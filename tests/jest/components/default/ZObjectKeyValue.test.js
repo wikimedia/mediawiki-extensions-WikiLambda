@@ -80,7 +80,6 @@ describe( 'ZObjectKeyValue', () => {
 		global.store.hotUpdate( {
 			actions: actions
 		} );
-
 	} );
 
 	describe( 'it renders the correct component type for', () => {
@@ -598,6 +597,11 @@ describe( 'ZObjectKeyValue', () => {
 			actions.changeType = jest.fn();
 
 			const mockNavigate = jest.fn();
+
+			// Create mock title element
+			const title = document.createElement( 'h1' );
+			title.setAttribute( 'id', 'firstHeading' );
+			document.body.appendChild( title );
 
 			global.store.registerModule( 'router', {
 				namespaced: true,

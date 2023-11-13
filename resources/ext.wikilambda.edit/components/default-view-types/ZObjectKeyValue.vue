@@ -695,13 +695,15 @@ module.exports = exports = {
 				append: payload.append ? payload.append : false
 			} );
 
-			// If we are setting Z2K2 type to Function/Z8, redirect to function editor
-			if (
-				( this.key === Constants.Z_PERSISTENTOBJECT_VALUE ) &&
-				( payload.value === Constants.Z_FUNCTION )
-			) {
-				this.navigate( { to: Constants.VIEWS.FUNCTION_EDITOR } );
-				return;
+			// If we are setting Z2K2 type
+			if ( this.key === Constants.Z_PERSISTENTOBJECT_VALUE ) {
+				// check if we need to reset the page title
+				this.resetPageTitle( payload.value );
+				// if we set it to Function/Z8, redirect to function editor
+				if ( payload.value === Constants.Z_FUNCTION ) {
+					this.navigate( { to: Constants.VIEWS.FUNCTION_EDITOR } );
+					return;
+				}
 			}
 
 			// Else remain in default view page and set to dirty
@@ -786,6 +788,33 @@ module.exports = exports = {
 				keyPath: payload.keyPath ? payload.keyPath : [],
 				value: payload.value
 			} );
+		},
+
+		/**
+		 * Sets the page title to a more specific string for types,
+		 * functions, implementations and tests.
+		 *
+		 * @param {string} type
+		 */
+		resetPageTitle: function ( type ) {
+			let pageTitle;
+			switch ( type ) {
+				case Constants.Z_TYPE:
+					pageTitle = this.$i18n( 'wikilambda-special-create-type' ).text();
+					break;
+				case Constants.Z_FUNCTION:
+					pageTitle = this.$i18n( 'wikilambda-special-create-function' ).text();
+					break;
+				case Constants.Z_IMPLEMENTATION:
+					pageTitle = this.$i18n( 'wikilambda-special-create-implementation' ).text();
+					break;
+				case Constants.Z_TESTER:
+					pageTitle = this.$i18n( 'wikilambda-special-create-test' ).text();
+					break;
+				default:
+					pageTitle = this.$i18n( 'wikilambda-special-createobject' ).text();
+			}
+			document.getElementById( 'firstHeading' ).textContent = pageTitle;
 		},
 
 		/**

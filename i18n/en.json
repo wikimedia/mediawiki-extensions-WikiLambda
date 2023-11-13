@@ -408,5 +408,9 @@
 	"wikilambda-list-type-change-warning": "You changed the type of one or more lists. On publish, all list items will be deleted",
 	"wikilambda-function-evaluation-restriction-notrunnable": "This function has no approved implementations.",
 	"wikilambda-function-evaluation-restriction-warning": "We are sorry! At the moment only logged-in users can run functions.",
-	"wikilambda-argument-reference-selector-placeholder": "Select argument"
+	"wikilambda-argument-reference-selector-placeholder": "Select argument",
+	"wikilambda-special-create-function": "Create a new Function",
+	"wikilambda-special-create-type": "Create a new Type",
+	"wikilambda-special-create-implementation": "Create a new Implementation",
+	"wikilambda-special-create-test": "Create a new Test"
 }

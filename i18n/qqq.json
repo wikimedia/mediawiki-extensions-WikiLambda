@@ -419,5 +419,9 @@
 	"wikilambda-list-type-change-warning": "Warning message when the type of a typed list is changed that list items will be removed",
 	"wikilambda-function-evaluation-restriction-notrunnable": "Explanation message to inform users that they will not be able to run a function as it's not complete yet",
 	"wikilambda-function-evaluation-restriction-warning": "Warning message to inform not logged in users that they will not be able to run functions",
-	"wikilambda-argument-reference-selector-placeholder": "Placeholder for the argument reference selector"
+	"wikilambda-argument-reference-selector-placeholder": "Placeholder for the argument reference selector",
+	"wikilambda-special-create-function": "Title for the Special page to create a function",
+	"wikilambda-special-create-type": "Title for the Special page to create a type",
+	"wikilambda-special-create-implementation": "Title for the Special page to create an implementation",
+	"wikilambda-special-create-test": "Title for the Special page to create a test"
 }
