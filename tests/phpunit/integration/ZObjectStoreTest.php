@@ -833,8 +833,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testInsertZFunctionReference() {
-		$response = $this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
-		$this->assertTrue( $response );
+		$this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
 
 		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->getPrimaryDatabase();
 		$res = $dbr->newSelectQueryBuilder()
@@ -851,8 +850,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testFindFirstZImplementationFunction() {
-		$response = $this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
-		$this->assertTrue( $response );
+		$this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
 
 		$zid = $this->zobjectStore->findFirstZImplementationFunction();
 
@@ -860,11 +858,8 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testFindReferencedZObjectsByZFunctionId() {
-		$response = $this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
-		$this->assertTrue( $response );
-
-		$response = $this->zobjectStore->insertZFunctionReference( 'Z10031', 'Z10029', 'Z14' );
-		$this->assertTrue( $response );
+		$this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
+		$this->zobjectStore->insertZFunctionReference( 'Z10031', 'Z10029', 'Z14' );
 
 		$res = $this->zobjectStore->findReferencedZObjectsByZFunctionIdAsList( 'Z10029', 'Z14' );
 		$this->assertCount( 2, $res );
@@ -876,8 +871,10 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testDeleteZFunctionReference() {
-		$response = $this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
-		$this->assertTrue( $response );
+		$this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
+
+		$res = $this->zobjectStore->findReferencedZObjectsByZFunctionIdAsList( 'Z10029', 'Z14' );
+		$this->assertCount( 1, $res );
 
 		$this->zobjectStore->deleteZFunctionReference( 'Z10030' );
 
@@ -917,8 +914,8 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testClearFunctionsSecondaryTables() {
-		$response = $this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
-		$response = $this->zobjectStore->insertZFunctionReference( 'Z10031', 'Z10029', 'Z14' );
+		$this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
+		$this->zobjectStore->insertZFunctionReference( 'Z10031', 'Z10029', 'Z14' );
 
 		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->getPrimaryDatabase();
 		$res = $dbr->newSelectQueryBuilder()
@@ -996,9 +993,9 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testDeleteFromFunctionsSecondaryTables() {
-		$response = $this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
-		$response = $this->zobjectStore->insertZFunctionReference( 'Z10031', 'Z10028', 'Z14' );
-		$response = $this->zobjectStore->insertZFunctionReference( 'Z10032', 'Z10027', 'Z20' );
+		$this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
+		$this->zobjectStore->insertZFunctionReference( 'Z10031', 'Z10028', 'Z14' );
+		$this->zobjectStore->insertZFunctionReference( 'Z10032', 'Z10027', 'Z20' );
 
 		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->getPrimaryDatabase();
 
