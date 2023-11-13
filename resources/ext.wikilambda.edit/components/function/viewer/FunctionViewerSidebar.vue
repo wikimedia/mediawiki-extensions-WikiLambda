@@ -8,12 +8,12 @@
 	<div
 		class="ext-wikilambda-function-viewer-sidebar"
 	>
-		<ul
-			v-for="( item, index ) in list"
-			:key="index"
-			class="ext-wikilambda-function-viewer-sidebar__chip"
-		>
-			<li>
+		<ul>
+			<li
+				v-for="( item, index ) in list"
+				:key="index"
+				class="ext-wikilambda-function-viewer-sidebar__chip"
+			>
 				<div
 					class="ext-wikilambda-function-viewer-sidebar__chip-container"
 				>
