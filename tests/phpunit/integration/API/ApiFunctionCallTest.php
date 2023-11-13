@@ -156,13 +156,13 @@ class ApiFunctionCallTest extends ApiTestCase {
 		yield 'Invoke Python function using a user-defined type' => [
 			self::readTestFile( 'example-user-defined-python.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
-			"{\"Z1K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z1000000\",\"Z4K2\":[\"Z3\",{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"Z1000000K1\",\"Z3K3\":\"Z400\"}],\"Z4K3\":\"Z831\"},\"Z1000000K1\":\"5\"}"
+			"{\"Z1K1\":\"Z1000000\",\"Z1000000K1\":\"5\"}"
 		];
 
 		yield 'Invoke JavaScript function using a user-defined type' => [
 			self::readTestFile( 'example-user-defined-javascript.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
-			"{\"Z1K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z1000000\",\"Z4K2\":[\"Z3\",{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"Z1000000K1\",\"Z3K3\":\"Z400\"}],\"Z4K3\":\"Z831\"},\"Z1000000K1\":\"5\"}"
+			"{\"Z1K1\":\"Z1000000\",\"Z1000000K1\":\"5\"}"
 		];
 
 		$ZMillion = self::readTestFileAsArray( 'user-defined-validation-type.json' );
