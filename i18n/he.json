@@ -392,5 +392,9 @@
 	"wikilambda-list-type-change-warning": "שינית את הסוג של רשימה אחת או יותר. בעת פרסום, כל פריטי הרשימה יימחקו",
 	"wikilambda-function-evaluation-restriction-notrunnable": "לפונקציה הזאת אין מימושים מאושרים.",
 	"wikilambda-function-evaluation-restriction-warning": "מצטערים! כרגע רק משתמשים שנכנסו לחשבון יכולים להריץ פונקציות.",
-	"wikilambda-argument-reference-selector-placeholder": "נא לבחור ארגומנט"
+	"wikilambda-argument-reference-selector-placeholder": "נא לבחור ארגומנט",
+	"wikilambda-special-create-function": "יצירת פונקציה חדשה",
+	"wikilambda-special-create-type": "יצירת סוג חדש",
+	"wikilambda-special-create-implementation": "יצירת מימוש חדש",
+	"wikilambda-special-create-test": "יצירת בדיקה חדשה"
 }

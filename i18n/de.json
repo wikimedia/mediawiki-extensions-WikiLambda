@@ -392,5 +392,9 @@
 	"wikilambda-list-type-change-warning": "Du hast den Typ einer oder mehrerer Listen geändert. Bei der Veröffentlichung werden alle Listenelemente gelöscht",
 	"wikilambda-function-evaluation-restriction-notrunnable": "Für diese Funktion gibt es keine genehmigten Implementierungen.",
 	"wikilambda-function-evaluation-restriction-warning": "Es tut uns leid! Momentan können nur angemeldete Benutzer Funktionen ausführen.",
-	"wikilambda-argument-reference-selector-placeholder": "Argument auswählen"
+	"wikilambda-argument-reference-selector-placeholder": "Argument auswählen",
+	"wikilambda-special-create-function": "Erstellen einer neuen Funktion",
+	"wikilambda-special-create-type": "Einen neuen Typ erstellen",
+	"wikilambda-special-create-implementation": "Eine neue Implementierung erstellen",
+	"wikilambda-special-create-test": "Einen neuen Test erstellen"
 }
