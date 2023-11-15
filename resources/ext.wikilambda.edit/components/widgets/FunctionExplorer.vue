@@ -52,10 +52,11 @@
 				<!-- Read mode -->
 				<div
 					v-else
-					class="ext-wikilambda-function-explorer-flex ext-wikilambda-function-explorer-space-between"
+					class="ext-wikilambda-function-explorer-flex
+						ext-wikilambda-function-explorer-space-between
+						ext-wikilambda-function-explorer-dark-links"
 				>
 					<a
-						class="ext-wikilambda-function-explorer-dark-link"
 						:href="getWikiUrl( currentFunctionZid )"
 						data-testid="function-name"
 					>
@@ -81,12 +82,12 @@
 
 				>
 					<div class="ext-wikilambda-function-explorer-flex ext-wikilambda-function-explorer-space-between">
-						<a
-							class="ext-wikilambda-function-explorer-dark-link"
-							:href="getWikiUrl( arg.typeZid )"
-							data-testid="function-input-type">{{
-								arg.type
-							}}</a>
+						<span class="ext-wikilambda-function-explorer-type ext-wikilambda-function-explorer-dark-links">
+							<wl-type-to-string
+								data-testid="function-input-type"
+								:type="arg.type"
+							></wl-type-to-string>
+						</span>
 						<span
 							v-if="implementation === Constants.Z_IMPLEMENTATION_CODE"
 							class="ext-wikilambda-function-explorer-copyable"
@@ -109,13 +110,12 @@
 					<h5 class="ext-wikilambda-function-explorer-heading-no-spacing">
 						{{ $i18n( 'wikilambda-function-definition-output-label' ).text() }}
 					</h5>
-					<a
-						class="ext-wikilambda-function-explorer-dark-link"
-						:class="{ 'ext-wikilambda-function-explorer-untitled': outputTypeIsUntitled }"
-						:href="getWikiUrl( outputTypeZid )"
-						data-testid="function-output">
-						{{ outputType }}
-					</a>
+					<span class="ext-wikilambda-function-explorer-type ext-wikilambda-function-explorer-dark-links">
+						<wl-type-to-string
+							data-testid="function-output"
+							:type="outputType"
+						></wl-type-to-string>
+					</span>
 				</div>
 			</section>
 		</template>
@@ -139,6 +139,7 @@ var
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	WidgetBase = require( '../base/WidgetBase.vue' ),
+	TypeToString = require( '../base/TypeToString.vue' ),
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	icons = require( '../../../lib/icons.json' ),
@@ -150,6 +151,7 @@ module.exports = exports = {
 	components: {
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon,
+		'wl-type-to-string': TypeToString,
 		'wl-widget-base': WidgetBase,
 		'wl-z-object-selector': ZObjectSelector
 	},
@@ -184,8 +186,7 @@ module.exports = exports = {
 			'getUserLangCode',
 			'getStoredObject',
 			'getInputsOfFunctionZid',
-			'getLabelData',
-			'getZImplementationContentType'
+			'getLabelData'
 		] ),
 		{
 			functionIsUntitled: function () {
@@ -205,8 +206,6 @@ module.exports = exports = {
 				}
 
 				return args.map( ( arg ) => {
-					const typeZid = this.typeToString( arg[ Constants.Z_ARGUMENT_TYPE ] );
-					const typeLabel = this.getLabelOrUntitledObject( typeZid ).text;
 					const keyZid = arg[ Constants.Z_ARGUMENT_KEY ];
 
 					const argLabelObject = this.getLabelOrUntitledObject( keyZid );
@@ -214,37 +213,19 @@ module.exports = exports = {
 					const isUntitled = argLabelObject.isUntitled;
 
 					return {
-						type: typeLabel,
 						label,
-						typeZid,
 						isUntitled,
-						keyZid
+						keyZid,
+						type: arg[ Constants.Z_ARGUMENT_TYPE ]
 					};
 				} );
 			},
 			functionExists: function () {
 				return Boolean( this.functionObject );
 			},
-			outputTypeZid: function () {
-				if ( !this.functionObject ) {
-					return;
-				}
-
-				const outputReturnType = this.functionObject[ Constants.Z_PERSISTENTOBJECT_VALUE ][
-					Constants.Z_FUNCTION_RETURN_TYPE
-				];
-
-				if ( typeof outputReturnType === 'object' ) {
-					return outputReturnType[ Constants.Z_FUNCTION_CALL_FUNCTION ];
-				}
-
-				return outputReturnType;
-			},
 			outputType: function () {
-				return this.getLabelOrUntitledObject( this.outputTypeZid ).text;
-			},
-			outputTypeIsUntitled: function () {
-				return this.getLabelOrUntitledObject( this.outputTypeZid ).isUntitled;
+				return this.functionObject[ Constants.Z_PERSISTENTOBJECT_VALUE ][
+					Constants.Z_FUNCTION_RETURN_TYPE ];
 			},
 			resetButtonDisabled: function () {
 				return this.currentFunctionZid === this.functionZid;
@@ -326,11 +307,13 @@ module.exports = exports = {
 		}
 	}
 
-	.ext-wikilambda-function-explorer-dark-link,
-	.ext-wikilambda-function-explorer-dark-link:visited,
-	.ext-wikilambda-function-explorer-dark-link:hover,
-	.ext-wikilambda-function-explorer-dark-link:active {
-		color: @color-base;
+	.ext-wikilambda-function-explorer-dark-links {
+		a,
+		a:visited,
+		a:hover,
+		a:active {
+			color: @color-base;
+		}
 	}
 
 	.ext-wikilambda-function-explorer-heading-no-spacing {

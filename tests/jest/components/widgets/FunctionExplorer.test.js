@@ -9,12 +9,13 @@
 const
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	FunctionExplorer = require( '../../../../resources/ext.wikilambda.edit/components/widgets/FunctionExplorer.vue' ),
+	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	mount = require( '@vue/test-utils' ).mount,
 	icons = require( '../../fixtures/icons.json' );
 
 const reverseStringFunctionArguments = [
 	{
-		type: 'String',
+		type: 'Z6',
 		label: 'String to reverse',
 		typeZid: Constants.Z_STRING,
 		keyZid: 'Z10004K1'
@@ -23,7 +24,7 @@ const reverseStringFunctionArguments = [
 
 const capitalizeStringFunctionArguments = [
 	{
-		type: 'String',
+		type: 'Z6',
 		label: 'String to check',
 		typeZid: Constants.Z_STRING,
 		keyZid: 'Z10002K1'
@@ -44,12 +45,7 @@ const mockFunctionExplorerComputed = {
 			capitalizeStringFunctionArguments
 	),
 	functionExists: jest.fn( () => true ),
-	outputTypeZid: jest.fn( () =>
-		currentFunctionZid === REVERSE_STRING_FUNCTION_ZID ?
-			Constants.Z_STRING :
-			Constants.Z_BOOLEAN
-	),
-	outputType: jest.fn( () => currentFunctionZid === REVERSE_STRING_FUNCTION_ZID ? 'String' : 'Boolean' )
+	outputType: jest.fn( () => currentFunctionZid === REVERSE_STRING_FUNCTION_ZID ? 'Z6' : 'Z40' )
 };
 
 function createFunctionExplorerWrapper( propsData = {}, computed = $.extend( mockFunctionExplorerComputed, {} ) ) {
@@ -60,13 +56,28 @@ function createFunctionExplorerWrapper( propsData = {}, computed = $.extend( moc
 }
 
 describe( 'FunctionExplorer', function () {
+	var getters, actions;
+
 	beforeAll( function () {
 		getters = {
-			getErrors: jest.fn( () => false ),
-			getLabel: jest.fn( () => () => 'Some Label' )
+			getLabel: jest.fn( () => ( zid ) => {
+				const labels = {
+					Z6: 'String',
+					Z881: 'Typed list'
+				};
+				return labels[ zid ] ? labels[ zid ] : zid;
+			} ),
+			getUserLangCode: createGetterMock( 'en' )
 		};
 
-		global.store.hotUpdate( { getters: getters } );
+		actions = {
+			fetchZids: jest.fn()
+		};
+
+		global.store.hotUpdate( {
+			getters: getters,
+			actions: actions
+		} );
 	} );
 
 	it( 'renders without errors', function () {
@@ -141,12 +152,12 @@ describe( 'FunctionExplorer', function () {
 			} );
 
 			it( 'should update the function output', function () {
-				expect( wrapper.vm.outputTypeZid ).toBe( Constants.Z_STRING );
+				expect( wrapper.vm.outputType ).toBe( Constants.Z_STRING );
 				currentFunctionZid = CAPITALIZE_STRING_FUNCTION_ZID;
 
 				// We need to remount the wrapper to trigger the computed properties
 				wrapper = createFunctionExplorerWrapper( propsData );
-				expect( wrapper.vm.outputTypeZid ).toBe( Constants.Z_BOOLEAN );
+				expect( wrapper.vm.outputType ).toBe( Constants.Z_BOOLEAN );
 			} );
 		} );
 
@@ -304,9 +315,10 @@ describe( 'FunctionExplorer', function () {
 
 			it( 'the link to the input type should redirect to the page that represents the type of the input', function () {
 				const inputWrapper = wrapper.find( '[data-testid="function-input-type"]' );
+				const link = inputWrapper.find( 'a' );
 
-				expect( inputWrapper.attributes() ).toHaveProperty( 'href' );
-				expect( inputWrapper.attributes().href ).toContain( 'Z6' );
+				expect( link.attributes() ).toHaveProperty( 'href' );
+				expect( link.attributes().href ).toContain( 'Z6' );
 			} );
 
 			it( 'it displays the output of the function', function () {
@@ -316,9 +328,10 @@ describe( 'FunctionExplorer', function () {
 			} );
 			it( 'the link to the output type should redirect to the page that represents the type of the input', function () {
 				const outputWrapper = wrapper.find( '[data-testid="function-output"]' );
+				const link = outputWrapper.find( 'a' );
 
-				expect( outputWrapper.attributes() ).toHaveProperty( 'href' );
-				expect( outputWrapper.attributes().href ).toContain( 'Z6' );
+				expect( link.attributes() ).toHaveProperty( 'href' );
+				expect( link.attributes().href ).toContain( 'Z6' );
 			} );
 
 		} );
