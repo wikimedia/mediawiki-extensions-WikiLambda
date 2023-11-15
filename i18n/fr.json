@@ -55,7 +55,7 @@
 	"action-wikilambda-edit-function": "modifier les objets fonction existants",
 	"action-wikilambda-edit-function-definition": "modifier la définition d’une fonction existante",
 	"action-wikilambda-edit-implementation": "modifier les objets implémentation existants",
-	"action-wikilambda-edit-key-label": "modifier les libellés clés d’un type existant",
+	"action-wikilambda-edit-key-label": "modifier les libellés des clés d’un Type existant",
 	"action-wikilambda-edit-language": "modifier les objets langage naturel existants",
 	"action-wikilambda-edit-object-alias": "modifier les alias d’un objet existant",
 	"action-wikilambda-edit-object-description": "modifier les descriptions d’un objet existant",
@@ -206,6 +206,7 @@
 	"wikilambda-functioncall-metadata-orchestration-memory-usage": "Utilisation de la mémoire pour l’orchestration",
 	"wikilambda-functioncall-metadata-evaluation-memory-usage": "Utilisation de la mémoire pour l’évaluation",
 	"wikilambda-functioncall-metadata-execution-memory-usage": "Utilisation de la mémoire pour l’exécution",
+	"wikilambda-functioncall-metadata-execution-programming-language-version": "Version du langage de programmation",
 	"wikilambda-functioncall-metadata-orchestration-cpu-usage": "Utilisation du processeur pour l’orchestration",
 	"wikilambda-functioncall-metadata-evaluation-cpu-usage": "Utilisation du processeur pour l’évaluation",
 	"wikilambda-functioncall-metadata-orchestration-hostname": "Serveur d’orchestration",
@@ -400,5 +401,6 @@
 	"wikilambda-unknown-save-error-message": "Une erreur s’est produire en tentant d’enregistrer vos modifications.",
 	"wikilambda-list-type-change-warning": "Vous avez modifié le type d’une ou plusieurs listes. Lors de la publication, tous les éléments de la liste seront supprimés.",
 	"wikilambda-function-evaluation-restriction-notrunnable": "Cette fonction n’a pas d’implémentations approuvées.",
-	"wikilambda-function-evaluation-restriction-warning": "Nous sommes désolés ! Pour le moment, seuls les utilisateurs connectés peuvent exécuter des fonctions."
+	"wikilambda-function-evaluation-restriction-warning": "Nous sommes désolés ! Pour le moment, seuls les utilisateurs connectés peuvent exécuter des fonctions.",
+	"wikilambda-argument-reference-selector-placeholder": "Choisissez un argument"
 }
