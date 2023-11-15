@@ -63,6 +63,19 @@ module.exports = exports = {
 						( payload.link && Constants.LINKED_TYPES.includes( payload.type ) ) ) {
 					return getters.createZReference( payload );
 				}
+
+				// If payload.type is an object, we are looking at a generic type,
+				// so a type returned by a function call. Transform the payload for
+				// the spacail cases: List, Pair and Map
+				if ( typeUtils.isGenericType( payload.type ) ) {
+					if ( payload.type[ Constants.Z_FUNCTION_CALL_FUNCTION ] === Constants.Z_TYPED_LIST ) {
+						const newPayload = JSON.parse( JSON.stringify( payload ) );
+						newPayload.type = Constants.Z_TYPED_LIST;
+						newPayload.value = payload.type[ Constants.Z_TYPED_LIST_TYPE ];
+						return getters.createObjectByType( newPayload, keyList );
+					}
+				}
+
 				switch ( payload.type ) {
 					case Constants.Z_REFERENCE:
 						return getters.createZReference( payload );

@@ -11,6 +11,18 @@ var Constants = require( '../Constants.js' ),
 	typeUtils = {
 		methods: {
 			/**
+			 * Whether the given type is defined by a function call
+			 *
+			 * @param {Object|string} value
+			 * @return {boolean}
+			 */
+			isGenericType: function ( value ) {
+				return (
+					( typeof value === 'object' ) &&
+					( value[ Constants.Z_OBJECT_TYPE ] === Constants.Z_FUNCTION_CALL )
+				);
+			},
+			/**
 			 * Gets the key type given its initial value.
 			 *
 			 * @param {Object|Array|string} value
