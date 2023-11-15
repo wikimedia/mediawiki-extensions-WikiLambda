@@ -354,7 +354,7 @@ EOT;
 	 * This test inserts a ZLanguage with a label in the same language (self-reference)
 	 */
 	public function testInstanceOfSelfReferencingLang() {
-		$status = $this->insertZids( [ 'Z60' ] );
+		$this->insertZids( [ 'Z60' ] );
 
 		$igboContent = <<<EOT
 {
