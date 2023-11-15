@@ -9,8 +9,9 @@
 		<template #header>
 			{{ $i18n( 'wikilambda-function-explorer-title' ).text() }}
 		</template>
-		<template v-if="edit" #header-action>
+		<template #header-action>
 			<cdx-button
+				v-if="edit"
 				weight="quiet"
 				:class="{ 'ext-wikilambda-function-explorer-disabled': resetButtonDisabled }"
 				:disabled="resetButtonDisabled"
