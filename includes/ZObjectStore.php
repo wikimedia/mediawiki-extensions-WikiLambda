@@ -24,9 +24,9 @@ use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Title\Title;
 use MediaWiki\Title\TitleArrayFromResult;
 use MediaWiki\Title\TitleFactory;
+use MediaWiki\User\User;
 use MediaWiki\User\UserGroupManager;
 use Psr\Log\LoggerInterface;
-use User;
 use Wikimedia\Rdbms\IConnectionProvider;
 use Wikimedia\Rdbms\IDatabase;
 use Wikimedia\Rdbms\IResultWrapper;
@@ -1007,9 +1007,9 @@ class ZObjectStore {
 	): bool {
 		$dbw = $this->dbProvider->getPrimaryDatabase();
 
-		$dbw->upsert(
-			'wikilambda_ztester_results',
-			[
+		$dbw->newInsertQueryBuilder()
+			->insertInto( 'wikilambda_ztester_results' )
+			->row( [
 				'wlztr_zfunction_zid' => $functionZID,
 				'wlztr_zfunction_revision' => $functionRevision,
 				'wlztr_zimplementation_zid' => $implementationZID,
@@ -1018,21 +1018,18 @@ class ZObjectStore {
 				'wlztr_ztester_revision' => $testerRevision,
 				'wlztr_pass' => $testerResult,
 				'wlztr_returnobject' => $testerResponse,
-			],
-			[
-				[
-					'wlztr_zfunction_revision',
-					'wlztr_zimplementation_revision',
-					'wlztr_ztester_revision'
-
-				]
-			],
-			[
+			] )
+			->onDuplicateKeyUpdate()
+			->uniqueIndexFields( [
+				'wlztr_zfunction_revision',
+				'wlztr_zimplementation_revision',
+				'wlztr_ztester_revision'
+			] )
+			->set( [
 				'wlztr_pass' => $testerResult,
 				'wlztr_returnobject' => $testerResponse,
-			],
-			__METHOD__
-		);
+			] )
+			->caller( __METHOD__ )->execute();
 
 		return (bool)$dbw->affectedRows();
 	}
