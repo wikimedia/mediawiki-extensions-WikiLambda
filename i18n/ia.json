@@ -391,5 +391,9 @@
 	"wikilambda-list-type-change-warning": "Tu ha cambiate le typo de un o plure listas. Al publication, tote le elementos del lista essera delite.",
 	"wikilambda-function-evaluation-restriction-notrunnable": "Iste function non ha implementationes approbate.",
 	"wikilambda-function-evaluation-restriction-warning": "Nos lo regretta! Al momento, solmente usatores que ha aperite session pote executar functiones.",
-	"wikilambda-argument-reference-selector-placeholder": "Selige argumento"
+	"wikilambda-argument-reference-selector-placeholder": "Selige argumento",
+	"wikilambda-special-create-function": "Crear un nove function",
+	"wikilambda-special-create-type": "Crear un nove typo",
+	"wikilambda-special-create-implementation": "Crear un nove implementation",
+	"wikilambda-special-create-test": "Crear un nove test"
 }

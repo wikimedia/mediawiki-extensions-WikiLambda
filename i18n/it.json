@@ -159,5 +159,9 @@
 	"wikilambda-function-evaluator-run-function": "Esegui funzione",
 	"wikilambda-unknown-save-error-message": "Si sono verificati errori durante il tentativo di salvare le tue modifiche.",
 	"wikilambda-list-type-change-warning": "Hai cambiato il tipo di uno o più elenchi. Alla pubblicazione, tutti gli elementi dell'elenco verranno cancellati",
-	"wikilambda-argument-reference-selector-placeholder": "Seleziona argomento"
+	"wikilambda-argument-reference-selector-placeholder": "Seleziona argomento",
+	"wikilambda-special-create-function": "Crea una nuova funzione",
+	"wikilambda-special-create-type": "Crea un nuovo tipo",
+	"wikilambda-special-create-implementation": "Crea una nuova implementazione",
+	"wikilambda-special-create-test": "Crea un nuovo test"
 }
