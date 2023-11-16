@@ -5430,6 +5430,74 @@ describe( 'zobject Vuex module', function () {
 				} );
 			} );
 
+			describe( 'add object of generic type', function () {
+				it( 'adds a valid typed list', function () {
+					const payload = { id: 0, type: { Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z6' } };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( [
+						{ Z1K1: 'Z9', Z9K1: 'Z6' }
+					] );
+				} );
+
+				it( 'adds a valid object of a type defined by a function call', function () {
+					const payload = { id: 0, type: { Z1K1: 'Z7', Z7K1: 'Z10001', Z10001K1: 'Z6' } };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: {
+							Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+							Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10001' },
+							Z10001K1: { Z1K1: 'Z9', Z9K1: 'Z6' }
+						}
+					} );
+				} );
+
+				it( 'adds a valid ZTypedPair with empty values', function () {
+					const payload = { id: 0, type: { Z1K1: 'Z7', Z7K1: 'Z882', Z882K1: 'Z6', Z882K2: 'Z6' } };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: {
+							Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+							Z7K1: { Z1K1: 'Z9', Z9K1: 'Z882' },
+							Z882K1: { Z1K1: 'Z9', Z9K1: 'Z6' },
+							Z882K2: { Z1K1: 'Z9', Z9K1: 'Z6' }
+						}
+					} );
+				} );
+
+				it( 'adds a valid ZTypedMap with empty values', function () {
+					const payload = { id: 0, type: { Z1K1: 'Z7', Z7K1: 'Z883', Z883K1: 'Z6', Z883K2: 'Z6' } };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: {
+							Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+							Z7K1: { Z1K1: 'Z9', Z9K1: 'Z883' },
+							Z883K1: { Z1K1: 'Z9', Z9K1: 'Z6' },
+							Z883K2: { Z1K1: 'Z9', Z9K1: 'Z6' }
+						}
+					} );
+				} );
+			} );
+
 			describe( 'add GenericObject', function () {
 				it( 'adds a valid object of known type', function () {
 					const payload = { id: 0, type: Constants.Z_KEY };
@@ -5476,23 +5544,6 @@ describe( 'zobject Vuex module', function () {
 						context.getters
 					) ).toEqual( {
 						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z10000' }
-					} );
-				} );
-
-				it( 'adds a valid object of a type defined by a function call', function () {
-					const payload = { id: 0, type: { Z1K1: 'Z7', Z7K1: 'Z10001', Z10001K1: 'Z6' } };
-					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
-					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
-						context.state,
-						context.getters,
-						context.rootState,
-						context.getters
-					) ).toEqual( {
-						Z1K1: {
-							Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
-							Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10001' },
-							Z10001K1: { Z1K1: 'Z9', Z9K1: 'Z6' }
-						}
 					} );
 				} );
 
