@@ -12,8 +12,9 @@
 		<template #header>
 			{{ title }}
 		</template>
-		<template v-if="hasItems" #header-action>
+		<template #header-action>
 			<cdx-button
+				v-if="hasItems"
 				weight="quiet"
 				:aria-label="reloadLabel"
 				@click="runTesters"
