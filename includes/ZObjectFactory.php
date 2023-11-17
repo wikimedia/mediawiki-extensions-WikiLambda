@@ -583,8 +583,11 @@ class ZObjectFactory {
 						)
 					);
 				}
-				// Make sure that the return type of the function is Z4
-				if ( $returnType !== ZTypeRegistry::Z_TYPE ) {
+				// Make sure that the return type of the function is Z4 or Z1
+				if (
+					( $returnType !== ZTypeRegistry::Z_TYPE ) &&
+					( $returnType !== ZTypeRegistry::Z_OBJECT )
+				) {
 					throw new ZErrorException(
 						ZErrorFactory::createZErrorInstance(
 							ZErrorTypeRegistry::Z_ERROR_UNEXPECTED_ZTYPE,

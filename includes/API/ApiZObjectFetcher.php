@@ -24,6 +24,15 @@ class ApiZObjectFetcher extends WikiLambdaApiBase {
 	/**
 	 * @inheritDoc
 	 */
+	public function __construct( $query, $moduleName ) {
+		parent::__construct( $query, $moduleName );
+
+		$this->setUp();
+	}
+
+	/**
+	 * @inheritDoc
+	 */
 	public function execute(): void {
 		$params = $this->extractRequestParams();
 
