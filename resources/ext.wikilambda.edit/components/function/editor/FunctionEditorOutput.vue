@@ -164,7 +164,7 @@ module.exports = exports = {
 		 * @return {string}
 		 */
 		listObjectsLink: function () {
-			return this.$i18n( 'wikilambda-function-definition-input-types' ).text();
+			return this.$i18n( 'wikilambda-function-definition-output-types' ).text();
 		}
 	} )
 };
