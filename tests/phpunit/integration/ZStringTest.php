@@ -84,8 +84,8 @@ class ZStringTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( '', $testObject->getZValue(), 'ZValue of implicit null is the empty string' );
 
 		$testObjectAsObject = $testObject->getSerialized( ZObject::FORM_NORMAL );
-		$this->assertObjectHasAttribute( ZTypeRegistry::Z_OBJECT_TYPE, $testObjectAsObject );
-		$this->assertObjectHasAttribute( ZTypeRegistry::Z_STRING_VALUE, $testObjectAsObject );
+		$this->assertObjectHasProperty( ZTypeRegistry::Z_OBJECT_TYPE, $testObjectAsObject );
+		$this->assertObjectHasProperty( ZTypeRegistry::Z_STRING_VALUE, $testObjectAsObject );
 		$this->assertSame( ZTypeRegistry::Z_STRING, $testObjectAsObject->{ ZTypeRegistry::Z_OBJECT_TYPE } );
 		$this->assertSame(
 			'',
@@ -98,7 +98,7 @@ class ZStringTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( null, $testObject->getSerialized(), 'ZValue of explicit null is null' );
 
 		$testObjectAsObject = $testObject->getSerialized( ZObject::FORM_NORMAL );
-		$this->assertObjectHasAttribute( ZTypeRegistry::Z_OBJECT_TYPE, $testObjectAsObject );
+		$this->assertObjectHasProperty( ZTypeRegistry::Z_OBJECT_TYPE, $testObjectAsObject );
 		$this->assertSame( ZTypeRegistry::Z_STRING, $testObjectAsObject->{ ZTypeRegistry::Z_OBJECT_TYPE } );
 		$this->assertFalse(
 			property_exists( $testObjectAsObject, ZTypeRegistry::Z_STRING_VALUE ),
@@ -109,8 +109,8 @@ class ZStringTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( '', $testObject->getZValue(), 'ZValue of an empty string is identical' );
 
 		$testObjectAsObject = $testObject->getSerialized( ZObject::FORM_NORMAL );
-		$this->assertObjectHasAttribute( ZTypeRegistry::Z_OBJECT_TYPE, $testObjectAsObject );
-		$this->assertObjectHasAttribute( ZTypeRegistry::Z_STRING_VALUE, $testObjectAsObject );
+		$this->assertObjectHasProperty( ZTypeRegistry::Z_OBJECT_TYPE, $testObjectAsObject );
+		$this->assertObjectHasProperty( ZTypeRegistry::Z_STRING_VALUE, $testObjectAsObject );
 		$this->assertSame( ZTypeRegistry::Z_STRING, $testObjectAsObject->{ ZTypeRegistry::Z_OBJECT_TYPE } );
 		$this->assertSame(
 			'',
@@ -122,8 +122,8 @@ class ZStringTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 'Test', $testObject->getZValue(), 'ZValue of a non-empty string is identical' );
 
 		$testObjectAsObject = $testObject->getSerialized( ZObject::FORM_NORMAL );
-		$this->assertObjectHasAttribute( ZTypeRegistry::Z_OBJECT_TYPE, $testObjectAsObject );
-		$this->assertObjectHasAttribute( ZTypeRegistry::Z_STRING_VALUE, $testObjectAsObject );
+		$this->assertObjectHasProperty( ZTypeRegistry::Z_OBJECT_TYPE, $testObjectAsObject );
+		$this->assertObjectHasProperty( ZTypeRegistry::Z_STRING_VALUE, $testObjectAsObject );
 		$this->assertSame( ZTypeRegistry::Z_STRING, $testObjectAsObject->{ ZTypeRegistry::Z_OBJECT_TYPE } );
 		$this->assertSame(
 			'Test',
