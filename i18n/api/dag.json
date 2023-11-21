@@ -5,15 +5,16 @@
 			"Amire80",
 			"Chirifo",
 			"Hasslaebetch",
-			"Sir Amugi"
+			"Sir Amugi",
+			"McDutchie"
 		]
 	},
-	"apihelp-wikilambda_edit-example-create": "Yori palli",
+	"apihelp-wikilambda_edit-example-create": "Nammi ZObject\n of type Z6, with value 'value' and labeled 'label' palli",
 	"apihelp-wikilambda_edit-example-edit-incorrect": "Dambu",
 	"apihelp-wikilambda_edit-summary": "Namma bee malimi a ZObject niŋ",
 	"apihelp-wikilambda_edit-param-summary": "Malimi kolivaai lahabali maa niŋ.",
 	"apihelp-wikilambda_edit-param-zid": "Zaɣpali pilibu",
 	"apihelp-wikilambda_edit-param-zobject": "JSON zaŋ ti ZObject di yan malsoŋ",
-	"apierror-wikilambda_edit-invalidjson": "Bi tooi nam ZObject n-ti given input '$1'; invalid JSON.",
+	"apierror-wikilambda_edit-invalidjson": "ZObject\n for given input '$1'; invalid JSON bɛ tooi nam",
 	"apierror-wikilambda_edit-unmatchingzid": "ZID tarisi ZID '$1' din bi doli ZObject ID '$2'"
 }
