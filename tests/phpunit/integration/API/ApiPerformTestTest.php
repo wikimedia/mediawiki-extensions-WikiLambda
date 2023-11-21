@@ -53,9 +53,6 @@ class ApiPerformTestTest extends ApiTestCase {
 	protected function setUp(): void {
 		parent::setUp();
 
-		$this->tablesUsed[] = 'wikilambda_zobject_labels';
-		$this->tablesUsed[] = 'wikilambda_zobject_function_join';
-		$this->tablesUsed[] = 'wikilambda_ztester_results';
 		$this->store = WikiLambdaServices::getZObjectStore();
 	}
 

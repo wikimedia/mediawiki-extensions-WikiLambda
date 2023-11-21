@@ -22,15 +22,6 @@ use MediaWiki\Title\Title;
  */
 class ApiZObjectFetcherTest extends ApiTestCase {
 
-	protected function setUp(): void {
-		parent::setUp();
-
-		$this->tablesUsed[] = 'wikilambda_zobject_labels';
-		$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';
-		$this->tablesUsed[] = 'wikilambda_zobject_function_join';
-		$this->tablesUsed[] = 'page';
-	}
-
 	public function testFailsWithMalformedTitle() {
 		$unnamable = 'nope; can\'t name it';
 

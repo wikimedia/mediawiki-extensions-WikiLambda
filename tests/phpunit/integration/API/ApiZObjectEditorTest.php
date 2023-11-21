@@ -37,11 +37,6 @@ class ApiZObjectEditorTest extends ApiTestCase {
 
 		$this->store = WikiLambdaServices::getZObjectStore();
 
-		$this->tablesUsed[] = 'wikilambda_zobject_labels';
-		$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';
-		$this->tablesUsed[] = 'wikilambda_zobject_function_join';
-		$this->tablesUsed[] = 'page';
-
 		$langs = ZLangRegistry::singleton();
 		$langs->register( self::EN, 'en' );
 		$langs->register( self::ES, 'es' );
