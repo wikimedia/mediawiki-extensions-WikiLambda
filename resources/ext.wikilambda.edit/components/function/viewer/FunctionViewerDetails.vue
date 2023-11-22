@@ -552,8 +552,7 @@ module.exports = exports = {
 	display: flex;
 	-webkit-flex-flow: row wrap;
 	flex-flow: row wrap;
-	row-gap: @spacing-150;
-	column-gap: @spacing-400;
+	gap: @spacing-150 @spacing-400;
 
 	&__summary:extend(.ext-wikilambda-edit__text-regular) {
 		color: @color-placeholder;
