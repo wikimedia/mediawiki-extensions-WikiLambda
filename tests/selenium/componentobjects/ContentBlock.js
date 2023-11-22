@@ -16,7 +16,9 @@ const { Element: WebdriverIOElementType } = require( 'webdriverio' );
 const ElementActions = require( '../utils/ElementActions' );
 
 class ContentBlock {
-	get contentBlock() { return $( 'div.ext-wikilambda-content' ); }
+	get contentBlock() {
+		return $( 'div.ext-wikilambda-content' );
+	}
 
 	// #region
 
@@ -38,9 +40,9 @@ class ContentBlock {
 		if ( !resolvedParentSection ) {
 			// setting this because the getter returns a Promise
 			const contentBlock = await this.contentBlock;
-			return await contentBlock.$( `.//label[text()="${label}"]/parent::div/parent::div` );
+			return await contentBlock.$( `.//label[text()="${ label }"]/parent::div/parent::div` );
 		}
-		return await resolvedParentSection.$( `.//label[text()="${label}"]/parent::div/parent::div` );
+		return await resolvedParentSection.$( `.//label[text()="${ label }"]/parent::div/parent::div` );
 	}
 
 	/**

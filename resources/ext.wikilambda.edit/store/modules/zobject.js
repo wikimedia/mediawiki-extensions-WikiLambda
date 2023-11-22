@@ -1995,7 +1995,7 @@ module.exports = exports = {
 			children.forEach( function ( itemRow, index ) {
 				context.commit( 'setKeyByRowIndex', {
 					index: context.getters.getRowIndexById( itemRow.id ),
-					key: `${index}`
+					key: `${ index }`
 				} );
 			} );
 		},
@@ -2017,7 +2017,7 @@ module.exports = exports = {
 				], argRow.id );
 				context.commit( 'setValueByRowIndex', {
 					index: context.getters.getRowIndexById( argKeyRow.id ),
-					value: `${context.getters.getCurrentZObjectId}K${index + 1}`
+					value: `${ context.getters.getCurrentZObjectId }K${ index + 1 }`
 				} );
 			} );
 		},

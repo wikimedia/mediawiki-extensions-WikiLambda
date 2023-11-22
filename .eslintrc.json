@@ -39,7 +39,6 @@
 			"error",
 			"kebab-case"
 		],
-		"vue/no-undef-components": "off",
 		"vue/no-undef-properties": "off",
 		"vue/require-explicit-emits": "off",
 		"vue/no-unsupported-features": [
@@ -49,15 +48,11 @@
 				"ignores": []
 			}
 		],
-		"vue/no-unregistered-components": [
+		"vue/no-undef-components": [
 			"warn",
 			{
 				"ignorePatterns": [
-					"router-link",
-					"router-view",
-					"wl-z-reference",
-					"wl-z-list-item",
-					"z-object"
+					"wl-z-reference"
 				]
 			}
 		],

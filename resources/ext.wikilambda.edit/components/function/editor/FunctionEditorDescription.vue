@@ -121,7 +121,7 @@ module.exports = exports = {
 		 * @return {string}
 		 */
 		descriptionInputId: function () {
-			return `ext-wikilambda-function-definition-description__input${this.zLanguage}`;
+			return `ext-wikilambda-function-definition-description__input${ this.zLanguage }`;
 		}
 	} ),
 	methods: $.extend( mapActions( [

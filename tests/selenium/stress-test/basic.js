@@ -39,10 +39,10 @@ try {
 	const executionNumber = parseInt( args[ executionNumberIndex ].split( '=' )[ 1 ] );
 
 	for ( let i = 0; i < executionNumber; i++ ) {
-		specs.push( `${specsRootDir}/${targetFile}` );
+		specs.push( `${ specsRootDir }/${ targetFile }` );
 	}
 
-	console.log( `Executing ${targetFile} ${executionNumber} times` );
+	console.log( `Executing ${ targetFile } ${ executionNumber } times` );
 } catch ( error ) {
 	console.log( 'Error occured' );
 }

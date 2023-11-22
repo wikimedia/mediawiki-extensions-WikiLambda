@@ -34,15 +34,15 @@ module.exports = exports = {
 		getNamespace: function ( type = null, action = 'edit' ) {
 			switch ( type ) {
 				case Constants.Z_FUNCTION:
-					return `${action}Function`;
+					return `${ action }Function`;
 				case Constants.Z_IMPLEMENTATION:
-					return `${action}Implementation`;
+					return `${ action }Implementation`;
 				case Constants.Z_TESTER:
-					return `${action}Tester`;
+					return `${ action }Tester`;
 				case Constants.Z_TYPE:
-					return `${action}Type`;
+					return `${ action }Type`;
 				default:
-					return `${action}ZObject`;
+					return `${ action }ZObject`;
 			}
 		}
 	}

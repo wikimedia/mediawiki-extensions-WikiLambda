@@ -25,8 +25,12 @@ describe( 'ZTypedListType', () => {
 			getZObjectKeyByRowId: createGettersWithFunctionsMock( '0' ),
 
 			// getters for ZObjectKeyValue
-			getDepthByRowId: () => () => { return 1; },
-			getParentRowId: () => () => { return 2; },
+			getDepthByRowId: () => () => {
+				return 1;
+			},
+			getParentRowId: () => () => {
+				return 2;
+			},
 			getZObjectValueByRowId: createGettersWithFunctionsMock(),
 			getZObjectTypeByRowId: createGettersWithFunctionsMock( Constants.Z_STRING ),
 			getUserLangZid: createGettersWithFunctionsMock( 'Z1002' )

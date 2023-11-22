@@ -33,7 +33,7 @@ function createFunctionsMockForId( expectedId, value ) {
 		} else if ( id === parentRowId ) {
 			return Constants.Z_REFERENCE_ID;
 		} else {
-			throw new Error( `Id ${id} not supported` );
+			throw new Error( `Id ${ id } not supported` );
 		}
 	};
 }
@@ -52,14 +52,14 @@ describe( 'ZObjectKeyValue', () => {
 				if ( id === rowId ) {
 					return 1;
 				} else {
-					throw new Error( `rowId ${id} not supported` );
+					throw new Error( `rowId ${ id } not supported` );
 				}
 			},
 			getParentRowId: () => ( id ) => {
 				if ( id === rowId ) {
 					return parentRowId;
 				} else {
-					throw new Error( `rowId ${id} not supported` );
+					throw new Error( `rowId ${ id } not supported` );
 				}
 			},
 			getZObjectValueByRowId: createGettersWithFunctionsMock(),
@@ -362,7 +362,7 @@ describe( 'ZObjectKeyValue', () => {
 					} else if ( id === rowId ) {
 						return Constants.Z_REFERENCE;
 					} else {
-						throw new Error( `rowId ${id}  not supported` );
+						throw new Error( `rowId ${ id }  not supported` );
 					}
 				};
 
@@ -448,7 +448,7 @@ describe( 'ZObjectKeyValue', () => {
 					} else if ( id === rowId ) {
 						return Constants.Z_REFERENCE;
 					} else {
-						throw new Error( `rowId ${id}  not supported` );
+						throw new Error( `rowId ${ id }  not supported` );
 					}
 				};
 				getters.getZObjectKeyByRowId( parentRowId, Constants.Z_OBJECT_TYPE );

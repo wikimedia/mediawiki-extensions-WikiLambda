@@ -39,7 +39,7 @@ class ObjectSelector {
 	}
 
 	getMenuOptionByTextContent( textContent ) {
-		return this.menu.$( `bdi=${textContent}` );
+		return this.menu.$( `bdi=${ textContent }` );
 	}
 
 	/**

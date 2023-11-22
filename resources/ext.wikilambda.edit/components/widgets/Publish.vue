@@ -145,7 +145,7 @@ module.exports = exports = {
 			// Get redirect url
 			const cancelTargetUrl = this.isNewZObject ?
 				new mw.Title( Constants.PATHS.MAIN_PAGE ).getUrl() :
-				`/view/${this.getUserLangCode}/${this.getCurrentZObjectId}`;
+				`/view/${ this.getUserLangCode }/${ this.getCurrentZObjectId }`;
 			this.leaveTo( cancelTargetUrl );
 		},
 
@@ -206,7 +206,7 @@ module.exports = exports = {
 			const leaveAction = () => {
 				this.removeListeners();
 				const eventNamespace = eventLogger.getNamespace( this.getCurrentZObjectType );
-				eventLogger.dispatchEvent( `wf.ui.${eventNamespace}.cancel`, this.eventData );
+				eventLogger.dispatchEvent( `wf.ui.${ eventNamespace }.cancel`, this.eventData );
 				window.location.href = targetUrl;
 			};
 

@@ -20,7 +20,7 @@ class ListFunctions extends Page {
 		if ( !functionZId ) {
 			throw new Error( 'Function not handled by ListFunctions' );
 		}
-		return $( `a[href$="/${functionZId}"` );
+		return $( `a[href$="/${ functionZId }"` );
 	}
 
 	async openFunction( functionName ) {
@@ -31,7 +31,9 @@ class ListFunctions extends Page {
 }
 
 class ListObjectsByType extends Page {
-	get title() { return $( '#firstHeading' ); }
+	get title() {
+		return $( '#firstHeading' );
+	}
 
 	get types() {
 		return {
@@ -44,7 +46,7 @@ class ListObjectsByType extends Page {
 	}
 
 	getListType( ztype ) {
-		return $( `a[href$="/${ztype}` );
+		return $( `a[href$="/${ ztype }` );
 	}
 
 	/**

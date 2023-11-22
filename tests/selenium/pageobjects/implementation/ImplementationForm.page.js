@@ -24,8 +24,13 @@ const ElementActions = require( '../../utils/ElementActions' );
 const InputDropdown = require( '../../componentobjects/InputDropdown' );
 
 class ImplementationForm extends Page {
-	get aboutBlockDialogBox() { return AboutBlock.detailsInputDialogBox; }
-	get contentBlock() { return ContentBlock.contentBlock; }
+	get aboutBlockDialogBox() {
+		return AboutBlock.detailsInputDialogBox;
+	}
+
+	get contentBlock() {
+		return ContentBlock.contentBlock;
+	}
 
 	// #region About Block
 
@@ -110,7 +115,7 @@ class ImplementationForm extends Page {
 	async selectImplementationType( implementationType ) {
 		const contentBlock = await this.contentBlock;
 		const implementationBlock = contentBlock.$( 'div.ext-wikilambda-implementation-type' );
-		const implementationTypeLabel = implementationBlock.$( `.//label[span/text()="${implementationType}"]` );
+		const implementationTypeLabel = implementationBlock.$( `.//label[span/text()="${ implementationType }"]` );
 		await ElementActions.doClick( implementationTypeLabel );
 	}
 
@@ -148,7 +153,9 @@ class ImplementationForm extends Page {
 
 	// #region Composition Block
 
-	get compositionBlock() { return ContentBlock.getSectionOfContentBlock( 'composition' ); }
+	get compositionBlock() {
+		return ContentBlock.getSectionOfContentBlock( 'composition' );
+	}
 
 	/**
 	 * Toggle the composition block

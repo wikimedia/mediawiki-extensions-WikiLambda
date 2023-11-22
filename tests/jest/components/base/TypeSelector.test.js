@@ -83,8 +83,8 @@ describe( 'TypeSelector', () => {
 			getters.getZFunctionCallArguments = createGettersWithFunctionsMock( [
 				{ id: 2, parent: 1, key: Constants.Z_TYPED_LIST_TYPE }
 			] );
-			getters.getLabel = () => ( key ) => `label of ${key}`;
-			getters.getExpectedTypeOfKey = () => ( key ) => `expected type of ${key}`;
+			getters.getLabel = () => ( key ) => `label of ${ key }`;
+			getters.getExpectedTypeOfKey = () => ( key ) => `expected type of ${ key }`;
 			global.store.hotUpdate( { getters: getters } );
 
 			const wrapper = shallowMount( TypeSelector, {
@@ -116,8 +116,8 @@ describe( 'TypeSelector', () => {
 				{ id: 2, parent: 1, key: Constants.Z_TYPED_PAIR_TYPE1 },
 				{ id: 3, parent: 1, key: Constants.Z_TYPED_PAIR_TYPE2 }
 			] );
-			getters.getLabel = () => ( key ) => `label of ${key}`;
-			getters.getExpectedTypeOfKey = () => ( key ) => `expected type of ${key}`;
+			getters.getLabel = () => ( key ) => `label of ${ key }`;
+			getters.getExpectedTypeOfKey = () => ( key ) => `expected type of ${ key }`;
 			global.store.hotUpdate( { getters: getters } );
 
 			const wrapper = shallowMount( TypeSelector, {

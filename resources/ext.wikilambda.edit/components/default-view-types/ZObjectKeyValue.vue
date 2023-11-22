@@ -383,7 +383,7 @@ module.exports = exports = {
 			 * @return {string}
 			 */
 			rootClasses: function () {
-				var classList = [ `ext-wikilambda-key-level-${this.depth}` ];
+				var classList = [ `ext-wikilambda-key-level-${ this.depth }` ];
 
 				if ( this.isKeyTypedListType( this.key ) && this.edit && !this.expanded ) {
 					classList.push( 'ext-wikilambda-key-value-flex' );

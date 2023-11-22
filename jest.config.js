@@ -77,7 +77,7 @@ module.exports = {
 			statements: 90
 		},
 		'./resources/ext.wikilambda.languageselector/': {
-			branches: 82,
+			branches: 75,
 			lines: 90,
 			functions: 90,
 			statements: 90

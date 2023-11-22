@@ -15,10 +15,21 @@
 const ElementActions = require( '../utils/ElementActions' );
 
 class EvaluateFunctionBlock {
-	get evaluateFunctionBlock() { return $( 'div.ext-wikilambda-function-evaluator' ); }
-	get functionCallBlock() { return this.evaluateFunctionBlock.$( 'div.ext-wikilambda-function-evaluator-inputs' ); }
-	get orchestrationResultBlock() { return $( 'div.ext-wikilambda-function-evaluator-result' ); }
-	get resultStatus() { return this.orchestrationResultBlock.$( './/div[contains(text(),"Running")]' ); }
+	get evaluateFunctionBlock() {
+		return $( 'div.ext-wikilambda-function-evaluator' );
+	}
+
+	get functionCallBlock() {
+		return this.evaluateFunctionBlock.$( 'div.ext-wikilambda-function-evaluator-inputs' );
+	}
+
+	get orchestrationResultBlock() {
+		return $( 'div.ext-wikilambda-function-evaluator-result' );
+	}
+
+	get resultStatus() {
+		return this.orchestrationResultBlock.$( './/div[contains(text(),"Running")]' );
+	}
 
 	// #region Function Call Block
 

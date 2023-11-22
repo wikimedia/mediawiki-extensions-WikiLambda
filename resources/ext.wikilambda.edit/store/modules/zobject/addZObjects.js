@@ -577,7 +577,7 @@ module.exports = exports = {
 				// Initialize function identity and one empty argument
 				const functionZid = getters.getCurrentZObjectId || Constants.NEW_ZID_PLACEHOLDER;
 				value[ Constants.Z_FUNCTION_IDENTITY ][ Constants.Z_REFERENCE_ID ] = functionZid;
-				arg[ Constants.Z_ARGUMENT_KEY ] = `${functionZid}K1`;
+				arg[ Constants.Z_ARGUMENT_KEY ] = `${ functionZid }K1`;
 				value[ Constants.Z_FUNCTION_ARGUMENTS ].push( arg );
 				return value;
 			}

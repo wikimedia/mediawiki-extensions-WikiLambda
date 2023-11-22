@@ -87,19 +87,19 @@ describe( 'Implementation (CUJ 5)', () => {
 				const time = Date.now();
 				aboutBlockEntriesEnglish = {
 					language: 'English',
-					label: `e2e-implementation-code-${time}-English`,
+					label: `e2e-implementation-code-${ time }-English`,
 					description: 'This is the description for the new implementation via code in English',
 					alias: 'alias in English'
 				};
 				aboutBlockEntriesFrench = {
 					language: 'French',
-					label: `e2e-implementation-code-${time}-français`,
+					label: `e2e-implementation-code-${ time }-français`,
 					description: 'Ceci est la description de la nouvelle implémentation via le code en français',
 					alias: 'alias en français'
 				};
 				aboutBlockEntriesHindi = {
 					language: 'Hindi',
-					label: `e2e-implementation-code-${time}-हिंदी`,
+					label: `e2e-implementation-code-${ time }-हिंदी`,
 					description: 'यह हिंदी में कोड के माध्यम से नए कार्यान्वयन का विवरण है',
 					alias: 'उपनाम हिंदी में'
 				};
@@ -186,10 +186,10 @@ describe( 'Implementation (CUJ 5)', () => {
 				it( 'should display the entries in the about section', async () => {
 					await expect( await ImplementationPage.getImplementationLabel() ).toBe(
 						aboutBlockEntriesEnglish.label,
-						{ message: `Implementation page is not displaying the implementation label as expected to be ${aboutBlockEntriesEnglish.label}` } );
+						{ message: `Implementation page is not displaying the implementation label as expected to be ${ aboutBlockEntriesEnglish.label }` } );
 					await expect( await ImplementationPage.getImplementationDescription() ).toBe(
 						aboutBlockEntriesEnglish.description,
-						{ message: `Implementation page is not displaying the implementation description as expected to be ${aboutBlockEntriesEnglish.description}` } );
+						{ message: `Implementation page is not displaying the implementation description as expected to be ${ aboutBlockEntriesEnglish.description }` } );
 				} );
 
 				it( 'should display the entries in the code block', async () => {
@@ -207,8 +207,8 @@ describe( 'Implementation (CUJ 5)', () => {
 					const code = await ImplementationPage.getCodeEditorLines();
 					for ( const line in code ) {
 						expect( code[ line ] ).toBe( codeBlockEntries.code[ line ],
-							{ message: `Code editor line number ${line + 1} is expected to be
-							${codeBlockEntries.code[ line ]} but received as ${code[ line ]}` } );
+							{ message: `Code editor line number ${ line + 1 } is expected to be
+							${ codeBlockEntries.code[ line ] } but received as ${ code[ line ] }` } );
 					}
 				} );
 
@@ -278,19 +278,19 @@ describe( 'Implementation (CUJ 5)', () => {
 				const time = Date.now();
 				aboutBlockEntriesEnglish = {
 					language: 'English',
-					label: `e2e-implementation-composition-${time}-English`,
+					label: `e2e-implementation-composition-${ time }-English`,
 					description: 'This is the description for the new implementation via composition in English',
 					alias: 'alias in English'
 				};
 				aboutBlockEntriesFrench = {
 					language: 'French',
-					label: `e2e-implementation-composition-${time}-français`,
+					label: `e2e-implementation-composition-${ time }-français`,
 					description: 'Ceci est la description de la nouvelle implémentation via la composition en français',
 					alias: 'alias en français'
 				};
 				aboutBlockEntriesHindi = {
 					language: 'Hindi',
-					label: `e2e-implementation-composition-${time}-हिंदी`,
+					label: `e2e-implementation-composition-${ time }-हिंदी`,
 					description: 'यह हिंदी में रचना के माध्यम से नए कार्यान्वयन का विवरण है',
 					alias: 'उपनाम हिंदी में'
 				};
@@ -371,10 +371,10 @@ describe( 'Implementation (CUJ 5)', () => {
 				it( 'should display the entries in the about section', async () => {
 					await expect( await ImplementationPage.getImplementationLabel() ).toBe(
 						aboutBlockEntriesEnglish.label,
-						{ message: `Implementation page is not displaying the implementation label as expected to be ${aboutBlockEntriesEnglish.label}` } );
+						{ message: `Implementation page is not displaying the implementation label as expected to be ${ aboutBlockEntriesEnglish.label }` } );
 					await expect( await ImplementationPage.getImplementationDescription() ).toBe(
 						aboutBlockEntriesEnglish.description,
-						{ message: `Implementation page is not displaying the implementation description as expected to be ${aboutBlockEntriesEnglish.description}` } );
+						{ message: `Implementation page is not displaying the implementation description as expected to be ${ aboutBlockEntriesEnglish.description }` } );
 				} );
 
 			} );

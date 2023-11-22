@@ -65,7 +65,7 @@ module.exports = exports = {
 			 * @return {string}
 			 */
 			nestingDepthClass: function () {
-				return `ext-wikilambda-key-level-${this.depth}`;
+				return `ext-wikilambda-key-level-${ this.depth }`;
 			},
 
 			/**
@@ -76,7 +76,9 @@ module.exports = exports = {
 			 */
 			childRowIds: function () {
 				return this.getChildrenByParentRowId( this.rowId )
-					.map( function ( row ) { return row.id; } );
+					.map( function ( row ) {
+						return row.id;
+					} );
 			},
 
 			/**

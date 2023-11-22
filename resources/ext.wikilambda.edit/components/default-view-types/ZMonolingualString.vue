@@ -143,7 +143,7 @@ module.exports = exports = {
 			 */
 			inputCssVariablesStyle: function () {
 				return {
-					'--chipWidthPx': `${this.chipWidth}px`
+					'--chipWidthPx': `${ this.chipWidth }px`
 				};
 			},
 			/**

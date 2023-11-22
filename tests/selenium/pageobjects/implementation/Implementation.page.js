@@ -23,9 +23,17 @@ const AboutBlock = require( '../../componentobjects/AboutBlock' );
 const ContentBlock = require( '../../componentobjects/ContentBlock' );
 
 class Implementation extends Page {
-	get implementationTitleSelector() { return $( 'span.ext-wikilambda-viewpage-header-title--function-name' ); }
-	get editSourceLink() { return $( '//a[contains(@title, "Edit")]/span[contains(text(),"Edit")]' ); }
-	get contentBlock() { return ContentBlock.contentBlock; }
+	get implementationTitleSelector() {
+		return $( 'span.ext-wikilambda-viewpage-header-title--function-name' );
+	}
+
+	get editSourceLink() {
+		return $( '//a[contains(@title, "Edit")]/span[contains(text(),"Edit")]' );
+	}
+
+	get contentBlock() {
+		return ContentBlock.contentBlock;
+	}
 
 	// #region Header
 
@@ -77,7 +85,7 @@ class Implementation extends Page {
 	 * @return {Promise<WebdriverIOElementType>}
 	 */
 	getContentBlockFunctionLinkSelector( ZObjectLabel ) {
-		return this.contentBlock.$( `.//a[text()="${ZObjectLabel}"]` );
+		return this.contentBlock.$( `.//a[text()="${ ZObjectLabel }"]` );
 	}
 
 	/**
@@ -88,7 +96,7 @@ class Implementation extends Page {
 	 */
 	getImplementationTypeSelector( implementationType ) {
 		return this.contentBlock.$( 'div.ext-wikilambda-implementation-type' )
-			.$( `.//span[text()="${implementationType}"]` );
+			.$( `.//span[text()="${ implementationType }"]` );
 	}
 
 	// #region Code block
@@ -100,7 +108,7 @@ class Implementation extends Page {
 	 * @return {void}
 	 */
 	getProgrammingLanguageSelector( language ) {
-		return this.contentBlock.$( `.//span[text()="${language}"]` );
+		return this.contentBlock.$( `.//span[text()="${ language }"]` );
 	}
 
 	/**

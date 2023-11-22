@@ -133,7 +133,7 @@ module.exports = exports = {
 			return icons.cdxIconClock;
 		},
 		statusIconClass: function () {
-			return `ext-wikilambda-function-report-item-status__${this.status}`;
+			return `ext-wikilambda-function-report-item-status__${ this.status }`;
 		}
 	} ),
 	methods: {

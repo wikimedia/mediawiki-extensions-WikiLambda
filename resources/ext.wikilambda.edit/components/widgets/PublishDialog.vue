@@ -231,7 +231,7 @@ module.exports = exports = {
 			this.closeDialog();
 			window.location.href = !pageTitle ?
 				new mw.Title( Constants.PATHS.MAIN_PAGE ).getUrl() :
-				`/view/${this.getUserLangCode}/${pageTitle}?success=true`;
+				`/view/${ this.getUserLangCode }/${ pageTitle }?success=true`;
 		},
 
 		/**
@@ -280,7 +280,7 @@ module.exports = exports = {
 					zlang: this.getUserLangZid || null,
 					haserrors: this.hasErrors
 				};
-				this.dispatchEvent( `wf.ui.${eventNamespace}.publish`, customData );
+				this.dispatchEvent( `wf.ui.${ eventNamespace }.publish`, customData );
 			} );
 		},
 

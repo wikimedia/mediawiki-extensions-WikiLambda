@@ -20,7 +20,7 @@ const lookupSearchAndSelect = async ( parentWrapper, searchText, selectText, sel
 	const combobox = await within( parentWrapper ).findByRole( 'combobox' );
 	await fireEvent.update( combobox, searchText );
 	const options = await within( parentWrapper ).findAllByRole( 'option', { hidden: true } );
-	const option = options.find( ( e ) => e.textContent === `${selectText}${selectType}` );
+	const option = options.find( ( e ) => e.textContent === `${ selectText }${ selectType }` );
 
 	return await fireEvent.click( option );
 };

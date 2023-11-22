@@ -8,7 +8,9 @@
 'use strict';
 const Page = require( 'wdio-mediawiki/Page' );
 class CreateObjectPage extends Page {
-	get title() { return $( '#firstHeading' ); }
+	get title() {
+		return $( '#firstHeading' );
+	}
 
 	open() {
 		return super.openTitle( 'Special:CreateObject' );

@@ -28,11 +28,11 @@ try {
 	}
 
 	specFiles.forEach( ( file ) => {
-		console.log( `Running the command for ${file}` );
+		console.log( `Running the command for ${ file }` );
 		try {
-			execSync( `npm run selenium-stress-test -- --target-file=${file} --execution-number="${executionNumber}"`, { stdio: 'inherit' } );
+			execSync( `npm run selenium-stress-test -- --target-file=${ file } --execution-number="${ executionNumber }"`, { stdio: 'inherit' } );
 		} catch ( error ) {
-			console.log( `e2e test failed for ${file}` );
+			console.log( `e2e test failed for ${ file }` );
 		}
 	} );
 

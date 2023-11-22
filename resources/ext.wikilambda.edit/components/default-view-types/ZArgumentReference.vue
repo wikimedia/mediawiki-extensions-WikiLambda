@@ -104,7 +104,6 @@ module.exports = exports = {
 			},
 
 			/**
-			 *
 			 * @return {string | undefined}
 			 */
 			implementationRowId: function () {

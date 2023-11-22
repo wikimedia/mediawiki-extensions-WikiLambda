@@ -16,16 +16,46 @@ const ElementActions = require( '../utils/ElementActions' );
 const InputDropdown = require( './InputDropdown' );
 
 class AboutBlock {
-	get aboutBlock() { return $( 'div.ext-wikilambda-about' ); }
-	get editButton() { return this.aboutBlock.$( './/button[@aria-label="Edit"]' ); }
-	get detailsInputDialogBox() { return $( '//*[@data-testid="edit-label-dialog" and @aria-modal="true"]' ); }
-	get languageInputSelector() { return this.detailsInputDialogBox.$( './/input[@placeholder="Select language"]' ); }
-	get labelInputSelector() { return this.detailsInputDialogBox.$( './/input[@placeholder="Enter name"]' ); }
-	get descriptionInputSelector() { return this.detailsInputDialogBox.$( './/input[@placeholder="Enter description"]' ); }
-	get aliasInputSelector() { return this.detailsInputDialogBox.$( './/input[@placeholder="Enter aliases" or @placeholder=""]' ); }
-	get doneButton() { return this.detailsInputDialogBox.$( 'button=Done' ); }
-	get cancelButton() { return this.detailsInputDialogBox.$( 'button=Cancel' ); }
-	get showLanguagesButton() { return this.aboutBlock.$( './/button[contains(text(),"languages")]' ); }
+	get aboutBlock() {
+		return $( 'div.ext-wikilambda-about' );
+	}
+
+	get editButton() {
+		return this.aboutBlock.$( './/button[@aria-label="Edit"]' );
+	}
+
+	get detailsInputDialogBox() {
+		return $( '//*[@data-testid="edit-label-dialog" and @aria-modal="true"]' );
+	}
+
+	get languageInputSelector() {
+		return this.detailsInputDialogBox.$( './/input[@placeholder="Select language"]' );
+	}
+
+	get labelInputSelector() {
+		return this.detailsInputDialogBox.$( './/input[@placeholder="Enter name"]' );
+	}
+
+	get descriptionInputSelector() {
+		return this.detailsInputDialogBox.$( './/input[@placeholder="Enter description"]' );
+	}
+
+	get aliasInputSelector() {
+		return this.detailsInputDialogBox.$( './/input[@placeholder="Enter aliases" or @placeholder=""]' );
+	}
+
+	get doneButton() {
+		return this.detailsInputDialogBox.$( 'button=Done' );
+	}
+
+	get cancelButton() {
+		return this.detailsInputDialogBox.$( 'button=Cancel' );
+	}
+
+	get showLanguagesButton() {
+		return this.aboutBlock.$( './/button[contains(text(),"languages")]' );
+	}
+
 	get languageListDialogBox() {
 		return this.aboutBlock.$(
 			'.//div[contains(@class,"ext-wikilambda-about-language-list") and role="dialog"]' );
@@ -149,7 +179,7 @@ class AboutBlock {
 	 * @return {void}
 	 */
 	async openLanguageListItem( language ) {
-		const itemSelector = this.languageListDialogBox.$( `.//div[text()="${language}"]` );
+		const itemSelector = this.languageListDialogBox.$( `.//div[text()="${ language }"]` );
 		await ElementActions.doClick( itemSelector );
 	}
 

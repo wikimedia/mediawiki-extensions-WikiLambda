@@ -75,19 +75,19 @@ describe( 'Tester', () => {
 			const time = Date.now();
 			aboutBlockEntriesEnglish = {
 				language: 'English',
-				label: `e2e-Create-A-New-Test-${time}-English`,
+				label: `e2e-Create-A-New-Test-${ time }-English`,
 				description: 'This is the description for the new test in English',
 				alias: 'alias in English'
 			};
 			aboutBlockEntriesFrench = {
 				language: 'French',
-				label: `e2e-Create-A-New-Test-${time}-français`,
+				label: `e2e-Create-A-New-Test-${ time }-français`,
 				description: 'Ceci est la description du nouveau test en français',
 				alias: 'alias en français'
 			};
 			aboutBlockEntriesHindi = {
 				language: 'Hindi',
-				label: `e2e-Create-A-New-Test-${time}-हिंदी`,
+				label: `e2e-Create-A-New-Test-${ time }-हिंदी`,
 				description: 'यह हिंदी में नए टेस्ट का विवरण है',
 				alias: 'उपनाम हिंदी में'
 			};
@@ -185,10 +185,10 @@ describe( 'Tester', () => {
 			it( 'should display the information in the about section', async () => {
 				await expect( await TesterPage.getTesterLabel() ).toBe(
 					aboutBlockEntriesEnglish.label,
-					{ message: `Tester page is not displaying the tester label as expected to be ${aboutBlockEntriesEnglish.label}` } );
+					{ message: `Tester page is not displaying the tester label as expected to be ${ aboutBlockEntriesEnglish.label }` } );
 				await expect( await TesterPage.getTesterDescription() ).toBe(
 					aboutBlockEntriesEnglish.description,
-					{ message: `Tester page is not displaying the tester description as expected to be ${aboutBlockEntriesEnglish.description}` } );
+					{ message: `Tester page is not displaying the tester description as expected to be ${ aboutBlockEntriesEnglish.description }` } );
 			} );
 
 			it( 'should display the call function block parameters', async () => {
@@ -196,15 +196,15 @@ describe( 'Tester', () => {
 				await expect( await
 				TesterPage.getCallFunctionConditionParameter(
 					callBlockEntries.condition ) ).toBeExisting(
-					{ message: `Condition parameter are not displayed as expected to be ${callBlockEntries.condition}` } );
+					{ message: `Condition parameter are not displayed as expected to be ${ callBlockEntries.condition }` } );
 				await expect( await
 				TesterPage.getCallFunctionThenParameter(
 					callBlockEntries.thenBlockInput ) ).toBeExisting(
-					{ message: `Then parameter are not displayed as expected to be ${callBlockEntries.thenBlockInput}` } );
+					{ message: `Then parameter are not displayed as expected to be ${ callBlockEntries.thenBlockInput }` } );
 				await expect( await
 				TesterPage.getCallFunctionElseParameter(
 					callBlockEntries.elseBlockInput ) ).toBeExisting(
-					{ message: `Else parameter are not displayed as expected to be ${callBlockEntries.elseBlockInput}` } );
+					{ message: `Else parameter are not displayed as expected to be ${ callBlockEntries.elseBlockInput }` } );
 			} );
 
 			it( 'should display the validation block parameters', async () => {
@@ -215,7 +215,7 @@ describe( 'Tester', () => {
 				await expect( await
 				TesterPage.getValidationParameter(
 					validationBlockEntries.secondString.true ) ).toBeExisting(
-					{ message: `Validation parameter are not displayed as expected to be ${validationBlockEntries.secondString.true}` } );
+					{ message: `Validation parameter are not displayed as expected to be ${ validationBlockEntries.secondString.true }` } );
 			} );
 		} );
 	} );
@@ -235,7 +235,7 @@ describe( 'Tester', () => {
 			const time = Date.now();
 			aboutBlockEditEntries = {
 				language: 'English',
-				label: `e2e-edit-test-${time}-English`,
+				label: `e2e-edit-test-${ time }-English`,
 				description: 'This is edited description for the test in English',
 				alias: 'edited alias in English'
 			};
@@ -275,7 +275,7 @@ describe( 'Tester', () => {
 			 */
 			await expect( await TesterPage.getTesterTitle() ).toBe(
 				aboutBlockEditEntries.label,
-				{ message: `Tester page is not displaying the tester title as expected to be ${aboutBlockEditEntries.label}` } );
+				{ message: `Tester page is not displaying the tester title as expected to be ${ aboutBlockEditEntries.label }` } );
 		} );
 
 		describe( 'Show details of edited test', () => {
@@ -283,10 +283,10 @@ describe( 'Tester', () => {
 			it( 'should display the information in the about section', async () => {
 				await expect( await TesterPage.getTesterLabel() ).toBe(
 					aboutBlockEditEntries.label,
-					{ message: `Tester page is not displaying the tester label as expected to be ${aboutBlockEditEntries.label}` } );
+					{ message: `Tester page is not displaying the tester label as expected to be ${ aboutBlockEditEntries.label }` } );
 				await expect( await TesterPage.getTesterDescription() ).toBe(
 					aboutBlockEditEntries.description,
-					{ message: `Tester page is not displaying the tester description as expected to be ${aboutBlockEditEntries.description}` } );
+					{ message: `Tester page is not displaying the tester description as expected to be ${ aboutBlockEditEntries.description }` } );
 			} );
 
 		} );

@@ -168,7 +168,7 @@ module.exports = exports = {
 		 * @return {string}
 		 */
 		inputsFieldId: function () {
-			return `ext-wikilambda-function-definition-inputs__label_${this.zLanguage}`;
+			return `ext-wikilambda-function-definition-inputs__label_${ this.zLanguage }`;
 		},
 		/**
 		 * Returns the description for the inputs field

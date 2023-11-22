@@ -106,19 +106,19 @@ describe( 'Type (CUJ 7)', () => {
 			const time = Date.now();
 			aboutBlockEntriesEnglish = {
 				language: 'English',
-				label: `e2e-Create-A-New-Type-${time}-English`,
+				label: `e2e-Create-A-New-Type-${ time }-English`,
 				description: 'This is the description for the new type in English',
 				alias: 'alias in English'
 			};
 			aboutBlockEntriesFrench = {
 				language: 'French',
-				label: `e2e-Create-A-New-Type-${time}-français`,
+				label: `e2e-Create-A-New-Type-${ time }-français`,
 				description: 'Ceci est la description du nouveau type en français',
 				alias: 'alias en français'
 			};
 			aboutBlockEntriesHindi = {
 				language: 'Hindi',
-				label: `e2e-Create-A-New-Type-${time}-हिंदी`,
+				label: `e2e-Create-A-New-Type-${ time }-हिंदी`,
 				description: 'यह हिंदी में नए प्रकार के लिए विवरण है',
 				alias: 'उपनाम हिंदी में'
 			};
@@ -213,18 +213,18 @@ describe( 'Type (CUJ 7)', () => {
 
 			before( async () => {
 				const typeZId = await TypePage.getTypeZId();
-				keysBlockEntries.firstKey.keyId = `${typeZId}K1`;
-				keysBlockEntries.secondKey.keyId = `${typeZId}K2`;
-				keysBlockEntries.thirdKey.keyId = `${typeZId}K3`;
+				keysBlockEntries.firstKey.keyId = `${ typeZId }K1`;
+				keysBlockEntries.secondKey.keyId = `${ typeZId }K2`;
+				keysBlockEntries.thirdKey.keyId = `${ typeZId }K3`;
 			} );
 
 			it( 'should display the entries in the about section', async () => {
 				await expect( await TypePage.getTypeLabel() ).toBe(
 					aboutBlockEntriesEnglish.label,
-					{ message: `Type page is not displaying the type label as expected to be ${aboutBlockEntriesEnglish.label}` } );
+					{ message: `Type page is not displaying the type label as expected to be ${ aboutBlockEntriesEnglish.label }` } );
 				await expect( await TypePage.getTypeDescription() ).toBe(
 					aboutBlockEntriesEnglish.description,
-					{ message: `Type page is not displaying the type description as expected to be ${aboutBlockEntriesEnglish.description}` } );
+					{ message: `Type page is not displaying the type description as expected to be ${ aboutBlockEntriesEnglish.description }` } );
 			} );
 
 			it( 'should display the entries in the keys block', async () => {
@@ -232,12 +232,12 @@ describe( 'Type (CUJ 7)', () => {
 				for ( const key of keyArr ) {
 					const [ valueTypeSelector, keyIdSelector, textSelectorArray ] =
 					await TypePage.getKeysBlockItemSelectors( keysBlockEntries[ key ] );
-					await expect( valueTypeSelector ).toBeExisting( { message: `${key} is not displaying the value Type as expected` } );
-					await expect( keyIdSelector ).toBeExisting( { message: `${key} is not displaying the key id as expected` } );
+					await expect( valueTypeSelector ).toBeExisting( { message: `${ key } is not displaying the value Type as expected` } );
+					await expect( keyIdSelector ).toBeExisting( { message: `${ key } is not displaying the key id as expected` } );
 
 					for ( const i in textSelectorArray ) {
-						await expect( textSelectorArray[ i ].languageSelector ).toBeExisting( { message: `${key} ${i + 1}th label is not displaying the language as expected` } );
-						await expect( textSelectorArray[ i ].textSelector ).toBeExisting( { message: `${key} ${i + 1}th label is not displaying the text as expected` } );
+						await expect( textSelectorArray[ i ].languageSelector ).toBeExisting( { message: `${ key } ${ i + 1 }th label is not displaying the language as expected` } );
+						await expect( textSelectorArray[ i ].textSelector ).toBeExisting( { message: `${ key } ${ i + 1 }th label is not displaying the text as expected` } );
 					}
 				}
 			} );
@@ -265,7 +265,7 @@ describe( 'Type (CUJ 7)', () => {
 			const time = Date.now();
 			aboutBlockEditEntries = {
 				language: 'English',
-				label: `e2e-edit-type-${time}-English`,
+				label: `e2e-edit-type-${ time }-English`,
 				description: 'This is edited description for the type in English',
 				alias: 'edited alias in English'
 			};
@@ -314,10 +314,10 @@ describe( 'Type (CUJ 7)', () => {
 			it( 'should display the information in the about section', async () => {
 				await expect( await TypePage.getTypeLabel() ).toBe(
 					aboutBlockEditEntries.label,
-					{ message: `Type page is not displaying the type label as expected to be ${aboutBlockEditEntries.label}` } );
+					{ message: `Type page is not displaying the type label as expected to be ${ aboutBlockEditEntries.label }` } );
 				await expect( await TypePage.getTypeDescription() ).toBe(
 					aboutBlockEditEntries.description,
-					{ message: `Type page is not displaying the type description as expected to be ${aboutBlockEditEntries.description}` } );
+					{ message: `Type page is not displaying the type description as expected to be ${ aboutBlockEditEntries.description }` } );
 			} );
 
 		} );

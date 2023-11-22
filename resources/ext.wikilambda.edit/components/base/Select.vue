@@ -55,8 +55,12 @@ module.exports = exports = {
 		 * Computed wrapper for selected
 		 */
 		value: {
-			get() { return this.selected; },
-			set( value ) { this.$emit( 'update:selected', value ); }
+			get() {
+				return this.selected;
+			},
+			set( value ) {
+				this.$emit( 'update:selected', value );
+			}
 		}
 	}
 };

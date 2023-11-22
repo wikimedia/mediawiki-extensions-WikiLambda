@@ -217,7 +217,9 @@ module.exports = exports = {
 		 */
 		inputRowIds: function () {
 			return this.getZFunctionCallArguments( this.functionCallRowId )
-				.map( function ( row ) { return row.id; } );
+				.map( function ( row ) {
+					return row.id;
+				} );
 		},
 
 		/**

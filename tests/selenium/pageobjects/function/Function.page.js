@@ -26,10 +26,21 @@ class FunctionPage extends Page {
 
 	// #region Header Section
 
-	get functionTitle() { return $( '.ext-wikilambda-viewpage-header-title--function-name' ); }
-	get functionZIdSelector() { return $( 'span.ext-wikilambda-viewpage-header-zid' ); }
-	get functionPageTabs() { return $( '[data-testid="function-viewer-tabs"]' ); }
-	get editSourceLink() { return $( '//nav[@aria-label="Views"]//a[contains(@title, "Edit")]/span[contains(text(),"Edit")]' ); }
+	get functionTitle() {
+		return $( '.ext-wikilambda-viewpage-header-title--function-name' );
+	}
+
+	get functionZIdSelector() {
+		return $( 'span.ext-wikilambda-viewpage-header-zid' );
+	}
+
+	get functionPageTabs() {
+		return $( '[data-testid="function-viewer-tabs"]' );
+	}
+
+	get editSourceLink() {
+		return $( '//nav[@aria-label="Views"]//a[contains(@title, "Edit")]/span[contains(text(),"Edit")]' );
+	}
 
 	/**
 	 * Get the ZId of the function page
@@ -108,19 +119,24 @@ class FunctionPage extends Page {
 	}
 
 	getNameInOtherLanguage( name ) {
-		return $( '.ext-wikilambda-function-viewer-names' ).$( `div*=${name}` );
+		return $( '.ext-wikilambda-function-viewer-names' ).$( `div*=${ name }` );
 	}
 
 	getAliasLabel( label ) {
-		return $( '.ext-wikilambda-function-about__aliases' ).$( `div*=${label}` );
+		return $( '.ext-wikilambda-function-about__aliases' ).$( `div*=${ label }` );
 	}
 
 	// #endregion About Sidebar
 
 	// #region Evaluate Function Block
 
-	get functionCallBlock() { return EvaluateFunctionBlock.functionCallBlock; }
-	get functionResultBlock() { return EvaluateFunctionBlock.orchestrationResultBlock; }
+	get functionCallBlock() {
+		return EvaluateFunctionBlock.functionCallBlock;
+	}
+
+	get functionResultBlock() {
+		return EvaluateFunctionBlock.orchestrationResultBlock;
+	}
 
 	async getValueBlock() {
 		const typeLabel = await $( ".//label[text()='type']" ).parentElement();
@@ -174,7 +190,7 @@ class FunctionPage extends Page {
 	 * @return {WebdriverIOElementType}
 	 */
 	async getEvaluateFunctionResultSelector( result ) {
-		return EvaluateFunctionBlock.orchestrationResultBlock.$( `.//p[text()="${result}"]` );
+		return EvaluateFunctionBlock.orchestrationResultBlock.$( `.//p[text()="${ result }"]` );
 	}
 
 	// #endregion Evaluate Function Block
@@ -185,7 +201,9 @@ class FunctionPage extends Page {
 
 	// #region Details Sidebar
 
-	get sidebarTable() { return $( '.ext-wikilambda-function-viewer-details-sidebar' ); }
+	get sidebarTable() {
+		return $( '.ext-wikilambda-function-viewer-details-sidebar' );
+	}
 
 	/**
 	 * Click on the "Show more languages" button.
@@ -202,18 +220,18 @@ class FunctionPage extends Page {
 	}
 
 	getArgumentLabel( label ) {
-		return $( `td=${label}` );
+		return $( `td=${ label }` );
 	}
 
 	async getInputType( inputTypeLabel, inputType ) {
-		const row = await this.sidebarTable.$( `td=${inputTypeLabel}` ).parentElement();
-		const type = await row.$( `a=${inputType}` );
+		const row = await this.sidebarTable.$( `td=${ inputTypeLabel }` ).parentElement();
+		const type = await row.$( `a=${ inputType }` );
 		return type;
 	}
 
 	async getOutputType( outputTypeLabel, outputType ) {
-		const row = await this.sidebarTable.$( `td=${outputTypeLabel}` ).parentElement();
-		const type = await row.$( `a=${outputType}` );
+		const row = await this.sidebarTable.$( `td=${ outputTypeLabel }` ).parentElement();
+		const type = await row.$( `a=${ outputType }` );
 		return type;
 	}
 
@@ -243,11 +261,25 @@ class FunctionPage extends Page {
 
 	// #region Implementations Table
 
-	get implementationsTableBlock() { return $( '[data-testid="function-implementations-table"]' ); }
-	get implementationProgressBar() { return this.implementationsTableBlock.$( './div[@role="progressbar"]' ); }
-	get implementationsTable() { return this.implementationsTableBlock.$( 'table' ); }
-	get approveImplementationButton() { return this.implementationsTableBlock.$( 'button[data-testid="approve"]' ); }
-	get deactivateImplementationButton() { return this.implementationsTableBlock.$( 'button[data-testid="deactivate"]' ); }
+	get implementationsTableBlock() {
+		return $( '[data-testid="function-implementations-table"]' );
+	}
+
+	get implementationProgressBar() {
+		return this.implementationsTableBlock.$( './div[@role="progressbar"]' );
+	}
+
+	get implementationsTable() {
+		return this.implementationsTableBlock.$( 'table' );
+	}
+
+	get approveImplementationButton() {
+		return this.implementationsTableBlock.$( 'button[data-testid="approve"]' );
+	}
+
+	get deactivateImplementationButton() {
+		return this.implementationsTableBlock.$( 'button[data-testid="deactivate"]' );
+	}
 
 	/**
 	 * Click on the "Connect" button in the implementations table
@@ -331,12 +363,29 @@ class FunctionPage extends Page {
 
 	// #region Tests Table
 
-	get testCasesTableBlock() { return $( '[data-testid="function-testers-table"]' ); }
-	get testCasesTableBlockHeader() { return this.testCasesTableBlock.$( './/div[contains(@class,"ext-wikilambda-table__title")]' ); }
-	get testCaseProgressBar() { return this.testCasesTableBlock.$( './div[@role="progressbar"]' ); }
-	get testCasesTable() { return this.testCasesTableBlock.$( "[data-testid='function-testers-table'] table" ); }
-	get approveTestCaseButton() { return this.testCasesTableBlock.$( 'button[data-testid="approve"]' ); }
-	get deactivateTestCaseButton() { return this.testCasesTableBlock.$( 'button[data-testid="deactivate"]' ); }
+	get testCasesTableBlock() {
+		return $( '[data-testid="function-testers-table"]' );
+	}
+
+	get testCasesTableBlockHeader() {
+		return this.testCasesTableBlock.$( './/div[contains(@class,"ext-wikilambda-table__title")]' );
+	}
+
+	get testCaseProgressBar() {
+		return this.testCasesTableBlock.$( './div[@role="progressbar"]' );
+	}
+
+	get testCasesTable() {
+		return this.testCasesTableBlock.$( "[data-testid='function-testers-table'] table" );
+	}
+
+	get approveTestCaseButton() {
+		return this.testCasesTableBlock.$( 'button[data-testid="approve"]' );
+	}
+
+	get deactivateTestCaseButton() {
+		return this.testCasesTableBlock.$( 'button[data-testid="deactivate"]' );
+	}
 
 	/**
 	 * Click on the "Connect" button in the test cases table

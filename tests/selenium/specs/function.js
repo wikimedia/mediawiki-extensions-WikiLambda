@@ -55,9 +55,15 @@ describe( 'Function', function () {
 		let functionTitle;
 		let alias;
 		const ALIASES = {
-			get ENGLISH() { return alias + '-English'; },
-			get FRENCH() { return alias + '-French'; },
-			get GERMAN() { return alias + '-German'; }
+			get ENGLISH() {
+				return alias + '-English';
+			},
+			get FRENCH() {
+				return alias + '-French';
+			},
+			get GERMAN() {
+				return alias + '-German';
+			}
 		};
 		const ARGUMENT_LABELS = {
 			ENGLISH: [ 'first argument', 'second argument' ],
@@ -107,9 +113,9 @@ describe( 'Function', function () {
 
 		it( 'should display the function aliases', async function () {
 			await FunctionPage.showMoreAliases();
-			assert.strictEqual( await FunctionPage.getAliasLabel( ALIASES.ENGLISH ).isExisting(), true, `Alias ${ALIASES.ENGLISH} should be displayed in alias list` );
-			assert.strictEqual( await FunctionPage.getAliasLabel( ALIASES.FRENCH ).isExisting(), true, `Alias ${ALIASES.FRENCH} should be displayed in alias list` );
-			assert.strictEqual( await FunctionPage.getAliasLabel( ALIASES.GERMAN ).isExisting(), true, `Alias ${ALIASES.GERMAN} should be displayed in alias list` );
+			assert.strictEqual( await FunctionPage.getAliasLabel( ALIASES.ENGLISH ).isExisting(), true, `Alias ${ ALIASES.ENGLISH } should be displayed in alias list` );
+			assert.strictEqual( await FunctionPage.getAliasLabel( ALIASES.FRENCH ).isExisting(), true, `Alias ${ ALIASES.FRENCH } should be displayed in alias list` );
+			assert.strictEqual( await FunctionPage.getAliasLabel( ALIASES.GERMAN ).isExisting(), true, `Alias ${ ALIASES.GERMAN } should be displayed in alias list` );
 		} );
 
 		it( 'should display the function arguments', async function () {
@@ -120,18 +126,18 @@ describe( 'Function', function () {
 			// But Eslint seems to be unhappy, so let's use this trick:
 			const labelValues = [].concat( ...Object.values( ARGUMENT_LABELS ) );
 			for ( const label of labelValues ) {
-				assert.strictEqual( await FunctionPage.getArgumentLabel( label ).isExisting(), true, `label "${label}" should exist in the list of arguments in the Details view` );
+				assert.strictEqual( await FunctionPage.getArgumentLabel( label ).isExisting(), true, `label "${ label }" should exist in the list of arguments in the Details view` );
 			}
 		} );
 
 		it( 'should display the input types', async function () {
 			for ( const [ index, inputType ] of INPUT_TYPES.entries() ) {
-				await expect( await FunctionPage.getInputType( `Input ${index + 1}`, inputType ) ).toBeExisting( { message: `input ${index + 1} should have ${inputType} type` } );
+				await expect( await FunctionPage.getInputType( `Input ${ index + 1 }`, inputType ) ).toBeExisting( { message: `input ${ index + 1 } should have ${ inputType } type` } );
 			}
 		} );
 
 		it( 'should display the output type', async function () {
-			await expect( await FunctionPage.getOutputType( 'Output', OUTPUT_TYPE ) ).toBeExisting( { message: `Output should have ${OUTPUT_TYPE} type` } );
+			await expect( await FunctionPage.getOutputType( 'Output', OUTPUT_TYPE ) ).toBeExisting( { message: `Output should have ${ OUTPUT_TYPE } type` } );
 		} );
 
 		it( 'should edit the function to remove a label', async function () {

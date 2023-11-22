@@ -261,7 +261,7 @@ module.exports = exports = {
 							const value = result.page_title;
 							const label = result.label;
 							const description = result.type_label;
-							const supportingText = ( result.label !== result.match_label ) ? `(${result.match_label})` : '';
+							const supportingText = ( result.label !== result.match_label ) ? `(${ result.match_label })` : '';
 							// If return type is set, reflect mode with icon
 							let icon;
 							if ( this.returnType ) {

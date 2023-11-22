@@ -25,10 +25,21 @@ const ContentBlock = require( '../../componentobjects/ContentBlock' );
 const FunctionExplorerBlock = require( '../../componentobjects/FunctionExplorerBlock' );
 
 class TesterPage extends Page {
-	get aboutBlockDialogBox() { return AboutBlock.detailsInputDialogBox; }
-	get contentBlock() { return ContentBlock.contentBlock; }
-	get callFunctionBlock() { return this.contentBlock.$( './/div[@role="ext-wikilambda-tester-call"]' ); }
-	get validationBlock() { return this.contentBlock.$( './/div[@role="ext-wikilambda-tester-validation"]' ); }
+	get aboutBlockDialogBox() {
+		return AboutBlock.detailsInputDialogBox;
+	}
+
+	get contentBlock() {
+		return ContentBlock.contentBlock;
+	}
+
+	get callFunctionBlock() {
+		return this.contentBlock.$( './/div[@role="ext-wikilambda-tester-call"]' );
+	}
+
+	get validationBlock() {
+		return this.contentBlock.$( './/div[@role="ext-wikilambda-tester-validation"]' );
+	}
 
 	// #region About Block
 
@@ -155,7 +166,7 @@ class TesterPage extends Page {
 		 * Fills the entries in the condition block
 		 */
 		const conditionBlock = await this.getCallFunctionBlockSection( 'condition' );
-		const conditionInputRadio = await conditionBlock.$( `.//label[span/text()="${condition}"]` );
+		const conditionInputRadio = await conditionBlock.$( `.//label[span/text()="${ condition }"]` );
 		await ElementActions.doClick( conditionInputRadio );
 
 		/**

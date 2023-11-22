@@ -107,7 +107,7 @@ module.exports = exports = {
 			return icons.cdxIconAlert;
 		},
 		statusIconClass: function () {
-			return `ext-wikilambda-function-report-item-status__${this.status}`;
+			return `ext-wikilambda-function-report-item-status__${ this.status }`;
 		},
 		messageIcon: function () {
 			return icons.cdxIconInfo;

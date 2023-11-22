@@ -77,7 +77,9 @@ module.exports = exports = {
 			 */
 			childRowIds: function () {
 				return this.getChildrenByParentRowId( this.rowId )
-					.map( function ( row ) { return row.id; } );
+					.map( function ( row ) {
+						return row.id;
+					} );
 			},
 
 			/**
@@ -119,7 +121,7 @@ module.exports = exports = {
 					return [
 						'ext-wikilambda-default-key-depth',
 						'ext-wikilambda-key-value-set',
-						`ext-wikilambda-key-level-${this.depth}`
+						`ext-wikilambda-key-level-${ this.depth }`
 					];
 				}
 			},

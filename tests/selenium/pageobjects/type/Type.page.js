@@ -21,8 +21,13 @@ const ContentBlock = require( '../../componentobjects/ContentBlock' );
 const { Element: WebdriverIOElementType } = require( 'webdriverio' );
 
 class Type extends Page {
-	get typeTitleSelector() { return $( 'span.ext-wikilambda-viewpage-header-title--function-name' ); }
-	get typeZIdSelector() { return $( 'span.ext-wikilambda-viewpage-header-zid' ); }
+	get typeTitleSelector() {
+		return $( 'span.ext-wikilambda-viewpage-header-title--function-name' );
+	}
+
+	get typeZIdSelector() {
+		return $( 'span.ext-wikilambda-viewpage-header-zid' );
+	}
 
 	// #region Header
 
@@ -122,18 +127,18 @@ class Type extends Page {
 		const keysBlockItem = await keysBlock.$$( './/label[contains(text(),"Item")]/parent::div/parent::div' )[ index ];
 
 		const valueTypeBlock = await ContentBlock.getSectionOfContentBlock( 'value type', keysBlockItem );
-		const valueTypeSelector = await valueTypeBlock.$( `.//a[text()="${valueType}"]` );
+		const valueTypeSelector = await valueTypeBlock.$( `.//a[text()="${ valueType }"]` );
 
 		const keyIdBlock = await ContentBlock.getSectionOfContentBlock( 'key id', keysBlockItem );
-		const keyIdSelector = await keyIdBlock.$( `.//p[text()="${keyId}"]` );
+		const keyIdSelector = await keyIdBlock.$( `.//p[text()="${ keyId }"]` );
 
 		const labelBlock = await ContentBlock.getSectionOfContentBlock( 'label', keysBlockItem );
 		const textsBlock = await ContentBlock.getSectionOfContentBlock( 'texts', labelBlock );
 		const textItemArray = [];
 		for ( const i in textArray ) {
 			const item = await textsBlock.$$( './/div[@data-testid="z-object-key-value"]' )[ i ];
-			const languageSelector = await item.$( `.//span[text()="${textArray[ i ].languageShortName}"]` );
-			const textSelector = await item.$( `.//div[contains(text(),"${textArray[ i ].text}")]` );
+			const languageSelector = await item.$( `.//span[text()="${ textArray[ i ].languageShortName }"]` );
+			const textSelector = await item.$( `.//div[contains(text(),"${ textArray[ i ].text }")]` );
 
 			textItemArray.push(
 				{
@@ -161,7 +166,7 @@ class Type extends Page {
 	 */
 	async getValidatorSelector( validator ) {
 		const validatorBlock = await this.validatorBlock;
-		return validatorBlock.$( `.//a[text()="${validator}"]` );
+		return validatorBlock.$( `.//a[text()="${ validator }"]` );
 	}
 
 	// #endregion

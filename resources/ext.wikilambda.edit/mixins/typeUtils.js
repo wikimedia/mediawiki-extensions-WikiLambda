@@ -220,14 +220,14 @@ var Constants = require( '../Constants.js' ),
 								// if function is a typed list
 								typeStringParam1 = type[ Constants.Z_TYPED_LIST_TYPE ];
 								typeString = typeStringParam1 ?
-									`${type[ Constants.Z_FUNCTION_CALL_FUNCTION ]}(${typeStringParam1})` :
+									`${ type[ Constants.Z_FUNCTION_CALL_FUNCTION ] }(${ typeStringParam1 })` :
 									type[ Constants.Z_FUNCTION_CALL_FUNCTION ];
 							} else if ( type[ Constants.Z_FUNCTION_CALL_FUNCTION ] === Constants.Z_TYPED_PAIR ) {
 								// if function is a typed pair
 								typeStringParam1 = type[ Constants.Z_TYPED_PAIR_TYPE1 ];
 								typeStringParam2 = type[ Constants.Z_TYPED_PAIR_TYPE2 ];
 								typeString = typeStringParam1 && typeStringParam2 ?
-									`${type[ Constants.Z_FUNCTION_CALL_FUNCTION ]}(${typeStringParam1},${typeStringParam2})` :
+									`${ type[ Constants.Z_FUNCTION_CALL_FUNCTION ] }(${ typeStringParam1 },${ typeStringParam2 })` :
 									type[ Constants.Z_FUNCTION_CALL_FUNCTION ];
 							} else {
 								typeString = type[ Constants.Z_FUNCTION_CALL_FUNCTION ];

@@ -249,8 +249,8 @@ describe( 'Connect implementation and test to the function (CUJ 6)', () => {
 
 		before( () => {
 			const randomString = Date.now();
-			accountDetail.username = `Username-${randomString}`;
-			accountDetail.password = `password-${randomString}`;
+			accountDetail.username = `Username-${ randomString }`;
+			accountDetail.password = `password-${ randomString }`;
 		} );
 
 		/**
@@ -317,7 +317,7 @@ describe( 'Connect implementation and test to the function (CUJ 6)', () => {
 					await FunctionPage.approveImplementation();
 				}
 
-				await expect( await FunctionPage.getImplementationsTableRowState( functionDetails.implementation.rowIndex ) ).toBe( implementationState, { message: `State is expected to remain ${implementationState}` } );
+				await expect( await FunctionPage.getImplementationsTableRowState( functionDetails.implementation.rowIndex ) ).toBe( implementationState, { message: `State is expected to remain ${ implementationState }` } );
 			} );
 
 		} );
@@ -366,7 +366,7 @@ describe( 'Connect implementation and test to the function (CUJ 6)', () => {
 					await FunctionPage.approveTestCase();
 				}
 
-				await expect( await FunctionPage.getTestCasesTableRowState( functionDetails.testCase.rowIndex ) ).toBe( testCaseState, { message: `State is expected to remain ${testCaseState}` } );
+				await expect( await FunctionPage.getTestCasesTableRowState( functionDetails.testCase.rowIndex ) ).toBe( testCaseState, { message: `State is expected to remain ${ testCaseState }` } );
 			} );
 
 		} );

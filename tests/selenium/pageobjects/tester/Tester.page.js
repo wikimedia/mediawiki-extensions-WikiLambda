@@ -22,12 +22,29 @@ const { Element: WebdriverIOElementType } = require( 'webdriverio' );
 const ContentBlock = require( '../../componentobjects/ContentBlock' );
 
 class Tester extends Page {
-	get testerTitleSelector() { return $( 'span.ext-wikilambda-viewpage-header-title--function-name' ); }
-	get testerZIdSelector() { return $( 'span.ext-wikilambda-viewpage-header-zid' ); }
-	get contentBlock() { return ContentBlock.contentBlock; }
-	get callFunctionBlock() { return this.contentBlock.$( './/div[@role="ext-wikilambda-tester-call"]' ); }
-	get validationBlock() { return this.contentBlock.$( './/div[@role="ext-wikilambda-tester-validation"]' ); }
-	get editSourceLink() { return $( '//nav[@aria-label="Views"]//a[contains(@title, "Edit")]/span[contains(text(),"Edit")]' ); }
+	get testerTitleSelector() {
+		return $( 'span.ext-wikilambda-viewpage-header-title--function-name' );
+	}
+
+	get testerZIdSelector() {
+		return $( 'span.ext-wikilambda-viewpage-header-zid' );
+	}
+
+	get contentBlock() {
+		return ContentBlock.contentBlock;
+	}
+
+	get callFunctionBlock() {
+		return this.contentBlock.$( './/div[@role="ext-wikilambda-tester-call"]' );
+	}
+
+	get validationBlock() {
+		return this.contentBlock.$( './/div[@role="ext-wikilambda-tester-validation"]' );
+	}
+
+	get editSourceLink() {
+		return $( '//nav[@aria-label="Views"]//a[contains(@title, "Edit")]/span[contains(text(),"Edit")]' );
+	}
 
 	// #region Header
 
@@ -126,7 +143,7 @@ class Tester extends Page {
 	 */
 	async getCallFunctionConditionParameter( condition ) {
 		const conditionParameterBlock = await this.getCallFunctionBlockSection( 'condition' );
-		return await conditionParameterBlock.$( `a=${condition}` );
+		return await conditionParameterBlock.$( `a=${ condition }` );
 	}
 
 	/**
@@ -137,7 +154,7 @@ class Tester extends Page {
 	 */
 	async getCallFunctionThenParameter( thenInput ) {
 		const thenParameterBlock = await this.getCallFunctionBlockSection( 'then' );
-		return await thenParameterBlock.$( `p=${thenInput}` );
+		return await thenParameterBlock.$( `p=${ thenInput }` );
 	}
 
 	/**
@@ -148,7 +165,7 @@ class Tester extends Page {
 	 */
 	async getCallFunctionElseParameter( elseInput ) {
 		const elseParameterBlock = await this.getCallFunctionBlockSection( 'else' );
-		return await elseParameterBlock.$( `p=${elseInput}` );
+		return await elseParameterBlock.$( `p=${ elseInput }` );
 	}
 
 	// #endregion
@@ -183,7 +200,7 @@ class Tester extends Page {
 	 */
 	async getValidationParameter( secondStringTrue ) {
 		const validationParameterBlock = await this.getValidationBlockSection( 'second string' );
-		return await validationParameterBlock.$( `p=${secondStringTrue}` );
+		return await validationParameterBlock.$( `p=${ secondStringTrue }` );
 	}
 
 	/**
@@ -194,7 +211,7 @@ class Tester extends Page {
 	 */
 	async getValidationBlockFunction( ZObjectLabel ) {
 		const validationBlockFunction = await this.getValidationBlockSection( 'function' );
-		return await validationBlockFunction.$( `a=${ZObjectLabel}` );
+		return await validationBlockFunction.$( `a=${ ZObjectLabel }` );
 	}
 
 	// #endregion

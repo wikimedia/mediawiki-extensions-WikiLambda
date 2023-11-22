@@ -304,7 +304,7 @@ const performTestResponseResults = ( zFunctionId, zimplementationIds, ztesterId,
 			zImplementationId: zimplementation,
 			zTesterId: ztesterId,
 			testMetadata: JSON.stringify( '{}' ),
-			validateStatus: `"${validateStatus}"`
+			validateStatus: `"${ validateStatus }"`
 		} );
 	} );
 	return testResults;

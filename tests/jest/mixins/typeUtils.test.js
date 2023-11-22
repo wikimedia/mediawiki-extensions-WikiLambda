@@ -349,7 +349,7 @@ describe( 'typeUtils mixin', function () {
 					[ Constants.Z_FUNCTION_CALL_FUNCTION ]: Constants.Z_TYPED_LIST,
 					[ Constants.Z_TYPED_LIST_TYPE ]: Constants.Z_STRING
 				} );
-				expect( type ).toBe( `${Constants.Z_TYPED_LIST}(${Constants.Z_STRING})` );
+				expect( type ).toBe( `${ Constants.Z_TYPED_LIST }(${ Constants.Z_STRING })` );
 			} );
 			it( 'with more than one argument', function () {
 				var type = typeUtils.typeToString( {
@@ -358,7 +358,7 @@ describe( 'typeUtils mixin', function () {
 					[ Constants.Z_TYPED_PAIR_TYPE1 ]: Constants.Z_STRING,
 					[ Constants.Z_TYPED_PAIR_TYPE2 ]: Constants.Z_BOOLEAN
 				} );
-				expect( type ).toBe( `${Constants.Z_TYPED_PAIR}(${Constants.Z_STRING},${Constants.Z_BOOLEAN})`
+				expect( type ).toBe( `${ Constants.Z_TYPED_PAIR }(${ Constants.Z_STRING },${ Constants.Z_BOOLEAN })`
 				);
 			} );
 		} );
@@ -384,7 +384,7 @@ describe( 'typeUtils mixin', function () {
 
 	describe( 'getScaffolding', function () {
 		describe( 'return empty object', function () {
-			it( `of reference if type is ${Constants.Z_OBJECT}`, function () {
+			it( `of reference if type is ${ Constants.Z_OBJECT }`, function () {
 				var result = typeUtils.getScaffolding( Constants.Z_OBJECT );
 				expect( result ).toStrictEqual( {
 					[ Constants.Z_OBJECT_TYPE ]: {
@@ -393,11 +393,11 @@ describe( 'typeUtils mixin', function () {
 					}
 				} );
 			} );
-			it( `of string if type is ${Constants.Z_STRING}`, function () {
+			it( `of string if type is ${ Constants.Z_STRING }`, function () {
 				var result = typeUtils.getScaffolding( Constants.Z_STRING );
 				expect( result ).toBe( '' );
 			} );
-			it( `of monolingual string if type is ${Constants.Z_MONOLINGUALSTRING}`, function () {
+			it( `of monolingual string if type is ${ Constants.Z_MONOLINGUALSTRING }`, function () {
 				var result = typeUtils.getScaffolding( Constants.Z_MONOLINGUALSTRING );
 				expect( result ).toStrictEqual( {
 					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
@@ -418,7 +418,7 @@ describe( 'typeUtils mixin', function () {
 	} );
 
 	describe( 'getKeyFromKeyList', function () {
-		it( `return the ${Constants.Z_KEY} object if given a key string from a list of ${Constants.Z_KEY} items`, function () {
+		it( `return the ${ Constants.Z_KEY } object if given a key string from a list of ${ Constants.Z_KEY } items`, function () {
 			var key = Constants.Z_MONOLINGUALSTRING_LANGUAGE;
 			var keyObject = {
 				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_KEY,
@@ -462,7 +462,7 @@ describe( 'typeUtils mixin', function () {
 	} );
 
 	describe( 'getArgFromArgList', function () {
-		it( `return the ${Constants.Z_ARGUMENT} object if given a key string from a list of ${Constants.Z_ARGUMENT} items`, function () {
+		it( `return the ${ Constants.Z_ARGUMENT } object if given a key string from a list of ${ Constants.Z_ARGUMENT } items`, function () {
 			var key = 'Z801K1';
 			var keyObject = {
 				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_ARGUMENT,

@@ -71,7 +71,7 @@ class FirstLanguageContainerComponent extends LanguageContainerComponent {
 	}
 
 	getInput( inputIndex ) {
-		return this.languageContext.$( `.ext-wikilambda-editor-input-list-item:nth-of-type(${inputIndex + 1})` );
+		return this.languageContext.$( `.ext-wikilambda-editor-input-list-item:nth-of-type(${ inputIndex + 1 })` );
 	}
 
 	async getInputTypeField( index ) {

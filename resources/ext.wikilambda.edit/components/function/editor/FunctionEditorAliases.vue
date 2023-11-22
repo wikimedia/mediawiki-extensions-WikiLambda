@@ -160,7 +160,7 @@ module.exports = exports = {
 		 * @return {string}
 		 */
 		aliasFieldId: function () {
-			return `ext-wikilambda-function-definition-aliases__input${this.zLanguage}`;
+			return `ext-wikilambda-function-definition-aliases__input${ this.zLanguage }`;
 		}
 	} ),
 	methods: $.extend( mapActions( [

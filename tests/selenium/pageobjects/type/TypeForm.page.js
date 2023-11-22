@@ -22,8 +22,13 @@ const InputDropdown = require( '../../componentobjects/InputDropdown' );
 const ElementActions = require( '../../utils/ElementActions' );
 
 class TypeForm extends Page {
-	get aboutBlockDialogBox() { return AboutBlock.detailsInputDialogBox; }
-	get contentBlock() { return ContentBlock.contentBlock; }
+	get aboutBlockDialogBox() {
+		return AboutBlock.detailsInputDialogBox;
+	}
+
+	get contentBlock() {
+		return ContentBlock.contentBlock;
+	}
 
 	/**
 	 * Open the type form
@@ -162,7 +167,7 @@ class TypeForm extends Page {
 			const button = await textsBlock.$( 'button.ext-wikilambda-ztyped-list-add-button' );
 			await ElementActions.doClick( button );
 
-			const textItem = await ContentBlock.getSectionOfContentBlock( `Item ${parseInt( i ) + 1}`, textsBlock );
+			const textItem = await ContentBlock.getSectionOfContentBlock( `Item ${ parseInt( i ) + 1 }`, textsBlock );
 
 			/**
 			 * Set the language input
