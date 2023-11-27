@@ -206,6 +206,7 @@ module.exports = exports = {
 		this.saveInitialFunctionSignature();
 
 		// Dispatch an editFunction load event
+		// TODO (T352141): Consider counting "About info" editing separately
 		this.dispatchEvent( 'wf.ui.editFunction.load', {
 			isnewzobject: this.isNewZObject,
 			zobjectid: this.getCurrentZObjectId || null,

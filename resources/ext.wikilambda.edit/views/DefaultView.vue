@@ -11,6 +11,7 @@
 				<!-- Widget About -->
 				<wl-about-widget
 					:edit="edit"
+					@edit-metadata="dispatchLoadEventForEditMetadataDialog"
 				></wl-about-widget>
 
 				<!-- Widget Function Explorer -->
@@ -204,14 +205,38 @@ module.exports = exports = {
 			}
 		}
 	),
+	methods: {
+		/**
+		 * Dispatch event (via Metrics Platform) to record loading this view,
+		 * or opening the about-edit-metadata-dialog.
+		 * This event indicates that the user is either (a) viewing a ZObject,
+		 * (b) starting to create a new one, or (c) starting to edit an existing one.
+		 * For case (a) editValue should be false; otherwise true.
+		 */
+		dispatchLoadEvent: function ( editValue ) {
+			this.dispatchEvent( 'wf.ui.defaultView.load', {
+				edit: editValue,
+				zobjecttype: this.contentType || null,
+				isnewzobject: this.isNewZObject,
+				zobjectid: this.getCurrentZObjectId || null,
+				zlang: this.getUserLangZid || null
+			} );
+		},
+		/**
+		 * This method handles a click of the edit-icon in the About widget. If this.edit = false,
+		 * we regard this click as the beginning of an edit journey of the current ZObject. But if
+		 * we are already in edit mode (this.edit = true), this journey has already begun and the
+		 * appropriate event has already been dispatched.
+		 * TODO (T352141): Consider counting "About info" editing separately
+		 */
+		dispatchLoadEventForEditMetadataDialog: function () {
+			if ( !this.edit ) {
+				this.dispatchLoadEvent( true );
+			}
+		}
+	},
 	mounted: function () {
-		this.dispatchEvent( 'wf.ui.defaultView.load', {
-			edit: this.edit,
-			zobjecttype: this.contentType || null,
-			isnewzobject: this.isNewZObject,
-			zobjectid: this.getCurrentZObjectId || null,
-			zlang: this.getUserLangZid || null
-		} );
+		this.dispatchLoadEvent( this.edit );
 		this.$emit( 'mounted' );
 	}
 };

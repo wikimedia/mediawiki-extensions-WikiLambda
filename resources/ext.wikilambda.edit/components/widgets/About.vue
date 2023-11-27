@@ -344,6 +344,7 @@ module.exports = exports = {
 		openEditLanguageDialog: function () {
 			this.showViewLanguagesDialog = false;
 			this.showEditMetadataDialog = true;
+			this.$emit( 'edit-metadata' );
 		},
 		/**
 		 * Opens the AboutViewLanguagesDialog with the first
