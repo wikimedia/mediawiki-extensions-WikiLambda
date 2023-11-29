@@ -132,7 +132,7 @@ describe( 'ZObjectToString', () => {
 
 			it( 'renders comma separated arguments', () => {
 				const wrapper = shallowMount( ZObjectToString );
-				expect( wrapper.text() ).toBe( 'And  ( first arg, second arg)' );
+				expect( wrapper.text() ).toBe( 'And  (first arg, second arg)' );
 			} );
 
 			it( 'renders each argument with another ZObjectToString component', () => {
@@ -210,7 +210,7 @@ describe( 'ZObjectToString', () => {
 
 			it( 'renders comma separated arguments', () => {
 				const wrapper = shallowMount( ZObjectToString );
-				expect( wrapper.text() ).toBe( 'Monolingual text  ( English, string value)' );
+				expect( wrapper.text() ).toBe( 'Monolingual text  (English, string value)' );
 			} );
 
 			it( 'renders each argument with another ZObjectToString component', () => {

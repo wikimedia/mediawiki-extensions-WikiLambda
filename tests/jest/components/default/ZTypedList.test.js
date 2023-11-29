@@ -135,7 +135,7 @@ describe( 'ZTypedList', () => {
 			expect( wrapper.find( '.ext-wikilambda-ztyped-list-add-button' ).exists() ).toBe( true );
 		} );
 
-		it( 'emits set-type when the add list item button is clicked', async () => {
+		it( 'emits add-list-item when the add list item button is clicked', async () => {
 			var wrapper = shallowMount( ZTypedList, {
 				props: {
 					edit: true
@@ -150,7 +150,7 @@ describe( 'ZTypedList', () => {
 			} );
 
 			wrapper.get( '.ext-wikilambda-ztyped-list-add-button' ).getComponent( CdxButton ).vm.$emit( 'click' );
-			expect( wrapper.emitted() ).toHaveProperty( 'set-type', [ [ { append: true, value: 'Z6' } ] ] );
+			expect( wrapper.emitted() ).toHaveProperty( 'add-list-item', [ [ { value: 'Z6' } ] ] );
 		} );
 	} );
 } );

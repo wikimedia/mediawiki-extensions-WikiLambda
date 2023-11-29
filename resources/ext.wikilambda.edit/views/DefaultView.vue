@@ -75,6 +75,7 @@ var Constants = require( '../Constants.js' ),
 	PublishWidget = require( '../components/widgets/Publish.vue' ),
 	FunctionReportWidget = require( '../components/widgets/FunctionReport.vue' ),
 	eventLogUtils = require( '../mixins/eventLogUtils.js' ),
+	typeUtils = require( '../mixins/typeUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
@@ -88,7 +89,7 @@ module.exports = exports = {
 		'wl-function-report-widget': FunctionReportWidget,
 		'wl-z-object-key-value': ZObjectKeyValue
 	},
-	mixins: [ eventLogUtils ],
+	mixins: [ eventLogUtils, typeUtils ],
 	data: function () {
 		return {};
 	},
@@ -133,7 +134,7 @@ module.exports = exports = {
 			 * @return {string}
 			 */
 			contentType: function () {
-				return this.getZObjectTypeByRowId( this.contentRowId );
+				return this.typeToString( this.getZObjectTypeByRowId( this.contentRowId ) );
 			},
 
 			/**
@@ -212,6 +213,8 @@ module.exports = exports = {
 		 * This event indicates that the user is either (a) viewing a ZObject,
 		 * (b) starting to create a new one, or (c) starting to edit an existing one.
 		 * For case (a) editValue should be false; otherwise true.
+		 *
+		 * @param {string} editValue
 		 */
 		dispatchLoadEvent: function ( editValue ) {
 			this.dispatchEvent( 'wf.ui.defaultView.load', {

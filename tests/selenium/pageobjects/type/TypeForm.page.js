@@ -110,7 +110,7 @@ class TypeForm extends Page {
 	 */
 	async addKey() {
 		const keysBlock = await this.keysBlock;
-		const button = await keysBlock.$$( 'button.ext-wikilambda-ztyped-list-add-button' );
+		const button = await keysBlock.$$( 'button[data-testid="typed-list-add-item"]' );
 		const length = button.length;
 		await ElementActions.doClick( button[ length - 1 ] );
 	}
@@ -148,7 +148,7 @@ class TypeForm extends Page {
 		 */
 		const valueTypeBlock = await ContentBlock.getSectionOfContentBlock( 'value type', keysBlockItem );
 		const selectTypeInput = await valueTypeBlock.$( './/input[@placeholder="Select a Type"]' );
-		await InputDropdown.setInputDropdown( valueTypeBlock, selectTypeInput, valueType );
+		await InputDropdown.setLookupOption( valueTypeBlock, selectTypeInput, valueType );
 
 		/**
 		 * Set the KeyId input
@@ -164,7 +164,7 @@ class TypeForm extends Page {
 			/**
 			 * Add text item
 			 */
-			const button = await textsBlock.$( 'button.ext-wikilambda-ztyped-list-add-button' );
+			const button = await textsBlock.$( 'button[data-testid="typed-list-add-item"]' );
 			await ElementActions.doClick( button );
 
 			const textItem = await ContentBlock.getSectionOfContentBlock( `Item ${ parseInt( i ) + 1 }`, textsBlock );
@@ -174,7 +174,7 @@ class TypeForm extends Page {
 			 */
 			const languageBlock = await ContentBlock.getSectionOfContentBlock( 'language', textItem );
 			const languageInput = await languageBlock.$( './/input[@placeholder="Select language"]' );
-			await InputDropdown.setInputDropdown( languageBlock, languageInput, textArray[ i ].language );
+			await InputDropdown.setLookupOption( languageBlock, languageInput, textArray[ i ].language );
 
 			/**
 			 * Set the text input
@@ -187,27 +187,20 @@ class TypeForm extends Page {
 
 	// #endregion
 
-	// #region Validator Block
-
-	/**
-	 * Validator Block is used to input the Validator for the Type
-	 */
-
-	get validatorBlock() {
-		return ContentBlock.getSectionOfContentBlock( 'validator' );
-	}
+	// #region Type Functions: Validator, Equality, Renderer and Parser
 
 	/**
 	 * Set the validator of the type
 	 *
 	 * @async
-	 * @param {string} validator
+	 * @param {string} label
+	 * @param {string} value
 	 * @return {void}
 	 */
-	async setValidator( validator ) {
-		const validatorBlock = await this.validatorBlock;
-		const input = await validatorBlock.$( './/input' );
-		await InputDropdown.setInputDropdown( this.validatorBlock, input, validator );
+	async setTypeFunction( label, value ) {
+		const typeFunctionBlock = await ContentBlock.getSectionOfContentBlock( label );
+		const typeFunctionInput = await typeFunctionBlock.$( './/input' );
+		await InputDropdown.setLookupOption( typeFunctionBlock, typeFunctionInput, value );
 	}
 
 	// #endregion

@@ -208,6 +208,7 @@ describe( 'typeUtils mixin', function () {
 
 			} );
 		} );
+
 		describe( 'typedListToArray', function () {
 			it( 'return an empty array if provided list is empty', function () {
 				var typeList = {
@@ -217,7 +218,6 @@ describe( 'typeUtils mixin', function () {
 				};
 				var formattedArray = typeUtils.typedListToArray( typeList );
 				expect( formattedArray ).toEqual( [] );
-
 			} );
 
 			describe( 'returns the formatted array', function () {
@@ -328,7 +328,7 @@ describe( 'typeUtils mixin', function () {
 					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
 					[ Constants.Z_FUNCTION_CALL_FUNCTION ]: 'Z10000'
 				} );
-				expect( type ).toBe( 'Z10000' );
+				expect( type ).toBe( 'Z10000()' );
 			} );
 			it( 'with zero arguments and normal reference', function () {
 				var type = typeUtils.typeToString( {
@@ -341,7 +341,7 @@ describe( 'typeUtils mixin', function () {
 						[ Constants.Z_REFERENCE_ID ]: 'Z10000'
 					}
 				} );
-				expect( type ).toBe( 'Z10000' );
+				expect( type ).toBe( 'Z10000()' );
 			} );
 			it( 'with one argument', function () {
 				var type = typeUtils.typeToString( {
@@ -360,6 +360,71 @@ describe( 'typeUtils mixin', function () {
 				} );
 				expect( type ).toBe( `${ Constants.Z_TYPED_PAIR }(${ Constants.Z_STRING },${ Constants.Z_BOOLEAN })`
 				);
+			} );
+			it( 'nested function calls - list of lists of strings', function () {
+				var type = typeUtils.typeToString( {
+					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
+					[ Constants.Z_FUNCTION_CALL_FUNCTION ]: Constants.Z_TYPED_LIST,
+					[ Constants.Z_TYPED_LIST_TYPE ]: {
+						[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
+						[ Constants.Z_FUNCTION_CALL_FUNCTION ]: Constants.Z_TYPED_LIST,
+						[ Constants.Z_TYPED_LIST_TYPE ]: Constants.Z_STRING
+					}
+				} );
+				expect( type ).toBe( `${ Constants.Z_TYPED_LIST }(${ Constants.Z_TYPED_LIST }(${ Constants.Z_STRING }))`
+				);
+			} );
+		} );
+
+		describe( 'Return function call identity with no args', function () {
+			it( 'with zero arguments', function () {
+				var type = typeUtils.typeToString( {
+					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
+					[ Constants.Z_FUNCTION_CALL_FUNCTION ]: 'Z10000'
+				}, true );
+				expect( type ).toBe( 'Z10000' );
+			} );
+			it( 'with zero arguments and normal reference', function () {
+				var type = typeUtils.typeToString( {
+					[ Constants.Z_OBJECT_TYPE ]: {
+						[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+						[ Constants.Z_REFERENCE_ID ]: Constants.Z_FUNCTION_CALL
+					},
+					[ Constants.Z_FUNCTION_CALL_FUNCTION ]: {
+						[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+						[ Constants.Z_REFERENCE_ID ]: 'Z10000'
+					}
+				}, true );
+				expect( type ).toBe( 'Z10000' );
+			} );
+			it( 'with one argument', function () {
+				var type = typeUtils.typeToString( {
+					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
+					[ Constants.Z_FUNCTION_CALL_FUNCTION ]: Constants.Z_TYPED_LIST,
+					[ Constants.Z_TYPED_LIST_TYPE ]: Constants.Z_STRING
+				}, true );
+				expect( type ).toBe( Constants.Z_TYPED_LIST );
+			} );
+			it( 'with more than one argument', function () {
+				var type = typeUtils.typeToString( {
+					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
+					[ Constants.Z_FUNCTION_CALL_FUNCTION ]: Constants.Z_TYPED_PAIR,
+					[ Constants.Z_TYPED_PAIR_TYPE1 ]: Constants.Z_STRING,
+					[ Constants.Z_TYPED_PAIR_TYPE2 ]: Constants.Z_BOOLEAN
+				}, true );
+				expect( type ).toBe( Constants.Z_TYPED_PAIR );
+			} );
+			it( 'nested function calls - list of lists of strings', function () {
+				var type = typeUtils.typeToString( {
+					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
+					[ Constants.Z_FUNCTION_CALL_FUNCTION ]: Constants.Z_TYPED_LIST,
+					[ Constants.Z_TYPED_LIST_TYPE ]: {
+						[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
+						[ Constants.Z_FUNCTION_CALL_FUNCTION ]: Constants.Z_TYPED_LIST,
+						[ Constants.Z_TYPED_LIST_TYPE ]: Constants.Z_STRING
+					}
+				}, true );
+				expect( type ).toBe( Constants.Z_TYPED_LIST );
 			} );
 		} );
 	} );

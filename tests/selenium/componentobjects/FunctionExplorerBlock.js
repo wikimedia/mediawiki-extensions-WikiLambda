@@ -52,7 +52,7 @@ class FunctionExplorerBlock {
 	 */
 	async setFunctionExplorerName( ZObjectLabel ) {
 		const parentSelector = this.functionNameInputSelector.$( './/ancestor::span[@data-testid]' );
-		await InputDropdown.setInputDropdown( parentSelector, this.functionNameInputSelector,
+		await InputDropdown.setLookupOption( parentSelector, this.functionNameInputSelector,
 			ZObjectLabel );
 	}
 }

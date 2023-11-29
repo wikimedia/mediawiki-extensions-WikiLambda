@@ -9,14 +9,14 @@
 		class="ext-wikilambda-ztyped-list"
 		:class="nestingDepthClass"
 	>
-		<!-- Type of list -->
+		<!-- Type of list item -->
 		<wl-z-typed-list-type
 			v-if="expanded"
 			:row-id="itemTypeRowId"
 			:edit="edit"
-			:list-type="itemType"
-			:parent-row-id="rowId"
+			:list-item-type="listItemType"
 			:list-items-row-ids="listItemsRowIds"
+			:parent-row-id="rowId"
 		></wl-z-typed-list-type>
 
 		<!-- Collection of items -->
@@ -24,17 +24,18 @@
 			:expanded="expanded"
 			:row-id="rowId"
 			:edit="edit"
-			:list-type="itemType"
-			:parent-row-id="rowId"
+			:list-item-type="listItemType"
 			:list-items-row-ids="listItemsRowIds"
+			:parent-row-id="rowId"
 			@add-list-item="addListItem"
 		></wl-z-typed-list-items>
 	</div>
 </template>
 
 <script>
-var ZTypedListItems = require( './ZTypedListItems.vue' ),
+const ZTypedListItems = require( './ZTypedListItems.vue' ),
 	ZTypedListType = require( './ZTypedListType.vue' ),
+	typeUtils = require( '../../mixins/typeUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
@@ -44,6 +45,7 @@ module.exports = exports = {
 		'wl-z-typed-list-items': ZTypedListItems,
 		'wl-z-typed-list-type': ZTypedListType
 	},
+	mixins: [ typeUtils ],
 	props: {
 		rowId: {
 			type: Number,
@@ -66,7 +68,8 @@ module.exports = exports = {
 	computed: $.extend(
 		mapGetters( [
 			'getChildrenByParentRowId',
-			'getTypedListItemType'
+			'getTypedListItemType',
+			'getZObjectAsJsonById'
 		] ),
 		{
 			/**
@@ -107,7 +110,7 @@ module.exports = exports = {
 			 *
 			 * @return {string}
 			 */
-			itemType: function () {
+			listItemType: function () {
 				return this.getTypedListItemType( this.rowId );
 			},
 
@@ -139,8 +142,8 @@ module.exports = exports = {
 		}
 	),
 	methods: {
-		addListItem: function ( payload ) {
-			this.$emit( 'set-type', payload );
+		addListItem: function () {
+			this.$emit( 'add-list-item', { value: this.listItemType } );
 		}
 	}
 };

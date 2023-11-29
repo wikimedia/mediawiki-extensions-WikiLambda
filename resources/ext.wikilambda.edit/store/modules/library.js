@@ -104,7 +104,7 @@ module.exports = exports = {
 							default:
 								return Constants.Z_OBJECT;
 						}
-						return typeUtils.typeToString( type );
+						return type;
 					}
 				}
 

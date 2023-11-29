@@ -79,9 +79,7 @@ module.exports = exports = {
 			}
 
 			// If we are to append the value to a parent list, wrap value in Array
-			const childValue = appendToList ?
-				Array.isArray( zObject ) ? zObject : [ zObject ] :
-				zObject;
+			const childValue = appendToList ? [ zObject ] : zObject;
 
 			// Initial call, if there's a parent, link with key and parent id, else undefined
 			flattenZObject(

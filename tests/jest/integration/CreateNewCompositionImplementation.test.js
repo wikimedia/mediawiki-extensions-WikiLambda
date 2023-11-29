@@ -35,7 +35,6 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		} );
 
 		// ACT: Select a function to add an implementation to
-		// const functionToAddImplementationToSelector = await getByTestId( 'z-reference-selector' );
 		const functionBlock = await findByTestId( 'implementation-function' );
 		const zReferenceSelectorDropdown = await within( functionBlock ).getByRole( 'combobox' );
 
@@ -46,9 +45,10 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 
 		await fireEvent.click( within( implementationRadioContainer ).getByDisplayValue( 'Z14K2' ) );
 
-		// ASSERT: Check that the code implementation radio button is selected
+		// ASSERT: Check that the composition implementation radio button is selected
 		expect( within( implementationRadioContainer ).getByDisplayValue( 'Z14K2' ).checked ).toBe( true );
 
+		//* -- Implementation content
 		// ACT: Click select function link button
 		const implementationContentBlock = await findByTestId( 'implementation-content-block' );
 
@@ -58,7 +58,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		await fireEvent.click( selectFunctionLink );
 
 		// ACT: Select the function to use for the composition implementation
-		const compositionReferenceSelectorContainer = within( implementationContentBlock ).getByTestId( 'z-reference-selector' );
+		const compositionReferenceSelectorContainer = within( implementationContentBlock ).getAllByTestId( 'z-reference-selector' )[ 1 ];
 		const compositionReferenceSelector = await within( compositionReferenceSelectorContainer ).getByRole( 'combobox' );
 
 		const functionNameToSelect = 'String equality';
@@ -75,23 +75,23 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		// ACT: Change the type of the first argument to argument reference
 		// By fetching this like this, we are guaranteed of only what is in the composition content block section - other page layout elements may change without affecting this
 		const compositionZObjectKeyValueSet = await within( implementationContentBlock ).getByTestId( 'z-object-key-value-set' );
-		const compositionAccordionList = await within( compositionZObjectKeyValueSet ).getAllByTestId( 'z-object-key-value' );
+		const compositionKeyValueList = await within( compositionZObjectKeyValueSet ).getAllByTestId( 'z-object-key-value' );
 
 		//* -- First argument
 		// The first argument is the third accordion in the list (the first is the composition type and the second is the composition function)
-		const firstArgumentAccordion = compositionAccordionList[ 2 ];
-		const firstArgumentAccordionToggleButton = await within( firstArgumentAccordion ).getByTestId( 'expanded-toggle' );
-		await fireEvent.click( firstArgumentAccordionToggleButton );
-		const compositionArg1TypeSelectorContainer = await within( firstArgumentAccordion ).getByTestId( 'z-object-type-select' );
+		const firstArgument = compositionKeyValueList[ 2 ];
 
 		// ACT: Set argument type for first argument ("First string") to argument reference
-		await clickLookupResult( compositionArg1TypeSelectorContainer, 'Argument reference' );
+		const firstArgumentModeSelector = await within( firstArgument ).getByTestId( 'mode-selector-button' );
+		await fireEvent.click( firstArgumentModeSelector );
+		await clickLookupResult( firstArgument, 'Argument reference' );
 
 		// ASSERT: Check that the type of the first argument is now argument reference
-		expect( within( firstArgumentAccordion ).getAllByRole( 'combobox' )[ 0 ] ).toHaveTextContent( 'Argument reference' );
+		const firstArgumentTypeSelector = within( firstArgument ).getAllByRole( 'combobox' )[ 0 ];
+		expect( firstArgumentTypeSelector.value ).toBe( 'Argument reference' );
 
 		// ACT: Select the first argument
-		const firstArgumentInput = within( firstArgumentAccordion ).getByTestId( 'argument-reference-key' );
+		const firstArgumentInput = within( firstArgument ).getByTestId( 'argument-reference-key' );
 		const firstArgumentExpectedInput = 'first argument label, in Afrikaans';
 		await clickLookupResult( firstArgumentInput, firstArgumentExpectedInput );
 
@@ -100,23 +100,23 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 
 		//* -- Second argument
 		// The second argument is the fourth accordion in the list (the first is the composition type and the second is the composition function)
-		const secondArgumentAccordion = compositionAccordionList[ 3 ];
-		const secondArgumentAccordionToggleButton = await within( secondArgumentAccordion ).getByTestId( 'expanded-toggle' );
-		await fireEvent.click( secondArgumentAccordionToggleButton );
-		const compositionArg2TypeSelectorContainer = await within( secondArgumentAccordion ).getByTestId( 'z-object-type-select' );
+		const secondArgument = compositionKeyValueList[ 3 ];
 
-		// ACT: Set argument type for first argument ("Second string") to argument reference
-		await clickLookupResult( compositionArg2TypeSelectorContainer, 'Argument reference' );
+		// ACT: Set argument type for second argument ("Second string") to argument reference
+		const secondArgumentModeSelector = await within( secondArgument ).getByTestId( 'mode-selector-button' );
+		await fireEvent.click( secondArgumentModeSelector );
+		await clickLookupResult( secondArgument, 'Argument reference' );
 
-		// ASSERT: Check that the type of the first argument is now argument reference
-		expect( within( secondArgumentAccordion ).getAllByRole( 'combobox' )[ 0 ] ).toHaveTextContent( 'Argument reference' );
+		// ASSERT: Check that the type of the second argument is now argument reference
+		const secondArgumentTypeSelector = within( secondArgument ).getAllByRole( 'combobox' )[ 0 ];
+		expect( secondArgumentTypeSelector.value ).toBe( 'Argument reference' );
 
 		// ACT: Select the second argument
-		const secondArgumentInput = within( secondArgumentAccordion ).getByTestId( 'argument-reference-key' );
+		const secondArgumentInput = within( secondArgument ).getByTestId( 'argument-reference-key' );
 		const secondArgumentExpectedInput = 'second argument label, in Afrikaans';
 		await clickLookupResult( secondArgumentInput, secondArgumentExpectedInput );
 
-		// ASSERT: Check the value of the first argument is correctly set
+		// ASSERT: Check the value of the second argument is correctly set
 		expect( within( secondArgumentInput ).getByRole( 'combobox' ) ).toHaveTextContent( secondArgumentExpectedInput );
 
 		//* -- Label section

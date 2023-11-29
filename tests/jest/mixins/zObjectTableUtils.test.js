@@ -241,13 +241,14 @@ describe( 'tableUtils mixin', function () {
 
 				const rows = tableUtils.convertZObjectToRows( zObject, parentRow, nextAvailableId, appendToList );
 				const expected = [
-					{ id: 10, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 9 },
-					{ id: 20, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 10 },
-					{ id: 21, key: 'Z1K1', value: 'Z6', parent: 20 },
-					{ id: 22, key: 'Z6K1', value: 'the stringy one', parent: 20 },
-					{ id: 23, key: '1', value: Constants.ROW_VALUE_OBJECT, parent: 10 },
-					{ id: 24, key: 'Z1K1', value: 'Z6', parent: 23 },
-					{ id: 25, key: 'Z6K1', value: 'the stringy two', parent: 23 }
+					{ id: 10, key: 'Z2K2', parent: 9, value: Constants.ROW_VALUE_ARRAY },
+					{ id: 20, key: '0', parent: 10, value: Constants.ROW_VALUE_ARRAY },
+					{ id: 21, key: '0', parent: 20, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 22, key: 'Z1K1', parent: 21, value: 'Z6' },
+					{ id: 23, key: 'Z6K1', parent: 21, value: 'the stringy one' },
+					{ id: 24, key: '1', parent: 20, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 25, key: 'Z1K1', parent: 24, value: 'Z6' },
+					{ id: 26, key: 'Z6K1', parent: 24, value: 'the stringy two' }
 				];
 				expect( rows ).toEqual( expected );
 			} );
@@ -267,13 +268,14 @@ describe( 'tableUtils mixin', function () {
 					fromIndex
 				);
 				const expected = [
-					{ id: 10, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 9 },
-					{ id: 20, key: '2', value: Constants.ROW_VALUE_OBJECT, parent: 10 },
-					{ id: 21, key: 'Z1K1', value: 'Z6', parent: 20 },
-					{ id: 22, key: 'Z6K1', value: 'the stringy one', parent: 20 },
-					{ id: 23, key: '3', value: Constants.ROW_VALUE_OBJECT, parent: 10 },
-					{ id: 24, key: 'Z1K1', value: 'Z6', parent: 23 },
-					{ id: 25, key: 'Z6K1', value: 'the stringy two', parent: 23 }
+					{ id: 10, key: 'Z2K2', parent: 9, value: Constants.ROW_VALUE_ARRAY },
+					{ id: 20, key: '2', parent: 10, value: Constants.ROW_VALUE_ARRAY },
+					{ id: 21, key: '0', parent: 20, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 22, key: 'Z1K1', parent: 21, value: 'Z6' },
+					{ id: 23, key: 'Z6K1', parent: 21, value: 'the stringy one' },
+					{ id: 24, key: '1', parent: 20, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 25, key: 'Z1K1', parent: 24, value: 'Z6' },
+					{ id: 26, key: 'Z6K1', parent: 24, value: 'the stringy two' }
 				];
 				expect( rows ).toEqual( expected );
 			} );
@@ -286,15 +288,16 @@ describe( 'tableUtils mixin', function () {
 
 				const rows = tableUtils.convertZObjectToRows( zObject, parentRow, nextAvailableId, appendToList );
 				const expected = [
-					{ id: 10, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 9 },
-					{ id: 20, key: '0', value: Constants.ROW_VALUE_ARRAY, parent: 10 },
-					{ id: 21, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 20 },
-					{ id: 22, key: 'Z1K1', value: 'Z6', parent: 21 },
-					{ id: 23, key: 'Z6K1', value: 'first stringly list', parent: 21 },
-					{ id: 24, key: '1', value: Constants.ROW_VALUE_ARRAY, parent: 10 },
-					{ id: 25, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 24 },
-					{ id: 26, key: 'Z1K1', value: 'Z6', parent: 25 },
-					{ id: 27, key: 'Z6K1', value: 'second stringly list', parent: 25 }
+					{ id: 10, key: 'Z2K2', parent: 9, value: Constants.ROW_VALUE_ARRAY },
+					{ id: 20, key: '0', parent: 10, value: Constants.ROW_VALUE_ARRAY },
+					{ id: 21, key: '0', parent: 20, value: Constants.ROW_VALUE_ARRAY },
+					{ id: 22, key: '0', parent: 21, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 23, key: 'Z1K1', parent: 22, value: 'Z6' },
+					{ id: 24, key: 'Z6K1', parent: 22, value: 'first stringly list' },
+					{ id: 25, key: '1', parent: 20, value: Constants.ROW_VALUE_ARRAY },
+					{ id: 26, key: '0', parent: 25, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 27, key: 'Z1K1', parent: 26, value: 'Z6' },
+					{ id: 28, key: 'Z6K1', parent: 26, value: 'second stringly list' }
 				];
 				expect( rows ).toEqual( expected );
 			} );
@@ -314,15 +317,16 @@ describe( 'tableUtils mixin', function () {
 					fromIndex
 				);
 				const expected = [
-					{ id: 10, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 9 },
-					{ id: 20, key: '2', value: Constants.ROW_VALUE_ARRAY, parent: 10 },
-					{ id: 21, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 20 },
-					{ id: 22, key: 'Z1K1', value: 'Z6', parent: 21 },
-					{ id: 23, key: 'Z6K1', value: 'first stringly list', parent: 21 },
-					{ id: 24, key: '3', value: Constants.ROW_VALUE_ARRAY, parent: 10 },
-					{ id: 25, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 24 },
-					{ id: 26, key: 'Z1K1', value: 'Z6', parent: 25 },
-					{ id: 27, key: 'Z6K1', value: 'second stringly list', parent: 25 }
+					{ id: 10, key: 'Z2K2', parent: 9, value: Constants.ROW_VALUE_ARRAY },
+					{ id: 20, key: '2', parent: 10, value: Constants.ROW_VALUE_ARRAY },
+					{ id: 21, key: '0', parent: 20, value: Constants.ROW_VALUE_ARRAY },
+					{ id: 22, key: '0', parent: 21, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 23, key: 'Z1K1', parent: 22, value: 'Z6' },
+					{ id: 24, key: 'Z6K1', parent: 22, value: 'first stringly list' },
+					{ id: 25, key: '1', parent: 20, value: Constants.ROW_VALUE_ARRAY },
+					{ id: 26, key: '0', parent: 25, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 27, key: 'Z1K1', parent: 26, value: 'Z6' },
+					{ id: 28, key: 'Z6K1', parent: 26, value: 'second stringly list' }
 				];
 				expect( rows ).toEqual( expected );
 			} );

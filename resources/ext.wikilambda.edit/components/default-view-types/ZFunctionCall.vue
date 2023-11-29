@@ -6,20 +6,23 @@
 -->
 <template>
 	<div class="ext-wikilambda-function-call">
-		<cdx-icon :icon="icon"></cdx-icon>
+		<cdx-icon
+			:icon="icon"
+			:class="iconClass"
+		></cdx-icon>
 		<wl-z-object-to-string
 			:row-id="rowId"
-			v-bind="$attrs"
 			data-testid="z-object-to-string"
-		>
-		</wl-z-object-to-string>
+			@expand="expand"
+		></wl-z-object-to-string>
 	</div>
 </template>
 
 <script>
-var CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+const CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	ZObjectToString = require( './ZObjectToString.vue' ),
-	icons = require( '../../../lib/icons.json' );
+	icons = require( '../../../lib/icons.json' ),
+	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = exports = {
@@ -28,7 +31,6 @@ module.exports = exports = {
 		'wl-z-object-to-string': ZObjectToString,
 		'cdx-icon': CdxIcon
 	},
-	inheritAttrs: false,
 	props: {
 		rowId: {
 			type: Number,
@@ -40,6 +42,36 @@ module.exports = exports = {
 		return {
 			icon: icons.cdxIconFunction
 		};
+	},
+	computed: $.extend( mapGetters( [
+		'getZFunctionCallFunctionId'
+	] ), {
+		/**
+		 * Returns the value of the function call or undefined
+		 *
+		 * @return {string|undefined}
+		 */
+		value: function () {
+			return this.getZFunctionCallFunctionId( this.rowId );
+		},
+		/**
+		 * Returns a special class name when the function call is undefined
+		 *
+		 * @return {string}
+		 */
+		iconClass: function () {
+			return !this.value ? 'ext-wikilambda-function-call-undefined' : '';
+		}
+	} ),
+	methods: {
+		/**
+		 * Emits event 'expand' when an unselected value is clicked.
+		 * This will push up the event till the immediate ZObjectKeyValue
+		 * parent, who will set the expansion flag to true.
+		 */
+		expand: function () {
+			this.$emit( 'expand' );
+		}
 	}
 };
 </script>
@@ -49,8 +81,16 @@ module.exports = exports = {
 
 .ext-wikilambda-function-call {
 	display: flex;
-	flex-flow: row wrap;
+	flex-direction: row;
 	justify-content: flex-start;
-	gap: @spacing-50;
+	gap: @spacing-25;
+
+	.cdx-icon {
+		color: @color-progressive;
+
+		&.ext-wikilambda-function-call-undefined {
+			color: @color-error;
+		}
+	}
 }
 </style>

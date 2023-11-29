@@ -103,8 +103,17 @@ describe( 'library module', function () {
 				expect( libraryModule.getters.getExpectedTypeOfKey( state )( 'Z10000K1' ) ).toEqual( Constants.Z_OBJECT );
 			} );
 
-			it( 'Returns the value type of a key if the zid is that of a type', function () {
+			it( 'Returns the terminal type of a global key', function () {
 				expect( libraryModule.getters.getExpectedTypeOfKey( state )( 'Z6K1' ) ).toEqual( Constants.Z_STRING );
+			} );
+
+			it( 'Returns the generic type of a global key', function () {
+				const expected = {
+					Z1K1: Constants.Z_FUNCTION_CALL,
+					Z7K1: Constants.Z_TYPED_LIST,
+					Z881K1: Constants.Z_STRING
+				};
+				expect( libraryModule.getters.getExpectedTypeOfKey( state )( 'Z31K2' ) ).toEqual( expected );
 			} );
 
 			it( 'Returns the argument type of a key if the zid is that of a function', function () {

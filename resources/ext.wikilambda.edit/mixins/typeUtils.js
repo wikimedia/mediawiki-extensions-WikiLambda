@@ -193,22 +193,24 @@ var Constants = require( '../Constants.js' ),
 			 * Transform the value of a Z1K1 key (object type) to a string.
 			 * When the type is a reference, return the Zid of the referred type.
 			 * When the type is a literal, return the stringified value of Z4K1.
-			 * When the type is a function call, return the function ID and the arguments in
-			 * brackets.
-			 *
-			 * TODO (T328639): Write tests
+			 * When the type is a function call, return the function ID:
+			 * - if noArgs is false, also return the arguments in brackets.
 			 *
 			 * @param {Object|string} type
+			 * @param {boolean} noArgs
 			 * @return {string}
 			 */
-			typeToString: function ( type ) {
+			typeToString: function ( type, noArgs = false ) {
 				if ( typeof type === 'string' ) {
 					return type;
 				} else {
 					const mode = typeUtils.methods.typeToString( type[ Constants.Z_OBJECT_TYPE ] );
 					let typeString,
-						typeStringParam1, // used for typed lists and typed pairs
-						typeStringParam2; // used for typed pairs
+						functionZid,
+						argKeys,
+						argType,
+						argTypes,
+						argTypesString;
 
 					switch ( mode ) {
 						case Constants.Z_REFERENCE:
@@ -216,26 +218,36 @@ var Constants = require( '../Constants.js' ),
 							break;
 
 						case Constants.Z_FUNCTION_CALL:
-							if ( type[ Constants.Z_FUNCTION_CALL_FUNCTION ] === Constants.Z_TYPED_LIST ) {
-								// if function is a typed list
-								typeStringParam1 = type[ Constants.Z_TYPED_LIST_TYPE ];
-								typeString = typeStringParam1 ?
-									`${ type[ Constants.Z_FUNCTION_CALL_FUNCTION ] }(${ typeStringParam1 })` :
-									type[ Constants.Z_FUNCTION_CALL_FUNCTION ];
-							} else if ( type[ Constants.Z_FUNCTION_CALL_FUNCTION ] === Constants.Z_TYPED_PAIR ) {
-								// if function is a typed pair
-								typeStringParam1 = type[ Constants.Z_TYPED_PAIR_TYPE1 ];
-								typeStringParam2 = type[ Constants.Z_TYPED_PAIR_TYPE2 ];
-								typeString = typeStringParam1 && typeStringParam2 ?
-									`${ type[ Constants.Z_FUNCTION_CALL_FUNCTION ] }(${ typeStringParam1 },${ typeStringParam2 })` :
-									type[ Constants.Z_FUNCTION_CALL_FUNCTION ];
-							} else {
-								typeString = type[ Constants.Z_FUNCTION_CALL_FUNCTION ];
+							// Stringify the function Zid
+							functionZid = type[ Constants.Z_FUNCTION_CALL_FUNCTION ];
+							if ( typeof functionZid === 'object' ) {
+								functionZid = typeUtils.methods.typeToString( functionZid );
+							}
+							typeString = functionZid;
+							if ( !noArgs ) {
+								// Stringify the function arguments
+								argTypes = [];
+								argKeys = Object.keys( type ).filter( ( key ) => {
+									return (
+										( key !== Constants.Z_OBJECT_TYPE ) &&
+										( key !== Constants.Z_FUNCTION_CALL_FUNCTION )
+									);
+								} );
+								for ( const argKey of argKeys ) {
+									argType = ( typeof type[ argKey ] === 'object' ) ?
+										typeUtils.methods.typeToString( type[ argKey ] ) :
+										type[ argKey ];
+									argTypes.push( argType );
+								}
+								argTypesString = argTypes.join( ',' );
+								// Put everything together
+								typeString += `(${ argTypesString })`;
 							}
 							break;
 
 						case Constants.Z_TYPE:
 							typeString = type[ Constants.Z_TYPE_IDENTITY ];
+							typeString = typeUtils.methods.typeToString( typeString );
 							break;
 
 						case Constants.Z_ARGUMENT_REFERENCE:
@@ -246,29 +258,8 @@ var Constants = require( '../Constants.js' ),
 							typeString = undefined;
 					}
 
-					return ( typeof typeString === 'object' ) ?
-						typeUtils.methods.typeToString( typeString ) :
-						typeString;
+					return typeString;
 				}
-			},
-
-			/**
-			 * Parse the type from a typed list string
-			 * Ex: 'Z881(Z11)' will return 'Z11'
-			 * Ex: 'Z11' will return 'Z11'
-			 *
-			 * TODO (T334117): does not account for Z881(Z881(Z11)) for example
-			 *
-			 * @param {string} typeString
-			 * @return {string}
-			 */
-			typedListStringToType: function ( typeString ) {
-				// not guaranteed to be defined as a Z881
-				if ( typeString.includes( Constants.Z_TYPED_LIST ) ) {
-					const regExp = /\(([^)]+)\)/;
-					return regExp.exec( typeString )[ 1 ];
-				}
-				return typeString;
 			},
 
 			/**

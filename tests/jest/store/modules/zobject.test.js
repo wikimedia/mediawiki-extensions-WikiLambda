@@ -240,13 +240,13 @@ describe( 'zobject Vuex module', function () {
 					getters = {};
 					getters.getRowById = zobjectModule.getters.getRowById( state, getters );
 					getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
-					getters.getZTypeStringRepresentation = zobjectModule.getters.getZTypeStringRepresentation( state, getters );
 					getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( state, getters );
 					getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
 					getters.getZReferenceTerminalValue = zobjectModule.getters.getZReferenceTerminalValue( state, getters );
 					getters.getZFunctionCallFunctionId = zobjectModule.getters.getZFunctionCallFunctionId( state, getters );
 					getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
 					getters.getZFunctionCallArguments = zobjectModule.getters.getZFunctionCallArguments( state, getters );
+					getters.getZObjectAsJsonById = zobjectModule.getters.getZObjectAsJsonById( state, getters );
 					getters.validateGenericType = currentZObject.getters.validateGenericType( state, getters );
 				} );
 
@@ -331,13 +331,13 @@ describe( 'zobject Vuex module', function () {
 					getters.getRowById = zobjectModule.getters.getRowById( state, getters );
 					getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
 
-					getters.getZTypeStringRepresentation = zobjectModule.getters.getZTypeStringRepresentation( state, getters );
 					getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( state, getters );
 					getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
 					getters.getZReferenceTerminalValue = zobjectModule.getters.getZReferenceTerminalValue( state, getters );
 					getters.getZFunctionCallFunctionId = zobjectModule.getters.getZFunctionCallFunctionId( state, getters );
 					getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
 					getters.getZFunctionCallArguments = zobjectModule.getters.getZFunctionCallArguments( state, getters );
+					getters.getZObjectAsJsonById = zobjectModule.getters.getZObjectAsJsonById( state, getters );
 					getters.validateGenericType = currentZObject.getters.validateGenericType( state, getters );
 
 					getters.getZFunctionOutput = zFunctionModule.getters.getZFunctionOutput( state, getters );
@@ -437,7 +437,6 @@ describe( 'zobject Vuex module', function () {
 					getters.getRowById = zobjectModule.getters.getRowById( state, getters );
 					getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
 
-					getters.getZTypeStringRepresentation = zobjectModule.getters.getZTypeStringRepresentation( state, getters );
 					getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( state, getters );
 					getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
 					getters.getZReferenceTerminalValue = zobjectModule.getters.getZReferenceTerminalValue( state, getters );
@@ -1186,13 +1185,15 @@ describe( 'zobject Vuex module', function () {
 			var getters;
 			beforeEach( function () {
 				getters = {};
-				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
-				getters.getZTypeStringRepresentation = zobjectModule.getters
-					.getZTypeStringRepresentation( state, getters );
-				getters.getRowById = zobjectModule.getters.getRowById( state );
 				getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+				getters.getRowById = zobjectModule.getters.getRowById( state );
+				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
 				getters.getZReferenceTerminalValue = zobjectModule.getters.getZReferenceTerminalValue( state, getters );
 				getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
+				getters.getZFunctionCallArguments = zobjectModule.getters.getZFunctionCallArguments( state, getters );
+				getters.getZFunctionCallFunctionId = zobjectModule.getters.getZFunctionCallFunctionId( state, getters );
+				getters.getZObjectAsJsonById = zobjectModule.getters.getZObjectAsJsonById( state, getters );
+				getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( state, getters );
 			} );
 
 			it( 'returns undefined when the rowId is undefined', function () {
@@ -1210,249 +1211,43 @@ describe( 'zobject Vuex module', function () {
 			} );
 
 			it( 'returns undefined when the row is not the start of a typed list', function () {
-				state.zobject = tableDataToRowObjects( [
-					{ id: 0, value: Constants.ROW_VALUE_OBJECT },
-					{ id: 1, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_STRING, parent: 0 },
-					{ id: 2, key: Constants.Z_STRING_VALUE, value: 'stringiform', parent: 0 }
-				] );
+				state.zobject = zobjectToRows( {
+					Z1K1: Constants.Z_STRING,
+					Z6K1: 'stringiform'
+				} );
 				const rowId = 0;
 				const expected = undefined;
 				expect( zobjectModule.getters.getTypedListItemType( state, getters )( rowId ) ).toEqual( expected );
 			} );
 
 			it( 'returns type when it is defined as a reference', function () {
-				// Initial setup
-				state.zobject = tableDataToRowObjects( [
-					{ id: 0, key: undefined, parent: undefined, value: 'object' },
-					{ id: 18, key: 'Z2K2', parent: 0, value: 'array' },
-					{ id: 19, key: '0', parent: 18, value: 'object' },
-					{ id: 20, key: 'Z1K1', parent: 19, value: 'Z9' },
-					{ id: 21, key: 'Z9K1', parent: 19, value: 'Z6' },
-					{ id: 22, key: '1', parent: 18, value: 'object' },
-					{ id: 23, key: 'Z1K1', parent: 22, value: 'Z6' },
-					{ id: 24, key: 'Z6K1', parent: 22, value: 'first string' },
-					{ id: 25, key: '2', parent: 18, value: 'object' },
-					{ id: 26, key: 'Z1K1', parent: 25, value: 'Z6' },
-					{ id: 27, key: 'Z6K1', parent: 25, value: 'second string ' }
-				] );
-				const rowId = 18;
+				state.zobject = zobjectToRows( {
+					Z2K2: [ 'Z6', 'first string', 'second string' ]
+				} );
+				const rowId = 1;
 				const expected = 'Z6';
 				expect( zobjectModule.getters.getTypedListItemType( state, getters )( rowId ) ).toEqual( expected );
 			} );
 
 			it( 'returns type when it is defined as a function call', function () {
-				// Initial setup
-				state.zobject = tableDataToRowObjects( [
-					{ id: 0, key: undefined, parent: undefined, value: 'object' },
-					{ id: 18, key: 'Z2K2', parent: 0, value: 'array' },
-					{ id: 19, key: '0', parent: 18, value: 'object' },
-					{ id: 20, key: 'Z1K1', parent: 19, value: 'object' },
-					{ id: 21, key: 'Z1K1', parent: 20, value: 'Z9' },
-					{ id: 22, key: 'Z9K1', parent: 20, value: 'Z7' },
-					{ id: 23, key: 'Z7K1', parent: 19, value: 'object' },
-					{ id: 24, key: 'Z1K1', parent: 23, value: 'Z9' },
-					{ id: 25, key: 'Z9K1', parent: 23, value: 'Z881' },
-					{ id: 26, key: 'Z881K1', parent: 19, value: 'object' },
-					{ id: 27, key: 'Z1K1', parent: 26, value: 'Z9' },
-					{ id: 28, key: 'Z9K1', parent: 26, value: 'Z6' },
-					{ id: 29, key: '1', parent: 18, value: 'array' },
-					{ id: 30, key: '0', parent: 29, value: 'object' },
-					{ id: 31, key: 'Z1K1', parent: 30, value: 'Z9' },
-					{ id: 32, key: 'Z9K1', parent: 30, value: 'Z6' },
-					{ id: 33, key: '1', parent: 29, value: 'object' },
-					{ id: 34, key: 'Z1K1', parent: 33, value: 'Z6' },
-					{ id: 35, key: 'Z6K1', parent: 33, value: 'list of lists' }
-				] );
-				// Request type in string form
-				const rowId = 18;
-				// const expected = 'Z881(Z6)'
-				const expected = 'Z881';
+				state.zobject = zobjectToRows( {
+					Z2K2: [
+						{
+							Z1K1: Constants.Z_FUNCTION_CALL,
+							Z7K1: Constants.Z_TYPED_LIST,
+							Z881K1: Constants.Z_STRING
+						},
+						[ 'Z6', 'first list of strings' ],
+						[ 'Z6', 'second list of strings' ]
+					]
+				} );
+				const rowId = 1;
+				const expected = {
+					Z1K1: Constants.Z_FUNCTION_CALL,
+					Z7K1: Constants.Z_TYPED_LIST,
+					Z881K1: Constants.Z_STRING
+				};
 				expect( zobjectModule.getters.getTypedListItemType( state, getters )( rowId ) ).toEqual( expected );
-			} );
-		} );
-
-		describe( 'getZTypeStringRepresentation', function () {
-			var getters;
-			beforeEach( function () {
-				getters = {};
-				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
-				getters.getRowById = zobjectModule.getters.getRowById( state );
-				getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
-				getters.getZReferenceTerminalValue = zobjectModule.getters.getZReferenceTerminalValue( state, getters );
-				getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
-			} );
-
-			it( 'returns undefined when the rowId is undefined', function () {
-				state.zobject = [];
-				// Request type in string form
-				const rowId = undefined;
-				const expectedType = undefined;
-				const stringType = zobjectModule.getters.getZTypeStringRepresentation( state, getters )( rowId );
-				expect( stringType ).toBe( expectedType );
-			} );
-
-			it( 'returns undefined when the row does not exist', function () {
-				state.zobject = [];
-				// Request type in string form
-				const rowId = 0;
-				const expectedType = undefined;
-				const stringType = zobjectModule.getters.getZTypeStringRepresentation( state, getters )( rowId );
-				expect( stringType ).toBe( expectedType );
-			} );
-
-			it( 'returns undefined when row is terminal', function () {
-				state.zobject = tableDataToRowObjects( [
-					{ id: 0, value: 'object' },
-					{ id: 18, key: 'Z2K2', parent: 0, value: 'object' },
-					{ id: 19, key: 'Z1K1', parent: 18, value: 'object' },
-					{ id: 20, key: 'Z1K1', parent: 19, value: 'Z9' },
-					{ id: 21, key: 'Z9K1', parent: 19, value: 'Z11' }
-				] );
-				const rowId = 21;
-				const expected = undefined;
-				expect( zobjectModule.getters.getTypedListItemType( state, getters )( rowId ) ).toEqual( expected );
-			} );
-
-			it( 'returns undefined when rowId points to a list', function () {
-				// Initial setup
-				state.zobject = tableDataToRowObjects( [
-					{ id: 0, key: undefined, parent: undefined, value: 'object' },
-					{ id: 18, key: 'Z2K2', parent: 0, value: 'array' },
-					{ id: 19, key: '0', parent: 18, value: 'object' },
-					{ id: 20, key: 'Z1K1', parent: 19, value: 'Z9' },
-					{ id: 21, key: 'Z9K1', parent: 19, value: 'Z6' }
-				] );
-				// Request type in string form
-				const rowId = 18;
-				const expectedType = undefined;
-				const stringType = zobjectModule.getters.getZTypeStringRepresentation( state, getters )( rowId );
-				expect( stringType ).toBe( expectedType );
-			} );
-
-			it( 'returns a string representation of an object type as a reference', function () {
-				// Initial setup
-				state.zobject = tableDataToRowObjects( [
-					{ id: 0, value: 'object' },
-					{ id: 18, key: 'Z2K2', parent: 0, value: 'object' },
-					{ id: 19, key: 'Z1K1', parent: 18, value: 'object' },
-					{ id: 20, key: 'Z1K1', parent: 19, value: 'Z9' },
-					{ id: 21, key: 'Z9K1', parent: 19, value: 'Z11' },
-					{ id: 22, key: 'Z11K1', parent: 18, value: 'object' },
-					{ id: 23, key: 'Z1K1', parent: 22, value: 'Z9' },
-					{ id: 24, key: 'Z9K1', parent: 22, value: 'Z1002' },
-					{ id: 25, key: 'Z11K2', parent: 18, value: 'object' },
-					{ id: 26, key: 'Z1K1', parent: 25, value: 'Z6' },
-					{ id: 27, key: 'Z6K1', parent: 25, value: 'monostuff' }
-				] );
-				// Request type in string form
-				const rowId = 19;
-				const expectedType = 'Z11';
-				const stringType = zobjectModule.getters.getZTypeStringRepresentation( state, getters )( rowId );
-				expect( stringType ).toBe( expectedType );
-			} );
-
-			it( 'returns a string representation of an object type as a function call (one arg)', function () {
-				// Initial setup
-				state.zobject = tableDataToRowObjects( [
-					{ id: 0, key: undefined, parent: undefined, value: 'object' },
-					{ id: 18, key: 'Z2K2', parent: 0, value: 'object' },
-					{ id: 19, key: 'Z1K1', parent: 18, value: 'object' },
-					{ id: 20, key: 'Z1K1', parent: 19, value: 'object' },
-					{ id: 21, key: 'Z1K1', parent: 20, value: 'Z9' },
-					{ id: 22, key: 'Z9K1', parent: 20, value: 'Z7' },
-					{ id: 23, key: 'Z7K1', parent: 19, value: 'object' },
-					{ id: 24, key: 'Z1K1', parent: 23, value: 'Z9' },
-					{ id: 25, key: 'Z9K1', parent: 23, value: 'Z881' },
-					{ id: 26, key: 'Z881K1', parent: 19, value: 'object' },
-					{ id: 27, key: 'Z1K1', parent: 26, value: 'Z9' },
-					{ id: 28, key: 'Z9K1', parent: 26, value: 'Z6' }
-				] );
-				// Request type in string form
-				const rowId = 19;
-				// const expectedType = 'Z881(Z6)'
-				const expectedType = 'Z881';
-				const stringType = zobjectModule.getters.getZTypeStringRepresentation( state, getters )( rowId );
-				expect( stringType ).toBe( expectedType );
-			} );
-
-			it( 'returns a string representation of an object type as a function call (two args)', function () {
-				// Initial setup
-				state.zobject = tableDataToRowObjects( [
-					{ id: 0, key: undefined, parent: undefined, value: 'object' },
-					{ id: 18, key: 'Z2K2', parent: 0, value: 'object' },
-					{ id: 19, key: 'Z1K1', parent: 18, value: 'object' },
-					{ id: 20, key: 'Z1K1', parent: 19, value: 'object' },
-					{ id: 21, key: 'Z1K1', parent: 20, value: 'Z9' },
-					{ id: 22, key: 'Z9K1', parent: 20, value: 'Z7' },
-					{ id: 23, key: 'Z7K1', parent: 19, value: 'object' },
-					{ id: 24, key: 'Z1K1', parent: 23, value: 'Z9' },
-					{ id: 25, key: 'Z9K1', parent: 23, value: 'Z882' },
-					{ id: 26, key: 'Z882K1', parent: 19, value: 'object' },
-					{ id: 27, key: 'Z1K1', parent: 26, value: 'Z9' },
-					{ id: 28, key: 'Z9K1', parent: 26, value: 'Z6' },
-					{ id: 29, key: 'Z882K2', parent: 19, value: 'object' },
-					{ id: 30, key: 'Z1K1', parent: 29, value: 'Z9' },
-					{ id: 31, key: 'Z9K1', parent: 29, value: 'Z40' }
-				] );
-				// Request type in string form
-				const rowId = 19;
-				// const expectedType = 'Z882(Z6,Z40)'
-				const expectedType = 'Z882';
-				const stringType = zobjectModule.getters.getZTypeStringRepresentation( state, getters )( rowId );
-				expect( stringType ).toBe( expectedType );
-			} );
-
-			it( 'returns a string representation of typed list type as a reference', function () {
-				// Initial setup
-				state.zobject = tableDataToRowObjects( [
-					{ id: 0, key: undefined, parent: undefined, value: 'object' },
-					{ id: 18, key: 'Z2K2', parent: 0, value: 'array' },
-					{ id: 19, key: '0', parent: 18, value: 'object' },
-					{ id: 20, key: 'Z1K1', parent: 19, value: 'Z9' },
-					{ id: 21, key: 'Z9K1', parent: 19, value: 'Z6' },
-					{ id: 22, key: '1', parent: 18, value: 'object' },
-					{ id: 23, key: 'Z1K1', parent: 22, value: 'Z6' },
-					{ id: 24, key: 'Z6K1', parent: 22, value: 'first string' },
-					{ id: 25, key: '2', parent: 18, value: 'object' },
-					{ id: 26, key: 'Z1K1', parent: 25, value: 'Z6' },
-					{ id: 27, key: 'Z6K1', parent: 25, value: 'second string ' }
-				] );
-				// Request type in string form
-				const rowId = 19;
-				const expectedType = 'Z6';
-				const stringType = zobjectModule.getters.getZTypeStringRepresentation( state, getters )( rowId );
-				expect( stringType ).toBe( expectedType );
-			} );
-
-			it( 'returns a string representation of typed list type as a function call', function () {
-				// Initial setup
-				state.zobject = tableDataToRowObjects( [
-					{ id: 0, key: undefined, parent: undefined, value: 'object' },
-					{ id: 18, key: 'Z2K2', parent: 0, value: 'array' },
-					{ id: 19, key: '0', parent: 18, value: 'object' },
-					{ id: 20, key: 'Z1K1', parent: 19, value: 'object' },
-					{ id: 21, key: 'Z1K1', parent: 20, value: 'Z9' },
-					{ id: 22, key: 'Z9K1', parent: 20, value: 'Z7' },
-					{ id: 23, key: 'Z7K1', parent: 19, value: 'object' },
-					{ id: 24, key: 'Z1K1', parent: 23, value: 'Z9' },
-					{ id: 25, key: 'Z9K1', parent: 23, value: 'Z881' },
-					{ id: 26, key: 'Z881K1', parent: 19, value: 'object' },
-					{ id: 27, key: 'Z1K1', parent: 26, value: 'Z9' },
-					{ id: 28, key: 'Z9K1', parent: 26, value: 'Z6' },
-					{ id: 29, key: '1', parent: 18, value: 'array' },
-					{ id: 30, key: '0', parent: 29, value: 'object' },
-					{ id: 31, key: 'Z1K1', parent: 30, value: 'Z9' },
-					{ id: 32, key: 'Z9K1', parent: 30, value: 'Z6' },
-					{ id: 33, key: '1', parent: 29, value: 'object' },
-					{ id: 34, key: 'Z1K1', parent: 33, value: 'Z6' },
-					{ id: 35, key: 'Z6K1', parent: 33, value: 'list of lists' }
-				] );
-				// Request type in string form
-				const rowId = 19;
-				// const expectedType = 'Z881(Z6)'
-				const expectedType = 'Z881';
-				const stringType = zobjectModule.getters.getZTypeStringRepresentation( state, getters )( rowId );
-				expect( stringType ).toBe( expectedType );
 			} );
 		} );
 
@@ -3333,103 +3128,218 @@ describe( 'zobject Vuex module', function () {
 		} );
 
 		describe( 'getZObjectTypeByRowId', function () {
+			var getters;
+
 			beforeEach( function () {
-				context.state = { };
-
-				context.state.zobject = tableDataToRowObjects( [
-					{ id: 0, value: Constants.ROW_VALUE_OBJECT },
-					{ id: 10, key: Constants.Z_PERSISTENTOBJECT_LABEL, value: Constants.ROW_VALUE_OBJECT, parent: 0 },
-					{ id: 11, key: Constants.Z_OBJECT_TYPE, value: Constants.ROW_VALUE_OBJECT, parent: 10 },
-					{ id: 12, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 11 },
-					{ id: 13, key: Constants.Z_REFERENCE_ID, value: Constants.Z_MULTILINGUALSTRING, parent: 11 },
-					{ id: 14, key: Constants.Z_MULTILINGUALSTRING_VALUE, value: Constants.ROW_VALUE_ARRAY, parent: 10 },
-					{ id: 15, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 14 },
-					{ id: 16, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 15 },
-					{ id: 17, key: Constants.Z_REFERENCE_ID, value: Constants.Z_MONOLINGUALSTRING, parent: 15 },
-					{ id: 18, key: '1', value: Constants.ROW_VALUE_OBJECT, parent: 14 },
-					{ id: 19, key: Constants.Z_OBJECT_TYPE, value: Constants.ROW_VALUE_OBJECT, parent: 18 },
-					{ id: 20, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 19 },
-					{ id: 21, key: Constants.Z_REFERENCE_ID, value: Constants.Z_MONOLINGUALSTRING, parent: 19 },
-					{ id: 22, key: Constants.Z_MONOLINGUALSTRING_LANGUAGE, value: Constants.ROW_VALUE_OBJECT, parent: 18 },
-					{ id: 23, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 22 },
-					{ id: 24, key: Constants.Z_REFERENCE_ID, value: Constants.Z_NATURAL_LANGUAGE_ENGLISH, parent: 22 },
-					{ id: 25, key: Constants.Z_MONOLINGUALSTRING_VALUE, value: Constants.ROW_VALUE_OBJECT, parent: 18 },
-					{ id: 26, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_STRING, parent: 25 },
-					{ id: 27, key: Constants.Z_STRING_VALUE, value: 'test', parent: 25 },
-					// From here, the ZObject is incorrect:
-					{ id: 28, key: '2', value: Constants.ROW_VALUE_OBJECT, parent: 14 },
-					{ id: 32, key: Constants.Z_MONOLINGUALSTRING_LANGUAGE, value: Constants.ROW_VALUE_OBJECT, parent: 28 },
-					{ id: 33, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 32 },
-					{ id: 34, key: Constants.Z_REFERENCE_ID, value: Constants.Z_NATURAL_LANGUAGE_ENGLISH, parent: 32 },
-					{ id: 35, key: Constants.Z_MONOLINGUALSTRING_VALUE, value: Constants.ROW_VALUE_OBJECT, parent: 28 },
-					{ id: 36, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_STRING, parent: 35 },
-					{ id: 37, key: Constants.Z_STRING_VALUE, value: 'test', parent: 35 }
-				] );
-
-				context.getters.getChildrenByParentRowId =
-				zobjectModule.getters.getChildrenByParentRowId( context.state );
-				context.getters.getRowById =
-				zobjectModule.getters.getRowById( context.state );
-				context.getters.getRowByKeyPath =
-				zobjectModule.getters.getRowByKeyPath( context.state, context.getters );
-				context.getters.getZReferenceTerminalValue =
-				zobjectModule.getters.getZReferenceTerminalValue( context.state, context.getters );
-				context.getters.getZTypeStringRepresentation =
-				zobjectModule.getters.getZTypeStringRepresentation( context.state, context.getters );
-				context.getters.getZObjectTypeByRowId =
-				zobjectModule.getters.getZObjectTypeByRowId( context.state, context.getters );
-				context.getters.getZObjectTerminalValue =
-				zobjectModule.getters.getZObjectTerminalValue( context.state, context.getters );
+				state = { zobject: [] };
+				getters = {};
+				getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+				getters.getRowById = zobjectModule.getters.getRowById( state );
+				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+				getters.getZReferenceTerminalValue = zobjectModule.getters.getZReferenceTerminalValue( state, getters );
+				getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
+				getters.getZFunctionCallArguments = zobjectModule.getters.getZFunctionCallArguments( state, getters );
+				getters.getZFunctionCallFunctionId = zobjectModule.getters.getZFunctionCallFunctionId( state, getters );
+				getters.getZObjectAsJsonById = zobjectModule.getters.getZObjectAsJsonById( state, getters );
+				getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( state, getters );
 			} );
 
 			it( 'should return undefined if rowId is undefined or falsy', () => {
-				const rowId = null;
-				expect( context.getters.getZObjectTypeByRowId( rowId ) ).toBeUndefined();
+				const rowId = undefined;
+				expect( getters.getZObjectTypeByRowId( rowId ) ).toBeUndefined();
 			} );
 
 			it( 'should return undefined if rowId is not found', () => {
 				const rowId = 100;
-				expect( context.getters.getZObjectTypeByRowId( rowId ) ).toBeUndefined();
+				expect( getters.getZObjectTypeByRowId( rowId ) ).toBeUndefined();
 			} );
 
-			it( 'should return Constants.Z_REFERENCE if the row is terminal and has key Constants.Z_REFERENCE_ID', () => {
-				const rowId = 21;
+			it( 'should return Z9/Reference if the row is terminal and the key is Z9K1/Reference Id', () => {
+				const rowId = 2;
+				state.zobject = zobjectToRows( {
+					Z1K1: Constants.Z_REFERENCE,
+					Z9K1: Constants.Z_STRING
+				} );
 
-				expect( context.getters.getZObjectTypeByRowId( rowId ) ).toBe( Constants.Z_REFERENCE );
+				expect( getters.getZObjectTypeByRowId( rowId ) ).toBe( Constants.Z_REFERENCE );
 			} );
 
-			it( 'should return Constants.Z_STRING if the row is terminal and does NOT have key Constants.Z_REFERENCE_ID', () => {
-				const rowId1 = 27;
+			it( 'should return Z6/String if the row is terminal and the key is Z1K1/Object Type', () => {
+				const rowId = 1;
+				state.zobject = zobjectToRows( {
+					Z1K1: Constants.Z_REFERENCE,
+					Z9K1: Constants.Z_MONOLINGUALSTRING
+				} );
 
-				expect( context.getters.getZObjectTypeByRowId( rowId1 ) ).toBe( Constants.Z_STRING );
+				expect( getters.getZObjectTypeByRowId( rowId ) ).toBe( Constants.Z_STRING );
 			} );
 
-			it( 'should return Constants.Z_TYPED_LIST if the row is an array', () => {
-				const rowId = 14;
+			it( 'should return Z6/String if the row is a terminal string value', () => {
+				const rowId = 2;
+				state.zobject = zobjectToRows( {
+					Z1K1: Constants.Z_STRING,
+					Z6K1: 'value'
+				} );
 
-				expect( context.getters.getZObjectTypeByRowId( rowId ) ).toBe( Constants.Z_TYPED_LIST );
+				expect( getters.getZObjectTypeByRowId( rowId ) ).toBe( Constants.Z_STRING );
 			} );
 
-			it( 'should return the type value if the typeRow is terminal', () => {
-				const rowId = 19;
+			it( 'should return Z9/Reference if the row is nor terminal has a reference object', () => {
+				const rowId = 0;
+				state.zobject = zobjectToRows( {
+					Z1K1: Constants.Z_REFERENCE,
+					Z9K1: Constants.Z_STRING
+				} );
 
-				// Assuming getRowById returns a type row that is terminal
-				const result = context.getters.getZObjectTypeByRowId( rowId );
-				expect( result ).toBe( Constants.Z_REFERENCE );
+				expect( getters.getZObjectTypeByRowId( rowId ) ).toBe( Constants.Z_REFERENCE );
 			} );
 
-			it( 'should return undefined if the typeRow could NOT be found', function () {
-				const rowId = 28;
+			it( 'should return Typed list of String if the row is an array of strings', () => {
+				const rowId = 1;
+				state.zobject = zobjectToRows( {
+					Z2K2: [ Constants.Z_STRING ]
+				} );
+				const expected = {
+					Z1K1: Constants.Z_FUNCTION_CALL,
+					Z7K1: Constants.Z_TYPED_LIST,
+					Z881K1: Constants.Z_STRING
+				};
 
-				expect( context.getters.getZObjectTypeByRowId( rowId ) ).toBeUndefined();
+				expect( getters.getZObjectTypeByRowId( rowId ) ).toStrictEqual( expected );
 			} );
 
-			it( 'returns the string representation of the type of an object', () => {
-				const rowId = 18;
+			it( 'should return Typed list of Object if the row is an array', () => {
+				const rowId = 1;
+				state.zobject = zobjectToRows( {
+					Z2K2: [ Constants.Z_OBJECT ]
+				} );
+				const expected = {
+					Z1K1: Constants.Z_FUNCTION_CALL,
+					Z7K1: Constants.Z_TYPED_LIST,
+					Z881K1: Constants.Z_OBJECT
+				};
 
-				expect( context.getters.getZObjectTypeByRowId( rowId ) ).toBe( Constants.Z_MONOLINGUALSTRING );
+				expect( getters.getZObjectTypeByRowId( rowId ) ).toStrictEqual( expected );
 			} );
 
+			it( 'should return Typed list of undefined if the row is an array with no type', () => {
+				const rowId = 1;
+				state.zobject = zobjectToRows( {
+					Z2K2: []
+				} );
+				const expected = {
+					Z1K1: Constants.Z_FUNCTION_CALL,
+					Z7K1: Constants.Z_TYPED_LIST,
+					Z881K1: ''
+				};
+
+				expect( getters.getZObjectTypeByRowId( rowId ) ).toStrictEqual( expected );
+			} );
+
+			it( 'should return Typed list of Typed lists of Strings if the row is a nested array', () => {
+				const rowId = 1;
+				state.zobject = zobjectToRows( {
+					Z2K2: [ {
+						Z1K1: Constants.Z_FUNCTION_CALL,
+						Z7K1: Constants.Z_TYPED_LIST,
+						Z881K1: Constants.Z_STRING
+					}, [ Constants.Z_STRING, 'one', 'two' ] ]
+				} );
+				const expected = {
+					Z1K1: Constants.Z_FUNCTION_CALL,
+					Z7K1: Constants.Z_TYPED_LIST,
+					Z881K1: {
+						Z1K1: Constants.Z_FUNCTION_CALL,
+						Z7K1: Constants.Z_TYPED_LIST,
+						Z881K1: Constants.Z_STRING
+					}
+				};
+
+				expect( getters.getZObjectTypeByRowId( rowId ) ).toStrictEqual( expected );
+			} );
+
+			it( 'should return the terminal reference value if the object is a reference', () => {
+				const rowId = 0;
+				state.zobject = zobjectToRows( {
+					Z1K1: {
+						Z1K1: Constants.Z_REFERENCE,
+						Z9K1: Constants.Z_MONOLINGUALSTRING
+					}
+				} );
+
+				const result = getters.getZObjectTypeByRowId( rowId );
+				expect( result ).toBe( Constants.Z_MONOLINGUALSTRING );
+			} );
+
+			it( 'should return the type of the object in a list', function () {
+				const rowId = 5;
+				state.zobject = zobjectToRows( {
+					Z2K2: [ Constants.Z_MONOLINGUALSTRING,
+						{ // rowId = 5
+							Z1K1: Constants.Z_MONOLINGUALSTRING,
+							Z11K1: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
+							Z11K2: 'value'
+						}
+					]
+				} );
+
+				expect( getters.getZObjectTypeByRowId( rowId ) ).toBe( Constants.Z_MONOLINGUALSTRING );
+			} );
+
+			it( 'returns the internal type of a function call', () => {
+				const rowId = 1;
+				state.zobject = zobjectToRows( {
+					Z1K1: {
+						Z1K1: Constants.Z_FUNCTION_CALL,
+						Z7K1: Constants.Z_TYPED_LIST,
+						Z881K1: Constants.Z_STRING
+					}
+				} );
+
+				expect( getters.getZObjectTypeByRowId( rowId ) ).toBe( Constants.Z_FUNCTION_CALL );
+			} );
+
+			it( 'returns the string representation of a type described by a function call to typed list', () => {
+				const rowId = 0;
+				const type = {
+					Z1K1: Constants.Z_FUNCTION_CALL,
+					Z7K1: Constants.Z_TYPED_LIST,
+					Z881K1: Constants.Z_STRING
+				};
+				state.zobject = zobjectToRows( {
+					Z1K1: type
+				} );
+
+				expect( getters.getZObjectTypeByRowId( rowId ) ).toStrictEqual( type );
+			} );
+
+			it( 'returns the string representation of a type described by a function call to typed pair', () => {
+				const rowId = 0;
+				const type = {
+					Z1K1: Constants.Z_FUNCTION_CALL,
+					Z7K1: Constants.Z_TYPED_PAIR,
+					Z882K1: Constants.Z_STRING,
+					Z882K2: Constants.Z_BOOLEAN
+				};
+				state.zobject = zobjectToRows( {
+					Z1K1: type
+				} );
+
+				expect( getters.getZObjectTypeByRowId( rowId ) ).toStrictEqual( type );
+			} );
+
+			it( 'returns the string representation of a type described by a function call with no arguments', () => {
+				const rowId = 0;
+				const type = {
+					Z1K1: Constants.Z_FUNCTION_CALL,
+					Z7K1: 'Z10000'
+				};
+				state.zobject = zobjectToRows( {
+					Z1K1: type
+				} );
+
+				expect( getters.getZObjectTypeByRowId( rowId ) ).toStrictEqual( type );
+			} );
 		} );
 
 		describe( 'getDepthByRowId', function () {
@@ -5265,8 +5175,6 @@ describe( 'zobject Vuex module', function () {
 					) ).toEqual( [ { Z1K1: 'Z9', Z9K1: 'Z11' } ] );
 				} );
 
-				// FIXME append a list to a list does concat instead. This is because the common use case is
-				// append a list of zids into the tester or implementation list.
 				it( 'appends a valid ZTypedList to a list', function () {
 					context.state.zobject = tableDataToRowObjects( [
 						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
@@ -5286,7 +5194,7 @@ describe( 'zobject Vuex module', function () {
 					) ).toEqual( {
 						Z2K2: [
 							{ Z1K1: 'Z9', Z9K1: 'Z1' },
-							{ Z1K1: 'Z9', Z9K1: 'Z6' }
+							[ { Z1K1: 'Z9', Z9K1: 'Z6' } ]
 						]
 					} );
 				} );
@@ -5612,6 +5520,26 @@ describe( 'zobject Vuex module', function () {
 						]
 					} );
 				} );
+			} );
+		} );
+
+		describe( 'clearType', () => {
+			beforeEach( () => {
+				context.dispatch = jest.fn();
+			} );
+
+			it( 'clears all children except Z1K1', () => {
+				context.getters.getChildrenByParentRowId = () => [
+					{ id: 1, key: 'Z1K1' },
+					{ id: 2, key: 'Z11K1' },
+					{ id: 3, key: 'Z11K2' }
+				];
+				zobjectModule.modules.addZObjects.actions.clearType( context, 0 );
+				expect( context.dispatch ).toHaveBeenCalledTimes( 4 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObjectChildren', 2 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObjectChildren', 3 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObject', 2 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObject', 3 );
 			} );
 		} );
 
@@ -6075,6 +6003,132 @@ describe( 'zobject Vuex module', function () {
 					value: 'another key'
 				} );
 
+				expect( context.state.zobject ).toEqual( expected );
+			} );
+		} );
+
+		describe( 'pushValuesToList', () => {
+			beforeEach( () => {
+				context.state = {
+					zobject: zobjectToRows( { Z2K2: [ 'Z1' ] } )
+				};
+				context.getters.getRowById = zobjectModule.getters.getRowById( context.state );
+				context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
+				context.getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( context.state );
+				context.getters.getNextArrayIndex = zobjectModule.getters.getNextArrayIndex( context.state, context.getters );
+				context.commit = jest.fn( ( mutationType, payload ) => {
+					zobjectModule.mutations[ mutationType ]( context.state, payload );
+				} );
+			} );
+
+			it( 'does nothing if rowId does not exist', () => {
+				const payload = { rowId: 100, values: [ 'one string' ] };
+				const expected = [
+					{ id: 0, key: undefined, parent: undefined, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 1, key: 'Z2K2', parent: 0, value: Constants.ROW_VALUE_ARRAY },
+					{ id: 2, key: '0', parent: 1, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 3, key: 'Z1K1', parent: 2, value: 'Z9' },
+					{ id: 4, key: 'Z9K1', parent: 2, value: 'Z1' }
+				];
+
+				zobjectModule.actions.pushValuesToList( context, payload );
+				expect( context.state.zobject ).toEqual( expected );
+			} );
+
+			it( 'does nothing if rowId does not belong to a list', () => {
+				const payload = { rowId: 2, values: [ 'one string' ] };
+				const expected = [
+					{ id: 0, key: undefined, parent: undefined, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 1, key: 'Z2K2', parent: 0, value: Constants.ROW_VALUE_ARRAY },
+					{ id: 2, key: '0', parent: 1, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 3, key: 'Z1K1', parent: 2, value: 'Z9' },
+					{ id: 4, key: 'Z9K1', parent: 2, value: 'Z1' }
+				];
+
+				zobjectModule.actions.pushValuesToList( context, payload );
+				expect( context.state.zobject ).toEqual( expected );
+			} );
+
+			it( 'pushes one string into the parent list', () => {
+				const payload = { rowId: 1, values: [ 'one string' ] };
+				const expected = [
+					{ id: 0, key: undefined, parent: undefined, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 1, key: 'Z2K2', parent: 0, value: Constants.ROW_VALUE_ARRAY },
+					{ id: 2, key: '0', parent: 1, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 3, key: 'Z1K1', parent: 2, value: 'Z9' },
+					{ id: 4, key: 'Z9K1', parent: 2, value: 'Z1' },
+					{ id: 5, key: '1', parent: 1, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 6, key: 'Z1K1', parent: 5, value: 'Z6' },
+					{ id: 7, key: 'Z6K1', parent: 5, value: 'one string' }
+				];
+
+				zobjectModule.actions.pushValuesToList( context, payload );
+				expect( context.state.zobject ).toEqual( expected );
+			} );
+
+			it( 'pushes two strings into the parent list', () => {
+				const payload = { rowId: 1, values: [ 'one string', 'another string' ] };
+				const expected = [
+					{ id: 0, key: undefined, parent: undefined, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 1, key: 'Z2K2', parent: 0, value: Constants.ROW_VALUE_ARRAY },
+					{ id: 2, key: '0', parent: 1, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 3, key: 'Z1K1', parent: 2, value: 'Z9' },
+					{ id: 4, key: 'Z9K1', parent: 2, value: 'Z1' },
+					{ id: 5, key: '1', parent: 1, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 6, key: 'Z1K1', parent: 5, value: 'Z6' },
+					{ id: 7, key: 'Z6K1', parent: 5, value: 'one string' },
+					{ id: 8, key: '2', parent: 1, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 9, key: 'Z1K1', parent: 8, value: 'Z6' },
+					{ id: 10, key: 'Z6K1', parent: 8, value: 'another string' }
+				];
+
+				zobjectModule.actions.pushValuesToList( context, payload );
+				expect( context.state.zobject ).toEqual( expected );
+			} );
+
+			it( 'pushes one monolingual string into the parent list', () => {
+				const payload = { rowId: 1, values: [ {
+					Z1K1: Constants.Z_MONOLINGUALSTRING,
+					Z11K1: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
+					Z11K2: 'one monolingual'
+				} ] };
+				const expected = [
+					{ id: 0, key: undefined, parent: undefined, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 1, key: 'Z2K2', parent: 0, value: Constants.ROW_VALUE_ARRAY },
+					{ id: 2, key: '0', parent: 1, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 3, key: 'Z1K1', parent: 2, value: 'Z9' },
+					{ id: 4, key: 'Z9K1', parent: 2, value: 'Z1' },
+					{ id: 5, key: '1', parent: 1, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 6, key: 'Z1K1', parent: 5, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 7, key: 'Z1K1', parent: 6, value: 'Z9' },
+					{ id: 8, key: 'Z9K1', parent: 6, value: 'Z11' },
+					{ id: 9, key: 'Z11K1', parent: 5, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 10, key: 'Z1K1', parent: 9, value: 'Z9' },
+					{ id: 11, key: 'Z9K1', parent: 9, value: 'Z1002' },
+					{ id: 12, key: 'Z11K2', parent: 5, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 13, key: 'Z1K1', parent: 12, value: 'Z6' },
+					{ id: 14, key: 'Z6K1', parent: 12, value: 'one monolingual' }
+				];
+
+				zobjectModule.actions.pushValuesToList( context, payload );
+				expect( context.state.zobject ).toEqual( expected );
+			} );
+
+			it( 'pushes a list into the parent list', () => {
+				const payload = { rowId: 1, values: [ [ 'Z6' ] ] };
+				const expected = [
+					{ id: 0, key: undefined, parent: undefined, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 1, key: 'Z2K2', parent: 0, value: Constants.ROW_VALUE_ARRAY },
+					{ id: 2, key: '0', parent: 1, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 3, key: 'Z1K1', parent: 2, value: 'Z9' },
+					{ id: 4, key: 'Z9K1', parent: 2, value: 'Z1' },
+					{ id: 5, key: '1', parent: 1, value: Constants.ROW_VALUE_ARRAY },
+					{ id: 6, key: '0', parent: 5, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 7, key: 'Z1K1', parent: 6, value: 'Z9' },
+					{ id: 8, key: 'Z9K1', parent: 6, value: 'Z6' }
+				];
+
+				zobjectModule.actions.pushValuesToList( context, payload );
 				expect( context.state.zobject ).toEqual( expected );
 			} );
 		} );

@@ -1028,7 +1028,7 @@ describe( 'zobject submission Vuex module', () => {
 			context.getters.getZMonolingualTextValue = zobjectModule.getters.getZMonolingualTextValue( context.state, context.getters );
 			context.getters.getZMonolingualLangValue = zobjectModule.getters.getZMonolingualLangValue( context.state, context.getters );
 			context.getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( context.state, context.getters );
-			context.getters.getZTypeStringRepresentation = zobjectModule.getters.getZTypeStringRepresentation( context.state, context.getters );
+			context.getters.getZObjectAsJsonById = zobjectModule.getters.getZObjectAsJsonById( context.state, context.getters );
 
 			// run zobject module actions
 			context.dispatch = jest.fn( ( actionType, payload ) => {

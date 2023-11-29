@@ -137,7 +137,7 @@ class TesterPage extends Page {
 		 */
 		const parentSelector = await this.getCallFunctionBlockSection( 'function' );
 		const callFunctionBlockInputSelector = await parentSelector.$( './/input[@placeholder="Select function"]' );
-		await InputDropdown.setInputDropdown(
+		await InputDropdown.setLookupOption(
 			parentSelector, callFunctionBlockInputSelector, ZObjectLabel );
 	}
 
@@ -174,7 +174,7 @@ class TesterPage extends Page {
 		 */
 		const thenBlock = await this.getCallFunctionBlockSection( 'then' );
 		const thenBlockInputTypeSelector = await thenBlock.$( './/input[@placeholder="Select a Type"]' );
-		await InputDropdown.setInputDropdown(
+		await InputDropdown.setLookupOption(
 			thenBlock, thenBlockInputTypeSelector, thenBlockInputType );
 		const thenBlockInputSelector = await thenBlock.$( 'input' );
 		await ElementActions.setInput( thenBlockInputSelector, thenBlockInput );
@@ -184,7 +184,7 @@ class TesterPage extends Page {
 		 */
 		const elseBlock = await this.getCallFunctionBlockSection( 'else' );
 		const elseBlockInputTypeSelector = await elseBlock.$( './/input[@placeholder="Select a Type"]' );
-		await InputDropdown.setInputDropdown(
+		await InputDropdown.setLookupOption(
 			elseBlock, elseBlockInputTypeSelector, elseBlockInputType );
 		const elseBlockInputSelector = await elseBlock.$( 'input' );
 		await ElementActions.setInput( elseBlockInputSelector, elseBlockInput );
@@ -229,7 +229,7 @@ class TesterPage extends Page {
 		 */
 		const parentSelector = await this.getValidationBlockSection( 'function' );
 		const validationInputSelector = await parentSelector.$( './/input[@placeholder="Select function"]' );
-		await InputDropdown.setInputDropdown(
+		await InputDropdown.setLookupOption(
 			parentSelector, validationInputSelector, ZObjectLabel );
 	}
 

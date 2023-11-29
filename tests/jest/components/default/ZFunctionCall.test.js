@@ -6,26 +6,36 @@
  */
 'use strict';
 
-const { CdxIcon } = require( '@wikimedia/codex' );
-var shallowMount = require( '@vue/test-utils' ).shallowMount,
-	ZFunctionCall = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZFunctionCall.vue' ),
-	ZObjectToString = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZObjectToString.vue' );
+const shallowMount = require( '@vue/test-utils' ).shallowMount,
+	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	ZFunctionCall = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZFunctionCall.vue' );
 
 describe( 'ZFunctionCall', () => {
 	describe( 'in view and edit mode', () => {
+		var getters;
+
+		beforeEach( () => {
+			getters = {
+				getZFunctionCallFunctionId: createGettersWithFunctionsMock( 'Z801' )
+			};
+			global.store.hotUpdate( {
+				getters: getters
+			} );
+		} );
+
 		it( 'renders without errors', () => {
-			var wrapper = shallowMount( ZFunctionCall );
+			const wrapper = shallowMount( ZFunctionCall );
 			expect( wrapper.find( '.ext-wikilambda-function-call' ).exists() ).toBe( true );
 		} );
 
 		it( 'displays a function call icon', () => {
-			var wrapper = shallowMount( ZFunctionCall );
-			expect( wrapper.findComponent( CdxIcon ).exists() ).toBe( true );
+			const wrapper = shallowMount( ZFunctionCall );
+			expect( wrapper.findComponent( { name: 'cdx-icon' } ).exists() ).toBe( true );
 		} );
 
 		it( 'renders the ZObjectToString component', () => {
-			var wrapper = shallowMount( ZFunctionCall );
-			expect( wrapper.findComponent( ZObjectToString ).exists() ).toBe( true );
+			const wrapper = shallowMount( ZFunctionCall );
+			expect( wrapper.findComponent( { name: 'wl-z-object-to-string' } ).exists() ).toBe( true );
 		} );
 	} );
 } );

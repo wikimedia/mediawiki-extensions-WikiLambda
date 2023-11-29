@@ -9,9 +9,7 @@
 	@license MIT
 -->
 <template>
-	<span
-		class="ext-wikilambda-select-zobject"
-	>
+	<span class="ext-wikilambda-select-zobject">
 		<!-- Show fields when edit is false -->
 		<cdx-lookup
 			:key="lookupKey"

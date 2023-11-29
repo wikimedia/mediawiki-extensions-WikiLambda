@@ -49,17 +49,12 @@ describe( 'Wikilambda frontend, running a function on Run Function Special page'
 		expect( functionInputs ).toHaveLength( 2 );
 
 		//* -- First Input
-		// ACT: Expand first input
+		// ASSERT: First input is displayed as a text input
 		const firstInput = functionInputs[ 0 ];
-		const firstInputExpandToggle = await within( firstInput ).getByTestId( 'expanded-toggle' );
-		await fireEvent.click( firstInputExpandToggle );
-
-		// ASSERT: First input is displayed with correct type.
-		const firstInputTypeSelect = await within( firstInput ).getByTestId( 'z-object-type-select' );
-		expect( within( firstInputTypeSelect ).getByRole( 'combobox' ) ).toHaveTextContent( 'String' );
+		const firstInputTextField = await within( firstInput ).getByTestId( 'text-input' );
+		expect( firstInputTextField ).toBeTruthy();
 
 		// ACT: Enter a value for the first input
-		const firstInputTextField = await within( firstInput ).getByTestId( 'text-input' );
 		const firstInputText = 'first argument value';
 		await fireEvent.update( firstInputTextField, firstInputText );
 
@@ -67,17 +62,12 @@ describe( 'Wikilambda frontend, running a function on Run Function Special page'
 		expect( firstInputTextField.value ).toBe( firstInputText );
 
 		//* -- Second Input
-		// ACT: Expand second input
+		// ASSERT: second input is displayed as a text input.
 		const secondInput = functionInputs[ 1 ];
-		const secondInputExpandToggle = await within( secondInput ).getByTestId( 'expanded-toggle' );
-		await fireEvent.click( secondInputExpandToggle );
-
-		// ASSERT: second input is displayed with correct type.
-		const secondInputTypeSelect = await within( secondInput ).getByTestId( 'z-object-type-select' );
-		expect( within( secondInputTypeSelect ).getByRole( 'combobox' ) ).toHaveTextContent( 'String' );
+		const secondInputTextField = await within( secondInput ).getByTestId( 'text-input' );
+		expect( secondInputTextField ).toBeTruthy();
 
 		// ACT: Enter a value for the second input
-		const secondInputTextField = await within( secondInput ).getByTestId( 'text-input' );
 		const secondInputText = 'second argument value';
 		await fireEvent.update( secondInputTextField, secondInputText );
 

@@ -9,14 +9,14 @@
 		<wl-z-object-key-value
 			:row-id="rowId"
 			:edit="edit"
-			:list-type="listType"
+			:list-item-type="listItemType"
 			@change-event="changeType"
 		></wl-z-object-key-value>
 	</div>
 </template>
 
 <script>
-var typeUtils = require( '../../mixins/typeUtils.js' ),
+const typeUtils = require( '../../mixins/typeUtils.js' ),
 	Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
@@ -42,8 +42,8 @@ module.exports = exports = {
 			type: String,
 			default: undefined
 		},
-		listType: {
-			type: String,
+		listItemType: {
+			type: [ String, Object ],
 			default: null
 		},
 		listItemsRowIds: {
@@ -68,16 +68,17 @@ module.exports = exports = {
 		parentKey: function () {
 			return this.getZObjectKeyByRowId( this.parentRowId );
 		},
-
 		/**
-		 * The expected type of the list
-		 * We use this to notify the ZObjectType.vue component if the type is alterable or not.
+		 * Returns the expected type of the parent key.
+		 * This can be either of these options:
+		 * - Any object / Z1,
+		 * - List / Z881(Z1), or
+		 * - Typed list / Z881(Zn)
 		 *
 		 * @return {string}
 		 */
-		expectedType: function () {
-			const expectedType = this.getExpectedTypeOfKey( this.parentKey );
-			return this.typedListStringToType( expectedType );
+		parentExpectedType: function () {
+			return this.getExpectedTypeOfKey( this.parentKey );
 		}
 	} ),
 	methods: $.extend( mapActions( [
@@ -91,7 +92,7 @@ module.exports = exports = {
 			// (instead of deleting all items)
 			if (
 				( payload.value !== Constants.Z_OBJECT ) &&
-				( payload.value !== this.listType ) &&
+				( payload.value !== this.listItemType ) &&
 				( this.listItemsRowIds.length > 0 )
 			) {
 				// TODO (T332990): Revisit how we want to display a warning to the user about deletion

@@ -737,6 +737,24 @@ module.exports = exports = {
 				value,
 				append: payload.append || false
 			} );
+		},
+
+		/**
+		 * Clears the type, keeping the key Z1K1 and removing all other keys
+		 * given a parent rowId
+		 *
+		 * @param {Object} context
+		 * @param {number} rowId
+		 */
+		clearType: function ( context, rowId ) {
+			// Get children
+			const children = context.getters.getChildrenByParentRowId( rowId );
+			// Exclude type key
+			const keys = children.filter( ( row ) => row.key !== Constants.Z_OBJECT_TYPE );
+			for ( const row of keys ) {
+				context.dispatch( 'removeZObjectChildren', row.id );
+				context.dispatch( 'removeZObject', row.id );
+			}
 		}
 	}
 };

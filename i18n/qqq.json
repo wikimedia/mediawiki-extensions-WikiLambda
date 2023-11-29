@@ -122,6 +122,7 @@
 	"wikilambda-reference": "Label for the word [[:meta:Abstract Wikipedia/Glossary#reference|reference]].\n\n{{doc-wikilambda}}\n\n{{identical|Reference}}",
 	"wikilambda-literal": "Label for the word [[:wikifunctions:Wikifunctions:Glossary#literal|literal]].\n\nNot as in \"literal translation\"\n\n{{doc-wikilambda}}",
 	"wikilambda-genericliteral": "Label for the word [[:meta:Abstract Wikipedia/Glossary#generic|generic]] literal.\n\n{{doc-wikilambda}}",
+	"wikilambda-literal-type": "Adjective for a type expressed as a literal, where the first argument is the type name.",
 	"wikilambda-functioncall": "Label for the word [[:meta:Abstract Wikipedia/Glossary#function call|function call]].\n\n{{doc-wikilambda}}",
 	"wikilambda-json": "{{Optional}}\n\nLabel for the word [[:meta:Abstract Wikipedia/Glossary#json|json]].\n\n{{doc-wikilambda}}",
 	"wikilambda-edit": "Label for the button to edit a function definition\n{{identical|Edit}}",
