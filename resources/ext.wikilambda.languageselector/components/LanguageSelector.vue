@@ -37,20 +37,10 @@
 </template>
 
 <script>
-const configureCompat = require( 'vue' ).configureCompat,
-	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+const CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxLookup = require( '@wikimedia/codex' ).CdxLookup,
 	icons = require( '../../lib/icons.json' );
-
-if ( configureCompat ) {
-	configureCompat( {
-		MODE: 3,
-		compilerOptions: {
-			whitespace: 'condense'
-		}
-	} );
-}
 
 // @vue/component
 module.exports = exports = {

@@ -246,7 +246,7 @@ describe( 'FunctionEvaluator', () => {
 			const block = wrapper.find( '.ext-wikilambda-function-evaluator-run-button' );
 			const button = block.findComponent( { name: 'cdx-button' } );
 			expect( button.exists() ).toBe( true );
-			expect( button.attributes( 'disabled' ) ).toBeUndefined();
+			expect( button.attributes( 'disabled' ) ).toBe( 'false' );
 		} );
 
 		it( 'renders orchestration result block when there are results', async () => {

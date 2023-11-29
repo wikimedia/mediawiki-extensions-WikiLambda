@@ -75,7 +75,7 @@ describe( 'ZBoolean', () => {
 			} );
 
 			expect( wrapper.getComponent( CdxRadio ).exists() ).toBeTruthy();
-			await wrapper.getComponent( CdxRadio ).vm.$emit( 'input', 'Z41' );
+			await wrapper.getComponent( CdxRadio ).vm.$emit( 'update:modelValue', 'Z41' );
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [ Constants.Z_BOOLEAN_IDENTITY, Constants.Z_REFERENCE_ID ], value: 'Z41' } ] ] );
 
 		} );

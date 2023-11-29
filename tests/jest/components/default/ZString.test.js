@@ -55,7 +55,7 @@ describe( 'ZString', () => {
 					}
 				} );
 
-				await wrapper.getComponent( CdxTextInput ).vm.$emit( 'input', 'my string value' );
+				await wrapper.getComponent( CdxTextInput ).vm.$emit( 'update:modelValue', 'my string value' );
 
 				expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [ 'Z6K1' ], value: 'my string value' } ] ] );
 			} );
@@ -76,7 +76,7 @@ describe( 'ZString', () => {
 				}
 			} );
 
-			await wrapper.getComponent( CdxTextInput ).vm.$emit( 'input', 'my string value' );
+			await wrapper.getComponent( CdxTextInput ).vm.$emit( 'update:modelValue', 'my string value' );
 
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [], value: 'my string value' } ] ] );
 		} );
