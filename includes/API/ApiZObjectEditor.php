@@ -83,6 +83,14 @@ class ApiZObjectEditor extends WikiLambdaApiBase {
 	}
 
 	/**
+	 * Mark as internal. This isn't meant to be user-facing, and can change at any time.
+	 * @return bool
+	 */
+	public function isInternal() {
+		return true;
+	}
+
+	/**
 	 * @inheritDoc
 	 * @codeCoverageIgnore
 	 */

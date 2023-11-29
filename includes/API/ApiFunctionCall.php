@@ -363,4 +363,12 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 
 		return trim( $response->getZValue() );
 	}
+
+	/**
+	 * Mark as internal. This isn't meant to be user-facing, and can change at any time.
+	 * @return bool
+	 */
+	public function isInternal() {
+		return true;
+	}
 }
