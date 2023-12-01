@@ -26,12 +26,16 @@ Much further functionality is to come.
 Install Node v16. Then from whatever directory you wish to set up your development environment, run:
 
 ```bash
-git clone "https://gerrit.wikimedia.org/r/mediawiki/mediawiki"
+git clone "https://gerrit.wikimedia.org/r/mediawiki/core" mediawiki
 cd mediawiki
 git clone --recurse-submodules --remote-submodules https://gerrit.wikimedia.org/r/mediawiki/extensions/WikiLambda extensions/WikiLambda
 cd extensions/WikiLambda
 npm run local:setup
 ```
+
+Note that all of the docker container locations mentioned here and in `docker-compose.override.yml`
+have the `mediawiki-` prefix. This is derived from the name of the directory to which
+you have cloned the `mediawiki/core` repository.
 
 ### Full instructions
 
@@ -90,15 +94,21 @@ You can evaluate an arbitrary function call by navigating to `localhost:8080/wik
 If you would like to use your own installation of the function orchestrator and evaluator services, please perform the following additional step:
 
 * Copy the contents of the `services` block in `mediawiki/extensions/WikiLambda/docker-compose.sample.yml` to the analogous `services` block in your `mediawiki/docker-compose.override.yml`.
-* If you want to use a different port or name for your orchestrator service, you will need to set the `$wgWikiLambdaOrchestratorLocation` configuration from the default of `mediawiki_function-orchestrator_1:6254` in your `LocalSettings.php` file, e.g. to `core_function-orchestrator_1:6254` you would add:
+* If you want to use a different port or name for your orchestrator service, you will need to set the `$wgWikiLambdaOrchestratorLocation` configuration from the default of `mediawiki_function-orchestrator_1:6254` in your `LocalSettings.php` file, e.g. to `mediawiki-function-orchestrator-1:6254` you would add:
 
  ```
- $wgWikiLambdaOrchestratorLocation = "core_function-orchestrator_1:6254";
+ $wgWikiLambdaOrchestratorLocation = "http://mediawiki-function-orchestrator-1:6254/1/v1/evaluate";
  ```
-
-* If your wiki is not called 'mediawiki-web', e.g. because your checkout of MediaWiki is not in a directory called 'mediawiki', you will need to set `$wgWikiLambdaOrchestratorLocation` in your `LocalSettings.php` and make similar edits to the `environment` variables you have set in your `mediawiki/docker-compose.override.yml` file.
 
 This will provide you with your own orchestrator and evaluator services, pointed at your wiki. You can now use this for local content as well as built-in content.
+
+* If your wiki is not called 'mediawiki-web', e.g. because your checkout of MediaWiki is not in a directory called 'mediawiki', you will need to set `$wgWikiLambdaOrchestratorLocation` in your `LocalSettings.php` and make similar edits to the `environment` variables you have set in your `mediawiki/docker-compose.override.yml` file.
+* If you would like to avoid permissions checks when developing locally, navigate to `localhost:8080/wiki` and log in (login: Admin, password: dockerpass)
+* If you would like to bypass the cache when developing locally, change the signature of the `orchestrate` function in `includes/OrchestratorRequest.php`, setting `bypass = true`:
+
+ ```
+ public function orchestrate( $query, $bypassCache = true ) : string {
+ ```
 
 #### Locally-built services for development
 
@@ -107,7 +117,7 @@ If you would instead like to develop changes to the function orchestrator or eva
 * [Get Blubber](https://wikitech.wikimedia.org/wiki/Blubber/Download#Blubber_as_a_(micro)Service) so you can build the service images
 * In a directory outside of your MediaWiki checkout, clone the services via `git clone --recurse-submodules --remote-submodules https://gitlab.wikimedia.org/repos/abstract-wiki/wikifunctions/function-orchestrator`.
 * From the root of your function-orchestrator installation, run
-  `blubber .pipeline/blubber.yaml development | docker build -t local-orchestrator -f - .`
+  `docker build -f .pipeline/blubber.yaml --target development -t local-orchestrator .`
 * Alter `mediawiki/docker-compose.override.yaml` to comment out `image: docker-registry...` in the `function-orchestrator` service stanza and uncomment the  `image: local-orchestrator:latest` line instead.
 
 If changing one or more of the evaluators, follow the same steps but for the evaluator's images and directory.
