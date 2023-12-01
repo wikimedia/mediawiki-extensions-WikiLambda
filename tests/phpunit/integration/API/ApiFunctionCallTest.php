@@ -140,21 +140,24 @@ class ApiFunctionCallTest extends ApiTestCase {
 			'who are these coming to the sacrifice'
 		];
 
-		yield 'Invoke a function that returns the second element of a Pair<String,Pair<String,Bool>>' => [
+		yield 'Invoke a function that returns the second element of a Pair<String,Boolean>' => [
 			self::readTestFile( 'example-generic-pair.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
 			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
 		];
 
-		/*
-		 * FIXME (T350887) Make sure that the function evaluator returns serialized maps and pairs in normal form
+		yield 'Invoke a function that returns the second element of a Pair<String,Pair<String,String>>' => [
+			self::readTestFile( 'example-generic-pair-2.json' ),
+			// @phpcs:ignore Generic.Files.LineLength.TooLong
+			'{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z6"},"K1":"Where the pot\'s not","K2":"is where it\'s useful."}'
+		];
+
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
 		yield 'Invoke a function that maps the element of a typed Map at a given key to a string version of its value' => [
 			self::readTestFile( 'example-generic-map.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
 			'{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z883","Z883K1":"Z6","Z883K2":"Z6"},"K1":[{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z6"},{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z6"},"K1":"true?","K2":"True"}]}'
 		];
-		*/
 
 		yield 'Invoke Python function using a user-defined type' => [
 			self::readTestFile( 'example-user-defined-python.json' ),
