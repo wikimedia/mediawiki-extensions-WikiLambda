@@ -489,13 +489,12 @@ describe( 'ZObjectKeyValue', () => {
 				},
 				global: {
 					stubs: {
-						WlZObjectType: false,
-						WlSelect: false
+						WlZObjectType: false
 					}
 				}
 			} );
 
-			wrapper.findComponent( { name: 'cdx-select' } ).vm.$emit( 'update:selected', 'Function call' );
+			wrapper.findComponent( { name: 'wl-select' } ).vm.$emit( 'update:selected', 'Function call' );
 			expect( wrapper.emitted() ).toHaveProperty( 'set-type', [ [ { keyPath: [], value: 'Function call' } ] ] );
 		} );
 
@@ -525,12 +524,12 @@ describe( 'ZObjectKeyValue', () => {
 				}
 			} );
 
-			await wrapper.getComponent( CdxTextInput ).vm.$emit( 'input', 'my string value' );
+			await wrapper.getComponent( CdxTextInput ).vm.$emit( 'update:modelValue', 'my string value' );
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [ Constants.Z_STRING_VALUE ], value: 'my string value' } ] ] );
 		} );
 
-		// TODO(T326007): Implement these tests.
-		it( 'if the value of the Z7K1 changes', () => {
+		// TODO (T326007): Implement these tests.
+		it.skip( 'if the value of the Z7K1 changes', () => {
 
 		} );
 
@@ -587,7 +586,7 @@ describe( 'ZObjectKeyValue', () => {
 				}
 			} );
 
-			await wrapper.getComponent( CdxTextInput ).vm.$emit( 'input', 'my string value' );
+			await wrapper.getComponent( CdxTextInput ).vm.$emit( 'update:modelValue', 'my string value' );
 			expect( actions.setValueByRowIdAndPath ).toHaveBeenCalledWith( expect.anything(), { keyPath: [ Constants.Z_STRING_VALUE ], rowId: 2, value: 'my string value' } );
 		} );
 

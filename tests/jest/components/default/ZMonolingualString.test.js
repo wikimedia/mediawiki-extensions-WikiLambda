@@ -89,7 +89,7 @@ describe( 'ZMonolingualString', () => {
 				}
 			} );
 
-			await wrapper.getComponent( CdxTextInput ).vm.$emit( 'input', 'my new label' );
+			await wrapper.getComponent( CdxTextInput ).vm.$emit( 'update:modelValue', 'my new label' );
 
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [ Constants.Z_MONOLINGUALSTRING_VALUE,
 				Constants.Z_STRING_VALUE ], value: 'my new label' } ] ] );

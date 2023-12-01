@@ -20,8 +20,7 @@
 </template>
 
 <script>
-var configureCompat = require( 'vue' ).configureCompat,
-	mapGetters = require( 'vuex' ).mapGetters,
+var mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	eventLogUtils = require( '../mixins/eventLogUtils.js' ),
 	FunctionEvaluator = require( '../views/FunctionEvaluator.vue' ),
@@ -30,15 +29,6 @@ var configureCompat = require( 'vue' ).configureCompat,
 	DefaultView = require( '../views/DefaultView.vue' );
 
 const startTime = Date.now();
-
-if ( configureCompat ) {
-	configureCompat( {
-		MODE: 3,
-		compilerOptions: {
-			whitespace: 'condense'
-		}
-	} );
-}
 
 // @vue/component
 module.exports = exports = {
