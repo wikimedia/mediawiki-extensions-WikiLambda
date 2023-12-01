@@ -391,21 +391,16 @@ class ZObjectUtils {
 			return $input;
 		}
 
+		if ( is_array( $input ) ) {
+			return array_map( function ( $item ) use ( $languages ) {
+				return self::filterZMultilingualStringsToLanguage( $item, $languages );
+			}, $input );
+		}
+
 		// For each key of the input ZObject
 		foreach ( $input as $index => $value ) {
-			// If the value of the key is an array, apply language filter
-			// to every element of the array
-			if ( is_array( $value ) ) {
-				$input->$index = array_map( function ( $item ) use ( $languages ) {
-					return self::filterZMultilingualStringsToLanguage( $item, $languages );
-				}, $value );
-			}
-
-			// If the value of the key is an object, apply language filter
-			// to every key in the value object
-			if ( is_object( $value ) ) {
-				$input->$index = self::filterZMultilingualStringsToLanguage( $value, $languages );
-			}
+			// Apply language filter to every item of the array or object
+			$input->$index = self::filterZMultilingualStringsToLanguage( $value, $languages );
 
 			// If the value is a string, and the type is ZMonolingualString,
 			// select the preferred language out of the available ZMonolingualStrings

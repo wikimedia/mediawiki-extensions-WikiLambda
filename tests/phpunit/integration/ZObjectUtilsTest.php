@@ -489,6 +489,28 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				. '] }',
 			],
 
+			'zobject with list of lists of multilingual strings' => [
+				'{ "Z1K1": "Z2", "Z2K2": ["Z1", [ "Z1", '
+				. '{ "Z1K1": "Z12", "Z12K1": ["Z11",'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "primer texto" },'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "first text" }'
+				. '] },'
+				. '{ "Z1K1": "Z12", "Z12K1": ["Z11",'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "second text" },'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1332", "Z11K2": "другий текст" }'
+				. '] }'
+				. '] ] }',
+				[ self::CAT, self::ES, self::EN ],
+				'{ "Z1K1": "Z2", "Z2K2": ["Z1", [ "Z1", '
+				. '{ "Z1K1": "Z12", "Z12K1": ["Z11",'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "primer texto" }'
+				. '] },'
+				. '{ "Z1K1": "Z12", "Z12K1": ["Z11",'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "second text" }'
+				. '] }'
+				. '] ] }',
+			],
+
 			'empty language list but we give a string as the input' => [
 				'"string value"',
 				[],

@@ -168,9 +168,18 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 		// We need to return dependencies of those objects that build arguments of keys:
 		// Types: return the types of its keys
 		// Functions: return the types of its arguments
-		$type = $zobject->{ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE }->{ ZTypeRegistry::Z_OBJECT_TYPE };
+		$content = $zobject->{ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE };
+		if (
+			is_array( $content ) ||
+			is_string( $content ) ||
+			!property_exists( $content, ZTypeRegistry::Z_OBJECT_TYPE )
+		) {
+			return $dependencies;
+		}
+
+		$type = $content->{ ZTypeRegistry::Z_OBJECT_TYPE };
 		if ( $type === ZTypeRegistry::Z_TYPE ) {
-			$keys = $zobject->{ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE }->{ ZTypeRegistry::Z_TYPE_KEYS };
+			$keys = $content->{ ZTypeRegistry::Z_TYPE_KEYS };
 			foreach ( array_slice( $keys, 1 ) as $key ) {
 				$keyType = $key->{ ZTypeRegistry::Z_KEY_TYPE };
 				if ( is_string( $keyType ) && ( !$this->typeRegistry->isZTypeBuiltIn( $keyType ) ) ) {
@@ -178,7 +187,7 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 				}
 			}
 		} elseif ( $type === ZTypeRegistry::Z_FUNCTION ) {
-			$args = $zobject->{ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE }->{ ZTypeRegistry::Z_FUNCTION_ARGUMENTS };
+			$args = $content->{ ZTypeRegistry::Z_FUNCTION_ARGUMENTS };
 			foreach ( array_slice( $args, 1 ) as $arg ) {
 				$argType = $arg->{ ZTypeRegistry::Z_ARGUMENTDECLARATION_TYPE };
 				if ( is_string( $argType ) && ( !$this->typeRegistry->isZTypeBuiltIn( $argType ) ) ) {
