@@ -113,6 +113,14 @@ class ZObjectAuthorization implements LoggerAwareInterface {
 			case ZTypeRegistry::Z_TESTER:
 				array_push( $userRights, 'wikilambda-create-tester' );
 				break;
+
+			case ZTypeRegistry::Z_BOOLEAN:
+				array_push( $userRights, 'wikilambda-create-boolean' );
+				break;
+
+			case ZTypeRegistry::Z_UNIT:
+				array_push( $userRights, 'wikilambda-create-unit' );
+				break;
 		}
 
 		return $userRights;

@@ -39,7 +39,7 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 		$this->zobjectStore = WikiLambdaServices::getZObjectStore();
 		$this->zobjectAuthorization = WikiLambdaServices::getZObjectAuthorization();
 
-		$this->insertZids( [ 'Z1', 'Z2', 'Z6', 'Z3', 'Z4', 'Z8', 'Z17', 'Z14', 'Z16', 'Z61', 'Z801' ] );
+		$this->insertZids( [ 'Z1', 'Z2', 'Z6', 'Z3', 'Z4', 'Z8', 'Z17', 'Z14', 'Z16', 'Z24', 'Z40', 'Z61', 'Z801' ] );
 	}
 
 	/**
@@ -51,10 +51,12 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 	 * @param string $createContent
 	 * @param array $expectedCreateRights
 	 * @param bool $expectedCreateAllowed
+	 * @param bool $systemBlocksAsInvalid
 	 */
 	public function testCreateNew(
 		string $userType, string $zid, string $testedType,
-		string $createContent, array $expectedCreateRights, bool $expectedCreateAllowed
+		string $createContent, array $expectedCreateRights,
+		bool $expectedCreateAllowed, bool $systemBlocksAsInvalid
 	) {
 		switch ( $userType ) {
 			case 'basic':
@@ -83,6 +85,15 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 		$title = Title::newFromText( $zid, NS_MAIN );
 
 		$contentObject = new ZObjectContent( $createContent );
+
+		if ( $systemBlocksAsInvalid ) {
+			$this->assertFalse(
+				$contentObject->isValid(),
+				"The system should block the content of a '$testedType' as invalid"
+			);
+			// We can't reason about invalid ZObjects below, so instead just finish this test run.
+			return;
+		}
 
 		$this->assertTrue(
 			$contentObject->isValid(),
@@ -238,11 +249,37 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 				],
 			],
 
-			// TODO: User-defined (ZID > 10k) boolean (Z40 instance)
-			// TODO: Pre-defined (ZID < 10k) boolean (Z40 instance)
-			// TODO: User-defined (ZID > 10k) unit (Z21 instance)
-			// TODO: Pre-defined (ZID < 10k) unit (Z21 instance)
+			'boolean (Z40 instance)' => [
+				'testedType' => 'Z40',
+				'systemBlocksAsInvalid' => true,
+				'createContent' =>
+					'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" }, '
+						. '"Z2K2": { "Z1K1": "Z40", "Z40K1": "Z0" }, '
+						. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } } ',
+				'createRights' => [ 'wikilambda-create-boolean' ],
+				'createAllowed' => [
+					'basic' => false, 'functioneer' => false, 'maintainer' => false, 'sysop' => false
+				],
+				'createAllowedPredefined' => [
+					'basic' => false, 'functioneer' => false, 'maintainer' => false, 'sysop' => false
+				],
+			],
 
+			'unit (Z21 instance)' => [
+				'testedType' => 'Z21',
+				'systemBlocksAsInvalid' => true,
+				'createContent' =>
+					'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" }, '
+						. '"Z2K2": { "Z1K1": "Z21" }, '
+						. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } } ',
+				'createRights' => [ 'wikilambda-create-unit' ],
+				'createAllowed' => [
+					'basic' => false, 'functioneer' => false, 'maintainer' => false, 'sysop' => false
+				],
+				'createAllowedPredefined' => [
+					'basic' => false, 'functioneer' => false, 'maintainer' => false, 'sysop' => false
+				],
+			],
 		];
 
 		$userZid = 10000;
@@ -260,7 +297,8 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 					/* $testedType */ $attemptObject['testedType'],
 					/* $createContent */ $createReservedContent,
 					/* $expectedCreateRights */ $expectedCreateRights + [ 'wikilambda-create-predefined' ],
-					/* $expectedCreateAllowed */ $expectedCreateAllowed
+					/* $expectedCreateAllowed */ $expectedCreateAllowed,
+					/* $systemBlocksAsInvalid */ $attemptObject['systemBlocksAsInvalid'] ?? false
 				];
 
 				if ( $expectedCreateAllowed ) {
@@ -277,7 +315,8 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 					/* $testedType */ $attemptObject['testedType'],
 					/* $createContent */ $createUserContent,
 					/* $expectedCreateRights */ $expectedCreateRights,
-					/* $expectedCreateAllowed */ $expectedCreateAllowed
+					/* $expectedCreateAllowed */ $expectedCreateAllowed,
+					/* $systemBlocksAsInvalid */ $attemptObject['systemBlocksAsInvalid'] ?? false
 				];
 
 				if ( $expectedCreateAllowed ) {
