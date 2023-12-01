@@ -47,14 +47,15 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 	 *
 	 * @param string $userType One of 'basic', 'functioneer', 'maintainer', 'sysop'
 	 * @param string $zid
+	 * @param string $testedType
 	 * @param string $createContent
 	 * @param array $expectedCreateRights
 	 * @param bool $expectedCreateAllowed
 	 */
 	public function testCreateNew(
-		string $userType, string $zid,
+		string $userType, string $zid, string $testedType,
 		string $createContent, array $expectedCreateRights, bool $expectedCreateAllowed
-		) {
+	) {
 		switch ( $userType ) {
 			case 'basic':
 				$user = $this->getTestUser()->getUser();
@@ -83,11 +84,20 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 
 		$contentObject = new ZObjectContent( $createContent );
 
+		$this->assertTrue(
+			$contentObject->isValid(),
+			"The system should recognise the content of a '$testedType' as valid"
+		);
+
 		// Assert that the correct creation rights are detected
 		$actualRights = $this->zobjectAuthorization->getRequiredCreateRights( $contentObject, $title );
 
 		foreach ( $expectedCreateRights as $key => $value ) {
-			$this->assertContains( $value, $actualRights, "Attempted creation should require the '$value' right" );
+			$this->assertContains(
+				$value,
+				$actualRights,
+				"Attempted creation of a '$testedType' should require the '$value' right"
+			);
 		}
 
 		// Attempt to make the creation
@@ -102,12 +112,12 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 		if ( $expectedCreateAllowed ) {
 			$this->assertTrue(
 				$attemptedCreation->isOK(),
-				"A $userType user should be allowed to create this ZObject as ZID $zid."
+				"A $userType user should be allowed to create this '$testedType' ZObject as ZID $zid."
 			);
 		} else {
 			$this->assertFalse(
 				$attemptedCreation->isOK(),
-				"A $userType user should not be allowed to create this ZObject as ZID $zid."
+				"A $userType user should not be allowed to create this '$testedType' ZObject as ZID $zid."
 			);
 		}
 	}
@@ -115,6 +125,7 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 	public function provideCreateNew() {
 		$typesToTry = [
 			'type (Z4 instance)' => [
+				'testedType' => 'Z4',
 				'createContent' =>
 					'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" }, "Z2K2": { "Z1K1": "Z4", '
 						. '"Z4K1": "Z0", '
@@ -156,6 +167,7 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 			],
 
 			'function (Z8 instance)' => [
+				'testedType' => 'Z8',
 				'createContent' =>
 					'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" }, "Z2K2": { "Z1K1": "Z8", '
 						. '"Z8K1": [ "Z17", { "Z1K1": "Z17", '
@@ -177,6 +189,7 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 			],
 
 			'implementation (Z14 instance)' => [
+				'testedType' => 'Z14',
 				'createContent' =>
 					'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" }, "Z2K2": { "Z1K1": "Z14", '
 						. '"Z14K1": "Z801", "Z14K3": { "Z1K1": "Z16", '
@@ -196,11 +209,12 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 			// TODO: User-defined (ZID > 10k) tester (Z20 instance)
 
 			'language (Z60 instance)' => [
+				'testedType' => 'Z60',
 				'content' =>
 					'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" }, '
 						. '"Z2K2": { "Z1K1": "Z60", "Z60K1": "en-test" }, '
 						. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
-				'rights' => [ 'wikilambda-create-language' ],
+				'createRights' => [ 'wikilambda-create-language' ],
 				'allowed' => [
 					'basic' => false, 'functioneer' => false, 'maintainer' => true, 'sysop' => false
 				],
@@ -210,6 +224,7 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 			],
 
 			'programming language (Z61 instance)' => [
+				'testedType' => 'Z61',
 				'createContent' =>
 					'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" }, '
 						. '"Z2K2": { "Z1K1": "Z61", "Z61K1": "test-programming-language" }, '
@@ -234,31 +249,38 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 		$reservedZid = 400;
 
 		foreach ( $typesToTry as $type => $attemptObject ) {
+			$expectedCreateRights = $attemptObject['createRights'] + [ 'edit', 'wikilambda-create' ];
+
 			foreach ( $attemptObject['createAllowedPredefined'] ?? [] as $userType => $expectedCreateAllowed ) {
-				$createContent = str_replace( 'Z0', 'Z' . $reservedZid, $attemptObject['createContent'] );
+				$createReservedContent = str_replace( 'Z0', 'Z' . $reservedZid, $attemptObject['createContent'] );
 
 				yield "Pre-defined (ZID < 10k) $type, $userType user" => [
-					$userType,
-					'Z' . $reservedZid,
-					$createContent,
-					$attemptObject['createRights'] + [ 'edit', 'wikilambda-create', 'wikilambda-create-predefined' ],
-					$expectedCreateAllowed
+					/* $userType */ $userType,
+					/* $zid */ 'Z' . $reservedZid,
+					/* $testedType */ $attemptObject['testedType'],
+					/* $createContent */ $createReservedContent,
+					/* $expectedCreateRights */ $expectedCreateRights + [ 'wikilambda-create-predefined' ],
+					/* $expectedCreateAllowed */ $expectedCreateAllowed
 				];
 
 				if ( $expectedCreateAllowed ) {
 					$reservedZid++;
 				}
 			}
-			foreach ( $attemptObject['createAllowed'] ?? [] as $userType => $expectedcreateAllowed ) {
+
+			foreach ( $attemptObject['createAllowed'] ?? [] as $userType => $expectedCreateAllowed ) {
+				$createUserContent = str_replace( 'Z0', 'Z' . $userZid, $attemptObject['createContent'] );
+
 				yield "User-defined (ZID > 10k) $type, $userType user" => [
-					$userType,
-					'Z' . $userZid,
-					str_replace( 'Z0', 'Z' . $userZid, $attemptObject['createContent'] ),
-					$attemptObject['createRights'] + [ 'edit', 'wikilambda-create' ],
-					$expectedcreateAllowed
+					/* $userType */ $userType,
+					/* $zid */ 'Z' . $userZid,
+					/* $testedType */ $attemptObject['testedType'],
+					/* $createContent */ $createUserContent,
+					/* $expectedCreateRights */ $expectedCreateRights,
+					/* $expectedCreateAllowed */ $expectedCreateAllowed
 				];
 
-				if ( $expectedcreateAllowed ) {
+				if ( $expectedCreateAllowed ) {
 					$userZid++;
 				}
 			}
