@@ -391,5 +391,9 @@
 	"wikilambda-list-type-change-warning": "Spremenili ste vrsto enega ali več seznamov. Ob objavi bodo vsi elementi seznama izbrisani",
 	"wikilambda-function-evaluation-restriction-notrunnable": "Ta funkcija nima odobrenih implementacij.",
 	"wikilambda-function-evaluation-restriction-warning": "Žal lahko trenutno izvajajo funkcije samo prijavljeni uporabniki.",
-	"wikilambda-argument-reference-selector-placeholder": "Izberite argument"
+	"wikilambda-argument-reference-selector-placeholder": "Izberite argument",
+	"wikilambda-special-create-function": "Ustvaritev nove funkcije",
+	"wikilambda-special-create-type": "Ustvaritev novega tipa",
+	"wikilambda-special-create-implementation": "Ustvaritev nove izvedbe",
+	"wikilambda-special-create-test": "Ustvaritev novega testa"
 }
