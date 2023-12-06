@@ -87,7 +87,7 @@ describe( 'ZCode', () => {
 					edit: true
 				}
 			} );
-			wrapper.findComponent( { name: 'wl-select' } ).vm.$emit( 'update:selected', 'javascript' );
+			wrapper.findComponent( { name: 'cdx-select' } ).vm.$emit( 'update:selected', 'javascript' );
 			await wrapper.vm.$nextTick();
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ {
 				keyPath: [
@@ -116,7 +116,7 @@ describe( 'ZCode', () => {
 					edit: true
 				}
 			} );
-			wrapper.findComponent( { name: 'wl-select' } ).vm.$emit( 'update:selected', 'python' );
+			wrapper.findComponent( { name: 'cdx-select' } ).vm.$emit( 'update:selected', 'python' );
 			await wrapper.vm.$nextTick();
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ {
 				keyPath: [

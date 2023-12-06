@@ -494,7 +494,7 @@ describe( 'ZObjectKeyValue', () => {
 				}
 			} );
 
-			wrapper.findComponent( { name: 'wl-select' } ).vm.$emit( 'update:selected', 'Function call' );
+			wrapper.findComponent( { name: 'cdx-select' } ).vm.$emit( 'update:selected', 'Function call' );
 			expect( wrapper.emitted() ).toHaveProperty( 'set-type', [ [ { keyPath: [], value: 'Function call' } ] ] );
 		} );
 

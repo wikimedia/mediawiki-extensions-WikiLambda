@@ -20,13 +20,13 @@
 				@input="setValue"
 			></wl-z-object-selector>
 			<!-- Non-Zero state, select mode -->
-			<wl-select
+			<cdx-select
 				v-else
 				v-model:selected="value"
 				:menu-items="typeOptions"
 				:disabled="disabled"
 				@update:selected="setValue"
-			></wl-select>
+			></cdx-select>
 		</div>
 		<a
 			v-else
@@ -42,7 +42,7 @@
 var
 	Constants = require( '../../Constants.js' ),
 	icons = require( '../../../lib/icons.json' ),
-	Select = require( '../base/Select.vue' ),
+	CdxSelect = require( '@wikimedia/codex' ).CdxSelect,
 	ZObjectSelector = require( './../ZObjectSelector.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -51,7 +51,7 @@ module.exports = exports = {
 	name: 'wl-z-object-type',
 	components: {
 		'wl-z-object-selector': ZObjectSelector,
-		'wl-select': Select
+		'cdx-select': CdxSelect
 	},
 	props: {
 		rowId: {

@@ -20,7 +20,7 @@
 						v-if="!edit"
 						class="ext-wikilambda-value-text"
 					>{{ programmingLanguageValue }}</span>
-					<wl-select
+					<cdx-select
 						v-else
 						v-model:selected="programmingLanguageValue"
 						class="ext-wikilambda-value-input ext-wikilambda-code__language-selector"
@@ -28,7 +28,7 @@
 						:default-label="$i18n( 'wikilambda-editor-label-select-programming-language-label' ).text()"
 						:status="( programmingLanguageErrors.length > 0 ) ? 'error' : 'default'"
 					>
-					</wl-select>
+					</cdx-select>
 				</div>
 				<cdx-message
 					v-for="( error, index ) in programmingLanguageErrors"
@@ -75,7 +75,7 @@
 var Constants = require( '../../Constants.js' ),
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	CodeEditor = require( '../base/CodeEditor.vue' ),
-	Select = require( '../base/Select.vue' ),
+	CdxSelect = require( '@wikimedia/codex' ).CdxSelect,
 	errorUtils = require( '../../mixins/errorUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
@@ -85,8 +85,8 @@ module.exports = exports = {
 	name: 'wl-z-code',
 	components: {
 		'cdx-message': CdxMessage,
-		'code-editor': CodeEditor,
-		'wl-select': Select
+		'cdx-select': CdxSelect,
+		'code-editor': CodeEditor
 	},
 	mixins: [ errorUtils ],
 	props: {
@@ -236,7 +236,7 @@ module.exports = exports = {
 			},
 
 			/**
-			 * Returns the appropriately formatted menu items to load the wl-select
+			 * Returns the appropriately formatted menu items to load the cdx-select
 			 * component with the different programming language options
 			 *
 			 * @return {Array}

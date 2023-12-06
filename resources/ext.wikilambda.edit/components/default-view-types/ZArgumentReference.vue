@@ -13,20 +13,20 @@
 			<cdx-icon :icon="icon"></cdx-icon>
 			{{ argumentLabel }}
 		</template>
-		<wl-select
+		<cdx-select
 			v-else
 			v-model:selected="argumentKey"
 			:menu-items="argumentOptions"
 			:default-label="argumentSelectorPlaceholder"
 			@update:selected="setValue"
-		></wl-select>
+		></cdx-select>
 	</div>
 </template>
 
 <script>
 const Constants = require( '../../Constants.js' ),
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
-	Select = require( '../base/Select.vue' ),
+	CdxSelect = require( '@wikimedia/codex' ).CdxSelect,
 	icons = require( '../../../lib/icons.json' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -34,7 +34,7 @@ const Constants = require( '../../Constants.js' ),
 module.exports = exports = {
 	name: 'wl-z-argument-reference',
 	components: {
-		'wl-select': Select,
+		'cdx-select': CdxSelect,
 		'cdx-icon': CdxIcon
 	},
 	props: {

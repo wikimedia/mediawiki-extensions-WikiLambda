@@ -88,7 +88,7 @@ describe( 'ZArgumentReference', () => {
 				}
 			} );
 			expect( wrapper.find( '.ext-wikilambda-argument-reference' ).exists() ).toBe( true );
-			expect( wrapper.findComponent( { name: 'wl-select' } ).exists() ).toBe( true );
+			expect( wrapper.findComponent( { name: 'cdx-select' } ).exists() ).toBe( true );
 		} );
 
 		it( 'renders the selector with all possible choices', () => {
@@ -104,16 +104,16 @@ describe( 'ZArgumentReference', () => {
 				}
 			} );
 
-			expect( wrapper.findComponent( { name: 'wl-select' } ).vm.menuItems.length ).toBe( 3 );
+			expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems.length ).toBe( 3 );
 			// First item Z10001K1 with label "first"
-			expect( wrapper.findComponent( { name: 'wl-select' } ).vm.menuItems[ 0 ].value ).toBe( 'Z10001K1' );
-			expect( wrapper.findComponent( { name: 'wl-select' } ).vm.menuItems[ 0 ].label ).toBe( 'first' );
+			expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems[ 0 ].value ).toBe( 'Z10001K1' );
+			expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems[ 0 ].label ).toBe( 'first' );
 			// Second item Z10001K2 with label "second"
-			expect( wrapper.findComponent( { name: 'wl-select' } ).vm.menuItems[ 1 ].value ).toBe( 'Z10001K2' );
-			expect( wrapper.findComponent( { name: 'wl-select' } ).vm.menuItems[ 1 ].label ).toBe( 'second' );
+			expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems[ 1 ].value ).toBe( 'Z10001K2' );
+			expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems[ 1 ].label ).toBe( 'second' );
 			// Second item Z10001K3 with no label
-			expect( wrapper.findComponent( { name: 'wl-select' } ).vm.menuItems[ 2 ].value ).toBe( 'Z10001K3' );
-			expect( wrapper.findComponent( { name: 'wl-select' } ).vm.menuItems[ 2 ].label ).toBe( 'Z10001K3' );
+			expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems[ 2 ].value ).toBe( 'Z10001K3' );
+			expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems[ 2 ].label ).toBe( 'Z10001K3' );
 		} );
 
 		it( 'renders the selector with empty value set', () => {
@@ -128,7 +128,7 @@ describe( 'ZArgumentReference', () => {
 				}
 			} );
 
-			expect( wrapper.findComponent( { name: 'wl-select' } ).vm.selected ).toEqual( '' );
+			expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.selected ).toEqual( '' );
 		} );
 
 		it( 'renders the selector with current value set', () => {
@@ -138,7 +138,7 @@ describe( 'ZArgumentReference', () => {
 				}
 			} );
 
-			expect( wrapper.findComponent( { name: 'wl-select' } ).vm.selected ).toEqual( 'Z10001K1' );
+			expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.selected ).toEqual( 'Z10001K1' );
 		} );
 
 		it( 'selects a new value when the component is used for the whole Z18 object in collapsed mode', () => {
@@ -148,9 +148,9 @@ describe( 'ZArgumentReference', () => {
 				}
 			} );
 
-			expect( wrapper.findComponent( { name: 'wl-select' } ).vm.selected ).toEqual( 'Z10001K1' );
+			expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.selected ).toEqual( 'Z10001K1' );
 
-			wrapper.findComponent( { name: 'wl-select' } ).vm.$emit( 'update:selected', 'Z10001K2' );
+			wrapper.findComponent( { name: 'cdx-select' } ).vm.$emit( 'update:selected', 'Z10001K2' );
 
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ {
 				keyPath: [ Constants.Z_ARGUMENT_REFERENCE_KEY, Constants.Z_STRING_VALUE ],
@@ -168,9 +168,9 @@ describe( 'ZArgumentReference', () => {
 				}
 			} );
 
-			expect( wrapper.findComponent( { name: 'wl-select' } ).vm.selected ).toEqual( 'Z10001K1' );
+			expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.selected ).toEqual( 'Z10001K1' );
 
-			wrapper.findComponent( { name: 'wl-select' } ).vm.$emit( 'update:selected', 'Z10001K2' );
+			wrapper.findComponent( { name: 'cdx-select' } ).vm.$emit( 'update:selected', 'Z10001K2' );
 
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ {
 				keyPath: [ Constants.Z_STRING_VALUE ],

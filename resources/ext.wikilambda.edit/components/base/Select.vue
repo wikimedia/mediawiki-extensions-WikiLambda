@@ -22,7 +22,8 @@ var CdxSelect = require( '@wikimedia/codex' ).CdxSelect;
 
 // @vue/component
 module.exports = exports = {
-	name: 'wl-select',
+	// Note: This is a temporary hack as we migrate off this compontent; should be 'wl-select'
+	name: 'cdx-select',
 	components: {
 		'cdx-select': CdxSelect
 	},
