@@ -5198,7 +5198,12 @@ describe( 'zobject Vuex module', function () {
 						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z4' },
 						Z4K1: { Z1K1: 'Z9', Z9K1: 'Z0' },
 						Z4K2: [ { Z1K1: 'Z9', Z9K1: 'Z3' } ],
-						Z4K3: { Z1K1: 'Z9', Z9K1: 'Z101' }
+						Z4K3: { Z1K1: 'Z9', Z9K1: 'Z101' },
+						Z4K4: { Z1K1: 'Z9', Z9K1: '' },
+						Z4K5: { Z1K1: 'Z9', Z9K1: '' },
+						Z4K6: { Z1K1: 'Z9', Z9K1: '' },
+						Z4K7: [ { Z1K1: 'Z9', Z9K1: 'Z46' } ],
+						Z4K8: [ { Z1K1: 'Z9', Z9K1: 'Z64' } ]
 					} );
 				} );
 
@@ -5225,7 +5230,12 @@ describe( 'zobject Vuex module', function () {
 								Z1K1: { Z1K1: 'Z9', Z9K1: 'Z4' },
 								Z4K1: { Z1K1: 'Z9', Z9K1: 'Z0' },
 								Z4K2: [ { Z1K1: 'Z9', Z9K1: 'Z3' } ],
-								Z4K3: { Z1K1: 'Z9', Z9K1: 'Z101' }
+								Z4K3: { Z1K1: 'Z9', Z9K1: 'Z101' },
+								Z4K4: { Z1K1: 'Z9', Z9K1: '' },
+								Z4K5: { Z1K1: 'Z9', Z9K1: '' },
+								Z4K6: { Z1K1: 'Z9', Z9K1: '' },
+								Z4K7: [ { Z1K1: 'Z9', Z9K1: 'Z46' } ],
+								Z4K8: [ { Z1K1: 'Z9', Z9K1: 'Z64' } ]
 							}
 						]
 					} );

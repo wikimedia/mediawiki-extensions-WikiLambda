@@ -175,7 +175,13 @@ EOT;
                 }
             }
         ],
-        "validator": "Z111"
+        "validator": "Z111",
+        "deserialisers": [
+            "Z46"
+        ],
+        "serialisers": [
+            "Z64"
+        ]
     },
     "labels": {
         "type": "Multilingual text",

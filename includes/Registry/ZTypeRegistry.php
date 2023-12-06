@@ -71,6 +71,11 @@ class ZTypeRegistry extends ZObjectRegistry {
 	public const Z_TYPE_IDENTITY = 'Z4K1';
 	public const Z_TYPE_KEYS = 'Z4K2';
 	public const Z_TYPE_VALIDATOR = 'Z4K3';
+	public const Z_TYPE_EQUALITY = 'Z4K4';
+	public const Z_TYPE_RENDERER = 'Z4K5';
+	public const Z_TYPE_PARSER = 'Z4K6';
+	public const Z_TYPE_DESERIALISERS = 'Z4K7';
+	public const Z_TYPE_SERIALISERS = 'Z4K8';
 
 	public const Z_ERROR = 'Z5';
 	public const Z_ERROR_TYPE = 'Z5K1';
@@ -129,11 +134,25 @@ class ZTypeRegistry extends ZObjectRegistry {
 	public const Z_KEYREFERENCE = 'Z39';
 	public const Z_KEYREFERENCE_VALUE = 'Z39K1';
 
+	public const Z_DESERIALISER = 'Z46';
+	public const Z_DESERIALISER_IDENTITY = 'Z46K1';
+	public const Z_DESERIALISER_TYPE = 'Z46K2';
+	public const Z_DESERIALISER_LANGUAGE = 'Z46K3';
+	public const Z_DESERIALISER_TARGET = 'Z46K4';
+	public const Z_DESERIALISER_CODE = 'Z46K5';
+
 	public const Z_LANGUAGE = 'Z60';
 	public const Z_LANGUAGE_CODE = 'Z60K1';
 	public const Z_LANGUAGE_SECONDARYCODES = 'Z60K2';
 
 	public const Z_PROGRAMMINGLANGUAGE = 'Z61';
+
+	public const Z_SERIALISER = 'Z64';
+	public const Z_SERIALISER_IDENTITY = 'Z64K1';
+	public const Z_SERIALISER_TYPE = 'Z64K2';
+	public const Z_SERIALISER_LANGUAGE = 'Z64K3';
+	public const Z_SERIALISER_SOURCE = 'Z64K4';
+	public const Z_SERIALISER_CODE = 'Z64K5';
 
 	public const Z_QUOTE = 'Z99';
 	public const Z_QUOTE_VALUE = 'Z99K1';
