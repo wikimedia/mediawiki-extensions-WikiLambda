@@ -14,7 +14,8 @@
 			"Robby",
 			"Umherirrender",
 			"Verdy p",
-			"Joseph"
+			"Joseph",
+			"McDutchie"
 		]
 	},
 	"wikilambda-metadata-help-link": "External link to the help page for the function metadata. {{Optional}}",
@@ -116,7 +117,7 @@
 	"wikilambda-viewmode-nojs": "Warning shown on a ZObject page to readers who do not have JavaScript.",
 	"wikilambda-diff-incompatible": "Warning shown on a diff page when a user tries to get the differences between a ZObject and something else.",
 	"wikilambda-reference": "Label for the word [[:meta:Abstract Wikipedia/Glossary#reference|reference]].\n\n{{doc-wikilambda}}\n\n{{identical|Reference}}",
-	"wikilambda-literal": "Label for the word [[:meta:Abstract Wikipedia/Glossary#literal|literal]].\n\nNot as in \"literal translation\"\n\n{{doc-wikilambda}}",
+	"wikilambda-literal": "Label for the word [[:wikifunctions:Wikifunctions:Glossary#literal|literal]].\n\nNot as in \"literal translation\"\n\n{{doc-wikilambda}}",
 	"wikilambda-genericliteral": "Label for the word [[:meta:Abstract Wikipedia/Glossary#generic|generic]] literal.\n\n{{doc-wikilambda}}",
 	"wikilambda-call-function": "Label for button that calls a function{{doc-wikilambda}}",
 	"wikilambda-functioncall": "Label for the word [[:meta:Abstract Wikipedia/Glossary#function call|function call]].\n\n{{doc-wikilambda}}",
