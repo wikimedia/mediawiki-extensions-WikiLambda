@@ -10,6 +10,7 @@ var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	ExpandedToggle = require( '../../../../resources/ext.wikilambda.edit/components/base/ExpandedToggle.vue' ),
+	CdxSelect = require( '@wikimedia/codex' ).CdxSelect,
 	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
 	ZObjectKeyValue = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZObjectKeyValue.vue' ),
 	ZMonolingualString = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZMonolingualString.vue' ),
@@ -19,8 +20,7 @@ var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	ZObjectKeyValueSet = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZObjectKeyValueSet.vue' ),
 	ZCode = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZCode.vue' ),
 	ZBoolean = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZBoolean.vue' ),
-	ZTypedList = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZTypedList.vue' ),
-	WlSelect = require( '../../../../resources/ext.wikilambda.edit/components/base/Select.vue' );
+	ZTypedList = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZTypedList.vue' );
 
 const parentRowId = 1;
 const rowId = 2;
@@ -550,8 +550,7 @@ describe( 'ZObjectKeyValue', () => {
 				},
 				global: {
 					stubs: {
-						WlZObjectType: false,
-						WlSelect: false
+						WlZObjectType: false
 					}
 				}
 			} );
@@ -559,7 +558,7 @@ describe( 'ZObjectKeyValue', () => {
 			const ZObjectTypeComponent = wrapper.getComponent( ZObjectType );
 			expect( ZObjectTypeComponent.exists() ).toBeTruthy();
 
-			const selectComponent = wrapper.getComponent( WlSelect );
+			const selectComponent = wrapper.getComponent( CdxSelect );
 			expect( selectComponent.exists() ).toBeTruthy();
 
 			await selectComponent.vm.$emit( 'update:selected', 'Reference' );

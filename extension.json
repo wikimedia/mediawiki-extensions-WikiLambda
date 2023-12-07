@@ -300,7 +300,6 @@
 				"ext.wikilambda.edit/components/base/ExpandedToggle.vue",
 				"ext.wikilambda.edit/components/base/LocalizedLabel.vue",
 				"ext.wikilambda.edit/components/base/Pagination.vue",
-				"ext.wikilambda.edit/components/base/Select.vue",
 				"ext.wikilambda.edit/components/base/Table.vue",
 				"ext.wikilambda.edit/components/base/Text.vue",
 				"ext.wikilambda.edit/components/base/Tooltip.vue",
