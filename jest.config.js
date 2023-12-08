@@ -57,6 +57,8 @@ module.exports = {
 		'resources/ext.wikilambda.app/components/index.js',
 		'resources/ext.wikilambda.app/Constants.js',
 		'resources/ext.wikilambda.languageselector/index.js',
+		// Ignore our Vector search integration
+		'resources/ext.wikilambda.languageselector/vector-2022SearchIntegration.js',
 		// TODO (T387560): Remove ignore rule of visual editor components
 		'resources/ext.wikilambda.app/store/stores/visualeditor.js',
 		'resources/ext.wikilambda.app/components/visualeditor/'

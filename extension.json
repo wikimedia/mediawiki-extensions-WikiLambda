@@ -307,9 +307,13 @@
 						"cdxIconLanguage",
 						"cdxIconSearch"
 					]
-				}
+				},
+				"ext.wikilambda.languageselector/vector-2022SearchIntegration.js"
 			],
 			"messages": [
+				"parentheses",
+				"word-separator",
+				"quotation-marks",
 				"wikilambda-about-widget-search-language-placeholder"
 			]
 		},
