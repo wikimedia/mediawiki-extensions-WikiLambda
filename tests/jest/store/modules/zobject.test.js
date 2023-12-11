@@ -6696,11 +6696,8 @@ describe( 'zobject Vuex module', function () {
 				const expected = {
 					Z1K1: 'Z10528',
 					Z10528K1: {
-						Z1K1: 'Z10528',
-						Z10528K1: {
-							Z1K1: 'Z9',
-							Z9K1: ''
-						}
+						Z1K1: 'Z9',
+						Z9K1: ''
 					}
 				};
 				const payload = { id: 1, type: 'Z10528', link: false };
@@ -6717,11 +6714,8 @@ describe( 'zobject Vuex module', function () {
 						Z20002K1: {
 							Z1K1: 'Z20003',
 							Z20003K1: {
-								Z1K1: 'Z20002',
-								Z20002K1: {
-									Z1K1: 'Z9',
-									Z9K1: ''
-								}
+								Z1K1: 'Z9',
+								Z9K1: ''
 							}
 						}
 					}

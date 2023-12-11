@@ -4,29 +4,10 @@
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
-var Constants = require( '../../../Constants.js' ),
+const Constants = require( '../../../Constants.js' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ).methods,
 	extractZIDs = require( '../../../mixins/schemata.js' ).methods.extractZIDs,
 	url = require( '../../../mixins/urlUtils.js' ).methods;
-
-function containsRepeatedKey( keyList ) {
-	var foundKeys = new Set();
-	while ( keyList !== null ) {
-		if ( foundKeys.has( keyList.key ) ) {
-			return true;
-		}
-		foundKeys.add( keyList.key );
-		keyList = keyList.previous;
-	}
-	return false;
-}
-
-function createKeyList( key, previousList = null ) {
-	return {
-		key: key,
-		previous: previousList
-	};
-}
 
 /* eslint-disable no-unused-vars */
 module.exports = exports = {
@@ -47,10 +28,10 @@ module.exports = exports = {
 			 * @param {Object} payload.value initialization values
 			 * @param {boolean} payload.append whether to append the new zobject to a list
 			 * @param {boolean} payload.link whether to default to reference over literal
-			 * @param {Object} keyList a list of types that have been seen so far
+			 * @param {Array} keyList a list of types that have been seen so far
 			 * @return {Object}
 			 */
-			function newObjectByType( payload, keyList = null ) {
+			function newObjectByType( payload, keyList = [] ) {
 				// If payload.link is true, we are prioritizing creating a
 				// blank reference over the literal object. This happens for the
 				// types Constants.LINKED_TYPES, which are generally persisted and
@@ -58,11 +39,11 @@ module.exports = exports = {
 				// We want to do this when we add new keys, new items to a list,
 				// arguments to a function call, or similar cases. We don't want
 				// to do this when we create the blank object for the page root.
-				if (
-					containsRepeatedKey( keyList ) ||
+				if ( keyList.includes( payload.type ) ||
 						( payload.link && Constants.LINKED_TYPES.includes( payload.type ) ) ) {
 					return getters.createZReference( payload );
 				}
+				keyList.push( payload.type );
 
 				// If payload.type is an object, we are looking at a generic type,
 				// so a type returned by a function call. Transform the payload for
@@ -136,15 +117,15 @@ module.exports = exports = {
 			/**
 			 * @param {Object} payload
 			 * @param {string} payload.type
-			 * @param {Object} keyList a list of types that have been seen so far
+			 * @param {Array} keyList a list of types that have been seen so far
 			 * @return {Object}
 			 */
-			function newGenericObject( payload, keyList ) {
-				var nextList = createKeyList( payload.type, keyList );
+			function newGenericObject( payload, keyList = [] ) {
 				const persisted = getters.getStoredObject( payload.type );
 				const value = {
 					[ Constants.Z_OBJECT_TYPE ]: payload.type
 				};
+				keyList.push( payload.type );
 				if ( persisted ) {
 					const zobject = persisted[ Constants.Z_PERSISTENTOBJECT_VALUE ];
 					if ( zobject[ Constants.Z_OBJECT_TYPE ] === Constants.Z_TYPE ) {
@@ -152,7 +133,7 @@ module.exports = exports = {
 						for ( let i = 1; i < keys.length; i++ ) {
 							const key = keys[ i ];
 							const keyPayload = typeUtils.initializePayloadForType( key[ Constants.Z_KEY_TYPE ] );
-							const blankValue = getters.createObjectByType( keyPayload, /* keyList= */ nextList );
+							const blankValue = getters.createObjectByType( keyPayload, keyList );
 							value[ key[ Constants.Z_KEY_ID ] ] = blankValue;
 						}
 					}
