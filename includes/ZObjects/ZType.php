@@ -22,11 +22,28 @@ class ZType extends ZObject {
 	 * @param ZObject $identity
 	 * @param ZObject $keys
 	 * @param ZObject $validator
+	 * @param ?ZObject $equality
+	 * @param ?ZObject $renderer
+	 * @param ?ZObject $parser
+	 * @param ?ZTypedList $deserialisers
+	 * @param ?ZTypedList $serialisers
 	 */
-	public function __construct( $identity, $keys, $validator ) {
+	public function __construct(
+		$identity, $keys, $validator,
+		?ZObject $equality = null,
+		?ZObject $renderer = null, ?ZObject $parser = null,
+		?ZTypedList $deserialisers = null, ?ZTypedList $serialisers = null
+	) {
 		$this->data[ ZTypeRegistry::Z_TYPE_IDENTITY ] = $identity;
 		$this->data[ ZTypeRegistry::Z_TYPE_KEYS ] = $keys;
 		$this->data[ ZTypeRegistry::Z_TYPE_VALIDATOR ] = $validator;
+		$this->data[ ZTypeRegistry::Z_TYPE_EQUALITY ] = $equality ?? false;
+		$this->data[ ZTypeRegistry::Z_TYPE_RENDERER ] = $renderer ?? false;
+		$this->data[ ZTypeRegistry::Z_TYPE_PARSER ] = $parser ?? false;
+		$this->data[ ZTypeRegistry::Z_TYPE_DESERIALISERS ] = $deserialisers ??
+			new ZTypedList( ZTypedList::buildType( new ZReference( ZTypeRegistry::Z_DESERIALISER ) ) );
+		$this->data[ ZTypeRegistry::Z_TYPE_SERIALISERS ] = $serialisers ??
+			new ZTypedList( ZTypedList::buildType( new ZReference( ZTypeRegistry::Z_SERIALISER ) ) );
 	}
 
 	/**
@@ -51,6 +68,26 @@ class ZType extends ZObject {
 				ZTypeRegistry::Z_TYPE_VALIDATOR => [
 					// NOTE: Allows Z0 until we support ZFunctions.
 					'type' => ZTypeRegistry::BUILTIN_REFERENCE_NULLABLE,
+				],
+				ZTypeRegistry::Z_TYPE_EQUALITY => [
+					'type' => ZTypeRegistry::Z_FUNCTION,
+					'required' => false,
+				],
+				ZTypeRegistry::Z_TYPE_RENDERER => [
+					'type' => ZTypeRegistry::Z_FUNCTION,
+					'required' => false,
+				],
+				ZTypeRegistry::Z_TYPE_PARSER => [
+					'type' => ZTypeRegistry::Z_FUNCTION,
+					'required' => false,
+				],
+				ZTypeRegistry::Z_TYPE_DESERIALISERS => [
+					'type' => ZTypeRegistry::Z_FUNCTION_TYPED_LIST,
+					'required' => false,
+				],
+				ZTypeRegistry::Z_TYPE_SERIALISERS => [
+					'type' => ZTypeRegistry::Z_FUNCTION_TYPED_LIST,
+					'required' => false,
 				],
 			],
 		];
@@ -110,6 +147,8 @@ class ZType extends ZObject {
 		}
 		// TODO: Actually check that the validator is a ZFunction that applies to us.
 
+		// FIXME: Check the equality, renderer, parser, deserialiser, and serialiser keys.
+
 		return true;
 	}
 
@@ -141,12 +180,60 @@ class ZType extends ZObject {
 	}
 
 	/**
-	 * Get the string representation fo the ZReference to this ZType validator
+	 * Get the string representation of the ZReference to this ZType's validator function
 	 *
 	 * @return string
 	 */
 	public function getTypeValidator() {
 		return $this->data[ ZTypeRegistry::Z_TYPE_VALIDATOR ]->getZValue();
+	}
+
+	/**
+	 * Get the string representation of the ZReference to this ZType's equality function,
+	 * or false if there is none.
+	 *
+	 * @return string|false
+	 */
+	public function getEqualityFunction() {
+		return $this->data[ ZTypeRegistry::Z_TYPE_EQUALITY ]->getZValue();
+	}
+
+	/**
+	 * Get the string representation of the ZReference to this ZType's rendering function,
+	 * or false if there is none.
+	 *
+	 * @return string|false
+	 */
+	public function getRendererFunction() {
+		return $this->data[ ZTypeRegistry::Z_TYPE_RENDERER ]->getZValue();
+	}
+
+	/**
+	 * Get the string representation of the ZReference to this ZType's parsing function,
+	 * or false if there is none.
+	 *
+	 * @return string|false
+	 */
+	public function getParserFunction() {
+		return $this->data[ ZTypeRegistry::Z_TYPE_PARSER ]->getZValue();
+	}
+
+	/**
+	 * Get the ZList of this ZType's deserialisers
+	 *
+	 * @return ZTypedList
+	 */
+	public function getDeserialisers() {
+		return $this->data[ ZTypeRegistry::Z_TYPE_DESERIALISERS];
+	}
+
+	/**
+	 * Get the ZList of this ZType's serialisers
+	 *
+	 * @return ZTypedList
+	 */
+	public function getSerialisers() {
+		return $this->data[ ZTypeRegistry::Z_TYPE_SERIALISERS ];
 	}
 
 	/**

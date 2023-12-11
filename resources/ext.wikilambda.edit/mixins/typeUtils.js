@@ -548,8 +548,13 @@ var Constants = require( '../Constants.js' ),
 						// {
 						//  Z1K1: 'Z4',
 						//  Z4K1: { Z1K1: 'Z9', Z9K1: 'Z0' },
-						//  Z4K2: [ 'Z3' ]
-						//  Z4K3: { Z1K1: 'Z9', Z9K1: '' }
+						//  Z4K2: [ 'Z3' ],
+						//  Z4K3: { Z1K1: 'Z9', Z9K1: '' },
+						//  Z4K4: { Z1K1: 'Z9', Z9K1: '' },
+						//  Z4K5: { Z1K1: 'Z9', Z9K1: '' },
+						//  Z4K6: { Z1K1: 'Z9', Z9K1: '' },
+						//  Z4K7: [ 'Z46' ]
+						//  Z4K8: [ 'Z64' ]
 						// }
 						return {
 							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_TYPE,
@@ -561,7 +566,21 @@ var Constants = require( '../Constants.js' ),
 							[ Constants.Z_TYPE_VALIDATOR ]: {
 								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
 								[ Constants.Z_REFERENCE_ID ]: ''
-							}
+							},
+							[ Constants.Z_TYPE_EQUALITY ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+								[ Constants.Z_REFERENCE_ID ]: ''
+							},
+							[ Constants.Z_TYPE_RENDERER ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+								[ Constants.Z_REFERENCE_ID ]: ''
+							},
+							[ Constants.Z_TYPE_PARSER ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+								[ Constants.Z_REFERENCE_ID ]: ''
+							},
+							[ Constants.Z_TYPE_DESERIALISERS ]: [ Constants.Z_DESERIALISER ],
+							[ Constants.Z_TYPE_SERIALISERS ]: [ Constants.Z_SERIALISER ]
 						};
 
 					case Constants.Z_KEY:

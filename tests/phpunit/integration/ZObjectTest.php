@@ -287,7 +287,13 @@ EOT;
             }
         }
     ],
-    "validator": "Z106"
+    "validator": "Z106",
+    "deserialisers": [
+        "Z46"
+    ],
+    "serialisers": [
+        "Z64"
+    ]
 }
 EOT;
 
