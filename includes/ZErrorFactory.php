@@ -620,7 +620,7 @@ class ZErrorFactory {
 
 			case ZErrorTypeRegistry::Z_ERROR_UNEXPECTED_ZTYPE:
 				$zErrorValue[] = new ZReference( $payload['expected'] );
-				$zErrorValue[] = new ZReference( $payload['actual'] );
+				$zErrorValue[] = new ZReference( $payload['used'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_ZTYPE_NOT_FOUND:

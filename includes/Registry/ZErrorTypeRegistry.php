@@ -177,7 +177,7 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 			// 		self::Z_ERROR_UNEXPECTED_ZTYPE,
 			// 		[
 			// 			"expected" => ZTypeRegistry::Z_ERRORTYPE,
-			// 			"actual" => $errorType
+			// 			"used" => $errorType
 			// 		]
 			// 	)
 			// );
