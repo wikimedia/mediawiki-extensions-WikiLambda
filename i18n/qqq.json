@@ -275,8 +275,6 @@
 	"wikilambda-tester-results-percentage-label": "Label for the count and percentage of passing testers",
 	"wikilambda-tester-run-testers": "Button text to re-run all testers and implementation for a given function.",
 	"wikilambda-tester-run-tester": "Button text to run a specific tester.",
-	"wikilambda-enable-expert-mode": "Label for the button to enable expert mode.",
-	"wikilambda-disable-expert-mode": "Label for the button to disable expert mode.",
 	"wikilambda-create-function": "Label for the button that navigates to the create function page",
 	"wikilambda-create-type": "Label for the button that preset the current view to create a type",
 	"wikilambda-expert-mode-json-label": "Label for the JSON 'expert mode' view of the ZObject.",
