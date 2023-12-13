@@ -17,7 +17,9 @@
 			:key="rowIdItem"
 			:row-id="rowIdItem"
 			:edit="edit"
-			v-bind="$attrs"
+			@set-type="$emit( 'set-type', $event )"
+			@set-value="$emit( 'set-value', $event )"
+			@change-event="$emit( 'change-event', $event )"
 		></wl-z-object-key-value>
 	</div>
 </template>
@@ -31,7 +33,6 @@ module.exports = exports = {
 	components: {
 		// Leave components as an empty object to add the ZObjectKeyValue later
 	},
-	inheritAttrs: false,
 	props: {
 		rowId: {
 			type: Number,
@@ -47,44 +48,42 @@ module.exports = exports = {
 			required: true
 		}
 	},
-	computed: $.extend(
-		mapGetters( [
-			'getZObjectKeyByRowId',
-			'getChildrenByParentRowId'
-		] ),
-		{
-			/**
-			 * Returns the css class that identifies the nesting level
-			 *
-			 * @return {string}
-			 */
-			nestingDepthClass: function () {
-				return `ext-wikilambda-key-level-${ this.depth }`;
-			},
+	computed: $.extend( mapGetters( [
+		'getZObjectKeyByRowId',
+		'getChildrenByParentRowId'
+	] ), {
+		/**
+		 * Returns the css class that identifies the nesting level
+		 *
+		 * @return {string}
+		 */
+		nestingDepthClass: function () {
+			return `ext-wikilambda-key-level-${ this.depth }`;
+		},
 
-			/**
-			 * Returns the array of rowIds for the child key-values to
-			 * render them with a ZObjectKeyValue component each.
-			 *
-			 * @return {Array}
-			 */
-			childRowIds: function () {
-				return this.getChildrenByParentRowId( this.rowId )
-					.map( function ( row ) {
-						return row.id;
-					} );
-			},
+		/**
+		 * Returns the array of rowIds for the child key-values to
+		 * render them with a ZObjectKeyValue component each.
+		 *
+		 * @return {Array}
+		 */
+		childRowIds: function () {
+			return this.getChildrenByParentRowId( this.rowId )
+				.map( function ( row ) {
+					return row.id;
+				} );
+		},
 
-			/**
-			 * Returns the parent key of the set of key-values represented
-			 * in this component.
-			 *
-			 * @return {string}
-			 */
-			parentKey: function () {
-				return this.getZObjectKeyByRowId( this.rowId );
-			}
-		} ),
+		/**
+		 * Returns the parent key of the set of key-values represented
+		 * in this component.
+		 *
+		 * @return {string}
+		 */
+		parentKey: function () {
+			return this.getZObjectKeyByRowId( this.rowId );
+		}
+	} ),
 	beforeCreate: function () {
 		// Need to delay require of ZObjectKeyValue to avoid loop
 		this.$options.components[ 'wl-z-object-key-value' ] = require( './ZObjectKeyValue.vue' );

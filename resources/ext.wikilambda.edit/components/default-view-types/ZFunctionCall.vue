@@ -13,7 +13,7 @@
 		<wl-z-object-to-string
 			:row-id="rowId"
 			data-testid="z-object-to-string"
-			@expand="expand"
+			@expand="$emit( 'expand' )"
 		></wl-z-object-to-string>
 	</div>
 </template>
@@ -62,17 +62,7 @@ module.exports = exports = {
 		iconClass: function () {
 			return !this.value ? 'ext-wikilambda-function-call-undefined' : '';
 		}
-	} ),
-	methods: {
-		/**
-		 * Emits event 'expand' when an unselected value is clicked.
-		 * This will push up the event till the immediate ZObjectKeyValue
-		 * parent, who will set the expansion flag to true.
-		 */
-		expand: function () {
-			this.$emit( 'expand' );
-		}
-	}
+	} )
 };
 </script>
 
