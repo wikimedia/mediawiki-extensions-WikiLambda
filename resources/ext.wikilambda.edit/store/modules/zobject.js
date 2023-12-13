@@ -9,6 +9,7 @@ var Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ).methods,
 	zobjectTreeUtils = require( '../../mixins/zobjectTreeUtils.js' ).methods,
 	extractZIDs = require( '../../mixins/schemata.js' ).methods.extractZIDs,
+	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject,
 	getParameterByName = require( '../../mixins/urlUtils.js' ).methods.getParameterByName,
 	addZObjects = require( './zobject/addZObjects.js' ),
 	currentZObject = require( './zobject/currentZObject.js' ),
@@ -523,7 +524,6 @@ module.exports = exports = {
 				if ( !langRow ) {
 					return undefined;
 				}
-
 				const zObjectType = getters.getZObjectTypeByRowId( langRow.id );
 
 				// If zobject language type is a natural language, return the
@@ -889,8 +889,9 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Returns the string representation for the type of the ZObject
-		 * represented by the value of the rowId passed as parameter
+		 * Returns the string or object representation for the type of the
+		 * ZObject represented in the rowId passed as parameter. Returns
+		 * undefined if no valid type is present.
 		 *
 		 * @param {Object} state
 		 * @param {Object} getters
@@ -898,15 +899,30 @@ module.exports = exports = {
 		 */
 		getZObjectTypeByRowId: function ( state, getters ) {
 			/**
+			 * @param {Row} typeRow
+			 * @return {string | Object | undefined} type
+			 */
+			function getTypeRepresentation( typeRow ) {
+				// If undefined, return undefined
+				if ( !typeRow ) {
+					return undefined;
+				}
+				// If typeRow is Terminal, return its value
+				if ( typeRow.isTerminal() ) {
+					return typeRow.value;
+				}
+				// If typeRow is NOT Terminal, return the canonical representation
+				return canonicalize( getters.getZObjectAsJsonById( typeRow.id ) );
+			}
+
+			/**
 			 * @param {number} id
-			 * @return {string | undefined} type
+			 * @return {string | Object | undefined} type
 			 */
 			function findZObjectTypeById( id ) {
-
 				const row = getters.getRowById( id );
 
-				// Three end conditions:
-				// 1. If id (row Id) doesn't exist and returns undefined
+				// 1. If rowId doesn't exist return undefined
 				if ( !row || row.id === row.parent ) {
 					return undefined;
 				}
@@ -918,42 +934,22 @@ module.exports = exports = {
 						Constants.Z_STRING;
 				}
 
-				// 3. If the row is an ARRAY, we return typed list
+				// 3. If the row is an ARRAY, we return the full typed list function call
+				let type;
 				if ( row.isArray() ) {
-					return Constants.Z_TYPED_LIST;
+					const itemTypeRow = getters.getRowByKeyPath( [ '0' ], row.id );
+					const itemType = getTypeRepresentation( itemTypeRow );
+					type = {
+						[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
+						[ Constants.Z_FUNCTION_CALL_FUNCTION ]: Constants.Z_TYPED_LIST,
+						[ Constants.Z_TYPED_LIST_TYPE ]: itemType || ''
+					};
+					return type;
 				}
 
-				// If it's an object we get its Z1K1 and analyze it:
-				// E.g. from { Z1K1: Z9 } the type is Z9
-				// E.g. from { Z1K1: Z7, Z7K1: Z881 } the type is Z7
-				// E.g. from { Z1K1: { Z1K1: Z9, Z9K1: Z7 } } the type is Z7
-				// But
-				// E.g. from { Z1K1: { Z1K1: Z9, Z9K1: Z2 } } the type is Z2
-				// E.g. from { Z1K1: { Z1K1: Z7, Z7K1: Z881 ... } } the type is Z881
+				// 4. If the row is an OBJECT we get its Z1K1 and return its representation
 				const typeRow = getters.getRowByKeyPath( [ Constants.Z_OBJECT_TYPE ], id );
-				if ( !typeRow ) {
-					// Return if undefined
-					return undefined;
-				}
-
-				// If typeRow is Terminal, return its value
-				// E.g. { Z1K1: Z9 }, return Z9
-				// E.g. { Z1K1: Z7, Z7K1: Z881 }, return Z7
-				if ( typeRow.isTerminal() ) {
-					return typeRow.value;
-				}
-
-				// If typeRow is NOT Terminal, return the value of its type
-				// E.g. from { Z1K1: { Z1K1: Z9, Z9K1: Z7 } } the type is Z7
-				// A type can be expressed in different modes:
-				// We need a method that, similarly to getReferenceValue, it gets ObjectTypeValue
-				// This method will know where to look depending on the mode
-				// * Literal: { Z1K1: Z4, Z4K1: Z10000 ... }
-				// * Resolvers:
-				//   * Reference { Z1K1: Z9, Z9K1: Z10000 }
-				//   * Function call { Z1K1: Z7, Z7K1: Z881, ... }
-				//   * Argument reference { Z1K1: Z18, Z18K1: "K1" }
-				return getters.getZTypeStringRepresentation( typeRow.id );
+				return getTypeRepresentation( typeRow );
 			}
 
 			return findZObjectTypeById;
@@ -970,14 +966,14 @@ module.exports = exports = {
 		getTypedListItemType: function ( state, getters ) {
 			/**
 			 * @param {number} parentRowId
-			 * @return {string|undefined}
+			 * @return {string|Object|undefined}
 			 */
 			function findTypedListItemType( parentRowId ) {
-				const typeRow = getters.getRowByKeyPath( [ '0' ], parentRowId );
-				if ( !typeRow ) {
+				const listType = getters.getZObjectTypeByRowId( parentRowId );
+				if ( !listType ) {
 					return undefined;
 				}
-				return getters.getZTypeStringRepresentation( typeRow.id );
+				return listType[ Constants.Z_TYPED_LIST_TYPE ];
 			}
 			return findTypedListItemType;
 		},
@@ -1241,86 +1237,6 @@ module.exports = exports = {
 			}
 
 			return findCompositionFromRowId;
-		},
-
-		/**
-		 * Returns the string representation of a type found
-		 * at the given rowID
-		 *
-		 * @param {Object} state
-		 * @param {Object} getters
-		 * @return {Function}
-		 */
-		getZTypeStringRepresentation: function ( state, getters ) {
-			/**
-			 * @param {number} rowId
-			 * @return {string | undefined}
-			 */
-			function findZTypeTerminalValue( rowId ) {
-				// rowId points at a row where the key is Z1K1 and the
-				// value is an object that must resolve to a type.
-				//
-				// This type object can have different shapes (modes).
-				// We need a method that, similarly to getReferenceValue,
-				// it returns a string value that identifies the type.
-				// This method will know where to look depending on the mode:
-				//
-				// * Literal: { Z1K1: Z4, Z4K1: Z10000 ... }
-				// * Literal: { Z1K1: {Z1K1: Z9, Z9K1: Z4}, Z4K1: {Z1K1: Z6, Z6K1: Z10000}... }
-				// * Resolvers:
-				// ** Reference { Z1K1: Z9, Z9K1: Z10000 }
-				// ** Function call { Z1K1: Z7, Z7K1: Z881, ... }
-				// ** Argument reference { Z1K1: Z18, Z18K1: "K1" }
-
-				const typeRow = getters.getRowByKeyPath( [ Constants.Z_OBJECT_TYPE ], rowId );
-
-				if ( !typeRow ) {
-					return undefined;
-				}
-
-				// If it's terminal, it's a reference, return value of Z9K1
-				if ( typeRow.isTerminal() ) {
-					return getters.getZReferenceTerminalValue( rowId );
-				}
-
-				// If it's not terminal, get the value of Z1K1.Z9K1 to find the mode
-				let type;
-				const mode = getters.getZReferenceTerminalValue( typeRow.id );
-
-				switch ( mode ) {
-					case Constants.Z_TYPE:
-						type = getters.getRowByKeyPath( [
-							Constants.Z_TYPE_IDENTITY,
-							Constants.Z_STRING_VALUE
-						], rowId );
-						break;
-
-					case Constants.Z_FUNCTION_CALL:
-						// FIXME account for a Z_FUNCTION_CALL key containing a literal
-						// function or any other resolver, not only references.
-						type = getters.getRowByKeyPath( [
-							Constants.Z_FUNCTION_CALL_FUNCTION,
-							Constants.Z_REFERENCE_ID
-						], rowId );
-						break;
-
-					case Constants.Z_ARGUMENT_REFERENCE:
-						type = getters.getRowByKeyPath( [
-							Constants.Z_ARGUMENT_REFERENCE_KEY,
-							Constants.Z_STRING_VALUE
-						], rowId );
-						break;
-
-					default:
-						type = undefined;
-				}
-
-				return type ?
-					type.value :
-					undefined;
-			}
-
-			return findZTypeTerminalValue;
 		},
 
 		/**
@@ -2117,7 +2033,7 @@ module.exports = exports = {
 			] );
 
 			return context
-				.dispatch( 'injectZObjectFromRowId', { rowId: listRow.id, value: payload.testerZIds, append: true } )
+				.dispatch( 'pushValuesToList', { rowId: listRow.id, values: payload.testerZIds } )
 				.then( () => {
 					return context.dispatch( 'submitZObject', '' ).catch( function ( e ) {
 						// Reset old ZObject if something failed
@@ -2186,7 +2102,7 @@ module.exports = exports = {
 			] );
 
 			return context
-				.dispatch( 'injectZObjectFromRowId', { rowId: listRow.id, value: payload.implementationZIds, append: true } )
+				.dispatch( 'pushValuesToList', { rowId: listRow.id, values: payload.implementationZIds } )
 				.then( () => {
 					return context.dispatch( 'submitZObject', '' ).catch( function ( e ) {
 						// Reset old ZObject if something failed
@@ -2485,6 +2401,35 @@ module.exports = exports = {
 			rows.forEach( function ( row ) {
 				context.commit( 'pushRow', row );
 			} );
+		},
+
+		/**
+		 * Pushes a list of values into an existing list parent rowId
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 * @param {number} payload.rowId list rowId
+		 * @param {Array} payload.values array of values to insert into the array
+		 */
+		pushValuesToList: function ( context, payload ) {
+			const parentRow = context.getters.getRowById( payload.rowId );
+			// rowId is not valid
+			if ( !parentRow || parentRow.value !== Constants.ROW_VALUE_ARRAY ) {
+				return;
+			}
+
+			let nextRowId = context.getters.getNextRowId;
+			for ( const value of payload.values ) {
+				const nextIndex = context.getters.getNextArrayIndex( parentRow.id );
+				const rows = zobjectTreeUtils.convertZObjectToRows( value, parentRow, nextRowId, true, nextIndex );
+				// Discard parentRow
+				rows.shift();
+				// Push all the object rows
+				rows.forEach( ( row ) => context.commit( 'pushRow', row ) );
+				// Calculate nextRowId
+				const lastRow = rows[ rows.length - 1 ];
+				nextRowId = lastRow.id + 1;
+			}
 		},
 
 		/**

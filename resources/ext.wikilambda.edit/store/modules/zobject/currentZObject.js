@@ -183,7 +183,7 @@ module.exports = exports = {
 		 *
 		 * @param {Object} state
 		 * @param {Object} getters
-		 * @return {string | undefined} current ZObject Type
+		 * @return {string | Object | undefined} current ZObject Type
 		 */
 		getCurrentZObjectType: function ( state, getters ) {
 			return getters.getZObjectTypeByRowId(
@@ -218,6 +218,8 @@ module.exports = exports = {
 			 * @return {Object} fields
 			 */
 			function validate( rowId, fields = [] ) {
+				// There's no need to convert to string as the
+				// possible options will be either Z7 or Z9
 				const mode = getters.getZObjectTypeByRowId( rowId );
 				const value = ( mode === Constants.Z_REFERENCE ) ?
 					getters.getZReferenceTerminalValue( rowId ) :

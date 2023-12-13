@@ -109,6 +109,7 @@
 	"wikilambda-reference": "Reference",
 	"wikilambda-literal": "Literal",
 	"wikilambda-genericliteral": "Generic literal",
+	"wikilambda-literal-type": "Literal $1",
 	"wikilambda-functioncall": "Function call",
 	"wikilambda-json": "JSON",
 	"wikilambda-edit": "Edit",

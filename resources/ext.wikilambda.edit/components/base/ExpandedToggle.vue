@@ -15,7 +15,7 @@
 		<cdx-icon
 			class="ext-wikilambda-expand-toggle-icon"
 			:class="iconClass"
-			:icon="hasExpandedMode ? icons.cdxIconExpand : icons.cdxIconNotBright"
+			:icon="hasExpandedMode ? icons.cdxIconExpand : iconBullet"
 		></cdx-icon>
 	</cdx-button>
 </template>
@@ -45,7 +45,10 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
-			icons: icons
+			icons: icons,
+			iconBullet: {
+				path: 'M8 8h4v4H8z'
+			}
 		};
 	},
 	computed: {
@@ -71,7 +74,16 @@ module.exports = exports = {
 @import '../../ext.wikilambda.edit.variables.less';
 
 .ext-wikilambda-expand-toggle {
+	width: calc( @min-size-icon-small + 2px );
+	min-width: calc( @min-size-icon-small + 2px );
+	padding: 0;
+
 	.ext-wikilambda-expand-toggle-icon {
+		width: @min-size-icon-small;
+		height: @min-size-icon-small;
+		min-width: @min-size-icon-small;
+		min-height: @min-size-icon-small;
+		padding: 0;
 		color: @color-subtle;
 		transition: transform @transition-duration-medium @transition-timing-function-system;
 
@@ -81,8 +93,8 @@ module.exports = exports = {
 
 		&.cdx-icon {
 			color: @color-subtle;
-			width: @size-125;
-			height: @size-125;
+			width: @min-size-icon-small;
+			height: @min-size-icon-small;
 
 			svg {
 				width: @size-75;
@@ -92,8 +104,8 @@ module.exports = exports = {
 
 		&.ext-wikilambda-expand-toggle-disabled {
 			svg {
-				width: @size-25;
-				height: @size-25;
+				width: @spacing-200;
+				height: @spacing-200;
 			}
 		}
 

@@ -17,14 +17,17 @@
 			<!-- Space for square quiet button before the content for expand toggle or bullet -->
 			<div
 				v-if="hasPreColumn"
-				class="ext-wikilambda-key-value-pre">
-				<wl-expanded-toggle
-					class="ext-wikilambda-key-value-pre-button"
-					:has-expanded-mode="hasExpandedMode"
-					:expanded="expanded"
-					data-testid="expanded-toggle"
-					@toggle="toggleExpanded( !expanded )"
-				></wl-expanded-toggle>
+				class="ext-wikilambda-key-value-pre"
+			>
+				<div class="ext-wikilambda-key-value-pre-buttons">
+					<wl-expanded-toggle
+						:class="expandToggleClass"
+						:has-expanded-mode="hasExpandedMode"
+						:expanded="expanded"
+						data-testid="expanded-toggle"
+						@toggle="setExpanded( !expanded )"
+					></wl-expanded-toggle>
+				</div>
 				<div
 					v-if="expanded"
 					class="ext-wikilambda-key-value-pre-border"
@@ -36,27 +39,26 @@
 				class="ext-wikilambda-key-value-main"
 				:class="{ 'ext-wikilambda-key-value-main__no-indent': !hasPreColumn }"
 			>
-				<!-- Key: conditional rendering -->
+				<!-- Key and Mode: render only when key is shown -->
 				<div
 					v-if="showKeyLabel"
 					class="ext-wikilambda-key-block"
-					:class="expandedClass"
+					:class="keyBlockClass"
 				>
-					<wl-localized-label
-						v-if="keyLabel"
-						:label-data="keyLabel"
-					></wl-localized-label>
-					<label
-						v-else
-						class="ext-wikilambda-key-unlabelled"
-					>{{ undefinedKeyLabel }}</label>
+					<wl-localized-label :label-data="keyLabel"></wl-localized-label>
+					<!-- Mode: never rendered in view mode -->
+					<wl-mode-selector
+						v-if="edit"
+						:row-id="rowId"
+						:disabled="disableEdit"
+						:parent-expected-type="expectedType"
+						@set-type="setType"
+						@delete-list-item="deleteListItem"
+					></wl-mode-selector>
 				</div>
+
 				<!-- Value: will always be rendered -->
-				<div
-					class="
-					ext-wikilambda-value-block
-					ext-wikilambda-field-overrides
-				">
+				<div class="ext-wikilambda-value-block ext-wikilambda-field-overrides ">
 					<component
 						:is="zobjectComponent"
 						:class="shiftLeft"
@@ -67,24 +69,14 @@
 						:row-id="rowId"
 						:expected-type="expectedType"
 						:parent-id="parentRowId"
+						:parent-disable-edit="disableEdit"
 						@set-value="setValue"
 						@set-type="setType"
+						@add-list-item="addListItem"
 						@change-event="changeEvent"
-						@expand="toggleExpanded( !expanded )"
+						@expand="setExpanded( true )"
 					></component>
 				</div>
-			</div>
-
-			<!-- Space for square quiet button before the content for context menu button or bin button -->
-			<div class="ext-wikilambda-key-value-post">
-				<cdx-button
-					v-if="showActionButton"
-					weight="quiet"
-					class="ext-wikilambda-ztyped-list-delete-button"
-					@click="deleteListItem"
-				>
-					<cdx-icon :icon="icons.cdxIconTrash"></cdx-icon>
-				</cdx-button>
 			</div>
 		</div>
 
@@ -110,16 +102,16 @@
 </template>
 
 <script>
-var CdxButton = require( '@wikimedia/codex' ).CdxButton,
+const CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	Constants = require( '../../Constants.js' ),
 	ExpandedToggle = require( '../base/ExpandedToggle.vue' ),
 	LocalizedLabel = require( '../base/LocalizedLabel.vue' ),
+	ModeSelector = require( '../base/ModeSelector.vue' ),
 	ZArgumentReference = require( './ZArgumentReference.vue' ),
 	ZMonolingualString = require( './ZMonolingualString.vue' ),
 	ZObjectKeyValueSet = require( './ZObjectKeyValueSet.vue' ),
-	ZObjectType = require( './ZObjectType.vue' ),
 	ZString = require( './ZString.vue' ),
 	ZCode = require( './ZCode.vue' ),
 	ZEvaluationResult = require( './ZEvaluationResult.vue' ),
@@ -131,7 +123,6 @@ var CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	ZTypedList = require( './ZTypedList.vue' ),
 	LabelData = require( '../../store/classes/LabelData.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
-	icons = require( '../../../lib/icons.json' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -144,6 +135,7 @@ module.exports = exports = {
 		'cdx-message': CdxMessage,
 		'wl-expanded-toggle': ExpandedToggle,
 		'wl-localized-label': LocalizedLabel,
+		'wl-mode-selector': ModeSelector,
 		'wl-z-argument-reference': ZArgumentReference,
 		'wl-z-code': ZCode,
 		'wl-z-evaluation-result': ZEvaluationResult,
@@ -152,7 +144,6 @@ module.exports = exports = {
 		'wl-z-tester': ZTester,
 		'wl-z-monolingual-string': ZMonolingualString,
 		'wl-z-object-key-value-set': ZObjectKeyValueSet,
-		'wl-z-object-type': ZObjectType,
 		'wl-z-string': ZString,
 		'wl-z-reference': ZReference,
 		'wl-z-boolean': ZBoolean,
@@ -169,7 +160,7 @@ module.exports = exports = {
 			type: Boolean,
 			required: true
 		},
-		listType: {
+		listItemType: {
 			type: String,
 			default: null
 		},
@@ -187,11 +178,14 @@ module.exports = exports = {
 			type: Number,
 			required: false,
 			default: null
+		},
+		parentDisableEdit: {
+			type: Boolean,
+			required: false
 		}
 	},
 	data: function () {
 		return {
-			icons: icons,
 			/**
 			 * Expanded is a property of the key-value and it
 			 * passes down only into its direct child. Every
@@ -203,6 +197,8 @@ module.exports = exports = {
 	},
 	computed: $.extend(
 		mapGetters( [
+			'getZObjectAsJsonById',
+			'getZPersistentContentRowId',
 			'getUserLangZid',
 			'getLabelData',
 			'getExpectedTypeOfKey',
@@ -213,6 +209,7 @@ module.exports = exports = {
 			'getZObjectTypeByRowId',
 			'getTypedListItemType',
 			'getErrors',
+			'isCreateNewPage',
 			'isMainObject'
 		] ),
 		{
@@ -243,16 +240,30 @@ module.exports = exports = {
 			 * @return {boolean}
 			 */
 			disableEdit: function () {
+				// If parentDisableEdit, all children must disableEdit
+				if ( this.parentDisableEdit ) {
+					return true;
+				}
+
 				// If the key is that of a typed list type (zero):
 				// 1. If parent expected type is Z1: return false (allow edit)
 				// 2. If parent expected type is Z881(Z1): return false (allow edit)
 				// 3. If parent expected type is Z881(Zn): return true (disable edit)
 				if ( this.isKeyTypedListType( this.key ) ) {
-					return ( this.typedListStringToType( this.parentExpectedType ) !== Constants.Z_OBJECT );
+					return !(
+						( this.parentExpectedType === Constants.Z_OBJECT ) ||
+						( this.parentExpectedType[ Constants.Z_TYPED_LIST_TYPE ] === Constants.Z_OBJECT )
+					);
 				}
-				// the root ZObject type (it will always be a Literal Persistent Object).
-				return ( this.key === Constants.Z_OBJECT_TYPE ) &&
-					( this.parentExpectedType === Constants.Z_PERSISTENTOBJECT );
+
+				// If the key is that of Object type/Z1K1 and:
+				// * the parent type is bound, or
+				// * the parent key is Z2K2 and we are editing this object
+				// return true (disable edit)
+				return ( ( this.key === Constants.Z_OBJECT_TYPE ) && (
+					( this.parentExpectedType !== Constants.Z_OBJECT ) ||
+					( ( this.parentKey === Constants.Z_PERSISTENTOBJECT_VALUE ) && !this.isCreateNewPage )
+				) );
 			},
 
 			/**
@@ -302,18 +313,17 @@ module.exports = exports = {
 					return false;
 				}
 				if ( this.isKeyTypedListItem( this.key ) ) {
-					return this.expanded;
+					return this.edit || this.expanded;
 				}
-				if ( this.isKeyTypedListType( this.key ) ) {
-					return true;
-				}
-				return !!this.key;
+				return true;
 			},
 
 			/**
 			 * Returns the label data object of the given key.
+			 * * If the key is a numeral, return hardcoded typed list labels
+			 * * If the key is not available, return the key id
 			 *
-			 * @return {LabelData | undefined}
+			 * @return {LabelData}
 			 */
 			keyLabel: function () {
 				// since the FE represents typed lists in canonical form, we need to hardcode typed list keys
@@ -331,18 +341,12 @@ module.exports = exports = {
 						this.getUserLangZid
 					);
 				}
-				return this.getLabelData( this.key );
-			},
-
-			/**
-			 * Returns string for an undefined key label
-			 *
-			 * @return {string}
-			 */
-			undefinedKeyLabel: function () {
-				// TODO (T340845): consider whether to put "Unlabelled" or "Untitled"
-				// return 'Unlabelled';
-				return this.key;
+				const label = this.getLabelData( this.key );
+				return label || new LabelData(
+					null,
+					this.key,
+					this.getUserLangZid
+				);
 			},
 
 			/**
@@ -359,22 +363,28 @@ module.exports = exports = {
 			},
 
 			/**
-			 * Returns the css class that identifies the nesting level
+			 * Returns the css classes that identify the key block
 			 *
-			 * @return {string}
+			 * @return {Object}
 			 */
-			nestingDepthClass: function () {
+			keyBlockClass: function () {
+				return {
+					'ext-wikilambda-key-block-edit': this.edit && !this.disableEdit,
+					'ext-wikilambda-key-block-edit-disabled': this.edit && this.disableEdit,
+					'ext-wikilambda-key-block-view': !this.edit
+				};
 			},
 
 			/**
-			 * Returns the css class that identifies the expanded mode
+			 * Returns the css classes that identify the expand button
 			 *
-			 * @return {string}
+			 * @return {Object}
 			 */
-			expandedClass: function () {
-				return this.expanded ?
-					'ext-wikilambda-key-block-expanded' :
-					'ext-wikilambda-key-block-collapsed';
+			expandToggleClass: function () {
+				return {
+					'ext-wikilambda-key-value-pre-button': true,
+					'ext-wikilambda-key-value-pre-button-disabled': this.edit && this.disableEdit
+				};
 			},
 
 			/**
@@ -390,12 +400,12 @@ module.exports = exports = {
 				}
 
 				// this class is only required for non-terminal items in collapsed mode
-				if ( this.listType && !this.expanded && this.hasExpandedMode ) {
+				if ( this.listItemType && !this.expanded && this.hasExpandedMode ) {
 					classList.push( 'ext-wikilambda-key-value-inherit' );
 				}
 				// string list items require different treatment because
 				// they have a <li> bullet point (but only in view mode)
-				if ( this.listType && this.type === Constants.Z_STRING && !this.edit ) {
+				if ( this.listItemType && this.type === Constants.Z_STRING && !this.edit ) {
 					classList.push( 'ext-wikilambda-key-value-inline-table' );
 				}
 
@@ -403,20 +413,21 @@ module.exports = exports = {
 			},
 
 			/**
-			 * Returns the type of the value of the the ZObject represented
+			 * Returns the simple string type of the value of the the ZObject represented
 			 * in this component. When it's not set, it's undefined.
 			 *
 			 * @return {string}
 			 */
 			type: function () {
-				return this.getZObjectTypeByRowId( this.rowId );
+				const noArgs = true;
+				return this.typeToString( this.getZObjectTypeByRowId( this.rowId ), noArgs );
 			},
 
 			/**
 			 * Returns the expected type of the parent key. If the key is of
 			 * a typed list item, it returns the list item expected type.
 			 *
-			 * @return {string}
+			 * @return {string|Object|undefined}
 			 */
 			parentExpectedType: function () {
 				// If parent key is a numerical index, it's the key of a typed list type/item
@@ -438,7 +449,7 @@ module.exports = exports = {
 			 * Returns the expected (or bound) type for the value of
 			 * the key-value pair represented in this component.
 			 *
-			 * @return {string}
+			 * @return {string|Object|undefined}
 			 */
 			expectedType: function () {
 				// If key is a numerical index, this is the key of a typed list type/item
@@ -446,19 +457,10 @@ module.exports = exports = {
 				if ( this.isKeyTypedListType( this.key ) ) {
 					return Constants.Z_TYPE;
 				}
-
 				// 2. If index is > zero, the type of each item must be whatever
-				// the type of the list is, or Z1 if listType is undefined
+				// the type of the list is, or Z1 if listItemType is undefined
 				if ( this.isKeyTypedListItem( this.key ) ) {
-					return this.listType || Constants.Z_OBJECT;
-				}
-
-				// FIXME: expected type changes if this is a resolver type
-				if ( this.key === Constants.Z_REFERENCE_ID ) {
-					return this.parentExpectedType;
-				}
-				if ( this.key === Constants.Z_OBJECT_TYPE ) {
-					return this.parentExpectedType;
+					return this.listItemType || Constants.Z_OBJECT;
 				}
 
 				return this.getExpectedTypeOfKey( this.key );
@@ -472,42 +474,11 @@ module.exports = exports = {
 			 * @return {boolean}
 			 */
 			hasExpandedMode: function () {
-				if ( this.edit ) {
-					// TERMINAL rules for edit:
-					// If the key is Z1K1 and the value is Z6, no expanded mode
-					if (
-						( this.key === Constants.Z_OBJECT_TYPE ) &&
-						( this.value === Constants.Z_STRING )
-					) {
-						return false;
-					}
-					// If the key is terminal Z6K1 or Z9K1, no expanded mode
-					if (
-						( this.key === Constants.Z_STRING_VALUE ) ||
-						( this.key === Constants.Z_REFERENCE_ID )
-					) {
-						return false;
-					}
-				} else {
-					// TERMINAL rules for view:
-					// If the type is string or reference, no expanded mode
-					if (
-						( this.type === Constants.Z_STRING ) ||
-						( this.type === Constants.Z_REFERENCE )
-					) {
-						return false;
-					}
-				}
-
-				// TERMINAL rule for typed list type:
-				if ( this.isKeyTypedListType( this.key ) ) {
-					// The parent expected type can be either Z1, Z881(Z1) or Z881(Zn)
-					// In both Z881(Z1) and Z881(Zn) we should disallow expansion:
-					return ( this.parentExpectedType === Constants.Z_OBJECT );
-				}
-
-				// TERMINAL rule for argument reference key:
-				if ( this.key === Constants.Z_ARGUMENT_REFERENCE_KEY ) {
+				// TERMINAL rule for string and reference
+				if (
+					( this.type === Constants.Z_REFERENCE ) ||
+					( this.type === Constants.Z_STRING )
+				) {
 					return false;
 				}
 
@@ -543,27 +514,14 @@ module.exports = exports = {
 					return false;
 				}
 
-				// TERMINAL rules for both view and edit:
-				// If the key is Z1K1:
-				if ( this.key === Constants.Z_OBJECT_TYPE ) {
-					// If the parent type is bound, no have expanded mode
-					if ( this.parentExpectedType !== Constants.Z_OBJECT ) {
-						return false;
-					}
-
-					// If the type is any but literal (resolvers like reference,
-					// function call or argument reference) then no expanded mode
-					if ( Constants.RESOLVER_TYPES.includes( this.value ) ) {
-						return false;
-					}
-				}
-
 				// If the type doesn't have any builting component, it must
 				// be always shown in its expanded-mode representation--the set
 				// of key values, so we won't show the expanded mode toggle
 				if ( !Object.keys( Constants.BUILTIN_COMPONENTS ).includes( this.type ) ) {
 					return false;
 				}
+
+				// Fallback: anything else can be expanded
 				return true;
 			},
 
@@ -580,10 +538,6 @@ module.exports = exports = {
 			 */
 			zobjectComponent: function () {
 				// BY KEY
-				// Z1K1 has a special component to handle ZObjectType and mode:
-				if ( ( this.key === Constants.Z_OBJECT_TYPE ) && !this.expanded ) {
-					return 'wl-z-object-type';
-				}
 				// Argument Reference Key/Z18K1 should be rendered with the same component
 				// as the parent Argument Reference/Z18 object when this is expanded.
 				if ( this.key === Constants.Z_ARGUMENT_REFERENCE_KEY ) {
@@ -604,7 +558,7 @@ module.exports = exports = {
 					return 'wl-z-implementation';
 				}
 				// Code doesn't have an expanded mode
-				if ( ( this.type === Constants.Z_CODE ) ) {
+				if ( this.type === Constants.Z_CODE ) {
 					return 'wl-z-code';
 				}
 				// Tester doesn't have an expanded mode
@@ -636,21 +590,8 @@ module.exports = exports = {
 				}
 
 				// If there's no builtin component, always show expanded mode
-				this.expanded = true;
+				this.setExpanded( true );
 				return 'wl-z-object-key-value-set';
-			},
-
-			/**
-			 * Logic for when to render the key delete button.
-			 *
-			 * @return {boolean}
-			 */
-			showActionButton: function () {
-				// When in edit mode, show button for typed list items
-				// Else, do not show button
-				return this.edit ?
-					this.isKeyTypedListItem( this.key ) :
-					false;
 			},
 
 			/**
@@ -666,6 +607,7 @@ module.exports = exports = {
 	),
 	methods: $.extend( mapActions( [
 		'changeType',
+		'clearType',
 		'clearErrors',
 		'setDirty',
 		'setValueByRowIdAndPath',
@@ -675,25 +617,55 @@ module.exports = exports = {
 	] ), mapActions( 'router', [ 'navigate' ] ),
 	{
 		/**
+		 * Adds an item of the given value to the list
+		 *
+		 * @param {Object} payload
+		 */
+		addListItem: function ( payload ) {
+			this.changeType( {
+				id: this.rowId,
+				type: payload.value,
+				append: true
+			} );
+		},
+		/**
 		 * Handles the modification of the ZObject when the changed key-value
 		 * is a type. This needs to call the changeType action, which handles
 		 * the clearing of the old content and the initialization of a new
 		 * scaffolding object representing the new type.
 		 *
-		 * TODO (T334604): we should not be using this method to add a list item
-		 *
 		 * @param {Object} payload
 		 * @param {Object} payload.keyPath sequence of keys till the value to edit
 		 * @param {Object | Array | string} payload.value new value
-		 * @param {boolean} payload.append whether to append a new blank object to a list
 		 */
 		setType: function ( payload ) {
+			// If setType with no payload, clear the current object of
+			// all its keys, except the Object type/Z1K1, and exit
+			if ( !payload ) {
+				this.clearType( this.rowId );
+				return;
+			}
+
+			// If payload.value is reference or string, set expanded to false;
+			// else, set expanded to true by default.
+			this.expanded = (
+				( payload.value !== Constants.Z_REFERENCE ) &&
+				( payload.value !== Constants.Z_STRING )
+			);
+
 			// Set the type
 			this.changeType( {
 				id: this.rowId,
 				type: payload.value,
-				append: payload.append ? payload.append : false
+				append: false
 			} );
+
+			// If we are setting the type of a Z1K1 key, we are changing the mode,
+			// which means that we need to propagate and change the parent type
+			// to clear the keys: emit a setType event with no payload
+			if ( this.key === Constants.Z_OBJECT_TYPE ) {
+				this.$emit( 'set-type' );
+			}
 
 			// If we are setting Z2K2 type
 			if ( this.key === Constants.Z_PERSISTENTOBJECT_VALUE ) {
@@ -726,16 +698,20 @@ module.exports = exports = {
 				return;
 			}
 
-			// DELEGATE CHANGE RESPONSIBILITY TO PARENT:
-			// If we are setting a typed list, we need to transform the whole parent object
-			if ( ( this.key === Constants.Z_FUNCTION_CALL_FUNCTION ) &&
-				( payload.value === Constants.Z_TYPED_LIST ) ) {
-				this.$parent.$emit( 'set-value', { keyPath: [], value: [ Constants.Z_OBJECT ] } );
+			// If we are setting a Z1K1 as typed list, this means we need to
+			// render the typed list component: we delegate change to the parent;
+			if (
+				( this.key === Constants.Z_FUNCTION_CALL_FUNCTION ) &&
+				( this.parentKey === Constants.Z_OBJECT_TYPE ) &&
+				( payload.value === Constants.Z_TYPED_LIST )
+			) {
+				this.$emit( 'set-value', { keyPath: [], value: [ Constants.Z_OBJECT ] } );
+				return;
 			}
 
 			// If the type of a typed list changed, notify the parent to take action
 			if ( this.isKeyTypedListType( this.parentKey ) || this.isKeyTypedListType( this.key ) ) {
-				this.$emit( 'change-event', payload );
+				this.changeEvent( payload );
 			}
 
 			// If the value of Z1K1 changes, tell parent key to change its type
@@ -745,13 +721,6 @@ module.exports = exports = {
 				} else {
 					this.$emit( 'set-type', payload );
 				}
-				return;
-			}
-
-			// If the value of Z1K1.Z9K1 changes, pass the set value responsability
-			if ( ( this.key === Constants.Z_REFERENCE_ID ) &&
-				( this.parentKey === Constants.Z_OBJECT_TYPE ) ) {
-				this.$emit( 'set-value', payload );
 				return;
 			}
 
@@ -797,6 +766,10 @@ module.exports = exports = {
 		 * @param {string} type
 		 */
 		resetPageTitle: function ( type ) {
+			// If this is an edit existing object page, do nothing
+			if ( !this.isCreateNewPage ) {
+				return;
+			}
 			let pageTitle;
 			switch ( type ) {
 				case Constants.Z_TYPE:
@@ -826,28 +799,23 @@ module.exports = exports = {
 		 * @param {Object} payload
 		 */
 		changeEvent: function ( payload ) {
-			this.$parent.$emit( 'change-event', payload );
+			this.$emit( 'change-event', payload );
 		},
 
 		/**
-		 * Toggles on and off the expanded flag
+		 * Sets the expanded flag to a given value. If the type
+		 * cannot be expanded (because it's terminal), it persistently
+		 * sets the expanded flag to false.
 		 *
 		 * @param {boolean} value
 		 */
-		toggleExpanded: function ( value ) {
+		setExpanded: function ( value ) {
+			// Never allow expansion of references and strings, as they are terminal
+			if ( this.type === Constants.Z_REFERENCE || this.type === Constants.Z_STRING ) {
+				this.expanded = false;
+				return;
+			}
 			this.expanded = value;
-		},
-
-		/**
-		 * Process delete item action
-		 *
-		 * @param {string} action
-		 */
-		deleteListItem: function () {
-			// TODO(T324242): replace with new setter when it exists
-			// TODO(T331132): can we create a 'revert delete' workflow?
-			this.setDirtyIfMainObject();
-			this.removeItemFromTypedList( { rowId: this.rowId } );
 		},
 
 		/**
@@ -869,6 +837,16 @@ module.exports = exports = {
 		 */
 		getErrorMessage: function ( error ) {
 			return error.message || this.$i18n( error.code ).text();
+		},
+
+		/**
+		 * Process delete item action
+		 */
+		deleteListItem: function () {
+			// TODO(T324242): replace with new setter when it exists
+			// TODO(T331132): can we create a 'revert delete' workflow?
+			this.setDirtyIfMainObject();
+			this.removeItemFromTypedList( { rowId: this.rowId } );
 		}
 	} )
 };
@@ -919,11 +897,17 @@ module.exports = exports = {
 		align-items: center;
 		padding-right: @spacing-25;
 
+		.ext-wikilambda-key-value-pre-buttons {
+			display: flex;
+			flex-direction: row;
+		}
+
 		.ext-wikilambda-key-value-pre-button {
 			flex: 0 1;
+			color: @color-subtle;
 
-			.ext-wikilambda-expand-toggle-expanded {
-				color: var( --levelColor );
+			&.ext-wikilambda-key-value-pre-button-disabled {
+				color: @color-disabled;
 			}
 		}
 
@@ -934,8 +918,12 @@ module.exports = exports = {
 		}
 	}
 
-	.ext-wikilambda-key-value-post {
+	.ext-wikilambda-key-value-mode {
 		flex: 0 1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		padding-right: @spacing-25;
 	}
 
 	.ext-wikilambda-key-value-main {
@@ -944,19 +932,33 @@ module.exports = exports = {
 		flex-direction: column;
 		min-height: @size-200;
 		justify-content: center;
+		position: relative;
 
 		.ext-wikilambda-key-block {
-			padding: @spacing-25 0;
-			color: @color-subtle;
+			padding: 0;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+
+			&.ext-wikilambda-key-block-edit {
+				color: @color-base;
+			}
+
+			&.ext-wikilambda-key-block-edit-disabled {
+				color: @color-disabled;
+			}
+
+			&.ext-wikilambda-key-block-view {
+				color: @color-subtle;
+			}
+
+			label {
+				margin-right: @spacing-25;
+				line-height: @spacing-200;
+			}
 
 			label.ext-wikilambda-key-unlabelled {
 				color: @color-placeholder;
-			}
-
-			&.ext-wikilambda-key-block-expanded {
-				label {
-					color: var( --levelColor );
-				}
 			}
 		}
 	}

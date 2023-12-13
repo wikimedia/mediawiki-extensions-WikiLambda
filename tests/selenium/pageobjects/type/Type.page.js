@@ -151,22 +151,19 @@ class Type extends Page {
 
 	// #endregion
 
-	// #region Validator Block
-
-	get validatorBlock() {
-		return ContentBlock.getSectionOfContentBlock( 'validator' );
-	}
+	// #region Type Functions: Validator, Equality, Renderer and Parser
 
 	/**
 	 * Get the validator of the type
 	 *
 	 * @async
-	 * @param {string} validator
+	 * @param {string} label
+	 * @param {string} value
 	 * @return {WebdriverIOElementType}
 	 */
-	async getValidatorSelector( validator ) {
-		const validatorBlock = await this.validatorBlock;
-		return validatorBlock.$( `.//a[text()="${ validator }"]` );
+	async getTypeFunctionSelector( label, value ) {
+		const typeFunctionBlock = await ContentBlock.getSectionOfContentBlock( label );
+		return typeFunctionBlock.$( `.//a[text()="${ value }"]` );
 	}
 
 	// #endregion

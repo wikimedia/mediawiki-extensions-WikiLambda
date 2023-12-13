@@ -47,6 +47,8 @@ const FunctionEditorLanguageBlock = require( './FunctionEditorLanguageBlock.vue'
 	icons = require( '../../../../lib/icons.json' ),
 	Constants = require( '../../../Constants.js' ),
 	eventLogUtils = require( '../../../mixins/eventLogUtils.js' ),
+	typeUtils = require( '../../../mixins/typeUtils.js' ),
+	canonicalize = require( '../../../mixins/schemata.js' ).methods.canonicalizeZObject,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	mapGetters = require( 'vuex' ).mapGetters;
@@ -60,7 +62,7 @@ module.exports = exports = {
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon
 	},
-	mixins: [ eventLogUtils ],
+	mixins: [ eventLogUtils, typeUtils ],
 	data: function () {
 		return {
 			rowId: 0,
@@ -78,7 +80,7 @@ module.exports = exports = {
 		'getZFunctionInputs',
 		'getZFunctionLanguages',
 		'getZFunctionOutput',
-		'getZTypeStringRepresentation',
+		'getZObjectAsJsonById',
 		'isNewZObject'
 	] ),
 	{
@@ -116,16 +118,12 @@ module.exports = exports = {
 		 * @return {Array}
 		 */
 		currentInputTypes: function () {
-			return this.getZFunctionInputs()
-				.map( ( inputRow ) => {
-					const inputTypeRow = this.getRowByKeyPath( [
-						Constants.Z_ARGUMENT_TYPE
-					], inputRow.id );
-					return inputTypeRow ?
-						this.getZTypeStringRepresentation( inputTypeRow.id ) :
-						undefined;
-				} )
-				.filter( ( type ) => !!type );
+			return this.getZFunctionInputs().map( ( inputRow ) => {
+				const inputTypeRow = this.getRowByKeyPath( [ Constants.Z_ARGUMENT_TYPE ], inputRow.id );
+				return inputTypeRow ?
+					this.getTypeStringRepresentation( inputTypeRow.id ) :
+					undefined;
+			} ).filter( ( type ) => !!type );
 		},
 		/**
 		 * Returns an the string representation of the
@@ -136,7 +134,7 @@ module.exports = exports = {
 		currentOutputType: function () {
 			const outputRow = this.getZFunctionOutput();
 			return outputRow ?
-				this.getZTypeStringRepresentation( outputRow.id ) :
+				this.getTypeStringRepresentation( outputRow.id ) :
 				undefined;
 		},
 		/**
@@ -192,6 +190,18 @@ module.exports = exports = {
 		 */
 		setLanguage: function ( payload ) {
 			this.functionLanguages[ payload.index ] = payload.language;
+		},
+		/**
+		 * Return the string representation of the object under
+		 * the given rowId. If it's a function call, includes args (E.g.
+		 * Z881(Z6)
+		 *
+		 * @param {number} rowId
+		 * @return {string}
+		 */
+		getTypeStringRepresentation: function ( rowId ) {
+			const canonical = canonicalize( this.getZObjectAsJsonById( rowId ) );
+			return this.typeToString( canonical );
 		}
 	},
 	mounted: function () {

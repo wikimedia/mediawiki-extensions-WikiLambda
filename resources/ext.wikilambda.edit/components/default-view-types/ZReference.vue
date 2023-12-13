@@ -26,9 +26,9 @@
 </template>
 
 <script>
-var
-	Constants = require( '../../Constants.js' ),
+const Constants = require( '../../Constants.js' ),
 	ZObjectSelector = require( './../ZObjectSelector.vue' ),
+	typeUtils = require( '../../mixins/typeUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
@@ -37,6 +37,7 @@ module.exports = exports = {
 	components: {
 		'wl-z-object-selector': ZObjectSelector
 	},
+	mixins: [ typeUtils ],
 	props: {
 		rowId: {
 			type: Number,
@@ -48,17 +49,13 @@ module.exports = exports = {
 			required: true
 		},
 		expectedType: {
-			type: String,
-			default: ''
+			type: [ String, Object ],
+			required: true
 		},
 		disabled: {
 			type: Boolean,
 			default: false
 		}
-	},
-	data: function () {
-		return {
-		};
 	},
 	computed: $.extend(
 		mapGetters( [
@@ -97,14 +94,15 @@ module.exports = exports = {
 
 			/**
 			 * Returns the bound type to configure the ZObjectSelector
-			 * if any, else returns an empty string.
+			 * if any, else returns an empty string. The type must be
+			 * converted to string with no args in case it's a generic type.
 			 *
 			 * @return {string}
 			 */
 			selectType: function () {
-				return this.expectedType === Constants.Z_OBJECT ?
+				return !this.expectedType || ( this.expectedType === Constants.Z_OBJECT ) ?
 					'' :
-					this.expectedType;
+					this.typeToString( this.expectedType, true );
 			},
 
 			/**

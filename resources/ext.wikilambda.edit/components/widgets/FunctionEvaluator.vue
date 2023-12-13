@@ -159,7 +159,6 @@ module.exports = exports = {
 		'getCurrentZObjectId',
 		'getCurrentZObjectType',
 		'getUserLangZid',
-		'getZObjectTypeByRowId',
 		'getMapValueByKey',
 		'userCanRunFunction',
 		'userCanRunUnsavedCode'

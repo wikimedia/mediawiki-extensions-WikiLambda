@@ -6,278 +6,300 @@
  */
 'use strict';
 
-var shallowMount = require( '@vue/test-utils' ).shallowMount,
+const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	ExpandedToggle = require( '../../../../resources/ext.wikilambda.edit/components/base/ExpandedToggle.vue' ),
-	CdxSelect = require( '@wikimedia/codex' ).CdxSelect,
-	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
-	ZObjectKeyValue = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZObjectKeyValue.vue' ),
-	ZMonolingualString = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZMonolingualString.vue' ),
-	ZString = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZString.vue' ),
-	ZReference = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZReference.vue' ),
-	ZObjectType = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZObjectType.vue' ),
-	ZObjectKeyValueSet = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZObjectKeyValueSet.vue' ),
-	ZCode = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZCode.vue' ),
-	ZBoolean = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZBoolean.vue' ),
-	ZTypedList = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZTypedList.vue' );
-
-const parentRowId = 1;
-const rowId = 2;
-const keyId = 3;
-
-function createFunctionsMockForId( expectedId, value ) {
-	return () => ( id ) => {
-		if ( id === expectedId ) {
-			return value;
-		} else if ( id === parentRowId ) {
-			return Constants.Z_REFERENCE_ID;
-		} else {
-			throw new Error( `Id ${ id } not supported` );
-		}
-	};
-}
+	ZObjectKeyValue = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZObjectKeyValue.vue' );
 
 describe( 'ZObjectKeyValue', () => {
 	var getters,
 		actions;
+
 	beforeEach( () => {
 		getters = {
+			isCreateNewPage: createGetterMock( false ),
 			isMainObject: createGettersWithFunctionsMock( true ),
 			getLabelData: createGettersWithFunctionsMock( { zid: Constants.Z_PERSISTENTOBJECT_ID, label: 'id', lang: Constants.Z_NATURAL_LANGUAGE_ENGLISH } ),
-			getZReferenceTerminalValue: jest.fn(),
-			getZObjectKeyByRowId: createGettersWithFunctionsMock( keyId ),
+			getZObjectKeyByRowId: createGettersWithFunctionsMock( 'Z1K1' ),
 			getExpectedTypeOfKey: createGettersWithFunctionsMock(),
-			getDepthByRowId: () => ( id ) => {
-				if ( id === rowId ) {
-					return 1;
-				} else {
-					throw new Error( `rowId ${ id } not supported` );
-				}
-			},
-			getParentRowId: () => ( id ) => {
-				if ( id === rowId ) {
-					return parentRowId;
-				} else {
-					throw new Error( `rowId ${ id } not supported` );
-				}
-			},
 			getZObjectValueByRowId: createGettersWithFunctionsMock(),
 			getZObjectTypeByRowId: createGettersWithFunctionsMock( Constants.Z_STRING ),
-			getZStringTerminalValue: createGettersWithFunctionsMock( 'string terminal value' ),
-			getLabel: createGettersWithFunctionsMock( 'Function call' ),
-			getLanguageIsoCodeOfZLang: createGettersWithFunctionsMock( 'EN' ),
 			getUserLangZid: createGettersWithFunctionsMock( 'Z1002' ),
-			getChildrenByParentRowId: createGettersWithFunctionsMock( [
-				{ id: 2, key: '0', parent: 1, value: 'object' }
-			] ),
-			zkeyLabels: createGettersWithFunctionsMock( 'String' )
+			getZObjectAsJsonById: createGettersWithFunctionsMock(),
+			getZPersistentContentRowId: createGettersWithFunctionsMock( 1 ),
+			getTypedListItemType: createGettersWithFunctionsMock( 'Z6' ),
+			getErrors: createGettersWithFunctionsMock( [] ),
+			getDepthByRowId: createGettersWithFunctionsMock( 1 ),
+			getParentRowId: createGettersWithFunctionsMock( 0 ),
+			getChildrenByParentRowId: createGettersWithFunctionsMock( [] )
 		};
 		actions = {
+			changeType: jest.fn(),
+			clearErrors: jest.fn(),
+			clearType: jest.fn(),
+			setDirty: jest.fn(),
 			setValueByRowIdAndPath: jest.fn(),
-			changeType: jest.fn()
+			setZFunctionCallArguments: jest.fn(),
+			setZImplementationContentType: jest.fn(),
+			removeItemFromTypedList: jest.fn()
 		};
 		global.store.hotUpdate( {
+			getters: getters,
 			actions: actions
 		} );
 	} );
 
-	describe( 'it renders the correct component type for', () => {
+	describe( 'it renders the correct component for type or key', () => {
 		it( 'z monolingual string', () => {
-			getters.getZObjectTypeByRowId = createFunctionsMockForId( rowId, Constants.Z_MONOLINGUALSTRING );
-
+			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_MONOLINGUALSTRING );
 			global.store.hotUpdate( {
 				getters: getters
 			} );
 
-			var wrapper = shallowMount( ZObjectKeyValue, {
+			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
-					rowId: rowId
+					rowId: 1
 				}
 			} );
 
-			expect( wrapper.findComponent( ZMonolingualString ).exists() ).toBe( true );
+			expect( wrapper.findComponent( { name: 'wl-z-monolingual-string' } ).exists() ).toBe( true );
 		} );
 
 		it( 'z reference', () => {
-			getters.getZObjectTypeByRowId = createFunctionsMockForId( rowId, Constants.Z_REFERENCE );
-
+			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
 			global.store.hotUpdate( {
 				getters: getters
 			} );
 
-			var wrapper = shallowMount( ZObjectKeyValue, {
+			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
-					rowId: rowId
+					rowId: 1
 				}
 			} );
 
-			expect( wrapper.findComponent( ZReference ).exists() ).toBe( true );
+			expect( wrapper.findComponent( { name: 'wl-z-reference' } ).exists() ).toBe( true );
 		} );
 
 		it( 'z string', () => {
-			getters.getZObjectTypeByRowId = createFunctionsMockForId( rowId, Constants.Z_STRING );
-
+			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_STRING );
 			global.store.hotUpdate( {
 				getters: getters
 			} );
 
-			var wrapper = shallowMount( ZObjectKeyValue, {
+			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
-					rowId: rowId
+					rowId: 1
 				}
 			} );
 
-			expect( wrapper.findComponent( ZString ).exists() ).toBe( true );
+			expect( wrapper.findComponent( { name: 'wl-z-string' } ).exists() ).toBe( true );
 		} );
 
 		it( 'z code', () => {
-			getters.getZObjectTypeByRowId = createFunctionsMockForId( rowId, Constants.Z_CODE );
-
+			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_CODE );
 			global.store.hotUpdate( {
 				getters: getters
 			} );
 
-			var wrapper = shallowMount( ZObjectKeyValue, {
+			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
-					rowId: rowId
+					rowId: 1
 				}
 			} );
 
-			expect( wrapper.findComponent( ZCode ).exists() ).toBe( true );
+			expect( wrapper.findComponent( { name: 'wl-z-code' } ).exists() ).toBe( true );
 		} );
 
 		it( 'z boolean', () => {
-			getters.getZObjectTypeByRowId = createFunctionsMockForId( rowId, Constants.Z_BOOLEAN );
-
+			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_BOOLEAN );
 			global.store.hotUpdate( {
 				getters: getters
 			} );
 
-			var wrapper = shallowMount( ZObjectKeyValue, {
+			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
-					rowId: rowId
+					rowId: 1
 				}
 			} );
 
-			expect( wrapper.findComponent( ZBoolean ).exists() ).toBe( true );
+			expect( wrapper.findComponent( { name: 'wl-z-boolean' } ).exists() ).toBe( true );
+		} );
+
+		it( 'z function call', () => {
+			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL );
+			global.store.hotUpdate( {
+				getters: getters
+			} );
+
+			const wrapper = shallowMount( ZObjectKeyValue, {
+				props: {
+					rowId: 1
+				}
+			} );
+
+			expect( wrapper.findComponent( { name: 'wl-z-function-call' } ).exists() ).toBe( true );
+		} );
+
+		it( 'z implementation', () => {
+			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_IMPLEMENTATION );
+			global.store.hotUpdate( {
+				getters: getters
+			} );
+
+			const wrapper = shallowMount( ZObjectKeyValue, {
+				props: {
+					rowId: 1
+				}
+			} );
+
+			expect( wrapper.findComponent( { name: 'wl-z-implementation' } ).exists() ).toBe( true );
+		} );
+
+		it( 'z tester', () => {
+			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_TESTER );
+			global.store.hotUpdate( {
+				getters: getters
+			} );
+
+			const wrapper = shallowMount( ZObjectKeyValue, {
+				props: {
+					rowId: 1
+				}
+			} );
+
+			expect( wrapper.findComponent( { name: 'wl-z-tester' } ).exists() ).toBe( true );
+		} );
+
+		it( 'z evaluation result', () => {
+			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_RESPONSEENVELOPE );
+			global.store.hotUpdate( {
+				getters: getters
+			} );
+
+			const wrapper = shallowMount( ZObjectKeyValue, {
+				props: {
+					rowId: 1
+				}
+			} );
+
+			expect( wrapper.findComponent( { name: 'wl-z-evaluation-result' } ).exists() ).toBe( true );
+		} );
+
+		it( 'z argument reference with type', () => {
+			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_ARGUMENT_REFERENCE );
+			global.store.hotUpdate( {
+				getters: getters
+			} );
+
+			const wrapper = shallowMount( ZObjectKeyValue, {
+				props: {
+					rowId: 1
+				}
+			} );
+
+			expect( wrapper.findComponent( { name: 'wl-z-argument-reference' } ).exists() ).toBe( true );
+		} );
+
+		it( 'z argument reference with key', () => {
+			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_STRING );
+			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_ARGUMENT_REFERENCE_KEY );
+			global.store.hotUpdate( {
+				getters: getters
+			} );
+
+			const wrapper = shallowMount( ZObjectKeyValue, {
+				props: {
+					rowId: 1
+				}
+			} );
+
+			expect( wrapper.findComponent( { name: 'wl-z-argument-reference' } ).exists() ).toBe( true );
 		} );
 
 		it( 'z typed list', () => {
-			getters.getZObjectTypeByRowId = createFunctionsMockForId( rowId, Constants.Z_TYPED_LIST );
-
+			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( {
+				Z1K1: Constants.Z_FUNCTION_CALL,
+				Z7K1: Constants.Z_TYPED_LIST,
+				Z881K1: Constants.Z_OBJECT
+			} );
 			global.store.hotUpdate( {
 				getters: getters
 			} );
 
-			var wrapper = shallowMount( ZObjectKeyValue, {
+			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
-					rowId: rowId
+					rowId: 1
 				}
 			} );
 
-			expect( wrapper.findComponent( ZTypedList ).exists() ).toBe( true );
-		} );
-
-		it( 'z object type', () => {
-			getters.getZObjectKeyByRowId = createFunctionsMockForId( rowId, Constants.Z_OBJECT_TYPE );
-
-			global.store.hotUpdate( {
-				getters: getters
-			} );
-
-			var wrapper = shallowMount( ZObjectKeyValue, {
-				props: {
-					rowId: rowId
-				}
-			} );
-
-			expect( wrapper.findComponent( ZObjectType ).exists() ).toBe( true );
+			expect( wrapper.findComponent( { name: 'wl-z-typed-list' } ).exists() ).toBe( true );
 		} );
 
 		it( 'fallback z-object-key-value-set', () => {
-			getters.getZObjectTypeByRowId = createFunctionsMockForId( rowId, null );
-
+			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z12345' );
 			global.store.hotUpdate( {
 				getters: getters
 			} );
 
-			var wrapper = shallowMount( ZObjectKeyValue, {
+			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
-					rowId: rowId
+					rowId: 1
 				}
 			} );
 
-			expect( wrapper.findComponent( ZObjectKeyValueSet ).exists() ).toBe( true );
+			expect( wrapper.findComponent( { name: 'wl-z-object-key-value-set' } ).exists() ).toBe( true );
 		} );
 	} );
 
 	describe( 'in edit mode', () => {
 		it( 'it renders without errors', () => {
-			var wrapper = shallowMount( ZObjectKeyValue, {
+			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
 					edit: true,
-					rowId: rowId
+					rowId: 1
 				}
 			} );
 
 			expect( wrapper.find( 'div' ).exists() ).toBe( true );
 		} );
 
-		it( 'it shows expansion toggle if it is not a special terminal case', () => {
-			getters.getZObjectKeyByRowId = createFunctionsMockForId( rowId, Constants.Z_KEY_TYPE );
-			getters.getExpectedTypeOfKey = createFunctionsMockForId( Constants.Z_KEY_TYPE, Constants.Z_TYPE );
-
-			global.store.hotUpdate( {
-				getters: getters
-			} );
-
-			var wrapper = shallowMount( ZObjectKeyValue, {
-				props: {
-					edit: true,
-					rowId: rowId
-				}
-			} );
-
-			expect( wrapper.findComponent( ExpandedToggle ).exists() ).toBe( true );
-		} );
-
-		describe( 'shows disabled expansion toggle if the key is a terminal', () => {
-			it( 'Z6K1, string value', () => {
-				getters.getZObjectKeyByRowId = createFunctionsMockForId( rowId, Constants.Z_STRING_VALUE );
-
+		describe( 'mode selector', () => {
+			it( 'it loads the mode selector if key is visible', () => {
+				getters.getExpectedTypeOfKey = createGettersWithFunctionsMock( Constants.Z_TYPE );
+				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_KEY_TYPE );
+				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
 				global.store.hotUpdate( {
 					getters: getters
 				} );
 
-				var wrapper = shallowMount( ZObjectKeyValue, {
+				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
 						edit: true,
-						rowId: rowId
+						rowId: 1
 					}
 				} );
-				const toggle = wrapper.findComponent( ExpandedToggle );
-				expect( toggle.exists() ).toBe( true );
-				expect( toggle.vm.hasExpandedMode ).toBe( false );
+
+				expect( wrapper.findComponent( { name: 'wl-mode-selector' } ).exists() ).toBe( true );
 			} );
 
-			it( 'Z9K1, reference', () => {
-				getters.getZObjectKeyByRowId = createFunctionsMockForId( rowId, Constants.Z_REFERENCE_ID );
-
+			it( 'it does not load the mode selector if key is skipped', () => {
+				getters.getExpectedTypeOfKey = createGettersWithFunctionsMock( Constants.Z_TYPE );
+				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_KEY_TYPE );
+				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
 				global.store.hotUpdate( {
 					getters: getters
 				} );
 
-				var wrapper = shallowMount( ZObjectKeyValue, {
+				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
 						edit: true,
-						rowId: rowId
+						rowId: 1,
+						skipKey: true
 					}
 				} );
 
-				const toggle = wrapper.findComponent( ExpandedToggle );
-				expect( toggle.exists() ).toBe( true );
-				expect( toggle.vm.hasExpandedMode ).toBe( false );
+				expect( wrapper.findComponent( { name: 'wl-mode-selector' } ).exists() ).toBe( false );
 			} );
 		} );
 	} );
@@ -287,346 +309,342 @@ describe( 'ZObjectKeyValue', () => {
 			var wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
 					edit: false,
-					rowId: rowId
+					rowId: 1
 				}
 			} );
 
 			expect( wrapper.find( 'div' ).exists() ).toBe( true );
 		} );
 
-		it( 'it shows expansion toggle if it is not a special terminal case', async () => {
-			getters.getZObjectTypeByRowId = createFunctionsMockForId( rowId, Constants.Z_MONOLINGUALSTRING );
-			getters.getZObjectValueByRowId = createFunctionsMockForId( rowId, 0 );
-			getters.getExpectedTypeOfKey = createFunctionsMockForId( keyId, Constants.Z_OBJECT );
-
-			global.store.hotUpdate( {
-				getters: getters
-			} );
-
-			var wrapper = shallowMount( ZObjectKeyValue, {
-				props: {
-					edit: false,
-					rowId: rowId
-				}
-			} );
-			expect( wrapper.findComponent( ExpandedToggle ).exists() ).toBe( true );
-		} );
-
-		describe( 'shows disabled expansion toggle if the key is a terminal', () => {
-			it( 'Z6, string type', () => {
-				getters.getZObjectTypeByRowId = createFunctionsMockForId( rowId, Constants.Z_STRING );
-
+		describe( 'mode selector', () => {
+			it( 'it does not load the mode selector even when key is visible', () => {
+				getters.getExpectedTypeOfKey = createGettersWithFunctionsMock( Constants.Z_TYPE );
+				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_KEY_TYPE );
+				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
 				global.store.hotUpdate( {
 					getters: getters
 				} );
 
-				var wrapper = shallowMount( ZObjectKeyValue, {
+				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
 						edit: false,
-						rowId: rowId
+						rowId: 1,
+						skipKey: false
 					}
 				} );
 
-				const toggle = wrapper.findComponent( ExpandedToggle );
-				expect( toggle.exists() ).toBe( true );
-				expect( toggle.vm.hasExpandedMode ).toBe( false );
+				expect( wrapper.findComponent( { name: 'wl-mode-selector' } ).exists() ).toBe( false );
 			} );
 
-			it( 'Z9, reference type', () => {
-				getters.getZObjectTypeByRowId = createFunctionsMockForId( rowId, Constants.Z_REFERENCE );
-
+			it( 'it does not load the mode selector if key is skipped', () => {
+				getters.getExpectedTypeOfKey = createGettersWithFunctionsMock( Constants.Z_TYPE );
+				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_KEY_TYPE );
+				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
 				global.store.hotUpdate( {
 					getters: getters
 				} );
 
-				var wrapper = shallowMount( ZObjectKeyValue, {
+				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
 						edit: false,
-						rowId: rowId
+						rowId: 1,
+						skipKey: true
 					}
 				} );
 
-				const toggle = wrapper.findComponent( ExpandedToggle );
-				expect( toggle.exists() ).toBe( true );
-				expect( toggle.vm.hasExpandedMode ).toBe( false );
+				expect( wrapper.findComponent( { name: 'wl-mode-selector' } ).exists() ).toBe( false );
 			} );
 		} );
 	} );
 
 	describe( 'in either view or edit mode', () => {
-		describe( 'shows disabled expansion toggle if the key is a terminal', () => {
-			it( 'Z1K1, with a bound parent type', () => {
-				getters.getZObjectKeyByRowId = () => ( id ) => {
-					if ( id === parentRowId ) {
-						return Constants.Z_OBJECT_TYPE;
-					} else if ( id === rowId ) {
-						return Constants.Z_REFERENCE;
-					} else {
-						throw new Error( `rowId ${ id }  not supported` );
-					}
-				};
 
-				getters.getExpectedTypeOfKey =
-					createFunctionsMockForId( Constants.Z_REFERENCE, Constants.Z_MULTILINGUALSTRING );
-
+		describe( 'expanded toggle', () => {
+			it( 'it shows expansion toggle if it is not a special terminal case', () => {
+				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_KEY_TYPE );
+				getters.getExpectedTypeOfKey = createGettersWithFunctionsMock( Constants.Z_TYPE );
 				global.store.hotUpdate( {
 					getters: getters
 				} );
 
-				var wrapper = shallowMount( ZObjectKeyValue, {
+				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
-						rowId: rowId
+						edit: true,
+						rowId: 1
 					}
 				} );
 
-				const toggle = wrapper.findComponent( ExpandedToggle );
+				expect( wrapper.findComponent( { name: 'wl-expanded-toggle' } ).exists() ).toBe( true );
+			} );
+
+			it( 'disables expansion when string', () => {
+				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_STRING );
+				global.store.hotUpdate( {
+					getters: getters
+				} );
+
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						edit: true,
+						rowId: 1
+					}
+				} );
+				const toggle = wrapper.findComponent( { name: 'wl-expanded-toggle' } );
+
 				expect( toggle.exists() ).toBe( true );
 				expect( toggle.vm.hasExpandedMode ).toBe( false );
 			} );
 
-			it( 'resolver type value Z Reference', () => {
-				getters.getZObjectValueByRowId = createFunctionsMockForId( rowId, Constants.Z_REFERENCE );
-				getters.getZObjectKeyByRowId = createFunctionsMockForId( rowId, Constants.Z_OBJECT_TYPE );
-
+			it( 'disables expansion when reference', () => {
+				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
 				global.store.hotUpdate( {
 					getters: getters
 				} );
 
-				var wrapper = shallowMount( ZObjectKeyValue, {
+				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
-						rowId: rowId
+						edit: true,
+						rowId: 1
 					}
 				} );
 
-				const toggle = wrapper.findComponent( ExpandedToggle );
+				const toggle = wrapper.findComponent( { name: 'wl-expanded-toggle' } );
 				expect( toggle.exists() ).toBe( true );
 				expect( toggle.vm.hasExpandedMode ).toBe( false );
 			} );
 
-			it( 'resolver type value Z Function Call', () => {
-				getters.getZObjectValueByRowId = createFunctionsMockForId( rowId, Constants.Z_FUNCTION_CALL );
-				getters.getZObjectKeyByRowId = createFunctionsMockForId( rowId, Constants.Z_OBJECT_TYPE );
-
+			it( 'disables expansion when implementation', () => {
+				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_IMPLEMENTATION );
 				global.store.hotUpdate( {
 					getters: getters
 				} );
 
-				var wrapper = shallowMount( ZObjectKeyValue, {
+				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
-						rowId: rowId
+						edit: true,
+						rowId: 1
 					}
 				} );
 
-				const toggle = wrapper.findComponent( ExpandedToggle );
+				const toggle = wrapper.findComponent( { name: 'wl-expanded-toggle' } );
 				expect( toggle.exists() ).toBe( true );
 				expect( toggle.vm.hasExpandedMode ).toBe( false );
 			} );
 
-			it( 'resolver type value Z Argument Reference', () => {
-				getters.getZObjectValueByRowId = createFunctionsMockForId( rowId, Constants.Z_ARGUMENT_REFERENCE );
-				getters.getZObjectKeyByRowId = createFunctionsMockForId( rowId, Constants.Z_OBJECT_TYPE );
-
+			it( 'disables expansion when implementation code', () => {
+				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_IMPLEMENTATION_CODE );
 				global.store.hotUpdate( {
 					getters: getters
 				} );
 
-				var wrapper = shallowMount( ZObjectKeyValue, {
+				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
-						rowId: rowId
+						edit: true,
+						rowId: 1
 					}
 				} );
 
-				const toggle = wrapper.findComponent( ExpandedToggle );
+				const toggle = wrapper.findComponent( { name: 'wl-expanded-toggle' } );
 				expect( toggle.exists() ).toBe( true );
 				expect( toggle.vm.hasExpandedMode ).toBe( false );
 			} );
 
-			it( 'non built-in type', () => {
-				getters.getZObjectKeyByRowId = () => ( id ) => {
-					if ( id === parentRowId ) {
-						return Constants.Z_OBJECT_TYPE;
-					} else if ( id === rowId ) {
-						return Constants.Z_REFERENCE;
-					} else {
-						throw new Error( `rowId ${ id }  not supported` );
-					}
-				};
-				getters.getZObjectKeyByRowId( parentRowId, Constants.Z_OBJECT_TYPE );
-				getters.getExpectedTypeOfKey =
-					createFunctionsMockForId( Constants.Z_REFERENCE, Constants.Z_MULTILINGUALSTRING );
-
+			it( 'disables expansion when implementation function', () => {
+				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_IMPLEMENTATION_FUNCTION );
 				global.store.hotUpdate( {
 					getters: getters
 				} );
 
-				var wrapper = shallowMount( ZObjectKeyValue, {
+				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
-						rowId: rowId
+						edit: true,
+						rowId: 1
 					}
 				} );
 
-				const toggle = wrapper.findComponent( ExpandedToggle );
+				const toggle = wrapper.findComponent( { name: 'wl-expanded-toggle' } );
+				expect( toggle.exists() ).toBe( true );
+				expect( toggle.vm.hasExpandedMode ).toBe( false );
+			} );
+
+			it( 'disables expansion when tester', () => {
+				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_TESTER );
+				global.store.hotUpdate( {
+					getters: getters
+				} );
+
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						edit: true,
+						rowId: 1
+					}
+				} );
+
+				const toggle = wrapper.findComponent( { name: 'wl-expanded-toggle' } );
+				expect( toggle.exists() ).toBe( true );
+				expect( toggle.vm.hasExpandedMode ).toBe( false );
+			} );
+
+			it( 'disables expansion when tester function', () => {
+				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_TESTER_FUNCTION );
+				global.store.hotUpdate( {
+					getters: getters
+				} );
+
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						edit: true,
+						rowId: 1
+					}
+				} );
+
+				const toggle = wrapper.findComponent( { name: 'wl-expanded-toggle' } );
+				expect( toggle.exists() ).toBe( true );
+				expect( toggle.vm.hasExpandedMode ).toBe( false );
+			} );
+
+			it( 'disables expansion for non built-in types', () => {
+				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z60' );
+				global.store.hotUpdate( {
+					getters: getters
+				} );
+
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						edit: true,
+						rowId: 1
+					}
+				} );
+
+				const toggle = wrapper.findComponent( { name: 'wl-expanded-toggle' } );
 				expect( toggle.exists() ).toBe( true );
 				expect( toggle.vm.hasExpandedMode ).toBe( false );
 			} );
 		} );
 	} );
 
-	describe( 'handles the modification of the state for the key-value represented in the component', () => {
-		it( 'if the value of Z1K1 changes', () => {
-			getters.getZObjectKeyByRowId = createFunctionsMockForId( rowId, Constants.Z_OBJECT_TYPE );
-			getters.getZReferenceTerminalValue = createFunctionsMockForId( rowId, Constants.Z_REFERENCE );
-			getters.isInsideComposition = createGettersWithFunctionsMock( false );
+	describe( 'state modification', () => {
 
-			global.store.hotUpdate( {
-				getters: getters
-			} );
+		describe( 'redirect state changes', () => {
 
-			var wrapper = shallowMount( ZObjectKeyValue, {
-				props: {
-					edit: true,
-					rowId: rowId
-				},
-				global: {
-					stubs: {
-						WlZObjectType: false
+			it( 'trigger set-type if the key is an object type', () => {
+				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_OBJECT_TYPE );
+				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
+				global.store.hotUpdate( {
+					getters: getters
+				} );
+
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						edit: true,
+						rowId: 1
 					}
-				}
+				} );
+
+				wrapper.findComponent( { name: 'wl-z-reference' } ).vm.$emit( 'set-value', { keyPath: [], value: 'Z60' } );
+				expect( wrapper.emitted() ).toHaveProperty( 'set-type', [ [ { keyPath: [], value: 'Z60' } ] ] );
 			} );
 
-			wrapper.findComponent( { name: 'cdx-select' } ).vm.$emit( 'update:selected', 'Function call' );
-			expect( wrapper.emitted() ).toHaveProperty( 'set-type', [ [ { keyPath: [], value: 'Function call' } ] ] );
+			it( 'trigger set-value when type is set to typed list', () => {
+				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
+				getters.getZObjectKeyByRowId = () => ( id ) => {
+					return ( id === 1 ) ? Constants.Z_FUNCTION_CALL_FUNCTION :
+						( id === 0 ) ? Constants.Z_OBJECT_TYPE :
+							undefined;
+				};
+				global.store.hotUpdate( {
+					getters: getters
+				} );
+
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						edit: true,
+						rowId: 1
+					}
+				} );
+
+				wrapper.findComponent( { name: 'wl-z-reference' } ).vm.$emit( 'set-value', { keyPath: [], value: 'Z881' } );
+				expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [], value: [ Constants.Z_OBJECT ] } ] ] );
+			} );
+
+			it( 'passes up responsibility if value is an array and key is Z1K1', () => {
+				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
+				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_OBJECT_TYPE );
+				global.store.hotUpdate( {
+					getters: getters
+				} );
+
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						edit: true,
+						rowId: 1
+					}
+				} );
+
+				wrapper.findComponent( { name: 'wl-z-reference' } ).vm.$emit( 'set-value', { keyPath: [], value: [ Constants.Z_OBJECT ] } );
+				expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [], value: [ Constants.Z_OBJECT ] } ] ] );
+			} );
 		} );
 
-		it( 'if the value of the Z1K1.Z9K1 changes', async () => {
-			getters.getZObjectKeyByRowId = () => ( id ) => {
-				if ( id === rowId ) {
-					return Constants.Z_REFERENCE_ID;
-				} else if ( id === parentRowId ) {
-					return Constants.Z_OBJECT_TYPE;
-				}
-			};
-			getters.getParentRowId = createFunctionsMockForId( rowId, parentRowId );
+		describe( 'perform simple changes', () => {
+			it( 'persists the change when occurs to the key-value pair', () => {
+				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
+				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_STRING );
+				global.store.hotUpdate( {
+					getters: getters
+				} );
 
-			global.store.hotUpdate( {
-				getters: getters
-			} );
-
-			var wrapper = shallowMount( ZObjectKeyValue, {
-				props: {
-					edit: true,
-					rowId: rowId
-				},
-				global: {
-					stubs: {
-						WlZString: false
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						edit: true,
+						rowId: 1
 					}
-				}
-			} );
+				} );
 
-			await wrapper.getComponent( CdxTextInput ).vm.$emit( 'update:modelValue', 'my string value' );
-			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [ Constants.Z_STRING_VALUE ], value: 'my string value' } ] ] );
+				wrapper.getComponent( { name: 'wl-z-string' } ).vm.$emit( 'set-value', { keyPath: [], value: 'my string value' } );
+				expect( actions.setValueByRowIdAndPath ).toHaveBeenCalledWith( expect.anything(), { keyPath: [ ], rowId: 1, value: 'my string value' } );
+			} );
 		} );
 
-		// TODO (T326007): Implement these tests.
-		it.skip( 'if the value of the Z7K1 changes', () => {
+		describe( 'page redirections', () => {
+			it( 'navigates into function editor when content type is set to function', () => {
+				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
+				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_OBJECT );
+				actions.changeType = jest.fn();
+				const mockNavigate = jest.fn();
 
-		} );
+				// Create mock title element
+				const title = document.createElement( 'h1' );
+				title.setAttribute( 'id', 'firstHeading' );
+				document.body.appendChild( title );
 
-		it( 'when the changed key-value is a type', async () => {
-			getters.isInsideComposition = createGettersWithFunctionsMock( false );
-			getters.getLabel = createGettersWithFunctionsMock( { zid: 'Z17', label: 'Argument declaration', lang: 'Z1002' } );
-			getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( 'Z17' );
-			getters.getZObjectKeyByRowId = createFunctionsMockForId( rowId, Constants.Z_OBJECT_TYPE );
+				global.store.registerModule( 'router', {
+					namespaced: true,
+					actions: { navigate: mockNavigate }
+				} );
 
-			global.store.hotUpdate( {
-				getters: getters
-			} );
-
-			var wrapper = shallowMount( ZObjectKeyValue, {
-				props: {
-					edit: true,
-					rowId: rowId
-				},
-				global: {
-					stubs: {
-						WlZObjectType: false
+				global.store.hotUpdate( { getters: getters, actions: actions } );
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						edit: true,
+						rowId: 1
+					},
+					global: {
+						stubs: {
+							WlZObjectKeyValueSet: false
+						}
 					}
-				}
-			} );
+				} );
 
-			const ZObjectTypeComponent = wrapper.getComponent( ZObjectType );
-			expect( ZObjectTypeComponent.exists() ).toBeTruthy();
-
-			const selectComponent = wrapper.getComponent( CdxSelect );
-			expect( selectComponent.exists() ).toBeTruthy();
-
-			await selectComponent.vm.$emit( 'update:selected', 'Reference' );
-			expect( ZObjectTypeComponent.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [], value: 'Reference' } ] ] );
-			expect( wrapper.emitted() ).toHaveProperty( 'set-type', [ [ { keyPath: [], value: 'Reference' } ] ] );
-		} );
-
-		it( 'for a simple change that is isolated to the key-value pair', async () => {
-			getters.getZObjectTypeByRowId = createFunctionsMockForId( rowId, Constants.Z_STRING );
-
-			global.store.hotUpdate( {
-				getters: getters
-			} );
-
-			var wrapper = shallowMount( ZObjectKeyValue, {
-				props: {
-					edit: true,
-					rowId: rowId
-				},
-				global: {
-					stubs: {
-						WlZString: false
-					}
-				}
-			} );
-
-			await wrapper.getComponent( CdxTextInput ).vm.$emit( 'update:modelValue', 'my string value' );
-			expect( actions.setValueByRowIdAndPath ).toHaveBeenCalledWith( expect.anything(), { keyPath: [ Constants.Z_STRING_VALUE ], rowId: 2, value: 'my string value' } );
-		} );
-
-		it( 'navigates into function editor when content type is set to function', () => {
-			getters.getZObjectKeyByRowId = createFunctionsMockForId( rowId, Constants.Z_PERSISTENTOBJECT_VALUE );
-			getters.getZObjectTypeByRowId = createFunctionsMockForId( rowId, Constants.Z_OBJECT );
-			actions.changeType = jest.fn();
-
-			const mockNavigate = jest.fn();
-
-			// Create mock title element
-			const title = document.createElement( 'h1' );
-			title.setAttribute( 'id', 'firstHeading' );
-			document.body.appendChild( title );
-
-			global.store.registerModule( 'router', {
-				namespaced: true,
-				actions: { navigate: mockNavigate }
-			} );
-
-			global.store.hotUpdate( { getters: getters, actions: actions } );
-			const wrapper = shallowMount( ZObjectKeyValue, {
-				props: {
-					edit: true,
-					rowId: rowId
-				},
-				global: {
-					stubs: {
-						WlZObjectKeyValueSet: false
-					}
-				}
-			} );
-
-			const keyValueSet = wrapper.findComponent( { name: 'wl-z-object-key-value-set' } );
-			keyValueSet.vm.$emit( 'set-type', { value: Constants.Z_FUNCTION } );
-			expect( mockNavigate ).toHaveBeenCalledWith( expect.anything(), { to: Constants.VIEWS.FUNCTION_EDITOR } );
-			expect( actions.changeType ).toHaveBeenCalledTimes( 1 );
-			expect( actions.changeType ).toHaveBeenCalledWith( expect.anything(), {
-				id: rowId,
-				type: Constants.Z_FUNCTION,
-				append: false
+				const keyValueSet = wrapper.findComponent( { name: 'wl-z-object-key-value-set' } );
+				keyValueSet.vm.$emit( 'set-type', { value: Constants.Z_FUNCTION } );
+				expect( mockNavigate ).toHaveBeenCalledWith( expect.anything(), { to: Constants.VIEWS.FUNCTION_EDITOR } );
+				expect( actions.changeType ).toHaveBeenCalledTimes( 1 );
+				expect( actions.changeType ).toHaveBeenCalledWith( expect.anything(), {
+					id: 1,
+					type: Constants.Z_FUNCTION,
+					append: false
+				} );
 			} );
 		} );
 	} );

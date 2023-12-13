@@ -16,8 +16,6 @@
 			v-for="rowIdItem in childRowIds"
 			:key="rowIdItem"
 			:row-id="rowIdItem"
-			:parent-expected-type="expectedType"
-			:parent-key="parentKey"
 			:edit="edit"
 			v-bind="$attrs"
 		></wl-z-object-key-value>
@@ -46,10 +44,6 @@ module.exports = exports = {
 		},
 		depth: {
 			type: Number,
-			required: true
-		},
-		expectedType: {
-			type: String,
 			required: true
 		}
 	},
@@ -102,7 +96,7 @@ module.exports = exports = {
 @import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-key-value-set {
-	margin-left: -@spacing-75;
+	margin-left: -@spacing-25;
 
 	.ext-wikilambda-key-value-row:last-child {
 		> .ext-wikilambda-key-value {

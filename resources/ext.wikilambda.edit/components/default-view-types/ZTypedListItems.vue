@@ -22,7 +22,8 @@
 			<!-- if expanded, show key label -->
 			<div
 				v-if="expanded"
-				class="ext-wikilambda-key-block"
+				:class="listItemsEditClass"
+				class="ext-wikilambda-ztyped-list-items-label ext-wikilambda-key-block"
 			>
 				<wl-localized-label :label-data="itemsLabel"></wl-localized-label>
 			</div>
@@ -34,16 +35,17 @@
 					:key="'list-item-' + item"
 					:row-id="item"
 					:edit="edit"
-					:list-type="listType"
+					:list-item-type="listItemType"
 				></wl-z-object-key-value>
 			</div>
 
 			<!-- Button to add a new item -->
-			<div>
+			<div
+				v-if="edit"
+				class="ext-wikilambda-ztyped-list-add-button"
+			>
 				<cdx-button
-					v-if="edit"
-					class="ext-wikilambda-ztyped-list-add-button"
-
+					data-testid="typed-list-add-item"
 					:title="$i18n( 'wikilambda-editor-zlist-additem-tooltip' ).text()"
 					:aria-label="$i18n( 'wikilambda-editor-zlist-additem-tooltip' ).text()"
 					@click="addListItem"
@@ -56,7 +58,7 @@
 </template>
 
 <script>
-var ExpandedToggle = require( '../base/ExpandedToggle.vue' ),
+const ExpandedToggle = require( '../base/ExpandedToggle.vue' ),
 	LocalizedLabel = require( '../base/LocalizedLabel.vue' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
@@ -87,7 +89,7 @@ module.exports = exports = {
 			type: Boolean,
 			required: true
 		},
-		listType: {
+		listItemType: {
 			type: String,
 			required: true
 		}
@@ -136,12 +138,24 @@ module.exports = exports = {
 					this.$i18n( 'wikilambda-list-items-label' ).text(),
 					this.getUserLangZid
 				);
+			},
+
+			/**
+			 * Returns all the conditional class names for the
+			 * the list items label
+			 *
+			 * @return {string}
+			 */
+			listItemsEditClass: function () {
+				return this.edit ?
+					'ext-wikilambda-key-block-edit' :
+					'ext-wikilambda-key-block-view';
 			}
 		}
 	),
 	methods: {
 		addListItem: function () {
-			this.$emit( 'add-list-item', { value: this.listType, append: true } );
+			this.$emit( 'add-list-item' );
 		}
 	},
 	watch: {
@@ -154,7 +168,7 @@ module.exports = exports = {
 					const newItem = this.$refs.listItemElements[
 						this.$refs.listItemElements.length - 1
 					];
-					newItem.toggleExpanded( true );
+					newItem.setExpanded( true );
 				} );
 			}
 		}
@@ -169,13 +183,21 @@ module.exports = exports = {
 @import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-ztyped-list-items {
+	margin-bottom: 0;
+
 	.ext-wikilambda-ztyped-list-add-button {
+		margin-left: -@spacing-50;
 		margin-top: @spacing-75;
-		margin-left: -@spacing-75;
 	}
 
 	.ext-wikilambda-ztyped-list-items-block {
-		margin-left: -@spacing-75;
+		margin-left: -@spacing-25;
+	}
+
+	.ext-wikilambda-ztyped-list-items-label {
+		label {
+			line-height: @spacing-200;
+		}
 	}
 }
 </style>

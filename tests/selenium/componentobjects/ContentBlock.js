@@ -46,6 +46,43 @@ class ContentBlock {
 	}
 
 	/**
+	 * Get the mode selector the given label in the content block
+	 *
+	 * @param {string} label - label for the section
+	 * @param {Promise<WebdriverIOElementType>} [parentSection] - Section of
+	 * the content block which is parent for other section of the content block - Optional param
+	 * @return {Promise<WebdriverIOElementType>}
+	 */
+	async getSectionModeSelector( label, parentSection ) {
+		const resolvedParentSection = await parentSection;
+		let contentBlock;
+		if ( !resolvedParentSection ) {
+			contentBlock = await this.getSectionOfContentBlock( label );
+			return contentBlock.$( 'div.ext-wikilambda-key-block' ).$( 'div.ext-wikilambda-mode-selector' );
+		}
+		contentBlock = await this.getSectionOfContentBlock( label, parentSection );
+		return contentBlock.$( 'div.ext-wikilambda-key-block' ).$( 'div.ext-wikilambda-mode-selector' );
+	}
+
+	/**
+	 * Set the mode of the label from the parentSection selector to the given mode
+	 *
+	 * @param {string} label - label for the section
+	 * @param {string} mode - new mode to set
+	 * @param {Promise<WebdriverIOElementType>} [parentSection] - Section of
+	 */
+	async selectMode( label, mode, parentSection ) {
+		const resolvedParentSection = await parentSection;
+		const modeSelector = await this.getSectionModeSelector( label, resolvedParentSection );
+		const modeButton = await modeSelector.$( 'button[data-testid="mode-selector-button"]' );
+		await ElementActions.doClick( modeButton );
+		const modeSelectorMenu = await modeSelector.$( '[data-testid="mode-selector-menu"]' );
+		modeSelectorMenu.waitForDisplayed();
+		const optionSelector = await modeSelectorMenu.$( `bdi=${ mode }` );
+		await ElementActions.doClick( await optionSelector );
+	}
+
+	/**
 	 * Get the toggle button for the section of the content block
 	 *
 	 * @param {string} label - label for the section

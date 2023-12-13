@@ -11,9 +11,13 @@
 			class="ext-wikilambda-tester-function"
 			data-testid="z-test-function-select-container"
 		>
+			<div class="ext-wikilambda-key-block">
+				<label>{{ functionLabel }}</label>
+			</div>
 			<wl-z-object-key-value
 				:key="functionRowId"
 				:row-id="functionRowId"
+				:skip-key="true"
 				:skip-indent="true"
 				:edit="edit"
 			></wl-z-object-key-value>
@@ -89,6 +93,15 @@ module.exports = exports = {
 			 */
 			functionRowId: function () {
 				return this.getZTesterFunctionRowId( this.rowId );
+			},
+
+			/**
+			 * Returns the human readable label for "Function"
+			 *
+			 * @return {string}
+			 */
+			functionLabel: function () {
+				return this.getLabel( Constants.Z_IMPLEMENTATION_FUNCTION );
 			},
 
 			/**

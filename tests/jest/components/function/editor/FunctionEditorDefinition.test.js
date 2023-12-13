@@ -22,7 +22,7 @@ describe( 'FunctionEditorDefinition', () => {
 			getZFunctionInputs: createGettersWithFunctionsMock( [] ),
 			getZFunctionLanguages: createGettersWithFunctionsMock( [ 'Z1002', 'Z1004' ] ),
 			getZFunctionOutput: createGettersWithFunctionsMock( { id: 2 } ),
-			getZTypeStringRepresentation: createGettersWithFunctionsMock( '' ),
+			getZObjectAsJsonById: createGettersWithFunctionsMock( 'Z6' ),
 			isNewZObject: createGetterMock( true )
 		};
 		global.store.hotUpdate( {
@@ -68,7 +68,7 @@ describe( 'FunctionEditorDefinition', () => {
 				getZFunctionInputs: createGettersWithFunctionsMock( [] ),
 				getZFunctionLanguages: createGettersWithFunctionsMock( [] ),
 				getZFunctionOutput: createGettersWithFunctionsMock( undefined ),
-				getZTypeStringRepresentation: createGettersWithFunctionsMock( '' ),
+				getZObjectAsJsonById: createGettersWithFunctionsMock( 'Z6' ),
 				isNewZObject: createGetterMock( true )
 			};
 			global.store.hotUpdate( {

@@ -90,13 +90,13 @@ module.exports = exports = {
 		'getZReferenceTerminalValue'
 	] ), {
 		/**
-		 * Returns the type (mode) of the selected value,
+		 * Returns the string type (mode) of the selected value,
 		 * which can be a Reference/Z9 or a Function call/Z7.
 		 *
 		 * @return {string}
 		 */
 		selectedMode: function () {
-			return this.getZObjectTypeByRowId( this.rowId );
+			return this.typeToString( this.getZObjectTypeByRowId( this.rowId ) );
 		},
 		/**
 		 * Returns whether the selected value is terminal

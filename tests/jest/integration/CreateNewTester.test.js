@@ -112,13 +112,13 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 
 		// ACT: Select the function under test as the function to call
 		const testerCallAccordionContainer = await within( testerCallContainer ).getByTestId( 'z-object-key-value-set' );
-		const callFunctionAccordion = await within( testerCallAccordionContainer ).getAllByTestId( 'z-object-key-value' )[ 1 ];
-		const callFunctionSelector = within( callFunctionAccordion ).getByRole( 'combobox' );
+		const callFunctionReference = await within( testerCallAccordionContainer ).getAllByTestId( 'z-reference-selector' )[ 1 ];
+		const callFunctionSelector = within( callFunctionReference ).getByRole( 'combobox' );
 
 		const testerCallFunctionName = 'function name, in Chinese';
 
 		await fireEvent.update( callFunctionSelector, testerCallFunctionName );
-		await clickLookupResult( callFunctionAccordion, testerCallFunctionName );
+		await clickLookupResult( callFunctionReference, testerCallFunctionName );
 
 		// ASSERT: The function under test is selected as the function to call.
 		expect( callFunctionSelector.value ).toBe( testerCallFunctionName );
@@ -145,13 +145,13 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 
 		// ACT: Select String Equality as the validation call function.
 		const testerValidationAccordionContainer = await within( testerValidationContainer ).getByTestId( 'z-object-key-value-set' );
-		const validationFunctionAccordion = await within( testerValidationAccordionContainer ).getAllByTestId( 'z-object-key-value' )[ 1 ];
-		const validationFunctionSelector = within( validationFunctionAccordion ).getByRole( 'combobox' );
+		const validationFunctionReference = await within( testerValidationAccordionContainer ).getAllByTestId( 'z-reference-selector' )[ 1 ];
+		const validationFunctionSelector = within( validationFunctionReference ).getByRole( 'combobox' );
 
 		const validationFunctionNameToSelect = 'String equality';
 
 		await fireEvent.update( validationFunctionSelector, validationFunctionNameToSelect );
-		await clickLookupResult( validationFunctionAccordion, validationFunctionNameToSelect );
+		await clickLookupResult( validationFunctionReference, validationFunctionNameToSelect );
 
 		// ASSERT: The function under test is selected as the function to call.
 		expect( validationFunctionSelector.value ).toBe( validationFunctionNameToSelect );

@@ -6,12 +6,11 @@
  */
 'use strict';
 
-var shallowMount = require( '@vue/test-utils' ).shallowMount,
+const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	ZReference = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZReference.vue' ),
-	ZObjectSelector = require( '../../../../resources/ext.wikilambda.edit/components/ZObjectSelector.vue' );
+	ZReference = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZReference.vue' );
 
 describe( 'ZReference', () => {
 	var getters;
@@ -19,9 +18,8 @@ describe( 'ZReference', () => {
 		getters = {
 			getUserLangCode: createGetterMock( 'en' ),
 			getLabel: createGettersWithFunctionsMock( 'String' ),
-			getLabelData: createGettersWithFunctionsMock( { zid: 'Z6', label: 'String', lang: 'Z1002' } ),
 			getZReferenceTerminalValue: createGettersWithFunctionsMock( 'Z6' ),
-			getZObjectKeyByRowId: createGettersWithFunctionsMock( '0' )
+			getZObjectKeyByRowId: createGettersWithFunctionsMock( 'Z1K1' )
 		};
 		global.store.hotUpdate( {
 			getters: getters
@@ -30,7 +28,7 @@ describe( 'ZReference', () => {
 
 	describe( 'in view mode', () => {
 		it( 'renders without errors', () => {
-			var wrapper = shallowMount( ZReference, {
+			const wrapper = shallowMount( ZReference, {
 				props: {
 					edit: false
 				}
@@ -40,7 +38,7 @@ describe( 'ZReference', () => {
 		} );
 
 		it( 'displays the reference link with its label if there is one', () => {
-			var wrapper = shallowMount( ZReference, {
+			const wrapper = shallowMount( ZReference, {
 				props: {
 					edit: false
 				}
@@ -54,13 +52,12 @@ describe( 'ZReference', () => {
 		it( 'displays the reference link with its value if there is no label', () => {
 			// If there's no label data stored, getLabel returns input key
 			getters.getLabel = createGettersWithFunctionsMock( 'Z6' );
-			getters.getLabelData = createGettersWithFunctionsMock();
 
 			global.store.hotUpdate( {
 				getters: getters
 			} );
 
-			var wrapper = shallowMount( ZReference, {
+			const wrapper = shallowMount( ZReference, {
 				props: {
 					edit: false
 				}
@@ -74,7 +71,7 @@ describe( 'ZReference', () => {
 
 	describe( 'in edit mode', () => {
 		it( 'renders without errors', () => {
-			var wrapper = shallowMount( ZReference, {
+			const wrapper = shallowMount( ZReference, {
 				props: {
 					edit: true
 				}
@@ -84,15 +81,15 @@ describe( 'ZReference', () => {
 		} );
 
 		it( 'displays a selector and emits the value with a Z_REFERENCE_ID (Z9K1) keyPath if its key is not a Z_REFERENCE_ID', async () => {
-			var wrapper = shallowMount( ZReference, {
+			const wrapper = shallowMount( ZReference, {
 				props: {
 					edit: true
 				}
 			} );
 
-			expect( wrapper.getComponent( ZObjectSelector ).exists() ).toBeTruthy();
+			expect( wrapper.getComponent( { name: 'wl-z-object-selector' } ).exists() ).toBeTruthy();
 
-			await wrapper.getComponent( ZObjectSelector ).vm.$emit( 'input', 'String' );
+			await wrapper.getComponent( { name: 'wl-z-object-selector' } ).vm.$emit( 'input', 'String' );
 
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [ 'Z9K1' ], value: 'String' } ] ] );
 		} );
@@ -100,7 +97,6 @@ describe( 'ZReference', () => {
 		it( 'displays a selector and emits the value with an empty keyPath if its key is a Z_REFERENCE_ID (Z9K1)', async () => {
 			getters = {
 				getLabel: createGettersWithFunctionsMock( 'String' ),
-				getLabelData: createGettersWithFunctionsMock( { zid: 'Z6', label: 'String', lang: 'Z1002' } ),
 				getZReferenceTerminalValue: createGettersWithFunctionsMock( 'Z6' ),
 				getZObjectKeyByRowId: createGettersWithFunctionsMock( 'Z9K1' )
 			};
@@ -108,21 +104,21 @@ describe( 'ZReference', () => {
 				getters: getters
 			} );
 
-			var wrapper = shallowMount( ZReference, {
+			const wrapper = shallowMount( ZReference, {
 				props: {
 					edit: true
 				}
 			} );
 
-			expect( wrapper.getComponent( ZObjectSelector ).exists() ).toBeTruthy();
+			expect( wrapper.getComponent( { name: 'wl-z-object-selector' } ).exists() ).toBeTruthy();
 
-			await wrapper.getComponent( ZObjectSelector ).vm.$emit( 'input', 'String' );
+			await wrapper.getComponent( { name: 'wl-z-object-selector' } ).vm.$emit( 'input', 'String' );
 
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [], value: 'String' } ] ] );
 		} );
 
 		it( 'binds the input type to the selector', async () => {
-			var wrapper = shallowMount( ZReference, {
+			const wrapper = shallowMount( ZReference, {
 				props: {
 					edit: true,
 					expectedType: Constants.Z_ARGUMENT_KEY

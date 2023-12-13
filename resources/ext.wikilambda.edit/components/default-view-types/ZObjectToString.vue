@@ -23,7 +23,7 @@
 		<div
 			v-if="hasChildren"
 			class="ext-wikilambda-zobject-to-string">
-			&nbsp;(
+			&nbsp;<span class="ext-wikilambda-zobject-to-string-divider">(</span>
 			<!-- eslint-disable vue/no-v-for-template-key -->
 			<template
 				v-for="( row, index ) in childRows"
@@ -33,20 +33,25 @@
 					:row-id="row.id"
 					@expand="expand"
 				></wl-z-object-to-string>
-				<span v-if="hasComma( index )">,&nbsp;</span>
-			</template>)
+				<span
+					v-if="hasComma( index )"
+					class="ext-wikilambda-zobject-to-string-divider"
+				>,&nbsp;</span>
+			</template><span class="ext-wikilambda-zobject-to-string-divider">)</span>
 		</div>
 	</div>
 	<div
 		v-else
 		class="ext-wikilambda-zobject-to-string"
-		role="ext-wikilambda-zobject-to-string-text">
+		role="ext-wikilambda-zobject-to-string-text"
+	>
 		{{ name }}
 	</div>
 </template>
 
 <script>
-var Constants = require( '../../Constants.js' ),
+const Constants = require( '../../Constants.js' ),
+	typeUtils = require( '../../mixins/typeUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
@@ -55,6 +60,7 @@ module.exports = exports = {
 	components: {
 		'wl-z-object-to-string': this
 	},
+	mixins: [ typeUtils ],
 	props: {
 		rowId: {
 			type: Number,
@@ -105,7 +111,8 @@ module.exports = exports = {
 			 * @return {string}
 			 */
 			type: function () {
-				return this.getZObjectTypeByRowId( this.rowId );
+				const noArgs = true;
+				return this.typeToString( this.getZObjectTypeByRowId( this.rowId ), noArgs );
 			},
 
 			/**
@@ -214,8 +221,10 @@ module.exports = exports = {
 			 * @return {boolean}
 			 */
 			isTerminal: function () {
-				return ( this.type === Constants.Z_STRING ) ||
-					( this.type === Constants.Z_REFERENCE );
+				return (
+					( this.type === Constants.Z_REFERENCE ) ||
+					( this.type === Constants.Z_STRING )
+				);
 			},
 
 			/**
@@ -271,8 +280,8 @@ module.exports = exports = {
 
 		/**
 		 * Emits event 'expand' when an unselected value is clicked.
-		 * This will trigger the event till the nearest ZObjectKeyValue
-		 * parent, who will toggle the expansion flag.
+		 * This will propagate the event till the nearest ZObjectKeyValue
+		 * parent, who will set the expansion flag to true.
 		 */
 		expand: function () {
 			this.$emit( 'expand' );
@@ -289,6 +298,10 @@ module.exports = exports = {
 	flex-flow: row wrap;
 	justify-content: flex-start;
 	gap: 0;
+
+	.ext-wikilambda-zobject-to-string-divider {
+		color: @color-subtle;
+	}
 
 	a.ext-wikilambda-zobject-to-string-blank {
 		color: @color-destructive;

@@ -31,7 +31,32 @@ describe( 'Type (CUJ 7)', () => {
 		 * Details about the entries in Validator block
 		 */
 		const validatorBlockEntries = {
-			validator: 'Validate object'
+			label: 'validator',
+			value: 'Validate object'
+		};
+
+		/**
+		 * Details about the entries in Equality block
+		 */
+		const equalityBlockEntries = {
+			label: 'equality',
+			value: 'Echo'
+		};
+
+		/**
+		 * Details about the entries in Renderer block
+		 */
+		const rendererBlockEntries = {
+			label: 'renderer',
+			value: 'Echo'
+		};
+
+		/**
+		 * Details about the entries in Parser block
+		 */
+		const parserBlockEntries = {
+			label: 'parser',
+			value: 'Echo'
 		};
 
 		/**
@@ -190,7 +215,19 @@ describe( 'Type (CUJ 7)', () => {
 		} );
 
 		it( 'should fill the entries in the validator block', async () => {
-			await TypeForm.setValidator( validatorBlockEntries.validator );
+			await TypeForm.setTypeFunction( validatorBlockEntries.label, validatorBlockEntries.value );
+		} );
+
+		it( 'should fill the entries in the equality block', async () => {
+			await TypeForm.setTypeFunction( equalityBlockEntries.label, equalityBlockEntries.value );
+		} );
+
+		it( 'should fill the entries in the renderer block', async () => {
+			await TypeForm.setTypeFunction( rendererBlockEntries.label, rendererBlockEntries.value );
+		} );
+
+		it( 'should fill the entries in the parser block', async () => {
+			await TypeForm.setTypeFunction( parserBlockEntries.label, parserBlockEntries.value );
 		} );
 
 		it( 'should publish the type', async () => {
@@ -243,8 +280,31 @@ describe( 'Type (CUJ 7)', () => {
 			} );
 
 			it( 'should display the entries in the validator block', async () => {
-				await expect( await TypePage.getValidatorSelector(
-					validatorBlockEntries.validator ) ).toBeDisplayed( { message: 'Validator is not displayed as expected' } );
+				await expect( await TypePage.getTypeFunctionSelector(
+					validatorBlockEntries.label,
+					validatorBlockEntries.value
+				) ).toBeDisplayed( { message: 'Validator is not displayed as expected' } );
+			} );
+
+			it( 'should display the entries in the equality block', async () => {
+				await expect( await TypePage.getTypeFunctionSelector(
+					equalityBlockEntries.label,
+					equalityBlockEntries.value
+				) ).toBeDisplayed( { message: 'Equality is not displayed as expected' } );
+			} );
+
+			it( 'should display the entries in the renderer block', async () => {
+				await expect( await TypePage.getTypeFunctionSelector(
+					rendererBlockEntries.label,
+					rendererBlockEntries.value
+				) ).toBeDisplayed( { message: 'Renderer is not displayed as expected' } );
+			} );
+
+			it( 'should display the entries in the parser block', async () => {
+				await expect( await TypePage.getTypeFunctionSelector(
+					parserBlockEntries.label,
+					parserBlockEntries.value
+				) ).toBeDisplayed( { message: 'Parser is not displayed as expected' } );
 			} );
 
 		} );

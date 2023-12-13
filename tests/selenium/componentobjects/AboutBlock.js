@@ -139,7 +139,7 @@ class AboutBlock {
 	async addAboutDetails( aboutDetails ) {
 		const { language, label, description, alias } = aboutDetails;
 		await ElementActions.clearInput( this.languageInputSelector );
-		await InputDropdown.setInputDropdown(
+		await InputDropdown.setLookupOption(
 			this.detailsInputDialogBox, this.languageInputSelector, language );
 		await ElementActions.setInput( this.labelInputSelector, label );
 		await ElementActions.setInput( this.descriptionInputSelector, description );

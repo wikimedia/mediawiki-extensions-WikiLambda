@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-var Constants = require( '../../Constants.js' ),
+const Constants = require( '../../Constants.js' ),
 	Row = require( '../classes/Row.js' ),
 	extractZIDs = require( '../../mixins/schemata.js' ).methods.extractZIDs,
 	performFunctionCall = require( '../../mixins/api.js' ).methods.performFunctionCall;
