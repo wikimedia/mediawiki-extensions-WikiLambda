@@ -262,8 +262,6 @@
 	"wikilambda-tester-results-percentage-label": "Total Tests Passing",
 	"wikilambda-tester-run-testers": "Run All Tests",
 	"wikilambda-tester-run-tester": "Run Test",
-	"wikilambda-enable-expert-mode": "Enable Expert Mode",
-	"wikilambda-disable-expert-mode": "Disable Expert Mode",
 	"wikilambda-create-function": "Create Function",
 	"wikilambda-create-type": "Create Type",
 	"wikilambda-expert-mode-json-label": "Current Object",

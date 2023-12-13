@@ -7,7 +7,6 @@
 'use strict';
 
 var Vuex = require( 'vuex' ),
-	state = require( './state.js' ),
 	actions = require( './actions.js' ),
 	getters = require( './getters.js' ),
 	zobjectModule = require( './modules/zobject.js' ),
@@ -25,7 +24,6 @@ var Vuex = require( 'vuex' ),
 	zFunction = require( './modules/zFunction.js' );
 
 module.exports = Vuex.createStore( {
-	state: state,
 	actions: actions,
 	getters: getters,
 	modules: {
