@@ -1,5 +1,5 @@
 /*
- * WikiLambda integration test for attaching a function tester.
+ * WikiLambda integration test for connecting a function test
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -34,28 +34,26 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 		runTeardown();
 	} );
 
-	it( 'allows attaching a function tester', async () => {
-		const { findByLabelText, findByRole } = renderForFunctionViewer();
+	it( 'allows connecting a function test', async () => {
+		const { findByLabelText } = renderForFunctionViewer();
 
-		// ACT: select the 'details' tab.
-		await fireEvent.click( await findByRole( 'tab', { name: 'Details' } ) );
+		// ASSERT: The "disconnected" test is shown in the table.
+		const testsTable = await findByLabelText( 'Tests' );
+		await waitFor( () => expect( within( testsTable ).getAllByRole( 'row' ) ).toHaveLength( 3 ) );
+		const firstTestRow = within( testsTable ).getAllByRole( 'row' )[ 1 ];
+		await waitFor( () => expect( firstTestRow ).toHaveTextContent( 'Tester name, in English' ) );
 
-		// ASSERT: The "unattached" tester is shown in the table.
-		const testersTable = await findByLabelText( 'Tests' );
-		const firstTesterRow = within( testersTable ).getAllByRole( 'row' )[ 1 ];
-		await waitFor( () => expect( firstTesterRow ).toHaveTextContent( 'Tester name, in English' ) );
+		// ASSERT: The "disconnected" test is shown as deactivated.
+		expect( firstTestRow ).toHaveTextContent( 'Disconnected' );
 
-		// ASSERT: The "unattached" tester is shown as deactivated.
-		expect( firstTesterRow ).toHaveTextContent( 'Disconnected' );
+		// ASSERT: The "disconnected" test shows as passing all implementation tests.
+		await waitFor( () => expect( within( firstTestRow ).getAllByText( 'Passed' ) ).toHaveLength( 2 ) );
 
-		// ASSERT: The "unattached" tester shows as passing all implementation tests.
-		await waitFor( () => expect( within( firstTesterRow ).getAllByText( 'Passed' ) ).toHaveLength( 2 ) );
-
-		// ACT: Select the "unattached" implementation in the table.
-		await fireEvent.update( within( firstTesterRow ).getByRole( 'checkbox' ), true );
+		// ACT: Select the "disconnected" implementation in the table.
+		await fireEvent.update( within( firstTestRow ).getByRole( 'checkbox' ), true );
 
 		// ACT: Click connect button.
-		await fireEvent.click( within( testersTable ).getByText( 'Connect' ) );
+		await fireEvent.click( within( testsTable ).getByText( 'Connect' ) );
 
 		// ASSERT: Correct ZObject was posted to the API.
 		await waitFor( () => expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {

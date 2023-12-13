@@ -132,14 +132,15 @@ module.exports = exports = {
 		localItems: function () {
 			return this.allLangs.map( ( langZid ) => {
 				const thisName = this.getZPersistentName( langZid );
+				const name = thisName ?
+					this.getZMonolingualTextValue( thisName.rowId ) :
+					undefined;
 				return {
 					langZid,
 					langLabel: this.getLabel( langZid ),
-					hasName: ( thisName !== undefined ),
 					hasMetadata: true,
-					name: thisName ?
-						this.getZMonolingualTextValue( thisName.rowId ) :
-						this.$i18n( 'wikilambda-editor-default-name' ).text()
+					hasName: !!name,
+					name: name || this.$i18n( 'wikilambda-editor-default-name' ).text()
 				};
 			} );
 		},
@@ -267,16 +268,17 @@ module.exports = exports = {
 				// Compile information for every search result
 				this.lookupResults = payload
 					.map( ( result ) => {
-						const name = this.getZPersistentName( result.page_title );
+						const thisName = this.getZPersistentName( result.page_title );
+						const name = thisName ?
+							this.getZMonolingualTextValue( thisName.rowId ) :
+							undefined;
 						allZids.push( result.page_title );
 						return {
 							langZid: result.page_title,
 							langLabel: result.label,
-							hasName: !!name,
 							hasMetadata: this.hasAnyMetadata( result.page_title ),
-							name: name ?
-								this.getZMonolingualTextValue( name.rowId ) :
-								this.$i18n( 'wikilambda-editor-default-name' ).text()
+							hasName: !!name,
+							name: name || this.$i18n( 'wikilambda-editor-default-name' ).text()
 						};
 					} )
 					.sort( ( a, b ) => {
@@ -309,17 +311,8 @@ module.exports = exports = {
 @import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-about-language-list {
-	gap: @spacing-100;
-
 	.cdx-dialog__body {
-		max-height: 304px;
 		padding: @spacing-50 0;
-		border-bottom: 1px solid @border-color-subtle;
-		border-top: 1px solid @border-color-subtle;
-
-		@media screen and ( max-width: @max-width-breakpoint-mobile ) {
-			max-height: 344px;
-		}
 	}
 
 	.ext-wikilambda-about-language-list-search {

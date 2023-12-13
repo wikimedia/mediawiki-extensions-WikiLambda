@@ -106,13 +106,32 @@
 						</span>
 					</div>
 				</div>
+				<!-- Function input fields -->
+				<template v-if="isFunction">
+					<cdx-field
+						v-for="( input, index ) in inputs"
+						:key="'input-' + index"
+						:optional-flag="optionalText"
+						class="ext-wikilambda-about-edit-metadata-field
+						ext-wikilambda-about-edit-metadata-input"
+					>
+						<cdx-text-input
+							v-model="inputs[ index ]"
+							:disabled="!canEdit"
+							:placeholder="inputPlaceholder"
+							data-testid="text-input"
+						></cdx-text-input>
+						<template #label>
+							{{ $i18n( 'wikilambda-about-widget-input-label', index + 1 ).text() }}
+						</template>
+					</cdx-field>
+				</template>
 			</div>
 		</cdx-dialog>
 	</div>
 </template>
 
 <script>
-
 const Constants = require( '../../Constants.js' ),
 	ChipContainer = require( '../base/ChipContainer.vue' ),
 	ZObjectSelector = require( './../ZObjectSelector.vue' ),
@@ -154,6 +173,10 @@ module.exports = exports = {
 			type: Boolean,
 			required: true,
 			default: false
+		},
+		isFunction: {
+			type: Boolean,
+			required: true
 		}
 	},
 	data: function () {
@@ -165,16 +188,20 @@ module.exports = exports = {
 			name: '',
 			description: '',
 			aliases: [],
+			inputs: [],
 			fakeAliasId: 0,
 			initialName: '',
 			initialDescription: '',
-			initialAliases: '[]'
+			initialAliases: '[]',
+			initialInputs: '[]'
 		};
 	},
 	computed: $.extend( mapGetters( [
 		'getLabel',
 		'getMetadataLanguages',
 		'getRowByKeyPath',
+		'getZArgumentLabelForLanguage',
+		'getZFunctionInputs',
 		'getZMonolingualTextValue',
 		'getZMonolingualStringsetValues',
 		'getZPersistentAlias',
@@ -205,7 +232,31 @@ module.exports = exports = {
 		currentAliasObject: function () {
 			return this.forLanguage ? this.getZPersistentAlias( this.forLanguage ) : undefined;
 		},
-
+		/**
+		 * Returns the parent rows for all the function inputs or empty
+		 * array if there are none (or the object is not a function)
+		 *
+		 * @return {Array}
+		 */
+		functionInputs: function () {
+			return this.getZFunctionInputs();
+		},
+		/**
+		 * Returns the input label object in the selected language
+		 * for all the function inputs or empty array if there are none
+		 * (or the object is not a function)
+		 *
+		 * @return {Array}
+		 */
+		currentInputObjects: function () {
+			return this.isFunction ?
+				this.functionInputs.map( ( row ) => {
+					return this.forLanguage ?
+						this.getZArgumentLabelForLanguage( row.id, this.forLanguage ) :
+						undefined;
+				} ) :
+				[];
+		},
 		/**
 		 * Returns the i18n message for the name field placeholder
 		 *
@@ -229,6 +280,14 @@ module.exports = exports = {
 		 */
 		aliasesPlaceholder: function () {
 			return this.$i18n( 'wikilambda-about-widget-aliases-placeholder' ).text();
+		},
+		/**
+		 * Returns the i18n message for an input field placeholder
+		 *
+		 * @return {string}
+		 */
+		inputPlaceholder: function () {
+			return this.$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text();
 		},
 		/**
 		 * Returns the i18n message for wikilambda-optional text
@@ -289,7 +348,8 @@ module.exports = exports = {
 			return (
 				( this.name !== this.initialName ) ||
 				( this.description !== this.initialDescription ) ||
-				( JSON.stringify( this.aliases ) !== this.initialAliases )
+				( JSON.stringify( this.aliases ) !== this.initialAliases ) ||
+				( JSON.stringify( this.inputs ) !== this.initialInputs )
 			);
 		},
 
@@ -475,32 +535,46 @@ module.exports = exports = {
 					} ) :
 				[];
 
+			// If function, initialize Input fields for given language
+			if ( this.isFunction ) {
+				this.inputs = this.currentInputObjects.map( ( row ) => {
+					return row !== undefined ?
+						this.getZMonolingualTextValue( row.id ) :
+						'';
+				} );
+			}
+
 			// Save copy of initial values
 			this.initialName = this.name;
 			this.initialDescription = this.description;
 			this.initialAliases = JSON.stringify( this.aliases );
+			this.initialInputs = JSON.stringify( this.inputs );
 		},
 
 		/**
 		 * Persists the new changes in the data store.
 		 */
 		persistState: function () {
+			let currentRowId, parentRowId;
+
 			// If name has changed, persist
 			if ( this.name !== this.initialName ) {
-				this.persistZMonolingualString(
+				currentRowId = this.currentNameObject ? this.currentNameObject.rowId : null;
+				parentRowId = this.getRowByKeyPath( [
 					Constants.Z_PERSISTENTOBJECT_LABEL,
-					this.currentNameObject,
-					this.name
-				);
+					Constants.Z_MULTILINGUALSTRING_VALUE
+				] ).id;
+				this.persistZMonolingualString( parentRowId, currentRowId, this.name );
 			}
 
 			// If description has changed, persist
 			if ( this.description !== this.initialDescription ) {
-				this.persistZMonolingualString(
+				currentRowId = this.currentDescriptionObject ? this.currentDescriptionObject.rowId : null;
+				parentRowId = this.getRowByKeyPath( [
 					Constants.Z_PERSISTENTOBJECT_DESCRIPTION,
-					this.currentDescriptionObject,
-					this.description
-				);
+					Constants.Z_MULTILINGUALSTRING_VALUE
+				] ).id;
+				this.persistZMonolingualString( parentRowId, currentRowId, this.description );
 			}
 
 			// If aliases have changed, persist
@@ -510,23 +584,40 @@ module.exports = exports = {
 					this.aliases.map( ( a ) => a.value )
 				);
 			}
-		},
 
+			// If inputs have changed, persist
+			if ( JSON.stringify( this.inputs ) !== this.initialInputs ) {
+				const initial = JSON.parse( this.initialInputs );
+				for ( const index in this.inputs ) {
+					if ( this.inputs[ index ] !== initial[ index ] ) {
+						const inputRowId = this.functionInputs[ index ].id;
+						parentRowId = this.getRowByKeyPath( [
+							Constants.Z_ARGUMENT_LABEL,
+							Constants.Z_MULTILINGUALSTRING_VALUE
+						], inputRowId ).id;
+						currentRowId = this.currentInputObjects[ index ] ?
+							this.currentInputObjects[ index ].id :
+							null;
+						this.persistZMonolingualString( parentRowId, currentRowId, this.inputs[ index ] );
+					}
+				}
+			}
+		},
 		/**
 		 * Persists the ZMonolingualString type changes in the data store.
 		 * These correspond to the Name/Z2K3 and Description/Z2K5 fields.
 		 *
-		 * @param {string} persistentObjectKey identifies name or description (Z2K3 or Z2K5)
-		 * @param {Object} currentObject object with the row id to persist the changes
+		 * @param {number} parentRowId identifies the parent multilingual value row Id
+		 * @param {number|null} currentRowId identifies the current monolingual value row Id
 		 * @param {string} value
 		 */
-		persistZMonolingualString: function ( persistentObjectKey, currentObject, value ) {
-			if ( currentObject ) {
+		persistZMonolingualString: function ( parentRowId, currentRowId, value ) {
+			if ( currentRowId !== null ) {
 				if ( value === '' ) {
-					this.removeItemFromTypedList( { rowId: currentObject.rowId } );
+					this.removeItemFromTypedList( { rowId: currentRowId } );
 				} else {
 					this.setValueByRowIdAndPath( {
-						rowId: currentObject.rowId,
+						rowId: currentRowId,
 						keyPath: [
 							Constants.Z_MONOLINGUALSTRING_VALUE,
 							Constants.Z_STRING_VALUE
@@ -535,19 +626,11 @@ module.exports = exports = {
 					} );
 				}
 			} else {
-				// If currentObject is undefined, there's no monolingual string
+				// If currentRowId is null, there's no monolingual string
 				// for the given language, so we create a new monolingual string
 				// with the new value and append to the parent list.
-				const parentRow = this.getRowByKeyPath( [
-					persistentObjectKey,
-					Constants.Z_MULTILINGUALSTRING_VALUE
-				] );
-				if ( !parentRow ) {
-					// This should never happen because all Z2Kn's are initialized
-					return;
-				}
 				this.changeType( {
-					id: parentRow.id,
+					id: parentRowId,
 					type: Constants.Z_MONOLINGUALSTRING,
 					lang: this.forLanguage,
 					value,
@@ -617,12 +700,8 @@ module.exports = exports = {
 @import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-about-edit-metadata {
-	gap: @spacing-100;
-
 	.cdx-dialog__body {
 		padding: @spacing-50 0;
-		border-bottom: 1px solid @border-color-subtle;
-		border-top: 1px solid @border-color-subtle;
 	}
 
 	.ext-wikilambda-about-edit-metadata-title {

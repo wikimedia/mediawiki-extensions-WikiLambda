@@ -1,5 +1,5 @@
 /*!
- * WikiLambda integration test for detaching a function tester.
+ * WikiLambda integration test for disconnecting a function test.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -31,28 +31,26 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 		runTeardown();
 	} );
 
-	it( 'allows detaching a function tester', async () => {
-		const { findByLabelText, findByRole } = renderForFunctionViewer();
+	it( 'allows disconnecting a function test', async () => {
+		const { findByLabelText } = renderForFunctionViewer();
 
-		// ACT: select the 'details' tab.
-		await fireEvent.click( await findByRole( 'tab', { name: 'Details' } ) );
-
-		// ASSERT: The "attached" tester is shown in the table.
-		const testersTable = await findByLabelText( 'Tests' );
-		const secondTesterRow = within( testersTable ).getAllByRole( 'row' )[ 2 ];
+		// ASSERT: The "connected" tester is shown in the table.
+		const testsTable = await findByLabelText( 'Tests' );
+		await waitFor( () => expect( within( testsTable ).getAllByRole( 'row' ) ).toHaveLength( 3 ) );
+		const secondTesterRow = within( testsTable ).getAllByRole( 'row' )[ 2 ];
 		await waitFor( () => expect( secondTesterRow ).toHaveTextContent( 'Tester name, in English' ) );
 
-		// ASSERT: The "attached" tester is shown as connected.
+		// ASSERT: The "connected" tester is shown as connected.
 		expect( secondTesterRow ).toHaveTextContent( 'Connected' );
 
-		// ASSERT: The "attached" tester shows as failing all implementation tests.
+		// ASSERT: The "connected" tester shows as failing all implementation tests.
 		await waitFor( () => expect( within( secondTesterRow ).getAllByText( 'Failed' ) ).toHaveLength( 2 ) );
 
-		// ACT: Select the "attached" implementation in the table.
+		// ACT: Select the "connected" implementation in the table.
 		await fireEvent.update( within( secondTesterRow ).getByRole( 'checkbox' ), true );
 
 		// ACT: Click disconnect button.
-		await fireEvent.click( within( testersTable ).getByText( 'Disconnect' ) );
+		await fireEvent.click( within( testsTable ).getByText( 'Disconnect' ) );
 
 		// ASSERT: Correct ZObject was posted to the API.
 		expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {

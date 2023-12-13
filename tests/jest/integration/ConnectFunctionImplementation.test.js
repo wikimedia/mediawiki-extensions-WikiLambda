@@ -1,5 +1,5 @@
 /*
- * WikiLambda integration test for attaching a function implementation.
+ * WikiLambda integration test for connecting a function implementation.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -36,22 +36,20 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 		runTeardown();
 	} );
 
-	it( 'allows attaching a function implementation', async () => {
-		const { findByLabelText, findByRole } = renderForFunctionViewer();
+	it( 'allows connecting a function implementation', async () => {
+		const { findByLabelText } = renderForFunctionViewer();
 
-		// ACT: select the 'details' tab.
-		await fireEvent.click( await findByRole( 'tab', { name: 'Details' } ) );
-
-		// ASSERT: The "unattached" implementation is shown in the table.
+		// ASSERT: The "disconnected" implementation is shown in the table.
 		const implementationsTable = await findByLabelText( 'Implementations' );
+		await waitFor( () => expect( within( implementationsTable ).getAllByRole( 'row' ) ).toHaveLength( 3 ) );
 		const secondImplementationRow = within( implementationsTable ).getAllByRole( 'row' )[ 2 ];
 		await waitFor(
 			() => expect( secondImplementationRow ).toHaveTextContent( 'Implementation in code, in English' ) );
 
-		// ASSERT: The "unattached" implementation is shown as deactivated.
+		// ASSERT: The "disconnected" implementation is shown as deactivated.
 		expect( secondImplementationRow ).toHaveTextContent( 'Disconnected' );
 
-		// ACT: Select the "unattached" implementation in the table.
+		// ACT: Select the "disconnected" implementation in the table.
 		await fireEvent.update( within( secondImplementationRow ).getByRole( 'checkbox' ), true );
 
 		// ACT: Click connect button.

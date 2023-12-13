@@ -53,17 +53,6 @@ class Implementation extends Page {
 	// #region About Block
 
 	/**
-	 * Get the implementation label
-	 *
-	 * @async
-	 * @return {string}
-	 */
-	async getImplementationLabel() {
-		const text = await AboutBlock.getAboutBlockLabel();
-		return text;
-	}
-
-	/**
 	 * Get the implementation description
 	 *
 	 * @async

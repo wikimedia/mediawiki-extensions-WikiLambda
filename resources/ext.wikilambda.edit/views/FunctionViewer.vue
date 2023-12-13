@@ -6,28 +6,32 @@
 -->
 <template>
 	<div class="ext-wikilambda-function-viewer">
-		<cdx-tabs v-model:active="currentTab" data-testid="function-viewer-tabs">
-			<cdx-tab
-				v-for="( tab, index ) in tabsData"
-				:key="index"
-				:name="tab.name"
-				:label="tab.label"
-				:data-testid="`function-viewer-tab-${index}`"
-			>
-				<!-- Keep alive helps keeps the local state of the component so that it is not remounted -->
-				<keep-alive>
-					<component
-						:is="tab.name"
-						v-if="tab.name === currentTab"
-						:name="tab.name"
-					></component>
-				</keep-alive>
-			</cdx-tab>
-		</cdx-tabs>
-		<div v-if="displaySuccessMessage" class="ext-wikilambda-function-viewer__message">
+		<div class="ext-wikilambda-row">
+			<div class="ext-wikilambda-col ext-wikilambda-col-8 ext-wikilambda-col-tablet-24">
+				<!-- Widget About -->
+				<wl-about-widget
+					:edit="false"
+					:type="functionType"
+					@edit-metadata="dispatchAboutEvent"
+				></wl-about-widget>
+			</div>
+			<div class="ext-wikilambda-col ext-wikilambda-col-16 ext-wikilambda-col-tablet-24">
+				<!-- Widget Function Evaluator -->
+				<wl-function-evaluator-widget
+					:function-zid="getCurrentZObjectId"
+				></wl-function-evaluator-widget>
+				<!-- Function Details for Testers and Implementations -->
+				<wl-function-viewer-details>
+				</wl-function-viewer-details>
+			</div>
+		</div>
+		<div
+			v-if="displaySuccessMessage"
+			class="ext-wikilambda-toast-message"
+		>
 			<cdx-message
-				class="ext-wikilambda-function-viewer__message__success"
 				:auto-dismiss="true"
+				:fade-in="true"
 				type="success"
 			>
 				{{ $i18n( 'wikilambda-publish-successful' ).text() }}
@@ -37,43 +41,52 @@
 </template>
 
 <script>
-var CdxTab = require( '@wikimedia/codex' ).CdxTab,
-	CdxTabs = require( '@wikimedia/codex' ).CdxTabs,
-	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
-	FunctionViewerAbout = require( '../components/function/viewer/FunctionViewerAbout.vue' ),
-	FunctionViewerDetails = require( '../components/function/viewer/FunctionViewerDetails.vue' );
+const CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
+	Constants = require( '../Constants.js' ),
+	AboutWidget = require( '../components/widgets/About.vue' ),
+	FunctionEvaluatorWidget = require( '../components/widgets/FunctionEvaluator.vue' ),
+	FunctionViewerDetails = require( '../components/function/viewer/FunctionViewerDetails.vue' ),
+	eventLogUtils = require( '../mixins/eventLogUtils.js' ),
+	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = exports = {
 	name: 'wl-function-viewer',
 	components: {
-		'wl-function-viewer-about': FunctionViewerAbout,
+		'wl-about-widget': AboutWidget,
+		'wl-function-evaluator-widget': FunctionEvaluatorWidget,
 		'wl-function-viewer-details': FunctionViewerDetails,
-		'cdx-tab': CdxTab,
-		'cdx-tabs': CdxTabs,
 		'cdx-message': CdxMessage
 	},
+	mixins: [ eventLogUtils ],
 	data: function () {
 		return {
-			currentTab: 'wl-function-viewer-about',
-			tabsData: [
-				{
-					name: 'wl-function-viewer-about',
-					label: this.$i18n( 'wikilambda-editor-fn-step-function-about' ).text()
-				},
-				{
-					name: 'wl-function-viewer-details',
-					label: this.$i18n( 'wikilambda-editor-fn-step-function-details' ).text()
-				}
-			]
+			functionType: Constants.Z_FUNCTION
 		};
 	},
-	computed: {
+	computed: $.extend( mapGetters( [
+		'getCurrentZObjectId',
+		'getUserLangZid'
+	] ), {
 		displaySuccessMessage: function () {
 			if ( mw.Uri().query ) {
 				return mw.Uri().query.success === 'true';
 			}
 			return false;
+		}
+	} ),
+	methods: {
+		/**
+		 * Dispatch event after a click of the edit icon in the About widget.
+		 */
+		dispatchAboutEvent: function () {
+			this.dispatchEvent( 'wf.ui.editFunction.load', {
+				edit: true,
+				zobjecttype: Constants.Z_FUNCTION,
+				isnewzobject: false,
+				zobjectid: this.getCurrentZObjectId || null,
+				zlang: this.getUserLangZid || null
+			} );
 		}
 	},
 	mounted: function () {
@@ -81,21 +94,3 @@ module.exports = exports = {
 	}
 };
 </script>
-
-<style lang="less">
-.ext-wikilambda-function-viewer {
-	&__message {
-		display: flex;
-		align-items: center;
-		flex-direction: column;
-		position: fixed;
-		left: 0;
-		right: 0;
-		bottom: 0;
-
-		&__success {
-			max-width: 100%;
-		}
-	}
-}
-</style>

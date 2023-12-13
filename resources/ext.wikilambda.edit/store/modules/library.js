@@ -189,6 +189,65 @@ module.exports = exports = {
 			return findImplementations;
 		},
 		/**
+		 * Returns the type of an implementation stored in the
+		 * global state, given its Zid. The type will be
+		 * composition/Z14K2, built-in/Z14K4, or code/Z14K3.
+		 * If the implementation Zid is unknown returns undefined.
+		 *
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		getTypeOfImplementation: function ( state ) {
+			/**
+			 * @param {string} zid
+			 * @return {string | undefined}
+			 */
+			function findImplementationType( zid ) {
+				let implementation = state.objects[ zid ];
+				if ( !implementation ) {
+					return undefined;
+				}
+
+				implementation = implementation[ Constants.Z_PERSISTENTOBJECT_VALUE ];
+				if ( Constants.Z_IMPLEMENTATION_COMPOSITION in implementation ) {
+					return Constants.Z_IMPLEMENTATION_COMPOSITION;
+				}
+				if ( Constants.Z_IMPLEMENTATION_BUILT_IN in implementation ) {
+					return Constants.Z_IMPLEMENTATION_BUILT_IN;
+				}
+				return Constants.Z_IMPLEMENTATION_CODE;
+			}
+			return findImplementationType;
+		},
+		/**
+		 * Returns the language code of an implementation stored
+		 * in the global state, given its Zid. If the implementation
+		 * is not of type code (but composition or built-in) returns
+		 * undefined.
+		 *
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		getLanguageOfImplementation: function ( state ) {
+			/**
+			 * @param {string} zid
+			 * @return {string | undefined}
+			 */
+			function findImplementationLanguage( zid ) {
+				let implementation = state.objects[ zid ];
+				if ( !implementation ) {
+					return undefined;
+				}
+				implementation = implementation[ Constants.Z_PERSISTENTOBJECT_VALUE ];
+				if ( Constants.Z_IMPLEMENTATION_CODE in implementation ) {
+					return implementation[ Constants.Z_IMPLEMENTATION_CODE ][
+						Constants.Z_CODE_LANGUAGE ][ Constants.Z_PROGRAMMING_LANGUAGE_CODE ];
+				}
+				return undefined;
+			}
+			return findImplementationLanguage;
+		},
+		/**
 		 * Given a function Zid, it inspects its function definition
 		 * stored in the state and returns an array of its arguments.
 		 * It returns undefined if the function is not available or the

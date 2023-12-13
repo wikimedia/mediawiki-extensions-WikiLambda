@@ -255,10 +255,7 @@ describe( 'Type (CUJ 7)', () => {
 				keysBlockEntries.thirdKey.keyId = `${ typeZId }K3`;
 			} );
 
-			it( 'should display the entries in the about section', async () => {
-				await expect( await TypePage.getTypeLabel() ).toBe(
-					aboutBlockEntriesEnglish.label,
-					{ message: `Type page is not displaying the type label as expected to be ${ aboutBlockEntriesEnglish.label }` } );
+			it( 'should display the description in the about section', async () => {
 				await expect( await TypePage.getTypeDescription() ).toBe(
 					aboutBlockEntriesEnglish.description,
 					{ message: `Type page is not displaying the type description as expected to be ${ aboutBlockEntriesEnglish.description }` } );
@@ -371,10 +368,7 @@ describe( 'Type (CUJ 7)', () => {
 
 		describe( 'Show details of edited type', () => {
 
-			it( 'should display the information in the about section', async () => {
-				await expect( await TypePage.getTypeLabel() ).toBe(
-					aboutBlockEditEntries.label,
-					{ message: `Type page is not displaying the type label as expected to be ${ aboutBlockEditEntries.label }` } );
+			it( 'should display the description in the about section', async () => {
 				await expect( await TypePage.getTypeDescription() ).toBe(
 					aboutBlockEditEntries.description,
 					{ message: `Type page is not displaying the type description as expected to be ${ aboutBlockEditEntries.description }` } );

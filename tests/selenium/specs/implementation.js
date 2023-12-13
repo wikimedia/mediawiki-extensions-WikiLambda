@@ -117,9 +117,6 @@ describe( 'Implementation (CUJ 5)', () => {
 				await FunctionPage.open( functionDetails.ZId );
 				await expect( await FunctionPage.functionTitle )
 					.toHaveText( functionDetails.ZObjectLabel, { message: 'Function Page is not open' } );
-				await FunctionPage.switchToDetailsTab();
-				await expect( await FunctionPage.getDetailsTabButton() ).toHaveAttribute( 'aria-selected', 'true',
-					{ message: 'Not able to switch to details view' } );
 				await FunctionPage.goToCreateImplementationLink();
 
 				/**
@@ -183,10 +180,7 @@ describe( 'Implementation (CUJ 5)', () => {
 
 			describe( 'Show details of new implementation created', () => {
 
-				it( 'should display the entries in the about section', async () => {
-					await expect( await ImplementationPage.getImplementationLabel() ).toBe(
-						aboutBlockEntriesEnglish.label,
-						{ message: `Implementation page is not displaying the implementation label as expected to be ${ aboutBlockEntriesEnglish.label }` } );
+				it( 'should display the description in the about section', async () => {
 					await expect( await ImplementationPage.getImplementationDescription() ).toBe(
 						aboutBlockEntriesEnglish.description,
 						{ message: `Implementation page is not displaying the implementation description as expected to be ${ aboutBlockEntriesEnglish.description }` } );
@@ -300,10 +294,6 @@ describe( 'Implementation (CUJ 5)', () => {
 				await FunctionPage.open( functionDetails.ZId );
 				await expect( await FunctionPage.functionTitle )
 					.toHaveText( functionDetails.ZObjectLabel, { message: 'Function Page is not open' } );
-				await FunctionPage.switchToDetailsTab();
-				const detailsTab = await FunctionPage.getDetailsTabButton();
-				await expect( await detailsTab ).toHaveAttribute( 'aria-selected', 'true',
-					{ message: 'Not able to switch to details view' } );
 				await FunctionPage.goToCreateImplementationLink();
 
 				/**
@@ -368,10 +358,7 @@ describe( 'Implementation (CUJ 5)', () => {
 
 			describe( 'Show details of new implementation created', () => {
 
-				it( 'should display the entries in the about section', async () => {
-					await expect( await ImplementationPage.getImplementationLabel() ).toBe(
-						aboutBlockEntriesEnglish.label,
-						{ message: `Implementation page is not displaying the implementation label as expected to be ${ aboutBlockEntriesEnglish.label }` } );
+				it( 'should display the description in the about section', async () => {
 					await expect( await ImplementationPage.getImplementationDescription() ).toBe(
 						aboutBlockEntriesEnglish.description,
 						{ message: `Implementation page is not displaying the implementation description as expected to be ${ aboutBlockEntriesEnglish.description }` } );

@@ -11,6 +11,7 @@
 				<!-- Widget About -->
 				<wl-about-widget
 					:edit="edit"
+					:type="contentType"
 					@edit-metadata="dispatchLoadEventForEditMetadataDialog"
 				></wl-about-widget>
 
@@ -66,8 +67,7 @@
 </template>
 
 <script>
-
-var Constants = require( '../Constants.js' ),
+const Constants = require( '../Constants.js' ),
 	ZObjectKeyValue = require( '../components/default-view-types/ZObjectKeyValue.vue' ),
 	FunctionEvaluatorWidget = require( '../components/widgets/FunctionEvaluator.vue' ),
 	FunctionExplorerWidget = require( '../components/widgets/FunctionExplorer.vue' ),
@@ -90,9 +90,6 @@ module.exports = exports = {
 		'wl-z-object-key-value': ZObjectKeyValue
 	},
 	mixins: [ eventLogUtils, typeUtils ],
-	data: function () {
-		return {};
-	},
 	computed: $.extend(
 		mapGetters( [
 			'getZObjectAsJson',
@@ -258,6 +255,7 @@ module.exports = exports = {
 	.ext-wikilambda-content-title {
 		font-weight: @font-weight-bold;
 		margin-bottom: @spacing-125;
+		font-size: @font-size-large;
 	}
 
 	> .ext-wikilambda-key-value-row {
@@ -272,55 +270,4 @@ module.exports = exports = {
 		}
 	}
 }
-
-.ext-wikilambda-widget {
-	box-sizing: border-box;
-	padding: @spacing-75;
-	border: 1px solid #c8ccd1;
-	border-radius: 2px;
-	margin-bottom: @spacing-100;
-
-	&.ext-wikilambda-widget-json {
-		padding: 0;
-	}
-}
-
-.ext-wikilambda-row {
-	display: flex;
-	flex-wrap: wrap;
-	margin-left: -@spacing-75;
-	margin-right: -@spacing-75;
-}
-
-.ext-wikilambda-col {
-	box-sizing: border-box;
-	padding-left: @spacing-75;
-	padding-right: @spacing-75;
-	flex-grow: 1;
-	min-width: 0;
-}
-
-.generate-columns(@index) when (@index <= 24) {
-	.ext-wikilambda-col-@{index} {
-		flex-basis: calc( 100% / 24 * @index );
-		max-width: calc( 100% / 24 * @index );
-	}
-
-	.generate-responsive-columns( @index, mobile );
-	.generate-responsive-columns( @index, tablet );
-	.generate-responsive-columns( @index, desktop );
-
-	.generate-columns( @index + 1 );
-}
-
-.generate-responsive-columns(@index, @size) {
-	@media ( max-width: ~'@{max-width-breakpoint-@{size}}' ) {
-		.ext-wikilambda-col-@{size}-@{index} {
-			flex-basis: calc( 100% / 24 * @index );
-			max-width: calc( 100% / 24 * @index );
-		}
-	}
-}
-
-.generate-columns( 1 );
 </style>

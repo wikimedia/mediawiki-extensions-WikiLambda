@@ -31,16 +31,16 @@
 </template>
 
 <script>
-var Constants = require( '../../Constants.js' ),
+const FunctionMetadataDialog = require( '../../widgets/FunctionMetadataDialog.vue' ),
+	Constants = require( '../../../Constants.js' ),
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
-	FunctionMetadataDialog = require( '../widgets/FunctionMetadataDialog.vue' ),
-	icons = require( '../../../../../lib/icons.json' ),
+	icons = require( '../../../../lib/icons.json' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
 // @vue/component
 module.exports = exports = {
-	name: 'wl-z-function-tester-table',
+	name: 'wl-function-tester-table',
 	components: {
 		'cdx-icon': CdxIcon,
 		'wl-function-metadata-dialog': FunctionMetadataDialog
@@ -144,7 +144,7 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-@import '../../ext.wikilambda.edit.less';
+@import '../../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-tester-table {
 	display: flex;

@@ -49,7 +49,7 @@ module.exports = exports = {
 		};
 	},
 	computed: $.extend( mapGetters( [
-		'getZFunctionLanguages'
+		'getMetadataLanguages'
 	] ), {
 		/**
 		 * Returns the available languages for the function definition,
@@ -58,7 +58,7 @@ module.exports = exports = {
 		 * @return {Array}
 		 */
 		functionLanguages: function () {
-			return this.getZFunctionLanguages( this.rowId );
+			return this.getMetadataLanguages( this.rowId );
 		},
 		/**
 		 * Returns the id for the language field

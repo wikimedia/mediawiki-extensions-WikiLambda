@@ -1,5 +1,5 @@
 /*
- * WikiLambda integration test for detaching a function implementation.
+ * WikiLambda integration test for disconnecting a function implementation.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -31,21 +31,19 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 	} );
 
 	it( 'allows detaching a function implementation', async () => {
-		const { findByLabelText, findByRole } = renderForFunctionViewer();
+		const { findByLabelText } = renderForFunctionViewer();
 
-		// ACT: select the 'details' tab.
-		await fireEvent.click( await findByRole( 'tab', { name: 'Details' } ) );
-
-		// ASSERT: The "attached" implementation is shown in the table.
+		// ASSERT: The "connected" implementation is shown in the table.
 		const implementationsTable = await findByLabelText( 'Implementations' );
+		await waitFor( () => expect( within( implementationsTable ).getAllByRole( 'row' ) ).toHaveLength( 3 ) );
 		const firstImplementationRow = within( implementationsTable ).getAllByRole( 'row' )[ 1 ];
 		await waitFor(
 			() => expect( firstImplementationRow ).toHaveTextContent( 'Implementation by composition, in English' ) );
 
-		// ASSERT: The "attached" implementation is shown as connected.
+		// ASSERT: The "connected" implementation is shown as connected.
 		expect( firstImplementationRow ).toHaveTextContent( 'Connected' );
 
-		// ACT: Select the "attached" implementation in the table.
+		// ACT: Select the "connected" implementation in the table.
 		await fireEvent.update( within( firstImplementationRow ).getByRole( 'checkbox' ), true );
 
 		// ACT: Click the disconnect button.

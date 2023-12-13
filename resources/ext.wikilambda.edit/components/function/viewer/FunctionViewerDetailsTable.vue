@@ -8,37 +8,46 @@
 	<div class="ext-wikilambda-function-details-table">
 		<wl-table
 			:header="header"
+			:hide-header="!header"
 			:body="body"
 			:is-loading="isLoading"
-			:aria-labelledby="'ext-wikilambda-function-details-table__title__text-' + name"
+			:aria-labelledby="'ext-wikilambda-function-details-table__title__text-' + type"
 			class="ext-wikilambda-function-details-table__body"
 		>
 			<template #table-title>
 				<div class="ext-wikilambda-function-details-table__title">
 					<span
-						:id="'ext-wikilambda-function-details-table__title__text-' + name"
+						:id="'ext-wikilambda-function-details-table__title__text-' + type"
 						class="ext-wikilambda-function-details-table__title__text">
 						{{ title }}
 					</span>
-					<!-- TODO (T306026): Replace with a button group -->
-					<div class="ext-wikilambda-function-details-table__title__buttons">
+					<div
+						v-if="canConnect || canDisconnect"
+						class="ext-wikilambda-function-details-table__title__buttons"
+					>
 						<cdx-button
-							v-if="!( isMobile && !canApprove )"
-							class="ext-wikilambda-function-details-table__title__buttons__approve-button"
-							:disabled="!canApprove"
-							data-testid="approve"
-							@click="approve">
+							v-if="!( isMobile && !canConnect )"
+							:disabled="!canConnect"
+							data-testid="connect"
+							@click="connect"
+						>
 							<label> {{ $i18n( 'wikilambda-function-details-table-approve' ).text() }} </label>
 						</cdx-button>
 						<cdx-button
-							v-if="!( isMobile && !canDeactivate )"
-							class="ext-wikilambda-function-details-table__title__buttons__deactivate-button"
-							:disabled="!canDeactivate"
-							data-testid="deactivate"
-							@click="deactivate"
+							v-if="!( isMobile && !canDisconnect )"
+							:disabled="!canDisconnect"
+							data-testid="disconnect"
+							@click="disconnect"
 						>
 							<label> {{ $i18n( 'wikilambda-function-details-table-deactivate' ).text() }} </label>
 						</cdx-button>
+					</div>
+					<div v-else>
+						<a :href="addLink" data-testid="add-link">
+							<cdx-button weight="quiet" aria-label="Add">
+								<cdx-icon :icon="icons.cdxIconAdd"></cdx-icon>
+							</cdx-button>
+						</a>
 					</div>
 				</div>
 			</template>
@@ -61,25 +70,34 @@
 
 <script>
 const CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	TableContainer = require( '../../../base/Table.vue' ),
-	Pagination = require( '../../../base/Pagination.vue' ),
-	typeUtils = require( '../../../../mixins/typeUtils.js' ),
-	Constants = require( '../../../../Constants.js' ),
-	useBreakpoints = require( '../../../../composables/useBreakpoints.js' );
+	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+	icons = require( '../../../../lib/icons.json' ),
+	TableContainer = require( '../../base/Table.vue' ),
+	Pagination = require( '../../base/Pagination.vue' ),
+	typeUtils = require( '../../../mixins/typeUtils.js' ),
+	Constants = require( '../../../Constants.js' ),
+	mapGetters = require( 'vuex' ).mapGetters,
+	useBreakpoints = require( '../../../composables/useBreakpoints.js' );
 
 // @vue/component
 module.exports = exports = {
 	name: 'wl-function-viewer-details-table',
 	components: {
 		'cdx-button': CdxButton,
+		'cdx-icon': CdxIcon,
 		'wl-table': TableContainer,
 		'wl-pagination': Pagination
 	},
 	mixins: [ typeUtils ],
 	props: {
+		type: {
+			type: String,
+			required: true
+		},
 		header: {
 			type: Object,
-			required: true
+			required: false,
+			default: null
 		},
 		body: {
 			type: Array,
@@ -108,11 +126,11 @@ module.exports = exports = {
 			type: Boolean,
 			defualt: false
 		},
-		canApprove: {
+		canConnect: {
 			type: Boolean,
 			required: true
 		},
-		canDeactivate: {
+		canDisconnect: {
 			type: Boolean,
 			required: true
 		},
@@ -120,7 +138,7 @@ module.exports = exports = {
 			type: Boolean,
 			default: false
 		},
-		name: {
+		addLink: {
 			type: String,
 			required: true
 		}
@@ -131,30 +149,58 @@ module.exports = exports = {
 			breakpoint
 		};
 	},
-	computed: {
+	data: function () {
+		return {
+			icons: icons
+		};
+	},
+	computed: $.extend( mapGetters( [
+		'isUserLoggedIn'
+	] ), {
+		/**
+		 * Whether the display is of the size of a mobile screen
+		 *
+		 * @return {boolean}
+		 */
 		isMobile: function () {
 			return this.breakpoint.current.value === Constants.breakpointsTypes.MOBILE;
 		}
-	},
+	} ),
 	methods: {
+		/**
+		 * Emits the event update-page when selecting
+		 * a page number to display
+		 *
+		 * @param {number} newPage
+		 */
 		updateCurrentPage: function ( newPage ) {
 			this.$emit( 'update-page', newPage );
 		},
+		/**
+		 * Emits the event reset-view when switching
+		 * the view all/view less toggle button
+		 */
 		resetView: function () {
 			this.$emit( 'reset-view' );
 		},
-		approve: function () {
-			this.$emit( 'approve' );
+		/**
+		 * Emits an event when the connect button is clicked
+		 */
+		connect: function () {
+			this.$emit( 'connect' );
 		},
-		deactivate: function () {
-			this.$emit( 'deactivate' );
+		/**
+		 * Emits an event when the disconnect button is clicked
+		 */
+		disconnect: function () {
+			this.$emit( 'disconnect' );
 		}
 	}
 };
 </script>
 
 <style lang="less">
-@import '../../../../ext.wikilambda.edit.less';
+@import '../../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-function-details-table {
 	margin-bottom: @spacing-200;
@@ -170,7 +216,7 @@ module.exports = exports = {
 	}
 
 	&__empty {
-		padding: 0 @spacing-100;
+		padding: 0 12px;
 		font-weight: @font-weight-normal;
 		color: @color-placeholder;
 		white-space: pre-wrap;
@@ -180,9 +226,8 @@ module.exports = exports = {
 		font-weight: @font-weight-bold;
 		color: @color-base;
 		overflow-wrap: break-word;
-		background: @background-color-interactive;
-		padding: 0 @spacing-100;
-		height: 50px;
+		background: @background-color-base;
+		padding: 6px 6px 0 12px;
 		display: flex;
 		align-items: center;
 
@@ -193,6 +238,8 @@ module.exports = exports = {
 			white-space: nowrap;
 			overflow: hidden;
 			text-overflow: ellipsis;
+			font-size: @font-size-large;
+			padding-top: 6px;
 		}
 
 		&__buttons {
@@ -210,8 +257,8 @@ module.exports = exports = {
 
 		&:first-child {
 			width: @size-125;
-			padding-left: @spacing-100;
-			padding-right: @spacing-100;
+			padding-left: 12px;
+			padding-right: 12px;
 		}
 
 		.cdx-checkbox {
@@ -222,7 +269,7 @@ module.exports = exports = {
 	}
 
 	&-item {
-		padding-right: @spacing-100;
+		padding-right: 12px;
 
 		a {
 			display: block; /* Fallback for non-webkit */
@@ -245,7 +292,7 @@ module.exports = exports = {
 		}
 
 		&:first-child {
-			padding-left: @spacing-100;
+			padding-left: 12px;
 		}
 	}
 

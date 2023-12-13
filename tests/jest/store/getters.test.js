@@ -13,22 +13,4 @@ describe( 'Vuex root getters', function () {
 		// Jest defaults viewmode to true
 		expect( getters.getViewMode() ).toBe( true );
 	} );
-
-	it( 'correctly paginates pages', function () {
-		const mockTesterList = [
-			'Tester 1',
-			'Tester 2',
-			'Tester 3',
-			'Tester 4',
-			'Tester 5',
-			'Tester 6',
-			'Tester 7'
-		];
-		expect( getters.paginateList( undefined )( mockTesterList ) ).toEqual(
-			{
-				1: [ 'Tester 1', 'Tester 2', 'Tester 3', 'Tester 4', 'Tester 5' ],
-				2: [ 'Tester 6', 'Tester 7' ]
-			}
-		);
-	} );
 } );

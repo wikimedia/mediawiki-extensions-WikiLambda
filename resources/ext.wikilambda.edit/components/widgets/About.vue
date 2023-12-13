@@ -24,49 +24,81 @@
 
 		<!-- Widget main -->
 		<template #main>
-			<!-- Name block -->
 			<div class="ext-wikilambda-about-fields">
-				<div class="ext-wikilambda-about-name">
-					<div class="ext-wikilambda-about-title">
-						{{ nameLabel }}
-					</div>
-					<div
-						class="ext-wikilambda-about-value"
-						:class="{ 'ext-wikilambda-about-name-untitled': !hasName }"
-					>
-						{{ name }}
-					</div>
+				<!-- No descriptions or aliases message -->
+				<div v-if="!hasDescription && !hasAliases" class="ext-wikilambda-about-unavailable">
+					{{ $i18n( 'wikilambda-about-widget-no-descriptions-or-aliases' ).text() }}
 				</div>
-				<!-- Description block -->
-				<div
-					v-if="hasDescription"
-					class="ext-wikilambda-about-description"
-				>
-					<div class="ext-wikilambda-about-title">
-						{{ descriptionLabel }}
+				<template v-else>
+					<!-- Description block -->
+					<div class="ext-wikilambda-about-description">
+						<span v-if="hasDescription" class="ext-wikilambda-about-value">
+							{{ description }}
+						</span>
+						<span v-else class="ext-wikilambda-about-unavailable">
+							{{ $i18n( 'wikilambda-about-widget-no-descriptions' ).text() }}
+						</span>
 					</div>
-					<div class="ext-wikilambda-about-value">
-						{{ description }}
+					<!-- Aliases block -->
+					<div class="ext-wikilambda-about-aliases">
+						<template v-if="hasAliases">
+							<span
+								v-for="( alias, index ) in visibleAliases"
+								:key="'alias-' + index"
+								class="ext-wikilambda-about-alias"
+							>
+								{{ alias.value }}
+							</span>
+							<a
+								v-if="aliases.length > 3 && !seeAllAliases"
+								class="ext-wikilambda-about-aliases-more"
+								@click="seeAllAliases = true"
+							>+{{ aliases.length - 3 }}</a>
+						</template>
+						<span v-else class="ext-wikilambda-about-unavailable">
+							{{ $i18n( 'wikilambda-about-widget-no-aliases' ).text() }}
+						</span>
 					</div>
-				</div>
-				<!-- Aliases block -->
-				<div
-					v-if="hasAliases"
-					class="ext-wikilambda-about-aliases"
-				>
-					<div class="ext-wikilambda-about-title">
-						{{ aliasesLabel }}
+				</template>
+			</div>
+
+			<!-- Function specific fields -->
+			<div v-if="isFunction" class="ext-wikilambda-about-function-fields">
+				<div class="ext-wikilambda-about-function-input">
+					<!-- Inputs -->
+					<div class="ext-wikilambda-about-function-field-title">
+						{{ $i18n( 'wikilambda-function-definition-inputs-label' ).text() }}
 					</div>
-					<div class="ext-wikilambda-about-value">
-						<span
-							v-for="( alias, index ) in aliases"
-							:key="'alias-' + index"
+					<template v-if="inputs.length > 0">
+						<div
+							v-for="input in inputs"
+							:key="input.key"
+							class="ext-wikilambda-about-function-field-value"
 						>
-							<span v-if="index !== 0">,&nbsp;</span>{{ alias.value }}
+							<span
+								class="ext-wikilambda-about-function-input-label"
+								:class="{ 'ext-wikilambda-about-unavailable': !input.hasLabel }"
+							>{{ input.label }}<span>:</span></span>
+							<wl-z-object-to-string :row-id="input.typeRowId"></wl-z-object-to-string>
+						</div>
+					</template>
+					<div v-else class="ext-wikilambda-about-function-field-value">
+						<span class="ext-wikilambda-about-unavailable">
+							{{ $i18n( 'wikilambda-about-widget-no-inputs' ).text() }}
 						</span>
 					</div>
 				</div>
+				<!-- Output -->
+				<div class="ext-wikilambda-about-function-output">
+					<div class="ext-wikilambda-about-function-field-title">
+						{{ $i18n( 'wikilambda-function-definition-output-label' ).text() }}
+					</div>
+					<div class="ext-wikilambda-about-function-field-value">
+						<wl-z-object-to-string :row-id="outputTypeRowId"></wl-z-object-to-string>
+					</div>
+				</div>
 			</div>
+
 			<!-- Dialogs -->
 			<wl-about-view-languages-dialog
 				:can-edit="canEditObject"
@@ -81,6 +113,7 @@
 				:edit="edit"
 				:for-language="selectedLanguage"
 				:open="showEditMetadataDialog"
+				:is-function="isFunction"
 				@change-selected-language="changeSelectedLanguage"
 				@close="showEditMetadataDialog = false"
 				@publish="showPublishDialog = true"
@@ -94,11 +127,8 @@
 		</template>
 
 		<!-- Widget footer -->
-		<template v-if="languageCount > 1" #footer>
-			<div
-				v-if="languageCount > 1"
-				class="ext-wikilambda-content-buttons"
-			>
+		<template v-if="languageCount > 0" #footer>
+			<div class="ext-wikilambda-about-button">
 				<cdx-button @click="openViewLanguagesDialog">
 					<cdx-icon :icon="icons.cdxIconLanguage"></cdx-icon>
 					{{ $i18n( 'wikilambda-about-widget-language-count-button', languageCount ).text() }}
@@ -113,6 +143,7 @@ const Constants = require( '../../Constants.js' ),
 	AboutViewLanguagesDialog = require( './AboutViewLanguagesDialog.vue' ),
 	AboutEditMetadataDialog = require( './AboutEditMetadataDialog.vue' ),
 	PublishDialog = require( './PublishDialog.vue' ),
+	ZObjectToString = require( '../default-view-types/ZObjectToString.vue' ),
 	WidgetBase = require( '../base/WidgetBase.vue' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
@@ -129,11 +160,16 @@ module.exports = exports = {
 		'wl-about-view-languages-dialog': AboutViewLanguagesDialog,
 		'wl-about-edit-metadata-dialog': AboutEditMetadataDialog,
 		'wl-publish-dialog': PublishDialog,
+		'wl-z-object-to-string': ZObjectToString,
 		'wl-widget-base': WidgetBase
 	},
 	props: {
 		edit: {
 			type: Boolean,
+			required: true
+		},
+		type: {
+			type: String,
 			required: true
 		}
 	},
@@ -143,18 +179,22 @@ module.exports = exports = {
 			showViewLanguagesDialog: false,
 			showEditMetadataDialog: false,
 			showPublishDialog: false,
-			selectedLanguage: ''
+			selectedLanguage: '',
+			seeAllAliases: false
 		};
 	},
 	computed: $.extend( mapGetters( [
 		'getLabel',
 		'getMetadataLanguages',
 		'getUserLangZid',
+		'getZArgumentTypeRowId',
+		'getZArgumentKey',
+		'getZFunctionOutput',
+		'getZFunctionInputs',
 		'getZMonolingualTextValue',
 		'getZMonolingualStringsetValues',
 		'getZPersistentAlias',
 		'getZPersistentDescription',
-		'getZPersistentName',
 		'isNewZObject',
 		'isUserLoggedIn'
 	] ), {
@@ -168,16 +208,7 @@ module.exports = exports = {
 			return this.isNewZObject ? true : this.isUserLoggedIn;
 		},
 		/**
-		 * Returns the best Name/Label (Z2K3) row depending
-		 * on the user preferred language.
-		 *
-		 * @return {Object}
-		 */
-		selectedNameObject: function () {
-			return this.getZPersistentName();
-		},
-		/**
-		 * Returns the best Name/Label (Z2K5) row depending
+		 * Returns the best Description (Z2K5) row depending
 		 * on the user preferred language.
 		 *
 		 * @return {Object}
@@ -194,25 +225,14 @@ module.exports = exports = {
 		selectedAliasesObject: function () {
 			return this.getZPersistentAlias();
 		},
-
 		/**
-		 * Returns whether the object has any available name
-		 * object (in any language). The object could have an
-		 * empty string.
+		 * Returns the visible aliases depending on
+		 * the seeAllAliases flag.
 		 *
-		 * @return {boolean}
+		 * @return {Array}
 		 */
-		hasNameObject: function () {
-			return this.selectedNameObject !== undefined;
-		},
-		/**
-		 * Returns whether the object has any available name
-		 * (in any language).
-		 *
-		 * @return {boolean}
-		 */
-		hasName: function () {
-			return !!this.nameValue;
+		visibleAliases: function () {
+			return this.seeAllAliases ? this.aliases : this.aliases.slice( 0, 3 );
 		},
 		/**
 		 * Returns whether the object has any available description
@@ -234,28 +254,6 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Returns the value of the selected name object, if any.
-		 * It can return an empty string.
-		 *
-		 * @return {string}
-		 */
-		nameValue: function () {
-			return this.hasNameObject ?
-				this.getZMonolingualTextValue( this.selectedNameObject.rowId ) :
-				'';
-		},
-		/**
-		 * Returns the string value to present as the name, if any, or "Untitled"
-		 * if no name object is present or the name object has an empty string.
-		 *
-		 * @return {string}
-		 */
-		name: function () {
-			return this.hasName ?
-				this.getZMonolingualTextValue( this.selectedNameObject.rowId ) :
-				this.$i18n( 'wikilambda-editor-default-name' ).text();
-		},
-		/**
 		 * Returns the string value for the selected description, if any
 		 *
 		 * @return {string}
@@ -275,32 +273,6 @@ module.exports = exports = {
 				this.getZMonolingualStringsetValues( this.selectedAliasesObject.rowId ) :
 				[];
 		},
-
-		/**
-		 * Returns the label for the name input field (Z2K3)
-		 *
-		 * @return {string}
-		 */
-		nameLabel: function () {
-			return this.getLabel( Constants.Z_PERSISTENTOBJECT_LABEL );
-		},
-		/**
-		 * Returns the label for the description input field (Z2K5)
-		 *
-		 * @return {string}
-		 */
-		descriptionLabel: function () {
-			return this.getLabel( Constants.Z_PERSISTENTOBJECT_DESCRIPTION );
-		},
-		/**
-		 * Returns the label for the aliases input field (Z2K4)
-		 *
-		 * @return {string}
-		 */
-		aliasesLabel: function () {
-			return this.getLabel( Constants.Z_PERSISTENTOBJECT_ALIASES );
-		},
-
 		/**
 		 * Returns a list of all the language Zids that are present
 		 * in the metadata collection (must have at least a name, a
@@ -318,6 +290,52 @@ module.exports = exports = {
 		 */
 		languageCount: function () {
 			return this.languages.length;
+		},
+		/**
+		 * Returns whether the current object is a function
+		 *
+		 * @return {boolean}
+		 */
+		isFunction: function () {
+			return this.type === Constants.Z_FUNCTION;
+		},
+		/**
+		 * Returns the rowId of the output type
+		 *
+		 * @return {number|undefined}
+		 */
+		outputTypeRowId: function () {
+			if ( !this.isFunction ) {
+				return undefined;
+			}
+			const outputTypeRow = this.getZFunctionOutput();
+			return outputTypeRow ? outputTypeRow.id : undefined;
+		},
+		/**
+		 * Returns the array of input data: its label or 'Unlabelled',
+		 * its typeRowId, and whether the input has a label or not.
+		 *
+		 * @return {Array}
+		 */
+		inputs: function () {
+			if ( !this.isFunction ) {
+				return [];
+			}
+			const inputs = this.getZFunctionInputs();
+			return inputs.map( ( row ) => {
+				const typeRowId = this.getZArgumentTypeRowId( row.id );
+				const key = this.getZArgumentKey( row.id );
+				const labelData = this.getLabel( key );
+				const hasLabel = labelData !== key;
+				const label = hasLabel ?
+					labelData :
+					this.$i18n( 'wikilambda-about-widget-unlabelled-input' ).text();
+				return {
+					label,
+					typeRowId,
+					hasLabel
+				};
+			} );
 		}
 	} ),
 	methods: $.extend( mapActions( [
@@ -372,24 +390,65 @@ module.exports = exports = {
 <style lang="less">
 @import '../../ext.wikilambda.edit.less';
 
-.ext-wikilambda-about-fields {
-	& > div {
-		margin-bottom: @spacing-100;
+.ext-wikilambda-about {
+	.ext-wikilambda-about-unavailable {
+		color: @color-placeholder;
 
-		&:last-child {
-			margin-bottom: 0;
+		& > span {
+			color: @color-base;
 		}
 	}
 
-	.ext-wikilambda-about-title {
-		color: @color-base;
-		font-weight: @font-weight-bold;
+	.ext-wikilambda-about-fields {
+		.ext-wikilambda-about-description,
+		.ext-wikilambda-about-aliases {
+			margin-top: @spacing-50;
+		}
+
+		.ext-wikilambda-about-aliases {
+			padding-bottom: @spacing-25;
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px;
+
+			.ext-wikilambda-about-alias {
+				display: inline-block;
+				border-radius: @border-radius-pill;
+				border: 1px solid @border-color-subtle;
+				color: @color-subtle;
+				padding: 0 @spacing-50;
+			}
+
+			.ext-wikilambda-about-aliases-more {
+				color: @color-progressive;
+			}
+		}
 	}
 
-	.ext-wikilambda-about-value {
-		&.ext-wikilambda-about-name-untitled {
-			color: @color-placeholder;
+	.ext-wikilambda-about-function-fields {
+		margin-top: @spacing-100;
+		border-top: 1px solid @border-color-subtle;
+
+		& > div {
+			margin-top: @spacing-100;
 		}
+
+		.ext-wikilambda-about-function-field-title {
+			font-weight: @font-weight-bold;
+		}
+
+		.ext-wikilambda-about-function-field-value {
+			margin-top: @spacing-25;
+			display: flex;
+
+			& > span {
+				margin-right: @spacing-25;
+			}
+		}
+	}
+
+	.ext-wikilambda-about-button {
+		margin-top: @spacing-125;
 	}
 }
 </style>

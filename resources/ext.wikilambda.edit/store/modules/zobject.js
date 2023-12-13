@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-var Constants = require( '../../Constants.js' ),
+const Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ).methods,
 	zobjectTreeUtils = require( '../../mixins/zobjectTreeUtils.js' ).methods,
 	extractZIDs = require( '../../mixins/schemata.js' ).methods.extractZIDs,
@@ -15,74 +15,9 @@ var Constants = require( '../../Constants.js' ),
 	currentZObject = require( './zobject/currentZObject.js' ),
 	submission = require( './zobject/submission.js' ),
 	Row = require( '../classes/Row.js' ),
-	debounceZObjectLookup = null,
 	DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT = 300;
 
-/**
- * Returns whether the object is a reference type from the parent object
- * E.g. "Z1K1: {Z1K1: Z9}"
- *
- * @param {Object} object row of the internal zobject table
- * @param {Object} parentObject row of the internal zobject table
- * @return {boolean}
- */
-function isObjectTypeDeclaration( object, parentObject ) {
-	var isReference = object.value === Constants.Z_REFERENCE;
-	var isObjectType = parentObject.key === Constants.Z_OBJECT_TYPE;
-
-	return isReference && isObjectType;
-}
-
-/**
- * Returns whether the value of the function call id (E.g. {Z7K1: Z881}) is
- * a known generic type with a custom component
- *
- * @param {Object} functionCallId object row where key is Z7K1
- * @return {boolean}
- */
-function isTypedObjectWithCustomComponent( functionCallId ) {
-	var istypedObject = Constants.Z_TYPED_OBJECTS_LIST.includes( functionCallId.value );
-
-	return istypedObject;
-}
-
-/**
- * Returns whether a given persisted function returns a Type/Z4
- *
- * @param {Object} objectDeclaration persisted function zobject
- * @return {boolean}
- */
-function isFunctionToType( objectDeclaration ) {
-	if ( objectDeclaration ) {
-		var isTypeFunction =
-			objectDeclaration[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ] === Constants.Z_FUNCTION;
-		var returnsAType =
-			objectDeclaration[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_RETURN_TYPE ] ===
-				Constants.Z_TYPE;
-
-		return isTypeFunction && returnsAType;
-	}
-}
-
-function isNotObjectOrArrayRoot( object ) {
-	return ![ 'array', 'object' ].includes( object.value );
-}
-
-/**
- * @param {Function} getZObjectChildrenById state getter
- * @param {Array} object
- * @return {Object}
- */
-function retrieveFunctionCallFunctionZid( getZObjectChildrenById, object ) {
-	var functionCall = typeUtils.findKeyInArray( Constants.Z_FUNCTION_CALL_FUNCTION, object );
-
-	if ( functionCall && functionCall.value === 'object' ) {
-		var functionCallObject = getZObjectChildrenById( functionCall.id );
-		functionCall = typeUtils.findKeyInArray( Constants.Z_REFERENCE_ID, functionCallObject );
-	}
-
-	return functionCall;
-}
+let debounceZObjectLookup = null;
 
 /**
  * Given a list of available languages for an object metadata
@@ -139,14 +74,6 @@ module.exports = exports = {
 		ZObjectInitialized: false
 	},
 	getters: {
-		/***********************************************************************
-		 * INTERFACE METHODS
-		 *
-		 * These are the methods that will be commonly used from the components.
-		 * These methods should never return internal structure of the zobject
-		 * table. The only internal information they may return are row IDs so
-		 * that they can pass them onto their child components.
-		 ***********************************************************************/
 		/**
 		 * Returns the whole state zobject table object
 		 *
@@ -156,6 +83,7 @@ module.exports = exports = {
 		getZObjectTable: function ( state ) {
 			return state.zobject;
 		},
+
 		/**
 		 * Return a specific zObject key given its row ID or
 		 * undefined if the row ID doesn't exist
@@ -222,10 +150,6 @@ module.exports = exports = {
 			}
 			return findDepth;
 		},
-
-		/************************************************************
-		 * INTERFACE METHODS FOR TYPES
-		 ************************************************************/
 
 		/**
 		 * Returns the row Id where the persistent object value starts (Z2K2 key)
@@ -437,8 +361,12 @@ module.exports = exports = {
 				const nameLangs = getters.getZPersistentNameLangs( rowId );
 				const descriptionLangs = getters.getZPersistentDescriptionLangs( rowId );
 				const aliasLangs = getters.getZPersistentAliasLangs( rowId );
+
+				// Get languages available in input labels if object is a function
+				const inputLangs = getters.getZFunctionInputLangs( rowId );
+
 				// Combine all languages and return the array of unique languageZids
-				const allLangs = nameLangs.concat( descriptionLangs, aliasLangs );
+				const allLangs = nameLangs.concat( descriptionLangs, aliasLangs, inputLangs );
 				const langZids = allLangs.map( ( lang ) => lang.langZid );
 				return [ ...new Set( langZids ) ];
 			}
@@ -1015,14 +943,6 @@ module.exports = exports = {
 			return findMapValue;
 		},
 
-		/******************************************************************
-		 * INTERNAL METHODS
-		 *
-		 * Should not be called from components. If we observe the need
-		 * of calling these from a component probably needs we need another
-		 * interface method that wraps it.
-		 ******************************************************************/
-
 		/**
 		 * Returns a row object given its row ID. Note that the row ID is its
 		 * parameter row.id and it is different than the indexx
@@ -1283,188 +1203,6 @@ module.exports = exports = {
 			return state.createNewPage;
 		},
 
-		// TODO: Deprecate
-		getNestedZObjectById: function ( state, getters ) {
-			/**
-			 * Return a specific zObject given a series of keys.
-			 *
-			 * @param {number} id
-			 * @param {Array} keys
-			 * @return {Object} zObjectItem
-			 */
-			return function ( id, keys ) {
-				var list = getters.getZObjectChildrenById( id ),
-					res;
-
-				for ( var k = 0; k < keys.length; k++ ) {
-					var key = keys[ k ];
-					res = typeUtils.findKeyInArray( key, list );
-
-					if ( res && k !== keys.length ) {
-						list = getters.getZObjectChildrenById( res.id );
-					} else {
-						break;
-					}
-				}
-
-				return res;
-			};
-		},
-
-		// TODO: Deprecate
-		getZObjectChildrenById: function ( state, getters ) {
-			/**
-			 * Return the children of a specific zObject by its ID. The return is in zObjectTree array form.
-			 * This method is desinged to return just ONE level of Depth.
-			 * This will support development of small reusable components
-			 * If language is passed, the language zid and object will be returned as a property
-			 *
-			 * TODO (T329107): Deprecate this in favor of getChildrenByParentRowId, after investigating
-			 * the need for row.language and row.languageString (below)
-			 *
-			 * @param {number} parentId
-			 * @param {string} language
-			 * @param {string} parentType
-			 * @return {Array} zObjectTree
-			 */
-			return function ( parentId, language, parentType ) {
-				if ( parentId === undefined ) {
-					return [];
-				}
-
-				var childrenObjects = [];
-
-				for ( var zobject in state.zobject ) {
-
-					var objectProps = state.zobject[ zobject ];
-					// if parentType is passed, ensure parentType matches the value of the zobject
-					if ( parentType && objectProps.id === parentId && objectProps.value !== parentType ) {
-						break;
-					}
-
-					if ( objectProps.parent === parentId ) {
-						const childObject = new Row(
-							objectProps.id,
-							objectProps.key,
-							objectProps.value,
-							objectProps.parent
-						);
-						// FIXME: why are row.language and row.languageString necessary?
-						if ( language ) {
-							childObject.language = language;
-							childObject.languageString = getters.getNestedZObjectById(
-								objectProps.id,
-								[ Constants.Z_STRING_VALUE ]
-							);
-						}
-						childrenObjects.push( childObject );
-					}
-				}
-
-				return childrenObjects;
-			};
-		},
-
-		/**
-		 * Return the direct children rows of a specific zObject by its ID.
-		 * This method is desinged to return just ONE level of Depth.
-		 * This will support development of small reusable components.
-		 * If language is passed, the language zid and object will be returned as a property.
-		 * Returns only the list items, removing the first item denoting the type.
-		 *
-		 * @param {Object} state
-		 * @param {Object} getters
-		 * @return {Function}
-		 */
-		getAllItemsFromListById: function ( state, getters ) {
-			/**
-			 * @param {number} parentId
-			 * @param {string} language
-			 * @return {Array} zObjectTree
-			 */
-			return function ( parentId, language ) {
-				var childrenObjects = getters.getZObjectChildrenById( parentId, language, 'array' );
-				// Remove first item in array which denotes the type of the list
-				if ( childrenObjects.length > 0 ) {
-					childrenObjects.shift();
-				}
-				return childrenObjects;
-			};
-		},
-
-		// TODO: Deprecate
-		getZObjectTypeById: function ( state, getters ) {
-			/**
-			 * Return the type of a specific zObject by its ID.
-			 * If the type cannot be found it will return undefined
-			 *
-			 * TODO: Deprecate in favor of getZObjectTypeByRowId
-			 *
-			 * @param {number} id
-			 * @return {string | undefined} type
-			 */
-			function findZObjectTypeById( id ) {
-				var type,
-					currentObject = getters.getRowById( id ),
-					children = [];
-
-				// If id (row Id) doesn't exist and returns undefined
-				// FIXME: If the id is the same as the parent it returns undefined ????
-				if ( !currentObject || currentObject.id === currentObject.parent ) {
-					return undefined;
-				}
-
-				// If the row is TERMINAL, we return the value if the key is Z1K1, else undefined
-				if ( currentObject.isTerminal() ) {
-					return ( currentObject.key === Constants.Z_OBJECT_TYPE ) ?
-						currentObject.value :
-						undefined;
-				}
-
-				// Checks the value
-				switch ( currentObject.value ) {
-
-					// If the value is NON TERMINAL and it's an array, returns typed list
-					case 'array':
-						type = Constants.Z_TYPED_LIST;
-						break;
-
-					// If the value is NON TERMINA and it's an object...
-					case 'object':
-						children = getters.getZObjectChildrenById( id );
-						var objectType = typeUtils.findKeyInArray( Constants.Z_OBJECT_TYPE, children ),
-							referenceId = typeUtils.findKeyInArray( Constants.Z_REFERENCE_ID, children ),
-							functionCallFunctionZid =
-								retrieveFunctionCallFunctionZid( getters.getZObjectChildrenById, children ),
-							objectTypeFunctionCallFunctionZid =
-								retrieveFunctionCallFunctionZid(
-									getters.getZObjectChildrenById, getters.getZObjectChildrenById( objectType.id ) );
-						if ( isObjectTypeDeclaration( objectType, currentObject ) ) {
-							type = referenceId.value;
-						} else if ( isTypedObjectWithCustomComponent( objectTypeFunctionCallFunctionZid ) ) {
-							type = objectTypeFunctionCallFunctionZid.value;
-						} else if (
-							functionCallFunctionZid &&
-								isFunctionToType( getters.getStoredObject( functionCallFunctionZid.value ) ) ) {
-							type = Constants.Z_FUNCTION_CALL_TO_TYPE;
-						} else if ( isNotObjectOrArrayRoot( objectType ) ) {
-							type = objectType.value;
-						} else {
-							type = findZObjectTypeById( objectType.id );
-						}
-						break;
-
-					// FIXME If the value is TERMINAL, it returns undefined, unless it was an empty string ???
-					default:
-						type = undefined;
-						break;
-				}
-				return type;
-			}
-
-			return findZObjectTypeById;
-		},
-
 		/**
 		 * Return the JSON representation of a specific zObject and its children
 		 * using the zObject id value within the zObject array
@@ -1525,85 +1263,6 @@ module.exports = exports = {
 			};
 		},
 
-		/**
-		 * Returns ZIDs for testers attached to the root function.
-		 * Note that this returns an array of only items, without the type from index 0.
-		 *
-		 * TODO (T314928): Refactor using getRowByKeyPath, getZOBjectChildrenByRowId and
-		 * getZReferenceTerminalValue
-		 *
-		 * @param {Object} state
-		 * @param {Object} getters
-		 * @return {Function}
-		 */
-		getAttachedZTesters: function ( state, getters ) {
-			/**
-			 * @param {string} functionId
-			 * @return {Array}
-			 */
-			return function ( functionId ) {
-				var attachedTesters = [];
-
-				const zTesterListId = getters.getNestedZObjectById(
-					functionId, [
-						Constants.Z_PERSISTENTOBJECT_VALUE,
-						Constants.Z_FUNCTION_TESTERS
-					] ).id;
-				const zTesterList = getters.getZObjectChildrenById( zTesterListId );
-				// remove the list type (we want to return a raw array, not a canonical ZList)
-				zTesterList.shift();
-
-				for ( var zid in zTesterList ) {
-					const testerZId = getters.getNestedZObjectById(
-						zTesterList[ zid ].id, [
-							Constants.Z_REFERENCE_ID
-						] ).value;
-					attachedTesters.push( testerZId );
-				}
-
-				return attachedTesters;
-			};
-		},
-
-		/**
-		 * Returns ZIDs for implementations attached to the root function.
-		 * Note that this returns an array of only items, without the type from index 0.
-		 *
-		 * TODO (T314928): Refactor using getRowByKeyPath, getZOBjectChildrenByRowId and
-		 * getZReferenceTerminalValue
-		 *
-		 * @param {Object} state
-		 * @param {Object} getters
-		 * @return {Function}
-		 */
-		getAttachedZImplementations: function ( state, getters ) {
-			/**
-			 * @param {string} functionId
-			 * @return {Array}
-			 */
-			return function ( functionId ) {
-				var attachedImplementations = [];
-
-				const zImplementationListId = getters.getNestedZObjectById(
-					functionId, [
-						Constants.Z_PERSISTENTOBJECT_VALUE,
-						Constants.Z_FUNCTION_IMPLEMENTATIONS
-					] ).id;
-				const zImplementationList = getters.getZObjectChildrenById( zImplementationListId );
-				// remove the list type (we want to return a raw array, not a canonical ZList)
-				zImplementationList.shift();
-
-				for ( var zid in zImplementationList ) {
-					const implementationZId = getters.getNestedZObjectById(
-						zImplementationList[ zid ].id, [
-							Constants.Z_REFERENCE_ID
-						] ).value;
-					attachedImplementations.push( implementationZId );
-				}
-
-				return attachedImplementations;
-			};
-		},
 		/**
 		 * Return a deep copy of the current zobject table
 		 *
@@ -2009,144 +1668,6 @@ module.exports = exports = {
 						return resolve( lookupResults );
 					} );
 				}, DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT );
-			} );
-		},
-
-		/**
-		 * Adds the given testers to the given function's list of connected testers, and submits
-		 * the change to the API.
-		 *
-		 * @param {Object} context
-		 * @param {Object} payload
-		 * @param {string} payload.functionId - the local ID of the function
-		 * @param {Array} payload.testerZIds - the ZIDs of the testers to attach
-		 * @return {Promise}
-		 */
-		attachZTesters: function ( context, payload ) {
-			// Save a copy of the pre-submission ZObject in case the submission returns an error
-			const zobjectCopy = context.getters.getZObjectCopy;
-
-			// Get tester list (Z8K3) row following the appropriate keyPath Z2K2.Z8K3 from the root
-			const listRow = context.getters.getRowByKeyPath( [
-				Constants.Z_PERSISTENTOBJECT_VALUE,
-				Constants.Z_FUNCTION_TESTERS
-			] );
-
-			return context
-				.dispatch( 'pushValuesToList', { rowId: listRow.id, values: payload.testerZIds } )
-				.then( () => {
-					return context.dispatch( 'submitZObject', '' ).catch( function ( e ) {
-						// Reset old ZObject if something failed
-						context.commit( 'setZObject', zobjectCopy );
-						throw e;
-					} );
-				} );
-		},
-
-		/**
-		 * Removes the given testers from the given function's list of connected testers, and submits the
-		 * change to the API.
-		 *
-		 * @param {Object} context
-		 * @param {Object} payload
-		 * @param {Object} payload.functionId - the local ID of the function
-		 * @param {Array} payload.testerZIds - the ZIDs of the testers to detach
-		 * @return {Promise}
-		 */
-		detachZTesters: function ( context, payload ) {
-			const zobjectCopy = context.getters.getZObjectCopy;
-
-			const listId = context.getters.getNestedZObjectById(
-				payload.functionId, [
-					Constants.Z_PERSISTENTOBJECT_VALUE,
-					Constants.Z_FUNCTION_TESTERS
-				] ).id;
-			const listItems = context.getters.getZObjectChildrenById( listId );
-
-			for ( const zid of payload.testerZIds ) {
-				const listItemId = listItems.find( ( listItem ) =>
-					context.getters.getNestedZObjectById(
-						listItem.id,
-						[ Constants.Z_REFERENCE_ID ]
-					).value === zid
-				).id;
-				context.dispatch( 'removeZObjectChildren', listItemId );
-				context.dispatch( 'removeZObject', listItemId );
-			}
-			context.dispatch( 'recalculateTypedListKeys', listId );
-			return context.dispatch( 'submitZObject', '' ).catch( function ( e ) {
-				// Reset old ZObject if something failed
-				context.commit( 'setZObject', zobjectCopy );
-				throw e;
-			} );
-		},
-
-		/**
-		 * Adds the given implementations to the given function's list of connected implementations, and submits
-		 * the change to the API.
-		 *
-		 * @param {Object} context
-		 * @param {Object} payload
-		 * @param {string} payload.functionId - the local ID of the function
-		 * @param {Array} payload.implementationZIds - the ZIDs of the implementations to attach
-		 * @return {Promise}
-		 */
-		attachZImplementations: function ( context, payload ) {
-			// Save a copy of the pre-submission ZObject in case the submission returns an error
-			const zobjectCopy = context.getters.getZObjectCopy;
-
-			// Get implementation list (Z8K4) row following the appropriate keyPath Z2K2.Z8K4 from the root
-			const listRow = context.getters.getRowByKeyPath( [
-				Constants.Z_PERSISTENTOBJECT_VALUE,
-				Constants.Z_FUNCTION_IMPLEMENTATIONS
-			] );
-
-			return context
-				.dispatch( 'pushValuesToList', { rowId: listRow.id, values: payload.implementationZIds } )
-				.then( () => {
-					return context.dispatch( 'submitZObject', '' ).catch( function ( e ) {
-						// Reset old ZObject if something failed
-						context.commit( 'setZObject', zobjectCopy );
-						throw e;
-					} );
-				} );
-		},
-
-		/**
-		 * Removes the given implementations from the given function's list of connected implementations,
-		 * and submits the change to the API.
-		 *
-		 * @param {Object} context
-		 * @param {Object} payload
-		 * @param {Object} payload.functionId - the local ID of the function
-		 * @param {Array} payload.implementationZIds - the ZIDs of the implementations to detach
-		 * @return {Promise}
-		 */
-		detachZImplementations: function ( context, payload ) {
-			const zobjectCopy = context.getters.getZObjectCopy;
-
-			const listId = context.getters.getNestedZObjectById(
-				payload.functionId, [
-					Constants.Z_PERSISTENTOBJECT_VALUE,
-					Constants.Z_FUNCTION_IMPLEMENTATIONS
-				] ).id;
-			const listItems = context.getters.getZObjectChildrenById( listId );
-
-			for ( const zid of payload.implementationZIds ) {
-				const listItemId = listItems.find( ( listItem ) =>
-					context.getters.getNestedZObjectById(
-						listItem.id,
-						[ Constants.Z_REFERENCE_ID ]
-					).value === zid
-				).id;
-				context.dispatch( 'removeZObjectChildren', listItemId );
-				context.dispatch( 'removeZObject', listItemId );
-			}
-			context.dispatch( 'recalculateTypedListKeys', listId );
-			return context.dispatch( 'submitZObject', '' ).catch( function ( e ) {
-				// Reset old ZObject if something failed
-				context.commit( 'setZObject', zobjectCopy );
-				throw e;
 			} );
 		},
 

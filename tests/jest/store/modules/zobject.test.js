@@ -91,19 +91,7 @@ describe( 'zobject Vuex module', function () {
 					then: getResolveMock
 				};
 			} ),
-			getters: {
-				getNestedZObjectById: jest.fn( function () {
-					return {
-						id: 17
-					};
-				} ),
-				getZObjectChildrenById: jest.fn( function () {
-					return [];
-				} ),
-				getAllItemsFromListById: jest.fn( function () {
-					return [];
-				} )
-			}
+			getters: {}
 		} );
 
 		mw.Api = jest.fn( function () {
@@ -626,63 +614,6 @@ describe( 'zobject Vuex module', function () {
 			} );
 		} );
 
-		describe( 'getZObjectChildrenById', function () {
-			it( 'Returns empty array if zobject has no children when calling getZObjectChildrenById', function () {
-				var result = [];
-				state.zobject = tableDataToRowObjects( zobjectTree );
-
-				expect( zobjectModule.getters.getZObjectChildrenById( state )( 10 ) ).toEqual( result );
-			} );
-
-			it( 'Returns zobject children when calling getZObjectChildrenById', function () {
-				var result = [
-					{ key: 'Z1K1', value: 'Z9', parent: 2, id: 4 },
-					{ key: 'Z9K1', value: 'Z0', parent: 2, id: 5 }
-				];
-				state.zobject = tableDataToRowObjects( zobjectTree );
-
-				expect( zobjectModule.getters.getZObjectChildrenById( state )( 2 ) ).toEqual( result );
-			} );
-		} );
-
-		describe( 'getAllItemsFromListById', function () {
-
-			it( 'Returns all items in list when calling getAllItemsFromListById', function () {
-				var result = [
-					{ id: 12, key: '1', value: 'object', parent: 8 }
-				];
-				state.zobject = tableDataToRowObjects( zobjectTree );
-				var getters = {
-					getZObjectChildrenById: zobjectModule.getters.getZObjectChildrenById( state )
-				};
-
-				expect( zobjectModule.getters.getAllItemsFromListById( state, getters )( 8 ) ).toEqual( result );
-			} );
-
-			it( 'Returns empty array if list contains single item(type) when calling getAllItemsFromListById', function () {
-				var result = [];
-				state.zobject = tableDataToRowObjects( [
-					{ id: 0, value: 'object' },
-					{ key: 'Z1K1', value: 'Z2', parent: 0, id: 1 },
-					{ key: 'Z2K1', value: 'object', parent: 0, id: 2 },
-					{ key: 'Z2K2', value: 'object', parent: 0, id: 3 },
-					{ key: 'Z1K1', value: 'Z9', parent: 2, id: 4 },
-					{ key: 'Z9K1', value: 'Z0', parent: 2, id: 5 },
-					{ key: 'Z2K3', value: 'object', parent: 0, id: 6 },
-					{ key: 'Z1K1', value: 'Z12', parent: 6, id: 7 },
-					{ key: 'Z12K1', value: 'array', parent: 6, id: 8 },
-					{ key: '0', value: 'object', parent: 8, id: 9 },
-					{ key: 'Z1K1', value: 'Z9', parent: 9, id: 10 },
-					{ key: 'Z9K1', value: 'Z11', parent: 9, id: 11 }
-				] );
-				var getters = {
-					getZObjectChildrenById: zobjectModule.getters.getZObjectChildrenById( state )
-				};
-
-				expect( zobjectModule.getters.getAllItemsFromListById( state, getters )( 8 ) ).toEqual( result );
-			} );
-		} );
-
 		describe( 'isCreateNewPage', function () {
 			it( 'Returns whether the current state has `createNewPage` default value', function () {
 				expect( zobjectModule.getters.isCreateNewPage( state ) ).toBe( false );
@@ -694,96 +625,6 @@ describe( 'zobject Vuex module', function () {
 				state.zobject = tableDataToRowObjects( zobjectTree );
 
 				expect( zobjectModule.getters.getNextKey( state, { getCurrentZObjectId: 'Z0' } ) ).toEqual( 'Z0K1' );
-			} );
-		} );
-
-		describe( 'getAttachedZTesters and getAttachedZImplementations', function () {
-			var getters;
-			beforeEach( function () {
-				state.zobject = tableDataToRowObjects( zobjectTree.concat( [
-					{ key: Constants.Z_FUNCTION_TESTERS, value: 'array', parent: 3, id: 18 },
-					{ key: Constants.Z_FUNCTION_IMPLEMENTATIONS, value: 'array', parent: 3, id: 19 },
-					{ key: '0', value: 'object', parent: 18, id: 20 },
-					{ key: '1', value: 'object', parent: 18, id: 21 },
-					{ key: '2', value: 'object', parent: 18, id: 22 },
-					{ key: '0', value: 'object', parent: 19, id: 23 },
-					{ key: '1', value: 'object', parent: 19, id: 24 },
-					{ key: '2', value: 'object', parent: 19, id: 25 },
-					{ key: Constants.Z_REFERENCE_ID, value: Constants.Z_TESTER, parent: 20, id: 26 },
-					{ key: Constants.Z_REFERENCE_ID, value: 'Z111', parent: 21, id: 27 }, // tester 1
-					{ key: Constants.Z_REFERENCE_ID, value: 'Z222', parent: 22, id: 28 }, // tester 2
-					{ key: Constants.Z_REFERENCE_ID, value: Constants.Z_IMPLEMENTATION, parent: 23, id: 29 },
-					{ key: Constants.Z_REFERENCE_ID, value: 'Z333', parent: 24, id: 30 }, // impl 1
-					{ key: Constants.Z_REFERENCE_ID, value: 'Z444', parent: 25, id: 31 } // impl 2
-				] ) );
-				getters = {};
-				getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( state, getters );
-				getters.getNestedZObjectById = zobjectModule.getters.getNestedZObjectById( state, getters );
-			} );
-			it( 'return attached ZTesters', function () {
-				expect( zobjectModule.getters.getAttachedZTesters( state, getters )( 0 ) )
-					.toEqual( [ 'Z111', 'Z222' ] );
-			} );
-			it( 'return attached ZImplementations', function () {
-				expect( zobjectModule.getters.getAttachedZImplementations( state, getters )( 0 ) )
-					.toEqual( [ 'Z333', 'Z444' ] );
-			} );
-		} );
-
-		describe( 'getZObjectTypeById', () => {
-			var getters;
-			beforeEach( function () {
-				getters = {};
-				getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( state, getters );
-				getters.getRowById = zobjectModule.getters.getRowById( state, getters );
-			} );
-			it( 'when object is a call to a function that does not return a type, returns Z_FUNCTION_CALL', () => {
-				state.zobject = tableDataToRowObjects( [
-					{ value: Constants.ROW_VALUE_OBJECT, id: 0 },
-					{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_FUNCTION_CALL, parent: 0, id: 1 },
-					{ key: Constants.Z_FUNCTION_CALL_FUNCTION, value: 'Z12345', parent: 0, id: 2 }
-				] );
-				getters.getStoredObject = function () {
-					return {
-						[ Constants.Z_PERSISTENTOBJECT_VALUE ]: {
-							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION,
-							[ Constants.Z_FUNCTION_RETURN_TYPE ]: Constants.Z_STRING
-						}
-					};
-				};
-
-				expect( zobjectModule.getters.getZObjectTypeById( state, getters )( 0 ) )
-					.toEqual( Constants.Z_FUNCTION_CALL );
-			} );
-			it( 'when object is a call to a function that returns a type, returns FUNCTION_CALL_TO_TYPE', () => {
-				state.zobject = tableDataToRowObjects( [
-					{ value: Constants.ROW_VALUE_OBJECT, id: 0 },
-					{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_FUNCTION_CALL, parent: 0, id: 1 },
-					{ key: Constants.Z_FUNCTION_CALL_FUNCTION, value: Constants.Z_TYPED_PAIR, parent: 0, id: 2 }
-				] );
-				getters.getStoredObject = function () {
-					return {
-						[ Constants.Z_PERSISTENTOBJECT_VALUE ]: {
-							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION,
-							[ Constants.Z_FUNCTION_RETURN_TYPE ]: Constants.Z_TYPE
-						}
-					};
-				};
-
-				expect( zobjectModule.getters.getZObjectTypeById( state, getters )( 0 ) )
-					.toEqual( Constants.Z_FUNCTION_CALL_TO_TYPE );
-			} );
-			it( `when object has as its type a call to a function that returns a type, and that returned type has a
-				dedicated UI component, returns that type`, () => {
-				state.zobject = tableDataToRowObjects( [
-					{ value: Constants.ROW_VALUE_OBJECT, id: 0 },
-					{ key: Constants.Z_OBJECT_TYPE, value: Constants.ROW_VALUE_OBJECT, parent: 0, id: 1 },
-					{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_FUNCTION_CALL, parent: 1, id: 2 },
-					{ key: Constants.Z_FUNCTION_CALL_FUNCTION, value: Constants.Z_TYPED_PAIR, parent: 1, id: 3 }
-				] );
-
-				expect( zobjectModule.getters.getZObjectTypeById( state, getters )( 0 ) )
-					.toEqual( Constants.Z_TYPED_PAIR );
 			} );
 		} );
 
@@ -2390,66 +2231,65 @@ describe( 'zobject Vuex module', function () {
 			} );
 
 			describe( 'getMetadataLanguages', function () {
-				it( 'returns empty list', function () {
-					getters.getZPersistentNameLangs = jest.fn( function () {
-						return [];
-					} );
-					getters.getZPersistentDescriptionLangs = jest.fn( function () {
-						return [];
-					} );
-					getters.getZPersistentAliasLangs = jest.fn( function () {
-						return [];
-					} );
+				beforeEach( () => {
+					getters = {};
+					getters.getZPersistentNameLangs = () => [];
+					getters.getZPersistentDescriptionLangs = () => [];
+					getters.getZPersistentAliasLangs = () => [];
+					getters.getZFunctionInputLangs = () => [];
+				} );
+
+				it( 'returns empty array when there is no metadata', () => {
 					const expected = [];
-					const languages = zobjectModule.getters.getMetadataLanguages( state, getters )();
-					expect( languages ).toStrictEqual( expected );
+					const current = zobjectModule.getters.getMetadataLanguages( state, getters )();
+					expect( current ).toStrictEqual( expected );
 				} );
 
-				it( 'returns set of non repeated languages', function () {
-					getters.getZPersistentNameLangs = jest.fn( function () {
-						return [
-							{ langZid: 'Z1002', langIsoCode: 'en', rowId: 1 }
-						];
-					} );
-					getters.getZPersistentDescriptionLangs = jest.fn( function () {
-						return [
-							{ langZid: 'Z1003', langIsoCode: 'en', rowId: 1 },
-							{ langZid: 'Z1004', langIsoCode: 'fr', rowId: 2 }
-						];
-					} );
-					getters.getZPersistentAliasLangs = jest.fn( function () {
-						return [
-							{ langZid: 'Z1005', langIsoCode: 'ru', rowId: 1 }
-						];
-					} );
-					const expected = [ 'Z1002', 'Z1003', 'Z1004', 'Z1005' ];
-					const languages = zobjectModule.getters.getMetadataLanguages( state, getters )();
-					expect( languages ).toStrictEqual( expected );
+				it( 'returns array with one language', () => {
+					getters.getZPersistentNameLangs = () => [ { langZid: 'Z1002', langIsoCode: 'en', rowId: 1 } ];
+					getters.getZPersistentDescriptionLangs = () => [ { langZid: 'Z1002', langIsoCode: 'en', rowId: 2 } ];
+					getters.getZPersistentAliasLangs = () => [ { langZid: 'Z1002', langIsoCode: 'en', rowId: 4 } ];
+					getters.getZFunctionInputLangs = () => [ { langZid: 'Z1002', langIsoCode: 'en', rowId: 5 } ];
+
+					const expected = [ 'Z1002' ];
+					const current = zobjectModule.getters.getMetadataLanguages( state, getters )();
+					expect( current ).toStrictEqual( expected );
 				} );
 
-				it( 'returns set of repeated languages', function () {
-					getters.getZPersistentNameLangs = jest.fn( function () {
-						return [
-							{ langZid: 'Z1002', langIsoCode: 'en', rowId: 1 },
-							{ langZid: 'Z1003', langIsoCode: 'es', rowId: 2 }
-						];
-					} );
-					getters.getZPersistentDescriptionLangs = jest.fn( function () {
-						return [
-							{ langZid: 'Z1002', langIsoCode: 'en', rowId: 1 },
-							{ langZid: 'Z1003', langIsoCode: 'es', rowId: 2 }
-						];
-					} );
-					getters.getZPersistentAliasLangs = jest.fn( function () {
-						return [
-							{ langZid: 'Z1002', langIsoCode: 'en', rowId: 1 },
-							{ langZid: 'Z1003', langIsoCode: 'es', rowId: 2 }
-						];
-					} );
+				it( 'returns array with four non overlapping languages', () => {
+					getters.getZPersistentNameLangs = () => [ { langZid: 'Z1003', langIsoCode: 'es', rowId: 1 } ];
+					getters.getZPersistentDescriptionLangs = () => [ { langZid: 'Z1002', langIsoCode: 'en', rowId: 2 } ];
+					getters.getZPersistentAliasLangs = () => [ { langZid: 'Z1004', langIsoCode: 'fr', rowId: 4 } ];
+					getters.getZFunctionInputLangs = () => [ { langZid: 'Z1006', langIsoCode: 'zh', rowId: 5 } ];
+
+					const expected = [ 'Z1003', 'Z1002', 'Z1004', 'Z1006' ];
+					const current = zobjectModule.getters.getMetadataLanguages( state, getters )();
+					expect( current ).toStrictEqual( expected );
+				} );
+
+				it( 'returns array with two overlapping languages', () => {
+					getters.getZPersistentNameLangs = () => [
+						{ langZid: 'Z1002', langIsoCode: 'en', rowId: 1 },
+						{ langZid: 'Z1003', langIsoCode: 'es', rowId: 2 }
+					];
+					getters.getZPersistentDescriptionLangs = () => [
+						{ langZid: 'Z1002', langIsoCode: 'en', rowId: 3 },
+						{ langZid: 'Z1003', langIsoCode: 'es', rowId: 4 }
+					];
+					getters.getZPersistentAliasLangs = () => [
+						{ langZid: 'Z1002', langIsoCode: 'en', rowId: 5 },
+						{ langZid: 'Z1003', langIsoCode: 'es', rowId: 6 }
+					];
+					getters.getZFunctionInputLangs = () => [
+						{ langZid: 'Z1002', langIsoCode: 'en', rowId: 7 },
+						{ langZid: 'Z1003', langIsoCode: 'es', rowId: 8 }
+					];
+
 					const expected = [ 'Z1002', 'Z1003' ];
-					const languages = zobjectModule.getters.getMetadataLanguages( state, getters )();
-					expect( languages ).toStrictEqual( expected );
+					const current = zobjectModule.getters.getMetadataLanguages( state, getters )();
+					expect( current ).toStrictEqual( expected );
 				} );
+
 			} );
 		} );
 
@@ -5543,238 +5383,6 @@ describe( 'zobject Vuex module', function () {
 			} );
 		} );
 
-		describe( 'Attach and detach testers and implementations', function () {
-			beforeEach( function () {
-				context.state = {
-					zobject: tableDataToRowObjects( zobjectTree.concat( [
-						{ key: Constants.Z_FUNCTION_TESTERS, value: 'array', parent: 3, id: 18 },
-						{ key: Constants.Z_FUNCTION_IMPLEMENTATIONS, value: 'array', parent: 3, id: 19 },
-						{ key: '0', value: 'object', parent: 18, id: 20 },
-						{ key: '1', value: 'object', parent: 18, id: 21 },
-						{ key: '2', value: 'object', parent: 18, id: 22 },
-						{ key: '3', value: 'object', parent: 18, id: 23 },
-						{ key: '0', value: 'object', parent: 19, id: 24 },
-						{ key: '1', value: 'object', parent: 19, id: 25 },
-						{ key: '2', value: 'object', parent: 19, id: 26 },
-						{ key: '3', value: 'object', parent: 19, id: 27 },
-						{ key: Constants.Z_REFERENCE_ID, value: Constants.Z_TESTER, parent: 20, id: 28 },
-						{ key: Constants.Z_REFERENCE_ID, value: 'Z111', parent: 21, id: 29 }, // existing tester 1
-						{ key: Constants.Z_REFERENCE_ID, value: 'Z222', parent: 22, id: 30 }, // existing tester 2
-						{ key: Constants.Z_REFERENCE_ID, value: 'Z333', parent: 23, id: 31 }, // existing tester 3
-						{ key: Constants.Z_REFERENCE_ID, value: Constants.Z_IMPLEMENTATION, parent: 24, id: 32 },
-						{ key: Constants.Z_REFERENCE_ID, value: 'Z444', parent: 25, id: 33 }, // existing impl 1
-						{ key: Constants.Z_REFERENCE_ID, value: 'Z555', parent: 26, id: 34 }, // existing impl 2
-						{ key: Constants.Z_REFERENCE_ID, value: 'Z666', parent: 27, id: 35 } // existing impl 3
-					] ) ),
-					errors: {}
-				};
-				context.rootState = {
-					zobjectModule: context.state
-				};
-				Object.keys( zobjectModule.getters ).forEach( function ( key ) {
-					context.getters[ key ] =
-						zobjectModule.getters[ key ](
-							context.state, context.getters,
-							{ zobjectModule: context.state },
-							context.getters );
-				} );
-
-				// Mutations
-				context.commit = jest.fn( ( mutationType, payload ) => {
-					if ( mutationType in zobjectModule.mutations ) {
-						zobjectModule.mutations[ mutationType ]( context.state, payload );
-					} else if ( mutationType in errorModule.mutations ) {
-						errorModule.mutations[ mutationType ]( context.state, payload );
-					}
-				} );
-				// Actions
-				context.dispatch = jest.fn( ( actionType, payload ) => {
-					// run zobject and addZObject module actions
-					var result;
-					if ( actionType in zobjectModule.actions ) {
-						result = zobjectModule.actions[ actionType ]( context, payload );
-					} else if ( actionType in zobjectModule.modules.addZObjects.actions ) {
-						result = zobjectModule.modules.addZObjects.actions[ actionType ]( context.state, payload );
-					}
-					// return then and catch
-					return {
-						then: ( fn ) => fn( result ),
-						catch: () => 'error'
-					};
-				} );
-			} );
-
-			it( 'attaches given testers', function () {
-				zobjectModule.actions.attachZTesters( context,
-					{ functionId: 0, testerZIds: [ 'Z777', 'Z888' ] } );
-
-				// Contains first item:
-				expect( context.state.zobject ).toContainEqual(
-					{ key: '4', value: 'object', parent: 18, id: 36 } );
-				expect( context.state.zobject ).toContainEqual(
-					{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 36, id: 37 } );
-				expect( context.state.zobject ).toContainEqual(
-					{ key: Constants.Z_REFERENCE_ID, value: 'Z777', parent: 36, id: 38 } );
-
-				// Contains second item:
-				expect( context.state.zobject ).toContainEqual(
-					{ key: '5', value: 'object', parent: 18, id: 39 } );
-				expect( context.state.zobject ).toContainEqual(
-					{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 39, id: 40 } );
-				expect( context.state.zobject ).toContainEqual(
-					{ key: Constants.Z_REFERENCE_ID, value: 'Z888', parent: 39, id: 41 } );
-
-				expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
-			} );
-
-			it( 'detaches given testers', function () {
-				zobjectModule.actions.detachZTesters( context,
-					{ functionId: 0, testerZIds: [ 'Z111', 'Z333' ] } );
-
-				const listChildren = context.state.zobject.filter( ( item ) => item.parent === 18 );
-				expect( listChildren ).toHaveLength( 2 );
-				expect( listChildren ).toContainEqual( { key: '0', value: 'object', parent: 18, id: 20 } );
-				expect( listChildren ).toContainEqual( { key: '1', value: 'object', parent: 18, id: 22 } );
-
-				expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
-			} );
-
-			it( 'attaches given implementations', function () {
-				zobjectModule.actions.attachZImplementations( context,
-					{ functionId: 0, implementationZIds: [ 'Z777', 'Z888' ] } );
-
-				// Contains first item:
-				expect( context.state.zobject ).toContainEqual(
-					{ key: '4', value: 'object', parent: 19, id: 36 } );
-				expect( context.state.zobject ).toContainEqual(
-					{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 36, id: 37 } );
-				expect( context.state.zobject ).toContainEqual(
-					{ key: Constants.Z_REFERENCE_ID, value: 'Z777', parent: 36, id: 38 } );
-
-				// Contains second item:
-				expect( context.state.zobject ).toContainEqual(
-					{ key: '5', value: 'object', parent: 19, id: 39 } );
-				expect( context.state.zobject ).toContainEqual(
-					{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 39, id: 40 } );
-				expect( context.state.zobject ).toContainEqual(
-					{ key: Constants.Z_REFERENCE_ID, value: 'Z888', parent: 39, id: 41 } );
-
-				expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
-			} );
-
-			it( 'detaches given implementations', function () {
-				zobjectModule.actions.detachZImplementations( context,
-					{ functionId: 0, implementationZIds: [ 'Z444', 'Z666' ] } );
-
-				const listChildren = context.state.zobject.filter( ( item ) => item.parent === 19 );
-				expect( listChildren ).toHaveLength( 2 );
-				expect( listChildren ).toContainEqual( { key: '0', value: 'object', parent: 19, id: 24 } );
-				expect( listChildren ).toContainEqual( { key: '1', value: 'object', parent: 19, id: 26 } );
-
-				expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
-			} );
-
-			describe( 'Revert zObject to previous state if api fails', function () {
-				const initialZObject = tableDataToRowObjects( zobjectTree.concat( [
-					{ key: Constants.Z_FUNCTION_TESTERS, value: 'array', parent: 3, id: 18 },
-					{ key: Constants.Z_FUNCTION_IMPLEMENTATIONS, value: 'array', parent: 3, id: 19 },
-					{ key: '0', value: 'object', parent: 18, id: 20 },
-					{ key: '1', value: 'object', parent: 18, id: 21 },
-					{ key: '2', value: 'object', parent: 18, id: 22 },
-					{ key: '3', value: 'object', parent: 18, id: 23 },
-					{ key: '0', value: 'object', parent: 19, id: 24 },
-					{ key: '1', value: 'object', parent: 19, id: 25 },
-					{ key: '2', value: 'object', parent: 19, id: 26 },
-					{ key: '3', value: 'object', parent: 19, id: 27 },
-					{ key: Constants.Z_REFERENCE_ID, value: Constants.Z_TESTER, parent: 20, id: 28 },
-					{ key: Constants.Z_REFERENCE_ID, value: 'Z111', parent: 21, id: 29 }, // existing tester 1
-					{ key: Constants.Z_REFERENCE_ID, value: 'Z222', parent: 22, id: 30 }, // existing tester 2
-					{ key: Constants.Z_REFERENCE_ID, value: 'Z333', parent: 23, id: 31 }, // existing tester 3
-					{ key: Constants.Z_REFERENCE_ID, value: Constants.Z_IMPLEMENTATION, parent: 24, id: 32 },
-					{ key: Constants.Z_REFERENCE_ID, value: 'Z444', parent: 25, id: 33 }, // existing impl 1
-					{ key: Constants.Z_REFERENCE_ID, value: 'Z555', parent: 26, id: 34 }, // existing impl 2
-					{ key: Constants.Z_REFERENCE_ID, value: 'Z666', parent: 27, id: 35 } // existing impl 3
-				] ) );
-
-				beforeEach( function () {
-					context.state = {
-						zobject: initialZObject
-					};
-					context.rootState = {
-						zobjectModule: context.state
-					};
-					Object.keys( zobjectModule.getters ).forEach( function ( key ) {
-						context.getters[ key ] =
-							zobjectModule.getters[ key ](
-								context.state, context.getters,
-								{ zobjectModule: context.state },
-								context.getters );
-					} );
-					context.commit = jest.fn( function ( mutationType, payload ) {
-						zobjectModule.mutations[ mutationType ]( context.state, payload );
-					} );
-					context.dispatch = jest.fn( function ( actionType, payload ) {
-						return {
-							then: function ( fn ) {
-								if ( actionType === 'submitZObject' ) {
-									throw fn();
-								}
-
-								return fn( payload );
-							},
-							catch: function ( fn ) {
-								return fn( 'error' );
-							}
-						};
-					} );
-				} );
-
-				it( 'attachZTesters', async function () {
-					try {
-						zobjectModule.actions.attachZTesters( context,
-							{ functionId: 0, testerZIds: [ 'Z777', 'Z888' ] } );
-					} catch ( error ) {
-						expect( error ).toEqual( 'error' );
-						expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
-						expect( context.commit ).toHaveBeenCalledWith( 'setZObject', initialZObject );
-					}
-				} );
-
-				it( 'detachZTesters', function () {
-					try {
-						zobjectModule.actions.detachZTesters( context,
-							{ functionId: 0, testerZIds: [ 'Z111', 'Z333' ] } );
-					} catch ( error ) {
-						expect( error ).toEqual( 'error' );
-						expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
-						expect( context.commit ).toHaveBeenCalledWith( 'setZObject', initialZObject );
-					}
-				} );
-
-				it( 'attachZImplementations', async function () {
-					try {
-						zobjectModule.actions.attachZImplementations( context,
-							{ functionId: 0, implementationZIds: [ 'Z777', 'Z888' ] } );
-					} catch ( error ) {
-						expect( error ).toEqual( 'error' );
-						expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
-						expect( context.commit ).toHaveBeenCalledWith( 'setZObject', initialZObject );
-					}
-				} );
-
-				it( 'detachZImplementations', function () {
-					try {
-						zobjectModule.actions.detachZImplementations( context,
-							{ functionId: 0, implementationZIds: [ 'Z444', 'Z666' ] } );
-					} catch ( error ) {
-						expect( error ).toEqual( 'error' );
-						expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
-						expect( context.commit ).toHaveBeenCalledWith( 'setZObject', initialZObject );
-					}
-				} );
-			} );
-		} );
-
 		describe( 'injectZObjectFromRowId', function () {
 			beforeEach( function () {
 				context.state = {
@@ -6164,7 +5772,6 @@ describe( 'zobject Vuex module', function () {
 				context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
 				context.getters.getRowIndexById = zobjectModule.getters.getRowIndexById( context.state );
 				context.getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( context.state );
-				context.getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( context.state );
 				context.getters.getZFunctionCallArguments = zobjectModule.getters.getZFunctionCallArguments( context.state, context.getters );
 				// Getters: library module
 				context.getters.getInputsOfFunctionZid = libraryModule.getters.getInputsOfFunctionZid( context.state );
@@ -6350,7 +5957,6 @@ describe( 'zobject Vuex module', function () {
 				context.getters.getRowIndexById = zobjectModule.getters.getRowIndexById( context.state );
 				context.getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( context.state );
 				context.getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( context.state, context.getters );
-				context.getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( context.state );
 				// Getters: library module
 				context.getters.getStoredObject = libraryModule.getters.getStoredObject( context.state );
 				// Getters: addZObject module

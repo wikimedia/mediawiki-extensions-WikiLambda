@@ -10,35 +10,6 @@ const Constants = require( '../../Constants.js' );
 module.exports = exports = {
 	getters: {
 		/**
-		 * Returns a list of all the language Zids that are present
-		 * in the function metadata collection (must have at least
-		 * a name, a description or a set of aliases or input labels).
-		 *
-		 * @param {Object} _state
-		 * @param {Object} getters
-		 * @return {Function}
-		 */
-		getZFunctionLanguages: function ( _state, getters ) {
-			/**
-			 * @param {number} rowId
-			 * @return {Array}
-			 */
-			function findAllLanguages( rowId = 0 ) {
-				// Get languages available in name, description and alias fields
-				const nameLangs = getters.getZPersistentNameLangs( rowId );
-				const descriptionLangs = getters.getZPersistentDescriptionLangs( rowId );
-				const aliasLangs = getters.getZPersistentAliasLangs( rowId );
-				// Get languages available in input labels
-				const inputLangs = getters.getZFunctionInputLangs( rowId );
-				// Combine all languages and return the array of unique languageZids
-				const allLangs = nameLangs.concat( descriptionLangs, aliasLangs, inputLangs );
-				const langZids = allLangs.map( ( lang ) => lang.langZid );
-				return [ ...new Set( langZids ) ];
-			}
-
-			return findAllLanguages;
-		},
-		/**
 		 * Returns the function Zid of a given function given
 		 * the function rowId. If not set, returns undefined
 		 *
@@ -133,7 +104,7 @@ module.exports = exports = {
 		 */
 		getZFunctionOutput: function ( _state, getters ) {
 			/**
-			 * @param {string} rowId
+			 * @param {number} rowId
 			 * @return {Object|undefined}
 			 */
 			function findZFunctionOutput( rowId = 0 ) {
@@ -155,12 +126,30 @@ module.exports = exports = {
 		 */
 		getZArgumentTypeRowId: function ( _state, getters ) {
 			/**
-			 * @param {string} rowId
+			 * @param {number} rowId
 			 * @return {number|undefined}
 			 */
 			function findArgumentType( rowId ) {
 				const argType = getters.getRowByKeyPath( [ Constants.Z_ARGUMENT_TYPE ], rowId );
 				return argType ? argType.id : undefined;
+			}
+			return findArgumentType;
+		},
+		/**
+		 * Returns the terminal string value of the input key
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getZArgumentKey: function ( _state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @return {string|undefined}
+			 */
+			function findArgumentType( rowId ) {
+				const argKey = getters.getRowByKeyPath( [ Constants.Z_ARGUMENT_KEY ], rowId );
+				return argKey ? getters.getZStringTerminalValue( argKey.id ) : undefined;
 			}
 			return findArgumentType;
 		},
@@ -194,6 +183,240 @@ module.exports = exports = {
 				return argLabel;
 			}
 			return findArgumentLabel;
+		},
+		/**
+		 * Returns ZIDs for testers connected to the root function.
+		 * Note that this returns an array of only items, without the type from index 0.
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getConnectedTests: function ( state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @return {Array}
+			 */
+			return function ( rowId ) {
+				const testsRow = getters.getRowByKeyPath( [
+					Constants.Z_PERSISTENTOBJECT_VALUE,
+					Constants.Z_FUNCTION_TESTERS
+				], rowId );
+
+				if ( !testsRow ) {
+					return [];
+				}
+				const childRows = getters.getChildrenByParentRowId( testsRow.id ).slice( 1 );
+				return childRows.map( ( row ) => getters.getZReferenceTerminalValue( row.id ) );
+			};
+		},
+		/**
+		 * Returns ZIDs for implementations connected to the root function.
+		 * Note that this returns an array of only items, without the type from index 0.
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getConnectedImplementations: function ( state, getters ) {
+			/**
+			 * @param {string} rowId
+			 * @return {Array}
+			 */
+			return function ( rowId ) {
+				const implementationsRow = getters.getRowByKeyPath( [
+					Constants.Z_PERSISTENTOBJECT_VALUE,
+					Constants.Z_FUNCTION_IMPLEMENTATIONS
+				], rowId );
+
+				if ( !implementationsRow ) {
+					return [];
+				}
+				const childRows = getters.getChildrenByParentRowId( implementationsRow.id ).slice( 1 );
+				return childRows.map( ( row ) => getters.getZReferenceTerminalValue( row.id ) );
+			};
+		}
+	},
+	actions: {
+		/**
+		 * Adds the given tests to the current function's list of
+		 * of connected tests and persists the change.
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 * @param {string} payload.rowId - the rowId of the function
+		 * @param {Array} payload.zids - the Zids of the tests to connect
+		 * @return {Promise}
+		 */
+		connectTests: function ( context, payload ) {
+			// Save a copy of the pre-submission ZObject in case the submission returns an error
+			const zobjectCopy = context.getters.getZObjectCopy;
+
+			const listRow = context.getters.getRowByKeyPath( [
+				Constants.Z_PERSISTENTOBJECT_VALUE,
+				Constants.Z_FUNCTION_TESTERS
+			], payload.rowId );
+
+			return context
+				.dispatch( 'pushValuesToList', { rowId: listRow.id, values: payload.zids } )
+				.then( () => {
+					return context.dispatch( 'submitZObject', '' ).catch( ( e ) => {
+						// Reset old ZObject if something failed
+						context.commit( 'setZObject', zobjectCopy );
+						throw e;
+					} );
+				} );
+		},
+		/**
+		 * Adds the given implementations to the current function's list of
+		 * of connected implementations and persists the change.
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 * @param {string} payload.rowId - the rowId of the function
+		 * @param {Array} payload.zids - the Zids of the implementations to connect
+		 * @return {Promise}
+		 */
+		connectImplementations: function ( context, payload ) {
+			// Save a copy of the pre-submission ZObject in case the submission returns an error
+			const zobjectCopy = context.getters.getZObjectCopy;
+
+			const listRow = context.getters.getRowByKeyPath( [
+				Constants.Z_PERSISTENTOBJECT_VALUE,
+				Constants.Z_FUNCTION_IMPLEMENTATIONS
+			], payload.rowId );
+
+			return context
+				.dispatch( 'pushValuesToList', { rowId: listRow.id, values: payload.zids } )
+				.then( () => {
+					return context.dispatch( 'submitZObject', '' ).catch( ( e ) => {
+						// Reset old ZObject if something failed
+						context.commit( 'setZObject', zobjectCopy );
+						throw e;
+					} );
+				} );
+		},
+		/**
+		 * Removes the given tests from the the current function's list of
+		 * of connected tests and persists the change.
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 * @param {Object} payload.rowId - the rowId of the function
+		 * @param {Array} payload.zids - the Zids of the tests to disconnect
+		 * @return {Promise}
+		 */
+		disconnectTests: function ( context, payload ) {
+			// Save a copy of the pre-submission ZObject in case the submission returns an error
+			const zobjectCopy = context.getters.getZObjectCopy;
+
+			// Find the item rows to delete from the list
+			const listRow = context.getters.getRowByKeyPath( [
+				Constants.Z_PERSISTENTOBJECT_VALUE,
+				Constants.Z_FUNCTION_TESTERS
+			], payload.rowId );
+			const listItems = context.getters.getChildrenByParentRowId( listRow.id ).slice( 1 );
+			const deleteRows = listItems.filter( ( row ) => {
+				const reference = context.getters.getZReferenceTerminalValue( row.id );
+				return payload.zids.includes( reference );
+			} );
+
+			// Delete items from the list and recalculate the list keys
+			for ( const row of deleteRows ) {
+				context.dispatch( 'removeZObjectChildren', row.id );
+				context.dispatch( 'removeZObject', row.id );
+			}
+			context.dispatch( 'recalculateTypedListKeys', listRow.id );
+
+			return context.dispatch( 'submitZObject', '' ).catch( ( e ) => {
+				// Reset old ZObject if something failed
+				context.commit( 'setZObject', zobjectCopy );
+				throw e;
+			} );
+		},
+		/**
+		 * Removes the given implementations from the the current function's list of
+		 * of connected implementations and persists the change.
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 * @param {Object} payload.rowId - the rowId of the function
+		 * @param {Array} payload.zids - the Zids of the implementations to disconnect
+		 * @return {Promise}
+		 */
+		disconnectImplementations: function ( context, payload ) {
+			const zobjectCopy = context.getters.getZObjectCopy;
+
+			// Find the item rows to delete from the list
+			const listRow = context.getters.getRowByKeyPath( [
+				Constants.Z_PERSISTENTOBJECT_VALUE,
+				Constants.Z_FUNCTION_IMPLEMENTATIONS
+			], payload.rowId );
+			const listItems = context.getters.getChildrenByParentRowId( listRow.id ).slice( 1 );
+			const deleteRows = listItems.filter( ( row ) => {
+				const reference = context.getters.getZReferenceTerminalValue( row.id );
+				return payload.zids.includes( reference );
+			} );
+
+			// Delete items from the list and recalculate the list keys
+			for ( const row of deleteRows ) {
+				context.dispatch( 'removeZObjectChildren', row.id );
+				context.dispatch( 'removeZObject', row.id );
+			}
+			context.dispatch( 'recalculateTypedListKeys', listRow.id );
+
+			return context.dispatch( 'submitZObject', '' ).catch( ( e ) => {
+				// Reset old ZObject if something failed
+				context.commit( 'setZObject', zobjectCopy );
+				throw e;
+			} );
+		},
+		/**
+		 * Triggers the fetch of all (connected and disconnected) tests for the i
+		 * given function Zid. Also fetches other relevant object Zids.
+		 *
+		 * @param {Object} context
+		 * @param {string} functionZid
+		 * @return {Promise}
+		 */
+		fetchTests: function ( context, functionZid ) {
+			const api = new mw.Api();
+			return api.get( {
+				action: 'query',
+				list: 'wikilambdafn_search',
+				format: 'json',
+				wikilambdafn_zfunction_id: functionZid,
+				wikilambdafn_type: Constants.Z_TESTER,
+				wikilambdafn_limit: Constants.API_LIMIT_MAX
+			} ).then( ( response ) => {
+				const zids = response.query.wikilambdafn_search.map( ( item ) => item.zid );
+				context.dispatch( 'fetchZids', { zids } );
+				return zids;
+			} );
+		},
+		/**
+		 * Triggers the fetch of all (connected and disconnected) implementations for the given
+		 * functionZid. Also fetches other relevant object Zids.
+		 *
+		 * @param {Object} context
+		 * @param {string} functionZid
+		 * @return {Promise}
+		 */
+		fetchImplementations: function ( context, functionZid ) {
+			const api = new mw.Api();
+			return api.get( {
+				action: 'query',
+				list: 'wikilambdafn_search',
+				format: 'json',
+				wikilambdafn_zfunction_id: functionZid,
+				wikilambdafn_type: Constants.Z_IMPLEMENTATION,
+				wikilambdafn_limit: Constants.API_LIMIT_MAX
+			} ).then( ( response ) => {
+				const zids = response.query.wikilambdafn_search.map( ( item ) => item.zid );
+				// context.commit( 'setImplementations', zids );
+				context.dispatch( 'fetchZids', { zids } );
+				return zids;
+			} );
 		}
 	}
 };

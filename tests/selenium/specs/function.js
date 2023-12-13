@@ -37,8 +37,8 @@ const assert = require( 'assert' ),
 	LoginPage = require( 'wdio-mediawiki/LoginPage' );
 
 describe( 'Function', function () {
-	describe( 'Function viewer (CUJ1)', function () {
 
+	describe( 'Function viewer (CUJ1)', function () {
 		it( 'should allow to evaluate a function', async function () {
 			await LoginPage.loginAdmin();
 			await ListObjectsByType.open();
@@ -49,8 +49,8 @@ describe( 'Function', function () {
 			await expect( await FunctionPage.getEvaluateFunctionResultSelector( 'foobar' ) )
 				.toBeExisting( { message: 'The response "foobar" is not displayed' } );
 		} );
-
 	} );
+
 	describe( 'Function editor (CUJ2)', function () {
 		let functionTitle;
 		let alias;
@@ -105,53 +105,40 @@ describe( 'Function', function () {
 		} );
 
 		it( 'should display the function name', async function () {
-			await FunctionPage.showNameInOtherLanguages();
 			assert.strictEqual( await FunctionPage.functionTitle.getText(), functionTitle );
-			assert.strictEqual( await FunctionPage.getNameInOtherLanguage( functionTitle + '-French' ).isExisting(), true, 'Should display function name in French' );
-			assert.strictEqual( await FunctionPage.getNameInOtherLanguage( functionTitle + '-German' ).isExisting(), true, 'Should display function name in German' );
+		} );
+
+		it( 'should display an empty description field', async function () {
+			await expect( await FunctionPage.getFunctionDescription() ).toBe( 'No description provided.' );
 		} );
 
 		it( 'should display the function aliases', async function () {
-			await FunctionPage.showMoreAliases();
-			assert.strictEqual( await FunctionPage.getAliasLabel( ALIASES.ENGLISH ).isExisting(), true, `Alias ${ ALIASES.ENGLISH } should be displayed in alias list` );
-			assert.strictEqual( await FunctionPage.getAliasLabel( ALIASES.FRENCH ).isExisting(), true, `Alias ${ ALIASES.FRENCH } should be displayed in alias list` );
-			assert.strictEqual( await FunctionPage.getAliasLabel( ALIASES.GERMAN ).isExisting(), true, `Alias ${ ALIASES.GERMAN } should be displayed in alias list` );
+			const aliases = await FunctionPage.getFunctionAliases();
+			await expect( await aliases[ 0 ] ).toBe( ALIASES.ENGLISH );
 		} );
 
-		it( 'should display the function arguments', async function () {
-			const detailsButton = await FunctionPage.getDetailsTabButton();
-			await detailsButton.click();
-			await FunctionPage.showArgumentsInOtherLanguages();
-			// FIXME: EcmaScript 2019, we can use Array.prototype.flat(). Chrome supports that.
-			// But Eslint seems to be unhappy, so let's use this trick:
-			const labelValues = [].concat( ...Object.values( ARGUMENT_LABELS ) );
-			for ( const label of labelValues ) {
-				assert.strictEqual( await FunctionPage.getArgumentLabel( label ).isExisting(), true, `label "${ label }" should exist in the list of arguments in the Details view` );
+		it( 'should display the input labels and types', async function () {
+			const inputs = await FunctionPage.getFunctionInputs();
+			for ( const index in inputs ) {
+				const expectedLabel = ARGUMENT_LABELS.ENGLISH[ index ];
+				const expectedType = INPUT_TYPES[ index ];
+				await expect( await inputs[ index ] ).toBe( `${ expectedLabel }:\n${ expectedType }` );
 			}
 		} );
 
-		it( 'should display the input types', async function () {
-			for ( const [ index, inputType ] of INPUT_TYPES.entries() ) {
-				await expect( await FunctionPage.getInputType( `Input ${ index + 1 }`, inputType ) ).toBeExisting( { message: `input ${ index + 1 } should have ${ inputType } type` } );
+		it( 'should display the input labels and types 2', async function () {
+			const inputs = await FunctionPage.getFunctionInputBlocks();
+			for ( let index = 0; index++; index < inputs.length ) {
+				const expectedLabel = ARGUMENT_LABELS.ENGLISH[ index ];
+				const expectedType = INPUT_TYPES[ index ];
+				await expect( await FunctionPage.getFunctionInputLabel( inputs[ index ] ) ).toBe( `${ expectedLabel }:` );
+				await expect( await FunctionPage.getFunctionInputType( inputs[ index ] ) ).toBe( expectedType );
 			}
 		} );
 
 		it( 'should display the output type', async function () {
-			await expect( await FunctionPage.getOutputType( 'Output', OUTPUT_TYPE ) ).toBeExisting( { message: `Output should have ${ OUTPUT_TYPE } type` } );
-		} );
-
-		it( 'should edit the function to remove a label', async function () {
-			await FunctionPage.clickOnEditSourceLink();
-			await FunctionForm.removeInput( 1 );
-			await FunctionForm.publishFunction();
-		} );
-
-		it( 'should display the function details without the removed label', async function () {
-			const detailsButton = await FunctionPage.getDetailsTabButton();
-			await detailsButton.click();
-			await FunctionPage.showArgumentsInOtherLanguages();
-			assert.strictEqual( await FunctionPage.getArgumentLabel( ARGUMENT_LABELS.FRENCH[ 0 ] ).isExisting(), true, 'French first argument should exist' );
-			assert.strictEqual( await FunctionPage.getArgumentLabel( ARGUMENT_LABELS.FRENCH[ 1 ] ).isExisting(), false, 'French second argument should NOT exist anymore' );
+			const outputType = await FunctionPage.getFunctionOutputType();
+			await expect( outputType ).toBe( OUTPUT_TYPE );
 		} );
 	} );
 } );

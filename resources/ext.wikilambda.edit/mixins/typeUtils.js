@@ -185,10 +185,6 @@ var Constants = require( '../Constants.js' ),
 				return Number.isInteger( numericalKey ) && numericalKey > 0;
 			},
 
-			isFunctionItemAttached( item, attachedItems ) {
-				return attachedItems.includes( item );
-			},
-
 			/**
 			 * Transform the value of a Z1K1 key (object type) to a string.
 			 * When the type is a reference, return the Zid of the referred type.

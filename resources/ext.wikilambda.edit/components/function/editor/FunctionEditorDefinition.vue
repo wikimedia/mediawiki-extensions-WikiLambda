@@ -78,7 +78,7 @@ module.exports = exports = {
 		'getRowByKeyPath',
 		'getUserLangZid',
 		'getZFunctionInputs',
-		'getZFunctionLanguages',
+		'getMetadataLanguages',
 		'getZFunctionOutput',
 		'getZObjectAsJsonById',
 		'isNewZObject'
@@ -207,7 +207,7 @@ module.exports = exports = {
 	mounted: function () {
 		// Initializ the local array with the collection of available languages
 		// and initialize first label block with user lang if there are none.
-		this.functionLanguages = this.getZFunctionLanguages( this.rowId );
+		this.functionLanguages = this.getMetadataLanguages( this.rowId );
 		if ( this.functionLanguages.length === 0 ) {
 			this.functionLanguages.push( this.getUserLangZid );
 		}

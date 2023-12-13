@@ -11,7 +11,7 @@ const zobjectToRows = require( '../../helpers/zObjectTableHelpers.js' ).zobjectT
 	zFunctionModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zFunction.js' );
 
 describe( 'zFunction Vuex module', () => {
-	let getters;
+	let getters, context;
 
 	describe( 'Getters', () => {
 		describe( 'getZFunctionInputs', () => {
@@ -143,67 +143,6 @@ describe( 'zFunction Vuex module', () => {
 					{ langZid: 'Z1003', langIsoCode: 'es', rowId: 34 }
 				];
 				const current = zFunctionModule.getters.getZFunctionInputLangs( state, getters )();
-				expect( current ).toStrictEqual( expected );
-			} );
-		} );
-
-		describe( 'getZFunctionLanguages', () => {
-			beforeEach( () => {
-				getters = {};
-				getters.getZPersistentNameLangs = () => [];
-				getters.getZPersistentDescriptionLangs = () => [];
-				getters.getZPersistentAliasLangs = () => [];
-				getters.getZFunctionInputLangs = () => [];
-			} );
-
-			it( 'returns empty array when there is no metadata', () => {
-				const expected = [];
-				const current = zFunctionModule.getters.getZFunctionLanguages( state, getters )();
-				expect( current ).toStrictEqual( expected );
-			} );
-
-			it( 'returns array with one language', () => {
-				getters.getZPersistentNameLangs = () => [ { langZid: 'Z1002', langIsoCode: 'en', rowId: 1 } ];
-				getters.getZPersistentDescriptionLangs = () => [ { langZid: 'Z1002', langIsoCode: 'en', rowId: 2 } ];
-				getters.getZPersistentAliasLangs = () => [ { langZid: 'Z1002', langIsoCode: 'en', rowId: 4 } ];
-				getters.getZFunctionInputLangs = () => [ { langZid: 'Z1002', langIsoCode: 'en', rowId: 5 } ];
-
-				const expected = [ 'Z1002' ];
-				const current = zFunctionModule.getters.getZFunctionLanguages( state, getters )();
-				expect( current ).toStrictEqual( expected );
-			} );
-
-			it( 'returns array with four non overlapping languages', () => {
-				getters.getZPersistentNameLangs = () => [ { langZid: 'Z1003', langIsoCode: 'es', rowId: 1 } ];
-				getters.getZPersistentDescriptionLangs = () => [ { langZid: 'Z1002', langIsoCode: 'en', rowId: 2 } ];
-				getters.getZPersistentAliasLangs = () => [ { langZid: 'Z1004', langIsoCode: 'fr', rowId: 4 } ];
-				getters.getZFunctionInputLangs = () => [ { langZid: 'Z1006', langIsoCode: 'zh', rowId: 5 } ];
-
-				const expected = [ 'Z1003', 'Z1002', 'Z1004', 'Z1006' ];
-				const current = zFunctionModule.getters.getZFunctionLanguages( state, getters )();
-				expect( current ).toStrictEqual( expected );
-			} );
-
-			it( 'returns array with two overlapping languages', () => {
-				getters.getZPersistentNameLangs = () => [
-					{ langZid: 'Z1002', langIsoCode: 'en', rowId: 1 },
-					{ langZid: 'Z1003', langIsoCode: 'es', rowId: 2 }
-				];
-				getters.getZPersistentDescriptionLangs = () => [
-					{ langZid: 'Z1002', langIsoCode: 'en', rowId: 3 },
-					{ langZid: 'Z1003', langIsoCode: 'es', rowId: 4 }
-				];
-				getters.getZPersistentAliasLangs = () => [
-					{ langZid: 'Z1002', langIsoCode: 'en', rowId: 5 },
-					{ langZid: 'Z1003', langIsoCode: 'es', rowId: 6 }
-				];
-				getters.getZFunctionInputLangs = () => [
-					{ langZid: 'Z1002', langIsoCode: 'en', rowId: 7 },
-					{ langZid: 'Z1003', langIsoCode: 'es', rowId: 8 }
-				];
-
-				const expected = [ 'Z1002', 'Z1003' ];
-				const current = zFunctionModule.getters.getZFunctionLanguages( state, getters )();
 				expect( current ).toStrictEqual( expected );
 			} );
 		} );
@@ -397,6 +336,386 @@ describe( 'zFunction Vuex module', () => {
 				expect( row.id ).toEqual( 72 );
 				expect( zobjectModule.getters.getZMonolingualTextValue( state, getters )( row.id ) )
 					.toEqual( 'segundo argumento' );
+			} );
+		} );
+
+		describe( 'getConnectedTests and getConnectedImplementations', () => {
+			beforeEach( () => {
+				state.zobject = zobjectToRows( {
+					Z1K1: 'Z2',
+					Z2K2: {
+						Z1K1: 'Z8',
+						Z8K1: [ 'Z17' ],
+						Z8K2: 'Z6',
+						Z8K3: [ 'Z20', 'Z10002', 'Z10003' ],
+						Z8K4: [ 'Z14', 'Z10004', 'Z10005' ]
+					}
+				} );
+				getters = {};
+				getters.getRowById = zobjectModule.getters.getRowById( state );
+				getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+				getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
+				getters.getZReferenceTerminalValue = zobjectModule.getters.getZReferenceTerminalValue( state, getters );
+			} );
+			it( 'return attached tests', () => {
+				expect( zFunctionModule.getters.getConnectedTests( state, getters )( 0 ) )
+					.toEqual( [ 'Z10002', 'Z10003' ] );
+			} );
+			it( 'return attached implementations', () => {
+				expect( zFunctionModule.getters.getConnectedImplementations( state, getters )( 0 ) )
+					.toEqual( [ 'Z10004', 'Z10005' ] );
+			} );
+		} );
+	} );
+
+	describe( 'Actions', () => {
+		context = {};
+
+		describe( 'Connect and disconnect tests and implementations', () => {
+			beforeEach( () => {
+				// State
+				const initialFunction = {
+					Z1K1: 'Z2',
+					Z2K2: {
+						Z1K1: 'Z8',
+						Z8K1: [ 'Z17' ],
+						Z8K2: 'Z6',
+						Z8K3: [ 'Z20', 'Z10002', 'Z10003' ],
+						Z8K4: [ 'Z14', 'Z10004', 'Z10005' ]
+					}
+				};
+				context.state = {
+					zobject: zobjectToRows( initialFunction ),
+					errors: {}
+				};
+				context.rootState = {
+					zobjectModule: context.state
+				};
+
+				// Getters
+				context.getters = {};
+				Object.keys( zobjectModule.getters ).forEach( function ( key ) {
+					context.getters[ key ] =
+						zobjectModule.getters[ key ](
+							context.state, context.getters,
+							{ zobjectModule: context.state },
+							context.getters );
+				} );
+
+				// Mutations
+				context.commit = jest.fn( ( mutationType, payload ) => {
+					if ( mutationType in zobjectModule.mutations ) {
+						zobjectModule.mutations[ mutationType ]( context.state, payload );
+					}
+				} );
+
+				// Actions
+				context.dispatch = jest.fn( ( actionType, payload ) => {
+					let result;
+					if ( actionType in zobjectModule.actions ) {
+						result = zobjectModule.actions[ actionType ]( context, payload );
+					}
+					// return then and catch
+					return {
+						then: ( fn ) => fn( result ),
+						catch: () => 'error'
+					};
+				} );
+			} );
+
+			describe( 'connect', () => {
+				it( 'connects given tests', () => {
+					zFunctionModule.actions.connectTests( context,
+						{ rowId: 0, zids: [ 'Z777', 'Z888' ] } );
+
+					expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z2' },
+						Z2K2: {
+							Z1K1: { Z1K1: 'Z9', Z9K1: 'Z8' },
+							Z8K1: [ { Z1K1: 'Z9', Z9K1: 'Z17' } ],
+							Z8K2: { Z1K1: 'Z9', Z9K1: 'Z6' },
+							Z8K3: [
+								{ Z1K1: 'Z9', Z9K1: 'Z20' },
+								{ Z1K1: 'Z9', Z9K1: 'Z10002' },
+								{ Z1K1: 'Z9', Z9K1: 'Z10003' },
+								{ Z1K1: 'Z9', Z9K1: 'Z777' },
+								{ Z1K1: 'Z9', Z9K1: 'Z888' }
+							],
+							Z8K4: [
+								{ Z1K1: 'Z9', Z9K1: 'Z14' },
+								{ Z1K1: 'Z9', Z9K1: 'Z10004' },
+								{ Z1K1: 'Z9', Z9K1: 'Z10005' }
+							]
+						}
+					} );
+				} );
+
+				it( 'connects given implementations', () => {
+					zFunctionModule.actions.connectImplementations( context,
+						{ rowId: 0, zids: [ 'Z777', 'Z888' ] } );
+
+					expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z2' },
+						Z2K2: {
+							Z1K1: { Z1K1: 'Z9', Z9K1: 'Z8' },
+							Z8K1: [ { Z1K1: 'Z9', Z9K1: 'Z17' } ],
+							Z8K2: { Z1K1: 'Z9', Z9K1: 'Z6' },
+							Z8K3: [
+								{ Z1K1: 'Z9', Z9K1: 'Z20' },
+								{ Z1K1: 'Z9', Z9K1: 'Z10002' },
+								{ Z1K1: 'Z9', Z9K1: 'Z10003' }
+							],
+							Z8K4: [
+								{ Z1K1: 'Z9', Z9K1: 'Z14' },
+								{ Z1K1: 'Z9', Z9K1: 'Z10004' },
+								{ Z1K1: 'Z9', Z9K1: 'Z10005' },
+								{ Z1K1: 'Z9', Z9K1: 'Z777' },
+								{ Z1K1: 'Z9', Z9K1: 'Z888' }
+							]
+						}
+					} );
+				} );
+			} );
+
+			describe( 'disconnect', () => {
+				it( 'disconnects given testers', () => {
+					zFunctionModule.actions.disconnectTests( context,
+						{ rowId: 0, zids: [ 'Z10002', 'Z10003' ] } );
+
+					expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z2' },
+						Z2K2: {
+							Z1K1: { Z1K1: 'Z9', Z9K1: 'Z8' },
+							Z8K1: [ { Z1K1: 'Z9', Z9K1: 'Z17' } ],
+							Z8K2: { Z1K1: 'Z9', Z9K1: 'Z6' },
+							Z8K3: [
+								{ Z1K1: 'Z9', Z9K1: 'Z20' }
+							],
+							Z8K4: [
+								{ Z1K1: 'Z9', Z9K1: 'Z14' },
+								{ Z1K1: 'Z9', Z9K1: 'Z10004' },
+								{ Z1K1: 'Z9', Z9K1: 'Z10005' }
+							]
+						}
+					} );
+				} );
+
+				it( 'disconnects given implementations', () => {
+					zFunctionModule.actions.disconnectImplementations( context,
+						{ rowId: 0, zids: [ 'Z10004', 'Z10005' ] } );
+
+					expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z2' },
+						Z2K2: {
+							Z1K1: { Z1K1: 'Z9', Z9K1: 'Z8' },
+							Z8K1: [ { Z1K1: 'Z9', Z9K1: 'Z17' } ],
+							Z8K2: { Z1K1: 'Z9', Z9K1: 'Z6' },
+							Z8K3: [
+								{ Z1K1: 'Z9', Z9K1: 'Z20' },
+								{ Z1K1: 'Z9', Z9K1: 'Z10002' },
+								{ Z1K1: 'Z9', Z9K1: 'Z10003' }
+							],
+							Z8K4: [
+								{ Z1K1: 'Z9', Z9K1: 'Z14' }
+							]
+						}
+					} );
+				} );
+			} );
+
+			describe( 'revert zObject to previous state if api fails', () => {
+				const initialZObject = zobjectToRows( {
+					Z1K1: 'Z2',
+					Z2K2: {
+						Z1K1: 'Z8',
+						Z8K1: [ 'Z17' ],
+						Z8K2: 'Z6',
+						Z8K3: [ 'Z20' ],
+						Z8K4: [ 'Z14' ]
+					}
+				} );
+
+				beforeEach( () => {
+					context.state = {
+						zobject: initialZObject
+					};
+					context.rootState = {
+						zobjectModule: context.state
+					};
+					Object.keys( zobjectModule.getters ).forEach( function ( key ) {
+						context.getters[ key ] =
+							zobjectModule.getters[ key ](
+								context.state, context.getters,
+								{ zobjectModule: context.state },
+								context.getters );
+					} );
+					context.commit = jest.fn( function ( mutationType, payload ) {
+						zobjectModule.mutations[ mutationType ]( context.state, payload );
+					} );
+					context.dispatch = jest.fn( function ( actionType, payload ) {
+						return {
+							then: function ( fn ) {
+								if ( actionType === 'submitZObject' ) {
+									throw fn();
+								}
+								return fn( payload );
+							},
+							catch: function ( fn ) {
+								return fn( 'error' );
+							}
+						};
+					} );
+				} );
+
+				it( 'connectTests', () => {
+					try {
+						zFunctionModule.actions.connectTests( context,
+							{ rowId: 0, zids: [ 'Z777', 'Z888' ] } );
+					} catch ( error ) {
+						expect( error ).toEqual( 'error' );
+						expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
+						expect( context.commit ).toHaveBeenCalledWith( 'setZObject', initialZObject );
+					}
+				} );
+
+				it( 'disconnectTests', () => {
+					try {
+						zFunctionModule.actions.disconnectTests( context,
+							{ rowId: 0, zids: [ 'Z111', 'Z333' ] } );
+					} catch ( error ) {
+						expect( error ).toEqual( 'error' );
+						expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
+						expect( context.commit ).toHaveBeenCalledWith( 'setZObject', initialZObject );
+					}
+				} );
+
+				it( 'connectImplementations', () => {
+					try {
+						zFunctionModule.actions.connectImplementations( context,
+							{ rowId: 0, zids: [ 'Z777', 'Z888' ] } );
+					} catch ( error ) {
+						expect( error ).toEqual( 'error' );
+						expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
+						expect( context.commit ).toHaveBeenCalledWith( 'setZObject', initialZObject );
+					}
+				} );
+
+				it( 'disconnectImplementations', () => {
+					try {
+						zFunctionModule.actions.disconnectImplementations( context,
+							{ rowId: 0, zids: [ 'Z444', 'Z666' ] } );
+					} catch ( error ) {
+						expect( error ).toEqual( 'error' );
+						expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
+						expect( context.commit ).toHaveBeenCalledWith( 'setZObject', initialZObject );
+					}
+				} );
+			} );
+		} );
+
+		describe( 'fetch tests and implementations', () => {
+			let getMock, getResolveMock;
+			const mockApiResponse = {
+				batchcomplete: '',
+				query: {
+					wikilambdafn_search: [
+						{
+							page_namespace: 0,
+							zid: 'Z10001'
+						},
+						{
+							page_namespace: 0,
+							zid: 'Z10002'
+						}
+					]
+				}
+			};
+
+			beforeEach( () => {
+				getResolveMock = jest.fn( ( thenFunction ) => {
+					return thenFunction( mockApiResponse );
+				} );
+				getMock = jest.fn( () => {
+					return {
+						then: getResolveMock
+					};
+				} );
+				mw.Api = jest.fn( () => {
+					return {
+						get: getMock
+					};
+				} );
+
+				context = $.extend( {}, {
+					commit: jest.fn(),
+					dispatch: jest.fn( () => {
+						return {
+							then: ( thenFunction ) => thenFunction()
+						};
+					} )
+				} );
+			} );
+
+			it( 'calls api.get for tests and returns their zids', () => {
+				const functionZid = 'Z801';
+				const zids = zFunctionModule.actions.fetchTests(
+					context,
+					functionZid
+				);
+				expect( zids ).toEqual( [ 'Z10001', 'Z10002' ] );
+				expect( getMock ).toHaveBeenCalledWith( {
+					action: 'query',
+					list: 'wikilambdafn_search',
+					format: 'json',
+					wikilambdafn_zfunction_id: 'Z801',
+					wikilambdafn_type: 'Z20',
+					wikilambdafn_limit: 100
+				} );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZids', { zids: [ 'Z10001', 'Z10002' ] } );
+			} );
+
+			it( 'calls api.get for implementations and returns their zids', () => {
+				const functionZid = 'Z801';
+				const zids = zFunctionModule.actions.fetchImplementations(
+					context,
+					functionZid
+				);
+
+				expect( zids ).toEqual( [ 'Z10001', 'Z10002' ] );
+				expect( getMock ).toHaveBeenCalledWith( {
+					action: 'query',
+					list: 'wikilambdafn_search',
+					format: 'json',
+					wikilambdafn_zfunction_id: 'Z801',
+					wikilambdafn_type: 'Z14',
+					wikilambdafn_limit: 100
+				} );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZids', { zids: [ 'Z10001', 'Z10002' ] } );
 			} );
 		} );
 	} );

@@ -78,10 +78,10 @@
 </template>
 
 <script>
-var CdxProgressBar = require( '@wikimedia/codex' ).CdxProgressBar,
+const CdxProgressBar = require( '@wikimedia/codex' ).CdxProgressBar,
 	CdxCheckbox = require( '@wikimedia/codex' ).CdxCheckbox,
 	ZObjectToString = require( '../default-view-types/ZObjectToString.vue' ),
-	ZFunctionTesterTable = require( '../function/ZFunctionTesterTable.vue' ),
+	FunctionTesterTable = require( '../function/viewer/FunctionTesterTable.vue' ),
 	CdxInfoChip = require( '@wikimedia/codex' ).CdxInfoChip,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon;
@@ -96,7 +96,7 @@ module.exports = exports = {
 		'cdx-icon': CdxIcon,
 		'cdx-info-chip': CdxInfoChip,
 		'wl-z-object-to-string': ZObjectToString,
-		'wl-z-function-tester-table': ZFunctionTesterTable
+		'wl-function-tester-table': FunctionTesterTable
 	},
 	props: {
 		header: { // example: { language: "Language" } or { language: { title: "Language" mobile: false } }
@@ -131,6 +131,7 @@ module.exports = exports = {
 .ext-wikilambda-table {
 	position: relative;
 	border: 1px solid @border-color-subtle;
+	border-radius: @border-radius-base;
 
 	&__title {
 		white-space: nowrap;
@@ -164,13 +165,13 @@ module.exports = exports = {
 
 		&__row {
 			&__item {
-				height: 50px;
 				align-items: center;
 				vertical-align: middle;
-				border-top: 1px solid @border-color-subtle;
+				border-top: 1px solid @background-color-interactive;
 				font-size: 1em;
 				line-height: 1.4em;
 				letter-spacing: -0.003em;
+				padding: 12px 0 12px 0;
 
 				span,
 				div,
@@ -188,6 +189,7 @@ module.exports = exports = {
 		&__header {
 			.ext-wikilambda-table__content__row__item {
 				border-top: 0;
+				border-bottom: 1px solid @border-color-subtle;
 				white-space: nowrap;
 
 				&--header {

@@ -64,27 +64,30 @@ class AboutBlock {
 	// #region About Block content
 
 	/**
-	 * Get the label displayed in the about block
-	 *
-	 * @async
-	 * @return {string}
-	 */
-	async getAboutBlockLabel() {
-		const selector = this.aboutBlock.$( './/div[text()="labels"]//following-sibling::div' );
-		const text = ElementActions.getText( selector );
-		return text;
-	}
-
-	/**
 	 * Get the description displayed in the about block
 	 *
 	 * @async
 	 * @return {string}
 	 */
 	async getAboutBlockDescription() {
-		const selector = this.aboutBlock.$( './/div[text()="short descriptions"]//following-sibling::div' );
+		const selector = this.aboutBlock.$( '.ext-wikilambda-about-description' );
 		const text = ElementActions.getText( selector );
 		return text;
+	}
+
+	/**
+	 * Get the aliases displayed in the about block
+	 *
+	 * @async
+	 * @return {Array}
+	 */
+	async getAboutBlockAliases() {
+		const aliasesBlock = await this.aboutBlock.$( '.ext-wikilambda-about-aliases' );
+		const aliases = await aliasesBlock.$$( '.ext-wikilambda-about-alias' );
+		return aliases.map( ( aliasElement ) => {
+			const text = ElementActions.getText( aliasElement );
+			return text;
+		} );
 	}
 
 	/**

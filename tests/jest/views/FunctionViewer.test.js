@@ -6,20 +6,19 @@
  */
 'use strict';
 
-var VueTestUtils = require( '@vue/test-utils' ),
+const VueTestUtils = require( '@vue/test-utils' ),
+	createGetterMock = require( '../helpers/getterHelpers.js' ).createGetterMock,
 	FunctionViewer = require( '../../../resources/ext.wikilambda.edit/views/FunctionViewer.vue' );
 
-describe( 'FunctionViewer', function () {
-	var getters;
+describe( 'FunctionViewer', () => {
 	const functionZid = 'Z12345';
+	let getters;
 
-	beforeEach( function () {
+	beforeEach( () => {
 		getters = {
+			getCurrentZObjectId: createGetterMock( functionZid )
 		};
-
-		global.store.hotUpdate( {
-			getters: getters
-		} );
+		global.store.hotUpdate( { getters: getters } );
 
 		window.mw.Uri.mockImplementation( () => {
 			return {
@@ -27,26 +26,26 @@ describe( 'FunctionViewer', function () {
 			};
 		} );
 
-		VueTestUtils.config.global.mocks.$i18n = jest.fn().mockImplementation( function () {
+		VueTestUtils.config.global.mocks.$i18n = jest.fn().mockImplementation( () => {
 			return {
 				text: jest.fn()
 			};
 		} );
 	} );
 
-	it( 'renders without errors', function () {
-		var wrapper = VueTestUtils.shallowMount( FunctionViewer );
+	it( 'renders without errors', () => {
+		const wrapper = VueTestUtils.shallowMount( FunctionViewer );
 
 		expect( wrapper.find( '.ext-wikilambda-function-viewer' ).exists() ).toBeTruthy();
 	} );
 
-	it( 'does not display success message by default', function () {
-		var wrapper = VueTestUtils.shallowMount( FunctionViewer );
+	it( 'does not display success message by default', () => {
+		const wrapper = VueTestUtils.shallowMount( FunctionViewer );
 
 		expect( wrapper.find( '.ext-wikilambda-function-viewer__message' ).exists() ).toBeFalsy();
 	} );
 
-	it( 'displays success message if indicated in url', function () {
+	it( 'displays success message if indicated in url', () => {
 		window.mw.Uri.mockImplementation( () => {
 			return {
 				path: '/wiki/' + functionZid,
@@ -55,8 +54,8 @@ describe( 'FunctionViewer', function () {
 				}
 			};
 		} );
-		var wrapper = VueTestUtils.shallowMount( FunctionViewer );
+		const wrapper = VueTestUtils.shallowMount( FunctionViewer );
 
-		expect( wrapper.find( '.ext-wikilambda-function-viewer__message' ).exists() ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-toast-message' ).exists() ).toBeTruthy();
 	} );
 } );

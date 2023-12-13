@@ -9,7 +9,7 @@
 		<div
 			v-if="hasHeaderSlot || hasHeaderAction"
 			class="ext-wikilambda-widget-base-header"
-			:class="`${ hasHeaderAction ? 'ext-wikilambda-widget-base-header-with-action' : '' }`"
+			:class="{ 'ext-wikilambda-widget-base-header-with-action': hasHeaderAction }"
 		>
 			<!-- Header title slot -->
 			<div v-if="hasHeaderSlot" class="ext-wikilambda-widget-base-header-title">
@@ -21,11 +21,7 @@
 			</div>
 		</div>
 		<!-- Main slot -->
-		<div
-			class="
-			ext-wikilambda-widget-base-main
-			ext-wikilambda-field-overrides
-		">
+		<div class="ext-wikilambda-widget-base-main ext-wikilambda-field-overrides">
 			<slot name="main"></slot>
 		</div>
 		<!-- Footer action slot -->
@@ -79,6 +75,7 @@ module.exports = exports = {
 			color: @color-base;
 			font-weight: @font-weight-bold;
 			line-height: @line-height-x-small;
+			font-size: @font-size-large;
 		}
 
 		.ext-wikilambda-widget-base-header-action {
@@ -87,11 +84,6 @@ module.exports = exports = {
 			margin-right: -@spacing-35;
 			margin-top: -@spacing-35;
 		}
-	}
-
-	.ext-wikilambda-widget-base-footer {
-		margin-top: @spacing-50;
-		font-size: @font-size-small;
 	}
 }
 </style>

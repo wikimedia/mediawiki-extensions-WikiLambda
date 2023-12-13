@@ -105,10 +105,6 @@ describe( 'Tester', () => {
 			await FunctionPage.open( functionDetails.ZId );
 			await expect( await FunctionPage.functionTitle )
 				.toHaveText( functionDetails.ZObjectLabel );
-			await FunctionPage.switchToDetailsTab();
-			const detailsTab = await FunctionPage.getDetailsTabButton();
-			await expect( await detailsTab ).toHaveAttribute( 'aria-selected', 'true',
-				{ message: 'Not able to switch to details view' } );
 			await FunctionPage.goToCreateNewTestLink();
 
 			/**
@@ -182,10 +178,7 @@ describe( 'Tester', () => {
 
 		describe( 'Show details of new test created', () => {
 
-			it( 'should display the information in the about section', async () => {
-				await expect( await TesterPage.getTesterLabel() ).toBe(
-					aboutBlockEntriesEnglish.label,
-					{ message: `Tester page is not displaying the tester label as expected to be ${ aboutBlockEntriesEnglish.label }` } );
+			it( 'should display the tester description in the about section', async () => {
 				await expect( await TesterPage.getTesterDescription() ).toBe(
 					aboutBlockEntriesEnglish.description,
 					{ message: `Tester page is not displaying the tester description as expected to be ${ aboutBlockEntriesEnglish.description }` } );
@@ -279,16 +272,11 @@ describe( 'Tester', () => {
 		} );
 
 		describe( 'Show details of edited test', () => {
-
 			it( 'should display the information in the about section', async () => {
-				await expect( await TesterPage.getTesterLabel() ).toBe(
-					aboutBlockEditEntries.label,
-					{ message: `Tester page is not displaying the tester label as expected to be ${ aboutBlockEditEntries.label }` } );
 				await expect( await TesterPage.getTesterDescription() ).toBe(
 					aboutBlockEditEntries.description,
 					{ message: `Tester page is not displaying the tester description as expected to be ${ aboutBlockEditEntries.description }` } );
 			} );
-
 		} );
 	} );
 } );

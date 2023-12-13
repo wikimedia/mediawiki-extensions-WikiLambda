@@ -15,7 +15,7 @@ describe( 'FunctionEditorDefinitionLanguage', () => {
 
 	beforeEach( () => {
 		getters = {
-			getZFunctionLanguages: createGettersWithFunctionsMock( [ 'Z1002', 'Z1004' ] )
+			getMetadataLanguages: createGettersWithFunctionsMock( [ 'Z1002', 'Z1004' ] )
 		};
 		global.store.hotUpdate( {
 			getters: getters

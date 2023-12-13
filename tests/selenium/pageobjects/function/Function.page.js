@@ -9,6 +9,7 @@
 const Page = require( 'wdio-mediawiki/Page' );
 const ElementActions = require( '../../utils/ElementActions' );
 const EvaluateFunctionBlock = require( '../../componentobjects/EvaluateFunctionBlock' );
+const AboutBlock = require( '../../componentobjects/AboutBlock' );
 const InputDropdown = require( '../../componentobjects/InputDropdown' );
 const { Element: WebdriverIOElementType } = require( 'webdriverio' );
 
@@ -68,65 +69,59 @@ class FunctionPage extends Page {
 		super.openTitle( ZId, { action: 'edit' } );
 	}
 
-	/**
-	 * Click on the details tab
-	 *
-	 * @async
-	 * @return {void}
-	 */
-
-	async getDetailsTabButton() {
-		const pageTabs = await this.functionPageTabs;
-		await pageTabs.waitForExist( { timeout: 10000 } );
-		const tabButtons = await pageTabs.$$( 'button[role="tab"]' );
-		return await tabButtons[ 1 ];
-	}
-
-	async switchToDetailsTab() {
-		// await browser.debug();
-		const detailsTabButton = await this.getDetailsTabButton();
-		await ElementActions.doClick( detailsTabButton );
-	}
-
 	// #endregion Header Section
 
-	// #region About Section
+	// #region About Widget
 
-	// #region About Sidebar
-
-	/**
-	 * Click on the "Show name in other languages" button.
-	 * This displays the list of the "name of the function" in different languages.
-	 *
-	 * @async
-	 * @return {void}
-	 */
-	async showNameInOtherLanguages() {
-		const button = $( 'button*=Show name in other languages' );
-		await ElementActions.doClick( button );
+	get aboutBlock() {
+		return AboutBlock.aboutBlock;
 	}
 
-	/**
-	 * Click on the "Show more languages" button.
-	 * This displays the list of the "alias of the function" in different languages.
-	 *
-	 * @async
-	 * @return {void}
-	 */
-	async showMoreAliases() {
-		const button = $( 'button*=Show more languages' );
-		await ElementActions.doClick( button );
+	async getFunctionDescription() {
+		const text = await AboutBlock.getAboutBlockDescription();
+		return text;
 	}
 
-	getNameInOtherLanguage( name ) {
-		return $( '.ext-wikilambda-function-viewer-names' ).$( `div*=${ name }` );
+	async getFunctionAliases() {
+		const aliases = await AboutBlock.getAboutBlockAliases();
+		return aliases;
 	}
 
-	getAliasLabel( label ) {
-		return $( '.ext-wikilambda-function-about__aliases' ).$( `div*=${ label }` );
+	async getFunctionInputs() {
+		const inputBlock = await this.aboutBlock.$( '.ext-wikilambda-about-function-input' );
+		const inputs = await inputBlock.$$( '.ext-wikilambda-about-function-field-value' );
+		return inputs.map( ( inputElement ) => {
+			const text = ElementActions.getText( inputElement );
+			return text;
+		} );
 	}
 
-	// #endregion About Sidebar
+	async getFunctionInputBlocks() {
+		const inputBlock = await this.aboutBlock.$( '.ext-wikilambda-about-function-input' );
+		const inputs = await inputBlock.$$( '.ext-wikilambda-about-function-field-value' );
+		return inputs;
+	}
+
+	async getFunctionInputLabel( inputSelector ) {
+		const inputLabel = await inputSelector.$( '.ext-wikilambda-about-function-input-label' );
+		const text = ElementActions.getText( inputLabel );
+		return text;
+	}
+
+	async getFunctionInputType( inputSelector ) {
+		const inputType = await inputSelector.$( '.ext-wikilambda-zobject-to-string' );
+		const text = ElementActions.getText( inputType );
+		return text;
+	}
+
+	async getFunctionOutputType() {
+		const outputBlock = await this.aboutBlock.$( '.ext-wikilambda-about-function-output' );
+		const outputType = await outputBlock.$( '.ext-wikilambda-zobject-to-string' );
+		const text = ElementActions.getText( outputType );
+		return text;
+	}
+
+	// #endregion About Widget
 
 	// #region Evaluate Function Block
 
@@ -242,8 +237,7 @@ class FunctionPage extends Page {
 	 * @return {void}
 	 */
 	async goToCreateNewTestLink() {
-		const createANewTestLink = $( 'a=Add test' );
-		await ElementActions.doClick( createANewTestLink );
+		await ElementActions.doClick( this.addTestButton );
 	}
 
 	/**
@@ -253,8 +247,7 @@ class FunctionPage extends Page {
 	 * @return {void}
 	 */
 	async goToCreateImplementationLink() {
-		const createAImplementation = await $( 'a=Add implementation' );
-		await ElementActions.doClick( createAImplementation );
+		await ElementActions.doClick( this.addImplementationButton );
 	}
 
 	// #endregion Details Sidebar
@@ -263,6 +256,10 @@ class FunctionPage extends Page {
 
 	get implementationsTableBlock() {
 		return $( '[data-testid="function-implementations-table"]' );
+	}
+
+	get addImplementationButton() {
+		return this.implementationsTableBlock.$( 'a[data-testid="add-link"]' );
 	}
 
 	get implementationProgressBar() {
@@ -274,11 +271,11 @@ class FunctionPage extends Page {
 	}
 
 	get approveImplementationButton() {
-		return this.implementationsTableBlock.$( 'button[data-testid="approve"]' );
+		return this.implementationsTableBlock.$( 'button[data-testid="connect"]' );
 	}
 
 	get deactivateImplementationButton() {
-		return this.implementationsTableBlock.$( 'button[data-testid="deactivate"]' );
+		return this.implementationsTableBlock.$( 'button[data-testid="disconnect"]' );
 	}
 
 	/**
@@ -367,6 +364,10 @@ class FunctionPage extends Page {
 		return $( '[data-testid="function-testers-table"]' );
 	}
 
+	get addTestButton() {
+		return this.testCasesTableBlock.$( 'a[data-testid="add-link"]' );
+	}
+
 	get testCasesTableBlockHeader() {
 		return this.testCasesTableBlock.$( './/div[contains(@class,"ext-wikilambda-table__title")]' );
 	}
@@ -380,11 +381,11 @@ class FunctionPage extends Page {
 	}
 
 	get approveTestCaseButton() {
-		return this.testCasesTableBlock.$( 'button[data-testid="approve"]' );
+		return this.testCasesTableBlock.$( 'button[data-testid="connect"]' );
 	}
 
 	get deactivateTestCaseButton() {
-		return this.testCasesTableBlock.$( 'button[data-testid="deactivate"]' );
+		return this.testCasesTableBlock.$( 'button[data-testid="disconnect"]' );
 	}
 
 	/**

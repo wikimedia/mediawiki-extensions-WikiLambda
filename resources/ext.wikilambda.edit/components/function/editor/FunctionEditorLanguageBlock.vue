@@ -99,7 +99,7 @@ module.exports = exports = {
 		};
 	},
 	computed: $.extend( mapGetters( [
-		'getZFunctionLanguages',
+		'getMetadataLanguages',
 		'isNewZObject',
 		'isUserLoggedIn'
 	] ), {
@@ -127,7 +127,7 @@ module.exports = exports = {
 		 * @return {Array}
 		 */
 		functionLanguages: function () {
-			return this.getZFunctionLanguages( this.rowId );
+			return this.getMetadataLanguages( this.rowId );
 		},
 		/**
 		 * Message for admin tooltip to show in both Input and Output components

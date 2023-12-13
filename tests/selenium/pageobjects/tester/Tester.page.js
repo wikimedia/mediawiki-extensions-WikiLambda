@@ -90,17 +90,6 @@ class Tester extends Page {
 	// #region About Block
 
 	/**
-	 * Get the tester label
-	 *
-	 * @async
-	 * @return {string}
-	 */
-	async getTesterLabel() {
-		const text = await AboutBlock.getAboutBlockLabel();
-		return text;
-	}
-
-	/**
 	 * Get the tester description
 	 *
 	 * @async

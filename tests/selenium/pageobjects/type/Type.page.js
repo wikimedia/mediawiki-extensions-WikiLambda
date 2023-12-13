@@ -71,16 +71,6 @@ class Type extends Page {
 	// #region About Block
 
 	/**
-	 * Get the type label
-	 *
-	 * @async
-	 * @return {string}
-	 */
-	async getTypeLabel() {
-		return await AboutBlock.getAboutBlockLabel();
-	}
-
-	/**
 	 * Get the type description
 	 *
 	 * @async

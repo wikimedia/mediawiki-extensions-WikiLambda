@@ -17,8 +17,6 @@ var Vuex = require( 'vuex' ),
 	languagesModule = require( './modules/languages.js' ),
 	programmingLanguagesModule = require( './modules/programmingLanguages.js' ),
 	zTesterResultsModule = require( './modules/zTesterResults.js' ),
-	zTesters = require( './modules/zTesters.js' ),
-	zImplementations = require( './modules/zImplementations.js' ),
 	zTypedList = require( './modules/zTypedList.js' ),
 	router = require( './modules/router.js' ),
 	zFunction = require( './modules/zFunction.js' );
@@ -35,8 +33,6 @@ module.exports = Vuex.createStore( {
 		languagesModule: languagesModule,
 		programmingLanguagesModule: programmingLanguagesModule,
 		zTesterResultsModule: zTesterResultsModule,
-		zTesters: zTesters,
-		zImplementations: zImplementations,
 		zTypedList: zTypedList,
 		router: router,
 		zFunction: zFunction

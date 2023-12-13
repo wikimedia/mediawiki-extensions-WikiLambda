@@ -22,13 +22,15 @@ describe( 'AboutEditMetadataDialog', () => {
 
 	beforeEach( () => {
 		getters = {
-			getRowByKeyPath: createGettersWithFunctionsMock( undefined ),
+			getRowByKeyPath: createGettersWithFunctionsMock( { id: 1 } ),
 			getZMonolingualTextValue: createGettersWithFunctionsMock( '' ),
 			getZMonolingualStringsetValues: createGettersWithFunctionsMock( [] ),
 			getZPersistentAlias: createGettersWithFunctionsMock( undefined ),
 			getZPersistentDescription: createGettersWithFunctionsMock( undefined ),
 			getZPersistentName: createGettersWithFunctionsMock( undefined ),
 			getErrors: createGettersWithFunctionsMock( {} ),
+			getZArgumentLabelForLanguage: createGettersWithFunctionsMock( undefined ),
+			getZFunctionInputs: createGettersWithFunctionsMock( [] ),
 			getLabel: () => ( key ) => {
 				const labels = {
 					Z2K3: 'name',
@@ -43,6 +45,7 @@ describe( 'AboutEditMetadataDialog', () => {
 
 		actions = {
 			fetchZids: jest.fn(),
+			changeType: jest.fn(),
 			setDirty: jest.fn()
 		};
 		global.store.hotUpdate( { getters: getters, actions: actions } );
@@ -54,6 +57,7 @@ describe( 'AboutEditMetadataDialog', () => {
 				edit: true,
 				canEdit: true,
 				open: true,
+				isFunction: false,
 				forLanguage: 'Z1002'
 			} } );
 
@@ -65,6 +69,7 @@ describe( 'AboutEditMetadataDialog', () => {
 				edit: true,
 				canEdit: true,
 				open: true,
+				isFunction: false,
 				forLanguage: 'Z1002'
 			} } );
 
@@ -100,6 +105,7 @@ describe( 'AboutEditMetadataDialog', () => {
 				edit: false,
 				canEdit: true,
 				open: true,
+				isFunction: false,
 				forLanguage: 'Z1002'
 			} } );
 
@@ -130,6 +136,7 @@ describe( 'AboutEditMetadataDialog', () => {
 				edit: true,
 				canEdit: true,
 				open: true,
+				isFunction: false,
 				forLanguage: 'Z1002'
 			} } );
 
@@ -192,6 +199,7 @@ describe( 'AboutEditMetadataDialog', () => {
 				edit: true,
 				canEdit: true,
 				open: true,
+				isFunction: false,
 				forLanguage: 'Z1002'
 			} } );
 
@@ -236,6 +244,7 @@ describe( 'AboutEditMetadataDialog', () => {
 				edit: true,
 				canEdit: true,
 				open: true,
+				isFunction: false,
 				forLanguage: 'Z1002'
 			} } );
 
@@ -317,6 +326,7 @@ describe( 'AboutEditMetadataDialog', () => {
 				edit: true,
 				canEdit: false,
 				open: true,
+				isFunction: false,
 				forLanguage: 'Z1002'
 			} } );
 
@@ -328,6 +338,7 @@ describe( 'AboutEditMetadataDialog', () => {
 				edit: true,
 				canEdit: false,
 				open: true,
+				isFunction: false,
 				forLanguage: 'Z1002'
 			} } );
 
@@ -365,6 +376,84 @@ describe( 'AboutEditMetadataDialog', () => {
 			// ASSERT: Primary action is disabled
 			const publishButton = wrapper.find( '.cdx-dialog__footer__primary-action' );
 			expect( publishButton.attributes( 'disabled' ) ).toBeDefined();
+		} );
+	} );
+
+	describe( 'About widget for Function View page', () => {
+
+		it( 'renders input fields with no labels', async () => {
+			const inputs = [ { id: 20 }, { id: 30 } ];
+			getters.getZFunctionInputs = createGettersWithFunctionsMock( inputs );
+			getters.getZArgumentLabelForLanguage = createGettersWithFunctionsMock( undefined );
+			global.store.hotUpdate( { getters: getters } );
+
+			const wrapper = mount( AboutEditMetadataDialog, { props: {
+				edit: true,
+				canEdit: false,
+				open: true,
+				isFunction: true,
+				forLanguage: 'Z1002'
+			} } );
+
+			// ACT: initialize and wait
+			wrapper.vm.initialize();
+			await wrapper.vm.$nextTick();
+
+			// ASSERT: inputs and initial value are being initialized properly
+			expect( wrapper.vm.inputs ).toEqual( [ '', '' ] );
+			expect( wrapper.vm.initialInputs ).toEqual( '["",""]' );
+
+			// ASSERT: two fields exist in the form
+			const inputFields = wrapper.findAll( '.ext-wikilambda-about-edit-metadata-input' );
+			expect( inputFields.length ).toBe( 2 );
+
+			// ASSERT: input fields have right value
+			expect( inputFields[ 0 ].findComponent( { name: 'cdx-text-input' } ).exists() ).toBe( true );
+			expect( inputFields[ 0 ].findComponent( { name: 'cdx-text-input' } ).vm.modelValue ).toBe( '' );
+			expect( inputFields[ 1 ].findComponent( { name: 'cdx-text-input' } ).exists() ).toBe( true );
+			expect( inputFields[ 1 ].findComponent( { name: 'cdx-text-input' } ).vm.modelValue ).toBe( '' );
+		} );
+
+		it( 'renders input fields with existing labels', async () => {
+			const inputs = [ { id: 20 }, { id: 30 } ];
+			const inputLabelObjects = {
+				20: { id: 22, parent: 21 },
+				30: { id: 32, parent: 31 }
+			};
+			const inputLabels = {
+				22: 'first',
+				32: 'second'
+			};
+			getters.getZFunctionInputs = createGettersWithFunctionsMock( inputs );
+			getters.getZArgumentLabelForLanguage = () => ( id ) => inputLabelObjects[ id ];
+			getters.getZMonolingualTextValue = () => ( id ) => inputLabels[ id ];
+			global.store.hotUpdate( { getters: getters } );
+
+			const wrapper = mount( AboutEditMetadataDialog, { props: {
+				edit: true,
+				canEdit: false,
+				open: true,
+				isFunction: true,
+				forLanguage: 'Z1002'
+			} } );
+
+			// ACT: initialize and wait
+			wrapper.vm.initialize();
+			await wrapper.vm.$nextTick();
+
+			// ASSERT: inputs and initial value are being initialized properly
+			expect( wrapper.vm.inputs ).toEqual( [ 'first', 'second' ] );
+			expect( wrapper.vm.initialInputs ).toEqual( '["first","second"]' );
+
+			// ASSERT: two fields exist in the form
+			const inputFields = wrapper.findAll( '.ext-wikilambda-about-edit-metadata-input' );
+			expect( inputFields.length ).toBe( 2 );
+
+			// ASSERT: input fields have right value
+			expect( inputFields[ 0 ].findComponent( { name: 'cdx-text-input' } ).exists() ).toBe( true );
+			expect( inputFields[ 0 ].findComponent( { name: 'cdx-text-input' } ).vm.modelValue ).toBe( 'first' );
+			expect( inputFields[ 1 ].findComponent( { name: 'cdx-text-input' } ).exists() ).toBe( true );
+			expect( inputFields[ 1 ].findComponent( { name: 'cdx-text-input' } ).vm.modelValue ).toBe( 'second' );
 		} );
 	} );
 } );
