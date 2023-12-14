@@ -245,8 +245,6 @@
 	"wikilambda-tester-results-percentage-label": "Całkowita liczba testów z pomyślnym wynikiem",
 	"wikilambda-tester-run-testers": "Uruchom wszystkie testy",
 	"wikilambda-tester-run-tester": "Uruchom test",
-	"wikilambda-enable-expert-mode": "Włącz tryb eksperta",
-	"wikilambda-disable-expert-mode": "Wyłącz tryb eksperta",
 	"wikilambda-create-function": "Stwórz funkcję",
 	"wikilambda-create-type": "Utwórz typ",
 	"wikilambda-expert-mode-json-label": "Bieżący obiekt",

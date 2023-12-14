@@ -248,8 +248,6 @@
 	"wikilambda-tester-results-percentage-label": "סך כול הבדיקות העוברות",
 	"wikilambda-tester-run-testers": "הרצת כל הבדיקות",
 	"wikilambda-tester-run-tester": "הרצת בדיקה",
-	"wikilambda-enable-expert-mode": "הפעלת מצב מומחה",
-	"wikilambda-disable-expert-mode": "כיבוי מצב מומחה",
 	"wikilambda-create-function": "יצירת פונקציה",
 	"wikilambda-create-type": "יצירת סוג",
 	"wikilambda-expert-mode-json-label": "עצם נוכחי",

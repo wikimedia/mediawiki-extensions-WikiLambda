@@ -79,8 +79,6 @@
 	"wikilambda-tester-status-cancel": "Annulla",
 	"wikilambda-tester-run-testers": "Esegui tutti i test",
 	"wikilambda-tester-run-tester": "Esegui test",
-	"wikilambda-enable-expert-mode": "Abilità modalità esperto",
-	"wikilambda-disable-expert-mode": "Disabilità modalità esperto",
 	"wikilambda-expert-mode-json-label": "Oggetto attuale",
 	"wikilambda-metadata-labels-table-label": "Etichette",
 	"wikilambda-metadata-language-column": "Lingua",

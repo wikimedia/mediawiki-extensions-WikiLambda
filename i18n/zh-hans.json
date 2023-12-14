@@ -234,8 +234,6 @@
 	"wikilambda-tester-results-percentage-label": "通过测试总数",
 	"wikilambda-tester-run-testers": "运行所有测试",
 	"wikilambda-tester-run-tester": "运行测试",
-	"wikilambda-enable-expert-mode": "开启专家模式",
-	"wikilambda-disable-expert-mode": "关闭专家模式",
 	"wikilambda-create-function": "创建函数",
 	"wikilambda-create-type": "创建类型",
 	"wikilambda-expert-mode-json-label": "当前对象",

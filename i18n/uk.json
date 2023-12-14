@@ -216,8 +216,6 @@
 	"wikilambda-tester-results-percentage-label": "Загальна кількість пройдених тестів",
 	"wikilambda-tester-run-testers": "Запустити усі Тести",
 	"wikilambda-tester-run-tester": "Запустити Тест",
-	"wikilambda-enable-expert-mode": "Увімкнути експертний режим",
-	"wikilambda-disable-expert-mode": "Вимкнути експертний режим",
 	"wikilambda-create-function": "Створити функцію",
 	"wikilambda-create-type": "Створити тип",
 	"wikilambda-expert-mode-json-label": "Поточний Object",

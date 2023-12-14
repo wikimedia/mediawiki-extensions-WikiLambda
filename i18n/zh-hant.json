@@ -211,8 +211,6 @@
 	"wikilambda-tester-results-percentage-label": "通過測試總數",
 	"wikilambda-tester-run-testers": "執行所有測試",
 	"wikilambda-tester-run-tester": "執行測試",
-	"wikilambda-enable-expert-mode": "開啟專家模式",
-	"wikilambda-disable-expert-mode": "關閉專家模式",
 	"wikilambda-create-function": "建立函數",
 	"wikilambda-create-type": "建立類型",
 	"wikilambda-expert-mode-json-label": "當前物件",

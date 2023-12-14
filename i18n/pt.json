@@ -195,8 +195,6 @@
 	"wikilambda-tester-results-percentage-label": "Total de testes passados",
 	"wikilambda-tester-run-testers": "Executar todos os testes",
 	"wikilambda-tester-run-tester": "Executar teste",
-	"wikilambda-enable-expert-mode": "Ativar o modo de especialista",
-	"wikilambda-disable-expert-mode": "Desativar o modo de especialista",
 	"wikilambda-create-function": "Criar função",
 	"wikilambda-create-type": "Criar tipo",
 	"wikilambda-expert-mode-json-label": "Objeto-Z atual",

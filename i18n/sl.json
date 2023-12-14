@@ -247,8 +247,6 @@
 	"wikilambda-tester-results-percentage-label": "Skupno opravljenih preizkusov",
 	"wikilambda-tester-run-testers": "Izvedi vse preizkuse",
 	"wikilambda-tester-run-tester": "Zaženi preizkus",
-	"wikilambda-enable-expert-mode": "Omogoči strokovni način",
-	"wikilambda-disable-expert-mode": "Onemogoči strokovni način",
 	"wikilambda-create-function": "Ustvari funkcijo",
 	"wikilambda-create-type": "Ustvari vrsto",
 	"wikilambda-expert-mode-json-label": "Trenutni objekt",

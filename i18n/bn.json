@@ -139,8 +139,6 @@
 	"wikilambda-tester-results-percentage-label": "মোট পরীক্ষায় উত্তীর্ণ",
 	"wikilambda-tester-run-testers": "সমস্ত পরীক্ষা চালান",
 	"wikilambda-tester-run-tester": "পরীক্ষা চালান",
-	"wikilambda-enable-expert-mode": "বিশেষজ্ঞ মোড সক্রিয় করুন",
-	"wikilambda-disable-expert-mode": "বিশেষজ্ঞ মোড নিষ্ক্রিয় করুন",
 	"wikilambda-create-function": "ফাংশন তৈরি করুন",
 	"wikilambda-create-type": "ধরন তৈরি করুন",
 	"wikilambda-expert-mode-json-label": "বর্তমান অবজেক্ট",

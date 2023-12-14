@@ -254,8 +254,6 @@
 	"wikilambda-tester-results-percentage-label": "Toplam Geçen Testler",
 	"wikilambda-tester-run-testers": "Tüm Testleri Çalıştır",
 	"wikilambda-tester-run-tester": "Testi Çalıştır",
-	"wikilambda-enable-expert-mode": "Uzman Modunu etkinleştir",
-	"wikilambda-disable-expert-mode": "Uzman Modunu Etkisizleştir",
 	"wikilambda-create-function": "İşlev Oluştur",
 	"wikilambda-create-type": "Tür Oluştur",
 	"wikilambda-expert-mode-json-label": "Geçerli Nesne",

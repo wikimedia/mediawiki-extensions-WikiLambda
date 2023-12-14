@@ -142,8 +142,6 @@
 	"wikilambda-tester-no-results": "Nu s-au găsit rezultatele testelor. Vă rugăm să adaugați o implementare și un test pentru a vedea rezultatele.",
 	"wikilambda-tester-run-testers": "Execută toate testele",
 	"wikilambda-tester-run-tester": "Execută test",
-	"wikilambda-enable-expert-mode": "Activați modul Expert",
-	"wikilambda-disable-expert-mode": "Dezactivați modul Expert",
 	"wikilambda-create-function": "Creează Funcție",
 	"wikilambda-create-type": "Creează Tip",
 	"wikilambda-expert-mode-json-label": "Creează Obiect",

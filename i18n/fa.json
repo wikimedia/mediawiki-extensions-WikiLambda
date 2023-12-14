@@ -38,8 +38,6 @@
 	"wikilambda-tester-results-percentage-label": "مجموع آزمایشگرهای در حال ارسال",
 	"wikilambda-tester-run-testers": "اجرای تمام آزمایشگرها",
 	"wikilambda-tester-run-tester": "راندن آزمایش‌گر",
-	"wikilambda-enable-expert-mode": "فعال‌سازی حالت پیشرفته",
-	"wikilambda-disable-expert-mode": "غیر فعال‌سازی حالت پیشرفته",
 	"wikilambda-create-function": "ایجاد تابع",
 	"wikilambda-metadata-language-column": "زبان",
 	"wikilambda-metadata-label-column": "برچسب",

@@ -102,8 +102,6 @@
 	"wikilambda-tester-status-passed": "Úspěch",
 	"wikilambda-tester-status-failed": "Neúspěch",
 	"wikilambda-tester-results-title": "Výsledky testů",
-	"wikilambda-enable-expert-mode": "Zapnout Režim pro experty",
-	"wikilambda-disable-expert-mode": "Vypnout Režim pro experty",
 	"wikilambda-create-function": "Vytvořit funkci",
 	"wikilambda-create-type": "Vytvořit typ",
 	"wikilambda-expert-mode-json-label": "Aktuální ZObjekt",

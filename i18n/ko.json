@@ -79,8 +79,6 @@
 	"wikilambda-tester-results-current-implementation": "현재 구현체",
 	"wikilambda-tester-run-testers": "모든 테스트 실행",
 	"wikilambda-tester-run-tester": "테스터 실행",
-	"wikilambda-enable-expert-mode": "전문가 모드 활성화",
-	"wikilambda-disable-expert-mode": "전문가 모드 비활성화",
 	"wikilambda-function-definition-edit": "정의 편집",
 	"wikilambda-function-implementation-name-label": "이름",
 	"wikilambda-function-definition-inputs-label": "입력",

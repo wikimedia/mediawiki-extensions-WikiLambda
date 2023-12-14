@@ -110,8 +110,6 @@
 	"wikilambda-tester-results-percentage-label": "Total Penguji yang Lulus",
 	"wikilambda-tester-run-testers": "Jalankan Semua Penguji",
 	"wikilambda-tester-run-tester": "Jalankan Penguji",
-	"wikilambda-enable-expert-mode": "Nyalakan Mode Ahli",
-	"wikilambda-disable-expert-mode": "Matikan Mode Ahli",
 	"wikilambda-create-function": "Buat Fungsi",
 	"wikilambda-create-type": "Buat Tipe",
 	"wikilambda-expert-mode-json-label": "ZObjek ini",

@@ -257,8 +257,6 @@
 	"wikilambda-tester-results-percentage-label": "合格したテストの総数",
 	"wikilambda-tester-run-testers": "すべてのテストを実行",
 	"wikilambda-tester-run-tester": "テストを実行",
-	"wikilambda-enable-expert-mode": "エキスパートモードを有効化",
-	"wikilambda-disable-expert-mode": "エキスパートモードを無効化",
 	"wikilambda-create-function": "関数を作成",
 	"wikilambda-create-type": "タイプを作成",
 	"wikilambda-expert-mode-json-label": "現在のオブジェクト",

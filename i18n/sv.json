@@ -244,8 +244,6 @@
 	"wikilambda-tester-results-percentage-label": "Totalt antal godkända tester",
 	"wikilambda-tester-run-testers": "Kör alla tester",
 	"wikilambda-tester-run-tester": "Kör test",
-	"wikilambda-enable-expert-mode": "Aktivera expertläge",
-	"wikilambda-disable-expert-mode": "Inaktivera expertläge",
 	"wikilambda-create-function": "Skapa funktion",
 	"wikilambda-create-type": "Skapa typ",
 	"wikilambda-expert-mode-json-label": "Aktuellt objekt",

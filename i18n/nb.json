@@ -237,8 +237,6 @@
 	"wikilambda-tester-results-percentage-label": "Totalt beståtte tester",
 	"wikilambda-tester-run-testers": "Kjør alle tester",
 	"wikilambda-tester-run-tester": "Kjør test",
-	"wikilambda-enable-expert-mode": "Aktiver ekspertmodus",
-	"wikilambda-disable-expert-mode": "Deaktiver ekspertmodus",
 	"wikilambda-create-function": "Opprett funksjon",
 	"wikilambda-create-type": "Opprett type",
 	"wikilambda-expert-mode-json-label": "Gjeldende objekt",

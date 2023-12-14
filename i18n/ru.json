@@ -66,8 +66,6 @@
 	"wikilambda-tester-results-current-test": "Текущий тест",
 	"wikilambda-tester-run-testers": "Запустить все тесты",
 	"wikilambda-tester-run-tester": "Запустить тест",
-	"wikilambda-enable-expert-mode": "Включить режим Эксперта",
-	"wikilambda-disable-expert-mode": "Выключить режим эксперта",
 	"wikilambda-create-function": "Создать функцию",
 	"wikilambda-create-type": "Создать тип",
 	"wikilambda-metadata-labels-table-label": "Метки",
