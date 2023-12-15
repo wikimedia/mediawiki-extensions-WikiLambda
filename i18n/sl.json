@@ -104,6 +104,7 @@
 	"wikilambda-reference": "Sklic",
 	"wikilambda-literal": "Literal",
 	"wikilambda-genericliteral": "Generični literal",
+	"wikilambda-literal-type": "Dobesedno $1",
 	"wikilambda-functioncall": "Klic funkcije",
 	"wikilambda-edit": "Uredi",
 	"wikilambda-helplink-button": "Pomoč",

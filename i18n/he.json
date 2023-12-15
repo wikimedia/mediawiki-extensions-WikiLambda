@@ -105,6 +105,7 @@
 	"wikilambda-reference": "הפניה",
 	"wikilambda-literal": "מפורש",
 	"wikilambda-genericliteral": "מפורש כללי",
+	"wikilambda-literal-type": "$1 מפורש",
 	"wikilambda-functioncall": "קריאה לפונקציה",
 	"wikilambda-edit": "עריכה",
 	"wikilambda-helplink-button": "עזרה",

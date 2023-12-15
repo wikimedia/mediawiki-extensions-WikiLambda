@@ -210,7 +210,7 @@
 	"wikilambda-tester-status-passed": "Пройдено",
 	"wikilambda-tester-status-failed": "Невдача",
 	"wikilambda-tester-results-title": "Результати тестів",
-	"wikilambda-tester-results-caption": "Результати тестування функцій проти реалізації",
+	"wikilambda-tester-results-caption": "Результати тестів функцій проти реалізацій",
 	"wikilambda-tester-results-current-implementation": "Поточне виконання",
 	"wikilambda-tester-no-results": "Результатів тестів не знайдено. Додайте реалізацію та тест, щоб побачити результати.",
 	"wikilambda-tester-results-percentage-label": "Загальна кількість пройдених тестів",
