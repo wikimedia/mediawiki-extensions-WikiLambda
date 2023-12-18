@@ -3,10 +3,12 @@
 		"authors": [
 			"Antonla",
 			"Saederup92",
-			"SiGNOUT"
+			"SiGNOUT",
+			"Zakawer2"
 		]
 	},
 	"wikilambda-persistentzobject-contents": "Indhold",
+	"wikilambda-literal-type": "Bogstavelig $1",
 	"wikilambda-special-listduplicateobjectlabels-language": "Sprog",
 	"wikilambda-special-objectsbytype-typeheader": "Alle typer",
 	"wikilambda-savenew": "Gem",

@@ -19,6 +19,7 @@
 		]
 	},
 	"wikilambda-persistentzobject-contents": "Содержание",
+	"wikilambda-literal-type": "Буквально $1",
 	"wikilambda-functioncall": "Вызов функции",
 	"wikilambda-edit": "Править",
 	"wikilambda-helplink-button": "Справка",
