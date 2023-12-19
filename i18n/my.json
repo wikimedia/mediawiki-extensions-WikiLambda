@@ -3,10 +3,11 @@
 		"authors": [
 			"Dr Lotus Black",
 			"Ninjastrikers",
-			"ခွန်ပညာႏ(တောင်ႏကီꩻ)"
+			"ခွန်ပညာႏ(တောင်ႏကီꩻ)",
+			"Msuantak"
 		]
 	},
-	"wikilambda-editor-label-addlanguage-label": "ဘာသာစကား ထည့်သွင်းရန်",
+	"wikilambda-editor-label-addlanguage-label": "ဘာသာစကား ရွေးရန်",
 	"wikilambda-tester-failure-actual": "လက်ခံရရှိခဲ့သည်",
 	"wikilambda-editor-steps-label": "တည်းဖြတ်သူအဆင့်များ",
 	"wikilambda-editor-go-back-button": "နောက်သို့ ပြန်သွားရန်",

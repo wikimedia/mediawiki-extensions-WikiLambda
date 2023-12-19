@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Kly",
-			"Iceman1415"
+			"Iceman1415",
+			"SunAfterRain"
 		]
 	},
 	"apihelp-wikilambda_fetch-summary": "取得 ZObjects 的 JSON 模組。",
@@ -11,6 +12,9 @@
 	"apihelp-wikilambda_fetch-example-single": "取得單一的 ZObject，Z1。",
 	"apihelp-wikilambda_fetch-example-multiple": "取得三個 ZObjects：Z1、Z2、Z3。",
 	"apierror-wikilambda_fetch-missingzid": "給予的 ZID「$1」不存在此 wiki 上。",
+	"apihelp-wikilambda_function_call-example-composition": "呼叫組合：如果第一個參數為真，則排序第二個；否則，原封不動地退回",
+	"apihelp-wikilambda_function_call-example-native-js-code": "呼叫使用者編寫的JavaScript代碼",
+	"apihelp-wikilambda_function_call-example-native-python-code": "呼叫使用者編寫的Python 3代碼",
 	"apihelp-query+wikilambdasearch_labels-summary": "此 API 查詢清單產生器讓您可在指定語言裡搜尋標籤 ZObjects。它主要是為支援展望搜索系統而存在。",
 	"apihelp-query+wikilambdasearch_labels-param-search": "搜尋項",
 	"apihelp-query+wikilambdasearch_labels-param-language": "在其中搜索的 MediaWiki 語言代碼",
@@ -18,5 +22,10 @@
 	"apihelp-query+wikilambdasearch_labels-param-type": "匹配 ZObject 特定類型的限制。",
 	"apihelp-query+wikilambdasearch_labels-param-limit": "回傳結果數量上限",
 	"apihelp-query+wikilambda-example-simple": "搜索標籤與英語裡「foo」匹配的 ZObjects",
-	"apihelp-query+wikilambda-example-type": "搜尋類型為「Z4」的 ZObjects，回傳英語標籤"
+	"apihelp-query+wikilambda-example-type": "搜尋類型為「Z4」的 ZObjects，回傳英語標籤",
+	"apierror-query+wikilambdaload_zobjects-unloadable": "ZObjectStore無法為「$1」載入頁面。",
+	"apierror-query+wikilambdaload_zobjects-notzobject": "ZObjectStore為「$1」載入了一個非ZObject。",
+	"apihelp-wikilambda_edit-summary": "建立或編輯 ZObject。",
+	"apierror-wikilambda_function_call-concurrency-limit": "目前您執行了太多函數呼叫。",
+	"apihelp-wikilambda_perform_test-param-nocache": "是否使用快取"
 }
