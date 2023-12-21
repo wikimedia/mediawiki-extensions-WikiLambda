@@ -104,7 +104,7 @@ This will provide you with your own orchestrator and evaluator services, pointed
 
 * If your wiki is not called 'mediawiki-web', e.g. because your checkout of MediaWiki is not in a directory called 'mediawiki', you will need to set `$wgWikiLambdaOrchestratorLocation` in your `LocalSettings.php` and make similar edits to the `environment` variables you have set in your `mediawiki/docker-compose.override.yml` file.
 * If you would like to avoid permissions checks when developing locally, navigate to `localhost:8080/wiki` and log in (login: Admin, password: dockerpass)
-* If you would like to bypass the cache when developing locally, change the signature of the `orchestrate` function in `includes/OrchestratorRequest.php`, setting `bypass = true`:
+* If you would like to bypass the cache when developing locally, change the signature of the `orchestrate` function in `includes/OrchestratorRequest.php`, setting `$bypassCache = true`:
 
  ```
  public function orchestrate( $query, $bypassCache = true ) : string {
@@ -114,11 +114,10 @@ This will provide you with your own orchestrator and evaluator services, pointed
 
 If you would instead like to develop changes to the function orchestrator or evaluators, you will need to use a locally-built version of the services. To do this for the orchestrator:
 
-* [Get Blubber](https://wikitech.wikimedia.org/wiki/Blubber/Download#Blubber_as_a_(micro)Service) so you can build the service images
 * In a directory outside of your MediaWiki checkout, clone the services via `git clone --recurse-submodules --remote-submodules https://gitlab.wikimedia.org/repos/abstract-wiki/wikifunctions/function-orchestrator`.
 * From the root of your function-orchestrator installation, run
   `docker build -f .pipeline/blubber.yaml --target development -t local-orchestrator .`
-* Alter `mediawiki/docker-compose.override.yaml` to comment out `image: docker-registry...` in the `function-orchestrator` service stanza and uncomment the  `image: local-orchestrator:latest` line instead.
+* Alter `mediawiki/docker-compose.override.yml` to comment out `image: docker-registry...` in the `function-orchestrator` service stanza and uncomment the `image: local-orchestrator:latest` line instead.
 
 If changing one or more of the evaluators, follow the same steps but for the evaluator's images and directory.
 
