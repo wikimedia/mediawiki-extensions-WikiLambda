@@ -2,9 +2,18 @@
 	"@metadata": {
 		"authors": [
 			"Bebiezaza",
-			"Trisorn Triboon"
+			"Trisorn Triboon",
+			"Thastp"
 		]
 	},
+	"wikilambda-desc": "จัดเตรียมฟังก์ชันตัวแจงส่วนการจัดรูปแบบวิกิให้วิกิต่าง ๆ ของวิกิมีเดีย สำหรับเรียกใช้ประเมินผลฟังก์ชันที่เขียน จัดการ และประเมินผลไว้บนวิกิส่วนกลาง",
+	"group-functioneer": "ฟังก์ชันเนียร์",
+	"group-functioneer-member": "{{GENDER:$1|ฟังก์ชันเนียร์}}",
+	"group-functionmaintainer": "ผู้บำรุงรักษา",
+	"group-functionmaintainer-member": "{{GENDER:$1|ผู้บำรุงรักษา}}",
+	"wikilambda-history-title": "ประวัติรุ่นแก้ไขของ \"$1\" ($2)",
+	"wikilambda-typeunavailable": "ชนิดที่ไม่รู้จัก",
+	"wikilambda-noresult": "ไม่มีผลลัพธ์ตรงกับคำค้น",
 	"wikilambda-confirm": "ยืนยัน",
 	"wikilambda-editor-label-select-programming-language-label": "เลือกภาษาเขียนโปรแกรม:",
 	"wikilambda-function-are-you-sure-dialog-header": "ท่านแน่ใจหรือไม่?",
