@@ -78,7 +78,7 @@
 	"apihelp-query+wikilambdafn_search-summary": "שאילתת ה־API הזאת מחפש רשימת מזהים של כל עצמי ה־Z שמשויכים למזהה פונקציית Z מסופקת",
 	"apihelp-query+wikilambdafn_search-example-simple": "חיפוש מזהי מימוש Z שמשויכים למזהה פונקציית Z נתונה",
 	"apihelp-query+wikilambdafn_search-param-zfunction_id": "איזה מזהה פונקציית Z לחפש",
-	"apihelp-query+wikilambdafn_search-param-type": "סוג עצם ה־Z שמופנה על־ידי פונקציית ה־Z לחיפוש",
+	"apihelp-query+wikilambdafn_search-param-type": "סוג עצם ה־Z שיש התייחסות אליו מפונקציית ה־Z לחיפוש",
 	"apihelp-query+wikilambdafn_search-param-limit": "מספר התוצאות המרבי להחזרה",
 	"apierror-wikilambda_perform_test-not-connected": "לא היה אפשר למצוא את שרת \"$1\", אולי כי המתזמר אינו רץ. נא לבדוק את ה־README כדי למצוא איך להוסיף את המתזמר להגדרות docker-compose שלך.",
 	"apihelp-wikilambda_perform_test-example": "ביצוא בדיקות אל מול פונקציית Z, מימוש Z, ובודקי Z מסופקים באופן מלא",
