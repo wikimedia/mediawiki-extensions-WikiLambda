@@ -13,6 +13,7 @@
 			"Pols12",
 			"SleaY",
 			"Thibaut120094",
+			"VIGNERON",
 			"Verdy p",
 			"Wladek92"
 		]
@@ -132,7 +133,7 @@
 	"wikilambda-special-createobject-nojs": "Cette page nécessite JavaScript pour être utilisée.",
 	"wikilambda-special-edit-function-definition-description": "Vous modifiez la page de définition de la fonction. $1 peut modifier la définition de la fonction. Chacun peut modifier les libellés. Assurez-vous d’enregistrer votre travail en cliquant sur le bouton bleu « Publier » ci-dessous.",
 	"wikilambda-special-edit-function-definition-special-permission-link-label": "Seulement les utilisateurs avec des droits spéciaux",
-	"wikilambda-special-runfunction": "Évaluer un appel de fonction",
+	"wikilambda-special-runfunction": "Exécuter une fonction",
 	"wikilambda-special-runfunction-summary": "Ce formulaire vous permet d’exécuter une fonction.",
 	"wikilambda-special-runfunction-intro": "Assurez-vous de suivre la politique de la communauté et les règles relatives au droit d’auteur et aux brevets.",
 	"wikilambda-special-runfunction-nojs": "Cette page nécessite JavaScript pour être utilisée.",

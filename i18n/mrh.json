@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Laitei",
 			"Teitei Para"
 		]
 	},
@@ -13,5 +14,5 @@
 	"wikilambda-editor-zobject-addkey": "Châhbi khô:",
 	"wikilambda-function-implementation-name-label": "Moh",
 	"wikilambda-function-implementation-language-label": "Reihchâ",
-	"wikilambda-function-implementation-state-label": "State"
+	"wikilambda-function-implementation-state-label": "Chhichâna"
 }

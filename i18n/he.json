@@ -352,7 +352,7 @@
 	"wikilambda-zimplementation-code-missing": "הקוד ריק. נא להזין את הקוד שלך.",
 	"wikilambda-zimplementation-code-language-missing": "נא לבחור שפת תכנות.",
 	"wikilambda-ztester-missing-call-function": "הקריאה ריקה. נא לבחור פונקציה.",
-	"wikilambda-ztester-missing-validation-function": "בדיקת התקינות של התוצאה שגויה. נא לבחור פונקציה.",
+	"wikilambda-ztester-missing-validation-function": "בדיקת תקינות תוצאה ריקה. נא לבחור פונקציה.",
 	"wikilambda-chip-remove": "הסרת פריט",
 	"wikilambda-add-list-item-button": "הוספת פריט",
 	"wikilambda-list-items-label": "פריטי רשימה",
