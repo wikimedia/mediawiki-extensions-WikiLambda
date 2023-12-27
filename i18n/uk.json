@@ -298,8 +298,10 @@
 	"wikilambda-about-widget-add-language": "Додати мову",
 	"wikilambda-about-widget-search-language-placeholder": "Пошук мови",
 	"wikilambda-function-evaluator-title-function": "Випробуйте цю функцію",
+	"wikilambda-function-evaluator-running": "Виконується...",
 	"wikilambda-function-evaluator-result": "Результат",
 	"wikilambda-function-evaluator-result-details": "Подробиці",
+	"wikilambda-function-evaluator-run-function": "Виконати функцію",
 	"wikilambda-function-evaluation-restriction-notrunnable": "Ця функція не має затверджених реалізацій.",
 	"wikilambda-function-evaluation-restriction-warning": "Ми вибачаємося! Наразі лише авторизовані користувачі можуть запускати функції.",
 	"wikilambda-argument-reference-selector-placeholder": "Вибрати аргумент"
