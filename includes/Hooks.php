@@ -11,12 +11,18 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use DatabaseUpdater;
+use MediaWiki\CommentStore\CommentStoreComment;
+use MediaWiki\Config\ConfigException;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Title\Title;
+use MediaWiki\User\User;
+use RecentChange;
 use RuntimeException;
-use User;
+use Wikimedia\Services\NoSuchServiceException;
 
 class Hooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook {
 
@@ -99,6 +105,16 @@ class Hooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook 
 	public static function createInitialContent( DatabaseUpdater $updater, $overwrite = false ) {
 		// Ensure that the extension is set up (namespace is defined) even when running in update.php outside of MW.
 		self::registerExtension();
+
+		$contentHandler = MediaWikiServices::getInstance()->getContentHandlerFactory();
+		if ( !$contentHandler->isDefinedModel( CONTENT_MODEL_ZOBJECT ) ) {
+			if ( method_exists( $contentHandler, 'defineContentHandler' ) ) {
+				// @phan-suppress-next-line PhanUndeclaredMethod this apparently phan doesn't take the hint above
+				$contentHandler->defineContentHandler( CONTENT_MODEL_ZOBJECT, ZObjectContentHandler::class );
+			} else {
+				throw new ConfigException( 'WikiLambda content model is not registered and we cannot inject it.' );
+			}
+		}
 
 		// Note: Hard-coding the English version for messages as this can run without a Context and so no language set.
 		$creatingUserName = wfMessage( 'wikilambda-systemuser' )->inLanguage( 'en' )->text();
@@ -204,7 +220,8 @@ class Hooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook 
 
 		$zid = substr( $filename, 0, -5 );
 		$title = Title::newFromText( $zid, NS_MAIN );
-		$page = MediaWikiServices::getInstance()->getWikiPageFactory()->newFromTitle( $title );
+		$services = MediaWikiServices::getInstance();
+		$page = $services->getWikiPageFactory()->newFromTitle( $title );
 
 		// If we don't want to overwrite the ZObjects, and if Zid has already been inserted,
 		// just purge the page to update secondary data and return true
@@ -230,13 +247,37 @@ class Hooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook 
 			return false;
 		}
 
-		$status = $page->doUserEditContent(
-			/* content */ $content,
-			/* user */ $user,
-			/* edit summary */ $comment
+		// If we're in the installer, it won't have registered our extension's services yet.
+		try {
+			$services->get( 'WikiLambdaZObjectStore' );
+		} catch ( NoSuchServiceException $e ) {
+
+			$zObjectStore = new ZObjectStore(
+				$services->getDBLoadBalancerFactory(),
+				$services->getTitleFactory(),
+				$services->getWikiPageFactory(),
+				$services->getRevisionStore(),
+				$services->getUserGroupManager(),
+				LoggerFactory::getInstance( 'WikiLambda' )
+			);
+			$services->defineService(
+				'WikiLambdaZObjectStore',
+				static function () use ( $zObjectStore ) {
+					return $zObjectStore;
+				}
+			);
+		}
+
+		$pageUpdater = $page->newPageUpdater( $user );
+		$pageUpdater->setContent( SlotRecord::MAIN, $content );
+		$pageUpdater->setRcPatrolStatus( RecentChange::PRC_PATROLLED );
+
+		$pageUpdater->saveRevision(
+			CommentStoreComment::newUnsavedComment( $comment ?? '' ),
+			EDIT_AUTOSUMMARY | EDIT_NEW
 		);
 
-		if ( $status->isOK() ) {
+		if ( $pageUpdater->wasSuccessful() ) {
 			array_push( $inserted, $zid );
 			$updater->insertUpdateRow( $updateRowName );
 			if ( !defined( 'MW_PHPUNIT_TEST' ) ) {
@@ -244,12 +285,12 @@ class Hooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook 
 				$updater->output( "\tSuccessfully created {$title->getPrefixedText()}.\n" );
 			}
 		} else {
-			$firstError = $status->getErrors()[0];
+			$firstError = $pageUpdater->getStatus()->getErrors()[0];
 			$error = wfMessage( $firstError[ 'message' ], $firstError[ 'params' ] );
 			$updater->output( "\t❌ Unable to make a page for {$title->getPrefixedText()}: $error\n" );
 		}
 
-		return $status->isOK();
+		return $pageUpdater->wasSuccessful();
 	}
 
 }
