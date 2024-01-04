@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Chrumps",
 			"Kareyac",
 			"Mruczek",
 			"Msz2001",
@@ -54,11 +55,13 @@
 	"action-wikilambda-edit-predefined": "edytowania istniejących zastrzeżonych obiektów (poniżej Z10000)",
 	"action-wikilambda-edit-programming": "edytowania istniejących obiektów dla języków programowania",
 	"action-wikilambda-edit-running-function": "edytowania funkcji, która ma przyłączoną implementację",
+	"action-wikilambda-edit-running-function-definition": "Edytowanie wejścia/wyjścia funkcji, która ma przyłączoną implementację",
 	"action-wikilambda-edit-tester": "edytowania istniejących obiektów przypadków testowych",
 	"action-wikilambda-edit-type": "edytowania istniejących obiektów dla typów",
 	"action-wikilambda-edit-unit": "edytowania istniejącego obiektu typu jednostkowego",
 	"action-wikilambda-edit-user-function": "edytowania istniejących funkcji stworzonych przez użytkowników",
 	"action-wikilambda-execute": "uruchamiania funkcji",
+	"action-wikilambda-execute-unsaved-code": "Uruchamianie niezapisanego kodu implementacji",
 	"right-wikilambda-connect-implementation": "Łączenie implementacji z funkcją, by umożliwić jej wykonanie",
 	"right-wikilambda-connect-tester": "Łączenie przypadków testowych z funkcją",
 	"right-wikilambda-create": "Tworzenie nowych obiektów",
@@ -89,6 +92,7 @@
 	"right-wikilambda-edit-predefined": "Edytowanie istniejących zastrzeżonych obiektów (poniżej Z10000)",
 	"right-wikilambda-edit-programming": "Edytowanie istniejących obiektów dla języków programowania",
 	"right-wikilambda-edit-running-function": "Edytowanie funkcji, która ma przyłączoną implementację",
+	"right-wikilambda-edit-running-function-definition": "Edytowanie wejścia/wyjścia funkcji, która ma przyłączoną implementację",
 	"right-wikilambda-edit-tester": "Edytowanie istniejących obiektów przypadków testowych",
 	"right-wikilambda-edit-type": "Edytowanie istniejących obiektów dla typów",
 	"right-wikilambda-edit-unit": "Edytowania istniejącego obiektu typu jednostkowego",
