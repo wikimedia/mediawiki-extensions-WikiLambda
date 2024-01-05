@@ -126,7 +126,7 @@
 	"wikilambda-functioncall-error-unknown": "ফাংশন কল ত্রুটি: '$1' একটি পরিচিত অবজেক্ট নয়",
 	"wikilambda-editor-tester-list-label": "পরীক্ষার তালিকা",
 	"wikilambda-tester-selector": "একটি পরীক্ষা নির্বাচন করুন",
-	"wikilambda-tester-none-found": "আপনার তৈরি করা পরীক্ষাগুলি এখানে প্রদর্শিত হবে৷",
+	"wikilambda-tester-none-found": "আপনার তৈরি করা পরীক্ষাগুলি এখানে প্রদর্শিত হবে।",
 	"wikilambda-tester-create-new": "পরীক্ষা যোগ করুন",
 	"wikilambda-tester-status-ready": "প্রস্তুত",
 	"wikilambda-tester-status-running": "রান হচ্ছে...",
