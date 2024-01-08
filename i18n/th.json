@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Bebiezaza",
+			"Ekminarin",
 			"Patsagorn Y.",
 			"Thastp",
 			"Trisorn Triboon"
@@ -99,6 +100,7 @@
 	"wikilambda-editor-label-addlanguage-label": "เลือกภาษา",
 	"wikilambda-editor-label-removelanguage-tooltip": "ลบภาษานี้ออกจากป้ายกำกับนี้",
 	"wikilambda-editor-label-select-programming-language-label": "เลือกภาษาโปรแกรม",
+	"specialpages-group-wikilambda": "หน้าวิกิฟังก์ชัน",
 	"wikilambda-function-are-you-sure-dialog-header": "ท่านแน่ใจหรือไม่?",
 	"wikilambda-editor-fn-step-function-about": "เกี่ยวกับ",
 	"wikilambda-editor-fn-step-function-details": "รายละเอียด",

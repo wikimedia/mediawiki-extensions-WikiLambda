@@ -397,8 +397,8 @@
 	"wikilambda-function-evaluation-restriction-notrunnable": "Ta funkcja nie ma zatwierdzonych implementacji.",
 	"wikilambda-function-evaluation-restriction-warning": "Przepraszamy! Na razie tylko zalogowani użytkownicy mogą uruchamiać funkcje.",
 	"wikilambda-argument-reference-selector-placeholder": "Wybierz argument",
-	"wikilambda-special-create-function": "Stwórz nową Funkcję",
-	"wikilambda-special-create-type": "Stwórz nowy Typ",
-	"wikilambda-special-create-implementation": "Stwórz nową Implementację",
-	"wikilambda-special-create-test": "Stwórz nowy Test"
+	"wikilambda-special-create-function": "Stwórz nową funkcję",
+	"wikilambda-special-create-type": "Stwórz nowy typ",
+	"wikilambda-special-create-implementation": "Stwórz nową implementację",
+	"wikilambda-special-create-test": "Stwórz nowy przypadek testowy"
 }
