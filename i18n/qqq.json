@@ -224,6 +224,7 @@
 	"wikilambda-functioncall-metadata-evaluation-memory-usage": "Label for how much memory this function call used on the evaluator.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-metadata-execution-memory-usage": "Label for how much memory this function call used on the executor.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-metadata-execution-programming-language-version": "Label for the version of the programming language used by the executor.\n\n{{doc-wikilambda}}",
+	"wikilambda-functioncall-metadata-execution-debug-logs": "Label for debugging strings produced by user code in the executor.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-metadata-orchestration-cpu-usage": "Label for how much CPU time this function call used on the orchestrator.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-metadata-evaluation-cpu-usage": "Label for how much CPU time this function call used on the evaluator.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-metadata-orchestration-hostname": "Label for what host the orchestrator ran on while handling this function call.\n\n{{doc-wikilambda}}",

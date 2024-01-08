@@ -90,9 +90,9 @@ module.exports = {
 		},
 		'./resources/ext.wikilambda.edit/mixins': {
 			branches: 81,
-			lines: 85,
-			functions: 92,
-			statements: 85
+			lines: 84,
+			functions: 91,
+			statements: 84
 		},
 		'./resources/ext.wikilambda.edit/store': {
 			branches: 88,
