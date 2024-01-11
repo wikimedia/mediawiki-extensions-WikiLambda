@@ -40,7 +40,8 @@ const knownKeys = new Map( [
 	[ 'evaluationHostname', { i18nId: 'wikilambda-functioncall-metadata-evaluation-hostname' } ],
 	[ 'executionCpuUsage', { i18nId: 'wikilambda-functioncall-metadata-execution-cpu-usage' } ],
 	[ 'executionMemoryUsage', { i18nId: 'wikilambda-functioncall-metadata-execution-memory-usage' } ],
-	[ 'programmingLanguageVersion', { i18nId: 'wikilambda-functioncall-metadata-execution-programming-language-version' } ]
+	[ 'programmingLanguageVersion', { i18nId: 'wikilambda-functioncall-metadata-execution-programming-language-version' } ],
+	[ 'executorDebugLogs', { i18nId: 'wikilambda-functioncall-metadata-execution-debug-logs' } ]
 ] );
 
 // A list of keys to hide.
@@ -92,6 +93,7 @@ module.exports = exports = {
 			html = html + this.keyAndStringValue( zMap, 'executionCpuUsage', keysUsed );
 			html = html + this.keyAndStringValue( zMap, 'executionMemoryUsage', keysUsed );
 			html = html + this.keyAndStringValue( zMap, 'programmingLanguageVersion', keysUsed );
+			html = html + this.keyAndSimpleList( zMap, 'executorDebugLogs', keysUsed );
 
 			// Now portray any top-level zMap entries that weren't already used above
 			const k1Array = zMap[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ];
@@ -113,9 +115,15 @@ module.exports = exports = {
 				// Message keys specified in knownKeys above.
 				// eslint-disable-next-line mediawiki/msg-doc
 				const displayKey = keyInfo ? this.$i18n( keyInfo.i18nId ).text() : key;
-				const value = this.maybeStringify( entry[ Constants.Z_TYPED_OBJECT_ELEMENT_2 ] ||
-					entry[ Constants.Z_TYPED_PAIR_TYPE2 ] );
-				html = html + '<li><b>' + displayKey + ':</b> ' + value + '</li>';
+				const value = entry[ Constants.Z_TYPED_OBJECT_ELEMENT_2 ] || entry[ Constants.Z_TYPED_PAIR_TYPE2 ];
+				if ( Array.isArray( value ) ) {
+					// The evaluator's executors allow code to add arbitrary key/value pairs to metadata (with strings
+					// for both keys and values), and collects all values for the same key into a list. We handle these
+					// in the same way as executorDebugLogs, whose value is also a list of strings.
+					html = html + '<li><b>' + displayKey + ':</b><br>' + this.formatSimpleList( value ) + '</li>';
+				} else {
+					html = html + '<li><b>' + displayKey + ':</b> ' + this.maybeStringify( value ) + '</li>';
+				}
 			}
 
 			return html + '</ul></span>';
@@ -304,6 +312,34 @@ module.exports = exports = {
 			// eslint-disable-next-line mediawiki/msg-doc
 			const i18nKey = this.$i18n( knownKeys.get( key ).i18nId ).text();
 			return '<li><b>' + i18nKey + ':</b> ' + value + '</li>';
+		},
+		keyAndSimpleList: function ( zMap, key, keysUsed ) {
+			keysUsed.push( key );
+			const list = getValueFromCanonicalZMap( zMap, key );
+			if ( list === undefined || !Array.isArray( list ) || list.length < 2 ) {
+				return '';
+			}
+			// Message keys specified in knownKeys above.
+			// eslint-disable-next-line mediawiki/msg-doc
+			const i18nKey = this.$i18n( knownKeys.get( key ).i18nId ).text();
+			return '<li><b>' + i18nKey + ':</b><br>' + this.formatSimpleList( list ) + '</li>';
+		},
+		/**
+		 * Given a list in canonical form, return HTML for the list elements, as a bulleted list (<ul>).
+		 * Each list element should be a string (or a value that can be nicely stringified into a string)
+		 * that's ideally not terribly long. There is no recursive handling for complex objects.
+		 *
+		 * @param {Array} list
+		 * @return {string}
+		 */
+		formatSimpleList: function ( list ) {
+			let listHtml = '<ul>';
+			// Skip over the 1st element; in canonical form it gives the type of the other elements
+			for ( let i = 1; i < list.length; ++i ) {
+				const value = this.maybeStringify( list[ i ] );
+				listHtml = listHtml + '<li>' + value + '</li>';
+			}
+			return listHtml + '</ul>';
 		},
 		/**
 		 * Portray the given key and its zMap value, which should be an arbitrary ZObject

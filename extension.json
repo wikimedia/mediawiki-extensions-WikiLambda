@@ -579,6 +579,7 @@
 				"wikilambda-functioncall-metadata-orchestration-hostname",
 				"wikilambda-functioncall-metadata-evaluation-hostname",
 				"wikilambda-functioncall-metadata-execution-programming-language-version",
+				"wikilambda-functioncall-metadata-execution-debug-logs",
 				"wikilambda-functioncall-metadata-expected-result",
 				"wikilambda-functioncall-metadata-actual-result",
 				"wikilambda-functioncall-metadata-validator-errors",

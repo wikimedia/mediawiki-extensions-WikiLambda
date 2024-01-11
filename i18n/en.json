@@ -211,6 +211,7 @@
 	"wikilambda-functioncall-metadata-evaluation-memory-usage": "Evaluation memory usage",
 	"wikilambda-functioncall-metadata-execution-memory-usage": "Execution memory usage",
 	"wikilambda-functioncall-metadata-execution-programming-language-version": "Programming language version",
+	"wikilambda-functioncall-metadata-execution-debug-logs": "Execution debug logs",
 	"wikilambda-functioncall-metadata-orchestration-cpu-usage": "Orchestration CPU usage",
 	"wikilambda-functioncall-metadata-evaluation-cpu-usage": "Evaluation CPU usage",
 	"wikilambda-functioncall-metadata-orchestration-hostname": "Orchestration server",
