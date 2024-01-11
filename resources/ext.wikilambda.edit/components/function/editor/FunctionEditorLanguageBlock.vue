@@ -117,7 +117,7 @@ module.exports = exports = {
 		 * @return {boolean}
 		 */
 		canEditFunction: function () {
-			// TODO(T301667): restrict to only certain user roles
+			// TODO (T301667): restrict to only certain user roles
 			return this.isNewZObject ? true : this.isUserLoggedIn;
 		},
 		/**

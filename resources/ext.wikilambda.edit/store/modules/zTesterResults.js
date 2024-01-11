@@ -73,7 +73,8 @@ module.exports = exports = {
 		},
 		getZTesterMetadata: function ( state ) {
 			/**
-			 * Retrieve metadata ( eg. duration ), for a specific test.
+			 * Retrieve metadata (e.g. duration), for a specific test.
+			 *
 			 * Test are identified by a zFunctionId, zTesterId, and zImplementationId.
 			 *
 			 * @param {string} zFunctionId
@@ -85,7 +86,7 @@ module.exports = exports = {
 			return function ( zFunctionId, zTesterId, zImplementationId ) {
 				var key = zFunctionId + ':' + zTesterId + ':' + zImplementationId;
 
-				// TODO(T314267): Check for and handle state.errorState = true
+				// TODO (T314267): Check for and handle state.errorState = true
 
 				return state.zTesterMetadata[ key ];
 			};

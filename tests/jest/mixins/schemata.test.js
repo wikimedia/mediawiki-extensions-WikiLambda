@@ -56,7 +56,7 @@ describe( 'schemata mixin', function () {
 	} );
 
 	it( 'extracts error structure from a simple error object in relaxed format', function () {
-		// TODO( ): Remove this test after the relaxed format is no longer produced
+		// TODO: Remove this test after the relaxed format is no longer produced
 		expect( extractErrorStructure( simpleErrorObjectRelaxedFormat ) ).toEqual(
 			[ { children: [], errorType: 'Z500', explanation: 'Arbitrary handcrafted message' } ] );
 	} );

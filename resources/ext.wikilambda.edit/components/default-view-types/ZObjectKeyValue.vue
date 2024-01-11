@@ -843,8 +843,8 @@ module.exports = exports = {
 		 * Process delete item action
 		 */
 		deleteListItem: function () {
-			// TODO(T324242): replace with new setter when it exists
-			// TODO(T331132): can we create a 'revert delete' workflow?
+			// TODO (T324242): replace with new setter when it exists
+			// TODO (T331132): can we create a 'revert delete' workflow?
 			this.setDirtyIfMainObject();
 			this.removeItemFromTypedList( { rowId: this.rowId } );
 		}

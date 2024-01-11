@@ -116,7 +116,7 @@ module.exports = exports = {
 			const metadata = this.getZTesterMetadata(
 				this.zFunctionId, this.zTesterId, this.zImplementationId );
 
-			// TODO(T316567): avoid returning ''
+			// TODO (T316567): avoid returning ''
 			return metadata || '';
 		},
 		implementationLabel: function () {
@@ -131,8 +131,8 @@ module.exports = exports = {
 	} ),
 	methods: $.extend( mapActions( [ 'fetchZids' ] ), {
 		handleMessageIconClick: function () {
-			// TODO(T315607): See if the metadata dialog behavior can be improved further.
-			// TODO(T316567): Check if results are ready before showing metadata dialog
+			// TODO (T315607): See if the metadata dialog behavior can be improved further.
+			// TODO (T316567): Check if results are ready before showing metadata dialog
 			if ( !this.showMetadata ) {
 				this.showMetadata = true;
 			} else {

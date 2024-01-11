@@ -368,7 +368,7 @@ module.exports = exports = {
 			updateCode: function ( code ) {
 				// there is an edge case where acejs will trigger an empty change that we process as an event object
 				// we don't want to update our object with that bad data
-				// TODO(T324605): this deserves a deeper investigation
+				// TODO (T324605): this deserves a deeper investigation
 				if ( typeof code !== 'object' ) {
 					this.clearErrors( this.codeValueRowId );
 					this.$emit( 'set-value', {
