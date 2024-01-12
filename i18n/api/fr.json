@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Ajeje Brazorf",
 			"DreZhsh",
 			"Gomoko",
 			"Lepticed",
@@ -77,7 +78,7 @@
 	"apierror-wikilambda_function_call-not-connected": "Impossible de résoudre l'hôte « $1 », probablement parce que l’orchestrateur ne fonctionne pas. Veuillez consulter le README pour ajouter l’orchestrateur à votre configuration « docker-compose ».",
 	"apierror-wikilambda_function_call-concurrency-limit": "Vous avez actuellement trop d’appels de fonctions en cours d’exécution.",
 	"apierror-wikilambda_function_call-general": "Quelque chose s’est mal passé : '$1'.",
-	"apierror-wikilambda_function_call-response-malformed": "Echec dans la réponse à l'appel de fonction : '$1'",
+	"apierror-wikilambda_function_call-response-malformed": "Échec dans la réponse à l’appel de fonction : '$1'",
 	"apierror-wikilambda_supported_programming_languages-not-connected": "Impossible de résoudre l’hôte « $1 », probablement parce que l’orchestrateur ne s'exécute pas. Veuillez consulter le README pour ajouter l’orchestrateur à votre configuration « docker-compose ».",
 	"apierror-wikilambda_supported_programming_languages-concurrency-limit": "Vous avez trop souvent demandé les langages de programmation.",
 	"apierror-wikilambda_edit-invalidjson": "Impossible de créer un Z-Objet avec la valeur « $1 » donnée ; JSON non valide.",
