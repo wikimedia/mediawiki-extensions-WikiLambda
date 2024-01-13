@@ -213,7 +213,6 @@
 		},
 		"ext.wikilambda.languageselector": {
 			"styles": [],
-			"es6": true,
 			"dependencies": [
 				"vue",
 				"@wikimedia/codex",
@@ -241,7 +240,6 @@
 				"ext.wikilambda.edit/ext.wikilambda.edit.variables.less",
 				"ext.wikilambda.edit/ext.wikilambda.edit.less"
 			],
-			"es6": true,
 			"dependencies": [
 				"vue",
 				"vuex",
