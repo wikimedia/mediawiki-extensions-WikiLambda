@@ -408,7 +408,7 @@
 	"wikilambda-about-widget-no-aliases": "Message for when there are no aliases in the About widget",
 	"wikilambda-about-widget-no-inputs": "Message for when there are no inputs to show in the About widget",
 	"wikilambda-about-widget-unlabelled-input": "Placeholder label for an input that has no name in the About widget",
-	"wikilambda-about-widget-input-label": "Label for the nth input label field in the About widget",
+	"wikilambda-about-widget-input-label": "Means \"The label of input number $1\". Label for the nth input label field in the About widget.",
 	"wikilambda-function-explorer-title": "The title of the function explorer component",
 	"wikilambda-function-inputs-title": "The header title for the inputs section of the function explorer",
 	"wikilambda-function-explorer-copied-text": "Text displayed when something is copied to the clipboard",

@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Drkirstyross"
+		]
+	},
+	"wikilambda-functioncall-metadata-execution-debug-logs": "Execution debug logs",
+	"wikilambda-about-widget-no-descriptions-or-aliases": "No description or aliases provided.",
+	"wikilambda-about-widget-no-descriptions": "No description provided.",
+	"wikilambda-about-widget-no-aliases": "No aliases provided.",
+	"wikilambda-about-widget-no-inputs": "No inputs provided.",
+	"wikilambda-about-widget-unlabelled-input": "Unlabelled",
+	"wikilambda-about-widget-input-label": "Input $1 label"
+}
