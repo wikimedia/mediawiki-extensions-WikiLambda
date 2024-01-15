@@ -11,7 +11,6 @@
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
-use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 class ZType extends ZObject {
 
@@ -130,9 +129,6 @@ class ZType extends ZObject {
 			if ( !$key->isValid() ) {
 				return false;
 			}
-			if ( ZObjectUtils::getZObjectReferenceFromKey( $key->getKeyId() ) !== $this->getTypeId() ) {
-				return false;
-			}
 		}
 
 		// Validator must be set to a valid ZKey reference
@@ -162,12 +158,12 @@ class ZType extends ZObject {
 	}
 
 	/**
-	 * Get the string representation of th ZType Zid
+	 * Get the representation of th ZType Zid
 	 *
-	 * @return string
+	 * @return ZReference|ZFunctionCall
 	 */
 	public function getTypeId() {
-		return $this->data[ ZTypeRegistry::Z_TYPE_IDENTITY ]->getZValue();
+		return $this->data[ ZTypeRegistry::Z_TYPE_IDENTITY ];
 	}
 
 	/**

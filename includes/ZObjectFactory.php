@@ -603,6 +603,11 @@ class ZObjectFactory {
 			return $type;
 		}
 
+		if ( $type instanceof ZType ) {
+			// return the content of the Type Identity field
+			return $type->getTypeId();
+		}
+
 		// Invalid type: Z1K1 contains something else than a ZReference or a ZFunctionCall
 		throw new ZErrorException(
 			ZErrorFactory::createZErrorInstance(

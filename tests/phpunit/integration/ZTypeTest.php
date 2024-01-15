@@ -52,7 +52,7 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 			$testObject->getAliases()->getAliasesForLanguage( $french )
 		);
 
-		$this->assertSame( 'Z111', $testObject->getInnerZObject()->getTypeId() );
+		$this->assertSame( 'Z111', $testObject->getInnerZObject()->getTypeId()->getZValue() );
 
 		$keys = $testObject->getInnerZObject()->getTypeKeys()->getAsArray();
 
