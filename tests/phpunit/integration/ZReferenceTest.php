@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 
 /**
@@ -61,6 +62,9 @@ class ZReferenceTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testIsValid() {
+		$testObject = new ZReference( null );
+		$this->assertFalse( $testObject->isValid(), 'Null ZReferences are invalid' );
+
 		$testObject = new ZReference( '' );
 		$this->assertFalse( $testObject->isValid(), 'Empty ZReferences are invalid' );
 
@@ -72,5 +76,23 @@ class ZReferenceTest extends WikiLambdaIntegrationTestCase {
 
 		$testObject = new ZReference( 'Z1K1' );
 		$this->assertFalse( $testObject->isValid(), 'Z1K1 as a ZReference is invalid' );
+	}
+
+	public function testGetSerialized() {
+		$testObject = new ZReference( 'Z1' );
+		$this->assertSame( 'Z1', $testObject->getSerialized(), 'Serialised form of directly-created ZReference' );
+		$this->assertArrayEquals(
+			[ 'Z1K1' => 'Z9', 'Z9K1' => 'Z1' ],
+			(array)$testObject->getSerialized( ZObject::FORM_NORMAL ),
+			'Serialised normal form of directly-created ZReference'
+		);
+
+		$testObject = ZObjectFactory::create( "Z1" );
+		$this->assertSame( 'Z1', $testObject->getSerialized(), 'Serialised form of indirectly-created ZReference' );
+		$this->assertArrayEquals(
+			[ 'Z1K1' => 'Z9', 'Z9K1' => 'Z1' ],
+			(array)$testObject->getSerialized( ZObject::FORM_NORMAL ),
+			'Serialised normal form of indirectly-created ZReference'
+		);
 	}
 }

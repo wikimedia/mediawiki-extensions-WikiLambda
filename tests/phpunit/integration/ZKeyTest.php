@@ -40,6 +40,7 @@ class ZKeyTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 'Z6', $testObject->getKeyType() );
 		$this->assertSame( 'Z6K1', $testObject->getKeyId() );
 		$this->assertSame( $testString->getString(), $testObject->getKeyLabel()->getStringForLanguageCode( 'en' ) );
+		$this->assertArrayEquals( [ $testKey, $testRef, $testLabelSet ], $testObject->getZValue() );
 		$this->assertTrue( $testObject->isValid() );
 	}
 
@@ -160,17 +161,24 @@ EOT
 			'unknown type' => [ 'Z0', $testId, [], null, false ],
 			'invalid type' => [ 'Test value?', $testId, [], null, false ],
 			'incorrect type' => [ 'Z6', $testId, [], null, false ],
+			'type reference to non-ZObject' => [ new ZReference( 'Q1' ), $testId, [ $testString1 ], null, false ],
 
 			'null identity' => [ $testRef, null, [], null, false ],
 			'invalid identity' => [ $testRef, 'Test value!', [], null, false ],
 			'local identity' => [ $testRef, 'K1', [], null, false ],
 			'unknown identity' => [ $testRef, 'Z0K1', [], null, false ],
+			'idendity reference to non-ZObject' => [ $testRef, new ZString( 'Q1K1' ), [ $testString1 ], null, false ],
 
 			'null label' => [ $testRef, $testId, null, null, false ],
 			'empty label' => [ $testRef, $testId, [], null, true ],
 			'invalid label' => [ $testRef, $testId, [ 'Test value:' ], null, false ],
 			'singleton label' => [ $testRef, $testId, [ $testString1 ], null, true ],
 			'multiple label' => [ $testRef, $testId, [ $testString1, $testString2 ], [ 'fr' ], true ],
+			'non-array labels' => [ $testRef, $testId, $testString1, null, false ],
+			'non-valid ZMonoLingualString label' => [ $testRef, $testId, [ new ZMonoLingualString(
+				new ZString( 'Language' ),
+				new ZString( 'Demonstration item' )
+			) ], null, false ],
 
 			'singleton labelset' => [ $testRef, $testId, $emptyLabelSet, null, true ],
 			'multiple labelset' => [ $testRef, $testId, $testLabelSet, [ 'it', 'de', 'fr' ], true ],

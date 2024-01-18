@@ -31,11 +31,35 @@ class ZMonoLingualStringTest extends WikiLambdaIntegrationTestCase {
 			new ZReference( 'Z1002' ),
 			new ZString( 'Demonstration item' )
 		);
+		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( 'Z11', $testObject->getZType() );
 		$this->assertSame( 'Z1002', $testObject->getLanguage() );
 		$this->assertSame( 'Demonstration item', $testObject->getString() );
 		$this->assertSame( [ 'Z1002' => 'Demonstration item' ], $testObject->getZValue() );
-		$this->assertTrue( $testObject->isValid() );
+	}
+
+	public function testCreation_invalidNonReferenceLanguage() {
+		$testObject = new ZMonoLingualString(
+			new ZString( 'Language' ),
+			new ZString( 'Demonstration item' )
+		);
+		$this->assertFalse( $testObject->isValid() );
+		$this->assertSame( 'Z11', $testObject->getZType() );
+		$this->assertSame( 'Language', $testObject->getLanguage() );
+		$this->assertSame( 'Demonstration item', $testObject->getString() );
+		$this->assertSame( [ 'Language' => 'Demonstration item' ], $testObject->getZValue() );
+	}
+
+	public function testCreation_invalidNonStringValue() {
+		$testObject = new ZMonoLingualString(
+			new ZReference( 'Z1002' ),
+			new ZReference( 'Z1000' )
+		);
+		$this->assertFalse( $testObject->isValid() );
+		$this->assertSame( 'Z11', $testObject->getZType() );
+		$this->assertSame( 'Z1002', $testObject->getLanguage() );
+		$this->assertSame( 'Z1000', $testObject->getString() );
+		$this->assertSame( [ 'Z1002' => 'Z1000' ], $testObject->getZValue() );
 	}
 
 	public function testStaticCreation() {
