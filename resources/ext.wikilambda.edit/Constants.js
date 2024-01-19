@@ -203,6 +203,10 @@ var Constants = {
 		[ Constants.Z_CODE ]: 'wl-z-code',
 		[ Constants.Z_TYPED_LIST ]: 'wl-z-typed-list'
 	},
+	programmingLanguages = {
+		JAVASCRIPT: 'Z600',
+		PYTHON: 'Z610'
+	},
 	linkedTypes = [
 		Constants.Z_TYPE,
 		Constants.Z_TESTER,
@@ -217,6 +221,7 @@ var Constants = {
 		Constants.Z_ARGUMENT_REFERENCE
 	];
 
+Constants.Z_PROGRAMMING_LANGUAGES = programmingLanguages;
 Constants.Z_TYPED_OBJECTS_LIST = typedObjectsList;
 Constants.VIEWS = views;
 Constants.PATHS = paths;

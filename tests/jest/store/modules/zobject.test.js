@@ -1805,7 +1805,7 @@ describe( 'zobject Vuex module', () => {
 			} );
 		} );
 
-		describe( 'getZCodeProgrammingLanguage', () => {
+		describe( 'getZCodeProgrammingLanguageRow', () => {
 			var getters;
 			beforeEach( () => {
 				getters = {};
@@ -1813,6 +1813,7 @@ describe( 'zobject Vuex module', () => {
 				getters.getRowById = zobjectModule.getters.getRowById( state );
 				getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
 				getters.getZStringTerminalValue = zobjectModule.getters.getZStringTerminalValue( state, getters );
+				getters.getZReferenceTerminalValue = zobjectModule.getters.getZReferenceTerminalValue( state, getters );
 				getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
 			} );
 
@@ -1820,7 +1821,7 @@ describe( 'zobject Vuex module', () => {
 				state.zobject = [];
 				const rowId = undefined;
 				const expected = undefined;
-				const lang = zobjectModule.getters.getZCodeProgrammingLanguage( state, getters )( rowId );
+				const lang = zobjectModule.getters.getZCodeProgrammingLanguageRow( state, getters )( rowId );
 				expect( lang ).toBe( expected );
 			} );
 
@@ -1828,20 +1829,35 @@ describe( 'zobject Vuex module', () => {
 				state.zobject = [];
 				const rowId = 0;
 				const expected = undefined;
-				const lang = zobjectModule.getters.getZCodeProgrammingLanguage( state, getters )( rowId );
+				const lang = zobjectModule.getters.getZCodeProgrammingLanguageRow( state, getters )( rowId );
 				expect( lang ).toBe( expected );
 			} );
 
-			it( 'returns literal that identifies the programing language', () => {
+			it( 'returns the row that contains the programing language (reference)', function () {
 				state.zobject = zobjectToRows( {
 					Z1K1: 'Z16',
-					Z16K1: { Z1K1: 'Z61', Z61K1: 'javascript' },
-					Z16K2: '() => "hello world";'
+					Z16K1: 'Z600'
 				} );
+
 				const rowId = 0;
-				const expected = 'javascript';
-				const lang = zobjectModule.getters.getZCodeProgrammingLanguage( state, getters )( rowId );
-				expect( lang ).toBe( expected );
+				const expected = { id: 4, key: Constants.Z_CODE_LANGUAGE, parent: 0, value: Constants.ROW_VALUE_OBJECT };
+				const lang = zobjectModule.getters.getZCodeProgrammingLanguageRow( state, getters )( rowId );
+				expect( lang ).toEqual( expected );
+			} );
+
+			it( 'returns literal that identifies the programing language (literal)', () => {
+				state.zobject = zobjectToRows( {
+					Z1K1: 'Z16',
+					Z16K1: {
+						Z1K1: 'Z61',
+						Z61K1: 'javascript'
+					}
+				} );
+
+				const rowId = 0;
+				const expected = { id: 4, key: Constants.Z_CODE_LANGUAGE, parent: 0, value: Constants.ROW_VALUE_OBJECT };
+				const lang = zobjectModule.getters.getZCodeProgrammingLanguageRow( state, getters )( rowId );
+				expect( lang ).toEqual( expected );
 			} );
 		} );
 
@@ -3554,7 +3570,7 @@ describe( 'zobject Vuex module', () => {
 				const expectedKey = {
 					rowId: 0,
 					key: 'Z14K3',
-					value: { Z1K1: 'Z16', Z16K1: { Z1K1: 'Z61', Z61K1: '' }, Z16K2: '' }
+					value: { Z1K1: 'Z16', Z16K1: { Z1K1: 'Z9', Z9K1: '' }, Z16K2: '' }
 				};
 				expect( context.dispatch ).toHaveBeenCalledWith( 'injectKeyValueFromRowId', expectedKey );
 			} );

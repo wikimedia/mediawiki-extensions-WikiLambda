@@ -127,20 +127,26 @@ module.exports = exports = {
 					if ( innerObject[ Constants.Z_IMPLEMENTATION_CODE ] ) {
 
 						// invalid if no programming language is defined
-						if ( !isTruthyOrEqual( innerObject, [
+						const hasLiteralProgrammingLanguage = isTruthyOrEqual( innerObject, [
 							Constants.Z_IMPLEMENTATION_CODE,
 							Constants.Z_CODE_LANGUAGE,
 							Constants.Z_PROGRAMMING_LANGUAGE_CODE,
 							Constants.Z_STRING_VALUE
-						] ) ) {
+						] );
+
+						const hasReferencedProgrammingLanguage = isTruthyOrEqual( innerObject, [
+							Constants.Z_IMPLEMENTATION_CODE,
+							Constants.Z_CODE_LANGUAGE,
+							Constants.Z_REFERENCE_ID
+						] );
+
+						if ( !hasReferencedProgrammingLanguage && !hasLiteralProgrammingLanguage ) {
 							rowId = context.getters.getZImplementationContentRowId(
 								contentRowId,
 								Constants.Z_IMPLEMENTATION_CODE
 							);
 							const langRow = context.getters.getRowByKeyPath( [
-								Constants.Z_CODE_LANGUAGE,
-								Constants.Z_PROGRAMMING_LANGUAGE_CODE,
-								Constants.Z_STRING_VALUE
+								Constants.Z_CODE_LANGUAGE
 							], rowId );
 							context.dispatch( 'setError', {
 								rowId: langRow.id,

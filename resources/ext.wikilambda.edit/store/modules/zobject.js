@@ -730,23 +730,20 @@ module.exports = exports = {
 		/**
 		 * Returns the row of a Z16/Code programming language key (Z16K1)
 		 *
-		 * TODO (T296815); Assumes programming language is always a literal.
-		 *
 		 * @param {Object} state
 		 * @param {Object} getters
 		 * @return {Function}
 		 */
-		getZCodeProgrammingLanguage: function ( state, getters ) {
+		getZCodeProgrammingLanguageRow: function ( state, getters ) {
 			/**
 			 * @param {number} rowId
-			 * @return {string | undefined}
+			 * @return {Row | undefined}
 			 */
 			function findZCodeLanguage( rowId ) {
-				const languageRow = getters.getRowByKeyPath( [
-					Constants.Z_CODE_LANGUAGE,
-					Constants.Z_PROGRAMMING_LANGUAGE_CODE
+				const langRow = getters.getRowByKeyPath( [
+					Constants.Z_CODE_LANGUAGE
 				], rowId );
-				return languageRow ? getters.getZStringTerminalValue( languageRow.id ) : undefined;
+				return langRow;
 			}
 			return findZCodeLanguage;
 		},
