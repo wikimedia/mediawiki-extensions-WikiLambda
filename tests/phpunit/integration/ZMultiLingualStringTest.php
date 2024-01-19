@@ -15,6 +15,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 
@@ -53,6 +54,40 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 'Z12', $testObject->getZType() );
 		$this->assertArrayHasKey( self::ZLANG['en'], $testObject->getZValue() );
 		$this->assertArrayNotHasKey( self::ZLANG['ru'], $testObject->getZValue() );
+		$this->assertArrayEquals(
+			[
+				self::ZLANG['en'] => 'Demonstration item',
+				self::ZLANG['es'] => 'Elemento para demostración',
+				self::ZLANG['de'] => 'Gegenstand zur Demonstration',
+				self::ZLANG['fr'] => 'Article pour démonstration'
+			],
+			$testObject->getValueAsList()
+		);
+
+		$serialisedForm = $testObject->getSerialized();
+
+		$this->assertSame( 'Z12', $serialisedForm->Z1K1 );
+
+		$this->assertSame( 'Z11', $serialisedForm->Z12K1[0] );
+
+		$this->assertArrayEquals( [
+				"Z1K1" => "Z11",
+				"Z11K1" => self::ZLANG['en'],
+				"Z11K2" => 'Demonstration item'
+			],
+			(array)$serialisedForm->Z12K1[1]
+		);
+
+		$serialisedNormalForm = $testObject->getSerialized( ZObject::FORM_NORMAL );
+		$this->assertSame( 'Z12', $serialisedNormalForm->Z1K1->Z9K1 );
+
+		$this->assertSame( 'Z7',   $serialisedNormalForm->Z12K1->Z1K1->Z1K1->Z9K1 );
+		$this->assertSame( 'Z881', $serialisedNormalForm->Z12K1->Z1K1->Z7K1->Z9K1 );
+		$this->assertSame( 'Z11', $serialisedNormalForm->Z12K1->Z1K1->Z881K1->Z9K1 );
+
+		$this->assertSame( 'Z11', $serialisedNormalForm->Z12K1->K1->Z1K1->Z9K1 );
+		$this->assertSame( self::ZLANG['en'], $serialisedNormalForm->Z12K1->K1->Z11K1->Z9K1 );
+		$this->assertSame( 'Demonstration item', $serialisedNormalForm->Z12K1->K1->Z11K2->Z6K1 );
 
 		$this->assertTrue(
 			$testObject->isLanguageProvidedValue( 'en' )
