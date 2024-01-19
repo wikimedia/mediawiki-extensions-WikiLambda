@@ -179,4 +179,14 @@ class SpecialViewObject extends SpecialPage {
 		$mainPageUrl = '/wiki/' . $output->msg( 'Mainpage' )->text();
 		$output->redirect( $mainPageUrl, 303 );
 	}
+
+	/**
+	 * (T355441) Unlike regular Special pages, we actively want search engines to
+	 * index our content and follow our links.
+	 *
+	 * @inheritDoc
+	 */
+	protected function getRobotPolicy() {
+		return 'index,follow';
+	}
 }
