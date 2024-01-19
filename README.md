@@ -103,6 +103,25 @@ If you would like to use your own installation of the function orchestrator and 
 This will provide you with your own orchestrator and evaluator services, pointed at your wiki. You can now use this for local content as well as built-in content.
 
 * If your wiki is not called 'mediawiki-web', e.g. because your checkout of MediaWiki is not in a directory called 'mediawiki', you will need to set `$wgWikiLambdaOrchestratorLocation` in your `LocalSettings.php` and make similar edits to the `environment` variables you have set in your `mediawiki/docker-compose.override.yml` file.
+  * To find out the correct name for all the variables, run `docker compose ps` in your mediawiki directory. The output should be something similar to this:
+  ```
+  NAME                                   COMMAND                  SERVICE                         STATUS              PORTS
+  core-function-evaluator-javascript-1   "node server.js"         function-evaluator-javascript   running             0.0.0.0:6929->6927/tcp, :::6929->6927/tcp
+  core-function-evaluator-python-1       "node server.js"         function-evaluator-python       running             0.0.0.0:6928->6927/tcp, :::6928->6927/tcp
+  core-function-orchestrator-1           "node server.js"         function-orchestrator           running             0.0.0.0:6254->6254/tcp, :::6254->6254/tcp
+  core-mediawiki-1                       "/bin/bash /php_entr…"   mediawiki                       running             9000/tcp
+  core-mediawiki-jobrunner-1             "/bin/bash /entrypoi…"   mediawiki-jobrunner             running
+  core-mediawiki-web-1                   "/bin/bash /entrypoi…"   mediawiki-web                   running             0.0.0.0:8080->8080/tcp, :::8080->8080/tcp
+  ```
+  * Use the `SERVICE` name for the `mediawiki-web` container for your `WIKI_API_URL` variable, `http://<MEDIAWIKI WEB SERVICE NAME>:8080/w/api.php`
+    * E.g. `http://mediawiki-web:8080/w/api.php`
+  * Use the container `NAME` of the javascript evaluator for the javascript `evaluatorUri` in the `ORCHESTRATOR_CONFIG` variable, `http://<JAVASCRIPT EVALUATOR CONTAINER NAME>:6927/1/v1/evaluate/`
+    * E.g. `http://core-function-evaluator-javascript-1:6927/1/v1/evaluate/`
+  * Use the container `NAME` of the python evaluator for the python `evaluatorUri` in the
+  `ORCHESTRATOR_CONFIG` variable, `http://<PYTHON EVALUATOR CONTAINER NAME>:6927/1/v1/evaluate/`
+    * E.g. `http://core-function-evaluator-python-1:6927/1/v1/evaluate/`
+  * Use the container `NAME` of the orchestrator for the `$wgWikiLambdaOrchestratorLocation` config variable in `LocalSettings.php` file, as specified above.
+    * E.g. `http://core-function-orchestrator-1:6254/1/v1/evaluate/`
 * If you would like to avoid permissions checks when developing locally, navigate to `localhost:8080/wiki` and log in (login: Admin, password: dockerpass)
 * If you would like to bypass the cache when developing locally, change the signature of the `orchestrate` function in `includes/OrchestratorRequest.php`, setting `$bypassCache = true`:
 
@@ -119,58 +138,41 @@ If you would instead like to develop changes to the function orchestrator or eva
   `docker build -f .pipeline/blubber.yaml --target development -t local-orchestrator .`
 * Alter `mediawiki/docker-compose.override.yml` to comment out `image: docker-registry...` in the `function-orchestrator` service stanza and uncomment the `image: local-orchestrator:latest` line instead.
 
-If changing one or more of the evaluators, follow the same steps but for the evaluator's images and directory.
+To do this for the evaluator:
+* In a directory outside of your MediaWiki checkout, clone the services via `git clone --recurse-submodules --remote-submodules https://gitlab.wikimedia.org/repos/abstract-wiki/wikifunctions/function-evaluator`.
+* From the root of your function-evaluator installation:
+  * To build the javascript evaluator image, run:
+    `docker build -f .pipeline/blubber.yaml --target development-javascript-all-wasm -t local-evaluator-js .`
+  * To build the python evaluator image, run:
+    `docker build -f .pipeline/blubber.yaml --target development-python3-all-wasm -t local-evaluator-py .`
+* Alter `mediawiki/docker-compose.override.yml` to comment out `image: docker-registry...` in the `function-evaluator` javascript and python services and uncomment the `image: local-evaluator-js:latest` and `image: local-evaluator-py:latest` lines instead.
 
-### Front-end data model (Vuex)
 
-Abstract Wikimedia uses a [Vuex](https://vuex.vuejs.org/) data model to store state and manipulate the data being provided by the PHP API.
+### PHPunit Tests
 
-WikiLambda is build on top of complex data structure called zObjects. This data is fetched and managed by Vuex, and this section is going to describe how VUEX make use of this data.
-
-#### zObject from JSON to Array
-
-The most important topic of the store manipulation is the conversion of zObjects from JSON to Array. zObject can be very large and splitting it up in "smaller" parts was required to simplify the development and design of the FrontEnd.
-
-The solution to this problem, was to convert a zObject JSON into an array that would allow us to separate the data into smaller parts and use individual array Indexes to support data manipulation.
-
-An example of a zObject JSON (mutlilingual string):
+To run the extension PHPunit tests, from the Mediawiki installation directory, run:
 
 ```
-{
-        "Z1K1": "Z12",
-        "Z12K1": [
-            {
-                "Z1K1": "Z11",
-                "Z11K1": "Z1002",
-                "Z11K2": "Good Morning"
-            },
-            {
-                "Z1K1": "Z11",
-                "Z11K1": "Z1787",
-                "Z11K2": "Buongiorno"
-            }
-        ]
-    }
+docker compose exec mediawiki composer phpunit:entrypoint extensions/WikiLambda/tests/phpunit/
 ```
-The provided example have 2 different instances of a monolingual string (Z11). If we would have been using JSON in our data model, we would have found difficult to manage the data. The Vue components would have had to have a complex flow of data all the way up, and modification of data (for example change Buongiorno to Buon giorno) would have been difficult due to the multiple instances of the same structure withint he JSON.
 
-To simplify the overall structure the above zObject is translated in the following array structure at first load in the method "convertZObjectToRows" in the `zobjectThreeUtils.js` mixins folder.
+### Jest Tests
 
-| id | key       | parent    | value        |
-|----|-----------|-----------|--------------|
-| 0  | undefined | undefined | object       |
-| 1  | Z1K1      | 0         | Z12          |
-| 2  | Z12K1     | 1         | array        |
-| 3  | 0         | 2         | object       |
-| 4  | Z1K1      | 3         | Z11          |
-| 5  | Z11K1     | 3         | Z1002        |
-| 6  | Z11K2     | 3         | Good Morning |
-| 7  | 1         | 2         | object       |
-| 8  | Z1K1      | 7         | Z11          |
-| 9  | Z11K1     | 7         | Z1787        |
-| 10 | Z11K2     | 7         | Buongiorno   |
+To run the Jest unit and integration tests, from the Wikilambda directory, do:
 
-The array data model allows us to manage the data in a more intuitive way. Each vue component is able to define its own scope by the use of Id's. For example the component that handles monolingual string will be rendered twice. One will be provided a Property of zObjectId of 3 and one with the value of 7. Doing so will allow the component to self manage the render (get all children of ID 3 or ID 7) and the manipulation of the data (modify Z11K2 of the monolingual with ID 7), and simplify the overall structure of the data.
+```
+# Install npm dependencies
+npm ci
+
+# Run tests
+npm test
+
+# Run linter
+npm run lint:fix
+
+# Run unit tests
+npm run test:unit
+```
 
 ### Selenium Tests
 
