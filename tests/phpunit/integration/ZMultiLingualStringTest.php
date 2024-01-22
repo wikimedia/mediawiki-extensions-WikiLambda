@@ -205,6 +205,32 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
+	public function testGetStringAndLanguageCode_empty() {
+		$this->registerLangs( [ 'en' ] );
+
+		$englishLang = self::makeLanguage( 'en' );
+
+		$testObject = new ZMultiLingualString( [
+			new ZMonoLingualString(
+				new ZReference( self::ZLANG['en'] ), new ZString( '' )
+			)
+		] );
+
+		$this->assertTrue( $testObject->isValid() );
+
+		// returns given language when there is no fallback needed
+		$this->assertSame(
+			[
+				'title' => '⧼test-message⧽',
+				'languageCode' => 'en'
+			],
+			$testObject->buildStringForLanguage( $englishLang )
+				->fallbackWithEnglish()
+				->placeholderWith( 'test-message' )
+				->getStringAndLanguageCode()
+		);
+	}
+
 	public function testTitleCreation() {
 		$englishLang = self::makeLanguage( 'en' );
 		// test title comes back correctly when it exists
