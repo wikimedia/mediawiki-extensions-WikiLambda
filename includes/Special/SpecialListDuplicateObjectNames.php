@@ -45,7 +45,7 @@ class SpecialListDuplicateObjectNames extends SpecialPage {
 
 		$output->addModuleStyles( [ 'mediawiki.special' ] );
 		// TODO (T300516): Make this help page.
-		$this->addHelpLink( 'Extension:WikiLambda/Duplicate Object labels' );
+		$this->addHelpLink( 'Help:Wikifunctions/Duplicate Object labels' );
 
 		$pager = new DuplicateObjectLabelsPager(
 			$this,
