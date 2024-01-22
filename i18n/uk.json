@@ -235,5 +235,8 @@
 	"wikilambda-function-details-summary-learn-more": "Дізнайтеся більше про процес перевірки.",
 	"wikilambda-function-viewer-aliases-show-language-button": "Показати більше мов",
 	"wikilambda-function-viewer-names-show-languages-button": "Показати назву іншими мовами",
-	"wikilambda-function-viewer-details-input-number": "Ввід $1"
+	"wikilambda-function-viewer-details-input-number": "Ввід $1",
+	"wikilambda-function-viewer-details-table-view-all": "Переглянути всі",
+	"wikilambda-function-viewer-details-table-view-less": "Показати компактно",
+	"wikilambda-toast-close": "Закрити"
 }
