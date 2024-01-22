@@ -281,6 +281,15 @@ module.exports = exports = {
 					haserrors: this.hasErrors
 				};
 				this.dispatchEvent( `wf.ui.${ eventNamespace }.publish`, customData );
+				// T350497 Update the WikiLambda instrumentation to use core interaction events
+				const interactionData = {
+					zobjecttype: this.getCurrentZObjectType || null,
+					zobjectid: this.getCurrentZObjectId || null,
+					zlang: this.getUserLangZid || null,
+					implementationtype: this.getCurrentZImplementationType || null,
+					haserrors: this.hasErrors
+				};
+				this.submitInteraction( 'publish', interactionData );
 			} );
 		},
 

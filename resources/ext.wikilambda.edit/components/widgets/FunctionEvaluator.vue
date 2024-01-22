@@ -410,6 +410,15 @@ module.exports = exports = {
 						zlang: this.getUserLangZid || null
 					};
 					this.dispatchEvent( 'wf.ui.callFunction', customData );
+					// T350497 Update the WikiLambda instrumentation to use core interaction events
+					const interactionData = {
+						zobjecttype: this.getCurrentZObjectType || null,
+						zobjectid: this.getCurrentZObjectId || null,
+						zlang: this.getUserLangZid || null,
+						selectedfunctionzid: this.selectedFunctionZid || null,
+						haserrors: this.resultHasError
+					};
+					this.submitInteraction( 'call', interactionData );
 				} );
 		},
 

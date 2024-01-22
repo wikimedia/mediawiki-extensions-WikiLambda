@@ -68,12 +68,15 @@ module.exports = exports = {
 			 */
 			newViewMounted: function () {
 				// Log using Metrics Platform
+				// Pending to remove due to T350495
 				const customData = {
 					viewname: this.getCurrentView || null,
 					isnewzobject: this.isNewZObject,
 					loadtime: Date.now() - startTime
 				};
 				this.dispatchEvent( 'wf.ui.newView.mounted', customData );
+				// T350495 Update the WikiLambda instrumentation to use core interaction events
+				// We should remove this event after migration (it's a performance event)
 			}
 		}
 	),

@@ -5,6 +5,7 @@
  * @license MIT
  */
 const Constants = require( '../../../Constants.js' );
+const submitInteraction = require( '../../../mixins/eventLogUtils.js' ).methods.submitInteraction;
 
 module.exports = exports = {
 	state: {
@@ -59,6 +60,17 @@ module.exports = exports = {
 		 * @param {boolean} value
 		 */
 		setDirty: function ( context, value = true ) {
+			// T350497 Update Wikilambda instrument to use core interaction events
+			// sending the 'change' event for the first change
+			if ( value === true && !context.getters.isDirty ) {
+				const interactionData = {
+					zobjectid: context.getters.getCurrentZObjectId,
+					zobjecttype: context.getters.getCurrentZObjectType || null,
+					implementationtype: context.getters.getCurrentZImplementationType || null,
+					zlang: context.getters.getUserLangZid || null
+				};
+				submitInteraction( 'change', interactionData );
+			}
 			context.commit( 'setDirty', value );
 		},
 		/**

@@ -221,6 +221,19 @@ module.exports = exports = {
 				zobjectid: this.getCurrentZObjectId || null,
 				zlang: this.getUserLangZid || null
 			} );
+			// T350497 Update the WikiLambda instrumentation to use core interaction events
+			const interactionData = {
+				zobjecttype: this.contentType || null,
+				zobjectid: this.getCurrentZObjectId || null,
+				zlang: this.getUserLangZid || null
+			};
+			let action = '';
+			if ( !editValue ) {
+				action = 'view';
+			} else {
+				action = this.isNewZObject ? 'create' : 'edit';
+			}
+			this.submitInteraction( action, interactionData );
 		},
 		/**
 		 * This method handles a click of the edit-icon in the About widget. If this.edit = false,

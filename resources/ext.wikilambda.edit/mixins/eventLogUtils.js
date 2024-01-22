@@ -23,6 +23,18 @@ module.exports = exports = {
 				mw.eventLog.dispatch( name, data );
 			}
 		},
+		// T350497 Update the WikiLambda instrumentation to use core interaction events
+		/**
+		 * Submit an interaction event using Metrics Platform
+		 * @param {string} action
+		 * @param {Object} interactionData
+		 */
+		submitInteraction: function ( action, interactionData ) {
+			if ( mw.eventLog ) {
+				mw.eventLog.submitInteraction( 'mediawiki.product_metrics.wikifunctions_ui',
+					'/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0', action, interactionData );
+			}
+		},
 		/**
 		 * Returns the event namespace string for particular
 		 * actions and important types, else returns generic one

@@ -88,6 +88,13 @@ module.exports = exports = {
 				zobjectid: this.getCurrentZObjectId || null,
 				zlang: this.getUserLangZid || null
 			} );
+			// T350495 Update the WikiLambda instrumentation to use core interaction events
+			const interactionData = {
+				zobjecttype: Constants.Z_FUNCTION,
+				zobjectid: this.getCurrentZObjectId || null,
+				zlang: this.getUserLangZid || null
+			};
+			this.submitInteraction( 'edit', interactionData );
 		}
 	},
 	mounted: function () {
@@ -98,6 +105,12 @@ module.exports = exports = {
 			zobjectid: this.getCurrentZObjectId || null,
 			zlang: this.getUserLangZid || null
 		} );
+		const interactionData = {
+			zobjecttype: Constants.Z_FUNCTION,
+			zobjectid: this.getCurrentZObjectId || null,
+			zlang: this.getUserLangZid || null
+		};
+		this.submitInteraction( 'view', interactionData );
 		this.$emit( 'mounted' );
 	}
 };

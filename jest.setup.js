@@ -115,6 +115,10 @@ global.mw = {
 		dispatch: jest.fn( function ( eventName, customData ) {
 			// eslint-disable-next-line no-console
 			console.log( 'Metrics Platform event emitted: ' + eventName + ' - ' + JSON.stringify( customData ) );
+		} ),
+		submitInteraction: jest.fn( function ( streamName, schemaID, action, interactionData ) {
+			// eslint-disable-next-line no-console
+			console.log( 'Metrics Platform event emitted using submitInteraction: ' + action + ' - ' + JSON.stringify( interactionData ) );
 		} )
 	},
 	message: jest.fn( function ( str ) {

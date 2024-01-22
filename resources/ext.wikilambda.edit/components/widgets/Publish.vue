@@ -227,6 +227,14 @@ module.exports = exports = {
 				this.removeListeners();
 				const eventNamespace = eventLogger.getNamespace( this.getCurrentZObjectType );
 				eventLogger.dispatchEvent( `wf.ui.${ eventNamespace }.cancel`, this.eventData );
+				// T350497 Update the WikiLambda instrumentation to use core interaction events
+				const interactionData = {
+					zobjecttype: this.getCurrentZObjectType || null,
+					zobjectid: this.getCurrentZObjectId,
+					zlang: this.getUserLangZid || null,
+					implementationtype: this.getCurrentZImplementationType || null
+				};
+				eventLogger.submitInteraction( 'cancel', interactionData );
 				window.location.href = targetUrl;
 			};
 

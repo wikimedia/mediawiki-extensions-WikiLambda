@@ -224,6 +224,14 @@ module.exports = exports = {
 			zobjecttype: Constants.Z_FUNCTION,
 			zlang: this.getUserLangZid || null
 		} );
+		// T350495 Update the WikiLambda instrumentation to use core interaction events
+		const interactionData = {
+			zobjecttype: Constants.Z_FUNCTION,
+			zobjectid: this.getCurrentZObjectId || null,
+			zlang: this.getUserLangZid || null
+		};
+		const action = this.isNewZObject ? 'create' : 'edit';
+		this.submitInteraction( action, interactionData );
 	}
 };
 </script>
