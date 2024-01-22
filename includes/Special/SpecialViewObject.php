@@ -21,6 +21,7 @@ use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
 use OutputPage;
 use ParserOptions;
+use RuntimeException;
 use SpecialPage;
 
 class SpecialViewObject extends SpecialPage {
@@ -157,6 +158,15 @@ class SpecialViewObject extends SpecialPage {
 				)
 			);
 		}
+
+		// (T355546) Over-ride the canonical URL to the /view/ form.
+		$urlUtils = $services->getUrlUtils();
+		$viewURL = $urlUtils->expand( "/view/$targetLanguage/$targetPageName" );
+		// $viewURL can be null 'if no valid URL can be constructed', which shouldn't ever happen.
+		if ( $viewURL === null ) {
+			throw new RuntimeException( 'No valid URL could be constructed for the canonical path' );
+		}
+		$outputPage->setCanonicalUrl( $viewURL );
 
 		// TODO: Make this help page.
 		$this->addHelpLink( 'Extension:WikiLambda/Viewing Objects' );
