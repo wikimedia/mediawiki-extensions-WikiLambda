@@ -12,6 +12,8 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunction;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction
@@ -27,6 +29,14 @@ class ZFunctionTest extends WikiLambdaIntegrationTestCase {
 		$zobject = ZObjectFactory::create( json_decode( $strFunction ) );
 		$this->assertInstanceOf( ZFunction::class, $zobject );
 		$this->assertTrue( $zobject->isValid() );
+
+		$createdObject = $zobject->getZValue();
+
+		$this->assertInstanceOf( ZTypedList::class, $createdObject['Z8K1'] );
+		$this->assertInstanceOf( ZReference::class, $createdObject['Z8K2'] );
+		$this->assertInstanceOf( ZTypedList::class, $createdObject['Z8K3'] );
+		$this->assertInstanceOf( ZTypedList::class, $createdObject['Z8K4'] );
+		$this->assertInstanceOf( ZReference::class, $createdObject['Z8K5'] );
 	}
 
 	public function testPersistentCreation() {
