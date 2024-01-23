@@ -71,7 +71,12 @@ class ZTestType extends ZObject {
 				}
 			}
 		],
-		"Z4K3": "Z111"
+		"Z4K3": "Z111",
+		"Z4K4": "Z111",
+		"Z4K5": "Z111",
+		"Z4K6": "Z111",
+		"Z4K7": ["Z46", "Z111"],
+		"Z4K8": ["Z64", "Z111"]
 	},
 	"Z2K3": {
 		"Z1K1": "Z12",
@@ -176,11 +181,16 @@ EOT;
             }
         ],
         "validator": "Z111",
+		"equality": "Z111",
+		"renderer": "Z111",
+		"parser": "Z111",
         "deserialisers": [
-            "Z46"
+            "Z46",
+			"Z111"
         ],
         "serialisers": [
-            "Z64"
+            "Z64",
+			"Z111"
         ]
     },
     "labels": {

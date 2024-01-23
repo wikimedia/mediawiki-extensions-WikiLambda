@@ -96,8 +96,15 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 'Other demonstration key', $keys[1]->getKeyLabel()->getStringForLanguage( $english ) );
 		$this->assertSame( 'Autre index pour démonstration', $keys[1]->getKeyLabel()->getStringForLanguage( $french ) );
 
-		// TODO: Nonsense result for now; once we implement Functions, will be one of those.
+		$this->assertInstanceOf( ZKey::class, $testObject->getInnerZObject()->getZKey( 'Z111K1' ) );
+		$this->assertNull( $testObject->getInnerZObject()->getZKey( 'Key does not exist' ) );
+
 		$this->assertSame( 'Z111', $testObject->getInnerZObject()->getTypeValidator() );
+		$this->assertSame( 'Z111', $testObject->getInnerZObject()->getEqualityFunction() );
+		$this->assertSame( 'Z111', $testObject->getInnerZObject()->getRendererFunction() );
+		$this->assertSame( 'Z111', $testObject->getInnerZObject()->getParserFunction() );
+		$this->assertInstanceOf( ZTypedList::class, $testObject->getInnerZObject()->getDeserialisers() );
+		$this->assertInstanceOf( ZTypedList::class, $testObject->getInnerZObject()->getSerialisers() );
 	}
 
 	/**
