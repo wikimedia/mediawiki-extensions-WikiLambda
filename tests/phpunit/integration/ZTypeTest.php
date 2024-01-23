@@ -53,6 +53,26 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 			$testObject->getAliases()->getAliasesForLanguage( $french )
 		);
 
+		$this->assertSame(
+			[ 'Z1002' => 'Demonstration type short description' ],
+			$testObject->getZObject()->getDescriptions()->getValueAsList()
+		);
+
+		$this->assertSame(
+			'Demonstration type short description',
+			$testObject->getZObject()->getDescription( $english )
+		);
+
+		$this->assertSame(
+			'(wikilambda-multilingualstring-nofallback)',
+			$testObject->getZObject()->getDescription( $docLang )
+		);
+
+		$this->assertSame(
+			'Demonstration type short description',
+			$testObject->getZObject()->getDescription( $french, true )
+		);
+
 		$this->assertSame( 'Z111', $testObject->getInnerZObject()->getTypeId()->getZValue() );
 
 		$keys = $testObject->getInnerZObject()->getTypeKeys()->getAsArray();
