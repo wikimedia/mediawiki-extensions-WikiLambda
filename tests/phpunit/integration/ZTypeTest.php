@@ -39,10 +39,18 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( 'Z4', $testObject->getZType() );
 
+		// Note: These are tests of ZObjectContent::getLabel(), which wraps ZPersistentObject::getLabel()
 		$this->assertSame( 'Demonstration type', $testObject->getLabel( $english ) );
 		$this->assertSame( '(wikilambda-multilingualstring-nofallback)', $testObject->getLabel( $docLang, false ) );
 		$this->assertSame( '(wikilambda-multilingualstring-nofallback)', $testObject->getLabel( $docLang, true ) );
 		$this->assertSame( 'Type pour démonstration', $testObject->getLabel( $french ) );
+
+		// Note: These are direct tests of ZPersistentObject::getLabel(); note that the fallback behaviour differs!
+		$testPObject = $testObject->getZObject();
+		$this->assertSame( 'Demonstration type', $testPObject->getLabel( $english ) );
+		$this->assertSame( '(wikilambda-multilingualstring-nofallback)', $testPObject->getLabel( $docLang, false ) );
+		$this->assertSame( 'Demonstration type', $testPObject->getLabel( $docLang, true ) );
+		$this->assertSame( 'Type pour démonstration', $testPObject->getLabel( $french ) );
 
 		$this->assertSame(
 			[ 'Demonstration type alias', 'Demonstration type second alias' ],
