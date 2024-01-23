@@ -179,15 +179,6 @@ class ZTypedList extends ZObject {
 	}
 
 	/**
-	 * Get a pair that represent the head and tail of this list
-	 *
-	 * @return array
-	 */
-	public function getZValue() {
-		return $this->data;
-	}
-
-	/**
 	 * Get the array of ZObjects represented by this list
 	 *
 	 * @return array

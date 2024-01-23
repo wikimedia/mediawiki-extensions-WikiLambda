@@ -149,15 +149,6 @@ class ZType extends ZObject {
 	}
 
 	/**
-	 * Get the complete data values of this ZType, comprised of identity, keys and validator
-	 *
-	 * @return array
-	 */
-	public function getZValue() {
-		return $this->data;
-	}
-
-	/**
 	 * Get the representation of th ZType Zid
 	 *
 	 * @return ZReference|ZFunctionCall
