@@ -17,7 +17,6 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
-use MediaWiki\MediaWikiServices;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZType
@@ -28,11 +27,11 @@ use MediaWiki\MediaWikiServices;
 class ZTypeTest extends WikiLambdaIntegrationTestCase {
 
 	public function testPersistentCreation() {
-		$services = MediaWikiServices::getInstance();
 		$this->registerLangs( [ 'fr' ] );
 
 		$english = self::makeLanguage( 'en' );
 		$french = self::makeLanguage( 'fr' );
+		$docLang = self::makeLanguage( 'qqx' );
 
 		$this->hideDeprecated( '::create' );
 		$testObject = new ZObjectContent( ZTestType::TEST_ENCODING );
@@ -41,6 +40,8 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 'Z4', $testObject->getZType() );
 
 		$this->assertSame( 'Demonstration type', $testObject->getLabel( $english ) );
+		$this->assertSame( '(wikilambda-multilingualstring-nofallback)', $testObject->getLabel( $docLang, false ) );
+		$this->assertSame( '(wikilambda-multilingualstring-nofallback)', $testObject->getLabel( $docLang, true ) );
 		$this->assertSame( 'Type pour démonstration', $testObject->getLabel( $french ) );
 
 		$this->assertSame(
