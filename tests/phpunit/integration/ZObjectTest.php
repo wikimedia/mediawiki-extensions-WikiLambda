@@ -36,11 +36,24 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 		$testObject = ZObjectFactory::create( 'foo' );
 		$this->assertSame( 'Z6', $testObject->getZType() );
 		$this->assertSame( 'foo', $testObject->getZValue() );
+		$this->assertSame( 'foo', $testObject->getValueByKey( 'Z6K1' ) );
 	}
 
 	public function testGetValueByKey_undefinedKey() {
 		$testObject = ZObjectFactory::create( 'foo' );
 		$this->assertNull( $testObject->getValueByKey( 'Z1K999' ) );
+	}
+
+	public function testSetValueByKey() {
+		$testObject = ZObjectFactory::create( 'foo' );
+		$this->assertNull( $testObject->getValueByKey( 'Z1K999' ) );
+		$testObject->setValueByKey( 'Z1K999', new ZReference( 'Z24' ) );
+		$this->assertNotNull( $testObject->getValueByKey( 'Z1K999' ) );
+	}
+
+	public function testGetZValue() {
+		$testObject = ZObjectFactory::create( 'foo' );
+		$this->assertSame( 'foo', $testObject->getZValue() );
 	}
 
 	public function testConstruct_builtinType() {
