@@ -13,7 +13,6 @@ namespace MediaWiki\Extension\WikiLambda\ZObjects;
 use Language;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
-use MediaWiki\Extension\WikiLambda\StringForLanguageBuilder;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 

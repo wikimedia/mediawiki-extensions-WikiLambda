@@ -9,10 +9,9 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda;
+namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
 use Language;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZMultilingualString;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\MediaWikiServices;
 
