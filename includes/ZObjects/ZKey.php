@@ -106,15 +106,6 @@ class ZKey extends ZObject {
 	}
 
 	/**
-	 * Get all the data (type, ID and labels) that describe this ZKey.
-	 *
-	 * @return mixed The key definition
-	 */
-	public function getZValue() {
-		return $this->data;
-	}
-
-	/**
 	 * Get the Zid for the type that describes the value of this key.
 	 *
 	 * @return string
