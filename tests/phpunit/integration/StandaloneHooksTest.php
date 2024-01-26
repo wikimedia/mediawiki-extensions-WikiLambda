@@ -14,6 +14,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 use DatabaseUpdater;
 use DeferredUpdates;
 use FormatJson;
+use IDBAccessObject;
 use MediaWiki\Extension\WikiLambda\Tests\HooksDataPathMock;
 use MediaWiki\Extension\WikiLambda\Tests\HooksInsertMock;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
@@ -213,7 +214,7 @@ EOT;
 		$this->assertCount( 2, $filteredErrors );
 
 		// Force re-check so it re-fetches from the DB.
-		$this->assertFalse( $secondTitle->exists( Title::READ_LATEST ) );
+		$this->assertFalse( $secondTitle->exists( IDBAccessObject::READ_LATEST ) );
 	}
 
 	public function testOnMultiContentSave_alias() {
@@ -345,7 +346,7 @@ EOT;
 			$title = Title::newFromText( $languageZid, NS_MAIN );
 			$content = $handler::makeContent( $contentString, $title );
 
-			$this->assertTrue( $title->exists( Title::READ_LATEST ), "$languageZid should now exist" );
+			$this->assertTrue( $title->exists( IDBAccessObject::READ_LATEST ), "$languageZid should now exist" );
 
 			$slotOutput = $revisionRenderer->getRenderedRevision(
 				$wikiPageFactory->newFromTitle( $title )->getRevisionRecord()
