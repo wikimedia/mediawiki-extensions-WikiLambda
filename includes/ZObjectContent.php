@@ -233,7 +233,11 @@ class ZObjectContent extends AbstractContent {
 		return [
 			'title' => $label,
 			'type' => $label
-				. wfMessage( 'word-separator' )->inContentLanguage()->text()
+				// (T356731) The language for word-separator and parentheses interface messages
+				// must be consistent, otherwise the word-separator would add unneeded whitespace
+				// when the parentheses is the full-width form for languages including zh-hans,
+				// zh-hant, etc.
+				. wfMessage( 'word-separator' )->text()
 				. wfMessage( 'parentheses' )->rawParams( $this->getZType() )->text(),
 			'languageCode' => $chosenLang
 		];

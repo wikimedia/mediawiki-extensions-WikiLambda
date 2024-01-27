@@ -478,8 +478,14 @@ class ZObjectContentHandler extends ContentHandler {
 				'lang' => ( $untitledStyle === null ? $userLanguageCode : $langCodeType ),
 				'class' => 'ext-wikilambda-viewpage-header'
 			],
-			$isoCodeObjectType . " " . $prefix
-			. wfMessage( 'colon-separator' )->text() . $isoCodeObjectName . " " . $label . ' ' . $id . $type
+			$isoCodeObjectType . ' ' . $prefix .
+				wfMessage( 'colon-separator' )->text() .
+				// (T356731) When $isoCodeObjectName is an empty string, colon-separator already
+				// adds/removes the needed/unneeded whitespace for languages. Always adding a
+				// space would unexpectedly add unneeded extra whitespace for languages including
+				// zh-hans, zh-hant, etc.
+				( $isoCodeObjectName === '' ? '' : $isoCodeObjectName . ' ' ) . $label . ' ' .
+				$id . $type
 		);
 	}
 
