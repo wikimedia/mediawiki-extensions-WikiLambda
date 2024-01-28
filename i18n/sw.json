@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Killy95",
 			"Stacy Lavuha",
 			"Wangombe"
 		]
@@ -16,5 +17,7 @@
 	"wikilambda-hide-more": "Ficha Zaidi",
 	"wikilambda-editor-fn-step-function-about": "Kuhusu",
 	"wikilambda-editor-fn-step-function-details": "Maelezo",
-	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|Lugha}} $1"
+	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|Lugha}} $1",
+	"wikilambda-about-widget-no-descriptions": "Hakuna maelezo yaliyofafanuliwa",
+	"wikilambda-about-widget-unlabelled-input": "Isiyo na lebo"
 }
