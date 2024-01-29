@@ -190,7 +190,7 @@ class Hooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook 
 		// Check dependencies
 		$zid = substr( $filename, 0, -5 );
 
-		if ( array_key_exists( $zid,  $dependencies ) ) {
+		if ( array_key_exists( $zid, $dependencies ) ) {
 			$deps = $dependencies[ $zid ];
 			foreach ( $deps as $dep ) {
 				if (

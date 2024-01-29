@@ -300,7 +300,7 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 		$array = $testObject->getAsArray();
 
 		$this->assertIsArray( $array );
-		$this->assertCount( 2,  $array );
+		$this->assertCount( 2, $array );
 		$this->assertInstanceOf( ZString::class, $array[0] );
 		$this->assertInstanceOf( ZReference::class, $array[1] );
 	}
@@ -418,7 +418,7 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 
 		$this->assertTrue( $testObject->isEmpty() );
 		$this->assertIsArray( $array );
-		$this->assertCount( 0,  $array );
+		$this->assertCount( 0, $array );
 	}
 
 	public function test_getZType() {

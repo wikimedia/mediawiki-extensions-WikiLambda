@@ -34,7 +34,7 @@ class ParserHooks implements
 	public function onParserFirstCallInit( $parser ) {
 		$config = MediaWikiServices::getInstance()->getMainConfig();
 		if ( $config->get( 'WikiLambdaEnableParserFunction' ) ) {
-			$parser->setFunctionHook( 'function', [ self::class , 'parserFunctionCallback' ], Parser::SFH_OBJECT_ARGS );
+			$parser->setFunctionHook( 'function', [ self::class, 'parserFunctionCallback' ], Parser::SFH_OBJECT_ARGS );
 		}
 	}
 
