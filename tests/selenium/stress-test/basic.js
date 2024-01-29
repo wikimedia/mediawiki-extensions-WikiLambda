@@ -2,11 +2,11 @@
  * Stress-test framework for the WikiLambda browser test suite
  *
  * Copy the following:
- * npm run selenium-stress-test -- --target-file="<spec_file>"
+ * npm run browser-stress-test -- --target-file="<spec_file>"
  * --execution-number="<number>"
  *
  * Example command:
- * npm run selenium-stress-test -- --target-file="basic.js"
+ * npm run browser-stress-test -- --target-file="basic.js"
  * --execution-number="6"
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt

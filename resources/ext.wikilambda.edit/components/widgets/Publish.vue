@@ -1,5 +1,5 @@
 <!--
-	Wikilambda Vue component for publishing a zobject.
+	WikiLambda Vue component for publishing a zobject.
 	Contains both the publish button and the dialog pop-up flow prior
 	to submission.
 

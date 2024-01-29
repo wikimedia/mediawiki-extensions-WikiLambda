@@ -1,14 +1,14 @@
 # E2E tests
 
 This section contains end-to-end (e2e) tests related utilities. These tests have been included to simulate a real user scenarios to test the application.
- 
-- Refer [official docs](https://webdriver.io/docs/api) for the WebDriverIO. 
-- Refer [mediawiki selenium docs](https://www.mediawiki.org/wiki/Selenium). 
+
+- Refer to the [official docs](https://webdriver.io/docs/api) for the WebDriverIO.
+- Refer to the [MediaWiki Selenium docs](https://www.mediawiki.org/wiki/Selenium).
 
 ## Getting started
 
 ### Setup
-Refer [wikilambda setup docs](https://www.mediawiki.org/wiki/MediaWiki-Docker/Extension/WikiLambda).
+Refer to the [WikiLambda set-up docs](https://www.mediawiki.org/wiki/MediaWiki-Docker/Extension/WikiLambda).
 
 ### Pre-requesites
 
@@ -21,12 +21,12 @@ Refer [wikilambda setup docs](https://www.mediawiki.org/wiki/MediaWiki-Docker/Ex
 
 ### Scripts
 
-> Run all the commands from the root of the Wikilambda.
+> Run all the commands from the root of the WikiLambda.
 
 1. Run all the tests once using the following command:
 
     ```bash
-    npm run selenium-test
+    npm run browser-test
     ```
 
 2. Run specific test once using the following command:
@@ -34,31 +34,31 @@ Refer [wikilambda setup docs](https://www.mediawiki.org/wiki/MediaWiki-Docker/Ex
     - Filter by file name:
 
         ```bash
-        npm run selenium-test -- --spec tests/selenium/specs/[FILE-NAME]
+        npm run browser-test -- --spec tests/selenium/specs/[FILE-NAME]
         ```
 
     - Filter by file name and test name:
 
         ```bash
-        npm run selenium-test -- --spec tests/selenium/specs/[FILE-NAME] --mochaOpts.grep [TEST-NAME]
+        npm run browser-test -- --spec tests/selenium/specs/[FILE-NAME] --mochaOpts.grep [TEST-NAME]
         ```
 
 3. Run all the tests multiple times (default 10 times) to check the stability of the tests using the following command:
 
     ```bash
-    npm run selenium-stress-test:all
+    npm run browser-stress-test:all
     ```
 
     - Customize the number of times each test should run using the following command:
 
         ```bash
-        npm run selenium-stress-test:all -- --execution-number=[NUMBER-OF-TIMES]
+        npm run browser-stress-test:all -- --execution-number=[NUMBER-OF-TIMES]
         ```
 
 4. Run specific test multiple times using the following command:
 
     ```bash
-    npm run selenium-stress-test -- --target-file=[FILE-NAME] --execution-number=[NUMBER-OF-TIMES]
+    npm run browser-stress-test -- --target-file=[FILE-NAME] --execution-number=[NUMBER-OF-TIMES]
     ```
 
 ## Test Structure and Customization
@@ -78,8 +78,8 @@ Refer [wikilambda setup docs](https://www.mediawiki.org/wiki/MediaWiki-Docker/Ex
 
 4. **`pageobjects/`**: Contains specific page related selectors and actions.
 
-    > Naming Convention:  
-    view mode: `<PageName>.page.js`  
+    > Naming Convention:
+    view mode: `<PageName>.page.js`
     edit mode: `<PageName>Form.page.js`
 
     - `function/`: Contains selectors and actions for the Function page.

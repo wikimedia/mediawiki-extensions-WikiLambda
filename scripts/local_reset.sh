@@ -26,5 +26,5 @@ PHP
 docker compose exec mediawiki php maintenance/run.php update --quick
 docker compose exec mediawiki php maintenance/run.php createAndPromote --custom-groups functioneer,functionmaintainer --force Admin
 
-printf "\n\e[32mEt voiλà! A pristine Wikilambda is waiting for you at http://localhost:8080\e[0m\n\n"
+printf "\n\e[32mEt voiλà! A pristine WikiLambda is waiting for you at http://localhost:8080\e[0m\n\n"
 printf "Try visiting http://localhost:8080/wiki/Special:ListObjectsByType/Z8 to see some functions\n\n"

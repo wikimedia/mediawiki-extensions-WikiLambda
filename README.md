@@ -150,7 +150,7 @@ To do this for the evaluator:
 
 ### PHPunit Tests
 
-To run the extension PHPunit tests, from the Mediawiki installation directory, run:
+To run the extension PHPunit tests, from the MediaWiki installation directory, run:
 
 ```
 docker compose exec mediawiki composer phpunit:entrypoint extensions/WikiLambda/tests/phpunit/
@@ -158,7 +158,7 @@ docker compose exec mediawiki composer phpunit:entrypoint extensions/WikiLambda/
 
 ### Jest Tests
 
-To run the Jest unit and integration tests, from the Wikilambda directory, do:
+To run the Jest unit and integration tests, from the WikiLambda directory, do:
 
 ```
 # Install npm dependencies
@@ -178,7 +178,7 @@ npm run test:unit
 
 #### Quickstart
 
-From your `extensions/Wikilambda` directory run:
+From your `extensions/WikiLambda` directory run:
 
 ```bash
 npm run local:selenium
@@ -213,8 +213,8 @@ export MEDIAWIKI_PASSWORD=dockerpass
 export DISPLAY=:1
 Xvfb "$DISPLAY" -screen 0 1280x1024x24 &
 
-# run the tests
-npm run selenium-test
+# run the browser tests
+npm run browser-test
 
 NOTE: the tests will produce some snapshot after completition (both on failure and success). This can be found on "extensions/WikiLambda/tests/selenium/log"
 ```

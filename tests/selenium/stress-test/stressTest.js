@@ -2,9 +2,9 @@
  * Stress-test framework for the WikiLambda browser test suite
  *
  * Copy the following command:
- * npm run selenium-stress-test:all
+ * npm run browser-stress-test:all
  * or
- * npm run selenium-stress-test:all -- --execution-number="<number>"
+ * npm run browser-stress-test:all -- --execution-number="<number>"
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -30,7 +30,7 @@ try {
 	specFiles.forEach( ( file ) => {
 		console.log( `Running the command for ${ file }` );
 		try {
-			execSync( `npm run selenium-stress-test -- --target-file=${ file } --execution-number="${ executionNumber }"`, { stdio: 'inherit' } );
+			execSync( `npm run browser-stress-test -- --target-file=${ file } --execution-number="${ executionNumber }"`, { stdio: 'inherit' } );
 		} catch ( error ) {
 			console.log( `e2e test failed for ${ file }` );
 		}
