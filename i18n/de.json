@@ -24,7 +24,7 @@
 	"wikilambda-persistentzobject-metadata": "Label und Aliasse",
 	"wikilambda-persistentzobject-contents": "Inhalte",
 	"wikilambda-persistentzobject-description": "Beginne mit der Erstellung deines ZObjekts, indem du unten einen Typ auswählst. Du kannst eine Funktion erstellen, indem du auf diesen Link klickst:",
-	"wikilambda-multilingualstring-nofallback": "Kein Bezeichnung in dieser oder einer akzeptierten Fallback-Sprache definiert",
+	"wikilambda-multilingualstring-nofallback": "Keine Bezeichnung in dieser oder einer akzeptierten Fallback-Sprache definiert",
 	"wikilambda-viewmode-nojs": "Diese Seite wird ohne JavaScript nur in eingeschränkter Weise angezeigt.",
 	"wikilambda-diff-incompatible": "Das System kann keine Unterschiede zwischen einem ZObjekt und einem Nicht-ZObjekt anzeigen.",
 	"wikilambda-reference": "Referenz",

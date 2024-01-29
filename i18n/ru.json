@@ -14,9 +14,12 @@
 			"Alex-Mart",
 			"Deltaspace",
 			"UniCollab",
-			"Butko"
+			"Butko",
+			"Stjn"
 		]
 	},
+	"wikilambda-typeunavailable": "Неизвестный тип",
+	"wikilambda-noresult": "Поиск не дал результатов.",
 	"wikilambda-persistentzobject-contents": "Содержание",
 	"wikilambda-call-function": "Функция Звонка",
 	"wikilambda-functioncall": "Вызов функции",
