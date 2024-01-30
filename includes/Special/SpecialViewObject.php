@@ -57,15 +57,15 @@ class SpecialViewObject extends SpecialPage {
 	public function execute( $subPage ) {
 		$services = MediaWikiServices::getInstance();
 
-		$output = $this->getOutput();
+		$outputPage = $this->getOutput();
 
 		// Make sure things don't think the page is wikitext, so that e.g. VisualEditor
 		// doesn't try to instantiate its tabs
-		$output->getTitle()->setContentModel( CONTENT_MODEL_ZOBJECT );
+		$outputPage->getTitle()->setContentModel( CONTENT_MODEL_ZOBJECT );
 
 		// If there's no sub-page, just exit.
 		if ( !$subPage || !is_string( $subPage ) ) {
-			$this->redirectToMain( $output );
+			$this->redirectToMain( $outputPage );
 			return;
 		}
 
@@ -90,7 +90,7 @@ class SpecialViewObject extends SpecialPage {
 			// … or somehow it's not for a valid ZObject
 			|| !ZObjectUtils::isValidId( $targetPageName )
 		) {
-			$this->redirectToMain( $output );
+			$this->redirectToMain( $outputPage );
 			return;
 		}
 
@@ -105,19 +105,19 @@ class SpecialViewObject extends SpecialPage {
 			$targetLanguageObject = $services->getLanguageFactory()->getLanguage( $targetLanguage );
 		} catch ( InvalidArgumentException $e ) {
 			// (T343006) Supplied language is invalid; probably a user-error, so just exit.
-			$this->redirectToMain( $output );
+			$this->redirectToMain( $outputPage );
 			return;
 		}
 
 		// Set the page language for our own purposes.
 		$this->getContext()->setLanguage( $targetLanguageObject );
 
-		$output->addModules( [ 'ext.wikilambda.edit', 'mediawiki.special' ] );
+		$outputPage->addModules( [ 'ext.wikilambda.edit', 'mediawiki.special' ] );
 
 		$targetContent = $this->zObjectStore->fetchZObjectByTitle( $targetTitle );
 
 		if ( !$targetContent ) {
-			$this->redirectToMain( $output );
+			$this->redirectToMain( $outputPage );
 		}
 
 		// Request that we render the content in the given target language.
@@ -134,9 +134,9 @@ class SpecialViewObject extends SpecialPage {
 
 		// Add the header to the parserOutput
 		$header = ZObjectContentHandler::createZObjectViewHeader( $targetContent, $targetTitle, $targetLanguageObject );
-		$output->setPageTitle( $header );
+		$outputPage->setPageTitle( $header );
 
-		$output->addParserOutput( $parserOutput );
+		$outputPage->addParserOutput( $parserOutput );
 
 		// Add all the see-other links to versions of this page in each of the known languages.
 		$languages = $this->zObjectStore->fetchAllZLanguageObjects();
@@ -145,7 +145,7 @@ class SpecialViewObject extends SpecialPage {
 				continue;
 			}
 			// Add each item individually to help phan understand the taint better, even though it's slower
-			$output->addHeadItem(
+			$outputPage->addHeadItem(
 				'link-alternate-language-' . strtolower( $bcpcode ),
 				Html::element(
 					'link',
@@ -161,7 +161,7 @@ class SpecialViewObject extends SpecialPage {
 		// TODO: Make this help page.
 		$this->addHelpLink( 'Extension:WikiLambda/Viewing Objects' );
 
-		$this->generateZObjectPayload( $output, $this->getContext(), [
+		$this->generateZObjectPayload( $outputPage, $this->getContext(), [
 			'createNewPage' => false,
 			'zId' => $targetPageName,
 			'viewmode' => true,
@@ -173,11 +173,11 @@ class SpecialViewObject extends SpecialPage {
 	 *
 	 * TODO: Actually tell the user why they ended up somewhere they might not want?
 	 *
-	 * @param OutputPage $output
+	 * @param OutputPage $outputPage
 	 */
-	private function redirectToMain( OutputPage $output ) {
-		$mainPageUrl = '/wiki/' . $output->msg( 'Mainpage' )->text();
-		$output->redirect( $mainPageUrl, 303 );
+	private function redirectToMain( OutputPage $outputPage ) {
+		$mainPageUrl = '/wiki/' . $outputPage->msg( 'Mainpage' )->text();
+		$outputPage->redirect( $mainPageUrl, 303 );
 	}
 
 	/**
