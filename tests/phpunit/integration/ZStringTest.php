@@ -72,42 +72,35 @@ class ZStringTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( $innerTestObject->getZValue(), $outerTestObject->getZValue() );
 	}
 
-	public function testCreation_constructors() {
-		$testObject = new ZString( null );
-		$this->assertNull( $testObject->getZValue() );
-		$this->assertFalse( $testObject->isValid() );
+	/** @dataProvider provideCreation_constructors */
+	public function testCreation_constructors( $value, $expected ) {
+		$testObject = new ZString( $value );
+		$this->assertSame( $expected, $testObject->getZValue() );
+		if ( is_string( $expected ) ) {
+			$this->assertTrue( $testObject->isValid() );
+		} else {
+			$this->assertFalse( $testObject->isValid() );
+		}
+	}
 
-		$testObject = new ZString( '' );
-		$this->assertSame( '', $testObject->getZValue() );
-		$this->assertTrue( $testObject->isValid() );
-
-		$testObject = new ZString( 'Test' );
-		$this->assertSame( 'Test', $testObject->getZValue() );
-		$this->assertTrue( $testObject->isValid() );
-
-		$testObject = new ZString( new ZString( 'Test' ) );
-		$this->assertSame( 'Test', $testObject->getZValue() );
-		$this->assertTrue( $testObject->isValid() );
-
-		$testObject = new ZString( [ '' ] );
-		$this->assertSame( '', $testObject->getZValue() );
-		$this->assertTrue( $testObject->isValid() );
-
-		$testObject = new ZString( new \stdClass( [ 1 ] ) );
-		$this->assertNull( $testObject->getZValue() );
-		$this->assertFalse( $testObject->isValid() );
-
-		$testObject = new ZString( unserialize( serialize( new ZString( 'Test' ) ) ) );
-		$this->assertSame( 'Test', $testObject->getZValue() );
-		$this->assertTrue( $testObject->isValid() );
-
-		$testObject = new ZString( unserialize( serialize( json_decode( '{"Foo": "bar"}' ) ) ) );
-		$this->assertNull( $testObject->getZValue() );
-		$this->assertFalse( $testObject->isValid() );
-
-		$testObject = new ZString( new ZReference( 'Z1' ) );
-		$this->assertNull( $testObject->getZValue() );
-		$this->assertFalse( $testObject->isValid() );
+	public static function provideCreation_constructors() {
+		// Parameters are the constructor input, and the expected value
+		// An object is valid if the expected value is a string
+		yield 'null' => [ null, null ];
+		yield 'empty string' => [ '', '' ];
+		yield 'non-empty string' => [ 'Test', 'Test' ];
+		yield 'ZString of non-empty string' => [ new ZString( 'Test' ), 'Test' ];
+		yield 'Array of empty string' => [ [ '' ], '' ];
+		yield 'stdClass' => [ new \stdClass( [ 1 ] ), null ];
+		yield 'Unserialized ZString' => [
+			unserialize( serialize( new ZString( 'Test' ) ) ),
+			'Test'
+		];
+		yield 'Unserialized json' => [
+			unserialize( serialize( json_decode( '{"Foo": "bar"}' ) ) ),
+			null
+		];
+		yield 'ZReference' => [ new ZReference( 'Z1' ), null ];
 	}
 
 	public function testGetZType() {
