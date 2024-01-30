@@ -14,9 +14,12 @@
 			"WindEwriX",
 			"Артём 13327",
 			"Загребин Илья",
-			"Butko"
+			"Butko",
+			"Stjn"
 		]
 	},
+	"wikilambda-typeunavailable": "Неизвестный тип",
+	"wikilambda-noresult": "Поиск не дал результатов.",
 	"wikilambda-persistentzobject-contents": "Содержание",
 	"wikilambda-functioncall": "Вызов функции",
 	"wikilambda-edit": "Править",
@@ -47,6 +50,7 @@
 	"wikilambda-editor-zobject-clearitem-tooltip": "Очистить это значение",
 	"wikilambda-editor-argument-list-label": "Список аргументов",
 	"wikilambda-implementation-selector-code": "Код",
+	"wikilambda-code-editor-label": "Редактор кода",
 	"wikilambda-argref-default-label": "Выберите аргумент",
 	"wikilambda-implementation-selector": "Выберите реализацию",
 	"wikilambda-implementation-create-new": "Создать новую реализацию",
@@ -65,7 +69,9 @@
 	"wikilambda-tester-status-pending": "В ожидании...",
 	"wikilambda-tester-status-running": "Выполняется…",
 	"wikilambda-tester-status-failed": "Неудача",
+	"wikilambda-tester-results-title": "Результаты теста",
 	"wikilambda-tester-results-current-test": "Текущий тест",
+	"wikilambda-tester-results-percentage-label": "Всего тестов пройдено",
 	"wikilambda-tester-run-testers": "Запустить все тесты",
 	"wikilambda-tester-run-tester": "Запустить тест",
 	"wikilambda-enable-expert-mode": "Включить режим Эксперта",
@@ -92,6 +98,7 @@
 	"wikilambda-function-definition-example-title": "Примеры использования функции",
 	"wikilambda-editor-fn-step-function-details": "Подробности",
 	"wikilambda-editor-fn-edit-definition-tooltip-content": "Приносим свои извинения! Только администраторы могут изменить описание функции после его публикации.",
+	"wikilambda-editor-publish-dialog-summary-label": "Описание изменений",
 	"wikilambda-ztyped-pair-placeholder": "Выберите тип",
 	"wikilambda-ztyped-pair-value-label": "Значение",
 	"wikilambda-continue-editing": "Продолжить редактирование",
@@ -105,7 +112,10 @@
 	"wikilambda-zobject-missing-attached-function": "Требуется функция",
 	"wikilambda-chip-remove": "Удалить элемент",
 	"wikilambda-add-list-item-button": "Добавить элемент",
+	"wikilambda-list-items-label": "Элементы списка",
+	"wikilambda-list-items-type-label": "Тип элементов списка",
 	"wikilambda-list-item-label": "Элемент",
+	"wikilambda-context-menu": "Контекстное меню",
 	"wikilambda-add-list-item": "Добавить элемент",
 	"wikilambda-delete-list-item": "Удалённый элемент"
 }
