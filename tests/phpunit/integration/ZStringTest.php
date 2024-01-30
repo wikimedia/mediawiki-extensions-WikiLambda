@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 
 /**
@@ -69,6 +70,44 @@ class ZStringTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 'Z6', $outerTestObject->getZType() );
 		$this->assertSame( 'Test-tacular!', $outerTestObject->getZValue() );
 		$this->assertSame( $innerTestObject->getZValue(), $outerTestObject->getZValue() );
+	}
+
+	public function testCreation_constructors() {
+		$testObject = new ZString( null );
+		$this->assertNull( $testObject->getZValue() );
+		$this->assertFalse( $testObject->isValid() );
+
+		$testObject = new ZString( '' );
+		$this->assertSame( '', $testObject->getZValue() );
+		$this->assertTrue( $testObject->isValid() );
+
+		$testObject = new ZString( 'Test' );
+		$this->assertSame( 'Test', $testObject->getZValue() );
+		$this->assertTrue( $testObject->isValid() );
+
+		$testObject = new ZString( new ZString( 'Test' ) );
+		$this->assertSame( 'Test', $testObject->getZValue() );
+		$this->assertTrue( $testObject->isValid() );
+
+		$testObject = new ZString( [ '' ] );
+		$this->assertSame( '', $testObject->getZValue() );
+		$this->assertTrue( $testObject->isValid() );
+
+		$testObject = new ZString( new \stdClass( [ 1 ] ) );
+		$this->assertNull( $testObject->getZValue() );
+		$this->assertFalse( $testObject->isValid() );
+
+		$testObject = new ZString( unserialize( serialize( new ZString( 'Test' ) ) ) );
+		$this->assertSame( 'Test', $testObject->getZValue() );
+		$this->assertTrue( $testObject->isValid() );
+
+		$testObject = new ZString( unserialize( serialize( json_decode( '{"Foo": "bar"}' ) ) ) );
+		$this->assertNull( $testObject->getZValue() );
+		$this->assertFalse( $testObject->isValid() );
+
+		$testObject = new ZString( new ZReference( 'Z1' ) );
+		$this->assertNull( $testObject->getZValue() );
+		$this->assertFalse( $testObject->isValid() );
 	}
 
 	public function testGetZType() {
