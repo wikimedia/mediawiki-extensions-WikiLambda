@@ -53,7 +53,7 @@ class SpecialRunFunction extends SpecialPage {
 		$output->addWikiMsg( 'wikilambda-special-runfunction-intro' );
 
 		// TODO (T300515): Make this help page.
-		$this->addHelpLink( 'Extension:WikiLambda/Run function' );
+		$this->addHelpLink( 'Help:Wikifunctions/Run function' );
 
 		// TODO: De-dupe a bit more from ZObjectEditAction?
 		$userLang = $this->getLanguage();

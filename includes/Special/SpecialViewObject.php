@@ -159,7 +159,7 @@ class SpecialViewObject extends SpecialPage {
 		}
 
 		// TODO: Make this help page.
-		$this->addHelpLink( 'Extension:WikiLambda/Viewing Objects' );
+		$this->addHelpLink( 'Help:Wikifunctions/Viewing Objects' );
 
 		$this->generateZObjectPayload( $outputPage, $this->getContext(), [
 			'createNewPage' => false,

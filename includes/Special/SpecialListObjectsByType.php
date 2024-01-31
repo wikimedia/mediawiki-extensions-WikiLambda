@@ -59,7 +59,7 @@ class SpecialListObjectsByType extends SpecialPage {
 
 		$output->addModuleStyles( [ 'mediawiki.special' ] );
 		// TODO (T300519): Make this help page.
-		$this->addHelpLink( 'Extension:WikiLambda/Objects by type' );
+		$this->addHelpLink( 'Help:Wikifunctions/Objects by type' );
 
 		$langRegistry = ZLangRegistry::singleton();
 
