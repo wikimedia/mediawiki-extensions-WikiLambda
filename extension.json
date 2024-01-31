@@ -224,7 +224,7 @@
 				"ext.wikilambda.languageselector/components/LanguageSelector.vue",
 				{
 					"name": "lib/icons.json",
-					"callback": "ResourceLoaderCodexModule::getIcons",
+					"callback": "MediaWiki\\ResourceLoader\\CodexModule::getIcons",
 					"callbackParam": [
 						"cdxIconLanguage",
 						"cdxIconSearch"
@@ -345,7 +345,7 @@
 				"lib/ace/src/ace.js",
 				{
 					"name": "lib/icons.json",
-					"callback": "ResourceLoaderCodexModule::getIcons",
+					"callback": "MediaWiki\\ResourceLoader\\CodexModule::getIcons",
 					"callbackParam": [
 						"cdxIconAdd",
 						"cdxIconExpand",
