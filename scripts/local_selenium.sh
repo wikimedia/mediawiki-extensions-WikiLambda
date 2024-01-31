@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# runs selenium tests targeted against the local environment
+# runs browser tests targeted against the local environment
 # this script prefers to be run with
 #   npm run local:selenium
 
@@ -11,4 +11,4 @@ core_dir="$script_dir/../../../"
 set -a
 source $core_dir/.env
 
-npm run selenium-test -- "$@"
+npm run browser-test -- "$@"

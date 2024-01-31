@@ -220,7 +220,7 @@ describe( 'library module', function () {
 
 			it( 'Call api.get with multiple Zids as a string separated by | ', function () {
 				const zids = [ 'Z1', 'Z6' ],
-					expectedWikilambdaloadZids = 'Z1|Z6';
+					expectedWikiLambdaloadZids = 'Z1|Z6';
 
 				libraryModule.actions.fetchZids( context, { zids } ).then( function () {
 					expect( mw.Api ).toHaveBeenCalledTimes( 1 );
@@ -228,7 +228,7 @@ describe( 'library module', function () {
 						action: 'query',
 						list: 'wikilambdaload_zobjects',
 						format: 'json',
-						wikilambdaload_zids: expectedWikilambdaloadZids,
+						wikilambdaload_zids: expectedWikiLambdaloadZids,
 						wikilambdaload_language: context.rootGetters.zLang,
 						wikilambdaload_get_dependencies: 'true'
 					} );
@@ -247,7 +247,7 @@ describe( 'library module', function () {
 
 			it( 'Will call the APi only with the Zids that are not yet fetched', function () {
 				const zids = [ 'Z1', 'Z2', 'Z6' ],
-					expectedWikilambdaloadZids = 'Z2|Z6';
+					expectedWikiLambdaloadZids = 'Z2|Z6';
 				context.state.objects = {
 					Z1: mockApiZids.Z1
 				};
@@ -259,7 +259,7 @@ describe( 'library module', function () {
 						action: 'query',
 						list: 'wikilambdaload_zobjects',
 						format: 'json',
-						wikilambdaload_zids: expectedWikilambdaloadZids,
+						wikilambdaload_zids: expectedWikiLambdaloadZids,
 						wikilambdaload_language: context.rootGetters.zLang,
 						wikilambdaload_get_dependencies: 'true'
 					} );

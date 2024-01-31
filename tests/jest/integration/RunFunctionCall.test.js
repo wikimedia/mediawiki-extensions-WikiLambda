@@ -16,7 +16,7 @@ const { fireEvent, render } = require( '@testing-library/vue' ),
 	App = require( '../../../resources/ext.wikilambda.edit/components/App.vue' ),
 	expectedFunctionCallPostedToApi = require( './objects/expectedFunctionCallPostedToApi.js' );
 
-describe( 'Wikilambda frontend, running a function on Run Function Special page', () => {
+describe( 'WikiLambda frontend, running a function on Run Function Special page', () => {
 	let apiPostWithFunctionCallMock;
 
 	beforeEach( () => {
