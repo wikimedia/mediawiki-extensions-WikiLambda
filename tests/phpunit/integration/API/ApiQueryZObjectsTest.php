@@ -210,6 +210,31 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 		}
 	}
 
+	public function testInvalidLanguage() {
+		$result = $this->doApiRequest( [
+			'action' => 'query',
+			'list' => 'wikilambdaload_zobjects',
+			'wikilambdaload_zids' => 'Z111',
+			'wikilambdaload_language' => 'thisisnotalanguagecodethisisjustatribute',
+		] );
+
+		$z111 = $result[0]['query']['wikilambdaload_zobjects']['Z111']['data'];
+		$keys = $z111['Z2K2']['Z4K2'];
+		$labels = $z111['Z2K3']['Z12K1'];
+
+		// Remove type element
+		array_shift( $keys );
+		array_shift( $labels );
+
+		$this->assertCount( 1, $labels );
+		$this->assertEquals( self::EN, $labels[0]['Z11K1'] );
+
+		foreach ( $keys as $key ) {
+			$this->assertCount( 2, $key['Z3K3']['Z12K1'] );
+			$this->assertEquals( self::EN, $key['Z3K3']['Z12K1'][1]['Z11K1'] );
+		}
+	}
+
 	public function testRevisions_valid() {
 		$revisionStore = MediaWikiServices::getInstance()->getRevisionStore();
 		$this->insertBuiltinObjects( [ 'Z11', 'Z12' ] );
