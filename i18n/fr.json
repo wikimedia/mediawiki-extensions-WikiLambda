@@ -210,6 +210,7 @@
 	"wikilambda-functioncall-metadata-evaluation-memory-usage": "Utilisation de la mémoire pour l’évaluation",
 	"wikilambda-functioncall-metadata-execution-memory-usage": "Utilisation de la mémoire pour l’exécution",
 	"wikilambda-functioncall-metadata-execution-programming-language-version": "Version du langage de programmation",
+	"wikilambda-functioncall-metadata-execution-debug-logs": "Journaux de débogage d'exécution",
 	"wikilambda-functioncall-metadata-orchestration-cpu-usage": "Utilisation du processeur pour l’orchestration",
 	"wikilambda-functioncall-metadata-evaluation-cpu-usage": "Utilisation du processeur pour l’évaluation",
 	"wikilambda-functioncall-metadata-orchestration-hostname": "Serveur d’orchestration",
