@@ -295,7 +295,9 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 				ParamValidator::PARAM_ISMULTI => true,
 			],
 			'language' => [
-				ParamValidator::PARAM_TYPE => array_keys( $this->languageNameUtils->getLanguageNames() ),
+				// FIXME: Can't use the below as it excludes Wikifunctions languages MW doesn't know about
+				// ParamValidator::PARAM_TYPE => array_keys( $this->languageNameUtils->getLanguageNames() ),
+				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_REQUIRED => false,
 			],
 			'get_dependencies' => [
