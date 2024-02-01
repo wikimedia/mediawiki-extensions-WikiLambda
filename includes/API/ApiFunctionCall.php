@@ -74,7 +74,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 		$zObjectAsStdClass = json_decode( $stringOfAZ );
 		$jsonQuery = [
 			'zobject' => $zObjectAsStdClass,
-			'doValidate' => false
+			'doValidate' => true
 		];
 		// Re-encoding to round-trip whitespace / encoded entities / etc.
 		$zObjectAsJsonStringForEvaluation = json_encode( $zObjectAsStdClass );
