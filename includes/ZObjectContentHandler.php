@@ -320,6 +320,12 @@ class ZObjectContentHandler extends ContentHandler {
 		$zLangRegistry = ZLangRegistry::singleton();
 		$userLangCode = $userLang->getCode();
 
+		// If the userLang isn't recognised (e.g. it's qqx, or a language we don't support yet, or it's
+		// nonsense), then fall back to English.
+		$userLangZid = $zLangRegistry->getLanguageZidFromCode( $userLangCode, true );
+		// Normalise our used language code from what the Language object says
+		$userLangCode = $zLangRegistry->getLanguageCodeFromZid( $userLangZid );
+
 		// Add the canonical page link to /view/<lang>/<zid>
 		$output = RequestContext::getMain()->getOutput();
 		$output->addLink( [
@@ -327,10 +333,6 @@ class ZObjectContentHandler extends ContentHandler {
 				'hreflang' => $userLangCode,
 				'href' => "/view/$userLangCode/" . $title->getDBkey(),
 			] );
-
-		// If the userLang isn't recognised (e.g. it's qqx, or a language we don't support yet, or it's
-		// nonsense), then fall back to English.
-		$userLangZid = $zLangRegistry->getLanguageZidFromCode( $userLangCode, true );
 
 		$editingData = [
 			// The following paramether may be the same now,

@@ -38,10 +38,12 @@ trait ZObjectEditingPageTrait {
 
 		$userLangCode = $userLang->getCode();
 
+		$zLangRegistry = ZLangRegistry::singleton();
 		// If the userLang isn't recognised (e.g. it's qqx, or a language we don't support yet, or it's
 		// nonsense), then fall back to English.
-		$zLangRegistry = ZLangRegistry::singleton();
 		$userLangZid = $zLangRegistry->getLanguageZidFromCode( $userLangCode, true );
+		// Normalise our used language code from what the Language object says
+		$userLangCode = $zLangRegistry->getLanguageCodeFromZid( $userLangZid );
 
 		$jsEditingConfigVarBase = [
 			'zlang' => $userLangCode,
