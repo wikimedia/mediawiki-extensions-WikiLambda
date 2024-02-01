@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use BagOStuff;
 use ConfigException;
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\Logger\LoggerFactory;
@@ -21,7 +22,7 @@ use ObjectCache;
  * @codeCoverageIgnore
  */
 return [
-	'WikiLambdaZObjectStore' => static function ( MediaWikiServices $services ) {
+	'WikiLambdaZObjectStore' => static function ( MediaWikiServices $services ): ZObjectStore {
 		return new ZObjectStore(
 			$services->getDBLoadBalancerFactory(),
 			$services->getTitleFactory(),
@@ -32,13 +33,13 @@ return [
 		);
 	},
 
-	'WikiLambdaZObjectAuthorization' => static function ( MediaWikiServices $services ) {
+	'WikiLambdaZObjectAuthorization' => static function ( MediaWikiServices $services ): ZObjectAuthorization {
 		return new ZObjectAuthorization(
 			LoggerFactory::getInstance( 'WikiLambda' )
 		);
 	},
 
-	'WikiLambdaZObjectStash' => static function ( MediaWikiServices $services ) {
+	'WikiLambdaZObjectStash' => static function ( MediaWikiServices $services ): BagOStuff {
 		$extensionConfig = $services->getConfigFactory()->makeConfig( 'WikiLambda' );
 		$requestedCache = $extensionConfig->get( 'WikiLambdaObjectCache' );
 
