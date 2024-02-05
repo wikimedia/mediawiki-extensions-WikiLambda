@@ -316,7 +316,7 @@ module.exports = exports = {
 	}
 
 	.ext-wikilambda-about-language-list-search {
-		padding: @spacing-100 @spacing-150 0;
+		padding: @spacing-100 0 0;
 	}
 
 	.ext-wikilambda-about-language-items {
