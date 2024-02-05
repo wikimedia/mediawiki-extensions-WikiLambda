@@ -1598,28 +1598,30 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Remove a specific zobject. This method does NOT remove its children.
+		 * Remove a specific row given its rowId. This method does NOT remove
+		 * the children of the given row.
 		 * It also clears whatever errors are associated to this rowId.
-		 *
-		 * @param {Object} context
-		 * @param {number} objectId
-		 */
-		removeZObject: function ( context, objectId ) {
-			if ( objectId === null || objectId === undefined ) {
-				return;
-			}
-			const objectIndex = context.getters.getRowIndexById( objectId );
-			context.commit( 'removeRowByIndex', objectIndex );
-			context.commit( 'clearErrorsForId', objectId );
-		},
-
-		/**
-		 * Remove all the children of a specific zObject. Useful to clean up existing data.
 		 *
 		 * @param {Object} context
 		 * @param {number} rowId
 		 */
-		removeZObjectChildren: function ( context, rowId ) {
+		removeRow: function ( context, rowId ) {
+			if ( rowId === null || rowId === undefined ) {
+				return;
+			}
+			const rowIndex = context.getters.getRowIndexById( rowId );
+			context.commit( 'removeRowByIndex', rowIndex );
+			context.commit( 'clearErrorsForId', rowId );
+		},
+
+		/**
+		 * Remove all the children rows of a given rowId. It also clears
+		 * whatever errors are associated to the children rowIds.
+		 *
+		 * @param {Object} context
+		 * @param {number} rowId
+		 */
+		removeRowChildren: function ( context, rowId ) {
 			if ( ( rowId === undefined ) || ( rowId === null ) ) {
 				return;
 			}
@@ -1628,10 +1630,10 @@ module.exports = exports = {
 			childRows.forEach( ( child ) => {
 				// If not terminal, recurse to remove all progenie
 				if ( !child.isTerminal() ) {
-					context.dispatch( 'removeZObjectChildren', child.id );
+					context.dispatch( 'removeRowChildren', child.id );
 				}
 				// Then remove child
-				context.dispatch( 'removeZObject', child.id );
+				context.dispatch( 'removeRow', child.id );
 			} );
 		},
 
@@ -1742,8 +1744,8 @@ module.exports = exports = {
 			// 3. For every key of parent: if it's not in new keys, remove it
 			oldArgs.forEach( function ( arg ) {
 				if ( !newKeys.includes( arg.key ) ) {
-					allActions.push( context.dispatch( 'removeZObjectChildren', arg.id ) );
-					allActions.push( context.dispatch( 'removeZObject', arg.id ) );
+					allActions.push( context.dispatch( 'removeRowChildren', arg.id ) );
+					allActions.push( context.dispatch( 'removeRow', arg.id ) );
 				}
 			} );
 
@@ -1805,8 +1807,8 @@ module.exports = exports = {
 				if ( key !== payload.key ) {
 					const keyRow = context.getters.getRowByKeyPath( [ key ], payload.parentId );
 					if ( keyRow ) {
-						context.dispatch( 'removeZObjectChildren', keyRow.id );
-						context.dispatch( 'removeZObject', keyRow.id );
+						context.dispatch( 'removeRowChildren', keyRow.id );
+						context.dispatch( 'removeRow', keyRow.id );
 					}
 				}
 			}
@@ -1886,7 +1888,7 @@ module.exports = exports = {
 
 				// Remove all necessary children that are dangling from this parent, if append is not set
 				if ( !payload.append ) {
-					allActions.push( context.dispatch( 'removeZObjectChildren', parentRow.id ) );
+					allActions.push( context.dispatch( 'removeRowChildren', parentRow.id ) );
 				}
 			} else {
 				// Convert input payload.value into table rows with no parent
@@ -1967,8 +1969,8 @@ module.exports = exports = {
 			}
 			const parentRowId = row.parent;
 			// remove item
-			context.dispatch( 'removeZObjectChildren', payload.rowId );
-			context.dispatch( 'removeZObject', payload.rowId );
+			context.dispatch( 'removeRowChildren', payload.rowId );
+			context.dispatch( 'removeRow', payload.rowId );
 			// renumber children of parent starting from key
 			context.dispatch( 'recalculateTypedListKeys', parentRowId );
 		},
@@ -1985,8 +1987,8 @@ module.exports = exports = {
 		 */
 		removeItemsFromTypedList: function ( context, payload ) {
 			for ( const itemRowId of payload.listItems ) {
-				context.dispatch( 'removeZObjectChildren', itemRowId );
-				context.dispatch( 'removeZObject', itemRowId );
+				context.dispatch( 'removeRowChildren', itemRowId );
+				context.dispatch( 'removeRow', itemRowId );
 			}
 			context.dispatch( 'recalculateTypedListKeys', payload.parentRowId );
 		}

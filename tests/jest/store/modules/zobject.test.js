@@ -5376,10 +5376,10 @@ describe( 'zobject Vuex module', function () {
 				];
 				zobjectModule.modules.addZObjects.actions.clearType( context, 0 );
 				expect( context.dispatch ).toHaveBeenCalledTimes( 4 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObjectChildren', 2 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObjectChildren', 3 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObject', 2 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObject', 3 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', 2 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', 3 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRow', 2 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRow', 3 );
 			} );
 		} );
 
@@ -6280,24 +6280,24 @@ describe( 'zobject Vuex module', function () {
 				expect( context.dispatch ).toHaveBeenCalledTimes( 0 );
 			} );
 
-			it( 'should dispatch the removeZObjectChildren action with row id', () => {
+			it( 'should dispatch the removeRowChildren action with row id', () => {
 				const payload = { rowId: 4 };
 				context.getters.getRowById = jest.fn( () => {
 					return { id: 4, parent: 3 };
 				} );
 				zobjectModule.actions.removeItemFromTypedList( context, payload );
 
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObjectChildren', 4 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', 4 );
 			} );
 
-			it( 'should dispatch the removeZObject action with row id', () => {
+			it( 'should dispatch the removeRow action with row id', () => {
 				const payload = { rowId: 4 };
 				context.getters.getRowById = jest.fn( () => {
 					return { id: 4, parent: 3 };
 				} );
 				zobjectModule.actions.removeItemFromTypedList( context, payload );
 
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObject', 4 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRow', 4 );
 			} );
 
 			it( 'should dispatch the recalculateTypedListKeys action with parent id', () => {
@@ -6312,20 +6312,20 @@ describe( 'zobject Vuex module', function () {
 		} );
 
 		describe( 'removeItemsFromTypedList', () => {
-			it( 'should dispatch a removeZObjectChildren action for each item in the list', () => {
+			it( 'should dispatch a removeRowChildren action for each item in the list', () => {
 				const payload = { parentRowId: 4, listItems: [ 11, 14 ] };
 				zobjectModule.actions.removeItemsFromTypedList( context, payload );
 
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObjectChildren', 11 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObjectChildren', 14 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', 11 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', 14 );
 			} );
 
-			it( 'should dispatch the removeZObject action for each item in the list', () => {
+			it( 'should dispatch the removeRow action for each item in the list', () => {
 				const payload = { parentRowId: 4, listItems: [ 11, 14 ] };
 				zobjectModule.actions.removeItemsFromTypedList( context, payload );
 
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObject', 11 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObject', 14 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRow', 11 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRow', 14 );
 			} );
 
 			it( 'should dispatch the recalculateTypedListKeys actions with parent id', () => {

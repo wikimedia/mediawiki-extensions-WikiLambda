@@ -371,8 +371,8 @@ module.exports = exports = {
 				const goodValues = [];
 				for ( const value of aliasValues ) {
 					if ( !value.value ) {
-						context.dispatch( 'removeZObjectChildren', value.rowId );
-						context.dispatch( 'removeZObject', value.rowId );
+						context.dispatch( 'removeRowChildren', value.rowId );
+						context.dispatch( 'removeRow', value.rowId );
 					} else {
 						goodValues.push( value );
 					}
@@ -387,8 +387,8 @@ module.exports = exports = {
 				// If alias has no values or no language, remove whole alias
 				const aliasLang = context.getters.getZMonolingualStringsetLang( alias.id );
 				if ( !aliasLang || goodValues.length === 0 ) {
-					context.dispatch( 'removeZObjectChildren', alias.id );
-					context.dispatch( 'removeZObject', alias.id );
+					context.dispatch( 'removeRowChildren', alias.id );
+					context.dispatch( 'removeRow', alias.id );
 				}
 			}
 			// Recalculate the keys of the list of monolingual string sets
@@ -459,8 +459,8 @@ module.exports = exports = {
 			] );
 			const implementations = context.getters.getChildrenByParentRowId( implementationRow.id ).slice( 1 );
 			for ( const row of implementations ) {
-				context.dispatch( 'removeZObjectChildren', row.id );
-				context.dispatch( 'removeZObject', row.id );
+				context.dispatch( 'removeRowChildren', row.id );
+				context.dispatch( 'removeRow', row.id );
 			}
 			// Disconnect testers
 			const testerRow = context.getters.getRowByKeyPath( [
@@ -469,8 +469,8 @@ module.exports = exports = {
 			] );
 			const testers = context.getters.getChildrenByParentRowId( testerRow.id ).slice( 1 );
 			for ( const row of testers ) {
-				context.dispatch( 'removeZObjectChildren', row.id );
-				context.dispatch( 'removeZObject', row.id );
+				context.dispatch( 'removeRowChildren', row.id );
+				context.dispatch( 'removeRow', row.id );
 			}
 		}
 	}
