@@ -7,7 +7,7 @@
 <template>
 	<div class="ext-wikilambda-string">
 		<p v-if="!edit">
-			{{ value }}
+			"{{ value }}"
 		</p>
 		<cdx-text-input
 			v-else

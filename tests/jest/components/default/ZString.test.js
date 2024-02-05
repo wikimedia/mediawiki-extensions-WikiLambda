@@ -17,7 +17,7 @@ describe( 'ZString', () => {
 	beforeEach( () => {
 		getters = {
 			getZObjectKeyByRowId: createGettersWithFunctionsMock( Constants.Z_ARGUMENT_KEY ),
-			getZStringTerminalValue: createGettersWithFunctionsMock( 'my terminating string' )
+			getZStringTerminalValue: createGettersWithFunctionsMock( 'my terminating string ' )
 		};
 		global.store.hotUpdate( {
 			getters: getters
@@ -42,7 +42,7 @@ describe( 'ZString', () => {
 				}
 			} );
 
-			expect( wrapper.find( 'p' ).text() ).toBe( 'my terminating string' );
+			expect( wrapper.find( 'p' ).text() ).toBe( '"my terminating string "' );
 		} );
 	} );
 

@@ -92,7 +92,7 @@ describe( 'WikiLambda frontend, running a function on Run Function Special page'
 		expect( await within( resultBlock ).findByText( 'Running...' ) ).toBeInTheDocument();
 
 		// ASSERT: Eventually the result is displayed
-		expect( await findByText( 'the function call result' ) ).toBeInTheDocument();
+		expect( await findByText( '"the function call result"' ) ).toBeInTheDocument();
 
 		// ACT: Click the show metrics button.
 		const detailsLink = await within( resultBlock ).findByRole( 'button', { name: 'Details' } );
