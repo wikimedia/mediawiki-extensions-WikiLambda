@@ -439,30 +439,4 @@ describe( 'tableUtils mixin', function () {
 			} );
 		} );
 	} );
-
-	describe( 'findLatestKey', function () {
-		describe( 'when a key is found for the provided zid', function () {
-
-			it( 'should return the latest key', function () {
-				const zObjectTree = tableDataToRowObjects( [
-					{ id: 1, key: 'Z9K1', value: 'Z6K1', parent: 0 }
-				] );
-
-				const latestKey = tableUtils.findLatestKey( zObjectTree, Constants.Z_STRING );
-
-				expect( latestKey ).toBe( 1 );
-			} );
-		} );
-
-		describe( 'when a key is NOT found for the provided zid', function () {
-			const zObjectTree = tableDataToRowObjects( [
-				{ id: 2, key: 'Z1K1', value: Constants.Z_STRING, parent: 1 },
-				{ id: 3, key: 'Z6K1', value: 'the stringy one', parent: 1 }
-			] );
-
-			const latestKey = tableUtils.findLatestKey( zObjectTree, Constants.Z_REFERENCE );
-
-			expect( latestKey ).toBe( 0 );
-		} );
-	} );
 } );

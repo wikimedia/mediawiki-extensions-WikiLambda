@@ -148,18 +148,6 @@ module.exports = exports = {
 				return json;
 			}
 			return reconstructJson( zObjectTree, parentId, rootIsArray );
-		},
-		findLatestKey: function ( zObject, zid ) {
-			const keyRegex = new RegExp( '^' + zid + 'K([0-9]+)$' );
-			const defaultKey = 0;
-
-			return Math.max(
-				defaultKey,
-				...zObject.map( function ( item ) {
-					const match = item.value && item.value.match( keyRegex );
-					return match ? parseInt( match[ 1 ], 10 ) : -1;
-				} )
-			);
 		}
 	}
 };

@@ -621,10 +621,24 @@ describe( 'zobject Vuex module', function () {
 		} );
 
 		describe( 'getNextKey', function () {
-			it( 'Returns next ID for a key or argument', function () {
-				state.zobject = tableDataToRowObjects( zobjectTree );
-
+			it( 'Returns first ID for argument', function () {
+				state.zobject = zobjectToRows( {
+					Z1K1: 'Z8',
+					Z8K1: [ 'Z17' ]
+				} );
 				expect( zobjectModule.getters.getNextKey( state, { getCurrentZObjectId: 'Z0' } ) ).toEqual( 'Z0K1' );
+			} );
+
+			it( 'Returns second ID for argument', function () {
+				state.zobject = zobjectToRows( {
+					Z1K1: 'Z8',
+					Z8K1: [ 'Z17', {
+						Z1K1: 'Z17',
+						Z17K1: 'Z6',
+						Z17K2: 'Z0K1'
+					} ]
+				} );
+				expect( zobjectModule.getters.getNextKey( state, { getCurrentZObjectId: 'Z0' } ) ).toEqual( 'Z0K2' );
 			} );
 		} );
 
