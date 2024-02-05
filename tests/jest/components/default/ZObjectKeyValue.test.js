@@ -608,20 +608,16 @@ describe( 'ZObjectKeyValue', () => {
 
 		describe( 'page redirections', () => {
 			it( 'navigates into function editor when content type is set to function', () => {
+				const mockNavigate = jest.fn();
 				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
 				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_OBJECT );
 				actions.changeType = jest.fn();
-				const mockNavigate = jest.fn();
+				actions.navigate = mockNavigate;
 
 				// Create mock title element
 				const title = document.createElement( 'h1' );
 				title.setAttribute( 'id', 'firstHeading' );
 				document.body.appendChild( title );
-
-				global.store.registerModule( 'router', {
-					namespaced: true,
-					actions: { navigate: mockNavigate }
-				} );
 
 				global.store.hotUpdate( { getters: getters, actions: actions } );
 				const wrapper = shallowMount( ZObjectKeyValue, {

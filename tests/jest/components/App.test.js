@@ -6,50 +6,52 @@
  */
 'use strict';
 
-var shallowMount = require( '@vue/test-utils' ).shallowMount,
-	App = require( '../../../resources/ext.wikilambda.edit/components/App.vue' ),
-	getters = require( '../../../resources/ext.wikilambda.edit/store/getters.js' );
+const { waitFor } = require( '@testing-library/vue' ),
+	shallowMount = require( '@vue/test-utils' ).shallowMount,
+	createGetterMock = require( '../helpers/getterHelpers.js' ).createGetterMock,
+	App = require( '../../../resources/ext.wikilambda.edit/components/App.vue' );
 
-describe( 'App.vue', function () {
-	var actions,
-		mockGetZObjectInitializedValue;
+describe( 'App.vue', () => {
+	let actions,
+		getters;
 
-	beforeAll( function () {
+	beforeEach( () => {
 		actions = {
 			initializeView: jest.fn(),
-			prefetchZids: jest.fn()
+			prefetchZids: jest.fn(),
+			evaluateUri: jest.fn(),
+			fetchUserRights: jest.fn()
+		};
+
+		getters = {
+			getZObjectInitialized: createGetterMock( true ),
+			getCurrentView: createGetterMock( 'function-editor' ),
+			isNewZObject: createGetterMock( false )
 		};
 
 		global.store.hotUpdate( {
 			actions: actions,
-			getters: $.extend( getters, {
-				getZObjectInitialized: function () {
-					return mockGetZObjectInitializedValue;
-				}
-			} )
+			getters: getters
 		} );
+	} );
 
-		global.store.registerModule( 'router', {
-			namespaced: true,
-			getters: {
-				getCurrentView: jest.fn().mockReturnValue( 'function-editor' ),
-				getQueryParams: jest.fn( function () {
-					return jest.fn();
-				} )
-			},
-			actions: {
-				evaluateUri: jest.fn()
+	it( 'Initializes the app on load', () => {
+		shallowMount( App, {
+			provide: {
+				viewmode: true
 			}
 		} );
 
+		expect( actions.initializeView ).toHaveBeenCalled();
 	} );
 
-	it( 'Renders loading when getZObjectInitialized and `isAppSetup`(data property) is false', function () {
-		var wrapper;
+	it( 'Renders loading when getZObjectInitialized and `isAppSetup`(data property) is false', () => {
+		getters.getZObjectInitialized = createGetterMock( false );
+		global.store.hotUpdate( {
+			getters: getters
+		} );
 
-		mockGetZObjectInitializedValue = false;
-
-		wrapper = shallowMount( App, {
+		const wrapper = shallowMount( App, {
 			provide: {
 				viewmode: true
 			}
@@ -60,14 +62,8 @@ describe( 'App.vue', function () {
 		expect( global.$i18n ).toHaveBeenCalledWith( 'wikilambda-loading' );
 	} );
 
-	it( 'Does not render the router view when getZObjectInitialized is true but initializeView has not yet completed', async () => {
-		jest.clearAllMocks();
-
-		var wrapper;
-
-		mockGetZObjectInitializedValue = true;
-
-		wrapper = shallowMount( App, {
+	it( 'Does not render the router view when getZObjectInitialized is true but initializeView has not yet completed', () => {
+		const wrapper = shallowMount( App, {
 			provide: {
 				viewmode: true
 			}
@@ -78,36 +74,15 @@ describe( 'App.vue', function () {
 	} );
 
 	it( 'Renders the router view when getZObjectInitialized is true and initializeView has completed', async () => {
-		jest.clearAllMocks();
-
-		var wrapper;
-
-		mockGetZObjectInitializedValue = true;
-
-		wrapper = shallowMount( App, {
+		const wrapper = shallowMount( App, {
 			provide: {
 				viewmode: true
 			}
 		} );
 
-		await wrapper.vm.$nextTick();
-		await wrapper.vm.$nextTick();
-
-		expect( wrapper.componentVM.isAppSetup ).toBe( true );
-		expect( wrapper.findComponent( { name: 'wl-function-editor' } ).exists() ).toBe( true );
-	} );
-
-	it( 'Initializes the app on load', function () {
-		jest.clearAllMocks();
-
-		mockGetZObjectInitializedValue = true;
-
-		shallowMount( App, {
-			provide: {
-				viewmode: true
-			}
+		await waitFor( () => {
+			expect( wrapper.componentVM.isAppSetup ).toBe( true );
+			expect( wrapper.findComponent( { name: 'wl-function-editor' } ).exists() ).toBe( true );
 		} );
-
-		expect( actions.initializeView ).toHaveBeenCalled();
 	} );
 } );

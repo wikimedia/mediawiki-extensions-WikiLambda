@@ -613,8 +613,9 @@ module.exports = exports = {
 		'setValueByRowIdAndPath',
 		'setZFunctionCallArguments',
 		'setZImplementationContentType',
-		'removeItemFromTypedList'
-	] ), mapActions( 'router', [ 'navigate' ] ),
+		'removeItemFromTypedList',
+		'navigate'
+	] ),
 	{
 		/**
 		 * Adds an item of the given value to the list
