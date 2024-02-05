@@ -92,7 +92,6 @@ const replaceToHistoryState = function ( path, query ) {
 };
 
 module.exports = {
-	namespaced: true,
 	state: {
 		currentPath: mw.Uri().path,
 		currentView: Constants.VIEWS.Z_OBJECT_VIEWER,
