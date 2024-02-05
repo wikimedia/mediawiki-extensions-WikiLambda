@@ -152,7 +152,7 @@ module.exports = exports = {
 					return this.placeholder;
 				}
 				return ( this.type === Constants.Z_STRING ) ?
-					this.value :
+					( '"' + this.value + '"' ) :
 					this.getLabel( this.value );
 			},
 
