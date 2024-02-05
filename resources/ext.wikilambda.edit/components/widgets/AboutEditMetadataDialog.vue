@@ -134,7 +134,7 @@
 <script>
 const Constants = require( '../../Constants.js' ),
 	ChipContainer = require( '../base/ChipContainer.vue' ),
-	ZObjectSelector = require( './../ZObjectSelector.vue' ),
+	ZObjectSelector = require( '../base/ZObjectSelector.vue' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,

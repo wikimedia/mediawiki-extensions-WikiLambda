@@ -7,10 +7,10 @@
 'use strict';
 
 const { waitFor } = require( '@testing-library/vue' ),
-	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
 	{ CdxLookup } = require( '@wikimedia/codex' ),
 	mount = require( '@vue/test-utils' ).mount,
-	ZObjectSelector = require( '../../../resources/ext.wikilambda.edit/components/ZObjectSelector.vue' );
+	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
+	ZObjectSelector = require( '../../../../resources/ext.wikilambda.edit/components/base/ZObjectSelector.vue' );
 
 describe( 'ZObjectSelector', function () {
 	var state,
