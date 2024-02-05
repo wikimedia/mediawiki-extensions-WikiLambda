@@ -48,14 +48,14 @@
 </template>
 
 <script>
-var Constants = require( '../Constants.js' ),
+var Constants = require( '../../Constants.js' ),
 	CdxLookup = require( '@wikimedia/codex' ).CdxLookup,
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
-	errorUtils = require( '../mixins/errorUtils.js' ),
-	typeUtils = require( '../mixins/typeUtils.js' ),
+	errorUtils = require( '../../mixins/errorUtils.js' ),
+	typeUtils = require( '../../mixins/typeUtils.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
-	icons = require( '../../../lib/icons.json' );
+	icons = require( '../../../../lib/icons.json' );
 
 // @vue/component
 module.exports = exports = {
@@ -393,7 +393,7 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-@import '../ext.wikilambda.edit.less';
+@import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-select-zobject {
 	.cdx-text-input__end-icon {

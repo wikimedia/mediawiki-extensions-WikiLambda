@@ -45,7 +45,7 @@
 <script>
 const Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
-	ZObjectSelector = require( '../ZObjectSelector.vue' ),
+	ZObjectSelector = require( './ZObjectSelector.vue' ),
 	CdxField = require( '@wikimedia/codex' ).CdxField,
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;

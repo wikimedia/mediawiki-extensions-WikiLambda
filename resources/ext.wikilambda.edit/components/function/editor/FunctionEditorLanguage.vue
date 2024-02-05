@@ -27,7 +27,7 @@
 
 <script>
 const Constants = require( '../../../Constants.js' ),
-	ZObjectSelector = require( '../../ZObjectSelector.vue' ),
+	ZObjectSelector = require( '../../base/ZObjectSelector.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component

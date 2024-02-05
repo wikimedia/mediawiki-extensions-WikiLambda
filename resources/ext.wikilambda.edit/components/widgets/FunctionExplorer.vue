@@ -141,7 +141,7 @@ var
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	WidgetBase = require( '../base/WidgetBase.vue' ),
 	TypeToString = require( '../base/TypeToString.vue' ),
-	ZObjectSelector = require( '../ZObjectSelector.vue' ),
+	ZObjectSelector = require( '../base/ZObjectSelector.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	icons = require( '../../../lib/icons.json' ),
 	typeUtils = require( '../../mixins/typeUtils.js' );
