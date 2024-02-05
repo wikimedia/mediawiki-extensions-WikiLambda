@@ -10,6 +10,33 @@ var typeUtils = require( '../../../resources/ext.wikilambda.edit/mixins/typeUtil
 
 describe( 'typeUtils mixin', function () {
 
+	describe( 'isGenericType', () => {
+		it( 'returns false if canonical referenced type', () => {
+			const type = Constants.Z_MONOLINGUALSTRING;
+			const isGeneric = typeUtils.isGenericType( type );
+			expect( isGeneric ).toBe( false );
+		} );
+
+		it( 'returns false if normal referenced type', () => {
+			const type = {
+				Z1K1: Constants.Z_REFERENCE,
+				Z9K1: Constants.Z_MONOLINGUALSTRING
+			};
+			const isGeneric = typeUtils.isGenericType( type );
+			expect( isGeneric ).toBe( false );
+		} );
+
+		it( 'returns true if function call', () => {
+			const type = {
+				Z1K1: Constants.Z_FUNCTION_CALL,
+				Z7K1: Constants.Z_TYPED_LIST,
+				Z881K1: Constants.Z_STRING
+			};
+			const isGeneric = typeUtils.isGenericType( type );
+			expect( isGeneric ).toBe( true );
+		} );
+	} );
+
 	describe( 'getZObjectType', function () {
 		describe( 'Return String ZID', function () {
 			it( 'when value is null', function () {
@@ -156,134 +183,16 @@ describe( 'typeUtils mixin', function () {
 				expect( arrayItem.value ).toBe( dummyArray[ 1 ].value );
 			} );
 		} );
-		describe( 'isValidZidFormat', function () {
-			it( 'return true if string is ZID format', function () {
-				var result = typeUtils.isValidZidFormat( 'Z123' );
-				expect( result ).toBeTruthy();
-			} );
-			it( 'return false if string is not a Zid', function () {
-				var result = typeUtils.isValidZidFormat( 'fakeValue' );
-				expect( result ).toBeFalsy();
-			} );
+	} );
+
+	describe( 'isValidZidFormat', function () {
+		it( 'return true if string is ZID format', function () {
+			var result = typeUtils.isValidZidFormat( 'Z123' );
+			expect( result ).toBeTruthy();
 		} );
-		describe( 'zObjectToString', function () {
-			it( 'return an empty string if zObject is undefined', function () {
-				var returnedString = typeUtils.zObjectToString();
-				expect( returnedString ).toBe( '' );
-			} );
-			it( 'return the function paramether if of type string', function () {
-				var object = 'I am a simple string';
-				var returnedString = typeUtils.zObjectToString( object );
-				expect( returnedString ).toBe( object );
-			} );
-			it( 'return a formatted string if value is Array', function () {
-				var object = [ 'one', 'two' ];
-				var returnedString = typeUtils.zObjectToString( object );
-				expect( returnedString ).toBe( '[ one, two ]' );
-			} );
-			describe( 'when the object is a boolean', function () {
-				it( 'return true if the boolean identity if true', function () {
-					var object = {
-						Z1K1: Constants.Z_BOOLEAN,
-						Z40K1: Constants.Z_BOOLEAN_TRUE
-					};
-					var returnedString = typeUtils.zObjectToString( object );
-					expect( returnedString ).toBeTruthy();
-				} );
-				it( 'return false if the boolean identity if false', function () {
-					var object = {
-						Z1K1: Constants.Z_BOOLEAN,
-						Z40K1: Constants.Z_BOOLEAN_FALSE
-					};
-					var returnedString = typeUtils.zObjectToString( object );
-					expect( returnedString ).toBeFalsy();
-				} );
-			} );
-			it( 'return the stringify JSON as a default for obect', function () {
-				var object = {
-					Z1K1: 'fakeObject'
-				};
-				var returnedString = typeUtils.zObjectToString( object );
-				expect( returnedString ).toBe( JSON.stringify( object ) );
-
-			} );
-		} );
-
-		describe( 'typedListToArray', function () {
-			it( 'return an empty array if provided list is empty', function () {
-				var typeList = {
-					Z1K1: {
-						Z1K1: 'FakeTypedListDeclaration'
-					}
-				};
-				var formattedArray = typeUtils.typedListToArray( typeList );
-				expect( formattedArray ).toEqual( [] );
-			} );
-
-			describe( 'returns the formatted array', function () {
-				it( 'when typed list has a single string value', function () {
-					var typeList = {
-						Z1K1: {
-							Z1K1: 'FakeTypedListDeclaration'
-						},
-						K1: 'test',
-						K2: {
-							Z1K1: {
-								Z1K1: 'FakeTypedListDeclaration'
-							}
-						}
-					};
-					var formattedArray = typeUtils.typedListToArray( typeList );
-					expect( formattedArray ).toEqual( [ 'test' ] );
-				} );
-				it( 'when typed list has a multiple string values', function () {
-					var typeList = {
-						Z1K1: {
-							Z1K1: 'FakeTypedListDeclaration'
-						},
-						K1: 'test',
-						K2: {
-							Z1K1: {
-								Z1K1: 'FakeTypedListDeclaration'
-							},
-							K1: 'test2',
-							K2: {
-								Z1K1: {
-									Z1K1: 'FakeTypedListDeclaration'
-								},
-								K1: 'test3',
-								K2: {
-									Z1K1: {
-										Z1K1: 'FakeTypedListDeclaration'
-									}
-								}
-							}
-						}
-					};
-					var formattedArray = typeUtils.typedListToArray( typeList );
-					expect( formattedArray ).toEqual( [ 'test', 'test2', 'test3' ] );
-				} );
-				it( 'when typed list has a single object array', function () {
-					var dummyValue = {
-						Z1K1: 'complexType',
-						Z123K4: 'ComplexValue'
-					};
-					var typeList = {
-						Z1K1: {
-							Z1K1: 'FakeTypedListDeclaration'
-						},
-						K1: dummyValue,
-						K2: {
-							Z1K1: {
-								Z1K1: 'FakeTypedListDeclaration'
-							}
-						}
-					};
-					var formattedArray = typeUtils.typedListToArray( typeList );
-					expect( formattedArray.length ).toBe( 1 );
-					expect( formattedArray[ 0 ] ).toBe( dummyValue );
-				} );
-			} );
+		it( 'return false if string is not a Zid', function () {
+			var result = typeUtils.isValidZidFormat( 'fakeValue' );
+			expect( result ).toBeFalsy();
 		} );
 	} );
 
@@ -427,6 +336,26 @@ describe( 'typeUtils mixin', function () {
 				expect( type ).toBe( Constants.Z_TYPED_LIST );
 			} );
 		} );
+
+		describe( 'Return argument reference key', () => {
+			it( 'returns the referenced key', () => {
+				const type = typeUtils.typeToString( {
+					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_ARGUMENT_REFERENCE,
+					[ Constants.Z_ARGUMENT_REFERENCE_KEY ]: 'Z10000K1'
+				}, true );
+				expect( type ).toBe( 'Z10000K1' );
+			} );
+		} );
+
+		describe( 'Not a type', () => {
+			it( 'returns undefined', () => {
+				const type = typeUtils.typeToString( {
+					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_NATURAL_LANGUAGE,
+					[ Constants.Z_NATURAL_LANGUAGE_ISO_CODE ]: 'en'
+				}, true );
+				expect( type ).toBe( undefined );
+			} );
+		} );
 	} );
 
 	describe( 'isGlobalKey', function () {
@@ -551,6 +480,90 @@ describe( 'typeUtils mixin', function () {
 			];
 			var result = typeUtils.getArgFromArgList( key, list );
 			expect( result ).toStrictEqual( keyObject );
+		} );
+	} );
+
+	describe( 'isKeyTypedListType', () => {
+		it( 'returns true if key is 0', () => {
+			expect( typeUtils.isKeyTypedListType( '0' ) ).toBe( true );
+		} );
+		it( 'returns false if key is other than 0', () => {
+			expect( typeUtils.isKeyTypedListType( '1' ) ).toBe( false );
+			expect( typeUtils.isKeyTypedListType( '5' ) ).toBe( false );
+		} );
+	} );
+
+	describe( 'isKeyTypedListItem', () => {
+		it( 'returns false if key is 0', () => {
+			expect( typeUtils.isKeyTypedListItem( '0' ) ).toBe( false );
+		} );
+		it( 'returns true if key is other than 0', () => {
+			expect( typeUtils.isKeyTypedListItem( '1' ) ).toBe( true );
+			expect( typeUtils.isKeyTypedListItem( '5' ) ).toBe( true );
+		} );
+	} );
+
+	describe( 'initializePayloadForType', () => {
+		it( 'initializes payload for linked types', () => {
+			const type = Constants.Z_TESTER;
+			const expected = {
+				type: Constants.Z_REFERENCE
+			};
+			const payload = typeUtils.initializePayloadForType( type );
+			expect( payload ).toEqual( expected );
+		} );
+
+		it( 'initializes payload for literal types', () => {
+			const type = Constants.Z_MONOLINGUALSTRING;
+			const expected = {
+				type: Constants.Z_MONOLINGUALSTRING
+			};
+			const payload = typeUtils.initializePayloadForType( type );
+			expect( payload ).toEqual( expected );
+		} );
+
+		it( 'initializes payload for typed list', () => {
+			const type = {
+				Z1K1: Constants.Z_FUNCTION_CALL,
+				Z7K1: Constants.Z_TYPED_LIST,
+				Z881K1: Constants.Z_STRING
+			};
+			const expected = {
+				type: Constants.Z_TYPED_LIST,
+				value: Constants.Z_STRING
+			};
+			const payload = typeUtils.initializePayloadForType( type );
+			expect( payload ).toEqual( expected );
+		} );
+
+		it( 'initializes payload for typed pair', () => {
+			const type = {
+				Z1K1: Constants.Z_FUNCTION_CALL,
+				Z7K1: Constants.Z_TYPED_PAIR,
+				Z882K1: Constants.Z_STRING,
+				Z882K2: Constants.Z_BOOLEAN
+			};
+			const expected = {
+				type: Constants.Z_TYPED_PAIR,
+				values: [ Constants.Z_STRING, Constants.Z_BOOLEAN ]
+			};
+			const payload = typeUtils.initializePayloadForType( type );
+			expect( payload ).toEqual( expected );
+		} );
+
+		it( 'initializes payload for typed map', () => {
+			const type = {
+				Z1K1: Constants.Z_FUNCTION_CALL,
+				Z7K1: Constants.Z_TYPED_MAP,
+				Z883K1: Constants.Z_STRING,
+				Z883K2: Constants.Z_BOOLEAN
+			};
+			const expected = {
+				type: Constants.Z_TYPED_MAP,
+				values: [ Constants.Z_STRING, Constants.Z_BOOLEAN ]
+			};
+			const payload = typeUtils.initializePayloadForType( type );
+			expect( payload ).toEqual( expected );
 		} );
 	} );
 } );

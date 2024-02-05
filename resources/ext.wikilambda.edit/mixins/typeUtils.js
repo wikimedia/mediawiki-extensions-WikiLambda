@@ -132,37 +132,6 @@ var Constants = require( '../Constants.js' ),
 					return ( item[ Constants.Z_ARGUMENT_KEY ] === key );
 				} );
 			},
-			zObjectToString: function ( zObject ) {
-				if ( typeof zObject === 'undefined' ) {
-					return '';
-				}
-				if ( typeof zObject === 'string' ) {
-					return zObject;
-				} else if ( Array.isArray( zObject ) ) {
-					return '[ ' + zObject.map( typeUtils.methods.zObjectToString ).join( ', ' ) + ' ]';
-				} else {
-					switch ( zObject.Z1K1 ) {
-						case Constants.Z_BOOLEAN:
-							return zObject[ Constants.Z_BOOLEAN_IDENTITY ] === Constants.Z_BOOLEAN_TRUE;
-						default:
-							return JSON.stringify( zObject );
-					}
-				}
-			},
-			typedListToArray( typedList, array ) {
-				array = array || [];
-
-				for ( var item in typedList ) {
-					if ( item === Constants.Z_TYPED_OBJECT_ELEMENT_1 ) {
-						array.push( typedList[ item ] );
-					} else if ( item === Constants.Z_TYPED_OBJECT_ELEMENT_2 ) {
-						typeUtils.methods.typedListToArray( typedList[ item ], array );
-					}
-				}
-
-				return array;
-			},
-
 			/**
 			 * Determine if a key indicates a typed list type.
 			 *
@@ -172,7 +141,6 @@ var Constants = require( '../Constants.js' ),
 			isKeyTypedListType: function ( key ) {
 				return key === '0';
 			},
-
 			/**
 			 * Determines if a key indicates a typed list item. This will be true when a key
 			 * is a stringified number greater than 0 (0 indicates the type of a typed list)
@@ -184,7 +152,6 @@ var Constants = require( '../Constants.js' ),
 				const numericalKey = Number( key );
 				return Number.isInteger( numericalKey ) && numericalKey > 0;
 			},
-
 			/**
 			 * Transform the value of a Z1K1 key (object type) to a string.
 			 * When the type is a reference, return the Zid of the referred type.
@@ -257,7 +224,6 @@ var Constants = require( '../Constants.js' ),
 					return typeString;
 				}
 			},
-
 			/**
 			 * Return the empty structure of builtin types that we will
 			 * create when creating these types in the interface.
@@ -676,7 +642,6 @@ var Constants = require( '../Constants.js' ),
 						return undefined;
 				}
 			},
-
 			/**
 			 * Given the canonical representation of a type,
 			 * it generates the payload that will be passed to the
@@ -712,7 +677,7 @@ var Constants = require( '../Constants.js' ),
 							break;
 						case Constants.Z_TYPED_PAIR:
 							payload = {
-								type: Constants.Z_TYPED_LIST,
+								type: Constants.Z_TYPED_PAIR,
 								values: [
 									type[ Constants.Z_TYPED_PAIR_TYPE1 ],
 									type[ Constants.Z_TYPED_PAIR_TYPE2 ]

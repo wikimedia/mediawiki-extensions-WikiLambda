@@ -1230,9 +1230,17 @@ module.exports = exports = {
 		 * @return {string} nextKey
 		 */
 		getNextKey: function ( state, getters ) {
-			var zid = getters.getCurrentZObjectId,
-				nextKey = zobjectTreeUtils.findLatestKey( state.zobject, zid ) + 1;
-
+			const zid = getters.getCurrentZObjectId;
+			const keyRegex = new RegExp( '^' + zid + 'K([0-9]+)$' );
+			const defaultKey = 0;
+			const lastKey = Math.max(
+				defaultKey,
+				...state.zobject.map( function ( item ) {
+					const match = item.value && item.value.match( keyRegex );
+					return match ? parseInt( match[ 1 ], 10 ) : -1;
+				} )
+			);
+			const nextKey = lastKey + 1;
 			return zid + 'K' + nextKey;
 		},
 

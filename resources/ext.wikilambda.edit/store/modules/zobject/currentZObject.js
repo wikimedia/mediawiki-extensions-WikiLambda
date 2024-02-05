@@ -291,29 +291,6 @@ module.exports = exports = {
 			const outputTypeRow = getters.getZFunctionOutput();
 			const outputTypeFields = getters.validateGenericType( outputTypeRow.id );
 			return outputTypeFields.filter( ( e ) => !e.isValid ).map( ( e ) => e.rowId );
-		},
-
-		currentZFunctionHasTesters: function ( state, getters ) {
-			if ( getters.getCurrentZObjectType !== Constants.Z_FUNCTION ) {
-				return false;
-			}
-
-			var zobject = getters.getZObjectAsJson;
-
-			return zobject &&
-				zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][
-					Constants.Z_FUNCTION_TESTERS ].length > 0;
-		},
-		currentZFunctionHasImplementations: function ( state, getters ) {
-			if ( getters.getCurrentZObjectType !== Constants.Z_FUNCTION ) {
-				return false;
-			}
-
-			var zobject = getters.getZObjectAsJson;
-
-			return zobject &&
-				zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][
-					Constants.Z_FUNCTION_IMPLEMENTATIONS ].length > 0;
 		}
 	}
 };
