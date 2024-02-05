@@ -323,8 +323,8 @@ module.exports = exports = {
 
 			// Delete items from the list and recalculate the list keys
 			for ( const row of deleteRows ) {
-				context.dispatch( 'removeZObjectChildren', row.id );
-				context.dispatch( 'removeZObject', row.id );
+				context.dispatch( 'removeRowChildren', row.id );
+				context.dispatch( 'removeRow', row.id );
 			}
 			context.dispatch( 'recalculateTypedListKeys', listRow.id );
 
@@ -360,8 +360,8 @@ module.exports = exports = {
 
 			// Delete items from the list and recalculate the list keys
 			for ( const row of deleteRows ) {
-				context.dispatch( 'removeZObjectChildren', row.id );
-				context.dispatch( 'removeZObject', row.id );
+				context.dispatch( 'removeRowChildren', row.id );
+				context.dispatch( 'removeRow', row.id );
 			}
 			context.dispatch( 'recalculateTypedListKeys', listRow.id );
 
