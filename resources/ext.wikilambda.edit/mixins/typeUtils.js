@@ -7,7 +7,7 @@
  */
 'use strict';
 
-var Constants = require( '../Constants.js' ),
+const Constants = require( '../Constants.js' ),
 	typeUtils = {
 		methods: {
 			/**
@@ -696,6 +696,26 @@ var Constants = require( '../Constants.js' ),
 					}
 				}
 				return payload;
+			},
+			/**
+			 * Returns whether the value of zobject after
+			 * following the values of the nested properties given
+			 * by the array of keys is truthy
+			 *
+			 * @param {Object} zobject
+			 * @param {Array} keys
+			 * @return {boolean}
+			 */
+			isValueTruthy: function ( zobject, keys = [] ) {
+				if ( keys.length === 0 ) {
+					return !!zobject;
+				}
+				const head = keys[ 0 ];
+				if ( zobject[ head ] ) {
+					const tail = keys.slice( 1 );
+					return typeUtils.methods.isValueTruthy( zobject[ head ], tail );
+				}
+				return false;
 			}
 		}
 	};
