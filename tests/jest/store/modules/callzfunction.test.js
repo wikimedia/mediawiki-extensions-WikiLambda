@@ -6,7 +6,7 @@
  */
 'use strict';
 
-var tableDataToRowObjects = require( '../../helpers/zObjectTableHelpers.js' ).tableDataToRowObjects,
+const tableDataToRowObjects = require( '../../helpers/zObjectTableHelpers.js' ).tableDataToRowObjects,
 	callZFunctionModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/callZFunction.js' ),
 	zobjectModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zobject.js' ),
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
@@ -26,9 +26,9 @@ var tableDataToRowObjects = require( '../../helpers/zObjectTableHelpers.js' ).ta
 	},
 	canonicalFunctionCall = {
 		Z1K1: 'Z7', Z7K1: 'Z110', Z110K1: 'past'
-	},
-	expectedData = '{ "Z1K1": "Z6", "Z6K1": "present" }',
-	context,
+	};
+
+let context,
 	postMock;
 
 describe( 'callZFunction Vuex module', function () {
@@ -90,8 +90,9 @@ describe( 'callZFunction Vuex module', function () {
 
 		describe( 'callZFunction', () => {
 			it( 'Call MW API for function orchestration; set orchestrationResult', function () {
-				// eslint-disable-next-line no-unused-vars
-				postMock = jest.fn( function ( payload ) {
+
+				const expectedData = '{ "Z1K1": "Z6", "Z6K1": "present" }';
+				postMock = jest.fn( function () {
 					return new Promise( function ( resolve ) {
 						resolve( {
 							query: {
