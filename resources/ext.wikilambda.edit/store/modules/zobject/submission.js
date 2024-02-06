@@ -9,28 +9,8 @@
 const Constants = require( '../../../Constants.js' ),
 	convertTableToJson = require( '../../../mixins/zobjectUtils.js' ).methods.convertTableToJson,
 	canonicalize = require( '../../../mixins/schemata.js' ).methods.canonicalizeZObject,
-	saveZObject = require( '../../../mixins/api.js' ).methods.saveZObject;
-
-/**
- * Returns whether the value of zobject after
- * following the values of the nested properties given
- * by the array of keys is truthy
- *
- * @param {Object} zobject
- * @param {Array} keys
- * @return {boolean}
- */
-function isValueTruthy( zobject, keys = [] ) {
-	if ( keys.length === 0 ) {
-		return !!zobject;
-	}
-	const head = keys[ 0 ];
-	if ( zobject[ head ] ) {
-		const tail = keys.slice( 1 );
-		return isValueTruthy( zobject[ head ], tail );
-	}
-	return false;
-}
+	saveZObject = require( '../../../mixins/api.js' ).methods.saveZObject,
+	isValueTruthy = require( '../../../mixins/typeUtils.js' ).methods.isValueTruthy;
 
 module.exports = exports = {
 	actions: {

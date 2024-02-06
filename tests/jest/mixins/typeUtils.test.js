@@ -566,4 +566,87 @@ describe( 'typeUtils mixin', function () {
 			expect( payload ).toEqual( expected );
 		} );
 	} );
+
+	describe( 'isValueTruthy', () => {
+		it( 'returns false if key chain is empty and object is falsy', () => {
+			const object = undefined;
+			const keys = [];
+			expect( typeUtils.isValueTruthy( object, keys ) ).toBe( false );
+		} );
+
+		it( 'returns true if key chain is empty and object is truthy', () => {
+			const object = 'some value';
+			const keys = [];
+			expect( typeUtils.isValueTruthy( object, keys ) ).toBe( true );
+		} );
+
+		it( 'returns false if value is not found by one key', () => {
+			const object = {
+				Z1K1: 'Z6',
+				Z6K1: 'string value'
+			};
+			const keys = [ 'Z11K1' ];
+			expect( typeUtils.isValueTruthy( object, keys ) ).toBe( false );
+		} );
+
+		it( 'returns true if value is found by one key', () => {
+			const object = {
+				Z1K1: 'Z6',
+				Z6K1: 'string value'
+			};
+			const keys = [ 'Z6K1' ];
+			expect( typeUtils.isValueTruthy( object, keys ) ).toBe( true );
+		} );
+
+		it( 'returns false if value is found by one key but empty', () => {
+			const object = {
+				Z1K1: 'Z6',
+				Z6K1: ''
+			};
+			const keys = [ 'Z6K1' ];
+			expect( typeUtils.isValueTruthy( object, keys ) ).toBe( false );
+		} );
+
+		it( 'returns false if value is not found by a chain of keys', () => {
+			const object = {
+				Z1K1: 'Z11',
+				Z11K1: 'Z1002',
+				Z11K2: 'string value'
+			};
+			const keys = [ 'Z11K1', 'Z60K1', 'Z6K1' ];
+			expect( typeUtils.isValueTruthy( object, keys ) ).toBe( false );
+		} );
+
+		it( 'returns true if value is found by a chain of keys', () => {
+			const object = {
+				Z1K1: 'Z11',
+				Z11K1: {
+					Z1K1: 'Z60',
+					Z60K1: {
+						Z1K1: 'Z6',
+						Z6K1: 'en'
+					}
+				},
+				Z11K2: 'string value'
+			};
+			const keys = [ 'Z11K1', 'Z60K1', 'Z6K1' ];
+			expect( typeUtils.isValueTruthy( object, keys ) ).toBe( true );
+		} );
+
+		it( 'returns false if value is found by a chain of keys but empty', () => {
+			const object = {
+				Z1K1: 'Z11',
+				Z11K1: {
+					Z1K1: 'Z60',
+					Z60K1: {
+						Z1K1: 'Z6',
+						Z6K1: ''
+					}
+				},
+				Z11K2: 'string value'
+			};
+			const keys = [ 'Z11K1', 'Z60K1', 'Z6K1' ];
+			expect( typeUtils.isValueTruthy( object, keys ) ).toBe( false );
+		} );
+	} );
 } );
