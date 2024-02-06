@@ -78,11 +78,9 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 
 		$z1_object = file_get_contents( $dataPath . 'Z1.json' );
 		$this->editPage( 'Z1', $z1_object, 'Test creation', NS_MAIN );
-		$this->titlesTouched[] = 'Z1';
 
 		$z3_object = file_get_contents( $dataPath . 'Z3.json' );
 		$this->editPage( 'Z3', $z3_object, 'Test creation', NS_MAIN );
-		$this->titlesTouched[] = 'Z3';
 
 		DeferredUpdates::doUpdates();
 		MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->waitForReplication();
@@ -108,7 +106,6 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 
 		$z1_object = file_get_contents( $dataPath . 'Z1.json' );
 		$this->editPage( 'Z1', $z1_object, 'Test creation', NS_MAIN );
-		$this->titlesTouched[] = 'Z1';
 
 		DeferredUpdates::doUpdates();
 		MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->waitForReplication();
@@ -135,7 +132,6 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 
 		$z1_object = file_get_contents( $dataPath . 'Z1.json' );
 		$this->editPage( 'Z1', $z1_object, 'Test creation', NS_MAIN );
-		$this->titlesTouched[] = 'Z1';
 
 		DeferredUpdates::doUpdates();
 		MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->waitForReplication();
@@ -156,11 +152,9 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 
 		$z1_object = file_get_contents( $dataPath . 'Z1.json' );
 		$this->editPage( 'Z1', $z1_object, 'Test creation', NS_MAIN );
-		$this->titlesTouched[] = 'Z1';
 
 		$z3_object = file_get_contents( $dataPath . 'Z3.json' );
 		$this->editPage( 'Z3', $z3_object, 'Test creation', NS_MAIN );
-		$this->titlesTouched[] = 'Z3';
 
 		DeferredUpdates::doUpdates();
 		MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->waitForReplication();
