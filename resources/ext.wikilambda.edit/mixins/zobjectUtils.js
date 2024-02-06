@@ -1,10 +1,16 @@
 /*!
- * WikiLambda Vue tree manipulation utilities code
+ * WikiLambda Vue ZObject manipulation utilities. This mixin contains
+ * the methods for transforming a ZObject from its JSON representation
+ * into a table representation that can be stored in the global state,
+ * and back from table to JSON.
+ *
+ * For more details on the ZObject table read:
+ * https://www.mediawiki.org/wiki/Extension:WikiLambda/Frontend_Architecture#ZObject_Table
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
-var Constants = require( '../Constants.js' ),
+const Constants = require( '../Constants.js' ),
 	Row = require( '../store/classes/Row.js' ),
 	normalize = require( './schemata.js' ).methods.normalizeZObject;
 
@@ -27,7 +33,7 @@ module.exports = exports = {
 		 * @param {boolean} returnParent whether to return the parent row in the row array
 		 * @return {Array}
 		 */
-		convertZObjectToRows: function (
+		convertJsonToTable: function (
 			zObject, parentRow, startingRowId, appendToList = false, appendFromIndex = 0, returnParent = true ) {
 
 			// Raise an exception if parentRow is set and nextAvailableId is not to avoid overwriting IDs
@@ -101,12 +107,12 @@ module.exports = exports = {
 		 * Converts the zObject flattened table into a nested object starting
 		 * from a given rowId
 		 *
-		 * @param {Array} zObjectTree array of Row objects
+		 * @param {Array} zObjectTable array of Row objects
 		 * @param {number} parentId starting rowId
 		 * @param {boolean} rootIsArray
 		 * @return {Object}
 		 */
-		convertZObjectTreetoJson: function ( zObjectTree, parentId = 0, rootIsArray = false ) {
+		convertTableToJson: function ( zObjectTable, parentId = 0, rootIsArray = false ) {
 			function reconstructJson( object, layer, isArrayChild ) {
 				var json = {},
 					value,
@@ -147,7 +153,7 @@ module.exports = exports = {
 
 				return json;
 			}
-			return reconstructJson( zObjectTree, parentId, rootIsArray );
+			return reconstructJson( zObjectTable, parentId, rootIsArray );
 		}
 	}
 };
