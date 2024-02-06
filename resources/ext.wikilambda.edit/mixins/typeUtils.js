@@ -716,6 +716,45 @@ const Constants = require( '../Constants.js' ),
 					return typeUtils.methods.isValueTruthy( zobject[ head ], tail );
 				}
 				return false;
+			},
+			/**
+			 * Given a list of available languages for an object metadata
+			 * (name, description or alias), it checks the user language and
+			 * fallback chain and selects which of the available ones is
+			 * the best pick (either the user language one, or the closest
+			 * fallback)
+			 *
+			 * @param {Array} allLanguages
+			 * @return {Object|undefined}
+			 */
+			selectBestLanguage: function ( allLanguages ) {
+				/**
+				 * @param {Array} chain
+				 * @param {Array} availableLangs
+				 * @return {Object}
+				 */
+				function findAvailableLang( chain, availableLangs ) {
+					// Iterate through the fallback chain and return
+					// the first available language found.
+					let foundLang;
+					for ( const lang of chain ) {
+						foundLang = availableLangs.find( ( langObj ) => {
+							return ( langObj.langIsoCode === lang );
+						} );
+						if ( foundLang !== undefined ) {
+							return foundLang;
+						}
+					}
+					return foundLang;
+				}
+
+				// There are no available languages, return undefined
+				if ( allLanguages.length === 0 ) {
+					return undefined;
+				}
+				const fallbackChain = mw.language.getFallbackLanguageChain();
+				const availableLang = findAvailableLang( fallbackChain, allLanguages );
+				return availableLang || allLanguages[ 0 ];
 			}
 		}
 	};
