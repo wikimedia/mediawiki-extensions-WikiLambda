@@ -6,7 +6,8 @@
  */
 
 const Constants = require( '../../Constants.js' ),
-	typeUtils = require( '../../mixins/typeUtils.js' ).methods,
+	findKeyInArray = require( '../../mixins/typeUtils.js' ).methods.findKeyInArray,
+	selectBestLanguage = require( '../../mixins/typeUtils.js' ).methods.selectBestLanguage,
 	zobjectUtils = require( '../../mixins/zobjectUtils.js' ).methods,
 	extractZIDs = require( '../../mixins/schemata.js' ).methods.extractZIDs,
 	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject,
@@ -18,48 +19,6 @@ const Constants = require( '../../Constants.js' ),
 	DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT = 300;
 
 let debounceZObjectLookup = null;
-
-/**
- * Given a list of available languages for an object metadata
- * (name, description or alias), it checks the user language and
- * fallback chain and selects which of the available ones is
- * the best pick (either the user language one, or the closest
- * fallback)
- *
- * TODO (T328430): Should we move this into a helpers or mixins file?
- *
- * @param {Array} allLanguages
- * @return {Object|undefined}
- */
-function selectBestLanguage( allLanguages ) {
-	/**
-	 * @param {Array} chain
-	 * @param {Array} availableLangs
-	 * @return {Object}
-	 */
-	function findAvailableLang( chain, availableLangs ) {
-		// Iterate through the fallback chain and return
-		// the first available language found.
-		let foundLang;
-		for ( const lang of chain ) {
-			foundLang = availableLangs.find( ( langObj ) => {
-				return ( langObj.langIsoCode === lang );
-			} );
-			if ( foundLang !== undefined ) {
-				return foundLang;
-			}
-		}
-		return foundLang;
-	}
-
-	// There are no available languages, return undefined
-	if ( allLanguages.length === 0 ) {
-		return undefined;
-	}
-	const fallbackChain = mw.language.getFallbackLanguageChain();
-	const availableLang = findAvailableLang( fallbackChain, allLanguages );
-	return availableLang || allLanguages[ 0 ];
-}
 
 module.exports = exports = {
 	modules: {
@@ -1478,8 +1437,7 @@ module.exports = exports = {
 				// Else, fetch `zid` and make sure it's a type
 				return context.dispatch( 'fetchZids', { zids: [ defaultType ] } )
 					.then( function () {
-						var Z2K2 =
-							typeUtils.findKeyInArray( Constants.Z_PERSISTENTOBJECT_VALUE, context.state.zobject );
+						var Z2K2 = findKeyInArray( Constants.Z_PERSISTENTOBJECT_VALUE, context.state.zobject );
 						defaultKeys = context.getters.getStoredObject( defaultType );
 
 						// If `zid` is not a type, return.
