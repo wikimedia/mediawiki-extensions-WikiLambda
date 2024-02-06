@@ -1,26 +1,26 @@
 /*!
- * WikiLambda unit test suite for the tableUtils mixin
+ * WikiLambda unit test suite for the zobjectUtils mixin
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
 
-var tableUtils = require( '../../../resources/ext.wikilambda.edit/mixins/zobjectTreeUtils.js' ).methods,
+const zobjectUtils = require( '../../../resources/ext.wikilambda.edit/mixins/zobjectUtils.js' ).methods,
 	Row = require( '../../../resources/ext.wikilambda.edit/store/classes/Row.js' ),
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
 	tableDataToRowObjects = require( '../helpers/zObjectTableHelpers.js' ).tableDataToRowObjects;
 
-describe( 'tableUtils mixin', function () {
+describe( 'zobjectUtils mixin', function () {
 
-	describe( 'convertZObjectToRows', function () {
-		describe( 'convertZObjectToRows with wrong parameters', function () {
+	describe( 'convertJsonToTable', function () {
+		describe( 'convertJsonToTable with wrong parameters', function () {
 
 			it( 'throws an exception when calling with parentRow but no nextAvailableId', function () {
 				const zObject = 'the stringy one';
 				const parentRow = new Row( 10, 'Z2K2', Constants.ROW_VALUE_OBJECT, 9 );
 
 				expect( function () {
-					tableUtils.convertZObjectToRows( zObject, parentRow );
+					zobjectUtils.convertJsonToTable( zObject, parentRow );
 				} ).toThrow( Error );
 			} );
 
@@ -31,16 +31,16 @@ describe( 'tableUtils mixin', function () {
 				const appendToList = true;
 
 				expect( function () {
-					tableUtils.convertZObjectToRows( zObject, parentRow, nextAvailableId, appendToList );
+					zobjectUtils.convertJsonToTable( zObject, parentRow, nextAvailableId, appendToList );
 				} ).toThrow( Error );
 			} );
 		} );
 
-		describe( 'convertZObjectToRows without parent', function () {
+		describe( 'convertJsonToTable without parent', function () {
 
 			it( 'converts a terminal string', function () {
 				const zObject = 'the stringy one';
-				const rows = tableUtils.convertZObjectToRows( zObject );
+				const rows = zobjectUtils.convertJsonToTable( zObject );
 				const expected = [
 					{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
 					{ id: 1, key: 'Z1K1', value: 'Z6', parent: 0 },
@@ -51,7 +51,7 @@ describe( 'tableUtils mixin', function () {
 
 			it( 'converts a reference', function () {
 				const zObject = 'Z12345';
-				const rows = tableUtils.convertZObjectToRows( zObject );
+				const rows = zobjectUtils.convertJsonToTable( zObject );
 				const expected = [
 					{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
 					{ id: 1, key: 'Z1K1', value: 'Z9', parent: 0 },
@@ -62,7 +62,7 @@ describe( 'tableUtils mixin', function () {
 
 			it( 'converts a typed list of strings', function () {
 				const zObject = [ 'Z6', 'stringful', 'stringlord' ];
-				const rows = tableUtils.convertZObjectToRows( zObject );
+				const rows = zobjectUtils.convertJsonToTable( zObject );
 				const expected = [
 					{ id: 0, key: undefined, value: Constants.ROW_VALUE_ARRAY, parent: undefined },
 					{ id: 1, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
@@ -87,7 +87,7 @@ describe( 'tableUtils mixin', function () {
 					},
 					Z11K2: 'Gñeee'
 				};
-				const rows = tableUtils.convertZObjectToRows( zObject );
+				const rows = zobjectUtils.convertJsonToTable( zObject );
 				const expected = [
 					{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
 					{ id: 1, key: 'Z1K1', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
@@ -108,14 +108,14 @@ describe( 'tableUtils mixin', function () {
 			} );
 		} );
 
-		describe( 'convertZObjectToRows with parent', function () {
+		describe( 'convertJsonToTable with parent', function () {
 
 			it( 'converts a terminal string', function () {
 				const zObject = 'the stringy one';
 				const parentRow = new Row( 10, 'Z2K2', Constants.ROW_VALUE_OBJECT, 9 );
 				const nextAvailableId = 20;
 
-				const rows = tableUtils.convertZObjectToRows( zObject, parentRow, nextAvailableId );
+				const rows = zobjectUtils.convertJsonToTable( zObject, parentRow, nextAvailableId );
 				const expected = [
 					{ id: 10, key: 'Z2K2', value: Constants.ROW_VALUE_OBJECT, parent: 9 },
 					{ id: 20, key: 'Z1K1', value: 'Z6', parent: 10 },
@@ -129,7 +129,7 @@ describe( 'tableUtils mixin', function () {
 				const parentRow = new Row( 10, 'Z2K2', Constants.ROW_VALUE_OBJECT, 9 );
 				const nextAvailableId = 20;
 
-				const rows = tableUtils.convertZObjectToRows( zObject, parentRow, nextAvailableId );
+				const rows = zobjectUtils.convertJsonToTable( zObject, parentRow, nextAvailableId );
 				const expected = [
 					{ id: 10, key: 'Z2K2', value: Constants.ROW_VALUE_OBJECT, parent: 9 },
 					{ id: 20, key: 'Z1K1', value: 'Z9', parent: 10 },
@@ -143,7 +143,7 @@ describe( 'tableUtils mixin', function () {
 				const parentRow = new Row( 10, 'Z2K2', Constants.ROW_VALUE_OBJECT, 9 );
 				const nextAvailableId = 20;
 
-				const rows = tableUtils.convertZObjectToRows( zObject, parentRow, nextAvailableId );
+				const rows = zobjectUtils.convertJsonToTable( zObject, parentRow, nextAvailableId );
 				const expected = [
 					{ id: 10, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 9 },
 					{ id: 20, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 10 },
@@ -171,7 +171,7 @@ describe( 'tableUtils mixin', function () {
 				const parentRow = new Row( 10, 'Z2K2', Constants.ROW_VALUE_OBJECT, 9 );
 				const nextAvailableId = 20;
 
-				const rows = tableUtils.convertZObjectToRows( zObject, parentRow, nextAvailableId );
+				const rows = zobjectUtils.convertJsonToTable( zObject, parentRow, nextAvailableId );
 
 				const expected = [
 					{ id: 10, key: 'Z2K2', value: Constants.ROW_VALUE_OBJECT, parent: 9 },
@@ -193,14 +193,14 @@ describe( 'tableUtils mixin', function () {
 			} );
 		} );
 
-		describe( 'convertZObjectToRows when parent is a list', function () {
+		describe( 'convertJsonToTable when parent is a list', function () {
 			it( 'insert a string in a parent list from index 0', function () {
 				const zObject = 'the stringy one';
 				const parentRow = new Row( 10, 'Z2K2', Constants.ROW_VALUE_ARRAY, 9 );
 				const nextAvailableId = 20;
 				const appendToList = true;
 
-				const rows = tableUtils.convertZObjectToRows( zObject, parentRow, nextAvailableId, appendToList );
+				const rows = zobjectUtils.convertJsonToTable( zObject, parentRow, nextAvailableId, appendToList );
 				const expected = [
 					{ id: 10, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 9 },
 					{ id: 20, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 10 },
@@ -217,7 +217,7 @@ describe( 'tableUtils mixin', function () {
 				const appendToList = true;
 				const fromIndex = 2;
 
-				const rows = tableUtils.convertZObjectToRows(
+				const rows = zobjectUtils.convertJsonToTable(
 					zObject,
 					parentRow,
 					nextAvailableId,
@@ -239,7 +239,7 @@ describe( 'tableUtils mixin', function () {
 				const nextAvailableId = 20;
 				const appendToList = true;
 
-				const rows = tableUtils.convertZObjectToRows( zObject, parentRow, nextAvailableId, appendToList );
+				const rows = zobjectUtils.convertJsonToTable( zObject, parentRow, nextAvailableId, appendToList );
 				const expected = [
 					{ id: 10, key: 'Z2K2', parent: 9, value: Constants.ROW_VALUE_ARRAY },
 					{ id: 20, key: '0', parent: 10, value: Constants.ROW_VALUE_ARRAY },
@@ -260,7 +260,7 @@ describe( 'tableUtils mixin', function () {
 				const appendToList = true;
 				const fromIndex = 2;
 
-				const rows = tableUtils.convertZObjectToRows(
+				const rows = zobjectUtils.convertJsonToTable(
 					zObject,
 					parentRow,
 					nextAvailableId,
@@ -286,7 +286,7 @@ describe( 'tableUtils mixin', function () {
 				const nextAvailableId = 20;
 				const appendToList = true;
 
-				const rows = tableUtils.convertZObjectToRows( zObject, parentRow, nextAvailableId, appendToList );
+				const rows = zobjectUtils.convertJsonToTable( zObject, parentRow, nextAvailableId, appendToList );
 				const expected = [
 					{ id: 10, key: 'Z2K2', parent: 9, value: Constants.ROW_VALUE_ARRAY },
 					{ id: 20, key: '0', parent: 10, value: Constants.ROW_VALUE_ARRAY },
@@ -309,7 +309,7 @@ describe( 'tableUtils mixin', function () {
 				const appendToList = true;
 				const fromIndex = 2;
 
-				const rows = tableUtils.convertZObjectToRows(
+				const rows = zobjectUtils.convertJsonToTable(
 					zObject,
 					parentRow,
 					nextAvailableId,
@@ -333,7 +333,7 @@ describe( 'tableUtils mixin', function () {
 		} );
 	} );
 
-	describe( 'convertZObjectTreetoJson', function () {
+	describe( 'convertTableToJson', function () {
 		describe( 'when zObjectTree does NOT contain any elements whose parent matches the parentId provided', function () {
 
 			describe( 'when rootIsArray is false', function () {
@@ -343,7 +343,7 @@ describe( 'tableUtils mixin', function () {
 						{ id: 2, key: 'Z6K1', value: 'the stringy one', parent: 1 }
 					] );
 					const parentId = 3;
-					const json = tableUtils.convertZObjectTreetoJson( zObjectTree, parentId );
+					const json = zobjectUtils.convertTableToJson( zObjectTree, parentId );
 					expect( json ).toBeUndefined();
 				} );
 			} );
@@ -355,7 +355,7 @@ describe( 'tableUtils mixin', function () {
 						{ id: 2, key: 'Z6K1', value: 'the stringy one', parent: 1 }
 					] );
 					const parentId = 3;
-					const json = tableUtils.convertZObjectTreetoJson( zObjectTree, parentId, true );
+					const json = zobjectUtils.convertTableToJson( zObjectTree, parentId, true );
 					expect( json ).toEqual( [] );
 				} );
 			} );
@@ -373,7 +373,7 @@ describe( 'tableUtils mixin', function () {
 						{ id: 6, key: 'Z9K1', value: Constants.Z_MONOLINGUALSTRING, parent: 4 }
 					] );
 
-					const json = tableUtils.convertZObjectTreetoJson( zObjectTree, 0 );
+					const json = zobjectUtils.convertTableToJson( zObjectTree, 0 );
 
 					expect( json ).toEqual( {
 						Z2K2: {
@@ -392,7 +392,7 @@ describe( 'tableUtils mixin', function () {
 						{ id: 1, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: 0 }
 					] );
 
-					const json = tableUtils.convertZObjectTreetoJson( zObjectTree, 0 );
+					const json = zobjectUtils.convertTableToJson( zObjectTree, 0 );
 
 					expect( json ).toBeUndefined();
 				} );
@@ -412,7 +412,7 @@ describe( 'tableUtils mixin', function () {
 					] );
 
 					let json;
-					json = tableUtils.convertZObjectTreetoJson( zObjectTree );
+					json = zobjectUtils.convertTableToJson( zObjectTree );
 					expect( json ).toEqual( {
 						Z2K2: {
 							Z1K1: Constants.Z_STRING,
@@ -420,7 +420,7 @@ describe( 'tableUtils mixin', function () {
 						}
 					} );
 
-					json = tableUtils.convertZObjectTreetoJson( zObjectTree, 0 );
+					json = zobjectUtils.convertTableToJson( zObjectTree, 0 );
 					expect( json ).toEqual( {
 						Z2K2: {
 							Z1K1: Constants.Z_STRING,
@@ -428,7 +428,7 @@ describe( 'tableUtils mixin', function () {
 						}
 					} );
 
-					json = tableUtils.convertZObjectTreetoJson( zObjectTree, 4 );
+					json = zobjectUtils.convertTableToJson( zObjectTree, 4 );
 					expect( json ).toEqual( {
 						Z2K2: {
 							Z1K1: Constants.Z_STRING,

@@ -7,7 +7,7 @@
 
 const Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ).methods,
-	zobjectTreeUtils = require( '../../mixins/zobjectTreeUtils.js' ).methods,
+	zobjectUtils = require( '../../mixins/zobjectUtils.js' ).methods,
 	extractZIDs = require( '../../mixins/schemata.js' ).methods.extractZIDs,
 	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject,
 	getParameterByName = require( '../../mixins/urlUtils.js' ).methods.getParameterByName,
@@ -1217,7 +1217,7 @@ module.exports = exports = {
 			 * @return {Array} zObjectJson
 			 */
 			return function ( id, isArray ) {
-				return zobjectTreeUtils.convertZObjectTreetoJson( state.zobject, id, isArray );
+				return zobjectUtils.convertTableToJson( state.zobject, id, isArray );
 			};
 		},
 
@@ -1557,7 +1557,7 @@ module.exports = exports = {
 				context.dispatch( 'fetchZids', { zids: listOfZIdWithinObject } );
 
 				// Convert to rows and set store:
-				const zobjectRows = zobjectTreeUtils.convertZObjectToRows( zobject );
+				const zobjectRows = zobjectUtils.convertJsonToTable( zobject );
 				context.commit( 'setZObject', zobjectRows );
 
 				// Set initialized as done:
@@ -1882,9 +1882,9 @@ module.exports = exports = {
 				if ( payload.append ) {
 					// If we append to a list, calculate the index from which we need to enter the value
 					const index = context.getters.getNextArrayIndex( payload.rowId );
-					rows = zobjectTreeUtils.convertZObjectToRows( payload.value, parentRow, nextRowId, true, index );
+					rows = zobjectUtils.convertJsonToTable( payload.value, parentRow, nextRowId, true, index );
 				} else {
-					rows = zobjectTreeUtils.convertZObjectToRows( payload.value, parentRow, nextRowId );
+					rows = zobjectUtils.convertJsonToTable( payload.value, parentRow, nextRowId );
 				}
 
 				// Reset the parent value in case it's changed
@@ -1900,7 +1900,7 @@ module.exports = exports = {
 				}
 			} else {
 				// Convert input payload.value into table rows with no parent
-				rows = zobjectTreeUtils.convertZObjectToRows( payload.value );
+				rows = zobjectUtils.convertJsonToTable( payload.value );
 			}
 
 			// Push all the rows, they already have their required IDs
@@ -1927,7 +1927,7 @@ module.exports = exports = {
 			const value = { [ payload.key ]: payload.value };
 			const parentRow = context.getters.getRowById( payload.rowId );
 			const nextRowId = context.getters.getNextRowId;
-			const rows = zobjectTreeUtils.convertZObjectToRows( value, parentRow, nextRowId, false, 0, false );
+			const rows = zobjectUtils.convertJsonToTable( value, parentRow, nextRowId, false, 0, false );
 
 			rows.forEach( function ( row ) {
 				context.commit( 'pushRow', row );
@@ -1952,7 +1952,7 @@ module.exports = exports = {
 			let nextRowId = context.getters.getNextRowId;
 			for ( const value of payload.values ) {
 				const nextIndex = context.getters.getNextArrayIndex( parentRow.id );
-				const rows = zobjectTreeUtils.convertZObjectToRows( value, parentRow, nextRowId, true, nextIndex );
+				const rows = zobjectUtils.convertJsonToTable( value, parentRow, nextRowId, true, nextIndex );
 				// Discard parentRow
 				rows.shift();
 				// Push all the object rows

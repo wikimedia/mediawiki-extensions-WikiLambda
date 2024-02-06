@@ -275,7 +275,7 @@
 				"ext.wikilambda.edit/store/classes/Row.js",
 				"ext.wikilambda.edit/mixins/typeUtils.js",
 				"ext.wikilambda.edit/mixins/urlUtils.js",
-				"ext.wikilambda.edit/mixins/zobjectTreeUtils.js",
+				"ext.wikilambda.edit/mixins/zobjectUtils.js",
 				"ext.wikilambda.edit/mixins/errorUtils.js",
 				"ext.wikilambda.edit/mixins/eventLogUtils.js",
 				"ext.wikilambda.edit/mixins/schemata.js",

@@ -7,7 +7,7 @@
  */
 
 const Constants = require( '../../../Constants.js' ),
-	convertZObjectTreetoJson = require( '../../../mixins/zobjectTreeUtils.js' ).methods.convertZObjectTreetoJson,
+	convertTableToJson = require( '../../../mixins/zobjectUtils.js' ).methods.convertTableToJson,
 	canonicalize = require( '../../../mixins/schemata.js' ).methods.canonicalizeZObject,
 	saveZObject = require( '../../../mixins/api.js' ).methods.saveZObject;
 
@@ -262,7 +262,7 @@ module.exports = exports = {
 		submitZObject: function ( context, { summary, disconnectFunctionObjects = false } ) {
 			context.dispatch( 'transformZObjectForSubmission', disconnectFunctionObjects );
 
-			const zobject = canonicalize( convertZObjectTreetoJson( context.getters.getZObjectTable ) );
+			const zobject = canonicalize( convertTableToJson( context.getters.getZObjectTable ) );
 
 			return saveZObject(
 				zobject,
