@@ -168,7 +168,7 @@ class ZResponseEnvelope extends ZObject {
 		if ( !( $metaData instanceof ZTypedMap ) ) {
 			$metaData = self::wrapInResponseMap( $key, $value );
 		} else {
-			$key = $key instanceof ZString ?: new ZString( $key );
+			$key = $key instanceof ZString ? $key : new ZString( $key );
 			$metaData->setValueForKey( $key, $value );
 		}
 

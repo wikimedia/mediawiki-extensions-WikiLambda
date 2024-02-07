@@ -15,6 +15,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedMap;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope
@@ -37,7 +38,7 @@ class ZResponseEnvelopeTest extends WikiLambdaIntegrationTestCase {
 
 	public function testCreation_constructor_error() {
 		$testError = new ZError( 'Z507', new ZString( 'error message' ) );
-		$zMap = ZResponseEnvelope::wrapInResponseMap( 'errors', $testError );
+		$zMap = ZResponseEnvelope::wrapErrorInResponseMap( $testError );
 		$testObject = new ZResponseEnvelope( null, $zMap );
 
 		$this->assertSame( ZTypeRegistry::Z_RESPONSEENVELOPE, $testObject->getZType() );
@@ -72,6 +73,26 @@ EOT;
 		$this->assertSame( 'Hello!', $testObject->getZValue()->getZValue() );
 		$this->assertTrue( $testObject->getZMetadata() instanceof ZReference );
 		$this->assertSame( ZTypeRegistry::Z_VOID, $testObject->getZMetadata()->getZValue() );
+
+		$testObject->setMetaDataValue( 'test key', new ZString( 'test value' ) );
+
+		$this->assertFalse( $testObject->hasErrors() );
+		$metadataObject = $testObject->getZMetadata();
+		$this->assertFalse( $metadataObject instanceof ZReference );
+		$this->assertTrue( $metadataObject instanceof ZTypedMap );
+		$this->assertSame( 'test value', $metadataObject->getValueGivenKey( new ZString( 'test key' ) )->getZValue() );
+
+		$errorObject = new ZError( 'Z500', 'Hello' );
+
+		$testObject->setMetaDataValue( new ZString( 'second test key' ), $errorObject );
+
+		$this->assertFalse( $testObject->hasErrors() );
+		$fetchedNonErrorError = $testObject->getZMetadata()->getValueGivenKey( new ZString( 'second test key' ) );
+		$this->assertTrue( $fetchedNonErrorError instanceof ZError );
+		$this->assertSame( 'Z500', $fetchedNonErrorError->getZErrorType() );
+
+		$testObject->setMetaDataValue( 'errors', $errorObject );
+		$this->assertTrue( $testObject->hasErrors() );
 	}
 
 	public function testCreation_factory_mapped_errors() {
