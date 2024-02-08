@@ -1199,7 +1199,7 @@ module.exports = exports = {
 			const lastKey = Math.max(
 				defaultKey,
 				...state.zobject.map( function ( item ) {
-					const match = item.value && item.value.match( keyRegex );
+					const match = item.isTerminal() && item.value.match( keyRegex );
 					return match ? parseInt( match[ 1 ], 10 ) : -1;
 				} )
 			);

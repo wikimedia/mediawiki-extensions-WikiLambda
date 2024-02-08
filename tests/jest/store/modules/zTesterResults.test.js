@@ -270,7 +270,7 @@ describe( 'zTesterResults Vuex module', function () {
 			it( 'should pass JSON for the current object to the API, if implementation ID matches current ' +
 				'object and current object is not new', async () => {
 				const currentObject = {
-						lovely: 'object'
+						lovely: 'implementation'
 					},
 					zFunctionId = 'Z10000',
 					zImplementations = [ 'Z10001', 'Z10002' ],
@@ -297,7 +297,7 @@ describe( 'zTesterResults Vuex module', function () {
 			'object and current object is new', async () => {
 				const currentObject = {
 						[ Constants.Z_PERSISTENTOBJECT_VALUE ]: {
-							lovely: 'object'
+							lovely: 'implementation'
 						}
 					},
 					zFunctionId = 'Z10000',

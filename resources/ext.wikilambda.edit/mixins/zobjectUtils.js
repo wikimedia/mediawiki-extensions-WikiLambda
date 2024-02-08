@@ -113,14 +113,12 @@ module.exports = exports = {
 		 * @return {Object}
 		 */
 		convertTableToJson: function ( zObjectTable, parentId = 0, rootIsArray = false ) {
-			function reconstructJson( object, layer, isArrayChild ) {
-				var json = {},
-					value,
-					currentElements = object.filter( function ( item ) {
-						return item.parent === layer;
-					} );
+			function reconstructJson( table, rowId, isArrayChild ) {
+				const rows = table.filter( ( item ) => item.parent === rowId );
+				let json = {},
+					value;
 
-				if ( currentElements.length === 0 && !isArrayChild ) {
+				if ( rows.length === 0 && !isArrayChild ) {
 					return;
 				}
 
@@ -129,25 +127,23 @@ module.exports = exports = {
 					json = [];
 				}
 
-				currentElements.forEach( function ( currentElement ) {
-					switch ( currentElement.value ) {
-						case 'array':
-							value = reconstructJson( object, currentElement.id, true );
-							json[ currentElement.key ] = value;
-							break;
-						case 'object':
-							if ( isArrayChild ) {
-								json[ currentElement.key ] = reconstructJson( object, currentElement.id );
-							} else if ( !currentElement.key ) {
-								json = reconstructJson( object, currentElement.id );
-							} else {
-								json[ currentElement.key ] = reconstructJson( object, currentElement.id );
-							}
-							break;
-
-						default:
-							json[ currentElement.key ] = currentElement.value;
-							break;
+				rows.forEach( ( row ) => {
+					if ( row.isArray() ) {
+						// row is parent of array
+						value = reconstructJson( table, row.id, true );
+						json[ row.key ] = value;
+					} else if ( row.isObject() ) {
+						// row is parent of object
+						if ( isArrayChild ) {
+							json[ row.key ] = reconstructJson( table, row.id );
+						} else if ( !row.key ) {
+							json = reconstructJson( table, row.id );
+						} else {
+							json[ row.key ] = reconstructJson( table, row.id );
+						}
+					} else {
+						// row is terminal
+						json[ row.key ] = row.value;
 					}
 				} );
 

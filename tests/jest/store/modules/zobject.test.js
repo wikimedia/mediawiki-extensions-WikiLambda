@@ -1005,7 +1005,7 @@ describe( 'zobject Vuex module', () => {
 					state.zobject = zobjectToRows( {
 						Z1K1: 'Z2',
 						Z2K1: 'Z0',
-						Z2K2: 'object'
+						Z2K2: Constants.ROW_VALUE_OBJECT
 					} );
 					const expectedRowId = 7;
 					const contentRowId = zobjectModule.getters.getZPersistentContentRowId( state, getters )();
@@ -1019,7 +1019,7 @@ describe( 'zobject Vuex module', () => {
 						Z10000K1: {
 							Z1K1: 'Z2',
 							Z2K1: 'Z0',
-							Z2K2: 'object'
+							Z2K2: Constants.ROW_VALUE_OBJECT
 						}
 					} );
 					const rowId = 4;
@@ -2424,7 +2424,7 @@ describe( 'zobject Vuex module', () => {
 				} );
 				const rowId = 0;
 				const key = 'errors';
-				const expected = { id: 45, key: 'K2', parent: 28, value: 'object' };
+				const expected = { id: 45, key: 'K2', parent: 28, value: Constants.ROW_VALUE_OBJECT };
 				const result = zobjectModule.getters.getMapValueByKey( state, getters )( rowId, key );
 				expect( result ).toEqual( expected );
 			} );
@@ -2536,7 +2536,7 @@ describe( 'zobject Vuex module', () => {
 				};
 
 				const expectedChangeTypePayload = { id: 0, type: Constants.Z_PERSISTENTOBJECT };
-				const expectedRootObject = { id: 0, key: undefined, parent: undefined, value: 'object' };
+				const expectedRootObject = { id: 0, key: undefined, parent: undefined, value: Constants.ROW_VALUE_OBJECT };
 
 				zobjectModule.actions.initializeCreateNewPage( context );
 
@@ -2569,7 +2569,7 @@ describe( 'zobject Vuex module', () => {
 				};
 
 				const expectedChangeTypePayload = { id: 0, type: Constants.Z_PERSISTENTOBJECT };
-				const expectedRootObject = { id: 0, key: undefined, parent: undefined, value: 'object' };
+				const expectedRootObject = { id: 0, key: undefined, parent: undefined, value: Constants.ROW_VALUE_OBJECT };
 				const expectedZ2K2ChangeTypePayload = { id: 7, type: Constants.Z_BOOLEAN };
 
 				zobjectModule.actions.initializeCreateNewPage( context );
@@ -2851,7 +2851,7 @@ describe( 'zobject Vuex module', () => {
 
 			it( 'Initialize evaluate function call page', () => {
 				const expectedChangeTypePayload = { id: 0, type: Constants.Z_FUNCTION_CALL };
-				const expectedRootObject = { id: 0, key: undefined, parent: undefined, value: 'object' };
+				const expectedRootObject = { id: 0, key: undefined, parent: undefined, value: Constants.ROW_VALUE_OBJECT };
 				context.state = {
 					zobject: []
 				};
@@ -2874,15 +2874,15 @@ describe( 'zobject Vuex module', () => {
 			// This is to prevent a null value from appearing in the generated JSON array.
 			it( 'does not change a correct indexed list', () => {
 				const initialList = [
-					{ id: 0, key: undefined, parent: undefined, value: 'object' },
-					{ id: 1, key: 'Z2K2', parent: 0, value: 'array' },
-					{ id: 2, key: '0', parent: 1, value: 'object' },
+					{ id: 0, key: undefined, parent: undefined, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 1, key: 'Z2K2', parent: 0, value: Constants.ROW_VALUE_ARRAY },
+					{ id: 2, key: '0', parent: 1, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 3, key: 'Z1K1', parent: 2, value: 'Z9' },
 					{ id: 4, key: 'Z9K1', parent: 2, value: 'Z6' },
-					{ id: 5, key: '1', parent: 1, value: 'object' },
+					{ id: 5, key: '1', parent: 1, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 6, key: 'Z1K1', parent: 5, value: 'Z6' },
 					{ id: 7, key: 'Z6K1', parent: 5, value: 'one' },
-					{ id: 8, key: '2', parent: 1, value: 'object' },
+					{ id: 8, key: '2', parent: 1, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 9, key: 'Z1K1', parent: 8, value: 'Z6' },
 					{ id: 10, key: 'Z6K1', parent: 8, value: 'two' }
 				];
@@ -2900,15 +2900,15 @@ describe( 'zobject Vuex module', () => {
 
 			it( 'recalculates indices for list with gaps', () => {
 				const initialList = [
-					{ id: 0, key: undefined, parent: undefined, value: 'object' },
-					{ id: 1, key: 'Z2K2', parent: 0, value: 'array' },
-					{ id: 2, key: '0', parent: 1, value: 'object' },
+					{ id: 0, key: undefined, parent: undefined, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 1, key: 'Z2K2', parent: 0, value: Constants.ROW_VALUE_ARRAY },
+					{ id: 2, key: '0', parent: 1, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 3, key: 'Z1K1', parent: 2, value: 'Z9' },
 					{ id: 4, key: 'Z9K1', parent: 2, value: 'Z6' },
-					{ id: 5, key: '3', parent: 1, value: 'object' },
+					{ id: 5, key: '3', parent: 1, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 6, key: 'Z1K1', parent: 5, value: 'Z6' },
 					{ id: 7, key: 'Z6K1', parent: 5, value: 'one' },
-					{ id: 8, key: '7', parent: 1, value: 'object' },
+					{ id: 8, key: '7', parent: 1, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 9, key: 'Z1K1', parent: 8, value: 'Z6' },
 					{ id: 10, key: 'Z6K1', parent: 8, value: 'two' }
 				];
@@ -3035,20 +3035,20 @@ describe( 'zobject Vuex module', () => {
 				console.log( context.state.zobject );
 				const zObject = 'stringness';
 				const expected = [
-					{ id: 0, key: undefined, parent: undefined, value: 'object' },
-					{ id: 1, key: 'Z1K1', parent: 0, value: 'object' },
+					{ id: 0, key: undefined, parent: undefined, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 1, key: 'Z1K1', parent: 0, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 2, key: 'Z1K1', parent: 1, value: 'Z9' },
 					{ id: 3, key: 'Z9K1', parent: 1, value: 'Z2' },
-					{ id: 4, key: 'Z2K1', parent: 0, value: 'object' },
+					{ id: 4, key: 'Z2K1', parent: 0, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 5, key: 'Z1K1', parent: 4, value: 'Z6' },
 					{ id: 6, key: 'Z6K1', parent: 4, value: 'Z0' },
-					{ id: 7, key: 'Z2K2', parent: 0, value: 'object' },
-					{ id: 10, key: 'Z2K3', parent: 0, value: 'object' },
-					{ id: 11, key: 'Z1K1', parent: 10, value: 'object' },
+					{ id: 7, key: 'Z2K2', parent: 0, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 10, key: 'Z2K3', parent: 0, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 11, key: 'Z1K1', parent: 10, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 12, key: 'Z1K1', parent: 11, value: 'Z9' },
 					{ id: 13, key: 'Z9K1', parent: 11, value: 'Z12' },
-					{ id: 14, key: 'Z12K1', parent: 10, value: 'array' },
-					{ id: 15, key: '0', parent: 14, value: 'object' },
+					{ id: 14, key: 'Z12K1', parent: 10, value: Constants.ROW_VALUE_ARRAY },
+					{ id: 15, key: '0', parent: 14, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 16, key: 'Z1K1', parent: 15, value: 'Z9' },
 					{ id: 17, key: 'Z9K1', parent: 15, value: 'Z11' },
 					// New value:
@@ -3067,30 +3067,30 @@ describe( 'zobject Vuex module', () => {
 			it( 'injects array of strings into zobject value', () => {
 				const zObject = [ 'Z6', 'stringful', 'stringlord' ];
 				const expected = [
-					{ id: 0, key: undefined, parent: undefined, value: 'object' },
-					{ id: 1, key: 'Z1K1', parent: 0, value: 'object' },
+					{ id: 0, key: undefined, parent: undefined, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 1, key: 'Z1K1', parent: 0, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 2, key: 'Z1K1', parent: 1, value: 'Z9' },
 					{ id: 3, key: 'Z9K1', parent: 1, value: 'Z2' },
-					{ id: 4, key: 'Z2K1', parent: 0, value: 'object' },
+					{ id: 4, key: 'Z2K1', parent: 0, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 5, key: 'Z1K1', parent: 4, value: 'Z6' },
 					{ id: 6, key: 'Z6K1', parent: 4, value: 'Z0' },
-					{ id: 7, key: 'Z2K2', parent: 0, value: 'array' },
-					{ id: 10, key: 'Z2K3', parent: 0, value: 'object' },
-					{ id: 11, key: 'Z1K1', parent: 10, value: 'object' },
+					{ id: 7, key: 'Z2K2', parent: 0, value: Constants.ROW_VALUE_ARRAY },
+					{ id: 10, key: 'Z2K3', parent: 0, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 11, key: 'Z1K1', parent: 10, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 12, key: 'Z1K1', parent: 11, value: 'Z9' },
 					{ id: 13, key: 'Z9K1', parent: 11, value: 'Z12' },
-					{ id: 14, key: 'Z12K1', parent: 10, value: 'array' },
-					{ id: 15, key: '0', parent: 14, value: 'object' },
+					{ id: 14, key: 'Z12K1', parent: 10, value: Constants.ROW_VALUE_ARRAY },
+					{ id: 15, key: '0', parent: 14, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 16, key: 'Z1K1', parent: 15, value: 'Z9' },
 					{ id: 17, key: 'Z9K1', parent: 15, value: 'Z11' },
 					// New value:
-					{ id: 18, key: '0', parent: 7, value: 'object' },
+					{ id: 18, key: '0', parent: 7, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 19, key: 'Z1K1', parent: 18, value: 'Z9' },
 					{ id: 20, key: 'Z9K1', parent: 18, value: 'Z6' },
-					{ id: 21, key: '1', parent: 7, value: 'object' },
+					{ id: 21, key: '1', parent: 7, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 22, key: 'Z1K1', parent: 21, value: 'Z6' },
 					{ id: 23, key: 'Z6K1', parent: 21, value: 'stringful' },
-					{ id: 24, key: '2', parent: 7, value: 'object' },
+					{ id: 24, key: '2', parent: 7, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 25, key: 'Z1K1', parent: 24, value: 'Z6' },
 					{ id: 26, key: 'Z6K1', parent: 24, value: 'stringlord' }
 				];
@@ -3114,34 +3114,34 @@ describe( 'zobject Vuex module', () => {
 				};
 
 				const expected = [
-					{ id: 0, key: undefined, parent: undefined, value: 'object' },
-					{ id: 1, key: 'Z1K1', parent: 0, value: 'object' },
+					{ id: 0, key: undefined, parent: undefined, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 1, key: 'Z1K1', parent: 0, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 2, key: 'Z1K1', parent: 1, value: 'Z9' },
 					{ id: 3, key: 'Z9K1', parent: 1, value: 'Z2' },
-					{ id: 4, key: 'Z2K1', parent: 0, value: 'object' },
+					{ id: 4, key: 'Z2K1', parent: 0, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 5, key: 'Z1K1', parent: 4, value: 'Z6' },
 					{ id: 6, key: 'Z6K1', parent: 4, value: 'Z0' },
-					{ id: 7, key: 'Z2K2', parent: 0, value: 'object' },
-					{ id: 10, key: 'Z2K3', parent: 0, value: 'object' },
-					{ id: 11, key: 'Z1K1', parent: 10, value: 'object' },
+					{ id: 7, key: 'Z2K2', parent: 0, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 10, key: 'Z2K3', parent: 0, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 11, key: 'Z1K1', parent: 10, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 12, key: 'Z1K1', parent: 11, value: 'Z9' },
 					{ id: 13, key: 'Z9K1', parent: 11, value: 'Z12' },
-					{ id: 14, key: 'Z12K1', parent: 10, value: 'array' },
-					{ id: 15, key: '0', parent: 14, value: 'object' },
+					{ id: 14, key: 'Z12K1', parent: 10, value: Constants.ROW_VALUE_ARRAY },
+					{ id: 15, key: '0', parent: 14, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 16, key: 'Z1K1', parent: 15, value: 'Z9' },
 					{ id: 17, key: 'Z9K1', parent: 15, value: 'Z11' },
 					// New value:
-					{ id: 18, key: 'Z1K1', parent: 7, value: 'object' },
+					{ id: 18, key: 'Z1K1', parent: 7, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 19, key: 'Z1K1', parent: 18, value: 'Z9' },
 					{ id: 20, key: 'Z9K1', parent: 18, value: 'Z11' },
-					{ id: 21, key: 'Z11K1', parent: 7, value: 'object' },
-					{ id: 22, key: 'Z1K1', parent: 21, value: 'object' },
+					{ id: 21, key: 'Z11K1', parent: 7, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 22, key: 'Z1K1', parent: 21, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 23, key: 'Z1K1', parent: 22, value: 'Z9' },
 					{ id: 24, key: 'Z9K1', parent: 22, value: 'Z60' },
-					{ id: 25, key: 'Z60K1', parent: 21, value: 'object' },
+					{ id: 25, key: 'Z60K1', parent: 21, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 26, key: 'Z1K1', parent: 25, value: 'Z6' },
 					{ id: 27, key: 'Z6K1', parent: 25, value: 'pang' },
-					{ id: 28, key: 'Z11K2', parent: 7, value: 'object' },
+					{ id: 28, key: 'Z11K2', parent: 7, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 29, key: 'Z1K1', parent: 28, value: 'Z6' },
 					{ id: 30, key: 'Z6K1', parent: 28, value: 'Gñeee' }
 				];
@@ -3207,15 +3207,15 @@ describe( 'zobject Vuex module', () => {
 
 			it( 'injects another key-value without removing the current ones', () => {
 				const expected = [
-					{ id: 0, key: undefined, parent: undefined, value: 'object' },
-					{ id: 1, key: 'Z1K1', parent: 0, value: 'object' },
+					{ id: 0, key: undefined, parent: undefined, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 1, key: 'Z1K1', parent: 0, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 2, key: 'Z1K1', parent: 1, value: 'Z9' },
 					{ id: 3, key: 'Z9K1', parent: 1, value: 'Z7' },
-					{ id: 4, key: 'Z7K1', parent: 0, value: 'object' },
+					{ id: 4, key: 'Z7K1', parent: 0, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 5, key: 'Z1K1', parent: 4, value: 'Z9' },
 					{ id: 6, key: 'Z9K1', parent: 4, value: 'Z881' },
 					// New key:
-					{ id: 7, key: 'Z881K1', parent: 0, value: 'object' },
+					{ id: 7, key: 'Z881K1', parent: 0, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 8, key: 'Z1K1', parent: 7, value: 'Z9' },
 					{ id: 9, key: 'Z9K1', parent: 7, value: 'Z6' }
 				];

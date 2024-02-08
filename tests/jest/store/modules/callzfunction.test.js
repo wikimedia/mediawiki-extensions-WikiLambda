@@ -55,7 +55,7 @@ describe( 'callZFunction Vuex module', function () {
 			beforeEach( function () {
 				context.state = {
 					zobject: tableDataToRowObjects( [
-						{ id: 0, key: undefined, parent: undefined, value: 'object' },
+						{ id: 0, key: undefined, parent: undefined, value: Constants.ROW_VALUE_OBJECT },
 						{ id: 1, key: 'Z1K1', parent: 0, value: 'Z6' },
 						{ id: 2, key: 'Z6K1', parent: 0, value: 'not a map' }
 					] )

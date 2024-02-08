@@ -166,7 +166,7 @@ module.exports = exports = {
 		 * @return {Array} zObjectJson
 		 */
 		getZObjectAsJson: function ( state, getters, rootState, rootGetters ) {
-			return rootGetters.getZObjectAsJsonById( 0, rootState.zobjectModule.zobject[ 0 ].value === 'array' );
+			return rootGetters.getZObjectAsJsonById( 0, rootState.zobjectModule.zobject[ 0 ].isArray() );
 		},
 		/**
 		 * Return the root ZObjectId, equivalend to the Z_REFERENCE_ID of Z_PERSISTENTOBJECT_ID

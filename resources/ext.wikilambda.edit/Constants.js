@@ -234,7 +234,10 @@ Constants.ABOUT_DIALOG_MAX_ITEMS = 5;
 Constants.LABEL_CHARS_MAX = 100;
 Constants.DESCRIPTION_CHARS_MAX = 100;
 
-Constants.ROW_VALUE_OBJECT = 'object';
-Constants.ROW_VALUE_ARRAY = 'array';
+// These constants should not be strings, to safely
+// differentiate them from possible terminal strings that
+// might contain the same values.
+Constants.ROW_VALUE_OBJECT = 1;
+Constants.ROW_VALUE_ARRAY = 2;
 
 module.exports = Constants;
