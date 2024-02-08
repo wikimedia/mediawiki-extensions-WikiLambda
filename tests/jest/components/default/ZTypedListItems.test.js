@@ -6,8 +6,9 @@
  */
 'use strict';
 
-var shallowMount = require( '@vue/test-utils' ).shallowMount,
+const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	ZTypedListItems = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZTypedListItems.vue' );
 
 describe( 'ZTypedListItems', () => {
@@ -17,9 +18,9 @@ describe( 'ZTypedListItems', () => {
 		getters = {
 			getZObjectTypeByRowId: createGettersWithFunctionsMock( 'Z6' ),
 			getChildrenByParentRowId: createGettersWithFunctionsMock( [
-				{ id: 28, key: '0', parent: 27, value: 'object' },
-				{ id: 39, key: '1', parent: 27, value: 'object' },
-				{ id: 41, key: '2', parent: 27, value: 'object' }
+				{ id: 28, key: '0', parent: 27, value: Constants.ROW_VALUE_OBJECT },
+				{ id: 39, key: '1', parent: 27, value: Constants.ROW_VALUE_OBJECT },
+				{ id: 41, key: '2', parent: 27, value: Constants.ROW_VALUE_OBJECT }
 			] ),
 			getUserLangZid: createGettersWithFunctionsMock( 'Z1003' )
 		};

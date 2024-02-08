@@ -6,10 +6,10 @@
  */
 'use strict';
 
-const { CdxButton } = require( '@wikimedia/codex' );
-
-var shallowMount = require( '@vue/test-utils' ).shallowMount,
+const { CdxButton } = require( '@wikimedia/codex' ),
+	shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	ZTypedList = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZTypedList.vue' ),
 	ZTypedListItems = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZTypedListItems.vue' ),
 	ZTypedListType = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZTypedListType.vue' );
@@ -20,9 +20,9 @@ describe( 'ZTypedList', () => {
 	beforeEach( () => {
 		getters = {
 			getChildrenByParentRowId: createGettersWithFunctionsMock( [
-				{ id: 28, key: '0', parent: 27, value: 'object' },
-				{ id: 39, key: '1', parent: 27, value: 'object' },
-				{ id: 41, key: '2', parent: 27, value: 'object' }
+				{ id: 28, key: '0', parent: 27, value: Constants.ROW_VALUE_OBJECT },
+				{ id: 39, key: '1', parent: 27, value: Constants.ROW_VALUE_OBJECT },
+				{ id: 41, key: '2', parent: 27, value: Constants.ROW_VALUE_OBJECT }
 			] ),
 			getTypedListItemType: createGettersWithFunctionsMock( 'Z6' )
 		};

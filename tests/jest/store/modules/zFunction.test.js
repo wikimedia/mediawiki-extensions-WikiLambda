@@ -7,6 +7,7 @@
 'use strict';
 
 const zobjectToRows = require( '../../helpers/zObjectTableHelpers.js' ).zobjectToRows,
+	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	zobjectModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zobject.js' ),
 	zFunctionModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zFunction.js' );
 
@@ -174,7 +175,7 @@ describe( 'zFunction Vuex module', () => {
 			it( 'returns output row', () => {
 				state.zobject = zobjectToRows( { Z2K2: { Z8K2: 'Z6' } } );
 				const rowId = 0;
-				const expected = { id: 2, key: 'Z8K2', parent: 1, value: 'object' };
+				const expected = { id: 2, key: 'Z8K2', parent: 1, value: Constants.ROW_VALUE_OBJECT };
 				expect( zFunctionModule.getters.getZFunctionOutput( state, getters )( rowId ) )
 					.toEqual( expected );
 			} );
