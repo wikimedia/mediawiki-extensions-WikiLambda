@@ -1134,9 +1134,13 @@ module.exports = exports = {
 		getZMultilingualLanguageList: function ( _state, getters ) {
 			/**
 			 * @param {number} rowId
-			 * @return {Object}
+			 * @return {Array}
 			 */
 			function findBestMonolingual( rowId ) {
+				const listRow = getters.getRowById( rowId );
+				if ( !listRow || !listRow.isArray() ) {
+					return [];
+				}
 				const allMonolinguals = getters.getChildrenByParentRowId( rowId ).slice( 1 );
 				const allLanguages = allMonolinguals.map( ( monolingual ) => {
 					const langZid = getters.getZMonolingualLangValue( monolingual.id );
@@ -1726,26 +1730,28 @@ module.exports = exports = {
 			let zids = [];
 			newArgs.forEach( function ( arg ) {
 				if ( !oldKeys.includes( arg[ Constants.Z_ARGUMENT_KEY ] ) ) {
-					const blank = context.getters.createObjectByType( {
+					const key = arg[ Constants.Z_ARGUMENT_KEY ];
+					const value = context.getters.createObjectByType( {
 						type: arg[ Constants.Z_ARGUMENT_TYPE ],
 						link: true
 					} );
 
 					// Asynchronously fetch the necessary zids. We don't need to wait
 					// to the fetch call because these will only be needed for labels.
-					zids = zids.concat( extractZIDs( blank ) );
-
+					zids = zids.concat( extractZIDs( { [ key ]: value } ) );
 					allActions.push( context.dispatch( 'injectKeyValueFromRowId', {
 						rowId: payload.parentId,
-						key: arg[ Constants.Z_ARGUMENT_KEY ],
-						value: blank
+						key,
+						value
 					} ) );
 				}
 			} );
 
 			// 4.c. Make sure that all the newly added referenced zids are fetched
 			zids = [ ...new Set( zids ) ];
-			context.dispatch( 'fetchZids', { zids } );
+			if ( zids.length > 0 ) {
+				context.dispatch( 'fetchZids', { zids } );
+			}
 
 			return Promise.all( allActions );
 		},
