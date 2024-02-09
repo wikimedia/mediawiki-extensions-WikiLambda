@@ -567,86 +567,179 @@ describe( 'typeUtils mixin', function () {
 		} );
 	} );
 
-	describe( 'isValueTruthy', () => {
-		it( 'returns false if key chain is empty and object is falsy', () => {
-			const object = undefined;
-			const keys = [];
-			expect( typeUtils.isValueTruthy( object, keys ) ).toBe( false );
+	describe( 'isTruthyOrEqual', () => {
+		describe( 'without equality parameter', () => {
+			it( 'returns false if key chain is empty and object is falsy', () => {
+				const object = undefined;
+				const keys = [];
+				expect( typeUtils.isTruthyOrEqual( object, keys ) ).toBe( false );
+			} );
+
+			it( 'returns true if key chain is empty and object is truthy', () => {
+				const object = 'some value';
+				const keys = [];
+				expect( typeUtils.isTruthyOrEqual( object, keys ) ).toBe( true );
+			} );
+
+			it( 'returns false if value is not found by one key', () => {
+				const object = {
+					Z1K1: 'Z6',
+					Z6K1: 'string value'
+				};
+				const keys = [ 'Z11K1' ];
+				expect( typeUtils.isTruthyOrEqual( object, keys ) ).toBe( false );
+			} );
+
+			it( 'returns true if value is found by one key', () => {
+				const object = {
+					Z1K1: 'Z6',
+					Z6K1: 'string value'
+				};
+				const keys = [ 'Z6K1' ];
+				expect( typeUtils.isTruthyOrEqual( object, keys ) ).toBe( true );
+			} );
+
+			it( 'returns false if value is found by one key but empty', () => {
+				const object = {
+					Z1K1: 'Z6',
+					Z6K1: ''
+				};
+				const keys = [ 'Z6K1' ];
+				expect( typeUtils.isTruthyOrEqual( object, keys ) ).toBe( false );
+			} );
+
+			it( 'returns false if value is not found by a chain of keys', () => {
+				const object = {
+					Z1K1: 'Z11',
+					Z11K1: 'Z1002',
+					Z11K2: 'string value'
+				};
+				const keys = [ 'Z11K1', 'Z60K1', 'Z6K1' ];
+				expect( typeUtils.isTruthyOrEqual( object, keys ) ).toBe( false );
+			} );
+
+			it( 'returns true if value is found by a chain of keys', () => {
+				const object = {
+					Z1K1: 'Z11',
+					Z11K1: {
+						Z1K1: 'Z60',
+						Z60K1: {
+							Z1K1: 'Z6',
+							Z6K1: 'en'
+						}
+					},
+					Z11K2: 'string value'
+				};
+				const keys = [ 'Z11K1', 'Z60K1', 'Z6K1' ];
+				expect( typeUtils.isTruthyOrEqual( object, keys ) ).toBe( true );
+			} );
+
+			it( 'returns false if value is found by a chain of keys but empty', () => {
+				const object = {
+					Z1K1: 'Z11',
+					Z11K1: {
+						Z1K1: 'Z60',
+						Z60K1: {
+							Z1K1: 'Z6',
+							Z6K1: ''
+						}
+					},
+					Z11K2: 'string value'
+				};
+				const keys = [ 'Z11K1', 'Z60K1', 'Z6K1' ];
+				expect( typeUtils.isTruthyOrEqual( object, keys ) ).toBe( false );
+			} );
 		} );
 
-		it( 'returns true if key chain is empty and object is truthy', () => {
-			const object = 'some value';
-			const keys = [];
-			expect( typeUtils.isValueTruthy( object, keys ) ).toBe( true );
-		} );
+		describe( 'with equality parameter', () => {
+			it( 'returns false if key chain is empty and object is not equal', () => {
+				const object = 'some value';
+				const keys = [];
+				const equals = 'something else';
+				expect( typeUtils.isTruthyOrEqual( object, keys, equals ) ).toBe( false );
+			} );
 
-		it( 'returns false if value is not found by one key', () => {
-			const object = {
-				Z1K1: 'Z6',
-				Z6K1: 'string value'
-			};
-			const keys = [ 'Z11K1' ];
-			expect( typeUtils.isValueTruthy( object, keys ) ).toBe( false );
-		} );
+			it( 'returns true if key chain is empty and object is truthy', () => {
+				const object = 'some value';
+				const keys = [];
+				const equals = 'some value';
+				expect( typeUtils.isTruthyOrEqual( object, keys, equals ) ).toBe( true );
+			} );
 
-		it( 'returns true if value is found by one key', () => {
-			const object = {
-				Z1K1: 'Z6',
-				Z6K1: 'string value'
-			};
-			const keys = [ 'Z6K1' ];
-			expect( typeUtils.isValueTruthy( object, keys ) ).toBe( true );
-		} );
+			it( 'returns false if value is not found by one key', () => {
+				const object = {
+					Z1K1: 'Z6',
+					Z6K1: 'string value'
+				};
+				const keys = [ 'Z11K1' ];
+				const equals = 'some value';
+				expect( typeUtils.isTruthyOrEqual( object, keys, equals ) ).toBe( false );
+			} );
 
-		it( 'returns false if value is found by one key but empty', () => {
-			const object = {
-				Z1K1: 'Z6',
-				Z6K1: ''
-			};
-			const keys = [ 'Z6K1' ];
-			expect( typeUtils.isValueTruthy( object, keys ) ).toBe( false );
-		} );
+			it( 'returns true if value is found and equal by one key', () => {
+				const object = {
+					Z1K1: 'Z6',
+					Z6K1: 'string value'
+				};
+				const keys = [ 'Z6K1' ];
+				const equals = 'string value';
+				expect( typeUtils.isTruthyOrEqual( object, keys, equals ) ).toBe( true );
+			} );
 
-		it( 'returns false if value is not found by a chain of keys', () => {
-			const object = {
-				Z1K1: 'Z11',
-				Z11K1: 'Z1002',
-				Z11K2: 'string value'
-			};
-			const keys = [ 'Z11K1', 'Z60K1', 'Z6K1' ];
-			expect( typeUtils.isValueTruthy( object, keys ) ).toBe( false );
-		} );
+			it( 'returns false if value is found by one key but not equal', () => {
+				const object = {
+					Z1K1: 'Z6',
+					Z6K1: 'string value'
+				};
+				const keys = [ 'Z6K1' ];
+				const equals = 'some other value';
+				expect( typeUtils.isTruthyOrEqual( object, keys, equals ) ).toBe( false );
+			} );
 
-		it( 'returns true if value is found by a chain of keys', () => {
-			const object = {
-				Z1K1: 'Z11',
-				Z11K1: {
-					Z1K1: 'Z60',
-					Z60K1: {
-						Z1K1: 'Z6',
-						Z6K1: 'en'
-					}
-				},
-				Z11K2: 'string value'
-			};
-			const keys = [ 'Z11K1', 'Z60K1', 'Z6K1' ];
-			expect( typeUtils.isValueTruthy( object, keys ) ).toBe( true );
-		} );
+			it( 'returns false if value is not found by a chain of keys', () => {
+				const object = {
+					Z1K1: 'Z11',
+					Z11K1: 'Z1002',
+					Z11K2: 'string value'
+				};
+				const keys = [ 'Z11K1', 'Z60K1', 'Z6K1' ];
+				const equals = 'some value';
+				expect( typeUtils.isTruthyOrEqual( object, keys, equals ) ).toBe( false );
+			} );
 
-		it( 'returns false if value is found by a chain of keys but empty', () => {
-			const object = {
-				Z1K1: 'Z11',
-				Z11K1: {
-					Z1K1: 'Z60',
-					Z60K1: {
-						Z1K1: 'Z6',
-						Z6K1: ''
-					}
-				},
-				Z11K2: 'string value'
-			};
-			const keys = [ 'Z11K1', 'Z60K1', 'Z6K1' ];
-			expect( typeUtils.isValueTruthy( object, keys ) ).toBe( false );
+			it( 'returns true if value is found by a chain of keys and is equal', () => {
+				const object = {
+					Z1K1: 'Z11',
+					Z11K1: {
+						Z1K1: 'Z60',
+						Z60K1: {
+							Z1K1: 'Z6',
+							Z6K1: 'en'
+						}
+					},
+					Z11K2: 'string value'
+				};
+				const keys = [ 'Z11K1', 'Z60K1', 'Z6K1' ];
+				const equals = 'en';
+				expect( typeUtils.isTruthyOrEqual( object, keys, equals ) ).toBe( true );
+			} );
+
+			it( 'returns false if value is found by a chain of keys but not equal', () => {
+				const object = {
+					Z1K1: 'Z11',
+					Z11K1: {
+						Z1K1: 'Z60',
+						Z60K1: {
+							Z1K1: 'Z6',
+							Z6K1: 'en'
+						}
+					},
+					Z11K2: 'string value'
+				};
+				const keys = [ 'Z11K1', 'Z60K1', 'Z6K1' ];
+				const equals = 'fr';
+				expect( typeUtils.isTruthyOrEqual( object, keys, equals ) ).toBe( false );
+			} );
 		} );
 	} );
 

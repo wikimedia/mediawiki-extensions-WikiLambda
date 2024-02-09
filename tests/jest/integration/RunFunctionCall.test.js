@@ -100,8 +100,9 @@ describe( 'WikiLambda frontend, running a function on Run Function Special page'
 
 		// ASSERT: The metadata is displayed in the dialog.
 		const detailsDialog = await findByRole( 'dialog' );
-		expect( detailsDialog ).toHaveTextContent( 'Orchestration start time: 11 seconds ago' );
-		expect( detailsDialog ).toHaveTextContent( 'Orchestration end time: 2 seconds ago' );
-		expect( detailsDialog ).toHaveTextContent( 'Orchestration duration: 146ms' );
+		expect( detailsDialog ).toHaveTextContent( 'Orchestration:' );
+		expect( detailsDialog ).toHaveTextContent( 'Start time: 11 seconds ago' );
+		expect( detailsDialog ).toHaveTextContent( 'End time: 2 seconds ago' );
+		expect( detailsDialog ).toHaveTextContent( 'Duration: 146ms' );
 	} );
 } );

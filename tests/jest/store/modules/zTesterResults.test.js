@@ -159,7 +159,7 @@ describe( 'zTesterResults Vuex module', function () {
 						wikilambda_perform_test_ztesters: zTesters.join( '|' ),
 						wikilambda_perform_test_nocache: false
 					} );
-					expect( context.commit ).toHaveBeenCalledTimes( 7 );
+					expect( context.commit ).toHaveBeenCalledTimes( 8 );
 					expect( Object.keys( context.state.zTesterResults ).length )
 						.toEqual( zTesters.length * zImplementations.length );
 
@@ -188,7 +188,7 @@ describe( 'zTesterResults Vuex module', function () {
 						wikilambda_perform_test_ztesters: zTesters.join( '|' ),
 						wikilambda_perform_test_nocache: false
 					} );
-					expect( context.commit ).toHaveBeenCalledTimes( 7 );
+					expect( context.commit ).toHaveBeenCalledTimes( 8 );
 					expect( Object.keys( context.state.zTesterResults ).length )
 						.toEqual( zTesters.length * zImplementations.length );
 

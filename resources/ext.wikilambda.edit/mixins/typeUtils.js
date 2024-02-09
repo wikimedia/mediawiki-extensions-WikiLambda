@@ -700,20 +700,25 @@ const Constants = require( '../Constants.js' ),
 			/**
 			 * Returns whether the value of zobject after
 			 * following the values of the nested properties given
-			 * by the array of keys is truthy
+			 * by the array of keys is truthy. If the additional
+			 * parameter equals is passed, it returns whether the
+			 * final zobject is equal to it.
 			 *
 			 * @param {Object} zobject
 			 * @param {Array} keys
+			 * @param {Mixed} equals
 			 * @return {boolean}
 			 */
-			isValueTruthy: function ( zobject, keys = [] ) {
+			isTruthyOrEqual: function ( zobject, keys = [], equals = undefined ) {
 				if ( keys.length === 0 ) {
-					return !!zobject;
+					return equals === undefined ?
+						!!zobject :
+						zobject === equals;
 				}
 				const head = keys[ 0 ];
 				if ( zobject[ head ] ) {
 					const tail = keys.slice( 1 );
-					return typeUtils.methods.isValueTruthy( zobject[ head ], tail );
+					return typeUtils.methods.isTruthyOrEqual( zobject[ head ], tail, equals );
 				}
 				return false;
 			},

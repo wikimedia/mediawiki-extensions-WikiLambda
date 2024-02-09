@@ -1982,7 +1982,6 @@ describe( 'zobject Vuex module', () => {
 			} );
 
 			it( 'returns Z41(true) when the boolean value is true', () => {
-				console.log( context.state.zobject );
 				// rowId of the parent of the boolean value
 				const rowId = 4;
 				const expected = Constants.Z_BOOLEAN_TRUE;
@@ -3032,7 +3031,6 @@ describe( 'zobject Vuex module', () => {
 			} );
 
 			it( 'injects string zobject value', () => {
-				console.log( context.state.zobject );
 				const zObject = 'stringness';
 				const expected = [
 					{ id: 0, key: undefined, parent: undefined, value: Constants.ROW_VALUE_OBJECT },

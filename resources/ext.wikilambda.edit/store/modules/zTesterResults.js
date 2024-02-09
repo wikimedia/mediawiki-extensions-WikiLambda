@@ -5,8 +5,9 @@
  * @license MIT
  */
 
-var Constants = require( '../../Constants.js' ),
-	hybridToCanonical = require( '../../mixins/schemata.js' ).methods.hybridToCanonical;
+const Constants = require( '../../Constants.js' ),
+	hybridToCanonical = require( '../../mixins/schemata.js' ).methods.hybridToCanonical,
+	extractZIDs = require( '../../mixins/schemata.js' ).methods.extractZIDs;
 
 /**
  * Loop through the given array of ZIDs and if a ZID is for the object currently being edited, or for a new object,
@@ -181,7 +182,7 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		getTestResults: function ( context, payload ) {
-			var api = new mw.Api();
+			const api = new mw.Api();
 
 			// If this API is already running, exit
 			if ( context.state.fetchingTestResults ) {
@@ -199,11 +200,11 @@ module.exports = exports = {
 				context.commit( 'clearZTesterResults' );
 			}
 
-			var implementations = replaceCurrentObjectWithFullJSONObject(
+			const implementations = replaceCurrentObjectWithFullJSONObject(
 				context,
 				payload.zImplementations
 			);
-			var testers = replaceCurrentObjectWithFullJSONObject(
+			const testers = replaceCurrentObjectWithFullJSONObject(
 				context,
 				payload.zTesters
 			);
@@ -215,7 +216,7 @@ module.exports = exports = {
 				wikilambda_perform_test_ztesters: testers.join( '|' ),
 				wikilambda_perform_test_nocache: payload.nocache || false
 			} ).then( function ( data ) {
-				var results = data.query.wikilambda_perform_test;
+				const results = data.query.wikilambda_perform_test;
 				if ( !Array.isArray( results ) &&
 						results[ Constants.Z_RESPONSEENVELOPE_METADATA ] !== Constants.Z_NOTHING ) {
 					throw new Error(
@@ -229,32 +230,36 @@ module.exports = exports = {
 					);
 				}
 
+				const zids = [];
 				results.forEach( function ( testResult ) {
-					var status = hybridToCanonical( JSON.parse( testResult.validateStatus ) ),
-						metadata = hybridToCanonical( JSON.parse( testResult.testMetadata ) ),
-						key = ( testResult.zFunctionId || Constants.NEW_ZID_PLACEHOLDER ) + ':' + ( testResult.zTesterId || Constants.NEW_ZID_PLACEHOLDER ) + ':' + ( testResult.zImplementationId || Constants.NEW_ZID_PLACEHOLDER );
+					const result = hybridToCanonical( JSON.parse( testResult.validateStatus ) );
+					const metadata = hybridToCanonical( JSON.parse( testResult.testMetadata ) );
+					const key = ( testResult.zFunctionId || Constants.NEW_ZID_PLACEHOLDER ) + ':' +
+						( testResult.zTesterId || Constants.NEW_ZID_PLACEHOLDER ) + ':' +
+						( testResult.zImplementationId || Constants.NEW_ZID_PLACEHOLDER );
+
+					// Collect zids
+					zids.push( ...extractZIDs( status ) );
+					zids.push( ...extractZIDs( metadata ) );
 
 					// Store result
-					context.commit( 'setZTesterResult', {
-						key: key,
-						result: status,
-						metadata: metadata
-					} );
+					context.commit( 'setZTesterResult', { key, result, metadata } );
 				} );
 
+				// Make sure that all returned Zids are in library.js
+				context.dispatch( 'fetchZids', { zids: [ ...new Set( zids ) ] } );
 				context.commit( 'setFetchingTestResults', false );
-			} )
-				.catch( function ( error, message ) {
-					mw.log.error( 'Tester API call was nothing: ' + error );
+			} ).catch( function ( error, message ) {
+				mw.log.error( 'Tester API call was nothing: ' + error );
 
-					var errorMessage = error;
-					if ( message && message.error && message.error.info ) {
-						errorMessage = message.error.info;
-					}
+				let errorMessage = error;
+				if ( message && message.error && message.error.info ) {
+					errorMessage = message.error.info;
+				}
 
-					context.commit( 'setErrorState', errorMessage );
-					context.commit( 'setFetchingTestResults', false );
-				} );
+				context.commit( 'setErrorState', errorMessage );
+				context.commit( 'setFetchingTestResults', false );
+			} );
 		}
 	}
 };

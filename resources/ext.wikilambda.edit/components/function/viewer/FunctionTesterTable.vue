@@ -22,8 +22,7 @@
 		></cdx-icon>
 		<wl-function-metadata-dialog
 			:open="showMetadata"
-			:implementation-label="implementationLabel"
-			:tester-label="testerLabel"
+			:header-text="implementationLabel"
 			:metadata="metadata"
 			@close-dialog="showMetadata = false"
 		></wl-function-metadata-dialog>
