@@ -10,7 +10,7 @@ const Constants = require( '../../Constants.js' ),
 	selectBestLanguage = require( '../../mixins/typeUtils.js' ).methods.selectBestLanguage,
 	zobjectUtils = require( '../../mixins/zobjectUtils.js' ).methods,
 	extractZIDs = require( '../../mixins/schemata.js' ).methods.extractZIDs,
-	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject,
+	hybridToCanonical = require( '../../mixins/schemata.js' ).methods.hybridToCanonical,
 	getParameterByName = require( '../../mixins/urlUtils.js' ).methods.getParameterByName,
 	addZObjects = require( './zobject/addZObjects.js' ),
 	currentZObject = require( './zobject/currentZObject.js' ),
@@ -799,7 +799,7 @@ module.exports = exports = {
 					return typeRow.value;
 				}
 				// If typeRow is NOT Terminal, return the canonical representation
-				return canonicalize( getters.getZObjectAsJsonById( typeRow.id ) );
+				return hybridToCanonical( getters.getZObjectAsJsonById( typeRow.id ) );
 			}
 
 			/**

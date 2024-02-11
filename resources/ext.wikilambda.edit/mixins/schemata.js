@@ -1,8 +1,8 @@
 /**
  * WikiLambda Vue editor: schemata mixin
- * Mixin with functions to canonicalize and normalize ZObjects.
- * This is distinct from the function-schemata as the UI
- * relies of slightly different requirements for normalization.
+ * Mixin with functions to convert zobjects between hybrid and canonical forms.
+ * Thsse conversions are distinct from canonicalize and normalize of function-schemata; hybrid form
+ * meets slightly different representational requirements of the UI layer.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -36,14 +36,17 @@ function canonicalizeZ6OrZ9( zobject ) {
 	return '';
 }
 
-function filterUndefinedLabels( allLabels ) {
-	return allLabels.filter( function ( label ) {
-		return label[ Constants.Z_OBJECT_TYPE ] !== Constants.Z_MONOLINGUALSTRING ||
-		!!label[ Constants.Z_MONOLINGUALSTRING_VALUE ];
-	} );
-}
-
-function canonicalize( zobject ) {
+/**
+ * Transform a ZObject from hybrid form to canonical form.  In hybrid form, strings and references are in normal
+ * form, but lists are in canonical form. If called on a ZObject already in canonical form, returns the ZObject
+ * unchanged.
+ *
+ * TODO(T357594):Determine how hybridToCanonical should handle normal inputs, implement & provide tests
+ *
+ * @param {Object | Array | string | undefined} zobject
+ * @return {Object | Array | string | undefined}
+ */
+function hybridToCanonical( zobject ) {
 	function listifyArray( zlist, arr ) {
 		var head = zlist[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ],
 			tail = zlist[ Constants.Z_TYPED_OBJECT_ELEMENT_2 ];
@@ -53,7 +56,7 @@ function canonicalize( zobject ) {
 		}
 
 		if ( head ) {
-			arr.push( canonicalize( head ) );
+			arr.push( hybridToCanonical( head ) );
 		}
 
 		if ( tail ) {
@@ -71,26 +74,30 @@ function canonicalize( zobject ) {
 		canon = zobject;
 	} else if ( Array.isArray( zobject ) ) {
 		canon = zobject.map( function ( element ) {
-			return canonicalize( element );
+			return hybridToCanonical( element );
 		} );
 	} else if (
 		[ Constants.Z_REFERENCE, Constants.Z_STRING ].includes( zobject[ Constants.Z_OBJECT_TYPE ] )
 	) {
 		canon = canonicalizeZ6OrZ9( zobject );
 	} else if ( zobject[ Constants.Z_OBJECT_TYPE ] &&
-		zobject[ Constants.Z_OBJECT_TYPE ][ Constants.Z_REFERENCE_ID ] === Constants.Z_TYPED_LIST
+		zobject[ Constants.Z_OBJECT_TYPE ][ Constants.Z_FUNCTION_CALL_FUNCTION ] &&
+		// Accommodate both hybrid form and canonical
+		( zobject[ Constants.Z_OBJECT_TYPE ][ Constants.Z_FUNCTION_CALL_FUNCTION ][ Constants.Z_REFERENCE_ID ] ===
+				Constants.Z_TYPED_LIST ||
+			zobject[ Constants.Z_OBJECT_TYPE ][ Constants.Z_FUNCTION_CALL_FUNCTION ] === Constants.Z_TYPED_LIST )
 	) {
-		canon = canonicalize( listifyArray( zobject ) );
+		canon = hybridToCanonical( listifyArray( zobject ) );
+	} else if ( zobject[ Constants.Z_OBJECT_TYPE ] &&
+		// Accommodate both hybrid form and canonical
+		( zobject[ Constants.Z_OBJECT_TYPE ][ Constants.Z_REFERENCE_ID ] === Constants.Z_QUOTE ||
+			zobject[ Constants.Z_OBJECT_TYPE ] === Constants.Z_QUOTE )
+	) {
+		canon[ Constants.Z_OBJECT_TYPE ] = Constants.Z_QUOTE;
+		canon[ Constants.Z_QUOTE_VALUE ] = zobject[ Constants.Z_QUOTE_VALUE ];
 	} else {
-		// remove any 'undefined' labels
-		if ( zobject[ Constants.Z_MULTILINGUALSTRING_VALUE ] ) {
-			zobject[ Constants.Z_MULTILINGUALSTRING_VALUE ] = filterUndefinedLabels(
-				zobject[ Constants.Z_MULTILINGUALSTRING_VALUE ]
-			);
-		}
-
 		Object.keys( zobject ).forEach( function ( key ) {
-			canon[ key ] = canonicalize( zobject[ key ] );
+			canon[ key ] = hybridToCanonical( zobject[ key ] );
 		} );
 	}
 	return canon;
@@ -105,62 +112,73 @@ function isZid( k ) {
 }
 
 /**
- * Return the ZObject in semi-normalized form. This means that the strings
- * and references will be normalized, but a canonical list will still be
- * left as a canonical list. This has also been referred to as Hybrid form
+ * Transform a ZObject from canonical form to hybrid form.  In hybrid form, strings and references are in normal
+ * form, but lists remain in canonical form. If called on a ZObject already in hybrid form, returns the ZObject
+ * unchanged.
  *
  * @param {Object | Array | string} zobject
  * @return {Object|Array|undefined}
  */
-function normalize( zobject ) {
-	var normal = {},
+function canonicalToHybrid( zobject ) {
+	var hybrid = {},
 		keys;
 
 	if ( typeof zobject === 'undefined' ) {
 		return undefined;
 	} else if ( typeof zobject === 'string' ) {
 		if ( typeUtils.getZObjectType( zobject ) === Constants.Z_REFERENCE ) {
-			normal = {
+			hybrid = {
 				Z1K1: Constants.Z_REFERENCE,
 				Z9K1: zobject
 			};
 		} else {
-			normal = {
+			hybrid = {
 				Z1K1: Constants.Z_STRING,
 				Z6K1: zobject
 			};
 		}
 	} else if ( Array.isArray( zobject ) ) {
-		normal = zobject.map( function ( element ) {
-			return normalize( element );
+		hybrid = zobject.map( function ( element ) {
+			return canonicalToHybrid( element );
 		} );
+	} else if ( zobject[ Constants.Z_OBJECT_TYPE ] &&
+		// Accommodate both hybrid form and canonical
+		( zobject[ Constants.Z_OBJECT_TYPE ][ Constants.Z_REFERENCE_ID ] === Constants.Z_QUOTE ||
+			zobject[ Constants.Z_OBJECT_TYPE ] === Constants.Z_QUOTE )
+	) {
+		const normalType = {
+			Z1K1: Constants.Z_REFERENCE,
+			Z9K1: Constants.Z_QUOTE
+		};
+		hybrid[ Constants.Z_OBJECT_TYPE ] = normalType;
+		hybrid[ Constants.Z_QUOTE_VALUE ] = zobject[ Constants.Z_QUOTE_VALUE ];
 	} else {
 		keys = Object.keys( zobject );
 		for ( var i = 0; i < keys.length; i++ ) {
 			if ( keys[ i ] === Constants.Z_OBJECT_TYPE && (
 				zobject.Z1K1 === Constants.Z_STRING || zobject.Z1K1 === Constants.Z_REFERENCE ) ) {
-				normal.Z1K1 = zobject.Z1K1;
+				hybrid.Z1K1 = zobject.Z1K1;
 				continue;
 			}
 			if ( keys[ i ] === Constants.Z_PERSISTENTOBJECT_ID && isString( zobject.Z2K1 ) ) {
-				normal.Z2K1 = {
+				hybrid.Z2K1 = {
 					Z1K1: Constants.Z_STRING,
 					Z6K1: zobject.Z2K1
 				};
 				continue;
 			}
 			if ( keys[ i ] === Constants.Z_STRING_VALUE && isString( zobject.Z6K1 ) ) {
-				normal.Z6K1 = zobject.Z6K1;
+				hybrid.Z6K1 = zobject.Z6K1;
 				continue;
 			}
 			if ( keys[ i ] === Constants.Z_REFERENCE_ID && isString( zobject.Z9K1 ) ) {
-				normal.Z9K1 = zobject.Z9K1;
+				hybrid.Z9K1 = zobject.Z9K1;
 				continue;
 			}
-			normal[ keys[ i ] ] = normalize( zobject[ keys[ i ] ] );
+			hybrid[ keys[ i ] ] = canonicalToHybrid( zobject[ keys[ i ] ] );
 		}
 	}
-	return normal;
+	return hybrid;
 }
 
 /**
@@ -337,8 +355,8 @@ function extractNestedSuberrors( zobject, errorType ) {
 
 module.exports = exports = {
 	methods: {
-		canonicalizeZObject: canonicalize,
-		normalizeZObject: normalize,
+		hybridToCanonical: hybridToCanonical,
+		canonicalToHybrid: canonicalToHybrid,
 		getValueFromCanonicalZMap: getValueFromCanonicalZMap,
 		extractErrorStructure: extractErrorStructure,
 		extractZIDs: extractZIDs

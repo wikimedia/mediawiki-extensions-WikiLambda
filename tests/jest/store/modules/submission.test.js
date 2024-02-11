@@ -10,7 +10,7 @@ const submissionModule = require( '../../../../resources/ext.wikilambda.edit/sto
 	zobjectModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zobject.js' ),
 	zfunctionModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zFunction.js' ),
 	zobjectToRows = require( '../../helpers/zObjectTableHelpers.js' ).zobjectToRows,
-	canonicalize = require( '../../../../resources/ext.wikilambda.edit/mixins/schemata.js' ).methods.canonicalizeZObject,
+	hybridToCanonical = require( '../../../../resources/ext.wikilambda.edit/mixins/schemata.js' ).methods.hybridToCanonical,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	fs = require( 'fs' ),
 	path = require( 'path' );
@@ -793,7 +793,7 @@ describe( 'zobject submission Vuex module', () => {
 			submissionModule.actions.removeEmptyMonolingualValues( context, 'Z2K3' );
 
 			const transformed = zobjectModule.getters.getZObjectAsJsonById( context.state )( 0, false );
-			expect( canonicalize( transformed ) ).toEqual( {
+			expect( hybridToCanonical( transformed ) ).toEqual( {
 				Z2K3: {
 					Z1K1: 'Z12',
 					Z12K1: [
@@ -819,7 +819,7 @@ describe( 'zobject submission Vuex module', () => {
 			submissionModule.actions.removeEmptyMonolingualValues( context, 'Z2K3' );
 
 			const transformed = zobjectModule.getters.getZObjectAsJsonById( context.state )( 0, false );
-			expect( canonicalize( transformed ) ).toEqual( {
+			expect( hybridToCanonical( transformed ) ).toEqual( {
 				Z2K3: {
 					Z1K1: 'Z12',
 					Z12K1: [
@@ -845,7 +845,7 @@ describe( 'zobject submission Vuex module', () => {
 			submissionModule.actions.removeEmptyMonolingualValues( context, 'Z2K3' );
 
 			const transformed = zobjectModule.getters.getZObjectAsJsonById( context.state )( 0, false );
-			expect( canonicalize( transformed ) ).toEqual( {
+			expect( hybridToCanonical( transformed ) ).toEqual( {
 				Z2K3: {
 					Z1K1: 'Z12',
 					Z12K1: [
@@ -878,7 +878,7 @@ describe( 'zobject submission Vuex module', () => {
 			submissionModule.actions.removeEmptyMonolingualValues( context, 'Z2K3' );
 
 			const transformed = zobjectModule.getters.getZObjectAsJsonById( context.state )( 0, false );
-			expect( canonicalize( transformed ) ).toEqual( {
+			expect( hybridToCanonical( transformed ) ).toEqual( {
 				Z2K3: {
 					Z1K1: 'Z12',
 					Z12K1: [ 'Z11' ]
@@ -942,7 +942,7 @@ describe( 'zobject submission Vuex module', () => {
 			submissionModule.actions.removeEmptyAliasValues( context );
 
 			const transformed = zobjectModule.getters.getZObjectAsJsonById( context.state )( 0, false );
-			expect( canonicalize( transformed ) ).toEqual( {
+			expect( hybridToCanonical( transformed ) ).toEqual( {
 				Z2K4: {
 					Z1K1: 'Z32',
 					Z32K1: [
@@ -970,7 +970,7 @@ describe( 'zobject submission Vuex module', () => {
 			submissionModule.actions.removeEmptyAliasValues( context );
 
 			const transformed = zobjectModule.getters.getZObjectAsJsonById( context.state )( 0, false );
-			expect( canonicalize( transformed ) ).toEqual( {
+			expect( hybridToCanonical( transformed ) ).toEqual( {
 				Z2K4: {
 					Z1K1: 'Z32',
 					Z32K1: [
@@ -997,7 +997,7 @@ describe( 'zobject submission Vuex module', () => {
 			submissionModule.actions.removeEmptyAliasValues( context );
 
 			const transformed = zobjectModule.getters.getZObjectAsJsonById( context.state )( 0, false );
-			expect( canonicalize( transformed ) ).toEqual( {
+			expect( hybridToCanonical( transformed ) ).toEqual( {
 				Z2K4: {
 					Z1K1: 'Z32',
 					Z32K1: [
@@ -1066,7 +1066,7 @@ describe( 'zobject submission Vuex module', () => {
 			submissionModule.actions.removeEmptyArguments( context );
 
 			const transformed = zobjectModule.getters.getZObjectAsJsonById( context.state )( 0, false );
-			expect( canonicalize( transformed ) ).toEqual( {
+			expect( hybridToCanonical( transformed ) ).toEqual( {
 				Z2K2: { Z8K1: [ 'Z17',
 					{ Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z12345K1', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11',
 						{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'input one' },
@@ -1100,7 +1100,7 @@ describe( 'zobject submission Vuex module', () => {
 			submissionModule.actions.removeEmptyArguments( context );
 
 			const transformed = zobjectModule.getters.getZObjectAsJsonById( context.state )( 0, false );
-			expect( canonicalize( transformed ) ).toEqual( {
+			expect( hybridToCanonical( transformed ) ).toEqual( {
 				Z2K2: { Z8K1: [ 'Z17',
 					{ Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z12345K1', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11',
 						{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'input one' }
@@ -1127,7 +1127,7 @@ describe( 'zobject submission Vuex module', () => {
 			submissionModule.actions.removeEmptyArguments( context );
 
 			const transformed = zobjectModule.getters.getZObjectAsJsonById( context.state )( 0, false );
-			expect( canonicalize( transformed ) ).toEqual( {
+			expect( hybridToCanonical( transformed ) ).toEqual( {
 				Z2K2: { Z8K1: [ 'Z17',
 					{ Z1K1: 'Z17',
 						Z17K1: { Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z6' },
@@ -1178,7 +1178,7 @@ describe( 'zobject submission Vuex module', () => {
 			submissionModule.actions.disconnectFunctionObjects( context );
 
 			const transformed = zobjectModule.getters.getZObjectAsJsonById( context.state )( 0, false );
-			expect( canonicalize( transformed ) ).toEqual( {
+			expect( hybridToCanonical( transformed ) ).toEqual( {
 				Z2K2: {
 					Z8K3: [ 'Z20' ],
 					Z8K4: [ 'Z14' ]
@@ -1197,7 +1197,7 @@ describe( 'zobject submission Vuex module', () => {
 			submissionModule.actions.disconnectFunctionObjects( context );
 
 			const transformed = zobjectModule.getters.getZObjectAsJsonById( context.state )( 0, false );
-			expect( canonicalize( transformed ) ).toEqual( {
+			expect( hybridToCanonical( transformed ) ).toEqual( {
 				Z2K2: {
 					Z8K3: [ 'Z20' ],
 					Z8K4: [ 'Z14' ]

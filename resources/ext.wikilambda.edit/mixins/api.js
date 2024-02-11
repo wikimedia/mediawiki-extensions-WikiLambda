@@ -9,7 +9,7 @@
 'use strict';
 
 var Constants = require( '../Constants.js' ),
-	canonicalize = require( './schemata.js' ).methods.canonicalizeZObject;
+	hybridToCanonical = require( './schemata.js' ).methods.hybridToCanonical;
 
 module.exports = exports = {
 	methods: {
@@ -19,14 +19,14 @@ module.exports = exports = {
 				action: 'wikilambda_function_call',
 				// eslint-disable-next-line camelcase
 				wikilambda_function_call_zobject: JSON.stringify(
-					canonicalize( zobject )
+					hybridToCanonical( zobject )
 				)
 			} ).then( function ( data ) {
 				return new Promise( function ( resolve ) {
 					var normalResponse = JSON.parse(
 							data.query.wikilambda_function_call.data
 						),
-						response = !shouldNormalize ? canonicalize( normalResponse ) : normalResponse,
+						response = !shouldNormalize ? hybridToCanonical( normalResponse ) : normalResponse,
 						result = response[ Constants.Z_RESPONSEENVELOPE_VALUE ],
 						metadata = response[ Constants.Z_RESPONSEENVELOPE_METADATA ];
 

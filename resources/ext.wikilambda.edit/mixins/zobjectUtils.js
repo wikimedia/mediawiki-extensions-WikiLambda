@@ -12,7 +12,7 @@
  */
 const Constants = require( '../Constants.js' ),
 	Row = require( '../store/classes/Row.js' ),
-	normalize = require( './schemata.js' ).methods.normalizeZObject;
+	canonicalToHybrid = require( './schemata.js' ).methods.canonicalToHybrid;
 
 module.exports = exports = {
 	methods: {
@@ -89,7 +89,7 @@ module.exports = exports = {
 
 			// Initial call, if there's a parent, link with key and parent id, else undefined
 			flattenZObject(
-				normalize( childValue ),
+				canonicalToHybrid( childValue ),
 				parentRow ? parentRow.key : undefined,
 				parentRow ? parentRow.id : undefined,
 				!!parentRow,
