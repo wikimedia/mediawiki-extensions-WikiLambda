@@ -17,10 +17,10 @@ The WikiLambda team comprises several contributors, of whom those who have commi
 * Umherirrender <umherirrender_de.wp@web.de>
 * Gabriel Lee <chihonglee777@gmail.com>
 * Allan Jeremy <allan.jeremy@thisdot.co>
+* Amin Al Hazwani <aalhazwani@wikimedia.org>
 * Stef Dunlap <sdunlap@wikimedia.org>
 * Timo Tijhof <krinkle@fastmail.com>
 * Amir E. Aharoni <amir.aharoni@mail.huji.ac.il>
-* Amin Al Hazwani <aalhazwani@wikimedia.org>
 * DannyS712 <DannyS712.wiki@gmail.com>
 * Lucas Werkmeister <mail@lucaswerkmeister.de>
 * Roan Kattouw <roan.kattouw@gmail.com>
@@ -29,12 +29,13 @@ The WikiLambda team comprises several contributors, of whom those who have commi
 * Daimona Eaytoy <daimona.wiki@gmail.com>
 * Klein Muçi <kleinmuci@gmail.com>
 * Mary Yang <myang-ctr@wikimedia.org>
+* Željko Filipin <zeljko.filipin@gmail.com>
 * Alexander Vorwerk <zabe@avorwerk.net>
 * Derick Alangi <alangiderick@gmail.com>
-* Ori Livneh <ori.livneh@gmail.com>
 * Grace Choi <gchoi@wikimedia.org>
+* Ori Livneh <ori.livneh@gmail.com>
+* Vaughn Walters <vwalters@wikimedia.org>
 * sushrith <bogisushrith@gmail.com>
-* Željko Filipin <zeljko.filipin@gmail.com>
 * Amir Sarabadani <ladsgroup@gmail.com>
 * Ammar Abdulhamid <ammarpad@yahoo.com>
 * Anne Tomasevich <atomasevich@wikimedia.org>
@@ -46,15 +47,16 @@ The WikiLambda team comprises several contributors, of whom those who have commi
 * Marco Fossati <fossati@spaziodati.eu>
 * Michał Łazowik <mlazowik@gmail.com>
 * Reedy <reedy@wikimedia.org>
-* Vaughn Walters <vwalters@wikimedia.org>
 * Volker E <volker.e@wikimedia.org>
+* Winston Sung <winston21.sung@gmail.com>
 * appare45 <kaibatsu35.7m45@gmail.com>
 * dr0ptp4kt <abaso@wikimedia.org>
 * osamaahmed17 <osamaahmedtahir17@gmail.com>
+* punithnayak <npunith125@gmail.com>
 
 … as well as many translation contributors, whose work is represented on TranslateWiki.net.
 
-(This list was generated on 2023-12-11 with `git shortlog -sne --no-merges | grep -v '\[BOT\]'`.)
+(This list was generated on 2024-02-13 with `git shortlog -sne --no-merges | grep -v '\[BOT\]'`.)
 
 This work is based on the vision set out by Denny Vrandečić whilst working at Google Research in his initial paper[0], evolved into an architecture in his subsequent paper[1], and was pioneered in a prototype implementation, AbstractText[2].
 
