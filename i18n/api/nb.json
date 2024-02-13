@@ -15,5 +15,9 @@
 	"apihelp-query+wikilambdasearch_labels-param-language": "MediaWiki-språkkoden det skal søkes på",
 	"apihelp-query+wikilambdasearch_labels-param-exact": "Hvorvidt det skal søkes etter nøyaktige treff. Hvis denne er slått av vil innputten ignorere forskjeller i store/små bokstaver, og som Unicode-normalisert der diakritiske tegn ignoreres.",
 	"apihelp-query+wikilambdasearch_labels-param-limit": "Maksimalt antall resultater som skal returneres",
-	"apihelp-query+wikilambda-example-simple": "Søk etter ZObject-er der etiketten matcher «foo» på engelsk"
+	"apihelp-query+wikilambda-example-simple": "Søk etter ZObject-er der etiketten matcher «foo» på engelsk",
+	"apihelp-query+wikilambdaload_zobjects-example-full": "Søk etter objektene Z12 og Z4 og returner deres fulle JSON-representasjon.",
+	"apihelp-query+wikilambdaload_zobjects-example-language": "Søk etter objektene Z12 og Z4 og returner etikettene deres filtrert til spansk eller reservespråk.",
+	"apihelp-query+wikilambdaload_zobjects-example-error": "Søk etter objekt Z1 og det ikke-eksisterende Z012345789 og returner deres fulle JSON-representasjon.",
+	"apihelp-query+wikilambdaload_zobjects-example-canonical": "Søk etter objekt Z12 og returner dets kanoniske JSON-representasjon."
 }
