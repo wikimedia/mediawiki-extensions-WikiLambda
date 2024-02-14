@@ -25,7 +25,7 @@
 			<cdx-lookup
 				class="ext-wikilambda-page-language-selector__lookup"
 				:selected="selectedLanguage"
-				:initia-input-value="selectedLanguage"
+				:initial-input-value="selectedLanguage"
 				:menu-items="lookupResults"
 				:start-icon="icons.cdxIconSearch"
 				:placeholder="selectLanguagePlaceholder"
