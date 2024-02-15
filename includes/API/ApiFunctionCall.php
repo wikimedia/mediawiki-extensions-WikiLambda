@@ -76,8 +76,6 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 			'zobject' => $zObjectAsStdClass,
 			'doValidate' => true
 		];
-		// Re-encoding to round-trip whitespace / encoded entities / etc.
-		$zObjectAsJsonStringForEvaluation = json_encode( $zObjectAsStdClass );
 
 		// Arbitrary implementation calls need more than wikilambda-execute;
 		// require wikilambda-execute-unsaved-code, so that it can be independently
@@ -85,6 +83,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 		// pass a custom function with the raw implementation rather than a ZID string.)
 		$isUnsavedCode = false;
 		if (
+			property_exists( $zObjectAsStdClass, 'Z7K1' ) &&
 			is_object( $zObjectAsStdClass->Z7K1 ) &&
 			property_exists( $zObjectAsStdClass->Z7K1, 'Z8K4' ) &&
 			count( $zObjectAsStdClass->Z7K1->Z8K4 ) > 1
