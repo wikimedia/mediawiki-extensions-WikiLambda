@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\HookHandler;
 
 use HtmlArmor;
+use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
@@ -154,6 +155,11 @@ class PageRenderingHandler implements
 
 		$context = RequestContext::getMain();
 		$currentPageContentLanguageCode = $context->getLanguage()->getCode();
+		// (T357702) If we don't know the language code, fall back to Z1002/'en'
+		$langRegistry = ZLangRegistry::singleton();
+		if ( !$langRegistry->isLanguageKnownGivenCode( $currentPageContentLanguageCode ) ) {
+			$currentPageContentLanguageCode = 'en';
+		}
 
 		// Re-write our path to include the content language ($attribs['href']) where appropriate
 		// HACK: Our hook doesn't tell us properly that the target is an action, so we have to pull it from the href
