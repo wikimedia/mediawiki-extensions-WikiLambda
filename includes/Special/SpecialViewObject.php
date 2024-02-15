@@ -129,7 +129,7 @@ class SpecialViewObject extends SpecialPage {
 		$parserOutput = $contentRenderer->getParserOutput(
 			$targetContent,
 			$targetTitle,
-			/* revId */ null,
+			null,
 			$parserOptions
 		);
 
