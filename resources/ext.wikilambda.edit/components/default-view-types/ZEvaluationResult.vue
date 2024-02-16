@@ -67,7 +67,7 @@
 var Constants = require( '../../Constants.js' ),
 	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
 	FunctionMetadataDialog = require( '../widgets/FunctionMetadataDialog.vue' ),
-	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject,
+	hybridToCanonical = require( '../../mixins/schemata.js' ).methods.hybridToCanonical,
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
@@ -161,7 +161,7 @@ module.exports = exports = {
 		 */
 		metadata: function () {
 			return this.hasMetadata ?
-				canonicalize( this.getZObjectAsJsonById( this.metadataRowId ) ) :
+				hybridToCanonical( this.getZObjectAsJsonById( this.metadataRowId ) ) :
 				undefined;
 		},
 

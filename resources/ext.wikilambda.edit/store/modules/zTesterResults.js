@@ -6,7 +6,7 @@
  */
 
 var Constants = require( '../../Constants.js' ),
-	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject;
+	hybridToCanonical = require( '../../mixins/schemata.js' ).methods.hybridToCanonical;
 
 /**
  * Loop through the given array of ZIDs and if a ZID is for the object currently being edited, or for a new object,
@@ -27,7 +27,7 @@ function replaceCurrentObjectWithFullJSONObject( context, items ) {
 				// will complain about the placeholder ID Z0 not existing.
 				zobject = zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
 			}
-			return JSON.stringify( canonicalize( JSON.parse( JSON.stringify( zobject ) ) ) );
+			return JSON.stringify( hybridToCanonical( JSON.parse( JSON.stringify( zobject ) ) ) );
 		}
 
 		return item;
@@ -230,8 +230,8 @@ module.exports = exports = {
 				}
 
 				results.forEach( function ( testResult ) {
-					var status = canonicalize( JSON.parse( testResult.validateStatus ) ),
-						metadata = canonicalize( JSON.parse( testResult.testMetadata ) ),
+					var status = hybridToCanonical( JSON.parse( testResult.validateStatus ) ),
+						metadata = hybridToCanonical( JSON.parse( testResult.testMetadata ) ),
 						key = ( testResult.zFunctionId || Constants.NEW_ZID_PLACEHOLDER ) + ':' + ( testResult.zTesterId || Constants.NEW_ZID_PLACEHOLDER ) + ':' + ( testResult.zImplementationId || Constants.NEW_ZID_PLACEHOLDER );
 
 					// Store result

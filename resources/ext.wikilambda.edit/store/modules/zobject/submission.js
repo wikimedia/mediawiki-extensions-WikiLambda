@@ -8,7 +8,7 @@
 
 const Constants = require( '../../../Constants.js' ),
 	convertTableToJson = require( '../../../mixins/zobjectUtils.js' ).methods.convertTableToJson,
-	canonicalize = require( '../../../mixins/schemata.js' ).methods.canonicalizeZObject,
+	hybridToCanonical = require( '../../../mixins/schemata.js' ).methods.hybridToCanonical,
 	saveZObject = require( '../../../mixins/api.js' ).methods.saveZObject,
 	isValueTruthy = require( '../../../mixins/typeUtils.js' ).methods.isValueTruthy;
 
@@ -242,7 +242,7 @@ module.exports = exports = {
 		submitZObject: function ( context, { summary, disconnectFunctionObjects = false } ) {
 			context.dispatch( 'transformZObjectForSubmission', disconnectFunctionObjects );
 
-			const zobject = canonicalize( convertTableToJson( context.getters.getZObjectTable ) );
+			const zobject = hybridToCanonical( convertTableToJson( context.getters.getZObjectTable ) );
 
 			return saveZObject(
 				zobject,

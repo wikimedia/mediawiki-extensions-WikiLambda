@@ -48,7 +48,7 @@ const FunctionEditorLanguageBlock = require( './FunctionEditorLanguageBlock.vue'
 	Constants = require( '../../../Constants.js' ),
 	eventLogUtils = require( '../../../mixins/eventLogUtils.js' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ),
-	canonicalize = require( '../../../mixins/schemata.js' ).methods.canonicalizeZObject,
+	hybridToCanonical = require( '../../../mixins/schemata.js' ).methods.hybridToCanonical,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	mapGetters = require( 'vuex' ).mapGetters;
@@ -200,7 +200,7 @@ module.exports = exports = {
 		 * @return {string}
 		 */
 		getTypeStringRepresentation: function ( rowId ) {
-			const canonical = canonicalize( this.getZObjectAsJsonById( rowId ) );
+			const canonical = hybridToCanonical( this.getZObjectAsJsonById( rowId ) );
 			return this.typeToString( canonical );
 		}
 	},
