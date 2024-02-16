@@ -121,6 +121,7 @@ class HooksTest extends WikiLambdaIntegrationTestCase {
 		$target, $expected, $create = true, $existing = true, $label = null, $attribs = [], $query = [], $lang = 'en'
 	) {
 		$this->setMwGlobals( 'wgArticlePath', '/wiki/$1' );
+		$this->registerLangs( [ 'en', 'fr' ] );
 		$linkRenderer = $this->getServiceContainer()->getLinkRenderer();
 
 		$targetTitle = Title::newFromDBkey( $target );
@@ -236,6 +237,17 @@ class HooksTest extends WikiLambdaIntegrationTestCase {
 			[],
 			[],
 			'fr'
+		];
+
+		yield 'Nonsense language, fallback no label, ZID, /view link' => [
+			'Z1',
+			'<a href="/view/en/Z1" title="Z1">Object (<span dir="ltr">Z1</span>)</a>',
+			true,
+			true,
+			null,
+			[],
+			[],
+			'hellothisisnotalanguage'
 		];
 
 		yield 'Talk pages are not over-ridden' => [
