@@ -212,12 +212,17 @@
 			]
 		},
 		"ext.wikilambda.languageselector": {
+			"class": "MediaWiki\\ResourceLoader\\CodexModule",
 			"styles": [],
 			"dependencies": [
 				"vue",
-				"@wikimedia/codex",
 				"mediawiki.api",
 				"mediawiki.Uri"
+			],
+			"codexComponents": [
+				"CdxIcon",
+				"CdxButton",
+				"CdxLookup"
 			],
 			"packageFiles": [
 				"ext.wikilambda.languageselector/index.js",

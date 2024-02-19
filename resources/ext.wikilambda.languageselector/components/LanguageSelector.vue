@@ -37,10 +37,8 @@
 </template>
 
 <script>
-const CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
-	CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	CdxLookup = require( '@wikimedia/codex' ).CdxLookup,
-	icons = require( '../../lib/icons.json' );
+const { CdxButton, CdxIcon, CdxLookup } = require( '../../codex.js' );
+const icons = require( '../../lib/icons.json' );
 
 // @vue/component
 module.exports = exports = {
