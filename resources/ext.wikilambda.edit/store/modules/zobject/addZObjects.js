@@ -133,7 +133,9 @@ module.exports = exports = {
 						for ( let i = 1; i < keys.length; i++ ) {
 							const key = keys[ i ];
 							const keyPayload = typeUtils.initializePayloadForType( key[ Constants.Z_KEY_TYPE ] );
-							const blankValue = getters.createObjectByType( keyPayload, keyList );
+							// We must pass keyList array by value in here, so that the types found in an argument
+							// branch don't affect another branch, it should only restrict repetition in depth.
+							const blankValue = getters.createObjectByType( keyPayload, keyList.slice() );
 							value[ key[ Constants.Z_KEY_ID ] ] = blankValue;
 						}
 					}

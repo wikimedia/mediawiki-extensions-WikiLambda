@@ -82,6 +82,19 @@ describe( 'addZObjects Vuex module', () => {
 					const result = context.getters.createObjectByType( payload );
 					expect( result ).toEqual( expected );
 				} );
+
+				it( 'does not restrict type repetition when it happens across argument branches', () => {
+					const expected = {
+						Z1K1: 'Z20004',
+						Z20004K1: '',
+						Z20004K2: '',
+						Z20004K3: ''
+					};
+					const payload = { id: 1, type: 'Z20004', link: false };
+					// zobjectModule.modules.addZObjects.getters.createObjectByType( context, payload );
+					const result = context.getters.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
 			} );
 		} );
 	} );
