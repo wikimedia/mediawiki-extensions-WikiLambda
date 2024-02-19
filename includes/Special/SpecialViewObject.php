@@ -186,7 +186,9 @@ class SpecialViewObject extends SpecialPage {
 	 * @param OutputPage $outputPage
 	 */
 	private function redirectToMain( OutputPage $outputPage ) {
-		$mainPageUrl = '/wiki/' . $outputPage->msg( 'Mainpage' )->text();
+		// We use inContentLanguage() to get it in English, rather than redirecting to non-existent pages
+		// like https://www.wikifunctions.org/wiki/Strona_g%C5%82%C3%B3wna if the user's language is pl.
+		$mainPageUrl = '/wiki/' . $outputPage->msg( 'Mainpage' )->inContentLanguage()->text();
 		$outputPage->redirect( $mainPageUrl, 303 );
 	}
 
