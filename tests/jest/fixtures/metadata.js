@@ -103,5 +103,6 @@ const metadataErrors = convertSetToMap( {
 module.exports = {
 	metadataBasic,
 	metadataErrors,
-	metadataEmpty
+	metadataEmpty,
+	convertSetToMap
 };

@@ -45,6 +45,18 @@ module.exports = exports = {
 			if ( this.rowId && ( this.rowId > 0 ) ) {
 				this.clearErrors( this.rowId );
 			}
+		},
+
+		/**
+		 * Returns the translated message for a given error code.
+		 * Error messages can have html tags.
+		 *
+		 * @param {Object} error
+		 * @return {string}
+		 */
+		getErrorMessage: function ( error ) {
+			// eslint-disable-next-line mediawiki/msg-doc
+			return error.message || this.$i18n( error.code ).text();
 		}
 	} ),
 	computed: $.extend( {}, mapGetters( [

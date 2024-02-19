@@ -44,6 +44,7 @@ var Constants = {
 		Z_ERROR: 'Z5',
 		Z_ERROR_TYPE: 'Z5K1',
 		Z_ERROR_VALUE: 'Z5K2',
+		Z_GENERIC_ERROR_VALUE: 'Z500K1',
 		Z_STRING: 'Z6',
 		Z_STRING_VALUE: 'Z6K1',
 		Z_FUNCTION: 'Z8',

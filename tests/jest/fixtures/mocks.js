@@ -66,184 +66,6 @@ const mockFunction = {
 };
 
 /**
- * Returns builtin objects Z1, Z2, Z6
- */
-const mockApiReponse = {
-	batchcomplete: '',
-	query: {
-		wikilambdaload_zobjects: {
-			Z1: {
-				success: '',
-				data: {
-					Z1K1: 'Z2',
-					Z2K1: {
-						Z1K1: 'Z6',
-						Z6K1: 'Z1'
-					},
-					Z2K2: {
-						Z1K1: 'Z4',
-						Z4K1: 'Z1',
-						Z4K2: [
-							'Z3',
-							{
-								Z1K1: 'Z3',
-								Z3K1: 'Z4',
-								Z3K2: 'Z1K1',
-								Z3K3: {
-									Z1K1: 'Z12',
-									Z12K1: [
-										'Z11',
-										{
-											Z1K1: 'Z11',
-											Z11K1: 'Z1002',
-											Z11K2: 'type'
-										}
-									]
-								}
-							}
-						],
-						Z4K3: 'Z101'
-					},
-					Z2K3: {
-						Z1K1: 'Z12',
-						Z12K1: [
-							'Z11',
-							{
-								Z1K1: 'Z11',
-								Z11K1: 'Z1002',
-								Z11K2: 'Object'
-							}
-						]
-					}
-				}
-			},
-			Z2: {
-				success: '',
-				data: {
-					Z1K1: 'Z2',
-					Z2K1: {
-						Z1K1: 'Z6',
-						Z6K1: 'Z2'
-					},
-					Z2K2: {
-						Z1K1: 'Z4',
-						Z4K1: 'Z2',
-						Z4K2: [
-							'Z3',
-							{
-								Z1K1: 'Z3',
-								Z3K1: 'Z6',
-								Z3K2: 'Z2K1',
-								Z3K3: {
-									Z1K1: 'Z12',
-									Z12K1: [
-										'Z11',
-										{
-											Z1K1: 'Z11',
-											Z11K1: 'Z1002',
-											Z11K2: 'id'
-										}
-									]
-								}
-							},
-							{
-								Z1K1: 'Z3',
-								Z3K1: 'Z1',
-								Z3K2: 'Z2K2',
-								Z3K3: {
-									Z1K1: 'Z12',
-									Z12K1: [
-										'Z11',
-										{
-											Z1K1: 'Z11',
-											Z11K1: 'Z1002',
-											Z11K2: 'value'
-										}
-									]
-								}
-							},
-							{
-								Z1K1: 'Z3',
-								Z3K1: 'Z12',
-								Z3K2: 'Z2K3',
-								Z3K3: {
-									Z1K1: 'Z12',
-									Z12K1: [
-										'Z11',
-										{
-											Z1K1: 'Z11',
-											Z11K1: 'Z1002',
-											Z11K2: 'label'
-										}
-									]
-								}
-							}
-						],
-						Z4K3: 'Z102'
-					},
-					Z2K3: {
-						Z1K1: 'Z12',
-						Z12K1: [
-							'Z11',
-							{
-								Z1K1: 'Z11',
-								Z11K1: 'Z1002',
-								Z11K2: 'Persistent object'
-							}
-						]
-					}
-				}
-			},
-			Z6: {
-				success: '',
-				data: {
-					Z1K1: 'Z2',
-					Z2K1: {
-						Z1K1: 'Z6',
-						Z6K1: 'Z6'
-					},
-					Z2K2: {
-						Z1K1: 'Z4',
-						Z4K1: 'Z6',
-						Z4K2: [
-							'Z3',
-							{
-								Z1K1: 'Z3',
-								Z3K1: 'Z6',
-								Z3K2: 'Z6K1',
-								Z3K3: {
-									Z1K1: 'Z12',
-									Z12K1: [
-										'Z11',
-										{
-											Z1K1: 'Z11',
-											Z11K1: 'Z1002',
-											Z11K2: 'value'
-										}
-									]
-								}
-							}
-						],
-						Z4K3: 'Z101'
-					},
-					Z2K3: {
-						Z1K1: 'Z12',
-						Z12K1: [
-							'Z11',
-							{
-								Z1K1: 'Z11',
-								Z11K1: 'Z1002',
-								Z11K2: 'String'
-							}
-						]
-					}
-				}
-			}
-		}
-	}
-};
-
-/**
  * Returns builtin objects Z1, Z3, Z6, Z31, Z32, Z802, Z881, Z882, Z1003
  * And custom objects Z10001, Z10528, Z20001, Z20002, Z20003
  */
@@ -286,6 +108,80 @@ const mockApiZids = {
 					Z1K1: 'Z11',
 					Z11K1: 'Z1002',
 					Z11K2: 'Object'
+				}
+			]
+		}
+	},
+	Z2: {
+		Z1K1: 'Z2',
+		Z2K1: {
+			Z1K1: 'Z6',
+			Z6K1: 'Z2'
+		},
+		Z2K2: {
+			Z1K1: 'Z4',
+			Z4K1: 'Z2',
+			Z4K2: [
+				'Z3',
+				{
+					Z1K1: 'Z3',
+					Z3K1: 'Z6',
+					Z3K2: 'Z2K1',
+					Z3K3: {
+						Z1K1: 'Z12',
+						Z12K1: [
+							'Z11',
+							{
+								Z1K1: 'Z11',
+								Z11K1: 'Z1002',
+								Z11K2: 'id'
+							}
+						]
+					}
+				},
+				{
+					Z1K1: 'Z3',
+					Z3K1: 'Z1',
+					Z3K2: 'Z2K2',
+					Z3K3: {
+						Z1K1: 'Z12',
+						Z12K1: [
+							'Z11',
+							{
+								Z1K1: 'Z11',
+								Z11K1: 'Z1002',
+								Z11K2: 'value'
+							}
+						]
+					}
+				},
+				{
+					Z1K1: 'Z3',
+					Z3K1: 'Z12',
+					Z3K2: 'Z2K3',
+					Z3K3: {
+						Z1K1: 'Z12',
+						Z12K1: [
+							'Z11',
+							{
+								Z1K1: 'Z11',
+								Z11K1: 'Z1002',
+								Z11K2: 'label'
+							}
+						]
+					}
+				}
+			],
+			Z4K3: 'Z102'
+		},
+		Z2K3: {
+			Z1K1: 'Z12',
+			Z12K1: [
+				'Z11',
+				{
+					Z1K1: 'Z11',
+					Z11K1: 'Z1002',
+					Z11K2: 'Persistent object'
 				}
 			]
 		}
@@ -767,18 +663,11 @@ const mockApiZids = {
 					Z3K2: 'Z10528K1',
 					Z3K3: {
 						Z1K1: 'Z12',
-						Z12K1: [
-							'Z11',
-							{
-								Z1K1: 'Z11',
-								Z11K1: 'Z1002',
-								Z11K2: 'identity'
-							}
-						]
+						Z12K1: [ 'Z11' ]
 					}
 				}
 			],
-			Z4K3: 'Z106'
+			Z4K3: 'Z106',
 		},
 		Z2K3: {
 			Z1K1: 'Z12',
@@ -820,7 +709,12 @@ const mockApiZids = {
 		Z2K3: {
 			Z1K1: 'Z12',
 			Z12K1: [
-				'Z11'
+				'Z11',
+				{
+					Z1K1: 'Z11',
+					Z11K1: 'Z1003',
+					Z11K2: 'mi amigo'
+				}
 			]
 		}
 	},
@@ -852,7 +746,10 @@ const mockApiZids = {
 					}
 				}
 			],
-			Z4K3: 'Z106'
+			Z4K3: 'Z106',
+			Z4K4: 'Z20010',
+			Z4K5: 'Z20020',
+			Z4K6: 'Z20030'
 		},
 		Z2K3: {
 			Z1K1: 'Z12',
@@ -989,6 +886,26 @@ const mockApiZids = {
 	}
 };
 
+/**
+ * Returns the API response object for the given zids
+ * The zids must be declared in mockApiZids
+ */
+const mockApiResponseFor = function ( zids ) {
+	const objects = {};
+	for( const zid of zids ) {
+		objects[ zid ] = {
+			success: '',
+			data: mockApiZids[ zid ]
+		};
+	}
+	return {
+		batchcomplete: '',
+		query: {
+			wikilambdaload_zobjects: objects
+		}
+	};
+};
+
 const mockLanguages = {
 	batchcomplete: true,
 	query: {
@@ -1049,7 +966,7 @@ const mockLanguages = {
 
 module.exports = {
 	mockFunction,
-	mockApiReponse,
+	mockApiResponseFor,
 	mockApiZids,
 	mockLanguages
 };

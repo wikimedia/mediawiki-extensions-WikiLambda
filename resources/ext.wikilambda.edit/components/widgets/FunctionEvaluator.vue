@@ -149,7 +149,7 @@ module.exports = exports = {
 		};
 	},
 	computed: $.extend( mapGetters( [
-		'getAttachedImplementations',
+		'getConnectedObjects',
 		'getZFunctionCallArguments',
 		'getLabel',
 		'getRowByKeyPath',
@@ -262,7 +262,9 @@ module.exports = exports = {
 		 * @return {Array}
 		 */
 		implementations: function () {
-			return this.selectedFunctionZid ? this.getAttachedImplementations( this.selectedFunctionZid ) : [];
+			return this.selectedFunctionZid ?
+				this.getConnectedObjects( this.selectedFunctionZid, Constants.Z_FUNCTION_IMPLEMENTATIONS ) :
+				[];
 		},
 
 		/**

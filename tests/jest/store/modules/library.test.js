@@ -6,15 +6,16 @@
  */
 'use strict';
 
-var libraryModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/library.js' ),
+const libraryModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/library.js' ),
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	mockApiReponse = require( '../../fixtures/mocks.js' ).mockApiReponse,
+	mockApiResponseFor = require( '../../fixtures/mocks.js' ).mockApiResponseFor,
 	mockApiZids = require( '../../fixtures/mocks.js' ).mockApiZids,
 	mockLabels = {
 		Z1: { zid: 'Z1', label: 'Object', lang: 'Z1002' },
 		Z6: { zid: 'Z6', label: 'String', lang: 'Z1002' }
-	},
-	state,
+	};
+
+let state,
 	context,
 	getMock,
 	getResolveMock;
@@ -22,7 +23,7 @@ var libraryModule = require( '../../../../resources/ext.wikilambda.edit/store/mo
 describe( 'library module', function () {
 	beforeEach( function () {
 		getResolveMock = jest.fn( function ( thenFunction ) {
-			return thenFunction( mockApiReponse );
+			return thenFunction( mockApiResponseFor( [ 'Z1', 'Z2', 'Z6' ] ) );
 		} );
 		getMock = jest.fn( function () {
 			return {
@@ -32,7 +33,9 @@ describe( 'library module', function () {
 		state = JSON.parse( JSON.stringify( libraryModule.state ) );
 		context = $.extend( {}, {
 			commit: jest.fn( function ( mutationType, payload ) {
-				return libraryModule.mutations[ mutationType ]( state, payload );
+				if ( mutationType in libraryModule.mutations ) {
+					return libraryModule.mutations[ mutationType ]( state, payload );
+				}
 			} ),
 			getters: {},
 			state: state,
@@ -143,19 +146,39 @@ describe( 'library module', function () {
 			} );
 		} );
 
-		describe( 'getAttachedImplementations', function () {
+		describe( 'getConnectedObjects', function () {
 			it( 'Returns empty array if the zid is not available in the state', function () {
-				expect( libraryModule.getters.getAttachedImplementations( state )( 'Z802' ) ).toEqual( [] );
+				expect(
+					libraryModule.getters.getConnectedObjects( state )( 'Z802', Constants.Z_FUNCTION_IMPLEMENTATIONS )
+				).toEqual( [] );
 			} );
 
 			it( 'Returns empty array if the zid is not of a function', function () {
 				state.objects = mockApiZids;
-				expect( libraryModule.getters.getAttachedImplementations( state )( 'Z6' ) ).toEqual( [] );
+				expect(
+					libraryModule.getters.getConnectedObjects( state )( 'Z6', Constants.Z_FUNCTION_IMPLEMENTATIONS )
+				).toEqual( [] );
 			} );
 
 			it( 'Returns array with the implementations of a given function', function () {
 				state.objects = mockApiZids;
-				expect( libraryModule.getters.getAttachedImplementations( state )( 'Z802' ) ).toEqual( [ 'Z902' ] );
+				expect(
+					libraryModule.getters.getConnectedObjects( state )( 'Z802', Constants.Z_FUNCTION_IMPLEMENTATIONS )
+				).toEqual( [ 'Z902' ] );
+			} );
+
+			it( 'Returns array with the tests of a given function', function () {
+				state.objects = mockApiZids;
+				expect(
+					libraryModule.getters.getConnectedObjects( state )( 'Z802', Constants.Z_FUNCTION_TESTERS )
+				).toEqual( [ 'Z8020', 'Z8021' ] );
+			} );
+
+			it( 'Returns empty array if key not valid', function () {
+				state.objects = mockApiZids;
+				expect(
+					libraryModule.getters.getConnectedObjects( state )( 'Z802' )
+				).toEqual( [] );
 			} );
 		} );
 
@@ -224,8 +247,9 @@ describe( 'library module', function () {
 
 			it( 'Call api.get if the zId is not already in the state', function () {
 				const zids = [ 'Z1' ];
+				context.state.objects = {};
 
-				libraryModule.actions.fetchZids( context, { zids } ).then( function () {
+				return libraryModule.actions.fetchZids( context, { zids } ).then( function () {
 					expect( mw.Api ).toHaveBeenCalledTimes( 1 );
 					expect( getMock ).toHaveBeenCalledWith( {
 						action: 'query',
@@ -239,10 +263,11 @@ describe( 'library module', function () {
 			} );
 
 			it( 'Call api.get with multiple Zids as a string separated by | ', function () {
-				const zids = [ 'Z1', 'Z6' ],
-					expectedWikiLambdaloadZids = 'Z1|Z6';
+				const zids = [ 'Z1', 'Z6' ];
+				const expectedWikiLambdaloadZids = 'Z1|Z6';
+				context.state.objects = {};
 
-				libraryModule.actions.fetchZids( context, { zids } ).then( function () {
+				return libraryModule.actions.fetchZids( context, { zids } ).then( function () {
 					expect( mw.Api ).toHaveBeenCalledTimes( 1 );
 					expect( getMock ).toHaveBeenCalledWith( {
 						action: 'query',
@@ -256,23 +281,23 @@ describe( 'library module', function () {
 			} );
 
 			it( 'Will NOT call the APi if the Zids are already fetched', function () {
-				const zids = [ 'Z1' ];
+				const zids = [ 'Z1', 'Z6' ];
 				context.state.objects = mockApiZids;
 
-				libraryModule.actions.fetchZids( context, { zids } ).then( function () {
+				return libraryModule.actions.fetchZids( context, { zids } ).then( function () {
 					expect( mw.Api ).toHaveBeenCalledTimes( 0 );
 					expect( getMock ).toHaveBeenCalledTimes( 0 );
 				} );
 			} );
 
 			it( 'Will call the APi only with the Zids that are not yet fetched', function () {
-				const zids = [ 'Z1', 'Z2', 'Z6' ],
-					expectedWikiLambdaloadZids = 'Z2|Z6';
+				const zids = [ 'Z1', 'Z2', 'Z6' ];
+				const expectedWikiLambdaloadZids = 'Z2|Z6';
 				context.state.objects = {
 					Z1: mockApiZids.Z1
 				};
 
-				libraryModule.actions.fetchZids( context, { zids } ).then( function () {
+				return libraryModule.actions.fetchZids( context, { zids } ).then( function () {
 					expect( mw.Api ).toHaveBeenCalledTimes( 1 );
 					expect( getMock ).toHaveBeenCalledTimes( 1 );
 					expect( getMock ).toHaveBeenCalledWith( {
@@ -286,25 +311,59 @@ describe( 'library module', function () {
 				} );
 			} );
 
-			it( 'Will Update the stored collection with the API response', function () {
-				const zids = [ 'Z1', 'Z2', 'Z6' ],
-					expectedAddZKeyInfoCall = expect.objectContaining( {
-						zid: expect.any( String ),
-						info: expect.any( Object )
-					} );
+			it( 'Will Update the stored collection with the objects in the API response', function () {
+				const zids = [ 'Z1', 'Z2', 'Z6' ];
+				const expectedAddZ1 = expect.objectContaining( {
+					zid: 'Z1',
+					info: expect.any( Object )
+				} );
+				const expectedAddZ2 = expect.objectContaining( {
+					zid: 'Z2',
+					info: expect.any( Object )
+				} );
+				const expectedAddZ6 = expect.objectContaining( {
+					zid: 'Z6',
+					info: expect.any( Object )
+				} );
+				context.state.objects = {};
 
-				libraryModule.actions.performFetchZids( context, { zids } );
-				expect( mw.Api ).toHaveBeenCalledTimes( 1 );
-				expect( getMock ).toHaveBeenCalledTimes( 1 );
-				expect( getResolveMock ).toHaveBeenCalledTimes( 1 );
-				expect( context.commit ).toHaveBeenCalledTimes( 11 );
-				expect( context.commit ).toHaveBeenCalledWith( 'setStoredObject', expectedAddZKeyInfoCall );
+				return libraryModule.actions.fetchZids( context, { zids } ).then( function () {
+					expect( mw.Api ).toHaveBeenCalledTimes( 1 );
+					expect( getMock ).toHaveBeenCalledTimes( 1 );
+					expect( getResolveMock ).toHaveBeenCalledTimes( 1 );
+					expect( context.commit ).toHaveBeenCalledTimes( 11 );
+					expect( context.commit ).toHaveBeenCalledWith( 'setStoredObject', expectedAddZ1 );
+					expect( context.commit ).toHaveBeenCalledWith( 'setStoredObject', expectedAddZ2 );
+					expect( context.commit ).toHaveBeenCalledWith( 'setStoredObject', expectedAddZ6 );
+				} );
 			} );
 
-			it( 'Will request the language Zids of the returned labels', function () {
-				const zids = [ 'Z1' ];
-				libraryModule.actions.performFetchZids( context, { zids } );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZids', { zids: [ 'Z1002' ] } );
+			describe( 'Fetch dependencies', () => {
+				it( 'requests the language Zids of the returned labels', function () {
+					const zids = [ 'Z20001' ];
+					context.state.objects = {};
+					getResolveMock = jest.fn( function ( thenFunction ) {
+						return thenFunction( mockApiResponseFor( zids ) );
+					} );
+
+					return libraryModule.actions.fetchZids( context, { zids } ).then( function () {
+						expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZids', { zids: [ 'Z1003', 'Z1002' ] } );
+					} );
+				} );
+
+				it( 'requests the renderer/parser Zids of the returned type', function () {
+					const zids = [ 'Z20002' ];
+					context.state.objects = {};
+					getResolveMock = jest.fn( function ( thenFunction ) {
+						return thenFunction( mockApiResponseFor( zids ) );
+					} );
+
+					return libraryModule.actions.fetchZids( context, { zids } ).then( function () {
+						expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZids', { zids: [ 'Z1002', 'Z20020', 'Z20030' ] } );
+						expect( context.commit ).toHaveBeenCalledWith( 'setRenderer', { type: 'Z20002', renderer: 'Z20020' } );
+						expect( context.commit ).toHaveBeenCalledWith( 'setParser', { type: 'Z20002', parser: 'Z20030' } );
+					} );
+				} );
 			} );
 		} );
 	} );

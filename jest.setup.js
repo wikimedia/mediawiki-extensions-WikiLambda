@@ -59,6 +59,10 @@ class Mocki18n {
 	toString() {
 		return this.text();
 	}
+
+	parse() {
+		return englishMessages[ this.string ];
+	}
 }
 
 // Mock MW object

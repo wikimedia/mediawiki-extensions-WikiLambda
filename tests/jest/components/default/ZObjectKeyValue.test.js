@@ -32,7 +32,9 @@ describe( 'ZObjectKeyValue', () => {
 			getErrors: createGettersWithFunctionsMock( [] ),
 			getDepthByRowId: createGettersWithFunctionsMock( 1 ),
 			getParentRowId: createGettersWithFunctionsMock( 0 ),
-			getChildrenByParentRowId: createGettersWithFunctionsMock( [] )
+			getChildrenByParentRowId: createGettersWithFunctionsMock( [] ),
+			hasRenderer: createGettersWithFunctionsMock( false ),
+			hasParser: createGettersWithFunctionsMock( false )
 		};
 		actions = {
 			changeType: jest.fn(),
@@ -236,6 +238,23 @@ describe( 'ZObjectKeyValue', () => {
 			expect( wrapper.findComponent( { name: 'wl-z-typed-list' } ).exists() ).toBe( true );
 		} );
 
+		it( 'fallback with renderer and parser', () => {
+			getters.hasRenderer = createGettersWithFunctionsMock( true );
+			getters.hasParser = createGettersWithFunctionsMock( true );
+			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z12345' );
+			global.store.hotUpdate( {
+				getters: getters
+			} );
+
+			const wrapper = shallowMount( ZObjectKeyValue, {
+				props: {
+					rowId: 1
+				}
+			} );
+
+			expect( wrapper.findComponent( { name: 'wl-z-object-string-renderer' } ).exists() ).toBe( true );
+		} );
+
 		it( 'fallback z-object-key-value-set', () => {
 			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z12345' );
 			global.store.hotUpdate( {
@@ -360,7 +379,7 @@ describe( 'ZObjectKeyValue', () => {
 	describe( 'in either view or edit mode', () => {
 
 		describe( 'expanded toggle', () => {
-			it( 'it shows expansion toggle if it is not a special terminal case', () => {
+			it( 'shows expansion toggle if it is not a special terminal case', () => {
 				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_KEY_TYPE );
 				getters.getExpectedTypeOfKey = createGettersWithFunctionsMock( Constants.Z_TYPE );
 				global.store.hotUpdate( {
@@ -375,6 +394,26 @@ describe( 'ZObjectKeyValue', () => {
 				} );
 
 				expect( wrapper.findComponent( { name: 'wl-expanded-toggle' } ).exists() ).toBe( true );
+			} );
+
+			it( 'shows expansion for non built-in types with renderer and parser', () => {
+				getters.hasRenderer = createGettersWithFunctionsMock( true );
+				getters.hasParser = createGettersWithFunctionsMock( true );
+				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z60' );
+				global.store.hotUpdate( {
+					getters: getters
+				} );
+
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						edit: true,
+						rowId: 1
+					}
+				} );
+
+				const toggle = wrapper.findComponent( { name: 'wl-expanded-toggle' } );
+				expect( toggle.exists() ).toBe( true );
+				expect( toggle.vm.hasExpandedMode ).toBe( false );
 			} );
 
 			it( 'disables expansion when string', () => {

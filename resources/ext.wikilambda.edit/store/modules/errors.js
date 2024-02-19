@@ -148,11 +148,12 @@ module.exports = exports = {
 			if ( !( payload.rowId in state.errors ) ) {
 				state.errors[ payload.rowId ] = [];
 			}
-			state.errors[ payload.rowId ].push( {
+			const errorPayload = {
 				message: payload.errorMessage,
 				code: payload.errorCode,
 				type: payload.errorType
-			} );
+			};
+			state.errors[ payload.rowId ].push( errorPayload );
 		},
 
 		/**

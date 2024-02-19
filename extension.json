@@ -269,6 +269,7 @@
 				"ext.wikilambda.edit/store/modules/zobject/currentZObject.js",
 				"ext.wikilambda.edit/store/modules/zobject/submission.js",
 				"ext.wikilambda.edit/store/modules/library.js",
+				"ext.wikilambda.edit/store/modules/types.js",
 				"ext.wikilambda.edit/store/modules/callZFunction.js",
 				"ext.wikilambda.edit/store/modules/errors.js",
 				"ext.wikilambda.edit/store/modules/user.js",
@@ -315,6 +316,7 @@
 				"ext.wikilambda.edit/components/default-view-types/ZMonolingualString.vue",
 				"ext.wikilambda.edit/components/default-view-types/ZObjectKeyValue.vue",
 				"ext.wikilambda.edit/components/default-view-types/ZObjectKeyValueSet.vue",
+				"ext.wikilambda.edit/components/default-view-types/ZObjectStringRenderer.vue",
 				"ext.wikilambda.edit/components/default-view-types/ZObjectToString.vue",
 				"ext.wikilambda.edit/components/default-view-types/ZReference.vue",
 				"ext.wikilambda.edit/components/default-view-types/ZString.vue",
@@ -653,7 +655,15 @@
 				"wikilambda-special-create-function",
 				"wikilambda-special-create-type",
 				"wikilambda-special-create-implementation",
-				"wikilambda-special-create-test"
+				"wikilambda-special-create-test",
+				"wikilambda-string-renderer-field-example",
+				"wikilambda-string-renderer-examples-title",
+				"wikilambda-renderer-error-footer-project-chat",
+				"wikilambda-renderer-api-error",
+				"wikilambda-renderer-unexpected-result-error",
+				"wikilambda-renderer-unknown-error",
+				"wikilambda-parser-unexpected-result-error",
+				"wikilambda-parser-unknown-error"
 			]
 		}
 	},

@@ -73,7 +73,7 @@ describe( 'FunctionEvaluator', () => {
 			getZFunctionCallArguments: createGettersWithFunctionsMock( [] ),
 			getRowByKeyPath: createGettersWithFunctionsMock( undefined ),
 			getZFunctionCallFunctionId: createGettersWithFunctionsMock( undefined ),
-			getAttachedImplementations: createGettersWithFunctionsMock( [] ),
+			getConnectedObjects: createGettersWithFunctionsMock( [] ),
 			getZObjectAsJsonById: createGettersWithFunctionsMock( '' ),
 			getLabel: createGettersWithFunctionsMock( 'Function' ),
 			getMapValueByKey: createGettersWithFunctionsMock( undefined ),
@@ -238,7 +238,7 @@ describe( 'FunctionEvaluator', () => {
 			// returns selectedFunctionZid = Z10000
 			getters.getZFunctionCallFunctionId = createGettersWithFunctionsMock( 'Z10000' );
 			// returns implementations = [ 'Z10001', 'Z10002' ]
-			getters.getAttachedImplementations = createGettersWithFunctionsMock( [ 'Z10001', 'Z10002' ] );
+			getters.getConnectedObjects = createGettersWithFunctionsMock( [ 'Z10001', 'Z10002' ] );
 			global.store.hotUpdate( { getters: getters, actions: actions } );
 
 			await wrapper.vm.$nextTick();
@@ -299,7 +299,7 @@ describe( 'FunctionEvaluator', () => {
 			// activates function call button
 			getters.getRowByKeyPath = createGettersWithFunctionsMock( { id: 2 } );
 			getters.getZFunctionCallFunctionId = createGettersWithFunctionsMock( 'Z10000' );
-			getters.getAttachedImplementations = createGettersWithFunctionsMock( [ 'Z10001', 'Z10002' ] );
+			getters.getConnectedObjects = createGettersWithFunctionsMock( [ 'Z10001', 'Z10002' ] );
 			// returns JSON function call
 			getters.getZObjectAsJsonById = createGettersWithFunctionsMock( functionCallJson );
 			global.store.hotUpdate( { getters: getters, actions: actions } );
@@ -442,7 +442,7 @@ describe( 'FunctionEvaluator', () => {
 			// set getters to activate function call button
 			getters.getRowByKeyPath = createGettersWithFunctionsMock( { id: 2 } );
 			getters.getZFunctionCallFunctionId = createGettersWithFunctionsMock( 'Z10000' );
-			getters.getAttachedImplementations = createGettersWithFunctionsMock( [ 'Z10001', 'Z10002' ] );
+			getters.getConnectedObjects = createGettersWithFunctionsMock( [ 'Z10001', 'Z10002' ] );
 			// returns function object from storage
 			getters.getStoredObject = createGettersWithFunctionsMock( functionJson );
 			// returns JSON function call or implementation conditionally

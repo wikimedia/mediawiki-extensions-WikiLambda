@@ -48,7 +48,7 @@
 </template>
 
 <script>
-var Constants = require( '../../Constants.js' ),
+const Constants = require( '../../Constants.js' ),
 	CdxLookup = require( '@wikimedia/codex' ).CdxLookup,
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	errorUtils = require( '../../mixins/errorUtils.js' ),
@@ -124,9 +124,7 @@ module.exports = exports = {
 		};
 	},
 	computed: $.extend( {}, mapGetters( [
-		'getLabel',
-		'getLabelData',
-		'getStoredObject'
+		'getLabel'
 	] ), {
 
 		/**
@@ -324,18 +322,6 @@ module.exports = exports = {
 				this.lookupDelayTimer = setTimeout( () => {
 					this.getLookupResults( input );
 				}, this.lookupDelayMs );
-			},
-
-			/**
-			 * Returns the translated message for a given error code.
-			 * Error messages can have html tags.
-			 *
-			 * @param {Object} error
-			 * @return {string}
-			 */
-			getErrorMessage: function ( error ) {
-				// eslint-disable-next-line mediawiki/msg-doc
-				return error.message || this.$i18n( error.code ).text();
 			},
 
 			/**

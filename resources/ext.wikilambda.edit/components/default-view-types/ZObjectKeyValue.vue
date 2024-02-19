@@ -67,6 +67,7 @@
 						:expanded="expanded"
 						:depth="depth"
 						:row-id="rowId"
+						:type="type"
 						:expected-type="expectedType"
 						:parent-id="parentRowId"
 						:parent-disable-edit="disableEdit"
@@ -74,7 +75,7 @@
 						@set-type="setType"
 						@add-list-item="addListItem"
 						@change-event="changeEvent"
-						@expand="setExpanded( true )"
+						@expand="setExpanded"
 					></component>
 				</div>
 			</div>
@@ -112,6 +113,7 @@ const CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	ZArgumentReference = require( './ZArgumentReference.vue' ),
 	ZMonolingualString = require( './ZMonolingualString.vue' ),
 	ZObjectKeyValueSet = require( './ZObjectKeyValueSet.vue' ),
+	ZObjectStringRenderer = require( './ZObjectStringRenderer.vue' ),
 	ZString = require( './ZString.vue' ),
 	ZCode = require( './ZCode.vue' ),
 	ZEvaluationResult = require( './ZEvaluationResult.vue' ),
@@ -144,6 +146,7 @@ module.exports = exports = {
 		'wl-z-tester': ZTester,
 		'wl-z-monolingual-string': ZMonolingualString,
 		'wl-z-object-key-value-set': ZObjectKeyValueSet,
+		'wl-z-object-string-renderer': ZObjectStringRenderer,
 		'wl-z-string': ZString,
 		'wl-z-reference': ZReference,
 		'wl-z-boolean': ZBoolean,
@@ -209,6 +212,8 @@ module.exports = exports = {
 			'getZObjectTypeByRowId',
 			'getTypedListItemType',
 			'getErrors',
+			'hasRenderer',
+			'hasParser',
 			'isCreateNewPage',
 			'isMainObject'
 		] ),
@@ -393,7 +398,7 @@ module.exports = exports = {
 			 * @return {string}
 			 */
 			rootClasses: function () {
-				var classList = [ `ext-wikilambda-key-level-${ this.depth }` ];
+				const classList = [ `ext-wikilambda-key-level-${ this.depth }` ];
 
 				if ( this.isKeyTypedListType( this.key ) && this.edit && !this.expanded ) {
 					classList.push( 'ext-wikilambda-key-value-flex' );
@@ -516,8 +521,11 @@ module.exports = exports = {
 
 				// If the type doesn't have any builting component, it must
 				// be always shown in its expanded-mode representation--the set
-				// of key values, so we won't show the expanded mode toggle
-				if ( !Object.keys( Constants.BUILTIN_COMPONENTS ).includes( this.type ) ) {
+				// of key values, so we won't show the expanded mode toggle.
+				if (
+					!Object.keys( Constants.BUILTIN_COMPONENTS ).includes( this.type ) &&
+					!( this.hasRenderer( this.type ) && this.hasParser( this.type ) )
+				) {
 					return false;
 				}
 
@@ -589,7 +597,15 @@ module.exports = exports = {
 					return 'wl-z-boolean';
 				}
 
-				// If there's no builtin component, always show expanded mode
+				// If there's no built-in component, check if there's a string renderer.
+				// TODO (T359669): Currently there are no type distinctions between renderers,
+				// all are string renderers. Whenever we create more types of renderers,
+				// we should consider checking the right type in here.
+				if ( this.hasRenderer( this.type ) && this.hasParser( this.type ) ) {
+					return 'wl-z-object-string-renderer';
+				}
+
+				// If there's no builtin component or renderer, always show expanded mode
 				this.setExpanded( true );
 				return 'wl-z-object-key-value-set';
 			},

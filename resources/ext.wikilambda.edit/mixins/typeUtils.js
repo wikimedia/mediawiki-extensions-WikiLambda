@@ -68,7 +68,7 @@ const Constants = require( '../Constants.js' ),
 							return !!filterResult;
 						} )[ 0 ] || false;
 				} else {
-					var result = array.filter( function ( item ) {
+					const result = array.filter( function ( item ) {
 						return item.key === key;
 					} );
 
@@ -664,7 +664,7 @@ const Constants = require( '../Constants.js' ),
 				const type = Constants.LINKED_TYPES.includes( keyType ) ?
 					Constants.Z_REFERENCE :
 					keyType;
-				var payload = { type };
+				let payload = { type };
 				// We need to hardcode the initialization payload for typed list/pair/map cases:
 				if ( type[ Constants.Z_FUNCTION_CALL_FUNCTION ] ) {
 					const functionId = type[ Constants.Z_FUNCTION_CALL_FUNCTION ];
@@ -710,6 +710,9 @@ const Constants = require( '../Constants.js' ),
 			 * @return {boolean}
 			 */
 			isTruthyOrEqual: function ( zobject, keys = [], equals = undefined ) {
+				if ( !zobject ) {
+					return false;
+				}
 				if ( keys.length === 0 ) {
 					return equals === undefined ?
 						!!zobject :

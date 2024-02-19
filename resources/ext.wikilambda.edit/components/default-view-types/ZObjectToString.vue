@@ -284,7 +284,7 @@ module.exports = exports = {
 		 * parent, who will set the expansion flag to true.
 		 */
 		expand: function () {
-			this.$emit( 'expand' );
+			this.$emit( 'expand', true );
 		}
 	}
 };

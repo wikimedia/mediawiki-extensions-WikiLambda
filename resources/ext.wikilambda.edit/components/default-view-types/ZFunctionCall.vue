@@ -13,7 +13,7 @@
 		<wl-z-object-to-string
 			:row-id="rowId"
 			data-testid="z-object-to-string"
-			@expand="$emit( 'expand' )"
+			@expand="$emit( 'expand', true )"
 		></wl-z-object-to-string>
 	</div>
 </template>

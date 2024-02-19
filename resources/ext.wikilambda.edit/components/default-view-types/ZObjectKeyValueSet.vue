@@ -25,7 +25,7 @@
 </template>
 
 <script>
-var mapGetters = require( 'vuex' ).mapGetters;
+const mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = exports = {
@@ -69,9 +69,7 @@ module.exports = exports = {
 		 */
 		childRowIds: function () {
 			return this.getChildrenByParentRowId( this.rowId )
-				.map( function ( row ) {
-					return row.id;
-				} );
+				.map( ( row ) => row.id );
 		},
 
 		/**

@@ -427,5 +427,13 @@
 	"wikilambda-special-create-function": "Title for the Special page to create a function",
 	"wikilambda-special-create-type": "Title for the Special page to create a type",
 	"wikilambda-special-create-implementation": "Title for the Special page to create an implementation",
-	"wikilambda-special-create-test": "Title for the Special page to create a test"
+	"wikilambda-special-create-test": "Title for the Special page to create a test",
+	"wikilambda-string-renderer-field-example": "Message to show the $1 example string in the renderer field",
+	"wikilambda-string-renderer-examples-title": "Title for the list of examples generated for a string renderer",
+	"wikilambda-renderer-error-footer-project-chat": "Error message footer to invite contributors to leave a message at the Wikifunctions Project chat page. Please do not change the target of the link.",
+	"wikilambda-renderer-api-error": "Error message for unexpected api or server errors when running parser or render functions",
+	"wikilambda-renderer-unexpected-result-error": "Error message for the string renderer returning an unexpected type as a result",
+	"wikilambda-renderer-unknown-error": "Error message for the string renderer returning an unknown error",
+	"wikilambda-parser-unexpected-result-error": "Error message for the string parser returning an unexpected type as a result",
+	"wikilambda-parser-unknown-error": "Error message for the string parser returning an unknown error"
 }

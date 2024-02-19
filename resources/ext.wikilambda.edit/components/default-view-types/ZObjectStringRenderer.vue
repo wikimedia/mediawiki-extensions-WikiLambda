@@ -1,0 +1,465 @@
+<!--
+	WikiLambda Vue component for a ZObject with a string renderer.
+
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
+	<div class="ext-wikilambda-zobject-string-renderer">
+
+		<!-- If expanded is false, show text field -->
+		<template v-if="!expanded || !initialized">
+			<p v-if="!edit" data-testid="rendered-text">
+				{{ renderedValue }}
+			</p>
+			<!-- We capture the change event instead of update:modelValue
+			to reduce the number of unnecessary calls to the orchestrator -->
+			<cdx-text-input
+				v-else
+				:class="{ 'cdx-text-input--status-error': hasFieldErrors }"
+				:model-value="renderedValue"
+				:placeholder="placeholderValue"
+				data-testid="rendered-text-input"
+				@change="setRenderedValue"
+			></cdx-text-input>
+			<div
+				v-if="hasFieldErrors"
+				class="ext-wikilambda-zobject-string-renderer-error"
+			>
+				<cdx-message :type="fieldErrors[0].type" :inline="true">
+					<span v-html="getErrorMessage( fieldErrors[0] )"></span>
+				</cdx-message>
+				<a v-if="showExamplesLink" @click="openExamplesDialog">
+					{{ $i18n( 'wikilambda-string-renderer-examples-title' ).text() }}
+				</a>
+				<p
+					v-if="showErrorFooter"
+					class="ext-wikilambda-zobject-string-renderer-error-footer"
+					v-html="$i18n( 'wikilambda-renderer-error-footer-project-chat' ).parse()"
+				></p>
+			</div>
+		</template>
+
+		<!-- If expanded is true, show key-value set -->
+		<template v-else>
+			<wl-z-object-key-value-set
+				:row-id="rowId"
+				:edit="edit"
+				:depth="depth"
+				@set-type="setType"
+			></wl-z-object-key-value-set>
+		</template>
+
+		<!-- Renderer examples dialog -->
+		<cdx-dialog
+			:open="showExamplesDialog"
+			:title="$i18n( 'wikilambda-string-renderer-examples-title' ).text()"
+			:close-button-label="$i18n( 'wikilamda-toast-close' ).text()"
+			@update:open="showExamplesDialog = false"
+		>
+			<ul class="ext-wikilambda-zobject-string-renderer-examples">
+				<li v-for="example in renderedExamples" :key="example.testZid">
+					{{ example.result }}
+				</li>
+			</ul>
+			<template #footer>
+				<a :href="rendererUrl" target="_blank">{{ getLabel( rendererZid ) }}</a>
+			</template>
+		</cdx-dialog>
+	</div>
+</template>
+
+<script>
+const Constants = require( '../../Constants.js' ),
+	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
+	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
+	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
+	ZObjectKeyValueSet = require( './ZObjectKeyValueSet.vue' ),
+	errorUtils = require( '../../mixins/errorUtils.js' ),
+	typeUtils = require( '../../mixins/typeUtils.js' ).methods,
+	getValueFromCanonicalZMap = require( '../../mixins/schemata.js' ).methods.getValueFromCanonicalZMap,
+	mapActions = require( 'vuex' ).mapActions,
+	mapGetters = require( 'vuex' ).mapGetters;
+
+// @vue/component
+module.exports = exports = {
+	name: 'wl-z-object-string-renderer',
+	components: {
+		'cdx-dialog': CdxDialog,
+		'cdx-message': CdxMessage,
+		'cdx-text-input': CdxTextInput,
+		'wl-z-object-key-value-set': ZObjectKeyValueSet
+	},
+	mixins: [ errorUtils ],
+	props: {
+		rowId: {
+			type: Number,
+			required: false,
+			default: 0
+		},
+		edit: {
+			type: Boolean,
+			required: true
+		},
+		depth: {
+			type: Number,
+			required: true
+		},
+		type: {
+			type: String,
+			required: false,
+			default: undefined
+		},
+		expanded: {
+			type: Boolean,
+			required: true
+		}
+	},
+	data: function () {
+		return {
+			initialized: false,
+			renderedValue: '',
+			showExamplesDialog: false,
+			showExamplesLink: false,
+			showErrorFooter: false
+		};
+	},
+	computed: $.extend( mapGetters( [
+		'createObjectByType',
+		'getCurrentView',
+		'getLabel',
+		'getPassingTestZids',
+		'getParserZid',
+		'getRendererZid',
+		'getRendererExamples',
+		'getStoredObject',
+		'getUserLangCode',
+		'getUserLangZid',
+		'getZObjectAsJsonById',
+		'isCreateNewPage'
+	] ), {
+		/**
+		 * Return renderer function Zid
+		 *
+		 * @return {string}
+		 */
+		rendererZid: function () {
+			return this.getRendererZid( this.type );
+		},
+		/**
+		 * Return the url for the renderer wiki page
+		 *
+		 * @return {string}
+		 */
+		rendererUrl: function () {
+			return '/view/' + this.getUserLangCode + '/' + this.rendererZid;
+		},
+		/**
+		 * Return parser function Zid
+		 *
+		 * @return {string}
+		 */
+		parserZid: function () {
+			return this.getParserZid( this.type );
+		},
+		/**
+		 * Returns the rendered examples in case the renderer
+		 * tests were run.
+		 *
+		 * @return {Array}
+		 */
+		renderedExamples: function () {
+			return this.getRendererExamples( this.rendererZid );
+		},
+		/**
+		 * Return a dynamically generated placeholder for the renderer field
+		 * using the available tests for the renderer function. If none are
+		 * available, returns the fallback placeholder message.
+		 *
+		 * @return {string}
+		 */
+		placeholderValue: function () {
+			if ( this.renderedExamples.length > 0 ) {
+				const example = this.renderedExamples[ 0 ].result;
+				return this.$i18n( 'wikilambda-string-renderer-field-example', example ).text();
+			}
+			return '';
+		},
+		/**
+		 * Filters the passing test zids array and returns an array with the
+		 * test objects for those which are wellformed. We consider wellformed
+		 * tests those which have a call to the renderer function on the first
+		 * level, directly under the Test call key/Z20K1.
+		 *
+		 * @return {Array}
+		 */
+		validRendererTests: function () {
+			// We return an empty array if not initialized so that the
+			// component forces a value change in validRendererTests on expanse
+			// and collapse, and the watch function is re-run again if it had
+			// been interrupted. This can happen if there are multiple nested
+			// ZObjectStringRenderer fields.
+			if ( !this.initialized ) {
+				return [];
+			}
+
+			return this.getPassingTestZids( this.rendererZid )
+				// For each test Zid, get the stored test object
+				.map( ( zid ) => {
+					const zobject = this.getStoredObject( zid );
+					return {
+						zid,
+						zobject: zobject ? zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ] : undefined
+					};
+				} )
+				// Filter out undefined or not wellformed test objects
+				.filter( ( test ) => {
+					return typeUtils.isTruthyOrEqual( test.zobject, [
+						Constants.Z_TESTER_CALL,
+						Constants.Z_FUNCTION_CALL_FUNCTION
+					], this.rendererZid );
+				} );
+		}
+	} ),
+	methods: $.extend( mapActions( [
+		'getTestResults',
+		'runRendererTest',
+		'runRenderer',
+		'runParser',
+		'setError'
+	] ), {
+		/**
+		 * If the object type is changed, surface the event so that
+		 * the ZObjectKeyValue parent component makes the type change.
+		 *
+		 * @param {Object} payload
+		 */
+		setType: function ( payload ) {
+			this.$emit( 'set-type', payload );
+		},
+		/**
+		 * Update the local renderedValue variable with the new
+		 * value and trigger the function call to generate the new
+		 * parsed object and set its keys in the global store.
+		 *
+		 * @param {Object} event
+		 */
+		setRenderedValue: function ( event ) {
+			this.renderedValue = event.target.value;
+			this.generateParsedValue();
+		},
+		/**
+		 * Trigger the call to the Renderer function for this type
+		 * passing the current object values, and set the returned string
+		 * in the local renderedValue variable.
+		 */
+		generateRenderedValue: function () {
+			// If we are in view mode, only generate rendered value once
+			if ( !this.edit && this.initialized ) {
+				return;
+			}
+
+			const zobject = this.getZObjectAsJsonById( this.rowId );
+			this.runRenderer( {
+				rendererZid: this.rendererZid,
+				zobject,
+				zlang: this.getUserLangZid
+			} ).then( ( data ) => {
+				this.clearRendererError();
+				const response = data.response[ Constants.Z_RESPONSEENVELOPE_VALUE ];
+				if ( response === Constants.Z_VOID ) {
+					// Renderer returned void:
+					// get error from metadata object and show examples link
+					this.renderedValue = '';
+					this.showExamplesLink = ( this.renderedExamples.length > 0 );
+					const metadata = data.response[ Constants.Z_RESPONSEENVELOPE_METADATA ];
+					const errorMessage = this.extractErrorMessage( metadata );
+					this.setRendererError( errorMessage || this.$i18n( 'wikilambda-renderer-unknown-error',
+						this.rendererZid ).parse() );
+				} else if ( typeUtils.getZObjectType( response ) !== Constants.Z_STRING ) {
+					// Renderer returned unexpected type:
+					// show unexpected result error and project chat footer
+					this.renderedValue = '';
+					this.showErrorFooter = true;
+					this.setRendererError( this.$i18n( 'wikilambda-renderer-unexpected-result-error',
+						this.rendererZid ).parse() );
+				} else {
+					// Success:
+					// Update the locally saved renderedValue with the response
+					this.renderedValue = response;
+				}
+			} ).catch( () => {
+				this.setRendererError( this.$i18n( 'wikilambda-renderer-api-error' ).text() );
+			} );
+		},
+		/**
+		 * Trigger the call to the Parser function for this type
+		 * passing the current rendererValue, and set the returned object
+		 * in the global store.
+		 */
+		generateParsedValue: function () {
+			this.runParser( {
+				parserZid: this.parserZid,
+				zobject: this.renderedValue,
+				zlang: this.getUserLangZid
+			} ).then( ( data ) => {
+				this.clearRendererError();
+				const response = data.response[ Constants.Z_RESPONSEENVELOPE_VALUE ];
+				if ( response === Constants.Z_VOID ) {
+					// Parser returned void:
+					// get error from metadata object and show examples link
+					this.clearParsedValue();
+					const metadata = data.response[ Constants.Z_RESPONSEENVELOPE_METADATA ];
+					const errorMessage = this.extractErrorMessage( metadata );
+					this.showExamplesLink = ( this.renderedExamples.length > 0 );
+					this.setRendererError( errorMessage || this.$i18n( 'wikilambda-parser-unknown-error',
+						this.parserZid ).parse() );
+				} else if ( typeUtils.getZObjectType( response ) !== this.type ) {
+					// Parser return unexpected type:
+					// show unexpected result error and project chat footer
+					this.clearParsedValue();
+					this.showErrorFooter = true;
+					this.setRendererError( this.$i18n( 'wikilambda-parser-unexpected-result-error',
+						this.parserZid ).parse() );
+				} else {
+					// Success:
+					// Set the value of the returned ZObject
+					this.$emit( 'set-value', {
+						keyPath: [],
+						value: response
+					} );
+				}
+			} ).catch( () => {
+				this.setRendererError( this.$i18n( 'wikilambda-renderer-api-error' ).text() );
+			} );
+		},
+		/**
+		 * Resets the parsed key-values to a blank state.
+		 * To do this, it emits a setType event with the current type
+		 * which will make the parent ZObjectKeyValue component run
+		 * the changeType action.
+		 */
+		clearParsedValue: function () {
+			const value = this.createObjectByType( { type: this.type } );
+			this.$emit( 'set-value', {
+				keyPath: [],
+				value
+			} );
+		},
+		/**
+		 * Saves the given error message for current rowId
+		 *
+		 * @param {string} errorMessage
+		 */
+		setRendererError: function ( errorMessage ) {
+			this.setError( {
+				rowId: this.rowId,
+				errorType: Constants.errorTypes.ERROR,
+				errorMessage
+			} );
+		},
+		/**
+		 * Clears renderer field errors
+		 */
+		clearRendererError: function () {
+			this.showExamplesLink = false;
+			this.showErrorFooter = false;
+			this.clearFieldErrors();
+		},
+		/**
+		 * Runs the test results for the renderer function. This
+		 * call must be treated asynchronously, so all the results
+		 * will be gathered as reactive computed properties.
+		 */
+		generateRendererExamples: function () {
+			if ( this.edit ) {
+				this.getTestResults( {
+					zFunctionId: this.rendererZid
+				} ).then( () => {
+					// At this point getPassingTestZids is already returning the existing tests.
+					// If none exist and we are creating a new object, expand to key-value set
+					const setExpanded = (
+						( this.isCreateNewPage || this.getCurrentView === Constants.VIEWS.FUNCTION_EVALUATOR ) &&
+						( this.getPassingTestZids( this.rendererZid ).length === 0 )
+					);
+					this.$emit( 'expand', setExpanded );
+					this.initialized = true;
+				} );
+			} else {
+				this.$emit( 'expand', false );
+				this.initialized = true;
+			}
+		},
+		/**
+		 * Given a metadata object of a failed function call, extracts the value
+		 * of the Z500K1 key and, if it contains a message, returns it
+		 *
+		 * @param {Object} metadata
+		 * @return {string}
+		 */
+		extractErrorMessage: function ( metadata ) {
+			const error = getValueFromCanonicalZMap( metadata, 'errors' );
+			const errorInfo = error[ Constants.Z_ERROR_VALUE ][ Constants.Z_GENERIC_ERROR_VALUE ];
+			return ( ( typeof errorInfo === 'string' ) && ( !!errorInfo ) ) ? errorInfo : undefined;
+		},
+		/**
+		 * Opens the dialog with the renderer examples, if any.
+		 */
+		openExamplesDialog: function () {
+			this.showExamplesDialog = true;
+		}
+	} ),
+	watch: {
+		/**
+		 * Watch the prop expanded. When the field is collapsed
+		 * generate the rendered value. When the field is expanded
+		 * we clear the renderer errors.
+		 *
+		 * @param {boolean} value
+		 */
+		expanded: function ( value ) {
+			if ( value === false ) {
+				this.generateRenderedValue();
+			} else {
+				this.clearRendererError();
+			}
+		},
+		/**
+		 * Watch the computed property validRendererTests and whenever those
+		 * are updated, run the renderer function test with the user language
+		 * as second input.
+		 *
+		 * @param {Array} tests
+		 */
+		validRendererTests: function ( tests ) {
+			for ( const test of tests ) {
+				this.runRendererTest( {
+					rendererZid: this.rendererZid,
+					testZid: test.zid,
+					test: test.zobject,
+					zlang: this.getUserLangZid
+				} );
+			}
+		}
+	},
+	mounted: function () {
+		this.generateRenderedValue();
+		this.generateRendererExamples();
+	}
+};
+</script>
+
+<style lang="less">
+@import '../../ext.wikilambda.edit.less';
+
+.ext-wikilambda-zobject-string-renderer {
+	.ext-wikilambda-zobject-string-renderer-error {
+		margin-top: @spacing-25;
+
+		.ext-wikilambda-zobject-string-renderer-error-footer {
+			margin: 0;
+			color: @color-subtle;
+		}
+	}
+}
+</style>

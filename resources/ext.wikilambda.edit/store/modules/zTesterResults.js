@@ -22,7 +22,7 @@ function replaceCurrentObjectWithFullJSONObject( context, items ) {
 	return ( items || [] ).map( function ( item ) {
 		// if the item is the current object replace it
 		if ( !context.getters.getViewMode && item === context.getters.getCurrentZObjectId ) {
-			var zobject = context.getters.getZObjectAsJson;
+			let zobject = context.getters.getZObjectAsJson;
 			if ( item === Constants.NEW_ZID_PLACEHOLDER ) {
 				// If this object is not yet persisted, pass only the inner object to the API, as otherwise the API
 				// will complain about the placeholder ID Z0 not existing.
@@ -41,14 +41,11 @@ module.exports = exports = {
 	state: {
 		zTesterResults: {},
 		zTesterMetadata: {},
-		fetchingTestResults: false,
+		testResultsPromises: {},
 		errorState: false,
 		errorMessage: ''
 	},
 	getters: {
-		getFetchingTestResults: function ( state ) {
-			return state.fetchingTestResults;
-		},
 		getZTesterResults: function ( state ) {
 			/**
 			 * Retrieve the result value zTester a specific set of Function, tester and implementation.
@@ -60,13 +57,13 @@ module.exports = exports = {
 			 * @return {boolean}
 			 */
 			return function ( zFunctionId, zTesterId, zImplementationId ) {
-				var key = zFunctionId + ':' + zTesterId + ':' + zImplementationId;
+				const key = zFunctionId + ':' + zTesterId + ':' + zImplementationId;
 
 				if ( state.errorState ) {
 					return false;
 				}
 
-				var result = state.zTesterResults[ key ];
+				const result = state.zTesterResults[ key ];
 				return result &&
 					( result === Constants.Z_BOOLEAN_TRUE ||
 						( typeof result === 'object' && result[ Constants.Z_BOOLEAN_IDENTITY ] === Constants.Z_BOOLEAN_TRUE ) );
@@ -85,7 +82,7 @@ module.exports = exports = {
 			 * @return {Object} metadata
 			 */
 			return function ( zFunctionId, zTesterId, zImplementationId ) {
-				var key = zFunctionId + ':' + zTesterId + ':' + zImplementationId;
+				const key = zFunctionId + ':' + zTesterId + ':' + zImplementationId;
 
 				// TODO (T314267): Check for and handle state.errorState = true
 
@@ -102,12 +99,12 @@ module.exports = exports = {
 			 * @return {Object}
 			 */
 			return function ( zid ) {
-				var results = Object.keys( state.zTesterResults ).filter( function ( key ) {
+				const results = Object.keys( state.zTesterResults ).filter( function ( key ) {
 						return key.includes( zid ) && state.zTesterResults[ key ] !== undefined;
 					} ),
 					total = results.length,
 					passing = results.filter( function ( key ) {
-						var result = state.zTesterResults[ key ];
+						const result = state.zTesterResults[ key ];
 						return result &&
 							( result === Constants.Z_BOOLEAN_TRUE ||
 								( typeof result === 'object' && result[ Constants.Z_BOOLEAN_IDENTITY ] === Constants.Z_BOOLEAN_TRUE ) );
@@ -120,9 +117,60 @@ module.exports = exports = {
 					percentage: percentage
 				};
 			};
+		},
+		/**
+		 * Returns the Zids of the passing and connected tests for the given functionZid
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getPassingTestZids: function ( state, getters ) {
+			/**
+			 * @param {string} functionZid
+			 * @return {Array}
+			 */
+			function getPassingTestsForFunction( functionZid ) {
+
+				const connected = getters.getConnectedObjects( functionZid, Constants.Z_FUNCTION_TESTERS );
+				const zids = [];
+
+				for ( const key in state.zTesterResults ) {
+					const parts = key.split( ':' );
+					// Filter out tests for other functions
+					if ( parts[ 0 ] === functionZid ) {
+						const result = state.zTesterResults[ key ];
+						const passing = result && (
+							result === Constants.Z_BOOLEAN_TRUE ||
+							( typeof result === 'object' && result[ Constants.Z_BOOLEAN_IDENTITY ] === Constants.Z_BOOLEAN_TRUE )
+						);
+						// If test passes, return zid
+						if ( passing && connected.includes( parts[ 1 ] ) ) {
+							zids.push( parts[ 1 ] );
+						}
+					}
+				}
+				return [ ...new Set( zids ) ];
+			}
+			return getPassingTestsForFunction;
 		}
 	},
 	mutations: {
+		/**
+		 * Set or unset the unresolved promise to the testResults API call for a given functionZid.
+		 *
+		 * @param {Object} state
+		 * @param {string} functionZid
+		 * @param {Promise} testResultsPromise
+		 */
+		setTestResultsPromise: function ( state, functionZid, testResultsPromise = undefined ) {
+			if ( !testResultsPromise ) {
+				// Set as a resolved Promise if the tests for this function have been fetched
+				state.testResultsPromises[ functionZid ] = Promise.resolve();
+			} else {
+				state.testResultsPromises[ functionZid ] = testResultsPromise;
+			}
+		},
 		/**
 		 * Set the result of a specific test
 		 *
@@ -137,22 +185,16 @@ module.exports = exports = {
 			state.zTesterMetadata[ result.key ] = result.metadata;
 		},
 		/**
-		 * Set the fetching state of the test results
-		 *
-		 * @param {Object} state
-		 * @param {boolean} fetching
-		 */
-		setFetchingTestResults: function ( state, fetching ) {
-			state.fetchingTestResults = fetching;
-		},
-		/**
 		 * Clear all the test results and metadata
 		 *
 		 * @param {Object} state
+		 * @param {string} functionZid
 		 */
-		clearZTesterResults: function ( state ) {
+		clearZTesterResults: function ( state, functionZid ) {
 			state.zTesterResults = {};
 			state.zTesterMetadata = {};
+			// Clear Promise
+			delete state.testResultsPromises[ functionZid ];
 		},
 		/**
 		 * Set the error state and message
@@ -184,21 +226,22 @@ module.exports = exports = {
 		getTestResults: function ( context, payload ) {
 			const api = new mw.Api();
 
-			// If this API is already running, exit
-			if ( context.state.fetchingTestResults ) {
-				return;
-			}
-
 			// If function ZID is empty, exit
 			if ( !payload.zFunctionId ) {
 				return;
 			}
 
-			context.commit( 'setFetchingTestResults', true );
-			context.commit( 'setErrorState', false );
+			// Clear previous results and make sure that the call is triggered
 			if ( payload.clearPreviousResults ) {
-				context.commit( 'clearZTesterResults' );
+				context.commit( 'clearZTesterResults', payload.zFunctionId );
 			}
+
+			// If this API for this functionZid is already running, return promise
+			if ( payload.zFunctionId in context.state.testResultsPromises ) {
+				return context.state.testResultsPromises[ payload.zFunctionId ];
+			}
+
+			context.commit( 'setErrorState', false );
 
 			const implementations = replaceCurrentObjectWithFullJSONObject(
 				context,
@@ -215,7 +258,7 @@ module.exports = exports = {
 				return a.replace( '|', '🪈' );
 			} );
 
-			return api.get( {
+			const testResultsPromise = api.get( {
 				action: 'wikilambda_perform_test',
 				wikilambda_perform_test_zfunction: payload.zFunctionId,
 				wikilambda_perform_test_zimplementations: implementations.join( '|' ),
@@ -245,6 +288,8 @@ module.exports = exports = {
 						( testResult.zImplementationId || Constants.NEW_ZID_PLACEHOLDER );
 
 					// Collect zids
+					zids.push( testResult.zTesterId );
+					zids.push( testResult.zImplementationId );
 					zids.push( ...extractZIDs( status ) );
 					zids.push( ...extractZIDs( metadata ) );
 
@@ -254,7 +299,7 @@ module.exports = exports = {
 
 				// Make sure that all returned Zids are in library.js
 				context.dispatch( 'fetchZids', { zids: [ ...new Set( zids ) ] } );
-				context.commit( 'setFetchingTestResults', false );
+				context.commit( 'setTestResultsPromise', payload.zFunctionId );
 			} ).catch( function ( error, message ) {
 				mw.log.error( 'Tester API call was nothing: ' + error );
 
@@ -264,8 +309,11 @@ module.exports = exports = {
 				}
 
 				context.commit( 'setErrorState', errorMessage );
-				context.commit( 'setFetchingTestResults', false );
+				context.commit( 'setTestResultsPromise', payload.zFunctionId );
 			} );
+
+			context.commit( 'setTestResultsPromise', payload.zFunctionId, testResultsPromise );
+			return testResultsPromise;
 		}
 	}
 };
