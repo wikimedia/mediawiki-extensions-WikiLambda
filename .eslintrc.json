@@ -28,7 +28,7 @@
 				"ignoreTemplateLiterals": true
 			}
 		],
-		"no-var": "off",
+		"no-var": "warn",
 		"es-x/no-array-prototype-includes": "off",
 		"es-x/no-string-prototype-matchall": "off",
 		"jsdoc/require-param-type": "error",
