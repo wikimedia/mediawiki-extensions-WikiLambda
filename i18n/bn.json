@@ -13,7 +13,9 @@
 			"আজিজ",
 			"আফতাবুজ্জামান",
 			"খাত্তাব হাসান",
-			"Mahir256"
+			"Mahir256",
+			"Asked42",
+			"ZI Jony"
 		]
 	},
 	"wikilambda-desc": "কেন্দ্রীয় উইকিতে লিখিত, পরিচালিত এবং মূল্যায়িত ফাংশনগুলোর মূল্যায়ন আহ্বান করার জন্য উইকিটেক্সট পার্সার ফাংশন সহ উইকিমিডিয়া উইকি প্রদান করা।",
@@ -69,7 +71,7 @@
 	"wikilambda-editor-boolean-selector": "সত্য/মিথ্যা নির্বাচন করুন",
 	"wikilambda-implementation-selector-code": "কোড",
 	"wikilambda-code-editor-label": "কোড সম্পাদক",
-	"wikilambda-argref-default-label": "একটি যুক্তি নির্বাচন করুন",
+	"wikilambda-argref-default-label": "একটি আর্গুমেন্ট নির্বাচন করুন",
 	"wikilambda-implementation-selector": "একটি বাস্তবায়ন নির্বাচন করুন",
 	"wikilambda-implementation-none-found": "বর্তমানে এই ফাংশনের জন্য কোনও বাস্তবায়ন নেই।",
 	"wikilambda-function-are-you-sure-dialog-header": "আপনি কি নিশ্চিত?",

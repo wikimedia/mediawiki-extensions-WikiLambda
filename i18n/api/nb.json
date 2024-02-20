@@ -19,5 +19,10 @@
 	"apihelp-query+wikilambdaload_zobjects-example-full": "Søk etter objektene Z12 og Z4 og returner deres fulle JSON-representasjon.",
 	"apihelp-query+wikilambdaload_zobjects-example-language": "Søk etter objektene Z12 og Z4 og returner etikettene deres filtrert til spansk eller reservespråk.",
 	"apihelp-query+wikilambdaload_zobjects-example-error": "Søk etter objekt Z1 og det ikke-eksisterende Z012345789 og returner deres fulle JSON-representasjon.",
-	"apihelp-query+wikilambdaload_zobjects-example-canonical": "Søk etter objekt Z12 og returner dets kanoniske JSON-representasjon."
+	"apihelp-query+wikilambdaload_zobjects-example-canonical": "Søk etter objekt Z12 og returner dets kanoniske JSON-representasjon.",
+	"apihelp-wikilambda_edit-summary": "Opprett eller rediger et objekt.",
+	"apihelp-wikilambda_edit-param-summary": "Redigeringsforklaringsmelding",
+	"apihelp-wikilambda_edit-param-zid": "ZID for objektet som skal redigeres. Hvis denne er null blir et nytt objekt opprettet",
+	"apihelp-wikilambda_edit-param-zobject": "JSON-representasjon av objektet som skal lagres",
+	"apihelp-wikilambda_perform_test-param-nocache": "Hvorvidt mellomlagring skal brukes"
 }
