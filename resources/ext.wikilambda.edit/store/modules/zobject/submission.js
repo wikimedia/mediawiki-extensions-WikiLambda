@@ -10,7 +10,7 @@ const Constants = require( '../../../Constants.js' ),
 	convertTableToJson = require( '../../../mixins/zobjectUtils.js' ).methods.convertTableToJson,
 	hybridToCanonical = require( '../../../mixins/schemata.js' ).methods.hybridToCanonical,
 	saveZObject = require( '../../../mixins/api.js' ).methods.saveZObject,
-	isValueTruthy = require( '../../../mixins/typeUtils.js' ).methods.isValueTruthy;
+	isTruthyOrEqual = require( '../../../mixins/typeUtils.js' ).methods.isTruthyOrEqual;
 
 module.exports = exports = {
 	actions: {
@@ -71,7 +71,7 @@ module.exports = exports = {
 				case Constants.Z_IMPLEMENTATION:
 
 					// invalid if a function hasn't been defined
-					if ( !isValueTruthy( innerObject, [
+					if ( !isTruthyOrEqual( innerObject, [
 						Constants.Z_IMPLEMENTATION_FUNCTION,
 						Constants.Z_REFERENCE_ID
 					] ) ) {
@@ -90,11 +90,11 @@ module.exports = exports = {
 						// or if composition has an undefied Z7K1
 						// or if composition has an undefined Z18K1
 						if (
-							!isValueTruthy( innerObject, [ Constants.Z_IMPLEMENTATION_COMPOSITION ] ) ||
+							!isTruthyOrEqual( innerObject, [ Constants.Z_IMPLEMENTATION_COMPOSITION ] ) ||
 							(
 								innerObject[ Constants.Z_IMPLEMENTATION_COMPOSITION ][
 									Constants.Z_FUNCTION_CALL_FUNCTION ] &&
-								!isValueTruthy( innerObject, [
+								!isTruthyOrEqual( innerObject, [
 									Constants.Z_IMPLEMENTATION_COMPOSITION,
 									Constants.Z_FUNCTION_CALL_FUNCTION,
 									Constants.Z_REFERENCE_ID
@@ -103,7 +103,7 @@ module.exports = exports = {
 							(
 								innerObject[ Constants.Z_IMPLEMENTATION_COMPOSITION ][
 									Constants.Z_ARGUMENT_REFERENCE_KEY ] &&
-								!isValueTruthy( innerObject, [
+								!isTruthyOrEqual( innerObject, [
 									Constants.Z_IMPLEMENTATION_COMPOSITION,
 									Constants.Z_ARGUMENT_REFERENCE_KEY,
 									Constants.Z_STRING_VALUE
@@ -127,7 +127,7 @@ module.exports = exports = {
 					if ( innerObject[ Constants.Z_IMPLEMENTATION_CODE ] ) {
 
 						// invalid if no programming language is defined
-						if ( !isValueTruthy( innerObject, [
+						if ( !isTruthyOrEqual( innerObject, [
 							Constants.Z_IMPLEMENTATION_CODE,
 							Constants.Z_CODE_LANGUAGE,
 							Constants.Z_PROGRAMMING_LANGUAGE_CODE,
@@ -151,7 +151,7 @@ module.exports = exports = {
 						}
 
 						// invalid if no code is defined
-						if ( !isValueTruthy( innerObject, [
+						if ( !isTruthyOrEqual( innerObject, [
 							Constants.Z_IMPLEMENTATION_CODE,
 							Constants.Z_CODE_CODE,
 							Constants.Z_STRING_VALUE
@@ -180,7 +180,7 @@ module.exports = exports = {
 				// * Tester validation has undefined function call (Z20K3.Z7K1)
 				case Constants.Z_TESTER:
 					// invalid if no function is defined
-					if ( !isValueTruthy( innerObject, [
+					if ( !isTruthyOrEqual( innerObject, [
 						Constants.Z_TESTER_FUNCTION,
 						Constants.Z_REFERENCE_ID
 					] ) ) {
@@ -194,7 +194,7 @@ module.exports = exports = {
 					}
 
 					// invalid if no function call is set
-					if ( !isValueTruthy( innerObject, [
+					if ( !isTruthyOrEqual( innerObject, [
 						Constants.Z_TESTER_CALL,
 						Constants.Z_FUNCTION_CALL_FUNCTION,
 						Constants.Z_REFERENCE_ID
@@ -209,7 +209,7 @@ module.exports = exports = {
 					}
 
 					// invalid if no result validation is set
-					if ( !isValueTruthy( innerObject, [
+					if ( !isTruthyOrEqual( innerObject, [
 						Constants.Z_TESTER_VALIDATION,
 						Constants.Z_FUNCTION_CALL_FUNCTION,
 						Constants.Z_REFERENCE_ID

@@ -9,7 +9,7 @@
  */
 'use strict';
 
-var Constants = require( '../Constants.js' ),
+const Constants = require( '../Constants.js' ),
 	typeUtils = require( './typeUtils.js' ).methods;
 
 // Note: This is intentionally "wrong" in that it allows for Z0.
@@ -80,14 +80,21 @@ function hybridToCanonical( zobject ) {
 		[ Constants.Z_REFERENCE, Constants.Z_STRING ].includes( zobject[ Constants.Z_OBJECT_TYPE ] )
 	) {
 		canon = canonicalizeZ6OrZ9( zobject );
-	} else if ( zobject[ Constants.Z_OBJECT_TYPE ] &&
-		zobject[ Constants.Z_OBJECT_TYPE ][ Constants.Z_FUNCTION_CALL_FUNCTION ] &&
-		// Accommodate both hybrid form and canonical
-		( zobject[ Constants.Z_OBJECT_TYPE ][ Constants.Z_FUNCTION_CALL_FUNCTION ][ Constants.Z_REFERENCE_ID ] ===
-				Constants.Z_TYPED_LIST ||
-			zobject[ Constants.Z_OBJECT_TYPE ][ Constants.Z_FUNCTION_CALL_FUNCTION ] === Constants.Z_TYPED_LIST )
+	} else if (
+		typeUtils.isTruthyOrEqual( zobject, [
+			Constants.Z_OBJECT_TYPE,
+			Constants.Z_FUNCTION_CALL_FUNCTION
+		], Constants.Z_TYPED_LIST ) ||
+		typeUtils.isTruthyOrEqual( zobject, [
+			Constants.Z_OBJECT_TYPE,
+			Constants.Z_FUNCTION_CALL_FUNCTION,
+			Constants.Z_REFERENCE_ID
+		], Constants.Z_TYPED_LIST )
 	) {
-		canon = hybridToCanonical( listifyArray( zobject ) );
+		canon = [
+			hybridToCanonical( zobject[ Constants.Z_OBJECT_TYPE ] ),
+			...hybridToCanonical( listifyArray( zobject ) )
+		];
 	} else if ( zobject[ Constants.Z_OBJECT_TYPE ] &&
 		// Accommodate both hybrid form and canonical
 		( zobject[ Constants.Z_OBJECT_TYPE ][ Constants.Z_REFERENCE_ID ] === Constants.Z_QUOTE ||

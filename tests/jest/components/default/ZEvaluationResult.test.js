@@ -9,16 +9,21 @@
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	ZEvaluationResult = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZEvaluationResult.vue' );
 
 describe( 'ZEvaluationResult', () => {
 	var getters;
 	beforeEach( () => {
 		getters = {
+			getCurrentZObjectId: createGetterMock( 'Z0' ),
 			getLabel: createGettersWithFunctionsMock(),
+			getLabelData: createGettersWithFunctionsMock(),
 			getMapValueByKey: createGettersWithFunctionsMock( undefined ),
 			getRowByKeyPath: createGettersWithFunctionsMock( undefined ),
-			getZObjectAsJsonById: createGettersWithFunctionsMock( {} )
+			getZObjectAsJsonById: createGettersWithFunctionsMock( {} ),
+			getZObjectTypeByRowId: createGettersWithFunctionsMock( 'Z8' ),
+			getZPersistentContentRowId: createGettersWithFunctionsMock( 0 )
 		};
 		actions = {
 			fetchZids: jest.fn()
@@ -110,7 +115,7 @@ describe( 'ZEvaluationResult', () => {
 					edit: false
 				}
 			} );
-			expect( wrapper.find( '.ext-wikilambda-evaluation-result-metadata-dialog' ).exists() ).toBe( true );
+			expect( wrapper.findComponent( { name: 'wl-function-metadata-dialog' } ).exists() ).toBe( true );
 		} );
 	} );
 
@@ -153,7 +158,7 @@ describe( 'ZEvaluationResult', () => {
 					edit: false
 				}
 			} );
-			expect( wrapper.find( '.ext-wikilambda-evaluation-result-metadata-dialog' ).exists() ).toBe( true );
+			expect( wrapper.findComponent( { name: 'wl-function-metadata-dialog' } ).exists() ).toBe( true );
 			expect( wrapper.find( '.ext-wikilambda-evaluation-result-error-dialog' ).exists() ).toBe( true );
 		} );
 	} );

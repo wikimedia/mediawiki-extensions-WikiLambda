@@ -36,10 +36,9 @@
 		<div>
 			<!-- Function Metadata Dialog -->
 			<wl-function-metadata-dialog
+				v-if="hasMetadata"
 				:open="showMetadata"
-				class="ext-wikilambda-evaluation-result-metadata-dialog"
-				:implementation-label="activeImplementationLabel"
-				:tester-label="activeTesterLabel"
+				:header-text="implementationName"
 				:metadata="metadata"
 				@close-dialog="showMetadata = false"
 			></wl-function-metadata-dialog>
@@ -50,7 +49,7 @@
 				:open="showError"
 				class="ext-wikilambda-evaluation-result-error-dialog"
 				:close-button-label="closeLabel"
-				:title="errorText"
+				:title="$i18n( 'wikilambda-functioncall-metadata-errors' ).text()"
 				@update:open="showError = false"
 			>
 				<!-- TODO (T320669): Construct this more nicely -->
@@ -64,7 +63,7 @@
 </template>
 
 <script>
-var Constants = require( '../../Constants.js' ),
+const Constants = require( '../../Constants.js' ),
 	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
 	FunctionMetadataDialog = require( '../widgets/FunctionMetadataDialog.vue' ),
 	hybridToCanonical = require( '../../mixins/schemata.js' ).methods.hybridToCanonical,
@@ -91,9 +90,13 @@ module.exports = exports = {
 		};
 	},
 	computed: $.extend( mapGetters( [
+		'getCurrentZObjectId',
+		'getLabelData',
 		'getMapValueByKey',
 		'getRowByKeyPath',
-		'getZObjectAsJsonById'
+		'getZPersistentContentRowId',
+		'getZObjectAsJsonById',
+		'getZObjectTypeByRowId'
 	] ), {
 		/**
 		 * Returns the row Id of the Response Envelope Value/Z22K1
@@ -191,6 +194,23 @@ module.exports = exports = {
 		parsedMetaDataHelpLink: function () {
 			const unformattedLink = this.$i18n( 'wikilambda-metadata-help-link' ).text();
 			return mw.internalWikiUrlencode( unformattedLink );
+		},
+
+		/**
+		 * If we are in an implementation page, return the implementation
+		 * label in the user language. Else return undefined
+		 *
+		 * @return {string|undefined}
+		 */
+		implementationName: function () {
+			const contentRowId = this.getZPersistentContentRowId() || 0;
+			const contentType = this.getZObjectTypeByRowId( contentRowId );
+			// If the page is an implementation, return label if available
+			if ( contentType === Constants.Z_IMPLEMENTATION ) {
+				const labelData = this.getLabelData( this.getCurrentZObjectId );
+				return labelData ? labelData.label : undefined;
+			}
+			return undefined;
 		}
 	} ),
 	beforeCreate: function () {

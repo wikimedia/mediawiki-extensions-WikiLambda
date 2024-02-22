@@ -42,8 +42,7 @@
 				</div>
 				<wl-function-metadata-dialog
 					:open="showMetrics"
-					:implementation-label="activeImplementationLabel"
-					:tester-label="activeTesterLabel"
+					:header-text="activeImplementationLabel"
 					:metadata="metadata"
 					@close-dialog="closeMetricsDialog"
 				></wl-function-metadata-dialog>
