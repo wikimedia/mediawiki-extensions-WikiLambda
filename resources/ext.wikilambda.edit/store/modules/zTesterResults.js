@@ -203,11 +203,17 @@ module.exports = exports = {
 			const implementations = replaceCurrentObjectWithFullJSONObject(
 				context,
 				payload.zImplementations
-			);
+			).map( ( a ) => {
+				// (T358089) Encode any '|' characters of ZObjects so that they can be recovered after the API.
+				return a.replace( '|', '🪈' );
+			} );
 			const testers = replaceCurrentObjectWithFullJSONObject(
 				context,
 				payload.zTesters
-			);
+			).map( ( a ) => {
+				// (T358089) Encode any '|' characters of ZObjects so that they can be recovered after the API.
+				return a.replace( '|', '🪈' );
+			} );
 
 			return api.get( {
 				action: 'wikilambda_perform_test',
