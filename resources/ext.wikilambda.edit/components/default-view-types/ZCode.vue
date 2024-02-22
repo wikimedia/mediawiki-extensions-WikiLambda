@@ -266,45 +266,6 @@ module.exports = exports = {
 					}
 				}
 				return programmingLangs;
-			},
-
-			/**
-			 * Returns whether the code object is in an error state
-			 *
-			 * @return {boolean}
-			 */
-			errorState: function () {
-				// the error is not guaranteed to exist
-				if ( this.getErrors[ this.rowId ] ) {
-					return this.getErrors[ this.rowId ].state;
-				}
-				return false;
-			},
-
-			/**
-			 * Returns the localized text that describes the error, if any,
-			 * else returns an emoty string.
-			 *
-			 * @return {string}
-			 */
-			errorMessage: function () {
-				if ( this.getErrors[ this.rowId ] && this.getErrors[ this.rowId ].state ) {
-					const messageStr = this.getErrors[ this.rowId ].message;
-					// TODO (T336873): These messages could be arbitrary and might not be defined.
-					// eslint-disable-next-line mediawiki/msg-doc
-					return this.$i18n( messageStr ).text();
-				}
-				return '';
-			},
-
-			/**
-			 * Returns the string identifying the error type, if any,
-			 * else returns undefined.
-			 *
-			 * @return {string | undefined}
-			 */
-			errorType: function () {
-				return this.getErrors[ this.rowId ] ? this.getErrors[ this.rowId ].type : undefined;
 			}
 		}
 	),
