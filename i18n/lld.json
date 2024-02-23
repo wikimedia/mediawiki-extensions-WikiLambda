@@ -5,6 +5,5 @@
 		]
 	},
 	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Fal|Fai}}",
-	"wikilambda-functioncall-metadata-errors-none": "Nët nia",
-	"wikilambda-functioncall-metadata-evaluation-duration": "Evaluazion dureda"
+	"wikilambda-functioncall-metadata-errors-none": "Nët nia"
 }

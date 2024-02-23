@@ -9,6 +9,5 @@
 	"action-wikilambda-execute-unsaved-code": "Лэдзӧ воштӧм реализация код",
 	"right-wikilambda-edit-error-key-label": "Веськӧтны шӧр пассэз сорсьӧм типлісь",
 	"right-wikilambda-edit-running-function-definition": "Веськӧтны функциялісь пырӧм/ петӧм, кӧда йитӧма реализациякӧт",
-	"right-wikilambda-execute-unsaved-code": "Лэдзны воштӧм реализация код",
-	"wikilambda-functioncall-metadata-execution-programming-language-version": "Программированнё кывлӧн мӧднёж петӧм"
+	"right-wikilambda-execute-unsaved-code": "Лэдзны воштӧм реализация код"
 }

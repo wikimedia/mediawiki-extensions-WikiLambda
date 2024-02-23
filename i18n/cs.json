@@ -74,8 +74,6 @@
 	"wikilambda-function-are-you-sure-dialog-header": "Jste si jisti?",
 	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Chyba|Chyby}}",
 	"wikilambda-functioncall-metadata-errors-none": "Nic",
-	"wikilambda-functioncall-metadata-evaluation-start-time": "Čas zahájení hodnocení",
-	"wikilambda-functioncall-metadata-evaluation-duration": "Doba trvání hodnocení",
 	"wikilambda-functioncall-error": "Chyba volání funkce: $1",
 	"wikilambda-functioncall-error-category": "Stránky s chybami volání Wikifunkcí",
 	"wikilambda-functioncall-error-category-desc": "Stránky s voláním Wikifunkcí, které končí obecnou chybou",

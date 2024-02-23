@@ -7,8 +7,6 @@
 	},
 	"wikilambda-implementation-none-found": "Čia bus rodomi jūsų sukurti įgyvendinimai.",
 	"wikilambda-implementation-create-new": "Pridėti įgyvendinimą",
-	"wikilambda-functioncall-metadata-orchestration-hostname": "\"Orkestravimo\" serveris",
-	"wikilambda-functioncall-metadata-evaluation-hostname": "Įvertinimo serveris",
 	"wikilambda-tester-none-found": "Čia bus rodomi jūsų sukurti testai.",
 	"wikilambda-tester-create-new": "Pridėti testą",
 	"wikilambda-tester-status-passed": "Pavyko",
