@@ -297,7 +297,7 @@ describe( 'zTesterResults Vuex module', function () {
 			'object and current object is new', async () => {
 				const currentObject = {
 						[ Constants.Z_PERSISTENTOBJECT_VALUE ]: {
-							lovely: 'implementation'
+							lovely: 'implementation|with|pipes'
 						}
 					},
 					zFunctionId = 'Z10000',
@@ -312,11 +312,12 @@ describe( 'zTesterResults Vuex module', function () {
 					zTesters: zTesters
 				} );
 
+				const expectedEncodedObject = JSON.stringify( currentObject[ Constants.Z_PERSISTENTOBJECT_VALUE ] ).replace( '|', '🪈' );
+
 				expect( getMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_perform_test',
 					wikilambda_perform_test_zfunction: zFunctionId,
-					wikilambda_perform_test_zimplementations: [
-						JSON.stringify( currentObject[ Constants.Z_PERSISTENTOBJECT_VALUE ] ), 'Z10002' ].join( '|' ),
+					wikilambda_perform_test_zimplementations: [ expectedEncodedObject, 'Z10002' ].join( '|' ),
 					wikilambda_perform_test_ztesters: zTesters.join( '|' ),
 					wikilambda_perform_test_nocache: false
 				} );

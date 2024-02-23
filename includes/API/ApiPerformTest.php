@@ -116,6 +116,8 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		foreach ( $requestedImplementations as $implementation ) {
 			$inlineImplementation = false;
 			if ( is_string( $implementation ) ) {
+				// (T358089) Decode any '|' characters of ZObjects that were escaped for the API transit
+				$implementation = str_replace( '🪈', '|', $implementation );
 				$decodedJson = FormatJson::decode( $implementation );
 				// If not JSON, assume we have received a ZID.
 				if ( $decodedJson ) {
@@ -178,6 +180,8 @@ class ApiPerformTest extends WikiLambdaApiBase {
 
 				$inlineTester = false;
 				if ( is_string( $requestedTester ) ) {
+					// (T358089) Decode any '|' characters of ZObjects that were escaped for the API transit
+					$requestedTester = str_replace( '🪈', '|', $requestedTester );
 					$decodedJson = FormatJson::decode( $requestedTester );
 					// If not JSON, assume we have received a ZID.
 					if ( $decodedJson ) {
