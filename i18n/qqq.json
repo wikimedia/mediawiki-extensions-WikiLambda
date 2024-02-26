@@ -24,6 +24,7 @@
 	"wikilambda-systemuser": "{{Ignore}}\n\nThe user name of the system user that creates the initial content of the wiki.",
 	"wikilambda-bootstrapcreationeditsummary": "{{Ignore}}\n\nThe edit comment made by the system user when creating the initial content of the wiki.",
 	"wikilambda-bootstrapupdatingeditsummary": "{{Ignore}}\n\nThe edit comment made by the system user when updating the initial content of the wiki.",
+	"wikilambda-migration-edit-comment": "{{Ignore}}\n\nThe edit comment made by the system user when making a code type reference conversion change.",
 	"group-functioneer": "In WikiLambda, \"functioneers\" are users who have some more rights for developing functions.\n\n{{doc-group|functioneer}}",
 	"group-functioneer-member": "In WikiLambda, \"functioneers\" are users who have some more rights for developing functions.\n\n{{doc-group|functioneer|member}}",
 	"grouppage-functioneer": "In WikiLambda, \"functioneers\" are users who have some more rights for developing functions.\n\n{{doc-group|functioneer|page}}",
