@@ -19,7 +19,7 @@
 					<span
 						v-if="!edit"
 						class="ext-wikilambda-value-text"
-					>{{ programmingLanguageValue }}</span>
+					>{{ programmingLanguageLiteral }}</span>
 					<cdx-select
 						v-else
 						v-model:selected="programmingLanguageValue"
@@ -50,7 +50,7 @@
 				<div class="ext-wikilambda-value-block">
 					<code-editor
 						class="ext-wikilambda-code__code-editor"
-						:mode="programmingLanguageValue"
+						:mode="programmingLanguageLiteral"
 						:read-only="!edit"
 						:value="editorValue"
 						data-testid="code-editor"
@@ -117,8 +117,10 @@ module.exports = exports = {
 			'getErrors',
 			'getLabel',
 			'getRowByKeyPath',
-			'getZCodeProgrammingLanguage',
+			'getZCodeProgrammingLanguageRow',
 			'getZCodeString',
+			'getZObjectTypeByRowId',
+			'getZReferenceTerminalValue',
 			'getInputsOfFunctionZid',
 			'getZImplementationFunctionZid'
 		] ),
@@ -174,34 +176,82 @@ module.exports = exports = {
 			},
 
 			/**
-			 * Terminal string with the programming language in which
-			 * the code is written or undefined if not found
+			 * Returns the programming language (Z16K1) row id
+			 *
+			 * @return {number}
+			 */
+			programmingLanguageRowId: function () {
+				const programmingLangRow = this.getZCodeProgrammingLanguageRow( this.rowId );
+				return programmingLangRow ? programmingLangRow.id : undefined;
+			},
+
+			/**
+			 * Returns whether the programming language field has a literal/Z61 or a reference/Z9
+			 *
+			 * @return {string}
+			 */
+			programmingLanguageType: function () {
+				return this.getZObjectTypeByRowId( this.programmingLanguageRowId );
+			},
+
+			/**
+			 * Returns the Zid of the programming language selected, or undefined if unselected.
+			 * When the programming language is a literal, finds the Zid in the Menu Items array by its literal.
 			 *
 			 * @return {string | undefined}
 			 */
+			programmingLanguageZid: function () {
+				// TODO: remove options for literal programming language when the time comes
+				let zId;
+				if ( this.programmingLanguageType === Constants.Z_PROGRAMMING_LANGUAGE ) {
+					const menuObject = this.programmingLanguageMenuItems.find( ( item ) =>
+						item.label === this.programmingLanguageLiteral
+					);
+					zId = menuObject ? menuObject.value : undefined;
+				} else {
+					zId = this.getZReferenceTerminalValue( this.programmingLanguageRowId );
+				}
+				return zId;
+			},
+
+			/**
+			 * Returns the literal of the programming language selected, or empty string if unselected.
+			 * When the programming language is a reference, finds the literal in the Menu Items array by
+			 * its zid.
+			 *
+			 * @return {string}
+			 */
+			programmingLanguageLiteral: function () {
+				let literal;
+				if ( this.programmingLanguageType === Constants.Z_PROGRAMMING_LANGUAGE ) {
+					const langObject = this.getRowByKeyPath( [
+						Constants.Z_PROGRAMMING_LANGUAGE_CODE,
+						Constants.Z_STRING_VALUE
+					], this.programmingLanguageRowId );
+					literal = langObject ? langObject.value : undefined;
+				} else {
+					const menuObject = this.programmingLanguageMenuItems.find( ( item ) =>
+						item.value === this.programmingLanguageValue
+					);
+					literal = menuObject ? menuObject.label : undefined;
+				}
+				return literal;
+			},
+
+			/**
+			 * Zid of the selected programming language or empty string if not set
+			 *
+			 * @return {string}
+			 */
 			programmingLanguageValue: {
 				get: function () {
-					return this.getZCodeProgrammingLanguage( this.rowId ) || '';
+					return this.programmingLanguageZid === undefined ? '' : this.programmingLanguageZid;
 				},
 				set: function ( val ) {
 					if ( val !== this.programmingLanguageValue ) {
 						this.selectLanguage( val );
 					}
 				}
-			},
-
-			/**
-			 * Returns the rowId for the programming language string
-			 *
-			 * @return {number | undefined}
-			 */
-			programmingLanguageRowId: function () {
-				const langRow = this.getRowByKeyPath( [
-					Constants.Z_CODE_LANGUAGE,
-					Constants.Z_PROGRAMMING_LANGUAGE_CODE,
-					Constants.Z_STRING_VALUE
-				], this.rowId );
-				return langRow ? langRow.id : undefined;
 			},
 
 			/**
@@ -244,22 +294,16 @@ module.exports = exports = {
 			programmingLanguageMenuItems: function () {
 				var programmingLangs = [];
 				if ( this.getAllProgrammingLangs.length > 0 ) {
-					for ( var lang in this.getAllProgrammingLangs ) {
+					for ( const lang of this.getAllProgrammingLangs ) {
 						programmingLangs.push(
 							{
-								label: this.getAllProgrammingLangs[
-									lang
-								][
+								label: lang[
 									Constants.Z_PERSISTENTOBJECT_VALUE
 								][
 									Constants.Z_PROGRAMMING_LANGUAGE_CODE
 								],
-								value: this.getAllProgrammingLangs[
-									lang
-								][
-									Constants.Z_PERSISTENTOBJECT_VALUE
-								][
-									Constants.Z_PROGRAMMING_LANGUAGE_CODE
+								value: lang[
+									Constants.Z_PERSISTENTOBJECT_ID
 								]
 							}
 						);
@@ -273,12 +317,13 @@ module.exports = exports = {
 		mapActions( [
 			'fetchZids',
 			'fetchAllZProgrammingLanguages',
+			'changeType',
 			'clearErrors'
 		] ),
 		{
 			/**
 			 * Sets the value of the Code programming language key (Z16K1) and
-			 * initializes the value of the of the Code content key (Z16K2)
+			 * initializes the value of the Code content key (Z16K2)
 			 *
 			 * @param {string} value
 			 */
@@ -288,12 +333,17 @@ module.exports = exports = {
 				// clear errors for language field
 				this.clearErrors( this.programmingLanguageRowId );
 
-				// update selected language
+				if ( this.programmingLanguageType === Constants.Z_PROGRAMMING_LANGUAGE ) {
+					this.changeType( {
+						id: this.programmingLanguageRowId,
+						type: Constants.Z_REFERENCE
+					} );
+				}
+
 				this.$emit( 'set-value', {
 					keyPath: [
 						Constants.Z_CODE_LANGUAGE,
-						Constants.Z_PROGRAMMING_LANGUAGE_CODE,
-						Constants.Z_STRING_VALUE
+						Constants.Z_REFERENCE_ID
 					],
 					value
 				} );
@@ -301,12 +351,12 @@ module.exports = exports = {
 				// update boiler plate code
 				let updatedBoilerPlateCode = '';
 				switch ( value ) {
-					case 'javascript':
+					case Constants.Z_PROGRAMMING_LANGUAGES.JAVASCRIPT:
 						updatedBoilerPlateCode = 'function ' +
 							this.functionZid + '( ' +
 							this.functionArgumentKeys.join( ', ' ) + ' ) {\n\n}';
 						break;
-					case 'python':
+					case Constants.Z_PROGRAMMING_LANGUAGES.PYTHON:
 						updatedBoilerPlateCode = 'def ' +
 							this.functionZid + '(' +
 							this.functionArgumentKeys.join( ', ' ) + '):\n\t';
@@ -356,7 +406,7 @@ module.exports = exports = {
 			immediate: true,
 			handler: function () {
 				// Check allowSetEditorValue to ensure we only set value in the editor when its current value should be
-				// overriden (e.g. when the editor is first loaded, or when the language changes). Ensuring this
+				// overridden (e.g. when the editor is first loaded, or when the language changes). Ensuring this
 				// prevents a bug that moves the cursor to the end of the editor on every keypress.
 				if ( this.allowSetEditorValue ) {
 					this.editorValue = this.codeValue || '';
