@@ -5,11 +5,15 @@
 		]
 	},
 	"apihelp-wikilambda_fetch-summary": "Hent JSON-modellen for ZObjects.",
-	"apihelp-wikilambda_fetch-param-zids": "ZObject-enes ZID-er som skal hentes, atskilt av vertikalstreker.",
+	"apihelp-wikilambda_fetch-param-zids": "ZID-ene for objekter som skal hentes.",
+	"apihelp-wikilambda_fetch-param-revisions": "Sideversjonene til de relevante ZID-ene som skal hentes. Hvis denne ikke er satt vil den siste versjonen hentes",
 	"apihelp-wikilambda_fetch-param-language": "Språket resultater skal returneres på.",
 	"apihelp-wikilambda_fetch-example-single": "Hent et enkelt ZObject, Z1.",
+	"apihelp-wikilambda_fetch-example-single-old": "Hent sideversjon 12 av ett enkelt objekt, Z1.",
 	"apihelp-wikilambda_fetch-example-multiple": "Hent tre ZObject-er: Z1, Z2 og Z3.",
+	"apihelp-wikilambda_fetch-example-multiple-old": "Hent sideversjon 12 av objekt Z1, sideversjon 14 av Z2 og sideversjon 25 av Z3.",
 	"apierror-wikilambda_fetch-missingzid": "Den gitte ZID-en «$1» finnes ikke på denne wikien.",
+	"apihelp-wikilambda_function_call-param-zobject": "Objekt for funksjonskall",
 	"apihelp-query+wikilambdasearch_labels-summary": "Denne API-spørringslistegeneratoren lar deg søke i ZObject-er etter etiketter på et gitt språk. Den finnes primært for å støtte look-ahead-søkesystemet",
 	"apihelp-query+wikilambdasearch_labels-param-search": "Søkeordet",
 	"apihelp-query+wikilambdasearch_labels-param-language": "MediaWiki-språkkoden det skal søkes på",
@@ -19,5 +23,10 @@
 	"apihelp-query+wikilambdaload_zobjects-example-full": "Søk etter objektene Z12 og Z4 og returner deres fulle JSON-representasjon.",
 	"apihelp-query+wikilambdaload_zobjects-example-language": "Søk etter objektene Z12 og Z4 og returner etikettene deres filtrert til spansk eller reservespråk.",
 	"apihelp-query+wikilambdaload_zobjects-example-error": "Søk etter objekt Z1 og det ikke-eksisterende Z012345789 og returner deres fulle JSON-representasjon.",
-	"apihelp-query+wikilambdaload_zobjects-example-canonical": "Søk etter objekt Z12 og returner dets kanoniske JSON-representasjon."
+	"apihelp-query+wikilambdaload_zobjects-example-canonical": "Søk etter objekt Z12 og returner dets kanoniske JSON-representasjon.",
+	"apihelp-wikilambda_edit-summary": "Opprett eller rediger et objekt.",
+	"apihelp-wikilambda_edit-param-summary": "Redigeringsforklaringsmelding",
+	"apihelp-wikilambda_edit-param-zid": "ZID for objektet som skal redigeres. Hvis denne er null blir et nytt objekt opprettet",
+	"apihelp-wikilambda_edit-param-zobject": "JSON-representasjon av objektet som skal lagres",
+	"apihelp-wikilambda_perform_test-param-nocache": "Hvorvidt mellomlagring skal brukes"
 }
