@@ -295,7 +295,7 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Returns the human readable lable for the function selector block
+		 * Returns the human readable label for the function selector block
 		 *
 		 * @return {string}
 		 */
@@ -304,7 +304,7 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Returns the human readable lable for the function call inputs block
+		 * Returns the human readable label for the function call inputs block
 		 *
 		 * @return {string}
 		 */
