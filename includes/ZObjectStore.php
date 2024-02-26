@@ -313,6 +313,7 @@ class ZObjectStore {
 		$this->userGroupManager->addUserToGroup( $user, 'sysop' );
 		$this->userGroupManager->addUserToGroup( $user, 'functionmaintainer' );
 		$this->userGroupManager->addUserToGroup( $user, 'functioneer' );
+		$this->userGroupManager->addUserToGroup( $user, 'wikifunctions-staff' );
 		return $this->updateZObject( $zid, $data, $summary, $user, $flags );
 	}
 
