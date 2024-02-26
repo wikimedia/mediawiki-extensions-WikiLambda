@@ -259,6 +259,10 @@ module.exports = exports = {
 						break;
 					default:
 						language = this.getLanguageOfImplementation( zid );
+						if ( this.isValidZidFormat( language ) ) {
+							this.fetchZids( { zids: [ language ] } );
+							language = this.getLabel( language );
+						}
 				}
 
 				// Build the table data for the implementations table
@@ -521,6 +525,7 @@ module.exports = exports = {
 		'disconnectTests',
 		'fetchImplementations',
 		'fetchTests',
+		'fetchZids',
 		'getTestResults'
 	] ), {
 		/**

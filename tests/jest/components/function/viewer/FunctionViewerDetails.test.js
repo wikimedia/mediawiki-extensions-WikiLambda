@@ -27,6 +27,15 @@ const mockData = {
 		label: 'Z444 name',
 		type: 'Z14K3',
 		language: 'javascript'
+	},
+	Z555: {
+		label: 'Z555 name',
+		type: 'Z14K3',
+		language: 'Z600'
+	},
+	Z600: {
+		label: 'JavaScript',
+		type: 'Z61'
 	}
 };
 
@@ -51,13 +60,14 @@ describe( 'FunctionViewerDetails', () => {
 			} );
 		};
 		const allTests = [ 'Z111', 'Z222' ];
-		const allImplementations = [ 'Z333', 'Z444' ];
+		const allImplementations = [ 'Z333', 'Z444', 'Z555' ];
 		actions = {
 			connectImplementations: createAction(),
 			connectTests: createAction(),
 			disconnectImplementations: createAction(),
 			disconnectTests: createAction(),
 			getTestResults: jest.fn(),
+			fetchZids: jest.fn(),
 			fetchImplementations: jest.fn( () => {
 				return { then: ( fn ) => fn( allImplementations ) };
 			} ),
@@ -69,7 +79,7 @@ describe( 'FunctionViewerDetails', () => {
 			getConnectedTests: createGettersWithFunctionsMock( [ 'Z222' ] ),
 			getConnectedImplementations: createGettersWithFunctionsMock( [ 'Z444' ] ),
 			getUserLangCode: createGetterMock( 'Z1002' ),
-			getCurrentZObjectId: createGetterMock( 'Z555' ),
+			getCurrentZObjectId: createGetterMock( 'Z666' ),
 			getLanguageOfImplementation: () => ( zid ) => {
 				const data = mockData[ zid ];
 				return data ? data.language : undefined;
@@ -106,7 +116,7 @@ describe( 'FunctionViewerDetails', () => {
 		const implTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 0 ];
 		const implTableItems = implTable.props( 'body' );
 
-		expect( implTableItems ).toHaveLength( 2 );
+		expect( implTableItems ).toHaveLength( 3 );
 		expect( implTableItems[ 0 ].checkbox.props.modelValue ).toBe( false );
 		expect( implTableItems[ 0 ].language.title ).toEqual( 'Composition' );
 		expect( implTableItems[ 0 ].name.title ).toEqual( 'Z333 name' );
@@ -115,6 +125,10 @@ describe( 'FunctionViewerDetails', () => {
 		expect( implTableItems[ 1 ].language.title ).toEqual( 'javascript' );
 		expect( implTableItems[ 1 ].name.title ).toEqual( 'Z444 name' );
 		expect( implTableItems[ 1 ].state.title ).toEqual( 'Connected' );
+		expect( implTableItems[ 2 ].checkbox.props.modelValue ).toBe( false );
+		expect( implTableItems[ 2 ].language.title ).toEqual( 'JavaScript' );
+		expect( implTableItems[ 2 ].name.title ).toEqual( 'Z555 name' );
+		expect( implTableItems[ 2 ].state.title ).toEqual( 'Disconnected' );
 	} );
 
 	it( 'passes testers to table correctly', async () => {
@@ -205,6 +219,7 @@ describe( 'FunctionViewerDetails', () => {
 			const implTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 0 ];
 			implTable.props( 'body' )[ 0 ].checkbox.props[ 'onUpdate:modelValue' ]( true );
 			implTable.props( 'body' )[ 1 ].checkbox.props[ 'onUpdate:modelValue' ]( true );
+			implTable.props( 'body' )[ 2 ].checkbox.props[ 'onUpdate:modelValue' ]( true );
 
 			await waitFor( () => expect( implTable.props( 'header' ).checkbox.props.modelValue ).toBe( true ) );
 		} );
@@ -229,6 +244,7 @@ describe( 'FunctionViewerDetails', () => {
 			const implTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 0 ];
 			implTable.props( 'body' )[ 0 ].checkbox.props[ 'onUpdate:modelValue' ]( true );
 			implTable.props( 'body' )[ 1 ].checkbox.props[ 'onUpdate:modelValue' ]( true );
+			implTable.props( 'body' )[ 2 ].checkbox.props[ 'onUpdate:modelValue' ]( true );
 			await waitFor( () => expect( implTable.props( 'header' ).checkbox.props.modelValue ).toBe( true ) );
 
 			implTable.props( 'header' ).checkbox.props[ 'onUpdate:modelValue' ]( false );
@@ -236,6 +252,7 @@ describe( 'FunctionViewerDetails', () => {
 			await waitFor( () => {
 				expect( implTable.props( 'body' )[ 0 ].checkbox.props.modelValue ).toBe( false );
 				expect( implTable.props( 'body' )[ 1 ].checkbox.props.modelValue ).toBe( false );
+				expect( implTable.props( 'body' )[ 2 ].checkbox.props.modelValue ).toBe( false );
 			} );
 		} );
 	} );
@@ -306,7 +323,7 @@ describe( 'FunctionViewerDetails', () => {
 			await waitFor( () => {
 				expect( actions.connectImplementations ).toHaveBeenCalledWith( expect.anything(), {
 					rowId: 123,
-					zids: [ 'Z333' ]
+					zids: [ 'Z333', 'Z555' ]
 				} );
 				expect( wrapper.findComponent( { name: 'cdx-message' } ).exists() ).toBe( false );
 			} );

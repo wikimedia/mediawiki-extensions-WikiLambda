@@ -186,6 +186,26 @@ describe( 'library module', function () {
 				expect( args[ 2 ].Z17K2 ).toEqual( 'Z802K3' );
 			} );
 		} );
+
+		describe( 'getLanguageOfImplementation', function () {
+			beforeEach( function () {
+				state.objects = mockApiZids;
+			} );
+
+			it( 'gets language of a code implementation with a referenced programming language', function () {
+				const zid = 'Z20005';
+				const expected = 'Z600';
+				const actual = libraryModule.getters.getLanguageOfImplementation( state )( zid );
+				expect( actual ).toBe( expected );
+			} );
+
+			it( 'gets language of a code implementation with a literal programming language', function () {
+				const zid = 'Z20006';
+				const expected = 'javascript';
+				const actual = libraryModule.getters.getLanguageOfImplementation( state )( zid );
+				expect( actual ).toBe( expected );
+			} );
+		} );
 	} );
 
 	describe( 'Actions', function () {

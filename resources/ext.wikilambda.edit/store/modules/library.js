@@ -240,8 +240,20 @@ module.exports = exports = {
 				}
 				implementation = implementation[ Constants.Z_PERSISTENTOBJECT_VALUE ];
 				if ( Constants.Z_IMPLEMENTATION_CODE in implementation ) {
+					// If code is literal: return literal
+					if (
+						typeUtils.isTruthyOrEqual( implementation, [
+							Constants.Z_IMPLEMENTATION_CODE,
+							Constants.Z_CODE_LANGUAGE,
+							Constants.Z_PROGRAMMING_LANGUAGE_CODE
+						] )
+					) {
+						return implementation[ Constants.Z_IMPLEMENTATION_CODE ][
+							Constants.Z_CODE_LANGUAGE ][ Constants.Z_PROGRAMMING_LANGUAGE_CODE ];
+					}
+					// Else, code is reference: return zid
 					return implementation[ Constants.Z_IMPLEMENTATION_CODE ][
-						Constants.Z_CODE_LANGUAGE ][ Constants.Z_PROGRAMMING_LANGUAGE_CODE ];
+						Constants.Z_CODE_LANGUAGE ];
 				}
 				return undefined;
 			}
