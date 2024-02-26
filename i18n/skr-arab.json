@@ -11,6 +11,8 @@
 	"wikilambda-zobject-to-string-enter-string": "تند درج کرو",
 	"wikilambda-zobjectselector-no-results": "کوئی نتیجہ نی لبھا۔",
 	"wikilambda-code-editor-label": "کوڈ ایڈیٹر",
+	"wikilambda-functioncall-metadata-implementation-name": "ناں",
+	"wikilambda-functioncall-metadata-programming-language-version": "ورژن",
 	"wikilambda-tester-create-new": "ٹیسٹ شامل کرو",
 	"wikilambda-tester-status-ready": "تیار",
 	"wikilambda-tester-status-run": "دوڑ",

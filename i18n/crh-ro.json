@@ -5,6 +5,8 @@
 		]
 	},
 	"wikilambda-zobjectselector-no-results": "Netiğe tapîlamadî.",
+	"wikilambda-functioncall-metadata-implementation-name": "At",
+	"wikilambda-functioncall-metadata-programming-language-version": "Versiyon",
 	"wikilambda-about-widget-title": "Hakkînda",
 	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|tíl}}",
 	"wikilambda-about-widget-done-button": "Píttí",
