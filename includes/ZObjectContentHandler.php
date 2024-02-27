@@ -437,11 +437,6 @@ class ZObjectContentHandler extends ContentHandler {
 			$langCodeType, $langNameType, $userLanguageCode, $isoCodeClassName
 		);
 
-		$prefix = Html::element(
-			'span', [ 'class' => 'ext-wikilambda-viewpage-header-title' ],
-			$zobjectType[ 'title' ]
-		);
-
 		$untitledStyle = $labelText === wfMessage( 'wikilambda-editor-default-name' )->text() ?
 			'ext-wikilambda-viewpage-header--title-untitled' : null;
 
@@ -478,8 +473,7 @@ class ZObjectContentHandler extends ContentHandler {
 				'lang' => ( $untitledStyle === null ? $userLanguageCode : $langCodeType ),
 				'class' => 'ext-wikilambda-viewpage-header'
 			],
-			$isoCodeObjectType . ' ' . $prefix .
-				wfMessage( 'colon-separator' )->text() .
+			$isoCodeObjectType . ' ' .
 				// (T356731) When $isoCodeObjectName is an empty string, colon-separator already
 				// adds/removes the needed/unneeded whitespace for languages. Always adding a
 				// space would unexpectedly add unneeded extra whitespace for languages including
