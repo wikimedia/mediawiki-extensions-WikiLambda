@@ -80,6 +80,7 @@
 	"wikilambda-editor-zobject-addkey": "添加鍵：",
 	"wikilambda-editor-zobject-removekey-tooltip": "從這個 ZList 移除此鍵/值",
 	"wikilambda-editor-zobject-clearitem-tooltip": "將此值留空",
+	"wikilambda-modeselector-genericliteral": "綜合",
 	"wikilambda-publish-lose-changes-prompt": "如果您沒有發布就離開，您將遺失所做的編輯。",
 	"specialpages-group-wikilambda": "Wikifunctions頁面",
 	"wikilambda-editor-argument-list-label": "參數列",
