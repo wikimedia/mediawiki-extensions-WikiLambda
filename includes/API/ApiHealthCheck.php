@@ -75,9 +75,23 @@ class ApiHealthCheck extends WikiLambdaApiBase {
 		] );
 		$response = $work->execute();
 		$data = json_decode( $response );
-		$resultField = json_encode( $data->{ 'Z22K1' } );
+
 		// Ensures that the expected outcome is a substring of the Z22K1 field.
-		return strpos( $resultField, $expectedOutcome ) !== false;
+		$resultField = json_encode( $data->{'Z22K1'} );
+		if ( strpos( $resultField, $expectedOutcome ) !== false ) {
+			return true;
+		}
+
+		$this->getLogger()->debug(
+			'API Health check test failed',
+			[
+				'test' => $requestFileName,
+				'expected' => $expectedOutcome,
+				'result' => $resultField,
+				'fullPayload' => $response,
+			]
+		);
+		return false;
 	}
 
 	/**
