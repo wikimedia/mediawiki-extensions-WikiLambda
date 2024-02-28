@@ -171,6 +171,7 @@
 	"wikilambda-editor-zobject-removekey-tooltip": "從物件中刪除此鍵/值",
 	"wikilambda-editor-zobject-clearitem-tooltip": "將此值留空",
 	"wikilambda-editor-label-select-programming-language-label": "選擇程式語言",
+	"wikilambda-modeselector-genericliteral": "綜合",
 	"wikilambda-publish-lose-changes-prompt": "如果您沒有發布就離開，您將遺失所做的編輯。",
 	"specialpages-group-wikilambda": "Wikifunctions頁面",
 	"wikilambda-editor-argument-list-label": "參數列",

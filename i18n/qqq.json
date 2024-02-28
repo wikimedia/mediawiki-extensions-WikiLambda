@@ -208,7 +208,7 @@
 	"wikilambda-function-are-you-sure-dialog-description": "Description for dialog confirming leaving edit mode without publishing",
 	"wikilambda-functioncall-metadata-errors": "Label for any error(s) returned from a function call.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-metadata-errors-summary": "Label for the brief form summary of any error(s) returned from a function call.\n\n{{doc-wikilambda}}",
-	"wikilambda-functioncall-metadata-errors-none": "String indicating no errors came back from a function call; follows 'i18n(Errors):'",
+	"wikilambda-functioncall-metadata-errors-none": "String indicating no errors came back from a function call. Follows {{msg-mw|Wikilambda-functioncall-metadata-errors}}.",
 	"wikilambda-functioncall-metadata-implementation-id": "Persistent ID of the implementation used to run the function.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-metadata-implementation-type": "Type of the implementation (Built-In, Evaluated, Composition) used to run the function.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-metadata-orchestration-start-time": "Label for when this function call started on the orchestrator.\n\n{{doc-wikilambda}}",
