@@ -35,7 +35,6 @@
 	"wikilambda-invalidzobject": "Error shown when an invalid ZObject definition edit is made.\n\n{{doc-wikilambda}}",
 	"wikilambda-invalidcontenttype": "Error shown when a non-ZObject is attempted to be saved on a ZObject page.\n\n{{doc-wikilambda}}",
 	"wikilambda-typeunavailable": "Label shown on ZObject pages when its type could not be determined.\n\n{{doc-wikilambda}}",
-	"wikilambda-noresult": "Error shown when a search has provided no result.",
 	"wikilambda-labelclash": "Error shown when a ZObject is attempted to be saved with a clashing label.\n\nParameters:\n* $1 - The ZID of the clashing page.\n* $2 - The language in which the other page's label clashes.\n\n{{doc-wikilambda}}",
 	"action-wikilambda-connect-implementation": "{{doc-action|wikilambda-connect-implementation}}",
 	"action-wikilambda-connect-tester": "{{doc-action|wikilambda-connect-tester}}",
