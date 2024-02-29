@@ -19,7 +19,7 @@
 			<cdx-button
 				class="ext-wikilambda-publish-widget__publish-button"
 				action="progressive"
-				:disabled="!isDirty"
+				:disabled="!isDirty && !revertToEdit"
 				data-testid="publish-button"
 				@click.stop="handlePublish"
 			>
@@ -49,7 +49,8 @@ const Constants = require( '../../Constants.js' ),
 	PublishDialog = require( './PublishDialog.vue' ),
 	eventLogger = require( '../../mixins/eventLogUtils.js' ).methods,
 	mapActions = require( 'vuex' ).mapActions,
-	mapGetters = require( 'vuex' ).mapGetters;
+	mapGetters = require( 'vuex' ).mapGetters,
+	getParameterByName = require( '../../mixins/urlUtils.js' ).methods.getParameterByName;
 
 // @vue/component
 module.exports = exports = {
@@ -119,6 +120,16 @@ module.exports = exports = {
 		 */
 		closeLeaveDialog: function () {
 			this.showLeaveEditorDialog = false;
+		},
+
+		/**
+		 * If 'oldid' exists in the query, return true.
+		 * If true, this enables the Publish button without needing an event.
+		 *
+		 * @return {boolean}
+		 */
+		revertToEdit: function () {
+			return !!( getParameterByName( 'oldid' ) || getParameterByName( 'undo' ) );
 		},
 
 		/**
