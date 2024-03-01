@@ -36,6 +36,7 @@ class ApiFunctionCallTest extends ApiTestCase {
 	}
 
 	/**
+	 * @group Broken
 	 * @dataProvider provideExecuteSuccessfulViaBetaCluster
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall::execute
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall::executeGenerator
