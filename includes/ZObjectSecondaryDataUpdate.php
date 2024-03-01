@@ -97,24 +97,25 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 			$zObjectStore->insertZObjectAliases( $zid, $ztype, $aliases, $returnType );
 		}
 
-		// Save function information in function table
-		if ( $ztype === ZTypeRegistry::Z_IMPLEMENTATION || $ztype === ZTypeRegistry::Z_TESTER ) {
-			$zFunction = null;
+		// Save function information in function table, if appropriate
+		// TODO: Have insertZFunctionReference do an update, and only delete if changing the type/target?
+		$zObjectStore->deleteZFunctionReference( $zid );
+		switch ( $ztype ) {
+			case ZTypeRegistry::Z_IMPLEMENTATION:
+				$zFunction = $innerZObject->getValueByKey( ZTypeRegistry::Z_IMPLEMENTATION_FUNCTION );
+				break;
 
-			if ( $ztype === ZTypeRegistry::Z_IMPLEMENTATION ) {
-				$zFunction = $innerZObject->getValueByKey(
-					ZTypeRegistry::Z_IMPLEMENTATION_FUNCTION
-				);
-			} elseif ( $ztype === ZTypeRegistry::Z_TESTER ) {
-				$zFunction = $innerZObject->getValueByKey(
-					ZTypeRegistry::Z_TESTER_FUNCTION
-				);
-			}
+			case ZTypeRegistry::Z_TESTER:
+				$zFunction = $innerZObject->getValueByKey( ZTypeRegistry::Z_TESTER_FUNCTION );
+				break;
 
-			if ( $zFunction && $zFunction->getZValue() ) {
-				$zObjectStore->deleteZFunctionReference( $zid );
-				$zObjectStore->insertZFunctionReference( $zid, $zFunction->getZValue(), $ztype );
-			}
+			default:
+				$zFunction = null;
+				break;
+		}
+
+		if ( $zFunction && $zFunction->getZValue() ) {
+			$zObjectStore->insertZFunctionReference( $zid, $zFunction->getZValue(), $ztype );
 		}
 
 		// If appropriate, clear wikilambda_ztester_results for this ZID
