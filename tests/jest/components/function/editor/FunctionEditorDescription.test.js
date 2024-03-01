@@ -46,7 +46,7 @@ describe( 'FunctionEditorDescription', () => {
 			zLanguage: 'Z1002'
 		} } );
 
-		const input = wrapper.findComponent( { name: 'cdx-text-input' } );
+		const input = wrapper.findComponent( { name: 'cdx-text-area' } );
 		expect( input.props( 'modelValue' ) ).toBe( 'Function description' );
 	} );
 
@@ -57,7 +57,7 @@ describe( 'FunctionEditorDescription', () => {
 			} } );
 
 			// ACT: Change value of name input
-			const input = wrapper.findComponent( { name: 'cdx-text-input' } );
+			const input = wrapper.findComponent( { name: 'cdx-text-area' } );
 			input.vm.$emit( 'change', { target: { value: '' } } );
 			await wrapper.vm.$nextTick();
 
@@ -76,7 +76,7 @@ describe( 'FunctionEditorDescription', () => {
 			} } );
 
 			// ACT: Change value of name input
-			const input = wrapper.findComponent( { name: 'cdx-text-input' } );
+			const input = wrapper.findComponent( { name: 'cdx-text-area' } );
 			input.vm.$emit( 'change', { target: { value: 'New Function Description' } } );
 			await wrapper.vm.$nextTick();
 
@@ -101,7 +101,7 @@ describe( 'FunctionEditorDescription', () => {
 			} } );
 
 			// ACT: Change value of name input
-			const input = wrapper.findComponent( { name: 'cdx-text-input' } );
+			const input = wrapper.findComponent( { name: 'cdx-text-area' } );
 			input.vm.$emit( 'change', { target: { value: 'New Function Description' } } );
 			await wrapper.vm.$nextTick();
 

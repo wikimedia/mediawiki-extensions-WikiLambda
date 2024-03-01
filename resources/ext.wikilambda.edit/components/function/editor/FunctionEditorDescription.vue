@@ -13,7 +13,7 @@
 			</label>
 		</div>
 		<div class="ext-wikilambda-function-block__body">
-			<cdx-text-input
+			<cdx-text-area
 				:id="descriptionInputId"
 				:model-value="description"
 				class="ext-wikilambda-function-definition-description__input"
@@ -22,7 +22,7 @@
 				:max-chars="maxDescriptionChars"
 				@input="updateRemainingChars"
 				@change="persistDescription"
-			></cdx-text-input>
+			></cdx-text-area>
 			<div class="ext-wikilambda-function-definition-description__counter">
 				{{ remainingChars }}
 			</div>
@@ -34,13 +34,13 @@
 const Constants = require( '../../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
-	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput;
+	CdxTextArea = require( '@wikimedia/codex' ).CdxTextArea;
 
 // @vue/component
 module.exports = exports = {
 	name: 'wl-function-editor-description',
 	components: {
-		'cdx-text-input': CdxTextInput
+		'cdx-text-area': CdxTextArea
 	},
 	props: {
 		zLanguage: {
@@ -197,6 +197,7 @@ module.exports = exports = {
 		color: @color-subtle;
 		margin-left: @spacing-50;
 		align-self: center;
+		float: right;
 	}
 }
 </style>
