@@ -22,7 +22,6 @@
 	"wikilambda-invalidzobject": "The provided content is not a valid Object.",
 	"wikilambda-invalidcontenttype": "The provided content is not an Object class.",
 	"wikilambda-typeunavailable": "Unrecognised type",
-	"wikilambda-noresult": "The search has provided no result.",
 	"wikilambda-labelclash": "The provided content's label clashes with Object '$1' for the label in '$2'.",
 	"action-wikilambda-connect-implementation": "connect an Implementation to its Function so it can be run",
 	"action-wikilambda-connect-tester": "connect a Test Case to its Function",
