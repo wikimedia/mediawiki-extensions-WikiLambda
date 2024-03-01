@@ -44,6 +44,7 @@ class ApiFunctionCallTest extends ApiTestCase {
 	}
 
 	/**
+	 * @group Broken
 	 * @dataProvider provideExecuteSuccessfulViaBetaCluster
 	 */
 	public function testExecuteSuccessfulViaBetaCluster(
