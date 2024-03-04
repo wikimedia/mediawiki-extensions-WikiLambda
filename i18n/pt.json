@@ -18,7 +18,6 @@
 	"wikilambda-invalidzobject": "O conteúdo fornecido não é um objeto válido.",
 	"wikilambda-invalidcontenttype": "O conteúdo fornecido não é uma classe objeto.",
 	"wikilambda-typeunavailable": "Tipo não reconhecido",
-	"wikilambda-noresult": "A pesquisa não forneceu nenhum resultado.",
 	"wikilambda-labelclash": "A etiqueta do conteúdo fornecido entra em conflito com o objeto '$1' para a etiqueta em '$2'.",
 	"action-wikilambda-connect-implementation": "ligar uma implementação à sua função para que possa ser executada",
 	"action-wikilambda-connect-tester": "ligar um caso de teste à sua função",

@@ -42,7 +42,6 @@
 	"wikilambda-invalidzobject": "El contenido proporcionado no constituye un Objeto Z válido.",
 	"wikilambda-invalidcontenttype": "El contenido proporcionado no es una clase de Objeto Z.",
 	"wikilambda-typeunavailable": "Tipo no reconocido",
-	"wikilambda-noresult": "La búsqueda no ha dado ningún resultado.",
 	"wikilambda-labelclash": "La etiqueta del contenido proporcionado choca con el «$1» del Objeto Z para la etiqueta en «$2».",
 	"action-wikilambda-connect-implementation": "conectar una implementación a su función para que pueda ejecutarse",
 	"action-wikilambda-connect-tester": "conectar un caso de prueba a su función",

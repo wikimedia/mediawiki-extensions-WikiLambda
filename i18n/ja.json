@@ -34,7 +34,6 @@
 	"wikilambda-invalidzobject": "指定されたコンテンツは有効なオブジェクトではありません。",
 	"wikilambda-invalidcontenttype": "指定されたコンテンツはオブジェクトクラスではありません。",
 	"wikilambda-typeunavailable": "認識できないタイプ",
-	"wikilambda-noresult": "検索結果が得られませんでした",
 	"wikilambda-labelclash": "指定されたコンテンツのラベルは、' $2 'のラベルのオブジェクト' $1 'と競合しています。",
 	"action-wikilambda-connect-implementation": "実装をその関数に接続して実行できるようにする",
 	"action-wikilambda-connect-tester": "テストケースのその 関数 への接続",

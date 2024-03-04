@@ -18,7 +18,6 @@
 	"wikilambda-invalidzobject": "ଦିଆ ବିଷୟବସ୍ତୁ ଏକ ବୈଧ ଅବଜେକ୍ଟ ନୁହେଁ ।",
 	"wikilambda-invalidcontenttype": "ଦିଆ ବିଷୟବସ୍ତୁ ଏକ ଅବଜେକ୍ଟ ଶ୍ରେଣୀ ନୁହେଁ ।",
 	"wikilambda-typeunavailable": "ଅଜଣା ପ୍ରକାର",
-	"wikilambda-noresult": "ଖୋଜାରୁ କୌଣସି ଫଳାଫଳ ମିଳିଲା ନାହିଁ ।",
 	"wikilambda-labelclash": "ଦିଆ ବିଷୟବସ୍ତୁର ନାମ '$2'ରେ ଥିବା ନାମ ପାଇଁ ଥିବା ଅବଜେକ୍ଟ '$1' ସହ ଅମେଳ ହେଉଛି ।",
 	"action-wikilambda-connect-implementation": "ଏହାର ଫଙ୍କସନ ସହ ଏକ ଇମ୍ପ୍ଲିମେଣ୍ଟେସନ ଯୋଡ଼ନ୍ତୁ ଫଳରେ ଏହା ଚଳାଯାଇପାରିବ ।",
 	"action-wikilambda-connect-tester": "ଏହାର ଫଙ୍କସନ ସହ ଏକ ଟେଷ୍ଟ କେସ ଯୋଡ଼ନ୍ତୁ",

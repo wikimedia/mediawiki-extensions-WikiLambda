@@ -19,7 +19,6 @@
 	"wikilambda-invalidzobject": "Kandungan yang disediakan bukan Objek yang sah.",
 	"wikilambda-invalidcontenttype": "Kandungan yang disediakan bukan kelas Objek.",
 	"wikilambda-typeunavailable": "Jenis yang tidak dikenali",
-	"wikilambda-noresult": "Carian tidak memberikan hasil.",
 	"wikilambda-labelclash": "Label kandungan yang disediakan bertembung dengan Objek '$1' untuk label pada '$2'.",
 	"action-wikilambda-connect-implementation": "sambungkan Pelaksanaan kepada Fungsinya supaya ia boleh dijalankan",
 	"action-wikilambda-connect-tester": "sambungkan Kes Ujian kepada Fungsinya",

@@ -19,7 +19,6 @@
 		]
 	},
 	"wikilambda-typeunavailable": "Неизвестный тип",
-	"wikilambda-noresult": "Поиск не дал результатов.",
 	"wikilambda-persistentzobject": "Объект",
 	"wikilambda-persistentzobject-contents": "Содержание",
 	"wikilambda-literal-type": "Буквально $1",

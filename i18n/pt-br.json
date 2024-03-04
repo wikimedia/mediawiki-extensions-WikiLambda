@@ -20,7 +20,6 @@
 	"wikilambda-invalidzobject": "O conteúdo fornecido não é um Objeto válido.",
 	"wikilambda-invalidcontenttype": "O conteúdo fornecido não é uma classe Objeto.",
 	"wikilambda-typeunavailable": "Tipo não reconhecido",
-	"wikilambda-noresult": "A pesquisa não forneceu nenhum resultado.",
 	"wikilambda-labelclash": "O rótulo do conteúdo fornecido entra em conflito com o Objeto '$1' para o rótulo em '$2'.",
 	"action-wikilambda-create-boolean": "criar novos Objetos Booleanos",
 	"action-wikilambda-create-unit": "criar novos Objeto Unidades",

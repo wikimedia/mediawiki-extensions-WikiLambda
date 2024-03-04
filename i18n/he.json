@@ -18,7 +18,6 @@
 	"wikilambda-invalidzobject": "התוכן שסופק אינו עצם תקין.",
 	"wikilambda-invalidcontenttype": "התוכן שסופק אינו מחלקה שמייצגת עצם.",
 	"wikilambda-typeunavailable": "סוג לא מוכר",
-	"wikilambda-noresult": "החיפוש לא הניב שום תוצאה.",
 	"wikilambda-labelclash": "התווית של התוכן שסופק מתנגשת עם העצם $1 עבור התווית בשפה $2.",
 	"action-wikilambda-connect-implementation": "לחבר מימוש לפונקציית שלו כדי שיהיה אפשר להריץ אותה",
 	"action-wikilambda-connect-tester": "לחבר בודק לפונקצייה שלו",

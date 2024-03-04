@@ -21,7 +21,6 @@
 	"wikilambda-invalidzobject": "เนื้อหาที่ระบุใช้ไม่ได้สำหรับวัตถุ",
 	"wikilambda-invalidcontenttype": "เนื้อหาที่ระบุไม่ใช่ชั้นของวัตถุ",
 	"wikilambda-typeunavailable": "ชนิดที่ไม่รู้จัก",
-	"wikilambda-noresult": "ไม่มีผลลัพธ์ตรงกับคำค้น",
 	"wikilambda-labelclash": "ป้ายกำกับเนื้อหาที่ระบุขัดกับป้ายกำกับของวัตถุ '$1' ใน '$2'",
 	"action-wikilambda-connect-implementation": "เชื่อมต่อการนำไปปฏิบัติเข้ากับฟังก์ขันเพื่อให้ใช้การได้",
 	"action-wikilambda-connect-tester": "เชื่อมต่อชุดทดสอบเข้ากับฟังก์ชัน",

@@ -30,7 +30,6 @@
 	"wikilambda-invalidzobject": "Sağlanan içerik geçerli bir Nesne değil.",
 	"wikilambda-invalidcontenttype": "Sağlanan içerik bir Nesne sınıfı değil.",
 	"wikilambda-typeunavailable": "Tanımlanamayan tür",
-	"wikilambda-noresult": "Arama bir sonuç vermedi.",
 	"wikilambda-labelclash": "Sağlanan içeriğin etiketi, '$2' dilindeki etiket için '$1' Nesnesi ile çakışıyor.",
 	"action-wikilambda-connect-implementation": "çalıştırılabilmesi için bir Uygulamayı İşlevine bağlamaya",
 	"action-wikilambda-connect-tester": "bir Test Senaryosunu İşlevine bağlamaya",

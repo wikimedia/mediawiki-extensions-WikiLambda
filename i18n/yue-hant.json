@@ -1,9 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
+			"H78c67c",
 			"Winston Sung"
 		]
 	},
 	"wikilambda-special-listduplicateobjectlabels-language": "語文",
-	"wikilambda-function-viewer-aliases-hide-language-button": "隱藏清單"
+	"wikilambda-function-viewer-aliases-hide-language-button": "顯示少啲語言"
 }

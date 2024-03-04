@@ -24,7 +24,6 @@
 	"wikilambda-invalidzobject": "Konten yang diberikan bukanlah Objek yang valid.",
 	"wikilambda-invalidcontenttype": "Konten yang diberikan bukanlah sebuah kelas Objek.",
 	"wikilambda-typeunavailable": "Tipe tidak dikenal",
-	"wikilambda-noresult": "Pencarian tidak menemukan apa-apa",
 	"wikilambda-labelclash": "Label konten yang diberikan bertentangan dengan Objek '$1' untuk label dalam '$2'.",
 	"action-wikilambda-connect-implementation": "menghubungkan Implementasi ke Fungsinya untuk menjalankannya",
 	"action-wikilambda-connect-tester": "menghubungkan Kasus Uji ke Fungsinya",

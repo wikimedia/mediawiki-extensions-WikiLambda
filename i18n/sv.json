@@ -21,7 +21,6 @@
 	"wikilambda-invalidzobject": "Det angivna innehållet är inte ett giltigt objekt.",
 	"wikilambda-invalidcontenttype": "Det angivna innehållet är inte en objekt-klass.",
 	"wikilambda-typeunavailable": "Okänd typ",
-	"wikilambda-noresult": "Sökningen gav inga resultat.",
 	"wikilambda-labelclash": "Det angivna innehållets etikett står i konflikt med objektet '$1' för etiketten i '$2'.",
 	"action-wikilambda-connect-implementation": "koppla en implementering till sin funktion så den kan köras",
 	"action-wikilambda-connect-tester": "koppla ett testfall till sin funktion",

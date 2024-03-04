@@ -27,7 +27,6 @@
 	"wikilambda-invalidzobject": "所提供的內容非有效物件。",
 	"wikilambda-invalidcontenttype": "所提供的內容不是物件類。",
 	"wikilambda-typeunavailable": "無法識別的類型",
-	"wikilambda-noresult": "搜尋沒有提供結果。",
 	"wikilambda-labelclash": "所提供的內容標籤與物件$1的$2標籤相衝突。",
 	"action-wikilambda-connect-implementation": "將實現與對應函數相連，使其可以執行",
 	"action-wikilambda-connect-tester": "將測試用例與對應函數相連",

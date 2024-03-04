@@ -11,7 +11,6 @@
 	"wikilambda-invalidzobject": "Укажаната содржина не претставува важечки ZObject.",
 	"wikilambda-invalidcontenttype": "Укажанаа содржина не претставува класа на ZObject.",
 	"wikilambda-typeunavailable": "Непрепознаен тип",
-	"wikilambda-noresult": "Пребарувањето не даде ништо.",
 	"wikilambda-labelclash": "Натписот на укажаната содржина се коси со ZObject „$1“ за натписот „$2“.",
 	"wikilambda-persistentzobject-contents": "Содржина",
 	"wikilambda-multilingualstring-nofallback": "Нема зададено натпис на овој јазик или прифатените резервни јазици",

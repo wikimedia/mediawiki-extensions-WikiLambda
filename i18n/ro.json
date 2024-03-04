@@ -19,7 +19,6 @@
 	"wikilambda-invalidzobject": "Conținutul furnizat nu este valid pentru un Obiect.",
 	"wikilambda-invalidcontenttype": "Conținutul furnizat nu este o clasă Object.",
 	"wikilambda-typeunavailable": "Tip nerecunoscut",
-	"wikilambda-noresult": "Căutarea nu a dat niciun rezultat.",
 	"action-wikilambda-create": "creați Obiecte noi",
 	"action-wikilambda-create-boolean": "creați Obiecte booleene noi",
 	"action-wikilambda-create-function": "creați Obiecte funcție noi",

@@ -17,7 +17,6 @@
 	"wikilambda-invalidzobject": "Predložena vsebina ni veljaven objekt.",
 	"wikilambda-invalidcontenttype": "Predložena vsebina ni objektni razred.",
 	"wikilambda-typeunavailable": "neprepoznana vrsta",
-	"wikilambda-noresult": "Iskanje ni našlo nobenega zadetka.",
 	"wikilambda-labelclash": "Oznaka predložene vsebine je v navzkrižju z objektom »$1« za oznako v »$2«.",
 	"action-wikilambda-connect-implementation": "povezovanje implementacije z njeno function, tako da jo je mogoče izvesti",
 	"action-wikilambda-connect-tester": "povezovanje testnega objekta z njegovo funkcijo",

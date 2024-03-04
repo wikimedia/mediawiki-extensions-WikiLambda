@@ -20,7 +20,6 @@
 	"wikilambda-invalidzobject": "Det gitte innholdet er ikke et gyldig objekt.",
 	"wikilambda-invalidcontenttype": "Det gitte innholdet er ikke en objektklasse.",
 	"wikilambda-typeunavailable": "Ukjent type",
-	"wikilambda-noresult": "Søket ga ingen resultater.",
 	"wikilambda-labelclash": "Det gitte innholdets etikett konflikterer med objektet «$1» for etiketten på «$2».",
 	"action-wikilambda-connect-implementation": "koble en implementering til funksjonen sin så den kan kjøres",
 	"action-wikilambda-connect-tester": "koble et testtilfelle til funksjonen sin",

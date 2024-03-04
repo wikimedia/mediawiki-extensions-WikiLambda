@@ -38,7 +38,6 @@
 	"wikilambda-invalidzobject": "所提供的内容非有效对象。",
 	"wikilambda-invalidcontenttype": "所提供的内容不是对象类。",
 	"wikilambda-typeunavailable": "不可识别种类",
-	"wikilambda-noresult": "搜索没有提供结果。",
 	"wikilambda-labelclash": "所提供的内容标签与对象$1的$2标签相冲突。",
 	"action-wikilambda-connect-implementation": "将实现与对应函数相连，使其可以运行",
 	"action-wikilambda-connect-tester": "将测试用例与对应函数相连",

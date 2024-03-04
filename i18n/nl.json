@@ -25,7 +25,6 @@
 	"wikilambda-invalidzobject": "De ingegeven inhoud is geen geldig object.",
 	"wikilambda-invalidcontenttype": "De ingegeven inhoud is geen objectklasse.",
 	"wikilambda-typeunavailable": "Onbekend type",
-	"wikilambda-noresult": "De zoekopdracht heeft geen resultaat opgeleverd.",
 	"wikilambda-labelclash": "Het label van de ingegeven inhoud botst met object '$1' met het label in '$2'.",
 	"action-wikilambda-connect-implementation": "een implementatie aan zijn functie te verbinden zodat deze kan worden uitgevoerd",
 	"action-wikilambda-connect-tester": "een tester op zijn functie aan te sluiten",

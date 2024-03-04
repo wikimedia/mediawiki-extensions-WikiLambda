@@ -31,7 +31,6 @@
 	"wikilambda-invalidzobject": "প্রদত্ত বিষয়বস্তু বৈধ বস্তু নয়।",
 	"wikilambda-invalidcontenttype": "প্রদত্ত উপাত্ত গুলো একটি বস্তু নয়।",
 	"wikilambda-typeunavailable": "ধরন অপরিচিত",
-	"wikilambda-noresult": "অনুসন্ধানে কোনো ফলাফল পাওয়া যায়নি।",
 	"action-wikilambda-connect-implementation": "একটি বাস্তবায়নকে এর ফাংশনে সংযুক্ত করুন যাতে এটি চালানো যায়",
 	"action-wikilambda-connect-tester": "একটি পরীক্ষার ক্ষেত্রকে সেটির ফাংশনের সাথে সংযুক্ত করুন",
 	"action-wikilambda-create": "নতুন বস্তু তৈরি করার",

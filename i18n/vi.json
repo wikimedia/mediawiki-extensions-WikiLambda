@@ -23,7 +23,6 @@
 	"wikilambda-invalidzobject": "Nội dung không phải là đối tượng hợp lệ.",
 	"wikilambda-invalidcontenttype": "Nội dung không phải là lớp đối tượng.",
 	"wikilambda-typeunavailable": "Không rõ kiểu dữ liệu",
-	"wikilambda-noresult": "Tìm kiếm không mang lại kết quả nào.",
 	"wikilambda-labelclash": "Nhãn của nội dung được cung cấp bị chặn bởi đối tượng '$1' với nhãn trong '$2'.",
 	"action-wikilambda-connect-implementation": "kết nối trường hợp sử dụng hàm để nó chạy được",
 	"action-wikilambda-connect-tester": "kết nối bài kiểm tra đến hàm",

@@ -17,7 +17,6 @@
 	"wikilambda-invalidzobject": "Le contento fornite non es un objecto valide.",
 	"wikilambda-invalidcontenttype": "Le contento fornite non es un classe de objecto.",
 	"wikilambda-typeunavailable": "Typo non recognoscite",
-	"wikilambda-noresult": "Le recerca non ha producite resultatos.",
 	"wikilambda-labelclash": "Le etiquetta del contento fornite es in conflicto con le objecto '$1' pro le etiquetta in '$2'.",
 	"action-wikilambda-connect-implementation": "connecter un implementation a su function de maniera que illo pote esser executate",
 	"action-wikilambda-connect-tester": "connecter un caso de test a su function",
