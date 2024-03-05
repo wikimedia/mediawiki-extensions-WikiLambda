@@ -301,10 +301,10 @@ EOT;
         }
     ],
     "validator": "Z106",
-    "deserialisers": [
+    "type converters to code": [
         "Z46"
     ],
-    "serialisers": [
+    "type converters from code": [
         "Z64"
     ]
 }

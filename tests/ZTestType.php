@@ -184,11 +184,11 @@ EOT;
 		"equality": "Z111",
 		"renderer": "Z111",
 		"parser": "Z111",
-        "deserialisers": [
+        "type converters to code": [
             "Z46",
 			"Z111"
         ],
-        "serialisers": [
+        "type converters from code": [
             "Z64",
 			"Z111"
         ]
