@@ -10,7 +10,8 @@
 			"Noretta93",
 			"Sofia Stecchi",
 			"Stefano",
-			"Sabas88"
+			"Sabas88",
+			"Sannita"
 		]
 	},
 	"wikilambda-desc": "Fornire alle wiki di Wikimedia una funzione di parsing del wikitesto che permetta di eseguire funzioni scritte, gestite ed eseguite su una wiki centralizzata.",
@@ -23,7 +24,12 @@
 	"wikilambda-typeunavailable": "Tipo non riconosciuto",
 	"wikilambda-noresult": "La ricerca non ha fornito risultati.",
 	"wikilambda-persistentzobject-contents": "Contenuti",
+	"wikilambda-multilingualstring-nofallback": "Nessuna etichetta definita in questa lingua o in una lingua di fallback accettata",
 	"wikilambda-viewmode-nojs": "Questa pagina viene visualizzata in modo limitato senza JavaScript.",
+	"wikilambda-reference": "Nota",
+	"wikilambda-literal": "Letterale",
+	"wikilambda-genericliteral": "Letterale generico",
+	"wikilambda-functioncall": "Chiamata di funzione",
 	"wikilambda-edit": "Modifica",
 	"wikilambda-helplink-button": "Aiuto",
 	"wikilambda-show-more": "Mostra altro",

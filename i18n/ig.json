@@ -2,9 +2,11 @@
 	"@metadata": {
 		"authors": [
 			"Edith Nwobu",
-			"Jenniferkene"
+			"Jenniferkene",
+			"LinNekky"
 		]
 	},
+	"wikilambda-desc": "Na-enye Wikimedia wiki nwere ọrụ parser wikitext iji kpọọ nyocha nke ọrụ edere, jikwaa na nyocha na wiki etiti.",
 	"wikilambda-editor-fn-step-function-about": "Maka",
 	"wikilambda-editor-fn-step-function-details": "Tụụtụụ na rịịrịị",
 	"wikilambda-continue-editing": "Gaa n'ihu n'idezi",
