@@ -662,7 +662,6 @@
 		"wikilambda_fetch": "MediaWiki\\Extension\\WikiLambda\\API\\ApiZObjectFetcher",
 		"wikilambda_edit": "MediaWiki\\Extension\\WikiLambda\\API\\ApiZObjectEditor",
 		"wikilambda_function_call": "MediaWiki\\Extension\\WikiLambda\\API\\ApiFunctionCall",
-		"wikilambda_health_check": "MediaWiki\\Extension\\WikiLambda\\API\\ApiHealthCheck",
 		"wikilambda_perform_test": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\API\\ApiPerformTest",
 			"services": [
