@@ -22,7 +22,7 @@
 
 			<!-- Not-runnable user warning -->
 			<cdx-message
-				v-if="!hasImplementations && selectedValue !== undefined"
+				v-if="!hasImplementations && selectedFunctionZid !== undefined"
 				type="notice"
 				class="ext-wikilambda-function-evaluator-message"
 			>
