@@ -252,7 +252,7 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-@import '../../../ext.wikilambda.edit.less';
+@import '../../../ext.wikilambda.edit.variables.less';
 
 .ext-wikilambda-editor-input-list-item {
 	border-radius: @border-radius-base;
