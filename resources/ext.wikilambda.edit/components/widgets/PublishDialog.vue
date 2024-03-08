@@ -300,7 +300,7 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-@import '../../ext.wikilambda.edit.less';
+@import '../../ext.wikilambda.edit.variables.less';
 
 .ext-wikilambda-publishdialog {
 	&__errors {

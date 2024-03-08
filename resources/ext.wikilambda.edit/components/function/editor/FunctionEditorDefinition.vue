@@ -227,7 +227,7 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-@import '../../../ext.wikilambda.edit.less';
+@import '../../../ext.wikilambda.edit.variables.less';
 
 .ext-wikilambda-function-definition {
 	&__action-add-language {
