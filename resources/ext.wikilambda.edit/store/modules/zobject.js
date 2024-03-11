@@ -8,6 +8,7 @@
 const Constants = require( '../../Constants.js' ),
 	findKeyInArray = require( '../../mixins/typeUtils.js' ).methods.findKeyInArray,
 	selectBestLanguage = require( '../../mixins/typeUtils.js' ).methods.selectBestLanguage,
+	isTruthyOrEqual = require( '../../mixins/typeUtils.js' ).methods.isTruthyOrEqual,
 	zobjectUtils = require( '../../mixins/zobjectUtils.js' ).methods,
 	extractZIDs = require( '../../mixins/schemata.js' ).methods.extractZIDs,
 	hybridToCanonical = require( '../../mixins/schemata.js' ).methods.hybridToCanonical,
@@ -1504,6 +1505,37 @@ module.exports = exports = {
 							Constants.Z_MONOLINGUALSTRING
 						]
 					};
+				}
+
+				// If object is Type/Z4, and on edit mode:
+				if ( !context.getters.getViewMode && isTruthyOrEqual( zobject, [
+					Constants.Z_PERSISTENTOBJECT_VALUE,
+					Constants.Z_OBJECT_TYPE ], Constants.Z_TYPE ) ) {
+					// 1. Initialize type function keys (Z4K3, Z4K4, Z4K5 and Z4K6)
+					const refs = [
+						Constants.Z_TYPE_VALIDATOR,
+						Constants.Z_TYPE_EQUALITY,
+						Constants.Z_TYPE_RENDERER,
+						Constants.Z_TYPE_PARSER
+					];
+					for ( const key of refs ) {
+						if ( !isTruthyOrEqual( zobject, [ Constants.Z_PERSISTENTOBJECT_VALUE, key ] ) ) {
+							zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ key ] = {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+								[ Constants.Z_REFERENCE_ID ]: ''
+							};
+						}
+					}
+					// 2. Initialize the converters lists (Z4K7, Z4K8)
+					const lists = {
+						[ Constants.Z_TYPE_DESERIALISERS ]: Constants.Z_DESERIALISER,
+						[ Constants.Z_TYPE_SERIALISERS ]: Constants.Z_SERIALISER
+					};
+					for ( const key in lists ) {
+						if ( !isTruthyOrEqual( zobject, [ Constants.Z_PERSISTENTOBJECT_VALUE, key ] ) ) {
+							zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ key ] = [ lists[ key ] ];
+						}
+					}
 				}
 
 				// Save initial multilingual data values

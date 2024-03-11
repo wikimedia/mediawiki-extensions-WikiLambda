@@ -2782,86 +2782,247 @@ describe( 'zobject Vuex module', () => {
 				expect( getMock ).toHaveBeenCalledWith( expectedPayload );
 			} );
 
-			it( 'Initialize Root ZObject', () => {
-				// Root ZObject
-				const Z1234 = {
-					Z1K1: 'Z2',
-					Z2K1: 'Z1234',
-					Z2K2: 'test',
-					Z2K3: {
-						Z1K1: 'Z12',
-						Z12K1: [
-							'Z11',
-							{
-								Z1K1: 'Z11',
-								Z11K1: 'Z1002',
-								Z11K2: 'test'
-							}
-						]
-					}
-				};
+			describe( 'initializeRootZObject', () => {
+				let Z1234, mockApiResponse;
 
-				const expectedZObjectJson = {
-					Z1K1: 'Z2',
-					Z2K1: 'Z1234',
-					Z2K2: 'test',
-					Z2K3: {
-						Z1K1: 'Z12',
-						Z12K1: [
-							'Z11',
-							{
-								Z1K1: 'Z11',
-								Z11K1: 'Z1002',
-								Z11K2: 'test'
-							}
-						]
-					},
-					Z2K4: {
-						Z1K1: 'Z32',
-						Z32K1: [ 'Z31' ]
-					},
-					Z2K5: {
-						Z1K1: 'Z12',
-						Z12K1: [ 'Z11' ]
-					}
-				};
+				beforeEach( () => {
+					context.getters.getViewMode = false;
+					getResolveMock = jest.fn( function ( thenFunction ) {
+						return thenFunction( mockApiResponse );
+					} );
+					getMock = jest.fn( () => {
+						return { then: getResolveMock };
+					} );
+					mw.Api = jest.fn( () => {
+						return { get: getMock };
+					} );
+				} );
 
-				// Mock responses
-				const mockApiResponse = {
-					batchcomplete: '',
-					query: {
-						wikilambdaload_zobjects: {
-							Z1234: {
-								success: '',
-								data: Z1234
+				it( 'initializes empty description and alias fields', () => {
+					// Initial ZObject
+					Z1234 = {
+						Z1K1: 'Z2',
+						Z2K1: 'Z1234',
+						Z2K2: 'test',
+						Z2K3: {
+							Z1K1: 'Z12',
+							Z12K1: [
+								'Z11',
+								{
+									Z1K1: 'Z11',
+									Z11K1: 'Z1002',
+									Z11K2: 'test'
+								}
+							]
+						}
+					};
+					// Mock responses
+					mockApiResponse = {
+						batchcomplete: '',
+						query: {
+							wikilambdaload_zobjects: {
+								Z1234: {
+									success: '',
+									data: Z1234
+								}
 							}
 						}
-					}
-				};
-				getResolveMock = jest.fn( function ( thenFunction ) {
-					return thenFunction( mockApiResponse );
-				} );
-				getMock = jest.fn( () => {
-					return { then: getResolveMock };
-				} );
-				mw.Api = jest.fn( () => {
-					return { get: getMock };
+					};
+
+					const expectedZObjectJson = {
+						Z1K1: 'Z2',
+						Z2K1: 'Z1234',
+						Z2K2: 'test',
+						Z2K3: {
+							Z1K1: 'Z12',
+							Z12K1: [
+								'Z11',
+								{
+									Z1K1: 'Z11',
+									Z11K1: 'Z1002',
+									Z11K2: 'test'
+								}
+							]
+						},
+						Z2K4: {
+							Z1K1: 'Z32',
+							Z32K1: [ 'Z31' ]
+						},
+						Z2K5: {
+							Z1K1: 'Z12',
+							Z12K1: [ 'Z11' ]
+						}
+					};
+
+					// Expected data
+					const expectedFetchZidsPayload = {
+						zids: [ 'Z1', 'Z2', 'Z1234', 'Z12', 'Z11', 'Z1002', 'Z32', 'Z31' ]
+					};
+
+					zobjectModule.actions.initializeRootZObject( context, 'Z1234' );
+
+					expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
+					expect( context.commit ).toHaveBeenCalledTimes( 4 );
+					expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z1234' );
+					expect( context.commit ).toHaveBeenCalledWith( 'saveMultilingualDataCopy', expectedZObjectJson );
+					expect( context.commit ).toHaveBeenCalledWith( 'setZObject', expect.anything() );
+					expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
+					expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZids', expectedFetchZidsPayload );
 				} );
 
-				// Expected data
-				const expectedFetchZidsPayload = {
-					zids: [ 'Z1', 'Z2', 'Z1234', 'Z12', 'Z11', 'Z1002', 'Z32', 'Z31' ]
-				};
+				it( 'initializes undefined type functions', () => {
+					// Initial ZObject
+					Z1234 = {
+						Z1K1: 'Z2',
+						Z2K1: 'Z1234',
+						Z2K2: {
+							Z1K1: 'Z4',
+							Z4K1: 'Z1234',
+							Z4K2: [ 'Z3' ],
+							Z4K7: [ 'Z46' ],
+							Z4K8: [ 'Z64' ]
+						},
+						Z2K3: {
+							Z1K1: 'Z12',
+							Z12K1: [ 'Z11' ]
+						},
+						Z2K4: {
+							Z1K1: 'Z32',
+							Z32K1: [ 'Z31' ]
+						},
+						Z2K5: {
+							Z1K1: 'Z12',
+							Z12K1: [ 'Z11' ]
+						}
+					};
+					// Mock responses
+					mockApiResponse = {
+						batchcomplete: '',
+						query: {
+							wikilambdaload_zobjects: {
+								Z1234: {
+									success: '',
+									data: Z1234
+								}
+							}
+						}
+					};
 
-				zobjectModule.actions.initializeRootZObject( context, 'Z1234' );
+					const expectedZObjectJson = {
+						Z1K1: 'Z2',
+						Z2K1: 'Z1234',
+						Z2K2: {
+							Z1K1: 'Z4',
+							Z4K1: 'Z1234',
+							Z4K2: [ 'Z3' ],
+							Z4K3: { Z1K1: 'Z9', Z9K1: '' },
+							Z4K4: { Z1K1: 'Z9', Z9K1: '' },
+							Z4K5: { Z1K1: 'Z9', Z9K1: '' },
+							Z4K6: { Z1K1: 'Z9', Z9K1: '' },
+							Z4K7: [ 'Z46' ],
+							Z4K8: [ 'Z64' ]
+						},
+						Z2K3: {
+							Z1K1: 'Z12',
+							Z12K1: [ 'Z11' ]
+						},
+						Z2K4: {
+							Z1K1: 'Z32',
+							Z32K1: [ 'Z31' ]
+						},
+						Z2K5: {
+							Z1K1: 'Z12',
+							Z12K1: [ 'Z11' ]
+						}
+					};
 
-				expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
-				expect( context.commit ).toHaveBeenCalledTimes( 4 );
-				expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z1234' );
-				expect( context.commit ).toHaveBeenCalledWith( 'saveMultilingualDataCopy', expectedZObjectJson );
-				expect( context.commit ).toHaveBeenCalledWith( 'setZObject', expect.anything() );
-				expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZids', expectedFetchZidsPayload );
+					zobjectModule.actions.initializeRootZObject( context, 'Z1234' );
+
+					expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
+					expect( context.commit ).toHaveBeenCalledTimes( 4 );
+					expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z1234' );
+					expect( context.commit ).toHaveBeenCalledWith( 'saveMultilingualDataCopy', expectedZObjectJson );
+					expect( context.commit ).toHaveBeenCalledWith( 'setZObject', expect.anything() );
+					expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
+				} );
+
+				it( 'initializes undefined converter lists', () => {
+					// Initial ZObject
+					Z1234 = {
+						Z1K1: 'Z2',
+						Z2K1: 'Z1234',
+						Z2K2: {
+							Z1K1: 'Z4',
+							Z4K1: 'Z1234',
+							Z4K2: [ 'Z3' ],
+							Z4K3: 'Z10001',
+							Z4K4: 'Z10002',
+							Z4K5: 'Z10003',
+							Z4K6: 'Z10004'
+						},
+						Z2K3: {
+							Z1K1: 'Z12',
+							Z12K1: [ 'Z11' ]
+						},
+						Z2K4: {
+							Z1K1: 'Z32',
+							Z32K1: [ 'Z31' ]
+						},
+						Z2K5: {
+							Z1K1: 'Z12',
+							Z12K1: [ 'Z11' ]
+						}
+					};
+					// Mock responses
+					mockApiResponse = {
+						batchcomplete: '',
+						query: {
+							wikilambdaload_zobjects: {
+								Z1234: {
+									success: '',
+									data: Z1234
+								}
+							}
+						}
+					};
+
+					const expectedZObjectJson = {
+						Z1K1: 'Z2',
+						Z2K1: 'Z1234',
+						Z2K2: {
+							Z1K1: 'Z4',
+							Z4K1: 'Z1234',
+							Z4K2: [ 'Z3' ],
+							Z4K3: 'Z10001',
+							Z4K4: 'Z10002',
+							Z4K5: 'Z10003',
+							Z4K6: 'Z10004',
+							Z4K7: [ 'Z46' ],
+							Z4K8: [ 'Z64' ]
+						},
+						Z2K3: {
+							Z1K1: 'Z12',
+							Z12K1: [ 'Z11' ]
+						},
+						Z2K4: {
+							Z1K1: 'Z32',
+							Z32K1: [ 'Z31' ]
+						},
+						Z2K5: {
+							Z1K1: 'Z12',
+							Z12K1: [ 'Z11' ]
+						}
+					};
+
+					zobjectModule.actions.initializeRootZObject( context, 'Z1234' );
+
+					expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
+					expect( context.commit ).toHaveBeenCalledTimes( 4 );
+					expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z1234' );
+					expect( context.commit ).toHaveBeenCalledWith( 'saveMultilingualDataCopy', expectedZObjectJson );
+					expect( context.commit ).toHaveBeenCalledWith( 'setZObject', expect.anything() );
+					expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
+				} );
 			} );
 
 			it( 'Initialize evaluate function call page', () => {
