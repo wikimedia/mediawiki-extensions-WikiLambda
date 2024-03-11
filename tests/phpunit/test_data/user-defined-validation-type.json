@@ -37,11 +37,8 @@
 				"Z14K1": "Z401",
 				"Z14K3": {
 					"Z1K1": "Z16",
-					"Z16K1": {
-						"Z1K1": "Z61",
-						"Z61K1": "python-3"
-					},
-					"Z16K2": "def Z401(Z401K1):\n  if Z401K1.Z1000000K1 != 'A':\n    raise Exception('does that look like an A to you???')\n  return Z401K1"
+					"Z16K1": "Z600",
+					"Z16K2": "function Z401( Z401K1 ) {\n\tif (Z401K1.Z1000000K1) !== 'A' {\n\tthrow new Exception('does that look like an A to you???');\n}\nreturn Z401K1;\n}"
 				}
 			}
 		],

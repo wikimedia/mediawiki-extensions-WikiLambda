@@ -14,11 +14,8 @@
 				"Z14K1": "Z10101",
 				"Z14K3": {
 					"Z1K1": "Z16",
-					"Z16K1": {
-						"Z1K1": "Z61",
-						"Z61K1": "python-3"
-					},
-					"Z16K2": "def Z10101():\n  while True:\n    pass"
+					"Z16K1": "Z600",
+					"Z16K2": "function Z10101() {\n\twhile (true) {\n\tconst a = '1';\n}\nreturn;\n}"
 				}
 			}
 		],

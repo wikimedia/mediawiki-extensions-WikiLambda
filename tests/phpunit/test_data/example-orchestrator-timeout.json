@@ -145,11 +145,8 @@
 											"Z14K1": "Z10055",
 											"Z14K3": {
 												"Z1K1": "Z16",
-												"Z16K1": {
-													"Z1K1": "Z61",
-													"Z61K1": "python-3"
-												},
-												"Z16K2": "def Z10055():\n  import time\n  time.sleep(10)\n  return 'acab'"
+												"Z16K1": "Z600",
+												"Z16K2": "function( Z10055 ) { await new Promise(response => setTimeout(response, 10000));\nreturn 'foo'; }"
 											}
 										}
 									],

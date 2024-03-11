@@ -3,10 +3,7 @@
 	"Z14K1": "Z813",
 	"Z14K3": {
 		"Z1K1": "Z16",
-		"Z16K1": {
-			"Z1K1": "Z61",
-			"Z61K1": "python"
-		},
-		"Z16K2": "def Z813(Z813K1):\n\treturn False"
+		"Z16K1": "Z600",
+		"Z16K2": "function Z813( Z813K1 ) { return false; }"
 	}
 }
