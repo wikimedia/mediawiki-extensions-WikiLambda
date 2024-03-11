@@ -230,6 +230,7 @@ class ZObjectContent extends AbstractContent {
 		} else {
 			$label = wfMessage( 'wikilambda-typeunavailable' )->inContentLanguage()->text();
 		}
+
 		return [
 			'title' => $label,
 			'type' => $label
