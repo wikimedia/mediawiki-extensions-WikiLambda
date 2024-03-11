@@ -9,6 +9,7 @@
 			"Nieuwsgierige Gebruiker",
 			"Robin van der Vliet",
 			"Romaine",
+			"Siebrand",
 			"Sjoerddebruin"
 		]
 	},
@@ -190,11 +191,11 @@
 	"wikilambda-function-are-you-sure-dialog-header": "Weet u het zeker?",
 	"wikilambda-function-are-you-sure-dialog-description": "Weet u zeker dat u de bewerkingsmodus wilt verlaten zonder eerst te publiceren?",
 	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Fout|Fouten}}",
-	"wikilambda-functioncall-metadata-errors-summary": "Foutensamenvatting",
+	"wikilambda-functioncall-metadata-errors-summary": "Fouttype",
 	"wikilambda-functioncall-metadata-errors-none": "Geen",
-	"wikilambda-functioncall-metadata-validator-errors-summary": "Samenvatting van validatorfouten",
-	"wikilambda-functioncall-metadata-implementation-id": "Implementatie-ID",
-	"wikilambda-functioncall-metadata-implementation-type": "Implementatietype",
+	"wikilambda-functioncall-metadata-validator-errors-summary": "Type validatiefout",
+	"wikilambda-functioncall-metadata-implementation-id": "ID",
+	"wikilambda-functioncall-metadata-implementation-type": "Type",
 	"wikilambda-functioncall-metadata-execution-debug-logs": "Uitvoering van debuglogboeken",
 	"wikilambda-functioncall-metadata-expected-result": "Verwacht resultaat",
 	"wikilambda-functioncall-metadata-actual-result": "Werkelijke resultaat",
