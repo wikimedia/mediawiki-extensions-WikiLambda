@@ -41,13 +41,16 @@ function canonicalizeZ6OrZ9( zobject ) {
  * form, but lists are in canonical form. If called on a ZObject already in canonical form, returns the ZObject
  * unchanged.
  *
- * TODO(T357594):Determine how hybridToCanonical should handle normal inputs, implement & provide tests
+ * This also handles lists in normal form; this is done defensively, because the orchestrator can still return normal
+ * form sometimes (T354917). Normal forms are not handled as thoroughly as function-schemata's canonicalize.
  *
  * @param {Object | Array | string | undefined} zobject
  * @return {Object | Array | string | undefined}
  */
 function hybridToCanonical( zobject ) {
-	function listifyArray( zlist, arr ) {
+	// Given a typed list in normal form, convert its elements to canonical and return them in an array
+	// (while ignoring its Z1K1)
+	function zlistToArray( zlist, arr ) {
 		var head = zlist[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ],
 			tail = zlist[ Constants.Z_TYPED_OBJECT_ELEMENT_2 ];
 
@@ -60,7 +63,7 @@ function hybridToCanonical( zobject ) {
 		}
 
 		if ( tail ) {
-			return listifyArray( tail, arr );
+			return zlistToArray( tail, arr );
 		} else {
 			return arr;
 		}
@@ -81,20 +84,16 @@ function hybridToCanonical( zobject ) {
 	) {
 		canon = canonicalizeZ6OrZ9( zobject );
 	} else if (
-		typeUtils.isTruthyOrEqual( zobject, [
-			Constants.Z_OBJECT_TYPE,
-			Constants.Z_FUNCTION_CALL_FUNCTION
-		], Constants.Z_TYPED_LIST ) ||
+		// Allow for typed lists in normal form, where the list's Z_OBJECT_TYPE is a function call.
+		// See also the header comments for this function.
 		typeUtils.isTruthyOrEqual( zobject, [
 			Constants.Z_OBJECT_TYPE,
 			Constants.Z_FUNCTION_CALL_FUNCTION,
 			Constants.Z_REFERENCE_ID
 		], Constants.Z_TYPED_LIST )
 	) {
-		canon = [
-			hybridToCanonical( zobject[ Constants.Z_OBJECT_TYPE ] ),
-			...hybridToCanonical( listifyArray( zobject ) )
-		];
+		const itemType = zobject[ Constants.Z_OBJECT_TYPE ][ Constants.Z_TYPED_LIST_TYPE ];
+		canon = [ hybridToCanonical( itemType ), ...hybridToCanonical( zlistToArray( zobject ) ) ];
 	} else if ( zobject[ Constants.Z_OBJECT_TYPE ] &&
 		// Accommodate both hybrid form and canonical
 		( zobject[ Constants.Z_OBJECT_TYPE ][ Constants.Z_REFERENCE_ID ] === Constants.Z_QUOTE ||

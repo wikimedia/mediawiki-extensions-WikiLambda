@@ -23,6 +23,9 @@ describe( 'schemata mixin', function () {
 		canonicalZFunction = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/canonicalZFunction.json' ) ) ),
 		hybridZList = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/hybridZList.json' ) ) ),
 		canonicalZList = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/canonicalZList.json' ) ) ),
+		normalZList = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/normalZList.json' ) ) ),
+		normalFunctionCall = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/normalFunctionCall.json' ) ) ),
+		canonicalFunctionCall = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/canonicalFunctionCall.json' ) ) ),
 		simpleErrorObjectRelaxedFormat = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/simpleErrorObject_RelaxedFormat.json' ) ) ),
 		fairlyComplexErrorObject = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/fairlyComplexErrorObject.json' ) ) ),
 		fairlyComplexErrorObjectLocalKeys = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/fairlyComplexErrorObject_LocalKeys.json' ) ) );
@@ -157,6 +160,14 @@ describe( 'schemata mixin', function () {
 
 	it( 'hybrid ZList is correctly canonicalized', function () {
 		expect( hybridToCanonical( hybridZList ) ).toEqual( canonicalZList );
+	} );
+
+	it( 'normal ZList is correctly canonicalized', function () {
+		expect( hybridToCanonical( normalZList ) ).toEqual( canonicalZList );
+	} );
+
+	it( 'normal function call is correctly canonicalized', function () {
+		expect( hybridToCanonical( normalFunctionCall ) ).toEqual( canonicalFunctionCall );
 	} );
 
 	it( 'canonical ZList is correctly hybridized', function () {
