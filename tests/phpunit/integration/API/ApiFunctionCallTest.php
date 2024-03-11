@@ -187,7 +187,7 @@ class ApiFunctionCallTest extends ApiTestCase {
 		yield 'Generate a Z4/Type with a user-defined function and use that Z4/Type as a ZObject\'s Z1K1/Type' => [
 			self::readTestFile( 'example-user-defined-generic-type.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
-			"{\"Z1K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z10101\",\"Z4K2\":[\"Z3\",{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"K1\",\"Z3K3\":\"Z400\"},{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z40\",\"Z3K2\":\"K2\",\"Z3K3\":\"Z400\"}],\"Z4K3\":\"Z831\"},\"K1\":\"TRUE\",\"K2\":{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}}"
+			'{"Z1K1":{"Z1K1":"Z7","Z7K1":{"Z1K1":"Z8","Z8K1":["Z17"],"Z8K2":"Z4","Z8K3":["Z20"],"Z8K4":["Z14",{"Z1K1":"Z14","Z14K1":"Z10106","Z14K2":{"Z1K1":"Z4","Z4K1":"Z10101","Z4K2":["Z3",{"Z1K1":"Z3","Z3K1":"Z6","Z3K2":"K1","Z3K3":"Z400"},{"Z1K1":"Z3","Z3K1":"Z40","Z3K2":"K2","Z3K3":"Z400"}],"Z4K3":"Z831"}}],"Z8K5":"Z10106"}},"K1":"TRUE","K2":{"Z1K1":"Z40","Z40K1":"Z41"}}'
 		];
 
 		$curryImplementation = self::readTestFileAsArray( 'curry-implementation-Z409.json' );
