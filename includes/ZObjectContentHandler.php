@@ -462,7 +462,7 @@ class ZObjectContentHandler extends ContentHandler {
 
 		$type = Html::element(
 			'div', [ 'class' => 'ext-wikilambda-viewpage-header-type' ],
-			$zobjectType[ 'type' ]
+			$zobjectType[ 'title' ]
 		);
 
 		return Html::rawElement(

@@ -340,7 +340,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->assertStringContainsString( 'Untitled', $enHeader );
 		$this->assertStringContainsString( 'ext-wikilambda-viewpage-header--title-untitled', $enHeader );
 		$this->assertStringContainsString(
-			'<div class="ext-wikilambda-viewpage-header-type">String (Z6)</div>', $enHeader
+			'<div class="ext-wikilambda-viewpage-header-type">String</div>', $enHeader
 		);
 
 		$frHeader = ZObjectContentHandler::createZObjectViewHeader( $content, $testTitle, self::makeLanguage( 'fr' ) );
