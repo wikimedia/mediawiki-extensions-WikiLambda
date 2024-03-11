@@ -275,16 +275,24 @@ module.exports = exports = {
 			context.dispatch( 'removeEmptyMonolingualValues', Constants.Z_PERSISTENTOBJECT_DESCRIPTION );
 			context.dispatch( 'removeEmptyAliasValues' );
 
-			// If there are argument functions, remove empty argument labels and empty arguments
-			const functionArguments = context.getters.getRowByKeyPath( [
-				Constants.Z_PERSISTENTOBJECT_VALUE,
-				Constants.Z_FUNCTION_ARGUMENTS
-			], 0 );
-			if ( functionArguments ) {
-				context.dispatch( 'removeEmptyArguments' );
+			const contentRow = context.getters.getRowByKeyPath( [ Constants.Z_PERSISTENTOBJECT_VALUE ], 0 );
+			const contentRowId = contentRow ? contentRow.id : 0;
+			const type = context.getters.getZObjectTypeByRowId( contentRowId );
+
+			// If object is a function, remove empty argument labels and empty arguments
+			if ( type === Constants.Z_FUNCTION ) {
+				const functionArguments = context.getters.getRowByKeyPath( [ Constants.Z_FUNCTION_ARGUMENTS ],
+					contentRowId );
+				if ( functionArguments ) {
+					context.dispatch( 'removeEmptyArguments' );
+				}
 			}
 
-			// TODO: If there are type keys, remove empty key labels
+			// If object is a type, remove empty renderer/parser/equality/validator functions
+			// TODO (T359869): If there are type keys, remove empty key labels
+			if ( type === Constants.Z_TYPE ) {
+				context.dispatch( 'removeEmptyTypeFunctions', contentRowId );
+			}
 
 			// If a list has changed its type, remove invalid list items
 			if ( context.getters.hasInvalidListItems ) {
@@ -302,6 +310,35 @@ module.exports = exports = {
 			// Disconnect implementations and testers if necessary
 			if ( disconnectFunctionObjects ) {
 				context.dispatch( 'disconnectFunctionObjects' );
+			}
+		},
+
+		/**
+		 * Removes Z4K3/Validator, Z4K4/Equality, Z4K5/Renderer and Z4K6/Parser key values
+		 * when the values are undefined. Assumes that the current object is a Type/Z4. Also
+		 * assumes that the given functions are references, and never literals or function calls.
+		 *
+		 * @param {Object} context
+		 * @param {number} rowId
+		 */
+		removeEmptyTypeFunctions: function ( context, rowId ) {
+			const keys = [
+				Constants.Z_TYPE_VALIDATOR,
+				Constants.Z_TYPE_EQUALITY,
+				Constants.Z_TYPE_RENDERER,
+				Constants.Z_TYPE_PARSER
+			];
+
+			for ( const key of keys ) {
+				const keyRow = context.getters.getRowByKeyPath( [ key ], rowId );
+				if ( keyRow ) {
+					const value = context.getters.getZReferenceTerminalValue( keyRow.id );
+					// If value is empty, remove the key altogether
+					if ( !value ) {
+						context.dispatch( 'removeRowChildren', keyRow.id );
+						context.dispatch( 'removeRow', keyRow.id );
+					}
+				}
 			}
 		},
 

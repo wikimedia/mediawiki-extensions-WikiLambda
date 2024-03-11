@@ -561,6 +561,7 @@ describe( 'zobject submission Vuex module', () => {
 			context.getters.getZStringTerminalValue = zobjectModule.getters.getZStringTerminalValue( context.state, context.getters );
 			context.getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( context.state, context.getters );
 			context.getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( context.state, context.getters );
+			context.getters.getZObjectAsJsonById = zobjectModule.getters.getZObjectAsJsonById( context.state, context.getters );
 
 			context.dispatch = jest.fn( ( actionType, payload ) => {
 				let result;
@@ -744,6 +745,7 @@ describe( 'zobject submission Vuex module', () => {
 	describe( 'transformZObjectForSubmission', () => {
 		beforeEach( () => {
 			context.getters.getRowByKeyPath = () => undefined;
+			context.getters.getZObjectTypeByRowId = () => undefined;
 		} );
 
 		it( 'removes empty names', () => {
@@ -767,11 +769,21 @@ describe( 'zobject submission Vuex module', () => {
 		} );
 
 		it( 'removes empty arguments if it is a function', () => {
+			context.getters.getZObjectTypeByRowId = () => Constants.Z_FUNCTION;
 			context.getters.getRowByKeyPath = () => {
 				return { id: 1 };
 			};
 			submissionModule.actions.transformZObjectForSubmission( context, false );
 			expect( context.dispatch ).toHaveBeenCalledWith( 'removeEmptyArguments' );
+		} );
+
+		it( 'removes undefined functions if it is a type', () => {
+			context.getters.getZObjectTypeByRowId = () => Constants.Z_TYPE;
+			context.getters.getRowByKeyPath = () => {
+				return { id: 1 };
+			};
+			submissionModule.actions.transformZObjectForSubmission( context, false );
+			expect( context.dispatch ).toHaveBeenCalledWith( 'removeEmptyTypeFunctions', 1 );
 		} );
 
 		it( 'removes list items marked as invalid', () => {
@@ -1196,6 +1208,179 @@ describe( 'zobject submission Vuex module', () => {
 						Z17K1: { Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z6' },
 						Z17K2: 'Z12345K2', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } }
 				] }
+			} );
+		} );
+	} );
+
+	describe( 'removeEmptyTypeFunctions', () => {
+
+		beforeEach( () => {
+			context.state = { zobject: {} };
+
+			// run zobject module getters
+			context.getters.getCurrentZObjectId = 'Z12345';
+			context.getters.getRowById = zobjectModule.getters.getRowById( context.state );
+			context.getters.getRowIndexById = zobjectModule.getters.getRowIndexById( context.state );
+			context.getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( context.state );
+			context.getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( context.state, context.getters );
+			context.getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( context.state, context.getters );
+			context.getters.getZReferenceTerminalValue = zobjectModule.getters.getZReferenceTerminalValue( context.state, context.getters );
+
+			// run zobject module actions
+			context.dispatch = jest.fn( ( actionType, payload ) => {
+				if ( actionType in zobjectModule.actions ) {
+					return zobjectModule.actions[ actionType ]( context, payload );
+				}
+				return;
+			} );
+
+			// run zobject module mutations
+			context.commit = jest.fn( ( mutationType, payload ) => {
+				if ( mutationType in zobjectModule.mutations ) {
+					zobjectModule.mutations[ mutationType ]( context.state, payload );
+				}
+			} );
+		} );
+
+		it( 'removes undefined validator function/Z4K3', () => {
+			const rowId = 1;
+			const zobject = {
+				Z2K2: { // rowId = 1
+					Z1K1: 'Z4',
+					Z4K1: 'Z12345',
+					Z4K2: [ 'Z3' ],
+					Z4K3: '',
+					Z4K4: 'Z10001',
+					Z4K5: 'Z10002',
+					Z4K6: 'Z10003'
+				}
+			};
+			context.state.zobject = zobjectToRows( zobject );
+			submissionModule.actions.removeEmptyTypeFunctions( context, rowId );
+
+			const transformed = zobjectModule.getters.getZObjectAsJsonById( context.state )( 0, false );
+			expect( hybridToCanonical( transformed ) ).toEqual( {
+				Z2K2: {
+					Z1K1: 'Z4',
+					Z4K1: 'Z12345',
+					Z4K2: [ 'Z3' ],
+					Z4K4: 'Z10001',
+					Z4K5: 'Z10002',
+					Z4K6: 'Z10003'
+				}
+			} );
+		} );
+
+		it( 'removes undefined equality function/Z4K4', () => {
+			const rowId = 1;
+			const zobject = {
+				Z2K2: { // rowId = 1
+					Z1K1: 'Z4',
+					Z4K1: 'Z12345',
+					Z4K2: [ 'Z3' ],
+					Z4K3: 'Z10001',
+					Z4K4: '',
+					Z4K5: 'Z10002',
+					Z4K6: 'Z10003'
+				}
+			};
+			context.state.zobject = zobjectToRows( zobject );
+			submissionModule.actions.removeEmptyTypeFunctions( context, rowId );
+
+			const transformed = zobjectModule.getters.getZObjectAsJsonById( context.state )( 0, false );
+			expect( hybridToCanonical( transformed ) ).toEqual( {
+				Z2K2: {
+					Z1K1: 'Z4',
+					Z4K1: 'Z12345',
+					Z4K2: [ 'Z3' ],
+					Z4K3: 'Z10001',
+					Z4K5: 'Z10002',
+					Z4K6: 'Z10003'
+				}
+			} );
+		} );
+
+		it( 'removes undefined renderer function/Z4K5', () => {
+			const rowId = 1;
+			const zobject = {
+				Z2K2: { // rowId = 1
+					Z1K1: 'Z4',
+					Z4K1: 'Z12345',
+					Z4K2: [ 'Z3' ],
+					Z4K3: 'Z10001',
+					Z4K4: 'Z10002',
+					Z4K5: '',
+					Z4K6: 'Z10003'
+				}
+			};
+			context.state.zobject = zobjectToRows( zobject );
+			submissionModule.actions.removeEmptyTypeFunctions( context, rowId );
+
+			const transformed = zobjectModule.getters.getZObjectAsJsonById( context.state )( 0, false );
+			expect( hybridToCanonical( transformed ) ).toEqual( {
+				Z2K2: {
+					Z1K1: 'Z4',
+					Z4K1: 'Z12345',
+					Z4K2: [ 'Z3' ],
+					Z4K3: 'Z10001',
+					Z4K4: 'Z10002',
+					Z4K6: 'Z10003'
+				}
+			} );
+		} );
+
+		it( 'removes undefined parser function/Z4K6', () => {
+			const rowId = 1;
+			const zobject = {
+				Z2K2: { // rowId = 1
+					Z1K1: 'Z4',
+					Z4K1: 'Z12345',
+					Z4K2: [ 'Z3' ],
+					Z4K3: 'Z10001',
+					Z4K4: 'Z10002',
+					Z4K5: 'Z10003',
+					Z4K6: ''
+				}
+			};
+			context.state.zobject = zobjectToRows( zobject );
+			submissionModule.actions.removeEmptyTypeFunctions( context, rowId );
+
+			const transformed = zobjectModule.getters.getZObjectAsJsonById( context.state )( 0, false );
+			expect( hybridToCanonical( transformed ) ).toEqual( {
+				Z2K2: {
+					Z1K1: 'Z4',
+					Z4K1: 'Z12345',
+					Z4K2: [ 'Z3' ],
+					Z4K3: 'Z10001',
+					Z4K4: 'Z10002',
+					Z4K5: 'Z10003'
+				}
+			} );
+		} );
+
+		it( 'removes all undefined type functions', () => {
+			const rowId = 1;
+			const zobject = {
+				Z2K2: { // rowId = 1
+					Z1K1: 'Z4',
+					Z4K1: 'Z12345',
+					Z4K2: [ 'Z3' ],
+					Z4K3: '',
+					Z4K4: '',
+					Z4K5: '',
+					Z4K6: ''
+				}
+			};
+			context.state.zobject = zobjectToRows( zobject );
+			submissionModule.actions.removeEmptyTypeFunctions( context, rowId );
+
+			const transformed = zobjectModule.getters.getZObjectAsJsonById( context.state )( 0, false );
+			expect( hybridToCanonical( transformed ) ).toEqual( {
+				Z2K2: {
+					Z1K1: 'Z4',
+					Z4K1: 'Z12345',
+					Z4K2: [ 'Z3' ]
+				}
 			} );
 		} );
 	} );
