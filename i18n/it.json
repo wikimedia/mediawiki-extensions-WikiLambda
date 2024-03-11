@@ -10,7 +10,8 @@
 			"Sofia Stecchi",
 			"Stefano",
 			"McDutchie",
-			"Sabas88"
+			"Sabas88",
+			"Sannita"
 		]
 	},
 	"wikilambda-desc": "Fornire alle wiki di Wikimedia una funzione di parsing del wikitesto che permetta di eseguire funzioni scritte, gestite ed eseguite su una wiki centralizzata.",
@@ -20,7 +21,12 @@
 	"wikilambda-noresult": "La ricerca non ha fornito risultati.",
 	"wikilambda-persistentzobject-metadata": "Etichette e Alias",
 	"wikilambda-persistentzobject-contents": "Contenuti",
+	"wikilambda-multilingualstring-nofallback": "Nessuna etichetta definita in questa lingua o in una lingua di fallback accettata",
 	"wikilambda-viewmode-nojs": "Questa pagina viene visualizzata in modo limitato senza JavaScript.",
+	"wikilambda-reference": "Riferimento",
+	"wikilambda-literal": "Letterale",
+	"wikilambda-genericliteral": "Letterale generico",
+	"wikilambda-functioncall": "Chiamata di funzione",
 	"wikilambda-edit": "Modifica",
 	"wikilambda-show-more": "Mostra altro",
 	"wikilambda-show-error": "Mostra errore",
