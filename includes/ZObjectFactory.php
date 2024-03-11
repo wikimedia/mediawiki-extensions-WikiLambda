@@ -104,7 +104,7 @@ class ZObjectFactory {
 			$persistentId = self::createChild( $input->{ ZTypeRegistry::Z_PERSISTENTOBJECT_ID } );
 			$persistentLabel = self::createChild( $input->{ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL } );
 
-			$persistentAliases = property_exists( $input,  ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES )
+			$persistentAliases = property_exists( $input, ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES )
 				? self::createChild( $input->{ ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES } )
 				: null;
 

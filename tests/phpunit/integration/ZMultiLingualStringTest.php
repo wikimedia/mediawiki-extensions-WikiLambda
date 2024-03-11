@@ -81,7 +81,7 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 		$serialisedNormalForm = $testObject->getSerialized( ZObject::FORM_NORMAL );
 		$this->assertSame( 'Z12', $serialisedNormalForm->Z1K1->Z9K1 );
 
-		$this->assertSame( 'Z7',   $serialisedNormalForm->Z12K1->Z1K1->Z1K1->Z9K1 );
+		$this->assertSame( 'Z7', $serialisedNormalForm->Z12K1->Z1K1->Z1K1->Z9K1 );
 		$this->assertSame( 'Z881', $serialisedNormalForm->Z12K1->Z1K1->Z7K1->Z9K1 );
 		$this->assertSame( 'Z11', $serialisedNormalForm->Z12K1->Z1K1->Z881K1->Z9K1 );
 
