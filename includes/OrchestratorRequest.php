@@ -49,7 +49,7 @@ class OrchestratorRequest {
 	/**
 	 * @param \stdClass|array $query
 	 * @param bool $bypassCache Whether to bypass the function call cache; this is only
-	 *   to be used for the system health-check service, as it's potentially expensive.
+	 *   to be used for special circumstances, as it's potentially expensive.
 	 * @return string response object returned by orchestrator, down-cast to a string
 	 */
 	public function orchestrate( $query, $bypassCache = false ): string {
