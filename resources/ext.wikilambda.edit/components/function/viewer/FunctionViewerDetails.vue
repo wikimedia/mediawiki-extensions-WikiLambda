@@ -114,6 +114,7 @@ module.exports = exports = {
 		'getCurrentZObjectId',
 		'getLabel',
 		'getLanguageOfImplementation',
+		'getZTesterPercentage',
 		'getTypeOfImplementation',
 		'getUserLangCode'
 	] ), {
@@ -247,6 +248,9 @@ module.exports = exports = {
 				// Get implementation connected state:
 				const isConnected = this.connectedImplementations.includes( zid );
 
+				// Get implementation test results:
+				const testResults = this.getZTesterPercentage( zid );
+
 				// Get implementation type and language:
 				const type = this.getTypeOfImplementation( zid );
 				let language;
@@ -309,8 +313,7 @@ module.exports = exports = {
 					},
 					// Column 4: passed tests
 					testsPassed: {
-						// TODO (T310003): fetch these from a cached table in mediawiki
-						title: '-'
+						title: testResults.passing + '/' + testResults.total
 					},
 					// Row class
 					class: this.implementationsState[ zid ].checked ? 'ext-wikilambda-function-details-table__row--active' : null

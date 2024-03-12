@@ -88,6 +88,13 @@ describe( 'FunctionViewerDetails', () => {
 				const data = mockData[ zid ];
 				return data ? data.type : undefined;
 			},
+			getZTesterPercentage: () => () => {
+				return {
+					passing: 1,
+					total: 1,
+					percentage: 100
+				};
+			},
 			getLabel: () => ( zid ) => {
 				const data = mockData[ zid ];
 				return data ? data.label : zid;
