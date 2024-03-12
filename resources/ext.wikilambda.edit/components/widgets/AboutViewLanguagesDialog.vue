@@ -9,6 +9,7 @@
 		<cdx-dialog
 			:open="open"
 			class="ext-wikilambda-about-language-list"
+			:title="$i18n( 'wikilambda-about-widget-view-languages-accessible-title' ).text()"
 			:default-action="defaultAction"
 			@default="addLanguage"
 			@update:open="closeDialog"
