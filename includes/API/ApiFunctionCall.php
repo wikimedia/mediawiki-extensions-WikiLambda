@@ -13,10 +13,11 @@ namespace MediaWiki\Extension\WikiLambda\API;
 use ApiMain;
 use ApiPageSet;
 use ApiUsageException;
-use DerivativeContext;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
+use MediaWiki\Context\DerivativeContext;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
@@ -24,10 +25,9 @@ use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZQuote;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
+use MediaWiki\PoolCounter\PoolCounterWorkViaCallback;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\Status\Status;
-use PoolCounterWorkViaCallback;
-use RequestContext;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiFunctionCall extends WikiLambdaApiBase {

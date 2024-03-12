@@ -12,7 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Special;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectEditingPageTrait;
-use SpecialPage;
+use MediaWiki\SpecialPage\SpecialPage;
 
 class SpecialCreateObject extends SpecialPage {
 	use ZObjectEditingPageTrait;

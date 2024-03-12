@@ -10,7 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-use DataUpdate;
+use MediaWiki\Deferred\DataUpdate;
 use MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry;
 use MediaWiki\Title\Title;
 

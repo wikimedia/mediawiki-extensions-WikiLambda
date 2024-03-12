@@ -11,7 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use Content;
-use DataUpdate;
+use MediaWiki\Deferred\DataUpdate;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Title\Title;

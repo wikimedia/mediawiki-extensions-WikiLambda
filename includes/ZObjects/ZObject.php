@@ -12,10 +12,10 @@ namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
 use FormatJson;
 use Language;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
-use RequestContext;
 
 class ZObject {
 

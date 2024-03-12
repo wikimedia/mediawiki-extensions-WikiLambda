@@ -10,10 +10,10 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-use Html;
-use IContextSource;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
-use OutputPage;
+use MediaWiki\Html\Html;
+use MediaWiki\Output\OutputPage;
 
 trait ZObjectEditingPageTrait {
 	/**

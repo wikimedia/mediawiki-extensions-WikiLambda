@@ -9,11 +9,11 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Api;
 
-use ApiTestCase;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Tests\Api\ApiTestCase;
 use MediaWiki\Title\Title;
 
 /**

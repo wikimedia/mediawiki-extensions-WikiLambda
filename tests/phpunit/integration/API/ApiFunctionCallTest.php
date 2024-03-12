@@ -9,7 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Api;
 
-use ApiTestCase;
+use MediaWiki\Tests\Api\ApiTestCase;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall

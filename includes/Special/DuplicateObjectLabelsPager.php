@@ -10,13 +10,13 @@
 
 namespace MediaWiki\Extension\WikiLambda\Special;
 
-use Html;
 use MediaWiki\Cache\LinkBatchFactory;
+use MediaWiki\Html\Html;
 use MediaWiki\Languages\LanguageNameUtils;
 use MediaWiki\Linker\LinkRenderer;
+use MediaWiki\Pager\TablePager;
+use MediaWiki\SpecialPage\SpecialPage;
 use MediaWiki\Title\Title;
-use SpecialPage;
-use TablePager;
 
 class DuplicateObjectLabelsPager extends TablePager {
 

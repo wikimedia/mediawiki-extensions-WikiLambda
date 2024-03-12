@@ -9,7 +9,6 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Api;
 
-use ApiTestCase;
 use MediaWiki\Extension\WikiLambda\API\ApiPerformTest;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
@@ -19,6 +18,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedMap;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedPair;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
+use MediaWiki\Tests\Api\ApiTestCase;
 use MediaWiki\Title\Title;
 
 /**

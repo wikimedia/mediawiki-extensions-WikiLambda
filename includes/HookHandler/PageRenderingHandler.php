@@ -11,20 +11,20 @@
 namespace MediaWiki\Extension\WikiLambda\HookHandler;
 
 use HtmlArmor;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
-use MediaWiki\Hook\BeforePageDisplayHook;
 use MediaWiki\Hook\SkinTemplateNavigation__UniversalHook;
 use MediaWiki\Hook\WebRequestPathInfoRouterHook;
 use MediaWiki\Linker\Hook\HtmlPageLinkRendererEndHook;
 use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\Linker\LinkTarget;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Output\Hook\BeforePageDisplayHook;
+use MediaWiki\Output\OutputPage;
 use MediaWiki\Title\Title;
-use OutputPage;
-use RequestContext;
 use Skin;
 
 class PageRenderingHandler implements

@@ -11,15 +11,15 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
-use DatabaseUpdater;
-use DeferredUpdates;
 use FormatJson;
 use IDBAccessObject;
+use MediaWiki\Deferred\DeferredUpdates;
 use MediaWiki\Extension\WikiLambda\Tests\HooksDataPathMock;
 use MediaWiki\Extension\WikiLambda\Tests\HooksInsertMock;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate;
+use MediaWiki\Installer\DatabaseUpdater;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Title\Title;

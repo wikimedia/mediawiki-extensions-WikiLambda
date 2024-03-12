@@ -12,7 +12,7 @@
 namespace MediaWiki\Extension\WikiLambda\HookHandler;
 
 use ApiMessage;
-use CommentStoreComment;
+use MediaWiki\CommentStore\CommentStoreComment;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
@@ -23,9 +23,9 @@ use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Status\Status;
 use MediaWiki\Storage\Hook\MultiContentSaveHook;
 use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use MediaWiki\User\UserIdentity;
 use MessageSpecifier;
-use User;
 
 class PageEditingHandler implements NamespaceIsMovableHook, MultiContentSaveHook, GetUserPermissionsErrorsHook {
 

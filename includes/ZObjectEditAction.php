@@ -11,7 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use Action;
-use Html;
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
 
 class ZObjectEditAction extends Action {

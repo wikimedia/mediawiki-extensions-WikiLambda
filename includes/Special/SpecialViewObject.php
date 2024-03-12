@@ -11,18 +11,18 @@
 
 namespace MediaWiki\Extension\WikiLambda\Special;
 
-use Html;
 use InvalidArgumentException;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectEditingPageTrait;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Output\OutputPage;
+use MediaWiki\SpecialPage\SpecialPage;
 use MediaWiki\Title\Title;
-use OutputPage;
 use ParserOptions;
 use RuntimeException;
-use SpecialPage;
 
 class SpecialViewObject extends SpecialPage {
 	use ZObjectEditingPageTrait;

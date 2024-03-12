@@ -10,7 +10,6 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-use Html;
 use JsonException;
 use Language;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
@@ -22,6 +21,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
+use MediaWiki\Html\Html;
 use MediaWiki\Title\Title;
 use Normalizer;
 use stdClass;

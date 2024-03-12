@@ -10,15 +10,15 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-use Html;
 use MediaWiki\Extension\WikiLambda\API\ApiFunctionCall;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\Sanitizer;
 use MediaWiki\Title\Title;
-use Parser;
 use PPFrame;
-use Sanitizer;
 
 class ParserHooks implements
 	\MediaWiki\Hook\ParserFirstCallInitHook

@@ -16,7 +16,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectPage;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Title\Title;
-use User;
+use MediaWiki\User\User;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization

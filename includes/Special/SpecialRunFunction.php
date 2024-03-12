@@ -10,9 +10,9 @@
 
 namespace MediaWiki\Extension\WikiLambda\Special;
 
-use Html;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
-use SpecialPage;
+use MediaWiki\Html\Html;
+use MediaWiki\SpecialPage\SpecialPage;
 
 class SpecialRunFunction extends SpecialPage {
 

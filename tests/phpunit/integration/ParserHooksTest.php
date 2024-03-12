@@ -9,7 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
-use Parser;
+use MediaWiki\Parser\Parser;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ParserHooks

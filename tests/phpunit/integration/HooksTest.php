@@ -9,11 +9,11 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Request\FauxRequest;
+use MediaWiki\Specials\SpecialRecentChanges;
 use MediaWiki\Title\Title;
-use RequestContext;
-use SpecialRecentChanges;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\Hooks

@@ -11,7 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\Special;
 
 use MediaWiki\MediaWikiServices;
-use SpecialPage;
+use MediaWiki\SpecialPage\SpecialPage;
 
 class SpecialListDuplicateObjectNames extends SpecialPage {
 	public function __construct() {

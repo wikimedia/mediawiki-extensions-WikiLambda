@@ -13,22 +13,22 @@ namespace MediaWiki\Extension\WikiLambda;
 use Content;
 use ContentHandler;
 use FormatJson;
-use Html;
-use IContextSource;
 use InvalidArgumentException;
 use Language;
 use MediaWiki\Content\Renderer\ContentParseParams;
 use MediaWiki\Content\Transform\PreSaveTransformParams;
 use MediaWiki\Content\ValidationParams;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Diff\ZObjectContentDifferenceEngine;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRenderingProvider;
 use MediaWiki\Title\Title;
 use ParserOutput;
-use RequestContext;
 use StatusValue;
 
 class ZObjectContentHandler extends ContentHandler {

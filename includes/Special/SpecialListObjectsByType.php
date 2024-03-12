@@ -14,7 +14,7 @@ use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Languages\LanguageFallback;
-use SpecialPage;
+use MediaWiki\SpecialPage\SpecialPage;
 
 class SpecialListObjectsByType extends SpecialPage {
 	/** @var ZObjectStore */

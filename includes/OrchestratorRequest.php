@@ -11,9 +11,9 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use BagOStuff;
-use GitInfo;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use MediaWiki\Utils\GitInfo;
 use Psr\Http\Message\ResponseInterface;
 
 /**

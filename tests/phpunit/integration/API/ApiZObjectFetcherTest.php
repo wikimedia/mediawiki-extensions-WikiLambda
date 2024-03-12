@@ -9,9 +9,9 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Api;
 
-use ApiTestCase;
-use DeferredUpdates;
+use MediaWiki\Deferred\DeferredUpdates;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Tests\Api\ApiTestCase;
 use MediaWiki\Title\Title;
 
 /**

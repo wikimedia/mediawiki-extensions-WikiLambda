@@ -10,11 +10,11 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-use DatabaseUpdater;
 use MediaWiki\CommentStore\CommentStoreComment;
 use MediaWiki\Config\ConfigException;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Installer\DatabaseUpdater;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRecord;

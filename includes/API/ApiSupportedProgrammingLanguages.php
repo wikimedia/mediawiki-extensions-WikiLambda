@@ -16,8 +16,8 @@ use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
+use MediaWiki\PoolCounter\PoolCounterWorkViaCallback;
 use MediaWiki\Status\Status;
-use PoolCounterWorkViaCallback;
 
 class ApiSupportedProgrammingLanguages extends WikiLambdaApiBase {
 
