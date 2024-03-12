@@ -61,7 +61,6 @@
 				<div class="ext-wikilambda-value-block ext-wikilambda-field-overrides ">
 					<component
 						:is="zobjectComponent"
-						:class="shiftLeft"
 						:edit="edit"
 						:disabled="disableEdit"
 						:expanded="expanded"
