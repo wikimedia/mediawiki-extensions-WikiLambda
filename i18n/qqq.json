@@ -133,8 +133,6 @@
 	"wikilambda-argref": "Label for button that access argument reference",
 	"wikilambda-special-createobject": "Description for Special:CreateObject.\n\n{{doc-wikilambda}}",
 	"wikilambda-special-viewobject": "Description for Special:ViewObject; generally not visible.\n\n{{doc-wikilambda}}",
-	"wikilambda-special-define-function": "Header text for defining a function",
-	"wikilambda-special-define-function-summary": "Description text for defining a function",
 	"wikilambda-special-createobject-intro": "Warning shown to editors on Special:CreateObject about following community rules.",
 	"wikilambda-special-createobject-nojs": "Warning shown to editors on Special:CreateObject who do not have JavaScript.",
 	"wikilambda-special-edit-function-definition-description": "Description of edit function and edit function permission.\n\nParameters:\n* $1 - link to the user group that can make the change, labelled with {{msg-mw|wikilambda-special-edit-function-definition-special-permission-link-label}}.\n\n{{doc-wikilambda}}",
