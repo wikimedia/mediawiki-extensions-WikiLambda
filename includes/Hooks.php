@@ -119,6 +119,7 @@ class Hooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook 
 		// Note: Hard-coding the English version for messages as this can run without a Context and so no language set.
 		$creatingUserName = wfMessage( 'wikilambda-systemuser' )->inLanguage( 'en' )->text();
 		$creatingUser = User::newSystemUser( $creatingUserName, [ 'steal' => true ] );
+		// We use wikilambda-bootstrapupdatingeditsummary in maintenance scripts when updating.
 		$creatingComment = wfMessage( 'wikilambda-bootstrapcreationeditsummary' )->inLanguage( 'en' )->text();
 
 		if ( !$creatingUser ) {

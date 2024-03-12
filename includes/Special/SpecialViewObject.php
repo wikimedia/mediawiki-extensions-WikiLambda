@@ -42,6 +42,7 @@ class SpecialViewObject extends SpecialPage {
 	 * @inheritDoc
 	 */
 	protected function getGroupName() {
+		// Triggers use of message specialpages-group-wikilambda
 		return 'wikilambda';
 	}
 
