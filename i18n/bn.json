@@ -77,7 +77,7 @@
 	"wikilambda-editor-implementation-list-label": "বাস্তবায়নের তালিকা",
 	"wikilambda-editor-boolean-selector": "সত্য/মিথ্যা নির্বাচন করুন",
 	"wikilambda-implementation-selector-code": "কোড",
-	"wikilambda-implementation-selector-composition": "গঠন",
+	"wikilambda-implementation-selector-composition": "ফাংশন প্রণয়ন",
 	"wikilambda-implementation-selector-built-in": "অন্তর্নির্মিত",
 	"wikilambda-code-editor-label": "কোড সম্পাদক",
 	"wikilambda-argref-default-label": "একটি আর্গুমেন্ট নির্বাচন করুন",
