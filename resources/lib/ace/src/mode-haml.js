@@ -74,7 +74,7 @@ var CssHighlightRules = function () {
                     + "|swash|ornaments|annotation|stylistic|styleset|character-variant)"
             }],
         "comments": [{
-                token: "comment",
+                token: "comment", // multi line comment
                 regex: "\\/\\*",
                 push: [{
                         token: "comment",
@@ -103,10 +103,10 @@ var CssHighlightRules = function () {
                 token: "constant.numeric",
                 regex: numRe
             }, {
-                token: "constant.numeric",
+                token: "constant.numeric", // hex6 color
                 regex: "#[a-f0-9]{6}"
             }, {
-                token: "constant.numeric",
+                token: "constant.numeric", // hex3 color
                 regex: "#[a-f0-9]{3}"
             }, {
                 token: ["punctuation", "entity.other.attribute-name.pseudo-element.css"],
@@ -178,50 +178,132 @@ exports.CssHighlightRules = CssHighlightRules;
 
 });
 
-define("ace/mode/doc_comment_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module){"use strict";
+define("ace/mode/jsdoc_comment_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module){"use strict";
 var oop = require("../lib/oop");
 var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
-var DocCommentHighlightRules = function () {
+var JsDocCommentHighlightRules = function () {
     this.$rules = {
-        "start": [{
+        "start": [
+            {
+                token: ["comment.doc.tag", "comment.doc.text", "lparen.doc"],
+                regex: "(@(?:param|member|typedef|property|namespace|var|const|callback))(\\s*)({)",
+                push: [
+                    {
+                        token: "lparen.doc",
+                        regex: "{",
+                        push: [
+                            {
+                                include: "doc-syntax"
+                            }, {
+                                token: "rparen.doc",
+                                regex: "}|(?=$)",
+                                next: "pop"
+                            }
+                        ]
+                    }, {
+                        token: ["rparen.doc", "text.doc", "variable.parameter.doc", "lparen.doc", "variable.parameter.doc", "rparen.doc"],
+                        regex: /(})(\s*)(?:([\w=:\/\.]+)|(?:(\[)([\w=:\/\.]+)(\])))/,
+                        next: "pop"
+                    }, {
+                        token: "rparen.doc",
+                        regex: "}|(?=$)",
+                        next: "pop"
+                    }, {
+                        include: "doc-syntax"
+                    }, {
+                        defaultToken: "text.doc"
+                    }
+                ]
+            }, {
+                token: ["comment.doc.tag", "text.doc", "lparen.doc"],
+                regex: "(@(?:returns?|yields|type|this|suppress|public|protected|private|package|modifies|"
+                    + "implements|external|exception|throws|enum|define|extends))(\\s*)({)",
+                push: [
+                    {
+                        token: "lparen.doc",
+                        regex: "{",
+                        push: [
+                            {
+                                include: "doc-syntax"
+                            }, {
+                                token: "rparen.doc",
+                                regex: "}|(?=$)",
+                                next: "pop"
+                            }
+                        ]
+                    }, {
+                        token: "rparen.doc",
+                        regex: "}|(?=$)",
+                        next: "pop"
+                    }, {
+                        include: "doc-syntax"
+                    }, {
+                        defaultToken: "text.doc"
+                    }
+                ]
+            }, {
+                token: ["comment.doc.tag", "text.doc", "variable.parameter.doc"],
+                regex: "(@(?:alias|memberof|instance|module|name|lends|namespace|external|this|template|"
+                    + "requires|param|implements|function|extends|typedef|mixes|constructor|var|"
+                    + "memberof\\!|event|listens|exports|class|constructs|interface|emits|fires|"
+                    + "throws|const|callback|borrows|augments))(\\s+)(\\w[\\w#\.:\/~\"\\-]*)?"
+            }, {
+                token: ["comment.doc.tag", "text.doc", "variable.parameter.doc"],
+                regex: "(@method)(\\s+)(\\w[\\w\.\\(\\)]*)"
+            }, {
                 token: "comment.doc.tag",
-                regex: "@[\\w\\d_]+" // TODO: fix email addresses
+                regex: "@access\\s+(?:private|public|protected)"
+            }, {
+                token: "comment.doc.tag",
+                regex: "@kind\\s+(?:class|constant|event|external|file|function|member|mixin|module|namespace|typedef)"
+            }, {
+                token: "comment.doc.tag",
+                regex: "@\\w+(?=\\s|$)"
             },
-            DocCommentHighlightRules.getTagRule(),
+            JsDocCommentHighlightRules.getTagRule(),
             {
                 defaultToken: "comment.doc",
                 caseInsensitive: true
+            }
+        ],
+        "doc-syntax": [{
+                token: "operator.doc",
+                regex: /[|:]/
+            }, {
+                token: "paren.doc",
+                regex: /[\[\]]/
             }]
     };
+    this.normalizeRules();
 };
-oop.inherits(DocCommentHighlightRules, TextHighlightRules);
-DocCommentHighlightRules.getTagRule = function (start) {
+oop.inherits(JsDocCommentHighlightRules, TextHighlightRules);
+JsDocCommentHighlightRules.getTagRule = function (start) {
     return {
         token: "comment.doc.tag.storage.type",
         regex: "\\b(?:TODO|FIXME|XXX|HACK)\\b"
     };
 };
-DocCommentHighlightRules.getStartRule = function (start) {
+JsDocCommentHighlightRules.getStartRule = function (start) {
     return {
-        token: "comment.doc",
+        token: "comment.doc", // doc comment
         regex: "\\/\\*(?=\\*)",
         next: start
     };
 };
-DocCommentHighlightRules.getEndRule = function (start) {
+JsDocCommentHighlightRules.getEndRule = function (start) {
     return {
-        token: "comment.doc",
+        token: "comment.doc", // closing comment
         regex: "\\*\\/",
         next: start
     };
 };
-exports.DocCommentHighlightRules = DocCommentHighlightRules;
+exports.JsDocCommentHighlightRules = JsDocCommentHighlightRules;
 
 });
 
-define("ace/mode/javascript_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/doc_comment_highlight_rules","ace/mode/text_highlight_rules"], function(require, exports, module){"use strict";
+define("ace/mode/javascript_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/jsdoc_comment_highlight_rules","ace/mode/text_highlight_rules"], function(require, exports, module){"use strict";
 var oop = require("../lib/oop");
-var DocCommentHighlightRules = require("./doc_comment_highlight_rules").DocCommentHighlightRules;
+var DocCommentHighlightRules = require("./jsdoc_comment_highlight_rules").JsDocCommentHighlightRules;
 var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
 var identifierRe = "[a-zA-Z\\$_\u00a1-\uffff][a-zA-Z\\d\\$_\u00a1-\uffff]*";
 var JavaScriptHighlightRules = function (options) {
@@ -235,7 +317,7 @@ var JavaScriptHighlightRules = function (options) {
             "decodeURI|decodeURIComponent|encodeURI|encodeURIComponent|eval|isFinite|" + // Non-constructor functions
             "isNaN|parseFloat|parseInt|" +
             "JSON|Math|" + // Other
-            "this|arguments|prototype|window|document",
+            "this|arguments|prototype|window|document", // Pseudo
         "keyword": "const|yield|import|get|set|async|await|" +
             "break|case|catch|continue|default|delete|do|else|finally|for|function|" +
             "if|in|of|instanceof|new|return|switch|throw|try|typeof|let|var|while|with|debugger|" +
@@ -267,10 +349,10 @@ var JavaScriptHighlightRules = function (options) {
                 regex: '"(?=.)',
                 next: "qqstring"
             }, {
-                token: "constant.numeric",
+                token: "constant.numeric", // hexadecimal, octal and binary
                 regex: /0(?:[xX][0-9a-fA-F]+|[oO][0-7]+|[bB][01]+)\b/
             }, {
-                token: "constant.numeric",
+                token: "constant.numeric", // decimal integers and floats
                 regex: /(?:\d\d*(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+\b)?/
             }, {
                 token: [
@@ -332,7 +414,7 @@ var JavaScriptHighlightRules = function (options) {
                 regex: /that\b/
             }, {
                 token: ["storage.type", "punctuation.operator", "support.function.firebug"],
-                regex: /(console)(\.)(warn|info|log|error|time|trace|timeEnd|assert)\b/
+                regex: /(console)(\.)(warn|info|log|error|debug|time|trace|timeEnd|assert)\b/
             }, {
                 token: keywordMapper,
                 regex: identifierRe
@@ -490,10 +572,10 @@ var JavaScriptHighlightRules = function (options) {
                 token: "constant.language",
                 regex: "null|Infinity|NaN|undefined"
             }, {
-                token: "constant.numeric",
+                token: "constant.numeric", // hexadecimal, octal and binary
                 regex: /0(?:[xX][0-9a-fA-F]+|[oO][0-7]+|[bB][01]+)\b/
             }, {
-                token: "constant.numeric",
+                token: "constant.numeric", // decimal integers and floats
                 regex: /(?:\d\d*(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+\b)?/
             }, {
                 token: "punctuation.operator",
@@ -734,7 +816,7 @@ function JSX() {
 function comments(next) {
     return [
         {
-            token: "comment",
+            token: "comment", // multi line comment
             regex: /\/\*/,
             next: [
                 DocCommentHighlightRules.getTagRule(),
@@ -1014,23 +1096,23 @@ define("ace/mode/ruby_highlight_rules",["require","exports","module","ace/lib/oo
 var oop = require("../lib/oop");
 var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
 var constantOtherSymbol = exports.constantOtherSymbol = {
-    token: "constant.other.symbol.ruby",
+    token: "constant.other.symbol.ruby", // symbol
     regex: "[:](?:[A-Za-z_]|[@$](?=[a-zA-Z0-9_]))[a-zA-Z0-9_]*[!=?]?"
 };
 exports.qString = {
-    token: "string",
+    token: "string", // single line
     regex: "['](?:(?:\\\\.)|(?:[^'\\\\]))*?[']"
 };
 exports.qqString = {
-    token: "string",
+    token: "string", // single line
     regex: '["](?:(?:\\\\.)|(?:[^"\\\\]))*?["]'
 };
 exports.tString = {
-    token: "string",
+    token: "string", // backtick string
     regex: "[`](?:(?:\\\\.)|(?:[^'\\\\]))*?[`]"
 };
 var constantNumericHex = exports.constantNumericHex = {
-    token: "constant.numeric",
+    token: "constant.numeric", // hex
     regex: "0[xX][0-9a-fA-F](?:[0-9a-fA-F]|_(?=[0-9a-fA-F]))*\\b"
 };
 var constantNumericBinary = exports.constantNumericBinary = {
@@ -1046,19 +1128,19 @@ var constantNumericOctal = exports.constantNumericDecimal = {
     regex: /\b(0[oO]?(?:[1-7](?:[0-7]|_(?=[0-7]))*|0))\b/
 };
 var constantNumericRational = exports.constantNumericRational = {
-    token: "constant.numeric",
+    token: "constant.numeric", //rational + complex
     regex: /\b([\d]+(?:[./][\d]+)?ri?)\b/
 };
 var constantNumericComplex = exports.constantNumericComplex = {
-    token: "constant.numeric",
+    token: "constant.numeric", //simple complex numbers
     regex: /\b([\d]i)\b/
 };
 var constantNumericFloat = exports.constantNumericFloat = {
-    token: "constant.numeric",
+    token: "constant.numeric", // float + complex
     regex: "[+-]?\\d(?:\\d|_(?=\\d))*(?:(?:\\.\\d(?:\\d|_(?=\\d))*)?(?:[eE][+-]?\\d+)?)?i?\\b"
 };
 var instanceVariable = exports.instanceVariable = {
-    token: "variable.instance",
+    token: "variable.instance", // instance variable
     regex: "@{1,2}[a-zA-Z_\\d]+"
 };
 var RubyHighlightRules = function () {
@@ -1123,7 +1205,7 @@ var RubyHighlightRules = function () {
                 token: "comment",
                 regex: "#.*$"
             }, {
-                token: "comment.multiline",
+                token: "comment.multiline", // multi line comment
                 regex: "^=begin(?=$|\\s.*$)",
                 next: "comment"
             }, {
@@ -1179,7 +1261,7 @@ var RubyHighlightRules = function () {
                             defaultToken: "string"
                         }]
                 }, {
-                    token: "string.start",
+                    token: "string.start", //doesn't see any differences between strings and array of strings in highlighting
                     regex: /%[qwx]([(\[<{^|%])/, onMatch: function (val, state, stack) {
                         if (stack.length)
                             stack = [];
@@ -1189,7 +1271,7 @@ var RubyHighlightRules = function () {
                         return this.token;
                     }
                 }, {
-                    token: "string.start",
+                    token: "string.start", //doesn't see any differences between strings and array of strings in highlighting
                     regex: /%[QWX]?([(\[<{^|%])/, onMatch: function (val, state, stack) {
                         if (stack.length)
                             stack = [];
@@ -1199,7 +1281,7 @@ var RubyHighlightRules = function () {
                         return this.token;
                     }
                 }, {
-                    token: "constant.other.symbol.ruby",
+                    token: "constant.other.symbol.ruby", //doesn't see any differences between symbols and array of symbols in highlighting
                     regex: /%[si]([(\[<{^|%])/, onMatch: function (val, state, stack) {
                         if (stack.length)
                             stack = [];
@@ -1209,7 +1291,7 @@ var RubyHighlightRules = function () {
                         return this.token;
                     }
                 }, {
-                    token: "constant.other.symbol.ruby",
+                    token: "constant.other.symbol.ruby", //doesn't see any differences between symbols and array of symbols in highlighting
                     regex: /%[SI]([(\[<{^|%])/, onMatch: function (val, state, stack) {
                         if (stack.length)
                             stack = [];
@@ -1230,15 +1312,15 @@ var RubyHighlightRules = function () {
                     }
                 }],
             {
-                token: "punctuation",
+                token: "punctuation", // namespaces aren't symbols
                 regex: "::"
             },
             instanceVariable,
             {
-                token: "variable.global",
+                token: "variable.global", // global variable
                 regex: "[$][a-zA-Z_\\d]+"
             }, {
-                token: "support.class",
+                token: "support.class", // class name
                 regex: "[A-Z][a-zA-Z_\\d]*"
             }, {
                 token: ["punctuation.operator", "support.function"],
@@ -1352,16 +1434,16 @@ var RubyHighlightRules = function () {
         ],
         "comment": [
             {
-                token: "comment.multiline",
+                token: "comment.multiline", // closing comment
                 regex: "^=end(?=$|\\s.*$)",
                 next: "start"
             }, {
-                token: "comment",
+                token: "comment", // comment spanning whole line
                 regex: ".+"
             }
         ],
         "qStateWithInterpolation": [{
-                token: "string.start",
+                token: "string.start", // excluded nested |^% due to difficulty in realization
                 regex: /[(\[<{]/, onMatch: function (val, state, stack) {
                     if (stack.length && val === stack[0]) {
                         stack.unshift(val, state);
@@ -1394,7 +1476,7 @@ var RubyHighlightRules = function () {
                 defaultToken: "string"
             }],
         "qStateWithoutInterpolation": [{
-                token: "string.start",
+                token: "string.start", // excluded nested |^% due to difficulty in realization
                 regex: /[(\[<{]/, onMatch: function (val, state, stack) {
                     if (stack.length && val === stack[0]) {
                         stack.unshift(val, state);
@@ -1423,7 +1505,7 @@ var RubyHighlightRules = function () {
                 defaultToken: "string"
             }],
         "sStateWithoutInterpolation": [{
-                token: "constant.other.symbol.ruby",
+                token: "constant.other.symbol.ruby", // excluded nested |^% due to difficulty in realization
                 regex: /[(\[<{]/, onMatch: function (val, state, stack) {
                     if (stack.length && val === stack[0]) {
                         stack.unshift(val, state);
@@ -1446,7 +1528,7 @@ var RubyHighlightRules = function () {
                 defaultToken: "constant.other.symbol.ruby"
             }],
         "sStateWithInterpolation": [{
-                token: "constant.other.symbol.ruby",
+                token: "constant.other.symbol.ruby", // excluded nested |^% due to difficulty in realization
                 regex: /[(\[<{]/, onMatch: function (val, state, stack) {
                     if (stack.length && val === stack[0]) {
                         stack.unshift(val, state);
@@ -1479,7 +1561,7 @@ var RubyHighlightRules = function () {
                 defaultToken: "constant.other.symbol.ruby"
             }],
         "rState": [{
-                token: "string.regexp",
+                token: "string.regexp", // excluded nested |^% due to difficulty in realization
                 regex: /[(\[<{]/, onMatch: function (val, state, stack) {
                     if (stack.length && val === stack[0]) {
                         stack.unshift(val, state);
@@ -1593,21 +1675,21 @@ var HamlHighlightRules = function () {
     this.$rules = {
         "start": [
             {
-                token: "comment.block",
+                token: "comment.block", // multiline HTML comment
                 regex: /^\/$/,
                 next: "comment"
             },
             {
-                token: "comment.block",
+                token: "comment.block", // multiline HAML comment
                 regex: /^\-#$/,
                 next: "comment"
             },
             {
-                token: "comment.line",
+                token: "comment.line", // HTML comment
                 regex: /\/\s*.*/
             },
             {
-                token: "comment.line",
+                token: "comment.line", // HAML comment
                 regex: /-#\s*.*/
             },
             {
@@ -1677,7 +1759,7 @@ var HamlHighlightRules = function () {
             RubyExports.qqString,
             RubyExports.tString,
             {
-                token: "support.class",
+                token: "support.class", // class name
                 regex: "[A-Z][a-zA-Z_\\d]+"
             },
             {
@@ -1707,7 +1789,7 @@ var HamlHighlightRules = function () {
                 next: "start"
             },
             {
-                token: "comment.block",
+                token: "comment.block", // comment spanning the whole line
                 regex: /\s+.*/
             }
         ]
@@ -1726,10 +1808,7 @@ var Range = require("../../range").Range;
 var FoldMode = exports.FoldMode = function () { };
 oop.inherits(FoldMode, BaseFoldMode);
 (function () {
-    this.getFoldWidgetRange = function (session, foldStyle, row) {
-        var range = this.indentationBlock(session, row);
-        if (range)
-            return range;
+    this.commentBlock = function (session, row) {
         var re = /\S/;
         var line = session.getLine(row);
         var startLevel = line.search(re);
@@ -1752,6 +1831,14 @@ oop.inherits(FoldMode, BaseFoldMode);
             var endColumn = session.getLine(endRow).length;
             return new Range(startRow, startColumn, endRow, endColumn);
         }
+    };
+    this.getFoldWidgetRange = function (session, foldStyle, row) {
+        var range = this.indentationBlock(session, row);
+        if (range)
+            return range;
+        range = this.commentBlock(session, row);
+        if (range)
+            return range;
     };
     this.getFoldWidget = function (session, foldStyle, row) {
         var line = session.getLine(row);
