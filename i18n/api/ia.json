@@ -34,7 +34,6 @@
 	"apihelp-wikilambda_function_call-example-orchestrator-timeout": "Invocar un function que tenta executar se durante troppo de tempore in le orchestrator, excedente le tempore limite",
 	"apihelp-wikilambda_function_call-summary": "Invocar un function appellante le orchestrator de functiones",
 	"apihelp-wikilambda_supported_programming_languages-summary": "Obtener le linguages de programmation supportate per le evalutator",
-	"apihelp-wikilambda_health_check-summary": "Exequer un verification de sanitate contra le puncto final WikiLambda",
 	"apihelp-query+wikilambdasearch_labels-summary": "Iste generator de listas de consultas del API te permitte cercar etiquettas in ZObjects in un lingua date. Illo existe principalmente pro supportar le systema de recerca anticipate.",
 	"apihelp-query+wikilambdasearch_labels-param-search": "Le termino a cercar",
 	"apihelp-query+wikilambdasearch_labels-param-language": "Le codice del lingua de MediaWiki in le qual cercar",

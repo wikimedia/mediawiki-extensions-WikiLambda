@@ -34,7 +34,6 @@
 	"apihelp-wikilambda_function_call-example-orchestrator-timeout": "Prikličite funkcijo, ki se poskuša predolgo izvajati v orkestratorju, zato prekorači časovno omejitev",
 	"apihelp-wikilambda_function_call-summary": "Klic funkcije s klicem orkestratorja funkcij",
 	"apihelp-wikilambda_supported_programming_languages-summary": "Pridobitev programskih jezikov, ki jih podpira ocenjevalnik",
-	"apihelp-wikilambda_health_check-summary": "Izvedba zdravstvenega pregleda glede na končno točko WikiLambda",
 	"apihelp-query+wikilambdasearch_labels-summary": "Ta generator seznama poizvedb API vam omogoča iskanje oznak v ZObjektih v danem jeziku. Načeloma obstaja za podporo sistemu iskanja vnaprej.",
 	"apihelp-query+wikilambdasearch_labels-param-search": "Iskalni izraz",
 	"apihelp-query+wikilambdasearch_labels-param-language": "MediaWiki oznaka jezika, v katerem želite iskati",

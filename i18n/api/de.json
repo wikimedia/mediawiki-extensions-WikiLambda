@@ -40,7 +40,6 @@
 	"apihelp-wikilambda_function_call-example-orchestrator-timeout": "Aufrufen einer Funktion, die im Orchestrator zu lange läuft und deshalb eine Zeitüberschreitung verursacht",
 	"apihelp-wikilambda_function_call-summary": "Aufrufen einer Funktion durch Aufruf des Funktions-Orchestrators",
 	"apihelp-wikilambda_supported_programming_languages-summary": "Abrufen der vom Evaluator unterstützten Programmiersprachen",
-	"apihelp-wikilambda_health_check-summary": "Führe eine Zustandsprüfung für den WikiLambda-Endpunkt durch",
 	"apihelp-query+wikilambdasearch_labels-summary": "Mit diesem API-Abfragelistengenerator kannst du ZObjects nach Bezeichnungen in einer bestimmten Sprache durchsuchen. Er dient in erster Linie zur Unterstützung des Look-Ahead-Suchsystems.",
 	"apihelp-query+wikilambdasearch_labels-param-search": "Der Suchbegriff",
 	"apihelp-query+wikilambdasearch_labels-param-language": "Der MediaWiki-Sprachcode, in dem gesucht werden soll",

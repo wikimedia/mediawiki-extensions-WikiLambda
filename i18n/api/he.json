@@ -34,7 +34,6 @@
 	"apihelp-wikilambda_function_call-example-orchestrator-timeout": "קריאה לפונקציה שמנסה לרוץ למשך זמן רב מדי במתזמר, ולכן זמנה פג",
 	"apihelp-wikilambda_function_call-summary": "קריאה לפונקציה באמצעות קריאה למתזמר הפונקציה",
 	"apihelp-wikilambda_supported_programming_languages-summary": "אחזור שפות התכנות הנתמכות על־ידי המעריך",
-	"apihelp-wikilambda_health_check-summary": "לבצע בדיקת תקינות מול נקודת קצה של ויקילמדא",
 	"apihelp-query+wikilambdasearch_labels-summary": "מחולל רשימות שאילתות ה־API הזה מאפשר לך לחפש בעצמי Z תוויות בשפה נתונה. הוא קיים בעיקר כדי לתמוך במערכת החיפוש עם מבט קדימה (look-ahead).",
 	"apihelp-query+wikilambdasearch_labels-param-search": "מילת החיפוש",
 	"apihelp-query+wikilambdasearch_labels-param-language": "קוד מדיה־ויקי של שפה שבה ייעשה החיפוש",

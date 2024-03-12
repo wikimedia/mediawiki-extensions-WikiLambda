@@ -35,7 +35,6 @@
 	"apihelp-wikilambda_function_call-example-orchestrator-timeout": "Een functie aanroepen die te lang probeert te blijven draaien in de orchestrator, waardoor er een time-out optreedt",
 	"apihelp-wikilambda_function_call-summary": "Roep een functie aan door de function-orchestrator aan te roepen",
 	"apihelp-wikilambda_supported_programming_languages-summary": "De programmeertalen opvragen die door de evaluator worden ondersteund",
-	"apihelp-wikilambda_health_check-summary": "Een toestandscontrole van het WikiLambda-eindpunt uitvoeren",
 	"apihelp-query+wikilambdasearch_labels-summary": "Met deze API-querylijstgenerator kunt u in ZObjects zoeken naar labels in een bepaalde taal. De generator is er voornamelijk ter ondersteuning van het vooruitkijkzoeksysteem.",
 	"apihelp-query+wikilambdasearch_labels-param-search": "De zoekterm",
 	"apihelp-query+wikilambdasearch_labels-param-language": "De MediaWiki-code van de taal waarin moet worden gezocht",

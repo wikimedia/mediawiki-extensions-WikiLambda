@@ -34,7 +34,6 @@
 	"apihelp-wikilambda_function_call-example-orchestrator-timeout": "Chamar uma função que tenta correr durante demasiado tempo no orquestrador e, portanto, ultrapassa o tempo limite",
 	"apihelp-wikilambda_function_call-summary": "Invocar uma função chamando o orquestrador de funções",
 	"apihelp-wikilambda_supported_programming_languages-summary": "Obter as linguagens de programação suportadas pelo avaliador",
-	"apihelp-wikilambda_health_check-summary": "Executar uma verificação de integridade do ponto de terminação Wiki Lambda",
 	"apihelp-query+wikilambdasearch_labels-summary": "Esta consulta geradora de listas, da API, permite pesquisar nos Objetos-Z as etiquetas de uma determinada língua. Ela existe sobretudo para apoiar o sistema de antecipação de pesquisa.",
 	"apihelp-query+wikilambdasearch_labels-param-search": "O termo de pesquisa",
 	"apihelp-query+wikilambdasearch_labels-param-language": "O código de língua do MediaWiki no qual pesquisar",

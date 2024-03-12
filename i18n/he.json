@@ -153,7 +153,7 @@
 	"wikilambda-argument-typeselector-label": "נא לבחור סוג עבור הארגומנט הזה",
 	"wikilambda-function-typeselector-label": "נא לבחור פונקציה",
 	"wikilambda-return-typeselector-label": "נא לבחור את סוג הערך המוחזר",
-	"wikilambda-zobject-to-string-select-object": "נא לבחור את $1",
+	"wikilambda-zobject-to-string-select-object": "נא לבחור $1",
 	"wikilambda-zobject-to-string-enter-string": "נא להזין מחרוזת",
 	"wikilambda-zobjectselector-label": "עצם",
 	"wikilambda-zobjectselector-no-results": "לא נמצאו תוצאות.",
