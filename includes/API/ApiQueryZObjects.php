@@ -134,7 +134,7 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 			$this->dieWithError( [ 'apierror-query+wikilambdaload_zobjects-unloadable', $zid ] );
 		}
 		if ( !( $page instanceof ZObjectContent ) ) {
-			$this->dieWithError( [ 'apierror-query+wikilambdaload_zobjects-nonzobject', $zid ] );
+			$this->dieWithError( [ 'apierror-query+wikilambdaload_zobjects-notzobject', $zid ] );
 		}
 
 		// The object was successfully retrieved
