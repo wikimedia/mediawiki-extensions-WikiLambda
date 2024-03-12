@@ -119,7 +119,7 @@ module.exports = exports = {
 		},
 		metadata: {
 			type: Object,
-			required: true
+			required: false
 		}
 	},
 	data: function () {
