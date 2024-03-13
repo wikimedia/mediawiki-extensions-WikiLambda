@@ -9,6 +9,7 @@
 		<cdx-dialog
 			:open="open"
 			class="ext-wikilambda-about-edit-metadata"
+			:title="$i18n( 'wikilambda-about-widget-edit-metadata-accessible-title' ).text()"
 			:primary-action="primaryAction"
 			:default-action="defaultAction"
 			data-testid="edit-label-dialog"

@@ -7,6 +7,7 @@
 <template>
 	<cdx-dialog
 		class="ext-wikilambda-metadata-dialog"
+		:title="$i18n( 'wikilambda-about-widget-accessible-title' ).text()"
 		:open="open"
 		@update:open="closeDialog"
 	>
