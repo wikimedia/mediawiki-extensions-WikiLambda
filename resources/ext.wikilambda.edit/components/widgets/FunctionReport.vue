@@ -36,6 +36,7 @@
 						:z-function-id="zFunctionId"
 						:z-implementation-id="isImplementationReport ? zImplementationId : item"
 						:z-tester-id="isTesterReport ? zTesterId : item"
+						:fetching="fetching"
 						:report-type="reportType"
 						@set-keys="openMetricsDialog"
 					></wl-function-report-item>
@@ -55,7 +56,7 @@
 </template>
 
 <script>
-var Constants = require( '../../Constants.js' ),
+const Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
@@ -98,15 +99,15 @@ module.exports = exports = {
 		return {
 			activeZImplementationId: null,
 			activeZTesterId: null,
-			showMetrics: false
+			showMetrics: false,
+			fetching: false
 		};
 	},
 	computed: $.extend( mapGetters( [
 		'getLabel',
 		'getStoredObject',
 		'getZTesterPercentage',
-		'getZTesterMetadata',
-		'getFetchingTestResults'
+		'getZTesterMetadata'
 	] ), {
 		/**
 		 * Returns the items that must be tested. If we are in an implementation page
@@ -252,7 +253,7 @@ module.exports = exports = {
 		 * @return {string}
 		 */
 		reloadIcon: function () {
-			return this.getFetchingTestResults ? icons.cdxIconCancel : icons.cdxIconReload;
+			return this.fetching ? icons.cdxIconCancel : icons.cdxIconReload;
 		},
 
 		/**
@@ -272,7 +273,7 @@ module.exports = exports = {
 		 * @return {string}
 		 */
 		reloadLabel: function () {
-			return this.getFetchingTestResults ?
+			return this.fetching ?
 				this.$i18n( 'wikilambda-tester-status-cancel' ).text() :
 				this.$i18n( 'wikilambda-tester-status-run' ).text();
 		}
@@ -303,11 +304,14 @@ module.exports = exports = {
 		 * Calls the run function API with the required tester and implementation zids.
 		 */
 		runTesters: function () {
+			this.fetching = true;
 			this.getTestResults( {
 				zFunctionId: this.zFunctionId,
 				zImplementations: this.implementations,
 				zTesters: this.testers,
 				clearPreviousResults: true
+			} ).then( () => {
+				this.fetching = false;
 			} );
 		},
 		/**

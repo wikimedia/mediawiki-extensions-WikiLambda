@@ -6,22 +6,20 @@
  */
 'use strict';
 
-var mount = require( '@vue/test-utils' ).mount,
+const mount = require( '@vue/test-utils' ).mount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	FunctionReportItem = require( '../../../../resources/ext.wikilambda.edit/components/widgets/FunctionReportItem.vue' );
 
 describe( 'FunctionReportItem', function () {
-	var getters,
+	let getters,
 		testStatus,
 		zFunctionId,
 		zImplementationId,
 		zTesterId,
-		reportType,
-		returnStatus = jest.fn( function () {
-			return testStatus;
-		} );
+		reportType;
+	const returnStatus = jest.fn( () => testStatus );
 
 	beforeEach( function () {
 		zFunctionId = 'Z10000';
@@ -29,7 +27,6 @@ describe( 'FunctionReportItem', function () {
 		zTesterId = 'Z10002';
 		reportType = Constants.Z_TESTER;
 		getters = {
-			getFetchingTestResults: createGetterMock( false ),
 			getZTesterResults: createGetterMock( returnStatus ),
 			getLabel: createGettersWithFunctionsMock(),
 			getUserLangCode: createGetterMock( 'en' )
@@ -40,7 +37,7 @@ describe( 'FunctionReportItem', function () {
 	} );
 
 	it( 'renders without errors', function () {
-		var wrapper = mount( FunctionReportItem, {
+		const wrapper = mount( FunctionReportItem, {
 			props: {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,
@@ -64,14 +61,13 @@ describe( 'FunctionReportItem', function () {
 	} );
 
 	it( 'displays running status when ongoing call', function () {
-		getters.getFetchingTestResults = createGetterMock( true );
-		global.store.hotUpdate( { getters: getters } );
-		var wrapper = mount( FunctionReportItem, {
+		const wrapper = mount( FunctionReportItem, {
 			props: {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,
 				zTesterId: zTesterId,
-				reportType: reportType
+				reportType: reportType,
+				fetching: true
 			}
 		} );
 		expect( wrapper.find( '.ext-wikilambda-function-report-item__footer-status' ).text() ).toBe( 'Running…' );
@@ -79,7 +75,7 @@ describe( 'FunctionReportItem', function () {
 
 	it( 'displays passed status when result is passed', function () {
 		testStatus = true;
-		var wrapper = mount( FunctionReportItem, {
+		const wrapper = mount( FunctionReportItem, {
 			props: {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,
@@ -92,7 +88,7 @@ describe( 'FunctionReportItem', function () {
 
 	it( 'displays failed status when result is failed', function () {
 		testStatus = false;
-		var wrapper = mount( FunctionReportItem, {
+		const wrapper = mount( FunctionReportItem, {
 			props: {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,
@@ -105,7 +101,7 @@ describe( 'FunctionReportItem', function () {
 
 	it( 'displays pending status when implementation missing', function () {
 		testStatus = undefined;
-		var wrapper = mount( FunctionReportItem, {
+		const wrapper = mount( FunctionReportItem, {
 			props: {
 				zFunctionId: zFunctionId,
 				zImplementationId: '',
@@ -118,7 +114,7 @@ describe( 'FunctionReportItem', function () {
 
 	it( 'displays pending status when tester missing', function () {
 		testStatus = undefined;
-		var wrapper = mount( FunctionReportItem, {
+		const wrapper = mount( FunctionReportItem, {
 			props: {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,

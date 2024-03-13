@@ -37,7 +37,6 @@ describe( 'FunctionReport', function () {
 				}
 			} ),
 			getViewMode: createGettersWithFunctionsMock(),
-			getFetchingTestResults: createGettersWithFunctionsMock( false ),
 			getZTesterPercentage: createGettersWithFunctionsMock( {
 				passing: 1,
 				total: 1,
@@ -56,7 +55,7 @@ describe( 'FunctionReport', function () {
 	} );
 
 	it( 'renders without errors', function () {
-		var wrapper = VueTestUtils.mount( FunctionReport, {
+		const wrapper = VueTestUtils.mount( FunctionReport, {
 			props: {
 				zFunctionId: ''
 			}
@@ -65,7 +64,7 @@ describe( 'FunctionReport', function () {
 	} );
 
 	it( 'displays no results when no implementations or testers found', function () {
-		var wrapper = VueTestUtils.mount( FunctionReport, {
+		const wrapper = VueTestUtils.mount( FunctionReport, {
 			props: {
 				zFunctionId: ''
 			}
@@ -75,7 +74,7 @@ describe( 'FunctionReport', function () {
 	} );
 
 	it( 'displays all available testers if a new zImplementation is being created', async function () {
-		var wrapper = VueTestUtils.mount( FunctionReport, {
+		const wrapper = VueTestUtils.mount( FunctionReport, {
 			props: {
 				zFunctionId: 'Z10000',
 				rootZid: Constants.NEW_ZID_PLACEHOLDER,
@@ -85,12 +84,12 @@ describe( 'FunctionReport', function () {
 
 		expect( wrapper.vm.zIds ).toEqual( [ 'Z10002', 'Z10003' ] );
 
-		var content = wrapper.findAll( '.ext-wikilambda-function-report__result' );
+		const content = wrapper.findAll( '.ext-wikilambda-function-report__result' );
 		expect( content.length ).toBe( 2 );
 	} );
 
 	it( 'displays all available implementations if a new zTester is being created', async function () {
-		var wrapper = VueTestUtils.mount( FunctionReport, {
+		const wrapper = VueTestUtils.mount( FunctionReport, {
 			props: {
 				zFunctionId: 'Z10000',
 				rootZid: Constants.NEW_ZID_PLACEHOLDER,
@@ -101,12 +100,12 @@ describe( 'FunctionReport', function () {
 		expect( wrapper.vm.zIds ).toEqual( [ 'Z10001', 'Z10004', 'Z10005' ] );
 		expect( wrapper.find( '.ext-wikilambda-widget-base-header-title' ).text() ).toEqual( 'Implementations' );
 
-		var content = wrapper.findAll( '.ext-wikilambda-function-report__result' );
+		const content = wrapper.findAll( '.ext-wikilambda-function-report__result' );
 		expect( content.length ).toBe( 3 );
 	} );
 
 	it( 'if displayed on a ZImplementation page, only shows testers', function () {
-		var wrapper = VueTestUtils.mount( FunctionReport, {
+		const wrapper = VueTestUtils.mount( FunctionReport, {
 			props: {
 				zFunctionId: 'Z10000',
 				rootZid: 'Z10001',
@@ -119,7 +118,7 @@ describe( 'FunctionReport', function () {
 	} );
 
 	it( 'if displayed on a ZTester page, only shows ZImplementations', function () {
-		var wrapper = VueTestUtils.mount( FunctionReport, {
+		const wrapper = VueTestUtils.mount( FunctionReport, {
 			props: {
 				zFunctionId: 'Z10000',
 				rootZid: 'Z10002',

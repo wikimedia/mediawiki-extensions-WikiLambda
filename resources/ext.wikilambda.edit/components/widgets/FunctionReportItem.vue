@@ -37,7 +37,7 @@
 </template>
 
 <script>
-var mapGetters = require( 'vuex' ).mapGetters,
+const mapGetters = require( 'vuex' ).mapGetters,
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	Constants = require( '../../Constants.js' ),
@@ -66,12 +66,15 @@ module.exports = exports = {
 		reportType: {
 			type: String,
 			default: Constants.Z_TESTER
+		},
+		fetching: {
+			type: Boolean,
+			default: false
 		}
 	},
 	computed: $.extend( mapGetters( [
 		'getUserLangCode',
 		'getZTesterResults',
-		'getFetchingTestResults',
 		'getLabel'
 	] ), {
 		testerStatus: function () {
@@ -93,7 +96,7 @@ module.exports = exports = {
 			return '/view/' + this.getUserLangCode + '/' + zid;
 		},
 		status: function () {
-			if ( this.getFetchingTestResults ) {
+			if ( this.fetching ) {
 				return Constants.testerStatus.RUNNING;
 			}
 			if ( !( this.zImplementationId ) || !( this.zTesterId ) ) {
