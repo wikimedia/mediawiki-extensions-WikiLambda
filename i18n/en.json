@@ -10,6 +10,7 @@
 	"wikilambda-systemuser": "WikiLambda system",
 	"wikilambda-bootstrapcreationeditsummary": "Initial pre-defined WikiLambda content creation",
 	"wikilambda-bootstrapupdatingeditsummary": "Updating pre-defined WikiLambda content creation",
+	"wikilambda-migration-edit-comment": "Converting reference to programming language to use an ID",
 	"group-functioneer": "Functioneers",
 	"group-functioneer-member": "{{GENDER:$1|functioneer}}",
 	"grouppage-functioneer": "{{ns:project}}:Functioneers",
@@ -272,7 +273,6 @@
 	"wikilambda-metadata-duplicate-alias-error": "'$1' already exists",
 	"wikilambda-metadata-all-languages": "Show all entered languages",
 	"wikilambda-metadata-fewer-languages": "Show fewer languages",
-
 	"wikilambda-implementation-selector-none": "This is a built-in implementation within the core software and is not visible here.",
 	"wikilambda-function-is-approved": "This object is approved for this function.",
 	"wikilambda-function-is-not-approved": "This object is not approved for this function.",
