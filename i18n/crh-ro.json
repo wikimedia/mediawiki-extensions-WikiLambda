@@ -4,10 +4,10 @@
 			"Zolgoyo"
 		]
 	},
-	"wikilambda-zobjectselector-no-results": "Netiğe tapîlamadî.",
-	"wikilambda-about-widget-title": "Hakkînda",
-	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|tíl}}",
-	"wikilambda-about-widget-done-button": "Píttí",
-	"wikilambda-about-widget-add-language": "Tíl koş",
-	"wikilambda-about-widget-search-language-placeholder": "Tíl kîdîr"
+	"wikilambda-zobjectselector-no-results": "Netice tapılamadı.",
+	"wikilambda-about-widget-title": "Haqqında",
+	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|tĭl}}",
+	"wikilambda-about-widget-done-button": "Pĭttĭ",
+	"wikilambda-about-widget-add-language": "Tĭl qoş",
+	"wikilambda-about-widget-search-language-placeholder": "Tĭl qıdır"
 }
