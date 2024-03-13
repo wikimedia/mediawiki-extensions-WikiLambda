@@ -410,5 +410,7 @@
 	"wikilambda-special-create-function": "নতুন ফাংশন তৈরি করুন",
 	"wikilambda-special-create-type": "নতুন ধরন তৈরি করুন",
 	"wikilambda-special-create-implementation": "নতুন বাস্তবায়ন তৈরি করুন",
-	"wikilambda-special-create-test": "নতুন পরীক্ষা তৈরি করুন"
+	"wikilambda-special-create-test": "নতুন পরীক্ষা তৈরি করুন",
+	"wikilambda-string-renderer-field-example": "উদা: $1",
+	"wikilambda-string-renderer-examples-title": "উদাহরণ"
 }

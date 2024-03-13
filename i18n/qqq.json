@@ -432,8 +432,8 @@
 	"wikilambda-string-renderer-examples-title": "Title for the list of examples generated for a string renderer",
 	"wikilambda-renderer-error-footer-project-chat": "Error message footer to invite contributors to leave a message at the Wikifunctions Project chat page. Please do not change the target of the link.",
 	"wikilambda-renderer-api-error": "Error message for unexpected api or server errors when running parser or render functions",
-	"wikilambda-renderer-unexpected-result-error": "Error message for the string renderer returning an unexpected type as a result",
-	"wikilambda-renderer-unknown-error": "Error message for the string renderer returning an unknown error",
-	"wikilambda-parser-unexpected-result-error": "Error message for the string parser returning an unexpected type as a result",
-	"wikilambda-parser-unknown-error": "Error message for the string parser returning an unknown error"
+	"wikilambda-renderer-unexpected-result-error": "Error message for the string renderer function returning an unexpected Type as a result\n\nParams:\n* $1 – The Wikifunctions Function that is the string renderer for the given Type.",
+	"wikilambda-renderer-unknown-error": "Error message for the string renderer Function returning an unknown error\n\nParams:\n* $1 – The Wikifunctions Function that is the string renderer for the given Type.",
+	"wikilambda-parser-unexpected-result-error": "Error message for the string parser Function returning an unexpected Type as a result\n\nParams:\n* $1 – The Wikifunctions Function that is the string parser for the given Type.",
+	"wikilambda-parser-unknown-error": "Error message for the string parser Function returning an unknown error\n\nParams:\n* $1 – The Wikifunctions Function that is the string parser for the given Type."
 }
