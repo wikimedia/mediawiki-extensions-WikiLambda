@@ -17,8 +17,16 @@ describe( 'App.vue', () => {
 
 	beforeEach( () => {
 		actions = {
-			initializeView: jest.fn(),
-			prefetchZids: jest.fn(),
+			initializeView: jest.fn( () => {
+				return {
+					then: ( callback ) => callback()
+				};
+			} ),
+			prefetchZids: jest.fn( () => {
+				return {
+					then: ( callback ) => callback()
+				};
+			} ),
 			evaluateUri: jest.fn(),
 			fetchUserRights: jest.fn()
 		};
@@ -35,14 +43,14 @@ describe( 'App.vue', () => {
 		} );
 	} );
 
-	it( 'Initializes the app on load', () => {
+	it( 'Initializes the app on load', async () => {
 		shallowMount( App, {
 			provide: {
 				viewmode: true
 			}
 		} );
 
-		expect( actions.initializeView ).toHaveBeenCalled();
+		await waitFor( () => expect( actions.initializeView ).toHaveBeenCalled() );
 	} );
 
 	it( 'Renders loading when getZObjectInitialized and `isAppSetup`(data property) is false', () => {

@@ -13,6 +13,7 @@ module.exports = exports = {
 	 * Pre-fetch information of the Zids most commonly used within the UI
 	 *
 	 * @param {Object} context
+	 * @return {Function}
 	 */
 	prefetchZids: function ( context ) {
 		const zids = [
@@ -32,8 +33,11 @@ module.exports = exports = {
 			Constants.Z_IMPLEMENTATION,
 			context.getters.getUserLangZid,
 			Constants.Z_TYPED_LIST,
-			Constants.Z_ARGUMENT_REFERENCE
+			Constants.Z_ARGUMENT_REFERENCE,
+			Constants.Z_NATURAL_LANGUAGE,
+			... Constants.SUGGESTIONS.LANGUAGES,
+			... Constants.SUGGESTIONS.TYPES
 		];
-		context.dispatch( 'fetchZids', { zids: zids } );
+		return context.dispatch( 'fetchZids', { zids: zids } );
 	}
 };

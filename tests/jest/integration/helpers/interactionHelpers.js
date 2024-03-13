@@ -19,9 +19,9 @@ const clickLookupResult = async ( parentWrapper, itemText ) => {
 const lookupSearchAndSelect = async ( parentWrapper, searchText, selectText, selectType = '' ) => {
 	const combobox = await within( parentWrapper ).findByRole( 'combobox' );
 	await fireEvent.update( combobox, searchText );
-	const options = await within( parentWrapper ).findAllByRole( 'option', { hidden: true } );
-	const option = options.find( ( e ) => e.textContent === `${ selectText }${ selectType }` );
-
+	const matcher = ( content, element ) => element.textContent === `${ selectText }${ selectType }`;
+	const matches = await within( parentWrapper ).findAllByText( matcher );
+	const option = matches[ 0 ];
 	return await fireEvent.click( option );
 };
 
@@ -33,7 +33,7 @@ const textInputChange = ( parentWrapper, newText ) => {
 const chipInputAddChip = async ( parentWrapper, newChip ) => {
 	const textbox = within( parentWrapper ).getByRole( 'textbox' );
 	await fireEvent.update( textbox, newChip );
-	return fireEvent.keyDown( textbox, { key: 'enter' } );
+	return await fireEvent.keyDown( textbox, { key: 'enter' } );
 };
 
 module.exports = {

@@ -275,7 +275,7 @@ describe( 'ZObjectStringRenderer', () => {
 			expect( keyValueSet.props( 'edit' ) ).toBe( true );
 		} );
 
-		it( 'on collapse event, runs renderer', () => {
+		it( 'on collapse event, runs renderer', async () => {
 			const wrapper = shallowMount( ZObjectStringRenderer, {
 				props: {
 					edit: true,
@@ -284,13 +284,26 @@ describe( 'ZObjectStringRenderer', () => {
 				}
 			} );
 
+			wrapper.setData( { initialized: true } );
+			await wrapper.vm.$nextTick();
+
+			// Make sure that the state is collapsed
+			const keyValueSet = wrapper.findComponent( { name: 'wl-z-object-key-value-set' } );
+			expect( keyValueSet.exists() ).toBe( true );
+
+			// Clear runRenderer action
+			actions.runRenderer = jest.fn();
+			global.store.hotUpdate( { actions: actions } );
+
 			// Update expanded prop
-			wrapper.setData( { expanded: false } );
-			expect( actions.runRenderer ).toHaveBeenCalledWith( expect.anything(), {
+			wrapper.setProps( { expanded: false } );
+			await wrapper.vm.$nextTick();
+
+			await waitFor( () => expect( actions.runRenderer ).toHaveBeenCalledWith( expect.anything(), {
 				rendererZid,
 				zobject: parsedObject,
 				zlang: 'Z1002'
-			} );
+			} ) );
 		} );
 
 		it( 'on renderer field update, runs parser', () => {

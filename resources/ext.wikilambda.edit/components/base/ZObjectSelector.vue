@@ -24,8 +24,6 @@
 			data-testid="z-object-selector-lookup"
 			@update:selected="onSelect"
 			@input="onInput"
-			@blur="onFocusOut"
-			@focus="onFocus"
 		>
 			<template #no-results>
 				{{ $i18n( 'wikilambda-zobjectselector-no-results' ).text() }}
@@ -108,10 +106,9 @@ module.exports = exports = {
 			required: false
 		}
 	},
-	emits: [ 'input', 'focus', 'focus-out' ],
+	emits: [ 'input' ],
 	data: function () {
 		return {
-			active: false,
 			lookupKey: 1,
 			lookupResults: [],
 			lookupConfig: {
@@ -123,7 +120,7 @@ module.exports = exports = {
 			inputValue: ''
 		};
 	},
-	computed: $.extend( {}, mapGetters( [
+	computed: $.extend( mapGetters( [
 		'getLabel'
 	] ), {
 
@@ -283,6 +280,8 @@ module.exports = exports = {
 						// Once lookupResults are gathered, fetch and collect all the data;
 						// fetchZids makes sure that only the missing zids are requested
 						this.fetchZids( { zids } );
+					} else {
+						this.setSuggestions();
 					}
 				} );
 			},
@@ -293,6 +292,7 @@ module.exports = exports = {
 			 */
 			clearResults: function () {
 				this.lookupResults = [];
+				this.setSuggestions();
 				this.inputValue = '';
 			},
 
@@ -337,43 +337,60 @@ module.exports = exports = {
 			},
 
 			/**
-			 * Focus out event sets active to false and controls width
-			 * of the field if it's set to fitWidth=true
+			 * Reset lookup to suggestions by type
 			 */
-			onFocusOut: function () {
-				this.active = false;
-				this.$emit( 'focus-out' );
-			},
+			setSuggestions: function () {
+				if ( !this.type ) {
+					return;
+				}
 
-			/**
-			 * Focus event sets active to true and controls width
-			 * of the field if it's set to fitWidth=true
-			 */
-			onFocus: function () {
-				this.active = true;
-				this.$emit( 'focus' );
+				let title = '';
+				let suggestedZids = [];
+				switch ( this.type ) {
+					case Constants.Z_NATURAL_LANGUAGE:
+						title = this.$i18n( 'wikilambda-object-selector-suggested-languages' ).text();
+						suggestedZids = Constants.SUGGESTIONS.LANGUAGES;
+						break;
+					case Constants.Z_TYPE:
+						title = this.$i18n( 'wikilambda-object-selector-suggested-types' ).text();
+						suggestedZids = Constants.SUGGESTIONS.TYPES;
+						break;
+					default:
+						return;
+				}
+
+				this.lookupResults.push( {
+					label: title,
+					value: 'suggestion',
+					disabled: true
+				} );
+
+				suggestedZids.forEach( ( zid ) => {
+					this.lookupResults.push( {
+						value: zid,
+						label: this.getLabel( zid ),
+						description: this.getLabel( this.type ),
+						class: 'ext-wikilambda-select-zobject-suggestion'
+					} );
+				} );
 			}
 		}
 	),
 	watch: {
-		selectedLabel: {
-			handler: function () {
-				// Trigger a rerender when initial input value changes,
-				// This might occur due to slow network request for a particular label
-				// Also make sure not to trigger rerender if the user has typed an input
-				if ( !this.inputValue ) {
-					this.lookupKey += 1;
-				}
+		selectedLabel: function () {
+			// Trigger a rerender when initial input value changes,
+			// This might occur due to slow network request for a particular label
+			// Also make sure not to trigger rerender if the user has typed an input
+			if ( !this.inputValue ) {
+				this.lookupKey += 1;
 			}
+		},
+		type: function () {
+			this.setSuggestions();
 		}
 	},
 	mounted: function () {
-		this.fetchZids( { zids: [
-			Constants.Z_STRING,
-			Constants.Z_REFERENCE,
-			Constants.Z_BOOLEAN,
-			Constants.Z_TYPED_LIST
-		] } );
+		this.setSuggestions();
 	}
 };
 </script>
@@ -402,6 +419,15 @@ module.exports = exports = {
 	&__errors {
 		margin-top: @spacing-50;
 		width: max-content;
+	}
+
+	.cdx-menu {
+		.cdx-menu-item.ext-wikilambda-select-zobject-suggestion {
+			.cdx-menu-item__text__label,
+			.cdx-search-result-title {
+				font-weight: @font-weight-normal;
+			}
+		}
 	}
 }
 </style>

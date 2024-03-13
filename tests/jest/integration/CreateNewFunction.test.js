@@ -40,30 +40,25 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		const {
 			findAllByTestId,
 			findByRole,
-			findByTestId,
 			getAllByTestId,
 			getByText
 		} = render( App, { global: { plugins: [ store ] } } );
 
-		// ACT: Select Chinese as the natural language.
-		const languageSelector = await findByTestId( 'function-editor-language-selector' );
-		await lookupSearchAndSelect( languageSelector, 'Chin', 'Chinese' );
-
-		// ACT: Refresh and get language block
+		// ACT: Get First language block. Selected by default: English
 		let languageBlocks = await findAllByTestId( 'function-editor-language-block' );
 		const firstLanguageBlock = languageBlocks[ 0 ];
 
-		// ACT: Enter a name for the function in Chinese.
+		// ACT: Enter a name for the function in English
 		const firstNameInputBlock = within( firstLanguageBlock ).getByTestId( 'function-editor-name-input' );
-		await textInputChange( firstNameInputBlock, 'function name, in Chinese' );
+		await textInputChange( firstNameInputBlock, 'function name, in English' );
 
-		// ACT: Enter a description for the function in Chinese.
+		// ACT: Enter a description for the function in English.
 		const firstDescriptionInputBlock = within( firstLanguageBlock ).getByTestId( 'function-editor-description-input' );
-		await textInputChange( firstDescriptionInputBlock, 'function description, in Chinese' );
+		await textInputChange( firstDescriptionInputBlock, 'function description, in English' );
 
-		// ACT: Enter an alias for the function in Chinese.
+		// ACT: Enter an alias for the function in English.
 		const aliasInputBlock = within( firstLanguageBlock ).getByTestId( 'function-editor-alias-input' );
-		await chipInputAddChip( aliasInputBlock, 'function alias, in Chinese' );
+		await chipInputAddChip( aliasInputBlock, 'function alias, in English' );
 
 		const argumentsArea = within( firstLanguageBlock ).getByTestId( 'function-editor-inputs' );
 
@@ -71,9 +66,9 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		const firstArgType = within( firstLanguageBlock ).getByTestId( 'function-editor-input-item-type' );
 		await lookupSearchAndSelect( firstArgType, 'Str', 'String' );
 
-		// ACT: Enter a label for the first argument in Chinese.
+		// ACT: Enter a label for the first argument in English.
 		const firstArgLabel = within( argumentsArea ).getByTestId( 'function-editor-input-item-label' );
-		await textInputChange( firstArgLabel, 'first argument label, in Chinese' );
+		await textInputChange( firstArgLabel, 'first argument label, in English' );
 
 		// ACT: Add another argument.
 		await fireEvent.click( getByText( 'Add another input' ) );
@@ -87,9 +82,9 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		const secondArgType = within( secondArg ).getByTestId( 'function-editor-input-item-type' );
 		await lookupSearchAndSelect( secondArgType, 'Str', 'String' );
 
-		// ACT: Enter a label for the second argument in Chinese.
+		// ACT: Enter a label for the second argument in English.
 		const secondArgLabel = within( secondArg ).getByTestId( 'function-editor-input-item-label' );
-		await textInputChange( secondArgLabel, 'second argument label, in Chinese' );
+		await textInputChange( secondArgLabel, 'second argument label, in English' );
 
 		// ACT: Select a type for the output.
 		const outputArea = within( firstLanguageBlock ).getByTestId( 'function-editor-output' );

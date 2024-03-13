@@ -40,15 +40,11 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		const {
 			findAllByTestId,
 			findByRole,
-			findByTestId,
 			getByText,
 			queryByRole
 		} = render( App, { global: { plugins: [ store ] } } );
 
-		// ACT: Select Chinese as the natural language.
-		const languageSelector = await findByTestId( 'function-editor-language-selector' );
-		await lookupSearchAndSelect( languageSelector, 'Chin', 'Chinese' );
-
+		// ACT: Get First language block. Selected by default: English
 		const languageBlocks = await findAllByTestId( 'function-editor-language-block' );
 		const firstLanguageBlock = languageBlocks[ 0 ];
 
@@ -71,12 +67,12 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		firstArgType = within( argumentsArea ).getByTestId( 'function-editor-input-item-type' );
 		await lookupSearchAndSelect( firstArgType, 'Str', 'String' );
 
-		// ACT: Enter an alias in Chinese.
-		const chineseAliasInput = within( firstLanguageBlock ).getByTestId( 'function-editor-alias-input' );
-		await chipInputAddChip( chineseAliasInput, 'first function alias, in Chinese' );
+		// ACT: Enter an alias in English.
+		const firstAliasInput = within( firstLanguageBlock ).getByTestId( 'function-editor-alias-input' );
+		await chipInputAddChip( firstAliasInput, 'first function alias, in English' );
 
 		// ACT: Delete the just-entered alias in Chinese [ EDGE CASE ].
-		await fireEvent.click( await waitFor( () => within( chineseAliasInput ).getByLabelText( 'Remove item' ) ) );
+		await fireEvent.click( await waitFor( () => within( firstAliasInput ).getByLabelText( 'Remove item' ) ) );
 
 		// ACT: Attempt to click publish button,  before output is set (invalid) [ EDGE CASE ].
 		await fireEvent.click( getByText( 'Publish' ) );
@@ -97,7 +93,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		// ACT: Select a label for the second argument, but not a type
 		const secondArg = within( firstLanguageBlock ).getAllByTestId( 'function-editor-input-item' )[ 1 ];
 		const secondArgLabel = within( secondArg ).getByTestId( 'function-editor-input-item-label' );
-		await textInputChange( secondArgLabel, 'label for second argument, in Chinese' );
+		await textInputChange( secondArgLabel, 'label for second argument, in English' );
 
 		// ACT: Attempt to click publish button, before input type is set (invalid) [ EDGE CASE ].
 		await fireEvent.click( getByText( 'Publish' ) );

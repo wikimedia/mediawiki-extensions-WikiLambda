@@ -657,7 +657,9 @@
 				"wikilambda-renderer-unexpected-result-error",
 				"wikilambda-renderer-unknown-error",
 				"wikilambda-parser-unexpected-result-error",
-				"wikilambda-parser-unknown-error"
+				"wikilambda-parser-unknown-error",
+				"wikilambda-object-selector-suggested-types",
+				"wikilambda-object-selector-suggested-languages"
 			]
 		}
 	},
