@@ -79,7 +79,8 @@ describe( 'FunctionEvaluator', () => {
 			getMapValueByKey: createGettersWithFunctionsMock( undefined ),
 			getUserLangZid: createGettersWithFunctionsMock( 'Z1002' ),
 			userCanRunFunction: createGetterMock( true ),
-			userCanRunUnsavedCode: createGetterMock( true )
+			userCanRunUnsavedCode: createGetterMock( true ),
+			waitForRunningParsers: createGetterMock( Promise.resolve() )
 		};
 		actions = {
 			callZFunction: jest.fn(),

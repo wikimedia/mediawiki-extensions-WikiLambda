@@ -69,7 +69,7 @@
 					action="progressive"
 					weight="primary"
 					:disabled="!canRunFunction"
-					@click="callFunction"
+					@click="waitAndCallFunction"
 				>
 					{{ $i18n( 'wikilambda-function-evaluator-run-function' ).text() }}
 				</cdx-button>
@@ -101,7 +101,7 @@
 </template>
 
 <script>
-var Constants = require( '../../Constants.js' ),
+const Constants = require( '../../Constants.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	WidgetBase = require( '../base/WidgetBase.vue' ),
@@ -161,7 +161,8 @@ module.exports = exports = {
 		'getUserLangZid',
 		'getMapValueByKey',
 		'userCanRunFunction',
-		'userCanRunUnsavedCode'
+		'userCanRunUnsavedCode',
+		'waitForRunningParsers'
 	] ), {
 		/**
 		 * Whether the widget has a pre-defined function
@@ -353,6 +354,14 @@ module.exports = exports = {
 			this.hasResult = false;
 			this.running = false;
 			this.initializeResultId( this.resultRowId );
+		},
+
+		/**
+		 * Waits for running parsers to return and persist
+		 * changes before going ahead and running the function call
+		 */
+		waitAndCallFunction: function () {
+			this.waitForRunningParsers.then( () => this.callFunction() );
 		},
 
 		/**

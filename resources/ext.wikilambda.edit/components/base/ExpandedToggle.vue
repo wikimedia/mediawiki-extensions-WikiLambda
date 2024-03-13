@@ -10,7 +10,7 @@
 		aria-label="Toggle"
 		class="ext-wikilambda-expand-toggle"
 		:disabled="!hasExpandedMode"
-		@click="clickExpandToggle"
+		@click="waitAndExpand"
 	>
 		<cdx-icon
 			class="ext-wikilambda-expand-toggle-icon"
@@ -21,10 +21,10 @@
 </template>
 
 <script>
-var
-	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+const CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	icons = require( '../../../lib/icons.json' );
+	icons = require( '../../../lib/icons.json' ),
+	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = exports = {
@@ -51,7 +51,9 @@ module.exports = exports = {
 			}
 		};
 	},
-	computed: {
+	computed: $.extend( mapGetters( [
+		'waitForRunningParsers'
+	] ), {
 		iconClass: function () {
 			if ( !this.hasExpandedMode ) {
 				return 'ext-wikilambda-expand-toggle-disabled';
@@ -61,8 +63,11 @@ module.exports = exports = {
 					'ext-wikilambda-expand-toggle-collapsed';
 			}
 		}
-	},
+	} ),
 	methods: {
+		waitAndExpand: function ( event ) {
+			this.waitForRunningParsers.then( () => this.clickExpandToggle( event ) );
+		},
 		clickExpandToggle: function ( event ) {
 			this.$emit( 'toggle', event );
 		}

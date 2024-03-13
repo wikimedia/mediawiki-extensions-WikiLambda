@@ -31,7 +31,12 @@ module.exports = exports = {
 		 *  }
 		 * }
 		 */
-		rendererExamples: {}
+		rendererExamples: {},
+		/**
+		 * Array of promises of pending running parser
+		 * functions
+		 */
+		parserPromises: []
 	},
 	getters: {
 		/**
@@ -132,9 +137,32 @@ module.exports = exports = {
 					filteredExamples;
 			}
 			return getExamples;
+		},
+		/**
+		 * Returns a Promise that will be resolved when all pending
+		 * parsers will finish running. Those which run successfully will
+		 * be resolved once the parser response is persisted in the state.
+		 * The ones which fail will be resolved immediately, as nothing is
+		 * persisted in the state.
+		 *
+		 * @param {Object} state
+		 * @return {Promise}
+		 */
+		waitForRunningParsers: function ( state ) {
+			return Promise.all( state.parserPromises );
 		}
 	},
 	mutations: {
+		/**
+		 * Add a running parser promise into the parserPromises
+		 * state array.
+		 *
+		 * @param {Object} state
+		 * @param {Promise} promise
+		 */
+		addParserPromise: function ( state, promise ) {
+			state.parserPromises.push( promise );
+		},
 		/**
 		 * Add renderer to the renderer collection
 		 *
@@ -206,17 +234,24 @@ module.exports = exports = {
 		/**
 		 * Given any Object/Z1 and a Language/Z60, it runs
 		 * its parser and returns the resulting Object.
+		 *
+		 * Sometimes the response of the parser should be persisted in the
+		 * store before other actions (like submission or call function)
+		 * take place. The flag wait indicates whether the response of
+		 * this parser function should be waited for.
+		 *
 		 * TODO: currently this will accept a String/Z6 object,
 		 * but in the future it may accept other types)
 		 *
-		 * @param {Object} _context
+		 * @param {Object} context
 		 * @param {Object} payload
 		 * @param {string} payload.parserZid
 		 * @param {Object|Array|string} payload.zobject
 		 * @param {string} payload.zlang
+		 * @param {boolean} payload.wait whether this parser should block API calls
 		 * @return {Promise}
 		 */
-		runParser: function ( _context, payload ) {
+		runParser: function ( context, payload ) {
 			// 1. Create a function call
 			// {
 			//   Z1K1: Z7,
@@ -229,8 +264,26 @@ module.exports = exports = {
 			parserCall[ `${ payload.parserZid }K1` ] = payload.zobject;
 			parserCall[ `${ payload.parserZid }K2` ] = payload.zlang;
 
-			// 2. Run this function call by calling wikilambda_function_call_zobject and return
-			return performFunctionCall( parserCall );
+			// 2. Add the parser promise to the parserPromises state array
+			// and keep the resolver function to be returned back to the caller.
+			let resolver;
+			const parserPromise = new Promise( ( resolve, reject ) => {
+				resolver = { resolve, reject };
+			} );
+			// If we want this parser to block other API calls, we add to the parserPromise array
+			if ( payload.wait ) {
+				context.commit( 'addParserPromise', parserPromise );
+			}
+
+			// 3. Run this function call by calling wikilambda_function_call_zobject
+			// and return the response and the Promise resolver function
+			return performFunctionCall( parserCall ).then( ( response ) => {
+				response.resolver = resolver;
+				return response;
+			} ).catch( ( e ) => {
+				resolver.resolve();
+				throw e;
+			} );
 		},
 		/**
 		 * Generates a renderer example by running its test with the

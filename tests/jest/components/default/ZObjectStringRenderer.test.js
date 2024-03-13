@@ -47,6 +47,20 @@ describe( 'ZObjectStringRenderer', () => {
 			Z1K1: 'Z22',
 			Z22K1: parsedObject,
 			Z22K2: convertSetToMap( {} )
+		},
+		resolver: {
+			resolve: jest.fn()
+		}
+	};
+
+	const parserBadResponse = {
+		response: {
+			Z1K1: 'Z22',
+			Z22K1: 'some other type',
+			Z22K2: convertSetToMap( {} )
+		},
+		resolver: {
+			resolve: jest.fn()
 		}
 	};
 
@@ -68,6 +82,9 @@ describe( 'ZObjectStringRenderer', () => {
 			Z1K1: 'Z22',
 			Z22K1: Constants.Z_VOID,
 			Z22K2: convertSetToMap( { errors: customError } )
+		},
+		resolver: {
+			resolve: jest.fn()
 		}
 	};
 
@@ -291,7 +308,8 @@ describe( 'ZObjectStringRenderer', () => {
 			expect( actions.runParser ).toHaveBeenCalledWith( expect.anything(), {
 				parserZid,
 				zobject: newValue,
-				zlang: 'Z1002'
+				zlang: 'Z1002',
+				wait: true
 			} );
 		} );
 
@@ -608,7 +626,7 @@ describe( 'ZObjectStringRenderer', () => {
 			it( 'parser returns wrong type', async () => {
 				actions.runParser = jest.fn( () => {
 					return {
-						then: ( fn ) => fn( rendererResponse )
+						then: ( fn ) => fn( parserBadResponse )
 					};
 				} );
 				global.store.hotUpdate( {
