@@ -38,5 +38,6 @@
 	"wikilambda-list-item-label": "आयटम",
 	"wikilambda-tester-details": "विवरण",
 	"wikilambda-function-evaluator-result": "परिणाम",
-	"wikilambda-function-evaluator-result-details": "विवरण"
+	"wikilambda-function-evaluator-result-details": "विवरण",
+	"wikilambda-string-renderer-examples-title": "उदाहरण"
 }

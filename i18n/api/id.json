@@ -9,7 +9,6 @@
 	"apihelp-wikilambda_fetch-param-language": "Bahasa dari hasil yang diberikan.",
 	"apihelp-wikilambda_fetch-example-single": "Ambil satu ZObject, Z1.",
 	"apihelp-wikilambda_fetch-example-multiple": "Ambil tiga ZObject: Z1, Z2, dan Z3.",
-	"apierror-wikilambda_fetch-missingzid": "ZID '$1\" yang diberikan tidak ada di wiki ini.",
 	"apihelp-wikilambda_function_call-param-zobject": "ZObject untuk pemanggilan fungsi",
 	"apihelp-query+wikilambdasearch_labels-summary": "Generator daftar kueri API ini memungkinkan Anda mencari ZObject dengan label dalam bahasa tertentu. Generator ini ada untuk mendukung sistem pencarian lihat-ke-depan.",
 	"apihelp-query+wikilambdasearch_labels-param-search": "Istilah pencarian",

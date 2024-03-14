@@ -15,7 +15,6 @@
 	"wikilambda-helplink-button": "Hëllef",
 	"wikilambda-show-more": "Méi weisen",
 	"wikilambda-hide-more": "Méi verstoppen",
-	"wikilambda-special-define-function": "Funktioun definéieren",
 	"wikilambda-special-runfunction-nojs": "Dës Säit brauch JavaScript fir benotzt ze ginn.",
 	"wikilambda-special-listduplicateobjectlabels-language": "Sprooch",
 	"wikilambda-special-objectsbytype-typeheader": "All Typpen",
@@ -143,5 +142,7 @@
 	"wikilambda-function-evaluator-result": "Resultat",
 	"wikilambda-function-evaluator-result-details": "Detailer",
 	"wikilambda-function-evaluator-run-function": "Funktioun ausféieren",
-	"wikilambda-argument-reference-selector-placeholder": "Argument auswielen"
+	"wikilambda-argument-reference-selector-placeholder": "Argument auswielen",
+	"wikilambda-string-renderer-field-example": "Z.&nbsp;B. $1",
+	"wikilambda-string-renderer-examples-title": "Beispiller"
 }

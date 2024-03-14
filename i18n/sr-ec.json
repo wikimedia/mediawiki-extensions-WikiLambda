@@ -11,7 +11,6 @@
 	"wikilambda-helplink-button": "Помоћ",
 	"wikilambda-show-more": "Прикажи више",
 	"wikilambda-hide-more": "Сакриј више",
-	"wikilambda-special-define-function": "Дефиниши функцију",
 	"wikilambda-special-createobject-intro": "Молимо поштујте правила заједнице, ауторска права и правила о патентима.",
 	"wikilambda-special-createobject-nojs": "Ова страница не ради без JavaScript-а.",
 	"wikilambda-special-runfunction": "Покрени функцију",
@@ -116,5 +115,8 @@
 	"wikilambda-function-evaluator-running": "Извршава се...",
 	"wikilambda-function-evaluator-result": "Резултат",
 	"wikilambda-function-evaluator-result-details": "Детаљи",
-	"wikilambda-function-evaluator-run-function": "Покрени функцију"
+	"wikilambda-function-evaluator-run-function": "Покрени функцију",
+	"wikilambda-string-renderer-field-example": "Нпр. $1",
+	"wikilambda-string-renderer-examples-title": "Примери",
+	"wikilambda-renderer-api-error": "Нешто је кренуло наопако. Покушајте поново касније."
 }

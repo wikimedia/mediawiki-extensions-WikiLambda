@@ -19,7 +19,6 @@
 	"apihelp-query+wikilambdasearch_labels-param-nofallback": "ফলব্যাক ভাষা ব্যতীত, শুধুমাত্র প্রদত্ত ভাষায় অনুসন্ধান করতে হবে কি না",
 	"apihelp-wikilambda_edit-summary": "একটি Z-বস্তু তৈরি বা সম্পাদনা করুন।",
 	"apihelp-wikilambda_edit-param-summary": "সম্পাদনা সারাংশ বার্তা",
-	"apierror-wikilambda_function_call-general": "কোনো সমস্যা হয়েছে: '$1'।",
 	"apierror-wikilambda_function_call-response-malformed": "ফাংশন কল প্রতিক্রিয়া বাধা পড়েছে: '$1'।",
 	"apihelp-wikilambda_perform_test-param-nocache": "ক্যাশ ব্যবহার করা হবে কি না"
 }

@@ -17,7 +17,6 @@
 	"action-wikilambda-execute": "함수 실행",
 	"action-wikilambda-execute-unsaved-code": "저장되지 않은 구현 코드 실행",
 	"right-wikilambda-execute": "함수 실행",
-	"wikilambda-persistentzobject": "객체",
 	"wikilambda-persistentzobject-contents": "내용",
 	"wikilambda-reference": "참조",
 	"wikilambda-edit": "편집",
@@ -26,7 +25,6 @@
 	"wikilambda-hide-more": "더 숨기기",
 	"wikilambda-special-createobject": "새 ZObject 만들기",
 	"wikilambda-special-viewobject": "객체 보기",
-	"wikilambda-special-define-function": "함수 정의",
 	"wikilambda-special-edit-function-definition-special-permission-link-label": "특수 권한이 있는 사용자만",
 	"wikilambda-special-runfunction": "함수 실행",
 	"wikilambda-special-runfunction-nojs": "이 페이지는 자바스크립트 사용이 필요합니다.",
@@ -52,7 +50,6 @@
 	"wikilambda-publish-lose-changes-prompt": "먼저 게시하지 않고 나가면 편집 내용이 소실됩니다.",
 	"specialpages-group-wikilambda": "위키함수 문서",
 	"wikilambda-code-editor-label": "코드 편집기",
-	"wikilambda-argref-default-label": "인수를 선택하세요",
 	"wikilambda-implementation-selector": "구현을 선택하세요",
 	"wikilambda-function-are-you-sure-dialog-header": "확실합니까?",
 	"wikilambda-function-are-you-sure-dialog-description": "정말 게시하지 않고 편집을 그만 두겠습니까?",
@@ -128,5 +125,7 @@
 	"wikilambda-about-widget-search-language-placeholder": "언어 검색",
 	"wikilambda-function-inputs-title": "입력",
 	"wikilambda-function-explorer-copied-text": "복사 완료!",
-	"wikilambda-function-explorer-name-title": "이름"
+	"wikilambda-function-explorer-name-title": "이름",
+	"wikilambda-string-renderer-field-example": "예: $1",
+	"wikilambda-string-renderer-examples-title": "예시"
 }

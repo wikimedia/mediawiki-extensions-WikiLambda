@@ -19,7 +19,6 @@
 		]
 	},
 	"wikilambda-typeunavailable": "Неизвестный тип",
-	"wikilambda-persistentzobject": "Объект",
 	"wikilambda-persistentzobject-contents": "Содержание",
 	"wikilambda-literal-type": "Буквально $1",
 	"wikilambda-functioncall": "Вызов функции",
@@ -27,7 +26,6 @@
 	"wikilambda-helplink-button": "Справка",
 	"wikilambda-show-more": "Показать больше",
 	"wikilambda-special-createobject": "Создать новый ZObject",
-	"wikilambda-special-define-function": "Определить функцию",
 	"wikilambda-special-createobject-nojs": "Эта страница требует использования JavaScript.",
 	"wikilambda-special-runfunction": "Выполнить функцию",
 	"wikilambda-special-listduplicateobjectlabels-language": "Язык",
@@ -53,7 +51,6 @@
 	"wikilambda-editor-argument-list-label": "Список аргументов",
 	"wikilambda-implementation-selector-code": "Код",
 	"wikilambda-code-editor-label": "Редактор кода",
-	"wikilambda-argref-default-label": "Выберите аргумент",
 	"wikilambda-implementation-selector": "Выберите реализацию",
 	"wikilambda-implementation-create-new": "Создать новую реализацию",
 	"wikilambda-function-are-you-sure-dialog-header": "Вы уверены?",

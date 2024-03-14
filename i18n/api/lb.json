@@ -6,6 +6,5 @@
 	},
 	"apihelp-query+wikilambdasearch_labels-param-search": "De Sichbegrëff",
 	"apihelp-query+wikilambdasearch_labels-param-language": "De MediaWiki-Sproochcode, an deem gesicht soll ginn",
-	"apierror-wikilambda_function_call-general": "Et ass eppes schif gaangen: '$1'.",
 	"apihelp-wikilambda_perform_test-param-nocache": "Ob de Cache benotz gi soll oder net"
 }

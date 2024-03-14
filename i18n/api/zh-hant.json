@@ -11,7 +11,6 @@
 	"apihelp-wikilambda_fetch-param-language": "返回結果的語言。",
 	"apihelp-wikilambda_fetch-example-single": "取得單一的 ZObject，Z1。",
 	"apihelp-wikilambda_fetch-example-multiple": "取得三個 ZObjects：Z1、Z2、Z3。",
-	"apierror-wikilambda_fetch-missingzid": "給予的 ZID「$1」不存在此 wiki 上。",
 	"apihelp-wikilambda_function_call-example-composition": "呼叫組合：如果第一個參數為真，則排序第二個；否則，原封不動地退回",
 	"apihelp-wikilambda_function_call-example-native-js-code": "呼叫使用者編寫的JavaScript代碼",
 	"apihelp-wikilambda_function_call-example-native-python-code": "呼叫使用者編寫的Python 3代碼",

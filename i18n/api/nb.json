@@ -12,7 +12,6 @@
 	"apihelp-wikilambda_fetch-example-single-old": "Hent sideversjon 12 av ett enkelt objekt, Z1.",
 	"apihelp-wikilambda_fetch-example-multiple": "Hent tre ZObject-er: Z1, Z2 og Z3.",
 	"apihelp-wikilambda_fetch-example-multiple-old": "Hent sideversjon 12 av objekt Z1, sideversjon 14 av Z2 og sideversjon 25 av Z3.",
-	"apierror-wikilambda_fetch-missingzid": "Den gitte ZID-en «$1» finnes ikke på denne wikien.",
 	"apihelp-wikilambda_function_call-param-zobject": "Objekt for funksjonskall",
 	"apihelp-query+wikilambdasearch_labels-summary": "Denne API-spørringslistegeneratoren lar deg søke i ZObject-er etter etiketter på et gitt språk. Den finnes primært for å støtte look-ahead-søkesystemet",
 	"apihelp-query+wikilambdasearch_labels-param-search": "Søkeordet",

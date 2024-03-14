@@ -11,7 +11,6 @@
 	"apihelp-wikilambda_fetch-param-language": "На кој јазик да се даде исходот.",
 	"apihelp-wikilambda_fetch-example-single": "Дај еден ZObject, Z1.",
 	"apihelp-wikilambda_fetch-example-multiple": "Дај три ZObjects: Z1, Z2 и Z3.",
-	"apierror-wikilambda_fetch-missingzid": "Дадениот ZID „$1“ не постои на ова вики.",
 	"apihelp-wikilambda_function_call-param-zobject": "ZObject за повик на функција",
 	"apihelp-wikilambda_function_call-example-if": "Повикајте го вградениот Z802 (If) со лажен прирок",
 	"apihelp-wikilambda_function_call-example-native-js-code": "Повикајте го кориснички напишаниот JavaScript-код",

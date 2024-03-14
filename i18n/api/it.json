@@ -5,6 +5,5 @@
 		]
 	},
 	"apihelp-wikilambda_fetch-param-language": "La lingua in cui restituire i risultati.",
-	"apihelp-wikilambda_function_call-example-timeout": "Invoca una funzione che tenta di essere eseguita per sempre e quindi va in timeout nel valutatore",
-	"apierror-wikilambda_function_call-general": "Qualcosa è andato storto: '$1'."
+	"apihelp-wikilambda_function_call-example-timeout": "Invoca una funzione che tenta di essere eseguita per sempre e quindi va in timeout nel valutatore"
 }
