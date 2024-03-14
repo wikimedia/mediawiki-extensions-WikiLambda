@@ -1053,9 +1053,11 @@ module.exports = exports = {
 					return undefined;
 				}
 				if ( row.isTerminal() ) {
-					return row.value ?
-						row.value :
-						undefined;
+					if ( terminalKey === Constants.Z_STRING_VALUE ) {
+						return row.value;
+					} else {
+						return row.value ? row.value : undefined;
+					}
 				} else {
 					const valueRow = getters.getRowByKeyPath( [ terminalKey ], row.id );
 					return valueRow ?
