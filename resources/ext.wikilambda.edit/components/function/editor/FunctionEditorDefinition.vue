@@ -218,8 +218,10 @@ module.exports = exports = {
 		// Dispatch an editFunction load event
 		// TODO (T352141): Consider counting "About info" editing separately
 		this.dispatchEvent( 'wf.ui.editFunction.load', {
+			edit: true,
 			isnewzobject: this.isNewZObject,
 			zobjectid: this.getCurrentZObjectId || null,
+			zobjecttype: Constants.Z_FUNCTION,
 			zlang: this.getUserLangZid || null
 		} );
 	}

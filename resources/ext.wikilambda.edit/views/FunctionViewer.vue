@@ -66,7 +66,8 @@ module.exports = exports = {
 	},
 	computed: $.extend( mapGetters( [
 		'getCurrentZObjectId',
-		'getUserLangZid'
+		'getUserLangZid',
+		'isNewZObject'
 	] ), {
 		displaySuccessMessage: function () {
 			if ( mw.Uri().query ) {
@@ -90,6 +91,13 @@ module.exports = exports = {
 		}
 	},
 	mounted: function () {
+		this.dispatchEvent( 'wf.ui.editFunction.load', {
+			edit: false,
+			zobjecttype: Constants.Z_FUNCTION,
+			isnewzobject: this.isNewZObject,
+			zobjectid: this.getCurrentZObjectId || null,
+			zlang: this.getUserLangZid || null
+		} );
 		this.$emit( 'mounted' );
 	}
 };
