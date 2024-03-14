@@ -80,6 +80,7 @@ class ParserHooks implements
 					$target
 				)->parseAsBlock()
 			);
+			// Triggers use of message wikilambda-functioncall-error-invalid-zobject-category-desc
 			$parser->addTrackingCategory( 'wikilambda-functioncall-error-invalid-zobject-category' );
 			return [ $ret ];
 		}
@@ -92,6 +93,7 @@ class ParserHooks implements
 					$target
 				)->parseAsBlock()
 			);
+			// Triggers use of message wikilambda-functioncall-error-nonfunction-category-desc
 			$parser->addTrackingCategory( 'wikilambda-functioncall-error-nonfunction-category' );
 			return [ $ret ];
 		}
@@ -109,6 +111,7 @@ class ParserHooks implements
 					$target
 				)->parseAsBlock()
 			);
+			// Triggers use of message wikilambda-functioncall-error-nonstringoutput-category-desc
 			$parser->addTrackingCategory( 'wikilambda-functioncall-error-nonstringoutput-category' );
 			return [ $ret ];
 		}
@@ -150,6 +153,7 @@ class ParserHooks implements
 					$nonStringArgumentType
 				)->parseAsBlock()
 			);
+			// Triggers use of message wikilambda-functioncall-error-nonstringinput-category-desc
 			$parser->addTrackingCategory( 'wikilambda-functioncall-error-nonstringinput-category' );
 			return [ $ret ];
 		}

@@ -42,6 +42,7 @@ class ZObjectContentHandler extends ContentHandler {
 			throw new InvalidArgumentException( __CLASS__ . " initialised for invalid content model" );
 		}
 
+		// Triggers use of message content-model-zobject
 		parent::__construct( CONTENT_MODEL_ZOBJECT, [ CONTENT_FORMAT_TEXT ] );
 	}
 
