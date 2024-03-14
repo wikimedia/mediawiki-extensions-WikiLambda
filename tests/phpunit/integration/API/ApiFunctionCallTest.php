@@ -156,13 +156,7 @@ class ApiFunctionCallTest extends ApiTestCase {
 		yield 'Invoke a function that maps the element of a typed Map at a given key to a string version of its value' => [
 			self::readTestFile( 'example-generic-map.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
-			'{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z883","Z883K1":"Z6","Z883K2":"Z6"},"K1":[{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z6"},{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z6"},"K1":"true?","K2":"True"}]}'
-		];
-
-		yield 'Invoke Python function using a user-defined type' => [
-			self::readTestFile( 'example-user-defined-python.json' ),
-			// @phpcs:ignore Generic.Files.LineLength.TooLong
-			"{\"Z1K1\":\"Z1000000\",\"Z1000000K1\":\"5\"}"
+			'{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z883","Z883K1":"Z6","Z883K2":"Z6"},"K1":[{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z6"},{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z6"},"K1":"true?","K2":"true"}]}'
 		];
 
 		yield 'Invoke JavaScript function using a user-defined type' => [
@@ -176,6 +170,7 @@ class ApiFunctionCallTest extends ApiTestCase {
 		$ZMillion["Z4K3"]["Z8K1"][1]["Z17K1"] = $ZMillion;
 		$validationZ7["Z801K1"]["Z1K1"] = $ZMillion;
 
+		// TODO (T360076): Rewrite this to use JS instead of Python.
 		yield 'Invoke user-defined validation function implemented in Python' => [
 			json_encode( $validationZ7 ),
 			'Z24',

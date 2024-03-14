@@ -88,11 +88,8 @@
 				"Z14K1": "Z10046",
 				"Z14K3": {
 					"Z1K1": "Z16",
-					"Z16K1": {
-						"Z1K1": "Z61",
-						"Z61K1": "python-3"
-					},
-					"Z16K2": "def Z10046(Z10046K1):\n    import re\n    return re.search(r'acab', Z10046K1) is not None"
+					"Z16K1": "Z600",
+					"Z16K2": "function Z10046( Z10046K1 ) {\n\treturn Z10046K1.match('acab') !== null\n}"
 				}
 			}
 		],
