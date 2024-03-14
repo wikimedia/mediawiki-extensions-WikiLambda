@@ -2,6 +2,7 @@
 	<div class="ext-wikilambda-mode-selector">
 		<cdx-button
 			data-testid="mode-selector-button"
+			:aria-label="$i18n( 'wikilambda-mode-selector-button-label' ).text()"
 			weight="quiet"
 			:disabled="disabled"
 			@click="expanded = true"

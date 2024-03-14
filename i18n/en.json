@@ -105,6 +105,7 @@
 	"wikilambda-multilingualstring-nofallback": "No label defined in this language or accepted fallbacks",
 	"wikilambda-viewmode-nojs": "This page displays in a limited way without JavaScript.",
 	"wikilambda-diff-incompatible": "The system cannot display differences between an Object and a non-Object.",
+	"wikilambda-mode-selector-button-label": "Change what kind of Object this is: a reference to an existing Object, an inline literal defintion, or a function call",
 	"wikilambda-reference": "Reference",
 	"wikilambda-literal-type": "Literal $1",
 	"wikilambda-functioncall": "Function call",
