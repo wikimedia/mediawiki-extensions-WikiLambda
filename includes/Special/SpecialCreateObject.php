@@ -67,8 +67,6 @@ class SpecialCreateObject extends SpecialPage {
 		// TODO: Use $subPage to extract and pre-fill type/etc.?
 
 		$this->setHeaders();
-		// TODO (T312532): determine if there should be object type agnostic text here
-		// $this->outputHeader( 'wikilambda-special-define-function-summary' );
 
 		$output = $this->getOutput();
 

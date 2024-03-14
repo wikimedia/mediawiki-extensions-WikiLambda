@@ -120,8 +120,6 @@
 	"wikilambda-argref": "Argument Reference",
 	"wikilambda-special-createobject": "Create a new Object",
 	"wikilambda-special-viewobject": "View an Object",
-	"wikilambda-special-define-function": "Define function",
-	"wikilambda-special-define-function-summary": "A function contains a definition, possibly multiple implementations, and requires tests for validation. The 'Function definition' tab below is for defining the input, output, and labels of the function, 'Implementation' is for editing and storing implementations, and 'Test' is for ensuring the function behaves as expected.",
 	"wikilambda-special-createobject-intro": "Make sure that you follow community policies, and copyright and patent rules.",
 	"wikilambda-special-createobject-nojs": "This page requires JavaScript to be used.",
 	"wikilambda-special-edit-function-definition-description": "You are editing the function definition page. $1 can change the definition of the function. Everyone can edit the labels. Make sure to save your work by clicking the blue Publish button below.",
