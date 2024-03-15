@@ -1358,7 +1358,7 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		initializeView: function ( context ) {
-			var editingData = mw.config.get( 'wgWikiLambda' ),
+			const editingData = mw.config.get( 'wgWikiLambda' ),
 				createNewPage = editingData.createNewPage,
 				runFunction = editingData.runFunction,
 				zId = editingData.zId;
@@ -1428,8 +1428,8 @@ module.exports = exports = {
 			} ).then( function () {
 				// If `zid` url parameter is found, the new ZObject
 				// will be of the given type.
-				var defaultType = getParameterByName( 'zid' ),
-					defaultKeys;
+				const defaultType = getParameterByName( 'zid' );
+				let defaultKeys;
 
 				context.commit( 'setZObjectInitialized', true );
 
@@ -1441,7 +1441,7 @@ module.exports = exports = {
 				// Else, fetch `zid` and make sure it's a type
 				return context.dispatch( 'fetchZids', { zids: [ defaultType ] } )
 					.then( function () {
-						var Z2K2 = findKeyInArray( Constants.Z_PERSISTENTOBJECT_VALUE, context.state.zobject );
+						const Z2K2 = findKeyInArray( Constants.Z_PERSISTENTOBJECT_VALUE, context.state.zobject );
 						defaultKeys = context.getters.getStoredObject( defaultType );
 
 						// If `zid` is not a type, return.
@@ -1649,7 +1649,7 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		lookupZObject: function ( context, payload ) {
-			var api = new mw.Api(),
+			const api = new mw.Api(),
 				queryType = 'wikilambdasearch_labels';
 
 			return new Promise( function ( resolve ) {
@@ -1664,7 +1664,7 @@ module.exports = exports = {
 						wikilambdasearch_strict_return_type: payload.strictType,
 						wikilambdasearch_language: context.getters.getUserLangCode
 					} ).then( function ( data ) {
-						var lookupResults = [];
+						let lookupResults = [];
 						if ( ( 'query' in data ) && ( queryType in data.query ) ) {
 							lookupResults = data.query[ queryType ];
 						}
@@ -1692,6 +1692,7 @@ module.exports = exports = {
 		 * @param {number} payload.rowId
 		 * @param {Array} payload.keyPath
 		 * @param {Object|Array|string} payload.value
+		 * @return {Promise}
 		 */
 		setValueByRowIdAndPath: function ( context, payload ) {
 			// assume this isn't an append unless explicitly stated
@@ -1704,9 +1705,9 @@ module.exports = exports = {
 			if ( row === undefined ) {
 				return;
 			} else if ( typeof payload.value === 'string' ) {
-				context.dispatch( 'setValueByRowId', { rowId: row.id, value: payload.value } );
+				return context.dispatch( 'setValueByRowId', { rowId: row.id, value: payload.value } );
 			} else {
-				context.dispatch( 'injectZObjectFromRowId', { rowId: row.id, value: payload.value, append } );
+				return context.dispatch( 'injectZObjectFromRowId', { rowId: row.id, value: payload.value, append } );
 			}
 		},
 

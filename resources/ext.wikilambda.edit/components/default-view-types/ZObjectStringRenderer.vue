@@ -6,7 +6,6 @@
 -->
 <template>
 	<div class="ext-wikilambda-zobject-string-renderer">
-
 		<!-- If expanded is false, show text field -->
 		<template v-if="!expanded || !initialized">
 			<p v-if="!edit" data-testid="rendered-text">
@@ -121,7 +120,8 @@ module.exports = exports = {
 			renderedValue: '',
 			showExamplesDialog: false,
 			showExamplesLink: false,
-			showErrorFooter: false
+			showErrorFooter: false,
+			pendingPromises: []
 		};
 	},
 	computed: $.extend( mapGetters( [
@@ -289,6 +289,7 @@ module.exports = exports = {
 					this.renderedValue = response;
 				}
 			} ).catch( () => {
+				this.clearRendererError();
 				this.setRendererError( this.$i18n( 'wikilambda-renderer-api-error' ).text() );
 			} );
 		},
@@ -301,13 +302,16 @@ module.exports = exports = {
 			this.runParser( {
 				parserZid: this.parserZid,
 				zobject: this.renderedValue,
-				zlang: this.getUserLangZid
+				zlang: this.getUserLangZid,
+				wait: true
 			} ).then( ( data ) => {
 				this.clearRendererError();
 				const response = data.response[ Constants.Z_RESPONSEENVELOPE_VALUE ];
 				if ( response === Constants.Z_VOID ) {
 					// Parser returned void:
-					// get error from metadata object and show examples link
+					// * Resolve parser promise
+					// * get error from metadata object and show examples link
+					data.resolver.resolve();
 					this.clearParsedValue();
 					const metadata = data.response[ Constants.Z_RESPONSEENVELOPE_METADATA ];
 					const errorMessage = this.extractErrorMessage( metadata );
@@ -316,20 +320,27 @@ module.exports = exports = {
 						this.parserZid ).parse() );
 				} else if ( typeUtils.getZObjectType( response ) !== this.type ) {
 					// Parser return unexpected type:
-					// show unexpected result error and project chat footer
+					// * Resolve parser promise
+					// * show unexpected result error and project chat footer
+					data.resolver.resolve();
 					this.clearParsedValue();
 					this.showErrorFooter = true;
 					this.setRendererError( this.$i18n( 'wikilambda-parser-unexpected-result-error',
 						this.parserZid ).parse() );
 				} else {
 					// Success:
-					// Set the value of the returned ZObject
+					// Parent component (ZObjectKeyValue) should:
+					// * Set the value of the returned ZObject
+					// * Resolve parser promise once the changes are persisted
+					this.pendingPromises.push( data.resolver );
 					this.$emit( 'set-value', {
 						keyPath: [],
-						value: response
+						value: response,
+						callback: () => data.resolver.resolve()
 					} );
 				}
 			} ).catch( () => {
+				this.clearRendererError();
 				this.setRendererError( this.$i18n( 'wikilambda-renderer-api-error' ).text() );
 			} );
 		},
@@ -445,6 +456,12 @@ module.exports = exports = {
 	mounted: function () {
 		this.generateRenderedValue();
 		this.generateRendererExamples();
+	},
+	beforeUnmount: function () {
+		// In the case of an abrupt unmount, resolve all pending promises
+		this.pendingPromises.forEach( ( resolver ) => {
+			resolver.resolve();
+		} );
 	}
 };
 </script>

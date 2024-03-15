@@ -8,7 +8,7 @@
 
 require( '@testing-library/jest-dom' );
 
-const { fireEvent, render } = require( '@testing-library/vue' ),
+const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
 	{ within } = require( '@testing-library/dom' ),
 	{ clickLookupResult } = require( './helpers/interactionHelpers.js' ),
 	{ runSetup, runTeardown } = require( './helpers/runFunctionTestHelpers.js' ),
@@ -80,6 +80,7 @@ describe( 'WikiLambda frontend, running a function on Run Function Special page'
 		await fireEvent.click( runFunctionButton );
 
 		// ASSERT: The correct function call is sent to the API with the newly input values.
+		await waitFor( () => expect( apiPostWithFunctionCallMock ).toHaveBeenCalledTimes( 1 ) );
 		expect( apiPostWithFunctionCallMock ).toHaveBeenCalledWith( {
 			action: 'wikilambda_function_call',
 			wikilambda_function_call_zobject: JSON.stringify( expectedFunctionCallPostedToApi )

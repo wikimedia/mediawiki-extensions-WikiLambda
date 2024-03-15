@@ -21,7 +21,7 @@
 				action="progressive"
 				:disabled="!isDirty && !revertToEdit"
 				data-testid="publish-button"
-				@click.stop="handlePublish"
+				@click.stop="waitAndHandlePublish"
 			>
 				{{ $i18n( 'wikilambda-publishnew' ).text() }}
 			</cdx-button>
@@ -86,7 +86,8 @@ module.exports = exports = {
 		'getCurrentZImplementationType',
 		'getUserLangZid',
 		'getUserLangCode',
-		'isNewZObject'
+		'isNewZObject',
+		'waitForRunningParsers'
 	] ), {
 		/**
 		 * Returns the eventLog data object
@@ -130,6 +131,14 @@ module.exports = exports = {
 		 */
 		revertToEdit: function () {
 			return !!( getParameterByName( 'oldid' ) || getParameterByName( 'undo' ) );
+		},
+
+		/**
+		 * Waits for running parsers to return and persist
+		 * changes before going ahead and running the function call
+		 */
+		waitAndHandlePublish: function () {
+			this.waitForRunningParsers.then( () => this.handlePublish() );
 		},
 
 		/**

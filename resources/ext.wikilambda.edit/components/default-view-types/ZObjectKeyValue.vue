@@ -772,6 +772,10 @@ module.exports = exports = {
 				rowId: this.rowId,
 				keyPath: payload.keyPath ? payload.keyPath : [],
 				value: payload.value
+			} ).then( () => {
+				if ( payload.callback ) {
+					payload.callback();
+				}
 			} );
 		},
 

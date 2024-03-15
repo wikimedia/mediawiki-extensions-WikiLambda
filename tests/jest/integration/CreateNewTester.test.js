@@ -188,7 +188,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 
 		// ACT: Confirm publish in publish dialog that opens
 		const confirmPublishDialog = await findByTestId( 'confirm-publish-dialog' );
-		const confirmPublishButton = await within( confirmPublishDialog ).getByText( 'Publish' );
+		const confirmPublishButton = await within( confirmPublishDialog ).findByText( 'Publish' );
 
 		await fireEvent.click( confirmPublishButton );
 
