@@ -21,5 +21,7 @@
 	"wikilambda-function-evaluator-title-implementation": "Esaeañ an emplantañ-mañ",
 	"wikilambda-function-evaluator-enter-inputs": "Bizskrivañ data enkas",
 	"wikilambda-function-evaluator-result": "Disoc'h",
-	"wikilambda-function-evaluator-result-details": "Munudoù"
+	"wikilambda-function-evaluator-result-details": "Munudoù",
+	"wikilambda-string-renderer-field-example": "Da skouer: $1",
+	"wikilambda-string-renderer-examples-title": "Skouerioù"
 }
