@@ -99,6 +99,11 @@ class PageRenderingHandler implements
 		// Rewrite history link to have ?uselang in it, but only if it exists (e.g. not for logged-out users)
 		if ( array_key_exists( 'edit', $links['views'] ) ) {
 			$links['views']['edit']['href'] = '/wiki/' . $zid . '?action=edit&uselang=' . $lang;
+			// If editing old revision, we want the edit button to route us to the oldid
+			$oldid = $skinTemplate->getRequest()->getRawVal( 'oldid' );
+			if ( $oldid ) {
+				$links['views']['edit']['href'] .= '&oldid=' . $oldid;
+			}
 		}
 
 		// Rewrite the 'main' namespace link to the Special page
