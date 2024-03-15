@@ -14,6 +14,7 @@
 				v-if="edit"
 				weight="quiet"
 				:class="{ 'ext-wikilambda-function-explorer-disabled': resetButtonDisabled }"
+				:aria-label="$i18n( 'wikilambda-function-explorer-accessible-label' ).text()"
 				:disabled="resetButtonDisabled"
 				data-testid="function-explorer-reset-button"
 				@click="resetFunction"

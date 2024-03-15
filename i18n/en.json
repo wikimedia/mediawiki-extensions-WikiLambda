@@ -383,6 +383,7 @@
 	"wikilambda-about-widget-no-inputs": "No inputs provided.",
 	"wikilambda-about-widget-unlabelled-input": "Unlabelled",
 	"wikilambda-about-widget-input-label": "Input $1 label",
+	"wikilambda-function-explorer-accessible-label": "Reset the function explorer box back to the main context of this page",
 	"wikilambda-function-explorer-title": "Function explorer",
 	"wikilambda-function-inputs-title": "Inputs",
 	"wikilambda-function-explorer-copied-text": "Copied!",
