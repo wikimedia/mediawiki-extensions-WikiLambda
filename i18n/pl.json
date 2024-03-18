@@ -6,7 +6,9 @@
 			"Msz2001",
 			"Rail",
 			"Woytecr",
-			"WaldiSt"
+			"WaldiSt",
+			"Chrumps",
+			"Tar Lócesilion"
 		]
 	},
 	"wikilambda-desc": "Dostarcza projektom Wikimedia funkcję parsera do wywoływania funkcji napisanych, zarządzanych i uruchamianych na centralnej wiki.",
@@ -98,8 +100,8 @@
 	"wikilambda-editor-zobject-clearitem-tooltip": "Wyczyść tę wartość",
 	"wikilambda-editor-label-select-programming-language-label": "Wybierz język programowania:",
 	"wikilambda-modeselector-genericliteral": "gen",
-	"specialpages-group-wikilambda": "Strony wikifunkcji",
-	"wikilambda-editor-argument-list-label": "Lista argumentów",
+	"specialpages-group-wikilambda": "Strony Wikifunkcji",
+	"wikilambda-editor-argument-list-label": "Lista parametrów",
 	"wikilambda-editor-implementation-list-label": "Lista implementacji",
 	"wikilambda-editor-boolean-selector": "Wybierz: prawda lub fałsz",
 	"wikilambda-implementation-selector-code": "Kod",
