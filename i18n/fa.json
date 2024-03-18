@@ -76,5 +76,7 @@
 	"wikilambda-function-explorer-name-title": "نام",
 	"wikilambda-function-view-function-button-text": "مشاهدهٔ تابع",
 	"wikilambda-function-evaluator-title": "امتحان‌کردن یک تابع",
-	"wikilambda-function-evaluator-run-function": "راندن تابع"
+	"wikilambda-function-evaluator-run-function": "راندن تابع",
+	"wikilambda-string-renderer-examples-title": "نمونه‌ها",
+	"wikilambda-renderer-api-error": "اشتباهی رخ داد. لطفاً دوباره تلاش کنید."
 }
