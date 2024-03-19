@@ -84,7 +84,7 @@ class ZObjectEditAction extends Action {
 			$zObjectId
 		);
 
-		/* isoCodes can occur in two places:
+		/* BCP47 Codes can occur in two places:
 			(1) in front of the entire header - this happens if
 				(a) ONLY the TYPE is in a non-user language OR
 				(b) if both the TYPE and the NAME are in the SAME non-user language
@@ -94,11 +94,11 @@ class ZObjectEditAction extends Action {
 		// used to go from LANG_CODE -> LANG_NAME
 		$services = MediaWikiServices::getInstance();
 
-		// the iso code of the language currently being rendered for the zObject Type
+		// the BCP47 code of the language currently being rendered for the zObject Type
 		$typeLangCode = $zObjectLabelsWithLang[ 'languageCode' ] ?: '';
 		$typeLangName = $services->getLanguageNameUtils()->getLanguageName( $typeLangCode );
 
-		// the iso code of the language currently being rendered for the zObject Type
+		// the BCP47 code of the language currently being rendered for the zObject Type
 		$userLangCode = $this->getLanguage()->getCode();
 
 		$nameLangCode = $this->getTargetZObject()
@@ -108,21 +108,22 @@ class ZObjectEditAction extends Action {
 			->getLanguageProvided() ?? $userLangCode;
 		$nameLangTitle = $services->getLanguageNameUtils()->getLanguageName( $nameLangCode );
 
-		$isoCodeClassName = 'ext-wikilambda-editpage-header--iso-code';
+		$BCP47CodeClassName = 'ext-wikilambda-editpage-header--bcp47-code';
 
-		if ( $typeLangCode !== $nameLangCode ) {
-			$isoCodeObjectName = $this->getIsoCodeIfUserLangIsDifferent(
-				$nameLangCode, $nameLangTitle, $userLangCode, $isoCodeClassName
+		$BCP47CodeObjectName = '';
+		if ( $nameLangCode !== $userLangCode ) {
+			$BCP47CodeObjectName = ZObjectUtils::wrapBCP47CodeInFakeCodexChip(
+				$nameLangCode, $nameLangTitle, $BCP47CodeClassName
 			);
-		} else {
-			// if we have two iso codes showing the same fallback language, only render the first one
-			$isoCodeObjectName = '';
 		}
 
 		// show a language label if the text is not the user's preferred language
-		$isoCodeObjectType = $this->getIsoCodeIfUserLangIsDifferent(
-			$typeLangCode, $typeLangName, $userLangCode, $isoCodeClassName
-		);
+		$BCP47CodeObjectType = '';
+		if ( $typeLangCode !== $userLangCode ) {
+			$BCP47CodeObjectType = ZObjectUtils::wrapBCP47CodeInFakeCodexChip(
+				$nameLangCode, $typeLangName, $BCP47CodeClassName
+			);
+		}
 
 		$prefix = Html::element(
 			'span', [ 'class' => 'ext-wikilambda-editpage-header-title' ],
@@ -132,8 +133,8 @@ class ZObjectEditAction extends Action {
 		return Html::rawElement(
 			'span',
 			[ 'class' => 'ext-wikilambda-editpage-header' ],
-			" " . $prefix . " " . $isoCodeObjectType . " " . $zObjectLabelsWithLang[ 'title' ]
-			. $this->msg( 'colon-separator' )->text() . $isoCodeObjectName . $label . ' ' . $id );
+			" " . $prefix . " " . $BCP47CodeObjectType . " " . $zObjectLabelsWithLang[ 'title' ]
+			. $this->msg( 'colon-separator' )->text() . $BCP47CodeObjectName . $label . ' ' . $id );
 	}
 
 	public function show() {

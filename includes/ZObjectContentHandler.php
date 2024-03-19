@@ -377,10 +377,16 @@ class ZObjectContentHandler extends ContentHandler {
 	/**
 	 * Generate the special "title" shown on view pages
 	 *
-	 * <span class="ext-wikilambda-viewpage-header">
-	 *     <span class="ext-wikilambda-viewpage-header-label firstHeading">multiply</span>
+	 * <span class="ext-wikilambda-viewpage-header" lang="es">
+	 *     <span class="ext-wikilambda-viewpage-header--bcp47-code">en</span>
+	 *     &#20;
+	 *     <span class="ext-wikilambda-viewpage-header-label">multiply</span>
 	 *     <span class="ext-wikilambda-viewpage-header-zid">Z12345</span>
-	 *     <div class="ext-wikilambda-viewpage-header-type">ZFunction…</div>
+	 *     <div class="ext-wikilambda-viewpage-header-type">
+	 *         <span class="ext-wikilambda-viewpage-header--bcp47-code">en</span>
+	 *         &#20;
+	 *         <span class="ext-wikilambda-viewpage-header-type-label">Function</span>
+	 *     </div>
 	 * </span>
 	 *
 	 * @param ZObjectContent $content
@@ -400,48 +406,61 @@ class ZObjectContentHandler extends ContentHandler {
 			return '';
 		}
 
-		$zobjectType = $content->getTypeStringAndLanguage( $userLang );
-
-		// the MW code of the user's preferred language (usually ISO code)
-		$userLanguageCode = $userLang->getCode();
-		// OBJECT TYPE language code ( MW code, which is usually ISO code ) (ex: 'en' )
-		$langCodeType = gettype( $zobjectType[ 'languageCode' ] ) === 'string' ? $zobjectType[ 'languageCode' ] : '';
-		// OBJECT TYPE language label (ex: English ) of the language currently being rendered
-		$langNameType = $services->getLanguageNameUtils()->getLanguageName( $langCodeType );
-
-		// OBJECT NAME label (ex: My function | Unknown) and language code (ex: 'en')
+		// Get best-available label (and its language code) for the target object's type, given the request language.
 		[
-			'title' => $labelText,
-			'languageCode' => $labelCodeName
+			'title' => $targetTypeLabel,
+			'languageCode' => $targetTypeLabelLanguage
+		] = $content->getTypeStringAndLanguage( $userLang );
+
+		// OBJECT TYPE Language code, which is usually a BCP47 code (e.g. 'en') but sometimes tests inject it as a
+		// Language object(!)
+		$targetTypeDisplayCode = gettype( $targetTypeLabelLanguage ) === 'string'
+			? $targetTypeLabelLanguage : $targetTypeLabelLanguage->getCode();
+		// OBJECT TYPE language label (e.g. 'Function') of the language currently being rendered
+		$targetTypeDisplayLabelLanguageName = $services->getLanguageNameUtils()->getLanguageName(
+			$targetTypeDisplayCode
+		);
+
+		// Get best-available label (and its language code) for the target object's name, given the request language.
+
+		// OBJECT NAME label (e.g. 'My function' or 'Unknown') and language code (e.g. 'en')
+		[
+			'title' => $targetLabel,
+			'languageCode' => $targetLabelLanguageCode
 		] = $zobject->getLabels()->buildStringForLanguage( $userLang )
 			->fallbackWithEnglish()
 			->placeholderForTitle()
 			->getStringAndLanguageCode();
 
-		// OBJECT NAME language label (ex: English) of the language currently being rendered
-		$labelStringName = $services->getLanguageNameUtils()->getLanguageName( $labelCodeName );
-
-		$isoCodeClassName = 'ext-wikilambda-viewpage-header--iso-code';
-
-		if ( $langNameType !== $labelStringName ) {
-			$isoCodeObjectName = static::getIsoCodeIfUserLangIsDifferent(
-				$labelCodeName, $labelStringName, $userLanguageCode, $isoCodeClassName
-			);
-		} else {
-			// if we have two iso codes showing the same fallback language, only render the first one
-			$isoCodeObjectName = '';
-		}
-
-		// if the object type (ex: Function ) is not in the user's language,
-		// render an iso code for the language used
-		$isoCodeObjectType = static::getIsoCodeIfUserLangIsDifferent(
-			$langCodeType, $langNameType, $userLanguageCode, $isoCodeClassName
+		// OBJECT NAME language label (e.g. 'English') of the language currently being rendered
+		$targetDisplayLabelLanguageName = $services->getLanguageNameUtils()->getLanguageName(
+			$targetLabelLanguageCode
 		);
 
-		$untitledStyle = $labelText === wfMessage( 'wikilambda-editor-default-name' )->text() ?
+		$bcp47CodeClassName = 'ext-wikilambda-viewpage-header--bcp47-code';
+
+		$targetDisplayLabelWidget = '';
+		// If the object type label (e.g. 'Function') is not in the user's language, show a BCP47 code widget
+		// for the language used instead
+		if ( $targetLabelLanguageCode !== $userLang->getCode() ) {
+			$targetDisplayLabelWidget = ZObjectUtils::wrapBCP47CodeInFakeCodexChip(
+				$targetLabelLanguageCode, $targetDisplayLabelLanguageName, $bcp47CodeClassName
+			);
+		}
+
+		$targetDisplayTypeWidget = '';
+		// If the object label (e.g. 'Echo') is not in the user's language, show a BCP47 code widget
+		// for the language used instead
+		if ( $targetTypeDisplayCode !== $userLang->getCode() ) {
+			$targetDisplayTypeWidget = ZObjectUtils::wrapBCP47CodeInFakeCodexChip(
+				$targetTypeDisplayCode, $targetTypeDisplayLabelLanguageName, $bcp47CodeClassName
+			);
+		}
+
+		$untitledStyle = $targetLabel === wfMessage( 'wikilambda-editor-default-name' )->text() ?
 			'ext-wikilambda-viewpage-header--title-untitled' : null;
 
-		$label = Html::element(
+		$labelSpan = Html::element(
 			'span',
 			[
 				'class' => [
@@ -450,10 +469,10 @@ class ZObjectContentHandler extends ContentHandler {
 					$untitledStyle
 				]
 			],
-			$labelText
+			$targetLabel
 		);
 
-		$id = Html::element(
+		$zidSpan = Html::element(
 			'span',
 			[
 				'class' => 'ext-wikilambda-viewpage-header-zid'
@@ -461,9 +480,23 @@ class ZObjectContentHandler extends ContentHandler {
 			$title->getText()
 		);
 
-		$type = Html::element(
+		$labelTitle =
+			// (T356731) When $targetDisplayLabelWidget is an empty string, colon-separator already
+			// adds/removes the needed/unneeded whitespace for languages. Always adding a
+			// space would unexpectedly add unneeded extra whitespace for languages including
+			// zh-hans, zh-hant, etc.
+			( $targetDisplayLabelWidget === '' ? '' : $targetDisplayLabelWidget . ' ' )
+				. $labelSpan . ' ' . $zidSpan;
+
+		$typeSubtitle = Html::rawElement(
 			'div', [ 'class' => 'ext-wikilambda-viewpage-header-type' ],
-			$zobjectType[ 'title' ]
+			$targetDisplayTypeWidget . ' ' . Html::element(
+				'span',
+				[
+					'class' => 'ext-wikilambda-viewpage-header-type-label'
+				],
+				$targetTypeLabel
+			)
 		);
 
 		return Html::rawElement(
@@ -471,16 +504,10 @@ class ZObjectContentHandler extends ContentHandler {
 			[
 				// Mark the header in the correct language, regardless of the rest of the page
 				// … but mark it back into their requested language if it's actually untitled
-				'lang' => ( $untitledStyle === null ? $userLanguageCode : $langCodeType ),
+				'lang' => ( $untitledStyle === null ? $userLang->getCode() : $targetTypeDisplayCode ),
 				'class' => 'ext-wikilambda-viewpage-header'
 			],
-			$isoCodeObjectType . ' ' .
-				// (T356731) When $isoCodeObjectName is an empty string, colon-separator already
-				// adds/removes the needed/unneeded whitespace for languages. Always adding a
-				// space would unexpectedly add unneeded extra whitespace for languages including
-				// zh-hans, zh-hant, etc.
-				( $isoCodeObjectName === '' ? '' : $isoCodeObjectName . ' ' ) . $label . ' ' .
-				$id . $type
+			$labelTitle . $typeSubtitle
 		);
 	}
 

@@ -29,19 +29,22 @@ use Transliterator;
 
 class ZObjectUtils {
 	/**
-	 * @param string $code The MW language code
-	 * @param string $name The plain text name of the language
-	 * @param string $class The name of the class for the HTML element
-	 * @return string the element to be rendered
+	 * Render a language 'Chip' of a language code with a hover-title of the language's label.
+	 *
+	 * TODO (T309039): use the chip component and ZID language object here instead
+	 *
+	 * @param string $code The BCP47 language code, e.g. 'fr' or 'en-US'.
+	 * @param string $label The plain text label of the language, e.g. 'français' or 'American English'
+	 * @param string $class The name of the class for the HTML element in which to wrap the label
+	 * @return string The HTML of the element to be rendered
 	 */
-	public static function getIsoCode( $code, $name, $class ) {
-		// TODO (T309039): use the chip component and ZID language object here instead
+	public static function wrapBCP47CodeInFakeCodexChip( string $code, string $label, string $class ) {
 		return Html::element(
 			'span',
 			[
-				'data-title' => $name,
+				'data-title' => $label,
 				'class' => $class
-			 ],
+			],
 			$code
 		);
 	}

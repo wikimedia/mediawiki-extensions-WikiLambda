@@ -16,7 +16,7 @@
 		color: @color-placeholder;
 	}
 
-	&--iso-code {
+	&--bcp47-code {
 		background-color: @background-color-interactive;
 		border: 1px solid @border-color-base;
 		border-radius: @border-radius-pill;
@@ -62,8 +62,11 @@
 	}
 
 	&-type {
-		color: @color-placeholder;
-		font-style: italic;
 		font-size: 60%;
+
+		&-label {
+			color: @color-placeholder;
+			font-style: italic;
+		}
 	}
 }
