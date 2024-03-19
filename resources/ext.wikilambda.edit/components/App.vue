@@ -20,7 +20,7 @@
 </template>
 
 <script>
-var mapGetters = require( 'vuex' ).mapGetters,
+const mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	eventLogUtils = require( '../mixins/eventLogUtils.js' ),
 	FunctionEvaluator = require( '../views/FunctionEvaluator.vue' ),
@@ -79,11 +79,12 @@ module.exports = exports = {
 	),
 	created: function () {
 		// Set zobject
-		this.initializeView().then( () => {
-			this.fetchUserRights();
-			this.prefetchZids();
-			this.evaluateUri();
-			this.isAppSetup = true;
+		this.fetchUserRights();
+		this.prefetchZids().then( () => {
+			this.initializeView().then( () => {
+				this.evaluateUri();
+				this.isAppSetup = true;
+			} );
 		} );
 
 		window.onpopstate = function () {

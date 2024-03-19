@@ -39,8 +39,8 @@ module.exports = {
 						Constants.Z_MONOLINGUALSTRING,
 						{
 							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
-							[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_CHINESE,
-							[ Constants.Z_MONOLINGUALSTRING_VALUE ]: 'label for second argument, in Chinese'
+							[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
+							[ Constants.Z_MONOLINGUALSTRING_VALUE ]: 'label for second argument, in English'
 						}
 					]
 				}
