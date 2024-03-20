@@ -31,7 +31,6 @@
 			<div class="ext-wikilambda-ztyped-list-items-block ext-wikilambda-value-block">
 				<wl-z-object-key-value
 					v-for="item in listItemsRowIds"
-					ref="listItemElements"
 					:key="'list-item-' + item"
 					:row-id="item"
 					:edit="edit"
@@ -156,21 +155,6 @@ module.exports = exports = {
 	methods: {
 		addListItem: function () {
 			this.$emit( 'add-list-item' );
-		}
-	},
-	watch: {
-		childRowIds: function ( list, prevList ) {
-			// When a new item is added the list,
-			// toggle the expansion in the child component
-			if ( list.length > prevList.length ) {
-				// Wait until the new item is rendered
-				this.$nextTick( () => {
-					const newItem = this.$refs.listItemElements[
-						this.$refs.listItemElements.length - 1
-					];
-					newItem.setExpanded( true );
-				} );
-			}
 		}
 	},
 	beforeCreate: function () {
