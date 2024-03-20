@@ -403,5 +403,7 @@
 	"wikilambda-renderer-unexpected-result-error": "[[$1|פונקציית תצוגה]] החזירה תוצאה בלתי־צפויה.",
 	"wikilambda-renderer-unknown-error": "[[$1|פונקציית תצוגה]] החזירה תוצאה בלתי־ידועה.",
 	"wikilambda-parser-unexpected-result-error": "[[$1|פונקציית קריאה]] החזירה תוצאה בלתי־צפויה.",
-	"wikilambda-parser-unknown-error": "[[$1|פונקציית קריאה]] החזירה תוצאה בלתי־ידועה."
+	"wikilambda-parser-unknown-error": "[[$1|פונקציית קריאה]] החזירה תוצאה בלתי־ידועה.",
+	"wikilambda-object-selector-suggested-types": "סוגים מוצעים",
+	"wikilambda-object-selector-suggested-languages": "שפות מוצעות"
 }
