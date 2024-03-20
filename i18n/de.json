@@ -406,5 +406,7 @@
 	"wikilambda-renderer-unexpected-result-error": "[[$1|Anzeigefunktion]] hat ein unerwartetes Ergebnis zurückgegeben.",
 	"wikilambda-renderer-unknown-error": "[[$1|Anzeigefunktion]] hat einen unbekannten Fehler zurückgegeben.",
 	"wikilambda-parser-unexpected-result-error": "[[$1|Lesefunktion]] hat ein unerwartetes Ergebnis zurückgegeben.",
-	"wikilambda-parser-unknown-error": "[[$1|Lesefunktion]] hat einen unbekannten Fehler zurückgegeben."
+	"wikilambda-parser-unknown-error": "[[$1|Lesefunktion]] hat einen unbekannten Fehler zurückgegeben.",
+	"wikilambda-object-selector-suggested-types": "Vorgeschlagene Typen",
+	"wikilambda-object-selector-suggested-languages": "Vorgeschlagene Sprachen"
 }

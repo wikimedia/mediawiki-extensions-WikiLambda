@@ -413,8 +413,8 @@
 	"wikilambda-string-renderer-examples-title": "উদাহরণ",
 	"wikilambda-renderer-error-footer-project-chat": "[[Wikifunctions:Project chat|প্রকল্প আড্ডায়]] একটি বার্তা দিন।",
 	"wikilambda-renderer-api-error": "কিছু ভুল হয়েছে। অনুগ্রহপূর্বক আবার চেষ্টা করুন।",
-	"wikilambda-renderer-unexpected-result-error": "[[$1|ফাংশন প্রদর্শন]] একটি অপ্রত্যাশিত ফলাফল ফিরিয়ে দিয়েছে।",
-	"wikilambda-renderer-unknown-error": "[[$1|ফাংশন প্রদর্শন]] একটি অজানা ত্রুটি ফিরিয়ে দিয়েছে।",
-	"wikilambda-parser-unexpected-result-error": "[[$1|রিডিং ফাংশন]] একটি অপ্রত্যাশিত ফলাফল ফিরিয়ে দিয়েছে।",
-	"wikilambda-parser-unknown-error": "[[$1|রিডিং ফাংশন]] একটি অজানা ত্রুটি ফিরিয়ে দিয়েছে।"
+	"wikilambda-renderer-unexpected-result-error": "[[$1|ফাংশন প্রদর্শন]] একটি অপ্রত্যাশিত ফলাফল দিয়েছে।",
+	"wikilambda-renderer-unknown-error": "[[$1|ফাংশন প্রদর্শন]] একটি অজানা ত্রুটি দিয়েছে।",
+	"wikilambda-parser-unexpected-result-error": "[[$1|পঠন ফাংশন]] একটি অপ্রত্যাশিত ফলাফল দিয়েছে।",
+	"wikilambda-parser-unknown-error": "[[$1|পঠন ফাংশন]] একটি অজানা ত্রুটি দিয়েছে।"
 }
