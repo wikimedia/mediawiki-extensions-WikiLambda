@@ -140,12 +140,13 @@ class SpecialListObjectsByType extends SpecialPage {
 			);
 
 			foreach ( $res as $row ) {
-				// Only set the label if we don't have one already, or it's the first-requested language.
+				// Only set the label if we don't have one already, or if
+				// it's the primary label of the first-requested language.
 				// TODO: This means that if you're asking for uk > ru > en and we only have ru and en
 				// labels, we'll return whichever is first, rather than your preferred ru label over en.
 				if (
 					!isset( $zobjects[$row->wlzl_zobject_zid] )
-					|| array_search( $row->wlzl_language, $languageZids ) === 0
+					|| ( $row->wlzl_label_primary && array_search( $row->wlzl_language, $languageZids ) === 0 )
 				) {
 					$zobjects[$row->wlzl_zobject_zid] = $row->wlzl_label;
 				}
