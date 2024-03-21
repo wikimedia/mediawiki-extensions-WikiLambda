@@ -6,25 +6,41 @@
  */
 'use strict';
 
-var shallowMount = require( '@vue/test-utils' ).shallowMount,
+const { waitFor } = require( '@testing-library/vue' ),
+	shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	ZTester = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZTester.vue' );
 
 describe( 'ZTester', () => {
-	var getters;
+	let getters, actions;
 	beforeEach( () => {
 		getters = {
 			getLabel: createGettersWithFunctionsMock( 'label' ),
+			getStoredObject: createGettersWithFunctionsMock(),
+			getZReferenceTerminalValue: createGettersWithFunctionsMock(),
 			getZTesterFunctionRowId: createGettersWithFunctionsMock( 1 ),
-			getZTesterCallRowId: createGettersWithFunctionsMock( 1 ),
-			getZTesterValidationRowId: createGettersWithFunctionsMock( 1 )
+			getZTesterCallRowId: createGettersWithFunctionsMock( 2 ),
+			getZTesterValidationRowId: createGettersWithFunctionsMock( 3 ),
+			isCreateNewPage: createGetterMock( false )
 		};
-		global.store.hotUpdate( { getters: getters } );
+		actions = {
+			fetchZids: jest.fn( () => {
+				return {
+					then: ( callback ) => callback()
+				};
+			} ),
+			setZFunctionCallArguments: jest.fn()
+		};
+		global.store.hotUpdate( {
+			getters: getters,
+			actions: actions
+		} );
 	} );
 
 	describe( 'in view mode', () => {
 		it( 'renders without errors', () => {
-			var wrapper = shallowMount( ZTester, {
+			const wrapper = shallowMount( ZTester, {
 				props: {
 					edit: false
 				}
@@ -33,7 +49,7 @@ describe( 'ZTester', () => {
 		} );
 
 		it( 'renders function block', () => {
-			var wrapper = shallowMount( ZTester, {
+			const wrapper = shallowMount( ZTester, {
 				props: {
 					edit: false
 				}
@@ -44,7 +60,7 @@ describe( 'ZTester', () => {
 		} );
 
 		it( 'renders tester call block', () => {
-			var wrapper = shallowMount( ZTester, {
+			const wrapper = shallowMount( ZTester, {
 				props: {
 					edit: false
 				}
@@ -55,7 +71,7 @@ describe( 'ZTester', () => {
 		} );
 
 		it( 'renders tester validation block', () => {
-			var wrapper = shallowMount( ZTester, {
+			const wrapper = shallowMount( ZTester, {
 				props: {
 					edit: false
 				}
@@ -68,7 +84,7 @@ describe( 'ZTester', () => {
 
 	describe( 'in edit mode', () => {
 		it( 'renders without errors', () => {
-			var wrapper = shallowMount( ZTester, {
+			const wrapper = shallowMount( ZTester, {
 				props: {
 					edit: true
 				}
@@ -77,7 +93,7 @@ describe( 'ZTester', () => {
 		} );
 
 		it( 'renders function block', () => {
-			var wrapper = shallowMount( ZTester, {
+			const wrapper = shallowMount( ZTester, {
 				props: {
 					edit: true
 				}
@@ -88,7 +104,7 @@ describe( 'ZTester', () => {
 		} );
 
 		it( 'renders tester call block', () => {
-			var wrapper = shallowMount( ZTester, {
+			const wrapper = shallowMount( ZTester, {
 				props: {
 					edit: true
 				}
@@ -99,7 +115,7 @@ describe( 'ZTester', () => {
 		} );
 
 		it( 'renders tester validation block', () => {
-			var wrapper = shallowMount( ZTester, {
+			const wrapper = shallowMount( ZTester, {
 				props: {
 					edit: true
 				}
@@ -107,6 +123,112 @@ describe( 'ZTester', () => {
 			const callBlock = wrapper.find( 'div[role=ext-wikilambda-tester-validation]' );
 			expect( callBlock.exists() ).toBe( true );
 			expect( callBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
+		} );
+	} );
+
+	describe( 'in create mode', () => {
+
+		const functionZid = 'Z10000';
+		const typeZid = 'Z10001';
+		const equalityZid = 'Z10002';
+		const functionObject = {
+			Z2K2: {
+				Z1K1: 'Z8',
+				Z8K2: typeZid
+			}
+		};
+		const typeObject = {
+			Z2K2: {
+				Z1K1: 'Z4',
+				Z4K4: equalityZid
+			}
+		};
+		// Expected payloads
+		const setCallPayload = {
+			keyPath: [ 'Z20K2', 'Z7K1', 'Z9K1' ],
+			value: functionZid
+		};
+		const setCallArguments = {
+			parentId: 2,
+			functionZid: functionZid
+		};
+		const setValidatorPayload = {
+			keyPath: [ 'Z20K3', 'Z7K1', 'Z9K1' ],
+			value: equalityZid
+		};
+		const setValidatorArguments = {
+			parentId: 3,
+			functionZid: equalityZid
+		};
+
+		beforeEach( () => {
+			getters.isCreateNewPage = createGetterMock( true );
+			getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( functionZid );
+			getters.getStoredObject = () => ( zid ) => {
+				if ( zid === functionZid ) {
+					return functionObject;
+				} else if ( zid === typeZid ) {
+					return typeObject;
+				}
+				return undefined;
+			};
+			actions.setZFunctionCallArguments = jest.fn();
+			global.store.hotUpdate( {
+				getters: getters,
+				actions: actions
+			} );
+		} );
+
+		it( 'sets test call on initialize', async () => {
+			const wrapper = shallowMount( ZTester, {
+				props: {
+					edit: true
+				}
+			} );
+
+			await waitFor( () => {
+				// 1. Set value for test call
+				expect( wrapper.emitted( 'set-value' )[ 0 ] ).toEqual( [ setCallPayload ] );
+				// 2. Set arguments for test call
+				expect( actions.setZFunctionCallArguments ).toHaveBeenCalledWith( expect.anything(),
+					setCallArguments );
+				// 3. Set value for validator call
+				expect( wrapper.emitted( 'set-value' )[ 1 ] ).toEqual( [ setValidatorPayload ] );
+				// 4. Set arguments for validator call
+				expect( actions.setZFunctionCallArguments ).toHaveBeenCalledWith( expect.anything(),
+					setValidatorArguments );
+			} );
+		} );
+
+		it( 'sets test call on new function zid', async () => {
+			getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( undefined );
+			global.store.hotUpdate( { getters: getters } );
+
+			const wrapper = shallowMount( ZTester, {
+				props: {
+					edit: true
+				}
+			} );
+
+			// Expect no initialization
+			expect( wrapper.emitted( 'set-value' ) ).toBeFalsy();
+
+			// Function Zid is updated
+			getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( functionZid );
+			global.store.hotUpdate( { getters: getters } );
+
+			await waitFor( () => {
+				// 1. Set value for test call
+				expect( wrapper.emitted( 'set-value' )[ 0 ] ).toEqual( [ setCallPayload ] );
+				// 2. Set arguments for test call
+				expect( actions.setZFunctionCallArguments ).toHaveBeenCalledWith( expect.anything(),
+					setCallArguments );
+				// 3. Set value for validator call
+				expect( wrapper.emitted( 'set-value' )[ 1 ] ).toEqual( [ setValidatorPayload ] );
+				// 4. Set arguments for validator call
+				expect( actions.setZFunctionCallArguments ).toHaveBeenCalledWith( expect.anything(),
+					setValidatorArguments );
+			} );
 		} );
 	} );
 } );

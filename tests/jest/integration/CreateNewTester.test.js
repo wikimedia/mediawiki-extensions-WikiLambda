@@ -106,9 +106,9 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		//* -- Call section
 		const testerCallContainer = await findByRole( 'ext-wikilambda-tester-call' );
 
-		// ACT: Click the link to open the function call section.
-		const selectCallFunctionLink = testerCallContainer.getElementsByTagName( 'a' )[ 0 ];
-		await fireEvent.click( selectCallFunctionLink );
+		// ACT: Expand toggle
+		const expandTesterCall = within( testerCallContainer ).getByTestId( 'expanded-toggle' );
+		await fireEvent.click( expandTesterCall );
 
 		// ACT: Select the function under test as the function to call
 		const testerCallAccordionContainer = await within( testerCallContainer ).getByTestId( 'z-object-key-value-set' );
@@ -116,9 +116,6 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		const callFunctionSelector = within( callFunctionReference ).getByRole( 'combobox' );
 
 		const testerCallFunctionName = 'function name, in Chinese';
-
-		await fireEvent.update( callFunctionSelector, testerCallFunctionName );
-		await clickLookupResult( callFunctionReference, testerCallFunctionName );
 
 		// ASSERT: The function under test is selected as the function to call.
 		expect( callFunctionSelector.value ).toBe( testerCallFunctionName );
