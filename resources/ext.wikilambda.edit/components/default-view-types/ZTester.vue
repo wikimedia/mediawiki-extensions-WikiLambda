@@ -58,7 +58,9 @@
 </template>
 
 <script>
-var Constants = require( '../../Constants.js' ),
+const Constants = require( '../../Constants.js' ),
+	isValidZidFormat = require( '../../mixins/typeUtils.js' ).methods.isValidZidFormat,
+	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
@@ -78,72 +80,169 @@ module.exports = exports = {
 			required: true
 		}
 	},
-	computed: $.extend(
-		mapGetters( [
-			'getLabel',
-			'getZTesterFunctionRowId',
-			'getZTesterCallRowId',
-			'getZTesterValidationRowId'
-		] ),
-		{
-			/**
-			 * Returns the row Id of the target function key: Z20K1
-			 *
-			 * @return {number|undefined}
-			 */
-			functionRowId: function () {
-				return this.getZTesterFunctionRowId( this.rowId );
-			},
+	computed: $.extend( mapGetters( [
+		'getLabel',
+		'getZTesterFunctionRowId',
+		'getZTesterCallRowId',
+		'getZTesterValidationRowId',
+		'getZReferenceTerminalValue',
+		'isCreateNewPage',
+		'getStoredObject'
+	] ), {
+		/**
+		 * Returns the row Id of the target function key: Z20K1
+		 *
+		 * @return {number|undefined}
+		 */
+		functionRowId: function () {
+			return this.getZTesterFunctionRowId( this.rowId );
+		},
 
-			/**
-			 * Returns the human readable label for "Function"
-			 *
-			 * @return {string}
-			 */
-			functionLabel: function () {
-				return this.getLabel( Constants.Z_IMPLEMENTATION_FUNCTION );
-			},
+		/**
+		 * Returns the human readable label for "Function"
+		 *
+		 * @return {string}
+		 */
+		functionLabel: function () {
+			return this.getLabel( Constants.Z_TESTER_FUNCTION );
+		},
 
-			/**
-			 * Returns the row Id of the tester call: Z20K2
-			 *
-			 * @return {number|undefined}
-			 */
-			testerCallRowId: function () {
-				return this.getZTesterCallRowId( this.rowId );
-			},
+		/**
+		 * Returns the Zid of the selected function/Z20K1
+		 *
+		 * @return {string}
+		 */
+		functionZid: function () {
+			return this.getZReferenceTerminalValue( this.functionRowId );
+		},
 
-			/**
-			 * Returns the row Id of the tester validation function call: Z20K3
-			 *
-			 * @return {number|undefined}
-			 */
-			testerValidationRowId: function () {
-				return this.getZTesterValidationRowId( this.rowId );
-			},
+		/**
+		 * Returns the stored function object given the selected function Zid.
+		 * This computed property is needed so that it can be observed and
+		 * update the test call/Z20K2 with the appropriate function call and
+		 * its arguments. Before it's fetched it will return undefined
+		 *
+		 * @return {Object|undefined}
+		 */
+		storedFunction: function () {
+			return this.getStoredObject( this.functionZid );
+		},
 
-			/**
-			 * Returns the human readable label for the tester call
-			 *
-			 * @return {string}
-			 */
-			testerCallLabel: function () {
-				return this.getLabel( Constants.Z_TESTER_CALL );
-			},
+		/**
+		 * Returns the row Id of the tester call: Z20K2
+		 *
+		 * @return {number|undefined}
+		 */
+		testerCallRowId: function () {
+			return this.getZTesterCallRowId( this.rowId );
+		},
 
-			/**
-			 * Returns the human readable label for the tester validation
-			 *
-			 * @return {string}
-			 */
-			testerValidationLabel: function () {
-				return this.getLabel( Constants.Z_TESTER_VALIDATION );
+		/**
+		 * Returns the row Id of the tester validation function call: Z20K3
+		 *
+		 * @return {number|undefined}
+		 */
+		testerValidationRowId: function () {
+			return this.getZTesterValidationRowId( this.rowId );
+		},
+
+		/**
+		 * Returns the human readable label for the tester call
+		 *
+		 * @return {string}
+		 */
+		testerCallLabel: function () {
+			return this.getLabel( Constants.Z_TESTER_CALL );
+		},
+
+		/**
+		 * Returns the human readable label for the tester validation
+		 *
+		 * @return {string}
+		 */
+		testerValidationLabel: function () {
+			return this.getLabel( Constants.Z_TESTER_VALIDATION );
+		}
+	} ),
+	methods: $.extend( mapActions( [
+		'fetchZids',
+		'setZFunctionCallArguments'
+	] ), {
+		/**
+		 * Initializes Test call/Z20K2 with a function call to the given functionZid
+		 */
+		initializeTestCall: function () {
+			if ( this.isCreateNewPage && !!this.functionZid ) {
+				// Set test call function call Zid
+				this.$emit( 'set-value', {
+					keyPath: [
+						Constants.Z_TESTER_CALL,
+						Constants.Z_FUNCTION_CALL_FUNCTION,
+						Constants.Z_REFERENCE_ID
+					],
+					value: this.functionZid
+				} );
+				// Set test call function arguments
+				this.setZFunctionCallArguments( {
+					parentId: this.testerCallRowId,
+					functionZid: this.functionZid
+				} );
+				// Get function output type and dismiss anything that's not a reference
+				const outputType = this.storedFunction[ Constants.Z_PERSISTENTOBJECT_VALUE ][
+					Constants.Z_FUNCTION_RETURN_TYPE ];
+				if ( !outputType || ( typeof outputType !== 'string' ) || !isValidZidFormat( outputType ) ) {
+					return;
+				}
+				this.fetchZids( { zids: [ outputType ] } ).then( () => {
+					this.initializeTestValidation( outputType );
+				} );
+			}
+		},
+		/**
+		 * Initializes Test validator/Z20K3 with a function call to the equality function
+		 * of the type returned by the Test call/Z20K2, which is passed as input parameter.
+		 *
+		 * @param {string} outputType
+		 */
+		initializeTestValidation: function ( outputType ) {
+			const type = this.getStoredObject( outputType );
+			const equalityZid = type[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_EQUALITY ];
+			if ( !equalityZid || ( typeof equalityZid !== 'string' ) || !isValidZidFormat( equalityZid ) ) {
+				return;
+			}
+			this.fetchZids( { zids: [ equalityZid ] } ).then( () => {
+				// Set test validation function call Zid
+				this.$emit( 'set-value', {
+					keyPath: [
+						Constants.Z_TESTER_VALIDATION,
+						Constants.Z_FUNCTION_CALL_FUNCTION,
+						Constants.Z_REFERENCE_ID
+					],
+					value: equalityZid
+				} );
+				// Set tester validation function arguments
+				this.setZFunctionCallArguments( {
+					parentId: this.testerValidationRowId,
+					functionZid: equalityZid
+				} );
+			} );
+		}
+	} ),
+	watch: {
+		storedFunction: function ( newFunction ) {
+			if ( newFunction ) {
+				this.initializeTestCall();
 			}
 		}
-	),
+	},
 	beforeCreate: function () {
 		// Need to delay require of ZObjectKeyValue to avoid loop
 		this.$options.components[ 'wl-z-object-key-value' ] = require( './ZObjectKeyValue.vue' );
+	},
+	mounted: function () {
+		if ( this.storedFunction ) {
+			this.initializeTestCall();
+		}
 	}
 };
 </script>
