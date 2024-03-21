@@ -328,5 +328,7 @@
 	"wikilambda-renderer-unexpected-result-error": "La [[$1|funzione di visualizzazione]] ha restituito un risultato inaspettato.",
 	"wikilambda-renderer-unknown-error": "La [[$1|funzione di visualizzazione]] ha restituito un errore sconosciuto.",
 	"wikilambda-parser-unexpected-result-error": "La [[$1|funzione di lettura]] ha restituito un risultato inaspettato.",
-	"wikilambda-parser-unknown-error": "La [[$1|funzione di lettura]] ha restituito un errore sconosciuto."
+	"wikilambda-parser-unknown-error": "La [[$1|funzione di lettura]] ha restituito un errore sconosciuto.",
+	"wikilambda-object-selector-suggested-types": "Tipi suggeriti",
+	"wikilambda-object-selector-suggested-languages": "Lingue suggerite"
 }

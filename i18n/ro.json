@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Alesaru",
+			"Cristina S",
 			"NGC 54",
 			"Strainu"
 		]
@@ -225,5 +226,7 @@
 	"wikilambda-unknown-save-error-message": "A apărut o eroare la încercarea de a salva modificările.",
 	"wikilambda-list-type-change-warning": "Ați schimbat tipul uneia sau mai multor liste. La publicare, toate elementele din listă vor fi șterse",
 	"wikilambda-function-evaluation-restriction-notrunnable": "Această funcție nu are implementări aprobate.",
-	"wikilambda-function-evaluation-restriction-warning": "Ne pare rău! În acest moment, numai utilizatorii autentificați pot rula funcții."
+	"wikilambda-function-evaluation-restriction-warning": "Ne pare rău! În acest moment, numai utilizatorii autentificați pot rula funcții.",
+	"wikilambda-object-selector-suggested-types": "Tipuri sugerate",
+	"wikilambda-object-selector-suggested-languages": "Limbi sugerate"
 }

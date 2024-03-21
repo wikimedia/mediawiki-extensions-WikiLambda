@@ -118,5 +118,7 @@
 	"wikilambda-function-evaluator-run-function": "Покрени функцију",
 	"wikilambda-string-renderer-field-example": "Нпр. $1",
 	"wikilambda-string-renderer-examples-title": "Примери",
-	"wikilambda-renderer-api-error": "Нешто је кренуло наопако. Покушајте поново касније."
+	"wikilambda-renderer-api-error": "Нешто је кренуло наопако. Покушајте поново касније.",
+	"wikilambda-object-selector-suggested-types": "Предложени типови",
+	"wikilambda-object-selector-suggested-languages": "Предложени јeзици"
 }

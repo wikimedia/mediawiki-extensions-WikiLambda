@@ -311,5 +311,7 @@
 	"wikilambda-renderer-unexpected-result-error": "[[$1|Función de visualización]] devolvió un resultado inesperado.",
 	"wikilambda-renderer-unknown-error": "[[$1|Función de visualización]] devolvió un error desconocido.",
 	"wikilambda-parser-unexpected-result-error": "[[$1|Función de lectura]] devolvió un resultado inesperado.",
-	"wikilambda-parser-unknown-error": "[[$1|Función de visualización]] devolvió un error desconocido."
+	"wikilambda-parser-unknown-error": "[[$1|Función de visualización]] devolvió un error desconocido.",
+	"wikilambda-object-selector-suggested-types": "Tipos sugeridos",
+	"wikilambda-object-selector-suggested-languages": "Idiomas sugeridos"
 }

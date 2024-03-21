@@ -4,6 +4,7 @@
 			"Alex-Mart",
 			"Butko",
 			"Deltaspace",
+			"Dirruw'o",
 			"Kareyac",
 			"NR Deblocked",
 			"Nastua Buldakova",
@@ -151,5 +152,7 @@
 	"wikilambda-argument-reference-selector-placeholder": "Выберите аргумент",
 	"wikilambda-special-create-function": "Создать новую функцию",
 	"wikilambda-special-create-type": "Создать новый тип",
-	"wikilambda-special-create-test": "Создать новый тест"
+	"wikilambda-special-create-test": "Создать новый тест",
+	"wikilambda-object-selector-suggested-types": "Предлагаемые типы",
+	"wikilambda-object-selector-suggested-languages": "Предлагаемые языки"
 }
