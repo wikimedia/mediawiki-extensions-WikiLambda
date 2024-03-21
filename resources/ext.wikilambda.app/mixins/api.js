@@ -28,7 +28,7 @@ module.exports = exports = {
 				action: 'wikilambda_function_call',
 				wikilambda_function_call_zobject: canonicalJson
 			} ).then( ( data ) => {
-				const maybeNormalResponse = JSON.parse( data.query.wikilambda_function_call.data );
+				const maybeNormalResponse = JSON.parse( data.wikilambda_function_call.data );
 				const response = hybridToCanonical( maybeNormalResponse );
 				const result = response[ Constants.Z_RESPONSEENVELOPE_VALUE ];
 				const metadata = response[ Constants.Z_RESPONSEENVELOPE_METADATA ];

@@ -62,11 +62,9 @@ const runSetup = function () {
 
 	// Set function call API mocks
 	const apiPostWithFunctionCallMock = jest.fn( () => Promise.resolve( {
-		query: {
-			wikilambda_function_call: {
-				success: '',
-				data: JSON.stringify( functionCallResultFromApi )
-			}
+		wikilambda_function_call: {
+			success: '',
+			data: JSON.stringify( functionCallResultFromApi )
 		}
 	} ) );
 	mw.Api = jest.fn( () => ( {

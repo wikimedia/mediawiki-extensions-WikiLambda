@@ -226,9 +226,7 @@ describe( 'ztype Vuex module', () => {
 			data = '{ "Z1K1": "Z6", "Z6K1": "some response" }';
 			postMock = jest.fn( () => new Promise( ( resolve ) => {
 				resolve( {
-					query: {
-						wikilambda_function_call: { data }
-					}
+					wikilambda_function_call: { data }
 				} );
 			} ) );
 			mw.Api = jest.fn( () => ( {
@@ -378,9 +376,7 @@ describe( 'ztype Vuex module', () => {
 				};
 				postMock = jest.fn( () => new Promise( ( resolve ) => {
 					resolve( {
-						query: {
-							wikilambda_function_call: { data: JSON.stringify( successfulResponse ) }
-						}
+						wikilambda_function_call: { data: JSON.stringify( successfulResponse ) }
 					} );
 				} ) );
 				mw.Api = jest.fn( () => ( { post: postMock } ) );
@@ -418,9 +414,7 @@ describe( 'ztype Vuex module', () => {
 				};
 				postMock = jest.fn( () => new Promise( ( resolve ) => {
 					resolve( {
-						query: {
-							wikilambda_function_call: { data: JSON.stringify( failedResponse ) }
-						}
+						wikilambda_function_call: { data: JSON.stringify( failedResponse ) }
 					} );
 				} ) );
 				mw.Api = jest.fn( () => ( { post: postMock } ) );

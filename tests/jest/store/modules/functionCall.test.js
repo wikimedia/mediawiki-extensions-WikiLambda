@@ -82,11 +82,7 @@ describe( 'functionCall Vuex module', () => {
 				const expectedData = '{ "Z1K1": "Z6", "Z6K1": "present" }';
 				postMock = jest.fn( () => new Promise( ( resolve ) => {
 					resolve( {
-						query: {
-							wikilambda_function_call: {
-								data: expectedData
-							}
-						}
+						wikilambda_function_call: { data: expectedData }
 					} );
 				} ) );
 
