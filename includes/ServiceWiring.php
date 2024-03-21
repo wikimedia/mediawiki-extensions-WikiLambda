@@ -16,7 +16,6 @@ use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
-use ObjectCache;
 
 /**
  * @codeCoverageIgnore
@@ -56,6 +55,6 @@ return [
 			);
 		}
 
-		return ObjectCache::newFromParams( $cacheParameters );
+		return $services->getObjectCacheFactory()->newFromParams( $cacheParameters );
 	},
 ];
