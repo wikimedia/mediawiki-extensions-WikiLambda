@@ -94,7 +94,10 @@ describe( 'zTesterResults Vuex module', () => {
 		} );
 
 		it( 'should set the tester result promise', () => {
-			zTesterResultsModule.mutations.setTestResultsPromise( context.state, 'Z10000', Promise.resolve( 'done' ) );
+			zTesterResultsModule.mutations.setTestResultsPromise( context.state, {
+				functionZid: 'Z10000',
+				promise: Promise.resolve( 'done' )
+			} );
 
 			return context.state.testResultsPromises.Z10000.then( ( result ) => {
 				expect( result ).toBe( 'done' );
@@ -102,7 +105,9 @@ describe( 'zTesterResults Vuex module', () => {
 		} );
 
 		it( 'should set the tester result as a resolving promise', () => {
-			zTesterResultsModule.mutations.setTestResultsPromise( context.state, 'Z10000' );
+			zTesterResultsModule.mutations.setTestResultsPromise( context.state, {
+				functionZid: 'Z10000'
+			} );
 
 			return context.state.testResultsPromises.Z10000.then( ( result ) => {
 				expect( result ).toBe( undefined );

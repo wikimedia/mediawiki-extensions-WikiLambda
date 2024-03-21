@@ -160,15 +160,16 @@ module.exports = exports = {
 		 * Set or unset the unresolved promise to the testResults API call for a given functionZid.
 		 *
 		 * @param {Object} state
-		 * @param {string} functionZid
-		 * @param {Promise} testResultsPromise
+		 * @param {Object} payload
+		 * @param {string} payload.functionZid
+		 * @param {Promise} payload.promise
 		 */
-		setTestResultsPromise: function ( state, functionZid, testResultsPromise = undefined ) {
-			if ( !testResultsPromise ) {
-				// Set as a resolved Promise if the tests for this function have been fetched
-				state.testResultsPromises[ functionZid ] = Promise.resolve();
+		setTestResultsPromise: function ( state, payload ) {
+			if ( 'promise' in payload ) {
+				state.testResultsPromises[ payload.functionZid ] = payload.promise;
 			} else {
-				state.testResultsPromises[ functionZid ] = testResultsPromise;
+				// Set as a resolved Promise if the tests for this function have been fetched
+				state.testResultsPromises[ payload.functionZid ] = Promise.resolve();
 			}
 		},
 		/**
@@ -264,7 +265,7 @@ module.exports = exports = {
 				wikilambda_perform_test_zimplementations: implementations.join( '|' ),
 				wikilambda_perform_test_ztesters: testers.join( '|' ),
 				wikilambda_perform_test_nocache: payload.nocache || false
-			} ).then( function ( data ) {
+			} ).then( ( data ) => {
 				const results = data.query.wikilambda_perform_test;
 				if ( !Array.isArray( results ) &&
 						results[ Constants.Z_RESPONSEENVELOPE_METADATA ] !== Constants.Z_NOTHING ) {
@@ -299,8 +300,8 @@ module.exports = exports = {
 
 				// Make sure that all returned Zids are in library.js
 				context.dispatch( 'fetchZids', { zids: [ ...new Set( zids ) ] } );
-				context.commit( 'setTestResultsPromise', payload.zFunctionId );
-			} ).catch( function ( error, message ) {
+				context.commit( 'setTestResultsPromise', { functionZid: payload.zFunctionId } );
+			} ).catch( ( error, message ) => {
 				mw.log.error( 'Tester API call was nothing: ' + error );
 
 				let errorMessage = error;
@@ -309,10 +310,13 @@ module.exports = exports = {
 				}
 
 				context.commit( 'setErrorState', errorMessage );
-				context.commit( 'setTestResultsPromise', payload.zFunctionId );
+				context.commit( 'setTestResultsPromise', { functionZid: payload.zFunctionId } );
 			} );
 
-			context.commit( 'setTestResultsPromise', payload.zFunctionId, testResultsPromise );
+			context.commit( 'setTestResultsPromise', {
+				functionZid: payload.zFunctionId,
+				promise: testResultsPromise
+			} );
 			return testResultsPromise;
 		}
 	}
