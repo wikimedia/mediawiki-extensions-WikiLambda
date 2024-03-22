@@ -20,7 +20,7 @@
 	"apihelp-wikilambda_fetch-example-multiple-old": "Holen von Version 12 von ZObjekt Z1, Version 14 von Z2 und Version 25 von Z3.",
 	"apihelp-wikilambda_function_call-param-zobject": "ZObjekt für Funktionsaufruf",
 	"apihelp-wikilambda_function_call-example-generic-list": "Aufrufen einer Funktion, die das erste Element einer typisierten Liste zurückgibt",
-	"apihelp-wikilambda_function_call-example-generic-pair": "Aufrufen einer Funktion, die das zweite Element eines Paares <String,Pair<String,Bool>> zurückgibt",
+	"apihelp-wikilambda_function_call-example-generic-pair": "Aufrufen einer Funktion, die das zweite Element eines Typed pair&lt;String,Typed pair&lt;String,Boolean&gt;&gt;",
 	"apihelp-wikilambda_function_call-example-generic-map": "Aufrufen einer Funktion, die das Element einer generischen Karte an einem bestimmten Schlüssel auf eine Zeichenketten-Version seines Wertes abbildet",
 	"apihelp-wikilambda_function_call-example-user-defined-generic-type": "Erzeugen eines Z4/Typs mit einer benutzerdefinierten Funktion und Verwendung dieses Z4/Typs als Z1K1/Typ eines ZObjekts",
 	"apihelp-wikilambda_function_call-example-composition": "Aufrufen einer Zusammenstellung: Wenn das erste Argument wahr ist, sortiere das zweite; sonst gib es unberührt zurück",

@@ -367,5 +367,13 @@
 	"wikilambda-special-create-function": "Opprett en ny funksjon",
 	"wikilambda-special-create-type": "Opprett en ny type",
 	"wikilambda-special-create-implementation": "Opprett en ny implementasjon",
-	"wikilambda-special-create-test": "Opprett en ny test"
+	"wikilambda-special-create-test": "Opprett en ny test",
+	"wikilambda-renderer-error-footer-project-chat": "Legg igjen en melding på [[Wikifunctions:Project chat|prosjektforumet]].",
+	"wikilambda-renderer-api-error": "Noe gikk galt. Prøv igjen.",
+	"wikilambda-renderer-unexpected-result-error": "[[$1|Visningsfunksjonen]] returnerte et uventet resultat.",
+	"wikilambda-renderer-unknown-error": "[[$1|Visningsfunksjonen]] returnerte en ukjent feil.",
+	"wikilambda-parser-unexpected-result-error": "[[$1|Lesefunksjonen]] returnerte et uventet resultat.",
+	"wikilambda-parser-unknown-error": "[[$1|Lesefunksjonen]] returnerte en ukjent feil.",
+	"wikilambda-object-selector-suggested-types": "Foreslåtte typer",
+	"wikilambda-object-selector-suggested-languages": "Foreslåtte språk"
 }
