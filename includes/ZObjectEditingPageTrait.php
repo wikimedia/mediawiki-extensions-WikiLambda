@@ -57,21 +57,4 @@ trait ZObjectEditingPageTrait {
 		// Vue app element
 		$output->addHtml( Html::element( 'div', [ 'id' => 'ext-wikilambda-app' ] ) );
 	}
-
-	/**
-	 * show a language label if the text is not the user's preferred language
-	 *
-	 * @param string $langCode
-	 * @param string $langTitle
-	 * @param string $userLangCode
-	 * @param string $isoCodeClassName
-	 *
-	 * @return string
-	 */
-	public static function getIsoCodeIfUserLangIsDifferent(
-		string $langCode, string $langTitle, string $userLangCode, string $isoCodeClassName
-	): string {
-		return $langCode === $userLangCode ? '' :
-			ZObjectUtils::getIsoCode( $langCode, $langTitle, $isoCodeClassName );
-	}
 }

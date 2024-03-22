@@ -1298,19 +1298,21 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( $translated, json_encode( $result ) );
 	}
 
-	public function testGetIsoCode() {
-		$actual = ZObjectUtils::getIsoCode( 'en', 'English', 'ext-wikilambda-viewpage-header--iso-code' );
+	public function testWrapBCP47CodeInFakeCodexChip() {
+		$actual = ZObjectUtils::wrapBCP47CodeInFakeCodexChip(
+			'en', 'English', 'ext-wikilambda-viewpage-header--bcp47-code'
+		);
 		$expected = Html::element(
 			'span',
 			[
 				'data-title' => 'English',
-				'class' => 'ext-wikilambda-viewpage-header--iso-code'
+				'class' => 'ext-wikilambda-viewpage-header--bcp47-code'
 			],
 			'en'
 		);
 		$this->assertIsString( $actual );
 
-		// correctly generates iso code
+		// correctly generates BCP47 code
 		$this->assertSame( $expected, $actual );
 	}
 
