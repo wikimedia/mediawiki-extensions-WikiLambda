@@ -89,11 +89,13 @@
 		"wikilambda-edit-unit",
 		"wikilambda-edit-user-function",
 		"wikilambda-execute",
-		"wikilambda-execute-unsaved-code"
+		"wikilambda-execute-unsaved-code",
+		"wikifunctions-run"
 	],
 	"GroupPermissions": {
 		"*": {
-			"wikilambda-execute": true
+			"wikilambda-execute": true,
+			"wikifunctions-run": true
 		},
 		"user": {
 			"wikilambda-execute-unsaved-code": true,
@@ -668,6 +670,7 @@
 		"wikilambda_fetch": "MediaWiki\\Extension\\WikiLambda\\API\\ApiZObjectFetcher",
 		"wikilambda_edit": "MediaWiki\\Extension\\WikiLambda\\API\\ApiZObjectEditor",
 		"wikilambda_function_call": "MediaWiki\\Extension\\WikiLambda\\API\\ApiFunctionCall",
+		"wikifunctions_run": "MediaWiki\\Extension\\WikiLambda\\PublicAPI\\ApiFunctionCall",
 		"wikilambda_perform_test": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\API\\ApiPerformTest",
 			"services": [
