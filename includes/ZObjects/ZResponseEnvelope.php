@@ -50,10 +50,10 @@ class ZResponseEnvelope extends ZObject {
 	 */
 	public function isValid(): bool {
 		return (
-			$this->data[ ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE ] instanceof ZObject &&
-			$this->data[ ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE ]->isValid() ||
-			$this->data[ ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA ] instanceof ZObject &&
-			$this->data[ ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA ]->isValid()
+			( $this->data[ ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE ] instanceof ZObject &&
+				$this->data[ ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE ]->isValid() ) ||
+			( $this->data[ ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA ] instanceof ZObject &&
+				$this->data[ ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA ]->isValid() )
 		);
 	}
 
