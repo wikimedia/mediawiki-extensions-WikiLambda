@@ -13,10 +13,11 @@ const LoginPage = require( 'wdio-mediawiki/LoginPage' ),
 describe( 'Installation checks', function () {
 
 	describe( 'CreateObject', function () {
-		it( 'page should exist on installation', async function () {
+		it( 'page should exist on installation but deny to logged-out user', async function () {
 			await CreateObjectPage.open();
 			await expect( await CreateObjectPage.title ).toHaveText( 'Permission error' );
-
+		} );
+		it( 'page should exist on installation and work when logged in', async function () {
 			await LoginPage.loginAdmin();
 			await expect( browser ).toHaveUrlContaining( 'Main_Page',
 				{ message: 'Login failed' } );
