@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"HanV",
 			"McDutchie",
 			"NthnH"
 		]
@@ -15,7 +16,7 @@
 	"apihelp-wikilambda_fetch-example-multiple-old": "Vraag versie 12 van het ZObject Z1, versie 14 van Z2 en versie 25 van Z3 op.",
 	"apihelp-wikilambda_function_call-param-zobject": "ZObject voor functieaanroep",
 	"apihelp-wikilambda_function_call-example-generic-list": "Een functie aanroepen die het eerste element terugstuurt van een lijst van een bepaald type",
-	"apihelp-wikilambda_function_call-example-generic-pair": "Een functie aanroepen die het tweede element van een Paar<Tekenreeks,Paar<Tekenreeks,BooleaanseWaarde>> retourneert",
+	"apihelp-wikilambda_function_call-example-generic-pair": "Een functie aanroepen die het tweede element van een Typed pair&lt;String,Typed pair&lt;String,Boolean&gt;&gt;",
 	"apihelp-wikilambda_function_call-example-generic-map": "Een functie aanroepen die, aan de hand van een sleutel, een element uit een generieke conversietabel omzet naar de tekenreeksversie van de waarde ervan",
 	"apihelp-wikilambda_function_call-example-user-defined-generic-type": "Genereer een Z4/Type met een door de gebruiker gedefinieerde functie en gebruik dat Z4/Type als een Z1K1/Type van een ZObject",
 	"apihelp-wikilambda_function_call-example-composition": "Een compositie aanroepen: als het eerste argument ‘true’ is, dan het tweede sorteren; zo niet, dat intact terugsturen",

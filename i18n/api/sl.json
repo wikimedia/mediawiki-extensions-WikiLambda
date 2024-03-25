@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Amire80",
 			"Eleassar"
 		]
 	},
@@ -14,7 +15,7 @@
 	"apihelp-wikilambda_fetch-example-multiple-old": "Pridobitev redakcije 12 ZObjekta Z1, redakcije 14 ZObjekta Z2 in redakcije 25 ZObjekta Z3.",
 	"apihelp-wikilambda_function_call-param-zobject": "ZObjekt za klic funkcije",
 	"apihelp-wikilambda_function_call-example-generic-list": "Klic funkcije, ki vrne prvi element vnesenega seznama",
-	"apihelp-wikilambda_function_call-example-generic-pair": "Klic funkcije, ki vrne drugi element para &lt;String,Typed pair&lt;String,Boolean&gt;&gt;",
+	"apihelp-wikilambda_function_call-example-generic-pair": "Klic funkcije, ki vrne drugi element Typed pair&lt;String,Typed pair&lt;String,Boolean&gt;&gt;",
 	"apihelp-wikilambda_function_call-example-generic-map": "Klic funkcijo, ki preslika element generične karte na danem ključu v nizovno različico njegove vrednosti",
 	"apihelp-wikilambda_function_call-example-user-defined-generic-type": "Generiranje Z4/Tip z uporabniško definirano funkcijo in uporaba tega Z4/Tip kot ZObjekta Z1K1/Tip",
 	"apihelp-wikilambda_function_call-example-composition": "Klic sestave: če je prvi argument resničen, razvrsti drugega; sicer ga vrne nespremenjenega",

@@ -14,7 +14,7 @@
 	"apihelp-wikilambda_fetch-example-multiple-old": "לאחזר את גרסה 12 של עצם ה־Z עם המזהה Z1, את גרסה 14 של Z2, ואת גרסה של 25 של Z3.",
 	"apihelp-wikilambda_function_call-param-zobject": "עצם ה־Z לקריאה לפונקציה",
 	"apihelp-wikilambda_function_call-example-generic-list": "קריאה לפונקציה שמחזירה את האיבר הראשון של רשימה מסווגת",
-	"apihelp-wikilambda_function_call-example-generic-pair": "קריאה לפונקציה שמחזירה את האיבר השני של מבנה <span dir=\"ltr\">Types pair&lt;String,Typed pair&lt;String,Boolean&gt;&gt;</span>",
+	"apihelp-wikilambda_function_call-example-generic-pair": "קריאה לפונקציה שמחזירה את האיבר השני של מבנה <span dir=\"ltr\">Typed pair&lt;String,Typed pair&lt;String,Boolean&gt;&gt;</span>",
 	"apihelp-wikilambda_function_call-example-generic-map": "קריאה לפונקציה שממפה את הרכיב של מפה כללית במפתח נתון לגרסת המחרוזת של הערך שלו",
 	"apihelp-wikilambda_function_call-example-user-defined-generic-type": "ליצור Z4/Type עם פונקציה מוגדרת על־ידי משתמש ולהשתמש ב־Z4/Type הזה בתור ה־Z1K1/Type של ZObject",
 	"apihelp-wikilambda_function_call-example-composition": "קריאה להרכבה: אם הארגומנט הראשון הוא אמת, למיין שני; אחרת, להחזיר ללא שינוי",

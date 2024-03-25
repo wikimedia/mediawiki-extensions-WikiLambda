@@ -1,11 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
+			"Eulalio",
 			"JDíaz32",
 			"Jackiezelaya",
 			"No se"
 		]
 	},
+	"apihelp-wikilambda_function_call-example-generic-pair": "Invocar una función que devuelve el segundo elemento de un Typed pair&lt;String,Typed pair&lt;String,Boolean&gt;&gt;",
 	"apihelp-wikilambda_function_call-example-timeout": "Invocar una función que intenta ejecutarse para siempre, por lo que se agota el tiempo de espera en el evaluador",
 	"apihelp-wikilambda_function_call-example-orchestrator-timeout": "Invocar una función que intenta ejecutarse durante demasiado tiempo en el orquestador, por lo que se agota el tiempo de espera",
 	"apierror-wikilambda_function_call-response-malformed": "La respuesta a la llamada de función se interrumpió: '$1'.",

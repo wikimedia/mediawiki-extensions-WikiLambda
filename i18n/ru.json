@@ -139,6 +139,7 @@
 	"wikilambda-about-widget-description-placeholder": "Введите описание",
 	"wikilambda-about-widget-done-button": "Готово",
 	"wikilambda-about-widget-add-language": "Добавить язык",
+	"wikilambda-function-explorer-accessible-label": "Сбросьте окно обозревателя функций обратно в основной контекст этой страницы.",
 	"wikilambda-function-explorer-copied-text": "Скопировано!",
 	"wikilambda-function-explorer-name-title": "Имя",
 	"wikilambda-function-evaluator-title": "Попробуйте функцию",

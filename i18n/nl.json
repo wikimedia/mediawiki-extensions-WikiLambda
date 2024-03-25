@@ -363,7 +363,7 @@
 	"wikilambda-about-widget-no-aliases": "Geen alias opgegeven.",
 	"wikilambda-about-widget-no-inputs": "Geen invoer opgegeven.",
 	"wikilambda-about-widget-unlabelled-input": "Ongelabeled",
-	"wikilambda-about-widget-input-label": "input van $1 label",
+	"wikilambda-about-widget-input-label": "Label van invoer $1",
 	"wikilambda-function-explorer-title": "Functieverkenner",
 	"wikilambda-function-inputs-title": "Invoer",
 	"wikilambda-function-explorer-copied-text": "Gekopieerd!",

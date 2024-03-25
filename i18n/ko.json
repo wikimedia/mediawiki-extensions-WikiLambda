@@ -127,5 +127,7 @@
 	"wikilambda-function-explorer-copied-text": "복사 완료!",
 	"wikilambda-function-explorer-name-title": "이름",
 	"wikilambda-string-renderer-field-example": "예: $1",
-	"wikilambda-string-renderer-examples-title": "예시"
+	"wikilambda-string-renderer-examples-title": "예시",
+	"wikilambda-object-selector-suggested-types": "제안 유형",
+	"wikilambda-object-selector-suggested-languages": "제안 언어"
 }

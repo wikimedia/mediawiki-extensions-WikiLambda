@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Amire80",
 			"Hamilton Abreu"
 		]
 	},
@@ -14,7 +15,7 @@
 	"apihelp-wikilambda_fetch-example-multiple-old": "Obter a revisão 12 do Objeto-Z Z1, a revisão 14 do Z2 e a revisão 25 do Z3.",
 	"apihelp-wikilambda_function_call-param-zobject": "Objeto-Z para a chamada de função",
 	"apihelp-wikilambda_function_call-example-generic-list": "Invocar uma função que devolve o primeiro elemento de uma lista de tipo determinado",
-	"apihelp-wikilambda_function_call-example-generic-pair": "Invocar uma função que devolve o segundo elemento de um Pair&lt;String,Typed pair&lt;String,Boolean&gt;&gt; (Par<Texto,Par<Texto,Booliano>>)",
+	"apihelp-wikilambda_function_call-example-generic-pair": "Invocar uma função que devolve o segundo elemento de um Typed pair&lt;String,Typed pair&lt;String,Boolean&gt;&gt;",
 	"apihelp-wikilambda_function_call-example-generic-map": "Invoca uma função que mapeia o elemento de um mapa genérico numa dada chave para uma versão em texto do seu valor",
 	"apihelp-wikilambda_function_call-example-user-defined-generic-type": "Gerar um Z4/Tipo com uma função definida pelo utilizador e usar esse Z4/Tipo como o Z1K1/Tipo de um Objeto-Z",
 	"apihelp-wikilambda_function_call-example-composition": "Invocar uma composição: se o primeiro argumento for verdadeiro, ordenar o segundo; caso contrário, devolvê-lo intacto",

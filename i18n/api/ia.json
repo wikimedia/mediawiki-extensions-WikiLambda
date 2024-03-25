@@ -14,7 +14,7 @@
 	"apihelp-wikilambda_fetch-example-multiple-old": "Obtener le version 12 del ZObject Z1, le version 14 de Z2 e le version 25 de Z3.",
 	"apihelp-wikilambda_function_call-param-zobject": "ZObject pro le appello de function",
 	"apihelp-wikilambda_function_call-example-generic-list": "Invocar un function que restitue le prime elemento de un lista typate",
-	"apihelp-wikilambda_function_call-example-generic-pair": "Invocar un function que restitue le secunde elemento de un Par<Catena,Par<Catena,Booleano>>",
+	"apihelp-wikilambda_function_call-example-generic-pair": "Invocar un function que restitue le secunde elemento de un Typed pair&lt;String,Typed pair&lt;String,Boolean&gt;&gt;",
 	"apihelp-wikilambda_function_call-example-generic-map": "Invocar un function que mappa le elemento de un Mappa generic in un clave date con un version de su valor como catena de characteres",
 	"apihelp-wikilambda_function_call-example-user-defined-generic-type": "Generar un Z4/Type con un function definite per le usator e usar ille Z4/Type como Z1K1/Type de un ZObject",
 	"apihelp-wikilambda_function_call-example-composition": "Invocar un composition: si le prime argumento es ver, ordinar le secunde; alteremente, restituer lo intacte",
