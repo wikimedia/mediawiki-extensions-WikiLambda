@@ -96,6 +96,9 @@ class SpecialViewObject extends SpecialPage {
 			return;
 		}
 
+		// (T345457) Tell OutputPage that our content is article-related, so we get Special:WhatLinksHere etc.
+		$outputPage->setArticleFlag( true );
+		// Tell the skin what content specifically we're related to, so edit/history links etc. work.
 		$this->getSkin()->setRelevantTitle( $targetTitle );
 
 		// (T345453) Have the standard copyright stuff show up.
