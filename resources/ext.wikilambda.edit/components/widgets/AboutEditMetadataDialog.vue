@@ -545,11 +545,7 @@ module.exports = exports = {
 				} );
 			}
 
-			// Save copy of initial values
-			this.initialName = this.name;
-			this.initialDescription = this.description;
-			this.initialAliases = JSON.stringify( this.aliases );
-			this.initialInputs = JSON.stringify( this.inputs );
+			this.saveCopies();
 		},
 
 		/**
@@ -678,6 +674,25 @@ module.exports = exports = {
 					append: true
 				} );
 			}
+		},
+		/**
+		 * Saves copies of initial values for name, description, aliases and inputs
+		 */
+		saveCopies: function () {
+			this.initialName = this.name;
+			this.initialDescription = this.description;
+			this.initialAliases = JSON.stringify( this.aliases );
+			this.initialInputs = JSON.stringify( this.inputs );
+		},
+		/**
+		 * Saves copies of initial values for name, description, aliases and inputs
+		 */
+		initializeBlankValues: function () {
+			this.name = '';
+			this.description = '';
+			this.aliases = [];
+			this.inputs = this.isFunction ? this.currentInputObjects.map( () => '' ) : [];
+			this.saveCopies();
 		}
 	} ),
 	watch: {
@@ -690,9 +705,11 @@ module.exports = exports = {
 			if ( !oldLang && !!newLang && !hasLabels && this.hasChanges ) {
 				return;
 			}
-
 			this.initialize();
 		}
+	},
+	mounted: function () {
+		this.initializeBlankValues();
 	}
 };
 </script>
