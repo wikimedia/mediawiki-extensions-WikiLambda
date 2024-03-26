@@ -298,7 +298,9 @@ module.exports = exports = {
 		 * @param {Object} payload
 		 */
 		setStoredObject: function ( state, payload ) {
-			state.objects[ payload.zid ] = payload.info;
+			if ( !( payload.zid in state.objects ) ) {
+				state.objects[ payload.zid ] = payload.info;
+			}
 		},
 		/**
 		 * Save the LabelData object for a given ID

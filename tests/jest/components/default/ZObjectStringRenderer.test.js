@@ -88,7 +88,17 @@ describe( 'ZObjectStringRenderer', () => {
 		}
 	};
 
-	const storedTests = {
+	const storedObjects = {
+		Z30000: {
+			Z2K2: {
+				Z1K1: 'Z4',
+				Z4K2: [ 'Z17',
+					{ Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z30000K1' },
+					{ Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z30000K2' },
+					{ Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z30000K3' }
+				]
+			}
+		},
 		Z30030: {
 			Z2K2: {
 				Z1K1: 'Z20',
@@ -134,7 +144,7 @@ describe( 'ZObjectStringRenderer', () => {
 			getParserZid: createGettersWithFunctionsMock( parserZid ),
 			getRendererZid: createGettersWithFunctionsMock( rendererZid ),
 			getRendererExamples: createGettersWithFunctionsMock( [] ),
-			getStoredObject: createGettersWithFunctionsMock(),
+			getStoredObject: () => ( zid ) => storedObjects[ zid ],
 			getUserLangCode: createGetterMock( 'en' ),
 			getUserLangZid: createGetterMock( 'Z1002' ),
 			getZObjectAsJsonById: createGettersWithFunctionsMock( parsedObject ),
@@ -372,7 +382,6 @@ describe( 'ZObjectStringRenderer', () => {
 
 		it( 'computes passing tests to generate examples, tests fetched', async () => {
 			getters.getPassingTestZids = createGettersWithFunctionsMock( [ 'Z30030', 'Z30031' ] );
-			getters.getStoredObject = () => ( zid ) => storedTests[ zid ];
 			global.store.hotUpdate( { getters: getters } );
 
 			const wrapper = shallowMount( ZObjectStringRenderer, {
@@ -388,11 +397,11 @@ describe( 'ZObjectStringRenderer', () => {
 				expect( wrapper.vm.validRendererTests ).toEqual( [
 					{
 						zid: 'Z30030',
-						zobject: storedTests.Z30030.Z2K2
+						zobject: storedObjects.Z30030.Z2K2
 					},
 					{
 						zid: 'Z30031',
-						zobject: storedTests.Z30031.Z2K2
+						zobject: storedObjects.Z30031.Z2K2
 					}
 				] );
 			} );
@@ -400,7 +409,6 @@ describe( 'ZObjectStringRenderer', () => {
 
 		it( 'excludes not wellformed tests', async () => {
 			getters.getPassingTestZids = createGettersWithFunctionsMock( [ 'Z30030', 'Z30031', 'Z30032' ] );
-			getters.getStoredObject = () => ( zid ) => storedTests[ zid ];
 			global.store.hotUpdate( { getters: getters } );
 
 			const wrapper = shallowMount( ZObjectStringRenderer, {
@@ -416,18 +424,17 @@ describe( 'ZObjectStringRenderer', () => {
 				expect( wrapper.vm.validRendererTests ).toEqual( [
 					{
 						zid: 'Z30030',
-						zobject: storedTests.Z30030.Z2K2
+						zobject: storedObjects.Z30030.Z2K2
 					},
 					{
 						zid: 'Z30031',
-						zobject: storedTests.Z30031.Z2K2
+						zobject: storedObjects.Z30031.Z2K2
 					}
 				] );
 			} );
 		} );
 
 		it( 'runs tests with user language', async () => {
-			getters.getStoredObject = () => ( zid ) => storedTests[ zid ];
 			global.store.hotUpdate( { getters: getters } );
 
 			const wrapper = shallowMount( ZObjectStringRenderer, {
@@ -446,13 +453,13 @@ describe( 'ZObjectStringRenderer', () => {
 				expect( actions.runRendererTest ).toHaveBeenCalledWith( expect.anything(), {
 					rendererZid,
 					testZid: 'Z30030',
-					test: storedTests.Z30030.Z2K2,
+					test: storedObjects.Z30030.Z2K2,
 					zlang: 'Z1002'
 				} );
 				expect( actions.runRendererTest ).toHaveBeenCalledWith( expect.anything(), {
 					rendererZid,
 					testZid: 'Z30031',
-					test: storedTests.Z30031.Z2K2,
+					test: storedObjects.Z30031.Z2K2,
 					zlang: 'Z1002'
 				} );
 			} );
@@ -701,6 +708,51 @@ describe( 'ZObjectStringRenderer', () => {
 			const link = dialogFooter.find( 'a' );
 			expect( link.attributes( 'href' ) ).toContain( rendererZid );
 			expect( link.text() ).toBe( rendererLabel );
+		} );
+
+		describe( 'in edit mode with blank object', () => {
+			beforeEach( () => {
+				getters.getZObjectAsJsonById = createGettersWithFunctionsMock( blankObject );
+				actions.runRenderer = jest.fn();
+				global.store.hotUpdate( {
+					getters: getters,
+					actions: actions
+				} );
+			} );
+
+			it( 'does not run renderer with empty values', async () => {
+				shallowMount( ZObjectStringRenderer, {
+					props: {
+						rowId: 1,
+						edit: true,
+						type: typeZid,
+						expanded: false
+					}
+				} );
+				await waitFor( () => expect( actions.runRenderer ).not.toHaveBeenCalled() );
+			} );
+
+			it( 'initializes blank object when type object is available', async () => {
+				getters.getStoredObject = createGettersWithFunctionsMock( undefined );
+				global.store.hotUpdate( { getters: getters } );
+				const wrapper = shallowMount( ZObjectStringRenderer, {
+					props: {
+						rowId: 1,
+						edit: true,
+						type: typeZid,
+						expanded: false
+					}
+				} );
+
+				expect( wrapper.vm.blankObject ).toBe( undefined );
+
+				getters.getStoredObject = () => ( zid ) => storedObjects[ zid ];
+				global.store.hotUpdate( { getters: getters } );
+				await wrapper.vm.$nextTick();
+
+				expect( wrapper.vm.blankObject ).toEqual( blankObject );
+				await waitFor( () => expect( actions.runRenderer ).not.toHaveBeenCalled() );
+			} );
 		} );
 	} );
 } );
