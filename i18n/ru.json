@@ -21,6 +21,7 @@
 	},
 	"wikilambda-typeunavailable": "Неизвестный тип",
 	"wikilambda-persistentzobject-contents": "Содержание",
+	"wikilambda-mode-selector-button-label": "Измените тип этого объекта: ссылку на существующий объект, определение встроенного литерала или вызов функции.",
 	"wikilambda-literal-type": "Буквально $1",
 	"wikilambda-functioncall": "Вызов функции",
 	"wikilambda-edit": "Править",
