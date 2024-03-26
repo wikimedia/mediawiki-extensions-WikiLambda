@@ -6,7 +6,7 @@
 -->
 <template>
 	<div class="ext-wikilambda-string">
-		<p v-if="!edit">
+		<p v-if="!edit" data-testid="view-only-string">
 			"{{ value }}"
 		</p>
 		<cdx-text-input

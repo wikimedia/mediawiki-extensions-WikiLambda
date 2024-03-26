@@ -12,7 +12,7 @@ const ZObjectPublish = require( '../../componentobjects/ZObjectPublish' );
 
 class FunctionForm extends Page {
 	get addLabelInAnotherLanguageBtn() {
-		return $( 'button*=Add language' );
+		return $( '[data-testid="add-language-button"]' );
 	}
 
 	async open() {
@@ -20,11 +20,11 @@ class FunctionForm extends Page {
 	}
 
 	getFirstLanguageContainer() {
-		return $( '.ext-wikilambda-function-block:first-of-type' );
+		return $( '[data-testid="function-editor-language-block"]:first-of-type' );
 	}
 
 	getLastLanguageContainer() {
-		return $( '.ext-wikilambda-function-block:last-of-type' );
+		return $( '[data-testid="function-editor-language-block"]:last-of-type' );
 	}
 
 	async removeInput( inputIndex ) {

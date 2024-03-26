@@ -23,6 +23,7 @@
 		<!-- Add Language Button -->
 		<div class="ext-wikilambda-function-definition__action-add-language">
 			<cdx-button
+				data-testid="add-language-button"
 				class="ext-wikilambda-function-definition__action-add-language-button"
 				@click="addLanguage"
 			>

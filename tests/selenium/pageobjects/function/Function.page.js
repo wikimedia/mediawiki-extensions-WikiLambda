@@ -77,23 +77,9 @@ class FunctionPage extends Page {
 		return AboutBlock.aboutBlock;
 	}
 
-	async getFunctionDescription() {
-		const text = await AboutBlock.getAboutBlockDescription();
-		return text;
-	}
-
 	async getFunctionAliases() {
 		const aliases = await AboutBlock.getAboutBlockAliases();
 		return aliases;
-	}
-
-	async getFunctionInputs() {
-		const inputBlock = await this.aboutBlock.$( '.ext-wikilambda-about-function-input' );
-		const inputs = await inputBlock.$$( '.ext-wikilambda-about-function-field-value' );
-		return inputs.map( ( inputElement ) => {
-			const text = ElementActions.getText( inputElement );
-			return text;
-		} );
 	}
 
 	async getFunctionInputBlocks() {
@@ -185,7 +171,7 @@ class FunctionPage extends Page {
 	 * @return {WebdriverIOElementType}
 	 */
 	async getEvaluateFunctionResultSelector( result ) {
-		return EvaluateFunctionBlock.orchestrationResultBlock.$( `.//p[text()="${ result }"]` );
+		return EvaluateFunctionBlock.orchestrationResultBlock.$( `//*[@data-testid="view-only-string" and contains(text(), "${ result }")]` );
 	}
 
 	// #endregion Evaluate Function Block
