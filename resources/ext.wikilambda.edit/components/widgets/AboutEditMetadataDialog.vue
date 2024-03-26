@@ -75,12 +75,12 @@
 					class="ext-wikilambda-about-edit-metadata-field
 					ext-wikilambda-about-edit-metadata-description"
 				>
-					<cdx-text-input
+					<cdx-text-area
 						v-model="description"
 						:disabled="!canEdit"
 						:placeholder="descriptionPlaceholder"
-						data-testid="text-input"
-					></cdx-text-input>
+						data-testid="text-area"
+					></cdx-text-area>
 					<template #label>
 						{{ descriptionLabel }}
 					</template>
@@ -140,6 +140,7 @@ const Constants = require( '../../Constants.js' ),
 	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	CdxField = require( '@wikimedia/codex' ).CdxField,
+	CdxTextArea = require( '@wikimedia/codex' ).CdxTextArea,
 	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
 	icons = require( '../../../lib/icons.json' ),
 	mapActions = require( 'vuex' ).mapActions,
@@ -152,6 +153,7 @@ module.exports = exports = {
 		'cdx-button': CdxButton,
 		'cdx-dialog': CdxDialog,
 		'cdx-icon': CdxIcon,
+		'cdx-text-area': CdxTextArea,
 		'cdx-text-input': CdxTextInput,
 		'cdx-field': CdxField,
 		'wl-chip-container': ChipContainer,
@@ -725,6 +727,10 @@ module.exports = exports = {
 
 		.ext-wikilambda-about-edit-metadata-field {
 			margin: 0 0 @spacing-100;
+
+			.cdx-field__help-text {
+				float: right;
+			}
 
 			.cdx-text-input {
 				flex: 1;
