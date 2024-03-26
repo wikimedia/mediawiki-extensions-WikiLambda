@@ -8,7 +8,7 @@
 
 module.exports = exports = {
 	getViewMode: function () {
-		var editingData = mw.config.get( 'wgWikiLambda' );
+		const editingData = mw.config.get( 'wgWikiLambda' );
 		return editingData.viewmode;
 	}
 };

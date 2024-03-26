@@ -39,7 +39,7 @@
 </template>
 
 <script>
-var CdxButton = require( '@wikimedia/codex' ).CdxButton,
+const CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	icons = require( '../../../lib/icons.json' );
 

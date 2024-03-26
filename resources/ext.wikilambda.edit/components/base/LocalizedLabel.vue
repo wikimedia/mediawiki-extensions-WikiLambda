@@ -14,7 +14,7 @@
 </template>
 
 <script>
-var LabelData = require( '../../store/classes/LabelData.js' ),
+const LabelData = require( '../../store/classes/LabelData.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component

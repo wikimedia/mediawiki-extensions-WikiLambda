@@ -18,17 +18,17 @@ const referenceRe = /^Z0*[1-9]*\d*$/;
 const errorTypeReferenceRe = /^Z5\d{2}$/;
 
 function canonicalizeZ6OrZ9( zobject ) {
-	var objectType = zobject[ Constants.Z_OBJECT_TYPE ];
+	const objectType = zobject[ Constants.Z_OBJECT_TYPE ];
 
 	if ( objectType === Constants.Z_STRING ) {
-		var Z6 = zobject[ Constants.Z_STRING_VALUE ];
+		const Z6 = zobject[ Constants.Z_STRING_VALUE ];
 		if ( Z6 && typeof Z6.match === 'function' && Z6.match( referenceRe ) ) {
 			return zobject;
 		}
 		return Z6 || '';
 	}
 
-	var Z9 = zobject[ Constants.Z_REFERENCE_ID ];
+	const Z9 = zobject[ Constants.Z_REFERENCE_ID ];
 	if ( Z9 && typeof Z9.match === 'function' && Z9.match( referenceRe ) ) {
 		return Z9;
 	}
@@ -51,7 +51,7 @@ function hybridToCanonical( zobject ) {
 	// Given a typed list in normal form, convert its elements to canonical and return them in an array
 	// (while ignoring its Z1K1)
 	function zlistToArray( zlist, arr ) {
-		var head = zlist[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ],
+		const head = zlist[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ],
 			tail = zlist[ Constants.Z_TYPED_OBJECT_ELEMENT_2 ];
 
 		if ( typeof arr === 'undefined' ) {
@@ -69,7 +69,7 @@ function hybridToCanonical( zobject ) {
 		}
 	}
 
-	var canon = {};
+	let canon = {};
 
 	if ( typeof zobject === 'undefined' ) {
 		return undefined;
@@ -126,7 +126,7 @@ function isZid( k ) {
  * @return {Object|Array|undefined}
  */
 function canonicalToHybrid( zobject ) {
-	var hybrid = {},
+	let hybrid = {},
 		keys;
 
 	if ( typeof zobject === 'undefined' ) {
@@ -160,7 +160,7 @@ function canonicalToHybrid( zobject ) {
 		hybrid[ Constants.Z_QUOTE_VALUE ] = zobject[ Constants.Z_QUOTE_VALUE ];
 	} else {
 		keys = Object.keys( zobject );
-		for ( var i = 0; i < keys.length; i++ ) {
+		for ( let i = 0; i < keys.length; i++ ) {
 			if ( keys[ i ] === Constants.Z_OBJECT_TYPE && (
 				zobject.Z1K1 === Constants.Z_STRING || zobject.Z1K1 === Constants.Z_REFERENCE ) ) {
 				hybrid.Z1K1 = zobject.Z1K1;
@@ -344,7 +344,7 @@ const errorKeysToTraverse = new Map( [
  * @return {Array} of objects
  */
 function extractNestedSuberrors( zobject, errorType ) {
-	var nested = [];
+	const nested = [];
 	if ( zobject !== null && typeof zobject === 'object' ) {
 		const keysToTraverse = errorKeysToTraverse.get( errorType );
 		// eslint-disable-next-line es-x/no-object-entries

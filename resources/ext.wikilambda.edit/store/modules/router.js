@@ -142,7 +142,7 @@ module.exports = {
 		 * @param {Object} context
 		 */
 		evaluateUri: function ( context ) {
-			var uri = mw.Uri();
+			const uri = mw.Uri();
 
 			// Set title of mw query if url is in /wiki/{{ title }} format
 			if ( !uri.query.title && uri.path.includes( '/wiki' ) ) {

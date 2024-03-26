@@ -42,7 +42,7 @@
 </template>
 
 <script>
-var CdxInfoChip = require( '@wikimedia/codex' ).CdxInfoChip,
+const CdxInfoChip = require( '@wikimedia/codex' ).CdxInfoChip,
 	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
 	Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;

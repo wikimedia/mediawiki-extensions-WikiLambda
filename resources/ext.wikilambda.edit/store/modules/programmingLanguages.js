@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-var Constants = require( '../../Constants.js' );
+const Constants = require( '../../Constants.js' );
 
 module.exports = exports = {
 	state: {
@@ -46,7 +46,7 @@ module.exports = exports = {
 		 */
 		fetchAllZProgrammingLanguages: function ( context ) {
 			// TODO (T296815): Stop using this hard-coded list and fetch them from the API
-			var zProgrammingLanguages = [
+			const zProgrammingLanguages = [
 				{
 					Z1K1: Constants.Z_PERSISTENTOBJECT,
 					Z2K1: 'Z600',

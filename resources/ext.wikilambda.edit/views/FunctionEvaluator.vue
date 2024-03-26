@@ -16,7 +16,7 @@
 </template>
 
 <script>
-var FunctionEvaluatorWidget = require( '../components/widgets/FunctionEvaluator.vue' );
+const FunctionEvaluatorWidget = require( '../components/widgets/FunctionEvaluator.vue' );
 
 // @vue/component
 module.exports = exports = {

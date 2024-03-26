@@ -25,7 +25,7 @@
 </template>
 
 <script>
-var CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+const CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	icons = require( '../../../lib/icons.json' );
 
 // @vue/component

@@ -30,7 +30,7 @@
 </template>
 
 <script>
-var CdxRadio = require( '@wikimedia/codex' ).CdxRadio,
+const CdxRadio = require( '@wikimedia/codex' ).CdxRadio,
 	Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 

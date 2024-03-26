@@ -4,7 +4,7 @@
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
-var Vue = require( 'vue' );
+const Vue = require( 'vue' );
 
 module.exports = function useBreakpoints( breakpoints ) {
 	breakpoints = breakpoints || {};
@@ -22,8 +22,8 @@ module.exports = function useBreakpoints( breakpoints ) {
 
 	// return the largest breakpoint as the current selected type
 	const current = Vue.computed( () => {
-		var currentType = Object.keys( breakpoints )[ 0 ] || null;
-		for ( var breakpoint in breakpoints ) {
+		let currentType = Object.keys( breakpoints )[ 0 ] || null;
+		for ( const breakpoint in breakpoints ) {
 			if ( windowWidth.value >= breakpoints[ breakpoint ] ) {
 				currentType = breakpoint;
 			}

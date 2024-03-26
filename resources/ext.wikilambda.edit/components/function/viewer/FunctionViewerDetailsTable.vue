@@ -144,7 +144,7 @@ module.exports = exports = {
 		}
 	},
 	setup: function () {
-		var breakpoint = useBreakpoints( Constants.breakpoints );
+		const breakpoint = useBreakpoints( Constants.breakpoints );
 		return {
 			breakpoint
 		};

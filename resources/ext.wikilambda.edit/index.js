@@ -6,7 +6,7 @@
  */
 'use strict';
 
-var Vue = require( 'vue' ),
+const Vue = require( 'vue' ),
 	store = require( './store/index.js' ),
 	App = require( './components/App.vue' );
 

@@ -72,7 +72,7 @@
 </template>
 
 <script>
-var Constants = require( '../../Constants.js' ),
+const Constants = require( '../../Constants.js' ),
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	CodeEditor = require( '../base/CodeEditor.vue' ),
 	CdxSelect = require( '@wikimedia/codex' ).CdxSelect,
@@ -292,7 +292,7 @@ module.exports = exports = {
 			 * @return {Array}
 			 */
 			programmingLanguageMenuItems: function () {
-				var programmingLangs = [];
+				const programmingLangs = [];
 				if ( this.getAllProgrammingLangs.length > 0 ) {
 					for ( const lang of this.getAllProgrammingLangs ) {
 						programmingLangs.push(
