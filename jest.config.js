@@ -54,16 +54,10 @@ module.exports = {
 		'resources/ext.wikilambda.edit/components/base/Chip.vue',
 		'resources/ext.wikilambda.edit/components/base/ChipContainer.vue',
 		'resources/ext.wikilambda.edit/components/base/CodeEditor.vue',
-		'resources/ext.wikilambda.edit/components/base/Dialog.vue',
-		'resources/ext.wikilambda.edit/components/base/DialogContainer.vue',
 		'resources/ext.wikilambda.edit/components/base/ExpandedToggle.vue',
-		'resources/ext.wikilambda.edit/components/base/LeaveEditorDialog.vue',
 		'resources/ext.wikilambda.edit/components/base/LocalizedLabel.vue',
 		'resources/ext.wikilambda.edit/components/base/Pagination.vue',
-		'resources/ext.wikilambda.edit/components/base/PublishDialog.vue',
-		'resources/ext.wikilambda.edit/components/base/Select.vue',
 		'resources/ext.wikilambda.edit/components/base/Table.vue',
-		'resources/ext.wikilambda.edit/components/base/Text.vue',
 		'resources/ext.wikilambda.edit/components/base/Tooltip.vue',
 		// These are components that will be removed:
 		'resources/ext.wikilambda.edit/components/main-types/'
