@@ -77,6 +77,7 @@ const Constants = require( '../../Constants.js' ),
 	errorUtils = require( '../../mixins/errorUtils.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ).methods,
 	getValueFromCanonicalZMap = require( '../../mixins/schemata.js' ).methods.getValueFromCanonicalZMap,
+	hybridToCanonical = require( '../../mixins/schemata.js' ).methods.hybridToCanonical,
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -116,6 +117,7 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
+			blankObject: undefined,
 			initialized: false,
 			renderedValue: '',
 			showExamplesDialog: false,
@@ -138,6 +140,14 @@ module.exports = exports = {
 		'getZObjectAsJsonById',
 		'isCreateNewPage'
 	] ), {
+		/**
+		 * Return the stored type object
+		 *
+		 * @return {Object}
+		 */
+		typeObject: function () {
+			return this.getStoredObject( this.type );
+		},
 		/**
 		 * Return renderer function Zid
 		 *
@@ -254,12 +264,29 @@ module.exports = exports = {
 		 * in the local renderedValue variable.
 		 */
 		generateRenderedValue: function () {
-			// If we are in view mode, only generate rendered value once
+			// If we are in view mode, only generate rendered value once.
 			if ( !this.edit && this.initialized ) {
 				return;
 			}
 
-			const zobject = this.getZObjectAsJsonById( this.rowId );
+			// If we are in edit mode, only generate rendered value if the object is not
+			// blank. For this we need to wait till the typeObject has been fetched.
+			if ( this.edit && !this.typeObject ) {
+				return;
+			}
+
+			// If typeObject is available, initialize the model blank object.
+			if ( this.typeObject && !this.blankObject ) {
+				this.initializeBlankObject();
+			}
+
+			const zobject = hybridToCanonical( this.getZObjectAsJsonById( this.rowId ) );
+
+			// If zobject is blank, exit renderer.
+			if ( JSON.stringify( zobject ) === JSON.stringify( this.blankObject ) ) {
+				return;
+			}
+
 			this.runRenderer( {
 				rendererZid: this.rendererZid,
 				zobject,
@@ -351,10 +378,9 @@ module.exports = exports = {
 		 * the changeType action.
 		 */
 		clearParsedValue: function () {
-			const value = this.createObjectByType( { type: this.type } );
 			this.$emit( 'set-value', {
 				keyPath: [],
-				value
+				value: this.blankObject
 			} );
 		},
 		/**
@@ -418,6 +444,14 @@ module.exports = exports = {
 		 */
 		openExamplesDialog: function () {
 			this.showExamplesDialog = true;
+		},
+		/**
+		 * Create the model for a blank object of this type and store it locally.
+		 * This initialization will only be run once, and only when we know for
+		 * sure that the typeObject is available.
+		 */
+		initializeBlankObject: function () {
+			this.blankObject = this.createObjectByType( { type: this.type } );
 		}
 	} ),
 	watch: {
@@ -451,6 +485,14 @@ module.exports = exports = {
 					zlang: this.getUserLangZid
 				} );
 			}
+		},
+		/**
+		 * Watch the typeObject and whenever it's updated, generate the
+		 * rendered value, in case the initial generateRenderedValue call
+		 * is called before the type object has been fetched.
+		 */
+		typeObject: function () {
+			this.generateRenderedValue();
 		}
 	},
 	mounted: function () {
