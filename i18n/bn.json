@@ -417,6 +417,6 @@
 	"wikilambda-renderer-unknown-error": "[[$1|ফাংশন প্রদর্শন]] একটি অজানা ত্রুটি দিয়েছে।",
 	"wikilambda-parser-unexpected-result-error": "[[$1|পঠন ফাংশন]] একটি অপ্রত্যাশিত ফলাফল দিয়েছে।",
 	"wikilambda-parser-unknown-error": "[[$1|পঠন ফাংশন]] একটি অজানা ত্রুটি দিয়েছে।",
-	"wikilambda-object-selector-suggested-types": "প্রস্তাবিত ধরণ সমূহ",
+	"wikilambda-object-selector-suggested-types": "প্রস্তাবিত ধরনসমূহ",
 	"wikilambda-object-selector-suggested-languages": "প্রস্তাবিত ভাষাসমূহ"
 }
