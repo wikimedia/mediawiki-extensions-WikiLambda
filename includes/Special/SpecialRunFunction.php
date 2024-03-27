@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda\Special;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Html\Html;
 use MediaWiki\SpecialPage\SpecialPage;
+use MediaWiki\User\User;
 
 class SpecialRunFunction extends SpecialPage {
 
@@ -33,6 +34,23 @@ class SpecialRunFunction extends SpecialPage {
 	 */
 	public function getDescription() {
 		return $this->msg( 'wikilambda-special-runfunction' );
+	}
+
+	/**
+	 * @inheritDoc
+	 *
+	 * @param User $user
+	 * @return bool
+	 */
+	public function userCanExecute( User $user ) {
+		$block = $user->getBlock();
+
+		return (
+			// Does the user have the relevant right (wikilambda-execute, as set above)?
+			parent::userCanExecute( $user ) &&
+			// If they're blocked in some way, is it site-wide?
+			( !$block || !$block->isSitewide() )
+		);
 	}
 
 	/**
