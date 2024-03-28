@@ -12,13 +12,13 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\PublicApi;
 use MediaWiki\Tests\Api\ApiTestCase;
 
 /**
- * @covers \MediaWiki\Extension\WikiLambda\PublicAPI\ApiFunctionCall
+ * @covers \MediaWiki\Extension\WikiLambda\PublicAPI\PublicApiRun
  * @covers \MediaWiki\Extension\WikiLambda\API\WikiLambdaApiBase
  * @group API
  * @group Standalone
  * @group Database
  */
-class ApiFunctionCallTest extends ApiTestCase {
+class PublicApiRunTest extends ApiTestCase {
 
 	/**
 	 * Reads file contents from test data directory.
