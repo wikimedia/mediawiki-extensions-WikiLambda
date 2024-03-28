@@ -6,24 +6,25 @@
 -->
 <template>
 	<div
-		id="ext-wikilambda-page-language-selector"
+		ref="languageSelector"
 		class="ext-wikilambda-page-language-selector"
 	>
 		<cdx-button
 			weight="quiet"
 			aria-label="Toggle"
-			class="ext-wikilambda-page-language-selector__trigger"
+			class="ext-wikilambda-page-language-selector-trigger"
 			@click="openLanguageSelector"
 		>
 			<cdx-icon :icon="icons.cdxIconLanguage"></cdx-icon>
 			{{ selectedLanguageLabel }}
 		</cdx-button>
 		<div
-			v-if="selectorVisible"
-			class="ext-wikilambda-page-language-selector__dropdown"
+			ref="languageSelectorDropdown"
+			class="ext-wikilambda-page-language-selector-dropdown"
 		>
 			<cdx-lookup
-				class="ext-wikilambda-page-language-selector__lookup"
+				ref="languageSelectorLookup"
+				class="ext-wikilambda-page-language-selector-lookup"
 				:selected="selectedLanguage"
 				:initial-input-value="selectedLanguage"
 				:menu-items="lookupResults"
@@ -55,8 +56,7 @@ module.exports = exports = {
 			lookupDelayTimer: null,
 			lookupDelayMs: 300,
 			lookupResults: [],
-			maxItems: 10,
-			selectorVisible: false
+			maxItems: 10
 		};
 	},
 	computed: {
@@ -235,14 +235,29 @@ module.exports = exports = {
 		 * Closes the language selector dropdown
 		 */
 		closeLanguageSelector: function () {
-			this.selectorVisible = false;
+			// Hide dropdown
+			const dropdown = this.$refs.languageSelectorDropdown;
+			$( dropdown ).removeClass( 'ext-wikilambda-page-language-selector-dropdown__visible' );
 		},
 
 		/**
 		 * Opens the language selector dropdown
 		 */
 		openLanguageSelector: function () {
-			this.selectorVisible = true;
+			// Display dropdown
+			const dropdown = this.$refs.languageSelectorDropdown;
+			$( dropdown ).addClass( 'ext-wikilambda-page-language-selector-dropdown__visible' );
+			// Focus selector
+			// eslint-disable-next-line no-jquery/variable-pattern
+			const lookup = this.$refs.languageSelectorLookup.$el;
+			try {
+				// Get input element from cdx-lookup->cdx-text-input->input
+				// Wrap in try catch to avoid throwing errors in case of codex changes
+				const input = lookup.firstChild.firstChild;
+				input.focus();
+			} catch ( e ) {
+				return;
+			}
 		},
 
 		/**
@@ -253,7 +268,7 @@ module.exports = exports = {
 		 * @param {Object} e
 		 */
 		handleClick: function ( e ) {
-			const parent = document.getElementById( 'ext-wikilambda-page-language-selector' );
+			const parent = this.$refs.languageSelector;
 			if ( e.target !== parent && !parent.contains( e.target ) ) {
 				this.closeLanguageSelector();
 			}
@@ -272,9 +287,14 @@ module.exports = exports = {
 .ext-wikilambda-page-language-selector {
 	position: relative;
 
-	&__dropdown {
+	.ext-wikilambda-page-language-selector-dropdown {
 		position: absolute;
 		right: 0;
+		display: none;
+
+		&__visible {
+			display: block;
+		}
 	}
 }
 </style>

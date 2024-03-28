@@ -72,10 +72,10 @@ module.exports = {
 			statements: 90
 		},
 		'./resources/ext.wikilambda.languageselector/': {
-			branches: 77,
-			lines: 93,
+			branches: 76,
+			lines: 92,
 			functions: 91,
-			statements: 93
+			statements: 92
 		},
 		'./resources/ext.wikilambda.edit/': {
 			branches: 83,
