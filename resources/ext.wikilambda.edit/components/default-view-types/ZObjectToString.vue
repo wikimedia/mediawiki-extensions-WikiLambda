@@ -296,6 +296,7 @@ module.exports = exports = {
 .ext-wikilambda-zobject-to-string {
 	display: flex;
 	white-space: pre-wrap;
+	word-break: break-all;
 	flex-flow: row wrap;
 	justify-content: flex-start;
 	gap: 0;
