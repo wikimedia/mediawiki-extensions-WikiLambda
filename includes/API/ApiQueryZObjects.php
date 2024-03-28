@@ -24,23 +24,20 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\Languages\LanguageNameUtils;
+use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Title\TitleFactory;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
 use stdClass;
 use Wikimedia\ParamValidator\ParamValidator;
 
-class ApiQueryZObjects extends ApiQueryGeneratorBase {
+class ApiQueryZObjects extends ApiQueryGeneratorBase implements LoggerAwareInterface {
 
-	/** @var LanguageFallback */
-	protected $languageFallback;
-
-	/** @var LanguageNameUtils */
-	protected $languageNameUtils;
-
-	/** @var TitleFactory */
-	protected $titleFactory;
-
-	/** @var ZTypeRegistry */
-	protected $typeRegistry;
+	protected LanguageFallback $languageFallback;
+	protected LanguageNameUtils $languageNameUtils;
+	protected TitleFactory $titleFactory;
+	protected ZTypeRegistry $typeRegistry;
+	protected LoggerInterface $logger;
 
 	/**
 	 * @inheritDoc
@@ -59,6 +56,7 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 		$this->languageNameUtils = $languageNameUtils;
 		$this->titleFactory = $titleFactory;
 		$this->typeRegistry = ZTypeRegistry::singleton();
+		$this->setLogger( LoggerFactory::getInstance( 'WikiLambda' ) );
 	}
 
 	/**
@@ -76,16 +74,26 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 	}
 
 	/**
-	 * @param ZError $zerror
+	 * This is a copy of WikiLambdaApiBase::dieWithZError() that we can't inherit from as we
+	 * have to extend ApiQueryGeneratorBase.
+	 *
+	 * @param ZError $zerror The ZError object to return to the user
 	 */
 	public function dieWithZError( $zerror ) {
 		try {
 			$errorData = $zerror->getErrorData();
 		} catch ( ZErrorException $e ) {
 			// Generating the human-readable error data itself threw. Oh dear.
+			$this->getLogger()->warning(
+				__METHOD__ . ' called but an error was thrown when trying to report an error',
+				[
+					'zerror' => $zerror->getSerialized(),
+					'error' => $e,
+				]
+			);
+
 			$errorData = [
-				'zerror' => $zerror->getSerialized(),
-				'extraerror' => $e
+				'zerror' => $zerror->getSerialized()
 			];
 		}
 
@@ -323,5 +331,15 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 			'action=query&format=json&list=wikilambdaload_zobjects&wikilambdaload_zids=Z0123456789%7CZ1'
 				=> 'apihelp-query+wikilambdaload_zobjects-example-error',
 		];
+	}
+
+	/** @inheritDoc */
+	public function setLogger( LoggerInterface $logger ) {
+		$this->logger = $logger;
+	}
+
+	/** @inheritDoc */
+	public function getLogger(): LoggerInterface {
+		return $this->logger;
 	}
 }
