@@ -20,6 +20,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Html\Html;
+use Wikimedia\TestingAccessWrapper;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils
@@ -558,12 +559,14 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
-	 * @dataProvider provideGetPreferredMonolingualString
+	 * @dataProvider provideGetPreferredMonolingualObject
 	 */
-	public function testGetPreferredMonolingualString( $multilingualStr, $languages, $languageKey, $expected ) {
+	public function testGetPreferredMonolingualObject( $multilingualStr, $languages, $languageKey, $expected ) {
+		$accessibleZObjectUtils = TestingAccessWrapper::newFromClass( ZObjectUtils::class );
+
 		$this->assertSame(
 			FormatJson::encode( FormatJson::decode( $expected ) ),
-			FormatJson::encode( ZObjectUtils::getPreferredMonolingualObject(
+			FormatJson::encode( $accessibleZObjectUtils->getPreferredMonolingualObject(
 				FormatJson::decode( $multilingualStr ),
 				$languages,
 				$languageKey
@@ -571,7 +574,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	public static function provideGetPreferredMonolingualString() {
+	public static function provideGetPreferredMonolingualObject() {
 		return [
 			'no monolingual string and no languages' => [ '["Z11"]', [], 'Z11K1', '["Z11"]', ],
 			'no monolingual string and one languages' => [ '["Z11"]', [ self::EN ], 'Z11K1', '["Z11"]', ],

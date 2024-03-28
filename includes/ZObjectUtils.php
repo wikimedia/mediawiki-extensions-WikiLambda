@@ -449,7 +449,7 @@ class ZObjectUtils {
 	 * @param string $key Identifies the key that contains the language in the monolingual object, Z11K1 or Z31K1
 	 * @return array same Multilingual String/Stringset value with only one item of the preferred language
 	 */
-	public static function getPreferredMonolingualObject( array $multilingual, array $languages, string $key ): array {
+	private static function getPreferredMonolingualObject( array $multilingual, array $languages, string $key ): array {
 		// Ignore first item in the canonical form array; this is a string representing the type
 		$itemType = array_shift( $multilingual );
 
