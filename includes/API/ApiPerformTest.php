@@ -75,7 +75,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		// FIXME: Handle an inline ZFunction (for when it's not been created yet)?
 		$targetTitle = Title::newFromText( $functionZid, NS_MAIN );
 		if ( !$targetTitle || !( $targetTitle->exists() ) ) {
-			$this->dieWithError( [ "wikilambda-performtest-error-unknown-zid", $functionZid ] );
+			$this->dieWithError( [ "wikilambda-performtest-error-unknown-zid", $functionZid ], null, null, 404 );
 		}
 
 		// Needed for caching.
@@ -84,7 +84,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		// @phan-suppress-next-line PhanTypeMismatchArgumentNullable
 		$targetObject = $this->zObjectStore->fetchZObjectByTitle( $targetTitle );
 		if ( $targetObject->getZType() !== ZTypeRegistry::Z_FUNCTION ) {
-			$this->dieWithError( [ "wikilambda-performtest-error-nonfunction", $functionZid ] );
+			$this->dieWithError( [ "wikilambda-performtest-error-nonfunction", $functionZid ], null, null, 400 );
 		}
 		$targetFunction = $targetObject->getInnerZObject();
 		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction $targetFunction';
@@ -128,16 +128,19 @@ class ApiPerformTest extends WikiLambdaApiBase {
 							ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN,
 							[]
 						);
-						$this->dieWithZError( $zError );
+						$this->dieWithZError( $zError, 403 );
 					}
 
 					try {
 						$implementation = ZObjectFactory::create( $decodedJson );
 					} catch ( ZErrorException $e ) {
-						$this->dieWithError( [
-							'wikilambda-performtest-error-invalidimplementation',
-							$e->getZErrorMessage()
-						] );
+						$this->dieWithError(
+							[
+								'wikilambda-performtest-error-invalidimplementation',
+								$e->getZErrorMessage()
+							],
+							null, null, 400
+						);
 					}
 				} else {
 					$implementation = new ZReference( $implementation );
@@ -153,10 +156,13 @@ class ApiPerformTest extends WikiLambdaApiBase {
 				if ( $title ) {
 					$implementationRevision = $title->getLatestRevID();
 				} else {
-					$this->dieWithError( [
-						'wikilambda-performtest-error-invalidimplementation',
-						$implementationZid
-					] );
+					$this->dieWithError(
+						[
+							'wikilambda-performtest-error-invalidimplementation',
+							$implementationZid
+						],
+						null, null, 400
+					);
 				}
 			}
 
@@ -192,16 +198,19 @@ class ApiPerformTest extends WikiLambdaApiBase {
 								ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN,
 								[]
 							);
-							$this->dieWithZError( $zError );
+							$this->dieWithZError( $zError, 403 );
 						}
 
 						try {
 							$requestedTester = ZObjectFactory::create( $decodedJson );
 						} catch ( ZErrorException $e ) {
-							$this->dieWithError( [
-								'wikilambda-performtest-error-invalidtester',
-								$e->getZErrorMessage()
-							] );
+							$this->dieWithError(
+								[
+									'wikilambda-performtest-error-invalidtester',
+									$e->getZErrorMessage()
+								],
+								null, null, 400
+							);
 						}
 					} else {
 						$requestedTester = new ZReference( $requestedTester );
@@ -219,10 +228,13 @@ class ApiPerformTest extends WikiLambdaApiBase {
 					if ( $title ) {
 						$testerRevision = $title->getLatestRevID();
 					} else {
-						$this->dieWithError( [
-							'wikilambda-performtest-error-invalidtester',
-							$testerZid
-						] );
+						$this->dieWithError(
+							[
+								'wikilambda-performtest-error-invalidtester',
+								$testerZid
+							],
+							null, null, 400
+						);
 					}
 				}
 
@@ -407,7 +419,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 			return $this->getImplementationListEntry(
 				$zobject->getValueByKey( ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ) );
 		}
-		$this->dieWithError( [ "wikilambda-performtest-error-nonimplementation", $zobject ] );
+		$this->dieWithError( [ "wikilambda-performtest-error-nonimplementation", $zobject ], null, null, 400 );
 	}
 
 	private function getTesterObject( $zobject ) {
@@ -415,7 +427,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 			$zid = ZObjectUtils::getZid( $zobject );
 			$title = Title::newFromText( $zid, NS_MAIN );
 			if ( !( $title instanceof Title ) || !$title->exists() ) {
-				$this->dieWithError( [ "wikilambda-performtest-error-unknown-zid", $zid ] );
+				$this->dieWithError( [ "wikilambda-performtest-error-unknown-zid", $zid ], null, null, 404 );
 			}
 			// @phan-suppress-next-line PhanTypeMismatchArgumentNullable
 			return $this->getTesterObject( $this->zObjectStore->fetchZObjectByTitle( $title )->getInnerZObject() );
@@ -424,7 +436,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		} elseif ( $zobject->getZType() === ZTypeRegistry::Z_TESTER ) {
 			return $zobject;
 		}
-		$this->dieWithError( [ "wikilambda-performtest-error-nontester", $zobject ] );
+		$this->dieWithError( [ "wikilambda-performtest-error-nontester", $zobject ], null, null, 400 );
 	}
 
 	private static function isFalse( $object ) {

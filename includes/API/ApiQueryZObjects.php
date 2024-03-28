@@ -78,8 +78,9 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase implements LoggerAwareInter
 	 * have to extend ApiQueryGeneratorBase.
 	 *
 	 * @param ZError $zerror The ZError object to return to the user
+	 * @param int $code HTTP error code, defaulting to 400/Bad Request
 	 */
-	public function dieWithZError( $zerror ) {
+	public function dieWithZError( $zerror, $code = 400 ) {
 		try {
 			$errorData = $zerror->getErrorData();
 		} catch ( ZErrorException $e ) {
@@ -100,7 +101,8 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase implements LoggerAwareInter
 		parent::dieWithError(
 			[ 'wikilambda-zerror', $zerror->getZErrorType() ],
 			null,
-			$errorData
+			$errorData,
+			$code
 		);
 	}
 
@@ -139,10 +141,10 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase implements LoggerAwareInter
 		$page = $zObjectStore->fetchZObjectByTitle( $title, $revision );
 
 		if ( !$page ) {
-			$this->dieWithError( [ 'apierror-query+wikilambdaload_zobjects-unloadable', $zid ] );
+			$this->dieWithError( [ 'apierror-query+wikilambdaload_zobjects-unloadable', $zid ], null, null, 500 );
 		}
 		if ( !( $page instanceof ZObjectContent ) ) {
-			$this->dieWithError( [ 'apierror-query+wikilambdaload_zobjects-notzobject', $zid ] );
+			$this->dieWithError( [ 'apierror-query+wikilambdaload_zobjects-notzobject', $zid ], null, null, 400 );
 		}
 
 		// The object was successfully retrieved
@@ -229,7 +231,7 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase implements LoggerAwareInter
 					ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
 					[ 'message' => "You must specify a revision for each ZID, or none at all." ]
 				);
-				$this->dieWithZError( $zErrorObject );
+				$this->dieWithZError( $zErrorObject, 400 );
 			}
 			foreach ( $zids as $index => $zid ) {
 				$revisionMap[ $zid ] = (int)$revisions[ $index ];
