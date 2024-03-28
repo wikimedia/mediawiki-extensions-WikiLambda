@@ -18,6 +18,7 @@ use MediaWiki\Extension\WikiLambda\API\WikiLambdaApiBase;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\PoolCounter\PoolCounterWorkViaCallback;
 use MediaWiki\Status\Status;
 use Wikimedia\ParamValidator\ParamValidator;
@@ -132,48 +133,6 @@ class PublicApiRun extends WikiLambdaApiBase {
 	}
 
 	/**
-	 * Reads file contents from test data directory.
-	 * @param string $fileName
-	 * @return string file contents
-	 * @codeCoverageIgnore
-	 */
-	private function readTestFile( $fileName ): string {
-		$baseDir = __DIR__ .
-			DIRECTORY_SEPARATOR .
-			'..' .
-			DIRECTORY_SEPARATOR .
-			'..' .
-			DIRECTORY_SEPARATOR .
-			'tests' .
-			DIRECTORY_SEPARATOR .
-			'phpunit' .
-			DIRECTORY_SEPARATOR .
-			'test_data';
-		$fullFile = $baseDir . DIRECTORY_SEPARATOR . $fileName;
-		return file_get_contents( $fullFile );
-	}
-
-	/**
-	 * Reads file contents from test data directory as JSON array.
-	 * @param string $fileName
-	 * @return array file contents (JSON-decoded)
-	 * @codeCoverageIgnore
-	 */
-	private function readTestFileAsArray( $fileName ): array {
-		return json_decode( $this->readTestFile( $fileName ), true );
-	}
-
-	/**
-	 * Generates URL-encoded example function call from JSON file contents.
-	 * @param string $fileName
-	 * @return string URL-encoded contents
-	 * @codeCoverageIgnore
-	 */
-	private function createExample( $fileName ): string {
-		return urlencode( $this->readTestFile( $fileName ) );
-	}
-
-	/**
 	 * @see ApiBase::getExamplesMessages()
 	 * @return array
 	 * @codeCoverageIgnore
@@ -181,7 +140,7 @@ class PublicApiRun extends WikiLambdaApiBase {
 	protected function getExamplesMessages() {
 		return [
 			'action=wikifunctions_run&function_call='
-				. $this->createExample( 'Z902_false.json' )
+				. urlencode( ZObjectUtils::readTestFile( 'Z902_false.json' ) )
 				=> 'apihelp-wikilambda_function_call-example-if',
 		];
 	}
