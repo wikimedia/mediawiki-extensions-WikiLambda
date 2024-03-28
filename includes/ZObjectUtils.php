@@ -412,9 +412,25 @@ class ZObjectUtils {
 				$index === ZTypeRegistry::Z_OBJECT_TYPE &&
 				$value === ZTypeRegistry::Z_MULTILINGUALSTRING
 			) {
-				$input->{ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE} = self::getPreferredMonolingualString(
+				$input->{ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE} = self::getPreferredMonolingualObject(
 					$input->{ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE},
-					$languages
+					$languages,
+					ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE
+				);
+				break;
+			}
+
+			// If the value is a string, and the type is ZMonolingualStringSet,
+			// select the preferred language out of the available ZMonolingualStringSets
+			if (
+				is_string( $value ) &&
+				$index === ZTypeRegistry::Z_OBJECT_TYPE &&
+				$value === ZTypeRegistry::Z_MULTILINGUALSTRINGSET
+			) {
+				$input->{ZTypeRegistry::Z_MULTILINGUALSTRINGSET_VALUE} = self::getPreferredMonolingualObject(
+					$input->{ZTypeRegistry::Z_MULTILINGUALSTRINGSET_VALUE},
+					$languages,
+					ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE
 				);
 				break;
 			}
@@ -423,28 +439,29 @@ class ZObjectUtils {
 	}
 
 	/**
-	 * Filters ZMonolingualString to preferred language.
+	 * Filters Monolingual Strings and Stringsets to the preferred language.
 	 *
-	 * Returns the preferred ZMonolingualString of a ZMultilingualString given an
-	 * array of preferred languages.
+	 * Returns the preferred Monolingual String/Stringset of a Multilingual
+	 * String/Stringset given an array of preferred languages.
 	 *
-	 * @param array $multilingualStr decoded JSON for a ZMultilingualString value (Z12K1)
+	 * @param array $multilingual decoded JSON for a Multilingual String/Stringset value
 	 * @param string[] $languages array of language Zids
-	 * @return array same ZMultilingualString value with only one item of the preferred language
+	 * @param string $key Identifies the key that contains the language in the monolingual object, Z11K1 or Z31K1
+	 * @return array same Multilingual String/Stringset value with only one item of the preferred language
 	 */
-	public static function getPreferredMonolingualString( array $multilingualStr, array $languages ): array {
+	public static function getPreferredMonolingualObject( array $multilingual, array $languages, string $key ): array {
 		// Ignore first item in the canonical form array; this is a string representing the type
-		$itemType = array_shift( $multilingualStr );
+		$itemType = array_shift( $multilingual );
 
 		$availableLangs = [];
 		$selectedIndex = 0;
 
-		if ( count( $multilingualStr ) == 0 ) {
+		if ( count( $multilingual ) == 0 ) {
 			return [ $itemType ];
 		}
 
-		foreach ( $multilingualStr as $value ) {
-			$availableLangs[] = $value->{ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE};
+		foreach ( $multilingual as $value ) {
+			$availableLangs[] = $value->{$key};
 		}
 
 		foreach ( $languages as $lang ) {
@@ -455,7 +472,7 @@ class ZObjectUtils {
 			}
 		}
 
-		return [ $itemType, $multilingualStr[ $selectedIndex ] ];
+		return [ $itemType, $multilingual[ $selectedIndex ] ];
 	}
 
 	/**

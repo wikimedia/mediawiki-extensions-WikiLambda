@@ -170,11 +170,12 @@ class ZObjectContentHandler extends ContentHandler {
 			);
 		}
 
-		$object = get_object_vars( ZObjectUtils::canonicalize( $zObject->getObject() ) );
+		$object = ZObjectUtils::canonicalize( $zObject->getObject() );
 
 		if ( $languageCode ) {
 			$services = MediaWikiServices::getInstance();
 
+			// If language code is not valid, throws ZErrorException of Z540/Invalid language code
 			if ( !$services->getLanguageNameUtils()->isValidCode( $languageCode ) ) {
 				throw new ZErrorException(
 					ZErrorFactory::createZErrorInstance(
@@ -187,33 +188,17 @@ class ZObjectContentHandler extends ContentHandler {
 			// If language doesn't have a Zid, throws ZErrorException of Z541/Language code not found
 			$languageZid = ZLangRegistry::singleton()->getLanguageZidFromCode( $languageCode );
 
-			$fullLabels = $zObject->getLabels();
-			$returnLanguage = $services->getLanguageFactory()->getLanguage( $languageCode );
-			$returnLabel = $fullLabels->getStringForLanguage( $returnLanguage );
-
-			$returnLabelObject = (object)[
-				ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MULTILINGUALSTRING,
-				ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE => [
-					ZTypeRegistry::Z_MONOLINGUALSTRING,
-					[
-						ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MONOLINGUALSTRING,
-						ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE => $languageZid,
-						ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE => $returnLabel
-					]
-				]
-			];
-			$object[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] = $returnLabelObject;
+			// Filter all Multilingual Strings and Stringsets if language is present and valid
+			$object = ZObjectUtils::filterZMultilingualStringsToLanguage( $object, [ $languageZid ] );
 		}
 
 		// Replace Z2K1: Z0 with the actual page ID.
-		$object[ ZTypeRegistry::Z_PERSISTENTOBJECT_ID ] = [
+		$object->{ ZTypeRegistry::Z_PERSISTENTOBJECT_ID } = [
 			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_STRING,
 			ZTypeRegistry::Z_STRING_VALUE => $zObjectTitle->getDBkey()
 		];
 
-		$encoded = FormatJson::encode( $object, true, FormatJson::UTF8_OK );
-
-		return $encoded;
+		return FormatJson::encode( $object, true, FormatJson::UTF8_OK );
 	}
 
 	/**

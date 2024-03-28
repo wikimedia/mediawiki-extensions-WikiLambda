@@ -20,7 +20,6 @@ use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectEditAction;
 use MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataRemoval;
 use MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Revision\SlotRenderingProvider;
 use MediaWiki\Title\Title;
@@ -162,21 +161,12 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 			'Only one label comes back when asked for in a specific language.'
 		);
 		$this->assertSame(
-			'', $externalRepresentationLabels->getStringForLanguageCode( 'en' ),
-			'ZPO label in English is absent when asked for in German.'
+			'Demonstration type', $externalRepresentationLabels->getStringForLanguageCode( 'en' ),
+			'ZPO label in English is present as fallback from German.'
 		);
 		$this->assertSame(
 			'', $externalRepresentationLabels->getStringForLanguageCode( 'fr' ),
 			'ZPO label in French is absent when asked for in German.'
-		);
-
-		$services = MediaWikiServices::getInstance();
-		$language = self::makeLanguage( 'de' );
-
-		$this->assertSame(
-			wfMessage( 'wikilambda-multilingualstring-nofallback' )->inLanguage( $language )->text(),
-			$externalRepresentationLabels->getStringForLanguageCode( 'de' ),
-			'ZPO fallback label in German is present when asked for in German.'
 		);
 	}
 

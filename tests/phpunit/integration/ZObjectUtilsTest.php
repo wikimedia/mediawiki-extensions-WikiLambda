@@ -511,6 +511,39 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				. '] ] }',
 			],
 
+			'zobject with multilingual strings and multilingual stringsets' => [
+				'{ "Z1K1": "Z2", "Z2K2": "value",'
+				. '"Z2K3":'
+				. '{ "Z1K1": "Z12", "Z12K1": ["Z11",'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "nombre" },'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "name" }'
+				. '] },'
+				. ' "Z2K5":'
+				. '{ "Z1K1": "Z12", "Z12K1": ["Z11",'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "description" },'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "descripción" }'
+				. '] },'
+				. ' "Z2K4":'
+				. '{ "Z1K1": "Z32", "Z32K1": ["Z31",'
+				. '{ "Z1K1": "Z31", "Z31K1": "Z1002", "Z31K2": [ "Z6", "one alias", "another alias" ] },'
+				. '{ "Z1K1": "Z31", "Z31K1": "Z1003", "Z31K2": [ "Z6", "un alias", "otro alias" ] }'
+				. '] } }',
+				[ self::ES ],
+				'{ "Z1K1": "Z2", "Z2K2": "value",'
+				. '"Z2K3":'
+				. '{ "Z1K1": "Z12", "Z12K1": ["Z11",'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "nombre" }'
+				. '] },'
+				. ' "Z2K5":'
+				. '{ "Z1K1": "Z12", "Z12K1": ["Z11",'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "descripción" }'
+				. '] },'
+				. ' "Z2K4":'
+				. '{ "Z1K1": "Z32", "Z32K1": ["Z31",'
+				. '{ "Z1K1": "Z31", "Z31K1": "Z1003", "Z31K2": [ "Z6", "un alias", "otro alias" ] }'
+				. '] } }',
+			],
+
 			'empty language list but we give a string as the input' => [
 				'"string value"',
 				[],
@@ -527,40 +560,45 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 	/**
 	 * @dataProvider provideGetPreferredMonolingualString
 	 */
-	public function testGetPreferredMonolingualString( $multilingualStr, $languages, $expected ) {
+	public function testGetPreferredMonolingualString( $multilingualStr, $languages, $languageKey, $expected ) {
 		$this->assertSame(
 			FormatJson::encode( FormatJson::decode( $expected ) ),
-			FormatJson::encode( ZObjectUtils::getPreferredMonolingualString(
+			FormatJson::encode( ZObjectUtils::getPreferredMonolingualObject(
 				FormatJson::decode( $multilingualStr ),
-				$languages
+				$languages,
+				$languageKey
 			) )
 		);
 	}
 
 	public static function provideGetPreferredMonolingualString() {
 		return [
-			'no monolingual string and no languages' => [ '["Z11"]', [], '["Z11"]', ],
-			'no monolingual string and one languages' => [ '["Z11"]', [ self::EN ], '["Z11"]', ],
-			'no monolingual string and many languages' => [ '["Z11"]', [ self::ES, self::EN ], '["Z11"]', ],
+			'no monolingual string and no languages' => [ '["Z11"]', [], 'Z11K1', '["Z11"]', ],
+			'no monolingual string and one languages' => [ '["Z11"]', [ self::EN ], 'Z11K1', '["Z11"]', ],
+			'no monolingual string and many languages' => [ '["Z11"]', [ self::ES, self::EN ], 'Z11K1', '["Z11"]', ],
 
 			'one monolingual string and no languages' => [
 				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 				[],
+				'Z11K1',
 				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 			],
 			'one monolingual string and an available language' => [
 				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 				[ self::EN ],
+				'Z11K1',
 				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 			],
 			'one monolingual string and one unavailable language' => [
 				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 				[ self::FR ],
+				'Z11K1',
 				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 			],
 			'one monolingual string and one unavailable language' => [
 				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 				[ self::FR ],
+				'Z11K1',
 				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 			],
 
@@ -568,32 +606,47 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" },'
 				. ' { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 				[],
+				'Z11K1',
 				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" }]',
 			],
 			'many monolingual strings and one available languages' => [
 				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" },'
 				. ' { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 				[ self::EN ],
+				'Z11K1',
 				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 			],
 		  'many monolingual strings and one unavailable languages' => [
 				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" },'
 				. ' { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 				[ self::FR ],
+				'Z11K1',
 				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" }]',
 			],
 			'many monolingual strings and some available languages' => [
 				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" },'
 				. ' { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 				[ self::CAT, self::ES, self::EN ],
+				'Z11K1',
 				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" }]',
 			],
 			'many monolingual strings and some unavailable languages' => [
 				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" },'
 				. ' { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 				[ self::UK, self::RU ],
+				'Z11K1',
 				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" }]',
 			],
+
+			'multilingual string set' => [
+				'[ "Z31", '
+				. ' { "Z1K1": "Z31", "Z31K1": "Z1002", "Z31K2": [ "Z6", "one", "two" ] },'
+				. ' { "Z1K1": "Z31", "Z31K1": "Z1003", "Z31K2": [ "Z6", "uno", "dos" ] } ]',
+				[ self::ES ],
+				'Z31K1',
+				'[ "Z31", '
+				. ' { "Z1K1": "Z31", "Z31K1": "Z1003", "Z31K2": [ "Z6", "uno", "dos" ] } ]',
+			]
 		];
 	}
 
