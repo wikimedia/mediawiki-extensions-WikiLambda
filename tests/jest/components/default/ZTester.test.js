@@ -22,6 +22,7 @@ describe( 'ZTester', () => {
 			getZTesterFunctionRowId: createGettersWithFunctionsMock( 1 ),
 			getZTesterCallRowId: createGettersWithFunctionsMock( 2 ),
 			getZTesterValidationRowId: createGettersWithFunctionsMock( 3 ),
+			createZObjectByType: createGettersWithFunctionsMock(),
 			isCreateNewPage: createGetterMock( false )
 		};
 		actions = {
@@ -143,6 +144,13 @@ describe( 'ZTester', () => {
 				Z4K4: equalityZid
 			}
 		};
+		const blankFunctionCall = {
+			Z1K1: 'Z7',
+			Z7K1: {
+				Z1K1: 'Z9',
+				Z9K1: ''
+			}
+		};
 		// Expected payloads
 		const setCallPayload = {
 			keyPath: [ 'Z20K2', 'Z7K1', 'Z9K1' ],
@@ -164,6 +172,7 @@ describe( 'ZTester', () => {
 		beforeEach( () => {
 			getters.isCreateNewPage = createGetterMock( true );
 			getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( functionZid );
+			getters.createObjectByType = createGettersWithFunctionsMock( blankFunctionCall );
 			getters.getStoredObject = () => ( zid ) => {
 				if ( zid === functionZid ) {
 					return functionObject;
@@ -179,7 +188,7 @@ describe( 'ZTester', () => {
 			} );
 		} );
 
-		it( 'sets test call on initialize', async () => {
+		it( 'sets test call and validation on initialize', async () => {
 			const wrapper = shallowMount( ZTester, {
 				props: {
 					edit: true
@@ -200,7 +209,7 @@ describe( 'ZTester', () => {
 			} );
 		} );
 
-		it( 'sets test call on new function zid', async () => {
+		it( 'sets test call and validation on new function zid', async () => {
 			getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( undefined );
 			global.store.hotUpdate( { getters: getters } );
 
@@ -228,6 +237,43 @@ describe( 'ZTester', () => {
 				// 4. Set arguments for validator call
 				expect( actions.setZFunctionCallArguments ).toHaveBeenCalledWith( expect.anything(),
 					setValidatorArguments );
+			} );
+		} );
+
+		it( 'sets test call and clears validation when type has no equality function', async () => {
+			jest.clearAllMocks();
+			const typeWithoutEquality = { Z2K2: { Z1K1: 'Z4' } };
+			getters.getStoredObject = () => ( zid ) => {
+				if ( zid === functionZid ) {
+					return functionObject;
+				} else if ( zid === typeZid ) {
+					return typeWithoutEquality;
+				}
+				return undefined;
+			};
+			global.store.hotUpdate( { getters: getters } );
+
+			const wrapper = shallowMount( ZTester, {
+				props: {
+					edit: true
+				}
+			} );
+
+			const clearValidatorPayload = {
+				keyPath: [ 'Z20K3' ],
+				value: blankFunctionCall
+			};
+
+			await waitFor( () => {
+				// 1. Set value for test call
+				expect( wrapper.emitted( 'set-value' )[ 0 ] ).toEqual( [ setCallPayload ] );
+				// 2. Set arguments for test call
+				expect( actions.setZFunctionCallArguments ).toHaveBeenCalledWith( expect.anything(),
+					setCallArguments );
+				// 3. Set blank value for validator call
+				expect( wrapper.emitted( 'set-value' )[ 1 ] ).toEqual( [ clearValidatorPayload ] );
+				// 4. Make sure that setZFunctionCallArguments has only been called once
+				expect( actions.setZFunctionCallArguments ).toHaveBeenCalledTimes( 1 );
 			} );
 		} );
 	} );

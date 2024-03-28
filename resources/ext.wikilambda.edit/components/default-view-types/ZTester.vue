@@ -81,6 +81,7 @@ module.exports = exports = {
 		}
 	},
 	computed: $.extend( mapGetters( [
+		'createObjectByType',
 		'getLabel',
 		'getZTesterFunctionRowId',
 		'getZTesterCallRowId',
@@ -208,6 +209,12 @@ module.exports = exports = {
 			const type = this.getStoredObject( outputType );
 			const equalityZid = type[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_EQUALITY ];
 			if ( !equalityZid || ( typeof equalityZid !== 'string' ) || !isValidZidFormat( equalityZid ) ) {
+				// Set to blank Function Call if the new test call output doesn't have an equality function
+				const blankFunctionCall = this.createObjectByType( { type: Constants.Z_FUNCTION_CALL } );
+				this.$emit( 'set-value', {
+					keyPath: [ Constants.Z_TESTER_VALIDATION ],
+					value: blankFunctionCall
+				} );
 				return;
 			}
 			this.fetchZids( { zids: [ equalityZid ] } ).then( () => {
