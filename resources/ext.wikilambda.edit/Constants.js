@@ -4,7 +4,7 @@
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
-var Constants = {
+const Constants = {
 		// TODO (T336292): Rethink why are we ecluding all these types from general selection?
 		// EXCLUDED_Z_TYPES: [ 'Z2', 'Z3', 'Z5', 'Z7', 'Z9', 'Z16', 'Z17', 'Z18', 'Z21', 'Z22', 'Z39' ],
 		// Z2: OK - only will be a root zobject, it should not be selected for anything else

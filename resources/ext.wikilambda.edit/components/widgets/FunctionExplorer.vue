@@ -136,7 +136,7 @@
 </template>
 
 <script>
-var
+const
 	Constants = require( '../../Constants.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,

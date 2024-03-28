@@ -50,13 +50,10 @@ module.exports = exports = {
 	},
 	methods: {
 		initialize: function () {
-			var self = this,
-				basePath;
-
 			this.editor = window.ace.edit( this.$refs.editor, { value: this.value } );
 
 			// Set base path to know where to import modules while setting language and theme
-			basePath = mw.config.get( 'wgExtensionAssetsPath', '' );
+			let basePath = mw.config.get( 'wgExtensionAssetsPath', '' );
 			// ACE doesn't understand relative links
 			if ( basePath.slice( 0, 2 ) === '//' ) {
 				basePath = window.location.protocol + basePath;
@@ -76,6 +73,7 @@ module.exports = exports = {
 			this.editor.setOptions( this.options );
 
 			// Set listener
+			const self = this;
 			this.editor.on( 'change', function () {
 				self.$emit( 'change', self.editor.getValue() );
 			} );

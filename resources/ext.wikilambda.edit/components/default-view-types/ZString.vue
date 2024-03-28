@@ -20,7 +20,7 @@
 </template>
 
 <script>
-var CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
+const CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
 	Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 

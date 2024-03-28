@@ -27,7 +27,7 @@ module.exports = exports = {
 				contentRowId = context.getters.getZPersistentContentRowId(),
 				innerObject = zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
 
-			var rowId,
+			let rowId,
 				invalidInputs,
 				invalidOutputs,
 				isValid = true;

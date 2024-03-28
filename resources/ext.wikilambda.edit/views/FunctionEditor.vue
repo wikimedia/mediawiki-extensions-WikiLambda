@@ -15,7 +15,7 @@
 </template>
 
 <script>
-var FunctionEditorDefinition = require( '../components/function/editor/FunctionEditorDefinition.vue' );
+const FunctionEditorDefinition = require( '../components/function/editor/FunctionEditorDefinition.vue' );
 
 // @vue/component
 module.exports = exports = {

@@ -6,7 +6,7 @@
  */
 'use strict';
 
-var Vuex = require( 'vuex' ),
+const Vuex = require( 'vuex' ),
 	actions = require( './actions.js' ),
 	getters = require( './getters.js' ),
 	zobjectModule = require( './modules/zobject.js' ),

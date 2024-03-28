@@ -32,7 +32,7 @@
 </template>
 
 <script>
-var Chip = require( './Chip.vue' );
+const Chip = require( './Chip.vue' );
 
 // @vue/component
 module.exports = exports = {

@@ -6,7 +6,7 @@
  */
 'use strict';
 
-var Constants = require( '../Constants.js' );
+const Constants = require( '../Constants.js' );
 
 module.exports = exports = {
 	/**

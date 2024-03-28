@@ -6,7 +6,7 @@
  */
 'use strict';
 
-var Constants = require( '../../Constants.js' );
+const Constants = require( '../../Constants.js' );
 
 /**
  * Row class represents one table entry or row in the ZObject

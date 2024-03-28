@@ -87,13 +87,15 @@ module.exports = exports = {
 						switch ( ztype ) {
 							// Return the key value type if zid belongs to a type
 							case Constants.Z_TYPE:
-								var zkey = typeUtils.getKeyFromKeyList( key, zobject[ Constants.Z_TYPE_KEYS ] );
+								// eslint-disable-next-line no-case-declarations
+								const zkey = typeUtils.getKeyFromKeyList( key, zobject[ Constants.Z_TYPE_KEYS ] );
 								type = zkey ? zkey[ Constants.Z_KEY_TYPE ] : Constants.Z_OBJECT;
 								break;
 
 							// Return the argument type if the zid belongs to a function
 							case Constants.Z_FUNCTION:
-								var zarg = typeUtils.getArgFromArgList(
+								// eslint-disable-next-line no-case-declarations
+								const zarg = typeUtils.getArgFromArgList(
 									key,
 									zobject[ Constants.Z_FUNCTION_ARGUMENTS ]
 								);

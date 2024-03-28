@@ -87,7 +87,7 @@
 </template>
 
 <script>
-var CdxRadio = require( '@wikimedia/codex' ).CdxRadio,
+const CdxRadio = require( '@wikimedia/codex' ).CdxRadio,
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;

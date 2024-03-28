@@ -34,7 +34,7 @@
 </template>
 
 <script>
-var CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+const CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	icons = require( '../../../lib/icons.json' );
 
 // @vue/component
@@ -80,7 +80,7 @@ module.exports = exports = {
 	methods: {
 		handleEnter: function ( event ) {
 			event.target.blur();
-			var newValue = event.target.innerText;
+			const newValue = event.target.innerText;
 			if ( newValue !== this.text ) {
 				this.$emit( 'edit-chip', this.index, newValue );
 			}
