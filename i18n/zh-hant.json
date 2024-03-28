@@ -291,7 +291,7 @@
 	"wikilambda-ztyped-pair-key-label": "鍵",
 	"wikilambda-ztyped-pair-value-label": "值",
 	"wikilambda-zerror": "錯誤類型$1",
-	"wikilambda-optional": "可選",
+	"wikilambda-optional": "非必填",
 	"wikilambda-continue-editing": "繼續編輯",
 	"wikilambda-discard-edits": "放棄編輯",
 	"wikilambda-function-details-summary": "任何人都可以提出新的實現或測試。所提出的代碼在經過Wikifunctions社群稽核後得以成為可用實現或者認證測試。",
