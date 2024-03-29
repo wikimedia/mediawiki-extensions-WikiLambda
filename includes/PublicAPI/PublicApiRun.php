@@ -80,7 +80,7 @@ class PublicApiRun extends WikiLambdaApiBase {
 			count( $zObjectAsStdClass->Z7K1->Z8K4 ) > 1
 		) {
 			$implementation = $zObjectAsStdClass->Z7K1->Z8K4[ 1 ];
-			if ( is_object( $implementation ) && property_exists( $implementation, 'Z14K3' ) ) {
+			if ( is_object( $implementation ) && property_exists( $implementation, 'Z14K1' ) ) {
 				$isUnsavedCode = true;
 			}
 		}
