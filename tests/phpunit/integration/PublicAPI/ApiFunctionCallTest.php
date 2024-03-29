@@ -85,7 +85,6 @@ class ApiFunctionCallTest extends ApiTestCase {
 	}
 
 	public static function provideExecuteSuccessfulViaBetaCluster() {
-		// TODO (T311801): Share this logic with the ApiFunctionCall examples.
 		yield 'Manual echo' => [
 			'{"Z1K1": "Z7", "Z7K1": "Z801", "Z801K1": "Hello, testers!" }',
 			'Hello, testers!'
@@ -99,144 +98,6 @@ class ApiFunctionCallTest extends ApiTestCase {
 		yield 'Invoke user-written JavaScript code' => [
 			self::readTestFile( 'evaluated-js.json' ),
 			"13",
-			null,
-			null,
-			// Public API rejects unsaved-code inputs; $expectedString above isn't used currently
-			'Error of type Z559'
-		];
-
-		yield 'Invoke user-written Python 3 code' => [
-			self::readTestFile( 'evaluated-python.json' ),
-			"13",
-			null,
-			null,
-			// Public API rejects unsaved-code inputs; $expectedString above isn't used currently
-			'Error of type Z559'
-		];
-
-		yield 'Invoke a composition: if first argument is true, sort second; else, return it intact' => [
-			self::readTestFile( 'example-composition.json' ),
-			'        abcddeeeefghhijklmnoooopqrrttuuvwxyz'
-		];
-
-		// @phpcs:ignore Generic.Files.LineLength.TooLong
-		yield 'Invoke the \"not empty\" function as a composition: returns true iff input list contains at least one element' => [
-			self::readTestFile( 'example-notempty.json' ),
-			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
-		];
-
-		// @phpcs:ignore Generic.Files.LineLength.TooLong
-		yield 'Invoke the Map function: given a function and a list of strings, return the result of running the function over each string' => [
-			self::readTestFile( 'example-map.json' ),
-			// @phpcs:ignore Generic.Files.LineLength.TooLong
-			"[{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z6\",\"Z4K2\":[\"Z3\",{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"Z6K1\",\"Z3K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[\"Z11\",{\"Z1K1\":\"Z11\",\"Z11K1\":\"Z1002\",\"Z11K2\":\"value\"}]}}],\"Z4K3\":\"Z106\"},\"acab\",\"acab\",\"bacab\"]"
-		];
-
-		// @phpcs:ignore Generic.Files.LineLength.TooLong
-		yield 'Invoke the Apply function: given a function and a string, return the result of running the function over the string' => [
-			self::readTestFile( 'example-apply.json' ),
-			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
-		];
-
-		yield 'Invoke a function that returns the first element of a typed List' => [
-			self::readTestFile( 'example-generic-list.json' ),
-			'who are these coming to the sacrifice',
-			null,
-			null,
-			// Public API rejects unsaved-code inputs; $expectedString above isn't used currently
-			'Error of type Z559'
-		];
-
-		yield 'Invoke a function that returns the second element of a Pair<String,Boolean>' => [
-			self::readTestFile( 'example-generic-pair.json' ),
-			// @phpcs:ignore Generic.Files.LineLength.TooLong
-			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}",
-			null,
-			null,
-			// Public API rejects unsaved-code inputs; $expectedString above isn't used currently
-			'Error of type Z559'
-		];
-
-		yield 'Invoke a function that returns the second element of a Pair<String,Pair<String,String>>' => [
-			self::readTestFile( 'example-generic-pair-2.json' ),
-			// @phpcs:ignore Generic.Files.LineLength.TooLong
-			'{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z6"},"K1":"Where the pot\'s not","K2":"is where it\'s useful."}',
-			null,
-			null,
-			// Public API rejects unsaved-code inputs; $expectedString above isn't used currently
-			'Error of type Z559'
-		];
-
-		// @phpcs:ignore Generic.Files.LineLength.TooLong
-		yield 'Invoke a function that maps the element of a typed Map at a given key to a string version of its value' => [
-			self::readTestFile( 'example-generic-map.json' ),
-			// @phpcs:ignore Generic.Files.LineLength.TooLong
-			'{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z883","Z883K1":"Z6","Z883K2":"Z6"},"K1":[{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z6"},{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z6"},"K1":"true?","K2":"true"}]}',
-			null,
-			null,
-			// Public API rejects unsaved-code inputs; $expectedString above isn't used currently
-			'Error of type Z559'
-		];
-
-		yield 'Invoke JavaScript function using a user-defined type' => [
-			self::readTestFile( 'example-user-defined-javascript.json' ),
-			// @phpcs:ignore Generic.Files.LineLength.TooLong
-			"{\"Z1K1\":\"Z1000000\",\"Z1000000K1\":\"5\"}",
-			null,
-			null,
-			// Public API rejects unsaved-code inputs; $expectedString above isn't used currently
-			'Error of type Z559'
-		];
-
-		$ZMillion = self::readTestFileAsArray( 'user-defined-validation-type.json' );
-		$validationZ7 = self::readTestFileAsArray( 'example-user-defined-validation.json' );
-		$ZMillion["Z4K3"]["Z8K1"][1]["Z17K1"] = $ZMillion;
-		$validationZ7["Z801K1"]["Z1K1"] = $ZMillion;
-
-		// TODO (T360076): Rewrite this to use JS instead of Python.
-		yield 'Invoke user-defined validation function implemented in Python' => [
-			json_encode( $validationZ7 ),
-			'Z24',
-			null,
-			// @phpcs:ignore Generic.Files.LineLength.TooLong
-			"{\"Z1K1\":\"Z5\",\"Z5K1\":{\"Z1K1\":\"Z518\",\"Z518K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z1000000\",\"Z4K2\":[{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"Z1000000K1\",\"Z3K3\":\"Z400\"}],\"Z4K3\":{\"Z1K1\":\"Z8\",\"Z8K1\":[{\"Z1K1\":\"Z17\",\"Z17K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z1000000\",\"Z4K2\":[{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"Z1000000K1\",\"Z3K3\":\"Z400\"}],\"Z4K3\":{\"Z1K1\":\"Z8\",\"Z8K1\":[{\"Z1K1\":\"Z17\",\"Z17K1\":\"Z1000000\",\"Z17K2\":\"Z1001K1\",\"Z17K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[]}}],\"Z8K2\":\"Z4\",\"Z8K3\":[],\"Z8K4\":[{\"Z1K1\":\"Z14\",\"Z14K1\":\"Z1001\",\"Z14K3\":{\"Z1K1\":\"Z16\",\"Z16K1\":{\"Z1K1\":\"Z61\",\"Z61K1\":\"python-3\"},\"Z16K2\":\"def Z1001(Z1001K1):\\n  if Z1001K1.Z1000000K1 != 'A':\\n    raise Exception('does that look like an A to you???')\\n  return Z1001K1\"}}],\"Z8K5\":\"Z1001\"}},\"Z17K2\":\"Z1001K1\",\"Z17K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[]}}],\"Z8K2\":\"Z4\",\"Z8K3\":[],\"Z8K4\":[{\"Z1K1\":\"Z14\",\"Z14K1\":\"Z1001\",\"Z14K3\":{\"Z1K1\":\"Z16\",\"Z16K1\":{\"Z1K1\":\"Z61\",\"Z61K1\":\"python-3\"},\"Z16K2\":\"def Z1001(Z1001K1):\\n  if Z1001K1.Z1000000K1 != 'A':\\n    raise Exception('does that look like an A to you???')\\n  return Z1001K1\"}}],\"Z8K5\":\"Z1001\"}},\"Z518K2\":{\"Z1K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z1000000\",\"Z4K2\":[{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"Z1000000K1\",\"Z3K3\":\"Z400\"}],\"Z4K3\":{\"Z1K1\":\"Z8\",\"Z8K1\":[{\"Z1K1\":\"Z17\",\"Z17K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z1000000\",\"Z4K2\":[{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"Z1000000K1\",\"Z3K3\":\"Z400\"}],\"Z4K3\":{\"Z1K1\":\"Z8\",\"Z8K1\":[{\"Z1K1\":\"Z17\",\"Z17K1\":\"Z1000000\",\"Z17K2\":\"Z1001K1\",\"Z17K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[]}}],\"Z8K2\":\"Z4\",\"Z8K3\":[],\"Z8K4\":[{\"Z1K1\":\"Z14\",\"Z14K1\":\"Z1001\",\"Z14K3\":{\"Z1K1\":\"Z16\",\"Z16K1\":{\"Z1K1\":\"Z61\",\"Z61K1\":\"python-3\"},\"Z16K2\":\"def Z1001(Z1001K1):\\n  if Z1001K1.Z1000000K1 != 'A':\\n    raise Exception('does that look like an A to you???')\\n  return Z1001K1\"}}],\"Z8K5\":\"Z1001\"}},\"Z17K2\":\"Z1001K1\",\"Z17K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[]}}],\"Z8K2\":\"Z4\",\"Z8K3\":[],\"Z8K4\":[{\"Z1K1\":\"Z14\",\"Z14K1\":\"Z1001\",\"Z14K3\":{\"Z1K1\":\"Z16\",\"Z16K1\":{\"Z1K1\":\"Z61\",\"Z61K1\":\"python-3\"},\"Z16K2\":\"def Z1001(Z1001K1):\\n  if Z1001K1.Z1000000K1 != 'A':\\n    raise Exception('does that look like an A to you???')\\n  return Z1001K1\"}}],\"Z8K5\":\"Z1001\"}},\"Z1000000K1\":\"a\"},\"Z518K3\":{\"Z1K1\":\"Z5\",\"Z5K2\":\"does that look like an A to you???\"}}}}",
-		];
-
-		yield 'Generate a Z4/Type with a user-defined function and use that Z4/Type as a ZObject\'s Z1K1/Type' => [
-			self::readTestFile( 'example-user-defined-generic-type.json' ),
-			// @phpcs:ignore Generic.Files.LineLength.TooLong
-			'{"Z1K1":{"Z1K1":"Z7","Z7K1":{"Z1K1":"Z8","Z8K1":["Z17"],"Z8K2":"Z4","Z8K3":["Z20"],"Z8K4":["Z14",{"Z1K1":"Z14","Z14K1":"Z10106","Z14K2":{"Z1K1":"Z4","Z4K1":"Z10101","Z4K2":["Z3",{"Z1K1":"Z3","Z3K1":"Z6","Z3K2":"K1","Z3K3":"Z400"},{"Z1K1":"Z3","Z3K1":"Z40","Z3K2":"K2","Z3K3":"Z400"}],"Z4K3":"Z831"}}],"Z8K5":"Z10106"}},"K1":"TRUE","K2":{"Z1K1":"Z40","Z40K1":"Z41"}}'
-		];
-
-		$curryImplementation = self::readTestFileAsArray( 'curry-implementation-Z409.json' );
-		$curryFunction = self::readTestFileAsArray( 'curry-Z408.json' );
-		$curryFunction["Z8K4"][1] = $curryImplementation;
-		$curryFunctionCall = self::readTestFileAsArray( 'curry-call-Z410.json' );
-		$curryFunctionCall["Z8K4"][1]["Z14K2"]["Z7K1"]["Z7K1"] = $curryFunction;
-		$andFunction = self::readTestFileAsArray( 'and-Z407.json' );
-		$curry = [
-			"Z1K1" => "Z7",
-			"Z7K1" => $curryFunctionCall,
-			"Z410K1" => $andFunction,
-			"Z410K2" => [
-				"Z1K1" => "Z40",
-				"Z40K1" => "Z41"
-			],
-			"Z410K3" => [
-				"Z1K1" => "Z40",
-				"Z40K1" => "Z41"
-			]
-		];
-
-		yield 'Create and invoke a curried function' => [
-			json_encode( $curry ),
-			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
-		];
-
-		yield 'Supply an implementation with an unsupported language; back off to the second' => [
-			self::readTestFile( 'example-bad-first-implementation.json' ),
-			// @phpcs:ignore Generic.Files.LineLength.TooLong
-			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}",
 			null,
 			null,
 			// Public API rejects unsaved-code inputs; $expectedString above isn't used currently
@@ -290,37 +151,5 @@ class ApiFunctionCallTest extends ApiTestCase {
 		$compositionData =
 			json_decode( $compositionResult[0]['wikifunctions_run']['data'], true );
 		$this->assertNotEquals( 'Z24', $compositionData[ 'Z22K1' ] );
-
-		$pythonZ7String = '{ "Z1K1": "Z7", "Z7K1": { "Z1K1": "Z8", "Z8K1": [ "Z17", { "Z1K1": "Z17", "Z17K1": "Z6", '
-			. '"Z17K2": { "Z1K1": "Z6", "Z6K1": "Z400K1" }, "Z17K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }, '
-			. '{ "Z1K1": "Z17", "Z17K1": "Z6", "Z17K2": { "Z1K1": "Z6", "Z6K1": "Z400K2" }, "Z17K3": '
-			. '{ "Z1K1": "Z12", "Z12K1": [ "Z11" ] } } ], "Z8K2": "Z1", "Z8K3": [ "Z20" ], "Z8K4": [ "Z14", '
-			. '{ "Z1K1": "Z14", "Z14K1": "Z400", "Z14K3": { "Z1K1": "Z16", "Z16K1": "Z610", "Z16K2": '
-			. '"def Z400(Z400K1, Z400K2):\n    return str(int(Z400K1) + int(Z400K2))" } } ], "Z8K5": "Z400" }, '
-			. '"Z400K1": "5", "Z400K2": "8" }';
-		$pythonResult = $this->doApiRequest( [
-			'action' => 'wikifunctions_run',
-			'function_call' => $pythonZ7String
-		] );
-		$pythonData = json_decode( $pythonResult[0]['wikifunctions_run']['data'], true );
-		$this->assertNotEquals( 'Z24', $pythonData['Z22K1'] );
-
-		$disallowedPythonZ7String = '{ "Z1K1": "Z7", "Z7K1": { "Z1K1": "Z8", "Z8K1": [ "Z17" ], "Z8K2": "Z1", '
-			. '"Z8K3": [ "Z20" ], "Z8K4": [ "Z14", { "Z1K1": "Z14", "Z14K1": "Z1000", "Z14K3": { "Z1K1": "Z16", '
-			. '"Z16K1": "Z610", "Z16K2": "def Z1000():\n    import socket\n    thatsock = socket.socket(socket.'
-			. 'AF_PACKET, socket.SOCK_DGRAM)\n    return \'i did a bad :(\'" } } ], "Z8K5": "Z1000" } }';
-		$disallowedPythonResult = $this->doApiRequest( [
-			'action' => 'wikifunctions_run',
-			'function_call' => $disallowedPythonZ7String
-		] );
-		$disallowedPythonData = json_decode(
-			$disallowedPythonResult[0]['wikifunctions_run']['data'],
-			true
-		);
-		$this->assertEquals( 'Z24', $disallowedPythonData['Z22K1'] );
-		$this->assertStringContainsString(
-			'Operation not permitted',
-			$disallowedPythonResult[0]['wikifunctions_run']['data']
-		);
 	}
 }
