@@ -19,8 +19,7 @@ use Exception;
 
 class ZObjectListDiffer implements Differ {
 
-	/** @var ZObjectDiffer */
-	private $zObjectDiffer;
+	private ZObjectDiffer $zObjectDiffer;
 
 	/**
 	 * Setter for the differ service that will calculate

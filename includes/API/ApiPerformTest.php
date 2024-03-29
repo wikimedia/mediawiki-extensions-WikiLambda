@@ -35,11 +35,8 @@ use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiPerformTest extends WikiLambdaApiBase {
 
-	/** @var ZObjectStore */
-	protected $zObjectStore;
-
-	/** @var JobQueueGroup */
-	private $jobQueueGroup;
+	private ZObjectStore $zObjectStore;
+	private JobQueueGroup $jobQueueGroup;
 
 	public function __construct( $query, $moduleName, ZObjectStore $zObjectStore ) {
 		parent::__construct( $query, $moduleName, 'wikilambda_perform_test_' );

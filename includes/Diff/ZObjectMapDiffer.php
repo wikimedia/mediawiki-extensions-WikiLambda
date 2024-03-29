@@ -21,11 +21,8 @@ use Exception;
 
 class ZObjectMapDiffer {
 
-	/** @var ZObjectListDiffer */
-	private $listDiffer;
-
-	/** @var ValueComparer */
-	private $valueComparer;
+	private ZObjectListDiffer $listDiffer;
+	private ValueComparer $valueComparer;
 
 	/**
 	 * Creates a ZObjectMapDiffer object

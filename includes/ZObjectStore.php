@@ -35,23 +35,12 @@ use WikiPage;
 
 class ZObjectStore {
 
-	/** @var IConnectionProvider */
-	private $dbProvider;
-
-	/** @var TitleFactory */
-	protected $titleFactory;
-
-	/** @var WikiPageFactory */
-	protected $wikiPageFactory;
-
-	/** @var RevisionStore */
-	protected $revisionStore;
-
-	/** @var UserGroupManager */
-	protected $userGroupManager;
-
-	/** @var LoggerInterface */
-	private $logger;
+	private IConnectionProvider $dbProvider;
+	private TitleFactory $titleFactory;
+	private WikiPageFactory $wikiPageFactory;
+	private RevisionStore $revisionStore;
+	private UserGroupManager $userGroupManager;
+	private LoggerInterface $logger;
 
 	/**
 	 * @param IConnectionProvider $dbProvider

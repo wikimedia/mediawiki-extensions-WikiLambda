@@ -16,8 +16,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 
 class ZErrorException extends Exception {
 
-	/** @var ZError */
-	private $error;
+	private ZError $error;
 
 	/**
 	 * @param ZError $error

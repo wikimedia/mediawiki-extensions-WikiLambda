@@ -21,14 +21,9 @@ use Psr\Http\Message\ResponseInterface;
  */
 class OrchestratorRequest {
 
-	/** @var Client */
-	protected $guzzleClient;
-
-	/** @var string */
-	protected $userAgentString;
-
-	/** @var BagOStuff */
-	protected $objectCache;
+	protected Client $guzzleClient;
+	protected string $userAgentString;
+	protected BagOStuff $objectCache;
 
 	/**
 	 * @param ClientInterface $client GuzzleHttp Client used for requests

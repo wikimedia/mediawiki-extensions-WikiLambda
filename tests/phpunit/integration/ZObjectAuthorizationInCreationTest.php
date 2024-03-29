@@ -27,11 +27,8 @@ use MediaWiki\Title\Title;
  */
 class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 
-	/** @var ZObjectStore */
-	protected $zobjectStore;
-
-	/** @var ZObjectAuthorization */
-	protected $zobjectAuthorization;
+	private ZObjectStore $zobjectStore;
+	private ZObjectAuthorization $zobjectAuthorization;
 
 	protected function setUp(): void {
 		parent::setUp();

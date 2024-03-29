@@ -20,11 +20,8 @@ use MediaWiki\Title\Title;
 
 class DuplicateObjectLabelsPager extends TablePager {
 
-	/** @var LinkBatchFactory */
-	private $linkBatchFactory;
-
-	/** @var LanguageNameUtils */
-	private $languageUtils;
+	private LinkBatchFactory $linkBatchFactory;
+	private LanguageNameUtils $languageUtils;
 
 	/**
 	 * @param SpecialPage $form

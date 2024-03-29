@@ -18,11 +18,8 @@ use MediaWiki\Title\Title;
 
 class ZObjectSecondaryDataUpdate extends DataUpdate {
 
-	/** @var Title */
-	private $title;
-
-	/** @var ZObjectContent */
-	private $zObject;
+	private Title $title;
+	private ZObjectContent $zObject;
 
 	/**
 	 * @param Title $title

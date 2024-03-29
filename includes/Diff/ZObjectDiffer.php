@@ -25,14 +25,9 @@ class ZObjectDiffer {
 	private const DIFF_ARRAY = 2;
 	private const DIFF_ASSOCIATIVE = 3;
 
-	/** @var ZObjectListDiffer */
-	private $listDiffer;
-
-	/** @var ZObjectMapDiffer */
-	private $mapDiffer;
-
-	/** @var StrictComparer */
-	private $comparer;
+	private ZObjectListDiffer $listDiffer;
+	private ZObjectMapDiffer $mapDiffer;
+	private StrictComparer $comparer;
 
 	public function __construct() {
 		$this->comparer = new StrictComparer();

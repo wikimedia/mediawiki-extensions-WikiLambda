@@ -22,8 +22,7 @@ use Symfony\Component\Yaml\Yaml;
 
 class ZObjectAuthorization implements LoggerAwareInterface {
 
-	/** @var LoggerInterface */
-	private $logger;
+	private LoggerInterface $logger;
 
 	/**
 	 * @param LoggerInterface $logger

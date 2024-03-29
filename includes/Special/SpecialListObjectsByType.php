@@ -17,11 +17,9 @@ use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\SpecialPage\SpecialPage;
 
 class SpecialListObjectsByType extends SpecialPage {
-	/** @var ZObjectStore */
-	protected $zObjectStore;
 
-	/** @var LanguageFallback */
-	private $languageFallback;
+	private ZObjectStore $zObjectStore;
+	private LanguageFallback $languageFallback;
 
 	/**
 	 * @param ZObjectStore $zObjectStore
