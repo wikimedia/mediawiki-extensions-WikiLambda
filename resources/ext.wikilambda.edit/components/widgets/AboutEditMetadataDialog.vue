@@ -207,7 +207,8 @@ module.exports = exports = {
 		'getZMonolingualStringsetValues',
 		'getZPersistentAlias',
 		'getZPersistentDescription',
-		'getZPersistentName'
+		'getZPersistentName',
+		'getUserLangZid'
 	] ), {
 		/**
 		 * Returns the Name/Label (Z2K3) row for the selected language.
@@ -437,9 +438,31 @@ module.exports = exports = {
 			if ( !this.edit ) {
 				this.$emit( 'publish' );
 			} else {
+				if ( this.forLanguage === this.getUserLangZid ) {
+					this.setPageTitle( this.name );
+				}
 				this.setDirty( true );
 			}
 			this.closeDialog();
+		},
+
+		/**
+		 * If this is the main language represented in the page,
+		 * sets the page title to the new Function Name in regular bold-filled font.
+		 * If the title is set back to an empty string, add the 'untitled' properties back to the class.
+		 *
+		 * @param {string} name
+		 */
+		setPageTitle: function ( name ) {
+			const pageTitleSelector = '#firstHeading .ext-wikilambda-editpage-header-title--function-name';
+			$( pageTitleSelector ).first().text( name );
+
+			if ( name === '' ) {
+				$( pageTitleSelector ).addClass( 'ext-wikilambda-editpage-header--title-untitled' );
+				$( pageTitleSelector ).first().text( this.$i18n( 'wikilambda-editor-default-name' ).text() );
+			} else {
+				$( pageTitleSelector ).removeClass( 'ext-wikilambda-editpage-header--title-untitled' );
+			}
 		},
 
 		/**
