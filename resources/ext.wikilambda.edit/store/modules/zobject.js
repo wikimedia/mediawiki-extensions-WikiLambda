@@ -236,7 +236,7 @@ module.exports = exports = {
 		 */
 		getZPersistentName: function ( _state, getters ) {
 			/**
-			 * @param {string|undefined} langZid
+			 * @param {string|null} langZid
 			 * @param {number} rowId
 			 * @return {Object|undefined}
 			 */
@@ -262,7 +262,7 @@ module.exports = exports = {
 		 */
 		getZPersistentDescription: function ( _state, getters ) {
 			/**
-			 * @param {string|undefined} langZid
+			 * @param {string|null} langZid
 			 * @param {number} rowId
 			 * @return {Object|undefined}
 			 */
@@ -288,7 +288,7 @@ module.exports = exports = {
 		 */
 		getZPersistentAlias: function ( _state, getters ) {
 			/**
-			 * @param {string|undefined} langZid
+			 * @param {string|null} langZid
 			 * @param {number} rowId
 			 * @return {Object|undefined}
 			 */
@@ -1385,7 +1385,6 @@ module.exports = exports = {
 		 * function call object.
 		 *
 		 * @param {Object} context
-		 * @return {Promise}
 		 */
 		initializeEvaluateFunction: function ( context ) {
 			// Set current Zid to empty placeholder (Z0)
@@ -1693,7 +1692,7 @@ module.exports = exports = {
 		 * @param {number} payload.rowId
 		 * @param {Array} payload.keyPath
 		 * @param {Object|Array|string} payload.value
-		 * @return {Promise}
+		 * @return {Promise|void}
 		 */
 		setValueByRowIdAndPath: function ( context, payload ) {
 			// assume this isn't an append unless explicitly stated
@@ -1799,7 +1798,6 @@ module.exports = exports = {
 		 * @param {Object} payload
 		 * @param {number} payload.parentId
 		 * @param {string} payload.key
-		 * @return {Promise}
 		 */
 		setZImplementationContentType: function ( context, payload ) {
 			const allKeys = [

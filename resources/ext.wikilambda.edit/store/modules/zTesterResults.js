@@ -222,7 +222,7 @@ module.exports = exports = {
 		 * @param {boolean} payload.nocache Whether to tell the Orchestrator to cache these results
 		 * @param {boolean} payload.clearPreviousResults Whether to clear the previous results from the Vuex store
 		 *
-		 * @return {Promise}
+		 * @return {Promise|void}
 		 */
 		getTestResults: function ( context, payload ) {
 			const api = new mw.Api();

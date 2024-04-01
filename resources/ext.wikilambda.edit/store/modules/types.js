@@ -297,7 +297,7 @@ module.exports = exports = {
 		 * @param {string} payload.testZid
 		 * @param {Object} payload.test
 		 * @param {string} payload.zlang
-		 * @return {Promise}
+		 * @return {Promise|void}
 		 */
 		runRendererTest: function ( context, payload ) {
 			// 1. If example is already rendered, ignore this
