@@ -45,6 +45,7 @@ class Title {
 	}
 }
 
+// eslint-disable-next-line security/detect-non-literal-fs-filename
 const englishMessages = JSON.parse( fs.readFileSync( path.join( __dirname, './i18n/en.json' ) ) );
 
 class Mocki18n {

@@ -1194,6 +1194,7 @@ module.exports = exports = {
 		 */
 		getNextKey: function ( state, getters ) {
 			const zid = getters.getCurrentZObjectId;
+			// eslint-disable-next-line security/detect-non-literal-regexp
 			const keyRegex = new RegExp( '^' + zid + 'K([0-9]+)$' );
 			const defaultKey = 0;
 			const lastKey = Math.max(
