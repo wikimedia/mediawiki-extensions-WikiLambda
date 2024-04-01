@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Dirruw'o"
+		]
+	},
+	"apihelp-wikifunctions_run-summary": "Запуск вызова функции",
+	"apihelp-wikifunctions_run-param-function_call": "ZObject для вызова функции для запуска"
+}

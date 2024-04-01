@@ -76,7 +76,7 @@
 	"action-wikilambda-edit-user-function": "{{doc-action|wikilambda-edit-user-function}}",
 	"action-wikilambda-execute": "{{doc-action|wikilambda-execute}}",
 	"action-wikilambda-execute-unsaved-code": "{{doc-action|wikilambda-execute-unsaved-code}}",
-	"action-wikifunctions-run": "{{doc-action|wikifunctions-run}}",
+	"action-wikifunctions-run": "{{doc-action|wikifunctions-run}}\n{{Doc-wikilambda}}",
 	"right-wikilambda-connect-implementation": "{{doc-right|wikilambda-connect-implementation}}",
 	"right-wikilambda-connect-tester": "{{doc-right|wikilambda-connect-tester}}",
 	"right-wikilambda-create": "{{doc-right|wikilambda-create}}",
