@@ -16,8 +16,7 @@ use MediaWiki\Title\Title;
 
 class ZObjectSecondaryDataRemoval extends DataUpdate {
 
-	/** @var Title */
-	private $title;
+	private Title $title;
 
 	/**
 	 * @inheritDoc

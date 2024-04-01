@@ -24,8 +24,7 @@ use Psr\Log\LoggerInterface;
  */
 class UpdateImplementationsJob extends Job implements GenericParameterJob {
 
-	/** @var LoggerInterface */
-	protected $logger;
+	private LoggerInterface $logger;
 
 	/**
 	 * @param array $params

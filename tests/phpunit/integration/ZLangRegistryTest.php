@@ -22,8 +22,7 @@ use MediaWiki\Title\Title;
  */
 class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 
-	/** @var ZLangRegistry */
-	protected $registry = null;
+	private ZLangRegistry $registry;
 
 	protected function setUp(): void {
 		parent::setUp();

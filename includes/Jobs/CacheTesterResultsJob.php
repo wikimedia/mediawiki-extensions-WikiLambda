@@ -22,11 +22,8 @@ use Psr\Log\LoggerInterface;
  */
 class CacheTesterResultsJob extends Job implements GenericParameterJob {
 
-	/** @var LoggerInterface */
-	private $logger;
-
-	/** @var ZObjectStore */
-	private $zObjectStore;
+	private LoggerInterface $logger;
+	private ZObjectStore $zObjectStore;
 
 	/**
 	 * @param array $params

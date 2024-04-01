@@ -22,14 +22,11 @@ use MediaWiki\MediaWikiServices;
  * MediaWiki\Extension\WikiLambda\ZObjects\ZMultilingualString->buildStringForLanguage( $lang )
  */
 class StringForLanguageBuilder {
-	/** @var int */
-	private $languageFallback = LanguageFallback::STRICT;
-	/** @var Language */
-	private $language;
-	/** @var ?string */
-	private $placeholderText = null;
-	/** @var ZMultiLingualString */
-	private $provider;
+
+	private int $languageFallback = LanguageFallback::STRICT;
+	private Language $language;
+	private ?string $placeholderText = null;
+	private ZMultiLingualString $provider;
 
 	/**
 	 * @param Language $lang The language with build the string for

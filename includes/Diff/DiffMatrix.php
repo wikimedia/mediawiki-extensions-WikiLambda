@@ -16,8 +16,7 @@ use Diff\DiffOp\DiffOp;
 
 class DiffMatrix {
 
-	/** @var ZObjectDiffer */
-	private $zObjectDiffer;
+	private ZObjectDiffer $zObjectDiffer;
 
 	/** @var array */
 	private $oldArray;

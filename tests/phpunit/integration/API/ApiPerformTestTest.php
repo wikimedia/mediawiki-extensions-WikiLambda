@@ -32,8 +32,7 @@ use MediaWiki\Title\Title;
  */
 class ApiPerformTestTest extends ApiTestCase {
 
-	/** @var ZObjectStore */
-	protected $store;
+	private ZObjectStore $store;
 
 	private function insertBuiltinObjects( $zids ): void {
 		$dataPath = dirname( __DIR__, 4 ) . '/function-schemata/data/definitions';

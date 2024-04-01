@@ -30,11 +30,8 @@ use Wikimedia\Rdbms\IResultWrapper;
  */
 class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
-	/** @var string */
-	private static $testResponse = '{ "Z1K1": "Z22", "Z22K1": "Z24", "Z22K2": "Z24" }';
-
-	/** @var ZObjectStore */
-	protected $zobjectStore;
+	private static string $testResponse = '{ "Z1K1": "Z22", "Z22K1": "Z24", "Z22K2": "Z24" }';
+	private ZObjectStore $zobjectStore;
 
 	protected function setUp(): void {
 		parent::setUp();

@@ -14,8 +14,7 @@ use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 
 class ZTypedPair extends ZObject {
 
-	/** @var ZTypeRegistry */
-	protected $typeRegistry;
+	private ZTypeRegistry $typeRegistry;
 
 	/**
 	 * Create a new ZTypedPair instance

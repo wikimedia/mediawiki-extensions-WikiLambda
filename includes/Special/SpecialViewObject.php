@@ -27,8 +27,7 @@ use RuntimeException;
 class SpecialViewObject extends SpecialPage {
 	use ZObjectEditingPageTrait;
 
-	/** @var ZObjectStore */
-	protected $zObjectStore;
+	private ZObjectStore $zObjectStore;
 
 	/**
 	 * @param ZObjectStore $zObjectStore

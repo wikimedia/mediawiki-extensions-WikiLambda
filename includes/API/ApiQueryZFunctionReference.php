@@ -20,8 +20,7 @@ use Wikimedia\ParamValidator\TypeDef\IntegerDef;
 
 class ApiQueryZFunctionReference extends ApiQueryGeneratorBase {
 
-	/** @var ZObjectStore */
-	protected $zObjectStore;
+	private ZObjectStore $zObjectStore;
 
 	/**
 	 * @inheritDoc

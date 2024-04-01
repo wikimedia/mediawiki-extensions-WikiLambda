@@ -15,6 +15,7 @@ use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Tests\Api\ApiTestCase;
 use MediaWiki\Title\Title;
 
@@ -29,8 +30,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 	private const EN = 'Z1002';
 	private const ES = 'Z1003';
 
-	/** @var ZObjectStore */
-	protected $store;
+	private ZObjectStore $store;
 
 	protected function setUp(): void {
 		parent::setUp();
