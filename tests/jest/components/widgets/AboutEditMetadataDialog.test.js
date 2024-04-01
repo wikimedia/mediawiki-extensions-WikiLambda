@@ -161,7 +161,7 @@ describe( 'AboutEditMetadataDialog', () => {
 
 			// ASSERT: Description block renders text input component
 			const descriptionBlock = wrapper.find( '.ext-wikilambda-about-edit-metadata-description' );
-			expect( descriptionBlock.findComponent( { name: 'cdx-text-input' } ).exists() ).toBe( true );
+			expect( descriptionBlock.findComponent( { name: 'cdx-text-area' } ).exists() ).toBe( true );
 			expect( descriptionBlock.find( '.cdx-field__help-text' ).text() ).toBe( '100' );
 
 			// ASSERT: Aliases are empty
@@ -223,10 +223,10 @@ describe( 'AboutEditMetadataDialog', () => {
 			expect( nameBlock.find( 'input' ).attributes( 'disabled' ) ).not.toBeDefined();
 			expect( nameBlock.find( '.cdx-field__help-text' ).text() ).toBe( '96' );
 
-			// ASSERT: Description block renders text input  component
+			// ASSERT: Description block renders text area component
 			const descriptionBlock = wrapper.find( '.ext-wikilambda-about-edit-metadata-description' );
-			expect( descriptionBlock.findComponent( { name: 'cdx-text-input' } ).exists() ).toBe( true );
-			expect( descriptionBlock.find( 'input' ).attributes( 'disabled' ) ).not.toBeDefined();
+			expect( descriptionBlock.findComponent( { name: 'cdx-text-area' } ).exists() ).toBe( true );
+			expect( descriptionBlock.findComponent( { name: 'cdx-text-area' } ).props( 'disabled' ) ).toBe( false );
 			expect( descriptionBlock.find( '.cdx-field__help-text' ).text() ).toBe( '84' );
 
 			// ASSERT: After initialization, aliases have value
@@ -362,10 +362,10 @@ describe( 'AboutEditMetadataDialog', () => {
 			expect( nameBlock.find( 'input' ).attributes( 'disabled' ) ).toBeDefined();
 			expect( nameBlock.find( '.cdx-field__help-text' ).text() ).toBe( '96' );
 
-			// ASSERT: Description block renders text input  component
+			// ASSERT: Description block renders text area component
 			const descriptionBlock = wrapper.find( '.ext-wikilambda-about-edit-metadata-description' );
-			expect( descriptionBlock.findComponent( { name: 'cdx-text-input' } ).exists() ).toBe( true );
-			expect( descriptionBlock.find( 'input' ).attributes( 'disabled' ) ).toBeDefined();
+			expect( descriptionBlock.findComponent( { name: 'cdx-text-area' } ).exists() ).toBe( true );
+			expect( descriptionBlock.findComponent( { name: 'cdx-text-area' } ).props( 'disabled' ) ).toBe( true );
 			expect( descriptionBlock.find( '.cdx-field__help-text' ).text() ).toBe( '84' );
 
 			// ASSERT: After initialization, aliases have value
