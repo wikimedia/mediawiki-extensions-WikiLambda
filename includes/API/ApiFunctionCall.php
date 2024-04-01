@@ -25,6 +25,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZQuote;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\PoolCounter\PoolCounterWorkViaCallback;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\Status\Status;
@@ -143,35 +144,13 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 	}
 
 	/**
-	 * Reads file contents from test data directory.
-	 * @param string $fileName
-	 * @return string file contents
-	 * @codeCoverageIgnore
-	 */
-	private function readTestFile( $fileName ): string {
-		$baseDir = __DIR__ .
-			DIRECTORY_SEPARATOR .
-			'..' .
-			DIRECTORY_SEPARATOR .
-			'..' .
-			DIRECTORY_SEPARATOR .
-			'tests' .
-			DIRECTORY_SEPARATOR .
-			'phpunit' .
-			DIRECTORY_SEPARATOR .
-			'test_data';
-		$fullFile = $baseDir . DIRECTORY_SEPARATOR . $fileName;
-		return file_get_contents( $fullFile );
-	}
-
-	/**
 	 * Reads file contents from test data directory as JSON array.
 	 * @param string $fileName
 	 * @return array file contents (JSON-decoded)
 	 * @codeCoverageIgnore
 	 */
 	private function readTestFileAsArray( $fileName ): array {
-		return json_decode( $this->readTestFile( $fileName ), true );
+		return json_decode( ZObjectUtils::readTestFile( $fileName ), true );
 	}
 
 	/**
@@ -225,7 +204,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 	 * @codeCoverageIgnore
 	 */
 	private function createExample( $fileName ): string {
-		return urlencode( $this->readTestFile( $fileName ) );
+		return urlencode( ZObjectUtils::readTestFile( $fileName ) );
 	}
 
 	/**

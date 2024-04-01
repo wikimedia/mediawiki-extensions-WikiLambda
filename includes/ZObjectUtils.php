@@ -990,4 +990,24 @@ class ZObjectUtils {
 		return $accumulator;
 	}
 
+	/**
+	 * Reads file contents from test data directory.
+	 * @param string $fileName
+	 * @return string file contents
+	 * @codeCoverageIgnore
+	 */
+	public static function readTestFile( $fileName ): string {
+		$baseDir = __DIR__ .
+			DIRECTORY_SEPARATOR .
+			'..' .
+			DIRECTORY_SEPARATOR .
+			'tests' .
+			DIRECTORY_SEPARATOR .
+			'phpunit' .
+			DIRECTORY_SEPARATOR .
+			'test_data';
+		$fullFile = $baseDir . DIRECTORY_SEPARATOR . $fileName;
+		return file_get_contents( $fullFile );
+	}
+
 }
