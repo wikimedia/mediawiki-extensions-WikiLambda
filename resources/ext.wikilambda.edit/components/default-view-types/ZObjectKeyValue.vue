@@ -81,22 +81,16 @@
 		</div>
 
 		<!-- Error row -->
-		<div v-if="hasErrors">
-			<div
+		<div v-if="hasErrors" class="ext-wikilambda-messages__box">
+			<cdx-message
 				v-for="( error, index ) in errors"
-				:key="'error-' + index"
-				class="ext-wikilambda-messages__box"
+				:key="'inline-error-' + rowId + '-' + index"
+				class="ext-wikilambda-key-value-inline-error"
+				:type="error.type"
+				:inline="true"
 			>
-				<cdx-message
-					v-for="( error, index ) in errors"
-					:key="'inline-error-' + rowId + '-' + index"
-					class="ext-wikilambda-key-value-inline-error"
-					:type="error.type"
-					:inline="true"
-				>
-					<div v-html="getErrorMessage( error )"></div>
-				</cdx-message>
-			</div>
+				<div v-html="getErrorMessage( error )"></div>
+			</cdx-message>
 		</div>
 	</div>
 </template>
