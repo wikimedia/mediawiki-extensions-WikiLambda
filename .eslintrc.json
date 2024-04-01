@@ -48,10 +48,10 @@
 			}
 		],
 		"vue/no-undef-components": [
-			"warn",
+			"error",
 			{
 				"ignorePatterns": [
-					"wl-z-reference"
+					"wl-z-object-key-value"
 				]
 			}
 		],
