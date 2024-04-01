@@ -113,7 +113,7 @@ module.exports = exports = {
 		 * Returns an array with the generated examples for a given renderer.
 		 * If testZid is present as an argument, filters the results to return only that value.
 		 *
-		 * @param {Objec} state
+		 * @param {Object} state
 		 * @return {Function}
 		 */
 		getRendererExamples: function ( state ) {
