@@ -115,6 +115,7 @@ module.exports = exports = {
 		},
 		headerText: {
 			type: String,
+			default: '',
 			required: false
 		},
 		metadata: {
