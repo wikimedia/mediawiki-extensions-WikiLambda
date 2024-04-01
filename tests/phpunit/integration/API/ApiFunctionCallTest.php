@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Api;
 
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Tests\Api\ApiTestCase;
 
 /**
@@ -21,26 +22,13 @@ use MediaWiki\Tests\Api\ApiTestCase;
 class ApiFunctionCallTest extends ApiTestCase {
 
 	/**
-	 * Reads file contents from test data directory.
-	 *
-	 * @param string $fileName
-	 * @return string file contents
-	 */
-	private static function readTestFile( $fileName ): string {
-		// @codingStandardsIgnoreLine
-		$baseDir = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'test_data';
-		$fullFile = $baseDir . DIRECTORY_SEPARATOR . $fileName;
-		return file_get_contents( $fullFile );
-	}
-
-	/**
 	 * Reads file contents from test data directory as JSON array.
 	 *
 	 * @param string $fileName
 	 * @return array file contents (JSON-decoded)
 	 */
 	private static function readTestFileAsArray( $fileName ): array {
-		return json_decode( self::readTestFile( $fileName ), true );
+		return json_decode( ZObjectUtils::readTestFile( $fileName ), true );
 	}
 
 	/**
@@ -97,71 +85,71 @@ class ApiFunctionCallTest extends ApiTestCase {
 		];
 
 		yield 'Invoke built-in Z802/If with false predicate' => [
-			self::readTestFile( 'Z902_false.json' ),
+			ZObjectUtils::readTestFile( 'Z902_false.json' ),
 			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}"
 		];
 
 		yield 'Invoke user-written JavaScript code' => [
-			self::readTestFile( 'evaluated-js.json' ),
+			ZObjectUtils::readTestFile( 'evaluated-js.json' ),
 			"13"
 		];
 
 		// Temporarily disabled as it's failing in Beta Cluster
 		// yield 'Invoke user-written Python 3 code' => [
-		// 	self::readTestFile( 'evaluated-python.json' ),
+		// 	ZObjectUtils::readTestFile( 'evaluated-python.json' ),
 		// 	"13"
 		// ];
 
 		yield 'Invoke a composition: if first argument is true, sort second; else, return it intact' => [
-			self::readTestFile( 'example-composition.json' ),
+			ZObjectUtils::readTestFile( 'example-composition.json' ),
 			'        abcddeeeefghhijklmnoooopqrrttuuvwxyz'
 		];
 
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
 		yield 'Invoke the \"not empty\" function as a composition: returns true iff input list contains at least one element' => [
-			self::readTestFile( 'example-notempty.json' ),
+			ZObjectUtils::readTestFile( 'example-notempty.json' ),
 			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
 		];
 
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
 		yield 'Invoke the Map function: given a function and a list of strings, return the result of running the function over each string' => [
-			self::readTestFile( 'example-map.json' ),
+			ZObjectUtils::readTestFile( 'example-map.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
 			"[{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z6\",\"Z4K2\":[\"Z3\",{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"Z6K1\",\"Z3K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[\"Z11\",{\"Z1K1\":\"Z11\",\"Z11K1\":\"Z1002\",\"Z11K2\":\"value\"}]}}],\"Z4K3\":\"Z106\"},\"acab\",\"acab\",\"bacab\"]"
 		];
 
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
 		yield 'Invoke the Apply function: given a function and a string, return the result of running the function over the string' => [
-			self::readTestFile( 'example-apply.json' ),
+			ZObjectUtils::readTestFile( 'example-apply.json' ),
 			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
 		];
 
 		yield 'Invoke a function that returns the first element of a typed List' => [
-			self::readTestFile( 'example-generic-list.json' ),
+			ZObjectUtils::readTestFile( 'example-generic-list.json' ),
 			'who are these coming to the sacrifice'
 		];
 
 		yield 'Invoke a function that returns the second element of a Pair<String,Boolean>' => [
-			self::readTestFile( 'example-generic-pair.json' ),
+			ZObjectUtils::readTestFile( 'example-generic-pair.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
 			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
 		];
 
 		yield 'Invoke a function that returns the second element of a Pair<String,Pair<String,String>>' => [
-			self::readTestFile( 'example-generic-pair-2.json' ),
+			ZObjectUtils::readTestFile( 'example-generic-pair-2.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
 			'{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z6"},"K1":"Where the pot\'s not","K2":"is where it\'s useful."}'
 		];
 
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
 		yield 'Invoke a function that maps the element of a typed Map at a given key to a string version of its value' => [
-			self::readTestFile( 'example-generic-map.json' ),
+			ZObjectUtils::readTestFile( 'example-generic-map.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
 			'{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z883","Z883K1":"Z6","Z883K2":"Z6"},"K1":[{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z6"},{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z6"},"K1":"true?","K2":"true"}]}'
 		];
 
 		yield 'Invoke JavaScript function using a user-defined type' => [
-			self::readTestFile( 'example-user-defined-javascript.json' ),
+			ZObjectUtils::readTestFile( 'example-user-defined-javascript.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
 			"{\"Z1K1\":\"Z1000000\",\"Z1000000K1\":\"5\"}"
 		];
@@ -182,7 +170,7 @@ class ApiFunctionCallTest extends ApiTestCase {
 		// ];
 
 		yield 'Generate a Z4/Type with a user-defined function and use that Z4/Type as a ZObject\'s Z1K1/Type' => [
-			self::readTestFile( 'example-user-defined-generic-type.json' ),
+			ZObjectUtils::readTestFile( 'example-user-defined-generic-type.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
 			'{"Z1K1":{"Z1K1":"Z7","Z7K1":{"Z1K1":"Z8","Z8K1":["Z17"],"Z8K2":"Z4","Z8K3":["Z20"],"Z8K4":["Z14",{"Z1K1":"Z14","Z14K1":"Z10106","Z14K2":{"Z1K1":"Z4","Z4K1":"Z10101","Z4K2":["Z3",{"Z1K1":"Z3","Z3K1":"Z6","Z3K2":"K1","Z3K3":"Z400"},{"Z1K1":"Z3","Z3K1":"Z40","Z3K2":"K2","Z3K3":"Z400"}],"Z4K3":"Z831"}}],"Z8K5":"Z10106"}},"K1":"TRUE","K2":{"Z1K1":"Z40","Z40K1":"Z41"}}'
 		];
@@ -214,7 +202,7 @@ class ApiFunctionCallTest extends ApiTestCase {
 
 		// Temporarily disabled as it's failing in Beta Cluster
 		// yield 'Supply an implementation with an unsupported language; back off to the second' => [
-		// 	self::readTestFile( 'example-bad-first-implementation.json' ),
+		// 	ZObjectUtils::readTestFile( 'example-bad-first-implementation.json' ),
 		// 	"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}",
 		// ];
 

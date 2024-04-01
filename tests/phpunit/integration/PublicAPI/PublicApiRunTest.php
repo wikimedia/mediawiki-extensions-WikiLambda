@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\PublicApi;
 
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Tests\Api\ApiTestCase;
 
 /**
@@ -21,26 +22,13 @@ use MediaWiki\Tests\Api\ApiTestCase;
 class PublicApiRunTest extends ApiTestCase {
 
 	/**
-	 * Reads file contents from test data directory.
-	 *
-	 * @param string $fileName
-	 * @return string file contents
-	 */
-	private static function readTestFile( $fileName ): string {
-		// @codingStandardsIgnoreLine
-		$baseDir = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'test_data';
-		$fullFile = $baseDir . DIRECTORY_SEPARATOR . $fileName;
-		return file_get_contents( $fullFile );
-	}
-
-	/**
 	 * Reads file contents from test data directory as JSON array.
 	 *
 	 * @param string $fileName
 	 * @return array file contents (JSON-decoded)
 	 */
 	private static function readTestFileAsArray( $fileName ): array {
-		return json_decode( self::readTestFile( $fileName ), true );
+		return json_decode( ZObjectUtils::readTestFile( $fileName ), true );
 	}
 
 	/**
@@ -91,12 +79,12 @@ class PublicApiRunTest extends ApiTestCase {
 		];
 
 		yield 'Invoke built-in Z802/If with false predicate' => [
-			self::readTestFile( 'Z902_false.json' ),
+			ZObjectUtils::readTestFile( 'Z902_false.json' ),
 			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}"
 		];
 
 		yield 'Invoke user-written JavaScript code' => [
-			self::readTestFile( 'evaluated-js.json' ),
+			ZObjectUtils::readTestFile( 'evaluated-js.json' ),
 			"13",
 			null,
 			null,
