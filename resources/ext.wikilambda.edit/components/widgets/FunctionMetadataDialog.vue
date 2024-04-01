@@ -44,8 +44,8 @@
 		<!-- Dialog Body -->
 		<div class="ext-wikilambda-metadata-dialog-body">
 			<cdx-accordion
-				v-for="( section, index ) in sections"
-				:key="index"
+				v-for="( section, sectionIndex ) in sections"
+				:key="sectionIndex"
 				:open="section.open"
 			>
 				<template #title>
@@ -56,8 +56,8 @@
 				</template>
 				<ul class="ext-wikilambda-metadata-dialog-content">
 					<li
-						v-for="( item, index ) in section.content"
-						:key="'item' + index"
+						v-for="( item, itemIndex ) in section.content"
+						:key="'item' + itemIndex"
 						class="ext-wikilambda-metadata-dialog-key"
 					>
 						<span class="ext-wikilambda-metadata-dialog-key-title">{{ item.title }}</span>:
