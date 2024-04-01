@@ -1,6 +1,6 @@
 <?php
 /**
- * WikiLambda function call API
+ * WikiLambda function call run public API
  *
  * @file
  * @ingroup Extensions
@@ -22,7 +22,7 @@ use MediaWiki\PoolCounter\PoolCounterWorkViaCallback;
 use MediaWiki\Status\Status;
 use Wikimedia\ParamValidator\ParamValidator;
 
-class ApiFunctionCall extends WikiLambdaApiBase {
+class PublicApiRun extends WikiLambdaApiBase {
 
 	/**
 	 * @inheritDoc
