@@ -117,7 +117,7 @@ module.exports = exports = {
 			/**
 			 * Returns the css class that identifies the nesting level
 			 *
-			 * @return {string}
+			 * @return {string[]}
 			 */
 			nestingDepthClass: function () {
 				if ( this.expanded ) {
@@ -127,6 +127,7 @@ module.exports = exports = {
 						`ext-wikilambda-key-level-${ this.depth }`
 					];
 				}
+				return [];
 			},
 
 			/**
