@@ -55,9 +55,10 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	}
 
 	/**
-	 * @param ZError $zerror
+	 * @param ZError $zerror The ZError object to return to the user
+	 * @param int $code HTTP error code, defaulting to 400/Bad Request
 	 */
-	public function dieWithZError( $zerror ) {
+	public function dieWithZError( $zerror, $code = 400 ) {
 		try {
 			$errorData = $zerror->getErrorData();
 		} catch ( ZErrorException $e ) {
@@ -78,7 +79,8 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		parent::dieWithError(
 			[ 'wikilambda-zerror', $zerror->getZErrorType() ],
 			null,
-			$errorData
+			$errorData,
+			$code
 		);
 	}
 
@@ -106,7 +108,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		$zObjectAsString = json_encode( $zObjectAsStdClass );
 
 		if ( $zObjectAsStdClass->Z1K1 !== 'Z7' && $zObjectAsStdClass->Z1K1->Z9K1 !== 'Z7' ) {
-			$this->dieWithError( [ "apierror-wikilambda_function_call-not-a-function" ] );
+			$this->dieWithError( [ "apierror-wikilambda_function_call-not-a-function" ], null, null, 400 );
 		}
 
 		$this->getLogger()->debug(
@@ -120,7 +122,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		// Unlike the Special pages, we don't have a helpful userCanExecute() method
 		if ( !$this->getContext()->getAuthority()->isAllowed( 'wikilambda-execute' ) ) {
 			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
-			$this->dieWithZError( $zError );
+			$this->dieWithZError( $zError, 403 );
 		}
 
 		$queryArguments = [
@@ -136,7 +138,10 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 						return $this->orchestrator->orchestrate( $queryArguments );
 					},
 					'error' => function ( Status $status ) {
-						$this->dieWithError( [ "apierror-wikilambda_function_call-concurrency-limit" ] );
+						$this->dieWithError(
+							[ "apierror-wikilambda_function_call-concurrency-limit" ],
+							null, null, 429
+						);
 					}
 				]
 			);
@@ -156,18 +161,27 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			try {
 				$responseObject = ZObjectFactory::create( $responseContents );
 			} catch ( ZErrorException $e ) {
-				$this->dieWithError( [
-					'apierror-wikilambda_function_call-response-malformed',
-					$e->getZErrorMessage()
-				] );
+				$this->dieWithError(
+					[
+						'apierror-wikilambda_function_call-response-malformed',
+						$e->getZErrorMessage()
+					],
+					null, null, 500
+				);
 			}
 			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope $responseObject';
 			return $responseObject;
 		} catch ( ConnectException $exception ) {
-			$this->dieWithError( [ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ] );
+			$this->dieWithError(
+				[ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ],
+				null, null, 503
+			);
 		} catch ( ClientException | ServerException $exception ) {
 			if ( $exception->getResponse()->getStatusCode() === 404 ) {
-				$this->dieWithError( [ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ] );
+				$this->dieWithError(
+					[ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ],
+					null, null, 503
+				);
 			}
 
 			$this->getLogger()->warning(

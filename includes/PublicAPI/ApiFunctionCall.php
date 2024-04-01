@@ -57,7 +57,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 		$userAuthority = $this->getContext()->getAuthority();
 		if ( !$userAuthority->isAllowed( 'wikifunctions-run' ) ) {
 			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
-			$this->dieWithZError( $zError );
+			$this->dieWithZError( $zError, 403 );
 		}
 
 		$params = $this->extractRequestParams();
@@ -85,7 +85,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 		}
 		if ( $isUnsavedCode ) {
 			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
-			$this->dieWithZError( $zError );
+			$this->dieWithZError( $zError, 403 );
 		}
 
 		$work = new PoolCounterWorkViaCallback( 'WikiLambdaFunctionCall', $this->getUser()->getName(), [
@@ -93,7 +93,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 				return $this->orchestrator->orchestrate( $jsonQuery );
 			},
 			'error' => function ( Status $status ) {
-				$this->dieWithError( [ "apierror-wikilambda_function_call-concurrency-limit" ] );
+				$this->dieWithError( [ "apierror-wikilambda_function_call-concurrency-limit" ], null, null, 429 );
 			}
 		] );
 
@@ -102,7 +102,10 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 			$response = $work->execute();
 			$result['data'] = $response;
 		} catch ( ConnectException $exception ) {
-			$this->dieWithError( [ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ] );
+			$this->dieWithError(
+				[ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ],
+				null, null, 503
+			);
 		} catch ( ClientException | ServerException $exception ) {
 			$zError = ZErrorFactory::wrapMessageInZError(
 				$exception->getResponse()->getReasonPhrase(),

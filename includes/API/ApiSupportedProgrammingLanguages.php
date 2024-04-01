@@ -61,16 +61,23 @@ class ApiSupportedProgrammingLanguages extends WikiLambdaApiBase {
 					return $this->orchestrator->getSupportedProgrammingLanguages();
 				},
 				'error' => function ( Status $status ) {
-					$this->dieWithError( [ "apierror-wikilambda_supported_programming_languages-concurrency-limit" ] );
+					$this->dieWithError(
+						[ "apierror-wikilambda_supported_programming_languages-concurrency-limit" ],
+						null, null, 429
+					);
 				} ] );
 
 		try {
 			$response = $work->execute();
 			$result = [ 'success' => true, 'data' => $response->getBody() ];
 		} catch ( ConnectException $exception ) {
-			$this->dieWithError( [
-				"apierror-wikilambda_supported_programming_languages-not-connected",
-				$this->orchestratorHost ] );
+			$this->dieWithError(
+				[
+					"apierror-wikilambda_supported_programming_languages-not-connected",
+					$this->orchestratorHost
+				],
+				null, null, 500
+			);
 		} catch ( ClientException | ServerException $exception ) {
 			$zError = ZErrorFactory::wrapMessageInZError( $exception->getResponse()->getReasonPhrase(), '' );
 			$zResponseMap = ZResponseEnvelope::wrapErrorInResponseMap( $zError );

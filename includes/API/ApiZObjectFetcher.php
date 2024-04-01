@@ -49,7 +49,7 @@ class ApiZObjectFetcher extends WikiLambdaApiBase {
 					'message' => "You must specify a revision for each ZID, or none at all."
 				]
 			);
-			$this->dieWithZError( $zErrorObject );
+			$this->dieWithZError( $zErrorObject, 400 );
 		}
 
 		$language = $params[ 'language' ];
@@ -60,7 +60,7 @@ class ApiZObjectFetcher extends WikiLambdaApiBase {
 					ZErrorTypeRegistry::Z_ERROR_INVALID_REFERENCE,
 					[ 'data' => $ZID ]
 				);
-				$this->dieWithZError( $zErrorObject );
+				$this->dieWithZError( $zErrorObject, 404 );
 			} else {
 				$title = Title::newFromText( $ZID, NS_MAIN );
 
@@ -69,7 +69,7 @@ class ApiZObjectFetcher extends WikiLambdaApiBase {
 						ZErrorTypeRegistry::Z_ERROR_UNKNOWN_REFERENCE,
 						[ 'data' => $ZID ]
 					);
-					$this->dieWithZError( $zErrorObject );
+					$this->dieWithZError( $zErrorObject, 404 );
 				} else {
 					$revision = $revisions ? $revisions[ $index ] : null;
 
