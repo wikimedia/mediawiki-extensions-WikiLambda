@@ -28,7 +28,6 @@ let state,
 	context,
 	postMock,
 	postWithEditTokenMock,
-	getMock,
 	getResolveMock;
 
 describe( 'zobject Vuex module', () => {
@@ -2720,12 +2719,10 @@ describe( 'zobject Vuex module', () => {
 			} );
 
 			it( 'initialize ZObject for an old revision', () => {
-				getMock = jest.fn( () => {
-					return {
-						then: () => {},
-						catch: () => {}
-					};
-				} );
+				const response = { query: { wikilambdaload_zobjects: {
+					Z10001: { data: {} }
+				} } };
+				const getMock = jest.fn().mockResolvedValueOnce( response );
 				mw.Api = jest.fn( () => {
 					return { get: getMock };
 				} );
@@ -2742,6 +2739,8 @@ describe( 'zobject Vuex module', () => {
 					action: 'query',
 					list: 'wikilambdaload_zobjects',
 					format: 'json',
+					wikilambdaload_get_dependencies: 'false',
+					wikilambdaload_language: undefined,
 					wikilambdaload_zids: 'Z10001',
 					wikilambdaload_revisions: '10002'
 				};
@@ -2752,12 +2751,10 @@ describe( 'zobject Vuex module', () => {
 			} );
 
 			it( 'initialize ZObject without revision', () => {
-				getMock = jest.fn( () => {
-					return {
-						then: () => {},
-						catch: () => {}
-					};
-				} );
+				const response = { query: { wikilambdaload_zobjects: {
+					Z10001: { data: {} }
+				} } };
+				const getMock = jest.fn().mockResolvedValueOnce( response );
 				mw.Api = jest.fn( () => {
 					return { get: getMock };
 				} );
@@ -2773,6 +2770,8 @@ describe( 'zobject Vuex module', () => {
 					action: 'query',
 					list: 'wikilambdaload_zobjects',
 					format: 'json',
+					wikilambdaload_get_dependencies: 'false',
+					wikilambdaload_language: undefined,
 					wikilambdaload_zids: 'Z10001',
 					wikilambdaload_revisions: undefined
 				};
@@ -2783,24 +2782,13 @@ describe( 'zobject Vuex module', () => {
 			} );
 
 			describe( 'initializeRootZObject', () => {
-				let Z1234, mockApiResponse;
-
 				beforeEach( () => {
 					context.getters.getViewMode = false;
-					getResolveMock = jest.fn( function ( thenFunction ) {
-						return thenFunction( mockApiResponse );
-					} );
-					getMock = jest.fn( () => {
-						return { then: getResolveMock };
-					} );
-					mw.Api = jest.fn( () => {
-						return { get: getMock };
-					} );
 				} );
 
-				it( 'initializes empty description and alias fields', () => {
+				it( 'initializes empty description and alias fields', async () => {
 					// Initial ZObject
-					Z1234 = {
+					const Z1234 = {
 						Z1K1: 'Z2',
 						Z2K1: 'Z1234',
 						Z2K2: 'test',
@@ -2816,8 +2804,9 @@ describe( 'zobject Vuex module', () => {
 							]
 						}
 					};
+
 					// Mock responses
-					mockApiResponse = {
+					const mockApiResponse = {
 						batchcomplete: '',
 						query: {
 							wikilambdaload_zobjects: {
@@ -2828,6 +2817,10 @@ describe( 'zobject Vuex module', () => {
 							}
 						}
 					};
+					const getMock = jest.fn().mockResolvedValueOnce( mockApiResponse );
+					mw.Api = jest.fn( () => {
+						return { get: getMock };
+					} );
 
 					const expectedZObjectJson = {
 						Z1K1: 'Z2',
@@ -2859,7 +2852,7 @@ describe( 'zobject Vuex module', () => {
 						zids: [ 'Z1', 'Z2', 'Z1234', 'Z12', 'Z11', 'Z1002', 'Z32', 'Z31' ]
 					};
 
-					zobjectModule.actions.initializeRootZObject( context, 'Z1234' );
+					await zobjectModule.actions.initializeRootZObject( context, 'Z1234' );
 
 					expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
 					expect( context.commit ).toHaveBeenCalledTimes( 4 );
@@ -2870,9 +2863,9 @@ describe( 'zobject Vuex module', () => {
 					expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZids', expectedFetchZidsPayload );
 				} );
 
-				it( 'initializes undefined type functions', () => {
+				it( 'initializes undefined type functions', async () => {
 					// Initial ZObject
-					Z1234 = {
+					const Z1234 = {
 						Z1K1: 'Z2',
 						Z2K1: 'Z1234',
 						Z2K2: {
@@ -2895,8 +2888,9 @@ describe( 'zobject Vuex module', () => {
 							Z12K1: [ 'Z11' ]
 						}
 					};
+
 					// Mock responses
-					mockApiResponse = {
+					const mockApiResponse = {
 						batchcomplete: '',
 						query: {
 							wikilambdaload_zobjects: {
@@ -2907,6 +2901,10 @@ describe( 'zobject Vuex module', () => {
 							}
 						}
 					};
+					const getMock = jest.fn().mockResolvedValueOnce( mockApiResponse );
+					mw.Api = jest.fn( () => {
+						return { get: getMock };
+					} );
 
 					const expectedZObjectJson = {
 						Z1K1: 'Z2',
@@ -2936,7 +2934,7 @@ describe( 'zobject Vuex module', () => {
 						}
 					};
 
-					zobjectModule.actions.initializeRootZObject( context, 'Z1234' );
+					await zobjectModule.actions.initializeRootZObject( context, 'Z1234' );
 
 					expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
 					expect( context.commit ).toHaveBeenCalledTimes( 4 );
@@ -2946,9 +2944,9 @@ describe( 'zobject Vuex module', () => {
 					expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
 				} );
 
-				it( 'initializes undefined converter lists', () => {
+				it( 'initializes undefined converter lists', async () => {
 					// Initial ZObject
-					Z1234 = {
+					const Z1234 = {
 						Z1K1: 'Z2',
 						Z2K1: 'Z1234',
 						Z2K2: {
@@ -2973,8 +2971,9 @@ describe( 'zobject Vuex module', () => {
 							Z12K1: [ 'Z11' ]
 						}
 					};
+
 					// Mock responses
-					mockApiResponse = {
+					const mockApiResponse = {
 						batchcomplete: '',
 						query: {
 							wikilambdaload_zobjects: {
@@ -2985,6 +2984,10 @@ describe( 'zobject Vuex module', () => {
 							}
 						}
 					};
+					const getMock = jest.fn().mockResolvedValueOnce( mockApiResponse );
+					mw.Api = jest.fn( () => {
+						return { get: getMock };
+					} );
 
 					const expectedZObjectJson = {
 						Z1K1: 'Z2',
@@ -3014,7 +3017,7 @@ describe( 'zobject Vuex module', () => {
 						}
 					};
 
-					zobjectModule.actions.initializeRootZObject( context, 'Z1234' );
+					await zobjectModule.actions.initializeRootZObject( context, 'Z1234' );
 
 					expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
 					expect( context.commit ).toHaveBeenCalledTimes( 4 );

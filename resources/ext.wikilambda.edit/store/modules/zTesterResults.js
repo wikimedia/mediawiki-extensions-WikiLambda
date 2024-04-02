@@ -6,6 +6,7 @@
  */
 
 const Constants = require( '../../Constants.js' ),
+	apiUtils = require( '../../mixins/api.js' ).methods,
 	hybridToCanonical = require( '../../mixins/schemata.js' ).methods.hybridToCanonical,
 	extractZIDs = require( '../../mixins/schemata.js' ).methods.extractZIDs;
 
@@ -225,8 +226,6 @@ module.exports = exports = {
 		 * @return {Promise|void}
 		 */
 		getTestResults: function ( context, payload ) {
-			const api = new mw.Api();
-
 			// If function ZID is empty, exit
 			if ( !payload.zFunctionId ) {
 				return;
@@ -259,14 +258,12 @@ module.exports = exports = {
 				return a.replace( '|', '🪈' );
 			} );
 
-			const testResultsPromise = api.get( {
-				action: 'wikilambda_perform_test',
-				wikilambda_perform_test_zfunction: payload.zFunctionId,
-				wikilambda_perform_test_zimplementations: implementations.join( '|' ),
-				wikilambda_perform_test_ztesters: testers.join( '|' ),
-				wikilambda_perform_test_nocache: payload.nocache || false
-			} ).then( ( data ) => {
-				const results = data.query.wikilambda_perform_test;
+			const testResultsPromise = apiUtils.performTests( {
+				functionZid: payload.zFunctionId,
+				nocache: payload.nocache,
+				implementations,
+				testers
+			} ).then( ( results ) => {
 				if ( !Array.isArray( results ) &&
 						results[ Constants.Z_RESPONSEENVELOPE_METADATA ] !== Constants.Z_NOTHING ) {
 					throw new Error(
@@ -301,15 +298,9 @@ module.exports = exports = {
 				// Make sure that all returned Zids are in library.js
 				context.dispatch( 'fetchZids', { zids: [ ...new Set( zids ) ] } );
 				context.commit( 'setTestResultsPromise', { functionZid: payload.zFunctionId } );
-			} ).catch( ( error, message ) => {
-				mw.log.error( 'Tester API call was nothing: ' + error );
-
-				let errorMessage = error;
-				if ( message && message.error && message.error.info ) {
-					errorMessage = message.error.info;
-				}
-
-				context.commit( 'setErrorState', errorMessage );
+			} ).catch( ( error ) => {
+				const errorMessage = error.error ? ( error.error.message || error.error.info ) : undefined;
+				context.commit( 'setErrorState', errorMessage || error );
 				context.commit( 'setTestResultsPromise', { functionZid: payload.zFunctionId } );
 			} );
 

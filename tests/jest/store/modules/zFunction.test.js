@@ -659,7 +659,7 @@ describe( 'zFunction Vuex module', () => {
 
 			beforeEach( () => {
 				getResolveMock = jest.fn( ( thenFunction ) => {
-					return thenFunction( mockApiResponse );
+					return Promise.resolve( thenFunction( mockApiResponse ) );
 				} );
 				getMock = jest.fn( () => {
 					return {
@@ -674,17 +674,13 @@ describe( 'zFunction Vuex module', () => {
 
 				context = $.extend( {}, {
 					commit: jest.fn(),
-					dispatch: jest.fn( () => {
-						return {
-							then: ( thenFunction ) => thenFunction()
-						};
-					} )
+					dispatch: jest.fn()
 				} );
 			} );
 
-			it( 'calls api.get for tests and returns their zids', () => {
+			it( 'calls api.get for tests and returns their zids', async () => {
 				const functionZid = 'Z801';
-				const zids = zFunctionModule.actions.fetchTests(
+				const zids = await zFunctionModule.actions.fetchTests(
 					context,
 					functionZid
 				);
@@ -700,9 +696,9 @@ describe( 'zFunction Vuex module', () => {
 				expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZids', { zids: [ 'Z10001', 'Z10002' ] } );
 			} );
 
-			it( 'calls api.get for implementations and returns their zids', () => {
+			it( 'calls api.get for implementations and returns their zids', async () => {
 				const functionZid = 'Z801';
-				const zids = zFunctionModule.actions.fetchImplementations(
+				const zids = await zFunctionModule.actions.fetchImplementations(
 					context,
 					functionZid
 				);

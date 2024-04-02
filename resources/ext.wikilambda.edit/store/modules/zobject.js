@@ -10,6 +10,7 @@ const Constants = require( '../../Constants.js' ),
 	selectBestLanguage = require( '../../mixins/typeUtils.js' ).methods.selectBestLanguage,
 	isTruthyOrEqual = require( '../../mixins/typeUtils.js' ).methods.isTruthyOrEqual,
 	zobjectUtils = require( '../../mixins/zobjectUtils.js' ).methods,
+	apiUtils = require( '../../mixins/api.js' ).methods,
 	extractZIDs = require( '../../mixins/schemata.js' ).methods.extractZIDs,
 	hybridToCanonical = require( '../../mixins/schemata.js' ).methods.hybridToCanonical,
 	getParameterByName = require( '../../mixins/urlUtils.js' ).methods.getParameterByName,
@@ -1479,15 +1480,11 @@ module.exports = exports = {
 
 			// Calling the API without language parameter so that we get
 			// the unfiltered multilingual object
-			const api = new mw.Api();
-			return api.get( {
-				action: 'query',
-				list: 'wikilambdaload_zobjects',
-				format: 'json',
-				wikilambdaload_zids: zId,
-				wikilambdaload_revisions: revision || undefined
-			} ).then( function ( response ) {
-				const zobject = response.query.wikilambdaload_zobjects[ zId ].data;
+			return apiUtils.fetchZObjects( {
+				zids: zId,
+				revisions: revision || undefined
+			} ).then( ( response ) => {
+				const zobject = response[ zId ].data;
 
 				// Initialize optional aliases key if absent
 				if ( !zobject[ Constants.Z_PERSISTENTOBJECT_ALIASES ] ) {
@@ -1649,26 +1646,13 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		lookupZObject: function ( context, payload ) {
-			const api = new mw.Api(),
-				queryType = 'wikilambdasearch_labels';
-
-			return new Promise( function ( resolve ) {
+			// Add user language code to the payload
+			payload.language = context.getters.getUserLangCode;
+			return new Promise( ( resolve ) => {
 				clearTimeout( debounceZObjectLookup );
-				debounceZObjectLookup = setTimeout( function () {
-					return api.get( {
-						action: 'query',
-						list: queryType,
-						wikilambdasearch_search: payload.input,
-						wikilambdasearch_type: payload.type,
-						wikilambdasearch_return_type: payload.returnType,
-						wikilambdasearch_strict_return_type: payload.strictType,
-						wikilambdasearch_language: context.getters.getUserLangCode
-					} ).then( function ( data ) {
-						let lookupResults = [];
-						if ( ( 'query' in data ) && ( queryType in data.query ) ) {
-							lookupResults = data.query[ queryType ];
-						}
-						return resolve( lookupResults );
+				debounceZObjectLookup = setTimeout( () => {
+					return apiUtils.searchLabels( payload ).then( ( data ) => {
+						return resolve( data );
 					} );
 				}, DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT );
 			} );
