@@ -11,38 +11,164 @@
 const Constants = require( '../Constants.js' ),
 	hybridToCanonical = require( './schemata.js' ).methods.hybridToCanonical;
 
+/* eslint-disable camelcase */
 module.exports = exports = {
 	methods: {
-		performFunctionCall: function ( zobject, shouldNormalize ) {
+		/**
+		 * Calls the wikilambda_function_call internal API
+		 * https://www.mediawiki.org/wiki/Extension:WikiLambda/API#wikilambda_function_call
+		 *
+		 * Needs error handling.
+		 *
+		 * @param {Object} zobject
+		 * @return {Promise}
+		 */
+		performFunctionCall: function ( zobject ) {
 			const api = new mw.Api();
+			const canonicalJson = JSON.stringify( hybridToCanonical( zobject ) );
 			return api.post( {
 				action: 'wikilambda_function_call',
-				// eslint-disable-next-line camelcase
-				wikilambda_function_call_zobject: JSON.stringify(
-					hybridToCanonical( zobject )
-				)
-			} ).then( function ( data ) {
-				return new Promise( function ( resolve ) {
-					const normalResponse = JSON.parse( data.query.wikilambda_function_call.data );
-					const response = !shouldNormalize ? hybridToCanonical( normalResponse ) : normalResponse;
-					const result = response[ Constants.Z_RESPONSEENVELOPE_VALUE ];
-					const metadata = response[ Constants.Z_RESPONSEENVELOPE_METADATA ];
-					resolve( { response, result, metadata } );
-				} );
+				wikilambda_function_call_zobject: canonicalJson
+			} ).then( ( data ) => {
+				const maybeNormalResponse = JSON.parse( data.query.wikilambda_function_call.data );
+				const response = hybridToCanonical( maybeNormalResponse );
+				const result = response[ Constants.Z_RESPONSEENVELOPE_VALUE ];
+				const metadata = response[ Constants.Z_RESPONSEENVELOPE_METADATA ];
+				return { response, result, metadata };
+			} ).catch( ( error, result ) => {
+				throw result.xhr.responseJSON;
 			} );
 		},
-		saveZObject: function ( zobject, zid, summary ) {
+		/**
+		 * Calls the wikilambda_edit internal API
+		 * https://www.mediawiki.org/wiki/Extension:WikiLambda/API#wikilambda_edit
+		 *
+		 * Needs error handling.
+		 *
+		 * @param {Object} payload
+		 * @param {Object} payload.zobject The canonical ZObject to update
+		 * @param {Object} payload.zid The zid of the object to update or undefined if new object
+		 * @param {Object} payload.summary The update summary
+		 * @return {Promise}
+		 */
+		saveZObject: function ( payload ) {
 			const api = new mw.Api();
 			return api.postWithEditToken( {
 				action: 'wikilambda_edit',
-				summary: summary || '',
-				zid: zid,
-				zobject: JSON.stringify( zobject )
-			} ).then( function ( result ) {
-				return result.wikilambda_edit;
-			} ).catch( function ( error, result ) {
-				// Pass the error up the chain
-				throw ( result );
+				summary: payload.summary || '',
+				zid: payload.zid,
+				zobject: JSON.stringify( payload.zobject )
+			} ).then( ( data ) => {
+				return data.wikilambda_edit;
+			} ).catch( ( error, result ) => {
+				throw result.xhr.responseJSON;
+			} );
+		},
+		/**
+		 * Calls the wikilambdaload_zobjects internal API
+		 * https://www.mediawiki.org/wiki/Extension:WikiLambda/API#wikilambdaload_zobjects
+		 *
+		 * Doesn't need error handling.
+		 *
+		 * @param {Object} payload
+		 * @param {string} payload.zids The zids to request, separated by pipes. E.g. 'Z1|Z2'
+		 * @param {string|undefined} payload.revisions The revisions to request, separated by pipes. E.g. '100|101'
+		 * @param {string|undefined} payload.language The preferred language code or none
+		 * @param {boolean|undefined} payload.dependencies Whether to fetch their dependencies too
+		 * @return {Promise}
+		 */
+		fetchZObjects: function ( payload ) {
+			const api = new mw.Api();
+			return api.get( {
+				action: 'query',
+				list: 'wikilambdaload_zobjects',
+				format: 'json',
+				wikilambdaload_zids: payload.zids,
+				wikilambdaload_revisions: payload.revisions,
+				wikilambdaload_language: payload.language,
+				wikilambdaload_get_dependencies: payload.dependencies ? 'true' : 'false'
+			} ).then( ( data ) => {
+				return data.query.wikilambdaload_zobjects;
+			} );
+		},
+		/**
+		 * Calls the wikilambdasearch_labels internal API
+		 * https://www.mediawiki.org/wiki/Extension:WikiLambda/API#wikilambdasearch_labels
+		 *
+		 * Doesn't need error handling.
+		 *
+		 * @param {Object} payload
+		 * @param {string} payload.input Substring to search by
+		 * @param {string} payload.type Type of objects to retrieve
+		 * @param {string} payload.returnType Retrieve also functions of a given output type
+		 * @param {boolean} payload.strictType Exclude functions that return anything/Z1
+		 * @param {string} payload.language The user language code
+		 * @return {Promise}
+		 */
+		searchLabels: function ( payload ) {
+			const api = new mw.Api();
+			return api.get( {
+				action: 'query',
+				list: 'wikilambdasearch_labels',
+				wikilambdasearch_search: payload.input,
+				wikilambdasearch_type: payload.type,
+				wikilambdasearch_return_type: payload.returnType,
+				wikilambdasearch_strict_return_type: payload.strictType,
+				wikilambdasearch_language: payload.language
+			} ).then( ( data ) => {
+				return data.query.wikilambdasearch_labels;
+			} );
+		},
+		/**
+		 * Calls the wikilambda_perform_test internal API
+		 * https://www.mediawiki.org/wiki/Extension:WikiLambda/API#wikilambda_perform_test
+		 *
+		 * Needs error handling.
+		 * TODO (T361683): Improve error handling in the caller (zTesterResults store module)
+		 *
+		 * @param {Object} payload
+		 * @param {string} payload.functionZid Zid of the function to test
+		 * @param {boolean} payload.nocache Request the orchestrator to not cache the results
+		 * @param {Array} payload.implementations List of implementations to test
+		 * @param {Array} payload.testers List of tests to run
+		 * @return {Promise}
+		 */
+		performTests: function ( payload ) {
+			const api = new mw.Api();
+			return api.get( {
+				action: 'wikilambda_perform_test',
+				wikilambda_perform_test_zfunction: payload.functionZid,
+				wikilambda_perform_test_zimplementations: payload.implementations.join( '|' ),
+				wikilambda_perform_test_ztesters: payload.testers.join( '|' ),
+				wikilambda_perform_test_nocache: payload.nocache || false
+			} ).then( ( data ) => {
+				return data.query.wikilambda_perform_test;
+			} ).catch( ( error, result ) => {
+				throw result.xhr.responseJSON;
+			} );
+		},
+		/**
+		 * Calls the wikilambdafn_search internal API
+		 * https://www.mediawiki.org/wiki/Extension:WikiLambda/API#wikilambdafn_search
+		 *
+		 * Doesn't need error handling.
+		 *
+		 * @param {Object} payload
+		 * @param {string} payload.functionZid Zid of the function to test
+		 * @param {string} payload.type What type of object to fetch (Z20 or Z14)
+		 * @return {Promise}
+		 */
+		fetchFunctionObjects: function ( payload ) {
+			const api = new mw.Api();
+			return api.get( {
+				action: 'query',
+				list: 'wikilambdafn_search',
+				format: 'json',
+				wikilambdafn_zfunction_id: payload.functionZid,
+				wikilambdafn_type: payload.type,
+				wikilambdafn_limit: Constants.API_LIMIT_MAX
+			} ).then( ( data ) => {
+				return data.query.wikilambdafn_search;
 			} );
 		}
 	}

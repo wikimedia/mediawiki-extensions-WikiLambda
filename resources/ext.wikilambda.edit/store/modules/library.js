@@ -9,6 +9,7 @@
  */
 
 const Constants = require( '../../Constants.js' ),
+	apiUtils = require( '../../mixins/api.js' ).methods,
 	typeUtils = require( '../../mixins/typeUtils.js' ).methods,
 	LabelData = require( '../classes/LabelData.js' ),
 	resolvePromiseList = {};
@@ -414,28 +415,24 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		performFetchZids: function ( context, payload ) {
-			const api = new mw.Api();
-			return api.get( {
-				action: 'query',
-				list: 'wikilambdaload_zobjects',
-				format: 'json',
-				wikilambdaload_zids: payload.zids.join( '|' ),
-				wikilambdaload_language: context.getters.getUserLangCode,
-				wikilambdaload_get_dependencies: 'true'
+			return apiUtils.fetchZObjects( {
+				zids: payload.zids.join( '|' ),
+				language: context.getters.getUserLangCode,
+				dependencies: true
 			} ).then( ( response ) => {
 				const requestedZids = payload.zids;
-				const returnedZids = Object.keys( response.query.wikilambdaload_zobjects );
+				const returnedZids = Object.keys( response );
 				const dependentZids = [];
 
 				returnedZids.forEach( ( zid ) => {
 					// If the requested zid returned error, do nothing
-					if ( !( 'success' in response.query.wikilambdaload_zobjects[ zid ] ) ) {
+					if ( !( 'success' in response[ zid ] ) ) {
 						return;
 					}
 
 					// 1. State mutation:
 					// Add zObject to the state objects array
-					const persistentObject = response.query.wikilambdaload_zobjects[ zid ].data;
+					const persistentObject = response[ zid ].data;
 
 					context.commit( 'setStoredObject', {
 						zid: zid,
