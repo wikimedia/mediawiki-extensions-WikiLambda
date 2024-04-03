@@ -446,7 +446,7 @@ class ZObjectStore {
 
 		$dbw->newInsertQueryBuilder()
 			->insertInto( 'wikilambda_zlanguages' )
-			->rows( [ 'wlzlangs_zid' => $zid, 'wlzlangs_language' => $languageCode ] )
+			->row( [ 'wlzlangs_zid' => $zid, 'wlzlangs_language' => $languageCode ] )
 			->caller( __METHOD__ )->execute();
 	}
 
