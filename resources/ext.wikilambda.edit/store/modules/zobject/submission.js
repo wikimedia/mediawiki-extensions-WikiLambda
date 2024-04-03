@@ -9,7 +9,7 @@
 const Constants = require( '../../../Constants.js' ),
 	convertTableToJson = require( '../../../mixins/zobjectUtils.js' ).methods.convertTableToJson,
 	hybridToCanonical = require( '../../../mixins/schemata.js' ).methods.hybridToCanonical,
-	saveZObject = require( '../../../mixins/api.js' ).methods.saveZObject,
+	apiUtils = require( '../../../mixins/api.js' ).methods,
 	isTruthyOrEqual = require( '../../../mixins/typeUtils.js' ).methods.isTruthyOrEqual;
 
 module.exports = exports = {
@@ -249,12 +249,13 @@ module.exports = exports = {
 			context.dispatch( 'transformZObjectForSubmission', disconnectFunctionObjects );
 
 			const zobject = hybridToCanonical( convertTableToJson( context.getters.getZObjectTable ) );
+			const zid = context.getters.isCreateNewPage ? undefined : context.getters.getCurrentZObjectId;
 
-			return saveZObject(
+			return apiUtils.saveZObject( {
 				zobject,
-				context.getters.isCreateNewPage ? undefined : context.getters.getCurrentZObjectId,
+				zid,
 				summary
-			);
+			} );
 		},
 
 		/**

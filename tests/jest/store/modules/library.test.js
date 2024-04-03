@@ -17,18 +17,13 @@ const libraryModule = require( '../../../../resources/ext.wikilambda.edit/store/
 
 let state,
 	context,
-	getMock,
-	getResolveMock;
+	getMock;
 
 describe( 'library module', function () {
 	beforeEach( function () {
-		getResolveMock = jest.fn( function ( thenFunction ) {
-			return thenFunction( mockApiResponseFor( [ 'Z1', 'Z2', 'Z6' ] ) );
-		} );
-		getMock = jest.fn( function () {
-			return {
-				then: getResolveMock
-			};
+		getMock = jest.fn().mockResolvedValue( mockApiResponseFor( [ 'Z1', 'Z2', 'Z6' ] ) );
+		mw.Api = jest.fn( () => {
+			return { get: getMock };
 		} );
 		state = JSON.parse( JSON.stringify( libraryModule.state ) );
 		context = $.extend( {}, {
@@ -40,12 +35,6 @@ describe( 'library module', function () {
 			getters: {},
 			state: state,
 			rootGetters: [ 'en' ]
-		} );
-
-		mw.Api = jest.fn( function () {
-			return {
-				get: getMock
-			};
 		} );
 	} );
 
@@ -330,7 +319,6 @@ describe( 'library module', function () {
 				return libraryModule.actions.fetchZids( context, { zids } ).then( function () {
 					expect( mw.Api ).toHaveBeenCalledTimes( 1 );
 					expect( getMock ).toHaveBeenCalledTimes( 1 );
-					expect( getResolveMock ).toHaveBeenCalledTimes( 1 );
 					expect( context.commit ).toHaveBeenCalledTimes( 11 );
 					expect( context.commit ).toHaveBeenCalledWith( 'setStoredObject', expectedAddZ1 );
 					expect( context.commit ).toHaveBeenCalledWith( 'setStoredObject', expectedAddZ2 );
@@ -342,9 +330,7 @@ describe( 'library module', function () {
 				it( 'requests the language Zids of the returned labels', function () {
 					const zids = [ 'Z20001' ];
 					context.state.objects = {};
-					getResolveMock = jest.fn( function ( thenFunction ) {
-						return thenFunction( mockApiResponseFor( zids ) );
-					} );
+					getMock = jest.fn().mockResolvedValue( mockApiResponseFor( zids ) );
 
 					return libraryModule.actions.fetchZids( context, { zids } ).then( function () {
 						expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZids', { zids: [ 'Z1003', 'Z1002' ] } );
@@ -354,9 +340,7 @@ describe( 'library module', function () {
 				it( 'requests the renderer/parser Zids of the returned type', function () {
 					const zids = [ 'Z20002' ];
 					context.state.objects = {};
-					getResolveMock = jest.fn( function ( thenFunction ) {
-						return thenFunction( mockApiResponseFor( zids ) );
-					} );
+					getMock = jest.fn().mockResolvedValue( mockApiResponseFor( zids ) );
 
 					return libraryModule.actions.fetchZids( context, { zids } ).then( function () {
 						expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZids', { zids: [ 'Z1002', 'Z20020', 'Z20030' ] } );

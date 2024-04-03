@@ -252,13 +252,13 @@ module.exports = exports = {
 				disconnectFunctionObjects
 			} ).then( ( response ) => {
 				this.successfulExit( response.page );
-			} ).catch( ( error ) => {
+			} ).catch( ( response ) => {
 				this.clearAllErrors();
-				// If error.error.message: known ZError
-				// Else, PHP error or exception captured in error.error.info
+				// If response.error.message: known ZError
+				// Else, PHP error or exception captured in response.error.info
 				// Additionally, if nothing available, show generic unknown error message
-				const errorMessage = ( error && error.error ) ?
-					( error.error.message || error.error.info ) :
+				const errorMessage = ( response && response.error ) ?
+					( response.error.message || response.error.info ) :
 					undefined;
 
 				const payload = {

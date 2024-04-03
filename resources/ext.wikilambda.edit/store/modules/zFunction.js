@@ -5,7 +5,8 @@
  * @license MIT
  */
 
-const Constants = require( '../../Constants.js' );
+const Constants = require( '../../Constants.js' ),
+	apiUtils = require( '../../mixins/api.js' ).methods;
 
 module.exports = exports = {
 	getters: {
@@ -380,16 +381,11 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		fetchTests: function ( context, functionZid ) {
-			const api = new mw.Api();
-			return api.get( {
-				action: 'query',
-				list: 'wikilambdafn_search',
-				format: 'json',
-				wikilambdafn_zfunction_id: functionZid,
-				wikilambdafn_type: Constants.Z_TESTER,
-				wikilambdafn_limit: Constants.API_LIMIT_MAX
-			} ).then( ( response ) => {
-				const zids = response.query.wikilambdafn_search.map( ( item ) => item.zid );
+			return apiUtils.fetchFunctionObjects( {
+				functionZid,
+				type: Constants.Z_TESTER
+			} ).then( ( items ) => {
+				const zids = items.map( ( item ) => item.zid );
 				context.dispatch( 'fetchZids', { zids } );
 				return zids;
 			} );
@@ -403,17 +399,11 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		fetchImplementations: function ( context, functionZid ) {
-			const api = new mw.Api();
-			return api.get( {
-				action: 'query',
-				list: 'wikilambdafn_search',
-				format: 'json',
-				wikilambdafn_zfunction_id: functionZid,
-				wikilambdafn_type: Constants.Z_IMPLEMENTATION,
-				wikilambdafn_limit: Constants.API_LIMIT_MAX
-			} ).then( ( response ) => {
-				const zids = response.query.wikilambdafn_search.map( ( item ) => item.zid );
-				// context.commit( 'setImplementations', zids );
+			return apiUtils.fetchFunctionObjects( {
+				functionZid,
+				type: Constants.Z_IMPLEMENTATION
+			} ).then( ( items ) => {
+				const zids = items.map( ( item ) => item.zid );
 				context.dispatch( 'fetchZids', { zids } );
 				return zids;
 			} );
