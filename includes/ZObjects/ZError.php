@@ -13,13 +13,14 @@ namespace MediaWiki\Extension\WikiLambda\ZObjects;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use MediaWiki\Html\Html;
 
 class ZError extends ZObject {
 
 	/**
 	 * Construct a new ZError instance.
 	 *
-	 * @param string $type ZErrorType Zid
+	 * @param ZReference $type ZErrorType Zid
 	 * @param ZObject $value Value that describes the ZError
 	 */
 	public function __construct( $type, $value ) {
@@ -57,7 +58,10 @@ class ZError extends ZObject {
 		if ( !isset( $this->data[ ZTypeRegistry::Z_ERROR_TYPE ] ) ) {
 			return false;
 		}
-		$errorType = $this->data[ ZTypeRegistry::Z_ERROR_TYPE ];
+		if ( !( $this->data[ ZTypeRegistry::Z_ERROR_TYPE  ] instanceof ZReference ) ) {
+			return false;
+		}
+		$errorType = $this->data[ ZTypeRegistry::Z_ERROR_TYPE ]->getZValue();
 		if ( !ZObjectUtils::isValidZObjectReference( $errorType ) ) {
 			return false;
 		}
@@ -89,7 +93,7 @@ class ZError extends ZObject {
 	 * @return string ZErrorType Zid
 	 */
 	public function getZErrorType(): string {
-		return $this->data[ ZTypeRegistry::Z_ERROR_TYPE ];
+		return $this->data[ ZTypeRegistry::Z_ERROR_TYPE ]->getZValue();
 	}
 
 	/**
@@ -98,30 +102,66 @@ class ZError extends ZObject {
 	 * @return string ZError message
 	 */
 	public function getMessage(): string {
+		return ZErrorTypeRegistry::singleton()->getZErrorTypeLabel( $this->getZErrorType() );
+	}
+
+	/**
+	 * Get a human-readable one-line string that identifies the ZError information
+	 *
+	 * @return string ZError message
+	 */
+	public function getHtmlMessage(): string {
+		$message = ZErrorTypeRegistry::singleton()->getZErrorTypeLabel( $this->getZErrorType() );
 		$messages = [];
-		$messages[] = ZErrorTypeRegistry::singleton()->getZErrorTypeLabel( $this->getZErrorType() );
 
-		$errorValue = $this->getZValue();
-		$valueType = $errorValue->getZType();
+		$errorType = $this->getZErrorType();
 
-		// If $valueType is Z502, concat message of Z502K2
-		if ( $valueType === ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED ) {
-			$subError = $errorValue->getValueByKey( 'Z502K2' );
-			'@phan-var ZError $subError';
-			$messages[] = $subError->getMessage();
-		}
+		// Errors that can have children: Z509, Z502, Z522, Z526
+		// List of children in K1:
+		// * Z509/List of errors
+		if ( $errorType === ZErrorTypeRegistry::Z_ERROR_LIST ) {
+			$errorValue = $this->getZValue();
+			$subErrors = $errorValue->getValueByKey( 'K1' );
 
-		// If $valueType is Z509, concat messages of list Z509K1
-		if ( $valueType === ZErrorTypeRegistry::Z_ERROR_LIST ) {
-			$subErrors = $errorValue->getValueByKey( 'Z509K1' );
 			if ( is_array( $subErrors ) || ( $subErrors instanceof ZTypedList ) ) {
 				foreach ( ZObjectUtils::getIterativeList( $subErrors ) as $subError ) {
-					$messages[] = $subError->getMessage();
+					$messages[] = Html::rawElement(
+						'li',
+						[ 'class' => 'ext-wikilambda-suberror-list-item' ],
+						$subError->getHtmlMessage()
+					);
 				}
 			}
 		}
 
-		return implode( ". ", $messages );
+		// Only child in K2:
+		// * Z502/Not wellformed
+		// * Z522/Array element not wellformed
+		// * Z526/Key value not wellformed
+		if (
+			( $errorType === ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED ) ||
+			( $errorType === ZErrorTypeRegistry::Z_ERROR_KEY_VALUE_NOT_WELLFORMED ) ||
+			( $errorType === ZErrorTypeRegistry::Z_ERROR_ARRAY_ELEMENT_NOT_WELLFORMED )
+		) {
+			$errorValue = $this->getZValue();
+			$subError = $errorValue->getValueByKey( 'K2' );
+			'@phan-var ZError $subError';
+			$messages[] = Html::rawElement(
+				'li',
+				[ 'class' => 'ext-wikilambda-suberror-list-item' ],
+				$subError->getHtmlMessage()
+			);
+		}
+
+		if ( count( $messages ) > 0 ) {
+			$message .= Html::rawElement(
+				'ul',
+				[ 'class' => 'ext-wikilambda-suberror-list' ],
+				implode( '', $messages )
+			);
+		}
+
+		return $message;
 	}
 
 	/**
@@ -131,9 +171,10 @@ class ZError extends ZObject {
 	 */
 	public function getErrorData() {
 		return [
-			'message' => $this->getMessage(),
+			'title' => $this->getMessage(),
+			'message' => $this->getHtmlMessage(),
 			'zerror' => $this->getSerialized(),
-			'labelled' => $this->getHumanReadable()
+			'labelled' => $this->getHumanReadable(),
 		];
 	}
 }

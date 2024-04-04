@@ -37,7 +37,7 @@ class ZResponseEnvelopeTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testCreation_constructor_error() {
-		$testError = new ZError( 'Z507', new ZString( 'error message' ) );
+		$testError = new ZError( new ZReference( 'Z507' ), new ZString( 'error message' ) );
 		$zMap = ZResponseEnvelope::wrapErrorInResponseMap( $testError );
 		$testObject = new ZResponseEnvelope( null, $zMap );
 
@@ -82,7 +82,7 @@ EOT;
 		$this->assertTrue( $metadataObject instanceof ZTypedMap );
 		$this->assertSame( 'test value', $metadataObject->getValueGivenKey( new ZString( 'test key' ) )->getZValue() );
 
-		$errorObject = new ZError( 'Z500', 'Hello' );
+		$errorObject = new ZError( new ZReference( 'Z500' ), new ZString( 'Hello' ) );
 
 		$testObject->setMetaDataValue( new ZString( 'second test key' ), $errorObject );
 
@@ -226,6 +226,6 @@ EOT;
 
 		$error = $testObject->getErrors();
 		$this->assertTrue( $error instanceof ZError );
-		$this->assertSame( '"Z507"', $error->getZErrorType() );
+		$this->assertSame( 'Z507', $error->getZErrorType() );
 	}
 }

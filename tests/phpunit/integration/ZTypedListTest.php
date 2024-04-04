@@ -200,7 +200,7 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( "Z6", $testObject->getElementType()->getZValue() );
 
 		// List type is Z6; new element type is Z5; exception should be raised
-		$newElements = [ new ZError( 'Z501', new ZString( 'error message' ) ) ];
+		$newElements = [ new ZError( new ZReference( 'Z501' ), new ZString( 'error message' ) ) ];
 		$this->expectException( ZErrorException::class );
 		$testObject->appendArray( $newElements );
 	}
@@ -212,7 +212,7 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 		$testObject = ZObjectFactory::create( json_decode( $typedList ) );
 
 		// The type mismatch here should be ignored because checkTypes = false
-		$newElements = [ new ZError( 'Z501', new ZString( 'error message' ) ) ];
+		$newElements = [ new ZError( new ZReference( 'Z501' ), new ZString( 'error message' ) ) ];
 		$testObject->appendArray( $newElements, false );
 
 		// This case ideally should cause an exception but does not because
@@ -285,7 +285,7 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 		// List type is Z6; new element type is Z5; exception should be raised
 		$newElements = new ZTypedList(
 			ZTypedList::buildType( new ZReference( ZTypeRegistry::Z_OBJECT ) ),
-			[ new ZError( 'Z501', new ZString( 'error message' ) ) ] );
+			[ new ZError( new ZReference( 'Z501' ), new ZString( 'error message' ) ) ] );
 		$this->expectException( ZErrorException::class );
 		$testObject->appendZTypedList( $newElements );
 	}

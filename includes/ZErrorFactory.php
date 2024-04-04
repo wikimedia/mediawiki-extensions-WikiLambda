@@ -704,7 +704,7 @@ class ZErrorFactory {
 		}
 
 		return new ZError(
-			$zErrorType,
+			new ZReference( $zErrorType ),
 			self::createTypedError( $zErrorType, $zErrorValue )
 		);
 	}
