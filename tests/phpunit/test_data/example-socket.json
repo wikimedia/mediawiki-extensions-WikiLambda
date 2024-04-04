@@ -31,7 +31,7 @@
 				"Z14K3": {
 					"Z1K1": "Z16",
 					"Z16K1": "Z610",
-					"Z16K2": "def Z401(Z401K1):\n  first = W.Call(\"Z802\", Z802K1=Z401K1, Z802K2=\"yes\", Z802K3=\"no\")\n  second = W.Call(\"Z802\", Z802K1=not Z401K1, Z802K2=\"yes\", Z802K3=\"no\")\n  return first + ' ' + second"
+					"Z16K2": "def Z401(Z401K1):\n\tfirst = W.Call(\"Z802\", Z802K1=Z401K1, Z802K2=\"yes\", Z802K3=\"no\")\n\tsecond = W.Call(\"Z802\", Z802K1=not Z401K1, Z802K2=\"yes\", Z802K3=\"no\")\n\treturn first + ' ' + second"
 				}
 			}
 		],

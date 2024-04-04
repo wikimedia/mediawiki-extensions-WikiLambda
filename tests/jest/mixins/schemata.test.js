@@ -87,11 +87,11 @@ describe( 'schemata mixin', function () {
 	} );
 
 	it( 'canonicalizes references', function () {
-		expect( hybridToCanonical( { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z1000' } ) ).toEqual( 'Z1000' );
+		expect( hybridToCanonical( { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z400' } ) ).toEqual( 'Z400' );
 	} );
 
 	it( 'canonicalizes real suspicious-lookin\' Z6s', function () {
-		expect( hybridToCanonical( { Z1K1: Constants.Z_STRING, Z6K1: 'Z1000' } ) ).toEqual( { Z1K1: Constants.Z_STRING, Z6K1: 'Z1000' } );
+		expect( hybridToCanonical( { Z1K1: Constants.Z_STRING, Z6K1: 'Z400' } ) ).toEqual( { Z1K1: Constants.Z_STRING, Z6K1: 'Z400' } );
 	} );
 
 	it( 'hybridToCanonical handles Z0 because the front end uses it', function () {
@@ -135,11 +135,11 @@ describe( 'schemata mixin', function () {
 	} );
 
 	it( 'hybridizes supremely sketch Z6s', function () {
-		expect( canonicalToHybrid( { Z1K1: Constants.Z_STRING, Z6K1: 'Z1000' } ) ).toEqual( { Z1K1: Constants.Z_STRING, Z6K1: 'Z1000' } );
+		expect( canonicalToHybrid( { Z1K1: Constants.Z_STRING, Z6K1: 'Z400' } ) ).toEqual( { Z1K1: Constants.Z_STRING, Z6K1: 'Z400' } );
 	} );
 
 	it( 'hybridizes Z9s', function () {
-		expect( canonicalToHybrid( 'Z1000' ) ).toEqual( { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z1000' } );
+		expect( canonicalToHybrid( 'Z400' ) ).toEqual( { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z400' } );
 	} );
 
 	it( 'hybridizes Z6s', function () {

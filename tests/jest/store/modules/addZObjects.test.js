@@ -577,16 +577,16 @@ describe( 'addZObjects Vuex module', () => {
 				} );
 
 				it( 'adds a valid ZArgument with initial values', () => {
-					const payload = { id: 0, type: Constants.Z_ARGUMENT, value: 'Z1000K2' };
+					const payload = { id: 0, type: Constants.Z_ARGUMENT, value: 'Z400K2' };
 					addZObjects.actions.changeType( context, payload );
 
-					const expectedZids = [ 'Z1', 'Z17', 'Z9', 'Z1000', 'Z12', 'Z11' ];
+					const expectedZids = [ 'Z1', 'Z17', 'Z9', 'Z400', 'Z12', 'Z11' ];
 					const expectedPayload = {
 						rowId: 0,
 						value: {
 							Z1K1: 'Z17',
 							Z17K1: { Z1K1: 'Z9', Z9K1: '' },
-							Z17K2: 'Z1000K2',
+							Z17K2: 'Z400K2',
 							Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
 						},
 						append: false
@@ -605,16 +605,16 @@ describe( 'addZObjects Vuex module', () => {
 						{ id: 4, key: 'Z9K1', value: 'Z17', parent: 2 }
 					] );
 					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
-					const payload = { id: 1, type: Constants.Z_ARGUMENT, value: 'Z1000K2', append: true };
+					const payload = { id: 1, type: Constants.Z_ARGUMENT, value: 'Z400K2', append: true };
 					addZObjects.actions.changeType( context, payload );
 
-					const expectedZids = [ 'Z1', 'Z17', 'Z9', 'Z1000', 'Z12', 'Z11' ];
+					const expectedZids = [ 'Z1', 'Z17', 'Z9', 'Z400', 'Z12', 'Z11' ];
 					const expectedPayload = {
 						rowId: 1,
 						value: {
 							Z1K1: 'Z17',
 							Z17K1: { Z1K1: 'Z9', Z9K1: '' },
-							Z17K2: 'Z1000K2',
+							Z17K2: 'Z400K2',
 							Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
 						},
 						append: true
