@@ -23,16 +23,38 @@ module.exports = exports = {
 				mw.eventLog.dispatch( name, data );
 			}
 		},
+		/**
+		 * Create a new object by removing properties with null or undefined values from the original object
+		 * @param {Object} object
+		 * @return {Object}
+		 */
+		removeNullUndefined: function ( original ) {
+			const result = {};
+			for ( const key in original ) {
+				if ( original[ key ] !== null && original[ key ] !== undefined ) {
+					result[ key ] = original[ key ];
+				}
+			}
+			return result;
+		},
 		// T350497 Update the WikiLambda instrumentation to use core interaction events
 		/**
 		 * Submit an interaction event using Metrics Platform
+		 *
+		 * Since the schema specifies each property to be either string or Boolean, we defensively remove
+		 * properties with null or undefined values. (Otherwise, a null or undefined property would cause
+		 * the event to be dropped from the stream.)
+		 *
 		 * @param {string} action
 		 * @param {Object} interactionData
 		 */
 		submitInteraction: function ( action, interactionData ) {
 			if ( mw.eventLog ) {
-				mw.eventLog.submitInteraction( 'mediawiki.product_metrics.wikifunctions_ui',
-					'/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0', action, interactionData );
+				mw.eventLog.submitInteraction(
+					'mediawiki.product_metrics.wikifunctions_ui',
+					'/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0',
+					action,
+					this.removeNullUndefined( interactionData ) );
 			}
 		},
 		/**

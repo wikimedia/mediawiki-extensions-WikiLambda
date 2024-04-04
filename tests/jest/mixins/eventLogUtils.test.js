@@ -1,0 +1,89 @@
+/*!
+ * WikiLambda unit test suite for the eventLogUtils mixin
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
+
+var eventLogUtils = require( '../../../resources/ext.wikilambda.edit/mixins/eventLogUtils.js' ).methods;
+
+describe( 'eventLogUtils mixin', function () {
+	describe( 'removeNullUndefined', () => {
+		it( 'removes null-valued property', () => {
+			const original = {
+				zobjectid: 'Z801',
+				zobjecttype: 'Z8',
+				implementationtype: null,
+				zlang: 'Z1002'
+			};
+			const expected = {
+				zobjectid: 'Z801',
+				zobjecttype: 'Z8',
+				zlang: 'Z1002'
+			};
+			const result = eventLogUtils.removeNullUndefined( original );
+			expect( result ).toStrictEqual( expected );
+		} );
+
+		it( 'removes undefined property', () => {
+			const original = {
+				zobjectid: 'Z801',
+				zobjecttype: 'Z8',
+				implementationtype: undefined,
+				zlang: 'Z1002'
+			};
+			const expected = {
+				zobjectid: 'Z801',
+				zobjecttype: 'Z8',
+				zlang: 'Z1002'
+			};
+			const result = eventLogUtils.removeNullUndefined( original );
+			expect( result ).toStrictEqual( expected );
+		} );
+
+		it( 'removes null-valued property from singleton object', () => {
+			const original = {
+				implementationtype: null
+			};
+			const expected = {};
+			const result = eventLogUtils.removeNullUndefined( original );
+			expect( result ).toStrictEqual( expected );
+		} );
+
+		it( 'removes undefined property from singleton object', () => {
+			const original = {
+				implementationtype: undefined
+			};
+			const expected = {};
+			const result = eventLogUtils.removeNullUndefined( original );
+			expect( result ).toStrictEqual( expected );
+		} );
+
+		it( 'removes nothing from empty object', () => {
+			const original = {};
+			const expected = {};
+			const result = eventLogUtils.removeNullUndefined( original );
+			expect( result ).toStrictEqual( expected );
+		} );
+	} );
+
+	it( 'removes multiple blank properties', () => {
+		const original = {
+			aaaa: null,
+			zobjectid: 'Z801',
+			bbbb: null,
+			cccc: null,
+			zobjecttype: 'Z8',
+			implementationtype: undefined,
+			zlang: 'Z1002',
+			dddd: undefined
+		};
+		const expected = {
+			zobjectid: 'Z801',
+			zobjecttype: 'Z8',
+			zlang: 'Z1002'
+		};
+		const result = eventLogUtils.removeNullUndefined( original );
+		expect( result ).toStrictEqual( expected );
+	} );
+} );

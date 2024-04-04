@@ -5,7 +5,7 @@
  * @license MIT
  */
 const Constants = require( '../../../Constants.js' );
-const submitInteraction = require( '../../../mixins/eventLogUtils.js' ).methods.submitInteraction;
+const eventLogUtils = require( '../../../mixins/eventLogUtils.js' );
 
 module.exports = exports = {
 	state: {
@@ -69,7 +69,7 @@ module.exports = exports = {
 					implementationtype: context.getters.getCurrentZImplementationType || null,
 					zlang: context.getters.getUserLangZid || null
 				};
-				submitInteraction( 'change', interactionData );
+				eventLogUtils.methods.submitInteraction( 'change', interactionData );
 			}
 			context.commit( 'setDirty', value );
 		},
