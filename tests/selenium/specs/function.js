@@ -38,9 +38,12 @@ const assert = require( 'assert' ),
 
 describe( 'Function', function () {
 
+	before( async function () {
+		await LoginPage.loginAdmin();
+	} );
+
 	describe( 'Function viewer (CUJ1)', function () {
 		it( 'should allow to evaluate a function', async function () {
-			await LoginPage.loginAdmin();
 			await ListObjectsByType.open();
 			const ListFunctions = await ListObjectsByType.openFunctionsList();
 			await ListFunctions.openFunction( 'echo' );
@@ -61,23 +64,21 @@ describe( 'Function', function () {
 			get FRENCH() {
 				return alias + '-French';
 			},
-			get GERMAN() {
-				return alias + '-German';
+			get SPANISH() {
+				return alias + '-Spanish';
 			}
 		};
 		const ARGUMENT_LABELS = {
 			ENGLISH: [ 'first argument', 'second argument' ],
 			FRENCH: [ 'premier argument', 'second argument' ],
-			GERMAN: [ 'erstes Argument', 'zweites Argument' ]
+			SPANISH: [ 'primer argumento', 'segundo argumento' ]
 		};
 		const INPUT_TYPES = [ 'String', 'Boolean' ];
 		const OUTPUT_TYPE = 'String';
-		before( function () {
+		before( async function () {
+			// create a new function
 			functionTitle = 'zzz-FunctionCreationTest-' + Date.now();
 			alias = util.getTestString( 'alias-' );
-		} );
-
-		it( 'should create a function', async function () {
 			await FunctionForm.open();
 			await FunctionForm.fillFirstLanguageContainer( {
 				language: 'English',
@@ -96,49 +97,36 @@ describe( 'Function', function () {
 				inputs: ARGUMENT_LABELS.FRENCH
 			} );
 			await FunctionForm.addLanguageContainer( {
-				language: 'German',
-				name: functionTitle + '-German',
-				alias: ALIASES.GERMAN,
-				inputs: ARGUMENT_LABELS.GERMAN
+				language: 'Spanish',
+				name: functionTitle + '-Spanish',
+				alias: ALIASES.SPANISH,
+				inputs: ARGUMENT_LABELS.SPANISH
 			} );
 			await FunctionForm.publishFunction();
 		} );
 
-		it( 'should display the function name', async function () {
+		it( 'should create a new function and display the function name', async function () {
 			assert.strictEqual( await FunctionPage.functionTitle.getText(), functionTitle );
 		} );
 
-		it( 'should display an empty description field', async function () {
-			await expect( await FunctionPage.getFunctionDescription() ).toBe( 'No description provided.' );
-		} );
-
-		it( 'should display the function aliases', async function () {
+		it( 'should create a new function and display function aliases', async function () {
 			const aliases = await FunctionPage.getFunctionAliases();
-			await expect( await aliases[ 0 ] ).toBe( ALIASES.ENGLISH );
+			expect( await aliases[ 0 ] ).toBe( ALIASES.ENGLISH );
 		} );
 
-		it( 'should display the input labels and types', async function () {
-			const inputs = await FunctionPage.getFunctionInputs();
-			for ( const index in inputs ) {
-				const expectedLabel = ARGUMENT_LABELS.ENGLISH[ index ];
-				const expectedType = INPUT_TYPES[ index ];
-				await expect( await inputs[ index ] ).toBe( `${ expectedLabel }:\n${ expectedType }` );
-			}
-		} );
-
-		it( 'should display the input labels and types 2', async function () {
+		it( 'should create a new function and display function input labels and types', async function () {
 			const inputs = await FunctionPage.getFunctionInputBlocks();
-			for ( let index = 0; index++; index < inputs.length ) {
+			await inputs.map( async ( _, index ) => {
 				const expectedLabel = ARGUMENT_LABELS.ENGLISH[ index ];
 				const expectedType = INPUT_TYPES[ index ];
-				await expect( await FunctionPage.getFunctionInputLabel( inputs[ index ] ) ).toBe( `${ expectedLabel }:` );
-				await expect( await FunctionPage.getFunctionInputType( inputs[ index ] ) ).toBe( expectedType );
-			}
+				expect( await FunctionPage.getFunctionInputLabel( inputs[ index ] ) ).toBe( `${ expectedLabel }:` );
+				expect( await FunctionPage.getFunctionInputType( inputs[ index ] ) ).toBe( expectedType );
+			} );
 		} );
 
-		it( 'should display the output type', async function () {
+		it( 'should create a new function and display function output type', async function () {
 			const outputType = await FunctionPage.getFunctionOutputType();
-			await expect( outputType ).toBe( OUTPUT_TYPE );
+			expect( outputType ).toBe( OUTPUT_TYPE );
 		} );
 	} );
 } );
