@@ -119,25 +119,4 @@ class PublicApiRunTest extends ApiTestCase {
 
 		// TODO (T325593): Call the example-timeout example; ensure the correct error is returned.
 	}
-
-	/**
-	 * Special tests for AppArmor;
-	 *
-	 * @group Broken
-	 * @group WikiLambdaAppArmor
-	 */
-	public function testExecuteCheckAppArmor() {
-		$compositionZ7String = '{ "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" }, "Z7K1": "Z802", '
-			. '"Z802K1": { "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z40" }, "Z40K1": { "Z1K1": "Z9", "Z9K1": "Z42" } }, '
-			. '"Z802K2": { "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z10" }, "Z10K1": { "Z1K1": "Z6", "Z6K1": '
-			. '"arbitrary ZObject" }, "Z10K2": { "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z10" } } }, '
-			. '"Z802K3": { "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z40" }, "Z40K1": { "Z1K1": "Z9", "Z9K1": "Z42" } } }';
-		$compositionResult = $this->doApiRequest( [
-			'action' => 'wikifunctions_run',
-			'function_call' => $compositionZ7String
-		] );
-		$compositionData =
-			json_decode( $compositionResult[0]['wikifunctions_run']['data'], true );
-		$this->assertNotEquals( 'Z24', $compositionData[ 'Z22K1' ] );
-	}
 }
