@@ -76,7 +76,6 @@ const CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	Pagination = require( '../../base/Pagination.vue' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ),
 	Constants = require( '../../../Constants.js' ),
-	mapGetters = require( 'vuex' ).mapGetters,
 	useBreakpoints = require( '../../../composables/useBreakpoints.js' );
 
 // @vue/component
@@ -154,9 +153,7 @@ module.exports = exports = {
 			icons: icons
 		};
 	},
-	computed: $.extend( mapGetters( [
-		'isUserLoggedIn'
-	] ), {
+	computed: {
 		/**
 		 * Whether the display is of the size of a mobile screen
 		 *
@@ -165,7 +162,7 @@ module.exports = exports = {
 		isMobile: function () {
 			return this.breakpoint.current.value === Constants.breakpointsTypes.MOBILE;
 		}
-	} ),
+	},
 	methods: {
 		/**
 		 * Emits the event update-page when selecting

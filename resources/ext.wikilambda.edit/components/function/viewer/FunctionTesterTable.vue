@@ -34,8 +34,7 @@ const FunctionMetadataDialog = require( '../../widgets/FunctionMetadataDialog.vu
 	Constants = require( '../../../Constants.js' ),
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	icons = require( '../../../../lib/icons.json' ),
-	mapGetters = require( 'vuex' ).mapGetters,
-	mapActions = require( 'vuex' ).mapActions;
+	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = exports = {
@@ -128,7 +127,7 @@ module.exports = exports = {
 			return this.$i18n( 'wikilambda-helplink-tooltip' ).text();
 		}
 	} ),
-	methods: $.extend( mapActions( [ 'fetchZids' ] ), {
+	methods: {
 		handleMessageIconClick: function () {
 			// TODO (T315607): See if the metadata dialog behavior can be improved further.
 			// TODO (T316567): Check if results are ready before showing metadata dialog
@@ -138,7 +137,7 @@ module.exports = exports = {
 				this.showMetadata = false;
 			}
 		}
-	} )
+	}
 };
 </script>
 

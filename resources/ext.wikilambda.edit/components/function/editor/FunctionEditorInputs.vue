@@ -122,8 +122,7 @@ module.exports = exports = {
 	computed: $.extend( mapGetters( [
 		'getZFunctionInputs',
 		'getRowByKeyPath',
-		'getUserLangCode',
-		'getZObjectAsJsonById'
+		'getUserLangCode'
 	] ), {
 		/**
 		 * List of inputs

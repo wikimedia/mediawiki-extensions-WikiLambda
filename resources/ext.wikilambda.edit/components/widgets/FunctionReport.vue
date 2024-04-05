@@ -106,7 +106,6 @@ module.exports = exports = {
 	computed: $.extend( mapGetters( [
 		'getLabel',
 		'getStoredObject',
-		'getZTesterPercentage',
 		'getZTesterMetadata'
 	] ), {
 		/**

@@ -92,7 +92,6 @@ module.exports = exports = {
 	mixins: [ eventLogUtils, typeUtils ],
 	computed: $.extend(
 		mapGetters( [
-			'getZObjectAsJson',
 			'getZPersistentContentRowId',
 			'getRowByKeyPath',
 			'getViewMode',

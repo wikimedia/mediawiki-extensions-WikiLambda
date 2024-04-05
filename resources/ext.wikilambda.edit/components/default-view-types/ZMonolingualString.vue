@@ -73,7 +73,6 @@ module.exports = exports = {
 	},
 	computed: $.extend(
 		mapGetters( [
-			'getLabel',
 			'getLanguageIsoCodeOfZLang',
 			'getZMonolingualTextValue',
 			'getZMonolingualLangValue'

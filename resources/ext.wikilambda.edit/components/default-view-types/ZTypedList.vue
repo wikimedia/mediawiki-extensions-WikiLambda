@@ -68,8 +68,7 @@ module.exports = exports = {
 	computed: $.extend(
 		mapGetters( [
 			'getChildrenByParentRowId',
-			'getTypedListItemType',
-			'getZObjectAsJsonById'
+			'getTypedListItemType'
 		] ),
 		{
 			/**

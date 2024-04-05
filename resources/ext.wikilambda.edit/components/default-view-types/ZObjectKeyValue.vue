@@ -193,8 +193,6 @@ module.exports = exports = {
 	},
 	computed: $.extend(
 		mapGetters( [
-			'getZObjectAsJsonById',
-			'getZPersistentContentRowId',
 			'getUserLangZid',
 			'getLabelData',
 			'getExpectedTypeOfKey',
@@ -617,7 +615,6 @@ module.exports = exports = {
 	methods: $.extend( mapActions( [
 		'changeType',
 		'clearType',
-		'clearErrors',
 		'setDirty',
 		'setValueByRowIdAndPath',
 		'setZFunctionCallArguments',

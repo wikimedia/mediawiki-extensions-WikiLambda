@@ -123,7 +123,6 @@ module.exports = exports = {
 		'getRowByKeyPath',
 		'getZArgumentLabelForLanguage',
 		'getZArgumentTypeRowId',
-		'getUserLangCode',
 		'getZMonolingualTextValue'
 	] ), {
 		/**
