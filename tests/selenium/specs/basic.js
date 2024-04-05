@@ -9,7 +9,9 @@
 const LoginPage = require( 'wdio-mediawiki/LoginPage' ),
 	CreateObjectPage = require( '../pageobjects/special/CreateObject.page.js' ),
 	RunFunction = require( '../pageobjects/special/RunFunction.page.js' ),
-	ListObjectsByType = require( '../pageobjects/special/ListObjectsByType.page.js' );
+	ListObjectsByType = require( '../pageobjects/special/ListObjectsByType.page.js' ),
+	i18n = require( '../utils/i18n.js' )();
+
 describe( 'Installation checks', function () {
 
 	describe( 'CreateObject', function () {
@@ -23,19 +25,19 @@ describe( 'Installation checks', function () {
 				{ message: 'Login failed' } );
 
 			await CreateObjectPage.open();
-			await expect( await CreateObjectPage.title ).toHaveText( 'Create a new Object' );
+			await expect( await CreateObjectPage.title ).toHaveText( i18n[ 'wikilambda-special-createobject' ] );
 		} );
 	} );
 	describe( 'RunFunction', function () {
 		it( 'page should exist on installation', async function () {
 			await RunFunction.open();
-			await expect( await RunFunction.title ).toHaveText( 'Run a function' );
+			await expect( await RunFunction.title ).toHaveText( i18n[ 'wikilambda-special-runfunction' ] );
 		} );
 	} );
 	describe( 'ListObjectsByType', function () {
 		it( 'page should exist on installation', async function () {
 			await ListObjectsByType.open();
-			await expect( await ListObjectsByType.title ).toHaveText( 'List all Objects of a given type' );
+			await expect( await ListObjectsByType.title ).toHaveText( i18n[ 'wikilambda-special-objectsbytype' ] );
 		} );
 	} );
 } );
