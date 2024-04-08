@@ -8,7 +8,6 @@
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	ZReference = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZReference.vue' );
 
@@ -16,8 +15,8 @@ describe( 'ZReference', () => {
 	var getters;
 	beforeEach( () => {
 		getters = {
-			getUserLangCode: createGetterMock( 'en' ),
 			getLabel: createGettersWithFunctionsMock( 'String' ),
+			getParentRowId: createGettersWithFunctionsMock( 2 ),
 			getZReferenceTerminalValue: createGettersWithFunctionsMock( 'Z6' ),
 			getZObjectKeyByRowId: createGettersWithFunctionsMock( 'Z1K1' )
 		};
@@ -126,6 +125,24 @@ describe( 'ZReference', () => {
 			} );
 
 			expect( wrapper.vm.selectType ).toBe( Constants.Z_ARGUMENT_KEY );
+		} );
+
+		it( 'sets excluded zids from root persistent content', () => {
+			getters.getParentRowId = createGettersWithFunctionsMock( 2 );
+			getters.getZObjectKeyByRowId = () => ( rowId ) => ( rowId === 1 ) ? 'Z1K1' : 'Z2K2';
+			global.store.hotUpdate( {
+				getters: getters
+			} );
+			const wrapper = shallowMount( ZReference, {
+				props: {
+					rowId: 1,
+					edit: true,
+					expectedType: 'Z4'
+				}
+			} );
+
+			const selector = wrapper.getComponent( { name: 'wl-z-object-selector' } );
+			expect( selector.vm.excludeZids ).toEqual( Constants.EXCLUDE_FROM_PERSISTENT_CONTENT );
 		} );
 	} );
 } );

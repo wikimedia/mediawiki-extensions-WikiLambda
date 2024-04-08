@@ -210,18 +210,13 @@ module.exports = exports = {
 			/**
 			 * Whether is in the built-in list of Zids excluded from selection.
 			 *
-			 * TODO (T336292): this is too opinionated for this component, this should
-			 * depend on what role this component has with respect to the whole ZObject.
-			 * For example a Z3 cannot be chosen as a root object, but can be
-			 * chosen as a type.
-			 *
 			 * @param {string} zid
 			 * @return {boolean}
 			 */
 			isDisallowedType: function ( zid ) {
 				return (
 					( this.type === Constants.Z_TYPE ) &&
-					Constants.EXCLUDED_Z_TYPES.includes( zid )
+					Constants.EXCLUDE_FROM_SELECTOR.includes( zid )
 				);
 			},
 
