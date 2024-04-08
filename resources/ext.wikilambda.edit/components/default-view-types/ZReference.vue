@@ -18,6 +18,7 @@
 				:row-id="rowId"
 				:selected-zid="value"
 				:type="selectType"
+				:exclude-zids="excludeZids"
 				data-testid="z-reference-selector"
 				@input="setValue"
 			></wl-z-object-selector>
@@ -60,6 +61,7 @@ module.exports = exports = {
 	computed: $.extend(
 		mapGetters( [
 			'getLabel',
+			'getParentRowId',
 			'getZObjectKeyByRowId',
 			'getZReferenceTerminalValue'
 		] ),
@@ -113,6 +115,30 @@ module.exports = exports = {
 			 */
 			key: function () {
 				return this.getZObjectKeyByRowId( this.rowId );
+			},
+
+			/**
+			 * Returns the key of the parent
+			 *
+			 * @return {string}
+			 */
+			parentKey: function () {
+				return this.getZObjectKeyByRowId( this.getParentRowId( this.rowId ) );
+			},
+
+			/**
+			 * Returns the list of excluded Zids to restrict in the lookup
+			 * component depending on the current Key. Currently only for the
+			 * content type of Z2K2, the keys from EXCLUDE_FROM_PERSISTENT_CONTENT
+			 * are intentionally excluded.
+			 *
+			 * @return {Array}
+			 */
+			excludeZids: function () {
+				return (
+					( this.key === Constants.Z_OBJECT_TYPE ) &&
+					( this.parentKey === Constants.Z_PERSISTENTOBJECT_VALUE )
+				) ? Constants.EXCLUDE_FROM_PERSISTENT_CONTENT : [];
 			}
 		}
 	),
