@@ -54,13 +54,7 @@ class PublicApiRun extends WikiLambdaApiBase {
 	 * @param ApiPageSet|null $resultPageSet
 	 */
 	private function run( $resultPageSet = null ) {
-		// Unlike the Special pages, we don't have a helpful userCanExecute() method
-		$userAuthority = $this->getContext()->getAuthority();
-		if ( !$userAuthority->isAllowed( 'wikifunctions-run' ) ) {
-			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
-			$this->dieWithZError( $zError, 403 );
-		}
-
+		$start = microtime( true );
 		$params = $this->extractRequestParams();
 		$pageResult = $this->getResult();
 		$stringOfAZ = $params[ 'function_call' ];
@@ -69,6 +63,22 @@ class PublicApiRun extends WikiLambdaApiBase {
 			'zobject' => $zObjectAsStdClass,
 			'doValidate' => true
 		];
+		// Extract the function called, as a string, for the metrics event. (It should always exist,
+		// but if not the orchestrator will return an error.)
+		$function = null;
+		if ( property_exists( $zObjectAsStdClass, 'Z7K1' ) ) {
+			$function = gettype( $zObjectAsStdClass->Z7K1 ) === 'string' ?
+				$zObjectAsStdClass->Z7K1 :
+				json_encode( $zObjectAsStdClass->Z7K1 );
+		}
+
+		// Unlike the Special pages, we don't have a helpful userCanExecute() method
+		$userAuthority = $this->getContext()->getAuthority();
+		if ( !$userAuthority->isAllowed( 'wikifunctions-run' ) ) {
+			$this->submitFunctionCallEvent( 403, $function, $start );
+			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
+			$this->dieWithZError( $zError, 403 );
+		}
 
 		// Don't allow the public API to run "unsaved code" (a custom function with the raw
 		// implementation rather than a ZID string).
@@ -85,6 +95,7 @@ class PublicApiRun extends WikiLambdaApiBase {
 			}
 		}
 		if ( $isUnsavedCode ) {
+			$this->submitFunctionCallEvent( 403, $function, $start );
 			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
 			$this->dieWithZError( $zError, 403 );
 		}
@@ -93,7 +104,8 @@ class PublicApiRun extends WikiLambdaApiBase {
 			'doWork' => function () use ( $jsonQuery ) {
 				return $this->orchestrator->orchestrate( $jsonQuery );
 			},
-			'error' => function ( Status $status ) {
+			'error' => function ( Status $status ) use ( $function, $start ) {
+				$this->submitFunctionCallEvent( 429, $function, $start );
 				$this->dieWithError( [ "apierror-wikilambda_function_call-concurrency-limit" ], null, null, 429 );
 			}
 		] );
@@ -103,6 +115,7 @@ class PublicApiRun extends WikiLambdaApiBase {
 			$response = $work->execute();
 			$result['data'] = $response;
 		} catch ( ConnectException $exception ) {
+			$this->submitFunctionCallEvent( 503, $function, $start );
 			$this->dieWithError(
 				[ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ],
 				null, null, 503
@@ -117,6 +130,26 @@ class PublicApiRun extends WikiLambdaApiBase {
 			$result['data'] = $zResponseObject->getSerialized();
 		}
 		$pageResult->addValue( [], $this->getModuleName(), $result );
+
+		$this->submitFunctionCallEvent( 200, $function, $start );
+	}
+
+	/**
+	 * Constructs and submits a metrics event representing this call.
+	 *
+	 * @param int $httpStatus
+	 * @param string|null $function
+	 * @param float $start
+	 * @return void
+	 * @codeCoverageIgnore
+	 */
+	private function submitFunctionCallEvent( $httpStatus, $function, $start ): void {
+		$eventData = [ 'http' => [ 'status_code' => $httpStatus ] ];
+		if ( $function !== null ) {
+			$eventData['function'] = $function;
+		}
+		$eventData['total_time_ms'] = 1000 * ( microtime( true ) - $start );
+		$this->submitMetricsEvent( 'wikifunctions_run', $eventData );
 	}
 
 	/**
