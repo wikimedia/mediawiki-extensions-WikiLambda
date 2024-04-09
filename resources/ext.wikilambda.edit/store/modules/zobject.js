@@ -1186,8 +1186,8 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Return the next key of the root ZObject. So if the current object is a Z1008
-		 * and there are currently 2 keys, it will return Z1008K3.
+		 * Return the next key of the root ZObject. So if the current object is a Z408
+		 * and there are currently 2 keys, it will return Z408K3.
 		 *
 		 * @param {Object} state
 		 * @param {Object} getters

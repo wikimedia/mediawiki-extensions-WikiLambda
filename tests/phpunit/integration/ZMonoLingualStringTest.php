@@ -53,13 +53,13 @@ class ZMonoLingualStringTest extends WikiLambdaIntegrationTestCase {
 	public function testCreation_invalidNonStringValue() {
 		$testObject = new ZMonoLingualString(
 			new ZReference( 'Z1002' ),
-			new ZReference( 'Z1000' )
+			new ZReference( 'Z400' )
 		);
 		$this->assertFalse( $testObject->isValid() );
 		$this->assertSame( 'Z11', $testObject->getZType() );
 		$this->assertSame( 'Z1002', $testObject->getLanguage() );
-		$this->assertSame( 'Z1000', $testObject->getString() );
-		$this->assertSame( [ 'Z1002' => 'Z1000' ], $testObject->getZValue() );
+		$this->assertSame( 'Z400', $testObject->getString() );
+		$this->assertSame( [ 'Z1002' => 'Z400' ], $testObject->getZValue() );
 	}
 
 	public function testStaticCreation() {

@@ -270,9 +270,9 @@ class ApiFunctionCallTest extends ApiTestCase {
 		$this->assertNotEquals( 'Z24', $pythonData['Z22K1'] );
 
 		$disallowedPythonZ7String = '{ "Z1K1": "Z7", "Z7K1": { "Z1K1": "Z8", "Z8K1": [ "Z17" ], "Z8K2": "Z1", '
-			. '"Z8K3": [ "Z20" ], "Z8K4": [ "Z14", { "Z1K1": "Z14", "Z14K1": "Z1000", "Z14K3": { "Z1K1": "Z16", '
-			. '"Z16K1": "Z610", "Z16K2": "def Z1000():\n    import socket\n    thatsock = socket.socket(socket.'
-			. 'AF_PACKET, socket.SOCK_DGRAM)\n    return \'i did a bad :(\'" } } ], "Z8K5": "Z1000" } }';
+			. '"Z8K3": [ "Z20" ], "Z8K4": [ "Z14", { "Z1K1": "Z14", "Z14K1": "Z400", "Z14K3": { "Z1K1": "Z16", '
+			. '"Z16K1": "Z610", "Z16K2": "def Z400():\n    import socket\n    thatsock = socket.socket(socket.'
+			. 'AF_PACKET, socket.SOCK_DGRAM)\n    return \'i did a bad :(\'" } } ], "Z8K5": "Z400" } }';
 		$disallowedPythonResult = $this->doApiRequest( [
 			'action' => 'wikilambda_function_call',
 			'wikilambda_function_call_zobject' => $disallowedPythonZ7String
