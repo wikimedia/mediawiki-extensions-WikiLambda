@@ -137,7 +137,6 @@ class ZError extends ZObject {
 		// Only child in K2:
 		// * Z502/Not wellformed
 		// * Z522/Array element not wellformed
-		// * Z526/Key value not wellformed
 		if (
 			( $errorType === ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED ) ||
 			( $errorType === ZErrorTypeRegistry::Z_ERROR_KEY_VALUE_NOT_WELLFORMED ) ||
@@ -151,6 +150,16 @@ class ZError extends ZObject {
 				[ 'class' => 'ext-wikilambda-suberror-list-item' ],
 				$subError->getHtmlMessage()
 			);
+		}
+
+		// Add failing key information to message:
+		// * Z526/Key value not wellformed
+		if ( $errorType === ZErrorTypeRegistry::Z_ERROR_KEY_VALUE_NOT_WELLFORMED ) {
+			$errorValue = $this->getZValue();
+			$errorKey = $errorValue->getValueByKey( 'K1' );
+			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZKey $errorKey';
+			$errorKeyLabel = $errorKey->getKeyLabel();
+			$message .= ': ' . $errorKeyLabel;
 		}
 
 		if ( count( $messages ) > 0 ) {

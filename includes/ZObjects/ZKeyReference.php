@@ -10,17 +10,25 @@
 
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use MediaWiki\Title\Title;
 
 class ZKeyReference extends ZObject {
 
 	/**
 	 * Construct a ZKeyReference instance, bypassing the internal ZString formally contained.
 	 *
-	 * @param string $value
+	 * @param ZString|string $value
 	 */
 	public function __construct( $value ) {
+		if ( $value instanceof ZString ) {
+			$this->data[ ZTypeRegistry::Z_KEYREFERENCE_VALUE ] = $value->getZValue();
+			return;
+		}
+
 		$this->data[ ZTypeRegistry::Z_KEYREFERENCE_VALUE ] = $value;
 	}
 
@@ -59,5 +67,28 @@ class ZKeyReference extends ZObject {
 	 */
 	public function getZValue() {
 		return $this->data[ ZTypeRegistry::Z_KEYREFERENCE_VALUE ];
+	}
+
+	/**
+	 * Returns the label of the current ZKeyReference, if it is
+	 * a global key. Else it returns the untranslated key.
+	 *
+	 * @return string
+	 */
+	public function getKeyLabel() {
+		$key = $this->data[ ZTypeRegistry::Z_KEYREFERENCE_VALUE ];
+
+		if ( ZObjectUtils::isValidZObjectGlobalKey( $key ) ) {
+			$typeZid = ZObjectUtils::getZObjectReferenceFromKey( $key );
+			$typeTitle = Title::newFromText( $typeZid, NS_MAIN );
+			$zObjectStore = WikiLambdaServices::getZObjectStore();
+			$content = $zObjectStore->fetchZObjectByTitle( $typeTitle );
+			$language = RequestContext::getMain()->getLanguage();
+			if ( $content && $content->isValid() ) {
+				return ZObjectUtils::getLabelOfGlobalKey( $key, $content->getZObject(), $language );
+			}
+		}
+
+		return $key;
 	}
 }

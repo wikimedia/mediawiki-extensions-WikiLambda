@@ -19,6 +19,8 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZError
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZKeyReference
+ *
  * @group Database
  */
 class ZErrorTest extends WikiLambdaIntegrationTestCase {
@@ -137,7 +139,7 @@ EOT;
 			. '<ul class="ext-wikilambda-suberror-list">'
 			. '<li class="ext-wikilambda-suberror-list-item">List of errors'
 			. '<ul class="ext-wikilambda-suberror-list">'
-			. '<li class="ext-wikilambda-suberror-list-item">Key value not wellformed'
+			. '<li class="ext-wikilambda-suberror-list-item">Key value not wellformed: Z4K1'
 			. '<ul class="ext-wikilambda-suberror-list">'
 			. '<li class="ext-wikilambda-suberror-list-item">List of errors'
 			. '<ul class="ext-wikilambda-suberror-list">'
