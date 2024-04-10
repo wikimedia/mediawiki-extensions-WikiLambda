@@ -22,6 +22,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Status\Status;
 use MediaWiki\Title\Title;
+use TextContent;
 
 /**
  * This class represents the wrapper for a ZObject, as stored in MediaWiki. Though its form is
@@ -359,6 +360,21 @@ class ZObjectContent extends AbstractContent {
 	public function copy() {
 		// We're immutable.
 		return $this;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function convert( $toModel, $lossy = '' ) {
+		if ( $toModel === CONTENT_MODEL_ZOBJECT ) {
+			return $this;
+		}
+
+		if ( $toModel === CONTENT_MODEL_TEXT ) {
+			return new TextContent( $this->text );
+		}
+
+		return false;
 	}
 
 	/**
