@@ -15,7 +15,8 @@
 			"UniCollab",
 			"WindEwriX",
 			"Артём 13327",
-			"Загребин Илья"
+			"Загребин Илья",
+			"Dirruw'o"
 		]
 	},
 	"wikilambda-typeunavailable": "Неизвестный тип",
@@ -55,7 +56,7 @@
 	"wikilambda-code-editor-label": "Редактор кода",
 	"wikilambda-argref-default-label": "Выберите аргумент",
 	"wikilambda-implementation-selector": "Выберите реализацию",
-	"wikilambda-implementation-create-new": "Создать новую реализацию",
+	"wikilambda-implementation-create-new": "Добавить реализацию",
 	"wikilambda-function-are-you-sure-dialog-header": "Вы уверены?",
 	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Ошибка|Ошибки|Ошибок}}",
 	"wikilambda-functioncall-metadata-execution-programming-language-version": "Версия языка программирования",

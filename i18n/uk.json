@@ -334,6 +334,7 @@
 	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1 мова|$1 мов}}",
 	"wikilambda-about-widget-edit-metadata-title": "Редагувати інформацію",
 	"wikilambda-about-widget-description-placeholder": "Введіть опис",
+	"wikilambda-about-widget-done-button": "Готово",
 	"wikilambda-about-widget-view-languages-title": "Інформація іншими мовами",
 	"wikilambda-about-widget-add-language": "Додати мову",
 	"wikilambda-about-widget-search-language-placeholder": "Пошук мови",
