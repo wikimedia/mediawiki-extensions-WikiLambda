@@ -14,7 +14,7 @@ use MediaWiki\Tests\Api\ApiTestCase;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\PublicAPI\PublicApiRun
- * @covers \MediaWiki\Extension\WikiLambda\API\WikiLambdaApiBase
+ * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\WikiLambdaApiBase
  * @group API
  * @group Standalone
  * @group Database

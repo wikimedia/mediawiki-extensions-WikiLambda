@@ -667,22 +667,22 @@
 	},
 	"ForeignResourcesDir": "resources/lib",
 	"APIModules": {
-		"wikilambda_fetch": "MediaWiki\\Extension\\WikiLambda\\API\\ApiZObjectFetcher",
-		"wikilambda_edit": "MediaWiki\\Extension\\WikiLambda\\API\\ApiZObjectEditor",
-		"wikilambda_function_call": "MediaWiki\\Extension\\WikiLambda\\API\\ApiFunctionCall",
+		"wikilambda_fetch": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiZObjectFetcher",
+		"wikilambda_edit": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiZObjectEditor",
+		"wikilambda_function_call": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiFunctionCall",
 		"wikifunctions_run": "MediaWiki\\Extension\\WikiLambda\\PublicAPI\\PublicApiRun",
 		"wikilambda_perform_test": {
-			"class": "MediaWiki\\Extension\\WikiLambda\\API\\ApiPerformTest",
+			"class": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiPerformTest",
 			"services": [
 				"WikiLambdaZObjectStore"
 			]
 		},
-		"wikilambda_supported_programming_languages": "MediaWiki\\Extension\\WikiLambda\\API\\ApiSupportedProgrammingLanguages"
+		"wikilambda_supported_programming_languages": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiSupportedProgrammingLanguages"
 	},
 	"APIListModules": {
-		"wikilambdasearch_labels": "MediaWiki\\Extension\\WikiLambda\\API\\ApiQueryZObjectLabels",
+		"wikilambdasearch_labels": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiQueryZObjectLabels",
 		"wikilambdaload_zobjects": {
-			"class": "MediaWiki\\Extension\\WikiLambda\\API\\ApiQueryZObjects",
+			"class": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiQueryZObjects",
 			"services": [
 				"LanguageFallback",
 				"LanguageNameUtils",
@@ -690,7 +690,7 @@
 			]
 		},
 		"wikilambdafn_search": {
-			"class": "MediaWiki\\Extension\\WikiLambda\\API\\ApiQueryZFunctionReference",
+			"class": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiQueryZFunctionReference",
 			"services": [
 				"WikiLambdaZObjectStore"
 			]

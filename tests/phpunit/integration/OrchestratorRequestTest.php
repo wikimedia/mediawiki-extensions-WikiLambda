@@ -17,7 +17,7 @@ use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 
 /**
  * @covers MediaWiki\Extension\WikiLambda\OrchestratorRequest
- * @covers MediaWiki\Extension\WikiLambda\API\ApiFunctionCall
+ * @covers MediaWiki\Extension\WikiLambda\ActionAPI\ApiFunctionCall
  * @group Database
  */
 class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {

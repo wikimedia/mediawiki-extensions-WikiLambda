@@ -10,7 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-use MediaWiki\Extension\WikiLambda\API\ApiFunctionCall;
+use MediaWiki\Extension\WikiLambda\ActionAPI\ApiFunctionCall;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
 use MediaWiki\Html\Html;

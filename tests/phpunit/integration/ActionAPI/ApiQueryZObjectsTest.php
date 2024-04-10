@@ -7,7 +7,7 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Api;
+namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
 use ApiUsageException;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
@@ -18,7 +18,7 @@ use MediaWiki\Tests\Api\ApiTestCase;
 use MediaWiki\Title\Title;
 
 /**
- * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZobjects
+ * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\ApiQueryZobjects
  * @group Database
  * @group API
  */

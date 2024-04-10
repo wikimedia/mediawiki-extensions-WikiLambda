@@ -8,7 +8,7 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda\API;
+namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
 use ApiMain;
 use ApiPageSet;

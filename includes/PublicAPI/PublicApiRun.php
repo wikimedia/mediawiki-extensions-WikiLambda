@@ -14,7 +14,7 @@ use ApiPageSet;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
-use MediaWiki\Extension\WikiLambda\API\WikiLambdaApiBase;
+use MediaWiki\Extension\WikiLambda\ActionAPI\WikiLambdaApiBase;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;

@@ -7,9 +7,9 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Api;
+namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
-use MediaWiki\Extension\WikiLambda\API\ApiPerformTest;
+use MediaWiki\Extension\WikiLambda\ActionAPI\ApiPerformTest;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
@@ -22,8 +22,8 @@ use MediaWiki\Tests\Api\ApiTestCase;
 use MediaWiki\Title\Title;
 
 /**
- * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest
- * @covers \MediaWiki\Extension\WikiLambda\API\WikiLambdaApiBase
+ * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\ApiPerformTest
+ * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\WikiLambdaApiBase
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils
  * @group API

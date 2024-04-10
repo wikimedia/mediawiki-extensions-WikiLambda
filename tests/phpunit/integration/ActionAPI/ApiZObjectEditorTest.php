@@ -7,7 +7,7 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Api;
+namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
 use ApiUsageException;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
@@ -20,7 +20,7 @@ use MediaWiki\Tests\Api\ApiTestCase;
 use MediaWiki\Title\Title;
 
 /**
- * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectEditor
+ * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\ApiZObjectEditor
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectStore
  * @group Database
  * @group API
