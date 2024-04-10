@@ -34,6 +34,11 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 	 * @inheritDoc
 	 */
 	public function execute() {
+		// (T362271) Emit appropriate cache headers for a 24 hour TTL
+		// NOTE (T362273): MediaWiki out-guesses us and assumes we don't know what we're doing; to fix so it works
+		$this->getMain()->setCacheMode( 'public' );
+		$this->getMain()->setCacheMaxAge( 60 * 60 * 24 );
+
 		$this->run();
 	}
 
