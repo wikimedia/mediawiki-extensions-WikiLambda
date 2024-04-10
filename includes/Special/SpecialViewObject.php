@@ -56,6 +56,7 @@ class SpecialViewObject extends SpecialPage {
 	 * @inheritDoc
 	 */
 	public function execute( $subPage ) {
+		// TODO (T362246): Dependency-inject
 		$services = MediaWikiServices::getInstance();
 
 		$outputPage = $this->getOutput();
@@ -171,7 +172,7 @@ class SpecialViewObject extends SpecialPage {
 		}
 		$outputPage->setCanonicalUrl( $viewURL );
 
-		// TODO: Make this help page.
+		// TODO (T362241): Make this help page.
 		$this->addHelpLink( 'Help:Wikifunctions/Viewing Objects' );
 
 		$this->generateZObjectPayload( $outputPage, $this->getContext(), [
@@ -184,7 +185,7 @@ class SpecialViewObject extends SpecialPage {
 	/**
 	 * Redirect the user to the Main Page, as their request isn't valid / answerable.
 	 *
-	 * TODO: Actually tell the user why they ended up somewhere they might not want?
+	 * TODO (T343652): Actually tell the user why they ended up somewhere they might not want?
 	 *
 	 * @param OutputPage $outputPage
 	 */

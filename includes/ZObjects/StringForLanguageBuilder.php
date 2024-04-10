@@ -81,6 +81,7 @@ class StringForLanguageBuilder {
 			return $languageCode;
 		}
 
+		// TODO (T362246): Dependency-inject
 		$fallbacks = MediaWikiServices::getInstance()->getLanguageFallback()->getAll(
 			$languageCode,
 			$this->languageFallback

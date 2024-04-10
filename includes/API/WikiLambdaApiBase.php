@@ -46,6 +46,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	protected function setUp() {
 		$this->setLogger( LoggerFactory::getInstance( 'WikiLambda' ) );
 
+		// TODO (T330033): Consider injecting this service rather than just fetching from main
 		$services = MediaWikiServices::getInstance();
 
 		$config = $services->getConfigFactory()->makeConfig( 'WikiLambda' );

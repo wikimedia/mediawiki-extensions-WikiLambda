@@ -242,7 +242,7 @@ class ZObjectUtils {
 					if ( $type === ZTypeRegistry::Z_STRING
 						&& array_key_exists( ZTypeRegistry::Z_STRING_VALUE, $output )
 						&& !self::isValidId( $output[ ZTypeRegistry::Z_STRING_VALUE ] ) ) {
-						// FIXME: what if it is a valid ID? what are we returning here?
+						// TODO (T342696): What if it is a valid ID? What do we returning then?
 						return self::canonicalize( $output[ ZTypeRegistry::Z_STRING_VALUE ] );
 					}
 
@@ -359,7 +359,7 @@ class ZObjectUtils {
 	 * Normalise and down-cast a label for database comparison by normalising Unicode, lower-casing,
 	 * and collapsing accents.
 	 *
-	 * TODO: To consider further changes.
+	 * TODO (T362250): To consider further changes; is this sufficient for all use cases and languages?
 	 *
 	 * @param string $input The input
 	 * @return string
@@ -371,7 +371,7 @@ class ZObjectUtils {
 		// This Transliterator removes Latin accents but e.g. retains Han characters as-is.
 		// Specifically, it does canonical decomposition (NFD); removes non-spacing marks like accents;
 		// then recomposes, e.g. for Korean Hangul syllables.
-		// TODO: Replace with a language-aware transliterator?
+		// TODO (T362250): Replace with a language-aware transliterator?
 		$transliterator = Transliterator::create( 'NFD; [:Nonspacing Mark:] Remove; NFC;' );
 		$output = $transliterator->transliterate( mb_strtolower( Normalizer::normalize( $output ) ) );
 

@@ -58,7 +58,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 
 		$labels = $this->zObject->getLabels()->getValueAsList();
 
-		// TODO: This should write the shortform, encoded type (e.g. `Z4(Z6)`)
+		// TODO (T357552): This should write the shortform, encoded type (e.g. `Z881(Z6)`)
 		$ztype = $this->zObject->getZType();
 
 		$innerZObject = $this->zObject->getInnerZObject();
@@ -95,7 +95,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		}
 
 		// Save function information in function table, if appropriate
-		// TODO: Have insertZFunctionReference do an update, and only delete if changing the type/target?
+		// TODO (T362248): Have insertZFunctionReference do an update, and only delete if changing the type/target?
 		$zObjectStore->deleteZFunctionReference( $zid );
 		switch ( $ztype ) {
 			case ZTypeRegistry::Z_IMPLEMENTATION:

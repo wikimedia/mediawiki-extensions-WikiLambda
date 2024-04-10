@@ -304,6 +304,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 					null,
 					[
 						'apierror-wikilambda_function_call-response-malformed',
+						// TODO (T362236): Pass the rendering language in, don't default to English
 						$e->getZError()->getMessage()
 					],
 					null,

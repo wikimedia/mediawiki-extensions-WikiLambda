@@ -236,8 +236,8 @@ class ZObject {
 				}
 			}
 		} elseif ( is_string( $value ) ) {
-			// TODO: Revisit this (probably not needed) when
-			// ZReferences are preserved/created correctly (T296925)
+			// TODO (T296925): Revisit this (probably not needed) when
+			// ZReferences are preserved/created correctly
 			if ( ZObjectUtils::isValidZObjectReference( $value ) ) {
 				$zobject->addLinkedZObject( $value );
 			}
@@ -290,7 +290,7 @@ class ZObject {
 		$serialized = $this->getSerialized();
 
 		// Walk the ZObject tree to get all ZIDs that need to be fetched from the database
-		// FIXME (T296741): currently fetchBatchZObjects doesn't fetch them in batch, must fix or reconsider
+		// TODO (T296741): currently fetchBatchZObjects doesn't fetch them in batch, must fix or reconsider
 		$zids = ZObjectUtils::getRequiredZids( $serialized );
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$contents = $zObjectStore->fetchBatchZObjects( $zids );

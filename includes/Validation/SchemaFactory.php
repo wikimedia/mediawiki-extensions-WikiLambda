@@ -88,7 +88,7 @@ class SchemaFactory {
 		if ( $ZID == ZTypeRegistry::Z_BOOLEAN_TRUE || $ZID == ZTypeRegistry::Z_BOOLEAN_FALSE ) {
 			$ZID = ZTypeRegistry::Z_BOOLEAN;
 		}
-		// FIXME (T300514): Assert that this->loader is not null.
+		// TODO (T300514): Assert that this->loader is not null.
 		$schema = $this->loader->loadSchema( $ZID );
 		if ( $schema == null ) {
 			return null;

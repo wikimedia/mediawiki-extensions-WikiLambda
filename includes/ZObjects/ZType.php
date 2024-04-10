@@ -60,7 +60,7 @@ class ZType extends ZObject {
 					'type' => ZTypeRegistry::BUILTIN_REFERENCE_NULLABLE,
 				],
 				ZTypeRegistry::Z_TYPE_KEYS => [
-					// TODO: Walk the array of ZKeys.
+					// TODO (T362257): Walk the array of ZKeys.
 					'type' => ZTypeRegistry::HACK_ARRAY_Z_KEY,
 					'required' => true,
 				],
@@ -141,9 +141,9 @@ class ZType extends ZObject {
 		if ( !( $this->data[ ZTypeRegistry::Z_TYPE_VALIDATOR ]->isValid() ) ) {
 			return false;
 		}
-		// TODO: Actually check that the validator is a ZFunction that applies to us.
+		// TODO (T362242): Actually check that the validator is a ZFunction that applies to us.
 
-		// FIXME: Check the equality, renderer, parser, deserialiser, and serialiser keys.
+		// TODO (T362243): Check the equality, renderer, parser, and type converter keys.
 
 		return true;
 	}

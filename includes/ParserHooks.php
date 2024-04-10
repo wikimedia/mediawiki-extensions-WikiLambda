@@ -45,7 +45,7 @@ class ParserHooks implements
 	 * @return array
 	 */
 	public static function parserFunctionCallback( Parser $parser, $frame, $args = [] ) {
-		// TODO: Turn $args into the request more properly.
+		// TODO (T362251): Turn $args into the request more properly.
 
 		$cleanupInput = static function ( $input ) use ( $frame ) {
 			return trim( Sanitizer::decodeCharReferences( $frame->expand( $input ) ) );
@@ -116,6 +116,7 @@ class ParserHooks implements
 			return [ $ret ];
 		}
 
+		// TODO (T362252): Check for and use renderers rather than check for Z6 output
 		$targetFunctionArguments = $targetFunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_ARGUMENTS );
 		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList $targetFunctionArguments';
 		$nonStringArgumentsDefinition = array_filter(
@@ -134,7 +135,7 @@ class ParserHooks implements
 
 		if ( count( $nonStringArgumentsDefinition ) ) {
 
-			// TODO: Would be nice to deal with multiple
+			// TODO (T362252): Would be nice to deal with multiple
 			$nonStringArgumentDefinition = $nonStringArgumentsDefinition[ 0 ];
 
 			$nonStringArgumentType = $nonStringArgumentDefinition->getValueByKey(
@@ -162,10 +163,10 @@ class ParserHooks implements
 
 		$call = ( new ZFunctionCall( $target, $arguments ) )->getSerialized();
 
-		// TODO: We want a much finer control on execution time than this.
-		// TODO: Actually do this, or something similar?
+		// TODO (T362254): We want a much finer control on execution time than this.
+		// TODO (T362254): Actually do this, or something similar?
 		// set_time_limit( 1 );
-		// TODO: We should retain this object for re-use if there's more than one call per page.
+		// TODO (T362256): We should retain this object for re-use if there's more than one call per page.
 		try {
 			$ret = [
 				ApiFunctionCall::makeRequest( $call ),
@@ -174,6 +175,7 @@ class ParserHooks implements
 		} catch ( \Throwable $th ) {
 			$parser->addTrackingCategory( 'wikilambda-functioncall-error-category' );
 			if ( $th instanceof ZErrorException ) {
+				// TODO (T362236): Pass in the rendering language as a parameter, don't default to English
 				$errorMessage = $th->getZErrorMessage();
 			} else {
 				// Something went wrong elsewhere; no nice translatable ZError to show, sadly.
@@ -185,7 +187,7 @@ class ParserHooks implements
 			);
 		} finally {
 			// Restore time limits to status quo.
-			// TODO: Actually do this, or something similar?
+			// TODO (T362254): Actually do this, or something similar?
 			// set_time_limit( 0 );
 		}
 

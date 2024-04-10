@@ -59,7 +59,7 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 			'continue' => $continue,
 		] = $this->extractRequestParams();
 
-		// FIXME (T348545): We can reduce this control limit to 100 when we have
+		// TODO (T348545): We can reduce this control limit to 100 when we have
 		// have a system to return results already pre-ranked from the DB.
 		$controlLimit = 5000;
 
@@ -76,7 +76,7 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 		);
 
 		// 1. Set match_rate for every entry and eliminate duplicates with lower match rates
-		// TODO: should we prioritize matches with primary labels?
+		// TODO (T349583): Improve this result sorting algorithm; e.g. should we prioritize matches with primary labels?
 		$matches = [];
 		$hasSearchTerm = ( $searchTerm !== '' );
 		$matchField = ZObjectUtils::isValidZObjectReference( $searchTerm ) ? 'wlzl_zobject_zid' : 'wlzl_label';
@@ -131,7 +131,7 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 		}
 
 		if ( $resultPageSet ) {
-			// FIXME: This needs to be an IResultWrapper, not an array of assoc. objects, irritatingly.
+			// TODO (T362192): This needs to be an IResultWrapper, not an array of assoc. objects, irritatingly.
 			// $resultPageSet->populateFromQueryResult( $dbr, $hits );
 			foreach ( $hits as $index => $entry ) {
 				$resultPageSet->setGeneratorData(
@@ -159,6 +159,7 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 			],
 			'language' => [
 				ParamValidator::PARAM_TYPE => array_keys(
+					// TODO (T330033): Consider injecting this service rather than just fetching from main
 					MediaWikiServices::getInstance()->getLanguageNameUtils()->getLanguageNames()
 				),
 				ParamValidator::PARAM_REQUIRED => true,

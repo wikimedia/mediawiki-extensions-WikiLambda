@@ -173,6 +173,7 @@ class ZObjectContentHandler extends ContentHandler {
 		$object = ZObjectUtils::canonicalize( $zObject->getObject() );
 
 		if ( $languageCode ) {
+			// TODO (T362246): Dependency-inject
 			$services = MediaWikiServices::getInstance();
 
 			// If language code is not valid, throws ZErrorException of Z540/Invalid language code
@@ -289,7 +290,7 @@ class ZObjectContentHandler extends ContentHandler {
 
 		$pageIdentity = $cpoParams->getPage();
 
-		// TODO: Re-work our code to use PageReferences rather than Titles
+		// TODO (T362245): Re-work our code to use PageReferences rather than Titles
 		$title = Title::castFromPageReference( $pageIdentity );
 		'@phan-var Title $title';
 
@@ -382,6 +383,7 @@ class ZObjectContentHandler extends ContentHandler {
 	public static function createZObjectViewHeader(
 		ZObjectContent $content, Title $title, Language $userLang
 	): string {
+		// TODO (T362246): Dependency-inject
 		$services = MediaWikiServices::getInstance();
 
 		$zobject = $content->getZObject();
