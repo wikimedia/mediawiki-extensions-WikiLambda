@@ -73,7 +73,7 @@ describe( 'Publish widget', () => {
 		wrapper.find( '.ext-wikilambda-publish-widget__publish-button' ).trigger( 'click' );
 
 		const publishDialog = wrapper.findComponent( { name: 'wl-publish-dialog' } );
-		waitFor( () => expect( publishDialog.props( 'showDialog' ) ).toBe( false ) );
+		await waitFor( () => expect( publishDialog.props( 'showDialog' ) ).toBe( false ) );
 	} );
 
 	it( 'opens the leave confirmation dialog if page is dirty', async () => {
