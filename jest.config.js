@@ -55,7 +55,6 @@ module.exports = {
 		'resources/ext.wikilambda.edit/components/base/ChipContainer.vue',
 		'resources/ext.wikilambda.edit/components/base/CodeEditor.vue',
 		'resources/ext.wikilambda.edit/components/base/ExpandedToggle.vue',
-		'resources/ext.wikilambda.edit/components/base/LocalizedLabel.vue',
 		'resources/ext.wikilambda.edit/components/base/Pagination.vue',
 		'resources/ext.wikilambda.edit/components/base/Table.vue',
 		'resources/ext.wikilambda.edit/components/base/Tooltip.vue',
