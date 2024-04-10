@@ -149,7 +149,8 @@ module.exports = exports = {
 		 *
 		 * @param {string} value
 		 */
-		setValue: function ( value ) {
+		setValue: function ( newValue ) {
+			const value = newValue || '';
 			const keyPath = ( this.key !== Constants.Z_REFERENCE_ID ) ?
 				[ Constants.Z_REFERENCE_ID ] :
 				[];
