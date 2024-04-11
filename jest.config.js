@@ -54,7 +54,6 @@ module.exports = {
 		'resources/ext.wikilambda.edit/components/base/Chip.vue',
 		'resources/ext.wikilambda.edit/components/base/ChipContainer.vue',
 		'resources/ext.wikilambda.edit/components/base/CodeEditor.vue',
-		'resources/ext.wikilambda.edit/components/base/Pagination.vue',
 		'resources/ext.wikilambda.edit/components/base/Table.vue',
 		'resources/ext.wikilambda.edit/components/base/Tooltip.vue',
 		// These are components that will be removed:
