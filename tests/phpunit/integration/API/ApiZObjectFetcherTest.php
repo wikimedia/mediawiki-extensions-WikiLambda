@@ -36,7 +36,6 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 		$this->doApiRequest( [
 			'action' => 'wikilambda_fetch',
 			'zids' => $unnamable,
-			'language' => 'en',
 		] );
 	}
 
@@ -59,7 +58,6 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 		$this->doApiRequest( [
 			'action' => 'wikilambda_fetch',
 			'zids' => $unknownZid,
-			'language' => 'en',
 		] );
 	}
 
@@ -68,7 +66,6 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 		$this->doApiRequest( [
 			'action' => 'wikilambda_fetch',
 			'zids' => '|',
-			'language' => 'en',
 		] );
 	}
 
@@ -87,7 +84,6 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 		$result = $this->doApiRequest( [
 			'action' => 'wikilambda_fetch',
 			'zids' => 'z1|z3',
-			'language' => 'en',
 		] );
 
 		$this->assertEquals(
@@ -117,7 +113,6 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 			'action' => 'wikilambda_fetch',
 			'zids' => 'z1',
 			'revisions' => $z1TitleRev,
-			'language' => 'en',
 		] );
 
 		$this->assertEquals(
@@ -140,7 +135,6 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 			'action' => 'wikilambda_fetch',
 			'zids' => 'Z1',
 			'revisions' => '-1',
-			'language' => 'en',
 		] );
 
 		$this->assertNull( $result[0]["Z1"]["wikilambda_fetch"] );
@@ -168,7 +162,6 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 			'action' => 'wikilambda_fetch',
 			'zids' => 'Z1|Z3',
 			'revisions' => $z1TitleRev,
-			'language' => 'en',
 		] );
 	}
 }

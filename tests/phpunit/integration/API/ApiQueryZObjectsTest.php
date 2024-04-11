@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Api;
 
+use ApiUsageException;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
@@ -54,6 +55,8 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 		$langs = ZLangRegistry::singleton();
 		$langs->register( self::EN, 'en' );
 		$langs->register( self::FR, 'fr' );
+
+		$this->insertBuiltinObjects( [ 'Z60', 'Z1002', 'Z1004' ] );
 
 		// Add ZTypeTest multilingual object (Z111)
 		$title = Title::newFromText( ZTestType::TEST_ZID, NS_MAIN );
@@ -186,6 +189,11 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 	}
 
 	public function testUnavailableLanguage() {
+		// Note that unlike the Invalid test below, this langugage is in the database, but not in the
+		// language cache, which shouldn't ever happen
+
+		$this->insertBuiltinObjects( [ 'Z1003' ] );
+
 		$result = $this->doApiRequest( [
 			'action' => 'query',
 			'list' => 'wikilambdaload_zobjects',
@@ -211,28 +219,19 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 	}
 
 	public function testInvalidLanguage() {
+		$badLanguageCode = 'thisisnotalanguagecodethisisjustatribute';
+
+		$this->expectException( ApiUsageException::class );
+		$this->expectExceptionMessage(
+			'Unrecognized value for parameter "wikilambdaload_language": ' . $badLanguageCode . '.'
+		);
+
 		$result = $this->doApiRequest( [
 			'action' => 'query',
 			'list' => 'wikilambdaload_zobjects',
 			'wikilambdaload_zids' => 'Z111',
-			'wikilambdaload_language' => 'thisisnotalanguagecodethisisjustatribute',
+			'wikilambdaload_language' => $badLanguageCode,
 		] );
-
-		$z111 = $result[0]['query']['wikilambdaload_zobjects']['Z111']['data'];
-		$keys = $z111['Z2K2']['Z4K2'];
-		$labels = $z111['Z2K3']['Z12K1'];
-
-		// Remove type element
-		array_shift( $keys );
-		array_shift( $labels );
-
-		$this->assertCount( 1, $labels );
-		$this->assertEquals( self::EN, $labels[0]['Z11K1'] );
-
-		foreach ( $keys as $key ) {
-			$this->assertCount( 2, $key['Z3K3']['Z12K1'] );
-			$this->assertEquals( self::EN, $key['Z3K3']['Z12K1'][1]['Z11K1'] );
-		}
 	}
 
 	public function testRevisions_valid() {

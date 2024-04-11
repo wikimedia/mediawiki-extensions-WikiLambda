@@ -294,6 +294,8 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase implements LoggerAwareInter
 	 * @codeCoverageIgnore
 	 */
 	protected function getAllowedParams(): array {
+		$zObjectStore = WikiLambdaServices::getZObjectStore();
+
 		return [
 			'zids' => [
 				ParamValidator::PARAM_TYPE => 'string',
@@ -305,9 +307,7 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase implements LoggerAwareInter
 				ParamValidator::PARAM_ISMULTI => true,
 			],
 			'language' => [
-				// TODO (T362193): Can't use the below as it excludes Wikifunctions languages MW doesn't know about
-				// ParamValidator::PARAM_TYPE => array_keys( $this->languageNameUtils->getLanguageNames() ),
-				ParamValidator::PARAM_TYPE => 'string',
+				ParamValidator::PARAM_TYPE => $zObjectStore->fetchAllZLanguageCodes(),
 				ParamValidator::PARAM_REQUIRED => false,
 			],
 			'get_dependencies' => [

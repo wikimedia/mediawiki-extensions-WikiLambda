@@ -592,6 +592,16 @@ class ZObjectStore {
 	}
 
 	/**
+	 * Gets from the secondary database a list of all supported natural languages,
+	 * mapping from ZID to BCP47 (or MediaWiki) language code
+	 *
+	 * @return array<string>
+	 */
+	public function fetchAllZLanguageCodes() {
+		return array_values( $this->fetchAllZLanguageObjects() );
+	}
+
+	/**
 	 * Search labels in the secondary database, filtering by language Zids, type or label string.
 	 *
 	 * @param string $label Term to search in the label database
