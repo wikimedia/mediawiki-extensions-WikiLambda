@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\RESTAPI;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
@@ -22,6 +23,7 @@ use MediaWiki\Rest\LocalizedHttpException;
 use MediaWiki\Rest\ResponseInterface;
 use MediaWiki\Rest\SimpleHandler;
 use MediaWiki\Title\Title;
+use Psr\Log\LoggerInterface;
 use Wikimedia\Message\MessageValue;
 use Wikimedia\ParamValidator\ParamValidator;
 
@@ -32,12 +34,18 @@ use Wikimedia\ParamValidator\ParamValidator;
 class FetchHandler extends SimpleHandler {
 
 	public const MAX_REQUESTED_ZIDS = 50;
+	private ZTypeRegistry $typeRegistry;
+	private LoggerInterface $logger;
 
 	/** @inheritDoc */
 	public function run( $ZIDs, $revisions = [] ) {
+		$this->typeRegistry = ZTypeRegistry::singleton();
+		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
+
 		$responseList = [];
 
 		$language = $this->getRequest()->getQueryParams()['language'];
+		$getDependencies = $this->getRequest()->getQueryParams()['getDependencies'];
 
 		if ( count( $revisions ) > 0 && ( count( $revisions ) !== count( $ZIDs ) ) ) {
 			$zErrorObject = ZErrorFactory::createZErrorInstance(
@@ -53,6 +61,8 @@ class FetchHandler extends SimpleHandler {
 		if ( $reqSize > self::MAX_REQUESTED_ZIDS ) {
 			$this->dieRESTfully( 'wikilambda-restapi-fetch-too-many', [ $reqSize, self::MAX_REQUESTED_ZIDS ], 403 );
 		}
+
+		$extraDependencies = [];
 
 		foreach ( $ZIDs as $index => $ZID ) {
 			if ( !ZObjectUtils::isValidZObjectReference( mb_strtoupper( $ZID ) ) ) {
@@ -84,13 +94,77 @@ class FetchHandler extends SimpleHandler {
 					}
 
 					$responseList[ $ZID ] = $fetchedContent;
+
+					if ( $getDependencies ) {
+						$dependencies = $this->getTypeDependencies( json_decode( $fetchedContent ) ?? [] );
+						foreach ( $dependencies as $_key => $dep ) {
+							if ( in_array( $dep, $ZIDs ) ) {
+								continue;
+							}
+							$extraDependencies[] = $dep;
+						}
+					}
+
 				}
 			}
+		}
+
+		// We use array_unique to de-duplicate dependencies if they're used multiple times
+		foreach ( array_unique( $extraDependencies ) as $_key => $ZID ) {
+			$responseList[$ZID] = ZObjectContentHandler::getExternalRepresentation(
+				Title::newFromText( $ZID, NS_MAIN ),
+				$language,
+				// Get latest, as we have no revision to request.
+				null
+			);
 		}
 
 		$response = $this->getResponseFactory()->createJson( $responseList );
 
 		return $response;
+	}
+
+	/**
+	 * Returns the types of type keys and function arguments
+	 *
+	 * @param \stdClass $zobject
+	 * @return array
+	 */
+	private function getTypeDependencies( $zobject ) {
+		$dependencies = [];
+
+		// We need to return dependencies of those objects that build arguments of keys:
+		// Types: return the types of its keys
+		// Functions: return the types of its arguments
+		$content = $zobject->{ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE };
+		if (
+			is_array( $content ) ||
+			is_string( $content ) ||
+			!property_exists( $content, ZTypeRegistry::Z_OBJECT_TYPE )
+		) {
+			return $dependencies;
+		}
+
+		$type = $content->{ ZTypeRegistry::Z_OBJECT_TYPE };
+		if ( $type === ZTypeRegistry::Z_TYPE ) {
+			$keys = $content->{ ZTypeRegistry::Z_TYPE_KEYS };
+			foreach ( array_slice( $keys, 1 ) as $key ) {
+				$keyType = $key->{ ZTypeRegistry::Z_KEY_TYPE };
+				if ( is_string( $keyType ) && ( !$this->typeRegistry->isZTypeBuiltIn( $keyType ) ) ) {
+					array_push( $dependencies, $keyType );
+				}
+			}
+		} elseif ( $type === ZTypeRegistry::Z_FUNCTION ) {
+			$args = $content->{ ZTypeRegistry::Z_FUNCTION_ARGUMENTS };
+			foreach ( array_slice( $args, 1 ) as $arg ) {
+				$argType = $arg->{ ZTypeRegistry::Z_ARGUMENTDECLARATION_TYPE };
+				if ( is_string( $argType ) && ( !$this->typeRegistry->isZTypeBuiltIn( $argType ) ) ) {
+					array_push( $dependencies, $argType );
+				}
+			}
+		}
+
+		return array_unique( $dependencies );
 	}
 
 	public function applyCacheControl( ResponseInterface $response ) {
@@ -127,6 +201,12 @@ class FetchHandler extends SimpleHandler {
 				ParamValidator::PARAM_DEFAULT => null,
 				ParamValidator::PARAM_REQUIRED => false,
 			],
+			'getDependencies' => [
+				self::PARAM_SOURCE => 'query',
+				ParamValidator::PARAM_TYPE => 'boolean',
+				ParamValidator::PARAM_DEFAULT => false,
+				ParamValidator::PARAM_REQUIRED => false,
+			],
 		];
 	}
 
@@ -136,7 +216,7 @@ class FetchHandler extends SimpleHandler {
 		} catch ( ZErrorException $e ) {
 			// Generating the human-readable error data itself threw. Oh dear.
 
-			LoggerFactory::getInstance( 'WikiLambda' )->warning(
+			$this->logger->warning(
 				__METHOD__ . ' called but an error was thrown when trying to report an error',
 				[
 					'zerror' => $zerror->getSerialized(),
