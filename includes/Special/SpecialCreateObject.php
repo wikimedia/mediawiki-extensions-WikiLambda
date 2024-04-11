@@ -83,7 +83,7 @@ class SpecialCreateObject extends SpecialPage {
 			$this->displayRestrictionError();
 		}
 
-		// TODO: Use $subPage to extract and pre-fill type/etc.?
+		// NOTE: We ignore $subPage server-side, and extract and pre-fill type/etc. in Vue
 
 		$this->setHeaders();
 

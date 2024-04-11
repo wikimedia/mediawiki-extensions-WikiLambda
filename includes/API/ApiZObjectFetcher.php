@@ -100,6 +100,7 @@ class ApiZObjectFetcher extends WikiLambdaApiBase {
 	 * @codeCoverageIgnore
 	 */
 	protected function getAllowedParams(): array {
+		// TODO (T330033): Consider injecting this service rather than just fetching from main
 		$languageUtils = MediaWikiServices::getInstance()->getLanguageNameUtils();
 
 		return [

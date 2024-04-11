@@ -48,11 +48,13 @@ class SpecialListDuplicateObjectNames extends SpecialPage {
 		// TODO (T300516): Make this help page.
 		$this->addHelpLink( 'Help:Wikifunctions/Duplicate Object labels' );
 
+		// TODO (T362246): Dependency-inject
+		$services = MediaWikiServices::getInstance();
 		$pager = new DuplicateObjectLabelsPager(
 			$this,
 			$this->getLinkRenderer(),
-			MediaWikiServices::getInstance()->getLinkBatchFactory(),
-			MediaWikiServices::getInstance()->getLanguageNameUtils()
+			$services->getLinkBatchFactory(),
+			$services->getLanguageNameUtils()
 		);
 
 		if ( $pager->getNumRows() === 0 ) {

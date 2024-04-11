@@ -87,10 +87,8 @@ class ZObjectStore {
 			->caller( __METHOD__ )
 			->fetchResultSet();
 
-		// TODO: Take 'Z9999' to extension constants when we define the ZID ranges
-		// available for new ZObjects.
-		// TODO: Maybe getNextAvailableZid will need to take ZType as an input in
-		// order to assign zid in different ranges.
+		// NOTE: This hard-codes user-provided content as starting from 'Z10000'. Now that the
+		// wiki has launched, change it will have unpredicatable effects.
 		$highestZid = $res->numRows() > 0 ? $res->fetchRow()[ 0 ] : 'Z9999';
 		$targetZid = 'Z' . ( max( intval( substr( $highestZid, 1 ) ) + 1, 10000 ) );
 
@@ -149,7 +147,7 @@ class ZObjectStore {
 
 		$dataArray = [];
 		foreach ( $titleArray as $title ) {
-			// TODO (T300521) Handle error from fetchZObjectByTitle
+			// TODO (T300521): Handle error from fetchZObjectByTitle
 			$content = $this->fetchZObjectByTitle( $title );
 			if ( $content->isValid() ) {
 				$dataArray[ $title->getBaseText() ] = $content->getZObject();
@@ -267,6 +265,7 @@ class ZObjectStore {
 			// Error: Database or a deeper MediaWiki error, e.g. a general editing rate limit
 			$error = ZErrorFactory::createZErrorInstance(
 				ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
+				// TODO (T362236): Add the rendering language as a parameter, don't default to English
 				[ 'message' => $e->getMessage() ]
 			);
 			return ZObjectPage::newFatal( $error );
@@ -381,7 +380,7 @@ class ZObjectStore {
 			->from( 'wikilambda_zobject_labels' )
 			->where( [
 				'wlzl_zobject_zid != ' . $dbr->addQuotes( $zid ),
-				// TODO: Check against type, once we properly implement that.
+				// TODO (T357552): Check against type, once we properly implement that.
 				// 'wlzl_type' => $dbr->addQuotes( $ztype ),
 				$dbr->makeList( $labelConflictConditions, $dbr::LIST_OR )
 			] )
@@ -390,7 +389,7 @@ class ZObjectStore {
 
 		$conflicts = [];
 		foreach ( $res as $row ) {
-			// TODO: What if more than one conflicts with us on each language?
+			// TODO (T362247): What if more than one conflicts with us on each language?
 			$conflicts[ $row->wlzl_language ] = $row->wlzl_zobject_zid;
 		}
 
@@ -712,6 +711,7 @@ class ZObjectStore {
 		// Set language filter
 		$languages = [ $languageZid ];
 		if ( $fallback ) {
+			// TODO (T362246): Dependency-inject
 			$fallbackLanguages = MediaWikiServices::getInstance()->getLanguageFallback()->getAll(
 				$languageCode,
 				// Note: We intentionally fall all the way back to English as this will likely be the most

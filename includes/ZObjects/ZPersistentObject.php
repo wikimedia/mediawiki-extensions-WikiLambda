@@ -75,7 +75,7 @@ class ZPersistentObject extends ZObject {
 	 * @inheritDoc
 	 */
 	public function isValid(): bool {
-		// FIXME (T296724): we accept ZStrings and ZReferences for now because functions-schemata/data
+		// TODO (T296724): we accept ZStrings and ZReferences for now because functions-schemata/data
 		// files are incorrect (Z2K1 contains reference instead of string)
 		if (
 			!( $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ID ] instanceof ZString ) &&

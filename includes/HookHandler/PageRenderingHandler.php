@@ -45,8 +45,9 @@ class PageRenderingHandler implements
 		$targetTitle = $skinTemplate->getRelevantTitle();
 
 		// For any page: Add a language control, for users to navigate to another language.
-		// TODO: this only works for browsers with Javascript. The button is invisible until
-		// the ext.wikilambda.languageselector module creates the Vue component to replace it.
+		// TODO (T362235): This only works for browsers with Javascript. The button is invisible
+		// until the ext.wikilambda.languageselector module creates the Vue component to replace
+		// it; instead, render this Codex component properly server-side somehow.
 		$ourButton = [ 'wikifunctions-language' => [
 			'button' => true,
 			'id' => 'ext-wikilambda-pagelanguagebutton',

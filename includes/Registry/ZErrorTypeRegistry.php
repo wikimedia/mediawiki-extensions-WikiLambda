@@ -237,7 +237,7 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 			return "Unknown error $errorType";
 		}
 
-		// TODO: should it be in the user selected language instead?
+		// TODO (T362236): Take the rendering language as a parameter, don't default to English
 		$errorLabel = $zObject->getLabels()->getStringForLanguageCode( 'en' );
 		$this->register( $errorType, $errorLabel );
 

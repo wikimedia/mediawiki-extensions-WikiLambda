@@ -69,7 +69,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		$requestedTesters = $params[ 'ztesters' ] ?: [];
 
 		// 1. Work out matrix of what we want for what
-		// FIXME: Handle an inline ZFunction (for when it's not been created yet)?
+		// TODO (T362190): Consider handling an inline ZFunction (for when it's not been created yet)?
 		$targetTitle = Title::newFromText( $functionZid, NS_MAIN );
 		if ( !$targetTitle || !( $targetTitle->exists() ) ) {
 			$this->dieWithError( [ "wikilambda-performtest-error-unknown-zid", $functionZid ], null, null, 404 );

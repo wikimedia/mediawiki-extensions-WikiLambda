@@ -305,7 +305,7 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase implements LoggerAwareInter
 				ParamValidator::PARAM_ISMULTI => true,
 			],
 			'language' => [
-				// FIXME: Can't use the below as it excludes Wikifunctions languages MW doesn't know about
+				// TODO (T362193): Can't use the below as it excludes Wikifunctions languages MW doesn't know about
 				// ParamValidator::PARAM_TYPE => array_keys( $this->languageNameUtils->getLanguageNames() ),
 				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_REQUIRED => false,

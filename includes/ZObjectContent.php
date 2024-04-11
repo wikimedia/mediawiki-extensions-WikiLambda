@@ -101,7 +101,7 @@ class ZObjectContent extends AbstractContent {
 		}
 
 		// Save the string and object content
-		// TODO: We might not need the text content
+		// TODO (T284473): We might not need the text content once we have proper diffs
 		$this->text = $text;
 		$this->object = $parseStatus->getValue();
 	}
@@ -115,6 +115,7 @@ class ZObjectContent extends AbstractContent {
 		try {
 			$this->zobject = ZObjectFactory::createPersistentContent( $this->getObject() );
 		} catch ( ZErrorException $e ) {
+			// TODO (T362236): Add the rendering language as a parameter, don't default to English
 			$this->status->fatal( $e->getMessage() );
 			$this->error = $e->getZError();
 		}
@@ -330,6 +331,7 @@ class ZObjectContent extends AbstractContent {
 	 * @inheritDoc
 	 */
 	public function getTextForSummary( $maxLength = 250 ) {
+		// TODO (T362246): Dependency-inject
 		$contentLanguage = MediaWikiServices::getInstance()->getContentLanguage();
 		// Splice out newlines from content.
 		$textWithoutNewlines = preg_replace( "/[\n\r]/", ' ', $this->getText() );
@@ -363,7 +365,7 @@ class ZObjectContent extends AbstractContent {
 	 * @inheritDoc
 	 */
 	public function isCountable( $hasLinks = null ) {
-		// TODO: Dependency-inject
+		// TODO (T362246): Dependency-inject
 		$config = MediaWikiServices::getInstance()->getMainConfig();
 
 		return (

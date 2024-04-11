@@ -197,7 +197,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 		self::Z_KEYREFERENCE,
 		self::Z_ERROR,
 		self::Z_CODE,
-		// TODO (T309302) uncomment when fixed Z24 insertion issue
+		// TODO (T309302): Uncomment when fixed Z24 insertion issue
 		// self::Z_UNIT,
 	];
 
@@ -415,7 +415,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 			return false;
 		}
 
-		// TODO: Do we want to always store English? Or the wiki's contentLanguage? Or something else?
+		// NOTE: We store English, as this label isn't actively used except for pre-defined ZTypes
 		$this->register( $key, $zObject->getLabels()->getStringForLanguageCode( 'en' ) );
 
 		return true;
@@ -457,7 +457,6 @@ class ZTypeRegistry extends ZObjectRegistry {
 	 * @return bool
 	 */
 	public function isZObjectTypeCached( string $type ): bool {
-		// TODO: The registry is just a cache; also check the DB given the key.
 		return in_array( $type, $this->getCachedZObjectTypes(), true );
 	}
 
@@ -473,7 +472,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 			return true;
 		}
 
-		// TODO: Walk the DB to find if this type is registered.
+		// TODO (T300530): The registry is just a cache; also walk the DB to find if this type is registered.
 		return false;
 	}
 

@@ -115,7 +115,7 @@ class ZObjectFactory {
 		}
 
 		// Build empty values if we are creating a new ZPersistentObject wrapper
-		// TODO: Looks like this case is never really used: contemplate removing it
+		// TODO (T362249): Looks like this case is never really used: contemplate removing it
 		$persistentId ??= self::createChild( ZTypeRegistry::Z_NULL_REFERENCE );
 		$persistentLabel ??= self::createChild( (object)[
 			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MULTILINGUALSTRING,
@@ -135,7 +135,7 @@ class ZObjectFactory {
 		// 4.6. Check validity, to make sure that ID, label and aliases have the right format
 		if ( !$persistentObject->isValid() ) {
 			throw new ZErrorException(
-				// FIXME (T300506) Detail persistent object-related errors
+				// TODO (T300506): Detail persistent object-related errors
 				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
 					[
@@ -193,7 +193,7 @@ class ZObjectFactory {
 
 		// 2. Create ZObjectStructureValidator to check that the ZObject is well formed
 		try {
-			// FIXME (T309409): Generic validator should work with lists but it fails during ZObject migration
+			// TODO (T309409): Generic validator should work with lists but it fails during ZObject migration
 			$validator = ZObjectStructureValidator::createCanonicalValidator( is_array( $input ) ? "LIST" : $typeZid );
 		} catch ( ZErrorException $e ) {
 			// If there's no function-schemata validator (user-defined type), we do a generic custom validation
@@ -496,7 +496,7 @@ class ZObjectFactory {
 
 		// Check for canonical arrays
 		if ( is_array( $object ) ) {
-			// FIXME (T298126): We should probably infer the type of ZObjects contained in
+			// TODO (T298126): We should probably infer the type of ZObjects contained in
 			// this array instead of just creating an untyped list of Z1s
 			return new ZFunctionCall(
 				new ZReference( ZTypeRegistry::Z_FUNCTION_TYPED_LIST ),
@@ -539,9 +539,9 @@ class ZObjectFactory {
 			$errorRegistry = ZErrorTypeRegistry::singleton();
 			$typeZid = $type->getZValue();
 
-			// FIXME (T298093)
-			// Remove this exception, we will not have ZReferences to ZErrorTypes
-			// here, but ZFunctionCalls to Z885.
+			// TODO (T298093): Remove this exception, we will not have ZReferences to
+			// ZErrorTypes here, but ZFunctionCalls to Z885.
+			//
 			// For now, if it's a reference to a ZErrorType (e.g. Z511), accept it
 			// as if it were a type.
 			if (

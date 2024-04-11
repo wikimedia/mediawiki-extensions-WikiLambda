@@ -120,7 +120,7 @@ class PageEditingHandler implements NamespaceIsMovableHook, MultiContentSaveHook
 			return;
 		}
 
-		// TODO: Is there a nicer way of getting 'all change actions'?
+		// TODO (T362234): Is there a nicer way of getting 'all change actions'?
 		if ( !( $action == 'create' || $action == 'edit' || $action == 'upload' ) ) {
 			return;
 		}
@@ -134,7 +134,7 @@ class PageEditingHandler implements NamespaceIsMovableHook, MultiContentSaveHook
 			return false;
 		}
 
-		// TODO: Per-user rights checks (in getUserPermissionsErrorsExpensive instead)?
+		// NOTE: We don't do per-user rights checks here; that's left to ZObjectAuthorization
 
 		return true;
 	}

@@ -121,6 +121,7 @@ class ZMultiLingualStringSet extends ZObject {
 			return $this->getAliasesForLanguageCode( $language->getCode() );
 		}
 
+		// TODO (T362246): Dependency-inject
 		$fallbacks = MediaWikiServices::getInstance()->getLanguageFallback()->getAll(
 			$language->getCode(),
 			/* Don't try for en unless it's an accepted fallback. */ LanguageFallback::STRICT

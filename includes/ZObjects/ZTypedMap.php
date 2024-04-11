@@ -154,7 +154,7 @@ class ZTypedMap extends ZObject {
 	 * already an entry for the given key, overwrites the corresponding value.  Otherwise,
 	 * creates a new entry. N.B.: Modifies the content of the ZMap's list in place.
 	 *
-	 * TODO (T302015) When ZMap keys are extended beyond Z6/Z39, update accordingly
+	 * TODO (T302015): When ZMap keys are extended beyond Z6/Z39, update accordingly
 	 *
 	 * @param ZObject $key A Z6 or Z39 instance to serve as the key
 	 * @param ?ZObject $value A ZObject to set; if null, no object is set

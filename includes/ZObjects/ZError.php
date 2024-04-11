@@ -102,6 +102,7 @@ class ZError extends ZObject {
 	 * @return string ZError message
 	 */
 	public function getMessage(): string {
+		// TODO (T362236): Add the rendering language as a parameter, don't default to English
 		return ZErrorTypeRegistry::singleton()->getZErrorTypeLabel( $this->getZErrorType() );
 	}
 
@@ -111,6 +112,7 @@ class ZError extends ZObject {
 	 * @return string ZError message
 	 */
 	public function getHtmlMessage(): string {
+		// TODO (T362236): Add the rendering language as a parameter, don't default to English
 		$message = ZErrorTypeRegistry::singleton()->getZErrorTypeLabel( $this->getZErrorType() );
 		$messages = [];
 

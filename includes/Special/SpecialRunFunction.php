@@ -61,7 +61,7 @@ class SpecialRunFunction extends SpecialPage {
 			$this->displayRestrictionError();
 		}
 
-		// TODO: Use $subPage to extract and pre-fill target Z8?
+		// TODO (T359573): Use $subPage to extract and pre-fill target Z8?
 
 		$this->setHeaders();
 		$this->outputHeader( 'wikilambda-special-runfunction-summary' );
@@ -71,10 +71,9 @@ class SpecialRunFunction extends SpecialPage {
 
 		$output->addWikiMsg( 'wikilambda-special-runfunction-intro' );
 
-		// TODO (T300515): Make this help page.
 		$this->addHelpLink( 'Help:Wikifunctions/Run function' );
 
-		// TODO: De-dupe a bit more from ZObjectEditAction?
+		// TODO (T362240): Can we re-use parts of ZObjectEditingPageTrait rather than re-use?
 		$userLang = $this->getLanguage();
 
 		// Fallback no-JS notice.

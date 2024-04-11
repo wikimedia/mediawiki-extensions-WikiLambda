@@ -92,6 +92,7 @@ class ZObjectEditAction extends Action {
 		*/
 
 		// used to go from LANG_CODE -> LANG_NAME
+		// TODO (T362246): Dependency-inject
 		$services = MediaWikiServices::getInstance();
 
 		// the BCP47 code of the language currently being rendered for the zObject Type
