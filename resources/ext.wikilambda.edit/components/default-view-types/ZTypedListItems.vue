@@ -105,24 +105,20 @@ module.exports = exports = {
 		] ),
 		{
 			/**
-			 * Gets the set of ids that compose this typed list, including the type itself
+			 * Returns the list of item row Ids (without the type item)
+			 * sorted by their key
 			 *
 			 * @return {Array}
 			 */
-			childRowIds: function () {
+			listItemsRowIds: function () {
 				return this.getChildrenByParentRowId( this.rowId )
-					.map( function ( row ) {
+					.sort( ( a, b ) => {
+						return parseInt( a.key ) - parseInt( b.key );
+					} )
+					.slice( 1 )
+					.map( ( row ) => {
 						return row.id;
 					} );
-			},
-
-			/**
-			 * Returns the list items without the type (the first item in the list)
-			 *
-			 * @return {Array} list
-			 */
-			listItemsRowIds: function () {
-				return this.childRowIds.slice( 1 );
 			},
 
 			/**

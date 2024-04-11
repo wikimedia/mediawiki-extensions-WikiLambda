@@ -1978,6 +1978,32 @@ module.exports = exports = {
 				context.dispatch( 'removeRow', itemRowId );
 			}
 			context.dispatch( 'recalculateTypedListKeys', payload.parentRowId );
+		},
+
+		/**
+		 * Moves an item in a typed list to the given position
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 * @param {number} payload.parentRowId
+		 * @param {string} payload.key
+		 * @param {number} payload.offset
+		 */
+		moveItemInTypedList: function ( context, payload ) {
+			const items = context.getters.getChildrenByParentRowId( payload.parentRowId );
+
+			const movedItem = items.find( ( row ) => row.key === payload.key );
+			const newKey = String( parseInt( payload.key ) + payload.offset );
+			const displacedItem = items.find( ( row ) => row.key === newKey );
+
+			context.commit( 'setKeyByRowIndex', {
+				index: context.getters.getRowIndexById( movedItem.id ),
+				key: newKey
+			} );
+			context.commit( 'setKeyByRowIndex', {
+				index: context.getters.getRowIndexById( displacedItem.id ),
+				key: payload.key
+			} );
 		}
 	}
 };

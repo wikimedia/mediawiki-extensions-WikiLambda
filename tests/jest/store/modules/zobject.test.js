@@ -4008,5 +4008,84 @@ describe( 'zobject Vuex module', () => {
 				expect( context.dispatch ).toHaveBeenCalledWith( 'recalculateTypedListKeys', 4 );
 			} );
 		} );
+
+		describe( 'moveItemInTypedList', () => {
+			let listRows;
+
+			beforeEach( () => {
+				listRows = tableDataToRowObjects( [
+					{ id: 0, key: undefined, parent: undefined, value: 2 },
+					{ id: 1, key: '0', parent: 0, value: 1 },
+					{ id: 2, key: 'Z1K1', parent: 1, value: 'Z9' },
+					{ id: 3, key: 'Z9K1', parent: 1, value: 'Z6' },
+					{ id: 4, key: '1', parent: 0, value: 1 },
+					{ id: 5, key: 'Z1K1', parent: 4, value: 'Z6' },
+					{ id: 6, key: 'Z6K1', parent: 4, value: 'one' },
+					{ id: 7, key: '2', parent: 0, value: 1 },
+					{ id: 8, key: 'Z1K1', parent: 7, value: 'Z6' },
+					{ id: 9, key: 'Z6K1', parent: 7, value: 'two' },
+					{ id: 10, key: '3', parent: 0, value: 1 },
+					{ id: 11, key: 'Z1K1', parent: 10, value: 'Z6' },
+					{ id: 12, key: 'Z6K1', parent: 10, value: 'three' },
+					{ id: 13, key: '4', parent: 0, value: 1 },
+					{ id: 14, key: 'Z1K1', parent: 13, value: 'Z6' },
+					{ id: 15, key: 'Z6K1', parent: 13, value: 'four' }
+				] );
+
+				context.state = {
+					zobject: listRows
+				};
+
+				context.getters.getRowById = zobjectModule.getters.getRowById( context.state );
+				context.getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( context.state );
+				context.getters.getRowIndexById = zobjectModule.getters.getRowIndexById( context.state );
+
+				context.commit = jest.fn( ( mutationType, payload ) => {
+					zobjectModule.mutations[ mutationType ]( context.state, payload );
+				} );
+			} );
+
+			it( 'moves an item one position earlier in the list', () => {
+				expect( context.state.zobject[ 1 ].key ).toBe( '0' );
+				expect( context.state.zobject[ 4 ].key ).toBe( '1' );
+				expect( context.state.zobject[ 7 ].key ).toBe( '2' );
+				expect( context.state.zobject[ 10 ].key ).toBe( '3' );
+				expect( context.state.zobject[ 13 ].key ).toBe( '4' );
+
+				const payload = {
+					parentRowId: 0,
+					key: '2',
+					offset: -1
+				};
+				zobjectModule.actions.moveItemInTypedList( context, payload );
+
+				expect( context.state.zobject[ 1 ].key ).toBe( '0' );
+				expect( context.state.zobject[ 7 ].key ).toBe( '1' );
+				expect( context.state.zobject[ 4 ].key ).toBe( '2' );
+				expect( context.state.zobject[ 10 ].key ).toBe( '3' );
+				expect( context.state.zobject[ 13 ].key ).toBe( '4' );
+			} );
+
+			it( 'moves an item one position later in the list', () => {
+				expect( context.state.zobject[ 1 ].key ).toBe( '0' );
+				expect( context.state.zobject[ 4 ].key ).toBe( '1' );
+				expect( context.state.zobject[ 7 ].key ).toBe( '2' );
+				expect( context.state.zobject[ 10 ].key ).toBe( '3' );
+				expect( context.state.zobject[ 13 ].key ).toBe( '4' );
+
+				const payload = {
+					parentRowId: 0,
+					key: '3',
+					offset: 1
+				};
+				zobjectModule.actions.moveItemInTypedList( context, payload );
+
+				expect( context.state.zobject[ 1 ].key ).toBe( '0' );
+				expect( context.state.zobject[ 4 ].key ).toBe( '1' );
+				expect( context.state.zobject[ 7 ].key ).toBe( '2' );
+				expect( context.state.zobject[ 13 ].key ).toBe( '3' );
+				expect( context.state.zobject[ 10 ].key ).toBe( '4' );
+			} );
+		} );
 	} );
 } );

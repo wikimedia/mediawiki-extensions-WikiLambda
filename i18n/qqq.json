@@ -375,6 +375,8 @@
 	"wikilambda-context-menu": "Title for a context menu",
 	"wikilambda-add-list-item": "Label for a button that adds an item to a list",
 	"wikilambda-delete-list-item": "Label for a button that removes an item from a list",
+	"wikilambda-move-before-list-item": "Label for a button that moves a list item to earlier in the list",
+	"wikilambda-move-after-list-item": "Label for a button that moves a list item to later in the list",
 	"wikilambda-tester-details": "Link to open details of tester results",
 	"wikilambda-about-widget-accessible-title": "Longer form of {{msg-mw|wikilambda-about-widget-title}} for accessibility, available for screen readers.",
 	"wikilambda-about-widget-title": "Title of the About widget",

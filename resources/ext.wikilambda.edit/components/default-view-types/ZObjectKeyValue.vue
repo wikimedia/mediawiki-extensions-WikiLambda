@@ -54,6 +54,8 @@
 						:parent-expected-type="expectedType"
 						@set-type="setType"
 						@delete-list-item="deleteListItem"
+						@move-before="moveBefore"
+						@move-after="moveAfter"
 					></wl-mode-selector>
 				</div>
 
@@ -620,6 +622,7 @@ module.exports = exports = {
 		'setZFunctionCallArguments',
 		'setZImplementationContentType',
 		'removeItemFromTypedList',
+		'moveItemInTypedList',
 		'navigate'
 	] ),
 	{
@@ -854,10 +857,31 @@ module.exports = exports = {
 		 * Process delete item action
 		 */
 		deleteListItem: function () {
-			// TODO (T324242): replace with new setter when it exists
 			// TODO (T331132): can we create a 'revert delete' workflow?
 			this.setDirtyIfMainObject();
 			this.removeItemFromTypedList( { rowId: this.rowId } );
+		},
+		/**
+		 * Process move-before list item action
+		 */
+		moveBefore: function () {
+			this.setDirtyIfMainObject();
+			this.moveItemInTypedList( {
+				parentRowId: this.parentRowId,
+				key: this.key,
+				offset: -1
+			} );
+		},
+		/**
+		 * Process move-after list item action
+		 */
+		moveAfter: function () {
+			this.setDirtyIfMainObject();
+			this.moveItemInTypedList( {
+				parentRowId: this.parentRowId,
+				key: this.key,
+				offset: 1
+			} );
 		}
 	} )
 };

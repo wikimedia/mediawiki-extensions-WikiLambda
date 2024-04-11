@@ -28,6 +28,8 @@ describe( 'ModeSelector', () => {
 	beforeEach( () => {
 		getters = {
 			getLabel: () => ( key ) => mockLabels[ key ],
+			getParentRowId: createGettersWithFunctionsMock( 1 ),
+			getChildrenByParentRowId: createGettersWithFunctionsMock( [] ),
 			getZObjectTypeByRowId: createGettersWithFunctionsMock( Constants.Z_REFERENCE ),
 			getZObjectKeyByRowId: createGettersWithFunctionsMock( Constants.Z_OBJECT_TYPE ),
 			isInsideComposition: createGettersWithFunctionsMock( false )
@@ -177,10 +179,20 @@ describe( 'ModeSelector', () => {
 	} );
 
 	describe( 'for list items', () => {
-		it( 'shows delete footer action', () => {
-			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( '1' );
+		beforeEach( () => {
+			const listWithThreeItems = [
+				{ key: '0', id: 2 },
+				{ key: '1', id: 3 },
+				{ key: '2', id: 4 },
+				{ key: '3', id: 5 }
+			];
+			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( '2' );
 			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_MONOLINGUALSTRING );
+			getters.getChildrenByParentRowId = createGettersWithFunctionsMock( listWithThreeItems );
 			global.store.hotUpdate( { getters: getters } );
+		} );
+
+		it( 'shows delete footer action', () => {
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
 					edit: true,
@@ -188,13 +200,39 @@ describe( 'ModeSelector', () => {
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu' } );
-			expect( menu.vm.menuItems.length ).toBe( 3 );
-			expect( menu.vm.footer.value ).toBe( 'delete-list-item' );
+			expect( menu.vm.menuItems.length ).toBe( 5 );
+			expect( menu.vm.footer.value ).toBe( Constants.LIST_MENU_OPTIONS.DELETE_ITEM );
 		} );
 
 		it( 'emits delete-list-item event if clicked delete footer action', async () => {
+			const wrapper = shallowMount( ModeSelector, {
+				props: {
+					edit: true,
+					parentExpectedType: Constants.Z_MONOLINGUALSTRING
+				}
+			} );
+			const menu = wrapper.findComponent( { name: 'cdx-menu' } );
+			menu.vm.$emit( 'update:selected', Constants.LIST_MENU_OPTIONS.DELETE_ITEM );
+			await waitFor( () => expect( wrapper.emitted() ).toHaveProperty( 'delete-list-item' ) );
+		} );
+
+		it( 'shows enabled move-before and move-after menu options', () => {
+			const wrapper = shallowMount( ModeSelector, {
+				props: {
+					edit: true,
+					parentExpectedType: Constants.Z_MONOLINGUALSTRING
+				}
+			} );
+			const menu = wrapper.findComponent( { name: 'cdx-menu' } );
+			expect( menu.vm.menuItems.length ).toBe( 5 );
+			expect( menu.vm.menuItems[ 3 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_BEFORE );
+			expect( menu.vm.menuItems[ 3 ].disabled ).toBe( false );
+			expect( menu.vm.menuItems[ 4 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_AFTER );
+			expect( menu.vm.menuItems[ 4 ].disabled ).toBe( false );
+		} );
+
+		it( 'shows disabled move-before for the first item', () => {
 			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( '1' );
-			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_MONOLINGUALSTRING );
 			global.store.hotUpdate( { getters: getters } );
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
@@ -203,8 +241,54 @@ describe( 'ModeSelector', () => {
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu' } );
-			menu.vm.$emit( 'update:selected', 'delete-list-item' );
-			await waitFor( () => expect( wrapper.emitted() ).toHaveProperty( 'delete-list-item' ) );
+			expect( menu.vm.menuItems.length ).toBe( 5 );
+			expect( menu.vm.menuItems[ 3 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_BEFORE );
+			expect( menu.vm.menuItems[ 3 ].disabled ).toBe( true );
+			expect( menu.vm.menuItems[ 4 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_AFTER );
+			expect( menu.vm.menuItems[ 4 ].disabled ).toBe( false );
+		} );
+
+		it( 'shows disabled move-after for the last item', () => {
+			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( '3' );
+			global.store.hotUpdate( { getters: getters } );
+			const wrapper = shallowMount( ModeSelector, {
+				props: {
+					edit: true,
+					parentExpectedType: Constants.Z_MONOLINGUALSTRING
+				}
+			} );
+			const menu = wrapper.findComponent( { name: 'cdx-menu' } );
+			expect( menu.vm.menuItems.length ).toBe( 5 );
+			expect( menu.vm.menuItems[ 3 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_BEFORE );
+			expect( menu.vm.menuItems[ 3 ].disabled ).toBe( false );
+			expect( menu.vm.menuItems[ 4 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_AFTER );
+			expect( menu.vm.menuItems[ 4 ].disabled ).toBe( true );
+		} );
+
+		it( 'emits move-before event when selecting move-before menu option', async () => {
+			const wrapper = shallowMount( ModeSelector, {
+				props: {
+					edit: true,
+					parentExpectedType: Constants.Z_MONOLINGUALSTRING
+				}
+			} );
+
+			const menu = wrapper.findComponent( { name: 'cdx-menu' } );
+			menu.vm.$emit( 'update:selected', Constants.LIST_MENU_OPTIONS.MOVE_BEFORE );
+			await waitFor( () => expect( wrapper.emitted() ).toHaveProperty( 'move-before' ) );
+		} );
+
+		it( 'emits move-after event when selecting move-after menu option', async () => {
+			const wrapper = shallowMount( ModeSelector, {
+				props: {
+					edit: true,
+					parentExpectedType: Constants.Z_MONOLINGUALSTRING
+				}
+			} );
+
+			const menu = wrapper.findComponent( { name: 'cdx-menu' } );
+			menu.vm.$emit( 'update:selected', Constants.LIST_MENU_OPTIONS.MOVE_AFTER );
+			await waitFor( () => expect( wrapper.emitted() ).toHaveProperty( 'move-after' ) );
 		} );
 	} );
 } );

@@ -169,10 +169,6 @@ const Constants = {
 		DESKTOP_WIDE: 'DESKTOP_WIDE',
 		DESKTOP_EXTRAWIDE: 'DESKTOP_EXTRAWIDE'
 	},
-	contextMenuItems = {
-		ADD_LIST_ITEM: 'add_list_item',
-		DELETE_LIST_ITEM: 'delete_list_item'
-	},
 	testerStatus = {
 		READY: 'ready',
 		PASSED: 'passed',
@@ -246,6 +242,12 @@ Constants.EXCLUDE_FROM_PERSISTENT_CONTENT = [
 	Constants.Z_CODE
 ];
 
+Constants.LIST_MENU_OPTIONS = {
+	DELETE_ITEM: 'delete-list-item',
+	MOVE_BEFORE: 'move-before',
+	MOVE_AFTER: 'move-after'
+};
+
 Constants.Z_PROGRAMMING_LANGUAGES = programmingLanguages;
 Constants.Z_TYPED_OBJECTS_LIST = typedObjectsList;
 Constants.VIEWS = views;
@@ -255,7 +257,6 @@ Constants.errorTypes = errorTypes;
 Constants.errorCodes = errorCodes;
 Constants.breakpoints = breakpoints;
 Constants.breakpointsTypes = breakpointsTypes;
-Constants.contextMenuItems = contextMenuItems;
 Constants.testerStatus = testerStatus;
 Constants.COLOR_NESTING_LEVELS = 6;
 Constants.BUILTIN_COMPONENTS = builtinComponents;

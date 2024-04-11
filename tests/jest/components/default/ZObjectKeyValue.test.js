@@ -44,7 +44,8 @@ describe( 'ZObjectKeyValue', () => {
 			setValueByRowIdAndPath: jest.fn(),
 			setZFunctionCallArguments: jest.fn(),
 			setZImplementationContentType: jest.fn(),
-			removeItemFromTypedList: jest.fn()
+			removeItemFromTypedList: jest.fn(),
+			moveItemInTypedList: jest.fn()
 		};
 		global.store.hotUpdate( {
 			getters: getters,
@@ -319,6 +320,72 @@ describe( 'ZObjectKeyValue', () => {
 				} );
 
 				expect( wrapper.findComponent( { name: 'wl-mode-selector' } ).exists() ).toBe( false );
+			} );
+
+			it( 'deletes an item list if mode selector emits delete-list-item', () => {
+				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( '2' );
+				global.store.hotUpdate( { getters: getters } );
+
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						edit: true,
+						rowId: 1
+					}
+				} );
+
+				const modeSelector = wrapper.findComponent( { name: 'wl-mode-selector' } );
+				modeSelector.vm.$emit( 'delete-list-item' );
+
+				expect( actions.setDirty ).toHaveBeenCalled();
+				expect( actions.removeItemFromTypedList ).toHaveBeenCalledWith( expect.anything(), {
+					rowId: 1
+				} );
+			} );
+
+			it( 'moves a list item one position earlier in the list if mode selector emits move-before', () => {
+				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( '2' );
+				getters.getParentRowId = createGettersWithFunctionsMock( 10 );
+				global.store.hotUpdate( { getters: getters } );
+
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						edit: true,
+						rowId: 11
+					}
+				} );
+
+				const modeSelector = wrapper.findComponent( { name: 'wl-mode-selector' } );
+				modeSelector.vm.$emit( 'move-before' );
+
+				expect( actions.setDirty ).toHaveBeenCalled();
+				expect( actions.moveItemInTypedList ).toHaveBeenCalledWith( expect.anything(), {
+					parentRowId: 10,
+					key: '2',
+					offset: -1
+				} );
+			} );
+
+			it( 'moves a list item one position later in the list if mode selector emits move-after', () => {
+				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( '2' );
+				getters.getParentRowId = createGettersWithFunctionsMock( 10 );
+				global.store.hotUpdate( { getters: getters } );
+
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						edit: true,
+						rowId: 11
+					}
+				} );
+
+				const modeSelector = wrapper.findComponent( { name: 'wl-mode-selector' } );
+				modeSelector.vm.$emit( 'move-after' );
+
+				expect( actions.setDirty ).toHaveBeenCalled();
+				expect( actions.moveItemInTypedList ).toHaveBeenCalledWith( expect.anything(), {
+					parentRowId: 10,
+					key: '2',
+					offset: 1
+				} );
 			} );
 		} );
 	} );

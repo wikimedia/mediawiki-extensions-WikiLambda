@@ -147,7 +147,7 @@ module.exports = exports = {
 		 * Emits the event setValue so that ZObjectKey can update
 		 * the terminal value in the ZObject data table.
 		 *
-		 * @param {string} value
+		 * @param {string} newValue
 		 */
 		setValue: function ( value ) {
 			const keyPath = ( this.key !== Constants.Z_REFERENCE_ID ) ?

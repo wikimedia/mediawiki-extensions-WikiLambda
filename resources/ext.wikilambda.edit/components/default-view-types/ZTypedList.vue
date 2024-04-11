@@ -15,7 +15,6 @@
 			:row-id="itemTypeRowId"
 			:edit="edit"
 			:list-item-type="listItemType"
-			:list-items-row-ids="listItemsRowIds"
 			:parent-row-id="rowId"
 		></wl-z-typed-list-type>
 
@@ -25,8 +24,6 @@
 			:row-id="rowId"
 			:edit="edit"
 			:list-item-type="listItemType"
-			:list-items-row-ids="listItemsRowIds"
-			:parent-row-id="rowId"
 			@add-list-item="addListItem"
 		></wl-z-typed-list-items>
 	</div>
@@ -72,35 +69,15 @@ module.exports = exports = {
 		] ),
 		{
 			/**
-			 * Gets the set of ids that compose this typed list,
-			 * including the type itself
-			 *
-			 * @return {Array}
-			 */
-			childRowIds: function () {
-				return this.getChildrenByParentRowId( this.rowId )
-					.map( function ( row ) {
-						return row.id;
-					} );
-			},
-
-			/**
-			 * Returns the list items without the type (the first item in the list)
-			 *
-			 * @return {Array} list
-			 */
-			listItemsRowIds: function () {
-				return this.childRowIds.slice( 1 );
-			},
-
-			/**
 			 * Returns the id for the first item on the list,
 			 * which represents the type of the list items
 			 *
-			 * @return {string}
+			 * @return {number}
 			 */
 			itemTypeRowId: function () {
-				return this.childRowIds[ 0 ];
+				const firstItem = this.getChildrenByParentRowId( this.rowId )
+					.find( ( item ) => item.key === '0' );
+				return firstItem ? firstItem.id : undefined;
 			},
 
 			/**

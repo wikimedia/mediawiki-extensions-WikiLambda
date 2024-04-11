@@ -72,16 +72,6 @@ describe( 'ZTypedList', () => {
 			expect( wrapper.getComponent( ZTypedListType ).exists() ).toBe( true );
 		} );
 
-		it( 'renders all the list items but not the list type as a list item', () => {
-			const wrapper = shallowMount( ZTypedList, {
-				props: {
-					edit: false
-				}
-			} );
-
-			expect( wrapper.vm.listItemsRowIds ).toEqual( [ 39, 41 ] );
-		} );
-
 		it( 'renders the list item component when there are one or more list items', () => {
 			const wrapper = shallowMount( ZTypedList, {
 				props: {

@@ -361,6 +361,8 @@
 	"wikilambda-context-menu": "Context Menu",
 	"wikilambda-add-list-item": "Add Item",
 	"wikilambda-delete-list-item": "Delete Item",
+	"wikilambda-move-before-list-item": "Move before",
+	"wikilambda-move-after-list-item": "Move after",
 	"wikilambda-tester-details": "Details",
 	"wikilambda-about-widget-accessible-title": "Dialog letting you see and edit the labels and information in different languages",
 	"wikilambda-about-widget-title": "About",

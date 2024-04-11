@@ -60,12 +60,13 @@ module.exports = exports = {
 	data: function () {
 		return {
 			expanded: false,
-			icon: icons.cdxIconEllipsis,
-			DELETE_ITEM: 'delete-list-item'
+			icon: icons.cdxIconEllipsis
 		};
 	},
 	computed: $.extend( mapGetters( [
+		'getChildrenByParentRowId',
 		'getLabel',
+		'getParentRowId',
 		'getZObjectTypeByRowId',
 		'getZObjectKeyByRowId',
 		'isInsideComposition'
@@ -178,13 +179,51 @@ module.exports = exports = {
 				return ( a.label < b.label ) ? -1 :
 					( a.label > b.label ) ? 1 : 0;
 			} );
+
+			// If it's a list item, add "Move before" and "Move after" items
+			if ( this.isKeyTypedListItem( this.key ) ) {
+				const isFirst = this.key === '1';
+				const isLast = this.key === String( this.listCount );
+				options.push( ...[ {
+					label: this.$i18n( 'wikilambda-move-before-list-item' ).text(),
+					value: Constants.LIST_MENU_OPTIONS.MOVE_BEFORE,
+					icon: icons.cdxIconTableMoveRowBefore,
+					disabled: isFirst,
+					class: 'ext-wikilambda-mode-selector-move-before'
+				}, {
+					label: this.$i18n( 'wikilambda-move-after-list-item' ).text(),
+					value: Constants.LIST_MENU_OPTIONS.MOVE_AFTER,
+					icon: icons.cdxIconTableMoveRowAfter,
+					disabled: isLast,
+					class: 'ext-wikilambda-mode-selector-move-after'
+				} ] );
+			}
 			return options;
 		},
+		/**
+		 * If the key belongs to a typed list item, it returns the
+		 * list item count (not including the type element)
+		 *
+		 * @return {number}
+		 */
+		listCount: function () {
+			if ( this.isKeyTypedListItem( this.key ) ) {
+				const parentRowId = this.getParentRowId( this.rowId );
+				const children = this.getChildrenByParentRowId( parentRowId );
+				return children.length - 1;
+			}
+			return 0;
+		},
+		/**
+		 * Returns "Delete" footer item if the key belongs to a typed list item
+		 *
+		 * @return {Object|null}
+		 */
 		footerAction: function () {
 			return this.isKeyTypedListItem( this.key ) ?
 				{
 					label: this.$i18n( 'wikilambda-delete-list-item' ).text(),
-					value: this.DELETE_ITEM,
+					value: Constants.LIST_MENU_OPTIONS.DELETE_ITEM,
 					icon: icons.cdxIconTrash,
 					class: 'ext-wikilambda-mode-selector-delete'
 				} : null;
@@ -192,8 +231,17 @@ module.exports = exports = {
 	} ),
 	methods: {
 		selectMode: function ( value ) {
-			if ( value === this.DELETE_ITEM ) {
+			// List actions:
+			if ( value === Constants.LIST_MENU_OPTIONS.DELETE_ITEM ) {
 				this.$emit( 'delete-list-item' );
+				return;
+			}
+			if ( value === Constants.LIST_MENU_OPTIONS.MOVE_BEFORE ) {
+				this.$emit( 'move-before' );
+				return;
+			}
+			if ( value === Constants.LIST_MENU_OPTIONS.MOVE_AFTER ) {
+				this.$emit( 'move-after' );
 				return;
 			}
 
@@ -222,6 +270,10 @@ module.exports = exports = {
 	.ext-wikilambda-mode-selector-menu {
 		max-width: @wl-field-label-width;
 		width: @wl-field-label-width;
+
+		.ext-wikilambda-mode-selector-move-before {
+			border-top: 1px solid @border-color-subtle;
+		}
 
 		.ext-wikilambda-mode-selector-delete {
 			.cdx-menu-item__content {
