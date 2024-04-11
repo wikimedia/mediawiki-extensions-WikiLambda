@@ -140,9 +140,11 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 		$langs->register( self::EN, 'en' );
 		$langs->register( self::ES, 'es' );
 
-		foreach ( $this->testData as $key => $testdatum ) {
-			$this->db->insert( 'wikilambda_zobject_labels', $testdatum );
-		}
+		$this->db->newInsertQueryBuilder()
+			->insertInto( 'wikilambda_zobject_labels' )
+			->rows( $this->testData )
+			->caller( __METHOD__ )
+			->execute();
 	}
 
 	private function resultFor( $zid, $resultTerm, $matchTerm = null ) {
