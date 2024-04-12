@@ -50,9 +50,11 @@ class ApiQueryZFunctionReferenceTest extends ApiTestCase {
 		$langs->register( self::IT, 'it' );
 		$langs->register( self::EGL, 'egl' );
 
-		foreach ( $this->testData as $key => $testdatum ) {
-			$this->db->insert( 'wikilambda_zobject_function_join', $testdatum );
-		}
+		$this->db->newInsertQueryBuilder()
+			->insertInto( 'wikilambda_zobject_function_join' )
+			->rows( array_values( $this->testData ) )
+			->caller( __METHOD__ )
+			->execute();
 	}
 
 	public function testNoResults() {
