@@ -10,7 +10,6 @@ require( '@testing-library/jest-dom' );
 
 const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
 	{ within } = require( '@testing-library/dom' ),
-	{ clickLookupResult } = require( './helpers/interactionHelpers.js' ),
 	store = require( '../../../resources/ext.wikilambda.edit/store/index.js' ),
 	App = require( '../../../resources/ext.wikilambda.edit/components/App.vue' ),
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
@@ -136,9 +135,9 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		//* -- Validation section
 		const testerValidationContainer = await findByRole( 'ext-wikilambda-tester-validation' );
 
-		// ACT: Click the link to open the function call section.
-		const selectValidationFunctionLink = testerValidationContainer.getElementsByTagName( 'a' )[ 0 ];
-		await fireEvent.click( selectValidationFunctionLink );
+		// ACT: Expand toggle
+		const expandValidationCall = within( testerValidationContainer ).getByTestId( 'expanded-toggle' );
+		await fireEvent.click( expandValidationCall );
 
 		// ACT: Select String Equality as the validation call function.
 		const testerValidationAccordionContainer = await within( testerValidationContainer ).getByTestId( 'z-object-key-value-set' );
@@ -146,9 +145,6 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		const validationFunctionSelector = within( validationFunctionReference ).getByRole( 'combobox' );
 
 		const validationFunctionNameToSelect = 'String equality';
-
-		await fireEvent.update( validationFunctionSelector, validationFunctionNameToSelect );
-		await clickLookupResult( validationFunctionReference, validationFunctionNameToSelect );
 
 		// ASSERT: The function under test is selected as the function to call.
 		expect( validationFunctionSelector.value ).toBe( validationFunctionNameToSelect );
