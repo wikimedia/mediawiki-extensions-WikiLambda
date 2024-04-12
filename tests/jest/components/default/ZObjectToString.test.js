@@ -241,11 +241,11 @@ describe( 'ZObjectToString', () => {
 				expect( stringElement.text() ).toBe( 'Enter String' );
 			} );
 
-			it( 'triggers an expand event when clicking the link', () => {
+			it( 'triggers an expand event when clicking the link', async () => {
 				const wrapper = shallowMount( ZObjectToString );
 				const link = wrapper.find( '.ext-wikilambda-zobject-to-string-blank' );
 				link.trigger( 'click' );
-				waitFor( () => expect( wrapper.emitted( 'expand' ) ).toBeTruthy() );
+				await waitFor( () => expect( wrapper.emitted( 'expand' ) ).toBeTruthy() );
 			} );
 		} );
 
@@ -274,11 +274,11 @@ describe( 'ZObjectToString', () => {
 				expect( referenceLink.text() ).toEqual( 'Select $1' );
 			} );
 
-			it( 'triggers an expand event when clicking the link', () => {
+			it( 'triggers an expand event when clicking the link', async () => {
 				const wrapper = shallowMount( ZObjectToString );
 				const link = wrapper.find( '.ext-wikilambda-zobject-to-string-blank' );
 				link.trigger( 'click' );
-				waitFor( () => expect( wrapper.emitted( 'expand' ) ).toBeTruthy() );
+				await waitFor( () => expect( wrapper.emitted( 'expand' ) ).toBeTruthy() );
 			} );
 		} );
 
@@ -306,11 +306,11 @@ describe( 'ZObjectToString', () => {
 				expect( referenceLink.text() ).toEqual( 'Select $1' );
 			} );
 
-			it( 'triggers an expand event when clicking the link', () => {
+			it( 'triggers an expand event when clicking the link', async () => {
 				const wrapper = shallowMount( ZObjectToString );
 				const link = wrapper.find( '.ext-wikilambda-zobject-to-string-blank' );
 				link.trigger( 'click' );
-				waitFor( () => expect( wrapper.emitted( 'expand' ) ).toBeTruthy() );
+				await waitFor( () => expect( wrapper.emitted( 'expand' ) ).toBeTruthy() );
 			} );
 		} );
 	} );
