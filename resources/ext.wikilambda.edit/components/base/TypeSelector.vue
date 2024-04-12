@@ -141,17 +141,6 @@ module.exports = exports = {
 		'setZFunctionCallArguments'
 	] ), {
 		/**
-		 * Clears the type selector and persist a blank reference value
-		 */
-		clearValue: function () {
-			this.changeType( {
-				id: this.rowId,
-				type: Constants.Z_REFERENCE,
-				value: ''
-			} );
-		},
-
-		/**
 		 * Persists the selected value in the global store.
 		 * If the selected value is of the required type, we persist as a reference
 		 * Else, the selected value is a function that returns the required type,
@@ -160,11 +149,9 @@ module.exports = exports = {
 		 * @param {string} value
 		 */
 		setValue: function ( value ) {
-			if ( !value ) {
-				this.clearValue();
-				return;
-			}
-
+			// TODO: what happens when we clear the field but we don't
+			// select a new value? What happens when we write something in the
+			// field but we don't select a value?
 			const zobject = this.getStoredObject( value );
 			if ( !zobject ) {
 				// This should not happen, the objects are requested as soon as the

@@ -24,7 +24,6 @@
 			data-testid="z-object-selector-lookup"
 			@update:selected="onSelect"
 			@input="onInput"
-			@blur="onBlur"
 		>
 			<template #no-results>
 				{{ $i18n( 'wikilambda-zobjectselector-no-results' ).text() }}
@@ -290,20 +289,6 @@ module.exports = exports = {
 				this.lookupResults = [];
 				this.setSuggestions();
 				this.inputValue = '';
-			},
-
-			/**
-			 * On Lookup blur, make sure that the input and the selected values
-			 * are synchronized: If there is something written in the input but
-			 * there is nothing selected, clear the input. If the input is empty,
-			 * clear the selection
-			 */
-			onBlur: function () {
-				if ( !this.inputValue || !this.selectedValue ) {
-					this.inputValue = '';
-					this.lookupKey += 1;
-					this.onSelect( null );
-				}
 			},
 
 			/**
