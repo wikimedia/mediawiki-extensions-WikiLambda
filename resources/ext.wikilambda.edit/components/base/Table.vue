@@ -23,13 +23,13 @@
 				<slot name="table-empty-text"></slot>
 			</div>
 			<table v-else class="ext-wikilambda-table__content">
-				<thead v-if="!hideHeader" class="ext-wikilambda-table__content__header ext-wikilambda-table__content__row">
+				<thead v-if="!hideHeader" class="ext-wikilambda-table__content__header ext-wikilambda-table__content">
 					<tr>
 						<template v-for="( n, i ) in header">
 							<th
 								v-if="n"
 								:key="i"
-								class="ext-wikilambda-table__content__row__item ext-wikilambda-table__content__row__item--header"
+								class="ext-wikilambda-table__content__item ext-wikilambda-table__content__item--header"
 								:class="n.class"
 								:colspan="n.colspan"
 							>
@@ -50,14 +50,14 @@
 					<tr
 						v-for="( n, i ) in body"
 						:key="i"
-						class="ext-wikilambda-table__content__row"
+						class="ext-wikilambda-table__content"
 						:class="n ? ( n.class ? n.class : '' ) : ''"
 					>
 						<template v-for="( _, item ) in header">
 							<td
 								v-if="n && item in n"
 								:key="item"
-								class="ext-wikilambda-table__content__row__item"
+								class="ext-wikilambda-table__content__item"
 								:class="n[ item ] ? n[ item ].class : ''"
 							>
 								<template v-if="n[ item ].component">
@@ -163,31 +163,29 @@ module.exports = exports = {
 		width: -webkit-fill-available;
 		border-collapse: collapse;
 
-		&__row {
-			&__item {
-				align-items: center;
-				vertical-align: middle;
-				border-top: 1px solid @background-color-interactive;
+		&__item {
+			align-items: center;
+			vertical-align: middle;
+			border-top: 1px solid @background-color-interactive;
+			font-size: 1em;
+			line-height: 1.4em;
+			letter-spacing: -0.003em;
+			padding: 12px 0 12px 0;
+
+			span,
+			div,
+			a {
 				font-size: 1em;
 				line-height: 1.4em;
-				letter-spacing: -0.003em;
-				padding: 12px 0 12px 0;
+			}
 
-				span,
-				div,
-				a {
-					font-size: 1em;
-					line-height: 1.4em;
-				}
-
-				&:last-child {
-					border-right: 0;
-				}
+			&:last-child {
+				border-right: 0;
 			}
 		}
 
 		&__header {
-			.ext-wikilambda-table__content__row__item {
+			.ext-wikilambda-table__content__item {
 				border-top: 0;
 				border-bottom: 1px solid @border-color-subtle;
 				white-space: nowrap;
@@ -197,19 +195,19 @@ module.exports = exports = {
 				}
 			}
 
-			div.ext-wikilambda-table__content__row__item--header:last-of-type {
+			div.ext-wikilambda-table__content__item--header:last-of-type {
 				border-right: 0;
 			}
 		}
 	}
 
 	&[ data-has-border='true' ] {
-		.ext-wikilambda-table__content .ext-wikilambda-table__content__row__item {
+		.ext-wikilambda-table__content .ext-wikilambda-table__content__item {
 			border-top: 1px solid @border-color-subtle;
 			border-right: 1px solid @border-color-subtle;
 		}
 
-		.ext-wikilambda-table__content .ext-wikilambda-table__content__row__item:last-child {
+		.ext-wikilambda-table__content .ext-wikilambda-table__content__item:last-child {
 			border-right: 0;
 		}
 	}
