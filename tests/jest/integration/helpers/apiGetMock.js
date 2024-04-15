@@ -23,7 +23,7 @@ const existingImplementationByCompositionZid =
 
 function createMockApi( apiMocks ) {
 	return ( request ) => {
-		var matchedMock = apiMocks.find( function ( mock ) {
+		const matchedMock = apiMocks.find( function ( mock ) {
 			if ( mock.matcher ) {
 				return mock.matcher( mock.request, request );
 			} else if ( mock.request === request ) {
@@ -35,7 +35,7 @@ function createMockApi( apiMocks ) {
 		if ( !matchedMock ) {
 			throw new Error( 'Test does not support API call with args: ' + JSON.stringify( request ) );
 		}
-		var response = matchedMock.response;
+		const response = matchedMock.response;
 		return Promise.resolve( { batchcomplete: '', query: response( request ) } );
 	};
 }
@@ -298,7 +298,7 @@ const associatedTestersSearchResponse = {
 const performTestResponseResults = ( zFunctionId, zimplementationIds, ztesterId, isSuccess ) => {
 	const testResults = [];
 	zimplementationIds.split( '|' ).forEach( function ( zimplementation ) {
-		var validateStatus = isSuccess ? Constants.Z_BOOLEAN_TRUE : Constants.Z_BOOLEAN_FALSE;
+		const validateStatus = isSuccess ? Constants.Z_BOOLEAN_TRUE : Constants.Z_BOOLEAN_FALSE;
 		testResults.push( {
 			zFunctionId: zFunctionId,
 			zImplementationId: zimplementation,
@@ -345,9 +345,9 @@ function isRequestMatchingZFunction( requestZfunction, zfunction ) {
 
 const performTestResponseBuilder = ( zfunction, zimplementations, ztesters ) => {
 	if ( isRequestMatchingZFunction( zfunction, existingFunctionFromApi ) ) {
-		var zFunctionId = existingFunctionFromApi[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
-		var successTestResults = [];
-		var failedTestResults = [];
+		const zFunctionId = existingFunctionFromApi[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
+		let successTestResults = [];
+		let failedTestResults = [];
 		ztesters.split( '|' ).forEach( function ( ztester ) {
 			let jsonTester;
 			try {

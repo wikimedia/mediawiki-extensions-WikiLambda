@@ -7,13 +7,13 @@
 'use strict';
 
 const { CdxRadio } = require( '@wikimedia/codex' );
-var shallowMount = require( '@vue/test-utils' ).shallowMount,
+const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	ZBoolean = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZBoolean.vue' );
 
 describe( 'ZBoolean', () => {
-	var getters;
+	let getters;
 	beforeEach( () => {
 		getters = {
 			getZBooleanValue: createGettersWithFunctionsMock( 14 ),
@@ -25,7 +25,7 @@ describe( 'ZBoolean', () => {
 	} );
 	describe( 'in view mode', () => {
 		it( 'renders without errors', () => {
-			var wrapper = shallowMount( ZBoolean, {
+			const wrapper = shallowMount( ZBoolean, {
 				props: {
 					edit: false
 				}
@@ -35,7 +35,7 @@ describe( 'ZBoolean', () => {
 		} );
 
 		it( 'does not load the radio codex component', () => {
-			var wrapper = shallowMount( ZBoolean, {
+			const wrapper = shallowMount( ZBoolean, {
 				props: {
 					edit: false
 				}
@@ -45,7 +45,7 @@ describe( 'ZBoolean', () => {
 		} );
 
 		it( 'displays the boolean value label', () => {
-			var wrapper = shallowMount( ZBoolean, {
+			const wrapper = shallowMount( ZBoolean, {
 				props: {
 					edit: false
 				}
@@ -58,7 +58,7 @@ describe( 'ZBoolean', () => {
 
 	describe( 'in edit mode', () => {
 		it( 'loads the radio codex component', () => {
-			var wrapper = shallowMount( ZBoolean, {
+			const wrapper = shallowMount( ZBoolean, {
 				props: {
 					edit: true
 				}
@@ -68,7 +68,7 @@ describe( 'ZBoolean', () => {
 		} );
 
 		it( 'changes the boolean value when selected', async () => {
-			var wrapper = shallowMount( ZBoolean, {
+			const wrapper = shallowMount( ZBoolean, {
 				props: {
 					edit: true
 				}

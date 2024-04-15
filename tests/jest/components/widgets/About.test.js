@@ -20,7 +20,7 @@ config.global.stubs = {
 };
 
 describe( 'About', () => {
-	var getters,
+	let getters,
 		actions;
 
 	beforeEach( () => {

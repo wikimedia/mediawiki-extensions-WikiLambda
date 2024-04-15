@@ -13,7 +13,7 @@ const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	FunctionEvaluator = require( '../../../../resources/ext.wikilambda.edit/components/widgets/FunctionEvaluator.vue' );
 
 describe( 'FunctionEvaluator', () => {
-	var getters,
+	let getters,
 		actions;
 
 	const functionCallJson = {

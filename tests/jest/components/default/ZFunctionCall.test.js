@@ -12,7 +12,7 @@ const shallowMount = require( '@vue/test-utils' ).shallowMount,
 
 describe( 'ZFunctionCall', () => {
 	describe( 'in view and edit mode', () => {
-		var getters;
+		let getters;
 
 		beforeEach( () => {
 			getters = {

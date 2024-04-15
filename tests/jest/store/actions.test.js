@@ -6,11 +6,11 @@
  */
 'use strict';
 
-var actions = require( '../../../resources/ext.wikilambda.edit/store/actions.js' );
+const actions = require( '../../../resources/ext.wikilambda.edit/store/actions.js' );
 
 describe( 'Vuex root actions', function () {
 	it( 'prefetchZids function performs expected actions', function () {
-		var context = {
+		const context = {
 			commit: jest.fn(),
 			dispatch: jest.fn(),
 			getters: {

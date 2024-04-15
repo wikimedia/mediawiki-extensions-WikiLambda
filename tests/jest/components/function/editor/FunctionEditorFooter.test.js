@@ -12,7 +12,7 @@ const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	FunctionEditorFooter = require( '../../../../../resources/ext.wikilambda.edit/components/function/editor/FunctionEditorFooter.vue' );
 
 describe( 'FunctionEditorFooter', function () {
-	var getters,
+	let getters,
 		actions;
 
 	beforeEach( () => {

@@ -56,7 +56,7 @@ function createFunctionExplorerWrapper( propsData = {}, computed = $.extend( moc
 }
 
 describe( 'FunctionExplorer', function () {
-	var getters, actions;
+	let getters, actions;
 
 	beforeAll( function () {
 		getters = {

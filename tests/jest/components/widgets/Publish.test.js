@@ -14,7 +14,7 @@ const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	PublishWidget = require( '../../../../resources/ext.wikilambda.edit/components/widgets/Publish.vue' );
 
 describe( 'Publish widget', () => {
-	var getters,
+	let getters,
 		actions;
 
 	beforeEach( () => {

@@ -13,7 +13,7 @@ const shallowMount = require( '@vue/test-utils' ).shallowMount,
 
 describe( 'ZArgumentReference', () => {
 
-	var getters;
+	let getters;
 
 	beforeEach( () => {
 		getters = {

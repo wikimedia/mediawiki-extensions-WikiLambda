@@ -28,11 +28,11 @@ describe( 'AboutViewLanguagesDialog', () => {
 		te: { langIsoCode: 'te', langZid: 'Z1429', rowId: 6 }
 	};
 
-	var getters,
-		actions,
-		lookupMock = jest.fn( function () {
-			return [];
-		} );
+	let getters,
+		actions;
+	const lookupMock = jest.fn( function () {
+		return [];
+	} );
 
 	beforeEach( () => {
 		getters = $.extend( getters, {

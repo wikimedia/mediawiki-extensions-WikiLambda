@@ -6,7 +6,7 @@
  */
 'use strict';
 
-var shallowMount = require( '@vue/test-utils' ).shallowMount,
+const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	{ waitFor } = require( '@testing-library/vue' ),
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	ExpandedToggle = require( '../../../../resources/ext.wikilambda.edit/components/base/ExpandedToggle.vue' );

@@ -162,7 +162,7 @@ describe( 'zobject Vuex module', () => {
 		} );
 
 		describe( 'getZObjectKeyByRowId', () => {
-			var getters;
+			let getters;
 			beforeEach( () => {
 				getters = {};
 				getters.getRowById = zobjectModule.getters.getRowById( state );
@@ -194,7 +194,7 @@ describe( 'zobject Vuex module', () => {
 		} );
 
 		describe( 'getZObjectValueByRowId', () => {
-			var getters;
+			let getters;
 			beforeEach( () => {
 				getters = {};
 				getters.getRowById = zobjectModule.getters.getRowById( state );
@@ -226,7 +226,7 @@ describe( 'zobject Vuex module', () => {
 		} );
 
 		describe( 'getChildrenByParentRowId', () => {
-			var getters;
+			let getters;
 			beforeEach( () => {
 				getters = {};
 				getters.getRowById = zobjectModule.getters.getRowById( state );
@@ -267,7 +267,7 @@ describe( 'zobject Vuex module', () => {
 		} );
 
 		describe( 'getRowByKeyPath', () => {
-			var getters;
+			let getters;
 			beforeEach( () => {
 				getters = {};
 				getters.getRowById = zobjectModule.getters.getRowById( state );
@@ -362,7 +362,7 @@ describe( 'zobject Vuex module', () => {
 		} );
 
 		describe( 'getZObjectTerminalValue', () => {
-			var getters;
+			let getters;
 			beforeEach( () => {
 				getters = {};
 				getters.getRowById = zobjectModule.getters.getRowById( state );
@@ -446,7 +446,7 @@ describe( 'zobject Vuex module', () => {
 		} );
 
 		describe( 'getZFunctionCallFunctionId', () => {
-			var getters;
+			let getters;
 			beforeEach( () => {
 				getters = {};
 				getters.getRowById = zobjectModule.getters.getRowById( state );
@@ -495,7 +495,7 @@ describe( 'zobject Vuex module', () => {
 		} );
 
 		describe( 'getZFunctionCallArguments', () => {
-			var getters;
+			let getters;
 			beforeEach( () => {
 				getters = {};
 				getters.getRowById = zobjectModule.getters.getRowById( state );
@@ -548,7 +548,7 @@ describe( 'zobject Vuex module', () => {
 		} );
 
 		describe( 'getTypedListItemType', () => {
-			var getters;
+			let getters;
 			beforeEach( () => {
 				getters = {};
 				getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
@@ -618,7 +618,7 @@ describe( 'zobject Vuex module', () => {
 		} );
 
 		describe( 'getZStringTerminalValue', () => {
-			var getters;
+			let getters;
 			beforeEach( () => {
 				getters = {};
 				getters.getRowById = zobjectModule.getters.getRowById( state );
@@ -661,7 +661,7 @@ describe( 'zobject Vuex module', () => {
 		} );
 
 		describe( 'getZReferenceTerminalValue', () => {
-			var getters;
+			let getters;
 			beforeEach( () => {
 				getters = {};
 				getters.getRowById = zobjectModule.getters.getRowById( state );
@@ -705,7 +705,7 @@ describe( 'zobject Vuex module', () => {
 
 		describe( 'ZMonolingualString', () => {
 			describe( 'getZMonolingualTextValue', () => {
-				var getters;
+				let getters;
 				beforeEach( () => {
 					getters = {};
 					getters.getRowById = zobjectModule.getters.getRowById( state );
@@ -737,7 +737,7 @@ describe( 'zobject Vuex module', () => {
 			} );
 
 			describe( 'getZMonolingualLangValue', () => {
-				var getters;
+				let getters;
 				beforeEach( () => {
 					getters = {};
 					getters.getRowById = zobjectModule.getters.getRowById( state );
@@ -789,7 +789,7 @@ describe( 'zobject Vuex module', () => {
 
 		describe( 'ZMultilingualString', () => {
 			describe( 'getZMultilingualLanguageList', () => {
-				var getters;
+				let getters;
 				beforeEach( () => {
 					getters = {};
 					getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
@@ -874,7 +874,7 @@ describe( 'zobject Vuex module', () => {
 
 		describe( 'ZMonolingualStringSet', () => {
 			describe( 'getZMonolingualStringsetValues', () => {
-				var getters;
+				let getters;
 				beforeEach( () => {
 					getters = {};
 					getters.getRowById = zobjectModule.getters.getRowById( state );
@@ -929,7 +929,7 @@ describe( 'zobject Vuex module', () => {
 			} );
 
 			describe( 'getZMonolingualStringsetLang', () => {
-				var getters;
+				let getters;
 				beforeEach( () => {
 					getters = {};
 					getters.getRowById = zobjectModule.getters.getRowById( state );
@@ -976,7 +976,7 @@ describe( 'zobject Vuex module', () => {
 
 		describe( 'ZPersistentObject', () => {
 			describe( 'getZPersistentContentRowId', () => {
-				var getters;
+				let getters;
 				beforeEach( () => {
 					getters = {};
 					getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
@@ -1029,7 +1029,7 @@ describe( 'zobject Vuex module', () => {
 			} );
 
 			describe( 'getZPersistentNameLangs', () => {
-				var getters;
+				let getters;
 				beforeEach( () => {
 					getters = {};
 					getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
@@ -1089,7 +1089,7 @@ describe( 'zobject Vuex module', () => {
 			} );
 
 			describe( 'getZPersistentName', () => {
-				var getters;
+				let getters;
 				beforeEach( () => {
 					getters = {};
 					getters.getZPersistentNameLangs = zobjectModule.getters.getZPersistentNameLangs( state, getters );
@@ -1185,7 +1185,7 @@ describe( 'zobject Vuex module', () => {
 			} );
 
 			describe( 'getZPersistentDescriptionLangs', () => {
-				var getters;
+				let getters;
 				beforeEach( () => {
 					getters = {};
 					getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
@@ -1245,7 +1245,7 @@ describe( 'zobject Vuex module', () => {
 			} );
 
 			describe( 'getZPersistentDescription', () => {
-				var getters;
+				let getters;
 				beforeEach( () => {
 					getters = {};
 					getters.getZPersistentDescriptionLangs = zobjectModule.getters
@@ -1342,7 +1342,7 @@ describe( 'zobject Vuex module', () => {
 			} );
 
 			describe( 'getZPersistentAliasLangs', () => {
-				var getters;
+				let getters;
 				beforeEach( () => {
 					getters = {};
 					getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
@@ -1425,7 +1425,7 @@ describe( 'zobject Vuex module', () => {
 			} );
 
 			describe( 'getZPersistentAlias', () => {
-				var getters;
+				let getters;
 				beforeEach( () => {
 					getters = {};
 					getters.getZPersistentAliasLangs = zobjectModule.getters.getZPersistentAliasLangs( state, getters );
@@ -1585,7 +1585,7 @@ describe( 'zobject Vuex module', () => {
 		} );
 
 		describe( 'getZImplementationFunctionRowId', () => {
-			var getters;
+			let getters;
 			beforeEach( () => {
 				getters = {};
 				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
@@ -1622,7 +1622,7 @@ describe( 'zobject Vuex module', () => {
 		} );
 
 		describe( 'getZImplementationFunctionZid', () => {
-			var getters;
+			let getters;
 			beforeEach( () => {
 				getters = {};
 				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
@@ -1663,7 +1663,7 @@ describe( 'zobject Vuex module', () => {
 		} );
 
 		describe( 'getZImplementationContentType', () => {
-			var getters;
+			let getters;
 			beforeEach( () => {
 				getters = {};
 				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
@@ -1736,7 +1736,7 @@ describe( 'zobject Vuex module', () => {
 		} );
 
 		describe( 'getZImplementationContentRowId', () => {
-			var getters;
+			let getters;
 			beforeEach( () => {
 				getters = {};
 				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
@@ -1805,7 +1805,7 @@ describe( 'zobject Vuex module', () => {
 		} );
 
 		describe( 'getZCodeProgrammingLanguageRow', () => {
-			var getters;
+			let getters;
 			beforeEach( () => {
 				getters = {};
 				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
@@ -1861,7 +1861,7 @@ describe( 'zobject Vuex module', () => {
 		} );
 
 		describe( 'getZCodeString', () => {
-			var getters;
+			let getters;
 			beforeEach( () => {
 				getters = {};
 				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
@@ -1901,7 +1901,7 @@ describe( 'zobject Vuex module', () => {
 		} );
 
 		describe( 'isInsideComposition', () => {
-			var getters;
+			let getters;
 			beforeEach( () => {
 				getters = {};
 				getters.getRowById = zobjectModule.getters.getRowById( state );
@@ -2030,7 +2030,7 @@ describe( 'zobject Vuex module', () => {
 		} );
 
 		describe( 'getZObjectTypeByRowId', () => {
-			var getters;
+			let getters;
 
 			beforeEach( () => {
 				state = { zobject: [] };
@@ -2349,7 +2349,7 @@ describe( 'zobject Vuex module', () => {
 		} );
 
 		describe( 'getMapValueByKey', () => {
-			var getters;
+			let getters;
 			beforeEach( () => {
 				getters = {};
 				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );

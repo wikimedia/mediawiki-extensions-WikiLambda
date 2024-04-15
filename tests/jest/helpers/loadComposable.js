@@ -4,7 +4,7 @@
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
-var Vue = require( 'vue' );
+const Vue = require( 'vue' );
 
 module.exports = function loadComposable( composable ) {
 	let result;

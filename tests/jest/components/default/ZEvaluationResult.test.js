@@ -6,14 +6,14 @@
  */
 'use strict';
 
-var shallowMount = require( '@vue/test-utils' ).shallowMount,
+const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	ZEvaluationResult = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZEvaluationResult.vue' );
 
 describe( 'ZEvaluationResult', () => {
-	var getters;
+	let getters;
 	beforeEach( () => {
 		getters = {
 			getCurrentZObjectId: createGetterMock( 'Z0' ),
@@ -36,7 +36,7 @@ describe( 'ZEvaluationResult', () => {
 
 	describe( 'with no result', () => {
 		it( 'renders without errors', () => {
-			var wrapper = shallowMount( ZEvaluationResult, {
+			const wrapper = shallowMount( ZEvaluationResult, {
 				props: {
 					edit: false
 				}
@@ -58,7 +58,7 @@ describe( 'ZEvaluationResult', () => {
 		} );
 
 		it( 'renders without errors', () => {
-			var wrapper = shallowMount( ZEvaluationResult, {
+			const wrapper = shallowMount( ZEvaluationResult, {
 				props: {
 					edit: false
 				}
@@ -67,7 +67,7 @@ describe( 'ZEvaluationResult', () => {
 		} );
 
 		it( 'renders result object', () => {
-			var wrapper = shallowMount( ZEvaluationResult, {
+			const wrapper = shallowMount( ZEvaluationResult, {
 				props: {
 					edit: false
 				}
@@ -91,7 +91,7 @@ describe( 'ZEvaluationResult', () => {
 		} );
 
 		it( 'renders without errors', () => {
-			var wrapper = shallowMount( ZEvaluationResult, {
+			const wrapper = shallowMount( ZEvaluationResult, {
 				props: {
 					edit: false
 				}
@@ -100,7 +100,7 @@ describe( 'ZEvaluationResult', () => {
 		} );
 
 		it( 'renders metadata link', () => {
-			var wrapper = shallowMount( ZEvaluationResult, {
+			const wrapper = shallowMount( ZEvaluationResult, {
 				props: {
 					edit: false
 				}
@@ -110,7 +110,7 @@ describe( 'ZEvaluationResult', () => {
 		} );
 
 		it( 'renders metadata dialog', () => {
-			var wrapper = shallowMount( ZEvaluationResult, {
+			const wrapper = shallowMount( ZEvaluationResult, {
 				props: {
 					edit: false
 				}
@@ -133,7 +133,7 @@ describe( 'ZEvaluationResult', () => {
 		} );
 
 		it( 'renders without errors', () => {
-			var wrapper = shallowMount( ZEvaluationResult, {
+			const wrapper = shallowMount( ZEvaluationResult, {
 				props: {
 					edit: false
 				}
@@ -142,7 +142,7 @@ describe( 'ZEvaluationResult', () => {
 		} );
 
 		it( 'renders metadata and error links', () => {
-			var wrapper = shallowMount( ZEvaluationResult, {
+			const wrapper = shallowMount( ZEvaluationResult, {
 				props: {
 					edit: false
 				}
@@ -153,7 +153,7 @@ describe( 'ZEvaluationResult', () => {
 		} );
 
 		it( 'renders metadata and error dialogs', () => {
-			var wrapper = shallowMount( ZEvaluationResult, {
+			const wrapper = shallowMount( ZEvaluationResult, {
 				props: {
 					edit: false
 				}

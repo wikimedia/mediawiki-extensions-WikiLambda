@@ -9,7 +9,6 @@
 		"jest/globals": true
 	},
 	"rules": {
-		"no-var": "off",
 		"strict": "off",
 		"es-x/no-async-functions": "off"
 	}

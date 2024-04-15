@@ -6,7 +6,7 @@
  */
 'use strict';
 
-var loadComposable = require( '../helpers/loadComposable.js' ),
+const loadComposable = require( '../helpers/loadComposable.js' ),
 	useBreakpoints = require( '../../../resources/ext.wikilambda.edit/composables/useBreakpoints.js' ),
 	mockBreakpoints = {
 		small: 100,
