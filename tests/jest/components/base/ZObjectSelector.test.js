@@ -11,11 +11,11 @@ const { waitFor } = require( '@testing-library/vue' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	mockEnumValues = require( '../../fixtures/mocks.js' ).mockEnumValues,
+	mockLookupValues = require( '../../fixtures/mocks.js' ).mockLookupValues,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	ZObjectSelector = require( '../../../../resources/ext.wikilambda.edit/components/base/ZObjectSelector.vue' );
 
 describe( 'ZObjectSelector', () => {
-	const lookupMock = jest.fn( () => [] );
 	let state,
 		getters,
 		actions;
@@ -46,7 +46,7 @@ describe( 'ZObjectSelector', () => {
 
 			actions = {
 				fetchZids: jest.fn(),
-				lookupZObjectLabels: lookupMock
+				lookupZObjectLabels: jest.fn()
 			};
 			global.store.hotUpdate( {
 				state: state,
@@ -70,7 +70,7 @@ describe( 'ZObjectSelector', () => {
 			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
 			lookup.vm.$emit( 'input', 'Stri' );
 
-			await waitFor( () => expect( lookupMock ).toHaveBeenLastCalledWith(
+			await waitFor( () => expect( actions.lookupZObjectLabels ).toHaveBeenLastCalledWith(
 				expect.anything(),
 				{
 					input: 'Stri',
@@ -79,6 +79,46 @@ describe( 'ZObjectSelector', () => {
 					strictType: false
 				}
 			) );
+		} );
+
+		it( 'on input change, shows lookup results', async () => {
+			actions.lookupZObjectLabels = jest.fn().mockResolvedValue( mockLookupValues );
+			global.store.hotUpdate( { actions: actions } );
+
+			const wrapper = mount( ZObjectSelector, {
+				props: {
+					type: Constants.Z_TYPE
+				}
+			} );
+
+			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
+			lookup.vm.$emit( 'input', 'text' );
+
+			const lookupPayload = {
+				input: 'text',
+				returnType: '',
+				type: Constants.Z_TYPE,
+				strictType: false
+			};
+			const lookupItems = [ {
+				description: 'Type',
+				icon: undefined,
+				label: 'Monolingual text',
+				supportingText: '',
+				value: 'Z11'
+			}, {
+				description: 'Type',
+				icon: undefined,
+				label: 'Multilingual text',
+				supportingText: '',
+				value: 'Z12'
+			} ];
+
+			await waitFor( () => {
+				expect( actions.lookupZObjectLabels ).toHaveBeenLastCalledWith( expect.anything(), lookupPayload );
+				expect( lookup.props( 'menuItems' ).length ).toBe( 2 );
+				expect( lookup.props( 'menuItems' ) ).toEqual( lookupItems );
+			} );
 		} );
 
 		it( 'on initialization, sets suggested objects', async () => {
@@ -155,6 +195,60 @@ describe( 'ZObjectSelector', () => {
 			await waitFor( () => expect( lookup.props( 'menuItems' ).length ).toBe( 7 ) );
 			expect( lookup.props( 'menuItems' ) ).toEqual( commonLangs );
 		} );
+
+		it( 'on blur, try to match and ignore if no matching value', async () => {
+			actions.lookupZObjectLabels = jest.fn().mockResolvedValue( mockLookupValues );
+			global.store.hotUpdate( { actions: actions } );
+
+			const wrapper = mount( ZObjectSelector, {
+				props: {
+					type: Constants.Z_TYPE,
+					selectedZid: Constants.Z_STRING
+				}
+			} );
+
+			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
+			lookup.vm.$emit( 'input', 'text' );
+
+			await waitFor( () => {
+				expect( wrapper.vm.inputValue ).toBe( 'text' );
+				expect( actions.lookupZObjectLabels ).toHaveBeenCalled();
+				expect( lookup.props( 'menuItems' ).length ).toBe( 2 );
+				expect( lookup.props( 'menuItems' )[ 0 ].label ).toEqual( 'Monolingual text' );
+			} );
+
+			lookup.vm.$emit( 'blur' );
+			await wrapper.vm.$nextTick();
+			// No exact match for "text", ignore input and keep selected value as Z6/String
+			expect( wrapper.vm.inputValue ).toBe( 'String' );
+		} );
+
+		it( 'on blur, try to match and select the matching value', async () => {
+			actions.lookupZObjectLabels = jest.fn().mockResolvedValue( mockLookupValues );
+			global.store.hotUpdate( { actions: actions } );
+
+			const wrapper = mount( ZObjectSelector, {
+				props: {
+					type: Constants.Z_TYPE,
+					selectedZid: Constants.Z_STRING
+				}
+			} );
+
+			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
+			lookup.vm.$emit( 'input', 'Monolingual text' );
+
+			await waitFor( () => {
+				expect( wrapper.vm.inputValue ).toBe( 'Monolingual text' );
+				expect( actions.lookupZObjectLabels ).toHaveBeenCalled();
+				expect( lookup.props( 'menuItems' ).length ).toBe( 2 );
+				expect( lookup.props( 'menuItems' )[ 0 ].label ).toEqual( 'Monolingual text' );
+			} );
+
+			lookup.vm.$emit( 'blur' );
+			await wrapper.vm.$nextTick();
+			// Found exact match for "Monolingual text", set as selected
+			expect( wrapper.vm.inputValue ).toBe( 'Monolingual text' );
+		} );
 	} );
 
 	describe( 'Select', () => {
@@ -187,7 +281,7 @@ describe( 'ZObjectSelector', () => {
 			actions = {
 				fetchZids: jest.fn(),
 				fetchEnumValues: jest.fn(),
-				lookupZObjectLabels: lookupMock
+				lookupZObjectLabels: jest.fn()
 			};
 			global.store.hotUpdate( {
 				state: state,

@@ -1271,10 +1271,42 @@ const mockEnumValues = [
   }
 ];
 
+const mockLookupValues = [
+  {
+    page_id: 0,
+    page_namespace: 0,
+    page_content_model: "zobject",
+    page_title: "Z11",
+    page_type: "Z4",
+    return_type: null,
+    match_label: "Monolingual text",
+    match_is_primary: "1",
+    match_lang: "Z1002",
+    match_rate: 0.25,
+    label: "Monolingual text",
+    type_label: "Type"
+  },
+  {
+    page_id: 0,
+    page_namespace: 0,
+    page_content_model: "zobject",
+    page_title: "Z12",
+    page_type: "Z4",
+    return_type: null,
+    match_label: "Multilingual text",
+    match_is_primary: "1",
+    match_lang: "Z1002",
+    match_rate: 0.23529411764705882,
+    label: "Multilingual text",
+    type_label: "Type"
+  }
+];
+
 module.exports = {
 	mockFunction,
 	mockApiResponseFor,
 	mockApiZids,
 	mockLanguages,
-	mockEnumValues
+	mockEnumValues,
+	mockLookupValues
 };
