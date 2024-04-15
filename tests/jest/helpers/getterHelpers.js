@@ -4,6 +4,8 @@
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
+'use strict';
+
 const createGettersWithFunctionsMock = function ( returnVal ) {
 	return jest.fn().mockImplementation( function () {
 		return jest.fn().mockReturnValue( returnVal );

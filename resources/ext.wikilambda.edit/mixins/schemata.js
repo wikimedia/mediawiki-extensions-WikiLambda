@@ -9,6 +9,8 @@
  */
 'use strict';
 
+/* eslint-disable no-implicit-globals */
+
 const Constants = require( '../Constants.js' ),
 	typeUtils = require( './typeUtils.js' ).methods;
 

@@ -13,6 +13,8 @@
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
+'use strict';
+
 const Row = require( '../../../resources/ext.wikilambda.edit/store/classes/Row.js' ),
 	zobjectUtils = require( '../../../resources/ext.wikilambda.edit/mixins/zobjectUtils.js' ).methods;
 

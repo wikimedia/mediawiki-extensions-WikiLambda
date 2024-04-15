@@ -5,6 +5,8 @@
  * @license MIT
  */
 
+'use strict';
+
 const schemata = require( '../../../resources/ext.wikilambda.edit/mixins/schemata.js' ).methods,
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
 	hybridToCanonical = schemata.hybridToCanonical,

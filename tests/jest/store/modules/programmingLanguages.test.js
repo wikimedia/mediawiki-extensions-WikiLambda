@@ -5,6 +5,8 @@
  * @license MIT
  */
 
+'use strict';
+
 const programmingLanguagesModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/programmingLanguages.js' ),
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	mockZProgrammingLanguages = [

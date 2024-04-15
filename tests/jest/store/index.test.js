@@ -5,6 +5,8 @@
  * @license MIT
  */
 
+'use strict';
+
 const Vuex = require( 'vuex' );
 
 const store = require( '../../../resources/ext.wikilambda.edit/store/index.js' );

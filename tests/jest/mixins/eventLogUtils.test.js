@@ -5,6 +5,8 @@
  * @license MIT
  */
 
+'use strict';
+
 const eventLogUtils = require( '../../../resources/ext.wikilambda.edit/mixins/eventLogUtils.js' ).methods;
 
 describe( 'eventLogUtils mixin', function () {

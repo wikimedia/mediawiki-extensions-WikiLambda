@@ -6,7 +6,9 @@
  */
 
 'use strict';
+
 const WebdriverIO = require( 'webdriverio' );
+
 class ObjectSelector {
 	get menu() {
 		return this.context.$( '.cdx-menu' );
@@ -19,7 +21,6 @@ class ObjectSelector {
 	 * @param {WebdriverIO.Element} inputField The input field in which we can type for search.
 	 *
 	 * @return {ObjectSelector}
-	 *
 	 */
 	constructor( context, inputField ) {
 		this.context = context;

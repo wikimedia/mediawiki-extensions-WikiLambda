@@ -5,6 +5,8 @@
  * @license MIT
  */
 
+'use strict';
+
 const typeUtils = require( '../../../resources/ext.wikilambda.edit/mixins/typeUtils.js' ).methods,
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' );
 

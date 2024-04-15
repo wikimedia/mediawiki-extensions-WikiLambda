@@ -4,6 +4,8 @@
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
+'use strict';
+
 class ApiMock {
 	constructor( request, response, matcher ) {
 		this.request = request;

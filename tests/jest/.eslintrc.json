@@ -7,9 +7,5 @@
 	},
 	"env": {
 		"jest/globals": true
-	},
-	"rules": {
-		"strict": "off",
-		"es-x/no-async-functions": "off"
 	}
 }

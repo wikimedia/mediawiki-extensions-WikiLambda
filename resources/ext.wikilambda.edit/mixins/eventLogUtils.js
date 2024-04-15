@@ -23,9 +23,11 @@ module.exports = exports = {
 				mw.eventLog.dispatch( name, data );
 			}
 		},
+
 		/**
 		 * Create a new object by removing properties with null or undefined values from the original object
-		 * @param {Object} object
+		 *
+		 * @param {Object} original
 		 * @return {Object}
 		 */
 		removeNullUndefined: function ( original ) {
@@ -37,6 +39,7 @@ module.exports = exports = {
 			}
 			return result;
 		},
+
 		// T350497 Update the WikiLambda instrumentation to use core interaction events
 		/**
 		 * Submit an interaction event using Metrics Platform

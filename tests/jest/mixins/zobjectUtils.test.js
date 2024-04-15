@@ -5,6 +5,8 @@
  * @license MIT
  */
 
+'use strict';
+
 const zobjectUtils = require( '../../../resources/ext.wikilambda.edit/mixins/zobjectUtils.js' ).methods,
 	Row = require( '../../../resources/ext.wikilambda.edit/store/classes/Row.js' ),
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),

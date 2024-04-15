@@ -99,11 +99,13 @@ module.exports = exports = {
 		'wl-function-tester-table': FunctionTesterTable
 	},
 	props: {
-		header: { // example: { language: "Language" } or { language: { title: "Language" mobile: false } }
+		// { language: "Language" } or { language: { title: "Language" mobile: false } }
+		header: {
 			type: Object,
 			required: true
 		},
-		body: { // example: { language: "Language" } or { language: { title: "Language" component: 'chip', props: { text: 'active' } } }
+		// { language: "Language" } or { language: { title: "Language" component: 'chip', props: { text: 'active' } } }
+		body: {
 			type: Array,
 			default: function () {
 				return [];

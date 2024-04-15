@@ -5,6 +5,8 @@
  * @license MIT
  */
 
+/* eslint-disable no-implicit-globals */
+
 const Constants = require( '../../Constants.js' ),
 	apiUtils = require( '../../mixins/api.js' ).methods,
 	hybridToCanonical = require( '../../mixins/schemata.js' ).methods.hybridToCanonical,
