@@ -7,7 +7,7 @@
 <template>
 	<cdx-button
 		weight="quiet"
-		aria-label="Toggle"
+		:aria-label="$i18n( 'wikilambda-toggle-expanded-view' ).text()"
 		class="ext-wikilambda-expand-toggle"
 		:disabled="!hasExpandedMode"
 		@click="waitAndExpand"

@@ -44,6 +44,7 @@ describe( 'ExpandedToggle', () => {
 			expect( wrapper.find( '.ext-wikilambda-expand-toggle-collapsed' ).exists() ).toBe( true );
 
 			wrapper.findComponent( { name: 'cdx-button' } ).trigger( 'click' );
+			expect( global.$i18n ).toHaveBeenCalledWith( 'wikilambda-toggle-expanded-view' );
 
 			await waitFor( () => expect( wrapper.emitted( 'toggle' ) ).toBeTruthy() );
 		} );
@@ -60,6 +61,7 @@ describe( 'ExpandedToggle', () => {
 			expect( wrapper.find( '.ext-wikilambda-expand-toggle-expanded' ).exists() ).toBe( true );
 
 			wrapper.findComponent( { name: 'cdx-button' } ).trigger( 'click' );
+			expect( global.$i18n ).toHaveBeenCalledWith( 'wikilambda-toggle-expanded-view' );
 
 			await waitFor( () => expect( wrapper.emitted( 'toggle' ) ).toBeTruthy() );
 		} );
