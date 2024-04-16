@@ -92,11 +92,14 @@
 	"wikilambda-functioncall-error-invalid-zobject": "Errore di chiamata alla funzione: l'elemento '$1' non è uno ZObject valido, quindi non può essere chiamato",
 	"wikilambda-functioncall-error-invalid-zobject-category": "Pagine con chiamate di Wikifuzioni a ZObject non validi",
 	"wikilambda-functioncall-error-invalid-zobject-category-desc": "Pagine con tentativi di chiamate a Wikifuzioni con uno ZObject non valido",
+	"wikilambda-performtest-error-nonfunction": "Errore nell'esecuzione del test: '$1' non è una funzione.",
+	"wikilambda-performtest-error-nonimplementation": "Errore nell'esecuzione del test: '$1' non è un'implementazione.",
 	"wikilambda-editor-tester-list-label": "Elenco test",
 	"wikilambda-tester-selector": "Seleziona un test",
 	"wikilambda-tester-none-found": "Al momento non ci sono casi di test per questa funzione.",
 	"wikilambda-tester-status-running": "In esecuzione…",
 	"wikilambda-tester-results-title": "Risultati del test",
+	"wikilambda-tester-results-caption": "Risultati dei test della funzione rispetto alle implementazioni",
 	"wikilambda-tester-results-current-implementation": "Implementazione attuale",
 	"wikilambda-tester-results-current-test": "Test attuale",
 	"wikilambda-tester-no-results": "Non è stato trovato alcun risultato. Aggiungi un'implementazione e un test per vedere i risultati.",
@@ -186,6 +189,7 @@
 	"wikilambda-add-list-item-button": "Aggiungi elemento",
 	"wikilambda-list-items-label": "Elenco elementi",
 	"wikilambda-list-item-label": "Elemento",
+	"wikilambda-context-menu": "Menu contestuale",
 	"wikilambda-add-list-item": "Aggiungi elemento",
 	"wikilambda-delete-list-item": "Cancella elemento"
 }
