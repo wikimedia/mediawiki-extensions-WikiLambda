@@ -223,20 +223,18 @@ describe( 'library module', function () {
 	describe( 'Actions', function () {
 		describe( 'fetchZids', function () {
 			beforeEach( function () {
+				context.state.objects = {};
+				context.state.requests = {};
 				context.dispatch = jest.fn( function ( key, payload ) {
-					// Run performFetchZids action
+					// Only run performFetchZids action
 					if ( key === 'performFetchZids' ) {
-						return new Promise( function ( resolve ) {
-							libraryModule.actions.performFetchZids( context, payload );
-							resolve( payload.zids );
-						} );
+						return libraryModule.actions.performFetchZids( context, payload );
 					}
 				} );
 			} );
 
 			it( 'Call api.get if the zId is not already in the state', function () {
 				const zids = [ 'Z1' ];
-				context.state.objects = {};
 
 				return libraryModule.actions.fetchZids( context, { zids } ).then( function () {
 					expect( mw.Api ).toHaveBeenCalledTimes( 1 );
@@ -254,7 +252,6 @@ describe( 'library module', function () {
 			it( 'Call api.get with multiple Zids as a string separated by | ', function () {
 				const zids = [ 'Z1', 'Z6' ];
 				const expectedWikiLambdaloadZids = 'Z1|Z6';
-				context.state.objects = {};
 
 				return libraryModule.actions.fetchZids( context, { zids } ).then( function () {
 					expect( mw.Api ).toHaveBeenCalledTimes( 1 );
@@ -314,22 +311,73 @@ describe( 'library module', function () {
 					zid: 'Z6',
 					info: expect.any( Object )
 				} );
-				context.state.objects = {};
 
 				return libraryModule.actions.fetchZids( context, { zids } ).then( function () {
 					expect( mw.Api ).toHaveBeenCalledTimes( 1 );
 					expect( getMock ).toHaveBeenCalledTimes( 1 );
-					expect( context.commit ).toHaveBeenCalledTimes( 11 );
 					expect( context.commit ).toHaveBeenCalledWith( 'setStoredObject', expectedAddZ1 );
 					expect( context.commit ).toHaveBeenCalledWith( 'setStoredObject', expectedAddZ2 );
 					expect( context.commit ).toHaveBeenCalledWith( 'setStoredObject', expectedAddZ6 );
 				} );
 			} );
 
+			it( 'fetches zids in batches of 50', () => {
+				// 123 zids, three batches of lengths: 50, 50, 23
+				const zids = [];
+				for ( let i = 1; i <= 123; i++ ) {
+					zids.push( `Z${ i }` );
+				}
+				const batch1 = zids.slice( 0, 50 );
+				const batch2 = zids.slice( 50, 100 );
+				const batch3 = zids.slice( 100, 123 );
+
+				return libraryModule.actions.fetchZids( context, { zids } ).then( () => {
+					expect( getMock ).toHaveBeenCalledTimes( 3 );
+					expect( getMock ).toHaveBeenNthCalledWith( 1, {
+						action: 'query',
+						list: 'wikilambdaload_zobjects',
+						format: 'json',
+						wikilambdaload_zids: batch1.join( '|' ),
+						wikilambdaload_language: context.rootGetters.zLang,
+						wikilambdaload_get_dependencies: 'true'
+					} );
+					expect( getMock ).toHaveBeenNthCalledWith( 2, {
+						action: 'query',
+						list: 'wikilambdaload_zobjects',
+						format: 'json',
+						wikilambdaload_zids: batch2.join( '|' ),
+						wikilambdaload_language: context.rootGetters.zLang,
+						wikilambdaload_get_dependencies: 'true'
+					} );
+					expect( getMock ).toHaveBeenNthCalledWith( 3, {
+						action: 'query',
+						list: 'wikilambdaload_zobjects',
+						format: 'json',
+						wikilambdaload_zids: batch3.join( '|' ),
+						wikilambdaload_language: context.rootGetters.zLang,
+						wikilambdaload_get_dependencies: 'true'
+					} );
+				} );
+			} );
+
+			it( 'request only the zids that have not been requested before', () => {
+				const first = [ 'Z1', 'Z2', 'Z3', 'Z4' ];
+				const second = [ 'Z1', 'Z2', 'Z3', 'Z4', 'Z5', 'Z6' ];
+
+				context.dispatch = jest.fn().mockResolvedValue( true );
+
+				// Run two inmediate calls with repeated zids
+				libraryModule.actions.fetchZids( context, { zids: first } );
+				return libraryModule.actions.fetchZids( context, { zids: second } ).then( () => {
+					expect( context.dispatch ).toHaveBeenCalledTimes( 2 );
+					expect( context.dispatch ).toHaveBeenNthCalledWith( 1, 'performFetchZids', { zids: first } );
+					expect( context.dispatch ).toHaveBeenNthCalledWith( 2, 'performFetchZids', { zids: [ 'Z5', 'Z6' ] } );
+				} );
+			} );
+
 			describe( 'Fetch dependencies', () => {
 				it( 'requests the language Zids of the returned labels', function () {
 					const zids = [ 'Z20001' ];
-					context.state.objects = {};
 					getMock = jest.fn().mockResolvedValue( mockApiResponseFor( zids ) );
 
 					return libraryModule.actions.fetchZids( context, { zids } ).then( function () {
@@ -339,7 +387,6 @@ describe( 'library module', function () {
 
 				it( 'requests the renderer/parser Zids of the returned type', function () {
 					const zids = [ 'Z20002' ];
-					context.state.objects = {};
 					getMock = jest.fn().mockResolvedValue( mockApiResponseFor( zids ) );
 
 					return libraryModule.actions.fetchZids( context, { zids } ).then( function () {
