@@ -11,10 +11,7 @@
 const Constants = require( '../../Constants.js' ),
 	apiUtils = require( '../../mixins/api.js' ).methods,
 	typeUtils = require( '../../mixins/typeUtils.js' ).methods,
-	LabelData = require( '../classes/LabelData.js' ),
-	resolvePromiseList = {};
-
-let zidsToFetch = [];
+	LabelData = require( '../classes/LabelData.js' );
 
 module.exports = exports = {
 	state: {
@@ -27,7 +24,12 @@ module.exports = exports = {
 		 * Collection of LabelData object indexed by the identifier of
 		 * the ZKey, ZPersistentObject or ZArgumentDeclaration.
 		 */
-		labels: {}
+		labels: {},
+		/**
+		 * Collection of the requested zids and the resolving promises
+		 * zid: promise
+		 */
+		requests: {}
 	},
 	getters: {
 		/**
@@ -295,6 +297,21 @@ module.exports = exports = {
 	},
 	mutations: {
 		/**
+		 * Set request state for each zid
+		 *
+		 * @param {Object} state
+		 * @param {Object} payload
+		 * @param {string} payload.zid
+		 * @param {Promise} payload.request
+		 */
+		setZidRequest: function ( state, payload ) {
+			if ( payload.request ) {
+				state.requests[ payload.zid ] = payload.request;
+			} else {
+				delete state.requests[ payload.zid ];
+			}
+		},
+		/**
 		 * Add zid info to the state
 		 *
 		 * @param {Object} state
@@ -318,9 +335,14 @@ module.exports = exports = {
 	},
 	actions: {
 		/**
-		 * Call the wikilambdaload_zobjects api to get the information of a
-		 * given set of ZIds, and stores the ZId information and the ZKey labels
-		 * in the state.
+		 * Orchestrates the calls to wikilambdaload_zobject api to fetch
+		 * a given set of ZIDs. This method takes care of the following requirements:
+		 *
+		 * * Zids are requested in batches of max 50 items.
+		 * * Zids are only requested once.
+		 * * Every zid is stored along with their request while it's being fetched.
+		 * * Once it's fetched, the request is cleared.
+		 * * The returning promise only resolves when all of the batches have returned.
 		 *
 		 * @param {Object} context
 		 * @param {Object} payload
@@ -328,75 +350,57 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		fetchZids: function ( context, payload ) {
+			let requestZids = [];
+			const allPromises = [];
 			const {
 				zids = []
 			} = payload;
 
-			/**
-			 * Generates a request name for the fetch promise
-			 *
-			 * @param {Array} zidsList
-			 * @return {string}
-			 */
-			function generateRequestName( zidsList ) {
-				const sortedKeys = zidsList.sort();
-				return sortedKeys.join( '-' );
-			}
-
-			/**
-			 * Dispatch the fetch promise
-			 *
-			 * @param {Array} fetchZids
-			 * @return {Promise}
-			 */
-			function dispatchFetchZids( fetchZids ) {
-				zidsToFetch = [];
-				return context.dispatch(
-					'performFetchZids',
-					{ zids: fetchZids }
-				).then( ( fetchedZids ) => {
-					if ( !fetchedZids || fetchedZids.length === 0 ) {
-						return;
-					}
-					// we replicate the name defined when the promise was set
-					const currentPromiseName = generateRequestName( fetchedZids );
-					resolvePromiseList[ currentPromiseName ].resolve();
-					delete resolvePromiseList[ currentPromiseName ];
-				} );
-			}
-
 			zids.forEach( ( zid ) => {
-				// Zid has already been fetched or
-				// Zid is in the process of being fetched
+				// Ignore if:
+				// * Zid is Z0
+				// * Zid has already been fetched
 				if ( zid &&
-					zid !== Constants.NEW_ZID_PLACEHOLDER &&
+					( zid !== Constants.NEW_ZID_PLACEHOLDER ) &&
 					!( zid in context.state.objects ) &&
-					( !zidsToFetch.includes( zid ) )
+					!( zid in context.state.requests )
 				) {
-					zidsToFetch.push( zid );
+					requestZids.push( zid );
+				}
+				// Capture pending promise to await if:
+				// * Zid is waiting to be fetched
+				if ( zid in context.state.requests ) {
+					allPromises.push( context.state.requests[ zid ] );
 				}
 			} );
 
-			if ( zidsToFetch.length === 0 ) {
-				return Promise.resolve();
+			// Keep only unique values
+			requestZids = [ ...new Set( requestZids ) ];
+
+			// Batch zids in groups of max 50 items
+			const batches = [];
+			for ( let i = 0; i < requestZids.length; i += Constants.API_REQUEST_ITEMS_LIMIT ) {
+				batches.push( requestZids.slice( i, i + Constants.API_REQUEST_ITEMS_LIMIT ) );
 			}
 
-			// we provide an unique name to the promise, to be able to resolve the correct one later.
-			const promiseName = generateRequestName( zidsToFetch );
-
-			// if a promise with the same name already exist, do not fetch again
-			if ( resolvePromiseList[ promiseName ] ) {
-				return resolvePromiseList[ promiseName ].promise;
-			} else {
-				resolvePromiseList[ promiseName ] = {};
+			// For each batch, generate a Promise
+			for ( const batch of batches ) {
+				const batchPromise = context.dispatch( 'performFetchZids', { zids: batch } ).then( () => {
+					// Once it's back, unset active request
+					batch.forEach( ( zid ) => {
+						context.commit( 'setZidRequest', { zid, request: null } );
+					} );
+				} );
+				// Set active request
+				batch.forEach( ( zid ) => {
+					context.commit( 'setZidRequest', { zid, request: batchPromise } );
+				} );
+				// Collect batch promises
+				allPromises.push( batchPromise );
 			}
 
-			resolvePromiseList[ promiseName ].promise = new Promise( ( resolve ) => {
-				resolvePromiseList[ promiseName ].resolve = resolve;
-				dispatchFetchZids( zidsToFetch );
-			} );
-
-			return resolvePromiseList[ promiseName ].promise;
+			// Return pending and new promises for all the requested zids
+			return Promise.all( allPromises );
 		},
 		/**
 		 * Calls the api wikilambdaload_zobjects with a set of Zids and
@@ -415,128 +419,129 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		performFetchZids: function ( context, payload ) {
-			return apiUtils.fetchZObjects( {
-				zids: payload.zids.join( '|' ),
-				language: context.getters.getUserLangCode,
-				dependencies: true
-			} ).then( ( response ) => {
-				const requestedZids = payload.zids;
-				const returnedZids = Object.keys( response );
-				const dependentZids = [];
+			return new Promise( ( resolve ) => {
+				apiUtils.fetchZObjects( {
+					zids: payload.zids.join( '|' ),
+					language: context.getters.getUserLangCode,
+					dependencies: true
+				} ).then( ( response ) => {
+					const requestedZids = payload.zids;
+					const returnedZids = Object.keys( response );
+					const dependentZids = [];
 
-				returnedZids.forEach( ( zid ) => {
-					// If the requested zid returned error, do nothing
-					if ( !( 'success' in response[ zid ] ) ) {
-						return;
-					}
+					returnedZids.forEach( ( zid ) => {
+						// If the requested zid returned error, do nothing
+						if ( !( 'success' in response[ zid ] ) ) {
+							return;
+						}
 
-					// 1. State mutation:
-					// Add zObject to the state objects array
-					const persistentObject = response[ zid ].data;
+						// 1. State mutation:
+						// Add zObject to the state objects array
+						const persistentObject = response[ zid ].data;
+						context.commit( 'setStoredObject', {
+							zid: zid,
+							info: persistentObject
+						} );
 
-					context.commit( 'setStoredObject', {
-						zid: zid,
-						info: persistentObject
+						// 2. State mutation:
+						// Add zObject label in user's selected language
+						const multiStr = persistentObject[
+							Constants.Z_PERSISTENTOBJECT_LABEL
+						][ Constants.Z_MULTILINGUALSTRING_VALUE ].slice( 1 );
+
+						// The returned multilingual strings will only contain one monolingual string
+						// (or none) as they have already been filtered by the back-end to the given
+						// language or any of its available fallbacks.
+						if ( multiStr.length === 1 ) {
+							const labelData = new LabelData(
+								zid,
+								multiStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ],
+								multiStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
+							);
+							dependentZids.push( multiStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] );
+							context.commit( 'setLabel', labelData );
+						}
+
+						// 3. State mutation:
+						// Add the key or argument labels from the selected language to the store
+						let objects;
+						const objectValue = persistentObject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
+						const zType = ( typeof objectValue === 'object' ) ?
+							objectValue[ Constants.Z_OBJECT_TYPE ] :
+							undefined;
+
+						switch ( zType ) {
+
+							case Constants.Z_TYPE:
+								// If the zObject is a type, get all key labels
+								// and commit to the store
+								objects = objectValue[ Constants.Z_TYPE_KEYS ].slice( 1 );
+
+								objects.forEach( function ( key ) {
+									const keyLabels = key[
+										Constants.Z_KEY_LABEL
+									][ Constants.Z_MULTILINGUALSTRING_VALUE ].slice( 1 );
+
+									if ( keyLabels.length === 1 ) {
+
+										const labelData = new LabelData(
+											key[ Constants.Z_KEY_ID ],
+											keyLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ],
+											keyLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
+										);
+										dependentZids.push( keyLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] );
+										context.commit( 'setLabel', labelData );
+									}
+								} );
+
+								// If the zObject is a type, get all parser and renderer functions
+								// and commit to the store
+								if ( Constants.Z_TYPE_RENDERER in objectValue ) {
+									const renderer = objectValue[ Constants.Z_TYPE_RENDERER ];
+									dependentZids.push( renderer );
+									context.commit( 'setRenderer', { type: zid, renderer } );
+								}
+								if ( Constants.Z_TYPE_PARSER in objectValue ) {
+									const parser = objectValue[ Constants.Z_TYPE_PARSER ];
+									dependentZids.push( parser );
+									context.commit( 'setParser', { type: zid, parser } );
+								}
+								break;
+
+							case Constants.Z_FUNCTION:
+								// If the zObject is a function, get all argument
+								// declaration labels and commit to the store
+								objects = objectValue[ Constants.Z_FUNCTION_ARGUMENTS ].slice( 1 );
+
+								objects.forEach( function ( arg ) {
+									const argLabels = arg[
+										Constants.Z_ARGUMENT_LABEL
+									][ Constants.Z_MULTILINGUALSTRING_VALUE ].slice( 1 );
+
+									if ( argLabels.length === 1 ) {
+
+										const labelData = new LabelData(
+											arg[ Constants.Z_ARGUMENT_KEY ],
+											argLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ],
+											argLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
+										);
+										dependentZids.push( argLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] );
+										context.commit( 'setLabel', labelData );
+									}
+								} );
+								break;
+
+							default:
+								// Do nothing
+						}
+
+						// Make sure that we fetch all languages stored in the labels library
+						context.dispatch( 'fetchZids', { zids: [ ...new Set( dependentZids ) ] } );
 					} );
 
-					// 2. State mutation:
-					// Add zObject label in user's selected language
-					const multiStr = persistentObject[
-						Constants.Z_PERSISTENTOBJECT_LABEL
-					][ Constants.Z_MULTILINGUALSTRING_VALUE ].slice( 1 );
-
-					// The returned multilingual strings will only contain one monolingual string
-					// (or none) as they have already been filtered by the back-end to the given
-					// language or any of its available fallbacks.
-					if ( multiStr.length === 1 ) {
-						const labelData = new LabelData(
-							zid,
-							multiStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ],
-							multiStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
-						);
-						dependentZids.push( multiStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] );
-						context.commit( 'setLabel', labelData );
-					}
-
-					// 3. State mutation:
-					// Add the key or argument labels from the selected language to the store
-					let objects;
-					const objectValue = persistentObject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
-					const zType = ( typeof objectValue === 'object' ) ?
-						objectValue[ Constants.Z_OBJECT_TYPE ] :
-						undefined;
-
-					switch ( zType ) {
-
-						case Constants.Z_TYPE:
-							// If the zObject is a type, get all key labels
-							// and commit to the store
-							objects = objectValue[ Constants.Z_TYPE_KEYS ].slice( 1 );
-
-							objects.forEach( function ( key ) {
-								const keyLabels = key[
-									Constants.Z_KEY_LABEL
-								][ Constants.Z_MULTILINGUALSTRING_VALUE ].slice( 1 );
-
-								if ( keyLabels.length === 1 ) {
-
-									const labelData = new LabelData(
-										key[ Constants.Z_KEY_ID ],
-										keyLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ],
-										keyLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
-									);
-									dependentZids.push( keyLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] );
-									context.commit( 'setLabel', labelData );
-								}
-							} );
-
-							// If the zObject is a type, get all parser and renderer functions
-							// and commit to the store
-							if ( Constants.Z_TYPE_RENDERER in objectValue ) {
-								const renderer = objectValue[ Constants.Z_TYPE_RENDERER ];
-								dependentZids.push( renderer );
-								context.commit( 'setRenderer', { type: zid, renderer } );
-							}
-							if ( Constants.Z_TYPE_PARSER in objectValue ) {
-								const parser = objectValue[ Constants.Z_TYPE_PARSER ];
-								dependentZids.push( parser );
-								context.commit( 'setParser', { type: zid, parser } );
-							}
-							break;
-
-						case Constants.Z_FUNCTION:
-							// If the zObject is a function, get all argument
-							// declaration labels and commit to the store
-							objects = objectValue[ Constants.Z_FUNCTION_ARGUMENTS ].slice( 1 );
-
-							objects.forEach( function ( arg ) {
-								const argLabels = arg[
-									Constants.Z_ARGUMENT_LABEL
-								][ Constants.Z_MULTILINGUALSTRING_VALUE ].slice( 1 );
-
-								if ( argLabels.length === 1 ) {
-
-									const labelData = new LabelData(
-										arg[ Constants.Z_ARGUMENT_KEY ],
-										argLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ],
-										argLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
-									);
-									dependentZids.push( argLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] );
-									context.commit( 'setLabel', labelData );
-								}
-							} );
-							break;
-
-						default:
-							// Do nothing
-					}
-
-					// Make sure that we fetch all languages stored in the labels library
-					context.dispatch( 'fetchZids', { zids: [ ...new Set( dependentZids ) ] } );
+					// performFetch must resolve to the list of requested zids
+					resolve( requestedZids );
 				} );
-
-				// performFetch must resolve to the list of requested zids
-				return requestedZids;
 			} );
 		}
 	}
