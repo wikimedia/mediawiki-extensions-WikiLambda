@@ -6,7 +6,7 @@
  */
 'use strict';
 
-var getters = require( '../../../resources/ext.wikilambda.edit/store/getters.js' );
+const getters = require( '../../../resources/ext.wikilambda.edit/store/getters.js' );
 
 describe( 'Vuex root getters', function () {
 	it( 'gets current view mode', function () {

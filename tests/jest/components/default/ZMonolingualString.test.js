@@ -6,7 +6,7 @@
  */
 'use strict';
 
-var shallowMount = require( '@vue/test-utils' ).shallowMount,
+const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	mount = require( '@vue/test-utils' ).mount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	ZMonolingualString = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZMonolingualString.vue' ),
@@ -14,7 +14,7 @@ var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' );
 
 describe( 'ZMonolingualString', () => {
-	var getters;
+	let getters;
 	beforeEach( () => {
 		getters = {
 			getLabel: createGettersWithFunctionsMock( { label: 'English', lang: 'Z1002', zid: 'Z1002' } ),
@@ -29,7 +29,7 @@ describe( 'ZMonolingualString', () => {
 
 	describe( 'in view mode', () => {
 		it( 'renders without errors', () => {
-			var wrapper = shallowMount( ZMonolingualString, {
+			const wrapper = shallowMount( ZMonolingualString, {
 				props: {
 					edit: false
 				}
@@ -38,7 +38,7 @@ describe( 'ZMonolingualString', () => {
 		} );
 
 		it( 'displays a language chip', () => {
-			var wrapper = mount( ZMonolingualString, {
+			const wrapper = mount( ZMonolingualString, {
 				props: {
 					edit: false
 				}
@@ -50,7 +50,7 @@ describe( 'ZMonolingualString', () => {
 		} );
 
 		it( 'displays the label value for the language', () => {
-			var wrapper = shallowMount( ZMonolingualString, {
+			const wrapper = shallowMount( ZMonolingualString, {
 				props: {
 					edit: false
 				}
@@ -62,7 +62,7 @@ describe( 'ZMonolingualString', () => {
 
 	describe( 'in edit mode', () => {
 		it( 'renders without errors', () => {
-			var wrapper = shallowMount( ZMonolingualString, {
+			const wrapper = shallowMount( ZMonolingualString, {
 				props: {
 					edit: true
 				}
@@ -71,7 +71,7 @@ describe( 'ZMonolingualString', () => {
 		} );
 
 		it( 'displays a language chip', () => {
-			var wrapper = mount( ZMonolingualString, {
+			const wrapper = mount( ZMonolingualString, {
 				props: {
 					edit: false
 				}
@@ -83,7 +83,7 @@ describe( 'ZMonolingualString', () => {
 		} );
 
 		it( 'its label value can be edited and the value emitted', async () => {
-			var wrapper = shallowMount( ZMonolingualString, {
+			const wrapper = shallowMount( ZMonolingualString, {
 				props: {
 					edit: true
 				}

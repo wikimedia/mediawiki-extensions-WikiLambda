@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-var typeUtils = require( '../../../resources/ext.wikilambda.edit/mixins/typeUtils.js' ).methods,
+const typeUtils = require( '../../../resources/ext.wikilambda.edit/mixins/typeUtils.js' ).methods,
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' );
 
 describe( 'typeUtils mixin', function () {
@@ -40,57 +40,57 @@ describe( 'typeUtils mixin', function () {
 	describe( 'getZObjectType', function () {
 		describe( 'Return String ZID', function () {
 			it( 'when value is null', function () {
-				var type = typeUtils.getZObjectType();
+				const type = typeUtils.getZObjectType();
 				expect( type ).toBe( Constants.Z_STRING );
 			} );
 			it( 'when value is a string', function () {
-				var dummyValue = 'Just a string';
+				const dummyValue = 'Just a string';
 
-				var type = typeUtils.getZObjectType( dummyValue );
+				const type = typeUtils.getZObjectType( dummyValue );
 				expect( type ).toBe( Constants.Z_STRING );
 			} );
 		} );
 
 		describe( 'Return reference ZID', function () {
 			it( 'when value matches a ZID format', function () {
-				var dummyValue = 'Z123';
+				const dummyValue = 'Z123';
 
-				var type = typeUtils.getZObjectType( dummyValue );
+				const type = typeUtils.getZObjectType( dummyValue );
 				expect( type ).toBe( Constants.Z_REFERENCE );
 			} );
 		} );
 
 		describe( 'Return List ZID', function () {
 			it( 'when value is an empty array', function () {
-				var dummyValue = [];
+				const dummyValue = [];
 
-				var type = typeUtils.getZObjectType( dummyValue );
+				const type = typeUtils.getZObjectType( dummyValue );
 				expect( type ).toBe( Constants.Z_TYPED_LIST );
 			} );
 			it( 'when value is a filled array', function () {
-				var dummyValue = [ 'dummyValue' ];
+				const dummyValue = [ 'dummyValue' ];
 
-				var type = typeUtils.getZObjectType( dummyValue );
+				const type = typeUtils.getZObjectType( dummyValue );
 				expect( type ).toBe( Constants.Z_TYPED_LIST );
 			} );
 		} );
 
 		describe( 'Return zObject ZID when value is an object', function () {
 			it( 'without a zObjectType ', function () {
-				var dummyValue = {};
+				const dummyValue = {};
 
-				var type = typeUtils.getZObjectType( dummyValue );
+				const type = typeUtils.getZObjectType( dummyValue );
 				expect( type ).toBe( Constants.Z_OBJECT );
 			} );
 		} );
 
 		describe( 'Return type included in the value', function () {
 			it( 'when argumet include an object type', function () {
-				var expectedReturnType = 'ZDummyReturn';
-				var dummyValue = {};
+				const expectedReturnType = 'ZDummyReturn';
+				const dummyValue = {};
 				dummyValue[ Constants.Z_OBJECT_TYPE ] = expectedReturnType;
 
-				var type = typeUtils.getZObjectType( dummyValue );
+				const type = typeUtils.getZObjectType( dummyValue );
 				expect( type ).toBe( expectedReturnType );
 			} );
 		} );
@@ -99,23 +99,23 @@ describe( 'typeUtils mixin', function () {
 	describe( 'findKeyInArray', function () {
 		describe( 'return false', function () {
 			it( 'when key is not defined', function () {
-				var arrayItem = typeUtils.findKeyInArray();
+				const arrayItem = typeUtils.findKeyInArray();
 				expect( arrayItem ).toBeFalsy();
 			} );
 			it( 'when array is not defined', function () {
-				var arrayItem = typeUtils.findKeyInArray( 'dummyKey' );
+				const arrayItem = typeUtils.findKeyInArray( 'dummyKey' );
 				expect( arrayItem ).toBeFalsy();
 			} );
 			it( 'when array paramether is not an array', function () {
-				var arrayItem = typeUtils.findKeyInArray( 'dummyKey', 'shouldHaveBeenAnArray' );
+				const arrayItem = typeUtils.findKeyInArray( 'dummyKey', 'shouldHaveBeenAnArray' );
 				expect( arrayItem ).toBeFalsy();
 			} );
 			it( 'when array is empty aramether is not an array', function () {
-				var arrayItem = typeUtils.findKeyInArray( 'dummyKey', [] );
+				const arrayItem = typeUtils.findKeyInArray( 'dummyKey', [] );
 				expect( arrayItem ).toBeFalsy();
 			} );
 			it( 'when key is not present in array', function () {
-				var arrayItem = typeUtils.findKeyInArray( 'dummyKey', [ { key: 'different' } ] );
+				const arrayItem = typeUtils.findKeyInArray( 'dummyKey', [ { key: 'different' } ] );
 				expect( arrayItem ).toBeFalsy();
 			} );
 		} );
@@ -123,21 +123,21 @@ describe( 'typeUtils mixin', function () {
 		describe( 'when key is a string', function () {
 			it( 'returns the array item with matching key', function () {
 
-				var dummyArray = [
+				const dummyArray = [
 					{ key: 'one', value: 'firstOccurance' },
 					{ key: 'two', value: 'two' }
 				];
-				var arrayItem = typeUtils.findKeyInArray( 'one', dummyArray );
+				const arrayItem = typeUtils.findKeyInArray( 'one', dummyArray );
 				expect( arrayItem.value ).toBe( dummyArray[ 0 ].value );
 			} );
 			it( 'returns the first instance with matching key', function () {
 
-				var dummyArray = [
+				const dummyArray = [
 					{ key: 'one', value: 'firstOccurance' },
 					{ key: 'two', value: 'two' },
 					{ key: 'one', value: 'secondOccurance' }
 				];
-				var arrayItem = typeUtils.findKeyInArray( 'one', dummyArray );
+				const arrayItem = typeUtils.findKeyInArray( 'one', dummyArray );
 				expect( arrayItem.value ).toBe( dummyArray[ 0 ].value );
 			} );
 		} );
@@ -145,41 +145,41 @@ describe( 'typeUtils mixin', function () {
 		describe( 'when key is an array', function () {
 			it( 'return the false if no key are found', function () {
 
-				var dummyArray = [
+				const dummyArray = [
 					{ key: 'one', value: 'firstOccurance' },
 					{ key: 'two', value: 'two' }
 				];
-				var arrayItem = typeUtils.findKeyInArray( [ 'three' ], dummyArray );
+				const arrayItem = typeUtils.findKeyInArray( [ 'three' ], dummyArray );
 				expect( arrayItem.value ).toBeFalsy();
 			} );
 
 			it( 'return the first item of the key array if found', function () {
 
-				var dummyArray = [
+				const dummyArray = [
 					{ key: 'one', value: 'firstOccurance' },
 					{ key: 'two', value: 'two' }
 				];
-				var arrayItem = typeUtils.findKeyInArray( [ 'one', 'three' ], dummyArray );
+				const arrayItem = typeUtils.findKeyInArray( [ 'one', 'three' ], dummyArray );
 				expect( arrayItem.value ).toBe( dummyArray[ 0 ].value );
 			} );
 
 			it( 'return the second item of the key array if the first is not available', function () {
 
-				var dummyArray = [
+				const dummyArray = [
 					{ key: 'one', value: 'firstOccurance' },
 					{ key: 'two', value: 'two' }
 				];
-				var arrayItem = typeUtils.findKeyInArray( [ 'three', 'two' ], dummyArray );
+				const arrayItem = typeUtils.findKeyInArray( [ 'three', 'two' ], dummyArray );
 				expect( arrayItem.value ).toBe( dummyArray[ 1 ].value );
 			} );
 
 			it( 'when multiple items are found, it return the first one', function () {
 
-				var dummyArray = [
+				const dummyArray = [
 					{ key: 'one', value: 'firstOccurance' },
 					{ key: 'two', value: 'two' }
 				];
-				var arrayItem = typeUtils.findKeyInArray( [ 'two', 'one' ], dummyArray );
+				const arrayItem = typeUtils.findKeyInArray( [ 'two', 'one' ], dummyArray );
 				expect( arrayItem.value ).toBe( dummyArray[ 1 ].value );
 			} );
 		} );
@@ -187,11 +187,11 @@ describe( 'typeUtils mixin', function () {
 
 	describe( 'isValidZidFormat', function () {
 		it( 'return true if string is ZID format', function () {
-			var result = typeUtils.isValidZidFormat( 'Z123' );
+			const result = typeUtils.isValidZidFormat( 'Z123' );
 			expect( result ).toBeTruthy();
 		} );
 		it( 'return false if string is not a Zid', function () {
-			var result = typeUtils.isValidZidFormat( 'fakeValue' );
+			const result = typeUtils.isValidZidFormat( 'fakeValue' );
 			expect( result ).toBeFalsy();
 		} );
 	} );
@@ -199,25 +199,25 @@ describe( 'typeUtils mixin', function () {
 	describe( 'typeToString', function () {
 		describe( 'Return persisted type zid', function () {
 			it( 'when value is string', function () {
-				var type = typeUtils.typeToString( Constants.Z_STRING );
+				const type = typeUtils.typeToString( Constants.Z_STRING );
 				expect( type ).toBe( Constants.Z_STRING );
 			} );
 			it( 'when value is a reference to a string', function () {
-				var type = typeUtils.typeToString( {
+				const type = typeUtils.typeToString( {
 					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
 					[ Constants.Z_REFERENCE_ID ]: Constants.Z_STRING
 				} );
 				expect( type ).toBe( Constants.Z_STRING );
 			} );
 			it( 'when value is a literal', function () {
-				var type = typeUtils.typeToString( {
+				const type = typeUtils.typeToString( {
 					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_TYPE,
 					[ Constants.Z_TYPE_IDENTITY ]: Constants.Z_STRING
 				} );
 				expect( type ).toBe( Constants.Z_STRING );
 			} );
 			it( 'when value is a literal and identity is a normal reference', function () {
-				var type = typeUtils.typeToString( {
+				const type = typeUtils.typeToString( {
 					[ Constants.Z_OBJECT_TYPE ]: {
 						[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
 						[ Constants.Z_REFERENCE_ID ]: Constants.Z_TYPE
@@ -233,14 +233,14 @@ describe( 'typeUtils mixin', function () {
 
 		describe( 'Return function call identity', function () {
 			it( 'with zero arguments', function () {
-				var type = typeUtils.typeToString( {
+				const type = typeUtils.typeToString( {
 					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
 					[ Constants.Z_FUNCTION_CALL_FUNCTION ]: 'Z10000'
 				} );
 				expect( type ).toBe( 'Z10000()' );
 			} );
 			it( 'with zero arguments and normal reference', function () {
-				var type = typeUtils.typeToString( {
+				const type = typeUtils.typeToString( {
 					[ Constants.Z_OBJECT_TYPE ]: {
 						[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
 						[ Constants.Z_REFERENCE_ID ]: Constants.Z_FUNCTION_CALL
@@ -253,7 +253,7 @@ describe( 'typeUtils mixin', function () {
 				expect( type ).toBe( 'Z10000()' );
 			} );
 			it( 'with one argument', function () {
-				var type = typeUtils.typeToString( {
+				const type = typeUtils.typeToString( {
 					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
 					[ Constants.Z_FUNCTION_CALL_FUNCTION ]: Constants.Z_TYPED_LIST,
 					[ Constants.Z_TYPED_LIST_TYPE ]: Constants.Z_STRING
@@ -261,7 +261,7 @@ describe( 'typeUtils mixin', function () {
 				expect( type ).toBe( `${ Constants.Z_TYPED_LIST }(${ Constants.Z_STRING })` );
 			} );
 			it( 'with more than one argument', function () {
-				var type = typeUtils.typeToString( {
+				const type = typeUtils.typeToString( {
 					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
 					[ Constants.Z_FUNCTION_CALL_FUNCTION ]: Constants.Z_TYPED_PAIR,
 					[ Constants.Z_TYPED_PAIR_TYPE1 ]: Constants.Z_STRING,
@@ -271,7 +271,7 @@ describe( 'typeUtils mixin', function () {
 				);
 			} );
 			it( 'nested function calls - list of lists of strings', function () {
-				var type = typeUtils.typeToString( {
+				const type = typeUtils.typeToString( {
 					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
 					[ Constants.Z_FUNCTION_CALL_FUNCTION ]: Constants.Z_TYPED_LIST,
 					[ Constants.Z_TYPED_LIST_TYPE ]: {
@@ -287,14 +287,14 @@ describe( 'typeUtils mixin', function () {
 
 		describe( 'Return function call identity with no args', function () {
 			it( 'with zero arguments', function () {
-				var type = typeUtils.typeToString( {
+				const type = typeUtils.typeToString( {
 					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
 					[ Constants.Z_FUNCTION_CALL_FUNCTION ]: 'Z10000'
 				}, true );
 				expect( type ).toBe( 'Z10000' );
 			} );
 			it( 'with zero arguments and normal reference', function () {
-				var type = typeUtils.typeToString( {
+				const type = typeUtils.typeToString( {
 					[ Constants.Z_OBJECT_TYPE ]: {
 						[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
 						[ Constants.Z_REFERENCE_ID ]: Constants.Z_FUNCTION_CALL
@@ -307,7 +307,7 @@ describe( 'typeUtils mixin', function () {
 				expect( type ).toBe( 'Z10000' );
 			} );
 			it( 'with one argument', function () {
-				var type = typeUtils.typeToString( {
+				const type = typeUtils.typeToString( {
 					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
 					[ Constants.Z_FUNCTION_CALL_FUNCTION ]: Constants.Z_TYPED_LIST,
 					[ Constants.Z_TYPED_LIST_TYPE ]: Constants.Z_STRING
@@ -315,7 +315,7 @@ describe( 'typeUtils mixin', function () {
 				expect( type ).toBe( Constants.Z_TYPED_LIST );
 			} );
 			it( 'with more than one argument', function () {
-				var type = typeUtils.typeToString( {
+				const type = typeUtils.typeToString( {
 					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
 					[ Constants.Z_FUNCTION_CALL_FUNCTION ]: Constants.Z_TYPED_PAIR,
 					[ Constants.Z_TYPED_PAIR_TYPE1 ]: Constants.Z_STRING,
@@ -324,7 +324,7 @@ describe( 'typeUtils mixin', function () {
 				expect( type ).toBe( Constants.Z_TYPED_PAIR );
 			} );
 			it( 'nested function calls - list of lists of strings', function () {
-				var type = typeUtils.typeToString( {
+				const type = typeUtils.typeToString( {
 					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
 					[ Constants.Z_FUNCTION_CALL_FUNCTION ]: Constants.Z_TYPED_LIST,
 					[ Constants.Z_TYPED_LIST_TYPE ]: {
@@ -360,18 +360,18 @@ describe( 'typeUtils mixin', function () {
 
 	describe( 'isGlobalKey', function () {
 		it( 'return true if string is a valid global Key', function () {
-			var result = typeUtils.isGlobalKey( 'Z123K123' );
+			const result = typeUtils.isGlobalKey( 'Z123K123' );
 			expect( result ).toBeTruthy();
 		} );
 		it( 'return false if string is not a valid global Key', function () {
-			var result = typeUtils.isGlobalKey( 'Z123K12K' );
+			const result = typeUtils.isGlobalKey( 'Z123K12K' );
 			expect( result ).toBeFalsy();
 		} );
 	} );
 
 	describe( 'getZidOfGlobalKey', function () {
 		it( 'return Zid of a global key', function () {
-			var result = typeUtils.getZidOfGlobalKey( 'Z123K123' );
+			const result = typeUtils.getZidOfGlobalKey( 'Z123K123' );
 			expect( result ).toBe( 'Z123' );
 		} );
 	} );
@@ -379,7 +379,7 @@ describe( 'typeUtils mixin', function () {
 	describe( 'getScaffolding', function () {
 		describe( 'return empty object', function () {
 			it( `of reference if type is ${ Constants.Z_OBJECT }`, function () {
-				var result = typeUtils.getScaffolding( Constants.Z_OBJECT );
+				const result = typeUtils.getScaffolding( Constants.Z_OBJECT );
 				expect( result ).toStrictEqual( {
 					[ Constants.Z_OBJECT_TYPE ]: {
 						[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
@@ -388,11 +388,11 @@ describe( 'typeUtils mixin', function () {
 				} );
 			} );
 			it( `of string if type is ${ Constants.Z_STRING }`, function () {
-				var result = typeUtils.getScaffolding( Constants.Z_STRING );
+				const result = typeUtils.getScaffolding( Constants.Z_STRING );
 				expect( result ).toBe( '' );
 			} );
 			it( `of monolingual string if type is ${ Constants.Z_MONOLINGUALSTRING }`, function () {
-				var result = typeUtils.getScaffolding( Constants.Z_MONOLINGUALSTRING );
+				const result = typeUtils.getScaffolding( Constants.Z_MONOLINGUALSTRING );
 				expect( result ).toStrictEqual( {
 					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
 					[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: {
@@ -405,7 +405,7 @@ describe( 'typeUtils mixin', function () {
 		} );
 		describe( 'return undefined', function () {
 			it( 'if type is other than reference, string, or monolingual string', function () {
-				var result = typeUtils.getScaffolding( 'Z123' );
+				const result = typeUtils.getScaffolding( 'Z123' );
 				expect( result ).toBeUndefined();
 			} );
 		} );
@@ -413,8 +413,8 @@ describe( 'typeUtils mixin', function () {
 
 	describe( 'getKeyFromKeyList', function () {
 		it( `return the ${ Constants.Z_KEY } object if given a key string from a list of ${ Constants.Z_KEY } items`, function () {
-			var key = Constants.Z_MONOLINGUALSTRING_LANGUAGE;
-			var keyObject = {
+			const key = Constants.Z_MONOLINGUALSTRING_LANGUAGE;
+			const keyObject = {
 				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_KEY,
 				[ Constants.Z_KEY_TYPE ]: Constants.Z_NATURAL_LANGUAGE,
 				[ Constants.Z_KEY_ID ]: Constants.Z_MONOLINGUALSTRING_LANGUAGE,
@@ -430,7 +430,7 @@ describe( 'typeUtils mixin', function () {
 					]
 				}
 			};
-			var list = [
+			const list = [
 				Constants.Z_KEY,
 				keyObject,
 				{
@@ -450,15 +450,15 @@ describe( 'typeUtils mixin', function () {
 					}
 				}
 			];
-			var result = typeUtils.getKeyFromKeyList( key, list );
+			const result = typeUtils.getKeyFromKeyList( key, list );
 			expect( result ).toStrictEqual( keyObject );
 		} );
 	} );
 
 	describe( 'getArgFromArgList', function () {
 		it( `return the ${ Constants.Z_ARGUMENT } object if given a key string from a list of ${ Constants.Z_ARGUMENT } items`, function () {
-			var key = 'Z801K1';
-			var keyObject = {
+			const key = 'Z801K1';
+			const keyObject = {
 				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_ARGUMENT,
 				[ Constants.Z_ARGUMENT_TYPE ]: Constants.Z_OBJECT,
 				[ Constants.Z_ARGUMENT_KEY ]: 'Z801K1',
@@ -474,11 +474,11 @@ describe( 'typeUtils mixin', function () {
 					]
 				}
 			};
-			var list = [
+			const list = [
 				Constants.Z_ARGUMENT,
 				keyObject
 			];
-			var result = typeUtils.getArgFromArgList( key, list );
+			const result = typeUtils.getArgFromArgList( key, list );
 			expect( result ).toStrictEqual( keyObject );
 		} );
 	} );

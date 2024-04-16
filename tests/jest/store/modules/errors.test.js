@@ -6,7 +6,7 @@
  */
 'use strict';
 
-var errorsModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/errors.js' ),
+const errorsModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/errors.js' ),
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	mockErrors = {
 		// Global errors
@@ -25,8 +25,8 @@ var errorsModule = require( '../../../../resources/ext.wikilambda.edit/store/mod
 			code: Constants.errorCodes.MISSING_FUNCTION_OUTPUT,
 			message: undefined
 		} ]
-	},
-	context,
+	};
+let context,
 	state;
 
 describe( 'Errors Vuex module', () => {

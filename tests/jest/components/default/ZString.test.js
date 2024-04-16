@@ -6,14 +6,14 @@
  */
 'use strict';
 
-var shallowMount = require( '@vue/test-utils' ).shallowMount,
+const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
 	ZString = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZString.vue' ),
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' );
 
 describe( 'ZString', () => {
-	var getters;
+	let getters;
 	beforeEach( () => {
 		getters = {
 			getZObjectKeyByRowId: createGettersWithFunctionsMock( Constants.Z_ARGUMENT_KEY ),
@@ -26,7 +26,7 @@ describe( 'ZString', () => {
 
 	describe( 'in view mode', () => {
 		it( 'renders without errors', () => {
-			var wrapper = shallowMount( ZString, {
+			const wrapper = shallowMount( ZString, {
 				props: {
 					edit: false
 				}
@@ -36,7 +36,7 @@ describe( 'ZString', () => {
 		} );
 
 		it( 'displays the terminating string value', async () => {
-			var wrapper = shallowMount( ZString, {
+			const wrapper = shallowMount( ZString, {
 				props: {
 					edit: false
 				}
@@ -49,7 +49,7 @@ describe( 'ZString', () => {
 	describe( 'in edit mode', () => {
 		it( 'takes an input and emits the value with a Z_STRING_VALUE (Z6K1) keyPath if its key is not a Z_STRING_VALUE',
 			async () => {
-				var wrapper = shallowMount( ZString, {
+				const wrapper = shallowMount( ZString, {
 					props: {
 						edit: true
 					}
@@ -70,7 +70,7 @@ describe( 'ZString', () => {
 				getters: getters
 			} );
 
-			var wrapper = shallowMount( ZString, {
+			const wrapper = shallowMount( ZString, {
 				props: {
 					edit: true
 				}

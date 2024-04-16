@@ -17,7 +17,7 @@ config.global.stubs = {
 };
 
 describe( 'AboutEditMetadataDialog', () => {
-	var getters,
+	let getters,
 		actions;
 
 	beforeEach( () => {

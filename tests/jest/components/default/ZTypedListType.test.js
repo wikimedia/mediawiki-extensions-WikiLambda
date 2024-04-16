@@ -6,14 +6,14 @@
  */
 'use strict';
 
-var shallowMount = require( '@vue/test-utils' ).shallowMount,
+const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	ZTypedListType = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZTypedListType.vue' ),
 	ZObjectKeyValue = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZObjectKeyValue.vue' );
 
 describe( 'ZTypedListType', () => {
-	var getters,
+	let getters,
 		actions;
 
 	beforeEach( () => {
@@ -48,7 +48,7 @@ describe( 'ZTypedListType', () => {
 	} );
 
 	it( 'renders without error in view mode', () => {
-		var wrapper = shallowMount( ZTypedListType, {
+		const wrapper = shallowMount( ZTypedListType, {
 			props: {
 				edit: false
 			}
@@ -58,7 +58,7 @@ describe( 'ZTypedListType', () => {
 	} );
 
 	it( 'renders without error in edit mode', () => {
-		var wrapper = shallowMount( ZTypedListType, {
+		const wrapper = shallowMount( ZTypedListType, {
 			props: {
 				edit: true
 			}
@@ -68,7 +68,7 @@ describe( 'ZTypedListType', () => {
 	} );
 
 	it( 'sets list items for removal when type changes', () => {
-		var wrapper = shallowMount( ZTypedListType, {
+		const wrapper = shallowMount( ZTypedListType, {
 			props: {
 				edit: true,
 				listItemsRowIds: [ 1, 2 ]
@@ -88,7 +88,7 @@ describe( 'ZTypedListType', () => {
 	} );
 
 	it( 'it does not set list items for removal if type changes to Z1', () => {
-		var wrapper = shallowMount( ZTypedListType, {
+		const wrapper = shallowMount( ZTypedListType, {
 			props: {
 				edit: true
 			},

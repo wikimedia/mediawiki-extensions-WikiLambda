@@ -12,7 +12,7 @@ const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	ZTypedListItems = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZTypedListItems.vue' );
 
 describe( 'ZTypedListItems', () => {
-	var getters;
+	let getters;
 
 	beforeEach( () => {
 		getters = {
@@ -31,7 +31,7 @@ describe( 'ZTypedListItems', () => {
 
 	describe( 'in view mode', () => {
 		it( 'renders without errors', () => {
-			var wrapper = shallowMount( ZTypedListItems, {
+			const wrapper = shallowMount( ZTypedListItems, {
 				props: {
 					edit: false
 				}
@@ -41,7 +41,7 @@ describe( 'ZTypedListItems', () => {
 		} );
 
 		it( 'renders ZObjectKeyValue for each list item', () => {
-			var wrapper = shallowMount( ZTypedListItems, {
+			const wrapper = shallowMount( ZTypedListItems, {
 				props: {
 					edit: false
 				}
@@ -51,7 +51,7 @@ describe( 'ZTypedListItems', () => {
 		} );
 
 		it( 'renders list items label when expanded', () => {
-			var wrapper = shallowMount( ZTypedListItems, {
+			const wrapper = shallowMount( ZTypedListItems, {
 				props: {
 					edit: false,
 					expanded: true
@@ -65,7 +65,7 @@ describe( 'ZTypedListItems', () => {
 		} );
 
 		it( 'does not render list items label when collapsed', () => {
-			var wrapper = shallowMount( ZTypedListItems, {
+			const wrapper = shallowMount( ZTypedListItems, {
 				props: {
 					edit: false,
 					expanded: false
@@ -79,7 +79,7 @@ describe( 'ZTypedListItems', () => {
 
 	describe( 'in edit mode', () => {
 		it( 'renders without errors', () => {
-			var wrapper = shallowMount( ZTypedListItems, {
+			const wrapper = shallowMount( ZTypedListItems, {
 				props: {
 					edit: true
 				}

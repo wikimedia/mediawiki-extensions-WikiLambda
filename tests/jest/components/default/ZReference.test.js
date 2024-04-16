@@ -12,7 +12,7 @@ const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	ZReference = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZReference.vue' );
 
 describe( 'ZReference', () => {
-	var getters;
+	let getters;
 	beforeEach( () => {
 		getters = {
 			getLabel: createGettersWithFunctionsMock( 'String' ),

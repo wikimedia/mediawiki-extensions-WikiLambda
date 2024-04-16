@@ -6,11 +6,11 @@
  */
 'use strict';
 
-var Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' );
+const Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' );
 
 describe( 'router Vuex module', function () {
 
-	var routerInstance;
+	let routerInstance;
 
 	beforeEach( function () {
 		jest.resetModules();
@@ -25,7 +25,7 @@ describe( 'router Vuex module', function () {
 		describe( 'getCurrentView', function () {
 			it( 'Returns the current view', function () {
 				routerInstance.state.currentView = 'DummyView';
-				var getCurrentView = routerInstance.getters.getCurrentView;
+				const getCurrentView = routerInstance.getters.getCurrentView;
 
 				expect( getCurrentView( routerInstance.state ) ).toBe( routerInstance.state.currentView );
 			} );
@@ -34,7 +34,7 @@ describe( 'router Vuex module', function () {
 		describe( 'getQueryParams', function () {
 			it( 'Returns the current queryParams', function () {
 				routerInstance.state.queryParams = 'DummyQueryParams';
-				var getQueryParams = routerInstance.getters.getQueryParams;
+				const getQueryParams = routerInstance.getters.getQueryParams;
 
 				expect( getQueryParams( routerInstance.state ) ).toBe( routerInstance.state.queryParams );
 			} );
@@ -44,7 +44,7 @@ describe( 'router Vuex module', function () {
 	describe( 'Mutations', function () {
 		describe( 'CHANGE_CURRENT_VIEW', function () {
 			it( 'Updates the current View', function () {
-				var dummyView = 'DummyView';
+				const dummyView = 'DummyView';
 
 				expect( routerInstance.state.currentView ).toBe( routerInstance.state.currentView );
 				routerInstance.mutations.CHANGE_CURRENT_VIEW( routerInstance.state, dummyView );
@@ -55,7 +55,7 @@ describe( 'router Vuex module', function () {
 
 		describe( 'CHANGE_QUERY_PARAMS', function () {
 			it( 'Updates the current View', function () {
-				var dummyParams = 'DummyParams';
+				const dummyParams = 'DummyParams';
 
 				expect( routerInstance.state.queryParams ).toBe( routerInstance.state.queryParams );
 				routerInstance.mutations.CHANGE_QUERY_PARAMS( routerInstance.state, dummyParams );
@@ -66,7 +66,7 @@ describe( 'router Vuex module', function () {
 	} );
 
 	describe( 'Actions', function () {
-		var context;
+		let context;
 
 		beforeEach( function () {
 			context = $.extend( {}, {
@@ -82,7 +82,7 @@ describe( 'router Vuex module', function () {
 
 		describe( 'navigate', function () {
 			it( 'does not trigger navigation when view is invalid', function () {
-				var payload = {
+				const payload = {
 					to: 'InvalidValidation'
 				};
 				routerInstance.actions.navigate( context, payload );
@@ -92,7 +92,7 @@ describe( 'router Vuex module', function () {
 
 			describe( 'when view is valid', function () {
 				it( 'triggers a CHANGE_CURRENT_VIEW mutation', function () {
-					var payload = {
+					const payload = {
 						to: Constants.VIEWS.DEFAULT_VIEW
 					};
 					routerInstance.actions.navigate( context, payload );
@@ -105,7 +105,7 @@ describe( 'router Vuex module', function () {
 				} );
 
 				it( 'call window.history.pushState', function () {
-					var payload = {
+					const payload = {
 						to: Constants.VIEWS.DEFAULT_VIEW
 					};
 					routerInstance.actions.navigate( context, payload );
@@ -114,10 +114,10 @@ describe( 'router Vuex module', function () {
 				} );
 
 				it( 'call window.history.pushState with path and query as state', function () {
-					var payload = {
+					const payload = {
 						to: Constants.VIEWS.DEFAULT_VIEW
 					};
-					var expectedObject = {
+					const expectedObject = {
 						path: 'dummyPath',
 						query: {
 							dummyParams: 'dummyValue',
@@ -133,10 +133,10 @@ describe( 'router Vuex module', function () {
 				} );
 
 				it( 'call window.history.pushState with argument as query string', function () {
-					var payload = {
+					const payload = {
 						to: Constants.VIEWS.DEFAULT_VIEW
 					};
-					var expectedQueryString = 'dummyPath?dummyParams=dummyValue&view=dummyView';
+					const expectedQueryString = 'dummyPath?dummyParams=dummyValue&view=dummyView';
 
 					context.state.currentPath = 'dummyPath';
 					context.state.currentView = 'dummyView';
@@ -148,11 +148,11 @@ describe( 'router Vuex module', function () {
 
 				describe( 'when params are passed', function () {
 					it( 'calls CHANGE_QUERY_PARAMS mutation', function () {
-						var payload = {
+						const payload = {
 							to: Constants.VIEWS.DEFAULT_VIEW,
 							params: { dummyParams: 'dummyValue' }
 						};
-						var expectedParams = {
+						const expectedParams = {
 							dummyParams: 'dummyValue',
 							existingParams: 'existingValue'
 						};
@@ -854,7 +854,7 @@ describe( 'router Vuex module', function () {
 			} );
 
 			it( 'changes the current view with the value provided', function () {
-				var dummyView = 'dummyView';
+				const dummyView = 'dummyView';
 				routerInstance.actions.changeCurrentView( context, dummyView );
 
 				expect( context.commit ).toHaveBeenCalled();
@@ -862,21 +862,21 @@ describe( 'router Vuex module', function () {
 			} );
 
 			it( 'does not replace history state if view is not set in query param', function () {
-				var dummyView = 'dummyView';
+				const dummyView = 'dummyView';
 				routerInstance.actions.changeCurrentView( context, dummyView );
 
 				expect( window.history.replaceState ).not.toHaveBeenCalled();
 			} );
 
 			it( 'does not replace history state if view set in query param is the view passed', function () {
-				var dummyView = 'dummyView';
+				const dummyView = 'dummyView';
 				routerInstance.actions.changeCurrentView( context, dummyView );
 
 				expect( window.history.replaceState ).not.toHaveBeenCalled();
 			} );
 
 			it( 'replace history state with current view', function () {
-				var dummyView = 'dummyView',
+				const dummyView = 'dummyView',
 					fakePath = 'fakePath',
 					fakeExistingValue = 'fakeValue';
 				window.mw.Uri.mockImplementation( function () {

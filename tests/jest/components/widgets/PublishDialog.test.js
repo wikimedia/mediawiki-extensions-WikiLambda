@@ -21,7 +21,7 @@ config.global.stubs = {
 };
 
 describe( 'Publish Dialog', () => {
-	var getters,
+	let getters,
 		actions;
 
 	beforeEach( () => {

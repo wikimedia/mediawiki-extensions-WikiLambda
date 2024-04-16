@@ -6,7 +6,7 @@
  */
 'use strict';
 
-var shallowMount = require( '@vue/test-utils' ).shallowMount,
+const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
@@ -14,7 +14,7 @@ var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	CodeEditor = require( '../../../../resources/ext.wikilambda.edit/components/base/CodeEditor.vue' );
 
 describe( 'ZCode', () => {
-	var getters,
+	let getters,
 		actions;
 	beforeEach( () => {
 		getters = {
@@ -66,7 +66,7 @@ describe( 'ZCode', () => {
 	} );
 	describe( 'in view mode', () => {
 		it( 'renders without errors', () => {
-			var wrapper = shallowMount( ZCode, {
+			const wrapper = shallowMount( ZCode, {
 				props: {
 					edit: false
 				}
@@ -76,7 +76,7 @@ describe( 'ZCode', () => {
 		} );
 
 		it( 'displays the ace editor', () => {
-			var wrapper = shallowMount( ZCode, {
+			const wrapper = shallowMount( ZCode, {
 				props: {
 					edit: false
 				}
@@ -86,7 +86,7 @@ describe( 'ZCode', () => {
 		} );
 
 		it( 'editor is in read only mode', () => {
-			var wrapper = shallowMount( ZCode, {
+			const wrapper = shallowMount( ZCode, {
 				props: {
 					edit: false
 				}
@@ -144,7 +144,7 @@ describe( 'ZCode', () => {
 
 	describe( 'in edit mode', () => {
 		it( 'enables programming language selector and code editor when not in read-only or view mode', () => {
-			var wrapper = shallowMount( ZCode, {
+			const wrapper = shallowMount( ZCode, {
 				props: {
 					edit: true
 				}
@@ -163,7 +163,7 @@ describe( 'ZCode', () => {
 					actions: actions
 				} );
 
-				var wrapper = shallowMount( ZCode, {
+				const wrapper = shallowMount( ZCode, {
 					props: {
 						edit: true
 					}
@@ -192,7 +192,7 @@ describe( 'ZCode', () => {
 					actions: actions
 				} );
 
-				var wrapper = shallowMount( ZCode, {
+				const wrapper = shallowMount( ZCode, {
 					props: {
 						edit: true
 					}
@@ -214,7 +214,7 @@ describe( 'ZCode', () => {
 			} );
 
 			it( 'updates code for valid strings', async () => {
-				var wrapper = shallowMount( ZCode, {
+				const wrapper = shallowMount( ZCode, {
 					props: {
 						edit: true
 					}
@@ -249,7 +249,7 @@ describe( 'ZCode', () => {
 					actions: actions
 				} );
 
-				var wrapper = shallowMount( ZCode, {
+				const wrapper = shallowMount( ZCode, {
 					props: {
 						edit: true
 					}
@@ -280,7 +280,7 @@ describe( 'ZCode', () => {
 					actions: actions
 				} );
 
-				var wrapper = shallowMount( ZCode, {
+				const wrapper = shallowMount( ZCode, {
 					props: {
 						edit: true
 					}

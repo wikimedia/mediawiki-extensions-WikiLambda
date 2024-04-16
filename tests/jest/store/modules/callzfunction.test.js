@@ -115,7 +115,7 @@ describe( 'callZFunction Vuex module', function () {
 			} );
 
 			it( 'Call MW API for function orchestration; set error as orchestrationResult', function () {
-				var error = 'one tissue, used';
+				const error = 'one tissue, used';
 
 				// eslint-disable-next-line no-unused-vars
 				postMock = jest.fn( function ( payload ) {

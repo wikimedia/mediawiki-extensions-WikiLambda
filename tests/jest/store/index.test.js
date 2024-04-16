@@ -5,9 +5,9 @@
  * @license MIT
  */
 
-var Vuex = require( 'vuex' );
+const Vuex = require( 'vuex' );
 
-var store = require( '../../../resources/ext.wikilambda.edit/store/index.js' );
+const store = require( '../../../resources/ext.wikilambda.edit/store/index.js' );
 
 describe( 'Vuex store (index.js)', function () {
 	it( 'should export a function', function () {

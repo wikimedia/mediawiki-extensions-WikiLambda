@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-var schemata = require( '../../../resources/ext.wikilambda.edit/mixins/schemata.js' ).methods,
+const schemata = require( '../../../resources/ext.wikilambda.edit/mixins/schemata.js' ).methods,
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
 	hybridToCanonical = schemata.hybridToCanonical,
 	canonicalToHybrid = schemata.canonicalToHybrid,
@@ -15,7 +15,7 @@ var schemata = require( '../../../resources/ext.wikilambda.edit/mixins/schemata.
 	path = require( 'path' );
 
 describe( 'schemata mixin', function () {
-	var hybridInitialZObject = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/hybridInitialZObject.json' ) ) ),
+	const hybridInitialZObject = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/hybridInitialZObject.json' ) ) ),
 		canonicalInitialZObject = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/canonicalInitialZObject.json' ) ) ),
 		canonicalResultWithLargeZQuote = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/canonicalResultWithLargeZQuote.json' ) ) ),
 		hybridResultWithLargeZQuote = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/hybridResultWithLargeZQuote.json' ) ) ),

@@ -13,7 +13,7 @@ const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	ZObjectKeyValue = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZObjectKeyValue.vue' );
 
 describe( 'ZObjectKeyValue', () => {
-	var getters,
+	let getters,
 		actions;
 
 	beforeEach( () => {
@@ -325,7 +325,7 @@ describe( 'ZObjectKeyValue', () => {
 
 	describe( 'in view mode', () => {
 		it( 'it renders without errors', () => {
-			var wrapper = shallowMount( ZObjectKeyValue, {
+			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
 					edit: false,
 					rowId: 1

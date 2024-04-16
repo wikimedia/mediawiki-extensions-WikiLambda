@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-var languagesModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/languages.js' );
+const languagesModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/languages.js' );
 
 describe( 'Languages Vuex module', function () {
 	describe( 'Getters', function () {

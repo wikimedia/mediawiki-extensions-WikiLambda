@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-var programmingLanguagesModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/programmingLanguages.js' ),
+const programmingLanguagesModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/programmingLanguages.js' ),
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	mockZProgrammingLanguages = [
 		{
@@ -26,8 +26,8 @@ var programmingLanguagesModule = require( '../../../../resources/ext.wikilambda.
 				Z61K2: 'Python'
 			}
 		}
-	],
-	state;
+	];
+let state;
 
 describe( 'Programming Languages Vuex module', function () {
 	beforeEach( function () {

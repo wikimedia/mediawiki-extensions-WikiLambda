@@ -201,7 +201,7 @@ describe( 'zTesterResults Vuex module', () => {
 			} );
 
 			it( 'should perform the provided tests (failing)', () => {
-				var zFunctionId = 'Z10000',
+				const zFunctionId = 'Z10000',
 					zImplementations = [ 'Z10001', 'Z10002' ],
 					zTesters = [ 'Z10003', 'Z10004' ];
 

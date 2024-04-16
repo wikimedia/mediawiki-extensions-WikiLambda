@@ -15,7 +15,7 @@ const { CdxButton } = require( '@wikimedia/codex' ),
 	ZTypedListType = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZTypedListType.vue' );
 
 describe( 'ZTypedList', () => {
-	var getters;
+	let getters;
 
 	beforeEach( () => {
 		getters = {
@@ -33,7 +33,7 @@ describe( 'ZTypedList', () => {
 
 	describe( 'in view mode', () => {
 		it( 'renders without errors', () => {
-			var wrapper = shallowMount( ZTypedList, {
+			const wrapper = shallowMount( ZTypedList, {
 				props: {
 					edit: false
 				}
@@ -43,7 +43,7 @@ describe( 'ZTypedList', () => {
 		} );
 
 		it( 'does not render add list button', () => {
-			var wrapper = shallowMount( ZTypedList, {
+			const wrapper = shallowMount( ZTypedList, {
 				props: {
 					edit: false
 				}
@@ -53,7 +53,7 @@ describe( 'ZTypedList', () => {
 		} );
 
 		it( 'does not render the list type when not expanded', () => {
-			var wrapper = shallowMount( ZTypedList, {
+			const wrapper = shallowMount( ZTypedList, {
 				props: {
 					edit: false,
 					expanded: false
@@ -63,7 +63,7 @@ describe( 'ZTypedList', () => {
 		} );
 
 		it( 'does render the list type when expanded', () => {
-			var wrapper = shallowMount( ZTypedList, {
+			const wrapper = shallowMount( ZTypedList, {
 				props: {
 					edit: false,
 					expanded: true
@@ -73,7 +73,7 @@ describe( 'ZTypedList', () => {
 		} );
 
 		it( 'renders all the list items but not the list type as a list item', () => {
-			var wrapper = shallowMount( ZTypedList, {
+			const wrapper = shallowMount( ZTypedList, {
 				props: {
 					edit: false
 				}
@@ -83,7 +83,7 @@ describe( 'ZTypedList', () => {
 		} );
 
 		it( 'renders the list item component when there are one or more list items', () => {
-			var wrapper = shallowMount( ZTypedList, {
+			const wrapper = shallowMount( ZTypedList, {
 				props: {
 					edit: false
 				}
@@ -93,7 +93,7 @@ describe( 'ZTypedList', () => {
 		} );
 
 		it( 'shows type and items when expanded', () => {
-			var wrapper = shallowMount( ZTypedList, {
+			const wrapper = shallowMount( ZTypedList, {
 				props: {
 					edit: false,
 					expanded: true
@@ -105,7 +105,7 @@ describe( 'ZTypedList', () => {
 		} );
 
 		it( 'does not show type when not expanded', () => {
-			var wrapper = shallowMount( ZTypedList, {
+			const wrapper = shallowMount( ZTypedList, {
 				props: {
 					edit: false,
 					expanded: false
@@ -119,7 +119,7 @@ describe( 'ZTypedList', () => {
 
 	describe( 'in edit mode', () => {
 		it( 'renders the add list button', () => {
-			var wrapper = shallowMount( ZTypedList, {
+			const wrapper = shallowMount( ZTypedList, {
 				props: {
 					edit: true
 				},
@@ -136,7 +136,7 @@ describe( 'ZTypedList', () => {
 		} );
 
 		it( 'emits add-list-item when the add list item button is clicked', async () => {
-			var wrapper = shallowMount( ZTypedList, {
+			const wrapper = shallowMount( ZTypedList, {
 				props: {
 					edit: true
 				},

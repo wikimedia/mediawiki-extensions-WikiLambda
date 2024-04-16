@@ -14,7 +14,7 @@ const { waitFor } = require( '@testing-library/vue' ),
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' );
 
 describe( 'ZObjectToString', () => {
-	var getters;
+	let getters;
 	beforeEach( () => {
 		getters = {
 			getUserLangCode: createGetterMock( 'en' ),

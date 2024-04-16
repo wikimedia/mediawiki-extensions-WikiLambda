@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-var eventLogUtils = require( '../../../resources/ext.wikilambda.edit/mixins/eventLogUtils.js' ).methods;
+const eventLogUtils = require( '../../../resources/ext.wikilambda.edit/mixins/eventLogUtils.js' ).methods;
 
 describe( 'eventLogUtils mixin', function () {
 	describe( 'removeNullUndefined', () => {

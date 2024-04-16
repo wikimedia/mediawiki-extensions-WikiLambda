@@ -6,12 +6,12 @@
  */
 'use strict';
 
-var shallowMount = require( '@vue/test-utils' ).shallowMount,
+const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	ZImplementation = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZImplementation.vue' );
 
 describe( 'ZImplementation', () => {
-	var getters;
+	let getters;
 	beforeEach( () => {
 		getters = {
 			getZImplementationFunctionRowId: createGettersWithFunctionsMock( 0 ),
@@ -31,7 +31,7 @@ describe( 'ZImplementation', () => {
 
 	describe( 'in view mode', () => {
 		it( 'renders without errors', () => {
-			var wrapper = shallowMount( ZImplementation, {
+			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: false
 				}
@@ -40,7 +40,7 @@ describe( 'ZImplementation', () => {
 		} );
 
 		it( 'renders function block', () => {
-			var wrapper = shallowMount( ZImplementation, {
+			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: false
 				}
@@ -51,7 +51,7 @@ describe( 'ZImplementation', () => {
 		} );
 
 		it( 'renders type block', () => {
-			var wrapper = shallowMount( ZImplementation, {
+			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: false
 				}
@@ -62,7 +62,7 @@ describe( 'ZImplementation', () => {
 		} );
 
 		it( 'renders content block', () => {
-			var wrapper = shallowMount( ZImplementation, {
+			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: false
 				}
@@ -75,7 +75,7 @@ describe( 'ZImplementation', () => {
 		it( 'it renders the composition type for a composition', () => {
 			getters.getZImplementationContentType = createGettersWithFunctionsMock( 'Z14K2' );
 			global.store.hotUpdate( { getters: getters } );
-			var wrapper = shallowMount( ZImplementation, {
+			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: false
 				}
@@ -88,7 +88,7 @@ describe( 'ZImplementation', () => {
 		it( 'it renders the code type for a code implementation', () => {
 			getters.getZImplementationContentType = createGettersWithFunctionsMock( 'Z14K3' );
 			global.store.hotUpdate( { getters: getters } );
-			var wrapper = shallowMount( ZImplementation, {
+			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: false
 				}
@@ -101,7 +101,7 @@ describe( 'ZImplementation', () => {
 		it( 'it renders non editable function for a builtin', () => {
 			getters.getZImplementationContentType = createGettersWithFunctionsMock( 'Z14K4' );
 			global.store.hotUpdate( { getters: getters } );
-			var wrapper = shallowMount( ZImplementation, {
+			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: false
 				}
@@ -115,7 +115,7 @@ describe( 'ZImplementation', () => {
 		it( 'it renders the warning message for a builtin', () => {
 			getters.getZImplementationContentType = createGettersWithFunctionsMock( 'Z14K4' );
 			global.store.hotUpdate( { getters: getters } );
-			var wrapper = shallowMount( ZImplementation, {
+			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: false
 				}
@@ -129,7 +129,7 @@ describe( 'ZImplementation', () => {
 
 	describe( 'in edit mode', () => {
 		it( 'renders without errors', () => {
-			var wrapper = shallowMount( ZImplementation, {
+			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: true
 				}
@@ -138,7 +138,7 @@ describe( 'ZImplementation', () => {
 		} );
 
 		it( 'renders function block', () => {
-			var wrapper = shallowMount( ZImplementation, {
+			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: true
 				}
@@ -149,7 +149,7 @@ describe( 'ZImplementation', () => {
 		} );
 
 		it( 'renders type block', () => {
-			var wrapper = shallowMount( ZImplementation, {
+			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: true
 				}
@@ -160,7 +160,7 @@ describe( 'ZImplementation', () => {
 		} );
 
 		it( 'renders content block', () => {
-			var wrapper = shallowMount( ZImplementation, {
+			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: true
 				}
@@ -171,7 +171,7 @@ describe( 'ZImplementation', () => {
 		} );
 
 		it( 'type block has code and composition radio buttons', () => {
-			var wrapper = shallowMount( ZImplementation, {
+			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: true
 				}
@@ -186,7 +186,7 @@ describe( 'ZImplementation', () => {
 		it( 'it renders non editable function for a builtin', () => {
 			getters.getZImplementationContentType = createGettersWithFunctionsMock( 'Z14K4' );
 			global.store.hotUpdate( { getters: getters } );
-			var wrapper = shallowMount( ZImplementation, {
+			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: true
 				}
@@ -200,7 +200,7 @@ describe( 'ZImplementation', () => {
 		it( 'it renders the warning message for a builtin', () => {
 			getters.getZImplementationContentType = createGettersWithFunctionsMock( 'Z14K4' );
 			global.store.hotUpdate( { getters: getters } );
-			var wrapper = shallowMount( ZImplementation, {
+			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: true
 				}

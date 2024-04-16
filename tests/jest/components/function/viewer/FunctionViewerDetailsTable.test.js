@@ -6,12 +6,12 @@
  */
 'use strict';
 
-var VueTestUtils = require( '@vue/test-utils' ),
+const VueTestUtils = require( '@vue/test-utils' ),
 	FunctionViewerDetailsTable = require( '../../../../../resources/ext.wikilambda.edit/components/function/viewer/FunctionViewerDetailsTable.vue' );
 
 describe( 'FunctionViewerDetailsTable', function () {
 	it( 'renders without errors', function () {
-		var wrapper = VueTestUtils.shallowMount( FunctionViewerDetailsTable );
+		const wrapper = VueTestUtils.shallowMount( FunctionViewerDetailsTable );
 		expect( wrapper.find( '.ext-wikilambda-function-details-table' ).exists() ).toBe( true );
 	} );
 } );
