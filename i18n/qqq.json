@@ -128,8 +128,6 @@
 	"wikilambda-edit": "Page heading for editing a ZObject page. Very similar in its function to {{msg-mw|editing}}, but doesn't have a parameter; see [https://phabricator.wikimedia.org/T359781 bug T359781].\n{{identical|Edit}}",
 	"wikilambda-helplink-button": "The label for a link to a page that explains the metadata shown in this dialog and what it means. See {{msg-mw|wikilambda-helplink-tooltip}} for the tooltip of the same link.\n\n{{doc-wikilambda}}",
 	"wikilambda-helplink-tooltip": "The tooltip for a link to a page that explains the metadata shown in this dialog and what it means. See {{msg-mw|wikilambda-helplink-button}} for the displayed text of the same link.\n\n{{doc-wikilambda}}",
-	"wikilambda-show-more": "Label for the button to show more items on truncated list",
-	"wikilambda-hide-more": "Label for the button to hide items from an expanded list",
 	"wikilambda-special-createobject": "Description for Special:CreateObject.\n\n{{doc-wikilambda}}",
 	"wikilambda-special-viewobject": "Description for Special:ViewObject; generally not visible.\n\n{{doc-wikilambda}}",
 	"wikilambda-special-createobject-intro": "Warning shown to editors on Special:CreateObject about following community rules.",
