@@ -82,7 +82,7 @@ On install, the extension will try to use the orchestrator and evaluator service
 You can test your installation by running the PHPUnit test suite as described in the MediaWiki install instructions:
 
 ```
-docker-compose exec mediawiki composer phpunit:entrypoint -- extensions/WikiLambda/tests/phpunit/integration/API/ApiFunctionCallTest.php
+docker-compose exec mediawiki composer phpunit:entrypoint -- extensions/WikiLambda/tests/phpunit/integration/ActionAPI/ApiFunctionCallTest.php
 ```
 
 If the tests all pass, your installation has successfully called the configured function orchestrator with the calls, executed them, and got the expected results back. Congratulations!

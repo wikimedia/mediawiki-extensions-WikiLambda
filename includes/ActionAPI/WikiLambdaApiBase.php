@@ -1,6 +1,6 @@
 <?php
 
-namespace MediaWiki\Extension\WikiLambda\API;
+namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
 use ApiBase;
 use ApiUsageException;

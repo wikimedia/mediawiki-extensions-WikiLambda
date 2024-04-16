@@ -7,13 +7,13 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Api;
+namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
 use MediaWiki\Tests\Api\ApiTestCase;
 
 /**
- * @covers \MediaWiki\Extension\WikiLambda\API\ApiSupportedProgrammingLanguages
- * @covers \MediaWiki\Extension\WikiLambda\API\WikiLambdaApiBase
+ * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\ApiSupportedProgrammingLanguages
+ * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\WikiLambdaApiBase
  * @group API
  * @group Standalone
  */

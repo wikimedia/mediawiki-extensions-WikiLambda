@@ -7,13 +7,13 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Api;
+namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Tests\Api\ApiTestCase;
 
 /**
- * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels
+ * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\ApiQueryZObjectLabels
  * @group Database
  * @group API
  */

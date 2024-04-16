@@ -7,7 +7,7 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Api;
+namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
 use MediaWiki\Deferred\DeferredUpdates;
 use MediaWiki\MediaWikiServices;
@@ -15,8 +15,8 @@ use MediaWiki\Tests\Api\ApiTestCase;
 use MediaWiki\Title\Title;
 
 /**
- * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectFetcher
- * @covers \MediaWiki\Extension\WikiLambda\API\WikiLambdaApiBase
+ * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\ApiZObjectFetcher
+ * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\WikiLambdaApiBase
  * @group Database
  * @group API
  */

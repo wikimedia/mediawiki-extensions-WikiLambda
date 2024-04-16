@@ -7,14 +7,14 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Api;
+namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Tests\Api\ApiTestCase;
 
 /**
- * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall
- * @covers \MediaWiki\Extension\WikiLambda\API\WikiLambdaApiBase
+ * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\ApiFunctionCall
+ * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\WikiLambdaApiBase
  * @group API
  * @group Standalone
  * @group Database
