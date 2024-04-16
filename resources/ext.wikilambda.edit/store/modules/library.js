@@ -11,10 +11,7 @@
 const Constants = require( '../../Constants.js' ),
 	apiUtils = require( '../../mixins/api.js' ).methods,
 	typeUtils = require( '../../mixins/typeUtils.js' ).methods,
-	LabelData = require( '../classes/LabelData.js' ),
-	resolvePromiseList = {};
-
-let zidsToFetch = [];
+	LabelData = require( '../classes/LabelData.js' );
 
 module.exports = exports = {
 	state: {
@@ -27,7 +24,12 @@ module.exports = exports = {
 		 * Collection of LabelData object indexed by the identifier of
 		 * the ZKey, ZPersistentObject or ZArgumentDeclaration.
 		 */
-		labels: {}
+		labels: {},
+		/**
+		 * Collection of the requested zids and the resolving promises
+		 * zid: promise
+		 */
+		requests: {}
 	},
 	getters: {
 		/**
@@ -295,6 +297,21 @@ module.exports = exports = {
 	},
 	mutations: {
 		/**
+		 * Set request state for each zid
+		 *
+		 * @param {Object} state
+		 * @param {Object} payload
+		 * @param {string} payload.zid
+		 * @param {Promise} payload.request
+		 */
+		setZidRequest: function ( state, payload ) {
+			if ( payload.request ) {
+				state.requests[ payload.zid ] = payload.request;
+			} else {
+				delete state.requests[ payload.zid ];
+			}
+		},
+		/**
 		 * Add zid info to the state
 		 *
 		 * @param {Object} state
@@ -318,9 +335,14 @@ module.exports = exports = {
 	},
 	actions: {
 		/**
-		 * Call the wikilambdaload_zobjects api to get the information of a
-		 * given set of ZIds, and stores the ZId information and the ZKey labels
-		 * in the state.
+		 * Orchestrates the calls to wikilambdaload_zobject api to fetch
+		 * a given set of ZIDs. This method takes care of the following requirements:
+		 *
+		 * * Zids are requested in batches of max 50 items.
+		 * * Zids are only requested once.
+		 * * Every zid is stored along with their request while it's being fetched.
+		 * * Once it's fetched, the request is cleared.
+		 * * The returning promise only resolves when all of the batches have returned.
 		 *
 		 * @param {Object} context
 		 * @param {Object} payload
@@ -328,75 +350,57 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		fetchZids: function ( context, payload ) {
+			let requestZids = [];
+			const allPromises = [];
 			const {
 				zids = []
 			} = payload;
 
-			/**
-			 * Generates a request name for the fetch promise
-			 *
-			 * @param {Array} zidsList
-			 * @return {string}
-			 */
-			function generateRequestName( zidsList ) {
-				const sortedKeys = zidsList.sort();
-				return sortedKeys.join( '-' );
-			}
-
-			/**
-			 * Dispatch the fetch promise
-			 *
-			 * @param {Array} fetchZids
-			 * @return {Promise}
-			 */
-			function dispatchFetchZids( fetchZids ) {
-				zidsToFetch = [];
-				return context.dispatch(
-					'performFetchZids',
-					{ zids: fetchZids }
-				).then( ( fetchedZids ) => {
-					if ( !fetchedZids || fetchedZids.length === 0 ) {
-						return;
-					}
-					// we replicate the name defined when the promise was set
-					const currentPromiseName = generateRequestName( fetchedZids );
-					resolvePromiseList[ currentPromiseName ].resolve();
-					delete resolvePromiseList[ currentPromiseName ];
-				} );
-			}
-
 			zids.forEach( ( zid ) => {
-				// Zid has already been fetched or
-				// Zid is in the process of being fetched
+				// Ignore if:
+				// * Zid is Z0
+				// * Zid has already been fetched
+				// * Zid is waiting to be fetched
 				if ( zid &&
-					zid !== Constants.NEW_ZID_PLACEHOLDER &&
+					( zid !== Constants.NEW_ZID_PLACEHOLDER ) &&
 					!( zid in context.state.objects ) &&
-					( !zidsToFetch.includes( zid ) )
+					!( zid in context.state.requests )
 				) {
-					zidsToFetch.push( zid );
+					requestZids.push( zid );
 				}
 			} );
 
-			if ( zidsToFetch.length === 0 ) {
+			// Keep only unique values
+			requestZids = [ ...new Set( requestZids ) ];
+
+			// Batch zids in groups of max 50 items
+			const batches = [];
+			for ( let i = 0; i < requestZids.length; i += Constants.API_REQUEST_ITEMS_LIMIT ) {
+				batches.push( requestZids.slice( i, i + Constants.API_REQUEST_ITEMS_LIMIT ) );
+			}
+
+			// Exit if nothing to fetch
+			if ( batches.length === 0 ) {
 				return Promise.resolve();
 			}
 
-			// we provide an unique name to the promise, to be able to resolve the correct one later.
-			const promiseName = generateRequestName( zidsToFetch );
-
-			// if a promise with the same name already exist, do not fetch again
-			if ( resolvePromiseList[ promiseName ] ) {
-				return resolvePromiseList[ promiseName ].promise;
-			} else {
-				resolvePromiseList[ promiseName ] = {};
+			// For each batch, generate a Promise
+			for ( const batch of batches ) {
+				const batchPromise = context.dispatch( 'performFetchZids', { zids: batch } ).then( () => {
+					// Once it's back, unset active request
+					batch.forEach( ( zid ) => {
+						context.commit( 'setZidRequest', { zid, request: null } );
+					} );
+				} );
+				// Set active request
+				batch.forEach( ( zid ) => {
+					context.commit( 'setZidRequest', { zid, request: batchPromise } );
+				} );
+				// Collect batch promises
+				allPromises.push( batchPromise );
 			}
 
-			resolvePromiseList[ promiseName ].promise = new Promise( ( resolve ) => {
-				resolvePromiseList[ promiseName ].resolve = resolve;
-				dispatchFetchZids( zidsToFetch );
-			} );
-
-			return resolvePromiseList[ promiseName ].promise;
+			return Promise.all( allPromises );
 		},
 		/**
 		 * Calls the api wikilambdaload_zobjects with a set of Zids and
