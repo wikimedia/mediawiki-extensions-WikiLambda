@@ -88,6 +88,8 @@
 	"apihelp-wikilambda_perform_test-param-zfunction": "The ZFunction ID (or object) to test",
 	"apihelp-wikilambda_perform_test-param-zimplementations": "The list of ZImplementation IDs (or objects) to test",
 	"apihelp-wikilambda_perform_test-param-ztesters": "The list of ZTester IDs (or objects) to test",
-	"apihelp-wikilambda_perform_test-param-nocache": "Whether to use the cache or not"
+	"apihelp-wikilambda_perform_test-param-nocache": "Whether to use the cache or not",
+	"wikilambda-restapi-fetch-too-many": "You have requested $1, which is too many Objects at once (maximum of $2 allowed)",
+	"wikilambda-restapi-revision-mismatch": "You have requested revision $1 of Object '$2', which not found"
 
 }

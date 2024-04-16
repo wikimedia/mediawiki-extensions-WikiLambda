@@ -696,6 +696,18 @@
 			]
 		}
 	},
+	"RestRoutes": [
+		{
+			"path": "/wikifunctions/v0/fetch/{zids}",
+			"method": "GET",
+			"class": "MediaWiki\\Extension\\WikiLambda\\RESTAPI\\FetchHandler"
+		},
+		{
+			"path": "/wikifunctions/v0/fetch/{zids}/{revisions}",
+			"method": "GET",
+			"class": "MediaWiki\\Extension\\WikiLambda\\RESTAPI\\FetchHandler"
+		}
+	],
 	"SpecialPages": {
 		"ViewObject": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialViewObject",
