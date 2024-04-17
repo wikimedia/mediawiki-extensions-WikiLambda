@@ -18,8 +18,6 @@
 	"wikilambda-reference": "Навод",
 	"wikilambda-functioncall": "Функциски повик",
 	"wikilambda-edit": "Уреди",
-	"wikilambda-show-more": "Прикажи повеќе",
-	"wikilambda-hide-more": "Скриј повеќе",
 	"wikilambda-special-createobject": "Создај нов ZObject",
 	"wikilambda-special-createobject-intro": "Ќе мора да ги следите правилата на заедницата, како и авторскоправните и патентните правила.",
 	"wikilambda-special-createobject-nojs": "Страницава бара JavaScript за да може да се користи.",

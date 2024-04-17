@@ -20,7 +20,6 @@
 	"wikilambda-functioncall": "Volání funkce",
 	"wikilambda-edit": "Editovat",
 	"wikilambda-helplink-button": "Nápověda",
-	"wikilambda-show-more": "Zobrazit více",
 	"wikilambda-special-createobject": "Vytvořit nový ZObjekt",
 	"wikilambda-special-createobject-nojs": "Tato stránka vyžaduje pro svou funkci JavaScript.",
 	"wikilambda-special-edit-function-definition-description": "Editujete stránku s definicí funkce. $1 mohou měnit definici funkce. Každý může editovat štítky. Nezapomeňte uložit svou práci kliknutím na modré tlačítko Zveřejnit níže.",

@@ -86,5 +86,7 @@
 	"apihelp-wikilambda_perform_test-param-zfunction": "Le ID (o objecto) del ZFunction a testar",
 	"apihelp-wikilambda_perform_test-param-zimplementations": "Le lista de IDs (o objectos) del ZImplementation a testar",
 	"apihelp-wikilambda_perform_test-param-ztesters": "Le lista de IDs (o objectos) del ZTester a testar",
-	"apihelp-wikilambda_perform_test-param-nocache": "Si se debe usar le cache o non"
+	"apihelp-wikilambda_perform_test-param-nocache": "Si se debe usar le cache o non",
+	"wikilambda-restapi-fetch-too-many": "Non es possibile requestar $1 objectos in un sol vice. Le maximo permittite es $2.",
+	"wikilambda-restapi-revision-mismatch": "Le requestate version $1 del objecto ‘$2’ non ha essite trovate."
 }
