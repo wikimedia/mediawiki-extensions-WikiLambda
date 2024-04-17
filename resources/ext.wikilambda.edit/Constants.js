@@ -263,7 +263,6 @@ Constants.BUILTIN_COMPONENTS = builtinComponents;
 Constants.RESOLVER_TYPES = resolverTypes;
 Constants.LINKED_TYPES = linkedTypes;
 Constants.API_LIMIT_MAX = 100;
-Constants.API_REQUEST_ITEMS_LIMIT = 50;
 Constants.ABOUT_DIALOG_MAX_ITEMS = 5;
 Constants.LABEL_CHARS_MAX = 100;
 Constants.DESCRIPTION_CHARS_MAX = 100;
