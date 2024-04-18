@@ -3,7 +3,8 @@
 		"authors": [
 			"HanV",
 			"McDutchie",
-			"NthnH"
+			"NthnH",
+			"Siebrand"
 		]
 	},
 	"apihelp-wikilambda_fetch-summary": "Het JSON-model van ZObjects opvragen.",
@@ -31,10 +32,10 @@
 	"apihelp-wikilambda_function_call-example-user-defined-validation": "Roept de door de gebruiker gedefinieerde validatiefunctie aan die is geïmplementeerd in Python.",
 	"apihelp-wikilambda_function_call-example-curry": "Een \"curried\"-functie aanroepen",
 	"apihelp-wikilambda_function_call-example-socket": "Een functie aanroepen die gebruik maakt van \"reentrance\" om terug te schakelen naar de \"orchestrator\"",
-	"apihelp-wikilambda_function_call-example-timeout": "Een functie aanroepen die eeuwig probeert te lopen, en dus door de evaluator wegens overschrijding van de maximumlooptijd wordt afgebroken",
+	"apihelp-wikilambda_function_call-example-timeout": "Een functie aanroepen die eeuwig probeert te lopen, en dus door de beoordelaar wegens overschrijding van de maximumlooptijd wordt afgebroken",
 	"apihelp-wikilambda_function_call-example-orchestrator-timeout": "Een functie aanroepen die te lang probeert te blijven draaien in de orchestrator, waardoor er een time-out optreedt",
 	"apihelp-wikilambda_function_call-summary": "Roep een functie aan door de function-orchestrator aan te roepen",
-	"apihelp-wikilambda_supported_programming_languages-summary": "De programmeertalen opvragen die door de evaluator worden ondersteund",
+	"apihelp-wikilambda_supported_programming_languages-summary": "De programmeertalen opvragen die door de beoordelaar worden ondersteund",
 	"apihelp-query+wikilambdasearch_labels-summary": "Met deze API-querylijstgenerator kunt u in ZObjects zoeken naar labels in een bepaalde taal. De generator is er voornamelijk ter ondersteuning van het vooruitkijkzoeksysteem.",
 	"apihelp-query+wikilambdasearch_labels-param-search": "De zoekterm",
 	"apihelp-query+wikilambdasearch_labels-param-language": "De MediaWiki-code van de taal waarin moet worden gezocht",
