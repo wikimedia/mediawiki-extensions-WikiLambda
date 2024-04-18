@@ -5,40 +5,10 @@
  * @license MIT
  */
 
-/* eslint-disable no-implicit-globals */
-
 const Constants = require( '../../Constants.js' ),
 	apiUtils = require( '../../mixins/api.js' ).methods,
 	hybridToCanonical = require( '../../mixins/schemata.js' ).methods.hybridToCanonical,
 	extractZIDs = require( '../../mixins/schemata.js' ).methods.extractZIDs;
-
-/**
- * Loop through the given array of ZIDs and if a ZID is for the object currently being edited, or for a new object,
- * replace it with a JSON representation of the full persistent object (if editing existing object) or inner object
- * (if new object). This is required to be able to see proper test results while changing implementations and testers.
- *
- * @param {Object} context
- * @param {Array} items - List of implementations or testers
- * @return {Array}
- */
-function replaceCurrentObjectWithFullJSONObject( context, items ) {
-	return ( items || [] ).map( function ( item ) {
-		// if the item is the current object replace it
-		if ( !context.getters.getViewMode && item === context.getters.getCurrentZObjectId ) {
-			let zobject = context.getters.getZObjectAsJson;
-			if ( item === Constants.NEW_ZID_PLACEHOLDER ) {
-				// If this object is not yet persisted, pass only the inner object to the API, as otherwise the API
-				// will complain about the placeholder ID Z0 not existing.
-				zobject = zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
-			}
-			return JSON.stringify( hybridToCanonical( JSON.parse( JSON.stringify( zobject ) ) ) );
-		}
-
-		return item;
-	} ).filter( function ( item ) {
-		return !!item;
-	} );
-}
 
 module.exports = exports = {
 	state: {
@@ -228,6 +198,35 @@ module.exports = exports = {
 		 * @return {Promise|void}
 		 */
 		getTestResults: function ( context, payload ) {
+			/**
+			 * Loop through the given array of ZIDs and if a ZID is for the object currently being edited, or for a new
+			 * object, replace it with a JSON representation of the full persistent object (if editing existing object)
+			 * or inner object (if new object). This is required to be able to see proper test results while changing
+			 * implementations and testers.
+			 *
+			 * @param {Object} iContext
+			 * @param {Array} items - List of implementations or testers
+			 * @return {Array}
+			 */
+			function replaceCurrentObjectWithFullJSONObject( iContext, items ) {
+				return ( items || [] ).map( function ( item ) {
+					// if the item is the current object replace it
+					if ( !iContext.getters.getViewMode && item === iContext.getters.getCurrentZObjectId ) {
+						let zobject = iContext.getters.getZObjectAsJson;
+						if ( item === Constants.NEW_ZID_PLACEHOLDER ) {
+							// If this object is not yet persisted, pass only the inner object to the API, as otherwise
+							// the API will complain about the placeholder ID Z0 not existing.
+							zobject = zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
+						}
+						return JSON.stringify( hybridToCanonical( JSON.parse( JSON.stringify( zobject ) ) ) );
+					}
+
+					return item;
+				} ).filter( function ( item ) {
+					return !!item;
+				} );
+			}
+
 			// If function ZID is empty, exit
 			if ( !payload.zFunctionId ) {
 				return;
