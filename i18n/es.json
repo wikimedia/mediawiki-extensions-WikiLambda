@@ -288,6 +288,8 @@
 	"wikilambda-context-menu": "Menú contextual",
 	"wikilambda-add-list-item": "Añadir elemento",
 	"wikilambda-delete-list-item": "Eliminar elemento",
+	"wikilambda-move-before-list-item": "Mover antes",
+	"wikilambda-move-after-list-item": "Mover después",
 	"wikilambda-tester-details": "Detalles",
 	"wikilambda-about-widget-done-button": "Hecho",
 	"wikilambda-about-widget-view-languages-title": "Información en otros idiomas",

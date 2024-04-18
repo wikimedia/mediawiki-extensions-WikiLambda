@@ -17,5 +17,7 @@
 	"apihelp-query+wikilambdafn_search-example-simple": "Buscar identificadores de ZImplementation que están asociados a un identificador de ZFunction determinado",
 	"apihelp-query+wikilambdafn_search-param-zfunction_id": "El ID de función Z para buscar",
 	"apihelp-query+wikilambdafn_search-param-type": "El tipo de ZObject referenced por el ZFunction para buscar",
-	"apihelp-query+wikilambdafn_search-param-limit": "El número máximo de resultados a devolver"
+	"apihelp-query+wikilambdafn_search-param-limit": "El número máximo de resultados a devolver",
+	"wikilambda-restapi-fetch-too-many": "Has solicitado $1, que son demasiados objetos a la vez (se permite un máximo de $2)",
+	"wikilambda-restapi-revision-mismatch": "Ha solicitado la revisión $1 del Objeto '$2', que no se encuentra"
 }

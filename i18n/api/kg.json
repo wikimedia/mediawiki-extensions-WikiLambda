@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Bergerdias"
+		]
+	},
+	"wikilambda-restapi-fetch-too-many": "Nge me lomba $1, yina kele bima mingi na mbala mosi (mingi $ 2 me pesama nswa)",
+	"wikilambda-restapi-revision-mismatch": "Nge lombaka nde bo tomisa diaka $1 ya diambu '$2' yina bo monaka ve"
+}

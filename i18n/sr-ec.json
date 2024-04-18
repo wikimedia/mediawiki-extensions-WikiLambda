@@ -102,6 +102,8 @@
 	"wikilambda-chip-remove": "Уклони ставку",
 	"wikilambda-list-items-label": "Списак ставки",
 	"wikilambda-list-item-label": "Ставка $1",
+	"wikilambda-move-before-list-item": "Премести испред",
+	"wikilambda-move-after-list-item": "Премести иза",
 	"wikilambda-tester-details": "Детаљи",
 	"wikilambda-about-widget-title": "О",
 	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1 језик|$1 језика}}",

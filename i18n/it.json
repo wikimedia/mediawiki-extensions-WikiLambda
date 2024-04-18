@@ -354,6 +354,8 @@
 	"wikilambda-context-menu": "Menu contestuale",
 	"wikilambda-add-list-item": "Aggiungi elemento",
 	"wikilambda-delete-list-item": "Cancella elemento",
+	"wikilambda-move-before-list-item": "Sposta prima",
+	"wikilambda-move-after-list-item": "Sposta dopo",
 	"wikilambda-tester-details": "Dettagli",
 	"wikilambda-about-widget-accessible-title": "Finestra di dialogo che ti consente di visualizzare e modificare le etichette e le informazioni in diverse lingue",
 	"wikilambda-about-widget-title": "Informazioni",

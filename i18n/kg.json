@@ -1,8 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
+			"Bergerdias",
 			"Cgmbo"
 		]
 	},
-	"wikilambda-persistentzobject-contents": "Mambu ya Ke na Kati"
+	"wikilambda-persistentzobject-contents": "Mambu ya Ke na Kati",
+	"wikilambda-move-before-list-item": "Kwenda na ntwala",
+	"wikilambda-move-after-list-item": "Kwenda na nima"
 }
