@@ -135,6 +135,8 @@
 	"wikilambda-context-menu": "Контекстное меню",
 	"wikilambda-add-list-item": "Добавить элемент",
 	"wikilambda-delete-list-item": "Удалённый элемент",
+	"wikilambda-move-before-list-item": "Передвинуть влево",
+	"wikilambda-move-after-list-item": "Передвинуть вправо",
 	"wikilambda-tester-details": "Подробности",
 	"wikilambda-about-widget-title": "Описание",
 	"wikilambda-about-widget-name-placeholder": "Введите имя",
