@@ -105,7 +105,7 @@ module.exports = exports = {
 		'getCurrentZImplementationType',
 		'getErrors',
 		'getUserLangZid',
-		'isNewZObject'
+		'isCreateNewPage'
 	] ), {
 		/**
 		 * Returns the array of errors and warnings of the page
@@ -273,7 +273,7 @@ module.exports = exports = {
 				// After receiving the response, log a publish event
 				const eventNamespace = this.getNamespace( this.getCurrentZObjectType );
 				const customData = {
-					isnewzobject: this.isNewZObject,
+					isnewzobject: this.isCreateNewPage,
 					zobjectid: this.getCurrentZObjectId,
 					zobjecttype: this.getCurrentZObjectType || null,
 					implementationtype: this.getCurrentZImplementationType || null,

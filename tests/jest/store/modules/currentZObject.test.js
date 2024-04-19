@@ -28,22 +28,6 @@ describe( 'currentZObject Vuex module', () => {
 	} );
 
 	describe( 'Getters', () => {
-		describe( 'isNewZObject', () => {
-			it( 'returns true if the value of the current ZObject is Z0', () => {
-				getters = {
-					getCurrentZObjectId: 'Z0'
-				};
-				expect( currentZObject.getters.isNewZObject( state, getters ) ).toEqual( true );
-			} );
-
-			it( 'returns false if the value of the current ZObject is not Z0', () => {
-				getters = {
-					getCurrentZObjectId: 'Z4'
-				};
-				expect( currentZObject.getters.isNewZObject( state, getters ) ).toEqual( false );
-			} );
-		} );
-
 		describe( 'isDirty', () => {
 			it( 'returns true when page has unsaved edits', () => {
 				state.dirty = true;

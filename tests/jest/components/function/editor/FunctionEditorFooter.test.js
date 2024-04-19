@@ -17,7 +17,7 @@ describe( 'FunctionEditorFooter', function () {
 
 	beforeEach( () => {
 		getters = {
-			isNewZObject: createGetterMock( true )
+			isCreateNewPage: createGetterMock( true )
 		};
 		actions = {
 			setError: jest.fn()
@@ -46,7 +46,7 @@ describe( 'FunctionEditorFooter', function () {
 	} );
 
 	it( 'raises function warnings if input or output have changed while editing', async () => {
-		getters.isNewZObject = createGetterMock( false );
+		getters.isCreateNewPage = createGetterMock( false );
 		global.store.hotUpdate( { getters: getters } );
 
 		const wrapper = shallowMount( FunctionEditorFooter, {

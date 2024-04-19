@@ -17,7 +17,7 @@ describe( 'FunctionEditorDefinitionLanguageBlock', () => {
 	beforeEach( () => {
 		getters = {
 			getZFunctionLanguages: createGettersWithFunctionsMock( [ 'Z1002', 'Z1004' ] ),
-			isNewZObject: createGetterMock( true ),
+			isCreateNewPage: createGetterMock( true ),
 			isUserLoggedIn: createGetterMock( true )
 		};
 		global.store.hotUpdate( {

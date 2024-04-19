@@ -86,7 +86,7 @@ module.exports = exports = {
 		'getCurrentZImplementationType',
 		'getUserLangZid',
 		'getUserLangCode',
-		'isNewZObject',
+		'isCreateNewPage',
 		'waitForRunningParsers'
 	] ), {
 		/**
@@ -96,7 +96,7 @@ module.exports = exports = {
 		 */
 		eventData: function () {
 			return {
-				isnewzobject: this.isNewZObject,
+				isnewzobject: this.isCreateNewPage,
 				zobjectid: this.getCurrentZObjectId,
 				zobjecttype: this.getCurrentZObjectType || null,
 				implementationtype: this.getCurrentZImplementationType || null,
@@ -163,7 +163,7 @@ module.exports = exports = {
 			// Emit click cancel event
 			this.$emit( 'start-cancel' );
 			// Get redirect url
-			const cancelTargetUrl = this.isNewZObject ?
+			const cancelTargetUrl = this.isCreateNewPage ?
 				new mw.Title( Constants.PATHS.MAIN_PAGE ).getUrl() :
 				`/view/${ this.getUserLangCode }/${ this.getCurrentZObjectId }`;
 			this.leaveTo( cancelTargetUrl );

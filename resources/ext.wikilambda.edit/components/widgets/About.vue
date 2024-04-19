@@ -195,7 +195,7 @@ module.exports = exports = {
 		'getZMonolingualStringsetValues',
 		'getZPersistentAlias',
 		'getZPersistentDescription',
-		'isNewZObject',
+		'isCreateNewPage',
 		'isUserLoggedIn'
 	] ), {
 		/**
@@ -205,7 +205,7 @@ module.exports = exports = {
 		 */
 		canEditObject: function () {
 			// TODO (T301667): restrict to only certain user roles
-			return this.isNewZObject ? true : this.isUserLoggedIn;
+			return this.isCreateNewPage ? true : this.isUserLoggedIn;
 		},
 		/**
 		 * Returns the best Description (Z2K5) row depending

@@ -101,7 +101,7 @@ module.exports = exports = {
 			'getZStringTerminalValue',
 			'getRowByKeyPath',
 			'isDirty',
-			'isNewZObject',
+			'isCreateNewPage',
 			'getCurrentZObjectId',
 			'getUserLangZid'
 		] ), {
@@ -216,7 +216,7 @@ module.exports = exports = {
 			this.dispatchEvent( 'wf.ui.defaultView.load', {
 				edit: editValue,
 				zobjecttype: this.contentType || null,
-				isnewzobject: this.isNewZObject,
+				isnewzobject: this.isCreateNewPage,
 				zobjectid: this.getCurrentZObjectId || null,
 				zlang: this.getUserLangZid || null
 			} );
@@ -230,7 +230,7 @@ module.exports = exports = {
 			if ( !editValue ) {
 				action = 'view';
 			} else {
-				action = this.isNewZObject ? 'create' : 'edit';
+				action = this.isCreateNewPage ? 'create' : 'edit';
 			}
 			this.submitInteraction( action, interactionData );
 		},

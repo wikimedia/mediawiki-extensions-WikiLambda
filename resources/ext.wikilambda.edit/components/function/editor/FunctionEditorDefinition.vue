@@ -82,7 +82,7 @@ module.exports = exports = {
 		'getMetadataLanguages',
 		'getZFunctionOutput',
 		'getZObjectAsJsonById',
-		'isNewZObject'
+		'isCreateNewPage'
 	] ),
 	{
 		/**
@@ -220,7 +220,7 @@ module.exports = exports = {
 		// TODO (T352141): Consider counting "About info" editing separately
 		this.dispatchEvent( 'wf.ui.editFunction.load', {
 			edit: true,
-			isnewzobject: this.isNewZObject,
+			isnewzobject: this.isCreateNewPage,
 			zobjectid: this.getCurrentZObjectId || null,
 			zobjecttype: Constants.Z_FUNCTION,
 			zlang: this.getUserLangZid || null
@@ -231,7 +231,7 @@ module.exports = exports = {
 			zobjectid: this.getCurrentZObjectId || null,
 			zlang: this.getUserLangZid || null
 		};
-		const action = this.isNewZObject ? 'create' : 'edit';
+		const action = this.isCreateNewPage ? 'create' : 'edit';
 		this.submitInteraction( action, interactionData );
 	}
 };

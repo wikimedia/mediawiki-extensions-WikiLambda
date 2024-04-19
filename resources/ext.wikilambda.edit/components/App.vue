@@ -51,7 +51,7 @@ module.exports = exports = {
 	computed: $.extend(
 		mapGetters( [
 			'getZObjectInitialized',
-			'isNewZObject',
+			'isCreateNewPage',
 			'getCurrentView'
 		] )
 	),
@@ -71,7 +71,7 @@ module.exports = exports = {
 				// Pending to remove due to T350495
 				const customData = {
 					viewname: this.getCurrentView || null,
-					isnewzobject: this.isNewZObject,
+					isnewzobject: this.isCreateNewPage,
 					loadtime: Date.now() - startTime
 				};
 				this.dispatchEvent( 'wf.ui.newView.mounted', customData );
@@ -91,8 +91,8 @@ module.exports = exports = {
 		} );
 
 		window.onpopstate = function () {
-			// Reinitialize zObject is current zobject is new and user changes route
-			if ( this.isNewZObject ) {
+			// Reinitialize zObject if current page/zObject is new and user changes route
+			if ( this.isCreateNewPage ) {
 				this.initializeView().then(
 					function () {
 						this.evaluateUri();

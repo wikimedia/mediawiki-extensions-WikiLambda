@@ -44,7 +44,7 @@ module.exports = exports = {
 		}
 	},
 	computed: $.extend( mapGetters( [
-		'isNewZObject'
+		'isCreateNewPage'
 	] ), {
 		/**
 		 * Returns whether the function type signature (input types
@@ -82,7 +82,7 @@ module.exports = exports = {
 		 */
 		raiseFunctionWarnings: function () {
 			// Only warn of changes if we are editing an existing function
-			if ( this.isNewZObject ) {
+			if ( this.isCreateNewPage ) {
 				return;
 			}
 

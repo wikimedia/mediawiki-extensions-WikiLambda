@@ -23,7 +23,7 @@ describe( 'Publish widget', () => {
 			getCurrentZObjectId: createGetterMock( 'Z0' ),
 			getCurrentZObjectType: createGetterMock( Constants.Z_FUNCTION ),
 			getCurrentZImplementationType: createGetterMock( Constants.Z_IMPLEMENTATION_CODE ),
-			isNewZObject: createGetterMock( true ),
+			isCreateNewPage: createGetterMock( true ),
 			getUserLangZid: createGetterMock( 'Z1002' ),
 			getUserLangCode: createGetterMock( 'en' ),
 			waitForRunningParsers: createGetterMock( Promise.resolve() )
@@ -108,7 +108,7 @@ describe( 'Publish widget', () => {
 	} );
 
 	it( 'redirects to main page if we cancel from a create page', async () => {
-		getters.isNewZObject = createGetterMock( true );
+		getters.isCreateNewPage = createGetterMock( true );
 		global.store.hotUpdate( { getters: getters } );
 
 		const wrapper = shallowMount( PublishWidget, {
@@ -124,7 +124,7 @@ describe( 'Publish widget', () => {
 	} );
 
 	it( 'redirects to object view page if we cancel from an edit page', () => {
-		getters.isNewZObject = createGetterMock( false );
+		getters.isCreateNewPage = createGetterMock( false );
 		getters.getCurrentZObjectId = createGetterMock( 'Z10001' );
 		global.store.hotUpdate( { getters: getters } );
 
@@ -143,7 +143,7 @@ describe( 'Publish widget', () => {
 	describe( 'Event logging', () => {
 
 		it( 'emits cancel event when leaving a create function page', async () => {
-			getters.isNewZObject = createGetterMock( true );
+			getters.isCreateNewPage = createGetterMock( true );
 			getters.getCurrentZObjectType = createGetterMock( 'Z8' );
 			getters.getCurrentZImplementationType = createGetterMock( undefined );
 			global.store.hotUpdate( { getters: getters } );
@@ -169,7 +169,7 @@ describe( 'Publish widget', () => {
 		} );
 
 		it( 'emits cancel event when leaving an edit code implementation page', async () => {
-			getters.isNewZObject = createGetterMock( false );
+			getters.isCreateNewPage = createGetterMock( false );
 			getters.getCurrentZObjectId = createGetterMock( 'Z10001' );
 			getters.getCurrentZObjectType = createGetterMock( 'Z14' );
 			getters.getCurrentZImplementationType = createGetterMock( 'Z14K3' );

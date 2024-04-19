@@ -67,7 +67,7 @@ module.exports = exports = {
 	computed: $.extend( mapGetters( [
 		'getCurrentZObjectId',
 		'getUserLangZid',
-		'isNewZObject'
+		'isCreateNewPage'
 	] ), {
 		displaySuccessMessage: function () {
 			if ( mw.Uri().query ) {
@@ -101,7 +101,7 @@ module.exports = exports = {
 		this.dispatchEvent( 'wf.ui.editFunction.load', {
 			edit: false,
 			zobjecttype: Constants.Z_FUNCTION,
-			isnewzobject: this.isNewZObject,
+			isnewzobject: this.isCreateNewPage,
 			zobjectid: this.getCurrentZObjectId || null,
 			zlang: this.getUserLangZid || null
 		} );

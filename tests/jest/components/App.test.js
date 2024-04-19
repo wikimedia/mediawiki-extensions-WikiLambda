@@ -34,7 +34,7 @@ describe( 'App.vue', () => {
 		getters = {
 			getZObjectInitialized: createGetterMock( true ),
 			getCurrentView: createGetterMock( 'function-editor' ),
-			isNewZObject: createGetterMock( false )
+			isCreateNewPage: createGetterMock( false )
 		};
 
 		global.store.hotUpdate( {

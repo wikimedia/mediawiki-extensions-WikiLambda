@@ -37,7 +37,7 @@ describe( 'About', () => {
 			getZPersistentDescription: createGettersWithFunctionsMock( undefined ),
 			getUserLangZid: createGetterMock( 'Z1002' ),
 			isUserLoggedIn: createGetterMock( true ),
-			isNewZObject: createGetterMock( true ),
+			isCreateNewPage: createGetterMock( true ),
 			getLabel: () => ( key ) => {
 				const labels = {
 					Z2K3: 'name',

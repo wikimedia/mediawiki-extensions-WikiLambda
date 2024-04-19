@@ -100,7 +100,7 @@ module.exports = exports = {
 	},
 	computed: $.extend( mapGetters( [
 		'getMetadataLanguages',
-		'isNewZObject',
+		'isCreateNewPage',
 		'isUserLoggedIn'
 	] ), {
 		/**
@@ -118,7 +118,7 @@ module.exports = exports = {
 		 */
 		canEditFunction: function () {
 			// TODO (T301667): restrict to only certain user roles
-			return this.isNewZObject ? true : this.isUserLoggedIn;
+			return this.isCreateNewPage ? true : this.isUserLoggedIn;
 		},
 		/**
 		 * Returns the available languages for the function definition,

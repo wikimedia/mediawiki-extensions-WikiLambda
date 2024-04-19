@@ -109,17 +109,6 @@ module.exports = exports = {
 	},
 	getters: {
 		/**
-		 * Return whether the page is creating a new ZObject
-		 * or is instead editing an already persisted one.
-		 *
-		 * @param {Object} state
-		 * @param {Object} getters
-		 * @return {boolean} is new ZObject page
-		 */
-		isNewZObject: function ( state, getters ) {
-			return getters.getCurrentZObjectId === Constants.NEW_ZID_PLACEHOLDER;
-		},
-		/**
 		 * Returns whether the page has had any
 		 * changes that need saving.
 		 *

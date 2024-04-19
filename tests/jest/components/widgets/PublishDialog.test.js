@@ -30,7 +30,7 @@ describe( 'Publish Dialog', () => {
 			getCurrentZObjectId: createGetterMock( 'Z0' ),
 			getCurrentZObjectType: createGetterMock( Constants.Z_FUNCTION ),
 			getCurrentZImplementationType: createGetterMock( undefined ),
-			isNewZObject: createGetterMock( true ),
+			isCreateNewPage: createGetterMock( true ),
 			getUserLangZid: createGetterMock( 'Z1002' ),
 			getUserLangCode: createGetterMock( 'en' )
 		};
@@ -166,7 +166,7 @@ describe( 'Publish Dialog', () => {
 
 	describe( 'Event logging', () => {
 		it( 'emits publish event after successful edit of an implementation', async () => {
-			getters.isNewZObject = createGetterMock( false );
+			getters.isCreateNewPage = createGetterMock( false );
 			getters.getCurrentZObjectId = createGetterMock( 'Z10001' );
 			getters.getCurrentZObjectType = createGetterMock( 'Z14' );
 			getters.getCurrentZImplementationType = createGetterMock( 'Z14K3' );
@@ -197,7 +197,7 @@ describe( 'Publish Dialog', () => {
 
 		it( 'emits publish event after unsuccessful creation of a function', async () => {
 			getters.getErrors = createGettersWithFunctionsMock( [ { type: 'error', message: 'some error' } ] );
-			getters.isNewZObject = createGetterMock( true );
+			getters.isCreateNewPage = createGetterMock( true );
 			getters.getCurrentZObjectId = createGetterMock( 'Z0' );
 			getters.getCurrentZObjectType = createGetterMock( 'Z8' );
 			getters.getCurrentZImplementationType = createGetterMock( undefined );
