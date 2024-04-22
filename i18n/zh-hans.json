@@ -23,6 +23,7 @@
 			"Xyb",
 			"Yining Chen",
 			"Zhang8569",
+			"沈澄心",
 			"落花有意12138"
 		]
 	},
@@ -188,7 +189,15 @@
 	"wikilambda-functioncall-metadata-errors-none": "无",
 	"wikilambda-functioncall-metadata-validator-errors-summary": "验证错误类型",
 	"wikilambda-functioncall-metadata-implementation-id": "ID",
+	"wikilambda-functioncall-metadata-implementation-name": "名称",
 	"wikilambda-functioncall-metadata-implementation-type": "类型",
+	"wikilambda-functioncall-metadata-start-time": "开始时间",
+	"wikilambda-functioncall-metadata-end-time": "结束时间",
+	"wikilambda-functioncall-metadata-cpu-usage": "CPU使用情况",
+	"wikilambda-functioncall-metadata-memory-usage": "内存使用情况",
+	"wikilambda-functioncall-metadata-hostname": "服务器",
+	"wikilambda-functioncall-metadata-programming-language": "编程语言",
+	"wikilambda-functioncall-metadata-programming-language-version": "版本",
 	"wikilambda-functioncall-metadata-expected-result": "预期结果",
 	"wikilambda-functioncall-metadata-actual-result": "实际结果",
 	"wikilambda-functioncall-error": "函数调用错误： $1",
