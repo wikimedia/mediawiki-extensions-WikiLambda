@@ -6,6 +6,7 @@
 		]
 	},
 	"wikilambda-persistentzobject-contents": "Садржај",
+	"wikilambda-viewmode-nojs": "Ова страница се не приказује у потпуности без JavaScript-а.",
 	"wikilambda-reference": "Референца",
 	"wikilambda-edit": "Уреди",
 	"wikilambda-show-more": "Прикажи више",
@@ -35,6 +36,7 @@
 	"wikilambda-function-implementation-name-label": "Назив",
 	"wikilambda-function-implementation-language-label": "Језик",
 	"wikilambda-function-definition-alias-label": "Друга имена",
+	"wikilambda-editor-additional-details-label": "Додатни детаљи",
 	"wikilambda-function-implementation-table-header": "Имплементације",
 	"wikilambda-editor-fn-step-function-about": "О",
 	"wikilambda-editor-fn-step-function-details": "Детаљи",
@@ -46,6 +48,7 @@
 	"wikilambda-optional": "необавезно",
 	"wikilambda-continue-editing": "Настави уређивање",
 	"wikilambda-discard-edits": "Одбаци измене",
+	"wikilambda-function-viewer-aliases-show-language-button": "Прикажи више језика",
 	"wikilambda-function-viewer-details-table-view-all": "Прикажи све",
 	"wikilambda-function-viewer-details-table-view-less": "Прикажи мање",
 	"wikilambda-toast-close": "Затвори"
