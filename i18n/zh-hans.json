@@ -117,6 +117,7 @@
 	"wikilambda-viewmode-nojs": "此页面以没有JavaScript的方式显示",
 	"wikilambda-diff-incompatible": "系统无法显示对象和非对象之间的差异。",
 	"wikilambda-reference": "引用",
+	"wikilambda-literal-type": "字面量$1",
 	"wikilambda-functioncall": "函数调用",
 	"wikilambda-edit": "编辑",
 	"wikilambda-helplink-button": "帮助",
@@ -356,6 +357,7 @@
 	"wikilambda-list-type-change-warning": "您更改了一个或多个列表的类型。发布时，所有列表项将被删除。",
 	"wikilambda-function-evaluation-restriction-warning": "很抱歉！目前只有登录用户才能运行函数。",
 	"wikilambda-argument-reference-selector-placeholder": "选择参数",
+	"wikilambda-string-renderer-examples-title": "示例",
 	"wikilambda-object-selector-suggested-types": "建议的类型",
 	"wikilambda-object-selector-suggested-languages": "建议的语言"
 }
