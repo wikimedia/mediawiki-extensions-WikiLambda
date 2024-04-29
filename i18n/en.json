@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Genoveva Galarza",
+			"Grace Choi",
 			"James D. Forrester"
 		]
 	},
@@ -112,6 +113,7 @@
 	"wikilambda-literal-type": "Literal $1",
 	"wikilambda-functioncall": "Function call",
 	"wikilambda-edit": "Edit",
+	"wikilambda-toggle-expanded-view": "Toggle expanded view",
 	"wikilambda-helplink-button": "Help",
 	"wikilambda-helplink-tooltip": "You can read a Help page which explains this metadata",
 	"wikilambda-special-createobject": "Create a new Object",
