@@ -107,6 +107,7 @@
 	"wikilambda-literal-type": "$1 מפורש",
 	"wikilambda-functioncall": "קריאה לפונקציה",
 	"wikilambda-edit": "עריכת",
+	"wikilambda-toggle-expanded-view": "החלפה לתצוגה המורחבת",
 	"wikilambda-helplink-button": "עזרה",
 	"wikilambda-helplink-tooltip": "באפשרותף לקרוא דף עזרה שמסביר את המטא־נתונים האלה",
 	"wikilambda-special-createobject": "יצירת עצם חדש",

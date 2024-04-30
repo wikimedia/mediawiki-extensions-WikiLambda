@@ -111,6 +111,7 @@
 	"wikilambda-literal-type": "Literal $1",
 	"wikilambda-functioncall": "Funktionsaufruf",
 	"wikilambda-edit": "Bearbeiten",
+	"wikilambda-toggle-expanded-view": "Erweiterte Ansicht ein-/ausblenden",
 	"wikilambda-helplink-button": "Hilfe",
 	"wikilambda-helplink-tooltip": "Du kannst eine Hilfeseite lesen, die diese Metadaten erklärt",
 	"wikilambda-special-createobject": "Neues ZObjekt erstellen",
