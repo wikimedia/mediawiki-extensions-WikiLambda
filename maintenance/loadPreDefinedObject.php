@@ -90,41 +90,65 @@ class LoadPreDefinedObject extends Maintenance {
 
 		$from = $this->getOption( 'from' );
 		$to = $this->getOption( 'to' );
+		$all = $this->getOption( 'all' );
+		$zid = $this->getOption( 'zid' );
+		$force = $this->getOption( 'force' ) || false;
 
-		if ( (bool)$from xor (bool)$to ) {
-			$this->fatalError( 'The flag "--from" must be used with the flag "--to" to set a range' . "\n" );
-		}
+		if ( $all ) {
+			// --all option overrides any --from and --to passed as arguments
+			if ( (bool)$from || (bool)$to ) {
+				$this->fatalError( 'The flag "--all" should not be used along with "--for" and "--to"' . "\n" );
+			}
 
-		if ( !is_numeric( $from ) || $from < 1 || $from > 9999 ) {
-			$this->fatalError( 'The flag "--from" must be a number between 1 and 9999' . "\n" );
-		}
-
-		if ( !is_numeric( $to ) || $to < 1 || $to > 9999 ) {
-			$this->fatalError( 'The flag "--to" must be a number between 1 and 9999' . "\n" );
-		}
-
-		if ( $from > $to ) {
-			$this->fatalError( 'The flag "--from" must be lower than the flag "--to"' . "\n" );
-		}
-
-		if ( $this->getOption( 'all' ) ) {
 			$from = 1;
 			$to = 9999;
-		}
-
-		$zid = $this->getOption( 'zid' );
-		if ( $zid ) {
+		} elseif ( $zid ) {
 			if ( !is_numeric( $zid ) || $zid < 1 || $zid > 9999 ) {
 				$this->fatalError( 'The flag "--zid" must be a number between 1 and 9999' . "\n" );
 			}
 
+			// --zid option overrides any --from and --to passed as arguments
+			if ( (bool)$from || (bool)$to ) {
+				$this->fatalError( 'The flag "--zid" should not be used with "--for" or "--to"' . "\n" );
+			}
+
+			// --zid option also overrides --all if present
 			$from = $zid;
 			$to = $zid;
+		} else {
+			// If no --all and no --zid are entered, then --from and --to are mandatory
+			if ( (bool)$from xor (bool)$to ) {
+				$this->fatalError( 'The flag "--from" must be used with the flag "--to" to set a range' . "\n" );
+			}
+
+			if ( !is_numeric( $from ) || $from < 1 || $from > 9999 ) {
+				$this->fatalError( 'The flag "--from" must be a number between 1 and 9999' . "\n" );
+			}
+
+			if ( !is_numeric( $to ) || $to < 1 || $to > 9999 ) {
+				$this->fatalError( 'The flag "--to" must be a number between 1 and 9999' . "\n" );
+			}
+
+			if ( $from > $to ) {
+				$this->fatalError( 'The flag "--from" must be lower than the flag "--to"' . "\n" );
+			}
 		}
 
-		$force = $this->getOption( 'force' ) || false;
-
+		// Base path:
 		$path = dirname( __DIR__ ) . '/function-schemata/data/definitions/';
+
+		// Get dependencies file
+		$dependenciesFile = file_get_contents( $path . 'dependencies.json' );
+		if ( $dependenciesFile === false ) {
+			$this->fatalError(
+				'Could not load dependencies file from function-schemata sub-repository of the WikiLambda extension.'
+				. ' Have you initiated & fetched it? Try `git submodule update --init --recursive`.'
+			);
+		}
+		$dependencies = json_decode( $dependenciesFile, true );
+		$tracker = [];
+
+		// Get data files
 		$initialDataToLoadListing = array_filter(
 			scandir( $path ),
 			static function ( $key ) use ( $from, $to ) {
@@ -136,6 +160,7 @@ class LoadPreDefinedObject extends Maintenance {
 				return false;
 			}
 		);
+
 		// Naturally sort, so Z2 gets created before Z12 etc.
 		natsort( $initialDataToLoadListing );
 
@@ -144,9 +169,9 @@ class LoadPreDefinedObject extends Maintenance {
 		$skipped = 0;
 		foreach ( $initialDataToLoadListing as $filename ) {
 
-			$zid = substr( $filename, 1, -5 );
+			$zid = substr( $filename, 0, -5 );
 
-			switch ( $this->makeEdit( $zid, $path, $titleFactory, $zObjectStore, $force ) ) {
+			switch ( $this->makeEdit( $zid, $path, $titleFactory, $zObjectStore, $force, $dependencies, $tracker ) ) {
 				case 1:
 					$success++;
 					break;
@@ -179,18 +204,24 @@ class LoadPreDefinedObject extends Maintenance {
 
 	// phpcs:disable MediaWiki.Commenting.FunctionComment.MissingDocumentationPrivate
 	private function makeEdit(
-		string $zid, string $path, TitleFactory $titleFactory, ZObjectStore $zObjectStore, bool $force
+		string $zid,
+		string $path,
+		TitleFactory $titleFactory,
+		ZObjectStore $zObjectStore,
+		bool $force,
+		array $dependencies,
+		array &$tracker
 	) {
-		$data = file_get_contents( $path . 'Z' . $zid . '.json' );
+		$data = file_get_contents( $path . $zid . '.json' );
 
 		if ( !$data ) {
-			$this->error( 'The ZObject "Z' . $zid . '" was not found in the definitions folder.' );
+			$this->error( 'The ZObject "' . $zid . '" was not found in the definitions folder.' );
 			return -1;
 		}
 
-		$title = $titleFactory->newFromText( 'Z' . $zid, NS_MAIN );
+		$title = $titleFactory->newFromText( $zid, NS_MAIN );
 		if ( !( $title instanceof Title ) ) {
-			$this->error( 'The ZObject title "Z' . $zid . '" could not be loaded somehow; invalid name?' );
+			$this->error( 'The ZObject title "' . $zid . '" could not be loaded somehow; invalid name?' );
 			return -1;
 		}
 
@@ -198,10 +229,34 @@ class LoadPreDefinedObject extends Maintenance {
 			$creating = true;
 		} else {
 			if ( !$force ) {
-				$this->error( 'The ZObject "Z' . $zid . '" already exists and --force was not passed.' );
+				$this->error( 'The ZObject "' . $zid . '" already exists and --force was not passed.' );
 				return 0;
 			}
 			$creating = false;
+		}
+
+		$deps = $dependencies[ $zid ];
+		foreach ( $deps as $dep ) {
+			// Avoid circular dependencies
+			if ( !in_array( $dep, $tracker ) ) {
+				array_push( $tracker, $dep );
+				// Don't force dependencies if they are already inserted, set to false
+				$depSuccess = $this->makeEdit(
+					$dep, $path, $titleFactory, $zObjectStore, false, $dependencies, $tracker );
+				switch ( $depSuccess ) {
+					case 1:
+						$this->output( "Dependency: $dep successfully inserted.\n" );
+						break;
+					case -1:
+						$this->output( "Dependency: $dep failed.\n" );
+						break;
+					case 0:
+						$this->output( "Dependency: $dep skipped.\n" );
+						break;
+					default:
+						throw new RuntimeException( 'Unrecognised return value!' );
+				}
+			}
 		}
 
 		$editSummary = wfMessage(
@@ -212,17 +267,17 @@ class LoadPreDefinedObject extends Maintenance {
 
 		// And we create or update the ZObject
 		$response = $zObjectStore->updateZObjectAsSystemUser(
-			/* String zid */ 'Z' . $zid,
+			/* String zid */ $zid,
 			/* String content */ $data,
 			/* Edit summary */ $editSummary,
 			/* Update flags */ $creating ? EDIT_NEW : EDIT_UPDATE
 		);
 
 		if ( $response->isOK() ) {
-			$this->output( ( $creating ? 'Created ' : 'Updated ' ) . '"Z' . $zid . '".' . "\n" );
+			$this->output( ( $creating ? 'Created ' : 'Updated ' ) . '"' . $zid . '".' . "\n" );
 			return 1;
 		} else {
-			$this->error( "Problem " . ( $creating ? 'creating' : 'updating' ) . ' "Z' . $zid . "\":\n" );
+			$this->error( "Problem " . ( $creating ? 'creating' : 'updating' ) . ' "' . $zid . "\":\n" );
 			$this->error( $response->getErrors() );
 			$this->error( "\n" );
 			return -1;
