@@ -106,6 +106,7 @@
 	"wikilambda-literal-type": "Literal $1",
 	"wikilambda-functioncall": "Appello de function",
 	"wikilambda-edit": "Modificar",
+	"wikilambda-toggle-expanded-view": "Commutar vista expandite",
 	"wikilambda-helplink-button": "Adjuta",
 	"wikilambda-helplink-tooltip": "Tu pote leger un pagina de adjuta que explica iste metadatos",
 	"wikilambda-special-createobject": "Crear un nove objecto",

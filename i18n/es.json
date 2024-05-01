@@ -81,6 +81,7 @@
 	"wikilambda-reference": "Referencia",
 	"wikilambda-functioncall": "Llamada a función",
 	"wikilambda-edit": "Editar",
+	"wikilambda-toggle-expanded-view": "Alternar vista expandida",
 	"wikilambda-helplink-button": "Ayuda",
 	"wikilambda-helplink-tooltip": "Puedes leer una página de ayuda que explica estos metadatos",
 	"wikilambda-special-createobject": "Crear un nuevo objeto",
