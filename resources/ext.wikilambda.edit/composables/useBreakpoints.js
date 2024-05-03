@@ -4,9 +4,10 @@
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
-const Vue = require( 'vue' );
 
 module.exports = function useBreakpoints( breakpoints ) {
+	const Vue = require( 'vue' );
+
 	breakpoints = breakpoints || {};
 	const windowWidth = Vue.ref( window.innerWidth );
 
