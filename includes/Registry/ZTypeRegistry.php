@@ -66,6 +66,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 	public const Z_KEY_TYPE = 'Z3K1';
 	public const Z_KEY_ID = 'Z3K2';
 	public const Z_KEY_LABEL = 'Z3K3';
+	public const Z_KEY_IS_IDENTITY = 'Z3K4';
 
 	public const Z_TYPE = 'Z4';
 	public const Z_TYPE_IDENTITY = 'Z4K1';
