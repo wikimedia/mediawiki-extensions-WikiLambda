@@ -10,6 +10,7 @@ const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
+	LabelData = require( '../../../../resources/ext.wikilambda.edit/store/classes/LabelData.js' ),
 	ZObjectKeyValue = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZObjectKeyValue.vue' );
 
 describe( 'ZObjectKeyValue', () => {
@@ -18,11 +19,16 @@ describe( 'ZObjectKeyValue', () => {
 
 	beforeEach( () => {
 		getters = {
+			createObjectByType: createGettersWithFunctionsMock(),
+			getCurrentZObjectId: createGetterMock( 'Z0' ),
+			getZKeyIsIdentity: createGettersWithFunctionsMock( false ),
+			getZKeyTypeRowId: createGettersWithFunctionsMock( 3 ),
 			isCreateNewPage: createGetterMock( false ),
+			isIdentityKey: createGettersWithFunctionsMock( false ),
 			isMainObject: createGettersWithFunctionsMock( true ),
-			getLabelData: createGettersWithFunctionsMock( { zid: Constants.Z_PERSISTENTOBJECT_ID, label: 'id', lang: Constants.Z_NATURAL_LANGUAGE_ENGLISH } ),
+			getLabelData: createGettersWithFunctionsMock( new LabelData( 'Z2K1', 'id', 'Z1002' ) ),
 			getZObjectKeyByRowId: createGettersWithFunctionsMock( 'Z1K1' ),
-			getExpectedTypeOfKey: createGettersWithFunctionsMock(),
+			getExpectedTypeOfKey: createGettersWithFunctionsMock( 'Z1' ),
 			getZObjectValueByRowId: createGettersWithFunctionsMock(),
 			getZObjectTypeByRowId: createGettersWithFunctionsMock( Constants.Z_STRING ),
 			getUserLangZid: createGettersWithFunctionsMock( 'Z1002' ),
@@ -62,7 +68,8 @@ describe( 'ZObjectKeyValue', () => {
 
 			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
-					rowId: 1
+					rowId: 1,
+					edit: false
 				}
 			} );
 
@@ -77,7 +84,8 @@ describe( 'ZObjectKeyValue', () => {
 
 			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
-					rowId: 1
+					rowId: 1,
+					edit: false
 				}
 			} );
 
@@ -92,7 +100,8 @@ describe( 'ZObjectKeyValue', () => {
 
 			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
-					rowId: 1
+					rowId: 1,
+					edit: false
 				}
 			} );
 
@@ -107,7 +116,8 @@ describe( 'ZObjectKeyValue', () => {
 
 			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
-					rowId: 1
+					rowId: 1,
+					edit: false
 				}
 			} );
 
@@ -122,7 +132,8 @@ describe( 'ZObjectKeyValue', () => {
 
 			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
-					rowId: 1
+					rowId: 1,
+					edit: false
 				}
 			} );
 
@@ -137,7 +148,8 @@ describe( 'ZObjectKeyValue', () => {
 
 			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
-					rowId: 1
+					rowId: 1,
+					edit: false
 				}
 			} );
 
@@ -152,7 +164,8 @@ describe( 'ZObjectKeyValue', () => {
 
 			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
-					rowId: 1
+					rowId: 1,
+					edit: false
 				}
 			} );
 
@@ -167,7 +180,8 @@ describe( 'ZObjectKeyValue', () => {
 
 			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
-					rowId: 1
+					rowId: 1,
+					edit: false
 				}
 			} );
 
@@ -182,7 +196,8 @@ describe( 'ZObjectKeyValue', () => {
 
 			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
-					rowId: 1
+					rowId: 1,
+					edit: false
 				}
 			} );
 
@@ -197,7 +212,8 @@ describe( 'ZObjectKeyValue', () => {
 
 			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
-					rowId: 1
+					rowId: 1,
+					edit: false
 				}
 			} );
 
@@ -213,7 +229,8 @@ describe( 'ZObjectKeyValue', () => {
 
 			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
-					rowId: 1
+					rowId: 1,
+					edit: false
 				}
 			} );
 
@@ -232,7 +249,8 @@ describe( 'ZObjectKeyValue', () => {
 
 			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
-					rowId: 1
+					rowId: 1,
+					edit: false
 				}
 			} );
 
@@ -249,7 +267,8 @@ describe( 'ZObjectKeyValue', () => {
 
 			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
-					rowId: 1
+					rowId: 1,
+					edit: false
 				}
 			} );
 
@@ -264,7 +283,8 @@ describe( 'ZObjectKeyValue', () => {
 
 			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
-					rowId: 1
+					rowId: 1,
+					edit: false
 				}
 			} );
 
@@ -386,6 +406,165 @@ describe( 'ZObjectKeyValue', () => {
 					key: '2',
 					offset: 1
 				} );
+			} );
+		} );
+
+		describe( 'disableEdit', () => {
+			it( 'disables edit if parent key is disabled', () => {
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						edit: true,
+						rowId: 1,
+						parentDisableEdit: true
+					}
+				} );
+
+				expect( wrapper.vm.disableEdit ).toBe( true );
+			} );
+
+			it( 'disables edit if the key is the identity key of the persistent object', () => {
+				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z2K2' );
+				getters.isIdentityKey = createGettersWithFunctionsMock( true );
+				global.store.hotUpdate( { getters: getters } );
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						edit: true,
+						rowId: 1
+					}
+				} );
+
+				expect( wrapper.vm.disableEdit ).toBe( true );
+			} );
+
+			it( 'disables edit if key is for the Typed List item type and the type is bound', () => {
+				getters.getParentRowId = createGettersWithFunctionsMock( 1 );
+				getters.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z11' );
+				getters.getZObjectKeyByRowId = () => ( id ) => {
+					return ( id === 10 ) ? '0' :
+						( id === 1 ) ? 'Z12K1' :
+							undefined;
+				};
+				global.store.hotUpdate( { getters: getters } );
+
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						edit: true,
+						rowId: 10
+					}
+				} );
+
+				expect( wrapper.vm.disableEdit ).toBe( true );
+			} );
+
+			it( 'enables edit if key is for the Typed List item type and the type is not bound', () => {
+				getters.getParentRowId = createGettersWithFunctionsMock( 1 );
+				getters.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z1' );
+				getters.getZObjectKeyByRowId = () => ( id ) => {
+					return ( id === 10 ) ? '0' :
+						( id === 1 ) ? 'Z12K1' :
+							undefined;
+				};
+				global.store.hotUpdate( { getters: getters } );
+
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						edit: true,
+						rowId: 10
+					}
+				} );
+
+				expect( wrapper.vm.disableEdit ).toBe( false );
+			} );
+
+			it( 'disables edit if key is Z3K1/Key type and Z3K4/Is identity is set to true', () => {
+				getters.getParentRowId = createGettersWithFunctionsMock( 1 );
+				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z3K1' );
+				getters.getZKeyIsIdentity = createGettersWithFunctionsMock( true );
+				global.store.hotUpdate( { getters: getters } );
+
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						edit: true,
+						rowId: 10
+					}
+				} );
+
+				expect( wrapper.vm.disableEdit ).toBe( true );
+			} );
+
+			it( 'enables edit if key is Z3K1/Key type and Z3K4/Is identity is set to false', () => {
+				getters.getParentRowId = createGettersWithFunctionsMock( 1 );
+				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z3K1' );
+				getters.getZKeyIsIdentity = createGettersWithFunctionsMock( false );
+				global.store.hotUpdate( { getters: getters } );
+
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						edit: true,
+						rowId: 10
+					}
+				} );
+
+				expect( wrapper.vm.disableEdit ).toBe( false );
+			} );
+
+			it( 'disables edit if key is Z1K1/Object type and the type is bound', () => {
+				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z1K1' );
+				getters.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z11' );
+				global.store.hotUpdate( { getters: getters } );
+
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						edit: true,
+						rowId: 10
+					}
+				} );
+
+				expect( wrapper.vm.disableEdit ).toBe( true );
+			} );
+
+			it( 'disables edit if we are editing the type of a stored persistent object', () => {
+				getters.getParentRowId = createGettersWithFunctionsMock( 1 );
+				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z1K1' );
+				getters.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z1' );
+				getters.isCreateNewPage = createGetterMock( false );
+				getters.getZObjectKeyByRowId = () => ( id ) => {
+					return ( id === 10 ) ? 'Z1K1' :
+						( id === 1 ) ? 'Z2K2' :
+							undefined;
+				};
+				global.store.hotUpdate( { getters: getters } );
+
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						edit: true,
+						rowId: 10
+					}
+				} );
+
+				expect( wrapper.vm.disableEdit ).toBe( true );
+			} );
+
+			it( 'enables edit if we are editing the type of a new persistent object', () => {
+				getters.getParentRowId = createGettersWithFunctionsMock( 1 );
+				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z1K1' );
+				getters.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z1' );
+				getters.isCreateNewPage = createGetterMock( true );
+				getters.getZObjectKeyByRowId = () => ( id ) => {
+					return ( id === 10 ) ? 'Z1K1' :
+						( id === 1 ) ? 'Z2K2' :
+							undefined;
+				};
+				global.store.hotUpdate( { getters: getters } );
+
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						edit: true,
+						rowId: 10
+					}
+				} );
+
+				expect( wrapper.vm.disableEdit ).toBe( false );
 			} );
 		} );
 	} );
@@ -689,6 +868,102 @@ describe( 'ZObjectKeyValue', () => {
 
 				wrapper.findComponent( { name: 'wl-z-reference' } ).vm.$emit( 'set-value', { keyPath: [], value: [ Constants.Z_OBJECT ] } );
 				expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [], value: [ Constants.Z_OBJECT ] } ] ] );
+			} );
+
+			it( 'passes up responsibility if the change happens on Z3K4.Z40K1 key', () => {
+				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
+				getters.getZObjectKeyByRowId = () => ( id ) => {
+					return ( id === 1 ) ? Constants.Z_BOOLEAN_IDENTITY :
+						( id === 0 ) ? Constants.Z_KEY_IS_IDENTITY :
+							undefined;
+				};
+				global.store.hotUpdate( {
+					getters: getters
+				} );
+
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						edit: true,
+						rowId: 1
+					}
+				} );
+
+				wrapper.findComponent( { name: 'wl-z-reference' } ).vm.$emit( 'set-value', {
+					keyPath: [ Constants.Z_REFERENCE_ID ],
+					value: Constants.Z_BOOLEAN_TRUE
+				} );
+				expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ {
+					keyPath: [ Constants.Z_BOOLEAN_IDENTITY, Constants.Z_REFERENCE_ID ],
+					value: Constants.Z_BOOLEAN_TRUE
+				} ] ] );
+			} );
+
+			it( 'sets Z3K1 reference to self if Z3K4 is set to true', () => {
+				getters.getCurrentZObjectId = createGetterMock( 'Z12345' );
+				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_KEY_IS_IDENTITY );
+				getters.getParentRowId = createGettersWithFunctionsMock( 0 );
+				getters.getZKeyTypeRowId = createGettersWithFunctionsMock( 2 );
+				getters.getZObjectTypeByRowId = () => ( id ) => {
+					const types = {
+						0: Constants.Z_KEY,
+						1: Constants.Z_BOOLEAN,
+						2: Constants.Z_REFERENCE
+					};
+					return types[ id ] || 'Z1';
+				};
+				global.store.hotUpdate( {
+					getters: getters
+				} );
+
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						edit: true,
+						rowId: 1
+					}
+				} );
+
+				wrapper.findComponent( { name: 'wl-z-boolean' } ).vm.$emit( 'set-value', {
+					keyPath: [ Constants.Z_BOOLEAN_IDENTITY, Constants.Z_REFERENCE_ID ],
+					value: Constants.Z_BOOLEAN_TRUE
+				} );
+				expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ {
+					keyPath: [ Constants.Z_KEY_TYPE, Constants.Z_REFERENCE_ID ],
+					value: 'Z12345'
+				} ] ] );
+			} );
+
+			it( 'sets Z3K1 function call to reference of self if Z3K4 is set to true', () => {
+				const refToSelf = { Z1K1: 'Z9', Z9K1: 'Z12345' };
+				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_KEY_IS_IDENTITY );
+				getters.getZKeyTypeRowId = createGettersWithFunctionsMock( 3 );
+				getters.createObjectByType = createGettersWithFunctionsMock( refToSelf );
+				getters.getZObjectTypeByRowId = () => ( id ) => {
+					const types = {
+						0: Constants.Z_KEY,
+						1: Constants.Z_BOOLEAN,
+						2: Constants.Z_REFERENCE
+					};
+					return types[ id ] || 'Z1';
+				};
+				global.store.hotUpdate( {
+					getters: getters
+				} );
+
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						edit: true,
+						rowId: 1
+					}
+				} );
+
+				wrapper.findComponent( { name: 'wl-z-boolean' } ).vm.$emit( 'set-value', {
+					keyPath: [ Constants.Z_BOOLEAN_IDENTITY, Constants.Z_REFERENCE_ID ],
+					value: Constants.Z_BOOLEAN_TRUE
+				} );
+				expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ {
+					keyPath: [ Constants.Z_KEY_TYPE ],
+					value: refToSelf
+				} ] ] );
 			} );
 		} );
 

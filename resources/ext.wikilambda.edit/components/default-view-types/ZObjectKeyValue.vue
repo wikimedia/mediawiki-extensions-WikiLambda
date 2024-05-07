@@ -195,6 +195,8 @@ module.exports = exports = {
 	},
 	computed: $.extend(
 		mapGetters( [
+			'createObjectByType',
+			'getCurrentZObjectId',
 			'getUserLangZid',
 			'getLabelData',
 			'getExpectedTypeOfKey',
@@ -203,11 +205,14 @@ module.exports = exports = {
 			'getZObjectKeyByRowId',
 			'getZObjectValueByRowId',
 			'getZObjectTypeByRowId',
+			'getZKeyIsIdentity',
+			'getZKeyTypeRowId',
 			'getTypedListItemType',
 			'getErrors',
 			'hasRenderer',
 			'hasParser',
 			'isCreateNewPage',
+			'isIdentityKey',
 			'isMainObject'
 		] ),
 		{
@@ -243,6 +248,14 @@ module.exports = exports = {
 					return true;
 				}
 
+				// If this is the identity key of the root object, disableEdit
+				if (
+					this.isIdentityKey( this.key ) &&
+					( this.parentKey === Constants.Z_PERSISTENTOBJECT_VALUE )
+				) {
+					return true;
+				}
+
 				// If the key is that of a typed list type (zero):
 				// 1. If parent expected type is Z1: return false (allow edit)
 				// 2. If parent expected type is Z881(Z1): return false (allow edit)
@@ -252,6 +265,13 @@ module.exports = exports = {
 						( this.parentExpectedType === Constants.Z_OBJECT ) ||
 						( this.parentExpectedType[ Constants.Z_TYPED_LIST_TYPE ] === Constants.Z_OBJECT )
 					);
+				}
+
+				// If the key is that of a key type/Z3K1 and:
+				// * the key is identity/Z3K4 is true
+				// return true (disable edit)
+				if ( this.key === Constants.Z_KEY_TYPE ) {
+					return this.getZKeyIsIdentity( this.parentRowId );
 				}
 
 				// If the key is that of Object type/Z1K1 and:
@@ -722,6 +742,38 @@ module.exports = exports = {
 			// If the type of a typed list changed, notify the parent to take action
 			if ( this.isKeyTypedListType( this.parentKey ) || this.isKeyTypedListType( this.key ) ) {
 				this.changeEvent( payload );
+			}
+
+			// If the key Z3K4/is identity changed, notify the parent to take action
+			if ( ( this.key === Constants.Z_BOOLEAN_IDENTITY ) && ( this.parentKey === Constants.Z_KEY_IS_IDENTITY ) ) {
+				// 1. If the change is done on expanded boolean, let the parent handle it completely
+				payload.keyPath = [ this.key, ...payload.keyPath ];
+				this.$emit( 'set-value', payload );
+				return;
+			}
+			if ( ( this.key === Constants.Z_KEY_IS_IDENTITY ) && ( payload.value === Constants.Z_BOOLEAN_TRUE ) ) {
+				// 2. If the change is done on collapsed mode, get the parent to set Z3K1/type
+				const keyTypeRowId = this.getZKeyTypeRowId( this.parentRowId );
+				const keyTypeType = this.getZObjectTypeByRowId( keyTypeRowId );
+
+				let identityPayload;
+				if ( keyTypeType === Constants.Z_REFERENCE ) {
+					identityPayload = {
+						keyPath: [ Constants.Z_KEY_TYPE, Constants.Z_REFERENCE_ID ],
+						value: this.getCurrentZObjectId
+					};
+				} else {
+					const refObject = this.createObjectByType( {
+						type: Constants.Z_REFERENCE,
+						value: this.getCurrentZObjectId
+					} );
+					identityPayload = {
+						keyPath: [ Constants.Z_KEY_TYPE ],
+						value: refObject
+					};
+				}
+
+				this.$emit( 'set-value', identityPayload );
 			}
 
 			// If the value of Z1K1 changes, tell parent key to change its type

@@ -2443,6 +2443,133 @@ describe( 'zobject Vuex module', () => {
 				expect( result ).toEqual( expected );
 			} );
 		} );
+
+		describe( 'getZKeyIsIdentity', () => {
+			let getters;
+			beforeEach( () => {
+				getters = {};
+				getters.getRowById = zobjectModule.getters.getRowById( state );
+				getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+				getters.getZReferenceTerminalValue = zobjectModule.getters.getZReferenceTerminalValue( state, getters );
+				getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
+				getters.getZFunctionCallArguments = zobjectModule.getters.getZFunctionCallArguments( state, getters );
+				getters.getZFunctionCallFunctionId = zobjectModule.getters.getZFunctionCallFunctionId( state, getters );
+				getters.getZObjectAsJsonById = zobjectModule.getters.getZObjectAsJsonById( state, getters );
+				getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( state, getters );
+				getters.getZBooleanValue = zobjectModule.getters.getZBooleanValue( state, getters );
+			} );
+
+			it( 'returns true when the is identity field is a reference to true', () => {
+				state.zobject = zobjectToRows( {
+					Z1K1: 'Z3',
+					Z3K1: 'Z6',
+					Z3K2: 'Z0K1',
+					Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] },
+					Z3K4: 'Z41'
+				} );
+				const rowId = 0;
+				const result = zobjectModule.getters.getZKeyIsIdentity( state, getters )( rowId );
+				expect( result ).toBe( true );
+			} );
+
+			it( 'returns true when the is identity field is the literal object true', () => {
+				state.zobject = zobjectToRows( {
+					Z1K1: 'Z3',
+					Z3K1: 'Z6',
+					Z3K2: 'Z0K1',
+					Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] },
+					Z3K4: { Z1K1: 'Z40', Z40K1: 'Z41' }
+				} );
+				const rowId = 0;
+				const result = zobjectModule.getters.getZKeyIsIdentity( state, getters )( rowId );
+				expect( result ).toBe( true );
+			} );
+
+			it( 'returns false when the is identity field is undefined', () => {
+				state.zobject = zobjectToRows( {
+					Z1K1: 'Z3',
+					Z3K1: 'Z6',
+					Z3K2: 'Z0K1',
+					Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+				} );
+				const rowId = 0;
+				const result = zobjectModule.getters.getZKeyIsIdentity( state, getters )( rowId );
+				expect( result ).toBe( false );
+			} );
+
+			it( 'returns false when the is identity field is a reference to false', () => {
+				state.zobject = zobjectToRows( {
+					Z1K1: 'Z3',
+					Z3K1: 'Z6',
+					Z3K2: 'Z0K1',
+					Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] },
+					Z3K4: 'Z42'
+				} );
+				const rowId = 0;
+				const result = zobjectModule.getters.getZKeyIsIdentity( state, getters )( rowId );
+				expect( result ).toBe( false );
+			} );
+
+			it( 'returns false when the is identity field is the literal object false', () => {
+				state.zobject = zobjectToRows( {
+					Z1K1: 'Z3',
+					Z3K1: 'Z6',
+					Z3K2: 'Z0K1',
+					Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] },
+					Z3K4: { Z1K1: 'Z40', Z40K1: 'Z42' }
+				} );
+				const rowId = 0;
+				const result = zobjectModule.getters.getZKeyIsIdentity( state, getters )( rowId );
+				expect( result ).toBe( false );
+			} );
+		} );
+
+		describe( 'getZKeyTypeRowId', () => {
+			let getters;
+			beforeEach( () => {
+				getters = {};
+				getters.getRowById = zobjectModule.getters.getRowById( state );
+				getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+			} );
+
+			it( 'returns undefined if the object is not a key', () => {
+				state.zobject = zobjectToRows( {
+					Z1K1: 'Z11',
+					Z11K1: 'Z1002',
+					Z11K2: 'something else'
+				} );
+				const rowId = 0;
+				const result = zobjectModule.getters.getZKeyTypeRowId( state, getters )( rowId );
+				expect( result ).toBe( undefined );
+			} );
+
+			it( 'returns undefined if the key type field does not exist', () => {
+				state.zobject = zobjectToRows( {
+					Z1K1: 'Z3',
+					Z3K2: 'Z0K1',
+					Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] },
+					Z3K4: 'Z41'
+				} );
+				const rowId = 0;
+				const result = zobjectModule.getters.getZKeyTypeRowId( state, getters )( rowId );
+				expect( result ).toBe( undefined );
+			} );
+
+			it( 'returns the rowId of the key type field', () => {
+				state.zobject = zobjectToRows( {
+					Z1K1: 'Z3',
+					Z3K1: 'Z6', // rowId = 4
+					Z3K2: 'Z0K1',
+					Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] },
+					Z3K4: 'Z41'
+				} );
+				const rowId = 0;
+				const result = zobjectModule.getters.getZKeyTypeRowId( state, getters )( rowId );
+				expect( result ).toBe( 4 );
+			} );
+		} );
 	} );
 
 	describe( 'Mutations', () => {

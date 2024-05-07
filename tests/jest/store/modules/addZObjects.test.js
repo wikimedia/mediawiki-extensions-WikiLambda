@@ -124,6 +124,7 @@ describe( 'addZObjects Vuex module', () => {
 				context.getters.getZObjectAsJsonById = zobjectModule.getters.getZObjectAsJsonById( context.state );
 				context.getters.getUserLangZid = 'Z1003';
 				context.getters.getStoredObject = ( zid ) => context.state.objects[ zid ];
+				context.getters.getZPersistentContentRowId = () => undefined;
 			} );
 
 			describe( 'add linkable type when non-literal is prioritized', () => {

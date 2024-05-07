@@ -18,6 +18,7 @@ const Constants = {
 		Z_KEY_TYPE: 'Z3K1',
 		Z_KEY_ID: 'Z3K2',
 		Z_KEY_LABEL: 'Z3K3',
+		Z_KEY_IS_IDENTITY: 'Z3K4',
 		Z_TYPE: 'Z4',
 		Z_TYPE_IDENTITY: 'Z4K1',
 		Z_TYPE_KEYS: 'Z4K2',

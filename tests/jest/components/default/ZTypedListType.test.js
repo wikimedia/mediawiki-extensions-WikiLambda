@@ -25,6 +25,7 @@ describe( 'ZTypedListType', () => {
 			getZObjectKeyByRowId: createGettersWithFunctionsMock( '0' ),
 
 			// getters for ZObjectKeyValue
+			isIdentityKey: createGettersWithFunctionsMock( false ),
 			getDepthByRowId: () => () => {
 				return 1;
 			},
