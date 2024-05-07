@@ -359,7 +359,7 @@ module.exports = exports = {
 				}
 				total += value;
 			}
-			return `${ total } ${ unit }`;
+			return `${ total.toPrecision( 4 ) } ${ unit }`;
 		},
 		/**
 		 * Returns the linked label of the root error from the given
