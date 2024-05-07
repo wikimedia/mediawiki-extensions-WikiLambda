@@ -73,6 +73,7 @@ Refer to the [WikiLambda set-up docs](https://www.mediawiki.org/wiki/MediaWiki-D
 
 2. **`utils/`**: Contains utility functions or helper modules that can be reused across the test suites.
     - `ElementActions.js`: Contains general actions that are performed on the browser elements.
+    - `i18n.js`: Contains action for retrieving English string names.
 
 3. **`wdio.conf.js`**: Contains the configuration for the tests.
 

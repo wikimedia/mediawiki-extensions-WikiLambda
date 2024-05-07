@@ -5,7 +5,7 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-function-definition-inputs">
+	<div class="ext-wikilambda-function-definition-inputs" data-testid="function-definition-inputs">
 		<div class="ext-wikilambda-function-block__label">
 			<label :id="inputsFieldId">
 				{{ inputsLabel }}

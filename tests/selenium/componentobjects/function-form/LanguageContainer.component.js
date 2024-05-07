@@ -7,23 +7,24 @@
 
 'use strict';
 
-const ObjectSelector = require( './ObjectSelector' );
+const ObjectSelector = require( './ObjectSelector' ),
+	i18n = require( '../../utils/i18n.js' )();
 
 class LanguageContainerComponent {
 	get languageField() {
-		return this.languageContext.$( "input[placeholder='Select language'" );
+		return this.languageContext.$( `input[placeholder="${ i18n[ 'wikilambda-editor-label-addlanguage-label' ] }"` );
 	}
 
 	get nameField() {
-		return this.languageContext.$( "input[placeholder*='Enter name']" );
+		return this.languageContext.$( `input[placeholder="${ i18n[ 'wikilambda-function-definition-name-placeholder' ] }"` );
 	}
 
 	get aliasField() {
-		return this.languageContext.$( "input[placeholder='Enter aliases']" );
+		return this.languageContext.$( `input[placeholder="${ i18n[ 'wikilambda-function-definition-alias-placeholder' ] }"` );
 	}
 
 	get inputLabelsField() {
-		return this.languageContext.$$( ".ext-wikilambda-function-definition-inputs input[placeholder='Enter label']" );
+		return this.languageContext.$$( `input[placeholder="${ i18n[ 'wikilambda-function-definition-inputs-item-input-placeholder' ] }"` );
 	}
 
 	constructor( languageContext ) {
