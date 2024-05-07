@@ -115,7 +115,7 @@ class ApiFunctionCallTest extends ApiTestCase {
 		yield 'Invoke the Map function: given a function and a list of strings, return the result of running the function over each string' => [
 			ZObjectUtils::readTestFile( 'example-map.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
-			'[{"Z1K1":"Z4","Z4K1":"Z6","Z4K2":["Z3",{"Z1K1":"Z3","Z3K1":"Z6","Z3K2":"Z6K1","Z3K3":{"Z1K1":"Z12","Z12K1":["Z11",{"Z1K1":"Z11","Z11K1":"Z1002","Z11K2":"value"}]}}],"Z4K3":"Z106","Z4K4":{"Z1K1":"Z8","Z8K1":["Z17",{"Z1K1":"Z17","Z17K1":"Z6","Z17K2":"Z866K1","Z17K3":{"Z1K1":"Z12","Z12K1":["Z11",{"Z1K1":"Z11","Z11K1":"Z1002","Z11K2":"first string"}]}},{"Z1K1":"Z17","Z17K1":"Z6","Z17K2":"Z866K2","Z17K3":{"Z1K1":"Z12","Z12K1":["Z11",{"Z1K1":"Z11","Z11K1":"Z1002","Z11K2":"second string"}]}}],"Z8K2":"Z40","Z8K3":["Z20","Z8660","Z8661","Z8662"],"Z8K4":["Z14",{"Z1K1":"Z14","Z14K1":"Z866","Z14K4":{"Z1K1":"Z6","Z6K1":"Z966"}}],"Z8K5":"Z866"}},"acab","acab","bacab"]'
+			'[{"Z1K1":"Z4","Z4K1":"Z6","Z4K2":["Z3",{"Z1K1":"Z3","Z3K1":"Z6","Z3K2":"Z6K1","Z3K3":{"Z1K1":"Z12","Z12K1":["Z11",{"Z1K1":"Z11","Z11K1":"Z1002","Z11K2":"value"}]}}],"Z4K3":"Z106","Z4K4":"Z866"},"acab","acab","bacab"]'
 		];
 
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
