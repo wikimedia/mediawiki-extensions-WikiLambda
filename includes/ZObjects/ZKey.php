@@ -21,11 +21,15 @@ class ZKey extends ZObject {
 	 * @param ZObject $type ZReference to the type for this key value
 	 * @param ZObject $identity ZString with the key ID
 	 * @param ZObject $label ZMultiLingualString that contains the label of this key
+	 * @param ZObject|null $isIdentity optional ZObject that contains the isIdentity flag
 	 */
-	public function __construct( $type, $identity, $label ) {
+	public function __construct( $type, $identity, $label, $isIdentity = null ) {
 		$this->data[ ZTypeRegistry::Z_KEY_TYPE ] = $type;
 		$this->data[ ZTypeRegistry::Z_KEY_ID ] = $identity;
 		$this->data[ ZTypeRegistry::Z_KEY_LABEL ] = $label;
+		if ( $isIdentity ) {
+			$this->data[ ZTypeRegistry::Z_KEY_IS_IDENTITY ] = $isIdentity;
+		}
 	}
 
 	/**
@@ -43,14 +47,15 @@ class ZKey extends ZObject {
 					'required' => true,
 				],
 				ZTypeRegistry::Z_KEY_ID => [
-					// TODO (T262097): Per the model, we used to dereference this ZReference into
-					// the string of its ZType, but creates recursion issues when evaluating ZKeys
-					// of ZTypes that are being created. For now, just store the string ZReference.
-					'type' => ZTypeRegistry::Z_TYPE_IDENTITY,
+					'type' => ZTypeRegistry::Z_STRING,
 					'required' => true,
 				],
 				ZTypeRegistry::Z_KEY_LABEL => [
 					'type' => ZTypeRegistry::Z_MULTILINGUALSTRING,
+				],
+				ZTypeRegistry::Z_KEY_IS_IDENTITY => [
+					'type' => ZTypeRegistry::Z_BOOLEAN,
+					'required' => false,
 				],
 			],
 		];
@@ -102,6 +107,40 @@ class ZKey extends ZObject {
 				return false;
 			}
 		}
+
+		// Is identity is an optional key, but if present it should be a valid ZBoolean
+		if ( isset( $this->data[ ZTypeRegistry::Z_KEY_IS_IDENTITY ] ) ) {
+			$isIdentity = $this->data[ ZTypeRegistry::Z_KEY_IS_IDENTITY ];
+
+			if ( $isIdentity instanceof ZReference ) {
+				// Either a reference to True or False...
+				if ( !$isIdentity->isValid() || (
+					( $isIdentity->getZValue() !== ZTypeRegistry::Z_BOOLEAN_TRUE ) &&
+					( $isIdentity->getZValue() !== ZTypeRegistry::Z_BOOLEAN_FALSE )
+				) ) {
+					return false;
+				}
+			} elseif ( $isIdentity instanceof ZObject ) {
+				// ... or a literal Z40 with a valid Z40K1.
+				if ( $isIdentity->getZType() !== ZTypeRegistry::Z_BOOLEAN ) {
+					return false;
+				}
+				$booleanValue = $isIdentity->getValueByKey( ZTypeRegistry::Z_BOOLEAN_VALUE );
+				if ( !$booleanValue instanceof ZReference ) {
+					return false;
+				}
+				if ( !$booleanValue->isValid() || (
+					( $booleanValue->getZValue() !== ZTypeRegistry::Z_BOOLEAN_TRUE ) &&
+					( $booleanValue->getZValue() !== ZTypeRegistry::Z_BOOLEAN_FALSE )
+				) ) {
+					return false;
+				}
+			} else {
+				// Has isIdentity field but the value is invalid
+				return false;
+			}
+		}
+
 		return true;
 	}
 
@@ -130,5 +169,25 @@ class ZKey extends ZObject {
 	 */
 	public function getKeyLabel() {
 		return $this->data[ ZTypeRegistry::Z_KEY_LABEL ];
+	}
+
+	/**
+	 * Returns whether the key is identity or not
+	 *
+	 * @return bool
+	 */
+	public function getIsIdentity() {
+		if ( isset( $this->data[ ZTypeRegistry::Z_KEY_IS_IDENTITY ] ) ) {
+			$isIdentity = $this->data[ ZTypeRegistry::Z_KEY_IS_IDENTITY ];
+			if ( $isIdentity->getZType() === ZTypeRegistry::Z_REFERENCE ) {
+				// Return true if it references Z41/True
+				return ( $isIdentity->getZValue() === ZTypeRegistry::Z_BOOLEAN_TRUE );
+			} elseif ( $isIdentity->getZType() === ZTypeRegistry::Z_BOOLEAN ) {
+				// Return true if the value of the literal Boolean is Z41/True
+				$booleanValue = $isIdentity->getValueByKey( ZTypeRegistry::Z_BOOLEAN_VALUE );
+				return ( $booleanValue->getZValue() === ZTypeRegistry::Z_BOOLEAN_TRUE );
+			}
+		}
+		return false;
 	}
 }
