@@ -730,7 +730,14 @@ class ZObjectStore {
 			);
 
 			foreach ( $fallbackLanguages as $index => $languageCode ) {
-				$languages[] = $zLangRegistry->getLanguageZidFromCode( $languageCode );
+				try {
+					$languages[] = $zLangRegistry->getLanguageZidFromCode( $languageCode );
+				} catch ( ZErrorException $error ) {
+					$this->logger->error(
+						__METHOD__ . ' was given an invalid language code: "' . $languageCode . '"',
+						[ 'responseObject' => $error ]
+					);
+				}
 			}
 		}
 		$conditions[ 'wlzl_language' ] = $languages;
