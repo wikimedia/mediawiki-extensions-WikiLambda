@@ -42,13 +42,13 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const CdxInfoChip = require( '@wikimedia/codex' ).CdxInfoChip,
 	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
 	Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-z-monolingual-string',
 	components: {
 		'cdx-text-input': CdxTextInput,
@@ -176,7 +176,7 @@ module.exports = exports = {
 		this.chipComponent = this.$refs.chipComponent;
 		this.getAndStoreChipWidth();
 	}
-};
+} );
 
 </script>
 

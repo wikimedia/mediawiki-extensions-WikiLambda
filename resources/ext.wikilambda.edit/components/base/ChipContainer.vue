@@ -32,10 +32,10 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const Chip = require( './Chip.vue' );
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-chip-container',
 	components: {
 		'wl-chip': Chip
@@ -107,7 +107,7 @@ module.exports = exports = {
 			}
 		}
 	}
-};
+} );
 </script>
 
 <style lang="less">

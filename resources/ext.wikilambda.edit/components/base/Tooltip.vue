@@ -29,8 +29,9 @@
 </template>
 
 <script>
-// @vue/component
-module.exports = exports = {
+const { defineComponent } = require( 'vue' );
+
+module.exports = exports = defineComponent( {
 	name: 'wl-tooltip-item',
 	// TODO (T301481): smart positioning of tooltip
 	props: {
@@ -59,7 +60,7 @@ module.exports = exports = {
 			this.isVisible = !this.isVisible;
 		}
 	}
-};
+} );
 </script>
 
 <style lang="less">

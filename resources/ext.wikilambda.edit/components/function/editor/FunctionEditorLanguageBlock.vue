@@ -63,6 +63,7 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const FunctionEditorLanguage = require( './FunctionEditorLanguage.vue' ),
 	FunctionEditorName = require( './FunctionEditorName.vue' ),
 	FunctionEditorDescription = require( './FunctionEditorDescription.vue' ),
@@ -72,8 +73,7 @@ const FunctionEditorLanguage = require( './FunctionEditorLanguage.vue' ),
 	icons = require( '../../../../lib/icons.json' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-language-block',
 	components: {
 		'wl-function-editor-language': FunctionEditorLanguage,
@@ -161,7 +161,7 @@ module.exports = exports = {
 			this.$emit( 'updated-labels' );
 		}
 	}
-};
+} );
 </script>
 
 <style lang="less">

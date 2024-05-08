@@ -50,12 +50,12 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-z-object-to-string',
 	components: {
 		'wl-z-object-to-string': this
@@ -287,7 +287,7 @@ module.exports = exports = {
 			this.$emit( 'expand', true );
 		}
 	}
-};
+} );
 </script>
 
 <style lang="less">

@@ -38,11 +38,11 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const { CdxButton, CdxIcon, CdxLookup } = require( '../../codex.js' );
 const icons = require( '../../lib/icons.json' );
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-language-selector',
 	components: {
 		'cdx-button': CdxButton,
@@ -280,7 +280,7 @@ module.exports = exports = {
 	beforeUnmount: function () {
 		window.removeEventListener( 'click', this.handleClick );
 	}
-};
+} );
 </script>
 
 <style lang="less">

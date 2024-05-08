@@ -19,13 +19,13 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	ZObjectToString = require( './ZObjectToString.vue' ),
 	icons = require( '../../../lib/icons.json' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-z-function-call',
 	components: {
 		'wl-z-object-to-string': ZObjectToString,
@@ -63,7 +63,7 @@ module.exports = exports = {
 			return !this.value ? 'ext-wikilambda-function-call-undefined' : '';
 		}
 	} )
-};
+} );
 </script>
 
 <style lang="less">

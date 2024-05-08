@@ -41,6 +41,7 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	Constants = require( '../Constants.js' ),
 	AboutWidget = require( '../components/widgets/About.vue' ),
@@ -49,8 +50,7 @@ const CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	eventLogUtils = require( '../mixins/eventLogUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-function-viewer',
 	components: {
 		'wl-about-widget': AboutWidget,
@@ -113,5 +113,5 @@ module.exports = exports = {
 		this.submitInteraction( 'view', interactionData );
 		this.$emit( 'mounted' );
 	}
-};
+} );
 </script>

@@ -69,6 +69,7 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
@@ -78,8 +79,7 @@ const Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-about-view-languages-dialog',
 	components: {
 		'cdx-button': CdxButton,
@@ -305,7 +305,7 @@ module.exports = exports = {
 			} );
 		}
 	} )
-};
+} );
 </script>
 
 <style lang="less">

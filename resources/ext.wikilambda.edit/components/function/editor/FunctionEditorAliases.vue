@@ -35,13 +35,13 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	WlChipContainer = require( '../../base/ChipContainer.vue' );
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-aliases',
 	components: {
 		// TODO: replace with codex filter chip when available
@@ -230,7 +230,7 @@ module.exports = exports = {
 			this.repeatedAlias = null;
 		}
 	} )
-};
+} );
 </script>
 
 <style lang="less">

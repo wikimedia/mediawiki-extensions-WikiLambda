@@ -56,6 +56,7 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
 	FunctionEditorInputsItem = require( './FunctionEditorInputsItem.vue' ),
 	Tooltip = require( '../../base/Tooltip.vue' ),
@@ -65,8 +66,7 @@ const Constants = require( '../../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-inputs',
 	components: {
 		'cdx-button': CdxButton,
@@ -245,5 +245,5 @@ module.exports = exports = {
 			this.$emit( 'updated-argument-label' );
 		}
 	} )
-};
+} );
 </script>

@@ -57,6 +57,7 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const ExpandedToggle = require( '../base/ExpandedToggle.vue' ),
 	LocalizedLabel = require( '../base/LocalizedLabel.vue' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
@@ -65,8 +66,7 @@ const ExpandedToggle = require( '../base/ExpandedToggle.vue' ),
 	icons = require( '../../../lib/icons.json' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-z-typed-list-items',
 	components: {
 		'wl-expanded-toggle': ExpandedToggle,
@@ -156,7 +156,7 @@ module.exports = exports = {
 	beforeCreate: function () {
 		this.$options.components[ 'wl-z-object-key-value' ] = require( './ZObjectKeyValue.vue' );
 	}
-};
+} );
 </script>
 
 <style lang="less">

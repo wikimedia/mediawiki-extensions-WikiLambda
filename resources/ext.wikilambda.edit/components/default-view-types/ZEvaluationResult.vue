@@ -63,14 +63,14 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
 	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
 	FunctionMetadataDialog = require( '../widgets/FunctionMetadataDialog.vue' ),
 	hybridToCanonical = require( '../../mixins/schemata.js' ).methods.hybridToCanonical,
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-z-evaluation-result',
 	components: {
 		'wl-function-metadata-dialog': FunctionMetadataDialog,
@@ -217,7 +217,7 @@ module.exports = exports = {
 		// Need to delay require of ZObjectKeyValue to avoid loop
 		this.$options.components[ 'wl-z-object-key-value' ] = require( './ZObjectKeyValue.vue' );
 	}
-};
+} );
 
 </script>
 

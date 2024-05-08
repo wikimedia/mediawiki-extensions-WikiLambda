@@ -14,11 +14,11 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const LabelData = require( '../../store/classes/LabelData.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-localized-label',
 	props: {
 		labelData: {
@@ -74,7 +74,7 @@ module.exports = exports = {
 			}
 		}
 	)
-};
+} );
 </script>
 
 <style lang="less">

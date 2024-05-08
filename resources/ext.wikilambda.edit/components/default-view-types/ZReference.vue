@@ -27,13 +27,13 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
 	ZObjectSelector = require( './../base/ZObjectSelector.vue' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-z-reference',
 	components: {
 		'wl-z-object-selector': ZObjectSelector
@@ -156,6 +156,6 @@ module.exports = exports = {
 			this.$emit( 'set-value', { keyPath, value } );
 		}
 	}
-};
+} );
 
 </script>

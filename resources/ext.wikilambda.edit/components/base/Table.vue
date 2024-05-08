@@ -78,6 +78,7 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const CdxProgressBar = require( '@wikimedia/codex' ).CdxProgressBar,
 	CdxCheckbox = require( '@wikimedia/codex' ).CdxCheckbox,
 	ZObjectToString = require( '../default-view-types/ZObjectToString.vue' ),
@@ -86,8 +87,7 @@ const CdxProgressBar = require( '@wikimedia/codex' ).CdxProgressBar,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-table-container',
 	components: {
 		'cdx-progress-bar': CdxProgressBar,
@@ -124,7 +124,7 @@ module.exports = exports = {
 			default: false
 		}
 	}
-};
+} );
 </script>
 
 <style lang="less">

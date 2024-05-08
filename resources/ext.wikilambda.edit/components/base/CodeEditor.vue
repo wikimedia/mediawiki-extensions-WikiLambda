@@ -13,10 +13,10 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 require( '../../../lib/ace/src/ace.js' );
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-code-editor',
 	props: {
 		value: {
@@ -96,7 +96,7 @@ module.exports = exports = {
 	mounted: function () {
 		this.initialize();
 	}
-};
+} );
 </script>
 
 <style lang="less">

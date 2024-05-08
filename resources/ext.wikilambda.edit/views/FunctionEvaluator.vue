@@ -16,10 +16,10 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const FunctionEvaluatorWidget = require( '../components/widgets/FunctionEvaluator.vue' );
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-function-evaluator',
 	components: {
 		'wl-function-evaluator-widget': FunctionEvaluatorWidget
@@ -27,5 +27,5 @@ module.exports = exports = {
 	mounted: function () {
 		this.$emit( 'mounted' );
 	}
-};
+} );
 </script>

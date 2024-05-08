@@ -26,12 +26,12 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
 	ZObjectSelector = require( '../../base/ZObjectSelector.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-language',
 	components: {
 		'wl-z-object-selector': ZObjectSelector
@@ -97,5 +97,5 @@ module.exports = exports = {
 			this.$emit( 'change', lang );
 		}
 	}
-};
+} );
 </script>

@@ -39,12 +39,12 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	icons = require( '../../../lib/icons.json' );
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-pagination-component',
 	components: {
 		'cdx-button': CdxButton,
@@ -100,7 +100,7 @@ module.exports = exports = {
 			this.$emit( 'reset-view' );
 		}
 	}
-};
+} );
 </script>
 
 <style lang="less">

@@ -69,6 +69,7 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	icons = require( '../../../../lib/icons.json' ),
@@ -78,8 +79,7 @@ const CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	Constants = require( '../../../Constants.js' ),
 	useBreakpoints = require( '../../../composables/useBreakpoints.js' );
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-function-viewer-details-table',
 	components: {
 		'cdx-button': CdxButton,
@@ -193,7 +193,7 @@ module.exports = exports = {
 			this.$emit( 'disconnect' );
 		}
 	}
-};
+} );
 </script>
 
 <style lang="less">

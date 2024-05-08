@@ -69,6 +69,7 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
 	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
@@ -81,8 +82,7 @@ const Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-z-object-string-renderer',
 	components: {
 		'cdx-dialog': CdxDialog,
@@ -505,7 +505,7 @@ module.exports = exports = {
 			resolver.resolve();
 		} );
 	}
-};
+} );
 </script>
 
 <style lang="less">

@@ -42,14 +42,14 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
 	TypeSelector = require( '../../base/TypeSelector.vue' ),
 	Tooltip = require( '../../base/Tooltip.vue' ),
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-output',
 	components: {
 		'wl-tooltip': Tooltip,
@@ -167,7 +167,7 @@ module.exports = exports = {
 			return this.$i18n( 'wikilambda-function-definition-output-types' ).text();
 		}
 	} )
-};
+} );
 </script>
 
 <style lang="less">

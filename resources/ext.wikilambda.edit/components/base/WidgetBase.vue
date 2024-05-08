@@ -33,8 +33,9 @@
 
 <script>
 
-// @vue/component
-module.exports = exports = {
+const { defineComponent } = require( 'vue' );
+
+module.exports = exports = defineComponent( {
 	name: 'wl-widget-base',
 	computed: {
 		hasHeaderSlot() {
@@ -47,7 +48,7 @@ module.exports = exports = {
 			return !!this.$slots.footer;
 		}
 	}
-};
+} );
 </script>
 
 <style lang="less">

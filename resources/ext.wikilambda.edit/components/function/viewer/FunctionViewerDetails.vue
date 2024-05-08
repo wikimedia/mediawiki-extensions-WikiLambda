@@ -65,6 +65,7 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const FunctionViewerDetailsTable = require( './FunctionViewerDetailsTable.vue' ),
 	Constants = require( '../../../Constants.js' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ),
@@ -72,8 +73,7 @@ const FunctionViewerDetailsTable = require( './FunctionViewerDetailsTable.vue' )
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-function-viewer-details',
 	components: {
 		'wl-function-viewer-details-table': FunctionViewerDetailsTable,
@@ -758,7 +758,7 @@ module.exports = exports = {
 		this.initializeImplementations();
 		this.initializeTests();
 	}
-};
+} );
 </script>
 
 <style lang="less">

@@ -72,6 +72,7 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	CodeEditor = require( '../base/CodeEditor.vue' ),
@@ -80,8 +81,7 @@ const Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-z-code',
 	components: {
 		'cdx-message': CdxMessage,
@@ -421,7 +421,7 @@ module.exports = exports = {
 			this.fetchAllZProgrammingLanguages();
 		}
 	}
-};
+} );
 </script>
 
 <style lang="less">

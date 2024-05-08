@@ -24,14 +24,14 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	CdxSelect = require( '@wikimedia/codex' ).CdxSelect,
 	icons = require( '../../../lib/icons.json' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-z-argument-reference',
 	components: {
 		'cdx-select': CdxSelect,
@@ -171,4 +171,4 @@ module.exports = exports = {
 			this.$emit( 'set-value', { keyPath, value } );
 		}
 	}
-};
+} );

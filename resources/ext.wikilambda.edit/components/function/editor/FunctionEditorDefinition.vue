@@ -43,6 +43,7 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const FunctionEditorLanguageBlock = require( './FunctionEditorLanguageBlock.vue' ),
 	FunctionEditorFooter = require( './FunctionEditorFooter.vue' ),
 	icons = require( '../../../../lib/icons.json' ),
@@ -54,8 +55,7 @@ const FunctionEditorLanguageBlock = require( './FunctionEditorLanguageBlock.vue'
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-definition',
 	components: {
 		'wl-function-editor-language-block': FunctionEditorLanguageBlock,
@@ -234,7 +234,7 @@ module.exports = exports = {
 		const action = this.isCreateNewPage ? 'create' : 'edit';
 		this.submitInteraction( action, interactionData );
 	}
-};
+} );
 </script>
 
 <style lang="less">

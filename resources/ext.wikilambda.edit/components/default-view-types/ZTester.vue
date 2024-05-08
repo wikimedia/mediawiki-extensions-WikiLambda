@@ -58,13 +58,13 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
 	isValidZidFormat = require( '../../mixins/typeUtils.js' ).methods.isValidZidFormat,
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-z-tester',
 	components: {
 		// Leave components as an empty object to add the ZObjectKeyValue later
@@ -251,7 +251,7 @@ module.exports = exports = {
 			this.initializeTestCall();
 		}
 	}
-};
+} );
 </script>
 
 <style lang="less">

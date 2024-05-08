@@ -15,13 +15,13 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const PublishWidget = require( '../../widgets/Publish.vue' ),
 	Constants = require( '../../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-footer',
 	components: {
 		'wl-publish-widget': PublishWidget
@@ -97,7 +97,7 @@ module.exports = exports = {
 			}
 		}
 	} )
-};
+} );
 
 </script>
 

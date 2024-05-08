@@ -87,13 +87,13 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const CdxRadio = require( '@wikimedia/codex' ).CdxRadio,
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-z-implementation',
 	components: {
 		'cdx-message': CdxMessage,
@@ -240,7 +240,7 @@ module.exports = exports = {
 		// Need to delay require of ZObjectKeyValue to avoid loop
 		this.$options.components[ 'wl-z-object-key-value' ] = require( './ZObjectKeyValue.vue' );
 	}
-};
+} );
 </script>
 
 <style lang="less">

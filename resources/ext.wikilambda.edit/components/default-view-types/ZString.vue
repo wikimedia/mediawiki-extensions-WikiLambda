@@ -20,12 +20,12 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
 	Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-z-string',
 	components: {
 		'cdx-text-input': CdxTextInput
@@ -95,7 +95,7 @@ module.exports = exports = {
 			}
 		}
 	)
-};
+} );
 
 </script>
 

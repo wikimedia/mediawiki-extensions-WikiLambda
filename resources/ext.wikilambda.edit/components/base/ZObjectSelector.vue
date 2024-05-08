@@ -46,6 +46,7 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
 	CdxLookup = require( '@wikimedia/codex' ).CdxLookup,
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
@@ -55,8 +56,7 @@ const Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	icons = require( '../../../../lib/icons.json' );
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-z-object-selector',
 	components: {
 		'cdx-message': CdxMessage,
@@ -387,7 +387,7 @@ module.exports = exports = {
 	mounted: function () {
 		this.setSuggestions();
 	}
-};
+} );
 </script>
 
 <style lang="less">

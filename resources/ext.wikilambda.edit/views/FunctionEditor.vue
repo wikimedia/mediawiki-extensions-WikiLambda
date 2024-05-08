@@ -15,10 +15,10 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const FunctionEditorDefinition = require( '../components/function/editor/FunctionEditorDefinition.vue' );
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-function-editor',
 	components: {
 		'wl-function-editor-definition': FunctionEditorDefinition
@@ -26,7 +26,7 @@ module.exports = exports = {
 	mounted: function () {
 		this.$emit( 'mounted' );
 	}
-};
+} );
 </script>
 
 <style lang="less">

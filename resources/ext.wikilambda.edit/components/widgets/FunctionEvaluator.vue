@@ -101,6 +101,7 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
@@ -111,8 +112,7 @@ const Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-function-evaluator-widget',
 	components: {
 		'cdx-button': CdxButton,
@@ -472,7 +472,7 @@ module.exports = exports = {
 	mounted: function () {
 		this.initializeDetachedObjects( this.functionZid );
 	}
-};
+} );
 </script>
 
 <style lang="less">

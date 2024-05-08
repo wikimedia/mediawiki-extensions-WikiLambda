@@ -86,6 +86,7 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const CdxAccordion = require( '@wikimedia/codex' ).CdxAccordion,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
@@ -97,8 +98,7 @@ const CdxAccordion = require( '@wikimedia/codex' ).CdxAccordion,
 	typeUtils = require( '../../mixins/typeUtils.js' ).methods,
 	icons = require( '../../../lib/icons.json' );
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-function-metadata-dialog',
 	components: {
 		'cdx-accordion': CdxAccordion,
@@ -497,7 +497,7 @@ module.exports = exports = {
 			return dateTimeString.replace( 'T', ' ' ).replace( 'Z', ' (UTC)' );
 		}
 	}
-};
+} );
 </script>
 
 <style lang="less">

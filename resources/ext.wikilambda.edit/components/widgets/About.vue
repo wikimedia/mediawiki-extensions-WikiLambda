@@ -139,6 +139,7 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
 	AboutViewLanguagesDialog = require( './AboutViewLanguagesDialog.vue' ),
 	AboutEditMetadataDialog = require( './AboutEditMetadataDialog.vue' ),
@@ -151,8 +152,7 @@ const Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-about-widget',
 	components: {
 		'cdx-icon': CdxIcon,
@@ -383,7 +383,7 @@ module.exports = exports = {
 			this.showPublishDialog = false;
 		}
 	} )
-};
+} );
 
 </script>
 

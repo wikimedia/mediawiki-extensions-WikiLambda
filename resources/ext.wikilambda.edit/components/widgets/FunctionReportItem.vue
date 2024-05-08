@@ -37,14 +37,14 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const mapGetters = require( 'vuex' ).mapGetters,
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	Constants = require( '../../Constants.js' ),
 	icons = require( '../../../../lib/icons.json' );
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-function-report-item',
 	components: {
 		'cdx-icon': CdxIcon
@@ -147,7 +147,7 @@ module.exports = exports = {
 			} );
 		}
 	}
-};
+} );
 </script>
 
 <style lang="less">

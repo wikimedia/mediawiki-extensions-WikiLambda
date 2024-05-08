@@ -56,6 +56,7 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
@@ -67,8 +68,7 @@ const Constants = require( '../../Constants.js' ),
 	FunctionMetadataDialog = require( './FunctionMetadataDialog.vue' ),
 	FunctionReportItem = require( './FunctionReportItem.vue' );
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-function-report-widget',
 	components: {
 		'wl-function-report-item': FunctionReportItem,
@@ -365,7 +365,7 @@ module.exports = exports = {
 				setTimeout( this.runInitialCall, 1000 );
 			} );
 	}
-};
+} );
 </script>
 
 <style lang="less">

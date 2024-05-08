@@ -59,6 +59,7 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
 	CdxField = require( '@wikimedia/codex' ).CdxField,
 	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
@@ -68,8 +69,7 @@ const Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-publish-dialog',
 	components: {
 		'cdx-field': CdxField,
@@ -305,7 +305,7 @@ module.exports = exports = {
 			return error.message || this.$i18n( error.code ).text();
 		}
 	} )
-};
+} );
 </script>
 
 <style lang="less">

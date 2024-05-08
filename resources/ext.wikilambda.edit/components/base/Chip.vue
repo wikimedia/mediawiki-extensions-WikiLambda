@@ -34,11 +34,11 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	icons = require( '../../../lib/icons.json' );
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-chip-item',
 	components: {
 		'cdx-icon': CdxIcon
@@ -89,7 +89,7 @@ module.exports = exports = {
 			this.$emit( 'remove-chip', this.index );
 		}
 	}
-};
+} );
 
 </script>
 

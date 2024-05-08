@@ -33,12 +33,12 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-type-to-string',
 	props: {
 		type: {
@@ -140,7 +140,7 @@ module.exports = exports = {
 			this.fetchZids( { zids: [ this.zid ] } );
 		}
 	}
-};
+} );
 </script>
 
 <style lang="less">

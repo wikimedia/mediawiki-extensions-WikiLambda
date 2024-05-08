@@ -56,6 +56,7 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
 	TypeSelector = require( '../../base/TypeSelector.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
@@ -66,8 +67,7 @@ const Constants = require( '../../../Constants.js' ),
 	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
 	icons = require( './../../../../lib/icons.json' );
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-inputs-item',
 	components: {
 		'wl-type-selector': TypeSelector,
@@ -247,7 +247,7 @@ module.exports = exports = {
 			this.$emit( 'update-argument-label' );
 		}
 	} )
-};
+} );
 </script>
 
 <style lang="less">

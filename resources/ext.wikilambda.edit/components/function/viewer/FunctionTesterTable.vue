@@ -30,14 +30,14 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const FunctionMetadataDialog = require( '../../widgets/FunctionMetadataDialog.vue' ),
 	Constants = require( '../../../Constants.js' ),
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	icons = require( '../../../../lib/icons.json' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-function-tester-table',
 	components: {
 		'cdx-icon': CdxIcon,
@@ -138,7 +138,7 @@ module.exports = exports = {
 			}
 		}
 	}
-};
+} );
 </script>
 
 <style lang="less">

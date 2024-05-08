@@ -98,6 +98,7 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
@@ -123,8 +124,7 @@ const CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-z-object-key-value',
 	components: {
 		'cdx-button': CdxButton,
@@ -936,7 +936,7 @@ module.exports = exports = {
 			} );
 		}
 	} )
-};
+} );
 </script>
 
 <style lang="less">

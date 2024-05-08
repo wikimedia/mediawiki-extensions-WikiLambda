@@ -133,6 +133,7 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
 	ChipContainer = require( '../base/ChipContainer.vue' ),
 	ZObjectSelector = require( '../base/ZObjectSelector.vue' ),
@@ -146,8 +147,7 @@ const Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-about-edit-metadata-dialog',
 	components: {
 		'cdx-button': CdxButton,
@@ -736,7 +736,7 @@ module.exports = exports = {
 	mounted: function () {
 		this.initializeBlankValues();
 	}
-};
+} );
 </script>
 
 <style lang="less">

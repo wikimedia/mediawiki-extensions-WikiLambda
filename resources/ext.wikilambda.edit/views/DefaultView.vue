@@ -67,6 +67,7 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const Constants = require( '../Constants.js' ),
 	ZObjectKeyValue = require( '../components/default-view-types/ZObjectKeyValue.vue' ),
 	FunctionEvaluatorWidget = require( '../components/widgets/FunctionEvaluator.vue' ),
@@ -78,8 +79,7 @@ const Constants = require( '../Constants.js' ),
 	typeUtils = require( '../mixins/typeUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-default-view',
 	components: {
 		'wl-about-widget': AboutWidget,
@@ -251,7 +251,7 @@ module.exports = exports = {
 		this.dispatchLoadEvent( this.edit );
 		this.$emit( 'mounted' );
 	}
-};
+} );
 </script>
 
 <style lang="less">

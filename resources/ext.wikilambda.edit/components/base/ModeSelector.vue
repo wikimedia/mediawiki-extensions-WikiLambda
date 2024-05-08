@@ -24,6 +24,7 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	CdxMenu = require( '@wikimedia/codex' ).CdxMenu,
@@ -32,8 +33,7 @@ const CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	icons = require( '../../../lib/icons.json' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-mode-selector',
 	components: {
 		'cdx-button': CdxButton,
@@ -254,7 +254,7 @@ module.exports = exports = {
 			}
 		}
 	}
-};
+} );
 </script>
 
 <style lang="less">

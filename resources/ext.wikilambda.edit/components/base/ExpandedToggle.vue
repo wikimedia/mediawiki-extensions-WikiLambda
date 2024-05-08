@@ -21,13 +21,13 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	icons = require( '../../../lib/icons.json' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-expanded-toggle',
 	components: {
 		'cdx-button': CdxButton,
@@ -72,7 +72,7 @@ module.exports = exports = {
 			this.$emit( 'toggle', event );
 		}
 	}
-};
+} );
 </script>
 
 <style lang="less">

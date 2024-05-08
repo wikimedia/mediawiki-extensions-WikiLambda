@@ -30,13 +30,13 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const ZTypedListItems = require( './ZTypedListItems.vue' ),
 	ZTypedListType = require( './ZTypedListType.vue' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-z-typed-list',
 	components: {
 		'wl-z-typed-list-items': ZTypedListItems,
@@ -123,5 +123,5 @@ module.exports = exports = {
 			this.$emit( 'add-list-item', { value: this.listItemType } );
 		}
 	}
-};
+} );
 </script>

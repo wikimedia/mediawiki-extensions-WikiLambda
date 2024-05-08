@@ -42,6 +42,7 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	WidgetBase = require( '../base/WidgetBase.vue' ),
@@ -52,8 +53,7 @@ const Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	getParameterByName = require( '../../mixins/urlUtils.js' ).methods.getParameterByName;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-publish-widget',
 	components: {
 		'cdx-button': CdxButton,
@@ -259,7 +259,7 @@ module.exports = exports = {
 		window.addEventListener( 'click', this.handleClickAway );
 		window.addEventListener( 'beforeunload', this.handleUnload );
 	}
-};
+} );
 </script>
 
 <style lang="less">

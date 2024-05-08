@@ -43,6 +43,7 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	ZObjectSelector = require( './ZObjectSelector.vue' ),
@@ -50,8 +51,7 @@ const Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-type-selector',
 	components: {
 		'cdx-field': CdxField,
@@ -178,7 +178,7 @@ module.exports = exports = {
 			}
 		}
 	} )
-};
+} );
 </script>
 
 <style lang="less">

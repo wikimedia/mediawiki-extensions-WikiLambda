@@ -136,6 +136,7 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const
 	Constants = require( '../../Constants.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
@@ -147,8 +148,7 @@ const
 	icons = require( '../../../lib/icons.json' ),
 	typeUtils = require( '../../mixins/typeUtils.js' );
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-function-explorer',
 	components: {
 		'cdx-button': CdxButton,
@@ -292,7 +292,7 @@ module.exports = exports = {
 			{ immediate: true }
 		);
 	}
-};
+} );
 </script>
 
 <style lang="less">

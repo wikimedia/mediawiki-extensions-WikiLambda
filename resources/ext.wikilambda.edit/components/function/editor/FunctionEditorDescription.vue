@@ -31,13 +31,13 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	CdxTextArea = require( '@wikimedia/codex' ).CdxTextArea;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-description',
 	components: {
 		'cdx-text-area': CdxTextArea
@@ -186,7 +186,7 @@ module.exports = exports = {
 			this.remainingChars = this.maxDescriptionChars - this.description.length;
 		} );
 	}
-};
+} );
 </script>
 
 <style lang="less">

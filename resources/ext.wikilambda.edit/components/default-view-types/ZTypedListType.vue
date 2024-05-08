@@ -16,13 +16,13 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const typeUtils = require( '../../mixins/typeUtils.js' ),
 	Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-z-typed-list-type',
 	components: {
 		//
@@ -111,7 +111,7 @@ module.exports = exports = {
 	beforeCreate: function () {
 		this.$options.components[ 'wl-z-object-key-value' ] = require( './ZObjectKeyValue.vue' );
 	}
-};
+} );
 </script>
 
 <style lang="less">

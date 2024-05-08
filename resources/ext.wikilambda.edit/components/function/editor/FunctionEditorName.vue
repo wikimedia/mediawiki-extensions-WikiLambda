@@ -27,13 +27,13 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput;
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-name',
 	components: {
 		'cdx-text-input': CdxTextInput
@@ -189,5 +189,5 @@ module.exports = exports = {
 			$( pageTitleSelector ).first().text( name );
 		}
 	} )
-};
+} );
 </script>

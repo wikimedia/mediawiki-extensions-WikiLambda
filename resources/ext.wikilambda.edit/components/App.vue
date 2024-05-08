@@ -20,6 +20,7 @@
 </template>
 
 <script>
+const { defineComponent } = require( 'vue' );
 const mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	eventLogUtils = require( '../mixins/eventLogUtils.js' ),
@@ -30,8 +31,7 @@ const mapGetters = require( 'vuex' ).mapGetters,
 
 const startTime = Date.now();
 
-// @vue/component
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'app',
 	components: {
 		'wl-function-evaluator': FunctionEvaluator,
@@ -104,7 +104,7 @@ module.exports = exports = {
 			this.evaluateUri();
 		}.bind( this );
 	}
-};
+} );
 </script>
 
 <style lang="less">
