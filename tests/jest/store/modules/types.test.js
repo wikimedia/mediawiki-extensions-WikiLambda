@@ -218,7 +218,7 @@ describe( 'types Vuex module', () => {
 		let postMock, data;
 
 		beforeEach( () => {
-			context = $.extend( {}, {
+			context = Object.assign( {}, {
 				commit: jest.fn(),
 				dispatch: jest.fn(),
 				getters: {}

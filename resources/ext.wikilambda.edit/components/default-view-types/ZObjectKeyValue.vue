@@ -193,7 +193,7 @@ module.exports = exports = defineComponent( {
 			expanded: false
 		};
 	},
-	computed: $.extend(
+	computed: Object.assign(
 		mapGetters( [
 			'createObjectByType',
 			'getCurrentZObjectId',
@@ -634,7 +634,7 @@ module.exports = exports = defineComponent( {
 			}
 		}
 	),
-	methods: $.extend( mapActions( [
+	methods: Object.assign( mapActions( [
 		'changeType',
 		'clearType',
 		'setDirty',

@@ -51,7 +51,7 @@ module.exports = exports = defineComponent( {
 			}
 		};
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'waitForRunningParsers'
 	] ), {
 		iconClass: function () {

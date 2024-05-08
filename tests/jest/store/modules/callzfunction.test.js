@@ -33,7 +33,7 @@ let context,
 
 describe( 'callZFunction Vuex module', function () {
 	beforeEach( function () {
-		context = $.extend( {}, {
+		context = Object.assign( {}, {
 			// eslint-disable-next-line no-unused-vars
 			commit: jest.fn( function ( mutationType, payload ) {
 				return;

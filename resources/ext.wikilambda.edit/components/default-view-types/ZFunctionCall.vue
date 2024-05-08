@@ -43,7 +43,7 @@ module.exports = exports = defineComponent( {
 			icon: icons.cdxIconFunction
 		};
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getZFunctionCallFunctionId'
 	] ), {
 		/**

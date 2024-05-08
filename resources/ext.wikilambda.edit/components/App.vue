@@ -48,14 +48,14 @@ module.exports = exports = defineComponent( {
 			isAppSetup: false
 		};
 	},
-	computed: $.extend(
+	computed: Object.assign(
 		mapGetters( [
 			'getZObjectInitialized',
 			'isCreateNewPage',
 			'getCurrentView'
 		] )
 	),
-	methods: $.extend(
+	methods: Object.assign(
 		mapActions( [
 			'initializeView',
 			'prefetchZids',

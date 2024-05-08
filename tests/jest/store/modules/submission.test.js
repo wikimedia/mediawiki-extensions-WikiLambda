@@ -20,7 +20,7 @@ describe( 'zobject submission Vuex module', () => {
 	let context;
 
 	beforeEach( () => {
-		context = $.extend( {}, {
+		context = Object.assign( {}, {
 			// eslint-disable-next-line no-unused-vars
 			commit: jest.fn( ( mutationType, payload ) => true ),
 			// eslint-disable-next-line no-unused-vars

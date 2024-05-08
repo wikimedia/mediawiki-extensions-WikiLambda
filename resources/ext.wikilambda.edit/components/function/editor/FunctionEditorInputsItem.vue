@@ -119,7 +119,7 @@ module.exports = exports = defineComponent( {
 			icons: icons
 		};
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getRowByKeyPath',
 		'getZArgumentLabelForLanguage',
 		'getZArgumentTypeRowId',
@@ -197,7 +197,7 @@ module.exports = exports = defineComponent( {
 			return this.$i18n( 'wikilambda-function-definition-inputs-item-selector-placeholder' ).text();
 		}
 	} ),
-	methods: $.extend( mapActions( [
+	methods: Object.assign( mapActions( [
 		'changeType',
 		'setValueByRowIdAndPath',
 		'removeItemFromTypedList'

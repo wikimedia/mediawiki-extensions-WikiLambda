@@ -183,7 +183,7 @@ module.exports = exports = defineComponent( {
 			seeAllAliases: false
 		};
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getLabel',
 		'getMetadataLanguages',
 		'getUserLangZid',
@@ -338,7 +338,7 @@ module.exports = exports = defineComponent( {
 			} );
 		}
 	} ),
-	methods: $.extend( mapActions( [
+	methods: Object.assign( mapActions( [
 		'resetMultilingualData'
 	] ), {
 		/**

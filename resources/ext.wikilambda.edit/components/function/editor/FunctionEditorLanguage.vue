@@ -48,7 +48,7 @@ module.exports = exports = defineComponent( {
 			naturalLanguageType: Constants.Z_NATURAL_LANGUAGE
 		};
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getMetadataLanguages'
 	] ), {
 		/**

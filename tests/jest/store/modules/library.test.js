@@ -26,7 +26,7 @@ describe( 'library module', function () {
 			return { get: getMock };
 		} );
 		state = JSON.parse( JSON.stringify( libraryModule.state ) );
-		context = $.extend( {}, {
+		context = Object.assign( {}, {
 			commit: jest.fn( function ( mutationType, payload ) {
 				if ( mutationType in libraryModule.mutations ) {
 					return libraryModule.mutations[ mutationType ]( state, payload );

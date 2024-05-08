@@ -71,7 +71,7 @@ module.exports = exports = defineComponent( {
 			chipWidth: 72
 		};
 	},
-	computed: $.extend(
+	computed: Object.assign(
 		mapGetters( [
 			'getLanguageIsoCodeOfZLang',
 			'getZMonolingualTextValue',

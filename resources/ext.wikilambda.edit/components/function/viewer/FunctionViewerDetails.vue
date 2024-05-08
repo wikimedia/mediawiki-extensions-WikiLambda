@@ -108,7 +108,7 @@ module.exports = exports = defineComponent( {
 			currentToast: null
 		};
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getConnectedImplementations',
 		'getConnectedTests',
 		'getCurrentZObjectId',
@@ -521,7 +521,7 @@ module.exports = exports = defineComponent( {
 			return this.implementationsFetched && this.testsFetched;
 		}
 	} ),
-	methods: $.extend( mapActions( [
+	methods: Object.assign( mapActions( [
 		'connectImplementations',
 		'connectTests',
 		'disconnectImplementations',

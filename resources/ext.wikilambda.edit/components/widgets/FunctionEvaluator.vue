@@ -148,7 +148,7 @@ module.exports = exports = defineComponent( {
 			functionType: Constants.Z_FUNCTION
 		};
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getConnectedObjects',
 		'getZFunctionCallArguments',
 		'getLabel',
@@ -319,7 +319,7 @@ module.exports = exports = defineComponent( {
 					this.$i18n( 'wikilambda-function-evaluator-title' ).text();
 		}
 	} ),
-	methods: $.extend( mapActions( [
+	methods: Object.assign( mapActions( [
 		'initializeResultId',
 		'changeType',
 		'fetchZids',

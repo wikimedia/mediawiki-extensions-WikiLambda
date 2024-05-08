@@ -33,7 +33,7 @@ describe( 'Errors Vuex module', () => {
 	beforeEach( () => {
 		state = JSON.parse( JSON.stringify( errorsModule.state ) );
 
-		context = $.extend( {}, {
+		context = Object.assign( {}, {
 			commit: jest.fn( () => {
 				return;
 			} )

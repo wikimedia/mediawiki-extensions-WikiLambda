@@ -63,7 +63,7 @@ module.exports = exports = defineComponent( {
 			icon: icons.cdxIconEllipsis
 		};
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getChildrenByParentRowId',
 		'getLabel',
 		'getParentRowId',

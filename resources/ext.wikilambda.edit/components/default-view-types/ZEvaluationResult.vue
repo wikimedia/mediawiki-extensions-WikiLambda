@@ -89,7 +89,7 @@ module.exports = exports = defineComponent( {
 			showError: false
 		};
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getCurrentZObjectId',
 		'getLabelData',
 		'getMapValueByKey',

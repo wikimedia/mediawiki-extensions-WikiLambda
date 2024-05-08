@@ -119,7 +119,7 @@ module.exports = exports = defineComponent( {
 			icons: icons
 		};
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getZFunctionInputs',
 		'getRowByKeyPath',
 		'getUserLangCode'
@@ -215,7 +215,7 @@ module.exports = exports = defineComponent( {
 				'ext-wikilambda-function-definition-inputs__add-another-input-button';
 		}
 	} ),
-	methods: $.extend( mapActions( [
+	methods: Object.assign( mapActions( [
 		'changeType',
 		'removeItemFromTypedList'
 	] ), {

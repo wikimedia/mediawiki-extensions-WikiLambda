@@ -53,7 +53,7 @@ module.exports = exports = defineComponent( {
 			}
 		}
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getExpectedTypeOfKey',
 		'getZObjectKeyByRowId'
 	] ),
@@ -80,7 +80,7 @@ module.exports = exports = defineComponent( {
 			return this.getExpectedTypeOfKey( this.parentKey );
 		}
 	} ),
-	methods: $.extend( mapActions( [
+	methods: Object.assign( mapActions( [
 		'setListItemsForRemoval',
 		'setError'
 	] ), {

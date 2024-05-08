@@ -45,7 +45,7 @@ module.exports = exports = defineComponent( {
 		return {
 		};
 	},
-	computed: $.extend(
+	computed: Object.assign(
 		mapGetters( [
 			'getZObjectKeyByRowId',
 			'getZStringTerminalValue'

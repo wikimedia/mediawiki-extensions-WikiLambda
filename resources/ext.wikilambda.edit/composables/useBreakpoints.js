@@ -42,7 +42,7 @@ module.exports = function useBreakpoints( breakpoints ) {
 			return object;
 		}, {} );
 
-	return $.extend(
+	return Object.assign(
 		{
 			current: current
 		},

@@ -17,7 +17,7 @@ module.exports = exports = {
 			localErrors: []
 		};
 	},
-	methods: $.extend( {}, mapActions( [
+	methods: Object.assign( {}, mapActions( [
 		'clearErrors'
 	] ), {
 		/**
@@ -59,7 +59,7 @@ module.exports = exports = {
 			return error.message || this.$i18n( error.code ).text();
 		}
 	} ),
-	computed: $.extend( {}, mapGetters( [
+	computed: Object.assign( {}, mapGetters( [
 		'getErrors'
 	] ), {
 		/**

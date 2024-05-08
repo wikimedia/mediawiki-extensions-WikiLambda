@@ -118,7 +118,7 @@ describe( 'About', () => {
 			const alias = { langIsoCode: 'en', langZid: 'Z1002', rowId: 3 };
 			const aliasValues = [ { rowId: 4, value: 'one' }, { rowId: 5, value: 'two' } ];
 
-			getters = $.extend( getters, {
+			getters = Object.assign( getters, {
 				getMetadataLanguages: createGettersWithFunctionsMock( [ 'Z1002' ] ),
 				getZPersistentAliasLangs: createGettersWithFunctionsMock( [ alias ] ),
 				getZPersistentDescriptionLangs: createGettersWithFunctionsMock( [ description ] ),
@@ -280,7 +280,7 @@ describe( 'About', () => {
 		beforeEach( () => {
 			const output = { id: 10 };
 			const inputs = [ { id: 20 }, { id: 30 } ];
-			getters = $.extend( getters, {
+			getters = Object.assign( getters, {
 				getZFunctionInputs: createGettersWithFunctionsMock( inputs ),
 				getZFunctionOutput: createGettersWithFunctionsMock( output ),
 				getZArgumentTypeRowId: () => ( id ) => {

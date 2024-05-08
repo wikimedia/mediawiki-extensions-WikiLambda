@@ -74,7 +74,7 @@ module.exports = exports = defineComponent( {
 			functionLanguages: []
 		};
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getCurrentZObjectId',
 		'getRowByKeyPath',
 		'getUserLangZid',

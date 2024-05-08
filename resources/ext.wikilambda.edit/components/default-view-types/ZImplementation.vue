@@ -111,7 +111,7 @@ module.exports = exports = defineComponent( {
 		}
 	},
 
-	computed: $.extend(
+	computed: Object.assign(
 		mapGetters( [
 			'getZImplementationFunctionRowId',
 			'getZImplementationContentType',

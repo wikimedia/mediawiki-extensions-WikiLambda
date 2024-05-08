@@ -181,7 +181,7 @@ describe( 'AboutEditMetadataDialog', () => {
 			const alias = { langIsoCode: 'en', langZid: 'Z1002', rowId: 3 };
 			const aliasValues = [ { rowId: 4, value: 'one' }, { rowId: 5, value: 'two' } ];
 
-			getters = $.extend( getters, {
+			getters = Object.assign( getters, {
 				getZPersistentAlias: createGettersWithFunctionsMock( alias ),
 				getZPersistentDescription: createGettersWithFunctionsMock( description ),
 				getZPersistentName: createGettersWithFunctionsMock( name ),
@@ -308,7 +308,7 @@ describe( 'AboutEditMetadataDialog', () => {
 			const alias = { langIsoCode: 'en', langZid: 'Z1002', rowId: 3 };
 			const aliasValues = [ { rowId: 4, value: 'one' }, { rowId: 5, value: 'two' } ];
 
-			getters = $.extend( getters, {
+			getters = Object.assign( getters, {
 				getZPersistentAlias: createGettersWithFunctionsMock( alias ),
 				getZPersistentDescription: createGettersWithFunctionsMock( description ),
 				getZPersistentName: createGettersWithFunctionsMock( name ),

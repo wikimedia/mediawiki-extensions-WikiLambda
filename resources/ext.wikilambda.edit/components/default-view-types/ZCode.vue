@@ -111,7 +111,7 @@ module.exports = exports = defineComponent( {
 			allowSetEditorValue: true
 		};
 	},
-	computed: $.extend(
+	computed: Object.assign(
 		mapGetters( [
 			'getAllProgrammingLangs',
 			'getErrors',
@@ -313,7 +313,7 @@ module.exports = exports = defineComponent( {
 			}
 		}
 	),
-	methods: $.extend(
+	methods: Object.assign(
 		mapActions( [
 			'fetchZids',
 			'fetchAllZProgrammingLanguages',

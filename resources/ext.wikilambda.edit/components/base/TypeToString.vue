@@ -46,7 +46,7 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getUserLangCode',
 		'getLabel'
 	] ), {
@@ -122,7 +122,7 @@ module.exports = exports = defineComponent( {
 			return this.args.length > 0;
 		}
 	} ),
-	methods: $.extend( mapActions( [
+	methods: Object.assign( mapActions( [
 		'fetchZids'
 	] ), {
 		/**

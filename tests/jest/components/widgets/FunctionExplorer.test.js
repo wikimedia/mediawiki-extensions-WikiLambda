@@ -48,7 +48,7 @@ const mockFunctionExplorerComputed = {
 	outputType: jest.fn( () => currentFunctionZid === REVERSE_STRING_FUNCTION_ZID ? 'Z6' : 'Z40' )
 };
 
-function createFunctionExplorerWrapper( propsData = {}, computed = $.extend( mockFunctionExplorerComputed, {} ) ) {
+function createFunctionExplorerWrapper( propsData = {}, computed = Object.assign( mockFunctionExplorerComputed, {} ) ) {
 	return mount( FunctionExplorer, {
 		propsData: propsData,
 		computed: computed
@@ -221,7 +221,7 @@ describe( 'FunctionExplorer', function () {
 						functionZid: REVERSE_STRING_FUNCTION_ZID,
 						edit: true
 					},
-					$.extend( mockFunctionExplorerComputed, {
+					Object.assign( mockFunctionExplorerComputed, {
 						resetIcon: () => icons.cdxIconHistory
 
 					} )
@@ -276,7 +276,7 @@ describe( 'FunctionExplorer', function () {
 					functionZid: REVERSE_STRING_FUNCTION_ZID,
 					edit: false
 				},
-				$.extend( mockFunctionExplorerComputed, {} )
+				Object.assign( mockFunctionExplorerComputed, {} )
 			);
 
 			expect( wrapper.find( '[data-testid="function-selector"]' ).exists() ).toBe( false );
@@ -290,7 +290,7 @@ describe( 'FunctionExplorer', function () {
 						functionZid: REVERSE_STRING_FUNCTION_ZID,
 						edit: false
 					},
-					$.extend( mockFunctionExplorerComputed, {} )
+					Object.assign( mockFunctionExplorerComputed, {} )
 				);
 			} );
 
@@ -342,7 +342,7 @@ describe( 'FunctionExplorer', function () {
 			it( 'should display a zero-blank state', function () {
 				const wrapper = createFunctionExplorerWrapper(
 					{ edit: true },
-					$.extend( mockFunctionExplorerComputed, {
+					Object.assign( mockFunctionExplorerComputed, {
 						functionExists: jest.fn( () => false )
 					} )
 				);

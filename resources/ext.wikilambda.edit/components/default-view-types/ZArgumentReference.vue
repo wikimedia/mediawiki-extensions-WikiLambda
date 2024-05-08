@@ -53,7 +53,7 @@ module.exports = exports = defineComponent( {
 			icon: icons.cdxIconFunctionArgument
 		};
 	},
-	computed: $.extend(
+	computed: Object.assign(
 		mapGetters( [
 			'getLabel',
 			'getRowByKeyPath',

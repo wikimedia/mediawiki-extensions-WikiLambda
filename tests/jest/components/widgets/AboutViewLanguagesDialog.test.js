@@ -35,7 +35,7 @@ describe( 'AboutViewLanguagesDialog', () => {
 	} );
 
 	beforeEach( () => {
-		getters = $.extend( getters, {
+		getters = Object.assign( getters || {}, {
 			getMetadataLanguages: createGettersWithFunctionsMock( [ langs.en.langZid, langs.es.langZid ] ),
 			getZPersistentName: () => ( langZid ) => {
 				const names = {
@@ -105,7 +105,7 @@ describe( 'AboutViewLanguagesDialog', () => {
 	describe( 'More than 5 languages available', () => {
 		beforeEach( () => {
 			// en, es, eu and qu have name, the rest don't
-			getters = $.extend( getters, {
+			getters = Object.assign( getters, {
 				getMetadataLanguages: createGettersWithFunctionsMock( [
 					langs.en.langZid,
 					langs.es.langZid,

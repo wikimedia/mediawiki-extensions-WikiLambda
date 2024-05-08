@@ -130,10 +130,10 @@ module.exports = {
 
 			context.commit( 'CHANGE_CURRENT_VIEW', payload.to );
 			if ( payload.params ) {
-				const queryParamsObject = $.extend( {}, context.state.queryParams, payload.params );
+				const queryParamsObject = Object.assign( {}, context.state.queryParams, payload.params );
 				context.commit( 'CHANGE_QUERY_PARAMS', queryParamsObject );
 			}
-			const query = $.extend( {}, context.state.queryParams, { view: context.state.currentView } );
+			const query = Object.assign( {}, context.state.queryParams, { view: context.state.currentView } );
 			pushToHistoryState( context.state.currentPath, query );
 		},
 		/**
@@ -197,7 +197,7 @@ module.exports = {
 			const uri = mw.Uri();
 			// should only replace history state if path query view is set and is different from new view
 			if ( uri.query.view && uri.query.view !== view ) {
-				const query = $.extend( uri.query, { view: view } );
+				const query = Object.assign( uri.query, { view: view } );
 				replaceToHistoryState( uri.path, query );
 			}
 		}

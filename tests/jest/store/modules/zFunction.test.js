@@ -672,7 +672,7 @@ describe( 'zFunction Vuex module', () => {
 					};
 				} );
 
-				context = $.extend( {}, {
+				context = Object.assign( {}, {
 					commit: jest.fn(),
 					dispatch: jest.fn()
 				} );

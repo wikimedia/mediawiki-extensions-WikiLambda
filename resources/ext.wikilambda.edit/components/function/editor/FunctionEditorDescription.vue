@@ -54,7 +54,7 @@ module.exports = exports = defineComponent( {
 			remainingChars: Constants.LABEL_CHARS_MAX
 		};
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getRowByKeyPath',
 		'getZMonolingualTextValue',
 		'getZPersistentDescription'
@@ -124,7 +124,7 @@ module.exports = exports = defineComponent( {
 			return `ext-wikilambda-function-definition-description__input${ this.zLanguage }`;
 		}
 	} ),
-	methods: $.extend( mapActions( [
+	methods: Object.assign( mapActions( [
 		'changeType',
 		'removeItemFromTypedList',
 		'setValueByRowIdAndPath'

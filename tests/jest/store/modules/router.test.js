@@ -69,10 +69,10 @@ describe( 'router Vuex module', function () {
 		let context;
 
 		beforeEach( function () {
-			context = $.extend( {}, {
+			context = Object.assign( {}, {
 				commit: jest.fn(),
 				dispatch: jest.fn(),
-				state: $.extend( {}, routerInstance.state ),
+				state: Object.assign( {}, routerInstance.state ),
 				rootGetters: jest.fn()
 			} );
 

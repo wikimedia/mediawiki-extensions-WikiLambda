@@ -199,7 +199,7 @@ module.exports = exports = defineComponent( {
 			initialInputs: '[]'
 		};
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getLabel',
 		'getMetadataLanguages',
 		'getRowByKeyPath',
@@ -417,7 +417,7 @@ module.exports = exports = defineComponent( {
 			return this.maxDescriptionChars - this.description.length;
 		}
 	} ),
-	methods: $.extend( mapActions( [
+	methods: Object.assign( mapActions( [
 		'changeType',
 		'removeItemFromTypedList',
 		'setValueByRowIdAndPath',

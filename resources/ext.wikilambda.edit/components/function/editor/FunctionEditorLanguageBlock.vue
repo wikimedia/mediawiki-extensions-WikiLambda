@@ -98,7 +98,7 @@ module.exports = exports = defineComponent( {
 			icons: icons
 		};
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getMetadataLanguages',
 		'isCreateNewPage',
 		'isUserLoggedIn'

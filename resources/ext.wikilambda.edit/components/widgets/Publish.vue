@@ -80,7 +80,7 @@ module.exports = exports = defineComponent( {
 			showPublishDialog: false
 		};
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getCurrentZObjectId',
 		'getCurrentZObjectType',
 		'getCurrentZImplementationType',
@@ -105,7 +105,7 @@ module.exports = exports = defineComponent( {
 			};
 		}
 	} ),
-	methods: $.extend( mapActions( [
+	methods: Object.assign( mapActions( [
 		'clearValidationErrors',
 		'validateZObject'
 	] ), {

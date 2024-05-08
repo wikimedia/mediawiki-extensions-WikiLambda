@@ -68,7 +68,7 @@ module.exports = exports = defineComponent( {
 			default: 0
 		}
 	},
-	computed: $.extend(
+	computed: Object.assign(
 		mapGetters( [
 			'getLabel',
 			'getExpectedTypeOfKey',

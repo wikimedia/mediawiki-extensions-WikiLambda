@@ -62,7 +62,7 @@ module.exports = exports = defineComponent( {
 			showMetadata: false
 		};
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getZTesterResults',
 		'getZTesterMetadata',
 		'getLabel'

@@ -10,7 +10,7 @@ const Vue = require( 'vue' ),
 	store = require( './store/index.js' ),
 	App = require( './components/App.vue' );
 
-window.vueInstance = Vue.createMwApp( $.extend( {
+window.vueInstance = Vue.createMwApp( Object.assign( {
 	provide: function () {
 		return {
 			viewmode: store.getters.getViewMode

@@ -64,7 +64,7 @@ module.exports = exports = defineComponent( {
 			functionType: Constants.Z_FUNCTION
 		};
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getCurrentZObjectId',
 		'getUserLangZid',
 		'isCreateNewPage'

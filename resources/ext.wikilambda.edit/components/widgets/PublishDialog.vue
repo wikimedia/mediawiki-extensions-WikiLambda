@@ -98,7 +98,7 @@ module.exports = exports = defineComponent( {
 			summary: ''
 		};
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getUserLangCode',
 		'getCurrentZObjectId',
 		'getCurrentZObjectType',
@@ -201,7 +201,7 @@ module.exports = exports = defineComponent( {
 				this.$i18n( 'wikifunctions-edit-copyrightwarning-function' ).text();
 		}
 	} ),
-	methods: $.extend( mapActions( [
+	methods: Object.assign( mapActions( [
 		'submitZObject',
 		'setError',
 		'setDirty',

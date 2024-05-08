@@ -48,7 +48,7 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getZObjectKeyByRowId',
 		'getChildrenByParentRowId'
 	] ), {

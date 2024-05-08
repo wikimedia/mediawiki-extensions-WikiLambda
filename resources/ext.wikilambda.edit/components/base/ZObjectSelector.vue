@@ -120,7 +120,7 @@ module.exports = exports = defineComponent( {
 			inputValue: ''
 		};
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getLabel'
 	] ), {
 
@@ -190,7 +190,7 @@ module.exports = exports = defineComponent( {
 			return this.hasFieldErrors ? 'error' : 'default';
 		}
 	} ),
-	methods: $.extend( {},
+	methods: Object.assign( {},
 		mapActions( [
 			'lookupZObject',
 			'fetchZids'

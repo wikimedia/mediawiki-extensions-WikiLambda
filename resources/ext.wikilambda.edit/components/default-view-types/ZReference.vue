@@ -58,7 +58,7 @@ module.exports = exports = defineComponent( {
 			default: false
 		}
 	},
-	computed: $.extend(
+	computed: Object.assign(
 		mapGetters( [
 			'getLabel',
 			'getParentRowId',

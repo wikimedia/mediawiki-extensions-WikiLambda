@@ -80,7 +80,7 @@ module.exports = exports = defineComponent( {
 			default: ''
 		}
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getExpectedTypeOfKey',
 		'getLabel',
 		'getStoredObject',
@@ -136,7 +136,7 @@ module.exports = exports = defineComponent( {
 			return this.selectedIsTerminal ? [] : this.getZFunctionCallArguments( this.rowId );
 		}
 	} ),
-	methods: $.extend( mapActions( [
+	methods: Object.assign( mapActions( [
 		'changeType',
 		'setZFunctionCallArguments'
 	] ), {

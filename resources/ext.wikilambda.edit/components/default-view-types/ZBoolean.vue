@@ -51,7 +51,7 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getLabel',
 		'getZBooleanValue'
 	] ),

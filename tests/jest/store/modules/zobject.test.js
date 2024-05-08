@@ -54,11 +54,11 @@ describe( 'zobject Vuex module', () => {
 			} );
 		} );
 
-		state = $.extend( {}, zobjectModule.state );
+		state = Object.assign( {}, zobjectModule.state );
 		getResolveMock = jest.fn( function ( thenFunction ) {
 			return thenFunction();
 		} );
-		context = $.extend( {}, {
+		context = Object.assign( {}, {
 			// eslint-disable-next-line no-unused-vars
 			commit: jest.fn( function ( mutationType, payload ) {
 				return;

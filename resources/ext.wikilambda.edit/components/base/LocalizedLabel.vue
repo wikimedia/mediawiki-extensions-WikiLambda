@@ -26,7 +26,7 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	computed: $.extend(
+	computed: Object.assign(
 		mapGetters( [
 			'getLabel',
 			'getLanguageIsoCodeOfZLang',

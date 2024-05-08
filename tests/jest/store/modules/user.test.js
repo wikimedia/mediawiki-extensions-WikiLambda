@@ -25,7 +25,7 @@ describe( 'User rights Vuex module', () => {
 	describe( 'Actions', () => {
 		beforeEach( () => {
 			// Mock context
-			context = $.extend( {}, {
+			context = Object.assign( {}, {
 				commit: jest.fn( () => {
 					return;
 				} )

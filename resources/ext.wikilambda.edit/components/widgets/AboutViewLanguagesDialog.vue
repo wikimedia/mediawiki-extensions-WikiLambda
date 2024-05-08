@@ -105,7 +105,7 @@ module.exports = exports = defineComponent( {
 			lookupResults: []
 		};
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getLabel',
 		'getMetadataLanguages',
 		'getZMonolingualTextValue',
@@ -192,7 +192,7 @@ module.exports = exports = defineComponent( {
 			return this.$i18n( 'wikilambda-about-widget-search-language-placeholder' ).text();
 		}
 	} ),
-	methods: $.extend( mapActions( [
+	methods: Object.assign( mapActions( [
 		'fetchZids',
 		'lookupZObject'
 	] ), {

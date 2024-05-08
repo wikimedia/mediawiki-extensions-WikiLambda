@@ -183,7 +183,7 @@ module.exports = exports = defineComponent( {
 			itemsCopied: []
 		};
 	},
-	computed: $.extend(
+	computed: Object.assign(
 		mapGetters( [
 			'getUserLangCode',
 			'getStoredObject',

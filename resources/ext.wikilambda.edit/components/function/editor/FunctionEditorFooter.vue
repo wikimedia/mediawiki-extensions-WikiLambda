@@ -43,7 +43,7 @@ module.exports = exports = defineComponent( {
 			default: false
 		}
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'isCreateNewPage'
 	] ), {
 		/**
@@ -73,7 +73,7 @@ module.exports = exports = defineComponent( {
 			return '';
 		}
 	} ),
-	methods: $.extend( mapActions( [
+	methods: Object.assign( mapActions( [
 		'setError'
 	] ), {
 		/**

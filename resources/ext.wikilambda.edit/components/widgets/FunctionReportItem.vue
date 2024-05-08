@@ -72,7 +72,7 @@ module.exports = exports = defineComponent( {
 			default: false
 		}
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getUserLangCode',
 		'getZTesterResults',
 		'getLabel'

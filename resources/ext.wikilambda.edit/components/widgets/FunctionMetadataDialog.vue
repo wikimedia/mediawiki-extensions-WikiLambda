@@ -128,7 +128,7 @@ module.exports = exports = defineComponent( {
 			icons: icons
 		};
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getLabel',
 		'getLabelData'
 	] ), {
@@ -270,7 +270,7 @@ module.exports = exports = defineComponent( {
 							// transformations can return an object with more values
 							// E.g. { value: 'text', url: 'http://some.link' },
 							// in such case, extend the item object.
-							$.extend( item, transformed );
+							Object.assign( item, transformed );
 						} else {
 							item.value = transformed;
 						}

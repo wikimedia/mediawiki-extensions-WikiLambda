@@ -90,7 +90,7 @@ module.exports = exports = defineComponent( {
 		'wl-z-object-key-value': ZObjectKeyValue
 	},
 	mixins: [ eventLogUtils, typeUtils ],
-	computed: $.extend(
+	computed: Object.assign(
 		mapGetters( [
 			'getZPersistentContentRowId',
 			'getRowByKeyPath',

@@ -98,7 +98,7 @@ module.exports = exports = defineComponent( {
 			icons: icons
 		};
 	},
-	computed: $.extend(
+	computed: Object.assign(
 		mapGetters( [
 			'getUserLangZid',
 			'getChildrenByParentRowId'

@@ -103,7 +103,7 @@ module.exports = exports = defineComponent( {
 			fetching: false
 		};
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getLabel',
 		'getStoredObject',
 		'getZTesterMetadata'
@@ -277,7 +277,7 @@ module.exports = exports = defineComponent( {
 				this.$i18n( 'wikilambda-tester-status-run' ).text();
 		}
 	} ),
-	methods: $.extend( mapActions( [
+	methods: Object.assign( mapActions( [
 		'fetchZids',
 		'getTestResults'
 	] ), {

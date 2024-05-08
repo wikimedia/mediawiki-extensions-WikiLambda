@@ -80,7 +80,7 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'createObjectByType',
 		'getLabel',
 		'getZTesterFunctionRowId',
@@ -165,7 +165,7 @@ module.exports = exports = defineComponent( {
 			return this.getLabel( Constants.Z_TESTER_VALIDATION );
 		}
 	} ),
-	methods: $.extend( mapActions( [
+	methods: Object.assign( mapActions( [
 		'fetchZids',
 		'setZFunctionCallArguments'
 	] ), {

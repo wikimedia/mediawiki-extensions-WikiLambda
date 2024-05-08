@@ -126,7 +126,7 @@ module.exports = exports = defineComponent( {
 			pendingPromises: []
 		};
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'createObjectByType',
 		'getCurrentView',
 		'getLabel',
@@ -231,7 +231,7 @@ module.exports = exports = defineComponent( {
 				} );
 		}
 	} ),
-	methods: $.extend( mapActions( [
+	methods: Object.assign( mapActions( [
 		'getTestResults',
 		'runRendererTest',
 		'runRenderer',

@@ -85,7 +85,7 @@ module.exports = exports = defineComponent( {
 			typeZid: Constants.Z_TYPE
 		};
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getUserLangCode',
 		'getZFunctionOutput'
 	] ), {

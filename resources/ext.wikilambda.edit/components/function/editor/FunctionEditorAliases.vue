@@ -63,7 +63,7 @@ module.exports = exports = defineComponent( {
 			repeatedAlias: null
 		};
 	},
-	computed: $.extend( mapGetters( [
+	computed: Object.assign( mapGetters( [
 		'getRowByKeyPath',
 		'getZPersistentAlias',
 		'getZMonolingualStringsetValues'
@@ -163,7 +163,7 @@ module.exports = exports = defineComponent( {
 			return `ext-wikilambda-function-definition-aliases__input${ this.zLanguage }`;
 		}
 	} ),
-	methods: $.extend( mapActions( [
+	methods: Object.assign( mapActions( [
 		'changeType',
 		'removeItemFromTypedList'
 	] ), {
