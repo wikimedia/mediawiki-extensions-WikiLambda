@@ -26,6 +26,7 @@
 		<div
 			class="ext-wikilambda-tester-content"
 			role="ext-wikilambda-tester-call"
+			data-testid="tester-call"
 		>
 			<div class="ext-wikilambda-key-block">
 				<label>{{ testerCallLabel }}</label>
@@ -42,6 +43,7 @@
 		<div
 			class="ext-wikilambda-tester-content"
 			role="ext-wikilambda-tester-validation"
+			data-testid="tester-validation"
 		>
 			<div class="ext-wikilambda-key-block">
 				<label>{{ testerValidationLabel }}</label>

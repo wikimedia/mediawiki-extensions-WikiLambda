@@ -37,7 +37,7 @@ class AboutBlock {
 	}
 
 	get descriptionInputSelector() {
-		return this.detailsInputDialogBox.$( './/input[@placeholder="Enter description"]' );
+		return this.detailsInputDialogBox.$( '[data-testid="text-area"]' );
 	}
 
 	get aliasInputSelector() {

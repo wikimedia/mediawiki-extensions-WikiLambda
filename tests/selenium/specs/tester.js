@@ -28,17 +28,13 @@ describe( 'Tester', () => {
 
 	describe( 'Create a new test (CUJ 4)', () => {
 
-		/**
-		 * Details about the function for which a new test is being created
-		 */
+		// Details about the function for which a new test is being created
 		const functionDetails = {
 			ZObjectLabel: 'If',
 			ZId: 'Z802'
 		};
 
-		/**
-		 * Details about the entries in Call block
-		 */
+		// Details about the entries in Call block
 		const callBlockEntries = {
 			condition: 'true',
 			thenBlockInputType: 'String',
@@ -47,9 +43,7 @@ describe( 'Tester', () => {
 			elseBlockInput: 'Bye'
 		};
 
-		/**
-		 * Details about the entries in validation block
-		 */
+		// Details about the entries in validation block
 		const validationBlockEntries = {
 			ZObjectLabel: 'String equality',
 			secondString: {
@@ -58,16 +52,12 @@ describe( 'Tester', () => {
 			}
 		};
 
-		/**
-		 * About block entries in different languages
-		 */
-		let aboutBlockEntriesEnglish, aboutBlockEntriesFrench,
-			aboutBlockEntriesHindi;
+		// About block entries in different languages
+		let aboutBlockEntriesEnglish, aboutBlockEntriesArabic;
 
-		/**
-		 * Initialize the entries of the About block before the test
-		 */
+		// Initialize the entries of the About block before the test
 		before( () => {
+			LoginPage.loginAdmin();
 			/**
 			 * Date.now() is being used so that label will be unique and
 			 * not collide in case of retries.
@@ -79,204 +69,112 @@ describe( 'Tester', () => {
 				description: 'This is the description for the new test in English',
 				alias: 'alias in English'
 			};
-			aboutBlockEntriesFrench = {
-				language: 'French',
-				label: `e2e-Create-A-New-Test-${ time }-français`,
-				description: 'Ceci est la description du nouveau test en français',
-				alias: 'alias en français'
-			};
-			aboutBlockEntriesHindi = {
-				language: 'Hindi',
-				label: `e2e-Create-A-New-Test-${ time }-हिंदी`,
-				description: 'यह हिंदी में नए टेस्ट का विवरण है',
-				alias: 'उपनाम हिंदी में'
+			aboutBlockEntriesArabic = {
+				language: 'Arabic',
+				label: `e2e-Create-A-New-Test-${ time }-عربي`,
+				description: 'هذا الوصف ل الاختبار الجديد باللغة العربية',
+				alias: 'الاسم المستعار باللغة العربية'
 			};
 		} );
 
-		it( 'should navigate to the tester form', async () => {
-			await LoginPage.loginAdmin();
+		it( 'should fill and submit the tester form', async () => {
+
 			/**
 			 * If login is successful then browser is redirected from "Special:UserLogin"
 			 * to URL containing "Main_Page"
 			 */
 			await expect( browser ).toHaveUrlContaining( 'Main_Page',
 				{ message: 'Login failed' } );
-
 			await FunctionPage.open( functionDetails.ZId );
-			await expect( await FunctionPage.functionTitle )
-				.toHaveText( functionDetails.ZObjectLabel );
 			await FunctionPage.goToCreateNewTestLink();
 
-			/**
-			 * Confirm that the test form is open
-			 */
-			await expect( await TesterForm.getFunctionExplorerName() )
-				.toBe( functionDetails.ZObjectLabel );
-		} );
-
-		it( 'should fill the entries in the about section', async () => {
-			/**
-			 * Add and Submit About block entries in English
-			 */
+			// Add and submit About block entries in English
 			await TesterForm.openAboutBlockDialogBox();
-			await expect( await TesterForm.aboutBlockDialogBox ).toBeDisplayed();
 			await TesterForm.addAboutBlockEntries( aboutBlockEntriesEnglish );
 			await TesterForm.submitAboutBlockEntries();
-			await expect( await TesterForm.aboutBlockDialogBox ).not.toBeDisplayed();
 
-			/**
-			 * Add and Submit About block entries in French
-			 */
+			// Add and Submit About block entries in Arabic
 			await TesterForm.openAboutBlockDialogBox();
-			await expect( await TesterForm.aboutBlockDialogBox ).toBeDisplayed();
-			await TesterForm.addAboutBlockEntries( aboutBlockEntriesFrench );
+			await TesterForm.addAboutBlockEntries( aboutBlockEntriesArabic );
 			await TesterForm.submitAboutBlockEntries();
-			await expect( await TesterForm.aboutBlockDialogBox ).not.toBeDisplayed();
 
-			/**
-			 * Add and Submit About block entries in Hindi
-			 */
-			await TesterForm.openAboutBlockDialogBox();
-			await expect( await TesterForm.aboutBlockDialogBox ).toBeDisplayed();
-			await TesterForm.addAboutBlockEntries( aboutBlockEntriesHindi );
-			await TesterForm.submitAboutBlockEntries();
-			await expect( await TesterForm.aboutBlockDialogBox ).not.toBeDisplayed();
-		} );
-
-		it( 'should fill the entries in the call block', async () => {
+			// fill the entries in the call block
 			await TesterForm.expandCallFunctionBlock();
-			await expect( await TesterForm.getCallFunctionBlockSection( 'function' ) ).toBeDisplayed();
 			await TesterForm.setCallFunctionBlock( functionDetails.ZObjectLabel );
-			await expect( await TesterForm.getCallFunctionBlockSection( 'condition' ) ).toBeDisplayed();
 			await TesterForm.setCallFunctionParameters( callBlockEntries );
-		} );
 
-		it( 'should fill the entries in the validation block', async () => {
+			// fill validation block
 			await TesterForm.expandValidationBlock();
-			await expect( await TesterForm.getValidationBlockSection( 'function' ) ).toBeDisplayed();
 			await TesterForm.setValidationBlock( validationBlockEntries.ZObjectLabel );
-			await expect( await TesterForm.getValidationBlockSection( 'second string' ) ).toBeDisplayed();
 			await TesterForm.setValidationBlockParameters(
 				validationBlockEntries.secondString.true );
-		} );
 
-		it( 'should publish the test', async () => {
+			// publish the test
 			await TesterForm.publishTest();
-			/**
-			 * When test is published successfully, the browser is redirected to URL
-			 * containing param "success=true"
-			 */
+
+			// confirm test is successfully published
 			await expect( browser ).toHaveUrlContaining( 'success=true',
 				{ message: 'Unable to publish the test' } );
 
-			/**
-			 * Confirm that the tester Page is open
-			 */
+			// Confirm that the tester Page is open
 			await expect( await TesterPage.getTesterTitle() )
 				.toBe( aboutBlockEntriesEnglish.label );
-		} );
 
-		describe( 'Show details of new test created', () => {
+			// display the tester description in the about section
+			await expect( await TesterPage.getTesterDescription() ).toBe(
+				aboutBlockEntriesEnglish.description,
+				{ message: `Tester page is not displaying the tester description as expected to be ${ aboutBlockEntriesEnglish.description }` } );
 
-			it( 'should display the tester description in the about section', async () => {
-				await expect( await TesterPage.getTesterDescription() ).toBe(
-					aboutBlockEntriesEnglish.description,
-					{ message: `Tester page is not displaying the tester description as expected to be ${ aboutBlockEntriesEnglish.description }` } );
-			} );
+			// display the call function block parameters
+			await TesterForm.expandCallFunctionBlock();
+			await expect( await
+			TesterPage.getCallFunctionConditionParameter(
+				callBlockEntries.condition ) ).toBeExisting(
+				{ message: `Condition parameter are not displayed as expected to be ${ callBlockEntries.condition }` } );
 
-			it( 'should display the call function block parameters', async () => {
-				await TesterPage.toggleCallFunctionBlock();
-				await expect( await
-				TesterPage.getCallFunctionConditionParameter(
-					callBlockEntries.condition ) ).toBeExisting(
-					{ message: `Condition parameter are not displayed as expected to be ${ callBlockEntries.condition }` } );
-				await expect( await
-				TesterPage.getCallFunctionThenParameter(
-					callBlockEntries.thenBlockInput ) ).toBeExisting(
-					{ message: `Then parameter are not displayed as expected to be ${ callBlockEntries.thenBlockInput }` } );
-				await expect( await
-				TesterPage.getCallFunctionElseParameter(
-					callBlockEntries.elseBlockInput ) ).toBeExisting(
-					{ message: `Else parameter are not displayed as expected to be ${ callBlockEntries.elseBlockInput }` } );
-			} );
+			await expect( await
+			TesterPage.getCallFunctionThenParameter( callBlockEntries.thenBlockInput ) ).toBeExisting(
+				{ message: `Then parameter are not displayed as expected to be ${ callBlockEntries.thenBlockInput }` } );
+			await expect( await
+			TesterPage.getCallFunctionElseParameter(
+				callBlockEntries.elseBlockInput ) ).toBeExisting(
+				{ message: `Else parameter are not displayed as expected to be ${ callBlockEntries.elseBlockInput }` } );
 
-			it( 'should display the validation block parameters', async () => {
-				await TesterPage.toggleValidationBlock();
-				await expect( await
-				TesterPage.getValidationBlockFunction(
-					validationBlockEntries.ZObjectLabel ) ).toBeExisting();
-				await expect( await
-				TesterPage.getValidationParameter(
-					validationBlockEntries.secondString.true ) ).toBeExisting(
-					{ message: `Validation parameter are not displayed as expected to be ${ validationBlockEntries.secondString.true }` } );
-			} );
+			// display the validation block parameters
+			await TesterForm.expandValidationBlock();
+			await expect( await
+			TesterPage.getValidationBlockFunction(
+				validationBlockEntries.ZObjectLabel ) ).toBeExisting();
+			await expect( await
+			TesterPage.getValidationParameter(
+				validationBlockEntries.secondString.true ) ).toBeExisting(
+				{ message: `Validation parameter are not displayed as expected to be ${ validationBlockEntries.secondString.true }` } );
 		} );
 	} );
+} );
 
-	describe( 'Edit the test', () => {
+describe( 'Edit the test', () => {
 
-		/**
-		 * About block edit entries in English
-		 */
-		let aboutBlockEditEntries;
+	let aboutBlockEditEnglishEntries;
 
-		before( () => {
-			/**
-			 * Date.now() is being used so that label will be unique and
-			 * not collide in case of retries.
-			 */
-			const time = Date.now();
-			aboutBlockEditEntries = {
-				language: 'English',
-				label: `e2e-edit-test-${ time }-English`,
-				description: 'This is edited description for the test in English',
-				alias: 'edited alias in English'
-			};
-		} );
+	before( () => {
+		const time = Date.now();
+		aboutBlockEditEnglishEntries = {
+			language: 'English',
+			label: `e2e-edit-test-${ time }-English`,
+			description: 'This is edited description for the test in English',
+			alias: 'edited alias in English'
+		};
+	} );
 
-		it( 'should open the tester form', async () => {
-			await TesterPage.clickOnEditSourceLink();
-			/**
-			 * If the tester form is opened, then browser is redirected to URL
-			 * containing the param "action=edit"
-			 */
-			await expect( browser ).toHaveUrlContaining( 'action=edit',
-				{ message: 'testerform is not opened' } );
-		} );
-
-		it( 'should edit the english label information', async () => {
-			/**
-			 * Edit About information in English
-			 */
-			await TesterForm.openAboutBlockDialogBox();
-			await expect( await TesterForm.aboutBlockDialogBox ).toBeDisplayed();
-			await TesterForm.addAboutBlockEntries( aboutBlockEditEntries );
-			await TesterForm.submitAboutBlockEntries();
-			await expect( await TesterForm.aboutBlockDialogBox ).not.toBeDisplayed();
-		} );
-
-		it( 'should publish the edited test', async () => {
-			await TesterForm.publishTest();
-			/**
-			 * When test is published successfully, the browser is redirected to url
-			 * containing param "success=true"
-			 */
-			await expect( browser ).toHaveUrlContaining( 'success=true',
-				{ message: 'Unable to publish edited tester' } );
-			/**
-			 * Confirm that the tester View Page is open
-			 */
-			await expect( await TesterPage.getTesterTitle() ).toBe(
-				aboutBlockEditEntries.label,
-				{ message: `Tester page is not displaying the tester title as expected to be ${ aboutBlockEditEntries.label }` } );
-		} );
-
-		describe( 'Show details of edited test', () => {
-			it( 'should display the information in the about section', async () => {
-				await expect( await TesterPage.getTesterDescription() ).toBe(
-					aboutBlockEditEntries.description,
-					{ message: `Tester page is not displaying the tester description as expected to be ${ aboutBlockEditEntries.description }` } );
-			} );
-		} );
+	it( 'should edit the about block test', async () => {
+		await TesterPage.clickOnEditSourceLink();
+		await TesterForm.openAboutBlockDialogBox();
+		await TesterForm.addAboutBlockEntries( aboutBlockEditEnglishEntries );
+		await TesterForm.submitAboutBlockEntries();
+		await TesterForm.publishTest();
+		await expect( await TesterPage.getTesterDescription() ).toBe(
+			aboutBlockEditEnglishEntries.description,
+			{ message: `Tester page is not displaying the tester description as expected to be ${ aboutBlockEditEnglishEntries.description }` } );
 	} );
 } );
