@@ -1245,6 +1245,57 @@ module.exports = exports = {
 		getZObjectCopy: function ( state ) {
 			// const copy = JSON.parse( JSON.stringify( context.state.zobject ) );
 			return state.zobject.map( ( row ) => new Row( row.id, row.key, row.value, row.parent ) );
+		},
+
+		/**
+		 * Returns whether the key has a Is identity/Z3K4 key set to true,
+		 * given the row ID of the key object
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getZKeyIsIdentity: function ( _state, getters ) {
+			/**
+			 * @param {string} zid
+			 * @return {boolean}
+			 */
+			function findZKeyIsIdentity( zid ) {
+				const isIdentity = getters.getRowByKeyPath( [ Constants.Z_KEY_IS_IDENTITY ], zid );
+				if ( !isIdentity ) {
+					return false;
+				}
+
+				let boolValue = '';
+				const type = getters.getZObjectTypeByRowId( isIdentity.id );
+				if ( type === Constants.Z_BOOLEAN ) {
+					boolValue = getters.getZBooleanValue( isIdentity.id );
+				} else if ( type === Constants.Z_REFERENCE ) {
+					boolValue = getters.getZReferenceTerminalValue( isIdentity.id );
+				}
+
+				return boolValue === Constants.Z_BOOLEAN_TRUE;
+			}
+			return findZKeyIsIdentity;
+		},
+
+		/**
+		 * Retuns the rowId of the key type field given the key rowId
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getZKeyTypeRowId: function ( _state, getters ) {
+			/**
+			 * @param {string} rowId
+			 * @return {number | undefined}
+			 */
+			function findZKeyType( rowId ) {
+				const keyType = getters.getRowByKeyPath( [ Constants.Z_KEY_TYPE ], rowId );
+				return keyType ? keyType.id : undefined;
+			}
+			return findZKeyType;
 		}
 	},
 	mutations: {
@@ -1533,6 +1584,16 @@ module.exports = exports = {
 					for ( const key in lists ) {
 						if ( !isTruthyOrEqual( zobject, [ Constants.Z_PERSISTENTOBJECT_VALUE, key ] ) ) {
 							zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ key ] = [ lists[ key ] ];
+						}
+					}
+					// 3. Initialize keys Is identity (Z3K4) field
+					const keys = zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
+					for ( const key of keys ) {
+						if ( !isTruthyOrEqual( key, [ Constants.Z_KEY_IS_IDENTITY ] ) ) {
+							key[ Constants.Z_KEY_IS_IDENTITY ] = {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_BOOLEAN,
+								[ Constants.Z_BOOLEAN_IDENTITY ]: Constants.Z_BOOLEAN_FALSE
+							};
 						}
 					}
 				}

@@ -132,7 +132,21 @@ module.exports = exports = {
 						const keys = zobject[ Constants.Z_TYPE_KEYS ];
 						for ( let i = 1; i < keys.length; i++ ) {
 							const key = keys[ i ];
-							const keyPayload = typeUtils.initializePayloadForType( key[ Constants.Z_KEY_TYPE ] );
+
+							// Create a reference to self it the key is the identity key of the root object
+							const isIdentityKey = !payload.isRoot ? false : (
+								typeUtils.isTruthyOrEqual( key, [
+									Constants.Z_KEY_IS_IDENTITY
+								], Constants.Z_BOOLEAN_TRUE ) ||
+								typeUtils.isTruthyOrEqual( key, [
+									Constants.Z_KEY_IS_IDENTITY,
+									Constants.Z_BOOLEAN_IDENTITY
+								], Constants.Z_BOOLEAN_TRUE )
+							);
+							const keyPayload = isIdentityKey ?
+								{ type: Constants.Z_REFERENCE, value: getters.getCurrentZObjectId } :
+								typeUtils.initializePayloadForType( key[ Constants.Z_KEY_TYPE ] );
+
 							// We must pass keyList array by value in here, so that the types found in an argument
 							// branch don't affect another branch, it should only restrict repetition in depth.
 							const blankValue = getters.createObjectByType( keyPayload, keyList.slice() );
@@ -725,6 +739,10 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		changeType: function ( context, payload ) {
+			// Set isRoot flag if we are changing the direct child of Z2K2
+			const rootRowId = context.getters.getZPersistentContentRowId();
+			payload.isRoot = ( rootRowId === payload.id );
+
 			// Build the expected value to assign
 			const value = context.getters.createObjectByType( payload );
 

@@ -117,6 +117,48 @@ describe( 'library module', function () {
 			} );
 		} );
 
+		describe( 'isIdentityKey', function () {
+			beforeEach( function () {
+				state.objects = mockApiZids;
+			} );
+
+			it( 'returns false if the key is undefined', function () {
+				expect( libraryModule.getters.isIdentityKey( state )( undefined ) ).toBe( false );
+			} );
+
+			it( 'returns false if the key is local', function () {
+				expect( libraryModule.getters.isIdentityKey( state )( 'K1' ) ).toBe( false );
+			} );
+
+			it( 'returns false if the key is of a typed list item', function () {
+				expect( libraryModule.getters.isIdentityKey( state )( '1' ) ).toBe( false );
+			} );
+
+			it( 'returns false if the key is unknown', function () {
+				expect( libraryModule.getters.isIdentityKey( state )( 'Z1234K567' ) ).toBe( false );
+			} );
+
+			it( 'returns false if the key is not a type key', function () {
+				expect( libraryModule.getters.isIdentityKey( state )( 'Z881K1' ) ).toBe( false );
+			} );
+
+			it( 'returns false if the key has no is identity/Z3K4 key', function () {
+				expect( libraryModule.getters.isIdentityKey( state )( 'Z20007K1' ) ).toBe( false );
+			} );
+
+			it( 'returns false if the key has is identity/Z3K4 key set to false', function () {
+				expect( libraryModule.getters.isIdentityKey( state )( 'Z20007K2' ) ).toBe( false );
+			} );
+
+			it( 'returns false if the key has is identity/Z3K4 key set to ref(true)', function () {
+				expect( libraryModule.getters.isIdentityKey( state )( 'Z20007K3' ) ).toBe( true );
+			} );
+
+			it( 'returns false if the key has is identity/Z3K4 key set to boolean(true)', function () {
+				expect( libraryModule.getters.isIdentityKey( state )( 'Z20007K4' ) ).toBe( true );
+			} );
+		} );
+
 		describe( 'getLanguageIsoCodeOfZLang', function () {
 			beforeEach( function () {
 				state.objects = mockApiZids;

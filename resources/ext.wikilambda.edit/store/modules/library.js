@@ -66,7 +66,7 @@ module.exports = exports = {
 		 */
 		getExpectedTypeOfKey: function ( state ) {
 			/**
-			 * @param {string} key
+			 * @param {string|undefined} key
 			 * @return {string}
 			 */
 			return function ( key ) {
@@ -115,6 +115,49 @@ module.exports = exports = {
 
 				// If key is a not found, a list index or a local key, return Z1/Object (any) type
 				return Constants.Z_OBJECT;
+			};
+		},
+		/**
+		 * Given a key, returns whether it is set to be an identity key
+		 * (Z3K4 field is set to true/Z41)
+		 *
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		isIdentityKey: function ( state ) {
+			/**
+			 * @param {string|undefined} key
+			 * @return {boolean}
+			 */
+			return function ( key ) {
+				if ( key === undefined ) {
+					return false;
+				}
+
+				if ( !typeUtils.isGlobalKey( key ) ) {
+					return false;
+				}
+
+				const zid = typeUtils.getZidOfGlobalKey( key );
+				if ( !state.objects[ zid ] ) {
+					return false;
+				}
+
+				const zobject = state.objects[ zid ][ Constants.Z_PERSISTENTOBJECT_VALUE ];
+				if ( zobject[ Constants.Z_OBJECT_TYPE ] !== Constants.Z_TYPE ) {
+					return false;
+				}
+
+				const zkey = typeUtils.getKeyFromKeyList( key, zobject[ Constants.Z_TYPE_KEYS ] );
+				const isIdentity = zkey[ Constants.Z_KEY_IS_IDENTITY ];
+				if ( !isIdentity ) {
+					return false;
+				}
+
+				return (
+					( isIdentity === Constants.Z_BOOLEAN_TRUE ) ||
+					( isIdentity[ Constants.Z_BOOLEAN_IDENTITY ] === Constants.Z_BOOLEAN_TRUE )
+				);
 			};
 		},
 		/**
