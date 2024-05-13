@@ -9,10 +9,7 @@
 const userModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/user.js' );
 let context,
 	state,
-	getters,
-	userRights,
-	getRightsMock,
-	getRightsResolveMock;
+	getters;
 
 describe( 'User rights Vuex module', () => {
 	beforeEach( () => {
@@ -23,6 +20,11 @@ describe( 'User rights Vuex module', () => {
 	} );
 
 	describe( 'Actions', () => {
+		const userRights = [
+			'wikilambda-execute',
+			'wikilambda-execute-unsaved-code'
+		];
+
 		beforeEach( () => {
 			// Mock context
 			context = Object.assign( {}, {
@@ -31,12 +33,8 @@ describe( 'User rights Vuex module', () => {
 				} )
 			} );
 			// Mock mw.user.getRights
-			userRights = [
-				'wikilambda-execute',
-				'wikilambda-execute-unsaved-code'
-			];
-			getRightsResolveMock = jest.fn( ( then ) => then( userRights ) );
-			getRightsMock = jest.fn( () => {
+			const getRightsResolveMock = jest.fn( ( then ) => then( userRights ) );
+			const getRightsMock = jest.fn( () => {
 				return {
 					then: getRightsResolveMock
 				};
@@ -59,7 +57,7 @@ describe( 'User rights Vuex module', () => {
 	describe( 'Mutations', () => {
 		describe( 'setUserRights', () => {
 			it( 'sets user rights', () => {
-				userRights = [
+				const userRights = [
 					'wikilambda-execute',
 					'wikilambda-execute-unsaved-code'
 				];
