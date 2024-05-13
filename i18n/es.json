@@ -24,7 +24,10 @@
 			"JDíaz32",
 			"Nelthal",
 			"No se",
-			"Soylacarli"
+			"Soylacarli",
+			"Eulalio",
+			"Samthony",
+			"Tmv"
 		]
 	},
 	"wikilambda-desc": "Proporcionar wikis de Wikimedia con una función de analizador gramático de wikitexto para llamar a la evaluación de funciones escritas, administradas y evaluadas en un wiki central.",
@@ -206,7 +209,7 @@
 	"wikilambda-function-implementation-state-proposed": "Propuesto",
 	"wikilambda-function-definition-name-placeholder": "Introduzca un nombre de función descriptivo",
 	"wikilambda-function-definition-name-example": "Ver ejemplos de nombres.",
-	"wikilambda-function-definition-alias-label": "Nombres alternativos",
+	"wikilambda-function-definition-alias-label": "Alias",
 	"wikilambda-function-definition-alias-placeholder": "Introduzca un nombre de función alternativo",
 	"wikilambda-function-definition-alias-example": "Ver ejemplos de alias.",
 	"wikilambda-function-definition-footer-placeholder": "Describe brevemente tus cambios",
