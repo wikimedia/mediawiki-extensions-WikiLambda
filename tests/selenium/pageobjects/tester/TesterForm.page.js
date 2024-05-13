@@ -34,7 +34,7 @@ class TesterPage extends Page {
 	}
 
 	get callFunctionBlock() {
-		return this.contentBlock.$( './/div[@role="ext-wikilambda-tester-call"]' );
+		return this.contentBlock.$( '[data-testid="tester-call"]' );
 	}
 
 	get validationBlock() {
@@ -110,7 +110,7 @@ class TesterPage extends Page {
 	 * @return {void}
 	 */
 	async expandCallFunctionBlock() {
-		const selectFunctionLink = await this.callFunctionBlock.$( './/a[text()="Select Function"]' );
+		const selectFunctionLink = await $( '[data-testid="tester-call"] [data-testid="expanded-toggle"]' );
 		await ElementActions.doClick( selectFunctionLink );
 	}
 
@@ -136,7 +136,7 @@ class TesterPage extends Page {
 		 * Function section of call function block
 		 */
 		const parentSelector = await this.getCallFunctionBlockSection( 'function' );
-		const callFunctionBlockInputSelector = await parentSelector.$( './/input[@placeholder="Select function"]' );
+		const callFunctionBlockInputSelector = await $( ' [data-testid="tester-call"] input[placeholder="Select function"][data-testid="z-object-selector-lookup"]' );
 		await InputDropdown.setLookupOption(
 			parentSelector, callFunctionBlockInputSelector, ZObjectLabel );
 	}
@@ -201,7 +201,7 @@ class TesterPage extends Page {
 	 * @return {void}
 	 */
 	async expandValidationBlock() {
-		const selectFunctionLink = await this.validationBlock.$( './/a[text()="Select Function"]' );
+		const selectFunctionLink = await $( '[data-testid="tester-validation"] [data-testid="expanded-toggle"]' );
 		await ElementActions.doClick( selectFunctionLink );
 	}
 

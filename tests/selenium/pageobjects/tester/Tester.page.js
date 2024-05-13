@@ -35,11 +35,11 @@ class Tester extends Page {
 	}
 
 	get callFunctionBlock() {
-		return this.contentBlock.$( './/div[@role="ext-wikilambda-tester-call"]' );
+		return this.contentBlock.$( '[data-testid="tester-call"]' );
 	}
 
 	get validationBlock() {
-		return this.contentBlock.$( './/div[@role="ext-wikilambda-tester-validation"]' );
+		return this.contentBlock.$( '[data-testid="tester-validation"]' );
 	}
 
 	get editSourceLink() {
@@ -143,7 +143,7 @@ class Tester extends Page {
 	 */
 	async getCallFunctionThenParameter( thenInput ) {
 		const thenParameterBlock = await this.getCallFunctionBlockSection( 'then' );
-		return await thenParameterBlock.$( `p=${ thenInput }` );
+		return await thenParameterBlock.$( `[data-testid="view-only-string"]*=${ thenInput }` );
 	}
 
 	/**
@@ -154,7 +154,7 @@ class Tester extends Page {
 	 */
 	async getCallFunctionElseParameter( elseInput ) {
 		const elseParameterBlock = await this.getCallFunctionBlockSection( 'else' );
-		return await elseParameterBlock.$( `p=${ elseInput }` );
+		return await elseParameterBlock.$( `[data-testid="view-only-string"]*=${ elseInput }` );
 	}
 
 	// #endregion
@@ -189,7 +189,7 @@ class Tester extends Page {
 	 */
 	async getValidationParameter( secondStringTrue ) {
 		const validationParameterBlock = await this.getValidationBlockSection( 'second string' );
-		return await validationParameterBlock.$( `p=${ secondStringTrue }` );
+		return await validationParameterBlock.$( `[data-testid="view-only-string"]*=${ secondStringTrue }` );
 	}
 
 	/**
