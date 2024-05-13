@@ -38,6 +38,7 @@ describe( 'About', () => {
 			getUserLangZid: createGetterMock( 'Z1002' ),
 			isUserLoggedIn: createGetterMock( true ),
 			isCreateNewPage: createGetterMock( true ),
+			isDirty: createGetterMock( false ),
 			getLabel: () => ( key ) => {
 				const labels = {
 					Z2K3: 'name',

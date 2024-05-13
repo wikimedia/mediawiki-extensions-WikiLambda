@@ -196,6 +196,7 @@ module.exports = exports = defineComponent( {
 		'getZPersistentAlias',
 		'getZPersistentDescription',
 		'isCreateNewPage',
+		'isDirty',
 		'isUserLoggedIn'
 	] ), {
 		/**
@@ -379,7 +380,9 @@ module.exports = exports = defineComponent( {
 		 * and then we cancel.
 		 */
 		cancelPublish: function () {
-			this.resetMultilingualData();
+			if ( this.isDirty ) {
+				this.resetMultilingualData();
+			}
 			this.showPublishDialog = false;
 		}
 	} )
