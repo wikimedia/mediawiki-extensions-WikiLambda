@@ -1398,4 +1398,91 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 			'Z1K1|Z7#0,Z7K1|Z802#0,Z802K1|Z1K1|Z40#0,Z40K1|Z41#0,,Z802K2|Z1K1|Z40#0,Z40K1|Z41#0,,Z802K3|Fail,'
 		];
 	}
+
+	/**
+	 * @dataProvider provideTypeToFingerprint
+	 */
+	public function testMakeTypeFingerprint( $inputObject, $expectedString ) {
+		$this->assertEquals( $expectedString, ZObjectUtils::makeTypeFingerprint( $inputObject ) );
+	}
+
+	public static function provideTypeToFingerprint() {
+		// Note that these are NOT valid ZObjects, they're just enough to test the relevant code.
+
+		yield 'Test a ZID' => [
+			"Z1",
+			"Z1"
+		];
+
+		yield 'Test another ZID' => [
+			"Z6",
+			"Z6"
+		];
+
+		yield 'Test typed list calls' => [
+			// @phpcs:ignore Generic.Files.LineLength.TooLong
+			json_decode( '{ "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" }' ),
+			"Z881(Z1)"
+		];
+
+		yield 'Test typed pair calls' => [
+			// @phpcs:ignore Generic.Files.LineLength.TooLong
+			json_decode( '{ "Z1K1": "Z7", "Z7K1": "Z882", "Z882K1": "Z1", "Z882K2": "Z1" }' ),
+			"Z882(Z1,Z1)"
+		];
+
+		yield 'Test typed pair calls in the wrong order' => [
+			// @phpcs:ignore Generic.Files.LineLength.TooLong
+			json_decode( '{ "Z1K1": "Z7", "Z7K1": "Z882", "Z882K2": "Z6", "Z882K1": "Z40" }' ),
+			"Z882(Z40,Z6)"
+		];
+
+		yield 'Test nested typed pair calls' => [
+			// @phpcs:ignore Generic.Files.LineLength.TooLong
+			json_decode( '{ "Z1K1": "Z7", "Z7K1": "Z882", "Z882K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" }, "Z882K2": "Z40" }' ),
+			"Z882(Z881(Z6),Z40)"
+		];
+
+		$z4String = <<<EOT
+{
+	"Z1K1": "Z4",
+	"Z4K1": "Z0",
+	"Z4K2": {
+		"Z1K1": {
+			"Z1K1": "Z7",
+			"Z7K1": "Z881",
+			"Z881K1": "Z3"
+		},
+		"K1": {
+			"Z1K1": "Z3",
+			"Z3K1": "Z6",
+			"Z3K2": "Z0K1",
+			"Z3K3": {
+				"Z1K1": "Z12",
+				"Z12K1": [
+					"Z11",
+					{
+						"Z1K1": "Z11",
+						"Z11K1": "Z1002",
+						"Z11K2": "Test key"
+					}
+				]
+			}
+		},
+		"K2": {
+			"Z1K1": {
+				"Z1K1": "Z7",
+				"Z7K1": "Z881",
+				"Z881K1": "Z3"
+			}
+		}
+	},
+	"Z4K3": "Z101"
+}
+EOT;
+		yield 'Test Z4 object' => [
+			json_decode( $z4String ),
+			null
+		];
+	}
 }

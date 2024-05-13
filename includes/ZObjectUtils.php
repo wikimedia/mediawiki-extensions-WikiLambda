@@ -22,6 +22,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 use MediaWiki\Html\Html;
+use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Title\Title;
 use Normalizer;
 use stdClass;
@@ -1010,4 +1011,45 @@ class ZObjectUtils {
 		return file_get_contents( $fullFile );
 	}
 
+	/**
+	 * Given a ZObject representing a type, return a string encoding of the type.
+	 *
+	 * N.B. Currently this only works for ZIDs and Z7s (Z_FUNCTIONCALL). It returns null
+	 * for anything else.
+	 *
+	 * @param stdClass|string $typeStringOrObject
+	 * @return string|null
+	 */
+	public static function makeTypeFingerprint( $typeStringOrObject ): ?string {
+		if ( is_string( $typeStringOrObject ) ) {
+			return $typeStringOrObject;
+		}
+
+		$logger = LoggerFactory::getInstance( 'WikiLambda' );
+		if ( !is_object( $typeStringOrObject ) ||
+			!property_exists( $typeStringOrObject, ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ) ) {
+			$logger->warning(
+				__METHOD__ . ' Unable to make fingerprint for given type',
+				[ 'typeStringOrObject' => $typeStringOrObject ]
+			);
+			return null;
+		}
+
+		// We're in a function call-defined type, not a reference
+		$callInputTypes = [];
+		foreach ( $typeStringOrObject as $key => $value ) {
+			if ( $key === ZTypeRegistry::Z_OBJECT_TYPE || $key === ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ) {
+				continue;
+			}
+			// Call ourselves in case the inner value is also a function call
+			$callInputTypes[$key] = static::makeTypeFingerprint( $value );
+			if ( $callInputTypes[$key] === null ) {
+				return null;
+			}
+		}
+		// Ensure that keys are re-ordered to the logical sequence regardless of input order
+		rsort( $callInputTypes, SORT_NATURAL );
+		return $typeStringOrObject->{ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION }
+		   . '(' . implode( ',', $callInputTypes ) . ')';
+	}
 }

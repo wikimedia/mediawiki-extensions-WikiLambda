@@ -890,6 +890,89 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 0, $res->numRows() );
 	}
 
+	private function injectRelatedZObjects(): void {
+		// Function Z401 has 3 arguments of types Z6, Z40, Z6,  and returns typed list of Z6.
+		$this->zobjectStore->insertRelatedZObjects( 'Z401', 'Z8', 'Z8K1',
+			'Z6', 'Z4' );
+		$this->zobjectStore->insertRelatedZObjects( 'Z401', 'Z8', 'Z8K1',
+			'Z40', 'Z4' );
+		$this->zobjectStore->insertRelatedZObjects( 'Z401', 'Z8', 'Z8K1',
+			'Z6', 'Z4' );
+		$this->zobjectStore->insertRelatedZObjects( 'Z401', 'Z8', 'Z8K2',
+			'Z881(Z6)', 'Z4' );
+	}
+
+	public function testInsertRelatedZObjects() {
+		$this->injectRelatedZObjects();
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->getPrimaryDatabase();
+		$res = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_related_zobject' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [
+				'wlzo_main_zid' => 'Z401',
+				'wlzo_key' => 'Z8K1'
+			] )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+		$this->assertSame( 3, $res->numRows() );
+
+		$res = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_related_zobject' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [
+				'wlzo_main_zid' => 'Z401',
+				'wlzo_key' => 'Z8K2'
+			] )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		$this->assertSame( 1, $res->numRows() );
+	}
+
+	public function testDeleteRelatedZObjects() {
+		$this->injectRelatedZObjects();
+
+		$this->zobjectStore->deleteRelatedZObjects( 'Z401', 'Z8', 'Z8K1' );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->getPrimaryDatabase();
+		$res = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_related_zobject' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [
+				'wlzo_main_zid' => 'Z401',
+				'wlzo_key' => 'Z8K1'
+			] )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+		$this->assertSame( 0, $res->numRows() );
+
+		$this->zobjectStore->deleteRelatedZObjects( 'Z401', 'Z8', 'Z8K2' );
+		$res = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_related_zobject' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [
+				'wlzo_main_zid' => 'Z401',
+				'wlzo_key' => 'Z8K2'
+			] )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+		$this->assertSame( 0, $res->numRows() );
+	}
+
+	public function testFindRelatedZObjectsByKey() {
+		$this->injectRelatedZObjects();
+
+		$res = $this->zobjectStore->findRelatedZObjectsByKeyAsList( 'Z401', 'Z8K1' );
+		$this->assertCount( 3, $res );
+		// On postgres the result may not in order
+		sort( $res );
+		$this->assertEquals( [ 'Z40', 'Z6', 'Z6' ], $res );
+
+		$res = $this->zobjectStore->findRelatedZObjectsByKeyAsList( 'Z401', 'Z8K2' );
+		$this->assertCount( 1, $res );
+		sort( $res );
+		$this->assertEquals( [ 'Z881(Z6)' ], $res );
+	}
+
 	public function testFetchZFunctionReturnType() {
 		$this->insertZids( [ 'Z17', 'Z801', 'Z844' ] );
 

@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda;
 
 use MediaWiki\CommentStore\CommentStoreComment;
 use MediaWiki\Config\ConfigException;
+use MediaWiki\Deferred\DeferredUpdates;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Installer\DatabaseUpdater;
@@ -61,7 +62,8 @@ class Hooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook 
 			'zobject_label_conflicts',
 			'zobject_function_join',
 			'ztester_results',
-			'zlanguages'
+			'zlanguages',
+			'zobject_join'
 		];
 
 		foreach ( $tables as $key => $table ) {
@@ -84,6 +86,7 @@ class Hooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook 
 		);
 
 		$updater->addExtensionUpdate( [ [ self::class, 'createInitialContent' ] ] );
+		$updater->addExtensionUpdate( [	[ self::class, 'initializeZObjectJoinTable' ] ] );
 	}
 
 	/**
@@ -248,26 +251,7 @@ class Hooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook 
 			return false;
 		}
 
-		// If we're in the installer, it won't have registered our extension's services yet.
-		try {
-			$services->get( 'WikiLambdaZObjectStore' );
-		} catch ( NoSuchServiceException $e ) {
-
-			$zObjectStore = new ZObjectStore(
-				$services->getDBLoadBalancerFactory(),
-				$services->getTitleFactory(),
-				$services->getWikiPageFactory(),
-				$services->getRevisionStore(),
-				$services->getUserGroupManager(),
-				LoggerFactory::getInstance( 'WikiLambda' )
-			);
-			$services->defineService(
-				'WikiLambdaZObjectStore',
-				static function () use ( $zObjectStore ) {
-					return $zObjectStore;
-				}
-			);
-		}
+		static::ensureZObjectStoreIsPresent( $services );
 
 		$pageUpdater = $page->newPageUpdater( $user );
 		$pageUpdater->setContent( SlotRecord::MAIN, $content );
@@ -294,4 +278,129 @@ class Hooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook 
 		return $pageUpdater->wasSuccessful();
 	}
 
+	/**
+	 * Installer/Updater callback to ensure that wikilambda_zobject_join has been populated for all
+	 * existing functions (Z8s). This is a callback so that it runs after the tables have been
+	 * created/updated.  This function can be removed when we are confident that all WikiLambda
+	 * installations have a fully populated wikilambda_zobject_join table.
+	 *
+	 * @param DatabaseUpdater $updater
+	 */
+	public static function initializeZObjectJoinTable( DatabaseUpdater $updater ) {
+		$updateKey = 'Initialized wikilambda_zobject_join for Z8s';
+
+		if ( !$updater->updateRowExists( $updateKey ) ) {
+			static::updateSecondaryTables( $updater, 'Z8' );
+			$updater->insertUpdateRow( $updateKey );
+		} else {
+			$updater->output( "...wikilambda_zobject_join table already initialized\n" );
+		}
+	}
+
+	/**
+	 * Ensures that secondary DB tables have been populated for ZObjects of the given zType.  For
+	 * each such ZObject, a new instance of ZObjectSecondaryDataUpdate is created and added to
+	 * DeferredUpdates.
+	 *
+	 * N.B. This function assumes that wikilambda_zobject_labels is fully populated; it calls
+	 * fetchZidsOfType to get a list of ZObjects of the given zType.
+	 *
+	 * Note there is a WikiLambda maintenance script (updateSecondaryTables.php) that provides
+	 * similar functionality (and with some code that duplicates what's here, which could not
+	 * easily be avoided).
+	 *
+	 * @param DatabaseUpdater $updater
+	 * @param string $zType The type of ZObject for which to do updates.
+	 * @param bool $verbose If true, print the ZID of each ZObject for which updating is done
+	 * (default = false)
+	 * @param bool $dryRun If true, do nothing, just print the output statements
+	 * (default = false)
+	 */
+	public static function updateSecondaryTables(
+		$updater,
+		$zType,
+		$verbose = false,
+		$dryRun = false
+	) {
+		$services = MediaWikiServices::getInstance();
+		static::ensureZObjectStoreIsPresent( $services );
+		$zObjectStore = WikiLambdaServices::getZObjectStore();
+		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+
+		$targets = $zObjectStore->fetchZidsOfType( $zType );
+
+		if ( count( $targets ) === 0 ) {
+			if ( !defined( 'MW_PHPUNIT_TEST' ) ) {
+				// Don't output during unit testing; causes the test to be labeled as risky.
+				$updater->output( "No ZObjects of type " . $zType . " for which secondary tables need updating\n" );
+			}
+			return;
+		}
+
+		if ( !defined( 'MW_PHPUNIT_TEST' ) ) {
+			// Don't output during unit testing; causes the test to be labeled as risky.
+			if ( $dryRun ) {
+				$updater->output( "Would have updated" );
+			} else {
+				$updater->output( "Updating" );
+			}
+			$updater->output( " secondary tables for " . count( $targets ) . " ZObjects of type " .
+				$zType . "\n" );
+		}
+
+		$offset = 0;
+		$queryLimit = 10;
+		do {
+			$contents = $zObjectStore->fetchBatchZObjects( array_slice( $targets, $offset,
+				$queryLimit ) );
+			$offset += $queryLimit;
+
+			foreach ( $contents as $zid => $persistentObject ) {
+				if ( $verbose ) {
+					$updater->output( "  $zid" );
+				}
+				if ( $dryRun ) {
+					continue;
+				}
+				$title = Title::newFromText( $zid, NS_MAIN );
+				$data = json_encode( $persistentObject->getSerialized() );
+				$content = $handler::makeContent( $data, $title );
+				$update = new ZObjectSecondaryDataUpdate( $title, $content );
+				DeferredUpdates::addUpdate( $update );
+			}
+			if ( $verbose ) {
+				$updater->output( "\n" );
+			}
+
+		} while ( count( $targets ) - $offset > 0 );
+	}
+
+	/**
+	 * Checks for the existence of WikiLambdaZObjectStore in $services, and creates it
+	 * if needed.
+	 *
+	 * @param MediaWikiServices $services
+	 */
+	private static function ensureZObjectStoreIsPresent( $services ) {
+		// If we're in the installer, it won't have registered our extension's services yet.
+		try {
+			$services->get( 'WikiLambdaZObjectStore' );
+		} catch ( NoSuchServiceException $e ) {
+
+			$zObjectStore = new ZObjectStore(
+				$services->getDBLoadBalancerFactory(),
+				$services->getTitleFactory(),
+				$services->getWikiPageFactory(),
+				$services->getRevisionStore(),
+				$services->getUserGroupManager(),
+				LoggerFactory::getInstance( 'WikiLambda' )
+			);
+			$services->defineService(
+				'WikiLambdaZObjectStore',
+				static function () use ( $zObjectStore ) {
+					return $zObjectStore;
+				}
+			);
+		}
+	}
 }

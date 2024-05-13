@@ -33,6 +33,7 @@ class ZObjectSecondaryDataRemoval extends DataUpdate {
 		$zObjectStore->deleteZObjectLabelsByZid( $zid );
 		$zObjectStore->deleteZObjectLabelConflictsByZid( $zid );
 		$zObjectStore->deleteZFunctionReference( $zid );
+		$zObjectStore->deleteRelatedZObjects( $zid );
 		$zObjectStore->deleteZLanguageFromLanguagesCache( $zid );
 
 		// Unregister the zid from any of the type-specific caches

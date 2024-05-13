@@ -974,6 +974,136 @@ class ZObjectStore {
 	}
 
 	/**
+	 * For the given main ZObject and key, return the related ZObjects.
+	 *
+	 * Related ZObjects may be ZIDs or string encodings of
+	 * compound ZObjects, such as "Z881(Z6)" for typed list of strings.
+	 *
+	 * @param string $mainZid ZID of the main ZObject
+	 * @param string $key ZID of the key that indicates the relationship
+	 * @return string[]
+	 */
+	public function findRelatedZObjectsByKeyAsList( $mainZid, $key ) {
+		$res = $this->findRelatedZObjectsByKey( $mainZid, $key );
+		$related = [];
+
+		foreach ( $res as $row ) {
+			$related[] = $row->wlzo_related_zobject;
+		}
+		return $related;
+	}
+
+	/**
+	 * For the given main ZObject and key, return the related ZObjects.
+	 *
+	 * Related ZObjects may be ZIDs or string encodings of
+	 * compound ZObjects, such as "Z881(Z6)" for typed list of strings.
+	 *
+	 * @param string $mainZid ZID of the main ZObject
+	 * @param string $key ZID of the key that indicates the relationship
+	 * @param string|null $continue Id to start. If null (the default), start from the first result.
+	 * @param int|null $limit Maximum number of results to return. Defaults to 10
+	 * @return IResultWrapper
+	 */
+	public function findRelatedZObjectsByKey( $mainZid, $key, $continue = null, $limit = 10 ) {
+		$dbr = $this->dbProvider->getReplicaDatabase();
+
+		$conditions = [
+			'wlzo_main_zid' => $mainZid,
+			'wlzo_key' => $key
+		];
+
+		// Set minimum id bound if we are continuing a paged result
+		if ( $continue != null ) {
+			$conditions[] = "wlzo_main_zid >= $continue";
+		}
+		$res = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_related_zobject', 'wlzo_main_zid' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( $conditions )
+			->orderBy( 'wlzo_main_zid', SelectQueryBuilder::SORT_ASC )
+			->limit( $limit )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		return $res;
+	}
+
+	/**
+	 * Add a row to the database for a main ZObject, a related ZObject, the types of each,
+	 * and the relationship between them.
+	 *
+	 * Example:
+	 *   'Z401', 'Z8', 'Z8K2', 'Z881(Z6)', 'Z4'
+	 * indicates that 'Z881(Z6)', the related ZObject, is the 'Z8K2' (return type) of 'Z401',
+	 * 'Z401' has type 'Z8', and 'Z881(Z6)' has type 'Z4'
+	 *
+	 * @param string $mainZid ZID of the main ZObject
+	 * @param string $mainType ZID of the type of the main ZObject
+	 * @param string $key ZID of a key indicating the relationship between main and related ZObjects
+	 * @param string $relatedZObject ZID or string encoding of the related ZObject
+	 * @param string $relatedType ZID of the type of the related ZObject
+	 * @return void
+	 */
+	public function insertRelatedZObjects( $mainZid, $mainType, $key, $relatedZObject, $relatedType ) {
+		$dbw = $this->dbProvider->getPrimaryDatabase();
+
+		$dbw->newInsertQueryBuilder()
+			->insertInto( 'wikilambda_zobject_join' )
+			->rows( [
+				[
+					'wlzo_main_zid' => $mainZid,
+					'wlzo_main_type' => $mainType,
+					'wlzo_key' => $key,
+					'wlzo_related_zobject' => $relatedZObject,
+					'wlzo_related_type' => $relatedType
+				]
+			] )
+			->caller( __METHOD__ )->execute();
+	}
+
+	/**
+	 * Delete all rows matching all of the non-null input values
+	 *
+	 * @param ?string $mainZid ZID of the main ZObject
+	 * @param ?string $mainType ZID of the type of the main ZObject
+	 * @param ?string $key ZID of a key indicating the relation between main and related ZObjects
+	 * @param ?string $relatedZObject The related ZObject
+	 * @param ?string $relatedType ZID of the type of the related ZObject
+	 * @return void
+	 */
+	public function deleteRelatedZObjects(
+		?string $mainZid,
+		?string $mainType = null,
+		?string $key = null,
+		?string $relatedZObject = null,
+		?string $relatedType = null
+	) {
+		$dbw = $this->dbProvider->getPrimaryDatabase();
+		$conditions = [];
+		if ( $mainZid !== null ) {
+			$conditions[] = "wlzo_main_zid = " . $dbw->addQuotes( $mainZid );
+		}
+		if ( $mainType !== null ) {
+			$conditions[] = "wlzo_main_type = " . $dbw->addQuotes( $mainType );
+		}
+		if ( $key !== null ) {
+			$conditions[] = "wlzo_key = " . $dbw->addQuotes( $key );
+		}
+		if ( $relatedZObject !== null ) {
+			$conditions[] = "wlzo_related_zobject = " . $dbw->addQuotes( $relatedZObject );
+		}
+		if ( $relatedType !== null ) {
+			$conditions[] = "wlzo_related_type = " . $dbw->addQuotes( $relatedType );
+		}
+
+		$dbw->newDeleteQueryBuilder()
+			->deleteFrom( 'wikilambda_zobject_join' )
+			->where( $conditions )
+			->caller( __METHOD__ )->execute();
+	}
+
+	/**
 	 * Search test run results in the secondary tester results table; the latest result (highest
 	 * database ID) will be used.
 	 *
