@@ -9,6 +9,7 @@
 const { CdxRadio } = require( '@wikimedia/codex' );
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	ZBoolean = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZBoolean.vue' );
 
@@ -17,7 +18,8 @@ describe( 'ZBoolean', () => {
 	beforeEach( () => {
 		getters = {
 			getZBooleanValue: createGettersWithFunctionsMock( 14 ),
-			getLabel: createGettersWithFunctionsMock( 'false' )
+			getLabel: createGettersWithFunctionsMock( 'false' ),
+			getUserLangCode: createGetterMock( 'en' )
 		};
 		global.store.hotUpdate( {
 			getters: getters

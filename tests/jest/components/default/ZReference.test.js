@@ -8,6 +8,7 @@
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	ZReference = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZReference.vue' );
 
@@ -18,7 +19,8 @@ describe( 'ZReference', () => {
 			getLabel: createGettersWithFunctionsMock( 'String' ),
 			getParentRowId: createGettersWithFunctionsMock( 2 ),
 			getZReferenceTerminalValue: createGettersWithFunctionsMock( 'Z6' ),
-			getZObjectKeyByRowId: createGettersWithFunctionsMock( 'Z1K1' )
+			getZObjectKeyByRowId: createGettersWithFunctionsMock( 'Z1K1' ),
+			getUserLangCode: createGetterMock( 'en' )
 		};
 		global.store.hotUpdate( {
 			getters: getters
@@ -94,11 +96,9 @@ describe( 'ZReference', () => {
 		} );
 
 		it( 'displays a selector and emits the value with an empty keyPath if its key is a Z_REFERENCE_ID (Z9K1)', async () => {
-			getters = {
-				getLabel: createGettersWithFunctionsMock( 'String' ),
-				getZReferenceTerminalValue: createGettersWithFunctionsMock( 'Z6' ),
-				getZObjectKeyByRowId: createGettersWithFunctionsMock( 'Z9K1' )
-			};
+			getters.getLabel = createGettersWithFunctionsMock( 'String' );
+			getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( 'Z6' );
+			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z9K1' );
 			global.store.hotUpdate( {
 				getters: getters
 			} );

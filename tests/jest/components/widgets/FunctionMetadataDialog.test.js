@@ -8,6 +8,7 @@
 
 const { config, mount } = require( '@vue/test-utils' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	FunctionMetadataDialog = require( '../../../../resources/ext.wikilambda.edit/components/widgets/FunctionMetadataDialog.vue' ),
 	metadata = require( '../../fixtures/metadata.js' );
 
@@ -22,6 +23,7 @@ describe( 'FunctionMetadataDialog', () => {
 
 	beforeEach( () => {
 		getters = {
+			getUserLangCode: createGetterMock( 'en' ),
 			getLabelData: createGettersWithFunctionsMock(),
 			getLabel: () => ( zid ) => {
 				const labels = {

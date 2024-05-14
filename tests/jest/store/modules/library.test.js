@@ -7,6 +7,7 @@
 'use strict';
 
 const libraryModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/library.js' ),
+	languagesModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/languages.js' ),
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	mockApiResponseFor = require( '../../fixtures/mocks.js' ).mockApiResponseFor,
 	mockApiZids = require( '../../fixtures/mocks.js' ).mockApiZids,
@@ -32,7 +33,10 @@ describe( 'library module', function () {
 					return libraryModule.mutations[ mutationType ]( state, payload );
 				}
 			} ),
-			getters: {},
+			getters: {
+				getUserRequestedLang: languagesModule.getters.getUserRequestedLang( state ),
+				getUserLangZid: languagesModule.getters.getUserLangZid( state )
+			},
 			state: state,
 			rootGetters: [ 'en' ]
 		} );
@@ -42,7 +46,7 @@ describe( 'library module', function () {
 
 		describe( 'getLabel', function () {
 			beforeEach( function () {
-				context.getters.getLabelData = libraryModule.getters.getLabelData( state );
+				context.getters.getLabelData = libraryModule.getters.getLabelData( state, context.getters );
 			} );
 
 			it( 'Returns the zid or key if label is not available in the state', function () {
@@ -63,6 +67,14 @@ describe( 'library module', function () {
 			it( 'Returns the label data if available in the state', function () {
 				state.labels = mockLabels;
 				expect( libraryModule.getters.getLabelData( state, context.getters )( 'Z6' ) ).toEqual( { zid: 'Z6', label: 'String', lang: 'Z1002' } );
+			} );
+
+			it( 'Returns raw zids when the requested language is qqx', function () {
+				state.labels = mockLabels;
+				mw.language.getFallbackLanguageChain = () => [ 'qqx', 'en' ];
+				context.getters.getUserRequestedLang = languagesModule.getters.getUserRequestedLang( state );
+				context.getters.getUserLangZid = languagesModule.getters.getUserLangZid( state );
+				expect( libraryModule.getters.getLabelData( state, context.getters )( 'Z6' ) ).toEqual( { zid: 'Z6', label: '(Z6)', lang: 'Z1002' } );
 			} );
 		} );
 

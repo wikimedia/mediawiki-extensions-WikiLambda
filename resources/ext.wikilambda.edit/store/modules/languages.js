@@ -22,6 +22,14 @@ module.exports = exports = {
 		 */
 		getUserLangZid: function () {
 			return mw.config.get( 'wgWikiLambda' ).zlangZid;
+		},
+		/**
+		 * Return user requested lang, which might not be a valid WF language.
+		 *
+		 * @return {string}
+		 */
+		getUserRequestedLang: function () {
+			return mw.language.getFallbackLanguageChain()[ 0 ];
 		}
 	}
 };

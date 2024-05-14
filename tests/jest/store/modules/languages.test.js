@@ -18,5 +18,13 @@ describe( 'Languages Vuex module', function () {
 		it( 'should return the user language zid as defined in wgWikiLambda config variables', function () {
 			expect( languagesModule.getters.getUserLangZid() ).toBe( 'Z1002' );
 		} );
+
+		it( 'should return the first requested user language code from the fallback chain', function () {
+			mw.language.getFallbackLanguageChain = () => [ 'qqx', 'en' ];
+			expect( languagesModule.getters.getUserRequestedLang() ).toBe( 'qqx' );
+
+			mw.language.getFallbackLanguageChain = () => [ 'en' ];
+			expect( languagesModule.getters.getUserRequestedLang() ).toBe( 'en' );
+		} );
 	} );
 } );
