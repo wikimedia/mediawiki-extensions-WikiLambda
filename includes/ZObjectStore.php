@@ -262,6 +262,12 @@ class ZObjectStore {
 			$status = $page->doUserEditContent( $content, $user, $summary, $flags );
 		} catch ( \Exception $e ) {
 			// Error: Database or a deeper MediaWiki error, e.g. a general editing rate limit
+
+			$this->logger->warning(
+				__METHOD__ . ' triggered an error on save, e.g. rate limited, for page "' . $zid . '"',
+				[ 'responseError' => $e ]
+			);
+
 			$error = ZErrorFactory::createZErrorInstance(
 				ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
 				// TODO (T362236): Add the rendering language as a parameter, don't default to English
