@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
@@ -50,7 +51,9 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
 			. '"Z2K2": "hello",'
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
-		$page = $this->zobjectStore->createNewZObject( $input, 'Create summary', $sysopUser );
+		$page = $this->zobjectStore->createNewZObject(
+			RequestContext::getMain(), $input, 'Create summary', $sysopUser
+		);
 		$this->assertTrue( $page instanceof ZObjectPage );
 		$this->assertTrue( $page->isOK() );
 
@@ -83,7 +86,9 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
 
 		// First revision:
-		$this->zobjectStore->createNewZObject( $input, 'Create summary', $sysopUser );
+		$this->zobjectStore->createNewZObject(
+			RequestContext::getMain(), $input, 'Create summary', $sysopUser
+		);
 		$zobject = $this->zobjectStore->fetchZObjectByTitle( $title );
 
 		// We change the text representation of the ZObject to update it in the DB
@@ -91,7 +96,9 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$secondObjectText = str_replace( "hello", "bye", $zobject->getText() );
 
 		// Second revision:
-		$page = $this->zobjectStore->updateZObject( $zid, $secondObjectText, 'Update summary', $sysopUser );
+		$page = $this->zobjectStore->updateZObject(
+			RequestContext::getMain(), $zid, $secondObjectText, 'Update summary', $sysopUser
+		);
 
 		// Get revision numbers:
 		$revisions = $revisionStore->getRevisionIdsBetween( $page->getWikiPage()->getId() );
@@ -124,7 +131,9 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
 			. '"Z2K2": "hello",'
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
-		$page = $this->zobjectStore->createNewZObject( $input, 'Create summary', $sysopUser );
+		$page = $this->zobjectStore->createNewZObject(
+			RequestContext::getMain(), $input, 'Create summary', $sysopUser
+		);
 		$this->assertTrue( $page instanceof ZObjectPage );
 		$this->assertTrue( $page->isOK() );
 
@@ -132,7 +141,9 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
 			. '"Z2K2": "world",'
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
-		$page = $this->zobjectStore->createNewZObject( $input, 'Create summary', $sysopUser );
+		$page = $this->zobjectStore->createNewZObject(
+			RequestContext::getMain(), $input, 'Create summary', $sysopUser
+		);
 		$this->assertTrue( $page instanceof ZObjectPage );
 		$this->assertTrue( $page->isOK() );
 
@@ -166,7 +177,9 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	 */
 	public function testCreateNewZObject( $input, $expected ) {
 		$sysopUser = $this->getTestSysop()->getUser();
-		$status = $this->zobjectStore->createNewZObject( $input, 'Create summary', $sysopUser );
+		$status = $this->zobjectStore->createNewZObject(
+			RequestContext::getMain(), $input, 'Create summary', $sysopUser
+		);
 
 		$this->assertTrue( $status instanceof ZObjectPage );
 		if ( $expected === true ) {
@@ -216,7 +229,9 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			. ' "Z2K2": "hello",'
 			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
 
-		$page = $this->zobjectStore->createNewZObject( $zObject, 'Create ZObject', $sysopUser );
+		$page = $this->zobjectStore->createNewZObject(
+			RequestContext::getMain(), $zObject, 'Create ZObject', $sysopUser
+		);
 		$this->assertTrue( $page instanceof ZObjectPage );
 		$this->assertTrue( $page->isOK() );
 
@@ -236,6 +251,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 		// We try to create a new ZObject of a banned ZID (Z401), per DISALLOWED_ROOT_ZOBJECTS
 		$status = $this->zobjectStore->updateZObject(
+			RequestContext::getMain(),
 			$zid,
 			$input,
 			'Creation summary',
@@ -246,6 +262,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 		// We try to create a new but invalid ZObject, this time as the system
 		$status = $this->zobjectStore->updateZObjectAsSystemUser(
+			RequestContext::getMain(),
 			$zid,
 			$input,
 			'Creation summary',
@@ -264,7 +281,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
 
 		// We create a new ZObject
-		$this->zobjectStore->createNewZObject( $input, 'Create summary', $sysopUser );
+		$this->zobjectStore->createNewZObject( RequestContext::getMain(), $input, 'Create summary', $sysopUser );
 		$zobject = $this->zobjectStore->fetchZObjectByTitle( $title );
 
 		$revisionStore = $this->getServiceContainer()->getRevisionStore();
@@ -274,7 +291,9 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$zobjectNewText = str_replace( "hello", "bye", $zobject->getText() );
 
 		// Update the ZObject
-		$this->zobjectStore->updateZObject( $zid, $zobjectNewText, 'Update summary', $sysopUser );
+		$this->zobjectStore->updateZObject(
+			RequestContext::getMain(), $zid, $zobjectNewText, 'Update summary', $sysopUser
+		);
 
 		// HACK (T343717): Re-get the Title so it's not cached on what the latest revision is
 		$title = Title::newFromText( $zid, NS_MAIN );
@@ -292,6 +311,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 	public function testUpdateZObject_nonTitle() {
 		$status = $this->zobjectStore->updateZObject(
+			RequestContext::getMain(),
 			'',
 			'',
 			'Update summary',
@@ -304,6 +324,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	public function testUpdateZObject_nonContent() {
 		$zid = $this->zobjectStore->getNextAvailableZid();
 		$status = $this->zobjectStore->updateZObject(
+			RequestContext::getMain(),
 			$zid,
 			'',
 			'Update summary',
@@ -316,6 +337,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	public function testUpdateZObject_badContent() {
 		$zid = $this->zobjectStore->getNextAvailableZid();
 		$status = $this->zobjectStore->updateZObject(
+			RequestContext::getMain(),
 			$zid,
 			'{"Z1K1":"Z6"}',
 			'Update summary',
@@ -332,6 +354,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
 
 		$status = $this->zobjectStore->updateZObject(
+			RequestContext::getMain(),
 			$zid,
 			$input,
 			'Update summary',
@@ -350,6 +373,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
 
 		$status = $this->zobjectStore->updateZObject(
+			RequestContext::getMain(),
 			$zid,
 			$input,
 			'Update summary',
@@ -367,6 +391,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
 
 		$status = $this->zobjectStore->updateZObject(
+			RequestContext::getMain(),
 			$zid,
 			$input,
 			'Update summary',
@@ -398,6 +423,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
 
 		$status = $this->zobjectStore->createNewZObject(
+			RequestContext::getMain(),
 			$input,
 			'Creation summary',
 			$this->getTestUser()->getUser()
@@ -425,6 +451,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
 
 		$status = $this->zobjectStore->createNewZObject(
+			RequestContext::getMain(),
 			$input,
 			'Creation summary',
 			$this->getTestUser()->getUser()
@@ -452,6 +479,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
 
 		$status = $this->zobjectStore->createNewZObject(
+			RequestContext::getMain(),
 			$input,
 			'Creation summary',
 			$this->getTestUser()->getUser()
@@ -480,6 +508,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
 
 		$status = $this->zobjectStore->createNewZObject(
+			RequestContext::getMain(),
 			$input,
 			'Creation summary',
 			$this->getTestUser()->getUser()
@@ -501,6 +530,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
 
 		$status = $this->zobjectStore->createNewZObject(
+			RequestContext::getMain(),
 			$input,
 			'Creation summary',
 			$this->getTestUser()->getUser()
@@ -521,6 +551,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
 
 		$status = $this->zobjectStore->createNewZObject(
+			RequestContext::getMain(),
 			$input,
 			'Creation summary',
 			$this->getTestUser()->getUser()

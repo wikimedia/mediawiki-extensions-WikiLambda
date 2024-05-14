@@ -11,6 +11,7 @@ namespace MediaWiki\Extension\WikiLambda\Jobs;
 
 use GenericParameterJob;
 use Job;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
@@ -100,7 +101,7 @@ class UpdateImplementationsJob extends Job implements GenericParameterJob {
 		// TODO (T330032): Consider accessing wfMessage as an injected service
 		$updatingComment = wfMessage( 'wikilambda-updated-implementations-summary' )
 			->inLanguage( 'en' )->text();
-		$editStatus = $zObjectStore->updateZObjectAsSystemUser( $functionZid,
+		$editStatus = $zObjectStore->updateZObjectAsSystemUser( RequestContext::getMain(), $functionZid,
 			$targetObject->getZObject()->__toString(), $updatingComment );
 
 		$this->logger->info(

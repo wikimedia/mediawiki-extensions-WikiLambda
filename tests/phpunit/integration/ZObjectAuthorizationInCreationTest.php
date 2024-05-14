@@ -9,11 +9,12 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
-use FormatJson;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\Title\Title;
 
 /**
@@ -115,6 +116,7 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 
 		// Attempt to make the creation
 		$attemptedCreation = $this->zobjectStore->updateZObject(
+			RequestContext::getMain(),
 			$zid,
 			$createContent,
 			'Insert new object',
@@ -377,6 +379,7 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 		$fileData = json_decode( file_get_contents( $filePath ) );
 		$month = $fileData->month;
 		$typePage = $this->zobjectStore->createNewZObject(
+			RequestContext::getMain(),
 			FormatJson::encode( $month ),
 			'Insert month type',
 			$functioneer

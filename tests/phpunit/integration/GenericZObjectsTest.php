@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
@@ -414,7 +415,7 @@ EOT;
 	}
 }
 EOT;
-		$page = $store->createNewZObject( $newLang, 'New ZLang', $maintainerUser );
+		$page = $store->createNewZObject( RequestContext::getMain(), $newLang, 'New ZLang', $maintainerUser );
 		$this->assertTrue(
 			$page->isOK(),
 			'ZLanguage with null (Z0) self-reference has been created'
@@ -443,7 +444,7 @@ EOT;
 	}
 }
 EOT;
-		$page = $store->createNewZObject( $newZObject, 'New ZObject', $maintainerUser );
+		$page = $store->createNewZObject( RequestContext::getMain(), $newZObject, 'New ZObject', $maintainerUser );
 		$this->assertTrue(
 			$page->isOK(),
 			'ZObject with labels in the two previously inserted languages has been created'

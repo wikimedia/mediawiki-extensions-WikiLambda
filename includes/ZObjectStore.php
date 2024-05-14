@@ -26,6 +26,7 @@ use MediaWiki\Title\TitleArrayFromResult;
 use MediaWiki\Title\TitleFactory;
 use MediaWiki\User\User;
 use MediaWiki\User\UserGroupManager;
+use MessageLocalizer;
 use Psr\Log\LoggerInterface;
 use Wikimedia\Rdbms\IConnectionProvider;
 use Wikimedia\Rdbms\IExpression;
@@ -160,22 +161,24 @@ class ZObjectStore {
 	/**
 	 * Create a new ZObject, with a newly assigned ZID, and store it in the Database
 	 *
+	 * @param MessageLocalizer $context The context of the action operation, for localisation of messages
 	 * @param string $data
 	 * @param string $summary
 	 * @param User $user
 	 * @return ZObjectPage
 	 */
-	public function createNewZObject( string $data, string $summary, User $user ) {
+	public function createNewZObject( MessageLocalizer $context, string $data, string $summary, User $user ) {
 		// Find all placeholder ZIDs and ZKeys and replace those with the next available ZID
 		$zid = $this->getNextAvailableZid();
 		$zPlaceholderRegex = '/\"' . ZTypeRegistry::Z_NULL_REFERENCE . '(K[1-9]\d*)?\"/';
 		$zObjectString = preg_replace( $zPlaceholderRegex, "\"$zid$1\"", $data );
-		return $this->updateZObject( $zid, $zObjectString, $summary, $user, EDIT_NEW );
+		return $this->updateZObject( $context, $zid, $zObjectString, $summary, $user, EDIT_NEW );
 	}
 
 	/**
 	 * Create or update a ZObject it in the Database
 	 *
+	 * @param MessageLocalizer $context The context of the action operation, for localisation of messages
 	 * @param string $zid The ZID of the page to create/update, e.g. 'Z12345'
 	 * @param string $data The ZObject's JSON to store, in string form, i.e. "{ Z1K1: "Z2", Z2K1: … }"
 	 * @param string $summary An edit summary to display in the page's history, Recent Changes, watchlists, etc.
@@ -183,7 +186,9 @@ class ZObjectStore {
 	 * @param int $flags Either EDIT_UPDATE (default) if editing or EDIT_NEW if creating a page
 	 * @return ZObjectPage
 	 */
-	public function updateZObject( string $zid, string $data, string $summary, User $user, int $flags = EDIT_UPDATE ) {
+	public function updateZObject(
+		MessageLocalizer $context, string $zid, string $data, string $summary, User $user, int $flags = EDIT_UPDATE
+	) {
 		$title = $this->titleFactory->newFromText( $zid, NS_MAIN );
 
 		// ERROR: Title is empty or invalid
@@ -279,6 +284,11 @@ class ZObjectStore {
 		}
 
 		if ( !$status->isOK() ) {
+
+			// TODO (T362246): Dependency-inject
+			$statusFormatter = MediaWikiServices::getInstance()->getFormatterFactory()
+				->getStatusFormatter( $context );
+
 			// Error: Other doUserEditContent related errors
 
 			$this->logger->info(
@@ -288,7 +298,7 @@ class ZObjectStore {
 
 			$error = ZErrorFactory::createZErrorInstance(
 				ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
-				[ 'message' => $status->getMessage() ]
+				[ 'message' => $statusFormatter->getHTML( $status ) ]
 			);
 			return ZObjectPage::newFatal( $error );
 		}
@@ -300,13 +310,16 @@ class ZObjectStore {
 	/**
 	 * Create or update a ZObject it in the Database as a System User
 	 *
+	 * @param MessageLocalizer $context The context of the action operation, for localisation of messages
 	 * @param string $zid
 	 * @param string $data
 	 * @param string $summary
 	 * @param int $flags
 	 * @return ZObjectPage
 	 */
-	public function updateZObjectAsSystemUser( string $zid, string $data, string $summary, int $flags = EDIT_UPDATE ) {
+	public function updateZObjectAsSystemUser(
+		MessageLocalizer $context, string $zid, string $data, string $summary, int $flags = EDIT_UPDATE
+	) {
 		$creatingUserName = wfMessage( 'wikilambda-systemuser' )->inLanguage( 'en' )->text();
 		// System user must belong to all privileged groups in order to
 		// perform all zobject creation and editing actions:
@@ -315,7 +328,7 @@ class ZObjectStore {
 		$this->userGroupManager->addUserToGroup( $user, 'functionmaintainer' );
 		$this->userGroupManager->addUserToGroup( $user, 'functioneer' );
 		$this->userGroupManager->addUserToGroup( $user, 'wikifunctions-staff' );
-		return $this->updateZObject( $zid, $data, $summary, $user, $flags );
+		return $this->updateZObject( $context, $zid, $data, $summary, $user, $flags );
 	}
 
 	/**

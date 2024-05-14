@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Jobs;
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Jobs\UpdateImplementationsJob;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
@@ -142,7 +143,11 @@ class UpdateImplementationsJobTest extends WikiLambdaIntegrationTestCase {
 		// Update persistent storage
 		$creatingComment = wfMessage( 'wikilambda-updated-implementations-summary' )
 			->inLanguage( 'en' )->text();
-		$this->store->updateZObjectAsSystemUser( $functionZid, $targetObject->getZObject()->__toString(),
-			$creatingComment );
+		$this->store->updateZObjectAsSystemUser(
+			RequestContext::getMain(),
+			$functionZid,
+			$targetObject->getZObject()->__toString(),
+			$creatingComment
+		);
 	}
 }

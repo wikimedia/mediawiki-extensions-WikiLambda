@@ -9,12 +9,13 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
-use FormatJson;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectPage;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\Title\Title;
 use MediaWiki\User\User;
 
@@ -129,6 +130,7 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 
 		// Insert new function
 		$functionPage = $this->zobjectStore->createNewZObject(
+			RequestContext::getMain(),
 			FormatJson::encode( $function ),
 			'Insert function',
 			$user
@@ -236,6 +238,7 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 
 		// Insert new function
 		$functionPage = $this->zobjectStore->createNewZObject(
+			RequestContext::getMain(),
 			FormatJson::encode( $function ),
 			'Insert function',
 			$user
@@ -327,6 +330,7 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 
 		// Insert new function
 		$functionPage = $this->zobjectStore->createNewZObject(
+			RequestContext::getMain(),
 			FormatJson::encode( $originalFunction ),
 			'Insert function',
 			$user
@@ -478,6 +482,7 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 
 		// Insert new enum type
 		$typePage = $this->zobjectStore->createNewZObject(
+			RequestContext::getMain(),
 			FormatJson::encode( $month ),
 			'Insert month type',
 			$functioneer
@@ -549,6 +554,7 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 
 		// Insert new type
 		$typePage = $this->zobjectStore->createNewZObject(
+			RequestContext::getMain(),
 			FormatJson::encode( $type ),
 			'Insert type',
 			$functioneer
@@ -629,6 +635,7 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 
 		// Try to update the already existing object
 		$page = $this->zobjectStore->updateZObject(
+			RequestContext::getMain(),
 			$zid,
 			FormatJson::encode( $newValue ),
 			'Update summary',

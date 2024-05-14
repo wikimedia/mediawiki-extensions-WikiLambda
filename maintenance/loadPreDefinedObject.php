@@ -11,6 +11,7 @@
  * @license MIT
  */
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -164,6 +165,8 @@ class LoadPreDefinedObject extends Maintenance {
 		// Naturally sort, so Z2 gets created before Z12 etc.
 		natsort( $initialDataToLoadListing );
 
+		$context = RequestContext::getMain();
+
 		$success = 0;
 		$failure = 0;
 		$skipped = 0;
@@ -171,7 +174,9 @@ class LoadPreDefinedObject extends Maintenance {
 
 			$zid = substr( $filename, 0, -5 );
 
-			switch ( $this->makeEdit( $zid, $path, $titleFactory, $zObjectStore, $force, $dependencies, $tracker ) ) {
+			switch (
+				$this->makeEdit( $context, $zid, $path, $titleFactory, $zObjectStore, $force, $dependencies, $tracker )
+			) {
 				case 1:
 					$success++;
 					break;
@@ -204,6 +209,7 @@ class LoadPreDefinedObject extends Maintenance {
 
 	// phpcs:disable MediaWiki.Commenting.FunctionComment.MissingDocumentationPrivate
 	private function makeEdit(
+		MessageLocalizer $context,
 		string $zid,
 		string $path,
 		TitleFactory $titleFactory,
@@ -242,7 +248,7 @@ class LoadPreDefinedObject extends Maintenance {
 				array_push( $tracker, $dep );
 				// Don't force dependencies if they are already inserted, set to false
 				$depSuccess = $this->makeEdit(
-					$dep, $path, $titleFactory, $zObjectStore, false, $dependencies, $tracker );
+					$context, $dep, $path, $titleFactory, $zObjectStore, false, $dependencies, $tracker );
 				switch ( $depSuccess ) {
 					case 1:
 						$this->output( "Dependency: $dep successfully inserted.\n" );
@@ -267,6 +273,7 @@ class LoadPreDefinedObject extends Maintenance {
 
 		// And we create or update the ZObject
 		$response = $zObjectStore->updateZObjectAsSystemUser(
+			/* MessageLocalizer context */ $context,
 			/* String zid */ $zid,
 			/* String content */ $data,
 			/* Edit summary */ $editSummary,
