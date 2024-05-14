@@ -37,12 +37,18 @@ class ContentBlock {
 	 */
 	async getSectionOfContentBlock( label, parentSection ) {
 		const resolvedParentSection = await parentSection;
+		let sectionElement;
+
 		if ( !resolvedParentSection ) {
 			// setting this because the getter returns a Promise
 			const contentBlock = await this.contentBlock;
-			return await contentBlock.$( `.//label[text()="${ label }"]/parent::div/parent::div` );
+			sectionElement = await contentBlock.$( `.//label[text()="${ label }"]/parent::div/parent::div` );
+		} else {
+			sectionElement = await resolvedParentSection.$( `.//label[text()="${ label }"]/parent::div/parent::div` );
 		}
-		return await resolvedParentSection.$( `.//label[text()="${ label }"]/parent::div/parent::div` );
+
+		await sectionElement.waitForDisplayed();
+		return sectionElement;
 	}
 
 	/**

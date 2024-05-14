@@ -12,16 +12,17 @@
  */
 
 'use strict';
-const ElementActions = require( '../utils/ElementActions' );
-const InputDropdown = require( './InputDropdown' );
+const ElementActions = require( '../utils/ElementActions' ),
+	InputDropdown = require( './InputDropdown' ),
+	i18n = require( '../utils/i18n.js' )();
 
 class AboutBlock {
 	get aboutBlock() {
-		return $( 'div.ext-wikilambda-about' );
+		return $( '[data-testid="about"]' );
 	}
 
 	get editButton() {
-		return this.aboutBlock.$( './/button[@aria-label="Edit"]' );
+		return this.aboutBlock.$( '[data-testid="open-dialog-button"]' );
 	}
 
 	get detailsInputDialogBox() {
@@ -29,11 +30,11 @@ class AboutBlock {
 	}
 
 	get languageInputSelector() {
-		return this.detailsInputDialogBox.$( './/input[@placeholder="Select language"]' );
+		return this.detailsInputDialogBox.$( '[data-testid="edit-label-dialog"] [data-testid="z-object-selector-lookup"]' );
 	}
 
 	get labelInputSelector() {
-		return this.detailsInputDialogBox.$( './/input[@placeholder="Enter name"]' );
+		return this.detailsInputDialogBox.$( '[data-testid="text-input"]' );
 	}
 
 	get descriptionInputSelector() {
@@ -41,19 +42,19 @@ class AboutBlock {
 	}
 
 	get aliasInputSelector() {
-		return this.detailsInputDialogBox.$( './/input[@placeholder="Enter aliases" or @placeholder=""]' );
+		return this.detailsInputDialogBox.$( '[data-testid="chip-input"]' );
 	}
 
 	get doneButton() {
-		return this.detailsInputDialogBox.$( 'button=Done' );
+		return this.detailsInputDialogBox.$( `button=${ i18n[ 'wikilambda-about-widget-done-button' ] }` );
 	}
 
 	get cancelButton() {
-		return this.detailsInputDialogBox.$( 'button=Cancel' );
+		return this.detailsInputDialogBox.$( `button=${ i18n[ 'wikilambda-cancel' ] }` );
 	}
 
 	get showLanguagesButton() {
-		return this.aboutBlock.$( './/button[contains(text(),"languages")]' );
+		return this.aboutBlock.$( '[data-testid="languages-button"]' );
 	}
 
 	get languageListDialogBox() {

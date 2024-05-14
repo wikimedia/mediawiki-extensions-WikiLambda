@@ -23,6 +23,7 @@
 			ref="chipInput"
 			v-model="newText"
 			class="ext-wikilambda-chip-container__input"
+			data-testid="chip-input"
 			:disabled="disabled"
 			:aria-label="inputAriaLabel"
 			:placeholder="!hasChips ? inputPlaceholder : ''"
