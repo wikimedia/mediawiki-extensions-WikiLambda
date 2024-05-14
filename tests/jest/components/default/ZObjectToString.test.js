@@ -19,6 +19,7 @@ describe( 'ZObjectToString', () => {
 		getters = {
 			getUserLangCode: createGetterMock( 'en' ),
 			getLabel: createGettersWithFunctionsMock( '' ),
+			getExpectedTypeOfKey: createGettersWithFunctionsMock( 'Z1' ),
 			getZObjectTypeByRowId: createGettersWithFunctionsMock( 'Z6' ),
 			getZObjectKeyByRowId: createGettersWithFunctionsMock( 'Z6K1' ),
 			getZStringTerminalValue: createGettersWithFunctionsMock( 'the final stringdown' ),

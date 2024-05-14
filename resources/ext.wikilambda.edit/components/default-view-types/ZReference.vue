@@ -63,7 +63,8 @@ module.exports = exports = defineComponent( {
 			'getLabel',
 			'getParentRowId',
 			'getZObjectKeyByRowId',
-			'getZReferenceTerminalValue'
+			'getZReferenceTerminalValue',
+			'getUserLangCode'
 		] ),
 		{
 			/**
@@ -91,7 +92,7 @@ module.exports = exports = defineComponent( {
 			 * @return {string}
 			 */
 			valueUrl: function () {
-				return '/view/' + ( mw.language.getFallbackLanguageChain()[ 0 ] || 'en' ) + '/' + this.value;
+				return '/view/' + this.getUserLangCode + '/' + this.value;
 			},
 
 			/**

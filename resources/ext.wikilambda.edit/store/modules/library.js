@@ -183,14 +183,19 @@ module.exports = exports = {
 		 * If not available, returns undefined.
 		 *
 		 * @param {Object} state
+		 * @param {Object} getters
 		 * @return {Function}
 		 */
-		getLabelData: function ( state ) {
+		getLabelData: function ( state, getters ) {
 			/**
 			 * @param {string} id of the ZPersistentObject, ZKey or ZArgumentDeclaration
 			 * @return {LabelData|undefined} contains zid, label and lang properties
 			 */
 			function findLabelData( id ) {
+				// Print raw zids if the requested language is 'qqx'
+				if ( getters.getUserRequestedLang === 'qqx' && id ) {
+					return new LabelData( id, `(${ id })`, getters.getUserLangZid );
+				}
 				return state.labels[ id ];
 			}
 			return findLabelData;

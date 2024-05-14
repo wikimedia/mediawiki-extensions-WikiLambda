@@ -130,7 +130,8 @@ module.exports = exports = defineComponent( {
 	},
 	computed: Object.assign( mapGetters( [
 		'getLabel',
-		'getLabelData'
+		'getLabelData',
+		'getUserLangCode'
 	] ), {
 		/**
 		 * Returns the help link from the Metadata dialog
@@ -422,7 +423,7 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		getUrl: function ( zid ) {
-			return '/view/' + ( mw.language.getFallbackLanguageChain()[ 0 ] || 'en' ) + '/' + zid;
+			return '/view/' + this.getUserLangCode + '/' + zid;
 		},
 		/**
 		 * Attempts to render a relative timestamp given a

@@ -78,7 +78,8 @@ module.exports = exports = defineComponent( {
 			'getZStringTerminalValue',
 			'getZObjectTypeByRowId',
 			'getZObjectKeyByRowId',
-			'getChildrenByParentRowId'
+			'getChildrenByParentRowId',
+			'getUserLangCode'
 		] ),
 		{
 			/**
@@ -162,7 +163,7 @@ module.exports = exports = defineComponent( {
 			 * @return {string}
 			 */
 			link: function () {
-				return ( this.hasLink && !this.isBlank ) ? '/view/' + ( mw.language.getFallbackLanguageChain()[ 0 ] || 'en' ) + '/' + this.value : '';
+				return ( this.hasLink && !this.isBlank ) ? '/view/' + this.getUserLangCode + '/' + this.value : '';
 			},
 
 			/**

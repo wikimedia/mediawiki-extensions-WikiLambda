@@ -53,7 +53,8 @@ module.exports = exports = defineComponent( {
 	},
 	computed: Object.assign( mapGetters( [
 		'getLabel',
-		'getZBooleanValue'
+		'getZBooleanValue',
+		'getUserLangCode'
 	] ),
 	{
 		value: {
@@ -74,7 +75,7 @@ module.exports = exports = defineComponent( {
 			return this.getLabel( this.value );
 		},
 		valueUrl: function () {
-			return '/view/' + ( mw.language.getFallbackLanguageChain()[ 0 ] || 'en' ) + '/' + this.value;
+			return '/view/' + this.getUserLangCode + '/' + this.value;
 		},
 		radioChoices: function () {
 			return [
