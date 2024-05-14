@@ -264,7 +264,7 @@ class ZObjectStore {
 			// Error: Database or a deeper MediaWiki error, e.g. a general editing rate limit
 
 			$this->logger->warning(
-				__METHOD__ . ' triggered an error on save, e.g. rate limited, for page "' . $zid . '"',
+				__METHOD__ . ' triggered an error on publish, e.g. rate limited, for page "' . $zid . '"',
 				[ 'responseError' => $e ]
 			);
 
@@ -278,6 +278,12 @@ class ZObjectStore {
 
 		if ( !$status->isOK() ) {
 			// Error: Other doUserEditContent related errors
+
+			$this->logger->info(
+				__METHOD__ . ' got a non-OK Status on publish, for page "' . $zid . '"',
+				[ 'responseStatus' => var_export( $status, true ) ]
+			);
+
 			$error = ZErrorFactory::createZErrorInstance(
 				ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
 				[ 'message' => $status->getMessage() ]
