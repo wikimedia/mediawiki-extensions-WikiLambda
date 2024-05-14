@@ -255,6 +255,7 @@
 				"mediawiki.api",
 				"mediawiki.router",
 				"mediawiki.storage",
+				"mediawiki.user",
 				"mediawiki.Uri",
 				"oojs"
 			],
