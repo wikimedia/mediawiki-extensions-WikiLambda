@@ -72,7 +72,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		expect( codeEditorInstance.getValue() ).toContain( 'function' );
 
 		// ACT: Set the label for the code implementation
-		const openLanguageDialogButton = await getByTestId( 'open-language-dialog-button' );
+		const openLanguageDialogButton = await getByTestId( 'open-dialog-button' );
 		await fireEvent.click( openLanguageDialogButton );
 
 		const languageDialog = await getByTestId( 'edit-label-dialog' );

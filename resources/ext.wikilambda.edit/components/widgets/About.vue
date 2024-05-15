@@ -5,7 +5,7 @@
 	@license MIT
 -->
 <template>
-	<wl-widget-base class="ext-wikilambda-about">
+	<wl-widget-base class="ext-wikilambda-about" data-testid="about">
 		<!-- Widget header -->
 		<template #header>
 			{{ $i18n( 'wikilambda-about-widget-title' ).text() }}
@@ -14,7 +14,7 @@
 			<cdx-button
 				weight="quiet"
 				aria-label="Edit"
-				data-testid="open-language-dialog-button"
+				data-testid="open-dialog-button"
 				:disabled="!canEditObject"
 				@click="openUserLanguageDialog"
 			>
@@ -129,7 +129,7 @@
 		<!-- Widget footer -->
 		<template v-if="languageCount > 0" #footer>
 			<div class="ext-wikilambda-about-button">
-				<cdx-button @click="openViewLanguagesDialog">
+				<cdx-button data-testid="language-buttons" @click="openViewLanguagesDialog">
 					<cdx-icon :icon="icons.cdxIconLanguage"></cdx-icon>
 					{{ $i18n( 'wikilambda-about-widget-language-count-button', languageCount ).text() }}
 				</cdx-button>
