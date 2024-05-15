@@ -132,7 +132,7 @@
 	"wikilambda-function-viewer-details-table-view-all": "Посмотреть все",
 	"wikilambda-function-viewer-details-table-view-less": "Показать компактно",
 	"wikilambda-toast-close": "Закрыть",
-	"wikilambda-zobject-missing-attached-function": "Требуется функция",
+	"wikilambda-zobject-missing-attached-function": "Функция пуста. Выберите какую-нибудь.",
 	"wikilambda-zimplementation-code-language-missing": "Выберите язык программирования.",
 	"wikilambda-chip-remove": "Удалить элемент",
 	"wikilambda-add-list-item-button": "Добавить элемент",

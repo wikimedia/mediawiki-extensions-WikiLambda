@@ -4,7 +4,8 @@
 			"Earnur97",
 			"Kareyac",
 			"Plaga med",
-			"Zmickli"
+			"Zmickli",
+			"Chadyka"
 		]
 	},
 	"action-wikilambda-create-function": "стварыць новыя функцыянальныя аб'екты",
@@ -21,5 +22,5 @@
 	"wikilambda-functioncall-error-nonfunction": "Памылка выкліку функцыі: аб'ект '$1' не з'яўляецца функцыяй, таму не можа быць выкліканы",
 	"wikilambda-function-definition-output-type-label": "Тып",
 	"wikilambda-editor-publish-dialog-summary-placeholder": "Увядзіце кароткае апісанне",
-	"wikilambda-zobject-missing-attached-function": "Патрабуецца адпаведная функцыя"
+	"wikilambda-zobject-missing-attached-function": "Функцыя пустая. Выберыце якую-небудзь."
 }
