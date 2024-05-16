@@ -52,6 +52,8 @@
 	"wikilambda-special-viewobject": "ଏକ ଅବଜେକ୍ଟ ଦେଖନ୍ତୁ",
 	"wikilambda-special-createobject-intro": "ନିଶ୍ଚିତ କରନ୍ତୁ ଯେ ଆପଣ ସମ୍ପ୍ରଦାୟର ନୀତି, କପିରାଇଟ ଏବଂ ପେଟେଣ୍ଟ ନିୟମ ମାନୁଛନ୍ତି ।",
 	"wikilambda-special-createobject-nojs": "ଏହି ପୃଷ୍ଠା ବ୍ୟବହାର କରିବାକୁ JavaScript ଆବଶ୍ୟକ ।",
+	"wikilambda-function-are-you-sure-dialog-header": "ଆପଣ ନିଶ୍ଚିତ ତ?",
+	"wikilambda-function-are-you-sure-dialog-description": "ପ୍ରକାଶ ବିନା ସମ୍ପାଦନା ମୋଡ୍ ଛାଡିବେ ବୋଲି ଆପଣ ପୂରା ନିଶ୍ଚିତ ତ?",
 	"wikilambda-editor-tester-list-label": "ପରଖ ତାଲିକା",
 	"wikilambda-tester-selector": "ପରଖଟିଏ ବାଛନ୍ତୁ",
 	"wikilambda-tester-none-found": "ଏହି ଫଙ୍କସନ ପାଇଁ ଏବେ କୌଣସି ପରୀକ୍ଷା ମାମଲା ନାହିଁ ।",

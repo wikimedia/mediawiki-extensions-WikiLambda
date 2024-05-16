@@ -6,7 +6,8 @@
 			"Druesenfieber",
 			"ElBe",
 			"FF-11",
-			"Justman10000"
+			"Justman10000",
+			"Denny"
 		]
 	},
 	"wikilambda-desc": "Bereitstellung einer Wikitext-Parser-Funktion für Wikimedia-Wikis, um die Auswertung von Funktionen aufzurufen, die in einem zentralen Wiki geschrieben, verwaltet und ausgewertet werden.",
@@ -359,7 +360,7 @@
 	"wikilambda-delete-list-item": "Objekt löschen",
 	"wikilambda-tester-details": "Details",
 	"wikilambda-about-widget-accessible-title": "Dialog zum Anzeigen und Bearbeiten der Beschriftungen und Informationen in verschiedenen Sprachen",
-	"wikilambda-about-widget-title": "Über",
+	"wikilambda-about-widget-title": "Über diese Funktion",
 	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1 Sprache|$1 Sprachen}}",
 	"wikilambda-about-widget-edit-metadata-title": "Informationen bearbeiten",
 	"wikilambda-about-widget-edit-metadata-accessible-title": "Dialog, in dem Beschriftungen und Informationen in einer Sprache hinzugefügt und bearbeitet werden können",
