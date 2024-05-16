@@ -30,6 +30,7 @@
 					class="ext-wikilambda-publishdialog__error"
 					:type="error.type"
 				>
+					<!-- eslint-disable vue/no-v-html -->
 					<div v-html="getErrorMessage( error )"></div>
 				</cdx-message>
 			</div>

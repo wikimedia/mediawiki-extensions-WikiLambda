@@ -91,6 +91,7 @@
 				:type="error.type"
 				:inline="true"
 			>
+				<!-- eslint-disable vue/no-v-html -->
 				<div v-html="getErrorMessage( error )"></div>
 			</cdx-message>
 		</div>
