@@ -8,6 +8,7 @@
 
 const { config, mount, shallowMount } = require( '@vue/test-utils' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	About = require( '../../../../resources/ext.wikilambda.edit/components/widgets/About.vue' ),
 	AboutEditMetadataDialog = require( '../../../../resources/ext.wikilambda.edit/components/widgets/AboutEditMetadataDialog.vue' ),
@@ -39,18 +40,15 @@ describe( 'About', () => {
 			isUserLoggedIn: createGetterMock( true ),
 			isCreateNewPage: createGetterMock( true ),
 			isDirty: createGetterMock( false ),
-			getLabel: () => ( key ) => {
-				const labels = {
-					Z2K3: 'name',
-					Z2K4: 'also known as',
-					Z2K5: 'description',
-					Z1002: 'English',
-					Z11K1: 'language',
-					Z10000K1: 'first',
-					Z10000K2: 'second'
-				};
-				return labels[ key ] || 'label';
-			}
+			getLabelData: createLabelDataMock( {
+				Z2K3: 'name',
+				Z2K4: 'also known as',
+				Z2K5: 'description',
+				Z1002: 'English',
+				Z11K1: 'language',
+				Z10000K1: 'first',
+				Z10000K2: 'second'
+			} )
 		};
 
 		actions = { fetchZids: jest.fn() };

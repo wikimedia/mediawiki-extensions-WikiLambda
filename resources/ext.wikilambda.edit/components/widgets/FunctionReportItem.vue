@@ -17,9 +17,10 @@
 			<a
 				:href="titleLink"
 				class="ext-wikilambda-function-report-item__title"
-				:class="{ 'ext-wikilambda-function-report-item__title--no-label': !titleLabelExists }"
-			>{{ title }}
-			</a>
+				:class="{ 'ext-wikilambda-function-report-item__title--no-label': titleLabelData.isUntitled }"
+				:lang="titleLabelData.langCode"
+				:dir="titleLabelData.langDir"
+			>{{ titleLabelData.labelOrUntitled }}</a>
 		</div>
 
 		<div class="ext-wikilambda-function-report-item__footer">
@@ -75,26 +76,44 @@ module.exports = exports = defineComponent( {
 	computed: Object.assign( mapGetters( [
 		'getUserLangCode',
 		'getZTesterResults',
-		'getLabel'
+		'getLabelData'
 	] ), {
-		testerStatus: function () {
-			return this.getZTesterResults( this.zFunctionId, this.zTesterId, this.zImplementationId );
-		},
-		titleLabel: function () {
+		/**
+		 * Returns the label data for the item title
+		 *
+		 * @return {LabelData}
+		 */
+		titleLabelData: function () {
 			return this.reportType === Constants.Z_TESTER ?
-				this.getLabel( this.zImplementationId ) :
-				this.getLabel( this.zTesterId );
+				this.getLabelData( this.zImplementationId ) :
+				this.getLabelData( this.zTesterId );
 		},
-		titleLabelExists: function () {
-			return this.titleLabel !== undefined;
-		},
-		title: function () {
-			return this.titleLabelExists ? this.titleLabel : this.$i18n( 'wikilambda-editor-default-name' ).text();
-		},
+		/**
+		 * Returns the link for the reported item
+		 *
+		 * @return {string}
+		 */
 		titleLink: function () {
 			const zid = this.reportType === Constants.Z_TESTER ? this.zImplementationId : this.zTesterId;
 			return '/view/' + this.getUserLangCode + '/' + zid;
 		},
+		/**
+		 * Returns whether the tester passed
+		 *
+		 * @return {boolean}
+		 */
+		testerStatus: function () {
+			return this.getZTesterResults(
+				this.zFunctionId,
+				this.zTesterId,
+				this.zImplementationId
+			);
+		},
+		/**
+		 * Returns the status of the test
+		 *
+		 * @return {string}
+		 */
 		status: function () {
 			if ( this.fetching ) {
 				return Constants.testerStatus.RUNNING;
@@ -110,9 +129,11 @@ module.exports = exports = defineComponent( {
 			}
 			return Constants.testerStatus.READY;
 		},
-		isRunning: function () {
-			return this.status === Constants.testerStatus.RUNNING;
-		},
+		/**
+		 * Returns the status message
+		 *
+		 * @return {string}
+		 */
 		statusMessage: function () {
 			switch ( this.status ) {
 				case Constants.testerStatus.READY:
@@ -125,6 +146,11 @@ module.exports = exports = defineComponent( {
 					return this.$i18n( 'wikilambda-tester-status-running' ).text();
 			}
 		},
+		/**
+		 * Returns the icon depending on the status
+		 *
+		 * @return {Object}
+		 */
 		statusIcon: function () {
 			if ( this.status === Constants.testerStatus.PASSED ) {
 				return icons.cdxIconSuccess;
@@ -135,8 +161,21 @@ module.exports = exports = defineComponent( {
 			// This will be used both for ready and running statuses
 			return icons.cdxIconClock;
 		},
+		/**
+		 * Returns the class for the icon depending on the status
+		 *
+		 * @return {string}
+		 */
 		statusIconClass: function () {
 			return `ext-wikilambda-function-report-item-status__${ this.status }`;
+		},
+		/**
+		 * Returns whether the tester is currently running
+		 *
+		 * @return {string}
+		 */
+		isRunning: function () {
+			return this.status === Constants.testerStatus.RUNNING;
 		}
 	} ),
 	methods: {

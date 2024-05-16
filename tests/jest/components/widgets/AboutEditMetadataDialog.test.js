@@ -8,6 +8,7 @@
 
 const { config, mount } = require( '@vue/test-utils' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	AboutEditMetadataDialog = require( '../../../../resources/ext.wikilambda.edit/components/widgets/AboutEditMetadataDialog.vue' );
 
 // Ignore all "teleport" behavior for the purpose of testing Dialog;
@@ -31,16 +32,13 @@ describe( 'AboutEditMetadataDialog', () => {
 			getErrors: createGettersWithFunctionsMock( {} ),
 			getZArgumentLabelForLanguage: createGettersWithFunctionsMock( undefined ),
 			getZFunctionInputs: createGettersWithFunctionsMock( [] ),
-			getLabel: () => ( key ) => {
-				const labels = {
-					Z2K3: 'name',
-					Z2K4: 'also known as',
-					Z2K5: 'description',
-					Z1002: 'English',
-					Z11K1: 'language'
-				};
-				return labels[ key ] || 'label';
-			}
+			getLabelData: createLabelDataMock( {
+				Z2K3: 'name',
+				Z2K4: 'also known as',
+				Z2K5: 'description',
+				Z1002: 'English',
+				Z11K1: 'language'
+			} )
 		};
 
 		actions = {

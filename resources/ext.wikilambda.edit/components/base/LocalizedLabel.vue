@@ -9,7 +9,10 @@
 		<span
 			v-if="!isUserLang"
 			class="ext-wikilambda-lang-chip"
-		>{{ labelLanguageIso }}</span>{{ labelText }}
+		>{{ labelData.langCode }}</span><span
+			:lang="labelData.langCode"
+			:dir="labelData.langDir"
+		>{{ labelData.label }}</span>
 	</label>
 </template>
 
@@ -26,54 +29,18 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	computed: Object.assign(
-		mapGetters( [
-			'getLabel',
-			'getLanguageIsoCodeOfZLang',
-			'getUserLangZid'
-		] ),
-		{
-			/**
-			 * Returns the string value of this label
-			 *
-			 * @return {string}
-			 */
-			labelText: function () {
-				return this.labelData.label;
-			},
-
-			/**
-			 * Returns the ISO code of the language of this label
-			 *
-			 * @return {string}
-			 */
-			labelLanguageIso: function () {
-				return this.getLanguageIsoCodeOfZLang( this.labelData.lang );
-			},
-
-			/**
-			 * Returns the name of the language of this label
-			 *
-			 * TODO (T329103): This is currently not used, but are we showing the
-			 * language name when we hover over the language ISO code chip? If so,
-			 * this is the string that should be shown
-			 *
-			 * @return {string}
-			 */
-			labelLanguageName: function () {
-				return this.getLabel( this.labelData.lang );
-			},
-
-			/**
-			 * Returns whether the label is in the user preferred language
-			 *
-			 * @return {boolean}
-			 */
-			isUserLang: function () {
-				return this.getUserLangZid === this.labelData.lang;
-			}
+	computed: Object.assign( mapGetters( [
+		'getUserLangZid'
+	] ), {
+		/**
+		 * Returns whether the label is in the user preferred language
+		 *
+		 * @return {boolean}
+		 */
+		isUserLang: function () {
+			return this.getUserLangZid === this.labelData.lang;
 		}
-	)
+	} )
 } );
 </script>
 

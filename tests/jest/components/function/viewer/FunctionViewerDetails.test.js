@@ -9,34 +9,29 @@
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	{ waitFor } = require( '@testing-library/vue' ),
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
 	FunctionViewerDetails = require( '../../../../../resources/ext.wikilambda.edit/components/function/viewer/FunctionViewerDetails.vue' );
 
-const mockData = {
-	Z111: {
-		label: 'Z111 name'
-	},
-	Z222: {
-		label: 'Z222 name'
-	},
-	Z333: {
-		label: 'Z333 name',
-		type: 'Z14K2'
-	},
-	Z444: {
-		label: 'Z444 name',
-		type: 'Z14K3',
-		language: 'javascript'
-	},
-	Z555: {
-		label: 'Z555 name',
-		type: 'Z14K3',
-		language: 'Z600'
-	},
-	Z600: {
-		label: 'JavaScript',
-		type: 'Z61'
-	}
+const mockLanguages = {
+	Z444: 'javascript',
+	Z555: 'Z600'
+};
+
+const mockTypes = {
+	Z333: 'Z14K2',
+	Z444: 'Z14K3',
+	Z555: 'Z14K3',
+	Z600: 'Z61'
+};
+
+const mockLabels = {
+	Z111: 'Z111 name',
+	Z222: 'Z222 name',
+	Z333: 'Z333 name',
+	Z444: 'Z444 name',
+	Z555: 'Z555 name',
+	Z600: 'JavaScript'
 };
 
 describe( 'FunctionViewerDetails', () => {
@@ -80,24 +75,15 @@ describe( 'FunctionViewerDetails', () => {
 			getConnectedImplementations: createGettersWithFunctionsMock( [ 'Z444' ] ),
 			getUserLangCode: createGetterMock( 'Z1002' ),
 			getCurrentZObjectId: createGetterMock( 'Z666' ),
-			getLanguageOfImplementation: () => ( zid ) => {
-				const data = mockData[ zid ];
-				return data ? data.language : undefined;
-			},
-			getTypeOfImplementation: () => ( zid ) => {
-				const data = mockData[ zid ];
-				return data ? data.type : undefined;
-			},
+			getLanguageOfImplementation: () => ( zid ) => mockLanguages[ zid ],
+			getTypeOfImplementation: () => ( zid ) => mockTypes[ zid ],
+			getLabelData: createLabelDataMock( mockLabels ),
 			getZTesterPercentage: () => () => {
 				return {
 					passing: 1,
 					total: 1,
 					percentage: 100
 				};
-			},
-			getLabel: () => ( zid ) => {
-				const data = mockData[ zid ];
-				return data ? data.label : zid;
 			}
 		};
 		global.store.hotUpdate( {
@@ -156,10 +142,7 @@ describe( 'FunctionViewerDetails', () => {
 
 	describe( 'implementations without labels display the ZID', () => {
 		beforeEach( () => {
-			getters.getLabel = () => ( zid ) => {
-				const labels = { Z333: 'Z333 name' };
-				return labels[ zid ] ? labels[ zid ] : zid;
-			};
+			getters.getLabelData = createLabelDataMock( { Z333: 'Z333 name' } );
 			global.store.hotUpdate( {
 				getters: getters
 			} );
@@ -188,10 +171,7 @@ describe( 'FunctionViewerDetails', () => {
 
 	describe( 'tests without labels display the ZID', () => {
 		beforeEach( () => {
-			getters.getLabel = () => ( zid ) => {
-				const labels = { Z222: 'Z222 name' };
-				return labels[ zid ] ? labels[ zid ] : zid;
-			};
+			getters.getLabelData = createLabelDataMock( { Z222: 'Z222 name' } );
 			global.store.hotUpdate( {
 				getters: getters
 			} );

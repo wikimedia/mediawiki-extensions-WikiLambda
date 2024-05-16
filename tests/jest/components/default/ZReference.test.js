@@ -8,6 +8,7 @@
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	ZReference = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZReference.vue' );
@@ -16,7 +17,9 @@ describe( 'ZReference', () => {
 	let getters;
 	beforeEach( () => {
 		getters = {
-			getLabel: createGettersWithFunctionsMock( 'String' ),
+			getLabelData: createLabelDataMock( {
+				Z6: 'String'
+			} ),
 			getParentRowId: createGettersWithFunctionsMock( 2 ),
 			getZReferenceTerminalValue: createGettersWithFunctionsMock( 'Z6' ),
 			getZObjectKeyByRowId: createGettersWithFunctionsMock( 'Z1K1' ),
@@ -51,9 +54,7 @@ describe( 'ZReference', () => {
 		} );
 
 		it( 'displays the reference link with its value if there is no label', () => {
-			// If there's no label data stored, getLabel returns input key
-			getters.getLabel = createGettersWithFunctionsMock( 'Z6' );
-
+			getters.getLabelData = createLabelDataMock();
 			global.store.hotUpdate( {
 				getters: getters
 			} );
@@ -96,7 +97,6 @@ describe( 'ZReference', () => {
 		} );
 
 		it( 'displays a selector and emits the value with an empty keyPath if its key is a Z_REFERENCE_ID (Z9K1)', async () => {
-			getters.getLabel = createGettersWithFunctionsMock( 'String' );
 			getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( 'Z6' );
 			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z9K1' );
 			global.store.hotUpdate( {

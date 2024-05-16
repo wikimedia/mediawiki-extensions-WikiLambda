@@ -122,7 +122,7 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign( mapGetters( [
-		'getLabel'
+		'getLabelData'
 	] ), {
 
 		/**
@@ -144,7 +144,7 @@ module.exports = exports = defineComponent( {
 		 */
 		selectedLabel: function () {
 			return this.selectedZid ?
-				this.getLabel( this.selectedZid ) :
+				this.getLabelData( this.selectedZid ).label :
 				'';
 		},
 
@@ -364,8 +364,8 @@ module.exports = exports = defineComponent( {
 				suggestedZids.forEach( ( zid ) => {
 					this.lookupResults.push( {
 						value: zid,
-						label: this.getLabel( zid ),
-						description: this.getLabel( this.type ),
+						label: this.getLabelData( zid ).label,
+						description: this.getLabelData( this.type ).label,
 						class: 'ext-wikilambda-select-zobject-suggestion'
 					} );
 				} );

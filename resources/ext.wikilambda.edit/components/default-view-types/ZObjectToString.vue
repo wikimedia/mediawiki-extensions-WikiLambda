@@ -13,12 +13,16 @@
 			<a
 				v-if="isBlank"
 				class="ext-wikilambda-zobject-to-string-blank"
+				:lang="labelData.langCode"
+				:dir="labelData.langDir"
 				@click="expand"
-			>{{ name }}</a>
+			>{{ labelData.label }}</a>
 			<a
 				v-else
 				:href="link"
-			>{{ name }}</a>
+				:lang="labelData.langCode"
+				:dir="labelData.langDir"
+			>{{ labelData.label }}</a>
 		</div>
 		<div
 			v-if="hasChildren"
@@ -44,8 +48,10 @@
 		v-else
 		class="ext-wikilambda-zobject-to-string"
 		role="ext-wikilambda-zobject-to-string-text"
+		:lang="labelData.langCode"
+		:dir="labelData.langDir"
 	>
-		{{ name }}
+		"{{ labelData.label }}"
 	</div>
 </template>
 
@@ -53,6 +59,7 @@
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
+	LabelData = require( '../../store/classes/LabelData.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 module.exports = exports = defineComponent( {
@@ -70,7 +77,7 @@ module.exports = exports = defineComponent( {
 	},
 	computed: Object.assign(
 		mapGetters( [
-			'getLabel',
+			'getLabelData',
 			'getExpectedTypeOfKey',
 			'getZFunctionCallFunctionId',
 			'getZFunctionCallArguments',
@@ -79,7 +86,8 @@ module.exports = exports = defineComponent( {
 			'getZObjectTypeByRowId',
 			'getZObjectKeyByRowId',
 			'getChildrenByParentRowId',
-			'getUserLangCode'
+			'getUserLangCode',
+			'getUserLangZid'
 		] ),
 		{
 			/**
@@ -89,23 +97,23 @@ module.exports = exports = defineComponent( {
 			 *
 			 * Z6/String:
 			 * * value: this.Z6K1
-			 * * name: this.value
+			 * * label: this.value
 			 * * link: -
 			 *
 			 * Z9/Reference:
 			 * * value: this.Z9K1
-			 * * name: this.value | getLabel
+			 * * label: this.value | getLabelData.label
 			 * * link: this.value | toLink
 			 *
 			 * Z7/Function call:
 			 * * value: this.Z7K1
-			 * * name: this.value | getLabel
+			 * * label: this.value | getLabelData.label
 			 * * link: this.value | toLink
 			 * * children: all child values except Z1K1 and Z7K1
 			 *
 			 * Any other object:
 			 * * value: this.type
-			 * * name: this.value | getLabel
+			 * * label: this.value | getLabelData.label
 			 * * link: this.value | getLink
 			 * * children: all child values except Z1K1
 			 *
@@ -130,10 +138,7 @@ module.exports = exports = defineComponent( {
 					return this.getZFunctionCallFunctionId( this.rowId );
 				}
 				if ( this.type === Constants.Z_STRING ) {
-					const value = this.getZStringTerminalValue( this.rowId );
-					return ( this.key === Constants.Z_ARGUMENT_REFERENCE_KEY ) ?
-						this.getLabel( value ) :
-						value;
+					return this.getZStringTerminalValue( this.rowId );
 				}
 				if ( this.type === Constants.Z_REFERENCE ) {
 					return this.getZReferenceTerminalValue( this.rowId );
@@ -142,19 +147,16 @@ module.exports = exports = defineComponent( {
 			},
 
 			/**
-			 * Returns the human readable string that identifies this object.
+			 * Returns the LabelData object for this object.
 			 * If value is undefined, we generate the placeholder depending
 			 * on its type.
 			 *
-			 * @return {string}
+			 * @return {LabelData}
 			 */
-			name: function () {
-				if ( this.isBlank ) {
-					return this.placeholder;
-				}
-				return ( this.type === Constants.Z_STRING ) ?
-					( '"' + this.value + '"' ) :
-					this.getLabel( this.value );
+			labelData: function () {
+				return this.isBlank ?
+					new LabelData( null, this.placeholder, this.getUserLangZid, this.getUserLangCode ) :
+					this.getLabelData( this.value );
 			},
 
 			/**
@@ -202,7 +204,9 @@ module.exports = exports = defineComponent( {
 				if ( Constants.RESOLVER_TYPES.includes( missingType ) ) {
 					missingType = this.expectedType;
 				}
-				const label = missingType ? this.getLabel( missingType ) : this.getLabel( Constants.Z_OBJECT );
+				const label = missingType ?
+					this.getLabelData( missingType ).label :
+					this.getLabelData( Constants.Z_OBJECT ).label;
 				return this.$i18n( 'wikilambda-zobject-to-string-select-object', label );
 			},
 

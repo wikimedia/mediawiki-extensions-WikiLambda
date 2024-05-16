@@ -7,7 +7,7 @@
 'use strict';
 
 const mount = require( '@vue/test-utils' ).mount,
-	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	FunctionReportItem = require( '../../../../resources/ext.wikilambda.edit/components/widgets/FunctionReportItem.vue' );
@@ -28,7 +28,7 @@ describe( 'FunctionReportItem', function () {
 		reportType = Constants.Z_TESTER;
 		getters = {
 			getZTesterResults: createGetterMock( returnStatus ),
-			getLabel: createGettersWithFunctionsMock(),
+			getLabelData: createLabelDataMock(),
 			getUserLangCode: createGetterMock( 'en' )
 		};
 		global.store.hotUpdate( {

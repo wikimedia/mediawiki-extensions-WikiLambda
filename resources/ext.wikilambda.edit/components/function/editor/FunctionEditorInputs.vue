@@ -150,7 +150,7 @@ module.exports = exports = defineComponent( {
 		 */
 		inputsLabel: function () {
 			// TODO (T335583): Replace i18n message with key label
-			// return this.getLabel( Constants.Z_FUNCTION_ARGUMENTS );
+			// return this.getLabelData( Constants.Z_FUNCTION_ARGUMENTS );
 			return this.$i18n( 'wikilambda-function-definition-inputs-label' ).text();
 		},
 		/**

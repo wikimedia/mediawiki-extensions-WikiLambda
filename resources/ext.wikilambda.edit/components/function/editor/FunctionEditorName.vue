@@ -99,7 +99,7 @@ module.exports = exports = defineComponent( {
 		 */
 		nameLabel: function () {
 			// TODO (T335583): Replace i18n message with key label
-			// return this.getLabel( Constants.Z_PERSISTENTOBJECT_LABEL );
+			// return this.getLabelData( Constants.Z_PERSISTENTOBJECT_LABEL );
 			return this.$i18n( 'wikilambda-function-definition-name-label' ).text();
 		},
 		/**

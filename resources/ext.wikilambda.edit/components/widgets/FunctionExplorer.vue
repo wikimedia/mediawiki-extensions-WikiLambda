@@ -35,7 +35,7 @@
 					<span
 						v-if="implementation === Constants.Z_IMPLEMENTATION_CODE"
 						class="ext-wikilambda-function-explorer-copyable"
-						:class="{ 'ext-wikilambda-function-explorer-untitled': functionisUntitled }"
+						:class="{ 'ext-wikilambda-function-explorer-untitled': functionLabel.isUntitled }"
 						data-testid="function-zid"
 						@click.stop="copyToClipboard( functionZid )"
 					>{{ showValueOrCopiedMessage( functionZid ) }}</span>
@@ -61,8 +61,10 @@
 					<a
 						:href="getWikiUrl( currentFunctionZid )"
 						data-testid="function-name"
+						:lang="functionLabel.langCode"
+						:dir="functionLabel.langDir"
 					>
-						{{ functionName }}
+						{{ functionLabel.labelOrUntitled }}
 					</a>
 				</div>
 			</section>
@@ -79,9 +81,8 @@
 				<!-- Function inputs/arguments -->
 				<div
 					v-for="arg in functionArguments"
-					:key="arg.label"
+					:key="arg.key"
 					class="ext-wikilambda-function-explorer-function-inputs-wrapper"
-
 				>
 					<div class="ext-wikilambda-function-explorer-flex ext-wikilambda-function-explorer-space-between">
 						<span class="ext-wikilambda-function-explorer-type ext-wikilambda-function-explorer-dark-links">
@@ -95,16 +96,18 @@
 							class="ext-wikilambda-function-explorer-copyable"
 							data-testid="function-input-zkey"
 							data-title="Click to copy"
-							@click.stop="copyToClipboard( arg.keyZid )"
+							@click.stop="copyToClipboard( arg.key )"
 						>
-							{{ showValueOrCopiedMessage( arg.keyZid ) }}
+							{{ showValueOrCopiedMessage( arg.key ) }}
 						</span>
 					</div>
 					<span
-						:class="{ 'ext-wikilambda-function-explorer-untitled': arg.isUntitled }"
+						:class="{ 'ext-wikilambda-function-explorer-untitled': arg.label.isUntitled }"
 						data-testid="function-input-name"
+						:lang="arg.label.langCode"
+						:dir="arg.label.langDir"
 					>
-						{{ arg.label }}
+						{{ arg.label.label }}
 					</span>
 				</div>
 
@@ -191,64 +194,72 @@ module.exports = exports = defineComponent( {
 			'getLabelData'
 		] ),
 		{
-			functionIsUntitled: function () {
-				return this.getLabelOrUntitledObject( this.currentFunctionZid ).isUntitled;
+			/**
+			 * Returns the LabelData object for the selected function Zid
+			 *
+			 * @return {LabelData}
+			 */
+			functionLabel: function () {
+				return this.getLabelData( this.currentFunctionZid );
 			},
-			functionName: function () {
-				return this.getLabelOrUntitledObject( this.currentFunctionZid ).text;
-			},
+			/**
+			 * Returns the stored function object for the selected function Zid
+			 *
+			 * @return {Object}
+			 */
 			functionObject: function () {
 				return this.getStoredObject( this.currentFunctionZid );
 			},
+			/**
+			 * Returns the zid, type and LabelData object for each function
+			 * argument given a selected function Zid
+			 *
+			 * @return {Array}
+			 */
 			functionArguments: function () {
 				const args = this.getInputsOfFunctionZid( this.currentFunctionZid );
 
-				if ( !args ) {
-					return [];
-				}
-
 				return args.map( ( arg ) => {
-					const keyZid = arg[ Constants.Z_ARGUMENT_KEY ];
-
-					const argLabelObject = this.getLabelOrUntitledObject( keyZid );
-					const label = argLabelObject.text;
-					const isUntitled = argLabelObject.isUntitled;
+					const key = arg[ Constants.Z_ARGUMENT_KEY ];
+					const type = arg[ Constants.Z_ARGUMENT_TYPE ];
+					const label = this.getLabelData( key );
 
 					return {
-						label,
-						isUntitled,
-						keyZid,
-						type: arg[ Constants.Z_ARGUMENT_TYPE ]
+						key,
+						type,
+						label
 					};
 				} );
 			},
+			/**
+			 * Returns whether the function exists and has been fetched
+			 *
+			 * @return {boolean}
+			 */
 			functionExists: function () {
 				return Boolean( this.functionObject );
 			},
+			/**
+			 * Returns the output type of the selected function
+			 *
+			 * @return {Object|string}
+			 */
 			outputType: function () {
 				return this.functionObject[ Constants.Z_PERSISTENTOBJECT_VALUE ][
 					Constants.Z_FUNCTION_RETURN_TYPE ];
 			},
+			/**
+			 * Returns whether the reset button must be disabled (the
+			 * selected function is the same as the initialized function)
+			 *
+			 * @return {boolean}
+			 */
 			resetButtonDisabled: function () {
 				return this.currentFunctionZid === this.functionZid;
 			}
 		}
 	),
 	methods: {
-		/**
-		 * Gets and returns a label for a given zid if found. Otherwise returns the equivalent of 'Untitled'
-		 *
-		 * @param {string} zid
-		 * @return {string}
-		 */
-		getLabelOrUntitledObject( zid ) {
-			const labelData = this.getLabelData( zid );
-
-			return {
-				isUntitled: !labelData,
-				text: labelData ? labelData.label : this.$i18n( 'wikilambda-editor-default-name' ).text()
-			};
-		},
 		updateSelectedFunction( zIdSelected ) {
 			this.currentFunctionZid = zIdSelected;
 		},
@@ -275,10 +286,8 @@ module.exports = exports = defineComponent( {
 			if ( this.itemsCopied.includes( value ) ) {
 				return this.$i18n( 'wikilambda-function-explorer-copied-text' ).text();
 			}
-
 			return value;
 		}
-
 	},
 	created: function () {
 		this.$watch(

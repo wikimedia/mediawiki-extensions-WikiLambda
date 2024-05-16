@@ -9,6 +9,7 @@
 const { CdxButton } = require( '@wikimedia/codex' ),
 	shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	ZTypedList = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZTypedList.vue' ),
 	ZTypedListItems = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZTypedListItems.vue' ),
@@ -24,7 +25,8 @@ describe( 'ZTypedList', () => {
 				{ id: 39, key: '1', parent: 27, value: Constants.ROW_VALUE_OBJECT },
 				{ id: 41, key: '2', parent: 27, value: Constants.ROW_VALUE_OBJECT }
 			] ),
-			getTypedListItemType: createGettersWithFunctionsMock( 'Z6' )
+			getTypedListItemType: createGettersWithFunctionsMock( 'Z6' ),
+			getUserLangZid: createGetterMock( 'Z1002' )
 		};
 		global.store.hotUpdate( {
 			getters: getters

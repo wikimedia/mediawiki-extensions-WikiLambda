@@ -36,7 +36,10 @@
 				data-testid="function-evaluator-call"
 			>
 				<div class="ext-wikilambda-key-block">
-					<label>{{ functionCallLabel }}</label>
+					<label
+						:lang="functionCallLabelData.langCode"
+						:dir="functionCallLabelData.langDir"
+					>{{ functionCallLabelData.label }}</label>
 				</div>
 				<wl-z-reference
 					:row-id="selectedFunctionRowId"
@@ -151,7 +154,7 @@ module.exports = exports = defineComponent( {
 	computed: Object.assign( mapGetters( [
 		'getConnectedObjects',
 		'getZFunctionCallArguments',
-		'getLabel',
+		'getLabelData',
 		'getRowByKeyPath',
 		'getStoredObject',
 		'getZFunctionCallFunctionId',
@@ -300,10 +303,10 @@ module.exports = exports = defineComponent( {
 		/**
 		 * Returns the human readable label for the function selector block
 		 *
-		 * @return {string}
+		 * @return {LabelData}
 		 */
-		functionCallLabel: function () {
-			return this.getLabel( Constants.Z_FUNCTION_CALL_FUNCTION );
+		functionCallLabelData: function () {
+			return this.getLabelData( Constants.Z_FUNCTION_CALL_FUNCTION );
 		},
 
 		/**

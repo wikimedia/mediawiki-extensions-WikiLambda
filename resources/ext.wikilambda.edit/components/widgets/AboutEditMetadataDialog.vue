@@ -36,7 +36,10 @@
 				<!-- Language Selector block -->
 				<div class="ext-wikilambda-about-edit-metadata-language">
 					<div class="ext-wikilambda-about-edit-metadata-title">
-						{{ languageLabel }}
+						<span
+							:lang="languageLabelData.langCode"
+							:dir="languageLabelData.langDir"
+						>{{ languageLabelData.label }}</span>
 					</div>
 					<div class="ext-wikilambda-about-edit-metadata-field">
 						<wl-z-object-selector
@@ -63,7 +66,10 @@
 						data-testid="text-input"
 					></cdx-text-input>
 					<template #label>
-						{{ nameLabel }}
+						<span
+							:lang="nameLabelData.langCode"
+							:dir="nameLabelData.langDir"
+						>{{ nameLabelData.label }}</span>
 					</template>
 					<template #help-text>
 						{{ labelCharsLeft }}
@@ -82,7 +88,10 @@
 						data-testid="text-area"
 					></cdx-text-area>
 					<template #label>
-						{{ descriptionLabel }}
+						<span
+							:lang="descriptionLabelData.langCode"
+							:dir="descriptionLabelData.langDir"
+						>{{ descriptionLabelData.label }}</span>
 					</template>
 					<template #help-text>
 						{{ descriptionCharsLeft }}
@@ -91,8 +100,13 @@
 				<!-- Aliases field -->
 				<div class="ext-wikilambda-about-edit-metadata-alias">
 					<div class="ext-wikilambda-about-edit-metadata-title">
-						{{ aliasesLabel }}
-						<span>{{ $i18n( 'parentheses', [ $i18n( 'wikilambda-optional' ).text() ] ).text() }}</span>
+						<span
+							:lang="aliasesLabelData.langCode"
+							:dir="aliasesLabelData.langDir"
+						>{{ aliasesLabelData.label }}</span>
+						<span class="ext-wikilambda-about-edit-metadata-optional">
+							{{ $i18n( 'parentheses', [ $i18n( 'wikilambda-optional' ).text() ] ).text() }}
+						</span>
 					</div>
 					<div class="ext-wikilambda-about-edit-metadata-field">
 						<wl-chip-container
@@ -200,7 +214,7 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign( mapGetters( [
-		'getLabel',
+		'getLabelData',
 		'getMetadataLanguages',
 		'getRowByKeyPath',
 		'getZArgumentLabelForLanguage',
@@ -304,42 +318,34 @@ module.exports = exports = defineComponent( {
 		/**
 		 * Returns the label for the selected language
 		 *
-		 * @return {string}
+		 * @return {LabelData}
 		 */
-		languageLabel: function () {
-			return this.getLabel( Constants.Z_MONOLINGUALSTRING_LANGUAGE );
-		},
-		/**
-		 * Returns the label for the selected language
-		 *
-		 * @return {string}
-		 */
-		selectedLanguageLabel: function () {
-			return this.getLabel( this.forLanguage );
+		languageLabelData: function () {
+			return this.getLabelData( Constants.Z_MONOLINGUALSTRING_LANGUAGE );
 		},
 		/**
 		 * Returns the label for the name input field (Z2K3)
 		 *
-		 * @return {string}
+		 * @return {LabelData}
 		 */
-		nameLabel: function () {
-			return this.getLabel( Constants.Z_PERSISTENTOBJECT_LABEL );
+		nameLabelData: function () {
+			return this.getLabelData( Constants.Z_PERSISTENTOBJECT_LABEL );
 		},
 		/**
 		 * Returns the label for the description input field (Z2K5)
 		 *
-		 * @return {string}
+		 * @return {LabelData}
 		 */
-		descriptionLabel: function () {
-			return this.getLabel( Constants.Z_PERSISTENTOBJECT_DESCRIPTION );
+		descriptionLabelData: function () {
+			return this.getLabelData( Constants.Z_PERSISTENTOBJECT_DESCRIPTION );
 		},
 		/**
 		 * Returns the label for the aliases input field (Z2K4)
 		 *
-		 * @return {string}
+		 * @return {LabelData}
 		 */
-		aliasesLabel: function () {
-			return this.getLabel( Constants.Z_PERSISTENTOBJECT_ALIASES );
+		aliasesLabelData: function () {
+			return this.getLabelData( Constants.Z_PERSISTENTOBJECT_ALIASES );
 		},
 
 		/**
@@ -751,7 +757,7 @@ module.exports = exports = defineComponent( {
 		font-weight: @font-weight-bold;
 		margin: 0 0 @spacing-25;
 
-		span {
+		.ext-wikilambda-about-edit-metadata-optional {
 			font-weight: @font-weight-normal;
 			color: @color-subtle;
 			margin-left: @spacing-25;

@@ -180,7 +180,10 @@ module.exports = exports = {
 		/**
 		 * Returns the LabelData of the ID of a ZKey, ZPersistentObject or ZArgumentDeclaration.
 		 * The label is in the user selected language, if available, or else in the closest fallback.
-		 * If not available, returns undefined.
+		 * If not available, returns a new LabelData object with the input zid as the label.
+		 *
+		 * This getter must make sure that there's always a LabelData object return, so that the
+		 * caller components can safely access the LabelData properties.
 		 *
 		 * @param {Object} state
 		 * @param {Object} getters
@@ -188,34 +191,24 @@ module.exports = exports = {
 		 */
 		getLabelData: function ( state, getters ) {
 			/**
-			 * @param {string} id of the ZPersistentObject, ZKey or ZArgumentDeclaration
-			 * @return {LabelData|undefined} contains zid, label and lang properties
-			 */
-			function findLabelData( id ) {
-				// Print raw zids if the requested language is 'qqx'
-				if ( getters.getUserRequestedLang === 'qqx' && id ) {
-					return new LabelData( id, `(${ id })`, getters.getUserLangZid );
-				}
-				return state.labels[ id ];
-			}
-			return findLabelData;
-		},
-		/**
-		 * Returns the string label of the ID of a ZKey, ZPersistentObject or ZArgumentDeclaration
-		 * or the string ID if the label is not available.
-		 *
-		 * @param {Object} _state
-		 * @param {Object} getters
-		 * @return {Function}
-		 */
-		getLabel: function ( _state, getters ) {
-			/**
-			 * @param {string} id of the ZPersistentObject, ZKey or ZArgumentDeclaration
-			 * @return {string} label or id
+			 * @param {string} id
+			 * @return {LabelData}
 			 */
 			function findLabel( id ) {
-				const labelData = getters.getLabelData( id );
-				return labelData ? labelData.label : id;
+				// If the requested language is 'qqx', return (zid) as the label
+				if ( getters.getUserRequestedLang === 'qqx' && id ) {
+					return new LabelData( id, `(${ id })`, getters.getUserLangZid, getters.getUserLangCode );
+				}
+
+				// If label data is still not present in the library, return zid as the label
+				const labelData = state.labels[ id ];
+				if ( !labelData ) {
+					return new LabelData( id, id, getters.getUserLangZid, getters.getUserLangCode );
+				}
+
+				// Enrich label data with language code and directionality
+				labelData.setLangCode( getters.getLanguageIsoCodeOfZLang( labelData.lang ) );
+				return labelData;
 			}
 			return findLabel;
 		},

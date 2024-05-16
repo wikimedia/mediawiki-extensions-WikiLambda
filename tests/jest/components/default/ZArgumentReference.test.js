@@ -8,6 +8,7 @@
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	ZArgumentReference = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZArgumentReference.vue' );
 
@@ -18,7 +19,7 @@ describe( 'ZArgumentReference', () => {
 	beforeEach( () => {
 		getters = {
 			getZImplementationFunctionZid: createGettersWithFunctionsMock( 'Z10001' ),
-			getLabel: createGettersWithFunctionsMock( 'input' ),
+			getLabelData: createLabelDataMock(),
 			getZObjectKeyByRowId: createGettersWithFunctionsMock( 'Z802K1' ),
 			getZStringTerminalValue: createGettersWithFunctionsMock( 'Z10001K1' ),
 			getRowByKeyPath: createGettersWithFunctionsMock( { id: 2 } ),
@@ -46,7 +47,6 @@ describe( 'ZArgumentReference', () => {
 		it( 'displays empty string when nothing selected', () => {
 			getters.getRowByKeyPath = createGettersWithFunctionsMock( undefined );
 			getters.getZStringTerminalValue = createGettersWithFunctionsMock( undefined );
-			getters.getLabel = createGettersWithFunctionsMock( '' );
 			global.store.hotUpdate( { getters: getters } );
 
 			const wrapper = shallowMount( ZArgumentReference, {
@@ -59,7 +59,6 @@ describe( 'ZArgumentReference', () => {
 
 		it( 'displays the argument key when it has no label', () => {
 			getters.getZStringTerminalValue = createGettersWithFunctionsMock( 'Z10001K1' );
-			getters.getLabel = createGettersWithFunctionsMock( 'Z10001K1' );
 			global.store.hotUpdate( { getters: getters } );
 
 			const wrapper = shallowMount( ZArgumentReference, {
@@ -71,6 +70,9 @@ describe( 'ZArgumentReference', () => {
 		} );
 
 		it( 'displays the argument label when available', () => {
+			getters.getLabelData = createLabelDataMock( { Z10001K1: 'input' } );
+			global.store.hotUpdate( { getters: getters } );
+
 			const wrapper = shallowMount( ZArgumentReference, {
 				props: {
 					edit: false
@@ -92,10 +94,10 @@ describe( 'ZArgumentReference', () => {
 		} );
 
 		it( 'renders the selector with all possible choices', () => {
-			getters.getLabel = () => ( zid ) => {
-				const labels = { Z10001K1: 'first', Z10001K2: 'second' };
-				return labels[ zid ] || zid;
-			};
+			getters.getLabelData = createLabelDataMock( {
+				Z10001K1: 'first',
+				Z10001K2: 'second'
+			} );
 			global.store.hotUpdate( { getters: getters } );
 
 			const wrapper = shallowMount( ZArgumentReference, {
@@ -119,7 +121,6 @@ describe( 'ZArgumentReference', () => {
 		it( 'renders the selector with empty value set', () => {
 			getters.getRowByKeyPath = createGettersWithFunctionsMock( undefined );
 			getters.getZStringTerminalValue = createGettersWithFunctionsMock( undefined );
-			getters.getLabel = createGettersWithFunctionsMock( '' );
 			global.store.hotUpdate( { getters: getters } );
 
 			const wrapper = shallowMount( ZArgumentReference, {

@@ -205,10 +205,9 @@ module.exports = exports = defineComponent( {
 		implementationName: function () {
 			const contentRowId = this.getZPersistentContentRowId() || 0;
 			const contentType = this.getZObjectTypeByRowId( contentRowId );
-			// If the page is an implementation, return label if available
+			// If the page is an implementation, return implementation label
 			if ( contentType === Constants.Z_IMPLEMENTATION ) {
-				const labelData = this.getLabelData( this.getCurrentZObjectId );
-				return labelData ? labelData.label : undefined;
+				return this.getLabelData( this.getCurrentZObjectId );
 			}
 			return undefined;
 		}

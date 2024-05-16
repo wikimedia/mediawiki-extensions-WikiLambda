@@ -8,66 +8,70 @@
 
 const
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
+	LabelData = require( '../../../../resources/ext.wikilambda.edit/store/classes/LabelData.js' ),
 	FunctionExplorer = require( '../../../../resources/ext.wikilambda.edit/components/widgets/FunctionExplorer.vue' ),
+	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
-	mount = require( '@vue/test-utils' ).mount,
-	icons = require( '../../fixtures/icons.json' );
+	shallowMount = require( '@vue/test-utils' ).shallowMount;
 
-const reverseStringFunctionArguments = [
-	{
-		type: 'Z6',
-		label: 'String to reverse',
-		typeZid: Constants.Z_STRING,
-		keyZid: 'Z10004K1'
+const reverseStringFunctionZid = 'Z10004';
+const reverseStringFunction = {
+	Z1K1: 'Z2',
+	Z2K2: {
+		Z1K1: 'Z8',
+		Z8K2: 'Z6'
 	}
-];
-
-const capitalizeStringFunctionArguments = [
-	{
-		type: 'Z6',
-		label: 'String to check',
-		typeZid: Constants.Z_STRING,
-		keyZid: 'Z10002K1'
-	}
-];
-
-const REVERSE_STRING_FUNCTION_ZID = 'Z10004';
-const CAPITALIZE_STRING_FUNCTION_ZID = 'Z10002';
-
-let currentFunctionZid = REVERSE_STRING_FUNCTION_ZID;
-
-const mockFunctionExplorerComputed = {
-	getStoredObject: () => mockReverseStringFunction,
-	functionName: jest.fn( () => currentFunctionZid === REVERSE_STRING_FUNCTION_ZID ? 'Reverse string' : 'String is truthy' ),
-	functionArguments: jest.fn( () =>
-		currentFunctionZid === REVERSE_STRING_FUNCTION_ZID ?
-			reverseStringFunctionArguments :
-			capitalizeStringFunctionArguments
-	),
-	functionExists: jest.fn( () => true ),
-	outputType: jest.fn( () => currentFunctionZid === REVERSE_STRING_FUNCTION_ZID ? 'Z6' : 'Z40' )
 };
+const reverseStringFunctionArguments = [
+	{ Z17K1: 'Z6', Z17K2: 'Z10004K1' }
+];
 
-function createFunctionExplorerWrapper( propsData = {}, computed = Object.assign( mockFunctionExplorerComputed, {} ) ) {
-	return mount( FunctionExplorer, {
+const isReverseStringFunctionZid = 'Z10002';
+const isReverseStringFunction = {
+	Z1K1: 'Z2',
+	Z2K2: {
+		Z1K1: 'Z8',
+		Z8K2: 'Z40'
+	}
+};
+const isReverseStringFunctionArguments = [
+	{ Z17K1: 'Z6', Z17K2: 'Z10002K1' },
+	{ Z17K1: 'Z6', Z17K2: 'Z10002K2' }
+];
+
+function createFunctionExplorerWrapper( propsData = {} ) {
+	return shallowMount( FunctionExplorer, {
 		propsData: propsData,
-		computed: computed
+		global: { stubs: { WlWidgetBase: false, CdxButton: false, WlTypeToString: false } }
 	} );
 }
 
 describe( 'FunctionExplorer', function () {
 	let getters, actions;
 
-	beforeAll( function () {
+	beforeEach( function () {
 		getters = {
-			getLabel: jest.fn( () => ( zid ) => {
-				const labels = {
-					Z6: 'String',
-					Z881: 'Typed list'
-				};
-				return labels[ zid ] ? labels[ zid ] : zid;
+			getLabelData: createLabelDataMock( {
+				Z6: 'String',
+				Z881: 'Typed list',
+				Z10002: 'Is reverse string',
+				Z10002K1: 'String one',
+				Z10002K2: 'String two',
+				Z10004: 'Reverse string',
+				Z10004K1: 'String to reverse'
 			} ),
-			getUserLangCode: createGetterMock( 'en' )
+			getUserLangCode: createGetterMock( 'en' ),
+			getStoredObject: () => ( zid ) => {
+				return zid === reverseStringFunctionZid ?
+					reverseStringFunction :
+					isReverseStringFunction;
+			},
+			getInputsOfFunctionZid: () => ( zid ) => {
+				return zid === reverseStringFunctionZid ?
+					reverseStringFunctionArguments :
+					isReverseStringFunctionArguments;
+			}
 		};
 
 		actions = {
@@ -78,6 +82,8 @@ describe( 'FunctionExplorer', function () {
 			getters: getters,
 			actions: actions
 		} );
+
+		window.open = jest.fn();
 	} );
 
 	it( 'renders without errors', function () {
@@ -90,7 +96,7 @@ describe( 'FunctionExplorer', function () {
 		it( 'should display a view function button', function () {
 
 			const wrapper = createFunctionExplorerWrapper( {
-				functionZid: REVERSE_STRING_FUNCTION_ZID,
+				functionZid: reverseStringFunctionZid,
 				edit: true
 			} );
 
@@ -101,7 +107,7 @@ describe( 'FunctionExplorer', function () {
 
 		it( 'should redirect to the function page when the view function button is clicked', function () {
 			const wrapper = createFunctionExplorerWrapper( {
-				functionZid: REVERSE_STRING_FUNCTION_ZID,
+				functionZid: reverseStringFunctionZid,
 				edit: true
 			} );
 
@@ -121,42 +127,39 @@ describe( 'FunctionExplorer', function () {
 
 			beforeEach( function () {
 				propsData = {
-					functionZid: REVERSE_STRING_FUNCTION_ZID,
+					functionZid: reverseStringFunctionZid,
 					edit: true
 				};
 				wrapper = createFunctionExplorerWrapper( propsData );
 			} );
 
-			afterEach( function () {
-				// Revert the function zid to the original one so it does not affect other tests
-				currentFunctionZid = REVERSE_STRING_FUNCTION_ZID;
-			} );
-
 			it( 'should update the function name', function () {
-				expect( wrapper.vm.functionName ).toBe( 'Reverse string' );
-				currentFunctionZid = CAPITALIZE_STRING_FUNCTION_ZID;
-
-				// We need to remount the wrapper to trigger the computed properties
-				wrapper = createFunctionExplorerWrapper( propsData );
-
-				expect( wrapper.vm.functionName ).toBe( 'String is truthy' );
+				expect( wrapper.vm.functionLabel.label ).toBe( 'Reverse string' );
+				wrapper.setData( { currentFunctionZid: isReverseStringFunctionZid } );
+				expect( wrapper.vm.functionLabel.label ).toBe( 'Is reverse string' );
 			} );
 
 			it( 'should update the function inputs', function () {
-				expect( wrapper.vm.functionArguments ).toEqual( reverseStringFunctionArguments );
-				currentFunctionZid = CAPITALIZE_STRING_FUNCTION_ZID;
-
-				// We need to remount the wrapper to trigger the computed properties
-				wrapper = createFunctionExplorerWrapper( propsData );
-				expect( wrapper.vm.functionArguments ).toEqual( capitalizeStringFunctionArguments );
+				expect( wrapper.vm.functionArguments ).toEqual( [ {
+					key: 'Z10004K1',
+					type: 'Z6',
+					label: new LabelData( 'Z10004K1', 'String to reverse', 'Z1002', 'en' )
+				} ] );
+				wrapper.setData( { currentFunctionZid: isReverseStringFunctionZid } );
+				expect( wrapper.vm.functionArguments ).toEqual( [ {
+					key: 'Z10002K1',
+					type: 'Z6',
+					label: new LabelData( 'Z10002K1', 'String one', 'Z1002', 'en' )
+				}, {
+					key: 'Z10002K2',
+					type: 'Z6',
+					label: new LabelData( 'Z10002K2', 'String two', 'Z1002', 'en' )
+				} ] );
 			} );
 
 			it( 'should update the function output', function () {
 				expect( wrapper.vm.outputType ).toBe( Constants.Z_STRING );
-				currentFunctionZid = CAPITALIZE_STRING_FUNCTION_ZID;
-
-				// We need to remount the wrapper to trigger the computed properties
-				wrapper = createFunctionExplorerWrapper( propsData );
+				wrapper.setData( { currentFunctionZid: isReverseStringFunctionZid } );
 				expect( wrapper.vm.outputType ).toBe( Constants.Z_BOOLEAN );
 			} );
 		} );
@@ -166,7 +169,7 @@ describe( 'FunctionExplorer', function () {
 
 			beforeEach( function () {
 				wrapper = createFunctionExplorerWrapper( {
-					functionZid: REVERSE_STRING_FUNCTION_ZID,
+					functionZid: reverseStringFunctionZid,
 					edit: true,
 					implementation: Constants.Z_IMPLEMENTATION_CODE
 				} );
@@ -191,7 +194,7 @@ describe( 'FunctionExplorer', function () {
 				it( 'should display the zid of the current function', function () {
 					const functionZid = wrapper.find( '[data-testid="function-zid"]' );
 
-					expect( functionZid.text() ).toBe( REVERSE_STRING_FUNCTION_ZID );
+					expect( functionZid.text() ).toBe( reverseStringFunctionZid );
 				} );
 				it( 'should display the zkey of each input', function () {
 					const functionZKeysWrapper = wrapper.findAll( '[data-testid="function-input-zkey"]' );
@@ -218,13 +221,9 @@ describe( 'FunctionExplorer', function () {
 			beforeEach( function () {
 				wrapper = createFunctionExplorerWrapper(
 					{
-						functionZid: REVERSE_STRING_FUNCTION_ZID,
+						functionZid: reverseStringFunctionZid,
 						edit: true
-					},
-					Object.assign( mockFunctionExplorerComputed, {
-						resetIcon: () => icons.cdxIconHistory
-
-					} )
+					}
 				);
 
 				resetButton = wrapper.find( '[data-testid="function-explorer-reset-button"]' );
@@ -273,10 +272,9 @@ describe( 'FunctionExplorer', function () {
 		it( 'should NOT display the lookup used to select a function', function () {
 			const wrapper = createFunctionExplorerWrapper(
 				{
-					functionZid: REVERSE_STRING_FUNCTION_ZID,
+					functionZid: reverseStringFunctionZid,
 					edit: false
-				},
-				Object.assign( mockFunctionExplorerComputed, {} )
+				}
 			);
 
 			expect( wrapper.find( '[data-testid="function-selector"]' ).exists() ).toBe( false );
@@ -287,10 +285,9 @@ describe( 'FunctionExplorer', function () {
 			beforeEach( function () {
 				wrapper = createFunctionExplorerWrapper(
 					{
-						functionZid: REVERSE_STRING_FUNCTION_ZID,
+						functionZid: reverseStringFunctionZid,
 						edit: false
-					},
-					Object.assign( mockFunctionExplorerComputed, {} )
+					}
 				);
 			} );
 
@@ -340,11 +337,14 @@ describe( 'FunctionExplorer', function () {
 	describe( 'Zero-blank state', function () {
 		describe( 'when no valid function was found', function () {
 			it( 'should display a zero-blank state', function () {
+				getters.getStoredObject = createGettersWithFunctionsMock();
+				getters.getInputsOfFunctionZid = createGettersWithFunctionsMock( [] );
+				global.store.hotUpdate( {
+					getters: getters
+				} );
+
 				const wrapper = createFunctionExplorerWrapper(
-					{ edit: true },
-					Object.assign( mockFunctionExplorerComputed, {
-						functionExists: jest.fn( () => false )
-					} )
+					{ edit: true }
 				);
 
 				const inputsWrapper = wrapper.findAll( '[data-testid="function-input-type"]' );
@@ -355,5 +355,4 @@ describe( 'FunctionExplorer', function () {
 			} );
 		} );
 	} );
-
 } );

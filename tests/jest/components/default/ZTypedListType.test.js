@@ -8,6 +8,8 @@
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
+	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
+	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	ZTypedListType = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZTypedListType.vue' ),
 	ZObjectKeyValue = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZObjectKeyValue.vue' );
@@ -18,23 +20,18 @@ describe( 'ZTypedListType', () => {
 
 	beforeEach( () => {
 		getters = {
-			getLabelData: createGettersWithFunctionsMock(
-				{ zid: 'Z881K1', label: 'String', lang: 'Z1002' }
-			),
+			getLabelData: createLabelDataMock(),
 			getExpectedTypeOfKey: createGettersWithFunctionsMock( 'Z1' ),
 			getZObjectKeyByRowId: createGettersWithFunctionsMock( '0' ),
 
 			// getters for ZObjectKeyValue
 			isIdentityKey: createGettersWithFunctionsMock( false ),
-			getDepthByRowId: () => () => {
-				return 1;
-			},
-			getParentRowId: () => () => {
-				return 2;
-			},
+			getDepthByRowId: createGettersWithFunctionsMock( 1 ),
+			getParentRowId: createGettersWithFunctionsMock( 2 ),
 			getZObjectValueByRowId: createGettersWithFunctionsMock(),
 			getZObjectTypeByRowId: createGettersWithFunctionsMock( Constants.Z_STRING ),
-			getUserLangZid: createGettersWithFunctionsMock( 'Z1002' )
+			getUserLangZid: createGetterMock( 'Z1002' ),
+			getUserLangCode: createGetterMock( 'en' )
 		};
 
 		actions = {

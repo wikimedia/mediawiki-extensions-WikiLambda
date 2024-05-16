@@ -16,13 +16,13 @@
 		</span>
 		<cdx-icon
 			v-if="testerStatus !== undefined"
-			:icon="messageIcon"
+			:icon="icons.cdxIconInfo"
 			class="ext-wikilambda-tester-table__message-icon ext-wikilambda-tester-table__message-icon--info"
 			@click.stop="handleMessageIconClick"
 		></cdx-icon>
 		<wl-function-metadata-dialog
 			:open="showMetadata"
-			:header-text="implementationLabel"
+			:header-text="implementationLabelData"
 			:metadata="metadata"
 			@close-dialog="showMetadata = false"
 		></wl-function-metadata-dialog>
@@ -59,17 +59,32 @@ module.exports = exports = defineComponent( {
 	},
 	data: function () {
 		return {
-			showMetadata: false
+			showMetadata: false,
+			icons: icons
 		};
 	},
 	computed: Object.assign( mapGetters( [
 		'getZTesterResults',
 		'getZTesterMetadata',
-		'getLabel'
+		'getLabelData'
 	] ), {
+		/**
+		 * Returns whether the tester passed
+		 *
+		 * @return {boolean}
+		 */
 		testerStatus: function () {
-			return this.getZTesterResults( this.zFunctionId, this.zTesterId, this.zImplementationId );
+			return this.getZTesterResults(
+				this.zFunctionId,
+				this.zTesterId,
+				this.zImplementationId
+			);
 		},
+		/**
+		 * Returns the status of the test
+		 *
+		 * @return {string}
+		 */
 		status: function () {
 			if ( !( this.zImplementationId ) || !( this.zTesterId ) ) {
 				return Constants.testerStatus.READY;
@@ -82,6 +97,11 @@ module.exports = exports = defineComponent( {
 			}
 			return Constants.testerStatus.RUNNING;
 		},
+		/**
+		 * Returns the status message
+		 *
+		 * @return {string}
+		 */
 		statusMessage: function () {
 			switch ( this.status ) {
 				case Constants.testerStatus.READY:
@@ -94,6 +114,11 @@ module.exports = exports = defineComponent( {
 					return this.$i18n( 'wikilambda-tester-status-running' ).text();
 			}
 		},
+		/**
+		 * Returns the icon depending on the status
+		 *
+		 * @return {Object}
+		 */
 		statusIcon: function () {
 			if ( this.testerStatus === true ) {
 				return icons.cdxIconCheck;
@@ -104,33 +129,40 @@ module.exports = exports = defineComponent( {
 			// This will be used both for ready and running statuses
 			return icons.cdxIconAlert;
 		},
+		/**
+		 * Returns the class for the icon depending on the status
+		 *
+		 * @return {string}
+		 */
 		statusIconClass: function () {
 			return `ext-wikilambda-function-report-item-status__${ this.status }`;
 		},
-		messageIcon: function () {
-			return icons.cdxIconInfo;
-		},
+		/**
+		 * Returns the tester metadata if stored, else returns undefined
+		 *
+		 * @return {Object|undefined}
+		 */
 		metadata: function () {
-			const metadata = this.getZTesterMetadata(
-				this.zFunctionId, this.zTesterId, this.zImplementationId );
-
-			// TODO (T316567): avoid returning ''
-			return metadata || '';
+			return this.getZTesterMetadata(
+				this.zFunctionId,
+				this.zTesterId,
+				this.zImplementationId
+			);
 		},
-		implementationLabel: function () {
-			return this.getLabel( this.zImplementationId );
-		},
-		testerLabel: function () {
-			return this.getLabel( this.zTesterId );
-		},
-		tooltipMetaDataHelpLink: function () {
-			return this.$i18n( 'wikilambda-helplink-tooltip' ).text();
+		/**
+		 * Returns the LabelData object of the implementation Zid,
+		 * if any, else returns undefined.
+		 *
+		 * @return {LabelData|undefined}
+		 */
+		implementationLabelData: function () {
+			return this.zImplementationId ?
+				this.getLabelData( this.zImplementationId ) :
+				undefined;
 		}
 	} ),
 	methods: {
 		handleMessageIconClick: function () {
-			// TODO (T315607): See if the metadata dialog behavior can be improved further.
-			// TODO (T316567): Check if results are ready before showing metadata dialog
 			if ( !this.showMetadata ) {
 				this.showMetadata = true;
 			} else {

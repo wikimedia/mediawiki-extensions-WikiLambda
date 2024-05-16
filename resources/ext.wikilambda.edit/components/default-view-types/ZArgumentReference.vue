@@ -11,7 +11,10 @@
 	>
 		<template v-if="!edit">
 			<cdx-icon :icon="icon"></cdx-icon>
-			{{ argumentLabel }}
+			<span
+				:lang="argumentLabelData.langCode"
+				:dir="argumentLabelData.langDir"
+			>{{ argumentLabelData.label }}</span>
 		</template>
 		<cdx-select
 			v-else
@@ -55,7 +58,7 @@ module.exports = exports = defineComponent( {
 	},
 	computed: Object.assign(
 		mapGetters( [
-			'getLabel',
+			'getLabelData',
 			'getRowByKeyPath',
 			'getInputsOfFunctionZid',
 			'getZImplementationFunctionZid',
@@ -97,10 +100,10 @@ module.exports = exports = defineComponent( {
 			 * Returns the label of the selected argument reference,
 			 * if any. Else returns the argument reference key.
 			 *
-			 * @return {string}
+			 * @return {LabelData}
 			 */
-			argumentLabel: function () {
-				return this.getLabel( this.argumentKey );
+			argumentLabelData: function () {
+				return this.getLabelData( this.argumentKey );
 			},
 
 			/**
@@ -132,7 +135,7 @@ module.exports = exports = defineComponent( {
 					.map( ( arg ) => {
 						return {
 							value: arg[ Constants.Z_ARGUMENT_KEY ],
-							label: this.getLabel( arg[ Constants.Z_ARGUMENT_KEY ] ),
+							label: this.getLabelData( arg[ Constants.Z_ARGUMENT_KEY ] ).label,
 							icon: icons.cdxIconFunctionArgument
 						};
 					} );

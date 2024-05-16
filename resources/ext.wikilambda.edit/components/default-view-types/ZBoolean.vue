@@ -10,9 +10,9 @@
 			<a
 				class="ext-wikilambda-edit-link"
 				:href="valueUrl"
-			>
-				{{ valueLabel }}
-			</a>
+				:lang="valueLabelData.langCode"
+				:dir="valueLabelData.langDir"
+			>{{ valueLabelData.label }}</a>
 		</template>
 		<template v-else>
 			<cdx-radio
@@ -23,7 +23,10 @@
 				:name="'boolean-radios-' + rowId"
 				:inline="true"
 			>
-				{{ radio.label }}
+				<span
+					:lang="radio.labelData.langCode"
+					:dir="radio.labelData.langDir"
+				>{{ radio.labelData.label }}</span>
 			</cdx-radio>
 		</template>
 	</div>
@@ -52,7 +55,7 @@ module.exports = exports = defineComponent( {
 		}
 	},
 	computed: Object.assign( mapGetters( [
-		'getLabel',
+		'getLabelData',
 		'getZBooleanValue',
 		'getUserLangCode'
 	] ),
@@ -71,20 +74,36 @@ module.exports = exports = defineComponent( {
 				} );
 			}
 		},
-		valueLabel: function () {
-			return this.getLabel( this.value );
+		/**
+		 * Returns the LabelData object for the selected value of the boolean
+		 *
+		 * @return {LabelData}
+		 */
+		valueLabelData: function () {
+			return this.getLabelData( this.value );
 		},
+		/**
+		 * Returns the url for the selected boolean value
+		 *
+		 * @return {string}
+		 */
 		valueUrl: function () {
 			return '/view/' + this.getUserLangCode + '/' + this.value;
 		},
+		/**
+		 * Returns the radio choices for True and False, with their value
+		 * and their LabelData object
+		 *
+		 * @return {Array}
+		 */
 		radioChoices: function () {
 			return [
 				{
-					label: this.getLabel( Constants.Z_BOOLEAN_TRUE ),
+					labelData: this.getLabelData( Constants.Z_BOOLEAN_TRUE ),
 					value: Constants.Z_BOOLEAN_TRUE
 				},
 				{
-					label: this.getLabel( Constants.Z_BOOLEAN_FALSE ),
+					labelData: this.getLabelData( Constants.Z_BOOLEAN_FALSE ),
 					value: Constants.Z_BOOLEAN_FALSE
 				}
 			];

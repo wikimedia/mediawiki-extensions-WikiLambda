@@ -199,6 +199,7 @@ module.exports = exports = defineComponent( {
 			'createObjectByType',
 			'getCurrentZObjectId',
 			'getUserLangZid',
+			'getUserLangCode',
 			'getLabelData',
 			'getExpectedTypeOfKey',
 			'getDepthByRowId',
@@ -350,22 +351,19 @@ module.exports = exports = defineComponent( {
 					return new LabelData(
 						null,
 						this.$i18n( 'wikilambda-list-item-label', this.key ).text(),
-						this.getUserLangZid
+						this.getUserLangZid,
+						this.getUserLangCode
 					);
 				}
 				if ( this.isKeyTypedListType( this.key ) ) {
 					return new LabelData(
 						null,
 						this.$i18n( 'wikilambda-list-items-type-label' ).text(),
-						this.getUserLangZid
+						this.getUserLangZid,
+						this.getUserLangCode
 					);
 				}
-				const label = this.getLabelData( this.key );
-				return label || new LabelData(
-					null,
-					this.key,
-					this.getUserLangZid
-				);
+				return this.getLabelData( this.key );
 			},
 
 			/**

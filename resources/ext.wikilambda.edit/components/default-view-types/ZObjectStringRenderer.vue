@@ -64,7 +64,12 @@
 				</li>
 			</ul>
 			<template #footer>
-				<a :href="rendererUrl" target="_blank">{{ getLabel( rendererZid ) }}</a>
+				<a
+					:href="rendererUrl"
+					target="_blank"
+					:lang="rendererLabel.langCode"
+					:dir="rendererLabel.langDir"
+				>{{ rendererLabel.label }}</a>
 			</template>
 		</cdx-dialog>
 	</div>
@@ -131,7 +136,7 @@ module.exports = exports = defineComponent( {
 	computed: Object.assign( mapGetters( [
 		'createObjectByType',
 		'getCurrentView',
-		'getLabel',
+		'getLabelData',
 		'getPassingTestZids',
 		'getParserZid',
 		'getRendererZid',
@@ -157,6 +162,14 @@ module.exports = exports = defineComponent( {
 		 */
 		rendererZid: function () {
 			return this.getRendererZid( this.type );
+		},
+		/**
+		 * Return renderer LabelData
+		 *
+		 * @return {LabelData}
+		 */
+		rendererLabel: function () {
+			return this.getLabelData( this.rendererZid );
 		},
 		/**
 		 * Return the url for the renderer wiki page

@@ -10,7 +10,13 @@
 		<!-- Main type selector -->
 		<cdx-field>
 			<template #label>
-				{{ label }}
+				<span
+					v-if="labelData"
+					:lang="labelData.langCode"
+					:dir="labelData.langDir"
+				>
+					{{ labelData.label }}
+				</span>
 			</template>
 			<wl-z-object-selector
 				:disabled="disabled"
@@ -33,7 +39,7 @@
 				:key="'type-' + rowId + '-arg-' + arg.id"
 				data-testid="type-selector-arg"
 				:row-id="arg.id"
-				:label="getLabel( arg.key )"
+				:label-data="getLabelData( arg.key )"
 				:type="getExpectedTypeOfKey( arg.key )"
 				:disabled="disabled"
 				:placeholder="placeholder"
@@ -46,6 +52,7 @@
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
+	LabelData = require( '../../store/classes/LabelData.js' ),
 	ZObjectSelector = require( './ZObjectSelector.vue' ),
 	CdxField = require( '@wikimedia/codex' ).CdxField,
 	mapActions = require( 'vuex' ).mapActions,
@@ -75,14 +82,14 @@ module.exports = exports = defineComponent( {
 			type: String,
 			default: ''
 		},
-		label: {
-			type: String,
-			default: ''
+		labelData: {
+			type: LabelData,
+			default: null
 		}
 	},
 	computed: Object.assign( mapGetters( [
 		'getExpectedTypeOfKey',
-		'getLabel',
+		'getLabelData',
 		'getStoredObject',
 		'getZObjectTypeByRowId',
 		'getZFunctionCallFunctionId',

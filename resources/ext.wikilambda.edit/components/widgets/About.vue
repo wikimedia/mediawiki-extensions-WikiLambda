@@ -77,8 +77,10 @@
 						>
 							<span
 								class="ext-wikilambda-about-function-input-label"
-								:class="{ 'ext-wikilambda-about-unavailable': !input.hasLabel }"
-							>{{ input.label }}<span>:</span></span>
+								:class="{ 'ext-wikilambda-about-unavailable': input.labelData.isUntitled }"
+								:lang="input.labelData.langCode"
+								:dir="input.labelData.langDir"
+							>{{ input.labelData.labelOrUntitled }}<span>:</span></span>
 							<wl-z-object-to-string :row-id="input.typeRowId"></wl-z-object-to-string>
 						</div>
 					</template>
@@ -184,7 +186,7 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign( mapGetters( [
-		'getLabel',
+		'getLabelData',
 		'getMetadataLanguages',
 		'getUserLangZid',
 		'getZArgumentTypeRowId',
@@ -326,15 +328,10 @@ module.exports = exports = defineComponent( {
 			return inputs.map( ( row ) => {
 				const typeRowId = this.getZArgumentTypeRowId( row.id );
 				const key = this.getZArgumentKey( row.id );
-				const labelData = this.getLabel( key );
-				const hasLabel = labelData !== key;
-				const label = hasLabel ?
-					labelData :
-					this.$i18n( 'wikilambda-about-widget-unlabelled-input' ).text();
+				const labelData = this.getLabelData( key );
 				return {
-					label,
-					typeRowId,
-					hasLabel
+					labelData,
+					typeRowId
 				};
 			} );
 		}

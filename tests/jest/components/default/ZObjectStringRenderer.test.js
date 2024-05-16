@@ -9,6 +9,7 @@
 const { waitFor } = require( '@testing-library/vue' ),
 	shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	ZObjectStringRenderer = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZObjectStringRenderer.vue' ),
@@ -139,7 +140,7 @@ describe( 'ZObjectStringRenderer', () => {
 		getters = {
 			createObjectByType: createGettersWithFunctionsMock( blankObject ),
 			getCurrentView: createGetterMock(),
-			getLabel: createGettersWithFunctionsMock(),
+			getLabelData: createLabelDataMock(),
 			getPassingTestZids: createGettersWithFunctionsMock( [] ),
 			getParserZid: createGettersWithFunctionsMock( parserZid ),
 			getRendererZid: createGettersWithFunctionsMock( rendererZid ),
@@ -678,7 +679,7 @@ describe( 'ZObjectStringRenderer', () => {
 
 		it( 'creates an examples dialog window', async () => {
 			const rendererLabel = 'Renderer function label';
-			getters.getLabel = createGettersWithFunctionsMock( rendererLabel );
+			getters.getLabelData = createLabelDataMock( { [ rendererZid ]: rendererLabel } );
 			getters.getRendererExamples = createGettersWithFunctionsMock( [
 				{ testZid: 'Z30030', result: 'example one' },
 				{ testZid: 'Z30031', result: 'example two' }

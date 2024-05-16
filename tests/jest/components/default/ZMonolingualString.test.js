@@ -8,6 +8,7 @@
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	mount = require( '@vue/test-utils' ).mount,
+	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	ZMonolingualString = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZMonolingualString.vue' ),
 	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
@@ -17,7 +18,7 @@ describe( 'ZMonolingualString', () => {
 	let getters;
 	beforeEach( () => {
 		getters = {
-			getLabel: createGettersWithFunctionsMock( { label: 'English', lang: 'Z1002', zid: 'Z1002' } ),
+			getLabelData: createLabelDataMock(),
 			getLanguageIsoCodeOfZLang: createGettersWithFunctionsMock( 'EN' ),
 			getZMonolingualTextValue: createGettersWithFunctionsMock( 'my label' ),
 			getZMonolingualLangValue: createGettersWithFunctionsMock( 'Z10002' )

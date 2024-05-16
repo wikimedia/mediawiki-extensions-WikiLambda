@@ -8,13 +8,15 @@
 
 const libraryModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/library.js' ),
 	languagesModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/languages.js' ),
+	LabelData = require( '../../../../resources/ext.wikilambda.edit/store/classes/LabelData.js' ),
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	mockApiResponseFor = require( '../../fixtures/mocks.js' ).mockApiResponseFor,
-	mockApiZids = require( '../../fixtures/mocks.js' ).mockApiZids,
-	mockLabels = {
-		Z1: { zid: 'Z1', label: 'Object', lang: 'Z1002' },
-		Z6: { zid: 'Z6', label: 'String', lang: 'Z1002' }
-	};
+	mockApiZids = require( '../../fixtures/mocks.js' ).mockApiZids;
+
+const mockLabels = {
+	Z1: new LabelData( 'Z1', 'Object', 'Z1002' ),
+	Z6: new LabelData( 'Z6', 'String', 'Z1002' )
+};
 
 let state,
 	context,
@@ -44,29 +46,23 @@ describe( 'library module', function () {
 
 	describe( 'Getters', function () {
 
-		describe( 'getLabel', function () {
-			beforeEach( function () {
-				context.getters.getLabelData = libraryModule.getters.getLabelData( state, context.getters );
-			} );
-
-			it( 'Returns the zid or key if label is not available in the state', function () {
-				expect( libraryModule.getters.getLabel( state, context.getters )( 'Z10000' ) ).toEqual( 'Z10000' );
-			} );
-
-			it( 'Returns the label if available in the state', function () {
-				state.labels = mockLabels;
-				expect( libraryModule.getters.getLabel( state, context.getters )( 'Z6' ) ).toEqual( 'String' );
-			} );
-		} );
-
 		describe( 'getLabelData', function () {
-			it( 'Returns undefined if label is not available in the state', function () {
-				expect( libraryModule.getters.getLabelData( state, context.getters )( 'Z10000' ) ).toEqual( undefined );
+			it( 'Returns untitled LabelData if label is not available in the state', function () {
+				const labelData = libraryModule.getters.getLabelData( state, context.getters )( 'Z10000' );
+				expect( labelData.zid ).toEqual( 'Z10000' );
+				expect( labelData.label ).toEqual( 'Z10000' );
+				expect( labelData.isUntitled ).toBe( true );
+				expect( labelData.labelOrUntitled ).toBe( 'Untitled' );
 			} );
 
 			it( 'Returns the label data if available in the state', function () {
 				state.labels = mockLabels;
-				expect( libraryModule.getters.getLabelData( state, context.getters )( 'Z6' ) ).toEqual( { zid: 'Z6', label: 'String', lang: 'Z1002' } );
+				context.getters.getLanguageIsoCodeOfZLang = () => 'en';
+				const labelData = libraryModule.getters.getLabelData( state, context.getters )( 'Z6' );
+				expect( labelData.zid ).toEqual( 'Z6' );
+				expect( labelData.label ).toEqual( 'String' );
+				expect( labelData.isUntitled ).toBe( false );
+				expect( labelData.labelOrUntitled ).toBe( 'String' );
 			} );
 
 			it( 'Returns raw zids when the requested language is qqx', function () {
@@ -74,7 +70,11 @@ describe( 'library module', function () {
 				mw.language.getFallbackLanguageChain = () => [ 'qqx', 'en' ];
 				context.getters.getUserRequestedLang = languagesModule.getters.getUserRequestedLang( state );
 				context.getters.getUserLangZid = languagesModule.getters.getUserLangZid( state );
-				expect( libraryModule.getters.getLabelData( state, context.getters )( 'Z6' ) ).toEqual( { zid: 'Z6', label: '(Z6)', lang: 'Z1002' } );
+				const labelData = libraryModule.getters.getLabelData( state, context.getters )( 'Z6' );
+				expect( labelData.zid ).toEqual( 'Z6' );
+				expect( labelData.label ).toEqual( '(Z6)' );
+				expect( labelData.isUntitled ).toBe( false );
+				expect( labelData.labelOrUntitled ).toBe( '(Z6)' );
 			} );
 		} );
 

@@ -107,7 +107,7 @@ module.exports = exports = defineComponent( {
 		 */
 		aliasLabel: function () {
 			// TODO (T335583): Replace i18n message with key label
-			// return this.getLabel( Constants.Z_PERSISTENTOBJECT_ALIASES );
+			// return this.getLabelData( Constants.Z_PERSISTENTOBJECT_ALIASES );
 			return this.$i18n( 'wikilambda-function-definition-alias-label' ).text();
 		},
 		/**

@@ -9,6 +9,7 @@
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	{ waitFor } = require( '@testing-library/vue' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	FunctionEvaluator = require( '../../../../resources/ext.wikilambda.edit/components/widgets/FunctionEvaluator.vue' );
 
@@ -75,7 +76,7 @@ describe( 'FunctionEvaluator', () => {
 			getZFunctionCallFunctionId: createGettersWithFunctionsMock( undefined ),
 			getConnectedObjects: createGettersWithFunctionsMock( [] ),
 			getZObjectAsJsonById: createGettersWithFunctionsMock( '' ),
-			getLabel: createGettersWithFunctionsMock( 'Function' ),
+			getLabelData: createLabelDataMock(),
 			getMapValueByKey: createGettersWithFunctionsMock( undefined ),
 			getUserLangZid: createGettersWithFunctionsMock( 'Z1002' ),
 			userCanRunFunction: createGetterMock( true ),

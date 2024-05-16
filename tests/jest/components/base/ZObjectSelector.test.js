@@ -9,6 +9,7 @@
 const { waitFor } = require( '@testing-library/vue' ),
 	mount = require( '@vue/test-utils' ).mount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	ZObjectSelector = require( '../../../../resources/ext.wikilambda.edit/components/base/ZObjectSelector.vue' );
 
@@ -26,22 +27,20 @@ describe( 'ZObjectSelector', () => {
 		};
 		getters = {
 			getErrors: createGettersWithFunctionsMock( [] ),
-			getLabel: () => ( zid ) => {
-				const labels = {
-					Z6: 'String',
-					Z4: 'Type',
-					Z40: 'Boolean',
-					Z60: 'Natural language',
-					Z1001: 'Arabic',
-					Z1002: 'English',
-					Z1003: 'Spanish',
-					Z1004: 'French',
-					Z1005: 'Russian',
-					Z1006: 'Chinese'
-				};
-				return zid in labels ? labels[ zid ] : zid;
-			}
+			getLabelData: createLabelDataMock( {
+				Z6: 'String',
+				Z4: 'Type',
+				Z40: 'Boolean',
+				Z60: 'Natural language',
+				Z1001: 'Arabic',
+				Z1002: 'English',
+				Z1003: 'Spanish',
+				Z1004: 'French',
+				Z1005: 'Russian',
+				Z1006: 'Chinese'
+			} )
 		};
+
 		actions = {
 			fetchZids: jest.fn(),
 			lookupZObject: lookupMock

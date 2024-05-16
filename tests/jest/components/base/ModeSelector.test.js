@@ -9,6 +9,7 @@
 const { waitFor } = require( '@testing-library/vue' ),
 	shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	ModeSelector = require( '../../../../resources/ext.wikilambda.edit/components/base/ModeSelector.vue' );
 
@@ -27,7 +28,7 @@ describe( 'ModeSelector', () => {
 
 	beforeEach( () => {
 		getters = {
-			getLabel: () => ( key ) => mockLabels[ key ],
+			getLabelData: createLabelDataMock( mockLabels ),
 			getParentRowId: createGettersWithFunctionsMock( 1 ),
 			getChildrenByParentRowId: createGettersWithFunctionsMock( [] ),
 			getZObjectTypeByRowId: createGettersWithFunctionsMock( Constants.Z_REFERENCE ),

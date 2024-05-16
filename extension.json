@@ -20,7 +20,8 @@
 	"requires": {
 		"MediaWiki": ">= 1.42",
 		"extensions": {
-			"WikimediaMessages": "*"
+			"WikimediaMessages": "*",
+			"UniversalLanguageSelector": "*"
 		}
 	},
 	"AutoloadNamespaces": {
@@ -251,6 +252,7 @@
 				"vue",
 				"vuex",
 				"@wikimedia/codex",
+				"jquery.uls.data",
 				"mediawiki.Title",
 				"mediawiki.api",
 				"mediawiki.router",

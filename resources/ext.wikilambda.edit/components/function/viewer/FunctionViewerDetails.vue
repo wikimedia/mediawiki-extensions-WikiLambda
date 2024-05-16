@@ -112,7 +112,7 @@ module.exports = exports = defineComponent( {
 		'getConnectedImplementations',
 		'getConnectedTests',
 		'getCurrentZObjectId',
-		'getLabel',
+		'getLabelData',
 		'getLanguageOfImplementation',
 		'getZTesterPercentage',
 		'getTypeOfImplementation',
@@ -243,7 +243,7 @@ module.exports = exports = defineComponent( {
 			const tableData = [];
 			for ( const zid of this.visibleImplementations ) {
 				// Get implementation name or its zid if unnamed:
-				const implementationName = this.getLabel( zid );
+				const implementationLabelData = this.getLabelData( zid );
 
 				// Get implementation connected state:
 				const isConnected = this.connectedImplementations.includes( zid );
@@ -265,7 +265,7 @@ module.exports = exports = defineComponent( {
 						language = this.getLanguageOfImplementation( zid );
 						if ( this.isValidZidFormat( language ) ) {
 							this.fetchZids( { zids: [ language ] } );
-							language = this.getLabel( language );
+							language = this.getLabelData( language ).label;
 						}
 				}
 
@@ -283,14 +283,16 @@ module.exports = exports = defineComponent( {
 							}
 						},
 						class: 'ext-wikilambda-function-details-table-item',
-						id: implementationName
+						id: implementationLabelData.label
 					},
 					// Column 2: name
 					name: {
-						title: implementationName,
+						title: implementationLabelData.label,
 						component: 'a',
 						props: {
-							href: `/view/${ this.getUserLangCode }/${ zid }`
+							href: `/view/${ this.getUserLangCode }/${ zid }`,
+							lang: implementationLabelData.langCode,
+							dir: implementationLabelData.langDir
 						},
 						class: 'ext-wikilambda-function-details-table-item'
 					},
@@ -427,10 +429,15 @@ module.exports = exports = defineComponent( {
 			// Add one column for each implementation selected,
 			// or for all visble implementations if none are selected
 			for ( const zid of this.visibleImplementations ) {
-				const implementationLabel = this.getLabel( zid );
+				const implementationLabelData = this.getLabelData( zid );
 				if ( this.implementationsState[ zid ].checked || !this.areAnyImplementationsChecked ) {
 					headers[ zid ] = {
-						title: implementationLabel,
+						title: implementationLabelData.label,
+						component: 'span',
+						props: {
+							lang: implementationLabelData.langCode,
+							dir: implementationLabelData.langDir
+						},
 						class: 'ext-wikilambda-function-details-table-text'
 					};
 				}
@@ -447,7 +454,7 @@ module.exports = exports = defineComponent( {
 			const tableData = [];
 			for ( const zid of this.visibleTests ) {
 				// Get test name or its zid if unnamed:
-				const testName = this.getLabel( zid );
+				const testLabelData = this.getLabelData( zid );
 
 				// Get test connected state:
 				const isConnected = this.connectedTests.includes( zid );
@@ -468,10 +475,12 @@ module.exports = exports = defineComponent( {
 					},
 					// Column 2: name
 					name: {
-						title: testName,
+						title: testLabelData.label,
 						component: 'a',
 						props: {
-							href: `/view/${ this.getUserLangCode }/${ zid }`
+							href: `/view/${ this.getUserLangCode }/${ zid }`,
+							lang: testLabelData.langCode,
+							dir: testLabelData.langDir
 						},
 						class: 'ext-wikilambda-function-details-table-item'
 					},

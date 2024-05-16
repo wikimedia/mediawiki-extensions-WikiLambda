@@ -8,9 +8,13 @@
 	<div class="ext-wikilambda-reference">
 		<template v-if="!edit">
 			<a
+				v-if="valueLabel"
 				class="ext-wikilambda-edit-link"
 				data-testid="edit-link"
-				:href="valueUrl">{{ valueLabel }}</a>
+				:lang="valueLabel.langCode"
+				:dir="valueLabel.langDir"
+				:href="valueUrl"
+			>{{ valueLabel.label }}</a>
 		</template>
 		<template v-else>
 			<wl-z-object-selector
@@ -61,7 +65,7 @@ module.exports = exports = defineComponent( {
 	},
 	computed: Object.assign(
 		mapGetters( [
-			'getLabel',
+			'getLabelData',
 			'getParentRowId',
 			'getZObjectKeyByRowId',
 			'getZReferenceTerminalValue',
@@ -81,10 +85,10 @@ module.exports = exports = defineComponent( {
 			 * Returns the string value of the label for the selected reference.
 			 * If no label is found, returns undefined.
 			 *
-			 * @return {string|undefined}
+			 * @return {LabelData|undefined}
 			 */
 			valueLabel: function () {
-				return this.value ? this.getLabel( this.value ) : undefined;
+				return this.value ? this.getLabelData( this.value ) : undefined;
 			},
 
 			/**

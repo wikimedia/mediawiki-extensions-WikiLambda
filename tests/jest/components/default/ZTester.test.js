@@ -9,6 +9,7 @@
 const { waitFor } = require( '@testing-library/vue' ),
 	shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	ZTester = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZTester.vue' );
 
@@ -16,7 +17,7 @@ describe( 'ZTester', () => {
 	let getters, actions;
 	beforeEach( () => {
 		getters = {
-			getLabel: createGettersWithFunctionsMock( 'label' ),
+			getLabelData: createLabelDataMock(),
 			getStoredObject: createGettersWithFunctionsMock(),
 			getZReferenceTerminalValue: createGettersWithFunctionsMock(),
 			getZTesterFunctionRowId: createGettersWithFunctionsMock( 1 ),

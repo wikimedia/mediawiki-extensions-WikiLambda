@@ -33,6 +33,12 @@
 		"jsdoc/require-param-type": "error",
 		"jsdoc/require-returns": "error",
 		"jsdoc/check-types": "error",
+		"jsdoc/no-undefined-types": [ "warn", {
+			"definedTypes": [
+				"LabelData",
+				"Row"
+			]
+		} ],
 		"vue/attributes-order": "error",
 		"vue/component-definition-name-casing": [
 			"error",

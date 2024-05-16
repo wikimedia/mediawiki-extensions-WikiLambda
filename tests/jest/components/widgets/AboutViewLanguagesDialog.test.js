@@ -8,6 +8,7 @@
 
 const { config, mount } = require( '@vue/test-utils' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	AboutViewLanguagesDialog = require( '../../../../resources/ext.wikilambda.edit/components/widgets/AboutViewLanguagesDialog.vue' );
 
 // Ignore all "teleport" behavior for the purpose of testing Dialog;
@@ -47,13 +48,10 @@ describe( 'AboutViewLanguagesDialog', () => {
 			getZMonolingualTextValue: () => ( rowId ) => {
 				return rowId === 0 ? 'name' : 'nombre';
 			},
-			getLabel: () => ( key ) => {
-				const labels = {
-					[ langs.en.langZid ]: 'English',
-					[ langs.es.langZid ]: 'español'
-				};
-				return labels[ key ];
-			}
+			getLabelData: createLabelDataMock( {
+				[ langs.en.langZid ]: 'English',
+				[ langs.es.langZid ]: 'español'
+			} )
 		} );
 
 		actions = {
@@ -128,18 +126,15 @@ describe( 'AboutViewLanguagesDialog', () => {
 					const names = [ 'Name', 'Nombre', 'Izena', 'Suti' ];
 					return names[ rowId ];
 				},
-				getLabel: () => ( key ) => {
-					const labels = {
-						[ langs.en.langZid ]: 'English',
-						[ langs.es.langZid ]: 'español',
-						[ langs.eu.langZid ]: 'euskara',
-						[ langs.qu.langZid ]: 'Quechua',
-						[ langs.it.langZid ]: 'Italian',
-						[ langs.hr.langZid ]: 'Croatian',
-						[ langs.te.langZid ]: 'Telugu'
-					};
-					return labels[ key ];
-				}
+				getLabelData: createLabelDataMock( {
+					[ langs.en.langZid ]: 'English',
+					[ langs.es.langZid ]: 'español',
+					[ langs.eu.langZid ]: 'euskara',
+					[ langs.qu.langZid ]: 'Quechua',
+					[ langs.it.langZid ]: 'Italian',
+					[ langs.hr.langZid ]: 'Croatian',
+					[ langs.te.langZid ]: 'Telugu'
+				} )
 			} );
 
 			global.store.hotUpdate( { getters: getters, actions: actions } );

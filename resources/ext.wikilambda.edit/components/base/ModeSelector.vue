@@ -65,7 +65,7 @@ module.exports = exports = defineComponent( {
 	},
 	computed: Object.assign( mapGetters( [
 		'getChildrenByParentRowId',
-		'getLabel',
+		'getLabelData',
 		'getParentRowId',
 		'getZObjectTypeByRowId',
 		'getZObjectKeyByRowId',
@@ -125,13 +125,13 @@ module.exports = exports = defineComponent( {
 			// * Argument reference only if we are inside a composition
 			const resolvers = [
 				{
-					label: this.getLabel( Constants.Z_REFERENCE ),
+					label: this.getLabelData( Constants.Z_REFERENCE ).label,
 					value: Constants.Z_REFERENCE,
 					type: Constants.Z_REFERENCE,
 					icon: icons.cdxIconInstance
 				},
 				{
-					label: this.getLabel( Constants.Z_FUNCTION_CALL ),
+					label: this.getLabelData( Constants.Z_FUNCTION_CALL ).label,
 					value: Constants.Z_FUNCTION_CALL,
 					type: Constants.Z_FUNCTION_CALL,
 					icon: icons.cdxIconFunction
@@ -139,7 +139,7 @@ module.exports = exports = defineComponent( {
 			];
 			if ( this.isInsideComposition( this.rowId ) ) {
 				resolvers.push( {
-					label: this.getLabel( Constants.Z_ARGUMENT_REFERENCE ),
+					label: this.getLabelData( Constants.Z_ARGUMENT_REFERENCE ).label,
 					value: Constants.Z_ARGUMENT_REFERENCE,
 					type: Constants.Z_ARGUMENT_REFERENCE,
 					icon: icons.cdxIconFunctionArgument
@@ -157,7 +157,7 @@ module.exports = exports = defineComponent( {
 			if ( this.key !== Constants.Z_OBJECT_TYPE && !this.isKeyTypedListType( this.key ) ) {
 				typeString = this.typeToString( this.parentExpectedType, true );
 				literals.push( {
-					label: this.$i18n( 'wikilambda-literal-type', this.getLabel( typeString ) ).text(),
+					label: this.$i18n( 'wikilambda-literal-type', this.getLabelData( typeString ).label ).text(),
 					value: typeString,
 					type: this.parentExpectedType,
 					icon: icons.cdxIconLiteral
@@ -166,7 +166,7 @@ module.exports = exports = defineComponent( {
 			if ( !!this.type && !this.isResolver && ( this.parentExpectedType === Constants.Z_OBJECT ) ) {
 				typeString = this.typeToString( this.type, true );
 				literals.push( {
-					label: this.$i18n( 'wikilambda-literal-type', this.getLabel( typeString ) ).text(),
+					label: this.$i18n( 'wikilambda-literal-type', this.getLabelData( typeString ).label ).text(),
 					value: typeString,
 					type: this.type,
 					icon: icons.cdxIconLiteral

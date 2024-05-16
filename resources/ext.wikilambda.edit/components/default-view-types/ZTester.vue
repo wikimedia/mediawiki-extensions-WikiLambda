@@ -12,7 +12,10 @@
 			data-testid="z-test-function-select-container"
 		>
 			<div class="ext-wikilambda-key-block">
-				<label>{{ functionLabel }}</label>
+				<label
+					:lang="functionLabelData.langCode"
+					:dir="functionLabelData.langDir"
+				>{{ functionLabelData.label }}</label>
 			</div>
 			<wl-z-object-key-value
 				:key="functionRowId"
@@ -29,7 +32,10 @@
 			data-testid="tester-call"
 		>
 			<div class="ext-wikilambda-key-block">
-				<label>{{ testerCallLabel }}</label>
+				<label
+					:lang="testerCallLabelData.langCode"
+					:dir="testerCallLabelData.langDir"
+				>{{ testerCallLabelData.label }}</label>
 			</div>
 			<wl-z-object-key-value
 				:key="testerCallRowId"
@@ -46,7 +52,10 @@
 			data-testid="tester-validation"
 		>
 			<div class="ext-wikilambda-key-block">
-				<label>{{ testerValidationLabel }}</label>
+				<label
+					:lang="testerValidationLabelData.langCode"
+					:dir="testerValidationLabelData.langDir"
+				>{{ testerValidationLabelData.label }}</label>
 			</div>
 			<wl-z-object-key-value
 				:key="testerValidationRowId"
@@ -84,7 +93,7 @@ module.exports = exports = defineComponent( {
 	},
 	computed: Object.assign( mapGetters( [
 		'createObjectByType',
-		'getLabel',
+		'getLabelData',
 		'getZTesterFunctionRowId',
 		'getZTesterCallRowId',
 		'getZTesterValidationRowId',
@@ -102,12 +111,12 @@ module.exports = exports = defineComponent( {
 		},
 
 		/**
-		 * Returns the human readable label for "Function"
+		 * Returns the LabelData object for the test Function/Z20K1 key
 		 *
-		 * @return {string}
+		 * @return {LabelData}
 		 */
-		functionLabel: function () {
-			return this.getLabel( Constants.Z_TESTER_FUNCTION );
+		functionLabelData: function () {
+			return this.getLabelData( Constants.Z_TESTER_FUNCTION );
 		},
 
 		/**
@@ -150,21 +159,21 @@ module.exports = exports = defineComponent( {
 		},
 
 		/**
-		 * Returns the human readable label for the tester call
+		 * Returns the label data for the tester call key
 		 *
-		 * @return {string}
+		 * @return {LabelData}
 		 */
-		testerCallLabel: function () {
-			return this.getLabel( Constants.Z_TESTER_CALL );
+		testerCallLabelData: function () {
+			return this.getLabelData( Constants.Z_TESTER_CALL );
 		},
 
 		/**
-		 * Returns the human readable label for the tester validation
+		 * Returns the label data for the tester validation key
 		 *
-		 * @return {string}
+		 * @return {LabelData}
 		 */
-		testerValidationLabel: function () {
-			return this.getLabel( Constants.Z_TESTER_VALIDATION );
+		testerValidationLabelData: function () {
+			return this.getLabelData( Constants.Z_TESTER_VALIDATION );
 		}
 	} ),
 	methods: Object.assign( mapActions( [

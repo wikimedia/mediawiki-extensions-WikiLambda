@@ -8,6 +8,7 @@
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
+	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	TypeToString = require( '../../../../resources/ext.wikilambda.edit/components/base/TypeToString.vue' );
 
@@ -18,12 +19,9 @@ describe( 'TypeToString', () => {
 	beforeEach( () => {
 		getters = {
 			getUserLangCode: createGetterMock( 'en' ),
-			getLabel: jest.fn( () => ( zid ) => {
-				const labels = {
-					Z6: 'String',
-					Z881: 'Typed list'
-				};
-				return labels[ zid ] ? labels[ zid ] : zid;
+			getLabelData: createLabelDataMock( {
+				Z6: 'String',
+				Z881: 'Typed list'
 			} )
 		};
 		actions = {

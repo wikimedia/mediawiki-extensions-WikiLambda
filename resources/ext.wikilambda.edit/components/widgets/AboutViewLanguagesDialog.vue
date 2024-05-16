@@ -46,12 +46,16 @@
 			<div class="ext-wikilambda-about-language-items">
 				<div
 					v-for="item in items"
-					:key="'dialog-lang-' + item.langZid + '-' + item.langLabel"
+					:key="'dialog-lang-' + item.langZid + '-' + item.langLabelData.label"
 					class="ext-wikilambda-about-language-item"
 					@click="editLanguage( item.langZid )"
 				>
-					<div class="ext-wikilambda-about-language-item-title">
-						{{ item.langLabel }}
+					<div
+						class="ext-wikilambda-about-language-item-title"
+						:lang="item.langLabelData.langCode"
+						:dir="item.langLabelData.langDir"
+					>
+						{{ item.langLabelData.label }}
 					</div>
 					<div class="ext-wikilambda-about-language-item-field">
 						<span
@@ -71,6 +75,7 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
+	LabelData = require( '../../store/classes/LabelData.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
@@ -106,7 +111,8 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign( mapGetters( [
-		'getLabel',
+		'getLabelData',
+		'getLanguageIsoCodeOfZLang',
 		'getMetadataLanguages',
 		'getZMonolingualTextValue',
 		'getZPersistentName'
@@ -138,7 +144,7 @@ module.exports = exports = defineComponent( {
 					undefined;
 				return {
 					langZid,
-					langLabel: this.getLabel( langZid ),
+					langLabelData: this.getLabelData( langZid ),
 					hasMetadata: true,
 					hasName: !!name,
 					name: name || this.$i18n( 'wikilambda-editor-default-name' ).text()
@@ -274,9 +280,15 @@ module.exports = exports = defineComponent( {
 							this.getZMonolingualTextValue( thisName.rowId ) :
 							undefined;
 						allZids.push( result.page_title );
+						const labelData = new LabelData(
+							result.page_title,
+							result.label,
+							result.match_lang,
+							this.getLanguageIsoCodeOfZLang( result.match_lang )
+						);
 						return {
 							langZid: result.page_title,
-							langLabel: result.label,
+							langLabelData: labelData,
 							hasMetadata: this.hasAnyMetadata( result.page_title ),
 							hasName: !!name,
 							name: name || this.$i18n( 'wikilambda-editor-default-name' ).text()

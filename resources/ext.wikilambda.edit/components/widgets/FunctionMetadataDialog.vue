@@ -18,8 +18,13 @@
 					<h2 class="cdx-dialog__header__title">
 						{{ $i18n( 'wikilambda-function-evaluator-result-details' ).text() }}
 					</h2>
-					<p v-if="headerText" class="cdx-dialog__header__subtitle">
-						{{ headerText }}
+					<p
+						v-if="headerText"
+						class="cdx-dialog__header__subtitle"
+						:lang="headerText.langCode"
+						:dir="headerText.langDir"
+					>
+						{{ headerText.label }}
 					</p>
 				</div>
 
@@ -52,7 +57,13 @@
 					{{ section.title }}
 				</template>
 				<template #description>
-					{{ section.description }}
+					<!-- Description can be string or LabelData -->
+					<span
+						v-if="isLabelData( section.description )"
+						:lang="section.description.langCode"
+						:dir="section.description.langDir"
+					>{{ section.description.labelOrUntitled }}</span>
+					<span v-else>{{ section.description }}</span>
 				</template>
 				<ul class="ext-wikilambda-metadata-dialog-content">
 					<li
@@ -65,9 +76,15 @@
 							<a
 								v-if="item.url"
 								:href="item.url"
+								:lang="item.lang"
+								:dir="item.dir"
 								target="_blank"
 							>{{ item.value }}</a>
-							<span v-else>{{ item.value }}</span>
+							<span
+								v-else
+								:lang="item.lang"
+								:dir="item.dir"
+							>{{ item.value }}</span>
 						</template>
 						<ul v-if="item.content">
 							<li
@@ -96,6 +113,7 @@ const CdxAccordion = require( '@wikimedia/codex' ).CdxAccordion,
 	metadataConfig = require( '../../mixins/metadata.js' ),
 	schemata = require( '../../mixins/schemata.js' ).methods,
 	typeUtils = require( '../../mixins/typeUtils.js' ).methods,
+	LabelData = require( '../../store/classes/LabelData.js' ),
 	icons = require( '../../../lib/icons.json' );
 
 module.exports = exports = defineComponent( {
@@ -114,13 +132,14 @@ module.exports = exports = defineComponent( {
 			default: false
 		},
 		headerText: {
-			type: String,
-			default: '',
-			required: false
+			type: LabelData,
+			required: false,
+			default: undefined
 		},
 		metadata: {
 			type: Object,
-			required: false
+			required: false,
+			default: undefined
 		}
 	},
 	data: function () {
@@ -129,7 +148,6 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign( mapGetters( [
-		'getLabel',
 		'getLabelData',
 		'getUserLangCode'
 	] ), {
@@ -287,26 +305,28 @@ module.exports = exports = defineComponent( {
 		/**
 		 * Returns the error section summary
 		 *
-		 * @return {string}
+		 * @return {LabelData|string}
 		 */
 		getErrorSummary: function () {
 			const error = this.keyValues.get( 'errors' );
 			const suberrors = schemata.extractErrorStructure( error );
-			// Return None if there are no errors
+			// Return labelized parent error type
 			if ( suberrors.length > 0 ) {
 				const errorType = suberrors[ 0 ].errorType;
-				return this.getLabel( errorType );
+				return this.getLabelData( errorType );
 			}
+			// Return None if there are no errors
 			return this.$i18n( 'wikilambda-functioncall-metadata-errors-none' ).text();
 		},
 		/**
 		 * Returns the implementation section summary
 		 *
-		 * @return {string}
+		 * @return {LabelData|string}
 		 */
 		getImplementationSummary: function () {
-			const implementation = this.getImplementationLink( this.keyValues.get( 'implementationId' ) );
-			return implementation ? implementation.value : '';
+			const implementationId = this.keyValues.get( 'implementationId' );
+			const zid = this.getStringValue( implementationId );
+			return typeUtils.isValidZidFormat( zid ) ? this.getLabelData( zid ) : '';
 		},
 		/**
 		 * Returns the duration section summary
@@ -374,8 +394,11 @@ module.exports = exports = defineComponent( {
 			const suberrors = schemata.extractErrorStructure( value );
 			if ( suberrors.length > 0 ) {
 				const errorType = suberrors[ 0 ].errorType;
+				const errorLabelData = this.getLabelData( errorType );
 				return {
-					value: this.getLabel( errorType ),
+					value: errorLabelData.label,
+					lang: errorLabelData.langCode,
+					dir: errorLabelData.langDir,
 					url: this.getUrl( errorType )
 				};
 			}
@@ -410,7 +433,9 @@ module.exports = exports = defineComponent( {
 			if ( typeUtils.isValidZidFormat( zid ) ) {
 				const labelData = this.getLabelData( zid );
 				return {
-					value: labelData ? labelData.label : this.$i18n( 'wikilambda-editor-default-name' ).text(),
+					value: labelData.labelOrUntitled,
+					lang: labelData.langCode,
+					dir: labelData.langDir,
 					url: this.getUrl( zid )
 				};
 			}
@@ -496,6 +521,16 @@ module.exports = exports = defineComponent( {
 
 			// Fallback for browsers without Intl
 			return dateTimeString.replace( 'T', ' ' ).replace( 'Z', ' (UTC)' );
+		},
+
+		/**
+		 * Returns whether the given payload is an instance of LabelData
+		 *
+		 * @param {LabelData|string} payload
+		 * @return {boolean}
+		 */
+		isLabelData( payload ) {
+			return ( payload instanceof LabelData );
 		}
 	}
 } );

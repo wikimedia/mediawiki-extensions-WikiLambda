@@ -10,7 +10,10 @@
 		<div class="ext-wikilambda-key-value">
 			<div class="ext-wikilambda-key-value-main">
 				<div class="ext-wikilambda-key-block">
-					<label>{{ programmingLanguageLabel }}</label>
+					<label
+						:lang="programmingLanguageLabelData.langCode"
+						:dir="programmingLanguageLabelData.langDir"
+					>{{ programmingLanguageLabelData.label }}</label>
 				</div>
 				<div
 					class="ext-wikilambda-value-block"
@@ -46,7 +49,10 @@
 		<div class="ext-wikilambda-key-value">
 			<div class="ext-wikilambda-key-value-main">
 				<div class="ext-wikilambda-key-block">
-					<label>{{ codeLabel }}</label>
+					<label
+						:lang="codeLabelData.langCode"
+						:dir="codeLabelData.langDir"
+					>{{ codeLabelData.label }}</label>
 				</div>
 				<div class="ext-wikilambda-value-block">
 					<code-editor
@@ -117,7 +123,7 @@ module.exports = exports = defineComponent( {
 		mapGetters( [
 			'getAllProgrammingLangs',
 			'getErrors',
-			'getLabel',
+			'getLabelData',
 			'getRowByKeyPath',
 			'getZCodeProgrammingLanguageRow',
 			'getZCodeString',
@@ -130,10 +136,10 @@ module.exports = exports = defineComponent( {
 			/**
 			 * Returns the label of the key Z16K2
 			 *
-			 * @return {string}
+			 * @return {LabelData}
 			 */
-			codeLabel: function () {
-				return this.getLabel( Constants.Z_CODE_CODE );
+			codeLabelData: function () {
+				return this.getLabelData( Constants.Z_CODE_CODE );
 			},
 
 			/**
@@ -171,10 +177,10 @@ module.exports = exports = defineComponent( {
 			/**
 			 * Returns the label of the key Z16K1
 			 *
-			 * @return {string}
+			 * @return {LabelData}
 			 */
-			programmingLanguageLabel: function () {
-				return this.getLabel( Constants.Z_CODE_LANGUAGE );
+			programmingLanguageLabelData: function () {
+				return this.getLabelData( Constants.Z_CODE_LANGUAGE );
 			},
 
 			/**

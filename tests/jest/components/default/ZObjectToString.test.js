@@ -9,6 +9,7 @@
 const { waitFor } = require( '@testing-library/vue' ),
 	shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	ZObjectToString = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZObjectToString.vue' ),
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' );
@@ -18,7 +19,16 @@ describe( 'ZObjectToString', () => {
 	beforeEach( () => {
 		getters = {
 			getUserLangCode: createGetterMock( 'en' ),
-			getLabel: createGettersWithFunctionsMock( '' ),
+			getUserLangZid: createGetterMock( 'Z1002' ),
+			getLabelData: createLabelDataMock( {
+				Z42: 'False',
+				Z60: 'Language',
+				Z7K1: 'function',
+				Z11: 'Monolingual text',
+				Z1002: 'English',
+				Z10001: 'And',
+				Z999K1: 'argument label'
+			} ),
 			getExpectedTypeOfKey: createGettersWithFunctionsMock( 'Z1' ),
 			getZObjectTypeByRowId: createGettersWithFunctionsMock( 'Z6' ),
 			getZObjectKeyByRowId: createGettersWithFunctionsMock( 'Z6K1' ),
@@ -57,7 +67,6 @@ describe( 'ZObjectToString', () => {
 			beforeEach( () => {
 				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z9' );
 				getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( 'Z42' );
-				getters.getLabel = createGettersWithFunctionsMock( 'False' );
 				global.store.hotUpdate( { getters: getters } );
 			} );
 
@@ -81,7 +90,6 @@ describe( 'ZObjectToString', () => {
 				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z7' );
 				getters.getZFunctionCallFunctionId = createGettersWithFunctionsMock( 'Z10001' );
 				getters.getZFunctionCallArguments = createGettersWithFunctionsMock( [] );
-				getters.getLabel = createGettersWithFunctionsMock( 'And' );
 				global.store.hotUpdate( { getters: getters } );
 			} );
 
@@ -105,7 +113,6 @@ describe( 'ZObjectToString', () => {
 				getters.getZObjectTypeByRowId = () => ( id ) => {
 					return ( id === 0 ) ? 'Z7' : 'Z6';
 				};
-				getters.getLabel = createGettersWithFunctionsMock( 'And' );
 				getters.getZStringTerminalValue = () => ( id ) => {
 					return ( id === 1 ) ? 'first arg' : 'second arg';
 				};
@@ -133,7 +140,19 @@ describe( 'ZObjectToString', () => {
 
 			it( 'renders comma separated arguments', () => {
 				const wrapper = shallowMount( ZObjectToString );
-				expect( wrapper.text() ).toBe( 'And  ("first arg", "second arg")' );
+
+				const childElements = wrapper
+					.find( '.ext-wikilambda-zobject-to-string' )
+					.findAll( '.ext-wikilambda-zobject-to-string' );
+				const dividerElements = childElements[ 1 ]
+					.findAll( '.ext-wikilambda-zobject-to-string-divider' );
+
+				expect( childElements[ 0 ].text() ).toBe( 'And' );
+				expect( dividerElements[ 0 ].text() ).toBe( '(' );
+				expect( childElements[ 2 ].text() ).toBe( '"first arg"' );
+				expect( dividerElements[ 1 ].text() ).toBe( ',' );
+				expect( childElements[ 3 ].text() ).toBe( '"second arg"' );
+				expect( dividerElements[ 2 ].text() ).toBe( ')' );
 			} );
 
 			it( 'renders each argument with another ZObjectToString component', () => {
@@ -147,7 +166,6 @@ describe( 'ZObjectToString', () => {
 				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z6' );
 				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z18K1' );
 				getters.getZStringTerminalValue = createGettersWithFunctionsMock( 'Z999K1' );
-				getters.getLabel = createGettersWithFunctionsMock( 'argument label' );
 				global.store.hotUpdate( { getters: getters } );
 			} );
 
@@ -173,10 +191,6 @@ describe( 'ZObjectToString', () => {
 				getters.getZReferenceTerminalValue = () => ( rowId ) => {
 					const refs = [ 'Z11', 'Z1002' ];
 					return refs[ rowId ];
-				};
-				getters.getLabel = () => ( zid ) => {
-					const labels = { Z11: 'Monolingual text', Z1002: 'English' };
-					return labels[ zid ];
 				};
 				getters.getZStringTerminalValue = createGettersWithFunctionsMock( 'string value' );
 				getters.getChildrenByParentRowId = createGettersWithFunctionsMock( [
@@ -211,7 +225,19 @@ describe( 'ZObjectToString', () => {
 
 			it( 'renders comma separated arguments', () => {
 				const wrapper = shallowMount( ZObjectToString );
-				expect( wrapper.text() ).toBe( 'Monolingual text  (English, "string value")' );
+
+				const childElements = wrapper
+					.find( '.ext-wikilambda-zobject-to-string' )
+					.findAll( '.ext-wikilambda-zobject-to-string' );
+				const dividerElements = childElements[ 1 ]
+					.findAll( '.ext-wikilambda-zobject-to-string-divider' );
+
+				expect( childElements[ 0 ].text() ).toBe( 'Monolingual text' );
+				expect( dividerElements[ 0 ].text() ).toBe( '(' );
+				expect( childElements[ 2 ].text() ).toBe( 'English' );
+				expect( dividerElements[ 1 ].text() ).toBe( ',' );
+				expect( childElements[ 4 ].text() ).toBe( '"string value"' );
+				expect( dividerElements[ 2 ].text() ).toBe( ')' );
 			} );
 
 			it( 'renders each argument with another ZObjectToString component', () => {
@@ -256,7 +282,6 @@ describe( 'ZObjectToString', () => {
 				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z11K1' );
 				getters.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z60' );
 				getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( undefined );
-				getters.getLabel = createGettersWithFunctionsMock( 'Language' );
 				global.store.hotUpdate( { getters: getters } );
 			} );
 
@@ -288,7 +313,6 @@ describe( 'ZObjectToString', () => {
 				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z7' );
 				getters.getZFunctionCallFunctionId = createGettersWithFunctionsMock( undefined );
 				getters.getZFunctionCallArguments = createGettersWithFunctionsMock( [] );
-				getters.getLabel = createGettersWithFunctionsMock( 'Function' );
 				global.store.hotUpdate( { getters: getters } );
 			} );
 

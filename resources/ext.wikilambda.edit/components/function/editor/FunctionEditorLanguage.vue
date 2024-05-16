@@ -75,7 +75,7 @@ module.exports = exports = defineComponent( {
 		 */
 		languageLabel: function () {
 			// TODO (T335583): Replace i18n message with key label
-			// return this.getLabel( Constants.Z_MONOLINGUALSTRING_LANGUAGE );
+			// return this.getLabelData( Constants.Z_MONOLINGUALSTRING_LANGUAGE );
 			return this.$i18n( 'wikilambda-languagelabel' ).text();
 		},
 		/**

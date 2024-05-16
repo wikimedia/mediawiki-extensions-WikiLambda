@@ -43,7 +43,7 @@
 				</div>
 				<wl-function-metadata-dialog
 					:open="showMetrics"
-					:header-text="activeImplementationLabel"
+					:header-text="activeImplementationLabelData"
 					:metadata="metadata"
 					@close-dialog="closeMetricsDialog"
 				></wl-function-metadata-dialog>
@@ -104,7 +104,7 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign( mapGetters( [
-		'getLabel',
+		'getLabelData',
 		'getStoredObject',
 		'getZTesterMetadata'
 	] ), {
@@ -228,21 +228,14 @@ module.exports = exports = defineComponent( {
 		},
 
 		/**
-		 * Returns the label of the tester for the current open metrics dialog
+		 * Returns the label data of the implementation for the current open metrics dialog
 		 *
-		 * @return {string}
+		 * @return {LabelData|undefined}
 		 */
-		activeTesterLabel: function () {
-			return this.activeZTesterId ? this.getLabel( this.activeZTesterId ) : '';
-		},
-
-		/**
-		 * Returns the label of the implementation for the current open metrics dialog
-		 *
-		 * @return {string}
-		 */
-		activeImplementationLabel: function () {
-			return this.activeZImplementationId ? this.getLabel( this.activeZImplementationId ) : '';
+		activeImplementationLabelData: function () {
+			return this.activeZImplementationId ?
+				this.getLabelData( this.activeZImplementationId ) :
+				undefined;
 		},
 
 		/**
@@ -321,30 +314,6 @@ module.exports = exports = defineComponent( {
 			if ( this.rootZid && this.rootZid !== Constants.NEW_ZID_PLACEHOLDER ) {
 				this.runTesters();
 			}
-		},
-		/**
-		 * Returns the label of the given implementation zid or
-		 * a default message if the implementation has no name.
-		 *
-		 * @param {string} implementation
-		 * @return {string}
-		 */
-		implementationLabel: function ( implementation ) {
-			return this.zImplementationId ?
-				this.$i18n( 'wikilambda-tester-results-current-implementation' ).text() :
-				this.getLabel( implementation );
-		},
-		/**
-		 * Returns the label of the given tester zid or
-		 * a default message if the tester has no name.
-		 *
-		 * @param {string} test
-		 * @return {string}
-		 */
-		testLabel: function ( test ) {
-			return this.zTesterId ?
-				this.$i18n( 'wikilambda-tester-results-current-test' ).text() :
-				this.getLabel( test );
 		}
 	} ),
 	watch: {

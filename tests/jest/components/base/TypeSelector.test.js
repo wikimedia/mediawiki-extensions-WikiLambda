@@ -9,6 +9,7 @@
 const { waitFor } = require( '@testing-library/vue' ),
 	shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	mockApiZids = require( '../../fixtures/mocks.js' ).mockApiZids,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	TypeSelector = require( '../../../../resources/ext.wikilambda.edit/components/base/TypeSelector.vue' );
@@ -25,7 +26,11 @@ describe( 'TypeSelector', () => {
 	beforeEach( () => {
 		getters = {
 			getExpectedTypeOfKey: createGettersWithFunctionsMock(),
-			getLabel: createGettersWithFunctionsMock(),
+			getLabelData: createLabelDataMock( {
+				Z881K1: 'item type',
+				Z882K1: 'first type',
+				Z882K2: 'second type'
+			} ),
 			getStoredObject: createGettersWithFunctionsMock(),
 			getZObjectTypeByRowId: createGettersWithFunctionsMock( Constants.Z_REFERENCE ),
 			getZFunctionCallFunctionId: createGettersWithFunctionsMock(),
@@ -83,7 +88,6 @@ describe( 'TypeSelector', () => {
 			getters.getZFunctionCallArguments = createGettersWithFunctionsMock( [
 				{ id: 2, parent: 1, key: Constants.Z_TYPED_LIST_TYPE }
 			] );
-			getters.getLabel = () => ( key ) => `label of ${ key }`;
 			getters.getExpectedTypeOfKey = () => ( key ) => `expected type of ${ key }`;
 			global.store.hotUpdate( { getters: getters } );
 
@@ -103,7 +107,7 @@ describe( 'TypeSelector', () => {
 			expect( args ).toHaveLength( 1 );
 
 			expect( args[ 0 ].props( 'rowId' ) ).toBe( 2 );
-			expect( args[ 0 ].props( 'label' ) ).toBe( 'label of Z881K1' );
+			expect( args[ 0 ].props( 'labelData' ).label ).toBe( 'item type' );
 			expect( args[ 0 ].props( 'type' ) ).toBe( 'expected type of Z881K1' );
 		} );
 
@@ -116,7 +120,6 @@ describe( 'TypeSelector', () => {
 				{ id: 2, parent: 1, key: Constants.Z_TYPED_PAIR_TYPE1 },
 				{ id: 3, parent: 1, key: Constants.Z_TYPED_PAIR_TYPE2 }
 			] );
-			getters.getLabel = () => ( key ) => `label of ${ key }`;
 			getters.getExpectedTypeOfKey = () => ( key ) => `expected type of ${ key }`;
 			global.store.hotUpdate( { getters: getters } );
 
@@ -137,12 +140,12 @@ describe( 'TypeSelector', () => {
 
 			// First arg
 			expect( args[ 0 ].props( 'rowId' ) ).toBe( 2 );
-			expect( args[ 0 ].props( 'label' ) ).toBe( 'label of Z882K1' );
+			expect( args[ 0 ].props( 'labelData' ).label ).toBe( 'first type' );
 			expect( args[ 0 ].props( 'type' ) ).toBe( 'expected type of Z882K1' );
 
 			// Second arg
 			expect( args[ 1 ].props( 'rowId' ) ).toBe( 3 );
-			expect( args[ 1 ].props( 'label' ) ).toBe( 'label of Z882K2' );
+			expect( args[ 1 ].props( 'labelData' ).label ).toBe( 'second type' );
 			expect( args[ 1 ].props( 'type' ) ).toBe( 'expected type of Z882K2' );
 		} );
 	} );

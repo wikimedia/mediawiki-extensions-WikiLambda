@@ -8,9 +8,9 @@
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	LabelData = require( '../../../../resources/ext.wikilambda.edit/store/classes/LabelData.js' ),
 	ZObjectKeyValue = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZObjectKeyValue.vue' );
 
 describe( 'ZObjectKeyValue', () => {
@@ -26,12 +26,13 @@ describe( 'ZObjectKeyValue', () => {
 			isCreateNewPage: createGetterMock( false ),
 			isIdentityKey: createGettersWithFunctionsMock( false ),
 			isMainObject: createGettersWithFunctionsMock( true ),
-			getLabelData: createGettersWithFunctionsMock( new LabelData( 'Z2K1', 'id', 'Z1002' ) ),
+			getLabelData: createLabelDataMock(),
 			getZObjectKeyByRowId: createGettersWithFunctionsMock( 'Z1K1' ),
 			getExpectedTypeOfKey: createGettersWithFunctionsMock( 'Z1' ),
 			getZObjectValueByRowId: createGettersWithFunctionsMock(),
 			getZObjectTypeByRowId: createGettersWithFunctionsMock( Constants.Z_STRING ),
-			getUserLangZid: createGettersWithFunctionsMock( 'Z1002' ),
+			getUserLangZid: createGetterMock( 'Z1002' ),
+			getUserLangCode: createGetterMock( 'en' ),
 			getZObjectAsJsonById: createGettersWithFunctionsMock(),
 			getZPersistentContentRowId: createGettersWithFunctionsMock( 1 ),
 			getTypedListItemType: createGettersWithFunctionsMock( 'Z6' ),

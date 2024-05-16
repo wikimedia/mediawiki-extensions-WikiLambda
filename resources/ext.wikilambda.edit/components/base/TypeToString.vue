@@ -14,7 +14,9 @@
 		<a
 			v-if="zid"
 			:href="wikiUrl"
-		>{{ label }}</a>
+			:lang="labelData.langCode"
+			:dir="labelData.langDir"
+		>{{ labelData.labelOrUntitled }}</a>
 		<div
 			v-if="hasArgs"
 			class="ext-wikilambda-type-to-string">
@@ -48,7 +50,7 @@ module.exports = exports = defineComponent( {
 	},
 	computed: Object.assign( mapGetters( [
 		'getUserLangCode',
-		'getLabel'
+		'getLabelData'
 	] ), {
 		/**
 		 * Whether the input type is a reference or a function call
@@ -86,14 +88,12 @@ module.exports = exports = defineComponent( {
 			return '/view/' + this.getUserLangCode + '/' + this.zid;
 		},
 		/**
-		 * Returns the label of the main Zid
+		 * Returns the label data of the main Zid
 		 *
-		 * @return {string}
+		 * @return {LabelData}
 		 */
-		label: function () {
-			return this.zid ?
-				this.getLabel( this.zid ) :
-				this.$i18n( 'wikilambda-editor-default-name' ).text();
+		labelData: function () {
+			return this.getLabelData( this.zid );
 		},
 		/**
 		 * If the type is a generic type (and represented by a function

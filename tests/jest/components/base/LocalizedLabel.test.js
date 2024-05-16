@@ -25,7 +25,7 @@ describe( 'LocalizedLabel', () => {
 	} );
 
 	describe( 'when user lang and label lang match', () => { // isUserLang is true
-		const englishLabel = new LabelData( 'Z1002', 'type', 'Z1002' );
+		const englishLabel = new LabelData( 'Z1K1', 'type', 'Z1002', 'en' );
 
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( LocalizedLabel, {
@@ -50,7 +50,7 @@ describe( 'LocalizedLabel', () => {
 	} );
 
 	describe( 'when user lang and local label do not match', () => { // isUserLang is false
-		const spanishLabel = new LabelData( 'Z1003', 'tipo', 'Z1003' );
+		const spanishLabel = new LabelData( 'Z1K1', 'tipo', 'Z1003', 'es' );
 
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( LocalizedLabel, {
@@ -71,7 +71,7 @@ describe( 'LocalizedLabel', () => {
 			} );
 
 			expect( wrapper.find( '.ext-wikilambda-lang-chip' ).exists() ).toBe( true );
-			expect( wrapper.find( '.ext-wikilambda-lang-chip' ).text() ).toBe( 'ES' );
+			expect( wrapper.find( '.ext-wikilambda-lang-chip' ).text() ).toBe( 'es' );
 		} );
 	} );
 } );

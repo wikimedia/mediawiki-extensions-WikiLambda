@@ -8,6 +8,7 @@
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
+	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	ZCode = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZCode.vue' ),
@@ -20,7 +21,7 @@ describe( 'ZCode', () => {
 		getters = {
 			getErrors: createGettersWithFunctionsMock( [] ),
 			getRowByKeyPath: createGettersWithFunctionsMock( 1 ),
-			getLabel: createGettersWithFunctionsMock( 'label' ),
+			getLabelData: createLabelDataMock(),
 			getAllProgrammingLangs: createGetterMock(
 				[
 					{

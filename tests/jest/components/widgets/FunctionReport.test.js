@@ -8,6 +8,7 @@
 const VueTestUtils = require( '@vue/test-utils' ),
 	{ waitFor } = require( '@testing-library/vue' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	FunctionReport = require( '../../../../resources/ext.wikilambda.edit/components/widgets/FunctionReport.vue' ),
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' );
@@ -19,7 +20,7 @@ describe( 'FunctionReport', function () {
 	beforeEach( function () {
 		getters = {
 			getUserLangCode: createGetterMock( 'en' ),
-			getLabel: createGettersWithFunctionsMock(),
+			getLabelData: createLabelDataMock(),
 			getStoredObject: createGettersWithFunctionsMock( {
 				[ Constants.Z_PERSISTENTOBJECT_VALUE ]:
 				{

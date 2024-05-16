@@ -7,8 +7,8 @@
 'use strict';
 
 const { config, mount } = require( '@vue/test-utils' ),
-	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
+	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	FunctionMetadataDialog = require( '../../../../resources/ext.wikilambda.edit/components/widgets/FunctionMetadataDialog.vue' ),
 	metadata = require( '../../fixtures/metadata.js' );
 
@@ -24,14 +24,10 @@ describe( 'FunctionMetadataDialog', () => {
 	beforeEach( () => {
 		getters = {
 			getUserLangCode: createGetterMock( 'en' ),
-			getLabelData: createGettersWithFunctionsMock(),
-			getLabel: () => ( zid ) => {
-				const labels = {
-					Z502: 'Not wellformed',
-					Z526: 'Key value not wellformed'
-				};
-				return labels[ zid ];
-			}
+			getLabelData: createLabelDataMock( {
+				Z502: 'Not wellformed',
+				Z526: 'Key value not wellformed'
+			} )
 		};
 		mw.internalWikiUrlencode = jest.fn( ( url ) => url );
 		global.store.hotUpdate( { getters: getters } );
@@ -67,7 +63,7 @@ describe( 'FunctionMetadataDialog', () => {
 		} );
 
 		it( 'renders a named implementation section', () => {
-			getters.getLabelData = createGettersWithFunctionsMock( { label: 'Javascript implementation for If' } );
+			getters.getLabelData = createLabelDataMock( { Z902: 'Javascript implementation for If' } );
 			global.store.hotUpdate( { getters: getters } );
 			const wrapper = mount( FunctionMetadataDialog, {
 				props: { open: true, metadata: metadata.metadataBasic }

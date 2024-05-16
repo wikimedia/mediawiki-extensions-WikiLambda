@@ -114,7 +114,7 @@ module.exports = exports = defineComponent( {
 		 */
 		outputLabel: function () {
 			// TODO (T335583): Replace i18n message with key label
-			// return this.getLabel( Constants.Z_FUNCTION_RETURN_TYPE );
+			// return this.getLabelData( Constants.Z_FUNCTION_RETURN_TYPE );
 			return this.$i18n( 'wikilambda-function-definition-output-label' ).text();
 		},
 		/**

@@ -8,6 +8,7 @@
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	ZImplementation = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZImplementation.vue' );
 
 describe( 'ZImplementation', () => {
@@ -17,14 +18,11 @@ describe( 'ZImplementation', () => {
 			getZImplementationFunctionRowId: createGettersWithFunctionsMock( 0 ),
 			getZImplementationContentType: createGettersWithFunctionsMock( 'Z14K2' ),
 			getZImplementationContentRowId: createGettersWithFunctionsMock( 1 ),
-			getLabel: () => ( key ) => {
-				const labels = {
-					Z14K2: 'composition',
-					Z14K3: 'code',
-					Z14: 'Implementation'
-				};
-				return labels[ key ] || 'label';
-			}
+			getLabelData: createLabelDataMock( {
+				Z14K2: 'composition',
+				Z14K3: 'code',
+				Z14: 'Implementation'
+			} )
 		};
 		global.store.hotUpdate( { getters: getters } );
 	} );

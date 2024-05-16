@@ -15,7 +15,10 @@
 			data-testid="implementation-function"
 		>
 			<div class="ext-wikilambda-key-block">
-				<label>{{ functionLabel }}</label>
+				<label
+					:lang="functionLabelData.langCode"
+					:dir="functionLabelData.langDir"
+				>{{ functionLabelData.label }}</label>
 			</div>
 			<wl-z-object-key-value
 				:key="functionRowId"
@@ -28,7 +31,10 @@
 		<!-- Implementation type block -->
 		<div class="ext-wikilambda-implementation-type">
 			<div class="ext-wikilambda-key-block">
-				<label>{{ implementationLabel }}</label>
+				<label
+					:lang="implementationLabelData.langCode"
+					:dir="implementationLabelData.langDir"
+				>{{ implementationLabelData.label }}</label>
 			</div>
 			<div class="ext-wikilambda-value-block">
 				<!-- Show warning message for builtins -->
@@ -42,7 +48,9 @@
 					<span
 						v-if="!edit"
 						class="ext-wikilambda-value-text"
-					>{{ implementationTypeLabel }}</span>
+						:lang="implementationTypeLabelData.langCode"
+						:dir="implementationTypeLabelData.langDir"
+					>{{ implementationTypeLabelData.label }}</span>
 					<div
 						v-else
 						class="ext-wikilambda-value-input"
@@ -56,7 +64,10 @@
 							:name="'implementation-radios-' + rowId"
 							:inline="true"
 						>
-							{{ radio.label }}
+							<span
+								:lang="radio.labelData.langCode"
+								:dir="radio.labelData.langDir"
+							>{{ radio.labelData.label }}</span>
 						</cdx-radio>
 					</div>
 				</template>
@@ -71,7 +82,10 @@
 				v-if="!isTypeCode"
 				class="ext-wikilambda-key-block"
 			>
-				<label>{{ implementationTypeLabel }}</label>
+				<label
+					:lang="implementationTypeLabelData.langCode"
+					:dir="implementationTypeLabelData.langDir"
+				>{{ implementationTypeLabelData.label }}</label>
 			</div>
 			<wl-z-object-key-value
 				:key="implementationContentRowId"
@@ -116,7 +130,7 @@ module.exports = exports = defineComponent( {
 			'getZImplementationFunctionRowId',
 			'getZImplementationContentType',
 			'getZImplementationContentRowId',
-			'getLabel'
+			'getLabelData'
 		] ),
 		{
 			/**
@@ -129,12 +143,12 @@ module.exports = exports = defineComponent( {
 			},
 
 			/**
-			 * Returns the human readable label for "Function"
+			 * Returns the LabelData object for the implementation Function/Z14K1 key
 			 *
-			 * @return {string}
+			 * @return {LabelData}
 			 */
-			functionLabel: function () {
-				return this.getLabel( Constants.Z_IMPLEMENTATION_FUNCTION );
+			functionLabelData: function () {
+				return this.getLabelData( Constants.Z_IMPLEMENTATION_FUNCTION );
 			},
 
 			/**
@@ -168,21 +182,21 @@ module.exports = exports = defineComponent( {
 			},
 
 			/**
-			 * Returns the human readable label for the implementation type
+			 * Returns the LabelData object for the implementation type
 			 *
-			 * @return {string}
+			 * @return {LabelData}
 			 */
-			implementationTypeLabel: function () {
-				return this.getLabel( this.implementationType );
+			implementationTypeLabelData: function () {
+				return this.getLabelData( this.implementationType );
 			},
 
 			/**
-			 * Returns the human readable label for "Implementation"
+			 * Returns the LabelData object for the type zid Implementation/Z14
 			 *
-			 * @return {string}
+			 * @return {LabelData}
 			 */
-			implementationLabel: function () {
-				return this.getLabel( Constants.Z_IMPLEMENTATION );
+			implementationLabelData: function () {
+				return this.getLabelData( Constants.Z_IMPLEMENTATION );
 			},
 
 			/**
@@ -225,11 +239,11 @@ module.exports = exports = defineComponent( {
 			radioChoices: function () {
 				return [
 					{
-						label: this.getLabel( Constants.Z_IMPLEMENTATION_CODE ),
+						labelData: this.getLabelData( Constants.Z_IMPLEMENTATION_CODE ),
 						value: Constants.Z_IMPLEMENTATION_CODE
 					},
 					{
-						label: this.getLabel( Constants.Z_IMPLEMENTATION_COMPOSITION ),
+						labelData: this.getLabelData( Constants.Z_IMPLEMENTATION_COMPOSITION ),
 						value: Constants.Z_IMPLEMENTATION_COMPOSITION
 					}
 				];

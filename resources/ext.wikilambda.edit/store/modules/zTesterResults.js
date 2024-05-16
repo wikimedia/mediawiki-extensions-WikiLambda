@@ -52,7 +52,7 @@ module.exports = exports = {
 			 * @param {string} zTesterId
 			 * @param {string} zImplementationId
 			 *
-			 * @return {Object} metadata
+			 * @return {Object|undefined} metadata
 			 */
 			return function ( zFunctionId, zTesterId, zImplementationId ) {
 				const key = zFunctionId + ':' + zTesterId + ':' + zImplementationId;
