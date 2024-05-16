@@ -64,10 +64,10 @@ class ContentBlock {
 		let contentBlock;
 		if ( !resolvedParentSection ) {
 			contentBlock = await this.getSectionOfContentBlock( label );
-			return contentBlock.$( 'div.ext-wikilambda-key-block' ).$( 'div.ext-wikilambda-mode-selector' );
+			return contentBlock.$( '[data-testid="mode-selector' );
 		}
 		contentBlock = await this.getSectionOfContentBlock( label, parentSection );
-		return contentBlock.$( 'div.ext-wikilambda-key-block' ).$( 'div.ext-wikilambda-mode-selector' );
+		return contentBlock.$( '[data-testid="mode-selector' );
 	}
 
 	/**

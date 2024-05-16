@@ -7,7 +7,7 @@
 	@license MIT
 -->
 <template>
-	<wl-widget-base class="ext-wikilambda-publish-widget">
+	<wl-widget-base class="ext-wikilambda-publish-widget" data-testid="publish-widget">
 		<template #main>
 			<cdx-button
 				class="ext-wikilambda-publish-widget__cancel-button"

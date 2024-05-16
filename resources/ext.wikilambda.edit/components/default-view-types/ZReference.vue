@@ -9,6 +9,7 @@
 		<template v-if="!edit">
 			<a
 				class="ext-wikilambda-edit-link"
+				data-testid="edit-link"
 				:href="valueUrl">{{ valueLabel }}</a>
 		</template>
 		<template v-else>
