@@ -35,6 +35,8 @@
 	"apihelp-wikilambda_function_call-example-timeout": "Een functie aanroepen die eeuwig probeert te lopen, en dus door de beoordelaar wegens overschrijding van de maximumlooptijd wordt afgebroken",
 	"apihelp-wikilambda_function_call-example-orchestrator-timeout": "Een functie aanroepen die te lang probeert te blijven draaien in de orchestrator, waardoor er een time-out optreedt",
 	"apihelp-wikilambda_function_call-summary": "Roep een functie aan door de function-orchestrator aan te roepen",
+	"apihelp-wikifunctions_run-summary": "Een functieaanroep uitvoeren",
+	"apihelp-wikifunctions_run-param-function_call": "ZObject voor de uit te voeren functieaanroep",
 	"apihelp-wikilambda_supported_programming_languages-summary": "De programmeertalen opvragen die door de beoordelaar worden ondersteund",
 	"apihelp-query+wikilambdasearch_labels-summary": "Met deze API-querylijstgenerator kunt u in ZObjects zoeken naar labels in een bepaalde taal. De generator is er voornamelijk ter ondersteuning van het vooruitkijkzoeksysteem.",
 	"apihelp-query+wikilambdasearch_labels-param-search": "De zoekterm",
@@ -87,5 +89,7 @@
 	"apihelp-wikilambda_perform_test-param-zfunction": "De ZFunction-ID die (of het object dat) moet worden getest",
 	"apihelp-wikilambda_perform_test-param-zimplementations": "De lijst met te testen ZImplementatie-ID’s (of objecten)",
 	"apihelp-wikilambda_perform_test-param-ztesters": "De lijst met te testen ZTester-ID’s (of objecten)",
-	"apihelp-wikilambda_perform_test-param-nocache": "Of de cache gebruikt moet worden of niet"
+	"apihelp-wikilambda_perform_test-param-nocache": "Of de cache gebruikt moet worden of niet",
+	"wikilambda-restapi-fetch-too-many": "U hebt $1 objecten aangevraagd, wat er te veel tegelijk zijn (maximaal $2 toegestaan)",
+	"wikilambda-restapi-revision-mismatch": "U heeft versie $1 van object ‘$2’ aangevraagd, maar deze is niet gevonden"
 }
