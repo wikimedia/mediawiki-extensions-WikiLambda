@@ -35,14 +35,6 @@ class FunctionPage extends Page {
 		return $( 'span.ext-wikilambda-viewpage-header-zid' );
 	}
 
-	get functionPageTabs() {
-		return $( '[data-testid="function-viewer-tabs"]' );
-	}
-
-	get editSourceLink() {
-		return $( '//nav[@aria-label="Views"]//a[contains(@title, "Edit")]/span[contains(text(),"Edit")]' );
-	}
-
 	/**
 	 * Get the ZId of the function page
 	 *

@@ -10,6 +10,7 @@
 		data-testid="confirm-publish-dialog"
 	>
 		<cdx-dialog
+			data-testid="publish-dialog"
 			:open="showDialog"
 			:title="publishDialogTitle"
 			:close-button-label="closeLabel"

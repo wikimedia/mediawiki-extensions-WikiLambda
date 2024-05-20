@@ -200,7 +200,7 @@ class Tester extends Page {
 	 */
 	async getValidationBlockFunction( ZObjectLabel ) {
 		const validationBlockFunction = await this.getValidationBlockSection( 'function' );
-		return await validationBlockFunction.$( `a=${ ZObjectLabel }` );
+		return await validationBlockFunction.$( `[data-testid="edit-link"]=${ ZObjectLabel }` );
 	}
 
 	// #endregion

@@ -16,11 +16,11 @@ const InputDropdown = require( './InputDropdown' );
 
 class FunctionExplorerBlock {
 	get functionExplorerBlock() {
-		return $( 'div.ext-wikilambda-function-explorer' );
+		return $( '[data-testid="function-explorer"]' );
 	}
 
 	get functionNameInputSelector() {
-		return this.functionExplorerBlock.$( './/section//input[@placeholder="Select function"]' );
+		return this.functionExplorerBlock.$( '[data-testid="z-object-selector-lookup"]' );
 	}
 
 	/**
@@ -37,9 +37,9 @@ class FunctionExplorerBlock {
 	async getFunctionExplorerZObjectLookup() {
 		const functionExplorer = await this.functionExplorerBlock;
 		await functionExplorer.waitForDisplayed( { timeout: 20000 } );
-		const lookup = await functionExplorer.$( '[data-testid="z-object-selector-lookup"]' );
+		const lookup = await this.functionNameInputSelector;
 		const name = await ElementActions.getValue( lookup );
-		return await name;
+		return name;
 
 	}
 
@@ -51,7 +51,7 @@ class FunctionExplorerBlock {
 	 * @return {void}
 	 */
 	async setFunctionExplorerName( ZObjectLabel ) {
-		const parentSelector = this.functionNameInputSelector.$( './/ancestor::span[@data-testid]' );
+		const parentSelector = '[data-testid="function-selector] [data-testid="z-object-selector-lookup"]';
 		await InputDropdown.setLookupOption( parentSelector, this.functionNameInputSelector,
 			ZObjectLabel );
 	}

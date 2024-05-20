@@ -1,5 +1,5 @@
 <template>
-	<div class="ext-wikilambda-mode-selector">
+	<div class="ext-wikilambda-mode-selector" data-testid="mode-selector">
 		<cdx-button
 			data-testid="mode-selector-button"
 			:aria-label="$i18n( 'wikilambda-mode-selector-button-label' ).text()"

@@ -31,6 +31,7 @@ class InputDropdown {
 		await inputSelector.waitForDisplayed();
 		await ElementActions.setInput( resolvedInputSelector, inputText );
 		// Get selector cdx-menu, excluding mode selector menu
+		// This is upstream from codex. Any testids would need added there.
 		const cdxMenu = await resolvedParentSelector.$(
 			'.//div[contains(@class,"cdx-menu")][not(contains(@class,"ext-wikilambda-mode-selector"))]' );
 		const optionSelector = await cdxMenu.$( `bdi=${ inputText }` );

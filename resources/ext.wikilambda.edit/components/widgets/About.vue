@@ -31,7 +31,7 @@
 				</div>
 				<template v-else>
 					<!-- Description block -->
-					<div class="ext-wikilambda-about-description">
+					<div class="ext-wikilambda-about-description" data-testid="about-description">
 						<span v-if="hasDescription" class="ext-wikilambda-about-value">
 							{{ description }}
 						</span>

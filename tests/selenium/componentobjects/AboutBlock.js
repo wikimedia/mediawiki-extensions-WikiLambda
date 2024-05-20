@@ -57,11 +57,6 @@ class AboutBlock {
 		return this.aboutBlock.$( '[data-testid="languages-button"]' );
 	}
 
-	get languageListDialogBox() {
-		return this.aboutBlock.$(
-			'.//div[contains(@class,"ext-wikilambda-about-language-list") and role="dialog"]' );
-	}
-
 	// #region About Block content
 
 	/**
@@ -71,7 +66,7 @@ class AboutBlock {
 	 * @return {string}
 	 */
 	async getAboutBlockDescription() {
-		const selector = this.aboutBlock.$( '.ext-wikilambda-about-description' );
+		const selector = this.aboutBlock.$( '[data-testid="about-description"]' );
 		const text = ElementActions.getText( selector );
 		return text;
 	}
@@ -169,22 +164,6 @@ class AboutBlock {
 	 */
 	async closeDetailsInputDialogBox() {
 		await ElementActions.doClick( this.cancelButton );
-	}
-
-	// #endregion
-
-	// #region Language List Dialog Box
-
-	/**
-	 * Click on the list item of the language list dialog box
-	 *
-	 * @async
-	 * @param {string} language
-	 * @return {void}
-	 */
-	async openLanguageListItem( language ) {
-		const itemSelector = this.languageListDialogBox.$( `.//div[text()="${ language }"]` );
-		await ElementActions.doClick( itemSelector );
 	}
 
 	// #endregion

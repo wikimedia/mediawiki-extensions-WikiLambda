@@ -10,23 +10,24 @@
  */
 
 'use strict';
-const ElementActions = require( '../utils/ElementActions' );
+const ElementActions = require( '../utils/ElementActions' ),
+	i18n = require( '../utils/i18n.js' )();
 
 class ZObjectPublish {
 	get publishBlock() {
-		return $( 'div.ext-wikilambda-publish-widget' );
+		return $( '[data-testid="publish-widget"]' );
 	}
 
 	get publishButton() {
-		return this.publishBlock.$( 'button=Publish' );
+		return this.publishBlock.$( '[data-testid="publish-button"]' );
 	}
 
 	get publishDialogBlock() {
-		return $( '//*[@role="dialog" and @aria-modal="true"]' );
+		return $( '[data-testid="publish-dialog"]' );
 	}
 
 	get confirmPublishButton() {
-		return this.publishDialogBlock.$( 'button=Publish' );
+		return this.publishDialogBlock.$( `button=${ i18n[ 'wikilambda-publishnew' ] }` );
 	}
 
 	/**
@@ -36,11 +37,8 @@ class ZObjectPublish {
 	 * @return {void}
 	 */
 	async publish() {
-		const pubButton = await $( 'button=Publish' );
-		await ElementActions.doClick( await pubButton );
-		const confirmDialog = await this.publishDialogBlock;
-		const confirmPubButton = await confirmDialog.$( 'button=Publish' );
-		await ElementActions.doClick( await confirmPubButton );
+		await ElementActions.doClick( await this.publishButton );
+		await ElementActions.doClick( await this.confirmPublishButton );
 	}
 }
 
