@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Psubhashish"
+			"Psubhashish",
+			"Amire80"
 		]
 	},
 	"wikilambda-desc": "ଏକ କେନ୍ଦ୍ରୀୟ ଉଇକିରେ ଲିଖିତ, ପରିଚାଳିତ ଏବଂ ମୂଲ୍ୟାଙ୍କିତ ଫଙ୍କସନସବୁର ମୂଲ୍ୟାଙ୍କନ ପାଇବା ପାଇଁ ଉଇକିମିଡ଼ିଆ ଉଇକିଗୁଡ଼ିକୁ ୱିକିଟେକ୍ସ ପାର୍ସର ଫଙ୍କସନ ଦେବା",
@@ -17,6 +18,8 @@
 	"wikilambda-hide-more": "ଅଧିକ ଲୁଚାନ୍ତୁ",
 	"wikilambda-argref": "ଯୁକ୍ତି ଆଧାର",
 	"wikilambda-special-define-function": "ଫଙ୍କସନଟିର ବ୍ୟାଖ୍ୟାକରନ୍ତୁ",
+	"wikilambda-function-are-you-sure-dialog-header": "ଆପଣ ନିଶ୍ଚିତ ତ?",
+	"wikilambda-function-are-you-sure-dialog-description": "ପ୍ରକାଶ ବିନା ସମ୍ପାଦନା ମୋଡ୍ ଛାଡିବେ ବୋଲି ଆପଣ ପୂରା ନିଶ୍ଚିତ ତ?",
 	"wikilambda-tester-results-current-implementation": "ଏବେର ଇମ୍ପ୍ଲିମେଣ୍ଟେସନ",
 	"wikilambda-function-definition-example-title": "ଫଙ୍କସନର ବ୍ୟବହାର ପାଇଁ ଉଦାହରଣ",
 	"wikilambda-function-definition-can-publish-message": "ଆପଣ ସଂଜ୍ଞା ସାରିଲେ! ତଳେ 'ପ୍ରକାଶ' ଉପରେ କ୍ଲିକ କରି ନିଜ କାମ ସାଇତିବେ ।",
