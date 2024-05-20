@@ -262,7 +262,7 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase implements LoggerAwareInter
 					$zid,
 					$languages,
 					$getDependencies,
-					$revisions ? $revisionMap[ $zid ] : null
+					$revisions ? ( $revisionMap[ $zid ] ?? null ) : null
 				);
 
 				// We queue the type dependencies
