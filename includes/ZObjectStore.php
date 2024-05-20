@@ -28,7 +28,9 @@ use MediaWiki\User\User;
 use MediaWiki\User\UserGroupManager;
 use Psr\Log\LoggerInterface;
 use Wikimedia\Rdbms\IConnectionProvider;
+use Wikimedia\Rdbms\IExpression;
 use Wikimedia\Rdbms\IResultWrapper;
+use Wikimedia\Rdbms\LikeValue;
 use Wikimedia\Rdbms\SelectQueryBuilder;
 use WikiPage;
 
@@ -342,13 +344,9 @@ class ZObjectStore {
 
 		$dbw->newDeleteQueryBuilder()
 			->deleteFrom( 'wikilambda_zobject_label_conflicts' )
-			->where( $dbw->makeList(
-					[
-						'wlzlc_existing_zid' => $zid,
-						'wlzlc_conflicting_zid' => $zid
-					],
-					$dbw::LIST_OR
-				)
+			->where(
+				$dbw->expr( 'wlzlc_existing_zid', '=', $zid )
+					->or( 'wlzlc_conflicting_zid', '=', $zid )
 			)
 			->caller( __METHOD__ )->execute();
 	}
@@ -390,9 +388,9 @@ class ZObjectStore {
 			->select( [ 'wlzl_zobject_zid', 'wlzl_language' ] )
 			->from( 'wikilambda_zobject_labels' )
 			->where( [
-				'wlzl_zobject_zid != ' . $dbr->addQuotes( $zid ),
+				$dbr->expr( 'wlzl_zobject_zid', '!=', $zid ),
 				// TODO (T357552): Check against type, once we properly implement that.
-				// 'wlzl_type' => $dbr->addQuotes( $ztype ),
+				// 'wlzl_type' => $ztype,
 				$dbr->makeList( $labelConflictConditions, $dbr::LIST_OR )
 			] )
 			->caller( __METHOD__ )
@@ -637,22 +635,23 @@ class ZObjectStore {
 	) {
 		$dbr = $this->dbProvider->getReplicaDatabase();
 
+		$conditions = [];
 		// Set language filter if any
 		if ( count( $languages ) > 0 ) {
-			$conditions = [ 'wlzl_language' => $languages ];
+			$conditions['wlzl_language'] = $languages;
 		}
 
 		// Set type filter
 		$typeConditions = [];
 		if ( $type != null ) {
-			$typeConditions[] = 'wlzl_type = ' . $dbr->addQuotes( $type );
+			$typeConditions['wlzl_type'] = $type;
 		}
 
 		// Set returntype filter
 		if ( $returnType != null ) {
-			$typeConditions[] = 'wlzl_return_type = ' . $dbr->addQuotes( $returnType );
+			$typeConditions['wlzl_return_type'] = [ $returnType ];
 			if ( !$strictReturnType ) {
-				$typeConditions[] = 'wlzl_return_type = ' . $dbr->addQuotes( ZTypeRegistry::Z_OBJECT );
+				$typeConditions['wlzl_return_type'][] = ZTypeRegistry::Z_OBJECT;
 			}
 		}
 
@@ -663,7 +662,7 @@ class ZObjectStore {
 
 		// Set minimum id bound if we are continuing a paged result
 		if ( $continue != null ) {
-			$conditions[] = "wlzl_id >= $continue";
+			$conditions[] = $dbr->expr( 'wlzl_id', '>=', $continue );
 		}
 
 		// Set search Term and column
@@ -678,7 +677,8 @@ class ZObjectStore {
 			$searchTerm = ZObjectUtils::comparableString( $label );
 		}
 
-		$conditions[] = $searchedColumn . $dbr->buildLike( $dbr->anyString(), $searchTerm, $dbr->anyString() );
+		$conditions[] = $dbr->expr( $searchedColumn, IExpression::LIKE,
+			new LikeValue( $dbr->anyString(), $searchTerm, $dbr->anyString() ) );
 
 		// Create query builder
 		$queryBuilder = $dbr->newSelectQueryBuilder()
@@ -880,7 +880,7 @@ class ZObjectStore {
 
 		// Set minimum id bound if we are continuing a paged result
 		if ( $continue != null ) {
-			$conditions[] = "wlzf_id >= $continue";
+			$conditions[] = $dbr->expr( 'wlzf_id', '>=', $continue );
 		}
 		$res = $dbr->newSelectQueryBuilder()
 			->select( [ 'wlzf_ref_zid', 'wlzf_id' ] )
@@ -957,25 +957,25 @@ class ZObjectStore {
 		$purgeableResults = [];
 		$conditions = [];
 		if ( $functionZID !== null ) {
-			$conditions[] = "wlztr_zfunction_zid = " . $dbr->addQuotes( $functionZID );
+			$conditions['wlztr_zfunction_zid'] = $functionZID;
 			$purgeableResults[] = $functionZID;
 		}
 		if ( $functionRevision !== null ) {
-			$conditions[] = "wlztr_zfunction_revision = " . $dbr->addQuotes( $functionRevision );
+			$conditions['wlztr_zfunction_revision'] = $functionRevision;
 		}
 		if ( $implementationZID !== null ) {
-			$conditions[] = "wlztr_zimplementation_zid = " . $dbr->addQuotes( $implementationZID );
+			$conditions['wlztr_zimplementation_zid'] = $implementationZID;
 			$purgeableResults[] = $implementationZID;
 		}
 		if ( $implementationRevision !== null ) {
-			$conditions[] = "wlztr_zimplementation_revision = " . $dbr->addQuotes( $implementationRevision );
+			$conditions['wlztr_zimplementation_revision'] = $implementationRevision;
 		}
 		if ( $testerZID !== null ) {
-			$conditions[] = "wlztr_ztester_zid = " . $dbr->addQuotes( $testerZID );
+			$conditions['wlztr_ztester_zid'] = $testerZID;
 			$purgeableResults[] = $testerZID;
 		}
 		if ( $testerRevision !== null ) {
-			$conditions[] = "wlztr_ztester_revision = " . $dbr->addQuotes( $testerRevision );
+			$conditions['wlztr_ztester_revision'] = $testerRevision;
 		}
 
 		$res = $dbr->newSelectQueryBuilder()
