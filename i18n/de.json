@@ -366,7 +366,7 @@
 	"wikilambda-add-list-item": "Objekt hinzufügen",
 	"wikilambda-delete-list-item": "Objekt löschen",
 	"wikilambda-tester-details": "Details",
-	"wikilambda-about-widget-title": "Über diese Funktion",
+	"wikilambda-about-widget-title": "Info",
 	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1 Sprache|$1 Sprachen}}",
 	"wikilambda-about-widget-edit-metadata-title": "Informationen bearbeiten",
 	"wikilambda-about-widget-name-placeholder": "Name eingeben",
