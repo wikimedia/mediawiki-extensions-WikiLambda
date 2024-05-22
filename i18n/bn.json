@@ -364,6 +364,8 @@
 	"wikilambda-context-menu": "প্রসঙ্গ মেনু",
 	"wikilambda-add-list-item": "আইটেম যোগ করুন",
 	"wikilambda-delete-list-item": "আইটেম মুছুন",
+	"wikilambda-move-before-list-item": "পূর্বে স্থানান্তর",
+	"wikilambda-move-after-list-item": "পরে স্থানান্তর",
 	"wikilambda-tester-details": "বিস্তারিত",
 	"wikilambda-about-widget-accessible-title": "ডায়ালগটি আপনাকে বিভিন্ন ভাষায় লেবেল এবং তথ্য দেখতে এবং সম্পাদনা করতে দেয়",
 	"wikilambda-about-widget-title": "পরিচিতি",
