@@ -241,7 +241,7 @@
 	"wikilambda-tester-results-caption": "Wyniki testów funkcji w porównaniu z implementacjami",
 	"wikilambda-tester-results-current-implementation": "Bieżąca implementacja",
 	"wikilambda-tester-results-current-test": "Bieżący test",
-	"wikilambda-tester-no-results": "Nie znaleziono wyników testu. Dodaj implementację i test, aby zobaczyć wyniki.",
+	"wikilambda-tester-no-results": "Nie znaleziono wyników testów. Dodaj implementację i test, aby zobaczyć wyniki.",
 	"wikilambda-tester-results-percentage-label": "Całkowita liczba testów z pomyślnym wynikiem",
 	"wikilambda-tester-run-testers": "Uruchom wszystkie testy",
 	"wikilambda-tester-run-tester": "Uruchom test",
