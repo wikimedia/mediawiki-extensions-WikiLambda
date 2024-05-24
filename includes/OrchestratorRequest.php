@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda;
 use BagOStuff;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use MediaWiki\Http\Telemetry;
 use MediaWiki\Utils\GitInfo;
 use Psr\Http\Message\ResponseInterface;
 
@@ -52,12 +53,26 @@ class OrchestratorRequest {
 		$guzzleClient = $this->guzzleClient;
 		$userAgentString = $this->userAgentString;
 
+		$requestHeaders = [
+			'User-Agent' => $userAgentString,
+		];
+
+		// (T365053) Propagate request tracing headers
+		$telemetry = Telemetry::getInstance();
+		$requestHeaders['X-Request-Id'] = $telemetry->getRequestId();
+		$tracestate = $telemetry->getTracestate();
+		if ( $tracestate !== null ) {
+			$requestHeaders['tracestate' ] = $tracestate;
+		}
+		$traceparent = $telemetry->getTraceparent();
+		if ( $traceparent !== null ) {
+			$requestHeaders['traceparent'] = $traceparent;
+		}
+
 		if ( $bypassCache ) {
 			return $this->guzzleClient->post( '/1/v1/evaluate/', [
 				'json' => $query,
-				'headers' => [
-					'User-Agent' => $this->userAgentString,
-				],
+				'headers' => $requestHeaders,
 			] )->getBody()->getContents();
 		}
 
@@ -65,12 +80,10 @@ class OrchestratorRequest {
 			$this->objectCache->makeKey( 'WikiLambdaFunctionCall', ZObjectUtils::makeCacheKeyFromZObject( $query ) ),
 			// TODO (T338243): Is this the right timeout? Maybe TTL_DAY or TTL_MONTH instead?
 			$this->objectCache::TTL_WEEK,
-			static function () use ( $query, $guzzleClient, $userAgentString ) {
+			static function () use ( $query, $guzzleClient, $requestHeaders ) {
 				return $guzzleClient->post( '/1/v1/evaluate/', [
 					'json' => $query,
-					'headers' => [
-						'User-Agent' => $userAgentString,
-					],
+					'headers' => $requestHeaders,
 				] )->getBody()->getContents();
 			}
 		);
