@@ -248,7 +248,7 @@ function extractZIDs( zobject ) {
  * it appears in a function call to Z885/'Errortype to type'.  Z885K1 is the 'errortype' key of Z885.
  *
  * @param {Object} zobject
- * @return {Array} of objects
+ * @return {Array|undefined} of objects
  */
 function checkIfSuberror( zobject ) {
 	if ( typeof zobject === 'object' && zobject.Z1K1 && typeof zobject.Z1K1 === 'string' &&
@@ -274,6 +274,7 @@ function checkIfSuberror( zobject ) {
 		}
 		return suberror;
 	}
+	return undefined;
 }
 
 // These error types have no keys whose values contain nested error content.  If a error type ZID
