@@ -1686,34 +1686,15 @@ module.exports = exports = {
 				return;
 			}
 
-			/**
-			 * @param {string} parentRowId
-			 * @return {Array}
-			 */
-			function getAllDescendants( parentRowId ) {
-				const childRows = context.getters.getChildrenByParentRowId( parentRowId );
-				// all are unique
-				const descendants = childRows.map( ( child ) => child.id );
-				for ( const childRowId of descendants ) {
-					const grandChildren = getAllDescendants( childRowId );
-					descendants.push( ... grandChildren );
-				}
-				return descendants;
-			}
+			// Remove children
+			const childRows = context.getters.getChildrenByParentRowId( rowId );
+			childRows.forEach( ( child ) => {
+				context.dispatch( 'removeRowChildren', { rowId: child.id, removeParent: true } );
+			} );
 
-			// Collect all descendants
-			const allDescendants = getAllDescendants( rowId );
-			// Add parent rowId
+			// Remove parent
 			if ( removeParent ) {
-				allDescendants.push( rowId );
-			}
-
-			for ( const childRowId of allDescendants ) {
-				const index = context.getters.getRowIndexById( childRowId );
-				if ( index > -1 ) {
-					context.commit( 'removeRowByIndex', index );
-					context.commit( 'clearErrorsForId', childRowId );
-				}
+				context.dispatch( 'removeRow', rowId );
 			}
 		},
 

@@ -38,6 +38,7 @@
 					<cdx-button
 						weight="quiet"
 						class="cdx-dialog__header__close-button"
+						:aria-label="$i18n( 'wikilambda-dialog-close' ).text()"
 						@click="closeDialog"
 					>
 						<cdx-icon :icon="icons.cdxIconClose"></cdx-icon>
@@ -48,6 +49,21 @@
 
 		<!-- Dialog Body -->
 		<div class="ext-wikilambda-metadata-dialog-body">
+			<cdx-field
+				v-if="hasNestedMetadata"
+				class="ext-wikilambda-metadata-dialog-select-block">
+				<cdx-select
+					v-model:selected="selectedMetadataPath"
+					class="ext-wikilambda-metadata-dialog-select"
+					:class="selectedMenuItemClass"
+					:menu-items="functionMenuItems"
+					@update:selected="setSelectedMetadata"
+				></cdx-select>
+				<template #label>
+					Function calls
+				</template>
+			</cdx-field>
+
 			<cdx-accordion
 				v-for="( section, sectionIndex ) in sections"
 				:key="sectionIndex"
@@ -108,6 +124,8 @@ const CdxAccordion = require( '@wikimedia/codex' ).CdxAccordion,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+	CdxField = require( '@wikimedia/codex' ).CdxField,
+	CdxSelect = require( '@wikimedia/codex' ).CdxSelect,
 	Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	metadataConfig = require( '../../mixins/metadata.js' ),
@@ -122,7 +140,9 @@ module.exports = exports = defineComponent( {
 		'cdx-accordion': CdxAccordion,
 		'cdx-button': CdxButton,
 		'cdx-dialog': CdxDialog,
-		'cdx-icon': CdxIcon
+		'cdx-icon': CdxIcon,
+		'cdx-field': CdxField,
+		'cdx-select': CdxSelect
 	},
 	mixins: [ metadataConfig ],
 	props: {
@@ -144,13 +164,40 @@ module.exports = exports = defineComponent( {
 	},
 	data: function () {
 		return {
-			icons: icons
+			icons: icons,
+			selectedMetadataPath: '0'
 		};
 	},
 	computed: Object.assign( mapGetters( [
 		'getLabelData',
-		'getUserLangCode'
+		'getUserLangCode',
+		'getFunctionZidOfImplementation'
 	] ), {
+		/**
+		 * Returns whether the root level metadata object has
+		 * nested metadata children.
+		 *
+		 * @return {boolean}
+		 */
+		hasNestedMetadata: function () {
+			const keyValues = this.getKeyValues( this.metadata );
+			return keyValues.has( 'nestedMetadata' );
+		},
+		/**
+		 * Returns the selected metadata collection given the
+		 * currently selected function Call Id that identifies it.
+		 * If no collection matches the Id, the parent metadata object
+		 * is returned.
+		 *
+		 * @return {Object}
+		 */
+		selectedMetadata: function () {
+			let selectedMetadata;
+			if ( this.hasNestedMetadata ) {
+				selectedMetadata = this.findMetadata( this.metadata, this.selectedMetadataPath );
+			}
+			return selectedMetadata || this.metadata;
+		},
 		/**
 		 * Returns the help link from the Metadata dialog
 		 *
@@ -174,15 +221,7 @@ module.exports = exports = defineComponent( {
 		 * @return {Map|undefined}
 		 */
 		keyValues: function () {
-			if ( !this.metadata ) {
-				return undefined;
-			}
-			const benjamin = this.metadata[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ];
-			const items = benjamin.slice( 1 );
-			return new Map( items.map( ( pair ) => [
-				pair[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ],
-				pair[ Constants.Z_TYPED_OBJECT_ELEMENT_2 ]
-			] ) );
+			return this.getKeyValues( this.selectedMetadata );
 		},
 		/**
 		 * @return {Array}
@@ -192,13 +231,158 @@ module.exports = exports = defineComponent( {
 				return [];
 			}
 			return this.compileSections( this.metadataKeys );
+		},
+		/**
+		 * Returns the parent-level menuItems array for the dialog selector.
+		 *
+		 * @return {Array}
+		 */
+		functionMenuItems: function () {
+			return this.hasNestedMetadata ? this.generateFunctionMenuItems( this.metadata ) : [];
+		},
+		/**
+		 * Returns the class of the selected menuItem,
+		 * to identify its passing/failing state.
+		 *
+		 * @return {string}
+		 */
+		selectedMenuItemClass: function () {
+			const selectedMenuItem = this.functionMenuItems
+				.find( ( menuItem ) => menuItem.value === this.selectedMetadataPath );
+			return selectedMenuItem ?
+				`ext-wikilambda-metadata-dialog-selected-${ selectedMenuItem.state }` :
+				'';
 		}
 	} ),
 	methods: {
 		/**
-		 * Close the dialog.
+		 * Returns the available keys present in the given metadata object
+		 *
+		 * @param {Object} metadata
+		 * @return {Map|undefined}
+		 */
+		getKeyValues: function ( metadata ) {
+			if ( !metadata ) {
+				return undefined;
+			}
+			const benjamin = metadata[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ];
+			const items = benjamin.slice( 1 );
+			return new Map( items.map( ( pair ) => [
+				pair[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ],
+				pair[ Constants.Z_TYPED_OBJECT_ELEMENT_2 ]
+			] ) );
+		},
+		/**
+		 * Returns the array of menu items to feed the CdxSelect
+		 * component. Each menu item identifies the metadata collection
+		 * for a particular function call. The value that identifies
+		 * the function call metadata Ids is created with the
+		 * functionCall string and the orchestration start time, to
+		 * distinguish between two function calls with the same name
+		 * and arguments.
+		 *
+		 * @param {Object} metadata
+		 * @param {number} depth
+		 * @param {number} index
+		 * @param {Array} path
+		 * @return {Array}
+		 */
+		generateFunctionMenuItems: function ( metadata, depth = 1, index = 0, path = [] ) {
+			const keyValues = this.getKeyValues( metadata );
+
+			let functionCall = keyValues.get( 'zObjectKey' );
+			let labelizedFunctionCall = this.$i18n( 'wikilambda-editor-default-name' ).text();
+
+			// If zObjectKey is not present, extract function Zid from implementationId
+			if ( !functionCall ) {
+				let implementationId = keyValues.get( 'implementationId' );
+				implementationId = this.getStringValue( implementationId );
+				functionCall = this.getFunctionZidOfImplementation( implementationId );
+			}
+
+			// If functionCall has any values, transform into human-readable labels
+			if ( functionCall ) {
+				const zids = schemata.extractZIDs( functionCall, true );
+				labelizedFunctionCall = this.addSpacing( functionCall );
+				zids.forEach( ( zid ) => {
+					labelizedFunctionCall = labelizedFunctionCall.split( zid ).join( this.getLabelData( zid ).label );
+				} );
+			}
+
+			path.push( index );
+			const uniqueId = path.join( '-' );
+
+			const errors = keyValues.get( 'errors' );
+			const nestedMetadata = keyValues.get( 'nestedMetadata' );
+			const state = !errors ? 'pass' : 'fail';
+
+			const menuItems = [ {
+				label: labelizedFunctionCall,
+				value: uniqueId,
+				style: `--menuItemLevel: ${ depth };`,
+				class: 'ext-wikilambda-metadata-dialog-menu-item ' +
+					`ext-wikilambda-metadata-dialog-menu-item-${ state }`,
+				icon: !errors ? icons.cdxIconSuccess : icons.cdxIconError,
+				state
+			} ];
+
+			// Recursively create child menu items
+			if ( nestedMetadata ) {
+				nestedMetadata.slice( 1 ).forEach( ( child, i ) => {
+					const childMenuItems = this.generateFunctionMenuItems( child, depth + 1, i, path.slice() );
+					menuItems.push( ...childMenuItems );
+				} );
+			}
+
+			return menuItems;
+		},
+		/**
+		 * Returns the metadata collection for the selected function
+		 * call metadata Id.
+		 *
+		 * @param {Object} metadata
+		 * @param {string} selectedMetadataPath
+		 * @param {number} index
+		 * @param {Array} path
+		 * @return {Object|undefined}
+		 */
+		findMetadata: function ( metadata, selectedMetadataPath, index = 0, path = [] ) {
+			const keyValues = this.getKeyValues( metadata );
+			let nestedMetadata = keyValues.get( 'nestedMetadata' );
+
+			path.push( index );
+			const uniqueId = path.join( '-' );
+
+			if ( uniqueId === selectedMetadataPath ) {
+				return metadata;
+			}
+
+			if ( nestedMetadata ) {
+				nestedMetadata = nestedMetadata.slice( 1 );
+				for ( const i in nestedMetadata ) {
+					const child = nestedMetadata[ i ];
+					const selectedMetadata = this.findMetadata( child, selectedMetadataPath, i, path.slice() );
+					if ( selectedMetadata ) {
+						return selectedMetadata;
+					}
+				}
+			}
+
+			return undefined;
+		},
+		/**
+		 * Selects the given function call metadata Id
+		 *
+		 * @param {string} value
+		 */
+		setSelectedMetadata: function ( value ) {
+			this.selectedMetadataPath = value;
+		},
+		/**
+		 * Closes the dialog.
 		 */
 		closeDialog: function () {
+			this.selectedMetadataPath = '0';
 			this.$emit( 'close-dialog' );
 		},
 		/**
@@ -520,7 +704,6 @@ module.exports = exports = defineComponent( {
 			// Fallback for browsers without Intl
 			return dateTimeString.replace( 'T', ' ' ).replace( 'Z', ' (UTC)' );
 		},
-
 		/**
 		 * Returns whether the given payload is an instance of LabelData
 		 *
@@ -529,6 +712,18 @@ module.exports = exports = defineComponent( {
 		 */
 		isLabelData( payload ) {
 			return ( payload instanceof LabelData );
+		},
+		/**
+		 * Given a function call string representation, adds spacing
+		 * before opening brackets and after divider commas
+		 *
+		 * @param {string} functionCall
+		 * @return {string}
+		 */
+		addSpacing( functionCall ) {
+			let spaced = functionCall.split( '(' ).join( ' (' );
+			spaced = spaced.split( ',' ).join( ', ' );
+			return spaced;
 		}
 	}
 } );
@@ -568,6 +763,43 @@ module.exports = exports = defineComponent( {
 
 		li {
 			font-size: @wl-font-size-base;
+		}
+
+		.ext-wikilambda-metadata-dialog-select-block {
+			padding-bottom: @spacing-100;
+
+			.ext-wikilambda-metadata-dialog-select {
+				width: 100%;
+
+				&.ext-wikilambda-metadata-dialog-selected-pass {
+					.cdx-icon {
+						color: @color-success;
+					}
+				}
+
+				&.ext-wikilambda-metadata-dialog-selected-fail {
+					.cdx-icon {
+						color: @color-destructive;
+					}
+				}
+
+				.ext-wikilambda-metadata-dialog-menu-item {
+					--spacing-75: @spacing-75;
+					padding-left: ~'calc( var(--spacing-75) * var(--menuItemLevel) )';
+
+					&.ext-wikilambda-metadata-dialog-menu-item-pass {
+						.cdx-icon {
+							color: @color-success;
+						}
+					}
+
+					&.ext-wikilambda-metadata-dialog-menu-item-fail {
+						.cdx-icon {
+							color: @color-destructive;
+						}
+					}
+				}
+			}
 		}
 	}
 }

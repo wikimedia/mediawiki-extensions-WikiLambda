@@ -147,6 +147,7 @@
 	"wikilambda-create-function": "Label for the button that navigates to the create function page",
 	"wikilambda-create-type": "Label for the button that preset the current view to create a type",
 	"wikilambda-delete-list-item": "Label for a button that removes an item from a list",
+	"wikilambda-dialog-close": "Label for button that closes a dialog.",
 	"wikilambda-diff-incompatible": "Warning shown on a diff page when a user tries to get the differences between a ZObject and something else.",
 	"wikilambda-discard-edits": "Label for the discard edits button",
 	"wikilambda-edit": "Page heading for editing a ZObject page. Very similar in its function to {{msg-mw|editing}}, but doesn't have a parameter; see [https://phabricator.wikimedia.org/T359781 bug T359781].\n{{identical|Edit}}",

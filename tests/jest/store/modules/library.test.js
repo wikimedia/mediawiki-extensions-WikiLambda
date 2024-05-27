@@ -251,6 +251,60 @@ describe( 'library module', () => {
 			} );
 		} );
 
+		describe( 'getFunctionZidOfImplementation', () => {
+			beforeEach( () => {
+				state.objects = mockApiZids;
+			} );
+
+			it( 'returns undefined if the implementation is not found', () => {
+				const zid = 'Z20055';
+				const expected = undefined;
+				const actual = libraryModule.getters.getFunctionZidOfImplementation( state )( zid );
+				expect( actual ).toBe( expected );
+			} );
+
+			it( 'returns undefined if the object is not an implementation', () => {
+				const zid = 'Z6';
+				const expected = undefined;
+				const actual = libraryModule.getters.getFunctionZidOfImplementation( state )( zid );
+				expect( actual ).toBe( expected );
+			} );
+
+			it( 'returns function zid of the implementation', () => {
+				const zid = 'Z20005';
+				const expected = 'Z20000';
+				const actual = libraryModule.getters.getFunctionZidOfImplementation( state )( zid );
+				expect( actual ).toBe( expected );
+			} );
+		} );
+
+		describe( 'getTypeOfImplementation', () => {
+			beforeEach( () => {
+				state.objects = mockApiZids;
+			} );
+
+			it( 'returns undefined if the implementation is not found', () => {
+				const zid = 'Z20055';
+				const expected = undefined;
+				const actual = libraryModule.getters.getTypeOfImplementation( state )( zid );
+				expect( actual ).toBe( expected );
+			} );
+
+			it( 'returns undefined if the object is not an implementation', () => {
+				const zid = 'Z6';
+				const expected = undefined;
+				const actual = libraryModule.getters.getTypeOfImplementation( state )( zid );
+				expect( actual ).toBe( expected );
+			} );
+
+			it( 'returns type of code implementation', () => {
+				const zid = 'Z20005';
+				const expected = 'Z14K3';
+				const actual = libraryModule.getters.getTypeOfImplementation( state )( zid );
+				expect( actual ).toBe( expected );
+			} );
+		} );
+
 		describe( 'getLanguageOfImplementation', () => {
 			beforeEach( () => {
 				state.objects = mockApiZids;

@@ -1,7 +1,5 @@
 /**
- * WikiLambda Vue editor: callZFunction mixin
- * Mixin with util function to invoke a ZFunctionCall, canonicalize
- * the result, and return the ZObject and its respective pairs.
+ * WikiLambda Vue editor: API calls mixin
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
