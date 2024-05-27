@@ -27,7 +27,7 @@ module.exports = exports = {
 			if ( row ) {
 				// payload is a valid row Id, remove its children
 				rowId = row.id;
-				context.dispatch( 'removeRowChildren', rowId );
+				context.dispatch( 'removeRowChildren', { rowId } );
 			} else {
 				// payload is not a row ID, add new rowId
 				rowId = context.getters.getNextRowId;

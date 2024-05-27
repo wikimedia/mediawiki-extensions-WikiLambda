@@ -336,8 +336,7 @@ module.exports = exports = {
 					const value = context.getters.getZReferenceTerminalValue( keyRow.id );
 					// If value is empty, remove the key altogether
 					if ( !value ) {
-						context.dispatch( 'removeRowChildren', keyRow.id );
-						context.dispatch( 'removeRow', keyRow.id );
+						context.dispatch( 'removeRowChildren', { rowId: keyRow.id, removeParent: true } );
 					}
 				}
 			}
@@ -395,8 +394,7 @@ module.exports = exports = {
 				const goodValues = [];
 				for ( const value of aliasValues ) {
 					if ( !value.value ) {
-						context.dispatch( 'removeRowChildren', value.rowId );
-						context.dispatch( 'removeRow', value.rowId );
+						context.dispatch( 'removeRowChildren', { rowId: value.rowId, removeParent: true } );
 					} else {
 						goodValues.push( value );
 					}
@@ -411,8 +409,7 @@ module.exports = exports = {
 				// If alias has no values or no language, remove whole alias
 				const aliasLang = context.getters.getZMonolingualStringsetLang( alias.id );
 				if ( !aliasLang || goodValues.length === 0 ) {
-					context.dispatch( 'removeRowChildren', alias.id );
-					context.dispatch( 'removeRow', alias.id );
+					context.dispatch( 'removeRowChildren', { rowId: alias.id, removeParent: true } );
 				}
 			}
 			// Recalculate the keys of the list of monolingual string sets
@@ -483,8 +480,7 @@ module.exports = exports = {
 			] );
 			const implementations = context.getters.getChildrenByParentRowId( implementationRow.id ).slice( 1 );
 			for ( const row of implementations ) {
-				context.dispatch( 'removeRowChildren', row.id );
-				context.dispatch( 'removeRow', row.id );
+				context.dispatch( 'removeRowChildren', { rowId: row.id, removeParent: true } );
 			}
 			// Disconnect testers
 			const testerRow = context.getters.getRowByKeyPath( [
@@ -493,8 +489,7 @@ module.exports = exports = {
 			] );
 			const testers = context.getters.getChildrenByParentRowId( testerRow.id ).slice( 1 );
 			for ( const row of testers ) {
-				context.dispatch( 'removeRowChildren', row.id );
-				context.dispatch( 'removeRow', row.id );
+				context.dispatch( 'removeRowChildren', { rowId: row.id, removeParent: true } );
 			}
 		}
 	}

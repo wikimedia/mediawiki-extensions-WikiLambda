@@ -84,7 +84,7 @@ describe( 'callZFunction Vuex module', function () {
 				const rowId = callZFunctionModule.actions.initializeResultId( context, payload );
 				expect( rowId ).toBe( 0 );
 				expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', 0 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', { rowId: 0 } );
 			} );
 		} );
 

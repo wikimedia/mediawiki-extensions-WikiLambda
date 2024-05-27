@@ -1669,31 +1669,56 @@ module.exports = exports = {
 				return;
 			}
 			const rowIndex = context.getters.getRowIndexById( rowId );
-			context.commit( 'removeRowByIndex', rowIndex );
-			context.commit( 'clearErrorsForId', rowId );
+			if ( rowIndex > -1 ) {
+				context.commit( 'removeRowByIndex', rowIndex );
+				context.commit( 'clearErrorsForId', rowId );
+			}
 		},
 
 		/**
-		 * Remove all the children rows of a given rowId. It also clears
+		 * Remove a given row and all the descending rows. It also clears
 		 * whatever errors are associated to the children rowIds.
 		 *
 		 * @param {Object} context
-		 * @param {number} rowId
+		 * @param {Object} payload
+		 * @param {string} payload.rowId
+		 * @param {boolean} payload.removeParent
 		 */
-		removeRowChildren: function ( context, rowId ) {
+		removeRowChildren: function ( context, payload ) {
+			const { rowId, removeParent = false } = payload;
 			if ( ( rowId === undefined ) || ( rowId === null ) ) {
 				return;
 			}
 
-			const childRows = context.getters.getChildrenByParentRowId( rowId );
-			childRows.forEach( ( child ) => {
-				// If not terminal, recurse to remove all progenie
-				if ( !child.isTerminal() ) {
-					context.dispatch( 'removeRowChildren', child.id );
+			/**
+			 * @param {string} parentRowId
+			 * @return {Array}
+			 */
+			function getAllDescendants( parentRowId ) {
+				const childRows = context.getters.getChildrenByParentRowId( parentRowId );
+				// all are unique
+				const descendants = childRows.map( ( child ) => child.id );
+				for ( const childRowId of descendants ) {
+					const grandChildren = getAllDescendants( childRowId );
+					descendants.push( ... grandChildren );
 				}
-				// Then remove child
-				context.dispatch( 'removeRow', child.id );
-			} );
+				return descendants;
+			}
+
+			// Collect all descendants
+			const allDescendants = getAllDescendants( rowId );
+			// Add parent rowId
+			if ( removeParent ) {
+				allDescendants.push( rowId );
+			}
+
+			for ( const childRowId of allDescendants ) {
+				const index = context.getters.getRowIndexById( childRowId );
+				if ( index > -1 ) {
+					context.commit( 'removeRowByIndex', index );
+					context.commit( 'clearErrorsForId', childRowId );
+				}
+			}
 		},
 
 		/**
@@ -1791,8 +1816,7 @@ module.exports = exports = {
 			// 3. For every key of parent: if it's not in new keys, remove it
 			oldArgs.forEach( function ( arg ) {
 				if ( !newKeys.includes( arg.key ) ) {
-					allActions.push( context.dispatch( 'removeRowChildren', arg.id ) );
-					allActions.push( context.dispatch( 'removeRow', arg.id ) );
+					allActions.push( context.dispatch( 'removeRowChildren', { rowId: arg.id, removeParent: true } ) );
 				}
 			} );
 
@@ -1855,8 +1879,7 @@ module.exports = exports = {
 				if ( key !== payload.key ) {
 					const keyRow = context.getters.getRowByKeyPath( [ key ], payload.parentId );
 					if ( keyRow ) {
-						context.dispatch( 'removeRowChildren', keyRow.id );
-						context.dispatch( 'removeRow', keyRow.id );
+						context.dispatch( 'removeRowChildren', { rowId: keyRow.id, removeParent: true } );
 					}
 				}
 			}
@@ -1936,7 +1959,7 @@ module.exports = exports = {
 
 				// Remove all necessary children that are dangling from this parent, if append is not set
 				if ( !payload.append ) {
-					allActions.push( context.dispatch( 'removeRowChildren', parentRow.id ) );
+					allActions.push( context.dispatch( 'removeRowChildren', { rowId: parentRow.id } ) );
 				}
 			} else {
 				// Convert input payload.value into table rows with no parent
@@ -2017,8 +2040,7 @@ module.exports = exports = {
 			}
 			const parentRowId = row.parent;
 			// remove item
-			context.dispatch( 'removeRowChildren', payload.rowId );
-			context.dispatch( 'removeRow', payload.rowId );
+			context.dispatch( 'removeRowChildren', { rowId: payload.rowId, removeParent: true } );
 			// renumber children of parent starting from key
 			context.dispatch( 'recalculateTypedListKeys', parentRowId );
 		},
@@ -2035,8 +2057,7 @@ module.exports = exports = {
 		 */
 		removeItemsFromTypedList: function ( context, payload ) {
 			for ( const itemRowId of payload.listItems ) {
-				context.dispatch( 'removeRowChildren', itemRowId );
-				context.dispatch( 'removeRow', itemRowId );
+				context.dispatch( 'removeRowChildren', { rowId: itemRowId, removeParent: true } );
 			}
 			context.dispatch( 'recalculateTypedListKeys', payload.parentRowId );
 		},

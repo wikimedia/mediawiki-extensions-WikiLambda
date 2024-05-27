@@ -1288,11 +1288,9 @@ describe( 'addZObjects Vuex module', () => {
 					{ id: 3, key: 'Z11K2' }
 				];
 				zobjectModule.modules.addZObjects.actions.clearType( context, 0 );
-				expect( context.dispatch ).toHaveBeenCalledTimes( 4 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', 2 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', 3 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRow', 2 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRow', 3 );
+				expect( context.dispatch ).toHaveBeenCalledTimes( 2 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', { rowId: 2, removeParent: true } );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', { rowId: 3, removeParent: true } );
 			} );
 		} );
 	} );
