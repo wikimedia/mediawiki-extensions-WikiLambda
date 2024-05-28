@@ -434,5 +434,6 @@
 	"wikilambda-parser-unexpected-result-error": "Error message for the string parser Function returning an unexpected Type as a result\n\nParams:\n* $1 – The Wikifunctions Function that is the string parser for the given Type.\n\n{{Doc-wikilambda}}",
 	"wikilambda-parser-unknown-error": "Error message for the string parser Function returning an unknown error\n\nParams:\n* $1 – The Wikifunctions Function that is the string parser for the given Type.\n\n{{Doc-wikilambda}}",
 	"wikilambda-object-selector-suggested-types": "Title of the suggested types section in the Object Selector",
-	"wikilambda-object-selector-suggested-languages": "Title of the suggested languages section in the Object Selector"
+	"wikilambda-object-selector-suggested-languages": "Title of the suggested languages section in the Object Selector",
+	"wikilambda-edit-monolingual-text-placeholder": "Placeholder text for a monolingual string input during edit"
 }

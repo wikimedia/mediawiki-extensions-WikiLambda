@@ -34,7 +34,7 @@
 			</cdx-info-chip>
 			<cdx-text-input
 				v-model="text"
-				placeholder="Enter text"
+				:placeholder="$i18n( 'wikilambda-edit-monolingual-text-placeholder' ).text()"
 			>
 			</cdx-text-input>
 		</div>
