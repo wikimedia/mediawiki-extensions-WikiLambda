@@ -660,6 +660,7 @@
 				"wikilambda-renderer-api-error",
 				"wikilambda-renderer-unexpected-result-error",
 				"wikilambda-renderer-unknown-error",
+				"wikilambda-renderer-view-invalid-result",
 				"wikilambda-parser-unexpected-result-error",
 				"wikilambda-parser-unknown-error",
 				"wikilambda-object-selector-suggested-types",

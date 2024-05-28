@@ -312,7 +312,8 @@ module.exports = exports = defineComponent( {
 				if ( response === Constants.Z_VOID ) {
 					// Renderer returned void:
 					// get error from metadata object and show examples link
-					this.renderedValue = '';
+					this.renderedValue = this.edit ? '' :
+						this.$i18n( 'wikilambda-renderer-view-invalid-result' ).text();
 					this.showExamplesLink = ( this.renderedExamples.length > 0 );
 					const metadata = data.response[ Constants.Z_RESPONSEENVELOPE_METADATA ];
 					const errorMessage = this.extractErrorMessage( metadata );
@@ -321,7 +322,8 @@ module.exports = exports = defineComponent( {
 				} else if ( typeUtils.getZObjectType( response ) !== Constants.Z_STRING ) {
 					// Renderer returned unexpected type:
 					// show unexpected result error and project chat footer
-					this.renderedValue = '';
+					this.renderedValue = this.edit ? '' :
+						this.i18n( 'wikilambda-renderer-view-invalid-result' ).text();
 					this.showErrorFooter = true;
 					this.setRendererError( this.$i18n( 'wikilambda-renderer-unexpected-result-error',
 						this.rendererZid ).parse() );
@@ -481,7 +483,9 @@ module.exports = exports = defineComponent( {
 			if ( value === false ) {
 				this.generateRenderedValue();
 			} else {
-				this.clearRendererError();
+				if ( this.edit ) {
+					this.clearRendererError();
+				}
 			}
 		},
 		/**
