@@ -18,15 +18,8 @@
 			"getValueFromCanonicalZMap",
 			"hasFieldErrors",
 			"hybridToCanonical",
-			"isCreatePath",
-			"isEvaluateFunctionCallPath",
-			"isFunctionRootObject",
-			"isViewMode",
 			"prefetchZids",
-			"pushToHistoryState",
-			"replaceToHistoryState",
-			"setLocalError",
-			"viewIsInvalid"
+			"setLocalError"
 		],
 		"template": "node_modules/jsdoc-wmf-theme"
 	},

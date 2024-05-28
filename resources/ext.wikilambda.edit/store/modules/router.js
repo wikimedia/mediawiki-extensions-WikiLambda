@@ -8,89 +8,6 @@
 
 const Constants = require( '../../Constants.js' );
 
-/**
- * Whether the URL is to Special Evaluate Function Call page
- *
- * @param {Object} uriQuery The contextual mw.Uri's query sub-object
- * @return {boolean}
- */
-const isEvaluateFunctionCallPath = function ( uriQuery ) {
-	return ( uriQuery.title === Constants.PATHS.RUN_FUNCTION_TITLE );
-};
-
-/**
- * Whether the current config has viewmode=true
- *
- * @param {Object} uriQuery The contextual mw.Uri's query sub-object
- * @return {boolean}
- */
-const isViewMode = function () {
-	const editingData = mw.config.get( 'wgWikiLambda' );
-	return editingData.viewmode;
-};
-
-/**
- * Whether the URL is to Special Create ZObject page
- *
- * @param {Object} uriQuery The contextual mw.Uri's query sub-object
- * @return {boolean}
- */
-const isCreatePath = function ( uriQuery ) {
-	return ( uriQuery.title === Constants.PATHS.CREATE_OBJECT_TITLE );
-};
-
-/**
- * Whether the Root ZObject presented in the view or edit page is a Z8/Function
- *
- * @param {Object} context The ZObject context in which we're operating
- * @return {boolean}
- */
-const isFunctionRootObject = function ( context ) {
-	return context.rootGetters.getCurrentZObjectType === Constants.Z_FUNCTION;
-};
-
-/**
- * Whether the given URI path string is a known view in Constants.VIEWS
- *
- * @param {string} view
- * @return {boolean}
- */
-const viewIsInvalid = function ( view ) {
-	let viewExist = false;
-	Object.keys( Constants.VIEWS ).forEach( function ( viewKey ) {
-		if ( Constants.VIEWS[ viewKey ] === view ) {
-			viewExist = true;
-		}
-	} );
-	return !viewExist;
-};
-
-/**
- * @param {string} path
- * @param {string} query
- */
-const pushToHistoryState = function ( path, query ) {
-	const stateObj = {
-		path: path,
-		query: query
-	};
-	const queryString = path + '?' + $.param( query );
-	window.history.pushState( stateObj, null, queryString );
-};
-
-/**
- * @param {string} path
- * @param {string} query
- */
-const replaceToHistoryState = function ( path, query ) {
-	const stateObj = {
-		path: path,
-		query: query
-	};
-	const queryString = path + '?' + $.param( query );
-	window.history.replaceState( stateObj, null, queryString );
-};
-
 module.exports = {
 	state: {
 		currentPath: mw.Uri().path,
@@ -124,9 +41,38 @@ module.exports = {
 		 * @param {Object} payload.params
 		 */
 		navigate: function ( context, payload ) {
+			/**
+			 * Whether the given URI path string is a known view in Constants.VIEWS
+			 *
+			 * @param {string} view
+			 * @return {boolean}
+			 */
+			const viewIsInvalid = function ( view ) {
+				let viewExist = false;
+				Object.keys( Constants.VIEWS ).forEach( function ( viewKey ) {
+					if ( Constants.VIEWS[ viewKey ] === view ) {
+						viewExist = true;
+					}
+				} );
+				return !viewExist;
+			};
+
 			if ( viewIsInvalid( payload.to ) ) {
 				return;
 			}
+
+			/**
+			 * @param {string} newPath
+			 * @param {string} newQuery
+			 */
+			const pushToHistoryState = function ( newPath, newQuery ) {
+				const stateObj = {
+					path: newPath,
+					query: newQuery
+				};
+				const queryString = newPath + '?' + $.param( newQuery );
+				window.history.pushState( stateObj, null, queryString );
+			};
 
 			context.commit( 'CHANGE_CURRENT_VIEW', payload.to );
 			if ( payload.params ) {
@@ -152,6 +98,16 @@ module.exports = {
 
 			let currentView;
 
+			/**
+			 * Whether the URL is to Special Create ZObject page
+			 *
+			 * @param {Object} uriQuery The contextual mw.Uri's query sub-object
+			 * @return {boolean}
+			 */
+			const isCreatePath = function ( uriQuery ) {
+				return ( uriQuery.title === Constants.PATHS.CREATE_OBJECT_TITLE );
+			};
+
 			// 1. if Special page Create
 			if ( isCreatePath( uri.query ) ) {
 				// I we have zid=Z8 in the uri, render function edit view
@@ -165,12 +121,43 @@ module.exports = {
 				return;
 			}
 
+			/**
+			 * Whether the URL is to Special Evaluate Function Call page
+			 *
+			 * @param {Object} uriQuery The contextual mw.Uri's query sub-object
+			 * @return {boolean}
+			 */
+			const isEvaluateFunctionCallPath = function ( uriQuery ) {
+				return ( uriQuery.title === Constants.PATHS.RUN_FUNCTION_TITLE );
+			};
+
 			// 2. if Special page Run Function
 			if ( isEvaluateFunctionCallPath( uri.query ) ) {
 				currentView = Constants.VIEWS.FUNCTION_EVALUATOR;
 				context.dispatch( 'changeCurrentView', currentView );
 				return;
 			}
+
+			/**
+			 * Whether the Root ZObject presented in the view or edit page is a Z8/Function
+			 *
+			 * @param {Object} objectContext The ZObject context in which we're operating
+			 * @return {boolean}
+			 */
+			const isFunctionRootObject = function ( objectContext ) {
+				return objectContext.rootGetters.getCurrentZObjectType === Constants.Z_FUNCTION;
+			};
+
+			/**
+			 * Whether the current config has viewmode=true
+			 *
+			 * @param {Object} uriQuery The contextual mw.Uri's query sub-object
+			 * @return {boolean}
+			 */
+			const isViewMode = function () {
+				const editingData = mw.config.get( 'wgWikiLambda' );
+				return editingData.viewmode;
+			};
 
 			if ( isFunctionRootObject( context ) ) {
 				currentView = isViewMode() ?
@@ -193,6 +180,19 @@ module.exports = {
 		 * @param {string} view
 		 */
 		changeCurrentView: function ( context, view ) {
+			/**
+			 * @param {string} path
+			 * @param {string} query
+			 */
+			const replaceToHistoryState = function ( path, query ) {
+				const stateObj = {
+					path: path,
+					query: query
+				};
+				const queryString = path + '?' + $.param( query );
+				window.history.replaceState( stateObj, null, queryString );
+			};
+
 			context.commit( 'CHANGE_CURRENT_VIEW', view );
 			const uri = mw.Uri();
 			// should only replace history state if path query view is set and is different from new view
