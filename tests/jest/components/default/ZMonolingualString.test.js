@@ -68,7 +68,10 @@ describe( 'ZMonolingualString', () => {
 					edit: true
 				}
 			} );
+
 			expect( wrapper.find( 'div' ).exists() ).toBe( true );
+			expect( wrapper.findComponent( { name: 'cdx-text-input' } ).exists() ).toBe( true );
+			expect( global.$i18n ).toHaveBeenCalledWith( 'wikilambda-edit-monolingual-text-placeholder' );
 		} );
 
 		it( 'displays a language chip', () => {

@@ -114,6 +114,7 @@
 	"wikilambda-functioncall": "Function call",
 	"wikilambda-edit": "Edit",
 	"wikilambda-toggle-expanded-view": "Toggle expanded view",
+	"wikilambda-edit-monolingual-text-placeholder": "Enter text",
 	"wikilambda-helplink-button": "Help",
 	"wikilambda-helplink-tooltip": "You can read a Help page which explains this metadata",
 	"wikilambda-special-createobject": "Create a new Object",
