@@ -61,26 +61,17 @@ module.exports = {
 				return;
 			}
 
-			/**
-			 * @param {string} newPath
-			 * @param {string} newQuery
-			 */
-			const pushToHistoryState = function ( newPath, newQuery ) {
-				const stateObj = {
-					path: newPath,
-					query: newQuery
-				};
-				const queryString = newPath + '?' + $.param( newQuery );
-				window.history.pushState( stateObj, null, queryString );
-			};
-
 			context.commit( 'CHANGE_CURRENT_VIEW', payload.to );
 			if ( payload.params ) {
 				const queryParamsObject = Object.assign( {}, context.state.queryParams, payload.params );
 				context.commit( 'CHANGE_QUERY_PARAMS', queryParamsObject );
 			}
+
+			const path = context.state.currentPath;
 			const query = Object.assign( {}, context.state.queryParams, { view: context.state.currentView } );
-			pushToHistoryState( context.state.currentPath, query );
+			const newUriString = path + '?' + $.param( query );
+
+			window.history.pushState( { path, query }, null, newUriString );
 		},
 		/**
 		 * Evaluate the Uri path to evaluate what View should be displayed.
@@ -180,25 +171,15 @@ module.exports = {
 		 * @param {string} view
 		 */
 		changeCurrentView: function ( context, view ) {
-			/**
-			 * @param {string} path
-			 * @param {string} query
-			 */
-			const replaceToHistoryState = function ( path, query ) {
-				const stateObj = {
-					path: path,
-					query: query
-				};
-				const queryString = path + '?' + $.param( query );
-				window.history.replaceState( stateObj, null, queryString );
-			};
-
 			context.commit( 'CHANGE_CURRENT_VIEW', view );
 			const uri = mw.Uri();
 			// should only replace history state if path query view is set and is different from new view
 			if ( uri.query.view && uri.query.view !== view ) {
+
+				const path = uri.path;
 				const query = Object.assign( uri.query, { view: view } );
-				replaceToHistoryState( uri.path, query );
+				const newUriString = path + '?' + $.param( query );
+				window.history.replaceState( { path, query }, null, newUriString );
 			}
 		}
 	}
