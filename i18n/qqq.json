@@ -430,6 +430,7 @@
 	"wikilambda-renderer-api-error": "Error message for unexpected api or server errors when running parser or render functions",
 	"wikilambda-renderer-unexpected-result-error": "Error message for the string renderer function returning an unexpected Type as a result\n\nParams:\n* $1 – The Wikifunctions Function that is the string renderer for the given Type.\n\n{{Doc-wikilambda}}",
 	"wikilambda-renderer-unknown-error": "Error message for the string renderer Function returning an unknown error\n\nParams:\n* $1 – The Wikifunctions Function that is the string renderer for the given Type.\n\n{{Doc-wikilambda}}",
+	"wikilambda-renderer-view-invalid-result": "Placeholder message to show when a display function returns an invalid value in a read page.\n\n{{Doc-wikilambda}}",
 	"wikilambda-parser-unexpected-result-error": "Error message for the string parser Function returning an unexpected Type as a result\n\nParams:\n* $1 – The Wikifunctions Function that is the string parser for the given Type.\n\n{{Doc-wikilambda}}",
 	"wikilambda-parser-unknown-error": "Error message for the string parser Function returning an unknown error\n\nParams:\n* $1 – The Wikifunctions Function that is the string parser for the given Type.\n\n{{Doc-wikilambda}}",
 	"wikilambda-object-selector-suggested-types": "Title of the suggested types section in the Object Selector",

@@ -416,6 +416,7 @@
 	"wikilambda-renderer-api-error": "Something went wrong. Please try again.",
 	"wikilambda-renderer-unexpected-result-error": "[[$1|Display function]] returned an unexpected result.",
 	"wikilambda-renderer-unknown-error": "[[$1|Display function]] returned an unknown error.",
+	"wikilambda-renderer-view-invalid-result": "No display value",
 	"wikilambda-parser-unexpected-result-error": "[[$1|Reading function]] returned an unexpected result.",
 	"wikilambda-parser-unknown-error": "[[$1|Reading function]] returned an unknown error.",
 	"wikilambda-object-selector-suggested-types": "Suggested types",
