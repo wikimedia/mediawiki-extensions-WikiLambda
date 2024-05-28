@@ -772,8 +772,7 @@ module.exports = exports = {
 			// Exclude type key
 			const keys = children.filter( ( row ) => row.key !== Constants.Z_OBJECT_TYPE );
 			for ( const row of keys ) {
-				context.dispatch( 'removeRowChildren', row.id );
-				context.dispatch( 'removeRow', row.id );
+				context.dispatch( 'removeRowChildren', { rowId: row.id, removeParent: true } );
 			}
 		}
 	}

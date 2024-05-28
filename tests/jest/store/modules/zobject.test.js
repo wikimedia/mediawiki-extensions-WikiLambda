@@ -3236,6 +3236,189 @@ describe( 'zobject Vuex module', () => {
 			} );
 		} );
 
+		describe( 'removeRow', () => {
+			const tableData = [
+				{ id: 0, key: undefined, parent: undefined, value: 1 },
+				{ id: 1, key: 'Z1K1', parent: 0, value: 1 },
+				{ id: 2, key: 'Z1K1', parent: 1, value: 'Z9' },
+				{ id: 3, key: 'Z9K1', parent: 1, value: 'Z2' },
+				{ id: 4, key: 'Z2K2', parent: 0, value: 1 },
+				{ id: 5, key: 'Z1K1', parent: 4, value: 1 },
+				{ id: 6, key: 'Z1K1', parent: 5, value: 'Z9' },
+				{ id: 7, key: 'Z9K1', parent: 5, value: 'Z61' },
+				{ id: 8, key: 'Z61K1', parent: 4, value: 1 },
+				{ id: 9, key: 'Z1K1', parent: 8, value: 'Z6' },
+				{ id: 10, key: 'Z6K1', parent: 8, value: 'some language code' },
+				{ id: 11, key: 'Z2K3', parent: 0, value: 1 },
+				{ id: 12, key: 'Z1K1', parent: 11, value: 1 },
+				{ id: 13, key: 'Z1K1', parent: 12, value: 'Z9' },
+				{ id: 14, key: 'Z9K1', parent: 12, value: 'Z12' },
+				{ id: 15, key: 'Z12K1', parent: 11, value: 2 },
+				{ id: 16, key: '0', parent: 15, value: 1 },
+				{ id: 17, key: 'Z1K1', parent: 16, value: 'Z9' },
+				{ id: 18, key: 'Z9K1', parent: 16, value: 'Z11' },
+				{ id: 19, key: '1', parent: 15, value: 1 },
+				{ id: 20, key: 'Z1K1', parent: 19, value: 1 },
+				{ id: 21, key: 'Z1K1', parent: 20, value: 'Z9' },
+				{ id: 22, key: 'Z9K1', parent: 20, value: 'Z11' },
+				{ id: 23, key: 'Z11K1', parent: 19, value: 1 },
+				{ id: 24, key: 'Z1K1', parent: 23, value: 'Z9' },
+				{ id: 25, key: 'Z9K1', parent: 23, value: 'Z1002' },
+				{ id: 26, key: 'Z11K2', parent: 19, value: 1 },
+				{ id: 27, key: 'Z1K1', parent: 26, value: 'Z6' },
+				{ id: 28, key: 'Z6K1', parent: 26, value: 'some label' }
+			];
+
+			beforeEach( () => {
+				// Mock initial state
+				context.state = { zobject: tableDataToRowObjects( tableData ) };
+
+				// Run getters from zobject module
+				context.getters.getRowIndexById = zobjectModule.getters.getRowIndexById( context.state );
+				context.getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId(
+					context.state );
+
+				// Spy on commit:
+				context.commit = jest.fn( ( mutationType, payload ) => {
+					// Run mutations from the zobject module
+					if ( mutationType in zobjectModule.mutations ) {
+						zobjectModule.mutations[ mutationType ]( context.state, payload );
+					}
+				} );
+			} );
+
+			it( 'does nothing if rowId is undefined', () => {
+				const rowId = undefined;
+				zobjectModule.actions.removeRow( context, rowId );
+				expect( context.state.zobject ).toEqual( tableData );
+				expect( context.commit ).not.toHaveBeenCalled();
+			} );
+
+			it( 'does nothing if rowId is not found', () => {
+				const rowId = 30;
+				zobjectModule.actions.removeRow( context, rowId );
+				expect( context.state.zobject ).toEqual( tableData );
+				expect( context.commit ).not.toHaveBeenCalled();
+			} );
+
+			it( 'removes the row Id and no children', () => {
+				const rowId = 19;
+				zobjectModule.actions.removeRow( context, rowId );
+
+				expect( context.commit ).toHaveBeenCalledTimes( 2 );
+
+				// parent row doesn't exist
+				const parentRow = context.state.zobject.find( ( row ) => row.id === rowId );
+				expect( parentRow ).toBe( undefined );
+
+				// all child rows still exist
+				const children = [ 20, 21, 22, 23, 24, 25, 26, 27, 28 ];
+				const childRows = context.state.zobject.filter( ( row ) => children.includes( row.id ) );
+				expect( childRows.length ).toBe( children.length );
+			} );
+		} );
+
+		describe( 'removeRowChildren', () => {
+			const tableData = [
+				{ id: 0, key: undefined, parent: undefined, value: 1 },
+				{ id: 1, key: 'Z1K1', parent: 0, value: 1 },
+				{ id: 2, key: 'Z1K1', parent: 1, value: 'Z9' },
+				{ id: 3, key: 'Z9K1', parent: 1, value: 'Z2' },
+				{ id: 4, key: 'Z2K2', parent: 0, value: 1 },
+				{ id: 5, key: 'Z1K1', parent: 4, value: 1 },
+				{ id: 6, key: 'Z1K1', parent: 5, value: 'Z9' },
+				{ id: 7, key: 'Z9K1', parent: 5, value: 'Z61' },
+				{ id: 8, key: 'Z61K1', parent: 4, value: 1 },
+				{ id: 9, key: 'Z1K1', parent: 8, value: 'Z6' },
+				{ id: 10, key: 'Z6K1', parent: 8, value: 'some language code' },
+				{ id: 11, key: 'Z2K3', parent: 0, value: 1 },
+				{ id: 12, key: 'Z1K1', parent: 11, value: 1 },
+				{ id: 13, key: 'Z1K1', parent: 12, value: 'Z9' },
+				{ id: 14, key: 'Z9K1', parent: 12, value: 'Z12' },
+				{ id: 15, key: 'Z12K1', parent: 11, value: 2 },
+				{ id: 16, key: '0', parent: 15, value: 1 },
+				{ id: 17, key: 'Z1K1', parent: 16, value: 'Z9' },
+				{ id: 18, key: 'Z9K1', parent: 16, value: 'Z11' },
+				{ id: 19, key: '1', parent: 15, value: 1 },
+				{ id: 20, key: 'Z1K1', parent: 19, value: 1 },
+				{ id: 21, key: 'Z1K1', parent: 20, value: 'Z9' },
+				{ id: 22, key: 'Z9K1', parent: 20, value: 'Z11' },
+				{ id: 23, key: 'Z11K1', parent: 19, value: 1 },
+				{ id: 24, key: 'Z1K1', parent: 23, value: 'Z9' },
+				{ id: 25, key: 'Z9K1', parent: 23, value: 'Z1002' },
+				{ id: 26, key: 'Z11K2', parent: 19, value: 1 },
+				{ id: 27, key: 'Z1K1', parent: 26, value: 'Z6' },
+				{ id: 28, key: 'Z6K1', parent: 26, value: 'some label' }
+			];
+
+			beforeEach( () => {
+				// Mock initial state
+				context.state = { zobject: tableDataToRowObjects( tableData ) };
+
+				// Run getters from zobject module
+				context.getters.getRowIndexById = zobjectModule.getters.getRowIndexById( context.state );
+				context.getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId(
+					context.state );
+
+				// Spy on commit:
+				context.commit = jest.fn( ( mutationType, payload ) => {
+					// Run mutations from the zobject module
+					if ( mutationType in zobjectModule.mutations ) {
+						zobjectModule.mutations[ mutationType ]( context.state, payload );
+					}
+				} );
+				context.dispatch = jest.fn( ( actionType, payload ) => {
+					zobjectModule.actions[ actionType ]( context, payload );
+				} );
+			} );
+
+			it( 'does nothing if rowId is undefined', () => {
+				const rowId = undefined;
+				zobjectModule.actions.removeRowChildren( context, { rowId } );
+				expect( context.state.zobject ).toEqual( tableData );
+				expect( context.commit ).not.toHaveBeenCalled();
+			} );
+
+			it( 'does nothing if rowId is not found', () => {
+				const rowId = 30;
+				zobjectModule.actions.removeRowChildren( context, { rowId } );
+				expect( context.state.zobject ).toEqual( tableData );
+				expect( context.commit ).not.toHaveBeenCalled();
+			} );
+
+			it( 'removes the child rows if removeParent is set to false', () => {
+				const rowId = 19;
+				const children = [ 20, 21, 22, 23, 24, 25, 26, 27, 28 ];
+
+				zobjectModule.actions.removeRowChildren( context, { rowId } );
+				expect( context.commit ).toHaveBeenCalledTimes( children.length * 2 );
+
+				// parent row still exists
+				const parentRow = context.state.zobject.find( ( row ) => row.id === rowId );
+				expect( parentRow.id ).toBe( rowId );
+
+				// no child rows exist
+				const childRows = context.state.zobject.filter( ( row ) => children.includes( row.id ) );
+				expect( childRows.length ).toBe( 0 );
+			} );
+
+			it( 'removes the child and parent rows if removeParent is set to true', () => {
+				const rowId = 19;
+				const children = [ 20, 21, 22, 23, 24, 25, 26, 27, 28 ];
+
+				zobjectModule.actions.removeRowChildren( context, { rowId, removeParent: true } );
+				expect( context.commit ).toHaveBeenCalledTimes( children.length * 2 + 2 );
+
+				// parent row doesn't exist
+				const parentRow = context.state.zobject.find( ( row ) => row.id === rowId );
+				expect( parentRow ).toBe( undefined );
+
+				// no child rows exist
+				const childRows = context.state.zobject.filter( ( row ) => children.includes( row.id ) );
+				expect( childRows.length ).toBe( 0 );
+			} );
+		} );
+
 		describe( 'recalculateArgumentKeys', () => {
 			it( 'does not change arguments that are correctly numbered', () => {
 				const argList = {
@@ -3700,10 +3883,8 @@ describe( 'zobject Vuex module', () => {
 				} );
 
 				// Assert that existing arguments are deleted
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', 7 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRow', 7 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', 10 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRow', 10 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', { rowId: 7, removeParent: true } );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', { rowId: 10, removeParent: true } );
 				// Assert that no new arguments are injected
 				expect( context.dispatch ).not.toHaveBeenCalledWith( 'injectKeyValueFromRowId', expect.anything() );
 				// Assert that no new zids are fetched
@@ -3717,10 +3898,8 @@ describe( 'zobject Vuex module', () => {
 				} );
 
 				// Assert that existing arguments are deleted
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', 7 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRow', 7 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', 10 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRow', 10 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', { rowId: 7, removeParent: true } );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', { rowId: 10, removeParent: true } );
 
 				// Assert that new arguments are injected
 				const expectedArg = {
@@ -3742,10 +3921,8 @@ describe( 'zobject Vuex module', () => {
 				} );
 
 				// Assert that existing arguments are deleted
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', 7 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRow', 7 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', 10 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRow', 10 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', { rowId: 7, removeParent: true } );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', { rowId: 10, removeParent: true } );
 
 				// Assert that new arguments are injected
 				const expectedArgs = [ {
@@ -3778,7 +3955,6 @@ describe( 'zobject Vuex module', () => {
 
 				// Assert that existing arguments are not deleted
 				expect( context.dispatch ).not.toHaveBeenCalledWith( 'removeRowChildren', expect.anything() );
-				expect( context.dispatch ).not.toHaveBeenCalledWith( 'removeRow', expect.anything() );
 				// Assert that no new arguments are injected
 				expect( context.dispatch ).not.toHaveBeenCalledWith( 'injectKeyValueFromRowId', expect.anything() );
 				// Assert that no new zids are fetched
@@ -3801,7 +3977,6 @@ describe( 'zobject Vuex module', () => {
 
 				// Assert that no arguments are not deleted
 				expect( context.dispatch ).not.toHaveBeenCalledWith( 'removeRowChildren', expect.anything() );
-				expect( context.dispatch ).not.toHaveBeenCalledWith( 'removeRow', expect.anything() );
 				// Assert that only second argument is injected
 				const expectedArg = {
 					rowId: 4,
@@ -3854,8 +4029,7 @@ describe( 'zobject Vuex module', () => {
 				} );
 
 				// Assert that current key is deleted
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', 7 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRow', 7 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', { rowId: 7, removeParent: true } );
 
 				// Assert that new key is injected
 				const expectedKey = {
@@ -3882,8 +4056,7 @@ describe( 'zobject Vuex module', () => {
 				} );
 
 				// Assert that current key is deleted
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', 7 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRow', 7 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', { rowId: 7, removeParent: true } );
 
 				// Assert that new key is injected
 				const expectedKey = {
@@ -4087,17 +4260,7 @@ describe( 'zobject Vuex module', () => {
 				} );
 				zobjectModule.actions.removeItemFromTypedList( context, payload );
 
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', 4 );
-			} );
-
-			it( 'should dispatch the removeRow action with row id', () => {
-				const payload = { rowId: 4 };
-				context.getters.getRowById = jest.fn( () => {
-					return { id: 4, parent: 3 };
-				} );
-				zobjectModule.actions.removeItemFromTypedList( context, payload );
-
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRow', 4 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', { rowId: 4, removeParent: true } );
 			} );
 
 			it( 'should dispatch the recalculateTypedListKeys action with parent id', () => {
@@ -4116,16 +4279,8 @@ describe( 'zobject Vuex module', () => {
 				const payload = { parentRowId: 4, listItems: [ 11, 14 ] };
 				zobjectModule.actions.removeItemsFromTypedList( context, payload );
 
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', 11 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', 14 );
-			} );
-
-			it( 'should dispatch the removeRow action for each item in the list', () => {
-				const payload = { parentRowId: 4, listItems: [ 11, 14 ] };
-				zobjectModule.actions.removeItemsFromTypedList( context, payload );
-
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRow', 11 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRow', 14 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', { rowId: 11, removeParent: true } );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', { rowId: 14, removeParent: true } );
 			} );
 
 			it( 'should dispatch the recalculateTypedListKeys actions with parent id', () => {
