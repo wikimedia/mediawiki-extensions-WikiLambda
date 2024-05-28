@@ -3419,7 +3419,20 @@ describe( 'zobject Vuex module', () => {
 			} );
 		} );
 
-		describe( 'recalculateArgumentKeys', () => {
+		describe( 'recalculateKeys', () => {
+			beforeEach( () => {
+				context.state = { zobject: [] };
+				context.getters.getCurrentZObjectId = 'Z999';
+				context.getters.getRowById = zobjectModule.getters.getRowById( context.state );
+				context.getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( context.state, context.getters );
+				context.getters.getRowIndexById = zobjectModule.getters.getRowIndexById( context.state );
+				context.getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId(
+					context.state );
+				context.commit = jest.fn( ( mutationType, payload ) => {
+					zobjectModule.mutations[ mutationType ]( context.state, payload );
+				} );
+			} );
+
 			it( 'does not change arguments that are correctly numbered', () => {
 				const argList = {
 					Z8K1: [ 'Z17', // row Id 1
@@ -3433,20 +3446,10 @@ describe( 'zobject Vuex module', () => {
 						}
 					]
 				};
-
-				context.state = { zobject: zobjectToRows( argList ) };
-				context.getters.getCurrentZObjectId = 'Z999';
-				context.getters.getRowById = zobjectModule.getters.getRowById( context.state );
-				context.getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( context.state, context.getters );
-				context.getters.getRowIndexById = zobjectModule.getters.getRowIndexById( context.state );
-				context.getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId(
-					context.state );
-				context.commit = jest.fn( ( mutationType, payload ) => {
-					zobjectModule.mutations[ mutationType ]( context.state, payload );
-				} );
+				context.state.zobject = zobjectToRows( argList );
 
 				// Recalculate keys
-				zobjectModule.actions.recalculateArgumentKeys( context, 1 );
+				zobjectModule.actions.recalculateKeys( context, { listRowId: 1, key: 'Z17K2' } );
 
 				expect( context.getters.getRowById( 14 ).value ).toEqual( 'Z999K1' );
 				expect( context.getters.getRowById( 32 ).value ).toEqual( 'Z999K2' );
@@ -3465,23 +3468,50 @@ describe( 'zobject Vuex module', () => {
 						}
 					]
 				};
-
-				context.state = { zobject: zobjectToRows( argList ) };
-				context.getters.getCurrentZObjectId = 'Z999';
-				context.getters.getRowById = zobjectModule.getters.getRowById( context.state );
-				context.getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( context.state, context.getters );
-				context.getters.getRowIndexById = zobjectModule.getters.getRowIndexById( context.state );
-				context.getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId(
-					context.state );
-				context.commit = jest.fn( ( mutationType, payload ) => {
-					zobjectModule.mutations[ mutationType ]( context.state, payload );
-				} );
+				context.state.zobject = zobjectToRows( argList );
 
 				// Recalculate keys
-				zobjectModule.actions.recalculateArgumentKeys( context, 1 );
+				zobjectModule.actions.recalculateKeys( context, { listRowId: 1, key: 'Z17K2' } );
 
 				expect( context.getters.getRowById( 14 ).value ).toEqual( 'Z999K1' );
 				expect( context.getters.getRowById( 32 ).value ).toEqual( 'Z999K2' );
+			} );
+
+			it( 'renumbers type keys', () => {
+				const type = {
+					Z1K1: 'Z4',
+					Z4K1: [ 'Z3', // rowId = 4
+						{
+							Z1K1: 'Z3',
+							Z3K1: 'Z6',
+							Z3K2: 'Z999K6', // rowId = 17
+							Z3K3: {
+								Z1K1: 'Z12',
+								Z12K1: [ 'Z11',
+									{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'one' }
+								]
+							}
+						},
+						{
+							Z1K1: 'Z3',
+							Z3K1: 'Z6',
+							Z3K2: 'Z999K3', // rowId = 45
+							Z3K3: {
+								Z1K1: 'Z12',
+								Z12K1: [ 'Z11',
+									{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'two' }
+								]
+							}
+						}
+					]
+				};
+				context.state.zobject = zobjectToRows( type );
+
+				// Recalculate keys
+				zobjectModule.actions.recalculateKeys( context, { listRowId: 4, key: 'Z3K2' } );
+
+				expect( context.getters.getRowById( 17 ).value ).toEqual( 'Z999K1' );
+				expect( context.getters.getRowById( 45 ).value ).toEqual( 'Z999K2' );
 			} );
 		} );
 
