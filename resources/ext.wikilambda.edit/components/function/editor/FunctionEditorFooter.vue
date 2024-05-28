@@ -15,11 +15,13 @@
 </template>
 
 <script>
+
 const { defineComponent } = require( 'vue' );
 const PublishWidget = require( '../../widgets/Publish.vue' ),
 	Constants = require( '../../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
-	mapActions = require( 'vuex' ).mapActions;
+	mapActions = require( 'vuex' ).mapActions,
+	eventLogUtils = require( '../../../mixins/eventLogUtils.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-footer',
@@ -44,7 +46,9 @@ module.exports = exports = defineComponent( {
 		}
 	},
 	computed: Object.assign( mapGetters( [
-		'isCreateNewPage'
+		'isCreateNewPage',
+		'getCurrentZObjectId',
+		'getUserLangZid'
 	] ), {
 		/**
 		 * Returns whether the function type signature (input types
@@ -96,7 +100,19 @@ module.exports = exports = defineComponent( {
 				} );
 			}
 		}
-	} )
+	} ),
+	watch: {
+		isFunctionDirty: function ( newValue ) {
+			if ( newValue === true ) {
+				const interactionData = {
+					zobjectid: this.getCurrentZObjectId,
+					zobjecttype: 'Z8',
+					zlang: this.getUserLangZid || null
+				};
+				eventLogUtils.methods.submitInteraction( 'change', interactionData );
+			}
+		}
+	}
 } );
 
 </script>
