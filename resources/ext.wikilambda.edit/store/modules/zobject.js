@@ -1635,24 +1635,28 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Recalculate the keys and key values of a ZArgument List.
-		 * This should be used when an item is removed from a ZArgument list.
+		 * Recalculate the keys and key values of a ZArgument or ZKey List.
 		 *
 		 * @param {Object} context
-		 * @param {number} listRowId
+		 * @param {Object} payload
+		 * @param {number} payload.listRowId
+		 * @param {string} payload.key
 		 */
-		recalculateArgumentKeys: function ( context, listRowId ) {
-			const args = context.getters.getChildrenByParentRowId( listRowId ).slice( 1 );
+		recalculateKeys: function ( context, payload ) {
+			const { listRowId, key } = payload;
+			const items = context.getters.getChildrenByParentRowId( listRowId ).slice( 1 );
 
-			args.forEach( function ( argRow, index ) {
-				const argKeyRow = context.getters.getRowByKeyPath( [
-					Constants.Z_ARGUMENT_KEY,
-					Constants.Z_STRING_VALUE
-				], argRow.id );
-				context.commit( 'setValueByRowIndex', {
-					index: context.getters.getRowIndexById( argKeyRow.id ),
-					value: `${ context.getters.getCurrentZObjectId }K${ index + 1 }`
-				} );
+			items.forEach( ( itemRow, index ) => {
+				const itemKeyRow = context.getters.getRowByKeyPath(
+					[ key, Constants.Z_STRING_VALUE ],
+					itemRow.id
+				);
+				if ( itemKeyRow ) {
+					context.commit( 'setValueByRowIndex', {
+						index: context.getters.getRowIndexById( itemKeyRow.id ),
+						value: `${ context.getters.getCurrentZObjectId }K${ index + 1 }`
+					} );
+				}
 			} );
 		},
 

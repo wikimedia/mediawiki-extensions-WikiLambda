@@ -685,8 +685,8 @@ describe( 'zobject submission Vuex module', () => {
 			submissionModule.actions.submitZObject( context, { summary: 'A summary' } );
 
 			expect( context.dispatch ).toHaveBeenCalledWith( 'transformZObjectForSubmission', false );
-			expect( context.dispatch ).toHaveBeenCalledWith( 'removeEmptyMonolingualValues', 'Z2K3' );
-			expect( context.dispatch ).toHaveBeenCalledWith( 'removeEmptyMonolingualValues', 'Z2K5' );
+			expect( context.dispatch ).toHaveBeenCalledWith( 'removeEmptyMonolingualValues', { key: 'Z2K3' } );
+			expect( context.dispatch ).toHaveBeenCalledWith( 'removeEmptyMonolingualValues', { key: 'Z2K5' } );
 			expect( context.dispatch ).toHaveBeenCalledWith( 'removeEmptyAliasValues' );
 
 			expect( mw.Api ).toHaveBeenCalledTimes( 1 );
@@ -746,16 +746,17 @@ describe( 'zobject submission Vuex module', () => {
 		beforeEach( () => {
 			context.getters.getRowByKeyPath = () => undefined;
 			context.getters.getZObjectTypeByRowId = () => undefined;
+			context.getters.getChildrenByParentRowId = () => [ 'Z1' ];
 		} );
 
 		it( 'removes empty names', () => {
 			submissionModule.actions.transformZObjectForSubmission( context, false );
-			expect( context.dispatch ).toHaveBeenCalledWith( 'removeEmptyMonolingualValues', 'Z2K3' );
+			expect( context.dispatch ).toHaveBeenCalledWith( 'removeEmptyMonolingualValues', { key: 'Z2K3' } );
 		} );
 
 		it( 'removes empty descriptions', () => {
 			submissionModule.actions.transformZObjectForSubmission( context, false );
-			expect( context.dispatch ).toHaveBeenCalledWith( 'removeEmptyMonolingualValues', 'Z2K5' );
+			expect( context.dispatch ).toHaveBeenCalledWith( 'removeEmptyMonolingualValues', { key: 'Z2K5' } );
 		} );
 
 		it( 'removes empty aliases', () => {
@@ -777,13 +778,57 @@ describe( 'zobject submission Vuex module', () => {
 			expect( context.dispatch ).toHaveBeenCalledWith( 'removeEmptyArguments' );
 		} );
 
-		it( 'removes undefined functions if it is a type', () => {
+		it( 'removes undefined parser, renderer and equality functions if it is a type', () => {
 			context.getters.getZObjectTypeByRowId = () => Constants.Z_TYPE;
 			context.getters.getRowByKeyPath = () => {
 				return { id: 1 };
 			};
 			submissionModule.actions.transformZObjectForSubmission( context, false );
 			expect( context.dispatch ).toHaveBeenCalledWith( 'removeEmptyTypeFunctions', 1 );
+		} );
+
+		it( 'recalculates keys if it is a type', () => {
+			context.getters.getZObjectTypeByRowId = () => Constants.Z_TYPE;
+			context.getters.getRowByKeyPath = () => {
+				return { id: 1 };
+			};
+			submissionModule.actions.transformZObjectForSubmission( context, false );
+			expect( context.dispatch ).toHaveBeenCalledWith( 'recalculateKeys', { listRowId: 1, key: 'Z3K2' } );
+		} );
+
+		it( 'removes empty key labels if it is a type', () => {
+			context.getters.getZObjectTypeByRowId = () => Constants.Z_TYPE;
+			context.getters.getRowByKeyPath = () => {
+				return { id: 1 };
+			};
+			context.getters.getChildrenByParentRowId = () => {
+				return [ { id: 2 }, { id: 3 }, { id: 4 } ];
+			};
+			submissionModule.actions.transformZObjectForSubmission( context, false );
+			expect( context.dispatch ).toHaveBeenCalledWith( 'removeEmptyMonolingualValues', { rowId: 3, key: 'Z3K3' } );
+			expect( context.dispatch ).toHaveBeenCalledWith( 'removeEmptyMonolingualValues', { rowId: 4, key: 'Z3K3' } );
+		} );
+
+		it( 'recalculates keys if it is an error type', () => {
+			context.getters.getZObjectTypeByRowId = () => Constants.Z_ERRORTYPE;
+			context.getters.getRowByKeyPath = () => {
+				return { id: 1 };
+			};
+			submissionModule.actions.transformZObjectForSubmission( context, false );
+			expect( context.dispatch ).toHaveBeenCalledWith( 'recalculateKeys', { listRowId: 1, key: 'Z3K2' } );
+		} );
+
+		it( 'removes empty key labels if it is an errortype', () => {
+			context.getters.getZObjectTypeByRowId = () => Constants.Z_ERRORTYPE;
+			context.getters.getRowByKeyPath = () => {
+				return { id: 1 };
+			};
+			context.getters.getChildrenByParentRowId = () => {
+				return [ { id: 2 }, { id: 3 }, { id: 4 } ];
+			};
+			submissionModule.actions.transformZObjectForSubmission( context, false );
+			expect( context.dispatch ).toHaveBeenCalledWith( 'removeEmptyMonolingualValues', { rowId: 3, key: 'Z3K3' } );
+			expect( context.dispatch ).toHaveBeenCalledWith( 'removeEmptyMonolingualValues', { rowId: 4, key: 'Z3K3' } );
 		} );
 
 		it( 'removes list items marked as invalid', () => {
@@ -862,7 +907,7 @@ describe( 'zobject submission Vuex module', () => {
 				}
 			};
 			context.state.zobject = zobjectToRows( zobject );
-			submissionModule.actions.removeEmptyMonolingualValues( context, 'Z2K3' );
+			submissionModule.actions.removeEmptyMonolingualValues( context, { key: 'Z2K3' } );
 
 			const transformed = zobjectModule.getters.getZObjectAsJsonById( context.state )( 0, false );
 			expect( hybridToCanonical( transformed ) ).toEqual( {
@@ -888,7 +933,7 @@ describe( 'zobject submission Vuex module', () => {
 				}
 			};
 			context.state.zobject = zobjectToRows( zobject );
-			submissionModule.actions.removeEmptyMonolingualValues( context, 'Z2K3' );
+			submissionModule.actions.removeEmptyMonolingualValues( context, { key: 'Z2K3' } );
 
 			const transformed = zobjectModule.getters.getZObjectAsJsonById( context.state )( 0, false );
 			expect( hybridToCanonical( transformed ) ).toEqual( {
@@ -914,7 +959,7 @@ describe( 'zobject submission Vuex module', () => {
 				}
 			};
 			context.state.zobject = zobjectToRows( zobject );
-			submissionModule.actions.removeEmptyMonolingualValues( context, 'Z2K3' );
+			submissionModule.actions.removeEmptyMonolingualValues( context, { key: 'Z2K3' } );
 
 			const transformed = zobjectModule.getters.getZObjectAsJsonById( context.state )( 0, false );
 			expect( hybridToCanonical( transformed ) ).toEqual( {
@@ -947,7 +992,7 @@ describe( 'zobject submission Vuex module', () => {
 				}
 			};
 			context.state.zobject = zobjectToRows( zobject );
-			submissionModule.actions.removeEmptyMonolingualValues( context, 'Z2K3' );
+			submissionModule.actions.removeEmptyMonolingualValues( context, { key: 'Z2K3' } );
 
 			const transformed = zobjectModule.getters.getZObjectAsJsonById( context.state )( 0, false );
 			expect( hybridToCanonical( transformed ) ).toEqual( {
@@ -1130,7 +1175,8 @@ describe( 'zobject submission Vuex module', () => {
 						{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'input two' },
 						{ Z1K1: 'Z11', Z11K1: 'Z1003', Z11K2: 'segundo parámetro' },
 						{ Z1K1: 'Z11', Z11K1: 'Z1004', Z11K2: '' },
-						{ Z1K1: 'Z11', Z11K1: 'Z1005', Z11K2: '' }
+						{ Z1K1: 'Z11', Z11K1: 'Z1005', Z11K2: '' },
+						{ Z1K1: 'Z11', Z11K1: '', Z11K2: 'some label with empty language' }
 					] } }
 				] }
 			};

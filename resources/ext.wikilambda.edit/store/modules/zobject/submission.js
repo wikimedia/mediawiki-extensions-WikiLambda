@@ -272,27 +272,48 @@ module.exports = exports = {
 		 */
 		transformZObjectForSubmission: function ( context, disconnectFunctionObjects ) {
 			// For al objects: remove empty monolingual string and monolingual stringsets
-			context.dispatch( 'removeEmptyMonolingualValues', Constants.Z_PERSISTENTOBJECT_LABEL );
-			context.dispatch( 'removeEmptyMonolingualValues', Constants.Z_PERSISTENTOBJECT_DESCRIPTION );
+			context.dispatch( 'removeEmptyMonolingualValues', { key: Constants.Z_PERSISTENTOBJECT_LABEL } );
+			context.dispatch( 'removeEmptyMonolingualValues', { key: Constants.Z_PERSISTENTOBJECT_DESCRIPTION } );
 			context.dispatch( 'removeEmptyAliasValues' );
 
 			const contentRow = context.getters.getRowByKeyPath( [ Constants.Z_PERSISTENTOBJECT_VALUE ], 0 );
 			const contentRowId = contentRow ? contentRow.id : 0;
 			const type = context.getters.getZObjectTypeByRowId( contentRowId );
 
-			// If object is a function, remove empty argument labels and empty arguments
+			// If object is a function:
 			if ( type === Constants.Z_FUNCTION ) {
-				const functionArguments = context.getters.getRowByKeyPath( [ Constants.Z_FUNCTION_ARGUMENTS ],
-					contentRowId );
-				if ( functionArguments ) {
-					context.dispatch( 'removeEmptyArguments' );
-				}
+				// 1. Clear empty monolingual strings
+				// 2. Remove arguments with undefined type and label
+				// 3. Rename misnumbered argument key Ids
+				context.dispatch( 'removeEmptyArguments' );
 			}
 
-			// If object is a type, remove empty renderer/parser/equality/validator functions
-			// TODO (T359869): If there are type keys, remove empty key labels
+			// If object is a type:
 			if ( type === Constants.Z_TYPE ) {
+				// 1. Clear non-set render, parser and equality function keys
+				// NOTE: Even if the render/parser/equality functions are mandatory, type creation
+				// and editing needs to allow empty values initially to avoid circular dependencies.
 				context.dispatch( 'removeEmptyTypeFunctions', contentRowId );
+				// 2. Rename misnumbered key Ids
+				const keys = context.getters.getRowByKeyPath( [ Constants.Z_TYPE_KEYS ], contentRowId );
+				context.dispatch( 'recalculateKeys', { listRowId: keys.id, key: Constants.Z_KEY_ID } );
+				// 3. Remove empty key labels
+				const items = context.getters.getChildrenByParentRowId( keys.id ).slice( 1 );
+				items.forEach( ( item ) => {
+					context.dispatch( 'removeEmptyMonolingualValues', { key: Constants.Z_KEY_LABEL, rowId: item.id } );
+				} );
+			}
+
+			// If object is an error type:
+			if ( type === Constants.Z_ERRORTYPE ) {
+				// 1. Rename misnumbered key Ids
+				const keys = context.getters.getRowByKeyPath( [ Constants.Z_ERRORTYPE_KEYS ], contentRowId );
+				context.dispatch( 'recalculateKeys', { listRowId: keys.id, key: Constants.Z_KEY_ID } );
+				// 2. Remove empty key labels
+				const items = context.getters.getChildrenByParentRowId( keys.id ).slice( 1 );
+				items.forEach( ( item ) => {
+					context.dispatch( 'removeEmptyMonolingualValues', { key: Constants.Z_KEY_LABEL, rowId: item.id } );
+				} );
 			}
 
 			// If a list has changed its type, remove invalid list items
@@ -347,10 +368,13 @@ module.exports = exports = {
 		 * string or language values from the global zobject.
 		 *
 		 * @param {Object} context
-		 * @param {string} key Z_PERSISTENTOBJECT_LABEL or Z_PERSISTENTOBJECT_DESCRIPTION
+		 * @param {Object} payload
+		 * @param {string} payload.key Z_PERSISTENTOBJECT_LABEL or Z_PERSISTENTOBJECT_DESCRIPTION
+		 * @param {number} payload.rowId Starting rowId, default is 0
 		 */
-		removeEmptyMonolingualValues: function ( context, key ) {
-			const listRow = context.getters.getRowByKeyPath( [ key, Constants.Z_MULTILINGUALSTRING_VALUE ], 0 );
+		removeEmptyMonolingualValues: function ( context, payload ) {
+			const { key, rowId = 0 } = payload;
+			const listRow = context.getters.getRowByKeyPath( [ key, Constants.Z_MULTILINGUALSTRING_VALUE ], rowId );
 			if ( !listRow ) {
 				return;
 			}
@@ -462,7 +486,10 @@ module.exports = exports = {
 			}
 
 			if ( inputs.length > 0 ) {
-				context.dispatch( 'recalculateArgumentKeys', inputs[ 0 ].parent );
+				context.dispatch( 'recalculateKeys', {
+					listRowId: inputs[ 0 ].parent,
+					key: Constants.Z_ARGUMENT_KEY
+				} );
 			}
 		},
 
