@@ -128,6 +128,7 @@
 	"wikilambda-functioncall": "Label for the word [[:meta:Abstract Wikipedia/Glossary#function call|function call]].\n\n{{doc-wikilambda}}",
 	"wikilambda-edit": "Page heading for editing a ZObject page. Very similar in its function to {{msg-mw|editing}}, but doesn't have a parameter; see [https://phabricator.wikimedia.org/T359781 bug T359781].\n{{identical|Edit}}",
 	"wikilambda-toggle-expanded-view": "Toggle for the expandable chevron/button, which means it can expand or collapse when enabled",
+	"wikilambda-edit-monolingual-text-placeholder": "Placeholder text for a monolingual string input during edit",
 	"wikilambda-helplink-button": "The label for a link to a page that explains the metadata shown in this dialog and what it means. See {{msg-mw|wikilambda-helplink-tooltip}} for the tooltip of the same link.\n\n{{doc-wikilambda}}",
 	"wikilambda-helplink-tooltip": "The tooltip for a link to a page that explains the metadata shown in this dialog and what it means. See {{msg-mw|wikilambda-helplink-button}} for the displayed text of the same link.\n\n{{doc-wikilambda}}",
 	"wikilambda-special-createobject": "Description for Special:CreateObject.\n\n{{doc-wikilambda}}",
@@ -434,6 +435,5 @@
 	"wikilambda-parser-unexpected-result-error": "Error message for the string parser Function returning an unexpected Type as a result\n\nParams:\n* $1 – The Wikifunctions Function that is the string parser for the given Type.\n\n{{Doc-wikilambda}}",
 	"wikilambda-parser-unknown-error": "Error message for the string parser Function returning an unknown error\n\nParams:\n* $1 – The Wikifunctions Function that is the string parser for the given Type.\n\n{{Doc-wikilambda}}",
 	"wikilambda-object-selector-suggested-types": "Title of the suggested types section in the Object Selector",
-	"wikilambda-object-selector-suggested-languages": "Title of the suggested languages section in the Object Selector",
-	"wikilambda-edit-monolingual-text-placeholder": "Placeholder text for a monolingual string input during edit"
+	"wikilambda-object-selector-suggested-languages": "Title of the suggested languages section in the Object Selector"
 }
