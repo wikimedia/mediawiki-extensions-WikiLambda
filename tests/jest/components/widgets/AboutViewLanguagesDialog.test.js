@@ -56,7 +56,7 @@ describe( 'AboutViewLanguagesDialog', () => {
 
 		actions = {
 			fetchZids: jest.fn(),
-			lookupZObject: lookupMock
+			lookupZObjectLabels: lookupMock
 		};
 
 		global.store.hotUpdate( { getters: getters, actions: actions } );

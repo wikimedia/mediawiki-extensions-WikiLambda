@@ -1,5 +1,5 @@
 /*!
- * WikiLambda Vuex code to manipulate the current ZObject.
+ * WikiLambda Vuex code to manipulate the state of the current page.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -10,10 +10,32 @@ const eventLogUtils = require( '../../../mixins/eventLogUtils.js' );
 module.exports = exports = {
 	state: {
 		currentZid: Constants.NEW_ZID_PLACEHOLDER,
+		createNewPage: false,
+		initialized: false,
 		dirty: false,
 		multilingualDataCopy: null
 	},
 	mutations: {
+		/**
+		 * Sets the flag state.initialized once the
+		 * root zobject state has been initialized.
+		 *
+		 * @param {Object} state
+		 * @param {boolean} value
+		 */
+		setInitialized: function ( state, value ) {
+			state.initialized = value;
+		},
+		/**
+		 * Sets the state flag createNewPage, which reflects
+		 * whether we are creating a new page.
+		 *
+		 * @param {Object} state
+		 * @param {boolean} payload
+		 */
+		setCreateNewPage: function ( state, payload ) {
+			state.createNewPage = payload;
+		},
 		/**
 		 * Set the value of the current Zid
 		 *
@@ -109,6 +131,24 @@ module.exports = exports = {
 	},
 	getters: {
 		/**
+		 * Returns whether the root ZObject is initialized
+		 *
+		 * @param {Object} state
+		 * @return {boolean}
+		 */
+		isInitialized: function ( state ) {
+			return state.initialized;
+		},
+		/**
+		 * Returns whether we are creating a new page.
+		 *
+		 * @param {Object} state
+		 * @return {boolean}
+		 */
+		isCreateNewPage: function ( state ) {
+			return state.createNewPage;
+		},
+		/**
 		 * Returns whether the page has had any
 		 * changes that need saving.
 		 *
@@ -158,18 +198,6 @@ module.exports = exports = {
 			return state.multilingualDataCopy;
 		},
 		/**
-		 * Return the complete zObject as a JSON
-		 *
-		 * @param {Object} state
-		 * @param {Object} getters
-		 * @param {Object} rootState
-		 * @param {Object} rootGetters
-		 * @return {Array} zObjectJson
-		 */
-		getZObjectAsJson: function ( state, getters, rootState, rootGetters ) {
-			return rootGetters.getZObjectAsJsonById( 0, rootState.zobjectModule.zobject[ 0 ].isArray() );
-		},
-		/**
 		 * Return the root ZObjectId, equivalend to the Z_REFERENCE_ID of Z_PERSISTENTOBJECT_ID
 		 *
 		 * @param {Object} state
@@ -203,95 +231,6 @@ module.exports = exports = {
 			return getters.getZImplementationContentType(
 				getters.getZPersistentContentRowId()
 			);
-		},
-		/**
-		 * Recursively waks a nested generic type and returns
-		 * the field IDs and whether they are valid or not.
-		 *
-		 * @param {Object} state
-		 * @param {Object} getters
-		 * @return {Function}
-		 */
-		validateGenericType: function ( state, getters ) {
-			/**
-			 * @param {number} rowId
-			 * @param {Object} fields
-			 * @return {Object} fields
-			 */
-			function validate( rowId, fields = [] ) {
-				// There's no need to convert to string as the
-				// possible options will be either Z7 or Z9
-				const mode = getters.getZObjectTypeByRowId( rowId );
-				const value = ( mode === Constants.Z_REFERENCE ) ?
-					getters.getZReferenceTerminalValue( rowId ) :
-					getters.getZFunctionCallFunctionId( rowId );
-
-				fields.push( {
-					rowId,
-					isValid: !!value
-				} );
-
-				if ( mode === Constants.Z_FUNCTION_CALL ) {
-					const args = getters.getZFunctionCallArguments( rowId );
-					for ( const arg of args ) {
-						getters.validateGenericType( arg.id, fields );
-					}
-				}
-				return fields;
-			}
-			return validate;
-		},
-		/**
-		 * Returns the array of input-related field ids that are invalid.
-		 * Ignores those inputs that have no label and fully empty type
-		 * because it will be deleted before submission.
-		 *
-		 * @param {Object} _state
-		 * @param {Object} getters
-		 * @return {Array}
-		 */
-		currentZFunctionInvalidInputs: function ( _state, getters ) {
-			const inputs = getters.getZFunctionInputs();
-			let invalidRowIds = [];
-			for ( const inputRow of inputs ) {
-				// Get the validity state of all the type fields
-				const inputTypeRow = getters.getRowByKeyPath( [ Constants.Z_ARGUMENT_TYPE ], inputRow.id );
-				const inputTypeFields = getters.validateGenericType( inputTypeRow.id );
-
-				// Get the values of the input labels
-				const inputLabelsRow = getters.getRowByKeyPath( [
-					Constants.Z_ARGUMENT_LABEL,
-					Constants.Z_MULTILINGUALSTRING_VALUE
-				], inputRow.id );
-				const inputLabelRows = getters.getChildrenByParentRowId( inputLabelsRow.id ).slice( 1 );
-				const inputLabelValues = inputLabelRows
-					.map( ( row ) => getters.getZMonolingualTextValue( row.id ) )
-					.filter( ( text ) => !!text );
-
-				// If type value is empty and fields are empty, ignore this input:
-				// because it's totally empty, the input will be erased before submission.
-				const inputTypeIsEmpty = ( inputTypeFields.filter( ( e ) => e.isValid ).length === 0 );
-				if ( inputTypeIsEmpty && inputLabelValues.length === 0 ) {
-					continue;
-				}
-
-				// Return errors to report
-				const invalidInputRowIds = inputTypeFields.filter( ( e ) => !e.isValid ).map( ( e ) => e.rowId );
-				invalidRowIds = invalidRowIds.concat( invalidInputRowIds );
-			}
-			return invalidRowIds;
-		},
-		/**
-		 * Returns the array of output-related field ids that are invalid.
-		 *
-		 * @param {Object} _state
-		 * @param {Object} getters
-		 * @return {Array}
-		 */
-		currentZFunctionInvalidOutput: function ( _state, getters ) {
-			const outputTypeRow = getters.getZFunctionOutput();
-			const outputTypeFields = getters.validateGenericType( outputTypeRow.id );
-			return outputTypeFields.filter( ( e ) => !e.isValid ).map( ( e ) => e.rowId );
 		}
 	}
 };

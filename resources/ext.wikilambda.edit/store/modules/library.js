@@ -13,6 +13,9 @@ const Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ).methods,
 	LabelData = require( '../classes/LabelData.js' );
 
+const DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT = 300;
+let debounceZObjectLookup = null;
+
 module.exports = exports = {
 	state: {
 		/**
@@ -376,6 +379,28 @@ module.exports = exports = {
 	},
 	actions: {
 		/**
+		 * Performs a Lookup call to the database to retrieve all
+		 * ZObject references that match a given input and type.
+		 * This is used in selectors such as ZObjectSelector or the
+		 * language selector of the About widget.
+		 *
+		 * @param {Object} context Vuex context object
+		 * @param {number} payload Object containing input(string) and type
+		 * @return {Promise}
+		 */
+		lookupZObjectLabels: function ( context, payload ) {
+			// Add user language code to the payload
+			payload.language = context.getters.getUserLangCode;
+			return new Promise( ( resolve ) => {
+				clearTimeout( debounceZObjectLookup );
+				debounceZObjectLookup = setTimeout( () => {
+					return apiUtils.searchLabels( payload ).then( ( data ) => {
+						return resolve( data );
+					} );
+				}, DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT );
+			} );
+		},
+		/**
 		 * Orchestrates the calls to wikilambdaload_zobject api to fetch
 		 * a given set of ZIDs. This method takes care of the following requirements:
 		 *
@@ -584,6 +609,37 @@ module.exports = exports = {
 					resolve( requestedZids );
 				} );
 			} );
+		},
+		/**
+		 * Pre-fetch information of the Zids most commonly used within the UI
+		 *
+		 * @param {Object} context
+		 * @return {Function}
+		 */
+		prefetchZids: function ( context ) {
+			const zids = [
+				Constants.Z_OBJECT,
+				Constants.Z_PERSISTENTOBJECT,
+				Constants.Z_MULTILINGUALSTRING,
+				Constants.Z_MONOLINGUALSTRING,
+				Constants.Z_KEY,
+				Constants.Z_TYPE,
+				Constants.Z_STRING,
+				Constants.Z_FUNCTION,
+				Constants.Z_FUNCTION_CALL,
+				Constants.Z_REFERENCE,
+				Constants.Z_BOOLEAN,
+				Constants.Z_BOOLEAN_TRUE,
+				Constants.Z_BOOLEAN_FALSE,
+				Constants.Z_IMPLEMENTATION,
+				context.getters.getUserLangZid,
+				Constants.Z_TYPED_LIST,
+				Constants.Z_ARGUMENT_REFERENCE,
+				Constants.Z_NATURAL_LANGUAGE,
+				... Constants.SUGGESTIONS.LANGUAGES,
+				... Constants.SUGGESTIONS.TYPES
+			];
+			return context.dispatch( 'fetchZids', { zids: zids } );
 		}
 	}
 };

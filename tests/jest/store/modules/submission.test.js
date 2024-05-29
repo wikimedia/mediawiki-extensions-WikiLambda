@@ -8,7 +8,7 @@
 
 const submissionModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zobject/submission.js' ),
 	zobjectModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zobject.js' ),
-	zfunctionModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zFunction.js' ),
+	zfunctionModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zfunction.js' ),
 	zobjectToRows = require( '../../helpers/zObjectTableHelpers.js' ).zobjectToRows,
 	hybridToCanonical = require( '../../../../resources/ext.wikilambda.edit/mixins/schemata.js' ).methods.hybridToCanonical,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
@@ -37,8 +37,8 @@ describe( 'zobject submission Vuex module', () => {
 				context.getters.getZObjectAsJson = {};
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
 
-				context.getters.currentZFunctionInvalidOutput = [];
-				context.getters.currentZFunctionInvalidInputs = [];
+				context.getters.getInvalidOutputFields = [];
+				context.getters.getInvalidInputFields = [];
 
 				const isValid = submissionModule.actions.validateZObject( context );
 				expect( context.dispatch ).toHaveBeenCalledTimes( 0 );
@@ -50,8 +50,8 @@ describe( 'zobject submission Vuex module', () => {
 				context.getters.getZObjectAsJson = {};
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
 
-				context.getters.currentZFunctionInvalidOutput = [ 2 ];
-				context.getters.currentZFunctionInvalidInputs = [];
+				context.getters.getInvalidOutputFields = [ 2 ];
+				context.getters.getInvalidInputFields = [];
 
 				const mockError = {
 					rowId: 2,
@@ -70,8 +70,8 @@ describe( 'zobject submission Vuex module', () => {
 				context.getters.getZObjectAsJson = {};
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
 
-				context.getters.currentZFunctionInvalidOutput = [ 2, 3 ];
-				context.getters.currentZFunctionInvalidInputs = [];
+				context.getters.getInvalidOutputFields = [ 2, 3 ];
+				context.getters.getInvalidInputFields = [];
 
 				const mockErrors = [ {
 					rowId: 2,
@@ -95,8 +95,8 @@ describe( 'zobject submission Vuex module', () => {
 				context.getters.getZObjectAsJson = {};
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
 
-				context.getters.currentZFunctionInvalidOutput = [];
-				context.getters.currentZFunctionInvalidInputs = [ 3 ];
+				context.getters.getInvalidOutputFields = [];
+				context.getters.getInvalidInputFields = [ 3 ];
 
 				const mockError = {
 					rowId: 3,
@@ -115,8 +115,8 @@ describe( 'zobject submission Vuex module', () => {
 				context.getters.getZObjectAsJson = {};
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
 
-				context.getters.currentZFunctionInvalidOutput = [];
-				context.getters.currentZFunctionInvalidInputs = [ 3, 4 ];
+				context.getters.getInvalidOutputFields = [];
+				context.getters.getInvalidInputFields = [ 3, 4 ];
 
 				const mockErrors = [ {
 					rowId: 3,
@@ -140,8 +140,8 @@ describe( 'zobject submission Vuex module', () => {
 				context.getters.getZObjectAsJson = {};
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
 
-				context.getters.currentZFunctionInvalidOutput = [ 2 ];
-				context.getters.currentZFunctionInvalidInputs = [ 3 ];
+				context.getters.getInvalidOutputFields = [ 2 ];
+				context.getters.getInvalidInputFields = [ 3 ];
 
 				const mockErrors = [ {
 					rowId: 2,
@@ -648,7 +648,7 @@ describe( 'zobject submission Vuex module', () => {
 
 		it( 'submits a function after disconnecting implementations and testers', () => {
 			zobject = JSON.parse(
-				fs.readFileSync( path.join( __dirname, './zobject/getZFunction.json' ) )
+				fs.readFileSync( path.join( __dirname, './objects/getZFunction.json' ) )
 			).clean;
 
 			context.state.zobject = zobjectToRows( zobject );
@@ -674,7 +674,7 @@ describe( 'zobject submission Vuex module', () => {
 
 		it( 'submits an object after cleaning empty monolingual objects', () => {
 			zobject = JSON.parse(
-				fs.readFileSync( path.join( __dirname, './zobject/getZFunction.json' ) )
+				fs.readFileSync( path.join( __dirname, './objects/getZFunction.json' ) )
 			);
 
 			context.state.zobject = zobjectToRows( zobject.dirty );

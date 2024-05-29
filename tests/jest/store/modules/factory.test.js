@@ -15,8 +15,8 @@ const tableDataToRowObjects = require( '../../helpers/zObjectTableHelpers.js' ).
 let context,
 	getResolveMock;
 
-describe( 'addZObjects Vuex module', () => {
-	const addZObjects = zobjectModule.modules.addZObjects;
+describe( 'factory Vuex module', () => {
+	const factoryModule = zobjectModule.modules.factory;
 
 	beforeEach( () => {
 		getResolveMock = jest.fn( ( thenFunction ) => thenFunction() );
@@ -39,9 +39,9 @@ describe( 'addZObjects Vuex module', () => {
 					context.getters.getStoredObject = function ( key ) {
 						return context.state.objects[ key ];
 					};
-					Object.keys( zobjectModule.modules.addZObjects.getters ).forEach( function ( key ) {
+					Object.keys( zobjectModule.modules.factory.getters ).forEach( function ( key ) {
 						context.getters[ key ] =
-							zobjectModule.modules.addZObjects.getters[ key ](
+							zobjectModule.modules.factory.getters[ key ](
 								context.state,
 								context.getters,
 								{ zobjectModule: context.state },
@@ -58,7 +58,7 @@ describe( 'addZObjects Vuex module', () => {
 						}
 					};
 					const payload = { id: 1, type: 'Z10528', link: false };
-					// zobjectModule.modules.addZObjects.getters.createObjectByType( context, payload );
+					// zobjectModule.modules.factory.getters.createObjectByType( context, payload );
 					const result = context.getters.createObjectByType( payload );
 					expect( result ).toEqual( expected );
 				} );
@@ -78,7 +78,7 @@ describe( 'addZObjects Vuex module', () => {
 						}
 					};
 					const payload = { id: 1, type: 'Z20001', link: false };
-					// zobjectModule.modules.addZObjects.getters.createObjectByType( context, payload );
+					// zobjectModule.modules.factory.getters.createObjectByType( context, payload );
 					const result = context.getters.createObjectByType( payload );
 					expect( result ).toEqual( expected );
 				} );
@@ -91,7 +91,7 @@ describe( 'addZObjects Vuex module', () => {
 						Z20004K3: ''
 					};
 					const payload = { id: 1, type: 'Z20004', link: false };
-					// zobjectModule.modules.addZObjects.getters.createObjectByType( context, payload );
+					// zobjectModule.modules.factory.getters.createObjectByType( context, payload );
 					const result = context.getters.createObjectByType( payload );
 					expect( result ).toEqual( expected );
 				} );
@@ -111,11 +111,11 @@ describe( 'addZObjects Vuex module', () => {
 				context.rootState = {
 					zobjectModule: context.state
 				};
-				context.getters.createObjectByType = addZObjects.getters.createObjectByType( context.state, context.getters );
+				context.getters.createObjectByType = factoryModule.getters.createObjectByType( context.state, context.getters );
 
 				// Getters
-				Object.keys( addZObjects.getters ).forEach( ( key ) => {
-					context.getters[ key ] = addZObjects.getters[ key ](
+				Object.keys( factoryModule.getters ).forEach( ( key ) => {
+					context.getters[ key ] = factoryModule.getters[ key ](
 						context.state,
 						context.getters
 					);
@@ -130,7 +130,7 @@ describe( 'addZObjects Vuex module', () => {
 			describe( 'add linkable type when non-literal is prioritized', () => {
 				it( 'adds a link to a type', () => {
 					const payload = { id: 0, type: Constants.Z_TYPE, link: true };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZids', { zids: [ 'Z1', 'Z9' ] } );
 					expect( context.dispatch ).toHaveBeenCalledWith( 'injectZObjectFromRowId', {
@@ -142,7 +142,7 @@ describe( 'addZObjects Vuex module', () => {
 
 				it( 'adds a link to a function', () => {
 					const payload = { id: 0, type: Constants.Z_FUNCTION, link: true };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZids', { zids: [ 'Z1', 'Z9' ] } );
 					expect( context.dispatch ).toHaveBeenCalledWith( 'injectZObjectFromRowId', {
@@ -154,7 +154,7 @@ describe( 'addZObjects Vuex module', () => {
 
 				it( 'adds a literal monolingual string', () => {
 					const payload = { id: 0, type: Constants.Z_MONOLINGUALSTRING, link: true };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZids', { zids: [ 'Z1', 'Z11', 'Z9' ] } );
 					expect( context.dispatch ).toHaveBeenCalledWith( 'injectZObjectFromRowId', {
@@ -173,7 +173,7 @@ describe( 'addZObjects Vuex module', () => {
 				it( 'adds a valid ZPersistentObject', () => {
 					context.getters.getUserLangZid = undefined;
 					const payload = { id: 0, type: Constants.Z_PERSISTENTOBJECT };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z2', 'Z6', 'Z9', 'Z12', 'Z11', 'Z32', 'Z31' ];
 					const expectedPayload = {
@@ -195,7 +195,7 @@ describe( 'addZObjects Vuex module', () => {
 
 				it( 'adds a valid ZPersistentObject with set uselang', () => {
 					const payload = { id: 0, type: Constants.Z_PERSISTENTOBJECT };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z2', 'Z6', 'Z9', 'Z12', 'Z11', 'Z1003', 'Z32', 'Z31' ];
 					const expectedPayload = {
@@ -229,7 +229,7 @@ describe( 'addZObjects Vuex module', () => {
 			describe( 'add ZMonolingualString', () => {
 				it( 'adds a valid ZMonolingualString with empty values', () => {
 					const payload = { id: 0, type: Constants.Z_MONOLINGUALSTRING };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z11', 'Z9' ];
 					const expectedPayload = {
@@ -248,7 +248,7 @@ describe( 'addZObjects Vuex module', () => {
 
 				it( 'adds a valid ZMonolingualString with initial values', () => {
 					const payload = { id: 0, type: Constants.Z_MONOLINGUALSTRING, lang: 'Z1004', value: 'test label' };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z11', 'Z9', 'Z1004' ];
 					const expectedPayload = {
@@ -272,7 +272,7 @@ describe( 'addZObjects Vuex module', () => {
 					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
 					const payload = { id: 1, type: Constants.Z_MONOLINGUALSTRING, lang: 'Z1004', value: 'test label', append: true };
 
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z11', 'Z9', 'Z1004' ];
 					const expectedPayload = {
@@ -293,7 +293,7 @@ describe( 'addZObjects Vuex module', () => {
 			describe( 'add ZMultilingualString', () => {
 				it( 'adds a valid ZMultilingualString with empty values', () => {
 					const payload = { id: 0, type: Constants.Z_MULTILINGUALSTRING };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z12', 'Z11' ];
 					const expectedPayload = {
@@ -311,7 +311,7 @@ describe( 'addZObjects Vuex module', () => {
 
 				it( 'adds a valid ZMultilingualString with empty monolingual', () => {
 					const payload = { id: 0, type: Constants.Z_MULTILINGUALSTRING, value: '' };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z12', 'Z11', 'Z9', 'Z1003' ];
 					const expectedPayload = {
@@ -333,7 +333,7 @@ describe( 'addZObjects Vuex module', () => {
 
 				it( 'adds a valid ZMultilingualString with initial values', () => {
 					const payload = { id: 0, type: Constants.Z_MULTILINGUALSTRING, lang: 'Z1004', value: 'test label' };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z12', 'Z11', 'Z9', 'Z1004' ];
 					const expectedPayload = {
@@ -357,7 +357,7 @@ describe( 'addZObjects Vuex module', () => {
 			describe( 'add ZMonolingualStringSet', () => {
 				it( 'adds a valid ZMonolingualStringSet with empty values', () => {
 					const payload = { id: 0, type: Constants.Z_MONOLINGUALSTRINGSET };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z31', 'Z9', 'Z6' ];
 					const expectedPayload = {
@@ -376,7 +376,7 @@ describe( 'addZObjects Vuex module', () => {
 
 				it( 'adds a valid ZMonolingualStringSet with initial value', () => {
 					const payload = { id: 0, type: Constants.Z_MONOLINGUALSTRINGSET, lang: 'Z1004', value: [ 'test alias' ] };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z31', 'Z9', 'Z1004', 'Z6' ];
 					const expectedPayload = {
@@ -395,7 +395,7 @@ describe( 'addZObjects Vuex module', () => {
 
 				it( 'adds a valid ZMonolingualStringSet with two initial values', () => {
 					const payload = { id: 0, type: Constants.Z_MONOLINGUALSTRINGSET, lang: 'Z1004', value: [ 'one', 'two' ] };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z31', 'Z9', 'Z1004', 'Z6' ];
 					const expectedPayload = {
@@ -418,7 +418,7 @@ describe( 'addZObjects Vuex module', () => {
 					} );
 					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
 					const payload = { id: 1, type: Constants.Z_MONOLINGUALSTRINGSET, lang: 'Z1004', value: [ 'test alias' ], append: true };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z31', 'Z9', 'Z1004', 'Z6' ];
 					const expectedPayload = {
@@ -439,7 +439,7 @@ describe( 'addZObjects Vuex module', () => {
 			describe( 'add ZString', () => {
 				it( 'adds a valid empty ZString', () => {
 					const payload = { id: 0, type: Constants.Z_STRING };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [];
 					const expectedPayload = {
@@ -454,7 +454,7 @@ describe( 'addZObjects Vuex module', () => {
 
 				it( 'adds a valid prefilled ZString', () => {
 					const payload = { id: 0, type: Constants.Z_STRING, value: 'Hello world' };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [];
 					const expectedPayload = {
@@ -477,7 +477,7 @@ describe( 'addZObjects Vuex module', () => {
 					] );
 					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
 					const payload = { id: 1, type: Constants.Z_STRING, value: 'Hello world', append: true };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [];
 					const expectedPayload = {
@@ -494,7 +494,7 @@ describe( 'addZObjects Vuex module', () => {
 			describe( 'add ZReference', () => {
 				it( 'adds a valid empty ZReference', () => {
 					const payload = { id: 0, type: Constants.Z_REFERENCE };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z9' ];
 					const expectedPayload = {
@@ -512,7 +512,7 @@ describe( 'addZObjects Vuex module', () => {
 
 				it( 'adds a valid prefilled ZReference', () => {
 					const payload = { id: 0, type: Constants.Z_REFERENCE, value: 'Z1' };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z9' ];
 					const expectedPayload = {
@@ -538,7 +538,7 @@ describe( 'addZObjects Vuex module', () => {
 					] );
 					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
 					const payload = { id: 1, type: Constants.Z_REFERENCE, value: 'Z11', append: true };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z9', 'Z11' ];
 					const expectedPayload = {
@@ -559,7 +559,7 @@ describe( 'addZObjects Vuex module', () => {
 				it( 'adds a valid ZArgument', () => {
 					context.getters.getNextKey = 'Z0K1';
 					const payload = { id: 0, type: Constants.Z_ARGUMENT };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z17', 'Z9', 'Z12', 'Z11' ];
 					const expectedPayload = {
@@ -579,7 +579,7 @@ describe( 'addZObjects Vuex module', () => {
 
 				it( 'adds a valid ZArgument with initial values', () => {
 					const payload = { id: 0, type: Constants.Z_ARGUMENT, value: 'Z400K2' };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z17', 'Z9', 'Z400', 'Z12', 'Z11' ];
 					const expectedPayload = {
@@ -607,7 +607,7 @@ describe( 'addZObjects Vuex module', () => {
 					] );
 					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
 					const payload = { id: 1, type: Constants.Z_ARGUMENT, value: 'Z400K2', append: true };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z17', 'Z9', 'Z400', 'Z12', 'Z11' ];
 					const expectedPayload = {
@@ -629,7 +629,7 @@ describe( 'addZObjects Vuex module', () => {
 			describe( 'add ZFunctionCall', () => {
 				it( 'adds a valid empty ZFunctionCall', () => {
 					const payload = { id: 0, type: Constants.Z_FUNCTION_CALL };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z7', 'Z9' ];
 					const expectedPayload = {
@@ -647,7 +647,7 @@ describe( 'addZObjects Vuex module', () => {
 
 				it( 'adds a valid ZFunctionCall with initial values', () => {
 					const payload = { id: 0, type: Constants.Z_FUNCTION_CALL, value: 'Z10001' };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z7', 'Z9', 'Z10001' ];
 					const expectedPayload = {
@@ -673,7 +673,7 @@ describe( 'addZObjects Vuex module', () => {
 					] );
 					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
 					const payload = { id: 1, type: Constants.Z_FUNCTION_CALL, value: 'Z10001', append: true };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z7', 'Z9', 'Z10001' ];
 					const expectedPayload = {
@@ -693,7 +693,7 @@ describe( 'addZObjects Vuex module', () => {
 			describe( 'add ZImplementation', () => {
 				it( 'adds a valid ZImplementation', () => {
 					const payload = { id: 0, type: Constants.Z_IMPLEMENTATION };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z14', 'Z9', 'Z7' ];
 					const expectedPayload = {
@@ -720,7 +720,7 @@ describe( 'addZObjects Vuex module', () => {
 							}
 						};
 					} );
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z14', 'Z9', 'Z10001', 'Z7' ];
 					const expectedPayload = {
@@ -741,7 +741,7 @@ describe( 'addZObjects Vuex module', () => {
 			describe( 'add ZFunction', () => {
 				it( 'adds a valid ZFunction', () => {
 					const payload = { id: 0, type: Constants.Z_FUNCTION };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z8', 'Z17', 'Z9', 'Z12', 'Z11', 'Z20', 'Z14' ];
 					const expectedPayload = {
@@ -772,7 +772,7 @@ describe( 'addZObjects Vuex module', () => {
 				it( 'adds a valid ZFunction with set zid', () => {
 					const payload = { id: 0, type: Constants.Z_FUNCTION };
 					context.getters.getCurrentZObjectId = 'Z10000';
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z8', 'Z17', 'Z9', 'Z10000', 'Z12', 'Z11', 'Z20', 'Z14' ];
 					const expectedPayload = {
@@ -804,7 +804,7 @@ describe( 'addZObjects Vuex module', () => {
 			describe( 'add ZType', () => {
 				it( 'adds a valid ZType', () => {
 					const payload = { id: 0, type: Constants.Z_TYPE };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z4', 'Z9', 'Z3', 'Z101', 'Z46', 'Z64' ];
 					const expectedPayload = {
@@ -837,7 +837,7 @@ describe( 'addZObjects Vuex module', () => {
 					] );
 					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
 					const payload = { id: 1, type: Constants.Z_TYPE, append: true };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z4', 'Z9', 'Z3', 'Z101', 'Z46', 'Z64' ];
 					const expectedPayload = {
@@ -864,7 +864,7 @@ describe( 'addZObjects Vuex module', () => {
 			describe( 'add ZTypedList', () => {
 				it( 'adds a valid ZTypedList', () => {
 					const payload = { id: 0, type: Constants.Z_TYPED_LIST };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z9' ];
 					const expectedPayload = {
@@ -881,7 +881,7 @@ describe( 'addZObjects Vuex module', () => {
 
 				it( 'adds a valid ZTypedList of a given type', () => {
 					const payload = { id: 0, type: Constants.Z_TYPED_LIST, value: 'Z11' };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z9', 'Z11' ];
 					const expectedPayload = {
@@ -906,7 +906,7 @@ describe( 'addZObjects Vuex module', () => {
 					] );
 					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
 					const payload = { id: 1, type: Constants.Z_TYPED_LIST, value: 'Z6', append: true };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z9', 'Z6' ];
 					const expectedPayload = {
@@ -925,7 +925,7 @@ describe( 'addZObjects Vuex module', () => {
 			describe( 'add ZTypedPair', () => {
 				it( 'adds a valid ZTypedPair with empty values', () => {
 					const payload = { id: 0, type: Constants.Z_TYPED_PAIR };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z7', 'Z882', 'Z9' ];
 					const expectedPayload = {
@@ -949,7 +949,7 @@ describe( 'addZObjects Vuex module', () => {
 
 				it( 'adds a valid ZTypedPair with initial types', () => {
 					const payload = { id: 0, type: Constants.Z_TYPED_PAIR, values: [ 'Z6', 'Z11' ] };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z7', 'Z882', 'Z9', 'Z6', 'Z11' ];
 					const expectedPayload = {
@@ -981,7 +981,7 @@ describe( 'addZObjects Vuex module', () => {
 					] );
 					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
 					const payload = { id: 1, type: Constants.Z_TYPED_PAIR, values: [ 'Z6', 'Z6' ], append: true };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z7', 'Z882', 'Z9', 'Z6' ];
 					const expectedPayload = {
@@ -1007,7 +1007,7 @@ describe( 'addZObjects Vuex module', () => {
 			describe( 'add ZTypedMap', () => {
 				it( 'adds a valid ZTypedMap with empty values', () => {
 					const payload = { id: 0, type: Constants.Z_TYPED_MAP };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z7', 'Z883', 'Z9' ];
 					const expectedPayload = {
@@ -1029,7 +1029,7 @@ describe( 'addZObjects Vuex module', () => {
 
 				it( 'adds a valid ZTypedMap with initial types', () => {
 					const payload = { id: 0, type: Constants.Z_TYPED_MAP, values: [ 'Z6', 'Z1' ] };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z7', 'Z883', 'Z9', 'Z6' ];
 					const expectedPayload = {
@@ -1059,7 +1059,7 @@ describe( 'addZObjects Vuex module', () => {
 					] );
 					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
 					const payload = { id: 1, type: Constants.Z_TYPED_MAP, values: [ 'Z6', 'Z1' ], append: true };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z7', 'Z883', 'Z9', 'Z6' ];
 					const expectedPayload = {
@@ -1083,7 +1083,7 @@ describe( 'addZObjects Vuex module', () => {
 			describe( 'add object of generic type', () => {
 				it( 'adds a valid typed list', () => {
 					const payload = { id: 0, type: { Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z6' } };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z9', 'Z6' ];
 					const expectedPayload = {
@@ -1098,7 +1098,7 @@ describe( 'addZObjects Vuex module', () => {
 
 				it( 'adds a valid object of a type defined by a function call', () => {
 					const payload = { id: 0, type: { Z1K1: 'Z7', Z7K1: 'Z10001', Z10001K1: 'Z6' } };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z7', 'Z10001', 'Z6' ];
 					const expectedPayload = {
@@ -1119,7 +1119,7 @@ describe( 'addZObjects Vuex module', () => {
 
 				it( 'adds a valid ZTypedPair with empty values', () => {
 					const payload = { id: 0, type: { Z1K1: 'Z7', Z7K1: 'Z882', Z882K1: 'Z6', Z882K2: 'Z6' } };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z7', 'Z882', 'Z6' ];
 					const expectedPayload = {
@@ -1141,7 +1141,7 @@ describe( 'addZObjects Vuex module', () => {
 
 				it( 'adds a valid ZTypedMap with empty values', () => {
 					const payload = { id: 0, type: { Z1K1: 'Z7', Z7K1: 'Z883', Z883K1: 'Z6', Z883K2: 'Z6' } };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z7', 'Z883', 'Z6' ];
 					const expectedPayload = {
@@ -1165,7 +1165,7 @@ describe( 'addZObjects Vuex module', () => {
 			describe( 'add GenericObject', () => {
 				it( 'adds a valid object of known type', () => {
 					const payload = { id: 0, type: Constants.Z_KEY };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z3', 'Z9', 'Z12', 'Z11' ];
 					const expectedPayload = {
@@ -1185,7 +1185,7 @@ describe( 'addZObjects Vuex module', () => {
 
 				it( 'adds a valid object of known type with typed lists', () => {
 					const payload = { id: 0, type: Constants.Z_MULTILINGUALSTRINGSET };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z32', 'Z9', 'Z31' ];
 					const expectedPayload = {
@@ -1205,7 +1205,7 @@ describe( 'addZObjects Vuex module', () => {
 
 				it( 'adds a valid object of an unknown type', () => {
 					const payload = { id: 0, type: 'Z10000' };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z10000' ];
 					const expectedPayload = {
@@ -1230,7 +1230,7 @@ describe( 'addZObjects Vuex module', () => {
 					] );
 					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
 					const payload = { id: 1, type: 'Z10002', append: true };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z10002' ];
 					const expectedPayload = {
@@ -1255,7 +1255,7 @@ describe( 'addZObjects Vuex module', () => {
 					] );
 					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
 					const payload = { id: 1, type: { Z1K1: 'Z7', Z7K1: 'Z10003', Z10003K1: 'Z6' }, append: true };
-					addZObjects.actions.changeType( context, payload );
+					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z7', 'Z10003', 'Z6' ];
 					const expectedPayload = {
@@ -1287,7 +1287,7 @@ describe( 'addZObjects Vuex module', () => {
 					{ id: 2, key: 'Z11K1' },
 					{ id: 3, key: 'Z11K2' }
 				];
-				zobjectModule.modules.addZObjects.actions.clearType( context, 0 );
+				zobjectModule.modules.factory.actions.clearType( context, 0 );
 				expect( context.dispatch ).toHaveBeenCalledTimes( 2 );
 				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', { rowId: 2, removeParent: true } );
 				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', { rowId: 3, removeParent: true } );

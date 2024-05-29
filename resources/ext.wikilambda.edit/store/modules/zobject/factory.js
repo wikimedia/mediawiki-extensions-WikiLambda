@@ -1,5 +1,5 @@
 /*!
- * WikiLambda Vuex code to interact with the store to create and update ZObjects.
+ * WikiLambda Vuex code to interact with the store to create new ZObjects by their type.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT

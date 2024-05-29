@@ -1,5 +1,5 @@
 /*!
- * WikiLambda Vue editor: Handle generating records in the ZObject list and storing records of function calls.
+ * WikiLambda Vue editor: Handle the request of function calls to the orchestrator.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT

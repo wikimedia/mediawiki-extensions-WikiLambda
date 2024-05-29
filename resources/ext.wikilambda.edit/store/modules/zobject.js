@@ -6,6 +6,9 @@
  */
 
 const Constants = require( '../../Constants.js' ),
+	factoryModule = require( './zobject/factory.js' ),
+	currentPageModule = require( './zobject/currentPage.js' ),
+	submissionModule = require( './zobject/submission.js' ),
 	findKeyInArray = require( '../../mixins/typeUtils.js' ).methods.findKeyInArray,
 	selectBestLanguage = require( '../../mixins/typeUtils.js' ).methods.selectBestLanguage,
 	isTruthyOrEqual = require( '../../mixins/typeUtils.js' ).methods.isTruthyOrEqual,
@@ -14,25 +17,16 @@ const Constants = require( '../../Constants.js' ),
 	extractZIDs = require( '../../mixins/schemata.js' ).methods.extractZIDs,
 	hybridToCanonical = require( '../../mixins/schemata.js' ).methods.hybridToCanonical,
 	getParameterByName = require( '../../mixins/urlUtils.js' ).methods.getParameterByName,
-	addZObjects = require( './zobject/addZObjects.js' ),
-	currentZObject = require( './zobject/currentZObject.js' ),
-	submission = require( './zobject/submission.js' ),
-	Row = require( '../classes/Row.js' ),
-	DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT = 300;
-
-let debounceZObjectLookup = null;
+	Row = require( '../classes/Row.js' );
 
 module.exports = exports = {
 	modules: {
-		addZObjects: addZObjects,
-		currentZObject: currentZObject,
-		submission: submission
+		currentPage: currentPageModule,
+		factory: factoryModule,
+		submission: submissionModule
 	},
 	state: {
-		zobject: [],
-		createNewPage: false,
-		isSavingZObject: false,
-		ZObjectInitialized: false
+		zobject: []
 	},
 	getters: {
 		/**
@@ -1158,16 +1152,6 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Returns whether we are creating a new page.
-		 *
-		 * @param {Object} state
-		 * @return {boolean}
-		 */
-		isCreateNewPage: function ( state ) {
-			return state.createNewPage;
-		},
-
-		/**
 		 * Return the JSON representation of a specific zObject and its children
 		 * using the zObject id value within the zObject array
 		 *
@@ -1183,6 +1167,17 @@ module.exports = exports = {
 			return function ( id, isArray ) {
 				return zobjectUtils.convertTableToJson( state.zobject, id, isArray );
 			};
+		},
+
+		/**
+		 * Return the complete zObject as a JSON
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Array}
+		 */
+		getZObjectAsJson: function ( state, getters ) {
+			return getters.getZObjectAsJsonById( 0, state.zobject[ 0 ].isArray() );
 		},
 
 		/**
@@ -1207,16 +1202,6 @@ module.exports = exports = {
 			);
 			const nextKey = lastKey + 1;
 			return zid + 'K' + nextKey;
-		},
-
-		/**
-		 * Returns whether the root ZObject is initialized
-		 *
-		 * @param {Object} state
-		 * @return {boolean}
-		 */
-		getZObjectInitialized: function ( state ) {
-			return state.ZObjectInitialized;
 		},
 
 		/**
@@ -1296,6 +1281,43 @@ module.exports = exports = {
 				return keyType ? keyType.id : undefined;
 			}
 			return findZKeyType;
+		},
+		/**
+		 * Recursively waks a nested generic type and returns
+		 * the field IDs and whether they are valid or not.
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		validateGenericType: function ( state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @param {Object} fields
+			 * @return {Object} fields
+			 */
+			function validate( rowId, fields = [] ) {
+				// There's no need to convert to string as the
+				// possible options will be either Z7 or Z9
+				const mode = getters.getZObjectTypeByRowId( rowId );
+				const value = ( mode === Constants.Z_REFERENCE ) ?
+					getters.getZReferenceTerminalValue( rowId ) :
+					getters.getZFunctionCallFunctionId( rowId );
+
+				fields.push( {
+					rowId,
+					isValid: !!value
+				} );
+
+				if ( mode === Constants.Z_FUNCTION_CALL ) {
+					const args = getters.getZFunctionCallArguments( rowId );
+					for ( const arg of args ) {
+						getters.validateGenericType( arg.id, fields );
+					}
+				}
+				return fields;
+			}
+			return validate;
 		}
 	},
 	mutations: {
@@ -1374,28 +1396,6 @@ module.exports = exports = {
 		 */
 		removeRowByIndex: function ( state, index ) {
 			state.zobject.splice( index, 1 );
-		},
-
-		/**
-		 * Sets the state flag createNewPage, which reflects
-		 * whether we are creating a new page.
-		 *
-		 * @param {Object} state
-		 * @param {boolean} payload
-		 */
-		setCreateNewPage: function ( state, payload ) {
-			state.createNewPage = payload;
-		},
-
-		/**
-		 * Sets the flag ZObjectInitialized once the
-		 * root zobject state has been initialized.
-		 *
-		 * @param {Object} state
-		 * @param {boolean} value
-		 */
-		setZObjectInitialized: function ( state, value ) {
-			state.ZObjectInitialized = value;
 		}
 	},
 	actions: {
@@ -1451,7 +1451,7 @@ module.exports = exports = {
 				id: 0,
 				type: Constants.Z_FUNCTION_CALL
 			} );
-			context.commit( 'setZObjectInitialized', true );
+			context.commit( 'setInitialized', true );
 		},
 
 		/**
@@ -1483,7 +1483,7 @@ module.exports = exports = {
 				const defaultType = getParameterByName( 'zid' );
 				let defaultKeys;
 
-				context.commit( 'setZObjectInitialized', true );
+				context.commit( 'setInitialized', true );
 
 				// No `zid` parameter, return.
 				if ( !defaultType || !defaultType.match( /Z[1-9]\d*$/ ) ) {
@@ -1612,7 +1612,7 @@ module.exports = exports = {
 				context.commit( 'setZObject', zobjectRows );
 
 				// Set initialized as done:
-				context.commit( 'setZObjectInitialized', true );
+				context.commit( 'setInitialized', true );
 			} );
 		},
 
@@ -1723,29 +1723,6 @@ module.exports = exports = {
 					context.commit( 'clearErrorsForId', childRowId );
 				}
 			}
-		},
-
-		/**
-		 * Performs a Lookup call to the database to retrieve all
-		 * ZObject references that match a given input and type.
-		 * This is used in selectors such as ZObjectSelector or the
-		 * language selector of the About widget.
-		 *
-		 * @param {Object} context Vuex context object
-		 * @param {number} payload Object containing input(string) and type
-		 * @return {Promise}
-		 */
-		lookupZObject: function ( context, payload ) {
-			// Add user language code to the payload
-			payload.language = context.getters.getUserLangCode;
-			return new Promise( ( resolve ) => {
-				clearTimeout( debounceZObjectLookup );
-				debounceZObjectLookup = setTimeout( () => {
-					return apiUtils.searchLabels( payload ).then( ( data ) => {
-						return resolve( data );
-					} );
-				}, DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT );
-			} );
 		},
 
 		/**

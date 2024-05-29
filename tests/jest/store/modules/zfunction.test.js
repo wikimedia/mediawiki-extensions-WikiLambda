@@ -9,9 +9,9 @@
 const zobjectToRows = require( '../../helpers/zObjectTableHelpers.js' ).zobjectToRows,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	zobjectModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zobject.js' ),
-	zFunctionModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zFunction.js' );
+	zfunctionModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zfunction.js' );
 
-describe( 'zFunction Vuex module', () => {
+describe( 'zfunction Vuex module', () => {
 	let getters, context;
 
 	describe( 'Getters', () => {
@@ -27,7 +27,7 @@ describe( 'zFunction Vuex module', () => {
 				state.zobject = [];
 				const rowId = undefined;
 				const expected = [];
-				expect( zFunctionModule.getters.getZFunctionInputs( state, getters )( rowId ) )
+				expect( zfunctionModule.getters.getZFunctionInputs( state, getters )( rowId ) )
 					.toEqual( expected );
 			} );
 
@@ -35,14 +35,14 @@ describe( 'zFunction Vuex module', () => {
 				state.zobject = [];
 				const rowId = 1;
 				const expected = [];
-				expect( zFunctionModule.getters.getZFunctionInputs( state, getters )( rowId ) )
+				expect( zfunctionModule.getters.getZFunctionInputs( state, getters )( rowId ) )
 					.toEqual( expected );
 			} );
 
 			it( 'returns empty array when no inputs', () => {
 				state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17' ] } } );
 				const rowId = 0;
-				const inputs = zFunctionModule.getters.getZFunctionInputs( state, getters )( rowId );
+				const inputs = zfunctionModule.getters.getZFunctionInputs( state, getters )( rowId );
 				expect( inputs ).toHaveLength( 0 );
 			} );
 
@@ -51,7 +51,7 @@ describe( 'zFunction Vuex module', () => {
 					{ Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z12345K1', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } }
 				] } } );
 				const rowId = 0;
-				const inputs = zFunctionModule.getters.getZFunctionInputs( state, getters )( rowId );
+				const inputs = zfunctionModule.getters.getZFunctionInputs( state, getters )( rowId );
 				expect( inputs ).toHaveLength( 1 );
 				expect( inputs[ 0 ].key ).toEqual( '1' );
 			} );
@@ -62,7 +62,7 @@ describe( 'zFunction Vuex module', () => {
 					{ Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z12345K2', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } }
 				] } } );
 				const rowId = 0;
-				const inputs = zFunctionModule.getters.getZFunctionInputs( state, getters )( rowId );
+				const inputs = zfunctionModule.getters.getZFunctionInputs( state, getters )( rowId );
 				expect( inputs ).toHaveLength( 2 );
 				expect( inputs[ 0 ].key ).toEqual( '1' );
 				expect( inputs[ 1 ].key ).toEqual( '2' );
@@ -86,21 +86,21 @@ describe( 'zFunction Vuex module', () => {
 				/* From library module */
 				getters.getLanguageIsoCodeOfZLang = ( key ) => ( key === 'Z1002' ? 'en' : 'es' );
 				/* From zFunction module */
-				getters.getZFunctionInputs = zFunctionModule.getters.getZFunctionInputs( state, getters );
+				getters.getZFunctionInputs = zfunctionModule.getters.getZFunctionInputs( state, getters );
 			} );
 
 			it( 'returns empty array when row is not found', () => {
 				state.zobject = [];
 				const rowId = 0;
 				const expected = [];
-				const current = zFunctionModule.getters.getZFunctionInputLangs( state, getters )( rowId );
+				const current = zfunctionModule.getters.getZFunctionInputLangs( state, getters )( rowId );
 				expect( current ).toStrictEqual( expected );
 			} );
 
 			it( 'returns empty array when function has no inputs', () => {
 				state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17' ] } } );
 				const expected = [];
-				const current = zFunctionModule.getters.getZFunctionInputLangs( state, getters )();
+				const current = zfunctionModule.getters.getZFunctionInputLangs( state, getters )();
 				expect( current ).toStrictEqual( expected );
 			} );
 
@@ -110,7 +110,7 @@ describe( 'zFunction Vuex module', () => {
 					{ Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z12345K2', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } }
 				] } } );
 				const expected = [];
-				const current = zFunctionModule.getters.getZFunctionInputLangs( state, getters )();
+				const current = zfunctionModule.getters.getZFunctionInputLangs( state, getters )();
 				expect( current ).toStrictEqual( expected );
 			} );
 
@@ -127,7 +127,7 @@ describe( 'zFunction Vuex module', () => {
 					{ langZid: 'Z1002', langIsoCode: 'en', rowId: 24 },
 					{ langZid: 'Z1002', langIsoCode: 'en', rowId: 52 }
 				];
-				const current = zFunctionModule.getters.getZFunctionInputLangs( state, getters )();
+				const current = zfunctionModule.getters.getZFunctionInputLangs( state, getters )();
 				expect( current ).toStrictEqual( expected );
 			} );
 
@@ -143,7 +143,7 @@ describe( 'zFunction Vuex module', () => {
 					{ langZid: 'Z1002', langIsoCode: 'en', rowId: 24 },
 					{ langZid: 'Z1003', langIsoCode: 'es', rowId: 34 }
 				];
-				const current = zFunctionModule.getters.getZFunctionInputLangs( state, getters )();
+				const current = zfunctionModule.getters.getZFunctionInputLangs( state, getters )();
 				expect( current ).toStrictEqual( expected );
 			} );
 		} );
@@ -160,7 +160,7 @@ describe( 'zFunction Vuex module', () => {
 				state.zobject = [];
 				const rowId = undefined;
 				const expected = undefined;
-				expect( zFunctionModule.getters.getZFunctionOutput( state, getters )( rowId ) )
+				expect( zfunctionModule.getters.getZFunctionOutput( state, getters )( rowId ) )
 					.toEqual( expected );
 			} );
 
@@ -168,7 +168,7 @@ describe( 'zFunction Vuex module', () => {
 				state.zobject = [];
 				const rowId = 1;
 				const expected = undefined;
-				expect( zFunctionModule.getters.getZFunctionOutput( state, getters )( rowId ) )
+				expect( zfunctionModule.getters.getZFunctionOutput( state, getters )( rowId ) )
 					.toEqual( expected );
 			} );
 
@@ -176,7 +176,7 @@ describe( 'zFunction Vuex module', () => {
 				state.zobject = zobjectToRows( { Z2K2: { Z8K2: 'Z6' } } );
 				const rowId = 0;
 				const expected = { id: 2, key: 'Z8K2', parent: 1, value: Constants.ROW_VALUE_OBJECT };
-				expect( zFunctionModule.getters.getZFunctionOutput( state, getters )( rowId ) )
+				expect( zfunctionModule.getters.getZFunctionOutput( state, getters )( rowId ) )
 					.toEqual( expected );
 			} );
 		} );
@@ -195,7 +195,7 @@ describe( 'zFunction Vuex module', () => {
 				state.zobject = [];
 				const rowId = undefined;
 				const expected = undefined;
-				const current = zFunctionModule.getters.getZFunctionIdentity( state, getters )( rowId );
+				const current = zfunctionModule.getters.getZFunctionIdentity( state, getters )( rowId );
 				expect( current ).toEqual( expected );
 			} );
 
@@ -203,7 +203,7 @@ describe( 'zFunction Vuex module', () => {
 				state.zobject = [];
 				const rowId = 0;
 				const expected = undefined;
-				const current = zFunctionModule.getters.getZFunctionIdentity( state, getters )( rowId );
+				const current = zfunctionModule.getters.getZFunctionIdentity( state, getters )( rowId );
 				expect( current ).toEqual( expected );
 			} );
 
@@ -211,7 +211,7 @@ describe( 'zFunction Vuex module', () => {
 				state.zobject = zobjectToRows( { Z2K2: { Z8K5: 'Z12345' } } );
 				const rowId = 0;
 				const expected = 'Z12345';
-				const current = zFunctionModule.getters.getZFunctionIdentity( state, getters )( rowId );
+				const current = zfunctionModule.getters.getZFunctionIdentity( state, getters )( rowId );
 				expect( current ).toEqual( expected );
 			} );
 		} );
@@ -228,7 +228,7 @@ describe( 'zFunction Vuex module', () => {
 				state.zobject = [];
 				const rowId = undefined;
 				const expected = undefined;
-				const current = zFunctionModule.getters.getZArgumentTypeRowId( state, getters )( rowId );
+				const current = zfunctionModule.getters.getZArgumentTypeRowId( state, getters )( rowId );
 				expect( current ).toEqual( expected );
 			} );
 
@@ -236,7 +236,7 @@ describe( 'zFunction Vuex module', () => {
 				state.zobject = [];
 				const rowId = 0;
 				const expected = undefined;
-				const current = zFunctionModule.getters.getZArgumentTypeRowId( state, getters )( rowId );
+				const current = zfunctionModule.getters.getZArgumentTypeRowId( state, getters )( rowId );
 				expect( current ).toEqual( expected );
 			} );
 
@@ -248,9 +248,9 @@ describe( 'zFunction Vuex module', () => {
 					{ Z1K1: 'Z17', Z17K1: 'Z40', Z17K2: 'Z12345K2', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } }
 				] } } );
 
-				expect( zFunctionModule.getters.getZArgumentTypeRowId( state, getters )( 6 ) )
+				expect( zfunctionModule.getters.getZArgumentTypeRowId( state, getters )( 6 ) )
 					.toEqual( 10 );
-				expect( zFunctionModule.getters.getZArgumentTypeRowId( state, getters )( 24 ) )
+				expect( zfunctionModule.getters.getZArgumentTypeRowId( state, getters )( 24 ) )
 					.toEqual( 28 );
 			} );
 
@@ -273,7 +273,7 @@ describe( 'zFunction Vuex module', () => {
 				state.zobject = [];
 				const rowId = undefined;
 				const expected = undefined;
-				const current = zFunctionModule.getters.getZArgumentLabelForLanguage( state, getters )( rowId );
+				const current = zfunctionModule.getters.getZArgumentLabelForLanguage( state, getters )( rowId );
 				expect( current ).toEqual( expected );
 			} );
 
@@ -281,7 +281,7 @@ describe( 'zFunction Vuex module', () => {
 				state.zobject = [];
 				const rowId = 0;
 				const expected = undefined;
-				const current = zFunctionModule.getters.getZArgumentLabelForLanguage( state, getters )( rowId );
+				const current = zfunctionModule.getters.getZArgumentLabelForLanguage( state, getters )( rowId );
 				expect( current ).toEqual( expected );
 			} );
 
@@ -294,7 +294,7 @@ describe( 'zFunction Vuex module', () => {
 				] } } );
 
 				// First argument in an unavailable language
-				expect( zFunctionModule.getters.getZArgumentLabelForLanguage( state, getters )( 6, 'Z1003' ) )
+				expect( zfunctionModule.getters.getZArgumentLabelForLanguage( state, getters )( 6, 'Z1003' ) )
 					.toEqual( undefined );
 			} );
 
@@ -315,25 +315,25 @@ describe( 'zFunction Vuex module', () => {
 				let row;
 
 				// First argument in English
-				row = zFunctionModule.getters.getZArgumentLabelForLanguage( state, getters )( 6, 'Z1002' );
+				row = zfunctionModule.getters.getZArgumentLabelForLanguage( state, getters )( 6, 'Z1002' );
 				expect( row.id ).toEqual( 24 );
 				expect( zobjectModule.getters.getZMonolingualTextValue( state, getters )( row.id ) )
 					.toEqual( 'input one' );
 
 				// First argument in Spanish
-				row = zFunctionModule.getters.getZArgumentLabelForLanguage( state, getters )( 6, 'Z1003' );
+				row = zfunctionModule.getters.getZArgumentLabelForLanguage( state, getters )( 6, 'Z1003' );
 				expect( row.id ).toEqual( 34 );
 				expect( zobjectModule.getters.getZMonolingualTextValue( state, getters )( row.id ) )
 					.toEqual( 'primer argumento' );
 
 				// Second argument in English
-				row = zFunctionModule.getters.getZArgumentLabelForLanguage( state, getters )( 44, 'Z1002' );
+				row = zfunctionModule.getters.getZArgumentLabelForLanguage( state, getters )( 44, 'Z1002' );
 				expect( row.id ).toEqual( 62 );
 				expect( zobjectModule.getters.getZMonolingualTextValue( state, getters )( row.id ) )
 					.toEqual( 'input two' );
 
 				// Second argument in Spanish
-				row = zFunctionModule.getters.getZArgumentLabelForLanguage( state, getters )( 44, 'Z1003' );
+				row = zfunctionModule.getters.getZArgumentLabelForLanguage( state, getters )( 44, 'Z1003' );
 				expect( row.id ).toEqual( 72 );
 				expect( zobjectModule.getters.getZMonolingualTextValue( state, getters )( row.id ) )
 					.toEqual( 'segundo argumento' );
@@ -360,12 +360,214 @@ describe( 'zFunction Vuex module', () => {
 				getters.getZReferenceTerminalValue = zobjectModule.getters.getZReferenceTerminalValue( state, getters );
 			} );
 			it( 'return attached tests', () => {
-				expect( zFunctionModule.getters.getConnectedTests( state, getters )( 0 ) )
+				expect( zfunctionModule.getters.getConnectedTests( state, getters )( 0 ) )
 					.toEqual( [ 'Z10002', 'Z10003' ] );
 			} );
 			it( 'return attached implementations', () => {
-				expect( zFunctionModule.getters.getConnectedImplementations( state, getters )( 0 ) )
+				expect( zfunctionModule.getters.getConnectedImplementations( state, getters )( 0 ) )
 					.toEqual( [ 'Z10004', 'Z10005' ] );
+			} );
+		} );
+
+		describe( 'getInvalidOutputFields', () => {
+			beforeEach( () => {
+				state = { zobject: [] };
+				getters = {};
+				getters.getRowById = zobjectModule.getters.getRowById( state, getters );
+				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+
+				getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( state, getters );
+				getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
+				getters.getZReferenceTerminalValue = zobjectModule.getters.getZReferenceTerminalValue( state, getters );
+				getters.getZFunctionCallFunctionId = zobjectModule.getters.getZFunctionCallFunctionId( state, getters );
+				getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+				getters.getZFunctionCallArguments = zobjectModule.getters.getZFunctionCallArguments( state, getters );
+				getters.getZObjectAsJsonById = zobjectModule.getters.getZObjectAsJsonById( state, getters );
+				getters.validateGenericType = zobjectModule.getters.validateGenericType( state, getters );
+
+				getters.getZFunctionOutput = zfunctionModule.getters.getZFunctionOutput( state, getters );
+			} );
+
+			it( 'returns empty array when output is filled reference', () => {
+				state.zobject = zobjectToRows( { Z2K2: {
+					Z8K2: 'Z6'
+				} } );
+
+				const invalidOutput = zfunctionModule.getters.getInvalidOutputFields( state, getters );
+				const expected = [];
+				expect( invalidOutput ).toEqual( expected );
+			} );
+
+			it( 'returns empty array when output is filled function call', () => {
+				state.zobject = zobjectToRows( { Z2K2: {
+					Z8K2: {
+						Z1K1: 'Z7',
+						Z7K1: 'Z881',
+						Z881K1: 'Z6'
+					}
+				} } );
+
+				const invalidOutput = zfunctionModule.getters.getInvalidOutputFields( state, getters );
+				const expected = [];
+				expect( invalidOutput ).toEqual( expected );
+			} );
+
+			it( 'returns empty array when output is filled nested function call', () => {
+				state.zobject = zobjectToRows( { Z2K2: {
+					Z8K2: {
+						Z1K1: 'Z7',
+						Z7K1: 'Z882',
+						Z882K1: 'Z6',
+						Z882K2: {
+							Z1K1: 'Z7',
+							Z7K1: 'Z881',
+							Z881K1: 'Z6'
+						}
+					}
+				} } );
+
+				const invalidOutput = zfunctionModule.getters.getInvalidOutputFields( state, getters );
+				const expected = [];
+				expect( invalidOutput ).toEqual( expected );
+			} );
+
+			it( 'returns error when output is empty reference', () => {
+				state.zobject = zobjectToRows( { Z2K2: {
+					Z8K2: '' // rowId 2
+				} } );
+
+				const invalidOutput = zfunctionModule.getters.getInvalidOutputFields( state, getters );
+				const expected = [ 2 ];
+				expect( invalidOutput ).toEqual( expected );
+			} );
+
+			it( 'returns error when output is empty function call', () => {
+				state.zobject = zobjectToRows( { Z2K2: {
+					Z8K2: {
+						Z1K1: 'Z7',
+						Z7K1: 'Z881',
+						Z881K1: '' // rowId 9
+					}
+				} } );
+
+				const invalidOutput = zfunctionModule.getters.getInvalidOutputFields( state, getters );
+				const expected = [ 9 ];
+				expect( invalidOutput ).toEqual( expected );
+			} );
+
+			it( 'returns all errors when output is empty nested function call', () => {
+				state.zobject = zobjectToRows( { Z2K2: {
+					Z8K2: {
+						Z1K1: 'Z7',
+						Z7K1: 'Z882',
+						Z882K1: '', // rowId 9
+						Z882K2: {
+							Z1K1: 'Z7',
+							Z7K1: 'Z881',
+							Z881K1: '' // rowId 19
+						}
+					}
+				} } );
+
+				const invalidOutput = zfunctionModule.getters.getInvalidOutputFields( state, getters );
+				const expected = [ 9, 19 ];
+				expect( invalidOutput ).toEqual( expected );
+			} );
+		} );
+
+		describe( 'getInvalidInputFields', () => {
+			beforeEach( () => {
+				state = { zobject: [] };
+				getters = {};
+				getters.getRowById = zobjectModule.getters.getRowById( state, getters );
+				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+
+				getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( state, getters );
+				getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
+				getters.getZReferenceTerminalValue = zobjectModule.getters.getZReferenceTerminalValue( state, getters );
+				getters.getZFunctionCallFunctionId = zobjectModule.getters.getZFunctionCallFunctionId( state, getters );
+				getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+				getters.getZFunctionCallArguments = zobjectModule.getters.getZFunctionCallArguments( state, getters );
+				getters.validateGenericType = zobjectModule.getters.validateGenericType( state, getters );
+
+				getters.getZStringTerminalValue = zobjectModule.getters.getZStringTerminalValue( state, getters );
+				getters.getZMonolingualTextValue = zobjectModule.getters.getZMonolingualTextValue( state, getters );
+				getters.getZFunctionInputs = zfunctionModule.getters.getZFunctionInputs( state, getters );
+			} );
+
+			it( 'returns empty array when no inputs', () => {
+				state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17' ] } } );
+
+				const invalidInputs = zfunctionModule.getters.getInvalidInputFields( state, getters );
+				expect( invalidInputs.length ).toEqual( 0 );
+			} );
+
+			it( 'returns empty array when all inputs have set type', () => {
+				state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17',
+					{
+						Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z999K1',
+						Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+					},
+					{
+						Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z999K2',
+						Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11', { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'label' } ] }
+					}
+				] } } );
+
+				const invalidInputs = zfunctionModule.getters.getInvalidInputFields( state, getters );
+				expect( invalidInputs.length ).toEqual( 0 );
+			} );
+
+			it( 'returns empty array when inputs have no type and no label', () => {
+				state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17',
+					{
+						Z1K1: 'Z17', Z17K1: '', Z17K2: 'Z999K1',
+						Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+					},
+					{
+						Z1K1: 'Z17', Z17K1: '', Z17K2: 'Z999K2',
+						Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+					}
+				] } } );
+
+				const invalidInputs = zfunctionModule.getters.getInvalidInputFields( state, getters );
+				expect( invalidInputs.length ).toEqual( 0 );
+			} );
+
+			it( 'returns input with empty type but non empty label', () => {
+				state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17',
+					{
+						Z1K1: 'Z17', Z17K1: '', Z17K2: 'Z999K1',
+						Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11', { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'label' } ] }
+					},
+					{
+						Z1K1: 'Z17', Z17K1: '', Z17K2: 'Z999K2',
+						Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+					}
+				] } } );
+
+				const invalidInputs = zfunctionModule.getters.getInvalidInputFields( state, getters );
+				// Expect first input to be invalid
+				const expected = [ 10 ];
+				expect( invalidInputs ).toEqual( expected );
+			} );
+
+			it( 'returns all inputs with empty type but non empty label', () => {
+				state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17',
+					{
+						Z1K1: 'Z17', Z17K1: '', Z17K2: 'Z999K1',
+						Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11', { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'first' } ] }
+					},
+					{
+						Z1K1: 'Z17', Z17K1: '', Z17K2: 'Z999K2',
+						Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11', { Z1K1: 'Z11', Z11K1: 'Z1003', Z11K2: 'segunda' } ] }
+					}
+				] } } );
+
+				const invalidInputs = zfunctionModule.getters.getInvalidInputFields( state, getters );
+				// Expect first and second inputs to be invalid
+				const expected = [ 10, 38 ];
+				expect( invalidInputs ).toEqual( expected );
 			} );
 		} );
 	} );
@@ -427,11 +629,11 @@ describe( 'zFunction Vuex module', () => {
 
 			describe( 'connect', () => {
 				it( 'connects given tests', () => {
-					zFunctionModule.actions.connectTests( context,
+					zfunctionModule.actions.connectTests( context,
 						{ rowId: 0, zids: [ 'Z777', 'Z888' ] } );
 
 					expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
-					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+					expect( zobjectModule.getters.getZObjectAsJson(
 						context.state,
 						context.getters,
 						context.rootState,
@@ -459,11 +661,11 @@ describe( 'zFunction Vuex module', () => {
 				} );
 
 				it( 'connects given implementations', () => {
-					zFunctionModule.actions.connectImplementations( context,
+					zfunctionModule.actions.connectImplementations( context,
 						{ rowId: 0, zids: [ 'Z777', 'Z888' ] } );
 
 					expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
-					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+					expect( zobjectModule.getters.getZObjectAsJson(
 						context.state,
 						context.getters,
 						context.rootState,
@@ -493,11 +695,11 @@ describe( 'zFunction Vuex module', () => {
 
 			describe( 'disconnect', () => {
 				it( 'disconnects given testers', () => {
-					zFunctionModule.actions.disconnectTests( context,
+					zfunctionModule.actions.disconnectTests( context,
 						{ rowId: 0, zids: [ 'Z10002', 'Z10003' ] } );
 
 					expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
-					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+					expect( zobjectModule.getters.getZObjectAsJson(
 						context.state,
 						context.getters,
 						context.rootState,
@@ -521,11 +723,11 @@ describe( 'zFunction Vuex module', () => {
 				} );
 
 				it( 'disconnects given implementations', () => {
-					zFunctionModule.actions.disconnectImplementations( context,
+					zfunctionModule.actions.disconnectImplementations( context,
 						{ rowId: 0, zids: [ 'Z10004', 'Z10005' ] } );
 
 					expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
-					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+					expect( zobjectModule.getters.getZObjectAsJson(
 						context.state,
 						context.getters,
 						context.rootState,
@@ -595,7 +797,7 @@ describe( 'zFunction Vuex module', () => {
 
 				it( 'connectTests', () => {
 					try {
-						zFunctionModule.actions.connectTests( context,
+						zfunctionModule.actions.connectTests( context,
 							{ rowId: 0, zids: [ 'Z777', 'Z888' ] } );
 					} catch ( error ) {
 						expect( error ).toEqual( 'error' );
@@ -606,7 +808,7 @@ describe( 'zFunction Vuex module', () => {
 
 				it( 'disconnectTests', () => {
 					try {
-						zFunctionModule.actions.disconnectTests( context,
+						zfunctionModule.actions.disconnectTests( context,
 							{ rowId: 0, zids: [ 'Z111', 'Z333' ] } );
 					} catch ( error ) {
 						expect( error ).toEqual( 'error' );
@@ -617,7 +819,7 @@ describe( 'zFunction Vuex module', () => {
 
 				it( 'connectImplementations', () => {
 					try {
-						zFunctionModule.actions.connectImplementations( context,
+						zfunctionModule.actions.connectImplementations( context,
 							{ rowId: 0, zids: [ 'Z777', 'Z888' ] } );
 					} catch ( error ) {
 						expect( error ).toEqual( 'error' );
@@ -628,7 +830,7 @@ describe( 'zFunction Vuex module', () => {
 
 				it( 'disconnectImplementations', () => {
 					try {
-						zFunctionModule.actions.disconnectImplementations( context,
+						zfunctionModule.actions.disconnectImplementations( context,
 							{ rowId: 0, zids: [ 'Z444', 'Z666' ] } );
 					} catch ( error ) {
 						expect( error ).toEqual( 'error' );
@@ -680,7 +882,7 @@ describe( 'zFunction Vuex module', () => {
 
 			it( 'calls api.get for tests and returns their zids', async () => {
 				const functionZid = 'Z801';
-				const zids = await zFunctionModule.actions.fetchTests(
+				const zids = await zfunctionModule.actions.fetchTests(
 					context,
 					functionZid
 				);
@@ -698,7 +900,7 @@ describe( 'zFunction Vuex module', () => {
 
 			it( 'calls api.get for implementations and returns their zids', async () => {
 				const functionZid = 'Z801';
-				const zids = await zFunctionModule.actions.fetchImplementations(
+				const zids = await zfunctionModule.actions.fetchImplementations(
 					context,
 					functionZid
 				);

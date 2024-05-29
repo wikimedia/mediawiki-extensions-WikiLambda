@@ -200,7 +200,7 @@ module.exports = exports = defineComponent( {
 	} ),
 	methods: Object.assign( mapActions( [
 		'fetchZids',
-		'lookupZObject'
+		'lookupZObjectLabels'
 	] ), {
 		/**
 		 * Returns whether the given language Zid has any metadata
@@ -264,7 +264,7 @@ module.exports = exports = defineComponent( {
 		 */
 		getLookupResults: function ( substring ) {
 			const allZids = [];
-			this.lookupZObject( {
+			this.lookupZObjectLabels( {
 				input: substring,
 				type: Constants.Z_NATURAL_LANGUAGE
 			} ).then( ( payload ) => {

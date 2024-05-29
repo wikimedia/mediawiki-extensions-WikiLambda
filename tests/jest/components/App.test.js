@@ -32,7 +32,7 @@ describe( 'App.vue', () => {
 		};
 
 		getters = {
-			getZObjectInitialized: createGetterMock( true ),
+			isInitialized: createGetterMock( true ),
 			getCurrentView: createGetterMock( 'function-editor' ),
 			isCreateNewPage: createGetterMock( false )
 		};
@@ -53,8 +53,8 @@ describe( 'App.vue', () => {
 		await waitFor( () => expect( actions.initializeView ).toHaveBeenCalled() );
 	} );
 
-	it( 'Renders loading when getZObjectInitialized and `isAppSetup`(data property) is false', () => {
-		getters.getZObjectInitialized = createGetterMock( false );
+	it( 'Renders loading when isInitialized and `isAppSetup`(data property) is false', () => {
+		getters.isInitialized = createGetterMock( false );
 		global.store.hotUpdate( {
 			getters: getters
 		} );
@@ -70,7 +70,7 @@ describe( 'App.vue', () => {
 		expect( global.$i18n ).toHaveBeenCalledWith( 'wikilambda-loading' );
 	} );
 
-	it( 'Does not render the router view when getZObjectInitialized is true but initializeView has not yet completed', () => {
+	it( 'Does not render the router view when isInitialized is true but initializeView has not yet completed', () => {
 		const wrapper = shallowMount( App, {
 			provide: {
 				viewmode: true
@@ -81,7 +81,7 @@ describe( 'App.vue', () => {
 		expect( wrapper.findComponent( { name: 'wl-function-editor' } ).exists() ).toBe( false );
 	} );
 
-	it( 'Renders the router view when getZObjectInitialized is true and initializeView has completed', async () => {
+	it( 'Renders the router view when isInitialized is true and initializeView has completed', async () => {
 		const wrapper = shallowMount( App, {
 			provide: {
 				viewmode: true

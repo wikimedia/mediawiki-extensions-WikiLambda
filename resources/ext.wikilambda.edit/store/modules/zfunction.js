@@ -1,5 +1,5 @@
 /*!
- * WikiLambda Vue editor: Function Editor Vuex module
+ * WikiLambda Vue editor: Function Editor and Viewer Vuex module
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -236,6 +236,58 @@ module.exports = exports = {
 				const childRows = getters.getChildrenByParentRowId( implementationsRow.id ).slice( 1 );
 				return childRows.map( ( row ) => getters.getZReferenceTerminalValue( row.id ) );
 			};
+		},
+		/**
+		 * Returns the array of input-related field ids that are invalid.
+		 * Ignores those inputs that have no label and fully empty type
+		 * because it will be deleted before submission.
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {Array}
+		 */
+		getInvalidInputFields: function ( _state, getters ) {
+			const inputs = getters.getZFunctionInputs();
+			let invalidRowIds = [];
+			for ( const inputRow of inputs ) {
+				// Get the validity state of all the type fields
+				const inputTypeRow = getters.getRowByKeyPath( [ Constants.Z_ARGUMENT_TYPE ], inputRow.id );
+				const inputTypeFields = getters.validateGenericType( inputTypeRow.id );
+
+				// Get the values of the input labels
+				const inputLabelsRow = getters.getRowByKeyPath( [
+					Constants.Z_ARGUMENT_LABEL,
+					Constants.Z_MULTILINGUALSTRING_VALUE
+				], inputRow.id );
+				const inputLabelRows = getters.getChildrenByParentRowId( inputLabelsRow.id ).slice( 1 );
+				const inputLabelValues = inputLabelRows
+					.map( ( row ) => getters.getZMonolingualTextValue( row.id ) )
+					.filter( ( text ) => !!text );
+
+				// If type value is empty and fields are empty, ignore this input:
+				// because it's totally empty, the input will be erased before submission.
+				const inputTypeIsEmpty = ( inputTypeFields.filter( ( e ) => e.isValid ).length === 0 );
+				if ( inputTypeIsEmpty && inputLabelValues.length === 0 ) {
+					continue;
+				}
+
+				// Return errors to report
+				const invalidInputRowIds = inputTypeFields.filter( ( e ) => !e.isValid ).map( ( e ) => e.rowId );
+				invalidRowIds = invalidRowIds.concat( invalidInputRowIds );
+			}
+			return invalidRowIds;
+		},
+		/**
+		 * Returns the array of output-related field ids that are invalid.
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {Array}
+		 */
+		getInvalidOutputFields: function ( _state, getters ) {
+			const outputTypeRow = getters.getZFunctionOutput();
+			const outputTypeFields = getters.validateGenericType( outputTypeRow.id );
+			return outputTypeFields.filter( ( e ) => !e.isValid ).map( ( e ) => e.rowId );
 		}
 	},
 	actions: {

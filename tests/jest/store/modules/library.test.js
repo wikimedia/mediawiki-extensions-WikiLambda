@@ -275,6 +275,21 @@ describe( 'library module', function () {
 	} );
 
 	describe( 'Actions', function () {
+		describe( 'prefetchZids', function () {
+			it( 'prefetchZids function performs expected actions', function () {
+				context.dispatch = jest.fn();
+				context.getters = {
+					getUserLangZid: jest.fn().mockReturnValue( 'Z1002' )
+				};
+
+				libraryModule.actions.prefetchZids( context );
+
+				expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
+				// No need to check specific prefetched keys, just that keys are being fetched
+				expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZids', expect.anything() );
+			} );
+		} );
+
 		describe( 'fetchZids', function () {
 			beforeEach( function () {
 				context.state.objects = {};

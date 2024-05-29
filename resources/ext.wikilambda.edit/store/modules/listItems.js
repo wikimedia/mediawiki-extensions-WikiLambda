@@ -1,5 +1,5 @@
 /*!
- * WikiLambda Vue editor: zTypedLists Vuex module
+ * WikiLambda Vue editor: Handle item actions on the existing typed lists.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT

@@ -193,7 +193,7 @@ module.exports = exports = defineComponent( {
 	} ),
 	methods: Object.assign( {},
 		mapActions( [
-			'lookupZObject',
+			'lookupZObjectLabels',
 			'fetchZids'
 		] ),
 		{
@@ -223,12 +223,12 @@ module.exports = exports = defineComponent( {
 
 			/**
 			 * Handle get zObject lookup.
-			 * update lookup results with label and update  in store.
+			 * update lookup results with label and update in store.
 			 *
 			 * @param {string} input
 			 */
 			getLookupResults: function ( input ) {
-				this.lookupZObject( {
+				this.lookupZObjectLabels( {
 					input,
 					type: this.type,
 					returnType: this.returnType,

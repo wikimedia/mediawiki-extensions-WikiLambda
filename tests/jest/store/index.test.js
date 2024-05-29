@@ -7,13 +7,11 @@
 
 'use strict';
 
-const Vuex = require( 'vuex' );
+const Vuex = require( 'vuex' ),
+	store = require( '../../../resources/ext.wikilambda.edit/store/index.js' );
 
-const store = require( '../../../resources/ext.wikilambda.edit/store/index.js' );
-
-describe( 'Vuex store (index.js)', function () {
-	it( 'should export a function', function () {
+describe( 'Vuex store (index.js)', () => {
+	it( 'should export a function', () => {
 		expect( store ).toBeInstanceOf( Vuex.Store );
 	} );
-}
-);
+} );

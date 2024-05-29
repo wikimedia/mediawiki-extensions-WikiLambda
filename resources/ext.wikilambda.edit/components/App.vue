@@ -6,7 +6,7 @@
 -->
 <template>
 	<div id="ext-wikilambda-app" class="ext-wikilambda-edit">
-		<template v-if="getZObjectInitialized && isAppSetup">
+		<template v-if="isInitialized && isAppSetup">
 			<!-- Append wl- prefix to the router current view, to help reference component correctly -->
 			<component
 				:is="`wl-${getCurrentView}`"
@@ -50,7 +50,7 @@ module.exports = exports = defineComponent( {
 	},
 	computed: Object.assign(
 		mapGetters( [
-			'getZObjectInitialized',
+			'isInitialized',
 			'isCreateNewPage',
 			'getCurrentView'
 		] )

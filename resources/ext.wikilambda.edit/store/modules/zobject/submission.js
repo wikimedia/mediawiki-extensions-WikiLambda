@@ -38,7 +38,7 @@ module.exports = exports = {
 				// * Input type not set
 				case Constants.Z_FUNCTION:
 					// invalid if a function doesn't have an output type
-					invalidOutputs = context.getters.currentZFunctionInvalidOutput;
+					invalidOutputs = context.getters.getInvalidOutputFields;
 					if ( invalidOutputs.length > 0 ) {
 						for ( const invalidRow of invalidOutputs ) {
 							context.dispatch( 'setError', {
@@ -51,7 +51,7 @@ module.exports = exports = {
 					}
 
 					// invalid if any of the non-empty inputs doesn't have a type
-					invalidInputs = context.getters.currentZFunctionInvalidInputs;
+					invalidInputs = context.getters.getInvalidInputFields;
 					if ( invalidInputs.length > 0 ) {
 						for ( const invalidRow of invalidInputs ) {
 							context.dispatch( 'setError', {

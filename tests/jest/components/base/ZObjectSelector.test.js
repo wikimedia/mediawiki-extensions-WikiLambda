@@ -43,7 +43,7 @@ describe( 'ZObjectSelector', () => {
 
 		actions = {
 			fetchZids: jest.fn(),
-			lookupZObject: lookupMock
+			lookupZObjectLabels: lookupMock
 		};
 		global.store.hotUpdate( {
 			state: state,

@@ -1,5 +1,5 @@
 /*!
- * WikiLambda unit test suite for the callZFunction Vuex module
+ * WikiLambda unit test suite for the functionCall Vuex module
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -7,52 +7,43 @@
 'use strict';
 
 const tableDataToRowObjects = require( '../../helpers/zObjectTableHelpers.js' ).tableDataToRowObjects,
-	callZFunctionModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/callZFunction.js' ),
+	functionCallModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/functionCall.js' ),
 	zobjectModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zobject.js' ),
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	functionCall = {
-		Z1K1: {
-			Z1K1: 'Z9',
-			Z9K1: 'Z7'
-		},
-		Z7K1: {
-			Z1K1: 'Z9',
-			Z9K1: 'Z110'
-		},
-		Z110K1: {
-			Z1K1: 'Z6',
-			Z6K1: 'past'
-		}
-	},
-	canonicalFunctionCall = {
-		Z1K1: 'Z7', Z7K1: 'Z110', Z110K1: 'past'
-	};
+	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' );
+
+const functionCall = {
+	Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+	Z7K1: { Z1K1: 'Z9', Z9K1: 'Z110' },
+	Z110K1: { Z1K1: 'Z6', Z6K1: 'past' }
+};
+
+const canonicalFunctionCall = {
+	Z1K1: 'Z7',
+	Z7K1: 'Z110',
+	Z110K1: 'past'
+};
 
 let context,
 	postMock;
 
-describe( 'callZFunction Vuex module', function () {
-	beforeEach( function () {
+describe( 'functionCall Vuex module', () => {
+	beforeEach( () => {
 		context = Object.assign( {}, {
-			// eslint-disable-next-line no-unused-vars
-			commit: jest.fn( function ( mutationType, payload ) {
-				return;
-			} ),
+			commit: jest.fn(),
 			dispatch: jest.fn(),
 			getters: {}
 		} );
 
-		mw.Api = jest.fn( function () {
+		mw.Api = jest.fn( () => {
 			return {
 				post: postMock
 			};
 		} );
 	} );
 
-	describe( 'Actions', function () {
-
+	describe( 'Actions', () => {
 		describe( 'initializeResultId', () => {
-			beforeEach( function () {
+			beforeEach( () => {
 				context.state = {
 					zobject: tableDataToRowObjects( [
 						{ id: 0, key: undefined, parent: undefined, value: Constants.ROW_VALUE_OBJECT },
@@ -68,7 +59,7 @@ describe( 'callZFunction Vuex module', function () {
 
 			it( 'it adds a detached row when rowId is not a valid row', () => {
 				const payload = '';
-				const rowId = callZFunctionModule.actions.initializeResultId( context, payload );
+				const rowId = functionCallModule.actions.initializeResultId( context, payload );
 				expect( rowId ).toBe( 3 );
 				expect( context.commit ).toHaveBeenCalledTimes( 1 );
 				expect( context.commit ).toHaveBeenCalledWith( 'pushRow', {
@@ -81,18 +72,17 @@ describe( 'callZFunction Vuex module', function () {
 
 			it( 'it removes children when rowId is a valid row', () => {
 				const payload = 0;
-				const rowId = callZFunctionModule.actions.initializeResultId( context, payload );
+				const rowId = functionCallModule.actions.initializeResultId( context, payload );
 				expect( rowId ).toBe( 0 );
 				expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
 				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', { rowId: 0 } );
 			} );
 		} );
 
-		describe( 'callZFunction', () => {
-			it( 'Call MW API for function orchestration; set orchestrationResult', function () {
-
+		describe( 'functionCall', () => {
+			it( 'Call MW API for function orchestration; set orchestrationResult', () => {
 				const expectedData = '{ "Z1K1": "Z6", "Z6K1": "present" }';
-				postMock = jest.fn( function () {
+				postMock = jest.fn( () => {
 					return new Promise( function ( resolve ) {
 						resolve( {
 							query: {
@@ -104,9 +94,7 @@ describe( 'callZFunction Vuex module', function () {
 					} );
 				} );
 
-				callZFunctionModule.actions.callZFunction(
-					context, { functionCall }
-				);
+				functionCallModule.actions.callZFunction( context, { functionCall } );
 
 				expect( postMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_function_call',
@@ -114,19 +102,17 @@ describe( 'callZFunction Vuex module', function () {
 				} );
 			} );
 
-			it( 'Call MW API for function orchestration; set error as orchestrationResult', function () {
+			it( 'Call MW API for function orchestration; set error as orchestrationResult', () => {
 				const error = 'one tissue, used';
 
 				// eslint-disable-next-line no-unused-vars
-				postMock = jest.fn( function ( payload ) {
-					return new Promise( function ( resolve, reject ) {
+				postMock = jest.fn( ( payload ) => {
+					return new Promise( ( resolve, reject ) => {
 						reject( error );
 					} );
 				} );
 
-				callZFunctionModule.actions.callZFunction(
-					context, { functionCall }
-				);
+				functionCallModule.actions.callZFunction( context, { functionCall } );
 
 				expect( postMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_function_call',

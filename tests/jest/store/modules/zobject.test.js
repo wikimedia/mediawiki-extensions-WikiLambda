@@ -103,17 +103,6 @@ describe( 'zobject Vuex module', () => {
 			} );
 		} );
 
-		describe( 'isCreateNewPage', () => {
-			it( 'Returns the default value of createNewPage', () => {
-				expect( zobjectModule.getters.isCreateNewPage( state ) ).toBe( false );
-			} );
-
-			it( 'Returns the createNewPage value', () => {
-				state.createNewPage = true;
-				expect( zobjectModule.getters.isCreateNewPage( state ) ).toBe( true );
-			} );
-		} );
-
 		describe( 'getNextKey', () => {
 			it( 'Returns first ID for argument', () => {
 				state.zobject = zobjectToRows( {
@@ -2570,6 +2559,97 @@ describe( 'zobject Vuex module', () => {
 				expect( result ).toBe( 4 );
 			} );
 		} );
+
+		describe( 'validateGenericType', () => {
+			let getters;
+			beforeEach( () => {
+				state = { zobject: [] };
+				getters = {};
+				getters.getRowById = zobjectModule.getters.getRowById( state, getters );
+				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+				getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( state, getters );
+				getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
+				getters.getZReferenceTerminalValue = zobjectModule.getters.getZReferenceTerminalValue( state, getters );
+				getters.getZFunctionCallFunctionId = zobjectModule.getters.getZFunctionCallFunctionId( state, getters );
+				getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+				getters.getZFunctionCallArguments = zobjectModule.getters.getZFunctionCallArguments( state, getters );
+				getters.getZObjectAsJsonById = zobjectModule.getters.getZObjectAsJsonById( state, getters );
+				getters.validateGenericType = zobjectModule.getters.validateGenericType( state, getters );
+			} );
+
+			it( 'unset reference is not valid', () => {
+				state.zobject = zobjectToRows( {
+					Z1K1: 'Z9',
+					Z9K1: ''
+				} );
+
+				const actual = getters.validateGenericType( 0 );
+				const expected = [ { rowId: 0, isValid: false } ];
+
+				expect( actual ).toEqual( expected );
+			} );
+
+			it( 'set reference is valid', () => {
+				state.zobject = zobjectToRows( {
+					Z1K1: 'Z9',
+					Z9K1: 'Z6'
+				} );
+
+				const actual = getters.validateGenericType( 0 );
+				const expected = [ { rowId: 0, isValid: true } ];
+
+				expect( actual ).toEqual( expected );
+			} );
+
+			it( 'unset function call is not valid', () => {
+				state.zobject = zobjectToRows( {
+					Z1K1: 'Z7',
+					Z7K1: ''
+				} );
+
+				const actual = getters.validateGenericType( 0 );
+				const expected = [ { rowId: 0, isValid: false } ];
+
+				expect( actual ).toEqual( expected );
+			} );
+
+			it( 'unset function call argument is not valid', () => {
+				state.zobject = zobjectToRows( {
+					Z1K1: 'Z7',
+					Z7K1: 'Z881', // rowId 0
+					Z881K1: '' // rowId 7
+				} );
+
+				const actual = getters.validateGenericType( 0 );
+				const expected = [ { rowId: 0, isValid: true }, { rowId: 7, isValid: false } ];
+
+				expect( actual ).toEqual( expected );
+			} );
+
+			it( 'nested function call argument is not valid', () => {
+				state.zobject = zobjectToRows( {
+					Z1K1: 'Z7',
+					Z7K1: 'Z881', // rowId 0
+					Z881K1: { // rowId 7
+						Z1K1: 'Z7',
+						Z7K1: 'Z881',
+						Z881K1: { // rowId 14
+							Z1K1: 'Z9',
+							Z9K1: ''
+						}
+					}
+				} );
+
+				const actual = getters.validateGenericType( 0 );
+				const expected = [
+					{ rowId: 0, isValid: true },
+					{ rowId: 7, isValid: true },
+					{ rowId: 14, isValid: false }
+				];
+
+				expect( actual ).toEqual( expected );
+			} );
+		} );
 	} );
 
 	describe( 'Mutations', () => {
@@ -2590,21 +2670,10 @@ describe( 'zobject Vuex module', () => {
 				expect( state.zobject ).toEqual( zobject );
 			} );
 		} );
-
-		describe( 'setCreateNewPage', () => {
-			it( 'Sets `createNewPage` to provided value', () => {
-				expect( state.createNewPage ).toBe( false );
-
-				zobjectModule.mutations.setCreateNewPage( state, true );
-
-				expect( state.createNewPage ).toBe( true );
-			} );
-		} );
 	} );
 
 	describe( 'Actions', () => {
 		describe( 'initializeView', () => {
-
 			it( 'calls initializeCreateNewPage when creating new page', () => {
 				mw.config = {
 					get: jest.fn( () => {
@@ -2687,7 +2756,7 @@ describe( 'zobject Vuex module', () => {
 				expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z0' );
 				expect( context.commit ).toHaveBeenCalledWith( 'pushRow', expectedRootObject );
 				expect( context.dispatch ).toHaveBeenCalledWith( 'changeType', expectedChangeTypePayload );
-				expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
+				expect( context.commit ).toHaveBeenCalledWith( 'setInitialized', true );
 			} );
 
 			it( 'Initialize ZObject, create new page, initial value for Z2K2', () => {
@@ -2722,7 +2791,7 @@ describe( 'zobject Vuex module', () => {
 				expect( context.commit ).toHaveBeenCalledWith( 'pushRow', expectedRootObject );
 				expect( context.dispatch ).toHaveBeenCalledWith( 'changeType', expectedChangeTypePayload );
 				expect( context.dispatch ).toHaveBeenCalledWith( 'changeType', expectedZ2K2ChangeTypePayload );
-				expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
+				expect( context.commit ).toHaveBeenCalledWith( 'setInitialized', true );
 			} );
 
 			it( 'Initialize ZObject, create new page, non-ZID value as initial', () => {
@@ -2986,7 +3055,7 @@ describe( 'zobject Vuex module', () => {
 					expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z1234' );
 					expect( context.commit ).toHaveBeenCalledWith( 'saveMultilingualDataCopy', expectedZObjectJson );
 					expect( context.commit ).toHaveBeenCalledWith( 'setZObject', expect.anything() );
-					expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
+					expect( context.commit ).toHaveBeenCalledWith( 'setInitialized', true );
 					expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZids', expectedFetchZidsPayload );
 				} );
 
@@ -3068,7 +3137,7 @@ describe( 'zobject Vuex module', () => {
 					expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z1234' );
 					expect( context.commit ).toHaveBeenCalledWith( 'saveMultilingualDataCopy', expectedZObjectJson );
 					expect( context.commit ).toHaveBeenCalledWith( 'setZObject', expect.anything() );
-					expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
+					expect( context.commit ).toHaveBeenCalledWith( 'setInitialized', true );
 				} );
 
 				it( 'initializes undefined converter lists', async () => {
@@ -3151,7 +3220,7 @@ describe( 'zobject Vuex module', () => {
 					expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z1234' );
 					expect( context.commit ).toHaveBeenCalledWith( 'saveMultilingualDataCopy', expectedZObjectJson );
 					expect( context.commit ).toHaveBeenCalledWith( 'setZObject', expect.anything() );
-					expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
+					expect( context.commit ).toHaveBeenCalledWith( 'setInitialized', true );
 				} );
 			} );
 
@@ -3171,7 +3240,7 @@ describe( 'zobject Vuex module', () => {
 				expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z0' );
 				expect( context.commit ).toHaveBeenCalledWith( 'pushRow', expectedRootObject );
 				expect( context.dispatch ).toHaveBeenCalledWith( 'changeType', expectedChangeTypePayload );
-				expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
+				expect( context.commit ).toHaveBeenCalledWith( 'setInitialized', true );
 			} );
 		} );
 
@@ -3896,9 +3965,9 @@ describe( 'zobject Vuex module', () => {
 				context.getters.getInputsOfFunctionZid = libraryModule.getters.getInputsOfFunctionZid( context.state );
 				context.getters.getStoredObject = libraryModule.getters.getStoredObject( context.state );
 				// Getters: addZObject module
-				Object.keys( zobjectModule.modules.addZObjects.getters ).forEach( function ( key ) {
+				Object.keys( zobjectModule.modules.factory.getters ).forEach( function ( key ) {
 					context.getters[ key ] =
-						zobjectModule.modules.addZObjects.getters[ key ](
+						zobjectModule.modules.factory.getters[ key ](
 							context.state,
 							context.getters,
 							{ zobjectModule: context.state },
@@ -4032,9 +4101,9 @@ describe( 'zobject Vuex module', () => {
 				// Getters: library module
 				context.getters.getStoredObject = libraryModule.getters.getStoredObject( context.state );
 				// Getters: addZObject module
-				Object.keys( zobjectModule.modules.addZObjects.getters ).forEach( function ( key ) {
+				Object.keys( zobjectModule.modules.factory.getters ).forEach( function ( key ) {
 					context.getters[ key ] =
-						zobjectModule.modules.addZObjects.getters[ key ](
+						zobjectModule.modules.factory.getters[ key ](
 							context.state,
 							context.getters,
 							{ zobjectModule: context.state },

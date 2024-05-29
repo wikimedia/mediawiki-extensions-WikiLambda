@@ -20,6 +20,10 @@ module.exports = {
 		},
 		getQueryParams: function ( state ) {
 			return state.queryParams;
+		},
+		getViewMode: function () {
+			const editingData = mw.config.get( 'wgWikiLambda' );
+			return editingData.viewmode;
 		}
 	},
 	mutations: {
@@ -136,22 +140,11 @@ module.exports = {
 			 * @return {boolean}
 			 */
 			const isFunctionRootObject = function ( objectContext ) {
-				return objectContext.rootGetters.getCurrentZObjectType === Constants.Z_FUNCTION;
-			};
-
-			/**
-			 * Whether the current config has viewmode=true
-			 *
-			 * @param {Object} uriQuery The contextual mw.Uri's query sub-object
-			 * @return {boolean}
-			 */
-			const isViewMode = function () {
-				const editingData = mw.config.get( 'wgWikiLambda' );
-				return editingData.viewmode;
+				return objectContext.getters.getCurrentZObjectType === Constants.Z_FUNCTION;
 			};
 
 			if ( isFunctionRootObject( context ) ) {
-				currentView = isViewMode() ?
+				currentView = context.getters.getViewMode ?
 					Constants.VIEWS.FUNCTION_VIEWER :
 					Constants.VIEWS.FUNCTION_EDITOR;
 
