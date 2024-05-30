@@ -6,7 +6,7 @@
  */
 'use strict';
 
-const shallowMount = require( '@vue/test-utils' ).shallowMount,
+const mount = require( '@vue/test-utils' ).mount,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
@@ -35,7 +35,7 @@ describe( 'TypeToString', () => {
 
 	describe( 'for simple type', () => {
 		it( 'renders type link', () => {
-			const wrapper = shallowMount( TypeToString, {
+			const wrapper = mount( TypeToString, {
 				props: {
 					type: Constants.Z_STRING
 				}
@@ -50,7 +50,7 @@ describe( 'TypeToString', () => {
 
 	describe( 'for generic type', () => {
 		it( 'renders type link', () => {
-			const wrapper = shallowMount( TypeToString, {
+			const wrapper = mount( TypeToString, {
 				props: {
 					type: {
 						Z1K1: Constants.Z_FUNCTION_CALL,
@@ -67,7 +67,7 @@ describe( 'TypeToString', () => {
 		} );
 
 		it( 'renders argument', () => {
-			const wrapper = shallowMount( TypeToString, {
+			const wrapper = mount( TypeToString, {
 				props: {
 					type: {
 						Z1K1: Constants.Z_FUNCTION_CALL,

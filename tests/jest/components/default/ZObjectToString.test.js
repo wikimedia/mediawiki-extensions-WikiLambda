@@ -7,7 +7,7 @@
 'use strict';
 
 const { waitFor } = require( '@testing-library/vue' ),
-	shallowMount = require( '@vue/test-utils' ).shallowMount,
+	mount = require( '@vue/test-utils' ).mount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
@@ -51,13 +51,13 @@ describe( 'ZObjectToString', () => {
 			} );
 
 			it( 'renders without errors', () => {
-				const wrapper = shallowMount( ZObjectToString );
+				const wrapper = mount( ZObjectToString );
 				expect( wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-text]' ).exists() ).toBe( true );
 				expect( wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' ).exists() ).toBe( false );
 			} );
 
 			it( 'renders the string terminal value', () => {
-				const wrapper = shallowMount( ZObjectToString );
+				const wrapper = mount( ZObjectToString );
 				const stringElement = wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-text]' );
 				expect( stringElement.text() ).toBe( '"the final stringdown"' );
 			} );
@@ -71,13 +71,13 @@ describe( 'ZObjectToString', () => {
 			} );
 
 			it( 'renders without errors', () => {
-				const wrapper = shallowMount( ZObjectToString );
+				const wrapper = mount( ZObjectToString );
 				expect( wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' ).exists() ).toBe( true );
 				expect( wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-text]' ).exists() ).toBe( false );
 			} );
 
 			it( 'renders the link to referred zobject', () => {
-				const wrapper = shallowMount( ZObjectToString );
+				const wrapper = mount( ZObjectToString );
 				const linkWrapper = wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' );
 				const referenceLink = linkWrapper.get( 'a' );
 				expect( referenceLink.attributes().href ).toBe( '/view/en/Z42' );
@@ -94,13 +94,13 @@ describe( 'ZObjectToString', () => {
 			} );
 
 			it( 'renders without errors', () => {
-				const wrapper = shallowMount( ZObjectToString );
+				const wrapper = mount( ZObjectToString );
 				expect( wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' ).exists() ).toBe( true );
 				expect( wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-text]' ).exists() ).toBe( false );
 			} );
 
 			it( 'renders the link to called function', () => {
-				const wrapper = shallowMount( ZObjectToString );
+				const wrapper = mount( ZObjectToString );
 				const linkWrapper = wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' );
 				const referenceLink = linkWrapper.get( 'a' );
 				expect( referenceLink.attributes().href ).toBe( '/view/en/Z10001' );
@@ -125,13 +125,13 @@ describe( 'ZObjectToString', () => {
 			} );
 
 			it( 'renders without errors', () => {
-				const wrapper = shallowMount( ZObjectToString );
+				const wrapper = mount( ZObjectToString );
 				expect( wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' ).exists() ).toBe( true );
 				expect( wrapper.findAll( 'div[role=ext-wikilambda-zobject-to-string-text]' ) ).toHaveLength( 2 );
 			} );
 
 			it( 'renders the link to called function', () => {
-				const wrapper = shallowMount( ZObjectToString );
+				const wrapper = mount( ZObjectToString );
 				const linkWrapper = wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' );
 				const referenceLink = linkWrapper.get( 'a' );
 				expect( referenceLink.attributes().href ).toBe( '/view/en/Z10001' );
@@ -139,7 +139,7 @@ describe( 'ZObjectToString', () => {
 			} );
 
 			it( 'renders comma separated arguments', () => {
-				const wrapper = shallowMount( ZObjectToString );
+				const wrapper = mount( ZObjectToString );
 
 				const childElements = wrapper
 					.find( '.ext-wikilambda-zobject-to-string' )
@@ -156,7 +156,7 @@ describe( 'ZObjectToString', () => {
 			} );
 
 			it( 'renders each argument with another ZObjectToString component', () => {
-				const wrapper = shallowMount( ZObjectToString );
+				const wrapper = mount( ZObjectToString );
 				expect( wrapper.findAllComponents( ZObjectToString ) ).toHaveLength( 2 );
 			} );
 		} );
@@ -170,13 +170,13 @@ describe( 'ZObjectToString', () => {
 			} );
 
 			it( 'renders without errors', () => {
-				const wrapper = shallowMount( ZObjectToString );
+				const wrapper = mount( ZObjectToString );
 				expect( wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-text]' ).exists() ).toBe( true );
 				expect( wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' ).exists() ).toBe( false );
 			} );
 
 			it( 'renders the string terminal value', () => {
-				const wrapper = shallowMount( ZObjectToString );
+				const wrapper = mount( ZObjectToString );
 				const stringElement = wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-text]' );
 				expect( stringElement.text() ).toBe( '"argument label"' );
 			} );
@@ -201,13 +201,13 @@ describe( 'ZObjectToString', () => {
 			} );
 
 			it( 'renders without errors', () => {
-				const wrapper = shallowMount( ZObjectToString );
+				const wrapper = mount( ZObjectToString );
 				expect( wrapper.findAll( 'div[role=ext-wikilambda-zobject-to-string-link]' ) ).toHaveLength( 2 );
 				expect( wrapper.findAll( 'div[role=ext-wikilambda-zobject-to-string-text]' ) ).toHaveLength( 1 );
 			} );
 
 			it( 'renders the link to type', () => {
-				const wrapper = shallowMount( ZObjectToString );
+				const wrapper = mount( ZObjectToString );
 				const linkWrapper = wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' );
 				const referenceLink = linkWrapper.get( 'a' );
 				expect( referenceLink.attributes().href ).toBe( '/view/en/Z11' );
@@ -215,7 +215,7 @@ describe( 'ZObjectToString', () => {
 			} );
 
 			it( 'renders the link to referenced argument', () => {
-				const wrapper = shallowMount( ZObjectToString );
+				const wrapper = mount( ZObjectToString );
 				const linkWrapper = wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' );
 				const argWrapper = linkWrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' );
 				const referenceLink = argWrapper.get( 'a' );
@@ -224,7 +224,7 @@ describe( 'ZObjectToString', () => {
 			} );
 
 			it( 'renders comma separated arguments', () => {
-				const wrapper = shallowMount( ZObjectToString );
+				const wrapper = mount( ZObjectToString );
 
 				const childElements = wrapper
 					.find( '.ext-wikilambda-zobject-to-string' )
@@ -241,7 +241,7 @@ describe( 'ZObjectToString', () => {
 			} );
 
 			it( 'renders each argument with another ZObjectToString component', () => {
-				const wrapper = shallowMount( ZObjectToString );
+				const wrapper = mount( ZObjectToString );
 				expect( wrapper.findAllComponents( ZObjectToString ) ).toHaveLength( 2 );
 			} );
 		} );
@@ -257,19 +257,19 @@ describe( 'ZObjectToString', () => {
 			} );
 
 			it( 'renders without errors', () => {
-				const wrapper = shallowMount( ZObjectToString );
+				const wrapper = mount( ZObjectToString );
 				expect( wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-text]' ).exists() ).toBe( false );
 				expect( wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' ).exists() ).toBe( true );
 			} );
 
 			it( 'renders the string terminal value', () => {
-				const wrapper = shallowMount( ZObjectToString );
+				const wrapper = mount( ZObjectToString );
 				const stringElement = wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' );
 				expect( stringElement.text() ).toBe( 'Enter String' );
 			} );
 
 			it( 'triggers an expand event when clicking the link', async () => {
-				const wrapper = shallowMount( ZObjectToString );
+				const wrapper = mount( ZObjectToString );
 				const link = wrapper.find( '.ext-wikilambda-zobject-to-string-blank' );
 				link.trigger( 'click' );
 				await waitFor( () => expect( wrapper.emitted( 'expand' ) ).toBeTruthy() );
@@ -286,13 +286,13 @@ describe( 'ZObjectToString', () => {
 			} );
 
 			it( 'renders without errors', () => {
-				const wrapper = shallowMount( ZObjectToString );
+				const wrapper = mount( ZObjectToString );
 				expect( wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' ).exists() ).toBe( true );
 				expect( wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-text]' ).exists() ).toBe( false );
 			} );
 
 			it( 'renders the link to referred zobject', () => {
-				const wrapper = shallowMount( ZObjectToString );
+				const wrapper = mount( ZObjectToString );
 				const linkWrapper = wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' );
 				const referenceLink = linkWrapper.get( 'a' );
 				expect( referenceLink.attributes().href ).toBe( undefined );
@@ -301,7 +301,7 @@ describe( 'ZObjectToString', () => {
 			} );
 
 			it( 'triggers an expand event when clicking the link', async () => {
-				const wrapper = shallowMount( ZObjectToString );
+				const wrapper = mount( ZObjectToString );
 				const link = wrapper.find( '.ext-wikilambda-zobject-to-string-blank' );
 				link.trigger( 'click' );
 				await waitFor( () => expect( wrapper.emitted( 'expand' ) ).toBeTruthy() );
@@ -317,13 +317,13 @@ describe( 'ZObjectToString', () => {
 			} );
 
 			it( 'renders without errors', () => {
-				const wrapper = shallowMount( ZObjectToString );
+				const wrapper = mount( ZObjectToString );
 				expect( wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' ).exists() ).toBe( true );
 				expect( wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-text]' ).exists() ).toBe( false );
 			} );
 
 			it( 'renders the link to called function', () => {
-				const wrapper = shallowMount( ZObjectToString );
+				const wrapper = mount( ZObjectToString );
 				const linkWrapper = wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' );
 				const referenceLink = linkWrapper.get( 'a' );
 				expect( referenceLink.attributes().href ).toBe( undefined );
@@ -332,7 +332,7 @@ describe( 'ZObjectToString', () => {
 			} );
 
 			it( 'triggers an expand event when clicking the link', async () => {
-				const wrapper = shallowMount( ZObjectToString );
+				const wrapper = mount( ZObjectToString );
 				const link = wrapper.find( '.ext-wikilambda-zobject-to-string-blank' );
 				link.trigger( 'click' );
 				await waitFor( () => expect( wrapper.emitted( 'expand' ) ).toBeTruthy() );
