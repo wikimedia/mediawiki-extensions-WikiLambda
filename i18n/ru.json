@@ -27,6 +27,7 @@
 	"wikilambda-literal-type": "Буквально $1",
 	"wikilambda-functioncall": "Вызов функции",
 	"wikilambda-edit": "Править",
+	"wikilambda-edit-monolingual-text-placeholder": "Введите текст",
 	"wikilambda-helplink-button": "Справка",
 	"wikilambda-special-createobject": "Создать новый ZObject",
 	"wikilambda-special-createobject-nojs": "Эта страница требует использования JavaScript.",
@@ -158,6 +159,7 @@
 	"wikilambda-special-create-function": "Создать новую функцию",
 	"wikilambda-special-create-type": "Создать новый тип",
 	"wikilambda-special-create-test": "Создать новый тест",
+	"wikilambda-renderer-view-invalid-result": "Нет отображаемого значения",
 	"wikilambda-object-selector-suggested-types": "Предлагаемые типы",
 	"wikilambda-object-selector-suggested-languages": "Предлагаемые языки"
 }

@@ -115,6 +115,7 @@
 	"wikilambda-literal-type": "$1 letterale",
 	"wikilambda-functioncall": "Chiamata di funzione",
 	"wikilambda-edit": "Modifica",
+	"wikilambda-edit-monolingual-text-placeholder": "Inserisci testo",
 	"wikilambda-helplink-button": "Aiuto",
 	"wikilambda-helplink-tooltip": "Puoi leggere una pagina di aiuto che spiega questi metadati",
 	"wikilambda-special-createobject": "Crea un nuovo oggetto",
