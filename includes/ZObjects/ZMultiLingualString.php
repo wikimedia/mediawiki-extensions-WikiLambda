@@ -15,6 +15,8 @@ use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use MediaWiki\Logger\LoggerFactory;
+use RuntimeException;
 
 class ZMultiLingualString extends ZObject {
 
@@ -162,7 +164,20 @@ class ZMultiLingualString extends ZObject {
 	 * @param ZMonoLingualString $value The new value to set.
 	 */
 	public function setMonoLingualString( ZMonoLingualString $value ): void {
-		$this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $value->getLanguage() ?? '' ] = $value;
+		$language = $value->getLanguage() ?? '';
+		if ( !is_string( $language ) ) {
+			$logger = LoggerFactory::getInstance( 'WikiLambda' );
+			$logger->warning(
+				'Label to be added to a ZMultiLingualString but not a string: {language}',
+				[
+					'language' => $language,
+					'value' => $value,
+					'e' => new RuntimeException()
+				]
+			);
+			return;
+		}
+		$this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $language ] = $value;
 	}
 
 	/**
