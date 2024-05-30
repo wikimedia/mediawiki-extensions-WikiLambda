@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Kuldeepburjbhalaike"
+			"Kuldeepburjbhalaike",
+			"Cabal"
 		]
 	},
 	"wikilambda-desc": "ਵਿਕੀਮੀਡੀਆ ਵਿਕੀਆਂ ਨੂੰ ਇੱਕ ਵਿਕੀਟੈਕਸਟ ਪਾਰਸ ਕਰਨ ਵਾਲਾ ਫੰਕਸ਼ਨ ਪ੍ਰਦਾਨ ਕਰਨਾ ਜਿਸ ਨਾਲ ਇੱਕ ਕੇਂਦਰੀ ਵਿਕੀ ਉੱਤੇ ਲਿਖੇ ਅਤੇ ਮੁਲਾਂਕਣ ਕੀਤੇ ਫੰਕਸ਼ਨਾਂ ਦੇ ਮੁਲਾਂਕਣ ਨੂੰ ਕਾਲ ਕੀਤਾ ਜਾ ਸਕੇ।",
@@ -30,12 +31,12 @@
 	"wikilambda-special-viewobject": "ਆਬਜੈਕਟ ਵੇਖੋ",
 	"wikilambda-special-listduplicateobjectlabels-existing": "ਮੌਜੂਦਾ ਆਬਜੈਕਟ",
 	"wikilambda-special-objectsbytype-typeheader": "ਸਾਰੀਆਂ ਕਿਸਮਾਂ",
-	"wikilambda-publishnew": "ਪ੍ਰਕਾਸ਼ਿਤ ਕਰੋ",
+	"wikilambda-publishnew": "ਸਾਂਭੋ",
 	"wikilambda-publish-successful": "ਤੁਹਾਡੀਆਂ ਤਬਦੀਲੀਆਂ ਸਫਲਤਾਪੂਰਵਕ ਪ੍ਰਕਾਸ਼ਿਤ ਕੀਤੀਆਂ ਗਈਆਂ ਹਨ",
 	"wikilambda-cancel": "ਰੱਦ ਕਰੋ",
 	"wikilambda-confirm": "ਪੁਸ਼ਟੀ",
 	"wikilambda-savenew": "ਸੰਭਾਲੋ",
-	"wikilambda-publishchanges": "ਤਬਦੀਲੀਆਂ ਪ੍ਰਕਾਸ਼ਿਤ ਕਰੋ",
+	"wikilambda-publishchanges": "ਤਬਦੀਲੀਆਂ ਛਾਪੋ",
 	"wikilambda-savechanges": "ਤਬਦੀਲੀਆਂ ਸਾਂਭੋ",
 	"wikilambda-summarylabel": "ਸਾਰ:",
 	"wikilambda-languagelabel": "ਭਾਸ਼ਾ",
@@ -108,7 +109,7 @@
 	"wikilambda-editor-input-typed-list-placeholder": "ਸੂਚੀ ਕਿਸਮ",
 	"wikilambda-editor-input-default-label": "ਇਨਪੁਟ",
 	"wikilambda-editor-output-title": "ਆਊਟਪੁਟ",
-	"wikilambda-editor-publish-dialog-header": "ਆਪਣੀਆਂ ਤਬਦੀਲੀਆਂ ਪ੍ਰਕਾਸ਼ਿਤ ਕਰੋ",
+	"wikilambda-editor-publish-dialog-header": "ਆਪਣੀਆਂ ਤਬਦੀਲੀਆਂ ਛਾਪੋ",
 	"wikilambda-editor-publish-dialog-summary-label": "ਸੋਧ ਸਾਰ",
 	"wikilambda-editor-publish-dialog-summary-placeholder": "ਸੰਖੇਪ ਸਾਰ ਦਰਜ ਕਰੋ",
 	"wikilambda-editor-publish-dialog-summary-help-text": "ਤੁਸੀਂ ਇਹ ਸਫ਼ਾ ਕਿਵੇਂ ਸੁਧਾਰਿਆ?",
@@ -117,7 +118,7 @@
 	"wikilambda-continue-editing": "ਸੋਧ ਜਾਰੀ ਰੱਖੋ",
 	"wikilambda-discard-edits": "ਸੋਧਾਂ ਨੂੰ ਰੱਦ ਕਰੋ",
 	"wikilambda-function-viewer-details-input-number": "ਇਨਪੁਟ $1",
-	"wikilambda-function-viewer-details-table-view-all": "ਸਭ ਵੇਖੋ",
+	"wikilambda-function-viewer-details-table-view-all": "ਸਾਰੇ ਵੇਖੋ",
 	"wikilambda-function-viewer-details-table-view-less": "ਘੱਟ ਵੇਖੋ",
 	"wikilambda-toast-close": "ਬੰਦ ਕਰੋ",
 	"wikilambda-tester-details": "ਵੇਰਵੇ",
