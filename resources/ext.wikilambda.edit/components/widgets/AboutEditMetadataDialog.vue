@@ -443,13 +443,13 @@ module.exports = exports = defineComponent( {
 			}
 
 			this.persistState();
+			this.setDirty( true );
 			if ( !this.edit ) {
 				this.$emit( 'publish' );
 			} else {
 				if ( this.forLanguage === this.getUserLangZid ) {
 					this.setPageTitle( this.name );
 				}
-				this.setDirty( true );
 			}
 			this.closeDialog();
 		},
