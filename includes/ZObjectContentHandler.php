@@ -266,11 +266,6 @@ class ZObjectContentHandler extends ContentHandler {
 		ContentParseParams $cpoParams,
 		ParserOutput &$parserOutput
 	) {
-		if ( !$cpoParams->getGenerateHtml() ) {
-			$parserOutput->setText( '' );
-			return;
-		}
-
 		$userLang = RequestContext::getMain()->getLanguage();
 
 		// Ensure the stored content is a valid ZObject; this also populates $this->getZObject() for us
@@ -285,6 +280,19 @@ class ZObjectContentHandler extends ContentHandler {
 				)
 			);
 			// Exit early, as the rest of the code relies on the stored content being well-formed and valid.
+			return;
+		}
+
+		// Add links to other ZObjects
+		// (T361701) Do this ahead of the early return, as LinkUpdater asks for the non-HTML version
+		foreach ( $content->getInnerZObject()->getLinkedZObjects() as $link ) {
+			$title = Title::newFromText( $link, NS_MAIN );
+			$parserOutput->addLink( $title, $title->getArticleID() );
+		}
+
+		// Don't do further work if the requester doesn't want the HTML version generated.
+		if ( !$cpoParams->getGenerateHtml() ) {
+			$parserOutput->setText( '' );
 			return;
 		}
 
@@ -353,11 +361,6 @@ class ZObjectContentHandler extends ContentHandler {
 				)
 			)
 		);
-
-		// Add links to other ZObjects
-		foreach ( $content->getInnerZObject()->getLinkedZObjects() as $link ) {
-			$parserOutput->addLink( Title::newFromText( $link, NS_MAIN ) );
-		}
 	}
 
 	/**

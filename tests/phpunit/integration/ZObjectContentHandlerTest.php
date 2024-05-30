@@ -10,6 +10,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use FormatJson;
+use MediaWiki\Content\Renderer\ContentParseParams;
 use MediaWiki\Content\Transform\PreSaveTransformParamsValue;
 use MediaWiki\Content\ValidationParams;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
@@ -308,6 +309,43 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 	public function testGenerateHTMLOnEdit() {
 		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
 		$this->assertFalse( $handler->generateHTMLOnEdit() );
+	}
+
+	public function testGetParserOutput_links() {
+		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+
+		$this->registerLangs( [ 'en' ] );
+		$this->insertZids( [ 'Z2', 'Z6', 'Z9', 'Z11', 'Z12', 'Z40' ] );
+
+		$testTitle = Title::newFromText( ZTestType::TEST_ZID, NS_MAIN );
+
+		$content = new ZObjectContent( ZTestType::TEST_ENCODING );
+
+		$cpoParamsWithHTML = new ContentParseParams( $testTitle, null, ParserOptions::newFromAnon(), true );
+		$parserOutputWithHTML = $handler->getParserOutput( $content, $cpoParamsWithHTML );
+		$parserOutputLinks = $parserOutputWithHTML->getLinks();
+
+		$this->assertCount( 1, $parserOutputLinks, 'Should have links only in one namespace' );
+		$this->assertArrayHasKey( 0, $parserOutputLinks, 'Should have links in NS_MAIN' );
+
+		$this->assertArrayEquals(
+			[ 'Z111', 'Z881', 'Z3', 'Z6', 'Z1002', 'Z1004', 'Z46', 'Z64' ],
+			array_keys( $parserOutputLinks[0] ),
+			'Should have the expected 8 links in NS_MAIN'
+		);
+
+		// Also check that this happens when the 'generate HTML' flag is false, e.g. LinksUpdate jobs
+		$cpoParamsWithoutHTML = new ContentParseParams( $testTitle, null, ParserOptions::newFromAnon(), false );
+		$parserOutputWithoutHTML = $handler->getParserOutput( $content, $cpoParamsWithoutHTML );
+		$parserOutputLinks = $parserOutputWithoutHTML->getLinks();
+
+		$this->assertCount( 1, $parserOutputLinks, 'Should have links only in one namespace' );
+		$this->assertArrayHasKey( 0, $parserOutputLinks, 'Should have links in NS_MAIN' );
+		$this->assertArrayEquals(
+			[ 'Z111', 'Z881', 'Z3', 'Z6', 'Z1002', 'Z1004', 'Z46', 'Z64' ],
+			array_keys( $parserOutputLinks[0] ),
+			'Should have the expected 8 links in NS_MAIN'
+		);
 	}
 
 	public function testCreateZObjectViewHeader() {
