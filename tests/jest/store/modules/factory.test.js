@@ -39,9 +39,9 @@ describe( 'factory Vuex module', () => {
 					context.getters.getStoredObject = function ( key ) {
 						return context.state.objects[ key ];
 					};
-					Object.keys( zobjectModule.modules.factory.getters ).forEach( function ( key ) {
+					Object.keys( factoryModule.getters ).forEach( function ( key ) {
 						context.getters[ key ] =
-							zobjectModule.modules.factory.getters[ key ](
+							factoryModule.getters[ key ](
 								context.state,
 								context.getters,
 								{ zobjectModule: context.state },
@@ -58,7 +58,7 @@ describe( 'factory Vuex module', () => {
 						}
 					};
 					const payload = { id: 1, type: 'Z10528', link: false };
-					// zobjectModule.modules.factory.getters.createObjectByType( context, payload );
+					// factoryModule.getters.createObjectByType( context, payload );
 					const result = context.getters.createObjectByType( payload );
 					expect( result ).toEqual( expected );
 				} );
@@ -78,7 +78,7 @@ describe( 'factory Vuex module', () => {
 						}
 					};
 					const payload = { id: 1, type: 'Z20001', link: false };
-					// zobjectModule.modules.factory.getters.createObjectByType( context, payload );
+					// factoryModule.getters.createObjectByType( context, payload );
 					const result = context.getters.createObjectByType( payload );
 					expect( result ).toEqual( expected );
 				} );
@@ -91,7 +91,7 @@ describe( 'factory Vuex module', () => {
 						Z20004K3: ''
 					};
 					const payload = { id: 1, type: 'Z20004', link: false };
-					// zobjectModule.modules.factory.getters.createObjectByType( context, payload );
+					// factoryModule.getters.createObjectByType( context, payload );
 					const result = context.getters.createObjectByType( payload );
 					expect( result ).toEqual( expected );
 				} );
@@ -1287,7 +1287,7 @@ describe( 'factory Vuex module', () => {
 					{ id: 2, key: 'Z11K1' },
 					{ id: 3, key: 'Z11K2' }
 				];
-				zobjectModule.modules.factory.actions.clearType( context, 0 );
+				factoryModule.actions.clearType( context, 0 );
 				expect( context.dispatch ).toHaveBeenCalledTimes( 2 );
 				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', { rowId: 2, removeParent: true } );
 				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', { rowId: 3, removeParent: true } );
