@@ -4,11 +4,13 @@ namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
 use ApiBase;
 use ApiUsageException;
+use ExtensionRegistry;
 use FormatJson;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
+use MediaWiki\Extension\EventLogging\EventLogging;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
@@ -270,5 +272,28 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	/** @inheritDoc */
 	public function getLogger(): LoggerInterface {
 		return $this->logger;
+	}
+
+	/**
+	 * @param string $action An arbitrary string describing what's being recorded
+	 * @param array $eventData Key-value pairs stating various characteristics of the action;
+	 *  these must conform to the specified schema.
+	 */
+	public function submitMetricsEvent( $action, $eventData ) {
+		if ( ExtensionRegistry::getInstance()->isLoaded( 'EventLogging' ) ) {
+			EventLogging::getMetricsPlatformClient()->submitInteraction(
+				'mediawiki.product_metrics.wikilambda_api',
+				'/analytics/mediawiki/product_metrics/wikilambda/api/1.0.0',
+				$action,
+				$eventData );
+		} else {
+			$this->getLogger()->debug(
+				__METHOD__ . ' unable to submit event; EventLogging not loaded',
+				[
+					'action' => $action,
+					'eventData' => $eventData
+				]
+			);
+		}
 	}
 }
