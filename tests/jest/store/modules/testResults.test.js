@@ -7,7 +7,8 @@
 'use strict';
 
 const testResultsModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/testResults.js' ),
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' );
+	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
+	metadata = require( '../../fixtures/metadata.js' );
 
 describe( 'testResults Vuex module', () => {
 	let state,
@@ -30,43 +31,62 @@ describe( 'testResults Vuex module', () => {
 	} );
 
 	describe( 'Getters', () => {
-		it( 'should get undefined when the key is not found', () => {
-			const result = testResultsModule.getters.getZTesterResults( context.state )( 'Z10000', 'Z10001', 'Z10002' );
-			expect( result ).toBe( undefined );
+		describe( 'getZTesterResults', () => {
+			it( 'should get undefined when the key is not found', () => {
+				const result = testResultsModule.getters.getZTesterResults( context.state )( 'Z10000', 'Z10001', 'Z10002' );
+				expect( result ).toBe( undefined );
+			} );
+
+			it( 'should return the test result when it is found (true)', () => {
+				// The code allows for either normal form, as here, or canonical, as below
+				context.state.zTesterResults[ 'Z10000:Z10001:Z10002' ] = { Z1K1: 'Z40', Z40K1: 'Z41' };
+				const result = testResultsModule.getters.getZTesterResults( context.state )( 'Z10000', 'Z10001', 'Z10002' );
+				expect( result ).toBe( true );
+			} );
+
+			it( 'should return the test result when it is found (false)', () => {
+				context.state.zTesterResults[ 'Z10000:Z10001:Z10002' ] = 'Z42';
+				const result = testResultsModule.getters.getZTesterResults( context.state )( 'Z10000', 'Z10001', 'Z10002' );
+				expect( result ).toBe( false );
+			} );
+
+			it( 'should return false when the state is in an error state', () => {
+				context.state.errorState = true;
+				const result = testResultsModule.getters.getZTesterResults( context.state )( 'Z10000', 'Z10001', 'Z10002' );
+				expect( result ).toBe( false );
+			} );
 		} );
 
-		it( 'should return the test result when it is found (true)', () => {
-			// The code allows for either normal form, as here, or canonical, as below
-			context.state.zTesterResults[ 'Z10000:Z10001:Z10002' ] = { Z1K1: 'Z40', Z40K1: 'Z41' };
-			const result = testResultsModule.getters.getZTesterResults( context.state )( 'Z10000', 'Z10001', 'Z10002' );
-			expect( result ).toBe( true );
+		describe( 'getZTesterMetadata', () => {
+			it( 'should return the metadata for the given function:test:implementation key', () => {
+				context.state.zTesterMetadata[ 'Z10000:Z10001:Z10002' ] = metadata.metadataBasic;
+				context.state.zTesterMetadata[ 'Z10000:Z10001:Z10003' ] = metadata.metadataEmpty;
+
+				const metadata1 = testResultsModule.getters.getZTesterMetadata( context.state )(
+					'Z10000', 'Z10001', 'Z10002' );
+				const metadata2 = testResultsModule.getters.getZTesterMetadata( context.state )(
+					'Z10000', 'Z10001', 'Z10003' );
+
+				expect( metadata1 ).toEqual( metadata.metadataBasic );
+				expect( metadata2 ).toEqual( metadata.metadataEmpty );
+			} );
 		} );
 
-		it( 'should return the test result when it is found (false)', () => {
-			context.state.zTesterResults[ 'Z10000:Z10001:Z10002' ] = 'Z42';
-			const result = testResultsModule.getters.getZTesterResults( context.state )( 'Z10000', 'Z10001', 'Z10002' );
-			expect( result ).toBe( false );
-		} );
+		describe( 'getZTesterPercentage', () => {
+			it( 'should return an object with values for the percentage of passing tests by one given ZID', () => {
+				context.state.zTesterResults[ 'Z10000:Z10001:Z10002' ] = 'Z41';
+				context.state.zTesterResults[ 'Z10000:Z10001:Z10003' ] = 'Z41';
+				context.state.zTesterResults[ 'Z10000:Z10001:Z10004' ] = 'Z41';
+				context.state.zTesterResults[ 'Z10000:Z10001:Z10005' ] = 'Z42';
+				context.state.zTesterResults[ 'Z10009:Z10010:Z10006' ] = 'Z42';
 
-		it( 'should return false when the state is in an error state', () => {
-			context.state.errorState = true;
-			const result = testResultsModule.getters.getZTesterResults( context.state )( 'Z10000', 'Z10001', 'Z10002' );
-			expect( result ).toBe( false );
-		} );
+				const result = testResultsModule.getters.getZTesterPercentage( context.state )( 'Z10000' );
 
-		it( 'should return an object with values for the percentage of passing tests by one given ZID', () => {
-			context.state.zTesterResults[ 'Z10000:Z10001:Z10002' ] = 'Z41';
-			context.state.zTesterResults[ 'Z10000:Z10001:Z10003' ] = 'Z41';
-			context.state.zTesterResults[ 'Z10000:Z10001:Z10004' ] = 'Z41';
-			context.state.zTesterResults[ 'Z10000:Z10001:Z10005' ] = 'Z42';
-			context.state.zTesterResults[ 'Z10009:Z10010:Z10006' ] = 'Z42';
-
-			const result = testResultsModule.getters.getZTesterPercentage( context.state )( 'Z10000' );
-
-			expect( result ).toEqual( {
-				total: 4,
-				passing: 3,
-				percentage: 75
+				expect( result ).toEqual( {
+					total: 4,
+					passing: 3,
+					percentage: 75
+				} );
 			} );
 		} );
 
@@ -86,46 +106,67 @@ describe( 'testResults Vuex module', () => {
 	} );
 
 	describe( 'Mutations', () => {
-		it( 'should set the tester result', () => {
-			testResultsModule.mutations.setZTesterResult( context.state, { key: 'Z10000:Z10001:Z10002', result: 'Z41' } );
+		describe( 'setZTesterResult', () => {
+			it( 'should set the tester result', () => {
+				const key = 'Z10000:Z10001:Z10002';
+				testResultsModule.mutations.setZTesterResult( context.state, {
+					key,
+					result: 'Z41',
+					metadata: metadata.metadataEmpty
+				} );
 
-			const result = testResultsModule.getters.getZTesterResults( context.state )( 'Z10000', 'Z10001', 'Z10002' );
-			expect( result ).toBe( true );
-		} );
-
-		it( 'should set the tester result promise', () => {
-			testResultsModule.mutations.setTestResultsPromise( context.state, {
-				functionZid: 'Z10000',
-				promise: Promise.resolve( 'done' )
+				expect( context.state.zTesterResults[ key ] ).toBe( 'Z41' );
+				expect( context.state.zTesterMetadata[ key ] ).toEqual( metadata.metadataEmpty );
 			} );
 
-			return context.state.testResultsPromises.Z10000.then( ( result ) => {
-				expect( result ).toBe( 'done' );
+		} );
+
+		describe( 'setTestResultsPromise', () => {
+			it( 'should set the tester result promise', async () => {
+				testResultsModule.mutations.setTestResultsPromise( context.state, {
+					functionZid: 'Z10000',
+					promise: Promise.resolve( 'done' )
+				} );
+				await context.state.testResultsPromises.Z10000.then( ( result ) => {
+					expect( result ).toBe( 'done' );
+				} );
+			} );
+
+			it( 'should set the tester result as a resolving promise', async () => {
+				testResultsModule.mutations.setTestResultsPromise( context.state, {
+					functionZid: 'Z10000'
+				} );
+				await context.state.testResultsPromises.Z10000.then( ( result ) => {
+					expect( result ).toBe( undefined );
+				} );
 			} );
 		} );
 
-		it( 'should set the tester result as a resolving promise', () => {
-			testResultsModule.mutations.setTestResultsPromise( context.state, {
-				functionZid: 'Z10000'
-			} );
+		describe( 'clearZTesterResults', () => {
+			it( 'should clear the test results', () => {
+				const key = 'Z10000:Z10001:Z10002';
+				context.state.zTesterResults[ key ] = 'Z41';
+				context.state.zTesterMetadata[ key ] = metadata.metadataEmpty;
+				context.state.testResultsPromises.Z10000 = new Promise( ( resolve ) => {
+					resolve();
+				} );
 
-			return context.state.testResultsPromises.Z10000.then( ( result ) => {
-				expect( result ).toBe( undefined );
+				testResultsModule.mutations.clearZTesterResults( context.state, 'Z10000' );
+				expect( Object.keys( context.state.zTesterResults ).length ).toEqual( 0 );
+				expect( Object.keys( context.state.zTesterMetadata ).length ).toEqual( 0 );
+				expect( 'Z10000' in context.state.testResultsPromises ).toBe( false );
 			} );
 		} );
 
-		it( 'should allow for clearing the test results', () => {
-			testResultsModule.mutations.setZTesterResult( context.state, { key: 'Z10000:Z10001:Z10002', result: { Z22K1: { Z40K1: 'Z41' } } } );
-			expect( Object.keys( context.state.zTesterResults ).length ).toEqual( 1 );
+		describe( 'setErrorState', () => {
+			it( 'should set error state and message', () => {
+				context.state.errorState = false;
+				context.state.errorMessage = '';
 
-			testResultsModule.mutations.clearZTesterResults( context.state );
-			expect( Object.keys( context.state.zTesterResults ).length ).toEqual( 0 );
-		} );
-
-		it( 'should allow for setting error state', () => {
-			testResultsModule.mutations.setErrorState( context.state, true );
-
-			expect( context.state.errorState ).toBe( true );
+				testResultsModule.mutations.setErrorState( context.state, 'some error happened' );
+				expect( context.state.errorState ).toBe( true );
+				expect( context.state.errorMessage ).toBe( 'some error happened' );
+			} );
 		} );
 	} );
 
@@ -173,6 +214,13 @@ describe( 'testResults Vuex module', () => {
 		} );
 
 		describe( 'getTestResults', () => {
+			it( 'exits early if function Zid is not provided', async () => {
+				const zFunctionId = undefined;
+				await testResultsModule.actions.getTestResults( context, { zFunctionId } );
+				expect( getMock ).not.toHaveBeenCalled();
+				expect( context.commit ).not.toHaveBeenCalled();
+			} );
+
 			it( 'should perform the provided tests (passing)', () => {
 				const zFunctionId = 'Z10000';
 				const zImplementations = [ 'Z10001', 'Z10002' ];

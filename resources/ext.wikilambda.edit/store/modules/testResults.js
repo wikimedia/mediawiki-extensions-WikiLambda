@@ -265,19 +265,6 @@ module.exports = exports = {
 				implementations,
 				testers
 			} ).then( ( results ) => {
-				if ( !Array.isArray( results ) &&
-						results[ Constants.Z_RESPONSEENVELOPE_METADATA ] !== Constants.Z_NOTHING ) {
-					throw new Error(
-						results[
-							Constants.Z_RESPONSEENVELOPE_METADATA
-						][
-							Constants.Z_ERROR_VALUE
-						][
-							Constants.Z_STRING_VALUE
-						]
-					);
-				}
-
 				const zids = [];
 				results.forEach( function ( testResult ) {
 					const result = hybridToCanonical( JSON.parse( testResult.validateStatus ) );
