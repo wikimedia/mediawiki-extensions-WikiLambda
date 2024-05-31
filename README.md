@@ -44,9 +44,10 @@ you have cloned the `mediawiki/core` repository.
   ```
   git clone --recurse-submodules --remote-submodules https://gerrit.wikimedia.org/r/mediawiki/extensions/WikiLambda
   ```
-* In your `mediawiki/extensions/` subdirectory, also clone the WikimediaMessages extension:
+* In your `mediawiki/extensions/` subdirectory, also clone the WikimediaMessages and UniversalLanguageSelector extensions:
   ```
   git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/WikimediaMessages
+  git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/UniversalLanguageSelector
   ```
 * Extend MediaWiki's composer dependencies to use ours by adding a `composer.local.json` file in your `mediawiki/` directory:
   ```
@@ -65,6 +66,7 @@ you have cloned the `mediawiki/core` repository.
   ```
   wfLoadExtension( 'WikiLambda' );
   wfLoadExtension( 'WikimediaMessages' );
+  wfLoadExtension( 'UniversalLanguageSelector' );
   ```
 * Run `php maintenance/run.php createAndPromote --custom-groups functioneer,functionmaintainer --force Admin` (or `docker-compose exec mediawiki php maintenance/run.php createAndPromote --custom-groups functioneer,functionmaintainer --force Admin` if MediaWiki is setup through Docker) to give your Admin user the special rights for creating and editing ZObjects.
 * Run `php maintenance/run.php update` (or `docker-compose exec mediawiki php maintenance/run.php update` if MediaWiki is setup through Docker) to provision necessary schemas and initial content (this step could take around 20 minutes).
