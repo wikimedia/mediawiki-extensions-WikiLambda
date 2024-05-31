@@ -16,7 +16,9 @@ describe( 'FunctionViewer', () => {
 
 	beforeEach( () => {
 		getters = {
-			getCurrentZObjectId: createGetterMock( functionZid )
+			getCurrentZObjectId: createGetterMock( functionZid ),
+			getUserLangZid: createGetterMock( 'Z1002' ),
+			isCreateNewPage: createGetterMock( false )
 		};
 		global.store.hotUpdate( { getters: getters } );
 

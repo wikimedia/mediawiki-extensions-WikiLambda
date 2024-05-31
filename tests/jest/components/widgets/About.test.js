@@ -58,7 +58,7 @@ describe( 'About', () => {
 	describe( 'Blank state', () => {
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( About, {
-				props: { edit: true },
+				props: { edit: true, type: 'Z6' },
 				global: { stubs: { WlWidgetBase: false } }
 			} );
 			expect( wrapper.find( '.ext-wikilambda-about' ).exists() ).toBe( true );
@@ -66,7 +66,7 @@ describe( 'About', () => {
 
 		it( 'renders fields block with empty placeholder', () => {
 			const wrapper = shallowMount( About, {
-				props: { edit: true },
+				props: { edit: true, type: 'Z6' },
 				global: { stubs: { WlWidgetBase: false } }
 			} );
 			const nameBlock = wrapper.find( '.ext-wikilambda-about-fields' );
@@ -76,7 +76,7 @@ describe( 'About', () => {
 
 		it( 'renders view languages button', () => {
 			const wrapper = shallowMount( About, {
-				props: { edit: true },
+				props: { edit: true, type: 'Z6' },
 				global: { stubs: { WlWidgetBase: false } }
 			} );
 			expect( wrapper.find( '.ext-wikilambda-about-button' ).exists() ).toBe( true );
@@ -84,7 +84,7 @@ describe( 'About', () => {
 
 		it( 'opens empty metadata dialog when clicking edit', async () => {
 			const wrapper = mount( About, {
-				props: { edit: true }
+				props: { edit: true, type: 'Z6' }
 			} );
 
 			// ACT: Get header button and trigger click
@@ -103,7 +103,7 @@ describe( 'About', () => {
 
 		it( 'does not render function fields', () => {
 			const wrapper = shallowMount( About, {
-				props: { edit: true },
+				props: { edit: true, type: 'Z6' },
 				global: { stubs: { WlWidgetBase: false } }
 			} );
 			expect( wrapper.find( '.ext-wikilambda-about-function-fields' ).exists() ).toBe( false );
@@ -135,7 +135,7 @@ describe( 'About', () => {
 
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( About, {
-				props: { edit: true },
+				props: { edit: true, type: 'Z6' },
 				global: { stubs: { WlWidgetBase: false } }
 			} );
 			expect( wrapper.find( '.ext-wikilambda-about' ).exists() ).toBe( true );
@@ -143,7 +143,7 @@ describe( 'About', () => {
 
 		it( 'renders selected values', () => {
 			const wrapper = shallowMount( About, {
-				props: { edit: true },
+				props: { edit: true, type: 'Z6' },
 				global: { stubs: { WlWidgetBase: false } }
 			} );
 
@@ -161,7 +161,7 @@ describe( 'About', () => {
 
 		it( 'renders view languages button', () => {
 			const wrapper = shallowMount( About, {
-				props: { edit: true },
+				props: { edit: true, type: 'Z6' },
 				global: { stubs: { WlWidgetBase: false } }
 			} );
 			expect( wrapper.find( '.ext-wikilambda-about-button' ).exists() ).toBe( true );
@@ -169,7 +169,7 @@ describe( 'About', () => {
 
 		it( 'opens metadata dialog with the user language values', async () => {
 			const wrapper = mount( About, {
-				props: { edit: true }
+				props: { edit: true, type: 'Z6' }
 			} );
 
 			// ACT: Get header button and trigger click
@@ -188,7 +188,7 @@ describe( 'About', () => {
 
 		it( 'opens view languages dialog when clicking language count button', async () => {
 			const wrapper = mount( About, {
-				props: { edit: true }
+				props: { edit: true, type: 'Z6' }
 			} );
 
 			// ACT: Get button and trigger click
@@ -206,7 +206,7 @@ describe( 'About', () => {
 			getters.getZPersistentAlias = createGettersWithFunctionsMock( undefined );
 			global.store.hotUpdate( { getters: getters } );
 			const wrapper = shallowMount( About, {
-				props: { edit: true },
+				props: { edit: true, type: 'Z6' },
 				global: { stubs: { WlWidgetBase: false } }
 			} );
 
@@ -223,7 +223,7 @@ describe( 'About', () => {
 			getters.getZPersistentDescription = createGettersWithFunctionsMock( undefined );
 			global.store.hotUpdate( { getters: getters } );
 			const wrapper = shallowMount( About, {
-				props: { edit: true },
+				props: { edit: true, type: 'Z6' },
 				global: { stubs: { WlWidgetBase: false } }
 			} );
 
@@ -250,7 +250,7 @@ describe( 'About', () => {
 			getters.getZMonolingualStringsetValues = createGettersWithFunctionsMock( aliasValues );
 			global.store.hotUpdate( { getters: getters } );
 			const wrapper = shallowMount( About, {
-				props: { edit: true },
+				props: { edit: true, type: 'Z6' },
 				global: { stubs: { WlWidgetBase: false } }
 			} );
 
@@ -268,7 +268,7 @@ describe( 'About', () => {
 
 		it( 'does not render function fields', () => {
 			const wrapper = shallowMount( About, {
-				props: { edit: true },
+				props: { edit: true, type: 'Z6' },
 				global: { stubs: { WlWidgetBase: false } }
 			} );
 			expect( wrapper.find( '.ext-wikilambda-about-function-fields' ).exists() ).toBe( false );

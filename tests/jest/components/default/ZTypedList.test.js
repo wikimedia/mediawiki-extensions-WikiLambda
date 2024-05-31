@@ -37,7 +37,9 @@ describe( 'ZTypedList', () => {
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( ZTypedList, {
 				props: {
-					edit: false
+					depth: 2,
+					edit: false,
+					expanded: false
 				}
 			} );
 
@@ -47,7 +49,9 @@ describe( 'ZTypedList', () => {
 		it( 'does not render add list button', () => {
 			const wrapper = shallowMount( ZTypedList, {
 				props: {
-					edit: false
+					depth: 2,
+					edit: false,
+					expanded: false
 				}
 			} );
 
@@ -57,6 +61,7 @@ describe( 'ZTypedList', () => {
 		it( 'does not render the list type when not expanded', () => {
 			const wrapper = shallowMount( ZTypedList, {
 				props: {
+					depth: 2,
 					edit: false,
 					expanded: false
 				}
@@ -67,6 +72,7 @@ describe( 'ZTypedList', () => {
 		it( 'does render the list type when expanded', () => {
 			const wrapper = shallowMount( ZTypedList, {
 				props: {
+					depth: 2,
 					edit: false,
 					expanded: true
 				}
@@ -77,7 +83,9 @@ describe( 'ZTypedList', () => {
 		it( 'renders the list item component when there are one or more list items', () => {
 			const wrapper = shallowMount( ZTypedList, {
 				props: {
-					edit: false
+					depth: 2,
+					edit: false,
+					expanded: false
 				}
 			} );
 
@@ -87,6 +95,7 @@ describe( 'ZTypedList', () => {
 		it( 'shows type and items when expanded', () => {
 			const wrapper = shallowMount( ZTypedList, {
 				props: {
+					depth: 2,
 					edit: false,
 					expanded: true
 				}
@@ -99,6 +108,7 @@ describe( 'ZTypedList', () => {
 		it( 'does not show type when not expanded', () => {
 			const wrapper = shallowMount( ZTypedList, {
 				props: {
+					depth: 2,
 					edit: false,
 					expanded: false
 				}
@@ -113,7 +123,9 @@ describe( 'ZTypedList', () => {
 		it( 'renders the add list button', () => {
 			const wrapper = shallowMount( ZTypedList, {
 				props: {
-					edit: true
+					depth: 2,
+					edit: true,
+					expanded: false
 				},
 				global: {
 					stubs: {
@@ -130,7 +142,9 @@ describe( 'ZTypedList', () => {
 		it( 'emits add-list-item when the add list item button is clicked', async () => {
 			const wrapper = shallowMount( ZTypedList, {
 				props: {
-					edit: true
+					depth: 2,
+					edit: true,
+					expanded: false
 				},
 				global: {
 					stubs: {

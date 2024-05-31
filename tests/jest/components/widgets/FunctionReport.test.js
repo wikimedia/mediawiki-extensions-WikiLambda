@@ -58,7 +58,9 @@ describe( 'FunctionReport', function () {
 	it( 'renders without errors', function () {
 		const wrapper = VueTestUtils.mount( FunctionReport, {
 			props: {
-				zFunctionId: ''
+				zFunctionId: '',
+				rootZid: Constants.NEW_ZID_PLACEHOLDER,
+				reportType: Constants.Z_IMPLEMENTATION
 			}
 		} );
 		expect( wrapper.find( 'div' ).exists() ).toBeTruthy();
@@ -67,7 +69,9 @@ describe( 'FunctionReport', function () {
 	it( 'displays no results when no implementations or testers found', function () {
 		const wrapper = VueTestUtils.mount( FunctionReport, {
 			props: {
-				zFunctionId: ''
+				zFunctionId: '',
+				rootZid: Constants.NEW_ZID_PLACEHOLDER,
+				reportType: Constants.Z_IMPLEMENTATION
 			}
 		} );
 		expect( wrapper.find( 'p' ).text() )

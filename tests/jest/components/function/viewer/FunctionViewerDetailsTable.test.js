@@ -6,12 +6,19 @@
  */
 'use strict';
 
-const VueTestUtils = require( '@vue/test-utils' ),
+const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	FunctionViewerDetailsTable = require( '../../../../../resources/ext.wikilambda.edit/components/function/viewer/FunctionViewerDetailsTable.vue' );
 
 describe( 'FunctionViewerDetailsTable', function () {
 	it( 'renders without errors', function () {
-		const wrapper = VueTestUtils.shallowMount( FunctionViewerDetailsTable );
+		const wrapper = shallowMount( FunctionViewerDetailsTable, {
+			props: {
+				addLink: 'howfun.com',
+				canConnect: false,
+				canDisconnect: false,
+				type: 'Z6'
+			}
+		} );
 		expect( wrapper.find( '.ext-wikilambda-function-details-table' ).exists() ).toBe( true );
 	} );
 } );

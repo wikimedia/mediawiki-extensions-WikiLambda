@@ -58,7 +58,7 @@ module.exports = exports = defineComponent( {
 		 * @return {Array}
 		 */
 		functionLanguages: function () {
-			return this.getMetadataLanguages( this.rowId );
+			return this.getMetadataLanguages();
 		},
 		/**
 		 * Returns the id for the language field

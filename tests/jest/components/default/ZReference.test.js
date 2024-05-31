@@ -34,7 +34,8 @@ describe( 'ZReference', () => {
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( ZReference, {
 				props: {
-					edit: false
+					edit: false,
+					expectedType: Constants.Z_STRING
 				}
 			} );
 
@@ -44,7 +45,8 @@ describe( 'ZReference', () => {
 		it( 'displays the reference link with its label if there is one', () => {
 			const wrapper = shallowMount( ZReference, {
 				props: {
-					edit: false
+					edit: false,
+					expectedType: Constants.Z_STRING
 				}
 			} );
 
@@ -61,7 +63,8 @@ describe( 'ZReference', () => {
 
 			const wrapper = shallowMount( ZReference, {
 				props: {
-					edit: false
+					edit: false,
+					expectedType: Constants.Z_STRING
 				}
 			} );
 
@@ -75,7 +78,8 @@ describe( 'ZReference', () => {
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( ZReference, {
 				props: {
-					edit: true
+					edit: true,
+					expectedType: Constants.Z_STRING
 				}
 			} );
 
@@ -85,7 +89,8 @@ describe( 'ZReference', () => {
 		it( 'displays a selector and emits the value with a Z_REFERENCE_ID (Z9K1) keyPath if its key is not a Z_REFERENCE_ID', async () => {
 			const wrapper = shallowMount( ZReference, {
 				props: {
-					edit: true
+					edit: true,
+					expectedType: Constants.Z_STRING
 				}
 			} );
 
@@ -105,7 +110,8 @@ describe( 'ZReference', () => {
 
 			const wrapper = shallowMount( ZReference, {
 				props: {
-					edit: true
+					edit: true,
+					expectedType: Constants.Z_STRING
 				}
 			} );
 
@@ -120,11 +126,11 @@ describe( 'ZReference', () => {
 			const wrapper = shallowMount( ZReference, {
 				props: {
 					edit: true,
-					expectedType: Constants.Z_ARGUMENT_KEY
+					expectedType: Constants.Z_STRING
 				}
 			} );
 
-			expect( wrapper.vm.selectType ).toBe( Constants.Z_ARGUMENT_KEY );
+			expect( wrapper.vm.selectType ).toBe( Constants.Z_STRING );
 		} );
 
 		it( 'sets excluded zids from root persistent content', () => {

@@ -72,7 +72,7 @@ module.exports = exports = defineComponent( {
 			default: null
 		},
 		inputAriaLabel: {
-			type: Object,
+			type: String,
 			required: false,
 			default: null
 		}

@@ -7,6 +7,7 @@
 'use strict';
 
 const { config, mount } = require( '@vue/test-utils' ),
+	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	AboutEditMetadataDialog = require( '../../../../resources/ext.wikilambda.edit/components/widgets/AboutEditMetadataDialog.vue' );
@@ -24,6 +25,7 @@ describe( 'AboutEditMetadataDialog', () => {
 	beforeEach( () => {
 		getters = {
 			getRowByKeyPath: createGettersWithFunctionsMock( { id: 1 } ),
+			getUserLangZid: createGetterMock( 'Z1002' ),
 			getZMonolingualTextValue: createGettersWithFunctionsMock( '' ),
 			getZMonolingualStringsetValues: createGettersWithFunctionsMock( [] ),
 			getZPersistentAlias: createGettersWithFunctionsMock( undefined ),

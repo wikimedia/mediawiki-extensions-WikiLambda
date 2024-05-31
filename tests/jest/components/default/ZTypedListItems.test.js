@@ -33,7 +33,9 @@ describe( 'ZTypedListItems', () => {
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( ZTypedListItems, {
 				props: {
-					edit: false
+					edit: false,
+					expanded: false,
+					listItemType: 'Z6'
 				}
 			} );
 
@@ -43,7 +45,9 @@ describe( 'ZTypedListItems', () => {
 		it( 'renders ZObjectKeyValue for each list item', () => {
 			const wrapper = shallowMount( ZTypedListItems, {
 				props: {
-					edit: false
+					edit: false,
+					expanded: false,
+					listItemType: 'Z6'
 				}
 			} );
 
@@ -54,7 +58,8 @@ describe( 'ZTypedListItems', () => {
 			const wrapper = shallowMount( ZTypedListItems, {
 				props: {
 					edit: false,
-					expanded: true
+					expanded: true,
+					listItemType: 'Z6'
 				}
 			} );
 
@@ -68,7 +73,8 @@ describe( 'ZTypedListItems', () => {
 			const wrapper = shallowMount( ZTypedListItems, {
 				props: {
 					edit: false,
-					expanded: false
+					expanded: false,
+					listItemType: 'Z6'
 				}
 			} );
 
@@ -81,7 +87,9 @@ describe( 'ZTypedListItems', () => {
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( ZTypedListItems, {
 				props: {
-					edit: true
+					edit: true,
+					expanded: false,
+					listItemType: 'Z6'
 				}
 			} );
 

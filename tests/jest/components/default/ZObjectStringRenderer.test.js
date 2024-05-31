@@ -182,6 +182,7 @@ describe( 'ZObjectStringRenderer', () => {
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( ZObjectStringRenderer, {
 				props: {
+					depth: 2,
 					edit: false,
 					type: typeZid,
 					expanded: false
@@ -193,6 +194,7 @@ describe( 'ZObjectStringRenderer', () => {
 		it( 'generates the rendered text on mount', () => {
 			shallowMount( ZObjectStringRenderer, {
 				props: {
+					depth: 2,
 					edit: false,
 					type: typeZid,
 					expanded: false
@@ -211,6 +213,7 @@ describe( 'ZObjectStringRenderer', () => {
 		it( 'when collapsed, runs renderer and shows result in text', async () => {
 			const wrapper = shallowMount( ZObjectStringRenderer, {
 				props: {
+					depth: 2,
 					edit: false,
 					type: typeZid,
 					expanded: false
@@ -251,6 +254,7 @@ describe( 'ZObjectStringRenderer', () => {
 		it( 'when collapsed, runs renderer and shows result in text field', async () => {
 			const wrapper = shallowMount( ZObjectStringRenderer, {
 				props: {
+					depth: 2,
 					edit: true,
 					type: typeZid,
 					expanded: false
@@ -289,6 +293,7 @@ describe( 'ZObjectStringRenderer', () => {
 		it( 'on collapse event, runs renderer', async () => {
 			const wrapper = shallowMount( ZObjectStringRenderer, {
 				props: {
+					depth: 2,
 					edit: true,
 					type: typeZid,
 					expanded: true
@@ -320,6 +325,7 @@ describe( 'ZObjectStringRenderer', () => {
 		it( 'on renderer field update, runs parser', () => {
 			const wrapper = shallowMount( ZObjectStringRenderer, {
 				props: {
+					depth: 2,
 					edit: true,
 					type: typeZid,
 					expanded: false
@@ -340,6 +346,7 @@ describe( 'ZObjectStringRenderer', () => {
 		it( 'runs test results on mount', () => {
 			shallowMount( ZObjectStringRenderer, {
 				props: {
+					depth: 2,
 					edit: true,
 					type: typeZid,
 					expanded: false
@@ -357,6 +364,7 @@ describe( 'ZObjectStringRenderer', () => {
 
 			const wrapper = shallowMount( ZObjectStringRenderer, {
 				props: {
+					depth: 2,
 					edit: true,
 					type: typeZid,
 					expanded: false
@@ -372,6 +380,7 @@ describe( 'ZObjectStringRenderer', () => {
 
 			const wrapper = shallowMount( ZObjectStringRenderer, {
 				props: {
+					depth: 2,
 					edit: true,
 					type: typeZid,
 					expanded: false
@@ -387,6 +396,7 @@ describe( 'ZObjectStringRenderer', () => {
 
 			const wrapper = shallowMount( ZObjectStringRenderer, {
 				props: {
+					depth: 2,
 					edit: true,
 					type: typeZid,
 					expanded: false
@@ -414,6 +424,7 @@ describe( 'ZObjectStringRenderer', () => {
 
 			const wrapper = shallowMount( ZObjectStringRenderer, {
 				props: {
+					depth: 2,
 					edit: true,
 					type: typeZid,
 					expanded: false
@@ -440,6 +451,7 @@ describe( 'ZObjectStringRenderer', () => {
 
 			const wrapper = shallowMount( ZObjectStringRenderer, {
 				props: {
+					depth: 2,
 					edit: true,
 					type: typeZid,
 					expanded: false
@@ -475,6 +487,7 @@ describe( 'ZObjectStringRenderer', () => {
 
 			const wrapper = shallowMount( ZObjectStringRenderer, {
 				props: {
+					depth: 2,
 					edit: true,
 					type: typeZid,
 					expanded: false
@@ -499,6 +512,7 @@ describe( 'ZObjectStringRenderer', () => {
 				} );
 				shallowMount( ZObjectStringRenderer, {
 					props: {
+						depth: 2,
 						rowId: 1,
 						edit: true,
 						type: typeZid,
@@ -531,6 +545,7 @@ describe( 'ZObjectStringRenderer', () => {
 				} );
 				shallowMount( ZObjectStringRenderer, {
 					props: {
+						depth: 2,
 						rowId: 1,
 						edit: true,
 						type: typeZid,
@@ -559,6 +574,7 @@ describe( 'ZObjectStringRenderer', () => {
 				} );
 				shallowMount( ZObjectStringRenderer, {
 					props: {
+						depth: 2,
 						rowId: 1,
 						edit: true,
 						type: typeZid,
@@ -590,6 +606,7 @@ describe( 'ZObjectStringRenderer', () => {
 				} );
 				const wrapper = shallowMount( ZObjectStringRenderer, {
 					props: {
+						depth: 2,
 						rowId: 1,
 						edit: true,
 						type: typeZid,
@@ -625,6 +642,7 @@ describe( 'ZObjectStringRenderer', () => {
 				} );
 				const wrapper = shallowMount( ZObjectStringRenderer, {
 					props: {
+						depth: 2,
 						rowId: 1,
 						edit: true,
 						type: typeZid,
@@ -656,6 +674,7 @@ describe( 'ZObjectStringRenderer', () => {
 				} );
 				const wrapper = shallowMount( ZObjectStringRenderer, {
 					props: {
+						depth: 2,
 						rowId: 1,
 						edit: true,
 						type: typeZid,
@@ -687,6 +706,7 @@ describe( 'ZObjectStringRenderer', () => {
 			global.store.hotUpdate( { getters: getters } );
 			const wrapper = shallowMount( ZObjectStringRenderer, {
 				props: {
+					depth: 2,
 					rowId: 1,
 					edit: true,
 					type: typeZid,
@@ -724,6 +744,7 @@ describe( 'ZObjectStringRenderer', () => {
 			it( 'does not run renderer with empty values', async () => {
 				shallowMount( ZObjectStringRenderer, {
 					props: {
+						depth: 2,
 						rowId: 1,
 						edit: true,
 						type: typeZid,
@@ -738,6 +759,7 @@ describe( 'ZObjectStringRenderer', () => {
 				global.store.hotUpdate( { getters: getters } );
 				const wrapper = shallowMount( ZObjectStringRenderer, {
 					props: {
+						depth: 2,
 						rowId: 1,
 						edit: true,
 						type: typeZid,
