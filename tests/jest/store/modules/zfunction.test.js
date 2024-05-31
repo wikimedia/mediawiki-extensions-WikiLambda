@@ -104,6 +104,16 @@ describe( 'zfunction Vuex module', () => {
 				expect( current ).toStrictEqual( expected );
 			} );
 
+			it( 'returns empty array when function inputs have no label key', () => {
+				state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17',
+					{ Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z12345K1' },
+					{ Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z12345K2' }
+				] } } );
+				const expected = [];
+				const current = zfunctionModule.getters.getZFunctionInputLangs( state, getters )();
+				expect( current ).toStrictEqual( expected );
+			} );
+
 			it( 'returns empty array when function inputs have no labels', () => {
 				state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17',
 					{ Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z12345K1', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } },
@@ -253,7 +263,47 @@ describe( 'zfunction Vuex module', () => {
 				expect( zfunctionModule.getters.getZArgumentTypeRowId( state, getters )( 24 ) )
 					.toEqual( 28 );
 			} );
+		} );
 
+		describe( 'getZArgumentKey', () => {
+			beforeEach( () => {
+				getters = {};
+				getters.getRowById = zobjectModule.getters.getRowById( state );
+				getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+				getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
+				getters.getZStringTerminalValue = zobjectModule.getters.getZStringTerminalValue( state, getters );
+			} );
+
+			it( 'returns undefined when row is undefined', () => {
+				state.zobject = [];
+				const rowId = undefined;
+				const expected = undefined;
+				const current = zfunctionModule.getters.getZArgumentKey( state, getters )( rowId );
+				expect( current ).toEqual( expected );
+			} );
+
+			it( 'returns undefined when row is not found', () => {
+				state.zobject = [];
+				const rowId = 100;
+				const expected = undefined;
+				const current = zfunctionModule.getters.getZArgumentKey( state, getters )( rowId );
+				expect( current ).toEqual( expected );
+			} );
+
+			it( 'returns argument key given the argument row Id', () => {
+				state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17',
+					/* Arg 1: rowId 6, type is rowId 10 */
+					{ Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z12345K1', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } },
+					/* Arg 2: rowId 24, type is rowId 28 */
+					{ Z1K1: 'Z17', Z17K1: 'Z40', Z17K2: 'Z12345K2', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } }
+				] } } );
+
+				expect( zfunctionModule.getters.getZArgumentKey( state, getters )( 6 ) )
+					.toEqual( 'Z12345K1' );
+				expect( zfunctionModule.getters.getZArgumentKey( state, getters )( 24 ) )
+					.toEqual( 'Z12345K2' );
+			} );
 		} );
 
 		describe( 'getZArgumentLabelForLanguage', () => {
@@ -366,6 +416,20 @@ describe( 'zfunction Vuex module', () => {
 			it( 'return attached implementations', () => {
 				expect( zfunctionModule.getters.getConnectedImplementations( state, getters )( 0 ) )
 					.toEqual( [ 'Z10004', 'Z10005' ] );
+			} );
+			it( 'returns empty array if test and implementations rows are not found', () => {
+				state.zobject = zobjectToRows( {
+					Z1K1: 'Z2',
+					Z2K2: {
+						Z1K1: 'Z8',
+						Z8K1: [ 'Z17' ],
+						Z8K2: 'Z6'
+					}
+				} );
+				expect( zfunctionModule.getters.getConnectedTests( state, getters )( 0 ) )
+					.toEqual( [] );
+				expect( zfunctionModule.getters.getConnectedImplementations( state, getters )( 0 ) )
+					.toEqual( [] );
 			} );
 		} );
 

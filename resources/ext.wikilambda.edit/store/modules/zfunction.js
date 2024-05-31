@@ -148,11 +148,11 @@ module.exports = exports = {
 			 * @param {number} rowId
 			 * @return {string|undefined}
 			 */
-			function findArgumentType( rowId ) {
+			function findArgumentKey( rowId ) {
 				const argKey = getters.getRowByKeyPath( [ Constants.Z_ARGUMENT_KEY ], rowId );
 				return argKey ? getters.getZStringTerminalValue( argKey.id ) : undefined;
 			}
-			return findArgumentType;
+			return findArgumentKey;
 		},
 		/**
 		 * Returns the input label row of an input or
