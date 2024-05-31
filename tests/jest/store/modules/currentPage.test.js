@@ -35,6 +35,18 @@ describe( 'currentPage Vuex module', () => {
 	} );
 
 	describe( 'Getters', () => {
+		describe( 'isInitialized', () => {
+			it( 'returns false when page has not been initialized', () => {
+				state.initialized = false;
+				expect( currentPageModule.getters.isInitialized( state ) ).toEqual( false );
+			} );
+
+			it( 'returns true when page has not been initialized', () => {
+				state.initialized = true;
+				expect( currentPageModule.getters.isInitialized( state ) ).toEqual( true );
+			} );
+		} );
+
 		describe( 'isDirty', () => {
 			it( 'returns true when page has unsaved edits', () => {
 				state.dirty = true;
@@ -161,12 +173,79 @@ describe( 'currentPage Vuex module', () => {
 	} );
 
 	describe( 'Mutations', () => {
-		/* FIXME add more mutation tests */
+		beforeEach( () => {
+			// Initialize to module state to test default values
+			state = currentPageModule.state;
+		} );
+
+		describe( 'setInitialized', () => {
+			it( 'sets initialized to true', () => {
+				expect( state.initialized ).toBe( false );
+				currentPageModule.mutations.setInitialized( state, true );
+				expect( state.initialized ).toBe( true );
+			} );
+		} );
+
 		describe( 'setCreateNewPage', () => {
-			it( 'Sets createNewPage to provided value', () => {
+			it( 'sets createNewPage to provided value', () => {
 				expect( state.createNewPage ).toBe( false );
 				currentPageModule.mutations.setCreateNewPage( state, true );
 				expect( state.createNewPage ).toBe( true );
+			} );
+		} );
+
+		describe( 'setCurrentZid', () => {
+			it( 'sets currentZid to provided value', () => {
+				expect( state.currentZid ).toBe( 'Z0' );
+				currentPageModule.mutations.setCurrentZid( state, 'Z10000' );
+				expect( state.currentZid ).toBe( 'Z10000' );
+			} );
+		} );
+
+		describe( 'setDirty', () => {
+			it( 'sets dirty to provided value', () => {
+				expect( state.dirty ).toBe( false );
+				currentPageModule.mutations.setDirty( state, true );
+				expect( state.dirty ).toBe( true );
+			} );
+		} );
+
+		describe( 'saveMultilingualDataCopy', () => {
+			it( 'saves all multilingual fields', () => {
+				const names = {
+					Z1K1: 'Z12',
+					Z12K1: [ 'Z11',
+						{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'label' }
+					]
+				};
+				const aliases = {
+					Z1K1: 'Z32',
+					Z32K1: [ 'Z31',
+						{ Z1K1: 'Z1', Z31K1: 'Z1002', Z31K2: [ 'Z6', 'alias' ] }
+					]
+				};
+				const descriptions = {
+					Z1K1: 'Z12',
+					Z12K1: [ 'Z11',
+						{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'description' }
+					]
+				};
+				const zobject = {
+					Z1K1: 'Z2',
+					Z2K1: 'Z1234',
+					Z2K2: 'test',
+					Z2K3: names,
+					Z2K4: aliases,
+					Z2K5: descriptions
+				};
+
+				expect( state.multilingualDataCopy ).toEqual( null );
+				currentPageModule.mutations.saveMultilingualDataCopy( state, zobject );
+				expect( state.multilingualDataCopy ).toEqual( {
+					names,
+					descriptions,
+					aliases
+				} );
 			} );
 		} );
 	} );
