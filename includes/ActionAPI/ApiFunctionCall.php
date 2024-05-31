@@ -26,6 +26,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZQuote;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\PoolCounter\PoolCounterWorkViaCallback;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\Status\Status;
@@ -71,6 +72,9 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 			'zobject' => $zObjectAsStdClass,
 			'doValidate' => true
 		];
+
+		$logger = LoggerFactory::getInstance( 'WikiLambda' );
+
 		// Extract the function called, as a string, for the metrics event. (It should always exist,
 		// but if not the orchestrator will return an error.)
 		$function = null;
@@ -87,6 +91,9 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
 			$this->dieWithZError( $zError, 403 );
 		}
+
+		// Principally used for the PoolCounter, but also logging
+		$userName = $this->getUser()->getName();
 
 		// Arbitrary implementation calls need more than wikilambda-execute;
 		// require wikilambda-execute-unsaved-code, so that it can be independently
@@ -105,16 +112,38 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 			}
 		}
 		if ( $isUnsavedCode && !$userAuthority->isAllowed( 'wikilambda-execute-unsaved-code' ) ) {
+			$logger->info(
+				'ApiFunctionCall rejecting a request for arbitrary execution from an unauthorised user "{user}"',
+				[
+					'user' => $userName,
+					'function' => $function
+				]
+			);
 			$this->submitFunctionCallEvent( 403, $function, $start );
 			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
 			$this->dieWithZError( $zError, 403 );
 		}
 
-		$work = new PoolCounterWorkViaCallback( 'WikiLambdaFunctionCall', $this->getUser()->getName(), [
-			'doWork' => function () use ( $jsonQuery ) {
+		$work = new PoolCounterWorkViaCallback( 'WikiLambdaFunctionCall', $userName, [
+			'doWork' => function () use ( $jsonQuery, $logger ) {
+				$logger->debug(
+					'ApiFunctionCall running request',
+					[
+						'query' => $jsonQuery
+					]
+				);
+
 				return $this->orchestrator->orchestrate( $jsonQuery );
 			},
-			'error' => function ( Status $status ) use ( $function, $start ) {
+			'error' => function ( Status $status ) use ( $function, $start, $userName, $logger ) {
+				$logger->info(
+					'ApiFunctionCall rejecting a request due to too many requests from source "{user}"',
+					[
+						'user' => $userName,
+						'function' => $function
+					]
+				);
+
 				$this->submitFunctionCallEvent( 429, $function, $start );
 				$this->dieWithError( [ "apierror-wikilambda_function_call-concurrency-limit" ], null, null, 429 );
 			}
@@ -126,6 +155,13 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 			$result['data'] = $response;
 			$result['success'] = true;
 		} catch ( ConnectException $exception ) {
+			$logger->warning(
+				'ApiFunctionCall failed due to a ConnectException: "{message}"',
+				[
+					'message' => $exception->getMessage(),
+					'exception' => $exception
+				]
+			);
 			$this->submitFunctionCallEvent( 503, $function, $start );
 			$this->dieWithError(
 				[ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ],
@@ -139,6 +175,13 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 			$zResponseMap = ZResponseEnvelope::wrapErrorInResponseMap( $zError );
 			$zResponseObject = new ZResponseEnvelope( null, $zResponseMap );
 			$result['data'] = $zResponseObject->getSerialized();
+			$logger->warning(
+				'ApiFunctionCall failed due to a Client or Server Exception: "{message}"',
+				[
+					'message' => $exception->getMessage(),
+					'exception' => $exception
+				]
+			);
 		}
 		$pageResult->addValue( [ 'query' ], $this->getModuleName(), $result );
 		$this->submitFunctionCallEvent( 200, $function, $start );
