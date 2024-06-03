@@ -120,6 +120,7 @@
 	"wikilambda-literal-type": "字面量$1",
 	"wikilambda-functioncall": "函数调用",
 	"wikilambda-edit": "编辑",
+	"wikilambda-edit-monolingual-text-placeholder": "输入文字",
 	"wikilambda-helplink-button": "帮助",
 	"wikilambda-helplink-tooltip": "您可以阅读解释此元数据的帮助页面",
 	"wikilambda-special-createobject": "创建新对象",
