@@ -55,7 +55,7 @@
 		<cdx-dialog
 			:open="showExamplesDialog"
 			:title="$i18n( 'wikilambda-string-renderer-examples-title' ).text()"
-			:close-button-label="$i18n( 'wikilamda-toast-close' ).text()"
+			:close-button-label="$i18n( 'wikilamda-dialog-close' ).text()"
 			@update:open="showExamplesDialog = false"
 		>
 			<ul class="ext-wikilambda-zobject-string-renderer-examples">

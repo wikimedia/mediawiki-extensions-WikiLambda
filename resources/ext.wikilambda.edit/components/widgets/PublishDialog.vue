@@ -13,7 +13,7 @@
 			data-testid="publish-dialog"
 			:open="showDialog"
 			:title="publishDialogTitle"
-			:close-button-label="closeLabel"
+			:close-button-label="$i18n( 'wikilambda-dialog-close' ).text()"
 			:primary-action="primaryAction"
 			:default-action="defaultAction"
 			@default="closeDialog"
@@ -178,15 +178,6 @@ module.exports = exports = defineComponent( {
 		 */
 		summaryPlaceholder: function () {
 			return this.$i18n( 'wikilambda-editor-publish-dialog-summary-placeholder' ).text();
-		},
-
-		/**
-		 * Returns the name for the Close dialog button
-		 *
-		 * @return {string}
-		 */
-		closeLabel: function () {
-			return this.$i18n( 'wikilambda-toast-close' ).text();
 		},
 
 		/**
