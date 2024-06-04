@@ -662,7 +662,8 @@
 				"wikilambda-parser-unexpected-result-error",
 				"wikilambda-parser-unknown-error",
 				"wikilambda-object-selector-suggested-types",
-				"wikilambda-object-selector-suggested-languages"
+				"wikilambda-object-selector-suggested-languages",
+				"wikilambda-edit-monolingual-text-placeholder"
 			]
 		}
 	},
