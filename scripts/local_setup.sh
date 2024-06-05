@@ -20,8 +20,10 @@ EOF
 
 rm -rf "$core_dir/skins/Vector"
 rm -rf "$core_dir/extensions/WikimediaMessages"
+rm -rf "$core_dir/extensions/UniversalLanguageSelector"
 
 git clone "https://gerrit.wikimedia.org/r/mediawiki/skins/Vector" $core_dir/skins/Vector
 git clone "https://gerrit.wikimedia.org/r/mediawiki/extensions/WikimediaMessages" $core_dir/extensions/WikimediaMessages
+git clone "https://gerrit.wikimedia.org/r/mediawiki/extensions/UniversalLanguageSelector" $core_dir/extensions/UniversalLanguageSelector
 
 bash $script_dir/local_reset.sh
