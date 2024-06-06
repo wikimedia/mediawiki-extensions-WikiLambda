@@ -6,7 +6,7 @@
 			"James D. Forrester"
 		]
 	},
-	"wikilambda-desc": "Providing Wikimedia wikis with a wikitext parser function to call evaluation of functions written, managed, and evaluated on a central wiki.",
+	"wikilambda-desc": "Providing for functions to be written, managed, and evaluated on a central wiki.",
 	"action-wikifunctions-run": "run Functions in the public API",
 	"action-wikilambda-connect-implementation": "connect an Implementation to its Function so it can be run",
 	"action-wikilambda-connect-tester": "connect a Test Case to its Function",

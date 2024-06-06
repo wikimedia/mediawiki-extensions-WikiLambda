@@ -16,7 +16,7 @@
 	"url": "https://www.mediawiki.org/wiki/Extension:WikiLambda",
 	"descriptionmsg": "wikilambda-desc",
 	"license-name": "MIT",
-	"type": "parserhook",
+	"type": "other",
 	"requires": {
 		"MediaWiki": ">= 1.42",
 		"extensions": {
@@ -38,10 +38,6 @@
 	"config": {
 		"WikiLambdaObjectCache": {
 			"description": "If false, store function calls in the main MediaWiki cache; if set to another value, that will be used as the key of a cache in wgObjectCaches.",
-			"value": false
-		},
-		"WikiLambdaEnableParserFunction": {
-			"description": "Enable the {{#function:…}} extension.",
 			"value": false
 		},
 		"WikiLambdaOrchestratorLocation": {
@@ -183,9 +179,6 @@
 		},
 		"PageRenderingHandler": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\PageRenderingHandler"
-		},
-		"WikiLambdaParserHooks": {
-			"class": "MediaWiki\\Extension\\WikiLambda\\ParserHooks"
 		}
 	},
 	"Hooks": {
@@ -193,7 +186,6 @@
 		"MultiContentSave": "PageEditingHandler",
 		"LoadExtensionSchemaUpdates": "WikiLambdaHooks",
 		"NamespaceIsMovable": "PageEditingHandler",
-		"ParserFirstCallInit": "WikiLambdaParserHooks",
 		"HtmlPageLinkRendererEnd": "PageRenderingHandler",
 		"SkinTemplateNavigation::Universal": "PageRenderingHandler",
 		"WebRequestPathInfoRouter": "PageRenderingHandler",
@@ -206,8 +198,7 @@
 		]
 	},
 	"ExtensionMessagesFiles": {
-		"WikiLambdaAliases": "WikiLambda.alias.php",
-		"WikiLambdaMagic": "WikiLambda.i18n.magic.php"
+		"WikiLambdaAliases": "WikiLambda.alias.php"
 	},
 	"ResourceFileModulePaths": {
 		"localBasePath": "resources",
