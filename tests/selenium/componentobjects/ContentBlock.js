@@ -37,16 +37,11 @@ class ContentBlock {
 	 */
 	async getSectionOfContentBlock( label, parentSection ) {
 		const resolvedParentSection = await parentSection;
-		let sectionElement;
+		const contentBlock = resolvedParentSection || this.contentBlock;
 
-		if ( !resolvedParentSection ) {
-			// setting this because the getter returns a Promise
-			const contentBlock = await this.contentBlock;
-			sectionElement = await contentBlock.$( `.//label[text()="${ label }"]/parent::div/parent::div` );
-		} else {
-			sectionElement = await resolvedParentSection.$( `.//label[text()="${ label }"]/parent::div/parent::div` );
-		}
-
+		const grandparentDiv =
+			`.//label/span[text()="${ label }"]/parent::label/parent::div/parent::div`;
+		const sectionElement = await contentBlock.$( grandparentDiv );
 		await sectionElement.waitForDisplayed();
 		return sectionElement;
 	}
@@ -64,10 +59,10 @@ class ContentBlock {
 		let contentBlock;
 		if ( !resolvedParentSection ) {
 			contentBlock = await this.getSectionOfContentBlock( label );
-			return contentBlock.$( '[data-testid="mode-selector' );
+			return contentBlock.$( '[data-testid="mode-selector"]' );
 		}
 		contentBlock = await this.getSectionOfContentBlock( label, parentSection );
-		return contentBlock.$( '[data-testid="mode-selector' );
+		return contentBlock.$( '[data-testid="mode-selector"]' );
 	}
 
 	/**

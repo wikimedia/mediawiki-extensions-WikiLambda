@@ -23,6 +23,7 @@ const ZObjectPublish = require( '../../componentobjects/ZObjectPublish' );
 const { Element: WebdriverIOElementType } = require( 'webdriverio' );
 const ContentBlock = require( '../../componentobjects/ContentBlock' );
 const FunctionExplorerBlock = require( '../../componentobjects/FunctionExplorerBlock' );
+const i18n = require( '../../utils/i18n.js' )();
 
 class TesterPage extends Page {
 	get aboutBlockDialogBox() {
@@ -136,7 +137,7 @@ class TesterPage extends Page {
 		 * Function section of call function block
 		 */
 		const parentSelector = await this.getCallFunctionBlockSection( 'function' );
-		const callFunctionBlockInputSelector = await $( ' [data-testid="tester-call"] input[placeholder="Select function"][data-testid="z-object-selector-lookup"]' );
+		const callFunctionBlockInputSelector = await $( `[data-testid="tester-call"] input[placeholder="${ i18n[ 'wikilambda-function-typeselector-label' ] }"][data-testid="z-object-selector-lookup"]` );
 		await InputDropdown.setLookupOption(
 			parentSelector, callFunctionBlockInputSelector, ZObjectLabel );
 	}
@@ -166,14 +167,14 @@ class TesterPage extends Page {
 		 * Fills the entries in the condition block
 		 */
 		const conditionBlock = await this.getCallFunctionBlockSection( 'condition' );
-		const conditionInputRadio = await conditionBlock.$( `.//label[span/text()="${ condition }"]` );
+		const conditionInputRadio = await conditionBlock.$( `.//span[contains(text(), "${ condition }")]` );
 		await ElementActions.doClick( conditionInputRadio );
 
 		/**
 		 * Fills the entries in the then block
 		 */
 		const thenBlock = await this.getCallFunctionBlockSection( 'then' );
-		const thenBlockInputTypeSelector = await thenBlock.$( './/input[@placeholder="Select a Type"]' );
+		const thenBlockInputTypeSelector = await thenBlock.$( `.//input[@placeholder="${ i18n[ 'wikilambda-typeselector-label' ] }"]` );
 		await InputDropdown.setLookupOption(
 			thenBlock, thenBlockInputTypeSelector, thenBlockInputType );
 		const thenBlockInputSelector = await thenBlock.$( 'input' );
@@ -183,7 +184,7 @@ class TesterPage extends Page {
 		 * Fills the entries in the else block
 		 */
 		const elseBlock = await this.getCallFunctionBlockSection( 'else' );
-		const elseBlockInputTypeSelector = await elseBlock.$( './/input[@placeholder="Select a Type"]' );
+		const elseBlockInputTypeSelector = await elseBlock.$( `.//input[@placeholder="${ i18n[ 'wikilambda-typeselector-label' ] }"]` );
 		await InputDropdown.setLookupOption(
 			elseBlock, elseBlockInputTypeSelector, elseBlockInputType );
 		const elseBlockInputSelector = await elseBlock.$( 'input' );
@@ -228,7 +229,8 @@ class TesterPage extends Page {
 		 * Function section of validation block
 		 */
 		const parentSelector = await this.getValidationBlockSection( 'function' );
-		const validationInputSelector = await parentSelector.$( './/input[@placeholder="Select function"]' );
+		// wikilambda-function-typeselector-label
+		const validationInputSelector = await parentSelector.$( `.//input[@placeholder="${ i18n[ 'wikilambda-function-typeselector-label' ] }"]` );
 		await InputDropdown.setLookupOption(
 			parentSelector, validationInputSelector, ZObjectLabel );
 	}
