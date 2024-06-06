@@ -57,6 +57,7 @@ describe( 'Tester', () => {
 
 		// Initialize the entries of the About block before the test
 		before( () => {
+			browser.deleteAllCookies();
 			LoginPage.loginAdmin();
 			/**
 			 * Date.now() is being used so that label will be unique and
