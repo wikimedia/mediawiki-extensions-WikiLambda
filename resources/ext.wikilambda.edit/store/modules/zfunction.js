@@ -6,7 +6,8 @@
  */
 
 const Constants = require( '../../Constants.js' ),
-	apiUtils = require( '../../mixins/api.js' ).methods;
+	apiUtils = require( '../../mixins/api.js' ).methods,
+	createConnectedItemsChangesSummaryMessage = require( '../../mixins/utilsMixins.js' ).methods.createConnectedItemsChangesSummaryMessage;
 
 module.exports = exports = {
 	getters: {
@@ -312,7 +313,11 @@ module.exports = exports = {
 
 			return context
 				.dispatch( 'pushValuesToList', { rowId: listRow.id, values: payload.zids } )
-				.then( () => context.dispatch( 'submitZObject', '' ).catch( ( e ) => {
+				.then( () => context.dispatch(
+					'submitZObject', {
+						summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-testers-approved-summary', payload.zids ),
+						detachFunctionObjects: false
+					} ).catch( ( e ) => {
 					// Reset old ZObject if something failed
 					context.commit( 'setZObject', zobjectCopy );
 					throw e;
@@ -339,7 +344,11 @@ module.exports = exports = {
 
 			return context
 				.dispatch( 'pushValuesToList', { rowId: listRow.id, values: payload.zids } )
-				.then( () => context.dispatch( 'submitZObject', '' ).catch( ( e ) => {
+				.then( () => context.dispatch(
+					'submitZObject', {
+						summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-implementations-approved-summary', payload.zids ),
+						detachFunctionObjects: false
+					} ).catch( ( e ) => {
 					// Reset old ZObject if something failed
 					context.commit( 'setZObject', zobjectCopy );
 					throw e;
@@ -376,7 +385,13 @@ module.exports = exports = {
 			}
 			context.dispatch( 'recalculateTypedListKeys', listRow.id );
 
-			return context.dispatch( 'submitZObject', '' ).catch( ( e ) => {
+			return context.dispatch(
+				'submitZObject',
+				{
+					summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-testers-deactivated-summary', payload.zids ),
+					detachFunctionObjects: false
+				}
+			).catch( ( e ) => {
 				// Reset old ZObject if something failed
 				context.commit( 'setZObject', zobjectCopy );
 				throw e;
@@ -412,7 +427,13 @@ module.exports = exports = {
 			}
 			context.dispatch( 'recalculateTypedListKeys', listRow.id );
 
-			return context.dispatch( 'submitZObject', '' ).catch( ( e ) => {
+			return context.dispatch(
+				'submitZObject',
+				{
+					summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-implementations-deactivated-summary', payload.zids ),
+					detachFunctionObjects: false
+				}
+			).catch( ( e ) => {
 				// Reset old ZObject if something failed
 				context.commit( 'setZObject', zobjectCopy );
 				throw e;

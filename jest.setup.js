@@ -58,6 +58,10 @@ class Mocki18n {
 		return this.text();
 	}
 
+	params() {
+		return this;
+	}
+
 	parse() {
 		return englishMessages[ this.string ];
 	}
@@ -94,6 +98,9 @@ global.mw = {
 	language: {
 		getFallbackLanguageChain: function () {
 			return [ 'en' ];
+		},
+		listToText: function () {
+			return 'list';
 		}
 	},
 	storage: {
