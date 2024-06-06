@@ -9,10 +9,12 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
@@ -151,6 +153,51 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 			'Z4 validator' => [ 'Z4', [ $validZ4Key ], 'Z4', true ],
 			'real validator' => [ 'Z4', [ $validZ4Key ], 'Z1234', true ],
 			'broken validator' => [ 'Z4', [ $validZ4Key ], 'Test value!', false ],
+		];
+	}
+
+	/**
+	 * @dataProvider provideIsEnumType
+	 */
+	public function testIsEnumType( $inputKeys, $expectedIsEnum ) {
+		// Ensure that Z40/Boolean is available
+		$this->insertZids( [ 'Z40' ] );
+
+		$listOfKeys = ZTypedList::buildType( new ZReference( 'Z3' ) );
+
+		$identity = 'Z1234';
+		$validator = 'Z101';
+		$testObject = new ZType(
+			new ZReference( $identity ),
+			new ZTypedList( $listOfKeys, $inputKeys ),
+			new ZReference( $validator )
+		);
+
+		$this->assertSame( $expectedIsEnum, $testObject->isEnumType() );
+	}
+
+	public static function provideIsEnumType() {
+		$trueRef = new ZReference( ZTypeRegistry::Z_BOOLEAN_TRUE );
+		$falseRef = new ZReference( ZTypeRegistry::Z_BOOLEAN_FALSE );
+		$trueLiteral = new ZObject( new ZReference( ZTypeRegistry::Z_BOOLEAN ), [
+			'Z40K1' => new ZReference( ZTypeRegistry::Z_BOOLEAN_TRUE )
+		] );
+		$falseLiteral = new ZObject( new ZReference( ZTypeRegistry::Z_BOOLEAN ), [
+			'Z40K1' => new ZReference( ZTypeRegistry::Z_BOOLEAN_FALSE )
+		] );
+
+		$noIdentityKey = new ZKey( new ZReference( 'Z1234' ), new ZString( 'Z1234K1' ), [] );
+		$identityTrueRef = new ZKey( new ZReference( 'Z1234' ), new ZString( 'Z1234K1' ), [], $trueRef );
+		$identityFalseRef = new ZKey( new ZReference( 'Z1234' ), new ZString( 'Z1234K1' ), [], $falseRef );
+		$identityTrueLiteral = new ZKey( new ZReference( 'Z1234' ), new ZString( 'Z1234K1' ), [], $trueLiteral );
+		$identityFalseLiteral = new ZKey( new ZReference( 'Z1234' ), new ZString( 'Z1234K1' ), [], $falseLiteral );
+
+		return [
+			'identity key not set' => [ [ $noIdentityKey ], false ],
+			'identity key reference to true' => [ [ $identityTrueRef ], true ],
+			'identity key reference to false' => [ [ $identityFalseRef ], false ],
+			'identity key literal true' => [ [ $identityTrueLiteral ], true ],
+			'identity key literal false' => [ [ $identityFalseLiteral ], false ]
 		];
 	}
 

@@ -21,6 +21,7 @@ use MediaWiki\User\User;
 /**
  * @covers \MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization
  * @covers \MediaWiki\Extension\WikiLambda\Authorization\ZObjectFilterInRange
+ * @covers \MediaWiki\Extension\WikiLambda\Authorization\ZObjectFilterIsEnumValue
  * @covers \MediaWiki\Extension\WikiLambda\Authorization\ZObjectFilterIsRunnable
  * @covers \MediaWiki\Extension\WikiLambda\Authorization\ZObjectFilterTypeChanged
  * @covers \MediaWiki\Extension\WikiLambda\Authorization\ZObjectFilterIsAttached
@@ -461,6 +462,77 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 			$status->isValid(),
 			'Functioneer is also authorized to edit the labels of an unattached function'
 		);
+	}
+
+	public function testEditEnumValue() {
+		$user = $this->getTestUser()->getUser();
+		$functioneer = $this->getTestUser( [ 'functioneer' ] )->getUser();
+		$maintainer = $this->getTestUser( [ 'functioneer', 'functionmaintainer' ] )->getUser();
+
+		// SETUP ENUM:
+		$this->insertZids( [ 'Z40' ] );
+		// Insert new Enum type
+		$filePath = dirname( __DIR__, 1 ) . '/test_data/authorization/enum-type.json';
+		$fileData = json_decode( file_get_contents( $filePath ) );
+		$month = $fileData->month;
+
+		// Insert new enum type
+		$typePage = $this->zobjectStore->createNewZObject(
+			FormatJson::encode( $month ),
+			'Insert month type',
+			$functioneer
+		);
+		$this->assertTrue( $typePage->isOK() );
+		$typeZid = $typePage->getTitle()->getBaseText();
+
+		// ENUM INSTANCE:
+		// Replace type Zid and create title
+		$january = json_decode( str_replace(
+			'TYPEZID',
+			$typeZid,
+			json_encode( $fileData->january )
+		) );
+		$title = Title::newFromText( $january->zid, NS_MAIN );
+
+		// Create and validate ZObjectContent objects
+		$oldContent = new ZObjectContent( FormatJson::encode( $january->oldValue ) );
+		$newContent = new ZObjectContent( FormatJson::encode( $january->newValue ) );
+		$this->assertTrue( $oldContent->isValid() );
+		$this->assertTrue( $newContent->isValid() );
+
+		// Assert that the correct rights are detected
+		$rights = $this->zobjectAuthorization->getRequiredEditRights(
+			$oldContent,
+			$newContent,
+			$title
+		);
+		$this->assertEquals( [
+			'edit',
+			'wikilambda-edit-enum-value'
+		], $rights );
+
+		// Request authorization finally goes through
+		$status = $this->zobjectAuthorization->authorize(
+			$oldContent,
+			$newContent,
+			$user,
+			$title
+		);
+		$this->assertFalse( $status->isValid(), 'User is not authorized to edit enum value' );
+		$status = $this->zobjectAuthorization->authorize(
+			$oldContent,
+			$newContent,
+			$functioneer,
+			$title
+		);
+		$this->assertFalse( $status->isValid(), 'Functioneer is not authorized to edit enum value' );
+		$status = $this->zobjectAuthorization->authorize(
+			$oldContent,
+			$newContent,
+			$maintainer,
+			$title
+		);
+		$this->assertTrue( $status->isValid(), 'Function maintainer is authorized to edit enum value' );
 	}
 
 	/**

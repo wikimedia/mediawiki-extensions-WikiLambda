@@ -114,6 +114,17 @@
     any:
       - wikilambda-edit-programming
 
+# ======================
+# Rights for enum values
+# ======================
+
+# Change an enum value
+- path: '^Z2K2\.(.*)?$'
+  filter: [ ZObjectFilterIsEnumValue ]
+  operations:
+    any:
+      - wikilambda-edit-enum-value
+
 # =======================================
 # Rights for all other predefined objects
 #
@@ -277,9 +288,9 @@
     any:
       - wikilambda-edit-tester
 
-# =============================
-# Fallback rules for edit types
-# =============================
+# ==================================
+# Fallback rules for edit any object
+# ==================================
 
 # Change zobject
 - path: '^Z2K2(\..*)?$'

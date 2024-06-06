@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use FormatJson;
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
@@ -19,6 +20,7 @@ use MediaWiki\Title\Title;
  * @covers \MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization
  * @covers \MediaWiki\Extension\WikiLambda\Authorization\AuthorizationStatus
  * @covers \MediaWiki\Extension\WikiLambda\Authorization\ZObjectFilterInRange
+ * @covers \MediaWiki\Extension\WikiLambda\Authorization\ZObjectFilterIsEnumValue
  * @covers \MediaWiki\Extension\WikiLambda\Authorization\ZObjectFilterIsRunnable
  * @covers \MediaWiki\Extension\WikiLambda\Authorization\ZObjectFilterTypeChanged
  * @covers \MediaWiki\Extension\WikiLambda\Authorization\ZObjectFilterIsAttached
@@ -321,6 +323,39 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 				}
 			}
 		}
+	}
+
+	public function testCreateEnumValue() {
+		$user = $this->getTestUser()->getUser();
+		$functioneer = $this->getTestUser( [ 'functioneer' ] )->getUser();
+		$maintainer = $this->getTestUser( [ 'functioneer', 'functionmaintainer' ] )->getUser();
+
+		// SETUP:
+		// Insert enum type
+		$filePath = dirname( __DIR__, 1 ) . '/test_data/authorization/enum-type.json';
+		$fileData = json_decode( file_get_contents( $filePath ) );
+		$month = $fileData->month;
+		$typePage = $this->zobjectStore->createNewZObject(
+			FormatJson::encode( $month ),
+			'Insert month type',
+			$functioneer
+		);
+		$this->assertTrue( $typePage->isOK() );
+		$typeZid = $typePage->getTitle()->getBaseText();
+
+		// TEST:
+		// Prepare to insert a new enum value
+		$january = json_decode( str_replace(
+			'TYPEZID',
+			$typeZid,
+			json_encode( $fileData->january )
+		) );
+		$title = Title::newFromText( $january->zid, NS_MAIN );
+		$contentObject = new ZObjectContent( json_encode( $january->newValue ) );
+
+		// Assert that the correct creation rights are detected
+		$actualRights = $this->zobjectAuthorization->getRequiredCreateRights( $contentObject, $title );
+		$this->assertContains( 'wikilambda-create-enum-value', $actualRights );
 	}
 
 	// TODO (T342357): Edits to pre-existing content, especially:
