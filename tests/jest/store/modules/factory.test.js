@@ -17,6 +17,7 @@ let context,
 
 describe( 'factory Vuex module', () => {
 	const factoryModule = zobjectModule.modules.factory;
+	const mockEnumZid = 'Z30000';
 
 	beforeEach( () => {
 		getResolveMock = jest.fn( ( thenFunction ) => thenFunction() );
@@ -34,9 +35,8 @@ describe( 'factory Vuex module', () => {
 			describe( 'createObjectByType does not do an infinite recursion', () => {
 				beforeEach( () => {
 					context.state = { objects: mockApiZids };
-					context.getters.getStoredObject = function ( key ) {
-						return context.state.objects[ key ];
-					};
+					context.getters.isEnumType = ( zid ) => zid === mockEnumZid;
+					context.getters.getStoredObject = ( key ) => context.state.objects[ key ];
 					Object.keys( factoryModule.getters ).forEach( ( key ) => {
 						context.getters[ key ] =
 							factoryModule.getters[ key ](
@@ -110,7 +110,6 @@ describe( 'factory Vuex module', () => {
 					zobjectModule: context.state
 				};
 				context.getters.createObjectByType = factoryModule.getters.createObjectByType( context.state, context.getters );
-
 				// Getters
 				Object.keys( factoryModule.getters ).forEach( ( key ) => {
 					context.getters[ key ] = factoryModule.getters[ key ](
@@ -119,6 +118,7 @@ describe( 'factory Vuex module', () => {
 					);
 				} );
 
+				context.getters.isEnumType = ( zid ) => zid === mockEnumZid;
 				context.getters.getZObjectAsJsonById = zobjectModule.getters.getZObjectAsJsonById( context.state );
 				context.getters.getUserLangZid = 'Z1003';
 				context.getters.getStoredObject = ( zid ) => context.state.objects[ zid ];
@@ -1264,6 +1264,26 @@ describe( 'factory Vuex module', () => {
 							}
 						},
 						append: true
+					};
+
+					expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZids', { zids: expectedZids } );
+					expect( context.dispatch ).toHaveBeenCalledWith( 'injectZObjectFromRowId', expectedPayload );
+				} );
+			} );
+
+			describe( 'Add enum value', () => {
+				it( 'adds a reference when type is an enumeration', () => {
+					const payload = { id: 0, type: mockEnumZid };
+					factoryModule.actions.changeType( context, payload );
+
+					const expectedZids = [ 'Z1', 'Z9' ];
+					const expectedPayload = {
+						rowId: 0,
+						value: {
+							Z1K1: 'Z9',
+							Z9K1: ''
+						},
+						append: false
 					};
 
 					expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZids', { zids: expectedZids } );

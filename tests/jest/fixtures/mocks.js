@@ -66,7 +66,7 @@ const mockFunction = {
 };
 
 /**
- * Returns builtin objects Z1, Z3, Z6, Z31, Z32, Z802, Z881, Z882, Z1003
+ * Returns builtin objects Z1, Z3, Z6, Z8, Z31, Z32, Z802, Z881, Z882, Z1003
  * And custom objects Z10001, Z10528, Z20001, Z20002, Z20003
  */
 const mockApiZids = {
@@ -298,6 +298,125 @@ const mockApiZids = {
 					Z1K1: 'Z11',
 					Z11K1: 'Z1002',
 					Z11K2: 'String'
+				}
+			]
+		}
+	},
+	Z8: {
+		Z1K1: "Z2",
+		Z2K1: {
+			Z1K1: "Z6",
+			Z6K1: "Z8"
+		},
+		Z2K2: {
+			Z1K1: "Z4",
+			Z4K1: "Z8",
+			Z4K2: [
+				"Z3",
+				{
+					Z1K1: "Z3",
+					Z3K1: {
+						Z1K1: "Z7",
+						Z7K1: "Z881",
+						Z881K1: "Z17"
+					},
+					Z3K2: "Z8K1",
+					Z3K3: {
+						Z1K1: "Z12",
+						Z12K1: [
+							"Z11",
+							{
+								Z1K1: "Z11",
+								Z11K1: "Z1002",
+								Z11K2: "arguments"
+							}
+						]
+					}
+				},
+				{
+					Z1K1: "Z3",
+					Z3K1: "Z4",
+					Z3K2: "Z8K2",
+					Z3K3: {
+						Z1K1: "Z12",
+						Z12K1: [
+							"Z11",
+							{
+								Z1K1: "Z11",
+								Z11K1: "Z1002",
+								Z11K2: "return type"
+							}
+						]
+					}
+				},
+				{
+					Z1K1: "Z3",
+					Z3K1: {
+						Z1K1: "Z7",
+						Z7K1: "Z881",
+						Z881K1: "Z20"
+					},
+					Z3K2: "Z8K3",
+					Z3K3: {
+						Z1K1: "Z12",
+						Z12K1: [
+							"Z11",
+							{
+								Z1K1: "Z11",
+								Z11K1: "Z1002",
+								Z11K2: "testers"
+							}
+						]
+					}
+				},
+				{
+					Z1K1: "Z3",
+					Z3K1: {
+						Z1K1: "Z7",
+						Z7K1: "Z881",
+						Z881K1: "Z14"
+					},
+					Z3K2: "Z8K4",
+					Z3K3: {
+						Z1K1: "Z12",
+						Z12K1: [
+							"Z11",
+							{
+								Z1K1: "Z11",
+								Z11K1: "Z1002",
+								Z11K2: "implementations"
+							}
+						]
+					}
+				},
+				{
+					Z1K1: "Z3",
+					Z3K1: "Z8",
+					Z3K2: "Z8K5",
+					Z3K3: {
+						Z1K1: "Z12",
+						Z12K1: [
+							"Z11",
+							{
+								Z1K1: "Z11",
+								Z11K1: "Z1002",
+								Z11K2: "identity"
+							}
+						]
+					},
+					Z3K4: "Z41"
+				}
+			],
+			Z4K3: "Z108"
+		},
+		Z2K3: {
+			Z1K1: "Z12",
+			Z12K1: [
+				"Z11",
+				{
+					Z1K1: "Z11",
+					Z11K1: "Z1002",
+					Z11K2: "Function"
 				}
 			]
 		}
@@ -945,6 +1064,51 @@ const mockApiZids = {
 			Z12K1: [ 'Z11' ]
 		}
 	},
+	Z30000: {
+		Z1K1: "Z2",
+		Z2K1: {
+			Z1K1: "Z6",
+			Z6K1: "Z30000"
+		},
+		Z2K2: {
+			Z1K1: "Z4",
+			Z4K1: "Z30000",
+			Z4K2: [ "Z3",
+				{
+					Z1K1: "Z3",
+					Z3K1: "Z30000",
+					Z3K2: "Z30000K1",
+					Z3K3: {
+						Z1K1: "Z12",
+						Z12K1: [ "Z11",
+							{
+								Z1K1: "Z11",
+								Z11K1: "Z1002",
+								Z11K2: "identity"
+							}
+						]
+					},
+					Z3K4: {
+						Z1K1: "Z40",
+						Z40K1: "Z41"
+					}
+				}
+			],
+			Z4K3: "Z101",
+			Z4K7: [ "Z46" ],
+			Z4K8: [ "Z64" ]
+		},
+		Z2K3: {
+			Z1K1: "Z12",
+			Z12K1: [ "Z11",
+				{
+					Z1K1: "Z11",
+					Z11K1: "Z1002",
+					Z11K2: "Month"
+				}
+			]
+		}
+	}
 };
 
 /**
@@ -1025,9 +1189,55 @@ const mockLanguages = {
 	}
 };
 
+const mockEnumValues = [
+  {
+    page_id: 0,
+    page_namespace: 0,
+    page_content_model: "zobject",
+    page_title: "Z30001",
+    page_type: "Z30000",
+    return_type: null,
+    match_label: null,
+    match_is_primary: null,
+    match_lang: null,
+    match_rate: 0,
+    label: "January",
+    type_label: "Month"
+  },
+  {
+    page_id: 0,
+    page_namespace: 0,
+    page_content_model: "zobject",
+    page_title: "Z30002",
+    page_type: "Z30000",
+    return_type: null,
+    match_label: null,
+    match_is_primary: null,
+    match_lang: null,
+    match_rate: 0,
+    label: "February",
+    type_label: "Month"
+  },
+  {
+    page_id: 0,
+    page_namespace: 0,
+    page_content_model: "zobject",
+    page_title: "Z30003",
+    page_type: "Z30000",
+    return_type: null,
+    match_label: null,
+    match_is_primary: null,
+    match_lang: null,
+    match_rate: 0,
+    label: "March",
+    type_label: "Month"
+  }
+];
+
 module.exports = {
 	mockFunction,
 	mockApiResponseFor,
 	mockApiZids,
-	mockLanguages
+	mockLanguages,
+	mockEnumValues
 };

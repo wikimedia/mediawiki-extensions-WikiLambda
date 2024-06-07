@@ -11,7 +11,8 @@ const libraryModule = require( '../../../../resources/ext.wikilambda.edit/store/
 	LabelData = require( '../../../../resources/ext.wikilambda.edit/store/classes/LabelData.js' ),
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	mockApiResponseFor = require( '../../fixtures/mocks.js' ).mockApiResponseFor,
-	mockApiZids = require( '../../fixtures/mocks.js' ).mockApiZids;
+	mockApiZids = require( '../../fixtures/mocks.js' ).mockApiZids,
+	mockEnumValues = require( '../../fixtures/mocks.js' ).mockEnumValues;
 
 const mockLabels = {
 	Z1: new LabelData( 'Z1', 'Object', 'Z1002' ),
@@ -270,6 +271,139 @@ describe( 'library module', () => {
 				expect( actual ).toBe( expected );
 			} );
 		} );
+
+		describe( 'isEnumType', () => {
+			beforeEach( () => {
+				state.objects = mockApiZids;
+			} );
+
+			it( 'returns false when zid is undefined', () => {
+				const zid = undefined;
+				const expected = false;
+				const actual = libraryModule.getters.isEnumType( state )( zid );
+				expect( actual ).toBe( expected );
+			} );
+
+			it( 'returns false when zid is in the excluded from enums list', () => {
+				const zid = 'Z8';
+				const expected = false;
+				const actual = libraryModule.getters.isEnumType( state )( zid );
+				expect( actual ).toBe( expected );
+			} );
+
+			it( 'returns false when zid is not available', () => {
+				const zid = 'Z50000';
+				const expected = false;
+				const actual = libraryModule.getters.isEnumType( state )( zid );
+				expect( actual ).toBe( expected );
+			} );
+
+			it( 'returns false when zid is not a type', () => {
+				const zid = 'Z802';
+				const expected = false;
+				const actual = libraryModule.getters.isEnumType( state )( zid );
+				expect( actual ).toBe( expected );
+			} );
+
+			it( 'returns false when type is not enum', () => {
+				const zid = 'Z3';
+				const expected = false;
+				const actual = libraryModule.getters.isEnumType( state )( zid );
+				expect( actual ).toBe( expected );
+			} );
+
+			it( 'returns true when type is enum', () => {
+				const zid = 'Z30000';
+				const expected = true;
+				const actual = libraryModule.getters.isEnumType( state )( zid );
+				expect( actual ).toBe( expected );
+			} );
+		} );
+
+		describe( 'isEnumFetched', () => {
+			it( 'returns false when enum zid is not present in the state', () => {
+				state.enums = {};
+
+				const zid = 'Z30000';
+				const expected = false;
+				const actual = libraryModule.getters.isEnumFetched( state )( zid );
+				expect( actual ).toBe( expected );
+			} );
+
+			it( 'returns true when enum values are being fetched', () => {
+				state.enums = {
+					Z30000: new Promise( ( resolve ) => {
+						resolve();
+					} )
+				};
+
+				const zid = 'Z30000';
+				const expected = true;
+				const actual = libraryModule.getters.isEnumFetched( state )( zid );
+				expect( actual ).toBe( expected );
+			} );
+
+			it( 'returns true when enum values are fetched and stored', () => {
+				state.enums = {
+					Z30000: mockEnumValues
+				};
+
+				const zid = 'Z30000';
+				const expected = true;
+				const actual = libraryModule.getters.isEnumFetched( state )( zid );
+				expect( actual ).toBe( expected );
+			} );
+		} );
+
+		describe( 'getEnumValues', () => {
+			it( 'returns empty array when enum zid is not present in the state', () => {
+				state.enums = {};
+
+				const zid = 'Z30000';
+				const expected = [];
+				const actual = libraryModule.getters.getEnumValues( state )( zid );
+				expect( actual ).toEqual( expected );
+			} );
+
+			it( 'returns empty array when enum zid is still being fetched', () => {
+				state.enums = {
+					Z30000: new Promise( ( resolve ) => {
+						resolve();
+					} )
+				};
+
+				const zid = 'Z30000';
+				const expected = [];
+				const actual = libraryModule.getters.getEnumValues( state )( zid );
+				expect( actual ).toEqual( expected );
+			} );
+
+			it( 'returns stored values when they have been fetched', () => {
+				state.enums = {
+					Z30000: mockEnumValues
+				};
+
+				const zid = 'Z30000';
+				const expected = mockEnumValues;
+				const actual = libraryModule.getters.getEnumValues( state )( zid );
+				expect( actual ).toEqual( expected );
+			} );
+		} );
+	} );
+
+	describe( 'Mutations', () => {
+		describe( 'setEnumValues', () => {
+			it( 'sets received values indexed by the enum zid', () => {
+				state.enums = {};
+				const payload = {
+					zid: 'Z30000',
+					data: mockEnumValues
+				};
+
+				libraryModule.mutations.setEnumValues( state, payload );
+				expect( state.enums.Z30000 ).toEqual( mockEnumValues );
+			} );
+		} );
 	} );
 
 	describe( 'Actions', () => {
@@ -461,6 +595,57 @@ describe( 'library module', () => {
 						expect( context.commit ).toHaveBeenCalledWith( 'setRenderer', { type: 'Z20002', renderer: 'Z20020' } );
 						expect( context.commit ).toHaveBeenCalledWith( 'setParser', { type: 'Z20002', parser: 'Z20030' } );
 					} );
+				} );
+			} );
+		} );
+
+		describe( 'fetchEnumValues', () => {
+			beforeEach( () => {
+				getMock = jest.fn( () => new Promise( ( resolve ) => {
+					const data = { query: { wikilambdasearch_labels: mockEnumValues } };
+					resolve( data );
+				} ) );
+			} );
+
+			it( 'exits early if enum type is already fetched', () => {
+				context.getters = {
+					isEnumFetched: jest.fn().mockReturnValue( true ),
+					getUserLangCode: 'en'
+				};
+
+				libraryModule.actions.fetchEnumValues( context, 'Z30000' );
+
+				expect( context.commit ).not.toHaveBeenCalled();
+				expect( getMock ).not.toHaveBeenCalled();
+			} );
+
+			it( 'calls the lookup api with the requested zid and saves the pending and final states', async () => {
+				context.getters = {
+					isEnumFetched: jest.fn().mockReturnValue( false ),
+					getUserLangCode: 'en'
+				};
+
+				const promise = libraryModule.actions.fetchEnumValues( context, 'Z30000' );
+
+				expect( getMock ).toHaveBeenCalledWith( {
+					action: 'query',
+					list: 'wikilambdasearch_labels',
+					wikilambdasearch_search: '',
+					wikilambdasearch_type: 'Z30000',
+					wikilambdasearch_return_type: undefined,
+					wikilambdasearch_strict_return_type: undefined,
+					wikilambdasearch_language: 'en'
+				} );
+
+				expect( context.commit ).toHaveBeenCalledWith( 'setEnumValues', {
+					zid: 'Z30000',
+					data: promise
+				} );
+
+				await promise;
+				expect( context.commit ).toHaveBeenCalledWith( 'setEnumValues', {
+					zid: 'Z30000',
+					data: mockEnumValues
 				} );
 			} );
 		} );

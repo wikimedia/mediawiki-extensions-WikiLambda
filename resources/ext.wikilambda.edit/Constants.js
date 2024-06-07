@@ -244,6 +244,18 @@ Constants.EXCLUDE_FROM_PERSISTENT_CONTENT = [
 	Constants.Z_ARGUMENT,
 	Constants.Z_CODE
 ];
+// Types that contain an identity key
+// but are not considered enums:
+// * Z4/Type
+// * Z8/Function
+// * Z46/Deserialiser
+// * Z64/Serialiser
+Constants.EXCLUDE_FROM_ENUMS = [
+	Constants.Z_TYPE,
+	Constants.Z_FUNCTION,
+	Constants.Z_DESERIALISER,
+	Constants.Z_SERIALISER
+];
 
 Constants.LIST_MENU_OPTIONS = {
 	DELETE_ITEM: 'delete-list-item',

@@ -43,6 +43,7 @@ module.exports = exports = {
 						( payload.link && Constants.LINKED_TYPES.includes( payload.type ) ) ) {
 					return getters.createZReference( payload );
 				}
+
 				keyList.push( payload.type );
 
 				// If payload.type is an object, we are looking at a generic type,
@@ -93,6 +94,13 @@ module.exports = exports = {
 					case Constants.Z_TYPED_MAP:
 						return getters.createZTypedMap( payload );
 					default:
+						// If type is enumeration, initialize it as a reference unless it's
+						// being explicitly requested as a literal by the Mode Selector
+						if ( getters.isEnumType( payload.type ) && !payload.literal ) {
+							payload.literal = false;
+							return getters.createZReference( payload );
+						}
+						// Else, explore and create new ZObject keys
 						return getters.createGenericObject( payload, keyList );
 				}
 			}

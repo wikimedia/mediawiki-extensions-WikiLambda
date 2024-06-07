@@ -37,6 +37,7 @@ describe( 'About', () => {
 			getZPersistentAlias: createGettersWithFunctionsMock( undefined ),
 			getZPersistentDescription: createGettersWithFunctionsMock( undefined ),
 			getUserLangZid: createGetterMock( 'Z1002' ),
+			isEnumType: createGettersWithFunctionsMock( false ),
 			isUserLoggedIn: createGetterMock( true ),
 			isCreateNewPage: createGetterMock( true ),
 			isDirty: createGetterMock( false ),

@@ -10,8 +10,15 @@
 -->
 <template>
 	<span class="ext-wikilambda-select-zobject">
-		<!-- Show fields when edit is false -->
+		<cdx-select
+			v-if="isEnum"
+			v-model:selected="selectedValue"
+			:menu-items="enumValues"
+			:menu-config="selectConfig"
+			@update:selected="onSelect"
+		></cdx-select>
 		<cdx-lookup
+			v-else
 			:key="lookupKey"
 			:selected="selectedValue"
 			:disabled="disabled"
@@ -50,6 +57,7 @@
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
 	CdxLookup = require( '@wikimedia/codex' ).CdxLookup,
+	CdxSelect = require( '@wikimedia/codex' ).CdxSelect,
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	errorUtils = require( '../../mixins/errorUtils.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
@@ -61,6 +69,7 @@ module.exports = exports = defineComponent( {
 	name: 'wl-z-object-selector',
 	components: {
 		'cdx-message': CdxMessage,
+		'cdx-select': CdxSelect,
 		'cdx-lookup': CdxLookup
 	},
 	mixins: [ errorUtils, typeUtils ],
@@ -110,6 +119,7 @@ module.exports = exports = defineComponent( {
 	emits: [ 'input' ],
 	data: function () {
 		return {
+			inputValue: '',
 			lookupKey: 1,
 			lookupResults: [],
 			lookupConfig: {
@@ -118,13 +128,16 @@ module.exports = exports = defineComponent( {
 			},
 			lookupDelayTimer: null,
 			lookupDelayMs: 300,
-			inputValue: ''
+			selectConfig: {
+				visibleItemLimit: 5
+			}
 		};
 	},
 	computed: Object.assign( mapGetters( [
-		'getLabelData'
+		'getLabelData',
+		'getEnumValues',
+		'isEnumType'
 	] ), {
-
 		/**
 		 * Value model for the internal codex lookup component. It
 		 * must be null or the value (Zid) of the selected MenuItem.
@@ -146,6 +159,28 @@ module.exports = exports = defineComponent( {
 			return this.selectedZid ?
 				this.getLabelData( this.selectedZid ).label :
 				'';
+		},
+
+		/**
+		 * Returns whether the type is an enumeration
+		 *
+		 * @return {boolean}
+		 */
+		isEnum: function () {
+			return this.isEnumType( this.type );
+		},
+
+		/**
+		 * Returns the menu items for the enumeration value selector
+		 *
+		 * @return {Array}
+		 */
+		enumValues: function () {
+			return this.getEnumValues( this.type ).map( ( item ) => {
+				const value = item.page_title;
+				const label = item.label;
+				return { value, label };
+			} );
 		},
 
 		/**
@@ -194,6 +229,7 @@ module.exports = exports = defineComponent( {
 	methods: Object.assign( {},
 		mapActions( [
 			'lookupZObjectLabels',
+			'fetchEnumValues',
 			'fetchZids'
 		] ),
 		{
@@ -383,10 +419,18 @@ module.exports = exports = defineComponent( {
 		},
 		type: function () {
 			this.setSuggestions();
+		},
+		isEnum: function ( value ) {
+			if ( value ) {
+				this.fetchEnumValues( this.type );
+			}
 		}
 	},
 	mounted: function () {
 		this.setSuggestions();
+		if ( this.isEnum ) {
+			this.fetchEnumValues( this.type );
+		}
 	}
 } );
 </script>

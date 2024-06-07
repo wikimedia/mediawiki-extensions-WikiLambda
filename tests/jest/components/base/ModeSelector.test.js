@@ -33,6 +33,7 @@ describe( 'ModeSelector', () => {
 			getChildrenByParentRowId: createGettersWithFunctionsMock( [] ),
 			getZObjectTypeByRowId: createGettersWithFunctionsMock( Constants.Z_REFERENCE ),
 			getZObjectKeyByRowId: createGettersWithFunctionsMock( Constants.Z_OBJECT_TYPE ),
+			isEnumType: createGettersWithFunctionsMock( false ),
 			isInsideComposition: createGettersWithFunctionsMock( false )
 		};
 		global.store.hotUpdate( {

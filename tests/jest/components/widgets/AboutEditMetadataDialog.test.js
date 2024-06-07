@@ -34,6 +34,7 @@ describe( 'AboutEditMetadataDialog', () => {
 			getErrors: createGettersWithFunctionsMock( {} ),
 			getZArgumentLabelForLanguage: createGettersWithFunctionsMock( undefined ),
 			getZFunctionInputs: createGettersWithFunctionsMock( [] ),
+			isEnumType: createGettersWithFunctionsMock( false ),
 			getLabelData: createLabelDataMock( {
 				Z2K3: 'name',
 				Z2K4: 'also known as',

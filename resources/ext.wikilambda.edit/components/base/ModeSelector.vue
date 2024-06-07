@@ -69,6 +69,7 @@ module.exports = exports = defineComponent( {
 		'getParentRowId',
 		'getZObjectTypeByRowId',
 		'getZObjectKeyByRowId',
+		'isEnumType',
 		'isInsideComposition'
 	] ), {
 		/**
@@ -154,7 +155,10 @@ module.exports = exports = defineComponent( {
 			//   * If type is defined, add "Literal <Selected Type>"
 			const literals = [];
 			let typeString;
-			if ( this.key !== Constants.Z_OBJECT_TYPE && !this.isKeyTypedListType( this.key ) ) {
+			if ( this.key !== Constants.Z_OBJECT_TYPE &&
+				!this.isKeyTypedListType( this.key ) &&
+				!this.isEnumType( this.parentExpectedType )
+			) {
 				typeString = this.typeToString( this.parentExpectedType, true );
 				literals.push( {
 					label: this.$i18n( 'wikilambda-literal-type', this.getLabelData( typeString ).label ).text(),
@@ -247,7 +251,8 @@ module.exports = exports = defineComponent( {
 				const newType = this.menuItems.find( ( menu ) => menu.value === value );
 				this.$emit( 'set-type', {
 					keypath: [],
-					value: newType.type
+					value: newType.type,
+					literal: true
 				} );
 			}
 		}

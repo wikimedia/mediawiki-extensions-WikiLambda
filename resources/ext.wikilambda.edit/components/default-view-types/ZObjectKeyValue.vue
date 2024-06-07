@@ -686,7 +686,8 @@ module.exports = exports = defineComponent( {
 			this.changeType( {
 				id: this.rowId,
 				type: payload.value,
-				append: false
+				append: false,
+				literal: payload.literal
 			} );
 
 			// If we are setting the type of a Z1K1 key, we are changing the mode,

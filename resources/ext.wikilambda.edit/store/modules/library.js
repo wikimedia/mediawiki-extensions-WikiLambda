@@ -32,7 +32,11 @@ module.exports = exports = {
 		 * Collection of the requested zids and the resolving promises
 		 * zid: promise
 		 */
-		requests: {}
+		requests: {},
+		/**
+		 * Collection of enum types with all their selectable values
+		 */
+		enums: {}
 	},
 	getters: {
 		/**
@@ -161,6 +165,38 @@ module.exports = exports = {
 					( isIdentity === Constants.Z_BOOLEAN_TRUE ) ||
 					( isIdentity[ Constants.Z_BOOLEAN_IDENTITY ] === Constants.Z_BOOLEAN_TRUE )
 				);
+			};
+		},
+		/**
+		 * Given a type zid, returns whether it has an identity key
+		 *
+		 * @param {Object} state
+		 * @return {boolean}
+		 */
+		isEnumType: function ( state ) {
+			return function ( zid ) {
+				if ( ( zid === undefined ) ||
+					( Constants.EXCLUDE_FROM_ENUMS.includes( zid ) ) ||
+					( !state.objects[ zid ] ) ) {
+					return false;
+				}
+
+				const zobject = state.objects[ zid ][ Constants.Z_PERSISTENTOBJECT_VALUE ];
+				if ( zobject[ Constants.Z_OBJECT_TYPE ] !== Constants.Z_TYPE ) {
+					return false;
+				}
+
+				const keys = zobject[ Constants.Z_TYPE_KEYS ].slice( 1 );
+				for ( const key of keys ) {
+					const isIdentity = key[ Constants.Z_KEY_IS_IDENTITY ];
+					if ( isIdentity && (
+						( isIdentity === Constants.Z_BOOLEAN_TRUE ) ||
+						( isIdentity[ Constants.Z_BOOLEAN_IDENTITY ] === Constants.Z_BOOLEAN_TRUE )
+					) ) {
+						return true;
+					}
+				}
+				return false;
 			};
 		},
 		/**
@@ -337,6 +373,35 @@ module.exports = exports = {
 				return obj[ Constants.Z_FUNCTION_ARGUMENTS ].slice( 1 );
 			}
 			return findInputs;
+		},
+		/**
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		getEnumValues: function ( state ) {
+			/**
+			 * @param {string} zid
+			 * @return {Array}
+			 */
+			function findEnum( zid ) {
+				const enumValues = state.enums[ zid ];
+				return ( enumValues instanceof Array ) ? enumValues : [];
+			}
+			return findEnum;
+		},
+		/**
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		isEnumFetched: function ( state ) {
+			/**
+			 * @param {string} zid
+			 * @return {boolean}
+			 */
+			function findEnum( zid ) {
+				return !!state.enums[ zid ];
+			}
+			return findEnum;
 		}
 	},
 	mutations: {
@@ -375,6 +440,15 @@ module.exports = exports = {
 		 */
 		setLabel: function ( state, labelData ) {
 			state.labels[ labelData.zid ] = labelData;
+		},
+		/**
+		 * @param {Object} state
+		 * @param {Object} payload
+		 * @param {string} payload.zid
+		 * @param {Array|Promise} payload.data
+		 */
+		setEnumValues: function ( state, payload ) {
+			state.enums[ payload.zid ] = payload.data;
 		}
 	},
 	actions: {
@@ -398,6 +472,36 @@ module.exports = exports = {
 					DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT
 				);
 			} );
+		},
+		/**
+		 * Fetches all values stored of a given enum type.
+		 *
+		 * @param {Object} context
+		 * @param {string} type
+		 * @return {Promise}
+		 */
+		fetchEnumValues: function ( context, type ) {
+			// If already fetched or fetching, don't request again
+			if ( context.getters.isEnumFetched( type ) ) {
+				return;
+			}
+
+			const promise = apiUtils.searchLabels( {
+				input: '',
+				type,
+				language: context.getters.getUserLangCode
+			} ).then( ( values ) => {
+				// Set values when the request is completed
+				context.commit( 'setEnumValues', { zid: type, data: values } );
+			} ).catch( () => {
+				// Unset if the request failed
+				context.commit( 'setEnumValues', { zid: type, data: undefined } );
+			} );
+
+			// Set Promise to capture pending state
+			context.commit( 'setEnumValues', { zid: type, data: promise } );
+
+			return promise;
 		},
 		/**
 		 * Orchestrates the calls to wikilambdaload_zobject api to fetch
@@ -613,7 +717,7 @@ module.exports = exports = {
 		 * Pre-fetch information of the Zids most commonly used within the UI
 		 *
 		 * @param {Object} context
-		 * @return {Function}
+		 * @return {Promise}
 		 */
 		prefetchZids: function ( context ) {
 			const zids = [
