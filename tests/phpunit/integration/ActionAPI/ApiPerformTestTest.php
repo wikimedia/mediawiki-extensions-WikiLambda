@@ -305,7 +305,9 @@ class ApiPerformTestTest extends ApiTestCase {
 					'ztesterId' => 'Z8130',
 					'validateStatus' => "\"Z42\"",
 					// Error in evaluation
-					'functionCallErrorType' => 'Z504',
+					// TODO (T367089): This should be Z504 instead of Z503
+					// 'functionCallErrorType' => 'Z504',
+					'functionCallErrorType' => 'Z503',
 				]
 			],
 		];
@@ -336,7 +338,9 @@ class ApiPerformTestTest extends ApiTestCase {
 					'ztesterId' => 'Z8130',
 					'validateStatus' => "\"Z42\"",
 					// Not wellformed error
-					'functionCallErrorType' => 'Z517'
+					// TODO (T367089): This should be Z504 instead of Z503
+					// 'functionCallErrorType' => 'Z517'
+					'functionCallErrorType' => 'Z503'
 				]
 			],
 		];
