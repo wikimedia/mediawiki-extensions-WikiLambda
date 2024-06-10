@@ -118,6 +118,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 	public function testFetchBatchZObjects() {
 		$sysopUser = $this->getTestSysop()->getUser();
+		$this->insertZids( [ 'Z6' ] );
 
 		$firstZid = $this->zobjectStore->getNextAvailableZid();
 		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
@@ -157,7 +158,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertEquals( 'world', $secondZObjectInnerValue );
 
 		$zids = $this->zobjectStore->fetchAllZids();
-		$this->assertSame( [ $firstZid, $secondZid ], $zids );
+		$this->assertSame( [ $firstZid, $secondZid, 'Z6' ], $zids );
 	}
 
 	/**

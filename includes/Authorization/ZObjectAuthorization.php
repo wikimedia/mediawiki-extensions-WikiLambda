@@ -12,8 +12,10 @@ namespace MediaWiki\Extension\WikiLambda\Authorization;
 
 use MediaWiki\Extension\WikiLambda\Diff\ZObjectDiffer;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Title\Title;
 use Psr\Log\LoggerAwareInterface;
@@ -120,6 +122,18 @@ class ZObjectAuthorization implements LoggerAwareInterface {
 			case ZTypeRegistry::Z_UNIT:
 				array_push( $userRights, 'wikilambda-create-unit' );
 				break;
+
+			default:
+				// Check for enumeration
+				$typeTitle = Title::newFromText( $type, NS_MAIN );
+				$zObjectStore = WikiLambdaServices::getZObjectStore();
+				$typeObject = $zObjectStore->fetchZObjectByTitle( $typeTitle );
+				if ( $typeObject ) {
+					$typeInnerObject = $typeObject->getInnerZObject();
+					if ( ( $typeInnerObject instanceof ZType ) && $typeInnerObject->isEnumType() ) {
+						array_push( $userRights, 'wikilambda-create-enum-value' );
+					}
+				}
 		}
 
 		return $userRights;

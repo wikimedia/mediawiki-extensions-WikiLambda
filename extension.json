@@ -57,6 +57,7 @@
 		"wikilambda-connect-tester",
 		"wikilambda-create",
 		"wikilambda-create-boolean",
+		"wikilambda-create-enum-value",
 		"wikilambda-create-function",
 		"wikilambda-create-implementation",
 		"wikilambda-create-language",
@@ -73,6 +74,7 @@
 		"wikilambda-edit-attached-tester",
 		"wikilambda-edit-boolean",
 		"wikilambda-edit-builtin-function",
+		"wikilambda-edit-enum-value",
 		"wikilambda-edit-error-key-label",
 		"wikilambda-edit-implementation",
 		"wikilambda-edit-key-label",
@@ -126,10 +128,12 @@
 			"wikilambda-edit-running-function": true
 		},
 		"functionmaintainer": {
+			"wikilambda-create-enum-value": true,
 			"wikilambda-create-language": true,
 			"wikilambda-create-predefined": true,
 			"wikilambda-create-programming": true,
 			"wikilambda-edit-builtin-function": true,
+			"wikilambda-edit-enum-value": true,
 			"wikilambda-edit-language": true,
 			"wikilambda-edit-predefined": true,
 			"wikilambda-edit-programming": true,

@@ -224,6 +224,21 @@ class ZType extends ZObject {
 	}
 
 	/**
+	 * Return whether the type has an identity key
+	 *
+	 * @return bool
+	 */
+	public function isEnumType() {
+		$keys = $this->getTypeKeys()->getAsArray();
+		foreach ( $keys as $key ) {
+			if ( $key->getIsIdentity() ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Get the ZKey of a given key reference from the set of ZKeys of this ZType or
 	 * null if the ZKey is not available.
 	 *
