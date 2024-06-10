@@ -114,8 +114,8 @@ class ImplementationForm extends Page {
 	 */
 	async selectImplementationType( implementationType ) {
 		const contentBlock = await this.contentBlock;
-		const implementationBlock = contentBlock.$( 'div.ext-wikilambda-implementation-type' );
-		const implementationTypeLabel = implementationBlock.$( `.//label[span/text()="${ implementationType }"]` );
+		const implementationBlock = contentBlock.$( '[data-testid="implementation-type"]' );
+		const implementationTypeLabel = implementationBlock.$( `.//label[span/span/text()="${ implementationType }"]` );
 		await ElementActions.doClick( implementationTypeLabel );
 	}
 
@@ -154,7 +154,7 @@ class ImplementationForm extends Page {
 	// #region Composition Block
 
 	get compositionBlock() {
-		return ContentBlock.getSectionOfContentBlock( 'composition' );
+		return this.contentBlock.$( '.ext-wikilambda-implementation-content' );
 	}
 
 	/**

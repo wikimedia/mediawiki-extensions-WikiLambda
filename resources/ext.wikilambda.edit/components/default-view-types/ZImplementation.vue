@@ -29,7 +29,7 @@
 			></wl-z-object-key-value>
 		</div>
 		<!-- Implementation type block -->
-		<div class="ext-wikilambda-implementation-type">
+		<div class="ext-wikilambda-implementation-type" data-testid="implementation-type">
 			<div class="ext-wikilambda-key-block">
 				<label
 					:lang="implementationLabelData.langCode"

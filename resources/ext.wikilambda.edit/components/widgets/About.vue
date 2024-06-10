@@ -40,12 +40,13 @@
 						</span>
 					</div>
 					<!-- Aliases block -->
-					<div class="ext-wikilambda-about-aliases">
+					<div class="ext-wikilambda-about-aliases" data-testid="about-aliases">
 						<template v-if="hasAliases">
 							<span
 								v-for="( alias, index ) in visibleAliases"
 								:key="'alias-' + index"
 								class="ext-wikilambda-about-alias"
+								data-testid="about-alias"
 							>
 								{{ alias.value }}
 							</span>

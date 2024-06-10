@@ -17,7 +17,7 @@ const ElementActions = require( '../utils/ElementActions' );
 
 class ContentBlock {
 	get contentBlock() {
-		return $( 'div.ext-wikilambda-content' );
+		return $( '[data-testid="content"]' );
 	}
 
 	// #region

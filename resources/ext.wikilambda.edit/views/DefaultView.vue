@@ -26,7 +26,7 @@
 
 			<div class="ext-wikilambda-col ext-wikilambda-col-12 ext-wikilambda-col-tablet-24">
 				<!-- Persistent Object content block -->
-				<div class="ext-wikilambda-content">
+				<div class="ext-wikilambda-content" data-testid="content">
 					<div class="ext-wikilambda-content-title">
 						{{ $i18n( 'wikilambda-persistentzobject-contents' ).text() }}
 					</div>

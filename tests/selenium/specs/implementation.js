@@ -26,345 +26,212 @@ const ImplementationPage = require( '../pageobjects/implementation/Implementatio
 
 describe( 'Implementation (CUJ 5)', () => {
 
+	/**
+	 * Details about the function for which a new implementation is being created
+	 */
+	const functionDetails = {
+		ZObjectLabel: 'Boolean equality',
+		ZId: 'Z844'
+	};
+
 	describe( 'Implementation via code', () => {
 
 		/**
-		 * Details about the function for which a new implementation is being created
+		 * Details about the entries in Code Block
 		 */
-		const functionDetails = {
-			ZObjectLabel: 'Boolean equality',
-			ZId: 'Z844'
+		const codeBlockEntries = {
+			language: 'javascript',
+			/**
+			 * Code to be written in Code editor in line wise manner
+			 */
+			code: [
+				'function Z844( Z844K1, Z844K2 ) {', // Line 1
+				'if(Z844K1) { if(Z844K2) return true; return false; }', // Line 2
+				'if(Z844K2) return false;', // Line 3
+				'return true;', // Line 4
+				'}' // Line 5
+			],
+			/**
+			 * Instructions to write the code in Code Editor
+			 * "Enter", "Backspace", "ArrowUp" are commands to click on the respective
+			 * buttons on the keyboard.
+			 *
+			 * @see https://w3c.github.io/webdriver/#keyboard-actions - for Keyboard codes
+			 */
+			codeInstructions: [
+				'ArrowUp',
+				'if(Z844K1) { if(Z844K2) return true; return false; }', // Line 1
+				'Enter',
+				'if(Z844K2) return false;', // Line 2
+				'Enter',
+				'return true;' // Line 3
+			]
 		};
 
-		describe( 'Create a new implementation', () => {
+		let aboutBlockEntriesEnglish,
+			aboutBlockEntriesHindi;
 
-			/**
-			 * Details about the entries in Code Block
-			 */
-			const codeBlockEntries = {
-				language: 'javascript',
-				/**
-				 * Code to be written in Code editor in line wise manner
-				 */
-				code: [
-					'function Z844( Z844K1, Z844K2 ) {', // Line 1
-					'if(Z844K1) { if(Z844K2) return true; return false; }', // Line 2
-					'if(Z844K2) return false;', // Line 3
-					'return true;', // Line 4
-					'}' // Line 5
-				],
-				/**
-				 * Instructions to write the code in Code Editor
-				 * "Enter", "Backspace", "ArrowUp" are commands to click on the respective
-				 * buttons on the keyboard.
-				 *
-				 * @see https://w3c.github.io/webdriver/#keyboard-actions - for Keyboard codes
-				 */
-				codeInstructions: [
-					'ArrowUp',
-					'if(Z844K1) { if(Z844K2) return true; return false; }', // Line 1
-					'Enter',
-					'if(Z844K2) return false;', // Line 2
-					'Enter',
-					'return true;' // Line 3
-				]
+		before( () => {
+			browser.deleteAllCookies();
+			LoginPage.loginAdmin();
+			const time = Date.now();
+			aboutBlockEntriesEnglish = {
+				language: 'English',
+				label: `e2e-implementation-code-${ time }-English`,
+				description: 'This is the description for the new implementation via code in English',
+				alias: 'alias in English'
 			};
+			aboutBlockEntriesHindi = {
+				language: 'Hindi',
+				label: `e2e-implementation-code-${ time }-हिंदी`,
+				description: 'यह हिंदी में कोड के माध्यम से नए कार्यान्वयन का विवरण है',
+				alias: 'उपनाम हिंदी में'
+			};
+		} );
 
-			/**
-			 * About block entries in different languages
-			 */
-			let aboutBlockEntriesEnglish, aboutBlockEntriesFrench,
-				aboutBlockEntriesHindi;
+		it( 'should create and publish a new implementation', async () => {
+			await expect( browser ).toHaveUrlContaining( 'Main_Page',
+				{ message: 'Login failed' } );
 
-			/**
-			 * Initialize the entries of the About block before the test
-			 */
-			before( () => {
-				/**
-				 * Date.now() is being used so that label will be unique and
-				 * not collide in case of retries.
-				 */
-				const time = Date.now();
-				aboutBlockEntriesEnglish = {
-					language: 'English',
-					label: `e2e-implementation-code-${ time }-English`,
-					description: 'This is the description for the new implementation via code in English',
-					alias: 'alias in English'
-				};
-				aboutBlockEntriesFrench = {
-					language: 'French',
-					label: `e2e-implementation-code-${ time }-français`,
-					description: 'Ceci est la description de la nouvelle implémentation via le code en français',
-					alias: 'alias en français'
-				};
-				aboutBlockEntriesHindi = {
-					language: 'Hindi',
-					label: `e2e-implementation-code-${ time }-हिंदी`,
-					description: 'यह हिंदी में कोड के माध्यम से नए कार्यान्वयन का विवरण है',
-					alias: 'उपनाम हिंदी में'
-				};
-			} );
+			await FunctionPage.open( functionDetails.ZId );
+			await expect( await FunctionPage.functionTitle )
+				.toHaveText( functionDetails.ZObjectLabel, { message: 'Function Page is not open' } );
+			await FunctionPage.goToCreateImplementationLink();
 
-			it( 'should navigate to the implementation form', async () => {
-				await LoginPage.loginAdmin();
-				/**
-				 * If login is successful then browser is redirected from "Special:UserLogin"
-				 * to URL containing "Main_Page"
-				 */
-				await expect( browser ).toHaveUrlContaining( 'Main_Page',
-					{ message: 'Login failed' } );
+			// Add and Submit About block entries in English
+			await ImplementationForm.openAboutBlockDialogBox();
+			await ImplementationForm.addAboutBlockEntries( aboutBlockEntriesEnglish );
+			await ImplementationForm.submitAboutBlockEntries();
 
-				await FunctionPage.open( functionDetails.ZId );
-				await expect( await FunctionPage.functionTitle )
-					.toHaveText( functionDetails.ZObjectLabel, { message: 'Function Page is not open' } );
-				await FunctionPage.goToCreateImplementationLink();
+			// Add and Submit About block entries in Hindi
+			await ImplementationForm.openAboutBlockDialogBox();
+			await ImplementationForm.addAboutBlockEntries( aboutBlockEntriesHindi );
+			await ImplementationForm.submitAboutBlockEntries();
 
-				/**
-				 * Confirm that the implementation form is open
-				 */
-				await expect( await ImplementationForm.getFunctionExplorerName() )
-					.toBe( functionDetails.ZObjectLabel, { message: 'Implementation form is not open' } );
-			} );
+			// Fill the entries in the code block
+			await ImplementationForm.selectImplementationType( 'code' );
+			await ImplementationForm.selectProgrammingLanguage( codeBlockEntries.language );
+			await ImplementationForm.setCodeEditor( codeBlockEntries.codeInstructions );
 
-			it( 'should fill the entries in the about section', async () => {
-				/**
-				 * Add and Submit About block entries in English
-				 */
-				await ImplementationForm.openAboutBlockDialogBox();
-				await expect( await ImplementationForm.aboutBlockDialogBox ).toBeDisplayed();
-				await ImplementationForm.addAboutBlockEntries( aboutBlockEntriesEnglish );
-				await ImplementationForm.submitAboutBlockEntries();
-				await expect( await ImplementationForm.aboutBlockDialogBox ).not.toBeDisplayed();
+			// Publish the new implementation
+			await ImplementationForm.publishImplementation();
+			await expect( browser ).toHaveUrlContaining( 'success=true',
+				{ message: 'Unable to publish the implementation' } );
 
-				/**
-				 * Add and Submit About block entries in French
-				 */
-				await ImplementationForm.openAboutBlockDialogBox();
-				await expect( await ImplementationForm.aboutBlockDialogBox ).toBeDisplayed();
-				await ImplementationForm.addAboutBlockEntries( aboutBlockEntriesFrench );
-				await ImplementationForm.submitAboutBlockEntries();
-				await expect( await ImplementationForm.aboutBlockDialogBox ).not.toBeDisplayed();
+			// Data checks
+			await expect( await ImplementationPage.getImplementationDescription() ).toBe(
+				aboutBlockEntriesEnglish.description,
+				{ message: `Implementation page is not displaying the implementation description as expected to be ${ aboutBlockEntriesEnglish.description }` } );
 
-				/**
-				 * Add and Submit About block entries in Hindi
-				 */
-				await ImplementationForm.openAboutBlockDialogBox();
-				await expect( await ImplementationForm.aboutBlockDialogBox ).toBeDisplayed();
-				await ImplementationForm.addAboutBlockEntries( aboutBlockEntriesHindi );
-				await ImplementationForm.submitAboutBlockEntries();
-				await expect( await ImplementationForm.aboutBlockDialogBox ).not.toBeDisplayed();
-			} );
+			await expect( await ImplementationPage.getContentBlockFunctionLinkSelector(
+				functionDetails.ZObjectLabel ) ).toBeExisting();
 
-			it( 'should fill the entries in the code block', async () => {
-				await ImplementationForm.setFunctionExplorerName( functionDetails.ZObjectLabel );
-				await ImplementationForm.selectImplementationType( 'code' );
-				await ImplementationForm.selectProgrammingLanguage( codeBlockEntries.language );
-				await ImplementationForm.setCodeEditor( codeBlockEntries.codeInstructions );
-			} );
+			await expect(
+				await ImplementationPage.getImplementationTypeSelector( 'code' ) ).toBeExisting();
 
-			it( 'should publish the new implementation', async () => {
-				await ImplementationForm.publishImplementation();
-				/**
-				 * When implementation is published successfully, the browser is redirected to URL
-				 * containing param "success=true"
-				 */
-				await expect( browser ).toHaveUrlContaining( 'success=true',
-					{ message: 'Unable to publish the implementation' } );
+			await expect( await ImplementationPage.getProgrammingLanguageSelector(
+				codeBlockEntries.language ) ).toBeExisting();
 
-				/**
-				 * Confirm that the Implementation Page is open
-				 */
-				await expect( await ImplementationPage.getImplementationTitle() )
-					.toBe( aboutBlockEntriesEnglish.label );
-			} );
-
-			describe( 'Show details of new implementation created', () => {
-
-				it( 'should display the description in the about section', async () => {
-					await expect( await ImplementationPage.getImplementationDescription() ).toBe(
-						aboutBlockEntriesEnglish.description,
-						{ message: `Implementation page is not displaying the implementation description as expected to be ${ aboutBlockEntriesEnglish.description }` } );
-				} );
-
-				it( 'should display the entries in the code block', async () => {
-					await expect( await ImplementationPage.getContentBlockFunctionLinkSelector(
-						functionDetails.ZObjectLabel ) ).toBeExisting();
-
-					await expect(
-						await ImplementationPage.getImplementationTypeSelector( 'code' ) ).toBeExisting();
-
-					await expect( await ImplementationPage.getProgrammingLanguageSelector(
-						codeBlockEntries.language ) ).toBeExisting();
-					/**
-					 * Code in line wise manner
-					 */
-					const code = await ImplementationPage.getCodeEditorLines();
-					for ( const line in code ) {
-						expect( code[ line ] ).toBe( codeBlockEntries.code[ line ],
-							{ message: `Code editor line number ${ line + 1 } is expected to be
+			const code = await ImplementationPage.getCodeEditorLines();
+			for ( const line in code ) {
+				expect( code[ line ] ).toBe( codeBlockEntries.code[ line ],
+					{ message: `Code editor line number ${ line + 1 } is expected to be
 							${ codeBlockEntries.code[ line ] } but received as ${ code[ line ] }` } );
-					}
-				} );
-
-			} );
+			}
 
 		} );
+
 	} );
 
 	describe( 'Implementation via composition', () => {
 
 		/**
-		 * Details about the function for which a new implementation is being created
+		 * Details about the entries in Composition Block.
+		 *
+		 * [Function call] [If] - First Function Call
+		 * [a] condition [Argument reference] [Z844K1]
+		 * [b] then [Argument reference] [Z844K2]
+		 * [c] else [Function call] [If] - Second Function Call
+		 * [c1] condition [Argument reference] [Z844K2]
+		 * [c2] then [Boolean] [false]
+		 * [c3] else [Boolean] [true]
 		 */
-		const functionDetails = {
-			ZObjectLabel: 'Boolean equality',
-			ZId: 'Z844'
+		const compositionBlockEntries = {
+			firstFunctionCallEntries: {
+				functionCallLabel: 'If',
+				conditionType: 'Argument reference',
+				conditionValue: 'first Boolean',
+				thenType: 'Argument reference',
+				thenValue: 'second Boolean',
+				elseType: 'Function call',
+				elseValue: 'If'
+			},
+			secondFunctionCallEntries: {
+				functionCallLabel: 'If',
+				conditionType: 'Argument reference',
+				conditionValue: 'second Boolean',
+				thenType: 'Boolean',
+				thenValue: 'false',
+				elseType: 'Boolean',
+				elseValue: 'true'
+			}
 		};
 
-		describe( 'Create a new implementation', () => {
+		let aboutBlockEntriesEnglish,
+			aboutBlockEntriesHindi;
 
-			/**
-			 * Details about the entries in Composition Block.
-			 *
-			 * [Function call] [If] - First Function Call
-			 * [a] condition [Argument reference] [Z844K1]
-			 * [b] then [Argument reference] [Z844K2]
-			 * [c] else [Function call] [If] - Second Function Call
-			 * [c1] condition [Argument reference] [Z844K2]
-			 * [c2] then [Boolean] [false]
-			 * [c3] else [Boolean] [true]
-			 */
-			const compositionBlockEntries = {
-				firstFunctionCallEntries: {
-					functionCallLabel: 'If',
-					conditionType: 'Argument reference',
-					conditionValue: 'first Boolean',
-					thenType: 'Argument reference',
-					thenValue: 'second Boolean',
-					elseType: 'Function call',
-					elseValue: 'If'
-				},
-				secondFunctionCallEntries: {
-					functionCallLabel: 'If',
-					conditionType: 'Argument reference',
-					conditionValue: 'second Boolean',
-					thenType: 'Boolean',
-					thenValue: 'false',
-					elseType: 'Boolean',
-					elseValue: 'true'
-				}
+		before( () => {
+			LoginPage.loginAdmin();
+			const time = Date.now();
+			aboutBlockEntriesEnglish = {
+				language: 'English',
+				label: `e2e-implementation-composition-${ time }-English`,
+				description: 'This is the description for the new implementation via composition in English',
+				alias: 'alias in English'
 			};
+			aboutBlockEntriesHindi = {
+				language: 'Hindi',
+				label: `e2e-implementation-composition-${ time }-हिंदी`,
+				description: 'यह हिंदी में रचना के माध्यम से नए कार्यान्वयन का विवरण है',
+				alias: 'उपनाम हिंदी में'
+			};
+		} );
 
-			/**
-			 * About block entries in different languages
-			 */
-			let aboutBlockEntriesEnglish, aboutBlockEntriesFrench,
-				aboutBlockEntriesHindi;
+		it( 'should create and publish a new implementation', async () => {
+			await expect( browser ).toHaveUrlContaining( 'Main_Page',
+				{ message: 'Login failed' } );
+			await FunctionPage.open( functionDetails.ZId );
+			await FunctionPage.goToCreateImplementationLink();
 
-			/**
-			 * Initialize the entries of the About block before the test
-			 */
-			before( () => {
-				/**
-				 * Date.now() is being used so that label will be unique and
-				 * not collide in case of retries.
-				 */
-				const time = Date.now();
-				aboutBlockEntriesEnglish = {
-					language: 'English',
-					label: `e2e-implementation-composition-${ time }-English`,
-					description: 'This is the description for the new implementation via composition in English',
-					alias: 'alias in English'
-				};
-				aboutBlockEntriesFrench = {
-					language: 'French',
-					label: `e2e-implementation-composition-${ time }-français`,
-					description: 'Ceci est la description de la nouvelle implémentation via la composition en français',
-					alias: 'alias en français'
-				};
-				aboutBlockEntriesHindi = {
-					language: 'Hindi',
-					label: `e2e-implementation-composition-${ time }-हिंदी`,
-					description: 'यह हिंदी में रचना के माध्यम से नए कार्यान्वयन का विवरण है',
-					alias: 'उपनाम हिंदी में'
-				};
-			} );
+			// Add and Submit About block entries in English
+			await ImplementationForm.openAboutBlockDialogBox();
+			await ImplementationForm.addAboutBlockEntries( aboutBlockEntriesEnglish );
+			await ImplementationForm.submitAboutBlockEntries();
 
-			it( 'should navigate to the implementation form', async () => {
-				await FunctionPage.open( functionDetails.ZId );
-				await expect( await FunctionPage.functionTitle )
-					.toHaveText( functionDetails.ZObjectLabel, { message: 'Function Page is not open' } );
-				await FunctionPage.goToCreateImplementationLink();
+			// Add and Submit About block entries in Hindi
+			await ImplementationForm.openAboutBlockDialogBox();
+			await ImplementationForm.addAboutBlockEntries( aboutBlockEntriesHindi );
+			await ImplementationForm.submitAboutBlockEntries();
 
-				/**
-				 * Confirm that the implementation form is open
-				 */
-				await expect( await ImplementationForm.getFunctionExplorerName() )
-					.toBe( functionDetails.ZObjectLabel, { message: 'Implementation form is not open' } );
-			} );
+			// Fill the entries in the composition block
+			await ImplementationForm.selectImplementationType( 'composition' );
+			await ImplementationForm.toggleCompositionBlock();
+			await ImplementationForm.setCompositionBlock( compositionBlockEntries );
 
-			it( 'should fill the entries in the about section', async () => {
-				/**
-				 * Add and Submit About block entries in English
-				 */
-				await ImplementationForm.openAboutBlockDialogBox();
-				await expect( await ImplementationForm.aboutBlockDialogBox ).toBeDisplayed();
-				await ImplementationForm.addAboutBlockEntries( aboutBlockEntriesEnglish );
-				await ImplementationForm.submitAboutBlockEntries();
-				await expect( await ImplementationForm.aboutBlockDialogBox ).not.toBeDisplayed();
+			// Publish the new implementation
+			await ImplementationForm.publishImplementation();
+			await expect( browser ).toHaveUrlContaining( 'success=true',
+				{ message: 'Unable to publish the implementation' } );
 
-				/**
-				 * Add and Submit About block entries in French
-				 */
-				await ImplementationForm.openAboutBlockDialogBox();
-				await expect( await ImplementationForm.aboutBlockDialogBox ).toBeDisplayed();
-				await ImplementationForm.addAboutBlockEntries( aboutBlockEntriesFrench );
-				await ImplementationForm.submitAboutBlockEntries();
-				await expect( await ImplementationForm.aboutBlockDialogBox ).not.toBeDisplayed();
+			// Confirm that the Implementation Page is open
+			await expect( await ImplementationPage.getImplementationTitle() )
+				.toBe( aboutBlockEntriesEnglish.label );
 
-				/**
-				 * Add and Submit About block entries in Hindi
-				 */
-				await ImplementationForm.openAboutBlockDialogBox();
-				await expect( await ImplementationForm.aboutBlockDialogBox ).toBeDisplayed();
-				await ImplementationForm.addAboutBlockEntries( aboutBlockEntriesHindi );
-				await ImplementationForm.submitAboutBlockEntries();
-				await expect( await ImplementationForm.aboutBlockDialogBox ).not.toBeDisplayed();
-			} );
+			// Display the description in the about section'
+			await expect( await ImplementationPage.getImplementationDescription() ).toBe(
+				aboutBlockEntriesEnglish.description,
+				{ message: `Implementation page is not displaying the implementation description as expected to be ${ aboutBlockEntriesEnglish.description }` } );
 
-			it( 'should fill the entries in the composition block', async () => {
-				await ImplementationForm.selectImplementationType( 'composition' );
-				await expect( await ImplementationForm.compositionBlock ).toBeDisplayed(
-					{ message: 'implementation type composition is not selected' } );
-				await ImplementationForm.toggleCompositionBlock();
-				await ImplementationForm.setCompositionBlock( compositionBlockEntries );
-			} );
-
-			it( 'should publish the new implementation', async () => {
-				await ImplementationForm.publishImplementation();
-				/**
-				 * When implementation is published successfully, the browser is redirected to URL
-				 * containing param "success=true"
-				 */
-				await expect( browser ).toHaveUrlContaining( 'success=true',
-					{ message: 'Unable to publish the implementation' } );
-
-				/**
-				 * Confirm that the Implementation Page is open
-				 */
-				await expect( await ImplementationPage.getImplementationTitle() )
-					.toBe( aboutBlockEntriesEnglish.label );
-			} );
-
-			describe( 'Show details of new implementation created', () => {
-
-				it( 'should display the description in the about section', async () => {
-					await expect( await ImplementationPage.getImplementationDescription() ).toBe(
-						aboutBlockEntriesEnglish.description,
-						{ message: `Implementation page is not displaying the implementation description as expected to be ${ aboutBlockEntriesEnglish.description }` } );
-				} );
-
-			} );
 		} );
 	} );
 

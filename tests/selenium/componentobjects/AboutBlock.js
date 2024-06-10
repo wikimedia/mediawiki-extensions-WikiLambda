@@ -78,8 +78,8 @@ class AboutBlock {
 	 * @return {Array}
 	 */
 	async getAboutBlockAliases() {
-		const aliasesBlock = await this.aboutBlock.$( '.ext-wikilambda-about-aliases' );
-		const aliases = await aliasesBlock.$$( '.ext-wikilambda-about-alias' );
+		const aliasesBlock = await this.aboutBlock.$( '[data-testid="about-aliases"]' );
+		const aliases = await aliasesBlock.$$( '[data-testid="about-alias"]' );
 		return aliases.map( ( aliasElement ) => {
 			const text = ElementActions.getText( aliasElement );
 			return text;
