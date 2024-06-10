@@ -19,25 +19,6 @@ const Constants = require( '../Constants.js' ),
 const referenceRe = /^Z0*[1-9]*\d*$/;
 const errorTypeReferenceRe = /^Z5\d{2}$/;
 
-function canonicalizeZ6OrZ9( zobject ) {
-	const objectType = zobject[ Constants.Z_OBJECT_TYPE ];
-
-	if ( objectType === Constants.Z_STRING ) {
-		const Z6 = zobject[ Constants.Z_STRING_VALUE ];
-		if ( Z6 && typeof Z6.match === 'function' && Z6.match( referenceRe ) ) {
-			return zobject;
-		}
-		return Z6 || '';
-	}
-
-	const Z9 = zobject[ Constants.Z_REFERENCE_ID ];
-	if ( Z9 && typeof Z9.match === 'function' && Z9.match( referenceRe ) ) {
-		return Z9;
-	}
-
-	return '';
-}
-
 /**
  * Transform a ZObject from hybrid form to canonical form.  In hybrid form, strings and references are in normal
  * form, but lists are in canonical form. If called on a ZObject already in canonical form, returns the ZObject
@@ -50,6 +31,25 @@ function canonicalizeZ6OrZ9( zobject ) {
  * @return {Object | Array | string | undefined}
  */
 function hybridToCanonical( zobject ) {
+	function canonicalizeZ6OrZ9( targetZObject ) {
+		const objectType = targetZObject[ Constants.Z_OBJECT_TYPE ];
+
+		if ( objectType === Constants.Z_STRING ) {
+			const Z6 = targetZObject[ Constants.Z_STRING_VALUE ];
+			if ( Z6 && typeof Z6.match === 'function' && Z6.match( referenceRe ) ) {
+				return targetZObject;
+			}
+			return Z6 || '';
+		}
+
+		const Z9 = targetZObject[ Constants.Z_REFERENCE_ID ];
+		if ( Z9 && typeof Z9.match === 'function' && Z9.match( referenceRe ) ) {
+			return Z9;
+		}
+
+		return '';
+	}
+
 	// Given a typed list in normal form, convert its elements to canonical and return them in an array
 	// (while ignoring its Z1K1)
 	function zlistToArray( zlist, arr ) {
@@ -234,49 +234,6 @@ function extractZIDs( zobject ) {
 	return uniqueZids;
 }
 
-/**
- * Checks if a given zobject is a suberror (a zobject whose type is an instance of Z50/'Error type').
- * If so, returns a JS object with keys errorType and (optionally) explanation.  If not, returns null.
- *
- * The 'explanation' is an explanatory string for this suberror.
- * Such strings are expected for Z500, but are also generated in the orchestrator for
- * some other error types. In addition to explanatory strings, a few other useful keys
- * with string values will show up here, e.g. Z503K1/'feature name' and Z504K1/ZID.
- *
- * Allows for the more relaxed Z5/Error format from the orchestrator, in which the suberror's
- * type appears directly as the value of Z1K1/type, and also the stricter format, in which
- * it appears in a function call to Z885/'Errortype to type'.  Z885K1 is the 'errortype' key of Z885.
- *
- * @param {Object} zobject
- * @return {Array|undefined} of objects
- */
-function checkIfSuberror( zobject ) {
-	if ( typeof zobject === 'object' && zobject.Z1K1 && typeof zobject.Z1K1 === 'string' &&
-		zobject.Z1K1.match( errorTypeReferenceRe ) ) {
-		// Handle the relaxed Z5/Error format from the orchestrator
-		const suberror = {};
-		suberror.errorType = zobject.Z1K1;
-		const stringKey = suberror.errorType + 'K1';
-		const k1String = zobject[ stringKey ];
-		if ( k1String && isString( k1String ) && !isZid( k1String ) ) {
-			suberror.explanation = k1String;
-		}
-		return suberror;
-	} else if ( typeof zobject === 'object' && zobject.Z1K1 && typeof zobject.Z1K1 === 'object' &&
-		zobject.Z1K1.Z885K1 && typeof zobject.Z1K1.Z885K1 === 'string' &&
-		zobject.Z1K1.Z885K1.match( errorTypeReferenceRe ) ) {
-		const suberror = {};
-		suberror.errorType = zobject.Z1K1.Z885K1;
-		const stringKey = 'K1';
-		const k1String = zobject[ stringKey ];
-		if ( k1String && isString( k1String ) && !isZid( k1String ) ) {
-			suberror.explanation = k1String;
-		}
-		return suberror;
-	}
-	return undefined;
-}
-
 // These error types have no keys whose values contain nested error content.  If a error type ZID
 // appears here, extractErrorStructure will not search through any children of a zobject of that type.
 const errorTypesNotToTraverse = new Set( [ 'Z501', 'Z505', 'Z508', 'Z511', 'Z512', 'Z513', 'Z516',
@@ -299,6 +256,54 @@ const errorTypesNotToTraverse = new Set( [ 'Z501', 'Z505', 'Z508', 'Z511', 'Z512
  * @return {Array} of objects
  */
 function extractErrorStructure( zobject ) {
+
+	/**
+	 * Checks if a given zobject is a suberror (a zobject whose type is an instance of Z50/'Error type').
+	 * If so, returns a JS object with keys errorType and (optionally) explanation.  If not, returns null.
+	 *
+	 * The 'explanation' is an explanatory string for this suberror.
+	 * Such strings are expected for Z500, but are also generated in the orchestrator for
+	 * some other error types. In addition to explanatory strings, a few other useful keys
+	 * with string values will show up here, e.g. Z503K1/'feature name' and Z504K1/ZID.
+	 *
+	 * Allows for the more relaxed Z5/Error format from the orchestrator, in which the suberror's
+	 * type appears directly as the value of Z1K1/type, and also the stricter format, in which
+	 * it appears in a function call to Z885/'Errortype to type'.  Z885K1 is the 'errortype' key of Z885.
+	 *
+	 * @param {Object} targetZObject
+	 * @return {Array|undefined} of objects
+	 */
+	function checkIfSuberror( targetZObject ) {
+		if (
+			typeof targetZObject === 'object' && targetZObject.Z1K1 &&
+			typeof targetZObject.Z1K1 === 'string' && targetZObject.Z1K1.match( errorTypeReferenceRe )
+		) {
+			// Handle the relaxed Z5/Error format from the orchestrator
+			const suberror = {};
+			suberror.errorType = targetZObject.Z1K1;
+			const stringKey = suberror.errorType + 'K1';
+			const k1String = targetZObject[ stringKey ];
+			if ( k1String && isString( k1String ) && !isZid( k1String ) ) {
+				suberror.explanation = k1String;
+			}
+			return suberror;
+		} else if (
+			typeof targetZObject === 'object' && targetZObject.Z1K1 && typeof targetZObject.Z1K1 === 'object' &&
+			targetZObject.Z1K1.Z885K1 && typeof targetZObject.Z1K1.Z885K1 === 'string' &&
+			targetZObject.Z1K1.Z885K1.match( errorTypeReferenceRe )
+		) {
+			const suberror = {};
+			suberror.errorType = targetZObject.Z1K1.Z885K1;
+			const stringKey = 'K1';
+			const k1String = targetZObject[ stringKey ];
+			if ( k1String && isString( k1String ) && !isZid( k1String ) ) {
+				suberror.explanation = k1String;
+			}
+			return suberror;
+		}
+		return undefined;
+	}
+
 	const subError = checkIfSuberror( zobject );
 	if ( subError ) {
 		if ( subError.explanation ) {
