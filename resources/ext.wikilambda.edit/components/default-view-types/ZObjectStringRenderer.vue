@@ -238,12 +238,10 @@ module.exports = exports = defineComponent( {
 					};
 				} )
 				// Filter out undefined or not wellformed test objects
-				.filter( ( test ) => {
-					return typeUtils.isTruthyOrEqual( test.zobject, [
-						Constants.Z_TESTER_CALL,
-						Constants.Z_FUNCTION_CALL_FUNCTION
-					], this.rendererZid );
-				} );
+				.filter( ( test ) => typeUtils.isTruthyOrEqual( test.zobject, [
+					Constants.Z_TESTER_CALL,
+					Constants.Z_FUNCTION_CALL_FUNCTION
+				], this.rendererZid ) );
 		}
 	} ),
 	methods: Object.assign( mapActions( [

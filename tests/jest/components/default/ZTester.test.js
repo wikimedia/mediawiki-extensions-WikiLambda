@@ -27,11 +27,9 @@ describe( 'ZTester', () => {
 			isCreateNewPage: createGetterMock( false )
 		};
 		actions = {
-			fetchZids: jest.fn( () => {
-				return {
-					then: ( callback ) => callback()
-				};
-			} ),
+			fetchZids: jest.fn( () => ( {
+				then: ( callback ) => callback()
+			} ) ),
 			setZFunctionCallArguments: jest.fn()
 		};
 		global.store.hotUpdate( {

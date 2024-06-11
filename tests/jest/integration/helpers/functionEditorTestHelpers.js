@@ -61,26 +61,22 @@ const runSetup = function ( pageConfig ) {
 		}
 	} ) );
 
-	mw.Api = jest.fn( () => {
-		return {
-			postWithEditToken: apiPostWithEditTokenMock,
-			get: apiGetMock.createMockApi( [
-				lookupZObjectLanguageLabels,
-				lookupZObjectTypeLabels,
-				initializeRootZObject,
-				fetchZImplementations,
-				fetchZTesters,
-				performTest
-			] )
-		};
-	} );
+	mw.Api = jest.fn( () => ( {
+		postWithEditToken: apiPostWithEditTokenMock,
+		get: apiGetMock.createMockApi( [
+			lookupZObjectLanguageLabels,
+			lookupZObjectTypeLabels,
+			initializeRootZObject,
+			fetchZImplementations,
+			fetchZTesters,
+			performTest
+		] )
+	} ) );
 
-	window.mw.Uri = jest.fn( () => {
-		return {
-			query: pageConfig.queryParams,
-			path: new window.mw.Title( pageConfig.title ).getUrl( pageConfig.queryParams )
-		};
-	} );
+	window.mw.Uri = jest.fn( () => ( {
+		query: pageConfig.queryParams,
+		path: new window.mw.Title( pageConfig.title ).getUrl( pageConfig.queryParams )
+	} ) );
 
 	global.mw.config.get = ( endpoint ) => {
 		switch ( endpoint ) {

@@ -58,9 +58,7 @@ module.exports = exports = {
 				summary: payload.summary || '',
 				zid: payload.zid,
 				zobject: JSON.stringify( payload.zobject )
-			} ).then( ( data ) => {
-				return data.wikilambda_edit;
-			} ).catch( ( error, result ) => {
+			} ).then( ( data ) => data.wikilambda_edit ).catch( ( error, result ) => {
 				throw result.xhr.responseJSON;
 			} );
 		},
@@ -87,9 +85,7 @@ module.exports = exports = {
 				wikilambdaload_revisions: payload.revisions,
 				wikilambdaload_language: payload.language,
 				wikilambdaload_get_dependencies: payload.dependencies ? 'true' : 'false'
-			} ).then( ( data ) => {
-				return data.query.wikilambdaload_zobjects;
-			} );
+			} ).then( ( data ) => data.query.wikilambdaload_zobjects );
 		},
 		/**
 		 * Calls the wikilambdasearch_labels internal API
@@ -115,9 +111,7 @@ module.exports = exports = {
 				wikilambdasearch_return_type: payload.returnType,
 				wikilambdasearch_strict_return_type: payload.strictType,
 				wikilambdasearch_language: payload.language
-			} ).then( ( data ) => {
-				return data.query.wikilambdasearch_labels;
-			} );
+			} ).then( ( data ) => data.query.wikilambdasearch_labels );
 		},
 		/**
 		 * Calls the wikilambda_perform_test internal API
@@ -141,9 +135,7 @@ module.exports = exports = {
 				wikilambda_perform_test_zimplementations: payload.implementations.join( '|' ),
 				wikilambda_perform_test_ztesters: payload.testers.join( '|' ),
 				wikilambda_perform_test_nocache: payload.nocache || false
-			} ).then( ( data ) => {
-				return data.query.wikilambda_perform_test;
-			} ).catch( ( error, result ) => {
+			} ).then( ( data ) => data.query.wikilambda_perform_test ).catch( ( error, result ) => {
 				throw result.xhr.responseJSON;
 			} );
 		},
@@ -167,9 +159,7 @@ module.exports = exports = {
 				wikilambdafn_zfunction_id: payload.functionZid,
 				wikilambdafn_type: payload.type,
 				wikilambdafn_limit: Constants.API_LIMIT_MAX
-			} ).then( ( data ) => {
-				return data.query.wikilambdafn_search;
-			} );
+			} ).then( ( data ) => data.query.wikilambdafn_search );
 		}
 	}
 };

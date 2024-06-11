@@ -13,11 +13,11 @@ const VueTestUtils = require( '@vue/test-utils' ),
 	FunctionReport = require( '../../../../resources/ext.wikilambda.edit/components/widgets/FunctionReport.vue' ),
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' );
 
-describe( 'FunctionReport', function () {
+describe( 'FunctionReport', () => {
 	let getters,
 		actions;
 
-	beforeEach( function () {
+	beforeEach( () => {
 		getters = {
 			getUserLangCode: createGetterMock( 'en' ),
 			getLabelData: createLabelDataMock(),
@@ -55,7 +55,7 @@ describe( 'FunctionReport', function () {
 		} );
 	} );
 
-	it( 'renders without errors', function () {
+	it( 'renders without errors', () => {
 		const wrapper = VueTestUtils.mount( FunctionReport, {
 			props: {
 				zFunctionId: '',
@@ -66,7 +66,7 @@ describe( 'FunctionReport', function () {
 		expect( wrapper.find( 'div' ).exists() ).toBeTruthy();
 	} );
 
-	it( 'displays no results when no implementations or testers found', function () {
+	it( 'displays no results when no implementations or testers found', () => {
 		const wrapper = VueTestUtils.mount( FunctionReport, {
 			props: {
 				zFunctionId: '',
@@ -78,7 +78,7 @@ describe( 'FunctionReport', function () {
 			.toBe( 'No test results found. Please add an implementation and a test to see results.' );
 	} );
 
-	it( 'displays all available testers if a new zImplementation is being created', async function () {
+	it( 'displays all available testers if a new zImplementation is being created', async () => {
 		const wrapper = VueTestUtils.mount( FunctionReport, {
 			props: {
 				zFunctionId: 'Z10000',
@@ -93,7 +93,7 @@ describe( 'FunctionReport', function () {
 		expect( content.length ).toBe( 2 );
 	} );
 
-	it( 'displays all available implementations if a new zTester is being created', async function () {
+	it( 'displays all available implementations if a new zTester is being created', async () => {
 		const wrapper = VueTestUtils.mount( FunctionReport, {
 			props: {
 				zFunctionId: 'Z10000',
@@ -109,7 +109,7 @@ describe( 'FunctionReport', function () {
 		expect( content.length ).toBe( 3 );
 	} );
 
-	it( 'if displayed on a ZImplementation page, only shows testers', function () {
+	it( 'if displayed on a ZImplementation page, only shows testers', () => {
 		const wrapper = VueTestUtils.mount( FunctionReport, {
 			props: {
 				zFunctionId: 'Z10000',
@@ -122,7 +122,7 @@ describe( 'FunctionReport', function () {
 		expect( wrapper.vm.zIds ).toEqual( [ 'Z10002', 'Z10003' ] );
 	} );
 
-	it( 'if displayed on a ZTester page, only shows ZImplementations', function () {
+	it( 'if displayed on a ZTester page, only shows ZImplementations', () => {
 		const wrapper = VueTestUtils.mount( FunctionReport, {
 			props: {
 				zFunctionId: 'Z10000',
@@ -199,9 +199,7 @@ describe( 'FunctionReport', function () {
 
 		it( 'does not trigger the tests if we are on new page', async () => {
 			actions.getTestResults = jest.fn();
-			actions.fetchZids = jest.fn( () => {
-				return { then: ( fn ) => fn() };
-			} );
+			actions.fetchZids = jest.fn( () => ( { then: ( fn ) => fn() } ) );
 			global.store.hotUpdate( {
 				getters: getters,
 				actions: actions
@@ -224,9 +222,7 @@ describe( 'FunctionReport', function () {
 
 		it( 'initially tests all the implementations for a tester page', async () => {
 			actions.getTestResults = jest.fn();
-			actions.fetchZids = jest.fn( () => {
-				return { then: ( fn ) => fn() };
-			} );
+			actions.fetchZids = jest.fn( () => ( { then: ( fn ) => fn() } ) );
 			global.store.hotUpdate( {
 				getters: getters,
 				actions: actions
@@ -255,9 +251,7 @@ describe( 'FunctionReport', function () {
 
 		it( 'initially tests all the testers for an implementation page', async () => {
 			actions.getTestResults = jest.fn();
-			actions.fetchZids = jest.fn( () => {
-				return { then: ( fn ) => fn() };
-			} );
+			actions.fetchZids = jest.fn( () => ( { then: ( fn ) => fn() } ) );
 			global.store.hotUpdate( {
 				getters: getters,
 				actions: actions

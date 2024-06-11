@@ -36,9 +36,7 @@ module.exports = function useBreakpoints( breakpoints ) {
 	// Dynamically creates a boolean value for each of the breakpoint
 	const dynamicBreakpoints = Object.keys( breakpoints )
 		.reduce( ( object, breakpoint ) => {
-			object[ breakpoint ] = Vue.computed( () => {
-				return current.value === breakpoint;
-			} );
+			object[ breakpoint ] = Vue.computed( () => current.value === breakpoint );
 			return object;
 		}, {} );
 

@@ -33,51 +33,39 @@ let state,
 describe( 'zobject Vuex module', () => {
 	beforeEach( () => {
 		// eslint-disable-next-line no-unused-vars
-		postMock = jest.fn( function ( payload ) {
-			return {
-				// eslint-disable-next-line no-unused-vars
-				then: jest.fn( function ( responsePayload ) {
-					return {
-						catch: jest.fn()
-					};
-				} )
-			};
-		} );
+		postMock = jest.fn( ( payload ) => ( {
+			// eslint-disable-next-line no-unused-vars
+			then: jest.fn( ( responsePayload ) => ( {
+				catch: jest.fn()
+			} ) )
+		} ) );
 		// eslint-disable-next-line no-unused-vars
-		postWithEditTokenMock = jest.fn( function ( payload ) {
-			return new Promise( function ( resolve ) {
-				resolve( {
-					wikilambda_edit: {
-						page: 'sample'
-					}
-				} );
+		postWithEditTokenMock = jest.fn( ( payload ) => new Promise( ( resolve ) => {
+			resolve( {
+				wikilambda_edit: {
+					page: 'sample'
+				}
 			} );
-		} );
+		} ) );
 
 		state = Object.assign( {}, zobjectModule.state );
-		getResolveMock = jest.fn( function ( thenFunction ) {
-			return thenFunction();
-		} );
+		getResolveMock = jest.fn( ( thenFunction ) => thenFunction() );
 		context = Object.assign( {}, {
-			// eslint-disable-next-line no-unused-vars
-			commit: jest.fn( function ( mutationType, payload ) {
+			// eslint-disable-next-line no-unused-vars, arrow-body-style
+			commit: jest.fn( ( mutationType, payload ) => {
 				return;
 			} ),
 			// eslint-disable-next-line no-unused-vars
-			dispatch: jest.fn( function ( actionType, payload ) {
-				return {
-					then: getResolveMock
-				};
-			} ),
+			dispatch: jest.fn( ( actionType, payload ) => ( {
+				then: getResolveMock
+			} ) ),
 			getters: {}
 		} );
 
-		mw.Api = jest.fn( () => {
-			return {
-				post: postMock,
-				postWithEditToken: postWithEditTokenMock
-			};
-		} );
+		mw.Api = jest.fn( () => ( {
+			post: postMock,
+			postWithEditToken: postWithEditTokenMock
+		} ) );
 	} );
 
 	describe( 'Getters', () => {
@@ -1031,9 +1019,7 @@ describe( 'zobject Vuex module', () => {
 					getters.getZReferenceTerminalValue = zobjectModule.getters
 						.getZReferenceTerminalValue( state, getters );
 					getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
-					getters.getLanguageIsoCodeOfZLang = () => {
-						return 'en';
-					};
+					getters.getLanguageIsoCodeOfZLang = () => 'en';
 				} );
 
 				it( 'returns empty array when the row is not found', () => {
@@ -1095,9 +1081,7 @@ describe( 'zobject Vuex module', () => {
 					getters.getLanguageIsoCodeOfZLang = function ( key ) {
 						return key === 'Z1002' ? 'en' : 'es';
 					};
-					mw.language.getFallbackLanguageChain = jest.fn( () => {
-						return [ 'es', 'en' ];
-					} );
+					mw.language.getFallbackLanguageChain = jest.fn( () => [ 'es', 'en' ] );
 				} );
 
 				it( 'returns metadata in user language', () => {
@@ -1187,9 +1171,7 @@ describe( 'zobject Vuex module', () => {
 					getters.getZReferenceTerminalValue = zobjectModule.getters
 						.getZReferenceTerminalValue( state, getters );
 					getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
-					getters.getLanguageIsoCodeOfZLang = () => {
-						return 'en';
-					};
+					getters.getLanguageIsoCodeOfZLang = () => 'en';
 				} );
 
 				it( 'returns empty array when the row is not found', () => {
@@ -1252,9 +1234,7 @@ describe( 'zobject Vuex module', () => {
 					getters.getLanguageIsoCodeOfZLang = function ( key ) {
 						return key === 'Z1002' ? 'en' : 'es';
 					};
-					mw.language.getFallbackLanguageChain = jest.fn( () => {
-						return [ 'es', 'en' ];
-					} );
+					mw.language.getFallbackLanguageChain = jest.fn( () => [ 'es', 'en' ] );
 				} );
 
 				it( 'returns metadata in user language', () => {
@@ -1343,9 +1323,7 @@ describe( 'zobject Vuex module', () => {
 					getters.getZReferenceTerminalValue = zobjectModule.getters
 						.getZReferenceTerminalValue( state, getters );
 					getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
-					getters.getLanguageIsoCodeOfZLang = ( zid ) => {
-						return zid === 'Z1003' ? 'es' : 'en';
-					};
+					getters.getLanguageIsoCodeOfZLang = ( zid ) => zid === 'Z1003' ? 'es' : 'en';
 				} );
 
 				it( 'returns empty array when the row is not found', () => {
@@ -1431,9 +1409,7 @@ describe( 'zobject Vuex module', () => {
 						const langs = { Z1003: 'es', Z1004: 'fr', Z1002: 'en' };
 						return langs[ zid ];
 					};
-					mw.language.getFallbackLanguageChain = jest.fn( () => {
-						return [ 'es', 'en' ];
-					} );
+					mw.language.getFallbackLanguageChain = jest.fn( () => [ 'es', 'en' ] );
 				} );
 
 				it( 'returns metadata in user language if available', () => {
@@ -1821,7 +1797,7 @@ describe( 'zobject Vuex module', () => {
 				expect( lang ).toBe( expected );
 			} );
 
-			it( 'returns the row that contains the programing language (reference)', function () {
+			it( 'returns the row that contains the programing language (reference)', () => {
 				state.zobject = zobjectToRows( {
 					Z1K1: 'Z16',
 					Z16K1: 'Z600'
@@ -2676,13 +2652,11 @@ describe( 'zobject Vuex module', () => {
 		describe( 'initializeView', () => {
 			it( 'calls initializeCreateNewPage when creating new page', () => {
 				mw.config = {
-					get: jest.fn( () => {
-						return {
-							createNewPage: true,
-							runFunction: false,
-							zId: null
-						};
-					} )
+					get: jest.fn( () => ( {
+						createNewPage: true,
+						runFunction: false,
+						zId: null
+					} ) )
 				};
 				zobjectModule.actions.initializeView( context );
 				expect( context.dispatch ).toHaveBeenCalledWith( 'initializeCreateNewPage' );
@@ -2690,13 +2664,11 @@ describe( 'zobject Vuex module', () => {
 
 			it( 'calls initializeEvaluateFunction when opening the function evaluator', () => {
 				mw.config = {
-					get: jest.fn( () => {
-						return {
-							createNewPage: false,
-							runFunction: true,
-							zId: null
-						};
-					} )
+					get: jest.fn( () => ( {
+						createNewPage: false,
+						runFunction: true,
+						zId: null
+					} ) )
 				};
 				zobjectModule.actions.initializeView( context );
 				expect( context.dispatch ).toHaveBeenCalledWith( 'initializeEvaluateFunction' );
@@ -2704,13 +2676,11 @@ describe( 'zobject Vuex module', () => {
 
 			it( 'calls initializeEvaluateFunction when no info available', () => {
 				mw.config = {
-					get: jest.fn( () => {
-						return {
-							createNewPage: false,
-							runFunction: false,
-							zId: null
-						};
-					} )
+					get: jest.fn( () => ( {
+						createNewPage: false,
+						runFunction: false,
+						zId: null
+					} ) )
 				};
 				zobjectModule.actions.initializeView( context );
 				expect( context.dispatch ).toHaveBeenCalledWith( 'initializeEvaluateFunction' );
@@ -2718,31 +2688,25 @@ describe( 'zobject Vuex module', () => {
 
 			it( 'calls initializeRootZObject when viewing or editing an object', () => {
 				mw.config = {
-					get: jest.fn( () => {
-						return {
-							createNewPage: false,
-							runFunction: false,
-							zId: 'Z10000'
-						};
-					} )
+					get: jest.fn( () => ( {
+						createNewPage: false,
+						runFunction: false,
+						zId: 'Z10000'
+					} ) )
 				};
 				zobjectModule.actions.initializeView( context );
 				expect( context.dispatch ).toHaveBeenCalledWith( 'initializeRootZObject', 'Z10000' );
 			} );
 
 			it( 'Initialize ZObject, create new page', () => {
-				mw.Uri.mockImplementationOnce( () => {
-					return {
-						query: {
-							action: Constants.ACTIONS.EDIT,
-							title: 'Z0'
-						}
-					};
-				} );
-				context.getters = {
-					getStoredObject: () => {
-						return { Z2K2: { Z1K1: 'Z4' } };
+				mw.Uri.mockImplementationOnce( () => ( {
+					query: {
+						action: Constants.ACTIONS.EDIT,
+						title: 'Z0'
 					}
+				} ) );
+				context.getters = {
+					getStoredObject: () => ( { Z2K2: { Z1K1: 'Z4' } } )
 				};
 
 				const expectedChangeTypePayload = { id: 0, type: Constants.Z_PERSISTENTOBJECT };
@@ -2760,22 +2724,18 @@ describe( 'zobject Vuex module', () => {
 			} );
 
 			it( 'Initialize ZObject, create new page, initial value for Z2K2', () => {
-				mw.Uri.mockImplementationOnce( () => {
-					return {
-						query: {
-							zid: Constants.Z_BOOLEAN,
-							action: Constants.ACTIONS.EDIT,
-							title: 'Z0'
-						}
-					};
-				} );
+				mw.Uri.mockImplementationOnce( () => ( {
+					query: {
+						zid: Constants.Z_BOOLEAN,
+						action: Constants.ACTIONS.EDIT,
+						title: 'Z0'
+					}
+				} ) );
 				context.state = {
 					zobject: zobjectToRows( blankPersistentObject )
 				};
 				context.getters = {
-					getStoredObject: () => {
-						return { Z2K2: { Z1K1: 'Z4' } };
-					}
+					getStoredObject: () => ( { Z2K2: { Z1K1: 'Z4' } } )
 				};
 
 				const expectedChangeTypePayload = { id: 0, type: Constants.Z_PERSISTENTOBJECT };
@@ -2795,15 +2755,13 @@ describe( 'zobject Vuex module', () => {
 			} );
 
 			it( 'Initialize ZObject, create new page, non-ZID value as initial', () => {
-				mw.Uri.mockImplementationOnce( () => {
-					return {
-						query: {
-							zid: 'banana',
-							action: Constants.ACTIONS.EDIT,
-							title: 'Z0'
-						}
-					};
-				} );
+				mw.Uri.mockImplementationOnce( () => ( {
+					query: {
+						zid: 'banana',
+						action: Constants.ACTIONS.EDIT,
+						title: 'Z0'
+					}
+				} ) );
 				context.state = {
 					zobject: zobjectToRows( blankPersistentObject )
 				};
@@ -2820,22 +2778,18 @@ describe( 'zobject Vuex module', () => {
 			} );
 
 			it( 'Initialize ZObject, create new page, non-type value as initial', () => {
-				mw.Uri.mockImplementationOnce( () => {
-					return {
-						query: {
-							zid: 'Z801',
-							action: Constants.ACTIONS.EDIT,
-							title: 'Z0'
-						}
-					};
-				} );
+				mw.Uri.mockImplementationOnce( () => ( {
+					query: {
+						zid: 'Z801',
+						action: Constants.ACTIONS.EDIT,
+						title: 'Z0'
+					}
+				} ) );
 				context.state = {
 					zobject: zobjectToRows( blankPersistentObject )
 				};
 				context.getters = {
-					getStoredObject: () => {
-						return { Z2K2: { Z1K1: 'Z8' } };
-					}
+					getStoredObject: () => ( { Z2K2: { Z1K1: 'Z8' } } )
 				};
 
 				const expectedZ2K2ChangeTypePayload = { id: 3, type: 'Z801' };
@@ -2847,22 +2801,18 @@ describe( 'zobject Vuex module', () => {
 			} );
 
 			it( 'Initialize ZObject, create new page, lowercase ZID', () => {
-				mw.Uri.mockImplementationOnce( () => {
-					return {
-						query: {
-							zid: 'z8',
-							action: Constants.ACTIONS.EDIT,
-							title: 'Z0'
-						}
-					};
-				} );
+				mw.Uri.mockImplementationOnce( () => ( {
+					query: {
+						zid: 'z8',
+						action: Constants.ACTIONS.EDIT,
+						title: 'Z0'
+					}
+				} ) );
 				context.state = {
 					zobject: zobjectToRows( blankPersistentObject )
 				};
 				context.getters = {
-					getStoredObject: () => {
-						return { Z2K2: { Z1K1: 'Z8' } };
-					}
+					getStoredObject: () => ( { Z2K2: { Z1K1: 'Z8' } } )
 				};
 
 				const expectedZ2K2ChangeTypePayload = { id: 7, type: Constants.Z_FUNCTION };
@@ -2873,15 +2823,13 @@ describe( 'zobject Vuex module', () => {
 			} );
 
 			it( 'Initialize ZObject, create new page, ZObject key passed as initial', () => {
-				mw.Uri.mockImplementationOnce( () => {
-					return {
-						query: {
-							zid: 'Z14K1',
-							action: Constants.ACTIONS.EDIT,
-							title: 'Z0'
-						}
-					};
-				} );
+				mw.Uri.mockImplementationOnce( () => ( {
+					query: {
+						zid: 'Z14K1',
+						action: Constants.ACTIONS.EDIT,
+						title: 'Z0'
+					}
+				} ) );
 				context.state = {
 					zobject: zobjectToRows( blankPersistentObject )
 				};
@@ -2894,15 +2842,13 @@ describe( 'zobject Vuex module', () => {
 			} );
 
 			it( 'Initialize ZObject, create new page, quasi-valid ZID', () => {
-				mw.Uri.mockImplementationOnce( () => {
-					return {
-						query: {
-							zid: 'Z8s',
-							action: Constants.ACTIONS.EDIT,
-							title: 'Z0'
-						}
-					};
-				} );
+				mw.Uri.mockImplementationOnce( () => ( {
+					query: {
+						zid: 'Z8s',
+						action: Constants.ACTIONS.EDIT,
+						title: 'Z0'
+					}
+				} ) );
 				context.state = {
 					zobject: zobjectToRows( blankPersistentObject )
 				};
@@ -2919,17 +2865,13 @@ describe( 'zobject Vuex module', () => {
 					Z10001: { data: {} }
 				} } };
 				const getMock = jest.fn().mockResolvedValueOnce( response );
-				mw.Api = jest.fn( () => {
-					return { get: getMock };
-				} );
-				mw.Uri.mockImplementationOnce( () => {
-					return {
-						query: {
-							title: 'Z10001',
-							oldid: '10002'
-						}
-					};
-				} );
+				mw.Api = jest.fn( () => ( { get: getMock } ) );
+				mw.Uri.mockImplementationOnce( () => ( {
+					query: {
+						title: 'Z10001',
+						oldid: '10002'
+					}
+				} ) );
 
 				const expectedPayload = {
 					action: 'query',
@@ -2951,16 +2893,12 @@ describe( 'zobject Vuex module', () => {
 					Z10001: { data: {} }
 				} } };
 				const getMock = jest.fn().mockResolvedValueOnce( response );
-				mw.Api = jest.fn( () => {
-					return { get: getMock };
-				} );
-				mw.Uri.mockImplementationOnce( () => {
-					return {
-						query: {
-							title: 'Z10001'
-						}
-					};
-				} );
+				mw.Api = jest.fn( () => ( { get: getMock } ) );
+				mw.Uri.mockImplementationOnce( () => ( {
+					query: {
+						title: 'Z10001'
+					}
+				} ) );
 
 				const expectedPayload = {
 					action: 'query',
@@ -3014,9 +2952,7 @@ describe( 'zobject Vuex module', () => {
 						}
 					};
 					const getMock = jest.fn().mockResolvedValueOnce( mockApiResponse );
-					mw.Api = jest.fn( () => {
-						return { get: getMock };
-					} );
+					mw.Api = jest.fn( () => ( { get: getMock } ) );
 
 					const expectedZObjectJson = {
 						Z1K1: 'Z2',
@@ -3098,9 +3034,7 @@ describe( 'zobject Vuex module', () => {
 						}
 					};
 					const getMock = jest.fn().mockResolvedValueOnce( mockApiResponse );
-					mw.Api = jest.fn( () => {
-						return { get: getMock };
-					} );
+					mw.Api = jest.fn( () => ( { get: getMock } ) );
 
 					const expectedZObjectJson = {
 						Z1K1: 'Z2',
@@ -3181,9 +3115,7 @@ describe( 'zobject Vuex module', () => {
 						}
 					};
 					const getMock = jest.fn().mockResolvedValueOnce( mockApiResponse );
-					mw.Api = jest.fn( () => {
-						return { get: getMock };
-					} );
+					mw.Api = jest.fn( () => ( { get: getMock } ) );
 
 					const expectedZObjectJson = {
 						Z1K1: 'Z2',
@@ -3230,9 +3162,7 @@ describe( 'zobject Vuex module', () => {
 				context.state = {
 					zobject: []
 				};
-				context.getters.getStoredObject = () => {
-					return { Z1K1: 'test', Z2K1: 'test' };
-				};
+				context.getters.getStoredObject = () => ( { Z1K1: 'test', Z2K1: 'test' } );
 				zobjectModule.actions.initializeEvaluateFunction( context );
 
 				expect( context.commit ).toHaveBeenCalledTimes( 3 );
@@ -3787,7 +3717,7 @@ describe( 'zobject Vuex module', () => {
 				};
 				context.getters.getRowById = zobjectModule.getters.getRowById( context.state );
 				context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
-				context.commit = jest.fn( function ( mutationType, payload ) {
+				context.commit = jest.fn( ( mutationType, payload ) => {
 					zobjectModule.mutations[ mutationType ]( context.state, payload );
 				} );
 			} );
@@ -3965,7 +3895,7 @@ describe( 'zobject Vuex module', () => {
 				context.getters.getInputsOfFunctionZid = libraryModule.getters.getInputsOfFunctionZid( context.state );
 				context.getters.getStoredObject = libraryModule.getters.getStoredObject( context.state );
 				// Getters: addZObject module
-				Object.keys( zobjectModule.modules.factory.getters ).forEach( function ( key ) {
+				Object.keys( zobjectModule.modules.factory.getters ).forEach( ( key ) => {
 					context.getters[ key ] =
 						zobjectModule.modules.factory.getters[ key ](
 							context.state,
@@ -4101,7 +4031,7 @@ describe( 'zobject Vuex module', () => {
 				// Getters: library module
 				context.getters.getStoredObject = libraryModule.getters.getStoredObject( context.state );
 				// Getters: addZObject module
-				Object.keys( zobjectModule.modules.factory.getters ).forEach( function ( key ) {
+				Object.keys( zobjectModule.modules.factory.getters ).forEach( ( key ) => {
 					context.getters[ key ] =
 						zobjectModule.modules.factory.getters[ key ](
 							context.state,
@@ -4354,9 +4284,7 @@ describe( 'zobject Vuex module', () => {
 
 			it( 'should dispatch the removeRowChildren action with row id', () => {
 				const payload = { rowId: 4 };
-				context.getters.getRowById = jest.fn( () => {
-					return { id: 4, parent: 3 };
-				} );
+				context.getters.getRowById = jest.fn( () => ( { id: 4, parent: 3 } ) );
 				zobjectModule.actions.removeItemFromTypedList( context, payload );
 
 				expect( context.dispatch ).toHaveBeenCalledWith( 'removeRowChildren', { rowId: 4, removeParent: true } );
@@ -4364,9 +4292,7 @@ describe( 'zobject Vuex module', () => {
 
 			it( 'should dispatch the recalculateTypedListKeys action with parent id', () => {
 				const payload = { rowId: 4 };
-				context.getters.getRowById = jest.fn( () => {
-					return { id: 4, parent: 3 };
-				} );
+				context.getters.getRowById = jest.fn( () => ( { id: 4, parent: 3 } ) );
 				zobjectModule.actions.removeItemFromTypedList( context, payload );
 
 				expect( context.dispatch ).toHaveBeenCalledWith( 'recalculateTypedListKeys', 3 );

@@ -125,9 +125,7 @@ describe( 'About', () => {
 				getZPersistentDescription: createGettersWithFunctionsMock( description ),
 				getZPersistentName: createGettersWithFunctionsMock( name ),
 				getZMonolingualStringsetValues: createGettersWithFunctionsMock( aliasValues ),
-				getZMonolingualTextValue: () => ( rowId ) => {
-					return rowId === 1 ? 'name' : 'some description';
-				}
+				getZMonolingualTextValue: () => ( rowId ) => rowId === 1 ? 'name' : 'some description'
 			} );
 
 			global.store.hotUpdate( { getters: getters, actions: actions } );
@@ -282,12 +280,8 @@ describe( 'About', () => {
 			getters = Object.assign( getters, {
 				getZFunctionInputs: createGettersWithFunctionsMock( inputs ),
 				getZFunctionOutput: createGettersWithFunctionsMock( output ),
-				getZArgumentTypeRowId: () => ( id ) => {
-					return id === 20 ? 21 : 31;
-				},
-				getZArgumentKey: () => ( id ) => {
-					return id === 20 ? 'Z10000K1' : 'Z10000K2';
-				}
+				getZArgumentTypeRowId: () => ( id ) => id === 20 ? 21 : 31,
+				getZArgumentKey: () => ( id ) => id === 20 ? 'Z10000K1' : 'Z10000K2'
 			} );
 			global.store.hotUpdate( { getters: getters, actions: actions } );
 		} );

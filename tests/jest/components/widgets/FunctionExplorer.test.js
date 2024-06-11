@@ -47,10 +47,10 @@ function createFunctionExplorerWrapper( propsData = {} ) {
 	} );
 }
 
-describe( 'FunctionExplorer', function () {
+describe( 'FunctionExplorer', () => {
 	let getters, actions;
 
-	beforeEach( function () {
+	beforeEach( () => {
 		getters = {
 			getLabelData: createLabelDataMock( {
 				Z6: 'String',
@@ -62,16 +62,12 @@ describe( 'FunctionExplorer', function () {
 				Z10004K1: 'String to reverse'
 			} ),
 			getUserLangCode: createGetterMock( 'en' ),
-			getStoredObject: () => ( zid ) => {
-				return zid === reverseStringFunctionZid ?
-					reverseStringFunction :
-					isReverseStringFunction;
-			},
-			getInputsOfFunctionZid: () => ( zid ) => {
-				return zid === reverseStringFunctionZid ?
-					reverseStringFunctionArguments :
-					isReverseStringFunctionArguments;
-			}
+			getStoredObject: () => ( zid ) => zid === reverseStringFunctionZid ?
+				reverseStringFunction :
+				isReverseStringFunction,
+			getInputsOfFunctionZid: () => ( zid ) => zid === reverseStringFunctionZid ?
+				reverseStringFunctionArguments :
+				isReverseStringFunctionArguments
 		};
 
 		actions = {
@@ -86,14 +82,14 @@ describe( 'FunctionExplorer', function () {
 		window.open = jest.fn();
 	} );
 
-	it( 'renders without errors', function () {
+	it( 'renders without errors', () => {
 		const wrapper = createFunctionExplorerWrapper();
 
 		expect( wrapper.find( '.ext-wikilambda-function-explorer' ).exists() ).toBe( true );
 	} );
 
-	describe( 'Edit mode', function () {
-		it( 'should display a view function button', function () {
+	describe( 'Edit mode', () => {
+		it( 'should display a view function button', () => {
 
 			const wrapper = createFunctionExplorerWrapper( {
 				functionZid: reverseStringFunctionZid,
@@ -105,7 +101,7 @@ describe( 'FunctionExplorer', function () {
 			expect( buttonViewFunction.exists() ).toBe( true );
 		} );
 
-		it( 'should redirect to the function page when the view function button is clicked', function () {
+		it( 'should redirect to the function page when the view function button is clicked', () => {
 			const wrapper = createFunctionExplorerWrapper( {
 				functionZid: reverseStringFunctionZid,
 				edit: true
@@ -122,10 +118,10 @@ describe( 'FunctionExplorer', function () {
 			spy.mockRestore();
 		} );
 
-		describe( 'when a function is selected from the lookup component', function () {
+		describe( 'when a function is selected from the lookup component', () => {
 			let wrapper, propsData;
 
-			beforeEach( function () {
+			beforeEach( () => {
 				propsData = {
 					functionZid: reverseStringFunctionZid,
 					edit: true
@@ -133,13 +129,13 @@ describe( 'FunctionExplorer', function () {
 				wrapper = createFunctionExplorerWrapper( propsData );
 			} );
 
-			it( 'should update the function name', function () {
+			it( 'should update the function name', () => {
 				expect( wrapper.vm.functionLabel.label ).toBe( 'Reverse string' );
 				wrapper.setData( { currentFunctionZid: isReverseStringFunctionZid } );
 				expect( wrapper.vm.functionLabel.label ).toBe( 'Is reverse string' );
 			} );
 
-			it( 'should update the function inputs', function () {
+			it( 'should update the function inputs', () => {
 				expect( wrapper.vm.functionArguments ).toEqual( [ {
 					key: 'Z10004K1',
 					type: 'Z6',
@@ -157,17 +153,17 @@ describe( 'FunctionExplorer', function () {
 				} ] );
 			} );
 
-			it( 'should update the function output', function () {
+			it( 'should update the function output', () => {
 				expect( wrapper.vm.outputType ).toBe( Constants.Z_STRING );
 				wrapper.setData( { currentFunctionZid: isReverseStringFunctionZid } );
 				expect( wrapper.vm.outputType ).toBe( Constants.Z_BOOLEAN );
 			} );
 		} );
 
-		describe( 'Implementation: Code', function () {
+		describe( 'Implementation: Code', () => {
 			let wrapper;
 
-			beforeEach( function () {
+			beforeEach( () => {
 				wrapper = createFunctionExplorerWrapper( {
 					functionZid: reverseStringFunctionZid,
 					edit: true,
@@ -175,8 +171,8 @@ describe( 'FunctionExplorer', function () {
 				} );
 			} );
 
-			describe( 'when a valid functionZid is provided', function () {
-				beforeAll( function () {
+			describe( 'when a valid functionZid is provided', () => {
+				beforeAll( () => {
 					Object.defineProperty( navigator, 'clipboard', {
 						value: {
 							writeText: jest.fn()
@@ -187,22 +183,22 @@ describe( 'FunctionExplorer', function () {
 
 				} );
 
-				afterAll( function () {
+				afterAll( () => {
 					navigator.clipboard.writeText.mockRestore();
 				} );
 
-				it( 'should display the zid of the current function', function () {
+				it( 'should display the zid of the current function', () => {
 					const functionZid = wrapper.find( '[data-testid="function-zid"]' );
 
 					expect( functionZid.text() ).toBe( reverseStringFunctionZid );
 				} );
-				it( 'should display the zkey of each input', function () {
+				it( 'should display the zkey of each input', () => {
 					const functionZKeysWrapper = wrapper.findAll( '[data-testid="function-input-zkey"]' );
 					const functionZKeys = functionZKeysWrapper.map( ( functionZKey ) => functionZKey.text() );
 
 					expect( functionZKeys ).toEqual( [ 'Z10004K1' ] );
 				} );
-				it( 'should copy the zkey of each input when the zkey is clicked', function () {
+				it( 'should copy the zkey of each input when the zkey is clicked', () => {
 					const functionZKeyWrapper = wrapper.find( '[data-testid="function-input-zkey"]' );
 					const functionZKey = functionZKeyWrapper.text();
 
@@ -214,11 +210,11 @@ describe( 'FunctionExplorer', function () {
 
 		} );
 
-		describe( 'Reset FunctionExplorer', function () {
+		describe( 'Reset FunctionExplorer', () => {
 
 			let wrapper, resetButton;
 
-			beforeEach( function () {
+			beforeEach( () => {
 				wrapper = createFunctionExplorerWrapper(
 					{
 						functionZid: reverseStringFunctionZid,
@@ -229,12 +225,12 @@ describe( 'FunctionExplorer', function () {
 				resetButton = wrapper.find( '[data-testid="function-explorer-reset-button"]' );
 			} );
 
-			it( 'should have a reset button', function () {
+			it( 'should have a reset button', () => {
 				expect( resetButton.exists() ).toBe( true );
 			} );
 
-			describe( 'when a functionZid was specified in the FunctionExplorer and the reset button is clicked', function () {
-				it( 'should reset the inputs of the function to the originally selected function', function () {
+			describe( 'when a functionZid was specified in the FunctionExplorer and the reset button is clicked', () => {
+				it( 'should reset the inputs of the function to the originally selected function', () => {
 					// TODO: Change the selected function before clicking the reset button
 					// const functionSelector = wrapper.findComponent( ZObjectSelector );
 
@@ -246,7 +242,7 @@ describe( 'FunctionExplorer', function () {
 					expect( inputsWrapper[ 0 ].text() ).toBe( 'String' );
 				} );
 
-				it( 'should reset the output of the function to the originally selected function', function () {
+				it( 'should reset the output of the function to the originally selected function', () => {
 					// TODO: Change the selected function before clicking the reset button
 					// const functionSelector = wrapper.findComponent( ZObjectSelector );
 
@@ -259,17 +255,17 @@ describe( 'FunctionExplorer', function () {
 
 			} );
 
-			describe( 'when a functionZid was NOT provided in the FunctionExplorer and the reset button is clicked', function () {
-				it( 'should do nothing', function () {
+			describe( 'when a functionZid was NOT provided in the FunctionExplorer and the reset button is clicked', () => {
+				it( 'should do nothing', () => {
 
 				} );
 			} );
 		} );
 	} );
 
-	describe( 'Read mode', function () {
+	describe( 'Read mode', () => {
 
-		it( 'should NOT display the lookup used to select a function', function () {
+		it( 'should NOT display the lookup used to select a function', () => {
 			const wrapper = createFunctionExplorerWrapper(
 				{
 					functionZid: reverseStringFunctionZid,
@@ -280,9 +276,9 @@ describe( 'FunctionExplorer', function () {
 			expect( wrapper.find( '[data-testid="function-selector"]' ).exists() ).toBe( false );
 		} );
 
-		describe( 'when a valid functionZid is provided', function () {
+		describe( 'when a valid functionZid is provided', () => {
 			let wrapper;
-			beforeEach( function () {
+			beforeEach( () => {
 				wrapper = createFunctionExplorerWrapper(
 					{
 						functionZid: reverseStringFunctionZid,
@@ -291,26 +287,26 @@ describe( 'FunctionExplorer', function () {
 				);
 			} );
 
-			it( 'displays the name of the function', function () {
+			it( 'displays the name of the function', () => {
 				const functionName = wrapper.find( '[data-testid="function-name"]' ).text();
 				expect( functionName ).toBe( 'Reverse string' );
 			} );
 
-			it( 'it displays the names of the function arguments', function () {
+			it( 'it displays the names of the function arguments', () => {
 				const inputsWrapper = wrapper.findAll( '[data-testid="function-input-name"]' );
 
 				expect( inputsWrapper.length ).toBe( 1 );
 				expect( inputsWrapper[ 0 ].text() ).toBe( 'String to reverse' );
 			} );
 
-			it( 'it displays the types of the function arguments', function () {
+			it( 'it displays the types of the function arguments', () => {
 				const inputsWrapper = wrapper.findAll( '[data-testid="function-input-type"]' );
 
 				expect( inputsWrapper.length ).toBe( 1 );
 				expect( inputsWrapper[ 0 ].text() ).toBe( 'String' );
 			} );
 
-			it( 'the link to the input type should redirect to the page that represents the type of the input', function () {
+			it( 'the link to the input type should redirect to the page that represents the type of the input', () => {
 				const inputWrapper = wrapper.find( '[data-testid="function-input-type"]' );
 				const link = inputWrapper.find( 'a' );
 
@@ -318,12 +314,12 @@ describe( 'FunctionExplorer', function () {
 				expect( link.attributes().href ).toContain( 'Z6' );
 			} );
 
-			it( 'it displays the output of the function', function () {
+			it( 'it displays the output of the function', () => {
 				const outputWrapper = wrapper.find( '[data-testid="function-output"]' );
 
 				expect( outputWrapper.text() ).toBe( 'String' );
 			} );
-			it( 'the link to the output type should redirect to the page that represents the type of the input', function () {
+			it( 'the link to the output type should redirect to the page that represents the type of the input', () => {
 				const outputWrapper = wrapper.find( '[data-testid="function-output"]' );
 				const link = outputWrapper.find( 'a' );
 
@@ -334,9 +330,9 @@ describe( 'FunctionExplorer', function () {
 		} );
 	} );
 
-	describe( 'Zero-blank state', function () {
-		describe( 'when no valid function was found', function () {
-			it( 'should display a zero-blank state', function () {
+	describe( 'Zero-blank state', () => {
+		describe( 'when no valid function was found', () => {
+			it( 'should display a zero-blank state', () => {
 				getters.getStoredObject = createGettersWithFunctionsMock();
 				getters.getInputsOfFunctionZid = createGettersWithFunctionsMock( [] );
 				global.store.hotUpdate( {

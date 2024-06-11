@@ -224,20 +224,16 @@ describe( 'ztype Vuex module', () => {
 				getters: {}
 			} );
 			data = '{ "Z1K1": "Z6", "Z6K1": "some response" }';
-			postMock = jest.fn( () => {
-				return new Promise( ( resolve ) => {
-					resolve( {
-						query: {
-							wikilambda_function_call: { data }
-						}
-					} );
+			postMock = jest.fn( () => new Promise( ( resolve ) => {
+				resolve( {
+					query: {
+						wikilambda_function_call: { data }
+					}
 				} );
-			} );
-			mw.Api = jest.fn( () => {
-				return {
-					post: postMock
-				};
-			} );
+			} ) );
+			mw.Api = jest.fn( () => ( {
+				post: postMock
+			} ) );
 		} );
 
 		describe( 'runRenderer', () => {
@@ -359,18 +355,14 @@ describe( 'ztype Vuex module', () => {
 					Z22K1: 'example one',
 					Z22K2: 'metadata'
 				};
-				postMock = jest.fn( () => {
-					return new Promise( ( resolve ) => {
-						resolve( {
-							query: {
-								wikilambda_function_call: { data: JSON.stringify( successfulResponse ) }
-							}
-						} );
+				postMock = jest.fn( () => new Promise( ( resolve ) => {
+					resolve( {
+						query: {
+							wikilambda_function_call: { data: JSON.stringify( successfulResponse ) }
+						}
 					} );
-				} );
-				mw.Api = jest.fn( () => {
-					return { post: postMock };
-				} );
+				} ) );
+				mw.Api = jest.fn( () => ( { post: postMock } ) );
 
 				const payload = {
 					rendererZid: rendererZid,
@@ -403,18 +395,14 @@ describe( 'ztype Vuex module', () => {
 					Z22K1: 'Z24',
 					Z22K2: 'metadata'
 				};
-				postMock = jest.fn( () => {
-					return new Promise( ( resolve ) => {
-						resolve( {
-							query: {
-								wikilambda_function_call: { data: JSON.stringify( failedResponse ) }
-							}
-						} );
+				postMock = jest.fn( () => new Promise( ( resolve ) => {
+					resolve( {
+						query: {
+							wikilambda_function_call: { data: JSON.stringify( failedResponse ) }
+						}
 					} );
-				} );
-				mw.Api = jest.fn( () => {
-					return { post: postMock };
-				} );
+				} ) );
+				mw.Api = jest.fn( () => ( { post: postMock } ) );
 
 				const payload = {
 					rendererZid: rendererZid,

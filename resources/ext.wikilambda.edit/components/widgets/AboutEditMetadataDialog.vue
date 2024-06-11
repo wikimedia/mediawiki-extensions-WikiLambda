@@ -268,11 +268,9 @@ module.exports = exports = defineComponent( {
 		 */
 		currentInputObjects: function () {
 			return this.isFunction ?
-				this.functionInputs.map( ( row ) => {
-					return this.forLanguage ?
-						this.getZArgumentLabelForLanguage( row.id, this.forLanguage ) :
-						undefined;
-				} ) :
+				this.functionInputs.map( ( row ) => this.forLanguage ?
+					this.getZArgumentLabelForLanguage( row.id, this.forLanguage ) :
+					undefined ) :
 				[];
 		},
 		/**
@@ -569,11 +567,9 @@ module.exports = exports = defineComponent( {
 
 			// If function, initialize Input fields for given language
 			if ( this.isFunction ) {
-				this.inputs = this.currentInputObjects.map( ( row ) => {
-					return row !== undefined ?
-						this.getZMonolingualTextValue( row.id ) :
-						'';
-				} );
+				this.inputs = this.currentInputObjects.map( ( row ) => row !== undefined ?
+					this.getZMonolingualTextValue( row.id ) :
+					'' );
 			}
 
 			this.saveCopies();

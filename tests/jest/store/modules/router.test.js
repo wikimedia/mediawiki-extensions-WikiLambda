@@ -43,11 +43,9 @@ describe( 'router Vuex module', () => {
 		describe( 'getViewMode', () => {
 			it( 'gets current view mode', () => {
 				window.mw.config = {
-					get: jest.fn( () => {
-						return {
-							viewmode: true
-						};
-					} )
+					get: jest.fn( () => ( {
+						viewmode: true
+					} ) )
 				};
 				expect( routerInstance.getters.getViewMode( routerInstance.state ) ).toBe( true );
 			} );
@@ -192,14 +190,12 @@ describe( 'router Vuex module', () => {
 					// Mock function edit config
 					context.getters.getViewMode = false;
 					window.mw.config = {
-						get: jest.fn( () => {
-							return {
-								createNewPage: false,
-								viewmode: false,
-								title: 'Z0',
-								zId: 'Z0'
-							};
-						} )
+						get: jest.fn( () => ( {
+							createNewPage: false,
+							viewmode: false,
+							title: 'Z0',
+							zId: 'Z0'
+						} ) )
 					};
 				} );
 
@@ -207,15 +203,13 @@ describe( 'router Vuex module', () => {
 					it( 'When action is edit and view is not passed', () => {
 						context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
 
-						window.mw.Uri.mockImplementationOnce( () => {
-							return {
-								query: {
-									action: Constants.ACTIONS.EDIT,
-									title: 'Z0'
-								},
-								path: new window.mw.Title( 'Z0' ).getUrl( { title: 'Z0', action: Constants.ACTIONS.EDIT } )
-							};
-						} );
+						window.mw.Uri.mockImplementationOnce( () => ( {
+							query: {
+								action: Constants.ACTIONS.EDIT,
+								title: 'Z0'
+							},
+							path: new window.mw.Title( 'Z0' ).getUrl( { title: 'Z0', action: Constants.ACTIONS.EDIT } )
+						} ) );
 
 						routerInstance.actions.evaluateUri( context );
 
@@ -231,12 +225,10 @@ describe( 'router Vuex module', () => {
 							title: 'Z0',
 							view: Constants.VIEWS.FUNCTION_EDITOR
 						};
-						window.mw.Uri.mockImplementationOnce( () => {
-							return {
-								query: queryParams,
-								path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
-							};
-						} );
+						window.mw.Uri.mockImplementationOnce( () => ( {
+							query: queryParams,
+							path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
+						} ) );
 
 						routerInstance.actions.evaluateUri( context );
 
@@ -252,12 +244,10 @@ describe( 'router Vuex module', () => {
 							title: 'Z0',
 							view: Constants.VIEWS.DEFAULT_VIEW
 						};
-						window.mw.Uri.mockImplementationOnce( () => {
-							return {
-								query: queryParams,
-								path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
-							};
-						} );
+						window.mw.Uri.mockImplementationOnce( () => ( {
+							query: queryParams,
+							path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
+						} ) );
 
 						routerInstance.actions.evaluateUri( context );
 
@@ -276,12 +266,10 @@ describe( 'router Vuex module', () => {
 							title: 'Z0'
 						};
 
-						window.mw.Uri.mockImplementationOnce( () => {
-							return {
-								query: queryParams,
-								path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
-							};
-						} );
+						window.mw.Uri.mockImplementationOnce( () => ( {
+							query: queryParams,
+							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
+						} ) );
 
 						routerInstance.actions.evaluateUri( context );
 
@@ -297,12 +285,10 @@ describe( 'router Vuex module', () => {
 							title: 'Z0',
 							view: Constants.VIEWS.FUNCTION_EDITOR
 						};
-						window.mw.Uri.mockImplementationOnce( () => {
-							return {
-								query: queryParams,
-								path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
-							};
-						} );
+						window.mw.Uri.mockImplementationOnce( () => ( {
+							query: queryParams,
+							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
+						} ) );
 
 						routerInstance.actions.evaluateUri( context );
 
@@ -318,12 +304,10 @@ describe( 'router Vuex module', () => {
 							title: 'Z0',
 							view: Constants.VIEWS.DEFAULT_VIEW
 						};
-						window.mw.Uri.mockImplementationOnce( () => {
-							return {
-								query: queryParams,
-								path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
-							};
-						} );
+						window.mw.Uri.mockImplementationOnce( () => ( {
+							query: queryParams,
+							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
+						} ) );
 
 						routerInstance.actions.evaluateUri( context );
 
@@ -339,14 +323,12 @@ describe( 'router Vuex module', () => {
 					// Mock non-function edit config
 					context.getters.getViewMode = false;
 					window.mw.config = {
-						get: jest.fn( () => {
-							return {
-								createNewPage: false,
-								viewmode: false,
-								title: 'Z0',
-								zId: 'Z0'
-							};
-						} )
+						get: jest.fn( () => ( {
+							createNewPage: false,
+							viewmode: false,
+							title: 'Z0',
+							zId: 'Z0'
+						} ) )
 					};
 				} );
 
@@ -376,12 +358,10 @@ describe( 'router Vuex module', () => {
 							title: 'Z0',
 							view: Constants.VIEWS.DEFAULT_VIEW
 						};
-						window.mw.Uri.mockImplementationOnce( () => {
-							return {
-								query: queryParams,
-								path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
-							};
-						} );
+						window.mw.Uri.mockImplementationOnce( () => ( {
+							query: queryParams,
+							path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
+						} ) );
 
 						routerInstance.actions.evaluateUri( context );
 
@@ -398,12 +378,10 @@ describe( 'router Vuex module', () => {
 							title: 'Z0'
 						};
 
-						window.mw.Uri.mockImplementationOnce( () => {
-							return {
-								query: queryParams,
-								path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
-							};
-						} );
+						window.mw.Uri.mockImplementationOnce( () => ( {
+							query: queryParams,
+							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
+						} ) );
 
 						routerInstance.actions.evaluateUri( context );
 
@@ -418,12 +396,10 @@ describe( 'router Vuex module', () => {
 							title: 'Z0',
 							view: Constants.VIEWS.DEFAULT_VIEW
 						};
-						window.mw.Uri.mockImplementationOnce( () => {
-							return {
-								query: queryParams,
-								path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
-							};
-						} );
+						window.mw.Uri.mockImplementationOnce( () => ( {
+							query: queryParams,
+							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
+						} ) );
 
 						routerInstance.actions.evaluateUri( context );
 
@@ -439,14 +415,12 @@ describe( 'router Vuex module', () => {
 					// Mock function view config
 					context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
 					window.mw.config = {
-						get: jest.fn( () => {
-							return {
-								createNewPage: false,
-								viewmode: true,
-								title: 'Z0',
-								zId: 'Z0'
-							};
-						} )
+						get: jest.fn( () => ( {
+							createNewPage: false,
+							viewmode: true,
+							title: 'Z0',
+							zId: 'Z0'
+						} ) )
 					};
 				} );
 
@@ -454,14 +428,12 @@ describe( 'router Vuex module', () => {
 					it( 'When zobject is a function', () => {
 						context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
 
-						window.mw.Uri.mockImplementationOnce( () => {
-							return {
-								query: {
-									title: 'Z0'
-								},
-								path: new window.mw.Title( 'Z0' ).getUrl( { title: 'Z0' } )
-							};
-						} );
+						window.mw.Uri.mockImplementationOnce( () => ( {
+							query: {
+								title: 'Z0'
+							},
+							path: new window.mw.Title( 'Z0' ).getUrl( { title: 'Z0' } )
+						} ) );
 
 						routerInstance.actions.evaluateUri( context );
 
@@ -476,12 +448,10 @@ describe( 'router Vuex module', () => {
 							title: 'Z0',
 							view: Constants.VIEWS.FUNCTION_VIEWER
 						};
-						window.mw.Uri.mockImplementationOnce( () => {
-							return {
-								query: queryParams,
-								path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
-							};
-						} );
+						window.mw.Uri.mockImplementationOnce( () => ( {
+							query: queryParams,
+							path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
+						} ) );
 
 						routerInstance.actions.evaluateUri( context );
 
@@ -496,12 +466,10 @@ describe( 'router Vuex module', () => {
 							title: 'Z0',
 							view: Constants.VIEWS.FUNCTION_EDITOR
 						};
-						window.mw.Uri.mockImplementationOnce( () => {
-							return {
-								query: queryParams,
-								path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
-							};
-						} );
+						window.mw.Uri.mockImplementationOnce( () => ( {
+							query: queryParams,
+							path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
+						} ) );
 
 						routerInstance.actions.evaluateUri( context );
 
@@ -516,12 +484,10 @@ describe( 'router Vuex module', () => {
 							title: 'Z0',
 							view: Constants.VIEWS.DEFAULT_VIEW
 						};
-						window.mw.Uri.mockImplementationOnce( () => {
-							return {
-								query: queryParams,
-								path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
-							};
-						} );
+						window.mw.Uri.mockImplementationOnce( () => ( {
+							query: queryParams,
+							path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
+						} ) );
 
 						routerInstance.actions.evaluateUri( context );
 
@@ -538,12 +504,10 @@ describe( 'router Vuex module', () => {
 						const queryParams = {
 							title: 'Z0'
 						};
-						window.mw.Uri.mockImplementationOnce( () => {
-							return {
-								query: queryParams,
-								path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
-							};
-						} );
+						window.mw.Uri.mockImplementationOnce( () => ( {
+							query: queryParams,
+							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
+						} ) );
 
 						routerInstance.actions.evaluateUri( context );
 
@@ -558,12 +522,10 @@ describe( 'router Vuex module', () => {
 							title: 'Z0',
 							view: Constants.VIEWS.FUNCTION_VIEWER
 						};
-						window.mw.Uri.mockImplementationOnce( () => {
-							return {
-								query: queryParams,
-								path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
-							};
-						} );
+						window.mw.Uri.mockImplementationOnce( () => ( {
+							query: queryParams,
+							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
+						} ) );
 
 						routerInstance.actions.evaluateUri( context );
 
@@ -578,12 +540,10 @@ describe( 'router Vuex module', () => {
 							title: 'Z0',
 							view: Constants.VIEWS.FUNCTION_EDITOR
 						};
-						window.mw.Uri.mockImplementationOnce( () => {
-							return {
-								query: queryParams,
-								path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
-							};
-						} );
+						window.mw.Uri.mockImplementationOnce( () => ( {
+							query: queryParams,
+							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
+						} ) );
 
 						routerInstance.actions.evaluateUri( context );
 
@@ -598,12 +558,10 @@ describe( 'router Vuex module', () => {
 							title: 'Z0',
 							view: Constants.VIEWS.DEFAULT_VIEW
 						};
-						window.mw.Uri.mockImplementationOnce( () => {
-							return {
-								query: queryParams,
-								path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
-							};
-						} );
+						window.mw.Uri.mockImplementationOnce( () => ( {
+							query: queryParams,
+							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
+						} ) );
 
 						routerInstance.actions.evaluateUri( context );
 
@@ -618,27 +576,23 @@ describe( 'router Vuex module', () => {
 				beforeEach( () => {
 					// Mock non-function view config
 					window.mw.config = {
-						get: jest.fn( () => {
-							return {
-								createNewPage: true,
-								viewmode: true,
-								title: 'Z0',
-								zId: 'Z0'
-							};
-						} )
+						get: jest.fn( () => ( {
+							createNewPage: true,
+							viewmode: true,
+							title: 'Z0',
+							zId: 'Z0'
+						} ) )
 					};
 				} );
 
 				describe( 'with URL Format One (/w/index.php)', () => {
 					it( 'When view is not passed', () => {
-						window.mw.Uri.mockImplementationOnce( () => {
-							return {
-								query: {
-									title: 'Z0'
-								},
-								path: new window.mw.Title( 'Z0' ).getUrl( { title: 'Z0', action: Constants.ACTIONS.EDIT } )
-							};
-						} );
+						window.mw.Uri.mockImplementationOnce( () => ( {
+							query: {
+								title: 'Z0'
+							},
+							path: new window.mw.Title( 'Z0' ).getUrl( { title: 'Z0', action: Constants.ACTIONS.EDIT } )
+						} ) );
 
 						routerInstance.actions.evaluateUri( context );
 
@@ -652,12 +606,10 @@ describe( 'router Vuex module', () => {
 							title: 'Z0',
 							view: Constants.VIEWS.DEFAULT_VIEW
 						};
-						window.mw.Uri.mockImplementationOnce( () => {
-							return {
-								query: queryParams,
-								path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
-							};
-						} );
+						window.mw.Uri.mockImplementationOnce( () => ( {
+							query: queryParams,
+							path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
+						} ) );
 
 						routerInstance.actions.evaluateUri( context );
 
@@ -673,12 +625,10 @@ describe( 'router Vuex module', () => {
 							title: 'Z0'
 						};
 
-						window.mw.Uri.mockImplementationOnce( () => {
-							return {
-								query: queryParams,
-								path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
-							};
-						} );
+						window.mw.Uri.mockImplementationOnce( () => ( {
+							query: queryParams,
+							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
+						} ) );
 
 						routerInstance.actions.evaluateUri( context );
 
@@ -688,15 +638,13 @@ describe( 'router Vuex module', () => {
 					} );
 
 					it( 'When view is passed as zobject viewer', () => {
-						window.mw.Uri.mockImplementationOnce( () => {
-							return {
-								query: {
-									title: 'Z0',
-									view: Constants.VIEWS.DEFAULT_VIEW
-								},
-								path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( { view: Constants.VIEWS.DEFAULT_VIEW } )
-							};
-						} );
+						window.mw.Uri.mockImplementationOnce( () => ( {
+							query: {
+								title: 'Z0',
+								view: Constants.VIEWS.DEFAULT_VIEW
+							},
+							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( { view: Constants.VIEWS.DEFAULT_VIEW } )
+						} ) );
 
 						routerInstance.actions.evaluateUri( context );
 
@@ -712,14 +660,12 @@ describe( 'router Vuex module', () => {
 					// Mock function create config
 					context.getters.getViewMode = false;
 					window.mw.config = {
-						get: jest.fn( () => {
-							return {
-								createNewPage: true,
-								viewmode: false,
-								title: 'Z0',
-								zId: 'Z0'
-							};
-						} )
+						get: jest.fn( () => ( {
+							createNewPage: true,
+							viewmode: false,
+							title: 'Z0',
+							zId: 'Z0'
+						} ) )
 					};
 				} );
 
@@ -728,12 +674,10 @@ describe( 'router Vuex module', () => {
 						const queryParams = {
 							zid: Constants.Z_FUNCTION
 						};
-						window.mw.Uri.mockImplementationOnce( () => {
-							return {
-								query: queryParams,
-								path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl( queryParams )
-							};
-						} );
+						window.mw.Uri.mockImplementationOnce( () => ( {
+							query: queryParams,
+							path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl( queryParams )
+						} ) );
 
 						routerInstance.actions.evaluateUri( context );
 
@@ -748,12 +692,10 @@ describe( 'router Vuex module', () => {
 						const queryParams = {
 							zid: Constants.Z_FUNCTION
 						};
-						window.mw.Uri.mockImplementationOnce( () => {
-							return {
-								query: queryParams,
-								path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl()
-							};
-						} );
+						window.mw.Uri.mockImplementationOnce( () => ( {
+							query: queryParams,
+							path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl()
+						} ) );
 
 						routerInstance.actions.evaluateUri( context );
 
@@ -769,28 +711,24 @@ describe( 'router Vuex module', () => {
 					// Mock non-function create config
 					context.getters.getViewMode = false;
 					window.mw.config = {
-						get: jest.fn( () => {
-							return {
-								createNewPage: true,
-								viewmode: false,
-								title: 'Z0',
-								zId: 'Z0'
-							};
-						} )
+						get: jest.fn( () => ( {
+							createNewPage: true,
+							viewmode: false,
+							title: 'Z0',
+							zId: 'Z0'
+						} ) )
 					};
 				} );
 
 				it( 'with URL Format One (/w/index.php)', () => {
-					window.mw.Uri.mockImplementationOnce( () => {
-						return {
-							query: {
-								title: Constants.PATHS.CREATE_OBJECT_TITLE,
-								zid: Constants.Z_IMPLEMENTATION
-							},
-							path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE )
-								.getUrl( { zid: Constants.Z_IMPLEMENTATION } )
-						};
-					} );
+					window.mw.Uri.mockImplementationOnce( () => ( {
+						query: {
+							title: Constants.PATHS.CREATE_OBJECT_TITLE,
+							zid: Constants.Z_IMPLEMENTATION
+						},
+						path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE )
+							.getUrl( { zid: Constants.Z_IMPLEMENTATION } )
+					} ) );
 
 					routerInstance.actions.evaluateUri( context );
 
@@ -800,12 +738,10 @@ describe( 'router Vuex module', () => {
 				} );
 
 				it( 'with URL Format Two (/wiki/{{title}})', () => {
-					window.mw.Uri.mockImplementationOnce( () => {
-						return {
-							query: {},
-							path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl()
-						};
-					} );
+					window.mw.Uri.mockImplementationOnce( () => ( {
+						query: {},
+						path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl()
+					} ) );
 
 					routerInstance.actions.evaluateUri( context );
 
@@ -820,26 +756,22 @@ describe( 'router Vuex module', () => {
 					// Mock function create config
 					context.getters.getViewMode = false;
 					window.mw.config = {
-						get: jest.fn( () => {
-							return {
-								createNewPage: false,
-								viewmode: false,
-								runFunction: true
-							};
-						} )
+						get: jest.fn( () => ( {
+							createNewPage: false,
+							viewmode: false,
+							runFunction: true
+						} ) )
 					};
 				} );
 
 				it( 'with URL Format One (/w/index.php)', () => {
-					window.mw.Uri.mockImplementationOnce( () => {
-						return {
-							query: {
-								title: Constants.PATHS.RUN_FUNCTION_TITLE
-							},
-							path: new window.mw.Title( Constants.PATHS.RUN_FUNCTION_TITLE )
-								.getUrl( { title: Constants.PATHS.RUN_FUNCTION_TITLE } )
-						};
-					} );
+					window.mw.Uri.mockImplementationOnce( () => ( {
+						query: {
+							title: Constants.PATHS.RUN_FUNCTION_TITLE
+						},
+						path: new window.mw.Title( Constants.PATHS.RUN_FUNCTION_TITLE )
+							.getUrl( { title: Constants.PATHS.RUN_FUNCTION_TITLE } )
+					} ) );
 
 					routerInstance.actions.evaluateUri( context );
 
@@ -849,12 +781,10 @@ describe( 'router Vuex module', () => {
 				} );
 
 				it( 'with URL Format Two (/wiki/{{title}})', () => {
-					window.mw.Uri.mockImplementationOnce( () => {
-						return {
-							query: {},
-							path: new window.mw.Title( Constants.PATHS.RUN_FUNCTION_TITLE ).getUrl()
-						};
-					} );
+					window.mw.Uri.mockImplementationOnce( () => ( {
+						query: {},
+						path: new window.mw.Title( Constants.PATHS.RUN_FUNCTION_TITLE ).getUrl()
+					} ) );
 
 					routerInstance.actions.evaluateUri( context );
 
@@ -867,11 +797,9 @@ describe( 'router Vuex module', () => {
 
 		describe( 'changeCurrentView', () => {
 			beforeEach( () => {
-				window.mw.Uri.mockImplementation( () => {
-					return {
-						query: {}
-					};
-				} );
+				window.mw.Uri.mockImplementation( () => ( {
+					query: {}
+				} ) );
 			} );
 
 			it( 'changes the current view with the value provided', () => {
@@ -900,15 +828,13 @@ describe( 'router Vuex module', () => {
 				const dummyView = 'dummyView',
 					fakePath = 'fakePath',
 					fakeExistingValue = 'fakeValue';
-				window.mw.Uri.mockImplementation( () => {
-					return {
-						query: {
-							view: 'initialDummyView',
-							existingDummyParams: fakeExistingValue
-						},
-						path: fakePath
-					};
-				} );
+				window.mw.Uri.mockImplementation( () => ( {
+					query: {
+						view: 'initialDummyView',
+						existingDummyParams: fakeExistingValue
+					},
+					path: fakePath
+				} ) );
 				routerInstance.actions.changeCurrentView( context, dummyView );
 				expect( window.history.replaceState.mock.calls[ 0 ][ 0 ] ).toMatchObject(
 					{

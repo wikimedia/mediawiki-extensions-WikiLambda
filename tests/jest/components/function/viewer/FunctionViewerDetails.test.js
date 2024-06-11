@@ -43,16 +43,14 @@ describe( 'FunctionViewerDetails', () => {
 		actionsThrowError = false;
 
 		const createAction = function () {
-			return jest.fn( () => {
-				return {
-					then: function ( fn ) {
-						if ( actionsThrowError ) {
-							throw Object.assign( new Error(), { error: { message: 'error!' } } );
-						}
-						return fn();
+			return jest.fn( () => ( {
+				then: function ( fn ) {
+					if ( actionsThrowError ) {
+						throw Object.assign( new Error(), { error: { message: 'error!' } } );
 					}
-				};
-			} );
+					return fn();
+				}
+			} ) );
 		};
 		const allTests = [ 'Z111', 'Z222' ];
 		const allImplementations = [ 'Z333', 'Z444', 'Z555' ];
@@ -63,12 +61,8 @@ describe( 'FunctionViewerDetails', () => {
 			disconnectTests: createAction(),
 			getTestResults: jest.fn(),
 			fetchZids: jest.fn(),
-			fetchImplementations: jest.fn( () => {
-				return { then: ( fn ) => fn( allImplementations ) };
-			} ),
-			fetchTests: jest.fn( () => {
-				return { then: ( fn ) => fn( allTests ) };
-			} )
+			fetchImplementations: jest.fn( () => ( { then: ( fn ) => fn( allImplementations ) } ) ),
+			fetchTests: jest.fn( () => ( { then: ( fn ) => fn( allTests ) } ) )
 		};
 		getters = {
 			getConnectedTests: createGettersWithFunctionsMock( [ 'Z222' ] ),
@@ -78,13 +72,11 @@ describe( 'FunctionViewerDetails', () => {
 			getLanguageOfImplementation: () => ( zid ) => mockLanguages[ zid ],
 			getTypeOfImplementation: () => ( zid ) => mockTypes[ zid ],
 			getLabelData: createLabelDataMock( mockLabels ),
-			getZTesterPercentage: () => () => {
-				return {
-					passing: 1,
-					total: 1,
-					percentage: 100
-				};
-			}
+			getZTesterPercentage: () => () => ( {
+				passing: 1,
+				total: 1,
+				percentage: 100
+			} )
 		};
 		global.store.hotUpdate( {
 			getters: getters,

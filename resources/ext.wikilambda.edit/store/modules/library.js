@@ -393,11 +393,10 @@ module.exports = exports = {
 			payload.language = context.getters.getUserLangCode;
 			return new Promise( ( resolve ) => {
 				clearTimeout( debounceZObjectLookup );
-				debounceZObjectLookup = setTimeout( () => {
-					return apiUtils.searchLabels( payload ).then( ( data ) => {
-						return resolve( data );
-					} );
-				}, DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT );
+				debounceZObjectLookup = setTimeout(
+					() => apiUtils.searchLabels( payload ).then( ( data ) => resolve( data ) ),
+					DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT
+				);
 			} );
 		},
 		/**
@@ -543,7 +542,7 @@ module.exports = exports = {
 								// and commit to the store
 								objects = objectValue[ Constants.Z_TYPE_KEYS ].slice( 1 );
 
-								objects.forEach( function ( key ) {
+								objects.forEach( ( key ) => {
 									const keyLabels = key[
 										Constants.Z_KEY_LABEL
 									][ Constants.Z_MULTILINGUALSTRING_VALUE ].slice( 1 );
@@ -579,7 +578,7 @@ module.exports = exports = {
 								// declaration labels and commit to the store
 								objects = objectValue[ Constants.Z_FUNCTION_ARGUMENTS ].slice( 1 );
 
-								objects.forEach( function ( arg ) {
+								objects.forEach( ( arg ) => {
 									const argLabels = arg[
 										Constants.Z_ARGUMENT_LABEL
 									][ Constants.Z_MULTILINGUALSTRING_VALUE ].slice( 1 );

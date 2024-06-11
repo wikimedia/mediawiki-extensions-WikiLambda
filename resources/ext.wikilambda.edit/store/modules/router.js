@@ -53,7 +53,7 @@ module.exports = {
 			 */
 			const viewIsInvalid = function ( view ) {
 				let viewExist = false;
-				Object.keys( Constants.VIEWS ).forEach( function ( viewKey ) {
+				Object.keys( Constants.VIEWS ).forEach( ( viewKey ) => {
 					if ( Constants.VIEWS[ viewKey ] === view ) {
 						viewExist = true;
 					}

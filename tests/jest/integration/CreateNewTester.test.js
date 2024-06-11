@@ -42,12 +42,10 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 			zid: Constants.Z_TESTER,
 			[ Constants.Z_TESTER_FUNCTION ]: functionZid
 		};
-		window.mw.Uri = jest.fn( () => {
-			return {
-				query: queryParams,
-				path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl( queryParams )
-			};
-		} );
+		window.mw.Uri = jest.fn( () => ( {
+			query: queryParams,
+			path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl( queryParams )
+		} ) );
 
 		global.mw.config.get = ( endpoint ) => {
 			switch ( endpoint ) {
@@ -71,16 +69,14 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 			}
 		} ) );
 
-		mw.Api = jest.fn( () => {
-			return {
-				postWithEditToken: apiPostWithEditTokenMock,
-				get: apiGetMock.createMockApi( [
-					initializeRootZObject,
-					lookupZObjectTypeLabels,
-					performTest
-				] )
-			};
-		} );
+		mw.Api = jest.fn( () => ( {
+			postWithEditToken: apiPostWithEditTokenMock,
+			get: apiGetMock.createMockApi( [
+				initializeRootZObject,
+				lookupZObjectTypeLabels,
+				performTest
+			] )
+		} ) );
 	} );
 
 	afterEach( () => {

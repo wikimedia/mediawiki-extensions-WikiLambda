@@ -37,12 +37,10 @@ const runSetup = function () {
 			href: 'currentPage'
 		}
 	} );
-	window.mw.Uri = jest.fn( () => {
-		return {
-			path: new window.mw.Title( Constants.PATHS.RUN_FUNCTION_TITLE ).getUrl(),
-			query: {}
-		};
-	} );
+	window.mw.Uri = jest.fn( () => ( {
+		path: new window.mw.Title( Constants.PATHS.RUN_FUNCTION_TITLE ).getUrl(),
+		query: {}
+	} ) );
 
 	// Set mw.config variables
 	global.mw.config.get = jest.fn( ( endpoint ) => {
@@ -71,15 +69,13 @@ const runSetup = function () {
 			}
 		}
 	} ) );
-	mw.Api = jest.fn( () => {
-		return {
-			post: apiPostWithFunctionCallMock,
-			get: apiGetMock.createMockApi( [
-				lookupZObjectTypeLabels,
-				initializeRootZObject
-			] )
-		};
-	} );
+	mw.Api = jest.fn( () => ( {
+		post: apiPostWithFunctionCallMock,
+		get: apiGetMock.createMockApi( [
+			lookupZObjectTypeLabels,
+			initializeRootZObject
+		] )
+	} ) );
 
 	return {
 		apiPostWithFunctionCallMock: apiPostWithFunctionCallMock

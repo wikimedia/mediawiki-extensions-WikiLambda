@@ -257,9 +257,7 @@ module.exports = exports = defineComponent( {
 					return this.getZFunctionCallArguments( this.rowId );
 				}
 				return this.getChildrenByParentRowId( this.rowId )
-					.filter( ( row ) => {
-						return ( row.key !== Constants.Z_OBJECT_TYPE );
-					} );
+					.filter( ( row ) => ( row.key !== Constants.Z_OBJECT_TYPE ) );
 			},
 
 			/**

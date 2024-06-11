@@ -31,15 +31,15 @@ const programmingLanguagesModule = require( '../../../../resources/ext.wikilambd
 	];
 let state;
 
-describe( 'Programming Languages Vuex module', function () {
-	beforeEach( function () {
+describe( 'Programming Languages Vuex module', () => {
+	beforeEach( () => {
 		state = JSON.parse( JSON.stringify( programmingLanguagesModule.state ) );
 	} );
-	describe( 'Getters', function () {
-		it( 'Returns empty list if no programming languages are defined in the state', function () {
+	describe( 'Getters', () => {
+		it( 'Returns empty list if no programming languages are defined in the state', () => {
 			expect( programmingLanguagesModule.getters.getAllProgrammingLangs( state ) ).toEqual( [] );
 		} );
-		it( 'Returns a list of programming languages', function () {
+		it( 'Returns a list of programming languages', () => {
 			state.allZProgrammingLangs = mockZProgrammingLanguages;
 			expect(
 				programmingLanguagesModule.getters.getAllProgrammingLangs( state )
@@ -47,8 +47,8 @@ describe( 'Programming Languages Vuex module', function () {
 		} );
 	} );
 
-	describe( 'Mutations', function () {
-		it( 'Updates the state', function () {
+	describe( 'Mutations', () => {
+		it( 'Updates the state', () => {
 			programmingLanguagesModule.mutations.setAllZProgrammingLangs( state, mockZProgrammingLanguages );
 
 			expect( state.allZProgrammingLangs ).toEqual( mockZProgrammingLanguages );

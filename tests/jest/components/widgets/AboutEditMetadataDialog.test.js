@@ -186,9 +186,7 @@ describe( 'AboutEditMetadataDialog', () => {
 				getZPersistentDescription: createGettersWithFunctionsMock( description ),
 				getZPersistentName: createGettersWithFunctionsMock( name ),
 				getZMonolingualStringsetValues: createGettersWithFunctionsMock( aliasValues ),
-				getZMonolingualTextValue: () => ( rowId ) => {
-					return rowId === 1 ? 'name' : 'some description';
-				}
+				getZMonolingualTextValue: () => ( rowId ) => rowId === 1 ? 'name' : 'some description'
 			} );
 
 			global.store.hotUpdate( { getters: getters, actions: actions } );
@@ -313,9 +311,7 @@ describe( 'AboutEditMetadataDialog', () => {
 				getZPersistentDescription: createGettersWithFunctionsMock( description ),
 				getZPersistentName: createGettersWithFunctionsMock( name ),
 				getZMonolingualStringsetValues: createGettersWithFunctionsMock( aliasValues ),
-				getZMonolingualTextValue: () => ( rowId ) => {
-					return rowId === 1 ? 'name' : 'some description';
-				}
+				getZMonolingualTextValue: () => ( rowId ) => rowId === 1 ? 'name' : 'some description'
 			} );
 
 			global.store.hotUpdate( { getters: getters, actions: actions } );

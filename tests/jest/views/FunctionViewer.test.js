@@ -22,17 +22,13 @@ describe( 'FunctionViewer', () => {
 		};
 		global.store.hotUpdate( { getters: getters } );
 
-		window.mw.Uri.mockImplementation( () => {
-			return {
-				path: '/wiki/' + functionZid
-			};
-		} );
+		window.mw.Uri.mockImplementation( () => ( {
+			path: '/wiki/' + functionZid
+		} ) );
 
-		VueTestUtils.config.global.mocks.$i18n = jest.fn().mockImplementation( () => {
-			return {
-				text: jest.fn()
-			};
-		} );
+		VueTestUtils.config.global.mocks.$i18n = jest.fn().mockImplementation( () => ( {
+			text: jest.fn()
+		} ) );
 	} );
 
 	it( 'renders without errors', () => {
@@ -48,14 +44,12 @@ describe( 'FunctionViewer', () => {
 	} );
 
 	it( 'displays success message if indicated in url', () => {
-		window.mw.Uri.mockImplementation( () => {
-			return {
-				path: '/wiki/' + functionZid,
-				query: {
-					success: 'true'
-				}
-			};
-		} );
+		window.mw.Uri.mockImplementation( () => ( {
+			path: '/wiki/' + functionZid,
+			query: {
+				success: 'true'
+			}
+		} ) );
 		const wrapper = VueTestUtils.shallowMount( FunctionViewer );
 
 		expect( wrapper.find( '.ext-wikilambda-toast-message' ).exists() ).toBeTruthy();

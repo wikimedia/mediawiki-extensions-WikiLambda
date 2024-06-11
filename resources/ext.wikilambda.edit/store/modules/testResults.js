@@ -72,11 +72,10 @@ module.exports = exports = {
 			 * @return {Object}
 			 */
 			return function ( zid ) {
-				const results = Object.keys( state.zTesterResults ).filter( function ( key ) {
-						return key.includes( zid ) && state.zTesterResults[ key ] !== undefined;
-					} ),
+				const results = Object.keys( state.zTesterResults ).filter(
+						( key ) => key.includes( zid ) && state.zTesterResults[ key ] !== undefined ),
 					total = results.length,
-					passing = results.filter( function ( key ) {
+					passing = results.filter( ( key ) => {
 						const result = state.zTesterResults[ key ];
 						return result &&
 							( result === Constants.Z_BOOLEAN_TRUE ||
@@ -209,7 +208,7 @@ module.exports = exports = {
 			 * @return {Array}
 			 */
 			function replaceCurrentObjectWithFullJSONObject( iContext, items ) {
-				return ( items || [] ).map( function ( item ) {
+				return ( items || [] ).map( ( item ) => {
 					// if the item is the current object replace it
 					if ( !iContext.getters.getViewMode && item === iContext.getters.getCurrentZObjectId ) {
 						let zobject = iContext.getters.getZObjectAsJson;
@@ -222,9 +221,7 @@ module.exports = exports = {
 					}
 
 					return item;
-				} ).filter( function ( item ) {
-					return !!item;
-				} );
+				} ).filter( ( item ) => !!item );
 			}
 
 			// If function ZID is empty, exit
@@ -247,17 +244,17 @@ module.exports = exports = {
 			const implementations = replaceCurrentObjectWithFullJSONObject(
 				context,
 				payload.zImplementations
-			).map( ( a ) => {
+			).map(
 				// (T358089) Encode any '|' characters of ZObjects so that they can be recovered after the API.
-				return a.replace( '|', '🪈' );
-			} );
+				( a ) => a.replace( '|', '🪈' )
+			);
 			const testers = replaceCurrentObjectWithFullJSONObject(
 				context,
 				payload.zTesters
-			).map( ( a ) => {
+			).map(
 				// (T358089) Encode any '|' characters of ZObjects so that they can be recovered after the API.
-				return a.replace( '|', '🪈' );
-			} );
+				( a ) => a.replace( '|', '🪈' )
+			);
 
 			const testResultsPromise = apiUtils.performTests( {
 				functionZid: payload.zFunctionId,
@@ -266,7 +263,7 @@ module.exports = exports = {
 				testers
 			} ).then( ( results ) => {
 				const zids = [];
-				results.forEach( function ( testResult ) {
+				results.forEach( ( testResult ) => {
 					const result = hybridToCanonical( JSON.parse( testResult.validateStatus ) );
 					const metadata = hybridToCanonical( JSON.parse( testResult.testMetadata ) );
 					const key = ( testResult.zFunctionId || Constants.NEW_ZID_PLACEHOLDER ) + ':' +

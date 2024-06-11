@@ -440,11 +440,9 @@ describe( 'ZObjectKeyValue', () => {
 			it( 'disables edit if key is for the Typed List item type and the type is bound', () => {
 				getters.getParentRowId = createGettersWithFunctionsMock( 1 );
 				getters.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z11' );
-				getters.getZObjectKeyByRowId = () => ( id ) => {
-					return ( id === 10 ) ? '0' :
-						( id === 1 ) ? 'Z12K1' :
-							undefined;
-				};
+				getters.getZObjectKeyByRowId = () => ( id ) => ( id === 10 ) ? '0' :
+					( id === 1 ) ? 'Z12K1' :
+						undefined;
 				global.store.hotUpdate( { getters: getters } );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
@@ -460,11 +458,9 @@ describe( 'ZObjectKeyValue', () => {
 			it( 'enables edit if key is for the Typed List item type and the type is not bound', () => {
 				getters.getParentRowId = createGettersWithFunctionsMock( 1 );
 				getters.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z1' );
-				getters.getZObjectKeyByRowId = () => ( id ) => {
-					return ( id === 10 ) ? '0' :
-						( id === 1 ) ? 'Z12K1' :
-							undefined;
-				};
+				getters.getZObjectKeyByRowId = () => ( id ) => ( id === 10 ) ? '0' :
+					( id === 1 ) ? 'Z12K1' :
+						undefined;
 				global.store.hotUpdate( { getters: getters } );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
@@ -529,11 +525,9 @@ describe( 'ZObjectKeyValue', () => {
 				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z1K1' );
 				getters.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z1' );
 				getters.isCreateNewPage = createGetterMock( false );
-				getters.getZObjectKeyByRowId = () => ( id ) => {
-					return ( id === 10 ) ? 'Z1K1' :
-						( id === 1 ) ? 'Z2K2' :
-							undefined;
-				};
+				getters.getZObjectKeyByRowId = () => ( id ) => ( id === 10 ) ? 'Z1K1' :
+					( id === 1 ) ? 'Z2K2' :
+						undefined;
 				global.store.hotUpdate( { getters: getters } );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
@@ -551,11 +545,9 @@ describe( 'ZObjectKeyValue', () => {
 				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z1K1' );
 				getters.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z1' );
 				getters.isCreateNewPage = createGetterMock( true );
-				getters.getZObjectKeyByRowId = () => ( id ) => {
-					return ( id === 10 ) ? 'Z1K1' :
-						( id === 1 ) ? 'Z2K2' :
-							undefined;
-				};
+				getters.getZObjectKeyByRowId = () => ( id ) => ( id === 10 ) ? 'Z1K1' :
+					( id === 1 ) ? 'Z2K2' :
+						undefined;
 				global.store.hotUpdate( { getters: getters } );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
@@ -833,11 +825,9 @@ describe( 'ZObjectKeyValue', () => {
 
 			it( 'trigger set-value when type is set to typed list', () => {
 				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
-				getters.getZObjectKeyByRowId = () => ( id ) => {
-					return ( id === 1 ) ? Constants.Z_FUNCTION_CALL_FUNCTION :
-						( id === 0 ) ? Constants.Z_OBJECT_TYPE :
-							undefined;
-				};
+				getters.getZObjectKeyByRowId = () => ( id ) => ( id === 1 ) ? Constants.Z_FUNCTION_CALL_FUNCTION :
+					( id === 0 ) ? Constants.Z_OBJECT_TYPE :
+						undefined;
 				global.store.hotUpdate( {
 					getters: getters
 				} );
@@ -873,11 +863,9 @@ describe( 'ZObjectKeyValue', () => {
 
 			it( 'passes up responsibility if the change happens on Z3K4.Z40K1 key', () => {
 				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
-				getters.getZObjectKeyByRowId = () => ( id ) => {
-					return ( id === 1 ) ? Constants.Z_BOOLEAN_IDENTITY :
-						( id === 0 ) ? Constants.Z_KEY_IS_IDENTITY :
-							undefined;
-				};
+				getters.getZObjectKeyByRowId = () => ( id ) => ( id === 1 ) ? Constants.Z_BOOLEAN_IDENTITY :
+					( id === 0 ) ? Constants.Z_KEY_IS_IDENTITY :
+						undefined;
 				global.store.hotUpdate( {
 					getters: getters
 				} );

@@ -34,11 +34,9 @@ describe( 'functionCall Vuex module', () => {
 			getters: {}
 		} );
 
-		mw.Api = jest.fn( () => {
-			return {
-				post: postMock
-			};
-		} );
+		mw.Api = jest.fn( () => ( {
+			post: postMock
+		} ) );
 	} );
 
 	describe( 'Actions', () => {
@@ -82,17 +80,15 @@ describe( 'functionCall Vuex module', () => {
 		describe( 'functionCall', () => {
 			it( 'Call MW API for function orchestration; set orchestrationResult', () => {
 				const expectedData = '{ "Z1K1": "Z6", "Z6K1": "present" }';
-				postMock = jest.fn( () => {
-					return new Promise( function ( resolve ) {
-						resolve( {
-							query: {
-								wikilambda_function_call: {
-									data: expectedData
-								}
+				postMock = jest.fn( () => new Promise( ( resolve ) => {
+					resolve( {
+						query: {
+							wikilambda_function_call: {
+								data: expectedData
 							}
-						} );
+						}
 					} );
-				} );
+				} ) );
 
 				functionCallModule.actions.callZFunction( context, { functionCall } );
 
@@ -106,11 +102,9 @@ describe( 'functionCall Vuex module', () => {
 				const error = 'one tissue, used';
 
 				// eslint-disable-next-line no-unused-vars
-				postMock = jest.fn( ( payload ) => {
-					return new Promise( ( resolve, reject ) => {
-						reject( error );
-					} );
-				} );
+				postMock = jest.fn( ( payload ) => new Promise( ( resolve, reject ) => {
+					reject( error );
+				} ) );
 
 				functionCallModule.actions.callZFunction( context, { functionCall } );
 

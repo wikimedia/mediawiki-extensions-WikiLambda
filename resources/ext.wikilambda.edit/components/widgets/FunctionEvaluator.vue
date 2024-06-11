@@ -220,9 +220,7 @@ module.exports = exports = defineComponent( {
 		 */
 		inputRowIds: function () {
 			return this.getZFunctionCallArguments( this.functionCallRowId )
-				.map( function ( row ) {
-					return row.id;
-				} );
+				.map( ( row ) => row.id );
 		},
 
 		/**
@@ -455,16 +453,18 @@ module.exports = exports = defineComponent( {
 						} );
 					}
 				} );
-			} ).then( () => {
+			} ).then(
 				// Initialize detached object for the result
-				return this.initializeResultId( this.resultRowId ).then( ( rowId ) => {
+				() => this.initializeResultId( this.resultRowId ).then( ( rowId ) => {
 					resultRowId = rowId;
-				} );
-			} ).finally( () => {
+				} )
+			).finally(
 				// Set both detached rowIds to render the components
-				this.functionCallRowId = functionCallRowId;
-				this.resultRowId = resultRowId;
-			} );
+				() => {
+					this.functionCallRowId = functionCallRowId;
+					this.resultRowId = resultRowId;
+				}
+			);
 		}
 	} ),
 	watch: {

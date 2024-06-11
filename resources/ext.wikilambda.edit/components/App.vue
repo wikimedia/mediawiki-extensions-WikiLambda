@@ -94,9 +94,9 @@ module.exports = exports = defineComponent( {
 			// Reinitialize zObject if current page/zObject is new and user changes route
 			if ( this.isCreateNewPage ) {
 				this.initializeView().then(
-					function () {
+					() => {
 						this.evaluateUri();
-					}.bind( this )
+					}
 				);
 				return;
 			}

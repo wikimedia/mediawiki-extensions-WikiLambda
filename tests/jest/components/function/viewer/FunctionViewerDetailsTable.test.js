@@ -9,8 +9,8 @@
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	FunctionViewerDetailsTable = require( '../../../../../resources/ext.wikilambda.edit/components/function/viewer/FunctionViewerDetailsTable.vue' );
 
-describe( 'FunctionViewerDetailsTable', function () {
-	it( 'renders without errors', function () {
+describe( 'FunctionViewerDetailsTable', () => {
+	it( 'renders without errors', () => {
 		const wrapper = shallowMount( FunctionViewerDetailsTable, {
 			props: {
 				addLink: 'howfun.com',

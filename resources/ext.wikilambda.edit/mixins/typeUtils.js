@@ -61,16 +61,10 @@ const Constants = require( '../Constants.js' ),
 				}
 
 				if ( Array.isArray( key ) ) {
-					return key.map( function ( k ) {
-						return typeUtils.methods.findKeyInArray( k, array );
-					} )
-						.filter( function ( filterResult ) {
-							return !!filterResult;
-						} )[ 0 ] || false;
+					return key.map( ( k ) => typeUtils.methods.findKeyInArray( k, array ) )
+						.filter( ( filterResult ) => !!filterResult )[ 0 ] || false;
 				} else {
-					const result = array.filter( function ( item ) {
-						return item.key === key;
-					} );
+					const result = array.filter( ( item ) => item.key === key );
 
 					if ( result.length === 0 ) {
 						return false;
@@ -115,9 +109,7 @@ const Constants = require( '../Constants.js' ),
 			 * @return {Object}
 			 */
 			getKeyFromKeyList: function ( key, list ) {
-				return list.find( function ( item ) {
-					return ( item[ Constants.Z_KEY_ID ] === key );
-				} );
+				return list.find( ( item ) => ( item[ Constants.Z_KEY_ID ] === key ) );
 			},
 			/**
 			 * Get the Z17/Argument object given a key string
@@ -128,9 +120,7 @@ const Constants = require( '../Constants.js' ),
 			 * @return {Object}
 			 */
 			getArgFromArgList: function ( key, list ) {
-				return list.find( function ( item ) {
-					return ( item[ Constants.Z_ARGUMENT_KEY ] === key );
-				} );
+				return list.find( ( item ) => ( item[ Constants.Z_ARGUMENT_KEY ] === key ) );
 			},
 			/**
 			 * Determine if a key indicates a typed list type.
@@ -190,12 +180,10 @@ const Constants = require( '../Constants.js' ),
 							if ( !noArgs ) {
 								// Stringify the function arguments
 								argTypes = [];
-								argKeys = Object.keys( type ).filter( ( key ) => {
-									return (
-										( key !== Constants.Z_OBJECT_TYPE ) &&
+								argKeys = Object.keys( type ).filter( ( key ) => (
+									( key !== Constants.Z_OBJECT_TYPE ) &&
 										( key !== Constants.Z_FUNCTION_CALL_FUNCTION )
-									);
-								} );
+								) );
 								for ( const argKey of argKeys ) {
 									argType = ( typeof type[ argKey ] === 'object' ) ?
 										typeUtils.methods.typeToString( type[ argKey ] ) :
@@ -746,9 +734,7 @@ const Constants = require( '../Constants.js' ),
 					// the first available language found.
 					let foundLang;
 					for ( const lang of chain ) {
-						foundLang = availableLangs.find( ( langObj ) => {
-							return ( langObj.langIsoCode === lang );
-						} );
+						foundLang = availableLangs.find( ( langObj ) => ( langObj.langIsoCode === lang ) );
 						if ( foundLang !== undefined ) {
 							return foundLang;
 						}

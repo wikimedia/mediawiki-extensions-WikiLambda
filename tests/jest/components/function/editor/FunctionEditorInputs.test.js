@@ -42,7 +42,7 @@ describe( 'FunctionEditorInputs', () => {
 		expect( wrapper.find( '.ext-wikilambda-function-definition-inputs' ).exists() ).toBeTruthy();
 	} );
 
-	it( 'displays the "add input" button if the user has edit permission and there are no arguments', function () {
+	it( 'displays the "add input" button if the user has edit permission and there are no arguments', () => {
 		getters.getZFunctionInputs = createGettersWithFunctionsMock( [] );
 		global.store.hotUpdate( { getters: getters } );
 		const wrapper = shallowMount( FunctionEditorInputs, {
