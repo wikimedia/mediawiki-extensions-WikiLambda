@@ -468,7 +468,7 @@ module.exports = exports = defineComponent( {
 		 * sure that the typeObject is available.
 		 */
 		initializeBlankObject: function () {
-			this.blankObject = this.createObjectByType( { type: this.type } );
+			this.blankObject = hybridToCanonical( this.createObjectByType( { type: this.type } ) );
 		}
 	} ),
 	watch: {
