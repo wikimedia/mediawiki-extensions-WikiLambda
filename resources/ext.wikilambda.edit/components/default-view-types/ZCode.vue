@@ -212,9 +212,8 @@ module.exports = exports = defineComponent( {
 				// TODO: remove options for literal programming language when the time comes
 				let zId;
 				if ( this.programmingLanguageType === Constants.Z_PROGRAMMING_LANGUAGE ) {
-					const menuObject = this.programmingLanguageMenuItems.find( ( item ) =>
-						item.label === this.programmingLanguageLiteral
-					);
+					const menuObject = this.programmingLanguageMenuItems
+						.find( ( item ) => item.label === this.programmingLanguageLiteral );
 					zId = menuObject ? menuObject.value : undefined;
 				} else {
 					zId = this.getZReferenceTerminalValue( this.programmingLanguageRowId );
@@ -238,9 +237,8 @@ module.exports = exports = defineComponent( {
 					], this.programmingLanguageRowId );
 					literal = langObject ? langObject.value : undefined;
 				} else {
-					const menuObject = this.programmingLanguageMenuItems.find( ( item ) =>
-						item.value === this.programmingLanguageValue
-					);
+					const menuObject = this.programmingLanguageMenuItems
+						.find( ( item ) => item.value === this.programmingLanguageValue );
 					literal = menuObject ? menuObject.label : undefined;
 				}
 				return literal;

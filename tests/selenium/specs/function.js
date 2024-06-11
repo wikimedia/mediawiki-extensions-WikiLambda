@@ -36,14 +36,14 @@ const assert = require( 'assert' ),
 	util = require( 'wdio-mediawiki/Util' ),
 	LoginPage = require( 'wdio-mediawiki/LoginPage' );
 
-describe( 'Function', function () {
+describe( 'Function', () => {
 
-	before( async function () {
+	before( async () => {
 		await LoginPage.loginAdmin();
 	} );
 
-	describe( 'Function viewer (CUJ1)', function () {
-		it( 'should allow to evaluate a function', async function () {
+	describe( 'Function viewer (CUJ1)', () => {
+		it( 'should allow to evaluate a function', async () => {
 			await ListObjectsByType.open();
 			const ListFunctions = await ListObjectsByType.openFunctionsList();
 			await ListFunctions.openFunction( 'echo' );
@@ -54,7 +54,7 @@ describe( 'Function', function () {
 		} );
 	} );
 
-	describe( 'Function editor (CUJ2)', function () {
+	describe( 'Function editor (CUJ2)', () => {
 		let functionTitle;
 		let alias;
 		const ALIASES = {
@@ -75,7 +75,7 @@ describe( 'Function', function () {
 		};
 		const INPUT_TYPES = [ 'String', 'Boolean' ];
 		const OUTPUT_TYPE = 'String';
-		before( async function () {
+		before( async () => {
 			// create a new function
 			functionTitle = 'zzz-FunctionCreationTest-' + Date.now();
 			alias = util.getTestString( 'alias-' );
@@ -105,16 +105,16 @@ describe( 'Function', function () {
 			await FunctionForm.publishFunction();
 		} );
 
-		it( 'should create a new function and display the function name', async function () {
+		it( 'should create a new function and display the function name', async () => {
 			assert.strictEqual( await FunctionPage.functionTitle.getText(), functionTitle );
 		} );
 
-		it( 'should create a new function and display function aliases', async function () {
+		it( 'should create a new function and display function aliases', async () => {
 			const aliases = await FunctionPage.getFunctionAliases();
 			expect( await aliases[ 0 ] ).toBe( ALIASES.ENGLISH );
 		} );
 
-		it( 'should create a new function and display function input labels and types', async function () {
+		it( 'should create a new function and display function input labels and types', async () => {
 			const inputs = await FunctionPage.getFunctionInputBlocks();
 			await inputs.map( async ( _, index ) => {
 				const expectedLabel = ARGUMENT_LABELS.ENGLISH[ index ];
@@ -124,7 +124,7 @@ describe( 'Function', function () {
 			} );
 		} );
 
-		it( 'should create a new function and display function output type', async function () {
+		it( 'should create a new function and display function output type', async () => {
 			const outputType = await FunctionPage.getFunctionOutputType();
 			expect( outputType ).toBe( OUTPUT_TYPE );
 		} );

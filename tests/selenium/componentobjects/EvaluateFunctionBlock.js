@@ -58,9 +58,7 @@ class EvaluateFunctionBlock {
 	async waitForResult() {
 		const orchestrationResultBlock = await this.orchestrationResultBlock;
 		await orchestrationResultBlock.waitForDisplayed( { message: 'Result Block not displayed' } );
-		await browser.waitUntil( async () => {
-			return ( this.resultStatus ).isExisting() === false;
-		}, { timeoutMsg: 'The output of the function is not displayed' } );
+		await browser.waitUntil( async () => ( this.resultStatus ).isExisting() === false, { timeoutMsg: 'The output of the function is not displayed' } );
 	}
 
 	// #endregion
