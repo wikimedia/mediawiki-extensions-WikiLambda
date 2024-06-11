@@ -11,7 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use BagOStuff;
-use ConfigException;
+use MediaWiki\Config\ConfigException;
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MainConfigNames;
