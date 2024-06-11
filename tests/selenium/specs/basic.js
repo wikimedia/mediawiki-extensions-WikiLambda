@@ -12,14 +12,14 @@ const LoginPage = require( 'wdio-mediawiki/LoginPage' ),
 	ListObjectsByType = require( '../pageobjects/special/ListObjectsByType.page.js' ),
 	i18n = require( '../utils/i18n.js' )();
 
-describe( 'Installation checks', function () {
+describe( 'Installation checks', () => {
 
-	describe( 'CreateObject', function () {
-		it( 'page should exist on installation but deny to logged-out user', async function () {
+	describe( 'CreateObject', () => {
+		it( 'page should exist on installation but deny to logged-out user', async () => {
 			await CreateObjectPage.open();
 			await expect( await CreateObjectPage.title ).toHaveText( 'Permission error' );
 		} );
-		it( 'page should exist on installation and work when logged in', async function () {
+		it( 'page should exist on installation and work when logged in', async () => {
 			await LoginPage.loginAdmin();
 			await expect( browser ).toHaveUrlContaining( 'Main_Page',
 				{ message: 'Login failed' } );
@@ -28,14 +28,14 @@ describe( 'Installation checks', function () {
 			await expect( await CreateObjectPage.title ).toHaveText( i18n[ 'wikilambda-special-createobject' ] );
 		} );
 	} );
-	describe( 'RunFunction', function () {
-		it( 'page should exist on installation', async function () {
+	describe( 'RunFunction', () => {
+		it( 'page should exist on installation', async () => {
 			await RunFunction.open();
 			await expect( await RunFunction.title ).toHaveText( i18n[ 'wikilambda-special-runfunction' ] );
 		} );
 	} );
-	describe( 'ListObjectsByType', function () {
-		it( 'page should exist on installation', async function () {
+	describe( 'ListObjectsByType', () => {
+		it( 'page should exist on installation', async () => {
 			await ListObjectsByType.open();
 			await expect( await ListObjectsByType.title ).toHaveText( i18n[ 'wikilambda-special-objectsbytype' ] );
 		} );

@@ -226,7 +226,6 @@ function getValueFromCanonicalZMap( zMap, key ) {
  */
 function extractZIDs( zobject ) {
 	const str = JSON.stringify( zobject );
-	// eslint-disable-next-line security/detect-unsafe-regex
 	const regexp = /"(Z[1-9]\d*)(K[1-9]\d*)?"/g;
 	const matches = [ ...str.matchAll( regexp ) ];
 	const allZids = matches.map( ( groups ) => groups[ 1 ] );

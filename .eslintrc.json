@@ -14,7 +14,8 @@
 			"error",
 			"last 2 chrome versions, last 2 firefox versions, last 2 opera versions, last 2 edge versions, safari >= 14, iOS >= 14"
 		],
-		"es-x/no-promise-prototype-finally": "off",
+		"arrow-body-style": "off",
+		"prefer-arrow-callback": "off",
 		"max-len": [
 			"error",
 			{
@@ -29,6 +30,7 @@
 			}
 		],
 		"es-x/no-array-prototype-includes": "off",
+		"es-x/no-promise-prototype-finally": "off",
 		"es-x/no-string-prototype-matchall": "off",
 		"jsdoc/require-param-type": "error",
 		"jsdoc/require-returns": "error",

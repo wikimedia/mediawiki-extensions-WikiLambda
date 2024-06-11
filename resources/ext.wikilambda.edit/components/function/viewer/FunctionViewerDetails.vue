@@ -126,6 +126,7 @@ module.exports = exports = defineComponent( {
 		allImplementations: function () {
 			return Object.keys( this.implementationsState );
 		},
+
 		/**
 		 * Zids of all implementations already connected to the function
 		 *
@@ -134,6 +135,7 @@ module.exports = exports = defineComponent( {
 		connectedImplementations: function () {
 			return this.getConnectedImplementations( this.rowId );
 		},
+
 		/**
 		 * Zids of all the implementations visible in the table
 		 *
@@ -144,6 +146,7 @@ module.exports = exports = defineComponent( {
 				this.allImplementations :
 				this.paginatedImplementations[ this.implementationsPage ];
 		},
+
 		/**
 		 * Return the implementations structured into pages
 		 *
@@ -152,6 +155,7 @@ module.exports = exports = defineComponent( {
 		paginatedImplementations: function () {
 			return this.paginateList( this.allImplementations );
 		},
+
 		/**
 		 * Total number of implementation pages
 		 *
@@ -160,32 +164,40 @@ module.exports = exports = defineComponent( {
 		implementationsTotalPages: function () {
 			return Object.keys( this.paginatedImplementations ).length;
 		},
+
 		/**
 		 * Whether any of the available implementations are checked
 		 *
 		 * @return {boolean}
 		 */
 		areAnyImplementationsChecked: function () {
-			return Object.keys( this.implementationsState ).some( ( zid ) => this.implementationsState[ zid ].checked );
+			return Object.keys( this.implementationsState ).some(
+				( zid ) => this.implementationsState[ zid ].checked
+			);
 		},
+
 		/**
 		 * Whether any of the disconnected implementations are checked
 		 *
 		 * @return {boolean}
 		 */
 		areProposedImplementationsSelected: function () {
-			return Object.keys( this.implementationsState ).some( ( zid ) =>
-				this.implementationsState[ zid ].checked && !this.implementationsState[ zid ].available );
+			return Object.keys( this.implementationsState ).some(
+				( zid ) => this.implementationsState[ zid ].checked && !this.implementationsState[ zid ].available
+			);
 		},
+
 		/**
 		 * Whether any of the connected implementations are checked
 		 *
 		 * @return {boolean}
 		 */
 		areAvailableImplementationsSelected: function () {
-			return Object.keys( this.implementationsState ).some( ( zid ) =>
-				this.implementationsState[ zid ].checked && this.implementationsState[ zid ].available );
+			return Object.keys( this.implementationsState ).some(
+				( zid ) => this.implementationsState[ zid ].checked && this.implementationsState[ zid ].available
+			);
 		},
+
 		/**
 		 * Returns the link for add new implementation page
 		 *
@@ -198,6 +210,7 @@ module.exports = exports = defineComponent( {
 				[ Constants.Z_IMPLEMENTATION_FUNCTION ]: this.getCurrentZObjectId
 			} );
 		},
+
 		/**
 		 * Build the header row for the Implementations table
 		 *
@@ -234,6 +247,7 @@ module.exports = exports = defineComponent( {
 					}
 				};
 		},
+
 		/**
 		 * Build the content rows for the Implementations table
 		 *
@@ -324,6 +338,7 @@ module.exports = exports = defineComponent( {
 
 			return tableData;
 		},
+
 		/**
 		 * Zids of all tests for this function
 		 *
@@ -332,6 +347,7 @@ module.exports = exports = defineComponent( {
 		allTests: function () {
 			return Object.keys( this.testsState );
 		},
+
 		/**
 		 * Zids of all tests already connected to the function
 		 *
@@ -340,6 +356,7 @@ module.exports = exports = defineComponent( {
 		connectedTests: function () {
 			return this.getConnectedTests( this.rowId );
 		},
+
 		/**
 		 * Zids of all the tests visible in the table
 		 *
@@ -350,6 +367,7 @@ module.exports = exports = defineComponent( {
 				this.allTests :
 				this.paginatedTests[ this.testsPage ];
 		},
+
 		/**
 		 * Return the tests structured into pages
 		 *
@@ -358,6 +376,7 @@ module.exports = exports = defineComponent( {
 		paginatedTests: function () {
 			return this.paginateList( this.allTests );
 		},
+
 		/**
 		 * Total number of tests pages
 		 *
@@ -366,24 +385,29 @@ module.exports = exports = defineComponent( {
 		testsTotalPages: function () {
 			return Object.keys( this.paginatedTests ).length;
 		},
+
 		/**
 		 * Whether any of the disconnected tests are checked
 		 *
 		 * @return {boolean}
 		 */
 		areProposedTestersSelected: function () {
-			return Object.keys( this.testsState ).some( ( zid ) =>
-				this.testsState[ zid ].checked && !this.testsState[ zid ].available );
+			return Object.keys( this.testsState ).some(
+				( zid ) => this.testsState[ zid ].checked && !this.testsState[ zid ].available
+			);
 		},
+
 		/**
 		 * Whether any of the connected tests are checked
 		 *
 		 * @return {boolean}
 		 */
 		areAvailableTestersSelected: function () {
-			return Object.keys( this.testsState ).some( ( zid ) =>
-				this.testsState[ zid ].checked && this.testsState[ zid ].available );
+			return Object.keys( this.testsState ).some(
+				( zid ) => this.testsState[ zid ].checked && this.testsState[ zid ].available
+			);
 		},
+
 		/**
 		 * Returns the link for add new test page
 		 *
@@ -396,6 +420,7 @@ module.exports = exports = defineComponent( {
 				[ Constants.Z_TESTER_FUNCTION ]: this.getCurrentZObjectId
 			} );
 		},
+
 		/**
 		 * Build the header row for the Implementations table
 		 *
@@ -445,6 +470,7 @@ module.exports = exports = defineComponent( {
 
 			return headers;
 		},
+
 		/**
 		 * Build the content rows for the Tests table
 		 *
@@ -519,6 +545,7 @@ module.exports = exports = defineComponent( {
 			}
 			return tableData;
 		},
+
 		/**
 		 * Computed property to watch the value of the
 		 * fetch flags. The hook will re-run the tests
@@ -551,6 +578,7 @@ module.exports = exports = defineComponent( {
 				this.implementationsFetched = true;
 			} );
 		},
+
 		/**
 		 * Fetches all the associated tests and
 		 * initializes the local state variables
@@ -562,6 +590,7 @@ module.exports = exports = defineComponent( {
 				this.testsFetched = true;
 			} );
 		},
+
 		/**
 		 * Sets the local implementations state with the properties
 		 * checked (set to false) and available
@@ -578,6 +607,7 @@ module.exports = exports = defineComponent( {
 				};
 			}
 		},
+
 		/**
 		 * Sets the local implementations state with the properties
 		 * checked (set to false) and available
@@ -594,12 +624,14 @@ module.exports = exports = defineComponent( {
 				};
 			}
 		},
+
 		/**
 		 * Get the set of checked implementations and connect them to the current function
 		 */
 		connectCheckedImplementations: function () {
-			const zids = Object.keys( this.implementationsState ).filter( ( zid ) =>
-				this.implementationsState[ zid ].checked && !this.implementationsState[ zid ].available );
+			const zids = Object.keys( this.implementationsState ).filter(
+				( zid ) => this.implementationsState[ zid ].checked && !this.implementationsState[ zid ].available
+			);
 
 			this.implementationsLoading = true;
 			this.connectImplementations( {
@@ -613,12 +645,14 @@ module.exports = exports = defineComponent( {
 				this.implementationsLoading = false;
 			} );
 		},
+
 		/**
 		 * Get the set of checked implementations and disconnect them from the current function
 		 */
 		disconnectCheckedImplementations: function () {
-			const zids = Object.keys( this.implementationsState ).filter( ( zid ) =>
-				this.implementationsState[ zid ].checked && this.implementationsState[ zid ].available );
+			const zids = Object.keys( this.implementationsState ).filter(
+				( zid ) => this.implementationsState[ zid ].checked && this.implementationsState[ zid ].available
+			);
 
 			this.implementationsLoading = true;
 			this.disconnectImplementations( {
@@ -632,12 +666,13 @@ module.exports = exports = defineComponent( {
 				this.implementationsLoading = false;
 			} );
 		},
+
 		/**
 		 * Get the set of checked tests and connect them to the current function
 		 */
 		connectCheckedTests: function () {
-			const zids = Object.keys( this.testsState ).filter( ( zid ) =>
-				this.testsState[ zid ].checked && !this.testsState[ zid ].available );
+			const zids = Object.keys( this.testsState )
+				.filter( ( zid ) => this.testsState[ zid ].checked && !this.testsState[ zid ].available );
 
 			this.testsLoading = true;
 			this.connectTests( {
@@ -651,12 +686,13 @@ module.exports = exports = defineComponent( {
 				this.testsLoading = false;
 			} );
 		},
+
 		/**
 		 * Get the set of checked tests and disconnect them from the current function
 		 */
 		disconnectCheckedTests: function () {
-			const zids = Object.keys( this.testsState ).filter( ( zid ) =>
-				this.testsState[ zid ].checked && this.testsState[ zid ].available );
+			const zids = Object.keys( this.testsState )
+				.filter( ( zid ) => this.testsState[ zid ].checked && this.testsState[ zid ].available );
 
 			this.testsLoading = true;
 			this.disconnectTests( {
@@ -670,6 +706,7 @@ module.exports = exports = defineComponent( {
 				this.testsLoading = false;
 			} );
 		},
+
 		/**
 		 * Triggers the re-run of all the tests and sets the result
 		 */
@@ -681,6 +718,7 @@ module.exports = exports = defineComponent( {
 				clearPreviousResults: true
 			} );
 		},
+
 		/**
 		 * Convert an array into a paginated object structure
 		 *
@@ -701,6 +739,7 @@ module.exports = exports = defineComponent( {
 			}
 			return { 1: items };
 		},
+
 		/**
 		 * Returns whether all the rows of the given state object are checked
 		 *
@@ -710,6 +749,7 @@ module.exports = exports = defineComponent( {
 		areAllRowsChecked: function ( rows ) {
 			return Object.keys( rows ).every( ( zid ) => rows[ zid ].checked );
 		},
+
 		/**
 		 * Modifies the given state object to check or uncheck all the rows
 		 *
@@ -721,6 +761,7 @@ module.exports = exports = defineComponent( {
 				rows[ zid ].checked = value;
 			}
 		},
+
 		/**
 		 * Sets the current page of the implementations table
 		 *
@@ -729,6 +770,7 @@ module.exports = exports = defineComponent( {
 		updateImplementationPage: function ( page ) {
 			this.implementationsPage = page;
 		},
+
 		/**
 		 * Sets the current page of the tests table
 		 *
@@ -737,18 +779,21 @@ module.exports = exports = defineComponent( {
 		updateTestersPage: function ( page ) {
 			this.testsPage = page;
 		},
+
 		/**
 		 * Toggle the view all/view less button in the implementations table
 		 */
 		resetImplementationView: function () {
 			this.implementationsShowAll = !this.implementationsShowAll;
 		},
+
 		/**
 		 * Toggle the view all/view less button in the implementations table
 		 */
 		resetTestersView: function () {
 			this.testsShowAll = !this.testsShowAll;
 		},
+
 		/**
 		 * Closes the warning toast message
 		 */
@@ -763,6 +808,7 @@ module.exports = exports = defineComponent( {
 			}
 		}
 	},
+
 	mounted: function () {
 		this.initializeImplementations();
 		this.initializeTests();

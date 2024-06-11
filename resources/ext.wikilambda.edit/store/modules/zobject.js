@@ -25,9 +25,11 @@ module.exports = exports = {
 		factory: factoryModule,
 		submission: submissionModule
 	},
+
 	state: {
 		zobject: []
 	},
+
 	getters: {
 		/**
 		 * Returns the whole state zobject table object
@@ -1190,7 +1192,6 @@ module.exports = exports = {
 		 */
 		getNextKey: function ( state, getters ) {
 			const zid = getters.getCurrentZObjectId;
-			// eslint-disable-next-line security/detect-non-literal-regexp
 			const keyRegex = new RegExp( '^' + zid + 'K([0-9]+)$' );
 			const defaultKey = 0;
 			const lastKey = Math.max(
@@ -1282,6 +1283,7 @@ module.exports = exports = {
 			}
 			return findZKeyType;
 		},
+
 		/**
 		 * Recursively waks a nested generic type and returns
 		 * the field IDs and whether they are valid or not.
@@ -1320,6 +1322,7 @@ module.exports = exports = {
 			return validate;
 		}
 	},
+
 	mutations: {
 		/**
 		 * This is the most atomic setter. It sets the value
@@ -1398,6 +1401,7 @@ module.exports = exports = {
 			state.zobject.splice( index, 1 );
 		}
 	},
+
 	actions: {
 		/**
 		 * Handles the initization of the pages given the wgWikiLambda config parameters.
