@@ -81,9 +81,7 @@ describe( 'TypeSelector', () => {
 		} );
 
 		it( 'renders non-terminal type and one argument field', () => {
-			getters.getZObjectTypeByRowId = () => ( id ) => {
-				return ( id === 1 ) ? Constants.Z_FUNCTION_CALL : Constants.Z_REFERENCE;
-			};
+			getters.getZObjectTypeByRowId = () => ( id ) => ( id === 1 ) ? Constants.Z_FUNCTION_CALL : Constants.Z_REFERENCE;
 			getters.getZFunctionCallFunctionId = createGettersWithFunctionsMock( Constants.Z_TYPED_LIST );
 			getters.getZFunctionCallArguments = createGettersWithFunctionsMock( [
 				{ id: 2, parent: 1, key: Constants.Z_TYPED_LIST_TYPE }
@@ -112,9 +110,7 @@ describe( 'TypeSelector', () => {
 		} );
 
 		it( 'renders non-terminal type and two argument fields', () => {
-			getters.getZObjectTypeByRowId = () => ( id ) => {
-				return ( id === 1 ) ? Constants.Z_FUNCTION_CALL : Constants.Z_REFERENCE;
-			};
+			getters.getZObjectTypeByRowId = () => ( id ) => ( id === 1 ) ? Constants.Z_FUNCTION_CALL : Constants.Z_REFERENCE;
 			getters.getZFunctionCallFunctionId = createGettersWithFunctionsMock( Constants.Z_TYPED_PAIR );
 			getters.getZFunctionCallArguments = createGettersWithFunctionsMock( [
 				{ id: 2, parent: 1, key: Constants.Z_TYPED_PAIR_TYPE1 },

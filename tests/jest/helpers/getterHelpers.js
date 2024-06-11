@@ -9,9 +9,7 @@
 const LabelData = require( '../../../resources/ext.wikilambda.edit/store/classes/LabelData.js' );
 
 const createGettersWithFunctionsMock = function ( returnVal ) {
-	return jest.fn().mockImplementation( function () {
-		return jest.fn().mockReturnValue( returnVal );
-	} );
+	return jest.fn().mockImplementation( () => jest.fn().mockReturnValue( returnVal ) );
 };
 
 const createGetterMock = function ( returnVal ) {
@@ -19,13 +17,11 @@ const createGetterMock = function ( returnVal ) {
 };
 
 const createLabelDataMock = function ( labels = {} ) {
-	return jest.fn().mockImplementation( () => {
-		return jest.fn().mockImplementation( ( zid ) => {
-			const defaultLangZid = 'Z1002';
-			const defaultLangCode = 'en';
-			return new LabelData( zid, ( labels[ zid ] || zid ), defaultLangZid, defaultLangCode );
-		} );
-	} );
+	return jest.fn().mockImplementation( () => jest.fn().mockImplementation( ( zid ) => {
+		const defaultLangZid = 'Z1002';
+		const defaultLangCode = 'en';
+		return new LabelData( zid, ( labels[ zid ] || zid ), defaultLangZid, defaultLangCode );
+	} ) );
 };
 
 module.exports = {

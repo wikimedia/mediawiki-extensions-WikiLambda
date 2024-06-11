@@ -17,16 +17,12 @@ describe( 'App.vue', () => {
 
 	beforeEach( () => {
 		actions = {
-			initializeView: jest.fn( () => {
-				return {
-					then: ( callback ) => callback()
-				};
-			} ),
-			prefetchZids: jest.fn( () => {
-				return {
-					then: ( callback ) => callback()
-				};
-			} ),
+			initializeView: jest.fn( () => ( {
+				then: ( callback ) => callback()
+			} ) ),
+			prefetchZids: jest.fn( () => ( {
+				then: ( callback ) => callback()
+			} ) ),
 			evaluateUri: jest.fn(),
 			fetchUserRights: jest.fn()
 		};

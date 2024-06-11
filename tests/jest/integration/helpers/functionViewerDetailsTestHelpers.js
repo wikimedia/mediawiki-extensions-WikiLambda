@@ -40,26 +40,22 @@ const runSetup = function () {
 			page: 'newPage'
 		}
 	} ) );
-	mw.Api = jest.fn( () => {
-		return {
-			postWithEditToken: apiPostWithEditTokenMock,
-			get: apiGetMock.createMockApi( [
-				initializeRootZObject,
-				fetchZImplementations,
-				fetchZTesters,
-				performTest
-			] )
-		};
-	} );
+	mw.Api = jest.fn( () => ( {
+		postWithEditToken: apiPostWithEditTokenMock,
+		get: apiGetMock.createMockApi( [
+			initializeRootZObject,
+			fetchZImplementations,
+			fetchZTesters,
+			performTest
+		] )
+	} ) );
 
-	window.mw.Uri.mockImplementation( () => {
-		return {
-			path: '/wiki/' + functionZid,
-			query: {
-				zid: Constants.Z_FUNCTION
-			}
-		};
-	} );
+	window.mw.Uri.mockImplementation( () => ( {
+		path: '/wiki/' + functionZid,
+		query: {
+			zid: Constants.Z_FUNCTION
+		}
+	} ) );
 
 	global.mw.config.get = ( endpoint ) => {
 		switch ( endpoint ) {
@@ -88,11 +84,13 @@ const runTeardown = () => {
 	jest.useRealTimers();
 };
 
-const renderForFunctionViewer = () =>
-	// By default, `render` mounts the app on a <div> element which is a child of document.body. For some reason
-	// this causes CdxTabs to throw an error when a new tab is navigated to on the functon viewer page. To avoid this,
-	// we pass `render` a parentless <div> to mount on.
-	render( App, { container: document.createElement( 'div' ), global: { plugins: [ store ] } } );
+// By default, `render` mounts the app on a <div> element which is a child of document.body. For some reason
+// this causes CdxTabs to throw an error when a new tab is navigated to on the functon viewer page. To avoid this,
+// we pass `render` a parentless <div> to mount on.
+const renderForFunctionViewer = () => render(
+	App,
+	{ container: document.createElement( 'div' ), global: { plugins: [ store ] } }
+);
 
 module.exports = {
 	runSetup: runSetup,

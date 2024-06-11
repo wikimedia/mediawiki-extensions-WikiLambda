@@ -104,12 +104,10 @@ module.exports = exports = defineComponent( {
 		 */
 		args: function () {
 			if ( this.mode === Constants.Z_FUNCTION_CALL ) {
-				return Object.keys( this.type ).filter( ( key ) => {
-					return (
-						( key !== Constants.Z_OBJECT_TYPE ) &&
+				return Object.keys( this.type ).filter( ( key ) => (
+					( key !== Constants.Z_OBJECT_TYPE ) &&
 						( key !== Constants.Z_FUNCTION_CALL_FUNCTION )
-					);
-				} );
+				) );
 			}
 			return [];
 		},

@@ -312,13 +312,11 @@ module.exports = exports = {
 
 			return context
 				.dispatch( 'pushValuesToList', { rowId: listRow.id, values: payload.zids } )
-				.then( () => {
-					return context.dispatch( 'submitZObject', '' ).catch( ( e ) => {
-						// Reset old ZObject if something failed
-						context.commit( 'setZObject', zobjectCopy );
-						throw e;
-					} );
-				} );
+				.then( () => context.dispatch( 'submitZObject', '' ).catch( ( e ) => {
+					// Reset old ZObject if something failed
+					context.commit( 'setZObject', zobjectCopy );
+					throw e;
+				} ) );
 		},
 		/**
 		 * Adds the given implementations to the current function's list of
@@ -341,13 +339,11 @@ module.exports = exports = {
 
 			return context
 				.dispatch( 'pushValuesToList', { rowId: listRow.id, values: payload.zids } )
-				.then( () => {
-					return context.dispatch( 'submitZObject', '' ).catch( ( e ) => {
-						// Reset old ZObject if something failed
-						context.commit( 'setZObject', zobjectCopy );
-						throw e;
-					} );
-				} );
+				.then( () => context.dispatch( 'submitZObject', '' ).catch( ( e ) => {
+					// Reset old ZObject if something failed
+					context.commit( 'setZObject', zobjectCopy );
+					throw e;
+				} ) );
 		},
 		/**
 		 * Removes the given tests from the the current function's list of

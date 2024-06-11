@@ -32,12 +32,10 @@ const runSetup = function () {
 		zid: Constants.Z_IMPLEMENTATION,
 		[ Constants.Z_IMPLEMENTATION_FUNCTION ]: functionZid
 	};
-	window.mw.Uri.mockImplementation( function () {
-		return {
-			query: queryParams,
-			path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl( queryParams )
-		};
-	} );
+	window.mw.Uri.mockImplementation( () => ( {
+		query: queryParams,
+		path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl( queryParams )
+	} ) );
 	global.mw.config.get = ( endpoint ) => {
 		switch ( endpoint ) {
 			case 'wgWikiLambda':
@@ -60,16 +58,14 @@ const runSetup = function () {
 			page: 'newPage'
 		}
 	} ) );
-	mw.Api = jest.fn( () => {
-		return {
-			postWithEditToken: apiPostWithEditTokenMock,
-			get: apiGetMock.createMockApi( [
-				initializeRootZObject,
-				lookupZObjectTypeLabels,
-				performTest
-			] )
-		};
-	} );
+	mw.Api = jest.fn( () => ( {
+		postWithEditToken: apiPostWithEditTokenMock,
+		get: apiGetMock.createMockApi( [
+			initializeRootZObject,
+			lookupZObjectTypeLabels,
+			performTest
+		] )
+	} ) );
 
 	return {
 		apiPostWithEditTokenMock: apiPostWithEditTokenMock

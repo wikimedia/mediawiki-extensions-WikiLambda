@@ -8,9 +8,6 @@
 			"error",
 			{ "properties": "never" }
 		],
-		"arrow-body-style": "off",
-		"implicit-arrow-linebreak": "off",
-		"prefer-arrow-callback": "off",
 		"max-len": "off",
 		"no-undef": "off"
 	}

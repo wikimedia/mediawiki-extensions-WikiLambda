@@ -662,7 +662,7 @@ describe( 'zfunction Vuex module', () => {
 
 				// Getters
 				context.getters = {};
-				Object.keys( zobjectModule.getters ).forEach( function ( key ) {
+				Object.keys( zobjectModule.getters ).forEach( ( key ) => {
 					context.getters[ key ] =
 						zobjectModule.getters[ key ](
 							context.state, context.getters,
@@ -834,29 +834,27 @@ describe( 'zfunction Vuex module', () => {
 					context.rootState = {
 						zobjectModule: context.state
 					};
-					Object.keys( zobjectModule.getters ).forEach( function ( key ) {
+					Object.keys( zobjectModule.getters ).forEach( ( key ) => {
 						context.getters[ key ] =
 							zobjectModule.getters[ key ](
 								context.state, context.getters,
 								{ zobjectModule: context.state },
 								context.getters );
 					} );
-					context.commit = jest.fn( function ( mutationType, payload ) {
+					context.commit = jest.fn( ( mutationType, payload ) => {
 						zobjectModule.mutations[ mutationType ]( context.state, payload );
 					} );
-					context.dispatch = jest.fn( function ( actionType, payload ) {
-						return {
-							then: function ( fn ) {
-								if ( actionType === 'submitZObject' ) {
-									throw fn();
-								}
-								return fn( payload );
-							},
-							catch: function ( fn ) {
-								return fn( 'error' );
+					context.dispatch = jest.fn( ( actionType, payload ) => ( {
+						then: function ( fn ) {
+							if ( actionType === 'submitZObject' ) {
+								throw fn();
 							}
-						};
-					} );
+							return fn( payload );
+						},
+						catch: function ( fn ) {
+							return fn( 'error' );
+						}
+					} ) );
 				} );
 
 				it( 'connectTests', () => {
@@ -924,19 +922,13 @@ describe( 'zfunction Vuex module', () => {
 			};
 
 			beforeEach( () => {
-				getResolveMock = jest.fn( ( thenFunction ) => {
-					return Promise.resolve( thenFunction( mockApiResponse ) );
-				} );
-				getMock = jest.fn( () => {
-					return {
-						then: getResolveMock
-					};
-				} );
-				mw.Api = jest.fn( () => {
-					return {
-						get: getMock
-					};
-				} );
+				getResolveMock = jest.fn( ( thenFunction ) => Promise.resolve( thenFunction( mockApiResponse ) ) );
+				getMock = jest.fn( () => ( {
+					then: getResolveMock
+				} ) );
+				mw.Api = jest.fn( () => ( {
+					get: getMock
+				} ) );
 
 				context = Object.assign( {}, {
 					commit: jest.fn(),

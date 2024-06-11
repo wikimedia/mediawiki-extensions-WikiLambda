@@ -286,9 +286,7 @@ module.exports = exports = defineComponent( {
 			 */
 			functionArgumentKeys: function () {
 				return this.getInputsOfFunctionZid( this.functionZid )
-					.map( function ( arg ) {
-						return arg[ Constants.Z_ARGUMENT_KEY ];
-					} );
+					.map( ( arg ) => arg[ Constants.Z_ARGUMENT_KEY ] );
 			},
 
 			/**

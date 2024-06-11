@@ -21,9 +21,7 @@ global.mockLocalStorage = {};
 
 global.toQueryParam = function ( param ) {
 	return Object.keys( param )
-		.map( ( key ) => {
-			return key + '=' + param[ key ];
-		} )
+		.map( ( key ) => key + '=' + param[ key ] )
 		.join( '&' );
 };
 
@@ -70,7 +68,7 @@ class Mocki18n {
 global.mw = {
 	Api: Api,
 	config: {
-		get: jest.fn( function ( endpoint ) {
+		get: jest.fn( ( endpoint ) => {
 			switch ( endpoint ) {
 				case 'wgWikiLambda':
 					return {
@@ -100,30 +98,26 @@ global.mw = {
 		}
 	},
 	storage: {
-		get: jest.fn( function ( key ) {
-			return mockLocalStorage[ key ];
-		} ),
-		set: jest.fn( function ( key, value ) {
+		get: jest.fn( ( key ) => mockLocalStorage[ key ] ),
+		set: jest.fn( ( key, value ) => {
 			mockLocalStorage[ key ] = value;
 		} )
 	},
-	track: jest.fn( function ( trackkey, trackmessage ) {
+	track: jest.fn( ( trackkey, trackmessage ) => {
 		// eslint-disable-next-line no-console
 		console.log( 'Log emitted: ' + trackkey + ' - ' + trackmessage );
 	} ),
 	eventLog: {
-		dispatch: jest.fn( function ( eventName, customData ) {
+		dispatch: jest.fn( ( eventName, customData ) => {
 			// eslint-disable-next-line no-console
 			console.log( 'Metrics Platform event emitted: ' + eventName + ' - ' + JSON.stringify( customData ) );
 		} ),
-		submitInteraction: jest.fn( function ( streamName, schemaID, action, interactionData ) {
+		submitInteraction: jest.fn( ( streamName, schemaID, action, interactionData ) => {
 			// eslint-disable-next-line no-console
 			console.log( 'Metrics Platform event emitted using submitInteraction: ' + action + ' - ' + JSON.stringify( interactionData ) );
 		} )
 	},
-	message: jest.fn( function ( str ) {
-		return new Mocki18n( str );
-	} ),
+	message: jest.fn( ( str ) => new Mocki18n( str ) ),
 	Uri: jest.fn().mockReturnValue( {
 		path: jest.fn(),
 		query: jest.fn()
@@ -134,9 +128,7 @@ global.mw = {
 };
 
 // Mock i18n & store for all tests
-global.$i18n = jest.fn( function ( str ) {
-	return new Mocki18n( str );
-} );
+global.$i18n = jest.fn( ( str ) => new Mocki18n( str ) );
 global.getters = {};
 global.state = {};
 global.mutations = {};

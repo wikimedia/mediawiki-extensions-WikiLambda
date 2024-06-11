@@ -11,7 +11,7 @@ const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	Constants = require( '../../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	FunctionEditorFooter = require( '../../../../../resources/ext.wikilambda.edit/components/function/editor/FunctionEditorFooter.vue' );
 
-describe( 'FunctionEditorFooter', function () {
+describe( 'FunctionEditorFooter', () => {
 	let getters,
 		actions;
 

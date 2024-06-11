@@ -19,14 +19,12 @@ const Row = require( '../../../resources/ext.wikilambda.edit/store/classes/Row.j
 	zobjectUtils = require( '../../../resources/ext.wikilambda.edit/mixins/zobjectUtils.js' ).methods;
 
 const tableDataToRowObjects = function ( tableData ) {
-	return tableData.map( function ( rowData ) {
-		return new Row(
-			rowData.id,
-			rowData.key,
-			rowData.value,
-			rowData.parent
-		);
-	} );
+	return tableData.map( ( rowData ) => new Row(
+		rowData.id,
+		rowData.key,
+		rowData.value,
+		rowData.parent
+	) );
 };
 
 const zobjectToRows = function ( zobject ) {

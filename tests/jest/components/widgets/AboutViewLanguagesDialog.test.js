@@ -31,9 +31,7 @@ describe( 'AboutViewLanguagesDialog', () => {
 
 	let getters,
 		actions;
-	const lookupMock = jest.fn( function () {
-		return [];
-	} );
+	const lookupMock = jest.fn( () => [] );
 
 	beforeEach( () => {
 		getters = Object.assign( getters || {}, {
@@ -45,9 +43,7 @@ describe( 'AboutViewLanguagesDialog', () => {
 				};
 				return names[ langZid ];
 			},
-			getZMonolingualTextValue: () => ( rowId ) => {
-				return rowId === 0 ? 'name' : 'nombre';
-			},
+			getZMonolingualTextValue: () => ( rowId ) => rowId === 0 ? 'name' : 'nombre',
 			getLabelData: createLabelDataMock( {
 				[ langs.en.langZid ]: 'English',
 				[ langs.es.langZid ]: 'español'

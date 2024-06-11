@@ -154,22 +154,16 @@ describe( 'ZObjectStringRenderer', () => {
 		};
 		actions = {
 			clearErrors: jest.fn(),
-			getTestResults: jest.fn( () => {
-				return {
-					then: ( fn ) => fn()
-				};
-			} ),
+			getTestResults: jest.fn( () => ( {
+				then: ( fn ) => fn()
+			} ) ),
 			runRendererTest: jest.fn(),
-			runRenderer: jest.fn( () => {
-				return {
-					then: ( fn ) => fn( rendererResponse )
-				};
-			} ),
-			runParser: jest.fn( () => {
-				return {
-					then: ( fn ) => fn( parserResponse )
-				};
-			} ),
+			runRenderer: jest.fn( () => ( {
+				then: ( fn ) => fn( rendererResponse )
+			} ) ),
+			runParser: jest.fn( () => ( {
+				then: ( fn ) => fn( parserResponse )
+			} ) ),
 			setError: jest.fn()
 		};
 		global.store.hotUpdate( {
@@ -501,11 +495,9 @@ describe( 'ZObjectStringRenderer', () => {
 
 		describe( 'renderer error handling', () => {
 			it( 'renderer returns void, no examples', async () => {
-				actions.runRenderer = jest.fn( () => {
-					return {
-						then: ( fn ) => fn( errorResponse )
-					};
-				} );
+				actions.runRenderer = jest.fn( () => ( {
+					then: ( fn ) => fn( errorResponse )
+				} ) );
 				global.store.hotUpdate( {
 					getters: getters,
 					actions: actions
@@ -534,11 +526,9 @@ describe( 'ZObjectStringRenderer', () => {
 					{ testZid: 'Z30030', result: 'example one' },
 					{ testZid: 'Z30031', result: 'example two' }
 				] );
-				actions.runRenderer = jest.fn( () => {
-					return {
-						then: ( fn ) => fn( errorResponse )
-					};
-				} );
+				actions.runRenderer = jest.fn( () => ( {
+					then: ( fn ) => fn( errorResponse )
+				} ) );
 				global.store.hotUpdate( {
 					getters: getters,
 					actions: actions
@@ -563,11 +553,9 @@ describe( 'ZObjectStringRenderer', () => {
 			} );
 
 			it( 'renderer returns wrong type', async () => {
-				actions.runRenderer = jest.fn( () => {
-					return {
-						then: ( fn ) => fn( parserResponse )
-					};
-				} );
+				actions.runRenderer = jest.fn( () => ( {
+					then: ( fn ) => fn( parserResponse )
+				} ) );
 				global.store.hotUpdate( {
 					getters: getters,
 					actions: actions
@@ -595,11 +583,9 @@ describe( 'ZObjectStringRenderer', () => {
 
 		describe( 'parser error handling', () => {
 			it( 'parser returns void, no examples', async () => {
-				actions.runParser = jest.fn( () => {
-					return {
-						then: ( fn ) => fn( errorResponse )
-					};
-				} );
+				actions.runParser = jest.fn( () => ( {
+					then: ( fn ) => fn( errorResponse )
+				} ) );
 				global.store.hotUpdate( {
 					getters: getters,
 					actions: actions
@@ -631,11 +617,9 @@ describe( 'ZObjectStringRenderer', () => {
 					{ testZid: 'Z30030', result: 'example one' },
 					{ testZid: 'Z30031', result: 'example two' }
 				] );
-				actions.runParser = jest.fn( () => {
-					return {
-						then: ( fn ) => fn( errorResponse )
-					};
-				} );
+				actions.runParser = jest.fn( () => ( {
+					then: ( fn ) => fn( errorResponse )
+				} ) );
 				global.store.hotUpdate( {
 					getters: getters,
 					actions: actions
@@ -663,11 +647,9 @@ describe( 'ZObjectStringRenderer', () => {
 			} );
 
 			it( 'parser returns wrong type', async () => {
-				actions.runParser = jest.fn( () => {
-					return {
-						then: ( fn ) => fn( parserBadResponse )
-					};
-				} );
+				actions.runParser = jest.fn( () => ( {
+					then: ( fn ) => fn( parserBadResponse )
+				} ) );
 				global.store.hotUpdate( {
 					getters: getters,
 					actions: actions

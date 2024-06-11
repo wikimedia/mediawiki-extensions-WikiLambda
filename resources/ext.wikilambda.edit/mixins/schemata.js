@@ -78,9 +78,7 @@ function hybridToCanonical( zobject ) {
 	} else if ( typeof zobject === 'string' ) {
 		canon = zobject;
 	} else if ( Array.isArray( zobject ) ) {
-		canon = zobject.map( function ( element ) {
-			return hybridToCanonical( element );
-		} );
+		canon = zobject.map( ( element ) => hybridToCanonical( element ) );
 	} else if (
 		[ Constants.Z_REFERENCE, Constants.Z_STRING ].includes( zobject[ Constants.Z_OBJECT_TYPE ] )
 	) {
@@ -104,7 +102,7 @@ function hybridToCanonical( zobject ) {
 		canon[ Constants.Z_OBJECT_TYPE ] = Constants.Z_QUOTE;
 		canon[ Constants.Z_QUOTE_VALUE ] = zobject[ Constants.Z_QUOTE_VALUE ];
 	} else {
-		Object.keys( zobject ).forEach( function ( key ) {
+		Object.keys( zobject ).forEach( ( key ) => {
 			canon[ key ] = hybridToCanonical( zobject[ key ] );
 		} );
 	}
@@ -146,9 +144,7 @@ function canonicalToHybrid( zobject ) {
 			};
 		}
 	} else if ( Array.isArray( zobject ) ) {
-		hybrid = zobject.map( function ( element ) {
-			return canonicalToHybrid( element );
-		} );
+		hybrid = zobject.map( ( element ) => canonicalToHybrid( element ) );
 	} else if ( zobject[ Constants.Z_OBJECT_TYPE ] &&
 		// Accommodate both hybrid form and canonical
 		( zobject[ Constants.Z_OBJECT_TYPE ][ Constants.Z_REFERENCE_ID ] === Constants.Z_QUOTE ||

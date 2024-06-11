@@ -110,12 +110,8 @@ describe( 'ZObjectToString', () => {
 
 		describe( 'for a function call with arguments', () => {
 			beforeEach( () => {
-				getters.getZObjectTypeByRowId = () => ( id ) => {
-					return ( id === 0 ) ? 'Z7' : 'Z6';
-				};
-				getters.getZStringTerminalValue = () => ( id ) => {
-					return ( id === 1 ) ? 'first arg' : 'second arg';
-				};
+				getters.getZObjectTypeByRowId = () => ( id ) => ( id === 0 ) ? 'Z7' : 'Z6';
+				getters.getZStringTerminalValue = () => ( id ) => ( id === 1 ) ? 'first arg' : 'second arg';
 				getters.getZFunctionCallFunctionId = createGettersWithFunctionsMock( 'Z10001' );
 				getters.getZFunctionCallArguments = createGettersWithFunctionsMock( [
 					{ id: 1, key: 'Z10001K1', parent: 0, value: Constants.ROW_VALUE_OBJECT },

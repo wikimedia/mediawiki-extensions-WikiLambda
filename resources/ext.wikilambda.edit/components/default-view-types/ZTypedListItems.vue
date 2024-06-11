@@ -112,13 +112,9 @@ module.exports = exports = defineComponent( {
 			 */
 			listItemsRowIds: function () {
 				return this.getChildrenByParentRowId( this.rowId )
-					.sort( ( a, b ) => {
-						return parseInt( a.key ) - parseInt( b.key );
-					} )
+					.sort( ( a, b ) => parseInt( a.key ) - parseInt( b.key ) )
 					.slice( 1 )
-					.map( ( row ) => {
-						return row.id;
-					} );
+					.map( ( row ) => row.id );
 			},
 
 			/**

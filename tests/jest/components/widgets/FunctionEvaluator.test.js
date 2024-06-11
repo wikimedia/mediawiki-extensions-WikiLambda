@@ -448,11 +448,9 @@ describe( 'FunctionEvaluator', () => {
 			// returns function object from storage
 			getters.getStoredObject = createGettersWithFunctionsMock( functionJson );
 			// returns JSON function call or implementation conditionally
-			getters.getZObjectAsJsonById = () => ( rowId ) => {
-				return ( rowId === 0 ) ? contentJson :
-					( rowId === 1 ) ? functionCallJson :
-						undefined;
-			};
+			getters.getZObjectAsJsonById = () => ( rowId ) => ( rowId === 0 ) ? contentJson :
+				( rowId === 1 ) ? functionCallJson :
+					undefined;
 			global.store.hotUpdate( { getters: getters, actions: actions } );
 
 			await wrapper.vm.$nextTick();

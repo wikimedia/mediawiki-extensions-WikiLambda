@@ -22,24 +22,22 @@ describe( 'factory Vuex module', () => {
 		getResolveMock = jest.fn( ( thenFunction ) => thenFunction() );
 		context = {
 			commit: jest.fn(),
-			dispatch: jest.fn( () => {
-				return {
-					then: getResolveMock
-				};
-			} ),
+			dispatch: jest.fn( () => ( {
+				then: getResolveMock
+			} ) ),
 			getters: {}
 		};
 	} );
 
 	describe( 'Getters', () => {
 		describe( 'createObjectByType', () => {
-			describe( 'createObjectByType does not do an infinite recursion', function () {
-				beforeEach( function () {
+			describe( 'createObjectByType does not do an infinite recursion', () => {
+				beforeEach( () => {
 					context.state = { objects: mockApiZids };
 					context.getters.getStoredObject = function ( key ) {
 						return context.state.objects[ key ];
 					};
-					Object.keys( factoryModule.getters ).forEach( function ( key ) {
+					Object.keys( factoryModule.getters ).forEach( ( key ) => {
 						context.getters[ key ] =
 							factoryModule.getters[ key ](
 								context.state,
@@ -49,7 +47,7 @@ describe( 'factory Vuex module', () => {
 					} );
 				} );
 
-				it( 'defaults to Z9/Reference when an object has an attribute of its own type', function () {
+				it( 'defaults to Z9/Reference when an object has an attribute of its own type', () => {
 					const expected = {
 						Z1K1: 'Z10528',
 						Z10528K1: {
@@ -63,7 +61,7 @@ describe( 'factory Vuex module', () => {
 					expect( result ).toEqual( expected );
 				} );
 
-				it( 'defaults to Z9/Reference when mutual reference occurs in an object\'s attribute', function () {
+				it( 'defaults to Z9/Reference when mutual reference occurs in an object\'s attribute', () => {
 					const expected = {
 						Z1K1: 'Z20001',
 						Z20001K1: {
@@ -712,14 +710,12 @@ describe( 'factory Vuex module', () => {
 
 				it( 'adds a valid ZImplementation for a given function Zid', () => {
 					const payload = { id: 0, type: Constants.Z_IMPLEMENTATION };
-					mw.Uri.mockImplementationOnce( () => {
-						return {
-							query: {
-								zid: Constants.Z_IMPLEMENTATION,
-								Z14K1: 'Z10001'
-							}
-						};
-					} );
+					mw.Uri.mockImplementationOnce( () => ( {
+						query: {
+							zid: Constants.Z_IMPLEMENTATION,
+							Z14K1: 'Z10001'
+						}
+					} ) );
 					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z14', 'Z9', 'Z10001', 'Z7' ];

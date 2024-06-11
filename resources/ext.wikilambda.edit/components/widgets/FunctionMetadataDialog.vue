@@ -179,12 +179,10 @@ module.exports = exports = defineComponent( {
 			}
 			const benjamin = this.metadata[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ];
 			const items = benjamin.slice( 1 );
-			return new Map( items.map( ( pair ) => {
-				return [
-					pair[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ],
-					pair[ Constants.Z_TYPED_OBJECT_ELEMENT_2 ]
-				];
-			} ) );
+			return new Map( items.map( ( pair ) => [
+				pair[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ],
+				pair[ Constants.Z_TYPED_OBJECT_ELEMENT_2 ]
+			] ) );
 		},
 		/**
 		 * @return {Array}

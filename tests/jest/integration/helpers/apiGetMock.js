@@ -23,7 +23,7 @@ const existingImplementationByCompositionZid =
 
 function createMockApi( apiMocks ) {
 	return ( request ) => {
-		const matchedMock = apiMocks.find( function ( mock ) {
+		const matchedMock = apiMocks.find( ( mock ) => {
 			if ( mock.matcher ) {
 				return mock.matcher( mock.request, request );
 			} else if ( mock.request === request ) {
@@ -72,8 +72,7 @@ const zObjectApiResponseBuilder = ( zids, language ) => {
 			// English not present.
 			const labels =
 				data[ Constants.Z_PERSISTENTOBJECT_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ].slice( 1 );
-			let labelToReturn = labels.find( ( item ) =>
-				item[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] === Constants.Z_NATURAL_LANGUAGE_ENGLISH );
+			let labelToReturn = labels.find( ( item ) => item[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] === Constants.Z_NATURAL_LANGUAGE_ENGLISH );
 			if ( !labelToReturn ) {
 				labelToReturn = labels[ 0 ];
 			}
@@ -297,7 +296,7 @@ const associatedTestersSearchResponse = {
 
 const performTestResponseResults = ( zFunctionId, zimplementationIds, ztesterId, isSuccess ) => {
 	const testResults = [];
-	zimplementationIds.split( '|' ).forEach( function ( zimplementation ) {
+	zimplementationIds.split( '|' ).forEach( ( zimplementation ) => {
 		const validateStatus = isSuccess ? Constants.Z_BOOLEAN_TRUE : Constants.Z_BOOLEAN_FALSE;
 		testResults.push( {
 			zFunctionId: zFunctionId,
@@ -348,7 +347,7 @@ const performTestResponseBuilder = ( zfunction, zimplementations, ztesters ) => 
 		const zFunctionId = existingFunctionFromApi[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
 		let successTestResults = [];
 		let failedTestResults = [];
-		ztesters.split( '|' ).forEach( function ( ztester ) {
+		ztesters.split( '|' ).forEach( ( ztester ) => {
 			let jsonTester;
 			try {
 				jsonTester = JSON.parse( ztester );
@@ -409,28 +408,19 @@ const performTestRequest = {
 
 // Matchers
 const basicFieldMatcher =
-	( expectedRequest, actualRequest, fields ) => {
-		return fields.every( ( field ) => expectedRequest[ field ] === actualRequest[ field ] );
-	};
-const labelsMatcher = ( expectedRequest, actualRequest ) =>
-	basicFieldMatcher( expectedRequest, actualRequest, [ 'action', 'list', 'wikilambdasearch_type' ] );
-const loadZObjectsMatcher = ( expectedRequest, actualRequest ) =>
-	basicFieldMatcher( expectedRequest, actualRequest, [ 'action', 'list' ] );
-const zObjectSearchMatcher = ( expectedRequest, actualRequest ) =>
-	basicFieldMatcher( expectedRequest, actualRequest, [ 'action', 'list', 'wikilambdafn_zfunction_id', 'wikilambdafn_type' ] );
+	( expectedRequest, actualRequest, fields ) => fields.every( ( field ) => expectedRequest[ field ] === actualRequest[ field ] );
+const labelsMatcher = ( expectedRequest, actualRequest ) => basicFieldMatcher( expectedRequest, actualRequest, [ 'action', 'list', 'wikilambdasearch_type' ] );
+const loadZObjectsMatcher = ( expectedRequest, actualRequest ) => basicFieldMatcher( expectedRequest, actualRequest, [ 'action', 'list' ] );
+const zObjectSearchMatcher = ( expectedRequest, actualRequest ) => basicFieldMatcher( expectedRequest, actualRequest, [ 'action', 'list', 'wikilambdafn_zfunction_id', 'wikilambdafn_type' ] );
 const actionMatcher = ( expectedRequest, actualRequest ) => basicFieldMatcher( expectedRequest, actualRequest, [ 'action' ] );
 
 // Responses
-const labelsResponse = ( request ) =>
-	labelsApiResponseBuilder( request.wikilambdasearch_type, request.wikilambdasearch_search );
-const loadZObjectsResponse = ( request ) =>
-	zObjectApiResponseBuilder( request.wikilambdaload_zids, request.wikilambdaload_language );
-const zObjectSearchResponse = ( request ) =>
-	searchApiResponseBuilder( request.wikilambdafn_zfunction_id, request.wikilambdafn_type );
-const performTestResponse = ( request ) =>
-	performTestResponseBuilder( request.wikilambda_perform_test_zfunction,
-		request.wikilambda_perform_test_zimplementations,
-		request.wikilambda_perform_test_ztesters );
+const labelsResponse = ( request ) => labelsApiResponseBuilder( request.wikilambdasearch_type, request.wikilambdasearch_search );
+const loadZObjectsResponse = ( request ) => zObjectApiResponseBuilder( request.wikilambdaload_zids, request.wikilambdaload_language );
+const zObjectSearchResponse = ( request ) => searchApiResponseBuilder( request.wikilambdafn_zfunction_id, request.wikilambdafn_type );
+const performTestResponse = ( request ) => performTestResponseBuilder( request.wikilambda_perform_test_zfunction,
+	request.wikilambda_perform_test_zimplementations,
+	request.wikilambda_perform_test_ztesters );
 
 module.exports = exports = {
 	createMockApi,

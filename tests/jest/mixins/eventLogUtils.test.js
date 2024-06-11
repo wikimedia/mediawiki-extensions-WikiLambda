@@ -9,7 +9,7 @@
 
 const eventLogUtils = require( '../../../resources/ext.wikilambda.edit/mixins/eventLogUtils.js' ).methods;
 
-describe( 'eventLogUtils mixin', function () {
+describe( 'eventLogUtils mixin', () => {
 	describe( 'removeNullUndefined', () => {
 		it( 'removes null-valued property', () => {
 			const original = {

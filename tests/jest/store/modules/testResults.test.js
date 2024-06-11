@@ -176,41 +176,37 @@ describe( 'testResults Vuex module', () => {
 
 		beforeEach( () => {
 			booleanReturn = Constants.Z_BOOLEAN_TRUE;
-			getMock = jest.fn( ( payload ) => {
-				return new Promise( ( resolve ) => {
-					const data = [];
+			getMock = jest.fn( ( payload ) => new Promise( ( resolve ) => {
+				const data = [];
 
-					payload.wikilambda_perform_test_zimplementations.split( '|' ).forEach( ( impl ) => {
-						payload.wikilambda_perform_test_ztesters.split( '|' ).forEach( ( tester ) => {
-							data.push( {
-								zFunctionId: payload.wikilambda_perform_test_zfunction,
-								zImplementationId: impl,
-								zTesterId: tester,
-								validateStatus: JSON.stringify( {
-									Z1K1: Constants.Z_BOOLEAN,
-									Z40K1: booleanReturn
-								} ),
-								// This will normally be a ZMap of metadata, but we aren't testing that here
-								testMetadata: JSON.stringify( Constants.Z_VOID )
-							} );
+				payload.wikilambda_perform_test_zimplementations.split( '|' ).forEach( ( impl ) => {
+					payload.wikilambda_perform_test_ztesters.split( '|' ).forEach( ( tester ) => {
+						data.push( {
+							zFunctionId: payload.wikilambda_perform_test_zfunction,
+							zImplementationId: impl,
+							zTesterId: tester,
+							validateStatus: JSON.stringify( {
+								Z1K1: Constants.Z_BOOLEAN,
+								Z40K1: booleanReturn
+							} ),
+							// This will normally be a ZMap of metadata, but we aren't testing that here
+							testMetadata: JSON.stringify( Constants.Z_VOID )
 						} );
 					} );
-
-					resolve( {
-						query: {
-							wikilambda_perform_test: data
-						}
-					} );
 				} );
-			} );
+
+				resolve( {
+					query: {
+						wikilambda_perform_test: data
+					}
+				} );
+			} ) );
 
 			context.getters.getCurrentZObjectId = 'Z0';
 
-			mw.Api = jest.fn( () => {
-				return {
-					get: getMock
-				};
-			} );
+			mw.Api = jest.fn( () => ( {
+				get: getMock
+			} ) );
 		} );
 
 		describe( 'getTestResults', () => {
@@ -311,11 +307,9 @@ describe( 'testResults Vuex module', () => {
 				const zImplementations = [ 'Z10001', 'Z10002' ];
 				const zTesters = [ 'Z10003', 'Z10004' ];
 
-				getMock = jest.fn( () => {
-					return new Promise( function ( resolve, reject ) {
-						reject( 'API error' );
-					} );
-				} );
+				getMock = jest.fn( () => new Promise( ( resolve, reject ) => {
+					reject( 'API error' );
+				} ) );
 
 				return testResultsModule.actions.getTestResults( context, {
 					zFunctionId,

@@ -132,13 +132,11 @@ module.exports = exports = defineComponent( {
 			 */
 			argumentOptions: function () {
 				return this.getInputsOfFunctionZid( this.functionZid )
-					.map( ( arg ) => {
-						return {
-							value: arg[ Constants.Z_ARGUMENT_KEY ],
-							label: this.getLabelData( arg[ Constants.Z_ARGUMENT_KEY ] ).label,
-							icon: icons.cdxIconFunctionArgument
-						};
-					} );
+					.map( ( arg ) => ( {
+						value: arg[ Constants.Z_ARGUMENT_KEY ],
+						label: this.getLabelData( arg[ Constants.Z_ARGUMENT_KEY ] ).label,
+						icon: icons.cdxIconFunctionArgument
+					} ) );
 			},
 
 			/**

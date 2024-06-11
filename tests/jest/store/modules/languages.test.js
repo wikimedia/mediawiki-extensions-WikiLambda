@@ -9,17 +9,17 @@
 
 const languagesModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/languages.js' );
 
-describe( 'Languages Vuex module', function () {
-	describe( 'Getters', function () {
-		it( 'should return the user language code as defined in wgWikiLambda config variables', function () {
+describe( 'Languages Vuex module', () => {
+	describe( 'Getters', () => {
+		it( 'should return the user language code as defined in wgWikiLambda config variables', () => {
 			expect( languagesModule.getters.getUserLangCode() ).toBe( 'en' );
 		} );
 
-		it( 'should return the user language zid as defined in wgWikiLambda config variables', function () {
+		it( 'should return the user language zid as defined in wgWikiLambda config variables', () => {
 			expect( languagesModule.getters.getUserLangZid() ).toBe( 'Z1002' );
 		} );
 
-		it( 'should return the first requested user language code from the fallback chain', function () {
+		it( 'should return the first requested user language code from the fallback chain', () => {
 			mw.language.getFallbackLanguageChain = () => [ 'qqx', 'en' ];
 			expect( languagesModule.getters.getUserRequestedLang() ).toBe( 'qqx' );
 

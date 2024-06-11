@@ -444,12 +444,10 @@ module.exports = exports = {
 					return [];
 				}
 				const list = getters.getChildrenByParentRowId( listRow.id ).slice( 1 );
-				const strings = list.map( ( stringRow ) => {
-					return {
-						rowId: stringRow.id,
-						value: getters.getZStringTerminalValue( stringRow.id )
-					};
-				} );
+				const strings = list.map( ( stringRow ) => ( {
+					rowId: stringRow.id,
+					value: getters.getZStringTerminalValue( stringRow.id )
+				} ) );
 				return strings;
 			}
 			return findZMonolingualStringsetValues;
@@ -528,10 +526,8 @@ module.exports = exports = {
 			 */
 			function findZFunctionCallArgs( rowId ) {
 				const children = getters.getChildrenByParentRowId( rowId );
-				return children.filter( ( row ) => {
-					return ( row.key !== Constants.Z_OBJECT_TYPE ) &&
-					( row.key !== Constants.Z_FUNCTION_CALL_FUNCTION );
-				} );
+				return children.filter( ( row ) => ( row.key !== Constants.Z_OBJECT_TYPE ) &&
+					( row.key !== Constants.Z_FUNCTION_CALL_FUNCTION ) );
 			}
 			return findZFunctionCallArgs;
 		},
@@ -667,7 +663,7 @@ module.exports = exports = {
 				const children = getters.getChildrenByParentRowId( rowId );
 				// get all child keys and remove Z1K1 and Z14K1
 				const childKeys = children
-					.filter( function ( child ) {
+					.filter( ( child ) => {
 						const allowedKeys = [
 							Constants.Z_IMPLEMENTATION_CODE,
 							Constants.Z_IMPLEMENTATION_COMPOSITION,
@@ -675,9 +671,7 @@ module.exports = exports = {
 						];
 						return ( allowedKeys.includes( child.key ) ) && ( child.value !== undefined );
 					} )
-					.map( function ( child ) {
-						return child.key;
-					} );
+					.map( ( child ) => child.key );
 				// childKeys should only have one element after the filtering
 				return ( childKeys.length === 1 ) ? childKeys[ 0 ] : undefined;
 			}
@@ -913,9 +907,7 @@ module.exports = exports = {
 			function fetchRowId( rowId ) {
 				return ( rowId === undefined ) ?
 					undefined :
-					state.zobject.find( function ( item ) {
-						return item.id === rowId;
-					} );
+					state.zobject.find( ( item ) => item.id === rowId );
 			}
 			return fetchRowId;
 		},
@@ -935,9 +927,7 @@ module.exports = exports = {
 			 * @return {Array}
 			 */
 			function fetchChildrenRows( rowId ) {
-				return state.zobject.filter( function ( row ) {
-					return ( row.parent === rowId );
-				} );
+				return state.zobject.filter( ( row ) => ( row.parent === rowId ) );
 			}
 			return fetchChildrenRows;
 		},
@@ -1009,9 +999,7 @@ module.exports = exports = {
 				const head = path[ 0 ];
 				const tail = path.slice( 1 );
 				const children = getters.getChildrenByParentRowId( rowId );
-				const child = children.find( function ( row ) {
-					return ( row.key === head );
-				} );
+				const child = children.find( ( row ) => ( row.key === head ) );
 
 				// Follow the path of keys parting from the child
 				return ( child === undefined ) ?
@@ -1078,7 +1066,7 @@ module.exports = exports = {
 				return highestObjectId;
 			}
 
-			state.zobject.forEach( function ( item ) {
+			state.zobject.forEach( ( item ) => {
 				if ( item.id > highestObjectId ) {
 					highestObjectId = item.id;
 				}
@@ -1196,7 +1184,7 @@ module.exports = exports = {
 			const defaultKey = 0;
 			const lastKey = Math.max(
 				defaultKey,
-				...state.zobject.map( function ( item ) {
+				...state.zobject.map( ( item ) => {
 					const match = item.isTerminal() && item.value.match( keyRegex );
 					return match ? parseInt( match[ 1 ], 10 ) : -1;
 				} )
@@ -1481,7 +1469,7 @@ module.exports = exports = {
 			return context.dispatch( 'changeType', {
 				id: 0,
 				type: Constants.Z_PERSISTENTOBJECT
-			} ).then( function () {
+			} ).then( () => {
 				// If `zid` url parameter is found, the new ZObject
 				// will be of the given type.
 				const defaultType = getParameterByName( 'zid' );
@@ -1496,7 +1484,7 @@ module.exports = exports = {
 
 				// Else, fetch `zid` and make sure it's a type
 				return context.dispatch( 'fetchZids', { zids: [ defaultType ] } )
-					.then( function () {
+					.then( () => {
 						const Z2K2 = findKeyInArray( Constants.Z_PERSISTENTOBJECT_VALUE, context.state.zobject );
 						defaultKeys = context.getters.getStoredObject( defaultType );
 
@@ -1630,7 +1618,7 @@ module.exports = exports = {
 		recalculateTypedListKeys: function ( context, listRowId ) {
 			const children = context.getters.getChildrenByParentRowId( listRowId );
 
-			children.forEach( function ( itemRow, index ) {
+			children.forEach( ( itemRow, index ) => {
 				context.commit( 'setKeyByRowIndex', {
 					index: context.getters.getRowIndexById( itemRow.id ),
 					key: `${ index }`
@@ -1787,19 +1775,15 @@ module.exports = exports = {
 			// 1. Get new argument definitions from payload.functionZid
 			if ( payload.functionZid ) {
 				newArgs = context.getters.getInputsOfFunctionZid( payload.functionZid );
-				newKeys = newArgs.map( ( arg ) => {
-					return arg[ Constants.Z_ARGUMENT_KEY ];
-				} );
+				newKeys = newArgs.map( ( arg ) => arg[ Constants.Z_ARGUMENT_KEY ] );
 			}
 
 			// 2. Get function call arguments from parentId
 			const oldArgs = context.getters.getZFunctionCallArguments( payload.parentId );
-			const oldKeys = oldArgs.map( ( arg ) => {
-				return arg.key;
-			} );
+			const oldKeys = oldArgs.map( ( arg ) => arg.key );
 
 			// 3. For every key of parent: if it's not in new keys, remove it
-			oldArgs.forEach( function ( arg ) {
+			oldArgs.forEach( ( arg ) => {
 				if ( !newKeys.includes( arg.key ) ) {
 					allActions.push( context.dispatch( 'removeRowChildren', { rowId: arg.id, removeParent: true } ) );
 				}
@@ -1814,7 +1798,7 @@ module.exports = exports = {
 
 			// 4.b. Initialize all the new function call arguments
 			let zids = [];
-			newArgs.forEach( function ( arg ) {
+			newArgs.forEach( ( arg ) => {
 				if ( !oldKeys.includes( arg[ Constants.Z_ARGUMENT_KEY ] ) ) {
 					const key = arg[ Constants.Z_ARGUMENT_KEY ];
 					const value = context.getters.createObjectByType( {
@@ -1952,7 +1936,7 @@ module.exports = exports = {
 			}
 
 			// Push all the rows, they already have their required IDs
-			rows.forEach( function ( row ) {
+			rows.forEach( ( row ) => {
 				allActions.push( context.commit( 'pushRow', row ) );
 			} );
 
@@ -1977,7 +1961,7 @@ module.exports = exports = {
 			const nextRowId = context.getters.getNextRowId;
 			const rows = zobjectUtils.convertJsonToTable( value, parentRow, nextRowId, false, 0, false );
 
-			rows.forEach( function ( row ) {
+			rows.forEach( ( row ) => {
 				context.commit( 'pushRow', row );
 			} );
 		},

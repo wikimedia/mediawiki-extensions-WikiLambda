@@ -154,11 +154,9 @@ module.exports = exports = defineComponent( {
 					// Filter items that match the input substring
 					const matchedLangs = Object.keys( data.query.languageinfo )
 						.map( ( key ) => data.query.languageinfo[ key ] )
-						.filter( ( result ) => {
-							return result.name.toLowerCase().includes( this.inputValue.toLowerCase() ) ||
+						.filter( ( result ) => result.name.toLowerCase().includes( this.inputValue.toLowerCase() ) ||
 								result.autonym.toLowerCase().includes( this.inputValue.toLowerCase() ) ||
-								result.code.toLowerCase().includes( this.inputValue.toLowerCase() );
-						} );
+								result.code.toLowerCase().includes( this.inputValue.toLowerCase() ) );
 					// Limit lookup reults to maxItems
 					this.setLookupResults( matchedLangs.slice( 0, this.maxItems ) );
 				}

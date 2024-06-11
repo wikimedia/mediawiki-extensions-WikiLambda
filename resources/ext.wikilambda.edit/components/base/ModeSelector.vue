@@ -175,10 +175,8 @@ module.exports = exports = defineComponent( {
 
 			// Return literals and resolvers, sorted by label
 			const options = [ ...literals, ...resolvers ];
-			options.sort( ( a, b ) => {
-				return ( a.label < b.label ) ? -1 :
-					( a.label > b.label ) ? 1 : 0;
-			} );
+			options.sort( ( a, b ) => ( a.label < b.label ) ? -1 :
+				( a.label > b.label ) ? 1 : 0 );
 
 			// If it's a list item, add "Move before" and "Move after" items
 			if ( this.isKeyTypedListItem( this.key ) ) {

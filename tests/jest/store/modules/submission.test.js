@@ -166,9 +166,7 @@ describe( 'zobject submission Vuex module', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
 				context.getters.getZImplementationContentRowId = jest.fn( () => 2 );
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
-				context.getters.getRowByKeyPath = jest.fn( () => {
-					return { id: 3 };
-				} );
+				context.getters.getRowByKeyPath = jest.fn( () => ( { id: 3 } ) );
 				context.getters.getZObjectAsJson = {
 					Z2K2: {
 						Z1K1: Constants.Z_IMPLEMENTATION,
@@ -190,9 +188,7 @@ describe( 'zobject submission Vuex module', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
 				context.getters.getZImplementationContentRowId = jest.fn( () => 2 );
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
-				context.getters.getRowByKeyPath = jest.fn( () => {
-					return { id: 3 };
-				} );
+				context.getters.getRowByKeyPath = jest.fn( () => ( { id: 3 } ) );
 
 				context.getters.getZObjectAsJson = {
 					Z2K2: {
@@ -337,9 +333,7 @@ describe( 'zobject submission Vuex module', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
 				context.getters.getZImplementationContentRowId = jest.fn( () => 2 );
-				context.getters.getRowByKeyPath = jest.fn( () => {
-					return { id: 3 };
-				} );
+				context.getters.getRowByKeyPath = jest.fn( () => ( { id: 3 } ) );
 				context.getters.getZObjectAsJson = {
 					Z2K2: {
 						Z1K1: Constants.Z_IMPLEMENTATION,
@@ -368,9 +362,7 @@ describe( 'zobject submission Vuex module', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
 				context.getters.getZImplementationContentRowId = jest.fn( () => 2 );
-				context.getters.getRowByKeyPath = jest.fn( () => {
-					return { id: 3 };
-				} );
+				context.getters.getRowByKeyPath = jest.fn( () => ( { id: 3 } ) );
 				context.getters.getZObjectAsJson = {
 					Z2K2: {
 						Z1K1: Constants.Z_IMPLEMENTATION,
@@ -399,9 +391,7 @@ describe( 'zobject submission Vuex module', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
 				context.getters.getZImplementationContentRowId = jest.fn( () => 2 );
-				context.getters.getRowByKeyPath = jest.fn( () => {
-					return { id: 4 };
-				} );
+				context.getters.getRowByKeyPath = jest.fn( () => ( { id: 4 } ) );
 				context.getters.getZObjectAsJson = {
 					Z2K2: {
 						Z1K1: Constants.Z_IMPLEMENTATION,
@@ -527,20 +517,16 @@ describe( 'zobject submission Vuex module', () => {
 		let zobject, postWithEditTokenMock;
 
 		beforeEach( () => {
-			postWithEditTokenMock = jest.fn( () => {
-				return new Promise( ( resolve ) => {
-					resolve( {
-						wikilambda_edit: {
-							page: 'sample'
-						}
-					} );
+			postWithEditTokenMock = jest.fn( () => new Promise( ( resolve ) => {
+				resolve( {
+					wikilambda_edit: {
+						page: 'sample'
+					}
 				} );
-			} );
-			mw.Api = jest.fn( () => {
-				return {
-					postWithEditToken: postWithEditTokenMock
-				};
-			} );
+			} ) );
+			mw.Api = jest.fn( () => ( {
+				postWithEditToken: postWithEditTokenMock
+			} ) );
 
 			context.state = { zobject: {} };
 
@@ -771,39 +757,29 @@ describe( 'zobject submission Vuex module', () => {
 
 		it( 'removes empty arguments if it is a function', () => {
 			context.getters.getZObjectTypeByRowId = () => Constants.Z_FUNCTION;
-			context.getters.getRowByKeyPath = () => {
-				return { id: 1 };
-			};
+			context.getters.getRowByKeyPath = () => ( { id: 1 } );
 			submissionModule.actions.transformZObjectForSubmission( context, false );
 			expect( context.dispatch ).toHaveBeenCalledWith( 'removeEmptyArguments' );
 		} );
 
 		it( 'removes undefined parser, renderer and equality functions if it is a type', () => {
 			context.getters.getZObjectTypeByRowId = () => Constants.Z_TYPE;
-			context.getters.getRowByKeyPath = () => {
-				return { id: 1 };
-			};
+			context.getters.getRowByKeyPath = () => ( { id: 1 } );
 			submissionModule.actions.transformZObjectForSubmission( context, false );
 			expect( context.dispatch ).toHaveBeenCalledWith( 'removeEmptyTypeFunctions', 1 );
 		} );
 
 		it( 'recalculates keys if it is a type', () => {
 			context.getters.getZObjectTypeByRowId = () => Constants.Z_TYPE;
-			context.getters.getRowByKeyPath = () => {
-				return { id: 1 };
-			};
+			context.getters.getRowByKeyPath = () => ( { id: 1 } );
 			submissionModule.actions.transformZObjectForSubmission( context, false );
 			expect( context.dispatch ).toHaveBeenCalledWith( 'recalculateKeys', { listRowId: 1, key: 'Z3K2' } );
 		} );
 
 		it( 'removes empty key labels if it is a type', () => {
 			context.getters.getZObjectTypeByRowId = () => Constants.Z_TYPE;
-			context.getters.getRowByKeyPath = () => {
-				return { id: 1 };
-			};
-			context.getters.getChildrenByParentRowId = () => {
-				return [ { id: 2 }, { id: 3 }, { id: 4 } ];
-			};
+			context.getters.getRowByKeyPath = () => ( { id: 1 } );
+			context.getters.getChildrenByParentRowId = () => [ { id: 2 }, { id: 3 }, { id: 4 } ];
 			submissionModule.actions.transformZObjectForSubmission( context, false );
 			expect( context.dispatch ).toHaveBeenCalledWith( 'removeEmptyMonolingualValues', { rowId: 3, key: 'Z3K3' } );
 			expect( context.dispatch ).toHaveBeenCalledWith( 'removeEmptyMonolingualValues', { rowId: 4, key: 'Z3K3' } );
@@ -811,21 +787,15 @@ describe( 'zobject submission Vuex module', () => {
 
 		it( 'recalculates keys if it is an error type', () => {
 			context.getters.getZObjectTypeByRowId = () => Constants.Z_ERRORTYPE;
-			context.getters.getRowByKeyPath = () => {
-				return { id: 1 };
-			};
+			context.getters.getRowByKeyPath = () => ( { id: 1 } );
 			submissionModule.actions.transformZObjectForSubmission( context, false );
 			expect( context.dispatch ).toHaveBeenCalledWith( 'recalculateKeys', { listRowId: 1, key: 'Z3K2' } );
 		} );
 
 		it( 'removes empty key labels if it is an errortype', () => {
 			context.getters.getZObjectTypeByRowId = () => Constants.Z_ERRORTYPE;
-			context.getters.getRowByKeyPath = () => {
-				return { id: 1 };
-			};
-			context.getters.getChildrenByParentRowId = () => {
-				return [ { id: 2 }, { id: 3 }, { id: 4 } ];
-			};
+			context.getters.getRowByKeyPath = () => ( { id: 1 } );
+			context.getters.getChildrenByParentRowId = () => [ { id: 2 }, { id: 3 }, { id: 4 } ];
 			submissionModule.actions.transformZObjectForSubmission( context, false );
 			expect( context.dispatch ).toHaveBeenCalledWith( 'removeEmptyMonolingualValues', { rowId: 3, key: 'Z3K3' } );
 			expect( context.dispatch ).toHaveBeenCalledWith( 'removeEmptyMonolingualValues', { rowId: 4, key: 'Z3K3' } );

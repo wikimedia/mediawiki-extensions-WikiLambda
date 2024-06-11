@@ -85,12 +85,10 @@ module.exports = exports = defineComponent( {
 		 */
 		aliases: function () {
 			return !this.aliasObject ? [] : this.getZMonolingualStringsetValues( this.aliasObject.rowId )
-				.map( ( value ) => {
-					return {
-						id: value.rowId,
-						value: value.value
-					};
-				} );
+				.map( ( value ) => ( {
+					id: value.rowId,
+					value: value.value
+				} ) );
 		},
 		/**
 		 * Returns whether there are any aliases for the selected language

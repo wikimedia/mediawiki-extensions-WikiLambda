@@ -23,9 +23,7 @@ describe( 'CodeEditor', () => {
 
 	beforeEach( () => {
 		mw.config = {
-			get: jest.fn( () => {
-				return '/w/extensions';
-			} )
+			get: jest.fn( () => '/w/extensions' )
 		};
 
 		mockSetListener = jest.fn();
@@ -35,24 +33,20 @@ describe( 'CodeEditor', () => {
 		mockSetOptions = jest.fn();
 		mockSetOption = jest.fn();
 		mockSetValue = jest.fn();
-		mockSession = jest.fn( () => {
-			return {
-				setMode: mockSetMode
-			};
-		} );
+		mockSession = jest.fn( () => ( {
+			setMode: mockSetMode
+		} ) );
 
-		window.ace.edit = jest.fn( () => {
-			return {
-				setReadOnly: mockSetReadOnly,
-				getSession: mockSession,
-				setMode: mockSetMode,
-				setTheme: mockSetTheme,
-				setOptions: mockSetOptions,
-				setOption: mockSetOption,
-				setValue: mockSetValue,
-				on: mockSetListener
-			};
-		} );
+		window.ace.edit = jest.fn( () => ( {
+			setReadOnly: mockSetReadOnly,
+			getSession: mockSession,
+			setMode: mockSetMode,
+			setTheme: mockSetTheme,
+			setOptions: mockSetOptions,
+			setOption: mockSetOption,
+			setValue: mockSetValue,
+			on: mockSetListener
+		} ) );
 	} );
 
 	it( 'initializes the code editor properties', () => {
