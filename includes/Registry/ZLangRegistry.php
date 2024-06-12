@@ -70,14 +70,23 @@ class ZLangRegistry extends ZObjectRegistry {
 			return $zid;
 		}
 
-		try {
-			$zid = $this->fetchLanguageZidFromCode( $code );
-		} catch ( \Throwable $th ) {
+		// Not in the registry, but let's check the DB
+		$zObjectStore = WikiLambdaServices::getZObjectStore();
+		$zid = $zObjectStore->findZLanguageFromCode( $code );
+
+		if ( $zid === null ) {
 			if ( $fallback ) {
 				return self::FALLBACK_LANGUAGE_ZID;
 			}
-			throw $th;
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_LANG_NOT_FOUND,
+					[ 'lang' => $code ]
+				)
+			);
 		}
+
+		// Add it to the register now for faster lookups later
 		$this->register( $zid, $code );
 		return $zid;
 	}
@@ -87,20 +96,13 @@ class ZLangRegistry extends ZObjectRegistry {
 	 *
 	 * @param string $code
 	 * @return bool
-	 * @throws ZErrorException
 	 */
 	public function isLanguageKnownGivenCode( $code ): bool {
-		if ( array_search( $code, $this->registry ) ) {
-			return true;
-		}
-
 		try {
-			$zid = $this->fetchLanguageZidFromCode( $code );
-		} catch ( ZErrorException $e ) {
+			$this->getLanguageZidFromCode( $code );
+		} catch ( \Throwable $th ) {
 			return false;
 		}
-		// Add it to the register now for faster lookups later
-		$this->register( $zid, $code );
 		return true;
 	}
 
@@ -115,10 +117,11 @@ class ZLangRegistry extends ZObjectRegistry {
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 
 		// Try the cache table, where it should be available
-		$languages = $zObjectStore->fetchAllZLanguageObjects();
+		$languages = $zObjectStore->findCodesFromZLanguage( $zid );
 
-		if ( array_key_exists( $zid, $languages ) ) {
-			return $languages[ $zid ];
+		if ( count( $languages ) ) {
+			// Return the first, in case there are aliases
+			return $languages[0];
 		}
 
 		// Fallback to the database just in case it's somehow not cached.
@@ -156,31 +159,6 @@ class ZLangRegistry extends ZObjectRegistry {
 		$zObjectStore->insertZLanguageToLanguagesCache( $zid, $code );
 
 		return $code;
-	}
-
-	/**
-	 * Find ZLanguage in the database given a language code.
-	 *
-	 * @param string $code
-	 * @return string The ZLanguage Zid associated to this language code
-	 * @throws ZErrorException
-	 */
-	private function fetchLanguageZidFromCode( $code ): string {
-		$zObjectStore = WikiLambdaServices::getZObjectStore();
-
-		$languages = $zObjectStore->fetchAllZLanguageObjects();
-
-		$foundZid = array_search( $code, $languages );
-		if ( $foundZid ) {
-			return $foundZid;
-		}
-
-		throw new ZErrorException(
-			ZErrorFactory::createZErrorInstance(
-				ZErrorTypeRegistry::Z_ERROR_LANG_NOT_FOUND,
-				[ 'lang' => $code ]
-			)
-		);
 	}
 
 	/**
