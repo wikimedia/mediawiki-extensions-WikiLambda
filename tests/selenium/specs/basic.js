@@ -13,6 +13,9 @@ const LoginPage = require( 'wdio-mediawiki/LoginPage' ),
 	i18n = require( '../utils/i18n.js' )();
 
 describe( 'Installation checks', () => {
+	before( async () => {
+		await browser.deleteAllCookies();
+	} );
 
 	describe( 'CreateObject', () => {
 		it( 'page should exist on installation but deny to logged-out user', async () => {
