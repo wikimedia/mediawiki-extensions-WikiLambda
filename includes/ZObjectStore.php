@@ -1130,7 +1130,7 @@ class ZObjectStore {
 
 		$dbw->newDeleteQueryBuilder()
 			->deleteFrom( 'wikilambda_zlanguages' )
-			->where( [ 'wlzlangs_id' => $zid ] )
+			->where( [ 'wlzlangs_zid' => $zid ] )
 			->caller( __METHOD__ )->execute();
 	}
 }

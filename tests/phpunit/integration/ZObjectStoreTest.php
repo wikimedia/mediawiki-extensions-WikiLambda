@@ -1005,17 +1005,16 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		// Deleting the first language removes its value
 		$this->zobjectStore->deleteZLanguageFromLanguagesCache( 'foo' );
 
-		// FIXME: This doesn't delete? Or doesn't do it fast enough, at least
-		// $languages = $this->zobjectStore->fetchAllZLanguageObjects();
-		// $this->assertArrayNotHasKey( 'foo', $languages );
-		// $this->assertCount( 1, $languages );
+		$languages = $this->zobjectStore->fetchAllZLanguageObjects();
+		$this->assertArrayNotHasKey( 'foo', $languages );
+		$this->assertCount( 1, $languages );
 
 		// Deleting the second language returns us to empty
 		$this->zobjectStore->deleteZLanguageFromLanguagesCache( 'foo-x' );
 
-		// $languages = $this->zobjectStore->fetchAllZLanguageObjects();
-		// $this->assertArrayNotHasKey( 'foo-x', $languages );
-		// $this->assertCount( 0, $languages );
+		$languages = $this->zobjectStore->fetchAllZLanguageObjects();
+		$this->assertArrayNotHasKey( 'foo-x', $languages );
+		$this->assertCount( 0, $languages );
 	}
 
 	public function testDeleteZFunctionFromZTesterResultsCache() {
