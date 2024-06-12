@@ -129,14 +129,14 @@ class FunctionPage extends Page {
 		 * Input the type "String"
 		 */
 		const functionCallBlock = await this.functionCallBlock;
-		const typeBlock = await functionCallBlock.$( './/label[text()="type"]/parent::div/following-sibling::div' );
+		const typeBlock = await functionCallBlock.$( './/label[span/text()="type"]/parent::div/following-sibling::div' );
 
 		const typeInput = await typeBlock.$( 'input' );
 		await InputDropdown.setLookupOption( typeBlock, typeInput, 'String' );
 		/**
 		 * Input the param
 		 */
-		const valueBlock = await functionCallBlock.$( './/label[text()="input"]/parent::div/following-sibling::div' );
+		const valueBlock = await functionCallBlock.$( './/label[span/text()="input"]/parent::div/following-sibling::div' );
 		const valueInput = await valueBlock.$( './/input' );
 		await ElementActions.setInput( valueInput, param );
 		/**
