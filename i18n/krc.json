@@ -4,21 +4,21 @@
 			"Къарачайлы"
 		]
 	},
-	"wikilambda-publish-successful": "Тюрлениулеригиз джетишимли басмаланнгандыла!",
-	"wikilambda-publish-input-changed-impact-prompt": "<p>Бу функцияны кириу къырын эмда типин тюрледиргенсиз. <strong>Бютеу бар тындырыула бла тестле бу фунциядан айрыллыкъдыла.</strong> Андан ары бардырыллыгъын излеймисиз?</p>",
-	"wikilambda-publish-output-changed-impact-prompt": "<p>Бу функцияны кириу къырын эмда типин тюрледиргенсиз. <strong>Бютеу бар тындырыула бла тестле бу фунциядан айрыллыкъдыла.</strong> Андан ары бардырыллыгъын излеймисиз?</p>",
-	"wikilambda-publish-input-and-output-changed-impact-prompt": "<p>Бу функцияны кириу къырын эмда типин тюрледиргенсиз. <strong>Бютеу бар тындырыула бла тестле бу фунциядан айрыллыкъдыла.</strong> Андан ары бардырыллыгъын излеймисиз?</p>",
-	"wikilambda-publish-lose-changes-prompt": "Ал басмалаусуз чыкъсагъыз, тюзетиулеригиз тас боллукъдула.",
+	"wikilambda-chip-remove": "Пунктну кетер",
+	"wikilambda-editor-fn-edit-definition-tooltip-content": "Кечериксиз! Къуру энчи эркинликлери болгъан къошулуучла, басмаланнгандан сора функцияны айгъакълауун тюрлендирирге боллукоъдула.",
+	"wikilambda-function-definition-alias-label-new": "Джангы псевдоним",
+	"wikilambda-function-definition-inputs-item-add-first-input-button": "Киргизиу къош",
+	"wikilambda-function-definition-inputs-item-remove": "Киргизтиуню (джазыуну) кетер",
 	"wikilambda-performtest-error-nonfunction": "Тест этиуде халат: '$1' функция тюлдю.",
 	"wikilambda-performtest-error-nonimplementation": "Тестни джетишиминде халат: $1 тындырыу тюлдю.",
 	"wikilambda-performtest-error-nontester": "Тест этиуню халаты: '$1' тест юлгю тюлдю.",
 	"wikilambda-performtest-error-unknown-zid": "Тест этиуде халат: '$1'  белгили Объект тюлдю",
-	"wikilambda-function-definition-alias-label-new": "Джангы псевдоним",
-	"wikilambda-function-definition-inputs-item-add-first-input-button": "Киргизиу къош",
-	"wikilambda-function-definition-inputs-item-remove": "Киргизтиуню (джазыуну) кетер",
-	"wikilambda-editor-fn-edit-definition-tooltip-content": "Кечериксиз! Къуру энчи эркинликлери болгъан къошулуучла, басмаланнгандан сора функцияны айгъакълауун тюрлендирирге боллукоъдула.",
-	"wikilambda-zobject-missing-attached-function": "Функция сайланмагъанды. Тилейбиз, бирин сайлагъыз.",
+	"wikilambda-publish-input-and-output-changed-impact-prompt": "<p>Бу функцияны кириу къырын эмда типин тюрледиргенсиз. <strong>Бютеу бар тындырыула бла тестле бу фунциядан айрыллыкъдыла.</strong> Андан ары бардырыллыгъын излеймисиз?</p>",
+	"wikilambda-publish-input-changed-impact-prompt": "<p>Бу функцияны кириу къырын эмда типин тюрледиргенсиз. <strong>Бютеу бар тындырыула бла тестле бу фунциядан айрыллыкъдыла.</strong> Андан ары бардырыллыгъын излеймисиз?</p>",
+	"wikilambda-publish-lose-changes-prompt": "Ал басмалаусуз чыкъсагъыз, тюзетиулеригиз тас боллукъдула.",
+	"wikilambda-publish-output-changed-impact-prompt": "<p>Бу функцияны кириу къырын эмда типин тюрледиргенсиз. <strong>Бютеу бар тындырыула бла тестле бу фунциядан айрыллыкъдыла.</strong> Андан ары бардырыллыгъын излеймисиз?</p>",
+	"wikilambda-publish-successful": "Тюрлениулеригиз джетишимли басмаланнгандыла!",
 	"wikilambda-zimplememntation-composition-missing": "Композиция сайланмагъанды. Тилейбиз, бирин сайлагъыз.",
 	"wikilambda-zimplementation-code-missing": "Код салынмагъанды. Тилейбиз, кодугъузну салыгъыз.",
-	"wikilambda-chip-remove": "Пунктну кетер"
+	"wikilambda-zobject-missing-attached-function": "Функция сайланмагъанды. Тилейбиз, бирин сайлагъыз."
 }

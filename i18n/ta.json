@@ -4,10 +4,10 @@
 			"Siddhan"
 		]
 	},
-	"wikilambda-implementation-selector-built-in": "உருவாக்கப்பட்ட",
-	"wikilambda-function-implementation-name-label": "பெயர்",
 	"wikilambda-function-implementation-language-label": "மொழி",
+	"wikilambda-function-implementation-name-label": "பெயர்",
 	"wikilambda-function-implementation-state-label": "நிலைமை",
+	"wikilambda-function-implementation-table-header": "அமலாக்கங்கள்",
 	"wikilambda-function-implementation-tests-passed-label": "தேர்ச்சி பெற்ற தேர்வுகள்",
-	"wikilambda-function-implementation-table-header": "அமலாக்கங்கள்"
+	"wikilambda-implementation-selector-built-in": "உருவாக்கப்பட்ட"
 }

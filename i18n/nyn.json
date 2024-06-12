@@ -4,10 +4,10 @@
 			"Kakonjo"
 		]
 	},
-	"wikilambda-special-edit-function-definition-description": "Oriyo no gorora Orubaju rwa okushoborora akamanyiso. $1 nabaasa oku hindura aha obumanyiso Obukuru",
-	"wikilambda-special-edit-function-definition-special-permission-link-label": "Abakozesa bonka abeine orusa orwa omutaano",
 	"wikilambda-function-viewer-aliases-header": "Nebwe nemanywa nka",
-	"wikilambda-function-viewer-aliases-show-language-button": "Yoreka Endimi eziri kukiraho",
 	"wikilambda-function-viewer-aliases-hide-language-button": "Shereka Orukarara",
-	"wikilambda-function-viewer-names-show-languages-button": "Yoreka eiziina omu ndimi Ezindi"
+	"wikilambda-function-viewer-aliases-show-language-button": "Yoreka Endimi eziri kukiraho",
+	"wikilambda-function-viewer-names-show-languages-button": "Yoreka eiziina omu ndimi Ezindi",
+	"wikilambda-special-edit-function-definition-description": "Oriyo no gorora Orubaju rwa okushoborora akamanyiso. $1 nabaasa oku hindura aha obumanyiso Obukuru",
+	"wikilambda-special-edit-function-definition-special-permission-link-label": "Abakozesa bonka abeine orusa orwa omutaano"
 }

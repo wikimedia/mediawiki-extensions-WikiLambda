@@ -6,12 +6,12 @@
 			"Sarchia"
 		]
 	},
-	"wikilambda-persistentzobject-contents": "ناوەڕۆکەکان",
-	"wikilambda-tester-status-passed": "دەرچوون",
-	"wikilambda-tester-status-failed": "شکست",
+	"wikilambda-editor-publish-dialog-header": "گۆڕانکارییەکانت بڵاو بکەوە",
+	"wikilambda-editor-publish-dialog-summary-label": "کورتەی دەستکاری",
 	"wikilambda-function-definition-alias-label": "ناوە جێگرەوەکان",
 	"wikilambda-function-definition-input-item-type": "جۆر",
 	"wikilambda-function-definition-output-label": "ئەنجام",
-	"wikilambda-editor-publish-dialog-header": "گۆڕانکارییەکانت بڵاو بکەوە",
-	"wikilambda-editor-publish-dialog-summary-label": "کورتەی دەستکاری"
+	"wikilambda-persistentzobject-contents": "ناوەڕۆکەکان",
+	"wikilambda-tester-status-failed": "شکست",
+	"wikilambda-tester-status-passed": "دەرچوون"
 }

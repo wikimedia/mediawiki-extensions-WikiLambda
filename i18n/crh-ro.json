@@ -4,12 +4,12 @@
 			"Zolgoyo"
 		]
 	},
-	"wikilambda-zobjectselector-no-results": "Netice tapılamadı.",
+	"wikilambda-about-widget-add-language": "Tĭl qoş",
+	"wikilambda-about-widget-done-button": "Pĭttĭ",
+	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|tĭl}}",
+	"wikilambda-about-widget-search-language-placeholder": "Tĭl qıdır",
+	"wikilambda-about-widget-title": "Haqqında",
 	"wikilambda-functioncall-metadata-implementation-name": "At",
 	"wikilambda-functioncall-metadata-programming-language-version": "Körĭnĭş",
-	"wikilambda-about-widget-title": "Haqqında",
-	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|tĭl}}",
-	"wikilambda-about-widget-done-button": "Pĭttĭ",
-	"wikilambda-about-widget-add-language": "Tĭl qoş",
-	"wikilambda-about-widget-search-language-placeholder": "Tĭl qıdır"
+	"wikilambda-zobjectselector-no-results": "Netice tapılamadı."
 }

@@ -5,19 +5,19 @@
 			"Joao Xavier"
 		]
 	},
-	"wikilambda-persistentzobject-contents": "Kontenajo",
-	"wikilambda-special-listduplicateobjectlabels-language": "Idiomo",
-	"wikilambda-publishnew": "Publikigez",
 	"wikilambda-cancel": "Anular",
 	"wikilambda-confirm": "Konfirmez",
-	"wikilambda-savenew": "Konservez",
-	"wikilambda-summarylabel": "Rezumo:",
-	"wikilambda-implementation-selector": "Selektez laborado",
-	"wikilambda-function-are-you-sure-dialog-header": "Ka vu esas certa?",
-	"wikilambda-function-are-you-sure-dialog-description": "Ka vu fakte deziras eskartar redaktado sen publikigar ol ante?",
-	"wikilambda-function-definition-footer-placeholder": "Facez rezumo pri vua modifikuri",
-	"wikilambda-function-definition-footer-label": "Rezumo pri redakto",
-	"wikilambda-editor-input-default-label": "eniro",
 	"wikilambda-continue-editing": "Durigar redaktado",
-	"wikilambda-discard-edits": "Eskartez redakturi"
+	"wikilambda-discard-edits": "Eskartez redakturi",
+	"wikilambda-editor-input-default-label": "eniro",
+	"wikilambda-function-are-you-sure-dialog-description": "Ka vu fakte deziras eskartar redaktado sen publikigar ol ante?",
+	"wikilambda-function-are-you-sure-dialog-header": "Ka vu esas certa?",
+	"wikilambda-function-definition-footer-label": "Rezumo pri redakto",
+	"wikilambda-function-definition-footer-placeholder": "Facez rezumo pri vua modifikuri",
+	"wikilambda-implementation-selector": "Selektez laborado",
+	"wikilambda-persistentzobject-contents": "Kontenajo",
+	"wikilambda-publishnew": "Publikigez",
+	"wikilambda-savenew": "Konservez",
+	"wikilambda-special-listduplicateobjectlabels-language": "Idiomo",
+	"wikilambda-summarylabel": "Rezumo:"
 }

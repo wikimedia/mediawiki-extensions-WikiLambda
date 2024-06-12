@@ -5,14 +5,14 @@
 			"Mirzali"
 		]
 	},
-	"wikilambda-publishnew": "Vıla ke",
-	"wikilambda-savenew": "Qeyd ke",
-	"wikilambda-publishchanges": "Vurnayışan vıla ke",
-	"wikilambda-savechanges": "Vurnayışan qeyd kerê",
-	"wikilambda-summarylabel": "Xulasa :",
-	"wikilambda-typeselector-label": "Tewrê Erci",
 	"wikilambda-editor-zlist-additem-tooltip": "Çiyê enê Zlisti kerê",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Nê çi ena Zlist ra wedarne",
 	"wikilambda-editor-zobject-addkey": "Kılit cı ke :",
-	"wikilambda-editor-zobject-removekey-tooltip": "Be ZObject ra enê kıliti /erci wedarne"
+	"wikilambda-editor-zobject-removekey-tooltip": "Be ZObject ra enê kıliti /erci wedarne",
+	"wikilambda-publishchanges": "Vurnayışan vıla ke",
+	"wikilambda-publishnew": "Vıla ke",
+	"wikilambda-savechanges": "Vurnayışan qeyd kerê",
+	"wikilambda-savenew": "Qeyd ke",
+	"wikilambda-summarylabel": "Xulasa :",
+	"wikilambda-typeselector-label": "Tewrê Erci"
 }

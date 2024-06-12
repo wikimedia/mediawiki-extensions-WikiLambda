@@ -6,14 +6,14 @@
 			"Yupik"
 		]
 	},
-	"wikilambda-special-listduplicateobjectlabels-language": "Kielâ",
-	"wikilambda-publishnew": "Almostit",
 	"wikilambda-cancel": "Jooskâ",
-	"wikilambda-savenew": "Vuorkkii",
-	"wikilambda-languagelabel": "Kielâ",
 	"wikilambda-editor-label-addlanguage-label": "Valjii kielâ",
 	"wikilambda-editor-label-select-programming-language-label": "Valjii ohjelmistemkielâ",
 	"wikilambda-function-are-you-sure-dialog-header": "Lah-uv tun vises?",
+	"wikilambda-function-implementation-language-label": "Kielâ",
+	"wikilambda-languagelabel": "Kielâ",
 	"wikilambda-metadata-language-column": "Kielâ",
-	"wikilambda-function-implementation-language-label": "Kielâ"
+	"wikilambda-publishnew": "Almostit",
+	"wikilambda-savenew": "Vuorkkii",
+	"wikilambda-special-listduplicateobjectlabels-language": "Kielâ"
 }

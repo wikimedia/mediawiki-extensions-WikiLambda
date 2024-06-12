@@ -13,9 +13,9 @@
 	"right-wikilambda-create-type": "Unda ZObles mpya za ZType",
 	"right-wikilambda-edit-error-key-label": "Hariri lebo muhimu ya aina ya hitilafu iliyopo.",
 	"right-wikilambda-execute-unsaved-code": "Endesha msimbo wa utekelezaji ambao haujahifadhiwa.",
-	"wikilambda-editor-fn-step-function-about": "Kuhusu",
-	"wikilambda-editor-fn-step-function-details": "Maelezo",
 	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|Lugha}} $1",
 	"wikilambda-about-widget-no-descriptions": "Hakuna maelezo yaliyofafanuliwa",
-	"wikilambda-about-widget-unlabelled-input": "Isiyo na lebo"
+	"wikilambda-about-widget-unlabelled-input": "Isiyo na lebo",
+	"wikilambda-editor-fn-step-function-about": "Kuhusu",
+	"wikilambda-editor-fn-step-function-details": "Maelezo"
 }

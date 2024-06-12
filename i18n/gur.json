@@ -11,18 +11,18 @@
 			"Dnshitobu"
 		]
 	},
-	"wikilambda-literal-type": "Literal $1",
-	"wikilambda-tester-status-passed": "Zɔɛ",
-	"wikilambda-tester-status-failed": "Koŋe",
-	"wikilambda-metadata-show-languages": "Pa'ale labole daka",
-	"wikilambda-metadata-hide-languages": "Soge labole daka",
-	"wikilambda-metadata-language-column": "Tɔgum",
-	"wikilambda-metadata-all-languages": "Pa'ale togum Za'a ke",
-	"wikilambda-metadata-fewer-languages": "Pa'ale togum buribuure fii",
 	"wikilambda-editor-additional-details-label": "Pa'asegɔ welisigo",
+	"wikilambda-editor-input-default-label": "Dikɛ ki'isɛ",
+	"wikilambda-editor-input-label-placeholder": "Iputi wa yu'urɛɛ?",
 	"wikilambda-editor-input-title": "Dikɛ iŋme",
 	"wikilambda-editor-input-type-placeholder": "Dikɛimŋɛ buuri",
-	"wikilambda-editor-input-label-placeholder": "Iputi wa yu'urɛɛ?",
-	"wikilambda-editor-input-default-label": "Dikɛ ki'isɛ",
-	"wikilambda-editor-output-title": "Yesigo"
+	"wikilambda-editor-output-title": "Yesigo",
+	"wikilambda-literal-type": "Literal $1",
+	"wikilambda-metadata-all-languages": "Pa'ale togum Za'a ke",
+	"wikilambda-metadata-fewer-languages": "Pa'ale togum buribuure fii",
+	"wikilambda-metadata-hide-languages": "Soge labole daka",
+	"wikilambda-metadata-language-column": "Tɔgum",
+	"wikilambda-metadata-show-languages": "Pa'ale labole daka",
+	"wikilambda-tester-status-failed": "Koŋe",
+	"wikilambda-tester-status-passed": "Zɔɛ"
 }

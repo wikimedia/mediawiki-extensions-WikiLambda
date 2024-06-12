@@ -4,13 +4,13 @@
 			"Ahrada2016"
 		]
 	},
-	"wikilambda-reference": "Ragaalee",
-	"wikilambda-functioncall": "Korree dalagaaru",
-	"wikilambda-argument-typeselector-label": "Gosa Falammii",
-	"wikilambda-function-typeselector-label": "Gosa Tajaajilaaru",
-	"wikilambda-editor-label-select-programming-language-label": "Sagantaa afaanii addabaasi:",
-	"wikilambda-list-items-label": "Wantoota tarreessi",
-	"wikilambda-context-menu": "Meenuu Halqaraa",
 	"wikilambda-add-list-item": "Wantoo Dabaluu",
-	"wikilambda-delete-list-item": "Wwntoota Haquu"
+	"wikilambda-argument-typeselector-label": "Gosa Falammii",
+	"wikilambda-context-menu": "Meenuu Halqaraa",
+	"wikilambda-delete-list-item": "Wwntoota Haquu",
+	"wikilambda-editor-label-select-programming-language-label": "Sagantaa afaanii addabaasi:",
+	"wikilambda-function-typeselector-label": "Gosa Tajaajilaaru",
+	"wikilambda-functioncall": "Korree dalagaaru",
+	"wikilambda-list-items-label": "Wantoota tarreessi",
+	"wikilambda-reference": "Ragaalee"
 }

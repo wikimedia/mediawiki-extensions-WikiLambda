@@ -7,14 +7,14 @@
 			"Skurz0"
 		]
 	},
-	"wikilambda-special-runfunction": "Avaluar una crida a una funció",
-	"wikilambda-special-runfunction-summary": "Aquest formulari permet avaluar una crida a una funció",
-	"wikilambda-special-runfunction-intro": "Assegura't que segueixes les polítiques de la comunitat, i copyright i regles de patent.",
-	"wikilambda-special-runfunction-nojs": "Aquesta pàgina requereix JavaScript per ser utilitzada.",
-	"wikilambda-special-listduplicateobjectlabels-language": "Llengua",
-	"wikilambda-functioncall-metadata-implementation-name": "Nom",
-	"wikilambda-functioncall-metadata-programming-language-version": "Versió",
 	"wikilambda-functioncall-error-invalid-zobject": "Error de trucada de funció: l'element\" $1\" no és un ZObject vàlid, per tant, no es pot cridar",
 	"wikilambda-functioncall-error-invalid-zobject-category": "Les pàgines amb Wikifunctions criden a objectes ZO no vàlids",
-	"wikilambda-functioncall-error-invalid-zobject-category-desc": "Pàgines amb intents de trucada a Wikifunctions amb un ZObject no vàlid"
+	"wikilambda-functioncall-error-invalid-zobject-category-desc": "Pàgines amb intents de trucada a Wikifunctions amb un ZObject no vàlid",
+	"wikilambda-functioncall-metadata-implementation-name": "Nom",
+	"wikilambda-functioncall-metadata-programming-language-version": "Versió",
+	"wikilambda-special-listduplicateobjectlabels-language": "Llengua",
+	"wikilambda-special-runfunction": "Avaluar una crida a una funció",
+	"wikilambda-special-runfunction-intro": "Assegura't que segueixes les polítiques de la comunitat, i copyright i regles de patent.",
+	"wikilambda-special-runfunction-nojs": "Aquesta pàgina requereix JavaScript per ser utilitzada.",
+	"wikilambda-special-runfunction-summary": "Aquest formulari permet avaluar una crida a una funció"
 }

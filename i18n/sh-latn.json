@@ -4,12 +4,12 @@
 			"Winston Sung"
 		]
 	},
-	"wikilambda-function-definition-input-item-type": "Vrsta",
-	"wikilambda-function-definition-output-label": "Izlaz",
-	"wikilambda-function-definition-output-type-label": "Vrsta",
 	"wikilambda-editor-fn-step-function-about": "O funkciji",
 	"wikilambda-editor-fn-step-function-details": "Detalji",
 	"wikilambda-editor-publish-dialog-header": "Objavi svoje izmjene",
+	"wikilambda-editor-publish-dialog-summary-help-text": "Na koji način ste poboljšali ovu stranicu?",
 	"wikilambda-editor-publish-dialog-summary-label": "Sažetak izmjene",
-	"wikilambda-editor-publish-dialog-summary-help-text": "Na koji način ste poboljšali ovu stranicu?"
+	"wikilambda-function-definition-input-item-type": "Vrsta",
+	"wikilambda-function-definition-output-label": "Izlaz",
+	"wikilambda-function-definition-output-type-label": "Vrsta"
 }

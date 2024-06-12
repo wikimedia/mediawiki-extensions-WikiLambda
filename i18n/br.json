@@ -7,20 +7,20 @@
 			"Y-M D"
 		]
 	},
-	"wikilambda-zobject-to-string-select-object": "Diuzañ $1",
-	"wikilambda-zobjectselector-no-results": "N'eus bet kavet disoc'h ebet.",
-	"wikilambda-function-are-you-sure-dialog-description": "Ha sur oc’h e fell deoc’h mont kuit eus ar mod kemmañ hep embann?",
-	"wikilambda-functioncall-metadata-implementation-name": "Anv",
-	"wikilambda-functioncall-metadata-implementation-type": "Seurt",
-	"wikilambda-functioncall-metadata-execution": "Seveniñ",
-	"wikilambda-functioncall-metadata-programming-language": "Yezh programmiñ",
-	"wikilambda-functioncall-metadata-programming-language-version": "Stumm",
 	"wikilambda-discard-edits": "Nullañ kemmoù",
-	"wikilambda-function-evaluator-title-function": "Esaeañ an arc'hwel-mañ",
-	"wikilambda-function-evaluator-title-implementation": "Esaeañ an emplantañ-mañ",
+	"wikilambda-function-are-you-sure-dialog-description": "Ha sur oc’h e fell deoc’h mont kuit eus ar mod kemmañ hep embann?",
 	"wikilambda-function-evaluator-enter-inputs": "Bizskrivañ data enkas",
 	"wikilambda-function-evaluator-result": "Disoc'h",
 	"wikilambda-function-evaluator-result-details": "Munudoù",
+	"wikilambda-function-evaluator-title-function": "Esaeañ an arc'hwel-mañ",
+	"wikilambda-function-evaluator-title-implementation": "Esaeañ an emplantañ-mañ",
+	"wikilambda-functioncall-metadata-execution": "Seveniñ",
+	"wikilambda-functioncall-metadata-implementation-name": "Anv",
+	"wikilambda-functioncall-metadata-implementation-type": "Seurt",
+	"wikilambda-functioncall-metadata-programming-language": "Yezh programmiñ",
+	"wikilambda-functioncall-metadata-programming-language-version": "Stumm",
+	"wikilambda-string-renderer-examples-title": "Skouerioù",
 	"wikilambda-string-renderer-field-example": "Da skouer: $1",
-	"wikilambda-string-renderer-examples-title": "Skouerioù"
+	"wikilambda-zobject-to-string-select-object": "Diuzañ $1",
+	"wikilambda-zobjectselector-no-results": "N'eus bet kavet disoc'h ebet."
 }

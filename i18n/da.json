@@ -7,20 +7,20 @@
 			"Zakawer2"
 		]
 	},
-	"wikilambda-persistentzobject-contents": "Indhold",
+	"wikilambda-editor-input-default-label": "input",
+	"wikilambda-editor-label-addlanguage-label": "Tilføj sprog",
+	"wikilambda-function-definition-inputs-item-selector-placeholder": "Vælg en type",
+	"wikilambda-function-definition-name-label": "Navn",
+	"wikilambda-function-definition-output-selector": "Vælg en type",
+	"wikilambda-function-typeselector-label": "Vælg en funktion",
+	"wikilambda-implementation-selector-code": "Kode",
 	"wikilambda-literal-type": "Bogstavelig $1",
+	"wikilambda-metadata-aka-column": "Også kendt som",
+	"wikilambda-metadata-language-column": "Sprog",
+	"wikilambda-persistentzobject-contents": "Indhold",
+	"wikilambda-publish-lose-changes-prompt": "Hvis du forlader siden uden at udgive først mister du dine ændringer.",
+	"wikilambda-savenew": "Gem",
 	"wikilambda-special-listduplicateobjectlabels-language": "Sprog",
 	"wikilambda-special-objectsbytype-typeheader": "Alle typer",
-	"wikilambda-savenew": "Gem",
-	"wikilambda-typeselector-label": "Vælg en type",
-	"wikilambda-function-typeselector-label": "Vælg en funktion",
-	"wikilambda-editor-label-addlanguage-label": "Tilføj sprog",
-	"wikilambda-publish-lose-changes-prompt": "Hvis du forlader siden uden at udgive først mister du dine ændringer.",
-	"wikilambda-implementation-selector-code": "Kode",
-	"wikilambda-metadata-language-column": "Sprog",
-	"wikilambda-metadata-aka-column": "Også kendt som",
-	"wikilambda-function-definition-name-label": "Navn",
-	"wikilambda-function-definition-inputs-item-selector-placeholder": "Vælg en type",
-	"wikilambda-function-definition-output-selector": "Vælg en type",
-	"wikilambda-editor-input-default-label": "input"
+	"wikilambda-typeselector-label": "Vælg en type"
 }

@@ -4,15 +4,15 @@
 			"Awangba Mangang"
 		]
 	},
+	"action-wikilambda-connect-implementation": "ꯃꯁꯤ ꯆꯂꯥꯏꯅꯕ ꯏꯝꯄ꯭ꯂꯤꯃꯦꯟꯇꯦꯁꯟ ꯑꯃ ꯃꯁꯤꯒꯤ ꯃꯊꯧ ꯑꯗꯨꯗ ꯁꯝꯅꯍꯟꯕꯤꯌꯨ",
 	"content-model-zobject": "ꯋꯤꯀꯤꯂꯝꯕꯗꯥ ꯑꯣꯕꯖꯦꯛꯠ",
 	"group-functioneer": "ꯃꯊꯧ ꯇꯧꯔꯤꯕꯁꯤꯡ",
 	"group-functionmaintainer": "ꯁꯦꯟꯅꯔꯤꯕꯁꯤꯡ",
-	"wikilambda-typeunavailable": "ꯈꯪꯗꯣꯛꯇ꯭ꯔꯤꯕ ꯃꯈꯜ",
-	"wikilambda-labelclash": "ꯄꯤꯔꯤꯕ ꯀꯟꯇꯦꯟꯠ ꯑꯗꯨꯒꯤ ꯂꯦꯕꯦꯜ ꯑꯗꯨ '$2 \"ꯒꯤ ꯂꯦꯕꯦꯜ ꯑꯗꯨꯒꯤ ꯑꯣꯕꯖꯦꯛꯠ' $1\" ꯒ ꯊꯦꯡꯅꯩ ꯫",
-	"action-wikilambda-connect-implementation": "ꯃꯁꯤ ꯆꯂꯥꯏꯅꯕ ꯏꯝꯄ꯭ꯂꯤꯃꯦꯟꯇꯦꯁꯟ ꯑꯃ ꯃꯁꯤꯒꯤ ꯃꯊꯧ ꯑꯗꯨꯗ ꯁꯝꯅꯍꯟꯕꯤꯌꯨ",
-	"wikilambda-reference": "ꯃꯇꯦꯡ ꯂꯧꯐꯝꯁꯤꯡ",
 	"wikilambda-helplink-button": "ꯃꯇꯦꯡ ꯄꯥꯡꯕꯤꯌꯨ",
 	"wikilambda-helplink-tooltip": "ꯃꯁꯤꯒꯤ ꯃꯦꯇꯥꯗꯦꯇꯥ ꯑꯁꯤ ꯁꯟꯗꯣꯛꯅ ꯇꯥꯛꯄ ꯃꯇꯦꯡ ꯂꯃꯥꯏ ꯑꯃ ꯅꯍꯥꯛꯅ ꯄꯥꯕ ꯌꯥꯏ ꯫",
+	"wikilambda-labelclash": "ꯄꯤꯔꯤꯕ ꯀꯟꯇꯦꯟꯠ ꯑꯗꯨꯒꯤ ꯂꯦꯕꯦꯜ ꯑꯗꯨ '$2 \"ꯒꯤ ꯂꯦꯕꯦꯜ ꯑꯗꯨꯒꯤ ꯑꯣꯕꯖꯦꯛꯠ' $1\" ꯒ ꯊꯦꯡꯅꯩ ꯫",
+	"wikilambda-reference": "ꯃꯇꯦꯡ ꯂꯧꯐꯝꯁꯤꯡ",
 	"wikilambda-special-createobject": "ꯑꯅꯧꯕ ꯑꯣꯕꯖꯦꯛꯠ ꯑꯃ ꯁꯦꯝꯃꯨ",
-	"wikilambda-special-viewobject": "ꯑꯣꯕꯖꯦꯛꯠ ꯑꯃ ꯎꯕ"
+	"wikilambda-special-viewobject": "ꯑꯣꯕꯖꯦꯛꯠ ꯑꯃ ꯎꯕ",
+	"wikilambda-typeunavailable": "ꯈꯪꯗꯣꯛꯇ꯭ꯔꯤꯕ ꯃꯈꯜ"
 }

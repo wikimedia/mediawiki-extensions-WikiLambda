@@ -4,7 +4,7 @@
 			"Norhorn"
 		]
 	},
-	"wikilambda-invalidzobject": "Το παρεχόμενο περιεχόμενο δεν είναι ένα έγκυρο ZObject.",
 	"wikilambda-editor-fn-step-function-about": "Σχετικά",
-	"wikilambda-editor-fn-step-function-details": "Λεπτομέρειες"
+	"wikilambda-editor-fn-step-function-details": "Λεπτομέρειες",
+	"wikilambda-invalidzobject": "Το παρεχόμενο περιεχόμενο δεν είναι ένα έγκυρο ZObject."
 }
