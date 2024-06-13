@@ -86,6 +86,7 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$zObjectStore->deleteZLanguageFromLanguagesCache( self::ZLANG['zh'] );
 
+		$this->expectException( ZErrorException::class );
 		$zid = $this->registry->getLanguageZidFromCode( 'zh' );
 		$this->assertTrue( $this->registry->isLanguageKnownGivenCode( 'zh' ) );
 		$this->assertTrue( $this->registry->isZidCached( self::ZLANG['zh'] ) );
