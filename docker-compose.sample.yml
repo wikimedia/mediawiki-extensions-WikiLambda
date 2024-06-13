@@ -1,4 +1,3 @@
-version: "3.7"
 services:
   function-orchestrator:
     image: docker-registry.wikimedia.org/repos/abstract-wiki/wikifunctions/function-orchestrator:latest
