@@ -983,6 +983,10 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		// We start with empty
 		$languages = $this->zobjectStore->fetchAllZLanguageObjects();
 		$this->assertCount( 0, $languages );
+		$foundCodes = $this->zobjectStore->findCodesFromZLanguage( 'foo' );
+		$this->assertCount( 0, $foundCodes );
+		$foundLanguage = $this->zobjectStore->findZLanguageFromCode( 'foo' );
+		$this->assertNull( $foundLanguage );
 
 		// Adding a single language is findable
 		$this->zobjectStore->insertZLanguageToLanguagesCache( 'foo', 'bar' );
@@ -992,6 +996,12 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertCount( 1, $languages );
 		$this->assertArrayHasKey( 'foo', $languages );
 		$this->assertSame( 'bar', $languages['foo'] );
+		$foundCodes = $this->zobjectStore->findCodesFromZLanguage( 'foo' );
+		$this->assertCount( 1, $foundCodes );
+		$this->assertSame( 'bar', $foundCodes[0] );
+		$foundLanguage = $this->zobjectStore->findZLanguageFromCode( 'bar' );
+		$this->assertNotNull( $foundLanguage );
+		$this->assertSame( 'foo', $foundLanguage );
 
 		// Adding a second language adds its value
 		$this->zobjectStore->insertZLanguageToLanguagesCache( 'foo-x', 'baz' );
@@ -1001,6 +1011,12 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertCount( 2, $languages );
 		$this->assertArrayHasKey( 'foo-x', $languages );
 		$this->assertSame( 'baz', $languages['foo-x'] );
+		$foundCodes = $this->zobjectStore->findCodesFromZLanguage( 'foo-x' );
+		$this->assertCount( 1, $foundCodes );
+		$this->assertSame( 'baz', $foundCodes[0] );
+		$foundLanguage = $this->zobjectStore->findZLanguageFromCode( 'baz' );
+		$this->assertNotNull( $foundLanguage );
+		$this->assertSame( 'foo-x', $foundLanguage );
 
 		// Deleting the first language removes its value
 		$this->zobjectStore->deleteZLanguageFromLanguagesCache( 'foo' );
@@ -1008,6 +1024,10 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$languages = $this->zobjectStore->fetchAllZLanguageObjects();
 		$this->assertArrayNotHasKey( 'foo', $languages );
 		$this->assertCount( 1, $languages );
+		$foundCodes = $this->zobjectStore->findCodesFromZLanguage( 'foo' );
+		$this->assertCount( 0, $foundCodes );
+		$foundLanguage = $this->zobjectStore->findZLanguageFromCode( 'bar' );
+		$this->assertNull( $foundLanguage );
 
 		// Deleting the second language returns us to empty
 		$this->zobjectStore->deleteZLanguageFromLanguagesCache( 'foo-x' );
@@ -1015,6 +1035,10 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$languages = $this->zobjectStore->fetchAllZLanguageObjects();
 		$this->assertArrayNotHasKey( 'foo-x', $languages );
 		$this->assertCount( 0, $languages );
+		$foundCodes = $this->zobjectStore->findCodesFromZLanguage( 'foo-x' );
+		$this->assertCount( 0, $foundCodes );
+		$foundLanguage = $this->zobjectStore->findZLanguageFromCode( 'baz' );
+		$this->assertNull( $foundLanguage );
 	}
 
 	public function testDeleteZFunctionFromZTesterResultsCache() {

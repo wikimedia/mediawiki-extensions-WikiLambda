@@ -611,6 +611,47 @@ class ZObjectStore {
 	}
 
 	/**
+	 * Gets from the secondary database the matching BCP47 (or MediaWiki) language code(s)
+	 * for a given ZID
+	 *
+	 * @param string $zid The ZID of the matching ZLanguage object for which to search.
+	 * @return string[] Any BCP47 (or MediaWiki) language code(s) if found; unordered.
+	 */
+	public function findCodesFromZLanguage( string $zid ) {
+		$dbr = $this->dbProvider->getReplicaDatabase();
+		$res = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzlangs_language' ] )
+			->from( 'wikilambda_zlanguages' )
+			->where( [ 'wlzlangs_zid' => $zid ], )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		$codes = [];
+		foreach ( $res as $row ) {
+			$codes[] = (string)$row->wlzlangs_language;
+		}
+		return $codes;
+	}
+
+	/**
+	 * Gets from the secondary database the ZID of a given BCP47 (or MediaWiki) language code
+	 *
+	 * @param string $code The BCP47 (or MediaWiki) language code for which to search
+	 * @return ?string The ZID of the matching ZLanguage object, or null if not found.
+	 */
+	public function findZLanguageFromCode( string $code ) {
+		$dbr = $this->dbProvider->getReplicaDatabase();
+		$res = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzlangs_zid' ] )
+			->from( 'wikilambda_zlanguages' )
+			->where( [ 'wlzlangs_language' => $code ], )
+			->caller( __METHOD__ )
+			->fetchField();
+
+		return $res ? (string)$res : null;
+	}
+
+	/**
 	 * Search labels in the secondary database, filtering by language Zids, type or label string.
 	 *
 	 * @param string $label Term to search in the label database
