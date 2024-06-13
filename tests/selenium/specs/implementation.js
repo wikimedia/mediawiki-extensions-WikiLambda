@@ -71,9 +71,9 @@ describe( 'Implementation (CUJ 5)', () => {
 		let aboutBlockEntriesEnglish,
 			aboutBlockEntriesHindi;
 
-		before( () => {
-			browser.deleteAllCookies();
-			LoginPage.loginAdmin();
+		before( async () => {
+			await browser.deleteAllCookies();
+			await LoginPage.loginAdmin();
 			const time = Date.now();
 			aboutBlockEntriesEnglish = {
 				language: 'English',

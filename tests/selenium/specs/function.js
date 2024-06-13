@@ -39,6 +39,7 @@ const assert = require( 'assert' ),
 describe( 'Function', () => {
 
 	before( async () => {
+		await browser.deleteAllCookies();
 		await LoginPage.loginAdmin();
 	} );
 
