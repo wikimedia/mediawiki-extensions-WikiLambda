@@ -22,6 +22,7 @@ const FunctionExplorerBlock = require( '../../componentobjects/FunctionExplorerB
 const ContentBlock = require( '../../componentobjects/ContentBlock' );
 const ElementActions = require( '../../utils/ElementActions' );
 const InputDropdown = require( '../../componentobjects/InputDropdown' );
+const i18n = require( '../../utils/i18n.js' )();
 
 class ImplementationForm extends Page {
 	get aboutBlockDialogBox() {
@@ -143,7 +144,7 @@ class ImplementationForm extends Page {
 	 * @return {void}
 	 */
 	async setCodeEditor( codeInstructions ) {
-		const codeBlock = this.contentBlock.$( 'div.ext-wikilambda-codeEditor' );
+		const codeBlock = this.contentBlock.$( '[data-testid="code-editor"]' );
 		await codeBlock.$( './textarea' ).waitForExist();
 		await codeBlock.$( './textarea' ).click();
 		await browser.keys( codeInstructions );
@@ -154,7 +155,7 @@ class ImplementationForm extends Page {
 	// #region Composition Block
 
 	get compositionBlock() {
-		return this.contentBlock.$( '.ext-wikilambda-implementation-content' );
+		return this.contentBlock.$( '[data-testid="implementation-content"]' );
 	}
 
 	/**
@@ -214,7 +215,7 @@ class ImplementationForm extends Page {
 		const functionBlock = await ContentBlock.getSectionOfContentBlock( 'function', this.compositionBlock );
 		await InputDropdown.setLookupOption(
 			functionBlock,
-			await functionBlock.$( './/input[@placeholder="Select function"]' ),
+			await functionBlock.$( `.//input[@placeholder="${ i18n[ 'wikilambda-function-typeselector-label' ] }"]` ),
 			firstFunctionCallEntries.functionCallLabel );
 
 		let secondFunctionCallBlock;
@@ -266,7 +267,7 @@ class ImplementationForm extends Page {
 			const elseValueInputBlock = await ContentBlock.getSectionOfContentBlock( 'function', elseBlock );
 			await InputDropdown.setLookupOption(
 				elseValueInputBlock,
-				await elseValueInputBlock.$( './/input[@placeholder="Select function"]' ),
+				await elseValueInputBlock.$( `.//input[@placeholder="${ i18n[ 'wikilambda-function-typeselector-label' ] }"]` ),
 				firstFunctionCallEntries.elseValue );
 
 			secondFunctionCallBlock = await elseBlock;
@@ -308,8 +309,8 @@ class ImplementationForm extends Page {
 			 * Set the then value to "false"
 			 */
 			const thenValueBlock = await ContentBlock.getSectionOfContentBlock( 'identity', thenBlock );
-			const thenValueInput = await thenValueBlock.$( 'input' );
-			await InputDropdown.setLookupOption(
+			const thenValueInput = await thenValueBlock.$( '[role="combobox"]' );
+			await InputDropdown.setSelectOption(
 				thenValueBlock,
 				thenValueInput,
 				secondFunctionCallEntries.thenValue );
@@ -329,8 +330,8 @@ class ImplementationForm extends Page {
 			 * Set the else value to "true"
 			 */
 			const elseValueBlock = await ContentBlock.getSectionOfContentBlock( 'identity', elseBlock );
-			const elseValueInput = await elseValueBlock.$( 'input' );
-			await InputDropdown.setLookupOption(
+			const elseValueInput = await elseValueBlock.$( '[role="combobox"]' );
+			await InputDropdown.setSelectOption(
 				elseValueBlock,
 				elseValueInput,
 				secondFunctionCallEntries.elseValue );

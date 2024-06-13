@@ -77,6 +77,7 @@
 		<div
 			v-if="!isTypeBuiltin"
 			class="ext-wikilambda-implementation-content"
+			data-testid="implementation-content"
 		>
 			<div
 				v-if="!isTypeCode"
