@@ -141,7 +141,7 @@
 	"wikilambda-languagelabel": "Jezik",
 	"wikilambda-publish-input-changed-impact-prompt": "<p>Spremenili ste vrsto vhoda te funkcije. <strong>Vse obstoječe izvedbe in preizkusi bodo ločeni od trenutne funkcije.</strong> Želite nadaljevati?</p>",
 	"wikilambda-publish-output-changed-impact-prompt": "<p>Spremenili ste vrsto izhoda te funkcije. <strong>Vse obstoječe izvedbe in testi bodo ločeni od trenutne funkcije.</strong> Želite nadaljevati?</p>",
-	"wikilambda-publish-input-and-output-changed-impact-prompt": "<p>Spremenili ste vrsto vhoda in izhoda te funkcije. <strong>Vse obstoječe izvedbe in preizkusi bodo ločeni od trenutne funkcije.</strong> Želite nadaljevati?</p?>",
+	"wikilambda-publish-input-and-output-changed-impact-prompt": "<p>Spremenili ste vrsto vhoda in izhoda te funkcije. <strong>Vse obstoječe izvedbe in preizkusi bodo ločeni od trenutne funkcije.</strong> Želite nadaljevati?</p>",
 	"wikilambda-loading": "Nalaganje podatkov",
 	"wikilambda-typeselector-label": "Izberite vrsto",
 	"wikilambda-argument-typeselector-label": "Izberite vrsto za ta argument",
