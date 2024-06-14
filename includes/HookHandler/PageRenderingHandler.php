@@ -168,8 +168,8 @@ class PageRenderingHandler implements
 		}
 
 		// Re-write our path to include the content language ($attribs['href']) where appropriate
-		// HACK: Our hook doesn't tell us properly that the target is an action, so we have to pull it from the href
-		// … we could get $query from using HtmlPageLinkRendererBefore, but then we don't have access to the href
+		// HACK (T358789): Our hook doesn't tell us properly that the target is an action, so we have to pull it from
+		// the href — we could get $query from HtmlPageLinkRendererBefore, but then we don't have access to the href
 		$queryPos = strpos( $attribs['href'], '?' );
 		$query = $queryPos ? wfCgiToArray( substr( $attribs['href'], $queryPos + 1 ) ) : [];
 

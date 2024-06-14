@@ -32,7 +32,7 @@ class ZErrorFactoryTest extends WikiLambdaIntegrationTestCase {
 
 		$this->assertFalse( $status->isValid() );
 
-		// TODO: It would be ideal to have a more elaborate testing mechanism that can assert
+		// TODO (T367515): It would be ideal to have a more elaborate testing mechanism that can assert
 		// things like "there's a Z526 error in the key sequence [Z2K2, Z6K1]".
 		// To accomplish this we would have to define a different way to represent
 		// the error data in the schemata (function-schemata/test-data/errors/Z2.json)
@@ -82,7 +82,7 @@ class ZErrorFactoryTest extends WikiLambdaIntegrationTestCase {
 
 		$this->assertFalse( $status->isValid() );
 
-		// TODO: It would be ideal to have a more elaborate testing mechanism that can assert
+		// TODO (T367515): It would be ideal to have a more elaborate testing mechanism that can assert
 		// things like "there's a Z526 error in the key sequence [Z2K2, Z6K1]".
 		// To accomplish this we would have to define a different way to represent
 		// the error data in the schemata (function-schemata/test-data/errrs/Z2.json)

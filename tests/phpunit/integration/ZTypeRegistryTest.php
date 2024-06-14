@@ -116,7 +116,7 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
-	 * TODO: Once this method tests the database, these tests should be expanded to cover DB reads.
+	 * TODO (T300530): Once this method tests the database, these tests should be expanded to cover DB reads.
 	 */
 	public function testIsZObjectTypeKnown() {
 		$registry = ZTypeRegistry::singleton();

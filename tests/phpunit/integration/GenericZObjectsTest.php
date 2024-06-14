@@ -66,10 +66,6 @@ EOT;
 
 	/**
 	 * This test proves that an on-wiki implementation can be made of a PHP-backed but non-built-in ZType.
-	 * FIXME: This test doesn't pass currently but should as soon as function-schemata is equipped
-	 * to validate user-defined types
-	 *
-	 * @coversNothing
 	 */
 	public function testInstanceOfZTestType() {
 		$this->registerLangs( ZTestType::TEST_LANGS );

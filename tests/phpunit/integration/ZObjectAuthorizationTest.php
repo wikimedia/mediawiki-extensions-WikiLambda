@@ -550,7 +550,7 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 		$this->registerLangs( [ 'en', 'es' ] );
 
 		// Get user
-		// FIXME: different type of user to come in the test file
+		// FIXME (T342357): different type of user to come in the test file
 		$user = $this->getTestSysop()->getUser();
 
 		// Try to update the already existing object

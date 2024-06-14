@@ -215,8 +215,8 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 				],
 			],
 
-			// TODO: Pre-defined (ZID < 10k) tester (Z20 instance)
-			// TODO: User-defined (ZID > 10k) tester (Z20 instance)
+			// TODO (T342357): Pre-defined (ZID < 10k) tester (Z20 instance)
+			// TODO (T342357): User-defined (ZID > 10k) tester (Z20 instance)
 
 			'language (Z60 instance)' => [
 				'testedType' => 'Z60',
@@ -359,6 +359,6 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	// TODO (T342357): Edits to pre-existing content, especially:
-	// TODO: Pre-defined (ZID < 10k) label change
-	// TODO: User-defined (ZID > 10k) label change
+	// TODO (T342357): Pre-defined (ZID < 10k) label change
+	// TODO (T342357): User-defined (ZID > 10k) label change
 }

@@ -276,7 +276,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		// Update the ZObject
 		$this->zobjectStore->updateZObject( $zid, $zobjectNewText, 'Update summary', $sysopUser );
 
-		// (T343717) HACK: Re-get the Title so it's not cached on what the latest revision is
+		// HACK (T343717): Re-get the Title so it's not cached on what the latest revision is
 		$title = Title::newFromText( $zid, NS_MAIN );
 
 		// Fetch it again and check whether the changes were saved

@@ -136,7 +136,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 
 		// Try to create the second Zobject with the same label
 		$this->expectException( ApiUsageException::class );
-		// TODO: detailed errors for Z2 related validations
+		// TODO (T302598): detailed errors for Z2 related validations
 		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED );
 
 		// Try to create the second Zobject with the same label
@@ -155,7 +155,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 
 		// Try to create the second Zobject with the same label
 		$this->expectException( ApiUsageException::class );
-		// TODO: detailed errors for Z2 related validations
+		// TODO (T302598): detailed errors for Z2 related validations
 		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_UNKNOWN );
 
 		$result = $this->doApiRequestWithToken( [
