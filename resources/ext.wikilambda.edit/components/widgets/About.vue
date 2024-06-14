@@ -403,6 +403,7 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-about-fields {
 		.ext-wikilambda-about-description,
 		.ext-wikilambda-about-aliases {
+			overflow-wrap: break-word;
 			margin-top: @spacing-50;
 		}
 
