@@ -84,7 +84,7 @@ class Implementation extends Page {
 	 * @return {Promise<WebdriverIOElementType>}
 	 */
 	getImplementationTypeSelector( implementationType ) {
-		return this.contentBlock.$( 'div.ext-wikilambda-implementation-type' )
+		return this.contentBlock.$( '[data-testid="implementation-type"]' )
 			.$( `.//span[text()="${ implementationType }"]` );
 	}
 
@@ -108,7 +108,7 @@ class Implementation extends Page {
 	 * @return {Array<string>}
 	 */
 	async getCodeEditorLines() {
-		const codeBlock = this.contentBlock.$( 'div.ext-wikilambda-codeEditor' );
+		const codeBlock = this.contentBlock.$( '[data-testid="code-editor"]' );
 		const code = await codeBlock.$$( './/div[contains(@class,"ace_line") and @role="option"]' );
 		const lineOfCodeArray = [];
 		code.forEach( async ( line ) => {
