@@ -8,6 +8,7 @@
 
 const { config, mount } = require( '@vue/test-utils' ),
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
+	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	FunctionMetadataDialog = require( '../../../../resources/ext.wikilambda.edit/components/widgets/FunctionMetadataDialog.vue' ),
 	metadata = require( '../../fixtures/metadata.js' );
@@ -23,10 +24,14 @@ describe( 'FunctionMetadataDialog', () => {
 
 	beforeEach( () => {
 		getters = {
+			getFunctionZidOfImplementation: createGettersWithFunctionsMock( 'Z801' ),
 			getUserLangCode: createGetterMock( 'en' ),
 			getLabelData: createLabelDataMock( {
 				Z502: 'Not wellformed',
-				Z526: 'Key value not wellformed'
+				Z526: 'Key value not wellformed',
+				Z801: 'Echo',
+				Z802: 'If',
+				Z41: 'true'
 			} )
 		};
 		mw.internalWikiUrlencode = jest.fn( ( url ) => url );
@@ -42,10 +47,20 @@ describe( 'FunctionMetadataDialog', () => {
 	} );
 
 	describe( 'with basic metadata', () => {
+		it( 'does not render function call selector correctly', () => {
+			const wrapper = mount( FunctionMetadataDialog, {
+				props: { open: true, metadata: metadata.metadataBasic }
+			} );
+
+			const selector = wrapper.findComponent( { name: 'cdx-select' } );
+			expect( selector.exists() ).toBe( false );
+		} );
+
 		it( 'renders an untitled implementation section', () => {
 			const wrapper = mount( FunctionMetadataDialog, {
 				props: { open: true, metadata: metadata.metadataBasic }
 			} );
+
 			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
 			const section = sections[ 0 ];
 
@@ -240,6 +255,67 @@ describe( 'FunctionMetadataDialog', () => {
 			expect( keys[ 1 ].find( 'a' ).attributes().href ).toContain( 'Z526' );
 			expect( keys[ 2 ].text() ).toContain( 'Expected result: ABC' );
 			expect( keys[ 3 ].text() ).toContain( 'Actual result: CBA' );
+		} );
+	} );
+
+	describe( 'with nested metadata', () => {
+		it( 'renders function call selector correctly', () => {
+			const wrapper = mount( FunctionMetadataDialog, {
+				props: { open: true, metadata: metadata.metadataNested }
+			} );
+
+			// Selector is rendered
+			const selector = wrapper.findComponent( { name: 'cdx-select' } );
+			expect( selector.exists() ).toBe( true );
+
+			// Displays all nested metadata sets
+			const menuItems = selector.vm.menuItems;
+			expect( menuItems.length ).toBe( 3 );
+
+			// Check labels from zObjectKey
+			expect( menuItems[ 0 ].label ).toBe( 'If (Echo (true), Echo ("is true"), "is false")' );
+			expect( menuItems[ 1 ].label ).toBe( 'Echo (true)' );
+			// Check label from implementationId
+			expect( menuItems[ 2 ].label ).toBe( 'Echo' );
+			// Check values calculated from index path
+			expect( menuItems[ 0 ].value ).toBe( '0' );
+			expect( menuItems[ 1 ].value ).toBe( '0-0' );
+			expect( menuItems[ 2 ].value ).toBe( '0-1' );
+			// Check state
+			expect( menuItems[ 0 ].state ).toBe( 'pass' );
+			expect( menuItems[ 1 ].state ).toBe( 'pass' );
+			expect( menuItems[ 2 ].state ).toBe( 'fail' );
+			// Check style
+			expect( menuItems[ 0 ].style ).toBe( '--menuItemLevel: 1;' );
+			expect( menuItems[ 1 ].style ).toBe( '--menuItemLevel: 2;' );
+			expect( menuItems[ 2 ].style ).toBe( '--menuItemLevel: 2;' );
+		} );
+
+		it( 'selects a child function call', async () => {
+			const wrapper = mount( FunctionMetadataDialog, {
+				props: { open: true, metadata: metadata.metadataNested }
+			} );
+			expect( wrapper.vm.selectedMetadataPath ).toBe( '0' );
+
+			let sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+			expect( sections.length ).toBe( 2 );
+
+			const selector = wrapper.findComponent( { name: 'cdx-select' } );
+			expect( selector.html() ).toContain( 'ext-wikilambda-metadata-dialog-selected-pass' );
+			expect( selector.html() ).not.toContain( 'ext-wikilambda-metadata-dialog-selected-fail' );
+
+			// Select second child
+			const selectedId = '0-1';
+			selector.vm.$emit( 'update:selected', selectedId );
+			await wrapper.vm.$nextTick();
+
+			// Selector class has changed from pass to fail
+			expect( selector.html() ).toContain( 'ext-wikilambda-metadata-dialog-selected-fail' );
+			expect( selector.html() ).not.toContain( 'ext-wikilambda-metadata-dialog-selected-pass' );
+
+			// Metadata body is now reflecting a different metadata set
+			sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+			expect( sections.length ).toBe( 3 );
 		} );
 	} );
 } );

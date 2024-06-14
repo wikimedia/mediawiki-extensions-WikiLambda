@@ -218,15 +218,19 @@ function getValueFromCanonicalZMap( zMap, key ) {
  * Finds all of the ZIDs appearing in an arbitrary ZObject.
  *
  * @param {Object|string} zobject a Z1/Object
+ * @param {boolean} returnKeys if set to true, return both matching Zids and matching Keys
  * @return {Set} Set of (string) ZIDs
  */
-function extractZIDs( zobject ) {
+function extractZIDs( zobject, returnKeys = false ) {
 	const str = JSON.stringify( zobject );
-	const regexp = /"(Z[1-9]\d*)(K[1-9]\d*)?"/g;
+	const regexp = /(Z[1-9]\d*)(K[1-9]\d*)?/g;
 	const matches = [ ...str.matchAll( regexp ) ];
-	const allZids = matches.map( ( groups ) => groups[ 1 ] );
-	const uniqueZids = [ ...new Set( allZids ) ];
-	return uniqueZids;
+	const allMatches = returnKeys ?
+		matches.map( ( groups ) => groups[ 0 ] ) :
+		matches.map( ( groups ) => groups[ 1 ] );
+	const uniqueMatches = [ ...new Set( allMatches ) ];
+	// sort so that keys are returned before zids
+	return uniqueMatches.sort( ( a, b ) => ( a.includes( 'K' ) ? ( b.includes( 'K' ) ? 0 : -1 ) : 1 ) );
 }
 
 // These error types have no keys whose values contain nested error content.  If a error type ZID

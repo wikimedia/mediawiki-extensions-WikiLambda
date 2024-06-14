@@ -276,6 +276,27 @@ module.exports = exports = {
 			return findConnectedObjects;
 		},
 		/**
+		 * Returns the function zid given an implementation zid
+		 * by returning the value in its Z14K1 field
+		 *
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		getFunctionZidOfImplementation: function ( state ) {
+			/**
+			 * @param {string} zid
+			 * @return {string|undefined}
+			 */
+			function findImplementationFunction( zid ) {
+				const implementation = state.objects[ zid ];
+				if ( !implementation ) {
+					return undefined;
+				}
+				return implementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_IMPLEMENTATION_FUNCTION ];
+			}
+			return findImplementationFunction;
+		},
+		/**
 		 * Returns the type of an implementation stored in the
 		 * global state, given its Zid. The type will be
 		 * composition/Z14K2, built-in/Z14K4, or code/Z14K3.
@@ -302,7 +323,10 @@ module.exports = exports = {
 				if ( Constants.Z_IMPLEMENTATION_BUILT_IN in implementation ) {
 					return Constants.Z_IMPLEMENTATION_BUILT_IN;
 				}
-				return Constants.Z_IMPLEMENTATION_CODE;
+				if ( Constants.Z_IMPLEMENTATION_CODE in implementation ) {
+					return Constants.Z_IMPLEMENTATION_CODE;
+				}
+				return undefined;
 			}
 			return findImplementationType;
 		},

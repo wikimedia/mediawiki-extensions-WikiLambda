@@ -47,6 +47,65 @@ const metadataBasic = convertSetToMap( {
 	programmingLanguageVersion: "QuickJS v0.5.0-alpha"
 } );
 
+
+const metadataChild1 = convertSetToMap( {
+	zObjectKey: 'Z801(Z41)',
+	implementationId: { Z1K1: "Z6", Z6K1: "Z901" },
+	implementationType: 'Evaluated',
+	// duration:
+	orchestrationDuration: "20 ms",
+  orchestrationStartTime: "2024-02-16T12:25:19.240Z",
+	orchestrationEndTime: "2024-02-16T12:25:19.260Z",
+	evaluationDuration: "5 ms",
+  evaluationStartTime: "2024-02-16T12:25:19.240Z",
+	evaluationEndTime: "2024-02-16T12:25:19.245Z",
+} );
+
+const metadataChild2 = convertSetToMap( {
+	// zObjectKey is missing
+	implementationId: { Z1K1: "Z6", Z6K1: "Z901" },
+	implementationType: 'Evaluated',
+	// errors:
+	errors: {
+		Z1K1: "Z5",
+		Z5K1: "Z500",
+		Z5K2: {
+			Z1K1: {
+				Z1K1: "Z7",
+				Z7K1: "Z885",
+				Z885K1: "Z500"
+			},
+			Z500K1: "some error in child function call",
+		}
+	},
+	// duration:
+	orchestrationDuration: "20 ms",
+  orchestrationStartTime: "2024-02-16T12:25:19.270Z",
+	orchestrationEndTime: "2024-02-16T12:25:19.290Z",
+	evaluationDuration: "2 ms",
+  evaluationStartTime: "2024-02-16T12:25:19.250Z",
+	evaluationEndTime: "2024-02-16T12:25:19.252Z",
+} );
+
+const metadataNested = convertSetToMap( {
+	zObjectKey: 'Z802(Z801(Z41),Z801("is true"),"is false")',
+	implementationId: { Z1K1: "Z6", Z6K1: "Z902" },
+	implementationType: 'Evaluated',
+	// nestedMetadata:
+	nestedMetadata: [
+		{ Z1K1: "Z7", Z7K1: "Z883", Z883K1: "Z6", Z883K2: "Z1" },
+		metadataChild1,
+		metadataChild2
+	],
+	// duration:
+	orchestrationDuration: "70 ms",
+  orchestrationStartTime: "2024-02-16T12:25:19.230Z",
+	orchestrationEndTime: "2024-02-16T12:25:19.300Z",
+	evaluationDuration: "10 ms",
+  evaluationStartTime: "2024-02-16T12:25:19.240Z",
+	evaluationEndTime: "2024-02-16T12:25:19.250Z",
+} );
+
 const metadataEmpty = convertSetToMap( {
 	orchestrationDuration: "70 ms",
 } );
@@ -104,5 +163,6 @@ module.exports = {
 	metadataBasic,
 	metadataErrors,
 	metadataEmpty,
+	metadataNested,
 	convertSetToMap
 };
