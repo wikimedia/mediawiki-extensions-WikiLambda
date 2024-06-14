@@ -5,7 +5,7 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-editor-input-list-item">
+	<div class="ext-wikilambda-editor-input-list-item" data-testid="input-list-item">
 		<!-- Per-input label -->
 		<div class="ext-wikilambda-editor-input-list-item__header">
 			<span class="ext-wikilambda-editor-input-list-item__header__text">
@@ -16,6 +16,7 @@
 				weight="quiet"
 				class="ext-wikilambda-editor-input-list-item__header__action-delete"
 				:aria-label="$i18n( 'wikilambda-function-definition-inputs-item-remove' ).text()"
+				data-testid="remove-input"
 				@click="removeInput"
 			>
 				<cdx-icon :icon="icons.cdxIconTrash"></cdx-icon>

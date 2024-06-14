@@ -16,19 +16,15 @@ const ElementActions = require( '../utils/ElementActions' );
 
 class EvaluateFunctionBlock {
 	get evaluateFunctionBlock() {
-		return $( 'div.ext-wikilambda-function-evaluator' );
+		return $( '[data-testid="function-evaluator"]' );
 	}
 
 	get functionCallBlock() {
-		return this.evaluateFunctionBlock.$( 'div.ext-wikilambda-function-evaluator-inputs' );
+		return this.evaluateFunctionBlock.$( '[data-testid="function-evaluator-inputs"]' );
 	}
 
 	get orchestrationResultBlock() {
-		return $( 'div.ext-wikilambda-function-evaluator-result' );
-	}
-
-	get resultStatus() {
-		return this.orchestrationResultBlock.$( './/div[contains(text(),"Running")]' );
+		return $( '[data-testid="function-evaluator-result"]' );
 	}
 
 	// #region Function Call Block
@@ -41,7 +37,7 @@ class EvaluateFunctionBlock {
 	 */
 	async callFunction() {
 		const evaluateFunctionBlock = await this.evaluateFunctionBlock;
-		const button = await evaluateFunctionBlock.$( './/button[text()="Run function"]' );
+		const button = await evaluateFunctionBlock.$( '[data-testid="evaluator-run-button"]' );
 		await ElementActions.doClick( button );
 	}
 
