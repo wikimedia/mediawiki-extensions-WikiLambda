@@ -159,6 +159,40 @@
     any:
       - wikilambda-edit-type
 
+# ======================================
+# Rights for user-contributed converters
+# ======================================
+
+# Change connected deserialiser
+- path: '^Z2K2\.(.*)?$'
+  type: Z46
+  filter: [ ZObjectFilterIsConnectedConverter ]
+  operations:
+    any:
+      - wikilambda-edit-connected-converter
+
+# Change connected serialiser
+- path: '^Z2K2\.(.*)?$'
+  type: Z64
+  filter: [ ZObjectFilterIsConnectedConverter ]
+  operations:
+    any:
+      - wikilambda-edit-connected-converter
+
+# Change deserialiser
+- path: '^Z2K2\.(.*)?$'
+  type: Z46
+  operations:
+    any:
+      - wikilambda-edit-converter
+
+# Change serialiser
+- path: '^Z2K2\.(.*)?$'
+  type: Z64
+  operations:
+    any:
+      - wikilambda-edit-converter
+
 # =====================================
 # Rights for user-contributed functions
 # =====================================
