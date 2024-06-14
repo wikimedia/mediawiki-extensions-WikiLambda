@@ -48,7 +48,7 @@
 				v-if="hasError"
 				:open="showError"
 				class="ext-wikilambda-evaluation-result-error-dialog"
-				:close-button-label="closeLabel"
+				:close-button-label="$i18n( 'wikilambda-dialog-close' ).text()"
 				:title="$i18n( 'wikilambda-functioncall-metadata-errors' ).text()"
 				@update:open="showError = false"
 			>
@@ -166,15 +166,6 @@ module.exports = exports = defineComponent( {
 			return this.hasMetadata ?
 				hybridToCanonical( this.getZObjectAsJsonById( this.metadataRowId ) ) :
 				undefined;
-		},
-
-		/**
-		 * Returns the name for the Close dialog button
-		 *
-		 * @return {string}
-		 */
-		closeLabel: function () {
-			return this.$i18n( 'wikilambda-toast-close' ).text();
 		},
 
 		/**

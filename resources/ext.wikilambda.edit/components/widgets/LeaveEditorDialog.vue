@@ -10,7 +10,7 @@
 		<cdx-dialog
 			:open="showDialog"
 			:title="leaveDialogTitle"
-			:close-button-label="closeLabel"
+			:close-button-label="$i18n( 'wikilambda-dialog-close' ).text()"
 			:primary-action="primaryAction"
 			:default-action="defaultAction"
 			@update:open="stayOnPage"
@@ -51,15 +51,6 @@ module.exports = exports = {
 		 */
 		leaveDialogTitle: function () {
 			return this.$i18n( 'wikilambda-editor-leave-edit-mode-header' ).text();
-		},
-
-		/**
-		 * Returns the name for the Close dialog button
-		 *
-		 * @return {string}
-		 */
-		closeLabel: function () {
-			return this.$i18n( 'wikilambda-toast-close' ).text();
 		},
 
 		/**

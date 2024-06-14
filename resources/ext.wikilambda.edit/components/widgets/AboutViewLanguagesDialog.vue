@@ -25,6 +25,7 @@
 					<cdx-button
 						weight="quiet"
 						class="cdx-dialog__header__close-button"
+						:aria-label="$i18n( 'wikilambda-dialog-close' ).text()"
 						@click="closeDialog"
 					>
 						<cdx-icon :icon="icons.cdxIconClose"></cdx-icon>
