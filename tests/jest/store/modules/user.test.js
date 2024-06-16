@@ -28,10 +28,7 @@ describe( 'User rights Vuex module', () => {
 		beforeEach( () => {
 			// Mock context
 			context = Object.assign( {}, {
-				// eslint-disable-next-line arrow-body-style
-				commit: jest.fn( () => {
-					return;
-				} )
+				commit: jest.fn( () => {} )
 			} );
 			// Mock mw.user.getRights
 			const getRightsResolveMock = jest.fn( ( then ) => then( userRights ) );
