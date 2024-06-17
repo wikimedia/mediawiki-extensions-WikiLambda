@@ -535,6 +535,80 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $status->isValid(), 'Function maintainer is authorized to edit enum value' );
 	}
 
+	public function testConnectedConverters() {
+		$loggedout = User::newFromId( 0 );
+		$user = $this->getTestUser()->getUser();
+		$functioneer = $this->getTestUser( [ 'functioneer' ] )->getUser();
+		$maintainer = $this->getTestUser( [ 'functioneer', 'functionmaintainer' ] )->getUser();
+
+		// SETUP:
+		$this->insertZids( [ 'Z16', 'Z64', 'Z46' ] );
+		$filePath = dirname( __DIR__, 1 ) . '/test_data/authorization/type-converters.json';
+		$fileData = json_decode( file_get_contents( $filePath ) );
+		$type = $fileData->type;
+
+		// Insert new type
+		$typePage = $this->zobjectStore->createNewZObject(
+			FormatJson::encode( $type ),
+			'Insert type',
+			$functioneer
+		);
+		$this->assertTrue( $typePage->isOK() );
+		$typeZid = $typePage->getTitle()->getBaseText();
+
+		$converters = [ 'deserialiser', 'serialiser' ];
+
+		foreach ( $converters as $converter ) {
+			// Replace type Zid and create title
+			$converterData = json_decode( str_replace(
+				'TYPEZID',
+				$typeZid,
+				json_encode( $fileData->{ $converter } )
+			) );
+			$title = Title::newFromText( $converterData->zid, NS_MAIN );
+
+			// Create and validate ZObjectContent objects
+			$oldContent = new ZObjectContent( FormatJson::encode( $converterData->oldValue ) );
+			$newContent = new ZObjectContent( FormatJson::encode( $converterData->newValue ) );
+			$this->assertTrue( $oldContent->isValid() );
+			$this->assertTrue( $newContent->isValid() );
+
+			// Assert that the correct rights are detected
+			$rights = $this->zobjectAuthorization->getRequiredEditRights(
+				$oldContent,
+				$newContent,
+				$title
+			);
+			$this->assertEquals( [
+				'edit',
+				'wikilambda-edit-connected-converter'
+			], $rights );
+
+			// Request authorization finally goes through
+			$status = $this->zobjectAuthorization->authorize(
+				$oldContent,
+				$newContent,
+				$user,
+				$title
+			);
+			$this->assertFalse( $status->isValid(), 'User is not authorized to edit enum value' );
+			$status = $this->zobjectAuthorization->authorize(
+				$oldContent,
+				$newContent,
+				$functioneer,
+				$title
+			);
+			$this->assertFalse( $status->isValid(), 'Functioneer is not authorized to edit enum value' );
+			$status = $this->zobjectAuthorization->authorize(
+				$oldContent,
+				$newContent,
+				$maintainer,
+				$title
+			);
+			$this->assertTrue( $status->isValid(), 'Function maintainer is authorized to edit enum value' );
+		}
+	}
+
 	/**
 	 * @dataProvider providePersistedEdits
 	 *

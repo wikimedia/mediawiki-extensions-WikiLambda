@@ -202,6 +202,13 @@ class ZTypeRegistry extends ZObjectRegistry {
 		// self::Z_UNIT,
 	];
 
+	public const EXCLUDE_TYPES_FROM_ENUMS = [
+		self::Z_TYPE,
+		self::Z_FUNCTION,
+		self::Z_DESERIALISER,
+		self::Z_SERIALISER
+	];
+
 	public const IGNORE_KEY_VALUES_FOR_LABELLING = [
 		self::Z_QUOTE_VALUE,
 		self::Z_KEYREFERENCE_VALUE,

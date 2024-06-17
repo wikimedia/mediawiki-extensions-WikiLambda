@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Authorization;
 
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
@@ -29,6 +30,11 @@ class ZObjectFilterIsEnumValue implements ZObjectFilter {
 	 */
 	public static function pass( $fromContent, $toContent, $title, $args = [] ): bool {
 		$type = $fromContent->getZType();
+
+		if ( in_array( $type, ZTypeRegistry::EXCLUDE_TYPES_FROM_ENUMS ) ) {
+			// Type has identity key but excluded from enum; return false
+			return false;
+		}
 
 		$typeTitle = Title::newFromText( $type, NS_MAIN );
 		$zObjectStore = WikiLambdaServices::getZObjectStore();

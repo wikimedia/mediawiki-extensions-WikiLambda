@@ -123,6 +123,11 @@ class ZObjectAuthorization implements LoggerAwareInterface {
 				array_push( $userRights, 'wikilambda-create-unit' );
 				break;
 
+			case ZTypeRegistry::Z_DESERIALISER:
+			case ZTypeRegistry::Z_SERIALISER:
+				array_push( $userRights, 'wikilambda-create-converter' );
+				break;
+
 			default:
 				// Check for enumeration
 				$typeTitle = Title::newFromText( $type, NS_MAIN );

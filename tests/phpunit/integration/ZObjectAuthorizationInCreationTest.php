@@ -38,7 +38,10 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 		$this->zobjectStore = WikiLambdaServices::getZObjectStore();
 		$this->zobjectAuthorization = WikiLambdaServices::getZObjectAuthorization();
 
-		$this->insertZids( [ 'Z1', 'Z2', 'Z6', 'Z3', 'Z4', 'Z8', 'Z17', 'Z14', 'Z16', 'Z24', 'Z40', 'Z61', 'Z801' ] );
+		$this->insertZids( [
+			'Z1', 'Z2', 'Z6', 'Z3', 'Z4', 'Z8', 'Z17', 'Z14', 'Z16',
+			'Z24', 'Z40', 'Z46', 'Z60', 'Z61', 'Z64', 'Z801'
+		] );
 	}
 
 	/**
@@ -215,20 +218,58 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 				],
 			],
 
+			'deserialiser (Z46 instance)' => [
+				'testedType' => 'Z46',
+				'createContent' =>
+					'{"Z1K1":"Z2","Z2K1":{"Z1K1":"Z6","Z6K1":"Z0"},'
+						. '"Z2K2":{"Z1K1":"Z46",'
+						. '"Z46K1":"Z0",'
+						. '"Z46K2":"Z6",'
+						. '"Z46K3":{"Z1K1":"Z16","Z16K1":"Z600","Z16K2":"function(){return true;}"},'
+						. '"Z46K4":"BigInt"},'
+						. '"Z2K3":{"Z1K1":"Z12","Z12K1":["Z11"]}}',
+				'createRights' => [ 'wikilambda-create-converter' ],
+				'createAllowed' => [
+					'basic' => true, 'functioneer' => true, 'maintainer' => true, 'sysop' => true
+				],
+				'createAllowedPredefined' => [
+					'basic' => false, 'functioneer' => false, 'maintainer' => true, 'sysop' => false
+				],
+			],
+
+			'serialiser (Z64 instance)' => [
+				'testedType' => 'Z64',
+				'createContent' =>
+					'{"Z1K1":"Z2","Z2K1":{"Z1K1":"Z6","Z6K1":"Z0"},'
+						. '"Z2K2":{"Z1K1":"Z64",'
+						. '"Z64K1":"Z0",'
+						. '"Z64K2":"Z6",'
+						. '"Z64K3":{"Z1K1":"Z16","Z16K1":"Z600","Z16K2":"function(){return true;}"},'
+						. '"Z64K4":"BigInt"},'
+						. '"Z2K3":{"Z1K1":"Z12","Z12K1":["Z11"]}}',
+				'createRights' => [ 'wikilambda-create-converter' ],
+				'createAllowed' => [
+					'basic' => true, 'functioneer' => true, 'maintainer' => true, 'sysop' => true
+				],
+				'createAllowedPredefined' => [
+					'basic' => false, 'functioneer' => false, 'maintainer' => true, 'sysop' => false
+				],
+			],
+
 			// TODO (T342357): Pre-defined (ZID < 10k) tester (Z20 instance)
 			// TODO (T342357): User-defined (ZID > 10k) tester (Z20 instance)
 
 			'language (Z60 instance)' => [
 				'testedType' => 'Z60',
-				'content' =>
+				'createContent' =>
 					'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" }, '
 						. '"Z2K2": { "Z1K1": "Z60", "Z60K1": "en-test" }, '
 						. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
 				'createRights' => [ 'wikilambda-create-language' ],
-				'allowed' => [
+				'createAllowed' => [
 					'basic' => false, 'functioneer' => false, 'maintainer' => true, 'sysop' => false
 				],
-				'allowedPredefined' => [
+				'createAllowedPredefined' => [
 					'basic' => false, 'functioneer' => false, 'maintainer' => true, 'sysop' => false
 				],
 			],
