@@ -13,6 +13,7 @@
 		<cdx-select
 			v-if="isEnum"
 			v-model:selected="selectedValue"
+			:disabled="disabled"
 			:menu-items="enumValues"
 			:menu-config="selectConfig"
 			@update:selected="onSelect"

@@ -1009,6 +1009,7 @@ describe( 'ZObjectKeyValue', () => {
 				expect( actions.changeType ).toHaveBeenCalledWith( expect.anything(), {
 					id: 1,
 					type: Constants.Z_FUNCTION,
+					literal: true,
 					append: false
 				} );
 			} );

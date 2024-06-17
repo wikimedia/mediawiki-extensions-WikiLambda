@@ -27,22 +27,30 @@ module.exports = exports = {
 			 * @param {number} payload.id the parent rowId for the new object
 			 * @param {Object} payload.value initialization values
 			 * @param {boolean} payload.append whether to append the new zobject to a list
-			 * @param {boolean} payload.link whether to default to reference over literal
+			 * @param {boolean} payload.literal force create a literal object: on root initialization and
+			 * mode selector explicit request
 			 * @param {Array} keyList a list of types that have been seen so far
 			 * @return {Object}
 			 */
 			function newObjectByType( payload, keyList = [] ) {
-				// If payload.link is true, we are prioritizing creating a
-				// blank reference over the literal object. This happens for the
-				// types Constants.LINKED_TYPES, which are generally persisted and
-				// linked (Z8/Function, Z4/Type, etc.)
-				// We want to do this when we add new keys, new items to a list,
-				// arguments to a function call, or similar cases. We don't want
-				// to do this when we create the blank object for the page root.
-				if ( keyList.includes( payload.type ) ||
-						( payload.link && Constants.LINKED_TYPES.includes( payload.type ) ) ) {
+				// If payload.literal is true, we are forcing creating a literal
+				// object for those types that are generally persisted and linked.
+				// We force literal when:
+				// * initializing a new root ZObject
+				// * the mode selector explicitly requests literal
+				// We default to references for LINKED_TYPES and Enums when:
+				// * initializing function arguments
+				// * initializing key values
+				// * adding new items to a list
+				if ( keyList.includes( payload.type ) || ( !payload.literal && (
+					Constants.LINKED_TYPES.includes( payload.type ) ||
+					getters.isEnumType( payload.type )
+				) ) ) {
 					return getters.createZReference( payload );
 				}
+
+				// Unset payload.literal for recursive calls
+				delete payload.literal;
 
 				keyList.push( payload.type );
 
@@ -94,13 +102,7 @@ module.exports = exports = {
 					case Constants.Z_TYPED_MAP:
 						return getters.createZTypedMap( payload );
 					default:
-						// If type is enumeration, initialize it as a reference unless it's
-						// being explicitly requested as a literal by the Mode Selector
-						if ( getters.isEnumType( payload.type ) && !payload.literal ) {
-							payload.literal = false;
-							return getters.createZReference( payload );
-						}
-						// Else, explore and create new ZObject keys
+						// Explore and create new ZObject keys
 						return getters.createGenericObject( payload, keyList );
 				}
 			}

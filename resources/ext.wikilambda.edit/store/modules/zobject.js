@@ -1499,7 +1499,8 @@ module.exports = exports = {
 						// If `zid` is a type, dispatch `changeType` action
 						return context.dispatch( 'changeType', {
 							id: Z2K2.id,
-							type: defaultType
+							type: defaultType,
+							literal: true
 						} );
 					} );
 			} );
@@ -1783,8 +1784,7 @@ module.exports = exports = {
 				if ( !oldKeys.includes( arg[ Constants.Z_ARGUMENT_KEY ] ) ) {
 					const key = arg[ Constants.Z_ARGUMENT_KEY ];
 					const value = context.getters.createObjectByType( {
-						type: arg[ Constants.Z_ARGUMENT_TYPE ],
-						link: true
+						type: arg[ Constants.Z_ARGUMENT_TYPE ]
 					} );
 
 					// Asynchronously fetch the necessary zids. We don't need to wait

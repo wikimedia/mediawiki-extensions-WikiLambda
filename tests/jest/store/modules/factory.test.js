@@ -689,8 +689,26 @@ describe( 'factory Vuex module', () => {
 			} );
 
 			describe( 'add ZImplementation', () => {
-				it( 'adds a valid ZImplementation', () => {
+				it( 'adds a reference if not forced to literal', () => {
 					const payload = { id: 0, type: Constants.Z_IMPLEMENTATION };
+					factoryModule.actions.changeType( context, payload );
+
+					const expectedZids = [ 'Z1', 'Z9' ];
+					const expectedPayload = {
+						rowId: 0,
+						value: {
+							Z1K1: 'Z9',
+							Z9K1: ''
+						},
+						append: false
+					};
+
+					expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZids', { zids: expectedZids } );
+					expect( context.dispatch ).toHaveBeenCalledWith( 'injectZObjectFromRowId', expectedPayload );
+				} );
+
+				it( 'adds a valid ZImplementation', () => {
+					const payload = { id: 0, type: Constants.Z_IMPLEMENTATION, literal: true };
 					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z14', 'Z9', 'Z7' ];
@@ -709,7 +727,7 @@ describe( 'factory Vuex module', () => {
 				} );
 
 				it( 'adds a valid ZImplementation for a given function Zid', () => {
-					const payload = { id: 0, type: Constants.Z_IMPLEMENTATION };
+					const payload = { id: 0, type: Constants.Z_IMPLEMENTATION, literal: true };
 					mw.Uri.mockImplementationOnce( () => ( {
 						query: {
 							zid: Constants.Z_IMPLEMENTATION,
@@ -735,8 +753,26 @@ describe( 'factory Vuex module', () => {
 			} );
 
 			describe( 'add ZFunction', () => {
-				it( 'adds a valid ZFunction', () => {
+				it( 'adds a reference if not forced to literal', () => {
 					const payload = { id: 0, type: Constants.Z_FUNCTION };
+					factoryModule.actions.changeType( context, payload );
+
+					const expectedZids = [ 'Z1', 'Z9' ];
+					const expectedPayload = {
+						rowId: 0,
+						value: {
+							Z1K1: 'Z9',
+							Z9K1: ''
+						},
+						append: false
+					};
+
+					expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZids', { zids: expectedZids } );
+					expect( context.dispatch ).toHaveBeenCalledWith( 'injectZObjectFromRowId', expectedPayload );
+				} );
+
+				it( 'adds a valid ZFunction', () => {
+					const payload = { id: 0, type: Constants.Z_FUNCTION, literal: true };
 					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z8', 'Z17', 'Z9', 'Z12', 'Z11', 'Z20', 'Z14' ];
@@ -766,7 +802,7 @@ describe( 'factory Vuex module', () => {
 				} );
 
 				it( 'adds a valid ZFunction with set zid', () => {
-					const payload = { id: 0, type: Constants.Z_FUNCTION };
+					const payload = { id: 0, type: Constants.Z_FUNCTION, literal: true };
 					context.getters.getCurrentZObjectId = 'Z10000';
 					factoryModule.actions.changeType( context, payload );
 
@@ -798,8 +834,26 @@ describe( 'factory Vuex module', () => {
 			} );
 
 			describe( 'add ZType', () => {
-				it( 'adds a valid ZType', () => {
+				it( 'adds a reference if not forced to literal', () => {
 					const payload = { id: 0, type: Constants.Z_TYPE };
+					factoryModule.actions.changeType( context, payload );
+
+					const expectedZids = [ 'Z1', 'Z9' ];
+					const expectedPayload = {
+						rowId: 0,
+						value: {
+							Z1K1: 'Z9',
+							Z9K1: ''
+						},
+						append: false
+					};
+
+					expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZids', { zids: expectedZids } );
+					expect( context.dispatch ).toHaveBeenCalledWith( 'injectZObjectFromRowId', expectedPayload );
+				} );
+
+				it( 'adds a valid ZType', () => {
+					const payload = { id: 0, type: Constants.Z_TYPE, literal: true };
 					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z4', 'Z9', 'Z3', 'Z101', 'Z46', 'Z64' ];
@@ -832,7 +886,7 @@ describe( 'factory Vuex module', () => {
 						{ id: 4, key: 'Z9K1', value: 'Z4', parent: 2 }
 					] );
 					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
-					const payload = { id: 1, type: Constants.Z_TYPE, append: true };
+					const payload = { id: 1, type: Constants.Z_TYPE, append: true, literal: true };
 					factoryModule.actions.changeType( context, payload );
 
 					const expectedZids = [ 'Z1', 'Z4', 'Z9', 'Z3', 'Z101', 'Z46', 'Z64' ];
@@ -1282,6 +1336,27 @@ describe( 'factory Vuex module', () => {
 						value: {
 							Z1K1: 'Z9',
 							Z9K1: ''
+						},
+						append: false
+					};
+
+					expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZids', { zids: expectedZids } );
+					expect( context.dispatch ).toHaveBeenCalledWith( 'injectZObjectFromRowId', expectedPayload );
+				} );
+
+				it( 'adds a literal when is explicitly requested', () => {
+					const payload = { id: 0, type: mockEnumZid, literal: true };
+					factoryModule.actions.changeType( context, payload );
+
+					const expectedZids = [ 'Z1', 'Z30000', 'Z9' ];
+					const expectedPayload = {
+						rowId: 0,
+						value: {
+							Z1K1: 'Z30000',
+							Z30000K1: {
+								Z1K1: 'Z9',
+								Z9K1: ''
+							}
 						},
 						append: false
 					};

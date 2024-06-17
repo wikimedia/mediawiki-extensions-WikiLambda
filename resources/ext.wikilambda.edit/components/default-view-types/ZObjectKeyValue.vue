@@ -682,12 +682,15 @@ module.exports = exports = defineComponent( {
 				( payload.value !== Constants.Z_STRING )
 			);
 
+			// Force literal object if it's root object or request comes from mode selector
+			const literal = payload.literal || this.key === Constants.Z_PERSISTENTOBJECT_VALUE;
+
 			// Set the type
 			this.changeType( {
 				id: this.rowId,
 				type: payload.value,
 				append: false,
-				literal: payload.literal
+				literal
 			} );
 
 			// If we are setting the type of a Z1K1 key, we are changing the mode,

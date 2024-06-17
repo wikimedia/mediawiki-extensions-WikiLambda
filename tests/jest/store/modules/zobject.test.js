@@ -2740,7 +2740,7 @@ describe( 'zobject Vuex module', () => {
 
 				const expectedChangeTypePayload = { id: 0, type: Constants.Z_PERSISTENTOBJECT };
 				const expectedRootObject = { id: 0, key: undefined, parent: undefined, value: Constants.ROW_VALUE_OBJECT };
-				const expectedZ2K2ChangeTypePayload = { id: 7, type: Constants.Z_BOOLEAN };
+				const expectedZ2K2ChangeTypePayload = { id: 7, type: Constants.Z_BOOLEAN, literal: true };
 
 				zobjectModule.actions.initializeCreateNewPage( context );
 
@@ -4031,6 +4031,7 @@ describe( 'zobject Vuex module', () => {
 				context.getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( context.state, context.getters );
 				// Getters: library module
 				context.getters.getStoredObject = libraryModule.getters.getStoredObject( context.state );
+				context.getters.isEnumType = libraryModule.getters.isEnumType( context.state );
 				// Getters: addZObject module
 				Object.keys( zobjectModule.modules.factory.getters ).forEach( ( key ) => {
 					context.getters[ key ] =

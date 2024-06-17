@@ -201,7 +201,9 @@ const Constants = {
 		Constants.Z_TESTER,
 		Constants.Z_IMPLEMENTATION,
 		Constants.Z_FUNCTION,
-		Constants.Z_NATURAL_LANGUAGE
+		Constants.Z_NATURAL_LANGUAGE,
+		Constants.Z_SERIALISER,
+		Constants.Z_DESERIALISER
 		// TODO (T296815): Constants.Z_PROGRAMMING_LANGUAGE
 	],
 	resolverTypes = [
