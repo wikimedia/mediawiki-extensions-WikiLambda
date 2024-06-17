@@ -1,66 +1,6 @@
 {
 	"root": true,
 	"extends": [
-		"wikimedia/client-es6",
-		"wikimedia/mediawiki",
-		"wikimedia/jquery"
-	],
-	"globals": {
-		"Promise": "readonly",
-		"exports": true
-	},
-	"rules": {
-		"compat/compat": [
-			"error",
-			"last 2 chrome versions, last 2 firefox versions, last 2 opera versions, last 2 edge versions, safari >= 14, iOS >= 14"
-		],
-		"max-len": [
-			"error",
-			{
-				"code": 120,
-				"tabWidth": 4,
-				"ignorePattern": "^// eslint-.+",
-				"ignoreUrls": true,
-				"ignoreComments": false,
-				"ignoreRegExpLiterals": true,
-				"ignoreStrings": true,
-				"ignoreTemplateLiterals": true
-			}
-		],
-		"es-x/no-array-prototype-includes": "off",
-		"es-x/no-promise-prototype-finally": "off",
-		"es-x/no-string-prototype-matchall": "off",
-		"jsdoc/require-param-type": "error",
-		"jsdoc/require-returns": "error",
-		"jsdoc/check-types": "error",
-		"jsdoc/no-undefined-types": [ "warn", {
-			"definedTypes": [
-				"LabelData",
-				"Row"
-			]
-		} ],
-		"vue/attributes-order": "error",
-		"vue/component-definition-name-casing": [
-			"error",
-			"kebab-case"
-		],
-		"vue/no-undef-properties": "off",
-		"vue/require-explicit-emits": "off",
-		"vue/no-unsupported-features": [
-			"error",
-			{
-				"version": "^3.0.0",
-				"ignores": []
-			}
-		],
-		"vue/no-undef-components": [
-			"error",
-			{
-				"ignorePatterns": [
-					"wl-z-object-key-value"
-				]
-			}
-		],
-		"vue/no-v-model-argument": "warn"
-	}
+		"wikimedia/server"
+	]
 }

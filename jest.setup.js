@@ -4,9 +4,9 @@
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
+'use strict';
 
-/* eslint-disable no-implicit-globals, no-undef */
-/* global global, jest, mockLocalStorage */
+/* global jest, mockLocalStorage, $ */
 // Assign things to "global" here if you want them to be globally available during tests
 
 const fs = require( 'fs' ),
