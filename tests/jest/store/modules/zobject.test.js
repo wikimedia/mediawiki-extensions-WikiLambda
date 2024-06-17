@@ -2536,6 +2536,84 @@ describe( 'zobject Vuex module', () => {
 			} );
 		} );
 
+		describe( 'getConverterIdentity', () => {
+			beforeEach( () => {
+				state = { zobject: [] };
+				getters = {};
+				getters.getRowById = zobjectModule.getters.getRowById( state );
+				getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+				getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
+				getters.getZReferenceTerminalValue = zobjectModule.getters.getZReferenceTerminalValue( state, getters );
+			} );
+
+			it( 'returns undefined if rowId is undefined', () => {
+				const rowId = undefined;
+				const type = Constants.Z_SERIALISER;
+				const expected = undefined;
+				const result = zobjectModule.getters.getConverterIdentity( state, getters )( rowId, type );
+				expect( result ).toBe( expected );
+			} );
+
+			it( 'returns undefined if type is undefined', () => {
+				state.zobject = zobjectToRows( {
+					Z1K1: 'Z64',
+					Z64K1: 'Z12345',
+					Z64K2: 'Z6',
+					Z64K3: { Z1K1: 'Z16', Z16K1: 'Z600', Z16K2: '()=>true' },
+					Z64K4: 'Int'
+				} );
+				const rowId = 0;
+				const type = undefined;
+				const expected = undefined;
+				const result = zobjectModule.getters.getConverterIdentity( state, getters )( rowId, type );
+				expect( result ).toBe( expected );
+			} );
+
+			it( 'returns undefined if object is not a converter', () => {
+				state.zobject = zobjectToRows( {
+					Z1K1: 'Z11',
+					Z11K1: 'Z1002',
+					Z11K2: 'not a converter'
+				} );
+				const rowId = 0;
+				const type = 'Z11';
+				const expected = undefined;
+				const result = zobjectModule.getters.getConverterIdentity( state, getters )( rowId, type );
+				expect( result ).toBe( expected );
+			} );
+
+			it( 'returns the identity of the Serialiser', () => {
+				state.zobject = zobjectToRows( {
+					Z1K1: 'Z64',
+					Z64K1: 'Z12345',
+					Z64K2: 'Z6',
+					Z64K3: { Z1K1: 'Z16', Z16K1: 'Z600', Z16K2: '()=>true' },
+					Z64K4: 'Int'
+				} );
+				const rowId = 0;
+				const type = 'Z64';
+				const expected = 'Z12345';
+				const result = zobjectModule.getters.getConverterIdentity( state, getters )( rowId, type );
+				expect( result ).toBe( expected );
+			} );
+
+			it( 'returns the identity of the Deserialiser', () => {
+				state.zobject = zobjectToRows( {
+					Z1K1: 'Z46',
+					Z46K1: 'Z12345',
+					Z46K2: 'Z6',
+					Z46K3: { Z1K1: 'Z16', Z16K1: 'Z600', Z16K2: '()=>true' },
+					Z46K4: 'Int'
+				} );
+				const rowId = 0;
+				const type = 'Z46';
+				const expected = 'Z12345';
+				const result = zobjectModule.getters.getConverterIdentity( state, getters )( rowId, type );
+				expect( result ).toBe( expected );
+			} );
+		} );
+
 		describe( 'validateGenericType', () => {
 			let getters;
 			beforeEach( () => {

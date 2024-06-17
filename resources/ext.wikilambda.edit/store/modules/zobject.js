@@ -1273,6 +1273,33 @@ module.exports = exports = {
 		},
 
 		/**
+		 * Retuns the value of the identity key of a converter object given the
+		 * rowId and the type of converter (Serialiser/Z64 or Deserialiser/Z46)
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getConverterIdentity: function ( _state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @param {string} type
+			 * @return {string | undefined}
+			 */
+			function findIdentity( rowId, type ) {
+				if ( type !== Constants.Z_DESERIALISER && type !== Constants.Z_SERIALISER ) {
+					return undefined;
+				}
+				const identityKey = `${ type }K1`;
+				const identityKeyRow = getters.getRowByKeyPath( [ identityKey ], rowId );
+				return identityKeyRow ?
+					getters.getZReferenceTerminalValue( identityKeyRow.id ) :
+					undefined;
+			}
+			return findIdentity;
+		},
+
+		/**
 		 * Recursively waks a nested generic type and returns
 		 * the field IDs and whether they are valid or not.
 		 *
