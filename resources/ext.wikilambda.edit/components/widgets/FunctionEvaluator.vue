@@ -5,7 +5,7 @@
 	@license MIT
 -->
 <template>
-	<wl-widget-base class="ext-wikilambda-function-evaluator">
+	<wl-widget-base class="ext-wikilambda-function-evaluator" data-testid="function-evaluator">
 		<template #header>
 			{{ title }}
 		</template>
@@ -72,6 +72,7 @@
 					action="progressive"
 					weight="primary"
 					:disabled="!canRunFunction"
+					data-testid="evaluator-run-button"
 					@click="waitAndCallFunction"
 				>
 					{{ $i18n( 'wikilambda-function-evaluator-run-function' ).text() }}
@@ -88,7 +89,7 @@
 					<div class="ext-wikilambda-key-block">
 						<label>{{ $i18n( 'wikilambda-function-evaluator-result' ).text() }}</label>
 					</div>
-					<div v-if="running">
+					<div v-if="running" data-testid="function-evaluator-running">
 						{{ $i18n( 'wikilambda-function-evaluator-running' ).text() }}
 					</div>
 					<wl-z-object-key-value

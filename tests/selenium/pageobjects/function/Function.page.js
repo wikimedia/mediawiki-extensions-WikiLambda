@@ -12,6 +12,7 @@ const EvaluateFunctionBlock = require( '../../componentobjects/EvaluateFunctionB
 const AboutBlock = require( '../../componentobjects/AboutBlock' );
 const InputDropdown = require( '../../componentobjects/InputDropdown' );
 const { Element: WebdriverIOElementType } = require( 'webdriverio' );
+const i18n = require( '../../utils/i18n.js' );
 
 class FunctionPage extends Page {
 
@@ -186,9 +187,9 @@ class FunctionPage extends Page {
 	 * @return {void}
 	 */
 	async showArgumentsInOtherLanguages() {
-		const button = $( 'button=Show more languages' );
+		const button = $( `button:contains('${ i18n[ 'wikilambda-function-viewer-aliases-show-language-button' ] }')` );
 		await ElementActions.doClick( button );
-		const hideListButton = $( 'button=Show fewer languages' );
+		const hideListButton = $( `button:contains('${ i18n[ 'wikilambda-function-viewer-aliases-hide-language-button' ] }')` );
 		await hideListButton.waitForDisplayed();
 	}
 
@@ -304,7 +305,7 @@ class FunctionPage extends Page {
 	 */
 	async getImplementationsTableRowState( index ) {
 		const stateColumn = await this.getImplementationsTableRow( index ).$$( './td' )[ 2 ];
-		const stateSelector = stateColumn.$( './/span[text()="Connected" or text()="Disconnected"]' );
+		const stateSelector = stateColumn.$( `.//span[text()="${ i18n[ 'wikilambda-function-implementation-state-approved' ] }" or text()="${ i18n[ 'wikilambda-function-implementation-state-deactivated' ] }"]` );
 		const state = await ElementActions.getText( stateSelector );
 		return state;
 	}
@@ -414,7 +415,7 @@ class FunctionPage extends Page {
 	 */
 	async getTestCasesTableRowState( index ) {
 		const stateColumn = this.getTestCasesTableRow( index ).$$( 'td' )[ 2 ];
-		const stateSelector = stateColumn.$( './/span[text()="Connected" or text()="Disconnected"]' );
+		const stateSelector = stateColumn.$( `.//span[text()="${ i18n[ 'wikilambda-function-implementation-state-approved' ] }" or text()="${ i18n[ 'wikilambda-function-implementation-state-deactivated' ] }"]` );
 		const state = await ElementActions.getText( stateSelector );
 		return state;
 	}

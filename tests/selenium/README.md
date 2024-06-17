@@ -69,7 +69,6 @@ Refer to the [WikiLambda set-up docs](https://www.mediawiki.org/wiki/MediaWiki-D
     - `function.js`: tests for [CUJ 1](https://phabricator.wikimedia.org/T318922), [CUJ 2](https://phabricator.wikimedia.org/T318930), [CUJ 3](https://phabricator.wikimedia.org/T318933).
     - `implementations.js`: tests for [CUJ 5](https://phabricator.wikimedia.org/T318939)
     - `tester.js`: tests for [CUJ 4](https://phabricator.wikimedia.org/T318938).
-    - `type.js`: tests for [CUJ 7](https://phabricator.wikimedia.org/T318943).
 
 2. **`utils/`**: Contains utility functions or helper modules that can be reused across the test suites.
     - `ElementActions.js`: Contains general actions that are performed on the browser elements.
@@ -86,7 +85,6 @@ Refer to the [WikiLambda set-up docs](https://www.mediawiki.org/wiki/MediaWiki-D
     - `function/`: Contains selectors and actions for the Function page.
     - `implementation/`: Contains selectors and actions for the Implementation page.
     - `tester/`: Contains selectors and actions for the Tester page.
-    - `type/`: Contains selectors and actions for the Type page.
     - `special/`: Contains selectors and actions for the Special pages.
 
 5. **`componentobjects/`**: Contains components that are shared across multiple pages of the application.

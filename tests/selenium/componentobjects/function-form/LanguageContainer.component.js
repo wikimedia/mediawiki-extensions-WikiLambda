@@ -60,11 +60,11 @@ class LanguageContainerComponent {
 
 class FirstLanguageContainerComponent extends LanguageContainerComponent {
 	get outputTypeField() {
-		return this.languageContext.$( ".ext-wikilambda-function-definition-output input[placeholder='Select type']" );
+		return this.languageContext.$( `[data-testid='function-editor-output'] input[placeholder='${ i18n[ 'wikilambda-function-definition-output-selector' ] }']` );
 	}
 
 	get anotherInputBtn() {
-		return this.languageContext.$( 'button*=Add another input' );
+		return this.languageContext.$( `button*=${ i18n[ 'wikilambda-function-definition-inputs-item-add-input-button' ] }` );
 	}
 
 	constructor( languageContext ) {
@@ -72,15 +72,15 @@ class FirstLanguageContainerComponent extends LanguageContainerComponent {
 	}
 
 	getInput( inputIndex ) {
-		return this.languageContext.$( `.ext-wikilambda-editor-input-list-item:nth-of-type(${ inputIndex + 1 })` );
+		return this.languageContext.$( `[data-testid="function-editor-input-item"]:nth-of-type(${ inputIndex + 1 })` );
 	}
 
 	async getInputTypeField( index ) {
-		return this.getInput( index ).$( "input[placeholder='Select type']" );
+		return this.getInput( index ).$( `input[placeholder='${ i18n[ 'wikilambda-function-definition-inputs-item-selector-placeholder' ] }']` );
 	}
 
 	getDeleteButtonForInput( inputIndex ) {
-		return this.getInput( inputIndex ).$( 'button[aria-label="Remove input"]' );
+		return this.getInput( inputIndex ).$( '[data-testid="remove-input"]' );
 	}
 
 	async getOrCreateInputTypeField( index ) {
