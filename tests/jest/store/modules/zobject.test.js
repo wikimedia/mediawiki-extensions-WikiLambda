@@ -51,10 +51,8 @@ describe( 'zobject Vuex module', () => {
 		state = Object.assign( {}, zobjectModule.state );
 		getResolveMock = jest.fn( ( thenFunction ) => thenFunction() );
 		context = Object.assign( {}, {
-			// eslint-disable-next-line no-unused-vars, arrow-body-style
-			commit: jest.fn( ( mutationType, payload ) => {
-				return;
-			} ),
+			// eslint-disable-next-line no-unused-vars
+			commit: jest.fn( ( mutationType, payload ) => {} ),
 			// eslint-disable-next-line no-unused-vars
 			dispatch: jest.fn( ( actionType, payload ) => ( {
 				then: getResolveMock

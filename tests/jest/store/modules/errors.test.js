@@ -34,10 +34,7 @@ describe( 'Errors Vuex module', () => {
 		state = JSON.parse( JSON.stringify( errorsModule.state ) );
 
 		context = Object.assign( {}, {
-			// eslint-disable-next-line arrow-body-style
-			commit: jest.fn( () => {
-				return;
-			} )
+			commit: jest.fn( () => {} )
 		} );
 	} );
 
