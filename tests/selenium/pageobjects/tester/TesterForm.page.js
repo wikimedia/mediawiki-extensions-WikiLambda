@@ -167,11 +167,8 @@ class TesterPage extends Page {
 		 * Fills the entries in the condition block
 		 */
 		const conditionBlock = await this.getCallFunctionBlockSection( 'condition' );
-		const conditionValueInput = await conditionBlock.$( '[role="combobox"]' );
-		await InputDropdown.setSelectOption(
-			conditionBlock,
-			conditionValueInput,
-			condition );
+		const conditionInputRadio = await conditionBlock.$( `.//span[contains(text(), "${ condition }")]` );
+		await ElementActions.doClick( conditionInputRadio );
 
 		/**
 		 * Fills the entries in the then block
