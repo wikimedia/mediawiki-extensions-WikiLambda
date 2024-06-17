@@ -122,6 +122,7 @@ module.exports = exports = defineComponent( {
 	computed: Object.assign(
 		mapGetters( [
 			'getAllProgrammingLangs',
+			'getConverterIdentity',
 			'getErrors',
 			'getLabelData',
 			'getRowByKeyPath',
@@ -270,23 +271,44 @@ module.exports = exports = defineComponent( {
 			},
 
 			/**
-			 * Zid of the target function that this code will implement
+			 * Type of the parent object. Most common types would be
+			 * Implementation/Z14, Serialiser/Z64 or Deserialiser/Z46
+			 *
+			 * @return {string}
+			 */
+			parentType: function () {
+				return this.getZObjectTypeByRowId( this.parentId );
+			},
+
+			/**
+			 * If parent is Implementation/Z14:
+			 * * Zid of the target function that this code will implement
+			 * If parent is Serialiser/Z64 or Deserialiser/Z46:
+			 * * Zid of the converter identity (or Z0):
 			 *
 			 * @return {string | undefined }
 			 */
 			functionZid: function () {
-				return this.getZImplementationFunctionZid( this.parentId );
+				return this.parentType === Constants.Z_IMPLEMENTATION ?
+					this.getZImplementationFunctionZid( this.parentId ) :
+					this.getConverterIdentity( this.parentId, this.parentType );
 			},
 
 			/**
-			 * Returns an array of strings with the keys of the selected
-			 * target function for the implementation (Z14K1)
+			 * If parent is Implementation/Z14:
+			 * * Returns an array of strings with the keys of the selected
+			 *   target function for the implementation (Z14K1)
+			 * * Zid of the target function that this code will implement
+			 * If parent is Serialiser/Z64 or Deserialiser/Z46:
+			 * * Return one key using the the converter identity (or Z0):
 			 *
 			 * @return {Array}
 			 */
 			functionArgumentKeys: function () {
-				return this.getInputsOfFunctionZid( this.functionZid )
-					.map( ( arg ) => arg[ Constants.Z_ARGUMENT_KEY ] );
+				return this.parentType === Constants.Z_IMPLEMENTATION ?
+					this.getInputsOfFunctionZid( this.functionZid )
+						.map( ( arg ) => arg[ Constants.Z_ARGUMENT_KEY ] ) :
+					[ `${ this.functionZid }K1` ];
 			},
 
 			/**

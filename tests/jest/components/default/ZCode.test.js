@@ -51,7 +51,7 @@ describe( 'ZCode', () => {
 				{ Z17K2: 'Z10001K1' },
 				{ Z17K2: 'Z10001K2' }
 			] ),
-			getZObjectTypeByRowId: createGettersWithFunctionsMock( 'Z9' ),
+			getZObjectTypeByRowId: () => ( rowId ) => rowId === 10 ? 'Z14' : 'Z9',
 			getZReferenceTerminalValue: createGettersWithFunctionsMock( 'Z610' )
 		};
 		actions = {
@@ -65,10 +65,12 @@ describe( 'ZCode', () => {
 			actions: actions
 		} );
 	} );
+
 	describe( 'in view mode', () => {
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( ZCode, {
 				props: {
+					parentId: 10,
 					edit: false
 				}
 			} );
@@ -79,6 +81,7 @@ describe( 'ZCode', () => {
 		it( 'displays the ace editor', () => {
 			const wrapper = shallowMount( ZCode, {
 				props: {
+					parentId: 10,
 					edit: false
 				}
 			} );
@@ -89,6 +92,7 @@ describe( 'ZCode', () => {
 		it( 'editor is in read only mode', () => {
 			const wrapper = shallowMount( ZCode, {
 				props: {
+					parentId: 10,
 					edit: false
 				}
 			} );
@@ -98,7 +102,6 @@ describe( 'ZCode', () => {
 		describe( 'when current programming language is a reference', () => {
 			beforeEach( () => {
 				getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( 'Z610' );
-				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z9' );
 				global.store.hotUpdate( {
 					getters: getters,
 					actions: actions
@@ -108,6 +111,7 @@ describe( 'ZCode', () => {
 			it( 'computes the programming language values', () => {
 				const wrapper = shallowMount( ZCode, {
 					props: {
+						parentId: 10,
 						edit: true
 					}
 				} );
@@ -121,7 +125,7 @@ describe( 'ZCode', () => {
 		describe( 'when current programming language is a literal', () => {
 			beforeEach( () => {
 				getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( undefined );
-				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z61' );
+				getters.getZObjectTypeByRowId = () => ( rowId ) => rowId === 10 ? 'Z14' : 'Z61';
 				getters.getRowByKeyPath = createGettersWithFunctionsMock( { id: 2, value: 'python' } );
 				global.store.hotUpdate( {
 					getters: getters,
@@ -132,6 +136,7 @@ describe( 'ZCode', () => {
 			it( 'computes the programming language values', () => {
 				const wrapper = shallowMount( ZCode, {
 					props: {
+						parentId: 10,
 						edit: true
 					}
 				} );
@@ -147,6 +152,7 @@ describe( 'ZCode', () => {
 		it( 'enables programming language selector and code editor when not in read-only or view mode', () => {
 			const wrapper = shallowMount( ZCode, {
 				props: {
+					parentId: 10,
 					edit: true
 				}
 			} );
@@ -166,6 +172,7 @@ describe( 'ZCode', () => {
 
 				const wrapper = shallowMount( ZCode, {
 					props: {
+						parentId: 10,
 						edit: true
 					}
 				} );
@@ -173,10 +180,7 @@ describe( 'ZCode', () => {
 					Constants.Z_PROGRAMMING_LANGUAGES.JAVASCRIPT );
 				await wrapper.vm.$nextTick();
 				expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ {
-					keyPath: [
-						Constants.Z_CODE_LANGUAGE,
-						Constants.Z_REFERENCE_ID
-					],
+					keyPath: [ Constants.Z_CODE_LANGUAGE, Constants.Z_REFERENCE_ID ],
 					value: Constants.Z_PROGRAMMING_LANGUAGES.JAVASCRIPT
 				} ],
 				[ {
@@ -195,6 +199,7 @@ describe( 'ZCode', () => {
 
 				const wrapper = shallowMount( ZCode, {
 					props: {
+						parentId: 10,
 						edit: true
 					}
 				} );
@@ -202,10 +207,7 @@ describe( 'ZCode', () => {
 					Constants.Z_PROGRAMMING_LANGUAGES.PYTHON );
 				await wrapper.vm.$nextTick();
 				expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ {
-					keyPath: [
-						Constants.Z_CODE_LANGUAGE,
-						Constants.Z_REFERENCE_ID
-					],
+					keyPath: [ Constants.Z_CODE_LANGUAGE, Constants.Z_REFERENCE_ID ],
 					value: Constants.Z_PROGRAMMING_LANGUAGES.PYTHON
 				} ],
 				[ {
@@ -217,6 +219,7 @@ describe( 'ZCode', () => {
 			it( 'updates code for valid strings', async () => {
 				const wrapper = shallowMount( ZCode, {
 					props: {
+						parentId: 10,
 						edit: true
 					}
 				} );
@@ -234,7 +237,7 @@ describe( 'ZCode', () => {
 		describe( 'when current programming language is a literal', () => {
 			beforeEach( () => {
 				getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( undefined );
-				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z61' );
+				getters.getZObjectTypeByRowId = () => ( rowId ) => rowId === 10 ? 'Z14' : 'Z61';
 				getters.getRowByKeyPath = createGettersWithFunctionsMock( { id: 2, value: 'python' } );
 				global.store.hotUpdate( {
 					getters: getters,
@@ -252,6 +255,7 @@ describe( 'ZCode', () => {
 
 				const wrapper = shallowMount( ZCode, {
 					props: {
+						parentId: 10,
 						edit: true
 					}
 				} );
@@ -283,6 +287,7 @@ describe( 'ZCode', () => {
 
 				const wrapper = shallowMount( ZCode, {
 					props: {
+						parentId: 10,
 						edit: true
 					}
 				} );
@@ -301,6 +306,40 @@ describe( 'ZCode', () => {
 				[ {
 					keyPath: [ Constants.Z_CODE_CODE, Constants.Z_STRING_VALUE ],
 					value: 'def Z10001(Z10001K1, Z10001K2):\n\t'
+				} ] ] );
+			} );
+		} );
+
+		describe( 'when parent of code is a converter', () => {
+			beforeEach( () => {
+				getters.getZObjectTypeByRowId = () => ( rowId ) => rowId === 10 ? 'Z64' : 'Z9';
+				getters.getConverterIdentity = createGettersWithFunctionsMock( 'Z12345' );
+			} );
+
+			it( 'initializes code box with the right function name and arguments', async () => {
+				// Set initial value to something other than javascript
+				getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( 'Z610' );
+				global.store.hotUpdate( {
+					getters: getters,
+					actions: actions
+				} );
+
+				const wrapper = shallowMount( ZCode, {
+					props: {
+						parentId: 10,
+						edit: true
+					}
+				} );
+				wrapper.findComponent( { name: 'cdx-select' } ).vm.$emit( 'update:selected',
+					Constants.Z_PROGRAMMING_LANGUAGES.JAVASCRIPT );
+				await wrapper.vm.$nextTick();
+				expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ {
+					keyPath: [ Constants.Z_CODE_LANGUAGE, Constants.Z_REFERENCE_ID ],
+					value: Constants.Z_PROGRAMMING_LANGUAGES.JAVASCRIPT
+				} ],
+				[ {
+					keyPath: [ Constants.Z_CODE_CODE, Constants.Z_STRING_VALUE ],
+					value: 'function Z12345( Z12345K1 ) {\n\n}'
 				} ] ] );
 			} );
 		} );
