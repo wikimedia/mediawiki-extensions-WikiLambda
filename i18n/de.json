@@ -135,6 +135,7 @@
 	"wikilambda-create-function": "Funktion erstellen",
 	"wikilambda-create-type": "Typ erstellen",
 	"wikilambda-delete-list-item": "Objekt löschen",
+	"wikilambda-dialog-close": "Dialog schließen",
 	"wikilambda-diff-incompatible": "Das System kann keine Unterschiede zwischen einem Objekt und einem Nicht-Objekt anzeigen.",
 	"wikilambda-discard-edits": "Bearbeitungen verwerfen",
 	"wikilambda-edit": "Bearbeiten",

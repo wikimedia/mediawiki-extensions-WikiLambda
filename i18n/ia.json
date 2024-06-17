@@ -129,6 +129,7 @@
 	"wikilambda-create-function": "Crear function",
 	"wikilambda-create-type": "Crear typo",
 	"wikilambda-delete-list-item": "Deler elemento",
+	"wikilambda-dialog-close": "Clauder dialogo",
 	"wikilambda-diff-incompatible": "Le systema non pote monstrar differentias inter un objecto e un non-objecto.",
 	"wikilambda-discard-edits": "Abandonar modificationes",
 	"wikilambda-edit": "Modificar",
