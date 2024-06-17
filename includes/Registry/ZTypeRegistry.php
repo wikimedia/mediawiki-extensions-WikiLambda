@@ -225,6 +225,8 @@ class ZTypeRegistry extends ZObjectRegistry {
 
 	// These consts are currently only used by ZObjectStore to prohibit creation, and are not (yet) built-in.
 	public const Z_CODE = 'Z16';
+	public const Z_CODE_LANGUAGE = 'Z16K1';
+	public const Z_CODE_CODE = 'Z16K2';
 	public const Z_ARGUMENTREFERENCE = 'Z18';
 	public const Z_UNIT = 'Z21';
 	public const Z_NULL = 'Z23';

@@ -1485,4 +1485,20 @@ EOT;
 			null
 		];
 	}
+
+	public function testReplaceNullReferencePlaceholder() {
+		$filePath = dirname( __DIR__, 1 ) . '/test_data/Z0_replace.json';
+		$fileData = json_decode( file_get_contents( $filePath ) );
+
+		$initial = json_encode( $fileData->initial );
+		$expected = json_encode( $fileData->transformed );
+
+		$zid = 'Z88888';
+
+		// NOTE: This method will replace all Z0 substrings that it encounters
+		// in a code/Z16K2 string object, even if these were not intended to be
+		// replaced by the newly created Zid.
+		$transformed = ZObjectUtils::replaceNullReferencePlaceholder( $initial, $zid );
+		$this->assertEquals( $expected, $transformed );
+	}
 }

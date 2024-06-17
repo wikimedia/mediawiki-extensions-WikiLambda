@@ -1052,4 +1052,34 @@ class ZObjectUtils {
 		return $typeStringOrObject->{ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION }
 		   . '(' . implode( ',', $callInputTypes ) . ')';
 	}
+
+	/**
+	 * Replaces all the instances of "Z0" references and keys with the newly assigned
+	 * Zid. If the ZObject has a code key/Z16K2, it also replaces instances of unquoted
+	 * Z0s inside of the submitted code.
+	 *
+	 * @param string $data
+	 * @param string $zid
+	 * @return string
+	 */
+	public static function replaceNullReferencePlaceholder( $data, $zid ): string {
+		// Replace references and keys:
+		$zPlaceholderRegex = '/\"' . ZTypeRegistry::Z_NULL_REFERENCE . '(K[1-9]\d*)?\"/';
+		$zObjectString = preg_replace( $zPlaceholderRegex, "\"$zid$1\"", $data );
+
+		// Match code
+		$codeRegex = '/\"' . ZTypeRegistry::Z_CODE_CODE . '\":\\s*\"((\\\\\"|[^\"])*)\"/';
+		$codeMatches = [];
+		preg_match( $codeRegex, $zObjectString, $codeMatches );
+
+		// Match and replace Z0s inside of the code
+		if ( count( $codeMatches ) > 0 ) {
+			$code = $codeMatches[ 0 ];
+			$z0Regex = '/' . ZTypeRegistry::Z_NULL_REFERENCE . '(K[1-9]\d*)?/';
+			$newCode = preg_replace( $z0Regex, "$zid$1", $code );
+			$zObjectString = preg_replace( $codeRegex, $newCode, $zObjectString );
+		}
+
+		return $zObjectString;
+	}
 }

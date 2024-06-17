@@ -170,8 +170,8 @@ class ZObjectStore {
 	public function createNewZObject( MessageLocalizer $context, string $data, string $summary, User $user ) {
 		// Find all placeholder ZIDs and ZKeys and replace those with the next available ZID
 		$zid = $this->getNextAvailableZid();
-		$zPlaceholderRegex = '/\"' . ZTypeRegistry::Z_NULL_REFERENCE . '(K[1-9]\d*)?\"/';
-		$zObjectString = preg_replace( $zPlaceholderRegex, "\"$zid$1\"", $data );
+		$zObjectString = ZObjectUtils::replaceNullReferencePlaceholder( $data, $zid );
+
 		return $this->updateZObject( $context, $zid, $zObjectString, $summary, $user, EDIT_NEW );
 	}
 

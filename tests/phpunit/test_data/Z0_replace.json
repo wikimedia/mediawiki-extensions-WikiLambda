@@ -1,0 +1,60 @@
+{
+	"initial": {
+		"Z1K1": "Z2",
+		"Z2K1": {
+			"Z1K1": "Z6",
+			"Z6K1": "Z0"
+		},
+		"Z2K2": {
+			"Z1K1": "Z64",
+			"Z64K1": "Z0",
+			"Z64K2": "Z6",
+			"Z64K3": {
+				"Z1K1": "Z16",
+				"Z16K1": "Z600",
+				"Z16K2": "function Z0( Z0K1 ) {\n\tconsole.log(Z0, Z0K2, \"the substring Z0 is being replaced\"); return Z0K1;\n\n}"
+			},
+			"Z64K4": "BigInt"
+		},
+		"Z2K3": {
+			"Z1K1": "Z12",
+			"Z12K1": [
+				"Z11",
+				{
+					"Z1K1": "Z11",
+					"Z11K1": "Z1002",
+					"Z11K2": "This Z0 must not be replaced"
+				}
+			]
+		}
+	},
+	"transformed": {
+		"Z1K1": "Z2",
+		"Z2K1": {
+			"Z1K1": "Z6",
+			"Z6K1": "Z88888"
+		},
+		"Z2K2": {
+			"Z1K1": "Z64",
+			"Z64K1": "Z88888",
+			"Z64K2": "Z6",
+			"Z64K3": {
+				"Z1K1": "Z16",
+				"Z16K1": "Z600",
+				"Z16K2": "function Z88888( Z88888K1 ) {\n\tconsole.log(Z88888, Z88888K2, \"the substring Z88888 is being replaced\"); return Z88888K1;\n\n}"
+			},
+			"Z64K4": "BigInt"
+		},
+		"Z2K3": {
+			"Z1K1": "Z12",
+			"Z12K1": [
+				"Z11",
+				{
+					"Z1K1": "Z11",
+					"Z11K1": "Z1002",
+					"Z11K2": "This Z0 must not be replaced"
+				}
+			]
+		}
+	}
+}
