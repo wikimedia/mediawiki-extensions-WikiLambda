@@ -18,8 +18,8 @@
 		"local:selenium": "bash scripts/local_selenium.sh"
 	},
 	"devDependencies": {
-		"@babel/core": "7.16.10",
-		"@babel/preset-env": "7.16.10",
+		"@babel/core": "7.24.7",
+		"@babel/preset-env": "7.24.7",
 		"@testing-library/jest-dom": "5.16.5",
 		"@testing-library/vue": "6.6.1",
 		"@vue/test-utils": "2.4.6",
