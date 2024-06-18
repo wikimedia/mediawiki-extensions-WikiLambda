@@ -130,6 +130,7 @@
 	"wikilambda-create-function": "יצירת פונקציה",
 	"wikilambda-create-type": "יצירת סוג",
 	"wikilambda-delete-list-item": "למחוק פריט",
+	"wikilambda-dialog-close": "סגירת תיבת דו־שיח",
 	"wikilambda-diff-incompatible": "המערכת אינה יכולה להציג הבדלים בין עצם לבין משהו שאינו עצם.",
 	"wikilambda-discard-edits": "זריקת העריכות",
 	"wikilambda-edit": "עריכת",
