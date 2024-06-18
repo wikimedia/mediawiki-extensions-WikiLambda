@@ -35,7 +35,7 @@ describe( 'factory Vuex module', () => {
 			describe( 'createObjectByType does not do an infinite recursion', () => {
 				beforeEach( () => {
 					context.state = { objects: mockApiZids };
-					context.getters.isEnumType = ( zid ) => zid === mockEnumZid;
+					context.getters.isCustomEnum = ( zid ) => zid === mockEnumZid;
 					context.getters.getStoredObject = ( key ) => context.state.objects[ key ];
 					Object.keys( factoryModule.getters ).forEach( ( key ) => {
 						context.getters[ key ] =
@@ -118,7 +118,7 @@ describe( 'factory Vuex module', () => {
 					);
 				} );
 
-				context.getters.isEnumType = ( zid ) => zid === mockEnumZid;
+				context.getters.isCustomEnum = ( zid ) => zid === mockEnumZid;
 				context.getters.getZObjectAsJsonById = zobjectModule.getters.getZObjectAsJsonById( context.state );
 				context.getters.getUserLangZid = 'Z1003';
 				context.getters.getStoredObject = ( zid ) => context.state.objects[ zid ];

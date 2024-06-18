@@ -69,7 +69,7 @@ module.exports = exports = defineComponent( {
 		'getParentRowId',
 		'getZObjectTypeByRowId',
 		'getZObjectKeyByRowId',
-		'isEnumType',
+		'isCustomEnum',
 		'isInsideComposition'
 	] ), {
 		/**
@@ -157,7 +157,7 @@ module.exports = exports = defineComponent( {
 			let typeString;
 			if ( this.key !== Constants.Z_OBJECT_TYPE &&
 				!this.isKeyTypedListType( this.key ) &&
-				!this.isEnumType( this.parentExpectedType )
+				!this.isCustomEnum( this.parentExpectedType )
 			) {
 				typeString = this.typeToString( this.parentExpectedType, true );
 				literals.push( {

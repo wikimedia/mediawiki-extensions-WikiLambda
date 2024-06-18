@@ -38,13 +38,14 @@ module.exports = exports = {
 				// We force literal when:
 				// * initializing a new root ZObject
 				// * the mode selector explicitly requests literal
+				// * it has a builtin component even if it's an enum
 				// We default to references for LINKED_TYPES and Enums when:
 				// * initializing function arguments
 				// * initializing key values
 				// * adding new items to a list
 				if ( keyList.includes( payload.type ) || ( !payload.literal && (
 					Constants.LINKED_TYPES.includes( payload.type ) ||
-					getters.isEnumType( payload.type )
+					getters.isCustomEnum( payload.type )
 				) ) ) {
 					return getters.createZReference( payload );
 				}

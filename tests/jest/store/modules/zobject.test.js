@@ -3971,6 +3971,7 @@ describe( 'zobject Vuex module', () => {
 				context.getters.getInputsOfFunctionZid = libraryModule.getters.getInputsOfFunctionZid( context.state );
 				context.getters.getStoredObject = libraryModule.getters.getStoredObject( context.state );
 				context.getters.isEnumType = libraryModule.getters.isEnumType( context.state );
+				context.getters.isCustomEnum = libraryModule.getters.isCustomEnum( context.state, context.getters );
 				// Getters: addZObject module
 				Object.keys( zobjectModule.modules.factory.getters ).forEach( ( key ) => {
 					context.getters[ key ] =
@@ -4108,6 +4109,7 @@ describe( 'zobject Vuex module', () => {
 				// Getters: library module
 				context.getters.getStoredObject = libraryModule.getters.getStoredObject( context.state );
 				context.getters.isEnumType = libraryModule.getters.isEnumType( context.state );
+				context.getters.isCustomEnum = libraryModule.getters.isCustomEnum( context.state, context.getters );
 				// Getters: addZObject module
 				Object.keys( zobjectModule.modules.factory.getters ).forEach( ( key ) => {
 					context.getters[ key ] =
