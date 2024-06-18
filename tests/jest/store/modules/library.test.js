@@ -372,6 +372,36 @@ describe( 'library module', () => {
 				const actual = libraryModule.getters.isEnumType( state )( zid );
 				expect( actual ).toBe( expected );
 			} );
+
+			it( 'returns true when type is Boolean', () => {
+				const zid = 'Z40';
+				const expected = true;
+				const actual = libraryModule.getters.isEnumType( state )( zid );
+				expect( actual ).toBe( expected );
+			} );
+
+			describe( 'isCustomEnum', () => {
+				beforeEach( () => {
+					state.objects = mockApiZids;
+					context.getters = {
+						isEnumType: libraryModule.getters.isEnumType( state )
+					};
+				} );
+
+				it( 'returns true when type is custom enum', () => {
+					const zid = 'Z30000';
+					const expected = true;
+					const actual = libraryModule.getters.isCustomEnum( state, context.getters )( zid );
+					expect( actual ).toBe( expected );
+				} );
+
+				it( 'returns false when type is Boolean (built-in enum)', () => {
+					const zid = 'Z40';
+					const expected = false;
+					const actual = libraryModule.getters.isCustomEnum( state, context.getters )( zid );
+					expect( actual ).toBe( expected );
+				} );
+			} );
 		} );
 
 		describe( 'isEnumFetched', () => {

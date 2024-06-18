@@ -259,6 +259,12 @@ Constants.EXCLUDE_FROM_ENUMS = [
 	Constants.Z_SERIALISER
 ];
 
+// Types that must be considered enums
+// but have a builtin component:
+Constants.BUILTIN_ENUMS = [
+	Constants.Z_BOOLEAN
+];
+
 Constants.LIST_MENU_OPTIONS = {
 	DELETE_ITEM: 'delete-list-item',
 	MOVE_BEFORE: 'move-before',

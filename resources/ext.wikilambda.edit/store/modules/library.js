@@ -171,9 +171,13 @@ module.exports = exports = {
 		 * Given a type zid, returns whether it has an identity key
 		 *
 		 * @param {Object} state
-		 * @return {boolean}
+		 * @return {Function}
 		 */
 		isEnumType: function ( state ) {
+			/**
+			 * @param {string} zid
+			 * @return {boolean}
+			 */
 			return function ( zid ) {
 				if ( ( zid === undefined ) ||
 					( Constants.EXCLUDE_FROM_ENUMS.includes( zid ) ) ||
@@ -197,6 +201,24 @@ module.exports = exports = {
 					}
 				}
 				return false;
+			};
+		},
+		/**
+		 * Given a type zid, returns whether it has an identity key,
+		 * excluding the builtin enum types (Boolean/Z40), as they
+		 * have builtin components that require special cases.
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		isCustomEnum: function ( _state, getters ) {
+			/**
+			 * @param {string} zid
+			 * @return {boolean}
+			 */
+			return function ( zid ) {
+				return getters.isEnumType( zid ) && !Constants.BUILTIN_ENUMS.includes( zid );
 			};
 		},
 		/**

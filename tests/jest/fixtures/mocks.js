@@ -66,7 +66,7 @@ const mockFunction = {
 };
 
 /**
- * Returns builtin objects Z1, Z3, Z6, Z8, Z31, Z32, Z802, Z881, Z882, Z1003
+ * Returns builtin objects Z1, Z3, Z6, Z8, Z31, Z32, Z40, Z802, Z881, Z882, Z1003
  * And custom objects Z10001, Z10528, Z20001, Z20002, Z20003
  */
 const mockApiZids = {
@@ -590,6 +590,43 @@ const mockApiZids = {
 					Z1K1: "Z11",
 					Z11K1: "Z1002",
 					Z11K2: "Multilingual stringset"
+				}
+			]
+		}
+	},
+	Z40: {
+		Z1K1: "Z2",
+		Z2K1: {
+			Z1K1: "Z6",
+			Z6K1: "Z40"
+		},
+		Z2K2: {
+			Z1K1: "Z4",
+			Z4K1: "Z40",
+			Z4K2: [
+				"Z3",
+				{
+					Z1K1: "Z3",
+					Z3K1: "Z40",
+					Z3K2: "Z40K1",
+					Z3K3: {
+						Z1K1: "Z12",
+						Z12K1: [ "Z11" ]
+					},
+					Z3K4: "Z41"
+				}
+			],
+			Z4K3: "Z140",
+			Z4K4: "Z844"
+		},
+		Z2K3: {
+			Z1K1: "Z12",
+			Z12K1: [
+				"Z11",
+				{
+					Z1K1: "Z11",
+					Z11K1: "Z1002",
+					Z11K2: "Boolean"
 				}
 			]
 		}
