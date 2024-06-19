@@ -30,6 +30,7 @@
 						:menu-items="programmingLanguageMenuItems"
 						:default-label="$i18n( 'wikilambda-editor-label-select-programming-language-label' ).text()"
 						:status="( programmingLanguageErrors.length > 0 ) ? 'error' : 'default'"
+						@change="clearErrors( programmingLanguageRowId )"
 					>
 					</cdx-select>
 				</div>
@@ -59,9 +60,11 @@
 						class="ext-wikilambda-code__code-editor"
 						:mode="programmingLanguageLiteral"
 						:read-only="!edit"
+						:disabled="!programmingLanguageValue"
 						:value="editorValue"
 						data-testid="code-editor"
 						@change="updateCode"
+						@click="checkCode"
 					></code-editor>
 				</div>
 				<cdx-message
@@ -116,7 +119,8 @@ module.exports = exports = defineComponent( {
 	data: function () {
 		return {
 			editorValue: '',
-			allowSetEditorValue: true
+			allowSetEditorValue: true,
+			hasClickedDisabledField: false
 		};
 	},
 	computed: Object.assign(
@@ -344,7 +348,8 @@ module.exports = exports = defineComponent( {
 			'fetchZids',
 			'fetchAllZProgrammingLanguages',
 			'changeType',
-			'clearErrors'
+			'clearErrors',
+			'setError'
 		] ),
 		{
 			/**
@@ -413,6 +418,23 @@ module.exports = exports = defineComponent( {
 						value: code
 					} );
 				}
+			},
+
+			/**
+			 * Checks if a programming language is set
+			 */
+			checkCode: function () {
+				if ( !this.edit || this.programmingLanguageValue || this.hasClickedDisabledField ) {
+					return;
+				}
+				const payload = {
+					rowId: this.programmingLanguageRowId,
+					errorType: Constants.errorTypes.WARNING,
+					errorMessage: this.$i18n( 'wikilambda-editor-label-select-programming-language-empty' ).text()
+				};
+				this.hasClickedDisabledField = true;
+				this.setError( payload );
+
 			},
 
 			/**

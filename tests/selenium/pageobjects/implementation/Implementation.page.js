@@ -108,7 +108,7 @@ class Implementation extends Page {
 	 * @return {Array<string>}
 	 */
 	async getCodeEditorLines() {
-		const codeBlock = this.contentBlock.$( '[data-testid="code-editor"]' );
+		const codeBlock = this.contentBlock.$( '[data-testid="ace-code-editor"]' );
 		const code = await codeBlock.$$( './/div[contains(@class,"ace_line") and @role="option"]' );
 		const lineOfCodeArray = [];
 		code.forEach( async ( line ) => {

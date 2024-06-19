@@ -7,9 +7,10 @@
 -->
 <template>
 	<div
-		ref="editor"
 		class="ext-wikilambda-codeEditor"
-	></div>
+		:class="{ 'ext-wikilambda-codeEditor-disabled': disabled }">
+		<div ref="editor" data-testid="ace-code-editor"></div>
+	</div>
 </template>
 
 <script>
@@ -32,6 +33,10 @@ module.exports = exports = defineComponent( {
 			default: 'chrome'
 		},
 		readOnly: {
+			type: Boolean,
+			default: false
+		},
+		disabled: {
 			type: Boolean,
 			default: false
 		}
@@ -61,8 +66,8 @@ module.exports = exports = defineComponent( {
 			// TODO: Figure a way to not have this path hardcoded
 			window.ace.config.set( 'basePath', basePath + '/WikiLambda/resources/lib/ace/src' );
 
-			// Set readonly
-			this.editor.setReadOnly( this.readOnly );
+			// Set readonly attribute when readonly or disabled
+			this.editor.setReadOnly( this.readOnly || this.disabled );
 
 			// Set language and theme
 			this.editor.getSession().setMode( 'ace/mode/' + this.mode );
@@ -102,11 +107,15 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../ext.wikilambda.edit.variables.less';
 
-.ext-wikilambda-codeEditor {
+.ext-wikilambda-codeEditor .ace_editor {
 	width: 100%;
 	border: 1px solid @border-color-subtle;
 	min-height: 85px;
 	z-index: 0;
 	box-sizing: @box-sizing-base;
+}
+
+.ext-wikilambda-codeEditor-disabled .ace_editor {
+	background-color: @background-color-disabled-subtle;
 }
 </style>
