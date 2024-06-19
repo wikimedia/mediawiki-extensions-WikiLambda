@@ -43,7 +43,6 @@ class Title {
 	}
 }
 
-// eslint-disable-next-line security/detect-non-literal-fs-filename
 const englishMessages = JSON.parse( fs.readFileSync( path.join( __dirname, './i18n/en.json' ) ) );
 
 class Mocki18n {
@@ -104,16 +103,16 @@ global.mw = {
 		} )
 	},
 	track: jest.fn( ( trackkey, trackmessage ) => {
-		// eslint-disable-next-line no-console
+
 		console.log( 'Log emitted: ' + trackkey + ' - ' + trackmessage );
 	} ),
 	eventLog: {
 		dispatch: jest.fn( ( eventName, customData ) => {
-			// eslint-disable-next-line no-console
+
 			console.log( 'Metrics Platform event emitted: ' + eventName + ' - ' + JSON.stringify( customData ) );
 		} ),
 		submitInteraction: jest.fn( ( streamName, schemaID, action, interactionData ) => {
-			// eslint-disable-next-line no-console
+
 			console.log( 'Metrics Platform event emitted using submitInteraction: ' + action + ' - ' + JSON.stringify( interactionData ) );
 		} )
 	},
