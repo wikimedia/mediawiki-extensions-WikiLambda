@@ -388,6 +388,165 @@ EOT;
 		$this->assertEquals( 'en', $aliasCodes->current()->wlzl_label );
 	}
 
-	// TODO (T367015): Test the uncaught behaviour of MultiContentSave when a clash happens too late for us to stop it.
+	public function testOnMultiContentSave_relatedObjects() {
+		$this->insertZids( [ 'Z17', 'Z1002' ] );
 
+		$selectedFunctions = [ "Z801", "Z804", "Z820", "Z883", "Z885", "Z889" ];
+
+		$services = MediaWikiServices::getInstance();
+		$dbLoadFactory = $services->getDBLoadBalancerFactory();
+		$revisionRenderer = $services->getRevisionRenderer();
+		$wikiPageFactory = $services->getWikiPageFactory();
+
+		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$dataPath = dirname( __DIR__, 3 ) . '/function-schemata/data/definitions';
+
+		foreach ( $selectedFunctions as $key => $functionZid ) {
+			// Duplicated logic from insertZids() because to trigger the SecondaryDataUpdate we need the content.
+
+			$contentString = file_get_contents( "$dataPath/$functionZid.json" );
+
+			$status = $this->editPage(
+				$functionZid,
+				$contentString,
+				'Test ZFunction creation and related object insertion',
+				NS_MAIN
+			);
+			$this->assertTrue( $status->isOK(), "Edit to create $functionZid went through" );
+
+			DeferredUpdates::doUpdates();
+			$dbLoadFactory->waitForReplication();
+
+			$title = Title::newFromText( $functionZid, NS_MAIN );
+			$content = $handler::makeContent( $contentString, $title );
+
+			$this->assertTrue( $title->exists( IDBAccessObject::READ_LATEST ), "$functionZid should now exist" );
+
+			$slotOutput = $revisionRenderer->getRenderedRevision(
+				$wikiPageFactory->newFromTitle( $title )->getRevisionRecord()
+			);
+
+			$updates = $handler->getSecondaryDataUpdates( $title, $content, SlotRecord::MAIN, $slotOutput );
+
+			$zobjectUpdates = array_filter( $updates, static function ( $u ) {
+				return $u instanceof ZObjectSecondaryDataUpdate;
+			} );
+			$zobjectUpdates[0]->doUpdate();
+		}
+
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->getPrimaryDatabase();
+
+		// Expect a total of 17 rows
+		$rows = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_main_zid', 'wlzo_main_type', 'wlzo_key', 'wlzo_related_zobject', 'wlzo_related_type' ] )
+			->from( 'wikilambda_zobject_join' )
+			->fetchResultSet();
+		$this->assertSame( 17, $rows->numRows() );
+		// And the same when specifying wlzo_main_type and wlzo_related_type in the where clause
+		$rows = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_main_zid', 'wlzo_main_type', 'wlzo_key', 'wlzo_related_zobject', 'wlzo_related_type' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [ 'wlzo_main_type' => 'Z8', 'wlzo_related_type' => 'Z4' ] )
+			->fetchResultSet();
+		$this->assertSame( 17, $rows->numRows() );
+		// Expect a total of 11 rows for function input argument types
+		// Z801: 1; Z804: 2; Z820: 2; Z883: 2; Z885: 1; Z889: 3
+		$rows = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_main_zid', 'wlzo_main_type', 'wlzo_key', 'wlzo_related_zobject', 'wlzo_related_type' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [ 'wlzo_key' => 'Z8K1' ] )
+			->fetchResultSet();
+		$this->assertSame( 11, $rows->numRows() );
+		// Expect a total of 6 rows for function output types
+		$rows = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_main_zid', 'wlzo_main_type', 'wlzo_key', 'wlzo_related_zobject', 'wlzo_related_type' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [ 'wlzo_key' => 'Z8K2' ] )
+			->fetchResultSet();
+		$this->assertSame( 6, $rows->numRows() );
+		// Expect the first input type of Z804 to be 'Z881(Z39)'
+		$rows = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_related_zobject' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [ 'wlzo_main_zid' => 'Z804', 'wlzo_key' => 'Z8K1' ] )
+			->fetchResultSet();
+		$this->assertSame( 2, $rows->numRows() );
+		$this->assertEquals( 'Z881(Z39)', $rows->current()->wlzo_related_zobject );
+		// Expect the 2nd input type of Z804 to be 'Z1'
+		$rows->next();
+		$this->assertEquals( 'Z1', $rows->current()->wlzo_related_zobject );
+		// Expect there to be 2 input types of Z883 that are 'Z4'
+		$rows = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_related_zobject' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [ 'wlzo_main_zid' => 'Z883', 'wlzo_key' => 'Z8K1', 'wlzo_related_zobject' => 'Z4' ] )
+			->fetchResultSet();
+		$this->assertSame( 2, $rows->numRows() );
+		$this->assertEquals( 'Z4', $rows->current()->wlzo_related_zobject );
+		$rows->next();
+		$this->assertEquals( 'Z4', $rows->current()->wlzo_related_zobject );
+		// Expect the output type of Z804 to be 'Z883(Z39,Z1)'
+		$rows = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_related_zobject' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [ 'wlzo_main_zid' => 'Z804', 'wlzo_key' => 'Z8K2' ] )
+			->fetchResultSet();
+		$this->assertSame( 1, $rows->numRows() );
+		$this->assertEquals( 'Z883(Z39,Z1)', $rows->current()->wlzo_related_zobject );
+	}
+
+	public function testUpdateSecondaryTables_inserted() {
+		$updater = DatabaseUpdater::newForDB( $this->db );
+		HooksDataPathMock::createInitialContent( $updater );
+
+		// The secondary tables have now been populated for all the ZObjects in the mock data path.
+		// Count how many Z8s were loaded.
+		$res = $this->db->newSelectQueryBuilder()
+			->select( [ 'wlzl_zobject_zid' ] )
+			->from( 'wikilambda_zobject_labels' )
+			->where( [
+				'wlzl_type' => 'Z8'
+			] )
+			->orderBy( 'wlzl_zobject_zid', SelectQueryBuilder::SORT_ASC )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+		$numFunctions = $res->numRows();
+		$this->assertSame( 6, $numFunctions );
+
+		// Clear the wikilambda_zobject_join table
+		$this->db->newDeleteQueryBuilder()
+			->deleteFrom( 'wikilambda_zobject_join' )
+			->where( [ true ] )
+			->caller( __METHOD__ )->execute();
+
+		// Call updateSecondaryTables to re-populate wikilambda_zobject_join.
+		HooksDataPathMock::updateSecondaryTables( $updater, 'Z8' );
+
+		// Confirm that updateSecondaryTables has populated wikilambda_zobject_join with
+		// at least one input-type row for each of the functions
+		$res = $this->db->newSelectQueryBuilder()
+			->select( [ 'wlzo_main_zid' ] )
+			->distinct()
+			->from( 'wikilambda_zobject_join' )
+			->where( [ 'wlzo_key' => 'Z8K1' ] )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+		$size = $res->numRows();
+		$this->assertSame( $size, $numFunctions );
+
+		// Confirm that updateSecondaryTables has populated wikilambda_zobject_join with
+		// one output-type row for each of the functions
+		$res = $this->db->newSelectQueryBuilder()
+			->select( [ 'wlzo_main_zid' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [ 'wlzo_key' => 'Z8K2' ] )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+		$size = $res->numRows();
+		$this->assertSame( $size, $numFunctions );
+	}
+
+	// TODO (T367015): Test the uncaught behaviour of MultiContentSave when a clash happens too late
+	//   for us to stop it.
+	// TODO (T367621): Consider moving some tests from StandaloneHooksTest to HooksTest
 }

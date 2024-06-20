@@ -1,0 +1,212 @@
+<?php
+
+/**
+ * WikiLambda maintenance script to update WikiLambda secondary tables,
+ * for ZObjects of a given type.  For each such ZObject, a new instance of
+ * ZObjectSecondaryDataUpdate is created and added to DeferredUpdates.
+ *
+ * The --report option prints secondary table sizes before and after the update.
+ *
+ * By default, sleeps 5 seconds between the creation of each ZObjectSecondaryDataUpdate.
+ *
+ * @file
+ * @ingroup Extensions
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
+
+namespace MediaWiki\Extensions\WikiLambda\Maintenance;
+
+use Maintenance;
+use MediaWiki\Deferred\DeferredUpdates;
+use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
+use MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate;
+use MediaWiki\Extension\WikiLambda\ZObjectStore;
+use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
+use Wikimedia\Rdbms\IConnectionProvider;
+use Wikimedia\Rdbms\SelectQueryBuilder;
+
+$IP = getenv( 'MW_INSTALL_PATH' );
+if ( $IP === false ) {
+	$IP = __DIR__ . '/../../..';
+}
+require_once "$IP/maintenance/Maintenance.php";
+
+class UpdateSecondaryTables extends Maintenance {
+
+	/**
+	 * @var ZObjectStore
+	 */
+	private $zObjectStore = null;
+	private IConnectionProvider $dbProvider;
+
+	/**
+	 * @inheritDoc
+	 */
+	public function __construct() {
+		parent::__construct();
+		$this->requireExtension( 'WikiLambda' );
+		$this->addDescription( "Updates WikiLambda secondary tables for each ZObject" .
+			" of the given zType. By default, sleeps 5 seconds after the creation of each update." );
+
+		$this->addOption(
+			'zType',
+			'Updates will be triggered for each ZObject of this type (a ZID)',
+			true,
+			true
+		);
+		$this->addOption(
+			'verbose',
+			"Whether to print the ZID of each ZObject for which updating is done (default: false)",
+			false,
+			false
+		);
+		$this->addOption(
+			'report',
+			"Whether to report table info (number of rows, highest autoincrement column value)" .
+			"\n\tbefore and after the updates (default: false)",
+			false,
+			false
+		);
+		$this->addOption(
+			'dryRun',
+			'Whether to just dry-run, without actually making changes (default: false)',
+			false,
+			false
+		);
+		$this->addOption(
+			'quick',
+			'Do not sleep 5 seconds after the creation of each update (default: false)',
+			false,
+			false
+		);
+	}
+
+	/**
+	 * @inheritDoc
+	 *
+	 * Note there is a function updateSecondaryTables in Hooks.php that provides similar
+	 * functionality (and with code that duplicates part of this, which could not
+	 * easily be avoided).
+	 */
+	public function execute() {
+		// Construct the ZObjectStore, because ServiceWiring hasn't run
+		$services = MediaWikiServices::getInstance();
+		$this->zObjectStore = new ZObjectStore(
+			$services->getDBLoadBalancerFactory(),
+			$services->getTitleFactory(),
+			$services->getWikiPageFactory(),
+			$services->getRevisionStore(),
+			$services->getUserGroupManager(),
+			LoggerFactory::getInstance( 'WikiLambda' )
+		);
+		$this->dbProvider = $services->getDBLoadBalancerFactory();
+		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+
+		$zType = $this->getOption( 'zType' );
+		$verbose = $this->getOption( 'verbose' );
+		$report = $this->getOption( 'report' );
+		$dryRun = $this->getOption( 'dryRun' );
+		$quick = $this->getOption( 'quick' );
+
+		if ( $report ) {
+			$this->output( "[Number of rows, highest autoincrement column value] before updates:\n" );
+			$this->reportTableInfo();
+			$this->output( "\n" );
+		}
+
+		$targets = $this->zObjectStore->fetchZidsOfType( $zType );
+
+		if ( count( $targets ) === 0 ) {
+				$this->output( "No ZObjects of type " . $zType . " for which secondary tables need updating\n" );
+			return;
+		}
+
+		if ( $dryRun ) {
+			$this->output( "Would have updated" );
+		} else {
+			$this->output( "Updating" );
+		}
+		$this->output( " secondary tables for " . count( $targets ) . " ZObjects of type " .
+			$zType . "\n" );
+
+		$offset = 0;
+		$queryLimit = 10;
+		do {
+			$contents = $this->zObjectStore->fetchBatchZObjects( array_slice( $targets, $offset,
+				$queryLimit ) );
+			$offset += $queryLimit;
+
+			foreach ( $contents as $zid => $persistentObject ) {
+				if ( $verbose ) {
+					$this->output( "  $zid" );
+				}
+				if ( $dryRun ) {
+					continue;
+				}
+				$title = Title::newFromText( $zid, NS_MAIN );
+				$data = json_encode( $persistentObject->getSerialized() );
+				$content = $handler::makeContent( $data, $title );
+				$update = new ZObjectSecondaryDataUpdate( $title, $content );
+				DeferredUpdates::addUpdate( $update );
+				if ( !$quick ) {
+					sleep( 5 );
+				}
+			}
+			if ( $verbose ) {
+				$this->output( "\n" );
+			}
+
+		} while ( count( $targets ) - $offset > 0 );
+
+		if ( $report ) {
+			// Make sure the updates have happened before reporting table info
+			DeferredUpdates::doUpdates();
+			$this->output( "\n[Number of rows, highest autoincrement column value] after updates:\n" );
+			$this->reportTableInfo();
+		}
+	}
+
+	/**
+	 * Print [Number of rows, highest autoincrement column value] for each secondary table
+	 */
+	private function reportTableInfo() {
+		$this->printTableInfo( 'wikilambda_zobject_join', 'wlzo_id' );
+		$this->printTableInfo( 'wikilambda_zlanguages', 'wlzlangs_id' );
+		$this->printTableInfo( 'wikilambda_zobject_function_join', 'wlzf_id' );
+		$this->printTableInfo( 'wikilambda_zobject_label_conflicts', 'wlzlc_id' );
+		$this->printTableInfo( 'wikilambda_zobject_labels', 'wlzl_id' );
+		$this->printTableInfo( 'wikilambda_ztester_results', 'wlztr_id' );
+	}
+
+	// phpcs:disable MediaWiki.Commenting.FunctionComment.MissingDocumentationPrivate
+	private function printTableInfo( $tableName, $columnName ) {
+		$tableInfo = $this->getTableInfo( $tableName, $columnName );
+		$this->output( "  $tableName: [$tableInfo[0], $tableInfo[1]]\n" );
+	}
+
+	// phpcs:disable MediaWiki.Commenting.FunctionComment.MissingDocumentationPrivate
+	private function getTableInfo( $tableName, $columnName ) {
+		$dbr = $this->dbProvider->getReplicaDatabase();
+
+		$res = $dbr->newSelectQueryBuilder()
+			->select( [ $columnName ] )
+			->from( $tableName )
+			->orderBy( $columnName, SelectQueryBuilder::SORT_DESC )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		$size = $res->numRows();
+		$highest = 'none';
+		if ( $size > 0 ) {
+			$highest = $res->fetchRow()[$columnName];
+		}
+
+		return [ $size, $highest ];
+	}
+}
+
+$maintClass = UpdateSecondaryTables::class;
+require_once RUN_MAINTENANCE_IF_MAIN;

@@ -41,6 +41,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		// 6. Saves non-conflicting labels in wikilambda_zobject_labels
 		// 7. If appropriate, clear wikilambda_ztester_results for this ZID
 		// 8. If appropriate, add entry to wikilambda_zlanguages for this ZID
+		// 9. Add related zobjects, if any, to wikilambda_zobject_join for this ZID
 
 		// TODO (T300522): Only re-write the labels if they've changed.
 		// TODO (T300522): Use a single fancy upsert to remove/update/insert instead?
@@ -113,6 +114,34 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 
 		if ( $zFunction && $zFunction->getZValue() ) {
 			$zObjectStore->insertZFunctionReference( $zid, $zFunction->getZValue(), $ztype );
+		}
+
+		// If $zid is a function, record each of its input types and its return type
+		$zObjectStore->deleteRelatedZObjects( $zid );
+		if ( $ztype === ZTypeRegistry::Z_FUNCTION ) {
+			$inputArgumentsObject = $innerZObject->getValueByKey( ZTypeRegistry::Z_FUNCTION_ARGUMENTS );
+			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList $inputArgumentsObject';
+			if ( $inputArgumentsObject !== null ) {
+				$inputArguments = $inputArgumentsObject->getAsArray();
+				foreach ( $inputArguments as $key => $inputArgument ) {
+					$inputTypeObject = $inputArgument->getValueByKey( ZTypeRegistry::Z_ARGUMENTDECLARATION_TYPE );
+					$inputTypeString = ZObjectUtils::makeTypeFingerprint( $inputTypeObject->getSerialized() );
+					if ( $inputTypeString !== null ) {
+						$zObjectStore->insertRelatedZObjects( $zid, $ztype,
+							ZTypeRegistry::Z_FUNCTION_ARGUMENTS,
+							$inputTypeString, ZTypeRegistry::Z_TYPE );
+					}
+				}
+			}
+			// Here we report more return type cases than above; use new vars to avoid confusion
+			$returnTypeObject = $innerZObject->getValueByKey(
+				ZTypeRegistry::Z_FUNCTION_RETURN_TYPE );
+			$returnTypeString = ZObjectUtils::makeTypeFingerprint( $returnTypeObject->getSerialized() );
+			if ( $returnTypeString !== null ) {
+				$zObjectStore->insertRelatedZObjects( $zid, $ztype,
+					ZTypeRegistry::Z_FUNCTION_RETURN_TYPE,
+					$returnTypeString, ZTypeRegistry::Z_TYPE );
+			}
 		}
 
 		// If appropriate, clear wikilambda_ztester_results for this ZID
