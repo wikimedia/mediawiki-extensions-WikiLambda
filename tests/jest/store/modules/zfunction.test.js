@@ -83,8 +83,6 @@ describe( 'zfunction Vuex module', () => {
 				getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
 				getters.getZMultilingualLanguageList = zobjectModule.getters.getZMultilingualLanguageList(
 					state, getters );
-				/* From library module */
-				getters.getLanguageIsoCodeOfZLang = ( key ) => ( key === 'Z1002' ? 'en' : 'es' );
 				/* From zFunction module */
 				getters.getZFunctionInputs = zfunctionModule.getters.getZFunctionInputs( state, getters );
 			} );
@@ -109,7 +107,7 @@ describe( 'zfunction Vuex module', () => {
 					{ Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z12345K1' },
 					{ Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z12345K2' }
 				] } } );
-				const expected = [];
+				const expected = [ [], [] ];
 				const current = zfunctionModule.getters.getZFunctionInputLangs( state, getters )();
 				expect( current ).toStrictEqual( expected );
 			} );
@@ -119,7 +117,7 @@ describe( 'zfunction Vuex module', () => {
 					{ Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z12345K1', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } },
 					{ Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z12345K2', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } }
 				] } } );
-				const expected = [];
+				const expected = [ [], [] ];
 				const current = zfunctionModule.getters.getZFunctionInputLangs( state, getters )();
 				expect( current ).toStrictEqual( expected );
 			} );
@@ -133,10 +131,7 @@ describe( 'zfunction Vuex module', () => {
 						{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'input two' }
 					] } }
 				] } } );
-				const expected = [
-					{ langZid: 'Z1002', langIsoCode: 'en', rowId: 24 },
-					{ langZid: 'Z1002', langIsoCode: 'en', rowId: 52 }
-				];
+				const expected = [ [ 'Z1002' ], [ 'Z1002' ] ];
 				const current = zfunctionModule.getters.getZFunctionInputLangs( state, getters )();
 				expect( current ).toStrictEqual( expected );
 			} );
@@ -149,10 +144,7 @@ describe( 'zfunction Vuex module', () => {
 					] } },
 					{ Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z12345K2', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } }
 				] } } );
-				const expected = [
-					{ langZid: 'Z1002', langIsoCode: 'en', rowId: 24 },
-					{ langZid: 'Z1003', langIsoCode: 'es', rowId: 34 }
-				];
+				const expected = [ [ 'Z1002', 'Z1003' ], [] ];
 				const current = zfunctionModule.getters.getZFunctionInputLangs( state, getters )();
 				expect( current ).toStrictEqual( expected );
 			} );

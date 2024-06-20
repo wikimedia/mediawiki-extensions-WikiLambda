@@ -69,7 +69,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Object|undefined}
 		 */
-		descriptionObject: function () {
+		descriptionRow: function () {
 			return this.zLanguage ?
 				this.getZPersistentDescription( this.zLanguage ) :
 				undefined;
@@ -80,7 +80,7 @@ module.exports = exports = defineComponent( {
 		 * @return {boolean}
 		 */
 		hasDescription: function () {
-			return this.descriptionObject !== undefined;
+			return this.descriptionRow !== undefined;
 		},
 		/**
 		 * Returns the description value for the given language.
@@ -90,7 +90,7 @@ module.exports = exports = defineComponent( {
 		 */
 		description: function () {
 			return this.hasDescription ?
-				this.getZMonolingualTextValue( this.descriptionObject.rowId ) :
+				this.getZMonolingualTextValue( this.descriptionRow.id ) :
 				'';
 		},
 		/**
@@ -156,10 +156,10 @@ module.exports = exports = defineComponent( {
 
 			if ( this.hasDescription ) {
 				if ( value === '' ) {
-					this.removeItemFromTypedList( { rowId: this.descriptionObject.rowId } );
+					this.removeItemFromTypedList( { rowId: this.descriptionRow.id } );
 				} else {
 					this.setValueByRowIdAndPath( {
-						rowId: this.descriptionObject.rowId,
+						rowId: this.descriptionRow.id,
 						keyPath: [
 							Constants.Z_MONOLINGUALSTRING_VALUE,
 							Constants.Z_STRING_VALUE
@@ -168,7 +168,7 @@ module.exports = exports = defineComponent( {
 					} );
 				}
 			} else {
-				// If this.descriptionObject is undefined, there's no monolingual string
+				// If this.descriptionRow is undefined, there's no monolingual string
 				// for the given language, so we create a new monolingual string
 				// with the new value and append to the parent list.
 				const parentRow = this.getRowByKeyPath( [

@@ -79,7 +79,7 @@ module.exports = exports = defineComponent( {
 		'getRowByKeyPath',
 		'getUserLangZid',
 		'getZFunctionInputs',
-		'getMetadataLanguages',
+		'getMultilingualDataLanguages',
 		'getZFunctionOutput',
 		'getZObjectAsJsonById',
 		'isCreateNewPage'
@@ -208,7 +208,7 @@ module.exports = exports = defineComponent( {
 	mounted: function () {
 		// Initializ the local array with the collection of available languages
 		// and initialize first label block with user lang if there are none.
-		this.functionLanguages = this.getMetadataLanguages( this.rowId );
+		this.functionLanguages = this.getMultilingualDataLanguages( this.rowId );
 		if ( this.functionLanguages.length === 0 ) {
 			this.functionLanguages.push( this.getUserLangZid );
 		}

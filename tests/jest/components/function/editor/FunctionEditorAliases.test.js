@@ -18,7 +18,7 @@ describe( 'FunctionEditorAliases', () => {
 	beforeEach( () => {
 		getters = {
 			getRowByKeyPath: createGettersWithFunctionsMock(),
-			getZPersistentAlias: createGettersWithFunctionsMock( { rowId: 2, langZid: 'Z1002', langIsoCode: 'en' } ),
+			getZPersistentAlias: createGettersWithFunctionsMock( { id: 2 } ),
 			getZMonolingualStringsetValues: createGettersWithFunctionsMock( [] )
 		};
 

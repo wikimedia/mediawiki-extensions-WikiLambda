@@ -65,8 +65,8 @@ module.exports = exports = {
 		},
 		/**
 		 * Returns the array of language Zids that are present
-		 * in a function's input labels. If no arguments or no
-		 * labels, returns an empty array.
+		 * for each of the function's input labels. If no arguments,
+		 * returns an empty array.
 		 *
 		 * @param {Object} _state
 		 * @param {Object} getters
@@ -75,10 +75,10 @@ module.exports = exports = {
 		getZFunctionInputLangs: function ( _state, getters ) {
 			/**
 			 * @param {string} rowId
-			 * @return {Array}
+			 * @return {Array} Array of Arrays of language zids
 			 */
 			function findInputLangs( rowId = 0 ) {
-				let languages = [];
+				const languages = [];
 				const inputs = getters.getZFunctionInputs( rowId );
 				for ( const inputRow of inputs ) {
 					const inputLabelsRow = getters.getRowByKeyPath( [
@@ -88,7 +88,7 @@ module.exports = exports = {
 					const inputLangs = inputLabelsRow ?
 						getters.getZMultilingualLanguageList( inputLabelsRow.id ) :
 						[];
-					languages = languages.concat( inputLangs );
+					languages.push( inputLangs );
 				}
 				return languages;
 			}

@@ -6,338 +6,920 @@
  */
 'use strict';
 
-const { config, mount, shallowMount } = require( '@vue/test-utils' ),
+const { shallowMount } = require( '@vue/test-utils' ),
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
-	About = require( '../../../../../resources/ext.wikilambda.app/components/widgets/about/About.vue' ),
-	AboutEditMetadataDialog = require( '../../../../../resources/ext.wikilambda.app/components/widgets/about/AboutEditMetadataDialog.vue' ),
-	AboutViewLanguagesDialog = require( '../../../../../resources/ext.wikilambda.app/components/widgets/about/AboutViewLanguagesDialog.vue' );
-
-// Ignore all "teleport" behavior for the purpose of testing Dialog;
-// see https://test-utils.vuejs.org/guide/advanced/teleport.html
-config.global.stubs = {
-	teleport: true
-};
+	About = require( '../../../../../resources/ext.wikilambda.app/components/widgets/about/About.vue' );
 
 describe( 'About', () => {
 	let getters,
 		actions;
 
 	beforeEach( () => {
+		const mockLabels = {
+			Z1002: 'English',
+			Z1003: 'español',
+			Z1732: 'asturianu'
+		};
 		getters = {
+			getFallbackLanguageZids: createGetterMock( [ 'Z1003', 'Z1002' ] ),
+			getLabelData: createLabelDataMock( mockLabels ),
+			getMultilingualDataLanguages: createGettersWithFunctionsMock( [] ),
+			getRowByKeyPath: createGettersWithFunctionsMock( undefined ),
+			getUserLangZid: createGetterMock( 'Z1002' ),
+			getZArgumentLabelForLanguage: createGettersWithFunctionsMock( undefined ),
 			getZArgumentTypeRowId: createGettersWithFunctionsMock( undefined ),
 			getZArgumentKey: createGettersWithFunctionsMock( undefined ),
 			getZFunctionInputs: createGettersWithFunctionsMock( [] ),
-			getZFunctionOutput: createGettersWithFunctionsMock( undefined ),
-			getMetadataLanguages: createGettersWithFunctionsMock( [ 'Z1002' ] ),
+			getZFunctionInputLangs: createGettersWithFunctionsMock( [] ),
 			getZMonolingualTextValue: createGettersWithFunctionsMock( '' ),
 			getZMonolingualStringsetValues: createGettersWithFunctionsMock( [] ),
 			getZPersistentName: createGettersWithFunctionsMock( undefined ),
-			getZPersistentAlias: createGettersWithFunctionsMock( undefined ),
+			getZPersistentNameLangs: createGettersWithFunctionsMock( [] ),
 			getZPersistentDescription: createGettersWithFunctionsMock( undefined ),
-			getUserLangZid: createGetterMock( 'Z1002' ),
-			isEnumType: createGettersWithFunctionsMock( false ),
+			getZPersistentDescriptionLangs: createGettersWithFunctionsMock( [] ),
+			getZPersistentAlias: createGettersWithFunctionsMock( undefined ),
+			getZPersistentAliasLangs: createGettersWithFunctionsMock( [] ),
+			isDirty: createGetterMock( false ),
 			isUserLoggedIn: createGetterMock( true ),
 			isCreateNewPage: createGetterMock( true ),
-			isDirty: createGetterMock( false ),
-			getLabelData: createLabelDataMock( {
-				Z2K3: 'name',
-				Z2K4: 'also known as',
-				Z2K5: 'description',
-				Z1002: 'English',
-				Z11K1: 'language',
-				Z10000K1: 'first',
-				Z10000K2: 'second'
-			} )
+			// pageTitle mixin getters:
+			getLanguageIsoCodeOfZLang: createGettersWithFunctionsMock( 'en' ),
+			getZReferenceTerminalValue: createGettersWithFunctionsMock( undefined )
 		};
-
-		actions = { fetchZids: jest.fn() };
+		actions = {
+			changeType: jest.fn(),
+			removeItemFromTypedList: jest.fn(),
+			resetMultilingualData: jest.fn(),
+			setDirty: jest.fn(),
+			setValueByRowIdAndPath: jest.fn()
+		};
 		global.store.hotUpdate( { getters: getters, actions: actions } );
 	} );
 
-	describe( 'Blank state', () => {
+	describe( 'View page', () => {
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( About, {
-				props: { edit: true, type: 'Z6' },
+				props: { edit: false, type: 'Z6' },
 				global: { stubs: { WlWidgetBase: false } }
 			} );
 			expect( wrapper.find( '.ext-wikilambda-app-about' ).exists() ).toBe( true );
 		} );
 
-		it( 'renders fields block with empty placeholder', () => {
-			const wrapper = shallowMount( About, {
-				props: { edit: true, type: 'Z6' },
-				global: { stubs: { WlWidgetBase: false } }
+		describe( 'Multilingual data available in the user language', () => {
+			beforeEach( () => {
+				getters.getMultilingualDataLanguages = createGettersWithFunctionsMock( [ 'Z1002' ] );
+				getters.getZPersistentNameLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
+				getters.getZPersistentName = createGettersWithFunctionsMock( { id: 10 } );
+				getters.getZMonolingualTextValue = createGettersWithFunctionsMock( 'Some name' );
+				global.store.hotUpdate( { getters: getters } );
 			} );
-			const nameBlock = wrapper.find( '.ext-wikilambda-app-about__fields' );
-			expect( nameBlock.find( '.ext-wikilambda-app-about__unavailable' ).exists() ).toBe( true );
-			expect( nameBlock.find( '.ext-wikilambda-app-about__unavailable' ).text() ).toBe( 'No description or aliases provided.' );
+
+			it( 'renders user language block: only name in user language', async () => {
+				const wrapper = shallowMount( About, {
+					props: { edit: false, type: 'Z6' },
+					global: { stubs: { WlWidgetBase: false, CdxAccordion: false } }
+				} );
+
+				await wrapper.vm.$nextTick();
+
+				const blocks = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+				expect( blocks.length ).toBe( 1 );
+
+				expect( blocks[ 0 ].attributes( 'open' ) ).toBeDefined();
+				expect( blocks[ 0 ].find( 'summary' ).text() ).toContain( 'English' );
+				expect( blocks[ 0 ].find( 'summary' ).text() ).toContain( 'Some name' );
+
+				const languageBlock = blocks[ 0 ].findComponent( { name: 'wl-about-language-block' } );
+				expect( languageBlock.exists() ).toBe( true );
+				expect( languageBlock.vm.language ).toBe( 'Z1002' );
+				expect( languageBlock.vm.edit ).toBe( false );
+				expect( languageBlock.vm.viewData.name ).toEqual( {
+					rowId: 10,
+					value: 'Some name'
+				} );
+			} );
+
+			it( 'renders user language block: name, description and aliases in user language', async () => {
+				const aliases = [ { rowId: 31, value: 'alias one' }, { rowId: 32, value: 'alias two' } ];
+				getters.getZPersistentDescriptionLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
+				getters.getZPersistentDescription = createGettersWithFunctionsMock( { id: 20 } );
+				getters.getZPersistentAliasLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
+				getters.getZPersistentAlias = createGettersWithFunctionsMock( { id: 30 } );
+				getters.getZMonolingualTextValue = () => ( rowId ) => rowId === 10 ? 'Some name' : 'Some description';
+				getters.getZMonolingualStringsetValues = createGettersWithFunctionsMock( aliases );
+				global.store.hotUpdate( { getters: getters } );
+
+				const wrapper = shallowMount( About, {
+					props: { edit: false, type: 'Z6' },
+					global: { stubs: { WlWidgetBase: false, CdxAccordion: false } }
+				} );
+
+				await wrapper.vm.$nextTick();
+
+				const blocks = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+				expect( blocks.length ).toBe( 1 );
+
+				expect( blocks[ 0 ].attributes( 'open' ) ).toBeDefined();
+				expect( blocks[ 0 ].find( 'summary' ).text() ).toContain( 'English' );
+				expect( blocks[ 0 ].find( 'summary' ).text() ).toContain( 'Some name' );
+
+				const languageBlock = blocks[ 0 ].findComponent( { name: 'wl-about-language-block' } );
+				expect( languageBlock.exists() ).toBe( true );
+				expect( languageBlock.vm.language ).toBe( 'Z1002' );
+				expect( languageBlock.vm.edit ).toBe( false );
+				expect( languageBlock.vm.viewData.name ).toEqual( {
+					rowId: 10,
+					value: 'Some name'
+				} );
+				expect( languageBlock.vm.viewData.description ).toEqual( {
+					rowId: 20,
+					value: 'Some description'
+				} );
+				expect( languageBlock.vm.viewData.aliases ).toEqual( {
+					rowId: 30,
+					value: aliases
+				} );
+			} );
 		} );
 
-		it( 'renders view languages button', () => {
-			const wrapper = shallowMount( About, {
-				props: { edit: true, type: 'Z6' },
-				global: { stubs: { WlWidgetBase: false } }
+		describe( 'Multilingual data available in fallback languages', () => {
+			beforeEach( () => {
+				// User language: Asturian, Fallback chain: [ Asturian, Spanish, English ]
+				getters.getFallbackLanguageZids = createGetterMock( [ 'Z1732', 'Z1003', 'Z1002' ] );
+				getters.getUserLangZid = createGetterMock( 'Z1732' );
+				getters.getMultilingualDataLanguages = createGettersWithFunctionsMock( [ 'Z1002' ] );
+				getters.getZPersistentNameLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
+				getters.getZPersistentName = () => ( lang ) => lang === 'Z1002' ? { id: 10 } : undefined;
+				getters.getZMonolingualTextValue = createGettersWithFunctionsMock( 'Some name' );
+				global.store.hotUpdate( { getters: getters } );
 			} );
-			expect( wrapper.find( '.ext-wikilambda-app-about__button' ).exists() ).toBe( true );
+
+			it( 'renders user language and fallback blocks', async () => {
+				const wrapper = shallowMount( About, {
+					props: { edit: false, type: 'Z6' },
+					global: { stubs: { WlWidgetBase: false, CdxAccordion: false } }
+				} );
+
+				await wrapper.vm.$nextTick();
+
+				const blocks = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+				expect( blocks.length ).toBe( 2 );
+
+				// User language: no title
+				expect( blocks[ 0 ].attributes( 'open' ) ).toBeDefined();
+				expect( blocks[ 0 ].find( 'summary' ).text() ).toContain( 'asturianu' );
+				expect( blocks[ 0 ].find( 'summary' ).text() ).toContain( 'Untitled' );
+
+				const uselangBlock = blocks[ 0 ].findComponent( { name: 'wl-about-language-block' } );
+				expect( uselangBlock.exists() ).toBe( true );
+				expect( uselangBlock.vm.language ).toBe( 'Z1732' );
+				expect( uselangBlock.vm.viewData.name ).toEqual( {
+					rowId: undefined,
+					value: ''
+				} );
+
+				// Fallback language: available title
+				expect( blocks[ 1 ].attributes( 'open' ) ).not.toBeDefined();
+				expect( blocks[ 1 ].find( 'summary' ).text() ).toContain( 'English' );
+				expect( blocks[ 1 ].find( 'summary' ).text() ).toContain( 'Some name' );
+
+				const fallbackBlock = blocks[ 1 ].findComponent( { name: 'wl-about-language-block' } );
+				expect( fallbackBlock.exists() ).toBe( true );
+				expect( fallbackBlock.vm.language ).toBe( 'Z1002' );
+				expect( fallbackBlock.vm.viewData.name ).toEqual( {
+					rowId: 10,
+					value: 'Some name'
+				} );
+			} );
 		} );
 
-		it( 'opens empty metadata dialog when clicking edit', async () => {
-			const wrapper = mount( About, {
-				props: { edit: true, type: 'Z6' }
+		describe( 'Multilingual data for functions available in fallback languages', () => {
+			const inputs = [ { id: 40 }, { id: 50 } ];
+
+			beforeEach( () => {
+				// User language: Asturian, Fallback chain: [ Asturian, Spanish, English ]
+				getters.getFallbackLanguageZids = createGetterMock( [ 'Z1732', 'Z1003', 'Z1002' ] );
+				getters.getUserLangZid = createGetterMock( 'Z1732' );
+				getters.getMultilingualDataLanguages = createGettersWithFunctionsMock( [ 'Z1002', 'Z1003' ] );
+				// Name available in English
+				getters.getZPersistentNameLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
+				getters.getZPersistentName = () => ( lang ) => lang === 'Z1002' ? { id: 10 } : undefined;
+				// Input labels available in Spanish
+				getters.getZFunctionInputs = createGettersWithFunctionsMock( inputs );
+				getters.getZFunctionInputLangs = createGettersWithFunctionsMock( [ 'Z1003' ] );
+				getters.getZArgumentTypeRowId = () => ( rowId ) => rowId === 40 ? 41 : 51;
+				getters.getZArgumentKey = () => ( rowId ) => rowId === 40 ? 'K1' : 'K2';
+				getters.getZArgumentLabelForLanguage = () => ( rowId, lang ) => {
+					if ( lang === 'Z1003' ) {
+						return rowId === 40 ? { id: 42 } : { id: 52 };
+					}
+					return undefined;
+				};
+				// Name and input label values
+				getters.getZMonolingualTextValue = () => ( rowId ) => {
+					const values = { 10: 'Some name', 42: 'primero', 52: 'segundo' };
+					return values[ rowId ];
+				};
+				global.store.hotUpdate( { getters: getters } );
 			} );
 
-			// ACT: Get header button and trigger click
-			const header = wrapper.find( '.ext-wikilambda-app-widget-base__header' );
-			header.findComponent( { name: 'cdx-button' } ).vm.$emit( 'click' );
-			await wrapper.vm.$nextTick();
+			it( 'renders user language and fallback blocks', async () => {
+				const wrapper = shallowMount( About, {
+					props: { edit: false, type: 'Z8' },
+					global: { stubs: { WlWidgetBase: false, CdxAccordion: false } }
+				} );
 
-			// ASSERT: Metadata dialog is open
-			const metadataDialog = wrapper.findComponent( AboutEditMetadataDialog );
-			expect( metadataDialog.vm.open ).toBe( true );
-			expect( wrapper.find( '.ext-wikilambda-app-about-edit-metadata-dialog' ).exists() ).toBe( true );
+				await wrapper.vm.$nextTick();
 
-			// ASSERT: Language is intiialized to user language
-			expect( metadataDialog.vm.forLanguage ).toBe( 'Z1002' );
+				const blocks = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+				expect( blocks.length ).toBe( 3 );
+
+				// User language: no title and no labels
+				expect( blocks[ 0 ].attributes( 'open' ) ).toBeDefined();
+				expect( blocks[ 0 ].find( 'summary' ).text() ).toContain( 'asturianu' );
+				expect( blocks[ 0 ].find( 'summary' ).text() ).toContain( 'Untitled' );
+
+				const uselangBlock = blocks[ 0 ].findComponent( { name: 'wl-about-language-block' } );
+				expect( uselangBlock.exists() ).toBe( true );
+				expect( uselangBlock.vm.language ).toBe( 'Z1732' );
+				expect( uselangBlock.vm.viewData.name ).toEqual( {
+					rowId: undefined,
+					value: ''
+				} );
+				expect( uselangBlock.vm.viewData.inputs ).toEqual( [
+					{ inputRowId: 40, key: 'K1', typeRowId: 41, labelRowId: undefined, value: '' },
+					{ inputRowId: 50, key: 'K2', typeRowId: 51, labelRowId: undefined, value: '' }
+				] );
+
+				// Fallback language 1: Spanish, available input labels
+				expect( blocks[ 1 ].attributes( 'open' ) ).not.toBeDefined();
+				expect( blocks[ 1 ].find( 'summary' ).text() ).toContain( 'español' );
+				expect( blocks[ 1 ].find( 'summary' ).text() ).toContain( 'Untitled' );
+
+				const fallbackBlock1 = blocks[ 1 ].findComponent( { name: 'wl-about-language-block' } );
+				expect( fallbackBlock1.exists() ).toBe( true );
+				expect( fallbackBlock1.vm.language ).toBe( 'Z1003' );
+				expect( fallbackBlock1.vm.viewData.name ).toEqual( {
+					rowId: undefined,
+					value: ''
+				} );
+				expect( fallbackBlock1.vm.viewData.inputs ).toEqual( [
+					{ inputRowId: 40, key: 'K1', typeRowId: 41, labelRowId: 42, value: 'primero' },
+					{ inputRowId: 50, key: 'K2', typeRowId: 51, labelRowId: 52, value: 'segundo' }
+				] );
+
+				// Fallback language 2: English, available title
+				expect( blocks[ 2 ].attributes( 'open' ) ).not.toBeDefined();
+				expect( blocks[ 2 ].find( 'summary' ).text() ).toContain( 'English' );
+				expect( blocks[ 2 ].find( 'summary' ).text() ).toContain( 'Some name' );
+
+				const fallbackBlock2 = blocks[ 2 ].findComponent( { name: 'wl-about-language-block' } );
+				expect( fallbackBlock2.exists() ).toBe( true );
+				expect( fallbackBlock2.vm.language ).toBe( 'Z1002' );
+				expect( fallbackBlock2.vm.viewData.name ).toEqual( {
+					rowId: 10,
+					value: 'Some name'
+				} );
+				expect( uselangBlock.vm.viewData.inputs ).toEqual( [
+					{ inputRowId: 40, key: 'K1', typeRowId: 41, labelRowId: undefined, value: '' },
+					{ inputRowId: 50, key: 'K2', typeRowId: 51, labelRowId: undefined, value: '' }
+				] );
+			} );
 		} );
 
-		it( 'does not render function fields', () => {
-			const wrapper = shallowMount( About, {
-				props: { edit: true, type: 'Z6' },
-				global: { stubs: { WlWidgetBase: false } }
+		describe( 'Quick edit', () => {
+			beforeEach( () => {
+				getters.getRowByKeyPath = createGettersWithFunctionsMock( { id: 1 } );
+				getters.getMultilingualDataLanguages = createGettersWithFunctionsMock( [ 'Z1002' ] );
+				getters.getZPersistentNameLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
+				getters.getZPersistentName = createGettersWithFunctionsMock( { id: 10 } );
+				getters.getZMonolingualTextValue = createGettersWithFunctionsMock( 'Some name' );
+				global.store.hotUpdate( { getters: getters } );
 			} );
-			expect( wrapper.find( '.ext-wikilambda-app-about__function-fields' ).exists() ).toBe( false );
+
+			it( 'goes into edit mode when click accordion action button', async () => {
+				const wrapper = shallowMount( About, {
+					props: { edit: false, type: 'Z6' },
+					global: { stubs: { WlWidgetBase: false, CdxAccordion: false } }
+				} );
+
+				await wrapper.vm.$nextTick();
+
+				const blocks = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+				const languageBlock = blocks[ 0 ].findComponent( { name: 'wl-about-language-block' } );
+				expect( languageBlock.vm.edit ).toBe( false );
+				expect( languageBlock.vm.editData ).toBe( undefined );
+
+				// Click edit:
+				const editButton = blocks[ 0 ].find( '.cdx-accordion__action' );
+				editButton.trigger( 'click' );
+				await wrapper.vm.$nextTick();
+
+				expect( languageBlock.vm.edit ).toBe( true );
+				expect( languageBlock.vm.editData ).toEqual( {
+					name: { rowId: 10, value: 'Some name' },
+					description: { rowId: undefined, value: '' },
+					aliases: { rowId: undefined, value: [] },
+					inputs: []
+				} );
+			} );
+
+			it( 'cancels edit and discards changes when click cancel button', async () => {
+				const wrapper = shallowMount( About, {
+					props: { edit: false, type: 'Z6' },
+					global: { stubs: { WlWidgetBase: false, CdxAccordion: false } }
+				} );
+
+				await wrapper.vm.$nextTick();
+				const blocks = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+				const languageBlock = blocks[ 0 ].findComponent( { name: 'wl-about-language-block' } );
+
+				// Click edit:
+				const editButton = blocks[ 0 ].find( '.cdx-accordion__action' );
+				editButton.trigger( 'click' );
+				await wrapper.vm.$nextTick();
+
+				// Make some changes:
+				languageBlock.vm.$emit( 'update-edit-value', {
+					data: languageBlock.vm.editData.name,
+					value: 'Some other name'
+				} );
+				expect( languageBlock.vm.editData.name.value ).toBe( 'Some other name' );
+
+				// Click cancel:
+				const cancelButton = wrapper.find( '.ext-wikilambda-app-about__button-cancel' );
+				cancelButton.trigger( 'click' );
+				await wrapper.vm.$nextTick();
+
+				// Assert that changes are discarded:
+				expect( languageBlock.vm.edit ).toBe( false );
+				expect( languageBlock.vm.editData ).toBe( undefined );
+				expect( languageBlock.vm.viewData.name.value ).toBe( 'Some name' );
+			} );
+
+			it( 'persists changes and initiates publish flow when click publish button', async () => {
+				const wrapper = shallowMount( About, {
+					props: { edit: false, type: 'Z6' },
+					global: { stubs: { WlWidgetBase: false, CdxAccordion: false } }
+				} );
+
+				await wrapper.vm.$nextTick();
+				const blocks = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+				const languageBlock = blocks[ 0 ].findComponent( { name: 'wl-about-language-block' } );
+
+				// Click edit:
+				const editButton = blocks[ 0 ].find( '.cdx-accordion__action' );
+				editButton.trigger( 'click' );
+				await wrapper.vm.$nextTick();
+
+				// Make some changes:
+				languageBlock.vm.$emit( 'update-edit-value', {
+					data: languageBlock.vm.editData.name,
+					value: 'Some other name'
+				} );
+				expect( languageBlock.vm.editData.name.value ).toBe( 'Some other name' );
+
+				// Spy on persistName
+				jest.spyOn( wrapper.vm, 'persistState' );
+
+				// Click publish:
+				const publishButton = wrapper.find( '.ext-wikilambda-app-about__button-publish' );
+				publishButton.trigger( 'click' );
+				await wrapper.vm.$nextTick();
+
+				// Assert that persistState is called:
+				expect( wrapper.vm.persistState ).toHaveBeenCalled();
+
+				// Assert that block is back to view state:
+				expect( languageBlock.vm.edit ).toBe( false );
+				expect( languageBlock.vm.editData ).toBe( undefined );
+
+				// Assert that publish dialog is set to open:
+				expect( wrapper.vm.showPublishDialog ).toBe( true );
+			} );
+
+			it( 'does not persist state with change-value events', async () => {
+				const wrapper = shallowMount( About, {
+					props: { edit: false, type: 'Z6' },
+					global: { stubs: { WlWidgetBase: false, CdxAccordion: false } }
+				} );
+
+				await wrapper.vm.$nextTick();
+				const blocks = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+				const languageBlock = blocks[ 0 ].findComponent( { name: 'wl-about-language-block' } );
+
+				// Spy on persistState
+				jest.spyOn( wrapper.vm, 'persistState' );
+
+				// Language block emits a change-value event
+				languageBlock.vm.$emit( 'change-value' );
+
+				// persistState should not have been called
+				await wrapper.vm.$nextTick();
+				expect( wrapper.vm.persistState ).not.toHaveBeenCalled();
+			} );
 		} );
 	} );
 
-	describe( 'One or more languages available', () => {
+	describe( 'Edit page', () => {
 		beforeEach( () => {
-			const name = { langIsoCode: 'en', langZid: 'Z1002', rowId: 1 };
-			const description = { langIsoCode: 'en', langZid: 'Z1002', rowId: 2 };
-			const alias = { langIsoCode: 'en', langZid: 'Z1002', rowId: 3 };
-			const aliasValues = [ { rowId: 4, value: 'one' }, { rowId: 5, value: 'two' } ];
-
-			getters = Object.assign( getters, {
-				getMetadataLanguages: createGettersWithFunctionsMock( [ 'Z1002' ] ),
-				getZPersistentAliasLangs: createGettersWithFunctionsMock( [ alias ] ),
-				getZPersistentDescriptionLangs: createGettersWithFunctionsMock( [ description ] ),
-				getZPersistentAlias: createGettersWithFunctionsMock( alias ),
-				getZPersistentDescription: createGettersWithFunctionsMock( description ),
-				getZPersistentName: createGettersWithFunctionsMock( name ),
-				getZMonolingualStringsetValues: createGettersWithFunctionsMock( aliasValues ),
-				getZMonolingualTextValue: () => ( rowId ) => rowId === 1 ? 'name' : 'some description'
-			} );
-
-			global.store.hotUpdate( { getters: getters, actions: actions } );
+			// User language: Asturian, Fallback chain: [ Asturian, Spanish, English ]
+			getters.getFallbackLanguageZids = createGetterMock( [ 'Z1732', 'Z1003', 'Z1002' ] );
+			getters.getUserLangZid = createGetterMock( 'Z1732' );
+			getters.getMultilingualDataLanguages = createGettersWithFunctionsMock( [ 'Z1002' ] );
+			getters.getZPersistentNameLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
+			getters.getZPersistentName = () => ( lang ) => lang === 'Z1002' ? { id: 10 } : undefined;
+			getters.getZMonolingualTextValue = createGettersWithFunctionsMock( 'Some name' );
+			global.store.hotUpdate( { getters: getters } );
 		} );
 
-		it( 'renders without errors', () => {
+		it( 'renders all blocks in edit mode', async () => {
 			const wrapper = shallowMount( About, {
 				props: { edit: true, type: 'Z6' },
-				global: { stubs: { WlWidgetBase: false } }
-			} );
-			expect( wrapper.find( '.ext-wikilambda-app-about' ).exists() ).toBe( true );
-		} );
-
-		it( 'renders selected values', () => {
-			const wrapper = shallowMount( About, {
-				props: { edit: true, type: 'Z6' },
-				global: { stubs: { WlWidgetBase: false } }
+				global: { stubs: { WlWidgetBase: false, CdxAccordion: false } }
 			} );
 
-			// ASSERT: Renders description
-			const descriptionBlock = wrapper.find( '.ext-wikilambda-app-about__description' );
-			expect( descriptionBlock.find( '.ext-wikilambda-app-about__value' ).text() ).toBe( 'some description' );
-
-			// ASSERT: Renders comma-separated aliases
-			const aliasBlock = wrapper.find( '.ext-wikilambda-app-about__aliases' );
-			const aliases = aliasBlock.findAll( '.ext-wikilambda-app-about__alias' );
-			expect( aliases.length ).toBe( 2 );
-			expect( aliases[ 0 ].text() ).toContain( 'one' );
-			expect( aliases[ 1 ].text() ).toContain( 'two' );
-		} );
-
-		it( 'renders view languages button', () => {
-			const wrapper = shallowMount( About, {
-				props: { edit: true, type: 'Z6' },
-				global: { stubs: { WlWidgetBase: false } }
-			} );
-			expect( wrapper.find( '.ext-wikilambda-app-about__button' ).exists() ).toBe( true );
-		} );
-
-		it( 'opens metadata dialog with the user language values', async () => {
-			const wrapper = mount( About, {
-				props: { edit: true, type: 'Z6' }
-			} );
-
-			// ACT: Get header button and trigger click
-			const header = wrapper.find( '.ext-wikilambda-app-widget-base__header' );
-			header.findComponent( { name: 'cdx-button' } ).vm.$emit( 'click' );
 			await wrapper.vm.$nextTick();
 
-			// ASSERT: Metadata dialog is open
-			const metadataDialog = wrapper.findComponent( AboutEditMetadataDialog );
-			expect( metadataDialog.vm.open ).toBe( true );
-			expect( wrapper.find( '.ext-wikilambda-app-about-edit-metadata-dialog' ).exists() ).toBe( true );
+			// No edit buttons in the accordion components:
+			const accordions = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+			expect( accordions.length ).toBe( 2 );
+			expect( accordions[ 0 ].vm.actionIcon ).toBeFalsy();
+			expect( accordions[ 1 ].vm.actionIcon ).toBeFalsy();
 
-			// ASSERT: Language is intiialized to user language
-			expect( metadataDialog.vm.forLanguage ).toBe( 'Z1002' );
+			// All language blocks set to edit:
+			const blocks = wrapper.findAllComponents( { name: 'wl-about-language-block' } );
+			expect( blocks.length ).toBe( 2 );
+			expect( blocks[ 0 ].vm.edit ).toBe( true );
+			expect( blocks[ 1 ].vm.edit ).toBe( true );
+
+			// All edit data is initialized with a copy of current persisted state
+			expect( blocks[ 0 ].vm.editData ).toEqual( wrapper.vm.displayLanguageData[ 0 ].viewData );
+			expect( blocks[ 1 ].vm.editData ).toEqual( wrapper.vm.displayLanguageData[ 1 ].viewData );
 		} );
 
-		it( 'opens view languages dialog when clicking language count button', async () => {
-			const wrapper = mount( About, {
-				props: { edit: true, type: 'Z6' }
+		it( 'does not render local publish and cancel buttons', async () => {
+			const wrapper = shallowMount( About, {
+				props: { edit: true, type: 'Z6' },
+				global: { stubs: { WlWidgetBase: false, CdxAccordion: false } }
 			} );
 
-			// ACT: Get button and trigger click
-			const buttons = wrapper.find( '.ext-wikilambda-app-about__button' );
-			buttons.findComponent( { name: 'cdx-button' } ).vm.$emit( 'click' );
+			await wrapper.vm.$nextTick();
+			expect( wrapper.find( '.ext-wikilambda-app-about__button-cancel' ).exists() ).toBe( false );
+			expect( wrapper.find( '.ext-wikilambda-app-about__button-publish' ).exists() ).toBe( false );
+		} );
+
+		it( 'persists state with change-value events', async () => {
+			const wrapper = shallowMount( About, {
+				props: { edit: true, type: 'Z6' },
+				global: { stubs: { WlWidgetBase: false, CdxAccordion: false } }
+			} );
+
+			await wrapper.vm.$nextTick();
+			const blocks = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+			const languageBlock = blocks[ 0 ].findComponent( { name: 'wl-about-language-block' } );
+
+			// Spy on persistState
+			jest.spyOn( wrapper.vm, 'persistState' );
+
+			// Language block emits a change-value event
+			languageBlock.vm.$emit( 'change-value' );
 			await wrapper.vm.$nextTick();
 
-			// ASSERT: Languages dialog is open
-			const langDialog = wrapper.findComponent( AboutViewLanguagesDialog );
-			expect( langDialog.vm.open ).toBe( true );
-			expect( wrapper.find( '.ext-wikilambda-app-about-view-languages-dialog' ).exists() ).toBe( true );
-		} );
-
-		it( 'shows description but no aliases', () => {
-			getters.getZPersistentAlias = createGettersWithFunctionsMock( undefined );
-			global.store.hotUpdate( { getters: getters } );
-			const wrapper = shallowMount( About, {
-				props: { edit: true, type: 'Z6' },
-				global: { stubs: { WlWidgetBase: false } }
-			} );
-
-			// ASSERT: Renders description
-			const descriptionBlock = wrapper.find( '.ext-wikilambda-app-about__description' );
-			expect( descriptionBlock.find( '.ext-wikilambda-app-about__value' ).text() ).toBe( 'some description' );
-
-			// ASSERT: Renders comma-separated aliases
-			const aliasBlock = wrapper.find( '.ext-wikilambda-app-about__unavailable' );
-			expect( aliasBlock.text() ).toBe( 'No aliases provided.' );
-		} );
-
-		it( 'shows aliases but no description', () => {
-			getters.getZPersistentDescription = createGettersWithFunctionsMock( undefined );
-			global.store.hotUpdate( { getters: getters } );
-			const wrapper = shallowMount( About, {
-				props: { edit: true, type: 'Z6' },
-				global: { stubs: { WlWidgetBase: false } }
-			} );
-
-			// ASSERT: Renders unavailable description
-			const descriptionBlock = wrapper.find( '.ext-wikilambda-app-about__unavailable' );
-			expect( descriptionBlock.text() ).toBe( 'No description provided.' );
-
-			// ASSERT: Renders comma-separated aliases
-			const aliasBlock = wrapper.find( '.ext-wikilambda-app-about__aliases' );
-			const aliases = aliasBlock.findAll( '.ext-wikilambda-app-about__alias' );
-			expect( aliases.length ).toBe( 2 );
-			expect( aliases[ 0 ].text() ).toContain( 'one' );
-			expect( aliases[ 1 ].text() ).toContain( 'two' );
-		} );
-
-		it( 'shows only first three aliases', () => {
-			const aliasValues = [
-				{ rowId: 4, value: 'one' },
-				{ rowId: 5, value: 'two' },
-				{ rowId: 6, value: 'three' },
-				{ rowId: 7, value: 'four' },
-				{ rowId: 8, value: 'five' }
-			];
-			getters.getZMonolingualStringsetValues = createGettersWithFunctionsMock( aliasValues );
-			global.store.hotUpdate( { getters: getters } );
-			const wrapper = shallowMount( About, {
-				props: { edit: true, type: 'Z6' },
-				global: { stubs: { WlWidgetBase: false } }
-			} );
-
-			// ASSERT: Renders comma-separated aliases
-			const aliasBlock = wrapper.find( '.ext-wikilambda-app-about__aliases' );
-			const aliases = aliasBlock.findAll( '.ext-wikilambda-app-about__alias' );
-			expect( aliases.length ).toBe( 3 );
-			expect( aliases[ 0 ].text() ).toContain( 'one' );
-			expect( aliases[ 1 ].text() ).toContain( 'two' );
-			expect( aliases[ 2 ].text() ).toContain( 'three' );
-
-			const aliasMore = aliasBlock.find( '.ext-wikilambda-app-about__aliases-more' );
-			expect( aliasMore.text() ).toBe( '+2' );
-		} );
-
-		it( 'does not render function fields', () => {
-			const wrapper = shallowMount( About, {
-				props: { edit: true, type: 'Z6' },
-				global: { stubs: { WlWidgetBase: false } }
-			} );
-			expect( wrapper.find( '.ext-wikilambda-app-about__function-fields' ).exists() ).toBe( false );
+			// persistState should have been called
+			expect( wrapper.vm.persistState ).toHaveBeenCalled();
 		} );
 	} );
 
-	describe( 'About widget in Function View', () => {
+	describe( 'Persist changes in the state', () => {
 		beforeEach( () => {
-			const output = { id: 10 };
-			const inputs = [ { id: 20 }, { id: 30 } ];
-			getters = Object.assign( getters, {
-				getZFunctionInputs: createGettersWithFunctionsMock( inputs ),
-				getZFunctionOutput: createGettersWithFunctionsMock( output ),
-				getZArgumentTypeRowId: () => ( id ) => id === 20 ? 21 : 31,
-				getZArgumentKey: () => ( id ) => id === 20 ? 'Z10000K1' : 'Z10000K2'
-			} );
-			global.store.hotUpdate( { getters: getters, actions: actions } );
+			getters.getZFunctionInputs = createGettersWithFunctionsMock( [ { id: 40 } ] );
+			getters.getZArgumentKey = createGettersWithFunctionsMock( 'K1' );
+			getters.getZArgumentTypeRowId = createGettersWithFunctionsMock( 41 );
+			getters.getRowByKeyPath = createGettersWithFunctionsMock( { id: 1 } );
+			global.store.hotUpdate( { getters: getters } );
 		} );
 
-		it( 'renders without errors', () => {
+		it( 'calls no persist methods when fields have no changes', async () => {
 			const wrapper = shallowMount( About, {
 				props: { edit: true, type: 'Z8' },
-				global: { stubs: { WlWidgetBase: false } }
+				global: { stubs: { WlWidgetBase: false, CdxAccordion: false } }
 			} );
-			expect( wrapper.find( '.ext-wikilambda-app-about' ).exists() ).toBe( true );
+			await wrapper.vm.$nextTick();
+
+			jest.spyOn( wrapper.vm, 'persistName' );
+			jest.spyOn( wrapper.vm, 'persistDescription' );
+			jest.spyOn( wrapper.vm, 'persistAlias' );
+			jest.spyOn( wrapper.vm, 'persistInputLabel' );
+
+			wrapper.vm.persistState();
+
+			expect( wrapper.vm.persistName ).toHaveBeenCalledTimes( 0 );
+			expect( wrapper.vm.persistDescription ).toHaveBeenCalledTimes( 0 );
+			expect( wrapper.vm.persistAlias ).toHaveBeenCalledTimes( 0 );
+			expect( wrapper.vm.persistInputLabel ).toHaveBeenCalledTimes( 0 );
 		} );
 
-		it( 'renders function fields', () => {
+		it( 'calls persist methods for each field with changes', async () => {
 			const wrapper = shallowMount( About, {
 				props: { edit: true, type: 'Z8' },
-				global: { stubs: { WlWidgetBase: false } }
+				global: { stubs: { WlWidgetBase: false, CdxAccordion: false } }
 			} );
-			expect( wrapper.find( '.ext-wikilambda-app-about__function-fields' ).exists() ).toBe( true );
+			await wrapper.vm.$nextTick();
+
+			jest.spyOn( wrapper.vm, 'persistName' );
+			jest.spyOn( wrapper.vm, 'persistDescription' );
+			jest.spyOn( wrapper.vm, 'persistAlias' );
+			jest.spyOn( wrapper.vm, 'persistInputLabel' );
+
+			// Mock the changes in the editData object
+			wrapper.vm.displayLanguages[ 0 ].editData.name.value = 'New name';
+			wrapper.vm.displayLanguages[ 0 ].editData.description.value = 'New description';
+			wrapper.vm.displayLanguages[ 0 ].editData.aliases.value = [ { value: 'New alias' } ];
+			wrapper.vm.displayLanguages[ 0 ].editData.inputs[ 0 ].value = 'New input label';
+
+			wrapper.vm.persistState();
+
+			expect( wrapper.vm.persistName ).toHaveBeenCalledWith( undefined, 'New name', 'Z1002' );
+			expect( wrapper.vm.persistDescription ).toHaveBeenCalledWith( undefined, 'New description', 'Z1002' );
+			expect( wrapper.vm.persistAlias ).toHaveBeenCalledWith( undefined, [ { value: 'New alias' } ], 'Z1002' );
+			expect( wrapper.vm.persistInputLabel ).toHaveBeenCalledWith( {
+				key: 'K1',
+				value: '',
+				inputRowId: 40,
+				typeRowId: 41,
+				labelRowId: undefined
+			}, 'New input label', 'Z1002' );
 		} );
 
-		it( 'shows function inputs', () => {
-			const wrapper = shallowMount( About, {
-				props: { edit: true, type: 'Z8' },
-				global: { stubs: { WlWidgetBase: false } }
+		describe( 'persistZMonolingualString', () => {
+			/**
+			 * persistZMonolingualString is used by persistName, persistDescription
+			 * and persistInputLabel, hence testing all its branches once as part of
+			 * this test case.
+			 */
+			it( 'inserts new monolingual string when there was none for this language', async () => {
+				const wrapper = shallowMount( About, {
+					props: { edit: true, type: 'Z8' },
+					global: { stubs: { WlWidgetBase: false, CdxAccordion: false } }
+				} );
+				await wrapper.vm.$nextTick();
+
+				wrapper.vm.persistZMonolingualString( 1, undefined, 'New name', 'Z1002' );
+
+				expect( actions.setDirty ).toHaveBeenCalledWith( expect.anything(), true );
+				expect( actions.changeType ).toHaveBeenCalledWith( expect.anything(), {
+					id: 1,
+					type: 'Z11',
+					lang: 'Z1002',
+					value: 'New name',
+					append: true
+				} );
 			} );
 
-			const inputBlock = wrapper.find( '.ext-wikilambda-app-about__function-input' );
-			expect( inputBlock.find( '.ext-wikilambda-app-about__function-field-title' ).text() ).toBe( 'Inputs' );
+			it( 'sets new value of an existing monolingual string', async () => {
+				const wrapper = shallowMount( About, {
+					props: { edit: true, type: 'Z8' },
+					global: { stubs: { WlWidgetBase: false, CdxAccordion: false } }
+				} );
+				await wrapper.vm.$nextTick();
 
-			const inputs = inputBlock.findAll( '.ext-wikilambda-app-about__function-field-value' );
-			expect( inputs.length ).toBe( 2 );
-			// Check labels:
-			expect( inputs[ 0 ].text() ).toContain( 'first:' );
-			expect( inputs[ 1 ].text() ).toContain( 'second:' );
-			// Check types:
-			const inputOne = inputs[ 0 ].findComponent( { name: 'wl-z-object-to-string' } );
-			const inputTwo = inputs[ 1 ].findComponent( { name: 'wl-z-object-to-string' } );
-			expect( inputOne.exists() ).toBe( true );
-			expect( inputOne.props( 'rowId' ) ).toBe( 21 );
-			expect( inputTwo.exists() ).toBe( true );
-			expect( inputTwo.props( 'rowId' ) ).toBe( 31 );
+				wrapper.vm.persistZMonolingualString( 1, 10, 'New name', 'Z1002' );
+
+				expect( actions.setDirty ).toHaveBeenCalledWith( expect.anything(), true );
+				expect( actions.setValueByRowIdAndPath ).toHaveBeenCalledWith( expect.anything(), {
+					rowId: 10,
+					keyPath: [ 'Z11K2', 'Z6K1' ],
+					value: 'New name'
+				} );
+			} );
+
+			it( 'removes existing monolingual string when new value is empty', async () => {
+				const wrapper = shallowMount( About, {
+					props: { edit: true, type: 'Z8' },
+					global: { stubs: { WlWidgetBase: false, CdxAccordion: false } }
+				} );
+				await wrapper.vm.$nextTick();
+
+				wrapper.vm.persistZMonolingualString( 1, 10, '', 'Z1002' );
+
+				expect( actions.setDirty ).toHaveBeenCalledWith( expect.anything(), true );
+				expect( actions.removeItemFromTypedList ).toHaveBeenCalledWith( expect.anything(), {
+					rowId: 10
+				} );
+			} );
 		} );
 
-		it( 'shows function output type', () => {
-			const wrapper = shallowMount( About, {
-				props: { edit: true, type: 'Z8' },
-				global: { stubs: { WlWidgetBase: false } }
+		describe( 'persistName', () => {
+			it( 'sets new name when there was none', async () => {
+				const wrapper = shallowMount( About, {
+					props: { edit: true, type: 'Z8' },
+					global: { stubs: { WlWidgetBase: false, CdxAccordion: false } }
+				} );
+				await wrapper.vm.$nextTick();
+				jest.spyOn( wrapper.vm, 'persistName' );
+				jest.spyOn( wrapper.vm, 'persistZMonolingualString' );
+
+				// Mock the changes in the editData object
+				wrapper.vm.displayLanguages[ 0 ].editData.name.value = 'New name';
+
+				// Run persistState
+				wrapper.vm.persistState();
+
+				expect( wrapper.vm.persistName ).toHaveBeenCalledWith( undefined, 'New name', 'Z1002' );
+				expect( wrapper.vm.persistZMonolingualString ).toHaveBeenCalledWith( 1, undefined, 'New name', 'Z1002' );
 			} );
 
-			const outputBlock = wrapper.find( '.ext-wikilambda-app-about__function-output' );
-			expect( outputBlock.find( '.ext-wikilambda-app-about__function-field-title' ).text() ).toBe( 'Output' );
+			it( 'sets new name value when there was one', async () => {
+				getters.getZPersistentNameLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
+				getters.getZPersistentName = createGettersWithFunctionsMock( { id: 10 } );
+				global.store.hotUpdate( { getters: getters } );
 
-			const outputType = outputBlock.findComponent( { name: 'wl-z-object-to-string' } );
-			expect( outputType.exists() ).toBe( true );
-			expect( outputType.props( 'rowId' ) ).toBe( 10 );
+				const wrapper = shallowMount( About, {
+					props: { edit: true, type: 'Z8' },
+					global: { stubs: { WlWidgetBase: false, CdxAccordion: false } }
+				} );
+				await wrapper.vm.$nextTick();
+				jest.spyOn( wrapper.vm, 'persistName' );
+				jest.spyOn( wrapper.vm, 'persistZMonolingualString' );
+
+				// Mock the changes in the editData object
+				wrapper.vm.displayLanguages[ 0 ].editData.name.value = 'New name';
+
+				// Run persistState
+				wrapper.vm.persistState();
+
+				expect( wrapper.vm.persistName ).toHaveBeenCalledWith( 10, 'New name', 'Z1002' );
+				expect( wrapper.vm.persistZMonolingualString ).toHaveBeenCalledWith( 1, 10, 'New name', 'Z1002' );
+			} );
+		} );
+
+		describe( 'persistDescription', () => {
+			it( 'sets new description when there was none', async () => {
+				const wrapper = shallowMount( About, {
+					props: { edit: true, type: 'Z8' },
+					global: { stubs: { WlWidgetBase: false, CdxAccordion: false } }
+				} );
+				await wrapper.vm.$nextTick();
+				jest.spyOn( wrapper.vm, 'persistDescription' );
+				jest.spyOn( wrapper.vm, 'persistZMonolingualString' );
+
+				// Mock the changes in the editData object
+				wrapper.vm.displayLanguages[ 0 ].editData.description.value = 'New description';
+
+				// Run persistState
+				wrapper.vm.persistState();
+
+				expect( wrapper.vm.persistDescription ).toHaveBeenCalledWith( undefined, 'New description', 'Z1002' );
+				expect( wrapper.vm.persistZMonolingualString ).toHaveBeenCalledWith( 1, undefined, 'New description', 'Z1002' );
+			} );
+
+			it( 'sets new description value when there was one', async () => {
+				getters.getZPersistentDescriptionLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
+				getters.getZPersistentDescription = createGettersWithFunctionsMock( { id: 10 } );
+				global.store.hotUpdate( { getters: getters } );
+
+				const wrapper = shallowMount( About, {
+					props: { edit: true, type: 'Z8' },
+					global: { stubs: { WlWidgetBase: false, CdxAccordion: false } }
+				} );
+				await wrapper.vm.$nextTick();
+				jest.spyOn( wrapper.vm, 'persistDescription' );
+				jest.spyOn( wrapper.vm, 'persistZMonolingualString' );
+
+				// Mock the changes in the editData object
+				wrapper.vm.displayLanguages[ 0 ].editData.description.value = 'New description';
+
+				// Run persistState
+				wrapper.vm.persistState();
+
+				expect( wrapper.vm.persistDescription ).toHaveBeenCalledWith( 10, 'New description', 'Z1002' );
+				expect( wrapper.vm.persistZMonolingualString ).toHaveBeenCalledWith( 1, 10, 'New description', 'Z1002' );
+			} );
+		} );
+
+		describe( 'persistInputLabel', () => {
+			it( 'sets new input label when there was none', async () => {
+				const wrapper = shallowMount( About, {
+					props: { edit: true, type: 'Z8' },
+					global: { stubs: { WlWidgetBase: false, CdxAccordion: false } }
+				} );
+				await wrapper.vm.$nextTick();
+				jest.spyOn( wrapper.vm, 'persistInputLabel' );
+				jest.spyOn( wrapper.vm, 'persistZMonolingualString' );
+
+				// Mock the changes in the editData object
+				wrapper.vm.displayLanguages[ 0 ].editData.inputs[ 0 ].value = 'New input label';
+
+				// Run persistState
+				wrapper.vm.persistState();
+
+				expect( wrapper.vm.persistInputLabel ).toHaveBeenCalledWith( {
+					key: 'K1',
+					value: '',
+					inputRowId: 40,
+					typeRowId: 41,
+					labelRowId: undefined
+				}, 'New input label', 'Z1002' );
+				expect( wrapper.vm.persistZMonolingualString ).toHaveBeenCalledWith( 1, undefined, 'New input label', 'Z1002' );
+			} );
+
+			it( 'sets new input label value when there was one', async () => {
+				getters.getZArgumentLabelForLanguage = createGettersWithFunctionsMock( { id: 42 } );
+				getters.getZMonolingualTextValue = createGettersWithFunctionsMock( 'Input label' );
+				global.store.hotUpdate( { getters: getters } );
+
+				const wrapper = shallowMount( About, {
+					props: { edit: true, type: 'Z8' },
+					global: { stubs: { WlWidgetBase: false, CdxAccordion: false } }
+				} );
+				await wrapper.vm.$nextTick();
+				jest.spyOn( wrapper.vm, 'persistInputLabel' );
+				jest.spyOn( wrapper.vm, 'persistZMonolingualString' );
+
+				// Mock the changes in the editData object
+				wrapper.vm.displayLanguages[ 0 ].editData.inputs[ 0 ].value = 'New input label';
+
+				// Run persistState
+				wrapper.vm.persistState();
+
+				expect( wrapper.vm.persistInputLabel ).toHaveBeenCalledWith( {
+					key: 'K1',
+					value: 'Input label',
+					inputRowId: 40,
+					typeRowId: 41,
+					labelRowId: 42
+				}, 'New input label', 'Z1002' );
+				expect( wrapper.vm.persistZMonolingualString ).toHaveBeenCalledWith( 1, 42, 'New input label', 'Z1002' );
+			} );
+		} );
+
+		describe( 'persistAlias', () => {
+			it( 'sets new aliases for a language that has none', async () => {
+				const wrapper = shallowMount( About, {
+					props: { edit: true, type: 'Z8' },
+					global: { stubs: { WlWidgetBase: false, CdxAccordion: false } }
+				} );
+				await wrapper.vm.$nextTick();
+				jest.spyOn( wrapper.vm, 'persistAlias' );
+				jest.spyOn( wrapper.vm, 'persistZMonolingualStringset' );
+
+				// Mock the changes in the editData object
+				const aliases = [ { rowId: undefined, value: 'one' } ];
+				wrapper.vm.displayLanguages[ 0 ].editData.aliases.value = aliases;
+
+				// Run persistState
+				wrapper.vm.persistState();
+
+				expect( wrapper.vm.persistAlias ).toHaveBeenCalledWith( undefined, aliases, 'Z1002' );
+				expect( wrapper.vm.persistZMonolingualStringset ).toHaveBeenCalledWith( 1, undefined, [ 'one' ], 'Z1002' );
+
+				expect( actions.setDirty ).toHaveBeenCalledWith( expect.anything(), true );
+				expect( actions.changeType ).toHaveBeenCalledWith( expect.anything(), {
+					id: 1,
+					type: 'Z31',
+					lang: 'Z1002',
+					value: [ 'one' ],
+					append: true
+				} );
+			} );
+
+			it( 'sets new aliases value for a language with existing values', async () => {
+				const aliases = [ { rowId: 31, value: 'one' } ];
+				getters.getZPersistentAliasLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
+				getters.getZPersistentAlias = createGettersWithFunctionsMock( { id: 30 } );
+				getters.getZMonolingualStringsetValues = createGettersWithFunctionsMock( aliases.slice() );
+				global.store.hotUpdate( { getters: getters } );
+
+				const wrapper = shallowMount( About, {
+					props: { edit: true, type: 'Z8' },
+					global: { stubs: { WlWidgetBase: false, CdxAccordion: false } }
+				} );
+				await wrapper.vm.$nextTick();
+				jest.spyOn( wrapper.vm, 'persistAlias' );
+				jest.spyOn( wrapper.vm, 'persistZMonolingualStringset' );
+
+				// Mock the changes in the editData object
+				aliases.push( { rowId: undefined, value: 'two' } );
+				wrapper.vm.displayLanguages[ 0 ].editData.aliases.value = aliases;
+
+				// Run persistState
+				wrapper.vm.persistState();
+
+				expect( wrapper.vm.persistAlias ).toHaveBeenCalledWith( 30, aliases, 'Z1002' );
+				expect( wrapper.vm.persistZMonolingualStringset ).toHaveBeenCalledWith( 1, 30, [ 'one', 'two' ], 'Z1002' );
+
+				expect( actions.setDirty ).toHaveBeenCalledWith( expect.anything(), true );
+				expect( actions.setValueByRowIdAndPath ).toHaveBeenCalledWith( expect.anything(), {
+					rowId: 30,
+					keyPath: [ 'Z31K2' ],
+					value: [ 'Z6', 'one', 'two' ]
+				} );
+			} );
+
+			it( 'removes all aliases for a language', async () => {
+				const aliases = [ { rowId: 31, value: 'one' } ];
+				getters.getZPersistentAliasLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
+				getters.getZPersistentAlias = createGettersWithFunctionsMock( { id: 30 } );
+				getters.getZMonolingualStringsetValues = createGettersWithFunctionsMock( aliases );
+				global.store.hotUpdate( { getters: getters } );
+
+				const wrapper = shallowMount( About, {
+					props: { edit: true, type: 'Z8' },
+					global: { stubs: { WlWidgetBase: false, CdxAccordion: false } }
+				} );
+				await wrapper.vm.$nextTick();
+				jest.spyOn( wrapper.vm, 'persistAlias' );
+				jest.spyOn( wrapper.vm, 'persistZMonolingualStringset' );
+
+				// Mock the changes in the editData object
+				wrapper.vm.displayLanguages[ 0 ].editData.aliases.value = [];
+
+				// Run persistState
+				wrapper.vm.persistState();
+
+				expect( wrapper.vm.persistAlias ).toHaveBeenCalledWith( 30, [], 'Z1002' );
+				expect( wrapper.vm.persistZMonolingualStringset ).toHaveBeenCalledWith( 1, 30, [], 'Z1002' );
+
+				expect( actions.setDirty ).toHaveBeenCalledWith( expect.anything(), true );
+				expect( actions.removeItemFromTypedList ).toHaveBeenCalledWith( expect.anything(), {
+					rowId: 30
+				} );
+			} );
+		} );
+	} );
+
+	describe( 'Add a new language', () => {
+		beforeEach( () => {
+			getters.getMultilingualDataLanguages = createGettersWithFunctionsMock( [ 'Z1002' ] );
+			getters.getZPersistentNameLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
+			getters.getZPersistentName = createGettersWithFunctionsMock( { id: 10 } );
+			getters.getZMonolingualTextValue = createGettersWithFunctionsMock( 'Some name' );
+			global.store.hotUpdate( { getters: getters } );
+		} );
+
+		it( 'adds a new language in read mode', async () => {
+			const wrapper = shallowMount( About, {
+				props: { edit: false, type: 'Z6' },
+				global: { stubs: { WlWidgetBase: false, CdxAccordion: false } }
+			} );
+			await wrapper.vm.$nextTick();
+
+			const languagesDialog = wrapper.findComponent( { name: 'wl-about-languages-dialog' } );
+			languagesDialog.vm.$emit( 'add-language', 'Z1003' );
+			await wrapper.vm.$nextTick();
+
+			// English and Spanish language blocks
+			const blocks = wrapper.findAllComponents( { name: 'wl-about-language-block' } );
+			expect( blocks.length ).toBe( 2 );
+			expect( blocks[ 0 ].vm.language ).toBe( 'Z1002' );
+			expect( blocks[ 1 ].vm.language ).toBe( 'Z1003' );
+			expect( blocks[ 1 ].vm.edit ).toBe( false );
+			expect( blocks[ 1 ].vm.editData ).toBe( undefined );
+		} );
+
+		it( 'adds a new language block in edit mode', async () => {
+			const wrapper = shallowMount( About, {
+				props: { edit: true, type: 'Z6' },
+				global: { stubs: { WlWidgetBase: false, CdxAccordion: false } }
+			} );
+			await wrapper.vm.$nextTick();
+
+			const languagesDialog = wrapper.findComponent( { name: 'wl-about-languages-dialog' } );
+			languagesDialog.vm.$emit( 'add-language', 'Z1003' );
+			await wrapper.vm.$nextTick();
+
+			// English and Spanish language blocks
+			const blocks = wrapper.findAllComponents( { name: 'wl-about-language-block' } );
+			expect( blocks.length ).toBe( 2 );
+			expect( blocks[ 0 ].vm.language ).toBe( 'Z1002' );
+			expect( blocks[ 1 ].vm.language ).toBe( 'Z1003' );
+			expect( blocks[ 1 ].vm.edit ).toBe( true );
+			expect( blocks[ 1 ].vm.editData ).toEqual( {
+				name: { rowId: 10, value: 'Some name' },
+				description: { rowId: undefined, value: '' },
+				aliases: { rowId: undefined, value: [] },
+				inputs: []
+			} );
+		} );
+
+		it( 'does nothing if language block already exists', async () => {
+			const wrapper = shallowMount( About, {
+				props: { edit: true, type: 'Z6' },
+				global: { stubs: { WlWidgetBase: false, CdxAccordion: false } }
+			} );
+			await wrapper.vm.$nextTick();
+
+			const languagesDialog = wrapper.findComponent( { name: 'wl-about-languages-dialog' } );
+			languagesDialog.vm.$emit( 'add-language', 'Z1002' );
+			await wrapper.vm.$nextTick();
+
+			// English and Spanish language blocks
+			const blocks = wrapper.findAllComponents( { name: 'wl-about-language-block' } );
+			expect( blocks.length ).toBe( 1 );
+			expect( blocks[ 0 ].vm.language ).toBe( 'Z1002' );
 		} );
 	} );
 } );

@@ -53,7 +53,13 @@ class Implementation extends Page {
 	// #region About Block
 
 	/**
-	 * Get the implementation description
+	 * Get the implementation description visible in the About widget.
+	 *
+	 * NOTE: this assumes that there will only be one language accordion
+	 * loaded into the About widget, and it will be open.
+	 * This will happen automatically when navigating to a read page
+	 * of an object that has available labels in the user language,
+	 * which is the case for the cases described in these tess.
 	 *
 	 * @async
 	 * @return {string}

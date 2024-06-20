@@ -98,7 +98,6 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign( mapGetters( [
-		'getMetadataLanguages',
 		'isCreateNewPage',
 		'isUserLoggedIn'
 	] ), {
@@ -118,15 +117,6 @@ module.exports = exports = defineComponent( {
 		canEditFunction: function () {
 			// TODO (T301667): restrict to only certain user roles
 			return this.isCreateNewPage ? true : this.isUserLoggedIn;
-		},
-		/**
-		 * Returns the available languages for the function definition,
-		 * which includes Name, Description, Aliases and Input labels.
-		 *
-		 * @return {Array}
-		 */
-		functionLanguages: function () {
-			return this.getMetadataLanguages( this.rowId );
 		},
 		/**
 		 * Message for admin tooltip to show in both Input and Output components

@@ -33,8 +33,8 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
-	FunctionEditorField = require( './FunctionEditorField.vue' ),
 	pageTitleUtils = require( '../../../mixins/pageTitleUtils.js' ),
+	FunctionEditorField = require( './FunctionEditorField.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput;
@@ -75,7 +75,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Object|undefined}
 		 */
-		nameObject: function () {
+		nameRow: function () {
 			return this.zLanguage ? this.getZPersistentName( this.zLanguage ) : undefined;
 		},
 		/**
@@ -85,7 +85,7 @@ module.exports = exports = defineComponent( {
 		 * @return {boolean}
 		 */
 		hasName: function () {
-			return !!this.nameObject;
+			return !!this.nameRow;
 		},
 		/**
 		 * Returns the Name value for the given language.
@@ -95,7 +95,7 @@ module.exports = exports = defineComponent( {
 		 */
 		name: function () {
 			return this.hasName ?
-				this.getZMonolingualTextValue( this.nameObject.rowId ) :
+				this.getZMonolingualTextValue( this.nameRow.id ) :
 				'';
 		},
 		/**
@@ -161,10 +161,10 @@ module.exports = exports = defineComponent( {
 
 			if ( this.hasName ) {
 				if ( value === '' ) {
-					this.removeItemFromTypedList( { rowId: this.nameObject.rowId } );
+					this.removeItemFromTypedList( { rowId: this.nameRow.id } );
 				} else {
 					this.setValueByRowIdAndPath( {
-						rowId: this.nameObject.rowId,
+						rowId: this.nameRow.id,
 						keyPath: [
 							Constants.Z_MONOLINGUALSTRING_VALUE,
 							Constants.Z_STRING_VALUE
@@ -173,7 +173,7 @@ module.exports = exports = defineComponent( {
 					} );
 				}
 			} else {
-				// If this.nameObject is undefined, there's no monolingual string
+				// If this.nameRow is undefined, there's no monolingual string
 				// for the given language, so we create a new monolingual string
 				// with the new value and append to the parent list.
 				const parentRow = this.getRowByKeyPath( [
@@ -192,8 +192,8 @@ module.exports = exports = defineComponent( {
 					append: true
 				} );
 			}
-
-			this.setPageTitle();
+			// After persisting in the state, update the page title
+			this.updatePageTitle();
 			this.$emit( 'updated-name' );
 		}
 	} ),

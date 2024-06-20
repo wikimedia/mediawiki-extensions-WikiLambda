@@ -13,54 +13,82 @@
 
 'use strict';
 const ElementActions = require( '../utils/ElementActions' ),
-	InputDropdown = require( './InputDropdown' ),
-	i18n = require( '../utils/i18n.js' )();
+	{ Element: WebdriverIOElementType } = require( 'webdriverio' );
 
 class AboutBlock {
 	get aboutBlock() {
 		return $( '[data-testid="about-widget"]' );
 	}
 
-	get editButton() {
-		return this.aboutBlock.$( '[data-testid="open-dialog-button"]' );
-	}
-
-	get detailsInputDialogBox() {
-		return $( '//*[@data-testid="edit-label-dialog" and @aria-modal="true"]' );
-	}
-
-	get languageInputSelector() {
-		return this.detailsInputDialogBox.$( '[data-testid="edit-label-dialog"] [data-testid="z-object-selector-lookup"]' );
-	}
-
-	get labelInputSelector() {
-		return this.detailsInputDialogBox.$( '[data-testid="text-input"]' );
-	}
-
-	get descriptionInputSelector() {
-		return this.detailsInputDialogBox.$( '[data-testid="text-area"]' );
-	}
-
-	get aliasInputSelector() {
-		return this.detailsInputDialogBox.$( '[data-testid="chip-input"]' );
-	}
-
-	get doneButton() {
-		return this.detailsInputDialogBox.$( `button=${ i18n[ 'wikilambda-about-widget-done-button' ] }` );
-	}
-
-	get cancelButton() {
-		return this.detailsInputDialogBox.$( `button=${ i18n[ 'wikilambda-cancel' ] }` );
-	}
-
 	get showLanguagesButton() {
 		return this.aboutBlock.$( '[data-testid="languages-button"]' );
+	}
+
+	get languagesDialogBox() {
+		return $( '//*[@data-testid="languages-dialog" and @aria-modal="true"]' );
+	}
+
+	get languagesDialogSearchbox() {
+		return this.languagesDialogBox.$( '[data-testid="languages-dialog"] [data-testid="search-language"]' );
 	}
 
 	// #region About Block content
 
 	/**
-	 * Get the description displayed in the about block
+	 * Get the accordion element for a given language
+	 *
+	 * @async
+	 * @param {string} language
+	 * @return {Promise<WebdriverIOElementType>}
+	 */
+	async getLanguageAccordion( language ) {
+		const accordionSelector = `.//span[text()="${ language }"]`;
+		const accordionTitle = await this.aboutBlock.$( accordionSelector );
+		await accordionTitle.waitForDisplayed();
+		const accordionElement = await accordionTitle.custom$( 'ancestor', 'details' );
+		return accordionElement;
+	}
+
+	/**
+	 * Get the input field for the name of a given
+	 * language block in the About widget.
+	 *
+	 * @async
+	 * @param {WebdriverIOElementType} parentBlock
+	 * @return {Promise<WebdriverIOElementType>}
+	 */
+	async getLabelInput( parentBlock ) {
+		return parentBlock.$( '[data-testid="about-name-field"] [data-testid="text-input"]' );
+	}
+
+	/**
+	 * Get the input field for the description of a given
+	 * language block in the About widget.
+	 *
+	 * @async
+	 * @param {WebdriverIOElementType} parentBlock
+	 * @return {Promise<WebdriverIOElementType>}
+	 */
+	async getDescriptionInput( parentBlock ) {
+		return parentBlock.$( '[data-testid="about-description-field"] [data-testid="text-area"]' );
+	}
+
+	/**
+	 * Get the input field for the aliases of a given
+	 * language block in the About widget.
+	 *
+	 * @async
+	 * @param {WebdriverIOElementType} parentBlock
+	 * @return {Promise<WebdriverIOElementType>}
+	 */
+	async getAliasInput( parentBlock ) {
+		return parentBlock.$( '[data-testid="about-aliases-field"] input' );
+	}
+
+	/**
+	 * Get the description displayed in a given
+	 * accordion element in the about block.
+	 * If parent block is empty, return the first description
 	 *
 	 * @async
 	 * @return {string}
@@ -87,38 +115,6 @@ class AboutBlock {
 	}
 
 	/**
-	 * Open the language list dialog box
-	 *
-	 * @async
-	 * @return {void}
-	 */
-	async clickShowLanguagesButton() {
-		await ElementActions.doClick( this.showLanguagesButton );
-	}
-
-	// #endregion
-
-	// #region Details Input Dialog Box
-
-	/**
-	 * Details Input Dialog Box contains
-	 * [1] Language Input
-	 * [2] Label Input
-	 * [3] Description Input
-	 * [4] Alias Input
-	 */
-
-	/**
-	 * Open the Details Input Dialog Box
-	 *
-	 * @async
-	 * @return {void}
-	 */
-	async openDetailsInputDialogBox() {
-		await ElementActions.doClick( this.editButton );
-	}
-
-	/**
 	 * Declare the Object type AboutDetails
 	 *
 	 * @typedef {Object} AboutDetails
@@ -137,33 +133,71 @@ class AboutBlock {
 	 */
 	async addAboutDetails( aboutDetails ) {
 		const { language, label, description, alias } = aboutDetails;
-		await ElementActions.clearInput( this.languageInputSelector );
-		await InputDropdown.setLookupOption(
-			this.detailsInputDialogBox, this.languageInputSelector, language );
-		await ElementActions.setInput( this.labelInputSelector, label );
-		await ElementActions.setInput( this.descriptionInputSelector, description );
-		await ElementActions.setInput( this.aliasInputSelector, alias );
+
+		// Select language block
+		const accordion = await this.getLanguageAccordion( language );
+
+		// Expand the accordion element
+		const accordionContent = await accordion.$( '.cdx-accordion__content' );
+		const openAttribute = await accordion.getAttribute( 'open' );
+		if ( openAttribute === null ) {
+			await ElementActions.doClick( accordion );
+			await accordionContent.waitForDisplayed();
+		}
+
+		// Get input field elements after waiting for them to appear)
+		const labelInput = await this.getLabelInput( accordion );
+		await labelInput.waitForDisplayed();
+		const descriptionInput = await this.getDescriptionInput( accordion );
+		const aliasInput = await this.getAliasInput( accordion );
+
+		// Input the new values
+		await ElementActions.setInput( labelInput, label );
+		await ElementActions.setInput( descriptionInput, description );
+		await ElementActions.setInput( aliasInput, alias );
 		await browser.keys( [ 'Enter' ] );
 	}
 
 	/**
-	 * Submit the about details
+	 * Open the language list dialog box
 	 *
 	 * @async
 	 * @return {void}
 	 */
-	async submitAboutDetails() {
-		await ElementActions.doEnabledClick( this.doneButton );
+	async clickShowLanguagesButton() {
+		await ElementActions.doClick( this.showLanguagesButton );
+	}
+
+	// #endregion
+
+	// #region Language selection dialog
+
+	/**
+	 * Searches and selects a language in the languages dialog box
+	 *
+	 * @param {string} language
+	 * @return {void}
+	 */
+	async addLanguage( language ) {
+		await this.clickShowLanguagesButton();
+		const dialog = await this.languagesDialogSearchbox;
+		await ElementActions.setInput( dialog, language );
+		const languageItem = await this.getLanguageItem( language );
+		await ElementActions.doClick( languageItem );
 	}
 
 	/**
-	 * Close the Details Input Dialog Box
+	 * Selects a displayed language from the list that
+	 * matches the given language.
 	 *
-	 * @async
-	 * @return {void}
+	 * @param {string} language
+	 * @return {Promise<WebdriverIOElementType>}
 	 */
-	async closeDetailsInputDialogBox() {
-		await ElementActions.doClick( this.cancelButton );
+	async getLanguageItem( language ) {
+		const itemSelector = `.//div[text()="${ language }"]`;
+		const itemElement = await this.languagesDialogBox.$( itemSelector );
+		await itemElement.waitForDisplayed();
+		return itemElement.parentElement();
 	}
 
 	// #endregion

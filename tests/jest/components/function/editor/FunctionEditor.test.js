@@ -20,7 +20,7 @@ describe( 'FunctionEditor', () => {
 			getRowByKeyPath: createGettersWithFunctionsMock(),
 			getUserLangZid: createGetterMock( 'Z1002' ),
 			getZFunctionInputs: createGettersWithFunctionsMock( [] ),
-			getMetadataLanguages: createGettersWithFunctionsMock( [ 'Z1002', 'Z1004' ] ),
+			getMultilingualDataLanguages: createGettersWithFunctionsMock( [ 'Z1002', 'Z1004' ] ),
 			getZFunctionOutput: createGettersWithFunctionsMock( { id: 2 } ),
 			getZObjectAsJsonById: createGettersWithFunctionsMock( 'Z6' ),
 			isCreateNewPage: createGetterMock( true )
@@ -66,7 +66,7 @@ describe( 'FunctionEditor', () => {
 				getRowByKeyPath: createGettersWithFunctionsMock(),
 				getUserLangZid: createGetterMock( 'Z1002' ),
 				getZFunctionInputs: createGettersWithFunctionsMock( [] ),
-				getMetadataLanguages: createGettersWithFunctionsMock( [] ),
+				getMultilingualDataLanguages: createGettersWithFunctionsMock( [] ),
 				getZFunctionOutput: createGettersWithFunctionsMock( undefined ),
 				getZObjectAsJsonById: createGettersWithFunctionsMock( 'Z6' ),
 				isCreateNewPage: createGetterMock( true )

@@ -1302,11 +1302,57 @@ const mockLookupValues = [
   }
 ];
 
+const mockLookupLanguages = [
+	{
+		page_id: 0,
+		page_namespace: 0,
+		page_content_model: "zobject",
+		page_title: "Z1006",
+		page_type: "Z60",
+		return_type: null,
+		match_label: "Chinese",
+		match_is_primary: "1",
+		match_lang: "Z1002",
+		match_rate: 0.5714285714285714,
+		label: "Chinese",
+		type_label: "Natural language"
+	},
+	{
+		page_id: 0,
+		page_namespace: 0,
+		page_content_model: "zobject",
+		page_title: "Z1219",
+		page_type: "Z60",
+		return_type: null,
+		match_label: "Kachin",
+		match_is_primary: "1",
+		match_lang: "Z1002",
+		match_rate: 0.5,
+		label: "Kachin",
+		type_label: "Natural language"
+	},
+	{
+		page_id: 0,
+		page_namespace: 0,
+		page_content_model: "zobject",
+		page_title: "Z1837",
+		page_type: "Z60",
+		return_type: null,
+		match_label: "Wu Chinese",
+		match_is_primary: "1",
+		match_lang: "Z1002",
+		match_rate: 0.4,
+		label: "Wu Chinese",
+		type_label: "Natural language"
+	}
+];
+
 module.exports = {
 	mockFunction,
 	mockApiResponseFor,
 	mockApiZids,
 	mockLanguages,
 	mockEnumValues,
-	mockLookupValues
+	mockLookupValues,
+	mockLookupLanguages
 };

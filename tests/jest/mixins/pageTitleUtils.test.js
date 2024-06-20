@@ -20,12 +20,17 @@ describe( 'pageTitleUtils', () => {
 	beforeEach( () => {
 
 		getters = {
-			getUserLangZid: createGetterMock( 'Z1002' ),
+			getUserLangZid: createGetterMock( 'Z1003' ),
+			getFallbackLanguageZids: createGetterMock( [ 'Z1003', 'Z1002' ] ),
 			getLabelData: createLabelDataMock( {
 				Z1002: 'English',
 				Z1003: 'Spanish'
 			} ),
-			getFallbackLanguageZids: createGetterMock( [ 'Z1002', 'Z1003' ] )
+			getLanguageIsoCodeOfZLang: () => ( zid ) => zid === 'Z1003' ? 'es' : 'en',
+			getRowByKeyPath: createGettersWithFunctionsMock(),
+			getZMonolingualTextValue: createGettersWithFunctionsMock(),
+			getZPersistentName: createGettersWithFunctionsMock(),
+			getZReferenceTerminalValue: createGettersWithFunctionsMock()
 		};
 		global.store.hotUpdate( {
 			getters: getters
@@ -54,20 +59,23 @@ describe( 'pageTitleUtils', () => {
 	it( 'updates page title when name is provided', async () => {
 		const { $pageTitle, $langChip } = createJQueryPageTitleMocks();
 
-		const value = 'new name';
+		const value = 'Name in main language';
 
-		// Set the main language name to be defined
-		getters.getZPersistentName = createGettersWithFunctionsMock( { langZid: 'Z1002', langIsoCode: 'en', rowId: 1 } );
-		// Update the store with the new name
-		getters.getZMonolingualTextValue = createGettersWithFunctionsMock( value );
+		// Set the main language name to be defined:
+		getters.getZPersistentName = createGettersWithFunctionsMock( { id: 1 } );
+		// Set language getters
+		getters.getRowByKeyPath = () => ( path, rowId ) => rowId === 1 ? { id: 2 } : undefined;
+		getters.getZReferenceTerminalValue = () => ( rowId ) => rowId === 2 ? 'Z1003' : undefined;
+		// Set text getter
+		getters.getZMonolingualTextValue = () => ( rowId ) => rowId === 1 ? value : undefined;
 		global.store.hotUpdate( { getters } );
 
-		await wrapper.vm.setPageTitle( value );
+		await wrapper.vm.updatePageTitle();
 
 		// ASSERT: Check if DOM manipulations were called with the correct arguments
-		expect( wrapper.vm.pageTitleObject ).toEqual( { title: 'new name', hasChip: false, chip: 'en', chipName: 'English' } );
-		expect( $pageTitle.text ).toHaveBeenCalledWith( 'new name' );
-		expect( $langChip.text ).toHaveBeenCalledWith( 'en' );
+		expect( wrapper.vm.pageTitleObject ).toEqual( { title: value, hasChip: false, chip: 'es', chipName: 'Spanish' } );
+		expect( $pageTitle.text ).toHaveBeenCalledWith( value );
+		expect( $langChip.text ).toHaveBeenCalledWith( 'es' );
 		expect( $langChip.toggleClass ).toHaveBeenCalledWith( 'ext-wikilambda-editpage-header--bcp47-code-hidden', true );
 		expect( $pageTitle.toggleClass ).toHaveBeenCalledWith( 'ext-wikilambda-editpage-header--title-untitled', false );
 	} );
@@ -75,45 +83,23 @@ describe( 'pageTitleUtils', () => {
 	it( 'updates page title when fallback language has a new name and current name is not set', async () => {
 		const { $pageTitle, $langChip } = createJQueryPageTitleMocks();
 
-		const fallbackValue = 'new fallback name';
+		const fallbackValue = 'New name in fallback language';
 
-		// Set the fallback language to be defined, and the main language to be undefined
-		getters.getZPersistentName = () => ( langZid ) => langZid === 'Z1003' ?
-			{ langZid: 'Z1003', langIsoCode: 'es', rowId: 11 } :
-			undefined;
-		// Update the store with the new fallback name
-		getters.getZMonolingualTextValue = createGettersWithFunctionsMock( fallbackValue );
+		// Set the fallback language to be defined, and the main language to be undefined:
+		getters.getZPersistentName = () => ( langZid ) => langZid === 'Z1002' ? { id: 11 } : undefined;
+		// Set language getters
+		getters.getRowByKeyPath = () => ( path, rowId ) => rowId === 11 ? { id: 22 } : undefined;
+		getters.getZReferenceTerminalValue = () => ( rowId ) => rowId === 22 ? 'Z1002' : undefined;
+		// Set text getter
+		getters.getZMonolingualTextValue = () => ( rowId ) => rowId === 11 ? fallbackValue : undefined;
 		global.store.hotUpdate( { getters } );
 
-		await wrapper.vm.setPageTitle( fallbackValue );
+		await wrapper.vm.updatePageTitle();
 
 		// ASSERT: Check if DOM manipulations were called with the correct arguments
-		expect( wrapper.vm.pageTitleObject ).toEqual( { title: 'new fallback name', hasChip: true, chip: 'es', chipName: 'Spanish' } );
-		expect( $pageTitle.text ).toHaveBeenCalledWith( 'new fallback name' );
-		expect( $langChip.text ).toHaveBeenCalledWith( 'es' );
-		expect( $langChip.toggleClass ).toHaveBeenCalledWith( 'ext-wikilambda-editpage-header--bcp47-code-hidden', false );
-		expect( $pageTitle.toggleClass ).toHaveBeenCalledWith( 'ext-wikilambda-editpage-header--title-untitled', false );
-	} );
-
-	it( 'updates page title when name is removed and there is a fallback', async () => {
-		const { $pageTitle, $langChip } = createJQueryPageTitleMocks();
-
-		const value = '';
-
-		// Set the fallback language to be defined, and the main language to be undefined
-		getters.getZPersistentName = () => ( langZid ) => langZid === 'Z1003' ?
-			{ langZid: 'Z1003', langIsoCode: 'es', rowId: 11 } :
-			undefined;
-		// Update the store: Set the fallback language name to be defined, and the main language name to be an empty string
-		getters.getZMonolingualTextValue = () => ( rowId ) => rowId === 11 ? 'Fallback Page Title in Spanish' : value;
-		global.store.hotUpdate( { getters } );
-
-		await wrapper.vm.setPageTitle( value );
-
-		// ASSERT: Check if DOM manipulations were called with the correct arguments
-		expect( wrapper.vm.pageTitleObject ).toEqual( { title: 'Fallback Page Title in Spanish', hasChip: true, chip: 'es', chipName: 'Spanish' } );
-		expect( $pageTitle.text ).toHaveBeenCalledWith( 'Fallback Page Title in Spanish' );
-		expect( $langChip.text ).toHaveBeenCalledWith( 'es' );
+		expect( wrapper.vm.pageTitleObject ).toEqual( { title: fallbackValue, hasChip: true, chip: 'en', chipName: 'English' } );
+		expect( $pageTitle.text ).toHaveBeenCalledWith( fallbackValue );
+		expect( $langChip.text ).toHaveBeenCalledWith( 'en' );
 		expect( $langChip.toggleClass ).toHaveBeenCalledWith( 'ext-wikilambda-editpage-header--bcp47-code-hidden', false );
 		expect( $pageTitle.toggleClass ).toHaveBeenCalledWith( 'ext-wikilambda-editpage-header--title-untitled', false );
 	} );
@@ -121,15 +107,11 @@ describe( 'pageTitleUtils', () => {
 	it( 'updates page title to undefined when name is removed and there is no fallback', async () => {
 		const { $pageTitle, $langChip } = createJQueryPageTitleMocks();
 
-		const value = '';
-
-		// Set the fallback language to be undefined, and the main language to be undefined
+		// Set all names to be undefined:
 		getters.getZPersistentName = createGettersWithFunctionsMock( undefined );
-		// Update the store with the new empty name
-		getters.getZMonolingualTextValue = createGettersWithFunctionsMock( value );
 		global.store.hotUpdate( { getters } );
 
-		await wrapper.vm.setPageTitle( value );
+		await wrapper.vm.updatePageTitle();
 
 		// ASSERT: Check if DOM manipulations were called with the correct arguments
 		expect( wrapper.vm.pageTitleObject ).toEqual( { title: null, hasChip: false, chip: null, chipName: null } );
