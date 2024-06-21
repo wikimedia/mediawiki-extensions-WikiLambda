@@ -164,6 +164,7 @@
 	"wikilambda-editor-label-addlanguage-label": "Select language",
 	"wikilambda-editor-label-removelanguage-tooltip": "Remove this language from this label",
 	"wikilambda-editor-label-select-programming-language-label": "Select programming language",
+	"wikilambda-editor-label-select-programming-language-empty": "Select programming language",
 	"wikilambda-editor-leave-edit-mode-header": "Leave edit mode",
 	"wikilambda-editor-output-title": "Output",
 	"wikilambda-editor-publish-dialog-header": "Publish your changes",

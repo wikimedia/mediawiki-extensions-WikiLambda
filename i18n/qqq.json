@@ -178,6 +178,7 @@
 	"wikilambda-editor-label-addlanguage-label": "Label for language selection dropdown.",
 	"wikilambda-editor-label-removelanguage-tooltip": "Tooltip for button to remove a language from a label.",
 	"wikilambda-editor-label-select-programming-language-label": "Label for programming language selection dropdown.",
+	"wikilambda-editor-label-select-programming-language-empty": "Warning message for when a user clicks the code editor field without choosing a programming language first.",
 	"wikilambda-editor-leave-edit-mode-header": "Header for the leave edit mode dialog.",
 	"wikilambda-editor-output-title": "Title for the output step.",
 	"wikilambda-editor-publish-dialog-header": "Header for the dialog shown before publishing a ZObject displaying.",

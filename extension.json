@@ -437,6 +437,7 @@
 				"wikilambda-editor-zobject-removekey-tooltip",
 				"wikilambda-editor-zobject-clearitem-tooltip",
 				"wikilambda-editor-label-select-programming-language-label",
+				"wikilambda-editor-label-select-programming-language-empty",
 				"wikilambda-argument-typeselector-label",
 				"wikilambda-function-typeselector-label",
 				"wikilambda-return-typeselector-label",

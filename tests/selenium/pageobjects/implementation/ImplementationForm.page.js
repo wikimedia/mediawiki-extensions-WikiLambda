@@ -144,7 +144,7 @@ class ImplementationForm extends Page {
 	 * @return {void}
 	 */
 	async setCodeEditor( codeInstructions ) {
-		const codeBlock = this.contentBlock.$( '[data-testid="code-editor"]' );
+		const codeBlock = this.contentBlock.$( '[data-testid="ace-code-editor"]' );
 		await codeBlock.$( './textarea' ).waitForExist();
 		await codeBlock.$( './textarea' ).click();
 		await browser.keys( codeInstructions );

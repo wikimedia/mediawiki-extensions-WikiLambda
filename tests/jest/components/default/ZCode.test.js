@@ -7,6 +7,7 @@
 'use strict';
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
+	{ waitFor } = require( '@testing-library/vue' ),
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
@@ -58,6 +59,7 @@ describe( 'ZCode', () => {
 			fetchAllZProgrammingLanguages: jest.fn(),
 			fetchZids: jest.fn(),
 			clearErrors: jest.fn(),
+			setError: jest.fn(),
 			changeType: jest.fn()
 		};
 		global.store.hotUpdate( {
@@ -97,6 +99,17 @@ describe( 'ZCode', () => {
 				}
 			} );
 			expect( wrapper.findComponent( { name: 'code-editor' } ).props( 'readOnly' ) ).toBe( true );
+		} );
+
+		it( 'should not show a warning message when clicking the code editor', () => {
+			const wrapper = shallowMount( ZCode, {
+				props: {
+					parentId: 10,
+					edit: false
+				}
+			} );
+			wrapper.findComponent( { name: 'code-editor' } ).trigger( 'click' );
+			expect( wrapper.find( '.cdx-message--warning.ext-wikilambda-key-value-inline-error' ).exists() ).toBe( false );
 		} );
 
 		describe( 'when current programming language is a reference', () => {
@@ -159,6 +172,58 @@ describe( 'ZCode', () => {
 
 			expect( wrapper.findComponent( '.ext-wikilambda-code__language-selector' ).exists() ).toBe( true );
 			expect( wrapper.findComponent( { name: 'code-editor' } ).props( 'readOnly' ) ).toBe( false );
+		} );
+
+		it( 'disables the code editor when no programming language is set on load', () => {
+			// Set initial value to undefined
+			getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( undefined );
+			global.store.hotUpdate( {
+				getters: getters,
+				actions: actions
+			} );
+			const wrapper = shallowMount( ZCode, {
+				props: {
+					parentId: 10,
+					edit: true
+				}
+			} );
+
+			expect( wrapper.findComponent( '.ext-wikilambda-code__language-selector' ).exists() ).toBe( true );
+			expect( wrapper.findComponent( { name: 'code-editor' } ).props( 'disabled' ) ).toBe( true );
+		} );
+
+		it( 'should show a warning message when clicking the code editor and no programming language is set', async () => {
+			// Set initial value to undefined
+			getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( undefined );
+			getters.getErrors = createGettersWithFunctionsMock( { message: 'Select programming language', type: 'warning' } );
+			global.store.hotUpdate( {
+				getters: getters,
+				actions: actions
+			} );
+			const wrapper = shallowMount( ZCode, {
+				props: {
+					parentId: 10,
+					edit: true
+				}
+			} );
+
+			expect( wrapper.findComponent( '.ext-wikilambda-code__language-selector' ).exists() ).toBe( true );
+
+			wrapper.findComponent( { name: 'code-editor' } ).trigger( 'click' );
+
+			await wrapper.vm.$nextTick();
+			await waitFor( () => expect( actions.setError ).toHaveBeenCalledWith( expect.anything(), {
+				errorMessage: 'Select programming language',
+				errorType: 'warning',
+				rowId: 1
+			} ) );
+			expect( global.$i18n ).toHaveBeenCalledWith( 'wikilambda-editor-label-select-programming-language-empty' );
+			await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-message' } ).exists() ).toBe( true ) );
+
+			wrapper.findComponent( { name: 'cdx-select' } ).vm.$emit( 'update:selected',
+				Constants.Z_PROGRAMMING_LANGUAGES.JAVASCRIPT );
+			await wrapper.vm.$nextTick();
+			expect( wrapper.find( '.cdx-message--warning.ext-wikilambda-key-value-inline-error' ).exists() ).toBe( false );
 		} );
 
 		describe( 'when current programming language is a reference', () => {
