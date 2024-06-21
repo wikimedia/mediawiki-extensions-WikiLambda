@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\ActionAPI\ApiPerformTest;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
@@ -678,8 +679,12 @@ class ApiPerformTestTest extends ApiTestCase {
 		// Update persistent storage
 		$creatingComment = wfMessage( 'wikilambda-updated-implementations-summary' )
 			->inLanguage( 'en' )->text();
-		$this->store->updateZObjectAsSystemUser( $functionZid, $targetObject->getZObject()->__toString(),
-			$creatingComment );
+		$this->store->updateZObjectAsSystemUser(
+			RequestContext::getMain(),
+			$functionZid,
+			$targetObject->getZObject()->__toString(),
+			$creatingComment
+		);
 	}
 
 	private function makeMetadataMap( $values ) {

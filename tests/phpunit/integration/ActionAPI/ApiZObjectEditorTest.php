@@ -10,6 +10,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
 use ApiUsageException;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
@@ -105,7 +106,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 		$data = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
 			. ' "Z2K2": "string",'
 			. ' "Z2K3":{ "Z1K1":"Z12", "Z12K1":[ "Z11", { "Z1K1":"Z11", "Z11K1":"Z1002", "Z11K2":"unique label" }]}}';
-		$this->store->createNewZObject( $data, 'First zobject', $sysopUser );
+		$this->store->createNewZObject( RequestContext::getMain(), $data, 'First zobject', $sysopUser );
 
 		$this->expectException( ApiUsageException::class );
 		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_LABEL_CLASH );
@@ -227,7 +228,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 		// Create the Zobject
 		$data = '{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": "New ZObject", "Z2K3":'
 			. ' { "Z1K1": "Z12", "Z12K1": [ "Z11", { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "unique label" } ] } }';
-		$this->store->createNewZObject( $data, 'New ZObject', $sysopUser );
+		$this->store->createNewZObject( RequestContext::getMain(), $data, 'New ZObject', $sysopUser );
 
 		$data = '{ "Z1K1": "Z2", "Z2K1": "' . $newZid . '", "Z2K2": "New ZObject", "Z2K3":'
 			. ' { "Z1K1": "Z12", "Z12K1": [ "Z11", { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "new label" },'

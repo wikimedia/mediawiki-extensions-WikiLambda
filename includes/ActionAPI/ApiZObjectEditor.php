@@ -43,10 +43,10 @@ class ApiZObjectEditor extends WikiLambdaApiBase {
 
 		if ( !$zid || $zid === ZTypeRegistry::Z_NULL_REFERENCE ) {
 			// Create a new ZObject
-			$response = $zObjectStore->createNewZObject( $zobject, $summary, $user );
+			$response = $zObjectStore->createNewZObject( $this, $zobject, $summary, $user );
 		} else {
 			// Edit an existing ZObject
-			$response = $zObjectStore->updateZObject( $zid, $zobject, $summary, $user );
+			$response = $zObjectStore->updateZObject( $this, $zid, $zobject, $summary, $user );
 		}
 
 		if ( !$response->isOK() ) {

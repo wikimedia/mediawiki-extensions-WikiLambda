@@ -14,6 +14,7 @@
 namespace MediaWiki\Extensions\WikiLambda\Maintenance;
 
 use Maintenance;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
@@ -143,6 +144,7 @@ class MigrateZ16K1StringsToZ61s extends Maintenance {
 				$data = json_encode( $persistentObject->getSerialized() );
 
 				$response = $this->zObjectStore->updateZObjectAsSystemUser(
+					RequestContext::getMain(),
 					/* String ZID */ $zid,
 					/* String content */ $data,
 					/* Edit summary */ $updateComment,
