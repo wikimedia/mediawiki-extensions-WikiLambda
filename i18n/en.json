@@ -420,7 +420,7 @@
 	"wikilambda-viewmode-nojs": "This page displays in a limited way without JavaScript.",
 	"wikilambda-zerror": "Error of type $1",
 	"wikilambda-zimplememntation-composition-missing": "Composition is empty. Please select a function.",
-	"wikilambda-zimplementation-code-language-missing": "Select a programming language.",
+	"wikilambda-zimplementation-code-language-missing": "Select a programming language first.",
 	"wikilambda-zimplementation-code-missing": "Code is empty. Please enter your code.",
 	"wikilambda-zobject-missing-attached-function": "Function is empty. Please select one.",
 	"wikilambda-zobject-to-string-enter-string": "Enter String",
