@@ -158,6 +158,7 @@
 	"wikilambda-editor-label-addlanguage-label": "Selige lingua",
 	"wikilambda-editor-label-removelanguage-tooltip": "Remover iste lingua de iste etiquetta",
 	"wikilambda-editor-label-select-programming-language-label": "Seliger linguage de programmation",
+	"wikilambda-editor-label-select-programming-language-empty": "Selige un linguage de programmation",
 	"wikilambda-editor-leave-edit-mode-header": "Exir del modo de modification",
 	"wikilambda-editor-output-title": "Sortita",
 	"wikilambda-editor-publish-dialog-header": "Publicar tu cambiamentos",

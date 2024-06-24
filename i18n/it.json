@@ -14,7 +14,7 @@
 			"Stefano"
 		]
 	},
-	"wikilambda-desc": "Fornisce agli wiki di Wikimedia una funzione di parsing del wikitesto che permette di eseguire funzioni scritte, gestite ed eseguite su un wiki centralizzato.",
+	"wikilambda-desc": "Fornire funzioni da scrivere, gestire e valutare su un wiki centrale.",
 	"action-wikifunctions-run": "eseguire funzioni nell'API pubblica",
 	"action-wikilambda-connect-implementation": "collegare un'implementazione alla sua funzione in modo che possa essere eseguita",
 	"action-wikilambda-connect-tester": "connetti un Caso di Test alla sua Funzione",
@@ -157,6 +157,7 @@
 	"wikilambda-editor-label-addlanguage-label": "Seleziona lingua",
 	"wikilambda-editor-label-removelanguage-tooltip": "Rimuovi questa lingua da questa etichetta",
 	"wikilambda-editor-label-select-programming-language-label": "Seleziona il linguaggio di programmazione",
+	"wikilambda-editor-label-select-programming-language-empty": "Seleziona il linguaggio di programmazione",
 	"wikilambda-editor-leave-edit-mode-header": "Esci dalla modalità di modifica",
 	"wikilambda-editor-output-title": "Uscita",
 	"wikilambda-editor-publish-dialog-header": "Pubblica le tue modifiche",

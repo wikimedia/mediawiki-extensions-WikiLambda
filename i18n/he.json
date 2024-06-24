@@ -159,6 +159,7 @@
 	"wikilambda-editor-label-addlanguage-label": "בחירת שפה",
 	"wikilambda-editor-label-removelanguage-tooltip": "הסרת השפה הזאת מהתווית הזאת",
 	"wikilambda-editor-label-select-programming-language-label": "{{GENDER:|בחר|בחרי}} שפת תכנות",
+	"wikilambda-editor-label-select-programming-language-empty": "{{GENDER:|בחר|בחרי}} שפת תכנות",
 	"wikilambda-editor-leave-edit-mode-header": "לעזוב את מצב העריכה",
 	"wikilambda-editor-output-title": "פלט",
 	"wikilambda-editor-publish-dialog-header": "פרסום השינויים שלך",

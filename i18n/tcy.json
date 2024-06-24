@@ -2,9 +2,11 @@
 	"@metadata": {
 		"authors": [
 			"ChiK",
-			"Chidananda Kampa"
+			"Chidananda Kampa",
+			"Mahaveer Indra"
 		]
 	},
+	"wikilambda-editor-label-select-programming-language-empty": "ಪ್ರೋಗ್ರಾಮಿಂಗ್ ಬಾಸೆನ್ ಆಯ್ಕೆ ಮಲ್ಪುಲೆ",
 	"wikilambda-editor-publish-dialog-summary-help-text": "ಈರ್ ಇ ಪುಟೊನ್ ವಾ ನಮೂಡೆಡ್ ಎಡ್ಡೆ ಮಲ್ತರ್?",
 	"wikilambda-metadata-language-column": "ಬಾಸೆ",
 	"wikilambda-persistentzobject-contents": "ವಿಸಯೊಲು"
