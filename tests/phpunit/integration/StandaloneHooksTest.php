@@ -76,7 +76,7 @@ class StandaloneHooksTest extends WikiLambdaIntegrationTestCase {
 		HooksDataPathMock::createInitialContent( $updater );
 
 		// Assert that all ZIDs available in the data directory are loaded in the database
-		$res = $this->db->newSelectQueryBuilder()
+		$res = $this->getDb()->newSelectQueryBuilder()
 			 ->select( [ 'page_title' ] )
 			 ->from( 'page' )
 			 ->where( [ 'page_namespace' => NS_MAIN ] )
@@ -501,7 +501,7 @@ EOT;
 
 		// The secondary tables have now been populated for all the ZObjects in the mock data path.
 		// Count how many Z8s were loaded.
-		$res = $this->db->newSelectQueryBuilder()
+		$res = $this->getDb()->newSelectQueryBuilder()
 			->select( [ 'wlzl_zobject_zid' ] )
 			->from( 'wikilambda_zobject_labels' )
 			->where( [
@@ -514,7 +514,7 @@ EOT;
 		$this->assertSame( 6, $numFunctions );
 
 		// Clear the wikilambda_zobject_join table
-		$this->db->newDeleteQueryBuilder()
+		$this->getDb()->newDeleteQueryBuilder()
 			->deleteFrom( 'wikilambda_zobject_join' )
 			->where( [ true ] )
 			->caller( __METHOD__ )->execute();
@@ -524,7 +524,7 @@ EOT;
 
 		// Confirm that updateSecondaryTables has populated wikilambda_zobject_join with
 		// at least one input-type row for each of the functions
-		$res = $this->db->newSelectQueryBuilder()
+		$res = $this->getDb()->newSelectQueryBuilder()
 			->select( [ 'wlzo_main_zid' ] )
 			->distinct()
 			->from( 'wikilambda_zobject_join' )
@@ -536,7 +536,7 @@ EOT;
 
 		// Confirm that updateSecondaryTables has populated wikilambda_zobject_join with
 		// one output-type row for each of the functions
-		$res = $this->db->newSelectQueryBuilder()
+		$res = $this->getDb()->newSelectQueryBuilder()
 			->select( [ 'wlzo_main_zid' ] )
 			->from( 'wikilambda_zobject_join' )
 			->where( [ 'wlzo_key' => 'Z8K2' ] )

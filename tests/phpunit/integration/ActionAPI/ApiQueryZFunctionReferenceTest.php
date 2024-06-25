@@ -50,7 +50,7 @@ class ApiQueryZFunctionReferenceTest extends ApiTestCase {
 		$langs->register( self::IT, 'it' );
 		$langs->register( self::EGL, 'egl' );
 
-		$this->db->newInsertQueryBuilder()
+		$this->getDb()->newInsertQueryBuilder()
 			->insertInto( 'wikilambda_zobject_function_join' )
 			->rows( array_values( $this->testData ) )
 			->caller( __METHOD__ )
