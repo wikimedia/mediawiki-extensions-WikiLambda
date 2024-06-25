@@ -198,7 +198,7 @@ module.exports = exports = {
 			 * @param {number} rowId
 			 * @return {Array}
 			 */
-			return function ( rowId ) {
+			return function ( rowId = 0 ) {
 				const testsRow = getters.getRowByKeyPath( [
 					Constants.Z_PERSISTENTOBJECT_VALUE,
 					Constants.Z_FUNCTION_TESTERS
@@ -224,7 +224,7 @@ module.exports = exports = {
 			 * @param {string} rowId
 			 * @return {Array}
 			 */
-			return function ( rowId ) {
+			return function ( rowId = 0 ) {
 				const implementationsRow = getters.getRowByKeyPath( [
 					Constants.Z_PERSISTENTOBJECT_VALUE,
 					Constants.Z_FUNCTION_IMPLEMENTATIONS
