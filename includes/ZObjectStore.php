@@ -1028,13 +1028,13 @@ class ZObjectStore {
 
 		// Set minimum id bound if we are continuing a paged result
 		if ( $continue != null ) {
-			$conditions[] = "wlzo_main_zid >= $continue";
+			$conditions[] = $dbr->expr( 'wlzo_id', '>=', $continue );
 		}
 		$res = $dbr->newSelectQueryBuilder()
-			->select( [ 'wlzo_related_zobject', 'wlzo_main_zid' ] )
+			->select( [ 'wlzo_related_zobject', 'wlzo_id' ] )
 			->from( 'wikilambda_zobject_join' )
 			->where( $conditions )
-			->orderBy( 'wlzo_main_zid', SelectQueryBuilder::SORT_ASC )
+			->orderBy( 'wlzo_id', SelectQueryBuilder::SORT_ASC )
 			->limit( $limit )
 			->caller( __METHOD__ )
 			->fetchResultSet();
