@@ -23,7 +23,7 @@
 		"template": "node_modules/jsdoc-wmf-theme"
 	},
 	"plugins": [
-		"plugins/markdown"
+		"node_modules/jsdoc-wmf-theme/plugins/default"
 	],
 	"recurseDepth": 10,
 	"source": {
@@ -38,12 +38,7 @@
 			"useLongnameInNav": true
 		},
 		"wmf": {
-			"repository": "https://gerrit.wikimedia.org/g/mediawiki/extensions/WikiLambda/",
-			"linkMap": {
-				"Array": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
-				"Promise": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
-				"Set": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set"
-			}
+			"repository": "https://gerrit.wikimedia.org/g/mediawiki/extensions/WikiLambda/"
 		}
 	}
 }
