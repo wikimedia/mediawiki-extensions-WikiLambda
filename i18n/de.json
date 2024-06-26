@@ -413,7 +413,7 @@
 	"wikilambda-viewmode-nojs": "Diese Seite wird ohne JavaScript nur in eingeschränkter Weise angezeigt.",
 	"wikilambda-zerror": "Fehler vom Typ $1",
 	"wikilambda-zimplememntation-composition-missing": "Die Zusammensetzung ist leer. Bitte wähle eine Funktion aus.",
-	"wikilambda-zimplementation-code-language-missing": "Wähle eine Programmiersprache aus.",
+	"wikilambda-zimplementation-code-language-missing": "Zuerst eine Programmiersprache auswählen.",
 	"wikilambda-zimplementation-code-missing": "Code ist leer. Bitte gib deinen Code ein.",
 	"wikilambda-zobject-missing-attached-function": "Funktion ist leer. Bitte wähle eine aus.",
 	"wikilambda-zobject-to-string-enter-string": "Zeichenfolge eingeben",

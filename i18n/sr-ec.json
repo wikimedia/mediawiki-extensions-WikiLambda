@@ -128,7 +128,7 @@
 	"wikilambda-tester-status-running": "Извршава се…",
 	"wikilambda-toast-close": "Затвори",
 	"wikilambda-viewmode-nojs": "Ова страница се не приказује у потпуности без JavaScript-а.",
-	"wikilambda-zimplementation-code-language-missing": "Изаберите програмски језик.",
+	"wikilambda-zimplementation-code-language-missing": "Изаберите програмски језик прво.",
 	"wikilambda-zimplementation-code-missing": "Нема кода. Молимо унесите код.",
 	"wikilambda-zobject-to-string-select-object": "Изабери $1",
 	"wikilambda-zobjectselector-label": "Објекат",

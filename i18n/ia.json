@@ -408,7 +408,7 @@
 	"wikilambda-viewmode-nojs": "Iste pagina appare in un modo limitate sin JavaScript.",
 	"wikilambda-zerror": "Error del typo $1",
 	"wikilambda-zimplememntation-composition-missing": "Le composition es vacue. Per favor selige un function.",
-	"wikilambda-zimplementation-code-language-missing": "Selige un linguage de programmation.",
+	"wikilambda-zimplementation-code-language-missing": "Selige un linguage de programmation primo.",
 	"wikilambda-zimplementation-code-missing": "Le codice es vacue. Per favor insere tu codice.",
 	"wikilambda-zobject-missing-attached-function": "Le function es vacue. Per favor selige un.",
 	"wikilambda-zobject-to-string-enter-string": "Insere catena",
