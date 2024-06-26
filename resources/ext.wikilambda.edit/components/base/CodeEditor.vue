@@ -96,6 +96,9 @@ module.exports = exports = defineComponent( {
 		},
 		readOnly: function ( newValue ) {
 			this.editor.setReadOnly( newValue );
+		},
+		disabled: function ( newValue ) {
+			this.editor.setReadOnly( newValue );
 		}
 	},
 	mounted: function () {
