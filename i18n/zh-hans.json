@@ -24,7 +24,8 @@
 			"Zhang8569",
 			"落花有意12138",
 			"Googology",
-			"沈澄心"
+			"沈澄心",
+			"Lakejason0"
 		]
 	},
 	"wikilambda-desc": "为维基媒体的wiki提供wikitext解析器函数，以调用在中央wiki上编写、管理和运行的函数。",
@@ -280,6 +281,7 @@
 	"wikilambda-function-definition-footer-label": "编辑摘要",
 	"wikilambda-function-definition-inputs-label": "输入",
 	"wikilambda-function-definition-inputs-item-selector-placeholder": "选择类型",
+	"wikilambda-function-definition-inputs-item-typed-list-placeholder": "选择列表的类型",
 	"wikilambda-function-definition-inputs-item-input-placeholder": "输入标签",
 	"wikilambda-function-definition-inputs-item-add-input-button": "添加另一个输入",
 	"wikilambda-function-definition-inputs-item-add-first-input-button": "添加输入",
