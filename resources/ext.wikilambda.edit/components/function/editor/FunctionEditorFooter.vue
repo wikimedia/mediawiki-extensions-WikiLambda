@@ -48,8 +48,19 @@ module.exports = exports = defineComponent( {
 	computed: Object.assign( mapGetters( [
 		'isCreateNewPage',
 		'getCurrentZObjectId',
+		'getConnectedImplementations',
+		'getConnectedTests',
 		'getUserLangZid'
 	] ), {
+
+		/**
+		 * Returns whether the function has connected objects (implementations or tests).
+		 *
+		 * @return {boolean}
+		 */
+		hasConnectedObjects: function () {
+			return !!this.getConnectedImplementations().length || !!this.getConnectedTests().length;
+		},
 		/**
 		 * Returns whether the function type signature (input types
 		 * and output type) has changed from its initial value.
@@ -80,6 +91,7 @@ module.exports = exports = defineComponent( {
 	methods: Object.assign( mapActions( [
 		'setError'
 	] ), {
+
 		/**
 		 * Set warnings when there are changes in the function signature
 		 * to announce that
@@ -92,7 +104,7 @@ module.exports = exports = defineComponent( {
 
 			// If there's changes in the function signature, warn that
 			// implementations and testers will be detached
-			if ( this.functionSignatureChanged ) {
+			if ( this.functionSignatureChanged && this.hasConnectedObjects ) {
 				this.setError( {
 					rowId: 0,
 					errorType: Constants.errorTypes.WARNING,
