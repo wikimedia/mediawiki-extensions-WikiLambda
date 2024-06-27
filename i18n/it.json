@@ -398,7 +398,7 @@
 	"wikilambda-viewmode-nojs": "Questa pagina viene visualizzata in modo limitato senza JavaScript.",
 	"wikilambda-zerror": "Errore di tipo $1",
 	"wikilambda-zimplememntation-composition-missing": "La composizione è vuota. Seleziona una funzione.",
-	"wikilambda-zimplementation-code-language-missing": "Seleziona un linguaggio di programmazione.",
+	"wikilambda-zimplementation-code-language-missing": "Seleziona prima un linguaggio di programmazione.",
 	"wikilambda-zimplementation-code-missing": "Il codice è vuoto. Inserisci il codice.",
 	"wikilambda-zobject-missing-attached-function": "La funzione è vuota. Selezionane una.",
 	"wikilambda-zobject-to-string-enter-string": "Inserisci stringa",

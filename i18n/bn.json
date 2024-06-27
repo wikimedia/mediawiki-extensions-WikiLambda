@@ -418,7 +418,7 @@
 	"wikilambda-viewmode-nojs": "এই পাতাটি জাভাস্ক্রিপ্ট ছাড়া সীমিত উপায়ে প্রদর্শিত হয়।",
 	"wikilambda-zerror": "$1 ধরনের ত্রুটি",
 	"wikilambda-zimplememntation-composition-missing": "ফাংশন প্রণয়ন খালি। অনুগ্রহ করে একটি ফাংশন নির্বাচন করুন।",
-	"wikilambda-zimplementation-code-language-missing": "একটি প্রোগ্রামিং ভাষা নির্বাচন করুন।",
+	"wikilambda-zimplementation-code-language-missing": "প্রথমে একটি প্রোগ্রামিং ভাষা নির্বাচন করুন।",
 	"wikilambda-zimplementation-code-missing": "কোড খালি। দয়া করে আপনার কোড লিখুন।",
 	"wikilambda-zobject-missing-attached-function": "ফাংশন খালি। দয়া করে একটি নির্বাচন করুন।",
 	"wikilambda-zobject-to-string-enter-string": "অক্ষরসারি লিখুন",
