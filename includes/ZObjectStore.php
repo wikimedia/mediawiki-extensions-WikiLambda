@@ -550,6 +550,7 @@ class ZObjectStore {
 		$dbr = $this->dbProvider->getReplicaDatabase();
 		$res = $dbr->newSelectQueryBuilder()
 			->select( [ 'wlzl_zobject_zid' ] )
+			->distinct()
 			->from( 'wikilambda_zobject_labels' )
 			->where( [
 				'wlzl_type' => $ztype
@@ -601,6 +602,7 @@ class ZObjectStore {
 		$dbr = $this->dbProvider->getReplicaDatabase();
 		$res = $dbr->newSelectQueryBuilder()
 			->select( [ 'wlzlangs_zid', 'wlzlangs_language' ] )
+			->distinct()
 			->from( 'wikilambda_zlanguages' )
 			->orderBy( 'wlzlangs_zid', SelectQueryBuilder::SORT_ASC )
 			->caller( __METHOD__ )
