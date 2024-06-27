@@ -171,6 +171,7 @@
 	"wikilambda-editor-publish-dialog-summary-help-text": "How did you improve this page?",
 	"wikilambda-editor-publish-dialog-summary-label": "Edit summary",
 	"wikilambda-editor-publish-dialog-summary-placeholder": "Enter short summary",
+	"wikilambda-editor-publish-dialog-keyboard-submit-warning": "You can press $1 $2 to publish your changes.",
 	"wikilambda-editor-removeitem": "🗑️",
 	"wikilambda-editor-tester-list-label": "Test List",
 	"wikilambda-editor-zlist-additem-tooltip": "Add an item to this List",
