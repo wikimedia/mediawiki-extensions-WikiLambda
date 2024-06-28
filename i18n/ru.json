@@ -156,7 +156,7 @@
 	"wikilambda-typeunavailable": "Неизвестный тип",
 	"wikilambda-unknown-save-error-message": "При попытке сохранить изменения произошла ошибка.",
 	"wikilambda-zerror": "Ошибка типа $1",
-	"wikilambda-zimplementation-code-language-missing": "Выберите язык программирования.",
+	"wikilambda-zimplementation-code-language-missing": "Сначала выберите язык программирования.",
 	"wikilambda-zobject-missing-attached-function": "Функция пуста. Выберите какую-нибудь.",
 	"wikilambda-zobjectselector-label": "Объект",
 	"wikilambda-zobjectselector-no-results": "Ничего не найдено.",

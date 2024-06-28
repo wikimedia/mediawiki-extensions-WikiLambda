@@ -379,7 +379,7 @@
 	"wikilambda-viewmode-nojs": "此页面以没有JavaScript的方式显示",
 	"wikilambda-zerror": "错误类型$1",
 	"wikilambda-zimplememntation-composition-missing": "组合为空。请选择一个函数。",
-	"wikilambda-zimplementation-code-language-missing": "选择一种编程语言。",
+	"wikilambda-zimplementation-code-language-missing": "首先选择一种编程语言。",
 	"wikilambda-zimplementation-code-missing": "代码为空。请输入您的代码。",
 	"wikilambda-zobject-missing-attached-function": "函数为空。请选择一项。",
 	"wikilambda-zobject-to-string-enter-string": "输入字符串",
