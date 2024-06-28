@@ -48,7 +48,10 @@
 		</template>
 
 		<!-- Dialog Body -->
-		<div class="ext-wikilambda-metadata-dialog-body">
+		<div v-if="httpErrors.length > 0" class="ext-wikilambda-metadata-dialog-body">
+			{{ getErrorMessage( httpErrors[ 0 ] ) }}
+		</div>
+		<div v-else class="ext-wikilambda-metadata-dialog-body">
 			<cdx-field
 				v-if="hasNestedMetadata"
 				class="ext-wikilambda-metadata-dialog-select-block">
@@ -130,6 +133,7 @@ const CdxAccordion = require( '@wikimedia/codex' ).CdxAccordion,
 	mapGetters = require( 'vuex' ).mapGetters,
 	metadataConfig = require( '../../mixins/metadata.js' ),
 	schemata = require( '../../mixins/schemata.js' ).methods,
+	errorUtils = require( '../../mixins/errorUtils.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ).methods,
 	LabelData = require( '../../store/classes/LabelData.js' ),
 	icons = require( '../../../lib/icons.json' );
@@ -144,7 +148,7 @@ module.exports = exports = defineComponent( {
 		'cdx-field': CdxField,
 		'cdx-select': CdxSelect
 	},
-	mixins: [ metadataConfig ],
+	mixins: [ metadataConfig, errorUtils ],
 	props: {
 		open: {
 			type: Boolean,
@@ -160,6 +164,10 @@ module.exports = exports = defineComponent( {
 			type: Object,
 			required: false,
 			default: undefined
+		},
+		errorId: {
+			type: Number,
+			required: false
 		}
 	},
 	data: function () {
@@ -169,10 +177,14 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign( mapGetters( [
+		'getErrors',
 		'getLabelData',
 		'getUserLangCode',
 		'getFunctionZidOfImplementation'
 	] ), {
+		httpErrors: function () {
+			return this.errorId !== undefined ? this.getErrors( this.errorId ) : [];
+		},
 		/**
 		 * Returns whether the root level metadata object has
 		 * nested metadata children.
@@ -181,7 +193,7 @@ module.exports = exports = defineComponent( {
 		 */
 		hasNestedMetadata: function () {
 			const keyValues = this.getKeyValues( this.metadata );
-			return keyValues.has( 'nestedMetadata' );
+			return keyValues ? keyValues.has( 'nestedMetadata' ) : false;
 		},
 		/**
 		 * Returns the selected metadata collection given the
@@ -262,10 +274,19 @@ module.exports = exports = defineComponent( {
 		 * @return {Map|undefined}
 		 */
 		getKeyValues: function ( metadata ) {
-			if ( !metadata ) {
+			// TODO (T368531) Checking typeof metadata as a safeguard;
+			// metadata should always be an object.
+			if ( !metadata || ( typeof metadata !== 'object' ) ) {
 				return undefined;
 			}
+
 			const benjamin = metadata[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ];
+			// TODO (T368531) Checking benjamin as a safeguard;
+			// benjamin should always exist and be a list.
+			if ( !benjamin || !Array.isArray( benjamin ) ) {
+				return undefined;
+			}
+
 			const items = benjamin.slice( 1 );
 			return new Map( items.map( ( pair ) => [
 				pair[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ],
@@ -289,6 +310,11 @@ module.exports = exports = defineComponent( {
 		 */
 		generateFunctionMenuItems: function ( metadata, depth = 1, index = 0, path = [] ) {
 			const keyValues = this.getKeyValues( metadata );
+			// TODO (T368531) Checking keyValues as a safeguard;
+			// keyValues should always exist.
+			if ( !keyValues ) {
+				return [];
+			}
 
 			let functionCall = keyValues.get( 'zObjectKey' );
 			let labelizedFunctionCall = this.$i18n( 'wikilambda-editor-default-name' ).text();
@@ -348,6 +374,12 @@ module.exports = exports = defineComponent( {
 		 */
 		findMetadata: function ( metadata, selectedMetadataPath, index = 0, path = [] ) {
 			const keyValues = this.getKeyValues( metadata );
+			// TODO (T368531) Checking keyValues as a safeguard;
+			// keyValues should always exist.
+			if ( !keyValues ) {
+				return undefined;
+			}
+
 			let nestedMetadata = keyValues.get( 'nestedMetadata' );
 
 			path.push( index );

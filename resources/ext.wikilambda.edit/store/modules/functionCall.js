@@ -57,13 +57,28 @@ module.exports = exports = {
 					value: data.response
 				} );
 			} ).catch( ( error ) => {
-				// Failure, we inject the error object in the resultRowId
-				// FIXME: figure out how we handle API failures correctly,
-				// do we get a zobject here, or an error message?
-				context.dispatch( 'injectZObjectFromRowId', {
-					rowId: payload.resultRowId,
-					value: error
-				} );
+				// We might get either a Z22/Response envelope or a
+				// HTTP error code response with an API error object:
+				// {
+				//   error: {
+				//     code: 'error_code',
+				//     info: 'error message',
+				//   }
+				// }
+				if ( Constants.Z_OBJECT_TYPE in error ) {
+					context.dispatch( 'injectZObjectFromRowId', {
+						rowId: payload.resultRowId,
+						value: error
+					} );
+				} else if ( 'error' in error ) {
+					const hasErrorMsg = 'info' in error.error;
+					context.dispatch( 'setError', {
+						rowId: payload.resultRowId,
+						errorCode: !hasErrorMsg ? Constants.errorCodes.UNKNOWN_ERROR : undefined,
+						errorMessage: hasErrorMsg ? error.error.info : undefined,
+						errorType: 'error'
+					} );
+				}
 			} );
 		}
 	}

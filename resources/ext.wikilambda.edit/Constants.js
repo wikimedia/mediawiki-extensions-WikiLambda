@@ -297,6 +297,10 @@ Constants.SUGGESTIONS = {
 	LANGUAGES: commonLanguages
 };
 
+Constants.errorIds = {
+	TEST_RESULTS: -1
+};
+
 // These constants should not be strings, to safely
 // differentiate them from possible terminal strings that
 // might contain the same values.

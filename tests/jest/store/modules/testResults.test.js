@@ -7,23 +7,29 @@
 'use strict';
 
 const testResultsModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/testResults.js' ),
+	errorsModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/errors.js' ),
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	metadata = require( '../../fixtures/metadata.js' );
 
 describe( 'testResults Vuex module', () => {
-	let state,
-		context;
+	let context;
 
 	beforeEach( () => {
-		state = JSON.parse( JSON.stringify( testResultsModule.state ) );
 		context = {
-			state: state,
+			state: {
+				zTesterResults: {},
+				zTesterMetadata: {},
+				testResultsPromises: {},
+				errors: {}
+			},
 			commit: jest.fn( ( mutationType, payload ) => {
-				testResultsModule.mutations[ mutationType ]( context.state, payload );
+				if ( mutationType in testResultsModule.mutations ) {
+					testResultsModule.mutations[ mutationType ]( context.state, payload );
+				} else if ( mutationType in errorsModule.mutations ) {
+					errorsModule.mutations[ mutationType ]( context.state, payload );
+				}
 			} ),
-			dispatch: jest.fn( ( actionType, payload ) => {
-				testResultsModule.actions[ actionType ]( context, payload );
-			} ),
+			dispatch: jest.fn(),
 			getters: {}
 		};
 
@@ -32,27 +38,34 @@ describe( 'testResults Vuex module', () => {
 
 	describe( 'Getters', () => {
 		describe( 'getZTesterResults', () => {
+			beforeEach( () => {
+				context.getters.getErrors = () => [];
+			} );
+
 			it( 'should get undefined when the key is not found', () => {
-				const result = testResultsModule.getters.getZTesterResults( context.state )( 'Z10000', 'Z10001', 'Z10002' );
+				const result = testResultsModule.getters.getZTesterResults( context.state, context.getters )( 'Z10000', 'Z10001', 'Z10002' );
 				expect( result ).toBe( undefined );
 			} );
 
 			it( 'should return the test result when it is found (true)', () => {
 				// The code allows for either normal form, as here, or canonical, as below
 				context.state.zTesterResults[ 'Z10000:Z10001:Z10002' ] = { Z1K1: 'Z40', Z40K1: 'Z41' };
-				const result = testResultsModule.getters.getZTesterResults( context.state )( 'Z10000', 'Z10001', 'Z10002' );
+				const result = testResultsModule.getters.getZTesterResults( context.state, context.getters )( 'Z10000', 'Z10001', 'Z10002' );
 				expect( result ).toBe( true );
 			} );
 
 			it( 'should return the test result when it is found (false)', () => {
 				context.state.zTesterResults[ 'Z10000:Z10001:Z10002' ] = 'Z42';
-				const result = testResultsModule.getters.getZTesterResults( context.state )( 'Z10000', 'Z10001', 'Z10002' );
+				const result = testResultsModule.getters.getZTesterResults( context.state, context.getters )( 'Z10000', 'Z10001', 'Z10002' );
 				expect( result ).toBe( false );
 			} );
 
 			it( 'should return false when the state is in an error state', () => {
-				context.state.errorState = true;
-				const result = testResultsModule.getters.getZTesterResults( context.state )( 'Z10000', 'Z10001', 'Z10002' );
+				context.getters.getErrors = () => [ {
+					message: 'Some HTTP error on perform_tests',
+					type: 'error'
+				} ];
+				const result = testResultsModule.getters.getZTesterResults( context.state, context.getters )( 'Z10000', 'Z10001', 'Z10002' );
 				expect( result ).toBe( false );
 			} );
 		} );
@@ -157,17 +170,6 @@ describe( 'testResults Vuex module', () => {
 				expect( 'Z10000' in context.state.testResultsPromises ).toBe( false );
 			} );
 		} );
-
-		describe( 'setErrorState', () => {
-			it( 'should set error state and message', () => {
-				context.state.errorState = false;
-				context.state.errorMessage = '';
-
-				testResultsModule.mutations.setErrorState( context.state, 'some error happened' );
-				expect( context.state.errorState ).toBe( true );
-				expect( context.state.errorMessage ).toBe( 'some error happened' );
-			} );
-		} );
 	} );
 
 	describe( 'Actions', () => {
@@ -236,7 +238,7 @@ describe( 'testResults Vuex module', () => {
 						wikilambda_perform_test_ztesters: zTesters.join( '|' ),
 						wikilambda_perform_test_nocache: false
 					} );
-					expect( context.commit ).toHaveBeenCalledTimes( 8 );
+					expect( context.commit ).toHaveBeenCalledTimes( 7 );
 					expect( Object.keys( context.state.zTesterResults ).length )
 						.toEqual( zTesters.length * zImplementations.length );
 
@@ -265,7 +267,7 @@ describe( 'testResults Vuex module', () => {
 						wikilambda_perform_test_ztesters: zTesters.join( '|' ),
 						wikilambda_perform_test_nocache: false
 					} );
-					expect( context.commit ).toHaveBeenCalledTimes( 8 );
+					expect( context.commit ).toHaveBeenCalledTimes( 7 );
 					expect( Object.keys( context.state.zTesterResults ).length )
 						.toEqual( zTesters.length * zImplementations.length );
 
@@ -330,7 +332,7 @@ describe( 'testResults Vuex module', () => {
 						.toEqual( 0 );
 
 					expect( result.passing ).toBe( 0 );
-					expect( context.state.errorState ).toBe( true );
+					expect( context.state.errors[ Constants.errorIds.TEST_RESULTS ] ).toBeTruthy();
 				} );
 			} );
 

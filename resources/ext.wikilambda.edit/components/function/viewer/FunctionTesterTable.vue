@@ -24,6 +24,7 @@
 			:open="showMetadata"
 			:header-text="implementationLabelData"
 			:metadata="metadata"
+			:error-id="errorId"
 			@close-dialog="showMetadata = false"
 		></wl-function-metadata-dialog>
 	</div>
@@ -60,7 +61,8 @@ module.exports = exports = defineComponent( {
 	data: function () {
 		return {
 			showMetadata: false,
-			icons: icons
+			icons: icons,
+			errorId: Constants.errorIds.TEST_RESULTS
 		};
 	},
 	computed: Object.assign( mapGetters( [

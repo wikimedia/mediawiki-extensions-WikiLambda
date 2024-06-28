@@ -14,12 +14,10 @@ module.exports = exports = {
 	state: {
 		zTesterResults: {},
 		zTesterMetadata: {},
-		testResultsPromises: {},
-		errorState: false,
-		errorMessage: ''
+		testResultsPromises: {}
 	},
 	getters: {
-		getZTesterResults: function ( state ) {
+		getZTesterResults: function ( state, getters ) {
 			/**
 			 * Retrieve the result value zTester a specific set of Function, tester and implementation.
 			 *
@@ -32,7 +30,8 @@ module.exports = exports = {
 			return function ( zFunctionId, zTesterId, zImplementationId ) {
 				const key = zFunctionId + ':' + zTesterId + ':' + zImplementationId;
 
-				if ( state.errorState ) {
+				const testResultErrors = getters.getErrors( Constants.errorIds.TEST_RESULTS );
+				if ( testResultErrors.length > 0 ) {
 					return false;
 				}
 
@@ -56,9 +55,6 @@ module.exports = exports = {
 			 */
 			return function ( zFunctionId, zTesterId, zImplementationId ) {
 				const key = zFunctionId + ':' + zTesterId + ':' + zImplementationId;
-
-				// TODO (T314267): Check for and handle state.errorState = true
-
 				return state.zTesterMetadata[ key ];
 			};
 		},
@@ -103,7 +99,6 @@ module.exports = exports = {
 			 * @return {Array}
 			 */
 			function getPassingTestsForFunction( functionZid ) {
-
 				const connected = getters.getConnectedObjects( functionZid, Constants.Z_FUNCTION_TESTERS );
 				const zids = [];
 
@@ -168,16 +163,6 @@ module.exports = exports = {
 			state.zTesterMetadata = {};
 			// Clear Promise
 			delete state.testResultsPromises[ functionZid ];
-		},
-		/**
-		 * Set the error state and message
-		 *
-		 * @param {Object} state
-		 * @param {Object} error
-		 */
-		setErrorState: function ( state, error ) {
-			state.errorState = !!error;
-			state.errorMessage = error.toString();
 		}
 	},
 	actions: {
@@ -239,7 +224,7 @@ module.exports = exports = {
 				return context.state.testResultsPromises[ payload.zFunctionId ];
 			}
 
-			context.commit( 'setErrorState', false );
+			context.commit( 'clearErrorsForId', Constants.errorIds.TEST_RESULTS );
 
 			const implementations = replaceCurrentObjectWithFullJSONObject(
 				context,
@@ -285,7 +270,11 @@ module.exports = exports = {
 				context.commit( 'setTestResultsPromise', { functionZid: payload.zFunctionId } );
 			} ).catch( ( error ) => {
 				const errorMessage = error.error ? ( error.error.message || error.error.info ) : undefined;
-				context.commit( 'setErrorState', errorMessage || error );
+				context.commit( 'setError', {
+					rowId: Constants.errorIds.TEST_RESULTS,
+					errorMessage: errorMessage || error,
+					errorType: 'error'
+				} );
 				context.commit( 'setTestResultsPromise', { functionZid: payload.zFunctionId } );
 			} );
 
