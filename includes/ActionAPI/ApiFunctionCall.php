@@ -79,9 +79,22 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 		// but if not the orchestrator will return an error.)
 		$function = null;
 		if ( property_exists( $zObjectAsStdClass, 'Z7K1' ) ) {
-			$function = gettype( $zObjectAsStdClass->Z7K1 ) === 'string' ?
-				$zObjectAsStdClass->Z7K1 :
-				json_encode( $zObjectAsStdClass->Z7K1 );
+			if ( gettype( $zObjectAsStdClass->Z7K1 ) === 'string' ) {
+				$function = $zObjectAsStdClass->Z7K1;
+			} elseif (
+				is_object( $zObjectAsStdClass->Z7K1 ) &&
+				property_exists( $zObjectAsStdClass->Z7K1, 'Z8K5' )
+			) {
+				$function = $zObjectAsStdClass->Z7K1->Z8K5;
+			} else {
+				$function = json_encode( $zObjectAsStdClass->Z7K1 );
+				$logger->info(
+					'ApiFunctionCall unable to find a ZID for the function called',
+					[
+						'zobject' => $stringOfAZ
+					]
+				);
+			}
 		}
 
 		// Unlike the Special pages, we don't have a helpful userCanExecute() method
