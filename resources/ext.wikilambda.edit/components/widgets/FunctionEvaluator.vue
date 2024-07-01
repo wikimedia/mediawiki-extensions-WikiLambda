@@ -92,12 +92,17 @@
 					<div v-if="running" data-testid="function-evaluator-running">
 						{{ $i18n( 'wikilambda-function-evaluator-running' ).text() }}
 					</div>
-					<wl-z-object-key-value
-						v-else
-						:row-id="resultRowId"
-						:skip-indent="true"
-						:edit="false"
-					></wl-z-object-key-value>
+					<template v-else>
+						<div v-if="httpErrors.length > 0">
+							{{ getErrorMessage( httpErrors[ 0 ] ) }}
+						</div>
+						<wl-z-object-key-value
+							v-else
+							:row-id="resultRowId"
+							:skip-indent="true"
+							:edit="false"
+						></wl-z-object-key-value>
+					</template>
 				</div>
 			</div>
 		</template>
@@ -113,6 +118,7 @@ const Constants = require( '../../Constants.js' ),
 	ZReference = require( '../default-view-types/ZReference.vue' ),
 	ZObjectKeyValue = require( '../default-view-types/ZObjectKeyValue.vue' ),
 	eventLogUtils = require( '../../mixins/eventLogUtils.js' ),
+	errorUtils = require( '../../mixins/errorUtils.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -125,7 +131,7 @@ module.exports = exports = defineComponent( {
 		'wl-z-reference': ZReference,
 		'wl-z-object-key-value': ZObjectKeyValue
 	},
-	mixins: [ eventLogUtils ],
+	mixins: [ eventLogUtils, errorUtils ],
 	props: {
 		functionZid: {
 			type: String,
@@ -153,6 +159,7 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign( mapGetters( [
+		'getErrors',
 		'getConnectedObjects',
 		'getZFunctionCallArguments',
 		'getLabelData',
@@ -260,6 +267,15 @@ module.exports = exports = defineComponent( {
 		},
 
 		/**
+		 * Returns the HTTP error returned by the orchestrator
+		 *
+		 * @return {Object}
+		 */
+		httpErrors: function () {
+			return this.resultRowId ? this.getErrors( this.resultRowId ) : [];
+		},
+
+		/**
 		 * Returns the array of implementation IDs for the selected function
 		 *
 		 * @return {Array}
@@ -322,6 +338,7 @@ module.exports = exports = defineComponent( {
 		}
 	} ),
 	methods: Object.assign( mapActions( [
+		'clearErrors',
 		'initializeResultId',
 		'changeType',
 		'fetchZids',
@@ -395,6 +412,7 @@ module.exports = exports = defineComponent( {
 			this.initializeResultId( this.resultRowId )
 				.then( ( rowId ) => {
 					this.resultRowId = rowId;
+					this.clearErrors( rowId );
 					return this.callZFunction( {
 						functionCall: functionCallJson,
 						resultRowId: this.resultRowId

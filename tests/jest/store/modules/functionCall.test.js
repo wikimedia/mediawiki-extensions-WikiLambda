@@ -98,19 +98,27 @@ describe( 'functionCall Vuex module', () => {
 				} );
 			} );
 
-			it( 'Call MW API for function orchestration; set error as orchestrationResult', () => {
-				const error = 'one tissue, used';
+			it( 'Call MW API for function orchestration; set HTTP error', async () => {
+				const error = { error: { info: 'one tissue, used' } };
+				postMock = jest.fn().mockReturnValue( {
+					then: jest.fn().mockReturnValue( {
+						catch: jest.fn().mockImplementation( () => new Promise( ( _resolve, reject ) => {
+							reject( error );
+						} ) )
+					} )
+				} );
 
-				// eslint-disable-next-line no-unused-vars
-				postMock = jest.fn( ( payload ) => new Promise( ( resolve, reject ) => {
-					reject( error );
-				} ) );
-
-				functionCallModule.actions.callZFunction( context, { functionCall } );
+				await functionCallModule.actions.callZFunction( context, { functionCall } );
 
 				expect( postMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_function_call',
 					wikilambda_function_call_zobject: JSON.stringify( canonicalFunctionCall )
+				} );
+
+				expect( context.dispatch ).toHaveBeenCalledWith( 'setError', {
+					errorCode: undefined,
+					errorMessage: 'one tissue, used',
+					errorType: 'error'
 				} );
 			} );
 		} );

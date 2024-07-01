@@ -68,6 +68,7 @@ describe( 'FunctionEvaluator', () => {
 
 	beforeEach( () => {
 		getters = {
+			getErrors: createGettersWithFunctionsMock( [] ),
 			getCurrentZObjectId: createGettersWithFunctionsMock( 'Z12345' ),
 			getCurrentZObjectType: createGettersWithFunctionsMock( 'Z14' ),
 			getStoredObject: createGettersWithFunctionsMock( undefined ),
@@ -85,6 +86,7 @@ describe( 'FunctionEvaluator', () => {
 		};
 		actions = {
 			callZFunction: jest.fn(),
+			clearErrors: jest.fn(),
 			changeType: jest.fn(),
 			fetchZids: jest.fn(),
 			initializeResultId: jest.fn(),
