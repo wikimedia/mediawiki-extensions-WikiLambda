@@ -163,6 +163,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 		] );
 
 		$result = [ 'success' => false ];
+
 		try {
 			$response = $work->execute();
 			$result['data'] = $response;
@@ -187,7 +188,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 			);
 			$zResponseMap = ZResponseEnvelope::wrapErrorInResponseMap( $zError );
 			$zResponseObject = new ZResponseEnvelope( null, $zResponseMap );
-			$result['data'] = $zResponseObject->getSerialized();
+			$result['data'] = json_encode( $zResponseObject->getSerialized() );
 			$logger->warning(
 				'ApiFunctionCall failed due to a Client or Server Exception: "{message}"',
 				[

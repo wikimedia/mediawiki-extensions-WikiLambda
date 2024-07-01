@@ -143,7 +143,7 @@ class PublicApiRun extends WikiLambdaApiBase {
 			);
 			$zResponseMap = ZResponseEnvelope::wrapErrorInResponseMap( $zError );
 			$zResponseObject = new ZResponseEnvelope( null, $zResponseMap );
-			$result['data'] = $zResponseObject->getSerialized();
+			$result['data'] = json_encode( $zResponseObject->getSerialized() );
 		}
 		$pageResult->addValue( [], $this->getModuleName(), $result );
 

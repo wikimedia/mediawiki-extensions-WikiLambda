@@ -33,7 +33,7 @@ class ZResponseEnvelopeTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertFalse( $testObject->hasErrors() );
 		$this->assertSame( $testResponse->getZValue(), $testObject->getZValue()->getZValue() );
-		$this->assertSame( ZTypeRegistry::Z_UNIT, $testObject->getZMetadata()->{ ZTypeRegistry::Z_OBJECT_TYPE } );
+		$this->assertSame( ZTypeRegistry::Z_VOID, $testObject->getZMetadata() );
 	}
 
 	public function testCreation_constructor_error() {
@@ -45,7 +45,7 @@ class ZResponseEnvelopeTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $testObject instanceof ZResponseEnvelope );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertTrue( $testObject->hasErrors() );
-		$this->assertSame( ZTypeRegistry::Z_UNIT, $testObject->getZValue()->{ ZTypeRegistry::Z_OBJECT_TYPE } );
+		$this->assertSame( ZTypeRegistry::Z_VOID, $testObject->getZValue() );
 
 		$metadata = $testObject->getZMetadata();
 		$metadataError = $metadata->getValueGivenKey( new ZString( 'errors' ) );
