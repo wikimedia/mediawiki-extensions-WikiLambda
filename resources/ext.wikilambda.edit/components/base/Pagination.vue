@@ -9,7 +9,7 @@
 		<cdx-button class="ext-wikilambda-pagination__view-all" @click="resetView">
 			{{ getButtonText }}
 		</cdx-button>
-		<div class="ext-wikilambda-pagination__page-selector">
+		<div v-if="!showingAll" class="ext-wikilambda-pagination__page-selector">
 			<div class="ext-wikilambda-pagination__page-selector__main">
 				<input
 					ref="pageInput"
@@ -92,7 +92,7 @@ module.exports = exports = defineComponent( {
 				} else if ( inputValue > this.totalPages ) {
 					this.$emit( 'update-page', this.totalPages );
 				} else {
-					this.$emit( 'update-page', inputValue );
+					this.$emit( 'update-page', Number( inputValue ) );
 				}
 			}
 		},

@@ -62,6 +62,64 @@ describe( 'Pagination', () => {
 				backButton.trigger( 'click' );
 				await waitFor( () => expect( wrapper.emitted( 'update-page' ) ).toBeTruthy() );
 			} );
+
+			it( 'will go to the page when using the input field with a valid page number', async () => {
+				const wrapper = shallowMount( Pagination, {
+					props: {
+						currentPage: 1,
+						totalPages: 5
+					},
+					global: { stubs: { CdxIcon: false } }
+				} );
+
+				const inputField = wrapper.find( '.ext-wikilambda-pagination__page-selector__input' );
+				expect( inputField.exists() ).toBe( true );
+
+				await inputField.setValue( 2 );
+				await inputField.trigger( 'input' );
+
+				await waitFor( () => expect( wrapper.emitted( 'update-page' ) ).toBeTruthy() );
+				expect( wrapper.emitted( 'update-page' )[ 0 ] ).toEqual( [ 2 ] );
+			} );
+
+			it( 'will go to the last page when using the input field with a number higher than the total page numbers', async () => {
+				const wrapper = shallowMount( Pagination, {
+					props: {
+						currentPage: 1,
+						totalPages: 5
+					},
+					global: { stubs: { CdxIcon: false } }
+				} );
+
+				const inputField = wrapper.find( '.ext-wikilambda-pagination__page-selector__input' );
+				expect( inputField.exists() ).toBe( true );
+
+				await inputField.setValue( 6 );
+				await inputField.trigger( 'input' );
+
+				await waitFor( () => expect( wrapper.emitted( 'update-page' ) ).toBeTruthy() );
+				expect( wrapper.emitted( 'update-page' )[ 0 ] ).toEqual( [ 5 ] );
+			} );
+
+			it( 'will go to the first page when using the input field with a number lower than the total page numbers', async () => {
+				const wrapper = shallowMount( Pagination, {
+					props: {
+						currentPage: 1,
+						totalPages: 5
+					},
+					global: { stubs: { CdxIcon: false } }
+				} );
+
+				const inputField = wrapper.find( '.ext-wikilambda-pagination__page-selector__input' );
+				expect( inputField.exists() ).toBe( true );
+
+				await inputField.setValue( 0 );
+				await inputField.trigger( 'input' );
+
+				await waitFor( () => expect( wrapper.emitted( 'update-page' ) ).toBeTruthy() );
+				expect( wrapper.emitted( 'update-page' )[ 0 ] ).toEqual( [ 1 ] );
+			} );
+
 		} );
 
 		describe( 'when only one page', () => {
@@ -101,7 +159,17 @@ describe( 'Pagination', () => {
 						totalPages: 3,
 						showingAll: false
 					},
-					global: { stubs: { CdxButton: false } }
+					global: {
+						stubs: { CdxButton: false }
+					},
+					data() {
+						return {
+							icons: {
+								cdxIconPrevious: 'previous',
+								cdxIconNext: 'next'
+							}
+						};
+					}
 				} );
 
 				const viewButton = wrapper.find( '.ext-wikilambda-pagination__view-all' );
@@ -114,7 +182,7 @@ describe( 'Pagination', () => {
 		} );
 
 		describe( 'when clicking button to view less', () => {
-			it( 'shows less of the functions', async () => {
+			it( 'shows less of the functions and hides the page selector', async () => {
 				const wrapper = shallowMount( Pagination, {
 					props: {
 						totalPages: 3,
@@ -125,6 +193,7 @@ describe( 'Pagination', () => {
 
 				const viewButton = wrapper.find( '.ext-wikilambda-pagination__view-all' );
 				expect( viewButton.text() ).toBe( 'View less' );
+				expect( wrapper.find( '.ext-wikilambda-pagination__page-selector' ).exists() ).toBe( false );
 
 				viewButton.trigger( 'click' );
 				await waitFor( () => expect( wrapper.emitted( 'reset-view' ) ).toBeTruthy() );
