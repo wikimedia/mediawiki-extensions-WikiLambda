@@ -185,6 +185,7 @@
 	"wikilambda-editor-publish-dialog-summary-help-text": "Label for the summary input on the publish changes dialog prompting users to enter their changes.",
 	"wikilambda-editor-publish-dialog-summary-label": "Aria label for the input box where a user can summarize the changes they made to the ZObject before publishing.",
 	"wikilambda-editor-publish-dialog-summary-placeholder": "Placeholder text for the summary changes input box in the publish dialog",
+	"wikilambda-editor-publish-dialog-keyboard-submit-warning": "Warning message shown when a user tries to submit the publish dialog with the enter key.",
 	"wikilambda-editor-removeitem": "{{ignore}}Label for button to delete item",
 	"wikilambda-editor-tester-list-label": "Label for a list of testers associated with a function.\n\n{{doc-wikilambda}}",
 	"wikilambda-editor-zlist-additem-tooltip": "Tooltip shown on button to add an entry to a ZList.\n\n{{doc-wikilambda}}",

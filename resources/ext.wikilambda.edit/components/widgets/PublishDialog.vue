@@ -37,16 +37,26 @@
 			</div>
 
 			<!-- Summary section -->
-			<cdx-field>
+			<cdx-field :status="status">
 				<cdx-text-input
 					v-model="summary"
 					class="ext-wikilambda-publishdialog__summary-input"
 					:aria-label="summaryLabel"
 					:placeholder="summaryPlaceholder"
+					@keydown="handleSummaryKeydown"
 				></cdx-text-input>
 				<template #label>
 					{{ $i18n( 'wikilambda-editor-publish-dialog-summary-help-text' ).text() }}
 				</template>
+
+				<cdx-message
+					v-if="hasKeyboardSubmitWarning"
+					class="ext-wikilambda-publishdialog__keyboard-submit-warning"
+					type="warning"
+					:inline="true"
+				>
+					<div v-html="keyboardSubmitMessage"></div>
+				</cdx-message>
 			</cdx-field>
 
 			<!-- Legal text -->
@@ -71,6 +81,22 @@ const Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
+const enterKeyChar = `
+	<kbd class="ext-wikilambda-publishdialog__kbd">
+		<span class="ext-wikilambda-publishdialog__kbd-enter">&#x21B5;</span>
+	</kbd>
+`;
+const cmdKeyChar = `
+	<kbd class="ext-wikilambda-publishdialog__kbd">
+		<span class="ext-wikilambda-publishdialog__kbd-cmd">&#x2318;</span>
+	</kbd>
+`;
+
+const ctrlKeyChar = `
+	<kbd class="ext-wikilambda-publishdialog__kbd">
+		<span class="ext-wikilambda-publishdialog__kbd-ctrl">Ctrl</span>
+	</kbd>
+`;
 module.exports = exports = defineComponent( {
 	name: 'wl-publish-dialog',
 	components: {
@@ -97,7 +123,8 @@ module.exports = exports = defineComponent( {
 	},
 	data: function () {
 		return {
-			summary: ''
+			summary: '',
+			hasKeyboardSubmitWarning: false
 		};
 	},
 	computed: Object.assign( mapGetters( [
@@ -109,6 +136,16 @@ module.exports = exports = defineComponent( {
 		'getUserLangZid',
 		'isCreateNewPage'
 	] ), {
+
+		/**
+		 * Returns the status of the summary text field.
+		 *
+		 * @return {string}
+		 */
+		status: function () {
+			return this.hasKeyboardSubmitWarning ? 'warning' : 'default';
+		},
+
 		/**
 		 * Returns the array of errors and warnings of the page
 		 *
@@ -192,6 +229,16 @@ module.exports = exports = defineComponent( {
 			return ( this.getCurrentZObjectType === Constants.Z_IMPLEMENTATION ) ?
 				this.$i18n( 'wikifunctions-edit-copyrightwarning-implementation' ).text() :
 				this.$i18n( 'wikifunctions-edit-copyrightwarning-function' ).text();
+		},
+
+		/**
+		 * Returns a warning message which informs the user that they can submit using Ctrl/CMD + Enter;
+		 *
+		 * @return {string}
+		 */
+		keyboardSubmitMessage: function () {
+			const isMac = /Mac|iPod|iPhone|iPad/.test( navigator.userAgent );
+			return this.$i18n( 'wikilambda-editor-publish-dialog-keyboard-submit-warning', isMac ? cmdKeyChar : ctrlKeyChar, enterKeyChar );
 		}
 	} ),
 	methods: Object.assign( mapActions( [
@@ -201,11 +248,46 @@ module.exports = exports = defineComponent( {
 		'clearAllErrors'
 	] ),
 	{
+
+		/**
+		 * Handle pressing the Enter key on the summary field.
+		 *
+		 * @param {Event} event The keydown event.
+		 */
+		handleSummaryEnter: function ( event ) {
+			event.preventDefault();
+			this.hasKeyboardSubmitWarning = true;
+		},
+
+		/**
+		 * Handles the keydown event on the summary text field.
+		 * - If the user presses Ctrl/Cmd + Enter, publishes the ZObject.
+		 * - If the user presses Enter, shows a warning message.
+		 *
+		 * @param {Event} event The keydown event.
+		 */
+		handleSummaryKeydown: function ( event ) {
+			const enterKey = event.key === 'Enter';
+
+			// If the user presses Ctrl/Cmd + Enter, publish the ZObject
+			if ( ( event.metaKey || event.ctrlKey ) && enterKey ) {
+				this.publishZObject();
+				return;
+			}
+
+			// If the user presses Enter, show a warning message
+			if ( enterKey ) {
+				this.handleSummaryEnter( event );
+			}
+		},
+
 		/**
 		 * Clears the error notifications and emits a close-dialog
 		 * event for the Publish widget to close the dialog.
 		 */
 		closeDialog: function () {
+			this.hasKeyboardSubmitWarning = false;
+
 			if ( this.hasErrors ) {
 				this.clearAllErrors();
 			}
@@ -318,6 +400,29 @@ module.exports = exports = defineComponent( {
 
 	&__summary-label {
 		padding-bottom: @spacing-25;
+	}
+
+	&__kbd {
+		font-size: @font-size-x-small;
+		font-weight: @font-weight-normal;
+		line-height: @line-height-x-small;
+		color: @color-base;
+		background-color: @background-color-interactive-subtle;
+		border: @border-width-base @border-style-base @border-color-subtle;
+		border-radius: @border-radius-base;
+		padding: (@spacing-12 / 2) @spacing-25;
+		box-shadow: @box-shadow-drop-small;
+		font-family: inherit;
+		display: inline-block;
+	}
+
+	&__kbd-enter {
+		position: relative;
+		top: (@spacing-12 / 2);
+	}
+
+	&__keyboard-submit-warning {
+		margin-top: @spacing-25;
 	}
 
 	&__divider {

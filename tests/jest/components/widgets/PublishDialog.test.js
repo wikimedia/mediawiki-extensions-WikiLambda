@@ -46,6 +46,15 @@ describe( 'Publish Dialog', () => {
 		} );
 	} );
 
+	const triggerKeydown = async ( input, key, keyCode, modifierKey ) => {
+		await input.trigger( 'keydown', {
+			key: key,
+			keyCode: keyCode,
+			code: key,
+			...modifierKey ? { [ modifierKey ]: true } : {}
+		} );
+	};
+
 	it( 'renders without errors', () => {
 		const wrapper = mount( PublishDialog, {
 			props: { showDialog: true }
@@ -162,6 +171,55 @@ describe( 'Publish Dialog', () => {
 			errorMessage: undefined,
 			errorCode: Constants.errorCodes.UNKNOWN_ERROR
 		} ) );
+	} );
+
+	it( 'shows a keyboard warning when trying to submit with the Enter key', async () => {
+		const wrapper = mount( PublishDialog, {
+			props: { showDialog: true, functionSignatureChanged: false }
+		} );
+
+		wrapper.vm.summary = 'mock summary';
+
+		// Find the input element
+		const input = wrapper.find( '.ext-wikilambda-publishdialog__summary-input input' );
+
+		// Simulate hitting Enter on the input element
+		await triggerKeydown( input, 'Enter', 13 );
+
+		await waitFor( () => expect( wrapper.find( '.cdx-message--warning.ext-wikilambda-publishdialog__keyboard-submit-warning' ).exists() ).toBe( true ) );
+		expect( actions.submitZObject ).not.toHaveBeenCalled();
+	} );
+
+	it( 'proceeds to publish when pressing Ctrl + Enter on Windows', async () => {
+
+		const wrapper = mount( PublishDialog, {
+			props: { showDialog: true, functionSignatureChanged: false }
+		} );
+
+		// Find the input element
+		const input = wrapper.find( '.ext-wikilambda-publishdialog__summary-input input' );
+
+		// Simulate hitting Ctrl + Enter on the input element
+		await triggerKeydown( input, 'Enter', 13, 'ctrlKey' );
+
+		await waitFor( () => expect( wrapper.find( '.cdx-message--warning.ext-wikilambda-publishdialog__keyboard-submit-warning' ).exists() ).toBe( false ) );
+		expect( actions.submitZObject ).toHaveBeenCalled();
+	} );
+
+	it( 'proceeds to publish when pressing CMD + Enter on Mac', async () => {
+
+		const wrapper = mount( PublishDialog, {
+			props: { showDialog: true, functionSignatureChanged: false }
+		} );
+
+		// Find the input element
+		const input = wrapper.find( '.ext-wikilambda-publishdialog__summary-input input' );
+
+		// Simulate hitting Cmd + Enter on the input element
+		await triggerKeydown( input, 'Enter', 13, 'metaKey' );
+
+		await waitFor( () => expect( wrapper.find( '.cdx-message--warning.ext-wikilambda-publishdialog__keyboard-submit-warning' ).exists() ).toBe( false ) );
+		expect( actions.submitZObject ).toHaveBeenCalled();
 	} );
 
 	describe( 'Event logging', () => {
