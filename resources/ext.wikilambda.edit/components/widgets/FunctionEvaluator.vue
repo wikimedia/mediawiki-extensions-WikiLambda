@@ -25,6 +25,8 @@
 				v-if="!hasImplementations && selectedFunctionZid !== undefined"
 				type="notice"
 				class="ext-wikilambda-function-evaluator-message"
+				data-testid="function-evaluator-message"
+
 			>
 				{{ $i18n( 'wikilambda-function-evaluation-restriction-notrunnable' ).text() }}
 			</cdx-message>

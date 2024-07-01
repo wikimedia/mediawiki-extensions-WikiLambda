@@ -58,4 +58,73 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 				JSON.stringify( expected.zFunctionWithImplementationsAndTesters( [], [ existingFailedTesterZid ] ) )
 		} );
 	} );
+
+	it( 'shows a message in the function evaluator when disconnecting all implementations', async () => {
+		const { findByLabelText, findByTestId, queryByTestId } = renderForFunctionViewer();
+
+		// ASSERT: The "connected" implementation is shown in the table.
+		const implementationsTable = await findByLabelText( 'Implementations' );
+		await waitFor( () => expect( within( implementationsTable ).getAllByRole( 'row' ) ).toHaveLength( 3 ) );
+		const firstImplementationRow = within( implementationsTable ).getAllByRole( 'row' )[ 1 ];
+		await waitFor(
+			() => expect( firstImplementationRow ).toHaveTextContent( 'Implementation by composition, in English' ) );
+
+		// ASSERT: The "connected" implementation is shown as connected.
+		expect( firstImplementationRow ).toHaveTextContent( 'Connected' );
+
+		// ASSERT: The function evaluator message is hidden
+		expect( queryByTestId( 'function-evaluator-message' ) ).not.toBeInTheDocument();
+
+		// Filter rows to get only those that contain the text "connected"
+		const connectedRows = within( implementationsTable ).getAllByRole( 'row' ).filter( ( row ) => within( row ).queryByText( 'Connected' ) );
+
+		// ACT: Select the "connected" implementations in the table.
+		for ( const row of connectedRows ) {
+			await fireEvent.update( within( row ).getByRole( 'checkbox' ), true );
+		}
+
+		// ACT: Click the disconnect button.
+		await fireEvent.click( within( implementationsTable ).getByText( 'Disconnect' ) );
+
+		// ASSERT: API was called to disconnect the implementations.
+		expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith(
+			expect.objectContaining( {
+				action: 'wikilambda_edit',
+				summary: 'Removed $1 from the approved list of implementations',
+				zid: functionZid
+			} )
+		);
+
+		// ASSERT: All rows are "Disconnected" and not active (Checkmark is not shown)
+		await waitFor( () => {
+			connectedRows.forEach( ( row ) => {
+				expect( row ).toHaveTextContent( 'Disconnected' );
+				expect( row ).not.toHaveClass( 'ext-wikilambda-function-details-table__row--active' );
+			} );
+		} );
+
+		// ASSERT: The function evaluator message is shown.
+		expect( await findByTestId( 'function-evaluator-message' ) ).toHaveTextContent( 'This function has no approved implementations.' );
+
+		// ACT: Select the first "disconnected" implementation in the table.
+		await fireEvent.update( within( firstImplementationRow ).getByRole( 'checkbox' ), true );
+
+		// ACT: Click the connect button.
+		await fireEvent.click( within( implementationsTable ).getByText( 'Connect' ) );
+
+		// ASSERT: API was called to connect the implementation
+		expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith(
+			expect.objectContaining( {
+				action: 'wikilambda_edit',
+				summary: 'Added $1 to the approved list of implementations',
+				zid: functionZid
+			} )
+		);
+
+		// ASSERT: The "connected" implementation is shown as connected.
+		expect( firstImplementationRow ).toHaveTextContent( 'Connected' );
+
+		// ASSERT: The function evaluator message is hidden
+		expect( queryByTestId( 'function-evaluator-message' ) ).not.toBeInTheDocument();
+	} );
 } );

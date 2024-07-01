@@ -78,6 +78,7 @@ const Constants = require( '../../Constants.js' ),
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
 	eventLogUtils = require( '../../mixins/eventLogUtils.js' ),
+	errorUtils = require( '../../mixins/errorUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
@@ -105,7 +106,7 @@ module.exports = exports = defineComponent( {
 		'cdx-message': CdxMessage,
 		'cdx-dialog': CdxDialog
 	},
-	mixins: [ eventLogUtils ],
+	mixins: [ eventLogUtils, errorUtils ],
 	inject: {
 		viewmode: { default: false }
 	},
@@ -366,18 +367,6 @@ module.exports = exports = defineComponent( {
 				};
 				this.submitInteraction( 'publish', interactionData );
 			} );
-		},
-
-		/**
-		 * Returns the translated message for a given error code.
-		 * Error messages can have html tags.
-		 *
-		 * @param {Object} error
-		 * @return {string}
-		 */
-		getErrorMessage: function ( error ) {
-			// eslint-disable-next-line mediawiki/msg-doc
-			return error.message || this.$i18n( error.code ).text();
 		}
 	} )
 } );
