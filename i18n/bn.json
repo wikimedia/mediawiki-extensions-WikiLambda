@@ -19,7 +19,7 @@
 			"খাত্তাব হাসান"
 		]
 	},
-	"wikilambda-desc": "কেন্দ্রীয় উইকিতে লিখিত, পরিচালিত এবং মূল্যায়িত ফাংশনগুলোর মূল্যায়ন কল করার জন্য উইকিটেক্সট পার্সার ফাংশন সহ উইকিমিডিয়া উইকি প্রদান করা।",
+	"wikilambda-desc": "কেন্দ্রীয় উইকিতে লিখিত, পরিচালিত এবং মূল্যায়িত করার জন্য ফাংশন প্রদান করা।",
 	"action-wikifunctions-run": "পাবলিক এপিআই-এ ফাংশন চালান",
 	"action-wikilambda-connect-implementation": "একটি বাস্তবায়নকে এর ফাংশনে সংযুক্ত করুন যাতে এটি চালানো যায়",
 	"action-wikilambda-connect-tester": "একটি পরীক্ষার ক্ষেত্রকে সেটির ফাংশনের সাথে সংযুক্ত করার",
@@ -412,6 +412,7 @@
 	"wikilambda-tester-status-run": "রান করুন",
 	"wikilambda-tester-status-running": "রান হচ্ছে...",
 	"wikilambda-toast-close": "বন্ধ",
+	"wikilambda-toggle-expanded-view": "প্রসারিত দৃশ্য টগল করুন",
 	"wikilambda-typeselector-label": "একটি ধরন নির্বাচন করুন",
 	"wikilambda-typeunavailable": "ধরন অপরিচিত",
 	"wikilambda-unknown-save-error-message": "আপনার পরিবর্তনগুলি সংরক্ষণ করার সময় ত্রুটি ঘটেছে।",
