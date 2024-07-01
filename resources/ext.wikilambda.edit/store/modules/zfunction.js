@@ -315,8 +315,7 @@ module.exports = exports = {
 				.dispatch( 'pushValuesToList', { rowId: listRow.id, values: payload.zids } )
 				.then( () => context.dispatch(
 					'submitZObject', {
-						summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-testers-approved-summary', payload.zids ),
-						detachFunctionObjects: false
+						summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-testers-approved-summary', payload.zids )
 					} ).catch( ( e ) => {
 					// Reset old ZObject if something failed
 					context.commit( 'setZObject', zobjectCopy );
@@ -346,8 +345,7 @@ module.exports = exports = {
 				.dispatch( 'pushValuesToList', { rowId: listRow.id, values: payload.zids } )
 				.then( () => context.dispatch(
 					'submitZObject', {
-						summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-implementations-approved-summary', payload.zids ),
-						detachFunctionObjects: false
+						summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-implementations-approved-summary', payload.zids )
 					} ).catch( ( e ) => {
 					// Reset old ZObject if something failed
 					context.commit( 'setZObject', zobjectCopy );
@@ -386,12 +384,9 @@ module.exports = exports = {
 			context.dispatch( 'recalculateTypedListKeys', listRow.id );
 
 			return context.dispatch(
-				'submitZObject',
-				{
-					summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-testers-deactivated-summary', payload.zids ),
-					detachFunctionObjects: false
-				}
-			).catch( ( e ) => {
+				'submitZObject', {
+					summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-testers-deactivated-summary', payload.zids )
+				} ).catch( ( e ) => {
 				// Reset old ZObject if something failed
 				context.commit( 'setZObject', zobjectCopy );
 				throw e;
@@ -428,12 +423,9 @@ module.exports = exports = {
 			context.dispatch( 'recalculateTypedListKeys', listRow.id );
 
 			return context.dispatch(
-				'submitZObject',
-				{
-					summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-implementations-deactivated-summary', payload.zids ),
-					detachFunctionObjects: false
-				}
-			).catch( ( e ) => {
+				'submitZObject', {
+					summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-implementations-deactivated-summary', payload.zids )
+				} ).catch( ( e ) => {
 				// Reset old ZObject if something failed
 				context.commit( 'setZObject', zobjectCopy );
 				throw e;

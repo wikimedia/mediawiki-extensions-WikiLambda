@@ -698,7 +698,7 @@ describe( 'zfunction Vuex module', () => {
 
 					expect( context.dispatch ).toHaveBeenCalledWith(
 						'submitZObject',
-						{ detachFunctionObjects: false, summary: 'Added $1 to the approved list of test cases' }
+						{ summary: 'Added $1 to the approved list of test cases' }
 					);
 					expect( zobjectModule.getters.getZObjectAsJson(
 						context.state,
@@ -731,7 +731,7 @@ describe( 'zfunction Vuex module', () => {
 					zfunctionModule.actions.connectImplementations( context,
 						{ rowId: 0, zids: [ 'Z777', 'Z888' ] } );
 
-					expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', { detachFunctionObjects: false, summary: 'Added $1 to the approved list of implementations' } );
+					expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', { summary: 'Added $1 to the approved list of implementations' } );
 					expect( zobjectModule.getters.getZObjectAsJson(
 						context.state,
 						context.getters,
@@ -765,7 +765,7 @@ describe( 'zfunction Vuex module', () => {
 					zfunctionModule.actions.disconnectTests( context,
 						{ rowId: 0, zids: [ 'Z10002', 'Z10003' ] } );
 
-					expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', { detachFunctionObjects: false, summary: 'Removed $1 from the approved list of test cases' } );
+					expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', { summary: 'Removed $1 from the approved list of test cases' } );
 					expect( zobjectModule.getters.getZObjectAsJson(
 						context.state,
 						context.getters,
@@ -793,7 +793,7 @@ describe( 'zfunction Vuex module', () => {
 					zfunctionModule.actions.disconnectImplementations( context,
 						{ rowId: 0, zids: [ 'Z10004', 'Z10005' ] } );
 
-					expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', { detachFunctionObjects: false, summary: 'Removed $1 from the approved list of implementations' } );
+					expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', { summary: 'Removed $1 from the approved list of implementations' } );
 					expect( zobjectModule.getters.getZObjectAsJson(
 						context.state,
 						context.getters,
@@ -866,7 +866,7 @@ describe( 'zfunction Vuex module', () => {
 							{ rowId: 0, zids: [ 'Z777', 'Z888' ] } );
 					} catch ( error ) {
 						expect( error ).toEqual( 'error' );
-						expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', { detachFunctionObjects: false, summary: 'Added $1 to the approved list of test cases' } );
+						expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', { summary: 'Added $1 to the approved list of test cases' } );
 						expect( context.commit ).toHaveBeenCalledWith( 'setZObject', initialZObject );
 					}
 				} );
@@ -877,7 +877,7 @@ describe( 'zfunction Vuex module', () => {
 							{ rowId: 0, zids: [ 'Z111', 'Z333' ] } );
 					} catch ( error ) {
 						expect( error ).toEqual( 'error' );
-						expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', { detachFunctionObjects: false, summary: 'Removed $1 from the approved list of test cases' } );
+						expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', { summary: 'Removed $1 from the approved list of test cases' } );
 						expect( context.commit ).toHaveBeenCalledWith( 'setZObject', initialZObject );
 					}
 				} );
@@ -888,7 +888,7 @@ describe( 'zfunction Vuex module', () => {
 							{ rowId: 0, zids: [ 'Z777', 'Z888' ] } );
 					} catch ( error ) {
 						expect( error ).toEqual( 'error' );
-						expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', { detachFunctionObjects: false, summary: 'Added $1 to the approved list of implementations' } );
+						expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', { summary: 'Added $1 to the approved list of implementations' } );
 						expect( context.commit ).toHaveBeenCalledWith( 'setZObject', initialZObject );
 					}
 				} );
@@ -899,7 +899,7 @@ describe( 'zfunction Vuex module', () => {
 							{ rowId: 0, zids: [ 'Z444', 'Z666' ] } );
 					} catch ( error ) {
 						expect( error ).toEqual( 'error' );
-						expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', { detachFunctionObjects: false, summary: 'Removed $1 from the approved list of implementations' } );
+						expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', { summary: 'Removed $1 from the approved list of implementations' } );
 						expect( context.commit ).toHaveBeenCalledWith( 'setZObject', initialZObject );
 					}
 				} );

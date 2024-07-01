@@ -21,7 +21,7 @@ module.exports = exports = {
 			// * wikilambda-updated-implementations-deactivated-summary
 			// * wikilambda-updated-testers-approved-summary
 			// * wikilambda-updated-testers-deactivated-summary
-			return mw.message( message ).params( mw.language.listToText( ZIDs ) ).text();
+			return mw.message( message ).params( [ mw.language.listToText( ZIDs ) ] ).text();
 		}
 	}
 };
