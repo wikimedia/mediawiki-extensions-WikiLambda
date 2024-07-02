@@ -403,7 +403,7 @@
 	"wikilambda-viewmode-nojs": "Zonder JavaScript is de weergave van deze pagina beperkt.",
 	"wikilambda-zerror": "Fout van type $1",
 	"wikilambda-zimplememntation-composition-missing": "Compositie is leeg. Selecteer een functie.",
-	"wikilambda-zimplementation-code-language-missing": "Selecteer een programmeertaal.",
+	"wikilambda-zimplementation-code-language-missing": "Kies eerst een programmeertaal uit.",
 	"wikilambda-zimplementation-code-missing": "Code is leeg. Voer uw code in.",
 	"wikilambda-zobject-missing-attached-function": "Functie is leeg. Selecteer er een.",
 	"wikilambda-zobject-to-string-enter-string": "Voer tekenreeks in",
