@@ -151,7 +151,9 @@ module.exports = exports = defineComponent( {
 	methods: {
 		/**
 		 * Emits the event setValue so that ZObjectKey can update
-		 * the terminal value in the ZObject data table.
+		 * the terminal value in the ZObject data table. ZObjectSelector
+		 * input event will always be called with a valid value from the
+		 * lookup list, never with an empty value.
 		 *
 		 * @param {string} value
 		 */

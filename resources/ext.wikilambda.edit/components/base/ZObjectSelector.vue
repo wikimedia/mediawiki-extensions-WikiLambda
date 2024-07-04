@@ -12,7 +12,7 @@
 	<span class="ext-wikilambda-select-zobject">
 		<cdx-select
 			v-if="isEnum"
-			v-model:selected="selectedValue"
+			:selected="selectedValue"
 			:disabled="disabled"
 			:menu-items="enumValues"
 			:menu-config="selectConfig"
@@ -32,6 +32,7 @@
 			data-testid="z-object-selector-lookup"
 			@update:selected="onSelect"
 			@input="onInput"
+			@blur="onBlur"
 		>
 			<template #no-results>
 				{{ $i18n( 'wikilambda-zobjectselector-no-results' ).text() }}
@@ -326,7 +327,6 @@ module.exports = exports = defineComponent( {
 			clearResults: function () {
 				this.lookupResults = [];
 				this.setSuggestions();
-				this.inputValue = '';
 			},
 
 			/**
@@ -365,8 +365,61 @@ module.exports = exports = defineComponent( {
 			 * @param {string} value
 			 */
 			onSelect: function ( value ) {
-				this.clearFieldErrors();
-				this.$emit( 'input', value );
+				if ( this.selectedValue === value ) {
+					// If we select the already selected value, restore the inputValue
+					this.inputValue = this.selectedLabel;
+					this.lookupKey += 1;
+				} else {
+					// If we select a new value, clear errors and emit input event
+					this.clearFieldErrors();
+					this.$emit( 'input', value );
+				}
+			},
+
+			/**
+			 * On Lookup blur, make sure that the input and the selected values
+			 * are synchronized: If there is something written in the input but
+			 * there is nothing selected, clear the input. If the input is empty,
+			 * clear the selection
+			 */
+			onBlur: function () {
+				// On blur, these are the possible states:
+				// * inputValue is empty
+				// * inputValue is non-empty
+				// * selectedValue is empty
+				// * selectedValue is not empty
+
+				// This means that the possible cases are:
+				// 1. Nothing is selected previously, and we blur with empty text field
+				// 2. Nothing is selected previously, and we blur with string in the input:
+				//    2.a. The field text doesn't match any lookup options
+				//         E.g. we write "str", nothing that we want comes in the lookup,
+				//         and we exit the field.
+				//    2.b. The field text matches one lookup option.
+				//         E.g. we write "String", we see "String" in the lookup and we exit
+				//         thinking that writing the option will be enough
+				// 3. Something is selected previously, and we blur with empty text field
+				// 4. Something is selected previously, and we blur with non-empty text field
+				//    4.a. The field text doesn't match any lookup options
+				//    4.b. The field text matches one lookup option
+
+				// Logic:
+				// Nothing selected:
+				// * match?: set selectedValue
+				// * no match?: clear inputValue
+				// Something selected:
+				// * match?: set selectedValue
+				// * no match?: set inputValue to selectedLabel
+
+				const match = this.lookupResults.find( ( option ) => option.label === this.inputValue );
+
+				if ( match ) {
+					this.onSelect( match.value );
+				} else {
+					this.inputValue = this.selectedLabel;
+					this.lookupConfig.searchQuery = this.selectedLabel;
+					this.lookupKey += 1;
+				}
 			},
 
 			/**
