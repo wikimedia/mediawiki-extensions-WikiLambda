@@ -21,6 +21,8 @@ use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectEditAction;
 use MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataRemoval;
 use MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate;
+use MediaWiki\MainConfigNames;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Revision\SlotRenderingProvider;
 use MediaWiki\Title\Title;
@@ -390,4 +392,32 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->assertStringNotContainsString( 'ext-wikilambda-viewpage-header--title-untitled', $frHeader );
 	}
 
+	public function testCreateZObjectViewTitle() {
+		$sitename = MediaWikiServices::getInstance()->getMainConfig()->get( MainConfigNames::Sitename );
+
+		$this->registerLangs( [ 'en', 'fr', 'pcd' ] );
+		$this->insertZids( [ 'Z6' ] );
+
+		$testZid = 'Z401';
+		$testTitle = Title::newFromText( $testZid, NS_MAIN );
+
+		$content = new ZObjectContent(
+			'{"Z1K1":"Z2","Z2K1":"Z401","Z2K2":"",' .
+				'"Z2K3":{"Z1K1":"Z12","Z12K1":["Z11",{"Z1K1":"Z11","Z11K1":"Z1004","Z11K2":"Éxample"}]}}'
+		);
+
+		$this->assertTrue( $content->isValid() );
+
+		// In English, we see Zid - Sitename
+		$enTitle = ZObjectContentHandler::createZObjectViewTitle( $content, $testTitle, self::makeLanguage( 'en' ) );
+		$this->assertSame( "$testZid - $sitename", $enTitle );
+
+		// In French, we see Label - Sitename
+		$frTitle = ZObjectContentHandler::createZObjectViewTitle( $content, $testTitle, self::makeLanguage( 'fr' ) );
+		$this->assertSame( "Éxample - $sitename", $frTitle );
+
+		// In Picard, we see the fr Label - Sitename
+		$pcdTitle = ZObjectContentHandler::createZObjectViewTitle( $content, $testTitle, self::makeLanguage( 'pcd' ) );
+		$this->assertSame( "Éxample - $sitename", $pcdTitle );
+	}
 }

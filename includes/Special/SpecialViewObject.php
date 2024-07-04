@@ -12,7 +12,6 @@
 namespace MediaWiki\Extension\WikiLambda\Special;
 
 use InvalidArgumentException;
-use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectEditingPageTrait;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
@@ -120,26 +119,19 @@ class SpecialViewObject extends SpecialPage {
 		$outputPage->addModules( [ 'ext.wikilambda.edit', 'mediawiki.special' ] );
 
 		$targetContent = $this->zObjectStore->fetchZObjectByTitle( $targetTitle );
-
 		if ( !$targetContent ) {
 			$this->redirectToMain( $outputPage );
 		}
 
 		// Request that we render the content in the given target language.
 		$parserOptions = ParserOptions::newFromUserAndLang( $this->getUser(), $targetLanguageObject );
-
 		$contentRenderer = $services->getContentRenderer();
-
 		$parserOutput = $contentRenderer->getParserOutput(
 			$targetContent,
 			$targetTitle,
 			null,
 			$parserOptions
 		);
-
-		// Add the header to the parserOutput
-		$header = ZObjectContentHandler::createZObjectViewHeader( $targetContent, $targetTitle, $targetLanguageObject );
-		$outputPage->setPageTitle( $header );
 
 		$outputPage->addParserOutput( $parserOutput );
 
