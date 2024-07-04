@@ -6,8 +6,8 @@
  */
 
 const Constants = require( '../../Constants.js' ),
-	apiUtils = require( '../../mixins/api.js' ).methods,
-	createConnectedItemsChangesSummaryMessage = require( '../../mixins/utilsMixins.js' ).methods.createConnectedItemsChangesSummaryMessage;
+	createConnectedItemsChangesSummaryMessage = require( '../../mixins/utilsMixins.js' ).methods.createConnectedItemsChangesSummaryMessage,
+	apiUtils = require( '../../mixins/api.js' ).methods;
 
 module.exports = exports = {
 	getters: {
@@ -292,6 +292,7 @@ module.exports = exports = {
 		}
 	},
 	actions: {
+
 		/**
 		 * Adds the given tests to the current function's list of
 		 * of connected tests and persists the change.
@@ -322,6 +323,7 @@ module.exports = exports = {
 					throw e;
 				} ) );
 		},
+
 		/**
 		 * Adds the given implementations to the current function's list of
 		 * of connected implementations and persists the change.
@@ -343,14 +345,16 @@ module.exports = exports = {
 
 			return context
 				.dispatch( 'pushValuesToList', { rowId: listRow.id, values: payload.zids } )
-				.then( () => context.dispatch(
-					'submitZObject', {
+				.then( () => context
+					.dispatch( 'submitZObject', {
 						summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-implementations-approved-summary', payload.zids )
-					} ).catch( ( e ) => {
-					// Reset old ZObject if something failed
-					context.commit( 'setZObject', zobjectCopy );
-					throw e;
-				} ) );
+					} )
+					.then( () => context.dispatch( 'updateStoredObject' ) )
+					.catch( ( e ) => {
+						// Reset old ZObject if something failed
+						context.commit( 'setZObject', zobjectCopy );
+						throw e;
+					} ) );
 		},
 		/**
 		 * Removes the given tests from the the current function's list of
@@ -422,14 +426,17 @@ module.exports = exports = {
 			}
 			context.dispatch( 'recalculateTypedListKeys', listRow.id );
 
-			return context.dispatch(
-				'submitZObject', {
+			return context.dispatch( 'submitZObject',
+				{
 					summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-implementations-deactivated-summary', payload.zids )
-				} ).catch( ( e ) => {
-				// Reset old ZObject if something failed
-				context.commit( 'setZObject', zobjectCopy );
-				throw e;
-			} );
+				}
+			)
+				.then( () => context.dispatch( 'updateStoredObject' ) )
+				.catch( ( e ) => {
+					// Reset old ZObject if something failed
+					context.commit( 'setZObject', zobjectCopy );
+					throw e;
+				} );
 		},
 		/**
 		 * Triggers the fetch of all (connected and disconnected) tests for the i

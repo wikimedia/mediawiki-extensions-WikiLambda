@@ -11,7 +11,9 @@
 const Constants = require( '../../Constants.js' ),
 	apiUtils = require( '../../mixins/api.js' ).methods,
 	typeUtils = require( '../../mixins/typeUtils.js' ).methods,
-	LabelData = require( '../classes/LabelData.js' );
+	LabelData = require( '../classes/LabelData.js' ),
+	convertTableToJson = require( '../../mixins/zobjectUtils.js' ).methods.convertTableToJson,
+	hybridToCanonical = require( '../../mixins/schemata.js' ).methods.hybridToCanonical;
 
 const DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT = 300;
 let debounceZObjectLookup = null;
@@ -473,7 +475,7 @@ module.exports = exports = {
 		 * @param {Object} payload
 		 */
 		setStoredObject: function ( state, payload ) {
-			if ( !( payload.zid in state.objects ) ) {
+			if ( !( payload.zid in state.objects ) || payload.forceUpdate ) {
 				state.objects[ payload.zid ] = payload.info;
 			}
 		},
@@ -498,6 +500,21 @@ module.exports = exports = {
 		}
 	},
 	actions: {
+		/**
+		 * Updates the stored object in the Library with the current ZObject
+		 *
+		 * @param {Object} context
+		 */
+		updateStoredObject: function ( context ) {
+			const zobject = hybridToCanonical( convertTableToJson( context.getters.getZObjectTable ) );
+			const zid = context.getters.getCurrentZObjectId;
+
+			context.commit( 'setStoredObject', {
+				zid,
+				info: zobject,
+				forceUpdate: true
+			} );
+		},
 		/**
 		 * Performs a Lookup call to the database to retrieve all
 		 * ZObject references that match a given input and type.
@@ -524,7 +541,7 @@ module.exports = exports = {
 		 *
 		 * @param {Object} context
 		 * @param {string} type
-		 * @return {Promise}
+		 * @return {Promise | undefined}
 		 */
 		fetchEnumValues: function ( context, type ) {
 			// If already fetched or fetching, don't request again

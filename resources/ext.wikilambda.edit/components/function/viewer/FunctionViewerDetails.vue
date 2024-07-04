@@ -69,6 +69,8 @@ const { defineComponent } = require( 'vue' );
 const FunctionViewerDetailsTable = require( './FunctionViewerDetailsTable.vue' ),
 	Constants = require( '../../../Constants.js' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ),
+	errorUtils = require( '../../../mixins/errorUtils.js' ),
+	utilsMixins = require( '../../../mixins/utilsMixins.js' ),
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
@@ -79,7 +81,7 @@ module.exports = exports = defineComponent( {
 		'wl-function-viewer-details-table': FunctionViewerDetailsTable,
 		'cdx-message': CdxMessage
 	},
-	mixins: [ typeUtils ],
+	mixins: [ typeUtils, errorUtils, utilsMixins ],
 	props: {
 		rowId: {
 			type: Number,
@@ -634,13 +636,15 @@ module.exports = exports = defineComponent( {
 			);
 
 			this.implementationsLoading = true;
+
 			this.connectImplementations( {
 				rowId: this.rowId,
 				zids
 			} ).then( () => {
+				this.closeToast();
 				this.setImplementationsState();
 			} ).catch( ( error ) => {
-				this.currentToast = error.error.message;
+				this.currentToast = this.getToastErrorMessage( error );
 			} ).finally( () => {
 				this.implementationsLoading = false;
 			} );
@@ -659,9 +663,10 @@ module.exports = exports = defineComponent( {
 				rowId: this.rowId,
 				zids
 			} ).then( () => {
+				this.closeToast();
 				this.setImplementationsState();
 			} ).catch( ( error ) => {
-				this.currentToast = error.error.message;
+				this.currentToast = this.getToastErrorMessage( error );
 			} ).finally( () => {
 				this.implementationsLoading = false;
 			} );
@@ -679,9 +684,10 @@ module.exports = exports = defineComponent( {
 				rowId: this.rowId,
 				zids
 			} ).then( () => {
+				this.closeToast();
 				this.setTestsState();
 			} ).catch( ( error ) => {
-				this.currentToast = error.error.message;
+				this.currentToast = this.getToastErrorMessage( error );
 			} ).finally( () => {
 				this.testsLoading = false;
 			} );
@@ -699,9 +705,10 @@ module.exports = exports = defineComponent( {
 				rowId: this.rowId,
 				zids
 			} ).then( () => {
+				this.closeToast();
 				this.setTestsState();
 			} ).catch( ( error ) => {
-				this.currentToast = error.error.message;
+				this.currentToast = this.getToastErrorMessage( error );
 			} ).finally( () => {
 				this.testsLoading = false;
 			} );
@@ -799,6 +806,16 @@ module.exports = exports = defineComponent( {
 		 */
 		closeToast: function () {
 			this.currentToast = null;
+		},
+
+		/**
+		 * Get the error message to display in the toast
+		 *
+		 * @param {Object} error
+		 * @return {string}
+		 */
+		getToastErrorMessage: function ( error ) {
+			return this.getErrorMessage( { message: this.getNestedProperty( error, 'error.message' ), code: Constants.errorCodes.UNKNOWN_ERROR } );
 		}
 	} ),
 	watch: {

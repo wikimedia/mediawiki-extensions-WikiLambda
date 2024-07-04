@@ -22,6 +22,42 @@ module.exports = exports = {
 			// * wikilambda-updated-testers-approved-summary
 			// * wikilambda-updated-testers-deactivated-summary
 			return mw.message( message ).params( [ mw.language.listToText( ZIDs ) ] ).text();
+		},
+
+		/**
+		 * Safely retrieves the value of a nested property within an object.
+		 *
+		 * This function will not throw an error if any part of the path is `null` or `undefined`.
+		 *
+		 * @param {Object} obj - The object from which to retrieve the property.
+		 * @param {string} path - The path to the desired property, specified as a string with dot notation.
+		 * @return {*} - The value of the nested property, or `undefined`
+		 * if any part of the path is `null` or `undefined`.
+		 *
+		 * @example
+		 *
+		 * const error = {
+		 *     error: {
+		 *         message: 'Something went wrong!'
+		 *     }
+		 * };
+		 *
+		 * const message = getNestedProperty(error, 'error.message');
+		 * console.log(message); // Output: 'Something went wrong!'
+		 *
+		 * const code = getNestedProperty(error, 'error.code');
+		 * console.log(code); // Output: undefined
+		 *
+		 * const nonExistent = getNestedProperty(null, 'error.message');
+		 * console.log(nonExistent); // Output: undefined
+		 */
+		getNestedProperty: function ( obj, path ) {
+			return path.split( '.' ).reduce( ( acc, part ) => {
+				if ( acc && acc[ part ] !== undefined && acc[ part ] !== null ) {
+					return acc[ part ];
+				}
+				return undefined;
+			}, obj );
 		}
 	}
 };

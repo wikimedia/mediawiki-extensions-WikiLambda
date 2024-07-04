@@ -122,6 +122,7 @@ const CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	ZTypedList = require( './ZTypedList.vue' ),
 	LabelData = require( '../../store/classes/LabelData.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
+	errorUtils = require( '../../mixins/errorUtils.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -148,7 +149,7 @@ module.exports = exports = defineComponent( {
 		'wl-z-boolean': ZBoolean,
 		'wl-z-typed-list': ZTypedList
 	},
-	mixins: [ typeUtils ],
+	mixins: [ typeUtils, errorUtils ],
 	props: {
 		rowId: {
 			type: Number,
@@ -895,17 +896,6 @@ module.exports = exports = defineComponent( {
 			if ( this.isMainObject( this.rowId ) ) {
 				this.setDirty();
 			}
-		},
-
-		/**
-		 * Returns the translated message for a given error code.
-		 * Error messages can have html tags.
-		 *
-		 * @param {Object} error
-		 * @return {string}
-		 */
-		getErrorMessage: function ( error ) {
-			return error.message || this.$i18n( error.code ).text();
 		},
 
 		/**

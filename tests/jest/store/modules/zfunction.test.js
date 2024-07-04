@@ -847,9 +847,10 @@ describe( 'zfunction Vuex module', () => {
 					context.commit = jest.fn( ( mutationType, payload ) => {
 						zobjectModule.mutations[ mutationType ]( context.state, payload );
 					} );
+
 					context.dispatch = jest.fn( ( actionType, payload ) => ( {
 						then: function ( fn ) {
-							if ( actionType === 'submitZObject' ) {
+							if ( actionType === 'updateStoredObject' ) {
 								throw fn();
 							}
 							return fn( payload );
@@ -889,6 +890,7 @@ describe( 'zfunction Vuex module', () => {
 					} catch ( error ) {
 						expect( error ).toEqual( 'error' );
 						expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', { summary: 'Added $1 to the approved list of implementations' } );
+						expect( context.dispatch ).toHaveBeenCalledWith( 'updateStoredObject' );
 						expect( context.commit ).toHaveBeenCalledWith( 'setZObject', initialZObject );
 					}
 				} );
@@ -900,6 +902,7 @@ describe( 'zfunction Vuex module', () => {
 					} catch ( error ) {
 						expect( error ).toEqual( 'error' );
 						expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', { summary: 'Removed $1 from the approved list of implementations' } );
+						expect( context.dispatch ).toHaveBeenCalledWith( 'updateStoredObject' );
 						expect( context.commit ).toHaveBeenCalledWith( 'setZObject', initialZObject );
 					}
 				} );
