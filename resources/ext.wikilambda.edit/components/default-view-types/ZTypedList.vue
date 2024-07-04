@@ -15,15 +15,16 @@
 			:row-id="itemTypeRowId"
 			:edit="edit"
 			:list-item-type="listItemType"
+			:list-items-row-ids="listItemsRowIds"
 			:parent-row-id="rowId"
 		></wl-z-typed-list-type>
 
 		<!-- Collection of items -->
 		<wl-z-typed-list-items
 			:expanded="expanded"
-			:row-id="rowId"
 			:edit="edit"
 			:list-item-type="listItemType"
+			:list-items-row-ids="listItemsRowIds"
 			@add-list-item="addListItem"
 		></wl-z-typed-list-items>
 	</div>
@@ -88,6 +89,19 @@ module.exports = exports = defineComponent( {
 			 */
 			listItemType: function () {
 				return this.getTypedListItemType( this.rowId );
+			},
+
+			/**
+			 * Returns the list of item row Ids (without the type item)
+			 * sorted by their key
+			 *
+			 * @return {Array}
+			 */
+			listItemsRowIds: function () {
+				return this.getChildrenByParentRowId( this.rowId )
+					.sort( ( a, b ) => parseInt( a.key ) - parseInt( b.key ) )
+					.slice( 1 )
+					.map( ( row ) => row.id );
 			},
 
 			/**

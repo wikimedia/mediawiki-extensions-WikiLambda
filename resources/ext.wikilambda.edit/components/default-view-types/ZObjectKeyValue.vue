@@ -161,7 +161,7 @@ module.exports = exports = defineComponent( {
 			required: true
 		},
 		listItemType: {
-			type: String,
+			type: [ String, Object ],
 			default: null
 		},
 		skipKey: {

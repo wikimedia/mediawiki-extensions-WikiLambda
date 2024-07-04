@@ -39,7 +39,7 @@ module.exports = exports = defineComponent( {
 			required: true
 		},
 		parentRowId: {
-			type: String,
+			type: Number,
 			default: undefined
 		},
 		listItemType: {
@@ -53,57 +53,74 @@ module.exports = exports = defineComponent( {
 			}
 		}
 	},
+	data: function () {
+		return {
+			hasError: false
+		};
+	},
 	computed: Object.assign( mapGetters( [
-		'getExpectedTypeOfKey',
-		'getZObjectKeyByRowId'
-	] ),
-	{
-		/**
-		 * The parent key of the list type.
-		 * They key for the list type itself will be '0', so we need the parent key to access the type
-		 *
-		 * @return {string}
-		 */
-		parentKey: function () {
-			return this.getZObjectKeyByRowId( this.parentRowId );
-		},
-		/**
-		 * Returns the expected type of the parent key.
-		 * This can be either of these options:
-		 * - Any object / Z1,
-		 * - List / Z881(Z1), or
-		 * - Typed list / Z881(Zn)
-		 *
-		 * @return {string}
-		 */
-		parentExpectedType: function () {
-			return this.getExpectedTypeOfKey( this.parentKey );
-		}
-	} ),
+		'getZObjectTypeByRowId'
+	] ) ),
 	methods: Object.assign( mapActions( [
 		'setListItemsForRemoval',
-		'setError'
+		'clearListItemsForRemoval',
+		'setError',
+		'clearErrors'
 	] ), {
+
+		/**
+		 * Retrieves a list of items to be removed.
+		 *
+		 * @param {string} newListItemType
+		 * @return {Array} - The list of items to be removed.
+		 */
+		getListItemsForRemoval( newListItemType ) {
+			return this.listItemsRowIds
+				.filter( ( rowId ) => this.getZObjectTypeByRowId( rowId ) !== newListItemType );
+		},
+
+		/**
+		 * Handles the change of the type of the list.
+		 *
+		 * @param {Object} payload
+		 * @return {void}
+		 */
 		changeType: function ( payload ) {
-			// if the type of the list has changed, warn the user this will delete list items (now the 'wrong' type)
-			// if the type was changed to Z1, we don't need to do this
-			// TODO: we can be smarter here and check each item to know what actually needs to be deleted
-			// (instead of deleting all items)
-			if (
-				( payload.value !== Constants.Z_OBJECT ) &&
-				( payload.value !== this.listItemType ) &&
-				( this.listItemsRowIds.length > 0 )
-			) {
-				// TODO (T332990): Revisit how we want to display a warning to the user about deletion
-				this.setError( {
-					rowId: 0,
-					errorCode: Constants.errorCodes.TYPED_LIST_TYPE_CHANGED,
-					errorType: Constants.errorTypes.WARNING
-				} );
+			/**
+			 * if the type of the list has changed:
+			 * - warn the user this will delete list items (now the 'wrong' type)
+			 * - except when the type was changed to Object/Z1: we can clear the errors
+			 * - the items that need to be deleted are the ones that are not of the new type
+			 */
+			const newListItemType = payload.value;
+			const isZObject = newListItemType === Constants.Z_OBJECT;
+			const isDifferentType = newListItemType !== this.listItemType && newListItemType !== Constants.Z_OBJECT;
+			const hasListItems = this.listItemsRowIds.length > 0;
+
+			// If the type was changed to Object/Z1, we can clear the errors
+			if ( this.hasError && isZObject ) {
+				this.hasError = false;
+				this.clearErrors( 0 );
+				this.clearListItemsForRemoval();
+				return;
+			}
+
+			// If the type was changed to a different type and there are list items, show a warning
+			if ( isDifferentType && hasListItems ) {
+
+				// Set the error only once
+				if ( !this.hasError ) {
+					this.hasError = true;
+					this.setError( {
+						rowId: 0,
+						errorCode: Constants.errorCodes.TYPED_LIST_TYPE_CHANGED,
+						errorType: Constants.errorTypes.WARNING
+					} );
+				}
 
 				this.setListItemsForRemoval( {
 					parentRowId: this.parentRowId,
-					listItems: this.listItemsRowIds
+					listItems: this.getListItemsForRemoval( newListItemType )
 				} );
 			}
 		}
