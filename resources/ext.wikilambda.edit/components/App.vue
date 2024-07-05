@@ -6,6 +6,12 @@
 -->
 <template>
 	<div id="ext-wikilambda-app" class="ext-wikilambda-edit">
+		<wl-clipboard-manager
+			:class-names="[
+				'ext-wikilambda-viewpage-header-zid',
+				'ext-wikilambda-editpage-header-zid'
+			]">
+		</wl-clipboard-manager>
 		<template v-if="isInitialized && isAppSetup">
 			<!-- Append wl- prefix to the router current view, to help reference component correctly -->
 			<component
@@ -23,6 +29,7 @@
 const { defineComponent } = require( 'vue' );
 const mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
+	ClipboardManager = require( './base/ClipboardManager.vue' ),
 	eventLogUtils = require( '../mixins/eventLogUtils.js' ),
 	FunctionEvaluator = require( '../views/FunctionEvaluator.vue' ),
 	FunctionEditor = require( '../views/FunctionEditor.vue' ),
@@ -37,7 +44,8 @@ module.exports = exports = defineComponent( {
 		'wl-function-evaluator': FunctionEvaluator,
 		'wl-function-editor': FunctionEditor,
 		'wl-function-viewer': FunctionViewer,
-		'wl-default-view': DefaultView
+		'wl-default-view': DefaultView,
+		'wl-clipboard-manager': ClipboardManager
 	},
 	mixins: [ eventLogUtils ],
 	inject: {
