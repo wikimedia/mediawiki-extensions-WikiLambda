@@ -1605,7 +1605,7 @@ module.exports = exports = {
 							};
 						}
 					}
-					// 2. Initialize the converters lists (Z4K7, Z4K8)
+					// 2. Initialize the converters' lists (Z4K7, Z4K8)
 					const lists = {
 						[ Constants.Z_TYPE_DESERIALISERS ]: Constants.Z_DESERIALISER,
 						[ Constants.Z_TYPE_SERIALISERS ]: Constants.Z_SERIALISER
@@ -1615,8 +1615,10 @@ module.exports = exports = {
 							zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ key ] = [ lists[ key ] ];
 						}
 					}
-					// 3. Initialize keys Is identity (Z3K4) field
-					const keys = zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
+					// 3. Initialize keys' Is identity (Z3K4) field
+					const keys = zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ]
+						// Skipping the initial value, the string 'Z3' (Benjamin list)
+						.slice( 1 );
 					for ( const key of keys ) {
 						if ( !isTruthyOrEqual( key, [ Constants.Z_KEY_IS_IDENTITY ] ) ) {
 							key[ Constants.Z_KEY_IS_IDENTITY ] = {
