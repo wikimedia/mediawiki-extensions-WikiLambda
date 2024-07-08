@@ -12,7 +12,7 @@ const EvaluateFunctionBlock = require( '../../componentobjects/EvaluateFunctionB
 const AboutBlock = require( '../../componentobjects/AboutBlock' );
 const InputDropdown = require( '../../componentobjects/InputDropdown' );
 const { Element: WebdriverIOElementType } = require( 'webdriverio' );
-const i18n = require( '../../utils/i18n.js' );
+const i18n = require( '../../utils/i18n.js' )();
 
 class FunctionPage extends Page {
 
@@ -305,7 +305,9 @@ class FunctionPage extends Page {
 	 */
 	async getImplementationsTableRowState( index ) {
 		const stateColumn = await this.getImplementationsTableRow( index ).$$( './td' )[ 2 ];
+		await stateColumn.waitForDisplayed();
 		const stateSelector = stateColumn.$( `.//span[text()="${ i18n[ 'wikilambda-function-implementation-state-approved' ] }" or text()="${ i18n[ 'wikilambda-function-implementation-state-deactivated' ] }"]` );
+		await stateSelector.waitForDisplayed();
 		const state = await ElementActions.getText( stateSelector );
 		return state;
 	}
@@ -318,21 +320,20 @@ class FunctionPage extends Page {
 	 * @return {void}
 	 */
 	async checkImplementationsTableRow( index ) {
-		const checkBox = this.getImplementationsTableRow( index ).$$( './td' )[ 0 ].$( './/input/following-sibling::span' );
-		return await ElementActions.doClick( checkBox );
-	}
+		const tableRow = this.getImplementationsTableRow( index );
+		const checkBox = await tableRow.$( './td[1]//input/following-sibling::span' );
+		await browser.waitUntil(
+			async () => {
+				const classAttribute = await tableRow.getAttribute( 'class' );
+				return !classAttribute.includes( 'ext-wikilambda-function-details-table__row--active' );
+			},
+			{
+				timeout: 10000,
+				timeoutMsg: 'The element with the class "ext-wikilambda-function-details-table__row--active" is still displayed'
+			}
+		);
 
-	/**
-	 * Check all the row of implementations table by clicking
-	 * on the checkbox in the table head
-	 *
-	 * @async
-	 * @return {void}
-	 */
-	async checkAllImplementations() {
-		const thead = this.implementationsTable.$$( './thead/tr' )[ 0 ];
-		const checkBox = thead.$$( './th' )[ 0 ].$( './/input/following-sibling::span' );
-		await ElementActions.doClick( checkBox );
+		await checkBox.click();
 	}
 
 	// #endregion Implementations Table
@@ -428,21 +429,20 @@ class FunctionPage extends Page {
 	 * @return {void}
 	 */
 	async checkTestCasesTableRow( index ) {
-		const checkBox = this.getTestCasesTableRow( index ).$$( './td' )[ 0 ].$( './/input/following-sibling::span' );
-		await ElementActions.doClick( checkBox );
-	}
+		const tableRow = this.getTestCasesTableRow( index );
+		const checkBox = await tableRow.$( './td[1]//input/following-sibling::span' );
+		await browser.waitUntil(
+			async () => {
+				const classAttribute = await tableRow.getAttribute( 'class' );
+				return !classAttribute.includes( 'ext-wikilambda-function-details-table__row--active' );
+			},
+			{
+				timeout: 10000,
+				timeoutMsg: 'The element with the class "ext-wikilambda-function-details-table__row--active" is still displayed'
+			}
+		);
 
-	/**
-	 * Check all the row of test cases table by clicking
-	 * on the checkbox in the table head
-	 *
-	 * @async
-	 * @return {void}
-	 */
-	async checkAllTestCases() {
-		const thead = this.testCasesTable.$$( './thead/tr' )[ 0 ];
-		const checkBox = thead.$$( './th' )[ 0 ].$( './/input/following-sibling::span' );
-		await ElementActions.doClick( checkBox );
+		await checkBox.click();
 	}
 
 	// #endregion Tests Table

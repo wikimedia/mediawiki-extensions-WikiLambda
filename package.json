@@ -8,7 +8,7 @@
 		"browser-stress-test": "wdio run tests/selenium/stress-test/basic.js",
 		"browser-stress-test:all": "node tests/selenium/stress-test/stressTest.js",
 		"selenium-test": "wdio tests/selenium/wdio.conf.js --spec tests/selenium/specs/basic.js",
-		"selenium-daily": "wdio tests/selenium/wdio.conf.js --spec tests/selenium/specs/basic.js tests/selenium/specs/function.js tests/selenium/specs/tester.js tests/selenium/specs/implementation.js",
+		"selenium-daily": "wdio tests/selenium/wdio.conf.js",
 		"doc": "jsdoc -c jsdoc.json",
 		"coverage": "npm run test:unit",
 		"lint": "grunt test",
