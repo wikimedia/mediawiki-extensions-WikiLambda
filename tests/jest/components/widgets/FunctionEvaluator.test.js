@@ -384,6 +384,16 @@ describe( 'FunctionEvaluator', () => {
 			expect( wrapper.find( '.ext-wikilambda-function-evaluator' ).exists() ).toBe( true );
 		} );
 
+		it( 'renders a loader before function is loaded', async () => {
+			const wrapper = shallowMount( FunctionEvaluator, {
+				props: { functionZid: 'Z10000', forImplementation: true },
+				global: { stubs: { WlWidgetBase: false } }
+			} );
+
+			const loader = wrapper.find( '.ext-wikilambda-function-evaluator-loader' );
+			expect( loader.exists() ).toBe( true );
+		} );
+
 		it( 'initializes detached objects', async () => {
 			shallowMount( FunctionEvaluator, {
 				props: { functionZid: 'Z10000', forImplementation: true }
