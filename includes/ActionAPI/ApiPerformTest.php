@@ -557,9 +557,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 	 * ordering is significantly different than the previous ordering for this function, instantiate
 	 * an asynchronous job to update Z8K4/implementations in the function's persistent storage.
 	 *
-	 * TODO (T329138): Consider whether average Cpu usage is good enough to determine the ranking.
-	 *   Should we eliminate implementations that are outliers relative to others on the same test?
-	 *   Should we consider non-CPU time needed to, e.g., retrieve info from Wikidata?
+	 * TODO (T329138): Consider possible refinements to the ranking strategy.
 	 *
 	 * @param string $functionZid
 	 * @param int $functionRevision
@@ -630,10 +628,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 				}
 				$metadataMap = $testResult[ 'testMetadata' ];
 				'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedMap $metadataMap';
-				$averageTime +=
-					( self::getNumericMetadataValue( $metadataMap, 'orchestrationCpuUsage' )
-					+ self::getNumericMetadataValue( $metadataMap, 'evaluationCpuUsage' )
-					+ self::getNumericMetadataValue( $metadataMap, 'executionCpuUsage' ) );
+				$averageTime += self::getNumericMetadataValue( $metadataMap, 'orchestrationDuration' );
 			}
 			$averageTime /= count( $testerMap );
 			$implementationMap[ $implementationZid ][ 'numFailed' ] = $numFailed;
