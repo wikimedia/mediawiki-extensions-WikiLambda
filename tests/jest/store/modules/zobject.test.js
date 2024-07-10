@@ -2790,7 +2790,7 @@ describe( 'zobject Vuex module', () => {
 
 				zobjectModule.actions.initializeCreateNewPage( context );
 
-				expect( context.commit ).toHaveBeenCalledTimes( 4 );
+				expect( context.commit ).toHaveBeenCalledTimes( 5 );
 				expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
 				expect( context.commit ).toHaveBeenCalledWith( 'setCreateNewPage', true );
 				expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z0' );
@@ -2820,7 +2820,7 @@ describe( 'zobject Vuex module', () => {
 
 				zobjectModule.actions.initializeCreateNewPage( context );
 
-				expect( context.commit ).toHaveBeenCalledTimes( 4 );
+				expect( context.commit ).toHaveBeenCalledTimes( 5 );
 				expect( context.dispatch ).toHaveBeenCalledTimes( 3 );
 				expect( context.commit ).toHaveBeenCalledWith( 'setCreateNewPage', true );
 				expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z0' );
@@ -3063,7 +3063,7 @@ describe( 'zobject Vuex module', () => {
 					await zobjectModule.actions.initializeRootZObject( context, 'Z1234' );
 
 					expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
-					expect( context.commit ).toHaveBeenCalledTimes( 4 );
+					expect( context.commit ).toHaveBeenCalledTimes( 5 );
 					expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z1234' );
 					expect( context.commit ).toHaveBeenCalledWith( 'saveMultilingualDataCopy', expectedZObjectJson );
 					expect( context.commit ).toHaveBeenCalledWith( 'setZObject', expect.anything() );
@@ -3143,7 +3143,7 @@ describe( 'zobject Vuex module', () => {
 					await zobjectModule.actions.initializeRootZObject( context, 'Z1234' );
 
 					expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
-					expect( context.commit ).toHaveBeenCalledTimes( 4 );
+					expect( context.commit ).toHaveBeenCalledTimes( 5 );
 					expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z1234' );
 					expect( context.commit ).toHaveBeenCalledWith( 'saveMultilingualDataCopy', expectedZObjectJson );
 					expect( context.commit ).toHaveBeenCalledWith( 'setZObject', expect.anything() );
@@ -3224,7 +3224,7 @@ describe( 'zobject Vuex module', () => {
 					await zobjectModule.actions.initializeRootZObject( context, 'Z1234' );
 
 					expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
-					expect( context.commit ).toHaveBeenCalledTimes( 4 );
+					expect( context.commit ).toHaveBeenCalledTimes( 5 );
 					expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z1234' );
 					expect( context.commit ).toHaveBeenCalledWith( 'saveMultilingualDataCopy', expectedZObjectJson );
 					expect( context.commit ).toHaveBeenCalledWith( 'setZObject', expect.anything() );
@@ -3241,7 +3241,7 @@ describe( 'zobject Vuex module', () => {
 				context.getters.getStoredObject = () => ( { Z1K1: 'test', Z2K1: 'test' } );
 				zobjectModule.actions.initializeEvaluateFunction( context );
 
-				expect( context.commit ).toHaveBeenCalledTimes( 3 );
+				expect( context.commit ).toHaveBeenCalledTimes( 4 );
 				expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
 				expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z0' );
 				expect( context.commit ).toHaveBeenCalledWith( 'pushRow', expectedRootObject );
