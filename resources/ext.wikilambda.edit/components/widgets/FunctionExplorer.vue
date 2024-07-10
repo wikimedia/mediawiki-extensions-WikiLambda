@@ -149,7 +149,8 @@ const
 	ZObjectSelector = require( '../base/ZObjectSelector.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	icons = require( '../../../lib/icons.json' ),
-	typeUtils = require( '../../mixins/typeUtils.js' );
+	typeUtils = require( '../../mixins/typeUtils.js' ),
+	clipboardUtils = require( '../../mixins/clipboardUtils.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-explorer',
@@ -160,7 +161,7 @@ module.exports = exports = defineComponent( {
 		'wl-widget-base': WidgetBase,
 		'wl-z-object-selector': ZObjectSelector
 	},
-	mixins: [ typeUtils ],
+	mixins: [ typeUtils, clipboardUtils ],
 	props: {
 		edit: {
 			type: Boolean,
@@ -182,8 +183,7 @@ module.exports = exports = defineComponent( {
 			currentFunctionZid: this.functionZid,
 			initialFunctionObject: null,
 			Constants: Constants,
-			resetIcon: icons.cdxIconHistory,
-			itemsCopied: []
+			resetIcon: icons.cdxIconHistory
 		};
 	},
 	computed: Object.assign(
@@ -271,22 +271,6 @@ module.exports = exports = defineComponent( {
 		},
 		navigateToFunction() {
 			window.open( this.getWikiUrl( this.currentFunctionZid ), '_blank' );
-		},
-		copyToClipboard( value ) {
-			navigator.clipboard.writeText( value );
-
-			// This will allow us to display a "copied" message for a short time
-			this.itemsCopied.push( value );
-
-			setTimeout( () => {
-				this.itemsCopied.shift();
-			}, 2000 );
-		},
-		showValueOrCopiedMessage( value ) {
-			if ( this.itemsCopied.includes( value ) ) {
-				return this.$i18n( 'wikilambda-function-explorer-copied-text' ).text();
-			}
-			return value;
 		}
 	},
 	created: function () {

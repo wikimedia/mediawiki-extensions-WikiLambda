@@ -47,17 +47,14 @@
 	}
 
 	&-zid {
-		color: @color-placeholder;
-		padding-left: 1em;
-		font-size: 70%;
-		font-weight: lighter;
-	}
+		color: @color-subtle;
+		font-size: @font-size-medium;
+		font-weight: @font-weight-normal;
+		font-family: @font-family-monospace;
+		cursor: pointer;
 
-	&-zid::before {
-		content: '(';
-	}
-
-	&-zid::after {
-		content: ')';
+		@media screen and ( max-width: @max-width-breakpoint-mobile ) {
+			font-size: @font-size-small;
+		}
 	}
 }
