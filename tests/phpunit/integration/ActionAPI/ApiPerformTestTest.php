@@ -459,10 +459,10 @@ class ApiPerformTestTest extends ApiTestCase {
 		// The structure of $implementationMap is described in comments of maybeUpdateImplementationRanking
 		$implementationMap = [];
 		foreach ( $testResults as $values ) {
-			$metadataMap = $this->makeMetadataMap( array_slice( $values, 2, 3 ) );
+			$metadataMap = $this->makeMetadataMap( array_slice( $values, 2, 4 ) );
 			$implementationMap[ $values[ 0 ] ][ $values[ 1 ] ][ 'testMetadata' ] = $metadataMap;
 			$implementationMap[ $values[ 0 ] ][ $values[ 1 ] ][ 'validateStatus' ] =
-				$this->makeZBoolean( $values[ 5 ] );
+				$this->makeZBoolean( $values[ 6 ] );
 		}
 		$targetObject = $this->store->fetchZObjectByTitle( $targetTitle );
 		$targetFunction = $targetObject->getInnerZObject();
@@ -492,168 +492,192 @@ class ApiPerformTestTest extends ApiTestCase {
 		$this->assertTrue( $expectedRanking === $targetImplementationZids );
 	}
 
+	/**
+	 * Each data set mocks the following values for a test run:
+	 *   Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU
+	 *   OrchestratorDuration, status
+	 * The ranking algorithm doesn't necessarily use all of these metadata elements, but we
+	 * keep them around in case the algorithm evolves.
+	 *
+	 * OrchestratorDuration was added for T369587. For convenience, it was derived by adding
+	 * OrchestratorCPU, EvaluatorCPU, and ExecutorCPU (but can easily be changed as needs evolve).
+	 */
 	public static function provideMaybeUpdateImplementationRanking() {
 		yield 'Request specifies orchestrationCpuUsage values calling for an update' => [
 			[
-				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status
-				[ 'Z91300', 'Z8130', '620.049 ms', null, null, true ],
-				[ 'Z91300', 'Z8131', '670 ms', null, null, true ],
-				[ 'Z91301', 'Z8130', '520.026 ms', null, null, true ],
-				[ 'Z91301', 'Z8131', '500 ms', null, null, true ],
-				[ 'Z91302', 'Z8130', '420.026 ms', null, null, true ],
-				[ 'Z91302', 'Z8131', '420.02 ms', null, null, true ]
+				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU,
+				// OrchestratorDuration, status
+				[ 'Z91300', 'Z8130', '620.049 ms', null, null, '620.049 ms', true ],
+				[ 'Z91300', 'Z8131', '670 ms', null, null, '670 ms', true ],
+				[ 'Z91301', 'Z8130', '520.026 ms', null, null, '520.026 ms', true ],
+				[ 'Z91301', 'Z8131', '500 ms', null, null, '500 ms', true ],
+				[ 'Z91302', 'Z8130', '420.026 ms', null, null, '420.026 ms', true ],
+				[ 'Z91302', 'Z8131', '420.02 ms', null, null, '420.02 ms', true ]
 			],
 			[ 'Z91302', 'Z91301', 'Z91300' ]
 		];
 		yield 'Request specifies orchestrationCpuUsage values calling for NO update' => [
 			[
-				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status
-				[ 'Z91300', 'Z8130', '420.026 ms', null, null, true ],
-				[ 'Z91300', 'Z8131', '420.02 ms', null, null, true ],
-				[ 'Z91301', 'Z8130', '520.026 ms', null, null, true ],
-				[ 'Z91301', 'Z8131', '500 ms', null, null, true ],
-				[ 'Z91302', 'Z8130', '620.049 ms', null, null, true ],
-				[ 'Z91302', 'Z8131', '670 ms', null, null, true ]
+				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU,
+				// OrchestratorDuration, status
+				[ 'Z91300', 'Z8130', '420.026 ms', null, null, '420.026 ms', true ],
+				[ 'Z91300', 'Z8131', '420.02 ms', null, null, '420.02 ms', true ],
+				[ 'Z91301', 'Z8130', '520.026 ms', null, null, '520.026 ms', true ],
+				[ 'Z91301', 'Z8131', '500 ms', null, null, '500 ms', true ],
+				[ 'Z91302', 'Z8130', '620.049 ms', null, null, '620.049 ms', true ],
+				[ 'Z91302', 'Z8131', '670 ms', null, null, '670 ms', true ]
 			],
 			null
 		];
 		yield 'Request specifies ..CpuUsage values calling for an update' => [
 			[
-				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status
-				[ 'Z91300', 'Z8130', '1620.049 ms', '20.049 ms', '20.040 ms', true ],
-				[ 'Z91300', 'Z8131', '1670 ms', '20.049 ms', '20.000 ms', true ],
-				[ 'Z91301', 'Z8130', '520.026 ms', '520.026 ms', '520.026 ms', true ],
-				[ 'Z91301', 'Z8131', '500 ms', null, '520.026 ms', true ],
-				[ 'Z91302', 'Z8130', '520.026 ms', '520.026 ms', '520.026 ms', true ],
-				[ 'Z91302', 'Z8131', '500 ms', '10 ms', '520.026 ms', true ]
+				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU,
+				// OrchestratorDuration, status
+				[ 'Z91300', 'Z8130', '1620.049 ms', '20.049 ms', '20.040 ms', '1660.138 ms', true ],
+				[ 'Z91300', 'Z8131', '1670 ms', '20.049 ms', '20.000 ms', '1710.049 ms', true ],
+				[ 'Z91301', 'Z8130', '520.026 ms', '520.026 ms', '520.026 ms', '1560.078 ms', true ],
+				[ 'Z91301', 'Z8131', '500 ms', null, '520.026 ms', '1020.026 ms', true ],
+				[ 'Z91302', 'Z8130', '520.026 ms', '520.026 ms', '520.026 ms', '1560.078 ms', true ],
+				[ 'Z91302', 'Z8131', '500 ms', '10 ms', '520.026 ms', '1030.026 ms', true ]
 			],
 			[ 'Z91301', 'Z91302', 'Z91300' ]
 		];
 		yield 'Request specifies ..CpuUsage values calling for NO update' => [
 			[
-				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status
-				[ 'Z91300', 'Z8130', '520.026 ms', '520.026 ms', '520.026 ms', true ],
-				[ 'Z91300', 'Z8131', '500 ms', null, '520.026 ms', true ],
-				[ 'Z91301', 'Z8130', '520.026 ms', '520.026 ms', '520.026 ms', true ],
-				[ 'Z91301', 'Z8131', '500 ms', '10 ms', '520.026 ms', true ],
-				[ 'Z91302', 'Z8130', '1620.049 ms', '20.049 ms', '20.040 ms', true ],
-				[ 'Z91302', 'Z8131', '1670 ms', '20.049 ms', '20.000 ms', true ]
+				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU,
+				// OrchestratorDuration, status
+				[ 'Z91300', 'Z8130', '520.026 ms', '520.026 ms', '520.026 ms', '1560.078 ms', true ],
+				[ 'Z91300', 'Z8131', '500 ms', null, '520.026 ms', '1020.026 ms', true ],
+				[ 'Z91301', 'Z8130', '520.026 ms', '520.026 ms', '520.026 ms', '1560.078 ms', true ],
+				[ 'Z91301', 'Z8131', '500 ms', '10 ms', '520.026 ms', '1030.026 ms', true ],
+				[ 'Z91302', 'Z8130', '1620.049 ms', '20.049 ms', '20.040 ms', '1660.138 ms', true ],
+				[ 'Z91302', 'Z8131', '1670 ms', '20.049 ms', '20.000 ms', '1710.049 ms', true ]
 			],
 			null
 		];
 		yield 'Request specifies validateStatus values calling for an update' => [
 			[
-				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status
-				[ 'Z91300', 'Z8130', '420.026 ms', null, null, true ],
-				[ 'Z91300', 'Z8131', '420.02 ms', null, null, false ],
-				[ 'Z91301', 'Z8130', '520.026 ms', null, null, true ],
-				[ 'Z91301', 'Z8131', '500 ms', null, null, true ],
-				[ 'Z91302', 'Z8130', '620.049 ms', null, null, true ],
-				[ 'Z91302', 'Z8131', '670 ms', null, null, true ]
+				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU,
+				// OrchestratorDuration, status
+				[ 'Z91300', 'Z8130', '420.026 ms', null, null, '420.026 ms', true ],
+				[ 'Z91300', 'Z8131', '420.02 ms', null, null, '420.02 ms', false ],
+				[ 'Z91301', 'Z8130', '520.026 ms', null, null, '520.026 ms', true ],
+				[ 'Z91301', 'Z8131', '500 ms', null, null, '500 ms', true ],
+				[ 'Z91302', 'Z8130', '620.049 ms', null, null, '620.049 ms', true ],
+				[ 'Z91302', 'Z8131', '670 ms', null, null, '670 ms', true ]
 			],
 			[ 'Z91301', 'Z91302', 'Z91300' ]
 		];
 		yield 'Request specifies validateStatus values calling for an update (2)' => [
 			[
-				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status
-				[ 'Z91300', 'Z8130', '420.026 ms', null, null, false ],
-				[ 'Z91300', 'Z8131', '420.02 ms', null, null, false ],
-				[ 'Z91301', 'Z8130', '520.026 ms', null, null, true ],
-				[ 'Z91301', 'Z8131', '500 ms', null, null, false ],
-				[ 'Z91302', 'Z8130', '620.049 ms', null, null, false ],
-				[ 'Z91302', 'Z8131', '670 ms', null, null, true ]
+				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU,
+				// OrchestratorDuration, status
+				[ 'Z91300', 'Z8130', '420.026 ms', null, null, '420.026 ms', false ],
+				[ 'Z91300', 'Z8131', '420.02 ms', null, null, '420.02 ms', false ],
+				[ 'Z91301', 'Z8130', '520.026 ms', null, null, '520.026 ms', true ],
+				[ 'Z91301', 'Z8131', '500 ms', null, null, '500 ms', false ],
+				[ 'Z91302', 'Z8130', '620.049 ms', null, null, '620.049 ms', false ],
+				[ 'Z91302', 'Z8131', '670 ms', null, null, '670 ms', true ]
 			],
 			[ 'Z91301', 'Z91302', 'Z91300' ]
 		];
 		yield 'Request specifies validateStatus values calling for NO update' => [
 			[
-				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status
-				[ 'Z91300', 'Z8130', '620.049 ms', null, null, true ],
-				[ 'Z91300', 'Z8131', '670 ms', null, null, true ],
-				[ 'Z91301', 'Z8130', '520.026 ms', null, null, true ],
-				[ 'Z91301', 'Z8131', '500 ms', null, null, false ],
-				[ 'Z91302', 'Z8130', '420.026 ms', null, null, false ],
-				[ 'Z91302', 'Z8131', '420.02 ms', null, null, true ]
+				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU,
+				// OrchestratorDuration, status
+				[ 'Z91300', 'Z8130', '620.049 ms', null, null, '620.049 ms', true ],
+				[ 'Z91300', 'Z8131', '670 ms', null, null, '670 ms', true ],
+				[ 'Z91301', 'Z8130', '520.026 ms', null, null, '520.026 ms', true ],
+				[ 'Z91301', 'Z8131', '500 ms', null, null, '500 ms', false ],
+				[ 'Z91302', 'Z8130', '420.026 ms', null, null, '420.026 ms', false ],
+				[ 'Z91302', 'Z8131', '420.02 ms', null, null, '420.02 ms', true ]
 			],
 			null
 		];
 		yield 'Request specifies validateStatus+metadata values calling for an update' => [
 			[
-				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status
-				[ 'Z91300', 'Z8130', '520.026 ms', '520.026 ms', '20.049 ms', true ],
-				[ 'Z91300', 'Z8131', '500 ms', '520.026 ms', '20.049 ms', false ],
-				[ 'Z91301', 'Z8130', '620.049 ms', '620.049 ms', null, true ],
-				[ 'Z91301', 'Z8131', '670 ms', '620.049 ms', null, false ],
-				[ 'Z91302', 'Z8130', '420.026 ms', '420.026 ms', null, true ],
-				[ 'Z91302', 'Z8131', '420.02 ms', '420.026 ms', null, false ]
+				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU,
+				// OrchestratorDuration, status
+				[ 'Z91300', 'Z8130', '520.026 ms', '520.026 ms', '20.049 ms', '1060.101 ms', true ],
+				[ 'Z91300', 'Z8131', '500 ms', '520.026 ms', '20.049 ms', '1040.075 ms', false ],
+				[ 'Z91301', 'Z8130', '620.049 ms', '620.049 ms', null, '1240.098 ms', true ],
+				[ 'Z91301', 'Z8131', '670 ms', '620.049 ms', null, '1290.049 ms', false ],
+				[ 'Z91302', 'Z8130', '420.026 ms', '420.026 ms', null, '840.052 ms', true ],
+				[ 'Z91302', 'Z8131', '420.02 ms', '420.026 ms', null, '840.046 ms', false ]
 			],
 			[ 'Z91302', 'Z91300', 'Z91301' ]
 		];
 		yield 'Request specifies validateStatus+metadata values calling for NO update' => [
 			[
-				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status
-				[ 'Z91300', 'Z8130', '420.026 ms', null, null, true ],
-				[ 'Z91300', 'Z8131', '420.02 ms', null, null, false ],
-				[ 'Z91301', 'Z8130', '520.026 ms', null, null, true ],
-				[ 'Z91301', 'Z8131', '500 ms', null, null, false ],
-				[ 'Z91302', 'Z8130', '620.049 ms', null, null, true ],
-				[ 'Z91302', 'Z8131', '670 ms', null, null, false ]
+				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU,
+				// OrchestratorDuration, status
+				[ 'Z91300', 'Z8130', '420.026 ms', null, null, '420.026 ms', true ],
+				[ 'Z91300', 'Z8131', '420.02 ms', null, null, '420.02 ms', false ],
+				[ 'Z91301', 'Z8130', '520.026 ms', null, null, '520.026 ms', true ],
+				[ 'Z91301', 'Z8131', '500 ms', null, null, '500 ms', false ],
+				[ 'Z91302', 'Z8130', '620.049 ms', null, null, '620.049 ms', true ],
+				[ 'Z91302', 'Z8131', '670 ms', null, null, '670 ms', false ]
 			],
 			null
 		];
 		yield 'Bailing due to relativeThreshold' => [
 			[
-				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status
+				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU,
+				// OrchestratorDuration, status
 				// Average time for Z91302 >= $relativeThreshold * average time for Z91300;
 				// only marginally better so we don't update.
 				// $relativeThreshold is defined in ApiPerformTest.php
-				[ 'Z91300', 'Z8130', '620.049 ms', null, null, true ],
-				[ 'Z91300', 'Z8131', '670 ms', null, null, true ],
-				[ 'Z91301', 'Z8130', '540.026 ms', null, null, true ],
-				[ 'Z91301', 'Z8131', '540 ms', null, null, true ],
-				[ 'Z91302', 'Z8130', '520.026 ms', null, null, true ],
-				[ 'Z91302', 'Z8131', '520.02 ms', null, null, true ]
+				[ 'Z91300', 'Z8130', '620.049 ms', null, null, '620.049 ms', true ],
+				[ 'Z91300', 'Z8131', '670 ms', null, null, '670 ms', true ],
+				[ 'Z91301', 'Z8130', '540.026 ms', null, null, '540.026 ms', true ],
+				[ 'Z91301', 'Z8131', '540 ms', null, null, '540 ms', true ],
+				[ 'Z91302', 'Z8130', '520.026 ms', null, null, '520.026 ms', true ],
+				[ 'Z91302', 'Z8131', '520.02 ms', null, null, '520.02 ms', true ]
 			],
 			null
 		];
 		yield 'NOT Bailing due to relativeThreshold, because of status values' => [
 			[
-				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status
+				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU,
+				// OrchestratorDuration, status
 				// Average time for Z91302 >= $relativeThreshold * average time for Z91300,
 				// BUT Z91300 has a false status, so we SHOULD update.
 				// $relativeThreshold is defined in ApiPerformTest.php
-				[ 'Z91300', 'Z8130', '620.049 ms', null, null, true ],
-				[ 'Z91300', 'Z8131', '670 ms', null, null, false ],
-				[ 'Z91301', 'Z8130', '540.026 ms', null, null, true ],
-				[ 'Z91301', 'Z8131', '540 ms', null, null, true ],
-				[ 'Z91302', 'Z8130', '520.026 ms', null, null, true ],
-				[ 'Z91302', 'Z8131', '520.02 ms', null, null, true ]
+				[ 'Z91300', 'Z8130', '620.049 ms', null, null, '620.049 ms', true ],
+				[ 'Z91300', 'Z8131', '670 ms', null, null, '670 ms', false ],
+				[ 'Z91301', 'Z8130', '540.026 ms', null, null, '540.026 ms', true ],
+				[ 'Z91301', 'Z8131', '540 ms', null, null, '540 ms', true ],
+				[ 'Z91302', 'Z8130', '520.026 ms', null, null, '520.026 ms', true ],
+				[ 'Z91302', 'Z8131', '520.02 ms', null, null, '520.02 ms', true ]
 			],
 			[ 'Z91302', 'Z91301', 'Z91300' ]
 		];
 		yield 'Request specifies only a single test result' => [
 			[
-				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status
-				[ 'Z91300', 'Z8130', '420.026 ms', null, null, true ]
+				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU,
+				// OrchestratorDuration, status
+				[ 'Z91300', 'Z8130', '420.026 ms', null, null, '420.026 ms', true ]
 			],
 			null
 		];
 		yield 'Request specifies a proper subset of the attached implementations' => [
 			[
-				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status
-				[ 'Z91300', 'Z8130', '420.026 ms', null, null, true ],
-				[ 'Z91300', 'Z8131', '420.02 ms', null, null, false ],
-				[ 'Z91301', 'Z8130', '520.026 ms', null, null, true ],
-				[ 'Z91301', 'Z8131', '500 ms', null, null, false ]
+				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU,
+				// OrchestratorDuration, status
+				[ 'Z91300', 'Z8130', '420.026 ms', null, null, '420.026 ms', true ],
+				[ 'Z91300', 'Z8131', '420.02 ms', null, null, '420.02 ms', false ],
+				[ 'Z91301', 'Z8130', '520.026 ms', null, null, '520.026 ms', true ],
+				[ 'Z91301', 'Z8131', '500 ms', null, null, '500 ms', false ]
 			],
 			null
 		];
 		yield 'Request specifies a proper subset of the attached testers' => [
 			[
-				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status
-				[ 'Z91300', 'Z8130', '420.026 ms', null, null, true ],
-				[ 'Z91301', 'Z8130', '520.026 ms', null, null, true ],
-				[ 'Z91302', 'Z8130', '620.049 ms', null, null, true ]
+				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU,
+				// OrchestratorDuration, status
+				[ 'Z91300', 'Z8130', '420.026 ms', null, null, '420.026 ms', true ],
+				[ 'Z91301', 'Z8130', '520.026 ms', null, null, '520.026 ms', true ],
+				[ 'Z91302', 'Z8130', '620.049 ms', null, null, '620.049 ms', true ]
 			],
 			null
 		];
@@ -704,6 +728,10 @@ class ApiPerformTestTest extends ApiTestCase {
 		if ( $values[ 2 ] ) {
 			$map->setValueForKey( new ZString( "executionCpuUsage" ),
 				new ZString( $values[ 2 ] ) );
+		}
+		if ( $values[ 3 ] ) {
+			$map->setValueForKey( new ZString( "orchestrationDuration" ),
+				new ZString( $values[ 3 ] ) );
 		}
 		return $map;
 	}
