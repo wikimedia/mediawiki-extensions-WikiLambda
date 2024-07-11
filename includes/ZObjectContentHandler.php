@@ -25,6 +25,7 @@ use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Html\Html;
+use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Revision\SlotRenderingProvider;
@@ -302,15 +303,8 @@ class ZObjectContentHandler extends ContentHandler {
 		$title = Title::castFromPageReference( $pageIdentity );
 		'@phan-var Title $title';
 
-		$header = static::createZObjectViewHeader( $content, $title, $userLang );
-		$parserOutput->setTitleText( $header );
-
 		$parserOutput->addModuleStyles( [ 'ext.wikilambda.viewpage.styles' ] );
-
 		$parserOutput->addModules( [ 'ext.wikilambda.edit' ] );
-
-		// $zObjectStore = WikiLambdaServices::getZObjectStore();
-		// $zObject = $zObjectStore->fetchZObjectByTitle( $title );
 
 		$zLangRegistry = ZLangRegistry::singleton();
 		$userLangCode = $userLang->getCode();
@@ -323,6 +317,15 @@ class ZObjectContentHandler extends ContentHandler {
 
 		// Add the canonical page link to /view/<lang>/<zid>
 		$output = RequestContext::getMain()->getOutput();
+
+		// Set page header
+		$header = static::createZObjectViewHeader( $content, $title, $userLang );
+		$output->setPageTitle( $header );
+
+		// (T360169) Set page title meta tag
+		$metaTitle = static::createZObjectViewTitle( $content, $title, $userLang );
+		$output->setHTMLTitle( $metaTitle );
+
 		$output->addLink( [
 				'rel' => 'canonical',
 				'hreflang' => $userLangCode,
@@ -392,7 +395,7 @@ class ZObjectContentHandler extends ContentHandler {
 		$zobject = $content->getZObject();
 
 		if ( !$zobject || !$zobject->isValid() ) {
-			// Soemthing's bad, let's give up.
+			// Something's bad, let's give up.
 			return '';
 		}
 
@@ -499,6 +502,35 @@ class ZObjectContentHandler extends ContentHandler {
 			],
 			$labelTitle . $typeSubtitle
 		);
+	}
+
+	/**
+	 * Generate the HTML "title" tag for the view page
+	 *
+	 * @param ZObjectContent $content
+	 * @param Title $title
+	 * @param Language $userLang
+	 * @return string
+	 */
+	public static function createZObjectViewTitle(
+		ZObjectContent $content, Title $title, Language $userLang
+	): string {
+		$zobject = $content->getZObject();
+		if ( !$zobject || !$zobject->isValid() ) {
+			// Something's bad, let's give up.
+			return '';
+		}
+
+		$sitename = MediaWikiServices::getInstance()->getMainConfig()->get( MainConfigNames::Sitename );
+
+		// Get label, english fallback, or zid if no available option
+		$label = $zobject->getLabels()->buildStringForLanguage( $userLang )
+			->fallbackWithEnglish()
+			->getString();
+
+		// Return Label/Zid - Sitename
+		return ( $label ?: $title->getBaseText() ) . ' - ' .
+			$sitename;
 	}
 
 	/**

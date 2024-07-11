@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda;
 
 use Action;
 use MediaWiki\Html\Html;
+use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
 
 class ZObjectEditAction extends Action {
@@ -42,7 +43,30 @@ class ZObjectEditAction extends Action {
 	}
 
 	/**
-	 * Get page title message
+	 * Get page title meta tag
+	 * @return string
+	 */
+	protected function getPageMetaTitle() {
+		// If the page doesn't exist (e.g. it's been deleted), return nothing.
+		if ( !$this->getTargetZObject() ) {
+			return '';
+		}
+
+		$sitename = MediaWikiServices::getInstance()->getMainConfig()->get( MainConfigNames::Sitename );
+
+		$zid = $this->getTargetZObject()->getZid();
+		$label = $this->getTargetZObject()->getLabels()
+			->buildStringForLanguage( $this->getLanguage() )
+			->fallbackWithEnglish()
+			->getString();
+
+		return $this->msg( 'wikilambda-edit' )->text() . ' ' .
+			( $label ?: $zid ) . ' - ' .
+			$sitename;
+	}
+
+	/**
+	 * Get page header message
 	 * @return string
 	 */
 	protected function getPageTitleMsg() {
@@ -157,9 +181,11 @@ class ZObjectEditAction extends Action {
 			return;
 		}
 
-		// (T290217) Show page title
-		// NOTE setPageTitle sets both the HTML <title> header and the <h1> tag
+		// (T290217) Set page header
 		$output->setPageTitle( $this->getPageTitleMsg() );
+
+		// (T360169) Set page title meta tag
+		$output->setHTMLTitle( $this->getPageMetaTitle() );
 
 		$zObjectLabelsWithLang = $this->getTargetZObjectWithLabels();
 
