@@ -7,6 +7,7 @@
 			"Daud I.F. Argana",
 			"Farras",
 			"Rachmat04",
+			"Rebeccayoga",
 			"Syman51",
 			"Veracious"
 		]
@@ -153,6 +154,7 @@
 	"wikilambda-editor-label-addlanguage-label": "Pilih bahasa",
 	"wikilambda-editor-label-removelanguage-tooltip": "Hapus bahasa ini dari label ini",
 	"wikilambda-editor-label-select-programming-language-label": "Pilih bahasa pemrograman",
+	"wikilambda-editor-label-select-programming-language-empty": "Pilih bahasa pemrograman",
 	"wikilambda-editor-leave-edit-mode-header": "Keluar dari mode penyuntingan",
 	"wikilambda-editor-output-title": "Hasil",
 	"wikilambda-editor-publish-dialog-header": "Terbitkan perubahan Anda",
