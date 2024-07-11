@@ -39,15 +39,40 @@ class ZObjectUtils {
 	 * @param string $class The name of the class for the HTML element in which to wrap the label
 	 * @return string The HTML of the element to be rendered
 	 */
-	public static function wrapBCP47CodeInFakeCodexChip( string $code, string $label, string $class ) {
+	public static function wrapBCP47CodeInFakeCodexChip(
+		string $code,
+		string $label,
+		string $class
+	) {
+		$attributes = [
+			'data-title' => $label,
+			'class' => $class,
+		];
 		return Html::element(
 			'span',
-			[
-				'data-title' => $label,
-				'class' => $class
-			],
+			$attributes,
 			$code
 		);
+	}
+
+	/**
+	 * Get the CSS class name for the BCP47 code based on the type and language codes.
+	 *
+	 * @param string $type
+	 * @param string $langCode
+	 * @param string $userLangCode
+	 * @return string
+	 */
+	public static function getBCP47ClassName( string $type, string $langCode, string $userLangCode ) {
+		$baseClass = 'ext-wikilambda-editpage-header--bcp47-code';
+		$modifierClass = $type === 'name'
+			? 'ext-wikilambda-editpage-header--bcp47-code-name'
+			: 'ext-wikilambda-editpage-header--bcp47-code-type';
+		$className = $baseClass . ' ' . $modifierClass;
+		if ( $langCode === $userLangCode ) {
+			$className .= ' ext-wikilambda-editpage-header--bcp47-code-hidden';
+		}
+		return $className;
 	}
 
 	/**
