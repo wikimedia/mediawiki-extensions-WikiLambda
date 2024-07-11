@@ -76,6 +76,31 @@ describe( 'LanguageSelector', () => {
 		);
 	} );
 
+	it( 'closes search dialog when clicking outside', async () => {
+		const wrapper = mount( LanguageSelector );
+
+		// Assert that dialog is initially hidden
+		expect( wrapper.find( '.ext-wikilambda-page-language-selector-dropdown__visible' ).exists() ).toBe( false );
+
+		// Click language button
+		const button = wrapper.find( '.ext-wikilambda-page-language-selector-trigger' );
+		button.trigger( 'click' );
+
+		// Assert that dialog is now visible
+		await waitFor( () => expect( wrapper.find( '.ext-wikilambda-page-language-selector-dropdown__visible' ).exists() ).toBe( true ) );
+
+		// Click outside the dialog
+		const clickEvent = new MouseEvent( 'click', {
+			bubbles: true,
+			cancelable: true,
+			view: window
+		} );
+		document.dispatchEvent( clickEvent );
+
+		// Assert that dialog is now hidden
+		await waitFor( () => expect( wrapper.find( '.ext-wikilambda-page-language-selector-dropdown__visible' ).exists() ).toBe( false ) );
+	} );
+
 	it( 'keeps the search dialog visble', async () => {
 		const wrapper = mount( LanguageSelector );
 

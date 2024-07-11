@@ -33,6 +33,8 @@ module.exports = {
 
 	testEnvironment: 'jsdom',
 
+	coverageProvider: 'v8',
+
 	// Indicates whether the coverage information should be collected while executing the test
 	collectCoverage: true,
 

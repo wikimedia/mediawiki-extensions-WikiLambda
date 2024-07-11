@@ -47,6 +47,10 @@ describe( 'CodeEditor', () => {
 			setValue: mockSetValue,
 			on: mockSetListener
 		} ) );
+
+		window.ace.config = {
+			set: jest.fn()
+		};
 	} );
 
 	it( 'initializes the code editor properties', () => {
@@ -67,7 +71,30 @@ describe( 'CodeEditor', () => {
 		expect( mockSetOptions ).toHaveBeenCalledWith( {
 			fontSize: 12, maxLines: 20, minLines: 5, showPrintMargin: false, useSoftTabs: false
 		} );
+		expect( window.ace.config.set ).toHaveBeenCalledWith(
+			'basePath',
+			'/w/extensions/WikiLambda/resources/lib/ace/src'
+		);
 		expect( window.ace.edit ).toHaveBeenCalledWith( expect.anything(), { value: 'pepsi cola' } );
+	} );
+
+	it( 'should set basePath with protocol if basePath starts with //', () => {
+		mw.config.get.mockReturnValue( '//example.com/path' );
+
+		const wrapper = shallowMount( CodeEditor, {
+			props: {
+				mode: 'python',
+				theme: 'chrome',
+				value: 'pepsi cola',
+				readOnly: true
+			}
+		} );
+
+		expect( wrapper.find( 'div' ).exists() ).toBe( true );
+		expect( window.ace.config.set ).toHaveBeenCalledWith(
+			'basePath',
+			'http://example.com/path/WikiLambda/resources/lib/ace/src'
+		);
 	} );
 
 	it( 'sets readOnly upon change', async () => {
