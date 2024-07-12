@@ -75,11 +75,6 @@ module.exports = exports = defineComponent( {
 		'cdx-icon': CdxIcon
 	},
 	props: {
-		rowId: {
-			type: Number,
-			required: false,
-			default: 0
-		},
 		edit: {
 			type: Boolean,
 			required: true
@@ -89,8 +84,14 @@ module.exports = exports = defineComponent( {
 			required: true
 		},
 		listItemType: {
-			type: String,
+			type: [ String, Object ],
 			required: true
+		},
+		listItemsRowIds: {
+			type: Array,
+			default() {
+				return [];
+			}
 		}
 	},
 	data: function () {
@@ -100,22 +101,9 @@ module.exports = exports = defineComponent( {
 	},
 	computed: Object.assign(
 		mapGetters( [
-			'getUserLangZid',
-			'getChildrenByParentRowId'
+			'getUserLangZid'
 		] ),
 		{
-			/**
-			 * Returns the list of item row Ids (without the type item)
-			 * sorted by their key
-			 *
-			 * @return {Array}
-			 */
-			listItemsRowIds: function () {
-				return this.getChildrenByParentRowId( this.rowId )
-					.sort( ( a, b ) => parseInt( a.key ) - parseInt( b.key ) )
-					.slice( 1 )
-					.map( ( row ) => row.id );
-			},
 
 			/**
 			 * Returns the key label for the list of items.

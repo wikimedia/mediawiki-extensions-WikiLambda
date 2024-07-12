@@ -21,7 +21,6 @@ describe( 'ZTypedListType', () => {
 	beforeEach( () => {
 		getters = {
 			getLabelData: createLabelDataMock(),
-			getExpectedTypeOfKey: createGettersWithFunctionsMock( 'Z1' ),
 			getZObjectKeyByRowId: createGettersWithFunctionsMock( '0' ),
 
 			// getters for ZObjectKeyValue
@@ -36,7 +35,8 @@ describe( 'ZTypedListType', () => {
 
 		actions = {
 			setListItemsForRemoval: jest.fn(),
-			setError: jest.fn()
+			setError: jest.fn(),
+			clearErrors: jest.fn()
 		};
 
 		global.store.hotUpdate( {
@@ -65,7 +65,53 @@ describe( 'ZTypedListType', () => {
 		expect( wrapper.find( 'div' ).exists() ).toBe( true );
 	} );
 
-	it( 'sets list items for removal when type changes', () => {
+	it( 'sets list items for removal when type changes and list items are present', () => {
+		const wrapper = shallowMount( ZTypedListType, {
+			props: {
+				edit: true,
+				listItemsRowIds: [ 1, 2 ]
+			},
+			global: {
+				stubs: {
+					WlZObjectKeyValue: false
+				}
+			}
+		} );
+
+		const mockPayload = { keyPath: [], value: Constants.Z_CHARACTER };
+		wrapper.findComponent( ZObjectKeyValue ).vm.$emit( 'change-event', mockPayload );
+
+		expect( actions.clearErrors ).not.toHaveBeenCalled();
+		expect( actions.setError ).toHaveBeenCalled();
+		expect( actions.setListItemsForRemoval ).toHaveBeenCalledWith(
+			expect.any( Object ),
+			{
+				parentRowId: undefined,
+				listItems: [ 1, 2 ]
+			} );
+	} );
+
+	it( 'it does not set list items for removal if type changes to Z1', () => {
+		const wrapper = shallowMount( ZTypedListType, {
+			props: {
+				edit: true,
+				listItemsRowIds: [ 1, 2 ]
+			},
+			global: {
+				stubs: {
+					WlZObjectKeyValue: false
+				}
+			}
+		} );
+
+		const mockPayload = { keyPath: [], value: Constants.Z_OBJECT };
+		wrapper.findComponent( ZObjectKeyValue ).vm.$emit( 'change-event', mockPayload );
+
+		expect( actions.setError ).not.toHaveBeenCalled();
+		expect( actions.setListItemsForRemoval ).not.toHaveBeenCalled();
+	} );
+
+	it( 'it clears errors when type changes back to Z1 after a change', () => {
 		const wrapper = shallowMount( ZTypedListType, {
 			props: {
 				edit: true,
@@ -83,24 +129,11 @@ describe( 'ZTypedListType', () => {
 
 		expect( actions.setError ).toHaveBeenCalled();
 		expect( actions.setListItemsForRemoval ).toHaveBeenCalled();
+
+		const mockZ1Payload = { keyPath: [], value: Constants.Z_OBJECT };
+		wrapper.findComponent( ZObjectKeyValue ).vm.$emit( 'change-event', mockZ1Payload );
+
+		expect( actions.clearErrors ).toHaveBeenCalled();
 	} );
 
-	it( 'it does not set list items for removal if type changes to Z1', () => {
-		const wrapper = shallowMount( ZTypedListType, {
-			props: {
-				edit: true
-			},
-			global: {
-				stubs: {
-					WlZObjectKeyValue: false
-				}
-			}
-		} );
-
-		const mockPayload = { keyPath: [], value: Constants.Z_OBJECT };
-		wrapper.findComponent( ZObjectKeyValue ).vm.$emit( 'change-event', mockPayload );
-
-		expect( actions.setError ).not.toHaveBeenCalled();
-		expect( actions.setListItemsForRemoval ).not.toHaveBeenCalled();
-	} );
 } );

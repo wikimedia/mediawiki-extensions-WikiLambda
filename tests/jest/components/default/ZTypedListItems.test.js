@@ -35,7 +35,8 @@ describe( 'ZTypedListItems', () => {
 				props: {
 					edit: false,
 					expanded: false,
-					listItemType: 'Z6'
+					listItemType: 'Z6',
+					listItemsRowIds: [ 1, 2 ]
 				}
 			} );
 
@@ -47,7 +48,8 @@ describe( 'ZTypedListItems', () => {
 				props: {
 					edit: false,
 					expanded: false,
-					listItemType: 'Z6'
+					listItemType: 'Z6',
+					listItemsRowIds: [ 1, 2 ]
 				}
 			} );
 
@@ -59,7 +61,8 @@ describe( 'ZTypedListItems', () => {
 				props: {
 					edit: false,
 					expanded: true,
-					listItemType: 'Z6'
+					listItemType: 'Z6',
+					listItemsRowIds: [ 1, 2 ]
 				}
 			} );
 
@@ -74,7 +77,8 @@ describe( 'ZTypedListItems', () => {
 				props: {
 					edit: false,
 					expanded: false,
-					listItemType: 'Z6'
+					listItemType: 'Z6',
+					listItemsRowIds: [ 1, 2 ]
 				}
 			} );
 
@@ -89,7 +93,8 @@ describe( 'ZTypedListItems', () => {
 				props: {
 					edit: true,
 					expanded: false,
-					listItemType: 'Z6'
+					listItemType: 'Z6',
+					listItemsRowIds: [ 1, 2 ]
 				}
 			} );
 
