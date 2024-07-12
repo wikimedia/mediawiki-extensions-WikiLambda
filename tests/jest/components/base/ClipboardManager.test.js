@@ -10,7 +10,7 @@ const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	ClipboardManager = require( '../../../../resources/ext.wikilambda.edit/components/base/ClipboardManager.vue' );
 
 describe( 'ClipboardManager', () => {
-	let wrapper, getters, actions;
+	let wrapper;
 
 	beforeEach( () => {
 
@@ -27,8 +27,6 @@ describe( 'ClipboardManager', () => {
 				classNames: [ 'test-class' ]
 			}
 		} );
-
-		global.store.hotUpdate( { getters: getters, actions: actions } );
 
 	} );
 
@@ -59,8 +57,17 @@ describe( 'ClipboardManager', () => {
 		mockElement.textContent = 'Copy Me';
 		document.body.appendChild( mockElement );
 
+		jest.spyOn( wrapper.vm, 'copyToClipboard' );
+
 		// Directly invoke handleWindowClick instead of simulating a click event
 		await wrapper.vm.handleWindowClick( { target: mockElement } );
+
+		// expect( wrapper.vm.copyToClipboard ).toHaveBeenCalledWith( 'Copy Me' );
+		expect( wrapper.vm.copyToClipboard ).toHaveBeenCalledWith(
+			'Copy Me',
+			expect.any( Function ), // Matcher for displayCopiedMessage function
+			expect.any( Function ) // Matcher for clearCopiedMessage function
+		);
 
 		expect( navigator.clipboard.writeText ).toHaveBeenCalledWith( 'Copy Me' );
 		expect( mockElement.getAttribute( 'data-copied' ) ).toBe( 'true' );
