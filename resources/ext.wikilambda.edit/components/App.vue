@@ -31,6 +31,7 @@ const mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	ClipboardManager = require( './base/ClipboardManager.vue' ),
 	eventLogUtils = require( '../mixins/eventLogUtils.js' ),
+	urlUtils = require( '../mixins/urlUtils.js' ),
 	FunctionEvaluator = require( '../views/FunctionEvaluator.vue' ),
 	FunctionEditor = require( '../views/FunctionEditor.vue' ),
 	FunctionViewer = require( '../views/FunctionViewer.vue' ),
@@ -47,7 +48,7 @@ module.exports = exports = defineComponent( {
 		'wl-default-view': DefaultView,
 		'wl-clipboard-manager': ClipboardManager
 	},
-	mixins: [ eventLogUtils ],
+	mixins: [ eventLogUtils, urlUtils ],
 	inject: {
 		viewmode: { default: false }
 	},
@@ -98,7 +99,18 @@ module.exports = exports = defineComponent( {
 			} );
 		} );
 
-		window.onpopstate = function () {
+		window.onpopstate = function ( event ) {
+			/**
+			 * Prevent reinitializing the view when there is a hash in the URL,
+			 * this is most likely when using a a11y SkipLink.
+			 */
+			if ( window.location.hash && event.state === null ) {
+				event.preventDefault();
+				// Remove hash from url so it does not persist after navigation
+				this.removeHashFromURL();
+				return false;
+			}
+
 			// Reinitialize zObject if current page/zObject is new and user changes route
 			if ( this.isCreateNewPage ) {
 				this.initializeView().then(

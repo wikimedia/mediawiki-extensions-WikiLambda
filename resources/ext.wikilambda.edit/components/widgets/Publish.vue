@@ -49,6 +49,7 @@ const Constants = require( '../../Constants.js' ),
 	LeaveEditorDialog = require( './LeaveEditorDialog.vue' ),
 	PublishDialog = require( './PublishDialog.vue' ),
 	eventLogger = require( '../../mixins/eventLogUtils.js' ).methods,
+	urlUtils = require( '../../mixins/urlUtils.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
 	getParameterByName = require( '../../mixins/urlUtils.js' ).methods.getParameterByName;
@@ -61,6 +62,7 @@ module.exports = exports = defineComponent( {
 		'wl-publish-dialog': PublishDialog,
 		'wl-widget-base': WidgetBase
 	},
+	mixins: [ urlUtils ],
 	props: {
 		functionSignatureChanged: {
 			type: Boolean,
@@ -172,7 +174,7 @@ module.exports = exports = defineComponent( {
 		/**
 		 * Handles navigation away from the page.
 		 * Currently only handles navigation out when
-		 * chicking a link.
+		 * clicking a link.
 		 *
 		 * @param {Object} e the click event
 		 */
@@ -185,9 +187,9 @@ module.exports = exports = defineComponent( {
 					return;
 				}
 			}
-			// If the link doesn't have a target or target property is _blank,
+			// If the link doesn't have a target, target property is _blank or the link is to the current page,
 			// we are staying in this page, so there's no need to handle cancelation
-			if ( !target.href || ( target.target === '_blank' ) ) {
+			if ( !target.href || target.target === '_blank' || this.isLinkCurrentPath( target.href ) ) {
 				return;
 			}
 			// Else, abandon the page

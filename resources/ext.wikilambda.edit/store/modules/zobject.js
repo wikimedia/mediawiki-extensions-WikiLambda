@@ -1458,6 +1458,9 @@ module.exports = exports = {
 		 * @param {Object} context
 		 */
 		initializeEvaluateFunction: function ( context ) {
+			// Reset state.zobject to initial state
+			context.commit( 'setZObject', [] );
+
 			// Set current Zid to empty placeholder (Z0)
 			context.commit( 'setCurrentZid', Constants.NEW_ZID_PLACEHOLDER );
 
@@ -1482,6 +1485,9 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		initializeCreateNewPage: function ( context ) {
+			// Reset state.zobject to initial state
+			context.commit( 'setZObject', [] );
+
 			// Set createNewPage flag to true
 			context.commit( 'setCreateNewPage', true );
 
@@ -1545,6 +1551,9 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		initializeRootZObject: function ( context, zId ) {
+			// Reset state.zobject to initial state
+			context.commit( 'setZObject', [] );
+
 			// Set current Zid
 			context.commit( 'setCurrentZid', zId );
 			const revision = getParameterByName( 'oldid' );
