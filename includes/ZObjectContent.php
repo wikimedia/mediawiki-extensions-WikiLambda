@@ -22,6 +22,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Status\Status;
 use MediaWiki\Title\Title;
+use MessageLocalizer;
 use TextContent;
 
 /**
@@ -31,6 +32,11 @@ use TextContent;
  * MediaWiki 'real' content and the functional model.
  */
 class ZObjectContent extends AbstractContent {
+
+	// Define the constant for the description and label length limit
+	// TODO (T371882) Set these constants to their final values: 200 and 50
+	private const DESCRIPTION_LENGTH_LIMIT = 500;
+	private const LABEL_LENGTH_LIMIT = 500;
 
 	/**
 	 * Fundamental internal representation, as stored in MediaWiki.
@@ -105,6 +111,58 @@ class ZObjectContent extends AbstractContent {
 		// TODO (T284473): We might not need the text content once we have proper diffs
 		$this->text = $text;
 		$this->object = $parseStatus->getValue();
+	}
+
+	/**
+	 * Validate fields and throws a ZErrorException if any of the following validations
+	 * don't pass successfully:
+	 * - ZPersistentObject description: validate the length of the description field
+	 * - ZPersistentObject name: validate the length of the name field
+	 *
+	 * @param MessageLocalizer $context The context of the action operation, for localisation of messages
+	 * @throws ZErrorException
+	 */
+	public function validateFields( $context ) {
+		$invalidDescriptionLanguages = $this
+			->getZObject()
+			->validateDescriptionLength( self::DESCRIPTION_LENGTH_LIMIT, $context );
+		$invalidLabelLanguages = $this
+			->getZObject()
+			->validateLabelLength( self::LABEL_LENGTH_LIMIT, $context );
+
+		$errors = [];
+		if ( count( $invalidDescriptionLanguages ) > 0 ) {
+			foreach ( $invalidDescriptionLanguages as $invalidLang ) {
+				// Create message for language and limit
+				$message = wfMessage( 'wikilambda-validation-error-description-toolong',
+					$invalidLang, self::DESCRIPTION_LENGTH_LIMIT )->text();
+				// Create Z500 and add to list
+				$errors[] = ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
+					[ 'message' => $message ]
+				);
+			}
+		}
+
+		if ( count( $invalidLabelLanguages ) > 0 ) {
+			foreach ( $invalidLabelLanguages as $invalidLang ) {
+				// Create message for language and limit
+				$message = wfMessage( 'wikilambda-validation-error-name-toolong',
+					$invalidLang, self::LABEL_LENGTH_LIMIT )->text();
+				// Create Z500 and add to list
+				$errors[] = ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
+					[ 'message' => $message ]
+				);
+			}
+		}
+
+		if ( count( $errors ) > 0 ) {
+			// Return Z500 if there's only one error
+			// Return Z509 if there are more than one
+			$error = ( count( $errors ) > 1 ) ? ZErrorFactory::createZErrorList( $errors ) : $errors[ 0 ];
+			throw new ZErrorException( $error );
+		}
 	}
 
 	/**

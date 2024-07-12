@@ -57,6 +57,27 @@ module.exports = exports = {
 		getErrorMessage: function ( error ) {
 			// eslint-disable-next-line mediawiki/msg-doc
 			return error.message || this.$i18n( error.code ).text();
+		},
+
+		/**
+		 * Given an error response of a failed call to the API,
+		 * extract the error message per type of error.
+		 *
+		 * @param {Object} error
+		 * @return {string | undefined}
+		 */
+		extractErrorMessage: function ( error ) {
+			if ( !error.zerror ) {
+				return undefined;
+			}
+
+			const errorMessage = error.zerror[ Constants.Z_ERROR_VALUE ][ Constants.Z_TYPED_OBJECT_ELEMENT_1 ];
+			const errorType = error.zerror[ Constants.Z_ERROR_TYPE ];
+			if ( !errorMessage || typeof errorMessage !== 'string' || errorType !== Constants.Z_GENERIC_ERROR ) {
+				return;
+			}
+
+			return errorMessage;
 		}
 	} ),
 	computed: Object.assign( {}, mapGetters( [
@@ -71,7 +92,7 @@ module.exports = exports = {
 		 * @return {Array}
 		 */
 		fieldErrors: function () {
-			const globalErrors = ( this.rowId && ( this.rowId > 0 ) ) ? this.getErrors( this.rowId ) : [];
+			const globalErrors = ( this.rowId && this.rowId > 0 ) ? this.getErrors( this.rowId ) : [];
 			return globalErrors.concat( this.localErrors );
 		},
 

@@ -118,6 +118,17 @@ class ZError extends ZObject {
 
 		$errorType = $this->getZErrorType();
 
+		// Errors that have message key: Z500, Z557
+		// Get error message from K1 (if not null)
+		if (
+			( $errorType === ZErrorTypeRegistry::Z_ERROR_UNKNOWN ) ||
+			( $errorType === ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT )
+		) {
+			$errorValue = $this->getZValue();
+			$messageKey = $errorValue->getValueByKey( 'K1' );
+			$message = $messageKey || $message;
+		}
+
 		// Errors that can have children: Z509, Z502, Z522, Z526
 		// List of children in K1:
 		// * Z509/List of errors

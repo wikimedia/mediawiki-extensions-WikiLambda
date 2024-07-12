@@ -23,10 +23,12 @@ use stdClass;
 use Wikimedia\Rdbms\IResultWrapper;
 
 /**
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectStore
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectPage
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataRemoval
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject
  * @group Database
  */
 class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
@@ -362,6 +364,54 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		);
 		$this->assertFalse( $status->isOK() );
 		$this->assertStringContainsString( ZErrorTypeRegistry::Z_ERROR_UNMATCHING_ZID, $status->getErrors() );
+	}
+
+	public function testUpdateZObject_badLabelLength() {
+		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+			. '"Z2K2": "hello",'
+			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11", { "Z1K1":"Z11","Z11K1":"Z1002","Z11K2":"The quick brown fox'
+			. ' jumps over the lazy dog while the sun sets behind the mountains and the sky turns shades of orange,'
+			. ' and pink painting a picturesque scene that makes everyone pause and appreciate the beauty of nature,'
+			. ' feeling a sense of calm and serenity in the midst of a hectic day. Meanwhile, an inspired writer'
+			. ' practices his craft by exploring a library of functions and give them the longest titles that nobody'
+			. ' has ever dared to imagine. His intentions are pure; he believes functions are poetry, the most'
+			. ' valuable jewels of language." } ] },'
+			. '"Z2K4": {"Z1K1": "Z32", "Z32K1": [ "Z31" ] },'
+			. '"Z2K5": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
+
+		$status = $this->zobjectStore->createNewZObject(
+			RequestContext::getMain(),
+			$input,
+			'Create summary',
+			$this->getTestSysop()->getUser()
+		);
+		$this->assertFalse( $status->isOK() );
+		$this->assertStringContainsString( ZErrorTypeRegistry::Z_ERROR_UNKNOWN, $status->getErrors() );
+		$this->assertStringContainsString( "Name in English", $status->getErrors() );
+	}
+
+	public function testUpdateZObject_badDescriptionLength() {
+		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+			. '"Z2K2": "hello",'
+			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] },'
+			. '"Z2K4": {"Z1K1": "Z32", "Z32K1": [ "Z31" ] },'
+			. '"Z2K5": {"Z1K1": "Z12", "Z12K1": [ "Z11", { "Z1K1":"Z11","Z11K1":"Z1002","Z11K2":"The quick brown fox'
+			. ' jumps over the lazy dog while the sun sets behind the mountains and the sky turns shades of orange,'
+			. ' and pink painting a picturesque scene that makes everyone pause and appreciate the beauty of nature,'
+			. ' feeling a sense of calm and serenity in the midst of a hectic day. Meanwhile, an inspired writer'
+			. ' practices his craft by exploring a library of functions and give them the longest titles that nobody'
+			. ' has ever dared to imagine. His intentions are pure; he believes functions are poetry, the most'
+			. ' valuable jewels of language." } ] } }';
+
+		$status = $this->zobjectStore->createNewZObject(
+			RequestContext::getMain(),
+			$input,
+			'Create summary',
+			$this->getTestSysop()->getUser()
+		);
+		$this->assertFalse( $status->isOK() );
+		$this->assertStringContainsString( ZErrorTypeRegistry::Z_ERROR_UNKNOWN, $status->getErrors() );
+		$this->assertStringContainsString( "Description in English", $status->getErrors() );
 	}
 
 	public function testUpdateZObject_editProhibited_loggedOut() {

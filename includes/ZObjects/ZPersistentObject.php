@@ -11,8 +11,12 @@
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
 use Language;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use MediaWiki\MediaWikiServices;
+use MessageLocalizer;
 
 class ZPersistentObject extends ZObject {
 
@@ -110,6 +114,67 @@ class ZPersistentObject extends ZObject {
 	 */
 	public function getZValue() {
 		return $this->getInnerZObject()->getZValue();
+	}
+
+	/**
+	 * Validate the length of a field in the ZMultilingualString of this ZPersistentObject.
+	 * The field is validated for each language in the ZMultilingualString.
+	 *
+	 * @param string $fieldName The name of the field to validate
+	 * @param int $length The maximum length of the field
+	 * @param MessageLocalizer|null $context The context of the action operation, for localisation of messages
+	 * @return array An array of invalid languages
+	 */
+	private function validateZMultilingualStringFieldLength( $fieldName, $length, $context = null ) {
+		// If we have context available as IContextSource, get user language to localize language names
+		$userLang = ( $context instanceof IContextSource ) ? $context->getLanguage()->getCode() : null;
+
+		// used to go from LANG_CODE -> LANG_NAME
+		// TODO (T362246): Dependency-inject
+		$services = MediaWikiServices::getInstance();
+		$zLangRegistry = ZLangRegistry::singleton();
+		$invalidLanguages = [];
+
+		// Ensure the field exists and is a valid object with getValueAsList method
+		if ( !isset( $this->data[$fieldName] ) || !method_exists( $this->data[$fieldName], 'getValueAsList' ) ) {
+			// Handle the case where the field is not present or is not valid
+			return $invalidLanguages;
+		}
+
+		$fieldValues = $this->data[$fieldName]->getValueAsList();
+		foreach ( $fieldValues as $lang => $value ) {
+			if ( strlen( $value ) > $length ) {
+				// get the language name from the language code
+				$langCode = $zLangRegistry->getLanguageCodeFromZid( $lang );
+				$langTitle = $services->getLanguageNameUtils()->getLanguageName( $langCode, $userLang );
+				$invalidLanguages[] = $langTitle;
+			}
+		}
+		return $invalidLanguages;
+	}
+
+	/**
+	 * Validates the length of the description field for a persistent object.
+	 *
+	 * @param int $length The maximum length allowed for the description.
+	 * @param MessageLocalizer|null $context The context of the action operation, for localisation of messages
+	 * @return array An array of invalid languages
+	 */
+	public function validateDescriptionLength( $length, $context = null ) {
+		return $this->validateZMultilingualStringFieldLength(
+			ZTypeRegistry::Z_PERSISTENTOBJECT_DESCRIPTION, $length, $context );
+	}
+
+	/**
+	 * Validates the length of the label field for a persistent object.
+	 *
+	 * @param int $length The maximum length allowed for the label.
+	 * @param MessageLocalizer|null $context The context of the action operation, for localisation of messages
+	 * @return array An array of invalid languages
+	 */
+	public function validateLabelLength( $length, $context = null ) {
+		return $this->validateZMultilingualStringFieldLength(
+			ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL, $length, $context );
 	}
 
 	/**
