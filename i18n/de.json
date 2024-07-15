@@ -311,7 +311,7 @@
 	"wikilambda-list-item-label": "Objekt $1",
 	"wikilambda-list-items-label": "Objekte auflisten",
 	"wikilambda-list-items-type-label": "Art der Datenobjekte auflisten",
-	"wikilambda-list-type-change-warning": "Du hast den Typ einer oder mehrerer Listen geändert. Bei der Veröffentlichung werden alle Listenelemente gelöscht",
+	"wikilambda-list-type-change-warning": "Du hast den Typ einer oder mehrerer Listen geändert. Bei der Veröffentlichung werden einige Listenelemente gelöscht",
 	"wikilambda-literal-type": "Literal $1",
 	"wikilambda-loading": "Daten werden geladen",
 	"wikilambda-metadata-add-alias": "Alias hinzufügen",

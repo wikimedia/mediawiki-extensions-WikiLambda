@@ -303,7 +303,7 @@
 	"wikilambda-list-item-label": "第$1项",
 	"wikilambda-list-items-label": "列表项",
 	"wikilambda-list-items-type-label": "列表项类型",
-	"wikilambda-list-type-change-warning": "您更改了一个或多个列表的类型。发布时，所有列表项将被删除。",
+	"wikilambda-list-type-change-warning": "您更改了一个或多个列表的类型。发布时，部分列表项将被删除。",
 	"wikilambda-literal-type": "字面量$1",
 	"wikilambda-loading": "正在加载数据",
 	"wikilambda-metadata-add-alias": "添加化名",

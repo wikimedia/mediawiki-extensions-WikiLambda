@@ -307,7 +307,7 @@
 	"wikilambda-list-item-label": "פריט $1",
 	"wikilambda-list-items-label": "פריטי רשימה",
 	"wikilambda-list-items-type-label": "סוג פריטי רשימה",
-	"wikilambda-list-type-change-warning": "שינית את הסוג של רשימה אחת או יותר. בעת פרסום, כל פריטי הרשימה יימחקו",
+	"wikilambda-list-type-change-warning": "שינית את הסוג של רשימה אחת או יותר. בעת פרסום, חלק מפריטי הרשימה יימחקו",
 	"wikilambda-literal-type": "$1 מפורש",
 	"wikilambda-loading": "טעינת נתונים",
 	"wikilambda-metadata-add-alias": "הוספת כינוי",

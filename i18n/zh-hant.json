@@ -270,7 +270,7 @@
 	"wikilambda-list-item-label": "第$1項",
 	"wikilambda-list-items-label": "列表項",
 	"wikilambda-list-items-type-label": "列表項類型",
-	"wikilambda-list-type-change-warning": "您變更了一個或多個列表的類型。發布時，所有列表項將被刪除。",
+	"wikilambda-list-type-change-warning": "您變更了一個或多個串列的類型。發布時，所有串列項目將被刪除。",
 	"wikilambda-loading": "正在載入資料",
 	"wikilambda-metadata-add-alias": "添加化名",
 	"wikilambda-metadata-aka-column": "別名",
