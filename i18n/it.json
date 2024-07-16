@@ -300,7 +300,7 @@
 	"wikilambda-languagelabel": "Lingua",
 	"wikilambda-list-item-label": "Elemento $1",
 	"wikilambda-list-items-label": "Elenco elementi",
-	"wikilambda-list-type-change-warning": "Hai cambiato il tipo di uno o più elenchi. Alla pubblicazione, tutti gli elementi dell'elenco verranno cancellati",
+	"wikilambda-list-type-change-warning": "Hai cambiato il tipo di uno o più elenchi. Alla pubblicazione, alcuni elementi dell'elenco verranno cancellati",
 	"wikilambda-literal-type": "$1 letterale",
 	"wikilambda-loading": "Caricamento dati",
 	"wikilambda-metadata-add-alias": "Aggiungi alias",
