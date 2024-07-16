@@ -138,7 +138,8 @@ module.exports = exports = defineComponent( {
 	computed: Object.assign( mapGetters( [
 		'getLabelData',
 		'getEnumValues',
-		'isEnumType'
+		'isEnumType',
+		'getUserRequestedLang'
 	] ), {
 		/**
 		 * Value model for the internal codex lookup component. It
@@ -180,7 +181,7 @@ module.exports = exports = defineComponent( {
 		enumValues: function () {
 			return this.getEnumValues( this.type ).map( ( item ) => {
 				const value = item.page_title;
-				const label = item.label;
+				const label = this.getLabelOrZid( value, item.label );
 				return { value, label };
 			} );
 		},
@@ -286,9 +287,9 @@ module.exports = exports = defineComponent( {
 							// Set up codex MenuItem options
 							// https://doc.wikimedia.org/codex/latest/components/demos/menu-item.html
 							const value = result.page_title;
-							const label = result.label;
-							const description = result.type_label;
-							const supportingText = ( result.label !== result.match_label ) ? `(${ result.match_label })` : '';
+							const label = this.getLabelOrZid( value, result.label );
+							const description = this.getLabelOrZid( result.page_type, result.type_label );
+							const supportingText = ( label !== result.match_label ) ? `(${ result.match_label })` : '';
 							// If return type is set, reflect mode with icon
 							let icon;
 							if ( this.returnType ) {
@@ -318,6 +319,22 @@ module.exports = exports = defineComponent( {
 						this.setSuggestions();
 					}
 				} );
+			},
+
+			/**
+			 * Returns the value when the user requested language is 'qqx',
+			 * otherwise returns the label.
+			 *
+			 * @param {string} value
+			 * @param {string} label
+			 * @return {Object}
+			 */
+			getLabelOrZid: function ( value, label ) {
+				// If the requested language is 'qqx', return (value/zid) as the label
+				if ( this.getUserRequestedLang === 'qqx' ) {
+					return `(${ value })`;
+				}
+				return label;
 			},
 
 			/**
