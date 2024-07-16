@@ -187,9 +187,15 @@ module.exports = exports = defineComponent( {
 					return;
 				}
 			}
-			// If the link doesn't have a target, target property is _blank or the link is to the current page,
-			// we are staying in this page, so there's no need to handle cancelation
-			if ( !target.href || target.target === '_blank' || this.isLinkCurrentPath( target.href ) ) {
+			/**
+			 * if the link:
+			 * - doesn't have a target,
+			 * - target property is _blank,
+			 * - the link is to the current page, (usually when it's a hash link)
+			 * - the link is a button
+			 * we are staying in this page, so there's no need to handle cancelation
+			 */
+			if ( !target.href || target.target === '_blank' || this.isLinkCurrentPath( target.href ) || target.role === 'button' ) {
 				return;
 			}
 			// Else, abandon the page
