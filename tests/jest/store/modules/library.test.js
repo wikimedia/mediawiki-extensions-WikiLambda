@@ -301,7 +301,7 @@ describe( 'library module', () => {
 				const zid = 'Z20005';
 				const expected = 'Z14K3';
 				const actual = libraryModule.getters.getTypeOfImplementation( state )( zid );
-				expect( actual ).toBe( expected );
+				expect( actual ).toEqual( expected );
 			} );
 		} );
 
@@ -403,38 +403,41 @@ describe( 'library module', () => {
 			} );
 		} );
 
-		describe( 'isEnumFetched', () => {
-			it( 'returns false when enum zid is not present in the state', () => {
+		describe( 'getEnum', () => {
+			it( 'returns undefined when enum is not present in the state', () => {
 				state.enums = {};
 
 				const zid = 'Z30000';
-				const expected = false;
-				const actual = libraryModule.getters.isEnumFetched( state )( zid );
-				expect( actual ).toBe( expected );
+				const actual = libraryModule.getters.getEnum( state )( zid );
+				expect( actual ).toBeUndefined();
 			} );
 
-			it( 'returns true when enum values are being fetched', () => {
+			it( 'returns enum with promise as data when enum values are being fetched', async () => {
 				state.enums = {
-					Z30000: new Promise( ( resolve ) => {
-						resolve();
-					} )
+					Z30000: {
+						data: new Promise( ( resolve ) => {
+							resolve();
+						} )
+					}
 				};
 
 				const zid = 'Z30000';
-				const expected = true;
-				const actual = libraryModule.getters.isEnumFetched( state )( zid );
-				expect( actual ).toBe( expected );
+				const expected = { data: expect.any( Promise ) };
+				const actual = libraryModule.getters.getEnum( state )( zid );
+				expect( actual ).toEqual( expected );
 			} );
 
-			it( 'returns true when enum values are fetched and stored', () => {
+			it( 'returns enum with data when enum values are fetched and stored', () => {
 				state.enums = {
-					Z30000: mockEnumValues
+					Z30000: {
+						data: mockEnumValues
+					}
 				};
 
 				const zid = 'Z30000';
-				const expected = true;
-				const actual = libraryModule.getters.isEnumFetched( state )( zid );
-				expect( actual ).toBe( expected );
+				const expected = { data: mockEnumValues };
+				const actual = libraryModule.getters.getEnum( state )( zid );
+				expect( actual ).toEqual( expected );
 			} );
 		} );
 
@@ -450,9 +453,11 @@ describe( 'library module', () => {
 
 			it( 'returns empty array when enum zid is still being fetched', () => {
 				state.enums = {
-					Z30000: new Promise( ( resolve ) => {
-						resolve();
-					} )
+					Z30000: {
+						data: new Promise( ( resolve ) => {
+							resolve();
+						} )
+					}
 				};
 
 				const zid = 'Z30000';
@@ -463,7 +468,9 @@ describe( 'library module', () => {
 
 			it( 'returns stored values when they have been fetched', () => {
 				state.enums = {
-					Z30000: mockEnumValues
+					Z30000: {
+						data: mockEnumValues
+					}
 				};
 
 				const zid = 'Z30000';
@@ -489,16 +496,50 @@ describe( 'library module', () => {
 	} );
 
 	describe( 'Mutations', () => {
-		describe( 'setEnumValues', () => {
-			it( 'sets received values indexed by the enum zid', () => {
+		describe( 'setEnumData', () => {
+			it( 'initializes enum data when no previous data exists', () => {
 				state.enums = {};
 				const payload = {
 					zid: 'Z30000',
 					data: mockEnumValues
 				};
 
-				libraryModule.mutations.setEnumValues( state, payload );
-				expect( state.enums.Z30000 ).toEqual( mockEnumValues );
+				libraryModule.mutations.setEnumData( state, payload );
+				expect( state.enums.Z30000 ).toEqual( { data: mockEnumValues } );
+			} );
+
+			it( 'overwrites existing promise data with new values', () => {
+				state.enums = {
+					Z30000: {
+						data: new Promise( ( resolve ) => {
+							resolve();
+						} )
+					}
+				};
+				const payload = {
+					zid: 'Z30000',
+					data: mockEnumValues
+				};
+
+				libraryModule.mutations.setEnumData( state, payload );
+				expect( state.enums.Z30000 ).toEqual( { data: mockEnumValues } );
+			} );
+
+			it( 'appends new values to existing data for the same enum zid', () => {
+				state.enums = {
+					Z30000: {
+						data: mockEnumValues
+					}
+				};
+				const payload = {
+					zid: 'Z30000',
+					data: mockEnumValues,
+					continue: 1
+				};
+
+				libraryModule.mutations.setEnumData( state, payload );
+				const expected = mockEnumValues.concat( mockEnumValues );
+				expect( state.enums.Z30000 ).toEqual( { continue: 1, data: expected } );
 			} );
 		} );
 
@@ -728,11 +769,11 @@ describe( 'library module', () => {
 
 			it( 'exits early if enum type is already fetched', () => {
 				context.getters = {
-					isEnumFetched: jest.fn().mockReturnValue( true ),
+					getEnum: jest.fn().mockReturnValue( { data: [] } ),
 					getUserLangCode: 'en'
 				};
 
-				libraryModule.actions.fetchEnumValues( context, 'Z30000' );
+				libraryModule.actions.fetchEnumValues( context, { type: 'Z30000' } );
 
 				expect( context.commit ).not.toHaveBeenCalled();
 				expect( getMock ).not.toHaveBeenCalled();
@@ -740,15 +781,17 @@ describe( 'library module', () => {
 
 			it( 'calls the lookup api with the requested zid and saves the pending and final states', async () => {
 				context.getters = {
-					isEnumFetched: jest.fn().mockReturnValue( false ),
+					getEnum: jest.fn().mockReturnValue( undefined ),
 					getUserLangCode: 'en'
 				};
 
-				const promise = libraryModule.actions.fetchEnumValues( context, 'Z30000' );
+				const promise = libraryModule.actions.fetchEnumValues( context, { type: 'Z30000' } );
 
 				expect( getMock ).toHaveBeenCalledWith( {
 					action: 'query',
 					list: 'wikilambdasearch_labels',
+					wikilambdasearch_continue: undefined,
+					wikilambdasearch_limit: 10,
 					wikilambdasearch_search: '',
 					wikilambdasearch_type: 'Z30000',
 					wikilambdasearch_return_type: undefined,
@@ -756,15 +799,16 @@ describe( 'library module', () => {
 					wikilambdasearch_language: 'en'
 				} );
 
-				expect( context.commit ).toHaveBeenCalledWith( 'setEnumValues', {
+				expect( context.commit ).toHaveBeenCalledWith( 'setEnumData', {
 					zid: 'Z30000',
 					data: promise
 				} );
 
 				await promise;
-				expect( context.commit ).toHaveBeenCalledWith( 'setEnumValues', {
+				expect( context.commit ).toHaveBeenCalledWith( 'setEnumData', {
 					zid: 'Z30000',
-					data: mockEnumValues
+					data: mockEnumValues,
+					continue: null
 				} );
 			} );
 		} );

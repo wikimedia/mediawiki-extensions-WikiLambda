@@ -97,7 +97,10 @@ module.exports = exports = {
 		 * @param {string} payload.returnType Retrieve also functions of a given output type
 		 * @param {boolean} payload.strictType Exclude functions that return anything/Z1
 		 * @param {string} payload.language The user language code
-		 * @return {Promise}
+		 * @param {number} payload.continue When more results are available, use this to continue
+		 * @param {number} payload.limit The maximum number of results to return
+		 * @return {Promise<Object>|undefined}
+		 * - Promise resolving to an object with 'labels' and 'continue'
 		 */
 		searchLabels: function ( payload ) {
 			const api = new mw.Api();
@@ -108,8 +111,13 @@ module.exports = exports = {
 				wikilambdasearch_type: payload.type,
 				wikilambdasearch_return_type: payload.returnType,
 				wikilambdasearch_strict_return_type: payload.strictType,
-				wikilambdasearch_language: payload.language
-			} ).then( ( data ) => data.query.wikilambdasearch_labels );
+				wikilambdasearch_language: payload.language,
+				wikilambdasearch_limit: payload.limit,
+				wikilambdasearch_continue: payload.continue
+			} ).then( ( data ) => ( {
+				labels: data.query.wikilambdasearch_labels,
+				continue: data.continue ? Number( data.continue.wikilambdasearch_continue ) : null
+			} ) );
 		},
 		/**
 		 * Calls the wikilambda_perform_test internal API
