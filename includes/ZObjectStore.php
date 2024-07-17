@@ -1097,19 +1097,19 @@ class ZObjectStore {
 		$dbw = $this->dbProvider->getPrimaryDatabase();
 		$conditions = [];
 		if ( $mainZid !== null ) {
-			$conditions[] = "wlzo_main_zid = " . $dbw->addQuotes( $mainZid );
+			$conditions['wlzo_main_zid'] = $mainZid;
 		}
 		if ( $mainType !== null ) {
-			$conditions[] = "wlzo_main_type = " . $dbw->addQuotes( $mainType );
+			$conditions['wlzo_main_type'] = $mainType;
 		}
 		if ( $key !== null ) {
-			$conditions[] = "wlzo_key = " . $dbw->addQuotes( $key );
+			$conditions['wlzo_key'] = $key;
 		}
 		if ( $relatedZObject !== null ) {
-			$conditions[] = "wlzo_related_zobject = " . $dbw->addQuotes( $relatedZObject );
+			$conditions['wlzo_related_zobject'] = $relatedZObject;
 		}
 		if ( $relatedType !== null ) {
-			$conditions[] = "wlzo_related_type = " . $dbw->addQuotes( $relatedType );
+			$conditions['wlzo_related_type'] = $relatedType;
 		}
 
 		$dbw->newDeleteQueryBuilder()
