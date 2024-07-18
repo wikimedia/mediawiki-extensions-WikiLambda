@@ -1,33 +1,23 @@
 <template>
 	<div class="ext-wikilambda-mode-selector" data-testid="mode-selector">
-		<cdx-button
+		<cdx-menu-button
 			data-testid="mode-selector-button"
+			class="ext-wikilambda-mode-selector-menu-button"
+			:selected="selected"
+			:menu-items="menuItems"
 			:aria-label="$i18n( 'wikilambda-mode-selector-button-label' ).text()"
-			weight="quiet"
 			:disabled="disabled"
-			@click="expanded = true"
-			@blur="expanded = false"
+			@update:selected="selectMode"
 		>
 			<cdx-icon :icon="icon"></cdx-icon>
-		</cdx-button>
-		<cdx-menu
-			v-if="!disabled"
-			v-model:expanded="expanded"
-			v-model:selected="selected"
-			class="ext-wikilambda-mode-selector-menu"
-			data-testid="mode-selector-menu"
-			:menu-items="menuItems"
-			:footer="footerAction"
-			@update:selected="selectMode"
-		></cdx-menu>
+		</cdx-menu-button>
 	</div>
 </template>
 
 <script>
 const { defineComponent } = require( 'vue' );
-const CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
-	CdxMenu = require( '@wikimedia/codex' ).CdxMenu,
+const CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+	CdxMenuButton = require( '@wikimedia/codex' ).CdxMenuButton,
 	Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	icons = require( '../../../lib/icons.json' ),
@@ -36,9 +26,8 @@ const CdxButton = require( '@wikimedia/codex' ).CdxButton,
 module.exports = exports = defineComponent( {
 	name: 'wl-mode-selector',
 	components: {
-		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon,
-		'cdx-menu': CdxMenu
+		'cdx-menu-button': CdxMenuButton
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -59,7 +48,6 @@ module.exports = exports = defineComponent( {
 	},
 	data: function () {
 		return {
-			expanded: false,
 			icon: icons.cdxIconEllipsis
 		};
 	},
@@ -198,6 +186,12 @@ module.exports = exports = defineComponent( {
 					icon: icons.cdxIconTableMoveRowAfter,
 					disabled: isLast,
 					class: 'ext-wikilambda-mode-selector-move-after'
+				}, {
+					label: this.$i18n( 'wikilambda-delete-list-item' ).text(),
+					value: Constants.LIST_MENU_OPTIONS.DELETE_ITEM,
+					icon: icons.cdxIconTrash,
+					action: 'destructive',
+					class: 'ext-wikilambda-mode-selector-delete'
 				} ] );
 			}
 			return options;
@@ -215,20 +209,6 @@ module.exports = exports = defineComponent( {
 				return children.length - 1;
 			}
 			return 0;
-		},
-		/**
-		 * Returns "Delete" footer item if the key belongs to a typed list item
-		 *
-		 * @return {Object|null}
-		 */
-		footerAction: function () {
-			return this.isKeyTypedListItem( this.key ) ?
-				{
-					label: this.$i18n( 'wikilambda-delete-list-item' ).text(),
-					value: Constants.LIST_MENU_OPTIONS.DELETE_ITEM,
-					icon: icons.cdxIconTrash,
-					class: 'ext-wikilambda-mode-selector-delete'
-				} : null;
 		}
 	} ),
 	methods: {
@@ -266,23 +246,12 @@ module.exports = exports = defineComponent( {
 .ext-wikilambda-mode-selector {
 	position: relative;
 
-	.cdx-button {
-		color: @color-subtle;
+	.ext-wikilambda-mode-selector-move-before {
+		box-shadow: 0 -1px 0 0 @border-color-subtle;
 	}
 
-	.ext-wikilambda-mode-selector-menu {
-		max-width: @wl-field-label-width;
-		width: @wl-field-label-width;
-
-		.ext-wikilambda-mode-selector-move-before {
-			border-top: 1px solid @border-color-subtle;
-		}
-
-		.ext-wikilambda-mode-selector-delete {
-			.cdx-menu-item__content {
-				color: @color-destructive;
-			}
-		}
+	.ext-wikilambda-mode-selector-delete {
+		box-shadow: 0 -1px 0 0 @border-color-subtle;
 	}
 }
 </style>

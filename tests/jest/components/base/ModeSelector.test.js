@@ -8,6 +8,7 @@
 
 const { waitFor } = require( '@testing-library/vue' ),
 	shallowMount = require( '@vue/test-utils' ).shallowMount,
+	mount = require( '@vue/test-utils' ).mount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
@@ -51,26 +52,34 @@ describe( 'ModeSelector', () => {
 			expect( wrapper.find( 'div' ).exists() ).toBe( true );
 		} );
 
-		it( 'renders button and menu', () => {
-			const wrapper = shallowMount( ModeSelector, {
+		it( 'renders the menu button', () => {
+			const wrapper = mount( ModeSelector, {
 				props: {
 					rowId: 1
 				}
 			} );
-			expect( wrapper.findComponent( { name: 'cdx-button' } ).exists() ).toBe( true );
-			expect( wrapper.findComponent( { name: 'cdx-menu' } ).exists() ).toBe( true );
+			const menu = wrapper.findComponent( { name: 'cdx-menu' } );
+			const toggleButton = wrapper.findComponent( { name: 'cdx-toggle-button' } );
+
+			expect( menu.exists() ).toBe( true );
+			expect( toggleButton.exists() ).toBe( true );
 		} );
 
 		it( 'opens the menu when button is clicked', async () => {
-			const wrapper = shallowMount( ModeSelector, {
+			const wrapper = mount( ModeSelector, {
 				props: {
 					rowId: 1
 				}
 			} );
-			const button = wrapper.findComponent( { name: 'cdx-button' } );
 			const menu = wrapper.findComponent( { name: 'cdx-menu' } );
-			button.vm.$emit( 'click' );
-			await waitFor( () => expect( menu.vm.expanded ).toBe( true ) );
+			expect( menu.isVisible() ).toBe( false );
+
+			const button = wrapper.findComponent( { name: 'cdx-toggle-button' } );
+			button.trigger( 'click' );
+
+			await wrapper.vm.$nextTick();
+
+			await waitFor( () => expect( menu.isVisible() ).toBe( true ) );
 		} );
 	} );
 
@@ -86,7 +95,7 @@ describe( 'ModeSelector', () => {
 				}
 			} );
 
-			const menu = wrapper.findComponent( { name: 'cdx-menu' } );
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			expect( menu.vm.menuItems.length ).toBe( 3 );
 			expect( menu.vm.menuItems[ 0 ].value ).toBe( 'Z7' );
 			expect( menu.vm.menuItems[ 1 ].value ).toBe( 'Z6' );
@@ -103,7 +112,7 @@ describe( 'ModeSelector', () => {
 					parentExpectedType: Constants.Z_OBJECT
 				}
 			} );
-			const menu = wrapper.findComponent( { name: 'cdx-menu' } );
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			expect( menu.vm.menuItems.length ).toBe( 4 );
 			expect( menu.vm.menuItems[ 0 ].value ).toBe( 'Z7' );
 			expect( menu.vm.menuItems[ 1 ].value ).toBe( 'Z1' );
@@ -122,7 +131,7 @@ describe( 'ModeSelector', () => {
 					parentExpectedType: Constants.Z_STRING
 				}
 			} );
-			const menu = wrapper.findComponent( { name: 'cdx-menu' } );
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			expect( menu.vm.menuItems.length ).toBe( 4 );
 			expect( menu.vm.menuItems[ 0 ].value ).toBe( 'Z18' );
 			expect( menu.vm.menuItems[ 1 ].value ).toBe( 'Z7' );
@@ -140,7 +149,7 @@ describe( 'ModeSelector', () => {
 					parentExpectedType: Constants.Z_STRING
 				}
 			} );
-			const menu = wrapper.findComponent( { name: 'cdx-menu' } );
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			expect( menu.vm.menuItems.length ).toBe( 3 );
 			expect( menu.vm.menuItems[ 0 ].value ).toBe( 'Z7' );
 			expect( menu.vm.menuItems[ 1 ].value ).toBe( 'Z6' );
@@ -159,7 +168,7 @@ describe( 'ModeSelector', () => {
 					parentExpectedType: Constants.Z_STRING
 				}
 			} );
-			const menu = wrapper.findComponent( { name: 'cdx-menu' } );
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			menu.vm.$emit( 'update:selected', Constants.Z_REFERENCE );
 			await waitFor( () => expect( wrapper.emitted() ).not.toHaveProperty( 'set-type' ) );
 		} );
@@ -174,7 +183,7 @@ describe( 'ModeSelector', () => {
 					parentExpectedType: Constants.Z_STRING
 				}
 			} );
-			const menu = wrapper.findComponent( { name: 'cdx-menu' } );
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			menu.vm.$emit( 'update:selected', Constants.Z_STRING );
 			await waitFor( () => expect( wrapper.emitted() ).toHaveProperty( 'set-type' ) );
 		} );
@@ -194,26 +203,26 @@ describe( 'ModeSelector', () => {
 			global.store.hotUpdate( { getters: getters } );
 		} );
 
-		it( 'shows delete footer action', () => {
+		it( 'shows delete action as the last item', () => {
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
 					edit: true,
 					parentExpectedType: Constants.Z_MONOLINGUALSTRING
 				}
 			} );
-			const menu = wrapper.findComponent( { name: 'cdx-menu' } );
-			expect( menu.vm.menuItems.length ).toBe( 5 );
-			expect( menu.vm.footer.value ).toBe( Constants.LIST_MENU_OPTIONS.DELETE_ITEM );
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
+			expect( menu.vm.menuItems.length ).toBe( 6 );
+			expect( menu.vm.menuItems[ 5 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.DELETE_ITEM );
 		} );
 
-		it( 'emits delete-list-item event if clicked delete footer action', async () => {
+		it( 'emits delete-list-item event  when selecting delete menu option', async () => {
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
 					edit: true,
 					parentExpectedType: Constants.Z_MONOLINGUALSTRING
 				}
 			} );
-			const menu = wrapper.findComponent( { name: 'cdx-menu' } );
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			menu.vm.$emit( 'update:selected', Constants.LIST_MENU_OPTIONS.DELETE_ITEM );
 			await waitFor( () => expect( wrapper.emitted() ).toHaveProperty( 'delete-list-item' ) );
 		} );
@@ -225,8 +234,8 @@ describe( 'ModeSelector', () => {
 					parentExpectedType: Constants.Z_MONOLINGUALSTRING
 				}
 			} );
-			const menu = wrapper.findComponent( { name: 'cdx-menu' } );
-			expect( menu.vm.menuItems.length ).toBe( 5 );
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
+			expect( menu.vm.menuItems.length ).toBe( 6 );
 			expect( menu.vm.menuItems[ 3 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_BEFORE );
 			expect( menu.vm.menuItems[ 3 ].disabled ).toBe( false );
 			expect( menu.vm.menuItems[ 4 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_AFTER );
@@ -242,8 +251,8 @@ describe( 'ModeSelector', () => {
 					parentExpectedType: Constants.Z_MONOLINGUALSTRING
 				}
 			} );
-			const menu = wrapper.findComponent( { name: 'cdx-menu' } );
-			expect( menu.vm.menuItems.length ).toBe( 5 );
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
+			expect( menu.vm.menuItems.length ).toBe( 6 );
 			expect( menu.vm.menuItems[ 3 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_BEFORE );
 			expect( menu.vm.menuItems[ 3 ].disabled ).toBe( true );
 			expect( menu.vm.menuItems[ 4 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_AFTER );
@@ -259,8 +268,8 @@ describe( 'ModeSelector', () => {
 					parentExpectedType: Constants.Z_MONOLINGUALSTRING
 				}
 			} );
-			const menu = wrapper.findComponent( { name: 'cdx-menu' } );
-			expect( menu.vm.menuItems.length ).toBe( 5 );
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
+			expect( menu.vm.menuItems.length ).toBe( 6 );
 			expect( menu.vm.menuItems[ 3 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_BEFORE );
 			expect( menu.vm.menuItems[ 3 ].disabled ).toBe( false );
 			expect( menu.vm.menuItems[ 4 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_AFTER );
@@ -275,7 +284,7 @@ describe( 'ModeSelector', () => {
 				}
 			} );
 
-			const menu = wrapper.findComponent( { name: 'cdx-menu' } );
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			menu.vm.$emit( 'update:selected', Constants.LIST_MENU_OPTIONS.MOVE_BEFORE );
 			await waitFor( () => expect( wrapper.emitted() ).toHaveProperty( 'move-before' ) );
 		} );
@@ -288,7 +297,7 @@ describe( 'ModeSelector', () => {
 				}
 			} );
 
-			const menu = wrapper.findComponent( { name: 'cdx-menu' } );
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			menu.vm.$emit( 'update:selected', Constants.LIST_MENU_OPTIONS.MOVE_AFTER );
 			await waitFor( () => expect( wrapper.emitted() ).toHaveProperty( 'move-after' ) );
 		} );
