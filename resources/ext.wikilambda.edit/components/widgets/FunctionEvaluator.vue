@@ -19,10 +19,9 @@
 			>
 				{{ $i18n( 'wikilambda-function-evaluation-restriction-warning' ).text() }}
 			</cdx-message>
-
 			<!-- Not-runnable user warning -->
 			<cdx-message
-				v-if="!hasImplementations && selectedFunctionZid !== undefined"
+				v-if="!hasImplementations && selectedFunctionExists"
 				type="notice"
 				class="ext-wikilambda-function-evaluator-message"
 				data-testid="function-evaluator-message"
@@ -30,7 +29,6 @@
 			>
 				{{ $i18n( 'wikilambda-function-evaluation-restriction-notrunnable' ).text() }}
 			</cdx-message>
-
 			<!-- Function Call -->
 			<div
 				v-if="showFunctionSelector"
@@ -51,34 +49,43 @@
 				></wl-z-reference>
 			</div>
 
-			<!-- Function Inputs -->
+			<!-- Loader for inputs + button -->
 			<div
-				v-if="hasInputs"
-				class="ext-wikilambda-function-evaluator-inputs"
-				data-testid="function-evaluator-inputs"
-			>
-				<div class="ext-wikilambda-key-block">
-					<label>{{ $i18n( 'wikilambda-function-evaluator-enter-inputs' ).text() }}</label>
-				</div>
-				<wl-z-object-key-value
-					v-for="inputRowId in inputRowIds"
-					:key="'input-row-id-' + inputRowId"
-					:row-id="inputRowId"
-					:edit="true"
-				></wl-z-object-key-value>
+				v-if="!selectedFunctionExists && !showFunctionSelector"
+				class="ext-wikilambda-function-evaluator-loader"
+				data-testid="function-evaluator-loader">
+				{{ $i18n( 'wikilambda-loading' ).text() }}
 			</div>
-
-			<!-- Run Function button -->
-			<div class="ext-wikilambda-function-evaluator-run-button">
-				<cdx-button
-					action="progressive"
-					weight="primary"
-					:disabled="!canRunFunction"
-					data-testid="evaluator-run-button"
-					@click="waitAndCallFunction"
+			<div v-else>
+				<!-- Function Inputs -->
+				<div
+					v-if="hasInputs"
+					class="ext-wikilambda-function-evaluator-inputs"
+					data-testid="function-evaluator-inputs"
 				>
-					{{ $i18n( 'wikilambda-function-evaluator-run-function' ).text() }}
-				</cdx-button>
+					<div class="ext-wikilambda-key-block">
+						<label>{{ $i18n( 'wikilambda-function-evaluator-enter-inputs' ).text() }}</label>
+					</div>
+					<wl-z-object-key-value
+						v-for="inputRowId in inputRowIds"
+						:key="'input-row-id-' + inputRowId"
+						:row-id="inputRowId"
+						:edit="true"
+					></wl-z-object-key-value>
+				</div>
+
+				<!-- Run Function button -->
+				<div class="ext-wikilambda-function-evaluator-run-button">
+					<cdx-button
+						action="progressive"
+						weight="primary"
+						:disabled="!canRunFunction"
+						data-testid="evaluator-run-button"
+						@click="waitAndCallFunction"
+					>
+						{{ $i18n( 'wikilambda-function-evaluator-run-function' ).text() }}
+					</cdx-button>
+				</div>
 			</div>
 
 			<!-- Evaluation Result -->
@@ -205,6 +212,24 @@ module.exports = exports = defineComponent( {
 		},
 
 		/**
+		 * Returns the stored function object for the selected function Zid
+		 *
+		 * @return {Object}
+		 */
+		selectedFunctionObject: function () {
+			return this.getStoredObject( this.selectedFunctionZid );
+		},
+
+		/**
+		 * Returns whether the function exists and has been fetched
+		 *
+		 * @return {boolean}
+		 */
+		selectedFunctionExists: function () {
+			return Boolean( this.selectedFunctionObject );
+		},
+
+		/**
 		 * Returns the selected function in the function call component
 		 *
 		 * @return {string | undefined}
@@ -306,15 +331,6 @@ module.exports = exports = defineComponent( {
 		 */
 		canRunFunction: function () {
 			return this.hasImplementations && this.userCanRunFunction;
-		},
-
-		/**
-		 * Returns whether the detached Function Call object is initialized
-		 *
-		 * @return {boolean}
-		 */
-		hasFunctionCall: function () {
-			return !!this.functionCallRowId;
 		},
 
 		/**
@@ -503,6 +519,12 @@ module.exports = exports = defineComponent( {
 @import '../../ext.wikilambda.edit.variables.less';
 
 .ext-wikilambda-function-evaluator {
+	.ext-wikilambda-function-evaluator-loader {
+		font-weight: @font-weight-normal;
+		color: @color-placeholder;
+		white-space: pre-wrap;
+	}
+
 	.ext-wikilambda-function-evaluator-message {
 		margin-bottom: @spacing-125;
 	}
