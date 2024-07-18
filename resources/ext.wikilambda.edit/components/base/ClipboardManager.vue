@@ -1,6 +1,6 @@
-<!-- eslint-disable vue/valid-template-root -->
 <template>
 	<!-- Placeholder -->
+	<div></div>
 </template>
 
 <script>
@@ -47,6 +47,7 @@ module.exports = exports = defineComponent( {
 		 */
 		handleWindowClick: function ( event ) {
 			const element = event.target;
+
 			// If the click was on an element that has the data-copied attribute (meaning it was just copied),
 			// or if the click was not on an element with the specified class names, do nothing
 			if (
