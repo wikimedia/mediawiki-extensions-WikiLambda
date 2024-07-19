@@ -222,11 +222,12 @@ module.exports = exports = defineComponent( {
 			return ( this.visibleImplementations.length === 0 ) ? undefined :
 				{
 					checkbox: {
-						title: '',
+						title: this.$i18n( 'wikilambda-function-implementation-selectall-label' ),
 						component: 'cdx-checkbox',
 						props: {
 							modelValue: this.areAllRowsChecked( this.implementationsState ),
-							'onUpdate:modelValue': ( value ) => this.checkAllRows( this.implementationsState, value )
+							'onUpdate:modelValue': ( value ) => this.checkAllRows( this.implementationsState, value ),
+							hideLabel: true
 						},
 						class: 'ext-wikilambda-function-details-table-text'
 					},
@@ -290,13 +291,14 @@ module.exports = exports = defineComponent( {
 				tableData.push( {
 					// Column 1: checkbox
 					checkbox: {
-						title: '',
+						title: this.$i18n( 'wikilambda-function-implementation-select-label' ),
 						component: 'cdx-checkbox',
 						props: {
 							modelValue: this.implementationsState[ zid ].checked,
 							'onUpdate:modelValue': ( value ) => {
 								this.implementationsState[ zid ].checked = value;
-							}
+							},
+							hideLabel: true
 						},
 						class: 'ext-wikilambda-function-details-table-item',
 						id: implementationLabelData.label
@@ -435,11 +437,12 @@ module.exports = exports = defineComponent( {
 
 			const headers = {
 				checkbox: {
-					title: '',
+					title: this.$i18n( 'wikilambda-function-implementation-selectall-label' ),
 					component: 'cdx-checkbox',
 					props: {
 						modelValue: this.areAllRowsChecked( this.testsState ),
-						'onUpdate:modelValue': ( value ) => this.checkAllRows( this.testsState, value )
+						'onUpdate:modelValue': ( value ) => this.checkAllRows( this.testsState, value ),
+						hideLabel: true
 					},
 					class: 'ext-wikilambda-function-details-table-text'
 				},
@@ -491,13 +494,14 @@ module.exports = exports = defineComponent( {
 				const rowData = {
 					// Column 1: checkbox
 					checkbox: {
-						title: '',
+						title: this.$i18n( 'wikilambda-function-implementation-select-label' ),
 						component: 'cdx-checkbox',
 						props: {
 							modelValue: this.testsState[ zid ].checked,
 							'onUpdate:modelValue': ( value ) => {
 								this.testsState[ zid ].checked = value;
-							}
+							},
+							hideLabel: true
 						},
 						class: 'ext-wikilambda-function-details-table-item'
 					},

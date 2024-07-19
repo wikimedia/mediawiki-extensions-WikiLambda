@@ -27,6 +27,7 @@ const lookupSearchAndSelect = async ( parentWrapper, searchText, selectText, sel
 
 const textInputChange = ( parentWrapper, newText ) => {
 	const textbox = within( parentWrapper ).getByRole( 'textbox' );
+	// TODO (T370511): Using "fireEvent.change" may lead to unexpected results. Please use fireEvent.update() instead
 	return fireEvent.change( textbox, { target: { value: newText } } );
 };
 

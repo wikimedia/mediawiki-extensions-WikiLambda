@@ -36,7 +36,8 @@ describe( 'ZTypedListType', () => {
 		actions = {
 			setListItemsForRemoval: jest.fn(),
 			setError: jest.fn(),
-			clearErrors: jest.fn()
+			clearErrors: jest.fn(),
+			clearListItemsForRemoval: jest.fn()
 		};
 
 		global.store.hotUpdate( {

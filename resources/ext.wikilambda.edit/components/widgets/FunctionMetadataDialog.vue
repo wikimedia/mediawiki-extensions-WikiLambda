@@ -167,7 +167,8 @@ module.exports = exports = defineComponent( {
 		},
 		errorId: {
 			type: Number,
-			required: false
+			required: false,
+			default: undefined
 		}
 	},
 	data: function () {

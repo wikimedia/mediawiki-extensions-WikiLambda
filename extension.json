@@ -499,6 +499,8 @@
 				"wikilambda-function-definition-edit",
 				"wikilambda-function-definition-description-label",
 				"wikilambda-function-definition-description-placeholder",
+				"wikilambda-function-implementation-selectall-label",
+				"wikilambda-function-implementation-select-label",
 				"wikilambda-function-implementation-name-label",
 				"wikilambda-function-implementation-language-label",
 				"wikilambda-function-implementation-state-label",

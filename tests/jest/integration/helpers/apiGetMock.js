@@ -302,7 +302,7 @@ const performTestResponseResults = ( zFunctionId, zimplementationIds, ztesterId,
 			zFunctionId: zFunctionId,
 			zImplementationId: zimplementation,
 			zTesterId: ztesterId,
-			testMetadata: JSON.stringify( '{}' ),
+			testMetadata: JSON.stringify( {} ),
 			validateStatus: `"${ validateStatus }"`
 		} );
 	} );

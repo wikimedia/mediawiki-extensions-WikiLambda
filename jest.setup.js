@@ -15,6 +15,12 @@ const fs = require( 'fs' ),
 	vueTestUtils = require( '@vue/test-utils' ),
 	vuex = require( 'vuex' );
 
+// Mocking window.location.href
+Object.defineProperty( global.window, 'location', {
+	writable: true,
+	value: { href: jest.fn(), protocol: 'http:' }
+} );
+
 global.$ = require( 'jquery' );
 
 global.mockLocalStorage = {};

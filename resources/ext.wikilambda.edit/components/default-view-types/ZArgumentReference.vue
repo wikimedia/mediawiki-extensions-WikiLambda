@@ -18,7 +18,7 @@
 		</template>
 		<cdx-select
 			v-else
-			v-model:selected="argumentKey"
+			:selected="argumentKey"
 			:menu-items="argumentOptions"
 			:default-label="argumentSelectorPlaceholder"
 			@update:selected="setValue"

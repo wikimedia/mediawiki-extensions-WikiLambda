@@ -94,7 +94,7 @@ module.exports = exports = defineComponent( {
 			required: true
 		},
 		header: {
-			type: Object,
+			type: [ Object, null ],
 			required: false,
 			default: null
 		},

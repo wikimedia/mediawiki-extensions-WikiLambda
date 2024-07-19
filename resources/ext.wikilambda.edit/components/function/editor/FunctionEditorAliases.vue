@@ -132,7 +132,7 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		aliasFieldPlaceholder: function () {
-			return !this.hasAlias ?
+			return !this.hasAliases ?
 				this.$i18n( 'wikilambda-function-definition-alias-placeholder' ).text() :
 				'';
 		},

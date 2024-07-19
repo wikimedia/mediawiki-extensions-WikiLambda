@@ -101,8 +101,9 @@ module.exports = exports = defineComponent( {
 	props: {
 		// { language: "Language" } or { language: { title: "Language" mobile: false } }
 		header: {
-			type: Object,
-			required: true
+			type: [ Object, null ],
+			required: false,
+			default: null
 		},
 		// { language: "Language" } or { language: { title: "Language" component: 'chip', props: { text: 'active' } } }
 		body: {

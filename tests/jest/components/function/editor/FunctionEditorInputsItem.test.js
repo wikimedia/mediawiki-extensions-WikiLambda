@@ -19,7 +19,7 @@ describe( 'FunctionEditorInputsItem', () => {
 		getters = {
 			getRowByKeyPath: createGettersWithFunctionsMock(),
 			getZArgumentLabelForLanguage: createGettersWithFunctionsMock(),
-			getZArgumentTypeRowId: createGettersWithFunctionsMock(),
+			getZArgumentTypeRowId: createGettersWithFunctionsMock( 5 ),
 			getUserLangCode: createGetterMock( 'en' ),
 			getZMonolingualTextValue: createGettersWithFunctionsMock()
 		};

@@ -63,7 +63,7 @@ describe( 'ZString', () => {
 		it( 'takes an input and emits the value with an empty keyPath if its key is a Z_STRING_VALUE (Z6K1)', async () => {
 			getters = {
 				getZObjectKeyByRowId: createGettersWithFunctionsMock( Constants.Z_STRING_VALUE ),
-				getZStringTerminalValue: createGettersWithFunctionsMock( {} )
+				getZStringTerminalValue: createGettersWithFunctionsMock( undefined )
 			};
 
 			await global.store.hotUpdate( {

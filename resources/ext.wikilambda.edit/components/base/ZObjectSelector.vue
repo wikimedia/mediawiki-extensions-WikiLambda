@@ -388,7 +388,7 @@ module.exports = exports = defineComponent( {
 			 * either with an empty value or with a selected value
 			 * from the menu.
 			 *
-			 * @param {string} value
+			 * @param {string | null} value
 			 */
 			onSelect: function ( value ) {
 				if ( this.selectedValue === value ) {
@@ -398,7 +398,8 @@ module.exports = exports = defineComponent( {
 				} else {
 					// If we select a new value, clear errors and emit input event
 					this.clearFieldErrors();
-					this.$emit( 'input', value );
+					// cdx-lookup @update:selected event can be triggered with null value
+					this.$emit( 'input', value || '' );
 				}
 			},
 

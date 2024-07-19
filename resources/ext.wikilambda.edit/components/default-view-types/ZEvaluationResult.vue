@@ -11,6 +11,7 @@
 				v-if="hasResult"
 				:skip-key="true"
 				:row-id="resultRowId"
+				:edit="false"
 			></wl-z-object-key-value>
 		</div>
 

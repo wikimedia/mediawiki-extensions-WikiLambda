@@ -36,11 +36,7 @@ describe( 'ZEvaluationResult', () => {
 
 	describe( 'with no result', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( ZEvaluationResult, {
-				props: {
-					edit: false
-				}
-			} );
+			const wrapper = shallowMount( ZEvaluationResult );
 			expect( wrapper.find( '.ext-wikilambda-evaluation-result' ).exists() ).toBe( true );
 		} );
 	} );
@@ -58,20 +54,12 @@ describe( 'ZEvaluationResult', () => {
 		} );
 
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( ZEvaluationResult, {
-				props: {
-					edit: false
-				}
-			} );
+			const wrapper = shallowMount( ZEvaluationResult );
 			expect( wrapper.find( '.ext-wikilambda-evaluation-result' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders result object', () => {
-			const wrapper = shallowMount( ZEvaluationResult, {
-				props: {
-					edit: false
-				}
-			} );
+			const wrapper = shallowMount( ZEvaluationResult );
 			const result = wrapper.find( '.ext-wikilambda-evaluation-result-result' );
 			expect( result.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 			expect( result.findComponent( { name: 'wl-z-object-key-value' } ).props() ).toHaveProperty( 'rowId', 1 );
@@ -91,30 +79,18 @@ describe( 'ZEvaluationResult', () => {
 		} );
 
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( ZEvaluationResult, {
-				props: {
-					edit: false
-				}
-			} );
+			const wrapper = shallowMount( ZEvaluationResult );
 			expect( wrapper.find( '.ext-wikilambda-evaluation-result' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders metadata link', () => {
-			const wrapper = shallowMount( ZEvaluationResult, {
-				props: {
-					edit: false
-				}
-			} );
+			const wrapper = shallowMount( ZEvaluationResult );
 			const actions = wrapper.find( '.ext-wikilambda-evaluation-result-actions' );
 			expect( actions.find( '.ext-wikilambda-evaluation-result-actions__metadata' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders metadata dialog', () => {
-			const wrapper = shallowMount( ZEvaluationResult, {
-				props: {
-					edit: false
-				}
-			} );
+			const wrapper = shallowMount( ZEvaluationResult );
 			expect( wrapper.findComponent( { name: 'wl-function-metadata-dialog' } ).exists() ).toBe( true );
 		} );
 	} );
@@ -133,31 +109,19 @@ describe( 'ZEvaluationResult', () => {
 		} );
 
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( ZEvaluationResult, {
-				props: {
-					edit: false
-				}
-			} );
+			const wrapper = shallowMount( ZEvaluationResult );
 			expect( wrapper.find( '.ext-wikilambda-evaluation-result' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders metadata and error links', () => {
-			const wrapper = shallowMount( ZEvaluationResult, {
-				props: {
-					edit: false
-				}
-			} );
+			const wrapper = shallowMount( ZEvaluationResult );
 			const actions = wrapper.find( '.ext-wikilambda-evaluation-result-actions' );
 			expect( actions.find( '.ext-wikilambda-evaluation-result-actions__metadata' ).exists() ).toBe( true );
 			expect( actions.find( '.ext-wikilambda-evaluation-result-actions__error' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders metadata and error dialogs', () => {
-			const wrapper = shallowMount( ZEvaluationResult, {
-				props: {
-					edit: false
-				}
-			} );
+			const wrapper = shallowMount( ZEvaluationResult );
 			expect( wrapper.findComponent( { name: 'wl-function-metadata-dialog' } ).exists() ).toBe( true );
 			expect( wrapper.find( '.ext-wikilambda-evaluation-result-error-dialog' ).exists() ).toBe( true );
 		} );

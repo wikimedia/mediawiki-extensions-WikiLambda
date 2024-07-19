@@ -87,6 +87,9 @@ const runTeardown = () => {
 // By default, `render` mounts the app on a <div> element which is a child of document.body. For some reason
 // this causes CdxTabs to throw an error when a new tab is navigated to on the functon viewer page. To avoid this,
 // we pass `render` a parentless <div> to mount on.
+//
+// TODO (T370509): fix the error ' [Vue warn]: App already provides property with key "store". It will be overwritten with the new value.
+// because we already have a store in the global object in jest.config.js
 const renderForFunctionViewer = () => render(
 	App,
 	{ container: document.createElement( 'div' ), global: { plugins: [ store ] } }

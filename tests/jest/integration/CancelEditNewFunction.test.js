@@ -10,7 +10,7 @@ require( '@testing-library/jest-dom' );
 
 const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
 	{ within } = require( '@testing-library/dom' ),
-	{ lookupSearchAndSelect, textInputChange } = require( './helpers/interactionHelpers.js' ),
+	{ textInputChange } = require( './helpers/interactionHelpers.js' ),
 	{ runSetup, runTeardown } = require( './helpers/functionEditorTestHelpers.js' ),
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
 	store = require( '../../../resources/ext.wikilambda.edit/store/index.js' ),
@@ -51,13 +51,9 @@ describe( 'WikiLambda frontend, function-editor view, on a new function', () => 
 			getByText
 		} = render( App, { global: { plugins: [ store ] } } );
 
-		// ACT: Select Chinese as the natural language.
-		const languageSelector = await findByTestId( 'function-editor-language-selector' );
-		await lookupSearchAndSelect( languageSelector, 'Chin', 'Chinese' );
-
 		// ACT: Change first language name
 		const nameInput = await findByTestId( 'function-editor-name-input' );
-		await textInputChange( nameInput, 'Edited name, in Chinese' );
+		await textInputChange( nameInput, 'Edited name' );
 
 		// ACT: Click cancel button.
 		await fireEvent.click( getByText( 'Cancel' ) );

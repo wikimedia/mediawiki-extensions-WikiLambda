@@ -18,14 +18,27 @@ const loadComposable = require( '../helpers/loadComposable.js' ),
 		medium: 'medium',
 		large: 'large'
 	};
+
 describe( 'useBreakpoints', () => {
+	let addEventListenerSpy, removeEventListenerSpy;
+
+	beforeEach( () => {
+		addEventListenerSpy = jest.spyOn( window, 'addEventListener' );
+		removeEventListenerSpy = jest.spyOn( window, 'removeEventListener' );
+	} );
+
+	afterEach( () => {
+		addEventListenerSpy.mockRestore();
+		removeEventListenerSpy.mockRestore();
+	} );
+
 	describe( 'when called with emtpy values', () => {
 		it( 'return a null value as the current breakpoint', () => {
-			const result = useBreakpoints();
+			const result = loadComposable( () => useBreakpoints() )[ 0 ];
 			expect( result.current.value ).toBe( null );
 		} );
 		it( 'return a null when resize event is triggered', () => {
-			const result = useBreakpoints();
+			const result = loadComposable( () => useBreakpoints() )[ 0 ];
 
 			global.innerWidth = 500;
 			global.dispatchEvent( new Event( 'resize' ) );
@@ -35,12 +48,12 @@ describe( 'useBreakpoints', () => {
 	} );
 	describe( 'when called with an object of breakpoints', () => {
 		it( 'return a value as the current breakpoint', () => {
-			const result = useBreakpoints( mockBreakpoints );
+			const result = loadComposable( () => useBreakpoints( mockBreakpoints ) )[ 0 ];
 			expect( result.current.value ).not.toBe( null );
 		} );
 
 		it( 'return a value for each breakpoint', () => {
-			const result = useBreakpoints( mockBreakpoints );
+			const result = loadComposable( () => useBreakpoints( mockBreakpoints ) )[ 0 ];
 			expect( mockBreakpointsType.small in result ).toBe( true );
 			expect( mockBreakpointsType.medium in result ).toBe( true );
 			expect( mockBreakpointsType.large in result ).toBe( true );
@@ -52,19 +65,19 @@ describe( 'useBreakpoints', () => {
 		} );
 
 		it( 'return current value as medium', () => {
-			const result = useBreakpoints( mockBreakpoints );
+			const result = loadComposable( () => useBreakpoints( mockBreakpoints ) )[ 0 ];
 			expect( result.current.value ).toBe( mockBreakpointsType.medium );
 		} );
 		it( 'return small breakpoint as false', () => {
-			const result = useBreakpoints( mockBreakpoints );
+			const result = loadComposable( () => useBreakpoints( mockBreakpoints ) )[ 0 ];
 			expect( result.small.value ).toBeFalsy();
 		} );
 		it( 'return medium breakpoint as true', () => {
-			const result = useBreakpoints( mockBreakpoints );
+			const result = loadComposable( () => useBreakpoints( mockBreakpoints ) )[ 0 ];
 			expect( result.medium.value ).toBeTruthy();
 		} );
 		it( 'return large breakpoint as false', () => {
-			const result = useBreakpoints( mockBreakpoints );
+			const result = loadComposable( () => useBreakpoints( mockBreakpoints ) )[ 0 ];
 			expect( result.large.value ).toBeFalsy();
 		} );
 	} );
@@ -91,6 +104,13 @@ describe( 'useBreakpoints', () => {
 			expect( result.small.value ).toBeFalsy();
 			expect( result.medium.value ).toBeFalsy();
 			expect( result.large.value ).toBeTruthy();
+		} );
+		it( 'removes the resize event listener when the component is unmounted', () => {
+			const app = loadComposable( () => useBreakpoints( mockBreakpoints ) )[ 1 ];
+			expect( addEventListenerSpy ).toHaveBeenCalledWith( 'resize', expect.any( Function ) );
+
+			app.unmount();
+			expect( removeEventListenerSpy ).toHaveBeenCalledWith( 'resize', expect.any( Function ) );
 		} );
 	} );
 } );

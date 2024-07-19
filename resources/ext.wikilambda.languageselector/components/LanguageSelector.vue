@@ -26,7 +26,6 @@
 				ref="languageSelectorLookup"
 				class="ext-wikilambda-page-language-selector-lookup"
 				:selected="selectedLanguage"
-				:initial-input-value="selectedLanguage"
 				:menu-items="lookupResults"
 				:start-icon="icons.cdxIconSearch"
 				:placeholder="selectLanguagePlaceholder"
@@ -56,7 +55,8 @@ module.exports = exports = defineComponent( {
 			lookupDelayTimer: null,
 			lookupDelayMs: 300,
 			lookupResults: [],
-			maxItems: 10
+			maxItems: 10,
+			selectedLanguage: null
 		};
 	},
 	computed: {
