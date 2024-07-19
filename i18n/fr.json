@@ -408,7 +408,7 @@
 	"wikilambda-viewmode-nojs": "Affichage réduit de cette page sans Javascript.",
 	"wikilambda-zerror": "Erreur de type $1",
 	"wikilambda-zimplememntation-composition-missing": "La composition est vide. Veuillez sélectionner une fonction.",
-	"wikilambda-zimplementation-code-language-missing": "Sélectionner un langage de programmation.",
+	"wikilambda-zimplementation-code-language-missing": "Sélectionner d’abord un langage de programmation.",
 	"wikilambda-zimplementation-code-missing": "Le code est vide. Veuillez saisir votre code.",
 	"wikilambda-zobject-missing-attached-function": "La fonction est vide. Veuillez en sélectionner une.",
 	"wikilambda-zobject-to-string-enter-string": "Saisissez une chaîne",
