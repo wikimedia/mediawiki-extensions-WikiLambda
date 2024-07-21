@@ -654,10 +654,10 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$res = $dbr->newSelectQueryBuilder()
 			 ->select( [ 'wlzlc_language' ] )
 			 ->from( 'wikilambda_zobject_label_conflicts' )
-			 ->where( $dbr->makeList( [
+			 ->where( $dbr->orExpr( [
 				 'wlzlc_existing_zid' => 'Z333',
 				 'wlzlc_conflicting_zid' => 'Z333',
-			 ], $dbr::LIST_OR ) )
+			 ] ) )
 			 ->fetchResultSet();
 		$this->assertSame( 0, $res->numRows() );
 	}

@@ -390,11 +390,11 @@ class ZObjectStore {
 
 		$labelConflictConditions = [];
 		foreach ( $labels as $language => $value ) {
-			$labelConflictConditions[] = $dbr->makeList( [
+			$labelConflictConditions[] = $dbr->andExpr( [
 				'wlzl_language' => $language,
 				'wlzl_label' => $value,
 				'wlzl_label_primary' => true
-			], $dbr::LIST_AND );
+			] );
 		}
 
 		$res = $dbr->newSelectQueryBuilder()
@@ -404,7 +404,7 @@ class ZObjectStore {
 				$dbr->expr( 'wlzl_zobject_zid', '!=', $zid ),
 				// TODO (T357552): Check against type, once we properly implement that.
 				// 'wlzl_type' => $ztype,
-				$dbr->makeList( $labelConflictConditions, $dbr::LIST_OR )
+				$dbr->orExpr( $labelConflictConditions )
 			] )
 			->caller( __METHOD__ )
 			->fetchResultSet();
@@ -713,7 +713,7 @@ class ZObjectStore {
 
 		// Set type conditions
 		if ( count( $typeConditions ) > 0 ) {
-			$conditions[] = $dbr->makeList( $typeConditions, $dbr::LIST_OR );
+			$conditions[] = $dbr->orExpr( $typeConditions );
 		}
 
 		// Set minimum id bound if we are continuing a paged result
