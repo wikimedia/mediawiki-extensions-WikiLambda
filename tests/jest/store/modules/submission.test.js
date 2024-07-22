@@ -865,6 +865,29 @@ describe( 'zobject submission Vuex module', () => {
 			} );
 		} );
 
+		it( 'does nothing when nothing is present', () => {
+			const zobject = {
+				Z2K3: {
+					Z1K1: 'Z12',
+					Z12K1: [
+						'Z11'
+					]
+				}
+			};
+			context.state.zobject = zobjectToRows( zobject );
+			submissionModule.actions.removeEmptyMonolingualValues( context, { key: 'Z2K3' } );
+
+			const transformed = zobjectModule.getters.getZObjectAsJsonById( context.state )( 0, false );
+			expect( hybridToCanonical( transformed ) ).toEqual( {
+				Z2K3: {
+					Z1K1: 'Z12',
+					Z12K1: [
+						'Z11'
+					]
+				}
+			} );
+		} );
+
 		it( 'removes monolingual value when text is empty', () => {
 			const zobject = {
 				Z2K3: {
