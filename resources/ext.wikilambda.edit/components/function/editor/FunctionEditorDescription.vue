@@ -19,7 +19,7 @@
 				class="ext-wikilambda-function-definition-description__input"
 				:aria-label="descriptionLabel"
 				:placeholder="descriptionInputPlaceholder"
-				:max-chars="maxDescriptionChars"
+				:maxlength="maxDescriptionChars"
 				@input="updateRemainingChars"
 				@change="persistDescription"
 			></cdx-text-area>
@@ -50,8 +50,8 @@ module.exports = exports = defineComponent( {
 	},
 	data: function () {
 		return {
-			maxDescriptionChars: Constants.LABEL_CHARS_MAX,
-			remainingChars: Constants.LABEL_CHARS_MAX
+			maxDescriptionChars: Constants.DESCRIPTION_CHARS_MAX,
+			remainingChars: Constants.DESCRIPTION_CHARS_MAX
 		};
 	},
 	computed: Object.assign( mapGetters( [

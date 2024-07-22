@@ -19,9 +19,13 @@
 				class="ext-wikilambda-function-definition-name__input"
 				:aria-label="nameLabel"
 				:placeholder="nameFieldPlaceholder"
-				:max-chars="maxLabelChars"
+				:maxlength="maxLabelChars"
+				@input="updateRemainingChars"
 				@change="persistName"
 			></cdx-text-input>
+			<div class="ext-wikilambda-function-definition-name__counter">
+				{{ remainingChars }}
+			</div>
 		</div>
 	</div>
 </template>
@@ -55,7 +59,8 @@ module.exports = exports = defineComponent( {
 	},
 	data: function () {
 		return {
-			maxLabelChars: Constants.LABEL_CHARS_MAX
+			maxLabelChars: Constants.LABEL_CHARS_MAX,
+			remainingChars: Constants.LABEL_CHARS_MAX
 		};
 	},
 	computed: Object.assign( mapGetters( [
@@ -133,6 +138,15 @@ module.exports = exports = defineComponent( {
 		'setValueByRowIdAndPath'
 	] ), {
 		/**
+		 * Updates the remainingChars data property as the user types into the Z2K5 field
+		 *
+		 * @param {Event} event - the event object that is automatically passed in on input
+		 */
+		updateRemainingChars: function ( event ) {
+			const { length } = event.target.value;
+			this.remainingChars = this.maxLabelChars - length;
+		},
+		/**
 		 * Persist the new name value in the globally stored object
 		 *
 		 * @param {Object} event
@@ -188,6 +202,24 @@ module.exports = exports = defineComponent( {
 			const pageTitleSelector = '#firstHeading .ext-wikilambda-editpage-header-title--function-name';
 			$( pageTitleSelector ).first().text( name );
 		}
-	} )
+	} ),
+	mounted: function () {
+		this.$nextTick( function () {
+			this.remainingChars = this.maxLabelChars - this.name.length;
+		} );
+	}
 } );
 </script>
+
+<style lang="less">
+@import '../../../ext.wikilambda.edit.variables.less';
+
+.ext-wikilambda-function-definition-name {
+	&__counter {
+		color: @color-subtle;
+		margin-left: @spacing-50;
+		align-self: center;
+		float: right;
+	}
+}
+</style>
