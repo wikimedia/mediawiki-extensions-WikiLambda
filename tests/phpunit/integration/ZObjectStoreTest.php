@@ -404,10 +404,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 	public function testUpdateZObject_editProhibited_unauthedUserMakingType() {
 		// For the purpose of this test, deny logged-in users the ability to create a Z4/Type
-		global $wgGroupPermissions;
-		$modifiedPerms = $wgGroupPermissions;
-		$modifiedPerms['user']['wikilambda-create-type'] = false;
-		$this->setMwGlobals( 'wgGroupPermissions', $modifiedPerms );
+		$this->setGroupPermissions( 'user', 'wikilambda-create-type', false );
 
 		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
 			. '"Z2K2": {'
@@ -434,10 +431,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 	public function testUpdateZObject_editProhibited_unauthedUserMakingFunction() {
 		// For the purpose of this test, deny logged-in users the ability to create a Z8/Function
-		global $wgGroupPermissions;
-		$modifiedPerms = $wgGroupPermissions;
-		$modifiedPerms['user']['wikilambda-create-function'] = false;
-		$this->setMwGlobals( 'wgGroupPermissions', $modifiedPerms );
+		$this->setGroupPermissions( 'user', 'wikilambda-create-function', false );
 
 		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
 			. '"Z2K2": {'
@@ -462,10 +456,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 	public function testUpdateZObject_editProhibited_unauthedUserMakingImplementation() {
 		// For the purpose of this test, deny logged-in users the ability to create a Z14/Implementation
-		global $wgGroupPermissions;
-		$modifiedPerms = $wgGroupPermissions;
-		$modifiedPerms['user']['wikilambda-create-implementation'] = false;
-		$this->setMwGlobals( 'wgGroupPermissions', $modifiedPerms );
+		$this->setGroupPermissions( 'user', 'wikilambda-create-implementation', false );
 
 		// Implementation isn't a guaranteed type by our testing system, so inject it just for this test.
 		$this->insertZids( [ 'Z14' ] );
@@ -490,10 +481,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 	public function testUpdateZObject_editProhibited_unauthedUserMakingTester() {
 		// For the purpose of this test, deny logged-in users the ability to create a Z20/Tester
-		global $wgGroupPermissions;
-		$modifiedPerms = $wgGroupPermissions;
-		$modifiedPerms['user']['wikilambda-create-tester'] = false;
-		$this->setMwGlobals( 'wgGroupPermissions', $modifiedPerms );
+		$this->setGroupPermissions( 'user', 'wikilambda-create-tester', false );
 
 		// Tester isn't a guaranteed type by our testing system, so inject it just for this test.
 		$this->insertZids( [ 'Z20' ] );

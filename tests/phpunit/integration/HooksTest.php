@@ -11,6 +11,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
+use MediaWiki\MainConfigNames;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\Specials\SpecialRecentChanges;
 use MediaWiki\Title\Title;
@@ -120,7 +121,7 @@ class HooksTest extends WikiLambdaIntegrationTestCase {
 	public function testChangedTargetToViewUrl(
 		$target, $expected, $create = true, $existing = true, $label = null, $attribs = [], $query = [], $lang = 'en'
 	) {
-		$this->setMwGlobals( 'wgArticlePath', '/wiki/$1' );
+		$this->overrideConfigValue( MainConfigNames::ArticlePath, '/wiki/$1' );
 		$this->registerLangs( [ 'en', 'fr' ] );
 		$linkRenderer = $this->getServiceContainer()->getLinkRenderer();
 
