@@ -38,7 +38,11 @@ module.exports = exports = {
 		/**
 		 * Collection of enum types with all their selectable values
 		 */
-		enums: {}
+		enums: {},
+		/**
+		 * Map of the available language zids in the store indexed by language code
+		 */
+		languages: {}
 	},
 	getters: {
 		/**
@@ -65,6 +69,24 @@ module.exports = exports = {
 				return zid;
 			}
 			return findLanguageCode;
+		},
+		/**
+		 * Returns the language zid given a language Iso code if the
+		 * object has been fetched and is stored in the state.
+		 * If not available, returns undefined.
+		 *
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		getLanguageZidOfCode: function ( state ) {
+			/**
+			 * @param {string} code
+			 * @return {string|undefined}
+			 */
+			function findLanguageZid( code ) {
+				return state.languages[ code ];
+			}
+			return findLanguageZid;
 		},
 		/**
 		 * Given a global ZKey (ZnKm) it returns a string that reflects
@@ -497,6 +519,15 @@ module.exports = exports = {
 		 */
 		setEnumValues: function ( state, payload ) {
 			state.enums[ payload.zid ] = payload.data;
+		},
+		/**
+		 * @param {Object} state
+		 * @param {Object} payload
+		 * @param {string} payload.code
+		 * @param {string} payload.zid
+		 */
+		setLanguageCode: function ( state, payload ) {
+			state.languages[ payload.code ] = payload.zid;
 		}
 	},
 	actions: {
@@ -760,6 +791,15 @@ module.exports = exports = {
 										dependentZids.push( argLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] );
 										context.commit( 'setLabel', labelData );
 									}
+								} );
+								break;
+
+							case Constants.Z_NATURAL_LANGUAGE:
+								// If the zObject is a natural langugae, save the
+								// code and the zid in the store for easy access
+								context.commit( 'setLanguageCode', {
+									code: objectValue[ Constants.Z_NATURAL_LANGUAGE_ISO_CODE ],
+									zid
 								} );
 								break;
 

@@ -30,6 +30,18 @@ module.exports = exports = {
 		 */
 		getUserRequestedLang: function () {
 			return mw.language.getFallbackLanguageChain()[ 0 ];
+		},
+		/**
+		 * Return the list of fallback languages in their Zid representations.
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {Array}
+		 */
+		getFallbackLanguageZids: function ( _state, getters ) {
+			return mw.language.getFallbackLanguageChain()
+				.map( ( code ) => getters.getLanguageZidOfCode( code ) )
+				.filter( ( zid ) => !!zid );
 		}
 	}
 };

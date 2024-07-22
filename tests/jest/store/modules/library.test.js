@@ -44,7 +44,6 @@ describe( 'library module', () => {
 	} );
 
 	describe( 'Getters', () => {
-
 		describe( 'getLabelData', () => {
 			it( 'Returns untitled LabelData if label is not available in the state', () => {
 				const labelData = libraryModule.getters.getLabelData( state, context.getters )( 'Z10000' );
@@ -473,6 +472,20 @@ describe( 'library module', () => {
 				expect( actual ).toEqual( expected );
 			} );
 		} );
+
+		describe( 'getLanguageZidOfCode', () => {
+			it( 'returns stored language zid when available', () => {
+				state.languages = {
+					en: 'Z1002'
+				};
+				expect( libraryModule.getters.getLanguageZidOfCode( state )( 'en' ) ).toBe( 'Z1002' );
+			} );
+
+			it( 'returns undefined when language code is not available', () => {
+				state.languages = {};
+				expect( libraryModule.getters.getLanguageZidOfCode( state )( 'en' ) ).toBeUndefined();
+			} );
+		} );
 	} );
 
 	describe( 'Mutations', () => {
@@ -486,6 +499,19 @@ describe( 'library module', () => {
 
 				libraryModule.mutations.setEnumValues( state, payload );
 				expect( state.enums.Z30000 ).toEqual( mockEnumValues );
+			} );
+		} );
+
+		describe( 'setLanguageCode', () => {
+			it( 'sets language sids indexed by language code', () => {
+				state.languages = {};
+				const payload = {
+					code: 'en',
+					zid: 'Z1002'
+				};
+
+				libraryModule.mutations.setLanguageCode( state, payload );
+				expect( state.languages.en ).toEqual( 'Z1002' );
 			} );
 		} );
 	} );
@@ -657,6 +683,15 @@ describe( 'library module', () => {
 					expect( context.dispatch ).toHaveBeenCalledTimes( 2 );
 					expect( context.dispatch ).toHaveBeenNthCalledWith( 1, 'performFetchZids', { zids: first } );
 					expect( context.dispatch ).toHaveBeenNthCalledWith( 2, 'performFetchZids', { zids: [ 'Z5', 'Z6' ] } );
+				} );
+			} );
+
+			it( 'updates the languages state property when language is retrieved', () => {
+				const zids = [ 'Z1003' ];
+				getMock = jest.fn().mockResolvedValue( mockApiResponseFor( zids ) );
+
+				return libraryModule.actions.fetchZids( context, { zids } ).then( () => {
+					expect( context.commit ).toHaveBeenCalledWith( 'setLanguageCode', { zid: 'Z1003', code: 'es' } );
 				} );
 			} );
 
