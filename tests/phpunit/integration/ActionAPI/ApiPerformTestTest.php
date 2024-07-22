@@ -91,23 +91,28 @@ class ApiPerformTestTest extends ApiTestCase {
 
 		for ( $i = 0; $i < count( $expectedResults ); $i++ ) {
 			$this->assertNotNull(
-				$results[$i]['testMetadata']
+				$results[$i]['testMetadata'],
+				'We should have a meta-data field returned for each result'
 			);
 			$this->assertEquals(
 				$requestedFunction,
-				$results[$i]['zFunctionId']
+				$results[$i]['zFunctionId'],
+				'We should have the correct Function ZID returned for each result'
 			);
 			$this->assertEquals(
 				$expectedResults[$i]['zimplementationId'],
-				$results[$i]['zImplementationId']
+				$results[$i]['zImplementationId'],
+				'We should have the correct Implementation ZID returned for each result'
 			);
 			$this->assertEquals(
 				$expectedResults[$i]['ztesterId'],
-				$results[$i]['zTesterId']
+				$results[$i]['zTesterId'],
+				'We should have the correct Tester ZID returned for each result'
 			);
 			$this->assertEquals(
 				json_decode( $expectedResults[$i]['validateStatus'] ),
-				json_decode( $results[$i]['validateStatus'] )
+				json_decode( $results[$i]['validateStatus'] ),
+				'We should have the correct validation status returned for each result'
 			);
 			if ( array_key_exists( 'expectedValue', $expectedResults[$i] ) ) {
 				$actualExpectedValueItem = current( array_filter(
@@ -116,10 +121,14 @@ class ApiPerformTestTest extends ApiTestCase {
 						return property_exists( $item, 'K1' ) && $item->K1 === 'expectedTestResult';
 					}
 				) );
-				$this->assertNotFalse( $actualExpectedValueItem );
+				$this->assertNotFalse(
+					$actualExpectedValueItem,
+					'We should have the expected value specified for each appropriate result'
+				);
 				$this->assertEquals(
 					json_decode( $expectedResults[$i]['expectedValue'] ),
-					$actualExpectedValueItem->K2
+					$actualExpectedValueItem->K2,
+					'We should have the correct expected value returned for each result'
 				);
 			}
 			if ( array_key_exists( 'actualValue', $expectedResults[$i] ) ) {
@@ -129,30 +138,38 @@ class ApiPerformTestTest extends ApiTestCase {
 						return property_exists( $item, 'K1' ) && $item->K1 === 'actualTestResult';
 					}
 				) );
-				$this->assertNotFalse( $actualActualValueItem );
+				$this->assertNotFalse(
+					$actualActualValueItem,
+					'We should have the actual value specified for each appropriate result'
+				);
 				$this->assertEquals(
 					json_decode( $expectedResults[$i]['actualValue'] ),
-					$actualActualValueItem->K2
+					$actualActualValueItem->K2,
+					'We should have the correct actual value returned for each result'
 				);
 			}
 			if ( array_key_exists( 'functionCallErrorType', $expectedResults[$i] ) ) {
 				$this->assertEquals(
 					'errors',
-					json_decode( $results[$i]['testMetadata'] )->K1[1]->K1
+					json_decode( $results[$i]['testMetadata'] )->K1[1]->K1,
+					'We should have an errors block returned for each appropriate result'
 				);
 				$this->assertEquals(
 					$expectedResults[$i]['functionCallErrorType'],
-					json_decode( $results[$i]['testMetadata'] )->K1[1]->K2->{ZTypeRegistry::Z_ERROR_TYPE}
+					json_decode( $results[$i]['testMetadata'] )->K1[1]->K2->{ZTypeRegistry::Z_ERROR_TYPE},
+					'We should have the correct error type returned for each appropriate result'
 				);
 			}
 			if ( array_key_exists( 'validationCallErrorType', $expectedResults[$i] ) ) {
 				$this->assertEquals(
 					'validateErrors',
-					json_decode( $results[$i]['testMetadata'] )->K1[9]->K1
+					json_decode( $results[$i]['testMetadata'] )->K1[9]->K1,
+					'We should have a validation errors block returned for each appropriate result'
 				);
 				$this->assertEquals(
 					$expectedResults[$i]['validationCallErrorType'],
-					json_decode( $results[$i]['testMetadata'] )->K1[9]->K2->{ZTypeRegistry::Z_ERROR_TYPE}
+					json_decode( $results[$i]['testMetadata'] )->K1[9]->K2->{ZTypeRegistry::Z_ERROR_TYPE},
+					'We should have the correct validation error type returned for each appropriate result'
 				);
 			}
 		}
