@@ -420,9 +420,10 @@ class ApiPerformTestTest extends ApiTestCase {
 	}
 
 	public function testExecuteFailure_noServer() {
-		$this->setMwGlobals( [
-			'wgWikiLambdaOrchestratorLocation' => 'https://wikifunctions-not-the-orchestrator.wmflabs.org'
-		] );
+		$this->overrideConfigValue(
+			'WikiLambdaOrchestratorLocation',
+			'https://wikifunctions-not-the-orchestrator.wmflabs.org'
+		);
 
 		$this->expectExceptionMessage(
 			'Could not resolve host \'https://wikifunctions-not-the-orchestrator.wmflabs.org\', probably because the ' .
