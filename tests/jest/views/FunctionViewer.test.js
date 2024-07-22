@@ -39,8 +39,8 @@ describe( 'FunctionViewer', () => {
 
 	it( 'does not display success message by default', () => {
 		const wrapper = VueTestUtils.shallowMount( FunctionViewer );
-
 		expect( wrapper.find( '.ext-wikilambda-function-viewer__message' ).exists() ).toBeFalsy();
+		expect( FunctionViewer.computed.displaySuccessMessage() ).toBe( false );
 	} );
 
 	it( 'displays success message if indicated in url', () => {
@@ -53,5 +53,6 @@ describe( 'FunctionViewer', () => {
 		const wrapper = VueTestUtils.shallowMount( FunctionViewer );
 
 		expect( wrapper.find( '.ext-wikilambda-toast-message' ).exists() ).toBeTruthy();
+		expect( FunctionViewer.computed.displaySuccessMessage() ).toBe( true );
 	} );
 } );
