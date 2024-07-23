@@ -222,7 +222,6 @@ class ApiPerformTestTest extends ApiTestCase {
 			]
 		];
 
-		/* (T370627) SKIPPED TEMPORARILY
 		yield 'Request specifies JSON for new implementation' => [
 			'Z813',
 			self::getTestFileContents( 'new-zimplementation.json' ),
@@ -241,9 +240,8 @@ class ApiPerformTestTest extends ApiTestCase {
 					'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
 				]
 			]
-		];*/
+		];
 
-		/* (T370627) SKIPPED TEMPORARILY
 		yield 'Request specifies JSON for edited version of existing implementation' => [
 			'Z813',
 			str_replace( "true", "false", self::getTestFileContents( 'existing-zimplementation.json' ) ),
@@ -262,7 +260,7 @@ class ApiPerformTestTest extends ApiTestCase {
 					'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
 				]
 			]
-		];*/
+		];
 
 		yield 'Request specifies tester by reference' => [
 			'Z813',
@@ -315,7 +313,6 @@ class ApiPerformTestTest extends ApiTestCase {
 			'Perform test error: \'Z123456789\' isn\'t a known Object'
 		];
 
-		/* (T370627) SKIPPED TEMPORARILY
 		yield 'Request specifies non-existent implementation' => [
 			'Z813',
 			'Z123456789',
@@ -324,14 +321,14 @@ class ApiPerformTestTest extends ApiTestCase {
 				[
 					'zimplementationId' => 'Z123456789',
 					'ztesterId' => 'Z8130',
-					'validateStatus' => "\"Z42\"",
+					'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}",
 					// Error in evaluation
 					// TODO (T367089): This should be Z504 instead of Z503
 					// 'functionCallErrorType' => 'Z504',
 					'functionCallErrorType' => 'Z503',
 				]
 			],
-		];*/
+		];
 
 		yield 'Request specifies non-existent tester' => [
 			'Z813',
@@ -349,7 +346,6 @@ class ApiPerformTestTest extends ApiTestCase {
 			'Perform test error: \'Z8130\' isn\'t a function'
 		];
 
-		/* (T370627) SKIPPED TEMPORARILY
 		yield 'Request specifies non-implementation as implementation, by reference' => [
 			'Z813',
 			'Z8130',
@@ -358,14 +354,14 @@ class ApiPerformTestTest extends ApiTestCase {
 				[
 					'zimplementationId' => 'Z8130',
 					'ztesterId' => 'Z8130',
-					'validateStatus' => "\"Z42\"",
+					'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}",
 					// Not wellformed error
 					// TODO (T367089): This should be Z504 instead of Z503
 					// 'functionCallErrorType' => 'Z517'
 					'functionCallErrorType' => 'Z503'
 				]
 			],
-		];*/
+		];
 
 		yield 'Request specifies non-implementation as implementation, by JSON' => [
 			'Z813',
