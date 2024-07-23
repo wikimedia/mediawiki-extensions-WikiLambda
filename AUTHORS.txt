@@ -13,10 +13,11 @@ The WikiLambda team comprises several contributors, of whom those who have commi
 * Denny Vrandečić <dvrandecic@wikimedia.org>
 * teleosteen <florent.git@zeteo.me>
 * Grace Choi <gchoi@wikimedia.org>
-* nik-55 <nik.xyz.in@gmail.com>
 * Umherirrender <umherirrender_de.wp@web.de>
+* nik-55 <nik.xyz.in@gmail.com>
 * Vaughn Walters <vwalters@wikimedia.org>
 * Arthur P. Smith <arthurpsmith@gmail.com>
+* Daphne Smit <dsmit@wikimedia.org>
 * Gabriel Lee <chihonglee777@gmail.com>
 * Allan Jeremy <allan.jeremy@thisdot.co>
 * Amir E. Aharoni <amir.aharoni@mail.huji.ac.il>
@@ -29,14 +30,14 @@ The WikiLambda team comprises several contributors, of whom those who have commi
 * Thiemo Kreuz <thiemo.kreuz@wikimedia.de>
 * Carrie Coxwell <ccoxwell@wikimedia.org>
 * Daimona Eaytoy <daimona.wiki@gmail.com>
-* Daphne Smit <dsmit@wikimedia.org>
 * Derick Alangi <alangiderick@gmail.com>
+* Ed Sanders <esanders@wikimedia.org>
 * Klein Muçi <kleinmuci@gmail.com>
 * Mary Yang <myang-ctr@wikimedia.org>
 * Željko Filipin <zeljko.filipin@gmail.com>
 * Alexander Vorwerk <zabe@avorwerk.net>
 * Anne Tomasevich <atomasevich@wikimedia.org>
-* Ed Sanders <esanders@wikimedia.org>
+* Fomafix <fomafix@googlemail.com>
 * Ori Livneh <ori.livneh@gmail.com>
 * sushrith <bogisushrith@gmail.com>
 * Amir Sarabadani <ladsgroup@gmail.com>
@@ -44,7 +45,6 @@ The WikiLambda team comprises several contributors, of whom those who have commi
 * Bartosz Dziewoński <matma.rex@gmail.com>
 * C. Scott Ananian <cscott@cscott.net>
 * Eric Gardner <gardner.ec@gmail.com>
-* Fomafix <fomafix@googlemail.com>
 * Kosta Harlan <kharlan@wikimedia.org>
 * Marco Fossati <fossati@spaziodati.eu>
 * Michał Łazowik <mlazowik@gmail.com>
@@ -60,7 +60,7 @@ The WikiLambda team comprises several contributors, of whom those who have commi
 
 … as well as many translation contributors, whose work is represented on TranslateWiki.net.
 
-(This list was generated on 2024-06-25 with `git shortlog -sne --no-merges | grep -v '\[BOT\]'`.)
+(This list was generated on 2024-07-23 with `git shortlog -sne --no-merges | grep -v '\[BOT\]'`.)
 
 This work is based on the vision set out by Denny Vrandečić whilst working at Google Research in his initial paper[0], evolved into an architecture in his subsequent paper[1], and was pioneered in a prototype implementation, AbstractText[2].
 
