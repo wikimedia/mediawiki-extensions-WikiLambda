@@ -24,7 +24,8 @@ describe( 'FunctionEditorAliases', () => {
 
 		actions = {
 			changeType: jest.fn(),
-			removeItemFromTypedList: jest.fn()
+			removeItemFromTypedList: jest.fn(),
+			setValueByRowIdAndPath: jest.fn()
 		};
 
 		global.store.hotUpdate( {
@@ -42,7 +43,8 @@ describe( 'FunctionEditorAliases', () => {
 	it( 'renders a chip container with empty aliases', () => {
 		const wrapper = shallowMount( FunctionEditorAliases, { props: { zLanguage: 'Z1002' } } );
 
-		expect( wrapper.getComponent( { name: 'wl-chip-container' } ).props( 'chips' ) ).toHaveLength( 0 );
+		const chipInput = wrapper.getComponent( { name: 'cdx-chip-input' } );
+		expect( chipInput.vm.inputChips.length ).toBe( 0 );
 	} );
 
 	it( 'passes chips to chip container if there are aliases', () => {
@@ -53,82 +55,81 @@ describe( 'FunctionEditorAliases', () => {
 		global.store.hotUpdate( { getters: getters } );
 		const wrapper = shallowMount( FunctionEditorAliases, { props: { zLanguage: 'Z1002' } } );
 
-		const chipsProp = wrapper.getComponent( { name: 'wl-chip-container' } ).props( 'chips' );
-		expect( chipsProp ).toHaveLength( 2 );
-		expect( chipsProp[ 0 ] ).toEqual( { id: 1, value: 'alias 1' } );
-		expect( chipsProp[ 1 ] ).toEqual( { id: 2, value: 'alias 2' } );
+		const chipInput = wrapper.getComponent( { name: 'cdx-chip-input' } );
+		expect( chipInput.vm.inputChips.length ).toBe( 2 );
+		expect( chipInput.vm.inputChips[ 0 ] ).toEqual( { id: 1, value: 'alias 1' } );
+		expect( chipInput.vm.inputChips[ 1 ] ).toEqual( { id: 2, value: 'alias 2' } );
 	} );
 
-	it( 'removes alias when chip removed from chip container', () => {
-		getters.getZMonolingualStringsetValues = createGettersWithFunctionsMock( [
-			{ rowId: 1, value: 'alias 1' },
-			{ rowId: 2, value: 'alias 2' }
-		] );
-		global.store.hotUpdate( { getters: getters } );
-		const wrapper = shallowMount( FunctionEditorAliases, { props: { zLanguage: 'Z1002' } } );
+	describe( 'When the chips are updated', () => {
+		it( 'persists aliases when aliasObject is defined and values are non-empty', async () => {
+			const wrapper = shallowMount( FunctionEditorAliases, { props: { zLanguage: 'Z1002',
+				global: { stubs: { CdxChipInput: false } } } } );
 
-		wrapper.getComponent( { name: 'wl-chip-container' } ).vm.$emit( 'remove-chip', 1 );
+			const chipInput = wrapper.getComponent( { name: 'cdx-chip-input' } );
+			await chipInput.vm.$emit( 'update:input-chips', [ { value: 'alias 1' }, { value: 'alias 2' } ] );
 
-		expect( actions.removeItemFromTypedList ).toHaveBeenCalledWith( expect.anything(), { rowId: 1 } );
-
-		// ASSERT: emits updated-name
-		expect( wrapper.emitted( 'updated-alias' ) ).toBeTruthy();
-	} );
-
-	describe( 'When a new chip is added in chip container', () => {
-		it( 'for an existing language, adds new alias', () => {
-			getters.getRowByKeyPath = createGettersWithFunctionsMock( { id: 1 } );
-			global.store.hotUpdate( { getters: getters } );
-			const wrapper = shallowMount( FunctionEditorAliases, { props: { zLanguage: 'Z1002' } } );
-
-			wrapper.getComponent( { name: 'wl-chip-container' } ).vm.$emit( 'add-chip', 'new alias' );
-
-			expect( actions.changeType ).toHaveBeenCalledWith( expect.anything(), {
-				type: Constants.Z_STRING,
-				id: 1,
-				value: 'new alias',
-				append: true
+			expect( actions.setValueByRowIdAndPath ).toHaveBeenCalledWith( expect.anything(), {
+				rowId: 2,
+				keyPath: [ Constants.Z_MONOLINGUALSTRINGSET_VALUE ],
+				value: [ Constants.Z_STRING, 'alias 1', 'alias 2' ]
 			} );
-
-			// ASSERT: emits updated-name
-			expect( wrapper.emitted( 'updated-alias' ) ).toBeTruthy();
+			expect( actions.removeItemFromTypedList ).not.toHaveBeenCalled();
 		} );
 
-		it( 'for an new language, adds new alias', () => {
-			getters.getZPersistentAlias = createGettersWithFunctionsMock( undefined );
-			getters.getRowByKeyPath = createGettersWithFunctionsMock( { id: 1 } );
-			global.store.hotUpdate( { getters: getters } );
+		it( 'removes alias when aliasObject is defined and values are empty', async () => {
 			const wrapper = shallowMount( FunctionEditorAliases, { props: { zLanguage: 'Z1002' } } );
 
-			wrapper.getComponent( { name: 'wl-chip-container' } ).vm.$emit( 'add-chip', 'new alias' );
+			const chipInput = wrapper.getComponent( { name: 'cdx-chip-input' } );
+			await chipInput.vm.$emit( 'update:input-chips', [] );
+
+			expect( actions.removeItemFromTypedList ).toHaveBeenCalledWith( expect.anything(), { rowId: 2 } );
+			expect( actions.setValueByRowIdAndPath ).not.toHaveBeenCalled();
+		} );
+
+		it( 'creates new monolingual stringset when aliasObject is undefined', async () => {
+			getters.getZPersistentAlias = createGettersWithFunctionsMock( undefined );
+			getters.getRowByKeyPath = createGettersWithFunctionsMock( { id: 3 } );
+			global.store.hotUpdate( { getters: getters } );
+
+			const wrapper = shallowMount( FunctionEditorAliases, { props: { zLanguage: 'Z1002' } } );
+
+			const chipInput = wrapper.getComponent( { name: 'cdx-chip-input' } );
+			await chipInput.vm.$emit( 'update:input-chips', [ { value: 'alias 1' } ] );
 
 			expect( actions.changeType ).toHaveBeenCalledWith( expect.anything(), {
+				id: 3,
 				type: Constants.Z_MONOLINGUALSTRINGSET,
 				lang: 'Z1002',
-				value: [ 'new alias' ],
-				id: 1,
+				value: [ 'alias 1' ],
 				append: true
 			} );
-
-			// ASSERT: emits updated-name
-			expect( wrapper.emitted( 'updated-alias' ) ).toBeTruthy();
+			expect( actions.removeItemFromTypedList ).not.toHaveBeenCalled();
+			expect( actions.setValueByRowIdAndPath ).not.toHaveBeenCalled();
 		} );
 
-		it( 'for a repeated alias display an erro', async () => {
-			getters.getZMonolingualStringsetValues = createGettersWithFunctionsMock( [
-				{ rowId: 2, value: 'existing alias' }
-			] );
-			global.store.hotUpdate( { getters: getters } );
+		it( 'emits updated-alias event after persisting aliases', async () => {
 			const wrapper = shallowMount( FunctionEditorAliases, { props: { zLanguage: 'Z1002' } } );
 
-			wrapper.getComponent( { name: 'wl-chip-container' } ).vm.$emit( 'add-chip', 'existing alias' );
-			await wrapper.vm.$nextTick();
+			const chipInput = wrapper.getComponent( { name: 'cdx-chip-input' } );
+			await chipInput.vm.$emit( 'update:input-chips', [ { value: 'alias 1' } ] );
 
-			expect( wrapper.get( '.ext-wikilambda-function-definition-aliases__error' ).exists() ).toBe( true );
+			expect( wrapper.emitted()[ 'updated-alias' ] ).toBeTruthy();
+		} );
+
+		it( 'does nothing when currentRowId is undefined and no parentRow exists', async () => {
+			getters.getZPersistentAlias = createGettersWithFunctionsMock( undefined );
+			getters.getRowByKeyPath = createGettersWithFunctionsMock( undefined );
+			global.store.hotUpdate( { getters: getters } );
+
+			const wrapper = shallowMount( FunctionEditorAliases, { props: { zLanguage: 'Z1002' } } );
+
+			const chipInput = wrapper.getComponent( { name: 'cdx-chip-input' } );
+			await chipInput.vm.$emit( 'update:input-chips', [ { value: 'alias 1' }, { value: 'alias 2' } ] );
+
 			expect( actions.changeType ).not.toHaveBeenCalled();
-
-			// ASSERT: does not emit updated-name
-			expect( wrapper.emitted( 'updated-alias' ) ).toBeFalsy();
+			expect( actions.removeItemFromTypedList ).not.toHaveBeenCalled();
+			expect( actions.setValueByRowIdAndPath ).not.toHaveBeenCalled();
 		} );
 	} );
 } );

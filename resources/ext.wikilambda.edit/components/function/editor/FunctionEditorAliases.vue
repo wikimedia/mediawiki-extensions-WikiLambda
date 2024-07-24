@@ -16,20 +16,13 @@
 			</span>
 		</div>
 		<div class="ext-wikilambda-function-block__body">
-			<wl-chip-container
+			<cdx-chip-input
 				:id="aliasFieldId"
-				:chips="aliases"
-				:input-placeholder="aliasFieldPlaceholder"
-				:input-aria-label="aliasInputLabel"
-				@add-chip="addAlias"
-				@remove-chip="removeAlias"
-			></wl-chip-container>
-			<p
-				v-if="repeatedAlias"
-				class="ext-wikilambda-function-definition-aliases__error"
-			>
-				{{ aliasErrorMessage }}
-			</p>
+				:aria-label="aliasInputLabel"
+				:input-chips="aliases"
+				:placeholder="aliasFieldPlaceholder"
+				@update:input-chips="persistAliases"
+			></cdx-chip-input>
 		</div>
 	</div>
 </template>
@@ -39,13 +32,12 @@ const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
-	WlChipContainer = require( '../../base/ChipContainer.vue' );
+	CdxChipInput = require( '@wikimedia/codex' ).CdxChipInput;
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-aliases',
 	components: {
-		// TODO: replace with codex filter chip when available
-		'wl-chip-container': WlChipContainer
+		'cdx-chip-input': CdxChipInput
 	},
 	props: {
 		/**
@@ -57,11 +49,6 @@ module.exports = exports = defineComponent( {
 			type: String,
 			required: true
 		}
-	},
-	data: function () {
-		return {
-			repeatedAlias: null
-		};
 	},
 	computed: Object.assign( mapGetters( [
 		'getRowByKeyPath',
@@ -145,14 +132,6 @@ module.exports = exports = defineComponent( {
 			return this.$i18n( 'wikilambda-function-definition-alias-description' ).text();
 		},
 		/**
-		 * Returns the error message for when an alias is repeated
-		 *
-		 * @return {string}
-		 */
-		aliasErrorMessage: function () {
-			return this.$i18n( 'wikilambda-metadata-duplicate-alias-error', this.repeatedAlias ).text();
-		},
-		/**
 		 * Returns the id for the alias field
 		 *
 		 * @return {string}
@@ -163,69 +142,65 @@ module.exports = exports = defineComponent( {
 	} ),
 	methods: Object.assign( mapActions( [
 		'changeType',
-		'removeItemFromTypedList'
+		'removeItemFromTypedList',
+		'setValueByRowIdAndPath'
 	] ), {
 		/**
-		 * Add a new string to the alias stringset
+		 * Persists the aliases in the data store.
 		 *
-		 * @param {string} alias
+		 * @param {Array} aliases list of aliases to persist
+		 * @return {void}
 		 */
-		addAlias: function ( alias ) {
-			// show an error message if a user enters a duplicate alias
-			// TODO (T317990): should duplication be case sensitive?
-			if ( this.aliases.some( ( a ) => a.value === alias ) ) {
-				this.repeatedAlias = alias;
-				return;
-			}
-			// clear the error message
-			this.clearAliasError();
+		persistAliases: function ( aliases ) {
+			const rowId = this.aliasObject ? this.aliasObject.rowId : undefined;
+			this.persistZMonolingualStringSet(
+				rowId,
+				aliases.map( ( alias ) => alias.value )
+			);
+		},
+		/**
+		 * Persists ZMonolingualStringset changes in the data store.
+		 * These correspond to the Aliases/Z2K4 field.
+		 * TODO: When About Widget 2.0 is finished, move this (and persistZMonolingualString)
+		 * into a mixin or into the zobject store actions.
+		 *
+		 * @param {number|undefined} currentRowId current monolingual stringset row Id
+		 * @param {Array} values list of aliases to persist
+		 */
+		persistZMonolingualStringSet: function ( currentRowId, values ) {
 
-			if ( this.aliasObject ) {
-				// If monolingual string set for the given language exists,
-				// find the monolingual string set value and add new string to the list.
-				const stringSet = this.getRowByKeyPath( [
-					Constants.Z_MONOLINGUALSTRINGSET_VALUE
-				], this.aliasObject.rowId );
-				this.changeType( {
-					type: Constants.Z_STRING,
-					id: stringSet.id,
-					value: alias,
-					append: true
-				} );
+			if ( currentRowId ) {
+				if ( values.length === 0 ) {
+					this.removeItemFromTypedList( { rowId: currentRowId } );
+				} else {
+					this.setValueByRowIdAndPath( {
+						rowId: currentRowId,
+						keyPath: [ Constants.Z_MONOLINGUALSTRINGSET_VALUE ],
+						value: [ Constants.Z_STRING, ...values ]
+					} );
+				}
 			} else {
-				// If the monolingualStringSet for the given language does not exist,
-				// create a monolingualStringSet object with an empty array of strings
-				// and add it to the list.
+				// If currentRowId is undefined, there's no monolingual stringset
+				// for the given language, so we create a new monolingual stringset
+				// with the new value and append to the parent list.
 				const parentRow = this.getRowByKeyPath( [
 					Constants.Z_PERSISTENTOBJECT_ALIASES,
 					Constants.Z_MULTILINGUALSTRINGSET_VALUE
 				] );
+				if ( !parentRow ) {
+					// This should never happen because all Z2Kn's are initialized
+					return;
+				}
 				this.changeType( {
 					id: parentRow.id,
 					type: Constants.Z_MONOLINGUALSTRINGSET,
 					lang: this.zLanguage,
-					value: [ alias ],
+					value: values,
 					append: true
 				} );
 			}
+
 			this.$emit( 'updated-alias' );
-		},
-		/**
-		 * Remove an alias from the monolingual stringset
-		 * value list given the alias row Id.
-		 *
-		 * @param {string} rowId
-		 */
-		removeAlias: function ( rowId ) {
-			this.clearAliasError();
-			this.removeItemFromTypedList( { rowId } );
-			this.$emit( 'updated-alias' );
-		},
-		/**
-		 * Clear the local error for repeated alias
-		 */
-		clearAliasError: function () {
-			this.repeatedAlias = null;
 		}
 	} )
 } );

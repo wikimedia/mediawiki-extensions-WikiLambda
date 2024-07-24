@@ -336,7 +336,6 @@
 	"wikilambda-metadata-add-alias": "Label for button to add an alias to a ZObject",
 	"wikilambda-metadata-aka-column": "Label for the 'Also known as' column in the metadata table.",
 	"wikilambda-metadata-all-languages": "Label for button to show all languages in the metadata.",
-	"wikilambda-metadata-duplicate-alias-error": "Error message when a duplicate alias is entered",
 	"wikilambda-metadata-fewer-languages": "Label for button to show fewer languages in the metadata.",
 	"wikilambda-metadata-help-link": "{{Optional}}\nExternal link to the help page for the function metadata.",
 	"wikilambda-metadata-hide-languages": "Label for button to hide initial languages in the metadata.",

@@ -34,7 +34,7 @@ const textInputChange = ( parentWrapper, newText ) => {
 const chipInputAddChip = async ( parentWrapper, newChip ) => {
 	const textbox = within( parentWrapper ).getByRole( 'textbox' );
 	await fireEvent.update( textbox, newChip );
-	return await fireEvent.keyDown( textbox, { key: 'enter' } );
+	return await fireEvent.keyDown( textbox, { key: 'Enter' } );
 };
 
 module.exports = {

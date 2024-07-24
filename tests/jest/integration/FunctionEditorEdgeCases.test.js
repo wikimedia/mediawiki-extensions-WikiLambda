@@ -72,7 +72,8 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		await chipInputAddChip( firstAliasInput, 'first function alias, in English' );
 
 		// ACT: Delete the just-entered alias in Chinese [ EDGE CASE ].
-		await fireEvent.click( await waitFor( () => within( firstAliasInput ).getByLabelText( 'Remove item' ) ) );
+		const removeButton = await waitFor( () => within( firstAliasInput ).findByRole( 'button', { hidden: true } ) );
+		await fireEvent.click( removeButton );
 
 		// ACT: Attempt to click publish button,  before output is set (invalid) [ EDGE CASE ].
 		await fireEvent.click( getByText( 'Publish' ) );

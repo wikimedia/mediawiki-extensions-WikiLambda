@@ -322,7 +322,6 @@
 	"wikilambda-metadata-add-alias": "Add Alias",
 	"wikilambda-metadata-aka-column": "Also known as",
 	"wikilambda-metadata-all-languages": "Show all entered languages",
-	"wikilambda-metadata-duplicate-alias-error": "'$1' already exists",
 	"wikilambda-metadata-fewer-languages": "Show fewer languages",
 	"wikilambda-metadata-help-link": "https://www.mediawiki.org/wiki/Special:MyLanguage/Help:Wikifunctions/Function_call_metadata",
 	"wikilambda-metadata-hide-languages": "Hide labels box",
