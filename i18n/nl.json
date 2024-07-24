@@ -302,7 +302,7 @@
 	"wikilambda-list-item-label": "Item $1",
 	"wikilambda-list-items-label": "Lijstitems",
 	"wikilambda-list-items-type-label": "Type lijstitems",
-	"wikilambda-list-type-change-warning": "U heeft het type van een of meer lijsten gewijzigd. Bij publicatie worden alle lijstitems verwijderd",
+	"wikilambda-list-type-change-warning": "U hebt het type van een of meer lijsten gewijzigd. Bij publicatie worden sommige lijstitems verwijderd",
 	"wikilambda-literal-type": "literale $1",
 	"wikilambda-loading": "Gegevens worden geladen",
 	"wikilambda-metadata-add-alias": "Voeg alias toe",
