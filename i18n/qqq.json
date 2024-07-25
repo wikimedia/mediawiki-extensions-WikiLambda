@@ -16,7 +16,8 @@
 			"Raymond",
 			"Robby",
 			"Umherirrender",
-			"Verdy p"
+			"Verdy p",
+			"Grace Choi"
 		]
 	},
 	"wikilambda-desc": "{{desc|name=WikiLambda|url=https://www.mediawiki.org/wiki/Extension:WikiLambda}}\n\n{{doc-wikilambda}}",
@@ -400,9 +401,9 @@
 	"wikilambda-about-widget-unlabelled-input": "Placeholder label for an input that has no name in the About widget",
 	"wikilambda-about-widget-input-label": "Means \"The label of input number $1\". Label for the nth input label field in the About widget.",
 	"wikilambda-function-explorer-accessible-label": "Label for the function explorer reset button for accessibility, available for screen readers.",
-	"wikilambda-function-explorer-title": "The title of the function explorer component",
+	"wikilambda-function-explorer-title": "The title of the function explorer panel on an implementation page. The panel shows information about one function: {{msg-mw|wikilambda-function-explorer-name-title}}, {{msg-mw|wikilambda-function-inputs-title}}, and {{msg-mw|wikilambda-function-definition-output-label}}.",
 	"wikilambda-function-inputs-title": "The header title for the inputs section of the function explorer",
-	"wikilambda-function-explorer-copied-text": "Text displayed when something is copied to the clipboard",
+	"wikilambda-function-explorer-copied-text": "Text displayed when something is copied to the clipboard, for example after clicking a Z number in the function page title.",
 	"wikilambda-function-explorer-name-title": "The title shown before the function name in the function explorer",
 	"wikilambda-function-view-function-button-text": "The text shown in the view function button in the function explorer",
 	"wikilambda-function-evaluator-title": "Title of the Function Evaluator widget in the Special Function Evaluation page",
