@@ -290,6 +290,7 @@ Constants.API_REQUEST_ITEMS_LIMIT = 50;
 Constants.ABOUT_DIALOG_MAX_ITEMS = 5;
 Constants.LABEL_CHARS_MAX = 100;
 Constants.DESCRIPTION_CHARS_MAX = 100;
+Constants.API_ENUMS_LIMIT = 10;
 
 // Suggested objects for selector
 Constants.SUGGESTIONS = {

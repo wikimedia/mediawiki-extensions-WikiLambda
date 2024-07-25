@@ -445,6 +445,8 @@ module.exports = exports = {
 			return findInputs;
 		},
 		/**
+		 * Returns the values of an enum with a given ZID
+		 *
 		 * @param {Object} state
 		 * @return {Function}
 		 */
@@ -454,22 +456,24 @@ module.exports = exports = {
 			 * @return {Array}
 			 */
 			function findEnum( zid ) {
-				const enumValues = state.enums[ zid ];
-				return ( enumValues instanceof Array ) ? enumValues : [];
+				const enumObj = state.enums[ zid ];
+				return enumObj && enumObj.data instanceof Array ? enumObj.data : [];
 			}
 			return findEnum;
 		},
 		/**
+		 * Returns the enum of a given ZID
+		 *
 		 * @param {Object} state
-		 * @return {Function}
+		 * @return {Object}
 		 */
-		isEnumFetched: function ( state ) {
+		getEnum: function ( state ) {
 			/**
 			 * @param {string} zid
-			 * @return {boolean}
+			 * @return {Array}
 			 */
 			function findEnum( zid ) {
-				return !!state.enums[ zid ];
+				return state.enums[ zid ];
 			}
 			return findEnum;
 		}
@@ -515,10 +519,28 @@ module.exports = exports = {
 		 * @param {Object} state
 		 * @param {Object} payload
 		 * @param {string} payload.zid
-		 * @param {Array|Promise} payload.data
+		 * @param {Array | Promise} payload.data
+		 * @param {number | undefined} payload.continue
 		 */
-		setEnumValues: function ( state, payload ) {
-			state.enums[ payload.zid ] = payload.data;
+		setEnumData: function ( state, payload ) {
+			const zid = payload.zid;
+			const data = payload.data;
+			const continueVal = payload.continue;
+
+			// Initialize the enum object if it does not exist with a Promise or Array
+			if ( !state.enums[ zid ] ) {
+				state.enums[ zid ] = { data };
+				return;
+			}
+
+			// Ensure data is an array before concatenation
+			if ( !Array.isArray( state.enums[ zid ].data ) ) {
+				state.enums[ zid ].data = [];
+			}
+
+			// Append new data and update continuation value
+			state.enums[ zid ].data = state.enums[ zid ].data.concat( data );
+			state.enums[ zid ].continue = continueVal;
 		},
 		/**
 		 * @param {Object} state
@@ -562,7 +584,7 @@ module.exports = exports = {
 			return new Promise( ( resolve ) => {
 				clearTimeout( debounceZObjectLookup );
 				debounceZObjectLookup = setTimeout(
-					() => apiUtils.searchLabels( payload ).then( ( data ) => resolve( data ) ),
+					() => apiUtils.searchLabels( payload ).then( ( data ) => resolve( data.labels ) ),
 					DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT
 				);
 			} );
@@ -571,31 +593,44 @@ module.exports = exports = {
 		 * Fetches all values stored of a given enum type.
 		 *
 		 * @param {Object} context
-		 * @param {string} type
-		 * @return {Promise | undefined}
+		 * @param {Object} payload
+		 * @param {string} payload.type - The ZID of the enum type
+		 * @param {boolean} payload.isContinue - Whether to continue fetching the enum
+		 * @return {Promise<Object>|undefined} - Promise resolving to:
+		 * @property {Array<Object>} labels - The search results
+		 * @property {number|null} continue - The token to continue the search or null if no more results
 		 */
-		fetchEnumValues: function ( context, type ) {
-			// If already fetched or fetching, don't request again
-			if ( context.getters.isEnumFetched( type ) ) {
+		fetchEnumValues: function ( context, payload ) {
+			const enumObject = context.getters.getEnum( payload.type );
+			const continueVal = enumObject ? enumObject.continue : undefined;
+
+			// If the enum has already been fetched and we are not continuing, do nothing
+			// If the enum has been fetched and we are continuing, but there are no more values, do nothing
+			if ( ( enumObject && !payload.isContinue ) || ( payload.isContinue && continueVal === null ) ) {
 				return;
 			}
-
 			const promise = apiUtils.searchLabels( {
 				input: '',
-				type,
-				language: context.getters.getUserLangCode
-			} ).then( ( values ) => {
+				type: payload.type,
+				limit: Constants.API_ENUMS_LIMIT,
+				language: context.getters.getUserLangCode,
+				continue: continueVal
+			} ).then( ( data ) => {
 				// Set values when the request is completed
-				context.commit( 'setEnumValues', { zid: type, data: values } );
+				context.commit( 'setEnumData', { zid: payload.type, data: data.labels, continue: data.continue } );
+				return data;
 			} ).catch( () => {
-				// Unset if the request failed
-				context.commit( 'setEnumValues', { zid: type, data: undefined } );
+				// Set empty array when the request fails, so we could retry
+				context.commit( 'setEnumData', { zid: payload.type, data: [] } );
 			} );
 
-			// Set Promise to capture pending state
-			context.commit( 'setEnumValues', { zid: type, data: promise } );
+			if ( !payload.isContinue ) {
+				// Initialize the enum with the pending promise
+				context.commit( 'setEnumData', { zid: payload.type, data: promise } );
+			}
 
 			return promise;
+
 		},
 		/**
 		 * Orchestrates the calls to wikilambdaload_zobject api to fetch

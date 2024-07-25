@@ -17,6 +17,7 @@
 			:menu-items="enumValues"
 			:menu-config="selectConfig"
 			@update:selected="onSelect"
+			@load-more="loadMoreValues"
 		></cdx-select>
 		<cdx-lookup
 			v-else
@@ -236,6 +237,14 @@ module.exports = exports = defineComponent( {
 			'fetchZids'
 		] ),
 		{
+			/**
+			 * Load more values for the enumeration selector
+			 *
+			 * @return {void}
+			 */
+			loadMoreValues: function () {
+				this.fetchEnumValues( { type: this.type, isContinue: true } );
+			},
 			/**
 			 * Whether is in the input list of Zids excluded from selection.
 			 * Al the zids in the excludeZids input property must be uppercase.
@@ -493,14 +502,14 @@ module.exports = exports = defineComponent( {
 		},
 		isEnum: function ( value ) {
 			if ( value ) {
-				this.fetchEnumValues( this.type );
+				this.fetchEnumValues( { type: this.type } );
 			}
 		}
 	},
 	mounted: function () {
 		this.setSuggestions();
 		if ( this.isEnum ) {
-			this.fetchEnumValues( this.type );
+			this.fetchEnumValues( { type: this.type } );
 		}
 	}
 } );
