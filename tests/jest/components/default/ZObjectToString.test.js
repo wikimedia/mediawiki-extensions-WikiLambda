@@ -19,7 +19,6 @@ describe( 'ZObjectToString', () => {
 	beforeEach( () => {
 		getters = {
 			getUserLangCode: createGetterMock( 'en' ),
-			getUserLangZid: createGetterMock( 'Z1002' ),
 			getLabelData: createLabelDataMock( {
 				Z42: 'False',
 				Z60: 'Language',

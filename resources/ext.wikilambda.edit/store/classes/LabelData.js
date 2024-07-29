@@ -76,6 +76,18 @@ class LabelData {
 			mw.message( 'wikilambda-editor-default-name' ).text() :
 			mw.message( 'wikilambda-about-widget-unlabelled-input' ).text();
 	}
+
+	/**
+	 * Build a LabelData object from a non localized string.
+	 *
+	 * @param {string} text
+	 * @param {string|undefined} langZid
+	 * @param {string|undefined} langCode
+	 * @return LabelData
+	 */
+	static fromString( text, langZid = null, langCode = null ) {
+		return new LabelData( null, text, langZid, langCode );
+	}
 }
 
 module.exports = exports = LabelData;

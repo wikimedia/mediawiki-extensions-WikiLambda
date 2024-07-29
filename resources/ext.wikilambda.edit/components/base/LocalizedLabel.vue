@@ -7,7 +7,7 @@
 <template>
 	<label>
 		<span
-			v-if="!isUserLang"
+			v-if="labelData.langCode && !isUserLang"
 			class="ext-wikilambda-lang-chip"
 		>{{ labelData.langCode }}</span><span
 			:lang="labelData.langCode"

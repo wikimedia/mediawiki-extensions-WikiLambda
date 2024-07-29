@@ -63,8 +63,7 @@ const ExpandedToggle = require( '../base/ExpandedToggle.vue' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	LabelData = require( '../../store/classes/LabelData.js' ),
-	icons = require( '../../../lib/icons.json' ),
-	mapGetters = require( 'vuex' ).mapGetters;
+	icons = require( '../../../lib/icons.json' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-typed-list-items',
@@ -99,39 +98,29 @@ module.exports = exports = defineComponent( {
 			icons: icons
 		};
 	},
-	computed: Object.assign(
-		mapGetters( [
-			'getUserLangZid'
-		] ),
-		{
+	computed: {
+		/**
+		 * Returns the key label for the list of items.
+		 * Since the FE represents typed lists as benjamin arrays, this must be hardcoded
+		 *
+		 * @return {string}
+		 */
+		itemsLabel: function () {
+			return LabelData.fromString( this.$i18n( 'wikilambda-list-items-label' ).text() );
+		},
 
-			/**
-			 * Returns the key label for the list of items.
-			 * Since the FE represents typed lists as benjamin arrays, this must be hardcoded
-			 *
-			 * @return {string}
-			 */
-			itemsLabel: function () {
-				return new LabelData(
-					null,
-					this.$i18n( 'wikilambda-list-items-label' ).text(),
-					this.getUserLangZid
-				);
-			},
-
-			/**
-			 * Returns all the conditional class names for the
-			 * the list items label
-			 *
-			 * @return {string}
-			 */
-			listItemsEditClass: function () {
-				return this.edit ?
-					'ext-wikilambda-key-block-edit' :
-					'ext-wikilambda-key-block-view';
-			}
+		/**
+		 * Returns all the conditional class names for the
+		 * the list items label
+		 *
+		 * @return {string}
+		 */
+		listItemsEditClass: function () {
+			return this.edit ?
+				'ext-wikilambda-key-block-edit' :
+				'ext-wikilambda-key-block-view';
 		}
-	),
+	},
 	methods: {
 		addListItem: function () {
 			this.$emit( 'add-list-item' );

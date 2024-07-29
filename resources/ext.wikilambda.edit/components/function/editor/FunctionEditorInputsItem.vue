@@ -48,7 +48,7 @@
 				data-testid="function-editor-input-item-type"
 				:row-id="inputTypeRowId"
 				:type="typeZid"
-				:label="inputTypeTitle"
+				:label-data="inputTypeLabel"
 				:disabled="!canEditType"
 				:placeholder="inputTypeFieldPlaceholder"
 			></wl-type-selector>
@@ -59,6 +59,7 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
+	LabelData = require( '../../../store/classes/LabelData.js' ),
 	TypeSelector = require( '../../base/TypeSelector.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
@@ -186,8 +187,10 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string}
 		 */
-		inputTypeTitle: function () {
-			return this.$i18n( 'wikilambda-function-definition-input-item-type' ).text();
+		inputTypeLabel: function () {
+			return LabelData.fromString(
+				this.$i18n( 'wikilambda-function-definition-input-item-type' ).text()
+			);
 		},
 		/**
 		 * Returns the placeholder for the input type field

@@ -31,8 +31,6 @@ describe( 'ZObjectKeyValue', () => {
 			getExpectedTypeOfKey: createGettersWithFunctionsMock( 'Z1' ),
 			getZObjectValueByRowId: createGettersWithFunctionsMock(),
 			getZObjectTypeByRowId: createGettersWithFunctionsMock( Constants.Z_STRING ),
-			getUserLangZid: createGetterMock( 'Z1002' ),
-			getUserLangCode: createGetterMock( 'en' ),
 			getZObjectAsJsonById: createGettersWithFunctionsMock(),
 			getZPersistentContentRowId: createGettersWithFunctionsMock( 1 ),
 			getTypedListItemType: createGettersWithFunctionsMock( 'Z6' ),

@@ -199,8 +199,6 @@ module.exports = exports = defineComponent( {
 		mapGetters( [
 			'createObjectByType',
 			'getCurrentZObjectId',
-			'getUserLangZid',
-			'getUserLangCode',
 			'getLabelData',
 			'getExpectedTypeOfKey',
 			'getDepthByRowId',
@@ -349,20 +347,10 @@ module.exports = exports = defineComponent( {
 			keyLabel: function () {
 				// since the FE represents typed lists in canonical form, we need to hardcode typed list keys
 				if ( this.isKeyTypedListItem( this.key ) ) {
-					return new LabelData(
-						null,
-						this.$i18n( 'wikilambda-list-item-label', this.key ).text(),
-						this.getUserLangZid,
-						this.getUserLangCode
-					);
+					return LabelData.fromString( this.$i18n( 'wikilambda-list-item-label', this.key ).text() );
 				}
 				if ( this.isKeyTypedListType( this.key ) ) {
-					return new LabelData(
-						null,
-						this.$i18n( 'wikilambda-list-items-type-label' ).text(),
-						this.getUserLangZid,
-						this.getUserLangCode
-					);
+					return LabelData.fromString( this.$i18n( 'wikilambda-list-items-type-label' ).text() );
 				}
 				return this.getLabelData( this.key );
 			},
