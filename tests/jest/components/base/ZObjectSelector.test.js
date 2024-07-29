@@ -9,6 +9,7 @@
 const { waitFor } = require( '@testing-library/vue' ),
 	mount = require( '@vue/test-utils' ).mount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	mockEnumValues = require( '../../fixtures/mocks.js' ).mockEnumValues,
 	mockLookupValues = require( '../../fixtures/mocks.js' ).mockLookupValues,
@@ -30,6 +31,7 @@ describe( 'ZObjectSelector', () => {
 			getters = {
 				isEnumType: createGettersWithFunctionsMock( false ),
 				getErrors: createGettersWithFunctionsMock( [] ),
+				getUserRequestedLang: createGetterMock( 'en' ),
 				getLabelData: createLabelDataMock( {
 					Z6: 'String',
 					Z4: 'Type',
@@ -264,6 +266,7 @@ describe( 'ZObjectSelector', () => {
 				isEnumType: createGettersWithFunctionsMock( true ),
 				getEnumValues: createGettersWithFunctionsMock( mockEnumValues ),
 				getErrors: createGettersWithFunctionsMock( [] ),
+				getUserRequestedLang: createGetterMock( 'en' ),
 				getLabelData: createLabelDataMock( {
 					Z6: 'String',
 					Z4: 'Type',
