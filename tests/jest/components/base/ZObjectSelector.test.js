@@ -42,7 +42,8 @@ describe( 'ZObjectSelector', () => {
 					Z1003: 'Spanish',
 					Z1004: 'French',
 					Z1005: 'Russian',
-					Z1006: 'Chinese'
+					Z1672: 'Chinese (traditional)',
+					Z1645: 'Chinese (simplified)'
 				} )
 			};
 
@@ -187,14 +188,19 @@ describe( 'ZObjectSelector', () => {
 				description: 'Natural language',
 				class: 'ext-wikilambda-select-zobject-suggestion'
 			}, {
-				value: 'Z1006',
-				label: 'Chinese',
+				value: 'Z1672',
+				label: 'Chinese (traditional)',
+				description: 'Natural language',
+				class: 'ext-wikilambda-select-zobject-suggestion'
+			}, {
+				value: 'Z1645',
+				label: 'Chinese (simplified)',
 				description: 'Natural language',
 				class: 'ext-wikilambda-select-zobject-suggestion'
 			} ];
 			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
 
-			await waitFor( () => expect( lookup.props( 'menuItems' ).length ).toBe( 7 ) );
+			await waitFor( () => expect( lookup.props( 'menuItems' ).length ).toBe( 8 ) );
 			expect( lookup.props( 'menuItems' ) ).toEqual( commonLangs );
 		} );
 
