@@ -6,7 +6,7 @@ WikiLambda provides for hosting, and letting users call evaluation, of functions
 
 ### Quick start
 
-Install Node v16. Then from whatever directory you wish to set up your development environment, run:
+From whatever directory you wish to set up your development environment, run:
 
 ```bash
 git clone "https://gerrit.wikimedia.org/r/mediawiki/core" mediawiki
