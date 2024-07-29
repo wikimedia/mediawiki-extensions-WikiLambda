@@ -71,28 +71,28 @@ module.exports = {
 			statements: 90
 		},
 		'./resources/ext.wikilambda.languageselector/': {
-			branches: 76,
-			lines: 92,
-			functions: 91,
-			statements: 92
+			branches: 96,
+			lines: 98,
+			functions: 94,
+			statements: 98
 		},
 		'./resources/ext.wikilambda.app/': {
-			branches: 83,
-			lines: 91,
-			functions: 90,
-			statements: 91
+			branches: 87,
+			lines: 95,
+			functions: 95,
+			statements: 95
 		},
 		'./resources/ext.wikilambda.app/mixins': {
-			branches: 81,
-			lines: 84,
-			functions: 91,
-			statements: 84
+			branches: 84,
+			lines: 88,
+			functions: 98,
+			statements: 88
 		},
 		'./resources/ext.wikilambda.app/store': {
-			branches: 88,
-			lines: 96,
-			functions: 98,
-			statements: 96
+			branches: 86,
+			lines: 95,
+			functions: 99,
+			statements: 95
 		}
 	},
 
