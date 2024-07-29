@@ -86,8 +86,7 @@ module.exports = exports = defineComponent( {
 			'getZObjectTypeByRowId',
 			'getZObjectKeyByRowId',
 			'getChildrenByParentRowId',
-			'getUserLangCode',
-			'getUserLangZid'
+			'getUserLangCode'
 		] ),
 		{
 			/**
@@ -155,7 +154,7 @@ module.exports = exports = defineComponent( {
 			 */
 			labelData: function () {
 				return this.isBlank ?
-					new LabelData( null, this.placeholder, this.getUserLangZid, this.getUserLangCode ) :
+					LabelData.fromString( this.placeholder ) :
 					this.getLabelData( this.value );
 			},
 
@@ -196,7 +195,7 @@ module.exports = exports = defineComponent( {
 			placeholder: function () {
 				let missingType = this.type;
 				if ( missingType === Constants.Z_STRING ) {
-					return this.$i18n( 'wikilambda-zobject-to-string-enter-string' );
+					return this.$i18n( 'wikilambda-zobject-to-string-enter-string' ).text();
 				}
 				if ( missingType === Constants.Z_FUNCTION_CALL ) {
 					missingType = Constants.Z_FUNCTION;
@@ -207,7 +206,7 @@ module.exports = exports = defineComponent( {
 				const label = missingType ?
 					this.getLabelData( missingType ).label :
 					this.getLabelData( Constants.Z_OBJECT ).label;
-				return this.$i18n( 'wikilambda-zobject-to-string-select-object', label );
+				return this.$i18n( 'wikilambda-zobject-to-string-select-object', label ).text();
 			},
 
 			/**
