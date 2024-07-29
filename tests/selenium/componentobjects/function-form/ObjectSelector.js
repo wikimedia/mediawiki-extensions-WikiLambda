@@ -35,7 +35,7 @@ class ObjectSelector {
 	 * @return {Promise<WebdriverIO.Element>} The object selector
 	 */
 	static async fromInputField( inputField ) {
-		const context = await inputField.custom$( 'ancestor', '.ext-wikilambda-select-zobject' );
+		const context = await inputField.custom$( 'ancestor', '.ext-wikilambda-app-object-selector' );
 		return new this( context, inputField );
 	}
 

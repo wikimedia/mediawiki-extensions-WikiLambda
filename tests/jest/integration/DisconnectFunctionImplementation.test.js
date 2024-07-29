@@ -101,7 +101,7 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 		await waitFor( () => {
 			connectedRows.forEach( ( row ) => {
 				expect( row ).toHaveTextContent( 'Disconnected' );
-				expect( row ).not.toHaveClass( 'ext-wikilambda-function-details-table__row--active' );
+				expect( row ).not.toHaveClass( 'ext-wikilambda-app-function-viewer-details-table__row--active' );
 			} );
 		} );
 

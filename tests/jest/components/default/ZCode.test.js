@@ -88,7 +88,7 @@ describe( 'ZCode', () => {
 				}
 			} );
 
-			expect( wrapper.find( '.ext-wikilambda-code__code-editor' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-code__code-editor' ).exists() ).toBe( true );
 		} );
 
 		it( 'editor is in read only mode', () => {
@@ -109,7 +109,7 @@ describe( 'ZCode', () => {
 				}
 			} );
 			wrapper.findComponent( { name: 'code-editor' } ).trigger( 'click' );
-			expect( wrapper.find( '.cdx-message--warning.ext-wikilambda-key-value-inline-error' ).exists() ).toBe( false );
+			expect( wrapper.find( '.cdx-message--warning.ext-wikilambda-app-key-value__inline-error' ).exists() ).toBe( false );
 		} );
 
 		describe( 'when current programming language is a reference', () => {
@@ -170,7 +170,7 @@ describe( 'ZCode', () => {
 				}
 			} );
 
-			expect( wrapper.findComponent( '.ext-wikilambda-code__language-selector' ).exists() ).toBe( true );
+			expect( wrapper.findComponent( '.ext-wikilambda-app-code__language-selector' ).exists() ).toBe( true );
 			expect( wrapper.findComponent( { name: 'code-editor' } ).props( 'readOnly' ) ).toBe( false );
 		} );
 
@@ -188,7 +188,7 @@ describe( 'ZCode', () => {
 				}
 			} );
 
-			expect( wrapper.findComponent( '.ext-wikilambda-code__language-selector' ).exists() ).toBe( true );
+			expect( wrapper.findComponent( '.ext-wikilambda-app-code__language-selector' ).exists() ).toBe( true );
 			expect( wrapper.findComponent( { name: 'code-editor' } ).props( 'disabled' ) ).toBe( true );
 		} );
 
@@ -207,7 +207,7 @@ describe( 'ZCode', () => {
 				}
 			} );
 
-			expect( wrapper.findComponent( '.ext-wikilambda-code__language-selector' ).exists() ).toBe( true );
+			expect( wrapper.findComponent( '.ext-wikilambda-app-code__language-selector' ).exists() ).toBe( true );
 
 			wrapper.findComponent( { name: 'code-editor' } ).trigger( 'click' );
 
@@ -223,7 +223,7 @@ describe( 'ZCode', () => {
 			wrapper.findComponent( { name: 'cdx-select' } ).vm.$emit( 'update:selected',
 				Constants.Z_PROGRAMMING_LANGUAGES.JAVASCRIPT );
 			await wrapper.vm.$nextTick();
-			expect( wrapper.find( '.cdx-message--warning.ext-wikilambda-key-value-inline-error' ).exists() ).toBe( false );
+			expect( wrapper.find( '.cdx-message--warning.ext-wikilambda-app-key-value__inline-error' ).exists() ).toBe( false );
 		} );
 
 		describe( 'when current programming language is a reference', () => {

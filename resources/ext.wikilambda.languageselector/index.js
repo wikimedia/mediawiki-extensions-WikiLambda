@@ -10,4 +10,4 @@ const Vue = require( 'vue' ),
 	WlLanguageSelector = require( './components/LanguageSelector.vue' );
 
 Vue.createMwApp( WlLanguageSelector )
-	.mount( '#ext-wikilambda-pagelanguagebutton' );
+	.mount( '#ext-wikilambda-language-selector' );

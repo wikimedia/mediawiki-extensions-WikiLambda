@@ -29,11 +29,11 @@ class FunctionPage extends Page {
 	// #region Header Section
 
 	get functionTitle() {
-		return $( '.ext-wikilambda-viewpage-header-title--function-name' );
+		return $( '.ext-wikilambda-viewpage-header__title' );
 	}
 
 	get functionZIdSelector() {
-		return $( 'span.ext-wikilambda-viewpage-header-zid' );
+		return $( 'span.ext-wikilambda-viewpage-header__zid' );
 	}
 
 	/**
@@ -76,26 +76,26 @@ class FunctionPage extends Page {
 	}
 
 	async getFunctionInputBlocks() {
-		const inputBlock = await this.aboutBlock.$( '.ext-wikilambda-about-function-input' );
-		const inputs = await inputBlock.$$( '.ext-wikilambda-about-function-field-value' );
+		const inputBlock = await this.aboutBlock.$( '.ext-wikilambda-app-about__function-input' );
+		const inputs = await inputBlock.$$( '.ext-wikilambda-app-about__function-field-value' );
 		return inputs;
 	}
 
 	async getFunctionInputLabel( inputSelector ) {
-		const inputLabel = await inputSelector.$( '.ext-wikilambda-about-function-input-label' );
+		const inputLabel = await inputSelector.$( '.ext-wikilambda-app-about__function-input-label' );
 		const text = ElementActions.getText( inputLabel );
 		return text;
 	}
 
 	async getFunctionInputType( inputSelector ) {
-		const inputType = await inputSelector.$( '.ext-wikilambda-zobject-to-string' );
+		const inputType = await inputSelector.$( '.ext-wikilambda-app-zobject-to-string' );
 		const text = ElementActions.getText( inputType );
 		return text;
 	}
 
 	async getFunctionOutputType() {
-		const outputBlock = await this.aboutBlock.$( '.ext-wikilambda-about-function-output' );
-		const outputType = await outputBlock.$( '.ext-wikilambda-zobject-to-string' );
+		const outputBlock = await this.aboutBlock.$( '.ext-wikilambda-app-about__function-output' );
+		const outputType = await outputBlock.$( '.ext-wikilambda-app-zobject-to-string' );
 		const text = ElementActions.getText( outputType );
 		return text;
 	}
@@ -174,40 +174,6 @@ class FunctionPage extends Page {
 	// #region Details Section
 
 	// #region Details Sidebar
-
-	get sidebarTable() {
-		return $( '.ext-wikilambda-function-viewer-details-sidebar' );
-	}
-
-	/**
-	 * Click on the "Show more languages" button.
-	 * This displays the "arguments" in different languages
-	 *
-	 * @async
-	 * @return {void}
-	 */
-	async showArgumentsInOtherLanguages() {
-		const button = $( `button:contains('${ i18n[ 'wikilambda-function-viewer-aliases-show-language-button' ] }')` );
-		await ElementActions.doClick( button );
-		const hideListButton = $( `button:contains('${ i18n[ 'wikilambda-function-viewer-aliases-hide-language-button' ] }')` );
-		await hideListButton.waitForDisplayed();
-	}
-
-	getArgumentLabel( label ) {
-		return $( `td=${ label }` );
-	}
-
-	async getInputType( inputTypeLabel, inputType ) {
-		const row = await this.sidebarTable.$( `td=${ inputTypeLabel }` ).parentElement();
-		const type = await row.$( `a=${ inputType }` );
-		return type;
-	}
-
-	async getOutputType( outputTypeLabel, outputType ) {
-		const row = await this.sidebarTable.$( `td=${ outputTypeLabel }` ).parentElement();
-		const type = await row.$( `a=${ outputType }` );
-		return type;
-	}
 
 	/**
 	 * Click on the "Add test" link
@@ -325,11 +291,11 @@ class FunctionPage extends Page {
 		await browser.waitUntil(
 			async () => {
 				const classAttribute = await tableRow.getAttribute( 'class' );
-				return !classAttribute.includes( 'ext-wikilambda-function-details-table__row--active' );
+				return !classAttribute.includes( 'ext-wikilambda-app-function-viewer-details-table__row--active' );
 			},
 			{
 				timeout: 10000,
-				timeoutMsg: 'The element with the class "ext-wikilambda-function-details-table__row--active" is still displayed'
+				timeoutMsg: 'The element with the class "ext-wikilambda-app-function-viewer-details-table__row--active" is still displayed'
 			}
 		);
 
@@ -349,7 +315,7 @@ class FunctionPage extends Page {
 	}
 
 	get testCasesTableBlockHeader() {
-		return this.testCasesTableBlock.$( './/div[contains(@class,"ext-wikilambda-table__title")]' );
+		return this.testCasesTableBlock.$( './/div[contains(@class,"ext-wikilambda-app-table__title")]' );
 	}
 
 	get testCaseProgressBar() {
@@ -434,11 +400,11 @@ class FunctionPage extends Page {
 		await browser.waitUntil(
 			async () => {
 				const classAttribute = await tableRow.getAttribute( 'class' );
-				return !classAttribute.includes( 'ext-wikilambda-function-details-table__row--active' );
+				return !classAttribute.includes( 'ext-wikilambda-app-function-viewer-details-table__row--active' );
 			},
 			{
 				timeout: 10000,
-				timeoutMsg: 'The element with the class "ext-wikilambda-function-details-table__row--active" is still displayed'
+				timeoutMsg: 'The element with the class "ext-wikilambda-app-function-viewer-details-table__row--active" is still displayed'
 			}
 		);
 

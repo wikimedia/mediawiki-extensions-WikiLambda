@@ -1356,13 +1356,13 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 
 	public function testWrapBCP47CodeInFakeCodexChip() {
 		$actual = ZObjectUtils::wrapBCP47CodeInFakeCodexChip(
-			'en', 'English', 'ext-wikilambda-viewpage-header--bcp47-code'
+			'en', 'English', 'ext-wikilambda-viewpage-header__bcp47-code'
 		);
 		$expected = Html::element(
 			'span',
 			[
 				'data-title' => 'English',
-				'class' => 'ext-wikilambda-viewpage-header--bcp47-code'
+				'class' => 'ext-wikilambda-viewpage-header__bcp47-code'
 			],
 			'en'
 		);
@@ -1376,16 +1376,16 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		$actual1 = ZObjectUtils::getBCP47ClassName(
 			'name', 'en', 'en'
 		);
-		$expected1 = 'ext-wikilambda-editpage-header--bcp47-code '
-			. 'ext-wikilambda-editpage-header--bcp47-code-name '
-			. 'ext-wikilambda-editpage-header--bcp47-code-hidden';
+		$expected1 = 'ext-wikilambda-editpage-header__bcp47-code '
+			. 'ext-wikilambda-editpage-header__bcp47-code-name '
+			. 'ext-wikilambda-editpage-header__bcp47-code--hidden';
 		$this->assertSame( $expected1, $actual1 );
 
 		$actual2 = ZObjectUtils::getBCP47ClassName(
 			'type', 'en', 'es'
 		);
-		$expected2 = 'ext-wikilambda-editpage-header--bcp47-code '
-			. 'ext-wikilambda-editpage-header--bcp47-code-type';
+		$expected2 = 'ext-wikilambda-editpage-header__bcp47-code '
+			. 'ext-wikilambda-editpage-header__bcp47-code-type';
 		$this->assertSame( $expected2, $actual2 );
 	}
 

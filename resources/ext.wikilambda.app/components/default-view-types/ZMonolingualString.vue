@@ -5,15 +5,15 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-monolingual-string">
+	<div class="ext-wikilambda-app-monolingual-string">
 		<!-- Monolingual string on view mode -->
 		<div
 			v-if="!edit"
-			class="ext-wikilambda-monolingual-string__view-mode"
+			class="ext-wikilambda-app-monolingual-string__view-mode"
 		>
 			<cdx-info-chip
-				class="ext-wikilambda-lang-chip"
-				:class="{ 'ext-wikilambda-lang-chip__empty': hasEmptyLang }"
+				class="ext-wikilambda-app-monolingual-string__chip"
+				:class="{ 'ext-wikilambda-app-monolingual-string__chip--empty': hasEmptyLang }"
 			>
 				{{ langIso.toUpperCase() }}
 			</cdx-info-chip>
@@ -22,18 +22,19 @@
 		<!-- Monolingual string on edit mode -->
 		<div
 			v-else
-			class="ext-wikilambda-monolingual-string__edit-mode"
+			class="ext-wikilambda-app-monolingual-string__edit-mode"
 			:style="inputCssVariablesStyle"
 		>
 			<cdx-info-chip
 				ref="chipComponent"
-				class="ext-wikilambda-lang-chip"
-				:class="{ 'ext-wikilambda-lang-chip__empty': hasEmptyLang }"
+				class="ext-wikilambda-app-monolingual-string__chip"
+				:class="{ 'ext-wikilambda-app-monolingual-string__chip--empty': hasEmptyLang }"
 			>
 				{{ langIso.toUpperCase() }}
 			</cdx-info-chip>
 			<cdx-text-input
 				v-model="text"
+				class="ext-wikilambda-app-monolingual-string__input"
 				:placeholder="$i18n( 'wikilambda-edit-monolingual-text-placeholder' ).text()"
 			>
 			</cdx-text-input>
@@ -183,15 +184,12 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-monolingual-string {
-	.ext-wikilambda-lang-chip {
-		.cdx-info-chip--text {
-			font-size: ~'14px';
-		}
-
-		&__empty {
+.ext-wikilambda-app-monolingual-string {
+	.ext-wikilambda-app-monolingual-string__chip {
+		&--empty {
 			border: 1px dashed @border-color-base;
 
+			// The chip is empty, so we need to make it look like a placeholder
 			.cdx-info-chip--text {
 				height: 22px;
 				min-width: 22px;
@@ -199,19 +197,19 @@ module.exports = exports = defineComponent( {
 		}
 	}
 
-	&__view-mode {
+	.ext-wikilambda-app-monolingual-string__view-mode {
 		margin: 0;
 		color: @color-base;
 		display: flex;
 		flex-direction: row;
 		align-items: flex-start;
 
-		.ext-wikilambda-lang-chip {
+		.ext-wikilambda-app-monolingual-string__chip {
 			margin-right: @spacing-50;
 		}
 	}
 
-	&__edit-mode {
+	.ext-wikilambda-app-monolingual-string__edit-mode {
 		min-height: @min-size-interactive-pointer;
 		display: flex;
 		flex-direction: row;
@@ -220,16 +218,19 @@ module.exports = exports = defineComponent( {
 		z-index: 3;
 		min-width: calc( 36px - 16px );
 
-		.cdx-text-input__input {
-			--spacing-50: @spacing-50;
-			padding-left: ~'calc( var(--spacing-50) + var(--chipWidthPx) + var(--spacing-50) )';
-		}
-
-		.ext-wikilambda-lang-chip {
+		.ext-wikilambda-app-monolingual-string__chip {
 			position: absolute;
 			z-index: 3;
 			min-width: calc( 36px - 16px );
 			left: @spacing-50;
+		}
+	}
+
+	.ext-wikilambda-app-monolingual-string__input {
+		// The input should be aligned with the chip
+		.cdx-text-input__input {
+			--spacing-50: @spacing-50;
+			padding-left: ~'calc( var(--spacing-50) + var(--chipWidthPx) + var(--spacing-50) )';
 		}
 	}
 }

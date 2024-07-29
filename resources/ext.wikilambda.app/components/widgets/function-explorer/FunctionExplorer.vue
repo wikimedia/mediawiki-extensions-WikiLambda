@@ -5,7 +5,7 @@
 	@license MIT
 -->
 <template>
-	<wl-widget-base class="ext-wikilambda-function-explorer" data-testid="function-explorer">
+	<wl-widget-base class="ext-wikilambda-app-function-explorer-widget" data-testid="function-explorer">
 		<template #header>
 			{{ $i18n( 'wikilambda-function-explorer-title' ).text() }}
 		</template>
@@ -13,7 +13,8 @@
 			<cdx-button
 				v-if="edit"
 				weight="quiet"
-				:class="{ 'ext-wikilambda-function-explorer-disabled': resetButtonDisabled }"
+				class="ext-wikilambda-app-function-explorer-widget__button"
+				:class="{ 'ext-wikilambda-app-function-explorer-widget__button--disabled': resetButtonDisabled }"
 				:aria-label="$i18n( 'wikilambda-function-explorer-accessible-label' ).text()"
 				:disabled="resetButtonDisabled"
 				data-testid="function-explorer-reset-button"
@@ -27,15 +28,16 @@
 			<!-- Function name & lookup -->
 			<section>
 				<div
-					class="ext-wikilambda-function-explorer-flex ext-wikilambda-function-explorer-space-between
-					ext-wikilambda-function-explorer-function-name-wrapper">
-					<h5 class="ext-wikilambda-function-explorer-heading-no-spacing">
+					class="ext-wikilambda-app-function-explorer-widget__flex
+					ext-wikilambda-app-function-explorer-widget__space-between
+					ext-wikilambda-app-function-explorer-widget__function-name-wrapper">
+					<h5 class="ext-wikilambda-app-function-explorer-widget__heading-no-spacing">
 						{{ $i18n( 'wikilambda-function-explorer-name-title' ) }}
 					</h5>
 					<span
 						v-if="implementation === Constants.Z_IMPLEMENTATION_CODE"
-						class="ext-wikilambda-function-explorer-copyable"
-						:class="{ 'ext-wikilambda-function-explorer-untitled': functionLabel.isUntitled }"
+						class="ext-wikilambda-app-function-explorer-widget__copyable"
+						:class="{ 'ext-wikilambda-app-function-explorer-widget__untitled': functionLabel.isUntitled }"
 						data-testid="function-zid"
 						@click.stop="copyToClipboard( functionZid )"
 					>{{ showValueOrCopiedMessage( functionZid ) }}</span>
@@ -54,9 +56,9 @@
 				<!-- Read mode -->
 				<div
 					v-else
-					class="ext-wikilambda-function-explorer-flex
-						ext-wikilambda-function-explorer-space-between
-						ext-wikilambda-function-explorer-dark-links"
+					class="ext-wikilambda-app-function-explorer-widget__flex
+						ext-wikilambda-app-function-explorer-widget__space-between
+						ext-wikilambda-app-function-explorer-widget__dark-links"
 				>
 					<a
 						:href="getWikiUrl( currentFunctionZid )"
@@ -71,8 +73,8 @@
 
 			<!-- Function details (inputs and outputs) -->
 			<section v-if="functionExists && functionArguments.length">
-				<div class="ext-wikilambda-function-explorer-function-inputs-title-wrapper">
-					<h5 class="ext-wikilambda-function-explorer-heading-no-spacing">
+				<div class="ext-wikilambda-app-function-explorer-widget__function-inputs-title-wrapper">
+					<h5 class="ext-wikilambda-app-function-explorer-widget__heading-no-spacing">
 						{{ $i18n( 'wikilambda-function-inputs-title' ).text() }}
 					</h5>
 				</div>
@@ -82,10 +84,14 @@
 				<div
 					v-for="arg in functionArguments"
 					:key="arg.key"
-					class="ext-wikilambda-function-explorer-function-inputs-wrapper"
+					class="ext-wikilambda-app-function-explorer-widget__function-inputs-wrapper"
 				>
-					<div class="ext-wikilambda-function-explorer-flex ext-wikilambda-function-explorer-space-between">
-						<span class="ext-wikilambda-function-explorer-type ext-wikilambda-function-explorer-dark-links">
+					<div
+						class="ext-wikilambda-app-function-explorer-widget__flex
+						ext-wikilambda-app-function-explorer-widget__space-between">
+						<span
+							class="ext-wikilambda-app-function-explorer-widget__type
+							ext-wikilambda-app-function-explorer-widget__dark-links">
 							<wl-type-to-string
 								data-testid="function-input-type"
 								:type="arg.type"
@@ -93,7 +99,7 @@
 						</span>
 						<span
 							v-if="implementation === Constants.Z_IMPLEMENTATION_CODE"
-							class="ext-wikilambda-function-explorer-copyable"
+							class="ext-wikilambda-app-function-explorer-widget__copyable"
 							data-testid="function-input-zkey"
 							data-title="Click to copy"
 							@click.stop="copyToClipboard( arg.key )"
@@ -102,7 +108,7 @@
 						</span>
 					</div>
 					<span
-						:class="{ 'ext-wikilambda-function-explorer-untitled': arg.label.isUntitled }"
+						:class="{ 'ext-wikilambda-app-function-explorer-widget__untitled': arg.label.isUntitled }"
 						data-testid="function-input-name"
 						:lang="arg.label.langCode"
 						:dir="arg.label.langDir"
@@ -111,11 +117,13 @@
 					</span>
 				</div>
 
-				<div class="ext-wikilambda-function-explorer-function-outputs-title-wrapper">
-					<h5 class="ext-wikilambda-function-explorer-heading-no-spacing">
+				<div class="ext-wikilambda-app-function-explorer-widget__function-outputs-title-wrapper">
+					<h5 class="ext-wikilambda-app-function-explorer-widget__heading-no-spacing">
 						{{ $i18n( 'wikilambda-function-definition-output-label' ).text() }}
 					</h5>
-					<span class="ext-wikilambda-function-explorer-type ext-wikilambda-function-explorer-dark-links">
+					<span
+						class="ext-wikilambda-app-function-explorer-widget__type
+						ext-wikilambda-app-function-explorer-widget__dark-links">
 						<wl-type-to-string
 							data-testid="function-output"
 							:type="outputType"
@@ -125,9 +133,9 @@
 			</section>
 		</template>
 		<template v-if="edit && functionExists" #footer>
-			<div class="ext-wikilambda-function-explorer-footer-wrapper">
+			<div class="ext-wikilambda-app-function-explorer-widget__footer-wrapper">
 				<cdx-button
-					class="ext-wikilambda-function-explorer-button-view-function"
+					class="ext-wikilambda-app-function-explorer-widget__button-view-function"
 					action="progressive"
 					data-testid="button-view-function"
 					@click="navigateToFunction">
@@ -141,19 +149,19 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const
-	Constants = require( '../../Constants.js' ),
+	Constants = require( '../../../Constants.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
-	WidgetBase = require( '../base/WidgetBase.vue' ),
-	TypeToString = require( '../base/TypeToString.vue' ),
-	ZObjectSelector = require( '../base/ZObjectSelector.vue' ),
+	WidgetBase = require( '../../base/WidgetBase.vue' ),
+	TypeToString = require( '../../base/TypeToString.vue' ),
+	ZObjectSelector = require( '../../base/ZObjectSelector.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
-	icons = require( '../../../lib/icons.json' ),
-	typeUtils = require( '../../mixins/typeUtils.js' ),
-	clipboardUtils = require( '../../mixins/clipboardUtils.js' );
+	icons = require( '../../../../lib/icons.json' ),
+	typeUtils = require( '../../../mixins/typeUtils.js' ),
+	clipboardUtils = require( '../../../mixins/clipboardUtils.js' );
 
 module.exports = exports = defineComponent( {
-	name: 'wl-function-explorer',
+	name: 'wl-function-explorer-widget',
 	components: {
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon,
@@ -289,69 +297,56 @@ module.exports = exports = defineComponent( {
 </script>
 
 <style lang="less">
-@import '../../ext.wikilambda.app.variables.less';
+@import '../../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-function-explorer {
-	.cdx-lookup {
-		min-width: fit-content;
-	}
-
-	.cdx-text-input {
-		.cdx-text-input__input {
-			min-width: fit-content;
-		}
-	}
-
-	.ext-wikilambda-function-explorer-dark-links {
-		a,
-		a:visited,
-		a:hover,
-		a:active {
+.ext-wikilambda-app-function-explorer-widget {
+	.ext-wikilambda-app-function-explorer-widget__dark-links {
+		a {
 			color: @color-base;
 		}
 	}
 
-	.ext-wikilambda-function-explorer-heading-no-spacing {
+	.ext-wikilambda-app-function-explorer-widget__heading-no-spacing {
 		margin-top: 0;
 		padding-top: 0;
 	}
 
-	.ext-wikilambda-function-explorer-function-name-wrapper {
+	.ext-wikilambda-app-function-explorer-widget__function-name-wrapper {
 		margin-bottom: @spacing-25;
 	}
 
-	.ext-wikilambda-function-explorer-function-inputs-wrapper:not( :last-child ) {
+	.ext-wikilambda-app-function-explorer-widget__function-inputs-wrapper:not( :last-child ) {
 		margin-bottom: @spacing-50;
 	}
 
-	.ext-wikilambda-function-explorer-untitled {
+	.ext-wikilambda-app-function-explorer-widget__untitled {
 		color: @color-placeholder;
 	}
 
-	.ext-wikilambda-function-explorer-function-inputs-title-wrapper,
-	.ext-wikilambda-function-explorer-function-outputs-title-wrapper {
+	.ext-wikilambda-app-function-explorer-widget__function-inputs-title-wrapper,
+	.ext-wikilambda-app-function-explorer-widget__function-outputs-title-wrapper {
 		margin-top: @spacing-100;
 	}
 
-	.ext-wikilambda-function-explorer-flex {
+	.ext-wikilambda-app-function-explorer-widget__flex {
 		display: flex;
 		align-items: center;
 	}
 
-	.ext-wikilambda-function-explorer-space-between {
+	.ext-wikilambda-app-function-explorer-widget__space-between {
 		justify-content: space-between;
 	}
 
-	.ext-wikilambda-function-explorer-copyable {
+	.ext-wikilambda-app-function-explorer-widget__copyable {
 		font-family: @font-family-monospace;
 		cursor: pointer;
 	}
 
-	.ext-wikilambda-function-explorer-button-view-function {
+	.ext-wikilambda-app-function-explorer-widget__button-view-function {
 		font-size: @wl-font-size-base;
 	}
 
-	.ext-wikilambda-function-explorer-disabled {
+	.ext-wikilambda-app-function-explorer-widget__button--disabled {
 		cursor: not-allowed;
 	}
 }

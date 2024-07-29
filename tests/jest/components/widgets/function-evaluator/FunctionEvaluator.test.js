@@ -8,10 +8,10 @@
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	{ waitFor } = require( '@testing-library/vue' ),
-	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
-	FunctionEvaluator = require( '../../../../resources/ext.wikilambda.app/components/widgets/FunctionEvaluator.vue' );
+	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
+	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
+	FunctionEvaluator = require( '../../../../../resources/ext.wikilambda.app/components/widgets/function-evaluator/FunctionEvaluator.vue' );
 
 describe( 'FunctionEvaluator', () => {
 	let getters,
@@ -100,7 +100,7 @@ describe( 'FunctionEvaluator', () => {
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( FunctionEvaluator );
 
-			expect( wrapper.find( '.ext-wikilambda-function-evaluator' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget' ).exists() ).toBe( true );
 		} );
 
 		it( 'initializes detached objects', async () => {
@@ -115,7 +115,7 @@ describe( 'FunctionEvaluator', () => {
 				global: { stubs: { WlWidgetBase: false } }
 			} );
 
-			expect( wrapper.find( '.ext-wikilambda-widget-base-header' ).text() ).toBe( 'Try a function' );
+			expect( wrapper.find( '.ext-wikilambda-app-widget-base__header' ).text() ).toBe( 'Try a function' );
 		} );
 
 		it( 'renders function call block', async () => {
@@ -130,7 +130,7 @@ describe( 'FunctionEvaluator', () => {
 
 			await wrapper.vm.$nextTick();
 
-			const block = wrapper.find( '.ext-wikilambda-function-evaluator-call' );
+			const block = wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__call' );
 			const component = block.findComponent( { name: 'wl-z-reference' } );
 			expect( component.exists() ).toBe( true );
 			expect( component.props( 'rowId' ) ).toBe( 2 );
@@ -141,7 +141,7 @@ describe( 'FunctionEvaluator', () => {
 				global: { stubs: { WlWidgetBase: false } }
 			} );
 
-			const block = wrapper.find( '.ext-wikilambda-function-evaluator-run-button' );
+			const block = wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__run-button' );
 			const button = block.findComponent( { name: 'cdx-button' } );
 			expect( button.exists() ).toBe( true );
 			expect( button.attributes( 'disabled' ) ).toBe( 'true' );
@@ -152,7 +152,7 @@ describe( 'FunctionEvaluator', () => {
 				global: { stubs: { WlWidgetBase: false } }
 			} );
 
-			expect( wrapper.find( '.ext-wikilambda-function-evaluator-inputs' ).exists() ).toBe( false );
+			expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__inputs' ).exists() ).toBe( false );
 		} );
 
 		it( 'does not render orchestration result block', () => {
@@ -160,7 +160,7 @@ describe( 'FunctionEvaluator', () => {
 				global: { stubs: { WlWidgetBase: false } }
 			} );
 
-			expect( wrapper.find( '.ext-wikilambda-function-evaluator-result' ).exists() ).toBe( false );
+			expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__result' ).exists() ).toBe( false );
 		} );
 
 		it( 'renders arguments when function is selected', async () => {
@@ -202,7 +202,7 @@ describe( 'FunctionEvaluator', () => {
 
 			await wrapper.vm.$nextTick();
 
-			const inputBlock = wrapper.find( '.ext-wikilambda-function-evaluator-inputs' );
+			const inputBlock = wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__inputs' );
 			expect( inputBlock.exists() ).toBe( true );
 
 			const inputs = inputBlock.findAllComponents( { name: 'wl-z-object-key-value' } );
@@ -226,7 +226,7 @@ describe( 'FunctionEvaluator', () => {
 
 			await wrapper.vm.$nextTick();
 
-			const block = wrapper.find( '.ext-wikilambda-function-evaluator-run-button' );
+			const block = wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__run-button' );
 			const button = block.findComponent( { name: 'cdx-button' } );
 			expect( button.exists() ).toBe( true );
 			expect( button.attributes( 'disabled' ) ).toBe( 'true' );
@@ -247,7 +247,7 @@ describe( 'FunctionEvaluator', () => {
 
 			await wrapper.vm.$nextTick();
 
-			const block = wrapper.find( '.ext-wikilambda-function-evaluator-run-button' );
+			const block = wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__run-button' );
 			const button = block.findComponent( { name: 'cdx-button' } );
 			expect( button.exists() ).toBe( true );
 			expect( button.attributes( 'disabled' ) ).toBe( 'false' );
@@ -263,7 +263,7 @@ describe( 'FunctionEvaluator', () => {
 
 			await wrapper.vm.$nextTick();
 
-			const block = wrapper.find( '.ext-wikilambda-function-evaluator-result' );
+			const block = wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__result' );
 			const component = block.findComponent( { name: 'wl-z-object-key-value' } );
 			expect( component.exists() ).toBe( true );
 			expect( component.props( 'rowId' ) ).toBe( 1 );
@@ -310,7 +310,7 @@ describe( 'FunctionEvaluator', () => {
 
 			await wrapper.vm.$nextTick();
 
-			const block = wrapper.find( '.ext-wikilambda-function-evaluator-run-button' );
+			const block = wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__run-button' );
 			const button = block.findComponent( { name: 'cdx-button' } );
 
 			button.trigger( 'click' );
@@ -326,7 +326,7 @@ describe( 'FunctionEvaluator', () => {
 	describe( 'in function details page', () => {
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( FunctionEvaluator, { props: { functionZid: 'Z10000' } } );
-			expect( wrapper.find( '.ext-wikilambda-function-evaluator' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget' ).exists() ).toBe( true );
 		} );
 
 		it( 'initializes detached objects', async () => {
@@ -358,7 +358,7 @@ describe( 'FunctionEvaluator', () => {
 				global: { stubs: { WlWidgetBase: false } }
 			} );
 
-			expect( wrapper.find( '.ext-wikilambda-widget-base-header' ).text() ).toBe( 'Try this function' );
+			expect( wrapper.find( '.ext-wikilambda-app-widget-base__header' ).text() ).toBe( 'Try this function' );
 		} );
 
 		it( 'does not render function call block', async () => {
@@ -371,7 +371,7 @@ describe( 'FunctionEvaluator', () => {
 			await wrapper.vm.$nextTick();
 
 			expect( wrapper.vm.forFunction ).toBe( true );
-			expect( wrapper.find( '.ext-wikilambda-function-evaluator-call' ).exists() ).toBe( false );
+			expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__call' ).exists() ).toBe( false );
 		} );
 	} );
 
@@ -381,7 +381,7 @@ describe( 'FunctionEvaluator', () => {
 				props: { functionZid: 'Z10000', forImplementation: true }
 			} );
 
-			expect( wrapper.find( '.ext-wikilambda-function-evaluator' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders a loader before function is loaded', async () => {
@@ -390,7 +390,7 @@ describe( 'FunctionEvaluator', () => {
 				global: { stubs: { WlWidgetBase: false } }
 			} );
 
-			const loader = wrapper.find( '.ext-wikilambda-function-evaluator-loader' );
+			const loader = wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__loader' );
 			expect( loader.exists() ).toBe( true );
 		} );
 
@@ -427,7 +427,7 @@ describe( 'FunctionEvaluator', () => {
 				global: { stubs: { WlWidgetBase: false } }
 			} );
 
-			expect( wrapper.find( '.ext-wikilambda-widget-base-header' ).text() ).toBe( 'Try this implementation' );
+			expect( wrapper.find( '.ext-wikilambda-app-widget-base__header' ).text() ).toBe( 'Try this implementation' );
 		} );
 
 		it( 'does not render function call block', async () => {
@@ -440,7 +440,7 @@ describe( 'FunctionEvaluator', () => {
 			await wrapper.vm.$nextTick();
 
 			expect( wrapper.vm.forFunction ).toBe( true );
-			expect( wrapper.find( '.ext-wikilambda-function-evaluator-call' ).exists() ).toBe( false );
+			expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__call' ).exists() ).toBe( false );
 		} );
 
 		it( 'calls implementation when click button', async () => {
@@ -467,7 +467,7 @@ describe( 'FunctionEvaluator', () => {
 
 			await wrapper.vm.$nextTick();
 
-			const block = wrapper.find( '.ext-wikilambda-function-evaluator-run-button' );
+			const block = wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__run-button' );
 			const button = block.findComponent( { name: 'cdx-button' } );
 			button.trigger( 'click' );
 

@@ -8,18 +8,7 @@
  */
 @import './ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-edit {
-	/* Typography */
-	&__text-regular {
-		font-family: @font-family-base;
-		font-weight: @font-weight-normal;
-		font-size: @wl-font-size-base;
-		line-height: @line-height-medium;
-		color: @color-base;
-	}
-}
-
-.ext-wikilambda-edit-link {
+.ext-wikilambda-app-link {
 	color: @color-progressive;
 
 	&:hover {
@@ -39,7 +28,7 @@
 	}
 }
 
-.ext-wikilambda-field-overrides {
+.ext-wikilambda-app-field-overrides {
 	.cdx-text-input,
 	.cdx-select,
 	.cdx-select-vue,
@@ -58,19 +47,7 @@
 	}
 }
 
-.ext-wikilambda-widget {
-	box-sizing: border-box;
-	padding: @spacing-75;
-	border: 1px solid #c8ccd1;
-	border-radius: 2px;
-	margin-bottom: @spacing-100;
-
-	&.ext-wikilambda-widget-json {
-		padding: 0;
-	}
-}
-
-.ext-wikilambda-toast-message {
+.ext-wikilambda-app-toast-message {
 	display: flex;
 	align-items: center;
 	flex-direction: column;
@@ -80,14 +57,17 @@
 	right: 0;
 }
 
-.ext-wikilambda-row {
+/**
+ * Grid system
+ */
+.ext-wikilambda-app-row {
 	display: flex;
 	flex-wrap: wrap;
 	margin-left: -@spacing-75;
 	margin-right: -@spacing-75;
 }
 
-.ext-wikilambda-col {
+.ext-wikilambda-app-col {
 	box-sizing: border-box;
 	padding-left: @spacing-75;
 	padding-right: @spacing-75;
@@ -95,26 +75,44 @@
 	min-width: 0;
 }
 
-.generate-columns(@index) when (@index <= 24) {
-	.ext-wikilambda-col-@{index} {
+/**
+ * Generate columns for a grid system
+ * @param {Number} @index - The index of the column
+ * @see https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#Mixins
+ */
+.mixin-generate-columns(@index) when (@index <= 24) {
+	.ext-wikilambda-app-col-@{index} {
 		flex-basis: calc( 100% / 24 * @index );
 		max-width: calc( 100% / 24 * @index );
 	}
 
-	.generate-responsive-columns( @index, mobile );
-	.generate-responsive-columns( @index, tablet );
-	.generate-responsive-columns( @index, desktop );
+	.mixin-generate-responsive-columns( @index, mobile );
+	.mixin-generate-responsive-columns( @index, tablet );
+	.mixin-generate-responsive-columns( @index, desktop );
 
-	.generate-columns( @index + 1 );
+	.mixin-generate-columns( @index + 1 );
 }
 
-.generate-responsive-columns(@index, @size) {
+/**
+ * Generate responsive columns for a grid system
+ * @param {Number} @index - The index of the column
+ * @param {String} @size - The size of the column
+ * @see https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#Mixins
+ */
+.mixin-generate-responsive-columns(@index, @size) {
 	@media ( max-width: ~'@{max-width-breakpoint-@{size}}' ) {
-		.ext-wikilambda-col-@{size}-@{index} {
+		.ext-wikilambda-app-col-@{size}-@{index} {
 			flex-basis: calc( 100% / 24 * @index );
 			max-width: calc( 100% / 24 * @index );
 		}
 	}
 }
 
-.generate-columns( 1 );
+.mixin-generate-columns( 1 );
+
+/**
+ * Empty chip
+ */
+.mixin-empty-chip() {
+	border: 1px dashed @border-color-base;
+}

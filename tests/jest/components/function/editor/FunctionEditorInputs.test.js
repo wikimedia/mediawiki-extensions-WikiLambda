@@ -34,12 +34,15 @@ describe( 'FunctionEditorInputs', () => {
 	} );
 
 	it( 'renders without errors', () => {
-		const wrapper = shallowMount( FunctionEditorInputs, { props: {
-			zLanguage: 'Z1002',
-			isMainLanguageBlock: true
-		} } );
+		const wrapper = shallowMount( FunctionEditorInputs, {
+			props: {
+				zLanguage: 'Z1002',
+				isMainLanguageBlock: true
+			},
+			global: { stubs: { WlFunctionEditorField: false } }
+		} );
 
-		expect( wrapper.find( '.ext-wikilambda-function-definition-inputs' ).exists() ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-app-function-editor-inputs' ).exists() ).toBeTruthy();
 	} );
 
 	it( 'displays the "add input" button if the user has edit permission and there are no arguments', () => {
@@ -52,11 +55,11 @@ describe( 'FunctionEditorInputs', () => {
 				canEdit: true
 			},
 			global: {
-				stubs: { CdxButton: false }
+				stubs: { WlFunctionEditorField: false, CdxButton: false }
 			}
 		} );
 
-		expect( wrapper.find( '.ext-wikilambda-function-definition-inputs__add-input-button' ).text() )
+		expect( wrapper.find( '.ext-wikilambda-app-function-editor-inputs__action-add' ).text() )
 			.toEqual( 'Add input' );
 	} );
 
@@ -72,11 +75,11 @@ describe( 'FunctionEditorInputs', () => {
 				canEdit: true
 			},
 			global: {
-				stubs: { CdxButton: false }
+				stubs: { WlFunctionEditorField: false, CdxButton: false }
 			}
 		} );
 
-		expect( wrapper.find( '.ext-wikilambda-function-definition-inputs__add-another-input-button' ).text() )
+		expect( wrapper.find( '.ext-wikilambda-app-function-editor-inputs__action-add-another' ).text() )
 			.toEqual( 'Add another input' );
 	} );
 
@@ -86,7 +89,8 @@ describe( 'FunctionEditorInputs', () => {
 				zLanguage: 'Z1002',
 				isMainLanguageBlock: true,
 				canEdit: false
-			}
+			},
+			global: { stubs: { WlFunctionEditorField: false } }
 		} );
 
 		expect( wrapper.findComponent( { name: 'cdx-button' } ).exists() ).toBeFalsy();
@@ -106,7 +110,7 @@ describe( 'FunctionEditorInputs', () => {
 				canEdit: true
 			},
 			global: {
-				stubs: { CdxButton: false }
+				stubs: { CdxButton: false, WlFunctionEditorField: false }
 			}
 		} );
 
@@ -125,7 +129,7 @@ describe( 'FunctionEditorInputs', () => {
 				canEdit: true
 			},
 			global: {
-				stubs: { CdxButton: false }
+				stubs: { CdxButton: false, WlFunctionEditorField: false }
 			}
 		} );
 

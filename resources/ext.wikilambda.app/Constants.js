@@ -126,10 +126,10 @@ const Constants = {
 	},
 	typedObjectsList = [ Constants.Z_TYPED_LIST, Constants.Z_TYPED_PAIR, Constants.Z_TYPED_MAP ],
 	views = {
-		FUNCTION_EDITOR: 'function-editor',
-		FUNCTION_VIEWER: 'function-viewer',
-		FUNCTION_EVALUATOR: 'function-evaluator',
-		DEFAULT_VIEW: 'default-view'
+		FUNCTION_EDITOR: 'function-editor-view',
+		FUNCTION_VIEWER: 'function-viewer-view',
+		FUNCTION_EVALUATOR: 'function-evaluator-view',
+		DEFAULT: 'default-view'
 	},
 	paths = {
 		MAIN_PAGE: 'Wikifunctions:Main_Page',

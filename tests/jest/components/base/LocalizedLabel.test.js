@@ -45,7 +45,7 @@ describe( 'LocalizedLabel', () => {
 				}
 			} );
 
-			expect( wrapper.find( '.ext-wikilambda-lang-chip' ).exists() ).toBe( false );
+			expect( wrapper.find( '.ext-wikilambda-app-localized-label__chip' ).exists() ).toBe( false );
 		} );
 	} );
 
@@ -70,8 +70,8 @@ describe( 'LocalizedLabel', () => {
 				}
 			} );
 
-			expect( wrapper.find( '.ext-wikilambda-lang-chip' ).exists() ).toBe( true );
-			expect( wrapper.find( '.ext-wikilambda-lang-chip' ).text() ).toBe( 'es' );
+			expect( wrapper.find( '.ext-wikilambda-app-localized-label__chip' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-localized-label__chip' ).text() ).toBe( 'es' );
 		} );
 	} );
 } );

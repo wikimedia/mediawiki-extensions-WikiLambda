@@ -5,61 +5,53 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-function-definition-inputs" data-testid="function-definition-inputs">
-		<div class="ext-wikilambda-function-block__label">
+	<wl-function-editor-field
+		class="ext-wikilambda-app-function-editor-inputs"
+		:show-tooltip="tooltipMessage && !canEdit"
+		:tooltip-message="tooltipMessage"
+		:tooltip-icon="tooltipIcon">
+		<template #label>
 			<label :id="inputsFieldId">
 				{{ inputsLabel }}
 				<span>{{ inputsOptional }}</span>
 			</label>
-			<wl-tooltip
-				v-if="tooltipMessage && !canEdit"
-				:content="tooltipMessage"
-			>
-				<cdx-icon
-					v-if="tooltipIcon"
-					class="ext-wikilambda-function-block__label__tooltip-icon"
-					:icon="tooltipIcon">
-				</cdx-icon>
-			</wl-tooltip>
-			<span class="ext-wikilambda-function-block__label__description">
-				{{ inputsFieldDescription }}
-				<a :href="listObjectsUrl" target="_blank">{{ listObjectsLink }}</a>
-			</span>
-		</div>
-		<!-- List of input fields -->
-		<div
-			:aria-labelledby="inputsFieldId"
-			class="ext-wikilambda-function-block__body"
-		>
-			<wl-function-editor-inputs-item
-				v-for="( input, index ) in inputs"
-				:key="'input-' + input.id + '-lang-' + zLanguage"
-				data-testid="function-editor-input-item"
-				:row-id="input.id"
-				:index="index"
-				:z-language="zLanguage"
-				:can-edit-type="canEdit"
-				:is-main-language-block="isMainLanguageBlock"
-				@remove="removeItem"
-				@update-argument-label="updateArgumentLabel"
-			></wl-function-editor-inputs-item>
-			<cdx-button
-				v-if="canEdit"
-				:class="addInputButtonClass"
-				@click="addNewItem"
-			>
-				<cdx-icon :icon="icons.cdxIconAdd"></cdx-icon>
-				{{ addNewItemText }}
-			</cdx-button>
-		</div>
-	</div>
+		</template>
+		<template #description>
+			{{ inputsFieldDescription }}
+			<a :href="listObjectsUrl" target="_blank">{{ listObjectsLink }}</a>
+		</template>
+		<template #body>
+			<div :aria-labelledby="inputsFieldId">
+				<wl-function-editor-inputs-item
+					v-for="( input, index ) in inputs"
+					:key="'input-' + input.id + '-lang-' + zLanguage"
+					data-testid="function-editor-input-item"
+					:row-id="input.id"
+					:index="index"
+					:z-language="zLanguage"
+					:can-edit-type="canEdit"
+					:is-main-language-block="isMainLanguageBlock"
+					@remove="removeItem"
+					@update-argument-label="updateArgumentLabel"
+				></wl-function-editor-inputs-item>
+				<cdx-button
+					v-if="canEdit"
+					:class="addInputButtonClass"
+					@click="addNewItem"
+				>
+					<cdx-icon :icon="icons.cdxIconAdd"></cdx-icon>
+					{{ addNewItemText }}
+				</cdx-button>
+			</div>
+		</template>
+	</wl-function-editor-field>
 </template>
 
 <script>
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
+	FunctionEditorField = require( './FunctionEditorField.vue' ),
 	FunctionEditorInputsItem = require( './FunctionEditorInputsItem.vue' ),
-	Tooltip = require( '../../base/Tooltip.vue' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	icons = require( './../../../../lib/icons.json' ),
@@ -71,8 +63,8 @@ module.exports = exports = defineComponent( {
 	components: {
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon,
-		'wl-function-editor-inputs-item': FunctionEditorInputsItem,
-		'wl-tooltip': Tooltip
+		'wl-function-editor-field': FunctionEditorField,
+		'wl-function-editor-inputs-item': FunctionEditorInputsItem
 	},
 	props: {
 		rowId: {
@@ -167,7 +159,7 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		inputsFieldId: function () {
-			return `ext-wikilambda-function-definition-inputs__label_${ this.zLanguage }`;
+			return `ext-wikilambda-app-function-editor-inputs__label-${ this.zLanguage }`;
 		},
 		/**
 		 * Returns the description for the inputs field
@@ -211,8 +203,8 @@ module.exports = exports = defineComponent( {
 		 */
 		addInputButtonClass: function () {
 			return this.inputs.length === 0 ?
-				'ext-wikilambda-function-definition-inputs__add-input-button' :
-				'ext-wikilambda-function-definition-inputs__add-another-input-button';
+				'ext-wikilambda-app-function-editor-inputs__action-add' :
+				'ext-wikilambda-app-function-editor-inputs__action-add-another';
 		}
 	} ),
 	methods: Object.assign( mapActions( [

@@ -45,7 +45,7 @@ describe( 'ZTester', () => {
 					edit: false
 				}
 			} );
-			expect( wrapper.find( '.ext-wikilambda-tester' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-tester' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders function block', () => {
@@ -54,7 +54,7 @@ describe( 'ZTester', () => {
 					edit: false
 				}
 			} );
-			const functionBlock = wrapper.find( '.ext-wikilambda-tester-function' );
+			const functionBlock = wrapper.find( '.ext-wikilambda-app-tester__function' );
 			expect( functionBlock.exists() ).toBe( true );
 			expect( functionBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 		} );
@@ -65,7 +65,7 @@ describe( 'ZTester', () => {
 					edit: false
 				}
 			} );
-			const callBlock = wrapper.find( 'div[role=ext-wikilambda-tester-call]' );
+			const callBlock = wrapper.find( 'div[data-testid=ext-wikilambda-app-tester-call]' );
 			expect( callBlock.exists() ).toBe( true );
 			expect( callBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 		} );
@@ -76,7 +76,7 @@ describe( 'ZTester', () => {
 					edit: false
 				}
 			} );
-			const callBlock = wrapper.find( 'div[role=ext-wikilambda-tester-validation]' );
+			const callBlock = wrapper.find( 'div[data-testid=ext-wikilambda-app-tester-validation]' );
 			expect( callBlock.exists() ).toBe( true );
 			expect( callBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 		} );
@@ -89,7 +89,7 @@ describe( 'ZTester', () => {
 					edit: true
 				}
 			} );
-			expect( wrapper.find( '.ext-wikilambda-tester' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-tester' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders function block', () => {
@@ -98,7 +98,7 @@ describe( 'ZTester', () => {
 					edit: true
 				}
 			} );
-			const functionBlock = wrapper.find( '.ext-wikilambda-tester-function' );
+			const functionBlock = wrapper.find( '.ext-wikilambda-app-tester__function' );
 			expect( functionBlock.exists() ).toBe( true );
 			expect( functionBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 		} );
@@ -109,7 +109,7 @@ describe( 'ZTester', () => {
 					edit: true
 				}
 			} );
-			const callBlock = wrapper.find( 'div[role=ext-wikilambda-tester-call]' );
+			const callBlock = wrapper.find( 'div[data-testid=ext-wikilambda-app-tester-call]' );
 			expect( callBlock.exists() ).toBe( true );
 			expect( callBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 		} );
@@ -120,7 +120,7 @@ describe( 'ZTester', () => {
 					edit: true
 				}
 			} );
-			const callBlock = wrapper.find( 'div[role=ext-wikilambda-tester-validation]' );
+			const callBlock = wrapper.find( 'div[data-testid=ext-wikilambda-app-tester-validation]' );
 			expect( callBlock.exists() ).toBe( true );
 			expect( callBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 		} );

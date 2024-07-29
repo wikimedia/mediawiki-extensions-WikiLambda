@@ -5,12 +5,12 @@
 	@license MIT
 -->
 <template>
-	<main
-		class="ext-wikilambda-function-definition"
+	<div
+		class="ext-wikilambda-app-function-editor"
 		data-testid="function-editor-definition"
 	>
 		<!-- Function Definition blocks -->
-		<div class="ext-wikilambda-function-definition__container">
+		<div class="ext-wikilambda-app-function-editor__container">
 			<wl-function-editor-language-block
 				v-for="( langZid, index ) in functionLanguages"
 				:key="'language-block-' + langZid"
@@ -21,10 +21,10 @@
 			></wl-function-editor-language-block>
 		</div>
 		<!-- Add Language Button -->
-		<div class="ext-wikilambda-function-definition__action-add-language">
+		<div class="ext-wikilambda-app-function-editor__action-add-language">
 			<cdx-button
 				data-testid="add-language-button"
-				class="ext-wikilambda-function-definition__action-add-language-button"
+				class="ext-wikilambda-app-function-editor__action-add-language-button"
 				@click="addLanguage"
 			>
 				<cdx-icon :icon="icons.cdxIconLanguage"></cdx-icon>
@@ -39,7 +39,7 @@
 			:function-output-changed="outputTypeChanged"
 			:function-signature-changed="functionSignatureChanged"
 		></wl-function-editor-footer>
-	</main>
+	</div>
 </template>
 
 <script>
@@ -56,7 +56,7 @@ const FunctionEditorLanguageBlock = require( './FunctionEditorLanguageBlock.vue'
 	mapGetters = require( 'vuex' ).mapGetters;
 
 module.exports = exports = defineComponent( {
-	name: 'wl-function-editor-definition',
+	name: 'wl-function-editor',
 	components: {
 		'wl-function-editor-language-block': FunctionEditorLanguageBlock,
 		'wl-function-editor-footer': FunctionEditorFooter,
@@ -240,8 +240,8 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-function-definition {
-	&__action-add-language {
+.ext-wikilambda-app-function-editor {
+	.ext-wikilambda-app-function-editor__action-add-language {
 		border-bottom: 1px solid @border-color-subtle;
 		padding: @spacing-150 0;
 	}

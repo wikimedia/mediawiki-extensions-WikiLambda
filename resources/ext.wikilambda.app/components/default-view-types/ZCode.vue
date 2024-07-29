@@ -5,28 +5,28 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-code">
+	<div class="ext-wikilambda-app-code">
 		<!-- Programming language block -->
-		<div class="ext-wikilambda-key-value">
-			<div class="ext-wikilambda-key-value-main">
-				<div class="ext-wikilambda-key-block">
+		<div class="ext-wikilambda-app-key-value">
+			<div class="ext-wikilambda-app-key-value__main">
+				<div class="ext-wikilambda-app-key-value__key">
 					<label
 						:lang="programmingLanguageLabelData.langCode"
 						:dir="programmingLanguageLabelData.langDir"
 					>{{ programmingLanguageLabelData.label }}</label>
 				</div>
 				<div
-					class="ext-wikilambda-value-block"
+					class="ext-wikilambda-app-key_value__value"
 					data-testid="language-dropdown"
 				>
 					<span
 						v-if="!edit"
-						class="ext-wikilambda-value-text"
+						class="ext-wikilambda-app-key_value__value-text"
 					>{{ programmingLanguageLiteral }}</span>
 					<cdx-select
 						v-else
 						v-model:selected="programmingLanguageValue"
-						class="ext-wikilambda-value-input ext-wikilambda-code__language-selector"
+						class="ext-wikilambda-app-key_value__value-input ext-wikilambda-app-code__language-selector"
 						:menu-items="programmingLanguageMenuItems"
 						:default-label="$i18n( 'wikilambda-editor-label-select-programming-language-label' ).text()"
 						:status="( programmingLanguageErrors.length > 0 ) ? 'error' : 'default'"
@@ -37,7 +37,7 @@
 				<cdx-message
 					v-for="( error, index ) in programmingLanguageErrors"
 					:key="'language-error-' + index"
-					class="ext-wikilambda-key-value-inline-error"
+					class="ext-wikilambda-app-key-value__inline-error"
 					:type="error.type"
 					:inline="true"
 				>
@@ -47,17 +47,17 @@
 			</div>
 		</div>
 		<!-- Code editor block -->
-		<div class="ext-wikilambda-key-value">
-			<div class="ext-wikilambda-key-value-main">
-				<div class="ext-wikilambda-key-block">
+		<div class="ext-wikilambda-app-key-value">
+			<div class="ext-wikilambda-app-key-value__main">
+				<div class="ext-wikilambda-app-key-value__key">
 					<label
 						:lang="codeLabelData.langCode"
 						:dir="codeLabelData.langDir"
 					>{{ codeLabelData.label }}</label>
 				</div>
-				<div class="ext-wikilambda-value-block">
+				<div class="ext-wikilambda-app-key_value__value">
 					<code-editor
-						class="ext-wikilambda-code__code-editor"
+						class="ext-wikilambda-app-code__code-editor"
 						:mode="programmingLanguageLiteral"
 						:read-only="!edit"
 						:disabled="!programmingLanguageValue"
@@ -70,7 +70,7 @@
 				<cdx-message
 					v-for="( error, index ) in codeErrors"
 					:key="'code-error-' + index"
-					class="ext-wikilambda-key-value-inline-error"
+					class="ext-wikilambda-app-key-value__inline-error"
 					:type="error.type"
 					:inline="true"
 				>
@@ -475,10 +475,10 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-code {
-	& > .ext-wikilambda-key-value {
-		& > .ext-wikilambda-key-value-main {
-			& > .ext-wikilambda-key-block {
+.ext-wikilambda-app-code {
+	& > .ext-wikilambda-app-key-value {
+		& > .ext-wikilambda-app-key-value__main {
+			& > .ext-wikilambda-app-key-value__key {
 				margin-bottom: 0;
 
 				label {
@@ -487,10 +487,10 @@ module.exports = exports = defineComponent( {
 				}
 			}
 
-			& > .ext-wikilambda-value-block {
+			& > .ext-wikilambda-app-key_value__value {
 				margin-bottom: @spacing-50;
 
-				.ext-wikilambda-value-input {
+				.ext-wikilambda-app-key_value__value-input {
 					margin-top: @spacing-25;
 				}
 			}

@@ -11,7 +11,7 @@ const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
 	FunctionEditorLanguageBlock = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorLanguageBlock.vue' );
 
-describe( 'FunctionEditorDefinitionLanguageBlock', () => {
+describe( 'FunctionEditorLanguageBlock', () => {
 	let getters;
 
 	beforeEach( () => {
@@ -27,18 +27,24 @@ describe( 'FunctionEditorDefinitionLanguageBlock', () => {
 
 	describe( 'function editor language block', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( FunctionEditorLanguageBlock, { props: {
-				index: 0,
-				zLanguage: 'Z1002'
-			} } );
-			expect( wrapper.find( '.ext-wikilambda-function-block' ).exists() ).toBe( true );
+			const wrapper = shallowMount( FunctionEditorLanguageBlock, {
+				props: {
+					index: 0,
+					zLanguage: 'Z1002'
+				},
+				global: { stubs: { WlFunctionEditorField: false } }
+			} );
+			expect( wrapper.find( '.ext-wikilambda-app-function-editor-language-block' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders all fields for main language', async () => {
-			const wrapper = shallowMount( FunctionEditorLanguageBlock, { props: {
-				index: 0,
-				zLanguage: 'Z1002'
-			} } );
+			const wrapper = shallowMount( FunctionEditorLanguageBlock, {
+				props: {
+					index: 0,
+					zLanguage: 'Z1002'
+				},
+				global: { stubs: { WlFunctionEditorField: false } }
+			} );
 
 			const lang = wrapper.findComponent( { name: 'wl-function-editor-language' } );
 			expect( lang.exists() ).toBe( true );
@@ -67,10 +73,13 @@ describe( 'FunctionEditorDefinitionLanguageBlock', () => {
 		} );
 
 		it( 'renders all fields for the other languages', async () => {
-			const wrapper = shallowMount( FunctionEditorLanguageBlock, { props: {
-				index: 2,
-				zLanguage: 'Z1002'
-			} } );
+			const wrapper = shallowMount( FunctionEditorLanguageBlock, {
+				props: {
+					index: 2,
+					zLanguage: 'Z1002'
+				},
+				global: { stubs: { WlFunctionEditorField: false } }
+			} );
 
 			const lang = wrapper.findComponent( { name: 'wl-function-editor-language' } );
 			expect( lang.exists() ).toBe( true );

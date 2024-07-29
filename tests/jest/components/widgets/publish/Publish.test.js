@@ -9,9 +9,9 @@
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	{ waitFor } = require( '@testing-library/vue' ),
-	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
-	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
-	PublishWidget = require( '../../../../resources/ext.wikilambda.app/components/widgets/Publish.vue' );
+	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
+	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
+	PublishWidget = require( '../../../../../resources/ext.wikilambda.app/components/widgets/publish/Publish.vue' );
 
 describe( 'Publish widget', () => {
 	let getters,
@@ -46,7 +46,7 @@ describe( 'Publish widget', () => {
 			global: { stubs: { WlWidgetBase: false } }
 		} );
 
-		expect( wrapper.find( '.ext-wikilambda-publish-widget' ).exists() ).toBe( true );
+		expect( wrapper.find( '.ext-wikilambda-app-publish-widget' ).exists() ).toBe( true );
 	} );
 
 	it( 'opens the publish dialog if validateZObject returns isValid true', async () => {
@@ -56,7 +56,7 @@ describe( 'Publish widget', () => {
 		} );
 		const publishDialog = wrapper.findComponent( { name: 'wl-publish-dialog' } );
 
-		wrapper.find( '.ext-wikilambda-publish-widget__publish-button' ).trigger( 'click' );
+		wrapper.find( '.ext-wikilambda-app-publish-widget__publish-button' ).trigger( 'click' );
 
 		await waitFor( () => expect( publishDialog.props( 'showDialog' ) ).toBe( true ) );
 		expect( wrapper.emitted( 'start-publish' ) ).toBeTruthy();
@@ -70,7 +70,7 @@ describe( 'Publish widget', () => {
 			global: { stubs: { WlWidgetBase: false } }
 		} );
 
-		wrapper.find( '.ext-wikilambda-publish-widget__publish-button' ).trigger( 'click' );
+		wrapper.find( '.ext-wikilambda-app-publish-widget__publish-button' ).trigger( 'click' );
 
 		const publishDialog = wrapper.findComponent( { name: 'wl-publish-dialog' } );
 		await waitFor( () => expect( publishDialog.props( 'showDialog' ) ).toBe( false ) );
@@ -82,7 +82,7 @@ describe( 'Publish widget', () => {
 			global: { stubs: { WlWidgetBase: false, CdxButton: false } }
 		} );
 
-		wrapper.find( '.ext-wikilambda-publish-widget__cancel-button' ).trigger( 'click' );
+		wrapper.find( '.ext-wikilambda-app-publish-widget__cancel-button' ).trigger( 'click' );
 
 		const leaveDialog = wrapper.findComponent( { name: 'wl-leave-editor-dialog' } );
 		await waitFor( () => expect( leaveDialog.props( 'showDialog' ) ).toBe( true ) );
@@ -97,7 +97,7 @@ describe( 'Publish widget', () => {
 			global: { stubs: { WlWidgetBase: false, CdxButton: false } }
 		} );
 
-		wrapper.find( '.ext-wikilambda-publish-widget__cancel-button' ).trigger( 'click' );
+		wrapper.find( '.ext-wikilambda-app-publish-widget__cancel-button' ).trigger( 'click' );
 
 		const leaveDialog = wrapper.findComponent( { name: 'wl-leave-editor-dialog' } );
 		await waitFor( () => expect( window.location.href ).not.toEqual( '' ) );
@@ -117,7 +117,7 @@ describe( 'Publish widget', () => {
 		} );
 
 		wrapper.vm.leaveTo = jest.fn();
-		wrapper.find( '.ext-wikilambda-publish-widget__cancel-button' ).trigger( 'click' );
+		wrapper.find( '.ext-wikilambda-app-publish-widget__cancel-button' ).trigger( 'click' );
 
 		const targetUrl = '/wiki/Wikifunctions:Main_Page';
 		expect( wrapper.vm.leaveTo ).toHaveBeenCalledWith( targetUrl );
@@ -134,7 +134,7 @@ describe( 'Publish widget', () => {
 		} );
 
 		wrapper.vm.leaveTo = jest.fn();
-		wrapper.find( '.ext-wikilambda-publish-widget__cancel-button' ).trigger( 'click' );
+		wrapper.find( '.ext-wikilambda-app-publish-widget__cancel-button' ).trigger( 'click' );
 
 		const targetUrl = '/view/en/Z10001';
 		expect( wrapper.vm.leaveTo ).toHaveBeenCalledWith( targetUrl );
@@ -153,7 +153,7 @@ describe( 'Publish widget', () => {
 				global: { stubs: { WlWidgetBase: false, CdxButton: false } }
 			} );
 
-			wrapper.find( '.ext-wikilambda-publish-widget__cancel-button' ).trigger( 'click' );
+			wrapper.find( '.ext-wikilambda-app-publish-widget__cancel-button' ).trigger( 'click' );
 
 			const eventName = 'wf.ui.editFunction.cancel';
 			const eventData = {
@@ -180,7 +180,7 @@ describe( 'Publish widget', () => {
 				global: { stubs: { WlWidgetBase: false, CdxButton: false } }
 			} );
 
-			wrapper.find( '.ext-wikilambda-publish-widget__cancel-button' ).trigger( 'click' );
+			wrapper.find( '.ext-wikilambda-app-publish-widget__cancel-button' ).trigger( 'click' );
 
 			const eventName = 'wf.ui.editImplementation.cancel';
 			const eventData = {

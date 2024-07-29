@@ -5,13 +5,13 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-tester">
+	<div class="ext-wikilambda-app-tester">
 		<!-- Function selection block -->
 		<div
-			class="ext-wikilambda-tester-function"
+			class="ext-wikilambda-app-tester__function"
 			data-testid="z-test-function-select-container"
 		>
-			<div class="ext-wikilambda-key-block">
+			<div class="ext-wikilambda-app-key-value__key">
 				<label
 					:lang="functionLabelData.langCode"
 					:dir="functionLabelData.langDir"
@@ -27,11 +27,10 @@
 		</div>
 		<!-- Tester call block -->
 		<div
-			class="ext-wikilambda-tester-content"
-			role="ext-wikilambda-tester-call"
-			data-testid="tester-call"
+			class="ext-wikilambda-app-tester__content"
+			data-testid="ext-wikilambda-app-tester-call"
 		>
-			<div class="ext-wikilambda-key-block">
+			<div class="ext-wikilambda-app-key-value__key">
 				<label
 					:lang="testerCallLabelData.langCode"
 					:dir="testerCallLabelData.langDir"
@@ -47,11 +46,10 @@
 		</div>
 		<!-- Tester result validation block -->
 		<div
-			class="ext-wikilambda-tester-content"
-			role="ext-wikilambda-tester-validation"
-			data-testid="tester-validation"
+			class="ext-wikilambda-app-tester__content"
+			data-testid="ext-wikilambda-app-tester-validation"
 		>
-			<div class="ext-wikilambda-key-block">
+			<div class="ext-wikilambda-app-key-value__key">
 				<label
 					:lang="testerValidationLabelData.langCode"
 					:dir="testerValidationLabelData.langDir"
@@ -268,11 +266,11 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-tester {
-	.ext-wikilambda-tester-content {
+.ext-wikilambda-app-tester {
+	.ext-wikilambda-app-tester__content {
 		padding-top: @spacing-75;
 
-		> .ext-wikilambda-key-block {
+		> .ext-wikilambda-app-key-value__key {
 			margin-bottom: 0;
 
 			label {
@@ -282,8 +280,8 @@ module.exports = exports = defineComponent( {
 		}
 	}
 
-	.ext-wikilambda-tester-function {
-		.ext-wikilambda-key-block {
+	.ext-wikilambda-app-tester__function {
+		.ext-wikilambda-app-key-value__key {
 			margin-bottom: 0;
 
 			label {

@@ -5,7 +5,7 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-ztyped-list-type">
+	<div class="ext-wikilambda-app-typed-list-type">
 		<wl-z-object-key-value
 			:row-id="rowId"
 			:edit="edit"
@@ -134,14 +134,7 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-ztyped-list-type {
+.ext-wikilambda-app-typed-list-type {
 	margin-bottom: @wl-key-value-set-margin-bottom;
-
-	&__label {
-		display: inline-block;
-		color: @color-subtle;
-		font-weight: @font-weight-normal;
-		margin-bottom: @spacing-12;
-	}
 }
 </style>

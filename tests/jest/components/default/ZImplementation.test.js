@@ -34,7 +34,7 @@ describe( 'ZImplementation', () => {
 					edit: false
 				}
 			} );
-			expect( wrapper.find( '.ext-wikilambda-implementation' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-implementation' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders function block', () => {
@@ -43,7 +43,7 @@ describe( 'ZImplementation', () => {
 					edit: false
 				}
 			} );
-			const functionBlock = wrapper.find( '.ext-wikilambda-implementation-function' );
+			const functionBlock = wrapper.find( '.ext-wikilambda-app-implementation__function' );
 			expect( functionBlock.exists() ).toBe( true );
 			expect( functionBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 		} );
@@ -54,9 +54,9 @@ describe( 'ZImplementation', () => {
 					edit: false
 				}
 			} );
-			const typeBlock = wrapper.find( '.ext-wikilambda-implementation-type' );
+			const typeBlock = wrapper.find( '.ext-wikilambda-app-implementation__type' );
 			expect( typeBlock.exists() ).toBe( true );
-			expect( typeBlock.find( '.ext-wikilambda-value-text' ).exists() ).toBe( true );
+			expect( typeBlock.find( '.ext-wikilambda-app-key_value__value-text' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders content block', () => {
@@ -65,7 +65,7 @@ describe( 'ZImplementation', () => {
 					edit: false
 				}
 			} );
-			const contentBlock = wrapper.find( '.ext-wikilambda-implementation-content' );
+			const contentBlock = wrapper.find( '.ext-wikilambda-app-implementation__content' );
 			expect( contentBlock.exists() ).toBe( true );
 			expect( contentBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 		} );
@@ -78,9 +78,9 @@ describe( 'ZImplementation', () => {
 					edit: false
 				}
 			} );
-			const typeBlock = wrapper.find( '.ext-wikilambda-implementation-type' );
-			expect( typeBlock.find( '.ext-wikilambda-key-block' ).text() ).toBe( 'Implementation' );
-			expect( typeBlock.find( '.ext-wikilambda-value-block' ).text() ).toBe( 'composition' );
+			const typeBlock = wrapper.find( '.ext-wikilambda-app-implementation__type' );
+			expect( typeBlock.find( '.ext-wikilambda-app-key-value__key' ).text() ).toBe( 'Implementation' );
+			expect( typeBlock.find( '.ext-wikilambda-app-key_value__value' ).text() ).toBe( 'composition' );
 		} );
 
 		it( 'it renders the code type for a code implementation', () => {
@@ -91,9 +91,9 @@ describe( 'ZImplementation', () => {
 					edit: false
 				}
 			} );
-			const typeBlock = wrapper.find( '.ext-wikilambda-implementation-type' );
-			expect( typeBlock.find( '.ext-wikilambda-key-block' ).text() ).toBe( 'Implementation' );
-			expect( typeBlock.find( '.ext-wikilambda-value-block' ).text() ).toBe( 'code' );
+			const typeBlock = wrapper.find( '.ext-wikilambda-app-implementation__type' );
+			expect( typeBlock.find( '.ext-wikilambda-app-key-value__key' ).text() ).toBe( 'Implementation' );
+			expect( typeBlock.find( '.ext-wikilambda-app-key_value__value' ).text() ).toBe( 'code' );
 		} );
 
 		it( 'it renders non editable function for a builtin', () => {
@@ -104,7 +104,7 @@ describe( 'ZImplementation', () => {
 					edit: false
 				}
 			} );
-			const functionBlock = wrapper.find( '.ext-wikilambda-implementation-function' );
+			const functionBlock = wrapper.find( '.ext-wikilambda-app-implementation__function' );
 			expect( functionBlock.exists() ).toBe( true );
 			expect( functionBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 			expect( functionBlock.findComponent( { name: 'wl-z-object-key-value' } ).props( 'edit' ) ).toBe( false );
@@ -118,9 +118,9 @@ describe( 'ZImplementation', () => {
 					edit: false
 				}
 			} );
-			const typeBlock = wrapper.find( '.ext-wikilambda-implementation-type' );
-			expect( typeBlock.find( '.ext-wikilambda-key-block' ).text() ).toBe( 'Implementation' );
-			const valueBlock = typeBlock.find( '.ext-wikilambda-value-block' );
+			const typeBlock = wrapper.find( '.ext-wikilambda-app-implementation__type' );
+			expect( typeBlock.find( '.ext-wikilambda-app-key-value__key' ).text() ).toBe( 'Implementation' );
+			const valueBlock = typeBlock.find( '.ext-wikilambda-app-key_value__value' );
 			expect( valueBlock.findComponent( { name: 'cdx-message' } ).exists() ).toBe( true );
 		} );
 	} );
@@ -132,7 +132,7 @@ describe( 'ZImplementation', () => {
 					edit: true
 				}
 			} );
-			expect( wrapper.find( '.ext-wikilambda-implementation' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-implementation' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders function block', () => {
@@ -141,7 +141,7 @@ describe( 'ZImplementation', () => {
 					edit: true
 				}
 			} );
-			const functionBlock = wrapper.find( '.ext-wikilambda-implementation-function' );
+			const functionBlock = wrapper.find( '.ext-wikilambda-app-implementation__function' );
 			expect( functionBlock.exists() ).toBe( true );
 			expect( functionBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 		} );
@@ -152,7 +152,7 @@ describe( 'ZImplementation', () => {
 					edit: true
 				}
 			} );
-			const typeBlock = wrapper.find( '.ext-wikilambda-implementation-type' );
+			const typeBlock = wrapper.find( '.ext-wikilambda-app-implementation__type' );
 			expect( typeBlock.exists() ).toBe( true );
 			expect( typeBlock.findAllComponents( { name: 'cdx-radio' } ) ).toHaveLength( 2 );
 		} );
@@ -163,7 +163,7 @@ describe( 'ZImplementation', () => {
 					edit: true
 				}
 			} );
-			const contentBlock = wrapper.find( '.ext-wikilambda-implementation-content' );
+			const contentBlock = wrapper.find( '.ext-wikilambda-app-implementation__content' );
 			expect( contentBlock.exists() ).toBe( true );
 			expect( contentBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 		} );
@@ -174,7 +174,7 @@ describe( 'ZImplementation', () => {
 					edit: true
 				}
 			} );
-			const typeBlock = wrapper.find( '.ext-wikilambda-implementation-type' );
+			const typeBlock = wrapper.find( '.ext-wikilambda-app-implementation__type' );
 			const radioButtons = typeBlock.findAllComponents( { name: 'cdx-radio' } );
 			expect( radioButtons ).toHaveLength( 2 );
 			expect( radioButtons[ 0 ].props( 'inputValue' ) ).toBe( 'Z14K3' );
@@ -189,7 +189,7 @@ describe( 'ZImplementation', () => {
 					edit: true
 				}
 			} );
-			const functionBlock = wrapper.find( '.ext-wikilambda-implementation-function' );
+			const functionBlock = wrapper.find( '.ext-wikilambda-app-implementation__function' );
 			expect( functionBlock.exists() ).toBe( true );
 			expect( functionBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 			expect( functionBlock.findComponent( { name: 'wl-z-object-key-value' } ).props( 'edit' ) ).toBe( false );
@@ -203,9 +203,9 @@ describe( 'ZImplementation', () => {
 					edit: true
 				}
 			} );
-			const typeBlock = wrapper.find( '.ext-wikilambda-implementation-type' );
-			expect( typeBlock.find( '.ext-wikilambda-key-block' ).text() ).toBe( 'Implementation' );
-			const valueBlock = typeBlock.find( '.ext-wikilambda-value-block' );
+			const typeBlock = wrapper.find( '.ext-wikilambda-app-implementation__type' );
+			expect( typeBlock.find( '.ext-wikilambda-app-key-value__key' ).text() ).toBe( 'Implementation' );
+			const valueBlock = typeBlock.find( '.ext-wikilambda-app-key_value__value' );
 			expect( valueBlock.findComponent( { name: 'cdx-message' } ).exists() ).toBe( true );
 		} );
 	} );

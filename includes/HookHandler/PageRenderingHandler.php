@@ -50,7 +50,7 @@ class PageRenderingHandler implements
 		// it; instead, render this Codex component properly server-side somehow.
 		$ourButton = [ 'wikifunctions-language' => [
 			'button' => true,
-			'id' => 'ext-wikilambda-pagelanguagebutton',
+			'id' => 'ext-wikilambda-language-selector',
 			'text' => '',
 			'active' => false,
 			'link-class' => [ 'wikifunctions-trigger' ],

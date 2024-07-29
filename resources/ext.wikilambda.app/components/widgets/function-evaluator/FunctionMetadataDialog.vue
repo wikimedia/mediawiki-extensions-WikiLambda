@@ -6,49 +6,38 @@
 -->
 <template>
 	<cdx-dialog
-		class="ext-wikilambda-metadata-dialog"
-		:title="$i18n( 'wikilambda-about-widget-accessible-title' ).text()"
+		class="ext-wikilambda-app-function-metadata-dialog"
+		:title="$i18n( 'wikilambda-functioncall-metadata-accessible-title' ).text()"
 		:open="open"
 		@update:open="closeDialog"
 	>
 		<!-- Dialog Header -->
 		<template #header>
-			<div class="cdx-dialog__header--default">
-				<div class="cdx-dialog__header__title-group">
-					<h2 class="cdx-dialog__header__title">
-						{{ $i18n( 'wikilambda-function-evaluator-result-details' ).text() }}
-					</h2>
-					<p
-						v-if="headerText"
-						class="cdx-dialog__header__subtitle"
-						:lang="headerText.langCode"
-						:dir="headerText.langDir"
-					>
+			<wl-custom-dialog-header @close="closeDialog">
+				<template #title>
+					{{ $i18n( 'wikilambda-function-evaluator-result-details' ).text() }}
+				</template>
+				<template v-if="headerText" #subtitle>
+					<span :lang="headerText.langCode" :dir="headerText.langDir">
 						{{ headerText.label }}
-					</p>
-				</div>
-
-				<div class="ext-wikilambda-metadata-dialog-helplink">
-					<cdx-icon :icon="icons.cdxIconHelpNotice"></cdx-icon>
-					<a
-						:title="tooltipMetaDataHelpLink"
-						:href="parsedMetaDataHelpLink"
-						target="_blank"
-					>{{ $i18n( 'wikilambda-helplink-button' ).text() }}</a>
-					<cdx-button
-						weight="quiet"
-						class="cdx-dialog__header__close-button"
-						:aria-label="$i18n( 'wikilambda-dialog-close' ).text()"
-						@click="closeDialog"
-					>
-						<cdx-icon :icon="icons.cdxIconClose"></cdx-icon>
-					</cdx-button>
-				</div>
-			</div>
+					</span>
+				</template>
+				<template #extra>
+					<div class="ext-wikilambda-app-function-metadata-dialog__helplink">
+						<cdx-icon :icon="icons.cdxIconHelpNotice"></cdx-icon>
+						<a
+							:title="tooltipMetaDataHelpLink"
+							:href="parsedMetaDataHelpLink"
+							target="_blank">
+							{{ $i18n( 'wikilambda-helplink-button' ).text() }}
+						</a>
+					</div>
+				</template>
+			</wl-custom-dialog-header>
 		</template>
 
 		<!-- Dialog Body -->
-		<div v-if="apiErrors.length > 0" class="ext-wikilambda-metadata-dialog-body">
+		<div v-if="apiErrors.length > 0" class="ext-wikilambda-app-function-metadata-dialog__body">
 			<cdx-message
 				v-for="( error, index ) in apiErrors"
 				:key="'dialog-error-' + index"
@@ -59,19 +48,19 @@
 				<div v-html="getErrorMessage( error )"></div>
 			</cdx-message>
 		</div>
-		<div v-else class="ext-wikilambda-metadata-dialog-body">
+		<div v-else class="ext-wikilambda-app-function-metadata-dialog__body">
 			<cdx-field
 				v-if="hasNestedMetadata"
-				class="ext-wikilambda-metadata-dialog-select-block">
+				class="ext-wikilambda-app-function-metadata-dialog__select-block">
 				<cdx-select
 					v-model:selected="selectedMetadataPath"
-					class="ext-wikilambda-metadata-dialog-select"
+					class="ext-wikilambda-app-function-metadata-dialog__select"
 					:class="selectedMenuItemClass"
 					:menu-items="functionMenuItems"
 					@update:selected="setSelectedMetadata"
 				></cdx-select>
 				<template #label>
-					Function calls
+					{{ $i18n( 'wikilambda-functioncall-metadata-select-label' ).text() }}
 				</template>
 			</cdx-field>
 
@@ -92,13 +81,13 @@
 					>{{ section.description.labelOrUntitled }}</span>
 					<span v-else>{{ section.description }}</span>
 				</template>
-				<ul class="ext-wikilambda-metadata-dialog-content">
+				<ul class="ext-wikilambda-app-function-metadata-dialog__content">
 					<li
 						v-for="( item, itemIndex ) in section.content"
 						:key="'item' + itemIndex"
-						class="ext-wikilambda-metadata-dialog-key"
+						class="ext-wikilambda-app-function-metadata-dialog__key"
 					>
-						<span class="ext-wikilambda-metadata-dialog-key-title">{{ item.title }}</span>:
+						<span class="ext-wikilambda-app-function-metadata-dialog__key-title">{{ item.title }}</span>:
 						<template v-if="item.value">
 							<a
 								v-if="item.url"
@@ -117,7 +106,7 @@
 							<li
 								v-for="( subitem, subindex ) in item.content"
 								:key="'subitem' + subindex"
-								class="ext-wikilambda-metadata-dialog-subkey"
+								class="ext-wikilambda-app-function-metadata-dialog__subkey"
 							>
 								{{ subitem.title }}: {{ subitem.value }}
 							</li>
@@ -132,31 +121,31 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const CdxAccordion = require( '@wikimedia/codex' ).CdxAccordion,
-	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
 	CdxField = require( '@wikimedia/codex' ).CdxField,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	CdxSelect = require( '@wikimedia/codex' ).CdxSelect,
-	Constants = require( '../../Constants.js' ),
+	Constants = require( '../../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
-	metadataConfig = require( '../../mixins/metadata.js' ),
-	schemata = require( '../../mixins/schemata.js' ).methods,
-	errorUtils = require( '../../mixins/errorUtils.js' ),
-	typeUtils = require( '../../mixins/typeUtils.js' ).methods,
-	LabelData = require( '../../store/classes/LabelData.js' ),
-	icons = require( '../../../lib/icons.json' );
+	CustomDialogHeader = require( '../../base/CustomDialogHeader.vue' ),
+	metadataConfig = require( '../../../mixins/metadata.js' ),
+	schemata = require( '../../../mixins/schemata.js' ).methods,
+	errorUtils = require( '../../../mixins/errorUtils.js' ),
+	typeUtils = require( '../../../mixins/typeUtils.js' ).methods,
+	LabelData = require( '../../../store/classes/LabelData.js' ),
+	icons = require( '../../../../lib/icons.json' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-metadata-dialog',
 	components: {
 		'cdx-accordion': CdxAccordion,
-		'cdx-button': CdxButton,
 		'cdx-dialog': CdxDialog,
 		'cdx-field': CdxField,
 		'cdx-icon': CdxIcon,
 		'cdx-message': CdxMessage,
-		'cdx-select': CdxSelect
+		'cdx-select': CdxSelect,
+		'wl-custom-dialog-header': CustomDialogHeader
 	},
 	mixins: [ metadataConfig, errorUtils ],
 	props: {
@@ -279,7 +268,7 @@ module.exports = exports = defineComponent( {
 			const selectedMenuItem = this.functionMenuItems
 				.find( ( menuItem ) => menuItem.value === this.selectedMetadataPath );
 			return selectedMenuItem ?
-				`ext-wikilambda-metadata-dialog-selected-${ selectedMenuItem.state }` :
+				`ext-wikilambda-app-function-metadata-dialog__selected--${ selectedMenuItem.state }` :
 				'';
 		}
 	} ),
@@ -363,8 +352,8 @@ module.exports = exports = defineComponent( {
 				label: labelizedFunctionCall,
 				value: uniqueId,
 				style: `--menuItemLevel: ${ depth };`,
-				class: 'ext-wikilambda-metadata-dialog-menu-item ' +
-					`ext-wikilambda-metadata-dialog-menu-item-${ state }`,
+				class: 'ext-wikilambda-app-function-metadata-dialog__menu-item ' +
+					`ext-wikilambda-app-function-metadata-dialog__menu-item--${ state }`,
 				icon: !errors ? icons.cdxIconSuccess : icons.cdxIconError,
 				state
 			} ];
@@ -779,75 +768,58 @@ module.exports = exports = defineComponent( {
 </script>
 
 <style lang="less">
-@import '../../ext.wikilambda.app.variables.less';
+@import '../../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-metadata-dialog {
-	.cdx-dialog__header--default {
-		align-items: flex-start;
-		gap: @spacing-100;
-
-		.cdx-dialog__header__title-group {
-			margin-top: @spacing-12;
-		}
-	}
-
-	.ext-wikilambda-metadata-dialog-helplink {
+.ext-wikilambda-app-function-metadata-dialog {
+	.ext-wikilambda-app-function-metadata-dialog__helplink {
 		display: flex;
 		align-items: center;
-		justify-content: flex-end;
 		gap: @spacing-25;
-		margin-top: -@spacing-25;
+	}
 
-		> a {
-			margin-right: @spacing-25;
+	.ext-wikilambda-app-function-metadata-dialog__body {
+		color: @color-base;
+	}
+
+	.ext-wikilambda-app-function-metadata-dialog__content {
+		font-size: @wl-font-size-base;
+	}
+
+	.ext-wikilambda-app-function-metadata-dialog__select-block {
+		padding-bottom: @spacing-100;
+	}
+
+	.ext-wikilambda-app-function-metadata-dialog__select {
+		width: 100%;
+	}
+
+	.ext-wikilambda-app-function-metadata-dialog__selected {
+		&--pass {
+			.cdx-icon {
+				color: @color-success;
+			}
 		}
 
-		> .cdx-icon {
-			color: @color-base;
+		&--fail {
+			.cdx-icon {
+				color: @color-destructive;
+			}
 		}
 	}
 
-	.ext-wikilambda-metadata-dialog-body {
-		color: @color-base;
+	.ext-wikilambda-app-function-metadata-dialog__menu-item {
+		--spacing-75: @spacing-75;
+		padding-left: ~'calc( var(--spacing-75) * var(--menuItemLevel) )';
 
-		li {
-			font-size: @wl-font-size-base;
+		&--pass {
+			.cdx-icon {
+				color: @color-success;
+			}
 		}
 
-		.ext-wikilambda-metadata-dialog-select-block {
-			padding-bottom: @spacing-100;
-
-			.ext-wikilambda-metadata-dialog-select {
-				width: 100%;
-
-				&.ext-wikilambda-metadata-dialog-selected-pass {
-					.cdx-icon {
-						color: @color-success;
-					}
-				}
-
-				&.ext-wikilambda-metadata-dialog-selected-fail {
-					.cdx-icon {
-						color: @color-destructive;
-					}
-				}
-
-				.ext-wikilambda-metadata-dialog-menu-item {
-					--spacing-75: @spacing-75;
-					padding-left: ~'calc( var(--spacing-75) * var(--menuItemLevel) )';
-
-					&.ext-wikilambda-metadata-dialog-menu-item-pass {
-						.cdx-icon {
-							color: @color-success;
-						}
-					}
-
-					&.ext-wikilambda-metadata-dialog-menu-item-fail {
-						.cdx-icon {
-							color: @color-destructive;
-						}
-					}
-				}
+		&--fail {
+			.cdx-icon {
+				color: @color-destructive;
 			}
 		}
 	}

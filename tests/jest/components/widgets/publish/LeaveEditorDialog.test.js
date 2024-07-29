@@ -7,7 +7,7 @@
 'use strict';
 
 const { config, mount } = require( '@vue/test-utils' ),
-	LeaveEditorDialog = require( '../../../../resources/ext.wikilambda.app/components/widgets/LeaveEditorDialog.vue' );
+	LeaveEditorDialog = require( '../../../../../resources/ext.wikilambda.app/components/widgets/publish/LeaveEditorDialog.vue' );
 
 // Ignore all "teleport" behavior for the purpose of testing Dialog;
 // see https://test-utils.vuejs.org/guide/advanced/teleport.html
@@ -22,7 +22,7 @@ describe( 'LeaveEditorDialog', () => {
 				showDialog: false
 			}
 		} );
-		expect( wrapper.find( '.ext-wikilambda-leaveeditordialog' ).exists() ).toBe( true );
+		expect( wrapper.find( '.ext-wikilambda-app-leave-editor-dialog' ).exists() ).toBe( true );
 	} );
 
 	it( 'runs the given continue callback on "discard edits" button click', () => {

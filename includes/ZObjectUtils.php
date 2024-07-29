@@ -64,13 +64,13 @@ class ZObjectUtils {
 	 * @return string
 	 */
 	public static function getBCP47ClassName( string $type, string $langCode, string $userLangCode ) {
-		$baseClass = 'ext-wikilambda-editpage-header--bcp47-code';
+		$baseClass = 'ext-wikilambda-editpage-header__bcp47-code';
 		$modifierClass = $type === 'name'
-			? 'ext-wikilambda-editpage-header--bcp47-code-name'
-			: 'ext-wikilambda-editpage-header--bcp47-code-type';
+			? 'ext-wikilambda-editpage-header__bcp47-code-name'
+			: 'ext-wikilambda-editpage-header__bcp47-code-type';
 		$className = $baseClass . ' ' . $modifierClass;
 		if ( $langCode === $userLangCode ) {
-			$className .= ' ext-wikilambda-editpage-header--bcp47-code-hidden';
+			$className .= ' ext-wikilambda-editpage-header__bcp47-code--hidden';
 		}
 		return $className;
 	}

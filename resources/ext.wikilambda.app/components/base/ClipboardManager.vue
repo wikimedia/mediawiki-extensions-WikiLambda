@@ -1,3 +1,9 @@
+<!--
+	WikiLambda Vue component for Clipboard Manager
+
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
 <template>
 	<!-- Placeholder -->
 	<div></div>

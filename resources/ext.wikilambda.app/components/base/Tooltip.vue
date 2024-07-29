@@ -7,15 +7,15 @@
 <template>
 	<div>
 		<div
-			class="ext-wikilambda-tooltip_button"
+			class="ext-wikilambda-app-tooltip"
 			@click="toggleVisibility"
 			@mouseover="isVisible = true"
 			@mouseleave="isVisible = false"
 		>
 			<slot></slot>
 		</div>
-		<div v-if="isVisible" class="ext-wikilambda-tooltip_content">
-			<div v-if="header" class="ext-wikilambda-tooltip_content_header">
+		<div v-if="isVisible" class="ext-wikilambda-app-tooltip__content">
+			<div v-if="header" class="ext-wikilambda-app-tooltip__header">
 				{{ header }}
 			</div>
 			<div>
@@ -32,8 +32,7 @@
 const { defineComponent } = require( 'vue' );
 
 module.exports = exports = defineComponent( {
-	name: 'wl-tooltip-item',
-	// TODO (T301481): smart positioning of tooltip
+	name: 'wl-tooltip',
 	props: {
 		header: {
 			type: String,
@@ -66,13 +65,11 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-tooltip {
-	&_button {
-		background: none;
-		border: 0;
-	}
+.ext-wikilambda-app-tooltip {
+	background: none;
+	border: 0;
 
-	&_content {
+	.ext-wikilambda-app-tooltip__content {
 		position: absolute;
 		width: 200px;
 		padding: @spacing-50;
@@ -84,36 +81,36 @@ module.exports = exports = defineComponent( {
 		font-weight: @font-weight-normal;
 		z-index: @z-index-overlay;
 
-		&_header {
-			font-weight: @font-weight-bold;
-			margin-bottom: 5%;
+		&::after,
+		&::before {
+			bottom: 100%;
+			left: 10%;
+			border: solid transparent;
+			content: '';
+			height: 0;
+			width: 0;
+			position: absolute;
+			pointer-events: none;
+		}
+
+		&::after {
+			border-color: rgba( 255, 255, 255, 0 );
+			border-bottom-color: @border-color-inverted;
+			border-width: 10px;
+			margin-left: -10px;
+		}
+
+		&::before {
+			border-color: rgba( 255, 255, 255, 0 );
+			border-bottom-color: @border-color-base;
+			border-width: 11px;
+			margin-left: -11px;
 		}
 	}
 
-	&_content::after,
-	&_content::before {
-		bottom: 100%;
-		left: 10%;
-		border: solid transparent;
-		content: '';
-		height: 0;
-		width: 0;
-		position: absolute;
-		pointer-events: none;
-	}
-
-	&_content::after {
-		border-color: rgba( 255, 255, 255, 0 );
-		border-bottom-color: @border-color-inverted;
-		border-width: 10px;
-		margin-left: -10px;
-	}
-
-	&_content::before {
-		border-color: rgba( 255, 255, 255, 0 );
-		border-bottom-color: @border-color-base;
-		border-width: 11px;
-		margin-left: -11px;
+	.ext-wikilambda-app-tooltip__header {
+		font-weight: @font-weight-bold;
+		margin-bottom: 5%;
 	}
 }
 </style>

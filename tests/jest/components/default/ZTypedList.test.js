@@ -55,7 +55,7 @@ describe( 'ZTypedList', () => {
 				}
 			} );
 
-			expect( wrapper.find( '.ext-wikilambda-ztyped-list__add-button' ).exists() ).toBe( false );
+			expect( wrapper.find( '.ext-wikilambda-app-typed-list__add-button' ).exists() ).toBe( false );
 		} );
 
 		it( 'does not render the list type when not expanded', () => {
@@ -66,7 +66,7 @@ describe( 'ZTypedList', () => {
 					expanded: false
 				}
 			} );
-			expect( wrapper.find( '.ext-wikilambda-ztyped-list__type' ).exists() ).toBe( false );
+			expect( wrapper.find( '.ext-wikilambda-app-typed-list__type' ).exists() ).toBe( false );
 		} );
 
 		it( 'does render the list type when expanded', () => {
@@ -136,7 +136,7 @@ describe( 'ZTypedList', () => {
 				}
 			} );
 
-			expect( wrapper.find( '.ext-wikilambda-ztyped-list-add-button' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-typed-list-items__add-button' ).exists() ).toBe( true );
 		} );
 
 		it( 'emits add-list-item when the add list item button is clicked', async () => {
@@ -155,7 +155,7 @@ describe( 'ZTypedList', () => {
 				}
 			} );
 
-			wrapper.get( '.ext-wikilambda-ztyped-list-add-button' ).getComponent( CdxButton ).vm.$emit( 'click' );
+			wrapper.get( '.ext-wikilambda-app-typed-list-items__add-button' ).getComponent( CdxButton ).vm.$emit( 'click' );
 			expect( wrapper.emitted() ).toHaveProperty( 'add-list-item', [ [ { value: 'Z6' } ] ] );
 		} );
 	} );

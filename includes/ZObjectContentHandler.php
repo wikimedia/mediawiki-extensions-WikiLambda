@@ -369,16 +369,16 @@ class ZObjectContentHandler extends ContentHandler {
 	/**
 	 * Generate the special "title" shown on view pages
 	 *
-	 * <span class="ext-wikilambda-viewpage-header" lang="es">
-	 *     <span class="ext-wikilambda-viewpage-header--bcp47-code">en</span>
-	 *     &#20;
-	 *     <span class="ext-wikilambda-viewpage-header-label">multiply</span>
-	 *     <span class="ext-wikilambda-viewpage-header-zid">Z12345</span>
-	 *     <div class="ext-wikilambda-viewpage-header-type">
-	 *         <span class="ext-wikilambda-viewpage-header--bcp47-code">en</span>
-	 *         &#20;
-	 *         <span class="ext-wikilambda-viewpage-header-type-label">Function</span>
-	 *     </div>
+	 * <span lang="es" class="ext-wikilambda-viewpage-header">
+	 * 		<span data-title="English" class="ext-wikilambda-viewpage-header__bcp47-code">en</span>
+	 * 		<span class="ext-wikilambda-viewpage-header__title ext-wikilambda-viewpage-header__title--function-name">
+	 * 			multiply
+	 * 		</span>
+	 * 		<span class="ext-wikilambda-viewpage-header__zid">Z12345</span>
+	 * 		<div class="ext-wikilambda-viewpage-header__type">
+	 * 			<span data-title="English" class="ext-wikilambda-viewpage-header__bcp47-code">en</span>
+	 * 			<span class="ext-wikilambda-viewpage-header__type-label">Function</span>
+	 * 		</div>
 	 * </span>
 	 *
 	 * @param ZObjectContent $content
@@ -430,7 +430,7 @@ class ZObjectContentHandler extends ContentHandler {
 			$targetLabelLanguageCode
 		);
 
-		$bcp47CodeClassName = 'ext-wikilambda-viewpage-header--bcp47-code';
+		$bcp47CodeClassName = 'ext-wikilambda-viewpage-header__bcp47-code';
 
 		$targetDisplayLabelWidget = '';
 		// If the object type label (e.g. 'Function') is not in the user's language, show a BCP47 code widget
@@ -451,14 +451,13 @@ class ZObjectContentHandler extends ContentHandler {
 		}
 
 		$untitledStyle = $targetLabel === wfMessage( 'wikilambda-editor-default-name' )->text() ?
-			'ext-wikilambda-viewpage-header--title-untitled' : null;
+			'ext-wikilambda-viewpage-header__title--untitled' : null;
 
 		$labelSpan = Html::element(
 			'span',
 			[
 				'class' => [
-					'ext-wikilambda-viewpage-header-title',
-					'ext-wikilambda-viewpage-header-title--function-name',
+					'ext-wikilambda-viewpage-header__title ext-wikilambda-viewpage-header__title--function-name',
 					$untitledStyle
 				]
 			],
@@ -468,7 +467,7 @@ class ZObjectContentHandler extends ContentHandler {
 		$zidSpan = Html::element(
 			'span',
 			[
-				'class' => 'ext-wikilambda-viewpage-header-zid'
+				'class' => 'ext-wikilambda-viewpage-header__zid'
 			],
 			$title->getText()
 		);
@@ -482,11 +481,11 @@ class ZObjectContentHandler extends ContentHandler {
 				. $labelSpan . ' ' . $zidSpan;
 
 		$typeSubtitle = Html::rawElement(
-			'div', [ 'class' => 'ext-wikilambda-viewpage-header-type' ],
+			'div', [ 'class' => 'ext-wikilambda-viewpage-header__type' ],
 			$targetDisplayTypeWidget . ' ' . Html::element(
 				'span',
 				[
-					'class' => 'ext-wikilambda-viewpage-header-type-label'
+					'class' => 'ext-wikilambda-viewpage-header__type-label'
 				],
 				$targetTypeLabel
 			)

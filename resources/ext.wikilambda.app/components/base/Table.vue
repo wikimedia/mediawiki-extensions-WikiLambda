@@ -6,30 +6,33 @@
 -->
 <template>
 	<div
-		class="ext-wikilambda-table"
-		:data-has-border="isBordered"
+		class="ext-wikilambda-app-table"
+		:class="{ 'ext-wikilambda-app-table--bordered': isBordered }"
 	>
-		<div class="ext-wikilambda-table__title">
+		<div class="ext-wikilambda-app-table__title">
 			<slot name="table-title"></slot>
 		</div>
 		<cdx-progress-bar
 			v-if="isLoading"
-			class="ext-wikilambda-table__loading"
+			class="ext-wikilambda-app-table__loading"
 			inline
 		>
 		</cdx-progress-bar>
-		<div class="ext-wikilambda-table__body">
-			<div v-if="!header && body.length === 0" class="ext-wikilambda-table__body__empty">
+		<div class="ext-wikilambda-app-table__body">
+			<div v-if="!header && body.length === 0" class="ext-wikilambda-app-table__body-empty">
 				<slot name="table-empty-text"></slot>
 			</div>
-			<table v-else class="ext-wikilambda-table__content">
-				<thead v-if="!hideHeader" class="ext-wikilambda-table__content__header ext-wikilambda-table__content">
+			<table v-else class="ext-wikilambda-app-table__container">
+				<thead
+					v-if="!hideHeader"
+					class="ext-wikilambda-app-table__header">
 					<tr>
 						<template v-for="( n, i ) in header">
 							<th
 								v-if="n"
 								:key="i"
-								class="ext-wikilambda-table__content__item ext-wikilambda-table__content__item--header"
+								class="ext-wikilambda-app-table__item
+								ext-wikilambda-app-table__item--header"
 								:class="n.class"
 								:colspan="n.colspan"
 							>
@@ -50,14 +53,13 @@
 					<tr
 						v-for="( n, i ) in body"
 						:key="i"
-						class="ext-wikilambda-table__content"
 						:class="n ? ( n.class ? n.class : '' ) : ''"
 					>
 						<template v-for="( _, item ) in header">
 							<td
 								v-if="n && item in n"
 								:key="item"
-								class="ext-wikilambda-table__content__item"
+								class="ext-wikilambda-app-table__item"
 								:class="n[ item ] ? n[ item ].class : ''"
 							>
 								<template v-if="n[ item ].component">
@@ -131,87 +133,89 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-table {
+.ext-wikilambda-app-table {
 	position: relative;
 	border: 1px solid @border-color-subtle;
 	border-radius: @border-radius-base;
 
-	&__title {
+	.ext-wikilambda-app-table__title {
 		white-space: nowrap;
 	}
 
-	&__loading {
+	.ext-wikilambda-app-table__loading {
 		position: absolute;
 	}
 
-	&__body {
+	.ext-wikilambda-app-table__body {
 		width: 100%;
 		overflow-x: auto;
-
-		table {
-			margin: 0;
-		}
-
-		&__empty {
-			height: 50px;
-			display: flex;
-			align-items: center;
-		}
 	}
 
-	&__content {
+	.ext-wikilambda-app-table__body-empty {
+		height: 50px;
+		display: flex;
+		align-items: center;
+	}
+
+	.ext-wikilambda-app-table__container {
 		position: relative;
 		width: 100%; // This is the fallback for non WebKit / Mozilla-based browsers.
 		width: -moz-available;
 		width: -webkit-fill-available;
 		border-collapse: collapse;
+		margin: 0;
+	}
 
-		&__item {
-			align-items: center;
-			vertical-align: middle;
-			border-top: 1px solid @background-color-interactive;
+	// This base mixin is used to style the table items
+	.mixin-base-item-styles() {
+		align-items: center;
+		vertical-align: middle;
+		font-size: 1em;
+		line-height: 1.4em;
+		letter-spacing: -0.003em;
+		padding: 12px 0;
+
+		span,
+		div,
+		a {
 			font-size: 1em;
 			line-height: 1.4em;
-			letter-spacing: -0.003em;
-			padding: 12px 0 12px 0;
-
-			span,
-			div,
-			a {
-				font-size: 1em;
-				line-height: 1.4em;
-			}
-
-			&:last-child {
-				border-right: 0;
-			}
 		}
 
-		&__header {
-			.ext-wikilambda-table__content__item {
-				border-top: 0;
-				border-bottom: 1px solid @border-color-subtle;
-				white-space: nowrap;
+		&:last-child {
+			border-right: 0;
+		}
 
-				&--header {
-					text-align: left;
-				}
-			}
+		&--header {
+			white-space: nowrap;
+			text-align: left;
 
-			div.ext-wikilambda-table__content__item--header:last-of-type {
+			&:last-of-type {
 				border-right: 0;
 			}
 		}
 	}
 
-	&[ data-has-border='true' ] {
-		.ext-wikilambda-table__content .ext-wikilambda-table__content__item {
+	.ext-wikilambda-app-table__item {
+		.mixin-base-item-styles();
+		border-top: 1px solid @background-color-interactive;
+
+		&--header {
+			border-top: 0;
+			border-bottom: 1px solid @border-color-subtle;
+		}
+	}
+
+	&--bordered {
+		.ext-wikilambda-app-table__item {
+			.mixin-base-item-styles();
 			border-top: 1px solid @border-color-subtle;
 			border-right: 1px solid @border-color-subtle;
-		}
 
-		.ext-wikilambda-table__content .ext-wikilambda-table__content__item:last-child {
-			border-right: 0;
+			&--header {
+				border-top: 1px solid @border-color-subtle;
+				border-bottom: 1px solid @border-color-subtle;
+			}
 		}
 	}
 }

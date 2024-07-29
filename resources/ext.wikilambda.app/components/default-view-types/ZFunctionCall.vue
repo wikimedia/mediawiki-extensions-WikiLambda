@@ -5,9 +5,10 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-function-call">
+	<div class="ext-wikilambda-app-function-call">
 		<cdx-icon
 			:icon="icon"
+			class="ext-wikilambda-app-function-call__icon"
 			:class="iconClass"
 		></cdx-icon>
 		<wl-z-object-to-string
@@ -60,7 +61,7 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		iconClass: function () {
-			return !this.value ? 'ext-wikilambda-function-call-undefined' : '';
+			return !this.value ? 'ext-wikilambda-app-function-call__icon--undefined' : '';
 		}
 	} )
 } );
@@ -69,16 +70,16 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-function-call {
+.ext-wikilambda-app-function-call {
 	display: flex;
 	flex-direction: row;
 	justify-content: flex-start;
 	gap: @spacing-25;
 
-	.cdx-icon {
+	.ext-wikilambda-app-function-call__icon {
 		color: @color-progressive;
 
-		&.ext-wikilambda-function-call-undefined {
+		&--undefined {
 			color: @color-error;
 		}
 	}

@@ -52,12 +52,12 @@ describe( 'LanguageSelector', () => {
 
 	it( 'renders without errors', () => {
 		const wrapper = shallowMount( LanguageSelector );
-		expect( wrapper.find( '.ext-wikilambda-page-language-selector' ).exists() ).toBe( true );
+		expect( wrapper.find( '.ext-wikilambda-language-selector' ).exists() ).toBe( true );
 	} );
 
 	it( 'renders toggle button with language name', () => {
 		const wrapper = mount( LanguageSelector );
-		const button = wrapper.find( '.ext-wikilambda-page-language-selector-trigger' );
+		const button = wrapper.find( '.ext-wikilambda-language-selector__trigger' );
 		expect( button.text() ).toBe( 'English' );
 	} );
 
@@ -65,14 +65,14 @@ describe( 'LanguageSelector', () => {
 		const wrapper = mount( LanguageSelector );
 
 		// Assert that dialog is initially hidden
-		expect( wrapper.find( '.ext-wikilambda-page-language-selector-dropdown__visible' ).exists() ).toBe( false );
+		expect( wrapper.find( '.ext-wikilambda-language-selector__dropdown--visible' ).exists() ).toBe( false );
 
 		// Click language button
-		const button = wrapper.find( '.ext-wikilambda-page-language-selector-trigger' );
+		const button = wrapper.find( '.ext-wikilambda-language-selector__trigger' );
 		button.trigger( 'click' );
 
 		// Assert that dialog is now visible
-		await waitFor( () => expect( wrapper.find( '.ext-wikilambda-page-language-selector-dropdown__visible' ).exists() ).toBe( true )
+		await waitFor( () => expect( wrapper.find( '.ext-wikilambda-language-selector__dropdown--visible' ).exists() ).toBe( true )
 		);
 	} );
 
@@ -80,14 +80,14 @@ describe( 'LanguageSelector', () => {
 		const wrapper = mount( LanguageSelector );
 
 		// Assert that dialog is initially hidden
-		expect( wrapper.find( '.ext-wikilambda-page-language-selector-dropdown__visible' ).exists() ).toBe( false );
+		expect( wrapper.find( '.ext-wikilambda-language-selector__dropdown--visible' ).exists() ).toBe( false );
 
 		// Click language button
-		const button = wrapper.find( '.ext-wikilambda-page-language-selector-trigger' );
+		const button = wrapper.find( '.ext-wikilambda-language-selector__trigger' );
 		button.trigger( 'click' );
 
 		// Assert that dialog is now visible
-		await waitFor( () => expect( wrapper.find( '.ext-wikilambda-page-language-selector-dropdown__visible' ).exists() ).toBe( true ) );
+		await waitFor( () => expect( wrapper.find( '.ext-wikilambda-language-selector__dropdown--visible' ).exists() ).toBe( true ) );
 
 		// Click outside the dialog
 		const clickEvent = new MouseEvent( 'click', {
@@ -98,34 +98,34 @@ describe( 'LanguageSelector', () => {
 		document.dispatchEvent( clickEvent );
 
 		// Assert that dialog is now hidden
-		await waitFor( () => expect( wrapper.find( '.ext-wikilambda-page-language-selector-dropdown__visible' ).exists() ).toBe( false ) );
+		await waitFor( () => expect( wrapper.find( '.ext-wikilambda-language-selector__dropdown--visible' ).exists() ).toBe( false ) );
 	} );
 
 	it( 'keeps the search dialog visble', async () => {
 		const wrapper = mount( LanguageSelector );
 
 		// Assert that dialog is initially hidden
-		expect( wrapper.find( '.ext-wikilambda-page-language-selector-dropdown__visible' ).exists() ).toBe( false );
+		expect( wrapper.find( '.ext-wikilambda-language-selector__dropdown--visible' ).exists() ).toBe( false );
 
 		// Click language button
-		wrapper.find( '.ext-wikilambda-page-language-selector-trigger' ).trigger( 'click' );
+		wrapper.find( '.ext-wikilambda-language-selector__trigger' ).trigger( 'click' );
 
 		// Assert that dialog is now visible
-		await waitFor( () => expect( wrapper.find( '.ext-wikilambda-page-language-selector-dropdown__visible' ).exists() ).toBe( true )
+		await waitFor( () => expect( wrapper.find( '.ext-wikilambda-language-selector__dropdown--visible' ).exists() ).toBe( true )
 		);
 
 		// Click the button again
-		wrapper.find( '.ext-wikilambda-page-language-selector-trigger' ).trigger( 'click' );
+		wrapper.find( '.ext-wikilambda-language-selector__trigger' ).trigger( 'click' );
 
 		// Assert that dialog is still visible
-		await waitFor( () => expect( wrapper.find( '.ext-wikilambda-page-language-selector-dropdown__visible' ).exists() ).toBe( true )
+		await waitFor( () => expect( wrapper.find( '.ext-wikilambda-language-selector__dropdown--visible' ).exists() ).toBe( true )
 		);
 
 		// Focus on the lookup
-		wrapper.find( '.ext-wikilambda-page-language-selector-lookup' ).trigger( 'focus' );
+		wrapper.find( '.ext-wikilambda-language-selector__lookup' ).trigger( 'focus' );
 
 		// Assert that dialog is still visible
-		await waitFor( () => expect( wrapper.find( '.ext-wikilambda-page-language-selector-dropdown__visible' ).exists() ).toBe( true )
+		await waitFor( () => expect( wrapper.find( '.ext-wikilambda-language-selector__dropdown--visible' ).exists() ).toBe( true )
 		);
 	} );
 
@@ -133,10 +133,10 @@ describe( 'LanguageSelector', () => {
 		const wrapper = mount( LanguageSelector );
 
 		// Click language button
-		wrapper.find( '.ext-wikilambda-page-language-selector-trigger' ).trigger( 'click' );
+		wrapper.find( '.ext-wikilambda-language-selector__trigger' ).trigger( 'click' );
 
 		// Wait for lookup to be found
-		await waitFor( () => expect( wrapper.find( '.ext-wikilambda-page-language-selector-lookup' ).exists() ).toBe( true )
+		await waitFor( () => expect( wrapper.find( '.ext-wikilambda-language-selector__lookup' ).exists() ).toBe( true )
 		);
 
 		// Input substring 'ita' in the lookup
@@ -158,10 +158,10 @@ describe( 'LanguageSelector', () => {
 		const wrapper = mount( LanguageSelector );
 
 		// Click language button
-		wrapper.find( '.ext-wikilambda-page-language-selector-trigger' ).trigger( 'click' );
+		wrapper.find( '.ext-wikilambda-language-selector__trigger' ).trigger( 'click' );
 
 		// Wait for lookup to be found
-		await waitFor( () => expect( wrapper.find( '.ext-wikilambda-page-language-selector-lookup' ).exists() ).toBe( true )
+		await waitFor( () => expect( wrapper.find( '.ext-wikilambda-language-selector__lookup' ).exists() ).toBe( true )
 		);
 
 		// Input substring 'ita' in the lookup
@@ -176,10 +176,10 @@ describe( 'LanguageSelector', () => {
 		const wrapper = mount( LanguageSelector );
 
 		// Click language button
-		wrapper.find( '.ext-wikilambda-page-language-selector-trigger' ).trigger( 'click' );
+		wrapper.find( '.ext-wikilambda-language-selector__trigger' ).trigger( 'click' );
 
 		// Wait for lookup to be found
-		await waitFor( () => expect( wrapper.find( '.ext-wikilambda-page-language-selector-lookup' ).exists() ).toBe( true )
+		await waitFor( () => expect( wrapper.find( '.ext-wikilambda-language-selector__lookup' ).exists() ).toBe( true )
 		);
 
 		// Input substring 'ita' in the lookup
@@ -222,10 +222,10 @@ describe( 'LanguageSelector', () => {
 			jest.spyOn( wrapper.vm, 'redirectToLanguagePage' );
 
 			// Click language button
-			wrapper.find( '.ext-wikilambda-page-language-selector-trigger' ).trigger( 'click' );
+			wrapper.find( '.ext-wikilambda-language-selector__trigger' ).trigger( 'click' );
 
 			// Wait for lookup to be found
-			await waitFor( () => expect( wrapper.find( '.ext-wikilambda-page-language-selector-lookup' ).exists() ).toBe( true )
+			await waitFor( () => expect( wrapper.find( '.ext-wikilambda-language-selector__lookup' ).exists() ).toBe( true )
 			);
 
 			// Selects option 'en' in the lookup
@@ -233,7 +233,7 @@ describe( 'LanguageSelector', () => {
 			lookup.vm.$emit( 'update:selected', 'en' );
 
 			// Assert that dialog is now closed
-			await waitFor( () => expect( wrapper.find( '.ext-wikilambda-page-language-selector-dropdown__visible' ).exists() ).toBe( false )
+			await waitFor( () => expect( wrapper.find( '.ext-wikilambda-language-selector__dropdown--visible' ).exists() ).toBe( false )
 			);
 
 			// Assert that the redirect method is not called
@@ -255,10 +255,10 @@ describe( 'LanguageSelector', () => {
 			expect( wrapper.vm.isViewPath ).toBe( true );
 
 			// Click language button
-			wrapper.find( '.ext-wikilambda-page-language-selector-trigger' ).trigger( 'click' );
+			wrapper.find( '.ext-wikilambda-language-selector__trigger' ).trigger( 'click' );
 
 			// Wait for lookup to be found
-			await waitFor( () => expect( wrapper.find( '.ext-wikilambda-page-language-selector-lookup' ).exists() ).toBe( true )
+			await waitFor( () => expect( wrapper.find( '.ext-wikilambda-language-selector__lookup' ).exists() ).toBe( true )
 			);
 
 			// Selects option 'it' in the lookup
@@ -284,10 +284,10 @@ describe( 'LanguageSelector', () => {
 			expect( wrapper.vm.isViewPath ).toBe( false );
 
 			// Click language button
-			wrapper.find( '.ext-wikilambda-page-language-selector-trigger' ).trigger( 'click' );
+			wrapper.find( '.ext-wikilambda-language-selector__trigger' ).trigger( 'click' );
 
 			// Wait for lookup to be found
-			await waitFor( () => expect( wrapper.find( '.ext-wikilambda-page-language-selector-lookup' ).exists() ).toBe( true )
+			await waitFor( () => expect( wrapper.find( '.ext-wikilambda-language-selector__lookup' ).exists() ).toBe( true )
 			);
 
 			// Selects option 'it' in the lookup

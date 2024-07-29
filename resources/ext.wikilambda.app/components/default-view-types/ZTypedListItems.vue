@@ -5,30 +5,32 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-ztyped-list-items ext-wikilambda-key-value">
+	<div class="ext-wikilambda-app-typed-list-items ext-wikilambda-app-key-value">
 		<!-- if expanded, show toggle button -->
 		<div
 			v-if="expanded"
-			class="ext-wikilambda-key-value-pre"
+			class="ext-wikilambda-app-key-value__pre"
 		>
 			<wl-expanded-toggle
-				class="ext-wikilambda-key-value-pre-button"
+				class="ext-wikilambda-app-key-value__pre-button"
 				:has-expanded-mode="false"
 				:expanded="true"
 			></wl-expanded-toggle>
 		</div>
 
-		<div class="ext-wikilambda-key-value-main">
+		<div class="ext-wikilambda-app-key-value__main">
 			<!-- if expanded, show key label -->
 			<div
 				v-if="expanded"
 				:class="listItemsEditClass"
-				class="ext-wikilambda-ztyped-list-items-label ext-wikilambda-key-block"
+				class="ext-wikilambda-app-typed-list-items__label ext-wikilambda-app-key-value__key"
 			>
-				<wl-localized-label :label-data="itemsLabel"></wl-localized-label>
+				<wl-localized-label
+					:label-data="itemsLabel"
+					class="ext-wikilambda-app-typed-list-items__localized-label"></wl-localized-label>
 			</div>
 			<!-- else, simply show list of items -->
-			<div class="ext-wikilambda-ztyped-list-items-block ext-wikilambda-value-block">
+			<div class="ext-wikilambda-app-typed-list-items__block ext-wikilambda-app-key_value__value">
 				<wl-z-object-key-value
 					v-for="item in listItemsRowIds"
 					:key="'list-item-' + item"
@@ -41,7 +43,7 @@
 			<!-- Button to add a new item -->
 			<div
 				v-if="edit"
-				class="ext-wikilambda-ztyped-list-add-button"
+				class="ext-wikilambda-app-typed-list-items__add-button"
 			>
 				<cdx-button
 					data-testid="typed-list-add-item"
@@ -117,8 +119,8 @@ module.exports = exports = defineComponent( {
 		 */
 		listItemsEditClass: function () {
 			return this.edit ?
-				'ext-wikilambda-key-block-edit' :
-				'ext-wikilambda-key-block-view';
+				'ext-wikilambda-app-key-value__key--edit' :
+				'ext-wikilambda-app-key-value__key--view';
 		}
 	},
 	methods: {
@@ -135,22 +137,20 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-ztyped-list-items {
+.ext-wikilambda-app-typed-list-items {
 	margin-bottom: 0;
 
-	.ext-wikilambda-ztyped-list-add-button {
+	.ext-wikilambda-app-typed-list-items__add-button {
 		margin-left: -@spacing-50;
 		margin-top: @spacing-75;
 	}
 
-	.ext-wikilambda-ztyped-list-items-block {
+	.ext-wikilambda-app-typed-list-items__block {
 		margin-left: -@spacing-25;
 	}
 
-	.ext-wikilambda-ztyped-list-items-label {
-		label {
-			line-height: @spacing-200;
-		}
+	.ext-wikilambda-app-typed-list-items__localized-label {
+		line-height: @spacing-200;
 	}
 }
 </style>

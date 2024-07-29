@@ -5,7 +5,7 @@
 	@license MIT
 -->
 <template>
-	<wl-widget-base class="ext-wikilambda-function-evaluator" data-testid="function-evaluator">
+	<wl-widget-base class="ext-wikilambda-app-function-evaluator-widget" data-testid="function-evaluator">
 		<template #header>
 			{{ title }}
 		</template>
@@ -15,7 +15,7 @@
 			<cdx-message
 				v-if="userCanRunFunction === false"
 				type="warning"
-				class="ext-wikilambda-function-evaluator-message"
+				class="ext-wikilambda-app-function-evaluator-widget__message"
 			>
 				{{ $i18n( 'wikilambda-function-evaluation-restriction-warning' ).text() }}
 			</cdx-message>
@@ -23,7 +23,7 @@
 			<cdx-message
 				v-if="!hasImplementations && selectedFunctionExists"
 				type="notice"
-				class="ext-wikilambda-function-evaluator-message"
+				class="ext-wikilambda-app-function-evaluator-widget__message"
 				data-testid="function-evaluator-message"
 
 			>
@@ -32,10 +32,10 @@
 			<!-- Function Call -->
 			<div
 				v-if="showFunctionSelector"
-				class="ext-wikilambda-function-evaluator-call"
+				class="ext-wikilambda-app-function-evaluator-widget__call"
 				data-testid="function-evaluator-call"
 			>
-				<div class="ext-wikilambda-key-block">
+				<div class="ext-wikilambda-app-key-value__key">
 					<label
 						:lang="functionCallLabelData.langCode"
 						:dir="functionCallLabelData.langDir"
@@ -52,7 +52,7 @@
 			<!-- Loader for inputs + button -->
 			<div
 				v-if="!selectedFunctionExists && !showFunctionSelector"
-				class="ext-wikilambda-function-evaluator-loader"
+				class="ext-wikilambda-app-function-evaluator-widget__loader"
 				data-testid="function-evaluator-loader">
 				{{ $i18n( 'wikilambda-loading' ).text() }}
 			</div>
@@ -60,10 +60,10 @@
 				<!-- Function Inputs -->
 				<div
 					v-if="hasInputs"
-					class="ext-wikilambda-function-evaluator-inputs"
+					class="ext-wikilambda-app-function-evaluator-widget__inputs"
 					data-testid="function-evaluator-inputs"
 				>
-					<div class="ext-wikilambda-key-block">
+					<div class="ext-wikilambda-app-key-value__key">
 						<label>{{ $i18n( 'wikilambda-function-evaluator-enter-inputs' ).text() }}</label>
 					</div>
 					<wl-z-object-key-value
@@ -75,7 +75,7 @@
 				</div>
 
 				<!-- Run Function button -->
-				<div class="ext-wikilambda-function-evaluator-run-button">
+				<div class="ext-wikilambda-app-function-evaluator-widget__run-button">
 					<cdx-button
 						action="progressive"
 						weight="primary"
@@ -91,11 +91,11 @@
 			<!-- Evaluation Result -->
 			<div
 				v-if="hasResult || running"
-				class="ext-wikilambda-function-evaluator-result-block"
+				class="ext-wikilambda-app-function-evaluator-widget__result-block"
 				data-testid="function-evaluator-result"
 			>
-				<div class="ext-wikilambda-function-evaluator-result">
-					<div class="ext-wikilambda-key-block">
+				<div class="ext-wikilambda-app-function-evaluator-widget__result">
+					<div class="ext-wikilambda-app-key-value__key">
 						<label>{{ $i18n( 'wikilambda-function-evaluator-result' ).text() }}</label>
 					</div>
 					<div v-if="running" data-testid="function-evaluator-running">
@@ -120,14 +120,14 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../Constants.js' ),
+const Constants = require( '../../../Constants.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
-	WidgetBase = require( '../base/WidgetBase.vue' ),
-	ZReference = require( '../default-view-types/ZReference.vue' ),
-	ZObjectKeyValue = require( '../default-view-types/ZObjectKeyValue.vue' ),
-	eventLogUtils = require( '../../mixins/eventLogUtils.js' ),
-	errorUtils = require( '../../mixins/errorUtils.js' ),
+	WidgetBase = require( '../../base/WidgetBase.vue' ),
+	ZReference = require( '../../default-view-types/ZReference.vue' ),
+	ZObjectKeyValue = require( '../../default-view-types/ZObjectKeyValue.vue' ),
+	eventLogUtils = require( '../../../mixins/eventLogUtils.js' ),
+	errorUtils = require( '../../../mixins/errorUtils.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -516,24 +516,24 @@ module.exports = exports = defineComponent( {
 </script>
 
 <style lang="less">
-@import '../../ext.wikilambda.app.variables.less';
+@import '../../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-function-evaluator {
-	.ext-wikilambda-function-evaluator-loader {
+.ext-wikilambda-app-function-evaluator-widget {
+	.ext-wikilambda-app-function-evaluator-widget__loader {
 		font-weight: @font-weight-normal;
 		color: @color-placeholder;
 		white-space: pre-wrap;
 	}
 
-	.ext-wikilambda-function-evaluator-message {
+	.ext-wikilambda-app-function-evaluator-widget__message {
 		margin-bottom: @spacing-125;
 	}
 
-	.ext-wikilambda-function-evaluator-inputs,
-	.ext-wikilambda-function-evaluator-call {
+	.ext-wikilambda-app-function-evaluator-widget__inputs,
+	.ext-wikilambda-app-function-evaluator-widget__call {
 		margin-bottom: @spacing-125;
 
-		> .ext-wikilambda-key-block {
+		> .ext-wikilambda-app-key-value__key {
 			margin-bottom: @spacing-25;
 
 			label {
@@ -543,27 +543,27 @@ module.exports = exports = defineComponent( {
 		}
 	}
 
-	.ext-wikilambda-function-evaluator-result-block {
+	.ext-wikilambda-app-function-evaluator-widget__result-block {
 		margin: 0 -@spacing-75 -@spacing-75;
+	}
 
-		.ext-wikilambda-function-evaluator-result {
-			margin-top: @spacing-75;
-			padding: @spacing-75;
-			background-color: @background-color-progressive-subtle;
+	.ext-wikilambda-app-function-evaluator-widget__result {
+		margin-top: @spacing-75;
+		padding: @spacing-75;
+		background-color: @background-color-progressive-subtle;
 
-			> .ext-wikilambda-key-block {
-				margin-bottom: @spacing-25;
+		> .ext-wikilambda-app-key-value__key {
+			margin-bottom: @spacing-25;
 
-				label {
-					font-weight: bold;
-					color: @color-base;
-				}
+			label {
+				font-weight: bold;
+				color: @color-base;
 			}
+		}
 
-			> .ext-wikilambda-key-value-row {
-				> .ext-wikilambda-key-value {
-					margin-bottom: 0;
-				}
+		> .ext-wikilambda-app-key-value__row {
+			> .ext-wikilambda-app-key-value {
+				margin-bottom: 0;
 			}
 		}
 	}

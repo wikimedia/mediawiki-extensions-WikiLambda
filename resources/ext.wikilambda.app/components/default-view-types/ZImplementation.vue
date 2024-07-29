@@ -6,15 +6,15 @@
 -->
 <template>
 	<div
-		class="ext-wikilambda-implementation"
+		class="ext-wikilambda-app-implementation"
 		data-testid="implementation"
 	>
 		<!-- Function selection block -->
 		<div
-			class="ext-wikilambda-implementation-function"
+			class="ext-wikilambda-app-implementation__function"
 			data-testid="implementation-function"
 		>
-			<div class="ext-wikilambda-key-block">
+			<div class="ext-wikilambda-app-key-value__key">
 				<label
 					:lang="functionLabelData.langCode"
 					:dir="functionLabelData.langDir"
@@ -29,14 +29,14 @@
 			></wl-z-object-key-value>
 		</div>
 		<!-- Implementation type block -->
-		<div class="ext-wikilambda-implementation-type" data-testid="implementation-type">
-			<div class="ext-wikilambda-key-block">
+		<div class="ext-wikilambda-app-implementation__type" data-testid="implementation-type">
+			<div class="ext-wikilambda-app-key-value__key">
 				<label
 					:lang="implementationLabelData.langCode"
 					:dir="implementationLabelData.langDir"
 				>{{ implementationLabelData.label }}</label>
 			</div>
-			<div class="ext-wikilambda-value-block">
+			<div class="ext-wikilambda-app-key_value__value">
 				<!-- Show warning message for builtins -->
 				<cdx-message
 					v-if="isTypeBuiltin"
@@ -47,13 +47,13 @@
 				<template v-else>
 					<span
 						v-if="!edit"
-						class="ext-wikilambda-value-text"
+						class="ext-wikilambda-app-key_value__value-text"
 						:lang="implementationTypeLabelData.langCode"
 						:dir="implementationTypeLabelData.langDir"
 					>{{ implementationTypeLabelData.label }}</span>
 					<div
 						v-else
-						class="ext-wikilambda-value-input"
+						class="ext-wikilambda-app-key_value__value-input"
 						data-testid="implementation-radio"
 					>
 						<cdx-radio
@@ -76,12 +76,12 @@
 		<!-- Implementation content block -->
 		<div
 			v-if="!isTypeBuiltin"
-			class="ext-wikilambda-implementation-content"
+			class="ext-wikilambda-app-implementation__content"
 			data-testid="implementation-content"
 		>
 			<div
 				v-if="!isTypeCode"
-				class="ext-wikilambda-key-block"
+				class="ext-wikilambda-app-key-value__key"
 			>
 				<label
 					:lang="implementationTypeLabelData.langCode"
@@ -261,9 +261,9 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-implementation {
-	.ext-wikilambda-implementation-function {
-		.ext-wikilambda-key-block {
+.ext-wikilambda-app-implementation {
+	.ext-wikilambda-app-implementation__function {
+		.ext-wikilambda-app-key-value__key {
 			margin-bottom: 0;
 
 			label {
@@ -273,10 +273,10 @@ module.exports = exports = defineComponent( {
 		}
 	}
 
-	.ext-wikilambda-implementation-type {
+	.ext-wikilambda-app-implementation__type {
 		padding-top: @spacing-75;
 
-		& > .ext-wikilambda-key-block {
+		& > .ext-wikilambda-app-key-value__key {
 			margin-bottom: 0;
 
 			label {
@@ -285,19 +285,19 @@ module.exports = exports = defineComponent( {
 			}
 		}
 
-		& > .ext-wikilambda-value-block {
+		& > .ext-wikilambda-app-key_value__value {
 			margin-bottom: @spacing-75;
 
-			.ext-wikilambda-value-input {
+			.ext-wikilambda-app-key_value__value-input {
 				margin-top: @spacing-25;
 			}
 		}
 	}
 
-	.ext-wikilambda-implementation-content {
+	.ext-wikilambda-app-implementation__content {
 		padding-top: @spacing-75;
 
-		& > .ext-wikilambda-key-block {
+		& > .ext-wikilambda-app-key-value__key {
 			margin-bottom: 0;
 
 			label {

@@ -6,13 +6,14 @@
 -->
 <template>
 	<div
-		class="ext-wikilambda-chip-container"
-		:class="{ 'ext-wikilambda-chip-container__disabled': disabled }"
+		class="ext-wikilambda-app-chip-container"
+		:class="{ 'ext-wikilambda-app-chip-container--disabled': disabled }"
 		@click="focusInput"
 	>
 		<wl-chip
 			v-for="chip in chips"
 			:key="chip.id"
+			class="ext-wikilambda-app-chip-container__chip"
 			:index="chip.id"
 			:text="chip.value"
 			:readonly="readonly"
@@ -22,7 +23,7 @@
 		<input
 			ref="chipInput"
 			v-model="newText"
-			class="ext-wikilambda-chip-container__input"
+			class="ext-wikilambda-app-chip-container__input"
 			data-testid="chip-input"
 			:disabled="disabled"
 			:aria-label="inputAriaLabel"
@@ -114,7 +115,7 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-chip-container {
+.ext-wikilambda-app-chip-container {
 	display: flex;
 	flex: 1 auto;
 	flex-flow: wrap;
@@ -128,18 +129,14 @@ module.exports = exports = defineComponent( {
 	min-width: 256px;
 	box-sizing: border-box;
 
-	.ext-wikilambda-chip {
-		margin: 0;
-	}
-
-	&__disabled {
+	&--disabled {
 		background-color: #eaecf0;
 		color: #72777d;
 		-webkit-text-fill-color: #72777d;
 		border-color: #c8ccd1;
 	}
 
-	&__input {
+	.ext-wikilambda-app-chip-container__input {
 		flex-grow: inherit;
 		padding: 0;
 		border: 0;
@@ -147,6 +144,10 @@ module.exports = exports = defineComponent( {
 		font-family: inherit;
 		font-size: inherit;
 		height: @spacing-150;
+	}
+
+	.ext-wikilambda-app-chip-container__chip {
+		margin: 0;
 	}
 }
 </style>

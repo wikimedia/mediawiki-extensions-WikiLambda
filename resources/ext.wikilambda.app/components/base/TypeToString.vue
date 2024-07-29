@@ -10,7 +10,7 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-type-to-string">
+	<div class="ext-wikilambda-app-type-to-string">
 		<a
 			v-if="zid"
 			:href="wikiUrl"
@@ -19,7 +19,7 @@
 		>{{ labelData.labelOrUntitled }}</a>
 		<div
 			v-if="hasArgs"
-			class="ext-wikilambda-type-to-string">
+			class="ext-wikilambda-app-type-to-string">
 			&nbsp;(
 			<!-- eslint-disable vue/no-v-for-template-key -->
 			<template
@@ -142,11 +142,10 @@ module.exports = exports = defineComponent( {
 </script>
 
 <style lang="less">
-.ext-wikilambda-type-to-string {
+.ext-wikilambda-app-type-to-string {
 	display: flex;
 	flex-flow: row wrap;
 	justify-content: flex-start;
 	gap: 0;
 }
-
 </style>

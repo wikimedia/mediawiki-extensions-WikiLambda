@@ -34,17 +34,19 @@ describe( 'FunctionEditorDescription', () => {
 	} );
 
 	it( 'renders without errors', () => {
-		const wrapper = shallowMount( FunctionEditorDescription, { props: {
-			zLanguage: 'Z1002'
-		} } );
+		const wrapper = shallowMount( FunctionEditorDescription, {
+			props: { zLanguage: 'Z1002' },
+			global: { stubs: { WlFunctionEditorField: false } }
+		} );
 
-		expect( wrapper.find( '.ext-wikilambda-function-definition-description' ).exists() ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-app-function-editor-description' ).exists() ).toBeTruthy();
 	} );
 
 	it( 'renders an initialized input box', () => {
-		const wrapper = shallowMount( FunctionEditorDescription, { props: {
-			zLanguage: 'Z1002'
-		} } );
+		const wrapper = shallowMount( FunctionEditorDescription, {
+			props: { zLanguage: 'Z1002' },
+			global: { stubs: { WlFunctionEditorField: false } }
+		} );
 
 		const input = wrapper.findComponent( { name: 'cdx-text-area' } );
 		expect( input.props( 'modelValue' ) ).toBe( 'Function description' );
@@ -52,9 +54,10 @@ describe( 'FunctionEditorDescription', () => {
 
 	describe( 'on input', () => {
 		it( 'removes the description object if new value is empty string', async () => {
-			const wrapper = shallowMount( FunctionEditorDescription, { props: {
-				zLanguage: 'Z1002'
-			} } );
+			const wrapper = shallowMount( FunctionEditorDescription, {
+				props: { zLanguage: 'Z1002' },
+				global: { stubs: { WlFunctionEditorField: false } }
+			} );
 
 			// ACT: Change value of name input
 			const input = wrapper.findComponent( { name: 'cdx-text-area' } );
@@ -71,9 +74,10 @@ describe( 'FunctionEditorDescription', () => {
 		} );
 
 		it( 'changes the description value if it already has a description object', async () => {
-			const wrapper = shallowMount( FunctionEditorDescription, { props: {
-				zLanguage: 'Z1002'
-			} } );
+			const wrapper = shallowMount( FunctionEditorDescription, {
+				props: { zLanguage: 'Z1002' },
+				global: { stubs: { WlFunctionEditorField: false } }
+			} );
 
 			// ACT: Change value of name input
 			const input = wrapper.findComponent( { name: 'cdx-text-area' } );
@@ -96,9 +100,10 @@ describe( 'FunctionEditorDescription', () => {
 			getters.getRowByKeyPath = createGettersWithFunctionsMock( { id: 1 } );
 			global.store.hotUpdate( { getters: getters } );
 
-			const wrapper = shallowMount( FunctionEditorDescription, { props: {
-				zLanguage: 'Z1002'
-			} } );
+			const wrapper = shallowMount( FunctionEditorDescription, {
+				props: { zLanguage: 'Z1002' },
+				global: { stubs: { WlFunctionEditorField: false } }
+			} );
 
 			// ACT: Change value of name input
 			const input = wrapper.findComponent( { name: 'cdx-text-area' } );

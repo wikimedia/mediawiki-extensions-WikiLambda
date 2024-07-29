@@ -10,7 +10,7 @@ const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	FunctionEditorLanguage = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorLanguage.vue' );
 
-describe( 'FunctionEditorDefinitionLanguage', () => {
+describe( 'FunctionEditorLanguage', () => {
 	let getters;
 
 	beforeEach( () => {
@@ -24,16 +24,18 @@ describe( 'FunctionEditorDefinitionLanguage', () => {
 
 	describe( 'function editor language block', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( FunctionEditorLanguage, { props: {
-				zLanguage: 'Z1002'
-			} } );
-			expect( wrapper.find( '.ext-wikilambda-function-language-selector' ).exists() ).toBe( true );
+			const wrapper = shallowMount( FunctionEditorLanguage, {
+				props: { zLanguage: 'Z1002' },
+				global: { stubs: { WlFunctionEditorField: false } }
+			} );
+			expect( wrapper.find( '.ext-wikilambda-app-function-editor-language' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders the selector with initial value', () => {
-			const wrapper = shallowMount( FunctionEditorLanguage, { props: {
-				zLanguage: 'Z1002'
-			} } );
+			const wrapper = shallowMount( FunctionEditorLanguage, {
+				props: { zLanguage: 'Z1002' },
+				global: { stubs: { WlFunctionEditorField: false } }
+			} );
 
 			const selector = wrapper.findComponent( { name: 'wl-z-object-selector' } );
 			expect( selector.props( 'selectedZid' ) ).toBe( 'Z1002' );
@@ -41,9 +43,10 @@ describe( 'FunctionEditorDefinitionLanguage', () => {
 		} );
 
 		it( 'renders the selector with no value', () => {
-			const wrapper = shallowMount( FunctionEditorLanguage, { props: {
-				zLanguage: ''
-			} } );
+			const wrapper = shallowMount( FunctionEditorLanguage, {
+				props: { zLanguage: '' },
+				global: { stubs: { WlFunctionEditorField: false } }
+			} );
 
 			const selector = wrapper.findComponent( { name: 'wl-z-object-selector' } );
 			expect( selector.props( 'selectedZid' ) ).toBe( '' );
@@ -51,9 +54,10 @@ describe( 'FunctionEditorDefinitionLanguage', () => {
 		} );
 
 		it( 'emits a change event whens selecting a new language', async () => {
-			const wrapper = shallowMount( FunctionEditorLanguage, { props: {
-				zLanguage: ''
-			} } );
+			const wrapper = shallowMount( FunctionEditorLanguage, {
+				props: { zLanguage: '' },
+				global: { stubs: { WlFunctionEditorField: false } }
+			} );
 
 			const selector = wrapper.findComponent( { name: 'wl-z-object-selector' } );
 			expect( selector.props( 'selectedZid' ) ).toBe( '' );

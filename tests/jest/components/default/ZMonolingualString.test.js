@@ -45,9 +45,9 @@ describe( 'ZMonolingualString', () => {
 				}
 			} );
 
-			expect( wrapper.find( '.ext-wikilambda-lang-chip' ).exists() ).toBeTruthy();
+			expect( wrapper.find( '.ext-wikilambda-app-monolingual-string__chip' ).exists() ).toBeTruthy();
 
-			expect( wrapper.find( '.ext-wikilambda-lang-chip' ).text() ).toBe( 'EN' );
+			expect( wrapper.find( '.ext-wikilambda-app-monolingual-string__chip' ).text() ).toBe( 'EN' );
 		} );
 
 		it( 'displays the label value for the language', () => {
@@ -57,7 +57,7 @@ describe( 'ZMonolingualString', () => {
 				}
 			} );
 
-			expect( wrapper.find( '.ext-wikilambda-monolingual-string__view-mode' ).text() ).toContain( 'my label' );
+			expect( wrapper.find( '.ext-wikilambda-app-monolingual-string__view-mode' ).text() ).toContain( 'my label' );
 		} );
 	} );
 
@@ -81,9 +81,9 @@ describe( 'ZMonolingualString', () => {
 				}
 			} );
 
-			expect( wrapper.find( '.ext-wikilambda-lang-chip' ).exists() ).toBeTruthy();
+			expect( wrapper.find( '.ext-wikilambda-app-monolingual-string__chip' ).exists() ).toBeTruthy();
 
-			expect( wrapper.find( '.ext-wikilambda-lang-chip' ).text() ).toBe( 'EN' );
+			expect( wrapper.find( '.ext-wikilambda-app-monolingual-string__chip' ).text() ).toBe( 'EN' );
 		} );
 
 		it( 'its label value can be edited and the value emitted', async () => {

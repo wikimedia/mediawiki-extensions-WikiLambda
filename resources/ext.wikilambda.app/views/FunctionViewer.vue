@@ -5,9 +5,9 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-function-viewer">
-		<div class="ext-wikilambda-row">
-			<div class="ext-wikilambda-col ext-wikilambda-col-8 ext-wikilambda-col-tablet-24">
+	<div class="ext-wikilambda-app-function-viewer-view">
+		<div class="ext-wikilambda-app-row">
+			<div class="ext-wikilambda-app-col ext-wikilambda-app-col-8 ext-wikilambda-app-col-tablet-24">
 				<!-- Widget About -->
 				<wl-about-widget
 					:edit="false"
@@ -15,7 +15,7 @@
 					@edit-metadata="dispatchAboutEvent"
 				></wl-about-widget>
 			</div>
-			<div class="ext-wikilambda-col ext-wikilambda-col-16 ext-wikilambda-col-tablet-24">
+			<div class="ext-wikilambda-app-col ext-wikilambda-app-col-16 ext-wikilambda-app-col-tablet-24">
 				<!-- Widget Function Evaluator -->
 				<wl-function-evaluator-widget
 					:function-zid="getCurrentZObjectId"
@@ -27,7 +27,7 @@
 		</div>
 		<div
 			v-if="displaySuccessMessage"
-			class="ext-wikilambda-toast-message"
+			class="ext-wikilambda-app-toast-message"
 		>
 			<cdx-message
 				:auto-dismiss="true"
@@ -44,14 +44,14 @@
 const { defineComponent } = require( 'vue' );
 const CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	Constants = require( '../Constants.js' ),
-	AboutWidget = require( '../components/widgets/About.vue' ),
-	FunctionEvaluatorWidget = require( '../components/widgets/FunctionEvaluator.vue' ),
+	AboutWidget = require( '../components/widgets/about/About.vue' ),
+	FunctionEvaluatorWidget = require( '../components/widgets/function-evaluator/FunctionEvaluator.vue' ),
 	FunctionViewerDetails = require( '../components/function/viewer/FunctionViewerDetails.vue' ),
 	eventLogUtils = require( '../mixins/eventLogUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 module.exports = exports = defineComponent( {
-	name: 'wl-function-viewer',
+	name: 'wl-function-viewer-view',
 	components: {
 		'wl-about-widget': AboutWidget,
 		'wl-function-evaluator-widget': FunctionEvaluatorWidget,

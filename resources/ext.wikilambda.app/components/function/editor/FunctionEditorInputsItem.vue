@@ -5,29 +5,31 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-editor-input-list-item" data-testid="input-list-item">
+	<div class="ext-wikilambda-app-function-editor-inputs-item" data-testid="input-list-item">
 		<!-- Per-input label -->
-		<div class="ext-wikilambda-editor-input-list-item__header">
-			<span class="ext-wikilambda-editor-input-list-item__header__text">
+		<div class="ext-wikilambda-app-function-editor-inputs-item__header">
+			<span class="ext-wikilambda-app-function-editor-inputs-item__label">
 				{{ inputFieldLabel }}
 			</span>
 			<cdx-button
 				v-if="canEditType"
 				weight="quiet"
-				class="ext-wikilambda-editor-input-list-item__header__action-delete"
+				class="ext-wikilambda-app-function-editor-inputs-item__action-delete"
 				:aria-label="$i18n( 'wikilambda-function-definition-inputs-item-remove' ).text()"
 				data-testid="remove-input"
 				@click="removeInput"
 			>
-				<cdx-icon :icon="icons.cdxIconTrash"></cdx-icon>
+				<cdx-icon
+					:icon="icons.cdxIconTrash"
+					class="ext-wikilambda-app-function-editor-inputs-item__icon-trash"></cdx-icon>
 			</cdx-button>
 		</div>
 
 		<!-- Input fields -->
-		<div class="ext-wikilambda-editor-input-list-item__body">
+		<div class="ext-wikilambda-app-function-editor-inputs-item__body">
 			<!-- Label field: always active -->
 			<cdx-field
-				class="ext-wikilambda-editor-input-list-item__body__field"
+				class="ext-wikilambda-app-function-editor-inputs-item__field"
 				data-testid="function-editor-input-item-label"
 			>
 				<template #label>
@@ -44,7 +46,7 @@
 			<!-- Type field: only first block -->
 			<wl-type-selector
 				v-if="isMainLanguageBlock"
-				class="ext-wikilambda-editor-input-list-item__body__field"
+				class="ext-wikilambda-app-function-editor-inputs-item__field"
 				data-testid="function-editor-input-item-type"
 				:row-id="inputTypeRowId"
 				:type="typeZid"
@@ -257,50 +259,50 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-editor-input-list-item {
+.ext-wikilambda-app-function-editor-inputs-item {
 	border-radius: @border-radius-base;
 	border: @border-subtle;
 	padding: @spacing-35 @spacing-75 @spacing-75;
 	margin-bottom: @spacing-100;
 
-	&__header {
+	.ext-wikilambda-app-function-editor-inputs-item__header {
 		display: flex;
 		flex-direction: row;
 		margin-bottom: @spacing-100;
 		margin-right: -@spacing-35;
-
-		&__text {
-			flex-grow: 1;
-			font-weight: @font-weight-bold;
-			display: inline-block;
-			line-height: @size-200;
-		}
-
-		&__action-delete {
-			flex-grow: 0;
-
-			.cdx-icon {
-				width: @size-100;
-				height: @size-100;
-			}
-		}
 	}
 
-	&__body {
+	.ext-wikilambda-app-function-editor-inputs-item__label {
+		flex-grow: 1;
+		font-weight: @font-weight-bold;
+		display: inline-block;
+		line-height: @size-200;
+	}
+
+	.ext-wikilambda-app-function-editor-inputs-item__action-delete {
+		flex-grow: 0;
+	}
+
+	.ext-wikilambda-app-function-editor-inputs-item__icon-trash.cdx-icon {
+		width: @size-100;
+		height: @size-100;
+	}
+
+	.ext-wikilambda-app-function-editor-inputs-item__body {
 		width: 100%;
 		box-sizing: border-box;
 		padding: 0;
+	}
 
-		&__field {
-			margin-bottom: @spacing-100;
+	.ext-wikilambda-app-function-editor-inputs-item__field {
+		margin-bottom: @spacing-100;
 
-			&:last-child {
-				margin-bottom: 0;
-			}
+		&:last-child {
+			margin-bottom: 0;
+		}
 
-			.cdx-label__label__text {
-				font-weight: @font-weight-normal;
-			}
+		.cdx-label__label__text {
+			font-weight: @font-weight-normal;
 		}
 	}
 }

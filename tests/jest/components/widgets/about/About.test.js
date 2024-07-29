@@ -7,12 +7,12 @@
 'use strict';
 
 const { config, mount, shallowMount } = require( '@vue/test-utils' ),
-	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
-	About = require( '../../../../resources/ext.wikilambda.app/components/widgets/About.vue' ),
-	AboutEditMetadataDialog = require( '../../../../resources/ext.wikilambda.app/components/widgets/AboutEditMetadataDialog.vue' ),
-	AboutViewLanguagesDialog = require( '../../../../resources/ext.wikilambda.app/components/widgets/AboutViewLanguagesDialog.vue' );
+	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
+	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
+	About = require( '../../../../../resources/ext.wikilambda.app/components/widgets/about/About.vue' ),
+	AboutEditMetadataDialog = require( '../../../../../resources/ext.wikilambda.app/components/widgets/about/AboutEditMetadataDialog.vue' ),
+	AboutViewLanguagesDialog = require( '../../../../../resources/ext.wikilambda.app/components/widgets/about/AboutViewLanguagesDialog.vue' );
 
 // Ignore all "teleport" behavior for the purpose of testing Dialog;
 // see https://test-utils.vuejs.org/guide/advanced/teleport.html
@@ -62,7 +62,7 @@ describe( 'About', () => {
 				props: { edit: true, type: 'Z6' },
 				global: { stubs: { WlWidgetBase: false } }
 			} );
-			expect( wrapper.find( '.ext-wikilambda-about' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-about' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders fields block with empty placeholder', () => {
@@ -70,9 +70,9 @@ describe( 'About', () => {
 				props: { edit: true, type: 'Z6' },
 				global: { stubs: { WlWidgetBase: false } }
 			} );
-			const nameBlock = wrapper.find( '.ext-wikilambda-about-fields' );
-			expect( nameBlock.find( '.ext-wikilambda-about-unavailable' ).exists() ).toBe( true );
-			expect( nameBlock.find( '.ext-wikilambda-about-unavailable' ).text() ).toBe( 'No description or aliases provided.' );
+			const nameBlock = wrapper.find( '.ext-wikilambda-app-about__fields' );
+			expect( nameBlock.find( '.ext-wikilambda-app-about__unavailable' ).exists() ).toBe( true );
+			expect( nameBlock.find( '.ext-wikilambda-app-about__unavailable' ).text() ).toBe( 'No description or aliases provided.' );
 		} );
 
 		it( 'renders view languages button', () => {
@@ -80,7 +80,7 @@ describe( 'About', () => {
 				props: { edit: true, type: 'Z6' },
 				global: { stubs: { WlWidgetBase: false } }
 			} );
-			expect( wrapper.find( '.ext-wikilambda-about-button' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-about__button' ).exists() ).toBe( true );
 		} );
 
 		it( 'opens empty metadata dialog when clicking edit', async () => {
@@ -89,14 +89,14 @@ describe( 'About', () => {
 			} );
 
 			// ACT: Get header button and trigger click
-			const header = wrapper.find( '.ext-wikilambda-widget-base-header' );
+			const header = wrapper.find( '.ext-wikilambda-app-widget-base__header' );
 			header.findComponent( { name: 'cdx-button' } ).vm.$emit( 'click' );
 			await wrapper.vm.$nextTick();
 
 			// ASSERT: Metadata dialog is open
 			const metadataDialog = wrapper.findComponent( AboutEditMetadataDialog );
 			expect( metadataDialog.vm.open ).toBe( true );
-			expect( wrapper.find( '.ext-wikilambda-about-edit-metadata' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-about-edit-metadata-dialog' ).exists() ).toBe( true );
 
 			// ASSERT: Language is intiialized to user language
 			expect( metadataDialog.vm.forLanguage ).toBe( 'Z1002' );
@@ -107,7 +107,7 @@ describe( 'About', () => {
 				props: { edit: true, type: 'Z6' },
 				global: { stubs: { WlWidgetBase: false } }
 			} );
-			expect( wrapper.find( '.ext-wikilambda-about-function-fields' ).exists() ).toBe( false );
+			expect( wrapper.find( '.ext-wikilambda-app-about__function-fields' ).exists() ).toBe( false );
 		} );
 	} );
 
@@ -137,7 +137,7 @@ describe( 'About', () => {
 				props: { edit: true, type: 'Z6' },
 				global: { stubs: { WlWidgetBase: false } }
 			} );
-			expect( wrapper.find( '.ext-wikilambda-about' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-about' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders selected values', () => {
@@ -147,12 +147,12 @@ describe( 'About', () => {
 			} );
 
 			// ASSERT: Renders description
-			const descriptionBlock = wrapper.find( '.ext-wikilambda-about-description' );
-			expect( descriptionBlock.find( '.ext-wikilambda-about-value' ).text() ).toBe( 'some description' );
+			const descriptionBlock = wrapper.find( '.ext-wikilambda-app-about__description' );
+			expect( descriptionBlock.find( '.ext-wikilambda-app-about__value' ).text() ).toBe( 'some description' );
 
 			// ASSERT: Renders comma-separated aliases
-			const aliasBlock = wrapper.find( '.ext-wikilambda-about-aliases' );
-			const aliases = aliasBlock.findAll( '.ext-wikilambda-about-alias' );
+			const aliasBlock = wrapper.find( '.ext-wikilambda-app-about__aliases' );
+			const aliases = aliasBlock.findAll( '.ext-wikilambda-app-about__alias' );
 			expect( aliases.length ).toBe( 2 );
 			expect( aliases[ 0 ].text() ).toContain( 'one' );
 			expect( aliases[ 1 ].text() ).toContain( 'two' );
@@ -163,7 +163,7 @@ describe( 'About', () => {
 				props: { edit: true, type: 'Z6' },
 				global: { stubs: { WlWidgetBase: false } }
 			} );
-			expect( wrapper.find( '.ext-wikilambda-about-button' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-about__button' ).exists() ).toBe( true );
 		} );
 
 		it( 'opens metadata dialog with the user language values', async () => {
@@ -172,14 +172,14 @@ describe( 'About', () => {
 			} );
 
 			// ACT: Get header button and trigger click
-			const header = wrapper.find( '.ext-wikilambda-widget-base-header' );
+			const header = wrapper.find( '.ext-wikilambda-app-widget-base__header' );
 			header.findComponent( { name: 'cdx-button' } ).vm.$emit( 'click' );
 			await wrapper.vm.$nextTick();
 
 			// ASSERT: Metadata dialog is open
 			const metadataDialog = wrapper.findComponent( AboutEditMetadataDialog );
 			expect( metadataDialog.vm.open ).toBe( true );
-			expect( wrapper.find( '.ext-wikilambda-about-edit-metadata' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-about-edit-metadata-dialog' ).exists() ).toBe( true );
 
 			// ASSERT: Language is intiialized to user language
 			expect( metadataDialog.vm.forLanguage ).toBe( 'Z1002' );
@@ -191,14 +191,14 @@ describe( 'About', () => {
 			} );
 
 			// ACT: Get button and trigger click
-			const buttons = wrapper.find( '.ext-wikilambda-about-button' );
+			const buttons = wrapper.find( '.ext-wikilambda-app-about__button' );
 			buttons.findComponent( { name: 'cdx-button' } ).vm.$emit( 'click' );
 			await wrapper.vm.$nextTick();
 
 			// ASSERT: Languages dialog is open
 			const langDialog = wrapper.findComponent( AboutViewLanguagesDialog );
 			expect( langDialog.vm.open ).toBe( true );
-			expect( wrapper.find( '.ext-wikilambda-about-language-list' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-about-view-languages-dialog' ).exists() ).toBe( true );
 		} );
 
 		it( 'shows description but no aliases', () => {
@@ -210,11 +210,11 @@ describe( 'About', () => {
 			} );
 
 			// ASSERT: Renders description
-			const descriptionBlock = wrapper.find( '.ext-wikilambda-about-description' );
-			expect( descriptionBlock.find( '.ext-wikilambda-about-value' ).text() ).toBe( 'some description' );
+			const descriptionBlock = wrapper.find( '.ext-wikilambda-app-about__description' );
+			expect( descriptionBlock.find( '.ext-wikilambda-app-about__value' ).text() ).toBe( 'some description' );
 
 			// ASSERT: Renders comma-separated aliases
-			const aliasBlock = wrapper.find( '.ext-wikilambda-about-unavailable' );
+			const aliasBlock = wrapper.find( '.ext-wikilambda-app-about__unavailable' );
 			expect( aliasBlock.text() ).toBe( 'No aliases provided.' );
 		} );
 
@@ -227,12 +227,12 @@ describe( 'About', () => {
 			} );
 
 			// ASSERT: Renders unavailable description
-			const descriptionBlock = wrapper.find( '.ext-wikilambda-about-unavailable' );
+			const descriptionBlock = wrapper.find( '.ext-wikilambda-app-about__unavailable' );
 			expect( descriptionBlock.text() ).toBe( 'No description provided.' );
 
 			// ASSERT: Renders comma-separated aliases
-			const aliasBlock = wrapper.find( '.ext-wikilambda-about-aliases' );
-			const aliases = aliasBlock.findAll( '.ext-wikilambda-about-alias' );
+			const aliasBlock = wrapper.find( '.ext-wikilambda-app-about__aliases' );
+			const aliases = aliasBlock.findAll( '.ext-wikilambda-app-about__alias' );
 			expect( aliases.length ).toBe( 2 );
 			expect( aliases[ 0 ].text() ).toContain( 'one' );
 			expect( aliases[ 1 ].text() ).toContain( 'two' );
@@ -254,14 +254,14 @@ describe( 'About', () => {
 			} );
 
 			// ASSERT: Renders comma-separated aliases
-			const aliasBlock = wrapper.find( '.ext-wikilambda-about-aliases' );
-			const aliases = aliasBlock.findAll( '.ext-wikilambda-about-alias' );
+			const aliasBlock = wrapper.find( '.ext-wikilambda-app-about__aliases' );
+			const aliases = aliasBlock.findAll( '.ext-wikilambda-app-about__alias' );
 			expect( aliases.length ).toBe( 3 );
 			expect( aliases[ 0 ].text() ).toContain( 'one' );
 			expect( aliases[ 1 ].text() ).toContain( 'two' );
 			expect( aliases[ 2 ].text() ).toContain( 'three' );
 
-			const aliasMore = aliasBlock.find( '.ext-wikilambda-about-aliases-more' );
+			const aliasMore = aliasBlock.find( '.ext-wikilambda-app-about__aliases-more' );
 			expect( aliasMore.text() ).toBe( '+2' );
 		} );
 
@@ -270,7 +270,7 @@ describe( 'About', () => {
 				props: { edit: true, type: 'Z6' },
 				global: { stubs: { WlWidgetBase: false } }
 			} );
-			expect( wrapper.find( '.ext-wikilambda-about-function-fields' ).exists() ).toBe( false );
+			expect( wrapper.find( '.ext-wikilambda-app-about__function-fields' ).exists() ).toBe( false );
 		} );
 	} );
 
@@ -292,7 +292,7 @@ describe( 'About', () => {
 				props: { edit: true, type: 'Z8' },
 				global: { stubs: { WlWidgetBase: false } }
 			} );
-			expect( wrapper.find( '.ext-wikilambda-about' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-about' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders function fields', () => {
@@ -300,7 +300,7 @@ describe( 'About', () => {
 				props: { edit: true, type: 'Z8' },
 				global: { stubs: { WlWidgetBase: false } }
 			} );
-			expect( wrapper.find( '.ext-wikilambda-about-function-fields' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-about__function-fields' ).exists() ).toBe( true );
 		} );
 
 		it( 'shows function inputs', () => {
@@ -309,10 +309,10 @@ describe( 'About', () => {
 				global: { stubs: { WlWidgetBase: false } }
 			} );
 
-			const inputBlock = wrapper.find( '.ext-wikilambda-about-function-input' );
-			expect( inputBlock.find( '.ext-wikilambda-about-function-field-title' ).text() ).toBe( 'Inputs' );
+			const inputBlock = wrapper.find( '.ext-wikilambda-app-about__function-input' );
+			expect( inputBlock.find( '.ext-wikilambda-app-about__function-field-title' ).text() ).toBe( 'Inputs' );
 
-			const inputs = inputBlock.findAll( '.ext-wikilambda-about-function-field-value' );
+			const inputs = inputBlock.findAll( '.ext-wikilambda-app-about__function-field-value' );
 			expect( inputs.length ).toBe( 2 );
 			// Check labels:
 			expect( inputs[ 0 ].text() ).toContain( 'first:' );
@@ -332,8 +332,8 @@ describe( 'About', () => {
 				global: { stubs: { WlWidgetBase: false } }
 			} );
 
-			const outputBlock = wrapper.find( '.ext-wikilambda-about-function-output' );
-			expect( outputBlock.find( '.ext-wikilambda-about-function-field-title' ).text() ).toBe( 'Output' );
+			const outputBlock = wrapper.find( '.ext-wikilambda-app-about__function-output' );
+			expect( outputBlock.find( '.ext-wikilambda-app-about__function-field-title' ).text() ).toBe( 'Output' );
 
 			const outputType = outputBlock.findComponent( { name: 'wl-z-object-to-string' } );
 			expect( outputType.exists() ).toBe( true );

@@ -6,12 +6,12 @@
 -->
 <template>
 	<div
-		class="ext-wikilambda-chip"
-		:class="'ext-wikilambda-chip_' + intent"
+		class="ext-wikilambda-app-chip"
+		:class="'ext-wikilambda-app-chip--' + intent"
 		@click.stop=""
 	>
 		<div
-			class="ext-wikilambda-chip_text"
+			class="ext-wikilambda-app-chip__text"
 			role="group"
 			:class="hover"
 			:contenteditable="!readonly"
@@ -21,12 +21,13 @@
 		</div>
 		<div
 			v-if="editableContainer"
-			class="ext-wikilambda-chip_icon"
+			class="ext-wikilambda-app-chip__icon-container"
 			role="button"
 			:aria-label="$i18n( 'wikilambda-chip-remove' ).text()"
 			@click="handleRemove"
 		>
 			<cdx-icon
+				class="ext-wikilambda-app-chip__icon"
 				:icon="icon"
 			></cdx-icon>
 		</div>
@@ -74,7 +75,7 @@ module.exports = exports = defineComponent( {
 	data: function () {
 		return {
 			icon: icons.cdxIconClose,
-			hover: 'ext-wikilambda-chip_input'
+			hover: 'ext-wikilambda-app-chip__input'
 		};
 	},
 	methods: {
@@ -96,7 +97,7 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-chip {
+.ext-wikilambda-app-chip {
 	display: inline-flex;
 	background-color: @background-color-interactive;
 	border-width: 1.5px;
@@ -109,7 +110,27 @@ module.exports = exports = defineComponent( {
 	max-width: 100%;
 	box-sizing: @box-sizing-base;
 
-	&_text {
+	&--notice {
+		background-color: @background-color-base;
+		border-color: @border-color-base;
+	}
+
+	&--warning {
+		background-color: @background-color-warning-subtle;
+		border-color: @border-color-warning;
+	}
+
+	&--error {
+		background-color: @background-color-error-subtle;
+		border-color: @border-color-error;
+	}
+
+	&--success {
+		background-color: @background-color-success-subtle;
+		border-color: @border-color-success;
+	}
+
+	.ext-wikilambda-app-chip__text {
 		height: 100%;
 		width: max-content;
 		max-width: 100%;
@@ -117,7 +138,7 @@ module.exports = exports = defineComponent( {
 		align-items: center;
 	}
 
-	&_icon {
+	.ext-wikilambda-app-chip__icon-container {
 		margin-left: 6px;
 		width: 20px;
 		height: 100%;
@@ -125,31 +146,11 @@ module.exports = exports = defineComponent( {
 		align-items: center;
 		justify-content: center;
 		flex: none;
-
-		.cdx-icon {
-			width: 12.4px;
-			height: 12.4px;
-		}
 	}
 
-	&_notice {
-		background-color: @background-color-base;
-		border-color: @border-color-base;
-	}
-
-	&_warning {
-		background-color: @background-color-warning-subtle;
-		border-color: @border-color-warning;
-	}
-
-	&_error {
-		background-color: @background-color-error-subtle;
-		border-color: @border-color-error;
-	}
-
-	&_success {
-		background-color: @background-color-success-subtle;
-		border-color: @border-color-success;
+	.ext-wikilambda-app-chip__icon.cdx-icon {
+		width: 12.4px;
+		height: 12.4px;
 	}
 }
 </style>

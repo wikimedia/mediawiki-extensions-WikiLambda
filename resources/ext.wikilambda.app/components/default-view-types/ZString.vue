@@ -5,8 +5,11 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-string">
-		<p v-if="!edit" data-testid="view-only-string">
+	<div class="ext-wikilambda-app-string">
+		<p
+			v-if="!edit"
+			class="ext-wikilambda-app-string__value"
+			data-testid="view-only-string">
 			"{{ value }}"
 		</p>
 		<cdx-text-input
@@ -102,8 +105,8 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-string {
-	p {
+.ext-wikilambda-app-string {
+	.ext-wikilambda-app-string__value {
 		margin: 0;
 		color: @color-base;
 	}

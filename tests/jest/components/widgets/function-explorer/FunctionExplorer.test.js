@@ -7,12 +7,12 @@
 'use strict';
 
 const
-	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
-	LabelData = require( '../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' ),
-	FunctionExplorer = require( '../../../../resources/ext.wikilambda.app/components/widgets/FunctionExplorer.vue' ),
-	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
+	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
+	LabelData = require( '../../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' ),
+	FunctionExplorer = require( '../../../../../resources/ext.wikilambda.app/components/widgets/function-explorer/FunctionExplorer.vue' ),
+	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
+	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
 	shallowMount = require( '@vue/test-utils' ).shallowMount;
 
 const reverseStringFunctionZid = 'Z10004';
@@ -85,7 +85,7 @@ describe( 'FunctionExplorer', () => {
 	it( 'renders without errors', () => {
 		const wrapper = createFunctionExplorerWrapper();
 
-		expect( wrapper.find( '.ext-wikilambda-function-explorer' ).exists() ).toBe( true );
+		expect( wrapper.find( '.ext-wikilambda-app-function-explorer-widget' ).exists() ).toBe( true );
 	} );
 
 	describe( 'Edit mode', () => {

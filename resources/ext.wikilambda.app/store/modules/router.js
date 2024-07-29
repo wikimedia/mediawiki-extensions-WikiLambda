@@ -109,7 +109,7 @@ module.exports = {
 				// Else, render default view
 				currentView = ( uri.query.zid === Constants.Z_FUNCTION ) ?
 					Constants.VIEWS.FUNCTION_EDITOR :
-					Constants.VIEWS.DEFAULT_VIEW;
+					Constants.VIEWS.DEFAULT;
 
 				// Change view and end?
 				context.dispatch( 'changeCurrentView', currentView );
@@ -153,7 +153,7 @@ module.exports = {
 				return;
 			}
 
-			currentView = Constants.VIEWS.DEFAULT_VIEW;
+			currentView = Constants.VIEWS.DEFAULT;
 			context.dispatch( 'changeCurrentView', currentView );
 		},
 		/**

@@ -5,21 +5,19 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-tester-table">
-		<cdx-icon
-			class="ext-wikilambda-tester-table__message-icon"
-			:icon="statusIcon"
-			:class="statusIconClass"
-		></cdx-icon>
-		<span class="ext-wikilambda-tester-table__message-status">
+	<div class="ext-wikilambda-app-function-tester-table">
+		<wl-status-icon
+			:status="status"
+			:status-icon="statusIcon"
+		></wl-status-icon>
+		<span class="ext-wikilambda-app-function-tester-table__status-message">
 			{{ statusMessage }}
 		</span>
-		<cdx-icon
+		<wl-status-icon
 			v-if="testerStatus !== undefined"
-			:icon="icons.cdxIconInfo"
-			class="ext-wikilambda-tester-table__message-icon ext-wikilambda-tester-table__message-icon--info"
+			status="info"
 			@click.stop="handleMessageIconClick"
-		></cdx-icon>
+		></wl-status-icon>
 		<wl-function-metadata-dialog
 			:open="showMetadata"
 			:header-text="implementationLabelData"
@@ -31,18 +29,19 @@
 </template>
 
 <script>
+
 const { defineComponent } = require( 'vue' );
-const FunctionMetadataDialog = require( '../../widgets/FunctionMetadataDialog.vue' ),
+const FunctionMetadataDialog = require( '../../widgets/function-evaluator/FunctionMetadataDialog.vue' ),
 	Constants = require( '../../../Constants.js' ),
-	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+	StatusIcon = require( '../../base/StatusIcon.vue' ),
 	icons = require( '../../../../lib/icons.json' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-tester-table',
 	components: {
-		'cdx-icon': CdxIcon,
-		'wl-function-metadata-dialog': FunctionMetadataDialog
+		'wl-function-metadata-dialog': FunctionMetadataDialog,
+		'wl-status-icon': StatusIcon
 	},
 	props: {
 		zFunctionId: {
@@ -61,7 +60,6 @@ module.exports = exports = defineComponent( {
 	data: function () {
 		return {
 			showMetadata: false,
-			icons: icons,
 			errorId: Constants.errorIds.TEST_RESULTS
 		};
 	},
@@ -132,14 +130,6 @@ module.exports = exports = defineComponent( {
 			return icons.cdxIconAlert;
 		},
 		/**
-		 * Returns the class for the icon depending on the status
-		 *
-		 * @return {string}
-		 */
-		statusIconClass: function () {
-			return `ext-wikilambda-function-report-item-status__${ this.status }`;
-		},
-		/**
 		 * Returns the tester metadata if stored, else returns undefined
 		 *
 		 * @return {Object|undefined}
@@ -178,50 +168,12 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-tester-table {
+.ext-wikilambda-app-function-tester-table {
 	display: flex;
 
-	&__message-icon {
-		svg {
-			width: 16px;
-			height: 16px;
-		}
-
-		&--info {
-			cursor: pointer;
-
-			svg {
-				width: 20px;
-				height: 20px;
-			}
-		}
-	}
-
-	&__message-status {
+	.ext-wikilambda-app-function-tester-table__status-message {
 		display: inline-block;
 		margin: 0 8px;
-	}
-
-	&-status {
-		&__ready {
-			color: @color-disabled;
-		}
-
-		&__canceled {
-			color: @color-subtle;
-		}
-
-		&__passed {
-			color: @color-success;
-		}
-
-		&__failed {
-			color: @color-error;
-		}
-
-		&__running {
-			color: @color-warning;
-		}
 	}
 }
 </style>

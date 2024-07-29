@@ -140,7 +140,7 @@ class ZError extends ZObject {
 				foreach ( ZObjectUtils::getIterativeList( $subErrors ) as $subError ) {
 					$messages[] = Html::rawElement(
 						'li',
-						[ 'class' => 'ext-wikilambda-suberror-list-item' ],
+						[ 'class' => 'ext-wikilambda-app-suberror-list__item' ],
 						$subError->getHtmlMessage()
 					);
 				}
@@ -160,7 +160,7 @@ class ZError extends ZObject {
 			'@phan-var ZError $subError';
 			$messages[] = Html::rawElement(
 				'li',
-				[ 'class' => 'ext-wikilambda-suberror-list-item' ],
+				[ 'class' => 'ext-wikilambda-app-suberror-list__item' ],
 				$subError->getHtmlMessage()
 			);
 		}
@@ -178,7 +178,7 @@ class ZError extends ZObject {
 		if ( count( $messages ) > 0 ) {
 			$message .= Html::rawElement(
 				'ul',
-				[ 'class' => 'ext-wikilambda-suberror-list' ],
+				[ 'class' => 'ext-wikilambda-app-suberror-list' ],
 				implode( '', $messages )
 			);
 		}

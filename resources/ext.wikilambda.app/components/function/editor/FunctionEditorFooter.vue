@@ -5,7 +5,7 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-function-definition-footer">
+	<div class="ext-wikilambda-app-function-editor-footer">
 		<wl-publish-widget
 			:is-dirty="isFunctionDirty"
 			:function-signature-changed="functionSignatureChanged"
@@ -17,7 +17,7 @@
 <script>
 
 const { defineComponent } = require( 'vue' );
-const PublishWidget = require( '../../widgets/Publish.vue' ),
+const PublishWidget = require( '../../widgets/publish/Publish.vue' ),
 	Constants = require( '../../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
@@ -132,7 +132,7 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-function-definition-footer {
+.ext-wikilambda-app-function-editor-footer {
 	padding: 0;
 	margin-top: @spacing-150;
 }

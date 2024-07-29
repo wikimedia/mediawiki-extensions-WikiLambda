@@ -7,17 +7,17 @@
 	@license MIT
 -->
 <template>
-	<wl-widget-base class="ext-wikilambda-publish-widget" data-testid="publish-widget">
+	<wl-widget-base class="ext-wikilambda-app-publish-widget" data-testid="publish-widget">
 		<template #main>
 			<cdx-button
-				class="ext-wikilambda-publish-widget__cancel-button"
+				class="ext-wikilambda-app-publish-widget__cancel-button"
 				weight="primary"
 				@click.stop="handleCancel"
 			>
 				{{ $i18n( 'wikilambda-cancel' ).text() }}
 			</cdx-button>
 			<cdx-button
-				class="ext-wikilambda-publish-widget__publish-button"
+				class="ext-wikilambda-app-publish-widget__publish-button"
 				action="progressive"
 				:disabled="!isDirty && !revertToEdit"
 				data-testid="publish-button"
@@ -43,16 +43,15 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../Constants.js' ),
+const Constants = require( '../../../Constants.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	WidgetBase = require( '../base/WidgetBase.vue' ),
+	WidgetBase = require( '../../base/WidgetBase.vue' ),
 	LeaveEditorDialog = require( './LeaveEditorDialog.vue' ),
 	PublishDialog = require( './PublishDialog.vue' ),
-	eventLogger = require( '../../mixins/eventLogUtils.js' ).methods,
-	urlUtils = require( '../../mixins/urlUtils.js' ),
+	eventLogger = require( '../../../mixins/eventLogUtils.js' ).methods,
+	urlUtils = require( '../../../mixins/urlUtils.js' ),
 	mapActions = require( 'vuex' ).mapActions,
-	mapGetters = require( 'vuex' ).mapGetters,
-	getParameterByName = require( '../../mixins/urlUtils.js' ).methods.getParameterByName;
+	mapGetters = require( 'vuex' ).mapGetters;
 
 module.exports = exports = defineComponent( {
 	name: 'wl-publish-widget',
@@ -132,7 +131,7 @@ module.exports = exports = defineComponent( {
 		 * @return {boolean}
 		 */
 		revertToEdit: function () {
-			return !!( getParameterByName( 'oldid' ) || getParameterByName( 'undo' ) );
+			return !!( this.getParameterByName( 'oldid' ) || this.getParameterByName( 'undo' ) );
 		},
 
 		/**
@@ -271,15 +270,11 @@ module.exports = exports = defineComponent( {
 </script>
 
 <style lang="less">
-@import '../../ext.wikilambda.app.variables.less';
+@import '../../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-publish-widget {
-	&__cancel-button {
+.ext-wikilambda-app-publish-widget {
+	.ext-wikilambda-app-publish-widget__cancel-button {
 		margin-right: @spacing-50;
-	}
-
-	.cdx-card__text__title {
-		display: none;
 	}
 }
 </style>

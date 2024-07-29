@@ -8,7 +8,7 @@
 -->
 <template>
 	<div
-		class="ext-wikilambda-key-value-set"
+		class="ext-wikilambda-app-key-value-set"
 		:class="nestingDepthClass"
 		data-testid="z-object-key-value-set"
 	>
@@ -58,7 +58,7 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		nestingDepthClass: function () {
-			return `ext-wikilambda-key-level-${ this.depth }`;
+			return `ext-wikilambda-app-key-value--${ this.depth }`;
 		},
 
 		/**
@@ -92,11 +92,11 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-key-value-set {
+.ext-wikilambda-app-key-value-set {
 	margin-left: -@spacing-25;
 
-	.ext-wikilambda-key-value-row:last-child {
-		> .ext-wikilambda-key-value {
+	.ext-wikilambda-app-key-value__row:last-child {
+		> .ext-wikilambda-app-key-value {
 			margin-bottom: @spacing-0;
 		}
 	}

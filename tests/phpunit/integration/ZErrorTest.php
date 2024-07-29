@@ -110,11 +110,11 @@ EOT;
 		$this->assertSame( 'List of errors', $testObject->getMessage() );
 
 		$errorsHtml = 'List of errors'
-			. '<ul class="ext-wikilambda-suberror-list">'
-			. '<li class="ext-wikilambda-suberror-list-item">'
+			. '<ul class="ext-wikilambda-app-suberror-list">'
+			. '<li class="ext-wikilambda-app-suberror-list__item">'
 			. 'Label for a given language clashes with another Object\'s label'
 			. '</li>'
-			. '<li class="ext-wikilambda-suberror-list-item">'
+			. '<li class="ext-wikilambda-app-suberror-list__item">'
 			. 'Label for a given language clashes with another Object\'s label'
 			. '</li>'
 			. '</ul>';
@@ -136,17 +136,17 @@ EOT;
 		$this->assertSame( 'Not wellformed', $testObject->getMessage() );
 
 		$errorsHtml = 'Not wellformed'
-			. '<ul class="ext-wikilambda-suberror-list">'
-			. '<li class="ext-wikilambda-suberror-list-item">List of errors'
-			. '<ul class="ext-wikilambda-suberror-list">'
-			. '<li class="ext-wikilambda-suberror-list-item">Key value not wellformed: Z4K1'
-			. '<ul class="ext-wikilambda-suberror-list">'
-			. '<li class="ext-wikilambda-suberror-list-item">List of errors'
-			. '<ul class="ext-wikilambda-suberror-list">'
-			. '<li class="ext-wikilambda-suberror-list-item">Schema type mismatch</li>'
-			. '<li class="ext-wikilambda-suberror-list-item">Invalid reference</li>'
+			. '<ul class="ext-wikilambda-app-suberror-list">'
+			. '<li class="ext-wikilambda-app-suberror-list__item">List of errors'
+			. '<ul class="ext-wikilambda-app-suberror-list">'
+			. '<li class="ext-wikilambda-app-suberror-list__item">Key value not wellformed: Z4K1'
+			. '<ul class="ext-wikilambda-app-suberror-list">'
+			. '<li class="ext-wikilambda-app-suberror-list__item">List of errors'
+			. '<ul class="ext-wikilambda-app-suberror-list">'
+			. '<li class="ext-wikilambda-app-suberror-list__item">Schema type mismatch</li>'
+			. '<li class="ext-wikilambda-app-suberror-list__item">Invalid reference</li>'
 			. '</ul></li></ul></li>'
-			. '<li class="ext-wikilambda-suberror-list-item">Schema type mismatch</li>'
+			. '<li class="ext-wikilambda-app-suberror-list__item">Schema type mismatch</li>'
 			. '</ul></li></ul>';
 		$this->assertSame( $errorsHtml, $testObject->getHtmlMessage() );
 	}

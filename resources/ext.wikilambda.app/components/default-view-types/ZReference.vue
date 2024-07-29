@@ -5,11 +5,11 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-reference">
+	<div class="ext-wikilambda-app-reference">
 		<template v-if="!edit">
 			<a
 				v-if="valueLabel"
-				class="ext-wikilambda-edit-link"
+				class="ext-wikilambda-app-link"
 				data-testid="edit-link"
 				:lang="valueLabel.langCode"
 				:dir="valueLabel.langDir"
@@ -18,7 +18,6 @@
 		</template>
 		<template v-else>
 			<wl-z-object-selector
-				:edit="edit"
 				:disabled="disabled"
 				:row-id="rowId"
 				:selected-zid="value"

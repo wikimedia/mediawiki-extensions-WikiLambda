@@ -9,7 +9,7 @@
 	@license MIT
 -->
 <template>
-	<span class="ext-wikilambda-select-zobject">
+	<span class="ext-wikilambda-app-object-selector">
 		<cdx-select
 			v-if="isEnum"
 			:selected="selectedValue"
@@ -41,7 +41,7 @@
 		</cdx-lookup>
 		<div
 			v-if="hasFieldErrors"
-			class="ext-wikilambda-select-zobject__errors"
+			class="ext-wikilambda-app-object-selector__errors"
 		>
 			<cdx-message
 				v-for="( error, index ) in fieldErrors"
@@ -483,7 +483,7 @@ module.exports = exports = defineComponent( {
 						value: zid,
 						label: this.getLabelData( zid ).label,
 						description: this.getLabelData( this.type ).label,
-						class: 'ext-wikilambda-select-zobject-suggestion'
+						class: 'ext-wikilambda-app-object-selector__suggestion'
 					} );
 				} );
 			}
@@ -519,7 +519,8 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-select-zobject {
+.ext-wikilambda-app-object-selector {
+	// Style the custom chevron icon to be smaller
 	.cdx-text-input__end-icon {
 		width: @size-icon-x-small;
 		height: @size-icon-x-small;
@@ -527,27 +528,16 @@ module.exports = exports = defineComponent( {
 		min-height: @size-icon-x-small;
 	}
 
-	&__link {
-		min-height: 32px;
-		display: inline-flex;
-		align-items: center;
-	}
-
-	a {
-		display: inline-flex;
-	}
-
-	&__errors {
+	.ext-wikilambda-app-object-selector__errors {
 		margin-top: @spacing-50;
 		width: max-content;
 	}
 
-	.cdx-menu {
-		.cdx-menu-item.ext-wikilambda-select-zobject-suggestion {
-			.cdx-menu-item__text__label,
-			.cdx-search-result-title {
-				font-weight: @font-weight-normal;
-			}
+	.ext-wikilambda-app-object-selector__suggestion {
+		// Override the default Codex menu item weight
+		.cdx-menu-item__text__label,
+		.cdx-search-result-title {
+			font-weight: @font-weight-normal;
 		}
 	}
 }

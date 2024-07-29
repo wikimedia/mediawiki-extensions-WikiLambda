@@ -96,10 +96,10 @@ class ContentBlock {
 		let contentBlock;
 		if ( !resolvedParentSection ) {
 			contentBlock = await this.getSectionOfContentBlock( label );
-			return contentBlock.$( './preceding-sibling::div[contains(@class,"ext-wikilambda-key-value-pre")]' );
+			return contentBlock.$( './preceding-sibling::div[contains(@class,"ext-wikilambda-app-key-value__pre")]' );
 		}
 		contentBlock = await this.getSectionOfContentBlock( label, parentSection );
-		return contentBlock.$( './preceding-sibling::div[contains(@class,"ext-wikilambda-key-value-pre")]' );
+		return contentBlock.$( './preceding-sibling::div[contains(@class,"ext-wikilambda-app-key-value__pre")]' );
 	}
 
 	/**

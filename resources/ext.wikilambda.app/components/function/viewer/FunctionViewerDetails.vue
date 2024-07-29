@@ -5,8 +5,8 @@
 	@license MIT
 -->
 <template>
-	<main class="ext-wikilambda-function-details">
-		<section class="ext-wikilambda-function-details__tables">
+	<main class="ext-wikilambda-app-function-viewer-details">
+		<section class="ext-wikilambda-app-function-viewer-details__tables">
 			<wl-function-viewer-details-table
 				:type="implementationType"
 				:header="implementationsHeader"
@@ -50,7 +50,7 @@
 		</section>
 		<div
 			v-if="!!currentToast"
-			class="ext-wikilambda-toast-message"
+			class="ext-wikilambda-app-toast-message"
 		>
 			<cdx-message
 				:dismiss-button-label="$i18n( 'wikilambda-toast-close' ).text()"
@@ -229,24 +229,24 @@ module.exports = exports = defineComponent( {
 							'onUpdate:modelValue': ( value ) => this.checkAllRows( this.implementationsState, value ),
 							hideLabel: true
 						},
-						class: 'ext-wikilambda-function-details-table-text'
+						class: 'ext-wikilambda-app-function-viewer-details-table__header'
 					},
 					name: {
 						title: this.$i18n( 'wikilambda-function-implementation-name-label' ),
-						class: 'ext-wikilambda-function-details-table-text',
+						class: 'ext-wikilambda-app-function-viewer-details-table__header',
 						id: 'implementations-header-checkbox'
 					},
 					state: {
 						title: this.$i18n( 'wikilambda-function-implementation-state-label' ),
-						class: 'ext-wikilambda-function-details-table-text'
+						class: 'ext-wikilambda-app-function-viewer-details-table__header'
 					},
 					language: {
 						title: this.$i18n( 'wikilambda-function-implementation-language-label' ),
-						class: 'ext-wikilambda-function-details-table-text'
+						class: 'ext-wikilambda-app-function-viewer-details-table__header'
 					},
 					testsPassed: {
 						title: this.$i18n( 'wikilambda-function-implementation-tests-passed-label' ),
-						class: 'ext-wikilambda-function-details-table-text'
+						class: 'ext-wikilambda-app-function-viewer-details-table__header'
 					}
 				};
 		},
@@ -300,7 +300,7 @@ module.exports = exports = defineComponent( {
 							},
 							hideLabel: true
 						},
-						class: 'ext-wikilambda-function-details-table-item',
+						class: 'ext-wikilambda-app-function-viewer-details-table__item',
 						id: implementationLabelData.label
 					},
 					// Column 2: name
@@ -312,7 +312,7 @@ module.exports = exports = defineComponent( {
 							lang: implementationLabelData.langCode,
 							dir: implementationLabelData.langDir
 						},
-						class: 'ext-wikilambda-function-details-table-item'
+						class: 'ext-wikilambda-app-function-viewer-details-table__item'
 					},
 					// Column 3: status
 					state: {
@@ -324,19 +324,19 @@ module.exports = exports = defineComponent( {
 						props: {
 							status: isConnected ? 'success' : 'warning'
 						},
-						class: 'ext-wikilambda-function-details-table-item'
+						class: 'ext-wikilambda-app-function-viewer-details-table__item'
 					},
 					// Column 4: language
 					language: {
 						title: language,
-						class: 'ext-wikilambda-function-details-table-item'
+						class: 'ext-wikilambda-app-function-viewer-details-table__item'
 					},
 					// Column 4: passed tests
 					testsPassed: {
 						title: testResults.passing + '/' + testResults.total
 					},
 					// Row class
-					class: this.implementationsState[ zid ].checked ? 'ext-wikilambda-function-details-table__row--active' : null
+					class: this.implementationsState[ zid ].checked ? 'ext-wikilambda-app-function-viewer-details-table__row--active' : null
 				} );
 			}
 
@@ -444,15 +444,15 @@ module.exports = exports = defineComponent( {
 						'onUpdate:modelValue': ( value ) => this.checkAllRows( this.testsState, value ),
 						hideLabel: true
 					},
-					class: 'ext-wikilambda-function-details-table-text'
+					class: 'ext-wikilambda-app-function-viewer-details-table__header'
 				},
 				name: {
 					title: this.$i18n( 'wikilambda-function-implementation-name-label' ),
-					class: 'ext-wikilambda-function-details-table-text'
+					class: 'ext-wikilambda-app-function-viewer-details-table__header'
 				},
 				state: {
 					title: this.$i18n( 'wikilambda-function-implementation-state-label' ),
-					class: 'ext-wikilambda-function-details-table-text'
+					class: 'ext-wikilambda-app-function-viewer-details-table__header'
 				}
 			};
 
@@ -468,7 +468,7 @@ module.exports = exports = defineComponent( {
 							lang: implementationLabelData.langCode,
 							dir: implementationLabelData.langDir
 						},
-						class: 'ext-wikilambda-function-details-table-text'
+						class: 'ext-wikilambda-app-function-viewer-details-table__header'
 					};
 				}
 			}
@@ -503,7 +503,7 @@ module.exports = exports = defineComponent( {
 							},
 							hideLabel: true
 						},
-						class: 'ext-wikilambda-function-details-table-item'
+						class: 'ext-wikilambda-app-function-viewer-details-table__item'
 					},
 					// Column 2: name
 					name: {
@@ -514,7 +514,7 @@ module.exports = exports = defineComponent( {
 							lang: testLabelData.langCode,
 							dir: testLabelData.langDir
 						},
-						class: 'ext-wikilambda-function-details-table-item'
+						class: 'ext-wikilambda-app-function-viewer-details-table__item'
 					},
 					// Column 3: status
 					state: {
@@ -526,10 +526,10 @@ module.exports = exports = defineComponent( {
 						props: {
 							status: isConnected ? 'success' : 'warning'
 						},
-						class: 'ext-wikilambda-function-details-table-item'
+						class: 'ext-wikilambda-app-function-viewer-details-table__item'
 					},
 					// Row class
-					class: this.testsState[ zid ].checked ? 'ext-wikilambda-function-details-table__row--active' : null
+					class: this.testsState[ zid ].checked ? 'ext-wikilambda-app-function-viewer-details-table__row--active' : null
 				};
 
 				// Add a column per implementation selected
@@ -542,7 +542,7 @@ module.exports = exports = defineComponent( {
 								zImplementationId: impZid,
 								zTesterId: zid
 							},
-							class: 'ext-wikilambda-function-details-table-item'
+							class: 'ext-wikilambda-app-function-viewer-details-table__item'
 						};
 					}
 				}
@@ -829,22 +829,22 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-function-details {
+.ext-wikilambda-app-function-viewer-details {
 	display: flex;
 	-webkit-flex-flow: row wrap;
 	flex-flow: row wrap;
 	gap: @spacing-150 @spacing-400;
 
-	&__tables {
+	@media screen and ( max-width: @max-width-breakpoint-mobile ) {
+		flex-flow: column wrap;
+	}
+
+	.ext-wikilambda-app-function-viewer-details__tables {
 		flex: 1;
 		flex-grow: 1;
 		width: calc( 100% - 400px );
-	}
 
-	@media screen and ( max-width: @max-width-breakpoint-mobile ) {
-		flex-flow: column wrap;
-
-		&__tables {
+		@media screen and ( max-width: @max-width-breakpoint-mobile ) {
 			width: @size-full;
 		}
 	}

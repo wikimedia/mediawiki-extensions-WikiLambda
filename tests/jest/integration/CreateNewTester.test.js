@@ -85,7 +85,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 	} );
 
 	it.only( 'allows creating a new tester', async () => {
-		const { findByRole, findByTestId } = render( App, {
+		const { findByTestId } = render( App, {
 			global: { plugins: [ store ], stubs: {
 				teleport: true,
 				WlFunctionEvaluatorWidget: true
@@ -99,7 +99,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 			.toHaveDisplayValue( 'function name, in Chinese' );
 
 		//* -- Call section
-		const testerCallContainer = await findByRole( 'ext-wikilambda-tester-call' );
+		const testerCallContainer = await findByTestId( 'ext-wikilambda-app-tester-call' );
 
 		// ACT: Expand toggle
 		const expandTesterCall = within( testerCallContainer ).getByTestId( 'expanded-toggle' );
@@ -129,7 +129,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		await fireEvent.update( secondCallArgumentInput, 'second argument value' );
 
 		//* -- Validation section
-		const testerValidationContainer = await findByRole( 'ext-wikilambda-tester-validation' );
+		const testerValidationContainer = await findByTestId( 'ext-wikilambda-app-tester-validation' );
 
 		// ACT: Expand toggle
 		const expandValidationCall = within( testerValidationContainer ).getByTestId( 'expanded-toggle' );

@@ -5,56 +5,49 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-function-definition-output">
-		<div class="ext-wikilambda-function-block__label">
-			<label id="ext-wikilambda-function-definition-output__label-id">
+	<wl-function-editor-field
+		class="ext-wikilambda-app-function-editor-output"
+		:tooltip-message="tooltipMessage"
+		:tooltip-icon="tooltipIcon"
+		:show-tooltip="tooltipMessage && !canEdit">
+		<template #label>
+			<label :id="outputFieldId">
 				{{ outputLabel }}
 			</label>
-			<wl-tooltip
-				v-if="tooltipMessage && !canEdit"
-				:content="tooltipMessage"
-			>
-				<cdx-icon
-					v-if="tooltipIcon"
-					class="ext-wikilambda-function-block__label__tooltip-icon"
-					:icon="tooltipIcon">
-				</cdx-icon>
-			</wl-tooltip>
-			<span class="ext-wikilambda-function-block__label__description">
-				{{ outputFieldDescription }}
-				<a :href="listObjectsUrl" target="_blank">{{ listObjectsLink }}</a>
-			</span>
-		</div>
-		<div class="ext-wikilambda-function-block__body">
+		</template>
+		<template #description>
+			{{ outputFieldDescription }}
+			<a :href="listObjectsUrl" target="_blank">{{ listObjectsLink }}</a>
+		</template>
+		<template #body>
 			<wl-type-selector
 				v-if="!!outputTypeRowId"
-				class="ext-wikilambda-function-definition-output__field"
+				class="ext-wikilambda-app-function-editor-output__field"
 				data-testid="function-editor-output-type"
-				aria-labelledby="ext-wikilambda-function-definition-output__label-id"
+				:aria-labelledby="outputFieldId"
 				:row-id="outputTypeRowId"
 				:disabled="!canEdit"
-				:label="outputTypeLabel"
+				:label-data="outputTypeLabel"
 				:placeholder="outputFieldPlaceholder"
 				:type="typeZid"
 			></wl-type-selector>
-		</div>
-	</div>
+		</template>
+	</wl-function-editor-field>
 </template>
 
 <script>
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
+	LabelData = require( '../../../store/classes/LabelData.js' ),
+	FunctionEditorField = require( './FunctionEditorField.vue' ),
 	TypeSelector = require( '../../base/TypeSelector.vue' ),
-	Tooltip = require( '../../base/Tooltip.vue' ),
-	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	mapGetters = require( 'vuex' ).mapGetters;
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-output',
 	components: {
-		'wl-tooltip': Tooltip,
 		'wl-type-selector': TypeSelector,
-		'cdx-icon': CdxIcon
+		'wl-function-editor-field': FunctionEditorField
 	},
 	props: {
 		/**
@@ -123,7 +116,9 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		outputTypeLabel: function () {
-			return this.$i18n( 'wikilambda-function-definition-output-type-label' ).text();
+			return LabelData.fromString(
+				this.$i18n( 'wikilambda-function-definition-output-type-label' ).text()
+			);
 		},
 		/**
 		 * Returns the id for the output field
@@ -131,7 +126,7 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		outputFieldId: function () {
-			return 'ext-wikilambda-function-definition-output__label-id';
+			return 'ext-wikilambda-app-function-editor-output__label-id';
 		},
 		/**
 		 * Returns the description for the output field
@@ -173,8 +168,8 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-function-definition-output {
-	&__field {
+.ext-wikilambda-app-function-editor-output {
+	.ext-wikilambda-app-function-editor-output__field {
 		border-radius: @border-radius-base;
 		border: @border-subtle;
 		padding: @spacing-75;

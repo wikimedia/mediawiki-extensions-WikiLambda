@@ -24,7 +24,7 @@ const ContentBlock = require( '../../componentobjects/ContentBlock' );
 
 class Implementation extends Page {
 	get implementationTitleSelector() {
-		return $( 'span.ext-wikilambda-viewpage-header-title--function-name' );
+		return $( 'span.ext-wikilambda-viewpage-header__title' );
 	}
 
 	get editSourceLink() {

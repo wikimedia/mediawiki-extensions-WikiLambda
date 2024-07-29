@@ -35,13 +35,19 @@ describe( 'FunctionEditorAliases', () => {
 	} );
 
 	it( 'renders without errors', () => {
-		const wrapper = shallowMount( FunctionEditorAliases, { props: { zLanguage: 'Z1002' } } );
+		const wrapper = shallowMount( FunctionEditorAliases, {
+			props: { zLanguage: 'Z1002' },
+			global: { stubs: { WlFunctionEditorField: false } }
+		} );
 
-		expect( wrapper.find( '.ext-wikilambda-function-definition-aliases' ).exists() ).toBe( true );
+		expect( wrapper.find( '.ext-wikilambda-app-function-editor-aliases' ).exists() ).toBe( true );
 	} );
 
 	it( 'renders a chip container with empty aliases', () => {
-		const wrapper = shallowMount( FunctionEditorAliases, { props: { zLanguage: 'Z1002' } } );
+		const wrapper = shallowMount( FunctionEditorAliases, {
+			props: { zLanguage: 'Z1002' },
+			global: { stubs: { WlFunctionEditorField: false } }
+		} );
 
 		const chipInput = wrapper.getComponent( { name: 'cdx-chip-input' } );
 		expect( chipInput.vm.inputChips.length ).toBe( 0 );
@@ -53,7 +59,10 @@ describe( 'FunctionEditorAliases', () => {
 			{ rowId: 2, value: 'alias 2' }
 		] );
 		global.store.hotUpdate( { getters: getters } );
-		const wrapper = shallowMount( FunctionEditorAliases, { props: { zLanguage: 'Z1002' } } );
+		const wrapper = shallowMount( FunctionEditorAliases, {
+			props: { zLanguage: 'Z1002' },
+			global: { stubs: { WlFunctionEditorField: false } }
+		} );
 
 		const chipInput = wrapper.getComponent( { name: 'cdx-chip-input' } );
 		expect( chipInput.vm.inputChips.length ).toBe( 2 );
@@ -63,8 +72,15 @@ describe( 'FunctionEditorAliases', () => {
 
 	describe( 'When the chips are updated', () => {
 		it( 'persists aliases when aliasObject is defined and values are non-empty', async () => {
-			const wrapper = shallowMount( FunctionEditorAliases, { props: { zLanguage: 'Z1002',
-				global: { stubs: { CdxChipInput: false } } } } );
+			const wrapper = shallowMount( FunctionEditorAliases, {
+				props: { zLanguage: 'Z1002' },
+				global: {
+					stubs: {
+						WlFunctionEditorField: false,
+						CdxChipInput: false
+					}
+				}
+			} );
 
 			const chipInput = wrapper.getComponent( { name: 'cdx-chip-input' } );
 			await chipInput.vm.$emit( 'update:input-chips', [ { value: 'alias 1' }, { value: 'alias 2' } ] );
@@ -78,7 +94,10 @@ describe( 'FunctionEditorAliases', () => {
 		} );
 
 		it( 'removes alias when aliasObject is defined and values are empty', async () => {
-			const wrapper = shallowMount( FunctionEditorAliases, { props: { zLanguage: 'Z1002' } } );
+			const wrapper = shallowMount( FunctionEditorAliases, {
+				props: { zLanguage: 'Z1002' },
+				global: { stubs: { WlFunctionEditorField: false } }
+			} );
 
 			const chipInput = wrapper.getComponent( { name: 'cdx-chip-input' } );
 			await chipInput.vm.$emit( 'update:input-chips', [] );
@@ -92,7 +111,10 @@ describe( 'FunctionEditorAliases', () => {
 			getters.getRowByKeyPath = createGettersWithFunctionsMock( { id: 3 } );
 			global.store.hotUpdate( { getters: getters } );
 
-			const wrapper = shallowMount( FunctionEditorAliases, { props: { zLanguage: 'Z1002' } } );
+			const wrapper = shallowMount( FunctionEditorAliases, {
+				props: { zLanguage: 'Z1002' },
+				global: { stubs: { WlFunctionEditorField: false } }
+			} );
 
 			const chipInput = wrapper.getComponent( { name: 'cdx-chip-input' } );
 			await chipInput.vm.$emit( 'update:input-chips', [ { value: 'alias 1' } ] );
@@ -109,7 +131,10 @@ describe( 'FunctionEditorAliases', () => {
 		} );
 
 		it( 'emits updated-alias event after persisting aliases', async () => {
-			const wrapper = shallowMount( FunctionEditorAliases, { props: { zLanguage: 'Z1002' } } );
+			const wrapper = shallowMount( FunctionEditorAliases, {
+				props: { zLanguage: 'Z1002' },
+				global: { stubs: { WlFunctionEditorField: false } }
+			} );
 
 			const chipInput = wrapper.getComponent( { name: 'cdx-chip-input' } );
 			await chipInput.vm.$emit( 'update:input-chips', [ { value: 'alias 1' } ] );
@@ -122,7 +147,10 @@ describe( 'FunctionEditorAliases', () => {
 			getters.getRowByKeyPath = createGettersWithFunctionsMock( undefined );
 			global.store.hotUpdate( { getters: getters } );
 
-			const wrapper = shallowMount( FunctionEditorAliases, { props: { zLanguage: 'Z1002' } } );
+			const wrapper = shallowMount( FunctionEditorAliases, {
+				props: { zLanguage: 'Z1002' },
+				global: { stubs: { WlFunctionEditorField: false } }
+			} );
 
 			const chipInput = wrapper.getComponent( { name: 'cdx-chip-input' } );
 			await chipInput.vm.$emit( 'update:input-chips', [ { value: 'alias 1' }, { value: 'alias 2' } ] );

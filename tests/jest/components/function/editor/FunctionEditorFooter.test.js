@@ -35,7 +35,7 @@ describe( 'FunctionEditorFooter', () => {
 
 	it( 'renders without errors', () => {
 		const wrapper = shallowMount( FunctionEditorFooter );
-		expect( wrapper.find( '.ext-wikilambda-function-definition-footer' ).exists() ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-app-function-editor-footer' ).exists() ).toBeTruthy();
 	} );
 
 	it( 'displays the PublishWidget component', () => {
@@ -47,7 +47,7 @@ describe( 'FunctionEditorFooter', () => {
 			},
 			global: { stubs: { WlPublishWidget: false } }
 		} );
-		expect( wrapper.find( '.ext-wikilambda-publish-widget' ).exists() ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-app-publish-widget' ).exists() ).toBeTruthy();
 	} );
 
 	it( 'raises input function warnings if input has changed while editing and at least one test or implementation is connected', async () => {

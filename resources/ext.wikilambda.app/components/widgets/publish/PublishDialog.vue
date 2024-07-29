@@ -6,7 +6,7 @@
 -->
 <template>
 	<div
-		class="ext-wikilambda-publishdialog"
+		class="ext-wikilambda-app-publish-dialog"
 		data-testid="confirm-publish-dialog"
 	>
 		<cdx-dialog
@@ -23,12 +23,12 @@
 			<!-- Error and Warning section -->
 			<div
 				v-if="hasErrors"
-				class="ext-wikilambda-publishdialog__errors"
+				class="ext-wikilambda-app-publish-dialog__errors"
 			>
 				<cdx-message
 					v-for="( error, index ) in errors"
 					:key="'dialog-error-' + index"
-					class="ext-wikilambda-publishdialog__error"
+					class="ext-wikilambda-app-publish-dialog__error"
 					:type="error.type"
 				>
 					<!-- eslint-disable vue/no-v-html -->
@@ -40,7 +40,7 @@
 			<cdx-field :status="status">
 				<cdx-text-input
 					v-model="summary"
-					class="ext-wikilambda-publishdialog__summary-input"
+					class="ext-wikilambda-app-publish-dialog__summary-input"
 					:aria-label="summaryLabel"
 					:placeholder="summaryPlaceholder"
 					@keydown="handleSummaryKeydown"
@@ -51,7 +51,7 @@
 
 				<cdx-message
 					v-if="hasKeyboardSubmitWarning"
-					class="ext-wikilambda-publishdialog__keyboard-submit-warning"
+					class="ext-wikilambda-app-publish-dialog__keyboard-submit-warning"
 					type="warning"
 					:inline="true"
 				>
@@ -62,7 +62,7 @@
 			<!-- Legal text -->
 			<template #footer-text>
 				<div
-					class="ext-wikilambda-publishdialog__legal-text"
+					class="ext-wikilambda-app-publish-dialog__legal-text"
 					v-html="legalText"
 				></div>
 			</template>
@@ -72,30 +72,30 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../Constants.js' ),
+const Constants = require( '../../../Constants.js' ),
 	CdxField = require( '@wikimedia/codex' ).CdxField,
 	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
-	eventLogUtils = require( '../../mixins/eventLogUtils.js' ),
-	errorUtils = require( '../../mixins/errorUtils.js' ),
+	eventLogUtils = require( '../../../mixins/eventLogUtils.js' ),
+	errorUtils = require( '../../../mixins/errorUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
 const enterKeyChar = `
-	<kbd class="ext-wikilambda-publishdialog__kbd">
-		<span class="ext-wikilambda-publishdialog__kbd-enter">&#x21B5;</span>
+	<kbd class="ext-wikilambda-app-publish-dialog__kbd">
+		<span class="ext-wikilambda-app-publish-dialog__kbd-enter">&#x21B5;</span>
 	</kbd>
 `;
 const cmdKeyChar = `
-	<kbd class="ext-wikilambda-publishdialog__kbd">
-		<span class="ext-wikilambda-publishdialog__kbd-cmd">&#x2318;</span>
+	<kbd class="ext-wikilambda-app-publish-dialog__kbd">
+		<span class="ext-wikilambda-app-publish-dialog__kbd-cmd">&#x2318;</span>
 	</kbd>
 `;
 
 const ctrlKeyChar = `
-	<kbd class="ext-wikilambda-publishdialog__kbd">
-		<span class="ext-wikilambda-publishdialog__kbd-ctrl">Ctrl</span>
+	<kbd class="ext-wikilambda-app-publish-dialog__kbd">
+		<span class="ext-wikilambda-app-publish-dialog__kbd-ctrl">Ctrl</span>
 	</kbd>
 `;
 module.exports = exports = defineComponent( {
@@ -363,25 +363,14 @@ module.exports = exports = defineComponent( {
 </script>
 
 <style lang="less">
-@import '../../ext.wikilambda.app.variables.less';
+@import '../../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-publishdialog {
-	&__errors {
+.ext-wikilambda-app-publish-dialog {
+	.ext-wikilambda-app-publish-dialog__errors {
 		margin-bottom: @spacing-200;
 	}
 
-	&__summary {
-		display: flex;
-		flex-direction: column;
-		padding: @spacing-50 0;
-		color: @color-placeholder;
-	}
-
-	&__summary-label {
-		padding-bottom: @spacing-25;
-	}
-
-	&__kbd {
+	.ext-wikilambda-app-publish-dialog__kbd {
 		font-size: @font-size-x-small;
 		font-weight: @font-weight-normal;
 		line-height: @line-height-x-small;
@@ -395,62 +384,17 @@ module.exports = exports = defineComponent( {
 		display: inline-block;
 	}
 
-	&__kbd-enter {
+	.ext-wikilambda-app-publish-dialog__kbd-enter {
 		position: relative;
 		top: (@spacing-12 / 2);
 	}
 
-	&__keyboard-submit-warning {
+	.ext-wikilambda-app-publish-dialog__keyboard-submit-warning {
 		margin-top: @spacing-25;
 	}
 
-	&__divider {
-		margin-top: @spacing-100;
-	}
-
-	&__actions {
-		display: flex;
-		flex-direction: row-reverse;
-
-		&__button-cancel {
-			margin-right: @spacing-50;
-		}
-	}
-
-	&__legal-text {
+	.ext-wikilambda-app-publish-dialog__legal-text {
 		color: @color-placeholder;
-	}
-
-	&__body {
-		padding: 0 @spacing-100 @spacing-100;
-	}
-
-	&__header {
-		display: flex;
-		justify-content: space-between;
-		padding: @spacing-50 0;
-		position: sticky;
-		top: @spacing-100;
-		background: @background-color-base;
-
-		&__title {
-			width: 100%;
-			font-weight: bold;
-			font-size: 1.15em;
-			margin: auto;
-		}
-
-		&__close-button {
-			display: flex;
-			color: @color-notice;
-			justify-content: center;
-			align-items: center;
-			height: @size-200;
-			width: @size-200;
-			background: none;
-			border: 0;
-			margin: auto;
-		}
 	}
 }
 </style>

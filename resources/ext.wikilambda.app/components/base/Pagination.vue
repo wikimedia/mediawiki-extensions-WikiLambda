@@ -5,30 +5,32 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-pagination">
-		<cdx-button class="ext-wikilambda-pagination__view-all" @click="resetView">
+	<div class="ext-wikilambda-app-pagination">
+		<cdx-button class="ext-wikilambda-app-pagination__view-all" @click="resetView">
 			{{ getButtonText }}
 		</cdx-button>
-		<div v-if="!showingAll" class="ext-wikilambda-pagination__page-selector">
-			<div class="ext-wikilambda-pagination__page-selector__main">
+		<div v-if="!showingAll" class="ext-wikilambda-app-pagination__container">
+			<div class="ext-wikilambda-app-pagination__numbers">
 				<input
 					ref="pageInput"
-					class="ext-wikilambda-pagination__page-selector__input"
+					class="ext-wikilambda-app-pagination__input"
 					:max="totalPages"
 					:value="currentPage"
 					@input="resetPage"
 				>
-				<span class="ext-wikilambda-pagination__page-selector__total-pages">/ {{ totalPages }} </span>
+				<span class="ext-wikilambda-app-pagination__total-pages">/ {{ totalPages }} </span>
 			</div>
 			<cdx-button
-				class="ext-wikilambda-pagination__page-selector__action"
+				aria-label="Back"
+				class="ext-wikilambda-app-pagination__action"
 				:disabled="currentPage === 1"
 				@click="updatePage( -1 )"
 			>
 				<cdx-icon :icon="icons.cdxIconPrevious" icon-label="Back"></cdx-icon>
 			</cdx-button>
 			<cdx-button
-				class="ext-wikilambda-pagination__page-selector__action"
+				aria-label="Next"
+				class="ext-wikilambda-app-pagination__action"
 				:disabled="currentPage === totalPages "
 				@click="updatePage( 1 )"
 			>
@@ -45,7 +47,7 @@ const CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	icons = require( '../../../lib/icons.json' );
 
 module.exports = exports = defineComponent( {
-	name: 'wl-pagination-component',
+	name: 'wl-pagination',
 	components: {
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon
@@ -106,42 +108,42 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-pagination {
+.ext-wikilambda-app-pagination {
 	padding-top: @spacing-50;
 	padding-bottom: @spacing-100;
 	display: flex;
 
-	&__view-all {
+	.ext-wikilambda-app-pagination__view-all {
 		flex: none;
 		height: @size-200;
 	}
 
-	&__page-selector {
+	.ext-wikilambda-app-pagination__container {
 		display: flex;
 		align-content: center;
 		margin-left: auto;
+	}
 
-		&__input {
-			width: @size-200;
-			height: @size-200;
-			margin: 0;
-			text-align: center;
-			border: 1px solid @border-color-base;
-			border-radius: @border-radius-base;
-			box-sizing: @box-sizing-base;
-		}
+	.ext-wikilambda-app-pagination__input {
+		width: @size-200;
+		height: @size-200;
+		margin: 0;
+		text-align: center;
+		border: 1px solid @border-color-base;
+		border-radius: @border-radius-base;
+		box-sizing: @box-sizing-base;
+	}
 
-		&__total-pages {
-			height: @size-200;
-			text-align: center;
-			padding: 0 6px;
-		}
+	.ext-wikilambda-app-pagination__total-pages {
+		height: @size-200;
+		text-align: center;
+		padding: 0 6px;
+	}
 
-		&__action {
-			padding-left: 0;
-			padding-right: 0;
-			margin-left: @spacing-50;
-		}
+	.ext-wikilambda-app-pagination__action {
+		padding-left: 0;
+		padding-right: 0;
+		margin-left: @spacing-50;
 	}
 }
 </style>

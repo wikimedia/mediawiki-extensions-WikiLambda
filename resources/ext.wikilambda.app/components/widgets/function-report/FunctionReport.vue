@@ -7,7 +7,7 @@
 	@license MIT
 -->
 <template>
-	<wl-widget-base class="ext-wikilambda-function-report">
+	<wl-widget-base class="ext-wikilambda-app-function-report-widget">
 		<!-- Widget header -->
 		<template #header>
 			{{ title }}
@@ -29,10 +29,10 @@
 				<div
 					v-for="item in zIds"
 					:key="item"
-					class="ext-wikilambda-function-report__items"
+					class="ext-wikilambda-app-function-report-widget__items"
 				>
 					<wl-function-report-item
-						class="ext-wikilambda-function-report__result"
+						class="ext-wikilambda-app-function-report-widget__result"
 						:z-function-id="zFunctionId"
 						:z-implementation-id="isImplementationReport ? zImplementationId : item"
 						:z-tester-id="isTesterReport ? zTesterId : item"
@@ -58,15 +58,15 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../Constants.js' ),
-	typeUtils = require( '../../mixins/typeUtils.js' ),
+const Constants = require( '../../../Constants.js' ),
+	typeUtils = require( '../../../mixins/typeUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
-	icons = require( '../../../lib/icons.json' ),
-	WidgetBase = require( '../base/WidgetBase.vue' ),
-	FunctionMetadataDialog = require( './FunctionMetadataDialog.vue' ),
+	icons = require( '../../../../lib/icons.json' ),
+	WidgetBase = require( '../../base/WidgetBase.vue' ),
+	FunctionMetadataDialog = require( '../function-evaluator/FunctionMetadataDialog.vue' ),
 	FunctionReportItem = require( './FunctionReportItem.vue' );
 
 module.exports = exports = defineComponent( {
@@ -340,38 +340,14 @@ module.exports = exports = defineComponent( {
 </script>
 
 <style lang="less">
-@import '../../ext.wikilambda.app.variables.less';
+@import '../../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-function-report {
-	&__items {
+.ext-wikilambda-app-function-report-widget {
+	.ext-wikilambda-app-function-report-widget__items {
 		margin-bottom: @spacing-50;
 
 		&:last-child {
 			margin-bottom: 0;
-		}
-	}
-
-	.cdx-card__text__description {
-		.ext-wikilambda-function-report-item-status {
-			&__ready {
-				color: @color-disabled;
-			}
-
-			&__canceled {
-				color: @color-subtle;
-			}
-
-			&__passed {
-				color: @color-success;
-			}
-
-			&__failed {
-				color: @color-error;
-			}
-
-			&__running {
-				color: @color-warning;
-			}
 		}
 	}
 }
