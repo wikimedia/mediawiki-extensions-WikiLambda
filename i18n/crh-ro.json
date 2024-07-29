@@ -9,6 +9,8 @@
 	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|tĭl}}",
 	"wikilambda-about-widget-search-language-placeholder": "Tĭl qıdır",
 	"wikilambda-about-widget-title": "Haqqında",
+	"wikilambda-function-implementation-selectall-label": "Epsĭnĭ sayla",
+	"wikilambda-function-implementation-select-label": "Sayla",
 	"wikilambda-functioncall-metadata-implementation-name": "At",
 	"wikilambda-functioncall-metadata-programming-language-version": "Körĭnĭş",
 	"wikilambda-zobjectselector-no-results": "Netice tapılamadı."

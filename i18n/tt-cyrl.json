@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Don Alessandro",
 			"Mansur",
 			"Ильгиз"
 		]
@@ -8,9 +9,9 @@
 	"action-wikilambda-edit-error-key-label": "хаталарның гамәлдәге төре төймәләренең тамгаларын үзгәртергә",
 	"action-wikilambda-edit-running-function-definition": "гамәлгә ашыру тоташтырылган функциянең керү/чыгуын үзгәртергә",
 	"action-wikilambda-execute-unsaved-code": "гамәлгә ашыруның сакланмаган кодын эшләтеп җибәрергә",
-	"right-wikilambda-edit-error-key-label": "Хаталарның гамәлдәге төре төймәләренең тамгаларын үзгәртергә",
-	"right-wikilambda-edit-running-function-definition": "Гамәлгә ашыру тоташтырылган функциянең керү/чыгуын үзгәртергә",
-	"right-wikilambda-execute-unsaved-code": "Гамәлгә ашыруның сакланмаган кодын эшләтеп җибәрергә",
+	"right-wikilambda-edit-error-key-label": "Хаталарның гамәлдәге төре төймәләренең тамгаларын үзгәртү",
+	"right-wikilambda-edit-running-function-definition": "Гамәлгә ашыру тоташтырылган функциянең керү/чыгуын үзгәртү",
+	"right-wikilambda-execute-unsaved-code": "Гамәлгә ашыруның сакланмаган кодын эшләтеп җибәрү",
 	"wikilambda-code-editor-label": "Кодны төзуче",
 	"wikilambda-function-definition-alias-description": "Башкалар бу функцияне җиңел таба алсын өчен өстәмә исемнәр өстәгез.",
 	"wikilambda-function-definition-alias-label": "Альтернатив исемнәр",

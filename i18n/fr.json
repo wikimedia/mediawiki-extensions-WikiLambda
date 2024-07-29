@@ -226,6 +226,8 @@
 	"wikilambda-function-explorer-copied-text": "Copié !",
 	"wikilambda-function-explorer-name-title": "Nom",
 	"wikilambda-function-explorer-title": "Explorateur de fonctions",
+	"wikilambda-function-implementation-selectall-label": "Tout sélectionner",
+	"wikilambda-function-implementation-select-label": "Sélectionner",
 	"wikilambda-function-implementation-language-label": "Langage",
 	"wikilambda-function-implementation-name-label": "Nom",
 	"wikilambda-function-implementation-state-approved": "Connecté",
