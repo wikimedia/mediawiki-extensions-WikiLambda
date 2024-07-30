@@ -1372,6 +1372,23 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( $expected, $actual );
 	}
 
+	public function testGetBCP47ClassName() {
+		$actual1 = ZObjectUtils::getBCP47ClassName(
+			'name', 'en', 'en'
+		);
+		$expected1 = 'ext-wikilambda-editpage-header--bcp47-code '
+			. 'ext-wikilambda-editpage-header--bcp47-code-name '
+			. 'ext-wikilambda-editpage-header--bcp47-code-hidden';
+		$this->assertSame( $expected1, $actual1 );
+
+		$actual2 = ZObjectUtils::getBCP47ClassName(
+			'type', 'en', 'es'
+		);
+		$expected2 = 'ext-wikilambda-editpage-header--bcp47-code '
+			. 'ext-wikilambda-editpage-header--bcp47-code-type';
+		$this->assertSame( $expected2, $actual2 );
+	}
+
 	/**
 	 * @dataProvider provideMakeCacheKeyFromZObject
 	 */

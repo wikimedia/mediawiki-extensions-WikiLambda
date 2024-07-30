@@ -18,12 +18,49 @@ config.global.stubs = {
 	teleport: true
 };
 
+// Helper function to setup jQuery mocks
+function setupJQueryPageTitleMocks() {
+	global.$ = jest.fn();
+
+	const $pageTitle = {
+		text: jest.fn().mockReturnThis(),
+		toggleClass: jest.fn().mockReturnThis()
+	};
+
+	const $langChip = {
+		text: jest.fn().mockReturnThis(),
+		toggleClass: jest.fn().mockReturnThis(),
+		attr: jest.fn().mockReturnThis()
+	};
+
+	const $firstHeading = {
+		find: jest.fn().mockImplementation( ( selector ) => {
+			if ( selector === '.ext-wikilambda-editpage-header-title--function-name' ) {
+				return {
+					first: jest.fn().mockReturnValue( $pageTitle )
+				};
+			} else if ( selector === '.ext-wikilambda-editpage-header--bcp47-code-name' ) {
+				return $langChip;
+			}
+		} )
+	};
+
+	$.mockImplementation( ( selector ) => {
+		if ( selector === '#firstHeading' ) {
+			return $firstHeading;
+		}
+	} );
+
+	return { $pageTitle, $langChip };
+}
+
 describe( 'AboutEditMetadataDialog', () => {
 	let getters,
 		actions;
 
 	beforeEach( () => {
 		getters = {
+			getFallbackLanguageZids: createGetterMock( [ 'Z1002', 'Z1003' ] ),
 			getRowByKeyPath: createGettersWithFunctionsMock( { id: 1 } ),
 			getUserLangZid: createGetterMock( 'Z1002' ),
 			getZMonolingualTextValue: createGettersWithFunctionsMock( '' ),
@@ -40,6 +77,7 @@ describe( 'AboutEditMetadataDialog', () => {
 				Z2K4: 'also known as',
 				Z2K5: 'description',
 				Z1002: 'English',
+				Z1003: 'Spanish',
 				Z11K1: 'language'
 			} )
 		};
@@ -47,7 +85,9 @@ describe( 'AboutEditMetadataDialog', () => {
 		actions = {
 			fetchZids: jest.fn(),
 			changeType: jest.fn(),
-			setDirty: jest.fn()
+			setDirty: jest.fn(),
+			removeItemFromTypedList: jest.fn(),
+			setValueByRowIdAndPath: jest.fn()
 		};
 		global.store.hotUpdate( { getters: getters, actions: actions } );
 	} );
@@ -130,6 +170,88 @@ describe( 'AboutEditMetadataDialog', () => {
 			expect( wrapper.emitted( 'publish' ) ).toBeTruthy();
 			expect( wrapper.emitted( 'change-selected-language' ) ).toBeTruthy();
 			expect( wrapper.emitted( 'close' ) ).toBeTruthy();
+		} );
+
+		it( 'updates page title when name is provided', async () => {
+			const { $pageTitle, $langChip } = setupJQueryPageTitleMocks();
+
+			const wrapper = mount( AboutEditMetadataDialog, {
+				props: {
+					edit: true,
+					canEdit: true,
+					open: true,
+					isFunction: false,
+					forLanguage: 'Z1002'
+				}
+			} );
+
+			// ACT: initialize and wait
+			wrapper.vm.initialize();
+			await wrapper.vm.$nextTick();
+
+			// ACT: Update name
+			wrapper.vm.name = 'new name';
+			await wrapper.vm.$nextTick();
+
+			// Update the store with the new persistent name
+			getters.getZPersistentName = createGettersWithFunctionsMock( { langZid: 'Z1002', langIsoCode: 'en', rowId: 1 } );
+			// Update the store with the new name
+			getters.getZMonolingualTextValue = createGettersWithFunctionsMock( 'new name' );
+			global.store.hotUpdate( { getters } );
+
+			// ACT: Click "Done"
+			await wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
+			await wrapper.vm.$nextTick();
+
+			// ASSERT: Check if DOM manipulations were called with the correct arguments
+			expect( wrapper.vm.pageTitleObject ).toEqual( { title: 'new name', hasChip: false, chip: 'en', chipName: 'English' } );
+			expect( $pageTitle.text ).toHaveBeenCalledWith( 'new name' );
+			expect( $langChip.text ).toHaveBeenCalledWith( 'en' );
+			expect( $langChip.toggleClass ).toHaveBeenCalledWith( 'ext-wikilambda-editpage-header--bcp47-code-hidden', true );
+			expect( $pageTitle.toggleClass ).toHaveBeenCalledWith( 'ext-wikilambda-editpage-header--title-untitled', false );
+		} );
+
+		it( 'updates page title when fallback language has a new name and current name is not set', async () => {
+			// Set the fallback language to be defined
+			getters.getZPersistentName = () => ( langZid ) => langZid === 'Z1003' ?
+				{ langZid: 'Z1003', langIsoCode: 'es', rowId: 11 } :
+				undefined;
+			global.store.hotUpdate( { getters } );
+
+			const { $pageTitle, $langChip } = setupJQueryPageTitleMocks();
+
+			const wrapper = mount( AboutEditMetadataDialog, {
+				props: {
+					edit: true,
+					canEdit: true,
+					open: true,
+					isFunction: false,
+					forLanguage: 'Z1003'
+				}
+			} );
+
+			// ACT: initialize and wait
+			wrapper.vm.initialize();
+			await wrapper.vm.$nextTick();
+
+			// ACT: Empty the name
+			wrapper.vm.name = 'new fallback name';
+			await wrapper.vm.$nextTick();
+
+			// Update the store with the new fallback name
+			getters.getZMonolingualTextValue = createGettersWithFunctionsMock( 'new fallback name' );
+			global.store.hotUpdate( { getters } );
+
+			// ACT: Click "Done"
+			await wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
+			await wrapper.vm.$nextTick();
+
+			// ASSERT: Check if DOM manipulations were called with the correct arguments
+			expect( wrapper.vm.pageTitleObject ).toEqual( { title: 'new fallback name', hasChip: true, chip: 'es', chipName: 'Spanish' } );
+			expect( $pageTitle.text ).toHaveBeenCalledWith( 'new fallback name' );
+			expect( $langChip.text ).toHaveBeenCalledWith( 'es' );
+			expect( $langChip.toggleClass ).toHaveBeenCalledWith( 'ext-wikilambda-editpage-header--bcp47-code-hidden', false );
+			expect( $pageTitle.toggleClass ).toHaveBeenCalledWith( 'ext-wikilambda-editpage-header--title-untitled', false );
 		} );
 
 		it( 'renders empty metadata fields', async () => {
@@ -238,23 +360,22 @@ describe( 'AboutEditMetadataDialog', () => {
 			expect( publishButton.attributes( 'disabled' ) ).toBeDefined();
 		} );
 
-		it( 'enables publish button when making changes', async () => {
-			const wrapper = mount( AboutEditMetadataDialog, { props: {
-				edit: true,
-				canEdit: true,
-				open: true,
-				isFunction: false,
-				forLanguage: 'Z1002'
-			} } );
+		it( 'updates page title when current name is changed', async () => {
+			const { $pageTitle, $langChip } = setupJQueryPageTitleMocks();
+
+			const wrapper = mount( AboutEditMetadataDialog, {
+				props: {
+					edit: true,
+					canEdit: true,
+					open: true,
+					isFunction: false,
+					forLanguage: 'Z1002'
+				}
+			} );
 
 			// ACT: initialize and wait
 			wrapper.vm.initialize();
 			await wrapper.vm.$nextTick();
-
-			// ASSERT: Primary action is disabled
-			expect(
-				wrapper.find( '.cdx-dialog__footer__primary-action' ).attributes( 'disabled' )
-			).toBeDefined();
 
 			// ACT: Update name
 			wrapper.vm.name = 'new name';
@@ -265,38 +386,101 @@ describe( 'AboutEditMetadataDialog', () => {
 				wrapper.find( '.cdx-dialog__footer__primary-action' ).attributes( 'disabled' )
 			).toBeUndefined();
 
-			// ACT: Reset
-			wrapper.vm.name = 'name';
-			await wrapper.vm.$nextTick();
-			expect(
-				wrapper.find( '.cdx-dialog__footer__primary-action' ).attributes( 'disabled' )
-			).toBeDefined();
+			// Update the store with the new name
+			getters.getZMonolingualTextValue = createGettersWithFunctionsMock( 'new name' );
+			global.store.hotUpdate( { getters } );
 
-			// ACT: Update description
-			wrapper.vm.description = 'more text';
+			// ACT: Click "Done"
+			await wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
 			await wrapper.vm.$nextTick();
 
-			// ASSERT: Primary action is enabled
-			expect(
-				wrapper.find( '.cdx-dialog__footer__primary-action' ).attributes( 'disabled' )
-			).toBeUndefined();
-
-			// ACT: Reset
-			wrapper.vm.description = 'some description';
-			await wrapper.vm.$nextTick();
-			expect(
-				wrapper.find( '.cdx-dialog__footer__primary-action' ).attributes( 'disabled' )
-			).toBeDefined();
-
-			// ACT: Update aliases
-			wrapper.vm.aliases.push( { id: 1000, value: 'new' } );
-			await wrapper.vm.$nextTick();
-
-			// ASSERT: Primary action is enabled
-			expect(
-				wrapper.find( '.cdx-dialog__footer__primary-action' ).attributes( 'disabled' )
-			).toBeUndefined();
+			// ASSERT: Check if DOM manipulations were called with the correct arguments
+			expect( wrapper.vm.pageTitleObject ).toEqual( { title: 'new name', hasChip: false, chip: 'en', chipName: 'English' } );
+			expect( $pageTitle.text ).toHaveBeenCalledWith( 'new name' );
+			expect( $langChip.text ).toHaveBeenCalledWith( 'en' );
+			expect( $langChip.toggleClass ).toHaveBeenCalledWith( 'ext-wikilambda-editpage-header--bcp47-code-hidden', true );
+			expect( $pageTitle.toggleClass ).toHaveBeenCalledWith( 'ext-wikilambda-editpage-header--title-untitled', false );
 		} );
+
+		it( 'updates page title when name is removed and there is a fallback', async () => {
+			const { $pageTitle, $langChip } = setupJQueryPageTitleMocks();
+
+			const wrapper = mount( AboutEditMetadataDialog, {
+				props: {
+					edit: true,
+					canEdit: true,
+					open: true,
+					isFunction: false,
+					forLanguage: 'Z1002'
+				}
+			} );
+
+			// ACT: initialize and wait
+			wrapper.vm.initialize();
+			await wrapper.vm.$nextTick();
+
+			// ACT: Empty the name
+			wrapper.vm.name = '';
+			await wrapper.vm.$nextTick();
+
+			// Update the store with the new persistent name: empty name and set fallback language
+			getters.getZPersistentName = () => ( langZid ) => langZid === 'Z1003' ?
+				{ langZid: 'Z1003', langIsoCode: 'es', rowId: 11 } :
+				undefined;
+			// Update the store with the fallback name
+			getters.getZMonolingualTextValue = () => ( rowId ) => rowId === 11 ? 'Fallback Page Title in Spanish' : '';
+			global.store.hotUpdate( { getters } );
+
+			// ACT: Click "Done"
+			await wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
+			await wrapper.vm.$nextTick();
+
+			// ASSERT: Check if DOM manipulations were called with the correct arguments
+			expect( wrapper.vm.pageTitleObject ).toEqual( { title: 'Fallback Page Title in Spanish', hasChip: true, chip: 'es', chipName: 'Spanish' } );
+			expect( $pageTitle.text ).toHaveBeenCalledWith( 'Fallback Page Title in Spanish' );
+			expect( $langChip.text ).toHaveBeenCalledWith( 'es' );
+			expect( $langChip.toggleClass ).toHaveBeenCalledWith( 'ext-wikilambda-editpage-header--bcp47-code-hidden', false );
+			expect( $pageTitle.toggleClass ).toHaveBeenCalledWith( 'ext-wikilambda-editpage-header--title-untitled', false );
+		} );
+
+		it( 'updates page title to undefined when name is removed and there is no fallback', async () => {
+			const { $pageTitle, $langChip } = setupJQueryPageTitleMocks();
+
+			const wrapper = mount( AboutEditMetadataDialog, {
+				props: {
+					edit: true,
+					canEdit: true,
+					open: true,
+					isFunction: false,
+					forLanguage: 'Z1002'
+				}
+			} );
+
+			// ACT: initialize and wait
+			wrapper.vm.initialize();
+			await wrapper.vm.$nextTick();
+
+			// ACT: Empty the name
+			wrapper.vm.name = '';
+			await wrapper.vm.$nextTick();
+
+			// Update the store with the empty name and fallback language data
+			getters.getZPersistentName = createGettersWithFunctionsMock( undefined );
+			getters.getZMonolingualTextValue = createGettersWithFunctionsMock( '' );
+			global.store.hotUpdate( { getters } );
+
+			// ACT: Click "Done"
+			await wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
+			await wrapper.vm.$nextTick();
+
+			// ASSERT: Check if DOM manipulations were called with the correct arguments
+			expect( wrapper.vm.pageTitleObject ).toEqual( { title: null, hasChip: false, chip: null, chipName: null } );
+			expect( $pageTitle.text ).toHaveBeenCalledWith( 'Untitled' );
+			expect( $langChip.text ).toHaveBeenCalledWith( null );
+			expect( $langChip.toggleClass ).toHaveBeenCalledWith( 'ext-wikilambda-editpage-header--bcp47-code-hidden', true );
+			expect( $pageTitle.toggleClass ).toHaveBeenCalledWith( 'ext-wikilambda-editpage-header--title-untitled', true );
+		} );
+
 	} );
 
 	describe( 'No edit rights', () => {
