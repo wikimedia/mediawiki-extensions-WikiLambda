@@ -82,7 +82,6 @@
 	"wikilambda-loading": "Notiek datu ielāde",
 	"wikilambda-metadata-aka-column": "Zināms arī kā",
 	"wikilambda-metadata-all-languages": "Rādīt visas ievadītās valodas",
-	"wikilambda-metadata-duplicate-alias-error": "'$1' jau pastāv",
 	"wikilambda-metadata-fewer-languages": "Rādīt mazāk valodas",
 	"wikilambda-metadata-language-column": "Valoda",
 	"wikilambda-persistentzobject-contents": "Saturs",

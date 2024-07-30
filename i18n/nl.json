@@ -308,7 +308,6 @@
 	"wikilambda-metadata-add-alias": "Voeg alias toe",
 	"wikilambda-metadata-aka-column": "Ook bekend als",
 	"wikilambda-metadata-all-languages": "Toon alle ingevoerde talen",
-	"wikilambda-metadata-duplicate-alias-error": "'$1' bestaat al",
 	"wikilambda-metadata-fewer-languages": "Toon minder talen",
 	"wikilambda-metadata-hide-languages": "Verberg box met labels",
 	"wikilambda-metadata-label-column": "Label",

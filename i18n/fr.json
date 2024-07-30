@@ -315,7 +315,6 @@
 	"wikilambda-metadata-add-alias": "Ajouter un alias",
 	"wikilambda-metadata-aka-column": "Aussi connu comme",
 	"wikilambda-metadata-all-languages": "Afficher toutes les langues saisies",
-	"wikilambda-metadata-duplicate-alias-error": "« $1 » existe déjà.",
 	"wikilambda-metadata-fewer-languages": "Afficher moins de langues",
 	"wikilambda-metadata-hide-languages": "Masquer la boîte des libellés",
 	"wikilambda-metadata-label-column": "Libellé",

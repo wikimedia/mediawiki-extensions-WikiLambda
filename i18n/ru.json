@@ -109,7 +109,6 @@
 	"wikilambda-literal-type": "Буквально $1",
 	"wikilambda-loading": "Загрузка данных",
 	"wikilambda-metadata-aka-column": "Также известно как",
-	"wikilambda-metadata-duplicate-alias-error": "'$1' уже существует",
 	"wikilambda-metadata-fewer-languages": "Показать меньше языков",
 	"wikilambda-metadata-label-column": "Метка",
 	"wikilambda-metadata-labels-table-label": "Метки",

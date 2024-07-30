@@ -306,7 +306,6 @@
 	"wikilambda-metadata-add-alias": "Aggiungi alias",
 	"wikilambda-metadata-aka-column": "Anche conosciuto come",
 	"wikilambda-metadata-all-languages": "Mostra tutte le lingue inserite",
-	"wikilambda-metadata-duplicate-alias-error": "'$1' esiste già",
 	"wikilambda-metadata-fewer-languages": "Mostra meno lingue",
 	"wikilambda-metadata-hide-languages": "Nascondi casella etichette",
 	"wikilambda-metadata-label-column": "Etichetta",

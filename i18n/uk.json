@@ -272,7 +272,6 @@
 	"wikilambda-metadata-add-alias": "Додати псевдонім",
 	"wikilambda-metadata-aka-column": "Також відомий як",
 	"wikilambda-metadata-all-languages": "Показати всі введені мови",
-	"wikilambda-metadata-duplicate-alias-error": "'$1' вже існує",
 	"wikilambda-metadata-fewer-languages": "Показувати менше мов",
 	"wikilambda-metadata-hide-languages": "Приховати поле з мітками",
 	"wikilambda-metadata-label-column": "Мітка",
