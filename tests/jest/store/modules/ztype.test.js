@@ -276,6 +276,27 @@ describe( 'ztype Vuex module', () => {
 					wikilambda_function_call_zobject: JSON.stringify( functionCall )
 				} );
 			} );
+
+			it( 'builds a function call and runs it, also when blocking', () => {
+				const payload = {
+					parserZid: parserZid,
+					zobject: 'some string',
+					zlang: 'Z1002',
+					wait: 'wait for me, Henry!'
+				};
+				const functionCall = {
+					Z1K1: 'Z7',
+					Z7K1: parserZid,
+					[ parserZid + 'K1' ]: 'some string',
+					[ parserZid + 'K2' ]: 'Z1002'
+				};
+				ztypeModule.actions.runParser( context, payload );
+				expect( postMock ).toHaveBeenCalledWith( {
+					action: 'wikilambda_function_call',
+					wikilambda_function_call_zobject: JSON.stringify( functionCall )
+				} );
+			} );
+
 		} );
 
 		describe( 'runRendererTest', () => {
