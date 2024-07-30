@@ -83,7 +83,7 @@ class LabelData {
 	 * @param {string} text
 	 * @param {string|undefined} langZid
 	 * @param {string|undefined} langCode
-	 * @return LabelData
+	 * @return {LabelData}
 	 */
 	static fromString( text, langZid = null, langCode = null ) {
 		return new LabelData( null, text, langZid, langCode );
