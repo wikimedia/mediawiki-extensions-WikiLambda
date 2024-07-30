@@ -89,7 +89,7 @@ class SpecialCreateObject extends SpecialPage {
 
 		$output = $this->getOutput();
 
-		$output->addModules( [ 'ext.wikilambda.edit', 'mediawiki.special' ] );
+		$output->addModules( [ 'ext.wikilambda.app', 'mediawiki.special' ] );
 
 		$output->addWikiMsg( 'wikilambda-special-createobject-intro' );
 

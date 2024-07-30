@@ -10,9 +10,9 @@ const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	mount = require( '@vue/test-utils' ).mount,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	ZMonolingualString = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZMonolingualString.vue' ),
+	ZMonolingualString = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZMonolingualString.vue' ),
 	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' );
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 
 describe( 'ZMonolingualString', () => {
 	let getters;

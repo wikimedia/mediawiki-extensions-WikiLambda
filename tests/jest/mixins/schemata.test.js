@@ -7,8 +7,8 @@
 
 'use strict';
 
-const schemata = require( '../../../resources/ext.wikilambda.edit/mixins/schemata.js' ).methods,
-	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
+const schemata = require( '../../../resources/ext.wikilambda.app/mixins/schemata.js' ).methods,
+	Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' ),
 	hybridToCanonical = schemata.hybridToCanonical,
 	canonicalToHybrid = schemata.canonicalToHybrid,
 	extractErrorStructure = schemata.extractErrorStructure,

@@ -7,7 +7,7 @@
  */
 'use strict';
 
-const ztypeModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/ztype.js' );
+const ztypeModule = require( '../../../../resources/ext.wikilambda.app/store/modules/ztype.js' );
 
 describe( 'ztype Vuex module', () => {
 	let state, context;

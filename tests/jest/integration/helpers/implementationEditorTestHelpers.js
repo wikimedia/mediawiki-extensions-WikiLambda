@@ -6,7 +6,7 @@
  */
 'use strict';
 
-const Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
 	ApiMock = require( './apiMock.js' ),
 	apiGetMock = require( './apiGetMock.js' ),
 	existingFunctionFromApi = require( '../objects/existingFunctionFromApi.js' );

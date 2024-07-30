@@ -8,7 +8,7 @@
 
 const VueTestUtils = require( '@vue/test-utils' ),
 	createGetterMock = require( '../helpers/getterHelpers.js' ).createGetterMock,
-	FunctionViewer = require( '../../../resources/ext.wikilambda.edit/views/FunctionViewer.vue' );
+	FunctionViewer = require( '../../../resources/ext.wikilambda.app/views/FunctionViewer.vue' );
 
 describe( 'FunctionViewer', () => {
 	const functionZid = 'Z12345';

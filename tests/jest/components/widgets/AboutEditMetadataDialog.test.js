@@ -10,7 +10,7 @@ const { config, mount } = require( '@vue/test-utils' ),
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	AboutEditMetadataDialog = require( '../../../../resources/ext.wikilambda.edit/components/widgets/AboutEditMetadataDialog.vue' );
+	AboutEditMetadataDialog = require( '../../../../resources/ext.wikilambda.app/components/widgets/AboutEditMetadataDialog.vue' );
 
 // Ignore all "teleport" behavior for the purpose of testing Dialog;
 // see https://test-utils.vuejs.org/guide/advanced/teleport.html

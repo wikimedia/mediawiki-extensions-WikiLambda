@@ -8,8 +8,8 @@
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	Constants = require( '../../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	FunctionEditorAliases = require( '../../../../../resources/ext.wikilambda.edit/components/function/editor/FunctionEditorAliases.vue' );
+	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
+	FunctionEditorAliases = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorAliases.vue' );
 
 describe( 'FunctionEditorAliases', () => {
 	let getters,

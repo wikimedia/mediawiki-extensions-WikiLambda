@@ -11,7 +11,7 @@ const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
-	FunctionEvaluator = require( '../../../../resources/ext.wikilambda.edit/components/widgets/FunctionEvaluator.vue' );
+	FunctionEvaluator = require( '../../../../resources/ext.wikilambda.app/components/widgets/FunctionEvaluator.vue' );
 
 describe( 'FunctionEvaluator', () => {
 	let getters,

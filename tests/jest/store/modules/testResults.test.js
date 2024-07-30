@@ -6,9 +6,9 @@
  */
 'use strict';
 
-const testResultsModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/testResults.js' ),
-	errorsModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/errors.js' ),
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
+const testResultsModule = require( '../../../../resources/ext.wikilambda.app/store/modules/testResults.js' ),
+	errorsModule = require( '../../../../resources/ext.wikilambda.app/store/modules/errors.js' ),
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
 	metadata = require( '../../fixtures/metadata.js' );
 
 describe( 'testResults Vuex module', () => {

@@ -9,8 +9,8 @@
 const mount = require( '@vue/test-utils' ).mount,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	TypeToString = require( '../../../../resources/ext.wikilambda.edit/components/base/TypeToString.vue' );
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
+	TypeToString = require( '../../../../resources/ext.wikilambda.app/components/base/TypeToString.vue' );
 
 describe( 'TypeToString', () => {
 

@@ -7,9 +7,9 @@
 'use strict';
 
 const zobjectToRows = require( '../../helpers/zObjectTableHelpers.js' ).zobjectToRows,
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	zobjectModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zobject.js' ),
-	zfunctionModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zfunction.js' );
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
+	zobjectModule = require( '../../../../resources/ext.wikilambda.app/store/modules/zobject.js' ),
+	zfunctionModule = require( '../../../../resources/ext.wikilambda.app/store/modules/zfunction.js' );
 
 describe( 'zfunction Vuex module', () => {
 	let getters, context;

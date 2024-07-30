@@ -10,8 +10,8 @@
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	{ waitFor } = require( '@testing-library/vue' ),
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	PublishWidget = require( '../../../../resources/ext.wikilambda.edit/components/widgets/Publish.vue' );
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
+	PublishWidget = require( '../../../../resources/ext.wikilambda.app/components/widgets/Publish.vue' );
 
 describe( 'Publish widget', () => {
 	let getters,

@@ -11,7 +11,7 @@ const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
-	FunctionViewerDetails = require( '../../../../../resources/ext.wikilambda.edit/components/function/viewer/FunctionViewerDetails.vue' );
+	FunctionViewerDetails = require( '../../../../../resources/ext.wikilambda.app/components/function/viewer/FunctionViewerDetails.vue' );
 
 const mockLanguages = {
 	Z444: 'javascript',

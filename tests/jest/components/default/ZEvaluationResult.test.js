@@ -7,11 +7,11 @@
 'use strict';
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
-	ZEvaluationResult = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZEvaluationResult.vue' );
+	ZEvaluationResult = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZEvaluationResult.vue' );
 
 describe( 'ZEvaluationResult', () => {
 	let getters;

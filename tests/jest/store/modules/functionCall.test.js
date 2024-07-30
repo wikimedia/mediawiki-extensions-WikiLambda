@@ -7,9 +7,9 @@
 'use strict';
 
 const tableDataToRowObjects = require( '../../helpers/zObjectTableHelpers.js' ).tableDataToRowObjects,
-	functionCallModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/functionCall.js' ),
-	zobjectModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zobject.js' ),
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' );
+	functionCallModule = require( '../../../../resources/ext.wikilambda.app/store/modules/functionCall.js' ),
+	zobjectModule = require( '../../../../resources/ext.wikilambda.app/store/modules/zobject.js' ),
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 
 const functionCall = {
 	Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },

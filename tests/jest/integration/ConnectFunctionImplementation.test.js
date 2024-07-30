@@ -11,7 +11,7 @@ require( '@testing-library/jest-dom' );
 const { fireEvent, waitFor } = require( '@testing-library/vue' ),
 	{ within } = require( '@testing-library/dom' ),
 	{ renderForFunctionViewer, runSetup, runTeardown } = require( './helpers/functionViewerDetailsTestHelpers.js' ),
-	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
+	Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' ),
 	existingFunctionFromApi = require( './objects/existingFunctionFromApi.js' ),
 	existingImplementationInCodeFromApi = require( './objects/existingImplementationInCodeFromApi.js' ),
 	existingImplementationByCompositionFromApi = require( './objects/existingImplementationByCompositionFromApi.js' ),

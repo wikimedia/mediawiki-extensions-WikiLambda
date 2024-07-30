@@ -6,8 +6,8 @@
  */
 'use strict';
 
-const errorsModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/errors.js' ),
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
+const errorsModule = require( '../../../../resources/ext.wikilambda.app/store/modules/errors.js' ),
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
 	mockErrors = {
 		// Global errors
 		0: [ {

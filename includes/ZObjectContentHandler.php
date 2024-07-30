@@ -304,7 +304,7 @@ class ZObjectContentHandler extends ContentHandler {
 		'@phan-var Title $title';
 
 		$parserOutput->addModuleStyles( [ 'ext.wikilambda.viewpage.styles' ] );
-		$parserOutput->addModules( [ 'ext.wikilambda.edit' ] );
+		$parserOutput->addModules( [ 'ext.wikilambda.app' ] );
 
 		$zLangRegistry = ZLangRegistry::singleton();
 		$userLangCode = $userLang->getCode();

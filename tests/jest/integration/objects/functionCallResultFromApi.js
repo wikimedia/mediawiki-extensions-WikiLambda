@@ -6,7 +6,7 @@
  */
 'use strict';
 
-const Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' );
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 
 module.exports = {
 	[ Constants.Z_OBJECT_TYPE ]: Constants.Z_RESPONSEENVELOPE,

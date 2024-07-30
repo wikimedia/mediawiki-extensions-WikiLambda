@@ -6,12 +6,12 @@
  */
 'use strict';
 
-const submissionModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zobject/submission.js' ),
-	zobjectModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zobject.js' ),
-	zfunctionModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zfunction.js' ),
+const submissionModule = require( '../../../../resources/ext.wikilambda.app/store/modules/zobject/submission.js' ),
+	zobjectModule = require( '../../../../resources/ext.wikilambda.app/store/modules/zobject.js' ),
+	zfunctionModule = require( '../../../../resources/ext.wikilambda.app/store/modules/zfunction.js' ),
 	zobjectToRows = require( '../../helpers/zObjectTableHelpers.js' ).zobjectToRows,
-	hybridToCanonical = require( '../../../../resources/ext.wikilambda.edit/mixins/schemata.js' ).methods.hybridToCanonical,
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
+	hybridToCanonical = require( '../../../../resources/ext.wikilambda.app/mixins/schemata.js' ).methods.hybridToCanonical,
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
 	fs = require( 'fs' ),
 	path = require( 'path' );
 

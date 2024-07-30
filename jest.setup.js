@@ -11,7 +11,7 @@
 
 const fs = require( 'fs' ),
 	path = require( 'path' ),
-	Constants = require( './resources/ext.wikilambda.edit/Constants.js' ),
+	Constants = require( './resources/ext.wikilambda.app/Constants.js' ),
 	vueTestUtils = require( '@vue/test-utils' ),
 	vuex = require( 'vuex' );
 

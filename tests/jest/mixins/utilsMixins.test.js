@@ -7,7 +7,7 @@
 
 'use strict';
 
-const utilsMixins = require( '../../../resources/ext.wikilambda.edit/mixins/utilsMixins.js' );
+const utilsMixins = require( '../../../resources/ext.wikilambda.app/mixins/utilsMixins.js' );
 
 describe( 'utilsMixins', () => {
 	describe( 'getNestedProperty', () => {

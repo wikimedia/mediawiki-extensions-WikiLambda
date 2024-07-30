@@ -7,8 +7,8 @@
 
 'use strict';
 
-const programmingLanguagesModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/programmingLanguages.js' ),
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
+const programmingLanguagesModule = require( '../../../../resources/ext.wikilambda.app/store/modules/programmingLanguages.js' ),
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
 	mockZProgrammingLanguages = [
 		{
 			Z1K1: Constants.Z_PERSISTENTOBJECT,

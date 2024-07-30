@@ -7,7 +7,7 @@
 'use strict';
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
-	ZTypedListItems = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZTypedListItems.vue' );
+	ZTypedListItems = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZTypedListItems.vue' );
 
 describe( 'ZTypedListItems', () => {
 

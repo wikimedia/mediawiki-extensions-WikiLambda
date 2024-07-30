@@ -10,9 +10,9 @@ require( '@testing-library/jest-dom' );
 
 const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
 	{ within } = require( '@testing-library/dom' ),
-	store = require( '../../../resources/ext.wikilambda.edit/store/index.js' ),
-	App = require( '../../../resources/ext.wikilambda.edit/components/App.vue' ),
-	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
+	store = require( '../../../resources/ext.wikilambda.app/store/index.js' ),
+	App = require( '../../../resources/ext.wikilambda.app/components/App.vue' ),
+	Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' ),
 	ApiMock = require( './helpers/apiMock.js' ),
 	apiGetMock = require( './helpers/apiGetMock.js' ),
 	existingFunctionFromApi = require( './objects/existingFunctionFromApi.js' ),

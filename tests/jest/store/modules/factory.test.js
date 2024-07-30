@@ -8,8 +8,8 @@
 
 const tableDataToRowObjects = require( '../../helpers/zObjectTableHelpers.js' ).tableDataToRowObjects,
 	zobjectToRows = require( '../../helpers/zObjectTableHelpers.js' ).zobjectToRows,
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	zobjectModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zobject.js' ),
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
+	zobjectModule = require( '../../../../resources/ext.wikilambda.app/store/modules/zobject.js' ),
 	mockApiZids = require( '../../fixtures/mocks.js' ).mockApiZids;
 
 let context,

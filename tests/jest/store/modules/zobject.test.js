@@ -8,10 +8,10 @@
 
 const tableDataToRowObjects = require( '../../helpers/zObjectTableHelpers.js' ).tableDataToRowObjects,
 	zobjectToRows = require( '../../helpers/zObjectTableHelpers.js' ).zobjectToRows,
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	zobjectModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zobject.js' ),
-	errorModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/errors.js' ),
-	libraryModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/library.js' ),
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
+	zobjectModule = require( '../../../../resources/ext.wikilambda.app/store/modules/zobject.js' ),
+	errorModule = require( '../../../../resources/ext.wikilambda.app/store/modules/errors.js' ),
+	libraryModule = require( '../../../../resources/ext.wikilambda.app/store/modules/library.js' ),
 	mockApiZids = require( '../../fixtures/mocks.js' ).mockApiZids;
 
 const blankPersistentObject = {

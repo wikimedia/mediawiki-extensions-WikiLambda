@@ -9,7 +9,7 @@
 const { waitFor } = require( '@testing-library/vue' ),
 	shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGetterMock = require( '../helpers/getterHelpers.js' ).createGetterMock,
-	App = require( '../../../resources/ext.wikilambda.edit/components/App.vue' );
+	App = require( '../../../resources/ext.wikilambda.app/components/App.vue' );
 
 describe( 'App.vue', () => {
 	let actions,

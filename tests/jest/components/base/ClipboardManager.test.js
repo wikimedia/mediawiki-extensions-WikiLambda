@@ -7,7 +7,7 @@
 'use strict';
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
-	ClipboardManager = require( '../../../../resources/ext.wikilambda.edit/components/base/ClipboardManager.vue' );
+	ClipboardManager = require( '../../../../resources/ext.wikilambda.app/components/base/ClipboardManager.vue' );
 
 describe( 'ClipboardManager', () => {
 	let wrapper;

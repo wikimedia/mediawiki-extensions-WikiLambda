@@ -8,7 +8,7 @@
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	ZFunctionCall = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZFunctionCall.vue' );
+	ZFunctionCall = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZFunctionCall.vue' );
 
 describe( 'ZFunctionCall', () => {
 	describe( 'in view and edit mode', () => {

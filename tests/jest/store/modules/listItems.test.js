@@ -6,7 +6,7 @@
  */
 'use strict';
 
-const listItemsModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/listItems.js' );
+const listItemsModule = require( '../../../../resources/ext.wikilambda.app/store/modules/listItems.js' );
 
 describe( 'listItems Vuex module', () => {
 

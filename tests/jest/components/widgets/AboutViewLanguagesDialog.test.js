@@ -9,7 +9,7 @@
 const { config, mount } = require( '@vue/test-utils' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	AboutViewLanguagesDialog = require( '../../../../resources/ext.wikilambda.edit/components/widgets/AboutViewLanguagesDialog.vue' );
+	AboutViewLanguagesDialog = require( '../../../../resources/ext.wikilambda.app/components/widgets/AboutViewLanguagesDialog.vue' );
 
 // Ignore all "teleport" behavior for the purpose of testing Dialog;
 // see https://test-utils.vuejs.org/guide/advanced/teleport.html

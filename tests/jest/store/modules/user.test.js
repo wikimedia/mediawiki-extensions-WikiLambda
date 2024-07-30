@@ -6,7 +6,7 @@
  */
 'use strict';
 
-const userModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/user.js' );
+const userModule = require( '../../../../resources/ext.wikilambda.app/store/modules/user.js' );
 let context,
 	state,
 	getters;

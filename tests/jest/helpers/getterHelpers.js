@@ -6,7 +6,7 @@
  */
 'use strict';
 
-const LabelData = require( '../../../resources/ext.wikilambda.edit/store/classes/LabelData.js' );
+const LabelData = require( '../../../resources/ext.wikilambda.app/store/classes/LabelData.js' );
 
 const createGettersWithFunctionsMock = function ( returnVal ) {
 	return jest.fn().mockImplementation( () => jest.fn().mockReturnValue( returnVal ) );

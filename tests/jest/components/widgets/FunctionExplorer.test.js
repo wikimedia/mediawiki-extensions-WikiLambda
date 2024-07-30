@@ -7,9 +7,9 @@
 'use strict';
 
 const
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	LabelData = require( '../../../../resources/ext.wikilambda.edit/store/classes/LabelData.js' ),
-	FunctionExplorer = require( '../../../../resources/ext.wikilambda.edit/components/widgets/FunctionExplorer.vue' ),
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
+	LabelData = require( '../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' ),
+	FunctionExplorer = require( '../../../../resources/ext.wikilambda.app/components/widgets/FunctionExplorer.vue' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,

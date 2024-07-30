@@ -9,7 +9,7 @@
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
-	FunctionEditorLanguageBlock = require( '../../../../../resources/ext.wikilambda.edit/components/function/editor/FunctionEditorLanguageBlock.vue' );
+	FunctionEditorLanguageBlock = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorLanguageBlock.vue' );
 
 describe( 'FunctionEditorDefinitionLanguageBlock', () => {
 	let getters;

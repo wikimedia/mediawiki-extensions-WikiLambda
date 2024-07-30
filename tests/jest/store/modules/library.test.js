@@ -6,10 +6,10 @@
  */
 'use strict';
 
-const libraryModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/library.js' ),
-	languagesModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/languages.js' ),
-	LabelData = require( '../../../../resources/ext.wikilambda.edit/store/classes/LabelData.js' ),
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
+const libraryModule = require( '../../../../resources/ext.wikilambda.app/store/modules/library.js' ),
+	languagesModule = require( '../../../../resources/ext.wikilambda.app/store/modules/languages.js' ),
+	LabelData = require( '../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' ),
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
 	mockApiResponseFor = require( '../../fixtures/mocks.js' ).mockApiResponseFor,
 	mockApiZids = require( '../../fixtures/mocks.js' ).mockApiZids,
 	mockEnumValues = require( '../../fixtures/mocks.js' ).mockEnumValues;

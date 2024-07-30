@@ -11,8 +11,8 @@ const { config, mount } = require( '@vue/test-utils' ),
 	{ waitFor } = require( '@testing-library/vue' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	PublishDialog = require( '../../../../resources/ext.wikilambda.edit/components/widgets/PublishDialog.vue' );
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
+	PublishDialog = require( '../../../../resources/ext.wikilambda.app/components/widgets/PublishDialog.vue' );
 
 // Ignore all "teleport" behavior for the purpose of testing Dialog;
 // see https://test-utils.vuejs.org/guide/advanced/teleport.html

@@ -7,9 +7,9 @@
 'use strict';
 
 const tableDataToRowObjects = require( '../../helpers/zObjectTableHelpers.js' ).tableDataToRowObjects,
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
 	zobjectToRows = require( '../../helpers/zObjectTableHelpers.js' ).zobjectToRows,
-	zobjectModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zobject.js' );
+	zobjectModule = require( '../../../../resources/ext.wikilambda.app/store/modules/zobject.js' );
 
 let state,
 	getters,

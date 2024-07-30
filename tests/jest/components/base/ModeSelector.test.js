@@ -11,8 +11,8 @@ const { waitFor } = require( '@testing-library/vue' ),
 	mount = require( '@vue/test-utils' ).mount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	ModeSelector = require( '../../../../resources/ext.wikilambda.edit/components/base/ModeSelector.vue' );
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
+	ModeSelector = require( '../../../../resources/ext.wikilambda.app/components/base/ModeSelector.vue' );
 
 const mockLabels = {
 	Z18: 'Argument reference',

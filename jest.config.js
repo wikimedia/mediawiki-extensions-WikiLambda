@@ -51,15 +51,15 @@ module.exports = {
 		// Ignore upstream libraries
 		'resources/lib/',
 		// Ignore index.js initialization scripts
-		'resources/ext.wikilambda.edit/index.js',
+		'resources/ext.wikilambda.app/index.js',
 		'resources/ext.wikilambda.languageselector/index.js',
 		// These are untested base components - as we add more tests, we should remove them from here
-		'resources/ext.wikilambda.edit/components/base/Chip.vue',
-		'resources/ext.wikilambda.edit/components/base/ChipContainer.vue',
-		'resources/ext.wikilambda.edit/components/base/Table.vue',
-		'resources/ext.wikilambda.edit/components/base/Tooltip.vue',
+		'resources/ext.wikilambda.app/components/base/Chip.vue',
+		'resources/ext.wikilambda.app/components/base/ChipContainer.vue',
+		'resources/ext.wikilambda.app/components/base/Table.vue',
+		'resources/ext.wikilambda.app/components/base/Tooltip.vue',
 		// These are components that will be removed:
-		'resources/ext.wikilambda.edit/components/main-types/'
+		'resources/ext.wikilambda.app/components/main-types/'
 	],
 
 	coverageThreshold: {
@@ -76,19 +76,19 @@ module.exports = {
 			functions: 91,
 			statements: 92
 		},
-		'./resources/ext.wikilambda.edit/': {
+		'./resources/ext.wikilambda.app/': {
 			branches: 83,
 			lines: 91,
 			functions: 90,
 			statements: 91
 		},
-		'./resources/ext.wikilambda.edit/mixins': {
+		'./resources/ext.wikilambda.app/mixins': {
 			branches: 81,
 			lines: 84,
 			functions: 91,
 			statements: 84
 		},
-		'./resources/ext.wikilambda.edit/store': {
+		'./resources/ext.wikilambda.app/store': {
 			branches: 88,
 			lines: 96,
 			functions: 98,

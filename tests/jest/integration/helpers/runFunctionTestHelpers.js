@@ -7,7 +7,7 @@
 'use strict';
 
 const functionCallResultFromApi = require( '../objects/functionCallResultFromApi.js' ),
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
 	apiGetMock = require( './apiGetMock.js' ),
 	ApiMock = require( './apiMock.js' );
 

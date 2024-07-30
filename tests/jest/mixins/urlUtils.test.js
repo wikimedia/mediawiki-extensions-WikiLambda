@@ -7,7 +7,7 @@
 
 'use strict';
 
-const urlUtils = require( '../../../resources/ext.wikilambda.edit/mixins/urlUtils.js' ).methods;
+const urlUtils = require( '../../../resources/ext.wikilambda.app/mixins/urlUtils.js' ).methods;
 
 describe( 'urlUtils', () => {
 	describe( 'getParameterByName', () => {

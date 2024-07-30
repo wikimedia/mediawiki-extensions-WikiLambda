@@ -12,9 +12,9 @@ const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
 	{ within } = require( '@testing-library/dom' ),
 	{ lookupSearchAndSelect, textInputChange, chipInputAddChip } = require( './helpers/interactionHelpers.js' ),
 	{ runSetup, runTeardown } = require( './helpers/functionEditorTestHelpers.js' ),
-	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
-	store = require( '../../../resources/ext.wikilambda.edit/store/index.js' ),
-	App = require( '../../../resources/ext.wikilambda.edit/components/App.vue' ),
+	Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' ),
+	store = require( '../../../resources/ext.wikilambda.app/store/index.js' ),
+	App = require( '../../../resources/ext.wikilambda.app/components/App.vue' ),
 	expectedNewFunctionPostedToApi = require( './objects/expectedNewFunctionPostedToApi.js' );
 
 describe( 'WikiLambda frontend, on function-editor view', () => {

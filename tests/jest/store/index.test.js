@@ -8,7 +8,7 @@
 'use strict';
 
 const Vuex = require( 'vuex' ),
-	store = require( '../../../resources/ext.wikilambda.edit/store/index.js' );
+	store = require( '../../../resources/ext.wikilambda.app/store/index.js' );
 
 describe( 'Vuex store (index.js)', () => {
 	it( 'should export a function', () => {

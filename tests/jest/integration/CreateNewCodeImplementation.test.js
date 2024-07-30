@@ -12,8 +12,8 @@ const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
 	{ within } = require( '@testing-library/dom' ),
 	{ runSetup, runTeardown } = require( './helpers/implementationEditorTestHelpers.js' ),
 	{ clickLookupResult } = require( './helpers/interactionHelpers.js' ),
-	store = require( '../../../resources/ext.wikilambda.edit/store/index.js' ),
-	App = require( '../../../resources/ext.wikilambda.edit/components/App.vue' ),
+	store = require( '../../../resources/ext.wikilambda.app/store/index.js' ),
+	App = require( '../../../resources/ext.wikilambda.app/components/App.vue' ),
 	expectedNewCodeImplementationPostedToApi = require( './objects/expectedNewCodeImplementationPostedToApi.js' );
 
 describe( 'WikiLambda frontend, on zobject-editor view', () => {

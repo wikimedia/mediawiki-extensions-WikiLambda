@@ -11,8 +11,8 @@ const { waitFor } = require( '@testing-library/vue' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	ZObjectStringRenderer = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZObjectStringRenderer.vue' ),
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
+	ZObjectStringRenderer = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZObjectStringRenderer.vue' ),
 	convertSetToMap = require( '../../fixtures/metadata.js' ).convertSetToMap;
 
 describe( 'ZObjectStringRenderer', () => {

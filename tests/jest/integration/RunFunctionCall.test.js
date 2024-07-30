@@ -12,8 +12,8 @@ const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
 	{ within } = require( '@testing-library/dom' ),
 	{ clickLookupResult } = require( './helpers/interactionHelpers.js' ),
 	{ runSetup, runTeardown } = require( './helpers/runFunctionTestHelpers.js' ),
-	store = require( '../../../resources/ext.wikilambda.edit/store/index.js' ),
-	App = require( '../../../resources/ext.wikilambda.edit/components/App.vue' ),
+	store = require( '../../../resources/ext.wikilambda.app/store/index.js' ),
+	App = require( '../../../resources/ext.wikilambda.app/components/App.vue' ),
 	expectedFunctionCallPostedToApi = require( './objects/expectedFunctionCallPostedToApi.js' );
 
 describe( 'WikiLambda frontend, running a function on Run Function Special page', () => {

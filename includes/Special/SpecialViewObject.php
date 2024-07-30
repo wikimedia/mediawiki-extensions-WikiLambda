@@ -116,7 +116,7 @@ class SpecialViewObject extends SpecialPage {
 		// Set the page language for our own purposes.
 		$this->getContext()->setLanguage( $targetLanguageObject );
 
-		$outputPage->addModules( [ 'ext.wikilambda.edit', 'mediawiki.special' ] );
+		$outputPage->addModules( [ 'ext.wikilambda.app', 'mediawiki.special' ] );
 
 		$targetContent = $this->zObjectStore->fetchZObjectByTitle( $targetTitle );
 		if ( !$targetContent ) {

@@ -13,8 +13,8 @@ const { waitFor } = require( '@testing-library/vue' ),
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	mockEnumValues = require( '../../fixtures/mocks.js' ).mockEnumValues,
 	mockLookupValues = require( '../../fixtures/mocks.js' ).mockLookupValues,
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	ZObjectSelector = require( '../../../../resources/ext.wikilambda.edit/components/base/ZObjectSelector.vue' );
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
+	ZObjectSelector = require( '../../../../resources/ext.wikilambda.app/components/base/ZObjectSelector.vue' );
 
 describe( 'ZObjectSelector', () => {
 	let state,

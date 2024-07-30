@@ -6,7 +6,7 @@
  */
 'use strict';
 
-const Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' );
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 
 describe( 'router Vuex module', () => {
 
@@ -14,7 +14,7 @@ describe( 'router Vuex module', () => {
 
 	beforeEach( () => {
 		jest.resetModules();
-		routerInstance = require( '../../../../resources/ext.wikilambda.edit/store/modules/router.js' );
+		routerInstance = require( '../../../../resources/ext.wikilambda.app/store/modules/router.js' );
 	} );
 
 	afterEach( () => {

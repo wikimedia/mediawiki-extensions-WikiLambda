@@ -11,9 +11,9 @@ const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	ZCode = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZCode.vue' ),
-	CodeEditor = require( '../../../../resources/ext.wikilambda.edit/components/base/CodeEditor.vue' );
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
+	ZCode = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZCode.vue' ),
+	CodeEditor = require( '../../../../resources/ext.wikilambda.app/components/base/CodeEditor.vue' );
 
 describe( 'ZCode', () => {
 	let getters,

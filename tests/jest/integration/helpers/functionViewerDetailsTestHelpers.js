@@ -7,9 +7,9 @@
 'use strict';
 
 const { render } = require( '@testing-library/vue' ),
-	store = require( '../../../../resources/ext.wikilambda.edit/store/index.js' ),
-	App = require( '../../../../resources/ext.wikilambda.edit/components/App.vue' ),
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
+	store = require( '../../../../resources/ext.wikilambda.app/store/index.js' ),
+	App = require( '../../../../resources/ext.wikilambda.app/components/App.vue' ),
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
 	apiGetMock = require( './apiGetMock.js' ),
 	ApiMock = require( './apiMock.js' ),
 	existingFunctionFromApi = require( '../objects/existingFunctionFromApi.js' );

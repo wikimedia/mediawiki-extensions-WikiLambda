@@ -10,10 +10,10 @@ const { CdxButton } = require( '@wikimedia/codex' ),
 	shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	ZTypedList = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZTypedList.vue' ),
-	ZTypedListItems = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZTypedListItems.vue' ),
-	ZTypedListType = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZTypedListType.vue' );
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
+	ZTypedList = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZTypedList.vue' ),
+	ZTypedListItems = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZTypedListItems.vue' ),
+	ZTypedListType = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZTypedListType.vue' );
 
 describe( 'ZTypedList', () => {
 	let getters;

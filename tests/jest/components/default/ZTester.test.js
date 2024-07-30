@@ -11,7 +11,7 @@ const { waitFor } = require( '@testing-library/vue' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
-	ZTester = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZTester.vue' );
+	ZTester = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZTester.vue' );
 
 describe( 'ZTester', () => {
 	let getters, actions;

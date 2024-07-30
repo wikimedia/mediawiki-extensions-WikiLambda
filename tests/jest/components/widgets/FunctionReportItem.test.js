@@ -9,8 +9,8 @@
 const mount = require( '@vue/test-utils' ).mount,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	FunctionReportItem = require( '../../../../resources/ext.wikilambda.edit/components/widgets/FunctionReportItem.vue' );
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
+	FunctionReportItem = require( '../../../../resources/ext.wikilambda.app/components/widgets/FunctionReportItem.vue' );
 
 describe( 'FunctionReportItem', () => {
 	let getters,

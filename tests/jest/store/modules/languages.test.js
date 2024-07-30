@@ -7,7 +7,7 @@
 
 'use strict';
 
-const languagesModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/languages.js' );
+const languagesModule = require( '../../../../resources/ext.wikilambda.app/store/modules/languages.js' );
 
 describe( 'Languages Vuex module', () => {
 	describe( 'Getters', () => {

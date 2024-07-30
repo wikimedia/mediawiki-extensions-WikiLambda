@@ -8,7 +8,7 @@
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	{ waitFor } = require( '@testing-library/vue' ),
-	Pagination = require( '../../../../resources/ext.wikilambda.edit/components/base/Pagination.vue' );
+	Pagination = require( '../../../../resources/ext.wikilambda.app/components/base/Pagination.vue' );
 
 describe( 'Pagination', () => {
 	describe( 'when using pagination button', () => {

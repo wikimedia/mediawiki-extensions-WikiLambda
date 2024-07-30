@@ -10,8 +10,8 @@ const VueTestUtils = require( '@vue/test-utils' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
-	FunctionReport = require( '../../../../resources/ext.wikilambda.edit/components/widgets/FunctionReport.vue' ),
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' );
+	FunctionReport = require( '../../../../resources/ext.wikilambda.app/components/widgets/FunctionReport.vue' ),
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 
 describe( 'FunctionReport', () => {
 	let getters,

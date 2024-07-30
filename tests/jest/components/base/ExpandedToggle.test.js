@@ -9,7 +9,7 @@
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	{ waitFor } = require( '@testing-library/vue' ),
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
-	ExpandedToggle = require( '../../../../resources/ext.wikilambda.edit/components/base/ExpandedToggle.vue' );
+	ExpandedToggle = require( '../../../../resources/ext.wikilambda.app/components/base/ExpandedToggle.vue' );
 
 describe( 'ExpandedToggle', () => {
 	beforeEach( () => {

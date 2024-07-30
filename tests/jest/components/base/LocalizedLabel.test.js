@@ -9,8 +9,8 @@
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	LabelData = require( '../../../../resources/ext.wikilambda.edit/store/classes/LabelData.js' ),
-	LocalizedLabel = require( '../../../../resources/ext.wikilambda.edit/components/base/LocalizedLabel.vue' );
+	LabelData = require( '../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' ),
+	LocalizedLabel = require( '../../../../resources/ext.wikilambda.app/components/base/LocalizedLabel.vue' );
 
 describe( 'LocalizedLabel', () => {
 	let getters;

@@ -13,9 +13,9 @@ const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
 	{ within } = require( '@testing-library/dom' ),
 	{ lookupSearchAndSelect } = require( './helpers/interactionHelpers.js' ),
 	{ runSetup, runTeardown } = require( './helpers/functionEditorTestHelpers.js' ),
-	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
-	store = require( '../../../resources/ext.wikilambda.edit/store/index.js' ),
-	App = require( '../../../resources/ext.wikilambda.edit/components/App.vue' ),
+	Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' ),
+	store = require( '../../../resources/ext.wikilambda.app/store/index.js' ),
+	App = require( '../../../resources/ext.wikilambda.app/components/App.vue' ),
 	expectedGenericTypeFunctionPostedToApi = require( './objects/expectedGenericTypeFunctionPostedToApi.js' );
 
 describe( 'WikiLambda frontend, on function-editor view', () => {

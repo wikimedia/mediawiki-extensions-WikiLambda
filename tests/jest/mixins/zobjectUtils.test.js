@@ -7,9 +7,9 @@
 
 'use strict';
 
-const zobjectUtils = require( '../../../resources/ext.wikilambda.edit/mixins/zobjectUtils.js' ).methods,
-	Row = require( '../../../resources/ext.wikilambda.edit/store/classes/Row.js' ),
-	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
+const zobjectUtils = require( '../../../resources/ext.wikilambda.app/mixins/zobjectUtils.js' ).methods,
+	Row = require( '../../../resources/ext.wikilambda.app/store/classes/Row.js' ),
+	Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' ),
 	tableDataToRowObjects = require( '../helpers/zObjectTableHelpers.js' ).tableDataToRowObjects;
 
 describe( 'zobjectUtils mixin', () => {

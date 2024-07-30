@@ -6,7 +6,7 @@
  */
 'use strict';
 
-const Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
 	existingFunctionFromApi = require( './existingFunctionFromApi.js' );
 
 const zid = existingFunctionFromApi[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];

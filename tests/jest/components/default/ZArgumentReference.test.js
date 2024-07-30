@@ -9,8 +9,8 @@
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	ZArgumentReference = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZArgumentReference.vue' );
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
+	ZArgumentReference = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZArgumentReference.vue' );
 
 describe( 'ZArgumentReference', () => {
 

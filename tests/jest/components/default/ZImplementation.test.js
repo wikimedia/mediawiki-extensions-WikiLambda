@@ -9,7 +9,7 @@
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	ZImplementation = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZImplementation.vue' );
+	ZImplementation = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZImplementation.vue' );
 
 describe( 'ZImplementation', () => {
 	let getters;

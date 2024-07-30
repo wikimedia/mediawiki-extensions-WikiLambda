@@ -10,8 +10,8 @@ const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	{ waitFor } = require( '@testing-library/vue' ),
 	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	Constants = require( '../../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	FunctionEditorFooter = require( '../../../../../resources/ext.wikilambda.edit/components/function/editor/FunctionEditorFooter.vue' );
+	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
+	FunctionEditorFooter = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorFooter.vue' );
 
 describe( 'FunctionEditorFooter', () => {
 

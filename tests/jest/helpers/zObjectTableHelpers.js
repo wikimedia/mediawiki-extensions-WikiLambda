@@ -15,8 +15,8 @@
  */
 'use strict';
 
-const Row = require( '../../../resources/ext.wikilambda.edit/store/classes/Row.js' ),
-	zobjectUtils = require( '../../../resources/ext.wikilambda.edit/mixins/zobjectUtils.js' ).methods;
+const Row = require( '../../../resources/ext.wikilambda.app/store/classes/Row.js' ),
+	zobjectUtils = require( '../../../resources/ext.wikilambda.app/mixins/zobjectUtils.js' ).methods;
 
 const tableDataToRowObjects = function ( tableData ) {
 	return tableData.map( ( rowData ) => new Row(

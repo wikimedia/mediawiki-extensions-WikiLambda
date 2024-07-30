@@ -11,8 +11,8 @@ const { waitFor } = require( '@testing-library/vue' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	mockApiZids = require( '../../fixtures/mocks.js' ).mockApiZids,
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	TypeSelector = require( '../../../../resources/ext.wikilambda.edit/components/base/TypeSelector.vue' );
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
+	TypeSelector = require( '../../../../resources/ext.wikilambda.app/components/base/TypeSelector.vue' );
 
 describe( 'TypeSelector', () => {
 

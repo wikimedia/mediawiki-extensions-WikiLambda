@@ -181,7 +181,7 @@ class ZObjectEditAction extends Action {
 
 	public function show() {
 		$output = $this->getOutput();
-		$output->addModules( [ 'ext.wikilambda.edit' ] );
+		$output->addModules( [ 'ext.wikilambda.app' ] );
 
 		// (T347528) The action's Title object, not the Message getPageTitle() for the HTML page heading
 		$zId = $this->getTitle()->getBaseText();

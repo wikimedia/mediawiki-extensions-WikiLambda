@@ -7,12 +7,12 @@
 'use strict';
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	ZTypedListType = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZTypedListType.vue' ),
-	ZObjectKeyValue = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZObjectKeyValue.vue' );
+	ZTypedListType = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZTypedListType.vue' ),
+	ZObjectKeyValue = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZObjectKeyValue.vue' );
 
 describe( 'ZTypedListType', () => {
 	let getters,
