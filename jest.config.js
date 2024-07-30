@@ -38,7 +38,7 @@ module.exports = {
 	// Indicates whether the coverage information should be collected while executing the test
 	collectCoverage: true,
 
-	// An array of glob patterns indicating a set of files for which coverage information should be collected
+	// An array of glob patterns of the files for which coverage information should be collected
 	collectCoverageFrom: [
 		'resources/**/*.(js|vue)'
 	],
@@ -53,7 +53,7 @@ module.exports = {
 		// Ignore index.js initialization scripts
 		'resources/ext.wikilambda.app/index.js',
 		'resources/ext.wikilambda.languageselector/index.js',
-		// These are untested base components - as we add more tests, we should remove them from here
+		// These are untested base components; as we add more tests, we should remove them from here
 		'resources/ext.wikilambda.app/components/base/Chip.vue',
 		'resources/ext.wikilambda.app/components/base/ChipContainer.vue',
 		'resources/ext.wikilambda.app/components/base/Table.vue',
@@ -63,7 +63,8 @@ module.exports = {
 	],
 
 	coverageThreshold: {
-		// This is our soft target, but doesn't actually affect any of our code as we over-ride below for now
+		// This is our soft target, but doesn't actually affect any of our code as we over-ride
+		// below for now
 		global: {
 			branches: 90,
 			lines: 90,
@@ -96,7 +97,8 @@ module.exports = {
 		}
 	},
 
-	// The paths to modules that run some code to configure or set up the testing environment before each test
+	// The paths to modules that run some code to configure or set up the testing environment
+	// before each test
 	setupFiles: [
 		'./jest.setup.js'
 	]
