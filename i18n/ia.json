@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Karmwiki",
 			"McDutchie"
 		]
 	},
@@ -225,6 +226,7 @@
 	"wikilambda-function-explorer-copied-text": "Copiate!",
 	"wikilambda-function-explorer-name-title": "Nomine",
 	"wikilambda-function-explorer-title": "Explorator de functiones",
+	"wikilambda-function-implementation-select-label": "Seliger",
 	"wikilambda-function-implementation-language-label": "Lingua",
 	"wikilambda-function-implementation-name-label": "Nomine",
 	"wikilambda-function-implementation-state-approved": "Connectite",
