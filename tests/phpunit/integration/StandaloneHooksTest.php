@@ -193,7 +193,6 @@ EOT;
 
 		// Force deferred updates from other edits so we can conflict with it.
 		DeferredUpdates::doUpdates();
-		MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->waitForReplication();
 		$this->assertSame( [], DeferredUpdates::getPendingUpdates() );
 
 		$secondTitleText = ZTestType::TEST_ZID . '000';
@@ -226,7 +225,6 @@ EOT;
 
 		// Force deferred updates from other edits so we can conflict with it.
 		DeferredUpdates::doUpdates();
-		MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->waitForReplication();
 		$this->assertSame( [], DeferredUpdates::getPendingUpdates() );
 
 		// Check the alias have been inserted in the secondary table
@@ -279,7 +277,6 @@ EOT;
 
 		// Force deferred updates from other edits so we can conflict with it.
 		DeferredUpdates::doUpdates();
-		MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->waitForReplication();
 		$this->assertSame( [], DeferredUpdates::getPendingUpdates() );
 
 		$res = $dbr->newSelectQueryBuilder()
@@ -320,7 +317,6 @@ EOT;
 		$selectedLanguages = [ "Z1001", "Z1002", "Z1003", "Z1004", "Z1005", "Z1006" ];
 
 		$services = MediaWikiServices::getInstance();
-		$dbLoadFactory = $services->getDBLoadBalancerFactory();
 		$revisionRenderer = $services->getRevisionRenderer();
 		$wikiPageFactory = $services->getWikiPageFactory();
 
@@ -341,7 +337,6 @@ EOT;
 			$this->assertTrue( $status->isOK(), "Edit to create $languageZid went through" );
 
 			DeferredUpdates::doUpdates();
-			$dbLoadFactory->waitForReplication();
 
 			$title = Title::newFromText( $languageZid, NS_MAIN );
 			$content = $handler::makeContent( $contentString, $title );
@@ -394,7 +389,6 @@ EOT;
 		$selectedFunctions = [ "Z801", "Z804", "Z820", "Z883", "Z885", "Z889" ];
 
 		$services = MediaWikiServices::getInstance();
-		$dbLoadFactory = $services->getDBLoadBalancerFactory();
 		$revisionRenderer = $services->getRevisionRenderer();
 		$wikiPageFactory = $services->getWikiPageFactory();
 
@@ -415,7 +409,6 @@ EOT;
 			$this->assertTrue( $status->isOK(), "Edit to create $functionZid went through" );
 
 			DeferredUpdates::doUpdates();
-			$dbLoadFactory->waitForReplication();
 
 			$title = Title::newFromText( $functionZid, NS_MAIN );
 			$content = $handler::makeContent( $contentString, $title );
