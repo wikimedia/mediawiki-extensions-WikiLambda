@@ -136,6 +136,7 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 			// ASSERT: Correct ZID and ZObject were posted to the API.
 			expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {
 				action: 'wikilambda_edit',
+				uselang: 'en',
 				summary: 'my changes summary',
 				zid: functionZid,
 				zobject: JSON.stringify( expectedEditedFunctionPostedToApi )

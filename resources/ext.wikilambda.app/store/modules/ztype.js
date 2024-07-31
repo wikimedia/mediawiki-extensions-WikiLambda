@@ -9,7 +9,7 @@
 
 const Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ).methods,
-	performFunctionCall = require( '../../mixins/api.js' ).methods.performFunctionCall;
+	apiUtils = require( '../../mixins/api.js' ).methods;
 
 module.exports = exports = {
 	state: {
@@ -229,7 +229,7 @@ module.exports = exports = {
 			rendererCall[ `${ payload.rendererZid }K2` ] = payload.zlang;
 
 			// 2. Run this function call by calling wikilambda_function_call_zobject and return
-			return performFunctionCall( rendererCall );
+			return apiUtils.performFunctionCall( rendererCall );
 		},
 		/**
 		 * Given any Object/Z1 and a Language/Z60, it runs
@@ -277,7 +277,7 @@ module.exports = exports = {
 
 			// 3. Run this function call by calling wikilambda_function_call_zobject
 			// and return the response and the Promise resolver function
-			return performFunctionCall( parserCall ).then( ( response ) => {
+			return apiUtils.performFunctionCall( parserCall ).then( ( response ) => {
 				response.resolver = resolver;
 				return response;
 			} ).catch( ( e ) => {
@@ -318,7 +318,7 @@ module.exports = exports = {
 			} );
 
 			// 4. Run renderer function
-			return performFunctionCall( rendererCall ).then( ( data ) => {
+			return apiUtils.performFunctionCall( rendererCall ).then( ( data ) => {
 				const response = data.response[ Constants.Z_RESPONSEENVELOPE_VALUE ];
 				if (
 					( response !== Constants.Z_VOID ) &&

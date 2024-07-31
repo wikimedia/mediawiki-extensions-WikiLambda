@@ -9,6 +9,7 @@
 const tableDataToRowObjects = require( '../../helpers/zObjectTableHelpers.js' ).tableDataToRowObjects,
 	functionCallModule = require( '../../../../resources/ext.wikilambda.app/store/modules/functionCall.js' ),
 	zobjectModule = require( '../../../../resources/ext.wikilambda.app/store/modules/zobject.js' ),
+	ApiError = require( '../../../../resources/ext.wikilambda.app/store/classes/ApiError.js' ),
 	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 
 const functionCall = {
@@ -90,12 +91,13 @@ describe( 'functionCall Vuex module', () => {
 
 				expect( postMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_function_call',
-					wikilambda_function_call_zobject: JSON.stringify( canonicalFunctionCall )
+					wikilambda_function_call_zobject: JSON.stringify( canonicalFunctionCall ),
+					uselang: 'en'
 				} );
 			} );
 
 			it( 'Call MW API for function orchestration; set HTTP error', async () => {
-				const error = { error: { info: 'one tissue, used' } };
+				const error = new ApiError( 'http', { error: { info: 'one tissue, used' } } );
 				postMock = jest.fn().mockReturnValue( {
 					then: jest.fn().mockReturnValue( {
 						catch: jest.fn().mockImplementation( () => new Promise( ( _resolve, reject ) => {
@@ -108,10 +110,11 @@ describe( 'functionCall Vuex module', () => {
 
 				expect( postMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_function_call',
-					wikilambda_function_call_zobject: JSON.stringify( canonicalFunctionCall )
+					wikilambda_function_call_zobject: JSON.stringify( canonicalFunctionCall ),
+					uselang: 'en'
 				} );
 
-				expect( context.dispatch ).toHaveBeenCalledWith( 'setError', {
+				expect( context.commit ).toHaveBeenCalledWith( 'setError', {
 					errorCode: undefined,
 					errorMessage: 'one tissue, used',
 					errorType: 'error'

@@ -233,6 +233,7 @@ describe( 'testResults Vuex module', () => {
 
 					expect( getMock ).toHaveBeenCalledWith( {
 						action: 'wikilambda_perform_test',
+						uselang: 'en',
 						wikilambda_perform_test_zfunction: zFunctionId,
 						wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
 						wikilambda_perform_test_ztesters: zTesters.join( '|' ),
@@ -262,6 +263,7 @@ describe( 'testResults Vuex module', () => {
 
 					expect( getMock ).toHaveBeenCalledWith( {
 						action: 'wikilambda_perform_test',
+						uselang: 'en',
 						wikilambda_perform_test_zfunction: zFunctionId,
 						wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
 						wikilambda_perform_test_ztesters: zTesters.join( '|' ),
@@ -322,6 +324,7 @@ describe( 'testResults Vuex module', () => {
 
 					expect( getMock ).toHaveBeenCalledWith( {
 						action: 'wikilambda_perform_test',
+						uselang: 'en',
 						wikilambda_perform_test_zfunction: zFunctionId,
 						wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
 						wikilambda_perform_test_ztesters: zTesters.join( '|' ),
@@ -364,6 +367,7 @@ describe( 'testResults Vuex module', () => {
 
 				expect( getMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_perform_test',
+					uselang: 'en',
 					wikilambda_perform_test_zfunction: zFunctionId,
 					wikilambda_perform_test_zimplementations: [ JSON.stringify( currentObject ), 'Z10002' ].join( '|' ),
 					wikilambda_perform_test_ztesters: zTesters.join( '|' ),
@@ -394,6 +398,7 @@ describe( 'testResults Vuex module', () => {
 
 				expect( getMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_perform_test',
+					uselang: 'en',
 					wikilambda_perform_test_zfunction: zFunctionId,
 					wikilambda_perform_test_zimplementations: [ expectedEncodedObject, 'Z10002' ].join( '|' ),
 					wikilambda_perform_test_ztesters: zTesters.join( '|' ),

@@ -648,7 +648,7 @@ module.exports = exports = defineComponent( {
 				this.closeToast();
 				this.setImplementationsState();
 			} ).catch( ( error ) => {
-				this.currentToast = this.getToastErrorMessage( error );
+				this.currentToast = error.messageOrFallback( Constants.errorCodes.UNKNOWN_SAVE_ERROR );
 			} ).finally( () => {
 				this.implementationsLoading = false;
 			} );
@@ -670,7 +670,7 @@ module.exports = exports = defineComponent( {
 				this.closeToast();
 				this.setImplementationsState();
 			} ).catch( ( error ) => {
-				this.currentToast = this.getToastErrorMessage( error );
+				this.currentToast = error.messageOrFallback( Constants.errorCodes.UNKNOWN_SAVE_ERROR );
 			} ).finally( () => {
 				this.implementationsLoading = false;
 			} );
@@ -691,7 +691,7 @@ module.exports = exports = defineComponent( {
 				this.closeToast();
 				this.setTestsState();
 			} ).catch( ( error ) => {
-				this.currentToast = this.getToastErrorMessage( error );
+				this.currentToast = error.messageOrFallback( Constants.errorCodes.UNKNOWN_SAVE_ERROR );
 			} ).finally( () => {
 				this.testsLoading = false;
 			} );
@@ -712,7 +712,7 @@ module.exports = exports = defineComponent( {
 				this.closeToast();
 				this.setTestsState();
 			} ).catch( ( error ) => {
-				this.currentToast = this.getToastErrorMessage( error );
+				this.currentToast = error.messageOrFallback( Constants.errorCodes.UNKNOWN_SAVE_ERROR );
 			} ).finally( () => {
 				this.testsLoading = false;
 			} );
@@ -810,16 +810,6 @@ module.exports = exports = defineComponent( {
 		 */
 		closeToast: function () {
 			this.currentToast = null;
-		},
-
-		/**
-		 * Get the error message to display in the toast
-		 *
-		 * @param {Object} error
-		 * @return {string}
-		 */
-		getToastErrorMessage: function ( error ) {
-			return this.getErrorMessage( { message: this.getNestedProperty( error, 'error.message' ), code: Constants.errorCodes.UNKNOWN_ERROR } );
 		}
 	} ),
 	watch: {
@@ -829,7 +819,6 @@ module.exports = exports = defineComponent( {
 			}
 		}
 	},
-
 	mounted: function () {
 		this.initializeImplementations();
 		this.initializeTests();

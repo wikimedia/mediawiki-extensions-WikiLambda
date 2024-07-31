@@ -41,7 +41,7 @@ module.exports = exports = {
 					invalidOutputs = context.getters.getInvalidOutputFields;
 					if ( invalidOutputs.length > 0 ) {
 						for ( const invalidRow of invalidOutputs ) {
-							context.dispatch( 'setError', {
+							context.commit( 'setError', {
 								rowId: invalidRow,
 								errorCode: Constants.errorCodes.MISSING_FUNCTION_OUTPUT,
 								errorType: Constants.errorTypes.ERROR
@@ -54,7 +54,7 @@ module.exports = exports = {
 					invalidInputs = context.getters.getInvalidInputFields;
 					if ( invalidInputs.length > 0 ) {
 						for ( const invalidRow of invalidInputs ) {
-							context.dispatch( 'setError', {
+							context.commit( 'setError', {
 								rowId: invalidRow,
 								errorCode: Constants.errorCodes.MISSING_FUNCTION_INPUT_TYPE,
 								errorType: Constants.errorTypes.ERROR
@@ -76,7 +76,7 @@ module.exports = exports = {
 						Constants.Z_REFERENCE_ID
 					] ) ) {
 						rowId = context.getters.getZImplementationFunctionRowId( contentRowId );
-						context.dispatch( 'setError', {
+						context.commit( 'setError', {
 							rowId,
 							errorCode: Constants.errorCodes.MISSING_TARGET_FUNCTION,
 							errorType: Constants.errorTypes.ERROR
@@ -114,7 +114,7 @@ module.exports = exports = {
 								contentRowId,
 								Constants.Z_IMPLEMENTATION_COMPOSITION
 							);
-							context.dispatch( 'setError', {
+							context.commit( 'setError', {
 								rowId,
 								errorCode: Constants.errorCodes.MISSING_IMPLEMENTATION_COMPOSITION,
 								errorType: Constants.errorTypes.ERROR
@@ -148,7 +148,7 @@ module.exports = exports = {
 							const langRow = context.getters.getRowByKeyPath( [
 								Constants.Z_CODE_LANGUAGE
 							], rowId );
-							context.dispatch( 'setError', {
+							context.commit( 'setError', {
 								rowId: langRow.id,
 								errorCode: Constants.errorCodes.MISSING_IMPLEMENTATION_CODE_LANGUAGE,
 								errorType: Constants.errorTypes.ERROR
@@ -170,7 +170,7 @@ module.exports = exports = {
 								Constants.Z_CODE_CODE,
 								Constants.Z_STRING_VALUE
 							], rowId );
-							context.dispatch( 'setError', {
+							context.commit( 'setError', {
 								rowId: codeRow.id,
 								errorCode: Constants.errorCodes.MISSING_IMPLEMENTATION_CODE,
 								errorType: Constants.errorTypes.ERROR
@@ -191,7 +191,7 @@ module.exports = exports = {
 						Constants.Z_REFERENCE_ID
 					] ) ) {
 						rowId = context.getters.getZTesterFunctionRowId( contentRowId );
-						context.dispatch( 'setError', {
+						context.commit( 'setError', {
 							rowId,
 							errorCode: Constants.errorCodes.MISSING_TARGET_FUNCTION,
 							errorType: Constants.errorTypes.ERROR
@@ -206,7 +206,7 @@ module.exports = exports = {
 						Constants.Z_REFERENCE_ID
 					] ) ) {
 						rowId = context.getters.getZTesterCallRowId( contentRowId );
-						context.dispatch( 'setError', {
+						context.commit( 'setError', {
 							rowId,
 							errorCode: Constants.errorCodes.MISSING_TESTER_CALL,
 							errorType: Constants.errorTypes.ERROR
@@ -221,7 +221,7 @@ module.exports = exports = {
 						Constants.Z_REFERENCE_ID
 					] ) ) {
 						rowId = context.getters.getZTesterValidationRowId( contentRowId );
-						context.dispatch( 'setError', {
+						context.commit( 'setError', {
 							rowId,
 							errorCode: Constants.errorCodes.MISSING_TESTER_VALIDATION,
 							errorType: Constants.errorTypes.ERROR

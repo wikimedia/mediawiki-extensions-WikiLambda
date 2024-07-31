@@ -8,7 +8,7 @@
 const Constants = require( '../../Constants.js' ),
 	Row = require( '../classes/Row.js' ),
 	extractZIDs = require( '../../mixins/schemata.js' ).methods.extractZIDs,
-	performFunctionCall = require( '../../mixins/api.js' ).methods.performFunctionCall;
+	apiUtils = require( '../../mixins/api.js' ).methods;
 
 module.exports = exports = {
 	actions: {
@@ -46,7 +46,7 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		callZFunction: function ( context, payload ) {
-			return performFunctionCall( payload.functionCall ).then( ( data ) => {
+			return apiUtils.performFunctionCall( payload.functionCall ).then( ( data ) => {
 				// Asynchronously collect the necessary labels
 				const zids = extractZIDs( data.response );
 				context.dispatch( 'fetchZids', { zids } );
@@ -56,29 +56,12 @@ module.exports = exports = {
 					rowId: payload.resultRowId,
 					value: data.response
 				} );
-			} ).catch( ( error ) => {
-				// We might get either a Z22/Response envelope or a
-				// HTTP error code response with an API error object:
-				// {
-				//   error: {
-				//     code: 'error_code',
-				//     info: 'error message',
-				//   }
-				// }
-				if ( Constants.Z_OBJECT_TYPE in error ) {
-					context.dispatch( 'injectZObjectFromRowId', {
-						rowId: payload.resultRowId,
-						value: error
-					} );
-				} else if ( 'error' in error ) {
-					const hasErrorMsg = 'info' in error.error;
-					context.dispatch( 'setError', {
-						rowId: payload.resultRowId,
-						errorCode: !hasErrorMsg ? Constants.errorCodes.UNKNOWN_ERROR : undefined,
-						errorMessage: hasErrorMsg ? error.error.info : undefined,
-						errorType: 'error'
-					} );
-				}
+			} ).catch( ( /* ApiError */ error ) => {
+				context.commit( 'setError', {
+					rowId: payload.resultRowId,
+					errorType: Constants.errorTypes.ERROR,
+					errorMessage: error.messageOrFallback( Constants.errorCodes.UNKNOWN_EXEC_ERROR )
+				} );
 			} );
 		}
 	}

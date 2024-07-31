@@ -147,7 +147,10 @@ const Constants = {
 		ERROR: 'error'
 	},
 	errorCodes = {
-		UNKNOWN_ERROR: 'wikilambda-unknown-save-error-message',
+		UNKNOWN_ERROR: 'wikilambda-unknown-error-message',
+		UNKNOWN_EXEC_ERROR: 'wikilambda-unknown-exec-error-message',
+		UNKNOWN_SAVE_ERROR: 'wikilambda-unknown-save-error-message',
+		UNKNOWN_TEST_ERROR: 'wikilambda-unknown-test-error-message',
 		MISSING_FUNCTION_OUTPUT: 'wikilambda-missing-function-output-error-message',
 		MISSING_FUNCTION_INPUT_TYPE: 'wikilambda-missing-function-input-type-error-message',
 		MISSING_TARGET_FUNCTION: 'wikilambda-zobject-missing-attached-function',
@@ -227,6 +230,12 @@ const Constants = {
 		Constants.Z_STRING,
 		Constants.Z_BOOLEAN
 	];
+
+Constants.Z_ERRORS = {
+	Z_ERROR_UNKNOWN: 'Z500',
+	Z_ERROR_INVALID_JSON: 'Z548',
+	Z_ERROR_USER_CANNOT_EDIT: 'Z557'
+};
 
 // EXCLUDE_FROM_SELECTOR:
 // * Never select persistent object: Z2

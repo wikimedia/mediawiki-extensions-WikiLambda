@@ -268,12 +268,11 @@ module.exports = exports = {
 				// Make sure that all returned Zids are in library.js
 				context.dispatch( 'fetchZids', { zids: [ ...new Set( zids ) ] } );
 				context.commit( 'setTestResultsPromise', { functionZid: payload.zFunctionId } );
-			} ).catch( ( error ) => {
-				const errorMessage = error.error ? ( error.error.message || error.error.info ) : undefined;
+			} ).catch( ( /* ApiError */ error ) => {
 				context.commit( 'setError', {
 					rowId: Constants.errorIds.TEST_RESULTS,
-					errorMessage: errorMessage || error,
-					errorType: 'error'
+					errorType: Constants.errorTypes.ERROR,
+					errorMessage: error.messageOrFallback( Constants.errorCodes.UNKNOWN_TEST_ERROR )
 				} );
 				context.commit( 'setTestResultsPromise', { functionZid: payload.zFunctionId } );
 			} );

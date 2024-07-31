@@ -32,7 +32,7 @@ describe( 'zobject submission Vuex module', () => {
 	describe( 'validateZObject', () => {
 
 		describe( 'validate function', () => {
-			it( 'Does not dispatch error for a valid function', () => {
+			it( 'Does not commit error for a valid function', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
 				context.getters.getZObjectAsJson = {};
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
@@ -41,11 +41,11 @@ describe( 'zobject submission Vuex module', () => {
 				context.getters.getInvalidInputFields = [];
 
 				const isValid = submissionModule.actions.validateZObject( context );
-				expect( context.dispatch ).toHaveBeenCalledTimes( 0 );
+				expect( context.commit ).toHaveBeenCalledTimes( 0 );
 				expect( isValid ).toEqual( true );
 			} );
 
-			it( 'Dispatches errors for a function with one invalid output field', () => {
+			it( 'Commits errors for a function with one invalid output field', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
 				context.getters.getZObjectAsJson = {};
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
@@ -60,12 +60,12 @@ describe( 'zobject submission Vuex module', () => {
 				};
 
 				const isValid = submissionModule.actions.validateZObject( context );
-				expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockError );
+				expect( context.commit ).toHaveBeenCalledTimes( 1 );
+				expect( context.commit ).toHaveBeenCalledWith( 'setError', mockError );
 				expect( isValid ).toEqual( false );
 			} );
 
-			it( 'Dispatches errors for a function with many invalid output fields', () => {
+			it( 'Commits errors for a function with many invalid output fields', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
 				context.getters.getZObjectAsJson = {};
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
@@ -84,13 +84,13 @@ describe( 'zobject submission Vuex module', () => {
 				} ];
 
 				const isValid = submissionModule.actions.validateZObject( context );
-				expect( context.dispatch ).toHaveBeenCalledTimes( 2 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockErrors[ 0 ] );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockErrors[ 1 ] );
+				expect( context.commit ).toHaveBeenCalledTimes( 2 );
+				expect( context.commit ).toHaveBeenCalledWith( 'setError', mockErrors[ 0 ] );
+				expect( context.commit ).toHaveBeenCalledWith( 'setError', mockErrors[ 1 ] );
 				expect( isValid ).toEqual( false );
 			} );
 
-			it( 'Dispatches errors for a function with one invalid input field', () => {
+			it( 'Commits errors for a function with one invalid input field', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
 				context.getters.getZObjectAsJson = {};
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
@@ -105,12 +105,12 @@ describe( 'zobject submission Vuex module', () => {
 				};
 
 				const isValid = submissionModule.actions.validateZObject( context );
-				expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockError );
+				expect( context.commit ).toHaveBeenCalledTimes( 1 );
+				expect( context.commit ).toHaveBeenCalledWith( 'setError', mockError );
 				expect( isValid ).toEqual( false );
 			} );
 
-			it( 'Dispatches errors for a function with many invalid input fields', () => {
+			it( 'Commits errors for a function with many invalid input fields', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
 				context.getters.getZObjectAsJson = {};
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
@@ -129,13 +129,13 @@ describe( 'zobject submission Vuex module', () => {
 				} ];
 
 				const isValid = submissionModule.actions.validateZObject( context );
-				expect( context.dispatch ).toHaveBeenCalledTimes( 2 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockErrors[ 0 ] );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockErrors[ 1 ] );
+				expect( context.commit ).toHaveBeenCalledTimes( 2 );
+				expect( context.commit ).toHaveBeenCalledWith( 'setError', mockErrors[ 0 ] );
+				expect( context.commit ).toHaveBeenCalledWith( 'setError', mockErrors[ 1 ] );
 				expect( isValid ).toEqual( false );
 			} );
 
-			it( 'Dispatches errors for a function with invalid output and input fields', () => {
+			it( 'Commits errors for a function with invalid output and input fields', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
 				context.getters.getZObjectAsJson = {};
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
@@ -154,15 +154,15 @@ describe( 'zobject submission Vuex module', () => {
 				} ];
 
 				const isValid = submissionModule.actions.validateZObject( context );
-				expect( context.dispatch ).toHaveBeenCalledTimes( 2 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockErrors[ 0 ] );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockErrors[ 1 ] );
+				expect( context.commit ).toHaveBeenCalledTimes( 2 );
+				expect( context.commit ).toHaveBeenCalledWith( 'setError', mockErrors[ 0 ] );
+				expect( context.commit ).toHaveBeenCalledWith( 'setError', mockErrors[ 1 ] );
 				expect( isValid ).toEqual( false );
 			} );
 		} );
 
 		describe( 'validate implementation', () => {
-			it( 'Does not dispatch error for a valid code implementation (literal programming language)', () => {
+			it( 'Does not commit error for a valid code implementation (literal programming language)', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
 				context.getters.getZImplementationContentRowId = jest.fn( () => 2 );
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
@@ -180,11 +180,11 @@ describe( 'zobject submission Vuex module', () => {
 				};
 
 				const isValid = submissionModule.actions.validateZObject( context );
-				expect( context.dispatch ).toHaveBeenCalledTimes( 0 );
+				expect( context.commit ).toHaveBeenCalledTimes( 0 );
 				expect( isValid ).toEqual( true );
 			} );
 
-			it( 'Does not dispatch error for a valid code implementation (referenced programming language)', () => {
+			it( 'Does not commit error for a valid code implementation (referenced programming language)', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
 				context.getters.getZImplementationContentRowId = jest.fn( () => 2 );
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
@@ -203,11 +203,11 @@ describe( 'zobject submission Vuex module', () => {
 				};
 
 				const isValid = submissionModule.actions.validateZObject( context );
-				expect( context.dispatch ).toHaveBeenCalledTimes( 0 );
+				expect( context.commit ).toHaveBeenCalledTimes( 0 );
 				expect( isValid ).toEqual( true );
 			} );
 
-			it( 'Does not dispatch error for a valid composition implementation (function call)', () => {
+			it( 'Does not commit error for a valid composition implementation (function call)', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
 				context.getters.getZObjectAsJson = {
@@ -222,11 +222,11 @@ describe( 'zobject submission Vuex module', () => {
 				};
 
 				const isValid = submissionModule.actions.validateZObject( context );
-				expect( context.dispatch ).toHaveBeenCalledTimes( 0 );
+				expect( context.commit ).toHaveBeenCalledTimes( 0 );
 				expect( isValid ).toEqual( true );
 			} );
 
-			it( 'Does not dispatch error for a valid composition implementation (argument reference)', () => {
+			it( 'Does not commit error for a valid composition implementation (argument reference)', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
 				context.getters.getZObjectAsJson = {
@@ -241,11 +241,11 @@ describe( 'zobject submission Vuex module', () => {
 				};
 
 				const isValid = submissionModule.actions.validateZObject( context );
-				expect( context.dispatch ).toHaveBeenCalledTimes( 0 );
+				expect( context.commit ).toHaveBeenCalledTimes( 0 );
 				expect( isValid ).toEqual( true );
 			} );
 
-			it( 'Does not dispatch error for a valid composition implementation (type)', () => {
+			it( 'Does not commit error for a valid composition implementation (type)', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
 				context.getters.getZObjectAsJson = {
@@ -261,11 +261,11 @@ describe( 'zobject submission Vuex module', () => {
 				};
 
 				const isValid = submissionModule.actions.validateZObject( context );
-				expect( context.dispatch ).toHaveBeenCalledTimes( 0 );
+				expect( context.commit ).toHaveBeenCalledTimes( 0 );
 				expect( isValid ).toEqual( true );
 			} );
 
-			it( 'Does not dispatch error for a valid builtin implementation', () => {
+			it( 'Does not commit error for a valid builtin implementation', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
 				context.getters.getZObjectAsJson = {
@@ -277,11 +277,11 @@ describe( 'zobject submission Vuex module', () => {
 				};
 
 				const isValid = submissionModule.actions.validateZObject( context );
-				expect( context.dispatch ).toHaveBeenCalledTimes( 0 );
+				expect( context.commit ).toHaveBeenCalledTimes( 0 );
 				expect( isValid ).toEqual( true );
 			} );
 
-			it( 'Dispatches error for an implementation with missing target function', () => {
+			it( 'Commits error for an implementation with missing target function', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
 				context.getters.getZImplementationFunctionRowId = jest.fn( () => 2 );
@@ -300,12 +300,12 @@ describe( 'zobject submission Vuex module', () => {
 				};
 
 				const isValid = submissionModule.actions.validateZObject( context );
-				expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockError );
+				expect( context.commit ).toHaveBeenCalledTimes( 1 );
+				expect( context.commit ).toHaveBeenCalledWith( 'setError', mockError );
 				expect( isValid ).toEqual( false );
 			} );
 
-			it( 'Dispatches error for an implementation with missing composition', () => {
+			it( 'Commits error for an implementation with missing composition', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
 				context.getters.getZImplementationContentRowId = jest.fn( () => 2 );
@@ -324,12 +324,12 @@ describe( 'zobject submission Vuex module', () => {
 				};
 
 				const isValid = submissionModule.actions.validateZObject( context );
-				expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockError );
+				expect( context.commit ).toHaveBeenCalledTimes( 1 );
+				expect( context.commit ).toHaveBeenCalledWith( 'setError', mockError );
 				expect( isValid ).toEqual( false );
 			} );
 
-			it( 'Dispatches error for a code implementation with missing programming language (literal)', () => {
+			it( 'Commits error for a code implementation with missing programming language (literal)', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
 				context.getters.getZImplementationContentRowId = jest.fn( () => 2 );
@@ -353,12 +353,12 @@ describe( 'zobject submission Vuex module', () => {
 				};
 
 				const isValid = submissionModule.actions.validateZObject( context );
-				expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockError );
+				expect( context.commit ).toHaveBeenCalledTimes( 1 );
+				expect( context.commit ).toHaveBeenCalledWith( 'setError', mockError );
 				expect( isValid ).toEqual( false );
 			} );
 
-			it( 'Dispatches error for a code implementation with missing programming language (reference)', () => {
+			it( 'Commits error for a code implementation with missing programming language (reference)', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
 				context.getters.getZImplementationContentRowId = jest.fn( () => 2 );
@@ -382,12 +382,12 @@ describe( 'zobject submission Vuex module', () => {
 				};
 
 				const isValid = submissionModule.actions.validateZObject( context );
-				expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockError );
+				expect( context.commit ).toHaveBeenCalledTimes( 1 );
+				expect( context.commit ).toHaveBeenCalledWith( 'setError', mockError );
 				expect( isValid ).toEqual( false );
 			} );
 
-			it( 'Dispatches error for a code implementation with missing code value', () => {
+			it( 'Commits error for a code implementation with missing code value', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
 				context.getters.getZImplementationContentRowId = jest.fn( () => 2 );
@@ -411,14 +411,14 @@ describe( 'zobject submission Vuex module', () => {
 				};
 
 				const isValid = submissionModule.actions.validateZObject( context );
-				expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockError );
+				expect( context.commit ).toHaveBeenCalledTimes( 1 );
+				expect( context.commit ).toHaveBeenCalledWith( 'setError', mockError );
 				expect( isValid ).toEqual( false );
 			} );
 		} );
 
 		describe( 'validate tester', () => {
-			it( 'Does not dispatch error for a valid tester', () => {
+			it( 'Does not commit error for a valid tester', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_TESTER;
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
 				context.getters.getZObjectAsJson = {
@@ -431,11 +431,11 @@ describe( 'zobject submission Vuex module', () => {
 				};
 
 				const isValid = submissionModule.actions.validateZObject( context );
-				expect( context.dispatch ).toHaveBeenCalledTimes( 0 );
+				expect( context.commit ).toHaveBeenCalledTimes( 0 );
 				expect( isValid ).toEqual( true );
 			} );
 
-			it( 'Dispatches error for a tester with missing target function', () => {
+			it( 'Commits error for a tester with missing target function', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_TESTER;
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
 				context.getters.getZTesterFunctionRowId = jest.fn( () => 2 );
@@ -455,12 +455,12 @@ describe( 'zobject submission Vuex module', () => {
 				};
 
 				const isValid = submissionModule.actions.validateZObject( context );
-				expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockError );
+				expect( context.commit ).toHaveBeenCalledTimes( 1 );
+				expect( context.commit ).toHaveBeenCalledWith( 'setError', mockError );
 				expect( isValid ).toEqual( false );
 			} );
 
-			it( 'Dispatches error for a tester with missing call', () => {
+			it( 'Commits error for a tester with missing call', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_TESTER;
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
 				context.getters.getZTesterCallRowId = jest.fn( () => 3 );
@@ -480,12 +480,12 @@ describe( 'zobject submission Vuex module', () => {
 				};
 
 				const isValid = submissionModule.actions.validateZObject( context );
-				expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockError );
+				expect( context.commit ).toHaveBeenCalledTimes( 1 );
+				expect( context.commit ).toHaveBeenCalledWith( 'setError', mockError );
 				expect( isValid ).toEqual( false );
 			} );
 
-			it( 'Dispatches error for a tester with missing validation', () => {
+			it( 'Commits error for a tester with missing validation', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_TESTER;
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
 				context.getters.getZTesterValidationRowId = jest.fn( () => 4 );
@@ -505,8 +505,8 @@ describe( 'zobject submission Vuex module', () => {
 				};
 
 				const isValid = submissionModule.actions.validateZObject( context );
-				expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockError );
+				expect( context.commit ).toHaveBeenCalledTimes( 1 );
+				expect( context.commit ).toHaveBeenCalledWith( 'setError', mockError );
 				expect( isValid ).toEqual( false );
 			} );
 		} );
@@ -592,6 +592,7 @@ describe( 'zobject submission Vuex module', () => {
 			expect( mw.Api ).toHaveBeenCalledTimes( 1 );
 			expect( postWithEditTokenMock ).toHaveBeenCalledWith( {
 				action: 'wikilambda_edit',
+				uselang: 'en',
 				summary: 'A summary',
 				zid: undefined,
 				zobject: JSON.stringify( zobject )
@@ -608,6 +609,7 @@ describe( 'zobject submission Vuex module', () => {
 			expect( mw.Api ).toHaveBeenCalledTimes( 1 );
 			expect( postWithEditTokenMock ).toHaveBeenCalledWith( {
 				action: 'wikilambda_edit',
+				uselang: 'en',
 				summary: 'A summary',
 				zid: 'Z0',
 				zobject: JSON.stringify( zobject )
@@ -626,6 +628,7 @@ describe( 'zobject submission Vuex module', () => {
 			expect( mw.Api ).toHaveBeenCalledTimes( 1 );
 			expect( postWithEditTokenMock ).toHaveBeenCalledWith( {
 				action: 'wikilambda_edit',
+				uselang: 'en',
 				summary: 'A summary',
 				zid: 'Z0',
 				zobject: JSON.stringify( zobject )
@@ -652,6 +655,7 @@ describe( 'zobject submission Vuex module', () => {
 
 			expect( postWithEditTokenMock ).toHaveBeenCalledWith( {
 				action: 'wikilambda_edit',
+				uselang: 'en',
 				summary: 'A summary',
 				zid: 'Z0',
 				zobject: JSON.stringify( zobject )
@@ -679,6 +683,7 @@ describe( 'zobject submission Vuex module', () => {
 
 			expect( postWithEditTokenMock ).toHaveBeenCalledWith( {
 				action: 'wikilambda_edit',
+				uselang: 'en',
 				summary: 'A summary',
 				zid: 'Z0',
 				zobject: JSON.stringify( zobject.clean )

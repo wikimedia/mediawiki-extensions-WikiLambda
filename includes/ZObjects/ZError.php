@@ -126,7 +126,7 @@ class ZError extends ZObject {
 		) {
 			$errorValue = $this->getZValue();
 			$messageKey = $errorValue->getValueByKey( 'K1' );
-			$message = $messageKey || $message;
+			$message = $messageKey ? $messageKey->getZValue() : $message;
 		}
 
 		// Errors that can have children: Z509, Z502, Z522, Z526

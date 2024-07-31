@@ -11,6 +11,7 @@ const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
+	ApiError = require( '../../../../../resources/ext.wikilambda.app/store/classes/ApiError.js' ),
 	FunctionViewerDetails = require( '../../../../../resources/ext.wikilambda.app/components/function/viewer/FunctionViewerDetails.vue' );
 
 const mockLanguages = {
@@ -46,7 +47,7 @@ describe( 'FunctionViewerDetails', () => {
 			return jest.fn( () => ( {
 				then: function ( fn ) {
 					if ( actionsThrowError ) {
-						throw Object.assign( new Error(), { error: { message: 'error!' } } );
+						throw new ApiError( 'code', { error: { message: 'error!' } } );
 					}
 					return fn();
 				}

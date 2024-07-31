@@ -317,7 +317,7 @@ module.exports = exports = {
 				.then( () => context.dispatch(
 					'submitZObject', {
 						summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-testers-approved-summary', payload.zids )
-					} ).catch( ( e ) => {
+					} ).catch( ( /* ApiError */ e ) => {
 					// Reset old ZObject if something failed
 					context.commit( 'setZObject', zobjectCopy );
 					throw e;
@@ -350,7 +350,7 @@ module.exports = exports = {
 						summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-implementations-approved-summary', payload.zids )
 					} )
 					.then( () => context.dispatch( 'updateStoredObject' ) )
-					.catch( ( e ) => {
+					.catch( ( /* ApiError */ e ) => {
 						// Reset old ZObject if something failed
 						context.commit( 'setZObject', zobjectCopy );
 						throw e;
@@ -387,10 +387,9 @@ module.exports = exports = {
 			}
 			context.dispatch( 'recalculateTypedListKeys', listRow.id );
 
-			return context.dispatch(
-				'submitZObject', {
-					summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-testers-deactivated-summary', payload.zids )
-				} ).catch( ( e ) => {
+			return context.dispatch( 'submitZObject', {
+				summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-testers-deactivated-summary', payload.zids )
+			} ).catch( ( /* ApiError */ e ) => {
 				// Reset old ZObject if something failed
 				context.commit( 'setZObject', zobjectCopy );
 				throw e;
@@ -426,13 +425,11 @@ module.exports = exports = {
 			}
 			context.dispatch( 'recalculateTypedListKeys', listRow.id );
 
-			return context.dispatch( 'submitZObject',
-				{
-					summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-implementations-deactivated-summary', payload.zids )
-				}
-			)
+			return context.dispatch( 'submitZObject', {
+				summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-implementations-deactivated-summary', payload.zids )
+			} )
 				.then( () => context.dispatch( 'updateStoredObject' ) )
-				.catch( ( e ) => {
+				.catch( ( /* ApiError */ e ) => {
 					// Reset old ZObject if something failed
 					context.commit( 'setZObject', zobjectCopy );
 					throw e;

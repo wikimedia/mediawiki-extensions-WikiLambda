@@ -328,26 +328,13 @@ module.exports = exports = defineComponent( {
 				disconnectFunctionObjects
 			} ).then( ( response ) => {
 				this.successfulExit( response.page );
-			} ).catch( ( response ) => {
+			} ).catch( ( /* ApiError */ error ) => {
 				this.clearAllErrors();
-				// If response.error.message: known ZError
-				// Else, PHP error or exception captured in response.error.info
-				// Additionally, if nothing available, show generic unknown error message
-				const genericErrorMessage = response && response.error ?
-					( response.error.message || response.error.info ) :
-					undefined;
-				const detailedErrorMessage = response && response.error ?
-					this.extractErrorMessage( response.error ) :
-					undefined;
-				const errorMessage = detailedErrorMessage || genericErrorMessage;
-				const payload = {
+				this.setError( {
 					rowId: 0,
 					errorType: Constants.errorTypes.ERROR,
-					errorMessage,
-					errorCode: !errorMessage ? Constants.errorCodes.UNKNOWN_ERROR : undefined
-				};
-
-				this.setError( payload );
+					errorMessage: error.messageOrFallback( Constants.errorCodes.UNKNOWN_SAVE_ERROR )
+				} );
 			} ).finally( () => {
 				// After receiving the response, log a publish event
 				const eventNamespace = this.getNamespace( this.getCurrentZObjectType );

@@ -11,6 +11,7 @@ const { config, mount } = require( '@vue/test-utils' ),
 	{ waitFor } = require( '@testing-library/vue' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
+	ApiError = require( '../../../../resources/ext.wikilambda.app/store/classes/ApiError.js' ),
 	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
 	PublishDialog = require( '../../../../resources/ext.wikilambda.app/components/widgets/PublishDialog.vue' );
 
@@ -35,7 +36,7 @@ describe( 'Publish Dialog', () => {
 			getUserLangCode: createGetterMock( 'en' )
 		};
 		actions = {
-			submitZObject: jest.fn(),
+			submitZObject: jest.fn().mockReturnValue( { page: 'Z10001' } ),
 			setError: jest.fn(),
 			setDirty: jest.fn(),
 			clearAllErrors: jest.fn()
@@ -98,7 +99,7 @@ describe( 'Publish Dialog', () => {
 		expect( messages[ 0 ].props( 'type' ) ).toBe( 'warning' );
 		expect( messages[ 0 ].text() ).toBe( 'custom warning message' );
 		expect( messages[ 1 ].props( 'type' ) ).toBe( 'error' );
-		expect( messages[ 1 ].text() ).toBe( 'Some error happened while attempting to save your changes.' );
+		expect( messages[ 1 ].text() ).toBe( 'Unable to complete request. Please try again.' );
 	} );
 
 	it( 'closes the dialog when click cancel button', () => {
@@ -124,9 +125,6 @@ describe( 'Publish Dialog', () => {
 	} );
 
 	it( 'closes dialog and navigates out when submission is successful', async () => {
-		actions.submitZObject = jest.fn( () => Promise.resolve( 'Z10001' ) );
-		global.store.hotUpdate( { actions: actions } );
-
 		const wrapper = mount( PublishDialog, {
 			props: { showDialog: true, functionSignatureChanged: false }
 		} );
@@ -136,12 +134,8 @@ describe( 'Publish Dialog', () => {
 	} );
 
 	it( 'shows error when submission is not successful', async () => {
-		const error = {
-			error: {
-				message: 'mock submission error'
-			}
-		};
-		actions.submitZObject = jest.fn( () => Promise.reject( error ) );
+		const error = new ApiError( 'http', { error: { message: 'mock submission error' } } );
+		actions.submitZObject = jest.fn().mockRejectedValue( error );
 		global.store.hotUpdate( { actions: actions } );
 
 		const wrapper = mount( PublishDialog, {
@@ -153,23 +147,6 @@ describe( 'Publish Dialog', () => {
 			rowId: 0,
 			errorType: Constants.errorTypes.ERROR,
 			errorMessage: 'mock submission error'
-		} ) );
-	} );
-
-	it( 'shows unknown error when submission is not successful', async () => {
-		actions.submitZObject = jest.fn( () => Promise.reject( 'some unstructured error response' ) );
-		global.store.hotUpdate( { actions: actions } );
-
-		const wrapper = mount( PublishDialog, {
-			props: { showDialog: true, functionSignatureChanged: false }
-		} );
-
-		wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
-		await waitFor( () => expect( actions.setError ).toHaveBeenCalledWith( expect.anything(), {
-			rowId: 0,
-			errorType: Constants.errorTypes.ERROR,
-			errorMessage: undefined,
-			errorCode: Constants.errorCodes.UNKNOWN_ERROR
 		} ) );
 	} );
 
@@ -228,10 +205,8 @@ describe( 'Publish Dialog', () => {
 			getters.getCurrentZObjectId = createGetterMock( 'Z10001' );
 			getters.getCurrentZObjectType = createGetterMock( 'Z14' );
 			getters.getCurrentZImplementationType = createGetterMock( 'Z14K3' );
-			actions.submitZObject = jest.fn( () => Promise.resolve( 'Z10001' ) );
 			global.store.hotUpdate( {
-				getters: getters,
-				actions: actions
+				getters: getters
 			} );
 
 			const wrapper = mount( PublishDialog, {
@@ -254,12 +229,13 @@ describe( 'Publish Dialog', () => {
 		} );
 
 		it( 'emits publish event after unsuccessful creation of a function', async () => {
+			const error = new ApiError( 'http', { error: { message: 'mock submission error' } } );
+			actions.submitZObject = jest.fn().mockRejectedValue( error );
 			getters.getErrors = createGettersWithFunctionsMock( [ { type: 'error', message: 'some error' } ] );
 			getters.isCreateNewPage = createGetterMock( true );
 			getters.getCurrentZObjectId = createGetterMock( 'Z0' );
 			getters.getCurrentZObjectType = createGetterMock( 'Z8' );
 			getters.getCurrentZImplementationType = createGetterMock( undefined );
-			actions.submitZObject = jest.fn( () => Promise.reject( 'some error' ) );
 			global.store.hotUpdate( {
 				getters: getters,
 				actions: actions

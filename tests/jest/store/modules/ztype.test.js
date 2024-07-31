@@ -250,7 +250,8 @@ describe( 'ztype Vuex module', () => {
 				ztypeModule.actions.runRenderer( context, payload );
 				expect( postMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_function_call',
-					wikilambda_function_call_zobject: JSON.stringify( functionCall )
+					wikilambda_function_call_zobject: JSON.stringify( functionCall ),
+					uselang: 'en'
 				} );
 			} );
 		} );
@@ -271,7 +272,8 @@ describe( 'ztype Vuex module', () => {
 				ztypeModule.actions.runParser( context, payload );
 				expect( postMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_function_call',
-					wikilambda_function_call_zobject: JSON.stringify( functionCall )
+					wikilambda_function_call_zobject: JSON.stringify( functionCall ),
+					uselang: 'en'
 				} );
 			} );
 
@@ -291,7 +293,8 @@ describe( 'ztype Vuex module', () => {
 				ztypeModule.actions.runParser( context, payload );
 				expect( postMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_function_call',
-					wikilambda_function_call_zobject: JSON.stringify( functionCall )
+					wikilambda_function_call_zobject: JSON.stringify( functionCall ),
+					uselang: 'en'
 				} );
 			} );
 
@@ -358,7 +361,8 @@ describe( 'ztype Vuex module', () => {
 
 				expect( postMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_function_call',
-					wikilambda_function_call_zobject: JSON.stringify( functionCall )
+					wikilambda_function_call_zobject: JSON.stringify( functionCall ),
+					uselang: 'en'
 				} );
 			} );
 

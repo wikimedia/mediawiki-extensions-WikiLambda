@@ -48,8 +48,16 @@
 		</template>
 
 		<!-- Dialog Body -->
-		<div v-if="httpErrors.length > 0" class="ext-wikilambda-metadata-dialog-body">
-			{{ getErrorMessage( httpErrors[ 0 ] ) }}
+		<div v-if="apiErrors.length > 0" class="ext-wikilambda-metadata-dialog-body">
+			<cdx-message
+				v-for="( error, index ) in apiErrors"
+				:key="'dialog-error-' + index"
+				class="ext-wikilambda-metadata-dialog-errors"
+				:type="error.type"
+			>
+				<!-- eslint-disable vue/no-v-html -->
+				<div v-html="getErrorMessage( error )"></div>
+			</cdx-message>
 		</div>
 		<div v-else class="ext-wikilambda-metadata-dialog-body">
 			<cdx-field
@@ -126,8 +134,9 @@ const { defineComponent } = require( 'vue' );
 const CdxAccordion = require( '@wikimedia/codex' ).CdxAccordion,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
-	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	CdxField = require( '@wikimedia/codex' ).CdxField,
+	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	CdxSelect = require( '@wikimedia/codex' ).CdxSelect,
 	Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
@@ -144,8 +153,9 @@ module.exports = exports = defineComponent( {
 		'cdx-accordion': CdxAccordion,
 		'cdx-button': CdxButton,
 		'cdx-dialog': CdxDialog,
-		'cdx-icon': CdxIcon,
 		'cdx-field': CdxField,
+		'cdx-icon': CdxIcon,
+		'cdx-message': CdxMessage,
 		'cdx-select': CdxSelect
 	},
 	mixins: [ metadataConfig, errorUtils ],
@@ -183,7 +193,13 @@ module.exports = exports = defineComponent( {
 		'getUserLangCode',
 		'getFunctionZidOfImplementation'
 	] ), {
-		httpErrors: function () {
+		/**
+		 * Returns all api errors saved in the store by the errorId passed
+		 * as a property. If none or errorId is undefined, returns emtpy array.
+		 *
+		 * @return {Array}
+		 */
+		apiErrors: function () {
 			return this.errorId !== undefined ? this.getErrors( this.errorId ) : [];
 		},
 		/**

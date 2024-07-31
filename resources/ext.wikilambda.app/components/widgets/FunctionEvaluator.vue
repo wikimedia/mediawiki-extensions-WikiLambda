@@ -102,8 +102,8 @@
 						{{ $i18n( 'wikilambda-function-evaluator-running' ).text() }}
 					</div>
 					<template v-else>
-						<div v-if="httpErrors.length > 0">
-							{{ getErrorMessage( httpErrors[ 0 ] ) }}
+						<div v-if="apiErrors.length > 0">
+							{{ getErrorMessage( apiErrors[ 0 ] ) }}
 						</div>
 						<wl-z-object-key-value
 							v-else
@@ -294,11 +294,11 @@ module.exports = exports = defineComponent( {
 		},
 
 		/**
-		 * Returns the HTTP error returned by the orchestrator
+		 * Returns the API error returned by the orchestrator
 		 *
 		 * @return {Object}
 		 */
-		httpErrors: function () {
+		apiErrors: function () {
 			return this.resultRowId ? this.getErrors( this.resultRowId ) : [];
 		},
 

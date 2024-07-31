@@ -7,6 +7,7 @@
 'use strict';
 
 const Constants = require( '../Constants.js' ),
+	ApiError = require( '../store/classes/ApiError.js' ),
 	hybridToCanonical = require( './schemata.js' ).methods.hybridToCanonical;
 
 /* eslint-disable camelcase */
@@ -26,16 +27,15 @@ module.exports = exports = {
 			const canonicalJson = JSON.stringify( hybridToCanonical( zobject ) );
 			return api.post( {
 				action: 'wikilambda_function_call',
-				wikilambda_function_call_zobject: canonicalJson
+				wikilambda_function_call_zobject: canonicalJson,
+				uselang: mw.config.get( 'wgWikiLambda' ).zlang
 			} ).then( ( data ) => {
 				const maybeNormalResponse = JSON.parse( data.wikilambda_function_call.data );
 				const response = hybridToCanonical( maybeNormalResponse );
 				const result = response[ Constants.Z_RESPONSEENVELOPE_VALUE ];
 				const metadata = response[ Constants.Z_RESPONSEENVELOPE_METADATA ];
 				return { response, result, metadata };
-			} ).catch( ( error, result ) => {
-				throw result.xhr.responseJSON;
-			} );
+			} ).catch( ApiError.fromMwApiRejection );
 		},
 		/**
 		 * Calls the wikilambda_edit internal API
@@ -55,10 +55,11 @@ module.exports = exports = {
 				action: 'wikilambda_edit',
 				summary: payload.summary || '',
 				zid: payload.zid,
-				zobject: JSON.stringify( payload.zobject )
-			} ).then( ( data ) => data.wikilambda_edit ).catch( ( error, result ) => {
-				throw result.xhr.responseJSON;
-			} );
+				zobject: JSON.stringify( payload.zobject ),
+				uselang: mw.config.get( 'wgWikiLambda' ).zlang
+			} )
+				.then( ( data ) => data.wikilambda_edit )
+				.catch( ApiError.fromMwApiRejection );
 		},
 		/**
 		 * Calls the wikilambdaload_zobjects internal API
@@ -123,9 +124,6 @@ module.exports = exports = {
 		 * Calls the wikilambda_perform_test internal API
 		 * https://www.mediawiki.org/wiki/Extension:WikiLambda/API#wikilambda_perform_test
 		 *
-		 * Needs error handling.
-		 * TODO (T361683): Improve error handling in the caller (zTesterResults store module)
-		 *
 		 * @param {Object} payload
 		 * @param {string} payload.functionZid Zid of the function to test
 		 * @param {boolean} payload.nocache Request the orchestrator to not cache the results
@@ -140,10 +138,11 @@ module.exports = exports = {
 				wikilambda_perform_test_zfunction: payload.functionZid,
 				wikilambda_perform_test_zimplementations: payload.implementations.join( '|' ),
 				wikilambda_perform_test_ztesters: payload.testers.join( '|' ),
-				wikilambda_perform_test_nocache: payload.nocache || false
-			} ).then( ( data ) => data.query.wikilambda_perform_test ).catch( ( error, result ) => {
-				throw result.xhr.responseJSON;
-			} );
+				wikilambda_perform_test_nocache: payload.nocache || false,
+				uselang: mw.config.get( 'wgWikiLambda' ).zlang
+			} )
+				.then( ( data ) => data.query.wikilambda_perform_test )
+				.catch( ApiError.fromMwApiRejection );
 		},
 		/**
 		 * Calls the wikilambdafn_search internal API

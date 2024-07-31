@@ -45,6 +45,7 @@
 					:open="showMetrics"
 					:header-text="activeImplementationLabelData"
 					:metadata="metadata"
+					:error-id="errorId"
 					@close-dialog="closeMetricsDialog"
 				></wl-function-metadata-dialog>
 			</div>
@@ -99,6 +100,7 @@ module.exports = exports = defineComponent( {
 		return {
 			activeZImplementationId: null,
 			activeZTesterId: null,
+			errorId: Constants.errorIds.TEST_RESULTS,
 			showMetrics: false,
 			fetching: false
 		};
