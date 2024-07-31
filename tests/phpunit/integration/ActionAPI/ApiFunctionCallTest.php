@@ -200,13 +200,12 @@ class ApiFunctionCallTest extends ApiTestCase {
 			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
 		];
 
-		// (T361124) Temporarily disabled as it's failing in Beta Cluster
-		// yield 'Supply an implementation with an unsupported language; back off to the second' => [
-		// 	ZObjectUtils::readTestFile( 'example-bad-first-implementation.json' ),
-		// 	"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}",
-		// ];
+		 yield 'Supply an implementation with an unsupported language; back off to the second' => [
+			ZObjectUtils::readTestFile( 'example-bad-first-implementation.json' ),
+			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}",
+		 ];
 
-		$Z823 = [
+		 $Z823 = [
 			"Z1K1" => "Z7",
 			"Z7K1" => "Z823",
 			"Z823K1" => [
@@ -219,8 +218,8 @@ class ApiFunctionCallTest extends ApiTestCase {
 					"Z802K3" => "the facts"
 				]
 			]
-		];
-		yield 'Ensure Z823 propagates invariants' => [
+		 ];
+		 yield 'Ensure Z823 propagates invariants' => [
 			json_encode( $Z823 ),
 			// (T368041) Temporarily switched to the wrong response, as it's failing in Beta Cluster
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
@@ -232,7 +231,7 @@ class ApiFunctionCallTest extends ApiTestCase {
 				self::assertEquals( $expected['K1'], $actual['K1'] );
 				// TODO (T314609): Also test that metadata has correct keys.
 			}
-		];
+		 ];
 
 		// TODO (T325593): Call the example-timeout example; ensure the correct error is returned.
 	}
