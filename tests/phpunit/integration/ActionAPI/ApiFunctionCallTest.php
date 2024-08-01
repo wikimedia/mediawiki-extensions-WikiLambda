@@ -198,11 +198,10 @@ class ApiFunctionCallTest extends ApiTestCase {
 			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
 		 ];
 
-		// (T361124) Temporarily disabled as it's failing in Beta Cluster
-		// yield 'Supply an implementation with an unsupported language; back off to the second' => [
-		// 	ZObjectUtils::readTestFile( 'example-bad-first-implementation.json' ),
-		// 	"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}",
-		// ];
+		 yield 'Supply an implementation with an unsupported language; back off to the second' => [
+			ZObjectUtils::readTestFile( 'example-bad-first-implementation.json' ),
+			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}",
+		 ];
 
 		 $Z823 = [
 			"Z1K1" => "Z7",
