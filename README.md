@@ -32,6 +32,11 @@ you have cloned the `mediawiki/core` repository.
   git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/WikimediaMessages
   git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/UniversalLanguageSelector
   ```
+  The following extensions are also recommended installations in the same directory:
+  ```
+  git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/EventLogging
+  git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/EventBus
+  ```
 * Extend MediaWiki's composer dependencies to use ours by adding a `composer.local.json` file in your `mediawiki/` directory:
   ```
   {

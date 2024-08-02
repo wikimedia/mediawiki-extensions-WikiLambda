@@ -23,6 +23,8 @@ wfLoadSkin( 'Vector' );
 wfLoadExtension( 'WikiLambda' );
 wfLoadExtension( 'WikimediaMessages' );
 wfLoadExtension( 'UniversalLanguageSelector' );
+wfLoadExtension( 'EventLogging' );
+wfLoadExtension( 'EventBus' );
 PHP
 docker compose exec mediawiki php maintenance/run.php update --quick
 docker compose exec mediawiki php maintenance/run.php createAndPromote --custom-groups functioneer,functionmaintainer --force Admin
