@@ -309,7 +309,7 @@
 	"wikilambda-list-item-label": "Élément $1",
 	"wikilambda-list-items-label": "Éléments de la liste",
 	"wikilambda-list-items-type-label": "Type d’éléments de la liste",
-	"wikilambda-list-type-change-warning": "Vous avez modifié le type d’une ou plusieurs listes. Lors de la publication, tous les éléments de la liste seront supprimés.",
+	"wikilambda-list-type-change-warning": "Vous avez modifié le type d’une ou plusieurs listes. Lors de la publication, certains les éléments de la liste seront supprimés.",
 	"wikilambda-literal-type": "$1 littéral",
 	"wikilambda-loading": "Chargement des données en cours",
 	"wikilambda-metadata-add-alias": "Ajouter un alias",
