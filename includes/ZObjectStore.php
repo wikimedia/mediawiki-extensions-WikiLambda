@@ -31,6 +31,7 @@ use MWContentSerializationException;
 use Psr\Log\LoggerInterface;
 use Wikimedia\Rdbms\IConnectionProvider;
 use Wikimedia\Rdbms\IExpression;
+use Wikimedia\Rdbms\IReadableDatabase;
 use Wikimedia\Rdbms\IResultWrapper;
 use Wikimedia\Rdbms\LikeValue;
 use Wikimedia\Rdbms\SelectQueryBuilder;
@@ -1312,6 +1313,107 @@ class ZObjectStore {
 			->fetchResultSet();
 
 		return $res;
+	}
+
+	/**
+	 * Find all functions using at least the given number of each given input type, and using
+	 * the given output type, if specified. Each result value is the ZID of one such function.
+	 *
+	 * Each specified type (in $inputTypes or $outputType) may be a ZID or a string encoding of a
+	 * compound type (as made by ZObjectUtils::makeTypeFingerprint, such as "Z881(Z6)" for typed
+	 * list of strings). Each number in $inputTypes must be an integer >= 1.  (Any number < 1
+	 * is treated as if it were 1.)
+	 *
+	 * Example: for $inputTypes = ["Z881(Z1)" => 2, "Z8" => 1] and $outputType = "Z40"
+	 * the result will include "Z889", the list element equality function, and any other
+	 * functions that have at least 2 input arguments of type "Z881(Z1)", at least 1 input argument
+	 * of type "Z8", and output of type "Z40".
+	 *
+	 * There must be at least one type mentioned, either in $inputTypes or $outputType;
+	 * otherwise null is returned.
+	 *
+	 * Query strategy: we compose a separate (sub)query for each type.  Each of those queries
+	 * returns a single column, wlzo_main_zid. We use joins to get the intersection of all the
+	 * queries. Each query should benefit from the table's wlzo_index_key_related_zobject index,
+	 * and relevant optimizations provided by the database.
+	 *
+	 * @param array $inputTypes array of (type => minimum number of uses)
+	 * @param string|null $outputType
+	 * @param string|null $continue Id to start. If null (the default), start from the first result.
+	 * @param int|null $limit Maximum number of results to return. Defaults to 50
+	 * @return string[] Array of ZIDs of functions
+	 */
+	public function findFunctionsByIOTypes(
+		$inputTypes,
+		$outputType = null,
+		$continue = null,
+		$limit = 50
+	) {
+		// Select one type/count (and key) for the first query; leave the other type/count pairs in
+		// $remainingTypes.
+		if ( $outputType ) {
+			$firstKey = 'Z8K2';
+			$firstType = $outputType;
+			$firstCount = 1;
+			$remainingTypes = $inputTypes;
+		} elseif ( count( $inputTypes ) > 0 ) {
+			$firstKey = 'Z8K1';
+			$firstType = array_key_first( $inputTypes );
+			$firstCount = reset( $inputTypes );
+			$remainingTypes = array_slice( $inputTypes, 1 );
+		} else {
+			return [];
+		}
+
+		$dbr = $this->dbProvider->getReplicaDatabase();
+
+		$query = $this->newIOTypeQuery( $dbr, $firstKey, $firstType, $firstCount, $continue );
+		foreach ( $remainingTypes as $type => $count ) {
+			$subQuery = $this->newIOTypeQuery( $dbr, 'Z8K1', $type, $count, $continue );
+			$query = $dbr->newSelectQueryBuilder()
+				->select( [ 'wlzo_main_zid' => 'q1.wlzo_main_zid' ] )
+				->from( $query, 'q1' )
+				->join( $subQuery, 'q2', 'q1.wlzo_main_zid = q2.wlzo_main_zid' );
+		}
+		return $query
+			->limit( $limit )
+			->caller( __METHOD__ )
+			->fetchFieldValues();
+	}
+
+	/**
+	 * Construct a query that finds functions in wikilambda_zobject_join having at least
+	 * $count rows with the given $key and $type, for use by findFunctionsByIOTypes().
+	 *
+	 * @param IReadableDatabase $dbr
+	 * @param string $key
+	 * @param string $type
+	 * @param int $count
+	 * @param string|null $continue
+	 * @return SelectQueryBuilder
+	 */
+	private function newIOTypeQuery( $dbr, $key, $type, $count, $continue ) {
+		$conditions = [
+			'wlzo_key' => $key,
+			'wlzo_related_zobject' => $type
+		];
+		// Set minimum id bound if we are continuing a paged result
+		if ( $continue != null ) {
+			$conditions[] = $dbr->expr( 'wlzo_main_zid', '>=', $continue );
+		}
+		$query =
+			$dbr->newSelectQueryBuilder()
+				->select( [ 'wlzo_main_zid' ] )
+				->from( 'wikilambda_zobject_join' )
+				->where( $conditions );
+		if ( $count > 1 ) {
+			$query
+				->groupBy( [ 'wlzo_main_zid' ] )
+				->having( [ 'COUNT(*) >= ' . $count ] );
+		} else {
+			$query->distinct();
+		}
+		return $query;
 	}
 
 	/**

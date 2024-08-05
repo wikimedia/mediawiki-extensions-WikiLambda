@@ -974,7 +974,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 0, $res->numRows() );
 	}
 
-	private function injectRelatedZObjects(): void {
+	private function injectZ401RelatedZObjects(): void {
 		// Function Z401:
 		// * has 3 arguments of types Z6, Z40, Z6
 		// * returns typed list of Z6
@@ -1038,8 +1038,68 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->zobjectStore->insertRelatedZObjects( $relatedZObjects );
 	}
 
+	private function injectZ402RelatedZObjects(): void {
+		// Function Z402 has 3 arguments of types Z6, Z6, Z6, and returns typed list of Z6.
+		$relatedZObjects = [
+			// Input types
+			(object)[
+				'zid' => 'Z402',
+				'type' => 'Z8',
+				'key' => 'Z8K1',
+				'related_zid' => 'Z6',
+				'related_type' => 'Z4'
+			],
+			(object)[
+				'zid' => 'Z402',
+				'type' => 'Z8',
+				'key' => 'Z8K1',
+				'related_zid' => 'Z6',
+				'related_type' => 'Z4'
+			],
+			(object)[
+				'zid' => 'Z402',
+				'type' => 'Z8',
+				'key' => 'Z8K1',
+				'related_zid' => 'Z6',
+				'related_type' => 'Z4'
+			],
+			// Output type
+			(object)[
+				'zid' => 'Z402',
+				'type' => 'Z8',
+				'key' => 'Z8K2',
+				'related_zid' => 'Z881(Z6)',
+				'related_type' => 'Z4'
+			]
+		];
+		$this->zobjectStore->insertRelatedZObjects( $relatedZObjects );
+	}
+
+	private function injectZ403RelatedZObjects(): void {
+		// Function Z403 has 1 argument of type Z6, and returns typed list of Z5.
+		$relatedZObjects = [
+			// Input types
+			(object)[
+				'zid' => 'Z403',
+				'type' => 'Z8',
+				'key' => 'Z8K1',
+				'related_zid' => 'Z6',
+				'related_type' => 'Z4'
+			],
+			// Output type
+			(object)[
+				'zid' => 'Z403',
+				'type' => 'Z8',
+				'key' => 'Z8K2',
+				'related_zid' => 'Z881(Z5)',
+				'related_type' => 'Z4'
+			]
+		];
+		$this->zobjectStore->insertRelatedZObjects( $relatedZObjects );
+	}
+
 	public function testInsertRelatedZObjects() {
-		$this->injectRelatedZObjects();
+		$this->injectZ401RelatedZObjects();
 		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();
 		$res = $dbr->newSelectQueryBuilder()
 			->select( [ 'wlzo_related_zobject' ] )
@@ -1097,7 +1157,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testDeleteRelatedZObjects() {
-		$this->injectRelatedZObjects();
+		$this->injectZ401RelatedZObjects();
 
 		$this->zobjectStore->deleteRelatedZObjects( 'Z401', 'Z8', 'Z8K1' );
 		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();
@@ -1126,7 +1186,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testFindRelatedZObjectsByKey() {
-		$this->injectRelatedZObjects();
+		$this->injectZ401RelatedZObjects();
 
 		$res = $this->zobjectStore->findRelatedZObjectsByKeyAsList( 'Z401', 'Z8K1' );
 		$this->assertCount( 3, $res );
@@ -1138,6 +1198,54 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertCount( 1, $res );
 		sort( $res );
 		$this->assertEquals( [ 'Z881(Z6)' ], $res );
+	}
+
+	public function testFindFunctionsByIOTypes() {
+		$this->injectZ401RelatedZObjects();
+		$this->injectZ402RelatedZObjects();
+		$this->injectZ403RelatedZObjects();
+
+		// Find functions having at least one input of type Z6
+		$res = $this->zobjectStore->findFunctionsByIOTypes( [ 'Z6' => 1 ] );
+		$this->assertCount( 3, $res );
+		// On postgres the result may not in order
+		sort( $res );
+		$this->assertEquals( [ 'Z401', 'Z402', 'Z403' ], $res );
+
+		// Find functions having at least 2 inputs of type Z6, and output of type Z881(Z6)
+		$res = $this->zobjectStore->findFunctionsByIOTypes( [ 'Z6' => 2 ], 'Z881(Z6)' );
+		$this->assertCount( 2, $res );
+		// On postgres the result may not in order
+		sort( $res );
+		$this->assertEquals( [ 'Z401', 'Z402' ], $res );
+
+		// Find functions having at least 2 inputs of type Z6, at least 1 input of type Z40,
+		// and output of type Z881(Z6)
+		$res = $this->zobjectStore->findFunctionsByIOTypes( [ 'Z6' => 2, 'Z40' => 1 ], 'Z881(Z6)' );
+		$this->assertCount( 1, $res );
+		// On postgres the result may not in order
+		sort( $res );
+		$this->assertEquals( [ 'Z401' ], $res );
+
+		// Find functions having at least 3 inputs of type Z6, and output of type Z881(Z6)
+		$res = $this->zobjectStore->findFunctionsByIOTypes( [ 'Z6' => 3 ], 'Z881(Z6)' );
+		$this->assertCount( 1, $res );
+		$this->assertEquals( [ 'Z402' ], $res );
+
+		// Find functions having at least 1 input of type Z6, and output of type Z881(Z5)
+		$res = $this->zobjectStore->findFunctionsByIOTypes( [ 'Z6' => 1 ], 'Z881(Z5)' );
+		$this->assertCount( 1, $res );
+		$this->assertEquals( [ 'Z403' ], $res );
+
+		// Find functions having output of type Z881(Z5)
+		$res = $this->zobjectStore->findFunctionsByIOTypes( [], 'Z881(Z5)' );
+		$this->assertCount( 1, $res );
+		$this->assertEquals( [ 'Z403' ], $res );
+
+		// Find functions having at least 2 inputs of type Z6, and output of type Z881(Z5)
+		$res = $this->zobjectStore->findFunctionsByIOTypes( [ 'Z6' => 2 ], 'Z881(Z5)' );
+		$this->assertCount( 0, $res );
+		$this->assertEquals( [], $res );
 	}
 
 	public function testFetchZFunctionReturnType() {
