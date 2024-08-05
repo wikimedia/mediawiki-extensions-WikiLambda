@@ -197,7 +197,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 				]
 			);
 		}
-		$pageResult->addValue( [ 'query' ], $this->getModuleName(), $result );
+		$pageResult->addValue( [], $this->getModuleName(), $result );
 		$this->submitFunctionCallEvent( 200, $function, $start );
 	}
 
@@ -410,7 +410,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 		// Now we know that the request has not failed before it even got to the orchestrator, get the response
 		// JSON string as a ZResponseEnvelope (falling back to an empty string in case it's unset).
 		$response = ZObjectFactory::create(
-			$outerResponse['query']['wikilambda_function_call']['data'] ?? ''
+			$outerResponse['wikilambda_function_call']['data'] ?? ''
 		);
 
 		if ( !( $response instanceof ZResponseEnvelope ) ) {
