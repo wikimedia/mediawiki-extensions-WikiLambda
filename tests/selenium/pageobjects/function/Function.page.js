@@ -88,14 +88,14 @@ class FunctionPage extends Page {
 	}
 
 	async getFunctionInputType( inputSelector ) {
-		const inputType = await inputSelector.$( '.ext-wikilambda-app-zobject-to-string' );
+		const inputType = await inputSelector.$( '.ext-wikilambda-app-object-to-string' );
 		const text = ElementActions.getText( inputType );
 		return text;
 	}
 
 	async getFunctionOutputType() {
 		const outputBlock = await this.aboutBlock.$( '.ext-wikilambda-app-about__function-output' );
-		const outputType = await outputBlock.$( '.ext-wikilambda-app-zobject-to-string' );
+		const outputType = await outputBlock.$( '.ext-wikilambda-app-object-to-string' );
 		const text = ElementActions.getText( outputType );
 		return text;
 	}

@@ -32,6 +32,9 @@ describe( 'ZTypedListItems', () => {
 					expanded: false,
 					listItemType: 'Z6',
 					listItemsRowIds: [ 1, 2 ]
+				},
+				global: {
+					stubs: { WlKeyValueBlock: false }
 				}
 			} );
 
@@ -45,6 +48,9 @@ describe( 'ZTypedListItems', () => {
 					expanded: true,
 					listItemType: 'Z6',
 					listItemsRowIds: [ 1, 2 ]
+				},
+				global: {
+					stubs: { WlKeyValueBlock: false, WlKeyBlock: false }
 				}
 			} );
 

@@ -5,7 +5,7 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-app-pagination">
+	<div class="ext-wikilambda-app-pagination" data-testid="pagination">
 		<cdx-button class="ext-wikilambda-app-pagination__view-all" @click="resetView">
 			{{ getButtonText }}
 		</cdx-button>

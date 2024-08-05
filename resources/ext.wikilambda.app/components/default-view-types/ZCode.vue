@@ -5,80 +5,83 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-app-code">
+	<div class="ext-wikilambda-app-code" data-testid="z-code">
 		<!-- Programming language block -->
-		<div class="ext-wikilambda-app-key-value">
-			<div class="ext-wikilambda-app-key-value__main">
-				<div class="ext-wikilambda-app-key-value__key">
-					<label
-						:lang="programmingLanguageLabelData.langCode"
-						:dir="programmingLanguageLabelData.langDir"
-					>{{ programmingLanguageLabelData.label }}</label>
-				</div>
+		<wl-key-value-block
+			:key-bold="true"
+			class="ext-wikilambda-app-code__language-selector-block">
+			<template #key>
+				<label
+					:lang="programmingLanguageLabelData.langCode"
+					:dir="programmingLanguageLabelData.langDir"
+				>{{ programmingLanguageLabelData.label }}</label>
+			</template>
+			<template #value>
 				<div
-					class="ext-wikilambda-app-key_value__value"
 					data-testid="language-dropdown"
-				>
-					<span
-						v-if="!edit"
-						class="ext-wikilambda-app-key_value__value-text"
-					>{{ programmingLanguageLiteral }}</span>
+					class="ext-wikilambda-app-code__language-selector">
+					<span v-if="!edit">
+						{{ programmingLanguageLiteral }}
+					</span>
 					<cdx-select
 						v-else
-						v-model:selected="programmingLanguageValue"
-						class="ext-wikilambda-app-key_value__value-input ext-wikilambda-app-code__language-selector"
+						:selected="programmingLanguageValue"
 						:menu-items="programmingLanguageMenuItems"
 						:default-label="$i18n( 'wikilambda-editor-label-select-programming-language-label' ).text()"
 						:status="( programmingLanguageErrors.length > 0 ) ? 'error' : 'default'"
-						@change="clearErrors( programmingLanguageRowId )"
-					>
-					</cdx-select>
+						@update:selected="onProgrammingLanguageChange"
+					></cdx-select>
 				</div>
+			</template>
+			<template v-if="programmingLanguageErrors.length > 0" #footer>
 				<cdx-message
 					v-for="( error, index ) in programmingLanguageErrors"
 					:key="'language-error-' + index"
-					class="ext-wikilambda-app-key-value__inline-error"
+					class="ext-wikilambda-app-code__inline-error"
 					:type="error.type"
 					:inline="true"
 				>
-					<!-- eslint-disable vue/no-v-html -->
+					<!-- eslint-disable-next-line vue/no-v-html -->
 					<div v-html="getErrorMessage( error )"></div>
 				</cdx-message>
-			</div>
-		</div>
+			</template>
+		</wl-key-value-block>
+
 		<!-- Code editor block -->
-		<div class="ext-wikilambda-app-key-value">
-			<div class="ext-wikilambda-app-key-value__main">
-				<div class="ext-wikilambda-app-key-value__key">
-					<label
-						:lang="codeLabelData.langCode"
-						:dir="codeLabelData.langDir"
-					>{{ codeLabelData.label }}</label>
-				</div>
-				<div class="ext-wikilambda-app-key_value__value">
-					<code-editor
-						class="ext-wikilambda-app-code__code-editor"
-						:mode="programmingLanguageLiteral"
-						:read-only="!edit"
-						:disabled="!programmingLanguageValue"
-						:value="editorValue"
-						data-testid="code-editor"
-						@change="updateCode"
-						@click="checkCode"
-					></code-editor>
-				</div>
+		<wl-key-value-block
+			:key-bold="true"
+			class="ext-wikilambda-app-code__code-editor-block">
+			<template #key>
+				<label
+					:lang="codeLabelData.langCode"
+					:dir="codeLabelData.langDir"
+				>{{ codeLabelData.label }}</label>
+			</template>
+			<template #value>
+				<code-editor
+					class="ext-wikilambda-app-code__code-editor"
+					:mode="programmingLanguageLiteral"
+					:read-only="!edit"
+					:disabled="!programmingLanguageValue"
+					:value="editorValue"
+					data-testid="code-editor"
+					@change="updateCode"
+					@click="checkCode"
+				></code-editor>
+			</template>
+			<template v-if="codeErrors.length > 0" #footer>
 				<cdx-message
 					v-for="( error, index ) in codeErrors"
 					:key="'code-error-' + index"
-					class="ext-wikilambda-app-key-value__inline-error"
+					class="ext-wikilambda-app-code__inline-error"
 					:type="error.type"
 					:inline="true"
 				>
-					<!-- eslint-disable vue/no-v-html -->
+					<!-- eslint-disable-next-line vue/no-v-html -->
 					<div v-html="getErrorMessage( error )"></div>
 				</cdx-message>
-			</div>
-		</div>
+			</template>
+		</wl-key-value-block>
 	</div>
 </template>
 
@@ -87,6 +90,7 @@ const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	CodeEditor = require( '../base/CodeEditor.vue' ),
+	KeyValueBlock = require( '../base/KeyValueBlock.vue' ),
 	CdxSelect = require( '@wikimedia/codex' ).CdxSelect,
 	errorUtils = require( '../../mixins/errorUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
@@ -97,7 +101,8 @@ module.exports = exports = defineComponent( {
 	components: {
 		'cdx-message': CdxMessage,
 		'cdx-select': CdxSelect,
-		'code-editor': CodeEditor
+		'code-editor': CodeEditor,
+		'wl-key-value-block': KeyValueBlock
 	},
 	mixins: [ errorUtils ],
 	props: {
@@ -421,6 +426,16 @@ module.exports = exports = defineComponent( {
 			},
 
 			/**
+			 * Handles the change event of the programming language dropdown
+			 *
+			 * @param {string} newValue
+			 */
+			onProgrammingLanguageChange: function ( newValue ) {
+				this.programmingLanguageValue = newValue;
+				this.clearErrors( this.programmingLanguageRowId );
+			},
+
+			/**
 			 * Checks if a programming language is set
 			 */
 			checkCode: function () {
@@ -435,18 +450,6 @@ module.exports = exports = defineComponent( {
 				this.hasClickedDisabledField = true;
 				this.setError( payload );
 
-			},
-
-			/**
-			 * Returns the translated message for a given error code.
-			 * Error messages can have html tags.
-			 *
-			 * @param {Object} error
-			 * @return {string}
-			 */
-			getErrorMessage: function ( error ) {
-				// eslint-disable-next-line mediawiki/msg-doc
-				return error.message || this.$i18n( error.code ).text();
 			}
 		} ),
 	watch: {
@@ -476,25 +479,9 @@ module.exports = exports = defineComponent( {
 @import '../../ext.wikilambda.app.variables.less';
 
 .ext-wikilambda-app-code {
-	& > .ext-wikilambda-app-key-value {
-		& > .ext-wikilambda-app-key-value__main {
-			& > .ext-wikilambda-app-key-value__key {
-				margin-bottom: 0;
-
-				label {
-					font-weight: bold;
-					color: @color-base;
-				}
-			}
-
-			& > .ext-wikilambda-app-key_value__value {
-				margin-bottom: @spacing-50;
-
-				.ext-wikilambda-app-key_value__value-input {
-					margin-top: @spacing-25;
-				}
-			}
-		}
+	.ext-wikilambda-app-code__language-selector {
+		margin-top: @spacing-25;
+		margin-bottom: @spacing-50;
 	}
 }
 </style>

@@ -35,11 +35,11 @@ class Tester extends Page {
 	}
 
 	get callFunctionBlock() {
-		return this.contentBlock.$( '[data-testid="ext-wikilambda-app-tester-call"]' );
+		return this.contentBlock.$( '[data-testid="tester-call"]' );
 	}
 
 	get validationBlock() {
-		return this.contentBlock.$( '[data-testid="ext-wikilambda-app-tester-validation"]' );
+		return this.contentBlock.$( '[data-testid="tester-validation"]' );
 	}
 
 	get editSourceLink() {

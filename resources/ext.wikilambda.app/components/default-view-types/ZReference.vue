@@ -5,7 +5,7 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-app-reference">
+	<div class="ext-wikilambda-app-reference" data-testid="z-reference">
 		<template v-if="!edit">
 			<a
 				v-if="valueLabel"

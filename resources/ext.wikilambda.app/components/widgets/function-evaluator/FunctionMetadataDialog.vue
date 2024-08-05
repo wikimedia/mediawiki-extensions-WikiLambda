@@ -53,7 +53,7 @@
 				v-if="hasNestedMetadata"
 				class="ext-wikilambda-app-function-metadata-dialog__select-block">
 				<cdx-select
-					v-model:selected="selectedMetadataPath"
+					:selected="selectedMetadataPath"
 					class="ext-wikilambda-app-function-metadata-dialog__select"
 					:class="selectedMenuItemClass"
 					:menu-items="functionMenuItems"

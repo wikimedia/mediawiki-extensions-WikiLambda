@@ -7,7 +7,7 @@
 	@license MIT
 -->
 <template>
-	<wl-widget-base class="ext-wikilambda-app-function-report-widget">
+	<wl-widget-base class="ext-wikilambda-app-function-report-widget" data-testid="function-report-widget">
 		<!-- Widget header -->
 		<template #header>
 			{{ title }}

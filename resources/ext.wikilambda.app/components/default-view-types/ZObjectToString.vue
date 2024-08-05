@@ -7,12 +7,12 @@
 <template>
 	<div
 		v-if="hasLink"
-		class="ext-wikilambda-app-zobject-to-string"
-		data-testid="ext-wikilambda-app-zobject-to-string-link">
-		<div class="ext-wikilambda-app-zobject-to-string">
+		class="ext-wikilambda-app-object-to-string"
+		data-testid="object-to-string-link">
+		<div class="ext-wikilambda-app-object-to-string">
 			<a
 				v-if="isBlank"
-				class="ext-wikilambda-app-zobject-to-string__blank is-red-link"
+				class="ext-wikilambda-app-object-to-string__blank is-red-link"
 				:lang="labelData.langCode"
 				:dir="labelData.langDir"
 				@click="expand"
@@ -26,8 +26,8 @@
 		</div>
 		<div
 			v-if="hasChildren"
-			class="ext-wikilambda-app-zobject-to-string">
-			&nbsp;<span class="ext-wikilambda-app-zobject-to-string__divider">(</span>
+			class="ext-wikilambda-app-object-to-string">
+			&nbsp;<span class="ext-wikilambda-app-object-to-string__divider">(</span>
 			<!-- eslint-disable vue/no-v-for-template-key -->
 			<template
 				v-for="( row, index ) in childRows"
@@ -39,15 +39,15 @@
 				></wl-z-object-to-string>
 				<span
 					v-if="hasComma( index )"
-					class="ext-wikilambda-app-zobject-to-string__divider"
+					class="ext-wikilambda-app-object-to-string__divider"
 				>,&nbsp;</span>
-			</template><span class="ext-wikilambda-app-zobject-to-string__divider">)</span>
+			</template><span class="ext-wikilambda-app-object-to-string__divider">)</span>
 		</div>
 	</div>
 	<div
 		v-else
-		class="ext-wikilambda-app-zobject-to-string"
-		data-testid="ext-wikilambda-app-zobject-to-string-text"
+		class="ext-wikilambda-app-object-to-string"
+		data-testid="object-to-string-text"
 		:lang="labelData.langCode"
 		:dir="labelData.langDir"
 	>
@@ -295,7 +295,7 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-app-zobject-to-string {
+.ext-wikilambda-app-object-to-string {
 	display: flex;
 	white-space: pre-wrap;
 	word-break: break-all;
@@ -303,11 +303,11 @@ module.exports = exports = defineComponent( {
 	justify-content: flex-start;
 	gap: 0;
 
-	.ext-wikilambda-app-zobject-to-string__divider {
+	.ext-wikilambda-app-object-to-string__divider {
 		color: @color-subtle;
 	}
 
-	.ext-wikilambda-app-zobject-to-string__blank {
+	.ext-wikilambda-app-object-to-string__blank {
 		.cdx-mixin-link();
 	}
 }

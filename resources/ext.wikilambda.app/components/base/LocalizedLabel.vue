@@ -5,7 +5,7 @@
 	@license MIT
 -->
 <template>
-	<label class="ext-wikilambda-app-localized-label">
+	<label class="ext-wikilambda-app-localized-label" data-testid="localized-label">
 		<span
 			v-if="labelData.langCode && !isUserLang"
 			class="ext-wikilambda-app-localized-label__chip"

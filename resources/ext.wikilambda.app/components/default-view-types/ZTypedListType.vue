@@ -5,7 +5,7 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-app-typed-list-type">
+	<div class="ext-wikilambda-app-typed-list-type" data-testid="z-typed-list-type">
 		<wl-z-object-key-value
 			:row-id="rowId"
 			:edit="edit"

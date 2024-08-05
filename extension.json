@@ -309,6 +309,8 @@
 				"ext.wikilambda.app/components/base/CodeEditor.vue",
 				"ext.wikilambda.app/components/base/CustomDialogHeader.vue",
 				"ext.wikilambda.app/components/base/ExpandedToggle.vue",
+				"ext.wikilambda.app/components/base/KeyValueBlock.vue",
+				"ext.wikilambda.app/components/base/KeyBlock.vue",
 				"ext.wikilambda.app/components/base/LocalizedLabel.vue",
 				"ext.wikilambda.app/components/base/ModeSelector.vue",
 				"ext.wikilambda.app/components/base/Pagination.vue",

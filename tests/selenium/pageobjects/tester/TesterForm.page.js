@@ -39,7 +39,7 @@ class TesterPage extends Page {
 	}
 
 	get validationBlock() {
-		return this.contentBlock.$( './/div[@data-testid="ext-wikilambda-app-tester-validation"]' );
+		return this.contentBlock.$( './/div[@data-testid="tester-validation"]' );
 	}
 
 	// #region About Block
@@ -202,7 +202,7 @@ class TesterPage extends Page {
 	 * @return {void}
 	 */
 	async expandValidationBlock() {
-		const selectFunctionLink = await $( '[data-testid="ext-wikilambda-app-tester-validation"] [data-testid="expanded-toggle"]' );
+		const selectFunctionLink = await $( '[data-testid="tester-validation"] [data-testid="expanded-toggle"]' );
 		await ElementActions.doClick( selectFunctionLink );
 	}
 

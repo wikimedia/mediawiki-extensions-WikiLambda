@@ -5,7 +5,7 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-app-boolean">
+	<div class="ext-wikilambda-app-boolean" data-testid="z-boolean">
 		<template v-if="!edit">
 			<a
 				class="ext-wikilambda-app-link"

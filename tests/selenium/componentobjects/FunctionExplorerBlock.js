@@ -16,7 +16,7 @@ const InputDropdown = require( './InputDropdown' );
 
 class FunctionExplorerBlock {
 	get functionExplorerBlock() {
-		return $( '[data-testid="function-explorer"]' );
+		return $( '[data-testid="function-explorer-widget"]' );
 	}
 
 	get functionNameInputSelector() {

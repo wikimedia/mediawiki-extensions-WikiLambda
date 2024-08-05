@@ -5,42 +5,34 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-app-typed-list-items ext-wikilambda-app-key-value">
-		<!-- if expanded, show toggle button -->
-		<div
-			v-if="expanded"
-			class="ext-wikilambda-app-key-value__pre"
-		>
-			<wl-expanded-toggle
-				class="ext-wikilambda-app-key-value__pre-button"
-				:has-expanded-mode="false"
-				:expanded="true"
-			></wl-expanded-toggle>
-		</div>
+	<!-- if expanded, show toggle button -->
+	<wl-key-value-block
+		:has-expanded-mode="false"
+		:expanded="expanded"
+		:has-pre-column="expanded"
+		:edit="edit"
+		class="ext-wikilambda-app-typed-list-items"
+		data-testid="z-typed-list-items">
+		<!-- if expanded, show key label -->
+		<template v-if="expanded" #key>
+			<wl-localized-label
+				:label-data="itemsLabel"
+				class="ext-wikilambda-app-typed-list-items__localized-label"></wl-localized-label>
+		</template>
+		<!-- else, simply show list of items -->
+		<template #value>
+			<wl-z-object-key-value
+				v-for="item in listItemsRowIds"
+				:key="'list-item-' + item"
+				class="ext-wikilambda-app-typed-list-items__block"
+				:row-id="item"
+				:edit="edit"
+				:list-item-type="listItemType"
+			></wl-z-object-key-value>
+		</template>
 
-		<div class="ext-wikilambda-app-key-value__main">
-			<!-- if expanded, show key label -->
-			<div
-				v-if="expanded"
-				:class="listItemsEditClass"
-				class="ext-wikilambda-app-typed-list-items__label ext-wikilambda-app-key-value__key"
-			>
-				<wl-localized-label
-					:label-data="itemsLabel"
-					class="ext-wikilambda-app-typed-list-items__localized-label"></wl-localized-label>
-			</div>
-			<!-- else, simply show list of items -->
-			<div class="ext-wikilambda-app-typed-list-items__block ext-wikilambda-app-key_value__value">
-				<wl-z-object-key-value
-					v-for="item in listItemsRowIds"
-					:key="'list-item-' + item"
-					:row-id="item"
-					:edit="edit"
-					:list-item-type="listItemType"
-				></wl-z-object-key-value>
-			</div>
-
-			<!-- Button to add a new item -->
+		<!-- Button to add a new item -->
+		<template #footer>
 			<div
 				v-if="edit"
 				class="ext-wikilambda-app-typed-list-items__add-button"
@@ -54,14 +46,14 @@
 					<cdx-icon :icon="icons.cdxIconAdd"></cdx-icon>
 				</cdx-button>
 			</div>
-		</div>
-	</div>
+		</template>
+	</wl-key-value-block>
 </template>
 
 <script>
 const { defineComponent } = require( 'vue' );
-const ExpandedToggle = require( '../base/ExpandedToggle.vue' ),
-	LocalizedLabel = require( '../base/LocalizedLabel.vue' ),
+const LocalizedLabel = require( '../base/LocalizedLabel.vue' ),
+	KeyValueBlock = require( '../base/KeyValueBlock.vue' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	LabelData = require( '../../store/classes/LabelData.js' ),
@@ -70,8 +62,8 @@ const ExpandedToggle = require( '../base/ExpandedToggle.vue' ),
 module.exports = exports = defineComponent( {
 	name: 'wl-z-typed-list-items',
 	components: {
-		'wl-expanded-toggle': ExpandedToggle,
 		'wl-localized-label': LocalizedLabel,
+		'wl-key-value-block': KeyValueBlock,
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon
 	},
@@ -109,18 +101,6 @@ module.exports = exports = defineComponent( {
 		 */
 		itemsLabel: function () {
 			return LabelData.fromString( this.$i18n( 'wikilambda-list-items-label' ).text() );
-		},
-
-		/**
-		 * Returns all the conditional class names for the
-		 * the list items label
-		 *
-		 * @return {string}
-		 */
-		listItemsEditClass: function () {
-			return this.edit ?
-				'ext-wikilambda-app-key-value__key--edit' :
-				'ext-wikilambda-app-key-value__key--view';
 		}
 	},
 	methods: {

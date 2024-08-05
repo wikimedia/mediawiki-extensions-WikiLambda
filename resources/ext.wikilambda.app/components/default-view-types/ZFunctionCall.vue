@@ -5,7 +5,7 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-app-function-call">
+	<div class="ext-wikilambda-app-function-call" data-testid="z-function-call">
 		<cdx-icon
 			:icon="icon"
 			class="ext-wikilambda-app-function-call__icon"

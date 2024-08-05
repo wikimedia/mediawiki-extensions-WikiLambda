@@ -9,7 +9,7 @@
 	@license MIT
 -->
 <template>
-	<span class="ext-wikilambda-app-object-selector">
+	<span class="ext-wikilambda-app-object-selector" data-testid="z-object-selector">
 		<cdx-select
 			v-if="isEnum"
 			:selected="selectedValue"
