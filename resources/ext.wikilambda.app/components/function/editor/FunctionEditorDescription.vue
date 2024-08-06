@@ -199,8 +199,8 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-function-editor-description__counter {
 		color: @color-subtle;
 		margin-left: @spacing-50;
-		align-self: center;
-		float: right;
+		display: flex;
+		justify-content: flex-end;
 	}
 }
 </style>

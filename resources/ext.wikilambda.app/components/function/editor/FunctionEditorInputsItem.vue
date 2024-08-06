@@ -39,9 +39,13 @@
 					:model-value="inputLabel"
 					:placeholder="inputLabelFieldPlaceholder"
 					:aria-label="inputLabelFieldPlaceholder"
-					:max-chars="maxLabelChars"
+					:maxlength="maxInputLabelChars"
+					@input="updateRemainingChars"
 					@change="persistInputLabel"
 				></cdx-text-input>
+				<div class="ext-wikilambda-app-function-editor-inputs-item__counter">
+					{{ remainingChars }}
+				</div>
 			</cdx-field>
 			<!-- Type field: only first block -->
 			<wl-type-selector
@@ -119,7 +123,8 @@ module.exports = exports = defineComponent( {
 	data: function () {
 		return {
 			typeZid: Constants.Z_TYPE,
-			maxLabelChars: Constants.LABEL_CHARS_MAX,
+			maxInputLabelChars: Constants.INPUT_CHARS_MAX,
+			remainingChars: Constants.INPUT_CHARS_MAX,
 			icons: icons
 		};
 	},
@@ -209,6 +214,15 @@ module.exports = exports = defineComponent( {
 		'removeItemFromTypedList'
 	] ), {
 		/**
+		 * Updates the remainingChars data property as the user types into the Z2K2 field
+		 *
+		 * @param {Event} event - the event object that is automatically passed in on input
+		 */
+		updateRemainingChars: function ( event ) {
+			const { length } = event.target.value;
+			this.remainingChars = this.maxInputLabelChars - length;
+		},
+		/**
 		 * Removes the input given by this rowId
 		 */
 		removeInput: function () {
@@ -252,7 +266,12 @@ module.exports = exports = defineComponent( {
 			}
 			this.$emit( 'update-argument-label' );
 		}
-	} )
+	} ),
+	mounted: function () {
+		this.$nextTick( function () {
+			this.remainingChars = this.maxInputLabelChars - this.inputLabel.length;
+		} );
+	}
 } );
 </script>
 
@@ -264,6 +283,13 @@ module.exports = exports = defineComponent( {
 	border: @border-subtle;
 	padding: @spacing-35 @spacing-75 @spacing-75;
 	margin-bottom: @spacing-100;
+
+	.ext-wikilambda-app-function-editor-inputs-item__counter {
+		color: @color-subtle;
+		margin-left: @spacing-50;
+		display: flex;
+		justify-content: flex-end;
+	}
 
 	.ext-wikilambda-app-function-editor-inputs-item__header {
 		display: flex;
