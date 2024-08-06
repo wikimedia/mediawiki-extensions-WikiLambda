@@ -45,7 +45,7 @@ class ZObjectUtils {
 		string $class
 	) {
 		$attributes = [
-			'data-title' => $label,
+			'title' => $label,
 			'class' => $class,
 		];
 		return Html::element(

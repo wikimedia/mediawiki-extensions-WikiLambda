@@ -56,9 +56,7 @@ module.exports = {
 		// These are untested base components,
 		// waiting for replacement with Codex alternatives; to drop!
 		// TODO (T373197): Replace with Codex's Table
-		'resources/ext.wikilambda.app/components/base/Table.vue',
-		// TODO (T298040): Replace with Codex's Tooltip
-		'resources/ext.wikilambda.app/components/base/Tooltip.vue'
+		'resources/ext.wikilambda.app/components/base/Table.vue'
 	],
 
 	coverageThreshold: {

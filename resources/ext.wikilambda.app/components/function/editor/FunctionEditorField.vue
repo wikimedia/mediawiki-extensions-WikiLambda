@@ -9,15 +9,14 @@
 	<div class="ext-wikilambda-app-function-editor-field">
 		<div class="ext-wikilambda-app-function-editor-field__label">
 			<slot name="label"></slot>
-			<wl-tooltip v-if="showTooltip" :content="tooltipMessage">
-				<slot name="tooltip-icon">
-					<cdx-icon
-						v-if="tooltipIcon"
-						class="ext-wikilambda-app-function-editor-field__tooltip-icon"
-						:icon="tooltipIcon">
-					</cdx-icon>
-				</slot>
-			</wl-tooltip>
+			<slot name="tooltip-icon">
+				<cdx-icon
+					v-if="showTooltip && tooltipIcon"
+					v-tooltip:bottom="tooltipMessage"
+					class="ext-wikilambda-app-function-editor-field__tooltip-icon"
+					:icon="tooltipIcon">
+				</cdx-icon>
+			</slot>
 			<div class="ext-wikilambda-app-function-editor-field__description">
 				<slot name="description"></slot>
 			</div>
@@ -29,15 +28,16 @@
 </template>
 
 <script>
-const { CdxIcon } = require( '@wikimedia/codex' );
+const { CdxIcon, CdxTooltip } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const Tooltip = require( '../../base/Tooltip.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-field',
 	components: {
-		'cdx-icon': CdxIcon,
-		'wl-tooltip': Tooltip
+		'cdx-icon': CdxIcon
+	},
+	directives: {
+		tooltip: CdxTooltip
 	},
 	props: {
 		showTooltip: {

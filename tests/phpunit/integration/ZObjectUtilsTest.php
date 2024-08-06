@@ -1370,7 +1370,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		$expected = Html::element(
 			'span',
 			[
-				'data-title' => 'English',
+				'title' => 'English',
 				'class' => 'ext-wikilambda-viewpage-header__bcp47-code'
 			],
 			'en'

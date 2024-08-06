@@ -48,7 +48,7 @@
 </template>
 
 <script>
-const { CdxButton, CdxIcon } = require( '@wikimedia/codex' );
+const { CdxButton, CdxIcon, CdxTooltip } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
 	FunctionEditorField = require( './FunctionEditorField.vue' ),
@@ -58,6 +58,9 @@ const Constants = require( '../../../Constants.js' ),
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-inputs',
+	directives: {
+		tooltip: CdxTooltip
+	},
 	components: {
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon,
