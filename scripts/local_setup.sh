@@ -18,6 +18,18 @@ MW_DOCKER_UID=$(id -u)
 MW_DOCKER_GID=$(id -g)
 EOF
 
+cat <<EOF > "$core_dir/composer.local.json"
+{
+  "extra": {
+    "merge-plugin": {
+      "include": [
+        "extensions/WikiLambda/composer.json"
+      ]
+    }
+  }
+}
+EOF
+
 rm -rf "$core_dir/skins/Vector"
 rm -rf "$core_dir/extensions/WikimediaMessages"
 rm -rf "$core_dir/extensions/UniversalLanguageSelector"
