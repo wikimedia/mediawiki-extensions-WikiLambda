@@ -423,6 +423,8 @@
 	"wikilambda-updated-testers-approved-summary": "Added $1 to the approved list of test cases",
 	"wikilambda-updated-testers-deactivated-summary": "Removed $1 from the approved list of test cases",
 	"wikilambda-users-help-link": "https://www.mediawiki.org/wiki/Special:MyLanguage/Help:Wikifunctions/User_rights",
+	"wikilambda-validation-error-description-toolong": "Description in $1 must be $2 characters or shorter.",
+	"wikilambda-validation-error-name-toolong": "Name in $1 must be $2 characters or shorter.",
 	"wikilambda-viewmode-nojs": "This page displays in a limited way without JavaScript.",
 	"wikilambda-zerror": "Error of type $1",
 	"wikilambda-zimplememntation-composition-missing": "Composition is empty. Please select a function.",

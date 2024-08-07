@@ -216,6 +216,7 @@ class ZObjectStore {
 
 		// Validate that $zid and zObject[Z2K1] are the same
 		$zObjectId = $content->getZid();
+
 		if ( $zObjectId !== $zid ) {
 			$error = ZErrorFactory::createZErrorInstance(
 				ZErrorTypeRegistry::Z_ERROR_UNMATCHING_ZID,
@@ -263,6 +264,13 @@ class ZObjectStore {
 			return ZObjectPage::newFatal( $status->getErrors() );
 		}
 
+		// Run ZObjectContent field validation
+		try {
+			$content->validateFields( $context );
+		} catch ( ZErrorException $e ) {
+			return ZObjectPage::newFatal( $e->getZError() );
+		}
+
 		// We prepare the content to be saved
 		$page = $this->wikiPageFactory->newFromTitle( $title );
 		try {
@@ -298,7 +306,7 @@ class ZObjectStore {
 
 			$error = ZErrorFactory::createZErrorInstance(
 				ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
-				[ 'message' => $statusFormatter->getHTML( $status ) ]
+				[ 'message' => $statusFormatter->getMessage( $status )->plain() ]
 			);
 			return ZObjectPage::newFatal( $error );
 		}

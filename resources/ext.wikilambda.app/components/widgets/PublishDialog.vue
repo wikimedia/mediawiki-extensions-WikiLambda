@@ -333,10 +333,13 @@ module.exports = exports = defineComponent( {
 				// If response.error.message: known ZError
 				// Else, PHP error or exception captured in response.error.info
 				// Additionally, if nothing available, show generic unknown error message
-				const errorMessage = ( response && response.error ) ?
+				const genericErrorMessage = response && response.error ?
 					( response.error.message || response.error.info ) :
 					undefined;
-
+				const detailedErrorMessage = response && response.error ?
+					this.extractErrorMessage( response.error ) :
+					undefined;
+				const errorMessage = detailedErrorMessage || genericErrorMessage;
 				const payload = {
 					rowId: 0,
 					errorType: Constants.errorTypes.ERROR,
