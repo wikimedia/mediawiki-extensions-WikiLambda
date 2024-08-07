@@ -22,7 +22,7 @@ you have cloned the `mediawiki/core` repository.
 
 ### Full instructions
 
-* Bring up a [development environment](https://www.mediawiki.org/wiki/How_to_become_a_MediaWiki_hacker) for MediaWiki (e.g. [Docker](https://www.mediawiki.org/wiki/MediaWiki-Docker) or [Vagrant](https://www.mediawiki.org/wiki/MediaWiki-Vagrant)). Be sure to install docker-compose v2 instead of v1.
+* Bring up a [development environment](https://www.mediawiki.org/wiki/How_to_become_a_MediaWiki_hacker) for MediaWiki (e.g. [Docker](https://www.mediawiki.org/wiki/MediaWiki-Docker) or [Vagrant](https://www.mediawiki.org/wiki/MediaWiki-Vagrant)). Be sure to install docker compose v2 instead of v1.
 * In your `mediawiki/extensions/` subdirectory, clone the extension as follows:
   ```
   git clone --recurse-submodules --remote-submodules https://gerrit.wikimedia.org/r/mediawiki/extensions/WikiLambda
@@ -44,15 +44,15 @@ you have cloned the `mediawiki/core` repository.
     }
   }
   ```
-* Run `docker-compose exec mediawiki composer update` or similar.
+* Run `docker compose exec mediawiki composer update` or similar.
 * Add the following to your `LocalSettings.php` file:
   ```
   wfLoadExtension( 'WikiLambda' );
   wfLoadExtension( 'WikimediaMessages' );
   wfLoadExtension( 'UniversalLanguageSelector' );
   ```
-* Run `php maintenance/run.php createAndPromote --custom-groups functioneer,functionmaintainer --force Admin` (or `docker-compose exec mediawiki php maintenance/run.php createAndPromote --custom-groups functioneer,functionmaintainer --force Admin` if MediaWiki is setup through Docker) to give your Admin user the special rights for creating and editing ZObjects.
-* Run `php maintenance/run.php update` (or `docker-compose exec mediawiki php maintenance/run.php update` if MediaWiki is setup through Docker) to provision necessary schemas and initial content (this step could take around 20 minutes).
+* Run `php maintenance/run.php createAndPromote --custom-groups functioneer,functionmaintainer --force Admin` (or `docker compose exec mediawiki php maintenance/run.php createAndPromote --custom-groups functioneer,functionmaintainer --force Admin` if MediaWiki is setup through Docker) to give your Admin user the special rights for creating and editing ZObjects.
+* Run `php maintenance/run.php update` (or `docker compose exec mediawiki php maintenance/run.php update` if MediaWiki is setup through Docker) to provision necessary schemas and initial content (this step could take around 20 minutes).
 
 Done! Navigate to the newly created `Z1` page on your wiki to verify that the extension is successfully installed.
 
@@ -67,7 +67,7 @@ On install, the extension will try to use the orchestrator and evaluator service
 You can test your installation by running the PHPUnit test suite as described in the MediaWiki install instructions:
 
 ```
-docker-compose exec mediawiki composer phpunit:entrypoint -- extensions/WikiLambda/tests/phpunit/integration/ActionAPI/ApiFunctionCallTest.php
+docker compose exec mediawiki composer phpunit:entrypoint -- extensions/WikiLambda/tests/phpunit/integration/ActionAPI/ApiFunctionCallTest.php
 ```
 
 If the tests all pass, your installation has successfully called the configured function orchestrator with the calls, executed them, and got the expected results back. Congratulations!
