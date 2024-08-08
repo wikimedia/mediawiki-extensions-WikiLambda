@@ -231,14 +231,14 @@ module.exports = exports = {
 				payload.zImplementations
 			).map(
 				// (T358089) Encode any '|' characters of ZObjects so that they can be recovered after the API.
-				( a ) => a.replace( '|', '🪈' )
+				( a ) => a.replace( /\|/g, '🪈' )
 			);
 			const testers = replaceCurrentObjectWithFullJSONObject(
 				context,
 				payload.zTesters
 			).map(
 				// (T358089) Encode any '|' characters of ZObjects so that they can be recovered after the API.
-				( a ) => a.replace( '|', '🪈' )
+				( a ) => a.replace( /\|/g, '🪈' )
 			);
 
 			const testResultsPromise = apiUtils.performTests( {

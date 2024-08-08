@@ -394,8 +394,9 @@ describe( 'testResults Vuex module', () => {
 					zTesters: zTesters
 				} );
 
-				const expectedEncodedObject = JSON.stringify( currentObject[ Constants.Z_PERSISTENTOBJECT_VALUE ] ).replace( '|', '🪈' );
+				const expectedEncodedObject = JSON.stringify( currentObject[ Constants.Z_PERSISTENTOBJECT_VALUE ] ).replace( /\|/g, '🪈' );
 
+				expect( expectedEncodedObject ).toBe( '{"lovely":"implementation🪈with🪈pipes"}' );
 				expect( getMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_perform_test',
 					uselang: 'en',
