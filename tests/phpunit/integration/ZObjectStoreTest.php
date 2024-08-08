@@ -1135,61 +1135,80 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		// We start with empty
 		$languages = $this->zobjectStore->fetchAllZLanguageObjects();
 		$this->assertCount( 0, $languages );
-		$foundCodes = $this->zobjectStore->findCodesFromZLanguage( 'foo' );
+		$foundCodes = $this->zobjectStore->findCodesFromZLanguage( 'Z1001' );
 		$this->assertCount( 0, $foundCodes );
-		$foundLanguage = $this->zobjectStore->findZLanguageFromCode( 'foo' );
+		$foundLanguage = $this->zobjectStore->findZLanguageFromCode( 'bar' );
 		$this->assertNull( $foundLanguage );
 
 		// Adding a single language is findable
-		$this->zobjectStore->insertZLanguageToLanguagesCache( 'foo', 'bar' );
+		$this->zobjectStore->insertZLanguageToLanguagesCache( 'Z1001', 'bar' );
 
 		$languages = $this->zobjectStore->fetchAllZLanguageObjects();
 		$this->assertIsArray( $languages );
 		$this->assertCount( 1, $languages );
-		$this->assertArrayHasKey( 'foo', $languages );
-		$this->assertSame( 'bar', $languages['foo'] );
-		$foundCodes = $this->zobjectStore->findCodesFromZLanguage( 'foo' );
+		$this->assertArrayHasKey( 'bar', $languages );
+		$this->assertSame( 'Z1001', $languages['bar'] );
+		$foundCodes = $this->zobjectStore->findCodesFromZLanguage( 'Z1001' );
 		$this->assertCount( 1, $foundCodes );
 		$this->assertSame( 'bar', $foundCodes[0] );
 		$foundLanguage = $this->zobjectStore->findZLanguageFromCode( 'bar' );
 		$this->assertNotNull( $foundLanguage );
-		$this->assertSame( 'foo', $foundLanguage );
+		$this->assertSame( 'Z1001', $foundLanguage );
 
-		// Adding a second language adds its value
-		$this->zobjectStore->insertZLanguageToLanguagesCache( 'foo-x', 'baz' );
+		// Adding a secondary code for a same zlanguage (Z60K2)
+		$this->zobjectStore->insertZLanguageToLanguagesCache( 'Z1001', 'bar-old' );
 
 		$languages = $this->zobjectStore->fetchAllZLanguageObjects();
 		$this->assertIsArray( $languages );
 		$this->assertCount( 2, $languages );
-		$this->assertArrayHasKey( 'foo-x', $languages );
-		$this->assertSame( 'baz', $languages['foo-x'] );
-		$foundCodes = $this->zobjectStore->findCodesFromZLanguage( 'foo-x' );
-		$this->assertCount( 1, $foundCodes );
-		$this->assertSame( 'baz', $foundCodes[0] );
-		$foundLanguage = $this->zobjectStore->findZLanguageFromCode( 'baz' );
+		$this->assertArrayHasKey( 'bar', $languages );
+		$this->assertArrayHasKey( 'bar-old', $languages );
+		$this->assertSame( 'Z1001', $languages['bar'] );
+		$this->assertSame( 'Z1001', $languages['bar-old'] );
+		$foundCodes = $this->zobjectStore->findCodesFromZLanguage( 'Z1001' );
+		$this->assertCount( 2, $foundCodes );
+		$this->assertSame( 'bar', $foundCodes[0] );
+		$this->assertSame( 'bar-old', $foundCodes[1] );
+		$foundLanguage = $this->zobjectStore->findZLanguageFromCode( 'bar-old' );
 		$this->assertNotNull( $foundLanguage );
-		$this->assertSame( 'foo-x', $foundLanguage );
+		$this->assertSame( 'Z1001', $foundLanguage );
 
-		// Deleting the first language removes its value
-		$this->zobjectStore->deleteZLanguageFromLanguagesCache( 'foo' );
+		// Adding a second language adds its value
+		$this->zobjectStore->insertZLanguageToLanguagesCache( 'Z1002', 'foo' );
 
 		$languages = $this->zobjectStore->fetchAllZLanguageObjects();
-		$this->assertArrayNotHasKey( 'foo', $languages );
+		$this->assertIsArray( $languages );
+		$this->assertCount( 3, $languages );
+		$this->assertArrayHasKey( 'foo', $languages );
+		$this->assertSame( 'Z1002', $languages['foo'] );
+		$foundCodes = $this->zobjectStore->findCodesFromZLanguage( 'Z1002' );
+		$this->assertCount( 1, $foundCodes );
+		$this->assertSame( 'foo', $foundCodes[0] );
+		$foundLanguage = $this->zobjectStore->findZLanguageFromCode( 'foo' );
+		$this->assertNotNull( $foundLanguage );
+		$this->assertSame( 'Z1002', $foundLanguage );
+
+		// Deleting the first language removes its value
+		$this->zobjectStore->deleteZLanguageFromLanguagesCache( 'Z1001' );
+
+		$languages = $this->zobjectStore->fetchAllZLanguageObjects();
+		$this->assertArrayNotHasKey( 'bar', $languages );
+		$this->assertArrayNotHasKey( 'bar-old', $languages );
 		$this->assertCount( 1, $languages );
-		$foundCodes = $this->zobjectStore->findCodesFromZLanguage( 'foo' );
+		$foundCodes = $this->zobjectStore->findCodesFromZLanguage( 'Z1001' );
 		$this->assertCount( 0, $foundCodes );
 		$foundLanguage = $this->zobjectStore->findZLanguageFromCode( 'bar' );
 		$this->assertNull( $foundLanguage );
 
 		// Deleting the second language returns us to empty
-		$this->zobjectStore->deleteZLanguageFromLanguagesCache( 'foo-x' );
+		$this->zobjectStore->deleteZLanguageFromLanguagesCache( 'Z1002' );
 
 		$languages = $this->zobjectStore->fetchAllZLanguageObjects();
-		$this->assertArrayNotHasKey( 'foo-x', $languages );
+		$this->assertArrayNotHasKey( 'foo', $languages );
 		$this->assertCount( 0, $languages );
-		$foundCodes = $this->zobjectStore->findCodesFromZLanguage( 'foo-x' );
+		$foundCodes = $this->zobjectStore->findCodesFromZLanguage( 'Z1002' );
 		$this->assertCount( 0, $foundCodes );
-		$foundLanguage = $this->zobjectStore->findZLanguageFromCode( 'baz' );
+		$foundLanguage = $this->zobjectStore->findZLanguageFromCode( 'foo' );
 		$this->assertNull( $foundLanguage );
 	}
 

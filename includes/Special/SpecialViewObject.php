@@ -136,8 +136,8 @@ class SpecialViewObject extends SpecialPage {
 		$outputPage->addParserOutput( $parserOutput );
 
 		// Add all the see-other links to versions of this page in each of the known languages.
-		$languages = $this->zObjectStore->fetchAllZLanguageObjects();
-		foreach ( $languages as $zid => $bcpcode ) {
+		$languages = $this->zObjectStore->fetchAllZLanguageCodes();
+		foreach ( $languages as $bcpcode ) {
 			if ( $bcpcode === $targetLanguage ) {
 				continue;
 			}
