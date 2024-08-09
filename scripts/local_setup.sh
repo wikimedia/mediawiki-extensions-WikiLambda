@@ -21,9 +21,13 @@ EOF
 rm -rf "$core_dir/skins/Vector"
 rm -rf "$core_dir/extensions/WikimediaMessages"
 rm -rf "$core_dir/extensions/UniversalLanguageSelector"
+rm -rf "$core_dir/extensions/EventLogging"
+rm -rf "$core_dir/extensions/EventBus"
 
 git clone "https://gerrit.wikimedia.org/r/mediawiki/skins/Vector" $core_dir/skins/Vector
 git clone "https://gerrit.wikimedia.org/r/mediawiki/extensions/WikimediaMessages" $core_dir/extensions/WikimediaMessages
 git clone "https://gerrit.wikimedia.org/r/mediawiki/extensions/UniversalLanguageSelector" $core_dir/extensions/UniversalLanguageSelector
+git clone "https://gerrit.wikimedia.org/r/mediawiki/extensions/EventLogging" $core_dir/extensions/EventLogging
+git clone "https://gerrit.wikimedia.org/r/mediawiki/extensions/EventBus" $core_dir/extensions/EventBus
 
 bash $script_dir/local_reset.sh
