@@ -398,7 +398,7 @@
 	"wikilambda-toggle-expanded-view": "Uitgebreide weergave omschakelen",
 	"wikilambda-typeselector-label": "Kies een type",
 	"wikilambda-typeunavailable": "Onbekend type",
-	"wikilambda-unknown-save-error-message": "Er is een fout opgetreden bij het opslaan van uw wijzigingen.",
+	"wikilambda-unknown-save-error-message": "Het publiceren is mislukt. Probeer het nog eens.",
 	"wikilambda-viewmode-nojs": "Zonder JavaScript is de weergave van deze pagina beperkt.",
 	"wikilambda-zerror": "Fout van type $1",
 	"wikilambda-zimplememntation-composition-missing": "Compositie is leeg. Selecteer een functie.",

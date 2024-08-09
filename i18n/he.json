@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Amire80",
+			"Freddy9",
 			"Xnet1234"
 		]
 	},
@@ -406,7 +407,12 @@
 	"wikilambda-toggle-expanded-view": "החלפה לתצוגה המורחבת",
 	"wikilambda-typeselector-label": "נא לבחור סוג",
 	"wikilambda-typeunavailable": "סוג לא מוכר",
-	"wikilambda-unknown-save-error-message": "אירעה שגיאה כלשהי בעת ניסיון לשמור את השינויים שלך.",
+	"wikilambda-unknown-error-message": "לא ניתן להשלים את הבקשה. נא לנסות שוב.",
+	"wikilambda-unknown-exec-error-message": "לא ניתן להריץ את הפונקציה. נא לנסות שוב.",
+	"wikilambda-unknown-save-error-message": "לא ניתן לפרסם. נא לנסות שוב.",
+	"wikilambda-unknown-test-error-message": "לא ניתן להריץ הבדיקות. נא לרענן.",
+	"wikilambda-validation-error-description-toolong": "אורך התיאור ב{{GRAMMAR:תחילית|$1}} צריך להיות עד $2 תווים.",
+	"wikilambda-validation-error-name-toolong": "אורך השם ב{{GRAMMAR:תחילית|$1}} צריך להיות עד $2 תווים.",
 	"wikilambda-viewmode-nojs": "הדף הזה מוצג באופן מוגבל ללא JavaScript",
 	"wikilambda-zerror": "שגיאת מסוג $1",
 	"wikilambda-zimplememntation-composition-missing": "ההרכבה ריקה. נא לבחור פונקציה.",
