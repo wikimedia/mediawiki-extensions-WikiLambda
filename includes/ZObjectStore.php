@@ -602,7 +602,8 @@ class ZObjectStore {
 
 	/**
 	 * Gets from the secondary database a list of all natural language ZIDs,
-	 * mapping from ZID to BCP47 (or MediaWiki) language code
+	 * mapping from BCP47 (or MediaWiki) language code to ZID (one zid can map
+	 * to multiple BCP47 codes)
 	 *
 	 * @return array<string,string>
 	 */
@@ -618,19 +619,19 @@ class ZObjectStore {
 
 		$languages = [];
 		foreach ( $res as $row ) {
-			$languages[ $row->wlzlangs_zid ] = $row->wlzlangs_language;
+			$languages[ $row->wlzlangs_language ] = $row->wlzlangs_zid;
 		}
 		return $languages;
 	}
 
 	/**
-	 * Gets from the secondary database a list of all supported natural languages,
-	 * mapping from ZID to BCP47 (or MediaWiki) language code
+	 * Gets from the secondary database a list of all supported natural
+	 * BCP47 (or MediaWiki) language codes.
 	 *
 	 * @return array<string>
 	 */
 	public function fetchAllZLanguageCodes() {
-		return array_values( $this->fetchAllZLanguageObjects() );
+		return array_keys( $this->fetchAllZLanguageObjects() );
 	}
 
 	/**
