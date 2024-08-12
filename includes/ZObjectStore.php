@@ -638,7 +638,7 @@ class ZObjectStore {
 	 */
 	public function fetchZidsOfType( $ztype ) {
 		$dbr = $this->dbProvider->getReplicaDatabase();
-		$res = $dbr->newSelectQueryBuilder()
+		return $dbr->newSelectQueryBuilder()
 			->select( [ 'wlzl_zobject_zid' ] )
 			->distinct()
 			->from( 'wikilambda_zobject_labels' )
@@ -647,13 +647,7 @@ class ZObjectStore {
 			] )
 			->orderBy( 'wlzl_zobject_zid', SelectQueryBuilder::SORT_ASC )
 			->caller( __METHOD__ )
-			->fetchResultSet();
-
-		$zids = [];
-		foreach ( $res as $row ) {
-			$zids[] = $row->wlzl_zobject_zid;
-		}
-		return $zids;
+			->fetchFieldValues();
 	}
 
 	/**
