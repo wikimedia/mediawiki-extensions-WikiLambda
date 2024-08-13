@@ -77,7 +77,8 @@ class ContentBlock {
 		const modeSelector = await this.getSectionModeSelector( label, resolvedParentSection );
 		const modeButton = await modeSelector.$( 'button[data-testid="mode-selector-button"]' );
 		await ElementActions.doClick( modeButton );
-		const modeSelectorMenu = await modeSelector.$( '[data-testid="mode-selector-menu"]' );
+		// the class ".cdx-menu__listbox" is from codex upstream
+		const modeSelectorMenu = await modeSelector.$( '.cdx-menu__listbox' );
 		modeSelectorMenu.waitForDisplayed();
 		const optionSelector = await modeSelectorMenu.$( `bdi=${ mode }` );
 		await ElementActions.doClick( await optionSelector );
