@@ -214,7 +214,7 @@ describe( 'ZObjectStringRenderer', () => {
 				}
 			} );
 
-			const text = wrapper.find( '[data-testid="rendered-text"]' );
+			const text = wrapper.find( '[data-testid="zobject-string-renderer-text"]' );
 			expect( text.exists() ).toBe( true );
 			await waitFor( () => expect( text.text() ).toContain( renderedString ) );
 		} );
@@ -233,7 +233,7 @@ describe( 'ZObjectStringRenderer', () => {
 			wrapper.setData( { initialized: true } );
 			await wrapper.vm.$nextTick();
 
-			const text = wrapper.find( '[data-testid="rendered-text"]' );
+			const text = wrapper.find( '[data-testid="zobject-string-renderer-text"]' );
 			expect( text.exists() ).toBe( false );
 
 			const keyValueSet = wrapper.findComponent( { name: 'wl-z-object-key-value-set' } );

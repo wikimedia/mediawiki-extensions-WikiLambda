@@ -8,7 +8,10 @@
 	<div class="ext-wikilambda-app-object-string-renderer" data-testid="z-object-string-renderer">
 		<!-- If expanded is false, show text field -->
 		<template v-if="!expanded || !initialized">
-			<p v-if="!edit" data-testid="rendered-text">
+			<p
+				v-if="!edit"
+				class="ext-wikilambda-app-object-string-renderer__text"
+				data-testid="zobject-string-renderer-text">
 				{{ renderedValue }}
 			</p>
 			<!-- We capture the change event instead of update:modelValue
@@ -18,7 +21,7 @@
 				:class="{ 'cdx-text-input--status-error': hasFieldErrors }"
 				:model-value="renderedValue"
 				:placeholder="placeholderValue"
-				data-testid="rendered-text-input"
+				data-testid="zobject-string-renderer-input"
 				@change="setRenderedValue"
 			></cdx-text-input>
 			<div
@@ -529,6 +532,11 @@ module.exports = exports = defineComponent( {
 @import '../../ext.wikilambda.app.variables.less';
 
 .ext-wikilambda-app-object-string-renderer {
+	.ext-wikilambda-app-object-string-renderer__text {
+		margin: 0;
+		line-height: @spacing-200;
+	}
+
 	.ext-wikilambda-app-object-string-renderer__error {
 		margin-top: @spacing-25;
 	}
