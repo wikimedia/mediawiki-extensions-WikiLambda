@@ -34,6 +34,7 @@
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
 	FunctionEditorField = require( './FunctionEditorField.vue' ),
+	pageTitleUtils = require( '../../../mixins/pageTitleUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput;
@@ -44,6 +45,7 @@ module.exports = exports = defineComponent( {
 		'wl-function-editor-field': FunctionEditorField,
 		'cdx-text-input': CdxTextInput
 	},
+	mixins: [ pageTitleUtils ],
 	props: {
 		/**
 		 * zID of item label language
@@ -53,10 +55,6 @@ module.exports = exports = defineComponent( {
 		zLanguage: {
 			type: String,
 			required: true
-		},
-		isMainLanguageBlock: {
-			type: Boolean,
-			default: false
 		}
 	},
 	data: function () {
@@ -188,21 +186,9 @@ module.exports = exports = defineComponent( {
 					append: true
 				} );
 			}
-			if ( this.isMainLanguageBlock ) {
-				this.setPageTitle( value );
-			}
-			this.$emit( 'updated-name' );
-		},
 
-		/**
-		 * If this is the main language represented in the page,
-		 * sets the page title to the new Function Name
-		 *
-		 * @param {string} name
-		 */
-		setPageTitle: function ( name ) {
-			const pageTitleSelector = '#firstHeading .ext-wikilambda-editpage-header__title--function-name';
-			$( pageTitleSelector ).first().text( name );
+			this.setPageTitle();
+			this.$emit( 'updated-name' );
 		}
 	} ),
 	mounted: function () {

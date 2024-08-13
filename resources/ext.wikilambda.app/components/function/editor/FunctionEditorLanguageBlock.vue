@@ -22,7 +22,6 @@
 			class="ext-wikilambda-app-function-editor-language-block__row"
 			data-testid="function-editor-name-input"
 			:z-language="zLanguage"
-			:is-main-language-block="isMainLanguageBlock"
 			@updated-name="updatedLabels"
 		></wl-function-editor-name>
 		<!-- component that displays the description for a language -->

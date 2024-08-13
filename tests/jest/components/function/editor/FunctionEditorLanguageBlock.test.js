@@ -53,7 +53,6 @@ describe( 'FunctionEditorLanguageBlock', () => {
 			const name = wrapper.findComponent( { name: 'wl-function-editor-name' } );
 			expect( name.exists() ).toBe( true );
 			expect( name.props( 'zLanguage' ) ).toBe( 'Z1002' );
-			expect( name.props( 'isMainLanguageBlock' ) ).toBe( true );
 
 			const description = wrapper.findComponent( { name: 'wl-function-editor-description' } );
 			expect( description.exists() ).toBe( true );
@@ -88,7 +87,6 @@ describe( 'FunctionEditorLanguageBlock', () => {
 			const name = wrapper.findComponent( { name: 'wl-function-editor-name' } );
 			expect( name.exists() ).toBe( true );
 			expect( name.props( 'zLanguage' ) ).toBe( 'Z1002' );
-			expect( name.props( 'isMainLanguageBlock' ) ).toBe( false );
 
 			const description = wrapper.findComponent( { name: 'wl-function-editor-description' } );
 			expect( description.exists() ).toBe( true );
