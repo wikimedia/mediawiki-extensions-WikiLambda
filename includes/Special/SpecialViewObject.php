@@ -108,10 +108,19 @@ class SpecialViewObject extends SpecialPage {
 			return;
 		}
 
-		// (T345457) Tell OutputPage that our content is article-related, so we get Special:WhatLinksHere etc.
-		$outputPage->setArticleFlag( true );
 		// Tell the skin what content specifically we're related to, so edit/history links etc. work.
 		$this->getSkin()->setRelevantTitle( $targetTitle );
+		// (T343594) Set the title of the page to the target title, so Recent Changes Link works
+		$outputPage->setTitle( $targetTitle );
+
+		/**
+		 * (T343594) Set the revision ID to the requested one or the latest, so the Permanent Link works
+		 *
+		 * TODO (T364318): add the revision navigation bar to the page.
+		 */
+		$latestRevId = $outputPage->getTitle()->getLatestRevID();
+		$targetRevision = $this->getRequest()->getInt( 'oldid' ) ?: $latestRevId;
+		$outputPage->setRevisionId( $targetRevision );
 
 		// (T345453) Have the standard copyright stuff show up.
 		$this->getContext()->getOutput()->setCopyright( true );
@@ -175,6 +184,10 @@ class SpecialViewObject extends SpecialPage {
 		}
 		$outputPage->setCanonicalUrl( $viewURL );
 
+		// (T345457) Tell OutputPage that our content is article-related, so we get Special:WhatLinksHere etc.
+		// (T343594) The Special:WhatLinksHere weren't shown on view/en/ZXXXX pages,
+		// but they were on wiki/ZXXXX pages. Setting the flag here (lower in code) fixes it.
+		$outputPage->setArticleFlag( true );
 		// TODO (T362241): Make this help page.
 		$this->addHelpLink( 'Help:Wikifunctions/Viewing Objects' );
 

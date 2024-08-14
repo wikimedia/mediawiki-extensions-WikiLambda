@@ -98,6 +98,18 @@ class ZObjectStore {
 	}
 
 	/**
+	 * Load a page revision from a given revision ID number.
+	 * Returns null if no such revision can be found.
+	 *
+	 * @param int $id Revision ID of this revision
+	 * @return RevisionRecord|null
+	 */
+	public function getRevisionById( int $id ) {
+		$revisionRecord = $this->revisionStore->getRevisionById( $id );
+		return $revisionRecord;
+	}
+
+	/**
 	 * Fetch the ZObject given its title and return it wrapped in a ZObjectContent object
 	 *
 	 * @param Title $title The ZObject to fetch
