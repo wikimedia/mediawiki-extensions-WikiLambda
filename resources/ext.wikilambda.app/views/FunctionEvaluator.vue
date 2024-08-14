@@ -5,9 +5,9 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-function-evaluator-view">
-		<div class="ext-wikilambda-row">
-			<div class="ext-wikilambda-col">
+	<div class="ext-wikilambda-app-function-evaluator-view">
+		<div class="ext-wikilambda-app-row">
+			<div class="ext-wikilambda-app-col">
 				<!-- Widget Function Evaluator -->
 				<wl-function-evaluator-widget></wl-function-evaluator-widget>
 			</div>
@@ -17,10 +17,10 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const FunctionEvaluatorWidget = require( '../components/widgets/FunctionEvaluator.vue' );
+const FunctionEvaluatorWidget = require( '../components/widgets/function-evaluator/FunctionEvaluator.vue' );
 
 module.exports = exports = defineComponent( {
-	name: 'wl-function-evaluator',
+	name: 'wl-function-evaluator-view',
 	components: {
 		'wl-function-evaluator-widget': FunctionEvaluatorWidget
 	},

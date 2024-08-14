@@ -34,12 +34,12 @@ describe( 'FunctionViewer', () => {
 	it( 'renders without errors', () => {
 		const wrapper = VueTestUtils.shallowMount( FunctionViewer );
 
-		expect( wrapper.find( '.ext-wikilambda-function-viewer' ).exists() ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-app-function-viewer-view' ).exists() ).toBeTruthy();
 	} );
 
 	it( 'does not display success message by default', () => {
 		const wrapper = VueTestUtils.shallowMount( FunctionViewer );
-		expect( wrapper.find( '.ext-wikilambda-function-viewer__message' ).exists() ).toBeFalsy();
+		expect( wrapper.find( '.ext-wikilambda-app-toast-message' ).exists() ).toBeFalsy();
 		expect( FunctionViewer.computed.displaySuccessMessage() ).toBe( false );
 	} );
 
@@ -52,7 +52,7 @@ describe( 'FunctionViewer', () => {
 		} ) );
 		const wrapper = VueTestUtils.shallowMount( FunctionViewer );
 
-		expect( wrapper.find( '.ext-wikilambda-toast-message' ).exists() ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-app-toast-message' ).exists() ).toBeTruthy();
 		expect( FunctionViewer.computed.displaySuccessMessage() ).toBe( true );
 	} );
 } );

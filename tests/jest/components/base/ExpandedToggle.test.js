@@ -41,7 +41,7 @@ describe( 'ExpandedToggle', () => {
 				global: { stubs: { CdxButton: false } }
 			} );
 
-			expect( wrapper.find( '.ext-wikilambda-expand-toggle-collapsed' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-expanded-toggle__icon--collapsed' ).exists() ).toBe( true );
 
 			wrapper.findComponent( { name: 'cdx-button' } ).trigger( 'click' );
 			expect( global.$i18n ).toHaveBeenCalledWith( 'wikilambda-toggle-expanded-view' );
@@ -58,7 +58,7 @@ describe( 'ExpandedToggle', () => {
 				global: { stubs: { CdxButton: false } }
 			} );
 
-			expect( wrapper.find( '.ext-wikilambda-expand-toggle-expanded' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-expanded-toggle__icon--expanded' ).exists() ).toBe( true );
 
 			wrapper.findComponent( { name: 'cdx-button' } ).trigger( 'click' );
 			expect( global.$i18n ).toHaveBeenCalledWith( 'wikilambda-toggle-expanded-view' );
@@ -89,7 +89,7 @@ describe( 'ExpandedToggle', () => {
 				global: { stubs: { CdxButton: false } }
 			} );
 
-			expect( wrapper.find( '.ext-wikilambda-expand-toggle-disabled' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-expanded-toggle__icon--disabled' ).exists() ).toBe( true );
 		} );
 	} );
 } );

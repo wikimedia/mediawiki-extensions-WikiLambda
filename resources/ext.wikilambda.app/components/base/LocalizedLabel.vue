@@ -5,10 +5,10 @@
 	@license MIT
 -->
 <template>
-	<label>
+	<label class="ext-wikilambda-app-localized-label">
 		<span
 			v-if="labelData.langCode && !isUserLang"
-			class="ext-wikilambda-lang-chip"
+			class="ext-wikilambda-app-localized-label__chip"
 		>{{ labelData.langCode }}</span><span
 			:lang="labelData.langCode"
 			:dir="labelData.langDir"
@@ -47,54 +47,33 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-text-toggle-truncate {
-	display: flex;
-	align-items: center;
-	justify-content: end;
-	margin-top: @spacing-100;
-	color: @color-base;
-	font-weight: @font-weight-bold;
-
-	&__icon {
-		margin-left: @spacing-50;
-
-		svg {
-			width: @size-100;
-			height: @size-100;
-		}
-
-		&__inverted {
-			transform: rotate( 180deg );
-		}
-	}
-}
-
-/* stylelint-disable declaration-property-unit-disallowed-list */
-span.ext-wikilambda-lang-chip {
-	font-size: 1em;
-	font-weight: @font-weight-normal;
-	line-height: calc( 22.4px - 2px );
-	color: @color-base;
-	border: 1px solid @border-color-base;
-	border-radius: @border-radius-pill;
-	min-width: 36px;
-	padding: 0 5px;
-	text-align: center;
-	display: inline-block;
-	box-sizing: border-box;
-	height: 22px;
-	min-height: 22px;
-	margin-right: @spacing-25;
-
-	&:empty {
-		width: 36px;
-		height: 22px;
+.ext-wikilambda-app-localized-label {
+	.ext-wikilambda-app-localized-label__chip {
+		font-size: 1em;
+		font-weight: @font-weight-normal;
+		line-height: 1.4;
+		color: @color-base;
+		border: 1px solid @border-color-base;
+		border-radius: @border-radius-pill;
 		min-width: 36px;
-		border: 1px dashed @border-color-base;
-	}
+		padding: 0 5px;
+		text-align: center;
+		display: inline-block;
+		box-sizing: border-box;
+		height: 22px;
+		min-height: 22px;
+		margin-right: @spacing-25;
 
-	@media screen and ( max-width: @max-width-breakpoint-mobile ) {
-		font-size: 0.875em;
+		&:empty {
+			width: 36px;
+			height: 22px;
+			min-width: 36px;
+			border: 1px dashed @border-color-base;
+		}
+
+		@media screen and ( max-width: @max-width-breakpoint-mobile ) {
+			font-size: 0.875em;
+		}
 	}
 }
 </style>

@@ -5,25 +5,25 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-function-details-table">
+	<div class="ext-wikilambda-app-function-viewer-details-table">
 		<wl-table
 			:header="header"
 			:hide-header="!header"
 			:body="body"
 			:is-loading="isLoading"
-			:aria-labelledby="'ext-wikilambda-function-details-table__title__text-' + type"
-			class="ext-wikilambda-function-details-table__body"
+			:aria-labelledby="'ext-wikilambda-app-function-viewer-details-table__title-text-' + type"
+			class="ext-wikilambda-app-function-viewer-details-table__body"
 		>
 			<template #table-title>
-				<div class="ext-wikilambda-function-details-table__title">
+				<div class="ext-wikilambda-app-function-viewer-details-table__title">
 					<span
-						:id="'ext-wikilambda-function-details-table__title__text-' + type"
-						class="ext-wikilambda-function-details-table__title__text">
+						:id="'ext-wikilambda-app-function-viewer-details-table__title-text-' + type"
+						class="ext-wikilambda-app-function-viewer-details-table__title-text">
 						{{ title }}
 					</span>
 					<div
 						v-if="canConnect || canDisconnect"
-						class="ext-wikilambda-function-details-table__title__buttons"
+						class="ext-wikilambda-app-function-viewer-details-table__buttons"
 					>
 						<cdx-button
 							v-if="!( isMobile && !canConnect )"
@@ -52,7 +52,7 @@
 				</div>
 			</template>
 			<template #table-empty-text>
-				<div class="ext-wikilambda-function-details-table__empty">
+				<div class="ext-wikilambda-app-function-viewer-details-table__empty">
 					<span>{{ emptyText }}</span>
 				</div>
 			</template>
@@ -199,27 +199,21 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-function-details-table {
+.ext-wikilambda-app-function-viewer-details-table {
 	margin-bottom: @spacing-200;
 
-	&__body {
-		&-link {
-			color: @color-progressive;
-		}
-	}
-
-	&__row--active {
+	.ext-wikilambda-app-function-viewer-details-table__row--active {
 		background: @background-color-progressive-subtle;
 	}
 
-	&__empty {
+	.ext-wikilambda-app-function-viewer-details-table__empty {
 		padding: 0 12px;
 		font-weight: @font-weight-normal;
 		color: @color-placeholder;
 		white-space: pre-wrap;
 	}
 
-	&__title {
+	.ext-wikilambda-app-function-viewer-details-table__title {
 		font-weight: @font-weight-bold;
 		color: @color-base;
 		overflow-wrap: break-word;
@@ -227,26 +221,26 @@ module.exports = exports = defineComponent( {
 		padding: 6px 6px 0 12px;
 		display: flex;
 		align-items: center;
-
-		&__text {
-			display: block;
-			width: 100%;
-			margin-right: @spacing-50;
-			white-space: nowrap;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			font-size: @font-size-large;
-			padding-top: 6px;
-		}
-
-		&__buttons {
-			margin-left: auto;
-			display: flex;
-			column-gap: @spacing-75;
-		}
 	}
 
-	&-text {
+	.ext-wikilambda-app-function-viewer-details-table__title-text {
+		display: block;
+		width: 100%;
+		margin-right: @spacing-50;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		font-size: @font-size-large;
+		padding-top: 6px;
+	}
+
+	.ext-wikilambda-app-function-viewer-details-table__buttons {
+		margin-left: auto;
+		display: flex;
+		column-gap: @spacing-75;
+	}
+
+	.ext-wikilambda-app-function-viewer-details-table__header {
 		padding-right: @spacing-200;
 		font-weight: @font-weight-bold;
 		color: @color-base;
@@ -265,7 +259,7 @@ module.exports = exports = defineComponent( {
 		}
 	}
 
-	&-item {
+	.ext-wikilambda-app-function-viewer-details-table__item {
 		padding-right: 12px;
 
 		a {
@@ -279,6 +273,11 @@ module.exports = exports = defineComponent( {
 			overflow-wrap: break-word;
 			overflow: hidden;
 			text-overflow: ellipsis;
+
+			@media screen and ( max-width: @max-width-breakpoint-mobile ) {
+				-webkit-line-clamp: 1;
+				height: 22.39px;
+			}
 		}
 
 		.cdx-checkbox {
@@ -290,15 +289,6 @@ module.exports = exports = defineComponent( {
 
 		&:first-child {
 			padding-left: 12px;
-		}
-	}
-
-	@media screen and ( max-width: @max-width-breakpoint-mobile ) {
-		&-item {
-			a {
-				-webkit-line-clamp: 1;
-				height: 22.39px;
-			}
 		}
 	}
 }

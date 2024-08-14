@@ -20,7 +20,7 @@ describe( 'Pagination', () => {
 					}
 				} );
 
-				expect( wrapper.find( '.ext-wikilambda-pagination' ).exists() ).toBe( true );
+				expect( wrapper.find( '.ext-wikilambda-app-pagination' ).exists() ).toBe( true );
 			} );
 
 			it( 'allows click to next page', async () => {
@@ -32,7 +32,7 @@ describe( 'Pagination', () => {
 					global: { stubs: { CdxIcon: false } }
 				} );
 
-				const paginatedButtons = wrapper.findAll( '.ext-wikilambda-pagination__page-selector__action' );
+				const paginatedButtons = wrapper.findAll( '.ext-wikilambda-app-pagination__action' );
 				expect( paginatedButtons.length ).toBe( 2 );
 				const backButton = paginatedButtons[ 0 ];
 				expect( backButton.attributes( 'disabled' ) ).toBe( 'true' );
@@ -52,7 +52,7 @@ describe( 'Pagination', () => {
 					global: { stubs: { CdxIcon: false } }
 				} );
 
-				const paginatedButtons = wrapper.findAll( '.ext-wikilambda-pagination__page-selector__action' );
+				const paginatedButtons = wrapper.findAll( '.ext-wikilambda-app-pagination__action' );
 				expect( paginatedButtons.length ).toBe( 2 );
 				const backButton = paginatedButtons[ 0 ];
 				expect( backButton.attributes( 'disabled' ) ).toBe( 'false' );
@@ -72,7 +72,7 @@ describe( 'Pagination', () => {
 					global: { stubs: { CdxIcon: false } }
 				} );
 
-				const inputField = wrapper.find( '.ext-wikilambda-pagination__page-selector__input' );
+				const inputField = wrapper.find( '.ext-wikilambda-app-pagination__input' );
 				expect( inputField.exists() ).toBe( true );
 
 				await inputField.setValue( 2 );
@@ -91,7 +91,7 @@ describe( 'Pagination', () => {
 					global: { stubs: { CdxIcon: false } }
 				} );
 
-				const inputField = wrapper.find( '.ext-wikilambda-pagination__page-selector__input' );
+				const inputField = wrapper.find( '.ext-wikilambda-app-pagination__input' );
 				expect( inputField.exists() ).toBe( true );
 
 				await inputField.setValue( 6 );
@@ -110,7 +110,7 @@ describe( 'Pagination', () => {
 					global: { stubs: { CdxIcon: false } }
 				} );
 
-				const inputField = wrapper.find( '.ext-wikilambda-pagination__page-selector__input' );
+				const inputField = wrapper.find( '.ext-wikilambda-app-pagination__input' );
 				expect( inputField.exists() ).toBe( true );
 
 				await inputField.setValue( 0 );
@@ -130,7 +130,7 @@ describe( 'Pagination', () => {
 					}
 				} );
 
-				expect( wrapper.find( '.ext-wikilambda-pagination' ).exists() ).toBe( true );
+				expect( wrapper.find( '.ext-wikilambda-app-pagination' ).exists() ).toBe( true );
 			} );
 
 			it( 'shows a button with click disabled', () => {
@@ -141,7 +141,7 @@ describe( 'Pagination', () => {
 					global: { stubs: { CdxIcon: false } }
 				} );
 
-				const paginatedButtons = wrapper.findAll( '.ext-wikilambda-pagination__page-selector__action' );
+				const paginatedButtons = wrapper.findAll( '.ext-wikilambda-app-pagination__action' );
 				expect( paginatedButtons.length ).toBe( 2 );
 				const backButton = paginatedButtons[ 0 ];
 				expect( backButton.attributes( 'disabled' ) ).toBe( 'true' );
@@ -172,7 +172,7 @@ describe( 'Pagination', () => {
 					}
 				} );
 
-				const viewButton = wrapper.find( '.ext-wikilambda-pagination__view-all' );
+				const viewButton = wrapper.find( '.ext-wikilambda-app-pagination__view-all' );
 				expect( viewButton.text() ).toBe( 'View all' );
 
 				viewButton.trigger( 'click' );
@@ -191,9 +191,9 @@ describe( 'Pagination', () => {
 					global: { stubs: { CdxButton: false } }
 				} );
 
-				const viewButton = wrapper.find( '.ext-wikilambda-pagination__view-all' );
+				const viewButton = wrapper.find( '.ext-wikilambda-app-pagination__view-all' );
 				expect( viewButton.text() ).toBe( 'View less' );
-				expect( wrapper.find( '.ext-wikilambda-pagination__page-selector' ).exists() ).toBe( false );
+				expect( wrapper.find( '.ext-wikilambda-app-pagination__container' ).exists() ).toBe( false );
 
 				viewButton.trigger( 'click' );
 				await waitFor( () => expect( wrapper.emitted( 'reset-view' ) ).toBeTruthy() );

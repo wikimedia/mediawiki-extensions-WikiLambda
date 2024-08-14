@@ -23,11 +23,11 @@ const ContentBlock = require( '../../componentobjects/ContentBlock' );
 
 class Tester extends Page {
 	get testerTitleSelector() {
-		return $( 'span.ext-wikilambda-viewpage-header-title--function-name' );
+		return $( 'span.ext-wikilambda-viewpage-header__title' );
 	}
 
 	get testerZIdSelector() {
-		return $( 'span.ext-wikilambda-viewpage-header-zid' );
+		return $( 'span.ext-wikilambda-viewpage-header__zid' );
 	}
 
 	get contentBlock() {
@@ -35,11 +35,11 @@ class Tester extends Page {
 	}
 
 	get callFunctionBlock() {
-		return this.contentBlock.$( '[data-testid="tester-call"]' );
+		return this.contentBlock.$( '[data-testid="ext-wikilambda-app-tester-call"]' );
 	}
 
 	get validationBlock() {
-		return this.contentBlock.$( '[data-testid="tester-validation"]' );
+		return this.contentBlock.$( '[data-testid="ext-wikilambda-app-tester-validation"]' );
 	}
 
 	get editSourceLink() {

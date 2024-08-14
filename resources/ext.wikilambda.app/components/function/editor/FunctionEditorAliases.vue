@@ -5,17 +5,17 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-function-definition-aliases">
-		<div class="ext-wikilambda-function-block__label">
+	<wl-function-editor-field class="ext-wikilambda-app-function-editor-aliases">
+		<template #label>
 			<label :for="aliasFieldId">
 				{{ aliasLabel }}
 				<span>{{ aliasOptional }}</span>
 			</label>
-			<span class="ext-wikilambda-function-block__label__description">
-				{{ aliasFieldDescription }}
-			</span>
-		</div>
-		<div class="ext-wikilambda-function-block__body">
+		</template>
+		<template #description>
+			{{ aliasFieldDescription }}
+		</template>
+		<template #body>
 			<cdx-chip-input
 				:id="aliasFieldId"
 				:aria-label="aliasInputLabel"
@@ -23,13 +23,14 @@
 				:placeholder="aliasFieldPlaceholder"
 				@update:input-chips="persistAliases"
 			></cdx-chip-input>
-		</div>
-	</div>
+		</template>
+	</wl-function-editor-field>
 </template>
 
 <script>
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
+	FunctionEditorField = require( './FunctionEditorField.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	CdxChipInput = require( '@wikimedia/codex' ).CdxChipInput;
@@ -37,6 +38,7 @@ const Constants = require( '../../../Constants.js' ),
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-aliases',
 	components: {
+		'wl-function-editor-field': FunctionEditorField,
 		'cdx-chip-input': CdxChipInput
 	},
 	props: {
@@ -137,7 +139,7 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		aliasFieldId: function () {
-			return `ext-wikilambda-function-definition-aliases__input${ this.zLanguage }`;
+			return `ext-wikilambda-app-function-editor-aliases__input${ this.zLanguage }`;
 		}
 	} ),
 	methods: Object.assign( mapActions( [
@@ -205,13 +207,3 @@ module.exports = exports = defineComponent( {
 	} )
 } );
 </script>
-
-<style lang="less">
-@import '../../../ext.wikilambda.app.variables.less';
-
-.ext-wikilambda-function-definition-aliases {
-	&__error {
-		color: @color-error;
-	}
-}
-</style>

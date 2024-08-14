@@ -84,7 +84,7 @@ class ZObjectEditAction extends Action {
 		$id = Html::element(
 			'span',
 			[
-				'class' => 'ext-wikilambda-editpage-header-zid'
+				'class' => 'ext-wikilambda-editpage-header__zid'
 			],
 			$zObjectId
 		);
@@ -101,7 +101,7 @@ class ZObjectEditAction extends Action {
 		);
 
 		$prefix = Html::element(
-			'span', [ 'class' => 'ext-wikilambda-editpage-header-title' ],
+			'span', [ 'class' => 'ext-wikilambda-editpage-header__title' ],
 			$this->msg( 'wikilambda-edit' )->text()
 		);
 
@@ -125,14 +125,14 @@ class ZObjectEditAction extends Action {
 			->placeholderForTitle()
 			->getStringAndLanguageCode();
 		$untitledStyle = $labelText === wfMessage( 'wikilambda-editor-default-name' )->text() ?
-		'ext-wikilambda-editpage-header--title-untitled' : null;
+		'ext-wikilambda-editpage-header__title--untitled' : null;
 
 		return Html::element(
 			'span',
 			[
 				'class' => [
-					'ext-wikilambda-editpage-header-title',
-					'ext-wikilambda-editpage-header-title--function-name',
+					'ext-wikilambda-editpage-header__title',
+					'ext-wikilambda-editpage-header__title--function-name',
 					$untitledStyle
 				]
 			],
@@ -210,14 +210,14 @@ class ZObjectEditAction extends Action {
 			$linkLabel = Html::element(
 				'a',
 				[
-					'class' => 'ext-wikilambda-editpage-header-description--link',
+					'class' => 'ext-wikilambda-editpage-header__description--link',
 					'href' => $this->msg( 'wikilambda-users-help-link' )->text()
 				],
 				$this->msg( 'wikilambda-special-edit-function-definition-special-permission-link-label' )->text()
 			);
 
 			$output->addHtml( Html::rawElement(
-				'div', [ 'class' => 'ext-wikilambda-editpage-header-description' ],
+				'div', [ 'class' => 'ext-wikilambda-editpage-header__description' ],
 				$this->msg( 'wikilambda-special-edit-function-definition-description' )->rawParams( $linkLabel )
 				->escaped()
 			) );

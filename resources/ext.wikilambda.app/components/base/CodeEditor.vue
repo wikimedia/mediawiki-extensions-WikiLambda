@@ -7,9 +7,12 @@
 -->
 <template>
 	<div
-		class="ext-wikilambda-codeEditor"
-		:class="{ 'ext-wikilambda-codeEditor-disabled': disabled }">
-		<div ref="editor" data-testid="ace-code-editor"></div>
+		class="ext-wikilambda-app-code-editor"
+		:class="{ 'ext-wikilambda-app-code-editor--disabled': disabled }">
+		<div
+			ref="editor"
+			class="ext-wikilambda-app-code-editor__ace"
+			data-testid="ace-code-editor"></div>
 	</div>
 </template>
 
@@ -110,15 +113,19 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-codeEditor .ace_editor {
-	width: 100%;
-	border: 1px solid @border-color-subtle;
-	min-height: 85px;
-	z-index: 0;
-	box-sizing: @box-sizing-base;
-}
+.ext-wikilambda-app-code-editor {
+	.ext-wikilambda-app-code-editor__ace.ace_editor {
+		width: 100%;
+		border: 1px solid @border-color-subtle;
+		min-height: 85px;
+		z-index: 0;
+		box-sizing: @box-sizing-base;
+	}
 
-.ext-wikilambda-codeEditor-disabled .ace_editor {
-	background-color: @background-color-disabled-subtle;
+	&--disabled {
+		.ext-wikilambda-app-code-editor__ace.ace_editor {
+			background-color: @background-color-disabled-subtle;
+		}
+	}
 }
 </style>

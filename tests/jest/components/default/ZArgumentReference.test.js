@@ -40,7 +40,7 @@ describe( 'ZArgumentReference', () => {
 					edit: false
 				}
 			} );
-			expect( wrapper.find( '.ext-wikilambda-argument-reference' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-argument-reference' ).exists() ).toBe( true );
 			expect( wrapper.findComponent( { name: 'cdx-icon' } ).exists() ).toBe( true );
 		} );
 
@@ -54,7 +54,7 @@ describe( 'ZArgumentReference', () => {
 					edit: false
 				}
 			} );
-			expect( wrapper.find( '.ext-wikilambda-argument-reference' ).text() ).toBe( '' );
+			expect( wrapper.find( '.ext-wikilambda-app-argument-reference' ).text() ).toBe( '' );
 		} );
 
 		it( 'displays the argument key when it has no label', () => {
@@ -66,7 +66,7 @@ describe( 'ZArgumentReference', () => {
 					edit: false
 				}
 			} );
-			expect( wrapper.find( '.ext-wikilambda-argument-reference' ).text() ).toBe( 'Z10001K1' );
+			expect( wrapper.find( '.ext-wikilambda-app-argument-reference' ).text() ).toBe( 'Z10001K1' );
 		} );
 
 		it( 'displays the argument label when available', () => {
@@ -78,7 +78,7 @@ describe( 'ZArgumentReference', () => {
 					edit: false
 				}
 			} );
-			expect( wrapper.find( '.ext-wikilambda-argument-reference' ).text() ).toBe( 'input' );
+			expect( wrapper.find( '.ext-wikilambda-app-argument-reference' ).text() ).toBe( 'input' );
 		} );
 	} );
 
@@ -89,7 +89,7 @@ describe( 'ZArgumentReference', () => {
 					edit: true
 				}
 			} );
-			expect( wrapper.find( '.ext-wikilambda-argument-reference' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-argument-reference' ).exists() ).toBe( true );
 			expect( wrapper.findComponent( { name: 'cdx-select' } ).exists() ).toBe( true );
 		} );
 

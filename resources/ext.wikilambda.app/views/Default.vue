@@ -5,9 +5,9 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-default-view">
-		<div class="ext-wikilambda-row">
-			<div class="ext-wikilambda-col ext-wikilambda-col-6 ext-wikilambda-col-tablet-24">
+	<div class="ext-wikilambda-app-default-view">
+		<div class="ext-wikilambda-app-row">
+			<div class="ext-wikilambda-app-col ext-wikilambda-app-col-6 ext-wikilambda-app-col-tablet-24">
 				<!-- Widget About -->
 				<wl-about-widget
 					:edit="edit"
@@ -24,10 +24,10 @@
 				></wl-function-explorer-widget>
 			</div>
 
-			<div class="ext-wikilambda-col ext-wikilambda-col-12 ext-wikilambda-col-tablet-24">
+			<div class="ext-wikilambda-app-col ext-wikilambda-app-col-12 ext-wikilambda-app-col-tablet-24">
 				<!-- Persistent Object content block -->
-				<div class="ext-wikilambda-content" data-testid="content">
-					<div class="ext-wikilambda-content-title">
+				<div class="ext-wikilambda-app-default-view__content" data-testid="content">
+					<div class="ext-wikilambda-app-default-view__title">
 						{{ $i18n( 'wikilambda-persistentzobject-contents' ).text() }}
 					</div>
 					<wl-z-object-key-value
@@ -39,7 +39,7 @@
 				</div>
 			</div>
 
-			<div class="ext-wikilambda-col ext-wikilambda-col-6 ext-wikilambda-col-tablet-24">
+			<div class="ext-wikilambda-app-col ext-wikilambda-app-col-6 ext-wikilambda-app-col-tablet-24">
 				<!-- Widget Publish Dialog -->
 				<wl-publish-widget
 					v-if="edit"
@@ -70,11 +70,11 @@
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../Constants.js' ),
 	ZObjectKeyValue = require( '../components/default-view-types/ZObjectKeyValue.vue' ),
-	FunctionEvaluatorWidget = require( '../components/widgets/FunctionEvaluator.vue' ),
-	FunctionExplorerWidget = require( '../components/widgets/FunctionExplorer.vue' ),
-	AboutWidget = require( '../components/widgets/About.vue' ),
-	PublishWidget = require( '../components/widgets/Publish.vue' ),
-	FunctionReportWidget = require( '../components/widgets/FunctionReport.vue' ),
+	FunctionEvaluatorWidget = require( '../components/widgets/function-evaluator/FunctionEvaluator.vue' ),
+	FunctionExplorerWidget = require( '../components/widgets/function-explorer/FunctionExplorer.vue' ),
+	AboutWidget = require( '../components/widgets/about/About.vue' ),
+	PublishWidget = require( '../components/widgets/publish/Publish.vue' ),
+	FunctionReportWidget = require( '../components/widgets/function-report/FunctionReport.vue' ),
 	eventLogUtils = require( '../mixins/eventLogUtils.js' ),
 	typeUtils = require( '../mixins/typeUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
@@ -257,29 +257,19 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-content {
-	box-sizing: border-box;
-	padding: @spacing-75;
-	border: 1px solid #c8ccd1;
-	border-radius: 2px;
-	margin-bottom: @spacing-100;
+.ext-wikilambda-app-default-view {
+	.ext-wikilambda-app-default-view__content {
+		box-sizing: border-box;
+		padding: @spacing-75;
+		border: 1px solid #c8ccd1;
+		border-radius: 2px;
+		margin-bottom: @spacing-100;
+	}
 
-	.ext-wikilambda-content-title {
+	.ext-wikilambda-app-default-view__title {
 		font-weight: @font-weight-bold;
 		margin-bottom: @spacing-125;
 		font-size: @font-size-large;
-	}
-
-	> .ext-wikilambda-key-value-row {
-		> .ext-wikilambda-key-value {
-			> .ext-wikilambda-key-value-main__no-indent {
-				> .ext-wikilambda-value-block {
-					> .ext-wikilambda-key-value-set.ext-wikilambda-key-level-1 {
-						margin-left: 0;
-					}
-				}
-			}
-		}
 	}
 }
 </style>

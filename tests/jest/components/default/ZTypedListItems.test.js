@@ -22,7 +22,7 @@ describe( 'ZTypedListItems', () => {
 				}
 			} );
 
-			expect( wrapper.find( '.ext-wikilambda-ztyped-list-items' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-typed-list-items' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders ZObjectKeyValue for each list item', () => {
@@ -80,7 +80,7 @@ describe( 'ZTypedListItems', () => {
 				}
 			} );
 
-			expect( wrapper.find( '.ext-wikilambda-ztyped-list-items' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-typed-list-items' ).exists() ).toBe( true );
 		} );
 	} );
 } );

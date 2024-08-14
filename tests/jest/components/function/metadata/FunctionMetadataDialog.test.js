@@ -1,5 +1,5 @@
 /*!
- * WikiLambda unit test suite for the function-definition-name component and related files.
+ * WikiLambda unit test suite for the function-metadata-dialog component and related files.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -7,11 +7,11 @@
 'use strict';
 
 const { config, mount } = require( '@vue/test-utils' ),
-	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
-	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	FunctionMetadataDialog = require( '../../../../resources/ext.wikilambda.app/components/widgets/FunctionMetadataDialog.vue' ),
-	metadata = require( '../../fixtures/metadata.js' );
+	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
+	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
+	FunctionMetadataDialog = require( '../../../../../resources/ext.wikilambda.app/components/widgets/function-evaluator/FunctionMetadataDialog.vue' ),
+	metadata = require( '../../../fixtures/metadata.js' );
 
 // Ignore all "teleport" behavior for the purpose of testing Dialog;
 // see https://test-utils.vuejs.org/guide/advanced/teleport.html
@@ -43,7 +43,7 @@ describe( 'FunctionMetadataDialog', () => {
 			props: { open: true, metadata: metadata.metadataBasic }
 		} );
 
-		expect( wrapper.find( '.ext-wikilambda-metadata-dialog' ).exists() ).toBe( true );
+		expect( wrapper.find( '.ext-wikilambda-app-function-metadata-dialog' ).exists() ).toBe( true );
 	} );
 
 	describe( 'with basic metadata', () => {
@@ -70,7 +70,7 @@ describe( 'FunctionMetadataDialog', () => {
 
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
-			const keys = content.findAll( '.ext-wikilambda-metadata-dialog-key' );
+			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__key' );
 			expect( keys[ 0 ].text() ).toContain( 'Name: Untitled' );
 			expect( keys[ 0 ].find( 'a' ).attributes().href ).toContain( 'Z902' );
 			expect( keys[ 1 ].text() ).toContain( 'Id: Z902' );
@@ -92,7 +92,7 @@ describe( 'FunctionMetadataDialog', () => {
 
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
-			const keys = content.findAll( '.ext-wikilambda-metadata-dialog-key' );
+			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__key' );
 			expect( keys[ 0 ].text() ).toContain( 'Name: Javascript implementation for If' );
 			expect( keys[ 0 ].find( 'a' ).attributes().href ).toContain( 'Z902' );
 			expect( keys[ 1 ].text() ).toContain( 'Id: Z902' );
@@ -114,17 +114,17 @@ describe( 'FunctionMetadataDialog', () => {
 
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
-			const keys = content.findAll( '.ext-wikilambda-metadata-dialog-key' );
+			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__key' );
 			expect( keys.length ).toBe( 2 );
 			let subkeys;
 			// Orchestrator key:
-			expect( keys[ 0 ].find( '.ext-wikilambda-metadata-dialog-key-title' ).text() ).toContain( 'Orchestration' );
+			expect( keys[ 0 ].find( '.ext-wikilambda-app-function-metadata-dialog__key-title' ).text() ).toContain( 'Orchestration' );
 			subkeys = keys[ 0 ].findAll( 'li' );
 			expect( subkeys[ 0 ].text() ).toContain( 'Duration: 70 ms' );
 			expect( subkeys[ 1 ].text() ).toContain( 'Start time: 4 minutes ago' );
 			expect( subkeys[ 2 ].text() ).toContain( 'End time: 4 minutes ago' );
 			// Evaluation key:
-			expect( keys[ 1 ].find( '.ext-wikilambda-metadata-dialog-key-title' ).text() ).toContain( 'Evaluation' );
+			expect( keys[ 1 ].find( '.ext-wikilambda-app-function-metadata-dialog__key-title' ).text() ).toContain( 'Evaluation' );
 			subkeys = keys[ 1 ].findAll( 'li' );
 			expect( subkeys[ 0 ].text() ).toContain( 'Duration: 10 ms' );
 			expect( subkeys[ 1 ].text() ).toContain( 'Start time: 4 minutes ago' );
@@ -144,7 +144,7 @@ describe( 'FunctionMetadataDialog', () => {
 
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
-			const keys = content.findAll( '.ext-wikilambda-metadata-dialog-key' );
+			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__key' );
 			expect( keys.length ).toBe( 3 );
 			expect( keys[ 0 ].text() ).toContain( 'Orchestration: 85.790 ms' );
 			expect( keys[ 1 ].text() ).toContain( 'Evaluation: 45.110 ms' );
@@ -164,7 +164,7 @@ describe( 'FunctionMetadataDialog', () => {
 
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
-			const keys = content.findAll( '.ext-wikilambda-metadata-dialog-key' );
+			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__key' );
 			expect( keys.length ).toBe( 3 );
 			expect( keys[ 0 ].text() ).toContain( 'Orchestration: 115.43 MiB' );
 			expect( keys[ 1 ].text() ).toContain( 'Evaluation: 15.57 MiB' );
@@ -183,7 +183,7 @@ describe( 'FunctionMetadataDialog', () => {
 
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
-			const keys = content.findAll( '.ext-wikilambda-metadata-dialog-key' );
+			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__key' );
 			expect( keys.length ).toBe( 2 );
 			expect( keys[ 0 ].text() ).toContain( 'Orchestration: function-orchestrator' );
 			expect( keys[ 1 ].text() ).toContain( 'Evaluation: function-evaluator-javascript' );
@@ -201,7 +201,7 @@ describe( 'FunctionMetadataDialog', () => {
 
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
-			const keys = content.findAll( '.ext-wikilambda-metadata-dialog-key' );
+			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__key' );
 			expect( keys.length ).toBe( 1 );
 			expect( keys[ 0 ].text() ).toContain( 'Version: QuickJS v0.5.0-alpha' );
 		} );
@@ -222,10 +222,10 @@ describe( 'FunctionMetadataDialog', () => {
 
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
-			const keys = content.findAll( '.ext-wikilambda-metadata-dialog-key' );
+			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__key' );
 			expect( keys.length ).toBe( 1 );
 			// Orchestrator key:
-			expect( keys[ 0 ].find( '.ext-wikilambda-metadata-dialog-key-title' ).text() ).toContain( 'Orchestration' );
+			expect( keys[ 0 ].find( '.ext-wikilambda-app-function-metadata-dialog__key-title' ).text() ).toContain( 'Orchestration' );
 			const subkeys = keys[ 0 ].findAll( 'li' );
 			expect( subkeys.length ).toBe( 1 );
 			expect( subkeys[ 0 ].text() ).toContain( 'Duration: 70 ms' );
@@ -247,7 +247,7 @@ describe( 'FunctionMetadataDialog', () => {
 
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
-			const keys = content.findAll( '.ext-wikilambda-metadata-dialog-key' );
+			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__key' );
 			expect( keys.length ).toBe( 4 );
 			expect( keys[ 0 ].text() ).toContain( 'Error type: Not wellformed' );
 			expect( keys[ 0 ].find( 'a' ).attributes().href ).toContain( 'Z502' );
@@ -301,8 +301,8 @@ describe( 'FunctionMetadataDialog', () => {
 			expect( sections.length ).toBe( 2 );
 
 			const selector = wrapper.findComponent( { name: 'cdx-select' } );
-			expect( selector.html() ).toContain( 'ext-wikilambda-metadata-dialog-selected-pass' );
-			expect( selector.html() ).not.toContain( 'ext-wikilambda-metadata-dialog-selected-fail' );
+			expect( selector.html() ).toContain( 'ext-wikilambda-app-function-metadata-dialog__selected--pass' );
+			expect( selector.html() ).not.toContain( 'ext-wikilambda-app-function-metadata-dialog__selected--fail' );
 
 			// Select second child
 			const selectedId = '0-1';
@@ -310,8 +310,8 @@ describe( 'FunctionMetadataDialog', () => {
 			await wrapper.vm.$nextTick();
 
 			// Selector class has changed from pass to fail
-			expect( selector.html() ).toContain( 'ext-wikilambda-metadata-dialog-selected-fail' );
-			expect( selector.html() ).not.toContain( 'ext-wikilambda-metadata-dialog-selected-pass' );
+			expect( selector.html() ).toContain( 'ext-wikilambda-app-function-metadata-dialog__selected--fail' );
+			expect( selector.html() ).not.toContain( 'ext-wikilambda-app-function-metadata-dialog__selected--pass' );
 
 			// Metadata body is now reflecting a different metadata set
 			sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );

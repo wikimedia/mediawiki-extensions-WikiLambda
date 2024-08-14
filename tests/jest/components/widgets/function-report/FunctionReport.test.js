@@ -7,11 +7,11 @@
 'use strict';
 const VueTestUtils = require( '@vue/test-utils' ),
 	{ waitFor } = require( '@testing-library/vue' ),
-	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
-	FunctionReport = require( '../../../../resources/ext.wikilambda.app/components/widgets/FunctionReport.vue' ),
-	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
+	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
+	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
+	FunctionReport = require( '../../../../../resources/ext.wikilambda.app/components/widgets/function-report/FunctionReport.vue' ),
+	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
 
 describe( 'FunctionReport', () => {
 	let getters,
@@ -89,7 +89,7 @@ describe( 'FunctionReport', () => {
 
 		expect( wrapper.vm.zIds ).toEqual( [ 'Z10002', 'Z10003' ] );
 
-		const content = wrapper.findAll( '.ext-wikilambda-function-report__result' );
+		const content = wrapper.findAll( '.ext-wikilambda-app-function-report-widget__result' );
 		expect( content.length ).toBe( 2 );
 	} );
 
@@ -103,9 +103,9 @@ describe( 'FunctionReport', () => {
 		} );
 
 		expect( wrapper.vm.zIds ).toEqual( [ 'Z10001', 'Z10004', 'Z10005' ] );
-		expect( wrapper.find( '.ext-wikilambda-widget-base-header-title' ).text() ).toEqual( 'Implementations' );
+		expect( wrapper.find( '.ext-wikilambda-app-widget-base__header-title' ).text() ).toEqual( 'Implementations' );
 
-		const content = wrapper.findAll( '.ext-wikilambda-function-report__result' );
+		const content = wrapper.findAll( '.ext-wikilambda-app-function-report-widget__result' );
 		expect( content.length ).toBe( 3 );
 	} );
 
@@ -118,7 +118,7 @@ describe( 'FunctionReport', () => {
 			}
 		} );
 
-		expect( wrapper.find( '.ext-wikilambda-widget-base-header-title' ).text() ).toEqual( 'Tests' );
+		expect( wrapper.find( '.ext-wikilambda-app-widget-base__header-title' ).text() ).toEqual( 'Tests' );
 		expect( wrapper.vm.zIds ).toEqual( [ 'Z10002', 'Z10003' ] );
 	} );
 
@@ -131,7 +131,7 @@ describe( 'FunctionReport', () => {
 			}
 		} );
 
-		expect( wrapper.find( '.ext-wikilambda-widget-base-header-title' ).text() ).toEqual( 'Implementations' );
+		expect( wrapper.find( '.ext-wikilambda-app-widget-base__header-title' ).text() ).toEqual( 'Implementations' );
 		expect( wrapper.vm.zIds ).toEqual( [ 'Z10001', 'Z10004', 'Z10005' ] );
 	} );
 

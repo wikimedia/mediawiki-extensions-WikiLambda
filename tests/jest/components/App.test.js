@@ -29,7 +29,7 @@ describe( 'App.vue', () => {
 
 		getters = {
 			isInitialized: createGetterMock( true ),
-			getCurrentView: createGetterMock( 'function-editor' ),
+			getCurrentView: createGetterMock( 'function-editor-view' ),
 			isCreateNewPage: createGetterMock( false )
 		};
 
@@ -62,7 +62,7 @@ describe( 'App.vue', () => {
 		} );
 
 		expect( wrapper.componentVM.isAppSetup ).toBe( false );
-		expect( wrapper.findComponent( { name: 'wl-function-editor' } ).exists() ).toBe( false );
+		expect( wrapper.findComponent( { name: 'wl-function-editor-view' } ).exists() ).toBe( false );
 		expect( global.$i18n ).toHaveBeenCalledWith( 'wikilambda-loading' );
 	} );
 
@@ -74,7 +74,7 @@ describe( 'App.vue', () => {
 		} );
 
 		expect( wrapper.componentVM.isAppSetup ).toBe( false );
-		expect( wrapper.findComponent( { name: 'wl-function-editor' } ).exists() ).toBe( false );
+		expect( wrapper.findComponent( { name: 'wl-function-editor-view' } ).exists() ).toBe( false );
 	} );
 
 	it( 'Renders the router view when isInitialized is true and initializeView has completed', async () => {
@@ -86,7 +86,7 @@ describe( 'App.vue', () => {
 
 		await waitFor( () => {
 			expect( wrapper.componentVM.isAppSetup ).toBe( true );
-			expect( wrapper.findComponent( { name: 'wl-function-editor' } ).exists() ).toBe( true );
+			expect( wrapper.findComponent( { name: 'wl-function-editor-view' } ).exists() ).toBe( true );
 		} );
 	} );
 } );

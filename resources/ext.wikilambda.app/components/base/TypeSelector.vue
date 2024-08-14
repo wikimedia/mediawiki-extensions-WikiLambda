@@ -6,7 +6,7 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-function-type-selector">
+	<div class="ext-wikilambda-app-type-selector">
 		<!-- Main type selector -->
 		<cdx-field>
 			<template #label>
@@ -32,7 +32,7 @@
 		<!-- Argument selectors -->
 		<div
 			v-if="hasSelected && !selectedIsTerminal"
-			class="ext-wikilambda-function-type-selector__args"
+			class="ext-wikilambda-app-type-selector__args"
 		>
 			<wl-type-selector
 				v-for="arg of genericTypeArgs"
@@ -202,14 +202,14 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-function-type-selector {
+.ext-wikilambda-app-type-selector {
 	margin-bottom: @spacing-100;
 
 	&:last-child {
 		margin-bottom: 0;
 	}
 
-	&__args {
+	.ext-wikilambda-app-type-selector__args {
 		margin-top: @spacing-100;
 		margin-left: @spacing-100;
 	}

@@ -5,27 +5,27 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-widget-base">
+	<div class="ext-wikilambda-app-widget-base">
 		<div
 			v-if="hasHeaderSlot || hasHeaderAction"
-			class="ext-wikilambda-widget-base-header"
-			:class="{ 'ext-wikilambda-widget-base-header-with-action': hasHeaderAction }"
+			class="ext-wikilambda-app-widget-base__header"
+			:class="{ 'ext-wikilambda-app-widget-base__header--with-action': hasHeaderAction }"
 		>
 			<!-- Header title slot -->
-			<div v-if="hasHeaderSlot" class="ext-wikilambda-widget-base-header-title">
+			<div v-if="hasHeaderSlot" class="ext-wikilambda-app-widget-base__header-title">
 				<slot name="header"></slot>
 			</div>
 			<!-- Header action slot -->
-			<div v-if="hasHeaderAction" class="ext-wikilambda-widget-base-header-action">
+			<div v-if="hasHeaderAction" class="ext-wikilambda-app-widget-base__header-action">
 				<slot name="header-action"></slot>
 			</div>
 		</div>
 		<!-- Main slot -->
-		<div class="ext-wikilambda-widget-base-main ext-wikilambda-field-overrides">
+		<div class="ext-wikilambda-app-widget-base__main ext-wikilambda-app-field-overrides">
 			<slot name="main"></slot>
 		</div>
 		<!-- Footer action slot -->
-		<div v-if="hasFooterSlot" class="ext-wikilambda-widget-base-footer">
+		<div v-if="hasFooterSlot" class="ext-wikilambda-app-widget-base__footer">
 			<slot name="footer"></slot>
 		</div>
 	</div>
@@ -54,37 +54,37 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-widget-base {
+.ext-wikilambda-app-widget-base {
 	border: @border-subtle;
 	border-radius: @border-radius-base;
 	margin-bottom: @spacing-125;
 	padding: @spacing-75;
 
-	.ext-wikilambda-widget-base-header {
+	.ext-wikilambda-app-widget-base__header {
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
 		margin-bottom: @spacing-125;
 
-		&.ext-wikilambda-widget-base-header-with-action {
+		&--with-action {
 			margin-bottom: @spacing-50;
 		}
+	}
 
-		.ext-wikilambda-widget-base-header-title {
-			flex-grow: 1;
-			flex-basis: 0;
-			color: @color-base;
-			font-weight: @font-weight-bold;
-			line-height: @line-height-x-small;
-			font-size: @font-size-large;
-		}
+	.ext-wikilambda-app-widget-base__header-title {
+		flex-grow: 1;
+		flex-basis: 0;
+		color: @color-base;
+		font-weight: @font-weight-bold;
+		line-height: @line-height-x-small;
+		font-size: @font-size-large;
+	}
 
-		.ext-wikilambda-widget-base-header-action {
-			display: flex;
-			align-items: center;
-			margin-right: -@spacing-35;
-			margin-top: -@spacing-35;
-		}
+	.ext-wikilambda-app-widget-base__header-action {
+		display: flex;
+		align-items: center;
+		margin-right: -@spacing-35;
+		margin-top: -@spacing-35;
 	}
 }
 </style>

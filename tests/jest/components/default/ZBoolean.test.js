@@ -57,8 +57,8 @@ describe( 'ZBoolean', () => {
 				}
 			} );
 
-			expect( wrapper.find( '.ext-wikilambda-edit-link' ).exists() ).toBe( true );
-			expect( wrapper.find( '.ext-wikilambda-edit-link' ).text() ).toBe( 'false' );
+			expect( wrapper.find( '.ext-wikilambda-app-link' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-link' ).text() ).toBe( 'false' );
 		} );
 	} );
 

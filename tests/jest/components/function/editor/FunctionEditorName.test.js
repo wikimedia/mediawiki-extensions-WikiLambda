@@ -34,19 +34,25 @@ describe( 'FunctionEditorName', () => {
 	} );
 
 	it( 'renders without errors', () => {
-		const wrapper = shallowMount( FunctionEditorName, { props: {
-			zLanguage: 'Z1002',
-			isMainLanguageBlock: true
-		} } );
+		const wrapper = shallowMount( FunctionEditorName, {
+			props: {
+				zLanguage: 'Z1002',
+				isMainLanguageBlock: true
+			},
+			global: { stubs: { WlFunctionEditorField: false } }
+		} );
 
-		expect( wrapper.find( '.ext-wikilambda-function-definition-name' ).exists() ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-app-function-editor-name' ).exists() ).toBeTruthy();
 	} );
 
 	it( 'renders an initialized input box', () => {
-		const wrapper = shallowMount( FunctionEditorName, { props: {
-			zLanguage: 'Z1002',
-			isMainLanguageBlock: true
-		} } );
+		const wrapper = shallowMount( FunctionEditorName, {
+			props: {
+				zLanguage: 'Z1002',
+				isMainLanguageBlock: true
+			},
+			global: { stubs: { WlFunctionEditorField: false } }
+		} );
 
 		const input = wrapper.findComponent( { name: 'cdx-text-input' } );
 		expect( input.props( 'modelValue' ) ).toBe( 'Function name' );
@@ -54,10 +60,13 @@ describe( 'FunctionEditorName', () => {
 
 	describe( 'on input', () => {
 		it( 'removes the name object if new value is empty string', async () => {
-			const wrapper = shallowMount( FunctionEditorName, { props: {
-				zLanguage: 'Z1002',
-				isMainLanguageBlock: true
-			} } );
+			const wrapper = shallowMount( FunctionEditorName, {
+				props: {
+					zLanguage: 'Z1002',
+					isMainLanguageBlock: true
+				},
+				global: { stubs: { WlFunctionEditorField: false } }
+			} );
 
 			// ACT: Change value of name input
 			const input = wrapper.findComponent( { name: 'cdx-text-input' } );
@@ -74,10 +83,13 @@ describe( 'FunctionEditorName', () => {
 		} );
 
 		it( 'changes the name value if it already has a name object', async () => {
-			const wrapper = shallowMount( FunctionEditorName, { props: {
-				zLanguage: 'Z1002',
-				isMainLanguageBlock: true
-			} } );
+			const wrapper = shallowMount( FunctionEditorName, {
+				props: {
+					zLanguage: 'Z1002',
+					isMainLanguageBlock: true
+				},
+				global: { stubs: { WlFunctionEditorField: false } }
+			} );
 
 			// ACT: Change value of name input
 			const input = wrapper.findComponent( { name: 'cdx-text-input' } );
@@ -100,10 +112,13 @@ describe( 'FunctionEditorName', () => {
 			getters.getRowByKeyPath = createGettersWithFunctionsMock( { id: 1 } );
 			global.store.hotUpdate( { getters: getters } );
 
-			const wrapper = shallowMount( FunctionEditorName, { props: {
-				zLanguage: 'Z1002',
-				isMainLanguageBlock: true
-			} } );
+			const wrapper = shallowMount( FunctionEditorName, {
+				props: {
+					zLanguage: 'Z1002',
+					isMainLanguageBlock: true
+				},
+				global: { stubs: { WlFunctionEditorField: false } }
+			} );
 
 			// ACT: Change value of name input
 			const input = wrapper.findComponent( { name: 'cdx-text-input' } );
@@ -124,10 +139,13 @@ describe( 'FunctionEditorName', () => {
 		} );
 
 		it( 'changes the page title if it is the main language block', async () => {
-			const wrapper = shallowMount( FunctionEditorName, { props: {
-				zLanguage: 'Z1002',
-				isMainLanguageBlock: true
-			} } );
+			const wrapper = shallowMount( FunctionEditorName, {
+				props: {
+					zLanguage: 'Z1002',
+					isMainLanguageBlock: true
+				},
+				global: { stubs: { WlFunctionEditorField: false } }
+			} );
 			jest.spyOn( wrapper.vm, 'setPageTitle' );
 
 			// ACT: Change value of name input
@@ -140,10 +158,13 @@ describe( 'FunctionEditorName', () => {
 		} );
 
 		it( 'does not change the page title if it is not the main language block', async () => {
-			const wrapper = shallowMount( FunctionEditorName, { props: {
-				zLanguage: 'Z1002',
-				isMainLanguageBlock: false
-			} } );
+			const wrapper = shallowMount( FunctionEditorName, {
+				props: {
+					zLanguage: 'Z1002',
+					isMainLanguageBlock: false
+				},
+				global: { stubs: { WlFunctionEditorField: false } }
+			} );
 			jest.spyOn( wrapper.vm, 'setPageTitle' );
 
 			// ACT: Change value of name input

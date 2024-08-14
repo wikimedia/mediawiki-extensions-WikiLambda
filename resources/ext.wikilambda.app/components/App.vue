@@ -5,11 +5,11 @@
 	@license MIT
 -->
 <template>
-	<div id="ext-wikilambda-app" class="ext-wikilambda-edit">
+	<div id="ext-wikilambda-app" class="ext-wikilambda-app">
 		<wl-clipboard-manager
 			:class-names="[
-				'ext-wikilambda-viewpage-header-zid',
-				'ext-wikilambda-editpage-header-zid'
+				'ext-wikilambda-viewpage-header__zid',
+				'ext-wikilambda-editpage-header__zid'
 			]">
 		</wl-clipboard-manager>
 		<template v-if="isInitialized && isAppSetup">
@@ -32,19 +32,19 @@ const mapGetters = require( 'vuex' ).mapGetters,
 	ClipboardManager = require( './base/ClipboardManager.vue' ),
 	eventLogUtils = require( '../mixins/eventLogUtils.js' ),
 	urlUtils = require( '../mixins/urlUtils.js' ),
-	FunctionEvaluator = require( '../views/FunctionEvaluator.vue' ),
-	FunctionEditor = require( '../views/FunctionEditor.vue' ),
-	FunctionViewer = require( '../views/FunctionViewer.vue' ),
-	DefaultView = require( '../views/DefaultView.vue' );
+	FunctionEvaluatorView = require( '../views/FunctionEvaluator.vue' ),
+	FunctionEditorView = require( '../views/FunctionEditor.vue' ),
+	FunctionViewerView = require( '../views/FunctionViewer.vue' ),
+	DefaultView = require( '../views/Default.vue' );
 
 const startTime = Date.now();
 
 module.exports = exports = defineComponent( {
 	name: 'app',
 	components: {
-		'wl-function-evaluator': FunctionEvaluator,
-		'wl-function-editor': FunctionEditor,
-		'wl-function-viewer': FunctionViewer,
+		'wl-function-evaluator-view': FunctionEvaluatorView,
+		'wl-function-editor-view': FunctionEditorView,
+		'wl-function-viewer-view': FunctionViewerView,
 		'wl-default-view': DefaultView,
 		'wl-clipboard-manager': ClipboardManager
 	},

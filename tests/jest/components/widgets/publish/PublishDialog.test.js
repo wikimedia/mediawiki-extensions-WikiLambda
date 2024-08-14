@@ -9,11 +9,11 @@
 
 const { config, mount } = require( '@vue/test-utils' ),
 	{ waitFor } = require( '@testing-library/vue' ),
-	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
-	ApiError = require( '../../../../resources/ext.wikilambda.app/store/classes/ApiError.js' ),
-	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
-	PublishDialog = require( '../../../../resources/ext.wikilambda.app/components/widgets/PublishDialog.vue' );
+	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
+	ApiError = require( '../../../../../resources/ext.wikilambda.app/store/classes/ApiError.js' ),
+	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
+	PublishDialog = require( '../../../../../resources/ext.wikilambda.app/components/widgets/publish/PublishDialog.vue' );
 
 // Ignore all "teleport" behavior for the purpose of testing Dialog;
 // see https://test-utils.vuejs.org/guide/advanced/teleport.html
@@ -60,21 +60,21 @@ describe( 'Publish Dialog', () => {
 		const wrapper = mount( PublishDialog, {
 			props: { showDialog: true }
 		} );
-		expect( wrapper.find( '.ext-wikilambda-publishdialog' ).exists() ).toBe( true );
+		expect( wrapper.find( '.ext-wikilambda-app-publish-dialog' ).exists() ).toBe( true );
 	} );
 
 	it( 'renders summary input field', () => {
 		const wrapper = mount( PublishDialog, {
 			props: { showDialog: true }
 		} );
-		expect( wrapper.find( '.ext-wikilambda-publishdialog__summary-input' ).exists() ).toBe( true );
+		expect( wrapper.find( '.ext-wikilambda-app-publish-dialog__summary-input' ).exists() ).toBe( true );
 	} );
 
 	it( 'renders conditional legal text', () => {
 		const wrapper = mount( PublishDialog, {
 			props: { showDialog: true }
 		} );
-		expect( wrapper.find( '.ext-wikilambda-publishdialog__legal-text' ).exists() ).toBe( true );
+		expect( wrapper.find( '.ext-wikilambda-app-publish-dialog__legal-text' ).exists() ).toBe( true );
 	} );
 
 	it( 'renders page errors and warnings', () => {
@@ -158,12 +158,12 @@ describe( 'Publish Dialog', () => {
 		wrapper.vm.summary = 'mock summary';
 
 		// Find the input element
-		const input = wrapper.find( '.ext-wikilambda-publishdialog__summary-input input' );
+		const input = wrapper.find( '.ext-wikilambda-app-publish-dialog__summary-input input' );
 
 		// Simulate hitting Enter on the input element
 		await triggerKeydown( input, 'Enter', 13 );
 
-		await waitFor( () => expect( wrapper.find( '.cdx-message--warning.ext-wikilambda-publishdialog__keyboard-submit-warning' ).exists() ).toBe( true ) );
+		await waitFor( () => expect( wrapper.find( '.cdx-message--warning.ext-wikilambda-app-publish-dialog__keyboard-submit-warning' ).exists() ).toBe( true ) );
 		expect( actions.submitZObject ).not.toHaveBeenCalled();
 	} );
 
@@ -174,12 +174,12 @@ describe( 'Publish Dialog', () => {
 		} );
 
 		// Find the input element
-		const input = wrapper.find( '.ext-wikilambda-publishdialog__summary-input input' );
+		const input = wrapper.find( '.ext-wikilambda-app-publish-dialog__summary-input input' );
 
 		// Simulate hitting Ctrl + Enter on the input element
 		await triggerKeydown( input, 'Enter', 13, 'ctrlKey' );
 
-		await waitFor( () => expect( wrapper.find( '.cdx-message--warning.ext-wikilambda-publishdialog__keyboard-submit-warning' ).exists() ).toBe( false ) );
+		await waitFor( () => expect( wrapper.find( '.cdx-message--warning.ext-wikilambda-app-publish-dialog__keyboard-submit-warning' ).exists() ).toBe( false ) );
 		expect( actions.submitZObject ).toHaveBeenCalled();
 	} );
 
@@ -190,12 +190,12 @@ describe( 'Publish Dialog', () => {
 		} );
 
 		// Find the input element
-		const input = wrapper.find( '.ext-wikilambda-publishdialog__summary-input input' );
+		const input = wrapper.find( '.ext-wikilambda-app-publish-dialog__summary-input input' );
 
 		// Simulate hitting Cmd + Enter on the input element
 		await triggerKeydown( input, 'Enter', 13, 'metaKey' );
 
-		await waitFor( () => expect( wrapper.find( '.cdx-message--warning.ext-wikilambda-publishdialog__keyboard-submit-warning' ).exists() ).toBe( false ) );
+		await waitFor( () => expect( wrapper.find( '.cdx-message--warning.ext-wikilambda-app-publish-dialog__keyboard-submit-warning' ).exists() ).toBe( false ) );
 		expect( actions.submitZObject ).toHaveBeenCalled();
 	} );
 

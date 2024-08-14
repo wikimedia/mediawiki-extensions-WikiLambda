@@ -33,7 +33,7 @@ class InputDropdown {
 		// Get selector cdx-menu, excluding mode selector menu
 		// This is upstream from codex. Any testids would need added there.
 		const cdxMenu = await resolvedParentSelector.$(
-			'.//div[contains(@class,"cdx-menu")][not(contains(@class,"ext-wikilambda-mode-selector"))]' );
+			'.//div[contains(@class,"cdx-menu")][not(contains(@class,"ext-wikilambda-app-mode-selector"))]' );
 		const optionSelector = await cdxMenu.$( `bdi=${ inputText }` );
 		await ElementActions.doClick( optionSelector );
 	}
@@ -53,7 +53,7 @@ class InputDropdown {
 		await ElementActions.doClick( inputSelector );
 		// Get selector cdx-menu, excluding mode selector menu
 		const cdxMenu = parentSelector.$(
-			'.//div[contains(@class,"cdx-menu")][not(contains(@class,"ext-wikilambda-mode-selector"))]' );
+			'.//div[contains(@class,"cdx-menu")][not(contains(@class,"ext-wikilambda-app-mode-selector"))]' );
 		const optionSelector = await cdxMenu.$( `bdi=${ inputText }` );
 		await ElementActions.doClick( optionSelector );
 	}

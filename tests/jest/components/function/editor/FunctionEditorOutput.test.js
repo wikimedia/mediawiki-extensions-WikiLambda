@@ -27,19 +27,28 @@ describe( 'FunctionEditorOutput', () => {
 	} );
 
 	it( 'renders without errors', () => {
-		const wrapper = shallowMount( FunctionEditorOutput, { props: { canEdit: true } } );
+		const wrapper = shallowMount( FunctionEditorOutput, {
+			props: { canEdit: true },
+			global: { stubs: { WlFunctionEditorField: false } }
+		} );
 
-		expect( wrapper.find( '.ext-wikilambda-function-definition-output' ).exists() ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-app-function-editor-output' ).exists() ).toBeTruthy();
 	} );
 
 	it( 'loads the type selector component', () => {
-		const wrapper = shallowMount( FunctionEditorOutput, { props: { canEdit: true } } );
+		const wrapper = shallowMount( FunctionEditorOutput, {
+			props: { canEdit: true },
+			global: { stubs: { WlFunctionEditorField: false } }
+		} );
 
 		expect( wrapper.findComponent( { name: 'wl-type-selector' } ).exists() ).toBeTruthy();
 	} );
 
 	it( 'initializes the type selector component with the function output row Id', () => {
-		const wrapper = shallowMount( FunctionEditorOutput, { props: { canEdit: true } } );
+		const wrapper = shallowMount( FunctionEditorOutput, {
+			props: { canEdit: true },
+			global: { stubs: { WlFunctionEditorField: false } }
+		} );
 
 		const selector = wrapper.findComponent( { name: 'wl-type-selector' } );
 		expect( selector.exists() ).toBeTruthy();
@@ -48,7 +57,10 @@ describe( 'FunctionEditorOutput', () => {
 	} );
 
 	it( 'initializes a disabled type selector component with the function output row Id', () => {
-		const wrapper = shallowMount( FunctionEditorOutput, { props: { canEdit: false } } );
+		const wrapper = shallowMount( FunctionEditorOutput, {
+			props: { canEdit: false },
+			global: { stubs: { WlFunctionEditorField: false } }
+		} );
 
 		const selector = wrapper.findComponent( { name: 'wl-type-selector' } );
 		expect( selector.exists() ).toBeTruthy();
@@ -59,7 +71,10 @@ describe( 'FunctionEditorOutput', () => {
 	it( 'does not initialize a type selector component', () => {
 		getters.getZFunctionOutput = createGettersWithFunctionsMock( undefined );
 		global.store.hotUpdate( { getters: getters } );
-		const wrapper = shallowMount( FunctionEditorOutput, { props: { canEdit: true } } );
+		const wrapper = shallowMount( FunctionEditorOutput, {
+			props: { canEdit: true },
+			global: { stubs: { WlFunctionEditorField: false } }
+		} );
 
 		const selector = wrapper.findComponent( { name: 'wl-type-selector' } );
 		expect( selector.exists() ).toBe( false );

@@ -7,7 +7,7 @@
 <template>
 	<div
 		data-testid="argument-reference-key"
-		class="ext-wikilambda-argument-reference"
+		class="ext-wikilambda-app-argument-reference"
 	>
 		<template v-if="!edit">
 			<cdx-icon :icon="icon"></cdx-icon>

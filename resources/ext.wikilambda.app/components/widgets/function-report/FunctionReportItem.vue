@@ -7,24 +7,24 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-function-report-item">
-		<div class="ext-wikilambda-function-report-item__header">
-			<cdx-icon
-				:icon="statusIcon"
-				:class="statusIconClass"
+	<div class="ext-wikilambda-app-function-report-item">
+		<div class="ext-wikilambda-app-function-report-item__header">
+			<wl-status-icon
 				size="small"
-			></cdx-icon>
+				:status="status"
+				:status-icon="statusIcon"
+			></wl-status-icon>
 			<a
 				:href="titleLink"
-				class="ext-wikilambda-function-report-item__title"
-				:class="{ 'ext-wikilambda-function-report-item__title--no-label': titleLabelData.isUntitled }"
+				class="ext-wikilambda-app-function-report-item__title"
+				:class="{ 'ext-wikilambda-app-function-report-item__title--no-label': titleLabelData.isUntitled }"
 				:lang="titleLabelData.langCode"
 				:dir="titleLabelData.langDir"
 			>{{ titleLabelData.labelOrUntitled }}</a>
 		</div>
 
-		<div class="ext-wikilambda-function-report-item__footer">
-			<span class="ext-wikilambda-function-report-item__footer-status">
+		<div class="ext-wikilambda-app-function-report-item__footer">
+			<span class="ext-wikilambda-app-function-report-item__footer-status">
 				{{ statusMessage }}
 			</span>
 			<a
@@ -38,17 +38,18 @@
 </template>
 
 <script>
+
 const { defineComponent } = require( 'vue' );
 const mapGetters = require( 'vuex' ).mapGetters,
-	typeUtils = require( '../../mixins/typeUtils.js' ),
-	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
-	Constants = require( '../../Constants.js' ),
+	typeUtils = require( '../../../mixins/typeUtils.js' ),
+	StatusIcon = require( '../../base/StatusIcon.vue' ),
+	Constants = require( '../../../Constants.js' ),
 	icons = require( '../../../../lib/icons.json' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-report-item',
 	components: {
-		'cdx-icon': CdxIcon
+		'wl-status-icon': StatusIcon
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -162,14 +163,6 @@ module.exports = exports = defineComponent( {
 			return icons.cdxIconClock;
 		},
 		/**
-		 * Returns the class for the icon depending on the status
-		 *
-		 * @return {string}
-		 */
-		statusIconClass: function () {
-			return `ext-wikilambda-function-report-item-status__${ this.status }`;
-		},
-		/**
 		 * Returns whether the tester is currently running
 		 *
 		 * @return {string}
@@ -190,10 +183,10 @@ module.exports = exports = defineComponent( {
 </script>
 
 <style lang="less">
-@import '../../ext.wikilambda.app.variables.less';
+@import '../../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-function-report-item {
-	&__header {
+.ext-wikilambda-app-function-report-item {
+	.ext-wikilambda-app-function-report-item__header {
 		display: flex;
 		align-items: flex-start;
 
@@ -203,53 +196,31 @@ module.exports = exports = defineComponent( {
 	}
 
 	/* TODO: update with codex dark link when available */
-	&__title {
+	.ext-wikilambda-app-function-report-item__title {
 		margin-left: @spacing-50;
 		margin-right: 0;
 		display: block;
 		color: @color-base;
-	}
 
-	&__title:visited {
-		color: @color-base;
-	}
-
-	&-status {
-		&__ready {
-			color: @color-disabled;
+		&:visited {
+			color: @color-base;
 		}
 
-		&__canceled {
-			color: @color-subtle;
-		}
-
-		&__passed {
-			color: @color-success;
-		}
-
-		&__failed {
-			color: @color-error;
-		}
-
-		&__running {
-			color: @color-warning;
+		&--no-label {
+			&:link,
+			&:visited {
+				color: @color-placeholder;
+			}
 		}
 	}
 
-	&__footer {
+	.ext-wikilambda-app-function-report-item__footer {
 		margin-left: calc( @spacing-100 + @spacing-50 );
-
-		&-status {
-			color: @color-subtle;
-			margin-right: @spacing-50;
-		}
 	}
-}
 
-.ext-wikilambda-function-report-item__title--no-label {
-	&:link,
-	&:visited {
-		color: @color-placeholder;
+	.ext-wikilambda-app-function-report-item__footer-status {
+		color: @color-subtle;
+		margin-right: @spacing-50;
 	}
 }
 </style>

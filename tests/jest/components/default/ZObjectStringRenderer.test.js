@@ -182,7 +182,7 @@ describe( 'ZObjectStringRenderer', () => {
 					expanded: false
 				}
 			} );
-			expect( wrapper.find( '.ext-wikilambda-zobject-string-renderer' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-zobject-string-renderer' ).exists() ).toBe( true );
 		} );
 
 		it( 'generates the rendered text on mount', () => {
@@ -701,7 +701,7 @@ describe( 'ZObjectStringRenderer', () => {
 			wrapper.setData( { showExamplesDialog: true } );
 			await wrapper.vm.$nextTick();
 
-			const exampleList = wrapper.find( '.ext-wikilambda-zobject-string-renderer-examples' );
+			const exampleList = wrapper.find( '.ext-wikilambda-app-zobject-string-renderer__examples' );
 			const examples = exampleList.findAll( 'li' );
 			expect( examples.length ).toBe( 2 );
 			expect( examples[ 0 ].text() ).toBe( 'example one' );

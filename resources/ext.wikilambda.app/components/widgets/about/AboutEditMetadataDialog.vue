@@ -8,7 +8,7 @@
 	<div>
 		<cdx-dialog
 			:open="open"
-			class="ext-wikilambda-about-edit-metadata"
+			class="ext-wikilambda-app-about-edit-metadata-dialog"
 			:title="$i18n( 'wikilambda-about-widget-edit-metadata-accessible-title' ).text()"
 			:primary-action="primaryAction"
 			:default-action="defaultAction"
@@ -19,32 +19,25 @@
 		>
 			<!-- Dialog Header -->
 			<template #header>
-				<div class="cdx-dialog__header--default">
-					<div class="cdx-dialog__header__title-group">
-						<h2 class="cdx-dialog__header__title">
-							{{ $i18n( 'wikilambda-about-widget-edit-metadata-title' ).text() }}
-						</h2>
-					</div>
-					<cdx-button
-						weight="quiet"
-						class="cdx-dialog__header__close-button"
-						:aria-label="$i18n( 'wikilambda-dialog-close' ).text()"
-						@click="closeDialog"
-					>
-						<cdx-icon :icon="iconClose"></cdx-icon>
-					</cdx-button>
-				</div>
+				<wl-custom-dialog-header @close="closeDialog">
+					<template #title>
+						{{ $i18n( 'wikilambda-about-widget-edit-metadata-title' ).text() }}
+					</template>
+				</wl-custom-dialog-header>
 				<!-- Language Selector block -->
-				<div class="ext-wikilambda-about-edit-metadata-language">
-					<div class="ext-wikilambda-about-edit-metadata-title">
+				<div class="ext-wikilambda-app-about-edit-metadata-dialog__language">
+					<div
+						class="ext-wikilambda-app-about-edit-metadata-dialog__language-title
+						ext-wikilambda-app-about-edit-metadata-dialog__title">
 						<span
 							:lang="languageLabelData.langCode"
 							:dir="languageLabelData.langDir"
 						>{{ languageLabelData.label }}</span>
 					</div>
-					<div class="ext-wikilambda-about-edit-metadata-field">
+					<div
+						class="ext-wikilambda-app-about-edit-metadata-dialog__field
+						ext-wikilambda-app-about-edit-metadata-dialog__field-language">
 						<wl-z-object-selector
-							:edit="true"
 							:disabled="freezeLanguage"
 							:selected-zid="forLanguage"
 							:type="languageType"
@@ -54,10 +47,10 @@
 				</div>
 			</template>
 			<!-- Dialog Body -->
-			<div class="ext-wikilambda-about-edit-metadata-fields">
+			<div class="ext-wikilambda-app-about-edit-metadata-dialog__fields">
 				<cdx-field
-					class="ext-wikilambda-about-edit-metadata-name
-					ext-wikilambda-about-edit-metadata-field"
+					class="ext-wikilambda-app-about-edit-metadata-dialog__field
+					ext-wikilambda-app-about-edit-metadata-dialog__field-name"
 					:optional-flag="optionalText"
 				>
 					<cdx-text-input
@@ -79,8 +72,8 @@
 				<!-- Description field -->
 				<cdx-field
 					:optional-flag="optionalText"
-					class="ext-wikilambda-about-edit-metadata-field
-					ext-wikilambda-about-edit-metadata-description"
+					class="ext-wikilambda-app-about-edit-metadata-dialog__field
+					ext-wikilambda-app-about-edit-metadata-dialog__field-description"
 				>
 					<cdx-text-area
 						v-model="description"
@@ -99,17 +92,17 @@
 					</template>
 				</cdx-field>
 				<!-- Aliases field -->
-				<div class="ext-wikilambda-about-edit-metadata-alias">
-					<div class="ext-wikilambda-about-edit-metadata-title">
+				<div class="ext-wikilambda-app-about-edit-metadata-dialog__alias">
+					<div class="ext-wikilambda-app-about-edit-metadata-dialog__title">
 						<span
 							:lang="aliasesLabelData.langCode"
 							:dir="aliasesLabelData.langDir"
 						>{{ aliasesLabelData.label }}</span>
-						<span class="ext-wikilambda-about-edit-metadata-optional">
+						<span class="ext-wikilambda-app-about-edit-metadata-dialog__optional">
 							{{ $i18n( 'parentheses', [ $i18n( 'wikilambda-optional' ).text() ] ).text() }}
 						</span>
 					</div>
-					<div class="ext-wikilambda-about-edit-metadata-field">
+					<div class="ext-wikilambda-app-about-edit-metadata-dialog__field">
 						<wl-chip-container
 							:chips="aliases"
 							:disabled="!canEdit"
@@ -117,7 +110,7 @@
 							@add-chip="addAlias"
 							@remove-chip="removeAlias"
 						></wl-chip-container>
-						<span class="ext-wikilambda-about-edit-metadata-field-caption">
+						<span class="ext-wikilambda-app-about-edit-metadata-dialog__field-caption">
 							{{ $i18n( 'wikilambda-about-widget-aliases-caption' ).text() }}
 						</span>
 					</div>
@@ -128,8 +121,8 @@
 						v-for="( input, index ) in inputs"
 						:key="'input-' + index"
 						:optional-flag="optionalText"
-						class="ext-wikilambda-about-edit-metadata-field
-						ext-wikilambda-about-edit-metadata-input"
+						class="ext-wikilambda-app-about-edit-metadata-dialog__field
+						ext-wikilambda-app-about-edit-metadata-dialog__field-input"
 					>
 						<cdx-text-input
 							v-model="inputs[ index ]"
@@ -149,29 +142,26 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../Constants.js' ),
-	ChipContainer = require( '../base/ChipContainer.vue' ),
-	ZObjectSelector = require( '../base/ZObjectSelector.vue' ),
-	CdxButton = require( '@wikimedia/codex' ).CdxButton,
+const Constants = require( '../../../Constants.js' ),
+	ChipContainer = require( '../../base/ChipContainer.vue' ),
+	ZObjectSelector = require( '../../base/ZObjectSelector.vue' ),
+	CustomDialogHeader = require( '../../base/CustomDialogHeader.vue' ),
 	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
-	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	CdxField = require( '@wikimedia/codex' ).CdxField,
 	CdxTextArea = require( '@wikimedia/codex' ).CdxTextArea,
 	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
-	icons = require( '../../../lib/icons.json' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
 module.exports = exports = defineComponent( {
 	name: 'wl-about-edit-metadata-dialog',
 	components: {
-		'cdx-button': CdxButton,
 		'cdx-dialog': CdxDialog,
-		'cdx-icon': CdxIcon,
 		'cdx-text-area': CdxTextArea,
 		'cdx-text-input': CdxTextInput,
 		'cdx-field': CdxField,
 		'wl-chip-container': ChipContainer,
+		'wl-custom-dialog-header': CustomDialogHeader,
 		'wl-z-object-selector': ZObjectSelector
 	},
 	props: {
@@ -199,7 +189,6 @@ module.exports = exports = defineComponent( {
 	},
 	data: function () {
 		return {
-			iconClose: icons.cdxIconClose,
 			languageType: Constants.Z_NATURAL_LANGUAGE,
 			maxLabelChars: Constants.LABEL_CHARS_MAX,
 			maxDescriptionChars: Constants.DESCRIPTION_CHARS_MAX,
@@ -461,17 +450,17 @@ module.exports = exports = defineComponent( {
 		updatePageTitleElements: function () {
 			// eslint-disable-next-line no-jquery/no-global-selector
 			const $firstHeading = $( '#firstHeading' );
-			const $langChip = $firstHeading.find( '.ext-wikilambda-editpage-header--bcp47-code-name' );
-			const $pageTitle = $firstHeading.find( '.ext-wikilambda-editpage-header-title--function-name' ).first();
+			const $langChip = $firstHeading.find( '.ext-wikilambda-editpage-header__bcp47-code-name' );
+			const $pageTitle = $firstHeading.find( '.ext-wikilambda-editpage-header__title--function-name' ).first();
 
 			// Update the title
 			$pageTitle
-				.toggleClass( 'ext-wikilambda-editpage-header--title-untitled', !this.pageTitleObject.title )
+				.toggleClass( 'ext-wikilambda-editpage-header__title--untitled', !this.pageTitleObject.title )
 				.text( this.pageTitleObject.title || this.$i18n( 'wikilambda-editor-default-name' ).text() );
 
 			// Update the language chip
 			$langChip
-				.toggleClass( 'ext-wikilambda-editpage-header--bcp47-code-hidden', !this.pageTitleObject.hasChip )
+				.toggleClass( 'ext-wikilambda-editpage-header__bcp47-code--hidden', !this.pageTitleObject.hasChip )
 				.text( this.pageTitleObject.chip )
 				.attr( 'data-title', this.pageTitleObject.chipName );
 		},
@@ -821,54 +810,54 @@ module.exports = exports = defineComponent( {
 </script>
 
 <style lang="less">
-@import '../../ext.wikilambda.app.variables.less';
+@import '../../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-about-edit-metadata {
+.ext-wikilambda-app-about-edit-metadata-dialog {
+	// Adds some extra padding to the dialog body
 	.cdx-dialog__body {
 		padding: @spacing-50 0;
 	}
 
-	.ext-wikilambda-about-edit-metadata-title {
+	.ext-wikilambda-app-about-edit-metadata-dialog__title {
 		font-weight: @font-weight-bold;
 		margin: 0 0 @spacing-25;
-
-		.ext-wikilambda-about-edit-metadata-optional {
-			font-weight: @font-weight-normal;
-			color: @color-subtle;
-			margin-left: @spacing-25;
-		}
 	}
 
-	.ext-wikilambda-about-edit-metadata-char-counter {
+	.ext-wikilambda-app-about-edit-metadata-dialog__optional {
+		font-weight: @font-weight-normal;
+		color: @color-subtle;
+		margin-left: @spacing-25;
+	}
+
+	.ext-wikilambda-app-about-edit-metadata-dialog__char-counter {
 		text-align: right;
 	}
 
-	.ext-wikilambda-about-edit-metadata-fields {
+	.ext-wikilambda-app-about-edit-metadata-dialog__fields {
 		padding: 0 @spacing-150;
+	}
 
-		.ext-wikilambda-about-edit-metadata-field {
-			margin: 0 0 @spacing-100;
+	.ext-wikilambda-app-about-edit-metadata-dialog__field {
+		margin: 0 0 @spacing-100;
 
-			.cdx-field__help-text {
-				float: right;
-			}
-
-			.cdx-text-input {
-				flex: 1;
-			}
-
-			.ext-wikilambda-about-edit-metadata-field-caption {
-				display: block;
-				color: @color-subtle;
-				margin-top: @spacing-25;
-			}
+		// To move the max length indicator
+		.cdx-field__help-text {
+			float: right;
 		}
 	}
 
-	.ext-wikilambda-about-edit-metadata-language {
-		.ext-wikilambda-about-edit-metadata-title {
-			margin-top: @spacing-100;
-		}
+	.ext-wikilambda-app-about-edit-metadata-dialog__field-language {
+		margin: 0;
+	}
+
+	.ext-wikilambda-app-about-edit-metadata-dialog__field-caption {
+		display: block;
+		color: @color-subtle;
+		margin-top: @spacing-25;
+	}
+
+	.ext-wikilambda-app-about-edit-metadata-dialog__language-title {
+		margin-top: @spacing-100;
 	}
 }
 </style>

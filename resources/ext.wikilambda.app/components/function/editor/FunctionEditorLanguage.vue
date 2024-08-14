@@ -5,15 +5,15 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-function-language-selector">
-		<div class="ext-wikilambda-function-block__label">
+	<wl-function-editor-field class="ext-wikilambda-app-function-editor-language">
+		<template #label>
 			<label :id="languageFieldId">
 				{{ languageLabel }}
 			</label>
-		</div>
-		<div class="ext-wikilambda-function-block__body">
+		</template>
+		<template #body>
 			<wl-z-object-selector
-				class="ext-wikilambda-function-language-selector__add-language"
+				class="ext-wikilambda-app-function-editor-language__add-language"
 				:aria-labelledby="languageFieldId"
 				:disabled="hasLanguage"
 				:exclude-zids="functionLanguages"
@@ -21,19 +21,22 @@
 				:type="naturalLanguageType"
 				@input="addNewLanguage"
 			></wl-z-object-selector>
-		</div>
-	</div>
+		</template>
+	</wl-function-editor-field>
 </template>
 
 <script>
+
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
+	FunctionEditorField = require( './FunctionEditorField.vue' ),
 	ZObjectSelector = require( '../../base/ZObjectSelector.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-language',
 	components: {
+		'wl-function-editor-field': FunctionEditorField,
 		'wl-z-object-selector': ZObjectSelector
 	},
 	props: {
@@ -66,7 +69,7 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		languageFieldId: function () {
-			return 'ext-wikilambda-function-language-selector__label-id';
+			return 'ext-wikilambda-app-function-editor-language__label-id';
 		},
 		/**
 		 * Returns the label for the language field

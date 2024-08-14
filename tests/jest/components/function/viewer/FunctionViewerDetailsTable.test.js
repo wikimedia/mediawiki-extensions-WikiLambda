@@ -1,5 +1,5 @@
 /*!
- * WikiLambda unit test suite for the function-definition-name component and related files.
+ * WikiLambda unit test suite for the function-viewers-details-table component and related files.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -19,6 +19,6 @@ describe( 'FunctionViewerDetailsTable', () => {
 				type: 'Z6'
 			}
 		} );
-		expect( wrapper.find( '.ext-wikilambda-function-details-table' ).exists() ).toBe( true );
+		expect( wrapper.find( '.ext-wikilambda-app-function-viewer-details-table' ).exists() ).toBe( true );
 	} );
 } );

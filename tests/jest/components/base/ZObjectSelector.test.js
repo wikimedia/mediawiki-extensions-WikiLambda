@@ -139,12 +139,12 @@ describe( 'ZObjectSelector', () => {
 				value: 'Z6',
 				label: 'String',
 				description: 'Type',
-				class: 'ext-wikilambda-select-zobject-suggestion'
+				class: 'ext-wikilambda-app-object-selector__suggestion'
 			}, {
 				value: 'Z40',
 				label: 'Boolean',
 				description: 'Type',
-				class: 'ext-wikilambda-select-zobject-suggestion'
+				class: 'ext-wikilambda-app-object-selector__suggestion'
 			} ];
 			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
 
@@ -166,37 +166,37 @@ describe( 'ZObjectSelector', () => {
 				value: 'Z1001',
 				label: 'Arabic',
 				description: 'Natural language',
-				class: 'ext-wikilambda-select-zobject-suggestion'
+				class: 'ext-wikilambda-app-object-selector__suggestion'
 			}, {
 				value: 'Z1002',
 				label: 'English',
 				description: 'Natural language',
-				class: 'ext-wikilambda-select-zobject-suggestion'
+				class: 'ext-wikilambda-app-object-selector__suggestion'
 			}, {
 				value: 'Z1003',
 				label: 'Spanish',
 				description: 'Natural language',
-				class: 'ext-wikilambda-select-zobject-suggestion'
+				class: 'ext-wikilambda-app-object-selector__suggestion'
 			}, {
 				value: 'Z1004',
 				label: 'French',
 				description: 'Natural language',
-				class: 'ext-wikilambda-select-zobject-suggestion'
+				class: 'ext-wikilambda-app-object-selector__suggestion'
 			}, {
 				value: 'Z1005',
 				label: 'Russian',
 				description: 'Natural language',
-				class: 'ext-wikilambda-select-zobject-suggestion'
+				class: 'ext-wikilambda-app-object-selector__suggestion'
 			}, {
 				value: 'Z1672',
 				label: 'Chinese (traditional)',
 				description: 'Natural language',
-				class: 'ext-wikilambda-select-zobject-suggestion'
+				class: 'ext-wikilambda-app-object-selector__suggestion'
 			}, {
 				value: 'Z1645',
 				label: 'Chinese (simplified)',
 				description: 'Natural language',
-				class: 'ext-wikilambda-select-zobject-suggestion'
+				class: 'ext-wikilambda-app-object-selector__suggestion'
 			} ];
 			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
 

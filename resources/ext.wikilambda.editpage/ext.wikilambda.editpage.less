@@ -7,26 +7,39 @@
 @import ( reference ) '../../../resources/lib/codex-design-tokens/theme-wikimedia-ui.less';
 
 .ext-wikilambda-editpage-header {
-	&-description {
+	&__description {
 		color: @color-base;
 		margin-bottom: @size-200;
 	}
 
-	&--title-untitled {
+	&__title--untitled {
 		color: @color-placeholder;
 	}
 
-	&--bcp47-code {
+	&__bcp47-code {
 		background-color: @background-color-interactive;
 		border: 1px solid @border-color-base;
 		border-radius: @border-radius-pill;
 		padding: 0 @spacing-25;
+
+		&--hidden {
+			display: none;
+		}
 	}
 
-	&--bcp47-code-hidden {
-		display: none;
+	&__zid {
+		color: @color-subtle;
+		font-size: @font-size-medium;
+		font-weight: @font-weight-normal;
+		font-family: @font-family-monospace;
+		cursor: pointer;
+
+		@media screen and ( max-width: @max-width-breakpoint-mobile ) {
+			font-size: @font-size-small;
+		}
 	}
 
+	// TODO (T298040): replace with Codex tooltip
 	[ data-title ] {
 		position: relative;
 	}
@@ -48,17 +61,5 @@
 		opacity: 1;
 		transition: all 0.1s ease 0.5s;
 		visibility: visible;
-	}
-
-	&-zid {
-		color: @color-subtle;
-		font-size: @font-size-medium;
-		font-weight: @font-weight-normal;
-		font-family: @font-family-monospace;
-		cursor: pointer;
-
-		@media screen and ( max-width: @max-width-breakpoint-mobile ) {
-			font-size: @font-size-small;
-		}
 	}
 }

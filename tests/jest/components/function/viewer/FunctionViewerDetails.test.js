@@ -87,7 +87,7 @@ describe( 'FunctionViewerDetails', () => {
 
 	it( 'renders without errors', () => {
 		const wrapper = shallowMount( FunctionViewerDetails );
-		expect( wrapper.find( '.ext-wikilambda-function-details' ).exists() ).toBe( true );
+		expect( wrapper.find( '.ext-wikilambda-app-function-viewer-details' ).exists() ).toBe( true );
 	} );
 
 	it( 'loads child components', () => {

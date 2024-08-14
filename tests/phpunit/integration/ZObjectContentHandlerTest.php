@@ -367,29 +367,41 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		// In English, we see 'Untitled' in en and the Type sub-title in en (with no BCP47 chip)
 		$enHeader = ZObjectContentHandler::createZObjectViewHeader( $content, $testTitle, self::makeLanguage( 'en' ) );
 		$this->assertStringStartsWith( '<span lang="en" class="ext-wikilambda-viewpage-header">', $enHeader );
-		$this->assertStringContainsString( '<span class="ext-wikilambda-viewpage-header-zid">Z401</span>', $enHeader );
+		$this->assertStringContainsString( '<span class="ext-wikilambda-viewpage-header__zid">Z401</span>', $enHeader );
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
-		$this->assertStringContainsString( '<span class="ext-wikilambda-viewpage-header-title ext-wikilambda-viewpage-header-title--function-name ext-wikilambda-viewpage-header--title-untitled">Untitled</span>', $enHeader );
+		$this->assertStringContainsString( '<span class="ext-wikilambda-viewpage-header__title ext-wikilambda-viewpage-header__title--function-name ext-wikilambda-viewpage-header__title--untitled">Untitled</span>', $enHeader );
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
-		$this->assertStringContainsString( '<div class="ext-wikilambda-viewpage-header-type"> <span class="ext-wikilambda-viewpage-header-type-label">String</span></div>', $enHeader );
+		$this->assertStringContainsString( '<div class="ext-wikilambda-viewpage-header__type"> <span class="ext-wikilambda-viewpage-header__type-label">String</span></div>', $enHeader );
 
 		// In French, we see the label and not 'Untitled', but the Type sub-title is in en with a BCP47 chip
 		$frHeader = ZObjectContentHandler::createZObjectViewHeader( $content, $testTitle, self::makeLanguage( 'fr' ) );
 		$this->assertStringStartsWith( '<span lang="fr" class="ext-wikilambda-viewpage-header">', $frHeader );
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
-		$this->assertStringContainsString( '><span class="ext-wikilambda-viewpage-header-title ext-wikilambda-viewpage-header-title--function-name">Éxample</span>', $frHeader );
+		$this->assertStringContainsString( '><span class="ext-wikilambda-viewpage-header__title ext-wikilambda-viewpage-header__title--function-name">Éxample</span>', $frHeader );
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
-		$this->assertStringContainsString( '<div class="ext-wikilambda-viewpage-header-type"><span data-title="English" class="ext-wikilambda-viewpage-header--bcp47-code">en</span>', $frHeader );
-		$this->assertStringNotContainsString( 'ext-wikilambda-viewpage-header--title-untitled', $frHeader );
+		$this->assertStringContainsString( '<div class="ext-wikilambda-viewpage-header__type"><span data-title="English" class="ext-wikilambda-viewpage-header__bcp47-code">en</span>', $frHeader );
+		$this->assertStringNotContainsString( 'ext-wikilambda-viewpage-header__title--untitled', $frHeader );
 
 		// In Picard, we see the fr label with a BCP47 chip, and the Type sub-title is in en with a different chip
 		$frHeader = ZObjectContentHandler::createZObjectViewHeader( $content, $testTitle, self::makeLanguage( 'pcd' ) );
 		$this->assertStringStartsWith( '<span lang="pcd" class="ext-wikilambda-viewpage-header">', $frHeader );
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
-		$this->assertStringContainsString( '<span data-title="français" class="ext-wikilambda-viewpage-header--bcp47-code">fr</span> <span class="ext-wikilambda-viewpage-header-title ext-wikilambda-viewpage-header-title--function-name">Éxample</span>', $frHeader );
+		$this->assertStringContainsString( '<span data-title="français" class="ext-wikilambda-viewpage-header__bcp47-code">fr</span> <span class="ext-wikilambda-viewpage-header__title ext-wikilambda-viewpage-header__title--function-name">Éxample</span>', $frHeader );
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
-		$this->assertStringContainsString( '<div class="ext-wikilambda-viewpage-header-type"><span data-title="English" class="ext-wikilambda-viewpage-header--bcp47-code">en</span>', $frHeader );
-		$this->assertStringNotContainsString( 'ext-wikilambda-viewpage-header--title-untitled', $frHeader );
+		$this->assertStringContainsString( '<div class="ext-wikilambda-viewpage-header__type"><span data-title="English" class="ext-wikilambda-viewpage-header__bcp47-code">en</span>', $frHeader );
+		$this->assertStringNotContainsString( 'ext-wikilambda-viewpage-header__title--untitled', $frHeader );
+
+		// Test with a broken ZObject
+		$brokenContent = new ZObjectContent(
+			'{"Z1K1":"Z2","Z2K1":"Z401","Z2K2":"",' .
+				'"Z2K3":{"Z1K1":"Z12","Z12K1":["Z11",{"Z1K1":"Z11","Z11K2":"Éxample"}]}}'
+		);
+		$brokenHeader = ZObjectContentHandler::createZObjectViewHeader(
+			$brokenContent,
+			$testTitle,
+			self::makeLanguage( 'en' )
+		);
+		$this->assertSame( '', $brokenHeader );
 	}
 
 	public function testCreateZObjectViewTitle() {

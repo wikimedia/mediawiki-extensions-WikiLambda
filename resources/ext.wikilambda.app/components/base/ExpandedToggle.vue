@@ -8,12 +8,12 @@
 	<cdx-button
 		weight="quiet"
 		:aria-label="$i18n( 'wikilambda-toggle-expanded-view' ).text()"
-		class="ext-wikilambda-expand-toggle"
+		class="ext-wikilambda-app-expanded-toggle"
 		:disabled="!hasExpandedMode"
 		@click="waitAndExpand"
 	>
 		<cdx-icon
-			class="ext-wikilambda-expand-toggle-icon"
+			class="ext-wikilambda-app-expanded-toggle__icon"
 			:class="iconClass"
 			:icon="hasExpandedMode ? icons.cdxIconExpand : iconBullet"
 		></cdx-icon>
@@ -56,11 +56,11 @@ module.exports = exports = defineComponent( {
 	] ), {
 		iconClass: function () {
 			if ( !this.hasExpandedMode ) {
-				return 'ext-wikilambda-expand-toggle-disabled';
+				return 'ext-wikilambda-app-expanded-toggle__icon--disabled';
 			} else {
 				return this.expanded ?
-					'ext-wikilambda-expand-toggle-expanded' :
-					'ext-wikilambda-expand-toggle-collapsed';
+					'ext-wikilambda-app-expanded-toggle__icon--expanded' :
+					'ext-wikilambda-app-expanded-toggle__icon--collapsed';
 			}
 		}
 	} ),
@@ -78,14 +78,12 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-expand-toggle {
+.ext-wikilambda-app-expanded-toggle {
 	width: calc( @min-size-icon-small + 2px );
 	min-width: calc( @min-size-icon-small + 2px );
 	padding: 0;
 
-	.ext-wikilambda-expand-toggle-icon {
-		width: @min-size-icon-small;
-		height: @min-size-icon-small;
+	.ext-wikilambda-app-expanded-toggle__icon {
 		min-width: @min-size-icon-small;
 		min-height: @min-size-icon-small;
 		padding: 0;
@@ -107,25 +105,24 @@ module.exports = exports = defineComponent( {
 			}
 		}
 
-		&.ext-wikilambda-expand-toggle-disabled {
+		// Make the bullet icon a bit bigger
+		&--disabled.cdx-icon {
 			svg {
 				width: @spacing-200;
 				height: @spacing-200;
 			}
 		}
 
-		&.ext-wikilambda-expand-toggle-collapsed {
+		&--collapsed.cdx-icon {
 			transform: rotate( -90deg );
 		}
 	}
 }
 
 [ dir='rtl' ] {
-	.ext-wikilambda-expand-toggle {
-		.ext-wikilambda-expand-toggle-icon {
-			&.ext-wikilambda-expand-toggle-collapsed {
-				transform: rotate( 90deg );
-			}
+	.ext-wikilambda-app-expanded-toggle {
+		.ext-wikilambda-app-expanded-toggle__icon--collapsed.cdx-icon {
+			transform: rotate( 90deg );
 		}
 	}
 }

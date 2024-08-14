@@ -5,7 +5,7 @@
 	@license MIT
 -->
 <template>
-	<wl-widget-base class="ext-wikilambda-about" data-testid="about">
+	<wl-widget-base class="ext-wikilambda-app-about" data-testid="about">
 		<!-- Widget header -->
 		<template #header>
 			{{ $i18n( 'wikilambda-about-widget-title' ).text() }}
@@ -24,39 +24,39 @@
 
 		<!-- Widget main -->
 		<template #main>
-			<div class="ext-wikilambda-about-fields">
+			<div class="ext-wikilambda-app-about__fields">
 				<!-- No descriptions or aliases message -->
-				<div v-if="!hasDescription && !hasAliases" class="ext-wikilambda-about-unavailable">
+				<div v-if="!hasDescription && !hasAliases" class="ext-wikilambda-app-about__unavailable">
 					{{ $i18n( 'wikilambda-about-widget-no-descriptions-or-aliases' ).text() }}
 				</div>
 				<template v-else>
 					<!-- Description block -->
-					<div class="ext-wikilambda-about-description" data-testid="about-description">
-						<span v-if="hasDescription" class="ext-wikilambda-about-value">
+					<div class="ext-wikilambda-app-about__description" data-testid="about-description">
+						<span v-if="hasDescription" class="ext-wikilambda-app-about__value">
 							{{ description }}
 						</span>
-						<span v-else class="ext-wikilambda-about-unavailable">
+						<span v-else class="ext-wikilambda-app-about__unavailable">
 							{{ $i18n( 'wikilambda-about-widget-no-descriptions' ).text() }}
 						</span>
 					</div>
 					<!-- Aliases block -->
-					<div class="ext-wikilambda-about-aliases" data-testid="about-aliases">
+					<div class="ext-wikilambda-app-about__aliases" data-testid="about-aliases">
 						<template v-if="hasAliases">
 							<span
 								v-for="( alias, index ) in visibleAliases"
 								:key="'alias-' + index"
-								class="ext-wikilambda-about-alias"
+								class="ext-wikilambda-app-about__alias"
 								data-testid="about-alias"
 							>
 								{{ alias.value }}
 							</span>
 							<a
 								v-if="aliases.length > 3 && !seeAllAliases"
-								class="ext-wikilambda-about-aliases-more"
+								class="ext-wikilambda-app-about__aliases-more"
 								@click="seeAllAliases = true"
 							>+{{ aliases.length - 3 }}</a>
 						</template>
-						<span v-else class="ext-wikilambda-about-unavailable">
+						<span v-else class="ext-wikilambda-app-about__unavailable">
 							{{ $i18n( 'wikilambda-about-widget-no-aliases' ).text() }}
 						</span>
 					</div>
@@ -64,39 +64,39 @@
 			</div>
 
 			<!-- Function specific fields -->
-			<div v-if="isFunction" class="ext-wikilambda-about-function-fields">
-				<div class="ext-wikilambda-about-function-input">
+			<div v-if="isFunction" class="ext-wikilambda-app-about__function-fields">
+				<div class="ext-wikilambda-app-about__function-input">
 					<!-- Inputs -->
-					<div class="ext-wikilambda-about-function-field-title">
+					<div class="ext-wikilambda-app-about__function-field-title">
 						{{ $i18n( 'wikilambda-function-definition-inputs-label' ).text() }}
 					</div>
 					<template v-if="inputs.length > 0">
 						<div
 							v-for="input in inputs"
 							:key="input.key"
-							class="ext-wikilambda-about-function-field-value"
+							class="ext-wikilambda-app-about__function-field-value"
 						>
 							<span
-								class="ext-wikilambda-about-function-input-label"
-								:class="{ 'ext-wikilambda-about-unavailable': input.labelData.isUntitled }"
+								class="ext-wikilambda-app-about__function-input-label"
+								:class="{ 'ext-wikilambda-app-about__unavailable': input.labelData.isUntitled }"
 								:lang="input.labelData.langCode"
 								:dir="input.labelData.langDir"
 							>{{ input.labelData.labelOrUntitled }}<span>:</span></span>
 							<wl-z-object-to-string :row-id="input.typeRowId"></wl-z-object-to-string>
 						</div>
 					</template>
-					<div v-else class="ext-wikilambda-about-function-field-value">
-						<span class="ext-wikilambda-about-unavailable">
+					<div v-else class="ext-wikilambda-app-about__function-field-value">
+						<span class="ext-wikilambda-app-about__unavailable">
 							{{ $i18n( 'wikilambda-about-widget-no-inputs' ).text() }}
 						</span>
 					</div>
 				</div>
 				<!-- Output -->
-				<div class="ext-wikilambda-about-function-output">
-					<div class="ext-wikilambda-about-function-field-title">
+				<div class="ext-wikilambda-app-about__function-output">
+					<div class="ext-wikilambda-app-about__function-field-title">
 						{{ $i18n( 'wikilambda-function-definition-output-label' ).text() }}
 					</div>
-					<div class="ext-wikilambda-about-function-field-value">
+					<div class="ext-wikilambda-app-about__function-field-value">
 						<wl-z-object-to-string :row-id="outputTypeRowId"></wl-z-object-to-string>
 					</div>
 				</div>
@@ -131,7 +131,7 @@
 
 		<!-- Widget footer -->
 		<template v-if="languageCount > 0" #footer>
-			<div class="ext-wikilambda-about-button">
+			<div class="ext-wikilambda-app-about__button">
 				<cdx-button data-testid="language-buttons" @click="openViewLanguagesDialog">
 					<cdx-icon :icon="icons.cdxIconLanguage"></cdx-icon>
 					{{ $i18n( 'wikilambda-about-widget-language-count-button', languageCount ).text() }}
@@ -143,15 +143,15 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../Constants.js' ),
+const Constants = require( '../../../Constants.js' ),
 	AboutViewLanguagesDialog = require( './AboutViewLanguagesDialog.vue' ),
 	AboutEditMetadataDialog = require( './AboutEditMetadataDialog.vue' ),
-	PublishDialog = require( './PublishDialog.vue' ),
-	ZObjectToString = require( '../default-view-types/ZObjectToString.vue' ),
-	WidgetBase = require( '../base/WidgetBase.vue' ),
+	PublishDialog = require( '../publish/PublishDialog.vue' ),
+	ZObjectToString = require( '../../default-view-types/ZObjectToString.vue' ),
+	WidgetBase = require( '../../base/WidgetBase.vue' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
-	icons = require( '../../../lib/icons.json' ),
+	icons = require( '../../../../lib/icons.json' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -389,67 +389,67 @@ module.exports = exports = defineComponent( {
 </script>
 
 <style lang="less">
-@import '../../ext.wikilambda.app.variables.less';
+@import '../../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-about {
-	.ext-wikilambda-about-unavailable {
+.ext-wikilambda-app-about {
+	.ext-wikilambda-app-about__unavailable {
 		color: @color-placeholder;
 
+		// To style the double colon after the label in normal text color
 		& > span {
 			color: @color-base;
 		}
 	}
 
-	.ext-wikilambda-about-fields {
-		.ext-wikilambda-about-description,
-		.ext-wikilambda-about-aliases {
-			overflow-wrap: break-word;
-			margin-top: @spacing-50;
-		}
-
-		.ext-wikilambda-about-aliases {
-			padding-bottom: @spacing-25;
-			display: flex;
-			flex-wrap: wrap;
-			gap: 8px;
-
-			.ext-wikilambda-about-alias {
-				display: inline-block;
-				border-radius: @border-radius-pill;
-				border: 1px solid @border-color-subtle;
-				color: @color-subtle;
-				padding: 0 @spacing-50;
-			}
-
-			.ext-wikilambda-about-aliases-more {
-				color: @color-progressive;
-			}
-		}
+	.ext-wikilambda-app-about__description,
+	.ext-wikilambda-app-about__aliases {
+		overflow-wrap: break-word;
+		margin-top: @spacing-50;
 	}
 
-	.ext-wikilambda-about-function-fields {
+	.ext-wikilambda-app-about__aliases {
+		padding-bottom: @spacing-25;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+
+	.ext-wikilambda-app-about__alias {
+		display: inline-block;
+		border-radius: @border-radius-pill;
+		border: 1px solid @border-color-subtle;
+		color: @color-subtle;
+		padding: 0 @spacing-50;
+	}
+
+	.ext-wikilambda-app-about__aliases-more {
+		color: @color-progressive;
+	}
+
+	.ext-wikilambda-app-about__function-fields {
 		margin-top: @spacing-100;
 		border-top: 1px solid @border-color-subtle;
-
-		& > div {
-			margin-top: @spacing-100;
-		}
-
-		.ext-wikilambda-about-function-field-title {
-			font-weight: @font-weight-bold;
-		}
-
-		.ext-wikilambda-about-function-field-value {
-			margin-top: @spacing-25;
-			display: flex;
-
-			& > span {
-				margin-right: @spacing-25;
-			}
-		}
 	}
 
-	.ext-wikilambda-about-button {
+	.ext-wikilambda-app-about__function-input,
+	.ext-wikilambda-app-about__function-output {
+		margin-top: @spacing-100;
+	}
+
+	.ext-wikilambda-app-about__function-input-label {
+		margin-right: @spacing-25;
+	}
+
+	.ext-wikilambda-app-about__function-field-title {
+		font-weight: @font-weight-bold;
+	}
+
+	.ext-wikilambda-app-about__function-field-value {
+		margin-top: @spacing-25;
+		display: flex;
+	}
+
+	.ext-wikilambda-app-about__button {
 		margin-top: @spacing-125;
 	}
 }

@@ -5,34 +5,35 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-function-definition-name">
-		<div class="ext-wikilambda-function-block__label">
+	<wl-function-editor-field class="ext-wikilambda-app-function-editor-name">
+		<template #label>
 			<label :for="nameFieldId">
 				{{ nameLabel }}
 				<span>{{ nameOptional }}</span>
 			</label>
-		</div>
-		<div class="ext-wikilambda-function-block__body">
+		</template>
+		<template #body>
 			<cdx-text-input
 				:id="nameFieldId"
 				:model-value="name"
-				class="ext-wikilambda-function-definition-name__input"
+				class="ext-wikilambda-app-function-editor-name__input"
 				:aria-label="nameLabel"
 				:placeholder="nameFieldPlaceholder"
 				:maxlength="maxLabelChars"
 				@input="updateRemainingChars"
 				@change="persistName"
 			></cdx-text-input>
-			<div class="ext-wikilambda-function-definition-name__counter">
+			<div class="ext-wikilambda-app-function-editor-name__counter">
 				{{ remainingChars }}
 			</div>
-		</div>
-	</div>
+		</template>
+	</wl-function-editor-field>
 </template>
 
 <script>
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
+	FunctionEditorField = require( './FunctionEditorField.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput;
@@ -40,6 +41,7 @@ const Constants = require( '../../../Constants.js' ),
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-name',
 	components: {
+		'wl-function-editor-field': FunctionEditorField,
 		'cdx-text-input': CdxTextInput
 	},
 	props: {
@@ -129,7 +131,7 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		nameFieldId: function () {
-			return `ext-wikilambda-function-definition-name__input${ this.zLanguage }`;
+			return `ext-wikilambda-app-function-editor-name__input-${ this.zLanguage }`;
 		}
 	} ),
 	methods: Object.assign( mapActions( [
@@ -199,7 +201,7 @@ module.exports = exports = defineComponent( {
 		 * @param {string} name
 		 */
 		setPageTitle: function ( name ) {
-			const pageTitleSelector = '#firstHeading .ext-wikilambda-editpage-header-title--function-name';
+			const pageTitleSelector = '#firstHeading .ext-wikilambda-editpage-header__title--function-name';
 			$( pageTitleSelector ).first().text( name );
 		}
 	} ),
@@ -214,8 +216,8 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-function-definition-name {
-	&__counter {
+.ext-wikilambda-app-function-editor-name {
+	.ext-wikilambda-app-function-editor-name__counter {
 		color: @color-subtle;
 		margin-left: @spacing-50;
 		align-self: center;

@@ -6,7 +6,7 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-leaveeditordialog">
+	<div class="ext-wikilambda-app-leave-editor-dialog">
 		<cdx-dialog
 			:open="showDialog"
 			:title="leaveDialogTitle"

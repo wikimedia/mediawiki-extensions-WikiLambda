@@ -5,10 +5,10 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-function-editor">
-		<div class="ext-wikilambda-function-editor__main">
-			<main class="ext-wikilambda-function-editor__main__content">
-				<wl-function-editor-definition></wl-function-editor-definition>
+	<div class="ext-wikilambda-app-function-editor-view">
+		<div class="ext-wikilambda-app-function-editor-view__main">
+			<main class="ext-wikilambda-app-function-editor-view__content">
+				<wl-function-editor></wl-function-editor>
 			</main>
 		</div>
 	</div>
@@ -16,12 +16,12 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const FunctionEditorDefinition = require( '../components/function/editor/FunctionEditorDefinition.vue' );
+const FunctionEditor = require( '../components/function/editor/FunctionEditor.vue' );
 
 module.exports = exports = defineComponent( {
-	name: 'wl-function-editor',
+	name: 'wl-function-editor-view',
 	components: {
-		'wl-function-editor-definition': FunctionEditorDefinition
+		'wl-function-editor': FunctionEditor
 	},
 	mounted: function () {
 		this.$emit( 'mounted' );
@@ -30,11 +30,9 @@ module.exports = exports = defineComponent( {
 </script>
 
 <style lang="less">
-.ext-wikilambda-function-editor {
-	&__main {
-		&__content {
-			width: 100%;
-		}
+.ext-wikilambda-app-function-editor-view {
+	.ext-wikilambda-app-function-editor-view__content {
+		width: 100%;
 	}
 }
 </style>

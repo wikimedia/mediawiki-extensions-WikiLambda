@@ -5,34 +5,36 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-function-definition-description">
-		<div class="ext-wikilambda-function-block__label">
+	<wl-function-editor-field class="ext-wikilambda-app-function-editor-description">
+		<template #label>
 			<label :for="descriptionInputId">
 				{{ descriptionLabel }}
 				<span>{{ descriptionOptional }}</span>
 			</label>
-		</div>
-		<div class="ext-wikilambda-function-block__body">
+		</template>
+		<template #body>
 			<cdx-text-area
 				:id="descriptionInputId"
 				:model-value="description"
-				class="ext-wikilambda-function-definition-description__input"
+				class="ext-wikilambda-app-function-editor-description__input"
 				:aria-label="descriptionLabel"
 				:placeholder="descriptionInputPlaceholder"
 				:maxlength="maxDescriptionChars"
 				@input="updateRemainingChars"
 				@change="persistDescription"
 			></cdx-text-area>
-			<div class="ext-wikilambda-function-definition-description__counter">
+			<div class="ext-wikilambda-app-function-editor-description__counter">
 				{{ remainingChars }}
 			</div>
-		</div>
-	</div>
+		</template>
+	</wl-function-editor-field>
 </template>
 
 <script>
+
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
+	FunctionEditorField = require( './FunctionEditorField.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	CdxTextArea = require( '@wikimedia/codex' ).CdxTextArea;
@@ -40,6 +42,7 @@ const Constants = require( '../../../Constants.js' ),
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-description',
 	components: {
+		'wl-function-editor-field': FunctionEditorField,
 		'cdx-text-area': CdxTextArea
 	},
 	props: {
@@ -121,7 +124,7 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		descriptionInputId: function () {
-			return `ext-wikilambda-function-definition-description__input${ this.zLanguage }`;
+			return `ext-wikilambda-app-function-editor-description__input${ this.zLanguage }`;
 		}
 	} ),
 	methods: Object.assign( mapActions( [
@@ -192,8 +195,8 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-function-definition-description {
-	&__counter {
+.ext-wikilambda-app-function-editor-description {
+	.ext-wikilambda-app-function-editor-description__counter {
 		color: @color-subtle;
 		margin-left: @spacing-50;
 		align-self: center;

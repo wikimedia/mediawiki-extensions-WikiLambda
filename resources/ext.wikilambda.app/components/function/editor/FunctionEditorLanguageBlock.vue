@@ -7,19 +7,19 @@
 -->
 <template>
 	<div
-		class="ext-wikilambda-function-block"
+		class="ext-wikilambda-app-function-editor-language-block"
 		data-testid="function-editor-language-block"
 	>
 		<!-- component that displays the language selector -->
 		<wl-function-editor-language
-			class="ext-wikilambda-function-block__row"
+			class="ext-wikilambda-app-function-editor-language-block__row"
 			data-testid="function-editor-language-selector"
 			:z-language="zLanguage"
 			@change="changeLanguage"
 		></wl-function-editor-language>
 		<!-- component that displays name for a language -->
 		<wl-function-editor-name
-			class="ext-wikilambda-function-block__row"
+			class="ext-wikilambda-app-function-editor-language-block__row"
 			data-testid="function-editor-name-input"
 			:z-language="zLanguage"
 			:is-main-language-block="isMainLanguageBlock"
@@ -27,21 +27,21 @@
 		></wl-function-editor-name>
 		<!-- component that displays the description for a language -->
 		<wl-function-editor-description
-			class="ext-wikilambda-function-block__row"
+			class="ext-wikilambda-app-function-editor-language-block__row"
 			data-testid="function-editor-description-input"
 			:z-language="zLanguage"
 			@updated-description="updatedLabels"
 		></wl-function-editor-description>
 		<!-- component that displays aliases for a language -->
 		<wl-function-editor-aliases
-			class="ext-wikilambda-function-block__row"
+			class="ext-wikilambda-app-function-editor-language-block__row"
 			data-testid="function-editor-alias-input"
 			:z-language="zLanguage"
 			@updated-alias="updatedLabels"
 		></wl-function-editor-aliases>
 		<!-- component that displays list of inputs for a language -->
 		<wl-function-editor-inputs
-			class="ext-wikilambda-function-block__row"
+			class="ext-wikilambda-app-function-editor-language-block__row"
 			data-testid="function-editor-inputs"
 			:z-language="zLanguage"
 			:is-main-language-block="isMainLanguageBlock"
@@ -53,7 +53,7 @@
 		<!-- component that displays output for a language -->
 		<wl-function-editor-output
 			v-if="isMainLanguageBlock"
-			class="ext-wikilambda-function-block__row"
+			class="ext-wikilambda-app-function-editor-language-block__row"
 			data-testid="function-editor-output"
 			:can-edit="canEditFunction"
 			:tooltip-icon="icons.cdxIconLock"
@@ -167,7 +167,7 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-function-block {
+.ext-wikilambda-app-function-editor-language-block {
 	padding-top: @spacing-150;
 	border-bottom: 1px solid @border-color-subtle;
 
@@ -175,59 +175,14 @@ module.exports = exports = defineComponent( {
 		border-top: 1px solid @border-color-subtle;
 	}
 
-	&__row {
+	.ext-wikilambda-app-function-editor-language-block__row {
 		display: flex;
 		margin-bottom: @spacing-150;
 		gap: @spacing-100;
 
 		@media screen and ( max-width: @max-width-breakpoint-mobile ) {
-			& {
-				flex-direction: column;
-			}
+			flex-direction: column;
 		}
-	}
-
-	&__label {
-		width: @wl-field-label-width;
-		display: flex;
-		flex-direction: column;
-
-		& > label {
-			line-height: @size-200;
-			font-weight: @font-weight-bold;
-
-			& > span {
-				font-weight: @font-weight-normal;
-			}
-		}
-
-		&__description {
-			color: @color-subtle;
-			font-size: @font-size-small;
-			line-height: @line-height-small;
-			display: inline-block;
-		}
-
-		&__tooltip-icon {
-			margin-left: @spacing-50;
-			width: @size-100;
-			height: @size-100;
-		}
-
-		@media screen and ( max-width: @max-width-breakpoint-mobile ) {
-			& > label {
-				line-height: inherit;
-				margin-bottom: @spacing-25;
-			}
-
-			&__description {
-				margin-bottom: @spacing-25;
-			}
-		}
-	}
-
-	&__body {
-		width: @wl-field-body-width;
 	}
 }
 </style>

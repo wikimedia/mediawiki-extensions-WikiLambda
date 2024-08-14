@@ -7,9 +7,9 @@
 'use strict';
 
 const { config, mount } = require( '@vue/test-utils' ),
-	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	AboutViewLanguagesDialog = require( '../../../../resources/ext.wikilambda.app/components/widgets/AboutViewLanguagesDialog.vue' );
+	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
+	AboutViewLanguagesDialog = require( '../../../../../resources/ext.wikilambda.app/components/widgets/about/AboutViewLanguagesDialog.vue' );
 
 // Ignore all "teleport" behavior for the purpose of testing Dialog;
 // see https://test-utils.vuejs.org/guide/advanced/teleport.html
@@ -65,7 +65,7 @@ describe( 'AboutViewLanguagesDialog', () => {
 				canEdit: true
 			} } );
 
-			expect( wrapper.find( '.ext-wikilambda-about-language-list' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-about-view-languages-dialog' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders without language search box', () => {
@@ -73,7 +73,7 @@ describe( 'AboutViewLanguagesDialog', () => {
 				open: true,
 				canEdit: true
 			} } );
-			expect( wrapper.find( '.ext-wikilambda-about-language-list-search' ).exists() ).toBe( false );
+			expect( wrapper.find( '.ext-wikilambda-app-about-view-languages-dialog__search' ).exists() ).toBe( false );
 		} );
 
 		it( 'renders all available languages', () => {
@@ -81,7 +81,7 @@ describe( 'AboutViewLanguagesDialog', () => {
 				open: true,
 				canEdit: true
 			} } );
-			const items = wrapper.findAll( '.ext-wikilambda-about-language-item' );
+			const items = wrapper.findAll( '.ext-wikilambda-app-about-view-languages-dialog__item' );
 			expect( items ).toHaveLength( 2 );
 		} );
 
@@ -141,7 +141,7 @@ describe( 'AboutViewLanguagesDialog', () => {
 				open: true,
 				canEdit: true
 			} } );
-			expect( wrapper.find( '.ext-wikilambda-about-language-list' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-about-view-languages-dialog' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders with language search box', () => {
@@ -149,7 +149,7 @@ describe( 'AboutViewLanguagesDialog', () => {
 				open: true,
 				canEdit: true
 			} } );
-			expect( wrapper.find( '.ext-wikilambda-about-language-list-search' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-about-view-languages-dialog__search' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders all available languages', () => {
@@ -157,7 +157,7 @@ describe( 'AboutViewLanguagesDialog', () => {
 				open: true,
 				canEdit: true
 			} } );
-			const items = wrapper.findAll( '.ext-wikilambda-about-language-item' );
+			const items = wrapper.findAll( '.ext-wikilambda-app-about-view-languages-dialog__item' );
 			expect( items ).toHaveLength( 7 );
 		} );
 
@@ -166,20 +166,20 @@ describe( 'AboutViewLanguagesDialog', () => {
 				open: true,
 				canEdit: true
 			} } );
-			const items = wrapper.findAll( '.ext-wikilambda-about-language-item' );
+			const items = wrapper.findAll( '.ext-wikilambda-app-about-view-languages-dialog__item' );
 
 			const basque = items[ 2 ];
 			const telugu = items[ 6 ];
 
 			// ASSERT: languages with set name show the correct name
-			expect( basque.find( '.ext-wikilambda-about-language-item-title' ).text() ).toBe( 'euskara' );
-			expect( basque.find( '.ext-wikilambda-about-language-item-field' ).text() ).toBe( 'Izena' );
-			expect( basque.find( '.ext-wikilambda-about-language-item-untitled' ).exists() ).toBe( false );
+			expect( basque.find( '.ext-wikilambda-app-about-view-languages-dialog__item-title' ).text() ).toBe( 'euskara' );
+			expect( basque.find( '.ext-wikilambda-app-about-view-languages-dialog__item-field' ).text() ).toBe( 'Izena' );
+			expect( basque.find( '.ext-wikilambda-app-about-view-languages-dialog__name--untitled' ).exists() ).toBe( false );
 
 			// ASSERT: languages with unset name show untitled string and class
-			expect( telugu.find( '.ext-wikilambda-about-language-item-title' ).text() ).toBe( 'Telugu' );
-			expect( telugu.find( '.ext-wikilambda-about-language-item-field' ).text() ).toBe( 'Untitled' );
-			expect( telugu.find( '.ext-wikilambda-about-language-item-untitled' ).exists() ).toBe( true );
+			expect( telugu.find( '.ext-wikilambda-app-about-view-languages-dialog__item-title' ).text() ).toBe( 'Telugu' );
+			expect( telugu.find( '.ext-wikilambda-app-about-view-languages-dialog__item-field' ).text() ).toBe( 'Untitled' );
+			expect( telugu.find( '.ext-wikilambda-app-about-view-languages-dialog__name--untitled' ).exists() ).toBe( true );
 		} );
 
 		it( 'emits change-selected-language and open-edit-language event when clicking on an item', () => {
@@ -187,7 +187,7 @@ describe( 'AboutViewLanguagesDialog', () => {
 				open: true,
 				canEdit: true
 			} } );
-			const items = wrapper.findAll( '.ext-wikilambda-about-language-item' );
+			const items = wrapper.findAll( '.ext-wikilambda-app-about-view-languages-dialog__item' );
 
 			// ACT: click on quechua item
 			const quechua = items[ 3 ];
@@ -206,7 +206,7 @@ describe( 'AboutViewLanguagesDialog', () => {
 				open: true,
 				canEdit: false
 			} } );
-			expect( wrapper.find( '.ext-wikilambda-about-language-list' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-about-view-languages-dialog' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders disabled add language button', () => {

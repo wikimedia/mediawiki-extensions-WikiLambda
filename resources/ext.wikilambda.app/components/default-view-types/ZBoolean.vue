@@ -5,10 +5,10 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-boolean">
+	<div class="ext-wikilambda-app-boolean">
 		<template v-if="!edit">
 			<a
-				class="ext-wikilambda-edit-link"
+				class="ext-wikilambda-app-link"
 				:href="valueUrl"
 				:lang="valueLabelData.langCode"
 				:dir="valueLabelData.langDir"

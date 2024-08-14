@@ -107,20 +107,20 @@ describe( 'router Vuex module', () => {
 			describe( 'when view is valid', () => {
 				it( 'triggers a CHANGE_CURRENT_VIEW mutation', () => {
 					const payload = {
-						to: Constants.VIEWS.DEFAULT_VIEW
+						to: Constants.VIEWS.DEFAULT
 					};
 					routerInstance.actions.navigate( context, payload );
 
 					expect( context.commit ).toHaveBeenCalled();
 					expect( context.commit ).toHaveBeenCalledWith(
 						'CHANGE_CURRENT_VIEW',
-						Constants.VIEWS.DEFAULT_VIEW
+						Constants.VIEWS.DEFAULT
 					);
 				} );
 
 				it( 'call window.history.pushState', () => {
 					const payload = {
-						to: Constants.VIEWS.DEFAULT_VIEW
+						to: Constants.VIEWS.DEFAULT
 					};
 					routerInstance.actions.navigate( context, payload );
 
@@ -129,7 +129,7 @@ describe( 'router Vuex module', () => {
 
 				it( 'call window.history.pushState with path and query as state', () => {
 					const payload = {
-						to: Constants.VIEWS.DEFAULT_VIEW
+						to: Constants.VIEWS.DEFAULT
 					};
 					const expectedObject = {
 						path: 'dummyPath',
@@ -148,7 +148,7 @@ describe( 'router Vuex module', () => {
 
 				it( 'call window.history.pushState with argument as query string', () => {
 					const payload = {
-						to: Constants.VIEWS.DEFAULT_VIEW
+						to: Constants.VIEWS.DEFAULT
 					};
 					const expectedQueryString = 'dummyPath?dummyParams=dummyValue&view=dummyView';
 
@@ -163,7 +163,7 @@ describe( 'router Vuex module', () => {
 				describe( 'when params are passed', () => {
 					it( 'calls CHANGE_QUERY_PARAMS mutation', () => {
 						const payload = {
-							to: Constants.VIEWS.DEFAULT_VIEW,
+							to: Constants.VIEWS.DEFAULT,
 							params: { dummyParams: 'dummyValue' }
 						};
 						const expectedParams = {
@@ -242,7 +242,7 @@ describe( 'router Vuex module', () => {
 						const queryParams = {
 							action: Constants.ACTIONS.EDIT,
 							title: 'Z0',
-							view: Constants.VIEWS.DEFAULT_VIEW
+							view: Constants.VIEWS.DEFAULT
 						};
 						window.mw.Uri.mockImplementationOnce( () => ( {
 							query: queryParams,
@@ -302,7 +302,7 @@ describe( 'router Vuex module', () => {
 						const queryParams = {
 							action: Constants.ACTIONS.EDIT,
 							title: 'Z0',
-							view: Constants.VIEWS.DEFAULT_VIEW
+							view: Constants.VIEWS.DEFAULT
 						};
 						window.mw.Uri.mockImplementationOnce( () => ( {
 							query: queryParams,
@@ -349,14 +349,14 @@ describe( 'router Vuex module', () => {
 
 						expect( context.dispatch ).toHaveBeenCalled();
 						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.DEFAULT_VIEW );
+							'changeCurrentView', Constants.VIEWS.DEFAULT );
 					} );
 
 					it( 'When action is edit and view is passed as zoject editor', () => {
 						const queryParams = {
 							action: Constants.ACTIONS.EDIT,
 							title: 'Z0',
-							view: Constants.VIEWS.DEFAULT_VIEW
+							view: Constants.VIEWS.DEFAULT
 						};
 						window.mw.Uri.mockImplementationOnce( () => ( {
 							query: queryParams,
@@ -367,7 +367,7 @@ describe( 'router Vuex module', () => {
 
 						expect( context.dispatch ).toHaveBeenCalled();
 						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.DEFAULT_VIEW );
+							'changeCurrentView', Constants.VIEWS.DEFAULT );
 					} );
 				} );
 
@@ -387,14 +387,14 @@ describe( 'router Vuex module', () => {
 
 						expect( context.dispatch ).toHaveBeenCalled();
 						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.DEFAULT_VIEW );
+							'changeCurrentView', Constants.VIEWS.DEFAULT );
 					} );
 
 					it( 'When action is edit and view is passed as zobject editor', () => {
 						const queryParams = {
 							action: Constants.ACTIONS.EDIT,
 							title: 'Z0',
-							view: Constants.VIEWS.DEFAULT_VIEW
+							view: Constants.VIEWS.DEFAULT
 						};
 						window.mw.Uri.mockImplementationOnce( () => ( {
 							query: queryParams,
@@ -405,7 +405,7 @@ describe( 'router Vuex module', () => {
 
 						expect( context.dispatch ).toHaveBeenCalled();
 						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.DEFAULT_VIEW );
+							'changeCurrentView', Constants.VIEWS.DEFAULT );
 					} );
 				} );
 			} );
@@ -482,7 +482,7 @@ describe( 'router Vuex module', () => {
 						context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
 						const queryParams = {
 							title: 'Z0',
-							view: Constants.VIEWS.DEFAULT_VIEW
+							view: Constants.VIEWS.DEFAULT
 						};
 						window.mw.Uri.mockImplementationOnce( () => ( {
 							query: queryParams,
@@ -556,7 +556,7 @@ describe( 'router Vuex module', () => {
 						context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
 						const queryParams = {
 							title: 'Z0',
-							view: Constants.VIEWS.DEFAULT_VIEW
+							view: Constants.VIEWS.DEFAULT
 						};
 						window.mw.Uri.mockImplementationOnce( () => ( {
 							query: queryParams,
@@ -598,13 +598,13 @@ describe( 'router Vuex module', () => {
 
 						expect( context.dispatch ).toHaveBeenCalled();
 						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.DEFAULT_VIEW );
+							'changeCurrentView', Constants.VIEWS.DEFAULT );
 					} );
 
 					it( 'When view is passed as zoject viewer', () => {
 						const queryParams = {
 							title: 'Z0',
-							view: Constants.VIEWS.DEFAULT_VIEW
+							view: Constants.VIEWS.DEFAULT
 						};
 						window.mw.Uri.mockImplementationOnce( () => ( {
 							query: queryParams,
@@ -615,7 +615,7 @@ describe( 'router Vuex module', () => {
 
 						expect( context.dispatch ).toHaveBeenCalled();
 						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.DEFAULT_VIEW );
+							'changeCurrentView', Constants.VIEWS.DEFAULT );
 					} );
 				} );
 
@@ -634,23 +634,23 @@ describe( 'router Vuex module', () => {
 
 						expect( context.dispatch ).toHaveBeenCalled();
 						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.DEFAULT_VIEW );
+							'changeCurrentView', Constants.VIEWS.DEFAULT );
 					} );
 
 					it( 'When view is passed as zobject viewer', () => {
 						window.mw.Uri.mockImplementationOnce( () => ( {
 							query: {
 								title: 'Z0',
-								view: Constants.VIEWS.DEFAULT_VIEW
+								view: Constants.VIEWS.DEFAULT
 							},
-							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( { view: Constants.VIEWS.DEFAULT_VIEW } )
+							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( { view: Constants.VIEWS.DEFAULT } )
 						} ) );
 
 						routerInstance.actions.evaluateUri( context );
 
 						expect( context.dispatch ).toHaveBeenCalled();
 						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.DEFAULT_VIEW );
+							'changeCurrentView', Constants.VIEWS.DEFAULT );
 					} );
 				} );
 			} );
@@ -734,7 +734,7 @@ describe( 'router Vuex module', () => {
 
 					expect( context.dispatch ).toHaveBeenCalled();
 					expect( context.dispatch ).toHaveBeenCalledWith(
-						'changeCurrentView', Constants.VIEWS.DEFAULT_VIEW );
+						'changeCurrentView', Constants.VIEWS.DEFAULT );
 				} );
 
 				it( 'with URL Format Two (/wiki/{{title}})', () => {
@@ -747,7 +747,7 @@ describe( 'router Vuex module', () => {
 
 					expect( context.dispatch ).toHaveBeenCalled();
 					expect( context.dispatch ).toHaveBeenCalledWith(
-						'changeCurrentView', Constants.VIEWS.DEFAULT_VIEW );
+						'changeCurrentView', Constants.VIEWS.DEFAULT );
 				} );
 			} );
 

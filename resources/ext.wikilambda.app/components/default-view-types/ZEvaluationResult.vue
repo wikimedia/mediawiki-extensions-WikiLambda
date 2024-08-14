@@ -5,8 +5,8 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-evaluation-result">
-		<div class="ext-wikilambda-evaluation-result-result">
+	<div class="ext-wikilambda-app-evaluation-result">
+		<div class="ext-wikilambda-app-evaluation-result__result">
 			<wl-z-object-key-value
 				v-if="hasResult"
 				:skip-key="true"
@@ -16,16 +16,16 @@
 		</div>
 
 		<!-- Action Bar -->
-		<div class="ext-wikilambda-evaluation-result-actions">
+		<div class="ext-wikilambda-app-evaluation-result__actions">
 			<a
 				v-if="hasMetadata"
-				class="ext-wikilambda-evaluation-result-actions__metadata"
+				class="ext-wikilambda-app-evaluation-result__action-details"
 				role="button"
 				@click="showMetadata = !showMetadata"
 			>{{ $i18n( 'wikilambda-function-evaluator-result-details' ).text() }}</a>
 			<a
 				v-if="hasError"
-				class="ext-wikilambda-evaluation-result-actions__error"
+				class="ext-wikilambda-app-evaluation-result__action-error"
 				role="button"
 				@click="showError = !showError"
 			>
@@ -48,7 +48,7 @@
 			<cdx-dialog
 				v-if="hasError"
 				:open="showError"
-				class="ext-wikilambda-evaluation-result-error-dialog"
+				class="ext-wikilambda-app-evaluation-result__error-dialog"
 				:close-button-label="$i18n( 'wikilambda-dialog-close' ).text()"
 				:title="$i18n( 'wikilambda-functioncall-metadata-errors' ).text()"
 				@update:open="showError = false"
@@ -67,7 +67,7 @@
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
 	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
-	FunctionMetadataDialog = require( '../widgets/FunctionMetadataDialog.vue' ),
+	FunctionMetadataDialog = require( '../widgets/function-evaluator/FunctionMetadataDialog.vue' ),
 	hybridToCanonical = require( '../../mixins/schemata.js' ).methods.hybridToCanonical,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -215,11 +215,10 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-evaluation-result-actions {
-	display: flex;
-
-	a:not( :first-child ) {
-		margin-left: @spacing-50;
+.ext-wikilambda-app-evaluation-result {
+	.ext-wikilambda-app-evaluation-result__actions {
+		display: flex;
+		gap: @spacing-50;
 	}
 }
 </style>

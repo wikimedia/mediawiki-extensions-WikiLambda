@@ -25,7 +25,7 @@ describe( 'ZFunctionCall', () => {
 
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( ZFunctionCall );
-			expect( wrapper.find( '.ext-wikilambda-function-call' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-function-call' ).exists() ).toBe( true );
 		} );
 
 		it( 'displays a function call icon', () => {

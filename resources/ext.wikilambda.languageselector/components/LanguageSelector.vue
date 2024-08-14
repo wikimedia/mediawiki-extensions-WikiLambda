@@ -7,12 +7,12 @@
 <template>
 	<div
 		ref="languageSelector"
-		class="ext-wikilambda-page-language-selector"
+		class="ext-wikilambda-language-selector"
 	>
 		<cdx-button
 			weight="quiet"
 			aria-label="Toggle"
-			class="ext-wikilambda-page-language-selector-trigger"
+			class="ext-wikilambda-language-selector__trigger"
 			@click="openLanguageSelector"
 		>
 			<cdx-icon :icon="icons.cdxIconLanguage"></cdx-icon>
@@ -20,11 +20,11 @@
 		</cdx-button>
 		<div
 			ref="languageSelectorDropdown"
-			class="ext-wikilambda-page-language-selector-dropdown"
+			class="ext-wikilambda-language-selector__dropdown"
 		>
 			<cdx-lookup
 				ref="languageSelectorLookup"
-				class="ext-wikilambda-page-language-selector-lookup"
+				class="ext-wikilambda-language-selector__lookup"
 				:selected="selectedLanguage"
 				:menu-items="lookupResults"
 				:start-icon="icons.cdxIconSearch"
@@ -235,7 +235,7 @@ module.exports = exports = defineComponent( {
 		closeLanguageSelector: function () {
 			// Hide dropdown
 			const dropdown = this.$refs.languageSelectorDropdown;
-			$( dropdown ).removeClass( 'ext-wikilambda-page-language-selector-dropdown__visible' );
+			$( dropdown ).removeClass( 'ext-wikilambda-language-selector__dropdown--visible' );
 		},
 
 		/**
@@ -244,7 +244,7 @@ module.exports = exports = defineComponent( {
 		openLanguageSelector: function () {
 			// Display dropdown
 			const dropdown = this.$refs.languageSelectorDropdown;
-			$( dropdown ).addClass( 'ext-wikilambda-page-language-selector-dropdown__visible' );
+			$( dropdown ).addClass( 'ext-wikilambda-language-selector__dropdown--visible' );
 			// Focus selector
 			// eslint-disable-next-line no-jquery/variable-pattern
 			const lookup = this.$refs.languageSelectorLookup.$el;
@@ -282,15 +282,15 @@ module.exports = exports = defineComponent( {
 </script>
 
 <style lang="less">
-.ext-wikilambda-page-language-selector {
+.ext-wikilambda-language-selector {
 	position: relative;
 
-	.ext-wikilambda-page-language-selector-dropdown {
+	&__dropdown {
 		position: absolute;
 		right: 0;
 		display: none;
 
-		&__visible {
+		&--visible {
 			display: block;
 		}
 	}

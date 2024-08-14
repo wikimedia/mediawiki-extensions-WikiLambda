@@ -7,10 +7,10 @@
 'use strict';
 
 const mount = require( '@vue/test-utils' ).mount,
-	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
-	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
-	FunctionReportItem = require( '../../../../resources/ext.wikilambda.app/components/widgets/FunctionReportItem.vue' );
+	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
+	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
+	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
+	FunctionReportItem = require( '../../../../../resources/ext.wikilambda.app/components/widgets/function-report/FunctionReportItem.vue' );
 
 describe( 'FunctionReportItem', () => {
 	let getters,
@@ -45,7 +45,7 @@ describe( 'FunctionReportItem', () => {
 				reportType: reportType
 			}
 		} );
-		expect( wrapper.find( '.ext-wikilambda-function-report-item' ).exists() ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-app-function-report-item' ).exists() ).toBeTruthy();
 	} );
 
 	it( 'fetches the test result for the provided IDs from Vuex', () => {
@@ -70,7 +70,7 @@ describe( 'FunctionReportItem', () => {
 				fetching: true
 			}
 		} );
-		expect( wrapper.find( '.ext-wikilambda-function-report-item__footer-status' ).text() ).toBe( 'Running…' );
+		expect( wrapper.find( '.ext-wikilambda-app-function-report-item__footer-status' ).text() ).toBe( 'Running…' );
 	} );
 
 	it( 'displays passed status when result is passed', () => {
@@ -83,7 +83,7 @@ describe( 'FunctionReportItem', () => {
 				reportType: reportType
 			}
 		} );
-		expect( wrapper.find( '.ext-wikilambda-function-report-item__footer-status' ).text() ).toBe( 'Passed' );
+		expect( wrapper.find( '.ext-wikilambda-app-function-report-item__footer-status' ).text() ).toBe( 'Passed' );
 	} );
 
 	it( 'displays failed status when result is failed', () => {
@@ -96,7 +96,7 @@ describe( 'FunctionReportItem', () => {
 				reportType: reportType
 			}
 		} );
-		expect( wrapper.find( '.ext-wikilambda-function-report-item__footer-status' ).text() ).toBe( 'Failed' );
+		expect( wrapper.find( '.ext-wikilambda-app-function-report-item__footer-status' ).text() ).toBe( 'Failed' );
 	} );
 
 	it( 'displays pending status when implementation missing', () => {
@@ -109,7 +109,7 @@ describe( 'FunctionReportItem', () => {
 				reportType: reportType
 			}
 		} );
-		expect( wrapper.find( '.ext-wikilambda-function-report-item__footer-status' ).text() ).toBe( 'Ready' );
+		expect( wrapper.find( '.ext-wikilambda-app-function-report-item__footer-status' ).text() ).toBe( 'Ready' );
 	} );
 
 	it( 'displays pending status when tester missing', () => {
@@ -122,6 +122,6 @@ describe( 'FunctionReportItem', () => {
 				reportType: reportType
 			}
 		} );
-		expect( wrapper.find( '.ext-wikilambda-function-report-item__footer-status' ).text() ).toBe( 'Ready' );
+		expect( wrapper.find( '.ext-wikilambda-app-function-report-item__footer-status' ).text() ).toBe( 'Ready' );
 	} );
 } );

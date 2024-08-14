@@ -1,8 +1,8 @@
 <template>
-	<div class="ext-wikilambda-mode-selector" data-testid="mode-selector">
+	<div class="ext-wikilambda-app-mode-selector" data-testid="mode-selector">
 		<cdx-menu-button
 			data-testid="mode-selector-button"
-			class="ext-wikilambda-mode-selector-menu-button"
+			class="ext-wikilambda-app-mode-selector__menu-button"
 			:selected="selected"
 			:menu-items="menuItems"
 			:aria-label="$i18n( 'wikilambda-mode-selector-button-label' ).text()"
@@ -179,19 +179,19 @@ module.exports = exports = defineComponent( {
 					value: Constants.LIST_MENU_OPTIONS.MOVE_BEFORE,
 					icon: icons.cdxIconTableMoveRowBefore,
 					disabled: isFirst,
-					class: 'ext-wikilambda-mode-selector-move-before'
+					class: 'ext-wikilambda-app-mode-selector__move-before'
 				}, {
 					label: this.$i18n( 'wikilambda-move-after-list-item' ).text(),
 					value: Constants.LIST_MENU_OPTIONS.MOVE_AFTER,
 					icon: icons.cdxIconTableMoveRowAfter,
 					disabled: isLast,
-					class: 'ext-wikilambda-mode-selector-move-after'
+					class: 'ext-wikilambda-app-mode-selector__move-after'
 				}, {
 					label: this.$i18n( 'wikilambda-delete-list-item' ).text(),
 					value: Constants.LIST_MENU_OPTIONS.DELETE_ITEM,
 					icon: icons.cdxIconTrash,
 					action: 'destructive',
-					class: 'ext-wikilambda-mode-selector-delete'
+					class: 'ext-wikilambda-app-mode-selector__delete'
 				} ] );
 			}
 			return options;
@@ -243,14 +243,14 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-mode-selector {
+.ext-wikilambda-app-mode-selector {
 	position: relative;
 
-	.ext-wikilambda-mode-selector-move-before {
+	.ext-wikilambda-app-mode-selector__move-before {
 		box-shadow: 0 -1px 0 0 @border-color-subtle;
 	}
 
-	.ext-wikilambda-mode-selector-delete {
+	.ext-wikilambda-app-mode-selector__delete {
 		box-shadow: 0 -1px 0 0 @border-color-subtle;
 	}
 }

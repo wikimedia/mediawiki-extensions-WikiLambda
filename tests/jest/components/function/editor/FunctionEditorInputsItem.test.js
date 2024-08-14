@@ -45,7 +45,7 @@ describe( 'FunctionEditorInputsItem', () => {
 			zLanguage: 'Z1002'
 		} } );
 
-		expect( wrapper.find( '.ext-wikilambda-editor-input-list-item' ).exists() ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-app-function-editor-inputs-item' ).exists() ).toBeTruthy();
 	} );
 
 	it( 'has an input element ', () => {
@@ -105,7 +105,7 @@ describe( 'FunctionEditorInputsItem', () => {
 			global: { stubs: { CdxButton: false } }
 		} );
 
-		expect( wrapper.findAll( '.ext-wikilambda-editor-input-list-item__header__action-delete' ).length ).toBe( 1 );
+		expect( wrapper.findAll( '.ext-wikilambda-app-function-editor-inputs-item__action-delete' ).length ).toBe( 1 );
 	} );
 
 	describe( 'on argument label change', () => {

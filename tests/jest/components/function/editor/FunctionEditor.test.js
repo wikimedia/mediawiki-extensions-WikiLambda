@@ -9,9 +9,9 @@
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
-	FunctionEditorDefinition = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorDefinition.vue' );
+	FunctionEditor = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditor.vue' );
 
-describe( 'FunctionEditorDefinition', () => {
+describe( 'FunctionEditor', () => {
 	let getters;
 
 	beforeEach( () => {
@@ -32,12 +32,12 @@ describe( 'FunctionEditorDefinition', () => {
 
 	describe( 'function editor with initial data', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( FunctionEditorDefinition );
-			expect( wrapper.find( '.ext-wikilambda-function-definition' ).exists() ).toBe( true );
+			const wrapper = shallowMount( FunctionEditor );
+			expect( wrapper.find( '.ext-wikilambda-app-function-editor' ).exists() ).toBe( true );
 		} );
 
 		it( 'loads language blocks', async () => {
-			const wrapper = shallowMount( FunctionEditorDefinition );
+			const wrapper = shallowMount( FunctionEditor );
 			await wrapper.vm.$nextTick();
 
 			expect( wrapper.findAllComponents( { name: 'wl-function-editor-language-block' } ).length ).toEqual( 2 );
@@ -45,7 +45,7 @@ describe( 'FunctionEditorDefinition', () => {
 		} );
 
 		it( 'creates new form inputs for another language on add button click', async () => {
-			const wrapper = shallowMount( FunctionEditorDefinition, {
+			const wrapper = shallowMount( FunctionEditor, {
 				global: { stubs: { CdxButton: false } }
 			} );
 
@@ -77,7 +77,7 @@ describe( 'FunctionEditorDefinition', () => {
 		} );
 
 		it( 'initializes language block with user language', async () => {
-			const wrapper = shallowMount( FunctionEditorDefinition );
+			const wrapper = shallowMount( FunctionEditor );
 			await wrapper.vm.$nextTick();
 
 			expect( wrapper.findAllComponents( { name: 'wl-function-editor-language-block' } ).length ).toEqual( 1 );
