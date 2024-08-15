@@ -46,6 +46,14 @@
 			"description": "If false, store function calls in the main MediaWiki cache; if set to another value, that will be used as the key of a cache in wgObjectCaches.",
 			"value": false
 		},
+		"WikiLambdaEnableClientMode": {
+			"description": "If true, enable the the 'client' mode of WikiLambda, providing the {{#function:…}} parser function to embed calls to Wikifunctions.",
+			"value": false
+		},
+		"WikiLambdaClientTargetAPI": {
+			"description": "API to target to make function calls (to allow testing against non-standard wikis).",
+			"value": "http://www.wikifunctions.org/"
+		},
 		"WikiLambdaOrchestratorLocation": {
 			"description": "Host and port of the function orchestrator.",
 			"value": "https://wikifunctions-orchestrator-beta.wmflabs.org:443"
@@ -180,6 +188,9 @@
 		"WikiLambdaHooks": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\Hooks"
 		},
+		"WikiLambdaClientHooks": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\ClientHooks"
+		},
 		"PageEditingHandler": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\PageEditingHandler"
 		},
@@ -188,6 +199,7 @@
 		}
 	},
 	"Hooks": {
+		"ParserFirstCallInit": "WikiLambdaClientHooks",
 		"getUserPermissionsErrors": "PageEditingHandler",
 		"MultiContentSave": "PageEditingHandler",
 		"LoadExtensionSchemaUpdates": "WikiLambdaHooks",
@@ -204,7 +216,8 @@
 		]
 	},
 	"ExtensionMessagesFiles": {
-		"WikiLambdaAliases": "WikiLambda.alias.php"
+		"WikiLambdaAliases": "WikiLambda.alias.php",
+		"WikiLambdaMagic": "WikiLambda.i18n.magic.php"
 	},
 	"ResourceFileModulePaths": {
 		"localBasePath": "resources",
