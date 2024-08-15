@@ -272,6 +272,7 @@ class Hooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook 
 		} else {
 			$firstError = $pageUpdater->getStatus()->getErrors()[0];
 			$error = wfMessage( $firstError[ 'message' ], $firstError[ 'params' ] );
+			// @phan-suppress-next-line SecurityCheck-DoubleEscaped Inside the installer, controlled content.
 			$updater->output( "\t❌ Unable to make a page for {$title->getPrefixedText()}: $error\n" );
 		}
 

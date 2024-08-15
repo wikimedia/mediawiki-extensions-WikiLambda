@@ -43,13 +43,6 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 	}
 
 	/**
-	 * @inheritDoc
-	 */
-	public function execute() {
-		$this->run();
-	}
-
-	/**
 	 * TODO (T338251): Use WikiLambdaApiBase::executeFunctionCall() rather than rolling our own.
 	 *
 	 * @inheritDoc

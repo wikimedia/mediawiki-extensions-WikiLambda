@@ -28,7 +28,7 @@ class ApiZObjectEditor extends WikiLambdaApiBase {
 	/**
 	 * @inheritDoc
 	 */
-	public function execute(): void {
+	protected function run(): void {
 		$user = $this->getUser();
 		$params = $this->extractRequestParams();
 
