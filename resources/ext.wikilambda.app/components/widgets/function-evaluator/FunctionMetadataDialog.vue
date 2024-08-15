@@ -317,8 +317,9 @@ module.exports = exports = defineComponent( {
 		generateFunctionMenuItems: function ( metadata, depth = 1, index = 0, path = [] ) {
 			const keyValues = this.getKeyValues( metadata );
 			// TODO (T368531) Checking keyValues as a safeguard;
-			// keyValues should always exist.
-			if ( !keyValues ) {
+			// 1. keyValues should always exist.
+			// 2. keyValues should not only contain a zObjectKey and no other metadata (T369625)
+			if ( !keyValues || keyValues.size === 1 && keyValues.has( 'zObjectKey' ) ) {
 				return [];
 			}
 
@@ -381,8 +382,9 @@ module.exports = exports = defineComponent( {
 		findMetadata: function ( metadata, selectedMetadataPath, index = 0, path = [] ) {
 			const keyValues = this.getKeyValues( metadata );
 			// TODO (T368531) Checking keyValues as a safeguard;
-			// keyValues should always exist.
-			if ( !keyValues ) {
+			// 1. keyValues should always exist
+			// 2. keyValues should not only contain a zObjectKey and no other metadata (T369625)
+			if ( !keyValues || keyValues.size === 1 && keyValues.has( 'zObjectKey' ) ) {
 				return undefined;
 			}
 
