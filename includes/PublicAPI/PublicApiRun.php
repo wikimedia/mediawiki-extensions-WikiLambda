@@ -10,7 +10,6 @@
 
 namespace MediaWiki\Extension\WikiLambda\PublicAPI;
 
-use ApiPageSet;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
@@ -43,18 +42,9 @@ class PublicApiRun extends WikiLambdaApiBase {
 	}
 
 	/**
-	 * @inheritDoc
-	 */
-	public function executeGenerator( $resultPageSet ) {
-		$this->run( $resultPageSet );
-	}
-
-	/**
 	 * TODO (T338251): Use WikiLambdaApiBase::executeFunctionCall() rather than rolling our own.
-	 *
-	 * @param ApiPageSet|null $resultPageSet
 	 */
-	private function run( $resultPageSet = null ) {
+	private function run() {
 		$start = microtime( true );
 		$params = $this->extractRequestParams();
 		$pageResult = $this->getResult();
