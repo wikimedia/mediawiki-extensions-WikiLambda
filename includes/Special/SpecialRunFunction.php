@@ -43,6 +43,11 @@ class SpecialRunFunction extends SpecialPage {
 	 * @return bool
 	 */
 	public function userCanExecute( User $user ) {
+		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
+			// No usage allowed on client-mode wikis.
+			return false;
+		}
+
 		$block = $user->getBlock();
 
 		return (

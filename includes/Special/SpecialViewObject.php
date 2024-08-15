@@ -60,6 +60,12 @@ class SpecialViewObject extends SpecialPage {
 
 		$outputPage = $this->getOutput();
 
+		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
+			// No usage allowed on client-mode wikis.
+			$this->redirectToMain( $outputPage );
+			return;
+		}
+
 		// Make sure things don't think the page is wikitext, so that e.g. VisualEditor
 		// doesn't try to instantiate its tabs
 		$outputPage->getTitle()->setContentModel( CONTENT_MODEL_ZOBJECT );

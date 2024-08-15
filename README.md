@@ -53,6 +53,7 @@ you have cloned the `mediawiki/core` repository.
 * Add the following to your `LocalSettings.php` file:
   ```
   wfLoadExtension( 'WikiLambda' );
+  $wgWikiLambdaEnableRepoMode = true;
   wfLoadExtension( 'WikimediaMessages' );
   wfLoadExtension( 'UniversalLanguageSelector' );
   ```

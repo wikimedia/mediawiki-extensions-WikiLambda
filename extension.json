@@ -38,6 +38,10 @@
 		"zobject": "MediaWiki\\Extension\\WikiLambda\\ZObjectContentHandler"
 	},
 	"config": {
+		"WikiLambdaEnableRepoMode": {
+			"description": "If true, enable the 'repo' mode of WikiLambda that powers Wikifunctions, and so hosting Functions in the main namespace.",
+			"value": true
+		},
 		"WikiLambdaObjectCache": {
 			"description": "If false, store function calls in the main MediaWiki cache; if set to another value, that will be used as the key of a cache in wgObjectCaches.",
 			"value": false

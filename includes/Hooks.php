@@ -28,7 +28,15 @@ use Wikimedia\Services\NoSuchServiceException;
 class Hooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook {
 
 	public static function registerExtension() {
+		// We define the content model regardless of if 'repo mode' is enabled
 		require_once __DIR__ . '/defines.php';
+
+		// Can't use MediaWikiServices or config objects yet, so use globals
+		global $wgWikiLambdaEnableRepoMode;
+		if ( !$wgWikiLambdaEnableRepoMode ) {
+			// Nothing for us to do.
+			return;
+		}
 
 		global $wgNamespaceContentModels;
 		$wgNamespaceContentModels[ NS_MAIN ] = CONTENT_MODEL_ZOBJECT;
@@ -48,6 +56,13 @@ class Hooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook 
 	 * @param DatabaseUpdater $updater DatabaseUpdater subclass
 	 */
 	public function onLoadExtensionSchemaUpdates( $updater ) {
+		$config = MediaWikiServices::getInstance()->getMainConfig();
+		// Special form of the check to call has() first, as we'll likely be in pre-extension registry mode
+		if ( !$config->has( 'WikiLambdaEnableRepoMode' ) || !$config->get( 'WikiLambdaEnableRepoMode' ) ) {
+			// Nothing for us to do.
+			return;
+		}
+
 		$db = $updater->getDB();
 		$type = $db->getType();
 		$dir = __DIR__ . '/../sql';
@@ -108,6 +123,12 @@ class Hooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook 
 	public static function createInitialContent( DatabaseUpdater $updater, $overwrite = false ) {
 		// Ensure that the extension is set up (namespace is defined) even when running in update.php outside of MW.
 		self::registerExtension();
+
+		$config = MediaWikiServices::getInstance()->getMainConfig();
+		if ( !$config->get( 'WikiLambdaEnableRepoMode' ) ) {
+			// Nothing for us to do.
+			return;
+		}
 
 		$contentHandler = MediaWikiServices::getInstance()->getContentHandlerFactory();
 		if ( !$contentHandler->isDefinedModel( CONTENT_MODEL_ZOBJECT ) ) {
@@ -272,7 +293,6 @@ class Hooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook 
 		} else {
 			$firstError = $pageUpdater->getStatus()->getErrors()[0];
 			$error = wfMessage( $firstError[ 'message' ], $firstError[ 'params' ] );
-			// @phan-suppress-next-line SecurityCheck-DoubleEscaped Inside the installer, controlled content.
 			$updater->output( "\t❌ Unable to make a page for {$title->getPrefixedText()}: $error\n" );
 		}
 
@@ -324,6 +344,13 @@ class Hooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook 
 		$dryRun = false
 	) {
 		$services = MediaWikiServices::getInstance();
+
+		$config = $services->getMainConfig();
+		if ( !$config->get( 'WikiLambdaEnableRepoMode' ) ) {
+			// Nothing for us to do.
+			return;
+		}
+
 		static::ensureZObjectStoreIsPresent( $services );
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
