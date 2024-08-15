@@ -60,26 +60,20 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	/**
 	 * @param ZError $zerror The ZError object to return to the user
 	 * @param int $code HTTP error code, defaulting to 400/Bad Request
+	 * @return never
 	 */
-	public function dieWithZError( $zerror, $code = 400 ) {
+	public static function dieWithZError( $zerror, $code = 400 ) {
 		try {
 			$errorData = $zerror->getErrorData();
 		} catch ( ZErrorException $e ) {
-			// Generating the human-readable error data itself threw. Oh dear.
-			$this->getLogger()->warning(
-				__METHOD__ . ' called but an error was thrown when trying to report an error',
-				[
-					'zerror' => $zerror->getSerialized(),
-					'error' => $e,
-				]
-			);
-
 			$errorData = [
 				'zerror' => $zerror->getSerialized()
 			];
 		}
 
-		parent::dieWithError(
+		// Copied from ApiBase in an ugly way, so that we can be static.
+		throw ApiUsageException::newWithMessage(
+			null,
 			[ 'wikilambda-zerror', $zerror->getZErrorType() ],
 			null,
 			$errorData,
@@ -125,7 +119,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		// Unlike the Special pages, we don't have a helpful userCanExecute() method
 		if ( !$this->getContext()->getAuthority()->isAllowed( 'wikilambda-execute' ) ) {
 			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
-			$this->dieWithZError( $zError, 403 );
+			self::dieWithZError( $zError, 403 );
 		}
 
 		$queryArguments = [

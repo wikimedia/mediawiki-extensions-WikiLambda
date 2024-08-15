@@ -93,7 +93,7 @@ class PublicApiRun extends WikiLambdaApiBase {
 		if ( !$userAuthority->isAllowed( 'wikifunctions-run' ) ) {
 			$this->submitFunctionCallEvent( 403, $function, $start );
 			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
-			$this->dieWithZError( $zError, 403 );
+			WikiLambdaApiBase::dieWithZError( $zError, 403 );
 		}
 
 		// Don't allow the public API to run "unsaved code" (a custom function with the raw
@@ -113,7 +113,7 @@ class PublicApiRun extends WikiLambdaApiBase {
 		if ( $isUnsavedCode ) {
 			$this->submitFunctionCallEvent( 403, $function, $start );
 			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
-			$this->dieWithZError( $zError, 403 );
+			WikiLambdaApiBase::dieWithZError( $zError, 403 );
 		}
 
 		$work = new PoolCounterWorkViaCallback( 'WikiLambdaFunctionCall', $this->getUser()->getName(), [
