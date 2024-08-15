@@ -3,7 +3,8 @@
 		"authors": [
 			"Amire80",
 			"Freddy9",
-			"Xnet1234"
+			"Xnet1234",
+			"YaronSh"
 		]
 	},
 	"wikilambda-desc": "אפשרות לכתוב, לנהל ולהעריך פונקציות בוויקי מרכזי.",
@@ -270,6 +271,7 @@
 	"wikilambda-functioncall-error-unknown": "שגיאה בקריאה לפונקציה: \"$1\" אינו עצם ידוע",
 	"wikilambda-functioncall-error-unknown-category": "דפים עם קריאות לוויקיפונקציות לעצמי בלתי־ידועים",
 	"wikilambda-functioncall-error-unknown-category-desc": "דפים שמנסים לקרוא לוויקיפונקציות שמבקשות עצם בלתי־ידוע",
+	"wikilambda-functioncall-metadata-accessible-title": "חלונית שמאפשרת לך לראות את נתוני העל של תוצאות הקריאה לפונקציה",
 	"wikilambda-functioncall-metadata-actual-result": "תוצאה בפועל",
 	"wikilambda-functioncall-metadata-cpu-usage": "שימוש במעבד",
 	"wikilambda-functioncall-metadata-duration": "משך זמן",
@@ -290,6 +292,7 @@
 	"wikilambda-functioncall-metadata-orchestration": "תזמור",
 	"wikilambda-functioncall-metadata-programming-language": "שפת תכנות",
 	"wikilambda-functioncall-metadata-programming-language-version": "גרסה",
+	"wikilambda-functioncall-metadata-select-label": "קריאות לפונקציה",
 	"wikilambda-functioncall-metadata-start-time": "זמן התחלה",
 	"wikilambda-functioncall-metadata-validator-errors-summary": "סוג שגיאת בדיקת תקינות",
 	"wikilambda-helplink-button": "עזרה",
