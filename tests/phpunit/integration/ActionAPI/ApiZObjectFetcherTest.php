@@ -10,7 +10,6 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
 use MediaWiki\Deferred\DeferredUpdates;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Tests\Api\ApiTestCase;
 use MediaWiki\Title\Title;
 
@@ -80,7 +79,6 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 		$this->editPage( 'Z3', $z3_object, 'Test creation', NS_MAIN );
 
 		DeferredUpdates::doUpdates();
-		MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->waitForReplication();
 		$result = $this->doApiRequest( [
 			'action' => 'wikilambda_fetch',
 			'zids' => 'z1|z3',
@@ -104,7 +102,6 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 		$this->editPage( 'Z1', $z1_object, 'Test creation', NS_MAIN );
 
 		DeferredUpdates::doUpdates();
-		MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->waitForReplication();
 
 		$z1Title = Title::newFromText( 'Z1' );
 		$z1TitleRev = $z1Title->getLatestRevID();
@@ -129,7 +126,6 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 		$this->editPage( 'Z1', $z1_object, 'Test creation', NS_MAIN );
 
 		DeferredUpdates::doUpdates();
-		MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->waitForReplication();
 
 		$result = $this->doApiRequest( [
 			'action' => 'wikilambda_fetch',
@@ -151,7 +147,6 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 		$this->editPage( 'Z3', $z3_object, 'Test creation', NS_MAIN );
 
 		DeferredUpdates::doUpdates();
-		MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->waitForReplication();
 
 		$z1Title = Title::newFromText( 'Z1' );
 		$z1TitleRev = $z1Title->getLatestRevID();
