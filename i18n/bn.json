@@ -303,6 +303,7 @@
 	"wikilambda-functioncall-metadata-orchestration": "অর্কেস্ট্রেশন",
 	"wikilambda-functioncall-metadata-programming-language": "প্রোগ্রামিং ভাষা",
 	"wikilambda-functioncall-metadata-programming-language-version": "সংস্করণ",
+	"wikilambda-functioncall-metadata-select-label": "ফাংশনের কল",
 	"wikilambda-functioncall-metadata-start-time": "শুরুর সময়",
 	"wikilambda-functioncall-metadata-validator-errors-summary": "বৈধকারী ত্রুটির ধরণ",
 	"wikilambda-helplink-button": "সাহায্য",

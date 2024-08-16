@@ -205,7 +205,7 @@
 	"wikilambda-function-definition-name-example": "ר' דוגמאות לשם.",
 	"wikilambda-function-definition-name-label": "שם",
 	"wikilambda-function-definition-name-placeholder": "נא להזין שם",
-	"wikilambda-function-definition-output-description": "איזה סוג של נתונים הפונקציה מחזיקה?",
+	"wikilambda-function-definition-output-description": "איזה סוג של נתונים הפונקציה מחזירה?",
 	"wikilambda-function-definition-output-label": "פלט",
 	"wikilambda-function-definition-output-selector": "נא לבחור סוג",
 	"wikilambda-function-definition-output-type-label": "סוג",
