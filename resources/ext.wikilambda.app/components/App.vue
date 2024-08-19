@@ -37,8 +37,6 @@ const mapGetters = require( 'vuex' ).mapGetters,
 	FunctionViewerView = require( '../views/FunctionViewer.vue' ),
 	DefaultView = require( '../views/Default.vue' );
 
-const startTime = Date.now();
-
 module.exports = exports = defineComponent( {
 	name: 'app',
 	components: {
@@ -70,24 +68,7 @@ module.exports = exports = defineComponent( {
 			'prefetchZids',
 			'fetchUserRights',
 			'evaluateUri'
-		] ),
-		{
-			/**
-			 * Instrument how long our view took to load, split by type of view
-			 */
-			newViewMounted: function () {
-				// Log using Metrics Platform
-				// Pending to remove due to T350495
-				const customData = {
-					viewname: this.getCurrentView || null,
-					isnewzobject: this.isCreateNewPage,
-					loadtime: Date.now() - startTime
-				};
-				this.dispatchEvent( 'wf.ui.newView.mounted', customData );
-				// T350495 Update the WikiLambda instrumentation to use core interaction events
-				// We should remove this event after migration (it's a performance event)
-			}
-		}
+		] )
 	),
 	created: function () {
 		// Set zobject
