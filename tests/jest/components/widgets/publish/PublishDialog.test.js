@@ -215,17 +215,12 @@ describe( 'Publish Dialog', () => {
 
 			wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
 
-			const eventName = 'wf.ui.editImplementation.publish';
-			const eventData = {
-				haserrors: false,
-				implementationtype: 'Z14K3',
-				isnewzobject: false,
-				zlang: 'Z1002',
-				zobjectid: 'Z10001',
-				zobjecttype: 'Z14'
-			};
+			const streamName = 'mediawiki.product_metrics.wikifunctions_ui';
+			const schemaID = '/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0';
+			const action = 'publish';
+			const interactionData = { haserrors: false, zlang: 'Z1002', zobjectid: 'Z0', zobjecttype: 'Z8' };
 
-			await waitFor( () => expect( mw.eventLog.dispatch ).toHaveBeenCalledWith( eventName, eventData ) );
+			await waitFor( () => expect( mw.eventLog.submitInteraction ).toHaveBeenCalledWith( streamName, schemaID, action, interactionData ) );
 		} );
 
 		it( 'emits publish event after unsuccessful creation of a function', async () => {
@@ -247,17 +242,12 @@ describe( 'Publish Dialog', () => {
 
 			wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
 
-			const eventName = 'wf.ui.editFunction.publish';
-			const eventData = {
-				haserrors: true,
-				implementationtype: null,
-				isnewzobject: true,
-				zlang: 'Z1002',
-				zobjectid: 'Z0',
-				zobjecttype: 'Z8'
-			};
+			const streamName = 'mediawiki.product_metrics.wikifunctions_ui';
+			const schemaID = '/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0';
+			const action = 'publish';
+			const interactionData = { haserrors: false, zlang: 'Z1002', zobjectid: 'Z0', zobjecttype: 'Z8' };
 
-			await waitFor( () => expect( mw.eventLog.dispatch ).toHaveBeenCalledWith( eventName, eventData ) );
+			await waitFor( () => expect( mw.eventLog.submitInteraction ).toHaveBeenCalledWith( streamName, schemaID, action, interactionData ) );
 		} );
 	} );
 } );

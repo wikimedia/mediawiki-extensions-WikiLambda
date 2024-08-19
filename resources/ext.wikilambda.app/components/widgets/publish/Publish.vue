@@ -232,9 +232,7 @@ module.exports = exports = defineComponent( {
 		leaveTo: function ( targetUrl ) {
 			const leaveAction = () => {
 				this.removeListeners();
-				const eventNamespace = eventLogger.getNamespace( this.getCurrentZObjectType );
-				eventLogger.dispatchEvent( `wf.ui.${ eventNamespace }.cancel`, this.eventData );
-				// T350497 Update the WikiLambda instrumentation to use core interaction events
+				// Log an event using Metrics Platform's core interaction events
 				const interactionData = {
 					zobjecttype: this.getCurrentZObjectType || null,
 					zobjectid: this.getCurrentZObjectId,

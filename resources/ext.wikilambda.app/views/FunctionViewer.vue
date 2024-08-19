@@ -66,8 +66,7 @@ module.exports = exports = defineComponent( {
 	},
 	computed: Object.assign( mapGetters( [
 		'getCurrentZObjectId',
-		'getUserLangZid',
-		'isCreateNewPage'
+		'getUserLangZid'
 	] ), {
 		displaySuccessMessage: function () {
 			if ( mw.Uri().query ) {
@@ -81,14 +80,7 @@ module.exports = exports = defineComponent( {
 		 * Dispatch event after a click of the edit icon in the About widget.
 		 */
 		dispatchAboutEvent: function () {
-			this.dispatchEvent( 'wf.ui.editFunction.load', {
-				edit: true,
-				zobjecttype: Constants.Z_FUNCTION,
-				isnewzobject: false,
-				zobjectid: this.getCurrentZObjectId || null,
-				zlang: this.getUserLangZid || null
-			} );
-			// T350495 Update the WikiLambda instrumentation to use core interaction events
+			// Log an event using Metrics Platform's core interaction events
 			const interactionData = {
 				zobjecttype: Constants.Z_FUNCTION,
 				zobjectid: this.getCurrentZObjectId || null,
@@ -98,13 +90,7 @@ module.exports = exports = defineComponent( {
 		}
 	},
 	mounted: function () {
-		this.dispatchEvent( 'wf.ui.editFunction.load', {
-			edit: false,
-			zobjecttype: Constants.Z_FUNCTION,
-			isnewzobject: this.isCreateNewPage,
-			zobjectid: this.getCurrentZObjectId || null,
-			zlang: this.getUserLangZid || null
-		} );
+		// Log an event using Metrics Platform's core interaction events
 		const interactionData = {
 			zobjecttype: Constants.Z_FUNCTION,
 			zobjectid: this.getCurrentZObjectId || null,

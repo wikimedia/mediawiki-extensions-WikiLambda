@@ -12,19 +12,6 @@ const Constants = require( '../Constants.js' );
 module.exports = exports = {
 	methods: {
 		/**
-		 * Dispatches the event with name and payload data
-		 * using the mw.eventLog service
-		 *
-		 * @param {string} name
-		 * @param {Object} data
-		 */
-		dispatchEvent: function ( name, data ) {
-			if ( mw.eventLog ) {
-				mw.eventLog.dispatch( name, data );
-			}
-		},
-
-		/**
 		 * Create a new object by removing properties with null or undefined values from the original object
 		 *
 		 * @param {Object} original
