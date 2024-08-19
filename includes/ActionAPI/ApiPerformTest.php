@@ -125,7 +125,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 							ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN,
 							[]
 						);
-						$this->dieWithZError( $zError, 403 );
+						WikiLambdaApiBase::dieWithZError( $zError, 403 );
 					}
 
 					try {
@@ -195,7 +195,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 								ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN,
 								[]
 							);
-							$this->dieWithZError( $zError, 403 );
+							WikiLambdaApiBase::dieWithZError( $zError, 403 );
 						}
 
 						try {

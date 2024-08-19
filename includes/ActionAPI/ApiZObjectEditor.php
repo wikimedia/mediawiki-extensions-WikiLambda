@@ -50,7 +50,7 @@ class ApiZObjectEditor extends WikiLambdaApiBase {
 		}
 
 		if ( !$response->isOK() ) {
-			$this->dieWithZError( $response->getErrors(), 400 );
+			WikiLambdaApiBase::dieWithZError( $response->getErrors(), 400 );
 		}
 
 		$title = $response->getTitle();

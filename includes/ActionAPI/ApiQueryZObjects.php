@@ -20,7 +20,6 @@ use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\Languages\LanguageNameUtils;
@@ -71,39 +70,6 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase implements LoggerAwareInter
 	 */
 	public function executeGenerator( $resultPageSet ) {
 		$this->run( $resultPageSet );
-	}
-
-	/**
-	 * This is a copy of WikiLambdaApiBase::dieWithZError() that we can't inherit from as we
-	 * have to extend ApiQueryGeneratorBase.
-	 *
-	 * @param ZError $zerror The ZError object to return to the user
-	 * @param int $code HTTP error code, defaulting to 400/Bad Request
-	 */
-	public function dieWithZError( $zerror, $code = 400 ) {
-		try {
-			$errorData = $zerror->getErrorData();
-		} catch ( ZErrorException $e ) {
-			// Generating the human-readable error data itself threw. Oh dear.
-			$this->getLogger()->warning(
-				__METHOD__ . ' called but an error was thrown when trying to report an error',
-				[
-					'zerror' => $zerror->getSerialized(),
-					'error' => $e,
-				]
-			);
-
-			$errorData = [
-				'zerror' => $zerror->getSerialized()
-			];
-		}
-
-		parent::dieWithError(
-			[ 'wikilambda-zerror', $zerror->getZErrorType() ],
-			null,
-			$errorData,
-			$code
-		);
 	}
 
 	/**
@@ -231,7 +197,7 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase implements LoggerAwareInter
 					ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
 					[ 'message' => "You must specify a revision for each ZID, or none at all." ]
 				);
-				$this->dieWithZError( $zErrorObject, 400 );
+				WikiLambdaApiBase::dieWithZError( $zErrorObject, 400 );
 			}
 			foreach ( $zids as $index => $zid ) {
 				$revisionMap[ $zid ] = (int)$revisions[ $index ];

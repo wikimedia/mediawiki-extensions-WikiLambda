@@ -102,7 +102,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 		if ( !$userAuthority->isAllowed( 'wikilambda-execute' ) ) {
 			$this->submitFunctionCallEvent( 403, $function, $start );
 			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
-			$this->dieWithZError( $zError, 403 );
+			WikiLambdaApiBase::dieWithZError( $zError, 403 );
 		}
 
 		// Principally used for the PoolCounter, but also logging
@@ -134,7 +134,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 			);
 			$this->submitFunctionCallEvent( 403, $function, $start );
 			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
-			$this->dieWithZError( $zError, 403 );
+			WikiLambdaApiBase::dieWithZError( $zError, 403 );
 		}
 
 		$work = new PoolCounterWorkViaCallback( 'WikiLambdaFunctionCall', $userName, [
