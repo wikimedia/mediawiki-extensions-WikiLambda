@@ -13,9 +13,9 @@ const convertSetToMap = function ( set ) {
 	};
 	for ( const key in set ) {
 		const pair = {
-      Z1K1: { Z1K1: "Z7", Z7K1: "Z882", Z882K1: "Z6", Z882K2: "Z1" },
-      K1: key,
-      K2: set[ key ]
+			Z1K1: { Z1K1: "Z7", Z7K1: "Z882", Z882K1: "Z6", Z882K2: "Z1" },
+			K1: key,
+			K2: set[ key ]
 		};
 		map.K1.push( pair );
 	}
@@ -27,22 +27,22 @@ const metadataBasic = convertSetToMap( {
 	implementationType: 'Evaluated',
 	// duration:
 	orchestrationDuration: "70 ms",
-  orchestrationStartTime: "2024-02-16T12:25:19.230Z",
+	orchestrationStartTime: "2024-02-16T12:25:19.230Z",
 	orchestrationEndTime: "2024-02-16T12:25:19.300Z",
 	evaluationDuration: "10 ms",
-  evaluationStartTime: "2024-02-16T12:25:19.240Z",
+	evaluationStartTime: "2024-02-16T12:25:19.240Z",
 	evaluationEndTime: "2024-02-16T12:25:19.250Z",
 	// cpu usage:
 	orchestrationCpuUsage: "85.790 ms",
 	evaluationCpuUsage: "45.110 ms",
 	executionCpuUsage: "<50 μs",
 	// memory usage:
-  orchestrationMemoryUsage: "115.43 MiB",
-  evaluationMemoryUsage: "15.57 MiB",
-  executionMemoryUsage: "1 MiB",
+	orchestrationMemoryUsage: "115.43 MiB",
+	evaluationMemoryUsage: "15.57 MiB",
+	executionMemoryUsage: "1 MiB",
 	// hostnames:
-  orchestrationHostname: "function-orchestrator",
-  evaluationHostname: "function-evaluator-javascript",
+	orchestrationHostname: "function-orchestrator",
+	evaluationHostname: "function-evaluator-javascript",
 	// programming language
 	programmingLanguageVersion: "QuickJS v0.5.0-alpha"
 } );
@@ -54,10 +54,10 @@ const metadataChild1 = convertSetToMap( {
 	implementationType: 'Evaluated',
 	// duration:
 	orchestrationDuration: "20 ms",
-  orchestrationStartTime: "2024-02-16T12:25:19.240Z",
+	orchestrationStartTime: "2024-02-16T12:25:19.240Z",
 	orchestrationEndTime: "2024-02-16T12:25:19.260Z",
 	evaluationDuration: "5 ms",
-  evaluationStartTime: "2024-02-16T12:25:19.240Z",
+	evaluationStartTime: "2024-02-16T12:25:19.240Z",
 	evaluationEndTime: "2024-02-16T12:25:19.245Z",
 } );
 
@@ -80,11 +80,17 @@ const metadataChild2 = convertSetToMap( {
 	},
 	// duration:
 	orchestrationDuration: "20 ms",
-  orchestrationStartTime: "2024-02-16T12:25:19.270Z",
+	orchestrationStartTime: "2024-02-16T12:25:19.270Z",
 	orchestrationEndTime: "2024-02-16T12:25:19.290Z",
 	evaluationDuration: "2 ms",
-  evaluationStartTime: "2024-02-16T12:25:19.250Z",
+	evaluationStartTime: "2024-02-16T12:25:19.250Z",
 	evaluationEndTime: "2024-02-16T12:25:19.252Z",
+} );
+
+const metadataChild3 = convertSetToMap( {
+	zObjectKey: 'Z42',
+	// incomplete metadata to test how the system handles minimal data
+	// This could represent a partially implemented function or an incomplete condition
 } );
 
 const metadataNested = convertSetToMap( {
@@ -93,16 +99,17 @@ const metadataNested = convertSetToMap( {
 	implementationType: 'Evaluated',
 	// nestedMetadata:
 	nestedMetadata: [
-		{ Z1K1: "Z7", Z7K1: "Z883", Z883K1: "Z6", Z883K2: "Z1" },
-		metadataChild1,
-		metadataChild2
+		{ Z1K1: "Z7", Z7K1: "Z883", Z883K1: "Z6", Z883K2: "Z1" }, // Represents Typed Map
+		metadataChild1, // Represents Z801(Z41)
+		metadataChild2, // Represents some error in child function call
+		metadataChild3 // Represents incomplete metadata
 	],
 	// duration:
 	orchestrationDuration: "70 ms",
-  orchestrationStartTime: "2024-02-16T12:25:19.230Z",
+	orchestrationStartTime: "2024-02-16T12:25:19.230Z",
 	orchestrationEndTime: "2024-02-16T12:25:19.300Z",
 	evaluationDuration: "10 ms",
-  evaluationStartTime: "2024-02-16T12:25:19.240Z",
+	evaluationStartTime: "2024-02-16T12:25:19.240Z",
 	evaluationEndTime: "2024-02-16T12:25:19.250Z",
 } );
 
