@@ -10,7 +10,6 @@
 
 namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
-use ApiPageSet;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
@@ -38,19 +37,12 @@ class ApiSupportedProgrammingLanguages extends WikiLambdaApiBase {
 	}
 
 	/**
-	 * @inheritDoc
-	 */
-	public function executeGenerator( $resultPageSet ) {
-		$this->run( $resultPageSet );
-	}
-
-	/**
 	 * TODO (T338251): Factor out some commonality with WikiLambdaApiBase::executeFunctionCall()
 	 * rather than rolling our own. (But note different end-point and error messages.)
 	 *
-	 * @param ApiPageSet|null $resultPageSet
+	 * @inheritDoc
 	 */
-	private function run( $resultPageSet = null ) {
+	protected function run() {
 		$pageResult = $this->getResult();
 
 		$work = new PoolCounterWorkViaCallback(

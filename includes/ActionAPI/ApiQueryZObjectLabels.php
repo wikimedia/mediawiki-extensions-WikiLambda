@@ -11,8 +11,6 @@
 namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
 use ApiBase;
-use ApiPageSet;
-use ApiQueryGeneratorBase;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\MediaWikiServices;
@@ -20,7 +18,7 @@ use MediaWiki\Title\Title;
 use Wikimedia\ParamValidator\ParamValidator;
 use Wikimedia\ParamValidator\TypeDef\IntegerDef;
 
-class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
+class ApiQueryZObjectLabels extends WikiLambdaApiQueryGeneratorBase {
 
 	/**
 	 * @inheritDoc
@@ -33,21 +31,7 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 	/**
 	 * @inheritDoc
 	 */
-	public function execute() {
-		$this->run();
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public function executeGenerator( $resultPageSet ) {
-		$this->run( $resultPageSet );
-	}
-
-	/**
-	 * @param ApiPageSet|null $resultPageSet
-	 */
-	private function run( $resultPageSet = null ) {
+	protected function run( $resultPageSet = null ) {
 		[
 			'search' => $searchTerm,
 			'type' => $type,

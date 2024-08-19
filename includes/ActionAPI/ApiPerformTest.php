@@ -10,7 +10,6 @@
 
 namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
-use ApiPageSet;
 use FormatJson;
 use JobQueueGroup;
 use MediaWiki\Extension\WikiLambda\Jobs\CacheTesterResultsJob;
@@ -54,14 +53,10 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		$this->run();
 	}
 
-	public function executeGenerator( $resultPageSet ) {
-		$this->run( $resultPageSet );
-	}
-
 	/**
-	 * @param ApiPageSet|null $resultPageSet
+	 * @inheritDoc
 	 */
-	private function run( $resultPageSet = null ) {
+	protected function run() {
 		$params = $this->extractRequestParams();
 		$pageResult = $this->getResult();
 		$functionZid = $params[ 'zfunction' ];

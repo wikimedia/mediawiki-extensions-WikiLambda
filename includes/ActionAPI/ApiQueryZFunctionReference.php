@@ -11,14 +11,12 @@
 namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
 use ApiBase;
-use ApiPageSet;
-use ApiQueryGeneratorBase;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Title\Title;
 use Wikimedia\ParamValidator\ParamValidator;
 use Wikimedia\ParamValidator\TypeDef\IntegerDef;
 
-class ApiQueryZFunctionReference extends ApiQueryGeneratorBase {
+class ApiQueryZFunctionReference extends WikiLambdaApiQueryGeneratorBase {
 
 	private ZObjectStore $zObjectStore;
 
@@ -39,21 +37,7 @@ class ApiQueryZFunctionReference extends ApiQueryGeneratorBase {
 	/**
 	 * @inheritDoc
 	 */
-	public function execute() {
-		$this->run();
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public function executeGenerator( $resultPageSet ) {
-		$this->run( $resultPageSet );
-	}
-
-	/**
-	 * @param ApiPageSet|null $resultPageSet
-	 */
-	private function run( $resultPageSet = null ) {
+	protected function run( $resultPageSet = null ) {
 		[
 			'zfunction_id' => $zFunctionId,
 			'type' => $type,

@@ -11,8 +11,6 @@
 namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
 use ApiBase;
-use ApiPageSet;
-use ApiQueryGeneratorBase;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
@@ -25,12 +23,11 @@ use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\Languages\LanguageNameUtils;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Title\TitleFactory;
-use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use stdClass;
 use Wikimedia\ParamValidator\ParamValidator;
 
-class ApiQueryZObjects extends ApiQueryGeneratorBase implements LoggerAwareInterface {
+class ApiQueryZObjects extends WikiLambdaApiQueryGeneratorBase {
 
 	protected LanguageFallback $languageFallback;
 	protected LanguageNameUtils $languageNameUtils;
@@ -56,20 +53,6 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase implements LoggerAwareInter
 		$this->titleFactory = $titleFactory;
 		$this->typeRegistry = ZTypeRegistry::singleton();
 		$this->setLogger( LoggerFactory::getInstance( 'WikiLambda' ) );
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public function execute() {
-		$this->run();
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public function executeGenerator( $resultPageSet ) {
-		$this->run( $resultPageSet );
 	}
 
 	/**
@@ -176,9 +159,9 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase implements LoggerAwareInter
 	}
 
 	/**
-	 * @param ApiPageSet|null $resultPageSet
+	 * @inheritDoc
 	 */
-	private function run( $resultPageSet = null ) {
+	protected function run( $resultPageSet = null ) {
 		$params = $this->extractRequestParams();
 
 		$languages = null;
@@ -299,15 +282,5 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase implements LoggerAwareInter
 			'action=query&format=json&list=wikilambdaload_zobjects&wikilambdaload_zids=Z0123456789%7CZ1'
 				=> 'apihelp-query+wikilambdaload_zobjects-example-error',
 		];
-	}
-
-	/** @inheritDoc */
-	public function setLogger( LoggerInterface $logger ) {
-		$this->logger = $logger;
-	}
-
-	/** @inheritDoc */
-	public function getLogger(): LoggerInterface {
-		return $this->logger;
 	}
 }
