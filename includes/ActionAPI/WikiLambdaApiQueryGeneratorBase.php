@@ -27,6 +27,17 @@ abstract class WikiLambdaApiQueryGeneratorBase extends \ApiQueryGeneratorBase im
 	 * @inheritDoc
 	 */
 	public function execute() {
+		// Exit if we're running in non-repo mode (e.g. on a client wiki)
+		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
+			WikiLambdaApiBase::dieWithZError(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN,
+					[]
+				),
+				501
+			);
+		}
+
 		$this->run( null );
 	}
 
@@ -34,6 +45,17 @@ abstract class WikiLambdaApiQueryGeneratorBase extends \ApiQueryGeneratorBase im
 	 * @inheritDoc
 	 */
 	public function executeGenerator( $resultPageSet ) {
+		// Exit if we're running in non-repo mode (e.g. on a client wiki)
+		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
+			WikiLambdaApiBase::dieWithZError(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN,
+					[]
+				),
+				501
+			);
+		}
+
 		$this->run( $resultPageSet );
 	}
 

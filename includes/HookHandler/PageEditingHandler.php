@@ -17,6 +17,7 @@ use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Hook\NamespaceIsMovableHook;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Permissions\Hook\GetUserPermissionsErrorsHook;
 use MediaWiki\Revision\RenderedRevision;
 use MediaWiki\Revision\SlotRecord;
@@ -37,6 +38,12 @@ class PageEditingHandler implements NamespaceIsMovableHook, MultiContentSaveHook
 	 * @return bool|void
 	 */
 	public function onNamespaceIsMovable( $index, &$result ) {
+		$config = MediaWikiServices::getInstance()->getMainConfig();
+		if ( !$config->get( 'WikiLambdaEnableRepoMode' ) ) {
+			// Nothing for us to do.
+			return;
+		}
+
 		if ( $index === NS_MAIN ) {
 			$result = false;
 			// Over-ride any other extensions which might have other ideas
@@ -57,6 +64,12 @@ class PageEditingHandler implements NamespaceIsMovableHook, MultiContentSaveHook
 	 * @return bool|void
 	 */
 	public function onMultiContentSave( $renderedRevision, $user, $summary, $flags, $hookStatus ) {
+		$config = MediaWikiServices::getInstance()->getMainConfig();
+		if ( !$config->get( 'WikiLambdaEnableRepoMode' ) ) {
+			// Nothing for us to do.
+			return;
+		}
+
 		$title = $renderedRevision->getRevision()->getPageAsLinkTarget();
 		if ( !$title->inNamespace( NS_MAIN ) ) {
 			return true;
@@ -116,6 +129,12 @@ class PageEditingHandler implements NamespaceIsMovableHook, MultiContentSaveHook
 	 * @return bool|void
 	 */
 	public function onGetUserPermissionsErrors( $title, $user, $action, &$result ) {
+		$config = MediaWikiServices::getInstance()->getMainConfig();
+		if ( !$config->get( 'WikiLambdaEnableRepoMode' ) ) {
+			// Nothing for us to do.
+			return;
+		}
+
 		if ( !$title->inNamespace( NS_MAIN ) ) {
 			return;
 		}

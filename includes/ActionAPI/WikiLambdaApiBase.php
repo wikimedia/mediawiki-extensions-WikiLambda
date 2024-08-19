@@ -61,6 +61,17 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	 * @inheritDoc
 	 */
 	public function execute() {
+		// Exit if we're running in non-repo mode (e.g. on a client wiki)
+		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
+			self::dieWithZError(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN,
+					[]
+				),
+				501
+			);
+		}
+
 		$this->run();
 	}
 
