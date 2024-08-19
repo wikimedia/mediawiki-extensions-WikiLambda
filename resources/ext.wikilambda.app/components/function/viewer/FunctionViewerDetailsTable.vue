@@ -251,12 +251,6 @@ module.exports = exports = defineComponent( {
 			padding-left: 12px;
 			padding-right: 12px;
 		}
-
-		.cdx-checkbox {
-			display: flex;
-			flex-direction: column;
-			justify-content: center;
-		}
 	}
 
 	.ext-wikilambda-app-function-viewer-details-table__item {
@@ -282,9 +276,6 @@ module.exports = exports = defineComponent( {
 
 		.cdx-checkbox {
 			width: 22.85px;
-			display: flex;
-			flex-direction: column;
-			justify-content: center;
 		}
 
 		&:first-child {
