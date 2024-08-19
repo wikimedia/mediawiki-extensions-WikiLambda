@@ -49,10 +49,6 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		$this->jobQueueGroup = $services->getJobQueueGroup();
 	}
 
-	public function execute() {
-		$this->run();
-	}
-
 	/**
 	 * @inheritDoc
 	 */
@@ -73,7 +69,6 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		// Needed for caching.
 		$functionRevision = $targetTitle->getLatestRevID();
 
-		// @phan-suppress-next-line PhanTypeMismatchArgumentNullable
 		$targetObject = $this->zObjectStore->fetchZObjectByTitle( $targetTitle );
 		if ( $targetObject->getZType() !== ZTypeRegistry::Z_FUNCTION ) {
 			$this->dieWithError( [ "wikilambda-performtest-error-nonfunction", $functionZid ], null, null, 400 );

@@ -35,16 +35,9 @@ class PublicApiRun extends WikiLambdaApiBase {
 	}
 
 	/**
-	 * @inheritDoc
-	 */
-	public function execute() {
-		$this->run();
-	}
-
-	/**
 	 * TODO (T338251): Use WikiLambdaApiBase::executeFunctionCall() rather than rolling our own.
 	 */
-	private function run() {
+	protected function run() {
 		$start = microtime( true );
 		$params = $this->extractRequestParams();
 		$pageResult = $this->getResult();

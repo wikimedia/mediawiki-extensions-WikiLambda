@@ -33,7 +33,7 @@ class ApiZObjectFetcher extends WikiLambdaApiBase {
 	/**
 	 * @inheritDoc
 	 */
-	public function execute(): void {
+	protected function run(): void {
 		$params = $this->extractRequestParams();
 
 		$ZIDs = $params[ 'zids' ];

@@ -58,6 +58,27 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	}
 
 	/**
+	 * @inheritDoc
+	 */
+	public function execute() {
+		$this->run();
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	protected function run() {
+		// Throw, not implemented
+		self::dieWithZError(
+			ZErrorFactory::createZErrorInstance(
+				ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
+				[ 'You must implement your run() method when using WikiLambdaApiBase' ]
+			),
+			501
+		);
+	}
+
+	/**
 	 * @param ZError $zerror The ZError object to return to the user
 	 * @param int $code HTTP error code, defaulting to 400/Bad Request
 	 * @return never
@@ -259,7 +280,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	}
 
 	/** @inheritDoc */
-	public function setLogger( LoggerInterface $logger ) {
+	public function setLogger( LoggerInterface $logger ): void {
 		$this->logger = $logger;
 	}
 

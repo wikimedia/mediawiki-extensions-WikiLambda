@@ -30,13 +30,6 @@ class ApiSupportedProgrammingLanguages extends WikiLambdaApiBase {
 	}
 
 	/**
-	 * @inheritDoc
-	 */
-	public function execute() {
-		$this->run();
-	}
-
-	/**
 	 * TODO (T338251): Factor out some commonality with WikiLambdaApiBase::executeFunctionCall()
 	 * rather than rolling our own. (But note different end-point and error messages.)
 	 *
