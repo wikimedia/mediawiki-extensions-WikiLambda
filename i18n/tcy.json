@@ -9,5 +9,7 @@
 	"wikilambda-editor-label-select-programming-language-empty": "ಪ್ರೋಗ್ರಾಮಿಂಗ್ ಬಾಸೆನ್ ಆಯ್ಕೆ ಮಲ್ಪುಲೆ",
 	"wikilambda-editor-publish-dialog-summary-help-text": "ಈರ್ ಇ ಪುಟೊನ್ ವಾ ನಮೂಡೆಡ್ ಎಡ್ಡೆ ಮಲ್ತರ್?",
 	"wikilambda-metadata-language-column": "ಬಾಸೆ",
-	"wikilambda-persistentzobject-contents": "ವಿಸಯೊಲು"
+	"wikilambda-persistentzobject-contents": "ವಿಸಯೊಲು",
+	"wikilambda-validation-error-description-toolong": "$1ತ ಇವರನೆ {{PLURAL:$2|$2 ಸಬ್ದೊ}}ಡು ಅತ್ಂಡ ಐಡ್ದ್ ಕಡಮೆ ಇಪ್ಪೊಡು.",
+	"wikilambda-validation-error-name-toolong": "$1 ಬಾಸೆಡ್ ಪುದರ್ {{PLURAL:$2|$2 ಸಬ್ದೊ}}ದಾತ್, ಅತ್ಂಡ, ನನಲಾ ಕಡಮೆ ಇಪ್ಪೊಡು"
 }

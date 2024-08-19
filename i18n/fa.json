@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Darafsh",
+			"Ebrahim",
 			"Jeeputer",
 			"Mojtabakd"
 		]
@@ -30,7 +31,7 @@
 	"wikilambda-editor-input-type-placeholder": "نوع ورودی",
 	"wikilambda-editor-output-title": "خروجی",
 	"wikilambda-editor-tester-list-label": "فهرست آزمایش‌ها",
-	"wikilambda-editor-zobject-clearitem-tooltip": "خالی‌کردن این مقدار",
+	"wikilambda-editor-zobject-clearitem-tooltip": "خالی کردن این مقدار",
 	"wikilambda-function-definition-edit": "ویرایش تعریف",
 	"wikilambda-function-evaluator-run-function": "راندن تابع",
 	"wikilambda-function-evaluator-title": "امتحان‌کردن یک تابع",

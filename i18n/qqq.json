@@ -451,7 +451,7 @@
 	"wikilambda-zimplementation-code-missing": "Error message for a code ZImplementation that is missing the code",
 	"wikilambda-zobject-missing-attached-function": "Error message for a ZObject that requires an associated function and is missing one",
 	"wikilambda-zobject-to-string-enter-string": "Call to action for entering a string in the ZObjectToString component.\n\n{{doc-wikilambda}}",
-	"wikilambda-zobject-to-string-select-object": "Call to action for selecting a blank object in the ZObjectToString component.",
+	"wikilambda-zobject-to-string-select-object": "Call to action for selecting a blank object in the ZObjectToString component.\n\n$1 – The label of a ZObject in the user's interface language.",
 	"wikilambda-zobjectselector-label": "Label for the ZObject selector, that searches using labels and offers a list of existing ZObjects.\n\n{{doc-wikilambda}}",
 	"wikilambda-zobjectselector-no-results": "Message shown when the lookup call returns no results.\n\n{{doc-wikilambda}}",
 	"wikilambda-ztester-missing-call-function": "Error message for a ZTester that is missing a call function",
