@@ -11,6 +11,7 @@
 			<p
 				v-if="!edit"
 				class="ext-wikilambda-app-object-string-renderer__text"
+				:class="{ 'ext-wikilambda-app-object-string-renderer__rendering': rendererRunning }"
 				data-testid="zobject-string-renderer-text">
 				{{ renderedValue }}
 			</p>
@@ -20,6 +21,7 @@
 				v-else
 				:class="{ 'cdx-text-input--status-error': hasFieldErrors }"
 				:model-value="renderedValue"
+				:disabled="rendererRunning"
 				:placeholder="placeholderValue"
 				data-testid="zobject-string-renderer-input"
 				@change="setRenderedValue"
@@ -130,6 +132,7 @@ module.exports = exports = defineComponent( {
 			blankObject: undefined,
 			initialized: false,
 			renderedValue: '',
+			rendererRunning: false,
 			showExamplesDialog: false,
 			showExamplesLink: false,
 			showErrorFooter: false,
@@ -203,6 +206,8 @@ module.exports = exports = defineComponent( {
 		 * Return a dynamically generated placeholder for the renderer field
 		 * using the available tests for the renderer function. If none are
 		 * available, returns the fallback placeholder message.
+		 *
+		 * When the renderer is running, show the Renderer running message.
 		 *
 		 * @return {string}
 		 */
@@ -302,6 +307,8 @@ module.exports = exports = defineComponent( {
 			if ( JSON.stringify( zobject ) === JSON.stringify( this.blankObject ) ) {
 				return;
 			}
+			this.rendererRunning = true;
+			this.renderedValue = this.$i18n( 'wikilambda-string-renderer-running' ).text();
 
 			this.runRenderer( {
 				rendererZid: this.rendererZid,
@@ -329,8 +336,7 @@ module.exports = exports = defineComponent( {
 					this.setRendererError( this.$i18n( 'wikilambda-renderer-unexpected-result-error',
 						this.rendererZid ).parse() );
 				} else {
-					// Success:
-					// Update the locally saved renderedValue with the response
+					// Success: Update the locally saved renderedValue with the response
 					this.renderedValue = response;
 				}
 			} ).catch( () => {
@@ -419,6 +425,7 @@ module.exports = exports = defineComponent( {
 		clearRendererError: function () {
 			this.showExamplesLink = false;
 			this.showErrorFooter = false;
+			this.rendererRunning = false;
 			this.clearFieldErrors();
 		},
 		/**
@@ -535,6 +542,10 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-object-string-renderer__text {
 		margin: 0;
 		line-height: @spacing-200;
+	}
+
+	.ext-wikilambda-app-object-string-renderer__rendering {
+		color: @color-placeholder;
 	}
 
 	.ext-wikilambda-app-object-string-renderer__error {

@@ -204,7 +204,7 @@ describe( 'ZObjectStringRenderer', () => {
 	} );
 
 	describe( 'in view mode', () => {
-		it( 'when collapsed, runs renderer and shows result in text', async () => {
+		it( 'when collapsed, shows a loading state when running the renderer and then shows result in text', async () => {
 			const wrapper = shallowMount( ZObjectStringRenderer, {
 				props: {
 					depth: 2,
@@ -216,6 +216,10 @@ describe( 'ZObjectStringRenderer', () => {
 
 			const text = wrapper.find( '[data-testid="zobject-string-renderer-text"]' );
 			expect( text.exists() ).toBe( true );
+			// Initially, the text should show "Running..."
+			await waitFor( () => expect( wrapper.vm.$data.rendererRunning ).toBeTruthy() );
+			expect( text.text() ).toBe( 'Running...' );
+			// After the renderer is done, the text should show the rendered string
 			await waitFor( () => expect( text.text() ).toContain( renderedString ) );
 		} );
 
@@ -245,7 +249,7 @@ describe( 'ZObjectStringRenderer', () => {
 	} );
 
 	describe( 'in edit mode', () => {
-		it( 'when collapsed, runs renderer and shows result in text field', async () => {
+		it( 'when collapsed, shows a loading state when running the renderer and then shows result in text field', async () => {
 			const wrapper = shallowMount( ZObjectStringRenderer, {
 				props: {
 					depth: 2,
@@ -257,6 +261,10 @@ describe( 'ZObjectStringRenderer', () => {
 
 			const text = wrapper.findComponent( { name: 'cdx-text-input' } );
 			expect( text.exists() ).toBe( true );
+			// Initially, the input value should show "Running..."
+			await waitFor( () => expect( wrapper.vm.$data.rendererRunning ).toBeTruthy() );
+			expect( text.vm.modelValue ).toBe( 'Running...' );
+			// After the renderer is done, the input value should show the rendered string
 			await waitFor( () => expect( text.vm.modelValue ).toBe( renderedString ) );
 		} );
 

@@ -408,6 +408,7 @@
 	"wikilambda-special-viewobject": "Description for Special:ViewObject; generally not visible.\n\n{{doc-wikilambda}}",
 	"wikilambda-string-renderer-examples-title": "Title for the list of examples generated for a string renderer",
 	"wikilambda-string-renderer-field-example": "Message to show the $1 example string in the renderer field",
+	"wikilambda-string-renderer-running": "Message showing when the string renderer is waiting for the return of the renderer call",
 	"wikilambda-summarylabel": "Label for summary of changes in the edited ZObject\n{{identical|Summary}}",
 	"wikilambda-systemuser": "{{Ignore}}\n\nThe user name of the system user that creates the initial content of the wiki.",
 	"wikilambda-tester-create-new": "Label for adding a new test to a function",
