@@ -222,45 +222,47 @@ class ApiPerformTestTest extends ApiTestCase {
 			]
 		];
 
-		yield 'Request specifies JSON for new implementation' => [
-			'Z813',
-			self::getTestFileContents( 'new-zimplementation.json' ),
-			'',
-			[
-				[
-					'zimplementationId' => 'Z0',
-					'ztesterId' => 'Z8130',
-					'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}",
-					'expectedValue' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}",
-					'actualValue' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}"
-				],
-				[
-					'zimplementationId' => 'Z0',
-					'ztesterId' => 'Z8131',
-					'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
-				]
-			]
-		];
+		// TODO (T371837): Fix Beta Cluster so we can re-enable this test.
+		// yield 'Request specifies JSON for new implementation' => [
+		// 	'Z813',
+		// 	self::getTestFileContents( 'new-zimplementation.json' ),
+		// 	'',
+		// 	[
+		// 		[
+		// 			'zimplementationId' => 'Z0',
+		// 			'ztesterId' => 'Z8130',
+		// 			'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}",
+		// 			'expectedValue' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}",
+		// 			'actualValue' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}"
+		// 		],
+		// 		[
+		// 			'zimplementationId' => 'Z0',
+		// 			'ztesterId' => 'Z8131',
+		// 			'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
+		// 		]
+		// 	]
+		// ];
 
-		yield 'Request specifies JSON for edited version of existing implementation' => [
-			'Z813',
-			str_replace( "true", "false", self::getTestFileContents( 'existing-zimplementation.json' ) ),
-			'',
-			[
-				[
-					'zimplementationId' => 'Z1000000',
-					'ztesterId' => 'Z8130',
-					'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}",
-					'expectedValue' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}",
-					'actualValue' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}"
-				],
-				[
-					'zimplementationId' => 'Z1000000',
-					'ztesterId' => 'Z8131',
-					'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
-				]
-			]
-		];
+		// TODO (T371837): Fix Beta Cluster so we can re-enable this test.
+		// yield 'Request specifies JSON for edited version of existing implementation' => [
+		// 	'Z813',
+		// 	str_replace( "true", "false", self::getTestFileContents( 'existing-zimplementation.json' ) ),
+		// 	'',
+		// 	[
+		// 		[
+		// 			'zimplementationId' => 'Z1000000',
+		// 			'ztesterId' => 'Z8130',
+		// 			'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}",
+		// 			'expectedValue' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}",
+		// 			'actualValue' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}"
+		// 		],
+		// 		[
+		// 			'zimplementationId' => 'Z1000000',
+		// 			'ztesterId' => 'Z8131',
+		// 			'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
+		// 		]
+		// 	]
+		// ];
 
 		yield 'Request specifies tester by reference' => [
 			'Z813',
