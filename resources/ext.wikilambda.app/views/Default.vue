@@ -213,14 +213,7 @@ module.exports = exports = defineComponent( {
 		 * @param {string} editValue
 		 */
 		dispatchLoadEvent: function ( editValue ) {
-			this.dispatchEvent( 'wf.ui.defaultView.load', {
-				edit: editValue,
-				zobjecttype: this.contentType || null,
-				isnewzobject: this.isCreateNewPage,
-				zobjectid: this.getCurrentZObjectId || null,
-				zlang: this.getUserLangZid || null
-			} );
-			// T350497 Update the WikiLambda instrumentation to use core interaction events
+			// Log an event using Metrics Platform's core interaction events
 			const interactionData = {
 				zobjecttype: this.contentType || null,
 				zobjectid: this.getCurrentZObjectId || null,

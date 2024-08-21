@@ -216,16 +216,7 @@ module.exports = exports = defineComponent( {
 		// Initialize initial state of inputs and output
 		this.saveInitialFunctionSignature();
 
-		// Dispatch an editFunction load event
-		// TODO (T352141): Consider counting "About info" editing separately
-		this.dispatchEvent( 'wf.ui.editFunction.load', {
-			edit: true,
-			isnewzobject: this.isCreateNewPage,
-			zobjectid: this.getCurrentZObjectId || null,
-			zobjecttype: Constants.Z_FUNCTION,
-			zlang: this.getUserLangZid || null
-		} );
-		// T350495 Update the WikiLambda instrumentation to use core interaction events
+		// Log an event using Metrics Platform's core interaction events
 		const interactionData = {
 			zobjecttype: Constants.Z_FUNCTION,
 			zobjectid: this.getCurrentZObjectId || null,

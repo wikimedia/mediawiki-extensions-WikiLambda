@@ -134,8 +134,7 @@ module.exports = exports = defineComponent( {
 		'getCurrentZObjectType',
 		'getCurrentZImplementationType',
 		'getErrors',
-		'getUserLangZid',
-		'isCreateNewPage'
+		'getUserLangZid'
 	] ), {
 
 		/**
@@ -336,18 +335,7 @@ module.exports = exports = defineComponent( {
 					errorMessage: error.messageOrFallback( Constants.errorCodes.UNKNOWN_SAVE_ERROR )
 				} );
 			} ).finally( () => {
-				// After receiving the response, log a publish event
-				const eventNamespace = this.getNamespace( this.getCurrentZObjectType );
-				const customData = {
-					isnewzobject: this.isCreateNewPage,
-					zobjectid: this.getCurrentZObjectId,
-					zobjecttype: this.getCurrentZObjectType || null,
-					implementationtype: this.getCurrentZImplementationType || null,
-					zlang: this.getUserLangZid || null,
-					haserrors: this.hasErrors
-				};
-				this.dispatchEvent( `wf.ui.${ eventNamespace }.publish`, customData );
-				// T350497 Update the WikiLambda instrumentation to use core interaction events
+				// After receiving the response, log an event using Metrics Platform's core interaction events
 				const interactionData = {
 					zobjecttype: this.getCurrentZObjectType || null,
 					zobjectid: this.getCurrentZObjectId || null,

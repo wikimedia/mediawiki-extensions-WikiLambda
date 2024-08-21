@@ -439,16 +439,7 @@ module.exports = exports = defineComponent( {
 				.then( () => {
 					this.running = false;
 					this.hasResult = true;
-					// Log an event using Metrics Platform
-					const customData = {
-						selectedfunctionzid: this.selectedFunctionZid || null,
-						zobjectid: this.getCurrentZObjectId || null,
-						zobjecttype: this.getCurrentZObjectType || null,
-						resulthaserror: this.resultHasError,
-						zlang: this.getUserLangZid || null
-					};
-					this.dispatchEvent( 'wf.ui.callFunction', customData );
-					// T350497 Update the WikiLambda instrumentation to use core interaction events
+					// Log an event using Metrics Platform's core interaction events
 					const interactionData = {
 						zobjecttype: this.getCurrentZObjectType || null,
 						zobjectid: this.getCurrentZObjectId || null,
