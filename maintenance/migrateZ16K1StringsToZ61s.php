@@ -28,6 +28,8 @@ if ( $IP === false ) {
 require_once "$IP/maintenance/Maintenance.php";
 
 class MigrateZ16K1StringsToZ61s extends Maintenance {
+	// TODO (T287153): Once the data is fully migrated, we should remove this
+	// script and the fetchAllImplementations method from ZObjectStore
 
 	/**
 	 * @var ZObjectStore
@@ -69,7 +71,7 @@ class MigrateZ16K1StringsToZ61s extends Maintenance {
 
 		$queryLimit = 10;
 
-		$targets = $this->zObjectStore->fetchZidsOfType( 'Z14' );
+		$targets = $this->zObjectStore->fetchAllImplementations();
 
 		$this->output( "Found " . count( $targets ) . " Z14s\n" );
 
