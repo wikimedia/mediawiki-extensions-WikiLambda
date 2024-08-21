@@ -59,6 +59,7 @@ module.exports = exports = defineComponent( {
 	},
 	data: function () {
 		return {
+			ignoreChangeEvent: false,
 			maxLabelChars: Constants.LABEL_CHARS_MAX,
 			remainingChars: Constants.LABEL_CHARS_MAX
 		};
@@ -152,7 +153,12 @@ module.exports = exports = defineComponent( {
 		 * @param {Object} event
 		 */
 		persistName: function ( event ) {
+			if ( this.ignoreChangeEvent ) {
+				return;
+			}
+
 			const value = event.target.value;
+
 			if ( this.hasName ) {
 				if ( value === '' ) {
 					this.removeItemFromTypedList( { rowId: this.nameObject.rowId } );
@@ -195,6 +201,10 @@ module.exports = exports = defineComponent( {
 		this.$nextTick( function () {
 			this.remainingChars = this.maxLabelChars - this.name.length;
 		} );
+	},
+	beforeUnmount() {
+		// When the component is unmounted, we want to ignore any change events and not persist the data
+		this.ignoreChangeEvent = true;
 	}
 } );
 </script>
