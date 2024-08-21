@@ -3,7 +3,8 @@
 		"authors": [
 			"Darafsh",
 			"Jeeputer",
-			"Mojtabakd"
+			"Mojtabakd",
+			"Ebrahim"
 		]
 	},
 	"wikilambda-persistentzobject-contents": "محتوا",
@@ -11,7 +12,7 @@
 	"wikilambda-argument-typeselector-label": "برای این آرگوومان، یک نوع انتخاب کنید",
 	"wikilambda-function-typeselector-label": "تابع را انتخاب کنید",
 	"wikilambda-return-typeselector-label": "نوع مورد نظر برای برگداندن را انتخاب کنید",
-	"wikilambda-editor-zobject-clearitem-tooltip": "خالی‌کردن این مقدار",
+	"wikilambda-editor-zobject-clearitem-tooltip": "خالی کردن این مقدار",
 	"specialpages-group-wikilambda": "صفحه‌های ویکی‌تابع",
 	"wikilambda-editor-argument-list-label": "فهرست آرگومان‌ها",
 	"wikilambda-editor-implementation-list-label": "فهرست پیاده‌سازی",

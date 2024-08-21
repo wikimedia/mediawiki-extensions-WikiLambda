@@ -2,7 +2,9 @@
 	"@metadata": {
 		"authors": [
 			"Amire80",
-			"Xnet1234"
+			"Xnet1234",
+			"Freddy9",
+			"YaronSh"
 		]
 	},
 	"wikilambda-desc": "מספקת לאתרי ויקי של ויקימדיה פונקציית מפענח לקוד ויקי לקריאה לפונקציות שנכתבות, מנוהלות, ומבוצעות בוויקי מרכזי.",
@@ -298,7 +300,7 @@
 	"wikilambda-function-definition-input-item-type": "סוג",
 	"wikilambda-function-definition-input-item-label": "תווית",
 	"wikilambda-function-definition-output-label": "פלט",
-	"wikilambda-function-definition-output-description": "איזה סוג של נתונים הפונקציה מחזיקה?",
+	"wikilambda-function-definition-output-description": "איזה סוג של נתונים הפונקציה מחזירה?",
 	"wikilambda-function-definition-output-types": "ר' את רשימת סוגי הפלט.",
 	"wikilambda-function-definition-output-type-label": "סוג",
 	"wikilambda-function-definition-output-selector": "נא לבחור סוג",
