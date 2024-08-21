@@ -85,6 +85,11 @@ describe( 'ZCode', () => {
 				props: {
 					parentId: 10,
 					edit: false
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false
+					}
 				}
 			} );
 
@@ -96,6 +101,11 @@ describe( 'ZCode', () => {
 				props: {
 					parentId: 10,
 					edit: false
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false
+					}
 				}
 			} );
 			expect( wrapper.findComponent( { name: 'code-editor' } ).props( 'readOnly' ) ).toBe( true );
@@ -106,10 +116,15 @@ describe( 'ZCode', () => {
 				props: {
 					parentId: 10,
 					edit: false
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false
+					}
 				}
 			} );
 			wrapper.findComponent( { name: 'code-editor' } ).trigger( 'click' );
-			expect( wrapper.find( '.cdx-message--warning.ext-wikilambda-app-key-value__inline-error' ).exists() ).toBe( false );
+			expect( wrapper.find( '.cdx-message--warning.ext-wikilambda-app-code__inline-error' ).exists() ).toBe( false );
 		} );
 
 		describe( 'when current programming language is a reference', () => {
@@ -167,10 +182,15 @@ describe( 'ZCode', () => {
 				props: {
 					parentId: 10,
 					edit: true
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false
+					}
 				}
 			} );
 
-			expect( wrapper.findComponent( '.ext-wikilambda-app-code__language-selector' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-code__language-selector' ).exists() ).toBe( true );
 			expect( wrapper.findComponent( { name: 'code-editor' } ).props( 'readOnly' ) ).toBe( false );
 		} );
 
@@ -185,17 +205,22 @@ describe( 'ZCode', () => {
 				props: {
 					parentId: 10,
 					edit: true
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false
+					}
 				}
 			} );
 
-			expect( wrapper.findComponent( '.ext-wikilambda-app-code__language-selector' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-code__language-selector' ).exists() ).toBe( true );
 			expect( wrapper.findComponent( { name: 'code-editor' } ).props( 'disabled' ) ).toBe( true );
 		} );
 
 		it( 'should show a warning message when clicking the code editor and no programming language is set', async () => {
 			// Set initial value to undefined
 			getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( undefined );
-			getters.getErrors = createGettersWithFunctionsMock( { message: 'Select programming language', type: 'warning' } );
+			getters.getErrors = createGettersWithFunctionsMock( [ { message: 'Select programming language', type: 'warning' } ] );
 			global.store.hotUpdate( {
 				getters: getters,
 				actions: actions
@@ -204,10 +229,15 @@ describe( 'ZCode', () => {
 				props: {
 					parentId: 10,
 					edit: true
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false
+					}
 				}
 			} );
 
-			expect( wrapper.findComponent( '.ext-wikilambda-app-code__language-selector' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-code__language-selector' ).exists() ).toBe( true );
 
 			wrapper.findComponent( { name: 'code-editor' } ).trigger( 'click' );
 
@@ -218,12 +248,15 @@ describe( 'ZCode', () => {
 				rowId: 1
 			} ) );
 			expect( global.$i18n ).toHaveBeenCalledWith( 'wikilambda-editor-label-select-programming-language-empty' );
-			await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-message' } ).exists() ).toBe( true ) );
+
+			await waitFor( () => {
+				expect( wrapper.findComponent( { name: 'cdx-message' } ).exists() ).toBe( true );
+			} );
 
 			wrapper.findComponent( { name: 'cdx-select' } ).vm.$emit( 'update:selected',
 				Constants.Z_PROGRAMMING_LANGUAGES.JAVASCRIPT );
 			await wrapper.vm.$nextTick();
-			expect( wrapper.find( '.cdx-message--warning.ext-wikilambda-app-key-value__inline-error' ).exists() ).toBe( false );
+			expect( wrapper.find( '.cdx-message--warning.ext-wikilambda-app-code__inline-error' ).exists() ).toBe( false );
 		} );
 
 		describe( 'when current programming language is a reference', () => {
@@ -239,6 +272,11 @@ describe( 'ZCode', () => {
 					props: {
 						parentId: 10,
 						edit: true
+					},
+					global: {
+						stubs: {
+							WlKeyValueBlock: false
+						}
 					}
 				} );
 				wrapper.findComponent( { name: 'cdx-select' } ).vm.$emit( 'update:selected',
@@ -266,6 +304,11 @@ describe( 'ZCode', () => {
 					props: {
 						parentId: 10,
 						edit: true
+					},
+					global: {
+						stubs: {
+							WlKeyValueBlock: false
+						}
 					}
 				} );
 				wrapper.findComponent( { name: 'cdx-select' } ).vm.$emit( 'update:selected',
@@ -286,6 +329,11 @@ describe( 'ZCode', () => {
 					props: {
 						parentId: 10,
 						edit: true
+					},
+					global: {
+						stubs: {
+							WlKeyValueBlock: false
+						}
 					}
 				} );
 				wrapper.getComponent( CodeEditor ).vm.$emit( 'change', 'def() {}' );
@@ -322,6 +370,11 @@ describe( 'ZCode', () => {
 					props: {
 						parentId: 10,
 						edit: true
+					},
+					global: {
+						stubs: {
+							WlKeyValueBlock: false
+						}
 					}
 				} );
 				wrapper.findComponent( { name: 'cdx-select' } ).vm.$emit( 'update:selected',
@@ -354,6 +407,11 @@ describe( 'ZCode', () => {
 					props: {
 						parentId: 10,
 						edit: true
+					},
+					global: {
+						stubs: {
+							WlKeyValueBlock: false
+						}
 					}
 				} );
 				wrapper.findComponent( { name: 'cdx-select' } ).vm.$emit( 'update:selected',
@@ -393,6 +451,11 @@ describe( 'ZCode', () => {
 					props: {
 						parentId: 10,
 						edit: true
+					},
+					global: {
+						stubs: {
+							WlKeyValueBlock: false
+						}
 					}
 				} );
 				wrapper.findComponent( { name: 'cdx-select' } ).vm.$emit( 'update:selected',

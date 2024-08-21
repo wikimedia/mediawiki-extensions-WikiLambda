@@ -16,7 +16,7 @@ const ElementActions = require( '../utils/ElementActions' );
 
 class EvaluateFunctionBlock {
 	get evaluateFunctionBlock() {
-		return $( '[data-testid="function-evaluator"]' );
+		return $( '[data-testid="function-evaluator-widget"]' );
 	}
 
 	get functionCallBlock() {

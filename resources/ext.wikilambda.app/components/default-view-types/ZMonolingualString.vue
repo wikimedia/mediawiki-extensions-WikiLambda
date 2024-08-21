@@ -5,7 +5,7 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-app-monolingual-string">
+	<div class="ext-wikilambda-app-monolingual-string" data-testid="z-monolingual-string">
 		<!-- Monolingual string on view mode -->
 		<div
 			v-if="!edit"

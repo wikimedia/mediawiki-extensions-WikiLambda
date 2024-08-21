@@ -8,93 +8,56 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-app-key-value__row">
-		<div
-			class="ext-wikilambda-app-key-value"
-			:class="rootClasses"
-			data-testid="z-object-key-value"
-		>
-			<!-- Space for square quiet button before the content for expand toggle or bullet -->
-			<div
-				v-if="hasPreColumn"
-				class="ext-wikilambda-app-key-value__pre"
-			>
-				<div class="ext-wikilambda-app-key-value__pre-buttons">
-					<wl-expanded-toggle
-						:class="expandToggleClass"
-						:has-expanded-mode="hasExpandedMode"
-						:expanded="expanded"
-						data-testid="expanded-toggle"
-						@toggle="setExpanded( !expanded )"
-					></wl-expanded-toggle>
-				</div>
-				<div
-					v-if="expanded"
-					class="ext-wikilambda-app-key-value__pre-border"
-				></div>
-			</div>
-
+	<div class="ext-wikilambda-app-object-key-value" data-testid="z-object-key-value">
+		<wl-key-value-block
+			field-overrides
+			:has-pre-column="hasPreColumn"
+			:has-expanded-mode="hasExpandedMode"
+			:has-expanded-border="expanded"
+			:expanded="expanded"
+			:edit="edit"
+			:disable-edit="disableEdit"
+			:expanded-disabled="edit && disableEdit"
+			:depth="depth"
+			:no-indent="!hasPreColumn"
+			@toggle-expanded="setExpanded( !expanded )">
 			<!-- Main content: either only one row with value, or top row with key and then value -->
-			<div
-				class="ext-wikilambda-app-key-value__main"
-				:class="{ 'ext-wikilambda-app-key-value__main--no-indent': !hasPreColumn }"
-			>
-				<!-- Key and Mode: render only when key is shown -->
-				<div
-					v-if="showKeyLabel"
-					class="ext-wikilambda-app-key-value__key"
-					:class="keyBlockClass"
-				>
-					<wl-localized-label :label-data="keyLabel"></wl-localized-label>
-					<!-- Mode: never rendered in view mode -->
-					<wl-mode-selector
-						v-if="edit"
-						:row-id="rowId"
-						:disabled="disableEdit"
-						:parent-expected-type="expectedType"
-						@set-type="setType"
-						@delete-list-item="deleteListItem"
-						@move-before="moveBefore"
-						@move-after="moveAfter"
-					></wl-mode-selector>
-				</div>
-
-				<!-- Value: will always be rendered -->
-				<div class="ext-wikilambda-app-key_value__value ext-wikilambda-app-field-overrides">
-					<component
-						:is="zobjectComponent"
-						:edit="edit"
-						:disabled="disableEdit"
-						:expanded="expanded"
-						:depth="depth"
-						:row-id="rowId"
-						:type="type"
-						:expected-type="expectedType"
-						:parent-id="parentRowId"
-						:parent-disable-edit="disableEdit"
-						@set-value="setValue"
-						@set-type="setType"
-						@add-list-item="addListItem"
-						@change-event="changeEvent"
-						@expand="setExpanded"
-					></component>
-				</div>
-			</div>
-		</div>
-
-		<!-- Error row -->
-		<div v-if="hasErrors" class="ext-wikilambda-app-key-value__messages">
-			<cdx-message
-				v-for="( error, index ) in errors"
-				:key="'inline-error-' + rowId + '-' + index"
-				class="ext-wikilambda-app-key-value__inline-error"
-				:type="error.type"
-				:inline="true"
-			>
-				<!-- eslint-disable vue/no-v-html -->
-				<div v-html="getErrorMessage( error )"></div>
-			</cdx-message>
-		</div>
+			<!-- Key and Mode: render only when key is shown -->
+			<template v-if="showKeyLabel" #key>
+				<wl-localized-label :label-data="keyLabel"></wl-localized-label>
+				<!-- Mode: never rendered in view mode -->
+				<wl-mode-selector
+					v-if="edit"
+					:row-id="rowId"
+					:disabled="disableEdit"
+					:parent-expected-type="expectedType"
+					@set-type="setType"
+					@delete-list-item="deleteListItem"
+					@move-before="moveBefore"
+					@move-after="moveAfter"
+				></wl-mode-selector>
+			</template>
+			<!-- Value: will always be rendered -->
+			<template #value>
+				<component
+					:is="zobjectComponent"
+					:edit="edit"
+					:disabled="disableEdit"
+					:expanded="expanded"
+					:depth="depth"
+					:row-id="rowId"
+					:type="type"
+					:expected-type="expectedType"
+					:parent-id="parentRowId"
+					:parent-disable-edit="disableEdit"
+					@set-value="setValue"
+					@set-type="setType"
+					@add-list-item="addListItem"
+					@change-event="changeEvent"
+					@expand="setExpanded"
+				></component>
+			</template>
+		</wl-key-value-block>
 	</div>
 </template>
 
@@ -118,6 +81,7 @@ const CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	ZBoolean = require( './ZBoolean.vue' ),
 	ZFunctionCall = require( './ZFunctionCall.vue' ),
 	ZImplementation = require( './ZImplementation.vue' ),
+	KeyValueBlock = require( '../base/KeyValueBlock.vue' ),
 	ZTester = require( './ZTester.vue' ),
 	ZTypedList = require( './ZTypedList.vue' ),
 	LabelData = require( '../../store/classes/LabelData.js' ),
@@ -140,6 +104,7 @@ module.exports = exports = defineComponent( {
 		'wl-z-evaluation-result': ZEvaluationResult,
 		'wl-z-function-call': ZFunctionCall,
 		'wl-z-implementation': ZImplementation,
+		'wl-key-value-block': KeyValueBlock,
 		'wl-z-tester': ZTester,
 		'wl-z-monolingual-string': ZMonolingualString,
 		'wl-z-object-key-value-set': ZObjectKeyValueSet,
@@ -366,56 +331,6 @@ module.exports = exports = defineComponent( {
 			depth: function () {
 				const depth = this.getDepthByRowId( this.rowId );
 				return ( ( depth - 1 ) % Constants.COLOR_NESTING_LEVELS ) + 1;
-			},
-
-			/**
-			 * Returns the css classes that identify the key block
-			 *
-			 * @return {Object}
-			 */
-			keyBlockClass: function () {
-				return {
-					'ext-wikilambda-app-key-value__key--edit': this.edit && !this.disableEdit,
-					'ext-wikilambda-app-key-value__key--edit-disabled': this.edit && this.disableEdit,
-					'ext-wikilambda-app-key-value__key--view': !this.edit
-				};
-			},
-
-			/**
-			 * Returns the css classes that identify the expand button
-			 *
-			 * @return {Object}
-			 */
-			expandToggleClass: function () {
-				return {
-					'ext-wikilambda-app-key-value__pre-button': true,
-					'ext-wikilambda-app-key-value__pre-button--disabled': this.edit && this.disableEdit
-				};
-			},
-
-			/**
-			 * Finds the correct root class depending on if the item is part of a list or not
-			 *
-			 * @return {string}
-			 */
-			rootClasses: function () {
-				const classList = [ `ext-wikilambda-app-key-value--${ this.depth }` ];
-
-				if ( this.isKeyTypedListType( this.key ) && this.edit && !this.expanded ) {
-					classList.push( 'ext-wikilambda-app-key-value__flex' );
-				}
-
-				// this class is only required for non-terminal items in collapsed mode
-				if ( this.listItemType && !this.expanded && this.hasExpandedMode ) {
-					classList.push( 'ext-wikilambda-app-key-value__inherit' );
-				}
-				// string list items require different treatment because
-				// they have a <li> bullet point (but only in view mode)
-				if ( this.listItemType && this.type === Constants.Z_STRING && !this.edit ) {
-					classList.push( 'ext-wikilambda-app-key-value__inline-table' );
-				}
-
-				return classList;
 			},
 
 			/**
@@ -919,119 +834,3 @@ module.exports = exports = defineComponent( {
 	} )
 } );
 </script>
-
-<style lang="less">
-@import '../../ext.wikilambda.app.variables.less';
-
-.ext-wikilambda-app-key-value {
-	flex: 1;
-	display: flex;
-	flex-flow: row nowrap;
-	justify-content: space-between;
-	margin-bottom: @spacing-50;
-
-	&--0 {
-		--levelColor: @wl-key-value-color-0;
-	}
-
-	&--1 {
-		--levelColor: @wl-key-value-color-1;
-	}
-
-	&--2 {
-		--levelColor: @wl-key-value-color-2;
-	}
-
-	&--3 {
-		--levelColor: @wl-key-value-color-3;
-	}
-
-	&--4 {
-		--levelColor: @wl-key-value-color-4;
-	}
-
-	&--5 {
-		--levelColor: @wl-key-value-color-5;
-	}
-
-	&--6 {
-		--levelColor: @wl-key-value-color-6;
-	}
-
-	.ext-wikilambda-app-key-value__pre {
-		flex: 0 1;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		padding-right: @spacing-25;
-	}
-
-	.ext-wikilambda-app-key-value__pre-buttons {
-		display: flex;
-		flex-direction: row;
-	}
-
-	.ext-wikilambda-app-key-value__pre-button {
-		flex: 0 1;
-		color: @color-subtle;
-
-		&--disabled {
-			color: @color-disabled;
-		}
-	}
-
-	.ext-wikilambda-app-key-value__pre-border {
-		border-right: @border-width-base @border-style-base @border-color-base;
-		border-color: var( --levelColor );
-		flex: 1;
-	}
-
-	.ext-wikilambda-app-key-value__mode {
-		flex: 0 1;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		padding-right: @spacing-25;
-	}
-
-	.ext-wikilambda-app-key-value__main {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		min-height: @size-200;
-		justify-content: center;
-		position: relative;
-
-		&--no-indent {
-			.ext-wikilambda-app-key-value-set.ext-wikilambda-app-key-value--1 {
-				margin-left: 0;
-			}
-		}
-	}
-
-	.ext-wikilambda-app-key-value__key {
-		padding: 0;
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-
-		&--edit {
-			color: @color-base;
-		}
-
-		&--edit-disabled {
-			color: @color-disabled;
-		}
-
-		&--view {
-			color: @color-subtle;
-		}
-
-		.ext-wikilambda-app-localized-label,
-		label {
-			margin-right: @spacing-25;
-			line-height: @spacing-200;
-		}
-	}
-}
-</style>

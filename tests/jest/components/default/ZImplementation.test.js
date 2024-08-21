@@ -52,11 +52,17 @@ describe( 'ZImplementation', () => {
 			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: false
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false,
+						WlKeyBlock: false
+					}
 				}
 			} );
 			const typeBlock = wrapper.find( '.ext-wikilambda-app-implementation__type' );
 			expect( typeBlock.exists() ).toBe( true );
-			expect( typeBlock.find( '.ext-wikilambda-app-key_value__value-text' ).exists() ).toBe( true );
+			expect( typeBlock.find( '.ext-wikilambda-app-implementation__value-text' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders content block', () => {
@@ -76,11 +82,17 @@ describe( 'ZImplementation', () => {
 			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: false
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false,
+						WlKeyBlock: false
+					}
 				}
 			} );
 			const typeBlock = wrapper.find( '.ext-wikilambda-app-implementation__type' );
-			expect( typeBlock.find( '.ext-wikilambda-app-key-value__key' ).text() ).toBe( 'Implementation' );
-			expect( typeBlock.find( '.ext-wikilambda-app-key_value__value' ).text() ).toBe( 'composition' );
+			expect( typeBlock.find( '.ext-wikilambda-app-key-block' ).text() ).toBe( 'Implementation' );
+			expect( typeBlock.find( '.ext-wikilambda-app-implementation__value-text' ).text() ).toBe( 'composition' );
 		} );
 
 		it( 'it renders the code type for a code implementation', () => {
@@ -89,11 +101,17 @@ describe( 'ZImplementation', () => {
 			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: false
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false,
+						WlKeyBlock: false
+					}
 				}
 			} );
 			const typeBlock = wrapper.find( '.ext-wikilambda-app-implementation__type' );
-			expect( typeBlock.find( '.ext-wikilambda-app-key-value__key' ).text() ).toBe( 'Implementation' );
-			expect( typeBlock.find( '.ext-wikilambda-app-key_value__value' ).text() ).toBe( 'code' );
+			expect( typeBlock.find( '.ext-wikilambda-app-key-block' ).text() ).toBe( 'Implementation' );
+			expect( typeBlock.find( '.ext-wikilambda-app-implementation__value-text' ).text() ).toBe( 'code' );
 		} );
 
 		it( 'it renders non editable function for a builtin', () => {
@@ -116,11 +134,17 @@ describe( 'ZImplementation', () => {
 			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: false
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false,
+						WlKeyBlock: false
+					}
 				}
 			} );
 			const typeBlock = wrapper.find( '.ext-wikilambda-app-implementation__type' );
-			expect( typeBlock.find( '.ext-wikilambda-app-key-value__key' ).text() ).toBe( 'Implementation' );
-			const valueBlock = typeBlock.find( '.ext-wikilambda-app-key_value__value' );
+			expect( typeBlock.find( '.ext-wikilambda-app-key-block' ).text() ).toBe( 'Implementation' );
+			const valueBlock = typeBlock.find( '.ext-wikilambda-app-key-value-block__value' );
 			expect( valueBlock.findComponent( { name: 'cdx-message' } ).exists() ).toBe( true );
 		} );
 	} );
@@ -150,6 +174,12 @@ describe( 'ZImplementation', () => {
 			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: true
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false,
+						WlKeyBlock: false
+					}
 				}
 			} );
 			const typeBlock = wrapper.find( '.ext-wikilambda-app-implementation__type' );
@@ -172,6 +202,12 @@ describe( 'ZImplementation', () => {
 			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: true
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false,
+						WlKeyBlock: false
+					}
 				}
 			} );
 			const typeBlock = wrapper.find( '.ext-wikilambda-app-implementation__type' );
@@ -187,6 +223,12 @@ describe( 'ZImplementation', () => {
 			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: true
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false,
+						WlKeyBlock: false
+					}
 				}
 			} );
 			const functionBlock = wrapper.find( '.ext-wikilambda-app-implementation__function' );
@@ -201,11 +243,17 @@ describe( 'ZImplementation', () => {
 			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: true
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false,
+						WlKeyBlock: false
+					}
 				}
 			} );
 			const typeBlock = wrapper.find( '.ext-wikilambda-app-implementation__type' );
-			expect( typeBlock.find( '.ext-wikilambda-app-key-value__key' ).text() ).toBe( 'Implementation' );
-			const valueBlock = typeBlock.find( '.ext-wikilambda-app-key_value__value' );
+			expect( typeBlock.find( '.ext-wikilambda-app-key-block' ).text() ).toBe( 'Implementation' );
+			const valueBlock = typeBlock.find( '.ext-wikilambda-app-key-value-block__value' );
 			expect( valueBlock.findComponent( { name: 'cdx-message' } ).exists() ).toBe( true );
 		} );
 	} );

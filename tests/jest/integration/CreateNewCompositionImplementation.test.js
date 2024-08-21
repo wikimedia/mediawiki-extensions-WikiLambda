@@ -91,7 +91,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		expect( firstArgumentTypeSelector.value ).toBe( 'Argument reference' );
 
 		// ACT: Select the first argument
-		const firstArgumentInput = within( firstArgument ).getByTestId( 'argument-reference-key' );
+		const firstArgumentInput = within( firstArgument ).getByTestId( 'z-argument-reference' );
 		const firstArgumentExpectedInput = 'first argument label, in Afrikaans';
 		await clickLookupResult( firstArgumentInput, firstArgumentExpectedInput );
 
@@ -112,7 +112,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		expect( secondArgumentTypeSelector.value ).toBe( 'Argument reference' );
 
 		// ACT: Select the second argument
-		const secondArgumentInput = within( secondArgument ).getByTestId( 'argument-reference-key' );
+		const secondArgumentInput = within( secondArgument ).getByTestId( 'z-argument-reference' );
 		const secondArgumentExpectedInput = 'second argument label, in Afrikaans';
 		await clickLookupResult( secondArgumentInput, secondArgumentExpectedInput );
 

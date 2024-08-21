@@ -94,12 +94,12 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 
 		//* -- Function call section
 		// ASSERT: The function specified in URL is pre-selected as the function under test.
-		const testerFunctionSelectContainer = await findByTestId( 'z-test-function-select-container' );
+		const testerFunctionSelectContainer = await findByTestId( 'tester-function-select' );
 		expect( within( testerFunctionSelectContainer ).getByRole( 'combobox' ) )
 			.toHaveDisplayValue( 'function name, in Chinese' );
 
 		//* -- Call section
-		const testerCallContainer = await findByTestId( 'ext-wikilambda-app-tester-call' );
+		const testerCallContainer = await findByTestId( 'tester-call' );
 
 		// ACT: Expand toggle
 		const expandTesterCall = within( testerCallContainer ).getByTestId( 'expanded-toggle' );
@@ -129,7 +129,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		await fireEvent.update( secondCallArgumentInput, 'second argument value' );
 
 		//* -- Validation section
-		const testerValidationContainer = await findByTestId( 'ext-wikilambda-app-tester-validation' );
+		const testerValidationContainer = await findByTestId( 'tester-validation' );
 
 		// ACT: Expand toggle
 		const expandValidationCall = within( testerValidationContainer ).getByTestId( 'expanded-toggle' );

@@ -5,7 +5,7 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-app-evaluation-result">
+	<div class="ext-wikilambda-app-evaluation-result" data-testid="z-evaluation-result">
 		<div class="ext-wikilambda-app-evaluation-result__result">
 			<wl-z-object-key-value
 				v-if="hasResult"

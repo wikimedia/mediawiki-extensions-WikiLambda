@@ -10,7 +10,7 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-app-type-to-string">
+	<div class="ext-wikilambda-app-type-to-string" data-testid="type-to-string">
 		<a
 			v-if="zid"
 			:href="wikiUrl"

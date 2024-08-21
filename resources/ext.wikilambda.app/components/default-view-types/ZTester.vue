@@ -5,70 +5,82 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-app-tester">
+	<div class="ext-wikilambda-app-tester" data-testid="z-tester">
 		<!-- Function selection block -->
-		<div
+		<wl-key-value-block
+			:key-bold="true"
 			class="ext-wikilambda-app-tester__function"
-			data-testid="z-test-function-select-container"
+			data-testid="tester-function-select"
 		>
-			<div class="ext-wikilambda-app-key-value__key">
+			<template #key>
 				<label
 					:lang="functionLabelData.langCode"
 					:dir="functionLabelData.langDir"
 				>{{ functionLabelData.label }}</label>
-			</div>
-			<wl-z-object-key-value
-				:key="functionRowId"
-				:row-id="functionRowId"
-				:skip-key="true"
-				:skip-indent="true"
-				:edit="edit"
-			></wl-z-object-key-value>
-		</div>
+			</template>
+			<template #value>
+				<wl-z-object-key-value
+					:key="functionRowId"
+					:row-id="functionRowId"
+					:skip-key="true"
+					:skip-indent="true"
+					:edit="edit"
+				></wl-z-object-key-value>
+			</template>
+		</wl-key-value-block>
+
 		<!-- Tester call block -->
-		<div
+		<wl-key-value-block
+			:key-bold="true"
 			class="ext-wikilambda-app-tester__content"
-			data-testid="ext-wikilambda-app-tester-call"
+			data-testid="tester-call"
 		>
-			<div class="ext-wikilambda-app-key-value__key">
+			<template #key>
 				<label
 					:lang="testerCallLabelData.langCode"
 					:dir="testerCallLabelData.langDir"
 				>{{ testerCallLabelData.label }}</label>
-			</div>
-			<wl-z-object-key-value
-				:key="testerCallRowId"
-				:skip-key="true"
-				:row-id="testerCallRowId"
-				:error-id="testerCallRowId"
-				:edit="edit"
-			></wl-z-object-key-value>
-		</div>
+			</template>
+			<template #value>
+				<wl-z-object-key-value
+					:key="testerCallRowId"
+					:skip-key="true"
+					:row-id="testerCallRowId"
+					:error-id="testerCallRowId"
+					:edit="edit"
+				></wl-z-object-key-value>
+			</template>
+		</wl-key-value-block>
+
 		<!-- Tester result validation block -->
-		<div
+		<wl-key-value-block
+			:key-bold="true"
 			class="ext-wikilambda-app-tester__content"
-			data-testid="ext-wikilambda-app-tester-validation"
+			data-testid="tester-validation"
 		>
-			<div class="ext-wikilambda-app-key-value__key">
+			<template #key>
 				<label
 					:lang="testerValidationLabelData.langCode"
 					:dir="testerValidationLabelData.langDir"
 				>{{ testerValidationLabelData.label }}</label>
-			</div>
-			<wl-z-object-key-value
-				:key="testerValidationRowId"
-				:skip-key="true"
-				:row-id="testerValidationRowId"
-				:error-id="testerValidationRowId"
-				:edit="edit"
-			></wl-z-object-key-value>
-		</div>
+			</template>
+			<template #value>
+				<wl-z-object-key-value
+					:key="testerValidationRowId"
+					:skip-key="true"
+					:row-id="testerValidationRowId"
+					:error-id="testerValidationRowId"
+					:edit="edit"
+				></wl-z-object-key-value>
+			</template>
+		</wl-key-value-block>
 	</div>
 </template>
 
 <script>
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
+	KeyValueBlock = require( '../base/KeyValueBlock.vue' ),
 	isValidZidFormat = require( '../../mixins/typeUtils.js' ).methods.isValidZidFormat,
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
@@ -76,7 +88,7 @@ const Constants = require( '../../Constants.js' ),
 module.exports = exports = defineComponent( {
 	name: 'wl-z-tester',
 	components: {
-		// Leave components as an empty object to add the ZObjectKeyValue later
+		'wl-key-value-block': KeyValueBlock
 	},
 	props: {
 		rowId: {
@@ -269,26 +281,6 @@ module.exports = exports = defineComponent( {
 .ext-wikilambda-app-tester {
 	.ext-wikilambda-app-tester__content {
 		padding-top: @spacing-75;
-
-		> .ext-wikilambda-app-key-value__key {
-			margin-bottom: 0;
-
-			label {
-				font-weight: bold;
-				color: @color-base;
-			}
-		}
-	}
-
-	.ext-wikilambda-app-tester__function {
-		.ext-wikilambda-app-key-value__key {
-			margin-bottom: 0;
-
-			label {
-				font-weight: bold;
-				color: @color-base;
-			}
-		}
 	}
 }
 </style>

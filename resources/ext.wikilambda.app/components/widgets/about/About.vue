@@ -5,7 +5,7 @@
 	@license MIT
 -->
 <template>
-	<wl-widget-base class="ext-wikilambda-app-about" data-testid="about">
+	<wl-widget-base class="ext-wikilambda-app-about" data-testid="about-widget">
 		<!-- Widget header -->
 		<template #header>
 			{{ $i18n( 'wikilambda-about-widget-title' ).text() }}

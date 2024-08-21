@@ -6,7 +6,7 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-app-type-selector">
+	<div class="ext-wikilambda-app-type-selector" data-testid="type-selector">
 		<!-- Main type selector -->
 		<cdx-field>
 			<template #label>

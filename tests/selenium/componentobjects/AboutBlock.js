@@ -18,7 +18,7 @@ const ElementActions = require( '../utils/ElementActions' ),
 
 class AboutBlock {
 	get aboutBlock() {
-		return $( '[data-testid="about"]' );
+		return $( '[data-testid="about-widget"]' );
 	}
 
 	get editButton() {

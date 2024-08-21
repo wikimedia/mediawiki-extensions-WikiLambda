@@ -7,19 +7,19 @@
 <template>
 	<div
 		class="ext-wikilambda-app-implementation"
-		data-testid="implementation"
+		data-testid="z-implementation"
 	>
 		<!-- Function selection block -->
 		<div
 			class="ext-wikilambda-app-implementation__function"
 			data-testid="implementation-function"
 		>
-			<div class="ext-wikilambda-app-key-value__key">
+			<wl-key-block :key-bold="true">
 				<label
 					:lang="functionLabelData.langCode"
 					:dir="functionLabelData.langDir"
 				>{{ functionLabelData.label }}</label>
-			</div>
+			</wl-key-block>
 			<wl-z-object-key-value
 				:key="functionRowId"
 				:row-id="functionRowId"
@@ -29,65 +29,66 @@
 			></wl-z-object-key-value>
 		</div>
 		<!-- Implementation type block -->
-		<div class="ext-wikilambda-app-implementation__type" data-testid="implementation-type">
-			<div class="ext-wikilambda-app-key-value__key">
-				<label
-					:lang="implementationLabelData.langCode"
-					:dir="implementationLabelData.langDir"
-				>{{ implementationLabelData.label }}</label>
-			</div>
-			<div class="ext-wikilambda-app-key_value__value">
-				<!-- Show warning message for builtins -->
-				<cdx-message
-					v-if="isTypeBuiltin"
-					:inline="true">
-					{{ $i18n( 'wikilambda-implementation-selector-none' ).text() }}
-				</cdx-message>
-				<!-- Show radio button for code or composition -->
-				<template v-else>
-					<span
-						v-if="!edit"
-						class="ext-wikilambda-app-key_value__value-text"
-						:lang="implementationTypeLabelData.langCode"
-						:dir="implementationTypeLabelData.langDir"
-					>{{ implementationTypeLabelData.label }}</span>
-					<div
-						v-else
-						class="ext-wikilambda-app-key_value__value-input"
-						data-testid="implementation-radio"
-					>
-						<cdx-radio
-							v-for="radio in radioChoices"
-							:key="'radio-' + radio.value"
-							v-model="implementationType"
-							:input-value="radio.value"
-							:name="'implementation-radios-' + rowId"
-							:inline="true"
-						>
-							<span
-								:lang="radio.labelData.langCode"
-								:dir="radio.labelData.langDir"
-							>{{ radio.labelData.label }}</span>
-						</cdx-radio>
-					</div>
+		<div
+			class="ext-wikilambda-app-implementation__type"
+			data-testid="implementation-type">
+			<wl-key-value-block :key-bold="true">
+				<template #key>
+					<label
+						:lang="implementationLabelData.langCode"
+						:dir="implementationLabelData.langDir"
+					>{{ implementationLabelData.label }}</label>
 				</template>
-			</div>
+				<template #value>
+					<!-- Show warning message for builtins -->
+					<cdx-message
+						v-if="isTypeBuiltin"
+						:inline="true">
+						{{ $i18n( 'wikilambda-implementation-selector-none' ).text() }}
+					</cdx-message>
+					<!-- Show radio button for code or composition -->
+					<template v-else>
+						<span
+							v-if="!edit"
+							class="ext-wikilambda-app-implementation__value-text"
+							:lang="implementationTypeLabelData.langCode"
+							:dir="implementationTypeLabelData.langDir"
+						>{{ implementationTypeLabelData.label }}</span>
+						<div
+							v-else
+							class="ext-wikilambda-app-implementation__value-input"
+							data-testid="implementation-radio"
+						>
+							<cdx-radio
+								v-for="radio in radioChoices"
+								:key="'radio-' + radio.value"
+								v-model="implementationType"
+								:input-value="radio.value"
+								:name="'implementation-radios-' + rowId"
+								:inline="true"
+							>
+								<span
+									:lang="radio.labelData.langCode"
+									:dir="radio.labelData.langDir"
+								>{{ radio.labelData.label }}</span>
+							</cdx-radio>
+						</div>
+					</template>
+				</template>
+			</wl-key-value-block>
 		</div>
-		<!-- Implementation content block -->
+
 		<div
 			v-if="!isTypeBuiltin"
 			class="ext-wikilambda-app-implementation__content"
 			data-testid="implementation-content"
 		>
-			<div
-				v-if="!isTypeCode"
-				class="ext-wikilambda-app-key-value__key"
-			>
+			<wl-key-block v-if="!isTypeCode" :key-bold="true">
 				<label
 					:lang="implementationTypeLabelData.langCode"
 					:dir="implementationTypeLabelData.langDir"
 				>{{ implementationTypeLabelData.label }}</label>
-			</div>
+			</wl-key-block>
 			<wl-z-object-key-value
 				:key="implementationContentRowId"
 				:skip-key="true"
@@ -106,13 +107,17 @@ const { defineComponent } = require( 'vue' );
 const CdxRadio = require( '@wikimedia/codex' ).CdxRadio,
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	Constants = require( '../../Constants.js' ),
+	KeyBlock = require( '../base/KeyBlock.vue' ),
+	KeyValueBlock = require( '../base/KeyValueBlock.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-implementation',
 	components: {
 		'cdx-message': CdxMessage,
-		'cdx-radio': CdxRadio
+		'cdx-radio': CdxRadio,
+		'wl-key-block': KeyBlock,
+		'wl-key-value-block': KeyValueBlock
 	},
 	props: {
 		rowId: {
@@ -262,49 +267,12 @@ module.exports = exports = defineComponent( {
 @import '../../ext.wikilambda.app.variables.less';
 
 .ext-wikilambda-app-implementation {
-	.ext-wikilambda-app-implementation__function {
-		.ext-wikilambda-app-key-value__key {
-			margin-bottom: 0;
-
-			label {
-				font-weight: bold;
-				color: @color-base;
-			}
-		}
-	}
-
 	.ext-wikilambda-app-implementation__type {
 		padding-top: @spacing-75;
-
-		& > .ext-wikilambda-app-key-value__key {
-			margin-bottom: 0;
-
-			label {
-				font-weight: bold;
-				color: @color-base;
-			}
-		}
-
-		& > .ext-wikilambda-app-key_value__value {
-			margin-bottom: @spacing-75;
-
-			.ext-wikilambda-app-key_value__value-input {
-				margin-top: @spacing-25;
-			}
-		}
 	}
 
 	.ext-wikilambda-app-implementation__content {
 		padding-top: @spacing-75;
-
-		& > .ext-wikilambda-app-key-value__key {
-			margin-bottom: 0;
-
-			label {
-				font-weight: bold;
-				color: @color-base;
-			}
-		}
 	}
 }
 </style>

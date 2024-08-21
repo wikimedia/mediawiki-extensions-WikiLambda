@@ -69,6 +69,11 @@ describe( 'ZObjectKeyValue', () => {
 				props: {
 					rowId: 1,
 					edit: false
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false
+					}
 				}
 			} );
 
@@ -85,6 +90,11 @@ describe( 'ZObjectKeyValue', () => {
 				props: {
 					rowId: 1,
 					edit: false
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false
+					}
 				}
 			} );
 
@@ -101,6 +111,11 @@ describe( 'ZObjectKeyValue', () => {
 				props: {
 					rowId: 1,
 					edit: false
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false
+					}
 				}
 			} );
 
@@ -117,6 +132,9 @@ describe( 'ZObjectKeyValue', () => {
 				props: {
 					rowId: 1,
 					edit: false
+				},
+				global: {
+					stubs: { WlKeyValueBlock: false }
 				}
 			} );
 
@@ -133,6 +151,11 @@ describe( 'ZObjectKeyValue', () => {
 				props: {
 					rowId: 1,
 					edit: false
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false
+					}
 				}
 			} );
 
@@ -149,6 +172,11 @@ describe( 'ZObjectKeyValue', () => {
 				props: {
 					rowId: 1,
 					edit: false
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false
+					}
 				}
 			} );
 
@@ -165,6 +193,11 @@ describe( 'ZObjectKeyValue', () => {
 				props: {
 					rowId: 1,
 					edit: false
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false
+					}
 				}
 			} );
 
@@ -181,6 +214,11 @@ describe( 'ZObjectKeyValue', () => {
 				props: {
 					rowId: 1,
 					edit: false
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false
+					}
 				}
 			} );
 
@@ -197,6 +235,11 @@ describe( 'ZObjectKeyValue', () => {
 				props: {
 					rowId: 1,
 					edit: false
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false
+					}
 				}
 			} );
 
@@ -213,6 +256,11 @@ describe( 'ZObjectKeyValue', () => {
 				props: {
 					rowId: 1,
 					edit: false
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false
+					}
 				}
 			} );
 
@@ -230,6 +278,11 @@ describe( 'ZObjectKeyValue', () => {
 				props: {
 					rowId: 1,
 					edit: false
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false
+					}
 				}
 			} );
 
@@ -250,6 +303,11 @@ describe( 'ZObjectKeyValue', () => {
 				props: {
 					rowId: 1,
 					edit: false
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false
+					}
 				}
 			} );
 
@@ -268,6 +326,11 @@ describe( 'ZObjectKeyValue', () => {
 				props: {
 					rowId: 1,
 					edit: false
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false
+					}
 				}
 			} );
 
@@ -284,6 +347,11 @@ describe( 'ZObjectKeyValue', () => {
 				props: {
 					rowId: 1,
 					edit: false
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false
+					}
 				}
 			} );
 
@@ -316,6 +384,12 @@ describe( 'ZObjectKeyValue', () => {
 					props: {
 						edit: true,
 						rowId: 1
+					},
+					global: {
+						stubs: {
+							WlKeyValueBlock: false,
+							WlKeyBlock: false
+						}
 					}
 				} );
 
@@ -335,6 +409,12 @@ describe( 'ZObjectKeyValue', () => {
 						edit: true,
 						rowId: 1,
 						skipKey: true
+					},
+					global: {
+						stubs: {
+							WlKeyValueBlock: false,
+							WlKeyBlock: false
+						}
 					}
 				} );
 
@@ -349,6 +429,12 @@ describe( 'ZObjectKeyValue', () => {
 					props: {
 						edit: true,
 						rowId: 1
+					},
+					global: {
+						stubs: {
+							WlKeyValueBlock: false,
+							WlKeyBlock: false
+						}
 					}
 				} );
 
@@ -370,6 +456,12 @@ describe( 'ZObjectKeyValue', () => {
 					props: {
 						edit: true,
 						rowId: 11
+					},
+					global: {
+						stubs: {
+							WlKeyValueBlock: false,
+							WlKeyBlock: false
+						}
 					}
 				} );
 
@@ -393,6 +485,12 @@ describe( 'ZObjectKeyValue', () => {
 					props: {
 						edit: true,
 						rowId: 11
+					},
+					global: {
+						stubs: {
+							WlKeyValueBlock: false,
+							WlKeyBlock: false
+						}
 					}
 				} );
 
@@ -627,6 +725,9 @@ describe( 'ZObjectKeyValue', () => {
 					props: {
 						edit: true,
 						rowId: 1
+					},
+					global: {
+						stubs: { WlKeyValueBlock: false }
 					}
 				} );
 
@@ -645,6 +746,9 @@ describe( 'ZObjectKeyValue', () => {
 					props: {
 						edit: true,
 						rowId: 1
+					},
+					global: {
+						stubs: { WlKeyValueBlock: false }
 					}
 				} );
 
@@ -663,6 +767,9 @@ describe( 'ZObjectKeyValue', () => {
 					props: {
 						edit: true,
 						rowId: 1
+					},
+					global: {
+						stubs: { WlKeyValueBlock: false }
 					}
 				} );
 				const toggle = wrapper.findComponent( { name: 'wl-expanded-toggle' } );
@@ -681,6 +788,9 @@ describe( 'ZObjectKeyValue', () => {
 					props: {
 						edit: true,
 						rowId: 1
+					},
+					global: {
+						stubs: { WlKeyValueBlock: false }
 					}
 				} );
 
@@ -699,6 +809,9 @@ describe( 'ZObjectKeyValue', () => {
 					props: {
 						edit: true,
 						rowId: 1
+					},
+					global: {
+						stubs: { WlKeyValueBlock: false }
 					}
 				} );
 
@@ -717,6 +830,9 @@ describe( 'ZObjectKeyValue', () => {
 					props: {
 						edit: true,
 						rowId: 1
+					},
+					global: {
+						stubs: { WlKeyValueBlock: false }
 					}
 				} );
 
@@ -735,6 +851,9 @@ describe( 'ZObjectKeyValue', () => {
 					props: {
 						edit: true,
 						rowId: 1
+					},
+					global: {
+						stubs: { WlKeyValueBlock: false }
 					}
 				} );
 
@@ -753,6 +872,9 @@ describe( 'ZObjectKeyValue', () => {
 					props: {
 						edit: true,
 						rowId: 1
+					},
+					global: {
+						stubs: { WlKeyValueBlock: false }
 					}
 				} );
 
@@ -771,6 +893,9 @@ describe( 'ZObjectKeyValue', () => {
 					props: {
 						edit: true,
 						rowId: 1
+					},
+					global: {
+						stubs: { WlKeyValueBlock: false }
 					}
 				} );
 
@@ -789,6 +914,9 @@ describe( 'ZObjectKeyValue', () => {
 					props: {
 						edit: true,
 						rowId: 1
+					},
+					global: {
+						stubs: { WlKeyValueBlock: false }
 					}
 				} );
 
@@ -814,6 +942,9 @@ describe( 'ZObjectKeyValue', () => {
 					props: {
 						edit: true,
 						rowId: 1
+					},
+					global: {
+						stubs: { WlKeyValueBlock: false }
 					}
 				} );
 
@@ -834,6 +965,9 @@ describe( 'ZObjectKeyValue', () => {
 					props: {
 						edit: true,
 						rowId: 1
+					},
+					global: {
+						stubs: { WlKeyValueBlock: false }
 					}
 				} );
 
@@ -852,6 +986,9 @@ describe( 'ZObjectKeyValue', () => {
 					props: {
 						edit: true,
 						rowId: 1
+					},
+					global: {
+						stubs: { WlKeyValueBlock: false }
 					}
 				} );
 
@@ -872,6 +1009,9 @@ describe( 'ZObjectKeyValue', () => {
 					props: {
 						edit: true,
 						rowId: 1
+					},
+					global: {
+						stubs: { WlKeyValueBlock: false }
 					}
 				} );
 
@@ -906,6 +1046,9 @@ describe( 'ZObjectKeyValue', () => {
 					props: {
 						edit: true,
 						rowId: 1
+					},
+					global: {
+						stubs: { WlKeyValueBlock: false }
 					}
 				} );
 
@@ -940,6 +1083,9 @@ describe( 'ZObjectKeyValue', () => {
 					props: {
 						edit: true,
 						rowId: 1
+					},
+					global: {
+						stubs: { WlKeyValueBlock: false }
 					}
 				} );
 
@@ -966,6 +1112,9 @@ describe( 'ZObjectKeyValue', () => {
 					props: {
 						edit: true,
 						rowId: 1
+					},
+					global: {
+						stubs: { WlKeyValueBlock: false }
 					}
 				} );
 
@@ -995,7 +1144,8 @@ describe( 'ZObjectKeyValue', () => {
 					},
 					global: {
 						stubs: {
-							WlZObjectKeyValueSet: false
+							WlZObjectKeyValueSet: false,
+							WlKeyValueBlock: false
 						}
 					}
 				} );

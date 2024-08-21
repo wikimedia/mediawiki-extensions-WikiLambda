@@ -5,7 +5,7 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-app-string">
+	<div class="ext-wikilambda-app-string" data-testid="z-string">
 		<p
 			v-if="!edit"
 			class="ext-wikilambda-app-string__value"

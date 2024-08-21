@@ -5,7 +5,7 @@
 	@license MIT
 -->
 <template>
-	<div class="cdx-dialog__header--default ext-wikilambda-app-custom-dialog-header">
+	<div class="cdx-dialog__header--default ext-wikilambda-app-custom-dialog-header" data-testid="custom-dialog-header">
 		<div class="cdx-dialog__header__title-group ext-wikilambda-app-custom-dialog-header__title-group">
 			<h2 class="cdx-dialog__header__title">
 				<slot name="title"></slot>

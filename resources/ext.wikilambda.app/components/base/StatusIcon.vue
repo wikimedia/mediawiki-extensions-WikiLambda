@@ -10,6 +10,7 @@
 		:size="size"
 		:icon="statusIcon"
 		:class="statusIconClass"
+		data-testid="status-icon"
 	></cdx-icon>
 </template>
 

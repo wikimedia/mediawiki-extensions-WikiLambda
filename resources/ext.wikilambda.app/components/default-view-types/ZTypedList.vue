@@ -8,6 +8,7 @@
 	<div
 		class="ext-wikilambda-app-typed-list"
 		:class="nestingDepthClass"
+		data-testid="z-typed-list"
 	>
 		<!-- Type of list item -->
 		<wl-z-typed-list-type
@@ -112,9 +113,8 @@ module.exports = exports = defineComponent( {
 			nestingDepthClass: function () {
 				if ( this.expanded ) {
 					return [
-						'ext-wikilambda-app-default-key-depth',
-						'ext-wikilambda-app-key-value-set',
-						`ext-wikilambda-app-key-value--${ this.depth }`
+						'ext-wikilambda-app-object-key-value-set',
+						`ext-wikilambda-app-key-level--${ this.depth }`
 					];
 				}
 				return [];

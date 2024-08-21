@@ -43,6 +43,9 @@ describe( 'ZTester', () => {
 			const wrapper = shallowMount( ZTester, {
 				props: {
 					edit: false
+				},
+				global: {
+					stubs: { WlKeyValueBlock: false }
 				}
 			} );
 			expect( wrapper.find( '.ext-wikilambda-app-tester' ).exists() ).toBe( true );
@@ -52,6 +55,9 @@ describe( 'ZTester', () => {
 			const wrapper = shallowMount( ZTester, {
 				props: {
 					edit: false
+				},
+				global: {
+					stubs: { WlKeyValueBlock: false }
 				}
 			} );
 			const functionBlock = wrapper.find( '.ext-wikilambda-app-tester__function' );
@@ -63,9 +69,12 @@ describe( 'ZTester', () => {
 			const wrapper = shallowMount( ZTester, {
 				props: {
 					edit: false
+				},
+				global: {
+					stubs: { WlKeyValueBlock: false }
 				}
 			} );
-			const callBlock = wrapper.find( 'div[data-testid=ext-wikilambda-app-tester-call]' );
+			const callBlock = wrapper.find( 'div[data-testid=tester-call]' );
 			expect( callBlock.exists() ).toBe( true );
 			expect( callBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 		} );
@@ -74,9 +83,12 @@ describe( 'ZTester', () => {
 			const wrapper = shallowMount( ZTester, {
 				props: {
 					edit: false
+				},
+				global: {
+					stubs: { WlKeyValueBlock: false }
 				}
 			} );
-			const callBlock = wrapper.find( 'div[data-testid=ext-wikilambda-app-tester-validation]' );
+			const callBlock = wrapper.find( 'div[data-testid=tester-validation]' );
 			expect( callBlock.exists() ).toBe( true );
 			expect( callBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 		} );
@@ -87,6 +99,9 @@ describe( 'ZTester', () => {
 			const wrapper = shallowMount( ZTester, {
 				props: {
 					edit: true
+				},
+				global: {
+					stubs: { WlKeyValueBlock: false }
 				}
 			} );
 			expect( wrapper.find( '.ext-wikilambda-app-tester' ).exists() ).toBe( true );
@@ -96,6 +111,9 @@ describe( 'ZTester', () => {
 			const wrapper = shallowMount( ZTester, {
 				props: {
 					edit: true
+				},
+				global: {
+					stubs: { WlKeyValueBlock: false }
 				}
 			} );
 			const functionBlock = wrapper.find( '.ext-wikilambda-app-tester__function' );
@@ -107,9 +125,12 @@ describe( 'ZTester', () => {
 			const wrapper = shallowMount( ZTester, {
 				props: {
 					edit: true
+				},
+				global: {
+					stubs: { WlKeyValueBlock: false }
 				}
 			} );
-			const callBlock = wrapper.find( 'div[data-testid=ext-wikilambda-app-tester-call]' );
+			const callBlock = wrapper.find( 'div[data-testid=tester-call]' );
 			expect( callBlock.exists() ).toBe( true );
 			expect( callBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 		} );
@@ -118,9 +139,12 @@ describe( 'ZTester', () => {
 			const wrapper = shallowMount( ZTester, {
 				props: {
 					edit: true
+				},
+				global: {
+					stubs: { WlKeyValueBlock: false }
 				}
 			} );
-			const callBlock = wrapper.find( 'div[data-testid=ext-wikilambda-app-tester-validation]' );
+			const callBlock = wrapper.find( 'div[data-testid=tester-validation]' );
 			expect( callBlock.exists() ).toBe( true );
 			expect( callBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 		} );
@@ -191,6 +215,9 @@ describe( 'ZTester', () => {
 			const wrapper = shallowMount( ZTester, {
 				props: {
 					edit: true
+				},
+				global: {
+					stubs: { WlKeyValueBlock: false }
 				}
 			} );
 
@@ -215,6 +242,9 @@ describe( 'ZTester', () => {
 			const wrapper = shallowMount( ZTester, {
 				props: {
 					edit: true
+				},
+				global: {
+					stubs: { WlKeyValueBlock: false }
 				}
 			} );
 
@@ -255,6 +285,9 @@ describe( 'ZTester', () => {
 			const wrapper = shallowMount( ZTester, {
 				props: {
 					edit: true
+				},
+				global: {
+					stubs: { WlKeyValueBlock: false }
 				}
 			} );
 

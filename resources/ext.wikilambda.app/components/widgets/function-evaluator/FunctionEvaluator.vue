@@ -5,7 +5,7 @@
 	@license MIT
 -->
 <template>
-	<wl-widget-base class="ext-wikilambda-app-function-evaluator-widget" data-testid="function-evaluator">
+	<wl-widget-base class="ext-wikilambda-app-function-evaluator-widget" data-testid="function-evaluator-widget">
 		<template #header>
 			{{ title }}
 		</template>
@@ -35,12 +35,12 @@
 				class="ext-wikilambda-app-function-evaluator-widget__call"
 				data-testid="function-evaluator-call"
 			>
-				<div class="ext-wikilambda-app-key-value__key">
+				<wl-key-block :key-bold="true">
 					<label
 						:lang="functionCallLabelData.langCode"
 						:dir="functionCallLabelData.langDir"
 					>{{ functionCallLabelData.label }}</label>
-				</div>
+				</wl-key-block>
 				<wl-z-reference
 					:row-id="selectedFunctionRowId"
 					:edit="true"
@@ -63,9 +63,9 @@
 					class="ext-wikilambda-app-function-evaluator-widget__inputs"
 					data-testid="function-evaluator-inputs"
 				>
-					<div class="ext-wikilambda-app-key-value__key">
+					<wl-key-block :key-bold="true">
 						<label>{{ $i18n( 'wikilambda-function-evaluator-enter-inputs' ).text() }}</label>
-					</div>
+					</wl-key-block>
 					<wl-z-object-key-value
 						v-for="inputRowId in inputRowIds"
 						:key="'input-row-id-' + inputRowId"
@@ -95,9 +95,9 @@
 				data-testid="function-evaluator-result"
 			>
 				<div class="ext-wikilambda-app-function-evaluator-widget__result">
-					<div class="ext-wikilambda-app-key-value__key">
+					<wl-key-block :key-bold="true">
 						<label>{{ $i18n( 'wikilambda-function-evaluator-result' ).text() }}</label>
-					</div>
+					</wl-key-block>
 					<div v-if="running" data-testid="function-evaluator-running">
 						{{ $i18n( 'wikilambda-function-evaluator-running' ).text() }}
 					</div>
@@ -125,6 +125,7 @@ const Constants = require( '../../../Constants.js' ),
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	WidgetBase = require( '../../base/WidgetBase.vue' ),
 	ZReference = require( '../../default-view-types/ZReference.vue' ),
+	KeyBlock = require( '../../base/KeyBlock.vue' ),
 	ZObjectKeyValue = require( '../../default-view-types/ZObjectKeyValue.vue' ),
 	eventLogUtils = require( '../../../mixins/eventLogUtils.js' ),
 	errorUtils = require( '../../../mixins/errorUtils.js' ),
@@ -138,6 +139,7 @@ module.exports = exports = defineComponent( {
 		'cdx-message': CdxMessage,
 		'wl-widget-base': WidgetBase,
 		'wl-z-reference': ZReference,
+		'wl-key-block': KeyBlock,
 		'wl-z-object-key-value': ZObjectKeyValue
 	},
 	mixins: [ eventLogUtils, errorUtils ],
@@ -523,15 +525,6 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-function-evaluator-widget__inputs,
 	.ext-wikilambda-app-function-evaluator-widget__call {
 		margin-bottom: @spacing-125;
-
-		> .ext-wikilambda-app-key-value__key {
-			margin-bottom: @spacing-25;
-
-			label {
-				font-weight: bold;
-				color: @color-base;
-			}
-		}
 	}
 
 	.ext-wikilambda-app-function-evaluator-widget__result-block {
@@ -542,21 +535,6 @@ module.exports = exports = defineComponent( {
 		margin-top: @spacing-75;
 		padding: @spacing-75;
 		background-color: @background-color-progressive-subtle;
-
-		> .ext-wikilambda-app-key-value__key {
-			margin-bottom: @spacing-25;
-
-			label {
-				font-weight: bold;
-				color: @color-base;
-			}
-		}
-
-		> .ext-wikilambda-app-key-value__row {
-			> .ext-wikilambda-app-key-value {
-				margin-bottom: 0;
-			}
-		}
 	}
 }
 </style>

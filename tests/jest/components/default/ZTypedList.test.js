@@ -131,7 +131,9 @@ describe( 'ZTypedList', () => {
 					stubs: {
 						CdxButton: false,
 						WlZTypedListType: false,
-						WlZTypedListItems: false
+						WlZTypedListItems: false,
+						WlKeyValueBlock: false,
+						WlKeyBlock: false
 					}
 				}
 			} );
@@ -150,7 +152,9 @@ describe( 'ZTypedList', () => {
 					stubs: {
 						CdxButton: false,
 						WlZTypedListType: false,
-						WlZTypedListItems: false
+						WlZTypedListItems: false,
+						WlKeyValueBlock: false,
+						WlKeyBlock: false
 					}
 				}
 			} );

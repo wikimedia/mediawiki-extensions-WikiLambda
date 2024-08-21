@@ -5,7 +5,7 @@
 	@license MIT
 -->
 <template>
-	<wl-widget-base class="ext-wikilambda-app-function-explorer-widget" data-testid="function-explorer">
+	<wl-widget-base class="ext-wikilambda-app-function-explorer-widget" data-testid="function-explorer-widget">
 		<template #header>
 			{{ $i18n( 'wikilambda-function-explorer-title' ).text() }}
 		</template>

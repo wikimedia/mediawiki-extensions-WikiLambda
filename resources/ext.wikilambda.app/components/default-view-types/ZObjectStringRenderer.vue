@@ -5,7 +5,7 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-app-zobject-string-renderer">
+	<div class="ext-wikilambda-app-object-string-renderer" data-testid="z-object-string-renderer">
 		<!-- If expanded is false, show text field -->
 		<template v-if="!expanded || !initialized">
 			<p v-if="!edit" data-testid="rendered-text">
@@ -23,7 +23,7 @@
 			></cdx-text-input>
 			<div
 				v-if="hasFieldErrors"
-				class="ext-wikilambda-app-zobject-string-renderer__error"
+				class="ext-wikilambda-app-object-string-renderer__error"
 			>
 				<cdx-message :type="fieldErrors[0].type" :inline="true">
 					<!-- eslint-disable vue/no-v-html -->
@@ -35,7 +35,7 @@
 				<!-- eslint-disable vue/no-v-html -->
 				<p
 					v-if="showErrorFooter"
-					class="ext-wikilambda-app-zobject-string-renderer__error-footer"
+					class="ext-wikilambda-app-object-string-renderer__error-footer"
 					v-html="$i18n( 'wikilambda-renderer-error-footer-project-chat' ).parse()"
 				></p>
 			</div>
@@ -58,7 +58,7 @@
 			:close-button-label="$i18n( 'wikilamda-dialog-close' ).text()"
 			@update:open="showExamplesDialog = false"
 		>
-			<ul class="ext-wikilambda-app-zobject-string-renderer__examples">
+			<ul class="ext-wikilambda-app-object-string-renderer__examples">
 				<li v-for="example in renderedExamples" :key="example.testZid">
 					{{ example.result }}
 				</li>
@@ -528,12 +528,12 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-app-zobject-string-renderer {
-	.ext-wikilambda-app-zobject-string-renderer__error {
+.ext-wikilambda-app-object-string-renderer {
+	.ext-wikilambda-app-object-string-renderer__error {
 		margin-top: @spacing-25;
 	}
 
-	.ext-wikilambda-app-zobject-string-renderer__error-footer {
+	.ext-wikilambda-app-object-string-renderer__error-footer {
 		margin: 0;
 		color: @color-subtle;
 	}

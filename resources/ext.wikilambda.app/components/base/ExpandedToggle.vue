@@ -10,6 +10,7 @@
 		:aria-label="$i18n( 'wikilambda-toggle-expanded-view' ).text()"
 		class="ext-wikilambda-app-expanded-toggle"
 		:disabled="!hasExpandedMode"
+		data-testid="expanded-toggle"
 		@click="waitAndExpand"
 	>
 		<cdx-icon

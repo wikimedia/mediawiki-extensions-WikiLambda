@@ -33,7 +33,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 			} }
 		} );
 
-		const zImplementationComponent = await findByTestId( 'implementation' );
+		const zImplementationComponent = await findByTestId( 'z-implementation' );
 
 		// ACT: Select a function
 		const zReferenceSelector = await getByTestId( 'z-reference-selector' );
