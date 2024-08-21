@@ -116,6 +116,11 @@ class MigrateZ16K1StringsToZ61s extends Maintenance {
 							$newValue = 'Z610';
 							break;
 
+						case 'lua':
+							$this->output( "for Lua(!)" );
+							$newValue = 'Z620';
+							break;
+
 						default:
 							$this->output( "but not understood: " . $programmingLanguage );
 							continue 2;
