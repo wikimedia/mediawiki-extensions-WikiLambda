@@ -607,7 +607,7 @@ module.exports = exports = defineComponent( {
 			// If we are setting Z2K2 type
 			if ( this.key === Constants.Z_PERSISTENTOBJECT_VALUE ) {
 				// check if we need to reset the page title
-				this.resetPageTitle( payload.value );
+				this.setPageCreateTitle( payload.value );
 				// if we set it to Function/Z8, redirect to function editor
 				if ( payload.value === Constants.Z_FUNCTION ) {
 					this.navigate( { to: Constants.VIEWS.FUNCTION_EDITOR } );
@@ -738,7 +738,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} type
 		 */
-		resetPageTitle: function ( type ) {
+		setPageCreateTitle: function ( type ) {
 			// If this is an edit existing object page, do nothing
 			if ( !this.isCreateNewPage ) {
 				return;

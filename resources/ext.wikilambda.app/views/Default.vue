@@ -12,7 +12,7 @@
 				<wl-about-widget
 					:edit="edit"
 					:type="contentType"
-					@edit-metadata="dispatchLoadEventForEditMetadataDialog"
+					@edit-multilingual-data="dispatchLoadEventForEditMultilingualData"
 				></wl-about-widget>
 
 				<!-- Widget Function Explorer -->
@@ -205,7 +205,7 @@ module.exports = exports = defineComponent( {
 	methods: {
 		/**
 		 * Dispatch event (via Metrics Platform) to record loading this view,
-		 * or opening the about-edit-metadata-dialog.
+		 * or editing the About widget content.
 		 * This event indicates that the user is either (a) viewing a ZObject,
 		 * (b) starting to create a new one, or (c) starting to edit an existing one.
 		 * For case (a) editValue should be false; otherwise true.
@@ -234,7 +234,7 @@ module.exports = exports = defineComponent( {
 		 * appropriate event has already been dispatched.
 		 * TODO (T352141): Consider counting "About info" editing separately
 		 */
-		dispatchLoadEventForEditMetadataDialog: function () {
+		dispatchLoadEventForEditMultilingualData: function () {
 			if ( !this.edit ) {
 				this.dispatchLoadEvent( true );
 			}

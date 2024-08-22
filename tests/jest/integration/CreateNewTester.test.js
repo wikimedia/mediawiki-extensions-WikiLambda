@@ -156,19 +156,11 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		expect( validationArgumentInput.value ).toBe( 'expected value' );
 
 		//* -- Label section
-		// ACT: Set the label for the code implementation
-		const openLanguageDialogButton = await findByTestId( 'open-dialog-button' );
-		await fireEvent.click( openLanguageDialogButton );
-
-		const languageDialog = await findByTestId( 'edit-label-dialog' );
-		const languageDialogInputs = within( languageDialog ).getAllByTestId( 'text-input' );
-		const languageDialogEditLabelInput = languageDialogInputs[ 0 ];
-
-		fireEvent.update( languageDialogEditLabelInput, 'tester name' );
-
-		// Since the button does not have a role and is built into the codex dialog component, we need to use getByText
-		const confirmEditLabelButton = within( languageDialog ).getByText( 'Done' );
-		fireEvent.click( confirmEditLabelButton );
+		// ACT: Set the label for the tester
+		const nameField = await findByTestId( 'about-name-field' );
+		const nameInput = within( nameField ).getByTestId( 'text-input' );
+		fireEvent.update( nameInput, 'tester name' );
+		fireEvent.change( nameInput );
 
 		//* -- Publish section
 		// ACT: Publish the implementation

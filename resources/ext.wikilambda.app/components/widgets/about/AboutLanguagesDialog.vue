@@ -1,5 +1,5 @@
 <!--
-	WikiLambda Vue component for the AboutViewLanguages Dialog.
+	WikiLambda Vue component for the AboutLanguages Dialog.
 
 	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 	@license MIT
@@ -8,10 +8,9 @@
 	<div>
 		<cdx-dialog
 			:open="open"
-			class="ext-wikilambda-app-about-view-languages-dialog"
+			data-testid="languages-dialog"
+			class="ext-wikilambda-app-about-languages-dialog"
 			:title="$i18n( 'wikilambda-about-widget-view-languages-accessible-title' ).text()"
-			:default-action="defaultAction"
-			@default="addLanguage"
 			@update:open="closeDialog"
 		>
 			<!-- Dialog Header -->
@@ -31,40 +30,57 @@
 					</template>
 				</wl-custom-dialog-header>
 				<!-- Language Search block -->
-				<div
-					v-if="showLanguageSearch"
-					class="ext-wikilambda-app-about-view-languages-dialog__search"
-				>
+				<div class="ext-wikilambda-app-about-languages-dialog__search">
 					<cdx-search-input
 						v-model="searchTerm"
+						data-testid="search-language"
+						class="ext-wikilambda-app-about-languages-dialog__search-input"
 						:placeholder="searchPlaceholder"
-						@update:model-value="onUpdateSearchTerm"
+						@update:model-value="updateSearchTerm"
+						@focus="showSearchCancel = true"
 					></cdx-search-input>
+					<cdx-button
+						v-if="showSearchCancel"
+						action="default"
+						weight="quiet"
+						class="ext-wikilambda-app-about-languages-dialog__search-cancel"
+						@click="clearSearch"
+					>
+						{{ $i18n( 'wikilambda-cancel' ).text() }}
+					</cdx-button>
 				</div>
 			</template>
 			<!-- Dialog Body: Language Items block -->
-			<div class="ext-wikilambda-app-about-view-languages-dialog__items">
+			<div class="ext-wikilambda-app-about-languages-dialog__items">
 				<div
-					v-for="item in items"
-					:key="'dialog-lang-' + item.langZid + '-' + item.langLabelData.label"
-					class="ext-wikilambda-app-about-view-languages-dialog__item"
-					@click="editLanguage( item.langZid )"
+					v-for="( item, index ) in items"
+					:key="'dialog-lang-' + index"
 				>
 					<div
-						class="ext-wikilambda-app-about-view-languages-dialog__item-title"
-						:lang="item.langLabelData.langCode"
-						:dir="item.langLabelData.langDir"
+						v-if="item.disabled"
+						class="ext-wikilambda-app-about-languages-dialog__title"
 					>
-						{{ item.langLabelData.label }}
+						{{ item.label }}
 					</div>
-					<div class="ext-wikilambda-app-about-view-languages-dialog__item-field">
-						<span
-							v-if="item.hasMetadata"
-							:class="{ 'ext-wikilambda-app-about-view-languages-dialog__name--untitled': !item.hasName }"
+					<div
+						v-else
+						class="ext-wikilambda-app-about-languages-dialog__item"
+						@click="editLanguage( item.langZid )"
+					>
+						<div
+							class="ext-wikilambda-app-about-languages-dialog__item-title"
+							:lang="item.langLabelData.langCode"
+							:dir="item.langLabelData.langDir"
 						>
-							{{ item.name }}
-						</span>
-						<a v-else>{{ $i18n( 'wikilambda-about-widget-add-language' ).text() }}</a>
+							{{ item.langLabelData.label }}
+						</div>
+						<div class="ext-wikilambda-app-about-languages-dialog__item-field">
+							<span
+								v-if="item.hasMultilingualData"
+								:class="{ 'ext-wikilambda-app-about-languages-dialog__item-untitled': !item.hasName }"
+							>{{ item.name }}</span>
+							<a v-else>{{ $i18n( 'wikilambda-about-widget-add-language' ).text() }}</a>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -75,25 +91,23 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
-	CustomDialogHeader = require( '../../base/CustomDialogHeader.vue' ),
 	LabelData = require( '../../../store/classes/LabelData.js' ),
+	CustomDialogHeader = require( '../../base/CustomDialogHeader.vue' ),
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
 	CdxSearchInput = require( '@wikimedia/codex' ).CdxSearchInput,
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
 module.exports = exports = defineComponent( {
-	name: 'wl-about-view-languages-dialog',
+	name: 'wl-about-languages-dialog',
 	components: {
+		'cdx-button': CdxButton,
 		'cdx-dialog': CdxDialog,
 		'cdx-search-input': CdxSearchInput,
 		'wl-custom-dialog-header': CustomDialogHeader
 	},
 	props: {
-		canEdit: {
-			type: Boolean,
-			required: true
-		},
 		open: {
 			type: Boolean,
 			required: true,
@@ -103,49 +117,90 @@ module.exports = exports = defineComponent( {
 	data: function () {
 		return {
 			searchTerm: '',
-			lookupResults: []
+			lookupResults: [],
+			showSearchCancel: false
 		};
 	},
 	computed: Object.assign( mapGetters( [
+		'getFallbackLanguageZids',
 		'getLabelData',
 		'getLanguageIsoCodeOfZLang',
-		'getMetadataLanguages',
+		'getMultilingualDataLanguages',
 		'getZMonolingualTextValue',
 		'getZPersistentName'
 	] ), {
 		/**
+		 * Returns a list of all the fallback language Zids.
+		 *
+		 * @return {Array}
+		 */
+		suggestedLangs: function () {
+			return this.getFallbackLanguageZids;
+		},
+
+		/**
 		 * Returns a list of all the language Zids that are present
 		 * in the metadata collection (must have at least a name, a
-		 * description or a set of aliases).
+		 * description or a set of aliases). The list excludes all
+		 * the suggested (fallback) language zids.
 		 *
 		 * @return {Array}
 		 */
 		allLangs: function () {
-			return this.getMetadataLanguages();
+			return this.getMultilingualDataLanguages()
+				.filter( ( lang ) => !this.suggestedLangs.includes( lang ) );
 		},
 
 		/**
 		 * Builds the list of items that correspond to the available
 		 * languages in the object. Each item contains the language Zid
 		 * and label, the Name/Label in that languege, and the flags
-		 * hasMetadata and hasName that will condition the style.
+		 * hasMultilingualData and hasName that will condition the style.
 		 *
 		 * @return {Array}
 		 */
 		localItems: function () {
-			return this.allLangs.map( ( langZid ) => {
-				const thisName = this.getZPersistentName( langZid );
-				const name = thisName ?
-					this.getZMonolingualTextValue( thisName.rowId ) :
+			const buildLangItem = ( langZid ) => {
+				const nameRow = this.getZPersistentName( langZid );
+				const name = nameRow ?
+					this.getZMonolingualTextValue( nameRow.id ) :
 					undefined;
 				return {
 					langZid,
 					langLabelData: this.getLabelData( langZid ),
-					hasMetadata: true,
+					hasMultilingualData: true,
 					hasName: !!name,
 					name: name || this.$i18n( 'wikilambda-editor-default-name' ).text()
 				};
-			} );
+			};
+
+			const sortByLabel = ( a, b ) => {
+				if ( a.langLabelData.label < b.langLabelData.label ) {
+					return -1;
+				}
+				if ( a.langLabelData.label > b.langLabelData.label ) {
+					return 1;
+				}
+				return 0;
+			};
+
+			const suggestedLangs = this.getFallbackLanguageZids.map( ( zid ) => buildLangItem( zid ) );
+			const otherLangs = this.allLangs.map( ( zid ) => buildLangItem( zid ) ).sort( sortByLabel );
+
+			const items = [];
+			if ( suggestedLangs.length > 0 ) {
+				items.push( {
+					label: this.$i18n( 'wikilambda-about-widget-view-languages-suggested' ).text(),
+					disabled: true
+				}, ...suggestedLangs );
+			}
+			if ( otherLangs.length > 0 ) {
+				items.push( {
+					label: this.$i18n( 'wikilambda-about-widget-view-languages-other' ).text(),
+					disabled: true
+				}, ...otherLangs );
+			}
+			return items;
 		},
 
 		/**
@@ -159,30 +214,6 @@ module.exports = exports = defineComponent( {
 			return ( this.lookupResults.length > 0 ) ?
 				this.lookupResults :
 				this.localItems;
-		},
-
-		/**
-		 * Whether to show the language search box or not. When the available
-		 * languages with metadata information are more than ABOUT_DIALOG_MAX_ITEMS
-		 * we render the search box to allow the user to filter and search languages.
-		 *
-		 * @return {boolean}
-		 */
-		showLanguageSearch: function () {
-			return this.allLangs.length > Constants.ABOUT_DIALOG_MAX_ITEMS;
-		},
-
-		/**
-		 * Returns an object of type DialogAction that describes
-		 * the action of the secondary (cancel) button.
-		 *
-		 * @return {Object}
-		 */
-		defaultAction: function () {
-			return {
-				label: this.$i18n( 'wikilambda-about-widget-add-language' ).text(),
-				disabled: !this.canEdit
-			};
 		},
 
 		/**
@@ -205,28 +236,20 @@ module.exports = exports = defineComponent( {
 		 * @param {string} langZid
 		 * @return {boolean}
 		 */
-		hasAnyMetadata: function ( langZid ) {
+		hasMultilingualData: function ( langZid ) {
 			return ( this.allLangs.includes( langZid ) );
 		},
 
 		/**
-		 * Emits the openEditLanguage action so that we go to the
-		 * edit metadata dialog for the given language.
+		 * Emits the addSelectedLanguage action so that we can edit or
+		 * create multilingual data in a given language by adding a new
+		 * block in the About widget accordion.
 		 *
 		 * @param {string} lang
 		 */
 		editLanguage: function ( lang ) {
-			this.$emit( 'change-selected-language', lang );
-			this.$emit( 'open-edit-language' );
-		},
-
-		/**
-		 * Emits the openEditLanguage action so that we go to the
-		 * edit metadata dialog for a new language.
-		 */
-		addLanguage: function () {
-			this.$emit( 'change-selected-language', '' );
-			this.$emit( 'open-edit-language' );
+			this.$emit( 'add-language', lang );
+			this.closeDialog();
 		},
 
 		/**
@@ -234,7 +257,18 @@ module.exports = exports = defineComponent( {
 		 * and unsaved changes are cleared.
 		 */
 		closeDialog: function () {
+			this.searchTerm = '';
+			this.lookupResults = [];
 			this.$emit( 'close' );
+		},
+
+		/**
+		 * Clear the search field and results
+		 */
+		clearSearch: function () {
+			this.searchTerm = '';
+			this.updateSearchTerm( '' );
+			this.showSearchCancel = false;
 		},
 
 		/**
@@ -243,7 +277,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} value
 		 */
-		onUpdateSearchTerm: function ( value ) {
+		updateSearchTerm: function ( value ) {
 			if ( !value ) {
 				this.lookupResults = [];
 				return;
@@ -271,9 +305,9 @@ module.exports = exports = defineComponent( {
 				// Compile information for every search result
 				this.lookupResults = payload
 					.map( ( result ) => {
-						const thisName = this.getZPersistentName( result.page_title );
-						const name = thisName ?
-							this.getZMonolingualTextValue( thisName.rowId ) :
+						const nameRow = this.getZPersistentName( result.page_title );
+						const name = nameRow ?
+							this.getZMonolingualTextValue( nameRow.id ) :
 							undefined;
 						allZids.push( result.page_title );
 						const labelData = new LabelData(
@@ -285,7 +319,7 @@ module.exports = exports = defineComponent( {
 						return {
 							langZid: result.page_title,
 							langLabelData: labelData,
-							hasMetadata: this.hasAnyMetadata( result.page_title ),
+							hasMultilingualData: this.hasMultilingualData( result.page_title ),
 							hasName: !!name,
 							name: name || this.$i18n( 'wikilambda-editor-default-name' ).text()
 						};
@@ -300,10 +334,10 @@ module.exports = exports = defineComponent( {
 						if ( b.hasName ) {
 							return 2;
 						}
-						if ( a.hasMetadata ) {
+						if ( a.hasMultilingualData ) {
 							return -1;
 						}
-						if ( b.hasMetadata ) {
+						if ( b.hasMultilingualData ) {
 							return 1;
 						}
 						return 0;
@@ -319,16 +353,32 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-app-about-view-languages-dialog {
+.ext-wikilambda-app-about-languages-dialog {
 	.cdx-dialog__body {
 		padding: @spacing-50 0;
 	}
 
-	.ext-wikilambda-app-about-view-languages-dialog__search {
+	.ext-wikilambda-app-about-languages-dialog__search {
 		padding: @spacing-100 0 0;
+		display: flex;
+		gap: @spacing-150;
 	}
 
-	.ext-wikilambda-app-about-view-languages-dialog__item {
+	.ext-wikilambda-app-about-languages-dialog__search-input {
+		flex-grow: 1;
+	}
+
+	.ext-wikilambda-app-about-languages-dialog__search-cancel {
+		flex-grow: 0;
+	}
+
+	.ext-wikilambda-app-about-languages-dialog__title {
+		padding: @spacing-50 @spacing-150;
+		font-weight: @font-weight-bold;
+		color: @color-disabled;
+	}
+
+	.ext-wikilambda-app-about-languages-dialog__item {
 		padding: @spacing-50 @spacing-150;
 
 		&:hover {
@@ -337,16 +387,16 @@ module.exports = exports = defineComponent( {
 		}
 	}
 
-	.ext-wikilambda-app-about-view-languages-dialog__item-title {
+	.ext-wikilambda-app-about-languages-dialog__item-title {
 		margin: 0;
 	}
 
-	.ext-wikilambda-app-about-view-languages-dialog__item-field {
+	.ext-wikilambda-app-about-languages-dialog__item-field {
 		margin: 0;
 		color: @color-subtle;
 	}
 
-	.ext-wikilambda-app-about-view-languages-dialog__name--untitled {
+	.ext-wikilambda-app-about-languages-dialog__item-untitled {
 		color: @color-placeholder;
 		font-style: italic;
 	}

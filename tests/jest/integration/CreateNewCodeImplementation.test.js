@@ -71,20 +71,14 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		const codeEditorInstance = window.ace.edit( codeEditor );
 		expect( codeEditorInstance.getValue() ).toContain( 'function' );
 
-		// ACT: Set the label for the code implementation
-		const openLanguageDialogButton = await getByTestId( 'open-dialog-button' );
-		await fireEvent.click( openLanguageDialogButton );
+		//* -- Label section
+		// ACT: Set the label for the implementation
+		const nameField = await findByTestId( 'about-name-field' );
+		const nameInput = within( nameField ).getByTestId( 'text-input' );
+		fireEvent.update( nameInput, 'implementation name' );
+		fireEvent.change( nameInput );
 
-		const languageDialog = await getByTestId( 'edit-label-dialog' );
-		const languageDialogInputs = within( languageDialog ).getAllByTestId( 'text-input' );
-		const languageDialogEditLabelInput = languageDialogInputs[ 0 ];
-
-		fireEvent.update( languageDialogEditLabelInput, 'implementation name' );
-
-		// Since the button does not have a role and is built into the codex dialog component, we need to use getByText
-		const confirmEditLabelButton = within( languageDialog ).getByText( 'Done' );
-		fireEvent.click( confirmEditLabelButton );
-
+		//* -- Publish section
 		// ACT: Publish the implementation
 		const publishButton = await getByTestId( 'publish-button' );
 		await fireEvent.click( publishButton );

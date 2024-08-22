@@ -52,7 +52,7 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign( mapGetters( [
-		'getMetadataLanguages'
+		'getMultilingualDataLanguages'
 	] ), {
 		/**
 		 * Returns the available languages for the function definition,
@@ -61,7 +61,7 @@ module.exports = exports = defineComponent( {
 		 * @return {Array}
 		 */
 		functionLanguages: function () {
-			return this.getMetadataLanguages();
+			return this.getMultilingualDataLanguages();
 		},
 		/**
 		 * Returns the id for the language field

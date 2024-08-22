@@ -76,13 +76,12 @@ class FunctionPage extends Page {
 	}
 
 	async getFunctionInputBlocks() {
-		const inputBlock = await this.aboutBlock.$( '.ext-wikilambda-app-about__function-input' );
-		const inputs = await inputBlock.$$( '.ext-wikilambda-app-about__function-field-value' );
+		const inputs = await this.aboutBlock.$$( '.ext-wikilambda-app-about-language-block__input' );
 		return inputs;
 	}
 
 	async getFunctionInputLabel( inputSelector ) {
-		const inputLabel = await inputSelector.$( '.ext-wikilambda-app-about__function-input-label' );
+		const inputLabel = await inputSelector.$( '.ext-wikilambda-app-about-language-block__input-label' );
 		const text = ElementActions.getText( inputLabel );
 		return text;
 	}
@@ -94,7 +93,7 @@ class FunctionPage extends Page {
 	}
 
 	async getFunctionOutputType() {
-		const outputBlock = await this.aboutBlock.$( '.ext-wikilambda-app-about__function-output' );
+		const outputBlock = await this.aboutBlock.$( '.ext-wikilambda-app-about-language-block__output' );
 		const outputType = await outputBlock.$( '.ext-wikilambda-app-object-to-string' );
 		const text = ElementActions.getText( outputType );
 		return text;

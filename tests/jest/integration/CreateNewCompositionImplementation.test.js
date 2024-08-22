@@ -27,7 +27,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 	} );
 
 	it( 'should allow you to create a new composition implementation', async () => {
-		const { getByTestId, findByTestId, getAllByTestId } = render( App, {
+		const { getByTestId, findByTestId } = render( App, {
 			global: { plugins: [ store ], stubs: {
 				teleport: true,
 				WlFunctionEvaluatorWidget: true
@@ -70,7 +70,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		expect( compositionReferenceSelector.value ).toBe( functionNameToSelect );
 
 		// ASSERT: Check that we have 2 arguments available after selecting "String equality"
-		expect( getAllByTestId( 'text-input' ).length ).toBe( 2 );
+		expect( within( implementationContentBlock ).getAllByTestId( 'text-input' ).length ).toBe( 2 );
 
 		// ACT: Change the type of the first argument to argument reference
 		// By fetching this like this, we are guaranteed of only what is in the composition content block section - other page layout elements may change without affecting this
@@ -120,19 +120,11 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		expect( within( secondArgumentInput ).getByRole( 'combobox' ) ).toHaveTextContent( secondArgumentExpectedInput );
 
 		//* -- Label section
-		// ACT: Set the label for the code implementation
-		const openLanguageDialogButton = await getByTestId( 'open-dialog-button' );
-		await fireEvent.click( openLanguageDialogButton );
-
-		const languageDialog = await getByTestId( 'edit-label-dialog' );
-		const languageDialogInputs = within( languageDialog ).getAllByTestId( 'text-input' );
-		const languageDialogEditLabelInput = languageDialogInputs[ 0 ];
-
-		fireEvent.update( languageDialogEditLabelInput, 'implementation name' );
-
-		// Since the button does not have a role and is built into the codex dialog component, we need to use getByText
-		const confirmEditLabelButton = within( languageDialog ).getByText( 'Done' );
-		fireEvent.click( confirmEditLabelButton );
+		// ACT: Set the label for the implementation
+		const nameField = await findByTestId( 'about-name-field' );
+		const nameInput = within( nameField ).getByTestId( 'text-input' );
+		fireEvent.update( nameInput, 'implementation name' );
+		fireEvent.change( nameInput );
 
 		//* -- Publish section
 		// ACT: Publish the implementation

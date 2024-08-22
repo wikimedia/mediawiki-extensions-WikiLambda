@@ -137,6 +137,8 @@
 	"wikilambda-about-widget-title": "Title of the About widget",
 	"wikilambda-about-widget-unlabelled-input": "Placeholder label for an input that has no name in the About widget",
 	"wikilambda-about-widget-view-languages-accessible-title": "Longer form of {{msg-mw|wikilambda-about-widget-view-languages-title}} for accessibility, available for screen readers.",
+	"wikilambda-about-widget-view-languages-other": "Title of the language group with other languages in the language selector",
+	"wikilambda-about-widget-view-languages-suggested": "Title of the language group with suggested languages in the language selector",
 	"wikilambda-about-widget-view-languages-title": "Title of the About widget View Languages dialog",
 	"wikilambda-add-list-item": "Label for a button that adds an item to a list",
 	"wikilambda-add-list-item-button": "Label for button to add an item to a list",

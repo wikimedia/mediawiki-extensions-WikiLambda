@@ -26,9 +26,6 @@ const FunctionExplorerBlock = require( '../../componentobjects/FunctionExplorerB
 const i18n = require( '../../utils/i18n.js' )();
 
 class TesterPage extends Page {
-	get aboutBlockDialogBox() {
-		return AboutBlock.detailsInputDialogBox;
-	}
 
 	get contentBlock() {
 		return ContentBlock.contentBlock;
@@ -45,13 +42,15 @@ class TesterPage extends Page {
 	// #region About Block
 
 	/**
-	 * Open the About Block Dialog Box
+	 * Add a new language block into the About widget
+	 * given the new language { zid, name }
 	 *
 	 * @async
+	 * @param {string} language
 	 * @return {void}
 	 */
-	async openAboutBlockDialogBox() {
-		await AboutBlock.openDetailsInputDialogBox();
+	async addAboutBlockLanguage( language ) {
+		await AboutBlock.addLanguage( language );
 	}
 
 	/**
@@ -73,16 +72,6 @@ class TesterPage extends Page {
 	 */
 	async addAboutBlockEntries( aboutBlockEntries ) {
 		await AboutBlock.addAboutDetails( aboutBlockEntries );
-	}
-
-	/**
-	 * Submit the About Block entries
-	 *
-	 * @async
-	 * @return {void}
-	 */
-	async submitAboutBlockEntries() {
-		await AboutBlock.submitAboutDetails();
 	}
 
 	// #endregion

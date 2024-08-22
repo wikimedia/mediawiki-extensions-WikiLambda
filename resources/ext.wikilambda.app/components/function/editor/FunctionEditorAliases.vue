@@ -62,7 +62,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Object|undefined}
 		 */
-		aliasObject: function () {
+		aliasRow: function () {
 			return this.zLanguage ?
 				this.getZPersistentAlias( this.zLanguage ) :
 				undefined;
@@ -73,7 +73,7 @@ module.exports = exports = defineComponent( {
 		 * @return {Array}
 		 */
 		aliases: function () {
-			return !this.aliasObject ? [] : this.getZMonolingualStringsetValues( this.aliasObject.rowId )
+			return ( this.aliasRow ? this.getZMonolingualStringsetValues( this.aliasRow.id ) : [] )
 				.map( ( value ) => ( {
 					id: value.rowId,
 					value: value.value
@@ -154,7 +154,7 @@ module.exports = exports = defineComponent( {
 		 * @return {void}
 		 */
 		persistAliases: function ( aliases ) {
-			const rowId = this.aliasObject ? this.aliasObject.rowId : undefined;
+			const rowId = this.aliasRow ? this.aliasRow.id : undefined;
 			this.persistZMonolingualStringSet(
 				rowId,
 				aliases.map( ( alias ) => alias.value )
@@ -170,7 +170,6 @@ module.exports = exports = defineComponent( {
 		 * @param {Array} values list of aliases to persist
 		 */
 		persistZMonolingualStringSet: function ( currentRowId, values ) {
-
 			if ( currentRowId ) {
 				if ( values.length === 0 ) {
 					this.removeItemFromTypedList( { rowId: currentRowId } );

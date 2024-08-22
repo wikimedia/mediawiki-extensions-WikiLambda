@@ -17,7 +17,7 @@ describe( 'FunctionEditorDescription', () => {
 	beforeEach( () => {
 		getters = {
 			getRowByKeyPath: createGettersWithFunctionsMock(),
-			getZPersistentDescription: createGettersWithFunctionsMock( { rowId: 2, langZid: 'Z1002', langIsoCode: 'en' } ),
+			getZPersistentDescription: createGettersWithFunctionsMock( { id: 2 } ),
 			getZMonolingualTextValue: createGettersWithFunctionsMock( 'Function description' )
 		};
 

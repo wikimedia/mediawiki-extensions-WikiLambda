@@ -90,14 +90,11 @@ describe( 'Tester', () => {
 			await FunctionPage.goToCreateNewTestLink();
 
 			// Add and submit About block entries in English
-			await TesterForm.openAboutBlockDialogBox();
 			await TesterForm.addAboutBlockEntries( aboutBlockEntriesEnglish );
-			await TesterForm.submitAboutBlockEntries();
 
 			// Add and Submit About block entries in Arabic
-			await TesterForm.openAboutBlockDialogBox();
+			await TesterForm.addAboutBlockLanguage( aboutBlockEntriesArabic.language );
 			await TesterForm.addAboutBlockEntries( aboutBlockEntriesArabic );
-			await TesterForm.submitAboutBlockEntries();
 
 			// fill the entries in the call block
 			await TesterForm.expandCallFunctionBlock();
@@ -170,9 +167,7 @@ describe( 'Edit the test', () => {
 
 	it( 'should edit the about block test', async () => {
 		await TesterPage.clickOnEditSourceLink();
-		await TesterForm.openAboutBlockDialogBox();
 		await TesterForm.addAboutBlockEntries( aboutBlockEditEnglishEntries );
-		await TesterForm.submitAboutBlockEntries();
 		await TesterForm.publishTest();
 		await expect( await TesterPage.getTesterDescription() ).toBe(
 			aboutBlockEditEnglishEntries.description,

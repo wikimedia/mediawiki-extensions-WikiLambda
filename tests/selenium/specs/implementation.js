@@ -98,15 +98,13 @@ describe( 'Implementation (CUJ 5)', () => {
 				.toHaveText( functionDetails.ZObjectLabel, { message: 'Function Page is not open' } );
 			await FunctionPage.goToCreateImplementationLink();
 
-			// Add and Submit About block entries in English
-			await ImplementationForm.openAboutBlockDialogBox();
+			// Add About block entries in English
 			await ImplementationForm.addAboutBlockEntries( aboutBlockEntriesEnglish );
-			await ImplementationForm.submitAboutBlockEntries();
 
-			// Add and Submit About block entries in Hindi
-			await ImplementationForm.openAboutBlockDialogBox();
+			// Add Hindi language block and
+			// Add About block entries in Hindi
+			await ImplementationForm.addAboutBlockLanguage( aboutBlockEntriesHindi.language );
 			await ImplementationForm.addAboutBlockEntries( aboutBlockEntriesHindi );
-			await ImplementationForm.submitAboutBlockEntries();
 
 			// Fill the entries in the code block
 			await ImplementationForm.selectImplementationType( 'code' );
@@ -203,15 +201,13 @@ describe( 'Implementation (CUJ 5)', () => {
 			await FunctionPage.open( functionDetails.ZId );
 			await FunctionPage.goToCreateImplementationLink();
 
-			// Add and Submit About block entries in English
-			await ImplementationForm.openAboutBlockDialogBox();
+			// Add About block entries in English
 			await ImplementationForm.addAboutBlockEntries( aboutBlockEntriesEnglish );
-			await ImplementationForm.submitAboutBlockEntries();
 
-			// Add and Submit About block entries in Hindi
-			await ImplementationForm.openAboutBlockDialogBox();
+			// Add Hindi language block and
+			// Add About block entries in Hindi
+			await ImplementationForm.addAboutBlockLanguage( aboutBlockEntriesHindi.language );
 			await ImplementationForm.addAboutBlockEntries( aboutBlockEntriesHindi );
-			await ImplementationForm.submitAboutBlockEntries();
 
 			// Fill the entries in the composition block
 			await ImplementationForm.selectImplementationType( 'composition' );

@@ -22,7 +22,7 @@ describe( 'FunctionEditorName', () => {
 			getLabelData: createLabelDataMock(),
 			getFallbackLanguageZids: createGetterMock( [ 'Z1002', 'Z1003' ] ),
 			getRowByKeyPath: createGettersWithFunctionsMock(),
-			getZPersistentName: createGettersWithFunctionsMock( { rowId: 2, langZid: 'Z1002', langIsoCode: 'en' } ),
+			getZPersistentName: createGettersWithFunctionsMock( { id: 2 } ),
 			getZMonolingualTextValue: createGettersWithFunctionsMock( 'Function name' )
 		};
 
@@ -70,6 +70,8 @@ describe( 'FunctionEditorName', () => {
 				global: { stubs: { WlFunctionEditorField: false } }
 			} );
 
+			wrapper.vm.updatePageTitle = jest.fn();
+
 			// ACT: Change value of name input
 			const input = wrapper.findComponent( { name: 'cdx-text-input' } );
 			input.vm.$emit( 'change', { target: { value: '' } } );
@@ -82,6 +84,9 @@ describe( 'FunctionEditorName', () => {
 
 			// ASSERT: emits updated-name
 			expect( wrapper.emitted( 'updated-name' ) ).toBeTruthy();
+
+			// ASSERT: calls updatePageTitle
+			expect( wrapper.vm.updatePageTitle ).toHaveBeenCalled();
 		} );
 
 		it( 'changes the name value if it already has a name object', async () => {
@@ -91,6 +96,8 @@ describe( 'FunctionEditorName', () => {
 				},
 				global: { stubs: { WlFunctionEditorField: false } }
 			} );
+
+			wrapper.vm.updatePageTitle = jest.fn();
 
 			// ACT: Change value of name input
 			const input = wrapper.findComponent( { name: 'cdx-text-input' } );
@@ -106,6 +113,9 @@ describe( 'FunctionEditorName', () => {
 
 			// ASSERT: emits updated-name
 			expect( wrapper.emitted( 'updated-name' ) ).toBeTruthy();
+
+			// ASSERT: calls updatePageTitle
+			expect( wrapper.vm.updatePageTitle ).toHaveBeenCalled();
 		} );
 
 		it( 'adds a new monolingual string if there is no name object', async () => {
@@ -119,6 +129,8 @@ describe( 'FunctionEditorName', () => {
 				},
 				global: { stubs: { WlFunctionEditorField: false } }
 			} );
+
+			wrapper.vm.updatePageTitle = jest.fn();
 
 			// ACT: Change value of name input
 			const input = wrapper.findComponent( { name: 'cdx-text-input' } );
@@ -136,6 +148,9 @@ describe( 'FunctionEditorName', () => {
 
 			// ASSERT: emits updated-name
 			expect( wrapper.emitted( 'updated-name' ) ).toBeTruthy();
+
+			// ASSERT: calls updatePageTitle
+			expect( wrapper.vm.updatePageTitle ).toHaveBeenCalled();
 		} );
 
 		it( 'changes the page title if it is the main language block', async () => {
@@ -145,15 +160,16 @@ describe( 'FunctionEditorName', () => {
 				},
 				global: { stubs: { WlFunctionEditorField: false } }
 			} );
-			jest.spyOn( wrapper.vm, 'setPageTitle' );
+
+			wrapper.vm.updatePageTitle = jest.fn();
 
 			// ACT: Change value of name input
 			const input = wrapper.findComponent( { name: 'cdx-text-input' } );
 			input.vm.$emit( 'change', { target: { value: 'New Function Title' } } );
 			await wrapper.vm.$nextTick();
 
-			// ASSERT: set page title gets changed
-			expect( wrapper.vm.setPageTitle ).toHaveBeenCalled();
+			// ASSERT: calls updatePageTitle
+			expect( wrapper.vm.updatePageTitle ).toHaveBeenCalled();
 		} );
 	} );
 } );

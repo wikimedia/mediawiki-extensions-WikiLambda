@@ -10,7 +10,6 @@ const Constants = require( '../../Constants.js' ),
 	currentPageModule = require( './zobject/currentPage.js' ),
 	submissionModule = require( './zobject/submission.js' ),
 	findKeyInArray = require( '../../mixins/typeUtils.js' ).methods.findKeyInArray,
-	selectBestLanguage = require( '../../mixins/typeUtils.js' ).methods.selectBestLanguage,
 	isTruthyOrEqual = require( '../../mixins/typeUtils.js' ).methods.isTruthyOrEqual,
 	zobjectUtils = require( '../../mixins/zobjectUtils.js' ).methods,
 	apiUtils = require( '../../mixins/api.js' ).methods,
@@ -129,9 +128,8 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Returns an array of all the ZMonolingualString objects
-		 * (their language and their rowId) that are available in
-		 * the persistent object Name/Label key (Z2K3).
+		 * Returns an array of all the ZMonolingualString languages
+		 * available in the persistent object Name/Label key (Z2K3).
 		 *
 		 * @param {Object} _state
 		 * @param {Object} getters
@@ -156,9 +154,8 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Returns an array of all the ZMonolingualString objects
-		 * (their language and their rowId) that are available in
-		 * the persistent object Description key (Z2K5).
+		 * Returns an array of all the ZMonolingualString languages
+		 * available in the persistent object Description key (Z2K5).
 		 *
 		 * @param {Object} _state
 		 * @param {Object} getters
@@ -201,31 +198,22 @@ module.exports = exports = {
 					Constants.Z_PERSISTENTOBJECT_ALIASES,
 					Constants.Z_MULTILINGUALSTRINGSET_VALUE
 				], rowId );
-				// Return undefined if row does not exist
+				// Return empty array if row does not exist
 				if ( aliasRow === undefined ) {
 					return [];
 				}
 				const allAlias = getters.getChildrenByParentRowId( aliasRow.id ).slice( 1 );
-				const allLanguages = allAlias.map( ( monolingualset ) => {
-					const langZid = getters.getZMonolingualStringsetLang( monolingualset.id );
-					const langIsoCode = getters.getLanguageIsoCodeOfZLang( langZid );
-					return {
-						langZid,
-						langIsoCode,
-						rowId: monolingualset.id
-					};
-				} );
-				return allLanguages;
+				return allAlias.map( ( mono ) => getters.getZMonolingualStringsetLang( mono.id ) );
 			}
 
 			return findAliases;
 		},
 
 		/**
-		 * Returns the name for the ZPersistent object for a given
-		 * lang Zid. If language isn't passed as a parameter, returns
-		 * the best name for the ZPersistent object depending on the
-		 * user preferred languge and the languages available.
+		 * Returns the row of the monolingual string that contains the
+		 * name for the ZPersistent object for a given language Zid.
+		 * If there's no monolingual string for this language, returns
+		 * undefined.
 		 *
 		 * @param {Object} _state
 		 * @param {Object} getters
@@ -233,25 +221,23 @@ module.exports = exports = {
 		 */
 		getZPersistentName: function ( _state, getters ) {
 			/**
-			 * @param {string|null} langZid
+			 * @param {string} langZid
 			 * @param {number} rowId
 			 * @return {Object|undefined}
 			 */
-			function findName( langZid = null, rowId = 0 ) {
-				const allNames = getters.getZPersistentNameLangs( rowId );
-				return langZid ?
-					allNames.find( ( lang ) => ( lang.langZid === langZid ) ) :
-					selectBestLanguage( allNames );
+			function findName( langZid, rowId = 0 ) {
+				const name = getters.getRowByKeyPath( [ Constants.Z_PERSISTENTOBJECT_LABEL ], rowId );
+				return name ? getters.getZMonolingualForLanguage( langZid, name.id ) : undefined;
 			}
 
 			return findName;
 		},
 
 		/**
-		 * Returns the description for the ZPersistent object for a given
-		 * lang Zid. If language isn't passed as a parameter, returns the
-		 * best description for the ZPersistent object depending on the
-		 * user preferred languge and the languages available.
+		 * Returns the row of the monolingual string that contains the
+		 * description for the ZPersistent object for a given language Zid.
+		 * If there's no monolingual string for this language, returns
+		 * undefined.
 		 *
 		 * @param {Object} _state
 		 * @param {Object} getters
@@ -259,15 +245,13 @@ module.exports = exports = {
 		 */
 		getZPersistentDescription: function ( _state, getters ) {
 			/**
-			 * @param {string|null} langZid
+			 * @param {string} langZid
 			 * @param {number} rowId
 			 * @return {Object|undefined}
 			 */
-			function findDescription( langZid = null, rowId = 0 ) {
-				const allDescriptions = getters.getZPersistentDescriptionLangs( rowId );
-				return langZid ?
-					allDescriptions.find( ( lang ) => ( lang.langZid === langZid ) ) :
-					selectBestLanguage( allDescriptions );
+			function findDescription( langZid, rowId = 0 ) {
+				const description = getters.getRowByKeyPath( [ Constants.Z_PERSISTENTOBJECT_DESCRIPTION ], rowId );
+				return description ? getters.getZMonolingualForLanguage( langZid, description.id ) : undefined;
 			}
 
 			return findDescription;
@@ -275,9 +259,8 @@ module.exports = exports = {
 
 		/**
 		 * Returns the alias for the ZPersistent object for a given
-		 * lang Zid. If language isn't passed as a parameter, returns
-		 * the best alias for the ZPersistent object depending on the
-		 * user preferred languge and the languages available.
+		 * lang Zid. If no alias exist for the given language, returns
+		 * an empty array.
 		 *
 		 * @param {Object} _state
 		 * @param {Object} getters
@@ -285,30 +268,28 @@ module.exports = exports = {
 		 */
 		getZPersistentAlias: function ( _state, getters ) {
 			/**
-			 * @param {string|null} langZid
+			 * @param {string} langZid
 			 * @param {number} rowId
 			 * @return {Object|undefined}
 			 */
-			function findAlias( langZid = null, rowId = 0 ) {
-				const allAlias = getters.getZPersistentAliasLangs( rowId );
-				return langZid ?
-					allAlias.find( ( lang ) => ( lang.langZid === langZid ) ) :
-					selectBestLanguage( allAlias );
+			function findAlias( langZid, rowId = 0 ) {
+				const aliases = getters.getRowByKeyPath( [ Constants.Z_PERSISTENTOBJECT_ALIASES ], rowId );
+				return aliases ? getters.getZMonolingualStringsetForLanguage( langZid, aliases.id ) : undefined;
 			}
 
 			return findAlias;
 		},
 
 		/**
-		 * Returns a list of all the language Zids that are present
-		 * in the metadata collection (must have at least a name, a
-		 * description or a set of aliases).
+		 * Returns a list of all the language Zids that are present in
+		 * the multilingual data collection (must have at least a name,
+		 * a description, a set of aliases and any input labels).
 		 *
 		 * @param {Object} _state
 		 * @param {Object} getters
 		 * @return {Function}
 		 */
-		getMetadataLanguages: function ( _state, getters ) {
+		getMultilingualDataLanguages: function ( _state, getters ) {
 			/**
 			 * @param {number} rowId
 			 * @return {Array}
@@ -323,9 +304,8 @@ module.exports = exports = {
 				const inputLangs = getters.getZFunctionInputLangs( rowId );
 
 				// Combine all languages and return the array of unique languageZids
-				const allLangs = nameLangs.concat( descriptionLangs, aliasLangs, inputLangs );
-				const langZids = allLangs.map( ( lang ) => lang.langZid );
-				return [ ...new Set( langZids ) ];
+				const allLangs = nameLangs.concat( descriptionLangs, aliasLangs, ...inputLangs );
+				return [ ...new Set( allLangs ) ];
 			}
 
 			return findAllLanguages;
@@ -1104,13 +1084,80 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Returns the list of metadata objects that are stored as
+		 * Return the monolingual string object row belonging
+		 * to a given language and multilingual string rowId,
+		 * or undefined if there is no monolingual string for
+		 * this language.
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getZMonolingualForLanguage: function ( _state, getters ) {
+			/**
+			 * @param {string} langZid
+			 * @param {number} rowId
+			 * @return {Object|undefined}
+			 */
+			function findMonolingual( langZid, rowId ) {
+				const list = getters.getRowByKeyPath( [ Constants.Z_MULTILINGUALSTRING_VALUE ], rowId );
+				if ( !list ) {
+					return undefined;
+				}
+				// get monolingual objects
+				const children = getters.getChildrenByParentRowId( list.id ).slice( 1 );
+				for ( const child of children ) {
+					const monoLangRow = getters.getRowByKeyPath( [ Constants.Z_MONOLINGUALSTRING_LANGUAGE ], child.id );
+					const monoLangZid = getters.getZReferenceTerminalValue( monoLangRow ? monoLangRow.id : undefined );
+					if ( langZid === monoLangZid ) {
+						return child;
+					}
+				}
+				return undefined;
+			}
+			return findMonolingual;
+		},
+
+		/**
+		 * Return the monolingual stringset object row belonging
+		 * to a given language and multilingual stringset rowId,
+		 * or undefined if there is no monolingual stringset for
+		 * this language.
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getZMonolingualStringsetForLanguage: function ( _state, getters ) {
+			/**
+			 * @param {string} langZid
+			 * @param {number} rowId
+			 * @return {Object|undefined}
+			 */
+			function findMonolingualStringset( langZid, rowId ) {
+				const list = getters.getRowByKeyPath( [ Constants.Z_MULTILINGUALSTRINGSET_VALUE ], rowId );
+				if ( !list ) {
+					return undefined;
+				}
+				// get monolingual objects
+				const children = getters.getChildrenByParentRowId( list.id ).slice( 1 );
+				for ( const child of children ) {
+					const row = getters.getRowByKeyPath( [ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ], child.id );
+					const zid = getters.getZReferenceTerminalValue( row ? row.id : undefined );
+					if ( langZid === zid ) {
+						return child;
+					}
+				}
+				return undefined;
+			}
+			return findMonolingualStringset;
+		},
+
+		/**
+		 * Returns the list of language zids represented in a given
 		 * ZMonolingualStrings (E.g. Name or Description) given the
 		 * rowId where the content of the ZMulilingualString Value/Z12K1
 		 * starts.
-		 *
-		 * TODO (T336390): Create Metadata class with langZid, langIsoCode
-		 * and rowId for all the About widget related methods.
 		 *
 		 * @param {Object} _state
 		 * @param {Object} getters
@@ -1127,16 +1174,7 @@ module.exports = exports = {
 					return [];
 				}
 				const allMonolinguals = getters.getChildrenByParentRowId( rowId ).slice( 1 );
-				const allLanguages = allMonolinguals.map( ( monolingual ) => {
-					const langZid = getters.getZMonolingualLangValue( monolingual.id );
-					const langIsoCode = getters.getLanguageIsoCodeOfZLang( langZid );
-					return {
-						langZid,
-						langIsoCode,
-						rowId: monolingual.id
-					};
-				} );
-				return allLanguages;
+				return allMonolinguals.map( ( mono ) => getters.getZMonolingualLangValue( mono.id ) );
 			}
 			return findBestMonolingual;
 		},
