@@ -13,22 +13,30 @@ namespace MediaWiki\Extension\WikiLambda\HookHandler;
 
 use ApiMessage;
 use MediaWiki\CommentStore\CommentStoreComment;
+use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
-use MediaWiki\Hook\NamespaceIsMovableHook;
-use MediaWiki\MediaWikiServices;
-use MediaWiki\Permissions\Hook\GetUserPermissionsErrorsHook;
 use MediaWiki\Revision\RenderedRevision;
 use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Status\Status;
-use MediaWiki\Storage\Hook\MultiContentSaveHook;
 use MediaWiki\Title\Title;
 use MediaWiki\User\User;
 use MediaWiki\User\UserIdentity;
 use MessageSpecifier;
 
-class PageEditingHandler implements NamespaceIsMovableHook, MultiContentSaveHook, GetUserPermissionsErrorsHook {
+class PageEditingHandler implements
+	\MediaWiki\Hook\NamespaceIsMovableHook,
+	\MediaWiki\Storage\Hook\MultiContentSaveHook,
+	\MediaWiki\Permissions\Hook\GetUserPermissionsErrorsHook
+{
+	private Config $config;
+
+	public function __construct(
+		Config $config
+	) {
+		$this->config = $config;
+	}
 
 	/**
 	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/NamespaceIsMovable
@@ -38,8 +46,7 @@ class PageEditingHandler implements NamespaceIsMovableHook, MultiContentSaveHook
 	 * @return bool|void
 	 */
 	public function onNamespaceIsMovable( $index, &$result ) {
-		$config = MediaWikiServices::getInstance()->getMainConfig();
-		if ( !$config->get( 'WikiLambdaEnableRepoMode' ) ) {
+		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
 			// Nothing for us to do.
 			return;
 		}
@@ -64,8 +71,7 @@ class PageEditingHandler implements NamespaceIsMovableHook, MultiContentSaveHook
 	 * @return bool|void
 	 */
 	public function onMultiContentSave( $renderedRevision, $user, $summary, $flags, $hookStatus ) {
-		$config = MediaWikiServices::getInstance()->getMainConfig();
-		if ( !$config->get( 'WikiLambdaEnableRepoMode' ) ) {
+		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
 			// Nothing for us to do.
 			return;
 		}
@@ -129,8 +135,7 @@ class PageEditingHandler implements NamespaceIsMovableHook, MultiContentSaveHook
 	 * @return bool|void
 	 */
 	public function onGetUserPermissionsErrors( $title, $user, $action, &$result ) {
-		$config = MediaWikiServices::getInstance()->getMainConfig();
-		if ( !$config->get( 'WikiLambdaEnableRepoMode' ) ) {
+		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
 			// Nothing for us to do.
 			return;
 		}

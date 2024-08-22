@@ -16,23 +16,26 @@ use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
-use MediaWiki\Hook\SkinTemplateNavigation__UniversalHook;
-use MediaWiki\Hook\WebRequestPathInfoRouterHook;
-use MediaWiki\Linker\Hook\HtmlPageLinkRendererEndHook;
+use MediaWiki\Languages\LanguageNameUtils;
 use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\Linker\LinkTarget;
-use MediaWiki\MediaWikiServices;
-use MediaWiki\Output\Hook\BeforePageDisplayHook;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Title\Title;
 use Skin;
 
 class PageRenderingHandler implements
-	HtmlPageLinkRendererEndHook,
-	SkinTemplateNavigation__UniversalHook,
-	WebRequestPathInfoRouterHook,
-	BeforePageDisplayHook
+	\MediaWiki\Linker\Hook\HtmlPageLinkRendererEndHook,
+	\MediaWiki\Hook\SkinTemplateNavigation__UniversalHook,
+	\MediaWiki\Hook\WebRequestPathInfoRouterHook,
+	\MediaWiki\Output\Hook\BeforePageDisplayHook
 {
+	private LanguageNameUtils $languageNameUtils;
+
+	public function __construct(
+		LanguageNameUtils $languageNameUtils
+	) {
+		$this->languageNameUtils = $languageNameUtils;
+	}
 
 	// phpcs:disable MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName
 
@@ -266,9 +269,8 @@ class PageRenderingHandler implements
 	 */
 	public function onBeforePageDisplay( $out, $skin ): void {
 		// Save language name in global variables, needed for language selector module
-		$languageNameUtils = MediaWikiServices::getInstance()->getLanguageNameUtils();
 		$userLang = $out->getLanguage();
-		$userLangName = $languageNameUtils->getLanguageName( $userLang->getCode() );
+		$userLangName = $this->languageNameUtils->getLanguageName( $userLang->getCode() );
 		$out->addJsConfigVars( 'wgUserLanguageName', $userLangName );
 
 		// Add language selector module to all pages
