@@ -94,6 +94,12 @@ module.exports = {
 			lines: 95,
 			functions: 99,
 			statements: 95
+		},
+		'./resources/ext.wikilambda.visualeditor': {
+			branches: 0,
+			lines: 0,
+			functions: 0,
+			statements: 0
 		}
 	},
 
