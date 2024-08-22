@@ -11,13 +11,21 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-use MediaWiki\Extension\WikiLambda\ActionAPI\ApiFunctionCall;
+use ApiMain;
+use ApiUsageException;
+use MediaWiki\Context\DerivativeContext;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZQuote;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\Sanitizer;
+use MediaWiki\Request\FauxRequest;
 use MediaWiki\Title\Title;
 use PPFrame;
 
@@ -56,66 +64,49 @@ class ClientHooks implements
 
 		$target = $cleanedArgs[0];
 
-		// TODO (T371027): We shouldn't have the logic for what functions exist here, but in WikiLambda.
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$targetTitle = Title::newFromText( $target, NS_MAIN );
 		if ( !( $targetTitle->exists() ) ) {
 			// User is trying to use a function that doesn't exist
-			$ret = Html::errorBox(
-				wfMessage(
-					'wikilambda-functioncall-error-unknown',
-					$target
-				)->parseAsBlock()
-			);
-			$parser->addTrackingCategory( 'wikilambda-functioncall-error-unknown-category' );
-			return [ $ret ];
+			// Triggers use of messages:
+			// * wikilambda-functioncall-error-unknown-category
+			// * wikilambda-functioncall-error-unknown-category-desc
+			return static::generateTargetError( $parser, $target, 'wikilambda-functioncall-error-unknown' );
 		}
 
 		$targetObject = $zObjectStore->fetchZObjectByTitle( $targetTitle );
 
+		// TODO (T272516): This will stop being our thing to check when we're remote-capable
 		// ZObjectStore's fetchZObjectByTitle() will return a ZObjectContent, so just check it's a valid ZObject
 		if ( !$targetObject->isValid() ) {
 			// User is trying to use an invalid ZObject or somehow non-ZObject in our namespace
-			$ret = Html::errorBox(
-				wfMessage(
-					'wikilambda-functioncall-error-invalid-zobject',
-					$target
-				)->parseAsBlock()
-			);
-			// Triggers use of message wikilambda-functioncall-error-invalid-zobject-category-desc
-			$parser->addTrackingCategory( 'wikilambda-functioncall-error-invalid-zobject-category' );
-			return [ $ret ];
+			// Triggers use of messages:
+			// * wikilambda-functioncall-error-invalid-zobject-category
+			// * wikilambda-functioncall-error-invalid-zobject-category-desc
+			return static::generateTargetError( $parser, $target, 'wikilambda-functioncall-error-invalid-zobject' );
 		}
 
 		if ( $targetObject->getZType() !== ZTypeRegistry::Z_FUNCTION ) {
 			// User is trying to use a ZObject that's not a ZFunction
-			$ret = Html::errorBox(
-				wfMessage(
-					'wikilambda-functioncall-error-nonfunction',
-					$target
-				)->parseAsBlock()
-			);
-			// Triggers use of message wikilambda-functioncall-error-nonfunction-category-desc
-			$parser->addTrackingCategory( 'wikilambda-functioncall-error-nonfunction-category' );
-			return [ $ret ];
+			// Triggers use of messages:
+			// * wikilambda-functioncall-error-nonfunction-category
+			// * wikilambda-functioncall-error-nonfunction-category-desc
+			return static::generateTargetError( $parser, $target, 'wikilambda-functioncall-error-nonfunction' );
 		}
 
 		$targetFunction = $targetObject->getInnerZObject();
 
+		// TODO (T362252): Check for and use renderers rather than check for Z6 output
+		$targetReturnType = $targetFunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_RETURN_TYPE )->getZValue();
 		if (
-			$targetFunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_RETURN_TYPE )->getZValue()
-			!== ZTypeRegistry::Z_STRING
+			$targetReturnType !== ZTypeRegistry::Z_STRING &&
+			$targetReturnType !== ZTypeRegistry::Z_OBJECT
 		) {
 			// User is trying to use a ZFunction that returns something other than a Z6/String
-			$ret = Html::errorBox(
-				wfMessage(
-					'wikilambda-functioncall-error-nonstringoutput',
-					$target
-				)->parseAsBlock()
-			);
-			// Triggers use of message wikilambda-functioncall-error-nonstringoutput-category-desc
-			$parser->addTrackingCategory( 'wikilambda-functioncall-error-nonstringoutput-category' );
-			return [ $ret ];
+			// Triggers use of messages:
+			// * wikilambda-functioncall-error-nonstringoutput-category
+			// * wikilambda-functioncall-error-nonstringoutput-category-desc
+			return static::generateTargetError( $parser, $target, 'wikilambda-functioncall-error-nonstringoutput' );
 		}
 
 		// TODO (T362252): Check for and use renderers rather than check for Z6 output
@@ -127,9 +118,13 @@ class ClientHooks implements
 				return !(
 					is_object( $arg_value )
 					&& $arg_value->getValueByKey( ZTypeRegistry::Z_OBJECT_TYPE )->getZValue()
-					=== ZTypeRegistry::Z_ARGUMENTDECLARATION
-					&& $arg_value->getValueByKey( ZTypeRegistry::Z_ARGUMENTDECLARATION_TYPE )->getZValue()
-					=== ZTypeRegistry::Z_STRING
+						=== ZTypeRegistry::Z_ARGUMENTDECLARATION
+					&& (
+						$arg_value->getValueByKey( ZTypeRegistry::Z_ARGUMENTDECLARATION_TYPE )->getZValue()
+							=== ZTypeRegistry::Z_STRING ||
+						$arg_value->getValueByKey( ZTypeRegistry::Z_ARGUMENTDECLARATION_TYPE )->getZValue()
+							=== ZTypeRegistry::Z_OBJECT
+					)
 				);
 			},
 			ARRAY_FILTER_USE_BOTH
@@ -161,10 +156,14 @@ class ClientHooks implements
 			return [ $ret ];
 		}
 
-		$arguments = array_slice( $cleanedArgs, 1 );
+		// Turn [ 0 => 123, 1 => 345 ] into [ Z…K1 => 123, Z…K2 => 345 ]
+		$unkeyedArguments = array_slice( $cleanedArgs, 1 );
+		$arguments = [];
+		foreach ( $unkeyedArguments as $key => $value ) {
+			$arguments[ $target . 'K' . ( $key + 1 ) ] = $value;
+		}
 
-		// TODO (T371027): We shouldn't have the logic for making the call here, but in WikiLambda.
-		$call = ( new ZFunctionCall( $target, $arguments ) )->getSerialized();
+		$call = ( new ZFunctionCall( new ZReference( $target ), $arguments ) )->getSerialized();
 
 		// TODO (T362254): We want a much finer control on execution time than this.
 		// TODO (T362254): Actually do this, or something similar?
@@ -172,7 +171,7 @@ class ClientHooks implements
 		// TODO (T362256): We should retain this object for re-use if there's more than one call per page.
 		try {
 			$ret = [
-				ApiFunctionCall::makeRequest( $call ),
+				static::makeRequest( json_encode( $call ) ),
 				/* Force content to be escaped */ 'nowiki'
 			];
 		} catch ( \Throwable $th ) {
@@ -194,9 +193,108 @@ class ClientHooks implements
 			// set_time_limit( 0 );
 		}
 
+		if ( is_string( $ret ) ) {
+			$ret = [
+				trim( $ret ),
+				// Don't parse this, it's plain text
+				'noparse' => true,
+				// Force content to be escaped
+				'nowiki' => true
+			];
+		}
+
+		return $ret;
+	}
+
+	/**
+	 * A convenience function for making a ZFunctionCall and returning its result to embed within a page.
+	 *
+	 * @param string $call The ZFunctionCall to make, as a JSON object turned into a string
+	 * @return string Currently the only permissable response objects are strings
+	 * @throws ZErrorException When the request is responded to oddly by the orchestrator
+	 */
+	private static function makeRequest( $call ): string {
+		$api = new ApiMain( new FauxRequest() );
+		$request = new FauxRequest(
+			[
+				'format' => 'json',
+				'action' => 'wikilambda_function_call',
+				'wikilambda_function_call_zobject' => $call,
+			],
+			/* wasPosted */ true
+		);
+
+		$context = new DerivativeContext( RequestContext::getMain() );
+		$context->setRequest( $request );
+		$api->setContext( $context );
+		$api->execute();
+		$outerResponse = $api->getResult()->getResultData( [], [ 'Strip' => 'all' ] );
+
+		if ( isset( $outerResponse[ 'error' ] ) ) {
+			try {
+				$zerror = ZObjectFactory::create( $outerResponse['error'] );
+			} catch ( ZErrorException $e ) {
+				// Can't use $this->dieWithError() as we're static, so use the call indirectly
+				throw ApiUsageException::newWithMessage(
+					null,
+					[
+						'apierror-wikilambda_function_call-response-malformed',
+						// TODO (T362236): Pass the rendering language in, don't default to English
+						$e->getZError()->getMessage()
+					],
+					null,
+					null,
+					400
+				);
+			}
+			if ( !( $zerror instanceof ZError ) ) {
+				$zerror = ZErrorFactory::wrapMessageInZError( new ZQuote( $zerror ), $call );
+			}
+			throw new ZErrorException( $zerror );
+		}
+
+		// Now we know that the request has not failed before it even got to the orchestrator, get the response
+		// JSON string as a ZResponseEnvelope (falling back to an empty string in case it's unset).
+		$response = ZObjectFactory::create(
+			json_decode( $outerResponse['wikilambda_function_call']['data'] ?? '' )
+		);
+
+		if ( !( $response instanceof ZResponseEnvelope ) ) {
+			// The server's not given us a result!
+			$responseType = $response->getZType();
+			$zerror = ZErrorFactory::wrapMessageInZError(
+				"Server returned a non-result of type '$responseType'!",
+				$call
+			);
+			throw new ZErrorException( $zerror );
+		}
+
+		if ( $response->hasErrors() ) {
+			// If the server has responsed with a Z5/Error, show that properly.
+			$zerror = $response->getErrors();
+			if ( !( $zerror instanceof ZError ) ) {
+				$zerror = ZErrorFactory::wrapMessageInZError( new ZQuote( $zerror ), $call );
+			}
+			throw new ZErrorException( $zerror );
+		}
+
+		return trim( $response->getZValue() );
+	}
+
+	/**
+	 * Make a title-related error
+	 *
+	 * @param Parser $parser
+	 * @param string $target
+	 * @param string $error
+	 * @return array
+	 */
+	private static function generateTargetError( Parser $parser, string $target, string $error ) {
+		$parser->addTrackingCategory( $error . '-category' );
 		return [
-			trim( $ret ),
-			/* Force content to be escaped */ 'nowiki'
+			Html::errorBox( wfMessage( $error, $target )->parseAsBlock() ),
+			'noparse' => true,
+			'isHTML' => true
 		];
 	}
 }
