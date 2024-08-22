@@ -13,23 +13,33 @@ use MediaWiki\Parser\Parser;
 use MediaWikiIntegrationTestCase;
 
 /**
- * @covers \MediaWiki\Extension\WikiLambda\ClientHooks
+ * @covers \MediaWiki\Extension\WikiLambda\HookHandler\ClientHooks
  * @group Database
  */
 class ClientHooksTest extends MediaWikiIntegrationTestCase {
 
-	public function testOnParserFirstCallInit() {
+	public function testOnParserFirstCallInit_enabled() {
 		// Force-enable our code
-		$this->setMwGlobals( [
-			'wgWikiLambdaEnableClientMode' => true,
-		] );
+		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
 
 		$parser = $this->createMock( Parser::class );
 		$parser->expects( $this->once() )
 			->method( 'setFunctionHook' )
 			->with( 'function', $this->isType( 'callable' ) );
 
-		$hooks = new \MediaWiki\Extension\WikiLambda\ClientHooks();
+		$hooks = new \MediaWiki\Extension\WikiLambda\HookHandler\ClientHooks();
+		$hooks->onParserFirstCallInit( $parser );
+	}
+
+	public function testOnParserFirstCallInit_disabled() {
+		// Force-disable our code
+		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', false );
+
+		$parser = $this->createMock( Parser::class );
+		$parser->expects( $this->never() )
+			->method( 'setFunctionHook' );
+
+		$hooks = new \MediaWiki\Extension\WikiLambda\HookHandler\ClientHooks();
 		$hooks->onParserFirstCallInit( $parser );
 	}
 }

@@ -189,7 +189,7 @@
 			"class": "MediaWiki\\Extension\\WikiLambda\\Hooks"
 		},
 		"WikiLambdaClientHooks": {
-			"class": "MediaWiki\\Extension\\WikiLambda\\ClientHooks"
+			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\ClientHooks"
 		},
 		"PageEditingHandler": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\PageEditingHandler",
