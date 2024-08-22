@@ -138,7 +138,8 @@ module.exports = exports = defineComponent( {
 			'getZObjectTypeByRowId',
 			'getZReferenceTerminalValue',
 			'getInputsOfFunctionZid',
-			'getZImplementationFunctionZid'
+			'getZImplementationFunctionZid',
+			'isCreateNewPage'
 		] ),
 		{
 			/**
@@ -179,7 +180,21 @@ module.exports = exports = defineComponent( {
 			 * @return {Array}
 			 */
 			codeErrors: function () {
-				return this.codeValueRowId ? this.getErrors( this.codeValueRowId ) : [];
+				return this.codeValueRowId ?
+					[ ...this.codeNotices, ...this.getErrors( this.codeValueRowId ) ] :
+					this.codeNotices;
+			},
+
+			/**
+			 * Returns code field notices
+			 *
+			 * @return {Array}
+			 */
+			codeNotices: function () {
+				return ( this.parentType === Constants.Z_IMPLEMENTATION || !this.isCreateNewPage ) ? [] : [ {
+					type: Constants.errorTypes.NOTICE,
+					code: Constants.errorCodes.NEW_ZID_PLACEHOLDER_WARNING
+				} ];
 			},
 
 			/**
@@ -442,6 +457,10 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-code__language-selector {
 		margin-top: @spacing-25;
 		margin-bottom: @spacing-50;
+	}
+
+	.ext-wikilambda-app-code__inline-error {
+		margin-top: @spacing-25;
 	}
 }
 </style>

@@ -150,6 +150,7 @@
 	"wikilambda-editor-argument-list-label": "Argument List",
 	"wikilambda-editor-boolean-selector": "Select true/false",
 	"wikilambda-editor-clearitem": "🧽",
+	"wikilambda-editor-code-editor-zid-placeholder-error": "Every 'Z0' occurrence in your code will be replaced with a system-generated ID upon publishing.",
 	"wikilambda-editor-default-name": "Untitled",
 	"wikilambda-editor-fn-edit-definition-tooltip-content": "Sorry! Only users with special permissions can change the function definition once a definition has been published.",
 	"wikilambda-editor-fn-step-function-about": "About",

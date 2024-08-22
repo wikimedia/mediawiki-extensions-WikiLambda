@@ -53,7 +53,8 @@ describe( 'ZCode', () => {
 				{ Z17K2: 'Z10001K2' }
 			] ),
 			getZObjectTypeByRowId: () => ( rowId ) => rowId === 10 ? 'Z14' : 'Z9',
-			getZReferenceTerminalValue: createGettersWithFunctionsMock( 'Z610' )
+			getZReferenceTerminalValue: createGettersWithFunctionsMock( 'Z610' ),
+			isCreateNewPage: createGetterMock( false )
 		};
 		actions = {
 			fetchAllZProgrammingLanguages: jest.fn(),
@@ -330,6 +331,7 @@ describe( 'ZCode', () => {
 			it( 'initializes code box with the right function name and arguments', async () => {
 				// Set initial value to something other than javascript
 				getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( 'Z610' );
+				getters.isCreateNewPage = createGetterMock( false );
 				global.store.hotUpdate( {
 					getters: getters,
 					actions: actions
@@ -346,6 +348,11 @@ describe( 'ZCode', () => {
 						}
 					}
 				} );
+
+				// No notice message when edit
+				const message = wrapper.findComponent( { name: 'cdx-message' } );
+				expect( message.exists() ).toBe( false );
+
 				wrapper.findComponent( { name: 'cdx-select' } ).vm.$emit( 'update:selected',
 					Constants.Z_PROGRAMMING_LANGUAGES.JAVASCRIPT );
 				await wrapper.vm.$nextTick();
@@ -357,6 +364,30 @@ describe( 'ZCode', () => {
 					keyPath: [ Constants.Z_CODE_CODE, Constants.Z_STRING_VALUE ],
 					value: 'function Z12345( Z12345K1 ) {\n\n}'
 				} ] ] );
+			} );
+
+			it( 'displays notice message when creating a new converter', async () => {
+				getters.isCreateNewPage = createGetterMock( true );
+				global.store.hotUpdate( {
+					getters: getters,
+					actions: actions
+				} );
+
+				const wrapper = shallowMount( ZCode, {
+					props: {
+						parentId: 10,
+						edit: true
+					},
+					global: {
+						stubs: {
+							WlKeyValueBlock: false
+						}
+					}
+				} );
+
+				const message = wrapper.findComponent( { name: 'cdx-message' } );
+				expect( message.exists() ).toBe( true );
+				expect( message.props( 'type' ) ).toBe( 'notice' );
 			} );
 		} );
 	} );

@@ -107,7 +107,13 @@ const Constants = {
 		Z_NATURAL_LANGUAGE_CANADIAN_FRENCH: 'Z1640',
 		Z_NATURAL_LANGUAGE_CHINESE_TAIWAN: 'Z1107',
 		Z_DESERIALISER: 'Z46',
+		Z_DESERIALISER_TYPE: 'Z46K1',
+		Z_DESERIALISER_VALUE: 'Z46K2',
+		Z_DESERIALISER_CONVERTER: 'Z46K3',
 		Z_SERIALISER: 'Z64',
+		Z_SERIALISER_TYPE: 'Z64K1',
+		Z_SERIALISER_VALUE: 'Z64K2',
+		Z_SERIALISER_CONVERTER: 'Z64K3',
 		Z_QUOTE: 'Z99',
 		Z_QUOTE_VALUE: 'Z99K1',
 		Z_VALIDATE_OBJECT: 'Z101',
@@ -143,6 +149,7 @@ const Constants = {
 		EDIT: 'edit'
 	},
 	errorTypes = {
+		NOTICE: 'notice',
 		WARNING: 'warning',
 		ERROR: 'error'
 	},
@@ -162,7 +169,8 @@ const Constants = {
 		TYPED_LIST_TYPE_CHANGED: 'wikilambda-list-type-change-warning',
 		FUNCTION_INPUT_OUTPUT_CHANGED: 'wikilambda-publish-input-and-output-changed-impact-prompt',
 		FUNCTION_INPUT_CHANGED: 'wikilambda-publish-input-changed-impact-prompt',
-		FUNCTION_OUTPUT_CHANGED: 'wikilambda-publish-output-changed-impact-prompt'
+		FUNCTION_OUTPUT_CHANGED: 'wikilambda-publish-output-changed-impact-prompt',
+		NEW_ZID_PLACEHOLDER_WARNING: 'wikilambda-editor-code-editor-zid-placeholder-error'
 	},
 	breakpoints = {
 		MOBILE: 320,
