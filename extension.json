@@ -192,10 +192,16 @@
 			"class": "MediaWiki\\Extension\\WikiLambda\\ClientHooks"
 		},
 		"PageEditingHandler": {
-			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\PageEditingHandler"
+			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\PageEditingHandler",
+			"services": [
+				"MainConfig"
+			]
 		},
 		"PageRenderingHandler": {
-			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\PageRenderingHandler"
+			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\PageRenderingHandler",
+			"services": [
+				"LanguageNameUtils"
+			]
 		}
 	},
 	"Hooks": {
