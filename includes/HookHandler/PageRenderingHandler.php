@@ -13,8 +13,8 @@ namespace MediaWiki\Extension\WikiLambda\HookHandler;
 use HtmlArmor;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
-use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Languages\LanguageNameUtils;
 use MediaWiki\Linker\LinkRenderer;
@@ -30,11 +30,14 @@ class PageRenderingHandler implements
 	\MediaWiki\Output\Hook\BeforePageDisplayHook
 {
 	private LanguageNameUtils $languageNameUtils;
+	private ZObjectStore $zObjectStore;
 
 	public function __construct(
-		LanguageNameUtils $languageNameUtils
+		LanguageNameUtils $languageNameUtils,
+		ZObjectStore $zObjectStore
 	) {
 		$this->languageNameUtils = $languageNameUtils;
+		$this->zObjectStore = $zObjectStore;
 	}
 
 	// phpcs:disable MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName
@@ -214,8 +217,7 @@ class PageRenderingHandler implements
 
 		// Rather than (rather expensively) fetching the whole object from the ZObjectStore, see if the labels are in
 		// the labels table already, which is very much faster:
-		$zObjectStore = WikiLambdaServices::getZObjectStore();
-		$label = $zObjectStore->fetchZObjectLabel(
+		$label = $this->zObjectStore->fetchZObjectLabel(
 			$zid,
 			$currentPageContentLanguageCode,
 			true
@@ -223,7 +225,7 @@ class PageRenderingHandler implements
 
 		// Just in case the database has no entry (e.g. the table is a millisecond behind or so), load the full object.
 		if ( $label === null ) {
-			$targetZObject = $zObjectStore->fetchZObjectByTitle( $targetTitle );
+			$targetZObject = $this->zObjectStore->fetchZObjectByTitle( $targetTitle );
 			// Do nothing if somehow after all that it's not loadable
 			if ( !$targetZObject || !( $targetZObject instanceof ZObjectContent ) || !$targetZObject->isValid() ) {
 				return;

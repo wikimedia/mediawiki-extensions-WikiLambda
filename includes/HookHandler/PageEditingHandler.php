@@ -14,8 +14,8 @@ namespace MediaWiki\Extension\WikiLambda\HookHandler;
 use ApiMessage;
 use MediaWiki\CommentStore\CommentStoreComment;
 use MediaWiki\Config\Config;
-use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Revision\RenderedRevision;
 use MediaWiki\Revision\SlotRecord;
@@ -31,11 +31,14 @@ class PageEditingHandler implements
 	\MediaWiki\Permissions\Hook\GetUserPermissionsErrorsHook
 {
 	private Config $config;
+	private ZObjectStore $zObjectStore;
 
 	public function __construct(
-		Config $config
+		Config $config,
+		ZObjectStore $zObjectStore
 	) {
 		$this->config = $config;
+		$this->zObjectStore = $zObjectStore;
 	}
 
 	/**
@@ -107,8 +110,7 @@ class PageEditingHandler implements
 			return true;
 		}
 
-		$zObjectStore = WikiLambdaServices::getZObjectStore();
-		$clashes = $zObjectStore->findZObjectLabelConflicts(
+		$clashes = $this->zObjectStore->findZObjectLabelConflicts(
 			$zid,
 			$content->getZType(),
 			$newLabels

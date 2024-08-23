@@ -194,13 +194,15 @@
 		"PageEditingHandler": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\PageEditingHandler",
 			"services": [
-				"MainConfig"
+				"MainConfig",
+				"WikiLambdaZObjectStore"
 			]
 		},
 		"PageRenderingHandler": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\PageRenderingHandler",
 			"services": [
-				"LanguageNameUtils"
+				"LanguageNameUtils",
+				"WikiLambdaZObjectStore"
 			]
 		}
 	},
