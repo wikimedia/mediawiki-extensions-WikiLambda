@@ -51,6 +51,7 @@
 	"wikilambda-functioncall-metadata-orchestration": "گروه‌بندی",
 	"wikilambda-functioncall-metadata-programming-language": "زبان برنامه‌نویسی",
 	"wikilambda-functioncall-metadata-programming-language-version": "نسخه",
+	"wikilambda-functioncall-metadata-select-label": "فراخوانی‌های تابع",
 	"wikilambda-functioncall-metadata-start-time": "زمان آغاز",
 	"wikilambda-implementation-create-new": "ایجاد پیاده‌سازی تازه",
 	"wikilambda-implementation-none-found": "پیاده‌سازی یافت نشد.",
@@ -65,6 +66,7 @@
 	"wikilambda-renderer-api-error": "اشتباهی رخ داد. لطفاً دوباره تلاش کنید.",
 	"wikilambda-return-typeselector-label": "نوع مورد نظر برای برگداندن را انتخاب کنید",
 	"wikilambda-string-renderer-examples-title": "نمونه‌ها",
+	"wikilambda-string-renderer-running": "در حال راندن...",
 	"wikilambda-tester-create-new": "ایجاد آزمون تازه",
 	"wikilambda-tester-details": "جزئیات",
 	"wikilambda-tester-no-results": "نتایج آزمایشگر یافت نشد. برای مشاهدهٔ نتایج، لطفاً یک پیاده‌سازی و یک آزمایشگر اضافه کنید.",
@@ -79,5 +81,11 @@
 	"wikilambda-tester-status-failed": "ناموفق",
 	"wikilambda-tester-status-passed": "موفق",
 	"wikilambda-tester-status-running": "در حال اجرا...",
-	"wikilambda-typeselector-label": "یک نوع را انتخاب کنید"
+	"wikilambda-typeselector-label": "یک نوع را انتخاب کنید",
+	"wikilambda-unknown-error-message": "ناتوان از تکمیل درخواست. لطفاً دوباره تلاش کنید.",
+	"wikilambda-unknown-exec-error-message": "ناتوان از راندن تابع. لطفاً دوباره تلاش کنید.",
+	"wikilambda-unknown-save-error-message": "ناتوان از انتشار. لطفاً دوباره تلاش کنید.",
+	"wikilambda-unknown-test-error-message": "ناتوان از راندن آزمون‌ها. لطفاً تازه‌سازی کنید.",
+	"wikilambda-validation-error-description-toolong": "طول توضیحات در $1 باید {{PLURAL:$2|$2 نویسه}} یا کمتر باشد.",
+	"wikilambda-validation-error-name-toolong": "طول نام در $1 باید {{PLURAL:$2|$2 نویسه}} یا کمتر باشد."
 }
