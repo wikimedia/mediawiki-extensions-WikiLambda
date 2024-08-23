@@ -19,15 +19,6 @@
 					<template #title>
 						{{ $i18n( 'wikilambda-about-widget-view-languages-title' ).text() }}
 					</template>
-					<template #extra>
-						<div v-if="showLanguageSearch" class="ext-wikilambda-app-about-view-languages-dialog__search">
-							<cdx-search-input
-								v-model="searchTerm"
-								:placeholder="searchPlaceholder"
-								@update:model-value="onUpdateSearchTerm"
-							></cdx-search-input>
-						</div>
-					</template>
 				</wl-custom-dialog-header>
 				<!-- Language Search block -->
 				<div class="ext-wikilambda-app-about-languages-dialog__search">
