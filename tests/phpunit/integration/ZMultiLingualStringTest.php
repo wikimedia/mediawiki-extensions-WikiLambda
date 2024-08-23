@@ -98,7 +98,7 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 
 		$this->assertSame(
 			'Demonstration item',
-			$testObject->getStringForLanguage( self::makeLanguage( 'en' ) )
+			$testObject->getStringForLanguage( $this->makeLanguage( 'en' ) )
 		);
 		$this->assertSame(
 			'Demonstration item',
@@ -111,31 +111,31 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 
 		$this->assertSame(
 			'Elemento para demostración',
-			$testObject->getStringForLanguage( self::makeLanguage( 'es' ) )
+			$testObject->getStringForLanguage( $this->makeLanguage( 'es' ) )
 		);
 		$this->assertSame(
 			'Gegenstand zur Demonstration',
-			$testObject->getStringForLanguage( self::makeLanguage( 'de' ) )
+			$testObject->getStringForLanguage( $this->makeLanguage( 'de' ) )
 		);
 		$this->assertSame(
 			'Article pour démonstration',
-			$testObject->getStringForLanguage( self::makeLanguage( 'fr' ) )
+			$testObject->getStringForLanguage( $this->makeLanguage( 'fr' ) )
 		);
 
 		// Test direct fall-back.
 		$this->assertSame(
 			'Article pour démonstration',
-			$testObject->getStringForLanguage( self::makeLanguage( 'atj' ) )
+			$testObject->getStringForLanguage( $this->makeLanguage( 'atj' ) )
 		);
 
 		// Test indirect fall-back.
 		$this->assertSame(
 			'Gegenstand zur Demonstration',
-			$testObject->getStringForLanguage( self::makeLanguage( 'dsb' ) )
+			$testObject->getStringForLanguage( $this->makeLanguage( 'dsb' ) )
 		);
 
 		// Test non-fall-back when not title.
-		$chineseLang = self::makeLanguage( 'zh' );
+		$chineseLang = $this->makeLanguage( 'zh' );
 		$this->assertSame(
 			wfMessage( 'wikilambda-multilingualstring-nofallback' )->inLanguage( $chineseLang )->text(),
 			$testObject->getStringForLanguage( $chineseLang )
@@ -150,8 +150,8 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 
 	public function testGetStringAndLanguageCode() {
 		$this->registerLangs( [ 'en' ] );
-		$germanLang = self::makeLanguage( 'de' );
-		$englishLang = self::makeLanguage( 'en' );
+		$germanLang = $this->makeLanguage( 'de' );
+		$englishLang = $this->makeLanguage( 'en' );
 
 		$testObject = new ZMultiLingualString( [] );
 		$this->assertTrue( $testObject->isValid() );
@@ -208,7 +208,7 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 	public function testGetStringAndLanguageCode_empty() {
 		$this->registerLangs( [ 'en' ] );
 
-		$englishLang = self::makeLanguage( 'en' );
+		$englishLang = $this->makeLanguage( 'en' );
 
 		$testObject = new ZMultiLingualString( [
 			new ZMonoLingualString(
@@ -232,7 +232,7 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testTitleCreation() {
-		$englishLang = self::makeLanguage( 'en' );
+		$englishLang = $this->makeLanguage( 'en' );
 		// test title comes back correctly when it exists
 		$testObject = new ZMultiLingualString( [] );
 		$this->assertTrue( $testObject->isValid() );
@@ -293,7 +293,7 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 		$testObject = new ZMultiLingualString( [] );
 		$this->assertTrue( $testObject->isValid() );
 
-		$french = self::makeLanguage( 'fr' );
+		$french = $this->makeLanguage( 'fr' );
 		$this->assertFalse( $testObject->isLanguageProvidedValue( 'fr' ) );
 		$testObject->setMonoLingualString( $testMono );
 		$this->assertTrue( $testObject->isValid() );
@@ -317,7 +317,7 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 			$testObject->getStringForLanguage( $french )
 		);
 
-		$spanish = self::makeLanguage( 'es' );
+		$spanish = $this->makeLanguage( 'es' );
 		$testObject->removeValue( $spanish );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame(
@@ -325,7 +325,7 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 			$testObject->getStringForLanguage( $spanish )
 		);
 
-		$invalidLang = self::makeLanguage( 'blargh' );
+		$invalidLang = $this->makeLanguage( 'blargh' );
 		$invalidMono = new ZMonoLingualString( new ZReference( 'blargh' ), new ZString( 'Invalid item' ) );
 		$testObject->setMonoLingualString( $invalidMono );
 		$this->assertFalse( $testObject->isValid() );
@@ -341,8 +341,8 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 	public function testPersistentCreation() {
 		$this->registerLangs( [ 'fr' ] );
 
-		$english = self::makeLanguage( 'en' );
-		$french = self::makeLanguage( 'fr' );
+		$english = $this->makeLanguage( 'en' );
+		$french = $this->makeLanguage( 'fr' );
 
 		$testObject = new ZObjectContent(
 			<<<EOT

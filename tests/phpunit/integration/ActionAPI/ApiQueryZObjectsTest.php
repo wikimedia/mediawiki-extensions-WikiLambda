@@ -13,7 +13,6 @@ use ApiUsageException;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Tests\Api\ApiTestCase;
 use MediaWiki\Title\Title;
 
@@ -235,7 +234,7 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 	}
 
 	public function testRevisions_valid() {
-		$revisionStore = MediaWikiServices::getInstance()->getRevisionStore();
+		$revisionStore = $this->getServiceContainer()->getRevisionStore();
 		$this->insertBuiltinObjects( [ 'Z11', 'Z12' ] );
 
 		$titleZ11 = Title::newFromText( 'Z11', NS_MAIN );
@@ -257,7 +256,7 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 	}
 
 	public function testRevisions_invalid() {
-		$revisionStore = MediaWikiServices::getInstance()->getRevisionStore();
+		$revisionStore = $this->getServiceContainer()->getRevisionStore();
 		$this->insertBuiltinObjects( [ 'Z11', 'Z12' ] );
 
 		$titleZ11 = Title::newFromText( 'Z11', NS_MAIN );
@@ -275,7 +274,7 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 	}
 
 	public function testRevisions_badCount() {
-		$revisionStore = MediaWikiServices::getInstance()->getRevisionStore();
+		$revisionStore = $this->getServiceContainer()->getRevisionStore();
 		$this->insertBuiltinObjects( [ 'Z11', 'Z12' ] );
 
 		$titleZ11 = Title::newFromText( 'Z11', NS_MAIN );

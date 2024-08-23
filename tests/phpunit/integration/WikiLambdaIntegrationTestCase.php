@@ -15,7 +15,6 @@ use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
-use MediaWiki\MediaWikiServices;
 use MediaWikiIntegrationTestCase;
 
 abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCase {
@@ -114,8 +113,8 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 	 * @param string $code
 	 * @return Language
 	 */
-	protected static function makeLanguage( string $code ) {
-		$services = MediaWikiServices::getInstance();
+	protected function makeLanguage( string $code ) {
+		$services = $this->getServiceContainer();
 		$languageFactory = $services->getLanguageFactory();
 		return $languageFactory->getLanguage( $code );
 	}

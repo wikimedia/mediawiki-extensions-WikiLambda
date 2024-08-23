@@ -22,7 +22,6 @@ use MediaWiki\Extension\WikiLambda\ZObjectEditAction;
 use MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataRemoval;
 use MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate;
 use MediaWiki\MainConfigNames;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Revision\SlotRenderingProvider;
 use MediaWiki\Title\Title;
@@ -365,7 +364,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $content->isValid() );
 
 		// In English, we see 'Untitled' in en and the Type sub-title in en (with no BCP47 chip)
-		$enHeader = ZObjectContentHandler::createZObjectViewHeader( $content, $testTitle, self::makeLanguage( 'en' ) );
+		$enHeader = ZObjectContentHandler::createZObjectViewHeader( $content, $testTitle, $this->makeLanguage( 'en' ) );
 		$this->assertStringStartsWith( '<span lang="en" class="ext-wikilambda-viewpage-header">', $enHeader );
 		$this->assertStringContainsString( '<span class="ext-wikilambda-viewpage-header__zid">Z401</span>', $enHeader );
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
@@ -374,7 +373,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->assertStringContainsString( '<div class="ext-wikilambda-viewpage-header__type"> <span class="ext-wikilambda-viewpage-header__type-label">String</span></div>', $enHeader );
 
 		// In French, we see the label and not 'Untitled', but the Type sub-title is in en with a BCP47 chip
-		$frHeader = ZObjectContentHandler::createZObjectViewHeader( $content, $testTitle, self::makeLanguage( 'fr' ) );
+		$frHeader = ZObjectContentHandler::createZObjectViewHeader( $content, $testTitle, $this->makeLanguage( 'fr' ) );
 		$this->assertStringStartsWith( '<span lang="fr" class="ext-wikilambda-viewpage-header">', $frHeader );
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
 		$this->assertStringContainsString( '><span class="ext-wikilambda-viewpage-header__title ext-wikilambda-viewpage-header__title--function-name">Éxample</span>', $frHeader );
@@ -383,7 +382,11 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->assertStringNotContainsString( 'ext-wikilambda-viewpage-header__title--untitled', $frHeader );
 
 		// In Picard, we see the fr label with a BCP47 chip, and the Type sub-title is in en with a different chip
-		$frHeader = ZObjectContentHandler::createZObjectViewHeader( $content, $testTitle, self::makeLanguage( 'pcd' ) );
+		$frHeader = ZObjectContentHandler::createZObjectViewHeader(
+			$content,
+			$testTitle,
+			$this->makeLanguage( 'pcd' )
+		);
 		$this->assertStringStartsWith( '<span lang="pcd" class="ext-wikilambda-viewpage-header">', $frHeader );
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
 		$this->assertStringContainsString( '<span data-title="français" class="ext-wikilambda-viewpage-header__bcp47-code">fr</span> <span class="ext-wikilambda-viewpage-header__title ext-wikilambda-viewpage-header__title--function-name">Éxample</span>', $frHeader );
@@ -399,13 +402,13 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$brokenHeader = ZObjectContentHandler::createZObjectViewHeader(
 			$brokenContent,
 			$testTitle,
-			self::makeLanguage( 'en' )
+			$this->makeLanguage( 'en' )
 		);
 		$this->assertSame( '', $brokenHeader );
 	}
 
 	public function testCreateZObjectViewTitle() {
-		$sitename = MediaWikiServices::getInstance()->getMainConfig()->get( MainConfigNames::Sitename );
+		$sitename = $this->getServiceContainer()->getMainConfig()->get( MainConfigNames::Sitename );
 
 		$this->registerLangs( [ 'en', 'fr', 'pcd' ] );
 		$this->insertZids( [ 'Z6' ] );
@@ -421,15 +424,15 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $content->isValid() );
 
 		// In English, we see Zid - Sitename
-		$enTitle = ZObjectContentHandler::createZObjectViewTitle( $content, $testTitle, self::makeLanguage( 'en' ) );
+		$enTitle = ZObjectContentHandler::createZObjectViewTitle( $content, $testTitle, $this->makeLanguage( 'en' ) );
 		$this->assertSame( "$testZid - $sitename", $enTitle );
 
 		// In French, we see Label - Sitename
-		$frTitle = ZObjectContentHandler::createZObjectViewTitle( $content, $testTitle, self::makeLanguage( 'fr' ) );
+		$frTitle = ZObjectContentHandler::createZObjectViewTitle( $content, $testTitle, $this->makeLanguage( 'fr' ) );
 		$this->assertSame( "Éxample - $sitename", $frTitle );
 
 		// In Picard, we see the fr Label - Sitename
-		$pcdTitle = ZObjectContentHandler::createZObjectViewTitle( $content, $testTitle, self::makeLanguage( 'pcd' ) );
+		$pcdTitle = ZObjectContentHandler::createZObjectViewTitle( $content, $testTitle, $this->makeLanguage( 'pcd' ) );
 		$this->assertSame( "Éxample - $sitename", $pcdTitle );
 	}
 }

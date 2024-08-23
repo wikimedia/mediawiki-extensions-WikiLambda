@@ -20,7 +20,6 @@ use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate;
 use MediaWiki\Installer\DatabaseUpdater;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Title\Title;
 use Wikimedia\Rdbms\SelectQueryBuilder;
@@ -228,7 +227,7 @@ EOT;
 		$this->assertSame( [], DeferredUpdates::getPendingUpdates() );
 
 		// Check the alias have been inserted in the secondary table
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->getPrimaryDatabase();
+		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();
 		$res = $dbr->newSelectQueryBuilder()
 			 ->select( [ 'wlzl_zobject_zid', 'wlzl_type', 'wlzl_language', 'wlzl_label', 'wlzl_label_primary' ] )
 			 ->from( 'wikilambda_zobject_labels' )
@@ -316,7 +315,7 @@ EOT;
 
 		$selectedLanguages = [ "Z1001", "Z1002", "Z1003", "Z1004", "Z1005", "Z1006" ];
 
-		$services = MediaWikiServices::getInstance();
+		$services = $this->getServiceContainer();
 		$revisionRenderer = $services->getRevisionRenderer();
 		$wikiPageFactory = $services->getWikiPageFactory();
 
@@ -355,7 +354,7 @@ EOT;
 			$zobjectUpdates[0]->doUpdate();
 		}
 
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->getPrimaryDatabase();
+		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();
 
 		// Expect 11 labels – a label in English for all six, and an autonum in the five non-English languages
 		$labels = $dbr->newSelectQueryBuilder()
@@ -388,7 +387,7 @@ EOT;
 
 		$selectedFunctions = [ "Z801", "Z804", "Z820", "Z883", "Z885", "Z889" ];
 
-		$services = MediaWikiServices::getInstance();
+		$services = $this->getServiceContainer();
 		$revisionRenderer = $services->getRevisionRenderer();
 		$wikiPageFactory = $services->getWikiPageFactory();
 
@@ -427,7 +426,7 @@ EOT;
 			$zobjectUpdates[0]->doUpdate();
 		}
 
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->getPrimaryDatabase();
+		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();
 
 		// Expect a total of 17 rows
 		$rows = $dbr->newSelectQueryBuilder()

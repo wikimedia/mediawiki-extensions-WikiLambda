@@ -31,9 +31,9 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 	public function testPersistentCreation() {
 		$this->registerLangs( [ 'fr' ] );
 
-		$english = self::makeLanguage( 'en' );
-		$french = self::makeLanguage( 'fr' );
-		$docLang = self::makeLanguage( 'qqx' );
+		$english = $this->makeLanguage( 'en' );
+		$french = $this->makeLanguage( 'fr' );
+		$docLang = $this->makeLanguage( 'qqx' );
 
 		$this->hideDeprecated( '::create' );
 		$testObject = new ZObjectContent( ZTestType::TEST_ENCODING );
