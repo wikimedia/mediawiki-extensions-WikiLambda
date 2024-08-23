@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use MediaWiki\Extension\WikiLambda\HookHandler\ClientHooks;
 use MediaWiki\Parser\Parser;
 use MediaWikiIntegrationTestCase;
 
@@ -17,6 +18,14 @@ use MediaWikiIntegrationTestCase;
  * @group Database
  */
 class ClientHooksTest extends MediaWikiIntegrationTestCase {
+
+	private function newClientHooks(): ClientHooks {
+		$services = $this->getServiceContainer();
+		return new ClientHooks(
+			$services->getMainConfig(),
+			$services->getService( 'WikiLambdaZObjectStore' )
+		);
+	}
 
 	public function testOnParserFirstCallInit_enabled() {
 		// Force-enable our code
@@ -27,7 +36,7 @@ class ClientHooksTest extends MediaWikiIntegrationTestCase {
 			->method( 'setFunctionHook' )
 			->with( 'function', $this->isType( 'callable' ) );
 
-		$hooks = new \MediaWiki\Extension\WikiLambda\HookHandler\ClientHooks();
+		$hooks = $this->newClientHooks();
 		$hooks->onParserFirstCallInit( $parser );
 	}
 
@@ -39,7 +48,7 @@ class ClientHooksTest extends MediaWikiIntegrationTestCase {
 		$parser->expects( $this->never() )
 			->method( 'setFunctionHook' );
 
-		$hooks = new \MediaWiki\Extension\WikiLambda\HookHandler\ClientHooks();
+		$hooks = $this->newClientHooks();
 		$hooks->onParserFirstCallInit( $parser );
 	}
 }
