@@ -147,7 +147,6 @@
 	"wikilambda-bootstrapcreationeditsummary": "{{Ignore}}\n\nThe edit comment made by the system user when creating the initial content of the wiki.",
 	"wikilambda-bootstrapupdatingeditsummary": "{{Ignore}}\n\nThe edit comment made by the system user when updating the initial content of the wiki.",
 	"wikilambda-cancel": "Label for the cancel button\n\n{{Identical|Cancel}}",
-	"wikilambda-chip-remove": "Label for a button that removes an item from a list of items",
 	"wikilambda-code-editor-label": "Label for code editor",
 	"wikilambda-confirm": "Label for the confirm button",
 	"wikilambda-context-menu": "Title for a context menu",

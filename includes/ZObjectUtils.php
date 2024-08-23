@@ -32,7 +32,7 @@ class ZObjectUtils {
 	/**
 	 * Render a language 'Chip' of a language code with a hover-title of the language's label.
 	 *
-	 * TODO (T309039): use the chip component and ZID language object here instead
+	 * TODO (T309039): use the actual Vue Chip component from Codex and ZID language object here instead
 	 *
 	 * @param string $code The BCP47 language code, e.g. 'fr' or 'en-US'.
 	 * @param string $label The plain text label of the language, e.g. 'français' or 'American English'
