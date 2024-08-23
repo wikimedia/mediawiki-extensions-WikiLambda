@@ -12,27 +12,37 @@
 namespace MediaWiki\Extension\WikiLambda\Special;
 
 use InvalidArgumentException;
+use MediaWiki\Content\Renderer\ContentRenderer;
 use MediaWiki\Extension\WikiLambda\ZObjectEditingPageTrait;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Html\Html;
-use MediaWiki\MediaWikiServices;
+use MediaWiki\Languages\LanguageFactory;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\SpecialPage\SpecialPage;
 use MediaWiki\Title\Title;
+use MediaWiki\Utils\UrlUtils;
 use ParserOptions;
 use RuntimeException;
 
 class SpecialViewObject extends SpecialPage {
 	use ZObjectEditingPageTrait;
 
+	private ContentRenderer $contentRenderer;
+	private LanguageFactory $languageFactory;
+	private UrlUtils $urlUtils;
 	private ZObjectStore $zObjectStore;
 
-	/**
-	 * @param ZObjectStore $zObjectStore
-	 */
-	public function __construct( ZObjectStore $zObjectStore ) {
+	public function __construct(
+		ContentRenderer $contentRenderer,
+		LanguageFactory $languageFactory,
+		UrlUtils $urlUtils,
+		ZObjectStore $zObjectStore
+	) {
 		parent::__construct( 'ViewObject', 'view', false );
+		$this->contentRenderer = $contentRenderer;
+		$this->languageFactory = $languageFactory;
+		$this->urlUtils = $urlUtils;
 		$this->zObjectStore = $zObjectStore;
 	}
 
@@ -55,9 +65,6 @@ class SpecialViewObject extends SpecialPage {
 	 * @inheritDoc
 	 */
 	public function execute( $subPage ) {
-		// TODO (T362246): Dependency-inject
-		$services = MediaWikiServices::getInstance();
-
 		$outputPage = $this->getOutput();
 
 		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
@@ -112,7 +119,7 @@ class SpecialViewObject extends SpecialPage {
 		$this->setHeaders();
 
 		try {
-			$targetLanguageObject = $services->getLanguageFactory()->getLanguage( $targetLanguage );
+			$targetLanguageObject = $this->languageFactory->getLanguage( $targetLanguage );
 		} catch ( InvalidArgumentException $e ) {
 			// (T343006) Supplied language is invalid; probably a user-error, so just exit.
 			$this->redirectToMain( $outputPage );
@@ -131,8 +138,7 @@ class SpecialViewObject extends SpecialPage {
 
 		// Request that we render the content in the given target language.
 		$parserOptions = ParserOptions::newFromUserAndLang( $this->getUser(), $targetLanguageObject );
-		$contentRenderer = $services->getContentRenderer();
-		$parserOutput = $contentRenderer->getParserOutput(
+		$parserOutput = $this->contentRenderer->getParserOutput(
 			$targetContent,
 			$targetTitle,
 			null,
@@ -162,8 +168,7 @@ class SpecialViewObject extends SpecialPage {
 		}
 
 		// (T355546) Over-ride the canonical URL to the /view/ form.
-		$urlUtils = $services->getUrlUtils();
-		$viewURL = $urlUtils->expand( "/view/$targetLanguage/$targetPageName" );
+		$viewURL = $this->urlUtils->expand( "/view/$targetLanguage/$targetPageName" );
 		// $viewURL can be null 'if no valid URL can be constructed', which shouldn't ever happen.
 		if ( $viewURL === null ) {
 			throw new RuntimeException( 'No valid URL could be constructed for the canonical path' );

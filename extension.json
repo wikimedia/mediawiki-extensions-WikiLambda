@@ -761,12 +761,21 @@
 		"ViewObject": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialViewObject",
 			"services": [
+				"ContentRenderer",
+				"LanguageFactory",
+				"UrlUtils",
 				"WikiLambdaZObjectStore"
 			]
 		},
 		"CreateObject": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialCreateObject",
 		"RunFunction": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialRunFunction",
-		"ListDuplicateObjectNames": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialListDuplicateObjectNames",
+		"ListDuplicateObjectNames": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialListDuplicateObjectNames",
+			"services": [
+				"LanguageNameUtils",
+				"LinkBatchFactory"
+			]
+		},
 		"ListObjectsByType": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialListObjectsByType",
 			"services": [

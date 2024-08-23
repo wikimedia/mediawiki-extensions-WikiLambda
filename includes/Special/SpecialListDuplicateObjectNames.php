@@ -10,12 +10,21 @@
 
 namespace MediaWiki\Extension\WikiLambda\Special;
 
-use MediaWiki\MediaWikiServices;
+use MediaWiki\Cache\LinkBatchFactory;
+use MediaWiki\Languages\LanguageNameUtils;
 use MediaWiki\SpecialPage\SpecialPage;
 
 class SpecialListDuplicateObjectNames extends SpecialPage {
-	public function __construct() {
+	private LanguageNameUtils $languageNameUtils;
+	private LinkBatchFactory $linkBatchFactory;
+
+	public function __construct(
+		LanguageNameUtils $languageNameUtils,
+		LinkBatchFactory $linkBatchFactory
+	) {
 		parent::__construct( 'ListDuplicateObjectNames' );
+		$this->languageNameUtils = $languageNameUtils;
+		$this->linkBatchFactory = $linkBatchFactory;
 	}
 
 	/**
@@ -48,13 +57,11 @@ class SpecialListDuplicateObjectNames extends SpecialPage {
 		// TODO (T300516): Make this help page.
 		$this->addHelpLink( 'Help:Wikifunctions/Duplicate Object labels' );
 
-		// TODO (T362246): Dependency-inject
-		$services = MediaWikiServices::getInstance();
 		$pager = new DuplicateObjectLabelsPager(
 			$this,
 			$this->getLinkRenderer(),
-			$services->getLinkBatchFactory(),
-			$services->getLanguageNameUtils()
+			$this->linkBatchFactory,
+			$this->languageNameUtils
 		);
 
 		if ( $pager->getNumRows() === 0 ) {
