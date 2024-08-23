@@ -1676,25 +1676,10 @@ describe( 'zobject Vuex module', () => {
 				expect( lang ).toBe( expected );
 			} );
 
-			it( 'returns the row that contains the programing language (reference)', () => {
+			it( 'returns the row that contains the programing language', () => {
 				state.zobject = zobjectToRows( {
 					Z1K1: 'Z16',
 					Z16K1: 'Z600'
-				} );
-
-				const rowId = 0;
-				const expected = { id: 4, key: Constants.Z_CODE_LANGUAGE, parent: 0, value: Constants.ROW_VALUE_OBJECT };
-				const lang = zobjectModule.getters.getZCodeProgrammingLanguageRow( state, getters )( rowId );
-				expect( lang ).toEqual( expected );
-			} );
-
-			it( 'returns literal that identifies the programing language (literal)', () => {
-				state.zobject = zobjectToRows( {
-					Z1K1: 'Z16',
-					Z16K1: {
-						Z1K1: 'Z61',
-						Z61K1: 'javascript'
-					}
 				} );
 
 				const rowId = 0;
@@ -1734,7 +1719,7 @@ describe( 'zobject Vuex module', () => {
 			it( 'returns string value of the code', () => {
 				state.zobject = zobjectToRows( {
 					Z1K1: 'Z16',
-					Z16K1: { Z1K1: 'Z61', Z61K1: 'python' },
+					Z16K1: 'Z610',
 					Z16K2: 'def Z10001:'
 				} );
 				const rowId = 0;

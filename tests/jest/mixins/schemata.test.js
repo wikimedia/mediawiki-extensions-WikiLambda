@@ -52,13 +52,13 @@ describe( 'schemata mixin', () => {
 
 	it( 'extracts ZIDs from hybrid function', () => {
 		expect( extractZIDs( hybridZFunction ) ).toEqual(
-			[ 'Z1', 'Z9', 'Z2', 'Z6', 'Z10023', 'Z8', 'Z17', 'Z12', 'Z11', 'Z14', 'Z16', 'Z61' ]
+			[ 'Z1', 'Z9', 'Z2', 'Z6', 'Z10023', 'Z8', 'Z17', 'Z12', 'Z11', 'Z14', 'Z16', 'Z600' ]
 		);
 	} );
 
 	it( 'extracts ZIDs from canonical function', () => {
 		expect( extractZIDs( canonicalZFunction ) ).toEqual(
-			[ 'Z1', 'Z2', 'Z6', 'Z10023', 'Z8', 'Z17', 'Z12', 'Z11', 'Z14', 'Z16', 'Z61' ]
+			[ 'Z1', 'Z2', 'Z6', 'Z10023', 'Z8', 'Z17', 'Z12', 'Z11', 'Z14', 'Z16', 'Z600' ]
 		);
 	} );
 
