@@ -53,13 +53,11 @@ module.exports = {
 		// Ignore index.js initialization scripts
 		'resources/ext.wikilambda.app/index.js',
 		'resources/ext.wikilambda.languageselector/index.js',
-		// These are untested base components; as we add more tests, we should remove them from here
-		'resources/ext.wikilambda.app/components/base/Chip.vue',
-		'resources/ext.wikilambda.app/components/base/ChipContainer.vue',
+		// These are untested base components, waiting for replacement with Codex alternatives; to drop!
+		// TODO (T373197): Replace with Codex's Table
 		'resources/ext.wikilambda.app/components/base/Table.vue',
-		'resources/ext.wikilambda.app/components/base/Tooltip.vue',
-		// These are components that will be removed:
-		'resources/ext.wikilambda.app/components/main-types/'
+		// TODO (T298040): Replace with Codex's Tooltip
+		'resources/ext.wikilambda.app/components/base/Tooltip.vue'
 	],
 
 	coverageThreshold: {
