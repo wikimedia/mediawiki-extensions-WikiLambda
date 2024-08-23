@@ -23,7 +23,6 @@ use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Logger\LoggerFactory;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
 use Wikimedia\Rdbms\IConnectionProvider;
 use Wikimedia\Rdbms\SelectQueryBuilder;
@@ -93,7 +92,7 @@ class UpdateSecondaryTables extends Maintenance {
 	 */
 	public function execute() {
 		// Construct the ZObjectStore, because ServiceWiring hasn't run
-		$services = MediaWikiServices::getInstance();
+		$services = $this->getServiceContainer();
 		$this->zObjectStore = new ZObjectStore(
 			$services->getDBLoadBalancerFactory(),
 			$services->getTitleFactory(),

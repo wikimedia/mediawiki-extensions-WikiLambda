@@ -19,7 +19,6 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Logger\LoggerFactory;
-use MediaWiki\MediaWikiServices;
 
 $IP = getenv( 'MW_INSTALL_PATH' );
 if ( $IP === false ) {
@@ -57,7 +56,7 @@ class MigrateZ16K1StringsToZ61s extends Maintenance {
 	 */
 	public function execute() {
 		// Construct the ZObjectStore, because ServiceWiring hasn't run
-		$services = MediaWikiServices::getInstance();
+		$services = $this->getServiceContainer();
 		$this->zObjectStore = new ZObjectStore(
 			$services->getDBLoadBalancerFactory(),
 			$services->getTitleFactory(),

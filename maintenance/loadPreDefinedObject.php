@@ -14,7 +14,6 @@
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Logger\LoggerFactory;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
 use MediaWiki\Title\TitleFactory;
 
@@ -78,7 +77,7 @@ class LoadPreDefinedObject extends Maintenance {
 	 */
 	public function execute() {
 		// Construct the ZObjectStore, because ServiceWiring hasn't run
-		$services = MediaWikiServices::getInstance();
+		$services = $this->getServiceContainer();
 		$titleFactory = $services->getTitleFactory();
 		$zObjectStore = new ZObjectStore(
 			$services->getDBLoadBalancerFactory(),
