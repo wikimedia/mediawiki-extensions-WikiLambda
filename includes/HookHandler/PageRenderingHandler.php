@@ -124,20 +124,29 @@ class PageRenderingHandler implements
 			$links['views']['view']['class'] = 'selected';
 		}
 
+		// (T360229) Build GET parameters using an array and `wfArrayToCgi`, rather than hacking inline
+		$generalParams = [ 'uselang' => $lang ];
+
 		// Rewrite history link to have ?uselang in it
-		$links['views']['history']['href'] = '/wiki/' . $zid . '?action=history&uselang=' . $lang;
-		// Rewrite history link to have ?uselang in it, but only if it exists (e.g. not for logged-out users)
+		$links['views']['history']['href'] = '/wiki/' . $zid
+			. '?' . wfArrayToCgi( $generalParams + [ 'action' => 'history' ] );
+
+		// Rewrite edit link to have ?uselang in it, but only if it exists (e.g. not for logged-out users)
 		if ( array_key_exists( 'edit', $links['views'] ) ) {
-			$links['views']['edit']['href'] = '/wiki/' . $zid . '?action=edit&uselang=' . $lang;
+			$editParams = $generalParams + [ 'action' => 'edit' ];
+
 			// If editing old revision, we want the edit button to route us to the oldid
 			$oldid = $skinTemplate->getRequest()->getRawVal( 'oldid' );
 			if ( $oldid ) {
-				$links['views']['edit']['href'] .= '&oldid=' . $oldid;
+				$editParams['oldid'] = $oldid;
 			}
+
+			$links['views']['edit']['href'] = '/wiki/' . $zid
+				. '?' . wfArrayToCgi( $editParams );
 		}
 
 		// Rewrite the 'main' namespace link to the Special page
-		// We have to set under 'namespaces' and 'associated-pages' due to a migration.
+		// We have to set under 'namespaces' and 'associated-pages' due to a migration in SkinTemplate.
 		$contentCanonicalHref = '/view/' . $lang . '/' . $zid;
 		$links['namespaces']['main']['href'] = $contentCanonicalHref;
 		$links['associated-pages']['main']['href'] = $contentCanonicalHref;
@@ -146,15 +155,18 @@ class PageRenderingHandler implements
 		$links['views']['view']['href'] = $contentCanonicalHref;
 
 		// Rewrite the 'talk' namespace link to have ?uselang in it
-		// Again, we have to set it twice
-		if ( strpos( $links['namespaces']['talk']['href'] ?? '', '?' ) ) {
-			// @phan-suppress-next-next-line PhanTypeArraySuspiciousNull, PhanTypeInvalidDimOffset
-			// @phan-suppress-next-line PhanTypeSuspiciousStringExpression
-			$talkRewrittenHref = $links['namespaces']['talk']['href'] . '&uselang=' . $lang;
-		} else {
-			$talkRewrittenHref = '/wiki/Talk:' . $zid . '?uselang=' . $lang;
-		}
 
+		$talkParams = $generalParams;
+
+		// Do some special magic if the href already has a query string, usually as it's a red link
+		if ( strpos( $links['namespaces']['talk']['href'] ?? '', '?' ) ) {
+			// We slice out the zeroth input, as it's the path
+			$talkHrefArray = array_slice( wfCgiToArray( $links['namespaces']['talk']['href'] ?? '' ), 1 );
+			$talkParams = $generalParams + $talkHrefArray;
+		}
+		$talkRewrittenHref = '/wiki/Talk:' . $zid . '?' . wfArrayToCgi( $talkParams );
+
+		// Again, we have to set it twice due to the migration in SkinTemplate
 		$links['namespaces']['talk']['href'] = $talkRewrittenHref;
 		$links['associated-pages']['talk']['href'] = $talkRewrittenHref;
 	}
