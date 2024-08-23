@@ -66,7 +66,7 @@ const Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
-	icons = require( '../../../../lib/icons.json' );
+	icons = require( '../../../lib/icons.json' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-object-selector',
