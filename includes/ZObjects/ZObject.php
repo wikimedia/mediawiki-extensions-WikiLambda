@@ -256,7 +256,7 @@ class ZObject {
 		];
 
 		foreach ( $this->data as $key => $value ) {
-			if ( $key == ZTypeRegistry::Z_OBJECT_TYPE ) {
+			if ( $key === ZTypeRegistry::Z_OBJECT_TYPE ) {
 				continue;
 			}
 

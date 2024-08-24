@@ -56,18 +56,13 @@ class PublicApiRunTest extends ApiTestCase {
 
 		$orchestrationResult = $result[0]['wikifunctions_run'];
 
-		$expected = json_decode( $expectedString, true );
-		if ( $expected == null ) {
-			$expected = $expectedString;
-		}
+		$expected = json_decode( $expectedString, true ) ?? $expectedString;
 		$resultEnvelope = json_decode( $orchestrationResult[ 'data' ], true );
 		$actualString = $resultEnvelope[ 'Z22K1' ];
 		$actual = $actualString;
-		if ( $callBack == null ) {
-			$callBack = function ( $expected, $actual ) {
-				$this->assertEquals( $expected, $actual );
-			};
-		}
+		$callBack ??= function ( $expected, $actual ) {
+			$this->assertEquals( $expected, $actual );
+		};
 		$callBack( $expected, $actual );
 		// TODO (T314609): Also test error cases.
 	}

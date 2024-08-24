@@ -107,7 +107,7 @@ class StringForLanguageBuilder {
 			$title = $this->provider->getStringForLanguageCode( $languageCodeProvided );
 
 			// use 'untitled' placeholder instead of an empty string
-			if ( $title == '' && $this->placeholderText !== null ) {
+			if ( $title === '' && $this->placeholderText !== null ) {
 				$title = wfMessage( $this->placeholderText )->inLanguage( $this->language )->text();
 			}
 

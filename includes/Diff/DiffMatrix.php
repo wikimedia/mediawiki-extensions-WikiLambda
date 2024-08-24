@@ -169,7 +169,7 @@ class DiffMatrix {
 		uasort(
 			$vectorCopy,
 			static function ( int $a, int $b ) {
-				return ( $a == $b ) ? 0 : ( ( $a < $b ) ? 1 : -1 );
+				return $b <=> $a;
 			}
 		);
 		return array_slice( array_keys( $vectorCopy ), 0, $numItems );

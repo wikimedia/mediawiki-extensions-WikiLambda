@@ -34,9 +34,7 @@ class SchemaFactory {
 	 * @return SchemaFactory
 	 */
 	public static function getNormalFormFactory( $loader = null ): SchemaFactory {
-		if ( $loader == null ) {
-			$loader = new YumYumYamlLoader();
-		}
+		$loader ??= new YumYumYamlLoader();
 		$normalDirectory = SchemataUtils::joinPath( SchemataUtils::dataDirectory(), 'NORMAL' );
 		$loader->registerPath( $normalDirectory, 'NORMAL' );
 		return new SchemaFactory( $loader );
@@ -49,9 +47,7 @@ class SchemaFactory {
 	 * @return SchemaFactory
 	 */
 	public static function getCanonicalFormFactory( $loader = null ): SchemaFactory {
-		if ( $loader == null ) {
-			$loader = new YumYumYamlLoader();
-		}
+		$loader ??= new YumYumYamlLoader();
 		$canonicalDirectory = SchemataUtils::joinPath( SchemataUtils::dataDirectory(), 'CANONICAL' );
 		$loader->registerPath( $canonicalDirectory, 'CANONICAL' );
 		return new SchemaFactory( $loader );
@@ -85,12 +81,12 @@ class SchemaFactory {
 	 * @return SchemaWrapper|null
 	 */
 	public function create( $ZID ) {
-		if ( $ZID == ZTypeRegistry::Z_BOOLEAN_TRUE || $ZID == ZTypeRegistry::Z_BOOLEAN_FALSE ) {
+		if ( $ZID === ZTypeRegistry::Z_BOOLEAN_TRUE || $ZID === ZTypeRegistry::Z_BOOLEAN_FALSE ) {
 			$ZID = ZTypeRegistry::Z_BOOLEAN;
 		}
 		// TODO (T300514): Assert that this->loader is not null.
 		$schema = $this->loader->loadSchema( $ZID );
-		if ( $schema == null ) {
+		if ( $schema === null ) {
 			return null;
 		}
 		$validator = new Validator();

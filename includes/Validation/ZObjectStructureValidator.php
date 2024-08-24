@@ -38,7 +38,7 @@ class ZObjectStructureValidator {
 	 */
 	public static function createCanonicalValidator( $type ) {
 		$validator = ( SchemaFactory::getCanonicalFormFactory() )->create( $type );
-		if ( $validator == null ) {
+		if ( $validator === null ) {
 			throw new ZErrorException(
 				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_ZTYPE_NOT_FOUND,
@@ -60,7 +60,7 @@ class ZObjectStructureValidator {
 	 */
 	public static function createNormalValidator( $type ) {
 		$validator = ( SchemaFactory::getNormalFormFactory() )->create( $type );
-		if ( $validator == null ) {
+		if ( $validator === null ) {
 			throw new ZErrorException(
 				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_ZTYPE_NOT_FOUND,

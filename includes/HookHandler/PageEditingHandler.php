@@ -147,7 +147,7 @@ class PageEditingHandler implements
 		}
 
 		// TODO (T362234): Is there a nicer way of getting 'all change actions'?
-		if ( !( $action == 'create' || $action == 'edit' || $action == 'upload' ) ) {
+		if ( !( $action === 'create' || $action === 'edit' || $action === 'upload' ) ) {
 			return;
 		}
 

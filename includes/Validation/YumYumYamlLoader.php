@@ -57,7 +57,7 @@ class YumYumYamlLoader implements ISchemaLoader {
 		}
 
 		$result = $this->schemaCache[$ZID];
-		if ( $result == self::$sentinel ) {
+		if ( $result === self::$sentinel ) {
 			return null;
 		}
 		return $result;

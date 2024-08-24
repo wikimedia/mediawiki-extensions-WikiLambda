@@ -61,18 +61,13 @@ class ApiFunctionCallTest extends ApiTestCase {
 		$this->assertArrayHasKey( 'success', $orchestrationResult );
 		$this->assertTrue( $orchestrationResult['success'] );
 
-		$expected = json_decode( $expectedString, true );
-		if ( $expected == null ) {
-			$expected = $expectedString;
-		}
+		$expected = json_decode( $expectedString, true ) ?? $expectedString;
 		$resultEnvelope = json_decode( $orchestrationResult[ 'data' ], true );
 		$actualString = $resultEnvelope[ 'Z22K1' ];
 		$actual = $actualString;
-		if ( $callBack == null ) {
-			$callBack = function ( $expected, $actual ) {
-				$this->assertEquals( $expected, $actual );
-			};
-		}
+		$callBack ??= function ( $expected, $actual ) {
+			$this->assertEquals( $expected, $actual );
+		};
 		$callBack( $expected, $actual );
 		// TODO (T314609): Also test error cases.
 	}

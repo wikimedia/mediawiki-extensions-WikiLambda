@@ -708,12 +708,12 @@ class ZObjectStore {
 
 		// Set type filter
 		$typeConditions = [];
-		if ( $type != null ) {
+		if ( $type !== null ) {
 			$typeConditions['wlzl_type'] = $type;
 		}
 
 		// Set returntype filter
-		if ( $returnType != null ) {
+		if ( $returnType !== null ) {
 			$typeConditions['wlzl_return_type'] = [ $returnType ];
 			if ( !$strictReturnType ) {
 				$typeConditions['wlzl_return_type'][] = ZTypeRegistry::Z_OBJECT;
@@ -726,7 +726,7 @@ class ZObjectStore {
 		}
 
 		// Set minimum id bound if we are continuing a paged result
-		if ( $continue != null ) {
+		if ( $continue !== null ) {
 			$conditions[] = $dbr->expr( 'wlzl_id', '>=', $continue );
 		}
 
@@ -944,7 +944,7 @@ class ZObjectStore {
 		];
 
 		// Set minimum id bound if we are continuing a paged result
-		if ( $continue != null ) {
+		if ( $continue !== null ) {
 			$conditions[] = $dbr->expr( 'wlzf_id', '>=', $continue );
 		}
 		$res = $dbr->newSelectQueryBuilder()
@@ -1070,7 +1070,7 @@ class ZObjectStore {
 		];
 
 		// Set minimum id bound if we are continuing a paged result
-		if ( $continue != null ) {
+		if ( $continue !== null ) {
 			$conditions[] = $dbr->expr( 'wlzo_id', '>=', $continue );
 		}
 		$res = $dbr->newSelectQueryBuilder()
@@ -1221,7 +1221,7 @@ class ZObjectStore {
 			->caller( __METHOD__ )
 			->fetchResultSet();
 
-		if ( $res->numRows() == 0 ) {
+		if ( $res->numRows() === 0 ) {
 			return null;
 		}
 

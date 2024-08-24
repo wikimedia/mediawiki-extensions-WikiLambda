@@ -140,7 +140,7 @@ class ZObjectUtils {
 	 * @throws ZErrorException
 	 */
 	public static function isValidZObjectList( array $input ): bool {
-		if ( count( $input ) === 0 ) {
+		if ( !$input ) {
 			throw new ZErrorException(
 				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_UNDEFINED_LIST_TYPE,
@@ -285,9 +285,9 @@ class ZObjectUtils {
 					$typeVars = get_object_vars( $type );
 					if (
 						array_key_exists( ZTypeRegistry::Z_OBJECT_TYPE, $typeVars )
-						&& $typeVars[ ZTypeRegistry::Z_OBJECT_TYPE ] == ZTypeRegistry::Z_FUNCTIONCALL
+						&& $typeVars[ ZTypeRegistry::Z_OBJECT_TYPE ] === ZTypeRegistry::Z_FUNCTIONCALL
 						&& array_key_exists( ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION, $typeVars )
-						&& $typeVars[ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ] == ZTypeRegistry::Z_FUNCTION_TYPED_LIST
+						&& $typeVars[ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ] === ZTypeRegistry::Z_FUNCTION_TYPED_LIST
 					) {
 						$itemType = $typeVars[ ZTypeRegistry::Z_FUNCTION_TYPED_LIST_TYPE ];
 						$typedListArray = [ $itemType ];
@@ -315,23 +315,23 @@ class ZObjectUtils {
 	 * @return int whether left is smaller (-1) than right or not (+1)
 	 */
 	public static function orderZKeyIDs( string $left, string $right ): int {
-		if ( $left == $right ) {
+		if ( $left === $right ) {
 			return 0;
 		}
-		if ( $left[0] == 'Z' && $right[0] == 'K' ) {
+		if ( $left[0] === 'Z' && $right[0] === 'K' ) {
 			return -1;
 		}
-		if ( $left[0] == 'K' && $right[0] == 'Z' ) {
+		if ( $left[0] === 'K' && $right[0] === 'Z' ) {
 			return 1;
 		}
 		$leftkpos = strpos( $left, 'K' );
 		$rightkpos = strpos( $right, 'K' );
-		if ( $leftkpos == 0 ) {
+		if ( $leftkpos === 0 ) {
 			$leftzid = 0;
 		} else {
 			$leftzid = intval( substr( $left, 1, $leftkpos - 1 ) );
 		}
-		if ( $rightkpos == 0 ) {
+		if ( $rightkpos === 0 ) {
 			$rightzid = 0;
 		} else {
 			$rightzid = intval( substr( $right, 1, $rightkpos - 1 ) );
@@ -482,7 +482,7 @@ class ZObjectUtils {
 		$availableLangs = [];
 		$selectedIndex = 0;
 
-		if ( count( $multilingual ) == 0 ) {
+		if ( !$multilingual ) {
 			return [ $itemType ];
 		}
 
@@ -1098,7 +1098,7 @@ class ZObjectUtils {
 		preg_match( $codeRegex, $zObjectString, $codeMatches );
 
 		// Match and replace Z0s inside of the code
-		if ( count( $codeMatches ) > 0 ) {
+		if ( $codeMatches ) {
 			$code = $codeMatches[ 0 ];
 			$z0Regex = '/' . ZTypeRegistry::Z_NULL_REFERENCE . '(K[1-9]\d*)?/';
 			$newCode = preg_replace( $z0Regex, "$zid$1", $code );
