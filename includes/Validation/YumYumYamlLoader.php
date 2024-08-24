@@ -24,10 +24,8 @@ class YumYumYamlLoader implements ISchemaLoader {
 	 */
 	protected $schemaCache = [];
 
-	/**
-	 * @var string not null and not a Schema
-	 */
-	private static $sentinel = "__SENTINEL__";
+	// SENTINEL is the constant for not null and not a Schema
+	private const SENTINEL = '__SENTINEL__';
 
 	/**
 	 * Populates cache with Schema for the provided ZID; places a sentinel value
@@ -45,7 +43,7 @@ class YumYumYamlLoader implements ISchemaLoader {
 				return;
 			}
 		}
-		$this->schemaCache[$ZID] = self::$sentinel;
+		$this->schemaCache[$ZID] = self::SENTINEL;
 	}
 
 	/**
@@ -57,7 +55,7 @@ class YumYumYamlLoader implements ISchemaLoader {
 		}
 
 		$result = $this->schemaCache[$ZID];
-		if ( $result === self::$sentinel ) {
+		if ( $result === self::SENTINEL ) {
 			return null;
 		}
 		return $result;
