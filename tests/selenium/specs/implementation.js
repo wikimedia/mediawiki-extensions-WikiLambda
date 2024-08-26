@@ -183,13 +183,13 @@ describe( 'Implementation (CUJ 5)', () => {
 			const time = Date.now();
 			aboutBlockEntriesEnglish = {
 				language: 'English',
-				label: `e2e-implementation-composition-${ time }-English`,
+				label: `e2e-implementation-comp-${ time }-English`,
 				description: 'This is the description for the new implementation via composition in English',
 				alias: 'alias in English'
 			};
 			aboutBlockEntriesHindi = {
 				language: 'Hindi',
-				label: `e2e-implementation-composition-${ time }-हिंदी`,
+				label: `e2e-implementation-comp-${ time }-हिंदी`,
 				description: 'यह हिंदी में रचना के माध्यम से नए कार्यान्वयन का विवरण है',
 				alias: 'उपनाम हिंदी में'
 			};
