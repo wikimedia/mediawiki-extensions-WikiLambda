@@ -48,6 +48,7 @@
 					:row-id="rowId"
 					:type="type"
 					:expected-type="expectedType"
+					:parent-expected-type="parentExpectedType"
 					:parent-id="parentRowId"
 					:parent-disable-edit="disableEdit"
 					@set-value="setValue"

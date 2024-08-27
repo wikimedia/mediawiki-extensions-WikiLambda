@@ -84,7 +84,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		jest.useRealTimers();
 	} );
 
-	it.only( 'allows creating a new tester', async () => {
+	it( 'allows creating a new tester', async () => {
 		const { findByTestId } = render( App, {
 			global: { plugins: [ store ], stubs: {
 				teleport: true,
