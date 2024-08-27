@@ -29,7 +29,6 @@ use MediaWiki\User\Options\UserOptionsLookup;
 use Skin;
 
 class PageRenderingHandler implements
-	\MediaWiki\Linker\Hook\HtmlPageLinkRendererEndHook,
 	\MediaWiki\Hook\SkinTemplateNavigation__UniversalHook,
 	\MediaWiki\Hook\WebRequestPathInfoRouterHook,
 	\MediaWiki\Output\Hook\BeforePageDisplayHook,
@@ -65,9 +64,7 @@ class PageRenderingHandler implements
 			return;
 		}
 
-		$targetTitle = $skinTemplate->getRelevantTitle();
-
-		// For any page: Add a language control, for users to navigate to another language.
+		// For any page in repo mode: Add a language control, for users to navigate to another language.
 		// TODO (T362235): This only works for browsers with Javascript. The button is invisible
 		// until the ext.wikilambda.languageselector module creates the Vue component to replace
 		// it; instead, render this Codex component properly server-side somehow.
@@ -81,7 +78,10 @@ class PageRenderingHandler implements
 		] ];
 		$links['user-interface-preferences'] = $ourButton + $links['user-interface-preferences'];
 
-		if ( !$targetTitle->hasContentModel( CONTENT_MODEL_ZOBJECT ) ) {
+		// The rest of this function is about rewriting skin links on ZObject pages
+		$targetTitle = $skinTemplate->getRelevantTitle();
+
+		if ( !$targetTitle || !$targetTitle->hasContentModel( CONTENT_MODEL_ZOBJECT ) ) {
 			// Nothing to do, exit.
 			return;
 		}
@@ -180,8 +180,16 @@ class PageRenderingHandler implements
 			return;
 		}
 
+		// (T343483) We only do this work on special pages, like Special:Watchlist; we don't want to mess with the
+		// wikitext content, partially because Parsoid-rendered HTML is incompatible with this hook.
+		$context = RequestContext::getMain();
+		if ( !$context->hasTitle() ) {
+			return;
+		}
+
 		// Convert the slimline LinkTarget into a full-fat Title so we can ask deeper questions
 		$targetTitle = Title::newFromLinkTarget( $linkTarget );
+
 		$zid = $targetTitle->getBaseText();
 
 		// Do nothing if the target isn't one of ours
