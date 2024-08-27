@@ -216,9 +216,9 @@ describe( 'ZObjectStringRenderer', () => {
 
 			const text = wrapper.find( '[data-testid="zobject-string-renderer-text"]' );
 			expect( text.exists() ).toBe( true );
-			// Initially, the text should show "Running..."
+			// Initially, the text should show "Running…"
 			await waitFor( () => expect( wrapper.vm.$data.rendererRunning ).toBeTruthy() );
-			expect( text.text() ).toBe( 'Running...' );
+			expect( text.text() ).toBe( 'Running…' );
 			// After the renderer is done, the text should show the rendered string
 			await waitFor( () => expect( text.text() ).toContain( renderedString ) );
 		} );
@@ -261,9 +261,9 @@ describe( 'ZObjectStringRenderer', () => {
 
 			const text = wrapper.findComponent( { name: 'cdx-text-input' } );
 			expect( text.exists() ).toBe( true );
-			// Initially, the input value should show "Running..."
+			// Initially, the input value should show "Running…"
 			await waitFor( () => expect( wrapper.vm.$data.rendererRunning ).toBeTruthy() );
-			expect( text.vm.modelValue ).toBe( 'Running...' );
+			expect( text.vm.modelValue ).toBe( 'Running…' );
 			// After the renderer is done, the input value should show the rendered string
 			await waitFor( () => expect( text.vm.modelValue ).toBe( renderedString ) );
 		} );

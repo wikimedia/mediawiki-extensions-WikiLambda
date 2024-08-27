@@ -90,8 +90,8 @@ describe( 'WikiLambda frontend, running a function on Run Function Special page'
 		//* -- Checking the response
 		const resultBlock = await findByTestId( 'function-evaluator-result' );
 
-		// ASSERT: The 'Running...' message is displayed.
-		expect( await within( resultBlock ).findByText( 'Running...' ) ).toBeInTheDocument();
+		// ASSERT: The 'Running…' message is displayed.
+		expect( await within( resultBlock ).findByText( 'Running…' ) ).toBeInTheDocument();
 
 		// ASSERT: Eventually the result is displayed
 		expect( await findByText( '"the function call result"' ) ).toBeInTheDocument();
