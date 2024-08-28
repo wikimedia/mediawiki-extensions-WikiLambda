@@ -60,6 +60,7 @@
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ),
+	utilsMixins = require( '../../../mixins/utilsMixins.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
@@ -78,7 +79,7 @@ module.exports = exports = defineComponent( {
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon
 	},
-	mixins: [ typeUtils ],
+	mixins: [ typeUtils, utilsMixins ],
 	inject: {
 		viewmode: { default: false }
 	},
@@ -317,16 +318,19 @@ module.exports = exports = defineComponent( {
 				this.runTesters();
 			}
 		}
+
 	} ),
 	watch: {
 		implementations: function ( newValue, oldValue ) {
-			if ( newValue.length !== oldValue.length ) {
+			if ( !this.arraysAreEqual( oldValue, newValue ) ) {
 				this.fetchZids( { zids: this.implementations } );
+				this.runTesters();
 			}
 		},
 		testers: function ( newValue, oldValue ) {
-			if ( newValue.length !== oldValue.length ) {
+			if ( !this.arraysAreEqual( oldValue, newValue ) ) {
 				this.fetchZids( { zids: this.testers } );
+				this.runTesters();
 			}
 		}
 	},
