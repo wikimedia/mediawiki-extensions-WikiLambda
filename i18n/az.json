@@ -5,6 +5,9 @@
 			"Nemoralis"
 		]
 	},
+	"wikilambda-desc": "Mərkəzi vikidə funksiyaların yazılmasını, idarə olunmasını və işə salınmasını təmin edir.",
+	"action-wikifunctions-run": "ictimai API-də Funksiyaları işə salmaq",
+	"action-wikilambda-connect-implementation": "işləyə bilməsi üçün Tətbiqi Funksiyasına bağlamaq",
 	"wikilambda-object-selector-suggested-languages": "Təklif edilən dillər",
 	"wikilambda-object-selector-suggested-types": "Tövsiyə edilən dəyərlər"
 }
