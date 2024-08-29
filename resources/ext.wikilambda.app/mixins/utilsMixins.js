@@ -58,6 +58,17 @@ module.exports = exports = {
 				}
 				return undefined;
 			}, obj );
+		},
+
+		/**
+		 * Check if two arrays are equal.
+		 *
+		 * @param {Array} arr1 - The first array to compare.
+		 * @param {Array} arr2 - The second array to compare.
+		 * @return {boolean} - True if the arrays are equal, false otherwise.
+		 */
+		arraysAreEqual: function ( arr1, arr2 ) {
+			return arr1.length === arr2.length && arr1.every( ( value, index ) => value === arr2[ index ] );
 		}
 	}
 };
