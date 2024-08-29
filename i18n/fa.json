@@ -34,6 +34,7 @@
 	"wikilambda-editor-zobject-clearitem-tooltip": "خالی کردن این مقدار",
 	"wikilambda-function-definition-edit": "ویرایش تعریف",
 	"wikilambda-function-evaluator-run-function": "راندن تابع",
+	"wikilambda-function-evaluator-running": "در حال اجرا…",
 	"wikilambda-function-evaluator-title": "امتحان‌کردن یک تابع",
 	"wikilambda-function-explorer-copied-text": "کپی شد!",
 	"wikilambda-function-explorer-name-title": "نام",

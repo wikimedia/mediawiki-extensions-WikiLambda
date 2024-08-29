@@ -2,10 +2,12 @@
 	"@metadata": {
 		"authors": [
 			"Abijeet Patro",
+			"Abijeet Patro - Normal",
 			"AnupamM",
 			"पदाति"
 		]
 	},
+	"wikilambda-about-widget-view-languages-other": "अन्य भाषाएँ",
 	"wikilambda-cancel": "रद्द करें",
 	"wikilambda-confirm": "सुनिश्चित करें",
 	"wikilambda-continue-editing": "संपादन जारी रखें",
