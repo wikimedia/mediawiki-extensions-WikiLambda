@@ -102,6 +102,10 @@ module.exports = exports = defineComponent( {
 
 	.ext-wikilambda-app-function-editor-field__body {
 		width: @wl-field-body-width;
+
+		@media screen and ( max-width: @max-width-breakpoint-mobile ) {
+			width: 100%;
+		}
 	}
 }
 </style>
