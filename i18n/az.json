@@ -1,9 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
-			"NMW03"
+			"NMW03",
+			"Nemoralis"
 		]
 	},
+	"action-wikilambda-connect-implementation": "işləyə bilməsi üçün Tətbiqi Funksiyasına bağlamaq",
+	"action-wikifunctions-run": "ictimai API-də Funksiyaları işə salmaq",
 	"wikilambda-object-selector-suggested-types": "Tövsiyə edilən dəyərlər",
 	"wikilambda-object-selector-suggested-languages": "Təklif edilən dillər"
 }
