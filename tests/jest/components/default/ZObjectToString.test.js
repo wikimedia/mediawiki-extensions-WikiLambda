@@ -137,12 +137,11 @@ describe( 'ZObjectToString', () => {
 				const wrapper = mount( ZObjectToString );
 
 				const childElements = wrapper
-					.find( '.ext-wikilambda-app-object-to-string' )
 					.findAll( '.ext-wikilambda-app-object-to-string' );
-				const dividerElements = childElements[ 1 ]
+				const dividerElements = wrapper
 					.findAll( '.ext-wikilambda-app-object-to-string__divider' );
 
-				expect( childElements[ 0 ].text() ).toBe( 'And' );
+				expect( childElements[ 1 ].text() ).toBe( 'And' );
 				expect( dividerElements[ 0 ].text() ).toBe( '(' );
 				expect( childElements[ 2 ].text() ).toBe( '"first arg"' );
 				expect( dividerElements[ 1 ].text() ).toBe( ',' );
@@ -222,12 +221,11 @@ describe( 'ZObjectToString', () => {
 				const wrapper = mount( ZObjectToString );
 
 				const childElements = wrapper
-					.find( '.ext-wikilambda-app-object-to-string' )
 					.findAll( '.ext-wikilambda-app-object-to-string' );
-				const dividerElements = childElements[ 1 ]
+				const dividerElements = wrapper
 					.findAll( '.ext-wikilambda-app-object-to-string__divider' );
 
-				expect( childElements[ 0 ].text() ).toBe( 'Monolingual text' );
+				expect( childElements[ 1 ].text() ).toBe( 'Monolingual text' );
 				expect( dividerElements[ 0 ].text() ).toBe( '(' );
 				expect( childElements[ 2 ].text() ).toBe( 'English' );
 				expect( dividerElements[ 1 ].text() ).toBe( ',' );

@@ -64,8 +64,8 @@
 								v-else
 								class="ext-wikilambda-app-about-language-block__input-label
 									ext-wikilambda-app-about-language-block__unavailable"
-							>{{ $i18n( 'wikilambda-editor-default-name' ).text() }}<span>:</span></span>
-							<wl-z-object-to-string :row-id="input.typeRowId"></wl-z-object-to-string>
+							>{{ $i18n( 'wikilambda-editor-default-name' ).text() }}<span>:</span>
+							</span>&nbsp;<wl-z-object-to-string :row-id="input.typeRowId"></wl-z-object-to-string>
 						</div>
 					</template>
 					<div v-else class="ext-wikilambda-app-about-language-block__field-value">
@@ -560,11 +560,6 @@ module.exports = exports = defineComponent( {
 
 	.ext-wikilambda-app-about-language-block__field-value {
 		margin-top: @spacing-25;
-		display: flex;
-
-		& > span {
-			margin-right: @spacing-25;
-		}
 	}
 
 	.ext-wikilambda-app-about-language-block__edit-field {
