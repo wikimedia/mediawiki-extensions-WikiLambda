@@ -80,14 +80,10 @@
 </template>
 
 <script>
+const { CdxProgressBar, CdxCheckbox, CdxInfoChip, CdxButton, CdxIcon } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const CdxProgressBar = require( '@wikimedia/codex' ).CdxProgressBar,
-	CdxCheckbox = require( '@wikimedia/codex' ).CdxCheckbox,
-	ZObjectToString = require( '../default-view-types/ZObjectToString.vue' ),
-	FunctionTesterTable = require( '../function/viewer/FunctionTesterTable.vue' ),
-	CdxInfoChip = require( '@wikimedia/codex' ).CdxInfoChip,
-	CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	CdxIcon = require( '@wikimedia/codex' ).CdxIcon;
+const ZObjectToString = require( '../default-view-types/ZObjectToString.vue' ),
+	FunctionTesterTable = require( '../function/viewer/FunctionTesterTable.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-table-container',

@@ -119,20 +119,15 @@
 </template>
 
 <script>
+const { CdxAccordion, CdxDialog, CdxField, CdxIcon, CdxMessage, CdxSelect } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const CdxAccordion = require( '@wikimedia/codex' ).CdxAccordion,
-	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
-	CdxField = require( '@wikimedia/codex' ).CdxField,
-	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
-	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
-	CdxSelect = require( '@wikimedia/codex' ).CdxSelect,
-	Constants = require( '../../../Constants.js' ),
-	mapGetters = require( 'vuex' ).mapGetters,
+const Constants = require( '../../../Constants.js' ),
+	{ mapGetters } = require( 'vuex' ),
 	CustomDialogHeader = require( '../../base/CustomDialogHeader.vue' ),
 	metadataConfig = require( '../../../mixins/metadata.js' ),
-	schemata = require( '../../../mixins/schemata.js' ).methods,
 	errorUtils = require( '../../../mixins/errorUtils.js' ),
-	typeUtils = require( '../../../mixins/typeUtils.js' ).methods,
+	{ extractZIDs, extractErrorStructure } = require( '../../../mixins/schemata.js' ).methods,
+	{ isValidZidFormat } = require( '../../../mixins/typeUtils.js' ).methods,
 	LabelData = require( '../../../store/classes/LabelData.js' ),
 	icons = require( '../../../../lib/icons.json' );
 
@@ -335,7 +330,7 @@ module.exports = exports = defineComponent( {
 
 			// If functionCall has any values, transform into human-readable labels
 			if ( functionCall ) {
-				const zids = schemata.extractZIDs( functionCall, true );
+				const zids = extractZIDs( functionCall, true );
 				labelizedFunctionCall = this.addSpacing( functionCall );
 				zids.forEach( ( zid ) => {
 					labelizedFunctionCall = labelizedFunctionCall.split( zid ).join( this.getLabelData( zid ).label );
@@ -531,7 +526,7 @@ module.exports = exports = defineComponent( {
 		 */
 		getErrorSummary: function () {
 			const error = this.keyValues.get( 'errors' );
-			const suberrors = schemata.extractErrorStructure( error );
+			const suberrors = extractErrorStructure( error );
 			// Return labelized parent error type
 			if ( suberrors.length > 0 ) {
 				const errorType = suberrors[ 0 ].errorType;
@@ -548,7 +543,7 @@ module.exports = exports = defineComponent( {
 		getImplementationSummary: function () {
 			const implementationId = this.keyValues.get( 'implementationId' );
 			const zid = this.getStringValue( implementationId );
-			return typeUtils.isValidZidFormat( zid ) ? this.getLabelData( zid ) : '';
+			return isValidZidFormat( zid ) ? this.getLabelData( zid ) : '';
 		},
 		/**
 		 * Returns the duration section summary
@@ -613,7 +608,7 @@ module.exports = exports = defineComponent( {
 		 * @return {Object | undefined}
 		 */
 		getErrorType: function ( value ) {
-			const suberrors = schemata.extractErrorStructure( value );
+			const suberrors = extractErrorStructure( value );
 			if ( suberrors.length > 0 ) {
 				const errorType = suberrors[ 0 ].errorType;
 				const errorLabelData = this.getLabelData( errorType );
@@ -652,7 +647,7 @@ module.exports = exports = defineComponent( {
 		 */
 		getImplementationLink: function ( value ) {
 			const zid = this.getStringValue( value );
-			if ( typeUtils.isValidZidFormat( zid ) ) {
+			if ( isValidZidFormat( zid ) ) {
 				const labelData = this.getLabelData( zid );
 				return {
 					value: labelData.labelOrUntitled,

@@ -43,6 +43,7 @@
 </template>
 
 <script>
+const { CdxButton, CdxIcon } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const FunctionEditorLanguageBlock = require( './FunctionEditorLanguageBlock.vue' ),
 	FunctionEditorFooter = require( './FunctionEditorFooter.vue' ),
@@ -50,10 +51,8 @@ const FunctionEditorLanguageBlock = require( './FunctionEditorLanguageBlock.vue'
 	Constants = require( '../../../Constants.js' ),
 	eventLogUtils = require( '../../../mixins/eventLogUtils.js' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ),
-	hybridToCanonical = require( '../../../mixins/schemata.js' ).methods.hybridToCanonical,
-	CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
-	mapGetters = require( 'vuex' ).mapGetters;
+	{ hybridToCanonical } = require( '../../../mixins/schemata.js' ).methods,
+	{ mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor',

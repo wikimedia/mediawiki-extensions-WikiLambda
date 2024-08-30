@@ -35,7 +35,7 @@ const FunctionMetadataDialog = require( '../../widgets/function-evaluator/Functi
 	Constants = require( '../../../Constants.js' ),
 	StatusIcon = require( '../../base/StatusIcon.vue' ),
 	icons = require( '../../../../lib/icons.json' ),
-	mapGetters = require( 'vuex' ).mapGetters;
+	{ mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-tester-table',

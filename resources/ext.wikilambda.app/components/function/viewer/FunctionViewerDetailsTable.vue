@@ -69,10 +69,9 @@
 </template>
 
 <script>
+const { CdxButton, CdxIcon } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
-	icons = require( '../../../../lib/icons.json' ),
+const icons = require( '../../../../lib/icons.json' ),
 	TableContainer = require( '../../base/Table.vue' ),
 	Pagination = require( '../../base/Pagination.vue' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ),

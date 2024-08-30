@@ -63,16 +63,12 @@
 </template>
 
 <script>
+const { CdxButton, CdxField, CdxIcon, CdxTextInput } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
 	LabelData = require( '../../../store/classes/LabelData.js' ),
 	TypeSelector = require( '../../base/TypeSelector.vue' ),
-	mapGetters = require( 'vuex' ).mapGetters,
-	mapActions = require( 'vuex' ).mapActions,
-	CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	CdxField = require( '@wikimedia/codex' ).CdxField,
-	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
-	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
+	{ mapActions, mapGetters } = require( 'vuex' ),
 	icons = require( './../../../../lib/icons.json' );
 
 module.exports = exports = defineComponent( {

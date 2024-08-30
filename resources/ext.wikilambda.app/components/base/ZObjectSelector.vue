@@ -57,15 +57,12 @@
 </template>
 
 <script>
+const { CdxLookup, CdxSelect, CdxMessage } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
-	CdxLookup = require( '@wikimedia/codex' ).CdxLookup,
-	CdxSelect = require( '@wikimedia/codex' ).CdxSelect,
-	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	errorUtils = require( '../../mixins/errorUtils.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
-	mapActions = require( 'vuex' ).mapActions,
-	mapGetters = require( 'vuex' ).mapGetters,
+	{ mapActions, mapGetters } = require( 'vuex' ),
 	icons = require( '../../../lib/icons.json' );
 
 module.exports = exports = defineComponent( {

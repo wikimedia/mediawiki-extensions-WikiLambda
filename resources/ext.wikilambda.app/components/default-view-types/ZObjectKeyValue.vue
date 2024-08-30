@@ -62,11 +62,9 @@
 </template>
 
 <script>
+const { CdxButton, CdxIcon, CdxMessage } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
-	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
-	Constants = require( '../../Constants.js' ),
+const Constants = require( '../../Constants.js' ),
 	ExpandedToggle = require( '../base/ExpandedToggle.vue' ),
 	LocalizedLabel = require( '../base/LocalizedLabel.vue' ),
 	ModeSelector = require( '../base/ModeSelector.vue' ),
@@ -87,8 +85,7 @@ const CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	LabelData = require( '../../store/classes/LabelData.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	errorUtils = require( '../../mixins/errorUtils.js' ),
-	mapActions = require( 'vuex' ).mapActions,
-	mapGetters = require( 'vuex' ).mapGetters;
+	{ mapActions, mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-object-key-value',

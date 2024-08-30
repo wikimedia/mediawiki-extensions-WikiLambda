@@ -70,7 +70,7 @@ const FunctionEditorLanguage = require( './FunctionEditorLanguage.vue' ),
 	FunctionEditorInputs = require( './FunctionEditorInputs.vue' ),
 	FunctionEditorOutput = require( './FunctionEditorOutput.vue' ),
 	icons = require( '../../../../lib/icons.json' ),
-	mapGetters = require( 'vuex' ).mapGetters;
+	{ mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-language-block',

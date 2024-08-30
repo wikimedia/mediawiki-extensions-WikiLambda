@@ -35,7 +35,7 @@ const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
 	ZObjectSelector = require( './../base/ZObjectSelector.vue' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
-	mapGetters = require( 'vuex' ).mapGetters;
+	{ mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-reference',

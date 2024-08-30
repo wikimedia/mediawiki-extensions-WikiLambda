@@ -49,14 +49,13 @@
 </template>
 
 <script>
+const { CdxField } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	LabelData = require( '../../store/classes/LabelData.js' ),
 	ZObjectSelector = require( './ZObjectSelector.vue' ),
-	CdxField = require( '@wikimedia/codex' ).CdxField,
-	mapActions = require( 'vuex' ).mapActions,
-	mapGetters = require( 'vuex' ).mapGetters;
+	{ mapActions, mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-type-selector',

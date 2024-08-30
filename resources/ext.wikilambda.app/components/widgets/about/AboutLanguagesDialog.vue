@@ -80,15 +80,12 @@
 </template>
 
 <script>
+const { CdxButton, CdxDialog, CdxSearchInput } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
 	LabelData = require( '../../../store/classes/LabelData.js' ),
 	CustomDialogHeader = require( '../../base/CustomDialogHeader.vue' ),
-	CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
-	CdxSearchInput = require( '@wikimedia/codex' ).CdxSearchInput,
-	mapActions = require( 'vuex' ).mapActions,
-	mapGetters = require( 'vuex' ).mapGetters;
+	{ mapActions, mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-about-languages-dialog',

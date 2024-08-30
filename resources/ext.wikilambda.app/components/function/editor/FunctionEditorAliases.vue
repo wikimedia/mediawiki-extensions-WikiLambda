@@ -28,12 +28,11 @@
 </template>
 
 <script>
+const { CdxChipInput } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
 	FunctionEditorField = require( './FunctionEditorField.vue' ),
-	mapGetters = require( 'vuex' ).mapGetters,
-	mapActions = require( 'vuex' ).mapActions,
-	CdxChipInput = require( '@wikimedia/codex' ).CdxChipInput;
+	{ mapGetters, mapActions } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-aliases',

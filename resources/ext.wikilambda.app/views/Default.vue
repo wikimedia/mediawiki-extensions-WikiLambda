@@ -77,7 +77,7 @@ const Constants = require( '../Constants.js' ),
 	FunctionReportWidget = require( '../components/widgets/function-report/FunctionReport.vue' ),
 	eventLogUtils = require( '../mixins/eventLogUtils.js' ),
 	typeUtils = require( '../mixins/typeUtils.js' ),
-	mapGetters = require( 'vuex' ).mapGetters;
+	{ mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-default-view',

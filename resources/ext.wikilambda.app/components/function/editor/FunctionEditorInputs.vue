@@ -48,15 +48,13 @@
 </template>
 
 <script>
+const { CdxButton, CdxIcon } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
 	FunctionEditorField = require( './FunctionEditorField.vue' ),
 	FunctionEditorInputsItem = require( './FunctionEditorInputsItem.vue' ),
-	CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	icons = require( './../../../../lib/icons.json' ),
-	mapGetters = require( 'vuex' ).mapGetters,
-	mapActions = require( 'vuex' ).mapActions;
+	{ mapActions, mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-inputs',

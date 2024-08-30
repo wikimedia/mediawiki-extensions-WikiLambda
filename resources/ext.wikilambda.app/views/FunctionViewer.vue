@@ -41,14 +41,14 @@
 </template>
 
 <script>
+const { CdxMessage } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
-	Constants = require( '../Constants.js' ),
+const Constants = require( '../Constants.js' ),
 	AboutWidget = require( '../components/widgets/about/About.vue' ),
 	FunctionEvaluatorWidget = require( '../components/widgets/function-evaluator/FunctionEvaluator.vue' ),
 	FunctionViewerDetails = require( '../components/function/viewer/FunctionViewerDetails.vue' ),
 	eventLogUtils = require( '../mixins/eventLogUtils.js' ),
-	mapGetters = require( 'vuex' ).mapGetters;
+	{ mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-viewer-view',

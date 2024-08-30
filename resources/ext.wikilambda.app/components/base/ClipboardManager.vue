@@ -12,6 +12,7 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const clipboardUtils = require( '../../mixins/clipboardUtils.js' );
+
 module.exports = exports = defineComponent( {
 	name: 'wl-clipboard-manager',
 	mixins: [ clipboardUtils ],

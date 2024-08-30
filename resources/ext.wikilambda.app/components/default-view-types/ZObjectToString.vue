@@ -60,7 +60,7 @@ const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	LabelData = require( '../../store/classes/LabelData.js' ),
-	mapGetters = require( 'vuex' ).mapGetters;
+	{ mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-object-to-string',

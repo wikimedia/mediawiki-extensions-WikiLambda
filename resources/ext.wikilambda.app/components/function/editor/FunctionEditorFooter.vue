@@ -19,8 +19,7 @@
 const { defineComponent } = require( 'vue' );
 const PublishWidget = require( '../../widgets/publish/Publish.vue' ),
 	Constants = require( '../../../Constants.js' ),
-	mapGetters = require( 'vuex' ).mapGetters,
-	mapActions = require( 'vuex' ).mapActions,
+	{ mapActions, mapGetters } = require( 'vuex' ),
 	eventLogUtils = require( '../../../mixins/eventLogUtils.js' );
 
 module.exports = exports = defineComponent( {

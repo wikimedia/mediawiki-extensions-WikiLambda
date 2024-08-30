@@ -41,7 +41,7 @@ const Constants = require( '../../../Constants.js' ),
 	LabelData = require( '../../../store/classes/LabelData.js' ),
 	FunctionEditorField = require( './FunctionEditorField.vue' ),
 	TypeSelector = require( '../../base/TypeSelector.vue' ),
-	mapGetters = require( 'vuex' ).mapGetters;
+	{ mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-output',

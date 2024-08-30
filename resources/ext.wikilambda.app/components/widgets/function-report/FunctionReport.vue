@@ -57,14 +57,12 @@
 </template>
 
 <script>
+const { CdxButton, CdxIcon } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ),
 	utilsMixins = require( '../../../mixins/utilsMixins.js' ),
-	mapGetters = require( 'vuex' ).mapGetters,
-	mapActions = require( 'vuex' ).mapActions,
-	CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+	{ mapActions, mapGetters } = require( 'vuex' ),
 	icons = require( '../../../../lib/icons.json' ),
 	WidgetBase = require( '../../base/WidgetBase.vue' ),
 	FunctionMetadataDialog = require( '../function-evaluator/FunctionMetadataDialog.vue' ),

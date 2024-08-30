@@ -31,7 +31,7 @@ const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
 	FunctionEditorField = require( './FunctionEditorField.vue' ),
 	ZObjectSelector = require( '../../base/ZObjectSelector.vue' ),
-	mapGetters = require( 'vuex' ).mapGetters;
+	{ mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-language',
