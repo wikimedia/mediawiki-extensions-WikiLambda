@@ -220,7 +220,7 @@
 	"wikilambda-function-details-summary-learn-more": "Learn more about the review process.",
 	"wikilambda-function-details-table-approve": "Connect",
 	"wikilambda-function-details-table-deactivate": "Disconnect",
-	"wikilambda-function-evaluation-restriction-notrunnable": "This function has no approved implementations.",
+	"wikilambda-function-evaluation-restriction-notrunnable": "This function has no connected implementations.",
 	"wikilambda-function-evaluation-restriction-warning": "We are sorry! At the moment only logged-in users can run functions.",
 	"wikilambda-function-evaluator-enter-inputs": "Enter inputs",
 	"wikilambda-function-evaluator-result": "Result",

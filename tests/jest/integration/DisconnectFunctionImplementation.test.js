@@ -106,7 +106,7 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 		} );
 
 		// ASSERT: The function evaluator message is shown.
-		expect( await findByTestId( 'function-evaluator-message' ) ).toHaveTextContent( 'This function has no approved implementations.' );
+		expect( await findByTestId( 'function-evaluator-message' ) ).toHaveTextContent( 'This function has no connected implementations.' );
 
 		// ACT: Select the first "disconnected" implementation in the table.
 		await fireEvent.update( within( firstImplementationRow ).getByRole( 'checkbox' ), true );
