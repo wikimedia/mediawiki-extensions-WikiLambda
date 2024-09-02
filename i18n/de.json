@@ -218,7 +218,7 @@
 	"wikilambda-function-details-summary-learn-more": "Weitere Informationen über den Überprüfungsprozess.",
 	"wikilambda-function-details-table-approve": "Verbinden",
 	"wikilambda-function-details-table-deactivate": "Trennen",
-	"wikilambda-function-evaluation-restriction-notrunnable": "Für diese Funktion gibt es keine genehmigten Implementierungen.",
+	"wikilambda-function-evaluation-restriction-notrunnable": "Für diese Funktion gibt es keine verbundenen Implementierungen.",
 	"wikilambda-function-evaluation-restriction-warning": "Es tut uns leid! Momentan können nur angemeldete Benutzer Funktionen ausführen.",
 	"wikilambda-function-evaluator-enter-inputs": "Eingaben eingeben",
 	"wikilambda-function-evaluator-result": "Ergebnis",

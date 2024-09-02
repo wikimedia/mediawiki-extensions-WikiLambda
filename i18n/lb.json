@@ -58,6 +58,7 @@
 	"wikilambda-function-definition-output-type-label": "Typ",
 	"wikilambda-function-details-table-approve": "Verbannen",
 	"wikilambda-function-details-table-deactivate": "Trennen",
+	"wikilambda-function-evaluation-restriction-notrunnable": "Dës Funktioun huet keng verbonnen Implementéierungen.",
 	"wikilambda-function-evaluator-result": "Resultat",
 	"wikilambda-function-evaluator-result-details": "Detailer",
 	"wikilambda-function-evaluator-run-function": "Funktioun ausféieren",
