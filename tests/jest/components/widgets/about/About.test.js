@@ -392,10 +392,6 @@ describe( 'About', () => {
 				// Assert that persistState is called:
 				expect( wrapper.vm.persistState ).toHaveBeenCalled();
 
-				// Assert that block is back to view state:
-				expect( languageBlock.vm.edit ).toBe( false );
-				expect( languageBlock.vm.editData ).toBe( undefined );
-
 				// Assert that publish dialog is set to open:
 				expect( wrapper.vm.showPublishDialog ).toBe( true );
 			} );

@@ -438,7 +438,6 @@ module.exports = exports = defineComponent( {
 				return;
 			}
 			this.persistState();
-			this.resetEditState();
 			this.showPublishDialog = true;
 		},
 		/**
