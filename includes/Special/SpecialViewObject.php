@@ -102,7 +102,7 @@ class SpecialViewObject extends SpecialPage {
 			// If the given page isn't a Title
 			!( $targetTitle instanceof Title ) || !$targetTitle->exists()
 			// … or somehow it's not for a valid ZObject
-			|| !ZObjectUtils::isValidId( $targetPageName )
+			|| !ZObjectUtils::isValidZObjectReference( $targetPageName )
 		) {
 			$this->redirectToMain( $outputPage );
 			return;
