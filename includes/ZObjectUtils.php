@@ -267,15 +267,14 @@ class ZObjectUtils {
 					// Type is ZString
 					if ( $type === ZTypeRegistry::Z_STRING
 						&& array_key_exists( ZTypeRegistry::Z_STRING_VALUE, $output )
-						&& !self::isValidId( $output[ ZTypeRegistry::Z_STRING_VALUE ] ) ) {
-						// TODO (T342696): What if it is a valid ID? What do we returning then?
+						&& !self::isValidZObjectReference( $output[ ZTypeRegistry::Z_STRING_VALUE ] ) ) {
 						return self::canonicalize( $output[ ZTypeRegistry::Z_STRING_VALUE ] );
 					}
 
 					// Type is a ZReference
 					if ( $type === ZTypeRegistry::Z_REFERENCE
 						&& array_key_exists( ZTypeRegistry::Z_REFERENCE_VALUE, $output )
-						&& self::isValidId( $output[ ZTypeRegistry::Z_REFERENCE_VALUE ] ) ) {
+						&& self::isValidZObjectReference( $output[ ZTypeRegistry::Z_REFERENCE_VALUE ] ) ) {
 						return self::canonicalize( $output[ ZTypeRegistry::Z_REFERENCE_VALUE ] );
 					}
 				}
@@ -543,7 +542,7 @@ class ZObjectUtils {
 	 * @return bool
 	 */
 	public static function isValidZObjectReference( string $input ): bool {
-		return preg_match( "/^\s*Z[1-9]\d*\s*$/", $input );
+		return preg_match( "/^Z[1-9]\d*$/", $input );
 	}
 
 	/**

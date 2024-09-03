@@ -211,7 +211,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 			],
 			'escaped string QID' => [
 				'{ "Z1K1": "Z6", "Z6K1": "Q42" }',
-				'{ "Z1K1": "Z6", "Z6K1": "Q42" }'
+				'"Q42"'
 			],
 			'unnecessary escaped string key' => [
 				'{ "Z1K1": "Z6", "Z6K1": "Z1K1" }',
@@ -245,6 +245,14 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z6", "Z6K1": "Z" } }',
 				'{ "Z1K1": "Z2", "Z2K2": "Z" }'
 			],
+			'string with reference should not be canonicalized' => [
+				'{ "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z2" }, "Z2K2": { "Z1K1": "Z6", "Z6K1": "Z1234" } }',
+				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z6", "Z6K1": "Z1234" } }'
+			],
+			'string with external ID should be canonicalized' => [
+				'{ "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z2" }, "Z2K2": { "Z1K1": "Z6", "Z6K1": "L1234" } }',
+				'{ "Z1K1": "Z2", "Z2K2": "L1234" }'
+			],
 			'explicit reference' => [
 				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z9", "Z9K1": "Z1" } }',
 				'{ "Z1K1": "Z2", "Z2K2": "Z1" }'
@@ -252,10 +260,6 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 			'implicit reference' => [
 				'{ "Z1K1": "Z2", "Z2K2": "Z1" }',
 				'{ "Z1K1": "Z2", "Z2K2": "Z1" }'
-			],
-			'explicit QID reference' => [
-				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z9", "Z9K1": "Q96807071" } }',
-				'{ "Z1K1": "Z2", "Z2K2": "Q96807071" }'
 			],
 			'invalid reference' => [
 				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z9", "Z9K1": "ZObject" } }',
@@ -795,9 +799,9 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 
 	public static function provideIsValidZObjectReferenceWithWhitespace() {
 		return [
-			'Whitespace-suffixed ZID' => [ "Z1 ", true ],
-			'Whitespace-prefixed ZID' => [ " Z1", true ],
-			'Whitespace-beset ZID' => [ "\n\t\rZ1\t \t", true ],
+			'Whitespace-suffixed ZID' => [ "Z1 ", false ],
+			'Whitespace-prefixed ZID' => [ " Z1", false ],
+			'Whitespace-beset ZID' => [ "\n\t\rZ1\t \t", false ],
 		];
 	}
 
