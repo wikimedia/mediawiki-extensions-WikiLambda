@@ -758,6 +758,12 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->zobjectStore->insertZObjectLabels(
 			'Z455', 'Z6', [ self::ZLANG['en'] => 'Some more examples' ]
 		);
+		$this->zobjectStore->insertZObjectLabels(
+			'Z455', 'Z8', [ self::ZLANG['en'] => 'Some more examples 2' ], 'Z6'
+		);
+		$this->zobjectStore->insertZObjectLabels(
+			'Z455', 'Z8', [ self::ZLANG['en'] => 'Some more examples 3' ], 'Z4'
+		);
 
 		$res = $this->zobjectStore->searchZObjectLabels(
 			'example', false, [ self::ZLANG['en'] ], 'Z7', null, false, null, 5000
@@ -767,6 +773,12 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 		$res = $this->zobjectStore->searchZObjectLabels(
 			'example', false, [ self::ZLANG['en'] ], 'Z6', null, false, null, 5000
+		);
+		$this->assertInstanceOf( IResultWrapper::class, $res );
+		$this->assertSame( 1, $res->numRows() );
+
+		$res = $this->zobjectStore->searchZObjectLabels(
+			'example', false, [ self::ZLANG['en'] ], null, 'Z6', true, null, 5000
 		);
 		$this->assertInstanceOf( IResultWrapper::class, $res );
 		$this->assertSame( 1, $res->numRows() );

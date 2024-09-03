@@ -122,15 +122,22 @@ describe( 'ZReference', () => {
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [], value: 'String' } ] ] );
 		} );
 
-		it( 'binds the input type to the selector', async () => {
+		it( 'binds the returnType to the selector when key is a function call function', async () => {
+			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL_FUNCTION );
+			global.store.hotUpdate( {
+				getters: getters
+			} );
+
 			const wrapper = shallowMount( ZReference, {
 				props: {
 					edit: true,
-					expectedType: Constants.Z_STRING
+					expectedType: Constants.Z_FUNCTION,
+					parentExpectedType: Constants.Z_STRING
 				}
 			} );
 
-			expect( wrapper.vm.selectType ).toBe( Constants.Z_STRING );
+			expect( wrapper.vm.returnType ).toBe( Constants.Z_STRING );
+			expect( wrapper.vm.type ).toBe( '' );
 		} );
 
 		it( 'sets excluded zids from root persistent content', () => {

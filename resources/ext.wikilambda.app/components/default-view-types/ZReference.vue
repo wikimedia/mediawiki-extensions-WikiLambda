@@ -21,7 +21,8 @@
 				:disabled="disabled"
 				:row-id="rowId"
 				:selected-zid="value"
-				:type="selectType"
+				:type="type"
+				:return-type="returnType"
 				:exclude-zids="excludeZids"
 				data-testid="z-reference-selector"
 				@input="setValue"
@@ -56,6 +57,11 @@ module.exports = exports = defineComponent( {
 		expectedType: {
 			type: [ String, Object ],
 			required: true
+		},
+		parentExpectedType: {
+			type: [ String, Object ],
+			required: false,
+			default: Constants.Z_OBJECT
 		},
 		disabled: {
 			type: Boolean,
@@ -101,22 +107,39 @@ module.exports = exports = defineComponent( {
 
 			/**
 			 * Returns the bound type to configure the ZObjectSelector
-			 * if any, else returns an empty string. The type must be
-			 * converted to string with no args in case it's a generic type.
+			 * If `returnType` is not set and `expectedType` is a valid bound type (not `Z_OBJECT`),
+			 * the bound type is returned as a string. Otherwise, returns an empty string.
+			 * The type is converted to a string with no arguments if it is a generic type.
 			 *
-			 * @return {string}
+			 * @return {string} The bound type as a string, or an empty string if not applicable.
 			 */
-			selectType: function () {
-				return !this.expectedType || ( this.expectedType === Constants.Z_OBJECT ) ?
+			type: function () {
+				return this.returnType || !this.expectedType || this.expectedType === Constants.Z_OBJECT ?
 					'' :
 					this.typeToString( this.expectedType, true );
+			},
+
+			/**
+			 * Returns the bound return type to configure the ZObjectSelector
+			 * If `key` is `Z_FUNCTION_CALL_FUNCTION` and `parentExpectedType` is a valid bound type (not `Z_OBJECT`),
+			 * the bound return type is returned as a string. Otherwise, returns an empty string.
+			 * The type is converted to a string with no arguments if it is a generic type.
+			 *
+			 * @return {string}  The bound return type as a string, or an empty string if not applicable.
+			 */
+			returnType: function () {
+				return this.key !== Constants.Z_FUNCTION_CALL_FUNCTION ||
+				!this.parentExpectedType ||
+				this.parentExpectedType === Constants.Z_OBJECT ?
+					'' :
+					this.typeToString( this.parentExpectedType, true );
 			},
 
 			/**
 			 * Returns the key that contains the reference value
 			 * represented in this component.
 			 *
-			 * @return {string}
+			 * @return {string} The key associated with the reference value.
 			 */
 			key: function () {
 				return this.getZObjectKeyByRowId( this.rowId );
