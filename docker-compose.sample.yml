@@ -8,6 +8,7 @@ services:
       - 6254:6254
     environment:
       WIKI_API_URL: "http://mediawiki-web:8080/w/api.php"
+      WIKIDATA_API_URL: "https://www.wikidata.org"
       ORCHESTRATOR_CONFIG: |
         {
           "evaluatorConfigs": [
