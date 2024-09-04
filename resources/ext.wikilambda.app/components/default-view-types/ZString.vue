@@ -109,6 +109,7 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-string__value {
 		margin: 0;
 		color: @color-base;
+		word-break: break-word;
 	}
 }
 </style>
