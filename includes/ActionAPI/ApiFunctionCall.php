@@ -10,24 +10,15 @@
 
 namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
-use ApiMain;
-use ApiUsageException;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
-use MediaWiki\Context\DerivativeContext;
-use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
-use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
-use MediaWiki\Extension\WikiLambda\ZObjectFactory;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZQuote;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\PoolCounter\PoolCounterWorkViaCallback;
-use MediaWiki\Request\FauxRequest;
 use MediaWiki\Status\Status;
 use Wikimedia\ParamValidator\ParamValidator;
 
@@ -343,81 +334,6 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 				. $this->createExample( 'example-orchestrator-timeout.json' )
 				=> 'apihelp-wikilambda_function_call-example-orchestrator-timeout',
 		];
-	}
-
-	/**
-	 * A convenience function for making a ZFunctionCall and returning its result to embed within a page.
-	 *
-	 * @param string $call The ZFunctionCall to make, as a JSON object turned into a string
-	 * @return string Currently the only permissable response objects are strings
-	 * @throws ZErrorException When the request is responded to oddly by the orchestrator
-	 */
-	public static function makeRequest( $call ): string {
-		$api = new ApiMain( new FauxRequest() );
-		$request = new FauxRequest(
-			[
-				'format' => 'json',
-				'action' => 'wikilambda_function_call',
-				'wikilambda_function_call_zobject' => $call,
-			],
-			/* wasPosted */ true
-		);
-
-		$context = new DerivativeContext( RequestContext::getMain() );
-		$context->setRequest( $request );
-		$api->setContext( $context );
-		$api->execute();
-		$outerResponse = $api->getResult()->getResultData( [], [ 'Strip' => 'all' ] );
-
-		if ( isset( $outerResponse[ 'error' ] ) ) {
-			try {
-				$zerror = ZObjectFactory::create( $outerResponse['error'] );
-			} catch ( ZErrorException $e ) {
-				// Can't use $this->dieWithError() as we're static, so use the call indirectly
-				throw ApiUsageException::newWithMessage(
-					null,
-					[
-						'apierror-wikilambda_function_call-response-malformed',
-						// TODO (T362236): Pass the rendering language in, don't default to English
-						$e->getZError()->getMessage()
-					],
-					null,
-					null,
-					400
-				);
-			}
-			if ( !( $zerror instanceof ZError ) ) {
-				$zerror = ZErrorFactory::wrapMessageInZError( new ZQuote( $zerror ), $call );
-			}
-			throw new ZErrorException( $zerror );
-		}
-
-		// Now we know that the request has not failed before it even got to the orchestrator, get the response
-		// JSON string as a ZResponseEnvelope (falling back to an empty string in case it's unset).
-		$response = ZObjectFactory::create(
-			$outerResponse['wikilambda_function_call']['data'] ?? ''
-		);
-
-		if ( !( $response instanceof ZResponseEnvelope ) ) {
-			// The server's not given us a result!
-			$responseType = $response->getZType();
-			$zerror = ZErrorFactory::wrapMessageInZError(
-				"Server returned a non-result of type '$responseType'!",
-				$call
-			);
-			throw new ZErrorException( $zerror );
-		}
-
-		if ( $response->hasErrors() ) {
-			// If the server has responsed with a Z5/Error, show that properly.
-			$zerror = $response->getErrors();
-			if ( !( $zerror instanceof ZError ) ) {
-				$zerror = ZErrorFactory::wrapMessageInZError( new ZQuote( $zerror ), $call );
-			}
-			throw new ZErrorException( $zerror );
-		}
-
-		return trim( $response->getZValue() );
 	}
 
 	/**
