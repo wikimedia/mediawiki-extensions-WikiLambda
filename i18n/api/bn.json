@@ -4,7 +4,8 @@
 			"FARMER",
 			"Tahmid",
 			"WikiAbuHuraira",
-			"Asked42"
+			"Asked42",
+			"ZeetBaral"
 		]
 	},
 	"apihelp-wikilambda_fetch-summary": "Z-বস্তুর JSON মডেল আনয়ন করুন।",
@@ -27,7 +28,7 @@
 	"apihelp-query+wikilambdasearch_labels-param-language": "মিডিয়াউইকি ভাষা কোড যেটিতে অনুসন্ধান করতে হবে",
 	"apihelp-query+wikilambdasearch_labels-param-nofallback": "ফলব্যাক ভাষা ব্যতীত, শুধুমাত্র প্রদত্ত ভাষায় অনুসন্ধান করতে হবে কি না",
 	"apihelp-query+wikilambdasearch_labels-param-limit": "রিটার্ন করার জন্য সর্বোচ্চ ফলাফলের সংখ্যা",
-	"apihelp-query+wikilambda-example-simple": "Z-বস্তুর জন্য অনুসন্ধান করুন যার লেবেল ইংরেজিতে 'foo'-এর সাথে  মেলে",
+	"apihelp-query+wikilambda-example-simple": "ইংরেজিতে 'foo' লেবেল মেলে এমন ZObjects খুঁজুন",
 	"apihelp-wikilambda_edit-summary": "একটি Z-বস্তু তৈরি বা সম্পাদনা করুন।",
 	"apihelp-wikilambda_edit-param-summary": "সম্পাদনা সারাংশ বার্তা",
 	"apihelp-wikilambda_edit-param-zid": "সম্পাদনা করার জন্য Z-বস্তুর Z-আইডি। যদি অনুপস্থিত হয়, তাহলে Z-বস্তু নতুন করে তৈরি করা হবে।",
