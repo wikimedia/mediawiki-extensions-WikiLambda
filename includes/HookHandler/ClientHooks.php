@@ -13,10 +13,10 @@ namespace MediaWiki\Extension\WikiLambda\HookHandler;
 
 use ApiMain;
 use ApiUsageException;
+use MediaWiki\Config\Config;
 use MediaWiki\Context\DerivativeContext;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
-use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
@@ -25,8 +25,8 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZQuote;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
+use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Html\Html;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\Sanitizer;
 use MediaWiki\Request\FauxRequest;
@@ -36,6 +36,16 @@ use PPFrame;
 class ClientHooks implements
 	\MediaWiki\Hook\ParserFirstCallInitHook
 {
+	private Config $config;
+	private ZObjectStore $zObjectStore;
+
+	public function __construct(
+		Config $config,
+		ZObjectStore $zObjectStore
+	) {
+		$this->config = $config;
+		$this->zObjectStore = $zObjectStore;
+	}
 
 	/**
 	 * Register {{#function:…}} as a wikitext parser function to trigger function evaluation.
@@ -45,9 +55,8 @@ class ClientHooks implements
 	 * @param Parser $parser
 	 */
 	public function onParserFirstCallInit( $parser ) {
-		$config = MediaWikiServices::getInstance()->getMainConfig();
-		if ( $config->get( 'WikiLambdaEnableClientMode' ) ) {
-			$parser->setFunctionHook( 'function', [ self::class, 'parserFunctionCallback' ], Parser::SFH_OBJECT_ARGS );
+		if ( $this->config->get( 'WikiLambdaEnableClientMode' ) ) {
+			$parser->setFunctionHook( 'function', [ $this, 'parserFunctionCallback' ], Parser::SFH_OBJECT_ARGS );
 		}
 	}
 
@@ -57,7 +66,7 @@ class ClientHooks implements
 	 * @param array $args
 	 * @return array
 	 */
-	public static function parserFunctionCallback( Parser $parser, $frame, $args = [] ) {
+	public function parserFunctionCallback( Parser $parser, $frame, $args = [] ) {
 		// TODO (T362251): Turn $args into the request more properly.
 
 		$cleanupInput = static function ( $input ) use ( $frame ) {
@@ -68,7 +77,6 @@ class ClientHooks implements
 
 		$target = $cleanedArgs[0];
 
-		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$targetTitle = Title::newFromText( $target, NS_MAIN );
 		if ( !( $targetTitle->exists() ) ) {
 			// User is trying to use a function that doesn't exist
@@ -78,7 +86,7 @@ class ClientHooks implements
 			return static::generateTargetError( $parser, $target, 'wikilambda-functioncall-error-unknown' );
 		}
 
-		$targetObject = $zObjectStore->fetchZObjectByTitle( $targetTitle );
+		$targetObject = $this->zObjectStore->fetchZObjectByTitle( $targetTitle );
 
 		// TODO (T272516): This will stop being our thing to check when we're remote-capable
 		// ZObjectStore's fetchZObjectByTitle() will return a ZObjectContent, so just check it's a valid ZObject
