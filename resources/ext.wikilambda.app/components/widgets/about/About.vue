@@ -90,6 +90,7 @@
 </template>
 
 <script>
+const { CdxAccordion, CdxButton, CdxIcon } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
 	pageTitleUtils = require( '../../../mixins/pageTitleUtils.js' ),
@@ -97,12 +98,8 @@ const Constants = require( '../../../Constants.js' ),
 	AboutLanguagesDialog = require( './AboutLanguagesDialog.vue' ),
 	PublishDialog = require( '../publish/PublishDialog.vue' ),
 	WidgetBase = require( '../../base/WidgetBase.vue' ),
-	CdxAccordion = require( '@wikimedia/codex' ).CdxAccordion,
-	CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	icons = require( '../../../../lib/icons.json' ),
-	mapActions = require( 'vuex' ).mapActions,
-	mapGetters = require( 'vuex' ).mapGetters;
+	{ mapActions, mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-about-widget',

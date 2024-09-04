@@ -20,11 +20,11 @@
 </template>
 
 <script>
+const { CdxIcon } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
-	ZObjectToString = require( './ZObjectToString.vue' ),
+const ZObjectToString = require( './ZObjectToString.vue' ),
 	icons = require( '../../../lib/icons.json' ),
-	mapGetters = require( 'vuex' ).mapGetters;
+	{ mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-function-call',

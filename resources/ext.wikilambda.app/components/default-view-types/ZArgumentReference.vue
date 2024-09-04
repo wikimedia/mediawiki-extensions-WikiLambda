@@ -27,12 +27,11 @@
 </template>
 
 <script>
+const { CdxIcon, CdxSelect } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
-	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
-	CdxSelect = require( '@wikimedia/codex' ).CdxSelect,
 	icons = require( '../../../lib/icons.json' ),
-	mapGetters = require( 'vuex' ).mapGetters;
+	{ mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-argument-reference',

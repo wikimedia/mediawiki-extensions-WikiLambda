@@ -44,10 +44,9 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const CdxInfoChip = require( '@wikimedia/codex' ).CdxInfoChip,
-	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
+const { CdxInfoChip, CdxTextInput } = require( '@wikimedia/codex' ),
 	Constants = require( '../../Constants.js' ),
-	mapGetters = require( 'vuex' ).mapGetters;
+	{ mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-monolingual-string',

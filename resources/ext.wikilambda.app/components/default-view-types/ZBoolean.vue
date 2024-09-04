@@ -33,10 +33,10 @@
 </template>
 
 <script>
+const { CdxRadio } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const CdxRadio = require( '@wikimedia/codex' ).CdxRadio,
-	Constants = require( '../../Constants.js' ),
-	mapGetters = require( 'vuex' ).mapGetters;
+const Constants = require( '../../Constants.js' ),
+	{ mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-boolean',

@@ -26,7 +26,7 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const mapGetters = require( 'vuex' ).mapGetters;
+const { mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-object-key-value-set',

@@ -29,9 +29,9 @@
 </template>
 
 <script>
+const { CdxIcon } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const Tooltip = require( '../../base/Tooltip.vue' ),
-	CdxIcon = require( '@wikimedia/codex' ).CdxIcon;
+const Tooltip = require( '../../base/Tooltip.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-field',

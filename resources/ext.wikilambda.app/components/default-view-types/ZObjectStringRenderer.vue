@@ -81,18 +81,14 @@
 </template>
 
 <script>
+const { CdxDialog, CdxMessage, CdxTextInput } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
-	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
-	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
-	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
 	ZObjectKeyValueSet = require( './ZObjectKeyValueSet.vue' ),
 	errorUtils = require( '../../mixins/errorUtils.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ).methods,
-	getValueFromCanonicalZMap = require( '../../mixins/schemata.js' ).methods.getValueFromCanonicalZMap,
-	hybridToCanonical = require( '../../mixins/schemata.js' ).methods.hybridToCanonical,
-	mapActions = require( 'vuex' ).mapActions,
-	mapGetters = require( 'vuex' ).mapGetters;
+	{ getValueFromCanonicalZMap, hybridToCanonical } = require( '../../mixins/schemata.js' ).methods,
+	{ mapActions, mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-object-string-renderer',

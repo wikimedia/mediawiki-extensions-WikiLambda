@@ -225,14 +225,11 @@
 </template>
 
 <script>
+const { CdxChipInput, CdxField, CdxTextArea, CdxTextInput } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
-	CdxChipInput = require( '@wikimedia/codex' ).CdxChipInput,
-	CdxField = require( '@wikimedia/codex' ).CdxField,
-	CdxTextArea = require( '@wikimedia/codex' ).CdxTextArea,
-	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
 	ZObjectToString = require( '../../default-view-types/ZObjectToString.vue' ),
-	mapGetters = require( 'vuex' ).mapGetters;
+	{ mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-about-language-block',

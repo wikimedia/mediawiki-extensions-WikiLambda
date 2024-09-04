@@ -42,16 +42,16 @@
 </template>
 
 <script>
+const { CdxButton } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
-	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	WidgetBase = require( '../../base/WidgetBase.vue' ),
 	LeaveEditorDialog = require( './LeaveEditorDialog.vue' ),
 	PublishDialog = require( './PublishDialog.vue' ),
 	eventLogger = require( '../../../mixins/eventLogUtils.js' ).methods,
 	urlUtils = require( '../../../mixins/urlUtils.js' ),
-	mapActions = require( 'vuex' ).mapActions,
-	mapGetters = require( 'vuex' ).mapGetters;
+	{ mapActions } = require( 'vuex' ),
+	{ mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-publish-widget',

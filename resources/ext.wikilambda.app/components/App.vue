@@ -27,8 +27,7 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const mapGetters = require( 'vuex' ).mapGetters,
-	mapActions = require( 'vuex' ).mapActions,
+const { mapActions, mapGetters } = require( 'vuex' ),
 	ClipboardManager = require( './base/ClipboardManager.vue' ),
 	eventLogUtils = require( '../mixins/eventLogUtils.js' ),
 	urlUtils = require( '../mixins/urlUtils.js' ),

@@ -40,7 +40,7 @@
 <script>
 
 const { defineComponent } = require( 'vue' );
-const mapGetters = require( 'vuex' ).mapGetters,
+const { mapGetters } = require( 'vuex' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ),
 	StatusIcon = require( '../../base/StatusIcon.vue' ),
 	Constants = require( '../../../Constants.js' ),

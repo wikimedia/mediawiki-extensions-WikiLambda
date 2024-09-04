@@ -51,11 +51,10 @@
 </template>
 
 <script>
+const { CdxButton, CdxIcon } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const LocalizedLabel = require( '../base/LocalizedLabel.vue' ),
 	KeyValueBlock = require( '../base/KeyValueBlock.vue' ),
-	CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	LabelData = require( '../../store/classes/LabelData.js' ),
 	icons = require( '../../../lib/icons.json' );
 

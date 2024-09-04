@@ -71,16 +71,12 @@
 </template>
 
 <script>
+const { CdxField, CdxTextInput, CdxMessage, CdxDialog } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
-	CdxField = require( '@wikimedia/codex' ).CdxField,
-	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
-	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
-	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
 	eventLogUtils = require( '../../../mixins/eventLogUtils.js' ),
 	errorUtils = require( '../../../mixins/errorUtils.js' ),
-	mapGetters = require( 'vuex' ).mapGetters,
-	mapActions = require( 'vuex' ).mapActions;
+	{ mapGetters, mapActions } = require( 'vuex' );
 
 const enterKeyChar = `
 	<kbd class="ext-wikilambda-app-publish-dialog__kbd">

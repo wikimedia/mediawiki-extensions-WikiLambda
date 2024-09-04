@@ -119,18 +119,16 @@
 </template>
 
 <script>
+const { CdxButton, CdxMessage } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
-	CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	WidgetBase = require( '../../base/WidgetBase.vue' ),
 	ZReference = require( '../../default-view-types/ZReference.vue' ),
 	KeyBlock = require( '../../base/KeyBlock.vue' ),
 	ZObjectKeyValue = require( '../../default-view-types/ZObjectKeyValue.vue' ),
 	eventLogUtils = require( '../../../mixins/eventLogUtils.js' ),
 	errorUtils = require( '../../../mixins/errorUtils.js' ),
-	mapActions = require( 'vuex' ).mapActions,
-	mapGetters = require( 'vuex' ).mapGetters;
+	{ mapActions, mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-evaluator-widget',

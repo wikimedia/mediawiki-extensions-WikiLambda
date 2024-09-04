@@ -23,10 +23,10 @@
 </template>
 
 <script>
+const { CdxTextInput } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
-	Constants = require( '../../Constants.js' ),
-	mapGetters = require( 'vuex' ).mapGetters;
+const Constants = require( '../../Constants.js' ),
+	{ mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-string',

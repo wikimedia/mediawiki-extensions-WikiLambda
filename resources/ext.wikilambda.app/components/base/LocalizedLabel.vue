@@ -19,7 +19,7 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const LabelData = require( '../../store/classes/LabelData.js' ),
-	mapGetters = require( 'vuex' ).mapGetters;
+	{ mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-localized-label',

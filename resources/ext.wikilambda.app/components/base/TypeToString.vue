@@ -37,8 +37,7 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
-	mapActions = require( 'vuex' ).mapActions,
-	mapGetters = require( 'vuex' ).mapGetters;
+	{ mapActions, mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-type-to-string',

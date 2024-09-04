@@ -31,13 +31,12 @@
 </template>
 
 <script>
+const { CdxTextInput } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
 	pageTitleUtils = require( '../../../mixins/pageTitleUtils.js' ),
 	FunctionEditorField = require( './FunctionEditorField.vue' ),
-	mapGetters = require( 'vuex' ).mapGetters,
-	mapActions = require( 'vuex' ).mapActions,
-	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput;
+	{ mapActions, mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-name',

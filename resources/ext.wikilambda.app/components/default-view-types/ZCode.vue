@@ -86,15 +86,13 @@
 </template>
 
 <script>
+const { CdxMessage, CdxSelect } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
-	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	CodeEditor = require( '../base/CodeEditor.vue' ),
 	KeyValueBlock = require( '../base/KeyValueBlock.vue' ),
-	CdxSelect = require( '@wikimedia/codex' ).CdxSelect,
 	errorUtils = require( '../../mixins/errorUtils.js' ),
-	mapGetters = require( 'vuex' ).mapGetters,
-	mapActions = require( 'vuex' ).mapActions;
+	{ mapGetters, mapActions } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-code',

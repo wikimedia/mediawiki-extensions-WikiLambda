@@ -19,8 +19,7 @@
 const { defineComponent } = require( 'vue' );
 const typeUtils = require( '../../mixins/typeUtils.js' ),
 	Constants = require( '../../Constants.js' ),
-	mapGetters = require( 'vuex' ).mapGetters,
-	mapActions = require( 'vuex' ).mapActions;
+	{ mapGetters, mapActions } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-typed-list-type',

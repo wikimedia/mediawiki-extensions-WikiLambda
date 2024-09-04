@@ -64,12 +64,12 @@
 </template>
 
 <script>
+const { CdxDialog } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
-	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
 	FunctionMetadataDialog = require( '../widgets/function-evaluator/FunctionMetadataDialog.vue' ),
-	hybridToCanonical = require( '../../mixins/schemata.js' ).methods.hybridToCanonical,
-	mapGetters = require( 'vuex' ).mapGetters;
+	{ hybridToCanonical } = require( '../../mixins/schemata.js' ).methods,
+	{ mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-evaluation-result',

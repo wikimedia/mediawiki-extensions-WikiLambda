@@ -147,15 +147,14 @@
 </template>
 
 <script>
+const { CdxButton, CdxIcon } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const
 	Constants = require( '../../../Constants.js' ),
-	CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	WidgetBase = require( '../../base/WidgetBase.vue' ),
 	TypeToString = require( '../../base/TypeToString.vue' ),
 	ZObjectSelector = require( '../../base/ZObjectSelector.vue' ),
-	mapGetters = require( 'vuex' ).mapGetters,
+	{ mapGetters } = require( 'vuex' ),
 	icons = require( '../../../../lib/icons.json' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ),
 	clipboardUtils = require( '../../../mixins/clipboardUtils.js' );

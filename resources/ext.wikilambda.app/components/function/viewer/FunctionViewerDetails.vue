@@ -65,15 +65,14 @@
 </template>
 
 <script>
+const { CdxMessage } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const FunctionViewerDetailsTable = require( './FunctionViewerDetailsTable.vue' ),
 	Constants = require( '../../../Constants.js' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ),
 	errorUtils = require( '../../../mixins/errorUtils.js' ),
 	utilsMixins = require( '../../../mixins/utilsMixins.js' ),
-	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
-	mapGetters = require( 'vuex' ).mapGetters,
-	mapActions = require( 'vuex' ).mapActions;
+	{ mapGetters, mapActions } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-viewer-details',

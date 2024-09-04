@@ -15,13 +15,12 @@
 </template>
 
 <script>
+const { CdxIcon, CdxMenuButton } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
-	CdxMenuButton = require( '@wikimedia/codex' ).CdxMenuButton,
-	Constants = require( '../../Constants.js' ),
+const Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	icons = require( '../../../lib/icons.json' ),
-	mapGetters = require( 'vuex' ).mapGetters;
+	{ mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-mode-selector',

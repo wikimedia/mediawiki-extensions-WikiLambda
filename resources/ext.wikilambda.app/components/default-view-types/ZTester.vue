@@ -81,9 +81,8 @@
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
 	KeyValueBlock = require( '../base/KeyValueBlock.vue' ),
-	isValidZidFormat = require( '../../mixins/typeUtils.js' ).methods.isValidZidFormat,
-	mapActions = require( 'vuex' ).mapActions,
-	mapGetters = require( 'vuex' ).mapGetters;
+	{ isValidZidFormat } = require( '../../mixins/typeUtils.js' ).methods,
+	{ mapActions, mapGetters } = require( 'vuex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-tester',
