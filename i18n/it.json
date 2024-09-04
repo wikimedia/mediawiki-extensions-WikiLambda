@@ -222,7 +222,7 @@
 	"wikilambda-function-details-summary-learn-more": "Ulteriori informazioni sul processo di revisione.",
 	"wikilambda-function-details-table-approve": "Connetti",
 	"wikilambda-function-details-table-deactivate": "Disconnetti",
-	"wikilambda-function-evaluation-restriction-notrunnable": "Questa funzione non ha implementazioni approvate.",
+	"wikilambda-function-evaluation-restriction-notrunnable": "Questa funzione non ha implementazioni connesse.",
 	"wikilambda-function-evaluation-restriction-warning": "Spiacenti! Al momento solo gli utenti registrati possono eseguire le funzioni.",
 	"wikilambda-function-evaluator-enter-inputs": "Inserisci ingressi",
 	"wikilambda-function-evaluator-result": "Risultato",
