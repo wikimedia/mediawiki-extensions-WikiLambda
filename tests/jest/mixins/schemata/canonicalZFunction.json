@@ -32,10 +32,7 @@
 				"Z14K2": "Z10023",
 				"Z14K3": {
 					"Z1K1": "Z16",
-					"Z16K1": {
-						"Z1K1": "Z61",
-						"Z61K1": "javascript"
-					},
+					"Z16K1": "Z600",
 					"Z16K2": "function Z10023(name) {\n\treturn `Hello, ${name}!`;\n}"
 				},
 				"Z14K4": "false"

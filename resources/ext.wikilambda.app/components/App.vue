@@ -16,7 +16,6 @@
 			<!-- Append wl- prefix to the router current view, to help reference component correctly -->
 			<component
 				:is="`wl-${getCurrentView}`"
-				@mounted="newViewMounted"
 			></component>
 		</template>
 		<span v-else>

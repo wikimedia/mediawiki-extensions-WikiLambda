@@ -23,10 +23,7 @@ module.exports = {
 		[ Constants.Z_IMPLEMENTATION_FUNCTION ]: functionZid,
 		[ Constants.Z_IMPLEMENTATION_CODE ]: {
 			[ Constants.Z_OBJECT_TYPE ]: Constants.Z_CODE,
-			[ Constants.Z_CODE_LANGUAGE ]: {
-				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_PROGRAMMING_LANGUAGE,
-				[ Constants.Z_PROGRAMMING_LANGUAGE_CODE ]: 'javascript'
-			},
+			[ Constants.Z_CODE_LANGUAGE ]: Constants.Z_PROGRAMMING_LANGUAGES.JAVASCRIPT,
 			[ Constants.Z_CODE_CODE ]:
 				'function Z12345( Z12345K1 ) return { javascript function implementation code here }'
 		}

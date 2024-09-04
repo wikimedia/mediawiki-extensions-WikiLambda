@@ -533,8 +533,8 @@ module.exports = exports = {
 		 * The value will result in a json representation equal to:
 		 *
 		 * {
-		 *  Z1K1: Z16
-		 *  Z16K1: { Z1K1: Z61, Z61K1: '' },
+		 *  Z1K1: 'Z16'
+		 *  Z16K1: { Z1K1: 'Z9', Z9K1: '' },
 		 *  Z16K2: ''
 		 * }
 		 *

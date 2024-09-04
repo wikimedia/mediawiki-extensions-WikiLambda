@@ -310,16 +310,9 @@ describe( 'library module', () => {
 				state.objects = mockApiZids;
 			} );
 
-			it( 'gets language of a code implementation with a referenced programming language', () => {
+			it( 'gets language of a code implementation', () => {
 				const zid = 'Z20005';
 				const expected = 'Z600';
-				const actual = libraryModule.getters.getLanguageOfImplementation( state )( zid );
-				expect( actual ).toBe( expected );
-			} );
-
-			it( 'gets language of a code implementation with a literal programming language', () => {
-				const zid = 'Z20006';
-				const expected = 'javascript';
 				const actual = libraryModule.getters.getLanguageOfImplementation( state )( zid );
 				expect( actual ).toBe( expected );
 			} );

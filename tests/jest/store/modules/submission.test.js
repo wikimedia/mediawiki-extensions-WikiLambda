@@ -162,29 +162,8 @@ describe( 'zobject submission Vuex module', () => {
 		} );
 
 		describe( 'validate implementation', () => {
-			it( 'Does not commit error for a valid code implementation (literal programming language)', () => {
-				context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
-				context.getters.getZImplementationContentRowId = jest.fn( () => 2 );
-				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
-				context.getters.getRowByKeyPath = jest.fn( () => ( { id: 3 } ) );
-				context.getters.getZObjectAsJson = {
-					Z2K2: {
-						Z1K1: Constants.Z_IMPLEMENTATION,
-						Z14K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z999' },
-						Z14K3: {
-							Z1K1: Constants.Z_CODE,
-							Z16K1: { Z1K1: Constants.Z_PROGRAMMING_LANGUAGE, Z61K1: { Z1K1: Constants.Z_STRING, Z6K1: 'lang' } },
-							Z16K2: { Z1K1: Constants.Z_STRING, Z6K1: 'some code' }
-						}
-					}
-				};
 
-				const isValid = submissionModule.actions.validateZObject( context );
-				expect( context.commit ).toHaveBeenCalledTimes( 0 );
-				expect( isValid ).toEqual( true );
-			} );
-
-			it( 'Does not commit error for a valid code implementation (referenced programming language)', () => {
+			it( 'Does not commit error for a valid code implementation', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
 				context.getters.getZImplementationContentRowId = jest.fn( () => 2 );
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
@@ -329,36 +308,7 @@ describe( 'zobject submission Vuex module', () => {
 				expect( isValid ).toEqual( false );
 			} );
 
-			it( 'Commits error for a code implementation with missing programming language (literal)', () => {
-				context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
-				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
-				context.getters.getZImplementationContentRowId = jest.fn( () => 2 );
-				context.getters.getRowByKeyPath = jest.fn( () => ( { id: 3 } ) );
-				context.getters.getZObjectAsJson = {
-					Z2K2: {
-						Z1K1: Constants.Z_IMPLEMENTATION,
-						Z14K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z999' },
-						Z14K3: {
-							Z1K1: Constants.Z_CODE,
-							Z16K1: { Z1K1: Constants.Z_PROGRAMMING_LANGUAGE, Z61K1: { Z1K1: Constants.Z_STRING, Z6K1: '' } },
-							Z16K2: { Z1K1: Constants.Z_STRING, Z6K1: 'some code' }
-						}
-					}
-				};
-
-				const mockError = {
-					rowId: 3,
-					errorCode: Constants.errorCodes.MISSING_IMPLEMENTATION_CODE_LANGUAGE,
-					errorType: Constants.errorTypes.ERROR
-				};
-
-				const isValid = submissionModule.actions.validateZObject( context );
-				expect( context.commit ).toHaveBeenCalledTimes( 1 );
-				expect( context.commit ).toHaveBeenCalledWith( 'setError', mockError );
-				expect( isValid ).toEqual( false );
-			} );
-
-			it( 'Commits error for a code implementation with missing programming language (reference)', () => {
+			it( 'Commits error for a code implementation with missing programming language', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
 				context.getters.getZImplementationContentRowId = jest.fn( () => 2 );
