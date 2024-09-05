@@ -14,15 +14,19 @@ namespace MediaWiki\Extension\WikiLambda\HookHandler;
 use MediaWiki\Api\ApiMessage;
 use MediaWiki\CommentStore\CommentStoreComment;
 use MediaWiki\Config\Config;
+use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientFanOutQueueJob;
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\RenderedRevision;
 use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Status\Status;
 use MediaWiki\Title\Title;
 use MediaWiki\User\User;
 use MediaWiki\User\UserIdentity;
+use RecentChange;
 use Wikimedia\Message\MessageSpecifier;
 
 class PageEditingHandler implements
@@ -164,4 +168,104 @@ class PageEditingHandler implements
 
 		return true;
 	}
+
+	// phpcs:disable MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName
+
+	/**
+	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/RecentChange_save
+	 *
+	 * @param RecentChange $recentChange
+	 * @return bool|void
+	 */
+	public function onRecentChange_save( $recentChange ) {
+		// We use this on the repo-mode wiki to create a job that *might* trigger updates to client wikis
+
+		$targetPage = $recentChange->getPage();
+		if (
+			// We're not in repo-mode
+			!$this->config->get( 'WikiLambdaEnableRepoMode' ) ||
+			// We're on a page that's not in the main namespace
+			$targetPage->getNamespace() !== NS_MAIN
+		) {
+			// Nothing for us to do.
+			return;
+		}
+
+		$logType = $recentChange->getAttribute( 'rc_log_type' );
+		if ( $logType !== null ) {
+			// If this is a logged action, we only care the edge case of deletions
+			if ( $logType === 'delete' ) {
+				// … and specifically, full page deletions and restorations, not revision deletions
+				$logAction = $recentChange->getAttribute( 'rc_log_action' );
+				if ( $logAction !== 'restore' && $logAction !== 'delete' ) {
+					return;
+				}
+			}
+		}
+
+		$targetTitle = Title::castFromPageReference( $targetPage );
+		if ( $targetTitle === null ) {
+			// This isn't a valid title, so we don't care.
+			return;
+		}
+
+		$targetZObject = $this->zObjectStore->fetchZObjectByTitle( $targetTitle );
+		if ( !$targetZObject ) {
+			// This isn't a ZObject, so we don't care.
+			return;
+		}
+
+		// (T383156): Only act if this is (a) a change to a Function or a linked Imp/Test & (b) the kind we care about.
+		$changeData = [ 'type' => $targetZObject->getZType() ];
+		switch ( $targetZObject->getZType() ) {
+			case ZTypeRegistry::Z_FUNCTION:
+				$changeData['target'] = $targetZObject->getZid();
+				$changeData['function'] = $targetZObject->getZid();
+				// TODO (T383156):
+				// * Filter out irrelevant changes (e.g. label changed)
+				// * Add details of what actually changed (e.g. implementation approved)
+				// * Add labels for this Function for the UX to render (? all languages)
+				break;
+
+			case ZTypeRegistry::Z_IMPLEMENTATION:
+				$changeData['target'] = $targetZObject->getZid();
+				$changeData['function'] = $targetZObject->getInnerZObject()->getValueByKey(
+					ZTypeRegistry::Z_IMPLEMENTATION_FUNCTION
+				);
+				// TODO (T383156):
+				// * Filter out irrelevant Implementations (only care about approved ones)
+				// * Filter out irrelevant changes (e.g. label changed)
+				break;
+
+			case ZTypeRegistry::Z_TESTER:
+				$changeData['target'] = $targetZObject->getInnerZObject();
+				$changeData['function'] = $targetZObject->getInnerZObject()->getValueByKey(
+					ZTypeRegistry::Z_TESTER_FUNCTION
+				);
+				// TODO (T383156):
+				// * Filter out irrelevant Testers (we only care about approved ones)
+				// * Filter out irrelevant changes (e.g. label changed)
+				break;
+
+			default:
+				// We only care about certain ZObjects
+				return;
+		}
+
+		$generalUpdateJob = new WikifunctionsClientFanOutQueueJob( [
+			'target' => $targetPage->getDBkey(),
+			'timestamp' => $recentChange->getAttribute( 'rc_timestamp' ),
+			'summary' => $recentChange->getAttribute( 'rc_comment_text' ),
+			'data' => $changeData,
+			'revision' => $recentChange->getAttribute( 'rc_this_oldid' ),
+			'user' => $recentChange->getPerformerIdentity()->getId(),
+			'bot' => $recentChange->getAttribute( 'rc_bot' ),
+		] );
+
+		$jobQueueGroup = MediaWikiServices::getInstance()->getJobQueueGroup();
+		$jobQueueGroup->lazyPush( $generalUpdateJob );
+	}
+
+	// phpcs:enable MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName
+
 }

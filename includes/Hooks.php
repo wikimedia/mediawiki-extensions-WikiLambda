@@ -56,13 +56,6 @@ class Hooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook 
 	 * @param DatabaseUpdater $updater DatabaseUpdater subclass
 	 */
 	public function onLoadExtensionSchemaUpdates( $updater ) {
-		$config = MediaWikiServices::getInstance()->getMainConfig();
-		// Special form of the check to call has() first, as we'll likely be in pre-extension registry mode
-		if ( !$config->has( 'WikiLambdaEnableRepoMode' ) || !$config->get( 'WikiLambdaEnableRepoMode' ) ) {
-			// Nothing for us to do.
-			return;
-		}
-
 		$db = $updater->getDB();
 		$type = $db->getType();
 		$dir = __DIR__ . '/../sql';
@@ -72,36 +65,51 @@ class Hooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook 
 			return;
 		}
 
-		$tables = [
-			'zobject_labels',
-			'zobject_label_conflicts',
-			'zobject_function_join',
-			'ztester_results',
-			'zlanguages',
-			'zobject_join'
-		];
+		$config = MediaWikiServices::getInstance()->getMainConfig();
 
-		foreach ( $tables as $key => $table ) {
-			$updater->addExtensionTable( 'wikilambda_' . $table, "$dir/$type/table-$table.sql" );
+		// Insert the tables for client-mode, if needed (most production wikis, and development machines)
+		if ( $config->has( 'WikiLambdaEnableClientMode' ) && $config->get( 'WikiLambdaEnableClientMode' ) ) {
+			// Note that we're calling ::has() first, as we'll likely be in pre-extension registry mode
+			$clientTables = [ 'usage' ];
+
+			foreach ( $clientTables as $table ) {
+				$updater->addExtensionTable( 'wikifunctionsclient_' . $table, "$dir/$type/table-$table.sql" );
+			}
 		}
 
-		// Database updates:
-		// (T285368) Add primary label field to labels table
-		$updater->addExtensionField(
-			'wikilambda_zobject_labels',
-			'wlzl_label_primary',
-			"$dir/$type/patch-add-primary-label-field.sql"
-		);
+		// Insert the tables for repo-mode, if needed (Wikifunctions.org and development machines only)
+		if ( $config->has( 'WikiLambdaEnableRepoMode' ) && $config->get( 'WikiLambdaEnableRepoMode' ) ) {
+			$repoTables = [
+				'zobject_labels',
+				'zobject_label_conflicts',
+				'zobject_function_join',
+				'ztester_results',
+				'zlanguages',
+				'zobject_join'
+			];
 
-		// (T262089) Add return type field to labels table
-		$updater->addExtensionField(
-			'wikilambda_zobject_labels',
-			'wlzl_return_type',
-			"$dir/$type/patch-add-return-type-field.sql"
-		);
+			foreach ( $repoTables as $table ) {
+				$updater->addExtensionTable( 'wikilambda_' . $table, "$dir/$type/table-$table.sql" );
+			}
 
-		$updater->addExtensionUpdate( [ [ self::class, 'createInitialContent' ] ] );
-		$updater->addExtensionUpdate( [	[ self::class, 'initializeZObjectJoinTable' ] ] );
+			// Database updates:
+			// (T285368) Add primary label field to labels table
+			$updater->addExtensionField(
+				'wikilambda_zobject_labels',
+				'wlzl_label_primary',
+				"$dir/$type/patch-add-primary-label-field.sql"
+			);
+
+			// (T262089) Add return type field to labels table
+			$updater->addExtensionField(
+				'wikilambda_zobject_labels',
+				'wlzl_return_type',
+				"$dir/$type/patch-add-return-type-field.sql"
+			);
+
+			$updater->addExtensionUpdate( [ [ self::class, 'createInitialContent' ] ] );
+			$updater->addExtensionUpdate( [ [ self::class, 'initializeZObjectJoinTable' ] ] );
+		}
 	}
 
 	/**

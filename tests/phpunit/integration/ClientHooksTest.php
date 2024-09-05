@@ -23,7 +23,8 @@ class ClientHooksTest extends MediaWikiIntegrationTestCase {
 		$services = $this->getServiceContainer();
 		return new ClientHooks(
 			$services->getMainConfig(),
-			$services->getService( 'WikiLambdaZObjectStore' )
+			$services->getService( 'HttpRequestFactory' ),
+			$services->getService( 'JobQueueGroup' )
 		);
 	}
 

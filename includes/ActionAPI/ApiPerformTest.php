@@ -351,7 +351,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 							'testerRevision' => $testerRevision,
 							'passed' => $passed,
 							'stashedResult' => $stashedResult->__toString()
-							]
+						]
 					);
 
 					$this->jobQueueGroup->push( $cacheTesterResultsJob );

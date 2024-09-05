@@ -42,6 +42,10 @@
 			"description": "If true, enable the 'repo' mode of WikiLambda that powers Wikifunctions, and so hosting Functions in the main namespace.",
 			"value": true
 		},
+		"WikiLambdaOrchestratorLocation": {
+			"description": "Host and port of the function orchestrator.",
+			"value": "https://wikifunctions-orchestrator-beta.wmflabs.org:443"
+		},
 		"WikiLambdaObjectCache": {
 			"description": "If false, store function calls in the main MediaWiki cache; if set to another value, that will be used as the key of a cache in wgObjectCaches.",
 			"value": false
@@ -54,9 +58,9 @@
 			"description": "API to target to make function calls (to allow testing against non-standard wikis).",
 			"value": "http://www.wikifunctions.org/"
 		},
-		"WikiLambdaOrchestratorLocation": {
-			"description": "Host and port of the function orchestrator.",
-			"value": "https://wikifunctions-orchestrator-beta.wmflabs.org:443"
+		"WikiLambdaClientWikis": {
+			"description": "List of client wikis for which the repo wiki will trigger updates.",
+			"value": []
 		}
 	},
 	"ConfigRegistry": {
@@ -194,7 +198,8 @@
 			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\ClientHooks",
 			"services": [
 				"MainConfig",
-				"WikiLambdaZObjectStore"
+				"HttpRequestFactory",
+				"JobQueueGroup"
 			]
 		},
 		"PageEditingHandler": {
@@ -215,10 +220,15 @@
 	},
 	"Hooks": {
 		"ParserFirstCallInit": "WikiLambdaClientHooks",
+		"PageSaveComplete": "WikiLambdaClientHooks",
+
+		"LoadExtensionSchemaUpdates": "WikiLambdaHooks",
+
 		"getUserPermissionsErrors": "PageEditingHandler",
 		"MultiContentSave": "PageEditingHandler",
-		"LoadExtensionSchemaUpdates": "WikiLambdaHooks",
 		"NamespaceIsMovable": "PageEditingHandler",
+		"RecentChange_save": "PageEditingHandler",
+
 		"HtmlPageLinkRendererEnd": "PageRenderingHandler",
 		"SkinTemplateNavigation::Universal": "PageRenderingHandler",
 		"WebRequestPathInfoRouter": "PageRenderingHandler",
@@ -796,6 +806,16 @@
 			"path": "/wikifunctions/v0/fetch/{zids}/{revisions}",
 			"method": "GET",
 			"class": "MediaWiki\\Extension\\WikiLambda\\RESTAPI\\FetchHandler"
+		},
+		{
+			"path": "/wikifunctions/v0/call/{zid}/{arguments}",
+			"method": "GET",
+			"class": "MediaWiki\\Extension\\WikiLambda\\RESTAPI\\FunctionCallHandler"
+		},
+		{
+			"path": "/wikifunctions/v0/call/{zid}/{arguments}/{parselang}/{renderlang}",
+			"method": "GET",
+			"class": "MediaWiki\\Extension\\WikiLambda\\RESTAPI\\FunctionCallHandler"
 		}
 	],
 	"SpecialPages": {
@@ -850,7 +870,10 @@
 	],
 	"JobClasses": {
 		"cacheTesterResults": "MediaWiki\\Extension\\WikiLambda\\Jobs\\CacheTesterResultsJob",
-		"updateImplementations": "MediaWiki\\Extension\\WikiLambda\\Jobs\\UpdateImplementationsJob"
+		"updateImplementations": "MediaWiki\\Extension\\WikiLambda\\Jobs\\UpdateImplementationsJob",
+		"wikifunctionsClientFanOutQueue": "MediaWiki\\Extension\\WikiLambda\\Jobs\\WikifunctionsClientFanOutQueueJob",
+		"wikifunctionsUsageUpdate": "MediaWiki\\Extension\\WikiLambda\\Jobs\\WikifunctionsUsageUpdateJob",
+		"wikifunctionsRecentChangesInsert": "MediaWiki\\Extension\\WikiLambda\\Jobs\\WikifunctionsRecentChangesInsertJob"
 	},
 	"manifest_version": 2
 }

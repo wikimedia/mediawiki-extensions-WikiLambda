@@ -21,6 +21,8 @@ use Wikimedia\ObjectCache\BagOStuff;
  * @codeCoverageIgnore
  */
 return [
+	// For repo wikis
+
 	'WikiLambdaZObjectStore' => static function ( MediaWikiServices $services ): ZObjectStore {
 		return new ZObjectStore(
 			$services->getDBLoadBalancerFactory(),
@@ -56,5 +58,11 @@ return [
 		}
 
 		return $services->getObjectCacheFactory()->newFromParams( $cacheParameters );
+	},
+
+	// For client wikis
+
+	'WikifunctionsClientStore' => static function ( MediaWikiServices $services ): WikifunctionsClientStore {
+		return new WikifunctionsClientStore( $services->getDBLoadBalancerFactory() );
 	},
 ];
