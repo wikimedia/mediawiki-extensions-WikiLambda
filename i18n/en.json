@@ -433,6 +433,7 @@
 	"wikilambda-validation-error-description-toolong": "Description in $1 must be {{PLURAL:$2|$2 character|$2 characters}} or shorter.",
 	"wikilambda-validation-error-name-toolong": "Name in $1 must be {{PLURAL:$2|$2 character|$2 characters}} or shorter.",
 	"wikilambda-viewmode-nojs": "This page displays in a limited way without JavaScript.",
+	"wikilambda-wikidata-lexeme-selector-placeholder": "Select Wikidata lexeme",
 	"wikilambda-zerror": "Error of type $1",
 	"wikilambda-zimplememntation-composition-missing": "Composition is empty. Please select a function.",
 	"wikilambda-zimplementation-code-language-missing": "Select a programming language first.",

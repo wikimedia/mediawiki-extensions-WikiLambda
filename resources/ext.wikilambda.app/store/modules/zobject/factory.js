@@ -102,6 +102,9 @@ module.exports = exports = {
 						return getters.createZTypedPair( payload );
 					case Constants.Z_TYPED_MAP:
 						return getters.createZTypedMap( payload );
+					case Constants.Z_WIKIDATA_LEXEME:
+					case Constants.Z_WIKIDATA_LEXEME_FORM:
+						return getters.createWikidataEntity( payload );
 					default:
 						// Explore and create new ZObject keys
 						return getters.createGenericObject( payload, keyList );
@@ -734,8 +737,70 @@ module.exports = exports = {
 				return value;
 			}
 			return newZTypedMap;
-		}
+		},
 
+		/**
+		 * Return a blank and initialized Wikidata Entity Fetch function call.
+		 * The value will result in a json representation equal to:
+		 * {
+		 *  Z1K1: {
+		 *   Z1K1: Z7,
+		 *   Z7K1: <Wikidata Fetch Function>,
+		 *   <Wikidata Fetch Function Id>: {
+		 *     Z1K1: <Wikidata Reference Type>,
+		 *     <Wikidata Reference Type Id>: { Z1K1: Z6, Z6K1: '' }
+		 *    }
+		 *  }
+		 * }
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		createWikidataEntity: function ( _state, getters ) {
+			/**
+			 * @param {Object} payload
+			 * @param {string} payload.type
+			 * @return {Object}
+			 */
+			function newWikidataEntity( payload ) {
+				// Get scaffolding
+				const value = typeUtils.getScaffolding( Constants.Z_FUNCTION_CALL );
+				let wdRef, wdFetch, wdFetchId;
+
+				// Set to Wikidata Entity fetch function call:
+				switch ( payload.type ) {
+					// Wikidata Lexeme Form:
+					case Constants.Z_WIKIDATA_LEXEME_FORM:
+						wdRef = getters.createObjectByType( { type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM } );
+						wdFetch = Constants.Z_WIKIDATA_FETCH_LEXEME_FORM;
+						wdFetchId = Constants.Z_WIKIDATA_FETCH_LEXEME_FORM_ID;
+
+						value[ Constants.Z_FUNCTION_CALL_FUNCTION ] = wdFetch;
+						value[ wdFetchId ] = wdRef;
+						return value;
+
+					// Wikidata Lexeme
+					case Constants.Z_WIKIDATA_LEXEME:
+						wdRef = getters.createObjectByType( { type: Constants.Z_WIKIDATA_REFERENCE_LEXEME } );
+						wdFetch = Constants.Z_WIKIDATA_FETCH_LEXEME;
+						wdFetchId = Constants.Z_WIKIDATA_FETCH_LEXEME_ID;
+
+						value[ Constants.Z_FUNCTION_CALL_FUNCTION ] = wdFetch;
+						value[ wdFetchId ] = wdRef;
+						return value;
+
+					// TODO: Future Wikidata integrations
+					// case Constants.Z_WIKIDATA_ITEM:
+					// case Constants.Z_WIKIDATA_PROPERTY:
+					// case Constants.Z_WIKIDATA_STATEMENT:
+					// case Constants.Z_WIKIDATA_LEXEME_SENSE:
+					default:
+						return value;
+				}
+			}
+			return newWikidataEntity;
+		}
 	},
 	actions: {
 		/**

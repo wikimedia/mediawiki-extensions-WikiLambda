@@ -35,7 +35,8 @@ describe( 'ModeSelector', () => {
 			getZObjectTypeByRowId: createGettersWithFunctionsMock( Constants.Z_REFERENCE ),
 			getZObjectKeyByRowId: createGettersWithFunctionsMock( Constants.Z_OBJECT_TYPE ),
 			isCustomEnum: createGettersWithFunctionsMock( false ),
-			isInsideComposition: createGettersWithFunctionsMock( false )
+			isInsideComposition: createGettersWithFunctionsMock( false ),
+			isWikidataEntity: createGettersWithFunctionsMock( false )
 		};
 		global.store.hotUpdate( {
 			getters: getters
@@ -154,6 +155,75 @@ describe( 'ModeSelector', () => {
 			expect( menu.vm.menuItems[ 0 ].value ).toBe( 'Z7' );
 			expect( menu.vm.menuItems[ 1 ].value ).toBe( 'Z6' );
 			expect( menu.vm.menuItems[ 2 ].value ).toBe( 'Z9' );
+		} );
+
+		it( 'displays no resolvers or literal options for wikidata entities', () => {
+			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
+			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL );
+			getters.isWikidataEntity = createGettersWithFunctionsMock( true );
+			global.store.hotUpdate( { getters: getters } );
+			const wrapper = shallowMount( ModeSelector, {
+				props: {
+					edit: true,
+					parentExpectedType: Constants.Z_WIKIDATA_LEXEME
+				}
+			} );
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
+
+			expect( menu.exists() ).toBe( false );
+			expect( wrapper.vm.menuItems.length ).toBe( 0 );
+		} );
+
+		it( 'displays function call and literal for wikidata references', () => {
+			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
+			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_REFERENCE_LEXEME );
+			global.store.hotUpdate( { getters: getters } );
+			const wrapper = shallowMount( ModeSelector, {
+				props: {
+					edit: true,
+					parentExpectedType: Constants.Z_WIKIDATA_REFERENCE_LEXEME
+				}
+			} );
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
+			expect( menu.vm.menuItems.length ).toBe( 2 );
+			expect( menu.vm.menuItems[ 0 ].value ).toBe( 'Z7' );
+			expect( menu.vm.menuItems[ 1 ].value ).toBe( Constants.Z_WIKIDATA_REFERENCE_LEXEME );
+		} );
+
+		it( 'displays literals and resolvers for wikidata entity with unbound parent type', () => {
+			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
+			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL );
+			getters.isWikidataEntity = createGettersWithFunctionsMock( true );
+			global.store.hotUpdate( { getters: getters } );
+			const wrapper = shallowMount( ModeSelector, {
+				props: {
+					edit: true,
+					parentExpectedType: Constants.Z_OBJECT
+				}
+			} );
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
+			expect( menu.vm.menuItems.length ).toBe( 3 );
+			expect( menu.vm.menuItems[ 0 ].value ).toBe( 'Z7' );
+			expect( menu.vm.menuItems[ 1 ].value ).toBe( 'Z1' );
+			expect( menu.vm.menuItems[ 2 ].value ).toBe( 'Z9' );
+		} );
+
+		it( 'displays literals and resolvers for wikidata reference with unbound parent type', () => {
+			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
+			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_REFERENCE_LEXEME );
+			global.store.hotUpdate( { getters: getters } );
+			const wrapper = shallowMount( ModeSelector, {
+				props: {
+					edit: true,
+					parentExpectedType: Constants.Z_OBJECT
+				}
+			} );
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
+			expect( menu.vm.menuItems.length ).toBe( 4 );
+			expect( menu.vm.menuItems[ 0 ].value ).toBe( 'Z7' );
+			expect( menu.vm.menuItems[ 1 ].value ).toBe( 'Z1' );
+			expect( menu.vm.menuItems[ 2 ].value ).toBe( Constants.Z_WIKIDATA_REFERENCE_LEXEME );
+			expect( menu.vm.menuItems[ 3 ].value ).toBe( 'Z9' );
 		} );
 	} );
 

@@ -165,6 +165,51 @@ module.exports = exports = {
 				wikilambdafn_type: payload.type,
 				wikilambdafn_limit: Constants.API_LIMIT_MAX
 			} ).then( ( data ) => data.query.wikilambdafn_search );
+		},
+		/**
+		 * Calls the wbsearchentities Wikidata Action API
+		 * https://www.wikidata.org/w/api.php?action=help&modules=wbsearchentities
+		 *
+		 * @param {Object} payload
+		 * @param {string} payload.language user language code
+		 * @param {string} payload.type type of Wikidata entity
+		 * @param {string} payload.search search term
+		 * @return {Promise}
+		 */
+		searchWikidataEntities: function ( payload ) {
+			const params = new URLSearchParams( {
+				origin: '*',
+				action: 'wbsearchentities',
+				format: 'json',
+				language: payload.language,
+				search: payload.search,
+				type: payload.type,
+				limit: '10',
+				props: 'url'
+			} );
+			return fetch( `${ Constants.WIKIDATA_BASE_URL }/w/api.php?${ params.toString() }` )
+				.then( ( response ) => response.json() );
+		},
+		/**
+		 * Calls the wbgetentities Wikidata Action API
+		 * https://www.wikidata.org/w/api.php?action=help&modules=wbgetentities
+		 *
+		 * @param {Object} payload
+		 * @param {string} payload.language user language code
+		 * @param {Array} payload.ids entity Ids to fetch
+		 * @return {Promise}
+		 */
+		fetchWikidataEntities: function ( payload ) {
+			const params = new URLSearchParams( {
+				origin: '*',
+				action: 'wbgetentities',
+				format: 'json',
+				languages: [ payload.language ],
+				languagefallback: true,
+				ids: payload.ids
+			} );
+			return fetch( `${ Constants.WIKIDATA_BASE_URL }/w/api.php?${ params.toString() }` )
+				.then( ( response ) => response.json() );
 		}
 	}
 };

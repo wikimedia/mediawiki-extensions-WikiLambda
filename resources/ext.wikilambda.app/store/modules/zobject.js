@@ -14,6 +14,7 @@ const Constants = require( '../../Constants.js' ),
 	zobjectUtils = require( '../../mixins/zobjectUtils.js' ).methods,
 	apiUtils = require( '../../mixins/api.js' ).methods,
 	extractZIDs = require( '../../mixins/schemata.js' ).methods.extractZIDs,
+	{ extractWikidataLexemeIds } = require( '../../mixins/wikidataUtils.js' ).methods,
 	hybridToCanonical = require( '../../mixins/schemata.js' ).methods.hybridToCanonical,
 	getParameterByName = require( '../../mixins/urlUtils.js' ).methods.getParameterByName,
 	Row = require( '../classes/Row.js' );
@@ -1681,9 +1682,17 @@ module.exports = exports = {
 				// state in the case of a publish cancelation action.
 				context.commit( 'saveMultilingualDataCopy', zobject );
 
-				// Get all zIds within the object:
+				// Internal data fetch:
+				// Get all ZObject Ids within the object
 				const listOfZIdWithinObject = extractZIDs( zobject );
 				context.dispatch( 'fetchZids', { zids: listOfZIdWithinObject } );
+
+				// External data fetch:
+				// Get all Wikidata Ids within the object (if any)
+				const listOfLexemeIds = extractWikidataLexemeIds( zobject );
+				if ( listOfLexemeIds.length > 0 ) {
+					context.dispatch( 'fetchLexemes', { ids: listOfLexemeIds } );
+				}
 
 				// Convert to rows and set store:
 				const zobjectRows = zobjectUtils.convertJsonToTable( zobject );
