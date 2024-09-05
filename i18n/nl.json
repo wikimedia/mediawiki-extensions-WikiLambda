@@ -206,7 +206,7 @@
 	"wikilambda-function-details-summary-learn-more": "Lees meer over het beoordelingsproces.",
 	"wikilambda-function-details-table-approve": "Verbinden",
 	"wikilambda-function-details-table-deactivate": "Loskoppelen",
-	"wikilambda-function-evaluation-restriction-notrunnable": "Deze functie heeft geen goedgekeurde implementaties.",
+	"wikilambda-function-evaluation-restriction-notrunnable": "Deze functie heeft geen verbonden implementaties.",
 	"wikilambda-function-evaluation-restriction-warning": "Het spijt ons. Op dit moment kunnen alleen ingelogde gebruikers functies uitvoeren.",
 	"wikilambda-function-evaluator-enter-inputs": "Voer invoer in",
 	"wikilambda-function-evaluator-result": "Resultaat",
