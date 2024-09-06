@@ -275,8 +275,8 @@ module.exports = exports = defineComponent( {
 			getLookupResults: function ( input ) {
 				this.lookupZObjectLabels( {
 					input,
-					type: this.type,
-					returnType: this.returnType,
+					type: this.type || undefined,
+					returnType: this.returnType || undefined,
 					strictType: this.strictType
 				} ).then( ( payload ) => {
 					// If the string searched has changed, do not show the search result
