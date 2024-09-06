@@ -21,14 +21,13 @@
 		></cdx-select>
 		<cdx-lookup
 			v-else
-			:key="lookupKey"
 			:selected="selectedValue"
 			:disabled="disabled"
 			:placeholder="lookupPlaceholder"
 			:menu-items="lookupResults"
 			:menu-config="lookupConfig"
 			:end-icon="lookupIcon"
-			:initial-input-value="selectedLabel"
+			:input-value="selectedLabel"
 			:status="errorLookupStatus"
 			data-testid="z-object-selector-lookup"
 			@update:selected="onSelect"
@@ -120,7 +119,6 @@ module.exports = exports = defineComponent( {
 	data: function () {
 		return {
 			inputValue: '',
-			lookupKey: 1,
 			lookupResults: [],
 			lookupConfig: {
 				boldLabel: true,
@@ -388,10 +386,18 @@ module.exports = exports = defineComponent( {
 			 * @param {string | null} value
 			 */
 			onSelect: function ( value ) {
+				// T374246: update:selected events are emitted with null value
+				// whenever input changes, so we need to exit early whenever
+				// selected value is null, instead of setting the value to empty
+				// for now. When Codex fixes this issue, we'll be able to remove
+				// the following lines and restore the clear behavior.
+				if ( value === null ) {
+					return;
+				}
+
 				if ( this.selectedValue === value ) {
 					// If we select the already selected value, restore the inputValue
 					this.inputValue = this.selectedLabel;
-					this.lookupKey += 1;
 				} else {
 					// If we select a new value, clear errors and emit input event
 					this.clearFieldErrors();
@@ -442,7 +448,6 @@ module.exports = exports = defineComponent( {
 				} else {
 					this.inputValue = this.selectedLabel;
 					this.lookupConfig.searchQuery = this.selectedLabel;
-					this.lookupKey += 1;
 				}
 			},
 
@@ -487,14 +492,6 @@ module.exports = exports = defineComponent( {
 		}
 	),
 	watch: {
-		selectedLabel: function () {
-			// Trigger a rerender when initial input value changes,
-			// This might occur due to slow network request for a particular label
-			// Also make sure not to trigger rerender if the user has typed an input
-			if ( !this.inputValue ) {
-				this.lookupKey += 1;
-			}
-		},
 		type: function () {
 			this.setSuggestions();
 		},
