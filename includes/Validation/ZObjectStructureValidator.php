@@ -76,6 +76,12 @@ class ZObjectStructureValidator {
 	 * @return ValidationStatus
 	 */
 	public function validate( $input ): ValidationStatus {
-		return new ValidationStatus( $this->validator->validate( $input ) );
+		// (T374241) Hardening measure: Always terminate execution if we reach more than 10 seconds(!) inside JsonSchema
+		set_time_limit( 10 );
+		$validationResult = $this->validator->validate( $input );
+		// Restore timeout to PHP-wide default (so ExcimerTimerWrapper is in charge instead)
+		set_time_limit( 0 );
+
+		return new ValidationStatus( $validationResult );
 	}
 }
