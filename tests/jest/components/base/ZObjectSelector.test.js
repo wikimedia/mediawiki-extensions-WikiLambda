@@ -77,7 +77,7 @@ describe( 'ZObjectSelector', () => {
 				expect.anything(),
 				{
 					input: 'Stri',
-					returnType: '',
+					returnType: undefined,
 					type: Constants.Z_TYPE,
 					strictType: false
 				}
@@ -99,7 +99,7 @@ describe( 'ZObjectSelector', () => {
 
 			const lookupPayload = {
 				input: 'text',
-				returnType: '',
+				returnType: undefined,
 				type: Constants.Z_TYPE,
 				strictType: false
 			};
