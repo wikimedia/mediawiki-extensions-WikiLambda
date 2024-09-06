@@ -33,6 +33,8 @@ class ApiFunctionCallTest extends ApiTestCase {
 
 	/**
 	 * @dataProvider provideExecuteSuccessfulViaBetaCluster
+	 * TODO (T374242): Fix Beta Cluster so we can re-enable these tests.
+	 * @group Broken
 	 */
 	public function testExecuteSuccessfulViaBetaCluster(
 		$requestString,

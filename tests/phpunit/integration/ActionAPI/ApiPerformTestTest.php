@@ -64,6 +64,8 @@ class ApiPerformTestTest extends ApiTestCase {
 
 	/**
 	 * @dataProvider provideExecuteSuccessfully
+	 * TODO (T374242): Fix Beta Cluster so we can re-enable these tests.
+	 * @group Broken
 	 */
 	public function testExecuteSuccessfully(
 		$requestedFunction,
