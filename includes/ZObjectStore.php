@@ -1253,8 +1253,9 @@ class ZObjectStore {
 		} catch ( \Throwable $th ) {
 			// Something's gone differently wrong, somehow
 			$this->logger->error(
-				__METHOD__ . ' threw from ZObjectFactory',
-				[ 'throwable' => $th ]
+				__METHOD__ . ' threw from ZObjectFactory: ' . $th->getMessage(),
+				// Limit length to 10 KiB, to avoid jsonTruncated errors in production
+				[ 'throwable' => substr( var_export( $th, true ), 0, 10240 ) ]
 			);
 		}
 
