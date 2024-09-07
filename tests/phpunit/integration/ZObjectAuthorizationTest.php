@@ -17,7 +17,6 @@ use MediaWiki\Extension\WikiLambda\ZObjectPage;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Json\FormatJson;
 use MediaWiki\Title\Title;
-use MediaWiki\User\User;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization
@@ -318,7 +317,7 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testNotRunningFunction() {
-		$loggedout = User::newFromId( 0 );
+		$loggedout = $this->getServiceContainer()->getUserFactory()->newAnonymous();
 		$user = $this->getTestUser()->getUser();
 		$functioneer = $this->getTestUser( [ 'functioneer' ] )->getUser();
 		$maintainer = $this->getTestUser( [ 'functioneer', 'functionmaintainer' ] )->getUser();
@@ -541,7 +540,6 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testConnectedConverters() {
-		$loggedout = User::newFromId( 0 );
 		$user = $this->getTestUser()->getUser();
 		$functioneer = $this->getTestUser( [ 'functioneer' ] )->getUser();
 		$maintainer = $this->getTestUser( [ 'functioneer', 'functionmaintainer' ] )->getUser();
