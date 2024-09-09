@@ -227,7 +227,7 @@
 	"wikilambda-function-details-summary-learn-more": "পর্যালোচনা প্রক্রিয়া সম্পর্কে আরও জানুন।",
 	"wikilambda-function-details-table-approve": "সংযোগ করুন",
 	"wikilambda-function-details-table-deactivate": "বিচ্ছিন্ন করুন",
-	"wikilambda-function-evaluation-restriction-notrunnable": "এই ফাংশনটির কোনও অনুমোদিত বাস্তবায়ন নেই।",
+	"wikilambda-function-evaluation-restriction-notrunnable": "এই ফাংশনের কোনও সংযুক্ত বাস্তবায়ন নেই।",
 	"wikilambda-function-evaluation-restriction-warning": "আমরা দুঃখিত! এই মুহুর্তে শুধুমাত্র প্রবেশকৃত ব্যবহারকারীরা ফাংশন চালাতে পারবেন।",
 	"wikilambda-function-evaluator-enter-inputs": "ইনপুট লিখুন",
 	"wikilambda-function-evaluator-result": "ফলাফল",
