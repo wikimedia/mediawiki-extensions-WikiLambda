@@ -159,12 +159,42 @@ class ZObjectFactory {
 	 * @throws ZErrorException
 	 */
 	public static function validatePersistentKeys( $input ): bool {
-		$validator = ZObjectStructureValidator::createCanonicalValidator( ZTypeRegistry::Z_PERSISTENTOBJECT );
-		$status = $validator->validate( $input );
-
-		if ( !$status->isValid() ) {
-			throw new ZErrorException( $status->getErrors() );
+		// We have a different error for Z2K2 being missing vs. the others.
+		if ( !property_exists( $input, ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ) ) {
+			throw new ZErrorException( ZErrorFactory::createZErrorInstance(
+				ZErrorTypeRegistry::Z_ERROR_MISSING_PERSISTENT_VALUE,
+				[ 'data' => $input ],
+			) );
 		}
+
+		$otherRequiredKeys = [
+			ZTypeRegistry::Z_PERSISTENTOBJECT_ID,
+			ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL,
+			// Disabled for now, optional
+			// ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES,
+			// Disabled for now, optional
+			// ZTypeRegistry::Z_PERSISTENTOBJECT_DESCRIPTION,
+		];
+
+		foreach ( $otherRequiredKeys as $_i => $requiredKey ) {
+			if ( !property_exists( $input, $requiredKey ) ) {
+				throw new ZErrorException( ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_MISSING_KEY,
+					[
+						'data' => $input,
+						'keywordArgs' => [ 'missing' => $requiredKey ],
+					]
+				) );
+			}
+		}
+
+		// (T374241) Use of JsonSchema validation temporarily(?) disabled, causing infinite recursion
+		// $validator = ZObjectStructureValidator::createCanonicalValidator( ZTypeRegistry::Z_PERSISTENTOBJECT );
+		// $status = $validator->validate( $input );
+
+		// if ( !$status->isValid() ) {
+		// 	throw new ZErrorException( $status->getErrors() );
+		// }
 
 		return true;
 	}
