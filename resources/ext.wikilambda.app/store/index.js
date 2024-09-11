@@ -6,7 +6,7 @@
  */
 'use strict';
 
-const Vuex = require( 'vuex' ),
+const { createStore } = require( 'vuex' ),
 	router = require( './modules/router.js' ),
 	errorsModule = require( './modules/errors.js' ),
 	languagesModule = require( './modules/languages.js' ),
@@ -20,7 +20,7 @@ const Vuex = require( 'vuex' ),
 	ztypeModule = require( './modules/ztype.js' ),
 	zfunctionModule = require( './modules/zfunction.js' );
 
-module.exports = Vuex.createStore( {
+module.exports = createStore( {
 	modules: {
 		// Router
 		router: router,

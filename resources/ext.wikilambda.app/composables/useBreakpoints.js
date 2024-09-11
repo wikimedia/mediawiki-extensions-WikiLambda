@@ -6,23 +6,23 @@
  */
 
 module.exports = function useBreakpoints( breakpoints ) {
-	const Vue = require( 'vue' );
+	const { ref, onMounted, onUnmounted, computed } = require( 'vue' );
 
 	breakpoints = breakpoints || {};
-	const windowWidth = Vue.ref( window.innerWidth );
+	const windowWidth = ref( window.innerWidth );
 
 	const onWidthChange = () => {
 		windowWidth.value = window.innerWidth;
 	};
-	Vue.onMounted( () => {
+	onMounted( () => {
 		window.addEventListener( 'resize', onWidthChange );
 	} );
-	Vue.onUnmounted( () => {
+	onUnmounted( () => {
 		window.removeEventListener( 'resize', onWidthChange );
 	} );
 
 	// return the largest breakpoint as the current selected type
-	const current = Vue.computed( () => {
+	const current = computed( () => {
 		let currentType = Object.keys( breakpoints )[ 0 ] || null;
 		for ( const breakpoint in breakpoints ) {
 			if ( windowWidth.value >= breakpoints[ breakpoint ] ) {
@@ -36,7 +36,7 @@ module.exports = function useBreakpoints( breakpoints ) {
 	// Dynamically creates a boolean value for each of the breakpoint
 	const dynamicBreakpoints = Object.keys( breakpoints )
 		.reduce( ( object, breakpoint ) => {
-			object[ breakpoint ] = Vue.computed( () => current.value === breakpoint );
+			object[ breakpoint ] = computed( () => current.value === breakpoint );
 			return object;
 		}, {} );
 

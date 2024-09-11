@@ -6,11 +6,11 @@
  */
 'use strict';
 
-const Vue = require( 'vue' ),
+const { createMwApp } = require( 'vue' ),
 	store = require( './store/index.js' ),
 	App = require( './components/App.vue' );
 
-window.vueInstance = Vue.createMwApp( Object.assign( {
+window.vueInstance = createMwApp( Object.assign( {
 	provide: function () {
 		return {
 			viewmode: store.getters.getViewMode

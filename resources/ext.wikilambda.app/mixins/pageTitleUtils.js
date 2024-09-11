@@ -8,7 +8,7 @@
 'use strict';
 
 const Constants = require( '../Constants.js' ),
-	mapGetters = require( 'vuex' ).mapGetters;
+	{ mapGetters } = require( 'vuex' );
 
 module.exports = exports = {
 	data: function () {

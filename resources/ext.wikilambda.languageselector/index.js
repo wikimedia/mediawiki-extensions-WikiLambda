@@ -6,8 +6,8 @@
  */
 'use strict';
 
-const Vue = require( 'vue' ),
+const { createMwApp } = require( 'vue' ),
 	WlLanguageSelector = require( './components/LanguageSelector.vue' );
 
-Vue.createMwApp( WlLanguageSelector )
+createMwApp( WlLanguageSelector )
 	.mount( '#ext-wikilambda-language-selector' );
