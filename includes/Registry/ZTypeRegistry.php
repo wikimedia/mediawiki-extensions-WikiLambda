@@ -469,7 +469,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 			return false;
 		}
 
-		// Check that the object is a type without running validation
+		// (T374241, T375065) Check that the object is a type without running validation
 		// to avoid going into an infinite loop:
 		$zObject = $content->getObject();
 		$innerType = $zObject->{ self::Z_PERSISTENTOBJECT_VALUE }->{ self::Z_OBJECT_TYPE };

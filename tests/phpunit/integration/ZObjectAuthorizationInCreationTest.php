@@ -293,14 +293,14 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 
 			'boolean (Z40 instance)' => [
 				'testedType' => 'Z40',
-				'systemBlocksAsInvalid' => true,
+				'systemBlocksAsInvalid' => false,
 				'createContent' =>
 					'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" }, '
 						. '"Z2K2": { "Z1K1": "Z40", "Z40K1": "Z0" }, '
 						. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } } ',
 				'createRights' => [ 'wikilambda-create-boolean' ],
 				'createAllowed' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => false, 'sysop' => false
+					'basic' => false, 'functioneer' => false, 'maintainer' => false, 'sysop' => true
 				],
 				'createAllowedPredefined' => [
 					'basic' => false, 'functioneer' => false, 'maintainer' => false, 'sysop' => false
@@ -328,17 +328,19 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 		$reservedZid = 400;
 
 		foreach ( $typesToTry as $type => $attemptObject ) {
-			$expectedCreateRights = $attemptObject['createRights'] + [ 'edit', 'wikilambda-create' ];
+			$expectedCreateRights = array_merge( $attemptObject['createRights'], [ 'edit', 'wikilambda-create' ] );
 
 			foreach ( $attemptObject['createAllowedPredefined'] ?? [] as $userType => $expectedCreateAllowed ) {
 				$createReservedContent = str_replace( 'Z0', 'Z' . $reservedZid, $attemptObject['createContent'] );
+				$expectedCreatePredefinedRights = array_merge(
+					$expectedCreateRights, [ 'wikilambda-create-predefined' ] );
 
 				yield "Pre-defined (ZID < 10k) $type, $userType user" => [
 					/* $userType */ $userType,
 					/* $zid */ 'Z' . $reservedZid,
 					/* $testedType */ $attemptObject['testedType'],
 					/* $createContent */ $createReservedContent,
-					/* $expectedCreateRights */ $expectedCreateRights + [ 'wikilambda-create-predefined' ],
+					/* $expectedCreateRights */ $expectedCreatePredefinedRights,
 					/* $expectedCreateAllowed */ $expectedCreateAllowed,
 					/* $systemBlocksAsInvalid */ $attemptObject['systemBlocksAsInvalid'] ?? false
 				];

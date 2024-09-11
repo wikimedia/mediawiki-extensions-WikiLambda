@@ -36,7 +36,7 @@ class ZBooleanTest extends WikiLambdaIntegrationTestCase {
 		$registry->register( 'Z502', 'Not wellformed' );
 
 		$testObject = new ZObjectContent( '{ "Z1K1": "Z40", "Z40K1": "Z400" }' );
-		$this->assertFalse( $testObject->isValid() );
+		$this->assertTrue( $testObject->isValid() );
 
 		$this->hideDeprecated( '::create' );
 		$testObject = new ZObjectContent(

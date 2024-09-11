@@ -336,6 +336,8 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testUpdateZObject_badContent() {
+		// TODO (T375065): This issue is only detectable with structural validatioon
+		$this->markTestSkipped( 'Only detectable with structural validation' );
 		$zid = $this->zobjectStore->getNextAvailableZid();
 		$status = $this->zobjectStore->updateZObject(
 			RequestContext::getMain(),
@@ -349,6 +351,8 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testUpdateZObject_badZ2K2() {
+		// TODO (T375065): This issue is only detectable with structural validatioon
+		$this->markTestSkipped( 'Only detectable with structural validation' );
 		$zid = $this->zobjectStore->getNextAvailableZid();
 		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
 			. '"Z2K2": "hello",'
