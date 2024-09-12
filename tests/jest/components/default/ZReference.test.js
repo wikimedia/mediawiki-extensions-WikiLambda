@@ -140,6 +140,42 @@ describe( 'ZReference', () => {
 			expect( wrapper.vm.type ).toBe( '' );
 		} );
 
+		it( 'returns empty returnType when the key is a function call but parent expected type is unbound', async () => {
+			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL_FUNCTION );
+			global.store.hotUpdate( {
+				getters: getters
+			} );
+
+			const wrapper = shallowMount( ZReference, {
+				props: {
+					edit: true,
+					expectedType: Constants.Z_FUNCTION,
+					parentExpectedType: Constants.Z_OBJECT
+				}
+			} );
+
+			expect( wrapper.vm.returnType ).toBe( '' );
+			expect( wrapper.vm.type ).toBe( Constants.Z_FUNCTION );
+		} );
+
+		it( 'returns empty returnType when the key is a function call but parent expected type is a resolver', async () => {
+			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL_FUNCTION );
+			global.store.hotUpdate( {
+				getters: getters
+			} );
+
+			const wrapper = shallowMount( ZReference, {
+				props: {
+					edit: true,
+					expectedType: Constants.Z_FUNCTION,
+					parentExpectedType: Constants.Z_FUNCTION_CALL
+				}
+			} );
+
+			expect( wrapper.vm.returnType ).toBe( '' );
+			expect( wrapper.vm.type ).toBe( Constants.Z_FUNCTION );
+		} );
+
 		it( 'sets excluded zids from root persistent content', () => {
 			getters.getParentRowId = createGettersWithFunctionsMock( 2 );
 			getters.getZObjectKeyByRowId = () => ( rowId ) => ( rowId === 1 ) ? 'Z1K1' : 'Z2K2';
