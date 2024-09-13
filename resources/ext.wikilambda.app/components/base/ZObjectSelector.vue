@@ -21,17 +21,17 @@
 		></cdx-select>
 		<cdx-lookup
 			v-else
+			v-model:input-value="inputValue"
 			:selected="selectedValue"
 			:disabled="disabled"
 			:placeholder="lookupPlaceholder"
-			:menu-items="lookupResults"
+			:menu-items="menuItems"
 			:menu-config="lookupConfig"
 			:end-icon="lookupIcon"
-			:input-value="selectedLabel"
 			:status="errorLookupStatus"
 			data-testid="z-object-selector-lookup"
 			@update:selected="onSelect"
-			@input="onInput"
+			@update:input-value="onInput"
 			@blur="onBlur"
 		>
 			<template #no-results>
@@ -158,6 +158,62 @@ module.exports = exports = defineComponent( {
 			return this.selectedZid ?
 				this.getLabelData( this.selectedZid ).label :
 				'';
+		},
+
+		/**
+		 * Returns lookupResults if there are any items,
+		 * else returns the suggestions for the type.
+		 *
+		 * @return {Array}
+		 */
+		menuItems: function () {
+			return this.lookupResults.length > 0 ? this.lookupResults : this.suggestions;
+		},
+
+		/**
+		 * Returns the computed suggestions for the given type.
+		 *
+		 * @return {Array}
+		 */
+		suggestions: function () {
+			if ( !this.type ) {
+				return [];
+			}
+
+			let title = '';
+			let suggestedZids = [];
+			switch ( this.type ) {
+				case Constants.Z_NATURAL_LANGUAGE:
+					title = this.$i18n( 'wikilambda-object-selector-suggested-languages' ).text();
+					suggestedZids = Constants.SUGGESTIONS.LANGUAGES;
+					break;
+				case Constants.Z_TYPE:
+					title = this.$i18n( 'wikilambda-object-selector-suggested-types' ).text();
+					suggestedZids = Constants.SUGGESTIONS.TYPES;
+					break;
+				default:
+					return [];
+			}
+
+			const suggestions = [];
+			// Add dropdown title
+			suggestions.push( {
+				label: title,
+				value: 'suggestion',
+				disabled: true
+			} );
+
+			// Add one item per suggested Zid
+			suggestedZids.forEach( ( zid ) => {
+				suggestions.push( {
+					value: zid,
+					label: this.getLabelData( zid ).label,
+					description: this.getLabelData( this.type ).label,
+					class: 'ext-wikilambda-app-object-selector__suggestion'
+				} );
+			} );
+
+			return suggestions;
 		},
 
 		/**
@@ -319,8 +375,6 @@ module.exports = exports = defineComponent( {
 						// Once lookupResults are gathered, fetch and collect all the data;
 						// fetchZids makes sure that only the missing zids are requested
 						this.fetchZids( { zids } );
-					} else {
-						this.setSuggestions();
 					}
 				} );
 			},
@@ -347,7 +401,6 @@ module.exports = exports = defineComponent( {
 			 */
 			clearResults: function () {
 				this.lookupResults = [];
-				this.setSuggestions();
 			},
 
 			/**
@@ -357,7 +410,6 @@ module.exports = exports = defineComponent( {
 			 * @param {string} input
 			 */
 			onInput: function ( input ) {
-				this.inputValue = input;
 				this.clearFieldErrors();
 
 				// If empty input, clear and exit
@@ -395,15 +447,17 @@ module.exports = exports = defineComponent( {
 					return;
 				}
 
+				// If the already selected value is selected again, exit early
 				if ( this.selectedValue === value ) {
-					// If we select the already selected value, restore the inputValue
-					this.inputValue = this.selectedLabel;
-				} else {
-					// If we select a new value, clear errors and emit input event
-					this.clearFieldErrors();
-					// cdx-lookup @update:selected event can be triggered with null value
-					this.$emit( 'input', value || '' );
+					return;
 				}
+
+				// If we select a new value, clear errors and emit input event
+				// Once the parent responds to the input event and updates the
+				// selected value, the computed property selectedValue will be
+				// updated.
+				this.clearFieldErrors();
+				this.$emit( 'input', value || '' );
 			},
 
 			/**
@@ -442,59 +496,34 @@ module.exports = exports = defineComponent( {
 				// * no match?: set inputValue to selectedLabel
 
 				const match = this.lookupResults.find( ( option ) => option.label === this.inputValue );
-
 				if ( match ) {
+					// Select new value
 					this.onSelect( match.value );
 				} else {
+					// Reset to old value
 					this.inputValue = this.selectedLabel;
 					this.lookupConfig.searchQuery = this.selectedLabel;
 				}
-			},
-
-			/**
-			 * Reset lookup to suggestions by type
-			 */
-			setSuggestions: function () {
-				if ( !this.type ) {
-					return;
-				}
-
-				let title = '';
-				let suggestedZids = [];
-				switch ( this.type ) {
-					case Constants.Z_NATURAL_LANGUAGE:
-						title = this.$i18n( 'wikilambda-object-selector-suggested-languages' ).text();
-						suggestedZids = Constants.SUGGESTIONS.LANGUAGES;
-						break;
-					case Constants.Z_TYPE:
-						title = this.$i18n( 'wikilambda-object-selector-suggested-types' ).text();
-						suggestedZids = Constants.SUGGESTIONS.TYPES;
-						break;
-					default:
-						return;
-				}
-
-				this.lookupResults.push( {
-					label: title,
-					value: 'suggestion',
-					disabled: true
-				} );
-
-				suggestedZids.forEach( ( zid ) => {
-					this.lookupResults.push( {
-						value: zid,
-						label: this.getLabelData( zid ).label,
-						description: this.getLabelData( this.type ).label,
-						class: 'ext-wikilambda-app-object-selector__suggestion'
-					} );
-				} );
 			}
 		}
 	),
 	watch: {
-		type: function () {
-			this.setSuggestions();
+		/**
+		 * When label of selected Zid is updated, updates
+		 * the input value shown in the field.
+		 *
+		 * @param {string} label
+		 */
+		selectedLabel: function ( label ) {
+			this.inputValue = label;
 		},
+		/**
+		 * When isEnum flag changes (due to a type change, or
+		 * due to delayed retrieval of type data), it initializes
+		 * the fetching of the enum values.
+		 *
+		 * @param {boolean} value
+		 */
 		isEnum: function ( value ) {
 			if ( value ) {
 				this.fetchEnumValues( { type: this.type } );
@@ -502,7 +531,7 @@ module.exports = exports = defineComponent( {
 		}
 	},
 	mounted: function () {
-		this.setSuggestions();
+		this.inputValue = this.selectedLabel;
 		if ( this.isEnum ) {
 			this.fetchEnumValues( { type: this.type } );
 		}

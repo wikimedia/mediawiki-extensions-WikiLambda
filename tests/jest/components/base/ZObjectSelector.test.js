@@ -71,7 +71,7 @@ describe( 'ZObjectSelector', () => {
 			} );
 
 			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
-			lookup.vm.$emit( 'input', 'Stri' );
+			lookup.vm.$emit( 'update:input-value', 'Stri' );
 
 			await waitFor( () => expect( actions.lookupZObjectLabels ).toHaveBeenLastCalledWith(
 				expect.anything(),
@@ -95,7 +95,7 @@ describe( 'ZObjectSelector', () => {
 			} );
 
 			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
-			lookup.vm.$emit( 'input', 'text' );
+			lookup.vm.$emit( 'update:input-value', 'text' );
 
 			const lookupPayload = {
 				input: 'text',
@@ -216,7 +216,7 @@ describe( 'ZObjectSelector', () => {
 			} );
 
 			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
-			lookup.vm.$emit( 'input', 'text' );
+			lookup.vm.$emit( 'update:input-value', 'text' );
 
 			await waitFor( () => {
 				expect( wrapper.vm.inputValue ).toBe( 'text' );
@@ -243,7 +243,7 @@ describe( 'ZObjectSelector', () => {
 			} );
 
 			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
-			lookup.vm.$emit( 'input', 'Monolingual text' );
+			lookup.vm.$emit( 'update:input-value', 'Monolingual text' );
 
 			await waitFor( () => {
 				expect( wrapper.vm.inputValue ).toBe( 'Monolingual text' );
