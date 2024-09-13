@@ -21,6 +21,7 @@ use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\Linker\LinkTarget;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Title\Title;
+use MediaWiki\User\Options\UserOptionsLookup;
 use Skin;
 
 class PageRenderingHandler implements
@@ -29,13 +30,16 @@ class PageRenderingHandler implements
 	\MediaWiki\Hook\WebRequestPathInfoRouterHook,
 	\MediaWiki\Output\Hook\BeforePageDisplayHook
 {
+	private UserOptionsLookup $userOptionsLookup;
 	private LanguageNameUtils $languageNameUtils;
 	private ZObjectStore $zObjectStore;
 
 	public function __construct(
+		UserOptionsLookup $userOptionsLookup,
 		LanguageNameUtils $languageNameUtils,
 		ZObjectStore $zObjectStore
 	) {
+		$this->userOptionsLookup = $userOptionsLookup;
 		$this->languageNameUtils = $languageNameUtils;
 		$this->zObjectStore = $zObjectStore;
 	}
@@ -77,8 +81,14 @@ class PageRenderingHandler implements
 
 		// Work out our ZID
 		$zid = $targetTitle->getText();
+
 		// Default language if not specified in the URL
 		$lang = 'en';
+
+		// (T374309) If the user is registered and has a language preference set, use that as the fallback
+		if ( $skinTemplate->getUser()->isRegistered() ) {
+			$lang = $this->userOptionsLookup->getOption( $skinTemplate->getUser(), 'language' );
+		}
 
 		// Special handling if we're on our special view page
 		$title = $skinTemplate->getTitle();
