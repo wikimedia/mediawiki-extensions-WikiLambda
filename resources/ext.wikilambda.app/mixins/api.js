@@ -116,7 +116,7 @@ module.exports = exports = {
 				wikilambdasearch_limit: payload.limit,
 				wikilambdasearch_continue: payload.continue
 			} ).then( ( data ) => ( {
-				labels: data.query.wikilambdasearch_labels,
+				labels: data.query ? data.query.wikilambdasearch_labels : [],
 				continue: data.continue ? Number( data.continue.wikilambdasearch_continue ) : null
 			} ) );
 		},
