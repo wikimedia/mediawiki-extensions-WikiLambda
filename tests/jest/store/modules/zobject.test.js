@@ -2937,243 +2937,323 @@ describe( 'zobject Vuex module', () => {
 					expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZids', expectedFetchZidsPayload );
 				} );
 
-				it( 'initializes undefined type functions', async () => {
-					// Initial ZObject
-					const Z1234 = {
-						Z1K1: 'Z2',
-						Z2K1: 'Z1234',
-						Z2K2: {
-							Z1K1: 'Z4',
-							Z4K1: 'Z1234',
-							Z4K2: [ 'Z3' ],
-							Z4K7: [ 'Z46' ],
-							Z4K8: [ 'Z64' ]
-						},
-						Z2K3: {
-							Z1K1: 'Z12',
-							Z12K1: [ 'Z11' ]
-						},
-						Z2K4: {
-							Z1K1: 'Z32',
-							Z32K1: [ 'Z31' ]
-						},
-						Z2K5: {
-							Z1K1: 'Z12',
-							Z12K1: [ 'Z11' ]
-						}
-					};
+				describe( 'For users with type editing permissions', () => {
+					beforeEach( () => {
+						context.getters.userCanEditTypes = true;
+					} );
 
-					// Mock responses
-					const mockApiResponse = {
-						batchcomplete: '',
-						query: {
-							wikilambdaload_zobjects: {
-								Z1234: {
-									success: '',
-									data: Z1234
+					it( 'initializes undefined type functions', async () => {
+						// Initial ZObject
+						const Z1234 = {
+							Z1K1: 'Z2',
+							Z2K1: 'Z1234',
+							Z2K2: {
+								Z1K1: 'Z4',
+								Z4K1: 'Z1234',
+								Z4K2: [ 'Z3' ],
+								Z4K7: [ 'Z46' ],
+								Z4K8: [ 'Z64' ]
+							},
+							Z2K3: {
+								Z1K1: 'Z12',
+								Z12K1: [ 'Z11' ]
+							},
+							Z2K4: {
+								Z1K1: 'Z32',
+								Z32K1: [ 'Z31' ]
+							},
+							Z2K5: {
+								Z1K1: 'Z12',
+								Z12K1: [ 'Z11' ]
+							}
+						};
+
+						// Mock responses
+						const mockApiResponse = {
+							batchcomplete: '',
+							query: {
+								wikilambdaload_zobjects: {
+									Z1234: {
+										success: '',
+										data: Z1234
+									}
 								}
 							}
-						}
-					};
-					const getMock = jest.fn().mockResolvedValueOnce( mockApiResponse );
-					mw.Api = jest.fn( () => ( { get: getMock } ) );
+						};
+						const getMock = jest.fn().mockResolvedValueOnce( mockApiResponse );
+						mw.Api = jest.fn( () => ( { get: getMock } ) );
 
-					const expectedZObjectJson = {
-						Z1K1: 'Z2',
-						Z2K1: 'Z1234',
-						Z2K2: {
-							Z1K1: 'Z4',
-							Z4K1: 'Z1234',
-							Z4K2: [ 'Z3' ],
-							Z4K3: { Z1K1: 'Z9', Z9K1: '' },
-							Z4K4: { Z1K1: 'Z9', Z9K1: '' },
-							Z4K5: { Z1K1: 'Z9', Z9K1: '' },
-							Z4K6: { Z1K1: 'Z9', Z9K1: '' },
-							Z4K7: [ 'Z46' ],
-							Z4K8: [ 'Z64' ]
-						},
-						Z2K3: {
-							Z1K1: 'Z12',
-							Z12K1: [ 'Z11' ]
-						},
-						Z2K4: {
-							Z1K1: 'Z32',
-							Z32K1: [ 'Z31' ]
-						},
-						Z2K5: {
-							Z1K1: 'Z12',
-							Z12K1: [ 'Z11' ]
-						}
-					};
+						const expectedZObjectJson = {
+							Z1K1: 'Z2',
+							Z2K1: 'Z1234',
+							Z2K2: {
+								Z1K1: 'Z4',
+								Z4K1: 'Z1234',
+								Z4K2: [ 'Z3' ],
+								Z4K3: { Z1K1: 'Z9', Z9K1: '' },
+								Z4K4: { Z1K1: 'Z9', Z9K1: '' },
+								Z4K5: { Z1K1: 'Z9', Z9K1: '' },
+								Z4K6: { Z1K1: 'Z9', Z9K1: '' },
+								Z4K7: [ 'Z46' ],
+								Z4K8: [ 'Z64' ]
+							},
+							Z2K3: {
+								Z1K1: 'Z12',
+								Z12K1: [ 'Z11' ]
+							},
+							Z2K4: {
+								Z1K1: 'Z32',
+								Z32K1: [ 'Z31' ]
+							},
+							Z2K5: {
+								Z1K1: 'Z12',
+								Z12K1: [ 'Z11' ]
+							}
+						};
 
-					await zobjectModule.actions.initializeRootZObject( context, 'Z1234' );
+						await zobjectModule.actions.initializeRootZObject( context, 'Z1234' );
 
-					expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
-					expect( context.commit ).toHaveBeenCalledTimes( 5 );
-					expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z1234' );
-					expect( context.commit ).toHaveBeenCalledWith( 'saveMultilingualDataCopy', expectedZObjectJson );
-					expect( context.commit ).toHaveBeenCalledWith( 'setZObject', expect.anything() );
-					expect( context.commit ).toHaveBeenCalledWith( 'setInitialized', true );
+						expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
+						expect( context.commit ).toHaveBeenCalledTimes( 5 );
+						expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z1234' );
+						expect( context.commit ).toHaveBeenCalledWith( 'saveMultilingualDataCopy', expectedZObjectJson );
+						expect( context.commit ).toHaveBeenCalledWith( 'setZObject', expect.anything() );
+						expect( context.commit ).toHaveBeenCalledWith( 'setInitialized', true );
+					} );
+
+					it( 'initializes undefined identity flags for every key', async () => {
+						// Initial ZObject
+						const Z1234 = {
+							Z1K1: 'Z2',
+							Z2K1: 'Z1234',
+							Z2K2: {
+								Z1K1: 'Z4',
+								Z4K1: 'Z1234',
+								Z4K2: [ 'Z3',
+									{ Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z1234K1', Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } },
+									{ Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z1234K2', Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }, Z3K4: 'Z41' },
+									{ Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z1234K3', Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } },
+									{ Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z1234K4', Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }, Z3K4: 'Z42' }
+								],
+								Z4K3: 'Z10001',
+								Z4K4: 'Z10002',
+								Z4K5: 'Z10003',
+								Z4K6: 'Z10004',
+								Z4K7: [ 'Z46' ],
+								Z4K8: [ 'Z64' ]
+							},
+							Z2K3: {
+								Z1K1: 'Z12',
+								Z12K1: [ 'Z11' ]
+							},
+							Z2K4: {
+								Z1K1: 'Z32',
+								Z32K1: [ 'Z31' ]
+							},
+							Z2K5: {
+								Z1K1: 'Z12',
+								Z12K1: [ 'Z11' ]
+							}
+						};
+
+						// Mock responses
+						const mockApiResponse = {
+							batchcomplete: '',
+							query: {
+								wikilambdaload_zobjects: {
+									Z1234: {
+										success: '',
+										data: Z1234
+									}
+								}
+							}
+						};
+						const getMock = jest.fn().mockResolvedValueOnce( mockApiResponse );
+						mw.Api = jest.fn( () => ( { get: getMock } ) );
+
+						const expectedZObjectJson = {
+							Z1K1: 'Z2',
+							Z2K1: 'Z1234',
+							Z2K2: {
+								Z1K1: 'Z4',
+								Z4K1: 'Z1234',
+								Z4K2: [ 'Z3',
+									{ Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z1234K1', Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }, Z3K4: { Z1K1: 'Z40', Z40K1: 'Z42' } },
+									{ Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z1234K2', Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }, Z3K4: 'Z41' },
+									{ Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z1234K3', Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }, Z3K4: { Z1K1: 'Z40', Z40K1: 'Z42' } },
+									{ Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z1234K4', Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }, Z3K4: 'Z42' }
+								],
+								Z4K3: 'Z10001',
+								Z4K4: 'Z10002',
+								Z4K5: 'Z10003',
+								Z4K6: 'Z10004',
+								Z4K7: [ 'Z46' ],
+								Z4K8: [ 'Z64' ]
+							},
+							Z2K3: {
+								Z1K1: 'Z12',
+								Z12K1: [ 'Z11' ]
+							},
+							Z2K4: {
+								Z1K1: 'Z32',
+								Z32K1: [ 'Z31' ]
+							},
+							Z2K5: {
+								Z1K1: 'Z12',
+								Z12K1: [ 'Z11' ]
+							}
+						};
+
+						await zobjectModule.actions.initializeRootZObject( context, 'Z1234' );
+
+						expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
+						expect( context.commit ).toHaveBeenCalledTimes( 5 );
+						expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z1234' );
+						expect( context.commit ).toHaveBeenCalledWith( 'saveMultilingualDataCopy', expectedZObjectJson );
+						expect( context.commit ).toHaveBeenCalledWith( 'setZObject', expect.anything() );
+						expect( context.commit ).toHaveBeenCalledWith( 'setInitialized', true );
+					} );
+
+					it( 'initializes undefined converter lists for type editor', async () => {
+						// Initial ZObject
+						const Z1234 = {
+							Z1K1: 'Z2',
+							Z2K1: 'Z1234',
+							Z2K2: {
+								Z1K1: 'Z4',
+								Z4K1: 'Z1234',
+								Z4K2: [ 'Z3' ],
+								Z4K3: 'Z10001',
+								Z4K4: 'Z10002',
+								Z4K5: 'Z10003',
+								Z4K6: 'Z10004'
+							},
+							Z2K3: {
+								Z1K1: 'Z12',
+								Z12K1: [ 'Z11' ]
+							},
+							Z2K4: {
+								Z1K1: 'Z32',
+								Z32K1: [ 'Z31' ]
+							},
+							Z2K5: {
+								Z1K1: 'Z12',
+								Z12K1: [ 'Z11' ]
+							}
+						};
+
+						// Mock responses
+						const mockApiResponse = {
+							batchcomplete: '',
+							query: {
+								wikilambdaload_zobjects: {
+									Z1234: {
+										success: '',
+										data: Z1234
+									}
+								}
+							}
+						};
+						const getMock = jest.fn().mockResolvedValueOnce( mockApiResponse );
+						mw.Api = jest.fn( () => ( { get: getMock } ) );
+
+						const expectedZObjectJson = {
+							Z1K1: 'Z2',
+							Z2K1: 'Z1234',
+							Z2K2: {
+								Z1K1: 'Z4',
+								Z4K1: 'Z1234',
+								Z4K2: [ 'Z3' ],
+								Z4K3: 'Z10001',
+								Z4K4: 'Z10002',
+								Z4K5: 'Z10003',
+								Z4K6: 'Z10004',
+								Z4K7: [ 'Z46' ],
+								Z4K8: [ 'Z64' ]
+							},
+							Z2K3: {
+								Z1K1: 'Z12',
+								Z12K1: [ 'Z11' ]
+							},
+							Z2K4: {
+								Z1K1: 'Z32',
+								Z32K1: [ 'Z31' ]
+							},
+							Z2K5: {
+								Z1K1: 'Z12',
+								Z12K1: [ 'Z11' ]
+							}
+						};
+
+						await zobjectModule.actions.initializeRootZObject( context, 'Z1234' );
+
+						expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
+						expect( context.commit ).toHaveBeenCalledTimes( 5 );
+						expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z1234' );
+						expect( context.commit ).toHaveBeenCalledWith( 'saveMultilingualDataCopy', expectedZObjectJson );
+						expect( context.commit ).toHaveBeenCalledWith( 'setZObject', expect.anything() );
+						expect( context.commit ).toHaveBeenCalledWith( 'setInitialized', true );
+					} );
 				} );
 
-				it( 'passes over keys for non-trivial keys types', async () => {
-					// Initial ZObject
-					const Z1234 = {
-						Z1K1: 'Z2',
-						Z2K1: 'Z1234',
-						Z2K2: {
-							Z1K1: 'Z4',
-							Z4K1: 'Z1234',
-							Z4K2: [ 'Z3', { Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z1234K1', Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }, Z3K4: 'Z41' } ],
-							Z4K7: [ 'Z46' ],
-							Z4K8: [ 'Z64' ]
-						},
-						Z2K3: {
-							Z1K1: 'Z12',
-							Z12K1: [ 'Z11' ]
-						},
-						Z2K4: {
-							Z1K1: 'Z32',
-							Z32K1: [ 'Z31' ]
-						},
-						Z2K5: {
-							Z1K1: 'Z12',
-							Z12K1: [ 'Z11' ]
-						}
-					};
+				describe( 'For users without type editing permissions', () => {
+					beforeEach( () => {
+						context.getters.userCanEditTypes = false;
+					} );
 
-					// Mock responses
-					const mockApiResponse = {
-						batchcomplete: '',
-						query: {
-							wikilambdaload_zobjects: {
-								Z1234: {
-									success: '',
-									data: Z1234
+					it( 'does not initialize undefined keys and type keys to falsy values', async () => {
+						// Initial ZObject
+						const Z1234 = {
+							Z1K1: 'Z2',
+							Z2K1: 'Z1234',
+							Z2K2: {
+								Z1K1: 'Z4',
+								Z4K1: 'Z1234',
+								Z4K2: [ 'Z3',
+									{ Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z1234K1', Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } },
+									{ Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z1234K2', Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }, Z3K4: 'Z41' },
+									{ Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z1234K3', Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } },
+									{ Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z1234K4', Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }, Z3K4: 'Z42' }
+								]
+							},
+							Z2K3: {
+								Z1K1: 'Z12',
+								Z12K1: [ 'Z11' ]
+							},
+							Z2K4: {
+								Z1K1: 'Z32',
+								Z32K1: [ 'Z31' ]
+							},
+							Z2K5: {
+								Z1K1: 'Z12',
+								Z12K1: [ 'Z11' ]
+							}
+						};
+
+						// Mock responses
+						const mockApiResponse = {
+							batchcomplete: '',
+							query: {
+								wikilambdaload_zobjects: {
+									Z1234: {
+										success: '',
+										data: Z1234
+									}
 								}
 							}
-						}
-					};
-					const getMock = jest.fn().mockResolvedValueOnce( mockApiResponse );
-					mw.Api = jest.fn( () => ( { get: getMock } ) );
+						};
+						const getMock = jest.fn().mockResolvedValueOnce( mockApiResponse );
+						mw.Api = jest.fn( () => ( { get: getMock } ) );
 
-					const expectedZObjectJson = {
-						Z1K1: 'Z2',
-						Z2K1: 'Z1234',
-						Z2K2: {
-							Z1K1: 'Z4',
-							Z4K1: 'Z1234',
-							Z4K2: [ 'Z3', { Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z1234K1', Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }, Z3K4: 'Z41' } ],
-							Z4K3: { Z1K1: 'Z9', Z9K1: '' },
-							Z4K4: { Z1K1: 'Z9', Z9K1: '' },
-							Z4K5: { Z1K1: 'Z9', Z9K1: '' },
-							Z4K6: { Z1K1: 'Z9', Z9K1: '' },
-							Z4K7: [ 'Z46' ],
-							Z4K8: [ 'Z64' ]
-						},
-						Z2K3: {
-							Z1K1: 'Z12',
-							Z12K1: [ 'Z11' ]
-						},
-						Z2K4: {
-							Z1K1: 'Z32',
-							Z32K1: [ 'Z31' ]
-						},
-						Z2K5: {
-							Z1K1: 'Z12',
-							Z12K1: [ 'Z11' ]
-						}
-					};
+						await zobjectModule.actions.initializeRootZObject( context, 'Z1234' );
 
-					await zobjectModule.actions.initializeRootZObject( context, 'Z1234' );
-
-					expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
-					expect( context.commit ).toHaveBeenCalledTimes( 5 );
-					expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z1234' );
-					expect( context.commit ).toHaveBeenCalledWith( 'saveMultilingualDataCopy', expectedZObjectJson );
-					expect( context.commit ).toHaveBeenCalledWith( 'setZObject', expect.anything() );
-					expect( context.commit ).toHaveBeenCalledWith( 'setInitialized', true );
-				} );
-
-				it( 'initializes undefined converter lists', async () => {
-					// Initial ZObject
-					const Z1234 = {
-						Z1K1: 'Z2',
-						Z2K1: 'Z1234',
-						Z2K2: {
-							Z1K1: 'Z4',
-							Z4K1: 'Z1234',
-							Z4K2: [ 'Z3' ],
-							Z4K3: 'Z10001',
-							Z4K4: 'Z10002',
-							Z4K5: 'Z10003',
-							Z4K6: 'Z10004'
-						},
-						Z2K3: {
-							Z1K1: 'Z12',
-							Z12K1: [ 'Z11' ]
-						},
-						Z2K4: {
-							Z1K1: 'Z32',
-							Z32K1: [ 'Z31' ]
-						},
-						Z2K5: {
-							Z1K1: 'Z12',
-							Z12K1: [ 'Z11' ]
-						}
-					};
-
-					// Mock responses
-					const mockApiResponse = {
-						batchcomplete: '',
-						query: {
-							wikilambdaload_zobjects: {
-								Z1234: {
-									success: '',
-									data: Z1234
-								}
-							}
-						}
-					};
-					const getMock = jest.fn().mockResolvedValueOnce( mockApiResponse );
-					mw.Api = jest.fn( () => ( { get: getMock } ) );
-
-					const expectedZObjectJson = {
-						Z1K1: 'Z2',
-						Z2K1: 'Z1234',
-						Z2K2: {
-							Z1K1: 'Z4',
-							Z4K1: 'Z1234',
-							Z4K2: [ 'Z3' ],
-							Z4K3: 'Z10001',
-							Z4K4: 'Z10002',
-							Z4K5: 'Z10003',
-							Z4K6: 'Z10004',
-							Z4K7: [ 'Z46' ],
-							Z4K8: [ 'Z64' ]
-						},
-						Z2K3: {
-							Z1K1: 'Z12',
-							Z12K1: [ 'Z11' ]
-						},
-						Z2K4: {
-							Z1K1: 'Z32',
-							Z32K1: [ 'Z31' ]
-						},
-						Z2K5: {
-							Z1K1: 'Z12',
-							Z12K1: [ 'Z11' ]
-						}
-					};
-
-					await zobjectModule.actions.initializeRootZObject( context, 'Z1234' );
-
-					expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
-					expect( context.commit ).toHaveBeenCalledTimes( 5 );
-					expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z1234' );
-					expect( context.commit ).toHaveBeenCalledWith( 'saveMultilingualDataCopy', expectedZObjectJson );
-					expect( context.commit ).toHaveBeenCalledWith( 'setZObject', expect.anything() );
-					expect( context.commit ).toHaveBeenCalledWith( 'setInitialized', true );
+						expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
+						expect( context.commit ).toHaveBeenCalledTimes( 5 );
+						expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z1234' );
+						expect( context.commit ).toHaveBeenCalledWith( 'saveMultilingualDataCopy', Z1234 );
+						expect( context.commit ).toHaveBeenCalledWith( 'setZObject', expect.anything() );
+						expect( context.commit ).toHaveBeenCalledWith( 'setInitialized', true );
+					} );
 				} );
 			} );
 

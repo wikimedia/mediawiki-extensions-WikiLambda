@@ -135,5 +135,27 @@ describe( 'User rights Vuex module', () => {
 				expect( userModule.getters.userCanRunUnsavedCode( state, getters ) ).toBe( true );
 			} );
 		} );
+
+		describe( 'userCanEditTypes', () => {
+			beforeEach( () => {
+				getters = {
+					userHasRight: userModule.getters.userHasRight( state )
+				};
+			} );
+
+			it( 'returns undefined if rights not initialized', () => {
+				expect( userModule.getters.userCanEditTypes( state, getters ) ).toBe( undefined );
+			} );
+
+			it( 'returns false if right is not found', () => {
+				state.userRights = [ 'wikilambda-edit' ];
+				expect( userModule.getters.userCanEditTypes( state, getters ) ).toBe( false );
+			} );
+
+			it( 'returns true if right is found', () => {
+				state.userRights = [ 'wikilambda-edit', 'wikilambda-edit-type' ];
+				expect( userModule.getters.userCanEditTypes( state, getters ) ).toBe( true );
+			} );
+		} );
 	} );
 } );

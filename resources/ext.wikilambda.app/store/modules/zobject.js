@@ -1624,10 +1624,19 @@ module.exports = exports = {
 					};
 				}
 
-				// If object is Type/Z4, and on edit mode:
-				if ( !context.getters.getViewMode && isTruthyOrEqual( zobject, [
-					Constants.Z_PERSISTENTOBJECT_VALUE,
-					Constants.Z_OBJECT_TYPE ], Constants.Z_TYPE ) ) {
+				// If object is Type/Z4, on edit mode, and user has permission to edit types,
+				// initialize falsy fields to allow users to change them.
+				//
+				// NOTE: This has the potential of adding unrelated edits to types,
+				// e.g. if a user edits a label and the identity flag was missing (falsy),
+				// the identity flag will be saved as false. This is why we need to restrict
+				// this initialization only to users that have the right to edit types.
+				if ( !context.getters.getViewMode &&
+					context.getters.userCanEditTypes &&
+					isTruthyOrEqual( zobject, [
+						Constants.Z_PERSISTENTOBJECT_VALUE,
+						Constants.Z_OBJECT_TYPE ], Constants.Z_TYPE
+					) ) {
 					// 1. Initialize type function keys (Z4K3, Z4K4, Z4K5 and Z4K6)
 					const refs = [
 						Constants.Z_TYPE_VALIDATOR,

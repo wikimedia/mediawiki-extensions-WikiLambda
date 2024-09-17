@@ -79,6 +79,16 @@ module.exports = exports = {
 		 */
 		userCanRunUnsavedCode: function ( _state, getters ) {
 			return getters.userHasRight( 'wikilambda-execute-unsaved-code' );
+		},
+		/**
+		 * Returns whether the user can edit type
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {boolean}
+		 */
+		userCanEditTypes: function ( _state, getters ) {
+			return getters.userHasRight( 'wikilambda-edit-type' );
 		}
 	}
 };
