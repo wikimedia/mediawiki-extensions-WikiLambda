@@ -161,6 +161,50 @@ class ZTypeRegistry extends ZObjectRegistry {
 	public const Z_ERRORTYPE = 'Z50';
 	public const Z_ERRORTYPE_KEYS = 'Z50K1';
 
+	// Wikidata Entity Types
+	public const Z_WIKIDATA_ITEM = 'Z6001';
+	public const Z_WIKIDATA_PROPERTY = 'Z6002';
+	public const Z_WIKIDATA_STATEMENT = 'Z6003';
+	public const Z_WIKIDATA_LEXEME_FORM = 'Z6004';
+	public const Z_WIKIDATA_LEXEME = 'Z6005';
+	public const Z_WIKIDATA_LEXEME_SENSE = 'Z6006';
+
+	public const WIKIDATA_TYPES = [
+		self::Z_WIKIDATA_ITEM,
+		self::Z_WIKIDATA_PROPERTY,
+		self::Z_WIKIDATA_STATEMENT,
+		self::Z_WIKIDATA_LEXEME_FORM,
+		self::Z_WIKIDATA_LEXEME,
+		self::Z_WIKIDATA_LEXEME_SENSE
+	];
+
+	// Wikidata Reference Types:
+	public const Z_WIKIDATA_REFERENCE_ITEM = 'Z6691';
+	public const Z_WIKIDATA_REFERENCE_PROPERTY = 'Z6692';
+	public const Z_WIKIDATA_REFERENCE_LEXEME_FORM = 'Z6694';
+	public const Z_WIKIDATA_REFERENCE_LEXEME = 'Z6695';
+	public const Z_WIKIDATA_REFERENCE_LEXEME_ID = 'Z6695K1';
+	public const Z_WIKIDATA_REFERENCE_LEXEME_SENSE = 'Z6696';
+
+	public const WIKIDATA_REFERENCE_TYPES = [
+		self::Z_WIKIDATA_REFERENCE_ITEM,
+		self::Z_WIKIDATA_REFERENCE_PROPERTY,
+		self::Z_WIKIDATA_REFERENCE_LEXEME_FORM,
+		self::Z_WIKIDATA_REFERENCE_LEXEME,
+		self::Z_WIKIDATA_REFERENCE_LEXEME_SENSE
+	];
+
+	// Wikidata Entity Fetch Functions:
+	public const Z_WIKIDATA_FETCH_LEXEME_FORM = 'Z6824';
+	public const Z_WIKIDATA_FETCH_LEXEME_FORM_ID = 'Z6824K1';
+	public const Z_WIKIDATA_FETCH_LEXEME = 'Z6825';
+	public const Z_WIKIDATA_FETCH_LEXEME_ID = 'Z6825K1';
+
+	public const WIKIDATA_FETCH_FUNCTIONS = [
+		self::Z_WIKIDATA_FETCH_LEXEME_FORM,
+		self::Z_WIKIDATA_FETCH_LEXEME
+	];
+
 	// Keep in sync with function-schemata's `typesBuiltIntoWikiLambda`
 	private const BUILT_IN_TYPES = [
 		self::Z_OBJECT => 'ZObject',
@@ -198,6 +242,9 @@ class ZTypeRegistry extends ZObjectRegistry {
 		self::Z_KEYREFERENCE,
 		self::Z_ERROR,
 		self::Z_CODE,
+		// Wikidata types
+		...self::WIKIDATA_TYPES,
+		...self::WIKIDATA_REFERENCE_TYPES
 		// TODO (T309302): Uncomment when fixed Z24 insertion issue
 		// self::Z_UNIT,
 	];
