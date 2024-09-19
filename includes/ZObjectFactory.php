@@ -227,27 +227,6 @@ class ZObjectFactory {
 	}
 
 	/**
-	 * Creates an instance of a custom or user-defined type after validating its basic
-	 * structure: the keys are valid ZObject keys and the values have the correct types
-	 *
-	 * @deprecated
-	 * @param string|array|\stdClass $input
-	 * @return ZObject
-	 * @throws ZErrorException
-	 */
-	public static function createCustom( $input ): ZObject {
-		try {
-			ZObjectUtils::isValidZObject( $input );
-		} catch ( ZErrorException $e ) {
-			throw new ZErrorException(
-				ZErrorFactory::createValidationZError( $e->getZError() )
-			);
-		}
-
-		return self::createChild( $input );
-	}
-
-	/**
 	 * Creates an object of type ZObject from the given input. This method should only
 	 * be called internally, either from the ZObjectFactory of from the ZObject
 	 * constructors. ZObjects created using this method will not necessarily be
