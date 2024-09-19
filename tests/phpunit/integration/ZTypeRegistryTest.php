@@ -74,9 +74,9 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 			"'TestingType' is not defined as a built-in, but is read from the DB as key '" . ZTestType::TEST_ZID . "'."
 		);
 		$this->assertEquals(
-			'Demonstration type',
+			ZTestType::TEST_ZID,
 			$registry->getZObjectTypeFromKey( ZTestType::TEST_ZID ),
-			"'" . ZTestType::TEST_ZID . "' lookup works to find 'Demonstration type'."
+			"'" . ZTestType::TEST_ZID . "' is cached in the local registry."
 		);
 	}
 

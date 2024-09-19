@@ -462,18 +462,22 @@ class ZTypeRegistry extends ZObjectRegistry {
 
 		// TODO (T300530): This is quite expensive. Store this in a metadata DB table, instead of fetching it live?
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
-		$zObject = $zObjectStore->fetchZObjectByTitle( $title );
+		$content = $zObjectStore->fetchZObjectByTitle( $title );
 
-		if ( $zObject === false ) {
+		if ( $content === false ) {
 			return false;
 		}
 
-		if ( $zObject->getZType() !== self::Z_TYPE ) {
+		// Check that the object is a type without running validation
+		// to avoid going into an infinite loop:
+		$zObject = $content->getObject();
+		$innerType = $zObject->{ self::Z_PERSISTENTOBJECT_VALUE }->{ self::Z_OBJECT_TYPE };
+		if ( $innerType !== self::Z_TYPE ) {
 			return false;
 		}
 
-		// NOTE: We store English, as this label isn't actively used except for pre-defined ZTypes
-		$this->register( $key, $zObject->getLabels()->getStringForLanguageCode( 'en' ) );
+		// We just need to store the index in the registry for newly fetched objects
+		$this->register( $key, $key );
 
 		return true;
 	}

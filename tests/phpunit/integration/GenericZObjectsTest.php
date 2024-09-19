@@ -87,7 +87,7 @@ EOT;
 			'ZTestType now known to ZTypeRegistry'
 		);
 		$this->assertSame(
-			'Demonstration type',
+			ZTestType::TEST_ZID,
 			$registry->getZObjectTypeFromKey( ZTestType::TEST_ZID ),
 			'ZTestType name known to ZTypeRegistry'
 		);
@@ -191,7 +191,7 @@ EOT;
 			'ZInteger now known to ZTypeRegistry'
 		);
 		$this->assertSame(
-			'ZInteger',
+			'Z91',
 			$registry->getZObjectTypeFromKey( 'Z91' ),
 			'ZInteger name known to ZTypeRegistry'
 		);
