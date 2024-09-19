@@ -925,10 +925,10 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 			'object with array and strings' => [
 				(object)[
 					'Z1K1' => 'Z2',
-					'Z2K1' => [ 'Z1K1' => 'Z9', 'Z9K1' => 'Z111' ],
+					'Z2K1' => [ 'Z1K1' => 'Z6', 'Z6K1' => 'Z111' ],
 					'Z2K2' => [ 'Z222', 'Z333', 'text' ]
 				],
-				[ 'Z1', 'Z2', 'Z9', 'Z111', 'Z222', 'Z333' ]
+				[ 'Z1', 'Z2', 'Z6', 'Z111', 'Z222', 'Z333' ]
 			],
 			'object with local keys' => [
 				(object)[
@@ -1039,7 +1039,8 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 	public static function provideGetLabelOfReference() {
 		return [
 			'simple label in English' => [
-				'{"Z1K1":"Z2", "Z2K1":"Z111", "Z2K2":"empty object", "Z2K3": { "Z1K1":"Z12", "Z12K1":["Z11",'
+				'{"Z1K1":"Z2", "Z2K1":{"Z1K1":"Z6","Z6K1":"Z111"}, "Z2K2":"empty object",'
+					. '"Z2K3": { "Z1K1":"Z12", "Z12K1":["Z11",'
 					. '{"Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "label"}'
 					. ']}}',
 				'en',
@@ -1047,7 +1048,8 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'label'
 			],
 			'fallback to English' => [
-				'{"Z1K1":"Z2", "Z2K1":"Z111", "Z2K2":"empty object", "Z2K3":{"Z1K1":"Z12", "Z12K1":["Z11",'
+				'{"Z1K1":"Z2", "Z2K1":{"Z1K1":"Z6","Z6K1":"Z111"}, "Z2K2":"empty object",'
+					. '"Z2K3":{"Z1K1":"Z12", "Z12K1":["Z11",'
 					. '{"Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2":"label"}'
 					. ']}}',
 				'es',
@@ -1055,7 +1057,8 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'label'
 			],
 			'simple label in Spanish' => [
-				'{"Z1K1":"Z2", "Z2K1":"Z111", "Z2K2":"empty object", "Z2K3": {"Z1K1":"Z12", "Z12K1":["Z11",'
+				'{"Z1K1":"Z2", "Z2K1":{"Z1K1":"Z6","Z6K1":"Z111"}, "Z2K2":"empty object",'
+					. '"Z2K3": {"Z1K1":"Z12", "Z12K1":["Z11",'
 					. '{"Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2":"label"},'
 					. '{"Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2":"etiqueta"}'
 					. ']}}',
@@ -1064,13 +1067,15 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'etiqueta'
 			],
 			'no label available' => [
-				'{"Z1K1":"Z2", "Z2K1":"Z111", "Z2K2":"empty object", "Z2K3":{"Z1K1":"Z12", "Z12K1":["Z11"]}}',
+				'{"Z1K1":"Z2", "Z2K1":{"Z1K1":"Z6","Z6K1":"Z111"}, "Z2K2":"empty object",'
+					. '"Z2K3":{"Z1K1":"Z12", "Z12K1":["Z11"]}}',
 				'es',
 				[ 'es' ],
 				'Z111'
 			],
 			'no label or fallback' => [
-				'{"Z1K1":"Z2", "Z2K1":"Z111", "Z2K2":"empty object", "Z2K3": {"Z1K1":"Z12", "Z12K1":["Z11",'
+				'{"Z1K1":"Z2", "Z2K1":{"Z1K1":"Z6","Z6K1":"Z111"}, "Z2K2":"empty object",'
+					. '"Z2K3": {"Z1K1":"Z12", "Z12K1":["Z11",'
 					. '{"Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2":"etiqueta"}'
 					. ']}}',
 				'de',

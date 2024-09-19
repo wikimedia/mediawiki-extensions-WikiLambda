@@ -83,7 +83,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 	}
 
 	public function testUpdateFailed_unmatchingZid() {
-		$data = '{ "Z1K1": "Z2", "Z2K1": "Z999",'
+		$data = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z999" },'
 			. ' "Z2K2": "string",'
 			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
 
@@ -103,7 +103,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 		$firstZid = $this->store->getNextAvailableZid();
 
 		// Create the first Zobject
-		$data = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+		$data = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
 			. ' "Z2K2": "string",'
 			. ' "Z2K3":{ "Z1K1":"Z12", "Z12K1":[ "Z11", { "Z1K1":"Z11", "Z11K1":"Z1002", "Z11K2":"unique label" }]}}';
 		$this->store->createNewZObject( RequestContext::getMain(), $data, 'First zobject', $sysopUser );
@@ -131,7 +131,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 		$firstZid = $this->store->getNextAvailableZid();
 
 		// Create the first Zobject
-		$data = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+		$data = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
 		   . ' "Z2K2": "string",'
 		   . ' "Z2K3":{ "Z1K1":"Z12", "Z12K1":[ "Z11", { "Z1K1":"Z11", "Z11K1":"en", "Z11K2":"wrong language" }]}}';
 
@@ -150,7 +150,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 
 	public function testUpdateFailed_invalidTitle() {
 		$invalidZid = 'ZID';
-		$data = '{ "Z1K1": "Z2", "Z2K1": "' . $invalidZid . '",'
+		$data = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "' . $invalidZid . '" },'
 			. ' "Z2K2": "string",'
 			. ' "Z2K3":{ "Z1K1":"Z12", "Z12K1":[ "Z11", { "Z1K1":"Z11", "Z11K1":"Z1002", "Z11K2":"unique label" }]}}';
 
@@ -168,10 +168,10 @@ class ApiZObjectEditorTest extends ApiTestCase {
 	}
 
 	public function testCreateFailed_invalidType() {
-		$data = '{ "Z1K1": "Z2", "Z2K1": "Z400",'
+		$data = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z400" },'
 			. ' "Z2K2": { '
 				. ' "Z1K1": "' . ZTypeRegistry::Z_PERSISTENTOBJECT . '",'
-				. ' "Z2K1": "Z0",'
+				. ' "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
 				. ' "Z2K2": { "Z1K1": "Z6", "Z6K1": "string" },'
 				. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] }'
 			. '},'
@@ -192,7 +192,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 	public function testCreateSuccess() {
 		$newZid = $this->store->getNextAvailableZid();
 
-		$data = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+		$data = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
 			. ' "Z2K2": "string",'
 			. ' "Z2K3":{ "Z1K1":"Z12", "Z12K1":[ "Z11", { "Z1K1":"Z11", "Z11K1":"Z1002", "Z11K2":"new label" }]}}';
 
@@ -208,7 +208,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 	}
 
 	public function testCreateSuccess_missingSummary() {
-		$data = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+		$data = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
 			. ' "Z2K2": "string",'
 			. ' "Z2K3":{ "Z1K1":"Z12", "Z12K1":[ "Z11", { "Z1K1":"Z11", "Z11K1":"Z1002", "Z11K2":"new label" }]}}';
 
@@ -226,11 +226,13 @@ class ApiZObjectEditorTest extends ApiTestCase {
 		$newZid = $this->store->getNextAvailableZid();
 
 		// Create the Zobject
-		$data = '{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": "New ZObject", "Z2K3":'
+		$data = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
+		  . ' "Z2K2": "New ZObject", "Z2K3":'
 			. ' { "Z1K1": "Z12", "Z12K1": [ "Z11", { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "unique label" } ] } }';
 		$this->store->createNewZObject( RequestContext::getMain(), $data, 'New ZObject', $sysopUser );
 
-		$data = '{ "Z1K1": "Z2", "Z2K1": "' . $newZid . '", "Z2K2": "New ZObject", "Z2K3":'
+		$data = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "' . $newZid . '" },'
+		  . ' "Z2K2": "New ZObject", "Z2K3":'
 			. ' { "Z1K1": "Z12", "Z12K1": [ "Z11", { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "new label" },'
 			. ' { "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "nueva etiqueta" } ] } }';
 

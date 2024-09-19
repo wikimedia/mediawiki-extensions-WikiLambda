@@ -55,7 +55,7 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 	public function testCreation_basicPersistentObject() {
 		$this->hideDeprecated( '::create' );
 		$testObject = new ZObjectContent(
-			'{ "Z1K1": "Z2", "Z2K1": "Z401",'
+			'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z401" },'
 			. ' "Z2K2": "persistent object",'
 			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }'
 		);
@@ -243,7 +243,7 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 
 		$this->registerLangs( [ 'es' ] );
 		$zobjectText = '{ "Z1K1": "Z2",'
-			. '"Z2K1": "Z0",'
+			. '"Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" }, '
 			. '"Z2K2": { "Z1K1": "' . ZTestType::TEST_ZID
 			. '", "Z111K1": "string value", "Z111K2": "Other string" },'
 			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11", '

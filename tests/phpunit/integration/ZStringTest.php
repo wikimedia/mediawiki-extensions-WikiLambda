@@ -42,7 +42,7 @@ class ZStringTest extends WikiLambdaIntegrationTestCase {
 		$testObject = new ZObjectContent(
 			'{ '
 				. '"Z1K1": "Z2", '
-				. '"Z2K1": "Z0", '
+				. '"Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" }, '
 				. '"Z2K2": "Test", '
 				. '"Z2K3": { "Z1K1":"Z12", "Z12K1":["Z11"] } '
 			. '}'

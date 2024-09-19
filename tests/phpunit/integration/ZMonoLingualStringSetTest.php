@@ -113,7 +113,7 @@ class ZMonoLingualStringSetTest extends WikiLambdaIntegrationTestCase {
 			<<<EOT
 {
 	"Z1K1": "Z2",
-	"Z2K1": "Z0",
+	"Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },
 	"Z2K2": {
 		"Z1K1": "Z31",
 		"Z31K1": "Z1002",

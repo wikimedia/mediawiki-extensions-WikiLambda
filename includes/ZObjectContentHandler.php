@@ -63,7 +63,9 @@ class ZObjectContentHandler extends ContentHandler {
 		return new $class(
 			'{' . "\n"
 			. '"' . ZTypeRegistry::Z_OBJECT_TYPE . '": "' . ZTypeRegistry::Z_PERSISTENTOBJECT . '",' . "\n"
-			. '"' . ZTypeRegistry::Z_PERSISTENTOBJECT_ID . '": "' . ZTypeRegistry::Z_NULL_REFERENCE . '",' . "\n"
+			. '"' . ZTypeRegistry::Z_PERSISTENTOBJECT_ID . '": {' . "\n"
+			. '"' . ZTypeRegistry::Z_OBJECT_TYPE . '": "' . ZTypeRegistry::Z_STRING . '",' . "\n"
+			. '"' . ZTypeRegistry::Z_STRING_VALUE . '": "' . ZTypeRegistry::Z_NULL_REFERENCE . '"},' . "\n"
 			. '"' . ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE . '": "",' . "\n"
 			. '"' . ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL . '": {' . "\n"
 			. '"' . ZTypeRegistry::Z_OBJECT_TYPE . '": "' . ZTypeRegistry::Z_MULTILINGUALSTRING . '",' . "\n"
