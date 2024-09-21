@@ -141,7 +141,7 @@ describe( 'LanguageSelector', () => {
 
 		// Input substring 'ita' in the lookup
 		const lookup = wrapper.findComponent( { name: 'cdx-lookup' } );
-		lookup.vm.$emit( 'input', 'ita' );
+		lookup.vm.$emit( 'update:input-value', 'ita' );
 
 		// Assert that the lookup triggers a fetch to the languageinfo meta query API
 		await waitFor( () => expect( getMock ).toHaveBeenLastCalledWith( {
@@ -166,7 +166,7 @@ describe( 'LanguageSelector', () => {
 
 		// Input substring 'ita' in the lookup
 		const lookup = wrapper.findComponent( { name: 'cdx-lookup' } );
-		lookup.vm.$emit( 'input', 'i' );
+		lookup.vm.$emit( 'update:input-value', 'i' );
 
 		// Assert that the lookup triggers a fetch to the languageinfo meta query API
 		await waitFor( () => expect( getMock ).not.toHaveBeenCalled() );
@@ -184,7 +184,7 @@ describe( 'LanguageSelector', () => {
 
 		// Input substring 'ita' in the lookup
 		const lookup = wrapper.findComponent( { name: 'cdx-lookup' } );
-		lookup.vm.$emit( 'input', 'ita' );
+		lookup.vm.$emit( 'update:input-value', 'ita' );
 
 		// Wait for the mw.Api().get to be called
 		await waitFor( () => expect( getMock ).toHaveBeenCalled() );
@@ -197,7 +197,7 @@ describe( 'LanguageSelector', () => {
 		] );
 
 		// Clear the lookup
-		lookup.vm.$emit( 'input', '' );
+		lookup.vm.$emit( 'update:input-value', '' );
 
 		// Assert that the lookup is cleared
 		expect( wrapper.vm.lookupResults ).toEqual( [] );

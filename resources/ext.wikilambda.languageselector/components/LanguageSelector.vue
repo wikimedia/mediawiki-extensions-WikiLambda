@@ -24,13 +24,14 @@
 		>
 			<cdx-lookup
 				ref="languageSelectorLookup"
+				v-model:input-value="inputValue"
 				class="ext-wikilambda-language-selector__lookup"
 				:selected="selectedLanguage"
 				:menu-items="lookupResults"
 				:start-icon="icons.cdxIconSearch"
 				:placeholder="selectLanguagePlaceholder"
-				@input="inputLanguage"
-				@update:selected="changeLanguage"
+				@update:input-value="onInput"
+				@update:selected="onSelect"
 			></cdx-lookup>
 		</div>
 	</div>
@@ -114,9 +115,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} input
 		 */
-		inputLanguage: function ( input ) {
-			this.inputValue = input;
-
+		onInput: function ( input ) {
 			// If empty input, clear and exit
 			if ( !input ) {
 				this.lookupResults = [];
@@ -217,7 +216,16 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} languageCode
 		 */
-		changeLanguage: function ( languageCode ) {
+		onSelect: function ( languageCode ) {
+			// T374246: update:selected events are emitted with null value
+			// whenever input changes, so we need to exit early whenever
+			// selected value is null, instead of setting the value to empty
+			// for now. When Codex fixes this issue, we'll be able to remove
+			// the following lines and restore the clear behavior.
+			if ( languageCode === null ) {
+				return;
+			}
+
 			this.closeLanguageSelector();
 
 			// If the language Zid is empty or the same as the current one, we pass

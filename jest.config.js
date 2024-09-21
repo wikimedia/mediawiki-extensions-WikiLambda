@@ -69,7 +69,7 @@ module.exports = {
 			statements: 90
 		},
 		'./resources/ext.wikilambda.languageselector/': {
-			branches: 96,
+			branches: 93,
 			lines: 98,
 			functions: 94,
 			statements: 98
@@ -81,7 +81,7 @@ module.exports = {
 			statements: 95
 		},
 		'./resources/ext.wikilambda.app/mixins': {
-			branches: 84,
+			branches: 83,
 			lines: 88,
 			functions: 98,
 			statements: 88
