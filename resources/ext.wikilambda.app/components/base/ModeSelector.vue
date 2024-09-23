@@ -1,6 +1,7 @@
 <template>
 	<div class="ext-wikilambda-app-mode-selector" data-testid="mode-selector">
 		<cdx-menu-button
+			v-if="menuItems.length > 0"
 			data-testid="mode-selector-button"
 			class="ext-wikilambda-app-mode-selector__menu-button"
 			:selected="selected"
@@ -57,7 +58,8 @@ module.exports = exports = defineComponent( {
 		'getZObjectTypeByRowId',
 		'getZObjectKeyByRowId',
 		'isCustomEnum',
-		'isInsideComposition'
+		'isInsideComposition',
+		'isWikidataEntity'
 	] ), {
 		/**
 		 * Returns the key of the key-value pair of this component.
@@ -85,6 +87,33 @@ module.exports = exports = defineComponent( {
 			return this.type ? this.typeToString( this.type, true ) : Constants.Z_OBJECT;
 		},
 		/**
+		 * Whether the value is a Wikidata entity, currently
+		 * represented by a function call to one of the Wikidata
+		 * fetch functions.
+		 *
+		 * @return {boolean}
+		 */
+		isWikidataItem: function () {
+			return this.isWikidataEntity( this.rowId );
+		},
+		/**
+		 * Whether the key expects a Wikidata item type.
+		 *
+		 * @return {boolean}
+		 */
+		expectsWikidataItem: function () {
+			return Constants.WIKIDATA_TYPES.includes( this.parentExpectedType );
+		},
+		/**
+		 * Returns whether the key expected type can be persisted and
+		 * hence can be referenced.
+		 *
+		 * @return {boolean}
+		 */
+		canBeReferenced: function () {
+			return !Constants.EXCLUDE_FROM_PERSISTENT_CONTENT.includes( this.parentExpectedType );
+		},
+		/**
 		 * Whether the selected mode is a resolver or a literal type
 		 *
 		 * @return {boolean}
@@ -108,68 +137,17 @@ module.exports = exports = defineComponent( {
 		 * @return {Array} Array of codex MenuItemData objects
 		 */
 		menuItems: function () {
-			// Resolver types:
-			// * Reference and function are always available
-			// * Argument reference only if we are inside a composition
-			const resolvers = [
-				{
-					label: this.getLabelData( Constants.Z_REFERENCE ).label,
-					value: Constants.Z_REFERENCE,
-					type: Constants.Z_REFERENCE,
-					icon: icons.cdxIconInstance
-				},
-				{
-					label: this.getLabelData( Constants.Z_FUNCTION_CALL ).label,
-					value: Constants.Z_FUNCTION_CALL,
-					type: Constants.Z_FUNCTION_CALL,
-					icon: icons.cdxIconFunction
-				}
-			];
-			if ( this.isInsideComposition( this.rowId ) ) {
-				resolvers.push( {
-					label: this.getLabelData( Constants.Z_ARGUMENT_REFERENCE ).label,
-					value: Constants.Z_ARGUMENT_REFERENCE,
-					type: Constants.Z_ARGUMENT_REFERENCE,
-					icon: icons.cdxIconFunctionArgument
-				} );
-			}
-
-			// Literal types:
-			// * if parent expects a given type and parent is not Z1K1:
-			//   * Add "Literal <Expected Type>"
-			// * If parent expects any type:
-			//   * Add "Literal Object"
-			//   * If type is defined, add "Literal <Selected Type>"
-			const literals = [];
-			let typeString;
-			if ( this.key !== Constants.Z_OBJECT_TYPE &&
-				!this.isKeyTypedListType( this.key ) &&
-				!this.isCustomEnum( this.parentExpectedType )
-			) {
-				typeString = this.typeToString( this.parentExpectedType, true );
-				literals.push( {
-					label: this.$i18n( 'wikilambda-literal-type', this.getLabelData( typeString ).label ).text(),
-					value: typeString,
-					type: this.parentExpectedType,
-					icon: icons.cdxIconLiteral
-				} );
-			}
-			if ( !!this.type && !this.isResolver && ( this.parentExpectedType === Constants.Z_OBJECT ) ) {
-				typeString = this.typeToString( this.type, true );
-				literals.push( {
-					label: this.$i18n( 'wikilambda-literal-type', this.getLabelData( typeString ).label ).text(),
-					value: typeString,
-					type: this.type,
-					icon: icons.cdxIconLiteral
-				} );
-			}
-
-			// Return literals and resolvers, sorted by label
+			// Literals and resolvers, sorted by label:
+			const resolvers = this.getResolverMenuItems();
+			const literals = this.getLiteralMenuItems();
 			const options = [ ...literals, ...resolvers ];
 			options.sort( ( a, b ) => ( a.label < b.label ) ? -1 :
 				( a.label > b.label ) ? 1 : 0 );
 
-			// If it's a list item, add "Move before" and "Move after" items
+			// If it's a list item, add list item operations:
+			// * Move item one position before
+			// * Move item one position after
+			// * Delete item
 			if ( this.isKeyTypedListItem( this.key ) ) {
 				const isFirst = this.key === '1';
 				const isLast = this.key === String( this.listCount );
@@ -211,6 +189,11 @@ module.exports = exports = defineComponent( {
 		}
 	} ),
 	methods: {
+		/**
+		 * Emit the event that corresponds to the selected menu item
+		 *
+		 * @param {string} value
+		 */
 		selectMode: function ( value ) {
 			// List actions:
 			if ( value === Constants.LIST_MENU_OPTIONS.DELETE_ITEM ) {
@@ -234,6 +217,102 @@ module.exports = exports = defineComponent( {
 					literal: true
 				} );
 			}
+		},
+		/**
+		 * Return the menu options for creating resolver types
+		 *
+		 * @return {Array}
+		 */
+		getResolverMenuItems: function () {
+			const resolvers = [];
+
+			// Function call: Always available as long as:
+			// * is not containing a wikidata entity (already a function call)
+			if ( !this.expectsWikidataItem ) {
+				resolvers.push( {
+					label: this.getLabelData( Constants.Z_FUNCTION_CALL ).label,
+					value: Constants.Z_FUNCTION_CALL,
+					type: Constants.Z_FUNCTION_CALL,
+					icon: icons.cdxIconFunction
+				} );
+			}
+
+			// Reference: Always available as long as:
+			// * is not containing a wikidata entity
+			// * the key expected type can be referenced
+			if ( this.canBeReferenced ) {
+				resolvers.push( {
+					label: this.getLabelData( Constants.Z_REFERENCE ).label,
+					value: Constants.Z_REFERENCE,
+					type: Constants.Z_REFERENCE,
+					icon: icons.cdxIconInstance
+				} );
+			}
+
+			// Argument reference: Only available if inside a composition
+			if ( this.isInsideComposition( this.rowId ) ) {
+				resolvers.push( {
+					label: this.getLabelData( Constants.Z_ARGUMENT_REFERENCE ).label,
+					value: Constants.Z_ARGUMENT_REFERENCE,
+					type: Constants.Z_ARGUMENT_REFERENCE,
+					icon: icons.cdxIconFunctionArgument
+				} );
+			}
+			return resolvers;
+		},
+		/**
+		 * Return the menu options for creating literal types
+		 *
+		 * @return {Array}
+		 */
+		getLiteralMenuItems: function () {
+			const literals = [];
+
+			// Add literal parent expected type when:
+			// * Key is not Z1K1/Object type; no literal Z4/Types
+			// * Key is not "0" type of a typed list; no literal Z4/Types
+			// * Is not a custom enum type; should never be a literal, always referenced
+			// * Does not expect a Wikidata entity
+			const parentTypeString = this.typeToString( this.parentExpectedType, true );
+			if (
+				this.key !== Constants.Z_OBJECT_TYPE &&
+				!this.isKeyTypedListType( this.key ) &&
+				!this.isCustomEnum( this.parentExpectedType ) &&
+				!this.expectsWikidataItem
+			) {
+				literals.push( {
+					label: this.$i18n( 'wikilambda-literal-type', this.getLabelData( parentTypeString ).label ).text(),
+					value: parentTypeString,
+					type: this.parentExpectedType,
+					icon: icons.cdxIconLiteral
+				} );
+			}
+
+			// Also add selected type when:
+			// * type is not a Wikidata item
+			// * type is selected and valid,
+			// * type is not a resolver (Z9/Z7/Z18), and
+			// * parent expected type is Z1/Object.
+			// This means that whenever the parent expected type is Z1
+			// but a valid type is selected, we will be showing both:
+			// * Literal Object
+			// * Literal <Selected type>
+			const typeString = this.typeToString( this.type, true );
+			if (
+				!this.isWikidataItem &&
+				!!this.type && !!typeString &&
+				!this.isResolver &&
+				this.parentExpectedType === Constants.Z_OBJECT
+			) {
+				literals.push( {
+					label: this.$i18n( 'wikilambda-literal-type', this.getLabelData( typeString ).label ).text(),
+					value: typeString,
+					type: this.type,
+					icon: icons.cdxIconLiteral
+				} );
+			}
+
+			return literals;
 		}
 	}
 } );

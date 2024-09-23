@@ -18,7 +18,9 @@ const { createStore } = require( 'vuex' ),
 	testResultsModule = require( './modules/testResults.js' ),
 	zobjectModule = require( './modules/zobject.js' ),
 	ztypeModule = require( './modules/ztype.js' ),
-	zfunctionModule = require( './modules/zfunction.js' );
+	zfunctionModule = require( './modules/zfunction.js' ),
+	wdEntitiesModule = require( './modules/wikidata/entities.js' ),
+	wdLexemesModule = require( './modules/wikidata/lexemes.js' );
 
 module.exports = createStore( {
 	modules: {
@@ -37,6 +39,9 @@ module.exports = createStore( {
 		// Main ZObject: general and for some specific types
 		zobjectModule: zobjectModule,
 		ztypeModule: ztypeModule,
-		zfunctionModule: zfunctionModule
+		zfunctionModule: zfunctionModule,
+		// Wikidata
+		wdEntitiesModule: wdEntitiesModule,
+		wdLexemesModule: wdLexemesModule
 	}
 } );

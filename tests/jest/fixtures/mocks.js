@@ -1122,6 +1122,43 @@ const mockApiZids = {
 				}
 			]
 		}
+	},
+	Z6695: {
+		Z1K1: "Z2",
+		Z2K1: {
+			Z1K1: "Z6",
+			Z6K1: "Z6695"
+		},
+		Z2K2: {
+			Z1K1: "Z4",
+			Z4K1: "Z6695",
+			Z4K2: [
+				"Z3",
+				{
+					Z1K1: "Z3",
+					Z3K1: "Z6",
+					Z3K2: "Z6695K1",
+					Z3K3: {
+						Z1K1: "Z12",
+						Z12K1: [
+							"Z11"
+						]
+					}
+				}
+			],
+			Z4K3: "Z101"
+		},
+		Z2K3: {
+			Z1K1: "Z12",
+			Z12K1: [
+				"Z11",
+				{
+					Z1K1: "Z11",
+					Z11K1: "Z1002",
+					Z11K2: "Wikidata lexeme reference"
+				}
+			]
+		}
 	}
 };
 
@@ -1324,6 +1361,61 @@ const mockLookupLanguages = [
 	}
 ];
 
+const mockLookupLexemes = {
+	search: [
+		{
+			id: "L290326",
+			title: "Lexeme:L290326",
+			pageid: 87831207,
+			concepturi: "http://www.wikidata.org/entity/L290326",
+			repository: "wikidata",
+			url: "//www.wikidata.org/wiki/Lexeme:L290326",
+			display: {
+				label: {
+					value: "pangolin",
+					language: "en"
+				},
+				description: {
+					value: "English, noun",
+					language: "en"
+				}
+			},
+			label: "pangolin",
+			description: "English, noun",
+			match: {
+				type: "label",
+				language: "en",
+				text: "pangolin"
+			}
+		},
+		{
+      id: "L1208742",
+      title: "Lexeme:L1208742",
+      pageid: 117464898,
+      concepturi: "http://www.wikidata.org/entity/L1208742",
+      repository: "wikidata",
+      url: "//www.wikidata.org/wiki/Lexeme:L1208742",
+      display: {
+        label: {
+          value: "pangolino",
+          language: "it"
+        },
+        description: {
+          value: "Italian, noun",
+          language: "en"
+        }
+      },
+      label: "pangolino",
+      description: "Italian, noun",
+      match: {
+        type: "label",
+        language: "it",
+        text: "pangolino"
+      }
+    }
+	]
+};
+
 module.exports = {
 	mockFunction,
 	mockApiResponseFor,
@@ -1331,5 +1423,6 @@ module.exports = {
 	mockLanguages,
 	mockEnumValues,
 	mockLookupValues,
-	mockLookupLanguages
+	mockLookupLanguages,
+	mockLookupLexemes
 };

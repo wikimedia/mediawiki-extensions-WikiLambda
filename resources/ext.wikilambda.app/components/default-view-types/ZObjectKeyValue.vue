@@ -83,6 +83,7 @@ const Constants = require( '../../Constants.js' ),
 	KeyValueBlock = require( '../base/KeyValueBlock.vue' ),
 	ZTester = require( './ZTester.vue' ),
 	ZTypedList = require( './ZTypedList.vue' ),
+	WikidataLexeme = require( './wikidata/Lexeme.vue' ),
 	LabelData = require( '../../store/classes/LabelData.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	errorUtils = require( '../../mixins/errorUtils.js' ),
@@ -95,21 +96,22 @@ module.exports = exports = defineComponent( {
 		'cdx-icon': CdxIcon,
 		'cdx-message': CdxMessage,
 		'wl-expanded-toggle': ExpandedToggle,
+		'wl-key-value-block': KeyValueBlock,
 		'wl-localized-label': LocalizedLabel,
 		'wl-mode-selector': ModeSelector,
+		'wl-wikidata-lexeme': WikidataLexeme,
 		'wl-z-argument-reference': ZArgumentReference,
+		'wl-z-boolean': ZBoolean,
 		'wl-z-code': ZCode,
 		'wl-z-evaluation-result': ZEvaluationResult,
 		'wl-z-function-call': ZFunctionCall,
 		'wl-z-implementation': ZImplementation,
-		'wl-key-value-block': KeyValueBlock,
-		'wl-z-tester': ZTester,
 		'wl-z-monolingual-string': ZMonolingualString,
 		'wl-z-object-key-value-set': ZObjectKeyValueSet,
 		'wl-z-object-string-renderer': ZObjectStringRenderer,
-		'wl-z-string': ZString,
 		'wl-z-reference': ZReference,
-		'wl-z-boolean': ZBoolean,
+		'wl-z-string': ZString,
+		'wl-z-tester': ZTester,
 		'wl-z-typed-list': ZTypedList
 	},
 	mixins: [ typeUtils, errorUtils ],
@@ -162,22 +164,25 @@ module.exports = exports = defineComponent( {
 		mapGetters( [
 			'createObjectByType',
 			'getCurrentZObjectId',
-			'getLabelData',
-			'getExpectedTypeOfKey',
 			'getDepthByRowId',
+			'getErrors',
+			'getExpectedTypeOfKey',
+			'getLabelData',
 			'getParentRowId',
-			'getZObjectKeyByRowId',
-			'getZObjectValueByRowId',
-			'getZObjectTypeByRowId',
+			'getTypedListItemType',
+			'getZFunctionCallFunctionId',
 			'getZKeyIsIdentity',
 			'getZKeyTypeRowId',
-			'getTypedListItemType',
-			'getErrors',
+			'getZObjectKeyByRowId',
+			'getZObjectTypeByRowId',
+			'getZObjectValueByRowId',
 			'hasRenderer',
 			'hasParser',
 			'isCreateNewPage',
 			'isIdentityKey',
-			'isMainObject'
+			'isMainObject',
+			'isWikidataEntity',
+			'isWikidataReference'
 		] ),
 		{
 			/**
@@ -386,6 +391,18 @@ module.exports = exports = defineComponent( {
 			},
 
 			/**
+			 * Returns the function call function Id if the object
+			 * represented is a function call. Else returns undefined
+			 *
+			 * @return {string|undefined}
+			 */
+			functionCallFunctionId: function () {
+				return this.type === Constants.Z_FUNCTION_CALL ?
+					this.getZFunctionCallFunctionId( this.rowId ) :
+					undefined;
+			},
+
+			/**
 			 * Returns whether this key-value can be expanded into an expanded mode.
 			 * This contains the logic for detecting terminal key-values and
 			 * not enter infinite UX recursion.
@@ -430,6 +447,11 @@ module.exports = exports = defineComponent( {
 
 				// TERMINAL rules for Evaluation Result: no expansion allowed
 				if ( this.type === Constants.Z_RESPONSEENVELOPE ) {
+					return false;
+				}
+
+				// TERMINAL rules for Wikidata items: no expansion allowed
+				if ( this.isWikidataEntity( this.rowId ) || this.isWikidataReference( this.rowId ) ) {
 					return false;
 				}
 
@@ -490,6 +512,15 @@ module.exports = exports = defineComponent( {
 				// Evaluation result doesn't have an expanded mode
 				if ( this.type === Constants.Z_RESPONSEENVELOPE ) {
 					return 'wl-z-evaluation-result';
+				}
+
+				// Wikidata Entities and References
+				if (
+					( this.functionCallFunctionId === Constants.Z_WIKIDATA_FETCH_LEXEME ) ||
+					( this.type === Constants.Z_WIKIDATA_REFERENCE_LEXEME )
+				) {
+					this.setExpanded( false );
+					return 'wl-wikidata-lexeme';
 				}
 
 				if ( ( this.type === Constants.Z_ARGUMENT_REFERENCE ) && !this.expanded ) {

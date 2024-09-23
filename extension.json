@@ -315,6 +315,8 @@
 				"ext.wikilambda.app/store/modules/user.js",
 				"ext.wikilambda.app/store/modules/functionCall.js",
 				"ext.wikilambda.app/store/modules/testResults.js",
+				"ext.wikilambda.app/store/modules/wikidata/entities.js",
+				"ext.wikilambda.app/store/modules/wikidata/lexemes.js",
 				"ext.wikilambda.app/mixins/clipboardUtils.js",
 				"ext.wikilambda.app/mixins/pageTitleUtils.js",
 				"ext.wikilambda.app/mixins/typeUtils.js",
@@ -326,6 +328,7 @@
 				"ext.wikilambda.app/mixins/metadata.js",
 				"ext.wikilambda.app/mixins/api.js",
 				"ext.wikilambda.app/mixins/utilsMixins.js",
+				"ext.wikilambda.app/mixins/wikidataUtils.js",
 				"ext.wikilambda.app/composables/useBreakpoints.js",
 				"ext.wikilambda.app/views/FunctionEvaluator.vue",
 				"ext.wikilambda.app/views/FunctionEditor.vue",
@@ -364,6 +367,7 @@
 				"ext.wikilambda.app/components/default-view-types/ZTypedList.vue",
 				"ext.wikilambda.app/components/default-view-types/ZTypedListType.vue",
 				"ext.wikilambda.app/components/default-view-types/ZTypedListItems.vue",
+				"ext.wikilambda.app/components/default-view-types/wikidata/Lexeme.vue",
 				"ext.wikilambda.app/components/function/editor/FunctionEditor.vue",
 				"ext.wikilambda.app/components/function/editor/FunctionEditorAliases.vue",
 				"ext.wikilambda.app/components/function/editor/FunctionEditorField.vue",
@@ -395,6 +399,7 @@
 					"callback": "MediaWiki\\ResourceLoader\\CodexModule::getIcons",
 					"callbackParam": [
 						"cdxIconAdd",
+						"cdxIconLogoWikidata",
 						"cdxIconExpand",
 						"cdxIconClear",
 						"cdxIconClose",
@@ -424,7 +429,8 @@
 						"cdxIconSuccess",
 						"cdxIconCancel",
 						"cdxIconHistory",
-						"cdxIconNotBright"
+						"cdxIconNotBright",
+						"cdxIconLinkExternal"
 					]
 				}
 			],
@@ -718,7 +724,8 @@
 				"wikilambda-parser-unknown-error",
 				"wikilambda-object-selector-suggested-types",
 				"wikilambda-object-selector-suggested-languages",
-				"wikilambda-edit-monolingual-text-placeholder"
+				"wikilambda-edit-monolingual-text-placeholder",
+				"wikilambda-wikidata-lexeme-selector-placeholder"
 			]
 		}
 	},

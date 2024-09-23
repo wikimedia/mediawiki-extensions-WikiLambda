@@ -231,6 +231,53 @@ const Constants = {
 		Constants.Z_BOOLEAN
 	];
 
+// Wikidata:
+Constants.WIKIDATA_BASE_URL = 'https://www.wikidata.org';
+
+// Wikidata Entity Types:
+Constants.Z_WIKIDATA_ITEM = 'Z6001';
+Constants.Z_WIKIDATA_PROPERTY = 'Z6002';
+Constants.Z_WIKIDATA_STATEMENT = 'Z6003';
+Constants.Z_WIKIDATA_LEXEME_FORM = 'Z6004';
+Constants.Z_WIKIDATA_LEXEME = 'Z6005';
+Constants.Z_WIKIDATA_LEXEME_SENSE = 'Z6006';
+
+Constants.WIKIDATA_TYPES = [
+	Constants.Z_WIKIDATA_ITEM,
+	Constants.Z_WIKIDATA_PROPERTY,
+	Constants.Z_WIKIDATA_STATEMENT,
+	Constants.Z_WIKIDATA_LEXEME_FORM,
+	Constants.Z_WIKIDATA_LEXEME,
+	Constants.Z_WIKIDATA_LEXEME_SENSE
+];
+
+// Wikidata Reference Types:
+Constants.Z_WIKIDATA_REFERENCE_ITEM = 'Z6691';
+Constants.Z_WIKIDATA_REFERENCE_PROPERTY = 'Z6692';
+Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM = 'Z6694';
+Constants.Z_WIKIDATA_REFERENCE_LEXEME = 'Z6695';
+Constants.Z_WIKIDATA_REFERENCE_LEXEME_ID = 'Z6695K1';
+Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE = 'Z6696';
+
+Constants.WIKIDATA_REFERENCE_TYPES = [
+	Constants.Z_WIKIDATA_REFERENCE_ITEM,
+	Constants.Z_WIKIDATA_REFERENCE_PROPERTY,
+	Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM,
+	Constants.Z_WIKIDATA_REFERENCE_LEXEME,
+	Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE
+];
+
+// Wikidata Entity Fetch Functions:
+Constants.Z_WIKIDATA_FETCH_LEXEME_FORM = 'Z6824';
+Constants.Z_WIKIDATA_FETCH_LEXEME_FORM_ID = 'Z6824K1';
+Constants.Z_WIKIDATA_FETCH_LEXEME = 'Z6825';
+Constants.Z_WIKIDATA_FETCH_LEXEME_ID = 'Z6825K1';
+
+Constants.WIKIDATA_FETCH_FUNCTIONS = [
+	Constants.Z_WIKIDATA_FETCH_LEXEME_FORM,
+	Constants.Z_WIKIDATA_FETCH_LEXEME
+];
+
 Constants.Z_ERRORS = {
 	Z_ERROR_UNKNOWN: 'Z500',
 	Z_ERROR_INVALID_JSON: 'Z548',
@@ -257,7 +304,9 @@ Constants.EXCLUDE_FROM_PERSISTENT_CONTENT = [
 	Constants.Z_KEY,
 	Constants.Z_KEY_REFERENCE,
 	Constants.Z_ARGUMENT,
-	Constants.Z_CODE
+	Constants.Z_CODE,
+	...Constants.WIKIDATA_TYPES,
+	...Constants.WIKIDATA_REFERENCE_TYPES
 ];
 // Types that contain an identity key
 // but are not considered enums:

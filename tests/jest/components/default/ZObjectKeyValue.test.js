@@ -21,25 +21,29 @@ describe( 'ZObjectKeyValue', () => {
 		getters = {
 			createObjectByType: createGettersWithFunctionsMock(),
 			getCurrentZObjectId: createGetterMock( 'Z0' ),
+			getDepthByRowId: createGettersWithFunctionsMock( 1 ),
+			getErrors: createGettersWithFunctionsMock( [] ),
+			getExpectedTypeOfKey: createGettersWithFunctionsMock( 'Z1' ),
+			getLabelData: createLabelDataMock(),
+			getParentRowId: createGettersWithFunctionsMock( 0 ),
+			getTypedListItemType: createGettersWithFunctionsMock( 'Z6' ),
+			getZFunctionCallFunctionId: createGettersWithFunctionsMock(),
 			getZKeyIsIdentity: createGettersWithFunctionsMock( false ),
 			getZKeyTypeRowId: createGettersWithFunctionsMock( 3 ),
+			getZObjectAsJsonById: createGettersWithFunctionsMock(),
+			getZObjectKeyByRowId: createGettersWithFunctionsMock( 'Z1K1' ),
+			getZObjectTypeByRowId: createGettersWithFunctionsMock( Constants.Z_STRING ),
+			getZObjectValueByRowId: createGettersWithFunctionsMock(),
+			getZPersistentContentRowId: createGettersWithFunctionsMock( 1 ),
+			hasParser: createGettersWithFunctionsMock( false ),
+			hasRenderer: createGettersWithFunctionsMock( false ),
 			isCreateNewPage: createGetterMock( false ),
 			isIdentityKey: createGettersWithFunctionsMock( false ),
 			isMainObject: createGettersWithFunctionsMock( true ),
-			getLabelData: createLabelDataMock(),
-			getZObjectKeyByRowId: createGettersWithFunctionsMock( 'Z1K1' ),
-			getExpectedTypeOfKey: createGettersWithFunctionsMock( 'Z1' ),
-			getZObjectValueByRowId: createGettersWithFunctionsMock(),
-			getZObjectTypeByRowId: createGettersWithFunctionsMock( Constants.Z_STRING ),
-			getZObjectAsJsonById: createGettersWithFunctionsMock(),
-			getZPersistentContentRowId: createGettersWithFunctionsMock( 1 ),
-			getTypedListItemType: createGettersWithFunctionsMock( 'Z6' ),
-			getErrors: createGettersWithFunctionsMock( [] ),
-			getDepthByRowId: createGettersWithFunctionsMock( 1 ),
-			getParentRowId: createGettersWithFunctionsMock( 0 ),
-			getChildrenByParentRowId: createGettersWithFunctionsMock( [] ),
-			hasRenderer: createGettersWithFunctionsMock( false ),
-			hasParser: createGettersWithFunctionsMock( false )
+			isWikidataEntity: createGettersWithFunctionsMock( false ),
+			isWikidataReference: createGettersWithFunctionsMock( false ),
+			// For ZObjectKeyValueSet:
+			getChildrenByParentRowId: createGettersWithFunctionsMock( [] )
 		};
 		actions = {
 			changeType: jest.fn(),
@@ -312,6 +316,53 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 
 			expect( wrapper.findComponent( { name: 'wl-z-typed-list' } ).exists() ).toBe( true );
+		} );
+
+		it( 'wikidata lexeme component for wikidata entity', () => {
+			getters.isWikidataEntity = createGettersWithFunctionsMock( true );
+			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL );
+			getters.getZFunctionCallFunctionId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_FETCH_LEXEME );
+			global.store.hotUpdate( {
+				getters: getters
+			} );
+
+			const wrapper = shallowMount( ZObjectKeyValue, {
+				props: {
+					rowId: 1,
+					edit: false
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false
+					}
+				}
+			} );
+
+			expect( wrapper.findComponent( { name: 'wl-wikidata-lexeme' } ).exists() ).toBe( true );
+			expect( wrapper.vm.expanded ).toBe( false );
+		} );
+
+		it( 'wikidata lexeme component for wikidata reference', () => {
+			getters.isWikidataReference = createGettersWithFunctionsMock( true );
+			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_REFERENCE_LEXEME );
+			global.store.hotUpdate( {
+				getters: getters
+			} );
+
+			const wrapper = shallowMount( ZObjectKeyValue, {
+				props: {
+					rowId: 1,
+					edit: false
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false
+					}
+				}
+			} );
+
+			expect( wrapper.findComponent( { name: 'wl-wikidata-lexeme' } ).exists() ).toBe( true );
+			expect( wrapper.vm.expanded ).toBe( false );
 		} );
 
 		it( 'fallback with renderer and parser', () => {
@@ -917,6 +968,55 @@ describe( 'ZObjectKeyValue', () => {
 					},
 					global: {
 						stubs: { WlKeyValueBlock: false }
+					}
+				} );
+
+				const toggle = wrapper.findComponent( { name: 'wl-expanded-toggle' } );
+				expect( toggle.exists() ).toBe( true );
+				expect( toggle.vm.hasExpandedMode ).toBe( false );
+			} );
+
+			it( 'disables expansion for wikidata entity', () => {
+				getters.isWikidataEntity = createGettersWithFunctionsMock( true );
+				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL );
+				getters.getZFunctionCallFunctionId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_FETCH_LEXEME );
+				global.store.hotUpdate( {
+					getters: getters
+				} );
+
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						rowId: 1,
+						edit: false
+					},
+					global: {
+						stubs: {
+							WlKeyValueBlock: false
+						}
+					}
+				} );
+
+				const toggle = wrapper.findComponent( { name: 'wl-expanded-toggle' } );
+				expect( toggle.exists() ).toBe( true );
+				expect( toggle.vm.hasExpandedMode ).toBe( false );
+			} );
+
+			it( 'disables expansion for wikidata reference', () => {
+				getters.isWikidataReference = createGettersWithFunctionsMock( true );
+				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_REFERENCE_LEXEME );
+				global.store.hotUpdate( {
+					getters: getters
+				} );
+
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						rowId: 1,
+						edit: false
+					},
+					global: {
+						stubs: {
+							WlKeyValueBlock: false
+						}
 					}
 				} );
 
