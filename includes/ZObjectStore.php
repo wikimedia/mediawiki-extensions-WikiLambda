@@ -182,6 +182,7 @@ class ZObjectStore {
 	 */
 	public function pushZObject( string $zid, string $data, string $summary ) {
 		$title = $this->titleFactory->newFromText( $zid, NS_MAIN );
+		// Error: Failed creating title due to invalid format
 		if ( !$title ) {
 			throw new ZErrorException(
 				ZErrorFactory::createZErrorInstance(
@@ -215,6 +216,19 @@ class ZObjectStore {
 
 		try {
 			$status = $page->doUserEditContent( $content, $user, $summary, $flags );
+			// Error: Other doUserEditContent related errors
+			if ( !$status->isOK() ) {
+				$this->logger->info(
+					__METHOD__ . ' got a non-OK Status on publish, for page "' . $zid . '"',
+					[ 'responseStatus' => var_export( $status, true ) ]
+				);
+				throw new ZErrorException(
+					ZErrorFactory::createZErrorInstance(
+						ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
+						[ 'message' => (string)$status->getMessage() ]
+					)
+				);
+			}
 		} catch ( Exception $e ) {
 			// Error: Database or a deeper MediaWiki error
 			$this->logger->warning(
