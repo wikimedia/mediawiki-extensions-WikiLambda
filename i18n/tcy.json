@@ -3,7 +3,8 @@
 		"authors": [
 			"ChiK",
 			"Chidananda Kampa",
-			"Mahaveer Indra"
+			"Mahaveer Indra",
+			"Pragathi. BH"
 		]
 	},
 	"wikilambda-editor-label-select-programming-language-empty": "ಪ್ರೋಗ್ರಾಮಿಂಗ್ ಬಾಸೆನ್ ಆಯ್ಕೆ ಮಲ್ಪುಲೆ",
@@ -11,5 +12,6 @@
 	"wikilambda-metadata-language-column": "ಬಾಸೆ",
 	"wikilambda-persistentzobject-contents": "ವಿಸಯೊಲು",
 	"wikilambda-validation-error-description-toolong": "$1ತ ಇವರನೆ {{PLURAL:$2|$2 ಸಬ್ದೊ}}ಡು ಅತ್ಂಡ ಐಡ್ದ್ ಕಡಮೆ ಇಪ್ಪೊಡು.",
-	"wikilambda-validation-error-name-toolong": "$1 ಬಾಸೆಡ್ ಪುದರ್ {{PLURAL:$2|$2 ಸಬ್ದೊ}}ದಾತ್, ಅತ್ಂಡ, ನನಲಾ ಕಡಮೆ ಇಪ್ಪೊಡು"
+	"wikilambda-validation-error-name-toolong": "$1 ಬಾಸೆಡ್ ಪುದರ್ {{PLURAL:$2|$2 ಸಬ್ದೊ}}ದಾತ್, ಅತ್ಂಡ, ನನಲಾ ಕಡಮೆ ಇಪ್ಪೊಡು",
+	"wikilambda-wikidata-lexeme-selector-placeholder": "ವಿಕಿಡೇಟಾ ಲೆಕ್ಸೆಮ್ ನ್ ಆಯ್ಕೆ ಮಲ್ಪುಲೆ"
 }
