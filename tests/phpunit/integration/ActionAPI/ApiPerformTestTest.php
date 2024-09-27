@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
+use IDBAccessObject;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\ActionAPI\ApiPerformTest;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
@@ -178,7 +179,7 @@ class ApiPerformTestTest extends ApiTestCase {
 
 		// Checks related to ApiPerformTest::maybeUpdateImplementationRanking
 		$targetTitle = Title::newFromText( $requestedFunction, NS_MAIN );
-		$functionRevisionBefore = $targetTitle->getLatestRevID();
+		$functionRevisionBefore = $targetTitle->getLatestRevID( IDBAccessObject::READ_LATEST );
 		$targetObject = $this->store->fetchZObjectByTitle( $targetTitle );
 		$targetFunction = $targetObject->getInnerZObject();
 		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction $targetFunction';
@@ -188,7 +189,8 @@ class ApiPerformTestTest extends ApiTestCase {
 			array_diff( $targetImplementationZids, $requestedZImplementations ) ||
 			array_diff( $targetTesterZids, $requestedZTesters ) ) {
 			// No update to implementation ranking should be done
-			$this->assertEquals( $functionRevisionBefore, $targetTitle->getLatestRevID() );
+			$this->assertEquals( $functionRevisionBefore,
+				$targetTitle->getLatestRevID( IDBAccessObject::READ_LATEST ) );
 		}
 	}
 
@@ -468,13 +470,13 @@ class ApiPerformTestTest extends ApiTestCase {
 	) {
 		$functionZid = 'Z813';
 		$targetTitle = Title::newFromText( $functionZid, NS_MAIN );
-		$functionRevision_0 = $targetTitle->getLatestRevID();
+		$functionRevision_0 = $targetTitle->getLatestRevID( IDBAccessObject::READ_LATEST );
 		// 1. Insert an initial ranking of 3 implementations (same for all tests)
 		// Z91300/Z91301/Z91302 don't exist in persistent storage, but no matter for these tests.
 		$initialRanking = [ new ZReference( 'Z91300' ),
 			new ZReference( 'Z91301' ), new ZReference( 'Z91302' ) ];
 		$this->updateImplementationsList( $functionZid, $targetTitle, $initialRanking );
-		$functionRevision_1 = $targetTitle->getLatestRevID();
+		$functionRevision_1 = $targetTitle->getLatestRevID( IDBAccessObject::READ_LATEST );
 		$this->assertTrue( $functionRevision_1 > $functionRevision_0 );
 
 		// 2. Prepare the arguments to maybeUpdateImplementationRanking()
@@ -497,13 +499,13 @@ class ApiPerformTestTest extends ApiTestCase {
 
 		if ( !$expectedRanking ) {
 			// In these cases no update should happen
-			$this->assertSame( $functionRevision_1, $targetTitle->getLatestRevID() );
+			$this->assertSame( $functionRevision_1, $targetTitle->getLatestRevID( IDBAccessObject::READ_LATEST ) );
 			return;
 		}
 
 		// 4. Force the UpdateImplementationsJob to run now
 		$this->runJobs( [ 'maxJobs' => 1 ], [ 'type' => 'updateImplementations' ] );
-		$functionRevision_2 = $targetTitle->getLatestRevID();
+		$functionRevision_2 = $targetTitle->getLatestRevID( IDBAccessObject::READ_LATEST );
 		$this->assertTrue( $functionRevision_2 > $functionRevision_1 );
 
 		// 5. Retrieve Z8K4/implementations (as ZIDs) and confirm correct
