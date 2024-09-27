@@ -223,8 +223,8 @@ module.exports = exports = defineComponent( {
 		 */
 		legalText: function () {
 			return ( this.getCurrentZObjectType === Constants.Z_IMPLEMENTATION ) ?
-				this.$i18n( 'wikifunctions-edit-copyrightwarning-implementation' ).text() :
-				this.$i18n( 'wikifunctions-edit-copyrightwarning-function' ).text();
+				this.$i18n( 'wikifunctions-editing-copyrightwarning-implementation' ).parse() :
+				this.$i18n( 'wikifunctions-editing-copyrightwarning-function' ).parse();
 		},
 
 		/**
