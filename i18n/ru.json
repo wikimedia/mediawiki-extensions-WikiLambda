@@ -116,6 +116,7 @@
 	"wikilambda-function-details-summary-learn-more": "Узнать больше о процессе проверки.",
 	"wikilambda-function-details-table-approve": "Подключить",
 	"wikilambda-function-details-table-deactivate": "Отключить",
+	"wikilambda-function-evaluation-restriction-notrunnable": "Эта функция не имеет связанных реализаций.",
 	"wikilambda-function-evaluation-restriction-warning": "Мы сожалеем! На данный момент только авторизованные пользователи могут запускать функции.",
 	"wikilambda-function-evaluator-result": "Результат",
 	"wikilambda-function-evaluator-result-details": "Подробности",
