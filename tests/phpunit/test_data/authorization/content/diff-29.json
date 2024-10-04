@@ -1,0 +1,295 @@
+{
+	"description": "User can add a label to a key of a pre-defined type, even with missing keys",
+	"authorized": true,
+	"rights": [
+		"edit",
+		"wikilambda-edit-key-label",
+		"wikilambda-edit-object-description",
+		"wikilambda-edit-object-label"
+	],
+	"groups": [],
+	"dependencies": [],
+	"zid": "Z46",
+	"oldValue": {
+		"Z1K1": "Z2",
+		"Z2K1": {
+			"Z1K1": "Z6",
+			"Z6K1": "Z46"
+		},
+		"Z2K2": {
+			"Z1K1": "Z4",
+			"Z4K1": "Z46",
+			"Z4K2": [
+				"Z3",
+				{
+					"Z1K1": "Z3",
+					"Z3K1": "Z46",
+					"Z3K2": "Z46K1",
+					"Z3K3": {
+						"Z1K1": "Z12",
+						"Z12K1": [
+							"Z11",
+							{
+								"Z1K1": "Z11",
+								"Z11K1": "Z1002",
+								"Z11K2": "identity"
+							},
+							{
+								"Z1K1": "Z11",
+								"Z11K1": "Z1025",
+								"Z11K2": "tożsamość"
+							}
+						]
+					}
+				},
+				{
+					"Z1K1": "Z3",
+					"Z3K1": "Z4",
+					"Z3K2": "Z46K2",
+					"Z3K3": {
+						"Z1K1": "Z12",
+						"Z12K1": [
+							"Z11",
+							{
+								"Z1K1": "Z11",
+								"Z11K1": "Z1002",
+								"Z11K2": "type"
+							},
+							{
+								"Z1K1": "Z11",
+								"Z11K1": "Z1025",
+								"Z11K2": "typ"
+							}
+						]
+					}
+				},
+				{
+					"Z1K1": "Z3",
+					"Z3K1": "Z16",
+					"Z3K2": "Z46K3",
+					"Z3K3": {
+						"Z1K1": "Z12",
+						"Z12K1": [
+							"Z11",
+							{
+								"Z1K1": "Z11",
+								"Z11K1": "Z1002",
+								"Z11K2": "converter"
+							},
+							{
+								"Z1K1": "Z11",
+								"Z11K1": "Z1025",
+								"Z11K2": "konwerter"
+							}
+						]
+					}
+				},
+				{
+					"Z1K1": "Z3",
+					"Z3K1": "Z6",
+					"Z3K2": "Z46K4",
+					"Z3K3": {
+						"Z1K1": "Z12",
+						"Z12K1": [
+							"Z11",
+							{
+								"Z1K1": "Z11",
+								"Z11K1": "Z1002",
+								"Z11K2": "native type"
+							},
+							{
+								"Z1K1": "Z11",
+								"Z11K1": "Z1025",
+								"Z11K2": "typ natywny dla języka"
+							}
+						]
+					}
+				}
+			],
+			"Z4K3": "Z161"
+		},
+		"Z2K3": {
+			"Z1K1": "Z12",
+			"Z12K1": [
+				"Z11",
+				{
+					"Z1K1": "Z11",
+					"Z11K1": "Z1002",
+					"Z11K2": "Type converter to code"
+				},
+				{
+					"Z1K1": "Z11",
+					"Z11K1": "Z1025",
+					"Z11K2": "Konwerter typu na kod źródłowy"
+				}
+			]
+		},
+		"Z2K5": {
+			"Z1K1": "Z12",
+			"Z12K1": [
+				"Z11",
+				{
+					"Z1K1": "Z11",
+					"Z11K1": "Z1002",
+					"Z11K2": "A function that converts an instance of a Wikifunctions type into one understood by a programming language"
+				}
+			]
+		}
+	},
+	"newValue": {
+		"Z1K1": "Z2",
+		"Z2K1": {
+			"Z1K1": "Z6",
+			"Z6K1": "Z46"
+		},
+		"Z2K2": {
+			"Z1K1": "Z4",
+			"Z4K1": "Z46",
+			"Z4K2": [
+				"Z3",
+				{
+					"Z1K1": "Z3",
+					"Z3K1": "Z46",
+					"Z3K2": "Z46K1",
+					"Z3K3": {
+						"Z1K1": "Z12",
+						"Z12K1": [
+							"Z11",
+							{
+								"Z1K1": "Z11",
+								"Z11K1": "Z1002",
+								"Z11K2": "identity"
+							},
+							{
+								"Z1K1": "Z11",
+								"Z11K1": "Z1025",
+								"Z11K2": "tożsamość"
+							},
+							{
+								"Z1K1": "Z11",
+								"Z11K1": "Z1430",
+								"Z11K2": "Gleichheit"
+							}
+						]
+					}
+				},
+				{
+					"Z1K1": "Z3",
+					"Z3K1": "Z4",
+					"Z3K2": "Z46K2",
+					"Z3K3": {
+						"Z1K1": "Z12",
+						"Z12K1": [
+							"Z11",
+							{
+								"Z1K1": "Z11",
+								"Z11K1": "Z1002",
+								"Z11K2": "type"
+							},
+							{
+								"Z1K1": "Z11",
+								"Z11K1": "Z1025",
+								"Z11K2": "typ"
+							},
+							{
+								"Z1K1": "Z11",
+								"Z11K1": "Z1430",
+								"Z11K2": "Typ"
+							}
+						]
+					}
+				},
+				{
+					"Z1K1": "Z3",
+					"Z3K1": "Z16",
+					"Z3K2": "Z46K3",
+					"Z3K3": {
+						"Z1K1": "Z12",
+						"Z12K1": [
+							"Z11",
+							{
+								"Z1K1": "Z11",
+								"Z11K1": "Z1002",
+								"Z11K2": "converter"
+							},
+							{
+								"Z1K1": "Z11",
+								"Z11K1": "Z1025",
+								"Z11K2": "konwerter"
+							},
+							{
+								"Z1K1": "Z11",
+								"Z11K1": "Z1430",
+								"Z11K2": "Wandler"
+							}
+						]
+					}
+				},
+				{
+					"Z1K1": "Z3",
+					"Z3K1": "Z6",
+					"Z3K2": "Z46K4",
+					"Z3K3": {
+						"Z1K1": "Z12",
+						"Z12K1": [
+							"Z11",
+							{
+								"Z1K1": "Z11",
+								"Z11K1": "Z1002",
+								"Z11K2": "native type"
+							},
+							{
+								"Z1K1": "Z11",
+								"Z11K1": "Z1025",
+								"Z11K2": "typ natywny dla języka"
+							},
+							{
+								"Z1K1": "Z11",
+								"Z11K1": "Z1430",
+								"Z11K2": "nativer Typ"
+							}
+						]
+					}
+				}
+			],
+			"Z4K3": "Z161"
+		},
+		"Z2K3": {
+			"Z1K1": "Z12",
+			"Z12K1": [
+				"Z11",
+				{
+					"Z1K1": "Z11",
+					"Z11K1": "Z1002",
+					"Z11K2": "Type converter to code"
+				},
+				{
+					"Z1K1": "Z11",
+					"Z11K1": "Z1025",
+					"Z11K2": "Konwerter typu na kod źródłowy"
+				},
+				{
+					"Z1K1": "Z11",
+					"Z11K1": "Z1430",
+					"Z11K2": "Typumwandler in Code"
+				}
+			]
+		},
+		"Z2K5": {
+			"Z1K1": "Z12",
+			"Z12K1": [
+				"Z11",
+				{
+					"Z1K1": "Z11",
+					"Z11K1": "Z1002",
+					"Z11K2": "A function that converts an instance of a Wikifunctions type into one understood by a programming language"
+				},
+				{
+					"Z1K1": "Z11",
+					"Z11K1": "Z1430",
+					"Z11K2": "wandelt einen Wikifunctions-Typ in einen Typ um, der von einer Programmiersprache verstanden wird"
+				}
+			]
+		}
+	}
+}
