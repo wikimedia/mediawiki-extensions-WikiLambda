@@ -51,7 +51,7 @@ class PublicApiRun extends WikiLambdaApiBase {
 
 		// Extract the function called, as a string, for the metrics event. (It should always exist,
 		// but if not the orchestrator will return an error.)
-		$function = null;
+		$function = '';
 		if ( property_exists( $zObjectAsStdClass, 'Z7K1' ) ) {
 			if ( gettype( $zObjectAsStdClass->Z7K1 ) === 'string' ) {
 				$function = $zObjectAsStdClass->Z7K1;
@@ -61,7 +61,6 @@ class PublicApiRun extends WikiLambdaApiBase {
 			) {
 				$function = $zObjectAsStdClass->Z7K1->Z8K5;
 			} else {
-				$function = json_encode( $zObjectAsStdClass->Z7K1 );
 				$logger->info(
 					'PublicApiRun unable to find a ZID for the function called',
 					[
@@ -69,6 +68,10 @@ class PublicApiRun extends WikiLambdaApiBase {
 					]
 				);
 			}
+		}
+		// Only log or submit event with $function if it's valid, to ensure privacy
+		if ( !ZObjectUtils::isValidZObjectReference( $function ) ) {
+			$function = 'No valid ZID';
 		}
 
 		// Unlike the Special pages, we don't have a helpful userCanExecute() method
