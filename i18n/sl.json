@@ -358,6 +358,7 @@
 	"wikilambda-typeunavailable": "neprepoznana vrsta",
 	"wikilambda-unknown-save-error-message": "Pri poskusu shranjevanja sprememb je prišlo do napake.",
 	"wikilambda-viewmode-nojs": "Ta stran je prikazana omejeno brez JavaScripta.",
+	"wikilambda-wikidata-lexeme-selector-placeholder": "Izberite leksem Wikipodatkov",
 	"wikilambda-zerror": "Napaka vrste $1",
 	"wikilambda-zimplememntation-composition-missing": "Sestava je prazna. Izberite funkcijo.",
 	"wikilambda-zimplementation-code-language-missing": "Izberite programski jezik",
