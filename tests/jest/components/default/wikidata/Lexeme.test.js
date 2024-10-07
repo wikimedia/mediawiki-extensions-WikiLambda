@@ -80,7 +80,6 @@ describe( 'WikidataLexeme', () => {
 			expect( link.exists() ).toBe( true );
 			expect( link.attributes().href ).toContain( `Lexeme:${ lexemeId }` );
 			expect( link.text() ).toBe( 'turtle' );
-			expect( link.findComponent( { name: 'cdx-icon' } ).exists() ).toBe( true );
 		} );
 
 		it( 'renders the lexeme external link if data is not available', () => {
@@ -95,7 +94,6 @@ describe( 'WikidataLexeme', () => {
 			expect( link.exists() ).toBe( true );
 			expect( link.attributes().href ).toContain( `Lexeme:${ lexemeId }` );
 			expect( link.text() ).toBe( lexemeId );
-			expect( link.findComponent( { name: 'cdx-icon' } ).exists() ).toBe( true );
 		} );
 	} );
 

@@ -18,13 +18,7 @@
 				:lang="lexemeLabelData.langCode"
 				:dir="lexemeLabelData.langDir"
 				target="_blank"
-			>
-				{{ lexemeLabelData.label }}<cdx-icon
-					v-if="lexemeUrl"
-					:icon="icons.cdxIconLinkExternal"
-					class="ext-wikilambda-app-wikidata-lexeme__link-icon"
-				></cdx-icon>
-			</a>
+			>{{ lexemeLabelData.label }}</a>
 		</template>
 		<cdx-lookup
 			v-else
@@ -50,9 +44,13 @@ const { defineComponent } = require( 'vue' );
 const { CdxIcon, CdxLookup } = require( '@wikimedia/codex' );
 const Constants = require( '../../../Constants.js' ),
 	LabelData = require( '../../../store/classes/LabelData.js' ),
-	{ mapActions, mapGetters } = require( 'vuex' ),
-	icons = require( '../../../../lib/icons.json' );
+	{ mapActions, mapGetters } = require( 'vuex' );
 
+// TODO (T375206): Replace the hardcoded logo svg with the icon version in the Codex library
+// After discussion with the Design Systems team, it's been agreed to use the Wikidata color icon
+// contrary to the monocolor icons available in Codex. The reason for this is that Wikidata
+// monocrome icon resembles a barcode instead of a Wikidata reference. Discussion on including color
+// versions for project logos in the Codex icon library can be read in T374731.
 const wikidataIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
   <path fill="#900" d="M0 16h.721V4H0v12Zm1.49 0H3.7V4H1.49v12ZM4.422 4v11.999h2.21V4h-2.21Z"/>
   <path fill="#396" d="M17.789 16h.72V4h-.72v12Zm1.49-12v12H20V4h-.721ZM7.378 16h.72V4h-.72v12Zm1.49-12v12h.721V4h-.721Z"/>
@@ -82,7 +80,6 @@ module.exports = exports = defineComponent( {
 	},
 	data: function () {
 		return {
-			icons: icons,
 			wikidataIcon: wikidataIconSvg,
 			inputValue: '',
 			lookupResults: [],
@@ -306,25 +303,20 @@ module.exports = exports = defineComponent( {
 
 .ext-wikilambda-app-wikidata-lexeme {
 	display: flex;
-	align-items: center;
+	align-items: normal;
+	min-height: @min-size-interactive-pointer;
+	box-sizing: border-box;
+	/* We calculate dynamically a different padding for the three settings */
+	--line-height-current: calc( var( --line-height-medium ) * 1em );
+	padding-top: calc( calc( @min-size-interactive-pointer - var( --line-height-current ) ) / 2 );
+
+	.ext-wikilambda-app-wikidata-lexeme__link {
+		line-height: var( --line-height-current );
+	}
 
 	.ext-wikilambda-app-wikidata-lexeme__wd-icon {
 		margin: 0 @spacing-25;
-	}
-
-	.ext-wikilambda-app-wikidata-lexeme__link {
-		display: flex;
-		align-items: center;
-	}
-
-	a > .ext-wikilambda-app-wikidata-lexeme__link-icon {
-		color: inherit;
-
-		&.cdx-icon {
-			width: @size-75;
-			height: @size-75;
-			padding-left: @spacing-12;
-		}
+		height: var( --line-height-current );
 	}
 }
 </style>
