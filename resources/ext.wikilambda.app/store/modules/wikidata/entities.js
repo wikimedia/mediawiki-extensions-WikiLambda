@@ -34,7 +34,7 @@ module.exports = exports = {
 		/**
 		 * Returns whether the rowId contains a Wikidata Reference, which
 		 * will be a literal object of one of the Wikidata Reference types
-		 * (Z6691-Z6696).
+		 * (Z6091-Z6096).
 		 *
 		 * @param {Object} _state
 		 * @param {Object} getters

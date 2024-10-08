@@ -1371,15 +1371,15 @@ describe( 'factory Vuex module', () => {
 					const payload = { id: 0, type: Constants.Z_WIKIDATA_LEXEME };
 					factoryModule.actions.changeType( context, payload );
 
-					const expectedZids = [ 'Z1', 'Z7', 'Z6825', 'Z6695' ];
+					const expectedZids = [ 'Z1', 'Z7', 'Z6825', 'Z6095' ];
 					const expectedPayload = {
 						rowId: 0,
 						value: {
 							Z1K1: 'Z7',
 							Z7K1: 'Z6825',
 							Z6825K1: {
-								Z1K1: 'Z6695',
-								Z6695K1: ''
+								Z1K1: 'Z6095',
+								Z6095K1: ''
 							}
 						},
 						append: false

@@ -89,13 +89,13 @@ describe( 'Wikidata Lexemes Vuex module', () => {
 						Z1K1: 'Z7',
 						Z7K1: 'Z6825',
 						Z6825K1: { // rowId = 8
-							Z1K1: 'Z6695',
-							Z6695K1: 'L333333' // rowId = 12
+							Z1K1: 'Z6095',
+							Z6095K1: 'L333333' // rowId = 12
 						}
 					}
 				} );
 				const rowId = 1;
-				const expected = { id: 12, key: 'Z6695K1', parent: 8, value: Constants.ROW_VALUE_OBJECT };
+				const expected = { id: 12, key: 'Z6095K1', parent: 8, value: Constants.ROW_VALUE_OBJECT };
 				expect( lexemesModule.getters.getLexemeIdRow( state, getters )( rowId ) )
 					.toEqual( expected );
 			} );
@@ -103,12 +103,12 @@ describe( 'Wikidata Lexemes Vuex module', () => {
 			it( 'returns wikidata reference lexeme Id row', () => {
 				state.zobject = zobjectToRows( {
 					Z2K2: { // rowId = 1
-						Z1K1: 'Z6695',
-						Z6695K1: 'L333333' // rowId = 5
+						Z1K1: 'Z6095',
+						Z6095K1: 'L333333' // rowId = 5
 					}
 				} );
 				const rowId = 1;
-				const expected = { id: 5, key: 'Z6695K1', parent: 1, value: Constants.ROW_VALUE_OBJECT };
+				const expected = { id: 5, key: 'Z6095K1', parent: 1, value: Constants.ROW_VALUE_OBJECT };
 				expect( lexemesModule.getters.getLexemeIdRow( state, getters )( rowId ) )
 					.toEqual( expected );
 			} );
