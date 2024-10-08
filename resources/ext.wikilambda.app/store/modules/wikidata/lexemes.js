@@ -48,7 +48,7 @@ module.exports = exports = {
 			function findLexemeId( rowId ) {
 				let wdReferenceRowId = rowId;
 
-				// Type is either Z7/Function call or Z6695/Wikidata lexeme reference:
+				// Type is either Z7/Function call or Z6095/Wikidata lexeme reference:
 				// * If Z7: The wikidata lexeme reference is in the first argument
 				const type = getters.getZObjectTypeByRowId( rowId );
 				if ( type === Constants.Z_FUNCTION_CALL ) {

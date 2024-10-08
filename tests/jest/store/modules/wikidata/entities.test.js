@@ -161,8 +161,8 @@ describe( 'Wikidata Entities Vuex module', () => {
 			it( 'returns true when object is a wikidata reference type', () => {
 				state.zobject = zobjectToRows( {
 					Z2K2: { // rowId = 1
-						Z1K1: 'Z6695',
-						Z6695K1: 'L333333'
+						Z1K1: 'Z6095',
+						Z6095K1: 'L333333'
 					}
 				} );
 				const rowId = 1;
