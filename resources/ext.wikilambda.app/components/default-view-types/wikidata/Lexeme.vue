@@ -6,7 +6,7 @@
 -->
 <template>
 	<div class="ext-wikilambda-app-wikidata-lexeme" data-testid="wikidata-lexeme">
-		<template v-if="!edit">
+		<div v-if="!edit" class="ext-wikilambda-app-wikidata-lexeme__read">
 			<cdx-icon
 				:icon="wikidataIcon"
 				class="ext-wikilambda-app-wikidata-lexeme__wd-icon"
@@ -19,7 +19,7 @@
 				:dir="lexemeLabelData.langDir"
 				target="_blank"
 			>{{ lexemeLabelData.label }}</a>
-		</template>
+		</div>
 		<cdx-lookup
 			v-else
 			v-model:input-value="inputValue"
@@ -302,13 +302,16 @@ module.exports = exports = defineComponent( {
 @import '../../../ext.wikilambda.app.variables.less';
 
 .ext-wikilambda-app-wikidata-lexeme {
-	display: flex;
-	align-items: normal;
-	min-height: @min-size-interactive-pointer;
-	box-sizing: border-box;
-	/* We calculate dynamically a different padding for the three settings */
 	--line-height-current: calc( var( --line-height-medium ) * 1em );
-	padding-top: calc( calc( @min-size-interactive-pointer - var( --line-height-current ) ) / 2 );
+
+	.ext-wikilambda-app-wikidata-lexeme__read {
+		display: flex;
+		align-items: normal;
+		min-height: @min-size-interactive-pointer;
+		box-sizing: border-box;
+		/* We calculate dynamically a different padding for each font size setting */
+		padding-top: calc( calc( @min-size-interactive-pointer - var( --line-height-current ) ) / 2 );
+	}
 
 	.ext-wikilambda-app-wikidata-lexeme__link {
 		line-height: var( --line-height-current );
