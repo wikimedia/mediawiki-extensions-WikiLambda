@@ -196,10 +196,6 @@ module.exports = exports = defineComponent( {
 				this.clearResults();
 				return;
 			}
-			// Just search if more than one characters
-			if ( input.length < 2 ) {
-				return;
-			}
 			// Search after 300 ms
 			clearTimeout( this.lookupDelayTimer );
 			this.lookupDelayTimer = setTimeout( () => {
