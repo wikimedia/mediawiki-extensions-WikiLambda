@@ -53,22 +53,10 @@ class OrchestratorRequest {
 		$guzzleClient = $this->guzzleClient;
 		$userAgentString = $this->userAgentString;
 
-		$requestHeaders = [
-			'User-Agent' => $userAgentString,
-		];
-
 		// (T365053) Propagate request tracing headers
 		$telemetry = Telemetry::getInstance();
-		$requestHeaders['X-Request-Id'] = $telemetry->getRequestId();
-		$tracestate = $telemetry->getTracestate();
-		if ( $tracestate !== null ) {
-			$requestHeaders['tracestate' ] = $tracestate;
-		}
-		$traceparent = $telemetry->getTraceparent();
-		if ( $traceparent !== null ) {
-			$requestHeaders['traceparent'] = $traceparent;
-		}
-
+		$requestHeaders = $telemetry->getRequestHeaders();
+		$requestHeaders['User-Agent'] = $userAgentString;
 		if ( $bypassCache ) {
 			return $this->guzzleClient->post( '/1/v1/evaluate/', [
 				'json' => $query,
