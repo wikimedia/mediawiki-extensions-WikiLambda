@@ -73,16 +73,10 @@ installation instructions, you will be asked to run the MediaWiki `maintenance/r
 script, which loads into the database all the built-in data if they are not there yet.
 However, the update script will not overwrite any existing data.
 
-To make fresh loads of the built-in data, load a given Zid or range of Zids, or other operations,
-you can use the `loadPreDefinedObject.php` maintenance script.
+To make fresh loads of the built-in data, load a given Zid or range of Zids, merge with existing
+data, or other more complex loading operations, use the `loadPreDefinedObject.php` maintenance script.
 
-This script makes smart insertions, making sure that the necessary dependencies are already present.
-For example, if you wish to insert the object with zid `Z41`, the script will first look into the
-`dependencies.json` file in `function-schemata` and will make sure that all the specified
-dependencies are available (Z40 and Z1002). If they are not present, the dependencies will be newly
-inserted. If they are already available, the dependencies will not be overwritten with new versions.
-
-The `loadPreDefinedObject` script uses the function-schemata data definitions files so always make
+The `loadPreDefinedObject` script uses the function-schemata data definition files so always make
 sure that the function-schemata is up to date. From the Wikilambda directory:
 
 ```
@@ -94,37 +88,125 @@ To run the script, from your MediaWiki installation directory, do:
 $ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php <OPTIONS>
 ```
 
-To load all built-in objects, use the `--all` option:
+##### Options
+
+The script can be called with a number of options that allow you to set the Zid or Zids to insert,
+and how to handle merges with already existing data.
+
+To configure **what objects to load**, use the following flags:
+
+* `--all`: Loads all built-in objects, from Z1 to Z999.
+* `--zid <Zid>`: Loads only the specified Zid from the built-in object range.
+* `--from <Zid>`: Sets the lower range of the set of sequential Zids to be loaded.
+* `--to <Zid>`: Sets the upper range of the set of sequential Zids to be loaded.
+
+
+In the absence of any special flags, if an object already exists in the database, the script will
+skip it. To set a different **update or merge strategy**, use the following flags:
+
+* `--force`: Whenever an object already exists in the database, overwrite it with the version
+available in the built-in data directory.
+* `--merge`: Whenever an object already exists in the database, attempt to merge the current version
+with the built-in version. The multilingual and other important changes will be kept as currently
+stored, while other changes will trigger a conflict. Every conflict will request input from the user
+to decide whether to keep the current version or restore to the builtin version. To skip the
+interactive mode, use the additional flags:
+  * `--current`: Whenever a conflict is found, this will automatically default to keeping the
+  current value.
+  * `--builtin`: Whenever a conflict is found, this will automatically default to restoring the
+  builtin value.
+
+Other configuration flags are:
+* `--wait <ms>`: Adds a sleep time (in milliseconds) between insertions.
+
+
+##### Dependencies
+
+Whenever the script inserts a subset of the builtin objects, specified with `--zid` or `--from` and
+`--to`, it will track the dependencies and output a notification message at the end of the
+insertions. These dependencies are not inserted automatically, so you must make sure that they are
+already available:
+
 ```
-$ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php --all
+Done!
+> 70 objects were created or updated successfully.
+
+Make sure the following dependencies are inserted and up to date:
+Z14, Z50, Z61, Z1002
 ```
 
-To load a given zid, use the `--zid` option:
+##### Examples
+
+
+To load all built-in objects (only new ones, skip those which are already loaded), use the `--all` option:
+```
+$ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php \
+--all
+```
+
+To load a given Zid, use the `--zid` option:
 ```
 # Update Z14
-$ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php --zid 14
+$ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php \
+--zid Z14
 ```
 
-To load all the objects in a range of zids, use the `--from` and `--to` options:
+To load all missing objects in a range of zids, use the `--from` and `--to` options:
 ```
 # Update from Z6000 to Z7000
-$ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php --from 6000 --to 7000
+$ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php \
+--from Z6000 --to Z7000
 ```
 
-If the objects are already present, the insertion will not take place. If you wish to force insert
-and overwrite the existing objects, use the `--force` option.
+To forcefully insert all objects, overwriting the ones that already exist, use the `--force` option:
 ```
 # Force all
-$ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php --all --force
+$ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php \
+--all --force
 
-# Force Z6005
-$ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php --zid 6005 --force
+# Rewrite Z6005 with its builtin version
+$ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php \
+--zid Z6005 --force
 ```
 
-Note that the `--force` flag will only be applicable for the requested objects, never for its
-dependencies. For example, in this last example, the object `Z6005` will be overwritten if it's
-already present, but only unavailable dependencies will be inserted, while available dependencies
-will not be overwritten.
+To insert all non-existing objects, and merge the already existing ones, use the `--merge` option.
+
+```
+$ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php \
+--all --merge
+```
+
+If conflicts are found, the script will request input from the user:
+```
+> Conflict:
+  | Zid: Z507
+  | Path: Z2K2.Z50K1.1.Z3K1
+  | Current value: "Z7"
+  | Builtin value: "Z99"
+> Restore to builtin value? (y/n) [n] >
+```
+
+As explained in this warning message, the object Z507 could not be merged automatically. The value
+found down the key path is currently stored as `Z7`, but the value as per the
+`function-schemata/data/definitions/Z507.json` file is `Z99`. This requires the user to make an
+informed decision to either keep the version currently preset in the database (`n`) or to restore
+it to its builtin value (`y`).
+
+To insert all non-existing objects, and merge the already existing ones by always keeping the
+current values whenever there are conflicts, use the `--merge --current` options.
+
+```
+$ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php \
+--all --merge --current
+```
+
+To insert all non-existing objects, and merge the already existing ones by always resetting the
+builtin values whenever there are conflicts, use the `--merge --builtin` options.
+
+```
+$ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php \
+--all --merge --builtin
+```
 
 #### Loading a production data dump
 

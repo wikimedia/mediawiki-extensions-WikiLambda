@@ -11,6 +11,7 @@
  * @license MIT
  */
 
+use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Title\Title;
@@ -171,8 +172,14 @@ class LoadJsonDump extends Maintenance {
 			$zObjectStore->pushZObject( $zid, $data, $summary );
 			$this->output( ( $creating ? 'Created' : 'Updated' ) . " $zid\n" );
 			return 1;
+		} catch ( ZErrorException $e ) {
+			$this->error( "Problem " . ( $creating ? 'creating' : 'updating' ) . " $zid:" );
+			$this->error( $e->getMessage() );
+			$this->error( $e->getZErrorMessage() );
+			$this->error( "\n" );
+			return -1;
 		} catch ( \Exception $e ) {
-			$this->error( "Problem " . ( $creating ? 'creating' : 'updating' ) . " $zid\n" );
+			$this->error( "Problem " . ( $creating ? 'creating' : 'updating' ) . " $zid:" );
 			$this->error( $e->getMessage() );
 			$this->error( $e->getTraceAsString() );
 			$this->error( "\n" );
