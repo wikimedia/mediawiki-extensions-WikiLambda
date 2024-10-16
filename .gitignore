@@ -2,6 +2,7 @@
 /vendor
 /node_modules
 .eslintcache
+.stylelintcache
 /coverage
 /jest-coverage
 /tests/selenium/log
