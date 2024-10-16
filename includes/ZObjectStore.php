@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use Exception;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
@@ -168,6 +169,61 @@ class ZObjectStore {
 			}
 		}
 		return $dataArray;
+	}
+
+	/**
+	 * Push a given Object into the Database, without validation.
+	 *
+	 * @param string $zid
+	 * @param string $data
+	 * @param string $summary
+	 * @return bool
+	 * @throws Exception
+	 */
+	public function pushZObject( string $zid, string $data, string $summary ) {
+		$title = $this->titleFactory->newFromText( $zid, NS_MAIN );
+		if ( !$title ) {
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_INVALID_TITLE,
+					[ 'title' => $zid ]
+				)
+			);
+		}
+
+		$page = $this->wikiPageFactory->newFromTitle( $title );
+		$flags = $title->exists() ? EDIT_UPDATE : EDIT_NEW;
+
+		// Create system user:
+		$creatingUserName = wfMessage( 'wikilambda-systemuser' )->inLanguage( 'en' )->text();
+		$user = User::newSystemUser( $creatingUserName, [ 'steal' => true ] );
+		$this->userGroupManager->addUserToGroup( $user, 'sysop' );
+		$this->userGroupManager->addUserToGroup( $user, 'functionmaintainer' );
+		$this->userGroupManager->addUserToGroup( $user, 'functioneer' );
+		$this->userGroupManager->addUserToGroup( $user, 'wikifunctions-staff' );
+
+		try {
+			$content = ZObjectContentHandler::makeContent( $data, $title );
+		} catch ( ZErrorException $e ) {
+			// Make content should not fail unless the JSON is invalid
+			$this->logger->warning(
+				__METHOD__ . ' triggered an error on creating content for page "' . $zid . '"',
+				[ 'responseError' => $e ]
+			);
+			throw $e;
+		}
+
+		try {
+			$status = $page->doUserEditContent( $content, $user, $summary, $flags );
+		} catch ( Exception $e ) {
+			// Error: Database or a deeper MediaWiki error
+			$this->logger->warning(
+				__METHOD__ . ' triggered an error on publish for page "' . $zid . '"',
+				[ 'responseError' => $e ]
+			);
+			throw $e;
+		}
+		return true;
 	}
 
 	/**

@@ -63,6 +63,120 @@ you have cloned the `mediawiki/core` repository.
 
 Done! Navigate to the newly created `Z1` page on your wiki to verify that the extension is successfully installed.
 
+### Loading ZObject data
+
+#### Loading the built-in data
+
+`function-schemata/data/definitions` contains all the JSON files for the canonical built-in ZObjects
+that a blank Wikifunctions environment must have in a blank installation. When following the general
+installation instructions, you will be asked to run the MediaWiki `maintenance/run.php update`
+script, which loads into the database all the built-in data if they are not there yet.
+However, the update script will not overwrite any existing data.
+
+To make fresh loads of the built-in data, load a given Zid or range of Zids, or other operations,
+you can use the `loadPreDefinedObject.php` maintenance script.
+
+This script makes smart insertions, making sure that the necessary dependencies are already present.
+For example, if you wish to insert the object with zid `Z41`, the script will first look into the
+`dependencies.json` file in `function-schemata` and will make sure that all the specified
+dependencies are available (Z40 and Z1002). If they are not present, the dependencies will be newly
+inserted. If they are already available, the dependencies will not be overwritten with new versions.
+
+The `loadPreDefinedObject` script uses the function-schemata data definitions files so always make
+sure that the function-schemata is up to date. From the Wikilambda directory:
+
+```
+$ git submodule update --init --recursive
+```
+
+To run the script, from your MediaWiki installation directory, do:
+```
+$ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php <OPTIONS>
+```
+
+To load all built-in objects, use the `--all` option:
+```
+$ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php --all
+```
+
+To load a given zid, use the `--zid` option:
+```
+# Update Z14
+$ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php --zid 14
+```
+
+To load all the objects in a range of zids, use the `--from` and `--to` options:
+```
+# Update from Z6000 to Z7000
+$ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php --from 6000 --to 7000
+```
+
+If the objects are already present, the insertion will not take place. If you wish to force insert
+and overwrite the existing objects, use the `--force` option.
+```
+# Force all
+$ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php --all --force
+
+# Force Z6005
+$ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php --zid 6005 --force
+```
+
+Note that the `--force` flag will only be applicable for the requested objects, never for its
+dependencies. For example, in this last example, the object `Z6005` will be overwritten if it's
+already present, but only unavailable dependencies will be inserted, while available dependencies
+will not be overwritten.
+
+#### Loading a production data dump
+
+Sometimes it might be necessary to replicate locally the current state of the Wikifunctions.org
+production database. This can be useful for data debugging purposes, analytics, etc. For this, you
+can use the `loadJsonDump.php` maintenance script.
+
+This script requires objects being downloaded via the
+[wikifunctions-content-download](https://gitlab.wikimedia.org/repos/abstract-wiki/wikifunctions-content-download/)
+script.
+
+To use this script, clone the project and follow the usage guide in the `README.md` file:
+```
+# With ssh:
+git@gitlab.wikimedia.org:repos/abstract-wiki/wikifunctions-content-download.git
+
+# With https:
+git clone https://gitlab.wikimedia.org/repos/abstract-wiki/wikifunctions-content-download.git
+
+# Install dependencies:
+cd wikifunctions-content-download
+npm ci
+
+# Run script so that the objects are stored in your Wikilambda directory:
+npm start -- --dir /home/user/mediawiki/core/extensions/WikiLambda/zobjectcache
+```
+
+This script will download all the production current objects into the `zobjectcache` folder in your
+WikiLambda extension. If this is the first time using the download script, it will take some time to complete the
+job. Otherwise it will just download the objects that have new versions available.
+
+Make sure that your `zobjectcache` directory contains the following files:
+* The index file `Z0.json` which contains a map with the latest revision ID for every ZObject Id.
+* All the versioned ZObject files, with filenames `Zid.revision.json`.
+
+You are now ready to use the `loadJsonDump.php` maintenance script to load all the data into your
+local installation, using the argument `--dir` to specify the data directory:
+
+```
+docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadJsonDump.php --dir zobjectcache
+```
+
+To insert a given zid, use the argument `--zid`:
+
+```
+docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadJsonDump.php --dir zobjectcache --zid Z6005
+```
+NOTE: You must use this option **very carefully**, as it will only force insert the specified Zid without
+being concerned about its dependencies between this and other objects. While it's safe to push locally the
+whole production database, as we are replicating the full context in one go, pushing one Zid should
+only be done if we are sure that the context matches this object perfectly.
+
 ### Back-end services
 
 WikiLambda uses two back-end services for running user-defined and built-in functions in a secure, scalable environment; a set of "evaluators" that run user-defined native code, and an "orchestrator" that receives execution requests and determines what to run.
