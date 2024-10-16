@@ -23,26 +23,26 @@
 				:lang="labelData.langCode"
 				:dir="labelData.langDir"
 			>{{ labelData.label }}</a>
-		</div>
-		<div
+		</div
+		><span
 			v-if="hasChildren"
-			class="ext-wikilambda-app-object-to-string">
-			&nbsp;<span class="ext-wikilambda-app-object-to-string__divider">(</span>
-			<!-- eslint-disable vue/no-v-for-template-key -->
-			<template
-				v-for="( row, index ) in childRows"
-				:key="index"
-			>
-				<wl-z-object-to-string
-					:row-id="row.id"
-					@expand="expand"
-				></wl-z-object-to-string>
-				<span
-					v-if="hasComma( index )"
-					class="ext-wikilambda-app-object-to-string__divider"
-				>,&nbsp;</span>
-			</template><span class="ext-wikilambda-app-object-to-string__divider">)</span>
-		</div>
+			class="ext-wikilambda-app-object-to-string__children">
+			&nbsp;<span class="ext-wikilambda-app-object-to-string__divider">(</span
+			><span class="ext-wikilambda-app-object-to-string__child">
+				<template
+					v-for="( row, index ) in childRows"
+					:key="index">
+					<wl-z-object-to-string
+						:row-id="row.id"
+						@expand="expand"
+					></wl-z-object-to-string
+					><span
+						v-if="hasComma( index )"
+						class="ext-wikilambda-app-object-to-string__divider"
+					>,&nbsp;</span>
+				</template>
+			</span><span class="ext-wikilambda-app-object-to-string__divider">)</span>
+		</span>
 	</div>
 	<div
 		v-else
@@ -296,15 +296,20 @@ module.exports = exports = defineComponent( {
 @import '../../ext.wikilambda.app.variables.less';
 
 .ext-wikilambda-app-object-to-string {
-	display: flex;
-	white-space: pre-wrap;
-	word-break: break-all;
-	flex-flow: row wrap;
-	justify-content: flex-start;
-	gap: 0;
+	display: inline;
+
+	.ext-wikilambda-app-object-to-string__child {
+		white-space: normal;
+		word-break: break-word;
+	}
+
+	.ext-wikilambda-app-object-to-string__children {
+		white-space: nowrap; /* Prevent wrapping */
+	}
 
 	.ext-wikilambda-app-object-to-string__divider {
 		color: @color-subtle;
+		white-space: nowrap; /* Prevent wrapping */
 	}
 
 	.ext-wikilambda-app-object-to-string__blank {
