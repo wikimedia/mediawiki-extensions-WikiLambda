@@ -244,6 +244,10 @@ module.exports = exports = defineComponent( {
 		 * else, restore the previous selected value.
 		 */
 		onBlur: function () {
+			// If current inputValue matches selected lexeme, do nothing:
+			if ( this.inputValue === this.lexemeLabel ) {
+				return;
+			}
 			// Match current inputValue with available menu options:
 			const match = this.lookupResults.find( ( option ) => option.label === this.inputValue );
 			if ( match ) {
