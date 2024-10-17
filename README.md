@@ -281,41 +281,84 @@ You can evaluate an arbitrary function call by navigating to `localhost:8080/wik
 
 If you would like to use your own installation of the function orchestrator and evaluator services, please perform the following additional step:
 
-* Copy the contents of the `services` block in `mediawiki/extensions/WikiLambda/docker-compose.sample.yml` to the analogous `services` block in your `mediawiki/docker-compose.override.yml`.
-* If you want to use a different port or name for your orchestrator service, you will need to set the `$wgWikiLambdaOrchestratorLocation` configuration from the default of `mediawiki_function-orchestrator_1:6254` in your `LocalSettings.php` file, e.g. to `mediawiki-function-orchestrator-1:6254` you would add:
+1. Copy the contents of the `services` block in `mediawiki/extensions/WikiLambda/docker-compose.sample.yml` to the analogous `services` block in your `mediawiki/docker-compose.override.yml`.
+2. Set the `$wgWikiLambdaOrchestratorLocation` configuration variable in your `LocalSettings.php` as explained in the [Orchestrator location](#orchestrator-location) section below.
+3. Set the function orchestrator environment variables in your docker-compose.override.yml file, as detailed in the [Orchestrator environment variables](#orchestrator-env) section below.
+4. Restart your docker containers
 
- ```
- $wgWikiLambdaOrchestratorLocation = "http://mediawiki-function-orchestrator-1:6254/1/v1/evaluate";
- ```
+<a name="orchestrator-location"></a>
+##### Orchestrator location
 
-This will provide you with your own orchestrator and evaluator services, pointed at your wiki. You can now use this for local content as well as built-in content.
+Your Mediawiki installation needs to know the location of your orchestrator service. This variable
+is set by default to the Beta cluster instance of function orchestrator. You can see this in the
+`extension.json` file, in the `config` property:
 
-* If your wiki is not called 'mediawiki-web', e.g. because your checkout of MediaWiki is not in a directory called 'mediawiki', you will need to set `$wgWikiLambdaOrchestratorLocation` in your `LocalSettings.php` and make similar edits to the `environment` variables you have set in your `mediawiki/docker-compose.override.yml` file.
-  * To find out the correct name for all the variables, run `docker compose ps` in your mediawiki directory. The output should be something similar to this:
-  ```
-  NAME                                   COMMAND                  SERVICE                         STATUS              PORTS
-  core-function-evaluator-javascript-1   "node server.js"         function-evaluator-javascript   running             0.0.0.0:6929->6927/tcp, :::6929->6927/tcp
-  core-function-evaluator-python-1       "node server.js"         function-evaluator-python       running             0.0.0.0:6928->6927/tcp, :::6928->6927/tcp
-  core-function-orchestrator-1           "node server.js"         function-orchestrator           running             0.0.0.0:6254->6254/tcp, :::6254->6254/tcp
-  core-mediawiki-1                       "/bin/bash /php_entr…"   mediawiki                       running             9000/tcp
-  core-mediawiki-jobrunner-1             "/bin/bash /entrypoi…"   mediawiki-jobrunner             running
-  core-mediawiki-web-1                   "/bin/bash /entrypoi…"   mediawiki-web                   running             0.0.0.0:8080->8080/tcp, :::8080->8080/tcp
-  ```
-  * Use the `SERVICE` name for the `mediawiki-web` container for your `WIKI_API_URL` variable, `http://<MEDIAWIKI WEB SERVICE NAME>:8080/w/api.php`
-    * E.g. `http://mediawiki-web:8080/w/api.php`
-  * Use the container `NAME` of the javascript evaluator for the javascript `evaluatorUri` in the `ORCHESTRATOR_CONFIG` variable, `http://<JAVASCRIPT EVALUATOR CONTAINER NAME>:6927/1/v1/evaluate/`
-    * E.g. `http://core-function-evaluator-javascript-1:6927/1/v1/evaluate/`
-  * Use the container `NAME` of the python evaluator for the python `evaluatorUri` in the
-  `ORCHESTRATOR_CONFIG` variable, `http://<PYTHON EVALUATOR CONTAINER NAME>:6927/1/v1/evaluate/`
-    * E.g. `http://core-function-evaluator-python-1:6927/1/v1/evaluate/`
-  * Use the container `NAME` of the orchestrator for the `$wgWikiLambdaOrchestratorLocation` config variable in `LocalSettings.php` file, as specified above.
-    * E.g. `http://core-function-orchestrator-1:6254/1/v1/evaluate/`
+```
+ "WikiLambdaOrchestratorLocation": {
+   "description": "Host and port of the function orchestrator.",
+   "value": "https://wikifunctions-orchestrator-beta.wmflabs.org:443"
+ }
+```
+
+To run your local orchestrator, you need to override this variable, by setting its new value
+in your `LocalSettings.php` file with the correct name and port of your orchestrator container.
+
+For example, if your orchestrator is called `core-function-orchestrator-1` and its port is `6254`,
+set the configuration variable to:
+
+```
+$wgWikiLambdaOrchestratorLocation = "http://mediawiki-function-orchestrator-1:6254/1/v1/evaluate";
+```
+
+NOTE: Container names are automatically assigned by docker and often uses the name of the directory
+where your Mediawiki repository is checked out. To find out the correct details of your docker containers,
+run `docker compose ps` in your mediawiki directory. The output should be something similar to this:
+
+```
+NAME                                   COMMAND                  SERVICE                         STATUS              PORTS
+core-function-evaluator-javascript-1   "node server.js"         function-evaluator-javascript   running             0.0.0.0:6929->6927/tcp, :::6929->6927/tcp
+core-function-evaluator-python-1       "node server.js"         function-evaluator-python       running             0.0.0.0:6928->6927/tcp, :::6928->6927/tcp
+core-function-orchestrator-1           "node server.js"         function-orchestrator           running             0.0.0.0:6254->6254/tcp, :::6254->6254/tcp
+core-mediawiki-1                       "/bin/bash /php_entr…"   mediawiki                       running             9000/tcp
+core-mediawiki-jobrunner-1             "/bin/bash /entrypoi…"   mediawiki-jobrunner             running
+core-mediawiki-web-1                   "/bin/bash /entrypoi…"   mediawiki-web                   running             0.0.0.0:8080->8080/tcp, :::8080->8080/tcp
+```
+
+<a name="orchestrator-env"></a>
+##### Orchestrator environment variables
+
+In your `docker-compose.override.yml` file, under the `function-orchestrator` service section, you'll
+need to set the following environment variables, which will allow you to enable and configure
+different features
+
+* **`WIKI_API_URL`** (mandatory): How to access the Mediawiki API from the function orchestrator.
+  This URL uses the service name of the `mediawiki-web` container: `http://<MEDIAWIKI WEB SERVICE NAME>:8080/w/api.php`.
+  * E.g. `http://mediawiki-web:8080/w/api.php`
+* **`WIKI_VIRTUAL_HOST`** (optional): E.g. `www.wikifunctions.org`
+* **`ORCHESTRATOR_CONFIG`** (mandatory): Internal configuration object for the orchestrator.
+  * **`evaluatorConfigs`** (mandatory): Configuration object for each of the available evaluators.
+    Each of them will need to set the correct value for their `evaluatorUri` configuration to: `http://<EVALUATOR CONTAINER NAME>:6927/1/v1/evaluate/`
+    * E.g. For **JavaScript** set `evaluatorUri` to `http://core-function-evaluator-javascript-1:6927/1/v1/evaluate/`
+    * E.g. For **Python** set `evaluatorUri` to `http://core-function-evaluator-python-1/1/v1/evaluate/`
+  * **`doValidate`** (deprecated)
+  * **`addNestedMetadata`** (optional): Feature flag to activate the return of nested metadata objects.
+  * **`useWikidata`** (optional): Feature flag to allow internal access to Wikidata.
+* **`WIKIDATA_API_URL`** (mandatory): This is necessary to work with Wikidata items and should point
+  at the public Wikidata base URL.
+  * E.g. `https://www.wikidata.org`
+* **`WIKIDATA_VIRTUAL_HOST`** (optional): E.g. `www.wikidata.org`
+* **`ORCHESTRATOR_TIMEOUT_MS`** (optional): Sets the orchestrator timeout limit, in milliseconds. If
+  not set, the default value is 20000 ms.
+
+
+##### Other configuration tips
+
 * If you would like to avoid permissions checks when developing locally, navigate to `localhost:8080/wiki` and log in (login: Admin, password: dockerpass)
 * If you would like to bypass the cache when developing locally, change the signature of the `orchestrate` function in `includes/OrchestratorRequest.php`, setting `$bypassCache = true`:
 
- ```
- public function orchestrate( $query, $bypassCache = true ) : string {
- ```
+```
+public function orchestrate( $query, $bypassCache = true ) : string {
+```
 
 #### Locally-built services for development
 
