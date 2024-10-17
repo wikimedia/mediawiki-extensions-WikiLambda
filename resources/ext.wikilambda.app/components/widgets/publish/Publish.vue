@@ -252,8 +252,15 @@ module.exports = exports = defineComponent( {
 		},
 
 		/**
-		 * On successfully exiting the page, remove event
-		 * listeners.
+		 * Add event listeners.
+		 */
+		addListeners: function () {
+			window.addEventListener( 'click', this.handleClickAway );
+			window.addEventListener( 'beforeunload', this.handleUnload );
+		},
+
+		/**
+		 * Remove event listeners.
 		 */
 		removeListeners: function () {
 			window.removeEventListener( 'click', this.handleClickAway );
@@ -261,8 +268,10 @@ module.exports = exports = defineComponent( {
 		}
 	} ),
 	mounted: function () {
-		window.addEventListener( 'click', this.handleClickAway );
-		window.addEventListener( 'beforeunload', this.handleUnload );
+		this.addListeners();
+	},
+	beforeUnmount: function () {
+		this.removeListeners();
 	}
 } );
 </script>
