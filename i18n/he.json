@@ -147,6 +147,7 @@
 	"wikilambda-editor-additional-details-label": "פרטים נוספים",
 	"wikilambda-editor-argument-list-label": "רשימת הארגומנטים",
 	"wikilambda-editor-boolean-selector": "בחירת אמת/שקר",
+	"wikilambda-editor-code-editor-zid-placeholder-error": "כל מופע של \"Z0\" בקוד שלך יוחלף במזהה שנוצר על־ידי המערכת בעת הפרסום.",
 	"wikilambda-editor-default-name": "ללא כותרת",
 	"wikilambda-editor-fn-edit-definition-tooltip-content": "מצטערים! רק משתמשים עם הרשאות מיוחדות יכולים לשנות הגדרה של פונקציה אחרי שההגדרה פורסמה.",
 	"wikilambda-editor-fn-step-function-about": "אודות",
