@@ -3,5 +3,7 @@
 	<rule ref="./vendor/mediawiki/mediawiki-codesniffer/MediaWiki" />
 
 	<file>.</file>
-	<exclude-pattern>\.js$</exclude-pattern>
+	<arg name="extensions" value="php" />
+	<arg name="encoding" value="UTF-8" />
+	<exclude-pattern type="relative">^function-schemata/*</exclude-pattern>
 </ruleset>
