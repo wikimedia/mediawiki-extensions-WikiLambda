@@ -10,7 +10,6 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-use FormatJson;
 use InvalidArgumentException;
 use MediaWiki\Content\Content;
 use MediaWiki\Content\ContentHandler;
@@ -24,6 +23,7 @@ use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Html\Html;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\Language\Language;
 use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;

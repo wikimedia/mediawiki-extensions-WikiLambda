@@ -10,7 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
-use ApiBase;
+use MediaWiki\Api\ApiBase;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Title\Title;
 use Wikimedia\ParamValidator\ParamValidator;

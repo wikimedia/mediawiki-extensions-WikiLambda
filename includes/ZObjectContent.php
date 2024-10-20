@@ -10,20 +10,20 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-use AbstractContent;
-use FormatJson;
-use Language;
+use MediaWiki\Content\AbstractContent;
+use MediaWiki\Content\TextContent;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualStringSet;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
+use MediaWiki\Json\FormatJson;
+use MediaWiki\Language\Language;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Status\Status;
 use MediaWiki\Title\Title;
 use MessageLocalizer;
-use TextContent;
 
 /**
  * This class represents the wrapper for a ZObject, as stored in MediaWiki. Though its form is

@@ -10,12 +10,12 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-use BagOStuff;
 use MediaWiki\Config\ConfigException;
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
+use Wikimedia\ObjectCache\BagOStuff;
 
 /**
  * @codeCoverageIgnore

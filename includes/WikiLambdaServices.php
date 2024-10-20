@@ -10,9 +10,9 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-use BagOStuff;
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\MediaWikiServices;
+use Wikimedia\ObjectCache\BagOStuff;
 
 /**
  * @codeCoverageIgnore

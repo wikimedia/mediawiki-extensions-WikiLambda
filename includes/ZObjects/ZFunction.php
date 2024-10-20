@@ -10,10 +10,10 @@
 
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
-use FormatJson;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
+use MediaWiki\Json\FormatJson;
 
 class ZFunction extends ZObject {
 
