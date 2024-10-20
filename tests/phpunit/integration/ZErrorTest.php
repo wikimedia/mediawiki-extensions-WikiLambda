@@ -9,13 +9,13 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
-use FormatJson;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
+use MediaWiki\Json\FormatJson;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZError

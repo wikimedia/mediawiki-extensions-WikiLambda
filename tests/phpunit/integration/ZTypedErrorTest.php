@@ -9,10 +9,10 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
-use FormatJson;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedError;
+use MediaWiki\Json\FormatJson;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedError

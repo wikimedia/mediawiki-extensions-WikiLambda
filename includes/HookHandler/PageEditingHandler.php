@@ -11,7 +11,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\HookHandler;
 
-use ApiMessage;
+use MediaWiki\Api\ApiMessage;
 use MediaWiki\CommentStore\CommentStoreComment;
 use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
@@ -23,7 +23,7 @@ use MediaWiki\Status\Status;
 use MediaWiki\Title\Title;
 use MediaWiki\User\User;
 use MediaWiki\User\UserIdentity;
-use MessageSpecifier;
+use Wikimedia\Message\MessageSpecifier;
 
 class PageEditingHandler implements
 	\MediaWiki\Hook\NamespaceIsMovableHook,

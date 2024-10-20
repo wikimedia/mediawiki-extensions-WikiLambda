@@ -10,8 +10,8 @@
 
 namespace MediaWiki\Extension\WikiLambda\Diff;
 
-use Content;
 use DifferenceEngine;
+use MediaWiki\Content\Content;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\MediaWikiServices;

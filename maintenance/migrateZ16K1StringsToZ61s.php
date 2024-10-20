@@ -13,12 +13,12 @@
 
 namespace MediaWiki\Extensions\WikiLambda\Maintenance;
 
-use Maintenance;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\Maintenance\Maintenance;
 
 $IP = getenv( 'MW_INSTALL_PATH' );
 if ( $IP === false ) {

@@ -10,7 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Diff;
 
-use Content;
+use MediaWiki\Content\Content;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use SlotDiffRenderer;
 

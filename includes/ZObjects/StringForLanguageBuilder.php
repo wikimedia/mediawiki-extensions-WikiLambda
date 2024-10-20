@@ -11,7 +11,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
-use Language;
+use MediaWiki\Language\Language;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\MediaWikiServices;
 

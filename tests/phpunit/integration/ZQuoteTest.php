@@ -9,8 +9,8 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
-use FormatJson;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZQuote;
+use MediaWiki\Json\FormatJson;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZQuote

@@ -2,6 +2,8 @@
 
 namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
+use MediaWiki\Api\ApiPageSet;
+use MediaWiki\Api\ApiQueryGeneratorBase;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use Psr\Log\LoggerAwareInterface;
@@ -19,7 +21,7 @@ use Psr\Log\LoggerInterface;
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
-abstract class WikiLambdaApiQueryGeneratorBase extends \ApiQueryGeneratorBase implements LoggerAwareInterface {
+abstract class WikiLambdaApiQueryGeneratorBase extends ApiQueryGeneratorBase implements LoggerAwareInterface {
 
 	protected LoggerInterface $logger;
 
@@ -60,7 +62,7 @@ abstract class WikiLambdaApiQueryGeneratorBase extends \ApiQueryGeneratorBase im
 	}
 
 	/**
-	 * @param \ApiPageSet|null $resultPageSet
+	 * @param ApiPageSet|null $resultPageSet
 	 */
 	protected function run( $resultPageSet ) {
 		// Throw, not implemented

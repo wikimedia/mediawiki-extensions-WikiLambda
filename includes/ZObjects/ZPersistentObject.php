@@ -10,11 +10,11 @@
 
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
-use Language;
 use MediaWiki\Context\IContextSource;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use MediaWiki\Language\Language;
 use MediaWiki\MediaWikiServices;
 use MessageLocalizer;
 

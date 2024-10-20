@@ -10,12 +10,12 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-use BagOStuff;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use MediaWiki\Http\Telemetry;
 use MediaWiki\Utils\GitInfo;
 use Psr\Http\Message\ResponseInterface;
+use Wikimedia\ObjectCache\BagOStuff;
 
 /**
  * @codeCoverageIgnore

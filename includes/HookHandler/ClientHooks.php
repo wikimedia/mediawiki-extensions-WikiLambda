@@ -11,8 +11,8 @@
 
 namespace MediaWiki\Extension\WikiLambda\HookHandler;
 
-use ApiMain;
-use ApiUsageException;
+use MediaWiki\Api\ApiMain;
+use MediaWiki\Api\ApiUsageException;
 use MediaWiki\Config\Config;
 use MediaWiki\Context\DerivativeContext;
 use MediaWiki\Context\RequestContext;
@@ -28,10 +28,10 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Html\Html;
 use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
 use MediaWiki\Parser\Sanitizer;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\Title\Title;
-use PPFrame;
 
 class ClientHooks implements
 	\MediaWiki\Hook\ParserFirstCallInitHook
