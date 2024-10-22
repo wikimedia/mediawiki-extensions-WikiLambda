@@ -1,31 +1,31 @@
 <!--
-	WikiLambda Vue component for Z6005/Wikidata Lexeme objects.
+	WikiLambda Vue component for Z6004/Wikidata Lexeme Form objects.
 
 	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-app-wikidata-lexeme" data-testid="wikidata-lexeme">
-		<div v-if="!edit" class="ext-wikilambda-app-wikidata-lexeme__read">
+	<div class="ext-wikilambda-app-wikidata-lexeme-form" data-testid="wikidata-lexeme-form">
+		<div v-if="!edit" class="ext-wikilambda-app-wikidata-lexeme-form__read">
 			<cdx-icon
 				:icon="wikidataIcon"
-				class="ext-wikilambda-app-wikidata-lexeme__wd-icon"
+				class="ext-wikilambda-app-wikidata-lexeme-form__wd-icon"
 			></cdx-icon>
 			<a
-				v-if="lexemeLabelData"
-				class="ext-wikilambda-app-wikidata-lexeme__link"
-				:href="lexemeUrl"
-				:lang="lexemeLabelData.langCode"
-				:dir="lexemeLabelData.langDir"
+				v-if="lexemeFormLabelData"
+				class="ext-wikilambda-app-wikidata-lexeme-form__link"
+				:href="lexemeFormUrl"
+				:lang="lexemeFormLabelData.langCode"
+				:dir="lexemeFormLabelData.langDir"
 				target="_blank"
-			>{{ lexemeLabelData.label }}</a>
+			>{{ lexemeFormLabelData.label }}</a>
 		</div>
 		<wl-wikidata-entity-selector
 			v-else
-			:entity-id="lexemeId"
-			:entity-label="lexemeLabel"
+			:entity-id="lexemeFormId"
+			:entity-label="lexemeFormLabel"
 			:icon="wikidataIcon"
-			:type="lexemeType"
+			:type="lexemeFormType"
 			@select-wikidata-entity="onSelect"
 		></wl-wikidata-entity-selector>
 	</div>
@@ -51,7 +51,7 @@ const wikidataIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="20" heig
 </svg>`;
 
 module.exports = exports = defineComponent( {
-	name: 'wl-wikidata-lexeme',
+	name: 'wl-wikidata-lexeme-form',
 	components: {
 		'cdx-icon': CdxIcon,
 		'wl-wikidata-entity-selector': WikidataEntitySelector
@@ -74,53 +74,57 @@ module.exports = exports = defineComponent( {
 	data: function () {
 		return {
 			wikidataIcon: wikidataIconSvg,
-			lexemeType: Constants.Z_WIKIDATA_LEXEME
+			lexemeFormType: Constants.Z_WIKIDATA_LEXEME_FORM
 		};
 	},
 	computed: Object.assign( mapGetters( [
-		'getLexemeData',
-		'getLexemeIdRow',
+		'getLexemeFormData',
+		'getLexemeFormIdRow',
 		'getUserLangCode',
 		'getZStringTerminalValue'
 	] ), {
 		/**
-		 * Returns the row where the Wikidata Item string Id value is.
-		 * If the value is unset or unfound, returns undefined.
+		 * Returns the row for the Fetch Wikidata Lexeme Identity argument is,
+		 * which will contain the string with the Wikidata Lexeme Id, if set,
 		 *
 		 * @return {Object|undefined}
 		 */
-		lexemeIdRow: function () {
-			return this.getLexemeIdRow( this.rowId );
+		lexemeFormIdRow: function () {
+			return this.getLexemeFormIdRow( this.rowId );
 		},
 		/**
 		 * Returns the Lexeme Id string value, if any Lexeme is selected.
-		 * Else returns null.
+		 * Else returns null (required as empty value for CdxLookup).
 		 *
 		 * @return {string|null}
 		 */
-		lexemeId: function () {
-			return this.lexemeIdRow ?
-				this.getZStringTerminalValue( this.lexemeIdRow.id ) || null :
+		lexemeFormId: function () {
+			return this.lexemeFormIdRow ?
+				this.getZStringTerminalValue( this.lexemeFormIdRow.id ) || null :
 				null;
 		},
 		/**
 		 * Returns the Lexeme data object, if any Lexeme is selected.
 		 * Else returns undefined.
 		 *
+		 * FIXME: need lexemeFormData
+		 *
 		 * @return {Object|undefined}
 		 */
-		lexemeData: function () {
-			return this.getLexemeData( this.lexemeId );
+		lexemeFormData: function () {
+			return this.getLexemeFormData( this.lexemeFormId );
 		},
 		/**
 		 * Returns the Wikidata URL for the selected Lexeme.
 		 *
 		 * @return {string|undefined}
 		 */
-		lexemeUrl: function () {
-			return this.lexemeId ?
-				`${ Constants.WIKIDATA_BASE_URL }/wiki/Lexeme:${ this.lexemeId }` :
-				undefined;
+		lexemeFormUrl: function () {
+			if ( !this.lexemeFormId ) {
+				return undefined;
+			}
+			const [ lexemeId = '', formId = '' ] = this.lexemeFormId.split( '-' );
+			return `${ Constants.WIKIDATA_BASE_URL }/wiki/Lexeme:${ lexemeId }#${ formId }`;
 		},
 		/**
 		 * Returns the LabelData object built from the available
@@ -131,31 +135,32 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {LabelData|undefined}
 		 */
-		lexemeLabelData: function () {
+		lexemeFormLabelData: function () {
 			// If no selected lexeme, return undefined
-			if ( !this.lexemeId ) {
+			if ( !this.lexemeFormId ) {
 				return undefined;
 			}
-			// If no lexemeData yet, return Lexeme Id
-			// Get best label from lemmas (if any)
-			const langs = this.lexemeData ? Object.keys( this.lexemeData.lemmas || {} ) : {};
+			// If no lexemeFormData yet, return Lexeme Id
+			// Get best label from representations (if any)
+			const langs = this.lexemeFormData ? Object.keys( this.lexemeFormData.representations || {} ) : {};
 			if ( langs.length > 0 ) {
-				const lemma = langs.includes( this.getUserLangCode ) ?
-					this.lexemeData.lemmas[ this.getUserLangCode ] :
-					this.lexemeData.lemmas[ langs[ 0 ] ];
-				return new LabelData( this.lexemeId, lemma.value, null, lemma.language );
+				const rep = langs.includes( this.getUserLangCode ) ?
+					this.lexemeFormData.representations[ this.getUserLangCode ] :
+					this.lexemeFormData.representations[ langs[ 0 ] ];
+				return new LabelData( this.lexemeFormId, rep.value, null, rep.language );
 			}
 			// Else, return Lexeme Id as label
-			return new LabelData( this.lexemeId, this.lexemeId, null );
+			return new LabelData( this.lexemeFormId, this.lexemeFormId, null );
 		},
 		/**
 		 * Returns the string label of the selected Lexeme or
-		 * an empty string if none is selected.
+		 * an empty string if none is selected. This is needed
+		 * for the CdxLookup component initial value.
 		 *
 		 * @return {string}
 		 */
-		lexemeLabel: function () {
-			return this.lexemeLabelData ? this.lexemeLabelData.label : '';
+		lexemeFormLabel: function () {
+			return this.lexemeFormLabelData ? this.lexemeFormLabelData.label : '';
 		}
 	} ),
 	methods: Object.assign( mapActions( [
@@ -175,12 +180,12 @@ module.exports = exports = defineComponent( {
 			// * Set Reference Id
 			// Else (type is Function Call):
 			// * Set Reference Id of the Fetch Function Id argument
-			const keyPath = ( this.type === Constants.Z_WIKIDATA_REFERENCE_LEXEME ) ? [
-				Constants.Z_WIKIDATA_REFERENCE_LEXEME_ID,
+			const keyPath = ( this.type === Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM ) ? [
+				Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM_ID,
 				Constants.Z_STRING_VALUE
 			] : [
-				Constants.Z_WIKIDATA_FETCH_LEXEME_ID,
-				Constants.Z_WIKIDATA_REFERENCE_LEXEME_ID,
+				Constants.Z_WIKIDATA_FETCH_LEXEME_FORM_ID,
+				Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM_ID,
 				Constants.Z_STRING_VALUE
 			];
 
@@ -191,19 +196,21 @@ module.exports = exports = defineComponent( {
 		}
 	} ),
 	watch: {
-		lexemeId: function ( id ) {
+		lexemeFormId: function ( id ) {
 			if ( id ) {
-				this.fetchLexemes( { ids: [ id ] } );
+				const [ lexemeId ] = id.split( '-' );
+				this.fetchLexemes( { ids: [ lexemeId ] } );
 			}
 		},
-		lexemeLabel: function ( label ) {
+		lexemeFormLabel: function ( label ) {
 			this.inputValue = label;
 		}
 	},
 	mounted: function () {
-		this.inputValue = this.lexemeLabel;
-		if ( this.lexemeId ) {
-			this.fetchLexemes( { ids: [ this.lexemeId ] } );
+		this.inputValue = this.lexemeFormLabel;
+		if ( this.lexemeFormId ) {
+			const [ lexemeId ] = this.lexemeFormId.split( '-' );
+			this.fetchLexemes( { ids: [ lexemeId ] } );
 		}
 	}
 } );
@@ -212,10 +219,10 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-app-wikidata-lexeme {
+.ext-wikilambda-app-wikidata-lexeme-form {
 	--line-height-current: calc( var( --line-height-medium ) * 1em );
 
-	.ext-wikilambda-app-wikidata-lexeme__read {
+	.ext-wikilambda-app-wikidata-lexeme-form__read {
 		display: flex;
 		align-items: normal;
 		min-height: @min-size-interactive-pointer;
@@ -224,16 +231,16 @@ module.exports = exports = defineComponent( {
 		padding-top: calc( calc( @min-size-interactive-pointer - var( --line-height-current ) ) / 2 );
 	}
 
-	.ext-wikilambda-app-wikidata-lexeme__notation {
+	.ext-wikilambda-app-wikidata-lexeme-form__notation {
 		margin-left: @spacing-25;
 		color: @color-subtle;
 	}
 
-	.ext-wikilambda-app-wikidata-lexeme__link {
+	.ext-wikilambda-app-wikidata-lexeme-form__link {
 		line-height: var( --line-height-current );
 	}
 
-	.ext-wikilambda-app-wikidata-lexeme__wd-icon {
+	.ext-wikilambda-app-wikidata-lexeme-form__wd-icon {
 		margin: 0 @spacing-25;
 		height: var( --line-height-current );
 	}

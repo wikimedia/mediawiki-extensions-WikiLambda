@@ -59,7 +59,7 @@ module.exports = exports = defineComponent( {
 		'getZObjectKeyByRowId',
 		'isCustomEnum',
 		'isInsideComposition',
-		'isWikidataEntity'
+		'isWikidataFetch'
 	] ), {
 		/**
 		 * Returns the key of the key-value pair of this component.
@@ -94,7 +94,7 @@ module.exports = exports = defineComponent( {
 		 * @return {boolean}
 		 */
 		isWikidataItem: function () {
-			return this.isWikidataEntity( this.rowId );
+			return this.isWikidataFetch( this.rowId );
 		},
 		/**
 		 * Whether the key expects a Wikidata item type.

@@ -33,8 +33,31 @@ module.exports = exports = {
 			return findLexemeData;
 		},
 		/**
-		 * Given the rowId of the function call fetchLexeme
-		 * returns the Id of the selected lexeme
+		 * Returns the lexeme form object of a given ID,
+		 * the fetch Promise if the fetch request is
+		 * on the fly, or undefined if it hasn't been
+		 * requested yet.
+		 *
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		getLexemeFormData: function ( state ) {
+			/**
+			 * @param {string} id
+			 * @return {Object|Promise|undefined}
+			 */
+			function findLexemeFormData( id ) {
+				const [ lexemeId ] = id.split( '-' );
+				const lexemeData = state.lexemes[ lexemeId ];
+				return ( lexemeData && lexemeData.forms ) ?
+					lexemeData.forms.find( ( item ) => item.id === id ) :
+					undefined;
+			}
+			return findLexemeFormData;
+		},
+		/**
+		 * Given the rowId of the Wikidata Lexeme entity
+		 * returns the rowId of the Lexeme Id string.
 		 *
 		 * @param {Object} _state
 		 * @param {Object} getters
@@ -46,21 +69,27 @@ module.exports = exports = {
 			 * @return {Object|undefined}
 			 */
 			function findLexemeId( rowId ) {
-				let wdReferenceRowId = rowId;
-
-				// Type is either Z7/Function call or Z6095/Wikidata lexeme reference:
-				// * If Z7: The wikidata lexeme reference is in the first argument
-				const type = getters.getZObjectTypeByRowId( rowId );
-				if ( type === Constants.Z_FUNCTION_CALL ) {
-					const children = getters.getChildrenByParentRowId( rowId );
-					const identityRow = children.find( ( row ) => row.key === Constants.Z_WIKIDATA_FETCH_LEXEME_ID );
-					wdReferenceRowId = identityRow ? identityRow.id : rowId;
-				}
-
-				// Once we have the Wikidata lexeme reference, return its ID key
-				return getters.getRowByKeyPath( [ Constants.Z_WIKIDATA_REFERENCE_LEXEME_ID ], wdReferenceRowId );
+				return getters.getWikidataEntityIdRow( rowId, Constants.Z_WIKIDATA_LEXEME );
 			}
 			return findLexemeId;
+		},
+		/**
+		 * Given the rowId of the Wikidata Lexeme Form entity
+		 * returns the rowId of the Lexeme Form Id string.
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getLexemeFormIdRow: function ( _state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @return {Object|undefined}
+			 */
+			function findLexemeFormId( rowId ) {
+				return getters.getWikidataEntityIdRow( rowId, Constants.Z_WIKIDATA_LEXEME_FORM );
+			}
+			return findLexemeFormId;
 		}
 	},
 	mutations: {
@@ -73,31 +102,15 @@ module.exports = exports = {
 		 * @param {Object} payload.data
 		 */
 		setLexemeData: function ( state, payload ) {
-			// Select only subset of Lexeme Data; keep only title and lemmas
-			const unwrap = ( ( { title, lemmas } ) => ( { title, lemmas } ) );
+			// Select only subset of Lexeme data; title, forms and lemmas
+			const unwrap = ( ( { title, forms, lemmas } ) => ( { title, forms, lemmas } ) );
 			state.lexemes[ payload.id ] = unwrap( payload.data );
 		}
 	},
 	actions: {
 		/**
-		 * Calls Wikidata Action API to search lexemes
-		 * by matching a the given searchTerm.
-		 *
-		 * @param {Object} context
-		 * @param {string} searchTerm
-		 * @return {Promise}
-		 */
-		lookupLexemes: function ( context, searchTerm ) {
-			const request = {
-				language: context.getters.getUserLangCode,
-				search: searchTerm,
-				type: 'lexeme'
-			};
-			return apiUtils.searchWikidataEntities( request );
-		},
-		/**
-		 * Calls Wikidata Action API to fetch the lexemes
-		 * given lexemes by their Ids.
+		 * Calls Wikidata Action API to fetch Wikidata Lexemes
+		 * given their Ids.
 		 *
 		 * @param {Object} context
 		 * @param {Object} payload

@@ -193,19 +193,6 @@ const Constants = {
 		RUNNING: 'running',
 		CANCELED: 'canceled'
 	},
-	builtinComponents = {
-		[ Constants.Z_ARGUMENT_REFERENCE ]: 'wl-z-argument-reference',
-		[ Constants.Z_FUNCTION_CALL ]: 'wl-z-function-call',
-		[ Constants.Z_RESPONSEENVELOPE ]: 'wl-z-evaluation-result',
-		[ Constants.Z_IMPLEMENTATION ]: 'wl-z-implementation',
-		[ Constants.Z_TESTER ]: 'wl-z-tester',
-		[ Constants.Z_MONOLINGUALSTRING ]: 'wl-z-monolingual-string',
-		[ Constants.Z_STRING ]: 'wl-z-string',
-		[ Constants.Z_REFERENCE ]: 'wl-z-reference',
-		[ Constants.Z_BOOLEAN ]: 'wl-z-boolean',
-		[ Constants.Z_CODE ]: 'wl-z-code',
-		[ Constants.Z_TYPED_LIST ]: 'wl-z-typed-list'
-	},
 	programmingLanguages = {
 		JAVASCRIPT: 'Z600',
 		PYTHON: 'Z610'
@@ -250,6 +237,31 @@ Constants.Z_WIKIDATA_LEXEME_FORM = 'Z6004';
 Constants.Z_WIKIDATA_LEXEME = 'Z6005';
 Constants.Z_WIKIDATA_LEXEME_SENSE = 'Z6006';
 
+// Wikidata Reference Types:
+Constants.Z_WIKIDATA_REFERENCE_ITEM = 'Z6091';
+Constants.Z_WIKIDATA_REFERENCE_ITEM_ID = 'Z6091K1';
+Constants.Z_WIKIDATA_REFERENCE_PROPERTY = 'Z6092';
+Constants.Z_WIKIDATA_REFERENCE_PROPERTY_ID = 'Z6092K1';
+Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM = 'Z6094';
+Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM_ID = 'Z6094K1';
+Constants.Z_WIKIDATA_REFERENCE_LEXEME = 'Z6095';
+Constants.Z_WIKIDATA_REFERENCE_LEXEME_ID = 'Z6095K1';
+Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE = 'Z6096';
+Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE_ID = 'Z6096K1';
+
+// Wikidata Entity Fetch Functions:
+Constants.Z_WIKIDATA_FETCH_ITEM = 'Z6821';
+Constants.Z_WIKIDATA_FETCH_ITEM_ID = 'Z6821K1';
+Constants.Z_WIKIDATA_FETCH_PROPERTY = 'Z6822';
+Constants.Z_WIKIDATA_FETCH_PROPERTY_ID = 'Z6822K1';
+Constants.Z_WIKIDATA_FETCH_LEXEME_FORM = 'Z6824';
+Constants.Z_WIKIDATA_FETCH_LEXEME_FORM_ID = 'Z6824K1';
+Constants.Z_WIKIDATA_FETCH_LEXEME = 'Z6825';
+Constants.Z_WIKIDATA_FETCH_LEXEME_ID = 'Z6825K1';
+Constants.Z_WIKIDATA_FETCH_LEXEME_SENSE = 'Z6826';
+Constants.Z_WIKIDATA_FETCH_LEXEME_SENSE_ID = 'Z6826K1';
+
+// Wikidata Types
 Constants.WIKIDATA_TYPES = [
 	Constants.Z_WIKIDATA_ITEM,
 	Constants.Z_WIKIDATA_PROPERTY,
@@ -259,32 +271,66 @@ Constants.WIKIDATA_TYPES = [
 	Constants.Z_WIKIDATA_LEXEME_SENSE
 ];
 
-// Wikidata Reference Types:
-Constants.Z_WIKIDATA_REFERENCE_ITEM = 'Z6091';
-Constants.Z_WIKIDATA_REFERENCE_PROPERTY = 'Z6092';
-Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM = 'Z6094';
-Constants.Z_WIKIDATA_REFERENCE_LEXEME = 'Z6095';
-Constants.Z_WIKIDATA_REFERENCE_LEXEME_ID = 'Z6095K1';
-Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE = 'Z6096';
+// Wikidata Reference Types (indexed by Wikidata type)
+Constants.WIKIDATA_REFERENCE_TYPES = {
+	[ Constants.Z_WIKIDATA_ITEM ]: Constants.Z_WIKIDATA_REFERENCE_ITEM,
+	[ Constants.Z_WIKIDATA_PROPERTY ]: Constants.Z_WIKIDATA_REFERENCE_PROPERTY,
+	[ Constants.Z_WIKIDATA_LEXEME_FORM ]: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM,
+	[ Constants.Z_WIKIDATA_LEXEME ]: Constants.Z_WIKIDATA_REFERENCE_LEXEME,
+	[ Constants.Z_WIKIDATA_LEXEME_SENSE ]: Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE
+};
 
-Constants.WIKIDATA_REFERENCE_TYPES = [
-	Constants.Z_WIKIDATA_REFERENCE_ITEM,
-	Constants.Z_WIKIDATA_REFERENCE_PROPERTY,
-	Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM,
-	Constants.Z_WIKIDATA_REFERENCE_LEXEME,
-	Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE
-];
+// Wikidata Entity Fetch Functions (indexed by Wikidata type)
+Constants.WIKIDATA_FETCH_FUNCTIONS = {
+	[ Constants.Z_WIKIDATA_ITEM ]: Constants.Z_WIKIDATA_FETCH_ITEM,
+	[ Constants.Z_WIKIDATA_PROPERTY ]: Constants.Z_WIKIDATA_FETCH_PROPERTY,
+	[ Constants.Z_WIKIDATA_LEXEME_FORM ]: Constants.Z_WIKIDATA_FETCH_LEXEME_FORM,
+	[ Constants.Z_WIKIDATA_LEXEME ]: Constants.Z_WIKIDATA_FETCH_LEXEME,
+	[ Constants.Z_WIKIDATA_LEXEME_SENSE ]: Constants.Z_WIKIDATA_FETCH_LEXEME_SENSE
+};
 
-// Wikidata Entity Fetch Functions:
-Constants.Z_WIKIDATA_FETCH_LEXEME_FORM = 'Z6824';
-Constants.Z_WIKIDATA_FETCH_LEXEME_FORM_ID = 'Z6824K1';
-Constants.Z_WIKIDATA_FETCH_LEXEME = 'Z6825';
-Constants.Z_WIKIDATA_FETCH_LEXEME_ID = 'Z6825K1';
+// Wikidata API values for the type property
+// https://www.wikidata.org/w/api.php?action=help&modules=wbsearchentities
+Constants.WIKIDATA_API_TYPE_VALUES = {
+	[ Constants.Z_WIKIDATA_ITEM ]: 'item',
+	[ Constants.Z_WIKIDATA_PROPERTY ]: 'property',
+	[ Constants.Z_WIKIDATA_LEXEME_FORM ]: 'form',
+	[ Constants.Z_WIKIDATA_LEXEME ]: 'lexeme',
+	[ Constants.Z_WIKIDATA_LEXEME_SENSE ]: 'sense'
+};
 
-Constants.WIKIDATA_FETCH_FUNCTIONS = [
-	Constants.Z_WIKIDATA_FETCH_LEXEME_FORM,
-	Constants.Z_WIKIDATA_FETCH_LEXEME
-];
+// Wikidata builtin components
+Constants.WIKIDATA_BUILTIN_COMPONENTS = {
+	[ Constants.Z_WIKIDATA_ITEM ]: 'wl-wikidata-item',
+	[ Constants.Z_WIKIDATA_REFERENCE_ITEM ]: 'wl-wikidata-item',
+	[ Constants.Z_WIKIDATA_FETCH_ITEM ]: 'wl-wikidata-item',
+	[ Constants.Z_WIKIDATA_LEXEME ]: 'wl-wikidata-lexeme',
+	[ Constants.Z_WIKIDATA_FETCH_LEXEME ]: 'wl-wikidata-lexeme',
+	[ Constants.Z_WIKIDATA_REFERENCE_LEXEME ]: 'wl-wikidata-lexeme',
+	[ Constants.Z_WIKIDATA_LEXEME_FORM ]: 'wl-wikidata-lexeme-form',
+	[ Constants.Z_WIKIDATA_FETCH_LEXEME_FORM ]: 'wl-wikidata-lexeme-form',
+	[ Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM ]: 'wl-wikidata-lexeme-form'
+};
+
+// Wikifunctions Builtin Components
+Constants.BUILTIN_COMPONENTS = {
+	[ Constants.Z_ARGUMENT_REFERENCE ]: 'wl-z-argument-reference',
+	[ Constants.Z_FUNCTION_CALL ]: 'wl-z-function-call',
+	[ Constants.Z_RESPONSEENVELOPE ]: 'wl-z-evaluation-result',
+	[ Constants.Z_IMPLEMENTATION ]: 'wl-z-implementation',
+	[ Constants.Z_TESTER ]: 'wl-z-tester',
+	[ Constants.Z_MONOLINGUALSTRING ]: 'wl-z-monolingual-string',
+	[ Constants.Z_STRING ]: 'wl-z-string',
+	[ Constants.Z_REFERENCE ]: 'wl-z-reference',
+	[ Constants.Z_BOOLEAN ]: 'wl-z-boolean',
+	[ Constants.Z_CODE ]: 'wl-z-code',
+	[ Constants.Z_TYPED_LIST ]: 'wl-z-typed-list'
+};
+
+Object.assign(
+	Constants.BUILTIN_COMPONENTS,
+	Constants.WIKIDATA_BUILTIN_COMPONENTS
+);
 
 Constants.Z_ERRORS = {
 	Z_ERROR_UNKNOWN: 'Z500',
@@ -303,6 +349,7 @@ Constants.EXCLUDE_FROM_SELECTOR = [
 	Constants.Z_ERROR,
 	Constants.Z_RESPONSEENVELOPE
 ];
+
 // EXCLUDE_FROM_PERSISTENT_CONTENT:
 // * Z3/Key
 // * Z39/Key reference
@@ -314,8 +361,9 @@ Constants.EXCLUDE_FROM_PERSISTENT_CONTENT = [
 	Constants.Z_ARGUMENT,
 	Constants.Z_CODE,
 	...Constants.WIKIDATA_TYPES,
-	...Constants.WIKIDATA_REFERENCE_TYPES
+	...Object.keys( Constants.WIKIDATA_REFERENCE_TYPES ).map( ( k ) => Constants.WIKIDATA_REFERENCE_TYPES[ k ] )
 ];
+
 // Types that contain an identity key
 // but are not considered enums:
 // * Z4/Type
@@ -352,7 +400,6 @@ Constants.breakpoints = breakpoints;
 Constants.breakpointsTypes = breakpointsTypes;
 Constants.testerStatus = testerStatus;
 Constants.COLOR_NESTING_LEVELS = 6;
-Constants.BUILTIN_COMPONENTS = builtinComponents;
 Constants.RESOLVER_TYPES = resolverTypes;
 Constants.LINKED_TYPES = linkedTypes;
 Constants.API_LIMIT_MAX = 100;

@@ -40,7 +40,8 @@ describe( 'ZObjectKeyValue', () => {
 			isCreateNewPage: createGetterMock( false ),
 			isIdentityKey: createGettersWithFunctionsMock( false ),
 			isMainObject: createGettersWithFunctionsMock( true ),
-			isWikidataEntity: createGettersWithFunctionsMock( false ),
+			isWikidataLiteral: createGettersWithFunctionsMock( false ),
+			isWikidataFetch: createGettersWithFunctionsMock( false ),
 			isWikidataReference: createGettersWithFunctionsMock( false ),
 			// For ZObjectKeyValueSet:
 			getChildrenByParentRowId: createGettersWithFunctionsMock( [] )
@@ -297,53 +298,6 @@ describe( 'ZObjectKeyValue', () => {
 			expect( wrapper.findComponent( { name: 'wl-z-typed-list' } ).exists() ).toBe( true );
 		} );
 
-		it( 'wikidata lexeme component for wikidata entity', () => {
-			getters.isWikidataEntity = createGettersWithFunctionsMock( true );
-			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL );
-			getters.getZFunctionCallFunctionId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_FETCH_LEXEME );
-			global.store.hotUpdate( {
-				getters: getters
-			} );
-
-			const wrapper = shallowMount( ZObjectKeyValue, {
-				props: {
-					rowId: 1,
-					edit: false
-				},
-				global: {
-					stubs: {
-						WlKeyValueBlock: false
-					}
-				}
-			} );
-
-			expect( wrapper.findComponent( { name: 'wl-wikidata-lexeme' } ).exists() ).toBe( true );
-			expect( wrapper.vm.expanded ).toBe( false );
-		} );
-
-		it( 'wikidata lexeme component for wikidata reference', () => {
-			getters.isWikidataReference = createGettersWithFunctionsMock( true );
-			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_REFERENCE_LEXEME );
-			global.store.hotUpdate( {
-				getters: getters
-			} );
-
-			const wrapper = shallowMount( ZObjectKeyValue, {
-				props: {
-					rowId: 1,
-					edit: false
-				},
-				global: {
-					stubs: {
-						WlKeyValueBlock: false
-					}
-				}
-			} );
-
-			expect( wrapper.findComponent( { name: 'wl-wikidata-lexeme' } ).exists() ).toBe( true );
-			expect( wrapper.vm.expanded ).toBe( false );
-		} );
-
 		it( 'fallback with renderer and parser', () => {
 			getters.hasRenderer = createGettersWithFunctionsMock( true );
 			getters.hasParser = createGettersWithFunctionsMock( true );
@@ -386,6 +340,224 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 
 			expect( wrapper.findComponent( { name: 'wl-z-object-key-value-set' } ).exists() ).toBe( true );
+		} );
+
+		describe( 'wikidata components', () => {
+			describe( 'lexeme', () => {
+				it( 'renders lexeme component for wikidata literal lexeme', () => {
+					getters.isWikidataLiteral = createGettersWithFunctionsMock( true );
+					getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_LEXEME );
+					global.store.hotUpdate( {
+						getters: getters
+					} );
+
+					const wrapper = shallowMount( ZObjectKeyValue, {
+						props: {
+							rowId: 1,
+							edit: false
+						},
+						global: {
+							stubs: {
+								WlKeyValueBlock: false
+							}
+						}
+					} );
+
+					expect( wrapper.findComponent( { name: 'wl-wikidata-lexeme' } ).exists() ).toBe( true );
+					expect( wrapper.vm.expanded ).toBe( false );
+				} );
+
+				it( 'renders lexeme component for function call to fetch wikidata lexeme', () => {
+					getters.isWikidataFetch = createGettersWithFunctionsMock( true );
+					getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL );
+					getters.getZFunctionCallFunctionId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_FETCH_LEXEME );
+					global.store.hotUpdate( {
+						getters: getters
+					} );
+
+					const wrapper = shallowMount( ZObjectKeyValue, {
+						props: {
+							rowId: 1,
+							edit: false
+						},
+						global: {
+							stubs: {
+								WlKeyValueBlock: false
+							}
+						}
+					} );
+
+					expect( wrapper.findComponent( { name: 'wl-wikidata-lexeme' } ).exists() ).toBe( true );
+					expect( wrapper.vm.expanded ).toBe( false );
+				} );
+
+				it( 'renders lexeme component for wikidata lexeme reference', () => {
+					getters.isWikidataReference = createGettersWithFunctionsMock( true );
+					getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_REFERENCE_LEXEME );
+					global.store.hotUpdate( {
+						getters: getters
+					} );
+
+					const wrapper = shallowMount( ZObjectKeyValue, {
+						props: {
+							rowId: 1,
+							edit: false
+						},
+						global: {
+							stubs: {
+								WlKeyValueBlock: false
+							}
+						}
+					} );
+
+					expect( wrapper.findComponent( { name: 'wl-wikidata-lexeme' } ).exists() ).toBe( true );
+					expect( wrapper.vm.expanded ).toBe( false );
+				} );
+			} );
+
+			describe( 'lexeme form', () => {
+				it( 'renders lexeme form component for wikidata literal lexeme form', () => {
+					getters.isWikidataLiteral = createGettersWithFunctionsMock( true );
+					getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_LEXEME_FORM );
+					global.store.hotUpdate( {
+						getters: getters
+					} );
+
+					const wrapper = shallowMount( ZObjectKeyValue, {
+						props: {
+							rowId: 1,
+							edit: false
+						},
+						global: {
+							stubs: {
+								WlKeyValueBlock: false
+							}
+						}
+					} );
+
+					expect( wrapper.findComponent( { name: 'wl-wikidata-lexeme-form' } ).exists() ).toBe( true );
+					expect( wrapper.vm.expanded ).toBe( false );
+				} );
+
+				it( 'renders lexeme form component for function call to fetch wikidata lexeme form', () => {
+					getters.isWikidataFetch = createGettersWithFunctionsMock( true );
+					getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL );
+					getters.getZFunctionCallFunctionId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_FETCH_LEXEME_FORM );
+					global.store.hotUpdate( {
+						getters: getters
+					} );
+
+					const wrapper = shallowMount( ZObjectKeyValue, {
+						props: {
+							rowId: 1,
+							edit: false
+						},
+						global: {
+							stubs: {
+								WlKeyValueBlock: false
+							}
+						}
+					} );
+
+					expect( wrapper.findComponent( { name: 'wl-wikidata-lexeme-form' } ).exists() ).toBe( true );
+					expect( wrapper.vm.expanded ).toBe( false );
+				} );
+
+				it( 'renders lexeme form component for wikidata lexeme form reference', () => {
+					getters.isWikidataReference = createGettersWithFunctionsMock( true );
+					getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM );
+					global.store.hotUpdate( {
+						getters: getters
+					} );
+
+					const wrapper = shallowMount( ZObjectKeyValue, {
+						props: {
+							rowId: 1,
+							edit: false
+						},
+						global: {
+							stubs: {
+								WlKeyValueBlock: false
+							}
+						}
+					} );
+
+					expect( wrapper.findComponent( { name: 'wl-wikidata-lexeme-form' } ).exists() ).toBe( true );
+					expect( wrapper.vm.expanded ).toBe( false );
+				} );
+			} );
+
+			describe( 'wikidata item', () => {
+				it( 'renders wikidata item component for wikidata literal item', () => {
+					getters.isWikidataLiteral = createGettersWithFunctionsMock( true );
+					getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_ITEM );
+					global.store.hotUpdate( {
+						getters: getters
+					} );
+
+					const wrapper = shallowMount( ZObjectKeyValue, {
+						props: {
+							rowId: 1,
+							edit: false
+						},
+						global: {
+							stubs: {
+								WlKeyValueBlock: false
+							}
+						}
+					} );
+
+					expect( wrapper.findComponent( { name: 'wl-wikidata-item' } ).exists() ).toBe( true );
+					expect( wrapper.vm.expanded ).toBe( false );
+				} );
+
+				it( 'renders wikidata item component for function call to fetch wikidata item', () => {
+					getters.isWikidataFetch = createGettersWithFunctionsMock( true );
+					getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL );
+					getters.getZFunctionCallFunctionId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_FETCH_ITEM );
+					global.store.hotUpdate( {
+						getters: getters
+					} );
+
+					const wrapper = shallowMount( ZObjectKeyValue, {
+						props: {
+							rowId: 1,
+							edit: false
+						},
+						global: {
+							stubs: {
+								WlKeyValueBlock: false
+							}
+						}
+					} );
+
+					expect( wrapper.findComponent( { name: 'wl-wikidata-item' } ).exists() ).toBe( true );
+					expect( wrapper.vm.expanded ).toBe( false );
+				} );
+
+				it( 'renders wikidata item component for wikidata item reference', () => {
+					getters.isWikidataReference = createGettersWithFunctionsMock( true );
+					getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_REFERENCE_ITEM );
+					global.store.hotUpdate( {
+						getters: getters
+					} );
+
+					const wrapper = shallowMount( ZObjectKeyValue, {
+						props: {
+							rowId: 1,
+							edit: false
+						},
+						global: {
+							stubs: {
+								WlKeyValueBlock: false
+							}
+						}
+					} );
+
+					expect( wrapper.findComponent( { name: 'wl-wikidata-item' } ).exists() ).toBe( true );
+					expect( wrapper.vm.expanded ).toBe( false );
+				} );
+			} );
 		} );
 	} );
 
@@ -947,55 +1119,6 @@ describe( 'ZObjectKeyValue', () => {
 					},
 					global: {
 						stubs: { WlKeyValueBlock: false }
-					}
-				} );
-
-				const toggle = wrapper.findComponent( { name: 'wl-expanded-toggle' } );
-				expect( toggle.exists() ).toBe( true );
-				expect( toggle.vm.hasExpandedMode ).toBe( false );
-			} );
-
-			it( 'disables expansion for wikidata entity', () => {
-				getters.isWikidataEntity = createGettersWithFunctionsMock( true );
-				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL );
-				getters.getZFunctionCallFunctionId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_FETCH_LEXEME );
-				global.store.hotUpdate( {
-					getters: getters
-				} );
-
-				const wrapper = shallowMount( ZObjectKeyValue, {
-					props: {
-						rowId: 1,
-						edit: false
-					},
-					global: {
-						stubs: {
-							WlKeyValueBlock: false
-						}
-					}
-				} );
-
-				const toggle = wrapper.findComponent( { name: 'wl-expanded-toggle' } );
-				expect( toggle.exists() ).toBe( true );
-				expect( toggle.vm.hasExpandedMode ).toBe( false );
-			} );
-
-			it( 'disables expansion for wikidata reference', () => {
-				getters.isWikidataReference = createGettersWithFunctionsMock( true );
-				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_REFERENCE_LEXEME );
-				global.store.hotUpdate( {
-					getters: getters
-				} );
-
-				const wrapper = shallowMount( ZObjectKeyValue, {
-					props: {
-						rowId: 1,
-						edit: false
-					},
-					global: {
-						stubs: {
-							WlKeyValueBlock: false
-						}
 					}
 				} );
 

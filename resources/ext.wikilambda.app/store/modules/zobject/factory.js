@@ -102,6 +102,7 @@ module.exports = exports = {
 						return getters.createZTypedPair( payload );
 					case Constants.Z_TYPED_MAP:
 						return getters.createZTypedMap( payload );
+					case Constants.Z_WIKIDATA_ITEM:
 					case Constants.Z_WIKIDATA_LEXEME:
 					case Constants.Z_WIKIDATA_LEXEME_FORM:
 						return getters.createWikidataEntity( payload );
@@ -790,8 +791,16 @@ module.exports = exports = {
 						value[ wdFetchId ] = wdRef;
 						return value;
 
+					case Constants.Z_WIKIDATA_ITEM:
+						wdRef = getters.createObjectByType( { type: Constants.Z_WIKIDATA_REFERENCE_ITEM } );
+						wdFetch = Constants.Z_WIKIDATA_FETCH_ITEM;
+						wdFetchId = Constants.Z_WIKIDATA_FETCH_ITEM_ID;
+
+						value[ Constants.Z_FUNCTION_CALL_FUNCTION ] = wdFetch;
+						value[ wdFetchId ] = wdRef;
+						return value;
+
 					// TODO: Future Wikidata integrations
-					// case Constants.Z_WIKIDATA_ITEM:
 					// case Constants.Z_WIKIDATA_PROPERTY:
 					// case Constants.Z_WIKIDATA_STATEMENT:
 					// case Constants.Z_WIKIDATA_LEXEME_SENSE:

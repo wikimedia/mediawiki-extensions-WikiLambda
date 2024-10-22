@@ -8,16 +8,22 @@
 'use strict';
 
 const
-	zobjectToRows = require( '../../../helpers/zObjectTableHelpers.js' ).zobjectToRows,
 	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
-	lexemesModule = require( '../../../../../resources/ext.wikilambda.app/store/modules/wikidata/lexemes.js' ),
-	zobjectModule = require( '../../../../../resources/ext.wikilambda.app/store/modules/zobject.js' );
+	lexemesModule = require( '../../../../../resources/ext.wikilambda.app/store/modules/wikidata/lexemes.js' );
 
 const lexemeData = {
 	title: 'Lexeme:L333333',
 	lemmas: {
 		en: { language: 'en', value: 'turtle' }
-	}
+	},
+	forms: [ {
+		id: 'L333333-F5',
+		representations: {
+			en: { language: 'en', value: 'turtled' }
+		},
+		grammaticalFeatures: [ 'Q1230649' ],
+		claims: {}
+	} ]
 };
 
 describe( 'Wikidata Lexemes Vuex module', () => {
@@ -26,91 +32,27 @@ describe( 'Wikidata Lexemes Vuex module', () => {
 	describe( 'Getters', () => {
 		describe( 'getLexemeIdRow', () => {
 			beforeEach( () => {
-				state = {
-					zobject: []
+				getters = {
+					getWikidataEntityIdRow: jest.fn()
 				};
-				getters = {};
-				getters.getRowById = zobjectModule.getters.getRowById( state );
-				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
-				getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
-				getters.getZReferenceTerminalValue = zobjectModule.getters.getZReferenceTerminalValue( state, getters );
-				getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
-				getters.getZFunctionCallArguments = zobjectModule.getters.getZFunctionCallArguments( state, getters );
-				getters.getZFunctionCallFunctionId = zobjectModule.getters.getZFunctionCallFunctionId( state, getters );
-				getters.getZObjectAsJsonById = zobjectModule.getters.getZObjectAsJsonById( state, getters );
-				getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( state, getters );
 			} );
 
-			it( 'returns undefined when row is undefined', () => {
-				const rowId = undefined;
-				const expected = undefined;
-				expect( lexemesModule.getters.getLexemeIdRow( state, getters )( rowId ) )
-					.toEqual( expected );
+			it( 'calls getWikidataEntityIdRow for lexemes', () => {
+				lexemesModule.getters.getLexemeIdRow( state, getters )( 10 );
+				expect( getters.getWikidataEntityIdRow ).toHaveBeenCalledWith( 10, Constants.Z_WIKIDATA_LEXEME );
+			} );
+		} );
+
+		describe( 'getLexemeFormIdRow', () => {
+			beforeEach( () => {
+				getters = {
+					getWikidataEntityIdRow: jest.fn()
+				};
 			} );
 
-			it( 'returns undefined when row is not found', () => {
-				const rowId = 100;
-				const expected = undefined;
-				expect( lexemesModule.getters.getLexemeIdRow( state, getters )( rowId ) )
-					.toEqual( expected );
-			} );
-
-			it( 'returns undefined when row belongs to something other than a function call', () => {
-				state.zobject = zobjectToRows( {
-					Z2K2: { // rowId = 1
-						Z1K1: 'Z11',
-						Z11K1: 'Z1002',
-						Z11K2: 'not a function call'
-					}
-				} );
-				const rowId = 1;
-				const expected = undefined;
-				expect( lexemesModule.getters.getLexemeIdRow( state, getters )( rowId ) )
-					.toEqual( expected );
-			} );
-
-			it( 'returns undefined when function call is not to a wikidata fetch function', () => {
-				state.zobject = zobjectToRows( {
-					Z2K2: { // rowId = 1
-						Z1K1: 'Z7',
-						Z7K1: 'Z801',
-						Z801K1: 'some function call'
-					}
-				} );
-				const rowId = 1;
-				const expected = undefined;
-				expect( lexemesModule.getters.getLexemeIdRow( state, getters )( rowId ) )
-					.toEqual( expected );
-			} );
-
-			it( 'returns wikidata reference lexeme Id row when inside fetch function call', () => {
-				state.zobject = zobjectToRows( {
-					Z2K2: { // rowId = 1
-						Z1K1: 'Z7',
-						Z7K1: 'Z6825',
-						Z6825K1: { // rowId = 8
-							Z1K1: 'Z6095',
-							Z6095K1: 'L333333' // rowId = 12
-						}
-					}
-				} );
-				const rowId = 1;
-				const expected = { id: 12, key: 'Z6095K1', parent: 8, value: Constants.ROW_VALUE_OBJECT };
-				expect( lexemesModule.getters.getLexemeIdRow( state, getters )( rowId ) )
-					.toEqual( expected );
-			} );
-
-			it( 'returns wikidata reference lexeme Id row', () => {
-				state.zobject = zobjectToRows( {
-					Z2K2: { // rowId = 1
-						Z1K1: 'Z6095',
-						Z6095K1: 'L333333' // rowId = 5
-					}
-				} );
-				const rowId = 1;
-				const expected = { id: 5, key: 'Z6095K1', parent: 1, value: Constants.ROW_VALUE_OBJECT };
-				expect( lexemesModule.getters.getLexemeIdRow( state, getters )( rowId ) )
-					.toEqual( expected );
+			it( 'calls getWikidataEntityIdRow for lexeme forms', () => {
+				lexemesModule.getters.getLexemeFormIdRow( state, getters )( 10 );
+				expect( getters.getWikidataEntityIdRow ).toHaveBeenCalledWith( 10, Constants.Z_WIKIDATA_LEXEME_FORM );
 			} );
 		} );
 
@@ -121,7 +63,7 @@ describe( 'Wikidata Lexemes Vuex module', () => {
 				};
 			} );
 
-			it( 'returns undefined if lexeme id not available', () => {
+			it( 'returns undefined if lexeme is not available', () => {
 				const lexemeId = 'L333333';
 				const expected = undefined;
 				expect( lexemesModule.getters.getLexemeData( state )( lexemeId ) )
@@ -133,6 +75,37 @@ describe( 'Wikidata Lexemes Vuex module', () => {
 				const lexemeId = 'L333333';
 				const expected = lexemeData;
 				expect( lexemesModule.getters.getLexemeData( state )( lexemeId ) )
+					.toEqual( expected );
+			} );
+		} );
+
+		describe( 'getLexemeFormData', () => {
+			beforeEach( () => {
+				state = {
+					lexemes: {}
+				};
+			} );
+
+			it( 'returns undefined if lexeme is not available', () => {
+				const lexemeFormId = 'L333333-F5';
+				const expected = undefined;
+				expect( lexemesModule.getters.getLexemeFormData( state )( lexemeFormId ) )
+					.toEqual( expected );
+			} );
+
+			it( 'returns undefined if lexeme form is not available', () => {
+				state.lexemes.L333333 = lexemeData;
+				const lexemeFormId = 'L333333-F3';
+				const expected = undefined;
+				expect( lexemesModule.getters.getLexemeFormData( state )( lexemeFormId ) )
+					.toEqual( expected );
+			} );
+
+			it( 'returns lexeme form data if available', () => {
+				state.lexemes.L333333 = lexemeData;
+				const lexemeFormId = 'L333333-F5';
+				const expected = lexemeData.forms[ 0 ];
+				expect( lexemesModule.getters.getLexemeFormData( state )( lexemeFormId ) )
 					.toEqual( expected );
 			} );
 		} );
@@ -160,31 +133,6 @@ describe( 'Wikidata Lexemes Vuex module', () => {
 	describe( 'Actions', () => {
 		const context = {};
 		let fetchMock;
-
-		describe( 'lookupLexemes', () => {
-			beforeEach( () => {
-				fetchMock = jest.fn().mockResolvedValue( {
-					json: jest.fn().mockReturnValue( 'some response' )
-				} );
-				// eslint-disable-next-line n/no-unsupported-features/node-builtins
-				global.fetch = fetchMock;
-				context.getters = {
-					getUserLangCode: 'en'
-				};
-			} );
-
-			it( 'calls wbsearchentities API', async () => {
-				const searchTerm = 'turtle';
-				const params = `origin=*&action=wbsearchentities&format=json&language=en&uselang=en&search=${
-					searchTerm }&type=lexeme&limit=10&props=url`;
-				const getUrl = `${ Constants.WIKIDATA_BASE_URL }/w/api.php?${ params }`;
-
-				const response = await lexemesModule.actions.lookupLexemes( context, searchTerm );
-
-				expect( fetchMock ).toHaveBeenCalledWith( getUrl );
-				expect( response ).toBe( 'some response' );
-			} );
-		} );
 
 		describe( 'fetchLexemes', () => {
 			beforeEach( () => {

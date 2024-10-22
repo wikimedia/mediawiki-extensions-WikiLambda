@@ -36,7 +36,7 @@ describe( 'ModeSelector', () => {
 			getZObjectKeyByRowId: createGettersWithFunctionsMock( Constants.Z_OBJECT_TYPE ),
 			isCustomEnum: createGettersWithFunctionsMock( false ),
 			isInsideComposition: createGettersWithFunctionsMock( false ),
-			isWikidataEntity: createGettersWithFunctionsMock( false )
+			isWikidataFetch: createGettersWithFunctionsMock( false )
 		};
 		global.store.hotUpdate( {
 			getters: getters

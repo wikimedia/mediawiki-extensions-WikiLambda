@@ -20,7 +20,8 @@ const { createStore } = require( 'vuex' ),
 	ztypeModule = require( './modules/ztype.js' ),
 	zfunctionModule = require( './modules/zfunction.js' ),
 	wdEntitiesModule = require( './modules/wikidata/entities.js' ),
-	wdLexemesModule = require( './modules/wikidata/lexemes.js' );
+	wdLexemesModule = require( './modules/wikidata/lexemes.js' ),
+	wdItemsModule = require( './modules/wikidata/items.js' );
 
 module.exports = createStore( {
 	modules: {
@@ -42,6 +43,7 @@ module.exports = createStore( {
 		zfunctionModule: zfunctionModule,
 		// Wikidata
 		wdEntitiesModule: wdEntitiesModule,
-		wdLexemesModule: wdLexemesModule
+		wdLexemesModule: wdLexemesModule,
+		wdItemsModule: wdItemsModule
 	}
 } );

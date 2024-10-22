@@ -82,7 +82,9 @@ const Constants = require( '../../Constants.js' ),
 	KeyValueBlock = require( '../base/KeyValueBlock.vue' ),
 	ZTester = require( './ZTester.vue' ),
 	ZTypedList = require( './ZTypedList.vue' ),
+	WikidataItem = require( './wikidata/Item.vue' ),
 	WikidataLexeme = require( './wikidata/Lexeme.vue' ),
+	WikidataLexemeForm = require( './wikidata/LexemeForm.vue' ),
 	LabelData = require( '../../store/classes/LabelData.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	errorUtils = require( '../../mixins/errorUtils.js' ),
@@ -98,7 +100,9 @@ module.exports = exports = defineComponent( {
 		'wl-key-value-block': KeyValueBlock,
 		'wl-localized-label': LocalizedLabel,
 		'wl-mode-selector': ModeSelector,
+		'wl-wikidata-item': WikidataItem,
 		'wl-wikidata-lexeme': WikidataLexeme,
+		'wl-wikidata-lexeme-form': WikidataLexemeForm,
 		'wl-z-argument-reference': ZArgumentReference,
 		'wl-z-boolean': ZBoolean,
 		'wl-z-code': ZCode,
@@ -179,7 +183,8 @@ module.exports = exports = defineComponent( {
 			'isCreateNewPage',
 			'isIdentityKey',
 			'isMainObject',
-			'isWikidataEntity',
+			'isWikidataLiteral',
+			'isWikidataFetch',
 			'isWikidataReference'
 		] ),
 		{
@@ -443,11 +448,6 @@ module.exports = exports = defineComponent( {
 					return false;
 				}
 
-				// TERMINAL rules for Wikidata items: no expansion allowed
-				if ( this.isWikidataEntity( this.rowId ) || this.isWikidataReference( this.rowId ) ) {
-					return false;
-				}
-
 				// If the type doesn't have any builting component, it must
 				// be always shown in its expanded-mode representation--the set
 				// of key values, so we won't show the expanded mode toggle.
@@ -502,16 +502,13 @@ module.exports = exports = defineComponent( {
 				if ( this.type === Constants.Z_TESTER ) {
 					return 'wl-z-tester';
 				}
-
 				// Wikidata Entities and References
-				if (
-					( this.functionCallFunctionId === Constants.Z_WIKIDATA_FETCH_LEXEME ) ||
-					( this.type === Constants.Z_WIKIDATA_REFERENCE_LEXEME )
-				) {
-					this.setExpanded( false );
-					return 'wl-wikidata-lexeme';
+				if ( (
+					this.isWikidataFetch( this.rowId ) ||
+					this.isWikidataReference( this.rowId ) ||
+					this.isWikidataLiteral( this.rowId ) ) && !!this.wikidataComponent && !this.expanded ) {
+					return this.wikidataComponent;
 				}
-
 				if ( ( this.type === Constants.Z_ARGUMENT_REFERENCE ) && !this.expanded ) {
 					return 'wl-z-argument-reference';
 				}
@@ -542,6 +539,18 @@ module.exports = exports = defineComponent( {
 				// If there's no builtin component or renderer, always show expanded mode
 				this.setExpanded( true );
 				return 'wl-z-object-key-value-set';
+			},
+
+			/**
+			 * Return the wikidata component
+			 *
+			 * @return {string|undefined}
+			 */
+			wikidataComponent: function () {
+				const wikidataComponent = this.functionCallFunctionId ?
+					Constants.WIKIDATA_BUILTIN_COMPONENTS[ this.functionCallFunctionId ] :
+					Constants.WIKIDATA_BUILTIN_COMPONENTS[ this.type ];
+				return wikidataComponent;
 			},
 
 			/**
@@ -849,6 +858,7 @@ module.exports = exports = defineComponent( {
 				offset: 1
 			} );
 		}
+
 	} )
 } );
 </script>
