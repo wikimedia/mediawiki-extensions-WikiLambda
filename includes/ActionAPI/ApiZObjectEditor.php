@@ -10,17 +10,15 @@
 
 namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
+use MediaWiki\Api\ApiMain;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiZObjectEditor extends WikiLambdaApiBase {
 
-	/**
-	 * @inheritDoc
-	 */
-	public function __construct( $query, $moduleName ) {
-		parent::__construct( $query, $moduleName );
+	public function __construct( ApiMain $mainModule, string $moduleName ) {
+		parent::__construct( $mainModule, $moduleName );
 
 		$this->setUp();
 	}

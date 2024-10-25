@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
 use MediaWiki\Api\ApiBase;
+use MediaWiki\Api\ApiQuery;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Title\Title;
 use Wikimedia\ParamValidator\ParamValidator;
@@ -21,12 +22,11 @@ class ApiQueryZFunctionReference extends WikiLambdaApiQueryGeneratorBase {
 	private ZObjectStore $zObjectStore;
 
 	/**
-	 * @inheritDoc
 	 * @codeCoverageIgnore
 	 */
 	public function __construct(
-		$query,
-		$moduleName,
+		ApiQuery $query,
+		string $moduleName,
 		ZObjectStore $zObjectStore
 	) {
 		parent::__construct( $query, $moduleName, 'wikilambdafn_' );

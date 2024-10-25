@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
+use MediaWiki\Api\ApiMain;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
@@ -24,11 +25,8 @@ use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiFunctionCall extends WikiLambdaApiBase {
 
-	/**
-	 * @inheritDoc
-	 */
-	public function __construct( $query, $moduleName ) {
-		parent::__construct( $query, $moduleName, 'wikilambda_function_call_' );
+	public function __construct( ApiMain $mainModule, string $moduleName ) {
+		parent::__construct( $mainModule, $moduleName, 'wikilambda_function_call_' );
 
 		$this->setUp();
 	}

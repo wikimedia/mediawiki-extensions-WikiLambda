@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
 use MediaWiki\Api\ApiBase;
+use MediaWiki\Api\ApiQuery;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\MediaWikiServices;
@@ -21,10 +22,9 @@ use Wikimedia\ParamValidator\TypeDef\IntegerDef;
 class ApiQueryZObjectLabels extends WikiLambdaApiQueryGeneratorBase {
 
 	/**
-	 * @inheritDoc
 	 * @codeCoverageIgnore
 	 */
-	public function __construct( $query, $moduleName ) {
+	public function __construct( ApiQuery $query, string $moduleName ) {
 		parent::__construct( $query, $moduleName, 'wikilambdasearch_' );
 	}
 
