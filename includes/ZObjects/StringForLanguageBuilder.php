@@ -119,7 +119,7 @@ class StringForLanguageBuilder {
 
 		$languageCode = $this->language->getCode();
 
-		if ( isset( $this->placeholderText ) ) {
+		if ( $this->placeholderText !== null ) {
 			return [
 				'title' => wfMessage( $this->placeholderText )->inLanguage( $this->language )->text(),
 				'languageCode' => $languageCode
