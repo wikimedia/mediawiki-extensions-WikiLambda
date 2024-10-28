@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
 use JobQueueGroup;
+use MediaWiki\Api\ApiMain;
 use MediaWiki\Extension\WikiLambda\Jobs\CacheTesterResultsJob;
 use MediaWiki\Extension\WikiLambda\Jobs\UpdateImplementationsJob;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
@@ -37,8 +38,12 @@ class ApiPerformTest extends WikiLambdaApiBase {
 	private ZObjectStore $zObjectStore;
 	private JobQueueGroup $jobQueueGroup;
 
-	public function __construct( $query, $moduleName, ZObjectStore $zObjectStore ) {
-		parent::__construct( $query, $moduleName, 'wikilambda_perform_test_' );
+	public function __construct(
+		ApiMain $mainModule,
+		string $moduleName,
+		ZObjectStore $zObjectStore
+	) {
+		parent::__construct( $mainModule, $moduleName, 'wikilambda_perform_test_' );
 
 		$this->zObjectStore = $zObjectStore;
 

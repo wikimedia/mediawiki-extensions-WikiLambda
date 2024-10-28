@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
 use MediaWiki\Api\ApiBase;
+use MediaWiki\Api\ApiQuery;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
@@ -36,12 +37,11 @@ class ApiQueryZObjects extends WikiLambdaApiQueryGeneratorBase {
 	protected LoggerInterface $logger;
 
 	/**
-	 * @inheritDoc
 	 * @codeCoverageIgnore
 	 */
 	public function __construct(
-		$query,
-		$moduleName,
+		ApiQuery $query,
+		string $moduleName,
 		LanguageFallback $languageFallback,
 		LanguageNameUtils $languageNameUtils,
 		TitleFactory $titleFactory

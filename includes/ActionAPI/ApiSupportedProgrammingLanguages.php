@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
+use MediaWiki\Api\ApiMain;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\PoolCounter\PoolCounterWorkViaCallback;
@@ -20,11 +21,8 @@ use MediaWiki\Status\Status;
 
 class ApiSupportedProgrammingLanguages extends WikiLambdaApiBase {
 
-	/**
-	 * @inheritDoc
-	 */
-	public function __construct( $query, $moduleName ) {
-		parent::__construct( $query, $moduleName, 'wikilambda_supported_programming_languages_' );
+	public function __construct( ApiMain $mainModule, string $moduleName ) {
+		parent::__construct( $mainModule, $moduleName, 'wikilambda_supported_programming_languages_' );
 
 		$this->setUp();
 	}
