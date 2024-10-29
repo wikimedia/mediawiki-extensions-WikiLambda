@@ -18,6 +18,7 @@
 			"もなー(偽物)",
 			"バレロン",
 			"春春眠眠",
+			"沈澄心",
 			"背番号4のエース"
 		]
 	},
@@ -252,8 +253,8 @@
 	"wikilambda-functioncall-metadata-errors-summary": "エラーの要約",
 	"wikilambda-functioncall-metadata-expected-result": "期待された結果",
 	"wikilambda-functioncall-metadata-hostname": "サーバー",
-	"wikilambda-functioncall-metadata-implementation-id": "実装ID",
-	"wikilambda-functioncall-metadata-implementation-type": "実装タイプ",
+	"wikilambda-functioncall-metadata-implementation-id": "ID",
+	"wikilambda-functioncall-metadata-implementation-type": "タイプ",
 	"wikilambda-functioncall-metadata-programming-language": "プログラミング言語",
 	"wikilambda-functioncall-metadata-programming-language-version": "バージョン",
 	"wikilambda-functioncall-metadata-validator-errors-summary": "バリデータエラーの概要",
