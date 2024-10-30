@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Hamilton Abreu"
+			"Hamilton Abreu",
+			"B3rnas"
 		]
 	},
 	"apihelp-wikilambda_fetch-summary": "Obter o modelo JSON de Objetos-Z.",

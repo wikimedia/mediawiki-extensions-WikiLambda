@@ -3,7 +3,8 @@
 		"authors": [
 			"JDíaz32",
 			"Jackiezelaya",
-			"No se"
+			"No se",
+			"Eulalio"
 		]
 	},
 	"apihelp-wikilambda_function_call-example-timeout": "Invocar una función que intenta ejecutarse para siempre, por lo que se agota el tiempo de espera en el evaluador",
