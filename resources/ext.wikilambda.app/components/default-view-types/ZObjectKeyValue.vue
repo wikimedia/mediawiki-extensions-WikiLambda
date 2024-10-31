@@ -75,7 +75,6 @@ const Constants = require( '../../Constants.js' ),
 	ZObjectStringRenderer = require( './ZObjectStringRenderer.vue' ),
 	ZString = require( './ZString.vue' ),
 	ZCode = require( './ZCode.vue' ),
-	ZEvaluationResult = require( './ZEvaluationResult.vue' ),
 	ZReference = require( './ZReference.vue' ),
 	ZBoolean = require( './ZBoolean.vue' ),
 	ZFunctionCall = require( './ZFunctionCall.vue' ),
@@ -103,7 +102,6 @@ module.exports = exports = defineComponent( {
 		'wl-z-argument-reference': ZArgumentReference,
 		'wl-z-boolean': ZBoolean,
 		'wl-z-code': ZCode,
-		'wl-z-evaluation-result': ZEvaluationResult,
 		'wl-z-function-call': ZFunctionCall,
 		'wl-z-implementation': ZImplementation,
 		'wl-z-monolingual-string': ZMonolingualString,
@@ -445,11 +443,6 @@ module.exports = exports = defineComponent( {
 					return false;
 				}
 
-				// TERMINAL rules for Evaluation Result: no expansion allowed
-				if ( this.type === Constants.Z_RESPONSEENVELOPE ) {
-					return false;
-				}
-
 				// TERMINAL rules for Wikidata items: no expansion allowed
 				if ( this.isWikidataEntity( this.rowId ) || this.isWikidataReference( this.rowId ) ) {
 					return false;
@@ -508,10 +501,6 @@ module.exports = exports = defineComponent( {
 				// Tester doesn't have an expanded mode
 				if ( this.type === Constants.Z_TESTER ) {
 					return 'wl-z-tester';
-				}
-				// Evaluation result doesn't have an expanded mode
-				if ( this.type === Constants.Z_RESPONSEENVELOPE ) {
-					return 'wl-z-evaluation-result';
 				}
 
 				// Wikidata Entities and References

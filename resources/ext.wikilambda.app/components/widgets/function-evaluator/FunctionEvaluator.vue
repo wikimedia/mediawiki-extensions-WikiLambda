@@ -105,12 +105,10 @@
 						<div v-if="apiErrors.length > 0">
 							{{ getErrorMessage( apiErrors[ 0 ] ) }}
 						</div>
-						<wl-z-object-key-value
+						<wl-evaluation-result
 							v-else
 							:row-id="resultRowId"
-							:skip-indent="true"
-							:edit="false"
-						></wl-z-object-key-value>
+						></wl-evaluation-result>
 					</template>
 				</div>
 			</div>
@@ -122,6 +120,7 @@
 const { CdxButton, CdxMessage } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
+	EvaluationResult = require( './EvaluationResult.vue' ),
 	WidgetBase = require( '../../base/WidgetBase.vue' ),
 	ZReference = require( '../../default-view-types/ZReference.vue' ),
 	KeyBlock = require( '../../base/KeyBlock.vue' ),
@@ -135,6 +134,7 @@ module.exports = exports = defineComponent( {
 	components: {
 		'cdx-button': CdxButton,
 		'cdx-message': CdxMessage,
+		'wl-evaluation-result': EvaluationResult,
 		'wl-widget-base': WidgetBase,
 		'wl-z-reference': ZReference,
 		'wl-key-block': KeyBlock,
@@ -169,6 +169,7 @@ module.exports = exports = defineComponent( {
 	},
 	computed: Object.assign( mapGetters( [
 		'getErrors',
+		'getMetadataError',
 		'getConnectedObjects',
 		'getZFunctionCallArguments',
 		'getLabelData',
@@ -179,7 +180,6 @@ module.exports = exports = defineComponent( {
 		'getCurrentZObjectId',
 		'getCurrentZObjectType',
 		'getUserLangZid',
-		'getMapValueByKey',
 		'userCanRunFunction',
 		'userCanRunUnsavedCode',
 		'waitForRunningParsers'
@@ -256,41 +256,6 @@ module.exports = exports = defineComponent( {
 		inputRowIds: function () {
 			return this.getZFunctionCallArguments( this.functionCallRowId )
 				.map( ( row ) => row.id );
-		},
-
-		/**
-		 * Returns the rowId of the Response Envelope Metadata/Z22K2
-		 *
-		 * @return {string|undefined}
-		 */
-		metadataRowId: function () {
-			if ( this.resultRowId === '' ) {
-				return undefined;
-			}
-			const row = this.getRowByKeyPath( [ Constants.Z_RESPONSEENVELOPE_METADATA ], this.resultRowId );
-			return row ? row.id : undefined;
-		},
-
-		/**
-		 * Returns the rowId of the Metadata object with key 'errors'
-		 *
-		 * @return {string|undefined}
-		 */
-		errorRowId: function () {
-			if ( !this.metadataRowId ) {
-				return undefined;
-			}
-			const row = this.getMapValueByKey( this.metadataRowId, 'errors' );
-			return row ? row.id : undefined;
-		},
-
-		/**
-		 * Returns whether there's an error key in the metadata of the ZEvaluationResult given by this.resultRowId
-		 *
-		 * @return {boolean}
-		 */
-		resultHasError: function () {
-			return this.errorRowId !== undefined;
 		},
 
 		/**
@@ -445,7 +410,7 @@ module.exports = exports = defineComponent( {
 						zobjectid: this.getCurrentZObjectId || null,
 						zlang: this.getUserLangZid || null,
 						selectedfunctionzid: this.selectedFunctionZid || null,
-						haserrors: this.resultHasError
+						haserrors: !!this.getMetadataError
 					};
 					this.submitInteraction( 'call', interactionData );
 				} );
