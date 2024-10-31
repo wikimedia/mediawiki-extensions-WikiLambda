@@ -91,7 +91,7 @@ class ZObjectContentHandler extends ContentHandler {
 	 * @param string|null $format
 	 * @return ZObjectContent
 	 */
-	public static function makeContent( $data, Title $title = null, $modelId = null, $format = null ) {
+	public static function makeContent( $data, ?Title $title = null, $modelId = null, $format = null ) {
 		// @phan-suppress-next-line PhanTypeMismatchReturnSuperType
 		return parent::makeContent( $data, $title, $modelId, $format );
 	}

@@ -20,8 +20,8 @@ class ZObjectSlotDiffRenderer extends SlotDiffRenderer {
 	 * @inheritDoc
 	 */
 	public function getDiff(
-		Content $oldContent = null,
-		Content $newContent = null
+		?Content $oldContent = null,
+		?Content $newContent = null
 	) {
 		// Create the entrypoint differ ZObjectDiffer and call doDiff
 		$differ = new ZObjectDiffer();
