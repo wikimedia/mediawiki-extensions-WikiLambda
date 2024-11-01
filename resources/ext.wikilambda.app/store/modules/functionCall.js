@@ -7,10 +7,30 @@
 
 const Constants = require( '../../Constants.js' ),
 	Row = require( '../classes/Row.js' ),
-	extractZIDs = require( '../../mixins/schemata.js' ).methods.extractZIDs,
+	{ extractZIDs, hybridToCanonical } = require( '../../mixins/schemata.js' ).methods,
 	apiUtils = require( '../../mixins/api.js' ).methods;
 
 module.exports = exports = {
+	state: {
+		metadata: undefined
+	},
+	getters: {
+		getMetadata: function ( state ) {
+			return state.metadata;
+		},
+		getMetadataError: function ( state ) {
+			if ( !state.metadata ) {
+				return undefined;
+			}
+			const map = state.metadata[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ].slice( 1 );
+			return map.find( ( item ) => item[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ] === 'errors' );
+		}
+	},
+	mutations: {
+		setMetadata: function ( state, metadata ) {
+			state.metadata = metadata;
+		}
+	},
 	actions: {
 		/**
 		 * Create a new result record, that is detached from the main zObject.
@@ -51,11 +71,16 @@ module.exports = exports = {
 				const zids = extractZIDs( data.response );
 				context.dispatch( 'fetchZids', { zids } );
 
-				// Success, we inject the response object in the resultRowId
+				// Success:
+				// We save the metadata JSON object, and
+				const metadata = hybridToCanonical( data.response.Z22K2 );
+				context.commit( 'setMetadata', metadata );
+				// We inject the response object in the resultRowId
 				context.dispatch( 'injectZObjectFromRowId', {
 					rowId: payload.resultRowId,
-					value: data.response
+					value: data.response.Z22K1
 				} );
+
 			} ).catch( ( /* ApiError */ error ) => {
 				context.commit( 'setError', {
 					rowId: payload.resultRowId,

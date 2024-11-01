@@ -229,27 +229,6 @@ describe( 'ZObjectKeyValue', () => {
 			expect( wrapper.findComponent( { name: 'wl-z-tester' } ).exists() ).toBe( true );
 		} );
 
-		it( 'z evaluation result', () => {
-			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_RESPONSEENVELOPE );
-			global.store.hotUpdate( {
-				getters: getters
-			} );
-
-			const wrapper = shallowMount( ZObjectKeyValue, {
-				props: {
-					rowId: 1,
-					edit: false
-				},
-				global: {
-					stubs: {
-						WlKeyValueBlock: false
-					}
-				}
-			} );
-
-			expect( wrapper.findComponent( { name: 'wl-z-evaluation-result' } ).exists() ).toBe( true );
-		} );
-
 		it( 'z argument reference with type', () => {
 			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_ARGUMENT_REFERENCE );
 			global.store.hotUpdate( {

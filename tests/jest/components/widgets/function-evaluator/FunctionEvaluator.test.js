@@ -78,11 +78,11 @@ describe( 'FunctionEvaluator', () => {
 			getConnectedObjects: createGettersWithFunctionsMock( [] ),
 			getZObjectAsJsonById: createGettersWithFunctionsMock( '' ),
 			getLabelData: createLabelDataMock(),
-			getMapValueByKey: createGettersWithFunctionsMock( undefined ),
 			getUserLangZid: createGettersWithFunctionsMock( 'Z1002' ),
 			userCanRunFunction: createGetterMock( true ),
 			userCanRunUnsavedCode: createGetterMock( true ),
-			waitForRunningParsers: createGetterMock( Promise.resolve() )
+			waitForRunningParsers: createGetterMock( Promise.resolve() ),
+			getMetadataError: createGetterMock()
 		};
 		actions = {
 			callZFunction: jest.fn(),
@@ -264,7 +264,7 @@ describe( 'FunctionEvaluator', () => {
 			await wrapper.vm.$nextTick();
 
 			const block = wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__result' );
-			const component = block.findComponent( { name: 'wl-z-object-key-value' } );
+			const component = block.findComponent( { name: 'wl-evaluation-result' } );
 			expect( component.exists() ).toBe( true );
 			expect( component.props( 'rowId' ) ).toBe( 1 );
 		} );
