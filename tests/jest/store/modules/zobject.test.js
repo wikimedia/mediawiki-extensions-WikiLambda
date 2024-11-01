@@ -2071,6 +2071,35 @@ describe( 'zobject Vuex module', () => {
 
 				expect( getters.getZObjectTypeByRowId( rowId ) ).toStrictEqual( type );
 			} );
+
+			it( 'returns the type id if the type is a literal', () => {
+				const rowId = 0;
+				const type = {
+					Z1K1: 'Z4',
+					Z4K1: 'Z11'
+				};
+				state.zobject = zobjectToRows( {
+					Z1K1: type
+				} );
+
+				expect( getters.getZObjectTypeByRowId( rowId ) ).toBe( Constants.Z_MONOLINGUALSTRING );
+			} );
+
+			it( 'returns the terminal type id if the type is a literal and contains nested literals', () => {
+				const rowId = 0;
+				const type = {
+					Z1K1: 'Z4',
+					Z4K1: {
+						Z1K1: 'Z4',
+						Z4K1: 'Z11'
+					}
+				};
+				state.zobject = zobjectToRows( {
+					Z1K1: type
+				} );
+
+				expect( getters.getZObjectTypeByRowId( rowId ) ).toBe( Constants.Z_MONOLINGUALSTRING );
+			} );
 		} );
 
 		describe( 'getDepthByRowId', () => {

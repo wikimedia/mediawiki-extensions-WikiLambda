@@ -769,7 +769,22 @@ module.exports = exports = {
 					return typeRow.value;
 				}
 				// If typeRow is NOT Terminal, return the canonical representation
-				return hybridToCanonical( getters.getZObjectAsJsonById( typeRow.id ) );
+
+				// FIXME: I think we can do it better in here
+				// If typeRow is not terminal, it can be:
+				// * a reference -> can we get the reference terminal value?
+				// * a literal type -> can we get the value of the type identity key?
+				// * a function call -> we need the function call representation
+				const type = getters.getZObjectTypeByRowId( typeRow.id );
+				if ( type === Constants.Z_REFERENCE ) {
+					const refValue = getters.getZReferenceTerminalValue( typeRow.id );
+					return refValue;
+				} else if ( type === Constants.Z_TYPE ) {
+					const typeIdRow = getters.getRowByKeyPath( [ Constants.Z_TYPE_IDENTITY ], typeRow.id );
+					return getTypeRepresentation( typeIdRow );
+				} else {
+					return hybridToCanonical( getters.getZObjectAsJsonById( typeRow.id ) );
+				}
 			}
 
 			/**
