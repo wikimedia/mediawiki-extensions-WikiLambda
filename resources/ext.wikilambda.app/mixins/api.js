@@ -182,6 +182,7 @@ module.exports = exports = {
 				action: 'wbsearchentities',
 				format: 'json',
 				language: payload.language,
+				uselang: payload.language,
 				search: payload.search,
 				type: payload.type,
 				limit: '10',
