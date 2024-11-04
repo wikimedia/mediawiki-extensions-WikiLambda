@@ -175,7 +175,7 @@ describe( 'Wikidata Lexemes Vuex module', () => {
 
 			it( 'calls wbsearchentities API', async () => {
 				const searchTerm = 'turtle';
-				const params = `origin=*&action=wbsearchentities&format=json&language=en&search=${
+				const params = `origin=*&action=wbsearchentities&format=json&language=en&uselang=en&search=${
 					searchTerm }&type=lexeme&limit=10&props=url`;
 				const getUrl = `${ Constants.WIKIDATA_BASE_URL }/w/api.php?${ params }`;
 
