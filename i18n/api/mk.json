@@ -2,8 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Bjankuloski06",
-			"Vlad5250",
-			"Amire80"
+			"Vlad5250"
 		]
 	},
 	"apihelp-wikilambda_fetch-summary": "Дај го JSON-моделот на ZObjects.",

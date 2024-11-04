@@ -1,7 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
-			"Jackiezelaya"
+			"Jackiezelaya",
+			"Eulalio",
+			"JDíaz32",
+			"No se"
 		]
 	},
 	"apihelp-query+wikilambdafn_search-summary": "Esta lista de consultas de API busca los IDENTIFICADORES de todos los ZObjects asociados con un identificador de función Z proporcionado",

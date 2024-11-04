@@ -1,8 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Rivka Silinsky"
+			"Rivka Silinsky",
+			"Dirruw'o"
 		]
-	},
-	"apihelp-wikilambda_function_call-summary": "Вызвать функцию звонком функционального оркестратора"
+	}
 }

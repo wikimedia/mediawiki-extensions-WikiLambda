@@ -2,7 +2,10 @@
 	"@metadata": {
 		"authors": [
 			"Alesaru",
-			"Strainu"
+			"Strainu",
+			"Cristina S",
+			"NGC 54",
+			"Paloi Sciurala"
 		]
 	},
 	"wikilambda-desc": "Furnizarea pe wikiurile Wikimedia a unei funcții parser care rulează funcțiile scrise, gestionate și evaluate pe un wiki central.",
