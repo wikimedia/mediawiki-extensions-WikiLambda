@@ -777,8 +777,7 @@ module.exports = exports = {
 				// * a function call -> we need the function call representation
 				const type = getters.getZObjectTypeByRowId( typeRow.id );
 				if ( type === Constants.Z_REFERENCE ) {
-					const refValue = getters.getZReferenceTerminalValue( typeRow.id );
-					return refValue;
+					return getters.getZReferenceTerminalValue( typeRow.id );
 				} else if ( type === Constants.Z_TYPE ) {
 					const typeIdRow = getters.getRowByKeyPath( [ Constants.Z_TYPE_IDENTITY ], typeRow.id );
 					return getTypeRepresentation( typeIdRow );

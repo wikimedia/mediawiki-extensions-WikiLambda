@@ -149,68 +149,73 @@ const Constants = require( '../Constants.js' ),
 			 * When the type is a function call, return the function ID:
 			 * - if noArgs is false, also return the arguments in brackets.
 			 *
-			 * @param {Object|string} type
+			 * @param {Object|string|undefined} type
 			 * @param {boolean} noArgs
 			 * @return {string}
 			 */
 			typeToString: function ( type, noArgs = false ) {
+				// Type is blank, return empty string
+				if ( type === undefined ) {
+					return '';
+				}
+				// Type is string, return itself
 				if ( typeof type === 'string' ) {
 					return type;
-				} else {
-					const mode = typeUtils.methods.typeToString( type[ Constants.Z_OBJECT_TYPE ] );
-					let typeString,
-						functionZid,
-						argKeys,
-						argType,
-						argTypes,
-						argTypesString;
-
-					switch ( mode ) {
-						case Constants.Z_REFERENCE:
-							typeString = type[ Constants.Z_REFERENCE_ID ];
-							break;
-
-						case Constants.Z_FUNCTION_CALL:
-							// Stringify the function Zid
-							functionZid = type[ Constants.Z_FUNCTION_CALL_FUNCTION ];
-							if ( typeof functionZid === 'object' ) {
-								functionZid = typeUtils.methods.typeToString( functionZid );
-							}
-							typeString = functionZid;
-							if ( !noArgs ) {
-								// Stringify the function arguments
-								argTypes = [];
-								argKeys = Object.keys( type ).filter( ( key ) => (
-									( key !== Constants.Z_OBJECT_TYPE ) &&
-										( key !== Constants.Z_FUNCTION_CALL_FUNCTION )
-								) );
-								for ( const argKey of argKeys ) {
-									argType = ( typeof type[ argKey ] === 'object' ) ?
-										typeUtils.methods.typeToString( type[ argKey ] ) :
-										type[ argKey ];
-									argTypes.push( argType );
-								}
-								argTypesString = argTypes.join( ',' );
-								// Put everything together
-								typeString += `(${ argTypesString })`;
-							}
-							break;
-
-						case Constants.Z_TYPE:
-							typeString = type[ Constants.Z_TYPE_IDENTITY ];
-							typeString = typeUtils.methods.typeToString( typeString );
-							break;
-
-						case Constants.Z_ARGUMENT_REFERENCE:
-							typeString = type[ Constants.Z_ARGUMENT_REFERENCE_KEY ];
-							break;
-
-						default:
-							typeString = undefined;
-					}
-
-					return typeString;
 				}
+				// Else, stringify type object
+				const mode = typeUtils.methods.typeToString( type[ Constants.Z_OBJECT_TYPE ] );
+				let typeString,
+					functionZid,
+					argKeys,
+					argType,
+					argTypes,
+					argTypesString;
+
+				switch ( mode ) {
+					case Constants.Z_REFERENCE:
+						typeString = type[ Constants.Z_REFERENCE_ID ];
+						break;
+
+					case Constants.Z_FUNCTION_CALL:
+						// Stringify the function Zid
+						functionZid = type[ Constants.Z_FUNCTION_CALL_FUNCTION ];
+						if ( typeof functionZid === 'object' ) {
+							functionZid = typeUtils.methods.typeToString( functionZid );
+						}
+						typeString = functionZid;
+						if ( !noArgs ) {
+							// Stringify the function arguments
+							argTypes = [];
+							argKeys = Object.keys( type ).filter( ( key ) => (
+								( key !== Constants.Z_OBJECT_TYPE ) &&
+									( key !== Constants.Z_FUNCTION_CALL_FUNCTION )
+							) );
+							for ( const argKey of argKeys ) {
+								argType = ( typeof type[ argKey ] === 'object' ) ?
+									typeUtils.methods.typeToString( type[ argKey ] ) :
+									type[ argKey ];
+								argTypes.push( argType );
+							}
+							argTypesString = argTypes.join( ',' );
+							// Put everything together
+							typeString += `(${ argTypesString })`;
+						}
+						break;
+
+					case Constants.Z_TYPE:
+						typeString = type[ Constants.Z_TYPE_IDENTITY ];
+						typeString = typeUtils.methods.typeToString( typeString );
+						break;
+
+					case Constants.Z_ARGUMENT_REFERENCE:
+						typeString = type[ Constants.Z_ARGUMENT_REFERENCE_KEY ];
+						break;
+
+					default:
+						typeString = undefined;
+				}
+
+				return typeString;
 			},
 			/**
 			 * Return the empty structure of builtin types that we will

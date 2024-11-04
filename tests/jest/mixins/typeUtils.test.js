@@ -199,6 +199,10 @@ describe( 'typeUtils mixin', () => {
 	} );
 
 	describe( 'typeToString', () => {
+		it( 'return empty string when type is undefined', () => {
+			const type = typeUtils.typeToString( undefined );
+			expect( type ).toBe( '' );
+		} );
 		describe( 'Return persisted type zid', () => {
 			it( 'when value is string', () => {
 				const type = typeUtils.typeToString( Constants.Z_STRING );
