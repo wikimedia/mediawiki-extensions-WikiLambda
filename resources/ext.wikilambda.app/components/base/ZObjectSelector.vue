@@ -122,7 +122,8 @@ module.exports = exports = defineComponent( {
 			lookupResults: [],
 			lookupConfig: {
 				boldLabel: true,
-				searchQuery: ''
+				searchQuery: '',
+				visibleItemLimit: 5
 			},
 			lookupDelayTimer: null,
 			lookupDelayMs: 300,
