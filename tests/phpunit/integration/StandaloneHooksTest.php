@@ -382,6 +382,91 @@ EOT;
 		$this->assertEquals( 'en', $aliasCodes->current()->wlzl_label );
 	}
 
+	public function testOnMultiContentSave_returnType() {
+		$this->insertZids( [ 'Z17', 'Z1002' ] );
+
+		$selectedFunctions = [ "Z801", "Z804", "Z810", "Z823", "Z883" ];
+
+		$services = $this->getServiceContainer();
+		$revisionRenderer = $services->getRevisionRenderer();
+		$wikiPageFactory = $services->getWikiPageFactory();
+
+		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$dataPath = dirname( __DIR__, 3 ) . '/function-schemata/data/definitions';
+
+		foreach ( $selectedFunctions as $key => $functionZid ) {
+			$contentString = file_get_contents( "$dataPath/$functionZid.json" );
+
+			$status = $this->editPage(
+				$functionZid,
+				$contentString,
+				'Test ZFunction creation and return type insertion',
+				NS_MAIN
+			);
+			$this->assertTrue( $status->isOK(), "Edit to create $functionZid went through" );
+
+			DeferredUpdates::doUpdates();
+
+			$title = Title::newFromText( $functionZid, NS_MAIN );
+			$content = $handler::makeContent( $contentString, $title );
+
+			$this->assertTrue( $title->exists( IDBAccessObject::READ_LATEST ), "$functionZid should now exist" );
+
+			$slotOutput = $revisionRenderer->getRenderedRevision(
+				$wikiPageFactory->newFromTitle( $title )->getRevisionRecord()
+			);
+
+			$updates = $handler->getSecondaryDataUpdates( $title, $content, SlotRecord::MAIN, $slotOutput );
+
+			$zobjectUpdates = array_filter( $updates, static function ( $u ) {
+				return $u instanceof ZObjectSecondaryDataUpdate;
+			} );
+			$zobjectUpdates[0]->doUpdate();
+		}
+
+		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();
+
+		// Expect a total of 5 distinct functions
+		$rows = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzl_zobject_zid', 'wlzl_type', 'wlzl_return_type' ] )
+			->where( [ 'wlzl_type' => 'Z8' ] )
+			->from( 'wikilambda_zobject_labels' )
+		  ->distinct()
+			->orderBy( 'wlzl_zobject_zid', SelectQueryBuilder::SORT_ASC )
+			->fetchResultSet();
+
+		$this->assertSame( 5, $rows->numRows() );
+
+		// Z801 -> outputs object: Z1
+		$this->assertEquals( 'Z801', $rows->current()->wlzl_zobject_zid );
+		$this->assertEquals( 'Z8', $rows->current()->wlzl_type );
+		$this->assertEquals( 'Z1', $rows->current()->wlzl_return_type );
+
+		// Z804 -> outputs typed map: Z883
+		$rows->next();
+		$this->assertEquals( 'Z804', $rows->current()->wlzl_zobject_zid );
+		$this->assertEquals( 'Z8', $rows->current()->wlzl_type );
+		$this->assertEquals( 'Z883', $rows->current()->wlzl_return_type );
+
+		// Z810 -> outputs typed list: Z881
+		$rows->next();
+		$this->assertEquals( 'Z810', $rows->current()->wlzl_zobject_zid );
+		$this->assertEquals( 'Z8', $rows->current()->wlzl_type );
+		$this->assertEquals( 'Z881', $rows->current()->wlzl_return_type );
+
+		// Z823 -> outputs typed pair: Z882
+		$rows->next();
+		$this->assertEquals( 'Z823', $rows->current()->wlzl_zobject_zid );
+		$this->assertEquals( 'Z8', $rows->current()->wlzl_type );
+		$this->assertEquals( 'Z882', $rows->current()->wlzl_return_type );
+
+		// Z883 -> outputs type: Z4
+		$rows->next();
+		$this->assertEquals( 'Z883', $rows->current()->wlzl_zobject_zid );
+		$this->assertEquals( 'Z8', $rows->current()->wlzl_type );
+		$this->assertEquals( 'Z4', $rows->current()->wlzl_return_type );
+	}
+
 	public function testOnMultiContentSave_relatedObjects() {
 		$this->insertZids( [ 'Z17', 'Z1002' ] );
 

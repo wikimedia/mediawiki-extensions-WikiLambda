@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda;
 use MediaWiki\Content\Content;
 use MediaWiki\Deferred\DataUpdate;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Title\Title;
 
@@ -64,20 +65,17 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 
 		$innerZObject = $this->zObject->getInnerZObject();
 
-		// (T262089) Save output type in labels table for function and function call
 		$returnType = null;
+		// (T262089) Save output type in labels table for function and function call
 		// Get Z_FUNCTION_RETURN_TYPE if the ZObject is a Z8 Function
 		if ( $ztype === ZTypeRegistry::Z_FUNCTION ) {
 			$returnRef = $innerZObject->getValueByKey( ZTypeRegistry::Z_FUNCTION_RETURN_TYPE );
-			if ( $returnRef instanceof ZReference ) {
+			// Fallback, save output type as Object/Z1 to avoid NULL returning functions
+			$returnType = ZTypeRegistry::Z_OBJECT;
+			if ( ( $returnRef instanceof ZReference ) || ( $returnRef instanceof ZFunctionCall ) ) {
+				// ZReference->getZValue returns the reference Zid
+				// ZFunctionCall->getZValue returns the function call function Zid
 				$returnType = $returnRef->getZValue();
-			}
-		}
-		// Get saved Z_FUNCTION_RETURN_TYPE of the Z_FUNCTIONCALL_FUNCTION if it's a Z7
-		if ( $ztype === ZTypeRegistry::Z_FUNCTIONCALL ) {
-			$functionRef = $innerZObject->getValueByKey( ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION );
-			if ( $functionRef instanceof ZReference ) {
-				$returnType = $zObjectStore->fetchZFunctionReturnType( $functionRef->getZValue() );
 			}
 		}
 
