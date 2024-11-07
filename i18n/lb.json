@@ -150,6 +150,7 @@
 	"wikilambda-typeunavailable": "Onbekannten Typ",
 	"wikilambda-validation-error-description-toolong": "D'Beschreiwung op $1 däerf maximal {{PLURAL:$2|$2 Zeeche}} laang sinn.",
 	"wikilambda-validation-error-name-toolong": "Den Numm op $1 däerf maximal {{PLURAL:$2|$2 Zeeche}} laang sinn.",
+	"wikilambda-wikidata-item-selector-placeholder": "Wikidata-Element wielen",
 	"wikilambda-zerror": "Feeler vum Typ $1",
 	"wikilambda-zimplementation-code-language-missing": "Sicht eng Programméiersprooch eraus.",
 	"wikilambda-zobject-to-string-select-object": "$1 eraussichen",
