@@ -354,6 +354,7 @@
 	"wikilambda-move-after-list-item": "Label for a button that moves a list item to later in the list",
 	"wikilambda-move-before-list-item": "Label for a button that moves a list item to earlier in the list",
 	"wikilambda-multilingualstring-nofallback": "Message shown when a multi-lingual string doesn't have a label defined for the user's language, nor for any of that language's fallbacks.",
+	"wikilambda-noobject": "Message shown when a user tries to access an object which does not exist.",
 	"wikilambda-object-selector-suggested-languages": "Title of the suggested languages section in the Object Selector",
 	"wikilambda-object-selector-suggested-types": "Title of the suggested types section in the Object Selector",
 	"wikilambda-optional": "Word used to inform the user that a given input is optional",

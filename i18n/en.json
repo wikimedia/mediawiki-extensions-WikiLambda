@@ -340,6 +340,7 @@
 	"wikilambda-move-after-list-item": "Move after",
 	"wikilambda-move-before-list-item": "Move before",
 	"wikilambda-multilingualstring-nofallback": "No label defined in this language or accepted fallbacks",
+	"wikilambda-noobject": "This Object does not exist. You can [{{fullurl:{{#Special:Log}}|page={{FULLPAGENAMEE}}}} search the related logs] to find out where it went.",
 	"wikilambda-object-selector-suggested-languages": "Suggested languages",
 	"wikilambda-object-selector-suggested-types": "Suggested types",
 	"wikilambda-optional": "optional",

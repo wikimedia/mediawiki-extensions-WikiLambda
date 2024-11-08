@@ -220,7 +220,8 @@
 		"HtmlPageLinkRendererEnd": "PageRenderingHandler",
 		"SkinTemplateNavigation::Universal": "PageRenderingHandler",
 		"WebRequestPathInfoRouter": "PageRenderingHandler",
-		"BeforePageDisplay": "PageRenderingHandler"
+		"BeforePageDisplay": "PageRenderingHandler",
+		"BeforeDisplayNoArticleText": "PageRenderingHandler"
 	},
 	"MessagesDirs": {
 		"WikiLambda": [
