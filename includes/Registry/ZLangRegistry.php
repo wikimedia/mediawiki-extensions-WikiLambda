@@ -25,6 +25,7 @@ class ZLangRegistry extends ZObjectRegistry {
 
 	private const FALLBACK_LANGUAGE_ZID = 'Z1002';
 	private const FALLBACK_LANGUAGE_CODE = 'en';
+	public const MULTILINGUAL_VALUE = 'Z1360';
 
 	/**
 	 * Initialize ZLangRegistry

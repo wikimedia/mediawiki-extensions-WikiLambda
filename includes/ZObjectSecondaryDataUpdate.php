@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda;
 
 use MediaWiki\Content\Content;
 use MediaWiki\Deferred\DataUpdate;
+use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
@@ -89,6 +90,8 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 
 		// (T285368) Write aliases in the labels table
 		$aliases = $this->zObject->getAliases()->getValueAsList();
+		// (T358737) Add the zid as fake aliases under Z1360/MUL (multi-lingual value)
+		$aliases[ ZLangRegistry::MULTILINGUAL_VALUE ] = [ $zid ];
 		if ( count( $aliases ) > 0 ) {
 			$zObjectStore->insertZObjectAliases( $zid, $ztype, $aliases, $returnType );
 		}
@@ -189,7 +192,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 			$zObjectStore->insertZObjectAliases(
 				$zid,
 				$ztype,
-				[ 'Z1360' => $languageCodes ],
+				[ ZLangRegistry::MULTILINGUAL_VALUE => $languageCodes ],
 				$returnType
 			);
 		}
