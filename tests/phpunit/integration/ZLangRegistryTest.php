@@ -13,6 +13,7 @@ use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
 
 /**
@@ -157,5 +158,15 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 
 		$zids = $this->registry->getLanguageZids( [ 'bar', 'es', 'fr', 'foo' ] );
 		$this->assertSame( [ self::ZLANG['es'], self::ZLANG['fr'] ], $zids );
+	}
+
+	public function testGetListOfFallbacks() {
+		$this->registry->register( 'Z1732', 'ast' );
+		$this->registry->register( 'Z1003', 'es' );
+		$this->registry->register( 'Z1002', 'en' );
+
+		$languageFallback = MediaWikiServices::getInstance()->getLanguageFallback();
+		$fallbackZids = $this->registry->getListOfFallbackLanguageZids( $languageFallback, 'ast' );
+		$this->assertSame( [ 'Z1732', 'Z1003', 'Z1002' ], $fallbackZids );
 	}
 }
