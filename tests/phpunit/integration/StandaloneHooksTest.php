@@ -234,7 +234,7 @@ EOT;
 			 ->where( [ 'wlzl_zobject_zid' => ZTestType::TEST_ZID ] )
 			 ->fetchResultSet();
 
-		$this->assertEquals( 5, $res->numRows() );
+		$this->assertEquals( 6, $res->numRows() );
 
 		$labels = [];
 		$expectedLabels = [
@@ -245,7 +245,8 @@ EOT;
 		$expectedAliases = [
 			[ "Z4", "Z1002", "Demonstration type alias" ],
 			[ "Z4", "Z1002", "Demonstration type second alias" ],
-			[ "Z4", "Z1004", "Alias de type pour démonstration" ]
+			[ "Z4", "Z1004", "Alias de type pour démonstration" ],
+			[ "Z4", "Z1360", ZTestType::TEST_ZID ],
 		];
 
 		foreach ( $res as $row ) {
@@ -284,7 +285,7 @@ EOT;
 			 ->where( [ 'wlzl_zobject_zid' => ZTestType::TEST_ZID ] )
 			 ->fetchResultSet();
 
-		$this->assertEquals( 5, $res->numRows() );
+		$this->assertEquals( 6, $res->numRows() );
 
 		$labels = [];
 		$expectedLabels = [
@@ -295,7 +296,8 @@ EOT;
 		$expectedAliases = [
 			[ "Z4", "Z1002", "Demonstration type alias" ],
 			[ "Z4", "Z1002", "Edited demonstration type alias" ],
-			[ "Z4", "Z1004", "Alias de type pour démonstration" ]
+			[ "Z4", "Z1004", "Alias de type pour démonstration" ],
+			[ "Z4", "Z1360", ZTestType::TEST_ZID ],
 		];
 
 		foreach ( $res as $row ) {
@@ -364,21 +366,27 @@ EOT;
 			->fetchResultSet();
 		$this->assertEquals( 11, $labels->numRows() );
 
-		// Expect 6 aliases – each language should have its code inserted
+		// Expect 12 aliases
+		// – each language should have its code inserted as MUL alias
+		// – each language should have its zid inserted as MUL alias
 		$aliasCodes = $dbr->newSelectQueryBuilder()
 			->select( [ 'wlzl_zobject_zid', 'wlzl_type', 'wlzl_language', 'wlzl_label', 'wlzl_label_primary' ] )
 			->from( 'wikilambda_zobject_labels' )
 			->where( [ 'wlzl_type' => 'Z60', 'wlzl_language' => 'Z1360', 'wlzl_label_primary' => false ] )
 			->fetchResultSet();
-		$this->assertEquals( 6, $aliasCodes->numRows() );
+		$this->assertEquals( 12, $aliasCodes->numRows() );
 
-		// Expect that there's exactly one MUL alias for 'en', and it points to Z1002
+		// Expect that there are exactly two MUL alias for 'en'
+		// – one with the language code
+		// – one with the zid
 		$aliasCodes = $dbr->newSelectQueryBuilder()
 			->select( [ 'wlzl_zobject_zid', 'wlzl_type', 'wlzl_language', 'wlzl_label', 'wlzl_label_primary' ] )
 			->from( 'wikilambda_zobject_labels' )
 			->where( [ 'wlzl_zobject_zid' => 'Z1002', 'wlzl_language' => 'Z1360', 'wlzl_label_primary' => false ] )
 			->fetchResultSet();
-		$this->assertSame( 1, $aliasCodes->numRows() );
+		$this->assertSame( 2, $aliasCodes->numRows() );
+		$this->assertEquals( 'Z1002', $aliasCodes->current()->wlzl_label );
+		$aliasCodes->next();
 		$this->assertEquals( 'en', $aliasCodes->current()->wlzl_label );
 	}
 
@@ -577,7 +585,7 @@ EOT;
 		HooksDataPathMock::createInitialContent( $updater );
 
 		// The secondary tables have now been populated for all the ZObjects in the mock data path.
-		// Count how many Z8s were loaded.
+		// Count how many distinct Z8s were loaded.
 		$res = $this->getDb()->newSelectQueryBuilder()
 			->select( [ 'wlzl_zobject_zid' ] )
 			->from( 'wikilambda_zobject_labels' )
@@ -585,6 +593,7 @@ EOT;
 				'wlzl_type' => 'Z8'
 			] )
 			->orderBy( 'wlzl_zobject_zid', SelectQueryBuilder::SORT_ASC )
+			->distinct()
 			->caller( __METHOD__ )
 			->fetchResultSet();
 		$numFunctions = $res->numRows();
