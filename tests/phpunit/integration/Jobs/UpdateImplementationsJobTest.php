@@ -29,14 +29,6 @@ class UpdateImplementationsJobTest extends WikiLambdaIntegrationTestCase {
 
 	private ZObjectStore $store;
 
-	private function insertBuiltinObjects( $zids ): void {
-		$dataPath = dirname( __DIR__, 4 ) . '/function-schemata/data/definitions';
-		foreach ( $zids as $zid ) {
-			$data = file_get_contents( "$dataPath/$zid.json" );
-			$this->editPage( $zid, $data, '', NS_MAIN );
-		}
-	}
-
 	protected function setUp(): void {
 		parent::setUp();
 
@@ -44,7 +36,7 @@ class UpdateImplementationsJobTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function addDBData() {
-		$this->insertBuiltinObjects( [ 'Z14', 'Z16', 'Z17', 'Z20', 'Z40', 'Z61', 'Z813', 'Z8130', 'Z8131', 'Z913' ] );
+		$this->insertZids( [ 'Z14', 'Z16', 'Z17', 'Z20', 'Z40', 'Z61', 'Z813', 'Z8130', 'Z8131', 'Z913' ] );
 	}
 
 	public function testRun() {
