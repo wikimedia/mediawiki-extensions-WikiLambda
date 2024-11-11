@@ -10,8 +10,8 @@
 
 namespace MediaWiki\Extension\WikiLambda\Special;
 
+use MediaWiki\Extension\WikiLambda\Pagers\ZObjectAlphabeticPager;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
-use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\SpecialPage\SpecialPage;
@@ -57,10 +57,9 @@ class SpecialListObjectsByType extends SpecialPage {
 		$output->enableOOUI();
 
 		$output->addModuleStyles( [ 'mediawiki.special' ] );
+
 		// TODO (T300519): Make this help page.
 		$this->addHelpLink( 'Help:Wikifunctions/Objects by type' );
-
-		$langRegistry = ZLangRegistry::singleton();
 
 		// Make list of fallback language Zids
 		$languages = array_merge(
@@ -70,95 +69,47 @@ class SpecialListObjectsByType extends SpecialPage {
 				/* Try for en, even if it's not an explicit fallback. */ LanguageFallback::MESSAGES
 			)
 		);
+		$langRegistry = ZLangRegistry::singleton();
+		$languageZids = $langRegistry->getLanguageZids( array_unique( $languages ) );
 
-		$languageZids = $langRegistry->getLanguageZids( $languages );
+		// Build ZObjectAlphabeticalPager for the given filters
+		$filters = ( ( $type === null ) || ( $type === '' ) ) ? [] : [ 'type' => $type ];
+		$pager = new ZObjectAlphabeticPager( $this->getContext(), $this->zObjectStore, $filters, $languageZids );
 
-		$typesList = $this->fetchZObjects( ZTypeRegistry::Z_TYPE, $languageZids );
+		// Add the header
+		$output->addWikiTextAsInterface( $this->getZObjectListHeader( $type ) );
 
-		$wikitext = '';
-		if ( $type !== null && $type !== '' && isset( $typesList[$type] ) ) {
-			$typeLabel = $typesList[$type];
-			$zobjectList = $this->fetchZObjects( $type, $languageZids );
-			$wikitext .= "\n== ";
-			$wikitext .= $this->msg( 'wikilambda-special-objectsbytype-listheader' )
-				->rawParams( htmlspecialchars( $typeLabel ), $type )
-				->parse();
-			$wikitext .= " ==\n";
-			foreach ( $zobjectList as $zid => $label ) {
-				// Let the usual linker de-reference the label as appropriate
-				$wikitext .= "# [[$zid]]\n";
-			}
+		// Add the top pagination controls
+		$output->addHTML( $pager->getNavigationBar() );
+		// Add the item list body
+		$output->addWikiTextAsInterface( $pager->getBody() );
+		// Add the bottom pagination controls
+		$output->addHTML( $pager->getNavigationBar() );
 
-			if ( count( $zobjectList ) === 0 ) {
-				$wikitext .= $this->msg( 'wikilambda-special-objectsbytype-empty' );
-			}
-		}
-		$wikitext .= "\n== ";
-		$wikitext .= $this->msg( 'wikilambda-special-objectsbytype-typeheader' );
-		$wikitext .= " ==\n";
-		$wikitext .= $this->msg( 'wikilambda-special-objectsbytype-summary' );
-		$wikitext .= "\n";
-		foreach ( $typesList as $type => $label ) {
-			$wikitext .= ": [[Special:ListObjectsByType/$type|$label]] ($type)\n";
-		}
-
-		$output->addWikiTextAsInterface( $wikitext );
+		// Add bottom pagination controls
+		$output->addWikiTextAsInterface( $pager->getBottomLinks() );
 	}
 
 	/**
-	 * Use ZObjectStore to fetch all ZObjects with appropriate labels for the provided type
+	 * Render the header for listing ZObjects by a specific type.
 	 *
-	 * @param string $type
-	 * @param string[] $languageZids
-	 * @return array
+	 * @param string|null $type - The type of ZObjects being listed.
+	 * @return string - The wikitext for the header.
 	 */
-	private function fetchZObjects( $type, $languageZids ) {
-		// Don't take down the site; limit listings to 5000(!) rows regardless.
-		$pageLimit = 5000;
+	private function getZObjectListHeader( $type ) {
+		$header = '';
+		$subheader = '';
 
-		// Paginate our DB query at 100 items per request
-		$queryLimit = 100;
-
-		$continue = null;
-
-		$zobjects = [];
-
-		while ( $pageLimit > 0 ) {
-			$pageLimit -= $queryLimit;
-
-			$res = $this->zObjectStore->searchZObjectLabels(
-				'',
-				true,
-				$languageZids,
-				$type,
-				null,
-				false,
-				$continue,
-				$queryLimit
-			);
-
-			foreach ( $res as $row ) {
-				// Only set the label if we don't have one already, or if
-				// it's the primary label of the first-requested language.
-				// TODO (T362238): This means that if you're asking for uk > ru > en and we only have ru and en
-				// labels, we'll return whichever is first, rather than your preferred ru label over en.
-				if (
-					!isset( $zobjects[$row->wlzl_zobject_zid] )
-					|| ( $row->wlzl_label_primary && array_search( $row->wlzl_language, $languageZids ) === 0 )
-				) {
-					$zobjects[$row->wlzl_zobject_zid] = $row->wlzl_label;
-				}
-				$continue = $row->wlzl_id;
-			}
-
-			if ( $res->numRows() < $queryLimit ) {
-				// We got fewer than our limit last time, so exit the loop.
-				break;
-			}
+		if ( ( $type === null ) || ( $type === '' ) ) {
+			$header = $this->msg( 'wikilambda-special-objectsbytype-allheader' );
+			$subheader = $this->msg( 'wikilambda-special-objectsbytype-summary' );
+			return "\n== $header ==\n\n$subheader\n";
 		}
 
-		asort( $zobjects );
-
-		return $zobjects;
+		$typeLabel = $this->zObjectStore->fetchZObjectLabel( $type, $this->getLanguage()->getCode() );
+		$header = $this->msg( 'wikilambda-special-objectsbytype-listheader' )
+			->rawParams( htmlspecialchars( $typeLabel ?? $type ), $type )
+			->parse();
+		return "\n== $header ==\n";
 	}
 }
