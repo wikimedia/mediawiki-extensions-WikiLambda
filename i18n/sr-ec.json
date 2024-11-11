@@ -129,6 +129,8 @@
 	"wikilambda-tester-status-running": "Извршава се…",
 	"wikilambda-toast-close": "Затвори",
 	"wikilambda-viewmode-nojs": "Ова страница се не приказује у потпуности без JavaScript-а.",
+	"wikilambda-wikidata-entity-selector-placeholder": "Изаберите ставку Википодатака",
+	"wikilambda-wikidata-item-selector-placeholder": "Изаберите ставку Википодатака",
 	"wikilambda-zimplementation-code-language-missing": "Изаберите програмски језик прво.",
 	"wikilambda-zimplementation-code-missing": "Нема кода. Молимо унесите код.",
 	"wikilambda-zobject-to-string-select-object": "Изабери $1",

@@ -431,6 +431,7 @@
 	"wikilambda-validation-error-description-toolong": "$1-এ বিবরণটি অবশ্যই {{PLURAL:$2|$2টি অক্ষর}} বা তার চেয়ে ছোট হতে হবে।",
 	"wikilambda-validation-error-name-toolong": "$1-এ নামটি অবশ্যই {{PLURAL:$2|2টি অক্ষর}} বা তার চেয়ে ছোট হতে হবে।",
 	"wikilambda-viewmode-nojs": "এই পাতাটি জাভাস্ক্রিপ্ট ছাড়া সীমিত উপায়ে প্রদর্শিত হয়।",
+	"wikilambda-wikidata-item-selector-placeholder": "উইকিউপাত্ত আইটেম নির্বাচন করুন",
 	"wikilambda-wikidata-lexeme-selector-placeholder": "উইকিউপাত্ত লেক্সেম নির্বাচন করুন",
 	"wikilambda-zerror": "$1 ধরনের ত্রুটি",
 	"wikilambda-zimplememntation-composition-missing": "ফাংশন প্রণয়ন খালি। অনুগ্রহ করে একটি ফাংশন নির্বাচন করুন।",
