@@ -51,9 +51,15 @@ class UpdateSecondaryTables extends Maintenance {
 			" of the given zType. By default, sleeps 5 seconds after the creation of each update." );
 
 		$this->addOption(
+			'all',
+			'Updates all stored ZObjects',
+			false,
+			false
+		);
+		$this->addOption(
 			'zType',
 			'Updates will be triggered for each ZObject of this type (a ZID)',
-			true,
+			false,
 			true
 		);
 		$this->addOption(
@@ -104,11 +110,24 @@ class UpdateSecondaryTables extends Maintenance {
 		$this->dbProvider = $services->getDBLoadBalancerFactory();
 		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
 
+		$all = $this->getOption( 'all' );
 		$zType = $this->getOption( 'zType' );
 		$verbose = $this->getOption( 'verbose' );
 		$report = $this->getOption( 'report' );
 		$dryRun = $this->getOption( 'dryRun' );
 		$quick = $this->getOption( 'quick' );
+
+		if ( $all && $zType ) {
+			$this->fatalError( 'The flags "--all" and "--zType <ZID>" should be mutually exclusive:' . "\n"
+				. 'Use "--all" to update all existing ZObjects.' . "\n"
+				. 'Use "--zType <ZID>" to update all ZObjects of the given type.' );
+		}
+
+		if ( !$all && !$zType ) {
+			$this->fatalError( 'The script must be called with at least one option, "--all" or "--zType <ZID>:' . "\n"
+				. 'Use "--all" to update all existing ZObjects.' . "\n"
+				. 'Use "--zType <ZID>" to update all ZObjects of the given type.' );
+		}
 
 		if ( $report ) {
 			$this->output( "[Number of rows, highest autoincrement column value] before updates:\n" );
@@ -116,10 +135,14 @@ class UpdateSecondaryTables extends Maintenance {
 			$this->output( "\n" );
 		}
 
-		$targets = $this->zObjectStore->fetchZidsOfType( $zType );
+		if ( $all ) {
+			$targets = $this->zObjectStore->fetchAllZids();
+		} else {
+			$targets = $this->zObjectStore->fetchZidsOfType( $zType );
+		}
 
 		if ( count( $targets ) === 0 ) {
-				$this->output( "No ZObjects of type " . $zType . " for which secondary tables need updating\n" );
+			$this->output( "No ZObjects for which secondary tables need updating\n" );
 			return;
 		}
 
@@ -128,8 +151,7 @@ class UpdateSecondaryTables extends Maintenance {
 		} else {
 			$this->output( "Updating" );
 		}
-		$this->output( " secondary tables for " . count( $targets ) . " ZObjects of type " .
-			$zType . "\n" );
+		$this->output( " secondary tables for " . count( $targets ) . " ZObjects\n" );
 
 		$offset = 0;
 		$queryLimit = 10;
@@ -140,7 +162,7 @@ class UpdateSecondaryTables extends Maintenance {
 
 			foreach ( $contents as $zid => $persistentObject ) {
 				if ( $verbose ) {
-					$this->output( "  $zid" );
+					$this->output( "  $zid\n" );
 				}
 				if ( $dryRun ) {
 					continue;
