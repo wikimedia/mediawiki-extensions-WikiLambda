@@ -2,7 +2,6 @@
 	"@metadata": {
 		"authors": [
 			"Ajeje Brazorf",
-			"Amire80",
 			"DreZhsh",
 			"Gomoko",
 			"Lepticed",
@@ -10,7 +9,8 @@
 			"Pols12",
 			"Scratcheur-2020Send",
 			"Verdy p",
-			"Wladek92"
+			"Wladek92",
+			"Mahabarata"
 		]
 	},
 	"apihelp-wikilambda_fetch-summary": "Extraire le modèle JSON des Z-Objets.",
@@ -41,6 +41,8 @@
 	"apihelp-wikilambda_function_call-example-timeout": "Invoquer une fonction qui tente de s’exécuter indéfiniment et donc expire son temps autorisé dans l’évaluateur",
 	"apihelp-wikilambda_function_call-example-orchestrator-timeout": "Invoquer une fonction qui tente de s’exécuter trop longtemps dans l’orchestrateur et donc expire son temps autorisé",
 	"apihelp-wikilambda_function_call-summary": "Invoquer une fonction en appelant l’orchestrateur de fonction",
+	"apihelp-wikifunctions_run-summary": "Exécuter un appel de fonction",
+	"apihelp-wikifunctions_run-param-function_call": "ZObject pour l'appel de fonction à exécuter",
 	"apihelp-wikilambda_supported_programming_languages-summary": "Récupérer les langages de programmation pris en charge par l’évaluateur",
 	"apihelp-query+wikilambdasearch_labels-summary": "Ce générateur de listes de requêtes API permet de rechercher des libellés de Z-Objets dans une langue donnée. Il existe principalement pour assister le système de recherche anticipée.",
 	"apihelp-query+wikilambdasearch_labels-param-search": "Le terme recherché",
@@ -93,5 +95,7 @@
 	"apihelp-wikilambda_perform_test-param-zfunction": "L’ID (ou objet) de la Z-Fonction à tester",
 	"apihelp-wikilambda_perform_test-param-zimplementations": "La liste des identifiants de Z-MiseEnŒuvre (ou objets) à tester",
 	"apihelp-wikilambda_perform_test-param-ztesters": "La liste des identifiants des Z-Testeurs (ou objets) à tester",
-	"apihelp-wikilambda_perform_test-param-nocache": "S’il faut ou non utiliser le cache"
+	"apihelp-wikilambda_perform_test-param-nocache": "S’il faut ou non utiliser le cache",
+	"wikilambda-restapi-fetch-too-many": "Vous avez demandé $1 Objets, ce qui est trop en une seule fois ($2 au maximum)",
+	"wikilambda-restapi-revision-mismatch": "Vous avez demandé la révision $1 de l'objet « $2 », elle n'a pas été trouvée"
 }

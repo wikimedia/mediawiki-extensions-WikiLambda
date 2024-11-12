@@ -7,7 +7,8 @@
 			"Karim185.3",
 			"NancyMilad",
 			"أَحمد",
-			"محمد أحمد عبد الفتاح"
+			"محمد أحمد عبد الفتاح",
+			"Meno25"
 		]
 	},
 	"wikilambda-confirm": "أكّد",
@@ -24,14 +25,14 @@
 	"wikilambda-function-are-you-sure-dialog-header": "هل أنت متأكد؟",
 	"wikilambda-function-definition-edit": "عدل التعريف",
 	"wikilambda-function-details-summary-learn-more": "تعلم المزيد عن عملية المراجعة.",
-	"wikilambda-function-implementation-state-approved": "مقبول",
-	"wikilambda-function-implementation-state-deactivated": "غير مفعل",
-	"wikilambda-functioncall-metadata-errors-summary": "ملخص الخطأ",
+	"wikilambda-function-implementation-state-approved": "متصل",
+	"wikilambda-function-implementation-state-deactivated": "مقطوع",
+	"wikilambda-functioncall-metadata-errors-summary": "نوع الخطأ",
 	"wikilambda-implementation-selector": "حدد التنفيذ",
 	"wikilambda-list-items-label": "عناصر القائمة",
 	"wikilambda-loading": "يجري تحميل البيانات",
 	"wikilambda-publishchanges": "نشر التغييرات",
 	"wikilambda-publishnew": "نشر",
 	"wikilambda-savechanges": "حفظ التغييرات",
-	"wikilambda-tester-create-new": "أنشئ اختبارًا جديدًا"
+	"wikilambda-tester-create-new": "إضافة اختبار"
 }
