@@ -11,7 +11,6 @@ namespace MediaWiki\Extension\WikiLambda;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
-use MediaWiki\Extension\WikiLambda\Validation\SchemataUtils;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKeyReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
@@ -19,7 +18,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZQuote;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedError;
-use Opis\JsonSchema\ValidationError;
+use Symfony\Component\Yaml\Yaml;
 
 class ZErrorFactory {
 
@@ -37,9 +36,9 @@ class ZErrorFactory {
 		if ( !self::$errorDescriptors ) {
 			try {
 				$descriptor = json_decode(
-					SchemataUtils::readYamlAsSecretJson(
-						SchemataUtils::joinPath(
-							SchemataUtils::dataDirectory(),
+					self::readYamlAsSecretJson(
+						self::joinPath(
+							self::joinPath( __DIR__, "..", "..", "function-schemata", "data" ),
 							"errors",
 							"error_types.yaml"
 						)
@@ -61,223 +60,24 @@ class ZErrorFactory {
 	}
 
 	/**
-	 * Root function to transform an array of Opis\JsonSchema\ValidationError objects
-	 * to a root Z5/ZError object with all the nested errors identified by the
-	 * built-in Z50/ZErrorTypes
-	 *
-	 * @param ValidationError[] $errors
-	 * @return ZError|false
+	 * Joins an arbitrary number of path components via DIRECTORY_SEPARATOR.
+	 * @return string
 	 */
-	public static function buildStructureValidationZError( $errors ) {
-		$zerrors = [];
-
-		foreach ( $errors as $error ) {
-			$zerror = self::buildStructureValidationZErrorItem( $error );
-			if ( $zerror !== false ) {
-				$zerrors[] = $zerror;
-			}
+	private static function joinPath(): string {
+		$components = [];
+		foreach ( func_get_args() as $component ) {
+			$component = rtrim( $component, DIRECTORY_SEPARATOR );
+			array_push( $components, $component );
 		}
-
-		if ( count( $zerrors ) === 0 ) {
-			return false;
-		} elseif ( count( $zerrors ) === 1 ) {
-			return self::createValidationZError( $zerrors[0] );
-		} else {
-			return self::createValidationZError( self::createZErrorList( $zerrors ) );
-		}
+		return implode( DIRECTORY_SEPARATOR, $components );
 	}
 
 	/**
-	 * From the error structure built from opis/json-schema, identify the error types
-	 * using the error descriptors and build a nested Z5/ZError with all that information
-	 *
-	 * @param ValidationError $err
-	 * @return ZError|bool
+	 * @param string $yamlFile File to read
+	 * @return string
 	 */
-	private static function buildStructureValidationZErrorItem( $err ) {
-		$nestedErrors = [];
-		$flatErrors = array_unique( self::flattenErrors( $err ), SORT_REGULAR );
-
-		foreach ( $flatErrors as $flat ) {
-			self::groupErrors(
-				$nestedErrors,
-				$flat['dataPointer'],
-				[
-					'data' => $flat['data'],
-					'dataPointer' => $flat['dataPointer'],
-					'keyword' => $flat['keyword'],
-					'keywordArgs' => $flat['keywordArgs']
-				]
-			);
-		}
-
-		// Return the Z5/ZError structure with identified Z50/ZErrorTypes
-		return self::identifyNestedErrors( $nestedErrors );
-	}
-
-	/**
-	 * Recursive function that walks the nested structure of errors and:
-	 * 1. when finding a terminal error, identifies it and builds a ZError by
-	 * matching the error descriptors, and
-	 * 2. when finding a non-terminal error, identifies it as a "key not wellformed"
-	 * builtin error and continues walking the branch.
-	 * It returns false if no errors could be identified or a root Z5/ZError if
-	 * with the identified errors.
-	 *
-	 * @param array $nestedErrors
-	 * @return ZError|bool Z5/ZError or false for no errors found
-	 */
-	public static function identifyNestedErrors( $nestedErrors ) {
-		$zerrors = [];
-
-		foreach ( $nestedErrors as $index => $errors ) {
-			if ( $index === 'errors' ) {
-				// Leaf with n errors detected by the parser: we identify and keep
-				// those that are matched to our error descriptors
-				foreach ( $errors as $error ) {
-					$errorType = self::identifyError( $error );
-					if ( $errorType ) {
-						$zerrors[] = self::createZErrorInstance( $errorType, $error );
-					}
-				}
-			} else {
-				// Branch with errors in their leafs, form errors recursively
-				$zerror = self::identifyNestedErrors( $errors );
-				if ( $zerror !== false ) {
-					if ( is_int( $index ) ) {
-						$zerrors[] = self::createArrayElementZError( (string)$index, $zerror );
-					} else {
-						$zerrors[] = self::createKeyValueZError( $index, $zerror );
-					}
-				}
-			}
-		}
-
-		// If we found a list of errors, return a single error Z509/Multiple errors
-		if ( count( $zerrors ) === 0 ) {
-			return false;
-		} elseif ( count( $zerrors ) === 1 ) {
-			return $zerrors[0];
-		}
-		return self::createZErrorList( $zerrors );
-	}
-
-	/**
-	 * Given the information provided by the JsonSchema parser about the error
-	 * (keyword, keywordArgs, data and dataPointer), it tries to match an error
-	 * type from the error descriptors
-	 *
-	 * @param array $error
-	 * @return string|bool
-	 */
-	public static function identifyError( $error ) {
-		$errorDescriptors = self::getErrorDescriptors();
-		$keyword = $error['keyword'];
-
-		// If no descriptors for this keyword, ignore
-		if ( !array_key_exists( $keyword, $errorDescriptors ) ) {
-			return false;
-		}
-
-		foreach ( $errorDescriptors[ $keyword ] as $errorDescriptor ) {
-			// If no descriptor matched for this error, ignore
-			if ( !self::errorMatchesDescriptor( $error, $errorDescriptor ) ) {
-				continue;
-			}
-
-			// If a descriptor is found but the type doesn't match, ignore
-			if ( !self::errorMatchesType( $error ) ) {
-				continue;
-			}
-
-			// Error descriptor matched: return error type
-			return $errorDescriptor['errorType'];
-		}
-
-		// No descriptor was found
-		return false;
-	}
-
-	/**
-	 * Given a nested structure of parsing errors found by json-schema,
-	 * it returns a flat list of errors, with enough information to match
-	 * them to error type descriptors
-	 *
-	 * @param ValidationError $err
-	 * @return array
-	 */
-	public static function flattenErrors( $err ) {
-		$leaves = [];
-
-		// If keyword is additionalProps, it can contain as subErrors the
-		// dataPoint of the failed additionalProp, but the information about
-		// the error is not in the child but in the parent.
-		// Before recursively flattening sub-errors, we need to account for
-		// this edge case.
-		if ( $err->keyword() === 'additionalProperties' ) {
-			foreach ( $err->subErrors() as $subErr ) {
-				$leaves[] = [
-					'data' => $err->data(),
-					'dataPointer' => $subErr->dataPointer(),
-					'keyword' => $err->keyword(),
-					'keywordArgs' => $subErr->keywordArgs()
-				];
-			}
-			return $leaves;
-		}
-
-		// If keyword is terminal, return array with 1 element
-		$countSubErr = count( $err->subErrors() );
-		if ( $countSubErr === 0 ) {
-			$leaves[] = json_decode( json_encode(
-				[
-					'data' => $err->data(),
-					'dataPointer' => $err->dataPointer(),
-					'keyword' => $err->keyword(),
-					'keywordArgs' => $err->keywordArgs()
-				]
-			), true );
-			return $leaves;
-		}
-
-		// If keyword is not terminal, and subErrors contains an array of
-		// errors, return the array of leaves for each one of the suberrors.
-		// Non-terminal keywords are:
-		// anyOf, allOf, oneOf, contains, propertyNames
-		// patternProperties, and additionalProperties
-		foreach ( $err->subErrors() as $index => $serr ) {
-			$leaves = array_merge( $leaves, self::flattenErrors( $serr ) );
-		}
-		return $leaves;
-	}
-
-	/**
-	 * @param array &$errors
-	 * @param array $keys
-	 * @param array $value
-	 */
-	private static function groupErrors( &$errors, $keys, $value ) {
-		if ( count( $keys ) === 0 ) {
-			// If this is the last key, we assign $value by pushing it to an existing
-			// errors array, or initializing one with $value as its only item.
-			if ( array_key_exists( 'errors', $errors ) ) {
-				$errors['errors'][] = $value;
-			} else {
-				$errors['errors'] = [ $value ];
-			}
-		} else {
-			// If this is a middle key, we check if it's already set.
-			// If it exists, we recursively assign the value
-			if ( array_key_exists( $keys[0], $errors ) ) {
-				self::groupErrors( $errors[$keys[0]], array_slice( $keys, 1 ), $value );
-			} else {
-				$a = [ 'errors' => [ $value ] ];
-				foreach ( array_reverse( $keys ) as $key ) {
-					$a = [ $key => $a ];
-				}
-				$errors[ $keys[0] ] = $a[ $keys[0] ];
-			}
-		}
+	public static function readYamlAsSecretJson( string $yamlFile ) {
+		return json_encode( Yaml::parseFile( $yamlFile ) );
 	}
 
 	/**
