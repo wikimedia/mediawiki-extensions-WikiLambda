@@ -135,7 +135,7 @@
 	"wikilambda-functioncall-error-unknown": "Chyba volání funkce: „$1“ není známý ZObjekt",
 	"wikilambda-functioncall-error-unknown-category": "Stránky s voláním Wikifunkcí na neznámý ZObjekt",
 	"wikilambda-functioncall-error-unknown-category-desc": "Stránky s voláním Wikifunkcí vyžadujícím neznámý ZObjekt",
-	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Chyba|Chyby}}",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|1=Chyba|Chyby}}",
 	"wikilambda-functioncall-metadata-errors-none": "Nic",
 	"wikilambda-functioncall-metadata-programming-language": "Programovací jazyk",
 	"wikilambda-functioncall-metadata-programming-language-version": "Verze",
