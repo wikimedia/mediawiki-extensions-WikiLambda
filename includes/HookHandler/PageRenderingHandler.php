@@ -10,12 +10,15 @@
 
 namespace MediaWiki\Extension\WikiLambda\HookHandler;
 
+use Article;
 use HtmlArmor;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use MediaWiki\Html\Html;
 use MediaWiki\Languages\LanguageNameUtils;
 use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\Linker\LinkTarget;
@@ -28,7 +31,8 @@ class PageRenderingHandler implements
 	\MediaWiki\Linker\Hook\HtmlPageLinkRendererEndHook,
 	\MediaWiki\Hook\SkinTemplateNavigation__UniversalHook,
 	\MediaWiki\Hook\WebRequestPathInfoRouterHook,
-	\MediaWiki\Output\Hook\BeforePageDisplayHook
+	\MediaWiki\Output\Hook\BeforePageDisplayHook,
+	\Mediawiki\Page\Hook\BeforeDisplayNoArticleTextHook
 {
 	private UserOptionsLookup $userOptionsLookup;
 	private LanguageNameUtils $languageNameUtils;
@@ -288,4 +292,50 @@ class PageRenderingHandler implements
 		// Add language selector module to all pages
 		$out->addModules( 'ext.wikilambda.languageselector' );
 	}
+
+	/**
+	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/BeforeDisplayNoArticleText
+	 *
+	 * @param Article $article
+	 * @return bool
+	 */
+	public function onBeforeDisplayNoArticleText( $article ): bool {
+		$title = $article->getTitle();
+		$zid = $title->getBaseText();
+
+		// ignore if the article is not a z object
+		if (
+			!$title->inNamespace( NS_MAIN )
+			|| !ZObjectUtils::isValidZObjectReference( $zid )
+		) {
+			return true;
+		}
+
+		$context = $article->getContext();
+
+		$this->showMissingObject( $context );
+
+		return false;
+	}
+
+	/**
+	 * T342965: Show a message on object pages that don't have a result.
+	 * @param IContextSource $context
+	 *
+	 * @return void
+	 */
+	public function showMissingObject( $context ): void {
+		$text = wfMessage( 'wikilambda-noobject' )->setContext( $context )->plain();
+
+		$dir = $context->getLanguage()->getDir();
+		$lang = $context->getLanguage()->getHtmlCode();
+
+		$outputPage = $context->getOutput();
+		$outputPage->addWikiTextAsInterface( Html::rawElement( 'div', [
+			'class' => "noarticletext mw-content-$dir",
+			'dir' => $dir,
+			'lang' => $lang,
+		], "\n$text\n" ) );
+	}
+
 }
