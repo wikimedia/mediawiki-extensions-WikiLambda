@@ -199,7 +199,7 @@
 	"wikilambda-implementation-create-new": "Ajouter une implémentation",
 	"wikilambda-function-are-you-sure-dialog-header": "Êtes-vous sûr(e) ?",
 	"wikilambda-function-are-you-sure-dialog-description": "Êtes-vous sûr de vouloir quitter le mode d’édition sans publier auparavant ?",
-	"wikilambda-functioncall-metadata-errors": "Erreur{{PLURAL:$1||s}}",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Erreur|Erreurs}}",
 	"wikilambda-functioncall-metadata-errors-summary": "Résumé des erreurs",
 	"wikilambda-functioncall-metadata-errors-none": "Aucune",
 	"wikilambda-functioncall-metadata-implementation-id": "Identifiant de l’implémentation",

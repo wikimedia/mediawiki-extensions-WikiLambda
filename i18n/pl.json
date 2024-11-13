@@ -186,7 +186,7 @@
 	"wikilambda-implementation-create-new": "Dodaj implementację",
 	"wikilambda-function-are-you-sure-dialog-header": "Na pewno?",
 	"wikilambda-function-are-you-sure-dialog-description": "Czy na pewno chcesz opuścić tryb edycji bez wcześniejszego opublikowania?",
-	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Błąd|Błędy}}",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|1=Błąd|Błędy}}",
 	"wikilambda-functioncall-metadata-errors-summary": "Podsumowanie błędów",
 	"wikilambda-functioncall-metadata-errors-none": "Brak",
 	"wikilambda-functioncall-metadata-implementation-id": "Identyfikator implementacji",

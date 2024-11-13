@@ -72,7 +72,7 @@
 	"wikilambda-implementation-none-found": "Zde se budou zobrazovat implementace, které vytvoříte.",
 	"wikilambda-implementation-create-new": "Přidat implementaci",
 	"wikilambda-function-are-you-sure-dialog-header": "Jste si jisti?",
-	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Chyba|Chyby}}",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|1=Chyba|Chyby}}",
 	"wikilambda-functioncall-metadata-errors-none": "Nic",
 	"wikilambda-functioncall-metadata-evaluation-start-time": "Čas zahájení hodnocení",
 	"wikilambda-functioncall-metadata-evaluation-duration": "Doba trvání hodnocení",

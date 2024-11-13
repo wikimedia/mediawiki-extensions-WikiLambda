@@ -180,7 +180,7 @@
 	"wikilambda-implementation-create-new": "Adder implementation",
 	"wikilambda-function-are-you-sure-dialog-header": "Es tu secur?",
 	"wikilambda-function-are-you-sure-dialog-description": "Es tu secur de voler exir del modo de modification sin publicar primo?",
-	"wikilambda-functioncall-metadata-errors": "Error{{PLURAL:$1||es}}",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Error|Errores}}",
 	"wikilambda-functioncall-metadata-errors-summary": "Summario de errores",
 	"wikilambda-functioncall-metadata-errors-none": "Necun",
 	"wikilambda-functioncall-metadata-implementation-id": "ID del implementation",

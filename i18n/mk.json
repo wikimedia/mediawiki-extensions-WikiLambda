@@ -76,7 +76,7 @@
 	"wikilambda-implementation-none-found": "Не најдов спроведувања.",
 	"wikilambda-function-are-you-sure-dialog-header": "Дали сте сигурни?",
 	"wikilambda-function-are-you-sure-dialog-description": "Дали сигурно сакате да го напуштите режимот на уредување без да ги објавите измените?",
-	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Грешка|Грешки}}",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|1=Грешка|Грешки}}",
 	"wikilambda-functioncall-metadata-errors-none": "Нема",
 	"wikilambda-functioncall-metadata-orchestration-start-time": "Време на започнување на оркестрацијата",
 	"wikilambda-functioncall-metadata-orchestration-end-time": "Време на завршување на оркестрацијата",
