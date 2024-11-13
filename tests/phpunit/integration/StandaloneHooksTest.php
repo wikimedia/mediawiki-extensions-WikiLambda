@@ -521,19 +521,33 @@ EOT;
 
 		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();
 
-		// Expect a total of 17 rows
+		// Expect a total of 27 rows
 		$rows = $dbr->newSelectQueryBuilder()
 			->select( [ 'wlzo_main_zid', 'wlzo_main_type', 'wlzo_key', 'wlzo_related_zobject', 'wlzo_related_type' ] )
 			->from( 'wikilambda_zobject_join' )
 			->fetchResultSet();
-		$this->assertSame( 17, $rows->numRows() );
-		// And the same when specifying wlzo_main_type and wlzo_related_type in the where clause
+		$this->assertSame( 27, $rows->numRows() );
+		// Expect 17 related types
 		$rows = $dbr->newSelectQueryBuilder()
 			->select( [ 'wlzo_main_zid', 'wlzo_main_type', 'wlzo_key', 'wlzo_related_zobject', 'wlzo_related_type' ] )
 			->from( 'wikilambda_zobject_join' )
 			->where( [ 'wlzo_main_type' => 'Z8', 'wlzo_related_type' => 'Z4' ] )
 			->fetchResultSet();
 		$this->assertSame( 17, $rows->numRows() );
+		// Expect 4 related tests
+		$rows = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_main_zid', 'wlzo_main_type', 'wlzo_key', 'wlzo_related_zobject', 'wlzo_related_type' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [ 'wlzo_main_type' => 'Z8', 'wlzo_related_type' => 'Z20' ] )
+			->fetchResultSet();
+		$this->assertSame( 4, $rows->numRows() );
+		// Expect 6 related implementations
+		$rows = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_main_zid', 'wlzo_main_type', 'wlzo_key', 'wlzo_related_zobject', 'wlzo_related_type' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [ 'wlzo_main_type' => 'Z8', 'wlzo_related_type' => 'Z14' ] )
+			->fetchResultSet();
+		$this->assertSame( 6, $rows->numRows() );
 		// Expect a total of 11 rows for function input argument types
 		// Z801: 1; Z804: 2; Z820: 2; Z883: 2; Z885: 1; Z889: 3
 		$rows = $dbr->newSelectQueryBuilder()
