@@ -222,6 +222,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 		self::Z_MONOLINGUALSTRINGSET => 'ZMonoLingualStringSet',
 		self::Z_MULTILINGUALSTRINGSET => 'ZMultiLingualStringSet',
 		self::Z_KEYREFERENCE => 'ZKeyReference',
+		self::Z_BOOLEAN => 'ZBoolean',
 		self::Z_QUOTE => 'ZQuote',
 	];
 
