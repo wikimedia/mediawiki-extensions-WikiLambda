@@ -807,6 +807,13 @@
 				"WikiLambdaZObjectStore",
 				"LanguageFallback"
 			]
+		},
+		"ListMissingLabels": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialListMissingLabels",
+			"services": [
+				"WikiLambdaZObjectStore",
+				"LanguageFallback"
+			]
 		}
 	},
 	"TrackingCategories": [

@@ -16,7 +16,6 @@ use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
-use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\WikiPageFactory;
 use MediaWiki\Revision\RevisionRecord;
@@ -34,6 +33,7 @@ use Wikimedia\Rdbms\IExpression;
 use Wikimedia\Rdbms\IResultWrapper;
 use Wikimedia\Rdbms\LikeValue;
 use Wikimedia\Rdbms\SelectQueryBuilder;
+use Wikimedia\Rdbms\Subquery;
 use WikiPage;
 
 class ZObjectStore {
@@ -734,6 +734,116 @@ class ZObjectStore {
 	}
 
 	/**
+	 * Fetch all ZLanguages stored in the language cache table, and
+	 * for each one, return its zid, its language code, and its label
+	 * in the user language or the closest available fallback.
+	 *
+	 * @param string $userLang - User language BCP47 code
+	 * @return IResultWrapper
+	 */
+	public function fetchAllZLanguagesWithLabels( $userLang ) {
+		$dbr = $this->dbProvider->getReplicaDatabase();
+
+		// TODO (T362246): Dependency-inject
+		$zLangRegistry = ZLangRegistry::singleton();
+		$languageFallback = MediaWikiServices::getInstance()->getLanguageFallback();
+		$languages = $zLangRegistry->getListOfFallbackLanguageZids( $languageFallback, $userLang );
+
+		// Returns table with unique zids and the most preferred primary label
+		$subquery = $this->getPreferredLabelsQuery( $languages );
+		return $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzl_zobject_zid', 'wlzl_label', 'wlzlangs_language' ] )
+			->rawTables( [ 'preferred_labels' => new Subquery( $subquery ) ] )
+			->join( 'wikilambda_zlanguages', null, [ 'wlzl_zobject_zid = wlzlangs_zid' ] )
+			->orderBy( 'wlzl_label', SelectQueryBuilder::SORT_ASC )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+	}
+
+	/**
+	 * Fetch all ZTypes that have persisted instances, with their
+	 * label in the user language or the closest available fallback.
+	 *
+	 * @param string $userLang - User language BCP47 code
+	 * @return IResultWrapper
+	 */
+	public function fetchAllInstancedTypesWithLabels( $userLang ) {
+		$dbr = $this->dbProvider->getReplicaDatabase();
+
+		// TODO (T362246): Dependency-inject
+		// Returns table with unique zids and the most preferred primary label
+		$zLangRegistry = ZLangRegistry::singleton();
+		$languageFallback = MediaWikiServices::getInstance()->getLanguageFallback();
+		$languages = $zLangRegistry->getListOfFallbackLanguageZids( $languageFallback, $userLang );
+		$subquery = $this->getPreferredLabelsQuery( $languages );
+
+		// Fetch only those types that have instances
+		$zids = $this->fetchAllInstancedTypes();
+
+		return $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzl_zobject_zid', 'wlzl_label' ] )
+			->rawTables( [ 'preferred_labels' => new Subquery( $subquery ) ] )
+			->where( [ 'wlzl_zobject_zid' => $zids ] )
+			->orderBy( 'wlzl_label', SelectQueryBuilder::SORT_ASC )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+	}
+
+	/**
+	 * Returns a list of distinct type Zids that have persisted instances.
+	 *
+	 * @return string[]
+	 */
+	public function fetchAllInstancedTypes() {
+		$dbr = $this->dbProvider->getReplicaDatabase();
+
+		return $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzl_type' ] )
+			->distinct()
+			->from( 'wikilambda_zobject_labels' )
+			->caller( __METHOD__ )
+			->fetchFieldValues();
+	}
+
+	/**
+	 * Generates a query that filters to the preferred label in the
+	 * labels table, depending on the user's language fallback chain
+	 * passed as parameter
+	 *
+	 * @param string[] $languageChain List of language zids in order of preference
+	 * @return string
+	 */
+	public function getPreferredLabelsQuery( $languageChain ) {
+		$dbr = $this->dbProvider->getReplicaDatabase();
+
+		// Build the CASE statement to assign language preference index
+		$caseParts = [];
+		foreach ( $languageChain as $index => $langZid ) {
+			$caseParts[] = "WHEN wlzl_language = " .
+				$dbr->addQuotes( $langZid ) . " AND wlzl_label_primary = " .
+				$dbr->addQuotes( true ) . " THEN " . ( $index + 1 );
+		}
+		$case = "CASE " . implode( " ", $caseParts ) . " ELSE " . ( count( $languageChain ) + 1 ) . " END";
+
+		// Create subquery to assign priority order to the labels depending on the languageChain
+		// TODO (T379560): Do this via SQLPlatform->selectSQLText() rather than raw SQL.
+		$fields = [ '*', "ROW_NUMBER() OVER ( PARTITION BY wlzl_zobject_zid ORDER BY $case ) AS priority" ];
+		$subquery = $dbr->selectSQLText( [ 'wikilambda_zobject_labels' ], $fields, '', __METHOD__ );
+
+		// Create query to select the most prioritary label for each zid
+		$queryBuilder = $dbr->newSelectQueryBuilder()
+			->select( [
+				'wlzl_id', 'wlzl_zobject_zid', 'wlzl_language', 'wlzl_label', 'wlzl_type',
+				'wlzl_label_normalised', 'wlzl_label_primary', 'wlzl_return_type'
+			] )
+			->from( new Subquery( $subquery ), 'preferred_labels' )
+			->where( [ 'priority' => 1 ] );
+
+		// Return SQL
+		return $queryBuilder->getSQL();
+	}
+
+	/**
 	 * Gets from the secondary database the ZID of a given BCP47 (or MediaWiki) language code
 	 *
 	 * @param string $code The BCP47 (or MediaWiki) language code for which to search
@@ -874,24 +984,8 @@ class ZObjectStore {
 		$languages = [ $languageZid ];
 		if ( $fallback ) {
 			// TODO (T362246): Dependency-inject
-			$fallbackLanguages = MediaWikiServices::getInstance()->getLanguageFallback()->getAll(
-				$languageCode,
-				// Note: We intentionally fall all the way back to English as this will likely be the most
-				// common entry language, and so doing this will result in a marginally better UX behaviour
-				// for the circumstance where no label exists.
-				LanguageFallback::MESSAGES
-			);
-
-			foreach ( $fallbackLanguages as $index => $languageCode ) {
-				try {
-					$languages[] = $zLangRegistry->getLanguageZidFromCode( $languageCode );
-				} catch ( ZErrorException $error ) {
-					$this->logger->error(
-						__METHOD__ . ' was given an invalid language code: "' . $languageCode . '"',
-						[ 'responseObject' => $error ]
-					);
-				}
-			}
+			$languageFallback = MediaWikiServices::getInstance()->getLanguageFallback();
+			$languages = $zLangRegistry->getListOfFallbackLanguageZids( $languageFallback, $languageCode );
 		}
 		$conditions[ 'wlzl_language' ] = $languages;
 

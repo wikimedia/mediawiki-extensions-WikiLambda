@@ -12,7 +12,10 @@ namespace MediaWiki\Extension\WikiLambda\Pagers;
 
 use AlphabeticPager;
 use MediaWiki\Context\IContextSource;
+use MediaWiki\Extension\WikiLambda\Fields\HTMLZLanguageSelectField;
+use MediaWiki\Extension\WikiLambda\Fields\HTMLZTypeSelectField;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
+use MediaWiki\HTMLForm\HTMLForm;
 use Wikimedia\Rdbms\Subquery;
 
 class ZObjectAlphabeticPager extends AlphabeticPager {
@@ -51,7 +54,7 @@ class ZObjectAlphabeticPager extends AlphabeticPager {
 	 */
 	public function getQueryInfo() {
 		// Returns table with unique zids and the most preferred primary label
-		$subquery = $this->getPreferredLabelsQuery();
+		$subquery = $this->zObjectStore->getPreferredLabelsQuery( $this->languageZids );
 
 		// Create filter conditions for Special List page
 		$conditions = [];
@@ -60,7 +63,11 @@ class ZObjectAlphabeticPager extends AlphabeticPager {
 			$conditions[ 'wlzl_type' ] = $this->filters[ 'type' ];
 		} else {
 			// When type is not passed, create list of types that have instances
-			$conditions[ 'wlzl_zobject_zid' ] = $this->getInstancedTypes();
+			$conditions[ 'wlzl_zobject_zid' ] = $this->zObjectStore->fetchAllInstancedTypes();
+		}
+
+		if ( array_key_exists( 'missing_language', $this->filters ) ) {
+			$conditions[] = $this->getDatabase()->expr( 'wlzl_language', '!=', $this->filters[ 'missing_language' ] );
 		}
 
 		// Add filtering and ordering options
@@ -77,62 +84,6 @@ class ZObjectAlphabeticPager extends AlphabeticPager {
 		];
 
 		return $query;
-	}
-
-	/**
-	 * Generates a query that filters to the preferred label in the
-	 * labels table, depending on the user's language fallback chain
-	 * in $this->languageZids
-	 *
-	 * @return string
-	 */
-	private function getPreferredLabelsQuery() {
-		$dbr = $this->getDatabase();
-
-		// Build the CASE statement to assign language preference index
-		$caseParts = [];
-		foreach ( $this->languageZids as $index => $langZid ) {
-			$caseParts[] = "WHEN wlzl_language = " .
-				$dbr->addQuotes( $langZid ) . " AND wlzl_label_primary = " .
-				$dbr->addQuotes( true ) . " THEN " . ( $index + 1 );
-		}
-		// Fallback for languages not in the list
-		$case = "CASE " . implode( " ", $caseParts ) .
-			" ELSE " . ( count( $this->languageZids ) + 1 ) .
-			" END";
-
-		// Create subquery to assign priority order to the labels depending on the languageZids list
-		// TODO (T379560): Do this via SQLPlatform->selectSQLText() rather than raw SQL.
-		$subquery = "SELECT *, " .
-				"ROW_NUMBER() OVER ( PARTITION BY wlzl_zobject_zid ORDER BY $case ) AS priority " .
-				"FROM wikilambda_zobject_labels";
-
-		// Create query to select the most prioritary label for each zid
-		$queryBuilder = $dbr->newSelectQueryBuilder()
-			->select( [
-				'wlzl_id', 'wlzl_zobject_zid', 'wlzl_language', 'wlzl_label', 'wlzl_type',
-				'wlzl_label_normalised', 'wlzl_label_primary', 'wlzl_return_type'
-			] )
-			->from( new Subquery( $subquery ), 'preferred_labels' )
-			->where( [ 'priority' => 1 ] );
-
-		// Return SQL
-		return $queryBuilder->getSQL();
-	}
-
-	/**
-	 * Returns a list of distinct type Zids that have persisted instances.
-	 *
-	 * @return string[]
-	 */
-	private function getInstancedTypes() {
-		$dbr = $this->getDatabase();
-		return $dbr->newSelectQueryBuilder()
-			->select( [ 'wlzl_type' ] )
-			->distinct()
-			->from( 'wikilambda_zobject_labels' )
-			->caller( __METHOD__ )
-			->fetchFieldValues();
 	}
 
 	/**
@@ -163,8 +114,8 @@ class ZObjectAlphabeticPager extends AlphabeticPager {
 		$wikitext .= "\n* [[Special:ListDuplicateObjectNames|" .
 			$this->msg( 'wikilambda-special-listduplicateobjectlabels-link' ) . "]]\n";
 
-		// TODO (T377908)
-		// $wikitext .= "\n* [[Special:ListUnlabeledFunctions|List of Functions with no name ]]\n";
+		$wikitext .= "\n* [[Special:ListMissingLabels|" .
+			$this->msg( 'wikilambda-special-missinglabels' ) . "]]\n";
 
 		// TODO (T377909)
 		// $wikitext .= "\n* [[Special:ListFunctionsWithUnconnectedTests|List of Functions with unconnected Tests ]]\n";
@@ -189,5 +140,33 @@ class ZObjectAlphabeticPager extends AlphabeticPager {
 		return array_key_exists( 'type', $this->filters ) ?
 			"# [[$zid|$label]] ($zid)\n" :
 			"# [[Special:ListObjectsByType/$zid|$label]] ($zid)\n";
+	}
+
+	/**
+	 * @param string $typeZid
+	 * @param string $langZid
+	 * @param string $formHeader
+	 * @return string
+	 */
+	public function getHeaderForm( $typeZid, $langZid, $formHeader ) {
+		$formDescriptor = [
+			'type' => [
+				'label' => 'Type',
+				'class' => HTMLZTypeSelectField::class,
+				'name' => 'type',
+				'default' => $typeZid
+			],
+			'language' => [
+				'label' => 'Language',
+				'class' => HTMLZLanguageSelectField::class,
+				'name' => 'language',
+				'default' => $langZid
+			]
+		];
+
+		$htmlForm = HTMLForm::factory( 'ooui', $formDescriptor, $this->getContext() )
+			->setWrapperLegend( $formHeader )
+			->setMethod( 'get' );
+		return $htmlForm->prepareForm()->getHTML( false );
 	}
 }

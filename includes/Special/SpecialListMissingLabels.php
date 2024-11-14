@@ -1,6 +1,6 @@
 <?php
 /**
- * WikiLambda Special:ListObjectsByType page
+ * WikiLambda Special:ListMissingLabels page
  *
  * @file
  * @ingroup Extensions
@@ -12,12 +12,13 @@ namespace MediaWiki\Extension\WikiLambda\Special;
 
 use MediaWiki\Extension\WikiLambda\Pagers\ZObjectAlphabeticPager;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\SpecialPage\SpecialPage;
 
-class SpecialListObjectsByType extends SpecialPage {
+class SpecialListMissingLabels extends SpecialPage {
 
 	private ZObjectStore $zObjectStore;
 	private LanguageFallback $languageFallback;
@@ -28,7 +29,7 @@ class SpecialListObjectsByType extends SpecialPage {
 	 * @param LanguageFallback $languageFallback
 	 */
 	public function __construct( ZObjectStore $zObjectStore, LanguageFallback $languageFallback ) {
-		parent::__construct( 'ListObjectsByType' );
+		parent::__construct( 'ListMissingLabels' );
 		$this->zObjectStore = $zObjectStore;
 		$this->languageFallback = $languageFallback;
 		$this->langRegistry = ZLangRegistry::singleton();
@@ -46,7 +47,8 @@ class SpecialListObjectsByType extends SpecialPage {
 	 * @inheritDoc
 	 */
 	public function getDescription() {
-		return $this->msg( 'wikilambda-special-objectsbytype' );
+		// TODO new message
+		return $this->msg( 'wikilambda-special-missinglabels' );
 	}
 
 	/**
@@ -56,11 +58,28 @@ class SpecialListObjectsByType extends SpecialPage {
 	 * @return string[] - type Zid, lang Zid
 	 */
 	private function getParameters( $subpage ) {
-		// Get type from subpage
+		// Get language from Request.
+		// * Can be empty string, valid or invalid Zid
+		// * Default: User language
+		$langZid = $this->getRequest()->getText( 'language' );
+		if ( ( !$langZid ) || !ZObjectUtils::isValidZObjectReference( $langZid ) ) {
+			$langCode = $this->getLanguage()->getCode();
+			$langZid = $this->langRegistry->getLanguageZidFromCode( $langCode );
+		}
+
+		// Get type from subpage; overwrite with value from Request.
 		// * subpage can be empty string or NULL or valid/invalid string
-		// Default: empty string
-		$type = $subpage && ZObjectUtils::isValidZObjectReference( $subpage ) ? $subpage : '';
-		return [ $type ];
+		// * requestType can be empty string or valid/invalid string
+		// Default: Z8/Function
+		$requestType = $this->getRequest()->getText( 'type' );
+		if ( $requestType && ZObjectUtils::isValidZObjectReference( $requestType ) ) {
+			$type = $requestType;
+		} else {
+			$type = $subpage && ZObjectUtils::isValidZObjectReference( $subpage ) ?
+				$subpage : ZTypeRegistry::Z_FUNCTION;
+		}
+
+		return [ $type, $langZid ];
 	}
 
 	/**
@@ -68,10 +87,11 @@ class SpecialListObjectsByType extends SpecialPage {
 	 */
 	public function execute( $subpage ) {
 		// Get and validate page parameters
-		[ $type ] = $this->getParameters( $subpage );
+		[ $type, $langZid ] = $this->getParameters( $subpage );
 
 		// Set headers
 		$this->setHeaders();
+		$this->outputHeader( 'wikilambda-special-missinglabels-summary' );
 
 		// Set output
 		$output = $this->getOutput();
@@ -79,7 +99,7 @@ class SpecialListObjectsByType extends SpecialPage {
 		$output->addModuleStyles( [ 'mediawiki.special' ] );
 
 		// TODO (T300519): Make this help page.
-		$this->addHelpLink( 'Help:Wikifunctions/Objects by type' );
+		$this->addHelpLink( 'Help:Wikifunctions/Missing labels' );
 
 		// Get list of fallback language Zids
 		$languageZids = $this->langRegistry->getListOfFallbackLanguageZids(
@@ -87,12 +107,21 @@ class SpecialListObjectsByType extends SpecialPage {
 			$this->getLanguage()->getCode()
 		);
 
+		// Add selected language at the start of the array
+		array_unshift( $languageZids, $langZid );
+		// Remove duplicates in case the selected language is the same as user language
+		$languageZids = array_unique( $languageZids );
+
 		// Build ZObjectAlphabeticalPager for the given filters
-		$filters = ( ( $type === null ) || ( $type === '' ) ) ? [] : [ 'type' => $type ];
+		$filters = [
+			'type' => $type,
+			'missing_language' => $langZid
+		];
 		$pager = new ZObjectAlphabeticPager( $this->getContext(), $this->zObjectStore, $filters, $languageZids );
 
-		// Add the header
-		$output->addWikiTextAsInterface( $this->getZObjectListHeader( $type ) );
+		// Add the header form
+		$header = $this->getZObjectListHeader( $type, $langZid );
+		$output->addHTML( $pager->getHeaderForm( $type, $langZid, $header ) );
 
 		// Add the top pagination controls
 		$output->addHTML( $pager->getNavigationBar() );
@@ -108,23 +137,16 @@ class SpecialListObjectsByType extends SpecialPage {
 	/**
 	 * Render the header for listing ZObjects by a specific type.
 	 *
-	 * @param string|null $type - The type of ZObjects being listed.
+	 * @param string $typeZid - The type of ZObjects being listed.
+	 * @param string $langZid - The selected language Zid.
 	 * @return string - The wikitext for the header.
 	 */
-	private function getZObjectListHeader( $type ) {
-		$header = '';
-		$subheader = '';
+	private function getZObjectListHeader( $typeZid, $langZid ) {
+		$typeLabel = $this->zObjectStore->fetchZObjectLabel( $typeZid, $this->getLanguage()->getCode() );
+		$langLabel = $this->zObjectStore->fetchZObjectLabel( $langZid, $this->getLanguage()->getCode() );
 
-		if ( ( $type === null ) || ( $type === '' ) ) {
-			$header = $this->msg( 'wikilambda-special-objectsbytype-allheader' );
-			$subheader = $this->msg( 'wikilambda-special-objectsbytype-summary' );
-			return "\n== $header ==\n\n$subheader\n";
-		}
-
-		$typeLabel = $this->zObjectStore->fetchZObjectLabel( $type, $this->getLanguage()->getCode() );
-		$header = $this->msg( 'wikilambda-special-objectsbytype-listheader' )
-			->rawParams( htmlspecialchars( $typeLabel ?? $type ), $type )
+		return $this->msg( 'wikilambda-special-missinglabels-for-type' )
+			->rawParams( htmlspecialchars( $typeLabel ), htmlspecialchars( $typeZid ), htmlspecialchars( $langLabel ) )
 			->parse();
-		return "\n== $header ==\n";
 	}
 }

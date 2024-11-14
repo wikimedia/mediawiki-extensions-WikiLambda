@@ -15,6 +15,7 @@ use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Title\Title;
 
@@ -214,5 +215,22 @@ class ZLangRegistry extends ZObjectRegistry {
 			}
 		}
 		return $languageZids;
+	}
+
+	/**
+	 * Return the list of unique language Zids that correspond
+	 * to the user's selected language, its fallbacks, and English
+	 * if requested.
+	 *
+	 * @param LanguageFallback $languageFallback
+	 * @param string $langCode - Language BCP47 code
+	 * @return string[]
+	 */
+	public function getListOfFallbackLanguageZids( $languageFallback, $langCode ) {
+		$languages = array_merge(
+			[ $langCode ],
+			$languageFallback->getAll( $langCode, LanguageFallback::MESSAGES )
+		);
+		return $this->getLanguageZids( array_unique( $languages ) );
 	}
 }
