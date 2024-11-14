@@ -172,7 +172,7 @@
 	"wikilambda-implementation-create-new": "Додати реалізацію",
 	"wikilambda-function-are-you-sure-dialog-header": "Ви впевнені?",
 	"wikilambda-function-are-you-sure-dialog-description": "Ви дійсно хочете припинити редагування, не опублікувавши зміни?",
-	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Помилка|Помилки}}",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|1=Помилка|Помилки}}",
 	"wikilambda-functioncall-metadata-errors-summary": "Тип помилки",
 	"wikilambda-functioncall-metadata-implementation": "Реалізація",
 	"wikilambda-functioncall-metadata-implementation-id": "Ідентифікатор",

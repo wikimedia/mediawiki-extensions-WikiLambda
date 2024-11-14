@@ -70,7 +70,7 @@
 	"wikilambda-implementation-none-found": "Не најдов спроведувања.",
 	"wikilambda-function-are-you-sure-dialog-header": "Дали сте сигурни?",
 	"wikilambda-function-are-you-sure-dialog-description": "Дали сигурно сакате да го напуштите режимот на уредување без да ги објавите измените?",
-	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Грешка|Грешки}}",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|1=Грешка|Грешки}}",
 	"wikilambda-functioncall-metadata-errors-none": "Нема",
 	"wikilambda-functioncall-error": "Грешка во повикот на функцијата: $1",
 	"wikilambda-functioncall-error-category": "Страници со погрешни повици на Викифункции",
