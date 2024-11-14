@@ -1256,36 +1256,36 @@ class ZObjectStore {
 	}
 
 	/**
-	 * Add a row to the database for a main ZObject, a related ZObject, the types of each,
-	 * and the relationship between them.
+	 * Add a batch of rows to the database describing the relation between
+	 * a main ZObject and a related one, given by the connecting key.
 	 *
-	 * Example:
-	 *   'Z401', 'Z8', 'Z8K2', 'Z881(Z6)', 'Z4'
-	 * indicates that 'Z881(Z6)', the related ZObject, is the 'Z8K2' (return type) of 'Z401',
-	 * 'Z401' has type 'Z8', and 'Z881(Z6)' has type 'Z4'
+	 * Example: [ 'Z401', 'Z8', 'Z8K2', 'Z881(Z6)', 'Z4' ]
+	 * Indicates that the main object (Z401) of type function (Z8) has an output
+	 * type (Z8K2) with value typed list of strings (Z881(Z6)) and type type (Z4)
 	 *
-	 * @param string $mainZid ZID of the main ZObject
-	 * @param string $mainType ZID of the type of the main ZObject
-	 * @param string $key ZID of a key indicating the relationship between main and related ZObjects
-	 * @param string $relatedZObject ZID or string encoding of the related ZObject
-	 * @param string $relatedType ZID of the type of the related ZObject
+	 * @param array $relatedZObjects Array of rows to insert into the table.
+	 *   Each row must be an object with the non-empty properties zid, type, key,
+	 *   related_zid and related_type
 	 * @return void
 	 */
-	public function insertRelatedZObjects( $mainZid, $mainType, $key, $relatedZObject, $relatedType ) {
-		$dbw = $this->dbProvider->getPrimaryDatabase();
+	public function insertRelatedZObjects( $relatedZObjects ) {
+		$rows = [];
+		foreach ( $relatedZObjects as $zobject ) {
+			$rows[] = [
+				'wlzo_main_zid' => $zobject->zid,
+				'wlzo_main_type' => $zobject->type,
+				'wlzo_key' => $zobject->key,
+				'wlzo_related_zobject' => $zobject->related_zid,
+				'wlzo_related_type' => $zobject->related_type
+			];
+		}
 
+		$dbw = $this->dbProvider->getPrimaryDatabase();
 		$dbw->newInsertQueryBuilder()
 			->insertInto( 'wikilambda_zobject_join' )
-			->rows( [
-				[
-					'wlzo_main_zid' => $mainZid,
-					'wlzo_main_type' => $mainType,
-					'wlzo_key' => $key,
-					'wlzo_related_zobject' => $relatedZObject,
-					'wlzo_related_type' => $relatedType
-				]
-			] )
-			->caller( __METHOD__ )->execute();
+			->rows( $rows )
+			->caller( __METHOD__ )
+			->execute();
 	}
 
 	/**

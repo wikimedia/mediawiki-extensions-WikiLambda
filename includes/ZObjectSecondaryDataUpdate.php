@@ -15,7 +15,9 @@ use MediaWiki\Deferred\DataUpdate;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 use MediaWiki\Title\Title;
 
 class ZObjectSecondaryDataUpdate extends DataUpdate {
@@ -117,32 +119,11 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 			$zObjectStore->insertZFunctionReference( $zid, $zFunction->getZValue(), $ztype );
 		}
 
-		// If $zid is a function, record each of its input types and its return type
+		// Delete and restore related ZObjects from wikilambda_zobject_join table:
 		$zObjectStore->deleteRelatedZObjects( $zid );
-		if ( $ztype === ZTypeRegistry::Z_FUNCTION ) {
-			$inputArgumentsObject = $innerZObject->getValueByKey( ZTypeRegistry::Z_FUNCTION_ARGUMENTS );
-			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList $inputArgumentsObject';
-			if ( $inputArgumentsObject !== null ) {
-				$inputArguments = $inputArgumentsObject->getAsArray();
-				foreach ( $inputArguments as $key => $inputArgument ) {
-					$inputTypeObject = $inputArgument->getValueByKey( ZTypeRegistry::Z_ARGUMENTDECLARATION_TYPE );
-					$inputTypeString = ZObjectUtils::makeTypeFingerprint( $inputTypeObject->getSerialized() );
-					if ( $inputTypeString !== null ) {
-						$zObjectStore->insertRelatedZObjects( $zid, $ztype,
-							ZTypeRegistry::Z_FUNCTION_ARGUMENTS,
-							$inputTypeString, ZTypeRegistry::Z_TYPE );
-					}
-				}
-			}
-			// Here we report more return type cases than above; use new vars to avoid confusion
-			$returnTypeObject = $innerZObject->getValueByKey(
-				ZTypeRegistry::Z_FUNCTION_RETURN_TYPE );
-			$returnTypeString = ZObjectUtils::makeTypeFingerprint( $returnTypeObject->getSerialized() );
-			if ( $returnTypeString !== null ) {
-				$zObjectStore->insertRelatedZObjects( $zid, $ztype,
-					ZTypeRegistry::Z_FUNCTION_RETURN_TYPE,
-					$returnTypeString, ZTypeRegistry::Z_TYPE );
-			}
+		$relatedZObjects = $this->getRelatedZObjects( $zid, $ztype, $innerZObject );
+		if ( count( $relatedZObjects ) > 0 ) {
+			$zObjectStore->insertRelatedZObjects( $relatedZObjects );
 		}
 
 		// If appropriate, clear wikilambda_ztester_results for this ZID
@@ -177,7 +158,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 			// Set secondary language codes, if any
 			$secondaryLanguagesObject = $innerZObject->getValueByKey( ZTypeRegistry::Z_LANGUAGE_SECONDARYCODES );
 			if ( $secondaryLanguagesObject !== null ) {
-				'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList $secondaryLanguagesObject';
+				'@phan-var ZTypedList $secondaryLanguagesObject';
 				$secondaryLanguages = $secondaryLanguagesObject->getAsArray();
 
 				foreach ( $secondaryLanguages as $key => $secondaryLanguage ) {
@@ -196,5 +177,95 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 				$returnType
 			);
 		}
+	}
+
+	/**
+	 * Return all important relations between the given object and others
+	 * to insert in the wikilambda_zobject_join table. The relations are
+	 * given by the key. Currently returns:
+	 * * For Functions/Z8:
+	 *   * key:Z8K1: Type of every function input
+	 *   * key:Z8K2: Type of the function output
+	 *   * key:Z8K3: Test connected to the function
+	 *   * key:Z8K4: Implementation connected to the function
+	 *
+	 * @param string $zid
+	 * @param string $ztype
+	 * @param ZObject $innerZObject
+	 * @return array Array of rows to insert in the join table
+	 */
+	private function getRelatedZObjects( $zid, $ztype, $innerZObject ) {
+		$relatedZObjects = [];
+
+		// For Functions/Z8:
+		if ( $ztype === ZTypeRegistry::Z_FUNCTION ) {
+			// Key:Z8K1: Get input types
+			$inputs = $innerZObject->getValueByKey( ZTypeRegistry::Z_FUNCTION_ARGUMENTS );
+			if ( $inputs instanceof ZTypedList ) {
+				$inputList = $inputs->getAsArray();
+				foreach ( $inputList as $key => $input ) {
+					$inputTypeObject = $input->getValueByKey( ZTypeRegistry::Z_ARGUMENTDECLARATION_TYPE );
+					$inputTypeString = ZObjectUtils::makeTypeFingerprint( $inputTypeObject->getSerialized() );
+					if ( $inputTypeString !== null ) {
+						$relatedZObjects[] = (object)[
+							'zid' => $zid,
+							'type' => $ztype,
+							'key' => ZTypeRegistry::Z_FUNCTION_ARGUMENTS,
+							'related_zid' => $inputTypeString,
+							'related_type' => ZTypeRegistry::Z_TYPE
+						];
+					}
+				}
+			}
+
+			// Key:Z8K1: Get output type
+			$outputType = $innerZObject->getValueByKey( ZTypeRegistry::Z_FUNCTION_RETURN_TYPE );
+			$outputTypeString = ZObjectUtils::makeTypeFingerprint( $outputType->getSerialized() );
+			if ( $outputTypeString !== null ) {
+				$relatedZObjects[] = (object)[
+					'zid' => $zid,
+					'type' => $ztype,
+					'key' => ZTypeRegistry::Z_FUNCTION_RETURN_TYPE,
+					'related_zid' => $outputTypeString,
+					'related_type' => ZTypeRegistry::Z_TYPE
+				];
+			}
+
+			// Key:Z8K3: Get tests
+			$tests = $innerZObject->getValueByKey( ZTypeRegistry::Z_FUNCTION_TESTERS );
+			if ( $tests instanceof ZTypedList ) {
+				$testList = $tests->getAsArray();
+				foreach ( $testList as $key => $test ) {
+					if ( $test instanceof ZReference && $test->isValid() ) {
+						$relatedZObjects[] = (object)[
+							'zid' => $zid,
+							'type' => $ztype,
+							'key' => ZTypeRegistry::Z_FUNCTION_TESTERS,
+							'related_zid' => $test->getZValue(),
+							'related_type' => ZTypeRegistry::Z_TESTER
+						];
+					}
+				}
+			}
+
+			// Key:Z8K4: Get implementations
+			$implementations = $innerZObject->getValueByKey( ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS );
+			if ( $implementations instanceof ZTypedList ) {
+				$implementationList = $implementations->getAsArray();
+				foreach ( $implementationList as $key => $implementation ) {
+					if ( $implementation instanceof ZReference && $implementation->isValid() ) {
+						$relatedZObjects[] = (object)[
+							'zid' => $zid,
+							'type' => $ztype,
+							'key' => ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS,
+							'related_zid' => $implementation->getZValue(),
+							'related_type' => ZTypeRegistry::Z_IMPLEMENTATION
+						];
+					}
+				}
+			}
+		}
+
+		return $relatedZObjects;
 	}
 }

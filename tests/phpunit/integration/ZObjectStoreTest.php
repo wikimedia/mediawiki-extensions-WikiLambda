@@ -971,15 +971,67 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	private function injectRelatedZObjects(): void {
-		// Function Z401 has 3 arguments of types Z6, Z40, Z6,  and returns typed list of Z6.
-		$this->zobjectStore->insertRelatedZObjects( 'Z401', 'Z8', 'Z8K1',
-			'Z6', 'Z4' );
-		$this->zobjectStore->insertRelatedZObjects( 'Z401', 'Z8', 'Z8K1',
-			'Z40', 'Z4' );
-		$this->zobjectStore->insertRelatedZObjects( 'Z401', 'Z8', 'Z8K1',
-			'Z6', 'Z4' );
-		$this->zobjectStore->insertRelatedZObjects( 'Z401', 'Z8', 'Z8K2',
-			'Z881(Z6)', 'Z4' );
+		// Function Z401:
+		// * has 3 arguments of types Z6, Z40, Z6
+		// * returns typed list of Z6
+		// * has 2 connected tests
+		// * has 1 connected implementation
+		$relatedZObjects = [
+			// Input types
+			(object)[
+				'zid' => 'Z401',
+				'type' => 'Z8',
+				'key' => 'Z8K1',
+				'related_zid' => 'Z6',
+				'related_type' => 'Z4'
+			],
+			(object)[
+				'zid' => 'Z401',
+				'type' => 'Z8',
+				'key' => 'Z8K1',
+				'related_zid' => 'Z40',
+				'related_type' => 'Z4'
+			],
+			(object)[
+				'zid' => 'Z401',
+				'type' => 'Z8',
+				'key' => 'Z8K1',
+				'related_zid' => 'Z6',
+				'related_type' => 'Z4'
+			],
+			// Output type
+			(object)[
+				'zid' => 'Z401',
+				'type' => 'Z8',
+				'key' => 'Z8K2',
+				'related_zid' => 'Z881(Z6)',
+				'related_type' => 'Z4'
+			],
+			// Connected tests
+			(object)[
+				'zid' => 'Z401',
+				'type' => 'Z8',
+				'key' => 'Z8K3',
+				'related_zid' => 'Z10001',
+				'related_type' => 'Z20'
+			],
+			(object)[
+				'zid' => 'Z401',
+				'type' => 'Z8',
+				'key' => 'Z8K3',
+				'related_zid' => 'Z10002',
+				'related_type' => 'Z20'
+			],
+			// Connected implementation
+			(object)[
+				'zid' => 'Z401',
+				'type' => 'Z8',
+				'key' => 'Z8K4',
+				'related_zid' => 'Z10003',
+				'related_type' => 'Z14'
+			]
+		];
+		$this->zobjectStore->insertRelatedZObjects( $relatedZObjects );
 	}
 
 	public function testInsertRelatedZObjects() {
@@ -995,6 +1047,11 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			->caller( __METHOD__ )
 			->fetchResultSet();
 		$this->assertSame( 3, $res->numRows() );
+		$this->assertEquals( 'Z6', $res->current()->wlzo_related_zobject );
+		$res->next();
+		$this->assertEquals( 'Z40', $res->current()->wlzo_related_zobject );
+		$res->next();
+		$this->assertEquals( 'Z6', $res->current()->wlzo_related_zobject );
 
 		$res = $dbr->newSelectQueryBuilder()
 			->select( [ 'wlzo_related_zobject' ] )
@@ -1005,8 +1062,34 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			] )
 			->caller( __METHOD__ )
 			->fetchResultSet();
-
 		$this->assertSame( 1, $res->numRows() );
+		$this->assertEquals( 'Z881(Z6)', $res->current()->wlzo_related_zobject );
+
+		$res = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_related_zobject' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [
+				'wlzo_main_zid' => 'Z401',
+				'wlzo_key' => 'Z8K3'
+			] )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+		$this->assertSame( 2, $res->numRows() );
+		$this->assertEquals( 'Z10001', $res->current()->wlzo_related_zobject );
+		$res->next();
+		$this->assertEquals( 'Z10002', $res->current()->wlzo_related_zobject );
+
+		$res = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_related_zobject' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [
+				'wlzo_main_zid' => 'Z401',
+				'wlzo_key' => 'Z8K4'
+			] )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+		$this->assertSame( 1, $res->numRows() );
+		$this->assertEquals( 'Z10003', $res->current()->wlzo_related_zobject );
 	}
 
 	public function testDeleteRelatedZObjects() {
