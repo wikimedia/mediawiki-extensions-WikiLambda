@@ -10,11 +10,14 @@
 
 namespace MediaWiki\Extension\WikiLambda\Special;
 
+use MediaWiki\Extension\WikiLambda\Fields\HTMLZLanguageSelectField;
+use MediaWiki\Extension\WikiLambda\Fields\HTMLZTypeSelectField;
 use MediaWiki\Extension\WikiLambda\Pagers\ZObjectAlphabeticPager;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use MediaWiki\HTMLForm\HTMLForm;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\SpecialPage\SpecialPage;
 
@@ -47,7 +50,6 @@ class SpecialListMissingLabels extends SpecialPage {
 	 * @inheritDoc
 	 */
 	public function getDescription() {
-		// TODO new message
 		return $this->msg( 'wikilambda-special-missinglabels' );
 	}
 
@@ -107,9 +109,13 @@ class SpecialListMissingLabels extends SpecialPage {
 			$this->getLanguage()->getCode()
 		);
 
-		// Add selected language at the start of the array
+		// Add selected language at the start of the array; this way
+		// we will identify objects with missing label in langZid by
+		// checking that the preferred label is not in langZid.
+		// The label displayed in the list will be then the one in the
+		// user language or its closes fallback. Also, remove duplicates
+		// in case the selected language is the same as user language.
 		array_unshift( $languageZids, $langZid );
-		// Remove duplicates in case the selected language is the same as user language
 		$languageZids = array_unique( $languageZids );
 
 		// Build ZObjectAlphabeticalPager for the given filters
@@ -120,8 +126,7 @@ class SpecialListMissingLabels extends SpecialPage {
 		$pager = new ZObjectAlphabeticPager( $this->getContext(), $this->zObjectStore, $filters, $languageZids );
 
 		// Add the header form
-		$header = $this->getZObjectListHeader( $type, $langZid );
-		$output->addHTML( $pager->getHeaderForm( $type, $langZid, $header ) );
+		$output->addHTML( $this->getHeaderForm( $type, $langZid ) );
 
 		// Add the top pagination controls
 		$output->addHTML( $pager->getNavigationBar() );
@@ -144,9 +149,40 @@ class SpecialListMissingLabels extends SpecialPage {
 	private function getZObjectListHeader( $typeZid, $langZid ) {
 		$typeLabel = $this->zObjectStore->fetchZObjectLabel( $typeZid, $this->getLanguage()->getCode() );
 		$langLabel = $this->zObjectStore->fetchZObjectLabel( $langZid, $this->getLanguage()->getCode() );
-
 		return $this->msg( 'wikilambda-special-missinglabels-for-type' )
 			->rawParams( htmlspecialchars( $typeLabel ), htmlspecialchars( $typeZid ), htmlspecialchars( $langLabel ) )
-			->parse();
+			->text();
+	}
+
+	/**
+	 * Build the form to place at the head of the Special page,
+	 * with a selector field for ZTypes and another for ZLanguages.
+	 *
+	 * @param string $typeZid
+	 * @param string $langZid
+	 * @return string
+	 */
+	public function getHeaderForm( $typeZid, $langZid ) {
+		$formHeader = $this->getZObjectListHeader( $typeZid, $langZid );
+		$formDescriptor = [
+			'type' => [
+				'label' => 'Type',
+				'class' => HTMLZTypeSelectField::class,
+				'name' => 'type',
+				'default' => $typeZid
+			],
+			'language' => [
+				'label' => 'Language',
+				'class' => HTMLZLanguageSelectField::class,
+				'name' => 'language',
+				'default' => $langZid
+			]
+		];
+
+		$htmlForm = HTMLForm::factory( 'ooui', $formDescriptor, $this->getContext() )
+			->setWrapperLegend( $formHeader )
+			->setCollapsibleOptions( true )
+			->setMethod( 'get' );
+		return $htmlForm->prepareForm()->getHTML( false );
 	}
 }

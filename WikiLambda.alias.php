@@ -18,4 +18,5 @@ $specialPageAliases['en'] = [
 	'ListDuplicateObjectNames' => [ 'ListDuplicateObjectNames', 'ListDuplicateZObjectLabels' ],
 	'ListObjectsByType' => [ 'ListObjectsByType', 'ListZObjectsByType', 'ObjectsByType' ],
 	'ListMissingLabels' => [ 'ListMissingLabels' ],
+	'ListFunctionsByTests' => [ 'ListFunctionsByTests' ],
 ];

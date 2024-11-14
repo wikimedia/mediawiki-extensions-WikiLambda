@@ -1,0 +1,43 @@
+/*!
+ * WikiLambda special pages styles
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
+@import ( reference ) '../../../resources/lib/codex-design-tokens/theme-wikimedia-ui.less';
+
+.mw-special-ListFunctionsByTests {
+	.ext-wikilambda-special-tests-connected {
+		color: @color-success;
+	}
+
+	.ext-wikilambda-special-tests-failing {
+		color: @color-destructive;
+	}
+
+	.oo-ui-fieldsetLayout-group {
+		max-width: 50em;
+
+		.oo-ui-panelLayout-padded.oo-ui-panelLayout-framed {
+			border: 0;
+			padding: 0;
+		}
+
+		.oo-ui-fieldsetLayout.oo-ui-labelElement > .oo-ui-fieldsetLayout-header {
+			display: none;
+		}
+	}
+
+	@media all and ( min-width: @min-width-breakpoint-tablet ) {
+		.oo-ui-fieldLayout.oo-ui-labelElement.mw-htmlform-field-HTMLIntField {
+			margin: 0;
+			margin-right: @spacing-100;
+			float: left;
+			width: calc( 50% - @spacing-50 );
+
+			&:last-child {
+				margin-right: 0;
+			}
+		}
+	}
+}

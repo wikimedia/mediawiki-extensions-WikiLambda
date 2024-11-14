@@ -248,6 +248,11 @@
 				"ext.wikilambda.editpage/ext.wikilambda.editpage.less"
 			]
 		},
+		"ext.wikilambda.special.styles": {
+			"styles": [
+				"ext.wikilambda.special/ext.wikilambda.special.less"
+			]
+		},
 		"ext.wikilambda.languageselector": {
 			"class": "MediaWiki\\ResourceLoader\\CodexModule",
 			"styles": [],
@@ -810,6 +815,13 @@
 		},
 		"ListMissingLabels": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialListMissingLabels",
+			"services": [
+				"WikiLambdaZObjectStore",
+				"LanguageFallback"
+			]
+		},
+		"ListFunctionsByTests": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialListFunctionsByTests",
 			"services": [
 				"WikiLambdaZObjectStore",
 				"LanguageFallback"

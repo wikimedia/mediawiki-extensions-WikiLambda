@@ -844,6 +844,45 @@ class ZObjectStore {
 	}
 
 	/**
+	 * Generates a query that returns a table with all the existing
+	 * test objects, their function, and their status:
+	 * * is_connected: whether the test is connected to the function
+	 * * is_passing: whether the test is passing against all the
+	 *   function's connected implementations
+	 *
+	 * @return string
+	 */
+	public function getTestStatusQuery() {
+		$dbr = $this->dbProvider->getReplicaDatabase();
+
+		$connQueryBuilder = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_related_zobject' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [ 'wlzo_key' => ZTypeRegistry::Z_FUNCTION_TESTERS ] );
+
+		$resultsQueryBuilder = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlztr_ztester_zid', 'wlztr_pass' ] )
+			->from( 'wikilambda_ztester_results' )
+			->join( 'wikilambda_zobject_join', 'c2', 'c2.wlzo_related_zobject = wlztr_zimplementation_zid' );
+
+		$queryBuilder = $dbr->newSelectQueryBuilder()
+			->select( [
+				'test_zid' => 'wlzf_ref_zid',
+				'function_zid' => 'wlzf_zfunction_zid',
+				'is_passing' => 'MIN( wlztr_pass )',
+				'is_connected' => 'CASE WHEN wlzo_related_zobject IS NOT NULL THEN 1 ELSE 0 END',
+				'all_tests' => 'COUNT(*) OVER( PARTITION BY wlzf_zfunction_zid )'
+			] )
+			->from( 'wikilambda_zobject_function_join' )
+			->leftJoin( $connQueryBuilder, 'c1', 'c1.wlzo_related_zobject = wlzf_ref_zid' )
+			->leftJoin( $resultsQueryBuilder, 'r1', 'r1.wlztr_ztester_zid = wlzf_ref_zid' )
+			->where( [ 'wlzf_type' => ZTypeRegistry::Z_TESTER ] )
+			->groupBy( [ 'wlzf_ref_zid', 'wlzf_zfunction_zid' ] );
+
+		return $queryBuilder->getSQL();
+	}
+
+	/**
 	 * Gets from the secondary database the ZID of a given BCP47 (or MediaWiki) language code
 	 *
 	 * @param string $code The BCP47 (or MediaWiki) language code for which to search

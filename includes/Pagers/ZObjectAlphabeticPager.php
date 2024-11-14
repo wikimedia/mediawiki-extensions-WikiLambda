@@ -12,10 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Pagers;
 
 use AlphabeticPager;
 use MediaWiki\Context\IContextSource;
-use MediaWiki\Extension\WikiLambda\Fields\HTMLZLanguageSelectField;
-use MediaWiki\Extension\WikiLambda\Fields\HTMLZTypeSelectField;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
-use MediaWiki\HTMLForm\HTMLForm;
 use Wikimedia\Rdbms\Subquery;
 
 class ZObjectAlphabeticPager extends AlphabeticPager {
@@ -56,8 +53,15 @@ class ZObjectAlphabeticPager extends AlphabeticPager {
 		// Returns table with unique zids and the most preferred primary label
 		$subquery = $this->zObjectStore->getPreferredLabelsQuery( $this->languageZids );
 
-		// Create filter conditions for Special List page
+		// Create additional filters and fields for Special pages:
+		$tables = [ 'preferred_labels' => new Subquery( $subquery ) ];
+		$fields = [ 'wlzl_zobject_zid', 'wlzl_label', 'wlzl_label_normalised',
+			'wlzl_id', 'wlzl_language', 'wlzl_label_primary' ];
 		$conditions = [];
+		$joins = [];
+		$options = [ 'ORDER BY' => 'wlzl_label ASC' ];
+
+		// Special:ListObjectsByType
 		if ( array_key_exists( 'type', $this->filters ) ) {
 			// When type is passed, create list of objects of that type
 			$conditions[ 'wlzl_type' ] = $this->filters[ 'type' ];
@@ -66,21 +70,78 @@ class ZObjectAlphabeticPager extends AlphabeticPager {
 			$conditions[ 'wlzl_zobject_zid' ] = $this->zObjectStore->fetchAllInstancedTypes();
 		}
 
+		// Special:ListMissingLabels
 		if ( array_key_exists( 'missing_language', $this->filters ) ) {
 			$conditions[] = $this->getDatabase()->expr( 'wlzl_language', '!=', $this->filters[ 'missing_language' ] );
 		}
 
+		// Special:ListFunctionsByTests
+		if ( array_key_exists( 'testfilters', $this->filters ) ) {
+			$min = $this->filters[ 'testfilters' ][ 'min' ];
+			$max = $this->filters[ 'testfilters' ][ 'max' ];
+			$connected = $this->filters[ 'testfilters' ][ 'connected' ];
+			$pending = $this->filters[ 'testfilters' ][ 'pending' ];
+			$pass = $this->filters[ 'testfilters' ][ 'pass' ];
+			$fail = $this->filters[ 'testfilters' ][ 'fail' ];
+
+			$testStatus = $this->zObjectStore->getTestStatusQuery();
+			$testFilters = [];
+			// Connection status filter:
+			// * Add where clause only if one value is selected
+			// * If both true or both false, leave unfiltered
+			if ( $connected !== $pending ) {
+				$testFilters[] = 'is_connected = ' . (int)$connected;
+			}
+			// Test results filter:
+			// * Add where clause only if one value is selected
+			// * If both true or both false, leave unfiltered
+			if ( $pass !== $fail ) {
+				$testFilters[] = 'is_passing = ' . (int)$pass;
+			}
+
+			// Conditional to count matching tests, if no filters count 1 per entry
+			$matchingConditional = 1;
+			if ( count( $testFilters ) > 0 ) {
+				$matchingConditional = $this->getDatabase()->conditional( $testFilters, '1', 'NULL' );
+			}
+
+			// Table with all function ids and their test count:
+			// * all_tests: count of all tests for this function
+			// * connected_tests: count of all tests connected to this function
+			// * failing_tests: count of all failing tests for this function
+			// * matching_tests: count of all tests that match the input filters
+			$filteredFunctions = $this->getDatabase()->newSelectQueryBuilder()
+				->select( [
+					'function_zid',
+					'all_tests',
+					'connected_tests' => 'COUNT( CASE WHEN is_connected = 1 THEN 1 END )',
+					'failing_tests' => 'COUNT( CASE WHEN is_passing = 0 THEN 1 END )',
+					'matching_tests' => 'COUNT( ' . $matchingConditional . ' )'
+				] )
+				->from( new Subquery( $testStatus ), 'filtered_functions' )
+				->groupBy( [ 'function_zid', 'all_tests' ] );
+
+			// Return all test counts in the main select
+			array_push( $fields, 'all_tests', 'matching_tests', 'connected_tests', 'failing_tests' );
+			$tables[ 'tests' ] = new Subquery( $filteredFunctions->getSQL() );
+			$joins[ 'tests' ] = [ 'LEFT JOIN', 'wlzl_zobject_zid = tests.function_zid' ];
+			// Return functions for which matching_tests count is less than max.
+			// If max is a negative value, set no filters.
+			if ( $max > -1 ) {
+				$conditions[] = "matching_tests <= $max";
+			}
+			if ( $min > 0 ) {
+				$conditions[] = "matching_tests >= $min";
+			}
+		}
+
 		// Add filtering and ordering options
 		$query = [
-			'tables' => [ 'preferred_labels' => new Subquery( $subquery ) ],
-			'fields' => [
-				'wlzl_zobject_zid', 'wlzl_label', 'wlzl_label_normalised',
-				'wlzl_id', 'wlzl_language', 'wlzl_label_primary'
-			],
+			'tables' => $tables,
+			'fields' => $fields,
 			'conds' => $conditions,
-			'options' => [
-				'ORDER BY' => 'wlzl_label ASC'
-			]
+			'join_conds' => $joins,
+			'options' => $options
 		];
 
 		return $query;
@@ -117,11 +178,8 @@ class ZObjectAlphabeticPager extends AlphabeticPager {
 		$wikitext .= "\n* [[Special:ListMissingLabels|" .
 			$this->msg( 'wikilambda-special-missinglabels' ) . "]]\n";
 
-		// TODO (T377909)
-		// $wikitext .= "\n* [[Special:ListFunctionsWithUnconnectedTests|List of Functions with unconnected Tests ]]\n";
-
-		// TODO (T377910)
-		// $wikitext .= "\n* [[Special:ListUntestedFunctions|List of Functions with fewer Tests ]]\n";
+		$wikitext .= "\n* [[Special:ListFunctionsByTests|" .
+			$this->msg( 'wikilambda-special-functionsbytests' ) . "]]\n";
 
 		return $wikitext;
 	}
@@ -137,36 +195,28 @@ class ZObjectAlphabeticPager extends AlphabeticPager {
 		$zid = $row->wlzl_zobject_zid;
 		$label = $row->wlzl_label;
 
-		return array_key_exists( 'type', $this->filters ) ?
-			"# [[$zid|$label]] ($zid)\n" :
-			"# [[Special:ListObjectsByType/$zid|$label]] ($zid)\n";
+		$formatted = array_key_exists( 'type', $this->filters ) ?
+			"# [[$zid|$label]] ($zid)" :
+			"# [[Special:ListObjectsByType/$zid|$label]] ($zid)";
+
+		// Additional info for Special:ListFunctionsByTests
+		if ( array_key_exists( 'testfilters', $this->filters ) ) {
+			$tests = $row->all_tests;
+			$fail = $row->failing_tests;
+			$conn = $row->connected_tests;
+
+			$testsMsg = $this->msg( 'wikilambda-special-functionsbytests-row-tests' )->params( $tests )->text();
+			$failMsg = $this->msg( 'wikilambda-special-functionsbytests-row-failing' )->params( $fail )->text();
+			$connMsg = $this->msg( 'wikilambda-special-functionsbytests-row-connected' )->params( $conn )->text();
+
+			$testInfo = "$testsMsg, "
+				. "<span class='ext-wikilambda-special-tests-connected'>$connMsg</span>"
+			  . ( (int)$fail == 0 ? '' : ", <span class='ext-wikilambda-special-tests-failing'>$failMsg</span>" );
+
+			$formatted .= " - " . $this->msg( 'parentheses' )->params( $testInfo )->text();
+		}
+
+		return "$formatted\n";
 	}
 
-	/**
-	 * @param string $typeZid
-	 * @param string $langZid
-	 * @param string $formHeader
-	 * @return string
-	 */
-	public function getHeaderForm( $typeZid, $langZid, $formHeader ) {
-		$formDescriptor = [
-			'type' => [
-				'label' => 'Type',
-				'class' => HTMLZTypeSelectField::class,
-				'name' => 'type',
-				'default' => $typeZid
-			],
-			'language' => [
-				'label' => 'Language',
-				'class' => HTMLZLanguageSelectField::class,
-				'name' => 'language',
-				'default' => $langZid
-			]
-		];
-
-		$htmlForm = HTMLForm::factory( 'ooui', $formDescriptor, $this->getContext() )
-			->setWrapperLegend( $formHeader )
-			->setMethod( 'get' );
-		return $htmlForm->prepareForm()->getHTML( false );
-	}
 }
