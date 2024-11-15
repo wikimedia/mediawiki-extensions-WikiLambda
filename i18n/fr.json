@@ -350,6 +350,7 @@
 	"wikilambda-move-after-list-item": "Déplacer après",
 	"wikilambda-move-before-list-item": "Déplacer avant",
 	"wikilambda-multilingualstring-nofallback": "Aucun libellé défini dans cette langue ni dans les langues de repli acceptées.",
+	"wikilambda-noobject": "Cet objet n'existe pas. Vous pouvez [{{fullurl:{{#Special:Log}}|page={{FULLPAGENAMEE}}}} rechercher les journaux associés] pour savoir où il est allé.",
 	"wikilambda-object-selector-suggested-languages": "Langues suggérées",
 	"wikilambda-object-selector-suggested-types": "Types suggérés",
 	"wikilambda-optional": "facultatif",
