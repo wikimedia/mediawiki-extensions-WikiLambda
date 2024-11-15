@@ -81,9 +81,8 @@ module.exports = exports = defineComponent( {
 			this.editor.setOptions( this.options );
 
 			// Set listener
-			const self = this;
 			this.editor.on( 'change', () => {
-				self.$emit( 'change', self.editor.getValue() );
+				this.$emit( 'change', this.editor.getValue() );
 			} );
 		}
 	},
