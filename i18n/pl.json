@@ -114,7 +114,7 @@
 	"wikilambda-function-are-you-sure-dialog-header": "Na pewno?",
 	"wikilambda-function-are-you-sure-dialog-description": "Czy na pewno chcesz opuścić tryb edycji bez wcześniejszego opublikowania?",
 	"wikilambda-functioncall-metadata-dialog-header": "Metadane",
-	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Błąd|Błędy}}",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|1=Błąd|Błędy}}",
 	"wikilambda-functioncall-metadata-errors-none": "Brak",
 	"wikilambda-functioncall-metadata-orchestration-start-time": "Czas rozpoczęcia orkiestracji",
 	"wikilambda-functioncall-metadata-orchestration-end-time": "Czas zakończenia orkiestracji",

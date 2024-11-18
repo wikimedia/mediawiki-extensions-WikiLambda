@@ -129,7 +129,7 @@
 	"wikilambda-function-are-you-sure-dialog-header": "Êtes-vous sûr(e) ?",
 	"wikilambda-function-are-you-sure-dialog-description": "Êtes-vous sûr de vouloir quitter le mode d’édition sans publier auparavant ?",
 	"wikilambda-functioncall-metadata-dialog-header": "Métadonnées",
-	"wikilambda-functioncall-metadata-errors": "Erreur{{PLURAL:$1||s}}",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Erreur|Erreurs}}",
 	"wikilambda-functioncall-metadata-errors-none": "Aucune",
 	"wikilambda-functioncall-metadata-orchestration-start-time": "Heure de début de l’orchestration",
 	"wikilambda-functioncall-metadata-orchestration-end-time": "Heure de fin de l’orchestration",

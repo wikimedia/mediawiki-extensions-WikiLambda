@@ -83,7 +83,7 @@
 	"wikilambda-implementation-create-new": "Vytvořit novou implementaci",
 	"wikilambda-function-are-you-sure-dialog-header": "Jste si jisti?",
 	"wikilambda-functioncall-metadata-dialog-header": "Metadata",
-	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Chyba|Chyby}}",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|1=Chyba|Chyby}}",
 	"wikilambda-functioncall-metadata-errors-none": "Nic",
 	"wikilambda-functioncall-metadata-evaluation-start-time": "Čas zahájení hodnocení",
 	"wikilambda-functioncall-metadata-evaluation-duration": "Doba trvání hodnocení",

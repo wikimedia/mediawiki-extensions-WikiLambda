@@ -64,7 +64,7 @@
 	"wikilambda-function-are-you-sure-dialog-header": "Вы уверены?",
 	"wikilambda-function-are-you-sure-dialog-description": "Вы уверены, что хотите выйти из режима правки, не опубликовав изменения?",
 	"wikilambda-functioncall-metadata-dialog-header": "Метаданные",
-	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Ошибка|Ошибки|Ошибок}}",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|1=Ошибка|Ошибки}}",
 	"wikilambda-functioncall-error": "Ошибка вызова функции: $1",
 	"wikilambda-tester-create-new": "Создать новый тест",
 	"wikilambda-tester-status-pending": "В ОЖИДАНИИ...",

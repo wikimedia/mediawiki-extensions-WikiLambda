@@ -62,7 +62,7 @@
 	"wikilambda-implementation-selector": "Chọn trường hợp sử dụng",
 	"wikilambda-function-are-you-sure-dialog-header": "Bạn có chắc không?",
 	"wikilambda-function-are-you-sure-dialog-description": "Bạn có chắc chắn muốn rời chế độ sửa đổi mà không lưu trang không?",
-	"wikilambda-functioncall-metadata-errors": "$1 {{PLURAL:$1}}Lỗi",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Lỗi}}",
 	"wikilambda-functioncall-metadata-errors-none": "Không có",
 	"wikilambda-functioncall-metadata-orchestration-start-time": "Thời gian bắt đầu dịch vụ phương tiện",
 	"wikilambda-functioncall-metadata-orchestration-end-time": "Thời gian kết thúc dịch vụ phương tiện",

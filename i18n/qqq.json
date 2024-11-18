@@ -16,7 +16,8 @@
 			"Jdforrester",
 			"Joseph",
 			"McDutchie",
-			"Msz2001"
+			"Msz2001",
+			"Grace Choi"
 		]
 	},
 	"wikilambda-desc": "{{desc|name=WikiLambda|url=https://www.mediawiki.org/wiki/Extension:WikiLambda}}\n\n{{doc-wikilambda}}",
@@ -134,7 +135,7 @@
 	"wikilambda-function-are-you-sure-dialog-header": "Header for dialog confirming leaving edit mode without publishing",
 	"wikilambda-function-are-you-sure-dialog-description": "Description for dialog confirming leaving edit mode without publishing",
 	"wikilambda-functioncall-metadata-dialog-header": "Header for dialog showing metadata about the execution of a function call",
-	"wikilambda-functioncall-metadata-errors": "Label for any error(s) returned from a function call.\n\n{{doc-wikilambda}}",
+	"wikilambda-functioncall-metadata-errors": "A heading for a list of errors that caused a test to fail. If there is one error in the list, the singular form is shown, and if there are multiple errors, then the plural. The actual number of errors is not needed in the message.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-metadata-errors-none": "String indicating no errors came back from a function call. Follows {{msg-mw|Wikilambda-functioncall-metadata-errors}}.",
 	"wikilambda-functioncall-metadata-orchestration-start-time": "Label for when this function call started on the orchestrator.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-metadata-orchestration-end-time": "Label for when this function call ended on the orchestrator.\n\n{{doc-wikilambda}}",

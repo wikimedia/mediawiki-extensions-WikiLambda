@@ -102,7 +102,7 @@
 	"wikilambda-implementation-create-new": "Створити нову реалізацію",
 	"wikilambda-function-are-you-sure-dialog-header": "Ви впевнені?",
 	"wikilambda-function-are-you-sure-dialog-description": "Ви дійсно хочете припинити редагування, не опублікувавши зміни?",
-	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Помилка|Помилки}}",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|1=Помилка|Помилки}}",
 	"wikilambda-functioncall-error": "Помилка виклику функції: $1",
 	"wikilambda-functioncall-error-category": "Сторінки з помилковими викликами функцій Вікіфункцій",
 	"wikilambda-functioncall-error-category-desc": "Сторінки з викликами Вікіфункцій, які призводять до загальної помилки",

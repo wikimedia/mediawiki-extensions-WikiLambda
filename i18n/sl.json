@@ -94,7 +94,7 @@
 	"wikilambda-function-are-you-sure-dialog-header": "Ste prepričani?",
 	"wikilambda-function-are-you-sure-dialog-description": "Ali res želite zapustiti način urejanja, ne da bi najprej objavili spremembe?",
 	"wikilambda-functioncall-metadata-dialog-header": "Metapodatki",
-	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Napaka|Napake}}",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|1=Napaka|Napake}}",
 	"wikilambda-functioncall-metadata-errors-none": "Nobenih",
 	"wikilambda-functioncall-metadata-orchestration-start-time": "Čas začetka orkestracije",
 	"wikilambda-functioncall-metadata-orchestration-end-time": "Čas konca orkestracije",
