@@ -391,6 +391,7 @@
 	"wikilambda-special-objectsbytype-summary": "Clicca su uno dei tipi elencati di seguito per vedere tutti gli oggetti di quel tipo.",
 	"wikilambda-special-objectsbytype-typeheader": "Tutti i tipi",
 	"wikilambda-special-objectsbytype-allheader": "Tutti i tipi con istanze",
+	"wikilambda-special-missinglabels": "Elenco degli oggetti con etichette mancanti",
 	"wikilambda-special-runfunction": "Esegui una funzione",
 	"wikilambda-special-runfunction-intro": "Assicurati di seguire le politiche della comunità, le regole sul copyright e sui brevetti.",
 	"wikilambda-special-runfunction-nojs": "Questa pagina richiede JavaScript per essere utilizzata.",
