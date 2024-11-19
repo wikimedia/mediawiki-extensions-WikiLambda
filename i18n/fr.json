@@ -295,7 +295,7 @@
 	"wikilambda-functioncall-metadata-cpu-usage": "Utilisation du processeur",
 	"wikilambda-functioncall-metadata-duration": "Durée",
 	"wikilambda-functioncall-metadata-end-time": "Horodatage de fin",
-	"wikilambda-functioncall-metadata-errors": "Erreur{{PLURAL:$1||s}}",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Erreur|Erreurs}}",
 	"wikilambda-functioncall-metadata-errors-none": "Aucune",
 	"wikilambda-functioncall-metadata-errors-summary": "Type d'erreur",
 	"wikilambda-functioncall-metadata-evaluation": "Évaluation",

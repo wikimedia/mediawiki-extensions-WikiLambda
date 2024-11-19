@@ -247,7 +247,7 @@
 	"wikilambda-functioncall-error-unknown-category": "Strani s klici vikifunkcij na neznane objekte",
 	"wikilambda-functioncall-error-unknown-category-desc": "Strani s poskusi klicev vikifunkcij na neznane objekte",
 	"wikilambda-functioncall-metadata-actual-result": "Dejanski rezultat",
-	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Napaka|Napake}}",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|1=Napaka|Napake}}",
 	"wikilambda-functioncall-metadata-errors-none": "Nobenih",
 	"wikilambda-functioncall-metadata-errors-summary": "Povzetek napak",
 	"wikilambda-functioncall-metadata-execution-debug-logs": "Dnevniki odpravljanja napak pri izvajanju",

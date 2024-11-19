@@ -236,7 +236,7 @@
 	"wikilambda-functioncall-metadata-cpu-usage": "Використання ЦП",
 	"wikilambda-functioncall-metadata-duration": "Тривалість",
 	"wikilambda-functioncall-metadata-end-time": "Час закінчення",
-	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Помилка|Помилки}}",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|1=Помилка|Помилки}}",
 	"wikilambda-functioncall-metadata-errors-summary": "Тип помилки",
 	"wikilambda-functioncall-metadata-expected-result": "Очікуваний результат",
 	"wikilambda-functioncall-metadata-hostname": "Сервер",

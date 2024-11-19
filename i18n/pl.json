@@ -263,7 +263,7 @@
 	"wikilambda-functioncall-metadata-cpu-usage": "Użycie CPU",
 	"wikilambda-functioncall-metadata-duration": "Czas trwania",
 	"wikilambda-functioncall-metadata-end-time": "Czas zakończenia",
-	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Błąd|Błędy}}",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|1=Błąd|Błędy}}",
 	"wikilambda-functioncall-metadata-errors-none": "Brak",
 	"wikilambda-functioncall-metadata-errors-summary": "Typ błędu",
 	"wikilambda-functioncall-metadata-evaluation": "Ocena",

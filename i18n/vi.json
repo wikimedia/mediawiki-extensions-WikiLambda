@@ -253,7 +253,7 @@
 	"wikilambda-functioncall-error-unknown-category": "Các trang có lệnh gọi Wikifunctions tới đối tượng không xác định",
 	"wikilambda-functioncall-error-unknown-category-desc": "Các trang đã thử gọi tới Wikifunctions mà yêu cầu đối tượng không xác định",
 	"wikilambda-functioncall-metadata-actual-result": "Kết quả thực tế",
-	"wikilambda-functioncall-metadata-errors": "$1 {{PLURAL:$1}}Lỗi",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Lỗi}}",
 	"wikilambda-functioncall-metadata-errors-none": "Không có",
 	"wikilambda-functioncall-metadata-errors-summary": "Tóm lược lỗi",
 	"wikilambda-functioncall-metadata-execution-debug-logs": "Nhật ký gỡ lỗi chạy chương trình",
