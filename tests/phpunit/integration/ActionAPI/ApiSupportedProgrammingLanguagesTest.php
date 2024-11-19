@@ -19,6 +19,10 @@ use MediaWiki\Tests\Api\ApiTestCase;
  */
 class ApiSupportedProgrammingLanguagesTest extends ApiTestCase {
 
+	/**
+	 * TODO (T374242): Fix Beta Cluster so we can re-enable these tests.
+	 * @group Broken
+	 */
 	public function testExecuteSuccessfulViaBetaCluster() {
 		// Beta cluster doesn't like all these tests, so retry until it does.
 		$result = [];
