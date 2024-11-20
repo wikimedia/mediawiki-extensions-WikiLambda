@@ -1,7 +1,6 @@
 {
 	"require": {
-		"diff/diff": "^3.2.0",
-		"opis/json-schema": "1.1.0"
+		"diff/diff": "^3.2.0"
 	},
 	"require-dev": {
 		"mediawiki/mediawiki-codesniffer": "45.0.0",
