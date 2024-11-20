@@ -34,6 +34,7 @@ class ZPersistentObject extends ZObject {
 	 */
 	public function __construct( $zid, $value, $label, $aliases = null, $description = null ) {
 		$aliases ??= new ZMultiLingualStringSet( [] );
+		$description ??= new ZMultiLingualString( [] );
 		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ID ] = $zid;
 		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] = $value;
 		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] = $label;
@@ -79,12 +80,7 @@ class ZPersistentObject extends ZObject {
 	 * @inheritDoc
 	 */
 	public function isValid(): bool {
-		// TODO (T296724): we accept ZStrings and ZReferences for now because functions-schemata/data
-		// files are incorrect (Z2K1 contains reference instead of string)
-		if (
-			!( $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ID ] instanceof ZString ) &&
-			!( $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ID ] instanceof ZReference )
-		) {
+		if ( !( $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ID ] instanceof ZString ) ) {
 			return false;
 		}
 		$zid = $this->getZid();
@@ -100,8 +96,7 @@ class ZPersistentObject extends ZObject {
 		if ( !( $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES ] instanceof ZMultiLingualStringSet ) ) {
 			return false;
 		}
-		if ( ( $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_DESCRIPTION ] !== null ) &&
-			!( $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_DESCRIPTION ] instanceof ZMultiLingualString ) ) {
+		if ( !( $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_DESCRIPTION ] instanceof ZMultiLingualString ) ) {
 			return false;
 		}
 		return true;

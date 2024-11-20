@@ -49,7 +49,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$zid = $this->zobjectStore->getNextAvailableZid();
 		$sysopUser = $this->getTestSysop()->getUser();
 
-		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+		$input = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
 			. '"Z2K2": "hello",'
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
 		$page = $this->zobjectStore->createNewZObject(
@@ -82,7 +82,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$zid = $this->zobjectStore->getNextAvailableZid();
 		$title = Title::newFromText( $zid, NS_MAIN );
 
-		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+		$input = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
 			. '"Z2K2": "hello",'
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
 
@@ -129,7 +129,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->insertZids( [ 'Z6' ] );
 
 		$firstZid = $this->zobjectStore->getNextAvailableZid();
-		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+		$input = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
 			. '"Z2K2": "hello",'
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
 		$page = $this->zobjectStore->createNewZObject(
@@ -139,7 +139,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $page->isOK() );
 
 		$secondZid = $this->zobjectStore->getNextAvailableZid();
-		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+		$input = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
 			. '"Z2K2": "world",'
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
 		$page = $this->zobjectStore->createNewZObject(
@@ -202,15 +202,16 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 				ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED
 			],
 			'incorrect ZObject, no value' => [
-				'{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
+				'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
+					. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
 				ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED
 			],
 			'incorrect ZObject, no label' => [
-				'{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": "hello" }',
+				'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" }, "Z2K2": "hello" }',
 				ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED
 			],
 			'correct ZObject' => [
-				'{ "Z1K1": "Z2", "Z2K1": "Z0",'
+				'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
 					. ' "Z2K2": "hello",'
 					. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
 				true
@@ -223,10 +224,10 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 		$zid = $this->zobjectStore->getNextAvailableZid();
 		$title = Title::newFromText( $zid, NS_MAIN );
-		$zObject = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+		$zObject = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
 			. ' "Z2K2": "hello",'
 			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
-		$savedZObject = '{ "Z1K1": "Z2", "Z2K1": "' . $zid . '",'
+		$savedZObject = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "' . $zid . '" },'
 			. ' "Z2K2": "hello",'
 			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
 
@@ -246,7 +247,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$basicUser = $this->getTestUser()->getUser();
 
 		$zid = 'Z401';
-		$input = '{ "Z1K1": "Z2", "Z2K1": "Z401",'
+		$input = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z401" },'
 			. '"Z2K2": "hello",'
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
 
@@ -277,7 +278,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 		$zid = $this->zobjectStore->getNextAvailableZid();
 		$title = Title::newFromText( $zid, NS_MAIN );
-		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+		$input = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
 			. '"Z2K2": "hello",'
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
 
@@ -354,10 +355,9 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		// TODO (T375065): This issue is only detectable with structural validatioon
 		$this->markTestSkipped( 'Only detectable with structural validation' );
 		$zid = $this->zobjectStore->getNextAvailableZid();
-		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+		$input = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "' . $zid . '" },'
 			. '"Z2K2": "hello",'
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
-
 		$status = $this->zobjectStore->updateZObject(
 			RequestContext::getMain(),
 			$zid,
@@ -370,7 +370,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testUpdateZObject_badLabelLength() {
-		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+		$input = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
 			. '"Z2K2": "hello",'
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11", { "Z1K1":"Z11","Z11K1":"Z1002","Z11K2":"The quick brown fox'
 			. ' jumps over the lazy dog while the sun sets behind the mountains and the sky turns shades of orange,'
@@ -394,7 +394,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testUpdateZObject_badDescriptionLength() {
-		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+		$input = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
 			. '"Z2K2": "hello",'
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] },'
 			. '"Z2K4": {"Z1K1": "Z32", "Z32K1": [ "Z31" ] },'
@@ -421,7 +421,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$loggedOutUser = $this->getServiceContainer()->getUserFactory()->newAnonymous( '127.0.0.1' );
 
 		$zid = $this->zobjectStore->getNextAvailableZid();
-		$input = '{ "Z1K1": "Z2", "Z2K1": "' . $zid . '",'
+		$input = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "' . $zid . '" },'
 			. '"Z2K2": "hello",'
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
 
@@ -439,7 +439,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 	public function testUpdateZObject_editProhibited_basicUserMakingPreDefined() {
 		$zid = 'Z400';
-		$input = '{ "Z1K1": "Z2", "Z2K1": "' . $zid . '",'
+		$input = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "' . $zid . '" },'
 			. '"Z2K2": "hello",'
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
 
@@ -459,7 +459,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		// For the purpose of this test, deny logged-in users the ability to create a Z4/Type
 		$this->setGroupPermissions( 'user', 'wikilambda-create-type', false );
 
-		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+		$input = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
 			. '"Z2K2": {'
 				. ' "Z1K1": "Z4",'
 				. ' "Z4K1": "Z0",'
@@ -486,7 +486,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		// For the purpose of this test, deny logged-in users the ability to create a Z8/Function
 		$this->setGroupPermissions( 'user', 'wikilambda-create-function', false );
 
-		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+		$input = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
 			. '"Z2K2": {'
 				. ' "Z1K1": "Z8",'
 				. ' "Z8K1": ["Z17"],'
@@ -514,7 +514,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		// Implementation isn't a guaranteed type by our testing system, so inject it just for this test.
 		$this->insertZids( [ 'Z14' ] );
 
-		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+		$input = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
 			. '"Z2K2": {'
 				. ' "Z1K1": "Z14",'
 				. ' "Z14K1": "Z1",'
@@ -539,7 +539,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		// Tester isn't a guaranteed type by our testing system, so inject it just for this test.
 		$this->insertZids( [ 'Z20' ] );
 
-		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+		$input = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
 			. '"Z2K2": {'
 				. ' "Z1K1": "Z20",'
 				. ' "Z20K1": "Z1",'
@@ -562,7 +562,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		// Language isn't a guaranteed type by our testing system, so inject it just for this test.
 		$this->insertZids( [ 'Z60' ] );
 
-		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+		$input = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
 			. '"Z2K2": {'
 				. ' "Z1K1": "Z60",'
 				. ' "Z60K1": "qqq",'
@@ -584,7 +584,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		// Programming language isn't a guaranteed type by our testing system, so inject it just for this test.
 		$this->insertZids( [ 'Z61' ] );
 
-		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+		$input = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
 			. '"Z2K2": {'
 				. ' "Z1K1": "Z61",'
 				. ' "Z61K1": "test-programming-language"'

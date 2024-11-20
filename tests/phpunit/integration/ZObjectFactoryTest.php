@@ -102,7 +102,7 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 			],
 			'wrapped string' => [
 				json_decode(
-					' { "Z1K1": "Z2", "Z2K1": "Z0",'
+					' { "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
 					. ' "Z2K2": "wrapped string",'
 					. ' "Z2K3": { "Z1K1": "Z12",  "Z12K1": [ "Z11",'
 					. ' { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "wrapped string label" } ] } }'
@@ -111,7 +111,7 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 			],
 			'wrapped array' => [
 				json_decode(
-					' { "Z1K1": "Z2", "Z2K1": "Z0",'
+					' { "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
 					. ' "Z2K2": [ "Z6", "wrapped", "array", "of strings" ],'
 					. ' "Z2K3": { "Z1K1": "Z12",  "Z12K1": [ "Z11",'
 					. ' { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "wrapped array label" } ] } }'
@@ -120,7 +120,7 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 			],
 			'wrapped monolingual' => [
 				json_decode(
-					' { "Z1K1": "Z2", "Z2K1": "Z0",'
+					' { "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
 					. ' "Z2K2": { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "wrapped monolingual" },'
 					. ' "Z2K3": { "Z1K1": "Z12",  "Z12K1": [ "Z11",'
 					. ' { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "wrapped monolingual label" } ] } }'
@@ -129,7 +129,7 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 			],
 			'wrapped self-referenced language' => [
 				json_decode(
-					' { "Z1K1": "Z2", "Z2K1": "Z401",'
+					' { "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z401" },'
 					. ' "Z2K2": { "Z1K1": "Z60", "Z60K1": "invent" },'
 					. ' "Z2K3": { "Z1K1": "Z12",  "Z12K1": [ "Z11",'
 					. ' { "Z1K1": "Z11", "Z11K1": "Z401", "Z11K2": "invent" } ] } }'
@@ -171,7 +171,7 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 			],
 			'unknown inner type' => [
 				json_decode(
-					' { "Z1K1": "Z2", "Z2K1": "Z0",'
+					' { "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
 					. ' "Z2K2": { "Z11K1": "Z1002", "Z11K2": "wrapped monolingual" },'
 					. ' "Z2K3": { "Z1K1": "Z12",  "Z12K1": [ "Z11",'
 					. ' { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "wrapped monolingual label" } ] } }'
@@ -180,7 +180,7 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 			],
 			'invalid inner type' => [
 				json_decode(
-					' { "Z1K1": "Z2", "Z2K1": "Z0",'
+					' { "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
 					. ' "Z2K2": { "Z1K1": "Z11", "Z11K2": "wrapped monolingual" },'
 					. ' "Z2K3": { "Z1K1": "Z12",  "Z12K1": [ "Z11",'
 					. ' { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "wrapped monolingual label" } ] } }'
@@ -189,7 +189,7 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 			],
 			'invalid persistent keys' => [
 				json_decode(
-					' { "Z1K1": "Z2", "Z2K1": "Z0",'
+					' { "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
 					. ' "Z2K2": { "Z1K1": "Z11", "Z11K2": "wrapped monolingual" } }'
 				),
 				ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED

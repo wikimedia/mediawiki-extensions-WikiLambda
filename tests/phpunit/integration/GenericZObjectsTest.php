@@ -35,7 +35,7 @@ class GenericZObjectsTest extends WikiLambdaIntegrationTestCase {
 		$instanceContent = <<<EOT
 {
 	"Z1K1": "Z2",
-	"Z2K1": "Z0",
+	"Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },
 	"Z2K2": "Tést content!",
 	"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] }
 }
@@ -97,7 +97,7 @@ EOT;
 		$instanceContent = <<<EOT
 {
 	"Z1K1": "Z2",
-	"Z2K1": "Z0",
+	"Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },
 	"Z2K2": {
 		"Z1K1": "Z111",
 		"Z111K1": "Tést",
@@ -151,7 +151,7 @@ EOT;
 		$baseTypeContent = <<<EOT
 {
 	"Z1K1": "Z2",
-	"Z2K1": "Z0",
+	"Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },
 	"Z2K2": {
 		"Z1K1": "Z4",
 		"Z4K1": "Z91",
@@ -201,7 +201,7 @@ EOT;
 		$instanceContent = <<<EOT
 {
 	"Z1K1": "Z2",
-	"Z2K1": "Z0",
+	"Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },
 	"Z2K2": {
 		"Z1K1": "Z91",
 		"Z91K1": "6"
@@ -397,7 +397,7 @@ EOT;
 		$newLang = <<<EOT
 {
 	"Z1K1": "Z2",
-	"Z2K1": "Z0",
+	"Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },
 	"Z2K2": {
 		"Z1K1": "Z60",
 		"Z60K1": "nw-lang"
@@ -425,7 +425,7 @@ EOT;
 		$newZObject = <<<EOT
 {
 	"Z1K1": "Z2",
-	"Z2K1": "Z0",
+	"Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },
 	"Z2K2": "test object",
 	"Z2K3": {
 		"Z1K1": "Z12",
@@ -461,7 +461,7 @@ EOT;
 		$baseTypeContent = <<<EOT
 {
 	"Z1K1": "Z2",
-	"Z2K1": "Z0",
+	"Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },
 	"Z2K2": {
 		"Z1K1": "Z4",
 		"Z4K1": "Z890",
@@ -512,7 +512,7 @@ EOT;
 		$instanceContent = <<<EOT
 {
 	"Z1K1": "Z2",
-	"Z2K1": "Z0",
+	"Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },
 	"Z2K2": {
 		"Z1K1": "Z890",
 		"Z890K1": [ "Z6", "Test"],
@@ -559,7 +559,7 @@ EOT;
 		$instanceContent = <<<EOT
 {
 	"Z1K1": "Z2",
-	"Z2K1": "Z0",
+	"Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },
 	"Z2K2": {
 		"Z1K1": "Z890",
 		"Z890K1": [ "Z6" ],

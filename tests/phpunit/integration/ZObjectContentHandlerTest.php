@@ -69,7 +69,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$content = $handler->makeEmptyContent();
 		$serialized = $handler->serializeContent( $content );
 		$expected = '{"Z1K1":"Z2",'
-			. '"Z2K1":"Z0",'
+			. '"Z2K1":{"Z1K1":"Z6","Z6K1":"Z0"},'
 			. '"Z2K2":"",'
 			. '"Z2K3":{"Z1K1":"Z12","Z12K1":["Z11"]},'
 			. '"Z2K4":{"Z1K1":"Z32","Z32K1":["Z31"]},'
@@ -83,7 +83,8 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testUnserializeContent() {
-		$serialized = '{"Z1K1":"Z2","Z2K1":"Z401","Z2K2":"","Z2K3":{"Z1K1":"Z12","Z12K1":["Z11"]}}';
+		$serialized = '{"Z1K1":"Z2","Z2K1":{"Z1K1":"Z6","Z6K1":"Z401"},'
+			. '"Z2K2":"","Z2K3":{"Z1K1":"Z12","Z12K1":["Z11"]}}';
 		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
 		$testObject = $handler->unserializeContent( $serialized );
 		$this->assertInstanceOf( ZObjectContent::class, $testObject );
@@ -218,7 +219,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		// Invalid content because it doesn't have Z2K3 key
 		$testObject = new ZObjectContent(
 			'{ "Z1K1": "Z2",'
-				. '"Z2K1": { "Z1K1": "Z9", "Z9K1": "Z333" },'
+				. '"Z2K1": { "Z1K1": "Z6", "Z6K1": "Z333" },'
 				. '"Z2K2": { "Z1K1": "Z6", "Z6K1": "string value" } }'
 		);
 		$pstParams = new PreSaveTransformParamsValue( $testTitle, $sysopUser, $popts );
@@ -300,7 +301,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$validateParams = new ValidationParams( $testPage, 0 );
 
 		$content = new ZObjectContent(
-			'{ "Z1K1": "Z2", "Z2K1": "Z401", "Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }'
+			'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z401" }, "Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }'
 		);
 
 		$status = $handler->validateSave( $content, $validateParams );
@@ -357,7 +358,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$testTitle = Title::newFromText( $testZid, NS_MAIN );
 
 		$content = new ZObjectContent(
-			'{"Z1K1":"Z2","Z2K1":"Z401","Z2K2":"",' .
+			'{"Z1K1":"Z2","Z2K1":{"Z1K1":"Z6","Z6K1":"Z401"},"Z2K2":"",' .
 				'"Z2K3":{"Z1K1":"Z12","Z12K1":["Z11",{"Z1K1":"Z11","Z11K1":"Z1004","Z11K2":"Éxample"}]}}'
 		);
 
@@ -396,7 +397,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 
 		// Test with a broken ZObject
 		$brokenContent = new ZObjectContent(
-			'{"Z1K1":"Z2","Z2K1":"Z401","Z2K2":"",' .
+			'{"Z1K1":"Z2","Z2K1":{"Z1K1":"Z6","Z6K1":"Z401"},"Z2K2":"",' .
 				'"Z2K3":{"Z1K1":"Z12","Z12K1":["Z11",{"Z1K1":"Z11","Z11K2":"Éxample"}]}}'
 		);
 		$brokenHeader = ZObjectContentHandler::createZObjectViewHeader(
@@ -417,7 +418,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$testTitle = Title::newFromText( $testZid, NS_MAIN );
 
 		$content = new ZObjectContent(
-			'{"Z1K1":"Z2","Z2K1":"Z401","Z2K2":"",' .
+			'{"Z1K1":"Z2","Z2K1":{"Z1K1":"Z6","Z6K1":"Z401"},"Z2K2":"",' .
 				'"Z2K3":{"Z1K1":"Z12","Z12K1":["Z11",{"Z1K1":"Z11","Z11K1":"Z1004","Z11K2":"Éxample"}]}}'
 		);
 
