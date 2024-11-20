@@ -57,6 +57,7 @@ class ZObjectAuthorization implements LoggerAwareInterface {
 		$status = new AuthorizationStatus();
 
 		foreach ( $requiredRights as $right ) {
+			// TODO (T375065): We can probably replace this with $authority->isAllowedAll( $requiredRights );
 			if ( !$authority->isAllowed( $right ) ) {
 				$flags = $creating ? EDIT_NEW : EDIT_UPDATE;
 				$error = ZErrorFactory::createAuthorizationZError( $right, $newContent, $flags );

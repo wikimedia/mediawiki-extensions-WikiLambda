@@ -59,22 +59,22 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 
 	public static function provideCreateInvalidInput() {
 		return [
-			'number' => [ 3, ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED ],
+			'number' => [ 3, ZErrorTypeRegistry::Z_ERROR_INVALID_FORMAT ],
 			'no type' => [
 				(object)[ 'Z11K1' => 'Z1003', 'Z11K2' => 'invalid monolingual string' ],
-				ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED
+				ZErrorTypeRegistry::Z_ERROR_MISSING_TYPE
 			],
 			'invalid type' => [
 				(object)[ 'Z1K1' => 'invalid' ],
-				ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED
+				ZErrorTypeRegistry::Z_ERROR_REFERENCE_VALUE_INVALID
 			],
 			'custom' => [
 				(object)[ 'Z1K1' => 'Z999', 'Z999K1' => 'custom' ],
-				ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED
+				ZErrorTypeRegistry::Z_ERROR_UNKNOWN_REFERENCE
 			],
 			'invalid' => [
 				(object)[ 'Z1K1' => 'Z11', 'Z11K2' => 'invalid monolingual string' ],
-				ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED
+				ZErrorTypeRegistry::Z_ERROR_MISSING_KEY
 			],
 		];
 	}
@@ -167,7 +167,7 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 			],
 			'invalid' => [
 				(object)[ 'Z1K1' => 'Z11', 'Z11K2' => 'invalid monolingual string' ],
-				ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED
+				ZErrorTypeRegistry::Z_ERROR_MISSING_KEY
 			],
 			'unknown inner type' => [
 				json_decode(
@@ -185,7 +185,7 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 					. ' "Z2K3": { "Z1K1": "Z12",  "Z12K1": [ "Z11",'
 					. ' { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "wrapped monolingual label" } ] } }'
 				),
-				ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED
+				ZErrorTypeRegistry::Z_ERROR_MISSING_KEY
 			],
 			'invalid persistent keys' => [
 				json_decode(

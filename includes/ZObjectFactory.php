@@ -12,7 +12,6 @@ namespace MediaWiki\Extension\WikiLambda;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
-use MediaWiki\Extension\WikiLambda\Validation\ZObjectStructureValidator;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
@@ -32,6 +31,9 @@ class ZObjectFactory {
 	 * structurally valid or well-formed.
 	 *
 	 * This method is the entrypoint from WikiLambda content object.
+	 *
+	 * TODO (T375065): This is probably unnecessary now. We never create an object
+	 * just passing the inner object, so we should probably strip this feature.
 	 *
 	 * @param string|array|\stdClass $input The item to turn into a ZObject
 	 * @return ZPersistentObject
@@ -188,14 +190,6 @@ class ZObjectFactory {
 			}
 		}
 
-		// (T374241) Use of JsonSchema validation temporarily(?) disabled, causing infinite recursion
-		// $validator = ZObjectStructureValidator::createCanonicalValidator( ZTypeRegistry::Z_PERSISTENTOBJECT );
-		// $status = $validator->validate( $input );
-
-		// if ( !$status->isValid() ) {
-		// 	throw new ZErrorException( $status->getErrors() );
-		// }
-
 		return true;
 	}
 
@@ -211,35 +205,24 @@ class ZObjectFactory {
 	 * @throws ZErrorException
 	 */
 	public static function create( $input ): ZObject {
+		// TODO (T375065) Type validation is checked in createChild so it's
+		// unnecessary here. We were only doing this validation so that we
+		// could safely load the schemata validator for the given type.
+		// However, this would be the place to run some more lax builtin
+		// validation, for example, the ZObject->isValid methof for the
+		// inner object. Currently this builtin validation is broken.
+
 		// 1. Get ZObject type. If not present, return a not wellformed error.
-		try {
-			$typeZObject = self::extractObjectType( $input );
-			$typeZid = $typeZObject->getZValue();
-		} catch ( ZErrorException $e ) {
-			throw new ZErrorException(
-				ZErrorFactory::createValidationZError( $e->getZError() )
-			);
-		}
+		// try {
+		// 	$typeZObject = self::extractObjectType( $input );
+		// 	$typeZid = $typeZObject->getZValue();
+		// } catch ( ZErrorException $e ) {
+		// 	throw new ZErrorException(
+		// 		ZErrorFactory::createValidationZError( $e->getZError() )
+		// 	);
+		// }
 
-		// 2. Create ZObjectStructureValidator to check that the ZObject is well formed
-		try {
-			// TODO (T309409): Generic validator should work with lists but it fails during ZObject migration
-			$validator = ZObjectStructureValidator::createCanonicalValidator( is_array( $input ) ? "LIST" : $typeZid );
-		} catch ( ZErrorException $e ) {
-			// If there's no function-schemata validator (user-defined type), we do a generic custom validation
-			$validator = ZObjectStructureValidator::createCanonicalValidator( ZTypeRegistry::Z_OBJECT );
-		}
-
-		$status = $validator->validate( $input );
-
-		// 3. Check structural validity or wellformedness:
-		// 		If structural validation does not succeed, we cannot save the ZObject:
-		// 		throw ZErrorException with the ZError returned by the validator
-		if ( !$status->isValid() ) {
-			throw new ZErrorException( $status->getErrors() );
-		}
-
-		// 4. Everything is correct, create ZObject instances
+		// 2. Assuming everything is correct, create ZObject instances
 		return self::createChild( $input );
 	}
 
@@ -507,7 +490,15 @@ class ZObjectFactory {
 	}
 
 	/**
-	 * Get a given ZObject's type, irrespective of it being in canonical or in normal form
+	 * Given a ZObject, return its type.
+	 *
+	 * It accepts both a canonical or a normal input.
+	 *
+	 * Throws errors if:
+	 * * The object doesn't have a type/Z1K1
+	 * * The object type is not a reference or a function call
+	 * * The object type reference points at an unexisting object
+	 * * The object type reference points at an object that's not a type
 	 *
 	 * @param \stdClass|array|string $object
 	 * @return ZReference|ZFunctionCall Object type represented by a reference or a function call
@@ -569,19 +560,18 @@ class ZObjectFactory {
 			$errorRegistry = ZErrorTypeRegistry::singleton();
 			$typeZid = $type->getZValue();
 
-			// TODO (T298093): Remove this exception, we will not have ZReferences to
-			// ZErrorTypes here, but ZFunctionCalls to Z885.
-			//
-			// For now, if it's a reference to a ZErrorType (e.g. Z511), accept it
-			// as if it were a type.
-			if (
-				!$typeRegistry->isZObjectKeyKnown( $typeZid ) &&
-				$errorRegistry->instanceOfZErrorType( $typeZid )
-			) {
-				return $type;
-			}
-
 			// Make sure that the reference is to a Z4
+
+			// TODO (T375065): isZObjectKeyKnown fetches and validates types,
+			// this has the potential of going into infinite loops when creating
+			// error objects.
+			// We should have a more efficient way to check that a Zid belongs to
+			// a type, or a function (the most important cases for creation and
+			// function call, respectively), probably through secondaty tables.
+			// Notice that current labels table has this info but ONLY for those
+			// objects containing labels, which means that:
+			// * the process would not be fully trustworthy, or
+			// * we'd need to make sure that types and functions are stored with labels
 			if ( !$typeRegistry->isZObjectKeyKnown( $typeZid ) ) {
 				throw new ZErrorException(
 					ZErrorFactory::createZErrorInstance(

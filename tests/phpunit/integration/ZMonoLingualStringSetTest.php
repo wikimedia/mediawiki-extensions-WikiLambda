@@ -86,6 +86,8 @@ class ZMonoLingualStringSetTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testStaticCreation_invalidValue() {
+		// TODO (T375065): This issue is only detectable with structural validatioon
+		$this->markTestSkipped( 'Only detectable with structural validation' );
 		$this->expectException( ZErrorException::class );
 		$invalidObject = ZObjectFactory::create( (object)[
 			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MONOLINGUALSTRINGSET,
