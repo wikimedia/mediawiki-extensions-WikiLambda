@@ -12,7 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Special;
 
 use MediaWiki\Extension\WikiLambda\Fields\HTMLZLanguageSelectField;
 use MediaWiki\Extension\WikiLambda\Fields\HTMLZTypeSelectField;
-use MediaWiki\Extension\WikiLambda\Pagers\ZObjectAlphabeticPager;
+use MediaWiki\Extension\WikiLambda\Pagers\BasicZObjectPager;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
@@ -118,12 +118,18 @@ class SpecialListMissingLabels extends SpecialPage {
 		array_unshift( $languageZids, $langZid );
 		$languageZids = array_unique( $languageZids );
 
-		// Build ZObjectAlphabeticalPager for the given filters
+		// Build BasicZObjectPager for the given filters
 		$filters = [
 			'type' => $type,
 			'missing_language' => $langZid
 		];
-		$pager = new ZObjectAlphabeticPager( $this->getContext(), $this->zObjectStore, $filters, $languageZids );
+		$pager = new BasicZObjectPager(
+			$this->getContext(),
+			$this->zObjectStore,
+			$languageZids,
+			null,
+			$filters
+		);
 
 		// Add the header form
 		$output->addHTML( $this->getHeaderForm( $type, $langZid ) );
@@ -140,13 +146,14 @@ class SpecialListMissingLabels extends SpecialPage {
 	}
 
 	/**
-	 * Render the header for listing ZObjects by a specific type.
+	 * Render the header for listing ZObjects by a specific type
+	 * with missing labels in the given language.
 	 *
 	 * @param string $typeZid - The type of ZObjects being listed.
 	 * @param string $langZid - The selected language Zid.
-	 * @return string - The wikitext for the header.
+	 * @return string - The text for the header.
 	 */
-	private function getZObjectListHeader( $typeZid, $langZid ) {
+	private function getHeaderTitle( $typeZid, $langZid ) {
 		$typeLabel = $this->zObjectStore->fetchZObjectLabel( $typeZid, $this->getLanguage()->getCode() );
 		$langLabel = $this->zObjectStore->fetchZObjectLabel( $langZid, $this->getLanguage()->getCode() );
 		return $this->msg( 'wikilambda-special-missinglabels-for-type' )
@@ -163,7 +170,7 @@ class SpecialListMissingLabels extends SpecialPage {
 	 * @return string
 	 */
 	public function getHeaderForm( $typeZid, $langZid ) {
-		$formHeader = $this->getZObjectListHeader( $typeZid, $langZid );
+		$formHeader = $this->getHeaderTitle( $typeZid, $langZid );
 		$formDescriptor = [
 			'type' => [
 				'label' => 'Type',

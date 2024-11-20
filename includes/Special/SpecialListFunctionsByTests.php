@@ -10,9 +10,8 @@
 
 namespace MediaWiki\Extension\WikiLambda\Special;
 
-use MediaWiki\Extension\WikiLambda\Pagers\ZObjectAlphabeticPager;
+use MediaWiki\Extension\WikiLambda\Pagers\FunctionsByTestsPager;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
-use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\HTMLForm\HTMLForm;
 use MediaWiki\Languages\LanguageFallback;
@@ -109,20 +108,16 @@ class SpecialListFunctionsByTests extends SpecialPage {
 			$this->getLanguage()->getCode()
 		);
 
-		// Build ZObjectAlphabeticalPager for the given filters
+		// Build FunctionsByTestsPager with the given filters
 		$filters = [
-			'type' => ZTypeRegistry::Z_FUNCTION,
-			'testfilters' => [
-				'min' => $min,
-				'max' => $max,
-				'connected' => $connected,
-				'pending' => $pending,
-				'pass' => $pass,
-				'fail' => $fail
-			]
+			'min' => $min,
+			'max' => $max,
+			'connected' => $connected,
+			'pending' => $pending,
+			'pass' => $pass,
+			'fail' => $fail
 		];
-
-		$pager = new ZObjectAlphabeticPager( $this->getContext(), $this->zObjectStore, $filters, $languageZids );
+		$pager = new FunctionsByTestsPager( $this->getContext(), $this->zObjectStore, $languageZids, $filters );
 
 		// Add the header form
 		$output->addHTML( $this->getHeaderForm() );
@@ -144,7 +139,7 @@ class SpecialListFunctionsByTests extends SpecialPage {
 	 * @return string - The wikitext for the header.
 	 */
 	private function getHeaderTitle() {
-		return $this->msg( 'wikilambda-special-functionsbytests-formheader' )->text();
+		return $this->msg( 'wikilambda-special-functionsbytests-form-header' )->text();
 	}
 
 	/**
@@ -153,7 +148,7 @@ class SpecialListFunctionsByTests extends SpecialPage {
 	 * @return string
 	 */
 	public function getHeaderForm() {
-		$formHeader = $this->msg( 'wikilambda-special-functionsbytests-form-header' )->text();
+		$formHeader = $this->getHeaderTitle();
 		$formDescriptor = [
 			'min' => [
 				'label' => $this->msg( 'wikilambda-special-functionsbytests-form-min' )->text(),
