@@ -80,10 +80,7 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 			"Z111K2" => "second demonstration key"
 		];
 
-		// User-defined type validation can't be tested here, hence
-		// using the method createChild instead of create, as the
-		// former does not request function-schemata validator
-		$testZObject = ZObjectFactory::createChild( $testObject );
+		$testZObject = ZObjectFactory::create( $testObject );
 		$this->assertInstanceOf( ZObject::class, $testZObject );
 		$this->assertSame( 'Z111', $testZObject->getZType() );
 	}
@@ -92,7 +89,7 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 		$this->insertZids( [ 'Z60' ] );
 
 		$testJson = '{ "Z1K1": "Z60", "Z60K1": { "Z1K1": "Z6", "Z6K1": "tasty soup" } }';
-		$testObject = ZObjectFactory::createChild( json_decode( $testJson ) );
+		$testObject = ZObjectFactory::create( json_decode( $testJson ) );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertTrue( $testObject->isTypeReference() );
 		$this->assertFalse( $testObject->isTypeFunctionCall() );
@@ -110,7 +107,7 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 			. '"K1": { "Z1K1": "Z6", "Z6K1": "soup, soup" },'
 			. '"K2": { "Z1K1": "Z6", "Z6K1": "oh, tasty soup, soup" } }';
 
-		$testObject = ZObjectFactory::createChild( json_decode( $testJson ) );
+		$testObject = ZObjectFactory::create( json_decode( $testJson ) );
 
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertFalse( $testObject->isTypeReference() );
@@ -135,7 +132,7 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 			"Z111K1" => "first demonstration key",
 			"Z111K2" => "second demonstration key"
 		];
-		$testZObject = ZObjectFactory::createChild( $testObject );
+		$testZObject = ZObjectFactory::create( $testObject );
 		$this->assertContains( "Z111", $testZObject->getLinkedZObjects() );
 	}
 
@@ -151,7 +148,7 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 			"Z111K1" => "first demonstration key",
 			"Z111K2" => "second demonstration key"
 		];
-		$testZObject = ZObjectFactory::createChild( $testObject );
+		$testZObject = ZObjectFactory::create( $testObject );
 
 		$toStringValue = $testZObject->__toString();
 

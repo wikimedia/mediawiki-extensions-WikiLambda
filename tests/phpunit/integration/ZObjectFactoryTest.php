@@ -61,6 +61,26 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 	public static function provideCreateInvalidInput() {
 		return [
 			'number' => [ 3, ZErrorTypeRegistry::Z_ERROR_INVALID_FORMAT ],
+			'invalid item' => [
+				[ 'Z1', 'good item', 4 ],
+				ZErrorTypeRegistry::Z_ERROR_ARRAY_ELEMENT_NOT_WELLFORMED
+			],
+			'undefined list type' => [
+				[],
+				ZErrorTypeRegistry::Z_ERROR_UNDEFINED_LIST_TYPE
+			],
+			'wrong list type' => [
+				[ 'wrong type' ],
+				ZErrorTypeRegistry::Z_ERROR_WRONG_LIST_TYPE
+			],
+			'object wrong reference' => [
+				json_decode( '{ "Z1K1": "bad" }' ),
+				ZErrorTypeRegistry::Z_ERROR_REFERENCE_VALUE_INVALID
+			],
+			'object unknown reference' => [
+				json_decode( '{ "Z1K1": "Z61" }' ),
+				ZErrorTypeRegistry::Z_ERROR_UNKNOWN_REFERENCE
+			],
 			'no type' => [
 				(object)[ 'Z11K1' => 'Z1003', 'Z11K2' => 'invalid monolingual string' ],
 				ZErrorTypeRegistry::Z_ERROR_MISSING_TYPE
@@ -205,7 +225,7 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 		if ( $dependencies !== null ) {
 			$this->insertZids( $dependencies );
 		}
-		$zobject = ZObjectFactory::createChild( $input );
+		$zobject = ZObjectFactory::create( $input );
 		$this->assertInstanceOf( ZObject::class, $zobject );
 		$this->assertInstanceOf( $zObjectClass, $zobject );
 	}
@@ -232,41 +252,6 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 				ZObject::class,
 				[ 'Z8', 'Z17', 'Z883' ]
 			],
-		];
-	}
-
-	/**
-	 * @dataProvider provideCreateChildInvalidInput
-	 */
-	public function testCreateChild_invalid( $input, $zErrorType ) {
-		$this->expectException( ZErrorException::class );
-		$this->expectExceptionMessage( $zErrorType );
-		ZObjectFactory::createChild( $input );
-	}
-
-	public static function provideCreateChildInvalidInput() {
-		return [
-			'number' => [ 3, ZErrorTypeRegistry::Z_ERROR_INVALID_FORMAT ],
-			'invalid item' => [
-				[ 'Z1', 'good item', 4 ],
-				ZErrorTypeRegistry::Z_ERROR_ARRAY_ELEMENT_NOT_WELLFORMED
-			],
-			'undefined list type' => [
-				[],
-				ZErrorTypeRegistry::Z_ERROR_UNDEFINED_LIST_TYPE
-			],
-			'wrong list type' => [
-				[ 'wrong type' ],
-				ZErrorTypeRegistry::Z_ERROR_WRONG_LIST_TYPE
-			],
-			'object wrong reference' => [
-				json_decode( '{ "Z1K1": "bad" }' ),
-				ZErrorTypeRegistry::Z_ERROR_REFERENCE_VALUE_INVALID
-			],
-			'object unknown reference' => [
-				json_decode( '{ "Z1K1": "Z61" }' ),
-				ZErrorTypeRegistry::Z_ERROR_UNKNOWN_REFERENCE
-			]
 		];
 	}
 

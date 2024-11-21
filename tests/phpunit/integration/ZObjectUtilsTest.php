@@ -1032,7 +1032,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 	public function testGetLabelOfReference( $data, $lang, $requiredLangs, $expected ) {
 		$lang = $this->makeLanguage( $lang );
 		$this->registerLangs( $requiredLangs );
-		$zobject = ZObjectFactory::createChild( FormatJson::parse( $data )->getValue() );
+		$zobject = ZObjectFactory::create( FormatJson::parse( $data )->getValue() );
 		$this->assertSame( $expected, ZObjectUtils::getLabelOfReference( 'Z111', $zobject, $lang ) );
 	}
 
@@ -1091,7 +1091,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 	public function testGetLabelOfGlobalKey_type( $key, $lang, $expected ) {
 		$lang = $this->makeLanguage( $lang );
 		$this->registerLangs( [ 'en', 'fr', 'pcd', 'zh' ] );
-		$ztype = ZObjectFactory::createChild( FormatJson::parse( ZTestType::TEST_ENCODING )->getValue() );
+		$ztype = ZObjectFactory::create( FormatJson::parse( ZTestType::TEST_ENCODING )->getValue() );
 		$this->assertSame( $expected, ZObjectUtils::getLabelOfGlobalKey( $key, $ztype, $lang ) );
 	}
 
@@ -1139,7 +1139,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public static function provideGetLabelOfTypeKey_unknown() {
-		$type1 = ZObjectFactory::createChild( json_decode(
+		$type1 = ZObjectFactory::create( json_decode(
 			'{ "Z1K1": "Z4", "Z4K1": "Z11111", "Z4K2": ["Z3",'
 			. '{ "Z1K1": "Z3", "Z3K1": "Z6", "Z3K2": "Z11111K1" }'
 			. '] }'
@@ -1150,7 +1150,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 			new ZMultiLingualString( [] )
 		);
 
-		$type2 = ZObjectFactory::createChild( json_decode(
+		$type2 = ZObjectFactory::create( json_decode(
 			'{ "Z1K1": "Z4", "Z4K1": "Z11111", "Z4K2": ["Z3",'
 			. '{ "Z1K1": "Z3", "Z3K1":"Z6", "Z3K2":"Z11111K1", "Z3K3":{"Z1K1":"Z12","Z12K1":["Z11"] } }'
 			. '] }'
@@ -1260,15 +1260,15 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 
 		$value1 = new ZObject( $errorType );
 		$value2 = new ZObject( $errorType, [
-			'Z50K1' => ZObjectFactory::createChild( [ "Z1" ] )
+			'Z50K1' => ZObjectFactory::create( [ "Z1" ] )
 		] );
 		$value3 = new ZObject( $errorType, [
-			'Z50K1' => ZObjectFactory::createChild( json_decode(
+			'Z50K1' => ZObjectFactory::create( json_decode(
 				'["Z3", {"Z1K1": "Z3", "Z3K1":"Z6", "Z3K2": "Z5555K1"}]'
 			) )
 		] );
 		$value4 = new ZObject( $errorType, [
-			'Z50K1' => ZObjectFactory::createChild( json_decode(
+			'Z50K1' => ZObjectFactory::create( json_decode(
 				'["Z3", {"Z1K1": "Z3", "Z3K1":"Z6", "Z3K2": "Z5555K1", "Z3K3":{"Z1K1": "Z12", "Z12K1":["Z11"]}}]'
 			) )
 		] );
@@ -1312,9 +1312,9 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 			. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
 			. '"K1": "second string",'
 			. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } } } }';
-		$emptyTyped = ZObjectFactory::createChild( json_decode( $typedList1 ) );
-		$typedOne = ZObjectFactory::createChild( json_decode( $typedList2 ) );
-		$typedTwo = ZObjectFactory::createChild( json_decode( $typedList3 ) );
+		$emptyTyped = ZObjectFactory::create( json_decode( $typedList1 ) );
+		$typedOne = ZObjectFactory::create( json_decode( $typedList2 ) );
+		$typedTwo = ZObjectFactory::create( json_decode( $typedList3 ) );
 		return [
 			'normal array' => [ [ "eins", "zwei" ], 2 ],
 			'empty typed list' => [ $emptyTyped, 0 ],

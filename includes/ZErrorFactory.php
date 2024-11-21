@@ -189,9 +189,9 @@ class ZErrorFactory {
 		return self::createZErrorInstance(
 			ZErrorTypeRegistry::Z_ERROR_LIST,
 			[
-				// We don't need to catch the error thrown by ZObjectFactory::createChild because
+				// We don't need to catch the error thrown by ZObjectFactory::create because
 				// we know that every item of the list is already an instance of ZObject
-				'errorList' => ZObjectFactory::createChild( $errorsList )
+				'errorList' => ZObjectFactory::create( $errorsList )
 			]
 		);
 	}

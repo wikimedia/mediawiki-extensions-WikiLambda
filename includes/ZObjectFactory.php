@@ -103,23 +103,23 @@ class ZObjectFactory {
 				);
 			}
 			// Build the values
-			$persistentId = self::createChild( $input->{ ZTypeRegistry::Z_PERSISTENTOBJECT_ID } );
-			$persistentLabel = self::createChild( $input->{ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL } );
+			$persistentId = self::create( $input->{ ZTypeRegistry::Z_PERSISTENTOBJECT_ID } );
+			$persistentLabel = self::create( $input->{ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL } );
 
 			$persistentAliases = property_exists( $input, ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES )
-				? self::createChild( $input->{ ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES } )
+				? self::create( $input->{ ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES } )
 				: null;
 
 			$persistentDescription = property_exists( $input,
 				ZTypeRegistry::Z_PERSISTENTOBJECT_DESCRIPTION )
-				? self::createChild( $input->{ ZTypeRegistry::Z_PERSISTENTOBJECT_DESCRIPTION } )
+				? self::create( $input->{ ZTypeRegistry::Z_PERSISTENTOBJECT_DESCRIPTION } )
 				: null;
 		}
 
 		// Build empty values if we are creating a new ZPersistentObject wrapper
 		// TODO (T362249): Looks like this case is never really used: contemplate removing it
-		$persistentId ??= self::createChild( ZTypeRegistry::Z_NULL_REFERENCE );
-		$persistentLabel ??= self::createChild( (object)[
+		$persistentId ??= self::create( ZTypeRegistry::Z_NULL_REFERENCE );
+		$persistentLabel ??= self::create( (object)[
 			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MULTILINGUALSTRING,
 			ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE => [ ZTypeRegistry::Z_MONOLINGUALSTRING ]
 		] );
@@ -194,39 +194,6 @@ class ZObjectFactory {
 	}
 
 	/**
-	 * Validates and creates an object of type ZObject from a given input data.
-	 * The resulting ZObject will be structurally valid or well-formed.
-	 *
-	 * This method is the entrypoint from WikiLambda ZObject creation parting
-	 * from their serialized representation.
-	 *
-	 * @param string|array|\stdClass $input
-	 * @return ZObject
-	 * @throws ZErrorException
-	 */
-	public static function create( $input ): ZObject {
-		// TODO (T375065) Type validation is checked in createChild so it's
-		// unnecessary here. We were only doing this validation so that we
-		// could safely load the schemata validator for the given type.
-		// However, this would be the place to run some more lax builtin
-		// validation, for example, the ZObject->isValid methof for the
-		// inner object. Currently this builtin validation is broken.
-
-		// 1. Get ZObject type. If not present, return a not wellformed error.
-		// try {
-		// 	$typeZObject = self::extractObjectType( $input );
-		// 	$typeZid = $typeZObject->getZValue();
-		// } catch ( ZErrorException $e ) {
-		// 	throw new ZErrorException(
-		// 		ZErrorFactory::createValidationZError( $e->getZError() )
-		// 	);
-		// }
-
-		// 2. Assuming everything is correct, create ZObject instances
-		return self::createChild( $input );
-	}
-
-	/**
 	 * Creates an object of type ZObject from the given input. This method should only
 	 * be called internally, either from the ZObjectFactory of from the ZObject
 	 * constructors. ZObjects created using this method will not necessarily be
@@ -236,7 +203,7 @@ class ZObjectFactory {
 	 * @return ZObject
 	 * @throws ZErrorException
 	 */
-	public static function createChild( $object ) {
+	public static function create( $object ) {
 		if ( $object instanceof ZObject ) {
 			return $object;
 		}
@@ -262,7 +229,7 @@ class ZObjectFactory {
 			}
 
 			$rawListType = array_shift( $object );
-			$listType = self::createChild( $rawListType );
+			$listType = self::create( $rawListType );
 
 			// TODO (T330321): All of the checks in the following if block have already been
 			// checked during static validation, but the following block is:
@@ -291,7 +258,7 @@ class ZObjectFactory {
 
 			foreach ( $object as $index => $value ) {
 				try {
-					$item = self::createChild( $value );
+					$item = self::create( $value );
 				} catch ( ZErrorException $e ) {
 					// We increment the index to point at the correct array item
 					// because we removed the first element by doing array_shift
@@ -397,7 +364,7 @@ class ZObjectFactory {
 					// Build the value of a given key to create nested ZObjects
 					// If it fails, throw a Z526/Key value error
 					try {
-						$creationArray[] = self::createChild( $objectVars[ $key ] );
+						$creationArray[] = self::create( $objectVars[ $key ] );
 					} catch ( ZErrorException $e ) {
 						throw new ZErrorException( ZErrorFactory::createKeyValueZError( $key, $e->getZError() ) );
 					}
@@ -434,7 +401,7 @@ class ZObjectFactory {
 					continue;
 				}
 				try {
-					$args[ $key ] = self::createChild( $value );
+					$args[ $key ] = self::create( $value );
 				} catch ( ZErrorException $e ) {
 					throw new ZErrorException( ZErrorFactory::createKeyValueZError( $key, $e->getZError() ) );
 				}
@@ -531,7 +498,7 @@ class ZObjectFactory {
 		// Value of Z1K1 can be a string or an object,
 		// resulting on a ZReference or a ZFunctionCall
 		$objectType = $object->{ ZTypeRegistry::Z_OBJECT_TYPE };
-		$type = self::createChild( $objectType );
+		$type = self::create( $objectType );
 		$typeRegistry = ZTypeRegistry::singleton();
 
 		// If it's a ZReference, it must point at an object of type Z4

@@ -51,8 +51,7 @@ class ZFunctionTest extends WikiLambdaIntegrationTestCase {
 	 * @dataProvider provideTestNotValid
 	 */
 	public function testNotValid( $input ) {
-		// We use createChild so that the ZObjects don't get validated against schemata and raise Z502 validation errors
-		$zobject = ZObjectFactory::createChild( json_decode( $input ) );
+		$zobject = ZObjectFactory::create( json_decode( $input ) );
 		$this->assertFalse( $zobject->isValid() );
 	}
 
@@ -106,7 +105,7 @@ class ZFunctionTest extends WikiLambdaIntegrationTestCase {
 	 */
 	public function testReturnType( $input, $returnType, $dependencies = [] ) {
 		$this->insertZids( $dependencies );
-		$zobject = ZObjectFactory::createChild( json_decode( $input ) );
+		$zobject = ZObjectFactory::create( json_decode( $input ) );
 		$this->assertSame( $zobject->getReturnType(), $returnType );
 	}
 
@@ -149,7 +148,7 @@ class ZFunctionTest extends WikiLambdaIntegrationTestCase {
 	 * @dataProvider provideTestGetIdentity
 	 */
 	public function testGetIdentity( $input, $identity ) {
-		$zobject = ZObjectFactory::createChild( json_decode( $input ) );
+		$zobject = ZObjectFactory::create( json_decode( $input ) );
 		$this->assertSame( $zobject->getIdentity(), $identity );
 	}
 

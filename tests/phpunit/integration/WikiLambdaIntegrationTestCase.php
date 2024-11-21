@@ -52,7 +52,7 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 	protected function getZPersistentObject( $zid ): ZPersistentObject {
 		$dataPath = dirname( __DIR__, 3 ) . '/function-schemata/data/definitions';
 		$data = file_get_contents( "$dataPath/$zid.json" );
-		return ZObjectFactory::createChild( json_decode( $data ) );
+		return ZObjectFactory::create( json_decode( $data ) );
 	}
 
 	/**

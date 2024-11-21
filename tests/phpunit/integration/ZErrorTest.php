@@ -104,7 +104,6 @@ EOT;
 		$registry = ZErrorTypeRegistry::singleton();
 		$registry->register( 'Z509', 'List of errors' );
 		$registry->register( 'Z554', 'Label for a given language clashes with another Object\'s label' );
-		$testObject = ZObjectFactory::createChild( FormatJson::parse( $errorData )->getValue() );
 		$testObject = ZObjectFactory::create( $errorObject );
 
 		$this->assertSame( 'List of errors', $testObject->getMessage() );
