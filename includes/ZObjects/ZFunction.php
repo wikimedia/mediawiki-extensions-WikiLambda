@@ -208,16 +208,19 @@ class ZFunction extends ZObject {
 				}
 			}
 
-			$zids[] = ( $item->getZType() === ZTypeRegistry::Z_REFERENCE ) ?
-				$item->getValueByKey( ZTypeRegistry::Z_REFERENCE_VALUE ) :
-				(
-					( $item->getZType() === ZTypeRegistry::Z_PERSISTENTOBJECT_ID ) ?
-						$item->getValueByKey( ZTypeRegistry::Z_PERSISTENTOBJECT_ID )->
-							getValueByKey( ZTypeRegistry::Z_STRING_VALUE ) :
-						ZTypeRegistry::Z_NULL_REFERENCE
-				);
+			switch ( $item->getZType() ) {
+				case ZTypeRegistry::Z_REFERENCE:
+					'@phan-var ZReference $item';
+					$zids[] = $item->getZValue();
+					break;
+				case ZTypeRegistry::Z_PERSISTENTOBJECT:
+					'@phan-var ZPersistentObject $item';
+					$zids[] = $item->getZid();
+					break;
+				default:
+					$zids[] = ZTypeRegistry::Z_NULL_REFERENCE;
+			}
 		}
 		return $zids;
 	}
-
 }

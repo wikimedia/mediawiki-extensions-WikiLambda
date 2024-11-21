@@ -128,11 +128,11 @@ class ApiZObjectEditor extends WikiLambdaApiBase {
 	protected function getExamplesMessages() {
 		return [
 			'action=wikilambda_edit&format=json&summary=New%20zobject&zobject='
-				. urlencode( '{"Z1K1":"Z2","Z2K1":"Z0","Z2K2":"string value",'
+				. urlencode( '{"Z1K1":"Z2","Z2K1":{"Z1K1":"Z6","Z6K1":"Z0"},"Z2K2":"string value",'
 				. '"Z2K3":{"Z1K1":"Z12","Z12K1":["Z11", {"Z1K1":"Z11","Z11K1":"Z1002","Z11K2":"label"}]}}' )
 			=> 'apihelp-wikilambda_edit-example-create',
 			'action=wikilambda_edit&format=json&summary=Edit%20zobject&zid=Z01&zobject='
-				. urlencode( '{"Z1K1":"Z2","Z2K1":"Z01","Z2K2":"string value"}' )
+				. urlencode( '{"Z1K1":"Z2","Z2K1":{"Z1K1":"Z6","Z6K1":"Z01"},"Z2K2":"string value"}' )
 			=> 'apihelp-wikilambda_edit-example-edit-incorrect'
 		];
 	}

@@ -49,7 +49,7 @@ module.exports = exports = {
 			const zProgrammingLanguages = [
 				{
 					Z1K1: Constants.Z_PERSISTENTOBJECT,
-					Z2K1: 'Z600',
+					Z2K1: { Z1K1: 'Z6', Z6K1: 'Z600' },
 					Z2K2: {
 						Z1K1: Constants.Z_PROGRAMMING_LANGUAGE,
 						Z61K1: 'javascript',
@@ -58,7 +58,7 @@ module.exports = exports = {
 				},
 				{
 					Z1K1: Constants.Z_PERSISTENTOBJECT,
-					Z2K1: 'Z610',
+					Z2K1: { Z1K1: 'Z6', Z6K1: 'Z610' },
 					Z2K2: {
 						Z1K1: Constants.Z_PROGRAMMING_LANGUAGE,
 						Z61K1: 'python',

@@ -232,7 +232,7 @@ describe( 'currentPage Vuex module', () => {
 				};
 				const zobject = {
 					Z1K1: 'Z2',
-					Z2K1: 'Z1234',
+					Z2K1: { Z1K1: 'Z6', Z6K1: 'Z1234' },
 					Z2K2: 'test',
 					Z2K3: names,
 					Z2K4: aliases,

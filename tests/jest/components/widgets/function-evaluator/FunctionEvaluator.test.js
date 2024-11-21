@@ -32,7 +32,7 @@ describe( 'FunctionEvaluator', () => {
 		}
 	};
 	const functionJson = {
-		Z2K1: 'Z10000',
+		Z2K1: { Z1K1: 'Z6', Z6K1: 'Z10000' },
 		Z2K2: {
 			Z1K1: 'Z8',
 			Z8K1: [ 'Z17' ],

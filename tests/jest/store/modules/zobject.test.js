@@ -16,7 +16,7 @@ const tableDataToRowObjects = require( '../../helpers/zObjectTableHelpers.js' ).
 
 const blankPersistentObject = {
 	Z1K1: 'Z2',
-	Z2K1: 'Z0',
+	Z2K1: { Z1K1: 'Z6', Z6K1: 'Z0' },
 	Z2K2: '', // content rowId = 7
 	Z2K3: {
 		Z1K1: 'Z12',
@@ -1044,7 +1044,7 @@ describe( 'zobject Vuex module', () => {
 				it( 'returns row where persistent object content/Z2K2 starts with default row (0)', () => {
 					state.zobject = zobjectToRows( {
 						Z1K1: 'Z2',
-						Z2K1: 'Z0',
+						Z2K1: { Z1K1: 'Z6', Z6K1: 'Z0' },
 						Z2K2: Constants.ROW_VALUE_OBJECT
 					} );
 					const expectedRowId = 7;
@@ -1058,7 +1058,7 @@ describe( 'zobject Vuex module', () => {
 						Z1K1: 'Z10000',
 						Z10000K1: {
 							Z1K1: 'Z2',
-							Z2K1: 'Z0',
+							Z2K1: { Z1K1: 'Z6', Z6K1: 'Z0' },
 							Z2K2: Constants.ROW_VALUE_OBJECT
 						}
 					} );
@@ -2604,7 +2604,7 @@ describe( 'zobject Vuex module', () => {
 			it( 'Updates the zobject', () => {
 				const zobject = zobjectToRows( {
 					Z1K1: 'Z2',
-					Z2K1: 'Z0',
+					Z2K1: { Z1K1: 'Z6', Z6K1: 'Z0' },
 					Z2K2: '',
 					Z2K3: {
 						Z1K1: 'Z12',
@@ -2895,7 +2895,7 @@ describe( 'zobject Vuex module', () => {
 					// Initial ZObject
 					const Z1234 = {
 						Z1K1: 'Z2',
-						Z2K1: 'Z1234',
+						Z2K1: { Z1K1: 'Z6', Z6K1: 'Z1234' },
 						Z2K2: 'test',
 						Z2K3: {
 							Z1K1: 'Z12',
@@ -2927,7 +2927,7 @@ describe( 'zobject Vuex module', () => {
 
 					const expectedZObjectJson = {
 						Z1K1: 'Z2',
-						Z2K1: 'Z1234',
+						Z2K1: { Z1K1: 'Z6', Z6K1: 'Z1234' },
 						Z2K2: 'test',
 						Z2K3: {
 							Z1K1: 'Z12',
@@ -2952,7 +2952,7 @@ describe( 'zobject Vuex module', () => {
 
 					// Expected data
 					const expectedFetchZidsPayload = {
-						zids: [ 'Z1', 'Z2', 'Z1234', 'Z12', 'Z11', 'Z1002', 'Z32', 'Z31' ]
+						zids: [ 'Z1', 'Z2', 'Z6', 'Z1234', 'Z12', 'Z11', 'Z1002', 'Z32', 'Z31' ]
 					};
 
 					await zobjectModule.actions.initializeRootZObject( context, 'Z1234' );
@@ -2975,7 +2975,7 @@ describe( 'zobject Vuex module', () => {
 						// Initial ZObject
 						const Z1234 = {
 							Z1K1: 'Z2',
-							Z2K1: 'Z1234',
+							Z2K1: { Z1K1: 'Z6', Z6K1: 'Z1234' },
 							Z2K2: {
 								Z1K1: 'Z4',
 								Z4K1: 'Z1234',
@@ -3014,7 +3014,7 @@ describe( 'zobject Vuex module', () => {
 
 						const expectedZObjectJson = {
 							Z1K1: 'Z2',
-							Z2K1: 'Z1234',
+							Z2K1: { Z1K1: 'Z6', Z6K1: 'Z1234' },
 							Z2K2: {
 								Z1K1: 'Z4',
 								Z4K1: 'Z1234',
@@ -3054,7 +3054,7 @@ describe( 'zobject Vuex module', () => {
 						// Initial ZObject
 						const Z1234 = {
 							Z1K1: 'Z2',
-							Z2K1: 'Z1234',
+							Z2K1: { Z1K1: 'Z6', Z6K1: 'Z1234' },
 							Z2K2: {
 								Z1K1: 'Z4',
 								Z4K1: 'Z1234',
@@ -3102,7 +3102,7 @@ describe( 'zobject Vuex module', () => {
 
 						const expectedZObjectJson = {
 							Z1K1: 'Z2',
-							Z2K1: 'Z1234',
+							Z2K1: { Z1K1: 'Z6', Z6K1: 'Z1234' },
 							Z2K2: {
 								Z1K1: 'Z4',
 								Z4K1: 'Z1234',
@@ -3147,7 +3147,7 @@ describe( 'zobject Vuex module', () => {
 						// Initial ZObject
 						const Z1234 = {
 							Z1K1: 'Z2',
-							Z2K1: 'Z1234',
+							Z2K1: { Z1K1: 'Z6', Z6K1: 'Z1234' },
 							Z2K2: {
 								Z1K1: 'Z4',
 								Z4K1: 'Z1234',
@@ -3188,7 +3188,7 @@ describe( 'zobject Vuex module', () => {
 
 						const expectedZObjectJson = {
 							Z1K1: 'Z2',
-							Z2K1: 'Z1234',
+							Z2K1: { Z1K1: 'Z6', Z6K1: 'Z1234' },
 							Z2K2: {
 								Z1K1: 'Z4',
 								Z4K1: 'Z1234',
@@ -3234,7 +3234,7 @@ describe( 'zobject Vuex module', () => {
 						// Initial ZObject
 						const Z1234 = {
 							Z1K1: 'Z2',
-							Z2K1: 'Z1234',
+							Z2K1: { Z1K1: 'Z6', Z6K1: 'Z1234' },
 							Z2K2: {
 								Z1K1: 'Z4',
 								Z4K1: 'Z1234',
@@ -3649,7 +3649,7 @@ describe( 'zobject Vuex module', () => {
 				context.state = {
 					zobject: zobjectToRows( {
 						Z1K1: 'Z2',
-						Z2K1: 'Z0',
+						Z2K1: { Z1K1: 'Z6', Z6K1: 'Z0' },
 						Z2K2: '',
 						Z2K3: {
 							Z1K1: 'Z12',

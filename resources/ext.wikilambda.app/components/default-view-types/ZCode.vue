@@ -322,6 +322,8 @@ module.exports = exports = defineComponent( {
 								],
 								value: lang[
 									Constants.Z_PERSISTENTOBJECT_ID
+								][
+									Constants.Z_STRING_VALUE
 								]
 							}
 						);

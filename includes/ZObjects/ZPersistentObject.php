@@ -53,7 +53,7 @@ class ZPersistentObject extends ZObject {
 			],
 			'keys' => [
 				ZTypeRegistry::Z_PERSISTENTOBJECT_ID => [
-					'type' => ZTypeRegistry::BUILTIN_REFERENCE_NULLABLE,
+					'type' => ZTypeRegistry::Z_STRING,
 					'required' => true,
 				],
 				ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE => [

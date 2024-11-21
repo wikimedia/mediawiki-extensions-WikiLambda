@@ -22,7 +22,7 @@ class ZTestType extends ZObject {
 	public const TEST_ENCODING = <<<EOT
 {
 	"Z1K1": "Z2",
-	"Z2K1": "Z0",
+	"Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },
 	"Z2K2": {
 		"Z1K1": "Z4",
 		"Z4K1": "Z111",
@@ -249,7 +249,7 @@ EOT;
 	public const TEST_HTML_ESCAPE = <<<EOT
 {
 	"Z1K1": "Z2",
-	"Z2K1": "Z0",
+	"Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },
 	"Z2K2": {
 		"Z1K1": "Z4",
 		"Z4K1": "Z111",

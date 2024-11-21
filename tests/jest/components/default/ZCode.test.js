@@ -27,7 +27,10 @@ describe( 'ZCode', () => {
 				[
 					{
 						Z1K1: Constants.Z_PERSISTENTOBJECT,
-						Z2K1: Constants.Z_PROGRAMMING_LANGUAGES.JAVASCRIPT,
+						Z2K1: {
+							Z1K1: Constants.Z_STRING,
+							Z6K1: Constants.Z_PROGRAMMING_LANGUAGES.JAVASCRIPT
+						},
 						Z2K2: {
 							Z1K1: Constants.Z_PROGRAMMING_LANGUAGE,
 							Z61K1: 'javascript',
@@ -36,7 +39,10 @@ describe( 'ZCode', () => {
 					},
 					{
 						Z1K1: Constants.Z_PERSISTENTOBJECT,
-						Z2K1: Constants.Z_PROGRAMMING_LANGUAGES.PYTHON,
+						Z2K1: {
+							Z1K1: Constants.Z_STRING,
+							Z6K1: Constants.Z_PROGRAMMING_LANGUAGES.PYTHON
+						},
 						Z2K2: {
 							Z1K1: Constants.Z_PROGRAMMING_LANGUAGE,
 							Z61K1: 'python',
