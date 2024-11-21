@@ -11,6 +11,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
+use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
@@ -266,6 +267,41 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 				json_decode( '{ "Z1K1": "Z61" }' ),
 				ZErrorTypeRegistry::Z_ERROR_UNKNOWN_REFERENCE
 			]
+		];
+	}
+
+	/**
+	 * @dataProvider provideErrorQuotedData
+	 */
+	public function testCreate_errorWithQuote( $quotedData ) {
+		// Create instance directly is successful, any Quoted value is valid:
+		$error = ZErrorFactory::createZErrorInstance(
+			ZErrorTypeRegistry::Z_ERROR_NOT_NUMBER_BOOLEAN_NULL,
+			[ 'data' => $quotedData ]
+		);
+		$this->assertTrue( $error->isValid() );
+
+		// Create instance with ZObjectFactory is successful,
+		// any Quoted value should not be recursively created
+		// with ZObjectFactory::create but directly assigned:
+		$errorJson = $error->getSerialized();
+		$createError = ZObjectFactory::create( $errorJson );
+		$this->assertTrue( $error->isValid() );
+	}
+
+	public static function provideErrorQuotedData() {
+		return [
+			'quote can be number' => [ 34 ],
+			'quote can be null' => [ null ],
+			'quote can be valid zobject' => [ json_decode( '{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "text" }' ) ],
+			'quote can be invalid zobject' => [ json_decode( '{ "Z1K1": "Z11" }' ) ],
+			'quote can be benjamin array' => [ json_decode( '[ "Z8", "Z801", "Z802" ]' ) ],
+			'quote can be boolean' => [ true ],
+			'quote can be string' => [ "quoted string" ],
+			'quote can be object' => [ json_decode( '{ "foo": "bar" }' ) ],
+			'quote can be array' => [ json_decode( '[ "foo", "bar" ]' ) ],
+			'quote can be empty object' => [ json_decode( '{}' ) ],
+			'quote can be empty array' => [ json_decode( '[]' ) ],
 		];
 	}
 }

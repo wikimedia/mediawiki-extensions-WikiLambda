@@ -228,7 +228,8 @@ class ZTypeRegistry extends ZObjectRegistry {
 
 	public const TERMINAL_KEYS = [
 		self::Z_STRING_VALUE,
-		self::Z_REFERENCE_VALUE
+		self::Z_REFERENCE_VALUE,
+		self::Z_QUOTE_VALUE
 	];
 
 	/**
