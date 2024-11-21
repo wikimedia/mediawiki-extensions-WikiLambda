@@ -25,7 +25,8 @@
 			"Zhang8569",
 			"落花有意12138",
 			"沈澄心",
-			"Lakejason0"
+			"Lakejason0",
+			"WiiUf"
 		]
 	},
 	"wikilambda-desc": "为维基媒体的wiki提供wikitext解析器函数，以调用在中央wiki上编写、管理和运行的函数。",
@@ -379,7 +380,7 @@
 	"wikilambda-argument-reference-selector-placeholder": "选择参数",
 	"wikilambda-special-create-function": "创建新函数",
 	"wikilambda-special-create-type": "创建新类型",
-	"wikilambda-special-create-implementation": "创建新实现",
+	"wikilambda-special-create-implementation": "新增实作",
 	"wikilambda-special-create-test": "创建新测试",
 	"wikilambda-string-renderer-field-example": "例如$1",
 	"wikilambda-string-renderer-examples-title": "示例",
