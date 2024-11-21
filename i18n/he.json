@@ -381,6 +381,7 @@
 	"wikilambda-special-listduplicateobjectlabels-existing": "עצם קיים",
 	"wikilambda-special-listduplicateobjectlabels-language": "שפה",
 	"wikilambda-special-listduplicateobjectlabels-summary": "הדף הזה מציג אילו עצמים נוצרו עם תוויות כפולות. רק הראשון יופיע בחיפושים, אז כדאי לתקן אותם.",
+	"wikilambda-special-functionsbytests": "רשימת פונקציות מסוננות לפי הבדיקות שלהן",
 	"wikilambda-special-objectsbytype": "רשימת כל העצמים מהסוג הנתון",
 	"wikilambda-special-objectsbytype-link": "רשימת כל הסוגים שיש להם מופעים",
 	"wikilambda-special-objectsbytype-empty": "לא נמצאו עצמים מתמידים עבור הסוג הזה.",
