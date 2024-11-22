@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Special;
 
+use MediaWiki\Deferred\DeferredUpdates;
 use MediaWiki\Extension\WikiLambda\Special\SpecialListFunctionsByTests;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
@@ -17,7 +18,8 @@ use MediaWiki\Request\FauxRequest;
 use SpecialPageTestBase;
 
 /**
- * @covers \MediaWiki\Extension\WikiLambda\Pagers\ZObjectAlphabeticPager
+ * @covers \MediaWiki\Extension\WikiLambda\Pagers\AbstractZObjectPager
+ * @covers \MediaWiki\Extension\WikiLambda\Pagers\FunctionsByTestsPager
  * @covers \MediaWiki\Extension\WikiLambda\Special\SpecialListFunctionsByTests
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectStore
  * @group Database
@@ -26,10 +28,27 @@ class SpecialListFunctionsByTestsTest extends SpecialPageTestBase {
 
 	private ZObjectStore $zObjectStore;
 
-	public function addDBData() {
+	protected function setUp(): void {
+		parent::setUp();
 		$this->zObjectStore = WikiLambdaServices::getZObjectStore();
+	}
 
-		// wikilambda_zobject_function_join: available tests and implementations
+	public function addDBDataOnce() {
+		$this->zObjectStore = WikiLambdaServices::getZObjectStore();
+		// Add three function pages to have page_id
+		// It updates:
+		// - wikilambda_zobject_join
+		// - wikilambda_zobject_labels
+		// It clears:
+		// - wikilambda_ztester_results
+		$dataFile = dirname( __DIR__, 2 ) . '/test_data/special/functionsbytests.json';
+		$data = json_decode( file_get_contents( $dataFile ) );
+		$this->editPage( 'Z10000', json_encode( $data->Z10000 ), 'function Z10000', NS_MAIN );
+		$this->editPage( 'Z10001', json_encode( $data->Z10001 ), 'function Z10001', NS_MAIN );
+		$this->editPage( 'Z10002', json_encode( $data->Z10002 ), 'function Z10002', NS_MAIN );
+		DeferredUpdates::doUpdates();
+
+		// Manually setup wikilambda_zobject_function_join: available tests and implementations
 		$availableTestsAndImps = [
 			// Available tests
 			[ 'Z20001', 'Z10000', 'Z20' ],
@@ -53,35 +72,7 @@ class SpecialListFunctionsByTestsTest extends SpecialPageTestBase {
 			$this->zObjectStore->insertZFunctionReference( ...$row );
 		}
 
-		// wikilambda_zobject_join: connected tests and implementations
-		$connectedPayload = [];
-		$connectedTestsAndImps = [
-			// Connected tests
-			[ 'Z10000', 'Z20001', 'Z8K3', 'Z20' ],
-			[ 'Z10000', 'Z20002', 'Z8K3', 'Z20' ],
-			[ 'Z10000', 'Z20003', 'Z8K3', 'Z20' ],
-			[ 'Z10001', 'Z20011', 'Z8K3', 'Z20' ],
-			[ 'Z10001', 'Z20012', 'Z8K3', 'Z20' ],
-			// Connected implementations
-			[ 'Z10000', 'Z30001', 'Z8K4', 'Z14' ],
-			[ 'Z10000', 'Z30002', 'Z8K4', 'Z14' ],
-			[ 'Z10001', 'Z30011', 'Z8K4', 'Z14' ],
-			[ 'Z10001', 'Z30012', 'Z8K4', 'Z14' ],
-			[ 'Z10002', 'Z30021', 'Z8K4', 'Z14' ],
-			[ 'Z10002', 'Z30022', 'Z8K4', 'Z14' ],
-		];
-		foreach ( $connectedTestsAndImps as $row ) {
-			$connectedPayload[] = (object)[
-				'zid' => $row[0],
-				'type' => 'Z8',
-				'key' => $row[2],
-				'related_zid' => $row[1],
-				'related_type' => $row[3]
-			];
-			$this->zObjectStore->insertRelatedZObjects( $connectedPayload );
-		}
-
-		// wikilambda_ztester_results: cached result of each test against each implementation
+		// Manually setup wikilambda_ztester_results: cached result of each test against each implementation
 		$testResults = [
 			// Function B:
 			// * 3 connected tests
@@ -116,16 +107,6 @@ class SpecialListFunctionsByTestsTest extends SpecialPageTestBase {
 		];
 		foreach ( $testResults as $row ) {
 			$this->zObjectStore->insertZTesterResult( ...$row );
-		}
-
-		// wikilambda_zobject_labels: function labels in english
-		$functionLabels = [
-			[ 'Z10000', 'Z8', [ 'Z1002' => 'Function B' ], 'Z6' ],
-			[ 'Z10001', 'Z8', [ 'Z1002' => 'Function A' ], 'Z6' ],
-			[ 'Z10002', 'Z8', [ 'Z1002' => 'Function C' ], 'Z6' ],
-		];
-		foreach ( $functionLabels as $row ) {
-			$this->zObjectStore->insertZObjectLabels( ...$row );
 		}
 	}
 

@@ -808,7 +808,7 @@ class ZObjectStore {
 	/**
 	 * Generates a query that filters to the preferred label in the
 	 * labels table, depending on the user's language fallback chain
-	 * passed as parameter
+	 * passed as parameter.
 	 *
 	 * @param string[] $languageChain List of language zids in order of preference
 	 * @return string
@@ -833,10 +833,11 @@ class ZObjectStore {
 		// Create query to select the most prioritary label for each zid
 		$queryBuilder = $dbr->newSelectQueryBuilder()
 			->select( [
-				'wlzl_id', 'wlzl_zobject_zid', 'wlzl_language', 'wlzl_label', 'wlzl_type',
+				'page_id', 'wlzl_zobject_zid', 'wlzl_language', 'wlzl_label', 'wlzl_type',
 				'wlzl_label_normalised', 'wlzl_label_primary', 'wlzl_return_type'
 			] )
 			->from( new Subquery( $subquery ), 'preferred_labels' )
+			->leftJoin( 'page', 'p', 'p.page_title = wlzl_zobject_zid' )
 			->where( [ 'priority' => 1 ] );
 
 		// Return SQL

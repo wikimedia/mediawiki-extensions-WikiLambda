@@ -10,10 +10,13 @@
 
 namespace MediaWiki\Extension\WikiLambda\Special;
 
-use MediaWiki\Extension\WikiLambda\Pagers\ZObjectAlphabeticPager;
+use MediaWiki\Extension\WikiLambda\Fields\HTMLZTypeSelectField;
+use MediaWiki\Extension\WikiLambda\Pagers\BasicZObjectPager;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use MediaWiki\HTMLForm\HTMLForm;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\SpecialPage\SpecialPage;
 
@@ -53,14 +56,31 @@ class SpecialListObjectsByType extends SpecialPage {
 	 * Get and validate SpecialPage parameters from subpage and url
 	 *
 	 * @param string $subpage
-	 * @return string[] - type Zid, lang Zid
+	 * @return string[] - type Zid, orderby
 	 */
 	private function getParameters( $subpage ) {
-		// Get type from subpage
+		// Get type from subpage; overwrite with value from Request.
+		// * requestType can be empty string or valid/invalid string
 		// * subpage can be empty string or NULL or valid/invalid string
-		// Default: empty string
-		$type = $subpage && ZObjectUtils::isValidZObjectReference( $subpage ) ? $subpage : '';
-		return [ $type ];
+		// Default: Z8/Function
+		$requestType = $this->getRequest()->getText( 'type' );
+		if ( $requestType && ZObjectUtils::isValidZObjectReference( $requestType ) ) {
+			$type = $requestType;
+		} else {
+			$type = $subpage && ZObjectUtils::isValidZObjectReference( $subpage ) ?
+				$subpage :
+				ZTypeRegistry::Z_FUNCTION;
+		}
+
+		// Get orderby from Request.
+		// * can be empty string or valid/invalid string (name, latest, oldest)
+		// Default: 'name'
+		$requestOrderby = $this->getRequest()->getText( 'orderby' );
+		$orderby = in_array( $requestOrderby, BasicZObjectPager::ORDER_BY_OPTIONS ) ?
+			$requestOrderby :
+			BasicZObjectPager::ORDER_BY_NAME;
+
+		return [ $type, $orderby ];
 	}
 
 	/**
@@ -68,10 +88,11 @@ class SpecialListObjectsByType extends SpecialPage {
 	 */
 	public function execute( $subpage ) {
 		// Get and validate page parameters
-		[ $type ] = $this->getParameters( $subpage );
+		[ $type, $orderby ] = $this->getParameters( $subpage );
 
 		// Set headers
 		$this->setHeaders();
+		$this->outputHeader( 'wikilambda-special-objectsbytype-summary' );
 
 		// Set output
 		$output = $this->getOutput();
@@ -87,12 +108,18 @@ class SpecialListObjectsByType extends SpecialPage {
 			$this->getLanguage()->getCode()
 		);
 
-		// Build ZObjectAlphabeticalPager for the given filters
-		$filters = ( ( $type === null ) || ( $type === '' ) ) ? [] : [ 'type' => $type ];
-		$pager = new ZObjectAlphabeticPager( $this->getContext(), $this->zObjectStore, $filters, $languageZids );
+		// Build BasicZObjectPager for the given filters
+		$filters = [ 'type' => $type ];
+		$pager = new BasicZObjectPager(
+			$this->getContext(),
+			$this->zObjectStore,
+			$languageZids,
+			$orderby,
+			$filters
+		);
 
-		// Add the header
-		$output->addWikiTextAsInterface( $this->getZObjectListHeader( $type ) );
+		// Add the header form
+		$output->addHTML( $this->getHeaderForm( $type, $orderby ) );
 
 		// Add the top pagination controls
 		$output->addHTML( $pager->getNavigationBar() );
@@ -108,23 +135,53 @@ class SpecialListObjectsByType extends SpecialPage {
 	/**
 	 * Render the header for listing ZObjects by a specific type.
 	 *
-	 * @param string|null $type - The type of ZObjects being listed.
-	 * @return string - The wikitext for the header.
+	 * @param string $typeZid - The type Zid of ZObjects being listed.
+	 * @return string - The text for the header.
 	 */
-	private function getZObjectListHeader( $type ) {
-		$header = '';
-		$subheader = '';
+	private function getHeaderTitle( $typeZid ) {
+		$typeLabel = $this->zObjectStore->fetchZObjectLabel( $typeZid, $this->getLanguage()->getCode() );
+		return $this->msg( 'wikilambda-special-objectsbytype-listheader' )
+			->rawParams( htmlspecialchars( $typeLabel ?? $typeZid ), htmlspecialchars( $typeZid ) )
+			->text();
+	}
 
-		if ( ( $type === null ) || ( $type === '' ) ) {
-			$header = $this->msg( 'wikilambda-special-objectsbytype-allheader' );
-			$subheader = $this->msg( 'wikilambda-special-objectsbytype-summary' );
-			return "\n== $header ==\n\n$subheader\n";
-		}
+	/**
+	 * Build the form to place at the head of the Special page,
+	 * with a selector field for ZTypes and another for ZLanguages.
+	 *
+	 * @param string $typeZid
+	 * @param string $orderby
+	 * @return string
+	 */
+	public function getHeaderForm( $typeZid, $orderby ) {
+		$formHeader = $this->getHeaderTitle( $typeZid );
+		$formDescriptor = [
+			'type' => [
+				'label' => $this->msg( 'wikilambda-special-objectsbytype-form-type' )->text(),
+				'class' => HTMLZTypeSelectField::class,
+				'name' => 'type',
+				'default' => $typeZid
+			],
+			'orderby' => [
+				'label' => $this->msg( 'wikilambda-special-objectsbytype-form-orderby' )->text(),
+				'type' => 'select',
+				'name' => 'orderby',
+				'options' => [
+					$this->msg( 'wikilambda-special-objectsbytype-form-orderby-name' )
+						->escaped() => BasicZObjectPager::ORDER_BY_NAME,
+					$this->msg( 'wikilambda-special-objectsbytype-form-orderby-latest' )
+						->escaped() => BasicZObjectPager::ORDER_BY_LATEST,
+					$this->msg( 'wikilambda-special-objectsbytype-form-orderby-oldest' )
+						->escaped() => BasicZObjectPager::ORDER_BY_OLDEST
+				],
+				'default' => $orderby
+			]
+		];
 
-		$typeLabel = $this->zObjectStore->fetchZObjectLabel( $type, $this->getLanguage()->getCode() );
-		$header = $this->msg( 'wikilambda-special-objectsbytype-listheader' )
-			->rawParams( htmlspecialchars( $typeLabel ?? $type ), $type )
-			->parse();
-		return "\n== $header ==\n";
+		$htmlForm = HTMLForm::factory( 'ooui', $formDescriptor, $this->getContext() )
+			->setWrapperLegend( $formHeader )
+			->setCollapsibleOptions( false )
+			->setMethod( 'get' );
+		return $htmlForm->prepareForm()->getHTML( false );
 	}
 }
