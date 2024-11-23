@@ -48,11 +48,11 @@ module.exports = exports = defineComponent( {
 		},
 
 		/**
-		 * Handle the window click event.
+		 * Handle click and keydown events.
 		 *
-		 * @param {MouseEvent} event - The click event.
+		 * @param {Event} event - Click or keydown events.
 		 */
-		handleWindowClick: function ( event ) {
+		handleEvent: function ( event ) {
 			const element = event.target;
 
 			// If the click was on an element that has the data-copied attribute (meaning it was just copied),
@@ -64,6 +64,11 @@ module.exports = exports = defineComponent( {
 				return;
 			}
 
+			// Check if the Event is a KeyboardEvent so that we can ignore non-Enter key presses
+			if ( event instanceof KeyboardEvent && event.key !== 'Enter' ) {
+				return;
+			}
+
 			const value = element.textContent;
 			this.copyToClipboard(
 				value,
@@ -72,11 +77,14 @@ module.exports = exports = defineComponent( {
 			);
 		}
 	},
+
 	mounted() {
-		window.addEventListener( 'click', this.handleWindowClick );
+		window.addEventListener( 'click', this.handleEvent );
+		window.addEventListener( 'keydown', this.handleEvent );
 	},
 	beforeUnmount() {
-		window.removeEventListener( 'click', this.handleWindowClick );
+		window.removeEventListener( 'click', this.handleEvent );
+		window.removeEventListener( 'keydown', this.handleEvent );
 	}
 } );
 </script>

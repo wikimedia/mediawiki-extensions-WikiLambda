@@ -375,7 +375,8 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		// In English, we see 'Untitled' in en and the Type sub-title in en (with no BCP47 chip)
 		$enHeader = ZObjectContentHandler::createZObjectViewHeader( $content, $testTitle, $this->makeLanguage( 'en' ) );
 		$this->assertStringStartsWith( '<span lang="en" class="ext-wikilambda-viewpage-header">', $enHeader );
-		$this->assertStringContainsString( '<span class="ext-wikilambda-viewpage-header__zid">Z401</span>', $enHeader );
+		// @phpcs:ignore Generic.Files.LineLength.TooLong
+		$this->assertStringContainsString( '<span class="ext-wikilambda-viewpage-header__zid" role="button" tabindex="0" aria-live="polite">Z401</span>', $enHeader );
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
 		$this->assertStringContainsString( '<span class="ext-wikilambda-viewpage-header__title ext-wikilambda-viewpage-header__title--function-name ext-wikilambda-viewpage-header__title--untitled">Untitled</span>', $enHeader );
 		// @phpcs:ignore Generic.Files.LineLength.TooLong

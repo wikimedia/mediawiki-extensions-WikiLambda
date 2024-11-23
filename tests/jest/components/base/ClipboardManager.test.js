@@ -51,7 +51,7 @@ describe( 'ClipboardManager', () => {
 		expect( mockElement.innerText ).toBe( value );
 	} );
 
-	it( 'handles window click event to copy text', async () => {
+	it( 'handles event to copy text', async () => {
 		const mockElement = document.createElement( 'div' );
 		mockElement.classList.add( 'test-class' );
 		mockElement.textContent = 'Copy Me';
@@ -59,8 +59,8 @@ describe( 'ClipboardManager', () => {
 
 		jest.spyOn( wrapper.vm, 'copyToClipboard' );
 
-		// Directly invoke handleWindowClick instead of simulating a click event
-		await wrapper.vm.handleWindowClick( { target: mockElement } );
+		// Directly invoke handleEvent instead of simulating a click or keydown event
+		await wrapper.vm.handleEvent( { target: mockElement } );
 
 		// expect( wrapper.vm.copyToClipboard ).toHaveBeenCalledWith( 'Copy Me' );
 		expect( wrapper.vm.copyToClipboard ).toHaveBeenCalledWith(
@@ -75,13 +75,13 @@ describe( 'ClipboardManager', () => {
 		document.body.removeChild( mockElement );
 	} );
 
-	it( 'does not copy text if clicked element does not match classNames', async () => {
+	it( 'does not copy text if target element does not match classNames', async () => {
 		const mockElement = document.createElement( 'div' );
 		mockElement.textContent = 'Do Not Copy Me';
 		document.body.appendChild( mockElement );
 
-		// Directly invoke handleWindowClick instead of simulating a click event
-		await wrapper.vm.handleWindowClick( { target: mockElement } );
+		// Directly invoke handleEvent instead of simulating a click or keydown event
+		await wrapper.vm.handleEvent( { target: mockElement } );
 
 		expect( navigator.clipboard.writeText ).not.toHaveBeenCalled();
 		expect( mockElement.getAttribute( 'data-copied' ) ).toBeNull();
@@ -96,8 +96,8 @@ describe( 'ClipboardManager', () => {
 		mockElement.textContent = 'Do Not Copy Me';
 		document.body.appendChild( mockElement );
 
-		// Directly invoke handleWindowClick instead of simulating a click event
-		await wrapperWithoutClasses.vm.handleWindowClick( { target: mockElement } );
+		// Directly invoke handleEvent instead of simulating a click or keydown event
+		await wrapperWithoutClasses.vm.handleEvent( { target: mockElement } );
 
 		expect( navigator.clipboard.writeText ).not.toHaveBeenCalled();
 		expect( mockElement.getAttribute( 'data-copied' ) ).toBeNull();
@@ -106,15 +106,28 @@ describe( 'ClipboardManager', () => {
 	} );
 
 	it( 'attaches click event listener on mount', () => {
-		// Expect window.addEventListener to be called with 'click' event and handleWindowClick function
-		expect( global.window.addEventListener ).toHaveBeenCalledWith( 'click', wrapper.vm.handleWindowClick );
+		// Expect window.addEventListener to be called with 'click' event and handleEvent function
+		expect( global.window.addEventListener ).toHaveBeenCalledWith( 'click', wrapper.vm.handleEvent );
 	} );
 
 	it( 'removes click event listener on unmount', () => {
 		// Unmount the component
 		wrapper.unmount();
 
-		// Expect window.removeEventListener to be called with 'click' event and handleWindowClick function
-		expect( global.window.removeEventListener ).toHaveBeenCalledWith( 'click', wrapper.vm.handleWindowClick );
+		// Expect window.removeEventListener to be called with 'click' event and handleEvent function
+		expect( global.window.removeEventListener ).toHaveBeenCalledWith( 'click', wrapper.vm.handleEvent );
+	} );
+
+	it( 'attaches keydown event listener on mount', () => {
+		// Expect window.addEventListener to be called with 'keydown' event and handleEvent function
+		expect( global.window.addEventListener ).toHaveBeenCalledWith( 'keydown', wrapper.vm.handleEvent );
+	} );
+
+	it( 'removes keydown event listener on unmount', () => {
+		// Unmount the component
+		wrapper.unmount();
+
+		// Expect window.removeEventListener to be called with 'keydown' event and handleEvent function
+		expect( global.window.removeEventListener ).toHaveBeenCalledWith( 'keydown', wrapper.vm.handleEvent );
 	} );
 } );
