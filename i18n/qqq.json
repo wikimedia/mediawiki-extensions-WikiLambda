@@ -422,7 +422,6 @@
 	"wikilambda-special-objectsbytype-empty": "Messages shown for Special:ObjectsByType when there are no matches.\n\n{{doc-wikilambda}}",
 	"wikilambda-special-objectsbytype-listheader": "Header for list of matching ZObjects.\n\nParameters:\n* $1 - The ZObject type being listed.\n* $2 - The ZID of the type\n{{doc-wikilambda}}",
 	"wikilambda-special-objectsbytype-summary": "Introductory summary for Special:ObjectsByType page.\n\n{{doc-wikilambda}}",
-	"wikilambda-special-objectsbytype-form-header": "Header of the filter form in the Special:ObjectsByType page to select the type and the order type.\n\n{{doc-wikilambda}}",
 	"wikilambda-special-objectsbytype-form-type": "Label for the type selector in the Special:ObjectsByType header form.\n\n{{doc-wikilambda}}",
 	"wikilambda-special-objectsbytype-form-orderby": "Label for the 'order by' selector in the Special:ObjectsByType header form.\n\n{{doc-wikilambda}}",
 	"wikilambda-special-objectsbytype-form-orderby-name": "Label for the 'name' option in the 'order by' selector from the Special:ObjectsByType header form.\n\n{{doc-wikilambda}}",
