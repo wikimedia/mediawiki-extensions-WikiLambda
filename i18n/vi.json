@@ -333,7 +333,6 @@
 	"wikilambda-special-objectsbytype-empty": "Không tìm thấy đối tượng liên tục nào cho kiểu này.",
 	"wikilambda-special-objectsbytype-listheader": "Tất cả các đối tượng thuộc kiểu $1 ($2)",
 	"wikilambda-special-objectsbytype-summary": "Nhấp vào một trong kiểu được liệt kê bên dưới để xem tất cả đối tượng thuộc loại đó.",
-	"wikilambda-special-objectsbytype-typeheader": "Mọi kiểu",
 	"wikilambda-special-runfunction": "Chạy hàm",
 	"wikilambda-special-runfunction-intro": "Bạn cần tuân thủ luật của cộng đồng, quy định bản quyền và quy định bằng sáng chế.",
 	"wikilambda-special-runfunction-nojs": "Trang này bắt buộc phải có JavaScript.",

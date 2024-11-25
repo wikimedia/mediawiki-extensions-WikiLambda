@@ -342,7 +342,6 @@
 	"wikilambda-special-objectsbytype-empty": "Ingen vedvarende objekter funnet for denne typen.",
 	"wikilambda-special-objectsbytype-listheader": "Alle objekter av typen $1 ($2)",
 	"wikilambda-special-objectsbytype-summary": "Trykk på en av typene som listes opp nedenfor for å se alle objekter av den typen.",
-	"wikilambda-special-objectsbytype-typeheader": "Alle typer",
 	"wikilambda-special-runfunction": "Kjør en funksjon",
 	"wikilambda-special-runfunction-intro": "Sørg for at du følger nettsamfunnets regler, samt opphavsretts- og patentregler.",
 	"wikilambda-special-runfunction-nojs": "Denne siden krever at JavaScript er slått på.",

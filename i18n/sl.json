@@ -328,7 +328,6 @@
 	"wikilambda-special-objectsbytype-empty": "Za ta tip ni bilo mogoče najti trajnih objektov.",
 	"wikilambda-special-objectsbytype-listheader": "Vsi objekti tipa $1 ($2)",
 	"wikilambda-special-objectsbytype-summary": "Kliknite enega od spodaj navedenih tipov, da si ogledate vse objekte tega tipa.",
-	"wikilambda-special-objectsbytype-typeheader": "Vse vrste",
 	"wikilambda-special-runfunction": "Ovrednotenje klica funkcije",
 	"wikilambda-special-runfunction-intro": "Zagotovite, da upoštevate politike skupnosti ter pravila o avtorskih pravicah in patentih.",
 	"wikilambda-special-runfunction-nojs": "Ta stran zahteva uporabo JavaScripta.",

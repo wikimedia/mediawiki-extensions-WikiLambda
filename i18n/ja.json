@@ -324,7 +324,6 @@
 	"wikilambda-special-objectsbytype-empty": "この型の永続的なオブジェクトが見つかりません。",
 	"wikilambda-special-objectsbytype-listheader": "型$1 ( $2 ) のすべてのオブジェクト",
 	"wikilambda-special-objectsbytype-summary": "以下にリストされている型のいずれかをクリックして、そのタイプのすべてのオブジェクトを表示します。",
-	"wikilambda-special-objectsbytype-typeheader": "すべてのタイプ",
 	"wikilambda-special-runfunction": "関数呼び出しを評価する",
 	"wikilambda-special-runfunction-intro": "コミュニティのポリシー、および著作権と特許の規則に従っていることを確認してください。",
 	"wikilambda-special-runfunction-nojs": "このページではJavaScriptを使用する必要があります。",

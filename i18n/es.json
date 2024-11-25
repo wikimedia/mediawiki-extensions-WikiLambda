@@ -383,7 +383,6 @@
 	"wikilambda-special-objectsbytype-empty": "No se encontraron objetos persistentes para este tipo.",
 	"wikilambda-special-objectsbytype-listheader": "Todos los objetos de tipo $1 ($2)",
 	"wikilambda-special-objectsbytype-summary": "Haga clic en uno de los tipos enumerados a continuación para ver todos los objetos de ese tipo.",
-	"wikilambda-special-objectsbytype-typeheader": "Todos los tipos",
 	"wikilambda-special-runfunction": "Evalúa una llamada de función",
 	"wikilambda-special-runfunction-intro": "Asegúrate de seguir las políticas de la comunidad y las reglas de derechos de autor y patentes.",
 	"wikilambda-special-runfunction-nojs": "Para utilizar esta página se necesita JavaScript.",

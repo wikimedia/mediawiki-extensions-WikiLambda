@@ -193,7 +193,6 @@
 	"wikilambda-special-objectsbytype-empty": "Nu s-au găsit obiecte persistente de acest tip.",
 	"wikilambda-special-objectsbytype-listheader": "Toate Obiectele de tip $1 ($2)",
 	"wikilambda-special-objectsbytype-summary": "Faceți clic pe unul dintre tipurile enumerate mai jos pentru a vedea toate Obiectele de acest tip.",
-	"wikilambda-special-objectsbytype-typeheader": "Toate tipurile",
 	"wikilambda-special-runfunction": "Rulați o funcție",
 	"wikilambda-special-runfunction-intro": "Asigurați-vă că respectați politicile comunității și regulile privind drepturile de autor și brevetele.",
 	"wikilambda-special-runfunction-nojs": "Această pagină necesită JavaScript pentru a fi folosită.",

@@ -315,7 +315,6 @@
 	"wikilambda-special-objectsbytype-empty": "找不到此類型的持久物件。",
 	"wikilambda-special-objectsbytype-listheader": "所有類型為$1（$2）的物件",
 	"wikilambda-special-objectsbytype-summary": "點擊下面所列出類型中的一個，可檢視該類型的所有對象。",
-	"wikilambda-special-objectsbytype-typeheader": "所有類型",
 	"wikilambda-special-runfunction": "執行函數",
 	"wikilambda-special-runfunction-intro": "確保您遵守社群政策以及著作權和專利規則。",
 	"wikilambda-special-runfunction-nojs": "此頁面需要使用JavaScript。",

@@ -367,7 +367,6 @@
 	"wikilambda-special-objectsbytype-empty": "Tidak ditemukan Objek bersinambung untuk tipe ini.",
 	"wikilambda-special-objectsbytype-listheader": "Semua Objek tipe $1 ($2)",
 	"wikilambda-special-objectsbytype-summary": "Tekan salah satu tipe di bawah untuk melihat semua Objek dengan tipe tersebut.",
-	"wikilambda-special-objectsbytype-typeheader": "Semua Tipe",
 	"wikilambda-special-runfunction": "Mengevaluasi pemanggilan fungsi",
 	"wikilambda-special-runfunction-intro": "Pastikan Anda mengikuti kebijakan komunitas, serta aturan paten dan hak cipta.",
 	"wikilambda-special-runfunction-nojs": "Halaman ini memerlukan JavaScript agar bisa digunakan.",

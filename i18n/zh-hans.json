@@ -357,7 +357,6 @@
 	"wikilambda-special-objectsbytype-empty": "找不到此类型的持久对象。",
 	"wikilambda-special-objectsbytype-listheader": "所有类型为$1（$2）的对象",
 	"wikilambda-special-objectsbytype-summary": "点击下面所列出类型中的一个，可查看该类型的所有对象。",
-	"wikilambda-special-objectsbytype-typeheader": "所有类型",
 	"wikilambda-special-runfunction": "运行函数",
 	"wikilambda-special-runfunction-intro": "确保您遵守社区政策以及版权和专利规则。",
 	"wikilambda-special-runfunction-nojs": "此页面需要使用JavaScript。",

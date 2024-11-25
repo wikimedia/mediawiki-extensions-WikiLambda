@@ -102,7 +102,6 @@
 	"wikilambda-special-objectsbytype": "Наведи ги сите ZObjects од даден тип",
 	"wikilambda-special-objectsbytype-empty": "Не се пронајдени постојани ZObjects за овој тип.",
 	"wikilambda-special-objectsbytype-listheader": "Сите ZObjects од типот $1 ($2)",
-	"wikilambda-special-objectsbytype-typeheader": "Сите типови",
 	"wikilambda-special-runfunction": "Вреднување на функциски повик",
 	"wikilambda-special-runfunction-intro": "Ќе мора да ги следите правилата на заедницата, како и авторскоправните и патентните правила.",
 	"wikilambda-special-runfunction-nojs": "Страницава бара JavaScript за да може да се користи.",

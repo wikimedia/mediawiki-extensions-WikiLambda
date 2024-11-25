@@ -312,7 +312,6 @@
 	"wikilambda-special-objectsbytype-empty": "Inga bestående objekt hittades för den här typen.",
 	"wikilambda-special-objectsbytype-listheader": "Alla objekt av typen $1 ($2)",
 	"wikilambda-special-objectsbytype-summary": "Klicka på en av typerna listade nedan för att se alla objekt av den typen.",
-	"wikilambda-special-objectsbytype-typeheader": "Alla typer",
 	"wikilambda-special-runfunction": "Utvärdera ett funktionsanrop",
 	"wikilambda-special-runfunction-intro": "Se till att du följer gemenskapens policyer och upphovsrätts- och patentregler.",
 	"wikilambda-special-runfunction-nojs": "Denna sida kräver JavaScript för att användas.",

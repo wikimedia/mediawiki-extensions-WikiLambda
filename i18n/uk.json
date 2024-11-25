@@ -319,7 +319,6 @@
 	"wikilambda-special-objectsbytype-empty": "Для цього типу не знайдено постійних Об'єктів.",
 	"wikilambda-special-objectsbytype-listheader": "Усі Об'єкти типу $1 ($2)",
 	"wikilambda-special-objectsbytype-summary": "Натисніть на один із перелічених нижче типів, щоб побачити всі Об'єкти цього типу.",
-	"wikilambda-special-objectsbytype-typeheader": "Усі типи",
 	"wikilambda-special-runfunction": "Виконання функції",
 	"wikilambda-special-runfunction-intro": "Переконайтеся, що Ви дотримуєтесь політики спільноти, а також авторських та патентних правил.",
 	"wikilambda-special-runfunction-nojs": "Ця сторінка вимагає використання JavaScript.",

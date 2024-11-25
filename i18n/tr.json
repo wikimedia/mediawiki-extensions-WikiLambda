@@ -322,7 +322,6 @@
 	"wikilambda-special-objectsbytype-empty": "Bu tür için kalıcı Nesne bulunamadı.",
 	"wikilambda-special-objectsbytype-listheader": "$1 türündeki tüm Nesneler ($2)",
 	"wikilambda-special-objectsbytype-summary": "Bu türden tüm Nesneleri görmek için aşağıda listelenen türlerden birine tıklayın.",
-	"wikilambda-special-objectsbytype-typeheader": "Tüm Türler",
 	"wikilambda-special-runfunction": "Bir işlev çağrısını değerlendirin",
 	"wikilambda-special-runfunction-intro": "Topluluk politikalarına, telif hakkı ve patent kurallarına uyduğunuzdan emin olun.",
 	"wikilambda-special-runfunction-nojs": "Bu sayfa JavaScript kullanımını gerektiriyor.",

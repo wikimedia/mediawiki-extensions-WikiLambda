@@ -191,7 +191,6 @@
 	"wikilambda-special-objectsbytype-empty": "Nenalezeny žádné perzistentní ZObjekty tohoto typu.",
 	"wikilambda-special-objectsbytype-listheader": "Všechny ZObjekty typu $1 ($2)",
 	"wikilambda-special-objectsbytype-summary": "Kliknutím na jeden z typů uvedených níže se zobrazí všechny ZObjekty tohoto typu.",
-	"wikilambda-special-objectsbytype-typeheader": "Všechny typy",
 	"wikilambda-special-runfunction": "Vyhodnotit volání funkce",
 	"wikilambda-special-runfunction-nojs": "Tato stránka vyžaduje pro svou funkci JavaScript.",
 	"wikilambda-special-runfunction-summary": "Pomocí tohoto formuláře můžete vyhodnotit volání funkce.",
