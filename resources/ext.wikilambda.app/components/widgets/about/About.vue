@@ -41,7 +41,7 @@
 				class="ext-wikilambda-app-about__accordion"
 				action-always-visible
 				data-testid="about-language-accordion"
-				:action-button-label="$i18n( 'wikilambda-edit' ).text()"
+				:action-button-label="$i18n( 'wikilambda-about-widget-edit-button' ).text()"
 				@action-button-click="initializeEdit( index )"
 			>
 				<template #title>

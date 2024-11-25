@@ -108,6 +108,7 @@
 	"wikilambda-about-widget-aliases-caption": "Press Return ↵ after each alias.",
 	"wikilambda-about-widget-aliases-placeholder": "Enter aliases",
 	"wikilambda-about-widget-description-placeholder": "Enter description",
+	"wikilambda-about-widget-edit-button": "Edit",
 	"wikilambda-about-widget-edit-metadata-accessible-title": "Dialog letting you add and edit the labels and information in a language",
 	"wikilambda-about-widget-edit-metadata-title": "Edit information",
 	"wikilambda-about-widget-input-label": "Input $1 label",

@@ -122,6 +122,7 @@
 	"wikilambda-about-widget-aliases-caption": "Caption to show under the Aliases field and inform the user how to enter each word",
 	"wikilambda-about-widget-aliases-placeholder": "Placeholder for the Aliases field in the About widget Edit Metadata dialog",
 	"wikilambda-about-widget-description-placeholder": "Placeholder for the Description field in the About widget Edit Metadata dialog",
+	"wikilambda-about-widget-edit-button": "Button to switch the widget into editing mode so you can make changes",
 	"wikilambda-about-widget-edit-metadata-accessible-title": "Longer form of {{msg-mw|wikilambda-about-widget-edit-metadata-title}} for accessibility, available for screen readers.",
 	"wikilambda-about-widget-edit-metadata-title": "Title of the About widget Edit Metadata dialog",
 	"wikilambda-about-widget-input-label": "Means \"The label of input number $1\". Label for the nth input label field in the About widget.",
