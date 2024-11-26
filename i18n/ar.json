@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Asma",
+			"Bonnjalal00",
 			"Dr. Mohammed",
 			"FiberAhmed",
 			"Karim185.3",
@@ -11,6 +12,16 @@
 			"محمد أحمد عبد الفتاح"
 		]
 	},
+	"wikilambda-desc": "توفير إمكانية كتابة الدوال وإدارتها وتقييمها على ويكي مركزي.",
+	"action-wikifunctions-run": "تشغيل الدوال في واجهة برمجة التطبيقات العامة",
+	"action-wikilambda-connect-implementation": "اربط التنفيذ بدالته حتى يمكن تشغيله",
+	"action-wikilambda-connect-tester": "اربط حالة الاختبار بدالتها",
+	"action-wikilambda-create": "إنشاء كائنات جديدة بشكل عام.",
+	"action-wikilambda-create-converter": "إنشاء مُسلسل أو مُفكك تسلسل جديد.",
+	"action-wikilambda-create-boolean": "إنشاء كائنات بوليانية جديدة",
+	"action-wikilambda-create-enum-value": "إنشاء نسخة جديدة من نوع تعداد (Enum).",
+	"action-wikilambda-create-function": "إنشاء كائنات دوال جديدة",
+	"action-wikilambda-create-implementation": "إنشاء كائنات تنفيذ جديدة.",
 	"wikilambda-confirm": "أكّد",
 	"wikilambda-context-menu": "قائمة السياق",
 	"wikilambda-continue-editing": "مواصلة التعديل",
