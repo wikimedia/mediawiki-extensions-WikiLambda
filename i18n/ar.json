@@ -8,9 +8,16 @@
 			"NancyMilad",
 			"أَحمد",
 			"محمد أحمد عبد الفتاح",
-			"Meno25"
+			"Meno25",
+			"Bonnjalal00"
 		]
 	},
+	"action-wikilambda-connect-implementation": "اربط التنفيذ بدالته حتى يمكن تشغيله",
+	"action-wikilambda-connect-tester": "اربط حالة الاختبار بدالتها",
+	"action-wikilambda-create": "إنشاء كائنات جديدة بشكل عام.",
+	"action-wikilambda-create-boolean": "إنشاء كائنات بوليانية جديدة",
+	"action-wikilambda-create-function": "إنشاء كائنات دوال جديدة",
+	"action-wikilambda-create-implementation": "إنشاء كائنات تنفيذ جديدة.",
 	"wikilambda-edit": "عدل",
 	"wikilambda-show-more": "أظهر المزيد",
 	"wikilambda-publishnew": "نشر",
