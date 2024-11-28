@@ -118,6 +118,7 @@
 	"wikilambda-special-objectsbytype-form-orderby": "정렬 기준:",
 	"wikilambda-special-objectsbytype-form-orderby-name": "이름",
 	"wikilambda-special-objectsbytype-form-orderby-latest": "최신 항목 먼저",
+	"wikilambda-special-objectsbytype-form-orderby-oldest": "과거 항목 먼저",
 	"wikilambda-special-runfunction": "함수 실행",
 	"wikilambda-special-runfunction-nojs": "이 페이지는 자바스크립트 사용이 필요합니다.",
 	"wikilambda-special-viewobject": "객체 보기",
