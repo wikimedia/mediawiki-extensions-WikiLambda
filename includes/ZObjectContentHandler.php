@@ -30,6 +30,7 @@ use MediaWiki\MediaWikiServices;
 use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Revision\SlotRenderingProvider;
 use MediaWiki\Title\Title;
+use MWContentSerializationException;
 use StatusValue;
 
 class ZObjectContentHandler extends ContentHandler {
@@ -125,12 +126,18 @@ class ZObjectContentHandler extends ContentHandler {
 	 * @param string $text
 	 * @param string|null $format
 	 * @return ZObjectContent
+	 * @throws MWContentSerializationException if input causes an error
 	 */
 	public function unserializeContent( $text, $format = null ) {
 		$this->checkFormat( $format );
 
 		$class = $this->getContentClass();
-		return new $class( $text );
+		try {
+			return new $class( $text );
+		} catch ( ZErrorException $zerror ) {
+			// (T381115) If the passed user input isn't valid, we're expected to throw this particular MW error
+			throw new MWContentSerializationException( $zerror->getZError()->getMessage() );
+		}
 	}
 
 	/**

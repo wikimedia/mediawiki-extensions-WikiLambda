@@ -47,7 +47,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 		$data = '{ invalidJson ]';
 
 		$this->expectException( ApiUsageException::class );
-		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_INVALID_JSON );
+		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_UNKNOWN );
 
 		$this->doApiRequestWithToken( [
 			'action' => 'wikilambda_edit',
