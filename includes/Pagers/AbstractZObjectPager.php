@@ -10,9 +10,9 @@
 
 namespace MediaWiki\Extension\WikiLambda\Pagers;
 
-use AlphabeticPager;
 use MediaWiki\Context\IContextSource;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
+use MediaWiki\Pager\AlphabeticPager;
 use Wikimedia\Rdbms\Subquery;
 
 abstract class AbstractZObjectPager extends AlphabeticPager {
