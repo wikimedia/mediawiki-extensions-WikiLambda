@@ -229,6 +229,7 @@
 	"wikilambda-function-evaluator-title": "Probiere eine Funktion aus",
 	"wikilambda-function-evaluator-title-function": "Probiere diese Funktion aus",
 	"wikilambda-function-evaluator-title-implementation": "Probiere diese Implementierung aus",
+	"wikilambda-function-explorer-accessible-label": "Setzt das Funktions-Explorer-Feld zurück auf den Hauptkontext dieser Seite",
 	"wikilambda-function-explorer-copied-text": "Kopiert!",
 	"wikilambda-function-explorer-name-title": "Name",
 	"wikilambda-function-explorer-title": "Funktions-Explorer",
