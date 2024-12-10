@@ -408,7 +408,6 @@
 	"wikilambda-special-objectsbytype-empty": "No persistent Objects found for this type.",
 	"wikilambda-special-objectsbytype-listheader": "All Objects of type $1 ($2)",
 	"wikilambda-special-objectsbytype-summary": "Click on one of the types listed below to see all Objects of that type.",
-	"wikilambda-special-objectsbytype-form-header": "Search for Types with instances",
 	"wikilambda-special-objectsbytype-form-type": "Type",
 	"wikilambda-special-objectsbytype-form-orderby": "Order by",
 	"wikilambda-special-objectsbytype-form-orderby-name": "Name",
