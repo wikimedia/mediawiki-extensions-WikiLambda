@@ -841,13 +841,19 @@ class ZObjectStore {
 		$subquery = $dbr->selectSQLText( [ 'wikilambda_zobject_labels' ], $fields, '', __METHOD__ );
 
 		// Create query to select the most prioritary label for each zid
+		// - Join with zobject entries in the page table to order objects by creation date
+		// - Select only those rows with label priority 1
+		$pageJoinConditions = [
+			'p.page_title = wlzl_zobject_zid',
+			'p.page_content_model = ' . $dbr->addQuotes( CONTENT_MODEL_ZOBJECT )
+		];
 		$queryBuilder = $dbr->newSelectQueryBuilder()
 			->select( [
 				'page_id', 'wlzl_zobject_zid', 'wlzl_language', 'wlzl_label', 'wlzl_type',
 				'wlzl_label_normalised', 'wlzl_label_primary', 'wlzl_return_type'
 			] )
 			->from( new Subquery( $subquery ), 'preferred_labels' )
-			->leftJoin( 'page', 'p', 'p.page_title = wlzl_zobject_zid' )
+			->leftJoin( 'page', 'p', $pageJoinConditions )
 			->where( [ 'priority' => 1 ] );
 
 		// Return SQL
