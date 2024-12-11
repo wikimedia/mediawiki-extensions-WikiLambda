@@ -26,6 +26,7 @@ use MediaWiki\Parser\ParserOptions;
 use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Revision\SlotRenderingProvider;
 use MediaWiki\Title\Title;
+use MWContentSerializationException;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectContentHandler
@@ -90,6 +91,13 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->assertInstanceOf( ZObjectContent::class, $testObject );
 		$this->assertSame( 'Z6', $testObject->getZType() );
 		$this->assertSame( '', $testObject->getZValue() );
+	}
+
+	public function testUnserializeContent_invalidJson() {
+		$notValidObjectString = 'This is not JSON!';
+		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$this->expectException( MWContentSerializationException::class );
+		$handler->unserializeContent( $notValidObjectString );
 	}
 
 	public function testGetExternalRepresentation_badNamespace() {

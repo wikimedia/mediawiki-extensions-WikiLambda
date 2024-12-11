@@ -27,6 +27,7 @@ use MediaWiki\Title\TitleFactory;
 use MediaWiki\User\User;
 use MediaWiki\User\UserGroupManager;
 use MessageLocalizer;
+use MWContentSerializationException;
 use Psr\Log\LoggerInterface;
 use Wikimedia\Rdbms\IConnectionProvider;
 use Wikimedia\Rdbms\IExpression;
@@ -289,6 +290,15 @@ class ZObjectStore {
 			$content = ZObjectContentHandler::makeContent( $data, $title );
 		} catch ( ZErrorException $e ) {
 			return ZObjectPage::newFatal( $e->getZError() );
+		} catch ( MWContentSerializationException $mwe ) {
+			return ZObjectPage::newFatal(
+				// We can't cleanly recover the inner ZErrorException (if indeed it was even thrown by us), so
+				// for now just pass this down as a Z500, perhaps with the ErrorType as the message.
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
+					[ 'message' => $mwe->getMessage() ]
+				)
+			);
 		}
 
 		// Error: ZObject validation errors.
