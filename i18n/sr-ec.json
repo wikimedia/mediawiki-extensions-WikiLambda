@@ -8,7 +8,6 @@
 	"wikilambda-about-widget-add-language": "Додај језик",
 	"wikilambda-about-widget-aliases-placeholder": "Унеси псеудониме",
 	"wikilambda-about-widget-description-placeholder": "Унесите опис",
-	"wikilambda-about-widget-done-button": "Урађено",
 	"wikilambda-about-widget-edit-metadata-title": "Уреди информације",
 	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1 језик|$1 језика}}",
 	"wikilambda-about-widget-name-placeholder": "Унесите име",

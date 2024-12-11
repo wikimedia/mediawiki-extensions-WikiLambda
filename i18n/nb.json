@@ -92,7 +92,6 @@
 	"wikilambda-about-widget-aliases-caption": "Trykk på returtasten etter hvert alias",
 	"wikilambda-about-widget-aliases-placeholder": "Skriv inn aliaser",
 	"wikilambda-about-widget-description-placeholder": "Skriv inn beskrivelse",
-	"wikilambda-about-widget-done-button": "Ferdig",
 	"wikilambda-about-widget-edit-metadata-title": "Rediger informasjon",
 	"wikilambda-about-widget-input-label": "Etikett for inndatafelt $1",
 	"wikilambda-about-widget-language-count-button": "$1 {{PLURAL:$1|språk}}",

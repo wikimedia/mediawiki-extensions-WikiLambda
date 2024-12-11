@@ -50,7 +50,6 @@
 	"wikilambda-about-widget-aliases-caption": "Нажимайте Return ↵ после каждого синонима.",
 	"wikilambda-about-widget-aliases-placeholder": "Введите синонимы",
 	"wikilambda-about-widget-description-placeholder": "Введите описание",
-	"wikilambda-about-widget-done-button": "Готово",
 	"wikilambda-about-widget-edit-metadata-accessible-title": "Диалоговое окно, позволяющее просматривать и править метки и информацию на языке",
 	"wikilambda-about-widget-edit-metadata-title": "Правка информации",
 	"wikilambda-about-widget-input-label": "Метка ввода $1",

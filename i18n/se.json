@@ -5,6 +5,7 @@
 			"Yupik"
 		]
 	},
+	"wikilambda-about-widget-view-languages-suggested": "Evttohuvvon gielat",
 	"wikilambda-cancel": "Gaskkalduhte",
 	"wikilambda-editor-additional-details-label": "Lassedieđut",
 	"wikilambda-editor-fn-step-function-definition": "Funkšuvnna meroštallan",
@@ -13,6 +14,7 @@
 	"wikilambda-editor-label-select-programming-language-label": "Vállje programmerengiela",
 	"wikilambda-function-are-you-sure-dialog-description": "Áiggutgo don duođaid heaitit rievdadeamis almmutkeahttá vuos rievdadusaid?",
 	"wikilambda-function-definition-alias-label": "Lassenamat",
+	"wikilambda-function-definition-description-label": "Govvádus",
 	"wikilambda-function-definition-edit": "Rievdat meroštallama",
 	"wikilambda-function-evaluator-result-details": "Dieđut",
 	"wikilambda-function-implementation-language-label": "Giella",
@@ -21,6 +23,7 @@
 	"wikilambda-function-viewer-details-table-view-less": "Čájet unnit",
 	"wikilambda-languagelabel": "Giella",
 	"wikilambda-metadata-language-column": "Giella",
+	"wikilambda-object-selector-suggested-languages": "Evttohuvvon gielat",
 	"wikilambda-optional": "eaktodáhtolaš",
 	"wikilambda-persistentzobject-contents": "Sisdoallu",
 	"wikilambda-savenew": "Vurke",

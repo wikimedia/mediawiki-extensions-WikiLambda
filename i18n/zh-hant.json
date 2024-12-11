@@ -101,7 +101,6 @@
 	"wikilambda-about-widget-aliases-caption": "在每個別名後按 Return ↵。",
 	"wikilambda-about-widget-aliases-placeholder": "輸入別名",
 	"wikilambda-about-widget-description-placeholder": "輸入描述",
-	"wikilambda-about-widget-done-button": "完成",
 	"wikilambda-about-widget-edit-metadata-title": "編輯資訊",
 	"wikilambda-about-widget-input-label": "輸入$1標籤",
 	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1種語言}}",

@@ -92,7 +92,6 @@
 	"wikilambda-about-widget-accessible-title": "Діалогове вікно, у якому можна переглядати та редагувати мітки та інформацію різними мовами",
 	"wikilambda-about-widget-add-language": "Додати мову",
 	"wikilambda-about-widget-description-placeholder": "Введіть опис",
-	"wikilambda-about-widget-done-button": "Готово",
 	"wikilambda-about-widget-edit-metadata-accessible-title": "Діалогове вікно для додавання і редагування міток та інформації однією з мов",
 	"wikilambda-about-widget-edit-metadata-title": "Редагувати інформацію",
 	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1 мова|$1 мов}}",

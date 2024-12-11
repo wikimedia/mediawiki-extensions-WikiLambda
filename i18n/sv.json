@@ -91,7 +91,6 @@
 	"wikilambda-about-widget-aliases-caption": "Tryck på returtangenten efter varje alias",
 	"wikilambda-about-widget-aliases-placeholder": "Ange alias",
 	"wikilambda-about-widget-description-placeholder": "Ange beskrivning",
-	"wikilambda-about-widget-done-button": "Klar",
 	"wikilambda-about-widget-edit-metadata-title": "Redigera information",
 	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1 språk}}",
 	"wikilambda-about-widget-name-placeholder": "Ange namn",

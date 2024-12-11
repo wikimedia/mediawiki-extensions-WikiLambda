@@ -14,7 +14,6 @@
 	"wikilambda-about-widget-aliases-caption": "Pēc katra nosaukuma nospied atgriešanas taustiņu",
 	"wikilambda-about-widget-aliases-placeholder": "Ievadi citus nosaukumus",
 	"wikilambda-about-widget-description-placeholder": "Ievadi aprakstu",
-	"wikilambda-about-widget-done-button": "Gatavs",
 	"wikilambda-about-widget-edit-metadata-title": "Labot informāciju",
 	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1 valodas|$1 valoda|$1 valodas}}",
 	"wikilambda-about-widget-name-placeholder": "Ievadi nosaukumu",

@@ -5,6 +5,7 @@
 		]
 	},
 	"content-model-zobject": "WikiLambda-objeʹktt",
+	"wikilambda-about-widget-view-languages-suggested": "Eʹtǩǩuum ǩiõl",
 	"wikilambda-cancel": "Jõõsk",
 	"wikilambda-confirm": "Priim",
 	"wikilambda-create-function": "Raaj funktio",
@@ -18,6 +19,7 @@
 	"wikilambda-editor-label-select-programming-language-label": "Vaʹlljed programmâʹsttemǩiõl",
 	"wikilambda-editor-publish-dialog-summary-label": "Õʹhtteǩeässmõš",
 	"wikilambda-editor-zobject-addkey": "Lââʹzzet čouddi:",
+	"wikilambda-function-definition-description-label": "Deskriptt",
 	"wikilambda-function-definition-edit": "Muuʹtt meäʹrteeʹlm",
 	"wikilambda-function-definition-footer-label": "Õʹhtteǩeässmõš",
 	"wikilambda-function-definition-name-label": "Nõmm",
@@ -36,6 +38,7 @@
 	"wikilambda-metadata-aka-column": "Toobdât še nõõmin leʹbe nõõmivuiʹm",
 	"wikilambda-metadata-label-column": "Nõmm",
 	"wikilambda-metadata-language-column": "Ǩiõll",
+	"wikilambda-object-selector-suggested-languages": "Eʹtǩǩuum ǩiõl",
 	"wikilambda-optional": "vaʹlljeemnallšem",
 	"wikilambda-publishchanges": "Õlmstââʹtt muttsid",
 	"wikilambda-publishnew": "Õlmstââʹtt",

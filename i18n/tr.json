@@ -100,7 +100,6 @@
 	"wikilambda-about-widget-aliases-caption": "Her addan sonra Enter ↵ tuşuna basın.",
 	"wikilambda-about-widget-aliases-placeholder": "Takma ad girin",
 	"wikilambda-about-widget-description-placeholder": "Açıklama girin",
-	"wikilambda-about-widget-done-button": "Tamam",
 	"wikilambda-about-widget-edit-metadata-title": "Bilgiyi düzenle",
 	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1 dil}}",
 	"wikilambda-about-widget-name-placeholder": "Ad girin",

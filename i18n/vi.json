@@ -99,7 +99,6 @@
 	"wikilambda-about-widget-aliases-caption": "Nhấn Return ↵ sau mỗi tên.",
 	"wikilambda-about-widget-aliases-placeholder": "Nhập tên khác",
 	"wikilambda-about-widget-description-placeholder": "Nhập miêu tả",
-	"wikilambda-about-widget-done-button": "Xong",
 	"wikilambda-about-widget-edit-metadata-title": "Sửa thông tin",
 	"wikilambda-about-widget-input-label": "Nhãn đầu vào $1",
 	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1}}$1 ngôn ngữ",

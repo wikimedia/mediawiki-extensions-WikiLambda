@@ -93,7 +93,6 @@
 	"wikilambda-about-widget-aliases-caption": "Po vsaki sopomenki pritisnite vnašalko",
 	"wikilambda-about-widget-aliases-placeholder": "Vnesite sopomenke",
 	"wikilambda-about-widget-description-placeholder": "Vnesite opis",
-	"wikilambda-about-widget-done-button": "Končano",
 	"wikilambda-about-widget-edit-metadata-title": "Uredi podatke",
 	"wikilambda-about-widget-input-label": "Oznaka vnosa $1",
 	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1 jezik|$1 jezika|$1 jeziki|$1 jezikov}}",

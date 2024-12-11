@@ -32,7 +32,6 @@
 	"wikilambda-about-widget-aliases-caption": "Apăsați Enter ↵ după fiecare alias.",
 	"wikilambda-about-widget-aliases-placeholder": "Introduceți aliasuri",
 	"wikilambda-about-widget-description-placeholder": "Introduceți descrierea",
-	"wikilambda-about-widget-done-button": "Realizat",
 	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1 limbă|$1 limbi|$1 de limbi}}",
 	"wikilambda-about-widget-name-placeholder": "Introduceți numele",
 	"wikilambda-about-widget-publish-button": "Continuați să publicați",

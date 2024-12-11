@@ -94,7 +94,6 @@
 	"wikilambda-about-widget-aliases-caption": "Pressione Return ↵ após cada nome alternativo.",
 	"wikilambda-about-widget-aliases-placeholder": "Introduzir nomes alternativos",
 	"wikilambda-about-widget-description-placeholder": "Introduzir descrição",
-	"wikilambda-about-widget-done-button": "Concluído",
 	"wikilambda-about-widget-edit-metadata-title": "Editar informações",
 	"wikilambda-about-widget-input-label": "Etiqueta de entrada nº $1",
 	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1 língua|$1 línguas}}",

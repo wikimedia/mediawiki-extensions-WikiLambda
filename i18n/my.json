@@ -8,7 +8,6 @@
 		]
 	},
 	"wikilambda-about-widget-add-language": "ဘာသာစကား ထည့်သွင်းရန်",
-	"wikilambda-about-widget-done-button": "ပြီးပြီ",
 	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|ဘာသာစကား $1 ခု|$1 ဘာသာစကားများ $1 ခု}}",
 	"wikilambda-about-widget-search-language-placeholder": "ဘာသာစကား ရှာဖွေရန်",
 	"wikilambda-about-widget-title": "အကြောင်း",

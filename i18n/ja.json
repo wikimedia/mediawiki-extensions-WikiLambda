@@ -109,7 +109,6 @@
 	"wikilambda-about-widget-aliases-caption": "各エイリアスを入力するたびにリターンキーを押す",
 	"wikilambda-about-widget-aliases-placeholder": "エイリアスを入力",
 	"wikilambda-about-widget-description-placeholder": "説明を入力",
-	"wikilambda-about-widget-done-button": "完了",
 	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1の言語版}}",
 	"wikilambda-about-widget-name-placeholder": "名称を入力",
 	"wikilambda-about-widget-publish-button": "次へ移り公開",

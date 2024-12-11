@@ -18,7 +18,6 @@
 	"wikilambda-about-widget-add-language": "Lisää kieli",
 	"wikilambda-about-widget-aliases-placeholder": "Lisää aliaksia",
 	"wikilambda-about-widget-description-placeholder": "Lisää kuvaus",
-	"wikilambda-about-widget-done-button": "Valmis",
 	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1 kieli|$1 kieltä}}",
 	"wikilambda-about-widget-name-placeholder": "Lisää nimi",
 	"wikilambda-about-widget-no-aliases": "Aliaksia ei ole annettu.",
