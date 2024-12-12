@@ -135,12 +135,10 @@ class ApiZObjectEditorTest extends ApiTestCase {
 		   . ' "Z2K2": "string",'
 		   . ' "Z2K3":{ "Z1K1":"Z12", "Z12K1":[ "Z11", { "Z1K1":"Z11", "Z11K1":"en", "Z11K2":"wrong language" }]}}';
 
-		// Try to create the second Zobject with the same label
 		$this->expectException( ApiUsageException::class );
 		// TODO (T302598): detailed errors for Z2 related validations
 		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED );
 
-		// Try to create the second Zobject with the same label
 		$result = $this->doApiRequestWithToken( [
 		   'action' => 'wikilambda_edit',
 		   'summary' => 'Summary message',
@@ -154,7 +152,6 @@ class ApiZObjectEditorTest extends ApiTestCase {
 			. ' "Z2K2": "string",'
 			. ' "Z2K3":{ "Z1K1":"Z12", "Z12K1":[ "Z11", { "Z1K1":"Z11", "Z11K1":"Z1002", "Z11K2":"unique label" }]}}';
 
-		// Try to create the second Zobject with the same label
 		$this->expectException( ApiUsageException::class );
 		// TODO (T302598): detailed errors for Z2 related validations
 		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_UNKNOWN );
@@ -162,6 +159,48 @@ class ApiZObjectEditorTest extends ApiTestCase {
 		$result = $this->doApiRequestWithToken( [
 			'action' => 'wikilambda_edit',
 			'zid' => $invalidZid,
+			'summary' => 'Summary message',
+			'zobject' => $data
+		] );
+	}
+
+	public function testUpdateFailed_invalidIdentityType() {
+		// Create the first Zobject
+		$sysopUser = $this->getTestSysop()->getUser();
+		$newZid = $this->store->getNextAvailableZid();
+		$newData = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
+			. ' "Z2K2": "string initial",'
+			. ' "Z2K3":{ "Z1K1":"Z12", "Z12K1":[ "Z11", { "Z1K1":"Z11", "Z11K1":"Z1002", "Z11K2":"worse identity" }]}}';
+		$this->store->createNewZObject( RequestContext::getMain(), $newData, 'New ZObject', $sysopUser );
+
+		// Prepare for update
+		$data = '{ "Z1K1": "Z2", "Z2K1": "' . $newZid . '",'
+			. ' "Z2K2": "string edited",'
+		  . ' "Z2K3":{ "Z1K1":"Z12", "Z12K1":[ "Z11", { "Z1K1":"Z11", "Z11K1":"Z1002", "Z11K2":"worse identity" }]}}';
+
+		$this->expectException( ApiUsageException::class );
+		// TODO (T302598): detailed errors for Z2 related validations
+		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_UNKNOWN );
+
+		$result = $this->doApiRequestWithToken( [
+			'action' => 'wikilambda_edit',
+			'zid' => $newZid,
+			'summary' => 'Summary message',
+			'zobject' => $data
+		] );
+	}
+
+	public function testCreateFailed_invalidIdentityType() {
+		$data = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+			. ' "Z2K2": "string",'
+			. ' "Z2K3":{ "Z1K1":"Z12", "Z12K1":[ "Z11", { "Z1K1":"Z11", "Z11K1":"Z1002", "Z11K2":"worse identity" }]}}';
+
+		$this->expectException( ApiUsageException::class );
+		// TODO (T302598): detailed errors for Z2 related validations
+		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_UNKNOWN );
+
+		$result = $this->doApiRequestWithToken( [
+			'action' => 'wikilambda_edit',
 			'summary' => 'Summary message',
 			'zobject' => $data
 		] );
