@@ -9,12 +9,15 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use MediaWiki\Content\Content;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry;
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Language\Language;
+use MediaWiki\Permissions\Authority;
 use MediaWikiIntegrationTestCase;
 
 abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCase {
@@ -41,6 +44,23 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 			$data = file_get_contents( "$dataPath/$zid.json" );
 			$this->editPage( $zid, $data, 'Test ZObject creation', NS_MAIN );
 		}
+	}
+
+	/** @inheritDoc */
+	protected function editPage(
+		$page,
+		$content,
+		$summary = '',
+		$defaultNs = NS_MAIN,
+		?Authority $performer = null
+	) {
+		// Make sure that $content Z0s are replaced with $page
+		$contentText = $content instanceof Content ? $content->getText() : $content;
+		$zPlaceholderRegex = '/\"' . ZTypeRegistry::Z_NULL_REFERENCE . '(K[1-9]\d*)?\"/';
+		$contentText = preg_replace( $zPlaceholderRegex, "\"$page$1\"", $contentText );
+
+		// Then call parent editPage
+		return parent::editPage( $page, $contentText, $summary, $defaultNs, $performer );
 	}
 
 	/**

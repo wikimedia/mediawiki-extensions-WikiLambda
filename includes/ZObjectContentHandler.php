@@ -180,6 +180,7 @@ class ZObjectContentHandler extends ContentHandler {
 			);
 		}
 
+		// Cautionary canonicalization: all objects should be fully canonicalized in the DB
 		$object = ZObjectUtils::canonicalize( $zObject->getObject() );
 
 		if ( $languageCode ) {
@@ -202,12 +203,6 @@ class ZObjectContentHandler extends ContentHandler {
 			// Filter all Multilingual Strings and Stringsets if language is present and valid
 			$object = ZObjectUtils::filterZMultilingualStringsToLanguage( $object, [ $languageZid ] );
 		}
-
-		// Replace Z2K1: Z0 with the actual page ID.
-		$object->{ ZTypeRegistry::Z_PERSISTENTOBJECT_ID } = [
-			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_STRING,
-			ZTypeRegistry::Z_STRING_VALUE => $zObjectTitle->getDBkey()
-		];
 
 		return FormatJson::encode( $object, true, FormatJson::UTF8_OK );
 	}
