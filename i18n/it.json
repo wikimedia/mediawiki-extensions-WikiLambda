@@ -116,6 +116,7 @@
 	"wikilambda-about-widget-aliases-caption": "Premi Invio ↵ dopo ogni alias.",
 	"wikilambda-about-widget-aliases-placeholder": "Inserisci gli alias",
 	"wikilambda-about-widget-description-placeholder": "Inserisci una descrizione",
+	"wikilambda-about-widget-edit-button": "Modifica",
 	"wikilambda-about-widget-edit-metadata-accessible-title": "Finestra di dialogo che ti consente di aggiungere e modificare le etichette e le informazioni in una lingua",
 	"wikilambda-about-widget-edit-metadata-title": "Modifica informazioni",
 	"wikilambda-about-widget-input-label": "Etichetta ingresso $1",
