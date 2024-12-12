@@ -18,6 +18,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
+use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Title\Title;
 
 class ZObjectSecondaryDataUpdate extends DataUpdate {
@@ -53,6 +54,22 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		$zid = $this->title->getDBkey();
 
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
+
+		// (T380446) If the object is not valid there's nothing useful to do, except log an error and exit.
+		if ( !$this->zObject->isValid() ) {
+			$zerror = $this->zObject->getErrors();
+			$logger = LoggerFactory::getInstance( 'WikiLambda' );
+			$logger->error(
+				'ZObjectSecondaryDataUpdate unable to process, error thrown',
+				[
+					'zid' => $zid,
+					'message' => $zerror->getMessage()
+				]
+			);
+			return;
+		}
+
+		// Object is valid, we go on!
 
 		// Delete all labels: primary ones and aliases
 		$zObjectStore->deleteZObjectLabelsByZid( $zid );
