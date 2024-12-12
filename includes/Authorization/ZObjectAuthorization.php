@@ -158,10 +158,8 @@ class ZObjectAuthorization implements LoggerAwareInterface {
 	public function getRequiredEditRights( $fromContent, $toContent, $title ): array {
 		// Default rights necessary for edit:
 		$userRights = [ 'edit' ];
-		// 1. Get type of original object
-		$oldType = $fromContent->getZType();
-		$newType = $toContent->getZType();
-		$type = $newType;
+		// 1. Get type of object
+		$type = $toContent->getZType();
 
 		// 2. Initial filter of the rules by type
 		$rules = $this->getRulesByType( $type );
