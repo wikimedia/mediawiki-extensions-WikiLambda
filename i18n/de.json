@@ -380,6 +380,7 @@
 	"wikilambda-about-widget-no-inputs": "Keine Eingaben vorhanden.",
 	"wikilambda-about-widget-unlabelled-input": "Unbeschriftet",
 	"wikilambda-about-widget-input-label": "Bezeichnung der Eingabe $1",
+	"wikilambda-function-explorer-accessible-label": "Setzt das Funktions-Explorer-Feld zurück auf den Hauptkontext dieser Seite",
 	"wikilambda-function-explorer-title": "Funktions-Explorer",
 	"wikilambda-function-inputs-title": "Eingaben",
 	"wikilambda-function-explorer-copied-text": "Kopiert!",

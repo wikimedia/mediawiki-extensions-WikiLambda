@@ -38,6 +38,7 @@
 	"wikilambda-function-definition-edit": "Muuʹtt meäʹrteeʹlm",
 	"wikilambda-function-implementation-name-label": "Nõmm",
 	"wikilambda-function-implementation-language-label": "Ǩiõll",
+	"wikilambda-function-definition-description-label": "Deskriptt",
 	"wikilambda-function-definition-footer-label": "Õʹhtteǩeässmõš",
 	"wikilambda-editor-fn-step-function-definition": "Funktio meäʹrtelm",
 	"wikilambda-editor-fn-step-function-about": "Lââʹssteâđ",
@@ -49,5 +50,6 @@
 	"wikilambda-function-details-table-approve": "Priim",
 	"wikilambda-function-viewer-aliases-show-language-button": "Čuäʹjet lââʹzz ǩiõlid",
 	"wikilambda-function-viewer-aliases-hide-language-button": "Čiõǥǥ liist",
-	"wikilambda-function-viewer-names-show-languages-button": "Čuäʹjet nõõm jeeʹres ǩiõlid"
+	"wikilambda-function-viewer-names-show-languages-button": "Čuäʹjet nõõm jeeʹres ǩiõlid",
+	"wikilambda-object-selector-suggested-languages": "Eʹtǩǩuum ǩiõl"
 }
