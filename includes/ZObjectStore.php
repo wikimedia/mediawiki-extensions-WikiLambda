@@ -207,7 +207,7 @@ class ZObjectStore {
 		try {
 			$content = ZObjectContentHandler::makeContent( $data, $title );
 		} catch ( ZErrorException $e ) {
-			// Make content should not fail unless the JSON is invalid
+			// Error: Make content will only fail if JSON is invalid
 			$this->logger->warning(
 				__METHOD__ . ' triggered an error on creating content for page "' . $zid . '"',
 				[ 'responseError' => $e ]
@@ -217,27 +217,30 @@ class ZObjectStore {
 
 		try {
 			$status = $page->doUserEditContent( $content, $user, $summary, $flags );
-			// Error: Other doUserEditContent related errors
-			if ( !$status->isOK() ) {
-				$this->logger->info(
-					__METHOD__ . ' got a non-OK Status on publish, for page "' . $zid . '"',
-					[ 'responseStatus' => var_export( $status, true ) ]
-				);
-				throw new ZErrorException(
-					ZErrorFactory::createZErrorInstance(
-						ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
-						[ 'message' => (string)$status->getMessage() ]
-					)
-				);
-			}
 		} catch ( Exception $e ) {
-			// Error: Database or a deeper MediaWiki error
+			// Error: Database or MediaWiki exception
 			$this->logger->warning(
 				__METHOD__ . ' triggered an error on publish for page "' . $zid . '"',
 				[ 'responseError' => $e ]
 			);
 			throw $e;
 		}
+
+		// Error: Other doUserEditContent related errors
+		if ( !$status->isOK() ) {
+			$statusMessage = $status->getMessage();
+			$this->logger->info(
+				__METHOD__ . ' got a non-OK Status on publish, for page "' . $zid . '"',
+				[ 'responseStatus' => var_export( $statusMessage, true ) ]
+			);
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
+					[ 'message' => (string)$statusMessage ]
+				)
+			);
+		}
+
 		return true;
 	}
 
