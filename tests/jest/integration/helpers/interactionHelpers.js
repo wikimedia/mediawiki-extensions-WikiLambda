@@ -13,6 +13,11 @@ const { fireEvent } = require( '@testing-library/vue' ),
 const clickLookupResult = async ( parentWrapper, itemText ) => {
 	const options = await within( parentWrapper ).findAllByRole( 'option', { hidden: true } );
 	const option = options.find( ( e ) => e.textContent === itemText );
+
+	if ( !option ) {
+		throw new Error( 'Unable to find a lookup result for "' + itemText + '"' );
+	}
+
 	await fireEvent.click( option );
 };
 
