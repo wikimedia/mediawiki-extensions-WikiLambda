@@ -56,7 +56,7 @@ class SpecialListObjectsByType extends SpecialPage {
 	 * Get and validate SpecialPage parameters from subpage and url
 	 *
 	 * @param string $subpage
-	 * @return string[] - type Zid, orderby
+	 * @return array - type ZID, orderby, bool excludePreDefined
 	 */
 	private function getParameters( $subpage ) {
 		// Get type from subpage; overwrite with value from Request.
@@ -80,7 +80,9 @@ class SpecialListObjectsByType extends SpecialPage {
 			$requestOrderby :
 			BasicZObjectPager::ORDER_BY_NAME;
 
-		return [ $type, $orderby ];
+		$excludePreDefined = $this->getRequest()->getBool( 'excludePreDefined' );
+
+		return [ $type, $orderby, $excludePreDefined ];
 	}
 
 	/**
@@ -88,7 +90,7 @@ class SpecialListObjectsByType extends SpecialPage {
 	 */
 	public function execute( $subpage ) {
 		// Get and validate page parameters
-		[ $type, $orderby ] = $this->getParameters( $subpage );
+		[ $type, $orderby, $excludePreDefined ] = $this->getParameters( $subpage );
 
 		// Set headers
 		$this->setHeaders();
@@ -115,6 +117,7 @@ class SpecialListObjectsByType extends SpecialPage {
 			$this->zObjectStore,
 			$languageZids,
 			$orderby,
+			$excludePreDefined,
 			$filters
 		);
 
@@ -153,7 +156,7 @@ class SpecialListObjectsByType extends SpecialPage {
 	 * @param string $orderby
 	 * @return string
 	 */
-	public function getHeaderForm( $typeZid, $orderby ) {
+	public function getHeaderForm( string $typeZid, string $orderby ) {
 		$formHeader = $this->getHeaderTitle( $typeZid );
 		$formDescriptor = [
 			'type' => [
@@ -175,6 +178,12 @@ class SpecialListObjectsByType extends SpecialPage {
 						->escaped() => BasicZObjectPager::ORDER_BY_OLDEST
 				],
 				'default' => $orderby
+			],
+			'excludePreDefined' => [
+				'type' => 'check',
+				'label' => $this->msg( 'wikilambda-special-objectsbytype-form-excludepredefined' )->text(),
+				'name' => 'excludePreDefined',
+				'default' => false
 			]
 		];
 

@@ -30,10 +30,13 @@ class BasicZObjectPager extends AbstractZObjectPager {
 	 * @param ZObjectStore $zObjectStore
 	 * @param array $languageZids
 	 * @param string|null $orderby
+	 * @param bool|null $excludePreDefined
 	 * @param array $filters
 	 */
-	public function __construct( $context, $zObjectStore, $languageZids, $orderby = null, $filters = [] ) {
-		parent::__construct( $context, $zObjectStore, $languageZids, $orderby );
+	public function __construct(
+		$context, $zObjectStore, $languageZids, $orderby = null, $excludePreDefined = null, $filters = []
+	) {
+		parent::__construct( $context, $zObjectStore, $languageZids, $orderby, $excludePreDefined );
 
 		$this->filters = $filters;
 	}

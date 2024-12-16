@@ -28,10 +28,13 @@ class FunctionsByTestsPager extends AbstractZObjectPager {
 	 * @param IContextSource|null $context Context.
 	 * @param ZObjectStore $zObjectStore
 	 * @param array $languageZids
-	 * @param array $filters [ min, max, connected, pending, pass, fail ]
+	 * @param bool|null $excludePreDefined
+	 * @param array|null $filters [ min, max, connected, pending, pass, fail ]
 	 */
-	public function __construct( $context, $zObjectStore, $languageZids, $filters = [] ) {
-		parent::__construct( $context, $zObjectStore, $languageZids );
+	public function __construct(
+		$context, $zObjectStore, $languageZids, $excludePreDefined = null, $filters = []
+	) {
+		parent::__construct( $context, $zObjectStore, $languageZids, null, $excludePreDefined );
 
 		$this->filters = $filters;
 	}

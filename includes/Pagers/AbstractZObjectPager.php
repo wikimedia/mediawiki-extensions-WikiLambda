@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda\Pagers;
 use MediaWiki\Context\IContextSource;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Pager\AlphabeticPager;
+use Wikimedia\Rdbms\RawSQLValue;
 use Wikimedia\Rdbms\Subquery;
 
 abstract class AbstractZObjectPager extends AlphabeticPager {
@@ -25,17 +26,20 @@ abstract class AbstractZObjectPager extends AlphabeticPager {
 	private ZObjectStore $zObjectStore;
 	private array $languageZids;
 	private string $orderby;
+	private bool $excludePreDefined;
 
 	/**
 	 * @param IContextSource|null $context Context.
 	 * @param ZObjectStore $zObjectStore
 	 * @param array $languageZids
 	 * @param string|null $orderby
+	 * @param bool|null $excludePreDefined
 	 */
-	public function __construct( $context, $zObjectStore, $languageZids, $orderby = null ) {
+	public function __construct( $context, $zObjectStore, $languageZids, $orderby = null, $excludePreDefined = null ) {
 		$this->zObjectStore = $zObjectStore;
 		$this->languageZids = $languageZids;
 		$this->orderby = $orderby ?? self::ORDER_BY_NAME;
+		$this->excludePreDefined = $excludePreDefined ?? false;
 
 		parent::__construct( $context );
 	}
@@ -77,11 +81,15 @@ abstract class AbstractZObjectPager extends AlphabeticPager {
 			'wlzl_language',
 			'wlzl_label_primary'
 		];
+		$conds = [];
+		if ( $this->excludePreDefined ) {
+			$conds[] = ( new RawSQLValue( 'LENGTH( wlzl_zobject_zid ) > 5' ) )->toSQL();
+		}
 
 		$queryInfo = [
 			'tables' => $tables,
 			'fields' => $fields,
-			'conds' => [],
+			'conds' => $conds,
 			'join_conds' => [],
 			'options' => []
 		];
