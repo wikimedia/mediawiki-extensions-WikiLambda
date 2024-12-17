@@ -177,6 +177,8 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	 * @dataProvider provideCreateNewZObject
 	 */
 	public function testCreateNewZObject( $input, $expected ) {
+		$this->insertZids( [ 'Z6' ] );
+
 		$sysopUser = $this->getTestSysop()->getUser();
 		$status = $this->zobjectStore->createNewZObject(
 			RequestContext::getMain(), $input, 'Create summary', $sysopUser
@@ -221,6 +223,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 	public function testCreateNewZObject_canonicalized() {
 		$sysopUser = $this->getTestSysop()->getUser();
+		$this->insertZids( [ 'Z6' ] );
 
 		$zid = $this->zobjectStore->getNextAvailableZid();
 		$title = Title::newFromText( $zid, NS_MAIN );
@@ -245,6 +248,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 	public function testUpdateZObjectAsSystemUser() {
 		$basicUser = $this->getTestUser()->getUser();
+		$this->insertZids( [ 'Z6' ] );
 
 		$zid = 'Z401';
 		$input = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z401" },'
@@ -275,6 +279,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 	public function testUpdateZObject() {
 		$sysopUser = $this->getTestSysop()->getUser();
+		$this->insertZids( [ 'Z6' ] );
 
 		$zid = $this->zobjectStore->getNextAvailableZid();
 		$title = Title::newFromText( $zid, NS_MAIN );

@@ -182,7 +182,9 @@ class ZType extends ZObject {
 	 * @return string|false
 	 */
 	public function getEqualityFunction() {
-		return $this->data[ ZTypeRegistry::Z_TYPE_EQUALITY ]->getZValue();
+		return $this->data[ ZTypeRegistry::Z_TYPE_EQUALITY ] ?
+			$this->data[ ZTypeRegistry::Z_TYPE_EQUALITY ]->getZValue() :
+			false;
 	}
 
 	/**
@@ -192,7 +194,9 @@ class ZType extends ZObject {
 	 * @return string|false
 	 */
 	public function getRendererFunction() {
-		return $this->data[ ZTypeRegistry::Z_TYPE_RENDERER ]->getZValue();
+		return $this->data[ ZTypeRegistry::Z_TYPE_RENDERER ] ?
+			$this->data[ ZTypeRegistry::Z_TYPE_RENDERER ]->getZValue() :
+			false;
 	}
 
 	/**
@@ -202,7 +206,9 @@ class ZType extends ZObject {
 	 * @return string|false
 	 */
 	public function getParserFunction() {
-		return $this->data[ ZTypeRegistry::Z_TYPE_PARSER ]->getZValue();
+		return $this->data[ ZTypeRegistry::Z_TYPE_PARSER ] ?
+			$this->data[ ZTypeRegistry::Z_TYPE_PARSER ]->getZValue() :
+			false;
 	}
 
 	/**
@@ -211,7 +217,7 @@ class ZType extends ZObject {
 	 * @return ZTypedList
 	 */
 	public function getDeserialisers() {
-		return $this->data[ ZTypeRegistry::Z_TYPE_DESERIALISERS];
+		return $this->data[ ZTypeRegistry::Z_TYPE_DESERIALISERS ];
 	}
 
 	/**
@@ -224,11 +230,23 @@ class ZType extends ZObject {
 	}
 
 	/**
-	 * Return whether the type has an identity key
+	 * Return whether the type has an identity key but is not
+	 * one of the non-enum reserved types with identity key:
+	 * * Type/Z4
+	 * * Function/Z8
+	 * * Deserialiser/Z46
+	 * * Serialiser/Z64
 	 *
 	 * @return bool
 	 */
 	public function isEnumType() {
+		$typeId = $this->getTypeId()->getZValue();
+
+		if ( in_array( $typeId, ZTypeRegistry::EXCLUDE_TYPES_FROM_ENUMS ) ) {
+			// Type has identity key but excluded from enum; return false
+			return false;
+		}
+
 		$keys = $this->getTypeKeys()->getAsArray();
 		foreach ( $keys as $key ) {
 			if ( $key->getIsIdentity() ) {
