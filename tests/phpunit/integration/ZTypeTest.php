@@ -156,6 +156,31 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 		];
 	}
 
+	public function testOptionalKeys() {
+		$testObject = new ZType(
+			new ZReference( 'Z10000' ),
+			[ new ZKey( new ZReference( 'Z6' ), new ZString( 'Z10000K1' ), [] ) ],
+			new ZReference( 'Z101' )
+		);
+
+		$this->assertFalse( $testObject->getEqualityFunction() );
+		$this->assertFalse( $testObject->getRendererFunction() );
+		$this->assertFalse( $testObject->getParserFunction() );
+
+		$testObject = new ZType(
+			new ZReference( 'Z10000' ),
+			[ new ZKey( new ZReference( 'Z6' ), new ZString( 'Z10000K1' ), [] ) ],
+			new ZReference( 'Z101' ),
+			new ZReference( 'Z10010' ),
+			new ZReference( 'Z10020' ),
+			new ZReference( 'Z10030' )
+		);
+
+		$this->assertSame( 'Z10010', $testObject->getEqualityFunction() );
+		$this->assertSame( 'Z10020', $testObject->getRendererFunction() );
+		$this->assertSame( 'Z10030', $testObject->getParserFunction() );
+	}
+
 	/**
 	 * @dataProvider provideIsEnumType
 	 */

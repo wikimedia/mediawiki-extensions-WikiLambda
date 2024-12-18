@@ -47,6 +47,8 @@ class ZObjectStore {
 	private UserGroupManager $userGroupManager;
 	private LoggerInterface $logger;
 
+	public const INSTANCEOFENUM = 'instanceofenum';
+
 	/**
 	 * @param IConnectionProvider $dbProvider
 	 * @param TitleFactory $titleFactory

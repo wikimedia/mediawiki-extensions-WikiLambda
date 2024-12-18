@@ -14,17 +14,22 @@ use MediaWiki\Content\Content;
 use MediaWiki\Deferred\DataUpdate;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZFunction;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Title\Title;
+use Psr\Log\LoggerInterface;
 
 class ZObjectSecondaryDataUpdate extends DataUpdate {
 
 	private Title $title;
+	private LoggerInterface $logger;
 	private ZObjectContent $zObject;
+	private ZObjectStore $zObjectStore;
 
 	/**
 	 * @param Title $title
@@ -33,6 +38,8 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 	public function __construct( Title $title, $zObject ) {
 		$this->title = $title;
 		$this->zObject = $zObject;
+		$this->zObjectStore = WikiLambdaServices::getZObjectStore();
+		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
 	}
 
 	public function doUpdate() {
@@ -53,13 +60,10 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 
 		$zid = $this->title->getDBkey();
 
-		$zObjectStore = WikiLambdaServices::getZObjectStore();
-
 		// (T380446) If the object is not valid there's nothing useful to do, except log an error and exit.
 		if ( !$this->zObject->isValid() ) {
 			$zerror = $this->zObject->getErrors();
-			$logger = LoggerFactory::getInstance( 'WikiLambda' );
-			$logger->error(
+			$this->logger->error(
 				'ZObjectSecondaryDataUpdate unable to process, error thrown',
 				[
 					'zid' => $zid,
@@ -72,11 +76,11 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		// Object is valid, we go on!
 
 		// Delete all labels: primary ones and aliases
-		$zObjectStore->deleteZObjectLabelsByZid( $zid );
-		$zObjectStore->deleteZObjectLabelConflictsByZid( $zid );
+		$this->zObjectStore->deleteZObjectLabelsByZid( $zid );
+		$this->zObjectStore->deleteZObjectLabelConflictsByZid( $zid );
 
 		// Delete language entries, if appropriate
-		$zObjectStore->deleteZLanguageFromLanguagesCache( $zid );
+		$this->zObjectStore->deleteZLanguageFromLanguagesCache( $zid );
 
 		$labels = $this->zObject->getLabels()->getValueAsList();
 
@@ -99,25 +103,25 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 			}
 		}
 
-		$conflicts = $zObjectStore->findZObjectLabelConflicts( $zid, $ztype, $labels );
+		$conflicts = $this->zObjectStore->findZObjectLabelConflicts( $zid, $ztype, $labels );
 		$newLabels = array_filter( $labels, static function ( $value, $lang ) use ( $conflicts ) {
 			return !isset( $conflicts[$lang] );
 		}, ARRAY_FILTER_USE_BOTH );
 
-		$zObjectStore->insertZObjectLabels( $zid, $ztype, $newLabels, $returnType );
-		$zObjectStore->insertZObjectLabelConflicts( $zid, $conflicts );
+		$this->zObjectStore->insertZObjectLabels( $zid, $ztype, $newLabels, $returnType );
+		$this->zObjectStore->insertZObjectLabelConflicts( $zid, $conflicts );
 
 		// (T285368) Write aliases in the labels table
 		$aliases = $this->zObject->getAliases()->getValueAsList();
 		// (T358737) Add the zid as fake aliases under Z1360/MUL (multi-lingual value)
 		$aliases[ ZLangRegistry::MULTILINGUAL_VALUE ] = [ $zid ];
 		if ( count( $aliases ) > 0 ) {
-			$zObjectStore->insertZObjectAliases( $zid, $ztype, $aliases, $returnType );
+			$this->zObjectStore->insertZObjectAliases( $zid, $ztype, $aliases, $returnType );
 		}
 
 		// Save function information in function table, if appropriate
 		// TODO (T362248): Have insertZFunctionReference do an update, and only delete if changing the type/target?
-		$zObjectStore->deleteZFunctionReference( $zid );
+		$this->zObjectStore->deleteZFunctionReference( $zid );
 		switch ( $ztype ) {
 			case ZTypeRegistry::Z_IMPLEMENTATION:
 				$zFunction = $innerZObject->getValueByKey( ZTypeRegistry::Z_IMPLEMENTATION_FUNCTION );
@@ -133,29 +137,33 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		}
 
 		if ( $zFunction && $zFunction->getZValue() ) {
-			$zObjectStore->insertZFunctionReference( $zid, $zFunction->getZValue(), $ztype );
+			$this->zObjectStore->insertZFunctionReference( $zid, $zFunction->getZValue(), $ztype );
 		}
 
 		// Delete and restore related ZObjects from wikilambda_zobject_join table:
-		$zObjectStore->deleteRelatedZObjects( $zid );
+		$this->zObjectStore->deleteRelatedZObjects( $zid );
+		if ( $ztype === ZTypeRegistry::Z_TYPE ) {
+			// If object is a type, remove all instanceofenum from wikilambda_zobject_join table:
+			$this->zObjectStore->deleteRelatedZObjects( null, $zid, ZObjectStore::INSTANCEOFENUM );
+		}
 		$relatedZObjects = $this->getRelatedZObjects( $zid, $ztype, $innerZObject );
 		if ( count( $relatedZObjects ) > 0 ) {
-			$zObjectStore->insertRelatedZObjects( $relatedZObjects );
+			$this->zObjectStore->insertRelatedZObjects( $relatedZObjects );
 		}
 
 		// If appropriate, clear wikilambda_ztester_results for this ZID
 		// TODO (T338247): Only do this for the old revision not the new one.
 		switch ( $ztype ) {
 			case ZTypeRegistry::Z_FUNCTION:
-				$zObjectStore->deleteZFunctionFromZTesterResultsCache( $zid );
+				$this->zObjectStore->deleteZFunctionFromZTesterResultsCache( $zid );
 				break;
 
 			case ZTypeRegistry::Z_IMPLEMENTATION:
-				$zObjectStore->deleteZImplementationFromZTesterResultsCache( $zid );
+				$this->zObjectStore->deleteZImplementationFromZTesterResultsCache( $zid );
 				break;
 
 			case ZTypeRegistry::Z_TESTER:
-				$zObjectStore->deleteZTesterFromZTesterResultsCache( $zid );
+				$this->zObjectStore->deleteZTesterFromZTesterResultsCache( $zid );
 				break;
 
 			default:
@@ -165,12 +173,12 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		// If appropriate, add entry to wikilambda_zlanguages for this ZID
 		if ( $ztype === ZTypeRegistry::Z_LANGUAGE ) {
 			// Clear old values, if any
-			$zObjectStore->deleteZLanguageFromLanguagesCache( $zid );
+			$this->zObjectStore->deleteZLanguageFromLanguagesCache( $zid );
 
 			// Set primary language code
 			$targetLanguage = $innerZObject->getValueByKey( ZTypeRegistry::Z_LANGUAGE_CODE )->getZValue();
 			$languageCodes = [ $targetLanguage ];
-			$zObjectStore->insertZLanguageToLanguagesCache( $zid, $targetLanguage );
+			$this->zObjectStore->insertZLanguageToLanguagesCache( $zid, $targetLanguage );
 
 			// Set secondary language codes, if any
 			$secondaryLanguagesObject = $innerZObject->getValueByKey( ZTypeRegistry::Z_LANGUAGE_SECONDARYCODES );
@@ -182,12 +190,12 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 					// $secondaryLanguage is a ZString but we want the actual string
 					$secondaryLanguageString = $secondaryLanguage->getZValue();
 					$languageCodes[] = $secondaryLanguageString;
-					$zObjectStore->insertZLanguageToLanguagesCache( $zid, $secondaryLanguageString );
+					$this->zObjectStore->insertZLanguageToLanguagesCache( $zid, $secondaryLanguageString );
 				}
 			}
 
 			// (T343465) Add the language codes as fake aliases under Z1360/MUL (multi-lingual value)
-			$zObjectStore->insertZObjectAliases(
+			$this->zObjectStore->insertZObjectAliases(
 				$zid,
 				$ztype,
 				[ ZLangRegistry::MULTILINGUAL_VALUE => $languageCodes ],
@@ -199,12 +207,10 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 	/**
 	 * Return all important relations between the given object and others
 	 * to insert in the wikilambda_zobject_join table. The relations are
-	 * given by the key. Currently returns:
-	 * * For Functions/Z8:
-	 *   * key:Z8K1: Type of every function input
-	 *   * key:Z8K2: Type of the function output
-	 *   * key:Z8K3: Test connected to the function
-	 *   * key:Z8K4: Implementation connected to the function
+	 * given by the key. Currently finds relations for:
+	 * * Functions/Z8
+	 * * Types/Z4
+	 * * Instances of enum types
 	 *
 	 * @param string $zid
 	 * @param string $ztype
@@ -212,75 +218,200 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 	 * @return array Array of rows to insert in the join table
 	 */
 	private function getRelatedZObjects( $zid, $ztype, $innerZObject ) {
+		if ( $innerZObject instanceof ZFunction ) {
+			return $this->getRelatedZObjectsOfFunction( $zid, $innerZObject );
+		}
+
+		if ( $innerZObject instanceof ZType ) {
+			return $this->getRelatedZObjectsOfType( $zid, $innerZObject );
+		}
+
+		return $this->getRelatedZObjectsOfInstance( $zid, $ztype );
+	}
+
+	/**
+	 * Return all important relations between the given function and others.
+	 * Currently returns:
+	 * * key:Z8K1: Type of every function input
+	 * * key:Z8K2: Type of the function output
+	 * * key:Z8K3: Test connected to the function
+	 * * key:Z8K4: Implementation connected to the function
+	 *
+	 * @param string $zid
+	 * @param ZFunction $innerZObject
+	 * @return array Array of rows to insert in the join table
+	 */
+	private function getRelatedZObjectsOfFunction( $zid, $innerZObject ) {
 		$relatedZObjects = [];
 
-		// For Functions/Z8:
-		if ( $ztype === ZTypeRegistry::Z_FUNCTION ) {
-			// Key:Z8K1: Get input types
-			$inputs = $innerZObject->getValueByKey( ZTypeRegistry::Z_FUNCTION_ARGUMENTS );
-			if ( $inputs instanceof ZTypedList ) {
-				$inputList = $inputs->getAsArray();
-				foreach ( $inputList as $key => $input ) {
-					$inputTypeObject = $input->getValueByKey( ZTypeRegistry::Z_ARGUMENTDECLARATION_TYPE );
-					$inputTypeString = ZObjectUtils::makeTypeFingerprint( $inputTypeObject->getSerialized() );
-					if ( $inputTypeString !== null ) {
-						$relatedZObjects[] = (object)[
-							'zid' => $zid,
-							'type' => $ztype,
-							'key' => ZTypeRegistry::Z_FUNCTION_ARGUMENTS,
-							'related_zid' => $inputTypeString,
-							'related_type' => ZTypeRegistry::Z_TYPE
-						];
-					}
+		// Key:Z8K1: Get input types
+		$inputs = $innerZObject->getValueByKey( ZTypeRegistry::Z_FUNCTION_ARGUMENTS );
+		if ( $inputs instanceof ZTypedList ) {
+			$inputList = $inputs->getAsArray();
+			foreach ( $inputList as $key => $input ) {
+				$inputTypeObject = $input->getValueByKey( ZTypeRegistry::Z_ARGUMENTDECLARATION_TYPE );
+				$inputTypeString = ZObjectUtils::makeTypeFingerprint( $inputTypeObject->getSerialized() );
+				if ( $inputTypeString !== null ) {
+					$relatedZObjects[] = (object)[
+						'zid' => $zid,
+						'type' => ZTypeRegistry::Z_FUNCTION,
+						'key' => ZTypeRegistry::Z_FUNCTION_ARGUMENTS,
+						'related_zid' => $inputTypeString,
+						'related_type' => ZTypeRegistry::Z_TYPE
+					];
 				}
 			}
+		}
 
-			// Key:Z8K1: Get output type
-			$outputType = $innerZObject->getValueByKey( ZTypeRegistry::Z_FUNCTION_RETURN_TYPE );
-			$outputTypeString = ZObjectUtils::makeTypeFingerprint( $outputType->getSerialized() );
-			if ( $outputTypeString !== null ) {
+		// Key:Z8K2: Get output type
+		$outputType = $innerZObject->getValueByKey( ZTypeRegistry::Z_FUNCTION_RETURN_TYPE );
+		$outputTypeString = ZObjectUtils::makeTypeFingerprint( $outputType->getSerialized() );
+		if ( $outputTypeString !== null ) {
+			$relatedZObjects[] = (object)[
+				'zid' => $zid,
+				'type' => ZTypeRegistry::Z_FUNCTION,
+				'key' => ZTypeRegistry::Z_FUNCTION_RETURN_TYPE,
+				'related_zid' => $outputTypeString,
+				'related_type' => ZTypeRegistry::Z_TYPE
+			];
+		}
+
+		// Key:Z8K3: Get tests
+		$tests = $innerZObject->getValueByKey( ZTypeRegistry::Z_FUNCTION_TESTERS );
+		if ( $tests instanceof ZTypedList ) {
+			$testList = $tests->getAsArray();
+			foreach ( $testList as $key => $test ) {
+				if ( $test instanceof ZReference && $test->isValid() ) {
+					$relatedZObjects[] = (object)[
+						'zid' => $zid,
+						'type' => ZTypeRegistry::Z_FUNCTION,
+						'key' => ZTypeRegistry::Z_FUNCTION_TESTERS,
+						'related_zid' => $test->getZValue(),
+						'related_type' => ZTypeRegistry::Z_TESTER
+					];
+				}
+			}
+		}
+
+		// Key:Z8K4: Get implementations
+		$implementations = $innerZObject->getValueByKey( ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS );
+		if ( $implementations instanceof ZTypedList ) {
+			$implementationList = $implementations->getAsArray();
+			foreach ( $implementationList as $key => $implementation ) {
+				if ( $implementation instanceof ZReference && $implementation->isValid() ) {
+					$relatedZObjects[] = (object)[
+						'zid' => $zid,
+						'type' => ZTypeRegistry::Z_FUNCTION,
+						'key' => ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS,
+						'related_zid' => $implementation->getZValue(),
+						'related_type' => ZTypeRegistry::Z_IMPLEMENTATION
+					];
+				}
+			}
+		}
+
+		return $relatedZObjects;
+	}
+
+	/**
+	 * Return all important relations between the given type and others.
+	 * Currently returns:
+	 * * key:Z4K5: Renderer function for the type
+	 * * key:Z4K6: Parser function for the type
+	 *
+	 * @param string $zid
+	 * @param ZType $innerZObject
+	 * @return array Array of rows to insert in the join table
+	 */
+	private function getRelatedZObjectsOfType( $zid, $innerZObject ) {
+		$relatedZObjects = [];
+
+		// Key:Z4K5: Get renderer function
+		$rendererFunction = $innerZObject->getRendererFunction();
+		if ( $rendererFunction ) {
+			$relatedZObjects[] = (object)[
+				'zid' => $zid,
+				'type' => ZTypeRegistry::Z_TYPE,
+				'key' => ZTypeRegistry::Z_TYPE_RENDERER,
+				'related_zid' => $rendererFunction,
+				'related_type' => ZTypeRegistry::Z_FUNCTION
+			];
+		}
+
+		// Key:Z4K6: Get parser function
+		$parserFunction = $innerZObject->getParserFunction();
+		if ( $parserFunction ) {
+			$relatedZObjects[] = (object)[
+				'zid' => $zid,
+				'type' => ZTypeRegistry::Z_TYPE,
+				'key' => ZTypeRegistry::Z_TYPE_PARSER,
+				'related_zid' => $parserFunction,
+				'related_type' => ZTypeRegistry::Z_FUNCTION
+			];
+		}
+
+		// Key:instanceofenum: Get all instances of enum type
+		if ( $innerZObject->isEnumType() ) {
+			// Gather all instances of this type,
+			// add them into the table
+			$instances = $this->zObjectStore->fetchZidsOfType( $zid );
+			foreach ( $instances as $instance ) {
 				$relatedZObjects[] = (object)[
-					'zid' => $zid,
-					'type' => $ztype,
-					'key' => ZTypeRegistry::Z_FUNCTION_RETURN_TYPE,
-					'related_zid' => $outputTypeString,
+					'zid' => $instance,
+					'type' => $zid,
+					'key' => ZObjectStore::INSTANCEOFENUM,
+					'related_zid' => $zid,
 					'related_type' => ZTypeRegistry::Z_TYPE
 				];
 			}
+		}
 
-			// Key:Z8K3: Get tests
-			$tests = $innerZObject->getValueByKey( ZTypeRegistry::Z_FUNCTION_TESTERS );
-			if ( $tests instanceof ZTypedList ) {
-				$testList = $tests->getAsArray();
-				foreach ( $testList as $key => $test ) {
-					if ( $test instanceof ZReference && $test->isValid() ) {
-						$relatedZObjects[] = (object)[
-							'zid' => $zid,
-							'type' => $ztype,
-							'key' => ZTypeRegistry::Z_FUNCTION_TESTERS,
-							'related_zid' => $test->getZValue(),
-							'related_type' => ZTypeRegistry::Z_TESTER
-						];
-					}
-				}
-			}
+		return $relatedZObjects;
+	}
 
-			// Key:Z8K4: Get implementations
-			$implementations = $innerZObject->getValueByKey( ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS );
-			if ( $implementations instanceof ZTypedList ) {
-				$implementationList = $implementations->getAsArray();
-				foreach ( $implementationList as $key => $implementation ) {
-					if ( $implementation instanceof ZReference && $implementation->isValid() ) {
-						$relatedZObjects[] = (object)[
-							'zid' => $zid,
-							'type' => $ztype,
-							'key' => ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS,
-							'related_zid' => $implementation->getZValue(),
-							'related_type' => ZTypeRegistry::Z_IMPLEMENTATION
-						];
-					}
-				}
-			}
+	/**
+	 * Return all important relations between arbitrary objects.
+	 * Currently returns:
+	 * * key:instanceofenum: if the given object is an instance of an enum type.
+	 *
+	 * @param string $zid
+	 * @param string $type
+	 * @return array Array of rows to insert in the join table
+	 */
+	private function getRelatedZObjectsOfInstance( $zid, $type ) {
+		$relatedZObjects = [];
+
+		$typeTitle = Title::newFromText( $type, NS_MAIN );
+		$typeContent = $this->zObjectStore->fetchZObjectByTitle( $typeTitle );
+		if ( !$typeContent ) {
+			// Error: type is not found, nothing we can do except log
+			$this->logger->warning(
+				__METHOD__ . ' failed to update relations for "' . $zid . '": type "' . $type . '" not found',
+				[ 'instance' => $zid, 'type' => $type ]
+			);
+			return [];
+		}
+
+		try {
+			$typeObject = $typeContent->getInnerZObject();
+		} catch ( ZErrorException $e ) {
+			// Error: type is not valid, nothing we can do except log
+			$this->logger->warning(
+				__METHOD__ . ' failed to update relations for "' . $zid . '": type "' . $type . '" not valid',
+				[ 'instance' => $zid, 'type' => $type, 'responseError' => $e ]
+			);
+			return [];
+		}
+
+		// Key:instanceofenum: If object is an instance of an Enum type
+		if ( $typeObject instanceof ZType && $typeObject->isEnumType() ) {
+			$relatedZObjects[] = (object)[
+				'zid' => $zid,
+				'type' => $type,
+				'key' => ZObjectStore::INSTANCEOFENUM,
+				'related_zid' => $type,
+				'related_type' => ZTypeRegistry::Z_TYPE
+			];
 		}
 
 		return $relatedZObjects;

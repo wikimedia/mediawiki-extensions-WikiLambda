@@ -17,6 +17,7 @@ use MediaWiki\Extension\WikiLambda\Tests\HooksInsertMock;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate;
+use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Installer\DatabaseUpdater;
 use MediaWiki\Json\FormatJson;
 use MediaWiki\Revision\SlotRecord;
@@ -475,7 +476,7 @@ EOT;
 		$this->assertEquals( 'Z4', $rows->current()->wlzl_return_type );
 	}
 
-	public function testOnMultiContentSave_relatedObjects() {
+	public function testOnMultiContentSave_relatedObjects_forFunction() {
 		$this->insertZids( [ 'Z17', 'Z1002' ] );
 
 		$selectedFunctions = [ "Z801", "Z804", "Z820", "Z883", "Z885", "Z889" ];
@@ -592,6 +593,247 @@ EOT;
 			->fetchResultSet();
 		$this->assertSame( 1, $rows->numRows() );
 		$this->assertEquals( 'Z883(Z39,Z1)', $rows->current()->wlzo_related_zobject );
+	}
+
+	public function testOnMultiContentSave_relatedObjects_forType() {
+		$this->insertZids( [ 'Z4', 'Z1002' ] );
+		$sysopUser = $this->getTestSysop()->getUser();
+		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();
+
+		// Insert new type
+		$filePath = dirname( __DIR__, 1 ) . '/test_data/object-relations-type.json';
+		$type = json_decode( file_get_contents( $filePath ) );
+
+		// 1. We insert the type
+		$this->editPage( $type->zid, json_encode( $type->data ), 'Test type', NS_MAIN, $sysopUser );
+
+		// Expect renderer and parser function entries:
+		$rows = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_main_zid', 'wlzo_main_type', 'wlzo_key', 'wlzo_related_zobject', 'wlzo_related_type' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [ 'wlzo_main_zid' => $type->zid ] )
+			->fetchResultSet();
+		$this->assertSame( 2, $rows->numRows() );
+		// Expect renderer:
+		$this->assertEquals( 'Z4', $rows->current()->wlzo_main_type );
+		$this->assertEquals( 'Z20020', $rows->current()->wlzo_related_zobject );
+		$this->assertEquals( 'Z4K5', $rows->current()->wlzo_key );
+		$this->assertEquals( 'Z8', $rows->current()->wlzo_related_type );
+		// Expect parser:
+		$rows->next();
+		$this->assertEquals( 'Z4', $rows->current()->wlzo_main_type );
+		$this->assertEquals( 'Z20030', $rows->current()->wlzo_related_zobject );
+		$this->assertEquals( 'Z4K6', $rows->current()->wlzo_key );
+		$this->assertEquals( 'Z8', $rows->current()->wlzo_related_type );
+
+		// 2. We edit the type (arbitrary edit to label)
+		$type->data->Z2K3->Z12K1[1]->Z11K2 = 'Type with renderer and parser (edited)';
+		$this->editPage( $type->zid, json_encode( $type->data ), 'Test type', NS_MAIN, $sysopUser );
+
+		// Expect same renderer and parser entries:
+		$rows = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_main_zid', 'wlzo_main_type', 'wlzo_key', 'wlzo_related_zobject', 'wlzo_related_type' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [ 'wlzo_main_zid' => $type->zid ] )
+			->fetchResultSet();
+		$this->assertSame( 2, $rows->numRows() );
+
+		// 3. We edit the type (set new renderer):
+		$type->data->Z2K2->Z4K5 = 'Z20040';
+		$this->editPage( $type->zid, json_encode( $type->data ), 'Test type', NS_MAIN, $sysopUser );
+
+		// Expect new renderer and same parser entries:
+		$rows = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_main_zid', 'wlzo_main_type', 'wlzo_key', 'wlzo_related_zobject', 'wlzo_related_type' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [ 'wlzo_main_zid' => $type->zid ] )
+			->fetchResultSet();
+		$this->assertSame( 2, $rows->numRows() );
+		// Expect new renderer:
+		$this->assertEquals( 'Z4', $rows->current()->wlzo_main_type );
+		$this->assertEquals( 'Z20040', $rows->current()->wlzo_related_zobject );
+		$this->assertEquals( 'Z4K5', $rows->current()->wlzo_key );
+		$this->assertEquals( 'Z8', $rows->current()->wlzo_related_type );
+		// Expect same parser:
+		$rows->next();
+		$this->assertEquals( 'Z4', $rows->current()->wlzo_main_type );
+		$this->assertEquals( 'Z20030', $rows->current()->wlzo_related_zobject );
+		$this->assertEquals( 'Z4K6', $rows->current()->wlzo_key );
+		$this->assertEquals( 'Z8', $rows->current()->wlzo_related_type );
+
+		// 4. We edit the type (remove parser):
+		unset( $type->data->Z2K2->Z4K6 );
+		$this->editPage( $type->zid, json_encode( $type->data ), 'Test type', NS_MAIN, $sysopUser );
+
+		// Expect only new renderer entry:
+		$rows = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_main_zid', 'wlzo_main_type', 'wlzo_key', 'wlzo_related_zobject', 'wlzo_related_type' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [ 'wlzo_main_zid' => $type->zid ] )
+			->fetchResultSet();
+		$this->assertSame( 1, $rows->numRows() );
+		// Expect new renderer:
+		$this->assertEquals( 'Z20040', $rows->current()->wlzo_related_zobject );
+
+		// 5. Delete type
+		$wikiPageFactory = $this->getServiceContainer()->getWikiPageFactory();
+		$typeTitle = Title::newFromText( $type->zid, NS_MAIN );
+		$typePage = $wikiPageFactory->newFromTitle( $typeTitle );
+		$this->deletePage( $typePage, 'Test delete', $sysopUser );
+
+		// Expect no entries left
+		$rows = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_main_zid', 'wlzo_main_type', 'wlzo_key', 'wlzo_related_zobject', 'wlzo_related_type' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [ 'wlzo_main_zid' => $type->zid ] )
+			->fetchResultSet();
+		$this->assertSame( 0, $rows->numRows() );
+	}
+
+	public function testOnMultiContentSave_relatedObjects_forEnumType() {
+		$this->insertZids( [ 'Z4', 'Z1002' ] );
+		$sysopUser = $this->getTestSysop()->getUser();
+		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();
+
+		// Insert new Enum type
+		$filePath = dirname( __DIR__, 1 ) . '/test_data/object-relations-instanceofenum.json';
+		$fileData = json_decode( file_get_contents( $filePath ) );
+
+		// 1. We insert the enum type: no instances yet
+		$type = $fileData->day;
+		$this->editPage( $type->zid, json_encode( $type->data ), 'Test enum', NS_MAIN, $sysopUser );
+
+		// Expect no instanceofenum entries:
+		$rows = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_main_zid', 'wlzo_main_type', 'wlzo_key', 'wlzo_related_zobject', 'wlzo_related_type' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [
+				'wlzo_main_type' => $type->zid,
+				'wlzo_key' => ZObjectStore::INSTANCEOFENUM
+			] )
+			->fetchResultSet();
+		$this->assertSame( 0, $rows->numRows() );
+
+		// 2. We insert the first instance of the enum type
+		$monday = $fileData->monday;
+		$this->editPage( $monday->zid, json_encode( $monday->data ), 'Test enum', NS_MAIN, $sysopUser );
+
+		// Expect one instanceofenum entry:
+		$rows = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_main_zid', 'wlzo_main_type', 'wlzo_key', 'wlzo_related_zobject', 'wlzo_related_type' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [
+				'wlzo_main_type' => $type->zid,
+				'wlzo_key' => ZObjectStore::INSTANCEOFENUM
+			] )
+			->fetchResultSet();
+		$this->assertSame( 1, $rows->numRows() );
+		$this->assertEquals( 'Z20001', $rows->current()->wlzo_main_zid );
+		$this->assertEquals( 'Z20000', $rows->current()->wlzo_related_zobject );
+		$this->assertEquals( 'Z4', $rows->current()->wlzo_related_type );
+
+		// 3. We insert the second instance of the enum type
+		$tuesday = $fileData->tuesday;
+		$this->editPage( $tuesday->zid, json_encode( $tuesday->data ), 'Test enum', NS_MAIN, $sysopUser );
+
+		// Expect two instanceofenum entries:
+		$rows = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_main_zid', 'wlzo_main_type', 'wlzo_key', 'wlzo_related_zobject', 'wlzo_related_type' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [
+				'wlzo_main_type' => $type->zid,
+				'wlzo_key' => ZObjectStore::INSTANCEOFENUM
+			] )
+			->fetchResultSet();
+		$this->assertSame( 2, $rows->numRows() );
+		$rows->seek( 1 );
+		$this->assertEquals( 'Z20002', $rows->current()->wlzo_main_zid );
+		$this->assertEquals( 'Z20000', $rows->current()->wlzo_related_zobject );
+		$this->assertEquals( 'Z4', $rows->current()->wlzo_related_type );
+
+		// 4. We edit an instance of enum type (arbitrary edit, label change)
+		$tuesday->data->Z2K3->Z12K1[1]->Z11K2 = 'Tuesday (edited)';
+		$this->editPage( $tuesday->zid, json_encode( $tuesday->data ), 'Test enum', NS_MAIN, $sysopUser );
+
+		// Expect two instanceofenum entries:
+		$rows = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_main_zid', 'wlzo_main_type', 'wlzo_key', 'wlzo_related_zobject', 'wlzo_related_type' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [
+				'wlzo_main_type' => $type->zid,
+				'wlzo_key' => ZObjectStore::INSTANCEOFENUM
+			] )
+			->fetchResultSet();
+		$this->assertSame( 2, $rows->numRows() );
+		$this->assertEquals( 'Z20001', $rows->current()->wlzo_main_zid );
+		$rows->next();
+		$this->assertEquals( 'Z20002', $rows->current()->wlzo_main_zid );
+
+		// 5. We edit the day type (arbitrary edit, label change)
+		$type->data->Z2K3->Z12K1[1]->Z11K2 = 'Day of the week (edited)';
+		$this->editPage( $type->zid, json_encode( $type->data ), 'Test enum', NS_MAIN, $sysopUser );
+
+		// Expect two instanceofenum entries:
+		$rows = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_main_zid', 'wlzo_main_type', 'wlzo_key', 'wlzo_related_zobject', 'wlzo_related_type' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [
+				'wlzo_main_type' => $type->zid,
+				'wlzo_key' => ZObjectStore::INSTANCEOFENUM
+			] )
+			->fetchResultSet();
+		$this->assertSame( 2, $rows->numRows() );
+		$this->assertEquals( 'Z20001', $rows->current()->wlzo_main_zid );
+		$rows->next();
+		$this->assertEquals( 'Z20002', $rows->current()->wlzo_main_zid );
+
+		// 6. We change day type to not be enum
+		$type->data->Z2K2->Z4K2[1]->Z3K4->Z40K1 = 'Z42';
+		$this->editPage( $type->zid, json_encode( $type->data ), 'Test enum', NS_MAIN, $sysopUser );
+
+		// Expect no instanceofenum entries:
+		$rows = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_main_zid', 'wlzo_main_type', 'wlzo_key', 'wlzo_related_zobject', 'wlzo_related_type' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [
+				'wlzo_main_type' => $type->zid,
+				'wlzo_key' => ZObjectStore::INSTANCEOFENUM
+			] )
+			->fetchResultSet();
+		$this->assertSame( 0, $rows->numRows() );
+
+		// 7. We change day type back to enum
+		$type->data->Z2K2->Z4K2[1]->Z3K4->Z40K1 = 'Z41';
+		$this->editPage( $type->zid, json_encode( $type->data ), 'Test enum', NS_MAIN, $sysopUser );
+
+		// Expect no instanceofenum entries:
+		$rows = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_main_zid', 'wlzo_main_type', 'wlzo_key', 'wlzo_related_zobject', 'wlzo_related_type' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [
+				'wlzo_main_type' => $type->zid,
+				'wlzo_key' => ZObjectStore::INSTANCEOFENUM
+			] )
+			->fetchResultSet();
+		$this->assertSame( 2, $rows->numRows() );
+
+		// 8. Delete instance of enum type
+		$wikiPageFactory = $this->getServiceContainer()->getWikiPageFactory();
+		$tuesdayTitle = Title::newFromText( $tuesday->zid, NS_MAIN );
+		$tuesdayPage = $wikiPageFactory->newFromTitle( $tuesdayTitle );
+		$this->deletePage( $tuesdayPage, 'Test delete', $sysopUser );
+
+		// Expect no entries for this instance
+		$rows = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_main_zid', 'wlzo_main_type', 'wlzo_key', 'wlzo_related_zobject', 'wlzo_related_type' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [
+				'wlzo_main_type' => $type->zid,
+				'wlzo_key' => ZObjectStore::INSTANCEOFENUM
+			] )
+			->fetchResultSet();
+		$this->assertSame( 1, $rows->numRows() );
+		$this->assertEquals( 'Z20001', $rows->current()->wlzo_main_zid );
 	}
 
 	public function testUpdateSecondaryTables_inserted() {
