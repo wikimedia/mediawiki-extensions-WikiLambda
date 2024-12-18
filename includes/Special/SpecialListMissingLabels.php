@@ -57,7 +57,7 @@ class SpecialListMissingLabels extends SpecialPage {
 	 * Get and validate SpecialPage parameters from subpage and url
 	 *
 	 * @param string $subpage
-	 * @return string[] - type Zid, lang Zid
+	 * @return array - type ZID, lang ZID, excludePreDefined
 	 */
 	private function getParameters( $subpage ) {
 		// Get language from Request.
@@ -81,7 +81,9 @@ class SpecialListMissingLabels extends SpecialPage {
 				$subpage : ZTypeRegistry::Z_FUNCTION;
 		}
 
-		return [ $type, $langZid ];
+		$excludePreDefined = $this->getRequest()->getBool( 'excludePreDefined' );
+
+		return [ $type, $langZid, $excludePreDefined ];
 	}
 
 	/**
@@ -89,7 +91,7 @@ class SpecialListMissingLabels extends SpecialPage {
 	 */
 	public function execute( $subpage ) {
 		// Get and validate page parameters
-		[ $type, $langZid ] = $this->getParameters( $subpage );
+		[ $type, $langZid, $excludePreDefined ] = $this->getParameters( $subpage );
 
 		// Set headers
 		$this->setHeaders();
@@ -128,6 +130,7 @@ class SpecialListMissingLabels extends SpecialPage {
 			$this->zObjectStore,
 			$languageZids,
 			null,
+			$excludePreDefined,
 			$filters
 		);
 
@@ -183,6 +186,12 @@ class SpecialListMissingLabels extends SpecialPage {
 				'class' => HTMLZLanguageSelectField::class,
 				'name' => 'language',
 				'default' => $langZid
+			],
+			'excludePreDefined' => [
+				'type' => 'check',
+				'label' => $this->msg( 'wikilambda-special-objectsbytype-form-excludepredefined' )->text(),
+				'name' => 'excludePreDefined',
+				'default' => false
 			]
 		];
 

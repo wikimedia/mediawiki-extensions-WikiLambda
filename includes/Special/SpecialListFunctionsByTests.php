@@ -52,7 +52,7 @@ class SpecialListFunctionsByTests extends SpecialPage {
 	/**
 	 * Get and validate SpecialPage parameters from url
 	 *
-	 * @return array - int min, int max, bool connected, bool pending, bool pass, bool fail
+	 * @return array - int min, int max, bool connected, bool pending, bool pass, bool fail, bool excludePreDefined
 	 */
 	private function getParameters() {
 		// Get max test count from request
@@ -77,7 +77,9 @@ class SpecialListFunctionsByTests extends SpecialPage {
 		$pass = is_array( $result ) ? in_array( 'pass', $result ) : false;
 		$fail = is_array( $result ) ? in_array( 'fail', $result ) : false;
 
-		return [ $min, $max, $connected, $pending, $pass, $fail ];
+		$excludePreDefined = $this->getRequest()->getBool( 'excludePreDefined' );
+
+		return [ $min, $max, $connected, $pending, $pass, $fail, $excludePreDefined ];
 	}
 
 	/**
@@ -85,7 +87,7 @@ class SpecialListFunctionsByTests extends SpecialPage {
 	 */
 	public function execute( $subpage ) {
 		// Get and validate page parameters
-		[ $min, $max, $connected, $pending, $pass, $fail ] = $this->getParameters();
+		[ $min, $max, $connected, $pending, $pass, $fail, $excludePreDefined ] = $this->getParameters();
 
 		// Set headers
 		$this->setHeaders();
@@ -102,7 +104,7 @@ class SpecialListFunctionsByTests extends SpecialPage {
 		// TODO (T300519): Make this help page.
 		$this->addHelpLink( 'Help:Wikifunctions/Functions by Test status' );
 
-		// Get list of fallback language Zids
+		// Get list of fallback language ZIDs
 		$languageZids = $this->langRegistry->getListOfFallbackLanguageZids(
 			$this->languageFallback,
 			$this->getLanguage()->getCode()
@@ -117,7 +119,13 @@ class SpecialListFunctionsByTests extends SpecialPage {
 			'pass' => $pass,
 			'fail' => $fail
 		];
-		$pager = new FunctionsByTestsPager( $this->getContext(), $this->zObjectStore, $languageZids, $filters );
+		$pager = new FunctionsByTestsPager(
+			$this->getContext(),
+			$this->zObjectStore,
+			$languageZids,
+			$excludePreDefined,
+			$filters
+		);
 
 		// Add the header form
 		$output->addHTML( $this->getHeaderForm() );
@@ -185,6 +193,12 @@ class SpecialListFunctionsByTests extends SpecialPage {
 					$this->msg( 'wikilambda-special-functionsbytests-form-result-fail' )->escaped() => 'fail'
 				],
 				'default' => [],
+			],
+			'excludePreDefined' => [
+				'type' => 'check',
+				'label' => $this->msg( 'wikilambda-special-objectsbytype-form-excludepredefined' )->text(),
+				'name' => 'excludePreDefined',
+				'default' => false
 			]
 		];
 
