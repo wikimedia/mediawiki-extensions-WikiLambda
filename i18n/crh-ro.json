@@ -8,8 +8,8 @@
 	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|tíl}}",
 	"wikilambda-about-widget-search-language-placeholder": "Tíl kîdîr",
 	"wikilambda-about-widget-title": "Hakkînda",
-	"wikilambda-function-implementation-selectall-label": "Epsíní sayla",
 	"wikilambda-function-implementation-select-label": "Sayla",
+	"wikilambda-function-implementation-selectall-label": "Epsíní sayla",
 	"wikilambda-functioncall-metadata-implementation-name": "At",
 	"wikilambda-functioncall-metadata-programming-language-version": "Kóríníş",
 	"wikilambda-zobjectselector-no-results": "Netiğe tapîlamadî."

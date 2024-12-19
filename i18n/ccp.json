@@ -6,9 +6,9 @@
 		]
 	},
 	"wikilambda-editor-label-select-programming-language-empty": "𑄛𑄳𑄢𑄮𑄉𑄳𑄢𑄟𑄨𑄁 𑄞𑄌𑄴 𑄥𑄨𑄣𑄬𑄇𑄴𑄑𑄴 𑄉𑄧𑄢𑄴",
-	"wikilambda-special-objectsbytype-form-type": "𑄙𑄳𑄃𑄧𑄇𑄴",
 	"wikilambda-special-objectsbytype-form-orderby": "𑄃𑄪𑄉𑄪𑄟𑄴 𑄘𑄳𑄃𑄬",
-	"wikilambda-special-objectsbytype-form-orderby-name": "𑄚𑄋𑄴",
 	"wikilambda-special-objectsbytype-form-orderby-latest": "𑄝𑄬𑄉𑄳𑄃𑄧 𑄖𑄪𑄟𑄳𑄅𑄧 𑄛𑄧𑄖𑄴𑄧𑄟𑄴",
-	"wikilambda-special-objectsbytype-form-orderby-oldest": "𑄛𑄪𑄢𑄳𑄅𑄧𑄚𑄨 𑄛𑄳𑄅𑄧𑄣𑄴𑄬"
+	"wikilambda-special-objectsbytype-form-orderby-name": "𑄚𑄋𑄴",
+	"wikilambda-special-objectsbytype-form-orderby-oldest": "𑄛𑄪𑄢𑄳𑄅𑄧𑄚𑄨 𑄛𑄳𑄅𑄧𑄣𑄴𑄬",
+	"wikilambda-special-objectsbytype-form-type": "𑄙𑄳𑄃𑄧𑄇𑄴"
 }
