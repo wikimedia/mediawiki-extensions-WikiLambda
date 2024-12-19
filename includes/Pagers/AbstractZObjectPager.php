@@ -70,7 +70,7 @@ abstract class AbstractZObjectPager extends AlphabeticPager {
 	 */
 	public function getQueryInfo() {
 		// Returns table with unique zids and the most preferred primary label
-		$subquery = $this->zObjectStore->getPreferredLabelsQuery( $this->languageZids );
+		$subquery = $this->zObjectStore->getPreferredLabelsQuery( $this->languageZids )->getSQL();
 
 		$tables = [ 'preferred_labels' => new Subquery( $subquery ) ];
 		$fields = [

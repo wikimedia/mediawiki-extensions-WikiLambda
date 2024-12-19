@@ -772,6 +772,13 @@
 			"services": [
 				"WikiLambdaZObjectStore"
 			]
+		},
+		"wikilambdasearch_functions": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiQueryFunctions",
+			"services": [
+				"LanguageFallback",
+				"WikiLambdaZObjectStore"
+			]
 		}
 	},
 	"RestRoutes": [
