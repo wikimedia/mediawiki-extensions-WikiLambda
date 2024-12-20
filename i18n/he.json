@@ -402,6 +402,7 @@
 	"wikilambda-special-missinglabels-summary": "הדף הזה מציג רשימה של כל הדפים מסוג נתון שאין להם שם בשפה שנבחרה (למשל כל הפונקציות ללא שם בבנגלית). העצמים ברשימה ממוינים בסדר אלפביתי, לפי שמם בשפת המשתמש (או בשפת הגיבוי הקרובה ביותר)",
 	"wikilambda-special-objectsbytype": "רשימת כל העצמים מהסוג הנתון",
 	"wikilambda-special-objectsbytype-empty": "לא נמצאו עצמים מתמידים עבור הסוג הזה.",
+	"wikilambda-special-objectsbytype-form-excludepredefined": "לא לכלול עצמים מוגדרים מראש",
 	"wikilambda-special-objectsbytype-form-orderby": "למיין לפי",
 	"wikilambda-special-objectsbytype-form-orderby-latest": "אחרונים קודם",
 	"wikilambda-special-objectsbytype-form-orderby-name": "שם",
