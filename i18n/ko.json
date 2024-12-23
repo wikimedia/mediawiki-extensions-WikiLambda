@@ -113,6 +113,7 @@
 	"wikilambda-special-list-all-pages": "모든 목록 문서",
 	"wikilambda-special-listduplicateobjectlabels-language": "언어",
 	"wikilambda-special-listduplicateobjectlabels-link": "중복된 레이블이 있는 개체 목록",
+	"wikilambda-special-objectsbytype-form-excludepredefined": "미리 정의된 객체 제외",
 	"wikilambda-special-objectsbytype-form-orderby": "정렬 기준:",
 	"wikilambda-special-objectsbytype-form-orderby-latest": "최신 항목 먼저",
 	"wikilambda-special-objectsbytype-form-orderby-name": "이름",
