@@ -318,7 +318,7 @@
 	"wikilambda-list-items-label": "Elementos de la lista",
 	"wikilambda-list-items-type-label": "Tipo de elementos de lista",
 	"wikilambda-list-type-change-warning": "Ha cambiado el tipo de una o más listas. Al publicar, todos los elementos de la lista serán eliminados",
-	"wikilambda-literal-type": "Literal $1",
+	"wikilambda-literal-type": "$1 literal",
 	"wikilambda-loading": "Cargando datos",
 	"wikilambda-metadata-add-alias": "Agregar alias",
 	"wikilambda-metadata-aka-column": "También conocido como",
