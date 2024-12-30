@@ -190,6 +190,7 @@
 	"wikilambda-mode-selector-button-label": "Измените тип этого объекта: ссылка на существующий объект, буквальное встроенное определение или вызов функции.",
 	"wikilambda-move-after-list-item": "Передвинуть вперёд",
 	"wikilambda-move-before-list-item": "Передвинуть назад",
+	"wikilambda-noobject": "Такого Объекта не существует. Вы можете [{{fullurl:{{#Special:Log}}|page={{FULLPAGENAMEE}}}} поискать соответствующие записи в журналах], чтобы узнать, что с ним могло случиться.",
 	"wikilambda-object-selector-suggested-languages": "Предлагаемые языки",
 	"wikilambda-object-selector-suggested-types": "Предлагаемые типы",
 	"wikilambda-persistentzobject-contents": "Содержание",
