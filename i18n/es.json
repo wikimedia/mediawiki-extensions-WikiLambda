@@ -129,7 +129,7 @@
 	"wikilambda-diff-incompatible": "El sistema no puede mostrar diferencias entre un objeto y un no objeto.",
 	"wikilambda-mode-selector-button-label": "Cambiar qué tipo de Objeto es este: una referencia a un Objeto existente, una definición literal en línea o una llamada de función",
 	"wikilambda-reference": "Referencia",
-	"wikilambda-literal-type": "Literal $1",
+	"wikilambda-literal-type": "$1 literal",
 	"wikilambda-functioncall": "Llamada a función",
 	"wikilambda-edit": "Editar",
 	"wikilambda-helplink-button": "Ayuda",

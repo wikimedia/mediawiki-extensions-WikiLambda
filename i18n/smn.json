@@ -18,5 +18,6 @@
 	"wikilambda-metadata-language-column": "Kielâ",
 	"wikilambda-function-implementation-language-label": "Kielâ",
 	"wikilambda-function-definition-description-label": "Kuvvim",
-	"wikilambda-optional": "valjimiävtulâš"
+	"wikilambda-optional": "valjimiävtulâš",
+	"wikilambda-renderer-api-error": "Miinii moonâi endurân. Keččâl uđđâsist."
 }
