@@ -401,7 +401,7 @@
 	"wikilambda-special-functionsbytests-form-status": "État du test de connexion :",
 	"wikilambda-special-functionsbytests-form-status-connected": "Connecté",
 	"wikilambda-special-functionsbytests-form-status-pending": "En attente de connexion",
-	"wikilambda-special-functionsbytests-row-connected": "$1 connecté{{PLURAL:$1||s}}",
+	"wikilambda-special-functionsbytests-row-connected": "$1 {{PLURAL:$1|connecté|connectés}}",
 	"wikilambda-special-functionsbytests-row-failing": "{{PLURAL:$1|Un échec|$1 échecs}}",
 	"wikilambda-special-functionsbytests-row-tests": "{{PLURAL:$1|Un test|$1 tests}}",
 	"wikilambda-special-functionsbytests-summary": "Cette page répertorie toutes les fonctions en fonction de la qualité et du statut de leurs tests. Le formulaire ci-dessous permet de créer des recherches complexes en faisant correspondre le statut de connexion avec celui des résultats des tests de chaque fonction. Les fonctions de la liste sont triées par ordre alphabétique, par leur nom dans la langue de l'utilisateur (ou une langue similaire).\n\nVous trouverez ci-dessous quelques exemples de recherches courantes et comment les réaliser (les champs non mentionnés doivent être laissés vides) :\n* Rechercher toutes les fonctions qui ont moins de 2 tests connectés : <code>Upper limit: 2</code>, <code>Test connection status: Connected</code> \n* Rechercher toutes les fonctions avec des tests réussis mais non connectés : <code>Lower limit: 1</code>, <code>Test connection status: Pending</code>, <code>Test results: Passing</code> \n* Rechercher toutes les fonctions avec des tests en échec : <code>Lower limit: 1</code>, <code>Test results: Failing</code>",
