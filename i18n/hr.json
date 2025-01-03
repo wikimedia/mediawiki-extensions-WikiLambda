@@ -275,7 +275,7 @@
 	"wikilambda-functioncall-metadata-cpu-usage": "Korištenje CPU-a",
 	"wikilambda-functioncall-metadata-duration": "Trajanje",
 	"wikilambda-functioncall-metadata-end-time": "Vrijeme završetka",
-	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Pogreška|Pogreške}}",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|1=Pogreška|Pogreške}}",
 	"wikilambda-functioncall-metadata-errors-none": "Nema",
 	"wikilambda-functioncall-metadata-errors-summary": "Vrsta pogreške",
 	"wikilambda-functioncall-metadata-evaluation": "Izračun",

@@ -279,7 +279,7 @@
 	"wikilambda-functioncall-metadata-cpu-usage": "Выкарыстанне CPU",
 	"wikilambda-functioncall-metadata-duration": "Працягласць",
 	"wikilambda-functioncall-metadata-end-time": "Час заканчэння",
-	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Памылка|Памылкі}}",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|1=Памылка|Памылкі}}",
 	"wikilambda-functioncall-metadata-errors-none": "Няма",
 	"wikilambda-functioncall-metadata-errors-summary": "Тып памылкі",
 	"wikilambda-functioncall-metadata-evaluation": "Вылічэнне",

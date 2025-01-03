@@ -78,7 +78,7 @@
 	"wikilambda-functioncall-metadata-cpu-usage": "Заузеће процесора",
 	"wikilambda-functioncall-metadata-duration": "Трајање",
 	"wikilambda-functioncall-metadata-end-time": "Крај",
-	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Грешка|Грешке}}",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|1=Грешка|Грешке}}",
 	"wikilambda-functioncall-metadata-errors-none": "нема",
 	"wikilambda-functioncall-metadata-errors-summary": "Опис грешке",
 	"wikilambda-functioncall-metadata-expected-result": "Очекиван резултат",
