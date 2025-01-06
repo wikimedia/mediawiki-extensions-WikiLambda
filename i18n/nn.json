@@ -1,8 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Olve Utne"
+			"Olve Utne",
+			"Njardarlogar"
 		]
 	},
+	"wikilambda-persistentzobject-contents": "Innhald",
+	"wikilambda-loading": "Lastar data",
 	"wikilambda-persistentobject-details-label": "Detaljar"
 }
