@@ -30,7 +30,7 @@ class HTMLZTypeSelectField extends HTMLSelectField {
 
 		// Get all valid WikiLambda types with instances: zids and labels
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
-		$types = $zObjectStore->fetchAllInstancedTypesWithLabels( $languageCode );
+		$types = $zObjectStore->fetchAllInstancedTypesWithLabels( $languageCode ) ?? [];
 
 		// Create the options array with all existing ZTypes
 		foreach ( $types as $row ) {
@@ -40,4 +40,16 @@ class HTMLZTypeSelectField extends HTMLSelectField {
 			$this->mParams[ 'options' ][ $label ] = $row->wlzl_zobject_zid;
 		}
 	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getOptions() {
+		if ( $this->mOptions === null ) {
+			return [];
+		}
+
+		return parent::getOptions();
+	}
+
 }

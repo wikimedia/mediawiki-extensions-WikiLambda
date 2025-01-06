@@ -29,6 +29,7 @@ use MediaWiki\User\UserGroupManager;
 use MessageLocalizer;
 use MWContentSerializationException;
 use Psr\Log\LoggerInterface;
+use Wikimedia\Rdbms\FakeResultWrapper;
 use Wikimedia\Rdbms\IConnectionProvider;
 use Wikimedia\Rdbms\IExpression;
 use Wikimedia\Rdbms\IReadableDatabase;
@@ -795,6 +796,11 @@ class ZObjectStore {
 
 		// Fetch only those types that have instances
 		$zids = $this->fetchAllInstancedTypes();
+
+		// If there are no Types with instances (e.g. in CI), just return a fake empty result.
+		if ( $zids === [] ) {
+			return new FakeResultWrapper( $zids );
+		}
 
 		return $dbr->newSelectQueryBuilder()
 			->select( [ 'wlzl_zobject_zid', 'wlzl_label' ] )

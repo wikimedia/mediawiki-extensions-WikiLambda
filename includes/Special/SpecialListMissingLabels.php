@@ -66,7 +66,11 @@ class SpecialListMissingLabels extends SpecialPage {
 		$langZid = $this->getRequest()->getText( 'language' );
 		if ( ( !$langZid ) || !ZObjectUtils::isValidZObjectReference( $langZid ) ) {
 			$langCode = $this->getLanguage()->getCode();
-			$langZid = $this->langRegistry->getLanguageZidFromCode( $langCode );
+			$langZid = $this->langRegistry->getLanguageZidFromCode(
+				$langCode,
+				// Fallback to English if the user language is not a valid ZLanguage
+				true
+			);
 		}
 
 		// Get type from subpage; overwrite with value from Request.
@@ -160,7 +164,11 @@ class SpecialListMissingLabels extends SpecialPage {
 		$typeLabel = $this->zObjectStore->fetchZObjectLabel( $typeZid, $this->getLanguage()->getCode() );
 		$langLabel = $this->zObjectStore->fetchZObjectLabel( $langZid, $this->getLanguage()->getCode() );
 		return $this->msg( 'wikilambda-special-missinglabels-for-type' )
-			->rawParams( htmlspecialchars( $typeLabel ), htmlspecialchars( $typeZid ), htmlspecialchars( $langLabel ) )
+			->rawParams(
+				htmlspecialchars( $typeLabel ?? '' ),
+				htmlspecialchars( $typeZid ?? '' ),
+				htmlspecialchars( $langLabel ?? '' )
+			)
 			->text();
 	}
 

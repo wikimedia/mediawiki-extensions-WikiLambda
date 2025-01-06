@@ -33,7 +33,7 @@ class HTMLZLanguageSelectField extends HTMLSelectField {
 		// Get all valid WikiLambda languages: zids, codes and labels
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$languages = $zObjectStore->fetchAllZLanguagesWithLabels( $languageCode );
-		$languageZid = ZLangRegistry::singleton()->getLanguageZidFromCode( $languageCode );
+		$languageZid = ZLangRegistry::singleton()->getLanguageZidFromCode( $languageCode, true );
 
 		// Create the options array with all existing ZLanguages
 		foreach ( $languages as $row ) {
@@ -47,5 +47,16 @@ class HTMLZLanguageSelectField extends HTMLSelectField {
 		}
 
 		$this->mParams[ 'default' ] ??= $languageZid;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getOptions() {
+		if ( $this->mOptions === null ) {
+			return [];
+		}
+
+		return parent::getOptions();
 	}
 }
