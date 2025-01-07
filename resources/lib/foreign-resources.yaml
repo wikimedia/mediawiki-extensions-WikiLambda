@@ -1,13 +1,14 @@
 ace:
   license: BSD-3-Clause
   homepage: https://github.com/ajaxorg/ace-builds
-  version: 1.32.7
+  version: 1.37.1
+  purl: pkg:github/ajaxorg/ace-builds@1.37.1
   type: tar
-  src: https://codeload.github.com/ajaxorg/ace-builds/tar.gz/v1.32.7
-  integrity: sha384-iXQLrzC3CnDx4a8SWF+JaB29bujwxssx+AayhWYUHUXgwU6N5WDFmtCz+6X8hfQP
+  src: https://codeload.github.com/ajaxorg/ace-builds/tar.gz/v1.37.1
+  integrity: sha384-MR42NrMlXB0wnEbUm4SgByFw4m0moArDMGdcj8RWaEZM+7LGMYrASMvjKPo8KE5F
 
   dest:
-    ace-builds-1.32.7/src:
-    ace-builds-1.32.7/CHANGELOG.md:
-    ace-builds-1.32.7/LICENSE:
-    ace-builds-1.32.7/README.md:
+    ace-builds-1.37.1/src:
+    ace-builds-1.37.1/CHANGELOG.md:
+    ace-builds-1.37.1/LICENSE:
+    ace-builds-1.37.1/README.md:
