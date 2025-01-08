@@ -10,15 +10,13 @@
 const { fireEvent } = require( '@testing-library/vue' ),
 	{ within } = require( '@testing-library/dom' );
 
-const clickLookupResult = async ( parentWrapper, itemText ) => {
+const clickMenuOption = async ( parentWrapper, itemText ) => {
 	const options = await within( parentWrapper ).findAllByRole( 'option', { hidden: true } );
 	const option = options.find( ( e ) => e.textContent === itemText );
-
 	if ( !option ) {
-		throw new Error( 'Unable to find a lookup result for "' + itemText + '"' );
+		throw new Error( 'Unable to find option "' + itemText + '"' );
 	}
-
-	await fireEvent.click( option );
+	return await fireEvent.click( option );
 };
 
 const lookupSearchAndSelect = async ( parentWrapper, searchText, selectText, selectType = '' ) => {
@@ -26,6 +24,9 @@ const lookupSearchAndSelect = async ( parentWrapper, searchText, selectText, sel
 	await fireEvent.update( combobox, searchText );
 	const matcher = ( content, element ) => element.textContent === `${ selectText }${ selectType }`;
 	const matches = await within( parentWrapper ).findAllByText( matcher );
+	if ( matches.length === 0 ) {
+		throw new Error( 'Unable to find lookup result for "' + searchText + '"' );
+	}
 	const option = matches[ 0 ];
 	return await fireEvent.click( option );
 };
@@ -43,7 +44,7 @@ const chipInputAddChip = async ( parentWrapper, newChip ) => {
 };
 
 module.exports = {
-	clickLookupResult: clickLookupResult,
+	clickMenuOption: clickMenuOption,
 	lookupSearchAndSelect: lookupSearchAndSelect,
 	textInputChange: textInputChange,
 	chipInputAddChip: chipInputAddChip

@@ -11,7 +11,7 @@ require( '@testing-library/jest-dom' );
 const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
 	{ within } = require( '@testing-library/dom' ),
 	{ runSetup, runTeardown } = require( './helpers/implementationEditorTestHelpers.js' ),
-	{ clickLookupResult } = require( './helpers/interactionHelpers.js' ),
+	{ clickMenuOption } = require( './helpers/interactionHelpers.js' ),
 	store = require( '../../../resources/ext.wikilambda.app/store/index.js' ),
 	App = require( '../../../resources/ext.wikilambda.app/components/App.vue' ),
 	expectedNewCodeImplementationPostedToApi = require( './objects/expectedNewCodeImplementationPostedToApi.js' );
@@ -58,7 +58,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 
 		// // Select the Javascript option
 		const programmingLanguageToSelect = 'javascript';
-		await clickLookupResult( programmingLanguageDropdown, programmingLanguageToSelect );
+		await clickMenuOption( programmingLanguageDropdown, programmingLanguageToSelect );
 
 		// ASSERT: Check that the language dropdown has javascript selected
 		expect( programmingLanguageDropdownField ).toHaveTextContent( programmingLanguageToSelect );

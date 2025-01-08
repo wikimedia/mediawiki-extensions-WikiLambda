@@ -11,7 +11,7 @@ require( '@testing-library/jest-dom' );
 const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
 	{ within } = require( '@testing-library/dom' ),
 	{ runSetup, runTeardown } = require( './helpers/implementationEditorTestHelpers.js' ),
-	{ clickLookupResult } = require( './helpers/interactionHelpers.js' ),
+	{ lookupSearchAndSelect, clickMenuOption } = require( './helpers/interactionHelpers.js' ),
 	store = require( '../../../resources/ext.wikilambda.app/store/index.js' ),
 	App = require( '../../../resources/ext.wikilambda.app/components/App.vue' ),
 	expectedNewCompositionImplementationPostedToApi = require( './objects/expectedNewCompositionImplementationPostedToApi.js' );
@@ -59,14 +59,11 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 
 		// ACT: Select the function to use for the composition implementation
 		const compositionReferenceSelectorContainer = within( implementationContentBlock ).getAllByTestId( 'z-reference-selector' )[ 1 ];
-		const compositionReferenceSelector = await within( compositionReferenceSelectorContainer ).getByRole( 'combobox' );
-
 		const functionNameToSelect = 'String equality';
-
-		await fireEvent.update( compositionReferenceSelector, functionNameToSelect );
-		await clickLookupResult( compositionReferenceSelectorContainer, functionNameToSelect );
+		await lookupSearchAndSelect( compositionReferenceSelectorContainer, 'equality', functionNameToSelect );
 
 		// ASSERT: Check that the correct function is selected
+		const compositionReferenceSelector = await within( compositionReferenceSelectorContainer ).findByRole( 'combobox' );
 		expect( compositionReferenceSelector.value ).toBe( functionNameToSelect );
 
 		// ASSERT: Check that we have 2 arguments available after selecting "String equality"
@@ -84,7 +81,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		// ACT: Set argument type for first argument ("First string") to argument reference
 		const firstArgumentModeSelector = await within( firstArgument ).getByTestId( 'mode-selector-button' );
 		await fireEvent.click( firstArgumentModeSelector );
-		await clickLookupResult( firstArgument, 'Argument reference' );
+		await clickMenuOption( firstArgument, 'Argument reference' );
 
 		// ASSERT: Check that the type of the first argument is now argument reference
 		const firstArgumentTypeSelector = within( firstArgument ).getAllByRole( 'combobox' )[ 0 ];
@@ -93,7 +90,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		// ACT: Select the first argument
 		const firstArgumentInput = within( firstArgument ).getByTestId( 'z-argument-reference' );
 		const firstArgumentExpectedInput = 'first argument label, in Afrikaans';
-		await clickLookupResult( firstArgumentInput, firstArgumentExpectedInput );
+		await clickMenuOption( firstArgumentInput, firstArgumentExpectedInput );
 
 		// ASSERT: Check the value of the first argument is correctly set
 		expect( within( firstArgumentInput ).getByRole( 'combobox' ) ).toHaveTextContent( firstArgumentExpectedInput );
@@ -105,7 +102,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		// ACT: Set argument type for second argument ("Second string") to argument reference
 		const secondArgumentModeSelector = await within( secondArgument ).getByTestId( 'mode-selector-button' );
 		await fireEvent.click( secondArgumentModeSelector );
-		await clickLookupResult( secondArgument, 'Argument reference' );
+		await clickMenuOption( secondArgument, 'Argument reference' );
 
 		// ASSERT: Check that the type of the second argument is now argument reference
 		const secondArgumentTypeSelector = within( secondArgument ).getAllByRole( 'combobox' )[ 0 ];
@@ -114,7 +111,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		// ACT: Select the second argument
 		const secondArgumentInput = within( secondArgument ).getByTestId( 'z-argument-reference' );
 		const secondArgumentExpectedInput = 'second argument label, in Afrikaans';
-		await clickLookupResult( secondArgumentInput, secondArgumentExpectedInput );
+		await clickMenuOption( secondArgumentInput, secondArgumentExpectedInput );
 
 		// ASSERT: Check the value of the second argument is correctly set
 		expect( within( secondArgumentInput ).getByRole( 'combobox' ) ).toHaveTextContent( secondArgumentExpectedInput );

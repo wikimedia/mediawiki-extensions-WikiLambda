@@ -249,6 +249,20 @@ const stringEqualityLabelLookupApiResponse = {
 			match_rate: 0.4666666666666667,
 			label: 'String equality',
 			type_label: ''
+		},
+		{
+			page_id: 0,
+			page_namespace: 0,
+			page_content_model: 'zobject',
+			page_title: 'Z844',
+			page_type: 'Z8',
+			return_type: 'Z40',
+			match_label: 'Boolean equality',
+			match_is_primary: '1',
+			match_lang: 'Z1002',
+			match_rate: 0.4,
+			label: 'Boolean equality',
+			type_label: ''
 		}
 	]
 };
@@ -267,6 +281,20 @@ const functionLabelLookupApiResponse = {
 			match_lang: 'Z1002',
 			match_rate: 1,
 			label: 'function name, in Chinese',
+			type_label: ''
+		},
+		{
+			page_id: 0,
+			page_namespace: 0,
+			page_content_model: 'zobject',
+			page_title: 'Z801',
+			page_type: 'Z8',
+			return_type: 'Z40',
+			match_label: 'another function name, in Chinese',
+			match_is_primary: '0.4',
+			match_lang: 'Z1002',
+			match_rate: 1,
+			label: 'another function name, in Chinese',
 			type_label: ''
 		}
 	]
