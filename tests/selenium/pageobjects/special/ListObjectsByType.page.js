@@ -41,7 +41,7 @@ class ListObjectsByType extends Page {
 		};
 	}
 
-	open() {
+	async open() {
 		return super.openTitle( 'Special:ListObjectsByType' );
 	}
 

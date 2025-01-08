@@ -12,7 +12,7 @@ class CreateObjectPage extends Page {
 		return $( '#firstHeading' );
 	}
 
-	open() {
+	async open() {
 		return super.openTitle( 'Special:CreateObject' );
 	}
 

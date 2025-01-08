@@ -82,7 +82,7 @@ class Tester extends Page {
 		 * Clicking on "edit" link sometimes do not open the edit form.
 		 */
 		const ZId = await this.getTesterZId();
-		super.openTitle( ZId, { action: 'edit' } );
+		return super.openTitle( ZId, { action: 'edit' } );
 	}
 
 	// #endregion
