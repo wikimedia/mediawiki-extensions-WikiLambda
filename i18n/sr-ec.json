@@ -33,7 +33,7 @@
 	"wikilambda-editor-label-addlanguage-label": "Изаберите језик",
 	"wikilambda-implementation-selector-code": "Кôд",
 	"wikilambda-function-are-you-sure-dialog-header": "Јесте ли сигурни?",
-	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Грешка|Грешке}}",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|1=Грешка|Грешке}}",
 	"wikilambda-functioncall-metadata-errors-summary": "Опис грешке",
 	"wikilambda-functioncall-metadata-errors-none": "нема",
 	"wikilambda-functioncall-metadata-implementation-name": "Назив",
