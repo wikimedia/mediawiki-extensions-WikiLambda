@@ -12,7 +12,7 @@ class RunFunctionPage extends Page {
 		return $( '#firstHeading' );
 	}
 
-	open() {
+	async open() {
 		return super.openTitle( 'Special:RunFunction' );
 	}
 }

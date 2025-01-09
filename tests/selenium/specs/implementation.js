@@ -178,8 +178,8 @@ describe( 'Implementation (CUJ 5)', () => {
 		let aboutBlockEntriesEnglish,
 			aboutBlockEntriesHindi;
 
-		before( () => {
-			LoginPage.loginAdmin();
+		before( async () => {
+			await LoginPage.loginAdmin();
 			const time = Date.now();
 			aboutBlockEntriesEnglish = {
 				language: 'English',
