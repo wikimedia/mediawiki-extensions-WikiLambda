@@ -767,7 +767,7 @@ class ZObjectStore {
 		$languages = $zLangRegistry->getListOfFallbackLanguageZids( $languageFallback, $userLang );
 
 		// Returns table with unique zids and the most preferred primary label
-		$subquery = $this->getPreferredLabelsQuery( $languages );
+		$subquery = $this->getPreferredLabelsQuery( $languages )->getSQL();
 		return $dbr->newSelectQueryBuilder()
 			->select( [ 'wlzl_zobject_zid', 'wlzl_label', 'wlzlangs_language' ] )
 			->rawTables( [ 'preferred_labels' => new Subquery( $subquery ) ] )
@@ -792,7 +792,7 @@ class ZObjectStore {
 		$zLangRegistry = ZLangRegistry::singleton();
 		$languageFallback = MediaWikiServices::getInstance()->getLanguageFallback();
 		$languages = $zLangRegistry->getListOfFallbackLanguageZids( $languageFallback, $userLang );
-		$subquery = $this->getPreferredLabelsQuery( $languages );
+		$subquery = $this->getPreferredLabelsQuery( $languages )->getSQL();
 
 		// Fetch only those types that have instances
 		$zids = $this->fetchAllInstancedTypes();
@@ -833,7 +833,7 @@ class ZObjectStore {
 	 * passed as parameter.
 	 *
 	 * @param string[] $languageChain List of language zids in order of preference
-	 * @return string
+	 * @return SelectQueryBuilder
 	 */
 	public function getPreferredLabelsQuery( $languageChain ) {
 		$dbr = $this->dbProvider->getReplicaDatabase();
@@ -868,8 +868,88 @@ class ZObjectStore {
 			->leftJoin( 'page', 'p', $pageJoinConditions )
 			->where( [ 'priority' => 1 ] );
 
-		// Return SQL
-		return $queryBuilder->getSQL();
+		return $queryBuilder;
+	}
+
+	/**
+	 * Search functions that match a series of conditions:
+	 * * have a label that partially matches the given searchTerm, and
+	 * * either have fully renderable inputs and outputs (to be used by WP integration)
+	 * * or have the specified input and output types
+	 *
+	 * @param string $searchTerm Term to search in the label database
+	 * @param string[] $languages List of language Zids to filter by
+	 * @param bool $renderable Whether to only filter through functions with renderable IOs
+	 * @param string[] $inputTypes List of input types to match the functions
+	 * @param string|null $outputType List of output type to match the functions
+	 * @return IResultWrapper
+	 */
+	public function searchFunctions(
+		$searchTerm,
+		$languages,
+		$renderable = false,
+		$inputTypes = [],
+		$outputType = null
+	) {
+		$dbr = $this->dbProvider->getReplicaDatabase();
+
+		// Subquery: Available function zids
+		// * if renderable is true, set conditions to only renderable types
+		// * else, set conditions to inputTypes and outputType
+		// If no function filtering is required, $functionsQuery will be null
+		$functionsQuery = $renderable ?
+			$this->functionsByRenderableIOQuery() :
+			$this->functionsByIOTypesQuery( $inputTypes, $outputType );
+
+		// Subquery: Preferred labels for all functions
+		// * Only return necessary fields
+		// * Add early condition: only functions
+		$preferredLabelsQuery = $this->getPreferredLabelsQuery( $languages );
+		$preferredLabelsQuery
+			->clearFields()
+			->fields( [ 'page_id', 'wlzl_zobject_zid', 'wlzl_label', 'wlzl_language' ] )
+			->andWhere( [ 'wlzl_type' => 'Z8' ] );
+
+		// Main Query searchCondition: match searchTerm substring
+		$searchTerm = ZObjectUtils::comparableString( $searchTerm );
+		$searchColumn = ZObjectUtils::isValidZObjectReference( $searchTerm ) ?
+			'wlzl_zobject_zid' : 'wlzl_label_normalised';
+		$searchCondition = $dbr->expr( $searchColumn, IExpression::LIKE, new LikeValue(
+			$dbr->anyString(), $searchTerm, $dbr->anyString() ) );
+
+		// Create main query builder
+		$queryBuilder = $dbr->newSelectQueryBuilder()
+			->select( [
+				'page_id',
+				'lb.wlzl_zobject_zid',
+				'wlzl_type',
+				'wlzl_return_type',
+				'lb.wlzl_language',
+				'lb.wlzl_label',
+				'wlzl_label_primary',
+				'wlzl_id',
+				'preferred_label' => 'pl.wlzl_label',
+				'preferred_language' => 'pl.wlzl_language'
+			] )
+			->from( 'wikilambda_zobject_labels', 'lb' )
+			// Inner join with preferred labels Subquery
+			->join( $preferredLabelsQuery, 'pl', 'lb.wlzl_zobject_zid = pl.wlzl_zobject_zid' )
+			->where( [
+				'wlzl_type' => 'Z8',
+				$searchCondition
+			] );
+
+		// If functionsQuery is not null, Left join and filter by wlzo_main_zid IS NOT NULL condition
+		if ( $functionsQuery ) {
+			$queryBuilder
+				->leftJoin( $functionsQuery, 'fn', 'lb.wlzl_zobject_zid = fn.wlzo_main_zid' )
+				->andWhere( 'fn.wlzo_main_zid IS NOT NULL' );
+		}
+
+		// Return result set:
+		return $queryBuilder
+			->caller( __METHOD__ )
+			->fetchResultSet();
 	}
 
 	/**
@@ -1324,7 +1404,132 @@ class ZObjectStore {
 	}
 
 	/**
-	 * Find all functions using at least the given number of each given input type, and using
+	 * Find all function Zids for which all their input and output types are renderable.
+	 * This means that:
+	 * * all their input types are either Z6/String, enums or have a parser function, and
+	 * * their output type is either Z6/String or have a renderer function.
+	 *
+	 * @return array
+	 */
+	public function findFunctionsByRenderableIO() {
+		return $this->functionsByRenderableIOQuery()
+			->caller( __METHOD__ )
+			->fetchFieldValues();
+	}
+
+	/**
+	 * Returns a Query that returns all the function Zids for which:
+	 * * all their inputs are of renderable type, and
+	 * * their output type is renderable.
+	 *
+	 * We define renderable differently for inputs and for outputs.
+	 * We understand that:
+	 * * input types are renderable if they are Z6, enums or have a parser function.
+	 * * output types are renderable if they are Z6 or have a renderer function.
+	 *
+	 * @return SelectQueryBuilder
+	 */
+	private function functionsByRenderableIOQuery() {
+		$dbr = $this->dbProvider->getReplicaDatabase();
+
+		// Subquery: Functions with input and output types that are renderable
+		$functionJoinsSQL = $this->getRenderableIOQuery()->getSQL();
+
+		$outputRenderableCond = $dbr->conditional( [ 'wlzo_key' => 'Z8K2', 'renderable' => 1 ], '1', 'NULL' );
+		$inputRenderableCond = $dbr->conditional( [ 'wlzo_key' => 'Z8K1', 'renderable' => 1 ], '1', 'NULL' );
+		$inputCond = $dbr->conditional( [ 'wlzo_key' => 'Z8K1' ], '1', 'NULL' );
+
+		// Aggregate conditions:
+		// * there's one renderable output
+		// * the number of inputs is the same as the number of renderable inputs
+		$aggregateConditions = [
+			'COUNT(' . $outputRenderableCond . ') = 1',
+			'COUNT(' . $inputCond . ') = COUNT(' . $inputRenderableCond . ')'
+		];
+
+		$functionsQuery = $dbr->newSelectQueryBuilder()
+			->select( 'wlzo_main_zid' )
+			->from( new Subquery( $functionJoinsSQL ), 'fj' )
+			->where( [ 'wlzo_main_type' => 'Z8' ] )
+			->groupBy( 'wlzo_main_zid' )
+			->having( $aggregateConditions );
+
+		return $functionsQuery;
+	}
+
+	/**
+	 * Returns a Query that returns the wikilambda_zobject_join table
+	 * with an additional column named "renderable", which holds a
+	 * boolean (1/0) value:
+	 *
+	 * * For every output row (wlzo_key=Z8K2), renderable is true if:
+	 * ** output type is Z6, or
+	 * ** output type has a renderer function
+	 *
+	 * * For every input row (wlzo_key=Z8K1), renderable is true if:
+	 * ** input type is Z6, or
+	 * ** input type is an enum, or
+	 * ** input type has a parser function
+	 *
+	 * @return SelectQueryBuilder
+	 */
+	private function getRenderableIOQuery() {
+		$dbr = $this->dbProvider->getReplicaDatabase();
+
+		// Case statement conditions for the renderable column
+		$renderableCase = $dbr->conditional( $dbr->orExpr( [
+			$dbr->expr( 'it.wlzo_id', '!=', null ),
+			$dbr->expr( 'ot.wlzo_id', '!=', null ),
+			$dbr->expr( 'ite.wlzo_main_type', '!=', null ),
+			'f.wlzo_related_zobject' => 'Z6'
+		] ), '1', '0' );
+
+		// Left Join with same table to see if input type has parser
+		$inputParserConditions = [
+			'f.wlzo_related_zobject = it.wlzo_main_zid',
+			'f.wlzo_key' => 'Z8K1',
+			'it.wlzo_key' => 'Z4K6'
+		];
+
+		// Left Join with same table to see if output type has renderer
+		$outputRendererConditions = [
+			'f.wlzo_related_zobject = ot.wlzo_main_zid',
+			'f.wlzo_key' => 'Z8K2',
+			'ot.wlzo_key' => 'Z4K5'
+		];
+
+		// Left Join with subquery that finds types with enums
+		$enumsQueryBuilder = $dbr->newSelectQueryBuilder()
+			->select( 'wlzo_main_type' )
+			->distinct()
+			->from( 'wikilambda_zobject_join' )
+			->where( [ 'wlzo_key' => 'instanceofenum' ] );
+		$inputEnumConditions = [
+			'f.wlzo_related_zobject = ite.wlzo_main_type',
+			'f.wlzo_key' => 'Z8K1'
+		];
+
+		// Build main query
+		$renderableIOQuery = $dbr->newSelectQueryBuilder()
+			->select( [
+				'f.wlzo_id',
+				'f.wlzo_main_zid',
+				'f.wlzo_main_type',
+				'f.wlzo_key',
+				'f.wlzo_related_zobject',
+				'f.wlzo_related_type',
+				'renderable' => $renderableCase
+			] )
+			->from( 'wikilambda_zobject_join', 'f' )
+			->leftJoin( 'wikilambda_zobject_join', 'it', $inputParserConditions )
+			->leftJoin( 'wikilambda_zobject_join', 'ot', $outputRendererConditions )
+			->leftJoin( $enumsQueryBuilder, 'ite', $inputEnumConditions );
+
+		return $renderableIOQuery;
+	}
+
+	/**
+	 * Find all functions Zids using at least the given number of each given input type, and using
 	 * the given output type, if specified. Each result value is the ZID of one such function.
 	 *
 	 * Each specified type (in $inputTypes or $outputType) may be a ZID or a string encoding of a
@@ -1338,27 +1543,40 @@ class ZObjectStore {
 	 * of type "Z8", and output of type "Z40".
 	 *
 	 * There must be at least one type mentioned, either in $inputTypes or $outputType;
-	 * otherwise null is returned.
+	 * otherwise an empty array is returned.
 	 *
-	 * Query strategy: we compose a separate (sub)query for each type.  Each of those queries
-	 * returns a single column, wlzo_main_zid. We use joins to get the intersection of all the
-	 * queries. Each query should benefit from the table's wlzo_index_key_related_zobject index,
-	 * and relevant optimizations provided by the database.
+	 * Internally, this method executes the query built by functionsByIOTypesQuery, which
+	 * can be independently used to build subqueries for other purposes.
 	 *
 	 * @param array $inputTypes array of (type => minimum number of uses)
 	 * @param string|null $outputType
-	 * @param string|null $continue Id to start. If null (the default), start from the first result.
-	 * @param int|null $limit Maximum number of results to return. Defaults to 50
-	 * @return string[] Array of ZIDs of functions
+	 * @return array
 	 */
-	public function findFunctionsByIOTypes(
-		$inputTypes,
-		$outputType = null,
-		$continue = null,
-		$limit = 50
-	) {
-		// Select one type/count (and key) for the first query; leave the other type/count pairs in
-		// $remainingTypes.
+	public function findFunctionsByIOTypes( $inputTypes, $outputType = null ) {
+		$queryBuilder = $this->functionsByIOTypesQuery( $inputTypes, $outputType );
+		return $queryBuilder === null ? [] :
+			$queryBuilder
+				->caller( __METHOD__ )
+				->fetchFieldValues();
+	}
+
+	/**
+	 * Returns a query that looks into the wikilambda_zobject_join table to return
+	 * all the functions whose input and output types match the given conditions.
+	 *
+	 * If no inputs or output types are specified, returns null. This way the
+	 * caller can decide whether to icorporate this subquery or avoid it if
+	 * no filters need to be applied.
+	 *
+	 * @param array $inputTypes array of (type => minimum number of uses)
+	 * @param string|null $outputType
+	 * @return SelectQueryBuilder|null
+	 */
+	private function functionsByIOTypesQuery( $inputTypes, $outputType = null ) {
+		$dbr = $this->dbProvider->getReplicaDatabase();
+
+		// Select one type/count (and key) for the first query;
+		// leave the other type/count pairs in $remainingTypes.
 		if ( $outputType ) {
 			$firstKey = 'Z8K2';
 			$firstType = $outputType;
@@ -1370,50 +1588,42 @@ class ZObjectStore {
 			$firstCount = reset( $inputTypes );
 			$remainingTypes = array_slice( $inputTypes, 1 );
 		} else {
-			return [];
+			// Return null if there's no inputs or outputs to filter by
+			return null;
 		}
 
-		$dbr = $this->dbProvider->getReplicaDatabase();
-
-		$query = $this->newIOTypeQuery( $dbr, $firstKey, $firstType, $firstCount, $continue );
+		$query = $this->newIOTypeQuery( $dbr, $firstKey, $firstType, $firstCount );
 		foreach ( $remainingTypes as $type => $count ) {
-			$subQuery = $this->newIOTypeQuery( $dbr, 'Z8K1', $type, $count, $continue );
+			$subQuery = $this->newIOTypeQuery( $dbr, 'Z8K1', $type, $count );
 			$query = $dbr->newSelectQueryBuilder()
 				->select( [ 'wlzo_main_zid' => 'q1.wlzo_main_zid' ] )
 				->from( $query, 'q1' )
 				->join( $subQuery, 'q2', 'q1.wlzo_main_zid = q2.wlzo_main_zid' );
 		}
-		return $query
-			->limit( $limit )
-			->caller( __METHOD__ )
-			->fetchFieldValues();
+
+		return $query;
 	}
 
 	/**
-	 * Construct a query that finds functions in wikilambda_zobject_join having at least
-	 * $count rows with the given $key and $type, for use by findFunctionsByIOTypes().
+	 * Returns a query that finds functions in wikilambda_zobject_join having at least
+	 * $count rows with the given $key and $type, for use by functionsByIOTypesQuery().
 	 *
 	 * @param IReadableDatabase $dbr
 	 * @param string $key
 	 * @param string $type
 	 * @param int $count
-	 * @param string|null $continue
 	 * @return SelectQueryBuilder
 	 */
-	private function newIOTypeQuery( $dbr, $key, $type, $count, $continue ) {
+	private function newIOTypeQuery( $dbr, $key, $type, $count ) {
 		$conditions = [
 			'wlzo_key' => $key,
 			'wlzo_related_zobject' => $type
 		];
-		// Set minimum id bound if we are continuing a paged result
-		if ( $continue != null ) {
-			$conditions[] = $dbr->expr( 'wlzo_main_zid', '>=', $continue );
-		}
-		$query =
-			$dbr->newSelectQueryBuilder()
+		$query = $dbr->newSelectQueryBuilder()
 				->select( [ 'wlzo_main_zid' ] )
 				->from( 'wikilambda_zobject_join' )
 				->where( $conditions );
+
 		if ( $count > 1 ) {
 			$query
 				->groupBy( [ 'wlzo_main_zid' ] )
