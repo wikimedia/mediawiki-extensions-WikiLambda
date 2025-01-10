@@ -318,6 +318,7 @@
 	"wikilambda-implementation-selector": "Выберите реализацию",
 	"wikilambda-implementation-selector-built-in": "Встроенная",
 	"wikilambda-implementation-selector-code": "Код",
+	"wikilambda-implementation-selector-composition": "Композиция",
 	"wikilambda-implementation-selector-none": "Это встроенная реализация в основном программном обеспечении, и здесь она не отображается.",
 	"wikilambda-invalidcontenttype": "Предоставленное содержание не является классом Объект.",
 	"wikilambda-invalidzobject": "Предоставленное содержание не является допустимым Объектом.",
