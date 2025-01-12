@@ -857,7 +857,7 @@ class ZObjectStore {
 		// - Select only those rows with label priority 1
 		$pageJoinConditions = [
 			'p.page_title = wlzl_zobject_zid',
-			'p.page_content_model = ' . $dbr->addQuotes( CONTENT_MODEL_ZOBJECT )
+			'p.page_namespace = ' . NS_MAIN
 		];
 		$queryBuilder = $dbr->newSelectQueryBuilder()
 			->select( [
