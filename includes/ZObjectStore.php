@@ -435,6 +435,8 @@ class ZObjectStore {
 		$this->userGroupManager->addUserToGroup( $user, 'functionmaintainer' );
 		$this->userGroupManager->addUserToGroup( $user, 'functioneer' );
 		$this->userGroupManager->addUserToGroup( $user, 'wikifunctions-staff' );
+		// Make sure the edit will be marked as a bot edit
+		$flags |= EDIT_FORCE_BOT;
 		return $this->updateZObject( $context, $zid, $data, $summary, $user, $flags );
 	}
 
