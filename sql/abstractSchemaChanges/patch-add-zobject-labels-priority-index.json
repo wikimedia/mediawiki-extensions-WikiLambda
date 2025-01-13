@@ -1,5 +1,77 @@
-[
-	{
+{
+	"before": {
+		"name": "wikilambda_zobject_labels",
+		"comment": "Stored mapping from the ZObject ID, type, language name tuple to a label.",
+		"columns": [
+			{
+				"name": "wlzl_id",
+				"comment": "Unique ID for index purposes",
+				"type": "bigint",
+				"options": { "unsigned": true, "notnull": true, "autoincrement": true }
+			},
+			{
+				"name": "wlzl_zobject_zid",
+				"comment": "The ZObject's ZID",
+				"type": "binary",
+				"options": { "length": 32, "notnull": true }
+			},
+			{
+				"name": "wlzl_type",
+				"comment": "The ZObject type",
+				"type": "binary",
+				"options": { "length": 255, "notnull": true }
+			},
+			{
+				"name": "wlzl_language",
+				"comment": "The language code in which the label applies",
+				"type": "binary",
+				"options": { "length": 255, "notnull": true }
+			},
+			{
+				"name": "wlzl_label",
+				"comment": "The user-provided label",
+				"type": "binary",
+				"options": { "length": 255, "notnull": true }
+			},
+			{
+				"name": "wlzl_label_normalised",
+				"comment": "The label, normalised, for searching",
+				"type": "binary",
+				"options": { "length": 255, "notnull": true }
+			},
+			{
+				"name": "wlzl_label_primary",
+				"comment": "Boolean value indicating whether the entry is a primary label or an alias",
+				"type": "mwtinyint",
+				"options": { "notnull": true, "default": 1 }
+			},
+			{
+				"name": "wlzl_return_type",
+				"comment": "The return type if the ZObject is a function or function call",
+				"type": "binary",
+				"options": { "length": 255, "notnull": false, "default": null }
+			}
+		],
+		"indexes": [
+			{
+				"name": "wlzl_label_searchindex",
+				"columns": [ "wlzl_type", "wlzl_language", "wlzl_label_normalised", "wlzl_return_type" ],
+				"unique": false
+			},
+			{
+				"name": "wlzl_label_searchindex_strict",
+				"columns": [ "wlzl_type", "wlzl_language", "wlzl_label", "wlzl_return_type" ],
+				"unique": false
+			},
+			{
+				"name": "wlzl_searchindex_zid",
+				"columns": [ "wlzl_zobject_zid" ],
+				"unique": false
+			}
+		],
+		"pk": [ "wlzl_id" ]
+	},
+	"after": {
 		"name": "wikilambda_zobject_labels",
 		"comment": "Stored mapping from the ZObject ID, type, language name tuple to a label.",
 		"columns": [
@@ -76,4 +148,4 @@
 		],
 		"pk": [ "wlzl_id" ]
 	}
-]
+}

@@ -1,5 +1,60 @@
-[
-	{
+{
+	"before": {
+		"name": "wikilambda_zobject_join",
+		"comment": "Relationships between ZObjects",
+		"columns": [
+			{
+				"name": "wlzo_id",
+				"comment": "Unique ID for index purposes",
+				"type": "bigint",
+				"options": { "unsigned": true, "notnull": true, "autoincrement": true }
+			},
+			{
+				"name": "wlzo_main_zid",
+				"comment": "The ZID of the main ZObject",
+				"type": "binary",
+				"options": { "length": 32, "notnull": true }
+			},
+			{
+				"name": "wlzo_main_type",
+				"comment": "The type of the main ZObject",
+				"type": "binary",
+				"options": { "length": 255, "notnull": true }
+			},
+			{
+				"name": "wlzo_key",
+				"comment": "ZKey indicating the relationship between the main and related ZObjects",
+				"type": "binary",
+				"options": { "length": 32, "notnull": true }
+			},
+			{
+				"name": "wlzo_related_zobject",
+				"comment": "The related ZObject",
+				"type": "binary",
+				"options": { "length": 255, "notnull": true }
+			},
+			{
+				"name": "wlzo_related_type",
+				"comment": "The type of the related ZObject",
+				"type": "binary",
+				"options": { "length": 255, "notnull": true }
+			}
+		],
+		"indexes": [
+			{
+				"name": "wlzo_index_main_zid_key",
+				"columns": [ "wlzo_main_zid", "wlzo_key" ],
+				"unique": false
+			},
+			{
+				"name": "wlzo_index_key_related_zobject",
+				"columns": [ "wlzo_key", "wlzo_related_zobject" ],
+				"unique": false
+			}
+		],
+		"pk": [ "wlzo_id" ]
+	},
+	"after": {
 		"name": "wikilambda_zobject_join",
 		"comment": "Relationships between ZObjects",
 		"columns": [
@@ -59,4 +114,4 @@
 		],
 		"pk": [ "wlzo_id" ]
 	}
-]
+}

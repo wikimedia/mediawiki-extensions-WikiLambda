@@ -19,5 +19,9 @@ CREATE TABLE /*_*/wikilambda_zobject_labels (
     wlzl_type, wlzl_language, wlzl_label,
     wlzl_return_type
   ),
+  INDEX wlzl_searchindex_zid (wlzl_zobject_zid),
+  INDEX wlzl_searchindex_orderby_priority (
+    wlzl_language, wlzl_label_primary
+  ),
   PRIMARY KEY(wlzl_id)
 ) /*$wgDBTableOptions*/;

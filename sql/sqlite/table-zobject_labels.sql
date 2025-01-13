@@ -20,3 +20,9 @@ CREATE INDEX wlzl_label_searchindex_strict ON /*_*/wikilambda_zobject_labels (
   wlzl_type, wlzl_language, wlzl_label,
   wlzl_return_type
 );
+
+CREATE INDEX wlzl_searchindex_zid ON /*_*/wikilambda_zobject_labels (wlzl_zobject_zid);
+
+CREATE INDEX wlzl_searchindex_orderby_priority ON /*_*/wikilambda_zobject_labels (
+  wlzl_language, wlzl_label_primary
+);

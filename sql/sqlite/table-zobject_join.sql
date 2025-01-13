@@ -12,3 +12,5 @@ CREATE TABLE /*_*/wikilambda_zobject_join (
 CREATE INDEX wlzo_index_main_zid_key ON /*_*/wikilambda_zobject_join (wlzo_main_zid, wlzo_key);
 
 CREATE INDEX wlzo_index_key_related_zobject ON /*_*/wikilambda_zobject_join (wlzo_key, wlzo_related_zobject);
+
+CREATE INDEX wlzo_index_related_type ON /*_*/wikilambda_zobject_join (wlzo_related_type);
