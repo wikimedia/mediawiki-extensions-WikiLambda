@@ -247,6 +247,7 @@ describe( 'FunctionReport', () => {
 					clearPreviousResults: true
 				} );
 			} );
+			await waitFor( () => expect( actions.getTestResults ).toHaveBeenCalledTimes( 1 ) );
 		} );
 
 		it( 'initially tests all the testers for an implementation page', async () => {
@@ -277,6 +278,7 @@ describe( 'FunctionReport', () => {
 					clearPreviousResults: true
 				} );
 			} );
+			await waitFor( () => expect( actions.getTestResults ).toHaveBeenCalledTimes( 1 ) );
 		} );
 	} );
 } );

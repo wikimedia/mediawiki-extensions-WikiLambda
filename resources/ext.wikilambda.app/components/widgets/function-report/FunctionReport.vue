@@ -322,13 +322,21 @@ module.exports = exports = defineComponent( {
 		implementations: function ( newValue, oldValue ) {
 			if ( !this.arraysAreEqual( oldValue, newValue ) ) {
 				this.fetchZids( { zids: this.implementations } );
-				this.runTesters();
+				// re-run the tests when the user changes the implementation's function Zid,
+				// except when creating a new implementation object (then only run on demand)
+				if ( oldValue.length && this.rootZid && this.rootZid !== Constants.NEW_ZID_PLACEHOLDER ) {
+					this.runTesters();
+				}
 			}
 		},
 		testers: function ( newValue, oldValue ) {
 			if ( !this.arraysAreEqual( oldValue, newValue ) ) {
 				this.fetchZids( { zids: this.testers } );
-				this.runTesters();
+				// re-run the tests when the user changes the test's function Zid,
+				// except when creating a new test object (then only run on demand)
+				if ( oldValue.length && this.rootZid && this.rootZid !== Constants.NEW_ZID_PLACEHOLDER ) {
+					this.runTesters();
+				}
 			}
 		}
 	},
