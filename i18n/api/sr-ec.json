@@ -1,8 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
-			"BadDog"
+			"BadDog",
+			"Milicevic01"
 		]
 	},
+	"apihelp-query+wikilambdasearch_functions-param-search": "Термин за претрагу",
 	"apihelp-query+wikilambdasearch_labels-param-search": "Термин за претрагу"
 }

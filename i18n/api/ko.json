@@ -7,6 +7,7 @@
 	"apihelp-wikilambda_function_call-example-user-defined-python": "사용자 지정 타입을 사용하여 파이썬 함수를 호출합니다.",
 	"apihelp-wikilambda_function_call-example-user-defined-javascript": "사용자 지정 타입을 사용하여 자바스크립트 함수를 호출합니다.",
 	"apihelp-wikifunctions_run-summary": "함수 호출 실행",
+	"apihelp-query+wikilambdasearch_functions-param-search": "검색 용어",
 	"apihelp-query+wikilambdasearch_labels-param-search": "검색 용어",
 	"apihelp-query+wikilambdasearch_labels-param-language": "검색할 미디어위키 언어 코드",
 	"apihelp-wikilambda_edit-param-summary": "편집 요약 메시지",
