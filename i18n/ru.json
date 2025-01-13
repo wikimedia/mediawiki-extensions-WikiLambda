@@ -67,6 +67,7 @@
 	"wikilambda-editor-implementation-list-label": "Список Реализаций",
 	"wikilambda-editor-boolean-selector": "Выберите истина/ложь",
 	"wikilambda-implementation-selector-code": "Код",
+	"wikilambda-implementation-selector-composition": "Композиция",
 	"wikilambda-implementation-selector-built-in": "Встроенная",
 	"wikilambda-argref-default-label": "Выберите аргумент",
 	"wikilambda-implementation-selector": "Выберите реализацию",

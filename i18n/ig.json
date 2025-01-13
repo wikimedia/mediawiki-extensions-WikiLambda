@@ -8,6 +8,7 @@
 		]
 	},
 	"wikilambda-desc": "Na-enye Wikimedia wiki nwere ọrụ parser wikitext iji kpọọ nyocha nke ọrụ edere, jikwaa na nyocha na wiki etiti.",
+	"wikilambda-functioncall": "Ọ̀kpụkpọ òkù maka ọrụ",
 	"wikilambda-edit": "Dezie",
 	"wikilambda-cancel": "Kagbuo",
 	"wikilambda-confirm": "Nye nkwado",
@@ -23,10 +24,15 @@
 	"wikilambda-editor-boolean-selector": "Họrọ eziokwu/ụgha",
 	"wikilambda-function-are-you-sure-dialog-header": "O doro gị anya?",
 	"wikilambda-function-are-you-sure-dialog-description": "O doro gị anya na I chọrọ ịhapụ ọnọdụ ndezi n'ebughị ụzọ bipụta ihe I mere?",
+	"wikilambda-functioncall-error": "Njehie ọkpụkpọ òkù maka ọrụ",
+	"wikilambda-functioncall-error-category": "Ibé ndị nwere ọkpụkpọ òkù maka ọrụ Wiki n'ezighi ezi",
+	"wikilambda-functioncall-error-category-desc": "Ibé ndị nwere ọkpụkpọ òkù gaa na ọrụ Wiki nke na-ebute mperi izugbe",
 	"wikilambda-create-function": "Kepụta Function",
 	"wikilambda-create-type": "Kepụta Type",
 	"wikilambda-function-definition-name-label": "Aha",
 	"wikilambda-function-definition-edit": "Dezie nkọwa",
+	"wikilambda-function-implementation-name-label": "Áhà",
+	"wikilambda-function-implementation-language-label": "Asụsụ",
 	"wikilambda-function-definition-name-example": "Lee ọmụmaatụ aha gasị",
 	"wikilambda-function-definition-alias-label": "Aha otutu gasị",
 	"wikilambda-function-definition-alias-example": "Lee ọmụmaatụ aha otutu gasị",
@@ -36,6 +42,7 @@
 	"wikilambda-function-definition-example-title": "Ọmụmaatụ gasị maka iji function ahụ mee ihe",
 	"wikilambda-function-definition-can-publish-message": "I dezuru nkọwa ahụ! Chekwaa ọrụ gị site n'ịpị aka na 'Bipụta' n'okpuru ebe a",
 	"wikilambda-editor-additional-details-label": "Nkọwa ndị ọzọ",
+	"wikilambda-function-implementation-table-header": "Ntinye n'ọrụ gasị",
 	"wikilambda-editor-fn-step-function-about": "Gbasara",
 	"wikilambda-editor-fn-step-function-details": "Tụụtụụ na rịịrịị",
 	"wikilambda-editor-input-title": "Ntinye",
@@ -50,5 +57,10 @@
 	"wikilambda-discard-edits": "Tụfuo ndezi gasị",
 	"wikilambda-function-about-summary": "Njiarụ a na-atụgharịnye mkpọolu okwu Bekee n'ụdịdị ụbara ya, mana Bekee bụ asụsụ mmụọ ma o nwere ike inwetajọ okwu ndị a naghị ejikebe eme ihe. Nye ya nnwale!",
 	"wikilambda-function-details-summary": "Onye ọ bụla nwere ike ịtụta árò ntinye n'ọrụ maọbụ nnwale ọhụrụ. Ndị òtù WikiFunctions ga-atụle koodu a tụtara n'árò ma nye nkwado, tutu ọ họrọ ntinye n'ọrụ ndị dị adị maọbu nnwale e nyochara nke ọma ma nye nkwado.",
-	"wikilambda-function-details-summary-learn-more": "Mụtakwuo maka usoro nnyocha"
+	"wikilambda-function-details-summary-learn-more": "Mụtakwuo maka usoro nnyocha",
+	"wikilambda-function-viewer-aliases-show-language-button": "Gosi ọtụtụ asụsụ",
+	"wikilambda-function-viewer-names-show-languages-button": "Gosi aha n'asụsụ ndị ọzọ",
+	"wikilambda-function-viewer-details-input-number": "Ntinye $1",
+	"wikilambda-function-viewer-details-table-view-all": "Lee ha niile",
+	"wikilambda-function-viewer-details-table-view-less": "Lelee obere"
 }
