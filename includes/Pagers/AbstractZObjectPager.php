@@ -167,6 +167,8 @@ abstract class AbstractZObjectPager extends AlphabeticPager {
 	public function formatRow( $row ) {
 		$zid = $row->wlzl_zobject_zid;
 		$label = $row->wlzl_label;
-		return "# [[$zid|$label]] ($zid)\n";
+		// Wrap the label in <nowiki> to escape all wikitext syntax
+		$escapedLabel = "<nowiki>$label</nowiki>";
+		return "# [[$zid|$escapedLabel]] ($zid)\n";
 	}
 }
