@@ -7,10 +7,19 @@
 'use strict';
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
+	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
 	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
 	FunctionEditorInputs = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorInputs.vue' );
+
+const langLabelData = {
+	zid: 'Z1002',
+	label: 'English',
+	lang: 'Z1002',
+	langCode: 'en',
+	langDir: 'ltr'
+};
 
 describe( 'FunctionEditorInputs', () => {
 	let getters,
@@ -18,6 +27,7 @@ describe( 'FunctionEditorInputs', () => {
 
 	beforeEach( () => {
 		getters = {
+			getLabelData: createLabelDataMock( { Z1002: 'English' } ),
 			getZFunctionInputs: createGettersWithFunctionsMock( [] ),
 			getRowByKeyPath: createGettersWithFunctionsMock( undefined ),
 			getUserLangCode: createGetterMock( 'en' )
@@ -37,6 +47,7 @@ describe( 'FunctionEditorInputs', () => {
 		const wrapper = shallowMount( FunctionEditorInputs, {
 			props: {
 				zLanguage: 'Z1002',
+				langLabelData,
 				isMainLanguageBlock: true
 			},
 			global: { stubs: { WlFunctionEditorField: false } }
@@ -51,6 +62,7 @@ describe( 'FunctionEditorInputs', () => {
 		const wrapper = shallowMount( FunctionEditorInputs, {
 			props: {
 				zLanguage: 'Z1002',
+				langLabelData,
 				isMainLanguageBlock: true,
 				canEdit: true
 			},
@@ -71,6 +83,7 @@ describe( 'FunctionEditorInputs', () => {
 		const wrapper = shallowMount( FunctionEditorInputs, {
 			props: {
 				zLanguage: 'Z1002',
+				langLabelData,
 				isMainLanguageBlock: true,
 				canEdit: true
 			},
@@ -87,6 +100,7 @@ describe( 'FunctionEditorInputs', () => {
 		const wrapper = shallowMount( FunctionEditorInputs, {
 			props: {
 				zLanguage: 'Z1002',
+				langLabelData,
 				isMainLanguageBlock: true,
 				canEdit: false
 			},
@@ -106,6 +120,7 @@ describe( 'FunctionEditorInputs', () => {
 		const wrapper = shallowMount( FunctionEditorInputs, {
 			props: {
 				zLanguage: 'Z1002',
+				langLabelData,
 				isMainLanguageBlock: true,
 				canEdit: true
 			},
@@ -125,6 +140,7 @@ describe( 'FunctionEditorInputs', () => {
 		const wrapper = shallowMount( FunctionEditorInputs, {
 			props: {
 				zLanguage: 'Z1002',
+				langLabelData,
 				isMainLanguageBlock: true,
 				canEdit: true
 			},

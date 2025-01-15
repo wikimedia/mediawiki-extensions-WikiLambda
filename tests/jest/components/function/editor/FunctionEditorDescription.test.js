@@ -10,6 +10,14 @@ const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	FunctionEditorDescription = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorDescription.vue' );
 
+const langLabelData = {
+	zid: 'Z1002',
+	label: 'English',
+	lang: 'Z1002',
+	langCode: 'en',
+	langDir: 'ltr'
+};
+
 describe( 'FunctionEditorDescription', () => {
 	let getters,
 		actions;
@@ -35,7 +43,7 @@ describe( 'FunctionEditorDescription', () => {
 
 	it( 'renders without errors', () => {
 		const wrapper = shallowMount( FunctionEditorDescription, {
-			props: { zLanguage: 'Z1002' },
+			props: { zLanguage: 'Z1002', langLabelData },
 			global: { stubs: { WlFunctionEditorField: false } }
 		} );
 
@@ -44,7 +52,7 @@ describe( 'FunctionEditorDescription', () => {
 
 	it( 'renders an initialized input box', () => {
 		const wrapper = shallowMount( FunctionEditorDescription, {
-			props: { zLanguage: 'Z1002' },
+			props: { zLanguage: 'Z1002', langLabelData },
 			global: { stubs: { WlFunctionEditorField: false } }
 		} );
 
@@ -55,7 +63,7 @@ describe( 'FunctionEditorDescription', () => {
 	describe( 'on input', () => {
 		it( 'removes the description object if new value is empty string', async () => {
 			const wrapper = shallowMount( FunctionEditorDescription, {
-				props: { zLanguage: 'Z1002' },
+				props: { zLanguage: 'Z1002', langLabelData },
 				global: { stubs: { WlFunctionEditorField: false } }
 			} );
 
@@ -75,7 +83,7 @@ describe( 'FunctionEditorDescription', () => {
 
 		it( 'changes the description value if it already has a description object', async () => {
 			const wrapper = shallowMount( FunctionEditorDescription, {
-				props: { zLanguage: 'Z1002' },
+				props: { zLanguage: 'Z1002', langLabelData },
 				global: { stubs: { WlFunctionEditorField: false } }
 			} );
 
@@ -101,7 +109,7 @@ describe( 'FunctionEditorDescription', () => {
 			global.store.hotUpdate( { getters: getters } );
 
 			const wrapper = shallowMount( FunctionEditorDescription, {
-				props: { zLanguage: 'Z1002' },
+				props: { zLanguage: 'Z1002', langLabelData },
 				global: { stubs: { WlFunctionEditorField: false } }
 			} );
 

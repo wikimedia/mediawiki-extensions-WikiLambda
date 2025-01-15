@@ -15,6 +15,8 @@
 		<template #body>
 			<cdx-text-area
 				:id="descriptionInputId"
+				:lang="description ? langLabelData.langCode : undefined"
+				:dir="description ? langLabelData.langDir : undefined"
 				:model-value="description"
 				class="ext-wikilambda-app-function-editor-description__input"
 				:aria-label="descriptionLabel"
@@ -35,6 +37,7 @@
 const { CdxTextArea } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
+	LabelData = require( '../../../store/classes/LabelData.js' ),
 	FunctionEditorField = require( './FunctionEditorField.vue' ),
 	{ mapActions, mapGetters } = require( 'vuex' );
 
@@ -48,6 +51,13 @@ module.exports = exports = defineComponent( {
 		zLanguage: {
 			type: String,
 			required: true
+		},
+		/**
+		 * Label data for the language
+		 */
+		langLabelData: {
+			type: LabelData,
+			default: null
 		}
 	},
 	data: function () {

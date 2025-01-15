@@ -28,6 +28,7 @@
 					data-testid="function-editor-input-item"
 					:row-id="input.id"
 					:index="index"
+					:lang-label-data="langLabelData"
 					:z-language="zLanguage"
 					:can-edit-type="canEdit"
 					:is-main-language-block="isMainLanguageBlock"
@@ -51,6 +52,7 @@
 const { CdxButton, CdxIcon, CdxTooltip } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
+	LabelData = require( '../../../store/classes/LabelData.js' ),
 	FunctionEditorField = require( './FunctionEditorField.vue' ),
 	FunctionEditorInputsItem = require( './FunctionEditorInputsItem.vue' ),
 	icons = require( './../../../../lib/icons.json' ),
@@ -104,6 +106,13 @@ module.exports = exports = defineComponent( {
 		 */
 		tooltipMessage: {
 			type: String,
+			default: null
+		},
+		/**
+		 * Label data for the language
+		 */
+		langLabelData: {
+			type: LabelData,
 			default: null
 		}
 	},
