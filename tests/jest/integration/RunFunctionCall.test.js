@@ -10,7 +10,7 @@ require( '@testing-library/jest-dom' );
 
 const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
 	{ within } = require( '@testing-library/dom' ),
-	{ clickLookupResult } = require( './helpers/interactionHelpers.js' ),
+	{ lookupSearchAndSelect } = require( './helpers/interactionHelpers.js' ),
 	{ runSetup, runTeardown } = require( './helpers/runFunctionTestHelpers.js' ),
 	store = require( '../../../resources/ext.wikilambda.app/store/index.js' ),
 	App = require( '../../../resources/ext.wikilambda.app/components/App.vue' ),
@@ -37,8 +37,7 @@ describe( 'WikiLambda frontend, running a function on Run Function Special page'
 		const functionSelector = within( functionSelectorBlock ).getByRole( 'combobox' );
 		const functionName = 'function name, in Chinese';
 
-		await fireEvent.update( functionSelector, functionName );
-		await clickLookupResult( functionSelectorBlock, functionName );
+		await lookupSearchAndSelect( functionSelectorBlock, functionName, functionName );
 
 		// ASSERT: The function is selected as the function to call.
 		expect( functionSelector.value ).toBe( functionName );
