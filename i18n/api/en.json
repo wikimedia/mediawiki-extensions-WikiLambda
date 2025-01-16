@@ -3,6 +3,7 @@
 		"authors": [
 			"Cory Massaro",
 			"Genoveva Galarza",
+			"Grace Choi",
 			"James D. Forrester"
 		]
 	},
@@ -15,6 +16,7 @@
 	"apihelp-wikilambda_fetch-example-multiple": "Fetch three ZObjects: Z1, Z2, and Z3.",
 	"apihelp-wikilambda_fetch-example-multiple-old": "Fetch revision 12 of the ZObject Z1, revision 14 of Z2, and revision 25 of Z3.",
 	"apihelp-wikilambda_function_call-param-zobject": "ZObject for function call",
+	"apihelp-wikilambda_function_call-param-bypass-cache": "Bypass-cache flag that is an optional param for internal special use only",
 	"apihelp-wikilambda_function_call-example-generic-list": "Invoke a function that returns the first element of a typed List",
 	"apihelp-wikilambda_function_call-example-generic-pair": "Invoke a function that returns the second element of a Typed pair&lt;String,Typed pair&lt;String,Boolean&gt;&gt;",
 	"apihelp-wikilambda_function_call-example-generic-map": "Invoke a function that maps the element of a generic Map at a given key to a string version of its value",
