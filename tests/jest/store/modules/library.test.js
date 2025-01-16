@@ -527,12 +527,12 @@ describe( 'library module', () => {
 				const payload = {
 					zid: 'Z30000',
 					data: mockEnumValues,
-					continue: 1
+					searchContinue: 1
 				};
 
 				libraryModule.mutations.setEnumData( state, payload );
 				const expected = mockEnumValues.concat( mockEnumValues );
-				expect( state.enums.Z30000 ).toEqual( { continue: 1, data: expected } );
+				expect( state.enums.Z30000 ).toEqual( { searchContinue: 1, data: expected } );
 			} );
 		} );
 
@@ -801,7 +801,7 @@ describe( 'library module', () => {
 				expect( context.commit ).toHaveBeenCalledWith( 'setEnumData', {
 					zid: 'Z30000',
 					data: mockEnumValues,
-					continue: null
+					searchContinue: null
 				} );
 			} );
 		} );

@@ -325,6 +325,7 @@
 				"ext.wikilambda.app/store/modules/wikidata/entities.js",
 				"ext.wikilambda.app/store/modules/wikidata/items.js",
 				"ext.wikilambda.app/store/modules/wikidata/lexemes.js",
+				"ext.wikilambda.app/store/modules/wikidata/properties.js",
 				"ext.wikilambda.app/mixins/clipboardUtils.js",
 				"ext.wikilambda.app/mixins/pageTitleUtils.js",
 				"ext.wikilambda.app/mixins/typeUtils.js",
@@ -377,6 +378,8 @@
 				"ext.wikilambda.app/components/default-view-types/wikidata/Item.vue",
 				"ext.wikilambda.app/components/default-view-types/wikidata/Lexeme.vue",
 				"ext.wikilambda.app/components/default-view-types/wikidata/LexemeForm.vue",
+				"ext.wikilambda.app/components/default-view-types/wikidata/Property.vue",
+				"ext.wikilambda.app/components/default-view-types/wikidata/wikidataIconSvg.js",
 				"ext.wikilambda.app/components/function/editor/FunctionEditor.vue",
 				"ext.wikilambda.app/components/function/editor/FunctionEditorAliases.vue",
 				"ext.wikilambda.app/components/function/editor/FunctionEditorField.vue",
@@ -738,7 +741,8 @@
 				"wikilambda-wikidata-entity-selector-placeholder",
 				"wikilambda-wikidata-item-selector-placeholder",
 				"wikilambda-wikidata-lexeme-selector-placeholder",
-				"wikilambda-wikidata-lexeme-form-selector-placeholder"
+				"wikilambda-wikidata-lexeme-form-selector-placeholder",
+				"wikilambda-wikidata-property-selector-placeholder"
 			]
 		}
 	},

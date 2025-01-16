@@ -129,17 +129,19 @@ describe( 'WikidataEntitySelector', () => {
 
 			// Wait for lookup API to be called:
 			await waitFor( () => expect( actions.lookupWikidataEntities )
-				.toHaveBeenCalledWith( expect.anything(), { search: 'pangoli', type: 'lexeme' } ) );
+				.toHaveBeenCalledWith( expect.anything(), { search: 'pangoli', type: 'lexeme', searchContinue: null } ) );
 
 			expect( wrapper.vm.lookupConfig.searchQuery ).toBe( 'pangoli' );
 			expect( lookup.vm.menuItems.length ).toBe( 2 );
 			expect( lookup.vm.menuItems[ 0 ] ).toEqual( {
 				description: 'English, noun',
+				title: 'English, noun', // Added to show in htmlattribute
 				label: 'pangolin',
 				value: 'L290326'
 			} );
 			expect( lookup.vm.menuItems[ 1 ] ).toEqual( {
 				description: 'Italian, noun',
+				title: 'Italian, noun', // Added to show in htmlattribute
 				label: 'pangolino',
 				value: 'L1208742'
 			} );

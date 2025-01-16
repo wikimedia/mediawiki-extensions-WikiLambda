@@ -467,6 +467,7 @@
 	"wikilambda-wikidata-item-selector-placeholder": "Select Wikidata item",
 	"wikilambda-wikidata-lexeme-form-selector-placeholder": "Select Wikidata lexeme form",
 	"wikilambda-wikidata-lexeme-selector-placeholder": "Select Wikidata lexeme",
+	"wikilambda-wikidata-property-selector-placeholder": "Select Wikidata property",
 	"wikilambda-zerror": "Error of type $1",
 	"wikilambda-zimplememntation-composition-missing": "Composition is empty. Please select a function.",
 	"wikilambda-zimplementation-code-language-missing": "Select a programming language first.",

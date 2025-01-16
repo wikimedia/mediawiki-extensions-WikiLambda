@@ -64,6 +64,9 @@ describe( 'ZObjectSelector', () => {
 		} );
 
 		it( 'on lookup, sends the the selector type in the payload', async () => {
+			actions.lookupZObjectLabels = jest.fn().mockResolvedValue( mockLookupValues );
+			global.store.hotUpdate( { actions: actions } );
+
 			const wrapper = mount( ZObjectSelector, {
 				props: {
 					type: Constants.Z_TYPE
@@ -78,6 +81,7 @@ describe( 'ZObjectSelector', () => {
 				{
 					input: 'Stri',
 					returnType: undefined,
+					searchContinue: null,
 					type: Constants.Z_TYPE,
 					strictType: false
 				}
@@ -100,6 +104,7 @@ describe( 'ZObjectSelector', () => {
 			const lookupPayload = {
 				input: 'text',
 				returnType: undefined,
+				searchContinue: null,
 				type: Constants.Z_TYPE,
 				strictType: false
 			};

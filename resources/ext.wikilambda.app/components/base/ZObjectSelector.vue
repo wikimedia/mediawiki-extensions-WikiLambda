@@ -17,7 +17,7 @@
 			:menu-items="enumValues"
 			:menu-config="selectConfig"
 			@update:selected="onSelect"
-			@load-more="loadMoreValues"
+			@load-more="onLoadMoreSelect"
 		></cdx-select>
 		<cdx-lookup
 			v-else
@@ -32,6 +32,7 @@
 			data-testid="z-object-selector-lookup"
 			@update:selected="onSelect"
 			@update:input-value="onInput"
+			@load-more="onLoadMoreLookup"
 			@blur="onBlur"
 		>
 			<template #no-results>
@@ -122,7 +123,8 @@ module.exports = exports = defineComponent( {
 			lookupConfig: {
 				boldLabel: true,
 				searchQuery: '',
-				visibleItemLimit: 5
+				visibleItemLimit: 5,
+				searchContinue: null
 			},
 			lookupDelayTimer: null,
 			lookupDelayMs: 300,
@@ -289,13 +291,26 @@ module.exports = exports = defineComponent( {
 		] ),
 		{
 			/**
-			 * Load more values for the enumeration selector
-			 *
-			 * @return {void}
+			 * Load more values for the enumeration selector when the user scrolls to the bottom of the list
+			 * and there are more results to load.
 			 */
-			loadMoreValues: function () {
-				this.fetchEnumValues( { type: this.type, isContinue: true } );
+			onLoadMoreSelect: function () {
+				this.fetchEnumValues( { type: this.type } );
 			},
+
+			/**
+			 * Load more Lookup results when the user scrolls to the bottom of the list
+			 * and there are more results to load.
+			 */
+			onLoadMoreLookup: function () {
+				if ( !this.lookupConfig.searchContinue ) {
+					// No more results to load
+					return;
+				}
+
+				this.getLookupResults( this.lookupConfig.searchQuery );
+			},
+
 			/**
 			 * Whether is in the input list of Zids excluded from selection.
 			 * Al the zids in the excludeZids input property must be uppercase.
@@ -331,18 +346,21 @@ module.exports = exports = defineComponent( {
 					input,
 					type: this.type || undefined,
 					returnType: this.returnType || undefined,
-					strictType: this.strictType
-				} ).then( ( payload ) => {
+					strictType: this.strictType,
+					searchContinue: this.lookupConfig.searchContinue
+				} ).then( ( data ) => {
+					const { labels, searchContinue } = data;
 					// If the string searched has changed, do not show the search result
 					if ( !this.inputValue.includes( input ) ) {
 						return;
 					}
 					const zids = [];
+					// If searchContinue is present, store it in lookupConfig
+					this.lookupConfig.searchContinue = searchContinue;
 					this.lookupConfig.searchQuery = input;
-					this.lookupResults = [];
 					// Update lookupResults list
-					if ( payload && payload.length > 0 ) {
-						payload.forEach( ( result ) => {
+					if ( labels && labels.length > 0 ) {
+						labels.forEach( ( result ) => {
 
 							// Set up codex MenuItem options
 							// https://doc.wikimedia.org/codex/latest/components/demos/menu-item.html
@@ -401,6 +419,8 @@ module.exports = exports = defineComponent( {
 			 */
 			clearResults: function () {
 				this.lookupResults = [];
+				// Reset searchContinue when a new search is initiated
+				this.lookupConfig.searchContinue = null;
 			},
 
 			/**
@@ -415,14 +435,11 @@ module.exports = exports = defineComponent( {
 
 				this.clearFieldErrors();
 
-				// If empty input, clear and exit
-				if ( !input ) {
-					this.clearResults();
-					return;
-				}
+				// Clear previous results when input changes
+				this.clearResults();
 
 				// Just search if more than one characters
-				if ( input.length < 2 ) {
+				if ( !input || input.length < 2 ) {
 					return;
 				}
 

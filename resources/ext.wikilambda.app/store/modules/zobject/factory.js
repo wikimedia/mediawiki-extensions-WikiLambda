@@ -105,6 +105,7 @@ module.exports = exports = {
 					case Constants.Z_WIKIDATA_ITEM:
 					case Constants.Z_WIKIDATA_LEXEME:
 					case Constants.Z_WIKIDATA_LEXEME_FORM:
+					case Constants.Z_WIKIDATA_PROPERTY:
 						return getters.createWikidataEntity( payload );
 					default:
 						// Explore and create new ZObject keys
@@ -791,6 +792,7 @@ module.exports = exports = {
 						value[ wdFetchId ] = wdRef;
 						return value;
 
+					// Wikidata Item
 					case Constants.Z_WIKIDATA_ITEM:
 						wdRef = getters.createObjectByType( { type: Constants.Z_WIKIDATA_REFERENCE_ITEM } );
 						wdFetch = Constants.Z_WIKIDATA_FETCH_ITEM;
@@ -800,8 +802,17 @@ module.exports = exports = {
 						value[ wdFetchId ] = wdRef;
 						return value;
 
+					// Wikidata Property
+					case Constants.Z_WIKIDATA_PROPERTY:
+						wdRef = getters.createObjectByType( { type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY } );
+						wdFetch = Constants.Z_WIKIDATA_FETCH_PROPERTY;
+						wdFetchId = Constants.Z_WIKIDATA_FETCH_PROPERTY_ID;
+
+						value[ Constants.Z_FUNCTION_CALL_FUNCTION ] = wdFetch;
+						value[ wdFetchId ] = wdRef;
+						return value;
+
 					// TODO: Future Wikidata integrations
-					// case Constants.Z_WIKIDATA_PROPERTY:
 					// case Constants.Z_WIKIDATA_STATEMENT:
 					// case Constants.Z_WIKIDATA_LEXEME_SENSE:
 					default:

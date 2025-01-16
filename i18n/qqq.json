@@ -481,6 +481,7 @@
 	"wikilambda-wikidata-item-selector-placeholder": "Placeholder text for the lookup component to search and select from Wikidata Items.\n\n{{doc-wikilambda}}",
 	"wikilambda-wikidata-lexeme-form-selector-placeholder": "Placeholder text for the lookup component to search and select from Wikidata Lexeme Forms.\n\n{{doc-wikilambda}}",
 	"wikilambda-wikidata-lexeme-selector-placeholder": "Placeholder text for the lookup component to search and select from Wikidata Lexemes.\n\n{{doc-wikilambda}}",
+	"wikilambda-wikidata-property-selector-placeholder": "Placeholder text for the lookup component to search and select from Wikidata Properties.\n\n{{doc-wikilambda}}",
 	"wikilambda-zerror": "Message that informs that a ZError of a given type has been returned.\n\n{{Doc-wikilambda}}",
 	"wikilambda-zimplememntation-composition-missing": "Error message for a ZImplementation that is missing a composition definition.\n\n{{doc-wikilambda}}",
 	"wikilambda-zimplementation-code-language-missing": "Error message for a code ZImplementation that is missing the programming language",
