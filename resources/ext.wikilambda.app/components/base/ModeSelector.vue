@@ -19,9 +19,10 @@
 const { CdxIcon, CdxMenuButton } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
+	useMainStore = require( '../../store/index.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	icons = require( '../../../lib/icons.json' ),
-	{ mapGetters } = require( 'vuex' );
+	{ mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-mode-selector',
@@ -51,7 +52,7 @@ module.exports = exports = defineComponent( {
 			icon: icons.cdxIconEllipsis
 		};
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getChildrenByParentRowId',
 		'getLabelData',
 		'getParentRowId',

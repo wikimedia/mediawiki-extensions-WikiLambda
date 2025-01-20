@@ -19,7 +19,8 @@
 const { defineComponent } = require( 'vue' );
 const PublishWidget = require( '../../widgets/publish/Publish.vue' ),
 	Constants = require( '../../../Constants.js' ),
-	{ mapActions, mapGetters } = require( 'vuex' ),
+	useMainStore = require( '../../../store/index.js' ),
+	{ mapActions, mapState } = require( 'pinia' ),
 	eventLogUtils = require( '../../../mixins/eventLogUtils.js' );
 
 module.exports = exports = defineComponent( {
@@ -44,7 +45,7 @@ module.exports = exports = defineComponent( {
 			default: false
 		}
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'isCreateNewPage',
 		'getCurrentZObjectId',
 		'getConnectedImplementations',
@@ -87,7 +88,7 @@ module.exports = exports = defineComponent( {
 			return '';
 		}
 	} ),
-	methods: Object.assign( mapActions( [
+	methods: Object.assign( {}, mapActions( useMainStore, [
 		'setError'
 	] ), {
 

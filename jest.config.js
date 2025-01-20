@@ -33,6 +33,8 @@ module.exports = {
 
 	testEnvironment: 'jsdom',
 
+	clearMocks: true,
+
 	coverageProvider: 'v8',
 
 	// Indicates whether the coverage information should be collected while executing the test
@@ -52,6 +54,7 @@ module.exports = {
 		'resources/lib/',
 		// Ignore index.js initialization scripts
 		'resources/ext.wikilambda.app/index.js',
+		'resources/ext.wikilambda.app/Constants.js',
 		'resources/ext.wikilambda.languageselector/index.js',
 		// These are untested base components,
 		// waiting for replacement with Codex alternatives; to drop!

@@ -31,8 +31,9 @@
 const { CdxChipInput } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
+	useMainStore = require( '../../../store/index.js' ),
 	FunctionEditorField = require( './FunctionEditorField.vue' ),
-	{ mapGetters, mapActions } = require( 'vuex' );
+	{ mapState, mapActions } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-aliases',
@@ -51,7 +52,7 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getRowByKeyPath',
 		'getZPersistentAlias',
 		'getZMonolingualStringsetValues'
@@ -141,7 +142,7 @@ module.exports = exports = defineComponent( {
 			return `ext-wikilambda-app-function-editor-aliases__input${ this.zLanguage }`;
 		}
 	} ),
-	methods: Object.assign( mapActions( [
+	methods: Object.assign( {}, mapActions( useMainStore, [
 		'changeType',
 		'removeItemFromTypedList',
 		'setValueByRowIdAndPath'

@@ -35,9 +35,10 @@
 const { defineComponent } = require( 'vue' );
 const { CdxIcon } = require( '@wikimedia/codex' );
 const Constants = require( '../../../Constants.js' ),
+	useMainStore = require( '../../../store/index.js' ),
 	LabelData = require( '../../../store/classes/LabelData.js' ),
 	WikidataEntitySelector = require( './EntitySelector.vue' ),
-	{ mapActions, mapGetters } = require( 'vuex' ),
+	{ mapActions, mapState } = require( 'pinia' ),
 	wikidataIconSvg = require( './wikidataIconSvg.js' );
 
 module.exports = exports = defineComponent( {
@@ -67,7 +68,7 @@ module.exports = exports = defineComponent( {
 			lexemeType: Constants.Z_WIKIDATA_LEXEME
 		};
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getLexemeData',
 		'getLexemeIdRow',
 		'getUserLangCode',
@@ -95,9 +96,10 @@ module.exports = exports = defineComponent( {
 		},
 		/**
 		 * Returns the Lexeme data object, if any Lexeme is selected.
+		 * Returns a Promise if the data is being fetched.
 		 * Else returns undefined.
 		 *
-		 * @return {Object|undefined}
+		 * @return {Object|Promise|undefined}
 		 */
 		lexemeData: function () {
 			return this.getLexemeData( this.lexemeId );
@@ -148,7 +150,7 @@ module.exports = exports = defineComponent( {
 			return this.lexemeLabelData ? this.lexemeLabelData.label : '';
 		}
 	} ),
-	methods: Object.assign( mapActions( [
+	methods: Object.assign( {}, mapActions( useMainStore, [
 		'fetchLexemes'
 	] ), {
 		/**

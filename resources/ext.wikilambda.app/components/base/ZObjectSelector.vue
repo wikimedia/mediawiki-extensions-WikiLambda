@@ -60,9 +60,10 @@
 const { CdxLookup, CdxSelect, CdxMessage } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
+	useMainStore = require( '../../store/index.js' ),
 	errorUtils = require( '../../mixins/errorUtils.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
-	{ mapActions, mapGetters } = require( 'vuex' ),
+	{ mapActions, mapState } = require( 'pinia' ),
 	icons = require( '../../../lib/icons.json' );
 
 module.exports = exports = defineComponent( {
@@ -133,7 +134,7 @@ module.exports = exports = defineComponent( {
 			}
 		};
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getLabelData',
 		'getEnumValues',
 		'isEnumType',
@@ -284,7 +285,7 @@ module.exports = exports = defineComponent( {
 		}
 	} ),
 	methods: Object.assign( {},
-		mapActions( [
+		mapActions( useMainStore, [
 			'lookupZObjectLabels',
 			'fetchEnumValues',
 			'fetchZids'

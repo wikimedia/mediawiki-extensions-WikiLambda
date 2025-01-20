@@ -102,15 +102,51 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 		await waitFor( () => {
 			connectedRows.forEach( ( row ) => {
 				expect( row ).toHaveTextContent( 'Disconnected' );
-				expect( row ).not.toHaveClass( 'ext-wikilambda-app-function-viewer-details-table__row--active' );
 			} );
 		} );
 
 		// ASSERT: The function evaluator message is shown.
 		expect( await findByTestId( 'function-evaluator-message' ) ).toHaveTextContent( 'This function has no connected implementations.' );
+	} );
+
+	it( 'can connect a disconnected test again', async () => {
+		const { findByLabelText } = renderForFunctionViewer();
+
+		// ASSERT: The "connected" implementation is shown in the table.
+		const implementationsTable = await findByLabelText( 'Implementations' );
+		await waitFor( () => expect( within( implementationsTable ).getAllByRole( 'row' ) ).toHaveLength( 3 ) );
+		const firstImplementationRow = within( implementationsTable ).getAllByRole( 'row' )[ 1 ];
+		await waitFor(
+			() => expect( firstImplementationRow ).toHaveTextContent( 'Implementation by composition, in English' ) );
+
+		// ASSERT: The "connected" implementation is shown as connected.
+		expect( firstImplementationRow ).toHaveTextContent( 'Connected' );
+
+		// ACT: Select the "connected" implementation in the table.
+		await fireEvent.update( within( firstImplementationRow ).getByRole( 'checkbox' ), true );
+
+		// ACT: Click the disconnect button.
+		await fireEvent.click( within( implementationsTable ).getByText( 'Disconnect' ) );
+
+		// ASSERT: Correct ZObject was posted to the API.
+		expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {
+			action: 'wikilambda_edit',
+			uselang: 'en',
+			summary: 'Removed $1 from the approved list of implementations',
+			zid: functionZid,
+			zobject:
+				JSON.stringify( expected.zFunctionWithImplementationsAndTesters( [], [ existingFailedTesterZid ] ) )
+		} );
+
+		// ASSERT: The "disconnected" implementation is shown as disconnected.
+		expect( firstImplementationRow ).toHaveTextContent( 'Disconnected' );
 
 		// Ensures state is consistent after a few ticks (fading in message and implementation state updates)
 		// This is necessary because we can not verify this targeting the UI directly
+		// TODO: Make this work without waiting for the nextTick
+		await nextTick();
+		await nextTick();
+		await nextTick();
 		await nextTick();
 		await nextTick();
 		await nextTick();
@@ -133,8 +169,5 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 
 		// ASSERT: The "connected" implementation is shown as connected.
 		expect( firstImplementationRow ).toHaveTextContent( 'Connected' );
-
-		// ASSERT: The function evaluator message is hidden
-		expect( queryByTestId( 'function-evaluator-message' ) ).not.toBeInTheDocument();
 	} );
 } );

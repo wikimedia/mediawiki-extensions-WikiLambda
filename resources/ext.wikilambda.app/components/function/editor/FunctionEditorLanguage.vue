@@ -29,9 +29,10 @@
 
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
+	useMainStore = require( '../../../store/index.js' ),
 	FunctionEditorField = require( './FunctionEditorField.vue' ),
 	ZObjectSelector = require( '../../base/ZObjectSelector.vue' ),
-	{ mapGetters } = require( 'vuex' );
+	{ mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-language',
@@ -50,7 +51,7 @@ module.exports = exports = defineComponent( {
 			naturalLanguageType: Constants.Z_NATURAL_LANGUAGE
 		};
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getMultilingualDataLanguages'
 	] ), {
 		/**

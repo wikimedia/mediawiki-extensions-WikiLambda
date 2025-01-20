@@ -12,20 +12,17 @@ const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	ZMonolingualString = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZMonolingualString.vue' ),
 	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
-	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
+	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 
 describe( 'ZMonolingualString', () => {
-	let getters;
+	let store;
 	beforeEach( () => {
-		getters = {
-			getLabelData: createLabelDataMock(),
-			getLanguageIsoCodeOfZLang: createGettersWithFunctionsMock( 'EN' ),
-			getZMonolingualTextValue: createGettersWithFunctionsMock( 'my label' ),
-			getZMonolingualLangValue: createGettersWithFunctionsMock( 'Z10002' )
-		};
-		global.store.hotUpdate( {
-			getters: getters
-		} );
+		store = useMainStore();
+		store.getLabelData = createLabelDataMock();
+		store.getLanguageIsoCodeOfZLang = createGettersWithFunctionsMock( 'EN' );
+		store.getZMonolingualTextValue = createGettersWithFunctionsMock( 'my label' );
+		store.getZMonolingualLangValue = createGettersWithFunctionsMock( 'Z10002' );
 	} );
 
 	describe( 'in view mode', () => {

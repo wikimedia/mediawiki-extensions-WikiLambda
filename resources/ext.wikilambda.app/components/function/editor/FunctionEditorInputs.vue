@@ -53,10 +53,11 @@ const { CdxButton, CdxIcon, CdxTooltip } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
 	LabelData = require( '../../../store/classes/LabelData.js' ),
+	useMainStore = require( '../../../store/index.js' ),
 	FunctionEditorField = require( './FunctionEditorField.vue' ),
 	FunctionEditorInputsItem = require( './FunctionEditorInputsItem.vue' ),
 	icons = require( './../../../../lib/icons.json' ),
-	{ mapActions, mapGetters } = require( 'vuex' );
+	{ mapActions, mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-inputs',
@@ -121,7 +122,7 @@ module.exports = exports = defineComponent( {
 			icons: icons
 		};
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getZFunctionInputs',
 		'getRowByKeyPath',
 		'getUserLangCode'
@@ -217,7 +218,7 @@ module.exports = exports = defineComponent( {
 				'ext-wikilambda-app-function-editor-inputs__action-add-another';
 		}
 	} ),
-	methods: Object.assign( mapActions( [
+	methods: Object.assign( {}, mapActions( useMainStore, [
 		'changeType',
 		'removeItemFromTypedList'
 	] ), {

@@ -7,41 +7,23 @@
 'use strict';
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
-	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	FunctionEditorName = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorName.vue' );
+	LabelData = require( '../../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' ),
+	FunctionEditorName = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorName.vue' ),
+	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 
-const langLabelData = {
-	zid: 'Z1002',
-	label: 'English',
-	lang: 'Z1002',
-	langCode: 'en',
-	langDir: 'ltr'
-};
+const langLabelData = new LabelData( 'Z1002', 'English', 'Z1002', 'en', 'ltr' );
 
 describe( 'FunctionEditorName', () => {
-	let getters,
-		actions;
+	let store;
 
 	beforeEach( () => {
-		getters = {
-			getUserLangZid: createGetterMock( 'Z1002' ),
-			getFallbackLanguageZids: createGetterMock( [ 'Z1002', 'Z1003' ] ),
-			getRowByKeyPath: createGettersWithFunctionsMock(),
-			getZPersistentName: createGettersWithFunctionsMock( { id: 2 } ),
-			getZMonolingualTextValue: createGettersWithFunctionsMock( 'Function name' )
-		};
-
-		actions = {
-			changeType: jest.fn(),
-			removeItemFromTypedList: jest.fn(),
-			setValueByRowIdAndPath: jest.fn()
-		};
-
-		global.store.hotUpdate( {
-			getters: getters,
-			actions: actions
-		} );
+		store = useMainStore();
+		store.getUserLangZid = 'Z1002';
+		store.getFallbackLanguageZids = [ 'Z1002', 'Z1003' ];
+		store.getRowByKeyPath = createGettersWithFunctionsMock();
+		store.getZPersistentName = createGettersWithFunctionsMock( { id: 2 } );
+		store.getZMonolingualTextValue = createGettersWithFunctionsMock( 'Function name' );
 	} );
 
 	it( 'renders without errors', () => {
@@ -87,7 +69,7 @@ describe( 'FunctionEditorName', () => {
 			await wrapper.vm.$nextTick();
 
 			// ASSERT: removeItemFromTypedList action runs correctly
-			expect( actions.removeItemFromTypedList ).toHaveBeenCalledWith( expect.anything(), {
+			expect( store.removeItemFromTypedList ).toHaveBeenCalledWith( {
 				rowId: 2
 			} );
 
@@ -115,7 +97,7 @@ describe( 'FunctionEditorName', () => {
 			await wrapper.vm.$nextTick();
 
 			// ASSERT: setValueByRowIdAndPath action runs correctly
-			expect( actions.setValueByRowIdAndPath ).toHaveBeenCalledWith( expect.anything(), {
+			expect( store.setValueByRowIdAndPath ).toHaveBeenCalledWith( {
 				rowId: 2,
 				keyPath: [ 'Z11K2', 'Z6K1' ],
 				value: 'New Function Name'
@@ -129,9 +111,8 @@ describe( 'FunctionEditorName', () => {
 		} );
 
 		it( 'adds a new monolingual string if there is no name object', async () => {
-			getters.getZPersistentName = createGettersWithFunctionsMock( undefined );
-			getters.getRowByKeyPath = createGettersWithFunctionsMock( { id: 1 } );
-			global.store.hotUpdate( { getters: getters } );
+			store.getZPersistentName = createGettersWithFunctionsMock( undefined );
+			store.getRowByKeyPath = createGettersWithFunctionsMock( { id: 1 } );
 
 			const wrapper = shallowMount( FunctionEditorName, {
 				props: {
@@ -149,7 +130,7 @@ describe( 'FunctionEditorName', () => {
 			await wrapper.vm.$nextTick();
 
 			// ASSERT: changeType action runs correctly
-			expect( actions.changeType ).toHaveBeenCalledWith( expect.anything(), {
+			expect( store.changeType ).toHaveBeenCalledWith( {
 				id: 1,
 				type: 'Z11',
 				lang: 'Z1002',

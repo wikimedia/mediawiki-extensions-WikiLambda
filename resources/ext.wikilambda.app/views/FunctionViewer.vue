@@ -44,11 +44,12 @@
 const { CdxMessage } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../Constants.js' ),
+	useMainStore = require( '../store/index.js' ),
 	AboutWidget = require( '../components/widgets/about/About.vue' ),
 	FunctionEvaluatorWidget = require( '../components/widgets/function-evaluator/FunctionEvaluator.vue' ),
 	FunctionViewerDetails = require( '../components/function/viewer/FunctionViewerDetails.vue' ),
 	eventLogUtils = require( '../mixins/eventLogUtils.js' ),
-	{ mapGetters } = require( 'vuex' );
+	{ mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-viewer-view',
@@ -64,7 +65,7 @@ module.exports = exports = defineComponent( {
 			functionType: Constants.Z_FUNCTION
 		};
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getCurrentZObjectId',
 		'getUserLangZid'
 	] ), {

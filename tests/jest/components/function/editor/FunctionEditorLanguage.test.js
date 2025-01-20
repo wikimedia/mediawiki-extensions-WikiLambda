@@ -8,18 +8,15 @@
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	FunctionEditorLanguage = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorLanguage.vue' );
+	FunctionEditorLanguage = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorLanguage.vue' ),
+	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 
 describe( 'FunctionEditorLanguage', () => {
-	let getters;
+	let store;
 
 	beforeEach( () => {
-		getters = {
-			getMultilingualDataLanguages: createGettersWithFunctionsMock( [ 'Z1002', 'Z1004' ] )
-		};
-		global.store.hotUpdate( {
-			getters: getters
-		} );
+		store = useMainStore();
+		store.getMultilingualDataLanguages = createGettersWithFunctionsMock( [ 'Z1002', 'Z1004' ] );
 	} );
 
 	describe( 'function editor language block', () => {

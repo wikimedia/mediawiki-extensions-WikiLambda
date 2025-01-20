@@ -80,9 +80,10 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
+	useMainStore = require( '../../store/index.js' ),
 	KeyValueBlock = require( '../base/KeyValueBlock.vue' ),
 	{ isValidZidFormat } = require( '../../mixins/typeUtils.js' ).methods,
-	{ mapActions, mapGetters } = require( 'vuex' );
+	{ mapActions, mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-tester',
@@ -100,7 +101,7 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'createObjectByType',
 		'getLabelData',
 		'getZTesterFunctionRowId',
@@ -185,7 +186,7 @@ module.exports = exports = defineComponent( {
 			return this.getLabelData( Constants.Z_TESTER_VALIDATION );
 		}
 	} ),
-	methods: Object.assign( mapActions( [
+	methods: Object.assign( {}, mapActions( useMainStore, [
 		'fetchZids',
 		'setZFunctionCallArguments'
 	] ), {

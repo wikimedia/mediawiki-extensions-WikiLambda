@@ -10,10 +10,10 @@
 const { config, mount } = require( '@vue/test-utils' ),
 	{ waitFor } = require( '@testing-library/vue' ),
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
 	ApiError = require( '../../../../../resources/ext.wikilambda.app/store/classes/ApiError.js' ),
 	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
-	PublishDialog = require( '../../../../../resources/ext.wikilambda.app/components/widgets/publish/PublishDialog.vue' );
+	PublishDialog = require( '../../../../../resources/ext.wikilambda.app/components/widgets/publish/PublishDialog.vue' ),
+	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 
 // Ignore all "teleport" behavior for the purpose of testing Dialog;
 // see https://test-utils.vuejs.org/guide/advanced/teleport.html
@@ -22,29 +22,18 @@ config.global.stubs = {
 };
 
 describe( 'Publish Dialog', () => {
-	let getters,
-		actions;
+	let store;
 
 	beforeEach( () => {
-		getters = {
-			getErrors: createGettersWithFunctionsMock( [] ),
-			getCurrentZObjectId: createGetterMock( 'Z0' ),
-			getCurrentZObjectType: createGetterMock( Constants.Z_FUNCTION ),
-			getCurrentZImplementationType: createGetterMock( undefined ),
-			isCreateNewPage: createGetterMock( true ),
-			getUserLangZid: createGetterMock( 'Z1002' ),
-			getUserLangCode: createGetterMock( 'en' )
-		};
-		actions = {
-			submitZObject: jest.fn().mockReturnValue( { page: 'Z10001' } ),
-			setError: jest.fn(),
-			setDirty: jest.fn(),
-			clearAllErrors: jest.fn()
-		};
-		global.store.hotUpdate( {
-			getters: getters,
-			actions: actions
-		} );
+		store = useMainStore();
+		store.getErrors = createGettersWithFunctionsMock( [] );
+		store.getCurrentZObjectId = 'Z0';
+		store.getCurrentZObjectType = Constants.Z_FUNCTION;
+		store.getCurrentZImplementationType = undefined;
+		store.isCreateNewPage = true;
+		store.getUserLangZid = 'Z1002';
+		store.getUserLangCode = 'en';
+		store.submitZObject.mockResolvedValue( { page: 'Z10001' } );
 	} );
 
 	const triggerKeydown = async ( input, key, keyCode, modifierKey ) => {
@@ -87,8 +76,7 @@ describe( 'Publish Dialog', () => {
 			code: Constants.errorCodes.UNKNOWN_ERROR,
 			type: Constants.errorTypes.ERROR
 		} ];
-		getters.getErrors = createGettersWithFunctionsMock( errors );
-		global.store.hotUpdate( { getters: getters } );
+		store.getErrors = createGettersWithFunctionsMock( errors );
 
 		const wrapper = mount( PublishDialog, {
 			props: { showDialog: true }
@@ -118,7 +106,7 @@ describe( 'Publish Dialog', () => {
 		wrapper.vm.summary = 'mock summary';
 
 		wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
-		expect( actions.submitZObject ).toHaveBeenCalledWith( expect.anything(), {
+		expect( store.submitZObject ).toHaveBeenCalledWith( {
 			summary: 'mock summary',
 			disconnectFunctionObjects: false
 		} );
@@ -135,15 +123,14 @@ describe( 'Publish Dialog', () => {
 
 	it( 'shows error when submission is not successful', async () => {
 		const error = new ApiError( 'http', { error: { message: 'mock submission error' } } );
-		actions.submitZObject = jest.fn().mockRejectedValue( error );
-		global.store.hotUpdate( { actions: actions } );
+		store.submitZObject.mockRejectedValue( error );
 
 		const wrapper = mount( PublishDialog, {
 			props: { showDialog: true, functionSignatureChanged: false }
 		} );
 
 		wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
-		await waitFor( () => expect( actions.setError ).toHaveBeenCalledWith( expect.anything(), {
+		await waitFor( () => expect( store.setError ).toHaveBeenCalledWith( {
 			rowId: 0,
 			errorType: Constants.errorTypes.ERROR,
 			errorMessage: 'mock submission error'
@@ -164,7 +151,7 @@ describe( 'Publish Dialog', () => {
 		await triggerKeydown( input, 'Enter', 13 );
 
 		await waitFor( () => expect( wrapper.find( '.cdx-message--warning.ext-wikilambda-app-publish-dialog__keyboard-submit-warning' ).exists() ).toBe( true ) );
-		expect( actions.submitZObject ).not.toHaveBeenCalled();
+		expect( store.submitZObject ).not.toHaveBeenCalled();
 	} );
 
 	it( 'proceeds to publish when pressing Ctrl + Enter on Windows', async () => {
@@ -180,7 +167,7 @@ describe( 'Publish Dialog', () => {
 		await triggerKeydown( input, 'Enter', 13, 'ctrlKey' );
 
 		await waitFor( () => expect( wrapper.find( '.cdx-message--warning.ext-wikilambda-app-publish-dialog__keyboard-submit-warning' ).exists() ).toBe( false ) );
-		expect( actions.submitZObject ).toHaveBeenCalled();
+		expect( store.submitZObject ).toHaveBeenCalled();
 	} );
 
 	it( 'proceeds to publish when pressing CMD + Enter on Mac', async () => {
@@ -196,18 +183,15 @@ describe( 'Publish Dialog', () => {
 		await triggerKeydown( input, 'Enter', 13, 'metaKey' );
 
 		await waitFor( () => expect( wrapper.find( '.cdx-message--warning.ext-wikilambda-app-publish-dialog__keyboard-submit-warning' ).exists() ).toBe( false ) );
-		expect( actions.submitZObject ).toHaveBeenCalled();
+		expect( store.submitZObject ).toHaveBeenCalled();
 	} );
 
 	describe( 'Event logging', () => {
 		it( 'emits publish event after successful edit of an implementation', async () => {
-			getters.isCreateNewPage = createGetterMock( false );
-			getters.getCurrentZObjectId = createGetterMock( 'Z10001' );
-			getters.getCurrentZObjectType = createGetterMock( 'Z14' );
-			getters.getCurrentZImplementationType = createGetterMock( 'Z14K3' );
-			global.store.hotUpdate( {
-				getters: getters
-			} );
+			store.isCreateNewPage = false;
+			store.getCurrentZObjectId = 'Z10001';
+			store.getCurrentZObjectType = 'Z14';
+			store.getCurrentZImplementationType = 'Z14K3';
 
 			const wrapper = mount( PublishDialog, {
 				props: { showDialog: true, functionSignatureChanged: false }
@@ -218,23 +202,20 @@ describe( 'Publish Dialog', () => {
 			const streamName = 'mediawiki.product_metrics.wikifunctions_ui';
 			const schemaID = '/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0';
 			const action = 'publish';
-			const interactionData = { haserrors: false, zlang: 'Z1002', zobjectid: 'Z0', zobjecttype: 'Z8' };
+			const interactionData = { haserrors: false, implementationtype: 'Z14K3', zlang: 'Z1002', zobjectid: 'Z10001', zobjecttype: 'Z14' };
 
 			await waitFor( () => expect( mw.eventLog.submitInteraction ).toHaveBeenCalledWith( streamName, schemaID, action, interactionData ) );
 		} );
 
 		it( 'emits publish event after unsuccessful creation of a function', async () => {
 			const error = new ApiError( 'http', { error: { message: 'mock submission error' } } );
-			actions.submitZObject = jest.fn().mockRejectedValue( error );
-			getters.getErrors = createGettersWithFunctionsMock( [ { type: 'error', message: 'some error' } ] );
-			getters.isCreateNewPage = createGetterMock( true );
-			getters.getCurrentZObjectId = createGetterMock( 'Z0' );
-			getters.getCurrentZObjectType = createGetterMock( 'Z8' );
-			getters.getCurrentZImplementationType = createGetterMock( undefined );
-			global.store.hotUpdate( {
-				getters: getters,
-				actions: actions
-			} );
+
+			store.submitZObject.mockRejectedValue( error );
+			store.getErrors = createGettersWithFunctionsMock( [ { type: 'error', message: 'some error' } ] );
+			store.isCreateNewPage = true;
+			store.getCurrentZObjectId = 'Z0';
+			store.getCurrentZObjectType = 'Z8';
+			store.getCurrentZImplementationType = undefined;
 
 			const wrapper = mount( PublishDialog, {
 				props: { showDialog: true, functionSignatureChanged: false }
@@ -245,7 +226,7 @@ describe( 'Publish Dialog', () => {
 			const streamName = 'mediawiki.product_metrics.wikifunctions_ui';
 			const schemaID = '/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0';
 			const action = 'publish';
-			const interactionData = { haserrors: false, zlang: 'Z1002', zobjectid: 'Z0', zobjecttype: 'Z8' };
+			const interactionData = { haserrors: true, zlang: 'Z1002', zobjectid: 'Z0', zobjecttype: 'Z8' };
 
 			await waitFor( () => expect( mw.eventLog.submitInteraction ).toHaveBeenCalledWith( streamName, schemaID, action, interactionData ) );
 		} );

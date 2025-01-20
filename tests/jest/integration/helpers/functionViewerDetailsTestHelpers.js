@@ -7,12 +7,13 @@
 'use strict';
 
 const { render } = require( '@testing-library/vue' ),
-	store = require( '../../../../resources/ext.wikilambda.app/store/index.js' ),
 	App = require( '../../../../resources/ext.wikilambda.app/components/App.vue' ),
 	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
 	apiGetMock = require( './apiGetMock.js' ),
 	ApiMock = require( './apiMock.js' ),
 	existingFunctionFromApi = require( '../objects/existingFunctionFromApi.js' );
+const { createPinia } = require( 'pinia' );
+const vueTestUtils = require( '@vue/test-utils' );
 
 const initializeRootZObject =
 	new ApiMock( apiGetMock.loadZObjectsRequest, apiGetMock.loadZObjectsResponse, apiGetMock.loadZObjectsMatcher );
@@ -34,6 +35,11 @@ const runSetup = function () {
 			href: 'currentPage'
 		}
 	} );
+
+	// Create a real Pinia store or a testing one
+	global.store = createPinia();
+	// Configure the Vue test utils to use our store
+	vueTestUtils.config.global.plugins = [ global.store ];
 
 	const apiPostWithEditTokenMock = jest.fn( () => Promise.resolve( {
 		wikilambda_edit: {
@@ -92,7 +98,7 @@ const runTeardown = () => {
 // because we already have a store in the global object in jest.config.js
 const renderForFunctionViewer = () => render(
 	App,
-	{ container: document.createElement( 'div' ), global: { plugins: [ store ] } }
+	{ container: document.createElement( 'div' ) }
 );
 
 module.exports = {

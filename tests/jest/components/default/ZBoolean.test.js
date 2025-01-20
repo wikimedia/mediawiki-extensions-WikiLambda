@@ -10,24 +10,20 @@ const { CdxRadio } = require( '@wikimedia/codex' );
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
-	ZBoolean = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZBoolean.vue' );
+	ZBoolean = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZBoolean.vue' ),
+	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 
 describe( 'ZBoolean', () => {
-	let getters;
+	let store;
 	beforeEach( () => {
-		getters = {
-			getZBooleanValue: createGettersWithFunctionsMock( 'Z42' ),
-			getLabelData: createLabelDataMock( {
-				Z41: 'true',
-				Z42: 'false'
-			} ),
-			getUserLangCode: createGetterMock( 'en' )
-		};
-		global.store.hotUpdate( {
-			getters: getters
+		store = useMainStore();
+		store.getZBooleanValue = createGettersWithFunctionsMock( 'Z42' );
+		store.getLabelData = createLabelDataMock( {
+			Z41: 'true',
+			Z42: 'false'
 		} );
+		store.getUserLangCode = 'en';
 	} );
 	describe( 'in view mode', () => {
 		it( 'renders without errors', () => {

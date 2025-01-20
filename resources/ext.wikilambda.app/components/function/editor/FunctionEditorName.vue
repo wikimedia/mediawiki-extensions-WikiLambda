@@ -37,9 +37,10 @@ const { CdxTextInput } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
 	LabelData = require( '../../../store/classes/LabelData.js' ),
+	useMainStore = require( '../../../store/index.js' ),
 	pageTitleUtils = require( '../../../mixins/pageTitleUtils.js' ),
 	FunctionEditorField = require( './FunctionEditorField.vue' ),
-	{ mapActions, mapGetters } = require( 'vuex' );
+	{ mapActions, mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-name',
@@ -73,7 +74,7 @@ module.exports = exports = defineComponent( {
 			remainingChars: Constants.LABEL_CHARS_MAX
 		};
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getZPersistentName',
 		'getZMonolingualTextValue',
 		'getRowByKeyPath'
@@ -142,7 +143,7 @@ module.exports = exports = defineComponent( {
 			return `ext-wikilambda-app-function-editor-name__input-${ this.zLanguage }`;
 		}
 	} ),
-	methods: Object.assign( mapActions( [
+	methods: Object.assign( {}, mapActions( useMainStore, [
 		'changeType',
 		'removeItemFromTypedList',
 		'setValueByRowIdAndPath'

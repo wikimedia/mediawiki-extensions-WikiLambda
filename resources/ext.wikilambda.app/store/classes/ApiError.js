@@ -136,7 +136,7 @@ class ApiError extends Error {
 	 * @param {Object} arg2
 	 * @param {Object|undefined} _arg3
 	 * @param {Object|undefined} _arg4
-	 * @throws {ApiError}
+	 * @return {ApiError}
 	 */
 	// eslint-disable-next-line no-unused-vars
 	static fromMwApiRejection( code, arg2, _arg3, _arg4 ) {
@@ -151,7 +151,7 @@ class ApiError extends Error {
 			// arg4 contains an object of class jQuery.jqXHR
 			response = arg2;
 		}
-		throw new ApiError( code, response );
+		return new ApiError( code, response );
 	}
 }
 

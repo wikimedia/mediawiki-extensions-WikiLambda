@@ -36,7 +36,8 @@ const { defineComponent } = require( 'vue' );
 const ZTypedListItems = require( './ZTypedListItems.vue' ),
 	ZTypedListType = require( './ZTypedListType.vue' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
-	{ mapGetters } = require( 'vuex' );
+	useMainStore = require( '../../store/index.js' ),
+	{ mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-typed-list',
@@ -65,7 +66,7 @@ module.exports = exports = defineComponent( {
 		}
 	},
 	computed: Object.assign(
-		mapGetters( [
+		mapState( useMainStore, [
 			'getChildrenByParentRowId',
 			'getTypedListItemType'
 		] ),

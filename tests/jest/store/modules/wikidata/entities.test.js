@@ -1,5 +1,5 @@
 /*!
- * WikiLambda unit test suite for the Wikidata entities Vuex store module
+ * WikiLambda unit test suite for the Wikidata entities Pinia store module
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -7,49 +7,36 @@
 
 'use strict';
 
-const
-	zobjectToRows = require( '../../../helpers/zObjectTableHelpers.js' ).zobjectToRows,
-	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
-	entitiesModule = require( '../../../../../resources/ext.wikilambda.app/store/modules/wikidata/entities.js' ),
-	zobjectModule = require( '../../../../../resources/ext.wikilambda.app/store/modules/zobject.js' );
+const { setActivePinia, createPinia } = require( 'pinia' );
+const { zobjectToRows } = require( '../../../helpers/zObjectTableHelpers.js' );
+const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
+const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 
-describe( 'Wikidata Entities Vuex module', () => {
-	let state, getters;
+describe( 'Wikidata Entities Pinia store', () => {
+	let store;
+
+	beforeEach( () => {
+		setActivePinia( createPinia() );
+		store = useMainStore();
+		store.zobject = [];
+	} );
 
 	describe( 'Getters', () => {
 		describe( 'isWikidataLiteral', () => {
-			beforeEach( () => {
-				state = {
-					zobject: []
-				};
-				getters = {};
-				getters.getRowById = zobjectModule.getters.getRowById( state );
-				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
-				getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
-				getters.getZReferenceTerminalValue = zobjectModule.getters.getZReferenceTerminalValue( state, getters );
-				getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
-				getters.getZFunctionCallArguments = zobjectModule.getters.getZFunctionCallArguments( state, getters );
-				getters.getZFunctionCallFunctionId = zobjectModule.getters.getZFunctionCallFunctionId( state, getters );
-				getters.getZObjectAsJsonById = zobjectModule.getters.getZObjectAsJsonById( state, getters );
-				getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( state, getters );
-			} );
-
 			it( 'returns false when row is undefined', () => {
 				const rowId = undefined;
 				const expected = false;
-				expect( entitiesModule.getters.isWikidataLiteral( state, getters )( rowId ) )
-					.toEqual( expected );
+				expect( store.isWikidataLiteral( rowId ) ).toEqual( expected );
 			} );
 
 			it( 'returns false when row is not found', () => {
 				const rowId = 100;
 				const expected = false;
-				expect( entitiesModule.getters.isWikidataLiteral( state, getters )( rowId ) )
-					.toEqual( expected );
+				expect( store.isWikidataLiteral( rowId ) ).toEqual( expected );
 			} );
 
 			it( 'returns false when object is not a wikidata reference type', () => {
-				state.zobject = zobjectToRows( {
+				store.zobject = zobjectToRows( {
 					Z2K2: { // rowId = 1
 						Z1K1: 'Z11',
 						Z11K1: 'Z1002',
@@ -58,12 +45,11 @@ describe( 'Wikidata Entities Vuex module', () => {
 				} );
 				const rowId = 1;
 				const expected = false;
-				expect( entitiesModule.getters.isWikidataLiteral( state, getters )( rowId ) )
-					.toEqual( expected );
+				expect( store.isWikidataLiteral( rowId ) ).toEqual( expected );
 			} );
 
 			it( 'returns false when object is a wikidata entity represented by a fetch function call', () => {
-				state.zobject = zobjectToRows( {
+				store.zobject = zobjectToRows( {
 					Z2K2: { // rowId = 1
 						Z1K1: 'Z7',
 						Z7K1: 'Z6825',
@@ -72,12 +58,11 @@ describe( 'Wikidata Entities Vuex module', () => {
 				} );
 				const rowId = 1;
 				const expected = false;
-				expect( entitiesModule.getters.isWikidataLiteral( state, getters )( rowId ) )
-					.toEqual( expected );
+				expect( store.isWikidataLiteral( rowId ) ).toEqual( expected );
 			} );
 
 			it( 'returns false when object is a wikidata reference type', () => {
-				state.zobject = zobjectToRows( {
+				store.zobject = zobjectToRows( {
 					Z2K2: { // rowId = 1
 						Z1K1: 'Z6095',
 						Z6095K1: 'L333333'
@@ -85,12 +70,11 @@ describe( 'Wikidata Entities Vuex module', () => {
 				} );
 				const rowId = 1;
 				const expected = false;
-				expect( entitiesModule.getters.isWikidataLiteral( state, getters )( rowId ) )
-					.toEqual( expected );
+				expect( store.isWikidataLiteral( rowId ) ).toEqual( expected );
 			} );
 
 			it( 'returns true when object is a wikidata literal', () => {
-				state.zobject = zobjectToRows( {
+				store.zobject = zobjectToRows( {
 					Z2K2: { // rowId = 1
 						Z1K1: 'Z6005',
 						Z6005K1: {
@@ -101,40 +85,25 @@ describe( 'Wikidata Entities Vuex module', () => {
 				} );
 				const rowId = 1;
 				const expected = true;
-				expect( entitiesModule.getters.isWikidataLiteral( state, getters )( rowId ) )
-					.toEqual( expected );
+				expect( store.isWikidataLiteral( rowId ) ).toEqual( expected );
 			} );
 		} );
 
 		describe( 'isWikidataFetch', () => {
-			beforeEach( () => {
-				state = {
-					zobject: []
-				};
-				getters = {};
-				getters.getRowById = zobjectModule.getters.getRowById( state );
-				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
-				getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
-				getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
-				getters.getZFunctionCallFunctionId = zobjectModule.getters.getZFunctionCallFunctionId( state, getters );
-			} );
-
 			it( 'returns false when row is undefined', () => {
 				const rowId = undefined;
 				const expected = false;
-				expect( entitiesModule.getters.isWikidataFetch( state, getters )( rowId ) )
-					.toEqual( expected );
+				expect( store.isWikidataFetch( rowId ) ).toEqual( expected );
 			} );
 
 			it( 'returns false when row is not found', () => {
 				const rowId = 100;
 				const expected = false;
-				expect( entitiesModule.getters.isWikidataFetch( state, getters )( rowId ) )
-					.toEqual( expected );
+				expect( store.isWikidataFetch( rowId ) ).toEqual( expected );
 			} );
 
 			it( 'returns false when row belongs to something other than a function call', () => {
-				state.zobject = zobjectToRows( {
+				store.zobject = zobjectToRows( {
 					Z2K2: { // rowId = 1
 						Z1K1: 'Z11',
 						Z11K1: 'Z1002',
@@ -143,12 +112,11 @@ describe( 'Wikidata Entities Vuex module', () => {
 				} );
 				const rowId = 1;
 				const expected = false;
-				expect( entitiesModule.getters.isWikidataFetch( state, getters )( rowId ) )
-					.toEqual( expected );
+				expect( store.isWikidataFetch( rowId ) ).toEqual( expected );
 			} );
 
 			it( 'returns false when function call is not to a wikidata fetch function', () => {
-				state.zobject = zobjectToRows( {
+				store.zobject = zobjectToRows( {
 					Z2K2: { // rowId = 1
 						Z1K1: 'Z7',
 						Z7K1: 'Z801',
@@ -157,12 +125,11 @@ describe( 'Wikidata Entities Vuex module', () => {
 				} );
 				const rowId = 1;
 				const expected = false;
-				expect( entitiesModule.getters.isWikidataFetch( state, getters )( rowId ) )
-					.toEqual( expected );
+				expect( store.isWikidataFetch( rowId ) ).toEqual( expected );
 			} );
 
 			it( 'returns true when function call is to a wikidata fetch function', () => {
-				state.zobject = zobjectToRows( {
+				store.zobject = zobjectToRows( {
 					Z2K2: { // rowId = 1
 						Z1K1: 'Z7',
 						Z7K1: 'Z6825',
@@ -174,44 +141,25 @@ describe( 'Wikidata Entities Vuex module', () => {
 				} );
 				const rowId = 1;
 				const expected = true;
-				expect( entitiesModule.getters.isWikidataFetch( state, getters )( rowId ) )
-					.toEqual( expected );
+				expect( store.isWikidataFetch( rowId ) ).toEqual( expected );
 			} );
 		} );
 
 		describe( 'isWikidataReference', () => {
-			beforeEach( () => {
-				state = {
-					zobject: []
-				};
-				getters = {};
-				getters.getRowById = zobjectModule.getters.getRowById( state );
-				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
-				getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
-				getters.getZReferenceTerminalValue = zobjectModule.getters.getZReferenceTerminalValue( state, getters );
-				getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
-				getters.getZFunctionCallArguments = zobjectModule.getters.getZFunctionCallArguments( state, getters );
-				getters.getZFunctionCallFunctionId = zobjectModule.getters.getZFunctionCallFunctionId( state, getters );
-				getters.getZObjectAsJsonById = zobjectModule.getters.getZObjectAsJsonById( state, getters );
-				getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( state, getters );
-			} );
-
 			it( 'returns false when row is undefined', () => {
 				const rowId = undefined;
 				const expected = false;
-				expect( entitiesModule.getters.isWikidataReference( state, getters )( rowId ) )
-					.toEqual( expected );
+				expect( store.isWikidataReference( rowId ) ).toEqual( expected );
 			} );
 
 			it( 'returns false when row is not found', () => {
 				const rowId = 100;
 				const expected = false;
-				expect( entitiesModule.getters.isWikidataReference( state, getters )( rowId ) )
-					.toEqual( expected );
+				expect( store.isWikidataReference( rowId ) ).toEqual( expected );
 			} );
 
 			it( 'returns false when object is not a wikidata reference type', () => {
-				state.zobject = zobjectToRows( {
+				store.zobject = zobjectToRows( {
 					Z2K2: { // rowId = 1
 						Z1K1: 'Z11',
 						Z11K1: 'Z1002',
@@ -220,12 +168,11 @@ describe( 'Wikidata Entities Vuex module', () => {
 				} );
 				const rowId = 1;
 				const expected = false;
-				expect( entitiesModule.getters.isWikidataReference( state, getters )( rowId ) )
-					.toEqual( expected );
+				expect( store.isWikidataReference( rowId ) ).toEqual( expected );
 			} );
 
 			it( 'returns false when object is a wikidata entity represented by a fetch function call', () => {
-				state.zobject = zobjectToRows( {
+				store.zobject = zobjectToRows( {
 					Z2K2: { // rowId = 1
 						Z1K1: 'Z7',
 						Z7K1: 'Z6825',
@@ -234,12 +181,11 @@ describe( 'Wikidata Entities Vuex module', () => {
 				} );
 				const rowId = 1;
 				const expected = false;
-				expect( entitiesModule.getters.isWikidataReference( state, getters )( rowId ) )
-					.toEqual( expected );
+				expect( store.isWikidataReference( rowId ) ).toEqual( expected );
 			} );
 
 			it( 'returns false when object is a wikidata literal', () => {
-				state.zobject = zobjectToRows( {
+				store.zobject = zobjectToRows( {
 					Z2K2: { // rowId = 1
 						Z1K1: 'Z6005',
 						Z6005K1: {
@@ -250,12 +196,11 @@ describe( 'Wikidata Entities Vuex module', () => {
 				} );
 				const rowId = 1;
 				const expected = false;
-				expect( entitiesModule.getters.isWikidataReference( state, getters )( rowId ) )
-					.toEqual( expected );
+				expect( store.isWikidataReference( rowId ) ).toEqual( expected );
 			} );
 
 			it( 'returns true when object is a wikidata reference type', () => {
-				state.zobject = zobjectToRows( {
+				store.zobject = zobjectToRows( {
 					Z2K2: { // rowId = 1
 						Z1K1: 'Z6095',
 						Z6095K1: 'L333333'
@@ -263,46 +208,27 @@ describe( 'Wikidata Entities Vuex module', () => {
 				} );
 				const rowId = 1;
 				const expected = true;
-				expect( entitiesModule.getters.isWikidataReference( state, getters )( rowId ) )
-					.toEqual( expected );
+				expect( store.isWikidataReference( rowId ) ).toEqual( expected );
 			} );
 		} );
 
 		describe( 'getWikidataEntityIdRow', () => {
-			beforeEach( () => {
-				state = {
-					zobject: []
-				};
-				getters = {};
-				getters.getRowById = zobjectModule.getters.getRowById( state );
-				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
-				getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
-				getters.getZReferenceTerminalValue = zobjectModule.getters.getZReferenceTerminalValue( state, getters );
-				getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
-				getters.getZFunctionCallArguments = zobjectModule.getters.getZFunctionCallArguments( state, getters );
-				getters.getZFunctionCallFunctionId = zobjectModule.getters.getZFunctionCallFunctionId( state, getters );
-				getters.getZObjectAsJsonById = zobjectModule.getters.getZObjectAsJsonById( state, getters );
-				getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( state, getters );
-			} );
-
 			it( 'returns undefined when row is undefined', () => {
 				const rowId = undefined;
 				const wikidataType = 'Z6005';
 				const expected = undefined;
-				expect( entitiesModule.getters.getWikidataEntityIdRow( state, getters )( rowId, wikidataType ) )
-					.toEqual( expected );
+				expect( store.getWikidataEntityIdRow( rowId, wikidataType ) ).toEqual( expected );
 			} );
 
 			it( 'returns undefined when row is not found', () => {
 				const rowId = 100;
 				const wikidataType = 'Z6005';
 				const expected = undefined;
-				expect( entitiesModule.getters.getWikidataEntityIdRow( state, getters )( rowId, wikidataType ) )
-					.toEqual( expected );
+				expect( store.getWikidataEntityIdRow( rowId, wikidataType ) ).toEqual( expected );
 			} );
 
 			it( 'returns undefined when object is not a wikidata entity', () => {
-				state.zobject = zobjectToRows( {
+				store.zobject = zobjectToRows( {
 					Z2K2: { // rowId = 1
 						Z1K1: 'Z11',
 						Z11K1: 'Z1002',
@@ -312,12 +238,11 @@ describe( 'Wikidata Entities Vuex module', () => {
 				const rowId = 1;
 				const wikidataType = 'Z6005';
 				const expected = undefined;
-				expect( entitiesModule.getters.getWikidataEntityIdRow( state, getters )( rowId, wikidataType ) )
-					.toEqual( expected );
+				expect( store.getWikidataEntityIdRow( rowId, wikidataType ) ).toEqual( expected );
 			} );
 
 			it( 'returns undefined when object is a function call to a different function', () => {
-				state.zobject = zobjectToRows( {
+				store.zobject = zobjectToRows( {
 					Z2K2: { // rowId = 1
 						Z1K1: 'Z7',
 						Z7K1: 'Z801',
@@ -327,12 +252,11 @@ describe( 'Wikidata Entities Vuex module', () => {
 				const rowId = 1;
 				const wikidataType = 'Z6005';
 				const expected = undefined;
-				expect( entitiesModule.getters.getWikidataEntityIdRow( state, getters )( rowId, wikidataType ) )
-					.toEqual( expected );
+				expect( store.getWikidataEntityIdRow( rowId, wikidataType ) ).toEqual( expected );
 			} );
 
 			it( 'returns identity row when object is a wikidata literal', () => {
-				state.zobject = zobjectToRows( {
+				store.zobject = zobjectToRows( {
 					Z2K2: { // rowId = 1
 						Z1K1: 'Z6005',
 						Z6005K1: {
@@ -344,12 +268,12 @@ describe( 'Wikidata Entities Vuex module', () => {
 				const rowId = 1;
 				const wikidataType = 'Z6005';
 				const expectedKey = 'Z6095K1';
-				const referenceRow = entitiesModule.getters.getWikidataEntityIdRow( state, getters )( rowId, wikidataType );
+				const referenceRow = store.getWikidataEntityIdRow( rowId, wikidataType );
 				expect( referenceRow.key ).toBe( expectedKey );
 			} );
 
 			it( 'returns identity row when object is a wikidata reference', () => {
-				state.zobject = zobjectToRows( {
+				store.zobject = zobjectToRows( {
 					Z2K2: { // rowId = 1
 						Z1K1: 'Z6095',
 						Z6095K1: 'L333333' // rowId = 9
@@ -358,12 +282,12 @@ describe( 'Wikidata Entities Vuex module', () => {
 				const rowId = 1;
 				const wikidataType = 'Z6005';
 				const expectedKey = 'Z6095K1';
-				const referenceRow = entitiesModule.getters.getWikidataEntityIdRow( state, getters )( rowId, wikidataType );
+				const referenceRow = store.getWikidataEntityIdRow( rowId, wikidataType );
 				expect( referenceRow.key ).toBe( expectedKey );
 			} );
 
 			it( 'returns identity row when object is a wikidata fetch function call', () => {
-				state.zobject = zobjectToRows( {
+				store.zobject = zobjectToRows( {
 					Z2K2: { // rowId = 1
 						Z1K1: 'Z7',
 						Z7K1: 'Z6825',
@@ -376,14 +300,13 @@ describe( 'Wikidata Entities Vuex module', () => {
 				const rowId = 1;
 				const wikidataType = 'Z6005';
 				const expectedKey = 'Z6095K1';
-				const referenceRow = entitiesModule.getters.getWikidataEntityIdRow( state, getters )( rowId, wikidataType );
+				const referenceRow = store.getWikidataEntityIdRow( rowId, wikidataType );
 				expect( referenceRow.key ).toBe( expectedKey );
 			} );
 		} );
 	} );
 
 	describe( 'Actions', () => {
-		const context = {};
 		const responseValue = {
 			search: 'some-response',
 			searchContinue: null
@@ -397,9 +320,10 @@ describe( 'Wikidata Entities Vuex module', () => {
 				} );
 				// eslint-disable-next-line n/no-unsupported-features/node-builtins
 				global.fetch = fetchMock;
-				context.getters = {
-					getUserLangCode: 'en'
-				};
+				// Mock the getters
+				Object.defineProperty( store, 'getUserLangCode', {
+					value: 'en'
+				} );
 			} );
 
 			it( 'calls wbsearchentities API for lexemes', async () => {
@@ -407,7 +331,7 @@ describe( 'Wikidata Entities Vuex module', () => {
 					type: 'lexeme',
 					search: 'turtle'
 				};
-				const response = await entitiesModule.actions.lookupWikidataEntities( context, request );
+				const response = await store.lookupWikidataEntities( request );
 				expect( response ).toEqual( responseValue );
 
 				const params = `origin=*&action=wbsearchentities&format=json&language=en&uselang=en&search=${

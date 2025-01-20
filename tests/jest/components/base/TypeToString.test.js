@@ -7,29 +7,20 @@
 'use strict';
 
 const mount = require( '@vue/test-utils' ).mount,
-	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
+	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' ),
 	TypeToString = require( '../../../../resources/ext.wikilambda.app/components/base/TypeToString.vue' );
 
 describe( 'TypeToString', () => {
-
-	let getters, actions;
+	let store;
 
 	beforeEach( () => {
-		getters = {
-			getUserLangCode: createGetterMock( 'en' ),
-			getLabelData: createLabelDataMock( {
-				Z6: 'String',
-				Z881: 'Typed list'
-			} )
-		};
-		actions = {
-			fetchZids: jest.fn()
-		};
-		global.store.hotUpdate( {
-			getters: getters,
-			actions: actions
+		store = useMainStore();
+		store.getUserLangCode = 'en';
+		store.getLabelData = createLabelDataMock( {
+			Z6: 'String',
+			Z881: 'Typed list'
 		} );
 	} );
 

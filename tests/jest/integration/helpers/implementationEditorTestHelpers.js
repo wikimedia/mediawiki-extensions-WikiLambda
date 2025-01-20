@@ -10,6 +10,8 @@ const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.j
 	ApiMock = require( './apiMock.js' ),
 	apiGetMock = require( './apiGetMock.js' ),
 	existingFunctionFromApi = require( '../objects/existingFunctionFromApi.js' );
+const { createPinia } = require( 'pinia' );
+const vueTestUtils = require( '@vue/test-utils' );
 
 const initializeRootZObject =
 	new ApiMock( apiGetMock.loadZObjectsRequest, apiGetMock.loadZObjectsResponse, apiGetMock.loadZObjectsMatcher );
@@ -27,6 +29,12 @@ const runSetup = function () {
 			href: '/w/index.php?title=Special:CreateObject&zid=Z14&Z14K1=' + functionZid
 		}
 	} );
+
+	// Create a real Pinia store or a testing one
+	global.store = createPinia();
+	// Configure the Vue test utils to use our store
+	vueTestUtils.config.global.plugins = [ global.store ];
+
 	const queryParams = {
 		title: Constants.PATHS.CREATE_OBJECT_TITLE,
 		zid: Constants.Z_IMPLEMENTATION,

@@ -52,10 +52,11 @@
 const { CdxField } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
+	useMainStore = require( '../../store/index.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	LabelData = require( '../../store/classes/LabelData.js' ),
 	ZObjectSelector = require( './ZObjectSelector.vue' ),
-	{ mapActions, mapGetters } = require( 'vuex' );
+	{ mapActions, mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-type-selector',
@@ -86,7 +87,7 @@ module.exports = exports = defineComponent( {
 			default: null
 		}
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getExpectedTypeOfKey',
 		'getLabelData',
 		'getStoredObject',
@@ -142,7 +143,7 @@ module.exports = exports = defineComponent( {
 			return this.selectedIsTerminal ? [] : this.getZFunctionCallArguments( this.rowId );
 		}
 	} ),
-	methods: Object.assign( mapActions( [
+	methods: Object.assign( {}, mapActions( useMainStore, [
 		'changeType',
 		'setZFunctionCallArguments'
 	] ), {

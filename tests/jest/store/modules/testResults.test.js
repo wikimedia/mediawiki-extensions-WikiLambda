@@ -1,84 +1,72 @@
 /*!
- * WikiLambda unit test suite for the zTesterResults Vuex module
+ * WikiLambda unit test suite for the zTesterResults Pinia store
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
 'use strict';
 
-const testResultsModule = require( '../../../../resources/ext.wikilambda.app/store/modules/testResults.js' ),
-	errorsModule = require( '../../../../resources/ext.wikilambda.app/store/modules/errors.js' ),
-	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
-	metadata = require( '../../fixtures/metadata.js' );
+const { setActivePinia, createPinia } = require( 'pinia' );
+const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
+const metadata = require( '../../fixtures/metadata.js' );
 
-describe( 'testResults Vuex module', () => {
-	let context;
+describe( 'testResults Pinia store', () => {
+	let store;
 
 	beforeEach( () => {
-		context = {
-			state: {
-				zTesterResults: {},
-				zTesterMetadata: {},
-				testResultsPromises: {},
-				errors: {}
-			},
-			commit: jest.fn( ( mutationType, payload ) => {
-				if ( mutationType in testResultsModule.mutations ) {
-					testResultsModule.mutations[ mutationType ]( context.state, payload );
-				} else if ( mutationType in errorsModule.mutations ) {
-					errorsModule.mutations[ mutationType ]( context.state, payload );
-				}
-			} ),
-			dispatch: jest.fn(),
-			getters: {}
-		};
-
-		mw.log = { error: () => {} };
+		setActivePinia( createPinia() );
+		store = useMainStore();
+		store.zTesterResults = {};
+		store.zTesterMetadata = {};
+		store.testResultsPromises = {};
+		store.errors = {};
 	} );
 
 	describe( 'Getters', () => {
 		describe( 'getZTesterResults', () => {
 			beforeEach( () => {
-				context.getters.getErrors = () => [];
+				Object.defineProperty( store, 'getErrors', {
+					value: jest.fn().mockReturnValue( [] )
+				} );
 			} );
 
 			it( 'should get undefined when the key is not found', () => {
-				const result = testResultsModule.getters.getZTesterResults( context.state, context.getters )( 'Z10000', 'Z10001', 'Z10002' );
+				const result = store.getZTesterResults( 'Z10000', 'Z10001', 'Z10002' );
 				expect( result ).toBe( undefined );
 			} );
 
 			it( 'should return the test result when it is found (true)', () => {
-				// The code allows for either normal form, as here, or canonical, as below
-				context.state.zTesterResults[ 'Z10000:Z10001:Z10002' ] = { Z1K1: 'Z40', Z40K1: 'Z41' };
-				const result = testResultsModule.getters.getZTesterResults( context.state, context.getters )( 'Z10000', 'Z10001', 'Z10002' );
+				store.zTesterResults[ 'Z10000:Z10001:Z10002' ] = { Z1K1: 'Z40', Z40K1: 'Z41' };
+				const result = store.getZTesterResults( 'Z10000', 'Z10001', 'Z10002' );
 				expect( result ).toBe( true );
 			} );
 
 			it( 'should return the test result when it is found (false)', () => {
-				context.state.zTesterResults[ 'Z10000:Z10001:Z10002' ] = 'Z42';
-				const result = testResultsModule.getters.getZTesterResults( context.state, context.getters )( 'Z10000', 'Z10001', 'Z10002' );
+				store.zTesterResults[ 'Z10000:Z10001:Z10002' ] = 'Z42';
+				const result = store.getZTesterResults( 'Z10000', 'Z10001', 'Z10002' );
 				expect( result ).toBe( false );
 			} );
 
 			it( 'should return false when the state is in an error state', () => {
-				context.getters.getErrors = () => [ {
-					message: 'Some HTTP error on perform_tests',
-					type: 'error'
-				} ];
-				const result = testResultsModule.getters.getZTesterResults( context.state, context.getters )( 'Z10000', 'Z10001', 'Z10002' );
+				Object.defineProperty( store, 'getErrors', {
+					value: jest.fn().mockReturnValue( [ {
+						message: 'Some HTTP error on perform_tests',
+						type: 'error'
+					} ] )
+				} );
+				const result = store.getZTesterResults( 'Z10000', 'Z10001', 'Z10002' );
 				expect( result ).toBe( false );
 			} );
 		} );
 
 		describe( 'getZTesterMetadata', () => {
 			it( 'should return the metadata for the given function:test:implementation key', () => {
-				context.state.zTesterMetadata[ 'Z10000:Z10001:Z10002' ] = metadata.metadataBasic;
-				context.state.zTesterMetadata[ 'Z10000:Z10001:Z10003' ] = metadata.metadataEmpty;
+				store.zTesterMetadata[ 'Z10000:Z10001:Z10002' ] = metadata.metadataBasic;
+				store.zTesterMetadata[ 'Z10000:Z10001:Z10003' ] = metadata.metadataEmpty;
 
-				const metadata1 = testResultsModule.getters.getZTesterMetadata( context.state )(
-					'Z10000', 'Z10001', 'Z10002' );
-				const metadata2 = testResultsModule.getters.getZTesterMetadata( context.state )(
-					'Z10000', 'Z10001', 'Z10003' );
+				const metadata1 = store.getZTesterMetadata( 'Z10000', 'Z10001', 'Z10002' );
+				const metadata2 = store.getZTesterMetadata( 'Z10000', 'Z10001', 'Z10003' );
 
 				expect( metadata1 ).toEqual( metadata.metadataBasic );
 				expect( metadata2 ).toEqual( metadata.metadataEmpty );
@@ -87,13 +75,13 @@ describe( 'testResults Vuex module', () => {
 
 		describe( 'getZTesterPercentage', () => {
 			it( 'should return an object with values for the percentage of passing tests by one given ZID', () => {
-				context.state.zTesterResults[ 'Z10000:Z10001:Z10002' ] = 'Z41';
-				context.state.zTesterResults[ 'Z10000:Z10001:Z10003' ] = 'Z41';
-				context.state.zTesterResults[ 'Z10000:Z10001:Z10004' ] = 'Z41';
-				context.state.zTesterResults[ 'Z10000:Z10001:Z10005' ] = 'Z42';
-				context.state.zTesterResults[ 'Z10009:Z10010:Z10006' ] = 'Z42';
+				store.zTesterResults[ 'Z10000:Z10001:Z10002' ] = 'Z41';
+				store.zTesterResults[ 'Z10000:Z10001:Z10003' ] = 'Z41';
+				store.zTesterResults[ 'Z10000:Z10001:Z10004' ] = 'Z41';
+				store.zTesterResults[ 'Z10000:Z10001:Z10005' ] = 'Z42';
+				store.zTesterResults[ 'Z10009:Z10010:Z10006' ] = 'Z42';
 
-				const result = testResultsModule.getters.getZTesterPercentage( context.state )( 'Z10000' );
+				const result = store.getZTesterPercentage( 'Z10000' );
 
 				expect( result ).toEqual( {
 					total: 4,
@@ -105,69 +93,18 @@ describe( 'testResults Vuex module', () => {
 
 		describe( 'getPassingTestZids', () => {
 			it( 'returns all passing test zids for a given function Zid', () => {
-				context.state.zTesterResults[ 'Z10000:Z10001:Z10011' ] = 'Z41';
-				context.state.zTesterResults[ 'Z10000:Z10002:Z10012' ] = 'Z41';
-				context.state.zTesterResults[ 'Z10000:Z10003:Z10013' ] = 'Z41';
-				context.state.zTesterResults[ 'Z10000:Z10004:Z10014' ] = 'Z42';
-				context.state.zTesterResults[ 'Z10009:Z10001:Z10015' ] = 'Z42';
-				// Only Z10001, Z10002 and Z10003 are connected
-				context.getters.getConnectedObjects = () => [ 'Z10001', 'Z10002', 'Z10003' ];
-				const result = testResultsModule.getters.getPassingTestZids( context.state, context.getters )( 'Z10000' );
+				store.zTesterResults[ 'Z10000:Z10001:Z10011' ] = 'Z41';
+				store.zTesterResults[ 'Z10000:Z10002:Z10012' ] = 'Z41';
+				store.zTesterResults[ 'Z10000:Z10003:Z10013' ] = 'Z41';
+				store.zTesterResults[ 'Z10000:Z10004:Z10014' ] = 'Z42';
+				store.zTesterResults[ 'Z10009:Z10001:Z10015' ] = 'Z42';
+
+				Object.defineProperty( store, 'getConnectedObjects', {
+					value: jest.fn().mockReturnValue( [ 'Z10001', 'Z10002', 'Z10003' ] )
+				} );
+
+				const result = store.getPassingTestZids( 'Z10000' );
 				expect( result ).toEqual( [ 'Z10001', 'Z10002', 'Z10003' ] );
-			} );
-		} );
-	} );
-
-	describe( 'Mutations', () => {
-		describe( 'setZTesterResult', () => {
-			it( 'should set the tester result', () => {
-				const key = 'Z10000:Z10001:Z10002';
-				testResultsModule.mutations.setZTesterResult( context.state, {
-					key,
-					result: 'Z41',
-					metadata: metadata.metadataEmpty
-				} );
-
-				expect( context.state.zTesterResults[ key ] ).toBe( 'Z41' );
-				expect( context.state.zTesterMetadata[ key ] ).toEqual( metadata.metadataEmpty );
-			} );
-
-		} );
-
-		describe( 'setTestResultsPromise', () => {
-			it( 'should set the tester result promise', async () => {
-				testResultsModule.mutations.setTestResultsPromise( context.state, {
-					functionZid: 'Z10000',
-					promise: Promise.resolve( 'done' )
-				} );
-				await context.state.testResultsPromises.Z10000.then( ( result ) => {
-					expect( result ).toBe( 'done' );
-				} );
-			} );
-
-			it( 'should set the tester result as a resolving promise', async () => {
-				testResultsModule.mutations.setTestResultsPromise( context.state, {
-					functionZid: 'Z10000'
-				} );
-				await context.state.testResultsPromises.Z10000.then( ( result ) => {
-					expect( result ).toBe( undefined );
-				} );
-			} );
-		} );
-
-		describe( 'clearZTesterResults', () => {
-			it( 'should clear the test results', () => {
-				const key = 'Z10000:Z10001:Z10002';
-				context.state.zTesterResults[ key ] = 'Z41';
-				context.state.zTesterMetadata[ key ] = metadata.metadataEmpty;
-				context.state.testResultsPromises.Z10000 = new Promise( ( resolve ) => {
-					resolve();
-				} );
-
-				testResultsModule.mutations.clearZTesterResults( context.state, 'Z10000' );
-				expect( Object.keys( context.state.zTesterResults ).length ).toEqual( 0 );
-				expect( Object.keys( context.state.zTesterMetadata ).length ).toEqual( 0 );
-				expect( 'Z10000' in context.state.testResultsPromises ).toBe( false );
 			} );
 		} );
 	} );
@@ -178,7 +115,7 @@ describe( 'testResults Vuex module', () => {
 
 		beforeEach( () => {
 			booleanReturn = Constants.Z_BOOLEAN_TRUE;
-			getMock = jest.fn( ( payload ) => new Promise( ( resolve ) => {
+			getMock = jest.fn( ( payload ) => {
 				const data = [];
 
 				payload.wikilambda_perform_test_zimplementations.split( '|' ).forEach( ( impl ) => {
@@ -191,162 +128,250 @@ describe( 'testResults Vuex module', () => {
 								Z1K1: Constants.Z_BOOLEAN,
 								Z40K1: booleanReturn
 							} ),
-							// This will normally be a ZMap of metadata, but we aren't testing that here
 							testMetadata: JSON.stringify( Constants.Z_VOID )
 						} );
 					} );
 				} );
 
-				resolve( {
+				// Use mockResolvedValue to mock the resolved value of the promise
+				return Promise.resolve( {
 					query: {
 						wikilambda_perform_test: data
 					}
 				} );
-			} ) );
-
-			context.getters.getCurrentZObjectId = 'Z0';
+			} );
+			Object.defineProperty( store, 'getCurrentZObjectId', {
+				value: 'Z0'
+			} );
 
 			mw.Api = jest.fn( () => ( {
 				get: getMock
 			} ) );
 		} );
 
-		describe( 'getTestResults', () => {
-			it( 'exits early if function Zid is not provided', async () => {
-				const zFunctionId = undefined;
-				await testResultsModule.actions.getTestResults( context, { zFunctionId } );
-				expect( getMock ).not.toHaveBeenCalled();
-				expect( context.commit ).not.toHaveBeenCalled();
+		describe( 'setZTesterResult', () => {
+			it( 'should set the tester result', () => {
+				const key = 'Z10000:Z10001:Z10002';
+				store.setZTesterResult( {
+					key,
+					result: 'Z41',
+					metadata: metadata.metadataEmpty
+				} );
+
+				expect( store.zTesterResults[ key ] ).toBe( 'Z41' );
+				expect( store.zTesterMetadata[ key ] ).toEqual( metadata.metadataEmpty );
 			} );
 
-			it( 'should perform the provided tests (passing)', () => {
+		} );
+
+		describe( 'setTestResultsPromise', () => {
+			it( 'should set the tester result promise', async () => {
+				store.setTestResultsPromise( {
+					functionZid: 'Z10000',
+					promise: Promise.resolve( 'done' )
+				} );
+				await store.testResultsPromises.Z10000.then( ( result ) => {
+					expect( result ).toBe( 'done' );
+				} );
+			} );
+
+			it( 'should set the tester result as a resolving promise', async () => {
+				store.setTestResultsPromise( {
+					functionZid: 'Z10000'
+				} );
+				await store.testResultsPromises.Z10000.then( ( result ) => {
+					expect( result ).toBe( undefined );
+				} );
+			} );
+		} );
+
+		describe( 'clearZTesterResults', () => {
+			it( 'should clear the test results', () => {
+				const key = 'Z10000:Z10001:Z10002';
+				store.zTesterResults[ key ] = 'Z41';
+				store.zTesterMetadata[ key ] = metadata.metadataEmpty;
+				store.testResultsPromises.Z10000 = new Promise( ( resolve ) => {
+					resolve();
+				} );
+
+				store.clearZTesterResults( 'Z10000' );
+				expect( Object.keys( store.zTesterResults ).length ).toEqual( 0 );
+				expect( Object.keys( store.zTesterMetadata ).length ).toEqual( 0 );
+				expect( 'Z10000' in store.testResultsPromises ).toBe( false );
+			} );
+		} );
+
+		describe( 'getTestResults', () => {
+
+			beforeEach( () => {
+				store.fetchZids = jest.fn();
+				store.clearErrors = jest.fn();
+				store.setError = jest.fn();
+			} );
+
+			it( 'exits early if function Zid is not provided', async () => {
+				store.clearZTesterResults = jest.fn();
+				store.setTestResultsPromise = jest.fn();
+				store.setZTesterResult = jest.fn();
+
+				const zFunctionId = undefined;
+
+				await store.getTestResults( { zFunctionId } );
+
+				expect( getMock ).not.toHaveBeenCalled();
+				expect( store.clearZTesterResults ).not.toHaveBeenCalled();
+				expect( store.clearErrors ).not.toHaveBeenCalled();
+				expect( store.setTestResultsPromise ).not.toHaveBeenCalled();
+				expect( store.fetchZids ).not.toHaveBeenCalled();
+				expect( store.setZTesterResult ).not.toHaveBeenCalled();
+				expect( store.setError ).not.toHaveBeenCalled();
+			} );
+
+			it( 'should perform the provided tests (passing)', async () => {
 				const zFunctionId = 'Z10000';
 				const zImplementations = [ 'Z10001', 'Z10002' ];
 				const zTesters = [ 'Z10003', 'Z10004' ];
 
-				return testResultsModule.actions.getTestResults( context, {
+				await store.getTestResults( {
 					zFunctionId,
 					zImplementations,
 					zTesters
-				} ).then( () => {
-					const result = testResultsModule.getters.getZTesterPercentage( context.state )( 'Z10000' );
-
-					expect( getMock ).toHaveBeenCalledWith( {
-						action: 'wikilambda_perform_test',
-						uselang: 'en',
-						wikilambda_perform_test_zfunction: zFunctionId,
-						wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
-						wikilambda_perform_test_ztesters: zTesters.join( '|' ),
-						wikilambda_perform_test_nocache: false
-					} );
-					expect( context.commit ).toHaveBeenCalledTimes( 7 );
-					expect( Object.keys( context.state.zTesterResults ).length )
-						.toEqual( zTesters.length * zImplementations.length );
-
-					expect( result.passing ).toBe( zTesters.length * zImplementations.length );
 				} );
-			} );
+				const result = store.getZTesterPercentage( 'Z10000' );
 
-			it( 'should perform the provided tests (failing)', () => {
+				expect( getMock ).toHaveBeenCalledWith( {
+					action: 'wikilambda_perform_test',
+					uselang: 'en',
+					wikilambda_perform_test_zfunction: zFunctionId,
+					wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
+					wikilambda_perform_test_ztesters: zTesters.join( '|' ),
+					wikilambda_perform_test_nocache: false
+				} );
+
+				expect( store.clearErrors ).toHaveBeenCalled();
+				expect( store.fetchZids ).toHaveBeenCalled();
+
+				expect( Object.keys( store.zTesterResults ).length )
+					.toEqual( zTesters.length * zImplementations.length );
+
+				expect( result.passing ).toBe( zTesters.length * zImplementations.length );
+
+			} );
+			it( 'should perform the provided tests (failing)', async () => {
 				const zFunctionId = 'Z10000',
 					zImplementations = [ 'Z10001', 'Z10002' ],
 					zTesters = [ 'Z10003', 'Z10004' ];
 
 				booleanReturn = Constants.Z_BOOLEAN_FALSE;
 
-				return testResultsModule.actions.getTestResults( context, {
+				await store.getTestResults( {
 					zFunctionId,
 					zImplementations,
 					zTesters
-				} ).then( () => {
-					const result = testResultsModule.getters.getZTesterPercentage( context.state )( 'Z10000' );
-
-					expect( getMock ).toHaveBeenCalledWith( {
-						action: 'wikilambda_perform_test',
-						uselang: 'en',
-						wikilambda_perform_test_zfunction: zFunctionId,
-						wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
-						wikilambda_perform_test_ztesters: zTesters.join( '|' ),
-						wikilambda_perform_test_nocache: false
-					} );
-					expect( context.commit ).toHaveBeenCalledTimes( 7 );
-					expect( Object.keys( context.state.zTesterResults ).length )
-						.toEqual( zTesters.length * zImplementations.length );
-
-					expect( result.passing ).toBe( 0 );
 				} );
+				const result = store.getZTesterPercentage( 'Z10000' );
+
+				expect( getMock ).toHaveBeenCalledWith( {
+					action: 'wikilambda_perform_test',
+					uselang: 'en',
+					wikilambda_perform_test_zfunction: zFunctionId,
+					wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
+					wikilambda_perform_test_ztesters: zTesters.join( '|' ),
+					wikilambda_perform_test_nocache: false
+				} );
+
+				expect( store.clearErrors ).toHaveBeenCalled();
+				expect( store.fetchZids ).toHaveBeenCalled();
+
+				expect( Object.keys( store.zTesterResults ).length )
+					.toEqual( zTesters.length * zImplementations.length );
+
+				expect( result.passing ).toBe( 0 );
+
 			} );
 
-			it( 'should not reset the tests when not to', () => {
+			it( 'should not reset the tests when not to', async () => {
 				const zFunctionId = 'Z10000';
 				const zImplementations = [ 'Z10001', 'Z10002' ];
 				const zTesters = [ 'Z10003', 'Z10004' ];
 
-				return testResultsModule.actions.getTestResults( context, {
+				store.clearZTesterResults = jest.fn();
+
+				await store.getTestResults( {
 					zFunctionId,
 					zImplementations,
 					zTesters
-				} ).then( () => {
-					expect( context.commit ).not.toHaveBeenCalledWith( 'clearZTesterResults' );
 				} );
+
+				expect( store.clearZTesterResults ).not.toHaveBeenCalled();
 			} );
 
-			it( 'should reset the tests when directed to', () => {
+			it( 'should reset the tests when directed to', async () => {
 				const zFunctionId = 'Z10000';
 				const zImplementations = [ 'Z10001', 'Z10002' ];
 				const zTesters = [ 'Z10003', 'Z10004' ];
 
-				return testResultsModule.actions.getTestResults( context, {
+				store.clearZTesterResults = jest.fn();
+
+				await store.getTestResults( {
 					zFunctionId,
 					zImplementations,
 					zTesters,
 					clearPreviousResults: true
-				} ).then( () => {
-					expect( context.commit ).toHaveBeenCalledWith( 'clearZTesterResults', 'Z10000' );
 				} );
+
+				expect( store.clearZTesterResults ).toHaveBeenCalledWith( 'Z10000' );
 			} );
 
-			it( 'should perform the provided tests (API error)', () => {
+			it( 'should perform the provided tests (API error)', async () => {
 				const zFunctionId = 'Z10000';
 				const zImplementations = [ 'Z10001', 'Z10002' ];
 				const zTesters = [ 'Z10003', 'Z10004' ];
 
-				getMock = jest.fn( () => new Promise( ( resolve, reject ) => {
-					reject( 'API error' );
-				} ) );
+				getMock = jest.fn().mockRejectedValue( 'API error' );
 
-				return testResultsModule.actions.getTestResults( context, {
+				await store.getTestResults( {
 					zFunctionId,
 					zImplementations,
 					zTesters
-				} ).then( () => {
-					const result = testResultsModule.getters.getZTesterPercentage( context.state )( 'Z10000' );
-
-					expect( getMock ).toHaveBeenCalledWith( {
-						action: 'wikilambda_perform_test',
-						uselang: 'en',
-						wikilambda_perform_test_zfunction: zFunctionId,
-						wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
-						wikilambda_perform_test_ztesters: zTesters.join( '|' ),
-						wikilambda_perform_test_nocache: false
-					} );
-					expect( context.commit ).toHaveBeenCalledTimes( 4 );
-					expect( Object.keys( context.state.zTesterResults ).length )
-						.toEqual( 0 );
-
-					expect( result.passing ).toBe( 0 );
-					expect( context.state.errors[ Constants.errorIds.TEST_RESULTS ] ).toBeTruthy();
 				} );
+				const result = store.getZTesterPercentage( 'Z10000' );
+
+				expect( getMock ).toHaveBeenCalledWith( {
+					action: 'wikilambda_perform_test',
+					uselang: 'en',
+					wikilambda_perform_test_zfunction: zFunctionId,
+					wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
+					wikilambda_perform_test_ztesters: zTesters.join( '|' ),
+					wikilambda_perform_test_nocache: false
+				} );
+
+				expect( store.clearErrors ).toHaveBeenCalled();
+				expect( store.fetchZids ).not.toHaveBeenCalled();
+				expect( store.setError ).toHaveBeenCalledWith( {
+					errorMessage: 'Unable to run tests. Please reload.',
+					errorType: 'error',
+					rowId: -1
+				} );
+
+				expect( Object.keys( store.zTesterResults ).length ).toEqual( 0 );
+
+				expect( result.passing ).toBe( 0 );
 			} );
 
 			it( 'should not perform the tests if already fetching for that functionZid', () => {
 				const zFunctionId = 'Z10000';
-				context.state.testResultsPromises = {
+				store.testResultsPromises = {
 					[ zFunctionId ]: Promise.resolve()
 				};
+				store.clearZTesterResults = jest.fn();
 
-				testResultsModule.actions.getTestResults( context, { zFunctionId } );
-				expect( context.commit ).not.toHaveBeenCalled();
+				store.getTestResults( { zFunctionId } );
+
+				expect( store.clearErrors ).not.toHaveBeenCalled();
+				expect( store.clearZTesterResults ).not.toHaveBeenCalled();
+				expect( store.fetchZids ).not.toHaveBeenCalled();
+
 			} );
 
 			it( 'should pass JSON for the current object to the API, if implementation ID matches current ' +
@@ -356,10 +381,18 @@ describe( 'testResults Vuex module', () => {
 				const zImplementations = [ 'Z10001', 'Z10002' ];
 				const zTesters = [ 'Z10003', 'Z10004' ];
 
-				context.getters.getCurrentZObjectId = 'Z10001';
-				context.getters.getZObjectAsJson = currentObject;
+				// Mock the getters
+				Object.defineProperty( store, 'getCurrentZObjectId', {
+					value: 'Z10001'
+				} );
+				Object.defineProperty( store, 'getZObjectAsJson', {
+					value: currentObject
+				} );
+				Object.defineProperty( store, 'getViewMode', {
+					value: false
+				} );
 
-				await testResultsModule.actions.getTestResults( context, {
+				await store.getTestResults( {
 					zFunctionId,
 					zImplementations,
 					zTesters
@@ -373,6 +406,8 @@ describe( 'testResults Vuex module', () => {
 					wikilambda_perform_test_ztesters: zTesters.join( '|' ),
 					wikilambda_perform_test_nocache: false
 				} );
+				expect( store.clearErrors ).toHaveBeenCalled();
+				expect( store.fetchZids ).toHaveBeenCalled();
 			} );
 
 			it( 'should pass JSON for the current inner object to the API, if implementation ID matches current ' +
@@ -385,10 +420,19 @@ describe( 'testResults Vuex module', () => {
 				const zFunctionId = 'Z10000';
 				const zImplementations = [ 'Z0', 'Z10002' ];
 				const zTesters = [ 'Z10003', 'Z10004' ];
-				context.getters.getCurrentZObjectId = 'Z0';
-				context.getters.getZObjectAsJson = currentObject;
 
-				await testResultsModule.actions.getTestResults( context, {
+				// Mock the getters
+				Object.defineProperty( store, 'getCurrentZObjectId', {
+					value: 'Z0'
+				} );
+				Object.defineProperty( store, 'getZObjectAsJson', {
+					value: currentObject
+				} );
+				Object.defineProperty( store, 'getViewMode', {
+					value: false
+				} );
+
+				await store.getTestResults( {
 					zFunctionId: zFunctionId,
 					zImplementations: zImplementations,
 					zTesters: zTesters
@@ -405,6 +449,8 @@ describe( 'testResults Vuex module', () => {
 					wikilambda_perform_test_ztesters: zTesters.join( '|' ),
 					wikilambda_perform_test_nocache: false
 				} );
+				expect( store.clearErrors ).toHaveBeenCalled();
+				expect( store.fetchZids ).toHaveBeenCalled();
 			} );
 		} );
 	} );

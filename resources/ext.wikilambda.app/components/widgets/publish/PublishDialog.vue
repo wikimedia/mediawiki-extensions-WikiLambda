@@ -74,9 +74,10 @@
 const { CdxField, CdxTextInput, CdxMessage, CdxDialog } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
+	useMainStore = require( '../../../store/index.js' ),
 	eventLogUtils = require( '../../../mixins/eventLogUtils.js' ),
 	errorUtils = require( '../../../mixins/errorUtils.js' ),
-	{ mapGetters, mapActions } = require( 'vuex' );
+	{ mapState, mapActions } = require( 'pinia' );
 
 const enterKeyChar = `
 	<kbd class="ext-wikilambda-app-publish-dialog__kbd">
@@ -124,7 +125,7 @@ module.exports = exports = defineComponent( {
 			hasKeyboardSubmitWarning: false
 		};
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getUserLangCode',
 		'getCurrentZObjectId',
 		'getCurrentZObjectType',
@@ -237,7 +238,7 @@ module.exports = exports = defineComponent( {
 			return this.$i18n( 'wikilambda-editor-publish-dialog-keyboard-submit-warning', isMac ? cmdKeyChar : ctrlKeyChar, enterKeyChar );
 		}
 	} ),
-	methods: Object.assign( mapActions( [
+	methods: Object.assign( {}, mapActions( useMainStore, [
 		'submitZObject',
 		'setError',
 		'setDirty',

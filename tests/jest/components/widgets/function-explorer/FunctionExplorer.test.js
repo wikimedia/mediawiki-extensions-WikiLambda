@@ -12,8 +12,8 @@ const
 	FunctionExplorer = require( '../../../../../resources/ext.wikilambda.app/components/widgets/function-explorer/FunctionExplorer.vue' ),
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
-	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
-	shallowMount = require( '@vue/test-utils' ).shallowMount;
+	shallowMount = require( '@vue/test-utils' ).shallowMount,
+	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 
 const reverseStringFunctionZid = 'Z10004';
 const reverseStringFunction = {
@@ -48,37 +48,26 @@ function createFunctionExplorerWrapper( propsData = {} ) {
 }
 
 describe( 'FunctionExplorer', () => {
-	let getters, actions;
+	let store;
 
 	beforeEach( () => {
-		getters = {
-			getLabelData: createLabelDataMock( {
-				Z6: 'String',
-				Z881: 'Typed list',
-				Z10002: 'Is reverse string',
-				Z10002K1: 'String one',
-				Z10002K2: 'String two',
-				Z10004: 'Reverse string',
-				Z10004K1: 'String to reverse'
-			} ),
-			getUserLangCode: createGetterMock( 'en' ),
-			getStoredObject: () => ( zid ) => zid === reverseStringFunctionZid ?
-				reverseStringFunction :
-				isReverseStringFunction,
-			getInputsOfFunctionZid: () => ( zid ) => zid === reverseStringFunctionZid ?
-				reverseStringFunctionArguments :
-				isReverseStringFunctionArguments
-		};
-
-		actions = {
-			fetchZids: jest.fn()
-		};
-
-		global.store.hotUpdate( {
-			getters: getters,
-			actions: actions
+		store = useMainStore();
+		store.getLabelData = createLabelDataMock( {
+			Z6: 'String',
+			Z881: 'Typed list',
+			Z10002: 'Is reverse string',
+			Z10002K1: 'String one',
+			Z10002K2: 'String two',
+			Z10004: 'Reverse string',
+			Z10004K1: 'String to reverse'
 		} );
-
+		store.getUserLangCode = 'en';
+		store.getStoredObject = ( zid ) => zid === reverseStringFunctionZid ?
+			reverseStringFunction :
+			isReverseStringFunction;
+		store.getInputsOfFunctionZid = ( zid ) => zid === reverseStringFunctionZid ?
+			reverseStringFunctionArguments :
+			isReverseStringFunctionArguments;
 		window.open = jest.fn();
 	} );
 
@@ -90,7 +79,6 @@ describe( 'FunctionExplorer', () => {
 
 	describe( 'Edit mode', () => {
 		it( 'should display a view function button', () => {
-
 			const wrapper = createFunctionExplorerWrapper( {
 				functionZid: reverseStringFunctionZid,
 				edit: true
@@ -333,11 +321,8 @@ describe( 'FunctionExplorer', () => {
 	describe( 'Zero-blank state', () => {
 		describe( 'when no valid function was found', () => {
 			it( 'should display a zero-blank state', () => {
-				getters.getStoredObject = createGettersWithFunctionsMock();
-				getters.getInputsOfFunctionZid = createGettersWithFunctionsMock( [] );
-				global.store.hotUpdate( {
-					getters: getters
-				} );
+				store.getStoredObject = createGettersWithFunctionsMock();
+				store.getInputsOfFunctionZid = createGettersWithFunctionsMock( [] );
 
 				const wrapper = createFunctionExplorerWrapper(
 					{ edit: true }

@@ -1,5 +1,5 @@
 /*!
- * WikiLambda unit test suite for the types Vuex module, which
+ * WikiLambda unit test suite for the types Pinia store, which
  * handles type renderers and parsers.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
@@ -7,118 +7,120 @@
  */
 'use strict';
 
-const ztypeModule = require( '../../../../resources/ext.wikilambda.app/store/modules/ztype.js' );
+const { setActivePinia, createPinia } = require( 'pinia' );
+const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 
-describe( 'ztype Vuex module', () => {
-	let state, context;
+describe( 'ztype Pinia store', () => {
+	let store;
 	const typeZid = 'Z30000';
 	const rendererZid = 'Z30001';
 	const parserZid = 'Z30002';
 
 	beforeEach( () => {
-		state = {
-			renderers: {},
-			parsers: {},
-			rendererExamples: {}
-		};
+		setActivePinia( createPinia() );
+		store = useMainStore();
+		store.renderers = {};
+		store.parsers = {};
+		store.rendererExamples = {};
+		store.parserPromises = [];
 	} );
 
 	describe( 'Getters', () => {
 		describe( 'getRendererZid', () => {
 			it( 'returns renderer zid when set', () => {
-				state.renderers = {
+				store.renderers = {
 					[ typeZid ]: rendererZid
 				};
-				expect( ztypeModule.getters.getRendererZid( state )( typeZid ) ).toBe( rendererZid );
+				expect( store.getRendererZid( typeZid ) ).toBe( rendererZid );
 			} );
 
 			it( 'returns undefined when not set', () => {
-				state.renderers = {};
-				expect( ztypeModule.getters.getRendererZid( state )( typeZid ) ).toBe( undefined );
+				store.renderers = {};
+				expect( store.getRendererZid( typeZid ) ).toBe( undefined );
 			} );
 		} );
 
 		describe( 'getParserZid', () => {
 			it( 'returns parser zid when set', () => {
-				state.parsers = {
+				store.parsers = {
 					[ typeZid ]: parserZid
 				};
-				expect( ztypeModule.getters.getParserZid( state )( typeZid ) ).toBe( parserZid );
+				expect( store.getParserZid( typeZid ) ).toBe( parserZid );
 			} );
 
 			it( 'returns undefined when not set', () => {
-				state.renderers = {};
-				expect( ztypeModule.getters.getRendererZid( state )( typeZid ) ).toBe( undefined );
+				store.parsers = {};
+				expect( store.getParserZid( typeZid ) ).toBe( undefined );
 			} );
 		} );
 
 		describe( 'hasRenderer', () => {
 			it( 'returns false when renderer is not set', () => {
-				expect( ztypeModule.getters.hasRenderer( state )( typeZid ) ).toBe( false );
+				expect( store.hasRenderer( typeZid ) ).toBe( false );
 			} );
 
 			it( 'returns false when renderer is set but falsy', () => {
-				state.renderers = {
+				store.renderers = {
 					[ typeZid ]: undefined
 				};
-				expect( ztypeModule.getters.hasRenderer( state )( typeZid ) ).toBe( false );
+				expect( store.hasRenderer( typeZid ) ).toBe( false );
 			} );
 
 			it( 'returns true when renderer is set', () => {
-				state.renderers = {
+				store.renderers = {
 					[ typeZid ]: rendererZid
 				};
-				expect( ztypeModule.getters.hasRenderer( state )( typeZid ) ).toBe( true );
+				expect( store.hasRenderer( typeZid ) ).toBe( true );
 			} );
 		} );
 
 		describe( 'hasParser', () => {
 			it( 'returns false when parser is not set', () => {
-				expect( ztypeModule.getters.hasParser( state )( typeZid ) ).toBe( false );
+				expect( store.hasParser( typeZid ) ).toBe( false );
 			} );
 
 			it( 'returns false when parser is set but falsy', () => {
-				state.parsers = {
+				store.parsers = {
 					[ typeZid ]: undefined
 				};
-				expect( ztypeModule.getters.hasParser( state )( typeZid ) ).toBe( false );
+				expect( store.hasParser( typeZid ) ).toBe( false );
 			} );
 
 			it( 'returns true when parser is set', () => {
-				state.parsers = {
+				store.parsers = {
 					[ typeZid ]: parserZid
 				};
-				expect( ztypeModule.getters.hasParser( state )( typeZid ) ).toBe( true );
+				expect( store.hasParser( typeZid ) ).toBe( true );
 			} );
 		} );
 
 		describe( 'getRendererExamples', () => {
 			it( 'returns empty array when no examples are set', () => {
 				const expected = [];
-				expect( ztypeModule.getters.getRendererExamples( state )( rendererZid ) ).toEqual( expected );
+				expect( store.getRendererExamples( rendererZid ) ).toEqual( expected );
 			} );
 
 			it( 'returns empty array when no examples are set for the renderer', () => {
-				state.rendererExamples = {
+				store.rendererExamples = {
 					[ rendererZid ]: {}
 				};
 				const expected = [];
-				expect( ztypeModule.getters.getRendererExamples( state )( rendererZid ) ).toEqual( expected );
+				expect( store.getRendererExamples( rendererZid ) ).toEqual( expected );
 			} );
 
 			it( 'returns empty array when examples are undefined', () => {
-				state.rendererExamples = {
+				store.rendererExamples = {
 					[ rendererZid ]: {
 						Z30010: undefined,
 						Z30011: undefined
 					}
 				};
 				const expected = [];
-				expect( ztypeModule.getters.getRendererExamples( state )( rendererZid ) ).toEqual( expected );
+				expect( store.getRendererExamples( rendererZid ) ).toEqual( expected );
 			} );
 
 			it( 'returns array of examples', () => {
-				state.rendererExamples = {
+				store.rendererExamples = {
 					[ rendererZid ]: {
 						Z30010: 'one',
 						Z30011: 'two'
@@ -128,11 +130,11 @@ describe( 'ztype Vuex module', () => {
 					{ testZid: 'Z30010', result: 'one' },
 					{ testZid: 'Z30011', result: 'two' }
 				];
-				expect( ztypeModule.getters.getRendererExamples( state )( rendererZid ) ).toEqual( expected );
+				expect( store.getRendererExamples( rendererZid ) ).toEqual( expected );
 			} );
 
 			it( 'returns example for a given test', () => {
-				state.rendererExamples = {
+				store.rendererExamples = {
 					[ rendererZid ]: {
 						Z30010: 'one',
 						Z30011: 'two'
@@ -141,12 +143,26 @@ describe( 'ztype Vuex module', () => {
 				const expected = [
 					{ testZid: 'Z30011', result: 'two' }
 				];
-				expect( ztypeModule.getters.getRendererExamples( state )( rendererZid, 'Z30011' ) ).toEqual( expected );
+				expect( store.getRendererExamples( rendererZid, 'Z30011' ) ).toEqual( expected );
 			} );
 		} );
 	} );
 
-	describe( 'Mutations', () => {
+	describe( 'Actions', () => {
+		let postMock, data;
+
+		beforeEach( () => {
+			data = '{ "Z1K1": "Z6", "Z6K1": "some response" }';
+			postMock = jest.fn( () => new Promise( ( resolve ) => {
+				resolve( {
+					wikilambda_function_call: { data }
+				} );
+			} ) );
+			mw.Api = jest.fn( () => ( {
+				post: postMock
+			} ) );
+		} );
+
 		describe( 'setRenderer', () => {
 			it( 'sets renderer in the store', () => {
 				const payload = {
@@ -156,8 +172,8 @@ describe( 'ztype Vuex module', () => {
 				const expected = {
 					[ typeZid ]: rendererZid
 				};
-				ztypeModule.mutations.setRenderer( state, payload );
-				expect( state.renderers ).toEqual( expected );
+				store.setRenderer( payload );
+				expect( store.renderers ).toEqual( expected );
 			} );
 		} );
 
@@ -170,8 +186,8 @@ describe( 'ztype Vuex module', () => {
 				const expected = {
 					[ typeZid ]: parserZid
 				};
-				ztypeModule.mutations.setParser( state, payload );
-				expect( state.parsers ).toEqual( expected );
+				store.setParser( payload );
+				expect( store.parsers ).toEqual( expected );
 			} );
 		} );
 
@@ -187,12 +203,12 @@ describe( 'ztype Vuex module', () => {
 						Z30010: 'one'
 					}
 				};
-				ztypeModule.mutations.setRendererExample( state, payload );
-				expect( state.rendererExamples ).toEqual( expected );
+				store.setRendererExample( payload );
+				expect( store.rendererExamples ).toEqual( expected );
 			} );
 
 			it( 'sets renderer example when store has more examples', () => {
-				state.rendererExamples = {
+				store.rendererExamples = {
 					[ rendererZid ]: {
 						Z30010: 'one'
 					}
@@ -208,30 +224,9 @@ describe( 'ztype Vuex module', () => {
 						Z30011: 'two'
 					}
 				};
-				ztypeModule.mutations.setRendererExample( state, payload );
-				expect( state.rendererExamples ).toEqual( expected );
+				store.setRendererExample( payload );
+				expect( store.rendererExamples ).toEqual( expected );
 			} );
-		} );
-	} );
-
-	describe( 'Actions', () => {
-		let postMock, data;
-
-		beforeEach( () => {
-			context = Object.assign( {}, {
-				commit: jest.fn(),
-				dispatch: jest.fn(),
-				getters: {}
-			} );
-			data = '{ "Z1K1": "Z6", "Z6K1": "some response" }';
-			postMock = jest.fn( () => new Promise( ( resolve ) => {
-				resolve( {
-					wikilambda_function_call: { data }
-				} );
-			} ) );
-			mw.Api = jest.fn( () => ( {
-				post: postMock
-			} ) );
 		} );
 
 		describe( 'runRenderer', () => {
@@ -247,7 +242,7 @@ describe( 'ztype Vuex module', () => {
 					[ rendererZid + 'K1' ]: { some: 'object' },
 					[ rendererZid + 'K2' ]: 'Z1002'
 				};
-				ztypeModule.actions.runRenderer( context, payload );
+				store.runRenderer( payload );
 				expect( postMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_function_call',
 					wikilambda_function_call_zobject: JSON.stringify( functionCall ),
@@ -269,7 +264,7 @@ describe( 'ztype Vuex module', () => {
 					[ parserZid + 'K1' ]: 'some string',
 					[ parserZid + 'K2' ]: 'Z1002'
 				};
-				ztypeModule.actions.runParser( context, payload );
+				store.runParser( payload );
 				expect( postMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_function_call',
 					wikilambda_function_call_zobject: JSON.stringify( functionCall ),
@@ -290,7 +285,7 @@ describe( 'ztype Vuex module', () => {
 					[ parserZid + 'K1' ]: 'some string',
 					[ parserZid + 'K2' ]: 'Z1002'
 				};
-				ztypeModule.actions.runParser( context, payload );
+				store.runParser( payload );
 				expect( postMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_function_call',
 					wikilambda_function_call_zobject: JSON.stringify( functionCall ),
@@ -318,13 +313,11 @@ describe( 'ztype Vuex module', () => {
 			};
 
 			it( 'does not run the test if it has been run', () => {
-				state.rendererExamples = {
+				store.setRendererExample = jest.fn();
+				store.rendererExamples = {
 					[ rendererZid ]: {
 						Z30010: 'one'
 					}
-				};
-				context.getters = {
-					getRendererExamples: ztypeModule.getters.getRendererExamples( state )
 				};
 				const payload = {
 					rendererZid: rendererZid,
@@ -333,17 +326,15 @@ describe( 'ztype Vuex module', () => {
 					zlang: 'Z1002'
 				};
 
-				ztypeModule.actions.runRendererTest( context, payload );
+				store.runRendererTest( payload );
 				expect( postMock ).not.toHaveBeenCalled();
-				expect( context.commit ).not.toHaveBeenCalled();
+				expect( store.setRendererExample ).not.toHaveBeenCalled();
 			} );
 
 			it( 'edits and runs the renderer test', () => {
+				store.setRendererExample = jest.fn();
 				// Empty rendererExamples
-				state.rendererExamples = {};
-				context.getters = {
-					getRendererExamples: ztypeModule.getters.getRendererExamples( state )
-				};
+				store.rendererExamples = {};
 
 				const payload = {
 					rendererZid: rendererZid,
@@ -357,21 +348,20 @@ describe( 'ztype Vuex module', () => {
 					[ rendererZid + 'K1' ]: 'some object',
 					[ rendererZid + 'K2' ]: 'Z1002'
 				};
-				ztypeModule.actions.runRendererTest( context, payload );
+				store.runRendererTest( payload );
 
 				expect( postMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_function_call',
 					wikilambda_function_call_zobject: JSON.stringify( functionCall ),
 					uselang: 'en'
 				} );
+				expect( store.setRendererExample ).toHaveBeenCalled();
 			} );
 
 			it( 'on successful response, set renderer test', async () => {
+				store.setRendererExample = jest.fn();
 				// Empty rendererExamples
-				state.rendererExamples = {};
-				context.getters = {
-					getRendererExamples: ztypeModule.getters.getRendererExamples( state )
-				};
+				store.rendererExamples = {};
 				// Mock successful response
 				const successfulResponse = {
 					Z1K1: 'Z22',
@@ -391,15 +381,15 @@ describe( 'ztype Vuex module', () => {
 					test: testObject,
 					zlang: 'Z1002'
 				};
-				await ztypeModule.actions.runRendererTest( context, payload );
+				await store.runRendererTest( payload );
 
-				expect( context.commit ).toHaveBeenCalledTimes( 2 );
-				expect( context.commit ).toHaveBeenCalledWith( 'setRendererExample', {
+				expect( store.setRendererExample ).toHaveBeenCalledTimes( 2 );
+				expect( store.setRendererExample ).toHaveBeenCalledWith( {
 					rendererZid: rendererZid,
 					testZid: 'Z30010',
 					example: undefined
 				} );
-				expect( context.commit ).toHaveBeenCalledWith( 'setRendererExample', {
+				expect( store.setRendererExample ).toHaveBeenCalledWith( {
 					rendererZid: rendererZid,
 					testZid: 'Z30010',
 					example: 'example one'
@@ -407,10 +397,8 @@ describe( 'ztype Vuex module', () => {
 			} );
 
 			it( 'on failed response, leave renderer test as undefined', async () => {
-				state.rendererExamples = {};
-				context.getters = {
-					getRendererExamples: ztypeModule.getters.getRendererExamples( state )
-				};
+				store.setRendererExample = jest.fn();
+				store.rendererExamples = {};
 				const failedResponse = {
 					Z1K1: 'Z22',
 					Z22K1: 'Z24',
@@ -429,10 +417,10 @@ describe( 'ztype Vuex module', () => {
 					test: testObject,
 					zlang: 'Z1002'
 				};
-				await ztypeModule.actions.runRendererTest( context, payload );
+				await store.runRendererTest( payload );
 
-				expect( context.commit ).toHaveBeenCalledTimes( 1 );
-				expect( context.commit ).toHaveBeenCalledWith( 'setRendererExample', {
+				expect( store.setRendererExample ).toHaveBeenCalledTimes( 1 );
+				expect( store.setRendererExample ).toHaveBeenCalledWith( {
 					rendererZid: rendererZid,
 					testZid: 'Z30010',
 					example: undefined

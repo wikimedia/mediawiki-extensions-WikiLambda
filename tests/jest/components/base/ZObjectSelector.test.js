@@ -9,52 +9,35 @@
 const { waitFor } = require( '@testing-library/vue' ),
 	mount = require( '@vue/test-utils' ).mount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	mockEnumValues = require( '../../fixtures/mocks.js' ).mockEnumValues,
 	mockLookupValues = require( '../../fixtures/mocks.js' ).mockLookupValues,
 	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
+	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' ),
 	ZObjectSelector = require( '../../../../resources/ext.wikilambda.app/components/base/ZObjectSelector.vue' );
 
 describe( 'ZObjectSelector', () => {
-	let state,
-		getters,
-		actions;
+	let store;
 
 	describe( 'Lookup', () => {
 		beforeEach( () => {
-			state = {
-				objects: {},
-				labels: {},
-				errors: {}
-			};
-			getters = {
-				isEnumType: createGettersWithFunctionsMock( false ),
-				getErrors: createGettersWithFunctionsMock( [] ),
-				getUserRequestedLang: createGetterMock( 'en' ),
-				getLabelData: createLabelDataMock( {
-					Z6: 'String',
-					Z4: 'Type',
-					Z40: 'Boolean',
-					Z60: 'Natural language',
-					Z1001: 'Arabic',
-					Z1002: 'English',
-					Z1003: 'Spanish',
-					Z1004: 'French',
-					Z1005: 'Russian',
-					Z1672: 'Chinese (traditional)',
-					Z1645: 'Chinese (simplified)'
-				} )
-			};
-
-			actions = {
-				fetchZids: jest.fn(),
-				lookupZObjectLabels: jest.fn()
-			};
-			global.store.hotUpdate( {
-				state: state,
-				getters: getters,
-				actions: actions
+			// Update the Pinia store with the getters and actions
+			store = useMainStore();
+			store.isEnumType = createGettersWithFunctionsMock( false );
+			store.getErrors = createGettersWithFunctionsMock( [] );
+			store.getUserRequestedLang = 'en';
+			store.getLabelData = createLabelDataMock( {
+				Z6: 'String',
+				Z4: 'Type',
+				Z40: 'Boolean',
+				Z60: 'Natural language',
+				Z1001: 'Arabic',
+				Z1002: 'English',
+				Z1003: 'Spanish',
+				Z1004: 'French',
+				Z1005: 'Russian',
+				Z1672: 'Chinese (traditional)',
+				Z1645: 'Chinese (simplified)'
 			} );
 		} );
 
@@ -64,8 +47,7 @@ describe( 'ZObjectSelector', () => {
 		} );
 
 		it( 'on lookup, sends the the selector type in the payload', async () => {
-			actions.lookupZObjectLabels = jest.fn().mockResolvedValue( mockLookupValues );
-			global.store.hotUpdate( { actions: actions } );
+			store.lookupZObjectLabels.mockResolvedValue( mockLookupValues );
 
 			const wrapper = mount( ZObjectSelector, {
 				props: {
@@ -76,8 +58,7 @@ describe( 'ZObjectSelector', () => {
 			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
 			lookup.vm.$emit( 'update:input-value', 'Stri' );
 
-			await waitFor( () => expect( actions.lookupZObjectLabels ).toHaveBeenLastCalledWith(
-				expect.anything(),
+			await waitFor( () => expect( store.lookupZObjectLabels ).toHaveBeenLastCalledWith(
 				{
 					input: 'Stri',
 					returnType: undefined,
@@ -89,8 +70,7 @@ describe( 'ZObjectSelector', () => {
 		} );
 
 		it( 'on input change, shows lookup results', async () => {
-			actions.lookupZObjectLabels = jest.fn().mockResolvedValue( mockLookupValues );
-			global.store.hotUpdate( { actions: actions } );
+			store.lookupZObjectLabels.mockResolvedValue( mockLookupValues );
 
 			const wrapper = mount( ZObjectSelector, {
 				props: {
@@ -123,7 +103,7 @@ describe( 'ZObjectSelector', () => {
 			} ];
 
 			await waitFor( () => {
-				expect( actions.lookupZObjectLabels ).toHaveBeenLastCalledWith( expect.anything(), lookupPayload );
+				expect( store.lookupZObjectLabels ).toHaveBeenLastCalledWith( lookupPayload );
 				expect( lookup.props( 'menuItems' ).length ).toBe( 2 );
 				expect( lookup.props( 'menuItems' ) ).toEqual( lookupItems );
 			} );
@@ -210,8 +190,7 @@ describe( 'ZObjectSelector', () => {
 		} );
 
 		it( 'on blur, try to match and ignore if no matching value', async () => {
-			actions.lookupZObjectLabels = jest.fn().mockResolvedValue( mockLookupValues );
-			global.store.hotUpdate( { actions: actions } );
+			store.lookupZObjectLabels.mockResolvedValue( mockLookupValues );
 
 			const wrapper = mount( ZObjectSelector, {
 				props: {
@@ -225,7 +204,7 @@ describe( 'ZObjectSelector', () => {
 
 			await waitFor( () => {
 				expect( wrapper.vm.inputValue ).toBe( 'text' );
-				expect( actions.lookupZObjectLabels ).toHaveBeenCalled();
+				expect( store.lookupZObjectLabels ).toHaveBeenCalled();
 				expect( lookup.props( 'menuItems' ).length ).toBe( 2 );
 				expect( lookup.props( 'menuItems' )[ 0 ].label ).toEqual( 'Monolingual text' );
 			} );
@@ -237,8 +216,7 @@ describe( 'ZObjectSelector', () => {
 		} );
 
 		it( 'on blur, try to match and select the matching value', async () => {
-			actions.lookupZObjectLabels = jest.fn().mockResolvedValue( mockLookupValues );
-			global.store.hotUpdate( { actions: actions } );
+			store.lookupZObjectLabels.mockResolvedValue( mockLookupValues );
 
 			const wrapper = mount( ZObjectSelector, {
 				props: {
@@ -252,7 +230,7 @@ describe( 'ZObjectSelector', () => {
 
 			await waitFor( () => {
 				expect( wrapper.vm.inputValue ).toBe( 'Monolingual text' );
-				expect( actions.lookupZObjectLabels ).toHaveBeenCalled();
+				expect( store.lookupZObjectLabels ).toHaveBeenCalled();
 				expect( lookup.props( 'menuItems' ).length ).toBe( 2 );
 				expect( lookup.props( 'menuItems' )[ 0 ].label ).toEqual( 'Monolingual text' );
 			} );
@@ -268,39 +246,22 @@ describe( 'ZObjectSelector', () => {
 		const mockEnumZid = 'Z30000';
 
 		beforeEach( () => {
-			state = {
-				objects: {},
-				labels: {},
-				errors: {}
-			};
-			getters = {
-				isEnumType: createGettersWithFunctionsMock( true ),
-				getEnumValues: createGettersWithFunctionsMock( mockEnumValues ),
-				getErrors: createGettersWithFunctionsMock( [] ),
-				getUserRequestedLang: createGetterMock( 'en' ),
-				getLabelData: createLabelDataMock( {
-					Z6: 'String',
-					Z4: 'Type',
-					Z40: 'Boolean',
-					Z60: 'Natural language',
-					Z1001: 'Arabic',
-					Z1002: 'English',
-					Z1003: 'Spanish',
-					Z1004: 'French',
-					Z1005: 'Russian',
-					Z1006: 'Chinese'
-				} )
-			};
-
-			actions = {
-				fetchZids: jest.fn(),
-				fetchEnumValues: jest.fn(),
-				lookupZObjectLabels: jest.fn()
-			};
-			global.store.hotUpdate( {
-				state: state,
-				getters: getters,
-				actions: actions
+			store = useMainStore();
+			store.isEnumType = createGettersWithFunctionsMock( true );
+			store.getEnumValues = createGettersWithFunctionsMock( mockEnumValues );
+			store.getErrors = createGettersWithFunctionsMock( [] );
+			store.getUserRequestedLang = 'en';
+			store.getLabelData = createLabelDataMock( {
+				Z6: 'String',
+				Z4: 'Type',
+				Z40: 'Boolean',
+				Z60: 'Natural language',
+				Z1001: 'Arabic',
+				Z1002: 'English',
+				Z1003: 'Spanish',
+				Z1004: 'French',
+				Z1005: 'Russian',
+				Z1006: 'Chinese'
 			} );
 		} );
 

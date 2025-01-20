@@ -24,7 +24,8 @@ const { CdxIcon } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const ZObjectToString = require( './ZObjectToString.vue' ),
 	icons = require( '../../../lib/icons.json' ),
-	{ mapGetters } = require( 'vuex' );
+	useMainStore = require( '../../store/index.js' ),
+	{ mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-function-call',
@@ -44,7 +45,7 @@ module.exports = exports = defineComponent( {
 			icon: icons.cdxIconFunction
 		};
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getZFunctionCallFunctionId'
 	] ), {
 		/**

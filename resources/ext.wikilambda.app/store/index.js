@@ -6,46 +6,92 @@
  */
 'use strict';
 
-const { createStore } = require( 'vuex' ),
-	router = require( './modules/router.js' ),
-	errorsModule = require( './modules/errors.js' ),
-	languagesModule = require( './modules/languages.js' ),
-	libraryModule = require( './modules/library.js' ),
-	listItemsModule = require( './modules/listItems.js' ),
-	programmingLanguagesModule = require( './modules/programmingLanguages.js' ),
-	userModule = require( './modules/user.js' ),
-	functionCallModule = require( './modules/functionCall.js' ),
-	testResultsModule = require( './modules/testResults.js' ),
-	zobjectModule = require( './modules/zobject.js' ),
-	ztypeModule = require( './modules/ztype.js' ),
-	zfunctionModule = require( './modules/zfunction.js' ),
-	wdEntitiesModule = require( './modules/wikidata/entities.js' ),
-	wdLexemesModule = require( './modules/wikidata/lexemes.js' ),
-	wdItemsModule = require( './modules/wikidata/items.js' ),
-	wdPropertiesModule = require( './modules/wikidata/properties.js' );
+const { defineStore } = require( 'pinia' ),
+	routerStore = require( './stores/router.js' ),
+	errorsStore = require( './stores/errors.js' ),
+	languagesStore = require( './stores/languages.js' ),
+	libraryStore = require( './stores/library.js' ),
+	listItemsStore = require( './stores/listItems.js' ),
+	programmingLanguagesStore = require( './stores/programmingLanguages.js' ),
+	userStore = require( './stores/user.js' ),
+	functionCallStore = require( './stores/functionCall.js' ),
+	testResultsStore = require( './stores/testResults.js' ),
+	zobjectStore = require( './stores/zobject.js' ),
+	ztypeStore = require( './stores/ztype.js' ),
+	zfunctionStore = require( './stores/zfunction.js' ),
+	wdEntitiesStore = require( './stores/wikidata/entities.js' ),
+	wdLexemesStore = require( './stores/wikidata/lexemes.js' ),
+	wdItemsStore = require( './stores/wikidata/items.js' ),
+	wdPropertiesStore = require( './stores/wikidata/properties.js' );
 
-module.exports = createStore( {
-	modules: {
+module.exports = defineStore( 'main', {
+	state: () => Object.assign(
 		// Router
-		router,
+		routerStore.state,
 		// Utils
-		errorsModule,
-		languagesModule,
-		libraryModule,
-		listItemsModule,
-		programmingLanguagesModule,
-		userModule,
+		errorsStore.state,
+		languagesStore.state,
+		libraryStore.state,
+		listItemsStore.state,
+		programmingLanguagesStore.state,
+		userStore.state,
 		// Orchestrator requests
-		functionCallModule,
-		testResultsModule,
+		functionCallStore.state,
+		testResultsStore.state,
 		// Main ZObject: general and for some specific types
-		zobjectModule,
-		ztypeModule,
-		zfunctionModule,
+		zobjectStore.state,
+		ztypeStore.state,
+		zfunctionStore.state,
 		// Wikidata
-		wdEntitiesModule,
-		wdLexemesModule,
-		wdItemsModule,
-		wdPropertiesModule
-	}
+		wdEntitiesStore.state,
+		wdLexemesStore.state,
+		wdItemsStore.state,
+		wdPropertiesStore.state
+	),
+	getters: Object.assign(
+		// Router
+		routerStore.getters,
+		// Utils
+		errorsStore.getters,
+		languagesStore.getters,
+		libraryStore.getters,
+		listItemsStore.getters,
+		programmingLanguagesStore.getters,
+		userStore.getters,
+		// Orchestrator requests
+		functionCallStore.getters,
+		testResultsStore.getters,
+		// Main ZObject: general and for some specific types
+		zobjectStore.getters,
+		ztypeStore.getters,
+		zfunctionStore.getters,
+		// Wikidata
+		wdEntitiesStore.getters,
+		wdLexemesStore.getters,
+		wdItemsStore.getters,
+		wdPropertiesStore.getters
+	),
+	actions: Object.assign(
+		// Router
+		routerStore.actions,
+		// Utils
+		errorsStore.actions,
+		languagesStore.actions,
+		libraryStore.actions,
+		listItemsStore.actions,
+		programmingLanguagesStore.actions,
+		userStore.actions,
+		// Orchestrator requests
+		functionCallStore.actions,
+		testResultsStore.actions,
+		// Main ZObject: general and for some specific types
+		zobjectStore.actions,
+		ztypeStore.actions,
+		zfunctionStore.actions,
+		// Wikidata
+		wdEntitiesStore.actions,
+		wdLexemesStore.actions,
+		wdItemsStore.actions,
+		wdPropertiesStore.actions
+	)
 } );

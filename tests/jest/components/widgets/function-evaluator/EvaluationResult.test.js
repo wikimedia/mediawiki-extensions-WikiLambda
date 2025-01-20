@@ -9,26 +9,18 @@
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
-	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
+	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' ),
 	EvaluationResult = require( '../../../../../resources/ext.wikilambda.app/components/widgets/function-evaluator/EvaluationResult.vue' );
 
 describe( 'EvaluationResult', () => {
-	let getters;
+	let store;
 	beforeEach( () => {
-		getters = {
-			getMetadata: createGetterMock(),
-			getCurrentZObjectId: createGetterMock( 'Z0' ),
-			getLabelData: createLabelDataMock(),
-			getZObjectTypeByRowId: createGettersWithFunctionsMock( 'Z8' ),
-			getZPersistentContentRowId: createGettersWithFunctionsMock( 0 )
-		};
-		actions = {
-			fetchZids: jest.fn()
-		};
-		global.store.hotUpdate( {
-			actions: actions,
-			getters: getters
-		} );
+		store = useMainStore();
+		store.getMetadata = {};
+		store.getCurrentZObjectId = 'Z0';
+		store.getLabelData = createLabelDataMock();
+		store.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z8' );
+		store.getZPersistentContentRowId = createGettersWithFunctionsMock( 0 );
 	} );
 
 	describe( 'with no result', () => {
@@ -54,11 +46,7 @@ describe( 'EvaluationResult', () => {
 
 	describe( 'with metadata', () => {
 		beforeEach( () => {
-			getters.getMetadata = createGetterMock( {} );
-			global.store.hotUpdate( {
-				actions: actions,
-				getters: getters
-			} );
+			store.getMetadata = {};
 		} );
 
 		it( 'renders without errors', () => {

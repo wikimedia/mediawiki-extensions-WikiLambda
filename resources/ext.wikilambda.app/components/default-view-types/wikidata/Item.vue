@@ -35,9 +35,10 @@
 const { defineComponent } = require( 'vue' );
 const { CdxIcon } = require( '@wikimedia/codex' );
 const Constants = require( '../../../Constants.js' ),
+	useMainStore = require( '../../../store/index.js' ),
 	LabelData = require( '../../../store/classes/LabelData.js' ),
 	WikidataEntitySelector = require( './EntitySelector.vue' ),
-	{ mapActions, mapGetters } = require( 'vuex' ),
+	{ mapActions, mapState } = require( 'pinia' ),
 	wikidataIconSvg = require( './wikidataIconSvg.js' );
 
 module.exports = exports = defineComponent( {
@@ -67,7 +68,7 @@ module.exports = exports = defineComponent( {
 			itemType: Constants.Z_WIKIDATA_ITEM
 		};
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getItemData',
 		'getItemIdRow',
 		'getUserLangCode',
@@ -95,9 +96,10 @@ module.exports = exports = defineComponent( {
 		},
 		/**
 		 * Returns the Wikidata Item data object, if any Item is selected.
+		 * Returns a Promise if the data is being fetched.
 		 * Else returns undefined.
 		 *
-		 * @return {Object|undefined}
+		 * @return {Object|Promise|undefined}
 		 */
 		itemData: function () {
 			return this.getItemData( this.itemId );
@@ -148,7 +150,7 @@ module.exports = exports = defineComponent( {
 			return this.itemLabelData ? this.itemLabelData.label : '';
 		}
 	} ),
-	methods: Object.assign( mapActions( [
+	methods: Object.assign( {}, mapActions( useMainStore, [
 		'fetchItems'
 	] ), {
 		/**

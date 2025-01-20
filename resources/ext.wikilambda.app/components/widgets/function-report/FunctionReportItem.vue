@@ -40,7 +40,8 @@
 <script>
 
 const { defineComponent } = require( 'vue' );
-const { mapGetters } = require( 'vuex' ),
+const { mapState } = require( 'pinia' ),
+	useMainStore = require( '../../../store/index.js' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ),
 	StatusIcon = require( '../../base/StatusIcon.vue' ),
 	Constants = require( '../../../Constants.js' ),
@@ -74,7 +75,7 @@ module.exports = exports = defineComponent( {
 			default: false
 		}
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getUserLangCode',
 		'getZTesterResults',
 		'getLabelData'

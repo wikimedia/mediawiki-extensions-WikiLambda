@@ -7,9 +7,12 @@
 'use strict';
 
 const Vue = require( 'vue' );
+const { createPinia } = require( 'pinia' );
 
 module.exports = function loadComposable( composable ) {
 	let result;
+
+	const pinia = createPinia();
 	const app = Vue.createApp( {
 		setup() {
 			result = composable();
@@ -17,6 +20,7 @@ module.exports = function loadComposable( composable ) {
 			return () => {};
 		}
 	} );
+	app.use( pinia );
 	app.mount( document.createElement( 'div' ) );
 	// return the result and the app instance
 	// for testing provide / unmount

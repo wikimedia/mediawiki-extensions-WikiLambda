@@ -6,16 +6,19 @@
  */
 'use strict';
 
-const { createMwApp } = require( 'vue' ),
-	store = require( './store/index.js' ),
-	App = require( './components/App.vue' );
+const { createMwApp } = require( 'vue' );
+const { createPinia } = require( 'pinia' );
+const useMainStore = require( './store/index.js' );
+const App = require( './components/App.vue' );
 
+const pinia = createPinia();
+const store = useMainStore( pinia );
 window.vueInstance = createMwApp( Object.assign( {
 	provide: function () {
 		return {
-			viewmode: store.getters.getViewMode
+			viewmode: store.getViewMode
 		};
 	}
 }, App ) )
-	.use( store )
+	.use( pinia )
 	.mount( '#ext-wikilambda-app' );

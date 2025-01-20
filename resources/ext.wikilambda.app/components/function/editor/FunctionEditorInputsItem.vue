@@ -68,9 +68,10 @@
 const { CdxButton, CdxField, CdxIcon, CdxTextInput } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
+	useMainStore = require( '../../../store/index.js' ),
 	LabelData = require( '../../../store/classes/LabelData.js' ),
 	TypeSelector = require( '../../base/TypeSelector.vue' ),
-	{ mapActions, mapGetters } = require( 'vuex' ),
+	{ mapActions, mapState } = require( 'pinia' ),
 	icons = require( './../../../../lib/icons.json' );
 
 module.exports = exports = defineComponent( {
@@ -133,7 +134,7 @@ module.exports = exports = defineComponent( {
 			icons: icons
 		};
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getRowByKeyPath',
 		'getZArgumentLabelForLanguage',
 		'getZArgumentTypeRowId',
@@ -213,7 +214,7 @@ module.exports = exports = defineComponent( {
 			return this.$i18n( 'wikilambda-function-definition-inputs-item-selector-placeholder' ).text();
 		}
 	} ),
-	methods: Object.assign( mapActions( [
+	methods: Object.assign( {}, mapActions( useMainStore, [
 		'changeType',
 		'setValueByRowIdAndPath',
 		'removeItemFromTypedList'

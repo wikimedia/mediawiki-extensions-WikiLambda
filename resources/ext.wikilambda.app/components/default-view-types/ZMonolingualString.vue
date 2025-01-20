@@ -46,7 +46,8 @@
 const { defineComponent } = require( 'vue' );
 const { CdxInfoChip, CdxTextInput } = require( '@wikimedia/codex' ),
 	Constants = require( '../../Constants.js' ),
-	{ mapGetters } = require( 'vuex' );
+	useMainStore = require( '../../store/index.js' ),
+	{ mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-monolingual-string',
@@ -72,7 +73,7 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign(
-		mapGetters( [
+		mapState( useMainStore, [
 			'getLanguageIsoCodeOfZLang',
 			'getZMonolingualTextValue',
 			'getZMonolingualLangValue'

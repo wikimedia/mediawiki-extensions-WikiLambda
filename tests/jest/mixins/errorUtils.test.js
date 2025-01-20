@@ -10,23 +10,16 @@
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	errorUtils = require( '../../../resources/ext.wikilambda.app/mixins/errorUtils.js' ),
 	createGettersWithFunctionsMock = require( '../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' );
+	Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' ),
+	useMainStore = require( '../../../resources/ext.wikilambda.app/store/index.js' );
 
 describe( 'errorUtils mixin', () => {
-	let wrapper, getters, actions;
+	let wrapper, store;
 
 	beforeEach( () => {
-
-		getters = {
-			getErrors: createGettersWithFunctionsMock( [] )
-		};
-		actions = {
-			clearErrors: jest.fn()
-		};
-		global.store.hotUpdate( {
-			getters: getters,
-			actions: actions
-		} );
+		store = useMainStore();
+		store.getErrors = createGettersWithFunctionsMock( [] );
+		store.clearErrors = jest.fn();
 
 		// Mocking a Vue component to test the mixin
 		const TestComponent = {
@@ -61,7 +54,7 @@ describe( 'errorUtils mixin', () => {
 			wrapper.vm.clearFieldErrors();
 
 			expect( wrapper.vm.localErrors ).toHaveLength( 0 );
-			expect( actions.clearErrors ).toHaveBeenCalledWith( expect.anything(), 1 );
+			expect( store.clearErrors ).toHaveBeenCalledWith( 1 );
 		} );
 
 		it( 'should not call clearErrors action if rowId is not defined or is 0', () => {
@@ -69,7 +62,7 @@ describe( 'errorUtils mixin', () => {
 			wrapper.vm.clearFieldErrors();
 
 			expect( wrapper.vm.localErrors ).toHaveLength( 0 );
-			expect( actions.clearErrors ).not.toHaveBeenCalled();
+			expect( store.clearErrors ).not.toHaveBeenCalled();
 		} );
 	} );
 
@@ -83,10 +76,7 @@ describe( 'errorUtils mixin', () => {
 	describe( 'fieldErrors computed property', () => {
 		it( 'should return combined localErrors and global errors from store', () => {
 			const globalErrors = [ { type: 'global_error', code: 'GLOBAL', message: 'Global error' } ];
-			getters.getErrors = createGettersWithFunctionsMock( globalErrors );
-			global.store.hotUpdate( {
-				getters: getters
-			} );
+			store.getErrors = createGettersWithFunctionsMock( globalErrors );
 
 			wrapper.vm.localErrors = [ { type: 'local_error', code: 'LOCAL', message: 'Local error' } ];
 

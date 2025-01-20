@@ -10,6 +10,8 @@ const functionCallResultFromApi = require( '../objects/functionCallResultFromApi
 	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
 	apiGetMock = require( './apiGetMock.js' ),
 	ApiMock = require( './apiMock.js' );
+const { createPinia } = require( 'pinia' );
+const vueTestUtils = require( '@vue/test-utils' );
 
 const lookupZObjectTypeLabels = new ApiMock(
 	apiGetMock.functionLabelsRequest,
@@ -37,6 +39,12 @@ const runSetup = function () {
 			href: 'currentPage'
 		}
 	} );
+
+	// Create a real Pinia store or a testing one
+	global.store = createPinia();
+	// Configure the Vue test utils to use our store
+	vueTestUtils.config.global.plugins = [ global.store ];
+
 	window.mw.Uri = jest.fn( () => ( {
 		path: new window.mw.Title( Constants.PATHS.RUN_FUNCTION_TITLE ).getUrl(),
 		query: {}

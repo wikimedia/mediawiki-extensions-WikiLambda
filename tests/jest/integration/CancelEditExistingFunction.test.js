@@ -13,7 +13,6 @@ const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
 	{ lookupSearchAndSelect, textInputChange } = require( './helpers/interactionHelpers.js' ),
 	{ runSetup, runTeardown } = require( './helpers/functionEditorTestHelpers.js' ),
 	Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' ),
-	store = require( '../../../resources/ext.wikilambda.app/store/index.js' ),
 	App = require( '../../../resources/ext.wikilambda.app/components/App.vue' ),
 	existingFunctionFromApi = require( './objects/existingFunctionFromApi.js' );
 
@@ -38,7 +37,7 @@ describe( 'WikiLambda frontend, function-editor view, on a new function', () => 
 
 	it( 'allows cancelling with no changes', async () => {
 		const { findByText } =
-			render( App, { global: { plugins: [ store ] } } );
+			render( App );
 
 		// ACT: Click cancel button.
 		await fireEvent.click( await findByText( 'Cancel' ) );
@@ -49,7 +48,7 @@ describe( 'WikiLambda frontend, function-editor view, on a new function', () => 
 
 	it( 'allows cancelling after changes', async () => {
 		const { getByText, findByRole, findByText, getAllByTestId } =
-			render( App, { global: { plugins: [ store ] } } );
+			render( App );
 
 		// ACT: Click "Add language".
 		await fireEvent.click( await findByText( 'Add language' ) );

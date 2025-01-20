@@ -7,91 +7,34 @@
 'use strict';
 
 require( '@testing-library/jest-dom' );
-
 const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
 	{ within } = require( '@testing-library/dom' ),
 	{ clickMenuOption } = require( './helpers/interactionHelpers.js' ),
-	store = require( '../../../resources/ext.wikilambda.app/store/index.js' ),
 	App = require( '../../../resources/ext.wikilambda.app/components/App.vue' ),
-	Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' ),
-	ApiMock = require( './helpers/apiMock.js' ),
-	apiGetMock = require( './helpers/apiGetMock.js' ),
-	existingFunctionFromApi = require( './objects/existingFunctionFromApi.js' ),
+	{ runSetup, runTeardown } = require( './helpers/testEditorTestHelpers.js' ),
 	expectedNewTesterPostedToApi = require( './objects/expectedNewTesterPostedToApi.js' );
-
-const initializeRootZObject =
-	new ApiMock( apiGetMock.loadZObjectsRequest, apiGetMock.loadZObjectsResponse, apiGetMock.loadZObjectsMatcher );
-const lookupZObjectTypeLabels =
-	new ApiMock( apiGetMock.functionLabelsRequest, apiGetMock.labelsResponse, apiGetMock.labelsMatcher );
-const performTest =
-	new ApiMock( apiGetMock.performTestRequest, apiGetMock.performTestResponse, apiGetMock.actionMatcher );
-const functionZid = existingFunctionFromApi[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
 
 describe( 'WikiLambda frontend, on zobject-editor view', () => {
 	let apiPostWithEditTokenMock;
 	beforeEach( () => {
-		jest.useFakeTimers();
-
-		Object.defineProperty( window, 'location', {
-			value: {
-				href: '/w/index.php?title=Special:CreateObject&zid=Z20&Z20K1=' + functionZid
-			}
-		} );
-
-		const queryParams = {
-			title: Constants.PATHS.CREATE_OBJECT_TITLE,
-			zid: Constants.Z_TESTER,
-			[ Constants.Z_TESTER_FUNCTION ]: functionZid
-		};
-		window.mw.Uri = jest.fn( () => ( {
-			query: queryParams,
-			path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl( queryParams )
-		} ) );
-
-		global.mw.config.get = ( endpoint ) => {
-			switch ( endpoint ) {
-				case 'wgWikiLambda':
-					return {
-						vieMode: false,
-						createNewPage: true,
-						zlangZid: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
-						zlang: 'en'
-					};
-				case 'wgExtensionAssetsPath':
-					return '/w/extensions';
-				default:
-					return {};
-			}
-		};
-
-		apiPostWithEditTokenMock = jest.fn( () => Promise.resolve( {
-			wikilambda_edit: {
-				page: 'newPage'
-			}
-		} ) );
-
-		mw.Api = jest.fn( () => ( {
-			postWithEditToken: apiPostWithEditTokenMock,
-			get: apiGetMock.createMockApi( [
-				initializeRootZObject,
-				lookupZObjectTypeLabels,
-				performTest
-			] )
-		} ) );
+		apiPostWithEditTokenMock = runSetup().apiPostWithEditTokenMock;
 	} );
-
 	afterEach( () => {
-		jest.runOnlyPendingTimers();
-		jest.useRealTimers();
+		runTeardown();
 	} );
 
 	it( 'allows creating a new tester', async () => {
 		const { findByTestId } = render( App, {
-			global: { plugins: [ store ], stubs: {
+			global: { stubs: {
 				teleport: true,
 				WlFunctionEvaluatorWidget: true
 			} }
 		} );
+
+		await waitFor(
+			async () => await findByTestId( 'z-tester' ),
+			{ timeout: 5000 } // Wait up to 5 seconds
+		);
 
 		//* -- Function call section
 		// ASSERT: The function specified in URL is pre-selected as the function under test.
@@ -190,7 +133,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 
 	it( 'allows changing the selected function call and ensures the function report testers are updated, but not executed', async () => {
 		const { findByTestId } = render( App, {
-			global: { plugins: [ store ], stubs: {
+			global: { stubs: {
 				teleport: true,
 				WlFunctionEvaluatorWidget: true
 			} }

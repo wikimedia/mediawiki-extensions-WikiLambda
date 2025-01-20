@@ -45,13 +45,14 @@
 const { CdxButton } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
+	useMainStore = require( '../../../store/index.js' ),
 	WidgetBase = require( '../../base/WidgetBase.vue' ),
 	LeaveEditorDialog = require( './LeaveEditorDialog.vue' ),
 	PublishDialog = require( './PublishDialog.vue' ),
 	eventLogger = require( '../../../mixins/eventLogUtils.js' ).methods,
 	urlUtils = require( '../../../mixins/urlUtils.js' ),
-	{ mapActions } = require( 'vuex' ),
-	{ mapGetters } = require( 'vuex' );
+	{ mapActions } = require( 'pinia' ),
+	{ mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-publish-widget',
@@ -81,7 +82,7 @@ module.exports = exports = defineComponent( {
 			showPublishDialog: false
 		};
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getCurrentZObjectId',
 		'getCurrentZObjectType',
 		'getCurrentZImplementationType',
@@ -106,7 +107,7 @@ module.exports = exports = defineComponent( {
 			};
 		}
 	} ),
-	methods: Object.assign( mapActions( [
+	methods: Object.assign( {}, mapActions( useMainStore, [
 		'clearValidationErrors',
 		'validateZObject'
 	] ), {
@@ -148,12 +149,11 @@ module.exports = exports = defineComponent( {
 		 */
 		handlePublish: function () {
 			this.clearValidationErrors();
-			this.validateZObject().then( ( isValid ) => {
-				if ( isValid ) {
-					this.$emit( 'start-publish' );
-					this.showPublishDialog = true;
-				}
-			} );
+			const isValid = this.validateZObject();
+			if ( isValid ) {
+				this.$emit( 'start-publish' );
+				this.showPublishDialog = true;
+			}
 		},
 
 		/**

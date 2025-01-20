@@ -10,31 +10,26 @@
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createJQueryPageTitleMocks = require( '../../../tests/jest/helpers/jqueryHelpers.js' ).createJQueryPageTitleMocks,
 	createLabelDataMock = require( '../../../tests/jest/helpers/getterHelpers.js' ).createLabelDataMock,
-	createGetterMock = require( '../../../tests/jest/helpers/getterHelpers.js' ).createGetterMock,
 	createGettersWithFunctionsMock = require( '../../../tests/jest/helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	pageTitleUtils = require( '../../../resources/ext.wikilambda.app/mixins/pageTitleUtils.js' );
+	pageTitleUtils = require( '../../../resources/ext.wikilambda.app/mixins/pageTitleUtils.js' ),
+	useMainStore = require( '../../../resources/ext.wikilambda.app/store/index.js' );
 
 describe( 'pageTitleUtils', () => {
-	let wrapper, getters;
+	let wrapper, store;
 
 	beforeEach( () => {
-
-		getters = {
-			getUserLangZid: createGetterMock( 'Z1003' ),
-			getFallbackLanguageZids: createGetterMock( [ 'Z1003', 'Z1002' ] ),
-			getLabelData: createLabelDataMock( {
-				Z1002: 'English',
-				Z1003: 'Spanish'
-			} ),
-			getLanguageIsoCodeOfZLang: () => ( zid ) => zid === 'Z1003' ? 'es' : 'en',
-			getRowByKeyPath: createGettersWithFunctionsMock(),
-			getZMonolingualTextValue: createGettersWithFunctionsMock(),
-			getZPersistentName: createGettersWithFunctionsMock(),
-			getZReferenceTerminalValue: createGettersWithFunctionsMock()
-		};
-		global.store.hotUpdate( {
-			getters: getters
+		store = useMainStore();
+		store.getUserLangZid = 'Z1003';
+		store.getFallbackLanguageZids = [ 'Z1003', 'Z1002' ];
+		store.getLabelData = createLabelDataMock( {
+			Z1002: 'English',
+			Z1003: 'Spanish'
 		} );
+		store.getLanguageIsoCodeOfZLang = ( zid ) => zid === 'Z1003' ? 'es' : 'en';
+		store.getRowByKeyPath = createGettersWithFunctionsMock();
+		store.getZMonolingualTextValue = createGettersWithFunctionsMock();
+		store.getZPersistentName = createGettersWithFunctionsMock();
+		store.getZReferenceTerminalValue = createGettersWithFunctionsMock();
 
 		// Mocking a Vue component to test the mixin
 		const TestComponent = {
@@ -62,13 +57,12 @@ describe( 'pageTitleUtils', () => {
 		const value = 'Name in main language';
 
 		// Set the main language name to be defined:
-		getters.getZPersistentName = createGettersWithFunctionsMock( { id: 1 } );
+		store.getZPersistentName = createGettersWithFunctionsMock( { id: 1 } );
 		// Set language getters
-		getters.getRowByKeyPath = () => ( path, rowId ) => rowId === 1 ? { id: 2 } : undefined;
-		getters.getZReferenceTerminalValue = () => ( rowId ) => rowId === 2 ? 'Z1003' : undefined;
+		store.getRowByKeyPath = jest.fn( ( path, rowId ) => rowId === 1 ? { id: 2 } : undefined );
+		store.getZReferenceTerminalValue = jest.fn( ( rowId ) => rowId === 2 ? 'Z1003' : undefined );
 		// Set text getter
-		getters.getZMonolingualTextValue = () => ( rowId ) => rowId === 1 ? value : undefined;
-		global.store.hotUpdate( { getters } );
+		store.getZMonolingualTextValue = jest.fn( ( rowId ) => rowId === 1 ? value : undefined );
 
 		await wrapper.vm.updatePageTitle();
 
@@ -86,13 +80,12 @@ describe( 'pageTitleUtils', () => {
 		const fallbackValue = 'New name in fallback language';
 
 		// Set the fallback language to be defined, and the main language to be undefined:
-		getters.getZPersistentName = () => ( langZid ) => langZid === 'Z1002' ? { id: 11 } : undefined;
+		store.getZPersistentName = jest.fn( ( langZid ) => langZid === 'Z1002' ? { id: 11 } : undefined );
 		// Set language getters
-		getters.getRowByKeyPath = () => ( path, rowId ) => rowId === 11 ? { id: 22 } : undefined;
-		getters.getZReferenceTerminalValue = () => ( rowId ) => rowId === 22 ? 'Z1002' : undefined;
+		store.getRowByKeyPath = jest.fn( ( path, rowId ) => rowId === 11 ? { id: 22 } : undefined );
+		store.getZReferenceTerminalValue = jest.fn( ( rowId ) => rowId === 22 ? 'Z1002' : undefined );
 		// Set text getter
-		getters.getZMonolingualTextValue = () => ( rowId ) => rowId === 11 ? fallbackValue : undefined;
-		global.store.hotUpdate( { getters } );
+		store.getZMonolingualTextValue = jest.fn( ( rowId ) => rowId === 11 ? fallbackValue : undefined );
 
 		await wrapper.vm.updatePageTitle();
 
@@ -108,8 +101,7 @@ describe( 'pageTitleUtils', () => {
 		const { $pageTitle, $langChip } = createJQueryPageTitleMocks();
 
 		// Set all names to be undefined:
-		getters.getZPersistentName = createGettersWithFunctionsMock( undefined );
-		global.store.hotUpdate( { getters } );
+		store.getZPersistentName = createGettersWithFunctionsMock( undefined );
 
 		await wrapper.vm.updatePageTitle();
 

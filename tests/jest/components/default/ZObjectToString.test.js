@@ -10,43 +10,40 @@ const { waitFor } = require( '@testing-library/vue' ),
 	mount = require( '@vue/test-utils' ).mount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
+	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' ),
 	ZObjectToString = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZObjectToString.vue' ),
 	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 
 describe( 'ZObjectToString', () => {
-	let getters;
+	let store;
 	beforeEach( () => {
-		getters = {
-			getUserLangCode: createGetterMock( 'en' ),
-			getLabelData: createLabelDataMock( {
-				Z42: 'False',
-				Z60: 'Language',
-				Z7K1: 'function',
-				Z11: 'Monolingual text',
-				Z1002: 'English',
-				Z10001: 'And',
-				Z999K1: 'argument label'
-			} ),
-			getExpectedTypeOfKey: createGettersWithFunctionsMock( 'Z1' ),
-			getZObjectTypeByRowId: createGettersWithFunctionsMock( 'Z6' ),
-			getZObjectKeyByRowId: createGettersWithFunctionsMock( 'Z6K1' ),
-			getZStringTerminalValue: createGettersWithFunctionsMock( 'the final stringdown' ),
-			getZReferenceTerminalValue: createGettersWithFunctionsMock( 'Z6' ),
-			getZFunctionCallFunctionId: createGettersWithFunctionsMock( 'Z10001' ),
-			getZFunctionCallArguments: createGettersWithFunctionsMock( [] ),
-			getChildrenByParentRowId: createGettersWithFunctionsMock( [] )
-		};
-		global.store.hotUpdate( { getters: getters } );
+		store = useMainStore();
+		store.getUserLangCode = 'en';
+		store.getLabelData = createLabelDataMock( {
+			Z42: 'False',
+			Z60: 'Language',
+			Z7K1: 'function',
+			Z11: 'Monolingual text',
+			Z1002: 'English',
+			Z10001: 'And',
+			Z999K1: 'argument label'
+		} );
+		store.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z1' );
+		store.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z6' );
+		store.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z6K1' );
+		store.getZStringTerminalValue = createGettersWithFunctionsMock( 'the final stringdown' );
+		store.getZReferenceTerminalValue = createGettersWithFunctionsMock( 'Z6' );
+		store.getZFunctionCallFunctionId = createGettersWithFunctionsMock( 'Z10001' );
+		store.getZFunctionCallArguments = createGettersWithFunctionsMock( [] );
+		store.getChildrenByParentRowId = createGettersWithFunctionsMock( [] );
 	} );
 
 	describe( 'in view and edit mode', () => {
 
 		describe( 'for a terminal string', () => {
 			beforeEach( () => {
-				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z6' );
-				getters.getZStringTerminalValue = createGettersWithFunctionsMock( 'the final stringdown' );
-				global.store.hotUpdate( { getters: getters } );
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z6' );
+				store.getZStringTerminalValue = createGettersWithFunctionsMock( 'the final stringdown' );
 			} );
 
 			it( 'renders without errors', () => {
@@ -64,9 +61,8 @@ describe( 'ZObjectToString', () => {
 
 		describe( 'for a terminal reference', () => {
 			beforeEach( () => {
-				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z9' );
-				getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( 'Z42' );
-				global.store.hotUpdate( { getters: getters } );
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z9' );
+				store.getZReferenceTerminalValue = createGettersWithFunctionsMock( 'Z42' );
 			} );
 
 			it( 'renders without errors', () => {
@@ -86,10 +82,9 @@ describe( 'ZObjectToString', () => {
 
 		describe( 'for a function call with zero arguments', () => {
 			beforeEach( () => {
-				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z7' );
-				getters.getZFunctionCallFunctionId = createGettersWithFunctionsMock( 'Z10001' );
-				getters.getZFunctionCallArguments = createGettersWithFunctionsMock( [] );
-				global.store.hotUpdate( { getters: getters } );
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z7' );
+				store.getZFunctionCallFunctionId = createGettersWithFunctionsMock( 'Z10001' );
+				store.getZFunctionCallArguments = createGettersWithFunctionsMock( [] );
 			} );
 
 			it( 'renders without errors', () => {
@@ -109,14 +104,13 @@ describe( 'ZObjectToString', () => {
 
 		describe( 'for a function call with arguments', () => {
 			beforeEach( () => {
-				getters.getZObjectTypeByRowId = () => ( id ) => ( id === 0 ) ? 'Z7' : 'Z6';
-				getters.getZStringTerminalValue = () => ( id ) => ( id === 1 ) ? 'first arg' : 'second arg';
-				getters.getZFunctionCallFunctionId = createGettersWithFunctionsMock( 'Z10001' );
-				getters.getZFunctionCallArguments = createGettersWithFunctionsMock( [
+				store.getZObjectTypeByRowId = jest.fn( ( id ) => ( id === 0 ) ? 'Z7' : 'Z6' );
+				store.getZStringTerminalValue = jest.fn( ( id ) => ( id === 1 ) ? 'first arg' : 'second arg' );
+				store.getZFunctionCallFunctionId = createGettersWithFunctionsMock( 'Z10001' );
+				store.getZFunctionCallArguments = createGettersWithFunctionsMock( [
 					{ id: 1, key: 'Z10001K1', parent: 0, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 2, key: 'Z10001K2', parent: 0, value: Constants.ROW_VALUE_OBJECT }
 				] );
-				global.store.hotUpdate( { getters: getters } );
 			} );
 
 			it( 'renders without errors', () => {
@@ -157,10 +151,9 @@ describe( 'ZObjectToString', () => {
 
 		describe( 'for an argument reference', () => {
 			beforeEach( () => {
-				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z6' );
-				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z18K1' );
-				getters.getZStringTerminalValue = createGettersWithFunctionsMock( 'Z999K1' );
-				global.store.hotUpdate( { getters: getters } );
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z6' );
+				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z18K1' );
+				store.getZStringTerminalValue = createGettersWithFunctionsMock( 'Z999K1' );
 			} );
 
 			it( 'renders without errors', () => {
@@ -178,20 +171,19 @@ describe( 'ZObjectToString', () => {
 
 		describe( 'for any other type', () => {
 			beforeEach( () => {
-				getters.getZObjectTypeByRowId = () => ( rowId ) => {
+				store.getZObjectTypeByRowId = jest.fn( ( rowId ) => {
 					const types = [ 'Z11', 'Z9', 'Z6' ];
 					return types[ rowId ];
-				};
-				getters.getZReferenceTerminalValue = () => ( rowId ) => {
+				} );
+				store.getZReferenceTerminalValue = jest.fn( ( rowId ) => {
 					const refs = [ 'Z11', 'Z1002' ];
 					return refs[ rowId ];
-				};
-				getters.getZStringTerminalValue = createGettersWithFunctionsMock( 'string value' );
-				getters.getChildrenByParentRowId = createGettersWithFunctionsMock( [
+				} );
+				store.getZStringTerminalValue = createGettersWithFunctionsMock( 'string value' );
+				store.getChildrenByParentRowId = createGettersWithFunctionsMock( [
 					{ id: 1, key: 'Z11K1', parent: 0, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 2, key: 'Z11K2', parent: 0, value: Constants.ROW_VALUE_OBJECT }
 				] );
-				global.store.hotUpdate( { getters: getters } );
 			} );
 
 			it( 'renders without errors', () => {
@@ -244,9 +236,8 @@ describe( 'ZObjectToString', () => {
 
 		describe( 'for a terminal blank string', () => {
 			beforeEach( () => {
-				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z6' );
-				getters.getZStringTerminalValue = createGettersWithFunctionsMock( undefined );
-				global.store.hotUpdate( { getters: getters } );
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z6' );
+				store.getZStringTerminalValue = createGettersWithFunctionsMock( undefined );
 			} );
 
 			it( 'renders without errors', () => {
@@ -271,11 +262,10 @@ describe( 'ZObjectToString', () => {
 
 		describe( 'for a terminal empty reference language', () => {
 			beforeEach( () => {
-				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z9' );
-				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z11K1' );
-				getters.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z60' );
-				getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( undefined );
-				global.store.hotUpdate( { getters: getters } );
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z9' );
+				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z11K1' );
+				store.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z60' );
+				store.getZReferenceTerminalValue = createGettersWithFunctionsMock( undefined );
 			} );
 
 			it( 'renders without errors', () => {
@@ -303,10 +293,9 @@ describe( 'ZObjectToString', () => {
 
 		describe( 'for a function call with an empty function', () => {
 			beforeEach( () => {
-				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z7' );
-				getters.getZFunctionCallFunctionId = createGettersWithFunctionsMock( undefined );
-				getters.getZFunctionCallArguments = createGettersWithFunctionsMock( [] );
-				global.store.hotUpdate( { getters: getters } );
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z7' );
+				store.getZFunctionCallFunctionId = createGettersWithFunctionsMock( undefined );
+				store.getZFunctionCallArguments = createGettersWithFunctionsMock( [] );
 			} );
 
 			it( 'renders without errors', () => {

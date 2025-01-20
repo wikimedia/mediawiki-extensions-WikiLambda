@@ -9,13 +9,14 @@
 const { shallowMount } = require( '@vue/test-utils' ),
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
-	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
+	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' ),
 	AboutLanguageBlock = require( '../../../../../resources/ext.wikilambda.app/components/widgets/about/AboutLanguageBlock.vue' );
 
 describe( 'AboutLanguageBlock', () => {
-	let wrapper, getters, viewData, fieldLangs;
+	let wrapper, store, viewData, fieldLangs;
 
 	beforeEach( () => {
+		store = useMainStore();
 		const mockLabels = {
 			Z2K3: 'name',
 			Z2K4: 'aliases',
@@ -27,18 +28,15 @@ describe( 'AboutLanguageBlock', () => {
 			Z10000K1: 'first',
 			Z10000K2: 'second'
 		};
-		getters = {
-			getFallbackLanguageZids: createGetterMock( [ 'Z1003', 'Z1002' ] ),
-			getLabelData: createLabelDataMock( mockLabels ),
-			getZArgumentLabelForLanguage: createGettersWithFunctionsMock( undefined ),
-			getZFunctionOutput: createGettersWithFunctionsMock( { id: 30 } ),
-			getZMonolingualTextValue: createGettersWithFunctionsMock( undefined ),
-			getZMonolingualStringsetValues: createGettersWithFunctionsMock( [] ),
-			getZPersistentAlias: createGettersWithFunctionsMock( undefined ),
-			getZPersistentDescription: createGettersWithFunctionsMock( undefined ),
-			getZPersistentName: createGettersWithFunctionsMock( { id: 1 } )
-		};
-		global.store.hotUpdate( { getters: getters } );
+		store.getFallbackLanguageZids = [ 'Z1003', 'Z1002' ];
+		store.getLabelData = createLabelDataMock( mockLabels );
+		store.getZArgumentLabelForLanguage = createGettersWithFunctionsMock( undefined );
+		store.getZFunctionOutput = createGettersWithFunctionsMock( { id: 30 } );
+		store.getZMonolingualTextValue = createGettersWithFunctionsMock( undefined );
+		store.getZMonolingualStringsetValues = createGettersWithFunctionsMock( [] );
+		store.getZPersistentAlias = createGettersWithFunctionsMock( undefined );
+		store.getZPersistentDescription = createGettersWithFunctionsMock( undefined );
+		store.getZPersistentName = createGettersWithFunctionsMock( { id: 1 } );
 	} );
 
 	afterEach( () => {
@@ -293,7 +291,7 @@ describe( 'AboutLanguageBlock', () => {
 				name: { rowId: 1, value: 'Name' },
 				description: { rowId: 2, value: 'Description' },
 				aliases: { rowId: 3, value: [ { rowId: 4, value: 'one alias' } ] },
-				inputs: [ { key: 'Z10001K1', value: 'input one', inputRowId: 11, labelRowId: 12, typeRowId: 13 } ]
+				inputs: [ { key: 'Z10001K1', value: 'input one', inputRowId: 11, typeRowId: 13 } ]
 			};
 			fieldLangs = {
 				name: [ 'Z1002' ],
@@ -336,15 +334,14 @@ describe( 'AboutLanguageBlock', () => {
 		describe( 'Fallback hints', () => {
 			it( 'shows fallback name hint', () => {
 				fieldLangs.name = [ 'Z1003', 'Z1002' ];
-				getters.getZPersistentName = () => ( langZid ) => {
+				store.getZPersistentName = ( langZid ) => {
 					const rows = { Z1003: { id: 101 }, Z1002: { id: 102 } };
 					return rows[ langZid ];
 				};
-				getters.getZMonolingualTextValue = () => ( rowId ) => {
+				store.getZMonolingualTextValue = ( rowId ) => {
 					const rows = { 101: 'Nombre', 102: 'Name' };
 					return rows[ rowId ];
 				};
-				global.store.hotUpdate( { getters: getters } );
 
 				wrapper = shallowMount( AboutLanguageBlock, {
 					global: { stubs: { CdxField: false } },
@@ -366,15 +363,14 @@ describe( 'AboutLanguageBlock', () => {
 
 			it( 'shows fallback description hint', () => {
 				fieldLangs.description = [ 'Z1003' ];
-				getters.getZPersistentDescription = () => ( langZid ) => {
+				store.getZPersistentDescription = ( langZid ) => {
 					const rows = { Z1003: { id: 201 } };
 					return rows[ langZid ];
 				};
-				getters.getZMonolingualTextValue = () => ( rowId ) => {
+				store.getZMonolingualTextValue = ( rowId ) => {
 					const rows = { 201: 'Descripción' };
 					return rows[ rowId ];
 				};
-				global.store.hotUpdate( { getters: getters } );
 
 				wrapper = shallowMount( AboutLanguageBlock, {
 					global: { stubs: { CdxField: false } },
@@ -396,15 +392,14 @@ describe( 'AboutLanguageBlock', () => {
 
 			it( 'shows fallback aliases hint', () => {
 				fieldLangs.aliases = [ 'Z1002' ];
-				getters.getZPersistentAlias = () => ( langZid ) => {
+				store.getZPersistentAlias = ( langZid ) => {
 					const rows = { Z1002: { id: 301 } };
 					return rows[ langZid ];
 				};
-				getters.getZMonolingualStringsetValues = () => ( rowId ) => {
+				store.getZMonolingualStringsetValues = ( rowId ) => {
 					const rows = { 301: [ { rowId: 31, value: 'one' }, { rowId: 32, value: 'two' } ] };
 					return rows[ rowId ] || [];
 				};
-				global.store.hotUpdate( { getters: getters } );
 
 				wrapper = shallowMount( AboutLanguageBlock, {
 					global: { stubs: { CdxField: false } },
@@ -431,7 +426,7 @@ describe( 'AboutLanguageBlock', () => {
 					{ key: 'Z10001K3', value: '', inputRowId: 31, typeRowId: 33 }
 				];
 				fieldLangs.inputs = [ [ 'Z1732', 'Z1002' ], [ 'Z1002' ], [ 'Z1002', 'Z1003' ] ];
-				getters.getZArgumentLabelForLanguage = () => ( rowId, langZid ) => {
+				store.getZArgumentLabelForLanguage = ( rowId, langZid ) => {
 					const rows = {
 						11: { Z1002: { id: 401 }, Z1732: { id: 402 } },
 						21: { Z1002: { id: 501 } },
@@ -439,11 +434,10 @@ describe( 'AboutLanguageBlock', () => {
 					};
 					return rows[ rowId ] ? rows[ rowId ][ langZid ] : undefined;
 				};
-				getters.getZMonolingualTextValue = () => ( rowId ) => {
+				store.getZMonolingualTextValue = ( rowId ) => {
 					const rows = { 401: 'first', 402: 'primeru', 501: 'second', 601: 'third', 602: 'tercero' };
 					return rows[ rowId ];
 				};
-				global.store.hotUpdate( { getters: getters } );
 
 				wrapper = shallowMount( AboutLanguageBlock, {
 					global: { stubs: { CdxField: false } },
@@ -478,7 +472,15 @@ describe( 'AboutLanguageBlock', () => {
 					name: { rowId: 1, value: 'Name' },
 					description: { rowId: 2, value: 'Description' },
 					aliases: { rowId: 3, value: [ { rowId: 4, value: 'one alias' } ] },
-					inputs: [ { key: 'Z10001K1', value: 'input one', inputRowId: 11, labelRowId: 12, typeRowId: 13 } ]
+					inputs: [
+						{
+							key: 'Z10001K1',
+							value: 'input one',
+							inputRowId: 11,
+							labelRowId: 12,
+							typeRowId: 13
+						}
+					]
 				};
 				fieldLangs = {
 					name: [ 'Z1002' ],
@@ -543,8 +545,19 @@ describe( 'AboutLanguageBlock', () => {
 				input.vm.$emit( 'update:inputChips', [ { value: 'one alias' }, { value: 'new alias' } ] );
 
 				expect( wrapper.emitted( 'update-edit-value' ) ).toEqual( [ [ {
-					data: { rowId: 3, value: [ { rowId: 4, value: 'one alias' } ] },
-					value: [ { value: 'one alias' }, { value: 'new alias' } ]
+					data: {
+						rowId: 3,
+						value: [
+							{
+								rowId: 4,
+								value: 'one alias'
+							}
+						]
+					},
+					value: [
+						{ value: 'one alias' },
+						{ value: 'new alias' }
+					]
 				} ] ] );
 				expect( wrapper.emitted() ).toHaveProperty( 'change-value' );
 			} );

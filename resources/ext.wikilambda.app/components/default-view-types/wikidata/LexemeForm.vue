@@ -35,9 +35,10 @@
 const { defineComponent } = require( 'vue' );
 const { CdxIcon } = require( '@wikimedia/codex' );
 const Constants = require( '../../../Constants.js' ),
+	useMainStore = require( '../../../store/index.js' ),
 	LabelData = require( '../../../store/classes/LabelData.js' ),
 	WikidataEntitySelector = require( './EntitySelector.vue' ),
-	{ mapActions, mapGetters } = require( 'vuex' ),
+	{ mapActions, mapState } = require( 'pinia' ),
 	wikidataIconSvg = require( './wikidataIconSvg.js' );
 
 module.exports = exports = defineComponent( {
@@ -67,7 +68,7 @@ module.exports = exports = defineComponent( {
 			lexemeFormType: Constants.Z_WIKIDATA_LEXEME_FORM
 		};
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getLexemeFormData',
 		'getLexemeFormIdRow',
 		'getUserLangCode',
@@ -153,7 +154,7 @@ module.exports = exports = defineComponent( {
 			return this.lexemeFormLabelData ? this.lexemeFormLabelData.label : '';
 		}
 	} ),
-	methods: Object.assign( mapActions( [
+	methods: Object.assign( {}, mapActions( useMainStore, [
 		'fetchLexemes'
 	] ), {
 		/**

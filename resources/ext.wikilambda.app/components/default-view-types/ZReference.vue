@@ -34,9 +34,10 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
+	useMainStore = require( '../../store/index.js' ),
 	ZObjectSelector = require( './../base/ZObjectSelector.vue' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
-	{ mapGetters } = require( 'vuex' );
+	{ mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-reference',
@@ -69,7 +70,7 @@ module.exports = exports = defineComponent( {
 		}
 	},
 	computed: Object.assign(
-		mapGetters( [
+		mapState( useMainStore, [
 			'getLabelData',
 			'getParentRowId',
 			'getZObjectKeyByRowId',

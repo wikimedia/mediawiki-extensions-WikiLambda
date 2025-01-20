@@ -13,7 +13,7 @@ const fs = require( 'fs' ),
 	path = require( 'path' ),
 	Constants = require( './resources/ext.wikilambda.app/Constants.js' ),
 	vueTestUtils = require( '@vue/test-utils' ),
-	vuex = require( 'vuex' );
+	{ createTestingPinia } = require( '@pinia/testing' );
 
 // Mocking window.location.href
 Object.defineProperty( global.window, 'location', {
@@ -141,20 +141,7 @@ global.mw = {
 
 // Mock i18n & store for all tests
 global.$i18n = jest.fn( ( str ) => new Mocki18n( str ) );
-global.getters = {};
-global.state = {};
-global.mutations = {};
-global.actions = {};
-global.modules = {};
-global.store = vuex.createStore( {
-	state() {
-		return global.state;
-	},
-	getters: global.getters,
-	mutations: global.mutations,
-	actions: global.actions,
-	modules: global.modules
-} );
+global.store = createTestingPinia();
 
 vueTestUtils.config.global.mocks = {
 	$i18n: global.$i18n

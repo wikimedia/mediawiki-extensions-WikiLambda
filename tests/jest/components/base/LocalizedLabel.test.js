@@ -7,21 +7,17 @@
 'use strict';
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
-	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	LabelData = require( '../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' ),
+	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' ),
 	LocalizedLabel = require( '../../../../resources/ext.wikilambda.app/components/base/LocalizedLabel.vue' );
 
 describe( 'LocalizedLabel', () => {
-	let getters;
+	let store;
 	beforeEach( () => {
-		getters = {
-			getUserLangZid: createGetterMock( 'Z1002' ),
-			getLanguageIsoCodeOfZLang: createGettersWithFunctionsMock( 'ES' )
-		};
-		global.store.hotUpdate( {
-			getters: getters
-		} );
+		store = useMainStore();
+		store.getUserLangZid = 'Z1002';
+		store.getLanguageIsoCodeOfZLang = createGettersWithFunctionsMock( 'ES' );
 	} );
 
 	describe( 'when user lang and label lang match', () => { // isUserLang is true

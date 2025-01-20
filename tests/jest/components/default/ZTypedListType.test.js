@@ -8,42 +8,26 @@
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
-	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	ZTypedListType = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZTypedListType.vue' ),
-	ZObjectKeyValue = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZObjectKeyValue.vue' );
+	ZObjectKeyValue = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZObjectKeyValue.vue' ),
+	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 
 describe( 'ZTypedListType', () => {
-	let getters,
-		actions;
+	let store;
 
 	beforeEach( () => {
-		getters = {
-			getLabelData: createLabelDataMock(),
-			getZObjectKeyByRowId: createGettersWithFunctionsMock( '0' ),
-
-			// getters for ZObjectKeyValue
-			isIdentityKey: createGettersWithFunctionsMock( false ),
-			getDepthByRowId: createGettersWithFunctionsMock( 1 ),
-			getParentRowId: createGettersWithFunctionsMock( 2 ),
-			getZObjectValueByRowId: createGettersWithFunctionsMock(),
-			getZObjectTypeByRowId: createGettersWithFunctionsMock( Constants.Z_STRING ),
-			getUserLangZid: createGetterMock( 'Z1002' ),
-			getUserLangCode: createGetterMock( 'en' )
-		};
-
-		actions = {
-			setListItemsForRemoval: jest.fn(),
-			setError: jest.fn(),
-			clearErrors: jest.fn(),
-			clearListItemsForRemoval: jest.fn()
-		};
-
-		global.store.hotUpdate( {
-			getters: getters,
-			actions: actions
-		} );
+		store = useMainStore();
+		store.getLabelData = createLabelDataMock();
+		store.getZObjectKeyByRowId = createGettersWithFunctionsMock( '0' );
+		store.isIdentityKey = createGettersWithFunctionsMock( false );
+		store.getDepthByRowId = createGettersWithFunctionsMock( 1 );
+		store.getParentRowId = createGettersWithFunctionsMock( 2 );
+		store.getZObjectValueByRowId = createGettersWithFunctionsMock();
+		store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_STRING );
+		store.getUserLangZid = 'Z1002';
+		store.getUserLangCode = 'en';
 	} );
 
 	it( 'renders without error in view mode', () => {
@@ -80,12 +64,12 @@ describe( 'ZTypedListType', () => {
 		} );
 
 		const mockPayload = { keyPath: [], value: Constants.Z_CHARACTER };
+
 		wrapper.findComponent( ZObjectKeyValue ).vm.$emit( 'change-event', mockPayload );
 
-		expect( actions.clearErrors ).not.toHaveBeenCalled();
-		expect( actions.setError ).toHaveBeenCalled();
-		expect( actions.setListItemsForRemoval ).toHaveBeenCalledWith(
-			expect.any( Object ),
+		expect( store.clearErrors ).not.toHaveBeenCalled();
+		expect( store.setError ).toHaveBeenCalled();
+		expect( store.setInvalidListItems ).toHaveBeenCalledWith(
 			{
 				parentRowId: undefined,
 				listItems: [ 1, 2 ]
@@ -108,8 +92,8 @@ describe( 'ZTypedListType', () => {
 		const mockPayload = { keyPath: [], value: Constants.Z_OBJECT };
 		wrapper.findComponent( ZObjectKeyValue ).vm.$emit( 'change-event', mockPayload );
 
-		expect( actions.setError ).not.toHaveBeenCalled();
-		expect( actions.setListItemsForRemoval ).not.toHaveBeenCalled();
+		expect( store.setError ).not.toHaveBeenCalled();
+		expect( store.setInvalidListItems ).not.toHaveBeenCalled();
 	} );
 
 	it( 'it clears errors when type changes back to Z1 after a change', () => {
@@ -128,13 +112,13 @@ describe( 'ZTypedListType', () => {
 		const mockPayload = { keyPath: [], value: Constants.Z_CHARACTER };
 		wrapper.findComponent( ZObjectKeyValue ).vm.$emit( 'change-event', mockPayload );
 
-		expect( actions.setError ).toHaveBeenCalled();
-		expect( actions.setListItemsForRemoval ).toHaveBeenCalled();
+		expect( store.setError ).toHaveBeenCalled();
+		expect( store.setInvalidListItems ).toHaveBeenCalled();
 
 		const mockZ1Payload = { keyPath: [], value: Constants.Z_OBJECT };
 		wrapper.findComponent( ZObjectKeyValue ).vm.$emit( 'change-event', mockZ1Payload );
 
-		expect( actions.clearErrors ).toHaveBeenCalled();
+		expect( store.clearErrors ).toHaveBeenCalled();
 	} );
 
 } );

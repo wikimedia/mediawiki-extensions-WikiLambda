@@ -26,7 +26,8 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { mapActions, mapGetters } = require( 'vuex' ),
+const { mapState, mapActions } = require( 'pinia' ),
+	useMainStore = require( '../store/index.js' ),
 	ClipboardManager = require( './base/ClipboardManager.vue' ),
 	eventLogUtils = require( '../mixins/eventLogUtils.js' ),
 	urlUtils = require( '../mixins/urlUtils.js' ),
@@ -54,14 +55,14 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign(
-		mapGetters( [
+		mapState( useMainStore, [
 			'isInitialized',
 			'isCreateNewPage',
 			'getCurrentView'
 		] )
 	),
 	methods: Object.assign(
-		mapActions( [
+		mapActions( useMainStore, [
 			'initializeView',
 			'prefetchZids',
 			'fetchUserRights',
@@ -71,12 +72,17 @@ module.exports = exports = defineComponent( {
 	created: function () {
 		// Set zobject
 		this.fetchUserRights();
-		this.prefetchZids().then( () => {
-			this.initializeView().then( () => {
-				this.evaluateUri();
-				this.isAppSetup = true;
+		this.prefetchZids()
+			.then( () => {
+				this.initializeView()
+					.then( () => {
+						this.evaluateUri();
+						this.isAppSetup = true;
+					} );
+			} )
+			.catch( () => {
+			// Do nothing
 			} );
-		} );
 
 		window.onpopstate = function ( event ) {
 			/**
@@ -92,11 +98,11 @@ module.exports = exports = defineComponent( {
 
 			// Reinitialize zObject if current page/zObject is new and user changes route
 			if ( this.isCreateNewPage ) {
-				this.initializeView().then(
-					() => {
-						this.evaluateUri();
-					}
-				);
+				this.initializeView()
+					.then( () => this.evaluateUri() )
+					.catch( () => {
+					// Do nothing
+					} );
 				return;
 			}
 

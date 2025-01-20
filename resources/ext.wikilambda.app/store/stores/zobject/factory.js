@@ -1,26 +1,27 @@
 /*!
- * WikiLambda Vuex code to interact with the store to create new ZObjects by their type.
+ * WikiLambda Pinia store to interact with the store to create new ZObjects by their type.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
-const Constants = require( '../../../Constants.js' ),
-	typeUtils = require( '../../../mixins/typeUtils.js' ).methods,
-	extractZIDs = require( '../../../mixins/schemata.js' ).methods.extractZIDs,
-	url = require( '../../../mixins/urlUtils.js' ).methods;
+'use strict';
 
-/* eslint-disable no-unused-vars */
-module.exports = exports = {
+const Constants = require( '../../../Constants.js' );
+const typeUtils = require( '../../../mixins/typeUtils.js' ).methods;
+const extractZIDs = require( '../../../mixins/schemata.js' ).methods.extractZIDs;
+const url = require( '../../../mixins/urlUtils.js' ).methods;
+
+module.exports = {
+	state: {},
+
 	getters: {
 		/**
 		 * Return a blank object for a given type, and initialize its
 		 * values if the payload contains the required initialization data.
 		 *
-		 * @param {Object} _state
-		 * @param {Object} getters
 		 * @return {Function}
 		 */
-		createObjectByType: function ( _state, getters ) {
+		createObjectByType: function () {
 			/**
 			 * @param {Object} payload
 			 * @param {string} payload.type the type of the new object to add
@@ -32,7 +33,7 @@ module.exports = exports = {
 			 * @param {Array} keyList a list of types that have been seen so far
 			 * @return {Object}
 			 */
-			function newObjectByType( payload, keyList = [] ) {
+			return ( payload, keyList = [] ) => {
 				// If payload.literal is true, we are forcing creating a literal
 				// object for those types that are generally persisted and linked.
 				// We force literal when:
@@ -45,9 +46,9 @@ module.exports = exports = {
 				// * adding new items to a list
 				if ( keyList.includes( payload.type ) || ( !payload.literal && (
 					Constants.LINKED_TYPES.includes( payload.type ) ||
-					getters.isCustomEnum( payload.type )
+                    this.isCustomEnum( payload.type )
 				) ) ) {
-					return getters.createZReference( payload );
+					return this.createZReference( payload );
 				}
 
 				// Unset payload.literal for recursive calls
@@ -57,62 +58,61 @@ module.exports = exports = {
 
 				// If payload.type is an object, we are looking at a generic type,
 				// so a type returned by a function call. Transform the payload for
-				// the spacail cases: List, Pair and Map
+				// the special cases: List, Pair and Map
 				if ( typeUtils.isGenericType( payload.type ) ) {
 					if ( payload.type[ Constants.Z_FUNCTION_CALL_FUNCTION ] === Constants.Z_TYPED_LIST ) {
 						const newPayload = JSON.parse( JSON.stringify( payload ) );
 						newPayload.type = Constants.Z_TYPED_LIST;
 						newPayload.value = payload.type[ Constants.Z_TYPED_LIST_TYPE ];
-						return getters.createObjectByType( newPayload, keyList );
+						return this.createObjectByType( newPayload, keyList );
 					}
 				}
 
 				switch ( payload.type ) {
 					case Constants.Z_REFERENCE:
-						return getters.createZReference( payload );
+						return this.createZReference( payload );
 					case Constants.Z_STRING:
-						return getters.createZString( payload );
+						return this.createZString( payload );
 					case Constants.Z_BOOLEAN:
-						return getters.createZBoolean( payload );
+						return this.createZBoolean( payload );
 					case Constants.Z_MULTILINGUALSTRING:
-						return getters.createZMultilingualString( payload );
+						return this.createZMultilingualString( payload );
 					case Constants.Z_MONOLINGUALSTRING:
-						return getters.createZMonolingualString( payload );
+						return this.createZMonolingualString( payload );
 					case Constants.Z_MONOLINGUALSTRINGSET:
-						return getters.createZMonolingualStringSet( payload );
+						return this.createZMonolingualStringSet( payload );
 					case Constants.Z_ARGUMENT:
-						return getters.createZArgument( payload );
+						return this.createZArgument( payload );
 					case Constants.Z_FUNCTION_CALL:
-						return getters.createZFunctionCall( payload );
+						return this.createZFunctionCall( payload );
 					case Constants.Z_FUNCTION:
-						return getters.createZFunction( payload );
+						return this.createZFunction( payload );
 					case Constants.Z_PERSISTENTOBJECT:
-						return getters.createZPersistentObject( payload );
+						return this.createZPersistentObject( payload );
 					case Constants.Z_TYPE:
-						return getters.createZType( payload );
+						return this.createZType( payload );
 					case Constants.Z_IMPLEMENTATION:
-						return getters.createZImplementation( payload );
+						return this.createZImplementation( payload );
 					case Constants.Z_CODE:
-						return getters.createZCode( payload );
+						return this.createZCode( payload );
 					case Constants.Z_TESTER:
-						return getters.createZTester( payload );
+						return this.createZTester( payload );
 					case Constants.Z_TYPED_LIST:
-						return getters.createZTypedList( payload );
+						return this.createZTypedList( payload );
 					case Constants.Z_TYPED_PAIR:
-						return getters.createZTypedPair( payload );
+						return this.createZTypedPair( payload );
 					case Constants.Z_TYPED_MAP:
-						return getters.createZTypedMap( payload );
+						return this.createZTypedMap( payload );
 					case Constants.Z_WIKIDATA_ITEM:
 					case Constants.Z_WIKIDATA_LEXEME:
 					case Constants.Z_WIKIDATA_LEXEME_FORM:
 					case Constants.Z_WIKIDATA_PROPERTY:
-						return getters.createWikidataEntity( payload );
+						return this.createWikidataEntity( payload );
 					default:
 						// Explore and create new ZObject keys
-						return getters.createGenericObject( payload, keyList );
+						return this.createGenericObject( payload, keyList );
 				}
-			}
-			return newObjectByType;
+			};
 		},
 
 		/**
@@ -125,19 +125,17 @@ module.exports = exports = {
 		 *  ZxK1: ''
 		 * }
 		 *
-		 * @param {Object} _state
-		 * @param {Object} getters
 		 * @return {Function}
 		 */
-		createGenericObject: function ( _state, getters ) {
+		createGenericObject: function () {
 			/**
 			 * @param {Object} payload
 			 * @param {string} payload.type
 			 * @param {Array} keyList a list of types that have been seen so far
 			 * @return {Object}
 			 */
-			function newGenericObject( payload, keyList = [] ) {
-				const persisted = getters.getStoredObject( payload.type );
+			return ( payload, keyList = [] ) => {
+				const persisted = this.getStoredObject( payload.type );
 				const value = {
 					[ Constants.Z_OBJECT_TYPE ]: payload.type
 				};
@@ -160,19 +158,18 @@ module.exports = exports = {
 								], Constants.Z_BOOLEAN_TRUE )
 							);
 							const keyPayload = isIdentityKey ?
-								{ type: Constants.Z_REFERENCE, value: getters.getCurrentZObjectId } :
+								{ type: Constants.Z_REFERENCE, value: this.getCurrentZObjectId } :
 								typeUtils.initializePayloadForType( key[ Constants.Z_KEY_TYPE ] );
 
 							// We must pass keyList array by value in here, so that the types found in an argument
 							// branch don't affect another branch, it should only restrict repetition in depth.
-							const blankValue = getters.createObjectByType( keyPayload, keyList.slice() );
+							const blankValue = this.createObjectByType( keyPayload, keyList.slice() );
 							value[ key[ Constants.Z_KEY_ID ] ] = blankValue;
 						}
 					}
 				}
 				return value;
-			}
-			return newGenericObject;
+			};
 		},
 
 		/**
@@ -194,34 +191,28 @@ module.exports = exports = {
 		 *  }
 		 * }
 		 *
-		 * @param {Object} _state
-		 * @param {Object} getters
 		 * @return {Function}
 		 */
-		createZPersistentObject: function ( _state, getters ) {
+		createZPersistentObject: function () {
 			/**
-			 * @param {Object} _payload
-			 * @param {number} _payload.id
-			 * @param {boolean} _payload.append
 			 * @return {Object}
 			 */
-			function newZPersistentObject( _payload ) {
+			return () => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_PERSISTENTOBJECT );
 				// Initialize persistent zid and blank label
-				const zid = getters.getCurrentZObjectId || Constants.NEW_ZID_PLACEHOLDER;
+				const zid = this.getCurrentZObjectId || Constants.NEW_ZID_PLACEHOLDER;
 				value[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ] = zid;
-				if ( getters.getUserLangZid ) {
+				if ( this.getUserLangZid ) {
 					const mono = typeUtils.getScaffolding( Constants.Z_MONOLINGUALSTRING );
 					mono[ Constants.Z_MONOLINGUALSTRING_VALUE ] = '';
 					mono[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][
-						Constants.Z_REFERENCE_ID ] = getters.getUserLangZid;
+						Constants.Z_REFERENCE_ID ] = this.getUserLangZid;
 					value[ Constants.Z_PERSISTENTOBJECT_LABEL ][
 						Constants.Z_MULTILINGUALSTRING_VALUE ].push( mono );
 				}
 				return value;
-			}
-			return newZPersistentObject;
+			};
 		},
 
 		/**
@@ -233,11 +224,9 @@ module.exports = exports = {
 		 *  Z11K2: { Z1K1: Z6, Z6K1: '' }
 		 * }
 		 *
-		 * @param {Object} _state
-		 * @param {Object} getters
 		 * @return {Function}
 		 */
-		createZMonolingualString: function ( _state, getters ) {
+		createZMonolingualString: function () {
 			/**
 			 * @param {Object} payload
 			 * @param {number} payload.id
@@ -246,7 +235,7 @@ module.exports = exports = {
 			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
-			function newZMonolingualString( payload ) {
+			return ( payload ) => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_MONOLINGUALSTRING );
 				// Initialize monolingual string
@@ -254,8 +243,7 @@ module.exports = exports = {
 				value[ Constants.Z_MONOLINGUALSTRING_VALUE ] = payload.value || '';
 				value[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_REFERENCE_ID ] = lang;
 				return value;
-			}
-			return newZMonolingualString;
+			};
 		},
 
 		/**
@@ -267,11 +255,9 @@ module.exports = exports = {
 		 *  Z31K2: [ 'Z6', { Z1K1: Z6, Z6K1: payload.value } ]
 		 * }
 		 *
-		 * @param {Object} _state
-		 * @param {Object} getters
 		 * @return {Function}
 		 */
-		createZMonolingualStringSet: function ( _state, getters ) {
+		createZMonolingualStringSet: function () {
 			/**
 			 * @param {Object} payload
 			 * @param {number} payload.id
@@ -280,7 +266,7 @@ module.exports = exports = {
 			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
-			function newZMonolingualStringSet( payload ) {
+			return ( payload ) => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_MONOLINGUALSTRINGSET );
 				// Initialize language and first string
@@ -292,12 +278,11 @@ module.exports = exports = {
 					} );
 				}
 				return value;
-			}
-			return newZMonolingualStringSet;
+			};
 		},
 
 		/**
-		 * Return a blank and initialized zMulilingualString.
+		 * Return a blank and initialized zMultilingualString.
 		 * The value will result in a json representation equal to:
 		 * {
 		 *  Z1K1: Z12,
@@ -307,11 +292,9 @@ module.exports = exports = {
 		 *  ]
 		 * }
 		 *
-		 * @param {Object} _state
-		 * @param {Object} getters
 		 * @return {Function}
 		 */
-		createZMultilingualString: function ( _state, getters ) {
+		createZMultilingualString: function () {
 			/**
 			 * @param {Object} payload
 			 * @param {number} payload.id
@@ -320,20 +303,19 @@ module.exports = exports = {
 			 * @param {number} payload.append
 			 * @return {Object}
 			 */
-			function newZMultilingualString( payload ) {
+			return ( payload ) => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_MULTILINGUALSTRING );
 				// Initialize first monolingual string if there's any lang or value
 				if ( ( 'lang' in payload ) || ( 'value' in payload ) ) {
 					const mono = typeUtils.getScaffolding( Constants.Z_MONOLINGUALSTRING );
-					const lang = payload.lang || getters.getUserLangZid;
+					const lang = payload.lang || this.getUserLangZid;
 					mono[ Constants.Z_MONOLINGUALSTRING_VALUE ] = payload.value || '';
 					mono[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_REFERENCE_ID ] = lang;
 					value[ Constants.Z_MULTILINGUALSTRING_VALUE ].push( mono );
 				}
 				return value;
-			}
-			return newZMultilingualString;
+			};
 		},
 
 		/**
@@ -341,10 +323,9 @@ module.exports = exports = {
 		 * The value will result in a json representation equal to:
 		 * { Z1K1: Z6, Z6K1: payload.value }
 		 *
-		 * @param {Object} _state
 		 * @return {Function}
 		 */
-		createZString: function ( _state ) {
+		createZString: function () {
 			/**
 			 * @param {Object} payload
 			 * @param {number} payload.id
@@ -352,12 +333,9 @@ module.exports = exports = {
 			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
-			function newZString( payload ) {
-				// No need to get scaffolding, the value is a canonical string, so
-				// either it's a blank string or a string with a value.
-				return payload.value || '';
-			}
-			return newZString;
+			// No need to get scaffolding, the value is a canonical string, so
+			// either it's a blank string or a string with a value.
+			return ( payload ) => payload.value || '';
 		},
 
 		/**
@@ -365,10 +343,9 @@ module.exports = exports = {
 		 * The value will result in a json representation equal to:
 		 * { Z1K1: Z9, Z9K1: payload.value }
 		 *
-		 * @param {Object} _state
 		 * @return {Function}
 		 */
-		createZReference: function ( _state ) {
+		createZReference: function () {
 			/**
 			 * @param {Object} payload
 			 * @param {number} payload.id
@@ -376,14 +353,13 @@ module.exports = exports = {
 			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
-			function newZReference( payload ) {
+			return ( payload ) => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_REFERENCE );
 				// Initialize values, if any
 				value[ Constants.Z_REFERENCE_ID ] = payload.value || '';
 				return value;
-			}
-			return newZReference;
+			};
 		},
 
 		/**
@@ -394,10 +370,9 @@ module.exports = exports = {
 		 *   Z40K1: { Z1K1: Z9, Z9K1: payload.value }
 		 * }
 		 *
-		 * @param {Object} _state
 		 * @return {Function}
 		 */
-		createZBoolean: function ( _state ) {
+		createZBoolean: function () {
 			/**
 			 * @param {Object} payload
 			 * @param {number} payload.id
@@ -405,14 +380,13 @@ module.exports = exports = {
 			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
-			function newZBoolean( payload ) {
+			return ( payload ) => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_BOOLEAN );
 				// Initialize value with the boolean Zid, if any
 				value[ Constants.Z_BOOLEAN_IDENTITY ][ Constants.Z_REFERENCE_ID ] = payload.value || '';
 				return value;
-			}
-			return newZBoolean;
+			};
 		},
 
 		/**
@@ -425,26 +399,20 @@ module.exports = exports = {
 		 *  Z4K3: { Z1K1: 'Z9', Z9K1: 'Z101' }
 		 * }
 		 *
-		 * @param {Object} _state
 		 * @return {Function}
 		 */
-		createZType: function ( _state ) {
+		createZType: function () {
 			/**
-			 * @param {Object} _payload
-			 * @param {number} _payload.id
-			 * @param {number} _payload.append
 			 * @return {Object}
 			 */
-			function newZType( _payload ) {
+			return () => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_TYPE );
 				// Initialize validator function
 				value[ Constants.Z_TYPE_VALIDATOR ][ Constants.Z_REFERENCE_ID ] = Constants.Z_VALIDATE_OBJECT;
 				return value;
-			}
-			return newZType;
+			};
 		},
-
 		/**
 		 * Return a blank and initialized zArgument.
 		 * The value will result in a json representation equal to:
@@ -455,11 +423,9 @@ module.exports = exports = {
 		 *  Z17K3: { Z1K1: 'Z12', Z12K1: [ Z11 ] }
 		 * }
 		 *
-		 * @param {Object} _state
-		 * @param {Object} getters
 		 * @return {Function}
 		 */
-		createZArgument: function ( _state, getters ) {
+		createZArgument: function () {
 			/**
 			 * @param {Object} payload
 			 * @param {number} payload.id
@@ -467,14 +433,13 @@ module.exports = exports = {
 			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
-			function newZArgument( payload ) {
+			return ( payload ) => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_ARGUMENT );
 				// Initialize argument key
-				value[ Constants.Z_ARGUMENT_KEY ] = payload.value || getters.getNextKey;
+				value[ Constants.Z_ARGUMENT_KEY ] = payload.value || this.getNextKey;
 				return value;
-			}
-			return newZArgument;
+			};
 		},
 
 		/**
@@ -482,10 +447,9 @@ module.exports = exports = {
 		 * The value will result in a json representation equal to:
 		 * { Z1K1: Z7, Z7K1: '' }
 		 *
-		 * @param {Object} _state
 		 * @return {Function}
 		 */
-		createZFunctionCall: function ( _state ) {
+		createZFunctionCall: function () {
 			/**
 			 * @param {Object} payload
 			 * @param {number} payload.id
@@ -493,14 +457,13 @@ module.exports = exports = {
 			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
-			function newZFunctionCall( payload ) {
+			return ( payload ) => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_FUNCTION_CALL );
 				// Initialize function zid
 				value[ Constants.Z_FUNCTION_CALL_FUNCTION ][ Constants.Z_REFERENCE_ID ] = payload.value || '';
 				return value;
-			}
-			return newZFunctionCall;
+			};
 		},
 
 		/**
@@ -512,25 +475,20 @@ module.exports = exports = {
 		 *  Z14K2: { Z1K1: 'Z7', Z7K1: '' },
 		 * }
 		 *
-		 * @param {Object} _state
 		 * @return {Function}
 		 */
-		createZImplementation: function ( _state ) {
+		createZImplementation: function () {
 			/**
-			 * @param {Object} _payload
-			 * @param {number} _payload.id
-			 * @param {boolean} _payload.append
 			 * @return {Object}
 			 */
-			function newZImplementation( _payload ) {
+			return () => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_IMPLEMENTATION );
 				// Initialize function zid from the url parameters
 				const functionZid = url.getParameterByName( Constants.Z_IMPLEMENTATION_FUNCTION ) || '';
 				value[ Constants.Z_IMPLEMENTATION_FUNCTION ][ Constants.Z_REFERENCE_ID ] = functionZid;
 				return value;
-			}
-			return newZImplementation;
+			};
 		},
 
 		/**
@@ -543,21 +501,14 @@ module.exports = exports = {
 		 *  Z16K2: ''
 		 * }
 		 *
-		 * @param {Object} _state
 		 * @return {Function}
 		 */
-		createZCode: function ( _state ) {
+		createZCode: function () {
 			/**
-			 * @param {Object} _payload
-			 * @param {number} _payload.id
-			 * @param {boolean} _payload.append
 			 * @return {Object}
 			 */
-			function newZCode( _payload ) {
-				// Get scaffolding
-				return typeUtils.getScaffolding( Constants.Z_CODE );
-			}
-			return newZCode;
+			return () => typeUtils.getScaffolding( Constants.Z_CODE );
+
 		},
 
 		/**
@@ -572,29 +523,23 @@ module.exports = exports = {
 		 *  Z8K5: { Z1K1: 'Z9', Z9K1: '' },
 		 * }
 		 *
-		 * @param {Object} _state
-		 * @param {Object} getters
 		 * @return {Function}
 		 */
-		createZFunction: function ( _state, getters ) {
+		createZFunction: function () {
 			/**
-			 * @param {Object} _payload
-			 * @param {number} _payload.id
-			 * @param {boolean} _payload.append
 			 * @return {Object}
 			 */
-			function newZFunction( _payload ) {
+			return () => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_FUNCTION );
 				const arg = typeUtils.getScaffolding( Constants.Z_ARGUMENT );
 				// Initialize function identity and one empty argument
-				const functionZid = getters.getCurrentZObjectId || Constants.NEW_ZID_PLACEHOLDER;
+				const functionZid = this.getCurrentZObjectId || Constants.NEW_ZID_PLACEHOLDER;
 				value[ Constants.Z_FUNCTION_IDENTITY ][ Constants.Z_REFERENCE_ID ] = functionZid;
 				arg[ Constants.Z_ARGUMENT_KEY ] = `${ functionZid }K1`;
 				value[ Constants.Z_FUNCTION_ARGUMENTS ].push( arg );
 				return value;
-			}
-			return newZFunction;
+			};
 		},
 
 		/**
@@ -613,17 +558,13 @@ module.exports = exports = {
 		 *  }
 		 * }
 		 *
-		 * @param {Object} _state
 		 * @return {Function}
 		 */
-		createZTester: function ( _state ) {
+		createZTester: function () {
 			/**
-			 * @param {Object} _payload
-			 * @param {number} _payload.id
-			 * @param {boolean} _payload.append
 			 * @return {Object}
 			 */
-			function newZTester( _payload ) {
+			return () => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_TESTER );
 
@@ -631,8 +572,7 @@ module.exports = exports = {
 				const functionZid = url.getParameterByName( Constants.Z_TESTER_FUNCTION ) || '';
 				value[ Constants.Z_TESTER_FUNCTION ][ Constants.Z_REFERENCE_ID ] = functionZid;
 				return value;
-			}
-			return newZTester;
+			};
 		},
 
 		/**
@@ -640,10 +580,9 @@ module.exports = exports = {
 		 * The value will result in a json representation equal to:
 		 * [ 'Z1' ]
 		 *
-		 * @param {Object} _state
 		 * @return {Function}
 		 */
-		createZTypedList: function ( _state ) {
+		createZTypedList: function () {
 			/**
 			 * @param {Object} payload
 			 * @param {number} payload.id
@@ -651,14 +590,13 @@ module.exports = exports = {
 			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
-			function newZTypedList( payload ) {
+			return ( payload ) => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_TYPED_LIST );
 				// Initialize function zid from the url parameters
 				value[ 0 ][ Constants.Z_REFERENCE_ID ] = payload.value || Constants.Z_OBJECT;
 				return value;
-			}
-			return newZTypedList;
+			};
 		},
 
 		/**
@@ -675,10 +613,9 @@ module.exports = exports = {
 		 *  K2: {}
 		 * }
 		 *
-		 * @param {Object} _state
 		 * @return {Function}
 		 */
-		createZTypedPair: function ( _state ) {
+		createZTypedPair: function () {
 			/**
 			 * @param {Object} payload
 			 * @param {number} payload.id
@@ -687,7 +624,7 @@ module.exports = exports = {
 			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
-			function newZTypedPair( payload ) {
+			return ( payload ) => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_TYPED_PAIR );
 				// Initialize typed pair types
@@ -700,8 +637,7 @@ module.exports = exports = {
 				value[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ] = value1;
 				value[ Constants.Z_TYPED_OBJECT_ELEMENT_2 ] = value2;
 				return value;
-			}
-			return newZTypedPair;
+			};
 		},
 
 		/**
@@ -716,10 +652,9 @@ module.exports = exports = {
 		 *  }
 		 * }
 		 *
-		 * @param {Object} _state
 		 * @return {Function}
 		 */
-		createZTypedMap: function ( _state ) {
+		createZTypedMap: function () {
 			/**
 			 * @param {Object} payload
 			 * @param {string} payload.values
@@ -727,7 +662,7 @@ module.exports = exports = {
 			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
-			function newZTypedMap( payload ) {
+			return ( payload ) => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_TYPED_MAP );
 
@@ -737,8 +672,7 @@ module.exports = exports = {
 				value[ Constants.Z_OBJECT_TYPE ][ Constants.Z_TYPED_MAP_TYPE1 ][ Constants.Z_REFERENCE_ID ] = type1;
 				value[ Constants.Z_OBJECT_TYPE ][ Constants.Z_TYPED_MAP_TYPE2 ][ Constants.Z_REFERENCE_ID ] = type2;
 				return value;
-			}
-			return newZTypedMap;
+			};
 		},
 
 		/**
@@ -755,17 +689,15 @@ module.exports = exports = {
 		 *  }
 		 * }
 		 *
-		 * @param {Object} _state
-		 * @param {Object} getters
 		 * @return {Function}
 		 */
-		createWikidataEntity: function ( _state, getters ) {
+		createWikidataEntity: function () {
 			/**
 			 * @param {Object} payload
 			 * @param {string} payload.type
 			 * @return {Object}
 			 */
-			function newWikidataEntity( payload ) {
+			return ( payload ) => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_FUNCTION_CALL );
 				let wdRef, wdFetch, wdFetchId;
@@ -774,7 +706,7 @@ module.exports = exports = {
 				switch ( payload.type ) {
 					// Wikidata Lexeme Form:
 					case Constants.Z_WIKIDATA_LEXEME_FORM:
-						wdRef = getters.createObjectByType( { type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM } );
+						wdRef = this.createObjectByType( { type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM } );
 						wdFetch = Constants.Z_WIKIDATA_FETCH_LEXEME_FORM;
 						wdFetchId = Constants.Z_WIKIDATA_FETCH_LEXEME_FORM_ID;
 
@@ -784,7 +716,7 @@ module.exports = exports = {
 
 					// Wikidata Lexeme
 					case Constants.Z_WIKIDATA_LEXEME:
-						wdRef = getters.createObjectByType( { type: Constants.Z_WIKIDATA_REFERENCE_LEXEME } );
+						wdRef = this.createObjectByType( { type: Constants.Z_WIKIDATA_REFERENCE_LEXEME } );
 						wdFetch = Constants.Z_WIKIDATA_FETCH_LEXEME;
 						wdFetchId = Constants.Z_WIKIDATA_FETCH_LEXEME_ID;
 
@@ -794,7 +726,7 @@ module.exports = exports = {
 
 					// Wikidata Item
 					case Constants.Z_WIKIDATA_ITEM:
-						wdRef = getters.createObjectByType( { type: Constants.Z_WIKIDATA_REFERENCE_ITEM } );
+						wdRef = this.createObjectByType( { type: Constants.Z_WIKIDATA_REFERENCE_ITEM } );
 						wdFetch = Constants.Z_WIKIDATA_FETCH_ITEM;
 						wdFetchId = Constants.Z_WIKIDATA_FETCH_ITEM_ID;
 
@@ -804,7 +736,7 @@ module.exports = exports = {
 
 					// Wikidata Property
 					case Constants.Z_WIKIDATA_PROPERTY:
-						wdRef = getters.createObjectByType( { type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY } );
+						wdRef = this.createObjectByType( { type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY } );
 						wdFetch = Constants.Z_WIKIDATA_FETCH_PROPERTY;
 						wdFetchId = Constants.Z_WIKIDATA_FETCH_PROPERTY_ID;
 
@@ -818,40 +750,42 @@ module.exports = exports = {
 					default:
 						return value;
 				}
-			}
-			return newWikidataEntity;
+			};
 		}
 	},
+
 	actions: {
 		/**
 		 * Changes the type, inserts or append a specific zObject given its type.
 		 *
-		 * @param {Object} context
 		 * @param {Object} payload
 		 * @param {string} payload.type the type of the new object to add
 		 * @param {number} payload.id the parent rowId for the new object
 		 * @param {boolean} payload.append whether to append the new zobject to a list
+		 * @param {boolean} payload.literal force create a literal object: on root initialization and
+		 * mode selector explicit request
 		 * @param {Object} payload.value initialization values
 		 * @return {Promise}
 		 */
-		changeType: function ( context, payload ) {
-			// Set isRoot flag if we are changing the direct child of Z2K2
-			const rootRowId = context.getters.getZPersistentContentRowId();
-			payload.isRoot = ( rootRowId === payload.id );
+		changeType: function ( payload ) {
+			const rootRowId = this.getZPersistentContentRowId();
 
+			// Set isRoot flag if we are changing the direct child of Z2K2
+			// Adds a new object so spyOn can be used to test the function
+			const object = Object.assign( {}, payload, { isRoot: rootRowId === payload.id } );
 			// Build the expected value to assign
-			const value = context.getters.createObjectByType( payload );
+			const value = this.createObjectByType( object );
 
 			// Asynchronously fetch the necessary zids. We don't need to wait
 			// to the fetch call because these will only be needed for labels.
 			const zids = extractZIDs( value );
-			context.dispatch( 'fetchZids', { zids } );
+			this.fetchZids( { zids } );
 
 			// Inject (replace or append) the value from a given row ID
-			return context.dispatch( 'injectZObjectFromRowId', {
-				rowId: payload.id,
+			return this.injectZObjectFromRowId( {
+				rowId: object.id,
 				value,
-				append: payload.append || false
+				append: object.append || false
 			} );
 		},
 
@@ -859,16 +793,15 @@ module.exports = exports = {
 		 * Clears the type, keeping the key Z1K1 and removing all other keys
 		 * given a parent rowId
 		 *
-		 * @param {Object} context
 		 * @param {number} rowId
 		 */
-		clearType: function ( context, rowId ) {
+		clearType: function ( rowId ) {
 			// Get children
-			const children = context.getters.getChildrenByParentRowId( rowId );
+			const children = this.getChildrenByParentRowId( rowId );
 			// Exclude type key
 			const keys = children.filter( ( row ) => row.key !== Constants.Z_OBJECT_TYPE );
 			for ( const row of keys ) {
-				context.dispatch( 'removeRowChildren', { rowId: row.id, removeParent: true } );
+				this.removeRowChildren( { rowId: row.id, removeParent: true } );
 			}
 		}
 	}

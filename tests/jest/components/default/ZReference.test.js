@@ -9,25 +9,21 @@
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
+	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' ),
 	ZReference = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZReference.vue' );
 
 describe( 'ZReference', () => {
-	let getters;
+	let store;
 	beforeEach( () => {
-		getters = {
-			getLabelData: createLabelDataMock( {
-				Z6: 'String'
-			} ),
-			getParentRowId: createGettersWithFunctionsMock( 2 ),
-			getZReferenceTerminalValue: createGettersWithFunctionsMock( 'Z6' ),
-			getZObjectKeyByRowId: createGettersWithFunctionsMock( 'Z1K1' ),
-			getUserLangCode: createGetterMock( 'en' )
-		};
-		global.store.hotUpdate( {
-			getters: getters
+		store = useMainStore();
+		store.getLabelData = createLabelDataMock( {
+			Z6: 'String'
 		} );
+		store.getParentRowId = createGettersWithFunctionsMock( 2 );
+		store.getZReferenceTerminalValue = createGettersWithFunctionsMock( 'Z6' );
+		store.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z1K1' );
+		store.getUserLangCode = 'en';
 	} );
 
 	describe( 'in view mode', () => {
@@ -56,11 +52,7 @@ describe( 'ZReference', () => {
 		} );
 
 		it( 'displays the reference link with its value if there is no label', () => {
-			getters.getLabelData = createLabelDataMock();
-			global.store.hotUpdate( {
-				getters: getters
-			} );
-
+			store.getLabelData = createLabelDataMock();
 			const wrapper = shallowMount( ZReference, {
 				props: {
 					edit: false,
@@ -102,11 +94,8 @@ describe( 'ZReference', () => {
 		} );
 
 		it( 'displays a selector and emits the value with an empty keyPath if its key is a Z_REFERENCE_ID (Z9K1)', async () => {
-			getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( 'Z6' );
-			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z9K1' );
-			global.store.hotUpdate( {
-				getters: getters
-			} );
+			store.getZReferenceTerminalValue = createGettersWithFunctionsMock( 'Z6' );
+			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z9K1' );
 
 			const wrapper = shallowMount( ZReference, {
 				props: {
@@ -123,10 +112,7 @@ describe( 'ZReference', () => {
 		} );
 
 		it( 'binds the returnType to the selector when key is a function call function', async () => {
-			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL_FUNCTION );
-			global.store.hotUpdate( {
-				getters: getters
-			} );
+			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL_FUNCTION );
 
 			const wrapper = shallowMount( ZReference, {
 				props: {
@@ -141,10 +127,7 @@ describe( 'ZReference', () => {
 		} );
 
 		it( 'returns empty returnType when the key is a function call but parent expected type is unbound', async () => {
-			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL_FUNCTION );
-			global.store.hotUpdate( {
-				getters: getters
-			} );
+			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL_FUNCTION );
 
 			const wrapper = shallowMount( ZReference, {
 				props: {
@@ -159,10 +142,7 @@ describe( 'ZReference', () => {
 		} );
 
 		it( 'returns empty returnType when the key is a function call but parent expected type is a resolver', async () => {
-			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL_FUNCTION );
-			global.store.hotUpdate( {
-				getters: getters
-			} );
+			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL_FUNCTION );
 
 			const wrapper = shallowMount( ZReference, {
 				props: {
@@ -177,11 +157,9 @@ describe( 'ZReference', () => {
 		} );
 
 		it( 'sets excluded zids from root persistent content', () => {
-			getters.getParentRowId = createGettersWithFunctionsMock( 2 );
-			getters.getZObjectKeyByRowId = () => ( rowId ) => ( rowId === 1 ) ? 'Z1K1' : 'Z2K2';
-			global.store.hotUpdate( {
-				getters: getters
-			} );
+			store.getParentRowId = createGettersWithFunctionsMock( 2 );
+			store.getZObjectKeyByRowId = jest.fn( ( rowId ) => ( rowId === 1 ) ? 'Z1K1' : 'Z2K2' );
+
 			const wrapper = shallowMount( ZReference, {
 				props: {
 					rowId: 1,

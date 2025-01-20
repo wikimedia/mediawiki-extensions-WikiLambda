@@ -120,6 +120,7 @@
 const { CdxButton, CdxMessage } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
+	useMainStore = require( '../../../store/index.js' ),
 	EvaluationResult = require( './EvaluationResult.vue' ),
 	WidgetBase = require( '../../base/WidgetBase.vue' ),
 	ZReference = require( '../../default-view-types/ZReference.vue' ),
@@ -127,7 +128,7 @@ const Constants = require( '../../../Constants.js' ),
 	ZObjectKeyValue = require( '../../default-view-types/ZObjectKeyValue.vue' ),
 	eventLogUtils = require( '../../../mixins/eventLogUtils.js' ),
 	errorUtils = require( '../../../mixins/errorUtils.js' ),
-	{ mapActions, mapGetters } = require( 'vuex' );
+	{ mapActions, mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-evaluator-widget',
@@ -167,7 +168,7 @@ module.exports = exports = defineComponent( {
 			functionType: Constants.Z_FUNCTION
 		};
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getErrors',
 		'getMetadataError',
 		'getConnectedObjects',
@@ -320,7 +321,7 @@ module.exports = exports = defineComponent( {
 					this.$i18n( 'wikilambda-function-evaluator-title' ).text();
 		}
 	} ),
-	methods: Object.assign( mapActions( [
+	methods: Object.assign( {}, mapActions( useMainStore, [
 		'clearErrors',
 		'initializeResultId',
 		'changeType',
@@ -392,18 +393,21 @@ module.exports = exports = defineComponent( {
 			}
 
 			this.running = true;
-			this.initializeResultId( this.resultRowId )
-				.then( ( rowId ) => {
-					this.resultRowId = rowId;
-					this.clearErrors( rowId );
-					return this.callZFunction( {
-						functionCall: functionCallJson,
-						resultRowId: this.resultRowId
-					} );
-				} )
+			this.resultRowId = this.initializeResultId( this.resultRowId );
+
+			// Clear errors and perform the function call
+			this.clearErrors( this.resultRowId );
+
+			// Perform the function call using .then() chain
+			this.callZFunction( {
+				functionCall: functionCallJson,
+				resultRowId: this.resultRowId
+			} )
 				.then( () => {
+					// Once the function call is done, update the state
 					this.running = false;
 					this.hasResult = true;
+
 					// Log an event using Metrics Platform's core interaction events
 					const interactionData = {
 						zobjecttype: this.getCurrentZObjectType || null,
@@ -412,8 +416,10 @@ module.exports = exports = defineComponent( {
 						selectedfunctionzid: this.selectedFunctionZid || null,
 						haserrors: !!this.getMetadataError
 					};
+
 					this.submitInteraction( 'call', interactionData );
 				} );
+
 		},
 
 		/**
@@ -425,39 +431,33 @@ module.exports = exports = defineComponent( {
 		 * @param {string|undefined} initialFunctionZid
 		 */
 		initializeDetachedObjects: function ( initialFunctionZid ) {
-			let functionCallRowId, resultRowId;
 			// Initialize detached object for the function call
-			this.initializeResultId( this.functionCallRowId ).then( ( rowId ) => {
-				functionCallRowId = rowId;
-				// Set the Function Call scaffolding
-				return this.changeType( {
-					type: Constants.Z_FUNCTION_CALL,
-					id: rowId,
-					value: initialFunctionZid || ''
-				} ).then( () => {
-					// If we are initializing the evaluator with an initialFunctionZid
-					// we fetch the function data and then we set the arguments
-					if ( initialFunctionZid ) {
-						this.fetchZids( { zids: [ initialFunctionZid ] } ).then( () => {
-							this.setZFunctionCallArguments( {
-								parentId: rowId,
-								functionZid: initialFunctionZid
-							} );
-						} );
-					}
+			const functionCallRowId = this.initializeResultId( this.functionCallRowId );
+
+			// Set the function call scaffolding
+			this.changeType( {
+				type: Constants.Z_FUNCTION_CALL,
+				id: functionCallRowId,
+				value: initialFunctionZid || ''
+			} );
+
+			// If we are initializing the evaluator with an initialFunctionZid
+			// we fetch the function data and then we set the arguments
+			if ( initialFunctionZid ) {
+				this.fetchZids( { zids: [ initialFunctionZid ] } ).then( () => {
+					this.setZFunctionCallArguments( {
+						parentId: functionCallRowId,
+						functionZid: initialFunctionZid
+					} );
 				} );
-			} ).then(
-				// Initialize detached object for the result
-				() => this.initializeResultId( this.resultRowId ).then( ( rowId ) => {
-					resultRowId = rowId;
-				} )
-			).finally(
-				// Set both detached rowIds to render the components
-				() => {
-					this.functionCallRowId = functionCallRowId;
-					this.resultRowId = resultRowId;
-				}
-			);
+			}
+
+			// Initialize detached object for the result
+			const resultRowId = this.initializeResultId( this.resultRowId );
+
+			// Set both detached rowIds to render the components
+			this.functionCallRowId = functionCallRowId;
+			this.resultRowId = resultRowId;
 		}
 	} ),
 	watch: {

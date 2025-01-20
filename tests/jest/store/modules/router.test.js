@@ -6,37 +6,37 @@
  */
 'use strict';
 
+const { setActivePinia, createPinia } = require( 'pinia' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
+const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 
-describe( 'router Vuex module', () => {
-
-	let routerInstance;
+describe( 'Router Pinia store', () => {
+	let store;
+	const dummyView = 'DummyView';
+	const dummyQueryParams = 'DummyQueryParams';
 
 	beforeEach( () => {
 		jest.resetModules();
-		routerInstance = require( '../../../../resources/ext.wikilambda.app/store/modules/router.js' );
-	} );
+		setActivePinia( createPinia() );
+		store = useMainStore();
 
-	afterEach( () => {
-		routerInstance = null;
+		store.currentPath = mw.Uri().path;
+		store.currentView = Constants.VIEWS.Z_OBJECT_VIEWER;
+		store.queryParams = mw.Uri().query;
 	} );
 
 	describe( 'Getters', () => {
 		describe( 'getCurrentView', () => {
 			it( 'Returns the current view', () => {
-				routerInstance.state.currentView = 'DummyView';
-				const getCurrentView = routerInstance.getters.getCurrentView;
-
-				expect( getCurrentView( routerInstance.state ) ).toBe( routerInstance.state.currentView );
+				store.currentView = dummyView;
+				expect( store.getCurrentView ).toBe( dummyView );
 			} );
 		} );
 
 		describe( 'getQueryParams', () => {
 			it( 'Returns the current queryParams', () => {
-				routerInstance.state.queryParams = 'DummyQueryParams';
-				const getQueryParams = routerInstance.getters.getQueryParams;
-
-				expect( getQueryParams( routerInstance.state ) ).toBe( routerInstance.state.queryParams );
+				store.queryParams = dummyQueryParams;
+				expect( store.getQueryParams ).toBe( dummyQueryParams );
 			} );
 		} );
 
@@ -47,87 +47,52 @@ describe( 'router Vuex module', () => {
 						viewmode: true
 					} ) )
 				};
-				expect( routerInstance.getters.getViewMode( routerInstance.state ) ).toBe( true );
-			} );
-		} );
-	} );
-
-	describe( 'Mutations', () => {
-		describe( 'CHANGE_CURRENT_VIEW', () => {
-			it( 'Updates the current View', () => {
-				const dummyView = 'DummyView';
-
-				expect( routerInstance.state.currentView ).toBe( routerInstance.state.currentView );
-				routerInstance.mutations.CHANGE_CURRENT_VIEW( routerInstance.state, dummyView );
-
-				expect( routerInstance.state.currentView ).toBe( dummyView );
-			} );
-		} );
-
-		describe( 'CHANGE_QUERY_PARAMS', () => {
-			it( 'Updates the current View', () => {
-				const dummyParams = 'DummyParams';
-
-				expect( routerInstance.state.queryParams ).toBe( routerInstance.state.queryParams );
-				routerInstance.mutations.CHANGE_QUERY_PARAMS( routerInstance.state, dummyParams );
-
-				expect( routerInstance.state.queryParams ).toBe( dummyParams );
+				expect( store.getViewMode ).toBe( true );
 			} );
 		} );
 	} );
 
 	describe( 'Actions', () => {
-		let context;
 
 		beforeEach( () => {
-			context = Object.assign( {}, {
-				commit: jest.fn(),
-				dispatch: jest.fn(),
-				state: Object.assign( {}, routerInstance.state ),
-				getters: {
-					getViewMode: true,
-					getCurrentZObjectType: true
-				}
-			} );
-
 			window.history.pushState = jest.fn();
 			window.history.replaceState = jest.fn();
 		} );
 
 		describe( 'navigate', () => {
-			it( 'does not trigger navigation when view is invalid', () => {
+			it( 'does not change view when view is invalid', () => {
 				const payload = {
 					to: 'InvalidValidation'
 				};
-				routerInstance.actions.navigate( context, payload );
+				store.navigate( payload );
 
-				expect( context.commit ).not.toHaveBeenCalled();
+				expect( store.currentView ).toBe( Constants.VIEWS.Z_OBJECT_VIEWER );
+				expect( window.history.pushState ).not.toHaveBeenCalled();
 			} );
 
 			describe( 'when view is valid', () => {
-				it( 'triggers a CHANGE_CURRENT_VIEW mutation', () => {
+				it( 'changes the view', () => {
 					const payload = {
 						to: Constants.VIEWS.DEFAULT
 					};
-					routerInstance.actions.navigate( context, payload );
+					store.navigate( payload );
 
-					expect( context.commit ).toHaveBeenCalled();
-					expect( context.commit ).toHaveBeenCalledWith(
-						'CHANGE_CURRENT_VIEW',
-						Constants.VIEWS.DEFAULT
-					);
+					expect( store.currentView ).toBe( Constants.VIEWS.DEFAULT );
 				} );
 
 				it( 'call window.history.pushState', () => {
 					const payload = {
 						to: Constants.VIEWS.DEFAULT
 					};
-					routerInstance.actions.navigate( context, payload );
+					store.navigate( payload );
 
 					expect( window.history.pushState ).toHaveBeenCalled();
 				} );
 
 				it( 'call window.history.pushState with path and query as state', () => {
+					store.currentPath = 'dummyPath';
+					store.queryParams = { dummyParams: 'dummyValue' };
+
 					const payload = {
 						to: Constants.VIEWS.DEFAULT
 					};
@@ -135,33 +100,31 @@ describe( 'router Vuex module', () => {
 						path: 'dummyPath',
 						query: {
 							dummyParams: 'dummyValue',
-							view: 'dummyView'
+							view: Constants.VIEWS.DEFAULT
 						}
 					};
-					context.state.currentPath = 'dummyPath';
-					context.state.currentView = 'dummyView';
-					context.state.queryParams = { dummyParams: 'dummyValue' };
-					routerInstance.actions.navigate( context, payload );
+
+					store.navigate( payload );
 
 					expect( window.history.pushState.mock.calls[ 0 ][ 0 ] ).toMatchObject( expectedObject );
 				} );
 
 				it( 'call window.history.pushState with argument as query string', () => {
+					store.currentPath = 'dummyPath';
+					store.queryParams = { dummyParams: 'dummyValue' };
+
 					const payload = {
 						to: Constants.VIEWS.DEFAULT
 					};
-					const expectedQueryString = 'dummyPath?dummyParams=dummyValue&view=dummyView';
+					const expectedQueryString = 'dummyPath?dummyParams=dummyValue&view=default-view';
 
-					context.state.currentPath = 'dummyPath';
-					context.state.currentView = 'dummyView';
-					context.state.queryParams = { dummyParams: 'dummyValue' };
-					routerInstance.actions.navigate( context, payload );
+					store.navigate( payload );
 
 					expect( window.history.pushState.mock.calls[ 0 ][ 2 ] ).toBe( expectedQueryString );
 				} );
 
 				describe( 'when params are passed', () => {
-					it( 'calls CHANGE_QUERY_PARAMS mutation', () => {
+					it( 'sets the queryParams', () => {
 						const payload = {
 							to: Constants.VIEWS.DEFAULT,
 							params: { dummyParams: 'dummyValue' }
@@ -171,13 +134,11 @@ describe( 'router Vuex module', () => {
 							existingParams: 'existingValue'
 						};
 
-						context.state.queryParams = { existingParams: 'existingValue' };
-						routerInstance.mutations.CHANGE_QUERY_PARAMS = jest.fn();
-						routerInstance.actions.navigate( context, payload );
+						store.queryParams = { existingParams: 'existingValue' };
 
-						expect( context.commit ).toHaveBeenCalled();
-						expect( context.commit ).toHaveBeenNthCalledWith( 2,
-							'CHANGE_QUERY_PARAMS', expectedParams );
+						store.navigate( payload );
+
+						expect( store.queryParams ).toEqual( expectedParams );
 					} );
 				} );
 			} );
@@ -187,8 +148,14 @@ describe( 'router Vuex module', () => {
 
 			describe( 'Edit Function Route loads Function Editor', () => {
 				beforeEach( () => {
+					Object.defineProperty( store, 'getCurrentZObjectType', {
+						value: Constants.Z_FUNCTION
+					} );
+					store.changeCurrentView = jest.fn();
 					// Mock function edit config
-					context.getters.getViewMode = false;
+					Object.defineProperty( store, 'getViewMode', {
+						value: false
+					} );
 					window.mw.config = {
 						get: jest.fn( () => ( {
 							createNewPage: false,
@@ -200,8 +167,8 @@ describe( 'router Vuex module', () => {
 				} );
 
 				describe( 'with URL Format One (/w/index.php)', () => {
+
 					it( 'When action is edit and view is not passed', () => {
-						context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
 
 						window.mw.Uri.mockImplementationOnce( () => ( {
 							query: {
@@ -211,15 +178,12 @@ describe( 'router Vuex module', () => {
 							path: new window.mw.Title( 'Z0' ).getUrl( { title: 'Z0', action: Constants.ACTIONS.EDIT } )
 						} ) );
 
-						routerInstance.actions.evaluateUri( context );
+						store.evaluateUri();
 
-						expect( context.dispatch ).toHaveBeenCalled();
-						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.FUNCTION_EDITOR );
+						expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.FUNCTION_EDITOR );
 					} );
 
 					it( 'When action is edit and view is passed as function editor', () => {
-						context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
 						const queryParams = {
 							action: Constants.ACTIONS.EDIT,
 							title: 'Z0',
@@ -230,15 +194,12 @@ describe( 'router Vuex module', () => {
 							path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
 						} ) );
 
-						routerInstance.actions.evaluateUri( context );
+						store.evaluateUri();
 
-						expect( context.dispatch ).toHaveBeenCalled();
-						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.FUNCTION_EDITOR );
+						expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.FUNCTION_EDITOR );
 					} );
 
 					it( 'When action is edit, object is a function and view is passed as default view', () => {
-						context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
 						const queryParams = {
 							action: Constants.ACTIONS.EDIT,
 							title: 'Z0',
@@ -249,17 +210,14 @@ describe( 'router Vuex module', () => {
 							path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
 						} ) );
 
-						routerInstance.actions.evaluateUri( context );
+						store.evaluateUri();
 
-						expect( context.dispatch ).toHaveBeenCalled();
-						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.FUNCTION_EDITOR );
+						expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.FUNCTION_EDITOR );
 					} );
 				} );
 
 				describe( 'with URL Format Two (/wiki/{{title}})', () => {
 					it( 'When action is edit and view is not passed', () => {
-						context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
 
 						const queryParams = {
 							action: Constants.ACTIONS.EDIT,
@@ -271,15 +229,12 @@ describe( 'router Vuex module', () => {
 							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
 						} ) );
 
-						routerInstance.actions.evaluateUri( context );
+						store.evaluateUri();
 
-						expect( context.dispatch ).toHaveBeenCalled();
-						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.FUNCTION_EDITOR );
+						expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.FUNCTION_EDITOR );
 					} );
 
 					it( 'When action is edit and view is passed', () => {
-						context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
 						const queryParams = {
 							action: Constants.ACTIONS.EDIT,
 							title: 'Z0',
@@ -290,15 +245,12 @@ describe( 'router Vuex module', () => {
 							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
 						} ) );
 
-						routerInstance.actions.evaluateUri( context );
+						store.evaluateUri();
 
-						expect( context.dispatch ).toHaveBeenCalled();
-						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.FUNCTION_EDITOR );
+						expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.FUNCTION_EDITOR );
 					} );
 
 					it( 'When action is edit, object is a function and view is passed as default view', () => {
-						context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
 						const queryParams = {
 							action: Constants.ACTIONS.EDIT,
 							title: 'Z0',
@@ -309,19 +261,20 @@ describe( 'router Vuex module', () => {
 							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
 						} ) );
 
-						routerInstance.actions.evaluateUri( context );
+						store.evaluateUri();
 
-						expect( context.dispatch ).toHaveBeenCalled();
-						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.FUNCTION_EDITOR );
+						expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.FUNCTION_EDITOR );
 					} );
 				} );
 			} );
 
 			describe( 'Edit ZObject Route loads Default View', () => {
 				beforeEach( () => {
+					store.changeCurrentView = jest.fn();
 					// Mock non-function edit config
-					context.getters.getViewMode = false;
+					Object.defineProperty( store, 'getViewMode', {
+						value: false
+					} );
 					window.mw.config = {
 						get: jest.fn( () => ( {
 							createNewPage: false,
@@ -345,11 +298,9 @@ describe( 'router Vuex module', () => {
 							};
 						} );
 
-						routerInstance.actions.evaluateUri( context );
+						store.evaluateUri();
 
-						expect( context.dispatch ).toHaveBeenCalled();
-						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.DEFAULT );
+						expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.DEFAULT );
 					} );
 
 					it( 'When action is edit and view is passed as zoject editor', () => {
@@ -363,15 +314,17 @@ describe( 'router Vuex module', () => {
 							path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
 						} ) );
 
-						routerInstance.actions.evaluateUri( context );
+						store.evaluateUri();
 
-						expect( context.dispatch ).toHaveBeenCalled();
-						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.DEFAULT );
+						expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.DEFAULT );
 					} );
 				} );
 
 				describe( 'with URL Format Two (/wiki/{{title}})', () => {
+					beforeEach( () => {
+						store.changeCurrentView = jest.fn();
+					} );
+
 					it( 'When action is edit and view is not passed', () => {
 						const queryParams = {
 							action: Constants.ACTIONS.EDIT,
@@ -383,11 +336,9 @@ describe( 'router Vuex module', () => {
 							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
 						} ) );
 
-						routerInstance.actions.evaluateUri( context );
+						store.evaluateUri();
 
-						expect( context.dispatch ).toHaveBeenCalled();
-						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.DEFAULT );
+						expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.DEFAULT );
 					} );
 
 					it( 'When action is edit and view is passed as zobject editor', () => {
@@ -401,19 +352,21 @@ describe( 'router Vuex module', () => {
 							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
 						} ) );
 
-						routerInstance.actions.evaluateUri( context );
+						store.evaluateUri();
 
-						expect( context.dispatch ).toHaveBeenCalled();
-						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.DEFAULT );
+						expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.DEFAULT );
 					} );
 				} );
 			} );
 
 			describe( 'View Function Route loads Function Viewer', () => {
 				beforeEach( () => {
+					store.changeCurrentView = jest.fn();
 					// Mock function view config
-					context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
+					Object.defineProperty( store, 'getCurrentZObjectType', {
+						value: Constants.Z_FUNCTION
+					} );
+
 					window.mw.config = {
 						get: jest.fn( () => ( {
 							createNewPage: false,
@@ -426,8 +379,6 @@ describe( 'router Vuex module', () => {
 
 				describe( 'with URL Format One (/w/index.php)', () => {
 					it( 'When zobject is a function', () => {
-						context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
-
 						window.mw.Uri.mockImplementationOnce( () => ( {
 							query: {
 								title: 'Z0'
@@ -435,15 +386,12 @@ describe( 'router Vuex module', () => {
 							path: new window.mw.Title( 'Z0' ).getUrl( { title: 'Z0' } )
 						} ) );
 
-						routerInstance.actions.evaluateUri( context );
+						store.evaluateUri();
 
-						expect( context.dispatch ).toHaveBeenCalled();
-						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.FUNCTION_VIEWER );
+						expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.FUNCTION_VIEWER );
 					} );
 
 					it( 'When zobject is a function and view is passed as function viewer', () => {
-						context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
 						const queryParams = {
 							title: 'Z0',
 							view: Constants.VIEWS.FUNCTION_VIEWER
@@ -453,15 +401,12 @@ describe( 'router Vuex module', () => {
 							path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
 						} ) );
 
-						routerInstance.actions.evaluateUri( context );
+						store.evaluateUri();
 
-						expect( context.dispatch ).toHaveBeenCalled();
-						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.FUNCTION_VIEWER );
+						expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.FUNCTION_VIEWER );
 					} );
 
 					it( 'When zobject is a function and an invalid view is passed', () => {
-						context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
 						const queryParams = {
 							title: 'Z0',
 							view: Constants.VIEWS.FUNCTION_EDITOR
@@ -471,15 +416,12 @@ describe( 'router Vuex module', () => {
 							path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
 						} ) );
 
-						routerInstance.actions.evaluateUri( context );
+						store.evaluateUri();
 
-						expect( context.dispatch ).toHaveBeenCalled();
-						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.FUNCTION_VIEWER );
+						expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.FUNCTION_VIEWER );
 					} );
 
 					it( 'When zobject is a function and default view is passed', () => {
-						context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
 						const queryParams = {
 							title: 'Z0',
 							view: Constants.VIEWS.DEFAULT
@@ -489,18 +431,14 @@ describe( 'router Vuex module', () => {
 							path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
 						} ) );
 
-						routerInstance.actions.evaluateUri( context );
+						store.evaluateUri();
 
-						expect( context.dispatch ).toHaveBeenCalled();
-						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.FUNCTION_VIEWER );
+						expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.FUNCTION_VIEWER );
 					} );
 				} );
 
 				describe( 'with URL Format Two (/wiki/{{title}})', () => {
 					it( 'When zobject is a function', () => {
-						context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
-
 						const queryParams = {
 							title: 'Z0'
 						};
@@ -509,15 +447,12 @@ describe( 'router Vuex module', () => {
 							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
 						} ) );
 
-						routerInstance.actions.evaluateUri( context );
+						store.evaluateUri();
 
-						expect( context.dispatch ).toHaveBeenCalled();
-						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.FUNCTION_VIEWER );
+						expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.FUNCTION_VIEWER );
 					} );
 
 					it( 'When zobject is a function and view is passed as function viewer', () => {
-						context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
 						const queryParams = {
 							title: 'Z0',
 							view: Constants.VIEWS.FUNCTION_VIEWER
@@ -527,15 +462,12 @@ describe( 'router Vuex module', () => {
 							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
 						} ) );
 
-						routerInstance.actions.evaluateUri( context );
+						store.evaluateUri();
 
-						expect( context.dispatch ).toHaveBeenCalled();
-						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.FUNCTION_VIEWER );
+						expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.FUNCTION_VIEWER );
 					} );
 
 					it( 'When zobject is a function and an invalid view is passed', () => {
-						context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
 						const queryParams = {
 							title: 'Z0',
 							view: Constants.VIEWS.FUNCTION_EDITOR
@@ -545,15 +477,12 @@ describe( 'router Vuex module', () => {
 							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
 						} ) );
 
-						routerInstance.actions.evaluateUri( context );
+						store.evaluateUri();
 
-						expect( context.dispatch ).toHaveBeenCalled();
-						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.FUNCTION_VIEWER );
+						expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.FUNCTION_VIEWER );
 					} );
 
 					it( 'When zobject is a function and default view is passed', () => {
-						context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
 						const queryParams = {
 							title: 'Z0',
 							view: Constants.VIEWS.DEFAULT
@@ -563,17 +492,16 @@ describe( 'router Vuex module', () => {
 							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
 						} ) );
 
-						routerInstance.actions.evaluateUri( context );
+						store.evaluateUri();
 
-						expect( context.dispatch ).toHaveBeenCalled();
-						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.FUNCTION_VIEWER );
+						expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.FUNCTION_VIEWER );
 					} );
 				} );
 			} );
 
 			describe( 'View ZObject Route loads ZObject Viewer', () => {
 				beforeEach( () => {
+					store.changeCurrentView = jest.fn();
 					// Mock non-function view config
 					window.mw.config = {
 						get: jest.fn( () => ( {
@@ -594,11 +522,9 @@ describe( 'router Vuex module', () => {
 							path: new window.mw.Title( 'Z0' ).getUrl( { title: 'Z0', action: Constants.ACTIONS.EDIT } )
 						} ) );
 
-						routerInstance.actions.evaluateUri( context );
+						store.evaluateUri();
 
-						expect( context.dispatch ).toHaveBeenCalled();
-						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.DEFAULT );
+						expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.DEFAULT );
 					} );
 
 					it( 'When view is passed as zoject viewer', () => {
@@ -611,11 +537,9 @@ describe( 'router Vuex module', () => {
 							path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
 						} ) );
 
-						routerInstance.actions.evaluateUri( context );
+						store.evaluateUri();
 
-						expect( context.dispatch ).toHaveBeenCalled();
-						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.DEFAULT );
+						expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.DEFAULT );
 					} );
 				} );
 
@@ -630,11 +554,9 @@ describe( 'router Vuex module', () => {
 							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
 						} ) );
 
-						routerInstance.actions.evaluateUri( context );
+						store.evaluateUri();
 
-						expect( context.dispatch ).toHaveBeenCalled();
-						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.DEFAULT );
+						expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.DEFAULT );
 					} );
 
 					it( 'When view is passed as zobject viewer', () => {
@@ -646,19 +568,21 @@ describe( 'router Vuex module', () => {
 							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( { view: Constants.VIEWS.DEFAULT } )
 						} ) );
 
-						routerInstance.actions.evaluateUri( context );
+						store.evaluateUri();
 
-						expect( context.dispatch ).toHaveBeenCalled();
-						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.DEFAULT );
+						expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.DEFAULT );
 					} );
 				} );
 			} );
 
 			describe( 'Create Function Route loads Function Editor', () => {
 				beforeEach( () => {
+					store.changeCurrentView = jest.fn();
 					// Mock function create config
-					context.getters.getViewMode = false;
+					Object.defineProperty( store, 'getViewMode', {
+						value: false
+					} );
+
 					window.mw.config = {
 						get: jest.fn( () => ( {
 							createNewPage: true,
@@ -679,11 +603,9 @@ describe( 'router Vuex module', () => {
 							path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl( queryParams )
 						} ) );
 
-						routerInstance.actions.evaluateUri( context );
+						store.evaluateUri();
 
-						expect( context.dispatch ).toHaveBeenCalled();
-						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.FUNCTION_EDITOR );
+						expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.FUNCTION_EDITOR );
 					} );
 				} );
 
@@ -697,19 +619,20 @@ describe( 'router Vuex module', () => {
 							path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl()
 						} ) );
 
-						routerInstance.actions.evaluateUri( context );
+						store.evaluateUri();
 
-						expect( context.dispatch ).toHaveBeenCalled();
-						expect( context.dispatch ).toHaveBeenCalledWith(
-							'changeCurrentView', Constants.VIEWS.FUNCTION_EDITOR );
+						expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.FUNCTION_EDITOR );
 					} );
 				} );
 			} );
 
 			describe( 'Create ZObject Route loads ZObject Editor', () => {
 				beforeEach( () => {
+					store.changeCurrentView = jest.fn();
 					// Mock non-function create config
-					context.getters.getViewMode = false;
+					Object.defineProperty( store, 'getViewMode', {
+						value: false
+					} );
 					window.mw.config = {
 						get: jest.fn( () => ( {
 							createNewPage: true,
@@ -730,11 +653,9 @@ describe( 'router Vuex module', () => {
 							.getUrl( { zid: Constants.Z_IMPLEMENTATION } )
 					} ) );
 
-					routerInstance.actions.evaluateUri( context );
+					store.evaluateUri();
 
-					expect( context.dispatch ).toHaveBeenCalled();
-					expect( context.dispatch ).toHaveBeenCalledWith(
-						'changeCurrentView', Constants.VIEWS.DEFAULT );
+					expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.DEFAULT );
 				} );
 
 				it( 'with URL Format Two (/wiki/{{title}})', () => {
@@ -743,18 +664,19 @@ describe( 'router Vuex module', () => {
 						path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl()
 					} ) );
 
-					routerInstance.actions.evaluateUri( context );
+					store.evaluateUri();
 
-					expect( context.dispatch ).toHaveBeenCalled();
-					expect( context.dispatch ).toHaveBeenCalledWith(
-						'changeCurrentView', Constants.VIEWS.DEFAULT );
+					expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.DEFAULT );
 				} );
 			} );
 
 			describe( 'Evaluate Function Route loads Function Evaluator view', () => {
 				beforeEach( () => {
+					store.changeCurrentView = jest.fn();
 					// Mock function create config
-					context.getters.getViewMode = false;
+					Object.defineProperty( store, 'getViewMode', {
+						value: false
+					} );
 					window.mw.config = {
 						get: jest.fn( () => ( {
 							createNewPage: false,
@@ -773,11 +695,9 @@ describe( 'router Vuex module', () => {
 							.getUrl( { title: Constants.PATHS.RUN_FUNCTION_TITLE } )
 					} ) );
 
-					routerInstance.actions.evaluateUri( context );
+					store.evaluateUri();
 
-					expect( context.dispatch ).toHaveBeenCalled();
-					expect( context.dispatch ).toHaveBeenCalledWith(
-						'changeCurrentView', Constants.VIEWS.FUNCTION_EVALUATOR );
+					expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.FUNCTION_EVALUATOR );
 				} );
 
 				it( 'with URL Format Two (/wiki/{{title}})', () => {
@@ -786,11 +706,9 @@ describe( 'router Vuex module', () => {
 						path: new window.mw.Title( Constants.PATHS.RUN_FUNCTION_TITLE ).getUrl()
 					} ) );
 
-					routerInstance.actions.evaluateUri( context );
+					store.evaluateUri();
 
-					expect( context.dispatch ).toHaveBeenCalled();
-					expect( context.dispatch ).toHaveBeenCalledWith(
-						'changeCurrentView', Constants.VIEWS.FUNCTION_EVALUATOR );
+					expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.FUNCTION_EVALUATOR );
 				} );
 			} );
 		} );
@@ -803,31 +721,26 @@ describe( 'router Vuex module', () => {
 			} );
 
 			it( 'changes the current view with the value provided', () => {
-				const dummyView = 'dummyView';
-				routerInstance.actions.changeCurrentView( context, dummyView );
+				store.changeCurrentView( dummyView );
 
-				expect( context.commit ).toHaveBeenCalled();
-				expect( context.commit ).toHaveBeenCalledWith( 'CHANGE_CURRENT_VIEW', dummyView );
+				expect( store.currentView ).toBe( dummyView );
 			} );
 
 			it( 'does not replace history state if view is not set in query param', () => {
-				const dummyView = 'dummyView';
-				routerInstance.actions.changeCurrentView( context, dummyView );
+				store.changeCurrentView( dummyView );
 
 				expect( window.history.replaceState ).not.toHaveBeenCalled();
 			} );
 
 			it( 'does not replace history state if view set in query param is the view passed', () => {
-				const dummyView = 'dummyView';
-				routerInstance.actions.changeCurrentView( context, dummyView );
+				store.changeCurrentView( dummyView );
 
 				expect( window.history.replaceState ).not.toHaveBeenCalled();
 			} );
 
 			it( 'replace history state with current view', () => {
-				const dummyView = 'dummyView',
-					fakePath = 'fakePath',
-					fakeExistingValue = 'fakeValue';
+				const fakePath = 'fakePath';
+				const fakeExistingValue = 'fakeValue';
 				window.mw.Uri.mockImplementation( () => ( {
 					query: {
 						view: 'initialDummyView',
@@ -835,7 +748,7 @@ describe( 'router Vuex module', () => {
 					},
 					path: fakePath
 				} ) );
-				routerInstance.actions.changeCurrentView( context, dummyView );
+				store.changeCurrentView( dummyView );
 				expect( window.history.replaceState.mock.calls[ 0 ][ 0 ] ).toMatchObject(
 					{
 						path: fakePath,
@@ -848,4 +761,5 @@ describe( 'router Vuex module', () => {
 			} );
 		} );
 	} );
+
 } );

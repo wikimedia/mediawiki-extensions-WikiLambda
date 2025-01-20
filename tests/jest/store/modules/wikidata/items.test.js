@@ -1,5 +1,5 @@
 /*!
- * WikiLambda unit test suite for the Wikidata items Vuex store module
+ * WikiLambda unit test suite for the Wikidata items Pinia store module
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -7,9 +7,9 @@
 
 'use strict';
 
-const
-	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
-	itemsModule = require( '../../../../../resources/ext.wikilambda.app/store/modules/wikidata/items.js' );
+const { setActivePinia, createPinia } = require( 'pinia' );
+const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
+const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 
 const itemId = 'Q223044';
 const itemData = {
@@ -19,49 +19,40 @@ const itemData = {
 	}
 };
 
-describe( 'Wikidata Items Vuex module', () => {
-	let state, getters;
+describe( 'Wikidata Items Pinia store', () => {
+	let store;
+
+	beforeEach( () => {
+		setActivePinia( createPinia() );
+		store = useMainStore();
+		store.items = {};
+	} );
 
 	describe( 'Getters', () => {
 		describe( 'getItemIdRow', () => {
-			beforeEach( () => {
-				getters = {
-					getWikidataEntityIdRow: jest.fn()
-				};
-			} );
-
 			it( 'calls getWikidataEntityIdRow for items', () => {
-				itemsModule.getters.getItemIdRow( state, getters )( 10 );
-				expect( getters.getWikidataEntityIdRow ).toHaveBeenCalledWith( 10, Constants.Z_WIKIDATA_ITEM );
+				Object.defineProperty( store, 'getWikidataEntityIdRow', {
+					value: jest.fn()
+				} );
+				store.getItemIdRow( 10 );
+				expect( store.getWikidataEntityIdRow ).toHaveBeenCalledWith( 10, Constants.Z_WIKIDATA_ITEM );
 			} );
 		} );
 
 		describe( 'getItemData', () => {
-			beforeEach( () => {
-				state = {
-					items: {}
-				};
-			} );
-
 			it( 'returns undefined if item is not available', () => {
-				expect( itemsModule.getters.getItemData( state )( itemId ) )
-					.toEqual( undefined );
+				expect( store.getItemData( itemId ) ).toEqual( undefined );
 			} );
 
 			it( 'returns item data if available', () => {
-				state.items[ itemId ] = itemData;
-				expect( itemsModule.getters.getItemData( state )( itemId ) )
-					.toEqual( itemData );
+				store.items[ itemId ] = itemData;
+				expect( store.getItemData( itemId ) ).toEqual( itemData );
 			} );
 		} );
 	} );
 
-	describe( 'Mutations', () => {
-		beforeEach( () => {
-			state = {
-				items: {}
-			};
-		} );
+	describe( 'Actions', () => {
+		let fetchMock;
 
 		describe( 'setItemData', () => {
 			it( 'sets item data for a given item Id', () => {
@@ -69,36 +60,28 @@ describe( 'Wikidata Items Vuex module', () => {
 					id: itemId,
 					data: itemData
 				};
-				itemsModule.mutations.setItemData( state, payload );
-				expect( state.items[ itemId ] ).toEqual( itemData );
+				store.setItemData( payload );
+				expect( store.items[ itemId ] ).toEqual( itemData );
 			} );
 		} );
-	} );
-
-	describe( 'Actions', () => {
-		const context = {};
-		let fetchMock;
 
 		describe( 'fetchItems', () => {
 			beforeEach( () => {
-				state = {
-					items: {
-						Q111111: 'has data',
-						Q222222: new Promise( ( resolve ) => {
-							resolve();
-						} )
-					}
+				store.items = {
+					Q111111: 'has data',
+					Q222222: new Promise( ( resolve ) => {
+						resolve();
+					} )
 				};
 				fetchMock = jest.fn().mockResolvedValue( {
 					json: jest.fn().mockReturnValue( {} )
 				} );
 				// eslint-disable-next-line n/no-unsupported-features/node-builtins
 				global.fetch = fetchMock;
-				context.getters = {
-					getUserLangCode: 'en',
-					getItemData: itemsModule.getters.getItemData( state )
-				};
-				context.commit = jest.fn();
+				// Mock the getters
+				Object.defineProperty( store, 'getUserLangCode', {
+					value: 'en'
+				} );
 			} );
 
 			it( 'exits early if item ids are already fetched or in flight', () => {
@@ -107,9 +90,8 @@ describe( 'Wikidata Items Vuex module', () => {
 					'Q222222' // Request in flight
 				];
 
-				itemsModule.actions.fetchItems( context, { ids: items } );
+				store.fetchItems( { ids: items } );
 
-				expect( context.commit ).not.toHaveBeenCalled();
 				expect( fetchMock ).not.toHaveBeenCalled();
 			} );
 
@@ -125,22 +107,23 @@ describe( 'Wikidata Items Vuex module', () => {
 				fetchMock = jest.fn().mockResolvedValue( {
 					json: jest.fn().mockReturnValue( expectedResponse )
 				} );
+				store.setItemData = jest.fn();
 				// eslint-disable-next-line n/no-unsupported-features/node-builtins
 				global.fetch = fetchMock;
 
 				const params = 'origin=*&action=wbgetentities&format=json&languages=en&languagefallback=true&ids=Q333333%7CQ444444';
 				const expectedUrl = `${ Constants.WIKIDATA_BASE_URL }/w/api.php?${ params }`;
 
-				const promise = itemsModule.actions.fetchItems( context, { ids: items } );
+				const promise = store.fetchItems( { ids: items } );
 
 				expect( fetchMock ).toHaveBeenCalledWith( expectedUrl );
 
 				// Save promises while request is in flight
-				expect( context.commit ).toHaveBeenCalledWith( 'setItemData', {
+				expect( store.setItemData ).toHaveBeenCalledWith( {
 					id: 'Q333333',
 					data: promise
 				} );
-				expect( context.commit ).toHaveBeenCalledWith( 'setItemData', {
+				expect( store.setItemData ).toHaveBeenCalledWith( {
 					id: 'Q444444',
 					data: promise
 				} );
@@ -148,16 +131,40 @@ describe( 'Wikidata Items Vuex module', () => {
 				const response = await promise;
 
 				// Save data when response arrives
-				expect( context.commit ).toHaveBeenCalledWith( 'setItemData', {
+				expect( store.setItemData ).toHaveBeenCalledWith( {
 					id: 'Q333333',
 					data: 'this'
 				} );
-				expect( context.commit ).toHaveBeenCalledWith( 'setItemData', {
+				expect( store.setItemData ).toHaveBeenCalledWith( {
 					id: 'Q444444',
 					data: 'that'
 				} );
 
 				expect( response ).toEqual( expectedResponse );
+			} );
+
+			it( 'resets ids when API fails', async () => {
+				store.items = {
+					Q111111: 'has data'
+				};
+				const items = [
+					'Q111111', // Already fetched
+					'Q333333',
+					'Q444444'
+				];
+
+				fetchMock = jest.fn().mockRejectedValue( 'some error' );
+				store.setItemData = jest.fn();
+				// eslint-disable-next-line n/no-unsupported-features/node-builtins
+				global.fetch = fetchMock;
+
+				const params = 'origin=*&action=wbgetentities&format=json&languages=en&languagefallback=true&ids=Q333333%7CQ444444';
+				const expectedUrl = `${ Constants.WIKIDATA_BASE_URL }/w/api.php?${ params }`;
+
+				await store.fetchItems( { ids: items } );
+
+				expect( fetchMock ).toHaveBeenCalledWith( expectedUrl );
+				expect( store.items ).toEqual( { Q111111: 'has data' } );
 			} );
 		} );
 	} );

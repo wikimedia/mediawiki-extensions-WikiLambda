@@ -7,8 +7,9 @@
 'use strict';
 
 const { shallowMount } = require( '@vue/test-utils' ),
-	{ createGetterMock, createGettersWithFunctionsMock } = require( '../../../helpers/getterHelpers.js' ),
+	{ createGettersWithFunctionsMock } = require( '../../../helpers/getterHelpers.js' ),
 	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
+	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' ),
 	WikidataLexeme = require( '../../../../../resources/ext.wikilambda.app/components/default-view-types/wikidata/Lexeme.vue' );
 
 const dataIcons = () => ( {
@@ -28,18 +29,14 @@ const lexemeData = {
 };
 
 describe( 'WikidataLexeme', () => {
-	let getters, actions;
+	let store;
+
 	beforeEach( () => {
-		getters = {
-			getLexemeData: createGettersWithFunctionsMock(),
-			getLexemeIdRow: createGettersWithFunctionsMock( { id: 1 } ),
-			getZStringTerminalValue: createGettersWithFunctionsMock( lexemeId ),
-			getUserLangCode: createGetterMock( 'en' )
-		};
-		actions = {
-			fetchLexemes: jest.fn()
-		};
-		global.store.hotUpdate( { actions, getters } );
+		store = useMainStore();
+		store.getLexemeData = createGettersWithFunctionsMock();
+		store.getLexemeIdRow = createGettersWithFunctionsMock( { id: 1 } );
+		store.getZStringTerminalValue = createGettersWithFunctionsMock( lexemeId );
+		store.getUserLangCode = 'en';
 	} );
 
 	describe( 'in view mode', () => {
@@ -66,8 +63,8 @@ describe( 'WikidataLexeme', () => {
 		} );
 
 		it( 'renders the lexeme external link if data is available', () => {
-			getters.getLexemeData = createGettersWithFunctionsMock( lexemeData );
-			global.store.hotUpdate( { getters } );
+			store.getLexemeData = createGettersWithFunctionsMock( lexemeData );
+
 			const wrapper = shallowMount( WikidataLexeme, {
 				props: {
 					edit: false,
@@ -109,8 +106,8 @@ describe( 'WikidataLexeme', () => {
 		} );
 
 		it( 'renders blank wikidata entity selector', () => {
-			getters.getZStringTerminalValue = createGettersWithFunctionsMock();
-			global.store.hotUpdate( { getters } );
+			store.getZStringTerminalValue = createGettersWithFunctionsMock();
+
 			const wrapper = shallowMount( WikidataLexeme, {
 				props: {
 					edit: true,
@@ -135,8 +132,8 @@ describe( 'WikidataLexeme', () => {
 		} );
 
 		it( 'initializes wikidata entity selector', async () => {
-			getters.getLexemeData = createGettersWithFunctionsMock( lexemeData );
-			global.store.hotUpdate( { getters } );
+			store.getLexemeData = createGettersWithFunctionsMock( lexemeData );
+
 			const wrapper = shallowMount( WikidataLexeme, {
 				props: {
 					edit: true,
@@ -150,7 +147,7 @@ describe( 'WikidataLexeme', () => {
 			expect( lookup.exists() ).toBe( true );
 			expect( lookup.vm.entityId ).toBe( lexemeId );
 			expect( lookup.vm.entityLabel ).toBe( lexemeLabel );
-			expect( actions.fetchLexemes ).toHaveBeenCalledWith( expect.anything(), { ids: [ lexemeId ] } );
+			expect( store.fetchLexemes ).toHaveBeenCalledWith( { ids: [ lexemeId ] } );
 		} );
 
 		it( 'initializes wikidata entity selector input value with delayed fetch response', async () => {
@@ -166,13 +163,13 @@ describe( 'WikidataLexeme', () => {
 			expect( lookup.vm.entityId ).toBe( lexemeId );
 			expect( lookup.vm.entityLabel ).toBe( lexemeId );
 
-			getters.getLexemeData = createGettersWithFunctionsMock( lexemeData );
-			global.store.hotUpdate( { getters } );
+			store.getLexemeData = createGettersWithFunctionsMock( lexemeData );
+
 			await wrapper.vm.$nextTick();
 
 			expect( lookup.vm.entityId ).toBe( lexemeId );
 			expect( lookup.vm.entityLabel ).toBe( lexemeLabel );
-			expect( actions.fetchLexemes ).toHaveBeenCalledWith( expect.anything(), { ids: [ lexemeId ] } );
+			expect( store.fetchLexemes ).toHaveBeenCalledWith( { ids: [ lexemeId ] } );
 		} );
 
 		it( 'sets lexeme reference ID when selecting option from the menu', async () => {

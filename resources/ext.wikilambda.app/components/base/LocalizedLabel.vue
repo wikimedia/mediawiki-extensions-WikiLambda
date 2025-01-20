@@ -19,7 +19,8 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const LabelData = require( '../../store/classes/LabelData.js' ),
-	{ mapGetters } = require( 'vuex' );
+	useMainStore = require( '../../store/index.js' ),
+	{ mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-localized-label',
@@ -29,7 +30,7 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getUserLangZid'
 	] ), {
 		/**

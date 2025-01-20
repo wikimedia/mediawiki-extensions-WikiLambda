@@ -1,6 +1,9 @@
 /**
  * WikiLambda Vue editor: API calls mixin
  *
+ * All mw.API calls are wrapped in a native Promise to make them easier to test
+ * and to make them more predictable.
+ *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
@@ -13,6 +16,7 @@ const Constants = require( '../Constants.js' ),
 /* eslint-disable camelcase */
 module.exports = exports = {
 	methods: {
+
 		/**
 		 * Calls the wikilambda_function_call internal API
 		 * https://www.mediawiki.org/wiki/Extension:WikiLambda/API#wikilambda_function_call
@@ -25,18 +29,26 @@ module.exports = exports = {
 		performFunctionCall: function ( zobject ) {
 			const api = new mw.Api();
 			const canonicalJson = JSON.stringify( hybridToCanonical( zobject ) );
-			return api.post( {
-				action: 'wikilambda_function_call',
-				wikilambda_function_call_zobject: canonicalJson,
-				uselang: mw.config.get( 'wgWikiLambda' ).zlang
-			} ).then( ( data ) => {
-				const maybeNormalResponse = JSON.parse( data.wikilambda_function_call.data );
-				const response = hybridToCanonical( maybeNormalResponse );
-				const result = response[ Constants.Z_RESPONSEENVELOPE_VALUE ];
-				const metadata = response[ Constants.Z_RESPONSEENVELOPE_METADATA ];
-				return { response, result, metadata };
-			} ).catch( ApiError.fromMwApiRejection );
+
+			return new Promise( ( resolve, reject ) => {
+				api.post( {
+					action: 'wikilambda_function_call',
+					wikilambda_function_call_zobject: canonicalJson,
+					uselang: mw.config.get( 'wgWikiLambda' ).zlang
+				} )
+					.then( ( data ) => {
+						const maybeNormalResponse = JSON.parse( data.wikilambda_function_call.data );
+						const response = hybridToCanonical( maybeNormalResponse );
+						resolve( {
+							response,
+							result: response[ Constants.Z_RESPONSEENVELOPE_VALUE ],
+							metadata: response[ Constants.Z_RESPONSEENVELOPE_METADATA ]
+						} );
+					} )
+					.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
+			} );
 		},
+
 		/**
 		 * Calls the wikilambda_edit internal API
 		 * https://www.mediawiki.org/wiki/Extension:WikiLambda/API#wikilambda_edit
@@ -51,15 +63,17 @@ module.exports = exports = {
 		 */
 		saveZObject: function ( payload ) {
 			const api = new mw.Api();
-			return api.postWithEditToken( {
-				action: 'wikilambda_edit',
-				summary: payload.summary || '',
-				zid: payload.zid,
-				zobject: JSON.stringify( payload.zobject ),
-				uselang: mw.config.get( 'wgWikiLambda' ).zlang
-			} )
-				.then( ( data ) => data.wikilambda_edit )
-				.catch( ApiError.fromMwApiRejection );
+			return new Promise( ( resolve, reject ) => {
+				api.postWithEditToken( {
+					action: 'wikilambda_edit',
+					summary: payload.summary || '',
+					zid: payload.zid,
+					zobject: JSON.stringify( payload.zobject ),
+					uselang: mw.config.get( 'wgWikiLambda' ).zlang
+				} )
+					.then( ( data ) => resolve( data.wikilambda_edit ) )
+					.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
+			} );
 		},
 		/**
 		 * Calls the wikilambdaload_zobjects internal API
@@ -76,15 +90,19 @@ module.exports = exports = {
 		 */
 		fetchZObjects: function ( payload ) {
 			const api = new mw.Api();
-			return api.get( {
-				action: 'query',
-				list: 'wikilambdaload_zobjects',
-				format: 'json',
-				wikilambdaload_zids: payload.zids,
-				wikilambdaload_revisions: payload.revisions,
-				wikilambdaload_language: payload.language,
-				wikilambdaload_get_dependencies: payload.dependencies ? 'true' : 'false'
-			} ).then( ( data ) => data.query.wikilambdaload_zobjects );
+			return new Promise( ( resolve, reject ) => {
+				api.get( {
+					action: 'query',
+					list: 'wikilambdaload_zobjects',
+					format: 'json',
+					wikilambdaload_zids: payload.zids,
+					wikilambdaload_revisions: payload.revisions,
+					wikilambdaload_language: payload.language,
+					wikilambdaload_get_dependencies: payload.dependencies ? 'true' : 'false'
+				} )
+					.then( ( data ) => resolve( data.query.wikilambdaload_zobjects ) )
+					.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
+			} );
 		},
 		/**
 		 * Calls the wikilambdasearch_labels internal API
@@ -105,20 +123,25 @@ module.exports = exports = {
 		 */
 		searchLabels: function ( payload ) {
 			const api = new mw.Api();
-			return api.get( {
-				action: 'query',
-				list: 'wikilambdasearch_labels',
-				wikilambdasearch_search: payload.input,
-				wikilambdasearch_type: payload.type,
-				wikilambdasearch_return_type: payload.returnType,
-				wikilambdasearch_strict_return_type: payload.strictType,
-				wikilambdasearch_language: payload.language,
-				wikilambdasearch_limit: payload.limit,
-				wikilambdasearch_continue: payload.searchContinue
-			} ).then( ( data ) => ( {
-				labels: data.query ? data.query.wikilambdasearch_labels : [],
-				searchContinue: data.continue ? Number( data.continue.wikilambdasearch_continue ) : null
-			} ) );
+			return new Promise( ( resolve, reject ) => {
+				api.get( {
+					action: 'query',
+					list: 'wikilambdasearch_labels',
+					wikilambdasearch_search: payload.input,
+					wikilambdasearch_type: payload.type,
+					wikilambdasearch_return_type: payload.returnType,
+					wikilambdasearch_strict_return_type: payload.strictType,
+					wikilambdasearch_language: payload.language,
+					wikilambdasearch_limit: payload.limit,
+					wikilambdasearch_continue: payload.searchContinue
+				} )
+					.then( ( data ) => resolve( {
+						labels: data.query ? data.query.wikilambdasearch_labels : [],
+						searchContinue: data.continue ? Number( data.continue.wikilambdasearch_continue ) : null
+					} )
+					)
+					.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
+			} );
 		},
 		/**
 		 * Calls the wikilambda_perform_test internal API
@@ -133,17 +156,20 @@ module.exports = exports = {
 		 */
 		performTests: function ( payload ) {
 			const api = new mw.Api();
-			return api.get( {
-				action: 'wikilambda_perform_test',
-				wikilambda_perform_test_zfunction: payload.functionZid,
-				wikilambda_perform_test_zimplementations: payload.implementations.join( '|' ),
-				wikilambda_perform_test_ztesters: payload.testers.join( '|' ),
-				wikilambda_perform_test_nocache: payload.nocache || false,
-				uselang: mw.config.get( 'wgWikiLambda' ).zlang
-			} )
-				.then( ( data ) => data.query.wikilambda_perform_test )
-				.catch( ApiError.fromMwApiRejection );
+			return new Promise( ( resolve, reject ) => {
+				api.get( {
+					action: 'wikilambda_perform_test',
+					wikilambda_perform_test_zfunction: payload.functionZid,
+					wikilambda_perform_test_zimplementations: payload.implementations.join( '|' ),
+					wikilambda_perform_test_ztesters: payload.testers.join( '|' ),
+					wikilambda_perform_test_nocache: payload.nocache || false,
+					uselang: mw.config.get( 'wgWikiLambda' ).zlang
+				} )
+					.then( ( data ) => resolve( data.query.wikilambda_perform_test ) )
+					.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
+			} );
 		},
+
 		/**
 		 * Calls the wikilambdafn_search internal API
 		 * https://www.mediawiki.org/wiki/Extension:WikiLambda/API#wikilambdafn_search
@@ -155,17 +181,23 @@ module.exports = exports = {
 		 * @param {string} payload.type What type of object to fetch (Z20 or Z14)
 		 * @return {Promise}
 		 */
-		fetchFunctionObjects: function ( payload ) {
+		fetchFunctionObjects( payload ) {
 			const api = new mw.Api();
-			return api.get( {
-				action: 'query',
-				list: 'wikilambdafn_search',
-				format: 'json',
-				wikilambdafn_zfunction_id: payload.functionZid,
-				wikilambdafn_type: payload.type,
-				wikilambdafn_limit: Constants.API_LIMIT_MAX
-			} ).then( ( data ) => data.query.wikilambdafn_search );
+
+			return new Promise( ( resolve, reject ) => {
+				api.get( {
+					action: 'query',
+					list: 'wikilambdafn_search',
+					format: 'json',
+					wikilambdafn_zfunction_id: payload.functionZid,
+					wikilambdafn_type: payload.type,
+					wikilambdafn_limit: Constants.API_LIMIT_MAX
+				} )
+					.then( ( data ) => resolve( data.query.wikilambdafn_search ) )
+					.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
+			} );
 		},
+
 		/**
 		 * Calls the wbsearchentities Wikidata Action API
 		 * https://www.wikidata.org/w/api.php?action=help&modules=wbsearchentities

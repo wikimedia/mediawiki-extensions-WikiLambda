@@ -10,12 +10,11 @@ const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	{ waitFor } = require( '@testing-library/vue' ),
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
-	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
+	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' ),
 	FunctionEvaluator = require( '../../../../../resources/ext.wikilambda.app/components/widgets/function-evaluator/FunctionEvaluator.vue' );
 
 describe( 'FunctionEvaluator', () => {
-	let getters,
-		actions;
+	let store;
 
 	const functionCallJson = {
 		Z1K1: 'Z7',
@@ -67,33 +66,24 @@ describe( 'FunctionEvaluator', () => {
 	};
 
 	beforeEach( () => {
-		getters = {
-			getErrors: createGettersWithFunctionsMock( [] ),
-			getCurrentZObjectId: createGettersWithFunctionsMock( 'Z12345' ),
-			getCurrentZObjectType: createGettersWithFunctionsMock( 'Z14' ),
-			getStoredObject: createGettersWithFunctionsMock( undefined ),
-			getZFunctionCallArguments: createGettersWithFunctionsMock( [] ),
-			getRowByKeyPath: createGettersWithFunctionsMock( undefined ),
-			getZFunctionCallFunctionId: createGettersWithFunctionsMock( undefined ),
-			getConnectedObjects: createGettersWithFunctionsMock( [] ),
-			getZObjectAsJsonById: createGettersWithFunctionsMock( '' ),
-			getLabelData: createLabelDataMock(),
-			getUserLangZid: createGettersWithFunctionsMock( 'Z1002' ),
-			userCanRunFunction: createGetterMock( true ),
-			userCanRunUnsavedCode: createGetterMock( true ),
-			waitForRunningParsers: createGetterMock( Promise.resolve() ),
-			getMetadataError: createGetterMock()
-		};
-		actions = {
-			callZFunction: jest.fn(),
-			clearErrors: jest.fn(),
-			changeType: jest.fn(),
-			fetchZids: jest.fn(),
-			initializeResultId: jest.fn(),
-			setValueByRowIdAndPath: jest.fn(),
-			setZFunctionCallArguments: jest.fn()
-		};
-		global.store.hotUpdate( { getters: getters, actions: actions } );
+		store = useMainStore();
+		store.getErrors = createGettersWithFunctionsMock( [] );
+		store.getCurrentZObjectId = 'Z12345';
+		store.getCurrentZObjectType = 'Z14';
+		store.getStoredObject = createGettersWithFunctionsMock( undefined );
+		store.getZFunctionCallArguments = createGettersWithFunctionsMock( [] );
+		store.getRowByKeyPath = createGettersWithFunctionsMock( undefined );
+		store.getZFunctionCallFunctionId = createGettersWithFunctionsMock( undefined );
+		store.getConnectedObjects = createGettersWithFunctionsMock( [] );
+		store.getZObjectAsJsonById = '';
+		store.getLabelData = createLabelDataMock();
+		store.getUserLangZid = 'Z1002';
+		store.userCanRunFunction = true;
+		store.userCanRunUnsavedCode = true;
+		store.waitForRunningParsers = Promise.resolve();
+		store.getMetadataError = undefined;
+		store.fetchZids.mockResolvedValue();
+		store.callZFunction.mockResolvedValue();
 	} );
 
 	describe( 'in function call special page', () => {
@@ -106,8 +96,8 @@ describe( 'FunctionEvaluator', () => {
 		it( 'initializes detached objects', async () => {
 			shallowMount( FunctionEvaluator );
 
-			await waitFor( () => expect( actions.initializeResultId ).toHaveBeenCalledTimes( 2 ) );
-			await waitFor( () => expect( actions.changeType ).toHaveBeenCalledTimes( 1 ) );
+			await waitFor( () => expect( store.initializeResultId ).toHaveBeenCalledTimes( 2 ) );
+			await waitFor( () => expect( store.changeType ).toHaveBeenCalledTimes( 1 ) );
 		} );
 
 		it( 'renders special page title', () => {
@@ -125,8 +115,7 @@ describe( 'FunctionEvaluator', () => {
 
 			wrapper.vm.functionCallRowId = 1;
 			// returns selectedFunctionRowId = 2
-			getters.getRowByKeyPath = createGettersWithFunctionsMock( { id: 2 } );
-			global.store.hotUpdate( { getters: getters, actions: actions } );
+			store.getRowByKeyPath = createGettersWithFunctionsMock( { id: 2 } );
 
 			await wrapper.vm.$nextTick();
 
@@ -170,18 +159,17 @@ describe( 'FunctionEvaluator', () => {
 
 			wrapper.vm.functionCallRowId = 1;
 			// returns selectedFunctionRowId = 2
-			getters.getRowByKeyPath = createGettersWithFunctionsMock( { id: 2 } );
-			global.store.hotUpdate( { getters: getters, actions: actions } );
+			store.getRowByKeyPath = createGettersWithFunctionsMock( { id: 2 } );
 
 			const functionSelector = wrapper.getComponent( { name: 'wl-z-reference' } );
 			expect( functionSelector.exists() ).toBeTruthy();
 			await functionSelector.vm.$emit( 'set-value', { value: 'Z10000', keyPath: [ 'Z9K1' ] } );
 
-			expect( actions.setZFunctionCallArguments ).toHaveBeenCalledWith( expect.anything(), {
+			expect( store.setZFunctionCallArguments ).toHaveBeenCalledWith( {
 				functionZid: 'Z10000',
 				parentId: 1
 			} );
-			expect( actions.setValueByRowIdAndPath ).toHaveBeenCalledWith( expect.anything(), {
+			expect( store.setValueByRowIdAndPath ).toHaveBeenCalledWith( {
 				rowId: 2,
 				keyPath: [ 'Z9K1' ],
 				value: 'Z10000'
@@ -194,11 +182,10 @@ describe( 'FunctionEvaluator', () => {
 			} );
 
 			wrapper.vm.functionCallRowId = 1;
-			getters.getZFunctionCallArguments = createGettersWithFunctionsMock( [
+			store.getZFunctionCallArguments = createGettersWithFunctionsMock( [
 				{ key: 'Z10000K1', id: 4, parent: 1 },
 				{ key: 'Z10000K2', id: 5, parent: 1 }
 			] );
-			global.store.hotUpdate( { getters: getters, actions: actions } );
 
 			await wrapper.vm.$nextTick();
 
@@ -219,10 +206,9 @@ describe( 'FunctionEvaluator', () => {
 			wrapper.vm.functionCallRowId = 1;
 			wrapper.vm.resultRowId = 2;
 			// returns selectedFunctionRowId = 2
-			getters.getRowByKeyPath = createGettersWithFunctionsMock( { id: 2 } );
+			store.getRowByKeyPath = createGettersWithFunctionsMock( { id: 2 } );
 			// returns selectedFunctionZid = Z10000
-			getters.getZFunctionCallFunctionId = createGettersWithFunctionsMock( 'Z10000' );
-			global.store.hotUpdate( { getters: getters, actions: actions } );
+			store.getZFunctionCallFunctionId = createGettersWithFunctionsMock( 'Z10000' );
 
 			await wrapper.vm.$nextTick();
 
@@ -238,12 +224,11 @@ describe( 'FunctionEvaluator', () => {
 			} );
 
 			// returns selectedFunctionRowId = 2
-			getters.getRowByKeyPath = createGettersWithFunctionsMock( { id: 2 } );
+			store.getRowByKeyPath = createGettersWithFunctionsMock( { id: 2 } );
 			// returns selectedFunctionZid = Z10000
-			getters.getZFunctionCallFunctionId = createGettersWithFunctionsMock( 'Z10000' );
+			store.getZFunctionCallFunctionId = createGettersWithFunctionsMock( 'Z10000' );
 			// returns implementations = [ 'Z10001', 'Z10002' ]
-			getters.getConnectedObjects = createGettersWithFunctionsMock( [ 'Z10001', 'Z10002' ] );
-			global.store.hotUpdate( { getters: getters, actions: actions } );
+			store.getConnectedObjects = createGettersWithFunctionsMock( [ 'Z10001', 'Z10002' ] );
 
 			await wrapper.vm.$nextTick();
 
@@ -278,17 +263,16 @@ describe( 'FunctionEvaluator', () => {
 			wrapper.vm.resultRowId = 10;
 			wrapper.vm.hasResult = true;
 			wrapper.vm.running = true;
-			actions.initializeResultId = jest.fn();
+			store.initializeResultId.mockReturnValue();
 			// returns selectedFunctionZid = Z10000
-			getters.getZFunctionCallFunctionId = createGettersWithFunctionsMock( 'Z10000' );
-			global.store.hotUpdate( { getters: getters, actions: actions } );
+			store.getZFunctionCallFunctionId = createGettersWithFunctionsMock( 'Z10000' );
 
 			await wrapper.vm.$nextTick();
 
 			expect( wrapper.vm.resultRowId ).toBe( 10 );
 			expect( wrapper.vm.hasResult ).toBe( false );
 			expect( wrapper.vm.running ).toBe( false );
-			expect( actions.initializeResultId ).toHaveBeenCalledWith( expect.anything(), 10 );
+			expect( store.initializeResultId ).toHaveBeenCalledWith( 10 );
 		} );
 
 		it( 'calls function call when click button', async () => {
@@ -299,14 +283,13 @@ describe( 'FunctionEvaluator', () => {
 			wrapper.vm.functionCallRowId = 1;
 			wrapper.vm.resultRowId = 10;
 			// mock initializeResultId to return a Promise
-			actions.initializeResultId = () => Promise.resolve( 10 );
+			store.initializeResultId.mockReturnValue( 10 );
 			// activates function call button
-			getters.getRowByKeyPath = createGettersWithFunctionsMock( { id: 2 } );
-			getters.getZFunctionCallFunctionId = createGettersWithFunctionsMock( 'Z10000' );
-			getters.getConnectedObjects = createGettersWithFunctionsMock( [ 'Z10001', 'Z10002' ] );
+			store.getRowByKeyPath = createGettersWithFunctionsMock( { id: 2 } );
+			store.getZFunctionCallFunctionId = createGettersWithFunctionsMock( 'Z10000' );
+			store.getConnectedObjects = createGettersWithFunctionsMock( [ 'Z10001', 'Z10002' ] );
 			// returns JSON function call
-			getters.getZObjectAsJsonById = createGettersWithFunctionsMock( functionCallJson );
-			global.store.hotUpdate( { getters: getters, actions: actions } );
+			store.getZObjectAsJsonById = createGettersWithFunctionsMock( functionCallJson );
 
 			await wrapper.vm.$nextTick();
 
@@ -315,8 +298,8 @@ describe( 'FunctionEvaluator', () => {
 
 			button.trigger( 'click' );
 
-			await waitFor( () => expect( actions.callZFunction ).toHaveBeenCalledTimes( 1 ) );
-			expect( actions.callZFunction ).toHaveBeenCalledWith( expect.anything(), {
+			await waitFor( () => expect( store.callZFunction ).toHaveBeenCalledTimes( 1 ) );
+			expect( store.callZFunction ).toHaveBeenCalledWith( {
 				functionCall: functionCallJson,
 				resultRowId: 10
 			} );
@@ -332,22 +315,21 @@ describe( 'FunctionEvaluator', () => {
 		it( 'initializes detached objects', async () => {
 			shallowMount( FunctionEvaluator, { props: { functionZid: 'Z10000' } } );
 
-			await waitFor( () => expect( actions.initializeResultId ).toHaveBeenCalledTimes( 2 ) );
-			await waitFor( () => expect( actions.changeType ).toHaveBeenCalledTimes( 1 ) );
+			await waitFor( () => expect( store.initializeResultId ).toHaveBeenCalledTimes( 2 ) );
+			await waitFor( () => expect( store.changeType ).toHaveBeenCalledTimes( 1 ) );
 		} );
 
 		it( 'initializes the function arguments', async () => {
 			// Set before mount
-			actions.initializeResultId = () => Promise.resolve( 10 );
-			global.store.hotUpdate( { getters: getters, actions: actions } );
+			store.initializeResultId.mockReturnValue( 10 );
 
 			shallowMount( FunctionEvaluator, { props: { functionZid: 'Z10000' } } );
 
-			await waitFor( () => expect( actions.fetchZids ).toHaveBeenCalledTimes( 1 ) );
-			await waitFor( () => expect( actions.fetchZids ).toHaveBeenCalledWith( expect.anything(),
+			await waitFor( () => expect( store.fetchZids ).toHaveBeenCalledTimes( 1 ) );
+			await waitFor( () => expect( store.fetchZids ).toHaveBeenCalledWith(
 				{ zids: [ 'Z10000' ] }
 			) );
-			await waitFor( () => expect( actions.setZFunctionCallArguments ).toHaveBeenCalledWith( expect.anything(),
+			await waitFor( () => expect( store.setZFunctionCallArguments ).toHaveBeenCalledWith(
 				{ parentId: 10, functionZid: 'Z10000' }
 			) );
 		} );
@@ -399,24 +381,23 @@ describe( 'FunctionEvaluator', () => {
 				props: { functionZid: 'Z10000', forImplementation: true }
 			} );
 
-			await waitFor( () => expect( actions.initializeResultId ).toHaveBeenCalledTimes( 2 ) );
-			await waitFor( () => expect( actions.changeType ).toHaveBeenCalledTimes( 1 ) );
+			await waitFor( () => expect( store.initializeResultId ).toHaveBeenCalledTimes( 2 ) );
+			await waitFor( () => expect( store.changeType ).toHaveBeenCalledTimes( 1 ) );
 		} );
 
 		it( 'initializes the function arguments', async () => {
 			// set before mount
-			actions.initializeResultId = () => Promise.resolve( 10 );
-			global.store.hotUpdate( { getters: getters, actions: actions } );
+			store.initializeResultId.mockReturnValue( 10 );
 
 			shallowMount( FunctionEvaluator, {
 				props: { functionZid: 'Z10000', forImplementation: true }
 			} );
 
-			await waitFor( () => expect( actions.fetchZids ).toHaveBeenCalledTimes( 1 ) );
-			await waitFor( () => expect( actions.fetchZids ).toHaveBeenCalledWith( expect.anything(),
+			await waitFor( () => expect( store.fetchZids ).toHaveBeenCalledTimes( 1 ) );
+			await waitFor( () => expect( store.fetchZids ).toHaveBeenCalledWith(
 				{ zids: [ 'Z10000' ] }
 			) );
-			await waitFor( () => expect( actions.setZFunctionCallArguments ).toHaveBeenCalledWith( expect.anything(),
+			await waitFor( () => expect( store.setZFunctionCallArguments ).toHaveBeenCalledWith(
 				{ parentId: 10, functionZid: 'Z10000' }
 			) );
 		} );
@@ -452,18 +433,17 @@ describe( 'FunctionEvaluator', () => {
 			wrapper.vm.functionCallRowId = 1;
 			wrapper.vm.resultRowId = 10;
 			// mock initializeResultId to return a Promise
-			actions.initializeResultId = () => Promise.resolve( 10 );
+			store.initializeResultId.mockReturnValue( 10 );
 			// set getters to activate function call button
-			getters.getRowByKeyPath = createGettersWithFunctionsMock( { id: 2 } );
-			getters.getZFunctionCallFunctionId = createGettersWithFunctionsMock( 'Z10000' );
-			getters.getConnectedObjects = createGettersWithFunctionsMock( [ 'Z10001', 'Z10002' ] );
+			store.getRowByKeyPath = createGettersWithFunctionsMock( { id: 2 } );
+			store.getZFunctionCallFunctionId = createGettersWithFunctionsMock( 'Z10000' );
+			store.getConnectedObjects = createGettersWithFunctionsMock( [ 'Z10001', 'Z10002' ] );
 			// returns function object from storage
-			getters.getStoredObject = createGettersWithFunctionsMock( functionJson );
+			store.getStoredObject = createGettersWithFunctionsMock( functionJson );
 			// returns JSON function call or implementation conditionally
-			getters.getZObjectAsJsonById = () => ( rowId ) => ( rowId === 0 ) ? contentJson :
+			store.getZObjectAsJsonById = jest.fn( ( rowId ) => ( rowId === 0 ) ? contentJson :
 				( rowId === 1 ) ? functionCallJson :
-					undefined;
-			global.store.hotUpdate( { getters: getters, actions: actions } );
+					undefined );
 
 			await wrapper.vm.$nextTick();
 
@@ -471,8 +451,8 @@ describe( 'FunctionEvaluator', () => {
 			const button = block.findComponent( { name: 'cdx-button' } );
 			button.trigger( 'click' );
 
-			await waitFor( () => expect( actions.callZFunction ).toHaveBeenCalledTimes( 1 ) );
-			expect( actions.callZFunction ).toHaveBeenCalledWith( expect.anything(), {
+			await waitFor( () => expect( store.callZFunction ).toHaveBeenCalledTimes( 1 ) );
+			expect( store.callZFunction ).toHaveBeenCalledWith( {
 				functionCall: implementationCall,
 				resultRowId: 10
 			} );

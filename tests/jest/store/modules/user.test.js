@@ -1,22 +1,21 @@
 /*!
- * WikiLambda unit test suite for the user Vuex module
+ * WikiLambda unit test suite for the user Pinia store
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
 'use strict';
 
-const userModule = require( '../../../../resources/ext.wikilambda.app/store/modules/user.js' );
-let context,
-	state,
-	getters;
+const { setActivePinia, createPinia } = require( 'pinia' );
+const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 
-describe( 'User rights Vuex module', () => {
+describe( 'User rights Pinia store', () => {
+	let store;
+
 	beforeEach( () => {
-		// Initialize state
-		state = {
-			userRights: null
-		};
+		setActivePinia( createPinia() );
+		store = useMainStore();
+		store.userRights = null;
 	} );
 
 	describe( 'Actions', () => {
@@ -26,10 +25,6 @@ describe( 'User rights Vuex module', () => {
 		];
 
 		beforeEach( () => {
-			// Mock context
-			context = Object.assign( {}, {
-				commit: jest.fn( () => {} )
-			} );
 			// Mock mw.user.getRights
 			const getRightsResolveMock = jest.fn( ( then ) => then( userRights ) );
 			const getRightsMock = jest.fn( () => ( {
@@ -41,24 +36,10 @@ describe( 'User rights Vuex module', () => {
 		} );
 
 		describe( 'fetchUserRights', () => {
-			it( 'fetches and sets rights', () => {
-				userModule.actions.fetchUserRights( context );
+			it( 'fetches and sets rights', async () => {
+				await store.fetchUserRights();
 				expect( mw.user.getRights ).toHaveBeenCalledTimes( 1 );
-				expect( context.commit ).toHaveBeenCalledTimes( 1 );
-				expect( context.commit ).toHaveBeenCalledWith( 'setUserRights', userRights );
-			} );
-		} );
-	} );
-
-	describe( 'Mutations', () => {
-		describe( 'setUserRights', () => {
-			it( 'sets user rights', () => {
-				const userRights = [
-					'wikilambda-execute',
-					'wikilambda-execute-unsaved-code'
-				];
-				userModule.mutations.setUserRights( state, userRights );
-				expect( state.userRights ).toEqual( userRights );
+				expect( store.userRights ).toEqual( userRights );
 			} );
 		} );
 	} );
@@ -67,94 +48,76 @@ describe( 'User rights Vuex module', () => {
 		describe( 'isUserLoggedIn', () => {
 			it( 'returns false if logged out', () => {
 				mw.config.values.wgUserName = null;
-				expect( userModule.getters.isUserLoggedIn() ).toBe( false );
+				expect( store.isUserLoggedIn ).toBe( false );
 			} );
 
 			it( 'returns true if logged in', () => {
 				mw.config.values.wgUserName = 'Username';
-				expect( userModule.getters.isUserLoggedIn() ).toBe( true );
+				expect( store.isUserLoggedIn ).toBe( true );
 			} );
 		} );
 
 		describe( 'userHasRight', () => {
 			it( 'returns undefined if rights not initialized', () => {
-				expect( userModule.getters.userHasRight( state )( 'wikilambda-execute' ) ).toBe( undefined );
+				expect( store.userHasRight( 'wikilambda-execute' ) ).toBe( undefined );
 			} );
 
 			it( 'returns false if right is not found', () => {
-				state.userRights = [];
-				expect( userModule.getters.userHasRight( state )( 'wikilambda-execute' ) ).toBe( false );
+				store.userRights = [];
+				expect( store.userHasRight( 'wikilambda-execute' ) ).toBe( false );
 			} );
 
 			it( 'returns true if right is found', () => {
-				state.userRights = [ 'wikilambda-execute' ];
-				expect( userModule.getters.userHasRight( state )( 'wikilambda-execute' ) ).toBe( true );
+				store.userRights = [ 'wikilambda-execute' ];
+				expect( store.userHasRight( 'wikilambda-execute' ) ).toBe( true );
 			} );
 		} );
 
 		describe( 'userCanRunFunction', () => {
-			beforeEach( () => {
-				getters = {
-					userHasRight: userModule.getters.userHasRight( state )
-				};
-			} );
-
 			it( 'returns undefined if rights not initialized', () => {
-				expect( userModule.getters.userCanRunFunction( state, getters ) ).toBe( undefined );
+				expect( store.userCanRunFunction ).toBe( undefined );
 			} );
 
 			it( 'returns false if right is not found', () => {
-				state.userRights = [];
-				expect( userModule.getters.userCanRunFunction( state, getters ) ).toBe( false );
+				store.userRights = [];
+				expect( store.userCanRunFunction ).toBe( false );
 			} );
 
 			it( 'returns true if right is found', () => {
-				state.userRights = [ 'wikilambda-execute' ];
-				expect( userModule.getters.userCanRunFunction( state, getters ) ).toBe( true );
+				store.userRights = [ 'wikilambda-execute' ];
+				expect( store.userCanRunFunction ).toBe( true );
 			} );
 		} );
 
 		describe( 'userCanRunUnsavedCode', () => {
-			beforeEach( () => {
-				getters = {
-					userHasRight: userModule.getters.userHasRight( state )
-				};
-			} );
-
 			it( 'returns undefined if rights not initialized', () => {
-				expect( userModule.getters.userCanRunUnsavedCode( state, getters ) ).toBe( undefined );
+				expect( store.userCanRunUnsavedCode ).toBe( undefined );
 			} );
 
 			it( 'returns false if right is not found', () => {
-				state.userRights = [ 'wikilambda-execute' ];
-				expect( userModule.getters.userCanRunUnsavedCode( state, getters ) ).toBe( false );
+				store.userRights = [ 'wikilambda-execute' ];
+				expect( store.userCanRunUnsavedCode ).toBe( false );
 			} );
 
 			it( 'returns true if right is found', () => {
-				state.userRights = [ 'wikilambda-execute-unsaved-code' ];
-				expect( userModule.getters.userCanRunUnsavedCode( state, getters ) ).toBe( true );
+				store.userRights = [ 'wikilambda-execute-unsaved-code' ];
+				expect( store.userCanRunUnsavedCode ).toBe( true );
 			} );
 		} );
 
 		describe( 'userCanEditTypes', () => {
-			beforeEach( () => {
-				getters = {
-					userHasRight: userModule.getters.userHasRight( state )
-				};
-			} );
-
 			it( 'returns undefined if rights not initialized', () => {
-				expect( userModule.getters.userCanEditTypes( state, getters ) ).toBe( undefined );
+				expect( store.userCanEditTypes ).toBe( undefined );
 			} );
 
 			it( 'returns false if right is not found', () => {
-				state.userRights = [ 'wikilambda-edit' ];
-				expect( userModule.getters.userCanEditTypes( state, getters ) ).toBe( false );
+				store.userRights = [ 'wikilambda-edit' ];
+				expect( store.userCanEditTypes ).toBe( false );
 			} );
 
 			it( 'returns true if right is found', () => {
-				state.userRights = [ 'wikilambda-edit', 'wikilambda-edit-type' ];
-				expect( userModule.getters.userCanEditTypes( state, getters ) ).toBe( true );
+				store.userRights = [ 'wikilambda-edit', 'wikilambda-edit-type' ];
+				expect( store.userCanEditTypes ).toBe( true );
 			} );
 		} );
 	} );

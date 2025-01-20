@@ -8,15 +8,14 @@
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	{ waitFor } = require( '@testing-library/vue' ),
-	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
+	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' ),
 	ExpandedToggle = require( '../../../../resources/ext.wikilambda.app/components/base/ExpandedToggle.vue' );
 
 describe( 'ExpandedToggle', () => {
+	let store;
 	beforeEach( () => {
-		getters = {
-			waitForRunningParsers: createGetterMock( Promise.resolve() )
-		};
-		global.store.hotUpdate( { getters: getters } );
+		store = useMainStore();
+		store.waitForRunningParsers = Promise.resolve();
 	} );
 
 	describe( 'when toggle is enabled', () => {

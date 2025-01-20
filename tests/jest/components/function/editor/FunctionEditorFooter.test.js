@@ -8,29 +8,19 @@
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	{ waitFor } = require( '@testing-library/vue' ),
-	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
+	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' ),
 	FunctionEditorFooter = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorFooter.vue' );
 
 describe( 'FunctionEditorFooter', () => {
-
-	let getters,
-		actions;
+	let store;
 
 	beforeEach( () => {
-		getters = {
-			getUserLangZid: createGetterMock( 'Z1002' ),
-			getCurrentZObjectId: createGetterMock( 'Z0' ),
-			isCreateNewPage: createGetterMock( true )
-		};
-		actions = {
-			setError: jest.fn()
-		};
-		global.store.hotUpdate( {
-			actions: actions,
-			getters: getters
-		} );
+		store = useMainStore();
+		store.getUserLangZid = 'Z1002';
+		store.getCurrentZObjectId = 'Z0';
+		store.isCreateNewPage = true;
 	} );
 
 	it( 'renders without errors', () => {
@@ -51,10 +41,9 @@ describe( 'FunctionEditorFooter', () => {
 	} );
 
 	it( 'raises input function warnings if input has changed while editing and at least one test or implementation is connected', async () => {
-		getters.isCreateNewPage = createGetterMock( false );
-		getters.getConnectedTests = createGettersWithFunctionsMock( [ ] );
-		getters.getConnectedImplementations = createGettersWithFunctionsMock( [ 'Z444' ] );
-		global.store.hotUpdate( { getters: getters } );
+		store.isCreateNewPage = false;
+		store.getConnectedTests = createGettersWithFunctionsMock( [] );
+		store.getConnectedImplementations = createGettersWithFunctionsMock( [ 'Z444' ] );
 
 		const wrapper = shallowMount( FunctionEditorFooter, {
 			props: {
@@ -77,14 +66,13 @@ describe( 'FunctionEditorFooter', () => {
 			errorType: Constants.errorTypes.WARNING,
 			errorCode: Constants.errorCodes.FUNCTION_INPUT_CHANGED
 		};
-		expect( actions.setError ).toHaveBeenCalledWith( expect.anything(), errorPayload );
+		expect( store.setError ).toHaveBeenCalledWith( errorPayload );
 	} );
 
 	it( 'raises output function warnings if output has changed while editing and at least one test or implementation is connected', async () => {
-		getters.isCreateNewPage = createGetterMock( false );
-		getters.getConnectedTests = createGettersWithFunctionsMock( [ 'Z222' ] );
-		getters.getConnectedImplementations = createGettersWithFunctionsMock( [ 'Z444' ] );
-		global.store.hotUpdate( { getters: getters } );
+		store.isCreateNewPage = false;
+		store.getConnectedTests = createGettersWithFunctionsMock( [ 'Z222' ] );
+		store.getConnectedImplementations = createGettersWithFunctionsMock( [ 'Z444' ] );
 
 		const wrapper = shallowMount( FunctionEditorFooter, {
 			props: {
@@ -107,14 +95,13 @@ describe( 'FunctionEditorFooter', () => {
 			errorType: Constants.errorTypes.WARNING,
 			errorCode: Constants.errorCodes.FUNCTION_OUTPUT_CHANGED
 		};
-		expect( actions.setError ).toHaveBeenCalledWith( expect.anything(), errorPayload );
+		expect( store.setError ).toHaveBeenCalledWith( errorPayload );
 	} );
 
 	it( 'raises input + output function warnings if input and output have changed while editing and at least one test or implementation is connected', async () => {
-		getters.isCreateNewPage = createGetterMock( false );
-		getters.getConnectedTests = createGettersWithFunctionsMock( [ 'Z222' ] );
-		getters.getConnectedImplementations = createGettersWithFunctionsMock( [ ] );
-		global.store.hotUpdate( { getters: getters } );
+		store.isCreateNewPage = false;
+		store.getConnectedTests = createGettersWithFunctionsMock( [ 'Z222' ] );
+		store.getConnectedImplementations = createGettersWithFunctionsMock( [] );
 
 		const wrapper = shallowMount( FunctionEditorFooter, {
 			props: {
@@ -137,14 +124,13 @@ describe( 'FunctionEditorFooter', () => {
 			errorType: Constants.errorTypes.WARNING,
 			errorCode: Constants.errorCodes.FUNCTION_INPUT_OUTPUT_CHANGED
 		};
-		expect( actions.setError ).toHaveBeenCalledWith( expect.anything(), errorPayload );
+		expect( store.setError ).toHaveBeenCalledWith( errorPayload );
 	} );
 
 	it( 'does not raise function warnings if there are no connected tests and implementations', async () => {
-		getters.isCreateNewPage = createGetterMock( false );
-		getters.getConnectedTests = createGettersWithFunctionsMock( [] );
-		getters.getConnectedImplementations = createGettersWithFunctionsMock( [] );
-		global.store.hotUpdate( { getters: getters } );
+		store.isCreateNewPage = false;
+		store.getConnectedTests = createGettersWithFunctionsMock( [] );
+		store.getConnectedImplementations = createGettersWithFunctionsMock( [] );
 
 		const wrapper = shallowMount( FunctionEditorFooter, {
 			props: {
@@ -162,12 +148,11 @@ describe( 'FunctionEditorFooter', () => {
 		const publishWidget = wrapper.findComponent( { name: 'wl-publish-widget' } );
 		publishWidget.vm.$emit( 'start-publish' );
 
-		expect( actions.setError ).not.toHaveBeenCalled();
+		expect( store.setError ).not.toHaveBeenCalled();
 	} );
 
-	it( 'does not raise function warnings if this is  new page', async () => {
-		getters.isCreateNewPage = createGetterMock( true );
-		global.store.hotUpdate( { getters: getters } );
+	it( 'does not raise function warnings if this is a new page', async () => {
+		store.isCreateNewPage = true;
 
 		const wrapper = shallowMount( FunctionEditorFooter, {
 			props: {
@@ -185,14 +170,13 @@ describe( 'FunctionEditorFooter', () => {
 		const publishWidget = wrapper.findComponent( { name: 'wl-publish-widget' } );
 		publishWidget.vm.$emit( 'start-publish' );
 
-		expect( actions.setError ).not.toHaveBeenCalled();
+		expect( store.setError ).not.toHaveBeenCalled();
 	} );
 
 	it( 'calls the submitInteraction method when isFunctionDirty is set to true', async () => {
-		getters.isCreateNewPage = createGetterMock( false );
-		getters.getConnectedTests = createGettersWithFunctionsMock( [] );
-		getters.getConnectedImplementations = createGettersWithFunctionsMock( [] );
-		global.store.hotUpdate( { getters: getters } );
+		store.isCreateNewPage = false;
+		store.getConnectedTests = createGettersWithFunctionsMock( [] );
+		store.getConnectedImplementations = createGettersWithFunctionsMock( [] );
 
 		const wrapper = shallowMount( FunctionEditorFooter, {
 			props: {

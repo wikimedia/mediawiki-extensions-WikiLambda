@@ -58,10 +58,11 @@ const { CdxMessage } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const FunctionViewerDetailsTable = require( './FunctionViewerDetailsTable.vue' ),
 	Constants = require( '../../../Constants.js' ),
+	useMainStore = require( '../../../store/index.js' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ),
 	errorUtils = require( '../../../mixins/errorUtils.js' ),
 	utilsMixins = require( '../../../mixins/utilsMixins.js' ),
-	{ mapGetters, mapActions } = require( 'vuex' );
+	{ mapState, mapActions } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-viewer-details',
@@ -92,7 +93,7 @@ module.exports = exports = defineComponent( {
 			currentToast: null
 		};
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getConnectedImplementations',
 		'getConnectedTests',
 		'getCurrentZObjectId',
@@ -464,7 +465,7 @@ module.exports = exports = defineComponent( {
 			return this.implementationsFetched && this.testsFetched;
 		}
 	} ),
-	methods: Object.assign( mapActions( [
+	methods: Object.assign( {}, mapActions( useMainStore, [
 		'connectImplementations',
 		'connectTests',
 		'disconnectImplementations',

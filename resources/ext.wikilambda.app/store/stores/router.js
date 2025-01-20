@@ -1,5 +1,5 @@
 /*!
- * WikiLambda Vue editor: Application store router
+ * WikiLambda Vue editor: Application store router (Pinia)
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -14,6 +14,7 @@ module.exports = {
 		currentView: Constants.VIEWS.Z_OBJECT_VIEWER,
 		queryParams: mw.Uri().query
 	},
+
 	getters: {
 		getCurrentView: function ( state ) {
 			return state.currentView;
@@ -26,25 +27,16 @@ module.exports = {
 			return editingData.viewmode;
 		}
 	},
-	mutations: {
-		CHANGE_CURRENT_VIEW: function ( state, view ) {
-			state.currentView = view;
-		},
-		CHANGE_QUERY_PARAMS: function ( state, queryParams ) {
-			state.queryParams = queryParams;
-		}
-	},
+
 	actions: {
 		/**
-		 * Changes the current View and Query params and updates the history states.
-		 * This method is used to navigate between pages within the UI.
+		 * Changes the current View and Query params and updates the history state.
 		 *
-		 * @param {Object} context
 		 * @param {Object} payload
-		 * @param {string} payload.to
-		 * @param {Object} payload.params
+		 * @param {string} payload.to - Target view.
+		 * @param {Object} [payload.params] - Additional query parameters.
 		 */
-		navigate: function ( context, payload ) {
+		navigate: function ( payload ) {
 			/**
 			 * Whether the given URI path string is a known view in Constants.VIEWS
 			 *
@@ -60,38 +52,34 @@ module.exports = {
 				} );
 				return !viewExist;
 			};
-
 			if ( viewIsInvalid( payload.to ) ) {
 				return;
 			}
 
-			context.commit( 'CHANGE_CURRENT_VIEW', payload.to );
+			this.currentView = payload.to;
+
 			if ( payload.params ) {
-				const queryParamsObject = Object.assign( {}, context.state.queryParams, payload.params );
-				context.commit( 'CHANGE_QUERY_PARAMS', queryParamsObject );
+				this.queryParams = Object.assign( {}, this.queryParams, payload.params );
 			}
 
-			const path = context.state.currentPath;
-			const query = Object.assign( {}, context.state.queryParams, { view: context.state.currentView } );
-			const newUriString = path + '?' + $.param( query );
+			const path = this.currentPath;
+			const query = Object.assign( {}, this.queryParams, { view: this.currentView } );
+			const newUriString = `${ path }?${ $.param( query ) }`;
 
 			window.history.pushState( { path, query }, null, newUriString );
 		},
+
 		/**
-		 * Evaluate the Uri path to evaluate what View should be displayed.
-		 *
-		 * @param {Object} context
+		 * Evaluate the Uri path and determine what View should be displayed.
 		 */
-		evaluateUri: function ( context ) {
+		evaluateUri: function () {
 			const uri = mw.Uri();
 
-			// Set title of mw query if url is in /wiki/{{ title }} format
+			// Set title if URL is in `/wiki/{{ title }}` format
 			if ( !uri.query.title && uri.path.includes( '/wiki' ) ) {
 				const lastPathIndex = uri.path.lastIndexOf( '/' );
 				uri.query.title = uri.path.slice( lastPathIndex + 1 );
 			}
-
-			let currentView;
 
 			/**
 			 * Whether the URL is to Special Create ZObject page
@@ -99,20 +87,17 @@ module.exports = {
 			 * @param {Object} uriQuery The contextual mw.Uri's query sub-object
 			 * @return {boolean}
 			 */
-			const isCreatePath = function ( uriQuery ) {
-				return ( uriQuery.title === Constants.PATHS.CREATE_OBJECT_TITLE );
-			};
+			const isCreatePath = ( uriQuery ) => uriQuery.title === Constants.PATHS.CREATE_OBJECT_TITLE;
 
 			// 1. if Special page Create
 			if ( isCreatePath( uri.query ) ) {
 				// I we have zid=Z8 in the uri, render function edit view
 				// Else, render default view
-				currentView = ( uri.query.zid === Constants.Z_FUNCTION ) ?
-					Constants.VIEWS.FUNCTION_EDITOR :
-					Constants.VIEWS.DEFAULT;
-
-				// Change view and end?
-				context.dispatch( 'changeCurrentView', currentView );
+				this.changeCurrentView(
+					uri.query.zid === Constants.Z_FUNCTION ?
+						Constants.VIEWS.FUNCTION_EDITOR :
+						Constants.VIEWS.DEFAULT
+				);
 				return;
 			}
 
@@ -122,14 +107,11 @@ module.exports = {
 			 * @param {Object} uriQuery The contextual mw.Uri's query sub-object
 			 * @return {boolean}
 			 */
-			const isEvaluateFunctionCallPath = function ( uriQuery ) {
-				return ( uriQuery.title === Constants.PATHS.RUN_FUNCTION_TITLE );
-			};
+			const isEvaluateFunctionCallPath = ( uriQuery ) => uriQuery.title === Constants.PATHS.RUN_FUNCTION_TITLE;
 
 			// 2. if Special page Run Function
 			if ( isEvaluateFunctionCallPath( uri.query ) ) {
-				currentView = Constants.VIEWS.FUNCTION_EVALUATOR;
-				context.dispatch( 'changeCurrentView', currentView );
+				this.changeCurrentView( Constants.VIEWS.FUNCTION_EVALUATOR );
 				return;
 			}
 
@@ -139,39 +121,38 @@ module.exports = {
 			 * @param {Object} objectContext The ZObject context in which we're operating
 			 * @return {boolean}
 			 */
-			const isFunctionRootObject = function ( objectContext ) {
-				return objectContext.getters.getCurrentZObjectType === Constants.Z_FUNCTION;
-			};
+			const isFunctionRootObject = () => this.getCurrentZObjectType === Constants.Z_FUNCTION;
 
-			if ( isFunctionRootObject( context ) ) {
-				currentView = context.getters.getViewMode ?
-					Constants.VIEWS.FUNCTION_VIEWER :
-					Constants.VIEWS.FUNCTION_EDITOR;
-
-				// Change view and end?
-				context.dispatch( 'changeCurrentView', currentView );
+			// 3. if Function page (edit or view)
+			if ( isFunctionRootObject() ) {
+				this.changeCurrentView(
+					this.getViewMode ?
+						Constants.VIEWS.FUNCTION_VIEWER :
+						Constants.VIEWS.FUNCTION_EDITOR
+				);
 				return;
 			}
 
-			currentView = Constants.VIEWS.DEFAULT;
-			context.dispatch( 'changeCurrentView', currentView );
+			// 4. Default view
+			this.changeCurrentView( Constants.VIEWS.DEFAULT );
 		},
+
 		/**
 		 * Handle the changes of a view and replace the history state.
-		 * This method is usually used when the change of view is made dynamically.
 		 *
-		 * @param {Object} context
-		 * @param {string} view
+		 * @param {string} view - The new view to set.
 		 */
-		changeCurrentView: function ( context, view ) {
-			context.commit( 'CHANGE_CURRENT_VIEW', view );
+		changeCurrentView: function ( view ) {
+			this.currentView = view;
+
 			const uri = mw.Uri();
+
 			// should only replace history state if path query view is set and is different from new view
 			if ( uri.query.view && uri.query.view !== view ) {
-
 				const path = uri.path;
-				const query = Object.assign( uri.query, { view: view } );
-				const newUriString = path + '?' + $.param( query );
+				const query = Object.assign( {}, uri.query, { view: view } );
+				const newUriString = `${ path }?${ $.param( query ) }`;
+
 				window.history.replaceState( { path, query }, null, newUriString );
 			}
 		}

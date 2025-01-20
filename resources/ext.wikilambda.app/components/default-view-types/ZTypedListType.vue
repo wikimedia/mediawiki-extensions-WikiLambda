@@ -19,7 +19,8 @@
 const { defineComponent } = require( 'vue' );
 const typeUtils = require( '../../mixins/typeUtils.js' ),
 	Constants = require( '../../Constants.js' ),
-	{ mapGetters, mapActions } = require( 'vuex' );
+	useMainStore = require( '../../store/index.js' ),
+	{ mapState, mapActions } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-typed-list-type',
@@ -57,12 +58,12 @@ module.exports = exports = defineComponent( {
 			hasError: false
 		};
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getZObjectTypeByRowId'
 	] ) ),
-	methods: Object.assign( mapActions( [
-		'setListItemsForRemoval',
-		'clearListItemsForRemoval',
+	methods: Object.assign( {}, mapActions( useMainStore, [
+		'setInvalidListItems',
+		'clearInvalidListItems',
 		'setError',
 		'clearErrors'
 	] ), {
@@ -100,7 +101,7 @@ module.exports = exports = defineComponent( {
 			if ( this.hasError && isZObject ) {
 				this.hasError = false;
 				this.clearErrors( 0 );
-				this.clearListItemsForRemoval();
+				this.clearInvalidListItems();
 				return;
 			}
 
@@ -117,7 +118,7 @@ module.exports = exports = defineComponent( {
 					} );
 				}
 
-				this.setListItemsForRemoval( {
+				this.setInvalidListItems( {
 					parentRowId: this.parentRowId,
 					listItems: this.getListItemsForRemoval( newListItemType )
 				} );

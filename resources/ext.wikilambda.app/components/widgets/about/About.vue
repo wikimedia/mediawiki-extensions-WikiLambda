@@ -93,13 +93,14 @@
 const { CdxAccordion, CdxButton, CdxIcon } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
+	useMainStore = require( '../../../store/index.js' ),
 	pageTitleUtils = require( '../../../mixins/pageTitleUtils.js' ),
 	AboutLanguageBlock = require( './AboutLanguageBlock.vue' ),
 	AboutLanguagesDialog = require( './AboutLanguagesDialog.vue' ),
 	PublishDialog = require( '../publish/PublishDialog.vue' ),
 	WidgetBase = require( '../../base/WidgetBase.vue' ),
 	icons = require( '../../../../lib/icons.json' ),
-	{ mapActions, mapGetters } = require( 'vuex' );
+	{ mapActions, mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-about-widget',
@@ -131,7 +132,7 @@ module.exports = exports = defineComponent( {
 			showPublishDialog: false
 		};
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getFallbackLanguageZids',
 		'getLabelData',
 		'getMultilingualDataLanguages',
@@ -232,7 +233,7 @@ module.exports = exports = defineComponent( {
 				.map( ( lang ) => this.getMultilingualDataForLanguage( lang.zid ) );
 		}
 	} ),
-	methods: Object.assign( mapActions( [
+	methods: Object.assign( {}, mapActions( useMainStore, [
 		'changeType',
 		'removeItemFromTypedList',
 		'resetMultilingualData',

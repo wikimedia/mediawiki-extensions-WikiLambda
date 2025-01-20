@@ -6,22 +6,29 @@
  */
 'use strict';
 
-const listItemsModule = require( '../../../../resources/ext.wikilambda.app/store/modules/listItems.js' );
+const { setActivePinia, createPinia } = require( 'pinia' );
+const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 
-describe( 'listItems Vuex module', () => {
+describe( 'ListItems Pinia store', () => {
+	let store;
+
+	beforeEach( () => {
+		setActivePinia( createPinia() );
+		store = useMainStore();
+		store.invalidListItems = {};
+	} );
 
 	describe( 'Getters', () => {
 		describe( 'hasInvalidListItems', () => {
 			it( 'returns false when there are no items marked as invalid', () => {
-				state.invalidListItems = {};
-				expect( listItemsModule.getters.hasInvalidListItems( state ) ).toBe( false );
+				expect( store.hasInvalidListItems ).toBe( false );
 			} );
 			it( 'returns true when there are items marked as invalid', () => {
-				state.invalidListItems = {
+				store.invalidListItems = {
 					1: [ 2, 3 ],
 					4: [ 5, 6 ]
 				};
-				expect( listItemsModule.getters.hasInvalidListItems( state ) ).toBe( true );
+				expect( store.hasInvalidListItems ).toBe( true );
 			} );
 		} );
 
@@ -31,59 +38,32 @@ describe( 'listItems Vuex module', () => {
 					1: [ 2, 3 ],
 					4: [ 5, 6 ]
 				};
-				state.invalidListItems = items;
-				expect( listItemsModule.getters.getInvalidListItems( state ) ).toEqual( items );
-			} );
-		} );
-	} );
-
-	describe( 'Mutations', () => {
-		describe( 'setInvalidListItems', () => {
-			it( 'sets invalid items for removal', () => {
-				state.invalidListItems = {};
-				const payload = {
-					parentRowId: 1,
-					listItems: [ 2, 3 ]
-				};
-				listItemsModule.mutations.setInvalidListItems( state, payload );
-				expect( state.invalidListItems ).toEqual( { 1: [ 2, 3 ] } );
-			} );
-		} );
-
-		describe( 'clearInvalidListItems', () => {
-			it( 'clears invalid items for removal', () => {
-				state.invalidListItems = {
-					1: [ 2, 3 ],
-					4: [ 5, 6 ]
-				};
-				listItemsModule.mutations.clearInvalidListItems( state );
-				expect( state.invalidListItems ).toEqual( {} );
+				store.invalidListItems = items;
+				expect( store.getInvalidListItems ).toEqual( items );
 			} );
 		} );
 	} );
 
 	describe( 'Actions', () => {
-		const context = {};
-
-		beforeEach( () => {
-			context.commit = jest.fn();
-		} );
-
-		describe( 'setListItemsForRemoval', () => {
-			it( 'sets items for removal', () => {
+		describe( 'setInvalidListItems', () => {
+			it( 'sets invalid items for removal', () => {
 				const payload = {
 					parentRowId: 1,
 					listItems: [ 2, 3 ]
 				};
-				listItemsModule.actions.setListItemsForRemoval( context, payload );
-				expect( context.commit ).toHaveBeenCalledWith( 'setInvalidListItems', payload );
+				store.setInvalidListItems( payload );
+				expect( store.invalidListItems ).toEqual( { 1: [ 2, 3 ] } );
 			} );
 		} );
 
-		describe( 'clearListItemsForRemoval', () => {
-			it( 'clears items for removal', () => {
-				listItemsModule.actions.clearListItemsForRemoval( context );
-				expect( context.commit ).toHaveBeenCalledWith( 'clearInvalidListItems' );
+		describe( 'clearInvalidListItems', () => {
+			it( 'clears invalid items for removal', () => {
+				store.invalidListItems = {
+					1: [ 2, 3 ],
+					4: [ 5, 6 ]
+				};
+				store.clearInvalidListItems();
+				expect( store.invalidListItems ).toEqual( {} );
 			} );
 		} );
 	} );

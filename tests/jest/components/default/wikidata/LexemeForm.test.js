@@ -7,8 +7,9 @@
 'use strict';
 
 const { shallowMount } = require( '@vue/test-utils' ),
-	{ createGetterMock, createGettersWithFunctionsMock } = require( '../../../helpers/getterHelpers.js' ),
+	{ createGettersWithFunctionsMock } = require( '../../../helpers/getterHelpers.js' ),
 	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
+	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' ),
 	WikidataLexemeForm = require( '../../../../../resources/ext.wikilambda.app/components/default-view-types/wikidata/LexemeForm.vue' );
 
 const dataIcons = () => ( {
@@ -30,18 +31,13 @@ const lexemeFormData = {
 };
 
 describe( 'WikidataLexemeForm', () => {
-	let getters, actions;
+	let store;
 	beforeEach( () => {
-		getters = {
-			getLexemeFormData: createGettersWithFunctionsMock(),
-			getLexemeFormIdRow: createGettersWithFunctionsMock( { id: 1 } ),
-			getZStringTerminalValue: createGettersWithFunctionsMock( lexemeFormId ),
-			getUserLangCode: createGetterMock( 'en' )
-		};
-		actions = {
-			fetchLexemes: jest.fn()
-		};
-		global.store.hotUpdate( { actions, getters } );
+		store = useMainStore();
+		store.getLexemeFormData = createGettersWithFunctionsMock();
+		store.getLexemeFormIdRow = createGettersWithFunctionsMock( { id: 1 } );
+		store.getZStringTerminalValue = createGettersWithFunctionsMock( lexemeFormId );
+		store.getUserLangCode = 'en';
 	} );
 
 	describe( 'in view mode', () => {
@@ -68,8 +64,8 @@ describe( 'WikidataLexemeForm', () => {
 		} );
 
 		it( 'renders the lexeme form external link if data is available', () => {
-			getters.getLexemeFormData = createGettersWithFunctionsMock( lexemeFormData );
-			global.store.hotUpdate( { getters } );
+			store.getLexemeFormData = createGettersWithFunctionsMock( lexemeFormData );
+
 			const wrapper = shallowMount( WikidataLexemeForm, {
 				props: {
 					edit: false,
@@ -111,8 +107,6 @@ describe( 'WikidataLexemeForm', () => {
 		} );
 
 		it( 'renders blank wikidata entity selector', () => {
-			getters.getZStringTerminalValue = createGettersWithFunctionsMock();
-			global.store.hotUpdate( { getters } );
 			const wrapper = shallowMount( WikidataLexemeForm, {
 				props: {
 					edit: true,
@@ -137,8 +131,8 @@ describe( 'WikidataLexemeForm', () => {
 		} );
 
 		it( 'initializes wikidata entity selector', async () => {
-			getters.getLexemeFormData = createGettersWithFunctionsMock( lexemeFormData );
-			global.store.hotUpdate( { getters } );
+			store.getLexemeFormData = createGettersWithFunctionsMock( lexemeFormData );
+
 			const wrapper = shallowMount( WikidataLexemeForm, {
 				props: {
 					edit: true,
@@ -152,7 +146,7 @@ describe( 'WikidataLexemeForm', () => {
 			expect( lookup.exists() ).toBe( true );
 			expect( lookup.vm.entityId ).toBe( lexemeFormId );
 			expect( lookup.vm.entityLabel ).toBe( lexemeFormLabel );
-			expect( actions.fetchLexemes ).toHaveBeenCalledWith( expect.anything(), { ids: [ lexemeId ] } );
+			expect( store.fetchLexemes ).toHaveBeenCalledWith( { ids: [ lexemeId ] } );
 		} );
 
 		it( 'initializes wikidata entity selector input value with delayed fetch response', async () => {
@@ -168,13 +162,13 @@ describe( 'WikidataLexemeForm', () => {
 			expect( lookup.vm.entityId ).toBe( lexemeFormId );
 			expect( lookup.vm.entityLabel ).toBe( lexemeFormId );
 
-			getters.getLexemeFormData = createGettersWithFunctionsMock( lexemeFormData );
-			global.store.hotUpdate( { getters } );
+			store.getLexemeFormData = createGettersWithFunctionsMock( lexemeFormData );
+
 			await wrapper.vm.$nextTick();
 
 			expect( lookup.vm.entityId ).toBe( lexemeFormId );
 			expect( lookup.vm.entityLabel ).toBe( lexemeFormLabel );
-			expect( actions.fetchLexemes ).toHaveBeenCalledWith( expect.anything(), { ids: [ lexemeId ] } );
+			expect( store.fetchLexemes ).toHaveBeenCalledWith( { ids: [ lexemeId ] } );
 		} );
 
 		it( 'sets lexeme form reference ID when selecting option from the menu', async () => {

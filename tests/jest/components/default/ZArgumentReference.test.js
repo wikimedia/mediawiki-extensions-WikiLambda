@@ -10,27 +10,25 @@ const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
-	ZArgumentReference = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZArgumentReference.vue' );
+	ZArgumentReference = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZArgumentReference.vue' ),
+	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 
 describe( 'ZArgumentReference', () => {
-
-	let getters;
+	let store;
 
 	beforeEach( () => {
-		getters = {
-			getZImplementationFunctionZid: createGettersWithFunctionsMock( 'Z10001' ),
-			getLabelData: createLabelDataMock(),
-			getZObjectKeyByRowId: createGettersWithFunctionsMock( 'Z802K1' ),
-			getZStringTerminalValue: createGettersWithFunctionsMock( 'Z10001K1' ),
-			getRowByKeyPath: createGettersWithFunctionsMock( { id: 2 } ),
-			getInputsOfFunctionZid: createGettersWithFunctionsMock( [
-				{ Z17K2: 'Z10001K1' },
-				{ Z17K2: 'Z10001K2' },
-				{ Z17K2: 'Z10001K3' }
-			] ),
-			getZPersistentContentRowId: createGettersWithFunctionsMock( 1 )
-		};
-		global.store.hotUpdate( { getters: getters } );
+		store = useMainStore();
+		store.getZImplementationFunctionZid = createGettersWithFunctionsMock( 'Z10001' );
+		store.getLabelData = createLabelDataMock();
+		store.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z802K1' );
+		store.getZStringTerminalValue = createGettersWithFunctionsMock( 'Z10001K1' );
+		store.getRowByKeyPath = createGettersWithFunctionsMock( { id: 2 } );
+		store.getInputsOfFunctionZid = createGettersWithFunctionsMock( [
+			{ Z17K2: 'Z10001K1' },
+			{ Z17K2: 'Z10001K2' },
+			{ Z17K2: 'Z10001K3' }
+		] );
+		store.getZPersistentContentRowId = createGettersWithFunctionsMock( 1 );
 	} );
 
 	describe( 'in view mode', () => {
@@ -45,9 +43,8 @@ describe( 'ZArgumentReference', () => {
 		} );
 
 		it( 'displays empty string when nothing selected', () => {
-			getters.getRowByKeyPath = createGettersWithFunctionsMock( undefined );
-			getters.getZStringTerminalValue = createGettersWithFunctionsMock( undefined );
-			global.store.hotUpdate( { getters: getters } );
+			store.getRowByKeyPath = createGettersWithFunctionsMock( undefined );
+			store.getZStringTerminalValue = createGettersWithFunctionsMock( undefined );
 
 			const wrapper = shallowMount( ZArgumentReference, {
 				props: {
@@ -58,8 +55,7 @@ describe( 'ZArgumentReference', () => {
 		} );
 
 		it( 'displays the argument key when it has no label', () => {
-			getters.getZStringTerminalValue = createGettersWithFunctionsMock( 'Z10001K1' );
-			global.store.hotUpdate( { getters: getters } );
+			store.getZStringTerminalValue = createGettersWithFunctionsMock( 'Z10001K1' );
 
 			const wrapper = shallowMount( ZArgumentReference, {
 				props: {
@@ -70,8 +66,7 @@ describe( 'ZArgumentReference', () => {
 		} );
 
 		it( 'displays the argument label when available', () => {
-			getters.getLabelData = createLabelDataMock( { Z10001K1: 'input' } );
-			global.store.hotUpdate( { getters: getters } );
+			store.getLabelData = createLabelDataMock( { Z10001K1: 'input' } );
 
 			const wrapper = shallowMount( ZArgumentReference, {
 				props: {
@@ -94,11 +89,10 @@ describe( 'ZArgumentReference', () => {
 		} );
 
 		it( 'renders the selector with all possible choices', () => {
-			getters.getLabelData = createLabelDataMock( {
+			store.getLabelData = createLabelDataMock( {
 				Z10001K1: 'first',
 				Z10001K2: 'second'
 			} );
-			global.store.hotUpdate( { getters: getters } );
 
 			const wrapper = shallowMount( ZArgumentReference, {
 				props: {
@@ -119,9 +113,8 @@ describe( 'ZArgumentReference', () => {
 		} );
 
 		it( 'renders the selector with empty value set', () => {
-			getters.getRowByKeyPath = createGettersWithFunctionsMock( undefined );
-			getters.getZStringTerminalValue = createGettersWithFunctionsMock( undefined );
-			global.store.hotUpdate( { getters: getters } );
+			store.getRowByKeyPath = createGettersWithFunctionsMock( undefined );
+			store.getZStringTerminalValue = createGettersWithFunctionsMock( undefined );
 
 			const wrapper = shallowMount( ZArgumentReference, {
 				props: {
@@ -160,8 +153,7 @@ describe( 'ZArgumentReference', () => {
 		} );
 
 		it( 'selects a new value when the component used for Z18K1 key', () => {
-			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z18K1' );
-			global.store.hotUpdate( { getters: getters } );
+			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z18K1' );
 
 			const wrapper = shallowMount( ZArgumentReference, {
 				props: {

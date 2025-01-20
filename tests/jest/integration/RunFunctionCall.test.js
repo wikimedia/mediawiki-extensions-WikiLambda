@@ -12,7 +12,6 @@ const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
 	{ within } = require( '@testing-library/dom' ),
 	{ lookupSearchAndSelect } = require( './helpers/interactionHelpers.js' ),
 	{ runSetup, runTeardown } = require( './helpers/runFunctionTestHelpers.js' ),
-	store = require( '../../../resources/ext.wikilambda.app/store/index.js' ),
 	App = require( '../../../resources/ext.wikilambda.app/components/App.vue' ),
 	expectedFunctionCallPostedToApi = require( './objects/expectedFunctionCallPostedToApi.js' );
 
@@ -30,7 +29,7 @@ describe( 'WikiLambda frontend, running a function on Run Function Special page'
 
 	it( 'allows choosing a function and calling it', async () => {
 		const { findByRole, findByText, findByTestId } =
-			render( App, { global: { plugins: [ store ] } } );
+			render( App );
 
 		// ACT: Select a function
 		const functionSelectorBlock = await findByTestId( 'function-evaluator-call' );

@@ -84,11 +84,12 @@
 const { CdxDialog, CdxMessage, CdxTextInput } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
+	useMainStore = require( '../../store/index.js' ),
 	ZObjectKeyValueSet = require( './ZObjectKeyValueSet.vue' ),
 	errorUtils = require( '../../mixins/errorUtils.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ).methods,
 	{ getValueFromCanonicalZMap, hybridToCanonical } = require( '../../mixins/schemata.js' ).methods,
-	{ mapActions, mapGetters } = require( 'vuex' );
+	{ mapActions, mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-object-string-renderer',
@@ -135,7 +136,7 @@ module.exports = exports = defineComponent( {
 			pendingPromises: []
 		};
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'createObjectByType',
 		'getCurrentView',
 		'getLabelData',
@@ -248,7 +249,7 @@ module.exports = exports = defineComponent( {
 				], this.rendererZid ) );
 		}
 	} ),
-	methods: Object.assign( mapActions( [
+	methods: Object.assign( {}, mapActions( useMainStore, [
 		'getTestResults',
 		'runRendererTest',
 		'runRenderer',

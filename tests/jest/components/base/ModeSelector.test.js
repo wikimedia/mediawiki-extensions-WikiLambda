@@ -12,6 +12,7 @@ const { waitFor } = require( '@testing-library/vue' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
+	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' ),
 	ModeSelector = require( '../../../../resources/ext.wikilambda.app/components/base/ModeSelector.vue' );
 
 const mockLabels = {
@@ -25,22 +26,18 @@ const mockLabels = {
 };
 
 describe( 'ModeSelector', () => {
-	let getters;
+	let store;
 
 	beforeEach( () => {
-		getters = {
-			getLabelData: createLabelDataMock( mockLabels ),
-			getParentRowId: createGettersWithFunctionsMock( 1 ),
-			getChildrenByParentRowId: createGettersWithFunctionsMock( [] ),
-			getZObjectTypeByRowId: createGettersWithFunctionsMock( Constants.Z_REFERENCE ),
-			getZObjectKeyByRowId: createGettersWithFunctionsMock( Constants.Z_OBJECT_TYPE ),
-			isCustomEnum: createGettersWithFunctionsMock( false ),
-			isInsideComposition: createGettersWithFunctionsMock( false ),
-			isWikidataFetch: createGettersWithFunctionsMock( false )
-		};
-		global.store.hotUpdate( {
-			getters: getters
-		} );
+		store = useMainStore();
+		store.getLabelData = createLabelDataMock( mockLabels );
+		store.getParentRowId = createGettersWithFunctionsMock( 1 );
+		store.getChildrenByParentRowId = createGettersWithFunctionsMock( [] );
+		store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
+		store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_OBJECT_TYPE );
+		store.isCustomEnum = createGettersWithFunctionsMock( false );
+		store.isInsideComposition = createGettersWithFunctionsMock( false );
+		store.isWikidataFetch = createGettersWithFunctionsMock( false );
 	} );
 
 	describe( 'basic rendering', () => {
@@ -86,9 +83,8 @@ describe( 'ModeSelector', () => {
 
 	describe( 'it displays the correct options in the selector dropdown', () => {
 		it( 'if a literal type is selected and its type is bound', () => {
-			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_MONOLINGUALSTRING_VALUE );
-			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_STRING );
-			global.store.hotUpdate( { getters: getters } );
+			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_MONOLINGUALSTRING_VALUE );
+			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_STRING );
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
 					edit: true,
@@ -104,9 +100,8 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'if a literal type is selected and its type is unbound', () => {
-			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
-			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_STRING );
-			global.store.hotUpdate( { getters: getters } );
+			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
+			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_STRING );
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
 					edit: true,
@@ -122,10 +117,9 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'if the type selector is inside a composition', () => {
-			getters.isInsideComposition = createGettersWithFunctionsMock( true );
-			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_MONOLINGUALSTRING_VALUE );
-			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_STRING );
-			global.store.hotUpdate( { getters: getters } );
+			store.isInsideComposition = createGettersWithFunctionsMock( true );
+			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_MONOLINGUALSTRING_VALUE );
+			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_STRING );
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
 					edit: true,
@@ -141,9 +135,8 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'if the type selected is a resolver type, shows the bound type if there is one', () => {
-			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_MONOLINGUALSTRING_VALUE );
-			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
-			global.store.hotUpdate( { getters: getters } );
+			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_MONOLINGUALSTRING_VALUE );
+			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
 					edit: true,
@@ -158,10 +151,9 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'displays no resolvers or literal options for wikidata entities', () => {
-			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
-			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL );
-			getters.isWikidataEntity = createGettersWithFunctionsMock( true );
-			global.store.hotUpdate( { getters: getters } );
+			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
+			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL );
+			store.isWikidataEntity = createGettersWithFunctionsMock( true );
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
 					edit: true,
@@ -175,9 +167,8 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'displays function call and literal for wikidata references', () => {
-			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
-			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_REFERENCE_LEXEME );
-			global.store.hotUpdate( { getters: getters } );
+			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
+			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_REFERENCE_LEXEME );
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
 					edit: true,
@@ -191,10 +182,9 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'displays literals and resolvers for wikidata entity with unbound parent type', () => {
-			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
-			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL );
-			getters.isWikidataEntity = createGettersWithFunctionsMock( true );
-			global.store.hotUpdate( { getters: getters } );
+			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
+			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL );
+			store.isWikidataEntity = createGettersWithFunctionsMock( true );
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
 					edit: true,
@@ -209,9 +199,8 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'displays literals and resolvers for wikidata reference with unbound parent type', () => {
-			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
-			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_REFERENCE_LEXEME );
-			global.store.hotUpdate( { getters: getters } );
+			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
+			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_REFERENCE_LEXEME );
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
 					edit: true,
@@ -229,9 +218,8 @@ describe( 'ModeSelector', () => {
 
 	describe( 'set mode', () => {
 		it( 'does not emit set-type when selected is same as current', async () => {
-			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_MONOLINGUALSTRING_VALUE );
-			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
-			global.store.hotUpdate( { getters: getters } );
+			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_MONOLINGUALSTRING_VALUE );
+			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
 					edit: true,
@@ -244,9 +232,8 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'emit set-type when selected is same as current', async () => {
-			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_MONOLINGUALSTRING_VALUE );
-			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
-			global.store.hotUpdate( { getters: getters } );
+			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_MONOLINGUALSTRING_VALUE );
+			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
 					edit: true,
@@ -267,10 +254,9 @@ describe( 'ModeSelector', () => {
 				{ key: '2', id: 4 },
 				{ key: '3', id: 5 }
 			];
-			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( '2' );
-			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_MONOLINGUALSTRING );
-			getters.getChildrenByParentRowId = createGettersWithFunctionsMock( listWithThreeItems );
-			global.store.hotUpdate( { getters: getters } );
+			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( '2' );
+			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_MONOLINGUALSTRING );
+			store.getChildrenByParentRowId = createGettersWithFunctionsMock( listWithThreeItems );
 		} );
 
 		it( 'shows delete action as the last item', () => {
@@ -313,8 +299,7 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'shows disabled move-before for the first item', () => {
-			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( '1' );
-			global.store.hotUpdate( { getters: getters } );
+			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( '1' );
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
 					edit: true,
@@ -330,8 +315,7 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'shows disabled move-after for the last item', () => {
-			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( '3' );
-			global.store.hotUpdate( { getters: getters } );
+			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( '3' );
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
 					edit: true,

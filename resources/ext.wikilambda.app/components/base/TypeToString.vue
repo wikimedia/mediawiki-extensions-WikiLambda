@@ -37,7 +37,8 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
-	{ mapActions, mapGetters } = require( 'vuex' );
+	useMainStore = require( '../../store/index.js' ),
+	{ mapActions, mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-type-to-string',
@@ -47,7 +48,7 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getUserLangCode',
 		'getLabelData'
 	] ), {
@@ -119,7 +120,7 @@ module.exports = exports = defineComponent( {
 			return this.args.length > 0;
 		}
 	} ),
-	methods: Object.assign( mapActions( [
+	methods: Object.assign( {}, mapActions( useMainStore, [
 		'fetchZids'
 	] ), {
 		/**

@@ -9,53 +9,43 @@
 const { shallowMount } = require( '@vue/test-utils' ),
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
-	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
+	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' ),
 	About = require( '../../../../../resources/ext.wikilambda.app/components/widgets/about/About.vue' );
 
 describe( 'About', () => {
-	let getters,
-		actions;
+	let store;
 
 	beforeEach( () => {
+		store = useMainStore();
 		const mockLabels = {
 			Z1002: 'English',
 			Z1003: 'español',
 			Z1732: 'asturianu'
 		};
-		getters = {
-			getFallbackLanguageZids: createGetterMock( [ 'Z1003', 'Z1002' ] ),
-			getLabelData: createLabelDataMock( mockLabels ),
-			getMultilingualDataLanguages: createGettersWithFunctionsMock( [] ),
-			getRowByKeyPath: createGettersWithFunctionsMock( undefined ),
-			getUserLangZid: createGetterMock( 'Z1002' ),
-			getZArgumentLabelForLanguage: createGettersWithFunctionsMock( undefined ),
-			getZArgumentTypeRowId: createGettersWithFunctionsMock( undefined ),
-			getZArgumentKey: createGettersWithFunctionsMock( undefined ),
-			getZFunctionInputs: createGettersWithFunctionsMock( [] ),
-			getZFunctionInputLangs: createGettersWithFunctionsMock( [] ),
-			getZMonolingualTextValue: createGettersWithFunctionsMock( '' ),
-			getZMonolingualStringsetValues: createGettersWithFunctionsMock( [] ),
-			getZPersistentName: createGettersWithFunctionsMock( undefined ),
-			getZPersistentNameLangs: createGettersWithFunctionsMock( [] ),
-			getZPersistentDescription: createGettersWithFunctionsMock( undefined ),
-			getZPersistentDescriptionLangs: createGettersWithFunctionsMock( [] ),
-			getZPersistentAlias: createGettersWithFunctionsMock( undefined ),
-			getZPersistentAliasLangs: createGettersWithFunctionsMock( [] ),
-			isDirty: createGetterMock( false ),
-			isUserLoggedIn: createGetterMock( true ),
-			isCreateNewPage: createGetterMock( true ),
-			// pageTitle mixin getters:
-			getLanguageIsoCodeOfZLang: createGettersWithFunctionsMock( 'en' ),
-			getZReferenceTerminalValue: createGettersWithFunctionsMock( undefined )
-		};
-		actions = {
-			changeType: jest.fn(),
-			removeItemFromTypedList: jest.fn(),
-			resetMultilingualData: jest.fn(),
-			setDirty: jest.fn(),
-			setValueByRowIdAndPath: jest.fn()
-		};
-		global.store.hotUpdate( { getters: getters, actions: actions } );
+		store.getFallbackLanguageZids = [ 'Z1003', 'Z1002' ];
+		store.getLabelData = createLabelDataMock( mockLabels );
+		store.getMultilingualDataLanguages = createGettersWithFunctionsMock( [] );
+		store.getRowByKeyPath = createGettersWithFunctionsMock( undefined );
+		store.getUserLangZid = 'Z1002';
+		store.getZArgumentLabelForLanguage = createGettersWithFunctionsMock( undefined );
+		store.getZArgumentTypeRowId = createGettersWithFunctionsMock( undefined );
+		store.getZArgumentKey = createGettersWithFunctionsMock( undefined );
+		store.getZFunctionInputs = createGettersWithFunctionsMock( [] );
+		store.getZFunctionInputLangs = createGettersWithFunctionsMock( [] );
+		store.getZMonolingualTextValue = createGettersWithFunctionsMock( '' );
+		store.getZMonolingualStringsetValues = createGettersWithFunctionsMock( [] );
+		store.getZPersistentName = createGettersWithFunctionsMock( undefined );
+		store.getZPersistentNameLangs = createGettersWithFunctionsMock( [] );
+		store.getZPersistentDescription = createGettersWithFunctionsMock( undefined );
+		store.getZPersistentDescriptionLangs = createGettersWithFunctionsMock( [] );
+		store.getZPersistentAlias = createGettersWithFunctionsMock( undefined );
+		store.getZPersistentAliasLangs = createGettersWithFunctionsMock( [] );
+		store.isDirty = false;
+		store.isUserLoggedIn = true;
+		store.isCreateNewPage = true;
+		// pageTitle mixin getters:
+		store.getLanguageIsoCodeOfZLang = createGettersWithFunctionsMock( 'en' );
+		store.getZReferenceTerminalValue = createGettersWithFunctionsMock( undefined );
 	} );
 
 	describe( 'View page', () => {
@@ -69,11 +59,10 @@ describe( 'About', () => {
 
 		describe( 'Multilingual data available in the user language', () => {
 			beforeEach( () => {
-				getters.getMultilingualDataLanguages = createGettersWithFunctionsMock( [ 'Z1002' ] );
-				getters.getZPersistentNameLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
-				getters.getZPersistentName = createGettersWithFunctionsMock( { id: 10 } );
-				getters.getZMonolingualTextValue = createGettersWithFunctionsMock( 'Some name' );
-				global.store.hotUpdate( { getters: getters } );
+				store.getMultilingualDataLanguages = createGettersWithFunctionsMock( [ 'Z1002' ] );
+				store.getZPersistentNameLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
+				store.getZPersistentName = createGettersWithFunctionsMock( { id: 10 } );
+				store.getZMonolingualTextValue = createGettersWithFunctionsMock( 'Some name' );
 			} );
 
 			it( 'renders user language block: only name in user language', async () => {
@@ -103,13 +92,12 @@ describe( 'About', () => {
 
 			it( 'renders user language block: name, description and aliases in user language', async () => {
 				const aliases = [ { rowId: 31, value: 'alias one' }, { rowId: 32, value: 'alias two' } ];
-				getters.getZPersistentDescriptionLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
-				getters.getZPersistentDescription = createGettersWithFunctionsMock( { id: 20 } );
-				getters.getZPersistentAliasLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
-				getters.getZPersistentAlias = createGettersWithFunctionsMock( { id: 30 } );
-				getters.getZMonolingualTextValue = () => ( rowId ) => rowId === 10 ? 'Some name' : 'Some description';
-				getters.getZMonolingualStringsetValues = createGettersWithFunctionsMock( aliases );
-				global.store.hotUpdate( { getters: getters } );
+				store.getZPersistentDescriptionLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
+				store.getZPersistentDescription = createGettersWithFunctionsMock( { id: 20 } );
+				store.getZPersistentAliasLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
+				store.getZPersistentAlias = createGettersWithFunctionsMock( { id: 30 } );
+				store.getZMonolingualTextValue = ( rowId ) => rowId === 10 ? 'Some name' : 'Some description';
+				store.getZMonolingualStringsetValues = createGettersWithFunctionsMock( aliases );
 
 				const wrapper = shallowMount( About, {
 					props: { edit: false, type: 'Z6' },
@@ -147,13 +135,12 @@ describe( 'About', () => {
 		describe( 'Multilingual data available in fallback languages', () => {
 			beforeEach( () => {
 				// User language: Asturian, Fallback chain: [ Asturian, Spanish, English ]
-				getters.getFallbackLanguageZids = createGetterMock( [ 'Z1732', 'Z1003', 'Z1002' ] );
-				getters.getUserLangZid = createGetterMock( 'Z1732' );
-				getters.getMultilingualDataLanguages = createGettersWithFunctionsMock( [ 'Z1002' ] );
-				getters.getZPersistentNameLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
-				getters.getZPersistentName = () => ( lang ) => lang === 'Z1002' ? { id: 10 } : undefined;
-				getters.getZMonolingualTextValue = createGettersWithFunctionsMock( 'Some name' );
-				global.store.hotUpdate( { getters: getters } );
+				store.getFallbackLanguageZids = [ 'Z1732', 'Z1003', 'Z1002' ];
+				store.getUserLangZid = 'Z1732';
+				store.getMultilingualDataLanguages = createGettersWithFunctionsMock( [ 'Z1002' ] );
+				store.getZPersistentNameLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
+				store.getZPersistentName = ( lang ) => lang === 'Z1002' ? { id: 10 } : undefined;
+				store.getZMonolingualTextValue = createGettersWithFunctionsMock( 'Some name' );
 			} );
 
 			it( 'renders user language and fallback blocks', async () => {
@@ -200,29 +187,28 @@ describe( 'About', () => {
 
 			beforeEach( () => {
 				// User language: Asturian, Fallback chain: [ Asturian, Spanish, English ]
-				getters.getFallbackLanguageZids = createGetterMock( [ 'Z1732', 'Z1003', 'Z1002' ] );
-				getters.getUserLangZid = createGetterMock( 'Z1732' );
-				getters.getMultilingualDataLanguages = createGettersWithFunctionsMock( [ 'Z1002', 'Z1003' ] );
+				store.getFallbackLanguageZids = [ 'Z1732', 'Z1003', 'Z1002' ];
+				store.getUserLangZid = 'Z1732';
+				store.getMultilingualDataLanguages = createGettersWithFunctionsMock( [ 'Z1002', 'Z1003' ] );
 				// Name available in English
-				getters.getZPersistentNameLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
-				getters.getZPersistentName = () => ( lang ) => lang === 'Z1002' ? { id: 10 } : undefined;
+				store.getZPersistentNameLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
+				store.getZPersistentName = ( lang ) => lang === 'Z1002' ? { id: 10 } : undefined;
 				// Input labels available in Spanish
-				getters.getZFunctionInputs = createGettersWithFunctionsMock( inputs );
-				getters.getZFunctionInputLangs = createGettersWithFunctionsMock( [ 'Z1003' ] );
-				getters.getZArgumentTypeRowId = () => ( rowId ) => rowId === 40 ? 41 : 51;
-				getters.getZArgumentKey = () => ( rowId ) => rowId === 40 ? 'K1' : 'K2';
-				getters.getZArgumentLabelForLanguage = () => ( rowId, lang ) => {
+				store.getZFunctionInputs = createGettersWithFunctionsMock( inputs );
+				store.getZFunctionInputLangs = createGettersWithFunctionsMock( [ 'Z1003' ] );
+				store.getZArgumentTypeRowId = ( rowId ) => rowId === 40 ? 41 : 51;
+				store.getZArgumentKey = ( rowId ) => rowId === 40 ? 'K1' : 'K2';
+				store.getZArgumentLabelForLanguage = ( rowId, lang ) => {
 					if ( lang === 'Z1003' ) {
 						return rowId === 40 ? { id: 42 } : { id: 52 };
 					}
 					return undefined;
 				};
 				// Name and input label values
-				getters.getZMonolingualTextValue = () => ( rowId ) => {
+				store.getZMonolingualTextValue = ( rowId ) => {
 					const values = { 10: 'Some name', 42: 'primero', 52: 'segundo' };
 					return values[ rowId ];
 				};
-				global.store.hotUpdate( { getters: getters } );
 			} );
 
 			it( 'renders user language and fallback blocks', async () => {
@@ -291,12 +277,11 @@ describe( 'About', () => {
 
 		describe( 'Quick edit', () => {
 			beforeEach( () => {
-				getters.getRowByKeyPath = createGettersWithFunctionsMock( { id: 1 } );
-				getters.getMultilingualDataLanguages = createGettersWithFunctionsMock( [ 'Z1002' ] );
-				getters.getZPersistentNameLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
-				getters.getZPersistentName = createGettersWithFunctionsMock( { id: 10 } );
-				getters.getZMonolingualTextValue = createGettersWithFunctionsMock( 'Some name' );
-				global.store.hotUpdate( { getters: getters } );
+				store.getRowByKeyPath = createGettersWithFunctionsMock( { id: 1 } );
+				store.getMultilingualDataLanguages = createGettersWithFunctionsMock( [ 'Z1002' ] );
+				store.getZPersistentNameLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
+				store.getZPersistentName = createGettersWithFunctionsMock( { id: 10 } );
+				store.getZMonolingualTextValue = createGettersWithFunctionsMock( 'Some name' );
 			} );
 
 			it( 'goes into edit mode when click accordion action button', async () => {
@@ -422,13 +407,12 @@ describe( 'About', () => {
 	describe( 'Edit page', () => {
 		beforeEach( () => {
 			// User language: Asturian, Fallback chain: [ Asturian, Spanish, English ]
-			getters.getFallbackLanguageZids = createGetterMock( [ 'Z1732', 'Z1003', 'Z1002' ] );
-			getters.getUserLangZid = createGetterMock( 'Z1732' );
-			getters.getMultilingualDataLanguages = createGettersWithFunctionsMock( [ 'Z1002' ] );
-			getters.getZPersistentNameLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
-			getters.getZPersistentName = () => ( lang ) => lang === 'Z1002' ? { id: 10 } : undefined;
-			getters.getZMonolingualTextValue = createGettersWithFunctionsMock( 'Some name' );
-			global.store.hotUpdate( { getters: getters } );
+			store.getFallbackLanguageZids = [ 'Z1732', 'Z1003', 'Z1002' ];
+			store.getUserLangZid = 'Z1732';
+			store.getMultilingualDataLanguages = createGettersWithFunctionsMock( [ 'Z1002' ] );
+			store.getZPersistentNameLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
+			store.getZPersistentName = jest.fn( ( lang ) => lang === 'Z1002' ? { id: 10 } : undefined );
+			store.getZMonolingualTextValue = createGettersWithFunctionsMock( 'Some name' );
 		} );
 
 		it( 'renders all blocks in edit mode', async () => {
@@ -491,11 +475,10 @@ describe( 'About', () => {
 
 	describe( 'Persist changes in the state', () => {
 		beforeEach( () => {
-			getters.getZFunctionInputs = createGettersWithFunctionsMock( [ { id: 40 } ] );
-			getters.getZArgumentKey = createGettersWithFunctionsMock( 'K1' );
-			getters.getZArgumentTypeRowId = createGettersWithFunctionsMock( 41 );
-			getters.getRowByKeyPath = createGettersWithFunctionsMock( { id: 1 } );
-			global.store.hotUpdate( { getters: getters } );
+			store.getZFunctionInputs = createGettersWithFunctionsMock( [ { id: 40 } ] );
+			store.getZArgumentKey = createGettersWithFunctionsMock( 'K1' );
+			store.getZArgumentTypeRowId = createGettersWithFunctionsMock( 41 );
+			store.getRowByKeyPath = createGettersWithFunctionsMock( { id: 1 } );
 		} );
 
 		it( 'calls no persist methods when fields have no changes', async () => {
@@ -565,8 +548,8 @@ describe( 'About', () => {
 
 				wrapper.vm.persistZMonolingualString( 1, undefined, 'New name', 'Z1002' );
 
-				expect( actions.setDirty ).toHaveBeenCalledWith( expect.anything(), true );
-				expect( actions.changeType ).toHaveBeenCalledWith( expect.anything(), {
+				expect( store.setDirty ).toHaveBeenCalledWith( true );
+				expect( store.changeType ).toHaveBeenCalledWith( {
 					id: 1,
 					type: 'Z11',
 					lang: 'Z1002',
@@ -584,8 +567,8 @@ describe( 'About', () => {
 
 				wrapper.vm.persistZMonolingualString( 1, 10, 'New name', 'Z1002' );
 
-				expect( actions.setDirty ).toHaveBeenCalledWith( expect.anything(), true );
-				expect( actions.setValueByRowIdAndPath ).toHaveBeenCalledWith( expect.anything(), {
+				expect( store.setDirty ).toHaveBeenCalledWith( true );
+				expect( store.setValueByRowIdAndPath ).toHaveBeenCalledWith( {
 					rowId: 10,
 					keyPath: [ 'Z11K2', 'Z6K1' ],
 					value: 'New name'
@@ -601,8 +584,8 @@ describe( 'About', () => {
 
 				wrapper.vm.persistZMonolingualString( 1, 10, '', 'Z1002' );
 
-				expect( actions.setDirty ).toHaveBeenCalledWith( expect.anything(), true );
-				expect( actions.removeItemFromTypedList ).toHaveBeenCalledWith( expect.anything(), {
+				expect( store.setDirty ).toHaveBeenCalledWith( true );
+				expect( store.removeItemFromTypedList ).toHaveBeenCalledWith( {
 					rowId: 10
 				} );
 			} );
@@ -629,9 +612,8 @@ describe( 'About', () => {
 			} );
 
 			it( 'sets new name value when there was one', async () => {
-				getters.getZPersistentNameLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
-				getters.getZPersistentName = createGettersWithFunctionsMock( { id: 10 } );
-				global.store.hotUpdate( { getters: getters } );
+				store.getZPersistentNameLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
+				store.getZPersistentName = createGettersWithFunctionsMock( { id: 10 } );
 
 				const wrapper = shallowMount( About, {
 					props: { edit: true, type: 'Z8' },
@@ -673,9 +655,8 @@ describe( 'About', () => {
 			} );
 
 			it( 'sets new description value when there was one', async () => {
-				getters.getZPersistentDescriptionLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
-				getters.getZPersistentDescription = createGettersWithFunctionsMock( { id: 10 } );
-				global.store.hotUpdate( { getters: getters } );
+				store.getZPersistentDescriptionLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
+				store.getZPersistentDescription = createGettersWithFunctionsMock( { id: 10 } );
 
 				const wrapper = shallowMount( About, {
 					props: { edit: true, type: 'Z8' },
@@ -723,9 +704,8 @@ describe( 'About', () => {
 			} );
 
 			it( 'sets new input label value when there was one', async () => {
-				getters.getZArgumentLabelForLanguage = createGettersWithFunctionsMock( { id: 42 } );
-				getters.getZMonolingualTextValue = createGettersWithFunctionsMock( 'Input label' );
-				global.store.hotUpdate( { getters: getters } );
+				store.getZArgumentLabelForLanguage = createGettersWithFunctionsMock( { id: 42 } );
+				store.getZMonolingualTextValue = createGettersWithFunctionsMock( 'Input label' );
 
 				const wrapper = shallowMount( About, {
 					props: { edit: true, type: 'Z8' },
@@ -772,8 +752,8 @@ describe( 'About', () => {
 				expect( wrapper.vm.persistAlias ).toHaveBeenCalledWith( undefined, aliases, 'Z1002' );
 				expect( wrapper.vm.persistZMonolingualStringset ).toHaveBeenCalledWith( 1, undefined, [ 'one' ], 'Z1002' );
 
-				expect( actions.setDirty ).toHaveBeenCalledWith( expect.anything(), true );
-				expect( actions.changeType ).toHaveBeenCalledWith( expect.anything(), {
+				expect( store.setDirty ).toHaveBeenCalledWith( true );
+				expect( store.changeType ).toHaveBeenCalledWith( {
 					id: 1,
 					type: 'Z31',
 					lang: 'Z1002',
@@ -784,10 +764,9 @@ describe( 'About', () => {
 
 			it( 'sets new aliases value for a language with existing values', async () => {
 				const aliases = [ { rowId: 31, value: 'one' } ];
-				getters.getZPersistentAliasLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
-				getters.getZPersistentAlias = createGettersWithFunctionsMock( { id: 30 } );
-				getters.getZMonolingualStringsetValues = createGettersWithFunctionsMock( aliases.slice() );
-				global.store.hotUpdate( { getters: getters } );
+				store.getZPersistentAliasLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
+				store.getZPersistentAlias = createGettersWithFunctionsMock( { id: 30 } );
+				store.getZMonolingualStringsetValues = createGettersWithFunctionsMock( aliases.slice() );
 
 				const wrapper = shallowMount( About, {
 					props: { edit: true, type: 'Z8' },
@@ -807,8 +786,8 @@ describe( 'About', () => {
 				expect( wrapper.vm.persistAlias ).toHaveBeenCalledWith( 30, aliases, 'Z1002' );
 				expect( wrapper.vm.persistZMonolingualStringset ).toHaveBeenCalledWith( 1, 30, [ 'one', 'two' ], 'Z1002' );
 
-				expect( actions.setDirty ).toHaveBeenCalledWith( expect.anything(), true );
-				expect( actions.setValueByRowIdAndPath ).toHaveBeenCalledWith( expect.anything(), {
+				expect( store.setDirty ).toHaveBeenCalledWith( true );
+				expect( store.setValueByRowIdAndPath ).toHaveBeenCalledWith( {
 					rowId: 30,
 					keyPath: [ 'Z31K2' ],
 					value: [ 'Z6', 'one', 'two' ]
@@ -817,10 +796,9 @@ describe( 'About', () => {
 
 			it( 'removes all aliases for a language', async () => {
 				const aliases = [ { rowId: 31, value: 'one' } ];
-				getters.getZPersistentAliasLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
-				getters.getZPersistentAlias = createGettersWithFunctionsMock( { id: 30 } );
-				getters.getZMonolingualStringsetValues = createGettersWithFunctionsMock( aliases );
-				global.store.hotUpdate( { getters: getters } );
+				store.getZPersistentAliasLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
+				store.getZPersistentAlias = createGettersWithFunctionsMock( { id: 30 } );
+				store.getZMonolingualStringsetValues = createGettersWithFunctionsMock( aliases );
 
 				const wrapper = shallowMount( About, {
 					props: { edit: true, type: 'Z8' },
@@ -839,8 +817,8 @@ describe( 'About', () => {
 				expect( wrapper.vm.persistAlias ).toHaveBeenCalledWith( 30, [], 'Z1002' );
 				expect( wrapper.vm.persistZMonolingualStringset ).toHaveBeenCalledWith( 1, 30, [], 'Z1002' );
 
-				expect( actions.setDirty ).toHaveBeenCalledWith( expect.anything(), true );
-				expect( actions.removeItemFromTypedList ).toHaveBeenCalledWith( expect.anything(), {
+				expect( store.setDirty ).toHaveBeenCalledWith( true );
+				expect( store.removeItemFromTypedList ).toHaveBeenCalledWith( {
 					rowId: 30
 				} );
 			} );
@@ -849,11 +827,10 @@ describe( 'About', () => {
 
 	describe( 'Add a new language', () => {
 		beforeEach( () => {
-			getters.getMultilingualDataLanguages = createGettersWithFunctionsMock( [ 'Z1002' ] );
-			getters.getZPersistentNameLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
-			getters.getZPersistentName = createGettersWithFunctionsMock( { id: 10 } );
-			getters.getZMonolingualTextValue = createGettersWithFunctionsMock( 'Some name' );
-			global.store.hotUpdate( { getters: getters } );
+			store.getMultilingualDataLanguages = createGettersWithFunctionsMock( [ 'Z1002' ] );
+			store.getZPersistentNameLangs = createGettersWithFunctionsMock( [ 'Z1002' ] );
+			store.getZPersistentName = createGettersWithFunctionsMock( { id: 10 } );
+			store.getZMonolingualTextValue = createGettersWithFunctionsMock( 'Some name' );
 		} );
 
 		it( 'adds a new language in read mode', async () => {

@@ -1,17 +1,21 @@
 /*!
- * WikiLambda unit test suite for the Vuex store
+ * WikiLambda unit test suite for the Pinia store
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
-
 'use strict';
 
-const Vuex = require( 'vuex' ),
-	store = require( '../../../resources/ext.wikilambda.app/store/index.js' );
+const { createPinia, setActivePinia } = require( 'pinia' );
+const useMainStore = require( '../../../resources/ext.wikilambda.app/store/index.js' );
 
-describe( 'Vuex store (index.js)', () => {
+describe( 'Pinia store (index.js)', () => {
+	beforeEach( () => {
+		setActivePinia( createPinia() );
+	} );
+
 	it( 'should export a function', () => {
-		expect( store ).toBeInstanceOf( Vuex.Store );
+		const store = useMainStore();
+		expect( store ).toBeDefined();
 	} );
 } );

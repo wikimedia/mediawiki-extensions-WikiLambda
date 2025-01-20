@@ -36,7 +36,8 @@
 const { CdxRadio } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
-	{ mapGetters } = require( 'vuex' );
+	useMainStore = require( '../../store/index.js' ),
+	{ mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-boolean',
@@ -54,7 +55,7 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getLabelData',
 		'getZBooleanValue',
 		'getUserLangCode'

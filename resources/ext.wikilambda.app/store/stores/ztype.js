@@ -1,5 +1,5 @@
 /*!
- * WikiLambda Vue editor: Vuex module for advanced type features.
+ * WikiLambda Vue editor: Pinia store module for advanced type features.
  * Handles parsers and renderers.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
@@ -7,11 +7,11 @@
  */
 'use strict';
 
-const Constants = require( '../../Constants.js' ),
-	typeUtils = require( '../../mixins/typeUtils.js' ).methods,
-	apiUtils = require( '../../mixins/api.js' ).methods;
+const Constants = require( '../../Constants.js' );
+const typeUtils = require( '../../mixins/typeUtils.js' ).methods;
+const apiUtils = require( '../../mixins/api.js' ).methods;
 
-module.exports = exports = {
+module.exports = {
 	state: {
 		/**
 		 * Collection of renderers indexed by type
@@ -38,6 +38,7 @@ module.exports = exports = {
 		 */
 		parserPromises: []
 	},
+
 	getters: {
 		/**
 		 * Returns the renderer Zid for a given type
@@ -51,13 +52,11 @@ module.exports = exports = {
 		getRendererZid: function ( state ) {
 			/**
 			 * @param {string} type
-			 * @return {string | undefined}
+			 * @return {string|undefined}
 			 */
-			function findRenderer( type ) {
-				return state.renderers[ type ];
-			}
-			return findRenderer;
+			return ( type ) => state.renderers[ type ];
 		},
+
 		/**
 		 * Returns the renderer Zid for a given type
 		 * or undefined if it does not exist.
@@ -72,11 +71,9 @@ module.exports = exports = {
 			 * @param {string} type
 			 * @return {string | undefined}
 			 */
-			function findParser( type ) {
-				return state.parsers[ type ];
-			}
-			return findParser;
+			return ( type ) => state.parsers[ type ];
 		},
+
 		/**
 		 * Returns whether the given type has a renderer in storage
 		 *
@@ -88,10 +85,7 @@ module.exports = exports = {
 			 * @param {string} type
 			 * @return {boolean}
 			 */
-			function typeHasRenderer( type ) {
-				return ( ( type in state.renderers ) && !!state.renderers[ type ] );
-			}
-			return typeHasRenderer;
+			return ( type ) => type in state.renderers && !!state.renderers[ type ];
 		},
 		/**
 		 * Returns whether the given type has a parser in storage
@@ -104,11 +98,9 @@ module.exports = exports = {
 			 * @param {string} type
 			 * @return {boolean}
 			 */
-			function typeHasParser( type ) {
-				return ( ( type in state.parsers ) && !!state.parsers[ type ] );
-			}
-			return typeHasParser;
+			return ( type ) => type in state.parsers && !!state.parsers[ type ];
 		},
+
 		/**
 		 * Returns an array with the generated examples for a given renderer.
 		 * If testZid is present as an argument, filters the results to return only that value.
@@ -122,7 +114,7 @@ module.exports = exports = {
 			 * @param {string|undefined} testZid
 			 * @return {Array}
 			 */
-			function getExamples( rendererZid, testZid = undefined ) {
+			return ( rendererZid, testZid = undefined ) => {
 				const filteredExamples = [];
 				const examples = state.rendererExamples[ rendererZid ];
 				if ( examples ) {
@@ -135,9 +127,9 @@ module.exports = exports = {
 				return testZid ?
 					filteredExamples.filter( ( item ) => item.testZid === testZid ) :
 					filteredExamples;
-			}
-			return getExamples;
+			};
 		},
+
 		/**
 		 * Returns a Promise that will be resolved when all pending
 		 * parsers will finish running. Those which run successfully will
@@ -152,70 +144,68 @@ module.exports = exports = {
 			return Promise.all( state.parserPromises );
 		}
 	},
-	mutations: {
+
+	actions: {
 		/**
 		 * Add a running parser promise into the parserPromises
 		 * state array.
 		 *
-		 * @param {Object} state
 		 * @param {Promise} promise
 		 */
-		addParserPromise: function ( state, promise ) {
-			state.parserPromises.push( promise );
+		addParserPromise: function ( promise ) {
+			this.parserPromises.push( promise );
 		},
+
 		/**
 		 * Add renderer to the renderer collection
 		 *
-		 * @param {Object} state
 		 * @param {Object} payload
 		 * @param {string} payload.type
 		 * @param {string} payload.renderer
 		 */
-		setRenderer: function ( state, payload ) {
-			state.renderers[ payload.type ] = payload.renderer;
+		setRenderer: function ( payload ) {
+			this.renderers[ payload.type ] = payload.renderer;
 		},
+
 		/**
 		 * Add parser to the parser collection
 		 *
-		 * @param {Object} state
 		 * @param {Object} payload
 		 * @param {string} payload.type
 		 * @param {string} payload.parser
 		 */
-		setParser: function ( state, payload ) {
-			state.parsers[ payload.type ] = payload.parser;
+		setParser: function ( payload ) {
+			this.parsers[ payload.type ] = payload.parser;
 		},
+
 		/**
 		 * Sets the value of a renderer example result
 		 *
-		 * @param {Object} state
 		 * @param {Object} payload
 		 * @param {string} payload.rendererZid
 		 * @param {string} payload.testZid
 		 * @param {Promise|string} payload.example
 		 */
-		setRendererExample: function ( state, payload ) {
-			if ( !( payload.rendererZid in state.rendererExamples ) ) {
-				state.rendererExamples[ payload.rendererZid ] = {};
+		setRendererExample: function ( payload ) {
+			if ( !( payload.rendererZid in this.rendererExamples ) ) {
+				this.rendererExamples[ payload.rendererZid ] = {};
 			}
-			state.rendererExamples[ payload.rendererZid ][ payload.testZid ] = payload.example;
-		}
-	},
-	actions: {
+			this.rendererExamples[ payload.rendererZid ][ payload.testZid ] = payload.example;
+		},
+
 		/**
 		 * Given any Object/Z1 and a Language/Z60, it runs
 		 * its renderer and returns the resulting Object.
 		 * TODO: currently this will return a String/Z6 object,
 		 * but in the future this can return other types)
 		 *
-		 * @param {Object} _context
 		 * @param {Object} payload
 		 * @param {string} payload.rendererZid
 		 * @param {Object|Array|string} payload.zobject
 		 * @param {string} payload.zlang
 		 * @return {Promise}
 		 */
-		runRenderer: function ( _context, payload ) {
+		runRenderer: function ( payload ) {
 			// 1. Create a function call
 			// {
 			//   Z1K1: Z7,
@@ -231,6 +221,7 @@ module.exports = exports = {
 			// 2. Run this function call by calling wikilambda_function_call_zobject and return
 			return apiUtils.performFunctionCall( rendererCall );
 		},
+
 		/**
 		 * Given any Object/Z1 and a Language/Z60, it runs
 		 * its parser and returns the resulting Object.
@@ -243,7 +234,6 @@ module.exports = exports = {
 		 * TODO: currently this will accept a String/Z6 object,
 		 * but in the future it may accept other types)
 		 *
-		 * @param {Object} context
 		 * @param {Object} payload
 		 * @param {string} payload.parserZid
 		 * @param {Object|Array|string} payload.zobject
@@ -251,7 +241,7 @@ module.exports = exports = {
 		 * @param {boolean} payload.wait whether this parser should block API calls
 		 * @return {Promise}
 		 */
-		runParser: function ( context, payload ) {
+		runParser: function ( payload ) {
 			// 1. Create a function call
 			// {
 			//   Z1K1: Z7,
@@ -272,7 +262,7 @@ module.exports = exports = {
 			} );
 			// If we want this parser to block other API calls, we add to the parserPromise array
 			if ( payload.wait ) {
-				context.commit( 'addParserPromise', parserPromise );
+				this.addParserPromise( parserPromise );
 			}
 
 			// 3. Run this function call by calling wikilambda_function_call_zobject
@@ -285,24 +275,24 @@ module.exports = exports = {
 				throw e;
 			} );
 		},
+
 		/**
 		 * Generates a renderer example by running its test with the
 		 * current user language and saves it in the store for other
 		 * similar fields to access it without re-running the same functions
 		 * multiple times.
 		 *
-		 * @param {Object} context
 		 * @param {Object} payload
 		 * @param {string} payload.rendererZid
 		 * @param {string} payload.testZid
 		 * @param {Object} payload.test
 		 * @param {string} payload.zlang
-		 * @return {Promise|void}
+		 * @return {Promise}
 		 */
-		runRendererTest: function ( context, payload ) {
+		runRendererTest: function ( payload ) {
 			// 1. If example is already rendered, ignore this
-			if ( context.getters.getRendererExamples( payload.rendererZid, payload.testZid ).length > 0 ) {
-				return;
+			if ( this.getRendererExamples( payload.rendererZid, payload.testZid ).length > 0 ) {
+				return Promise.resolve();
 			}
 
 			// 2. Build test object with current user lang Zid
@@ -311,7 +301,7 @@ module.exports = exports = {
 
 			// 3. Save empty value in the store under the rendererZid.testZid
 			// to avoid re-running the same example multiple times
-			context.commit( 'setRendererExample', {
+			this.setRendererExample( {
 				rendererZid: payload.rendererZid,
 				testZid: payload.testZid,
 				example: undefined
@@ -320,12 +310,9 @@ module.exports = exports = {
 			// 4. Run renderer function
 			return apiUtils.performFunctionCall( rendererCall ).then( ( data ) => {
 				const response = data.response[ Constants.Z_RESPONSEENVELOPE_VALUE ];
-				if (
-					( response !== Constants.Z_VOID ) &&
-					( typeUtils.getZObjectType( response ) === Constants.Z_STRING )
-				) {
+				if ( response !== Constants.Z_VOID && typeUtils.getZObjectType( response ) === Constants.Z_STRING ) {
 					// If rendered value from the test is valid, save in examples
-					context.commit( 'setRendererExample', {
+					this.setRendererExample( {
 						rendererZid: payload.rendererZid,
 						testZid: payload.testZid,
 						example: response

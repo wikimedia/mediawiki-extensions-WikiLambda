@@ -7,11 +7,11 @@
 'use strict';
 
 const { config, mount } = require( '@vue/test-utils' ),
-	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
 	FunctionMetadataDialog = require( '../../../../../resources/ext.wikilambda.app/components/widgets/function-evaluator/FunctionMetadataDialog.vue' ),
-	metadata = require( '../../../fixtures/metadata.js' );
+	metadata = require( '../../../fixtures/metadata.js' ),
+	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 
 // Ignore all "teleport" behavior for the purpose of testing Dialog;
 // see https://test-utils.vuejs.org/guide/advanced/teleport.html
@@ -20,22 +20,20 @@ config.global.stubs = {
 };
 
 describe( 'FunctionMetadataDialog', () => {
-	let getters;
+	let store;
 
 	beforeEach( () => {
-		getters = {
-			getFunctionZidOfImplementation: createGettersWithFunctionsMock( 'Z801' ),
-			getUserLangCode: createGetterMock( 'en' ),
-			getLabelData: createLabelDataMock( {
-				Z502: 'Not wellformed',
-				Z526: 'Key value not wellformed',
-				Z801: 'Echo',
-				Z802: 'If',
-				Z41: 'true'
-			} )
-		};
+		store = useMainStore();
+		store.getFunctionZidOfImplementation = createGettersWithFunctionsMock( 'Z801' );
+		store.getUserLangCode = 'en';
+		store.getLabelData = createLabelDataMock( {
+			Z502: 'Not wellformed',
+			Z526: 'Key value not wellformed',
+			Z801: 'Echo',
+			Z802: 'If',
+			Z41: 'true'
+		} );
 		mw.internalWikiUrlencode = jest.fn( ( url ) => url );
-		global.store.hotUpdate( { getters: getters } );
 	} );
 
 	it( 'renders without errors', () => {
@@ -78,8 +76,7 @@ describe( 'FunctionMetadataDialog', () => {
 		} );
 
 		it( 'renders a named implementation section', () => {
-			getters.getLabelData = createLabelDataMock( { Z902: 'Javascript implementation for If' } );
-			global.store.hotUpdate( { getters: getters } );
+			store.getLabelData = createLabelDataMock( { Z902: 'Javascript implementation for If' } );
 			const wrapper = mount( FunctionMetadataDialog, {
 				props: { open: true, metadata: metadata.metadataBasic }
 			} );

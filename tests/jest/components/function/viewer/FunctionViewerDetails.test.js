@@ -10,9 +10,9 @@ const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	{ waitFor } = require( '@testing-library/vue' ),
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
-	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
 	ApiError = require( '../../../../../resources/ext.wikilambda.app/store/classes/ApiError.js' ),
-	FunctionViewerDetails = require( '../../../../../resources/ext.wikilambda.app/components/function/viewer/FunctionViewerDetails.vue' );
+	FunctionViewerDetails = require( '../../../../../resources/ext.wikilambda.app/components/function/viewer/FunctionViewerDetails.vue' ),
+	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 
 const mockLanguages = {
 	Z444: 'javascript',
@@ -36,53 +36,39 @@ const mockLabels = {
 };
 
 describe( 'FunctionViewerDetails', () => {
-	let getters,
-		actions,
-		actionsThrowError;
+	let store, actionsThrowError;
 
 	beforeEach( () => {
 		actionsThrowError = false;
 
-		const createAction = function () {
-			return jest.fn( () => ( {
-				then: function ( fn ) {
-					if ( actionsThrowError ) {
-						throw new ApiError( 'code', { error: { message: 'error!' } } );
-					}
-					return fn();
-				}
-			} ) );
-		};
+		const createMockAction = () => jest.fn( () => actionsThrowError ?
+			Promise.reject( new ApiError( 'code', { error: { message: 'error!' } } ) ) :
+			Promise.resolve()
+		);
+
 		const allTests = [ 'Z111', 'Z222' ];
 		const allImplementations = [ 'Z333', 'Z444', 'Z555' ];
-		actions = {
-			connectImplementations: createAction(),
-			connectTests: createAction(),
-			disconnectImplementations: createAction(),
-			disconnectTests: createAction(),
-			getTestResults: jest.fn(),
-			fetchZids: jest.fn(),
-			fetchImplementations: jest.fn( () => ( { then: ( fn ) => fn( allImplementations ) } ) ),
-			fetchTests: jest.fn( () => ( { then: ( fn ) => fn( allTests ) } ) )
-		};
-		getters = {
-			getConnectedTests: createGettersWithFunctionsMock( [ 'Z222' ] ),
-			getConnectedImplementations: createGettersWithFunctionsMock( [ 'Z444' ] ),
-			getUserLangCode: createGetterMock( 'Z1002' ),
-			getCurrentZObjectId: createGetterMock( 'Z666' ),
-			getLanguageOfImplementation: () => ( zid ) => mockLanguages[ zid ],
-			getTypeOfImplementation: () => ( zid ) => mockTypes[ zid ],
-			getLabelData: createLabelDataMock( mockLabels ),
-			getZTesterPercentage: () => () => ( {
-				passing: 1,
-				total: 1,
-				percentage: 100
-			} )
-		};
-		global.store.hotUpdate( {
-			getters: getters,
-			actions: actions
+
+		store = useMainStore();
+		store.getConnectedTests = createGettersWithFunctionsMock( [ 'Z222' ] );
+		store.getConnectedImplementations = createGettersWithFunctionsMock( [ 'Z444' ] );
+		store.getUserLangCode = 'Z1002';
+		store.getCurrentZObjectId = 'Z666';
+		store.getLanguageOfImplementation = jest.fn( ( zid ) => mockLanguages[ zid ] );
+		store.getTypeOfImplementation = jest.fn( ( zid ) => mockTypes[ zid ] );
+		store.getLabelData = createLabelDataMock( mockLabels );
+		store.getZTesterPercentage = createGettersWithFunctionsMock( {
+			passing: 1,
+			total: 1,
+			percentage: 100
 		} );
+		store.connectImplementations.mockImplementation( createMockAction() );
+		store.connectTests.mockImplementation( createMockAction() );
+		store.disconnectImplementations.mockImplementation( createMockAction() );
+		store.disconnectTests.mockImplementation( createMockAction() );
+		store.fetchImplementations.mockResolvedValue( allImplementations );
+		store.fetchTests.mockResolvedValue( allTests );
+
 	} );
 
 	it( 'renders without errors', () => {
@@ -103,7 +89,6 @@ describe( 'FunctionViewerDetails', () => {
 		const implTableItems = implTable.props( 'data' );
 
 		expect( implTableItems ).toHaveLength( 3 );
-		console.log( 'implTableItems', implTableItems );
 		expect( implTableItems[ 0 ].checkbox.props.modelValue ).toBe( false );
 		expect( implTableItems[ 0 ].language.title ).toEqual( 'Composition' );
 		expect( implTableItems[ 0 ].name.title ).toEqual( 'Z333 name' );
@@ -136,10 +121,7 @@ describe( 'FunctionViewerDetails', () => {
 
 	describe( 'implementations without labels display the ZID', () => {
 		beforeEach( () => {
-			getters.getLabelData = createLabelDataMock( { Z333: 'Z333 name' } );
-			global.store.hotUpdate( {
-				getters: getters
-			} );
+			store.getLabelData = createLabelDataMock( { Z333: 'Z333 name' } );
 		} );
 
 		it( 'in the implementations table', async () => {
@@ -157,7 +139,6 @@ describe( 'FunctionViewerDetails', () => {
 			await waitFor( () => expect( wrapper.vm.testsFetched ).toBeTruthy() );
 
 			const testTableHeaderItems = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 1 ].props( 'columns' );
-			console.log( 'testTableHeaderItems', testTableHeaderItems );
 
 			expect( testTableHeaderItems.find( ( item ) => item.id === 'Z333' ).title ).toEqual( 'Z333 name' );
 			expect( testTableHeaderItems.find( ( item ) => item.id === 'Z444' ).title ).toEqual( 'Z444' );
@@ -166,10 +147,7 @@ describe( 'FunctionViewerDetails', () => {
 
 	describe( 'tests without labels display the ZID', () => {
 		beforeEach( () => {
-			getters.getLabelData = createLabelDataMock( { Z222: 'Z222 name' } );
-			global.store.hotUpdate( {
-				getters: getters
-			} );
+			store.getLabelData = createLabelDataMock( { Z222: 'Z222 name' } );
 		} );
 
 		it( 'in the tests table rows', async () => {
@@ -194,7 +172,7 @@ describe( 'FunctionViewerDetails', () => {
 			implTable.vm.$emit( 'connect' );
 
 			await waitFor( () => {
-				expect( actions.connectImplementations ).toHaveBeenCalledWith( expect.anything(), {
+				expect( store.connectImplementations ).toHaveBeenCalledWith( {
 					rowId: 123,
 					zids: [ 'Z333', 'Z555' ]
 				} );
@@ -212,7 +190,7 @@ describe( 'FunctionViewerDetails', () => {
 			implTable.vm.$emit( 'disconnect' );
 
 			await waitFor( () => {
-				expect( actions.disconnectImplementations ).toHaveBeenCalledWith( expect.anything(), {
+				expect( store.disconnectImplementations ).toHaveBeenCalledWith( {
 					rowId: 123,
 					zids: [ 'Z444' ]
 				} );
@@ -230,7 +208,7 @@ describe( 'FunctionViewerDetails', () => {
 			testTable.vm.$emit( 'connect' );
 
 			await waitFor( () => {
-				expect( actions.connectTests ).toHaveBeenCalledWith( expect.anything(), {
+				expect( store.connectTests ).toHaveBeenCalledWith( {
 					rowId: 123,
 					zids: [ 'Z111' ]
 				} );
@@ -248,7 +226,7 @@ describe( 'FunctionViewerDetails', () => {
 			testTable.vm.$emit( 'disconnect' );
 
 			await waitFor( () => {
-				expect( actions.disconnectTests ).toHaveBeenCalledWith( expect.anything(), {
+				expect( store.disconnectTests ).toHaveBeenCalledWith( {
 					rowId: 123,
 					zids: [ 'Z222' ]
 				} );

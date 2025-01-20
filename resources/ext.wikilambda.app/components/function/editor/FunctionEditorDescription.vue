@@ -37,9 +37,10 @@
 const { CdxTextArea } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
+	useMainStore = require( '../../../store/index.js' ),
 	LabelData = require( '../../../store/classes/LabelData.js' ),
 	FunctionEditorField = require( './FunctionEditorField.vue' ),
-	{ mapActions, mapGetters } = require( 'vuex' );
+	{ mapActions, mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-description',
@@ -67,7 +68,7 @@ module.exports = exports = defineComponent( {
 			remainingChars: Constants.DESCRIPTION_CHARS_MAX
 		};
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getRowByKeyPath',
 		'getZMonolingualTextValue',
 		'getZPersistentDescription'
@@ -137,7 +138,7 @@ module.exports = exports = defineComponent( {
 			return `ext-wikilambda-app-function-editor-description__input${ this.zLanguage }`;
 		}
 	} ),
-	methods: Object.assign( mapActions( [
+	methods: Object.assign( {}, mapActions( useMainStore, [
 		'changeType',
 		'removeItemFromTypedList',
 		'setValueByRowIdAndPath'

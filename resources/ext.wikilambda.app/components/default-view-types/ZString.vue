@@ -26,7 +26,8 @@
 const { CdxTextInput } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
-	{ mapGetters } = require( 'vuex' );
+	useMainStore = require( '../../store/index.js' ),
+	{ mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-string',
@@ -49,7 +50,7 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign(
-		mapGetters( [
+		mapState( useMainStore, [
 			'getZObjectKeyByRowId',
 			'getZStringTerminalValue'
 		] ),

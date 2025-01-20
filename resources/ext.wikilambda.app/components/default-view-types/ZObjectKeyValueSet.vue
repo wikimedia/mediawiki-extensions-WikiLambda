@@ -26,7 +26,8 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { mapGetters } = require( 'vuex' );
+const { mapState } = require( 'pinia' ),
+	useMainStore = require( '../../store/index.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-object-key-value-set',
@@ -48,7 +49,7 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getZObjectKeyByRowId',
 		'getChildrenByParentRowId'
 	] ), {

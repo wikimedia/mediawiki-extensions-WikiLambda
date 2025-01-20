@@ -12,7 +12,6 @@ const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
 	{ within } = require( '@testing-library/dom' ),
 	{ runSetup, runTeardown } = require( './helpers/implementationEditorTestHelpers.js' ),
 	{ clickMenuOption } = require( './helpers/interactionHelpers.js' ),
-	store = require( '../../../resources/ext.wikilambda.app/store/index.js' ),
 	App = require( '../../../resources/ext.wikilambda.app/components/App.vue' ),
 	expectedNewCodeImplementationPostedToApi = require( './objects/expectedNewCodeImplementationPostedToApi.js' );
 
@@ -27,13 +26,16 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 
 	it( 'should allow you to create a new code implementation', async () => {
 		const { getByTestId, findByTestId } = render( App, {
-			global: { plugins: [ store ], stubs: {
+			global: { stubs: {
 				teleport: true,
 				WlFunctionEvaluatorWidget: true
 			} }
 		} );
-
-		const zImplementationComponent = await findByTestId( 'z-implementation' );
+		// const zImplementationComponent = await findByTestId( 'z-implementation' );
+		const zImplementationComponent = await waitFor(
+			async () => await findByTestId( 'z-implementation' ),
+			{ timeout: 5000 } // Wait up to 5 seconds
+		);
 
 		// ACT: Select a function
 		const zReferenceSelector = await getByTestId( 'z-reference-selector' );
@@ -106,7 +108,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 
 	it( 'allows changing the selected function call and ensures the function report testers are updated, but not executed', async () => {
 		const { findByTestId } = render( App, {
-			global: { plugins: [ store ], stubs: {
+			global: { stubs: {
 				teleport: true,
 				WlFunctionEvaluatorWidget: true
 			} }

@@ -1,24 +1,25 @@
 /*!
- * WikiLambda Vue editor:  Vuex library module: fetch, store and
- * provide auxiliary data from other ZObejcts (labels, keys, etc.).
+ * WikiLambda Vue editor: Pinia store: fetch, store and
+ * provide auxiliary data from other ZObjects (labels, keys, etc.).
  * It also contains other helper getters to retrieve details of other
  * stored auxiliary objects such as functions, languages, etc.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
+'use strict';
 
-const Constants = require( '../../Constants.js' ),
-	apiUtils = require( '../../mixins/api.js' ).methods,
-	typeUtils = require( '../../mixins/typeUtils.js' ).methods,
-	LabelData = require( '../classes/LabelData.js' ),
-	convertTableToJson = require( '../../mixins/zobjectUtils.js' ).methods.convertTableToJson,
-	hybridToCanonical = require( '../../mixins/schemata.js' ).methods.hybridToCanonical;
+const Constants = require( '../../Constants.js' );
+const apiUtils = require( '../../mixins/api.js' ).methods;
+const typeUtils = require( '../../mixins/typeUtils.js' ).methods;
+const LabelData = require( '../classes/LabelData.js' );
+const { convertTableToJson } = require( '../../mixins/zobjectUtils.js' ).methods;
+const { hybridToCanonical } = require( '../../mixins/schemata.js' ).methods;
 
 const DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT = 300;
 let debounceZObjectLookup = null;
 
-module.exports = exports = {
+module.exports = {
 	state: {
 		/**
 		 * Collection of ZPersistent objects fetched
@@ -44,6 +45,7 @@ module.exports = exports = {
 		 */
 		languages: {}
 	},
+
 	getters: {
 		/**
 		 * Returns the string value of the language Iso code if the object
@@ -58,7 +60,7 @@ module.exports = exports = {
 			 * @param {string} zid
 			 * @return {string}
 			 */
-			function findLanguageCode( zid ) {
+			return ( zid ) => {
 				if ( state.objects[ zid ] ) {
 					const zobject = state.objects[ zid ][ Constants.Z_PERSISTENTOBJECT_VALUE ];
 					const ztype = zobject[ Constants.Z_OBJECT_TYPE ];
@@ -67,9 +69,9 @@ module.exports = exports = {
 					}
 				}
 				return zid;
-			}
-			return findLanguageCode;
+			};
 		},
+
 		/**
 		 * Returns the language zid given a language Iso code if the
 		 * object has been fetched and is stored in the state.
@@ -83,11 +85,9 @@ module.exports = exports = {
 			 * @param {string} code
 			 * @return {string|undefined}
 			 */
-			function findLanguageZid( code ) {
-				return state.languages[ code ];
-			}
-			return findLanguageZid;
+			return ( code ) => state.languages[ code ];
 		},
+
 		/**
 		 * Given a global ZKey (ZnKm) it returns a string that reflects
 		 * its expected value type (if any). Else it returns Z1.
@@ -100,7 +100,7 @@ module.exports = exports = {
 			 * @param {string|undefined} key
 			 * @return {string}
 			 */
-			return function ( key ) {
+			return ( key ) => {
 
 				// If the key is undefined, then this is the root object,
 				// the expected type is always Z2/Persistent object type
@@ -148,6 +148,7 @@ module.exports = exports = {
 				return Constants.Z_OBJECT;
 			};
 		},
+
 		/**
 		 * Given a key, returns whether it is set to be an identity key
 		 * (Z3K4 field is set to true/Z41)
@@ -160,7 +161,7 @@ module.exports = exports = {
 			 * @param {string|undefined} key
 			 * @return {boolean}
 			 */
-			return function ( key ) {
+			return ( key ) => {
 				if ( key === undefined ) {
 					return false;
 				}
@@ -191,6 +192,7 @@ module.exports = exports = {
 				);
 			};
 		},
+
 		/**
 		 * Given a type zid, returns whether it has an identity key
 		 *
@@ -202,10 +204,12 @@ module.exports = exports = {
 			 * @param {string} zid
 			 * @return {boolean}
 			 */
-			return function ( zid ) {
-				if ( ( zid === undefined ) ||
+			return ( zid ) => {
+				if (
+					( zid === undefined ) ||
 					( Constants.EXCLUDE_FROM_ENUMS.includes( zid ) ) ||
-					( !state.objects[ zid ] ) ) {
+					( !state.objects[ zid ] )
+				) {
 					return false;
 				}
 
@@ -227,23 +231,20 @@ module.exports = exports = {
 				return false;
 			};
 		},
+
 		/**
 		 * Given a type zid, returns whether it has an identity key,
 		 * excluding the builtin enum types (Boolean/Z40), as they
 		 * have builtin components that require special cases.
 		 *
-		 * @param {Object} _state
-		 * @param {Object} getters
 		 * @return {Function}
 		 */
-		isCustomEnum: function ( _state, getters ) {
+		isCustomEnum: function () {
 			/**
 			 * @param {string} zid
 			 * @return {boolean}
 			 */
-			return function ( zid ) {
-				return getters.isEnumType( zid ) && !Constants.BUILTIN_ENUMS.includes( zid );
-			};
+			return ( zid ) => this.isEnumType( zid ) && !Constants.BUILTIN_ENUMS.includes( zid );
 		},
 		/**
 		 * Returns the persisted object for a given ZID if that was
@@ -257,11 +258,9 @@ module.exports = exports = {
 			 * @param {string} zid of the ZPersistentObject
 			 * @return {Object|undefined} persisted ZObject
 			 */
-			function findPersistedObject( zid ) {
-				return state.objects[ zid ];
-			}
-			return findPersistedObject;
+			return ( zid ) => state.objects[ zid ];
 		},
+
 		/**
 		 * Returns the LabelData of the ID of a ZKey, ZPersistentObject or ZArgumentDeclaration.
 		 * The label is in the user selected language, if available, or else in the closest fallback.
@@ -271,32 +270,31 @@ module.exports = exports = {
 		 * caller components can safely access the LabelData properties.
 		 *
 		 * @param {Object} state
-		 * @param {Object} getters
 		 * @return {Function}
 		 */
-		getLabelData: function ( state, getters ) {
+		getLabelData: function ( state ) {
 			/**
 			 * @param {string} id
 			 * @return {LabelData}
 			 */
-			function findLabel( id ) {
+			return ( id ) => {
 				// If the requested language is 'qqx', return (zid) as the label
-				if ( getters.getUserRequestedLang === 'qqx' && id ) {
-					return new LabelData( id, `(${ id })`, getters.getUserLangZid, getters.getUserLangCode );
+				if ( this.getUserRequestedLang === 'qqx' && id ) {
+					return new LabelData( id, `(${ id })`, this.getUserLangZid, this.getUserLangCode );
 				}
 
 				// If label data is still not present in the library, return zid as the label
 				const labelData = state.labels[ id ];
 				if ( !labelData ) {
-					return new LabelData( id, id, getters.getUserLangZid, getters.getUserLangCode );
+					return new LabelData( id, id, this.getUserLangZid, this.getUserLangCode );
 				}
 
 				// Enrich label data with language code and directionality
-				labelData.setLangCode( getters.getLanguageIsoCodeOfZLang( labelData.lang ) );
+				labelData.setLangCode( this.getLanguageIsoCodeOfZLang( labelData.lang ) );
 				return labelData;
-			}
-			return findLabel;
+			};
 		},
+
 		/**
 		 * Returns the array of implementations or tests connected to a persisted
 		 * Function stored in the library, given the Function Zid and the key
@@ -311,16 +309,16 @@ module.exports = exports = {
 			 * @param {string} key
 			 * @return {Array}
 			 */
-			function findConnectedObjects( zid, key ) {
+			return ( zid, key ) => {
 				const func = state.objects[ zid ];
 				if ( func ) {
 					const imps = func[ Constants.Z_PERSISTENTOBJECT_VALUE ][ key ];
 					return imps ? imps.slice( 1 ) : [];
 				}
 				return [];
-			}
-			return findConnectedObjects;
+			};
 		},
+
 		/**
 		 * Returns the function zid given an implementation zid
 		 * by returning the value in its Z14K1 field
@@ -333,15 +331,15 @@ module.exports = exports = {
 			 * @param {string} zid
 			 * @return {string|undefined}
 			 */
-			function findImplementationFunction( zid ) {
+			return ( zid ) => {
 				const implementation = state.objects[ zid ];
 				if ( !implementation ) {
 					return undefined;
 				}
 				return implementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_IMPLEMENTATION_FUNCTION ];
-			}
-			return findImplementationFunction;
+			};
 		},
+
 		/**
 		 * Returns the type of an implementation stored in the
 		 * global state, given its Zid. The type will be
@@ -356,12 +354,11 @@ module.exports = exports = {
 			 * @param {string} zid
 			 * @return {string | undefined}
 			 */
-			function findImplementationType( zid ) {
+			return ( zid ) => {
 				let implementation = state.objects[ zid ];
 				if ( !implementation ) {
 					return undefined;
 				}
-
 				implementation = implementation[ Constants.Z_PERSISTENTOBJECT_VALUE ];
 				if ( Constants.Z_IMPLEMENTATION_COMPOSITION in implementation ) {
 					return Constants.Z_IMPLEMENTATION_COMPOSITION;
@@ -373,9 +370,9 @@ module.exports = exports = {
 					return Constants.Z_IMPLEMENTATION_CODE;
 				}
 				return undefined;
-			}
-			return findImplementationType;
+			};
 		},
+
 		/**
 		 * Returns the language code of an implementation stored
 		 * in the global state, given its Zid. If the implementation
@@ -390,7 +387,7 @@ module.exports = exports = {
 			 * @param {string} zid
 			 * @return {string | undefined}
 			 */
-			function findImplementationLanguage( zid ) {
+			return ( zid ) => {
 				let implementation = state.objects[ zid ];
 				if ( !implementation ) {
 					return undefined;
@@ -406,16 +403,16 @@ module.exports = exports = {
 						] )
 					) {
 						return implementation[ Constants.Z_IMPLEMENTATION_CODE ][
-							Constants.Z_CODE_LANGUAGE ][ Constants.Z_PROGRAMMING_LANGUAGE_CODE ];
+							Constants.Z_CODE_LANGUAGE
+						][ Constants.Z_PROGRAMMING_LANGUAGE_CODE ];
 					}
 					// Else, code is reference: return zid
-					return implementation[ Constants.Z_IMPLEMENTATION_CODE ][
-						Constants.Z_CODE_LANGUAGE ];
+					return implementation[ Constants.Z_IMPLEMENTATION_CODE ][ Constants.Z_CODE_LANGUAGE ];
 				}
 				return undefined;
-			}
-			return findImplementationLanguage;
+			};
 		},
+
 		/**
 		 * Given a function Zid, it inspects its function definition
 		 * stored in the state and returns an array of its arguments.
@@ -430,7 +427,7 @@ module.exports = exports = {
 			 * @param {string} zid
 			 * @return {Array}
 			 */
-			function findInputs( zid ) {
+			return ( zid ) => {
 				const func = state.objects[ zid ];
 				if ( func === undefined ) {
 					return [];
@@ -441,9 +438,9 @@ module.exports = exports = {
 				}
 				// Remove benjamin type item
 				return obj[ Constants.Z_FUNCTION_ARGUMENTS ].slice( 1 );
-			}
-			return findInputs;
+			};
 		},
+
 		/**
 		 * Returns the values of an enum with a given ZID
 		 *
@@ -455,134 +452,126 @@ module.exports = exports = {
 			 * @param {string} zid
 			 * @return {Array}
 			 */
-			function findEnum( zid ) {
+			return ( zid ) => {
 				const enumObj = state.enums[ zid ];
 				return enumObj && enumObj.data instanceof Array ? enumObj.data : [];
-			}
-			return findEnum;
+			};
 		},
+
 		/**
 		 * Returns the enum of a given ZID
 		 *
 		 * @param {Object} state
-		 * @return {Object}
+		 * @return {Function}
 		 */
 		getEnum: function ( state ) {
 			/**
 			 * @param {string} zid
 			 * @return {Array}
 			 */
-			function findEnum( zid ) {
-				return state.enums[ zid ];
-			}
-			return findEnum;
+			return ( zid ) => state.enums[ zid ];
 		}
 	},
-	mutations: {
+
+	actions: {
 		/**
 		 * Set request state for each zid
 		 *
-		 * @param {Object} state
 		 * @param {Object} payload
 		 * @param {string} payload.zid
 		 * @param {Promise} payload.request
 		 */
-		setZidRequest: function ( state, payload ) {
+		setZidRequest: function ( payload ) {
 			if ( payload.request ) {
-				state.requests[ payload.zid ] = payload.request;
+				this.requests[ payload.zid ] = payload.request;
 			} else {
-				delete state.requests[ payload.zid ];
+				delete this.requests[ payload.zid ];
 			}
 		},
+
 		/**
 		 * Add zid info to the state
 		 *
-		 * @param {Object} state
 		 * @param {Object} payload
 		 */
-		setStoredObject: function ( state, payload ) {
-			if ( !( payload.zid in state.objects ) || payload.forceUpdate ) {
-				state.objects[ payload.zid ] = payload.info;
+		setStoredObject: function ( payload ) {
+			if ( !( payload.zid in this.objects ) || payload.forceUpdate ) {
+				this.objects[ payload.zid ] = payload.info;
 			}
 		},
+
 		/**
 		 * Save the LabelData object for a given ID
 		 * of a ZPersistentObject, ZKey or ZArgumentDeclaration.
 		 *
-		 * @param {Object} state
 		 * @param {LabelData} labelData
 		 */
-		setLabel: function ( state, labelData ) {
-			state.labels[ labelData.zid ] = labelData;
+		setLabel: function ( labelData ) {
+			this.labels[ labelData.zid ] = labelData;
 		},
+
 		/**
-		 * @param {Object} state
 		 * @param {Object} payload
 		 * @param {string} payload.zid
 		 * @param {Array | Promise} payload.data
 		 * @param {number | undefined} payload.searchContinue
 		 */
-		setEnumData: function ( state, payload ) {
+		setEnumData: function ( payload ) {
 			const zid = payload.zid;
 			const data = payload.data;
 			const searchContinue = payload.searchContinue;
 
 			// Initialize the enum object if it does not exist with a Promise or Array
-			if ( !state.enums[ zid ] ) {
-				state.enums[ zid ] = { data };
+			if ( !this.enums[ zid ] ) {
+				this.enums[ zid ] = { data };
 				return;
 			}
 
 			// Ensure data is an array before concatenation
-			if ( !Array.isArray( state.enums[ zid ].data ) ) {
-				state.enums[ zid ].data = [];
+			if ( !Array.isArray( this.enums[ zid ].data ) ) {
+				this.enums[ zid ].data = [];
 			}
 
 			// Append new data and update continuation value
-			state.enums[ zid ].data = state.enums[ zid ].data.concat( data );
-			state.enums[ zid ].searchContinue = searchContinue;
+			this.enums[ zid ].data = this.enums[ zid ].data.concat( data );
+			this.enums[ zid ].searchContinue = searchContinue;
 		},
+
 		/**
-		 * @param {Object} state
 		 * @param {Object} payload
 		 * @param {string} payload.code
 		 * @param {string} payload.zid
 		 */
-		setLanguageCode: function ( state, payload ) {
-			state.languages[ payload.code ] = payload.zid;
-		}
-	},
-	actions: {
+		setLanguageCode: function ( payload ) {
+			this.languages[ payload.code ] = payload.zid;
+		},
+
 		/**
 		 * Updates the stored object in the Library with the current ZObject
-		 *
-		 * @param {Object} context
 		 */
-		updateStoredObject: function ( context ) {
-			const zobject = hybridToCanonical( convertTableToJson( context.getters.getZObjectTable ) );
-			const zid = context.getters.getCurrentZObjectId;
-
-			context.commit( 'setStoredObject', {
+		updateStoredObject: function () {
+			const zobject = hybridToCanonical( convertTableToJson( this.getZObjectTable ) );
+			const zid = this.getCurrentZObjectId;
+			this.setStoredObject( {
 				zid,
 				info: zobject,
 				forceUpdate: true
 			} );
 		},
+
 		/**
 		 * Performs a Lookup call to the database to retrieve all
 		 * ZObject references that match a given input and type.
 		 * This is used in selectors such as ZObjectSelector or the
 		 * language selector of the About widget.
 		 *
-		 * @param {Object} context Vuex context object
 		 * @param {number} payload Object containing input(string) and type
 		 * @return {Promise}
 		 * @property {Array<Object>} labels - The search results
 		 * @property {number|null} searchContinue - The token to continue the search or null if no more results
 		 */
-		lookupZObjectLabels: function ( context, payload ) {
-			// Add user language code to the payload
-			payload.language = context.getters.getUserLangCode;
+		lookupZObjectLabels: function ( payload ) {
+			payload.language = this.getUserLangCode;
 			return new Promise( ( resolve ) => {
 				clearTimeout( debounceZObjectLookup );
 				debounceZObjectLookup = setTimeout(
@@ -595,16 +584,15 @@ module.exports = exports = {
 		/**
 		 * Fetches all values stored of a given enum type.
 		 *
-		 * @param {Object} context
 		 * @param {Object} payload
 		 * @param {string} payload.type - The ZID of the enum type
 		 * @return {Promise<Object>|undefined} - Promise resolving to:
 		 * @property {Array<Object>} labels - The search results
 		 * @property {number|null} searchContinue - The token to continue the search or null if no more results
 		 */
-		fetchEnumValues: function ( context, payload ) {
+		fetchEnumValues: function ( payload ) {
 			const { type } = payload;
-			const enumObject = context.getters.getEnum( type );
+			const enumObject = this.getEnum( payload.type );
 			const searchContinue = enumObject ? enumObject.searchContinue : undefined;
 
 			// If no continuation token and the enum is already fetched, do nothing
@@ -615,25 +603,22 @@ module.exports = exports = {
 				input: '',
 				type,
 				limit: Constants.API_ENUMS_LIMIT,
-				language: context.getters.getUserLangCode,
+				language: this.getUserLangCode,
 				searchContinue
 			} ).then( ( data ) => {
 				// Set values when the request is completed
-				context.commit( 'setEnumData', { zid: payload.type, data: data.labels, searchContinue: data.searchContinue } );
+				this.setEnumData( { zid: payload.type, data: data.labels, searchContinue: data.searchContinue } );
 				return data;
 			} ).catch( () => {
-				// Set empty array when the request fails, so we could retry
-				context.commit( 'setEnumData', { zid: payload.type, data: [] } );
+				this.setEnumData( { zid: payload.type, data: [] } );
 			} );
 
-			// Initialize the enum with the pending promise when it's the first request
 			if ( !searchContinue ) {
-				context.commit( 'setEnumData', { zid: payload.type, data: promise } );
+				this.setEnumData( { zid: payload.type, data: promise } );
 			}
-
 			return promise;
-
 		},
+
 		/**
 		 * Orchestrates the calls to wikilambdaload_zobject api to fetch
 		 * a given set of ZIDs. This method takes care of the following requirements:
@@ -644,12 +629,11 @@ module.exports = exports = {
 		 * * Once it's fetched, the request is cleared.
 		 * * The returning promise only resolves when all of the batches have returned.
 		 *
-		 * @param {Object} context
 		 * @param {Object} payload
 		 * @param {Array} payload.zids array of zids to fetch
 		 * @return {Promise}
 		 */
-		fetchZids: function ( context, payload ) {
+		fetchZids: function ( payload ) {
 			let requestZids = [];
 			const allPromises = [];
 			const {
@@ -660,17 +644,18 @@ module.exports = exports = {
 				// Ignore if:
 				// * Zid is Z0
 				// * Zid has already been fetched
-				if ( zid &&
-					( zid !== Constants.NEW_ZID_PLACEHOLDER ) &&
-					!( zid in context.state.objects ) &&
-					!( zid in context.state.requests )
+				if (
+					zid &&
+					zid !== Constants.NEW_ZID_PLACEHOLDER &&
+					!( zid in this.objects ) &&
+					!( zid in this.requests )
 				) {
 					requestZids.push( zid );
 				}
 				// Capture pending promise to await if:
 				// * Zid is waiting to be fetched
-				if ( zid in context.state.requests ) {
-					allPromises.push( context.state.requests[ zid ] );
+				if ( zid in this.requests ) {
+					allPromises.push( this.requests[ zid ] );
 				}
 			} );
 
@@ -685,15 +670,15 @@ module.exports = exports = {
 
 			// For each batch, generate a Promise
 			for ( const batch of batches ) {
-				const batchPromise = context.dispatch( 'performFetchZids', { zids: batch } ).then( () => {
+				const batchPromise = this.performFetchZids( { zids: batch } ).then( () => {
 					// Once it's back, unset active request
 					batch.forEach( ( zid ) => {
-						context.commit( 'setZidRequest', { zid, request: null } );
+						this.setZidRequest( { zid, request: null } );
 					} );
 				} );
 				// Set active request
 				batch.forEach( ( zid ) => {
-					context.commit( 'setZidRequest', { zid, request: batchPromise } );
+					this.setZidRequest( { zid, request: batchPromise } );
 				} );
 				// Collect batch promises
 				allPromises.push( batchPromise );
@@ -702,6 +687,7 @@ module.exports = exports = {
 			// Return pending and new promises for all the requested zids
 			return Promise.all( allPromises );
 		},
+
 		/**
 		 * Calls the api wikilambdaload_zobjects with a set of Zids and
 		 * with or without language property. The language will always be
@@ -714,15 +700,14 @@ module.exports = exports = {
 		 * labels store object. The labels returned are already in the
 		 * preferred language (or closest fallback available).
 		 *
-		 * @param {Object} context
 		 * @param {Object} payload
 		 * @return {Promise}
 		 */
-		performFetchZids: function ( context, payload ) {
+		performFetchZids: function ( payload ) {
 			return new Promise( ( resolve ) => {
 				apiUtils.fetchZObjects( {
 					zids: payload.zids.join( '|' ),
-					language: context.getters.getUserLangCode,
+					language: this.getUserLangCode,
 					dependencies: true
 				} ).then( ( response ) => {
 					const requestedZids = payload.zids;
@@ -738,8 +723,8 @@ module.exports = exports = {
 						// 1. State mutation:
 						// Add zObject to the state objects array
 						const persistentObject = response[ zid ].data;
-						context.commit( 'setStoredObject', {
-							zid: zid,
+						this.setStoredObject( {
+							zid,
 							info: persistentObject
 						} );
 
@@ -759,7 +744,7 @@ module.exports = exports = {
 								multiStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
 							);
 							dependentZids.push( multiStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] );
-							context.commit( 'setLabel', labelData );
+							this.setLabel( labelData );
 						}
 
 						// 3. State mutation:
@@ -771,7 +756,6 @@ module.exports = exports = {
 							undefined;
 
 						switch ( zType ) {
-
 							case Constants.Z_TYPE:
 								// If the zObject is a type, get all key labels
 								// and commit to the store
@@ -790,7 +774,7 @@ module.exports = exports = {
 											keyLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
 										);
 										dependentZids.push( keyLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] );
-										context.commit( 'setLabel', labelData );
+										this.setLabel( labelData );
 									}
 								} );
 
@@ -799,12 +783,12 @@ module.exports = exports = {
 								if ( Constants.Z_TYPE_RENDERER in objectValue ) {
 									const renderer = objectValue[ Constants.Z_TYPE_RENDERER ];
 									dependentZids.push( renderer );
-									context.commit( 'setRenderer', { type: zid, renderer } );
+									this.setRenderer( { type: zid, renderer } );
 								}
 								if ( Constants.Z_TYPE_PARSER in objectValue ) {
 									const parser = objectValue[ Constants.Z_TYPE_PARSER ];
 									dependentZids.push( parser );
-									context.commit( 'setParser', { type: zid, parser } );
+									this.setParser( { type: zid, parser } );
 								}
 								break;
 
@@ -826,7 +810,7 @@ module.exports = exports = {
 											argLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
 										);
 										dependentZids.push( argLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] );
-										context.commit( 'setLabel', labelData );
+										this.setLabel( labelData );
 									}
 								} );
 								break;
@@ -834,18 +818,18 @@ module.exports = exports = {
 							case Constants.Z_NATURAL_LANGUAGE:
 								// If the zObject is a natural langugae, save the
 								// code and the zid in the store for easy access
-								context.commit( 'setLanguageCode', {
+								this.setLanguageCode( {
 									code: objectValue[ Constants.Z_NATURAL_LANGUAGE_ISO_CODE ],
 									zid
 								} );
 								break;
 
 							default:
-								// Do nothing
+							// Do nothing
 						}
 
 						// Make sure that we fetch all languages stored in the labels library
-						context.dispatch( 'fetchZids', { zids: [ ...new Set( dependentZids ) ] } );
+						this.fetchZids( { zids: [ ...new Set( dependentZids ) ] } );
 					} );
 
 					// performFetch must resolve to the list of requested zids
@@ -856,10 +840,9 @@ module.exports = exports = {
 		/**
 		 * Pre-fetch information of the Zids most commonly used within the UI
 		 *
-		 * @param {Object} context
 		 * @return {Promise}
 		 */
-		prefetchZids: function ( context ) {
+		prefetchZids: function () {
 			const zids = [
 				Constants.Z_OBJECT,
 				Constants.Z_PERSISTENTOBJECT,
@@ -875,14 +858,14 @@ module.exports = exports = {
 				Constants.Z_BOOLEAN_TRUE,
 				Constants.Z_BOOLEAN_FALSE,
 				Constants.Z_IMPLEMENTATION,
-				context.getters.getUserLangZid,
+				this.getUserLangZid,
 				Constants.Z_TYPED_LIST,
 				Constants.Z_ARGUMENT_REFERENCE,
 				Constants.Z_NATURAL_LANGUAGE,
 				... Constants.SUGGESTIONS.LANGUAGES,
 				... Constants.SUGGESTIONS.TYPES
 			];
-			return context.dispatch( 'fetchZids', { zids: zids } );
+			return this.fetchZids( { zids } );
 		}
 	}
 };

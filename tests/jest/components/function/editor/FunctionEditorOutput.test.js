@@ -8,22 +8,17 @@
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
-	FunctionEditorOutput = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorOutput.vue' );
+	FunctionEditorOutput = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorOutput.vue' ),
+	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 
 describe( 'FunctionEditorOutput', () => {
-	let getters;
+	let store;
 
 	beforeEach( () => {
-		getters = {
-			getUserLangCode: createGetterMock( 'en' ),
-			getZFunctionOutput: createGettersWithFunctionsMock( { id: 1 } ),
-			getZReferenceTerminalValue: createGettersWithFunctionsMock()
-		};
-
-		global.store.hotUpdate( {
-			getters: getters
-		} );
+		store = useMainStore();
+		store.getUserLangCode = 'en';
+		store.getZFunctionOutput = createGettersWithFunctionsMock( { id: 1 } );
+		store.getZReferenceTerminalValue = createGettersWithFunctionsMock();
 	} );
 
 	it( 'renders without errors', () => {
@@ -69,8 +64,7 @@ describe( 'FunctionEditorOutput', () => {
 	} );
 
 	it( 'does not initialize a type selector component', () => {
-		getters.getZFunctionOutput = createGettersWithFunctionsMock( undefined );
-		global.store.hotUpdate( { getters: getters } );
+		store.getZFunctionOutput = createGettersWithFunctionsMock( undefined );
 		const wrapper = shallowMount( FunctionEditorOutput, {
 			props: { canEdit: true },
 			global: { stubs: { WlFunctionEditorField: false } }

@@ -47,12 +47,13 @@ const { CdxButton, CdxIcon } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const FunctionEditorLanguageBlock = require( './FunctionEditorLanguageBlock.vue' ),
 	FunctionEditorFooter = require( './FunctionEditorFooter.vue' ),
+	useMainStore = require( '../../../store/index.js' ),
 	icons = require( '../../../../lib/icons.json' ),
 	Constants = require( '../../../Constants.js' ),
 	eventLogUtils = require( '../../../mixins/eventLogUtils.js' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ),
 	{ hybridToCanonical } = require( '../../../mixins/schemata.js' ).methods,
-	{ mapGetters } = require( 'vuex' );
+	{ mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor',
@@ -73,7 +74,7 @@ module.exports = exports = defineComponent( {
 			functionLanguages: []
 		};
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getCurrentZObjectId',
 		'getRowByKeyPath',
 		'getUserLangZid',

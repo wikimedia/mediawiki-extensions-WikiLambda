@@ -7,8 +7,9 @@
 'use strict';
 
 const { shallowMount } = require( '@vue/test-utils' ),
-	{ createGetterMock, createGettersWithFunctionsMock } = require( '../../../helpers/getterHelpers.js' ),
+	{ createGettersWithFunctionsMock } = require( '../../../helpers/getterHelpers.js' ),
 	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
+	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' ),
 	WikidataItem = require( '../../../../../resources/ext.wikilambda.app/components/default-view-types/wikidata/Item.vue' );
 
 const dataIcons = () => ( {
@@ -27,18 +28,14 @@ const itemData = {
 };
 
 describe( 'WikidataItem', () => {
-	let getters, actions;
+	let store;
+
 	beforeEach( () => {
-		getters = {
-			getItemData: createGettersWithFunctionsMock(),
-			getItemIdRow: createGettersWithFunctionsMock( { id: 1 } ),
-			getZStringTerminalValue: createGettersWithFunctionsMock( itemId ),
-			getUserLangCode: createGetterMock( 'en' )
-		};
-		actions = {
-			fetchItems: jest.fn()
-		};
-		global.store.hotUpdate( { actions, getters } );
+		store = useMainStore();
+		store.getItemData = createGettersWithFunctionsMock();
+		store.getItemIdRow = createGettersWithFunctionsMock( { id: 1 } );
+		store.getZStringTerminalValue = createGettersWithFunctionsMock( itemId );
+		store.getUserLangCode = 'en';
 	} );
 
 	describe( 'in view mode', () => {
@@ -65,8 +62,8 @@ describe( 'WikidataItem', () => {
 		} );
 
 		it( 'renders the item external link if data is available', () => {
-			getters.getItemData = createGettersWithFunctionsMock( itemData );
-			global.store.hotUpdate( { getters } );
+			store.getItemData = createGettersWithFunctionsMock( itemData );
+
 			const wrapper = shallowMount( WikidataItem, {
 				props: {
 					edit: false,
@@ -108,8 +105,8 @@ describe( 'WikidataItem', () => {
 		} );
 
 		it( 'renders blank wikidata entity selector', () => {
-			getters.getZStringTerminalValue = createGettersWithFunctionsMock();
-			global.store.hotUpdate( { getters } );
+			store.getZStringTerminalValue = createGettersWithFunctionsMock();
+
 			const wrapper = shallowMount( WikidataItem, {
 				props: {
 					edit: true,
@@ -134,8 +131,8 @@ describe( 'WikidataItem', () => {
 		} );
 
 		it( 'initializes wikidata entity selector', async () => {
-			getters.getItemData = createGettersWithFunctionsMock( itemData );
-			global.store.hotUpdate( { getters } );
+			store.getItemData = createGettersWithFunctionsMock( itemData );
+
 			const wrapper = shallowMount( WikidataItem, {
 				props: {
 					edit: true,
@@ -149,7 +146,7 @@ describe( 'WikidataItem', () => {
 			expect( lookup.exists() ).toBe( true );
 			expect( lookup.vm.entityId ).toBe( itemId );
 			expect( lookup.vm.entityLabel ).toBe( itemLabel );
-			expect( actions.fetchItems ).toHaveBeenCalledWith( expect.anything(), { ids: [ itemId ] } );
+			expect( store.fetchItems ).toHaveBeenCalledWith( { ids: [ itemId ] } );
 		} );
 
 		it( 'initializes wikidata entity selector input value with delayed fetch response', async () => {
@@ -165,13 +162,13 @@ describe( 'WikidataItem', () => {
 			expect( lookup.vm.entityId ).toBe( itemId );
 			expect( lookup.vm.entityLabel ).toBe( itemId );
 
-			getters.getItemData = createGettersWithFunctionsMock( itemData );
-			global.store.hotUpdate( { getters } );
+			store.getItemData = createGettersWithFunctionsMock( itemData );
+
 			await wrapper.vm.$nextTick();
 
 			expect( lookup.vm.entityId ).toBe( itemId );
 			expect( lookup.vm.entityLabel ).toBe( itemLabel );
-			expect( actions.fetchItems ).toHaveBeenCalledWith( expect.anything(), { ids: [ itemId ] } );
+			expect( store.fetchItems ).toHaveBeenCalledWith( { ids: [ itemId ] } );
 		} );
 
 		it( 'sets item reference ID when selecting option from the menu', async () => {

@@ -37,9 +37,10 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
+	useMainStore = require( '../../../store/index.js' ),
 	FunctionMetadataDialog = require( './FunctionMetadataDialog.vue' ),
 	ZObjectKeyValue = require( '../../default-view-types/ZObjectKeyValue.vue' ),
-	{ mapGetters } = require( 'vuex' );
+	{ mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-evaluation-result',
@@ -59,7 +60,7 @@ module.exports = exports = defineComponent( {
 			showMetadata: false
 		};
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getMetadata',
 		'getCurrentZObjectId',
 		'getLabelData',

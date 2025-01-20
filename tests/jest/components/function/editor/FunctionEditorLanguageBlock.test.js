@@ -9,23 +9,19 @@
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
-	FunctionEditorLanguageBlock = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorLanguageBlock.vue' );
+	FunctionEditorLanguageBlock = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorLanguageBlock.vue' ),
+	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 
 describe( 'FunctionEditorLanguageBlock', () => {
-	let getters;
+	let store;
 
 	beforeEach( () => {
-		getters = {
-			getLabelDataForLangCode: createLabelDataMock( { zid: null, label: null, lang: 'Z1002', langCode: 'en', langDir: 'ltr' } ),
-			getLabelData: createLabelDataMock( { Z1002: 'English' } ),
-			getZFunctionLanguages: createGettersWithFunctionsMock( [ 'Z1002', 'Z1004' ] ),
-			isCreateNewPage: createGetterMock( true ),
-			isUserLoggedIn: createGetterMock( true )
-		};
-		global.store.hotUpdate( {
-			getters: getters
-		} );
+		store = useMainStore();
+		store.getLabelDataForLangCode = createLabelDataMock( { zid: null, label: null, lang: 'Z1002', langCode: 'en', langDir: 'ltr' } );
+		store.getLabelData = createLabelDataMock( { Z1002: 'English' } );
+		store.getZFunctionLanguages = createGettersWithFunctionsMock( [ 'Z1002', 'Z1004' ] );
+		store.isCreateNewPage = true;
+		store.isUserLoggedIn = true;
 	} );
 
 	describe( 'function editor language block', () => {

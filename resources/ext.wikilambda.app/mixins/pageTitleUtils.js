@@ -8,7 +8,8 @@
 'use strict';
 
 const Constants = require( '../Constants.js' ),
-	{ mapGetters } = require( 'vuex' );
+	useMainStore = require( '../store/index.js' ),
+	{ mapState } = require( 'pinia' );
 
 module.exports = exports = {
 	data: function () {
@@ -16,7 +17,7 @@ module.exports = exports = {
 			pageTitleObject: {}
 		};
 	},
-	computed: mapGetters( [
+	computed: mapState( useMainStore, [
 		'getFallbackLanguageZids',
 		'getLabelData',
 		'getLanguageIsoCodeOfZLang',

@@ -122,7 +122,8 @@
 const { CdxAccordion, CdxDialog, CdxField, CdxIcon, CdxMessage, CdxSelect } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
-	{ mapGetters } = require( 'vuex' ),
+	{ mapState } = require( 'pinia' ),
+	useMainStore = require( '../../../store/index.js' ),
 	CustomDialogHeader = require( '../../base/CustomDialogHeader.vue' ),
 	metadataConfig = require( '../../../mixins/metadata.js' ),
 	errorUtils = require( '../../../mixins/errorUtils.js' ),
@@ -171,7 +172,7 @@ module.exports = exports = defineComponent( {
 			selectedMetadataPath: '0'
 		};
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getErrors',
 		'getLabelData',
 		'getUserLangCode',

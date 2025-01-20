@@ -10,13 +10,13 @@ const { waitFor } = require( '@testing-library/vue' ),
 	shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
 	ZObjectStringRenderer = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZObjectStringRenderer.vue' ),
-	convertSetToMap = require( '../../fixtures/metadata.js' ).convertSetToMap;
+	convertSetToMap = require( '../../fixtures/metadata.js' ).convertSetToMap,
+	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 
 describe( 'ZObjectStringRenderer', () => {
-	let getters, actions;
+	let store;
 
 	const typeZid = 'Z30000';
 	const rendererZid = 'Z30010';
@@ -137,39 +137,23 @@ describe( 'ZObjectStringRenderer', () => {
 	};
 
 	beforeEach( () => {
-		getters = {
-			createObjectByType: createGettersWithFunctionsMock( blankObject ),
-			getCurrentView: createGetterMock(),
-			getLabelData: createLabelDataMock(),
-			getPassingTestZids: createGettersWithFunctionsMock( [] ),
-			getParserZid: createGettersWithFunctionsMock( parserZid ),
-			getRendererZid: createGettersWithFunctionsMock( rendererZid ),
-			getRendererExamples: createGettersWithFunctionsMock( [] ),
-			getStoredObject: () => ( zid ) => storedObjects[ zid ],
-			getUserLangCode: createGetterMock( 'en' ),
-			getUserLangZid: createGetterMock( 'Z1002' ),
-			getZObjectAsJsonById: createGettersWithFunctionsMock( parsedObject ),
-			isCreateNewPage: createGetterMock(),
-			getErrors: createGettersWithFunctionsMock( [] )
-		};
-		actions = {
-			clearErrors: jest.fn(),
-			getTestResults: jest.fn( () => ( {
-				then: ( fn ) => fn()
-			} ) ),
-			runRendererTest: jest.fn(),
-			runRenderer: jest.fn( () => ( {
-				then: ( fn ) => fn( rendererResponse )
-			} ) ),
-			runParser: jest.fn( () => ( {
-				then: ( fn ) => fn( parserResponse )
-			} ) ),
-			setError: jest.fn()
-		};
-		global.store.hotUpdate( {
-			getters: getters,
-			actions: actions
-		} );
+		store = useMainStore();
+		store.createObjectByType = createGettersWithFunctionsMock( blankObject );
+		store.getCurrentView = 'view';
+		store.getLabelData = createLabelDataMock();
+		store.getPassingTestZids = createGettersWithFunctionsMock( [] );
+		store.getParserZid = createGettersWithFunctionsMock( parserZid );
+		store.getRendererZid = createGettersWithFunctionsMock( rendererZid );
+		store.getRendererExamples = createGettersWithFunctionsMock( [] );
+		store.getStoredObject = jest.fn( ( zid ) => storedObjects[ zid ] );
+		store.getUserLangCode = 'en';
+		store.getUserLangZid = 'Z1002';
+		store.getZObjectAsJsonById = createGettersWithFunctionsMock( parsedObject );
+		store.isCreateNewPage = false;
+		store.getErrors = createGettersWithFunctionsMock( [] );
+		store.getTestResults.mockResolvedValue();
+		store.runRenderer.mockResolvedValue( rendererResponse );
+		store.runParser.mockResolvedValue( parserResponse );
 	} );
 
 	describe( 'in view and edit mode', () => {
@@ -195,7 +179,7 @@ describe( 'ZObjectStringRenderer', () => {
 				}
 			} );
 
-			expect( actions.runRenderer ).toHaveBeenCalledWith( expect.anything(), {
+			expect( store.runRenderer ).toHaveBeenCalledWith( {
 				rendererZid,
 				zobject: parsedObject,
 				zlang: 'Z1002'
@@ -310,14 +294,13 @@ describe( 'ZObjectStringRenderer', () => {
 			expect( keyValueSet.exists() ).toBe( true );
 
 			// Clear runRenderer action
-			actions.runRenderer = jest.fn();
-			global.store.hotUpdate( { actions: actions } );
+			store.runRenderer.mockResolvedValue();
 
 			// Update expanded prop
 			wrapper.setProps( { expanded: false } );
 			await wrapper.vm.$nextTick();
 
-			await waitFor( () => expect( actions.runRenderer ).toHaveBeenCalledWith( expect.anything(), {
+			await waitFor( () => expect( store.runRenderer ).toHaveBeenCalledWith( {
 				rendererZid,
 				zobject: parsedObject,
 				zlang: 'Z1002'
@@ -337,7 +320,7 @@ describe( 'ZObjectStringRenderer', () => {
 			const newValue = 'some new value';
 			const text = wrapper.findComponent( { name: 'cdx-text-input' } );
 			text.vm.$emit( 'change', { target: { value: newValue } } );
-			expect( actions.runParser ).toHaveBeenCalledWith( expect.anything(), {
+			expect( store.runParser ).toHaveBeenCalledWith( {
 				parserZid,
 				zobject: newValue,
 				zlang: 'Z1002',
@@ -355,14 +338,13 @@ describe( 'ZObjectStringRenderer', () => {
 				}
 			} );
 
-			expect( actions.getTestResults ).toHaveBeenCalledWith( expect.anything(), {
+			expect( store.getTestResults ).toHaveBeenCalledWith( {
 				zFunctionId: rendererZid
 			} );
 		} );
 
 		it( 'if no passing tests, and is special page, trigger expansion', async () => {
-			getters.isCreateNewPage = createGetterMock( true );
-			global.store.hotUpdate( { getters: getters } );
+			store.isCreateNewPage = true;
 
 			const wrapper = shallowMount( ZObjectStringRenderer, {
 				props: {
@@ -377,8 +359,7 @@ describe( 'ZObjectStringRenderer', () => {
 		} );
 
 		it( 'computes passing tests to generate examples, tests not fetched', async () => {
-			getters.getPassingTestZids = createGettersWithFunctionsMock( [ 'Z30030', 'Z30031' ] );
-			global.store.hotUpdate( { getters: getters } );
+			store.getPassingTestZids = createGettersWithFunctionsMock( [ 'Z30030', 'Z30031' ] );
 
 			const wrapper = shallowMount( ZObjectStringRenderer, {
 				props: {
@@ -393,8 +374,7 @@ describe( 'ZObjectStringRenderer', () => {
 		} );
 
 		it( 'computes passing tests to generate examples, tests fetched', async () => {
-			getters.getPassingTestZids = createGettersWithFunctionsMock( [ 'Z30030', 'Z30031' ] );
-			global.store.hotUpdate( { getters: getters } );
+			store.getPassingTestZids = createGettersWithFunctionsMock( [ 'Z30030', 'Z30031' ] );
 
 			const wrapper = shallowMount( ZObjectStringRenderer, {
 				props: {
@@ -421,8 +401,7 @@ describe( 'ZObjectStringRenderer', () => {
 		} );
 
 		it( 'excludes not wellformed tests', async () => {
-			getters.getPassingTestZids = createGettersWithFunctionsMock( [ 'Z30030', 'Z30031', 'Z30032' ] );
-			global.store.hotUpdate( { getters: getters } );
+			store.getPassingTestZids = createGettersWithFunctionsMock( [ 'Z30030', 'Z30031', 'Z30032' ] );
 
 			const wrapper = shallowMount( ZObjectStringRenderer, {
 				props: {
@@ -449,7 +428,7 @@ describe( 'ZObjectStringRenderer', () => {
 		} );
 
 		it( 'runs tests with user language', async () => {
-			global.store.hotUpdate( { getters: getters } );
+			store.getPassingTestZids = createGettersWithFunctionsMock( [ 'Z30030', 'Z30031' ] );
 
 			const wrapper = shallowMount( ZObjectStringRenderer, {
 				props: {
@@ -460,18 +439,15 @@ describe( 'ZObjectStringRenderer', () => {
 				}
 			} );
 
-			getters.getPassingTestZids = createGettersWithFunctionsMock( [ 'Z30030', 'Z30031' ] );
-			global.store.hotUpdate( { getters: getters } );
-
 			await waitFor( () => {
 				expect( wrapper.vm.validRendererTests.length ).toBe( 2 );
-				expect( actions.runRendererTest ).toHaveBeenCalledWith( expect.anything(), {
+				expect( store.runRendererTest ).toHaveBeenCalledWith( {
 					rendererZid,
 					testZid: 'Z30030',
 					test: storedObjects.Z30030.Z2K2,
 					zlang: 'Z1002'
 				} );
-				expect( actions.runRendererTest ).toHaveBeenCalledWith( expect.anything(), {
+				expect( store.runRendererTest ).toHaveBeenCalledWith( {
 					rendererZid,
 					testZid: 'Z30031',
 					test: storedObjects.Z30031.Z2K2,
@@ -481,11 +457,10 @@ describe( 'ZObjectStringRenderer', () => {
 		} );
 
 		it( 'uses first example as placeholder', () => {
-			getters.getRendererExamples = createGettersWithFunctionsMock( [
+			store.getRendererExamples = createGettersWithFunctionsMock( [
 				{ testZid: 'Z30030', result: 'example one' },
 				{ testZid: 'Z30031', result: 'example two' }
 			] );
-			global.store.hotUpdate( { getters: getters } );
 
 			const wrapper = shallowMount( ZObjectStringRenderer, {
 				props: {
@@ -503,13 +478,8 @@ describe( 'ZObjectStringRenderer', () => {
 
 		describe( 'renderer error handling', () => {
 			it( 'renderer returns void, no examples', async () => {
-				actions.runRenderer = jest.fn( () => ( {
-					then: ( fn ) => fn( errorResponse )
-				} ) );
-				global.store.hotUpdate( {
-					getters: getters,
-					actions: actions
-				} );
+				store.runRenderer.mockResolvedValue( errorResponse );
+
 				shallowMount( ZObjectStringRenderer, {
 					props: {
 						depth: 2,
@@ -526,21 +496,16 @@ describe( 'ZObjectStringRenderer', () => {
 					errorMessage: 'Some error message'
 				};
 
-				await waitFor( () => expect( actions.setError ).toHaveBeenCalledWith( expect.anything(), errorPayload ) );
+				await waitFor( () => expect( store.setError ).toHaveBeenCalledWith( errorPayload ) );
 			} );
 
 			it( 'renderer returns void, available examples', async () => {
-				getters.getRendererExamples = createGettersWithFunctionsMock( [
+				store.getRendererExamples = createGettersWithFunctionsMock( [
 					{ testZid: 'Z30030', result: 'example one' },
 					{ testZid: 'Z30031', result: 'example two' }
 				] );
-				actions.runRenderer = jest.fn( () => ( {
-					then: ( fn ) => fn( errorResponse )
-				} ) );
-				global.store.hotUpdate( {
-					getters: getters,
-					actions: actions
-				} );
+				store.runRenderer.mockResolvedValue( errorResponse );
+
 				shallowMount( ZObjectStringRenderer, {
 					props: {
 						depth: 2,
@@ -557,17 +522,12 @@ describe( 'ZObjectStringRenderer', () => {
 					errorMessage: 'Some error message'
 				};
 
-				await waitFor( () => expect( actions.setError ).toHaveBeenCalledWith( expect.anything(), errorPayload ) );
+				await waitFor( () => expect( store.setError ).toHaveBeenCalledWith( errorPayload ) );
 			} );
 
 			it( 'renderer returns wrong type', async () => {
-				actions.runRenderer = jest.fn( () => ( {
-					then: ( fn ) => fn( parserResponse )
-				} ) );
-				global.store.hotUpdate( {
-					getters: getters,
-					actions: actions
-				} );
+				store.runRenderer.mockResolvedValue( parserResponse );
+
 				shallowMount( ZObjectStringRenderer, {
 					props: {
 						depth: 2,
@@ -584,20 +544,15 @@ describe( 'ZObjectStringRenderer', () => {
 					errorMessage: '[[$1|Display function]] returned an unexpected result.'
 				};
 
-				await waitFor( () => expect( actions.setError ).toHaveBeenCalledWith( expect.anything(), errorPayload ) );
+				await waitFor( () => expect( store.setError ).toHaveBeenCalledWith( errorPayload ) );
 				expect( global.$i18n ).toHaveBeenCalledWith( 'wikilambda-renderer-unexpected-result-error', rendererZid );
 			} );
 		} );
 
 		describe( 'parser error handling', () => {
 			it( 'parser returns void, no examples', async () => {
-				actions.runParser = jest.fn( () => ( {
-					then: ( fn ) => fn( errorResponse )
-				} ) );
-				global.store.hotUpdate( {
-					getters: getters,
-					actions: actions
-				} );
+				store.runParser.mockResolvedValue( errorResponse );
+
 				const wrapper = shallowMount( ZObjectStringRenderer, {
 					props: {
 						depth: 2,
@@ -617,21 +572,16 @@ describe( 'ZObjectStringRenderer', () => {
 					errorMessage: 'Some error message'
 				};
 
-				await waitFor( () => expect( actions.setError ).toHaveBeenCalledWith( expect.anything(), errorPayload ) );
+				await waitFor( () => expect( store.setError ).toHaveBeenCalledWith( errorPayload ) );
 			} );
 
 			it( 'parser returns void, available examples', async () => {
-				getters.getRendererExamples = createGettersWithFunctionsMock( [
+				store.getRendererExamples = createGettersWithFunctionsMock( [
 					{ testZid: 'Z30030', result: 'example one' },
 					{ testZid: 'Z30031', result: 'example two' }
 				] );
-				actions.runParser = jest.fn( () => ( {
-					then: ( fn ) => fn( errorResponse )
-				} ) );
-				global.store.hotUpdate( {
-					getters: getters,
-					actions: actions
-				} );
+				store.runParser.mockResolvedValue( errorResponse );
+
 				const wrapper = shallowMount( ZObjectStringRenderer, {
 					props: {
 						depth: 2,
@@ -651,17 +601,12 @@ describe( 'ZObjectStringRenderer', () => {
 					errorMessage: 'Some error message'
 				};
 
-				await waitFor( () => expect( actions.setError ).toHaveBeenCalledWith( expect.anything(), errorPayload ) );
+				await waitFor( () => expect( store.setError ).toHaveBeenCalledWith( errorPayload ) );
 			} );
 
 			it( 'parser returns wrong type', async () => {
-				actions.runParser = jest.fn( () => ( {
-					then: ( fn ) => fn( parserBadResponse )
-				} ) );
-				global.store.hotUpdate( {
-					getters: getters,
-					actions: actions
-				} );
+				store.runParser.mockResolvedValue( parserBadResponse );
+
 				const wrapper = shallowMount( ZObjectStringRenderer, {
 					props: {
 						depth: 2,
@@ -681,19 +626,19 @@ describe( 'ZObjectStringRenderer', () => {
 					errorMessage: '[[$1|Reading function]] returned an unexpected result.'
 				};
 
-				await waitFor( () => expect( actions.setError ).toHaveBeenCalledWith( expect.anything(), errorPayload ) );
+				await waitFor( () => expect( store.setError ).toHaveBeenCalledWith( errorPayload ) );
 				expect( global.$i18n ).toHaveBeenCalledWith( 'wikilambda-parser-unexpected-result-error', parserZid );
 			} );
 		} );
 
 		it( 'creates an examples dialog window', async () => {
 			const rendererLabel = 'Renderer function label';
-			getters.getLabelData = createLabelDataMock( { [ rendererZid ]: rendererLabel } );
-			getters.getRendererExamples = createGettersWithFunctionsMock( [
+			store.getLabelData = createLabelDataMock( { [ rendererZid ]: rendererLabel } );
+			store.getRendererExamples = createGettersWithFunctionsMock( [
 				{ testZid: 'Z30030', result: 'example one' },
 				{ testZid: 'Z30031', result: 'example two' }
 			] );
-			global.store.hotUpdate( { getters: getters } );
+
 			const wrapper = shallowMount( ZObjectStringRenderer, {
 				props: {
 					depth: 2,
@@ -723,12 +668,8 @@ describe( 'ZObjectStringRenderer', () => {
 
 		describe( 'in edit mode with blank object', () => {
 			beforeEach( () => {
-				getters.getZObjectAsJsonById = createGettersWithFunctionsMock( blankObject );
-				actions.runRenderer = jest.fn();
-				global.store.hotUpdate( {
-					getters: getters,
-					actions: actions
-				} );
+				store.getZObjectAsJsonById = createGettersWithFunctionsMock( blankObject );
+				store.runRenderer = jest.fn();
 			} );
 
 			it( 'does not run renderer with empty values', async () => {
@@ -741,12 +682,12 @@ describe( 'ZObjectStringRenderer', () => {
 						expanded: false
 					}
 				} );
-				await waitFor( () => expect( actions.runRenderer ).not.toHaveBeenCalled() );
+				await waitFor( () => expect( store.runRenderer ).not.toHaveBeenCalled() );
 			} );
 
 			it( 'initializes blank object when type object is available', async () => {
-				getters.getStoredObject = createGettersWithFunctionsMock( undefined );
-				global.store.hotUpdate( { getters: getters } );
+				store.getStoredObject = createGettersWithFunctionsMock( undefined );
+
 				const wrapper = shallowMount( ZObjectStringRenderer, {
 					props: {
 						depth: 2,
@@ -759,12 +700,11 @@ describe( 'ZObjectStringRenderer', () => {
 
 				expect( wrapper.vm.blankObject ).toBe( undefined );
 
-				getters.getStoredObject = () => ( zid ) => storedObjects[ zid ];
-				global.store.hotUpdate( { getters: getters } );
+				store.getStoredObject = ( zid ) => storedObjects[ zid ];
 				await wrapper.vm.$nextTick();
 
 				expect( wrapper.vm.blankObject ).toEqual( blankObject );
-				await waitFor( () => expect( actions.runRenderer ).not.toHaveBeenCalled() );
+				await waitFor( () => expect( store.runRenderer ).not.toHaveBeenCalled() );
 			} );
 		} );
 	} );

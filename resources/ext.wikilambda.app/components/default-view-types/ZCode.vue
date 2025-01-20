@@ -89,10 +89,11 @@
 const { CdxMessage, CdxSelect } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
+	useMainStore = require( '../../store/index.js' ),
 	CodeEditor = require( '../base/CodeEditor.vue' ),
 	KeyValueBlock = require( '../base/KeyValueBlock.vue' ),
 	errorUtils = require( '../../mixins/errorUtils.js' ),
-	{ mapGetters, mapActions } = require( 'vuex' );
+	{ mapState, mapActions } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-code',
@@ -127,7 +128,7 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign(
-		mapGetters( [
+		mapState( useMainStore, [
 			'getAllProgrammingLangs',
 			'getConverterIdentity',
 			'getErrors',
@@ -334,7 +335,7 @@ module.exports = exports = defineComponent( {
 		}
 	),
 	methods: Object.assign(
-		mapActions( [
+		mapActions( useMainStore, [
 			'fetchZids',
 			'fetchAllZProgrammingLanguages',
 			'clearErrors',

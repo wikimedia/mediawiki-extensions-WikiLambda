@@ -38,10 +38,11 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
+	useMainStore = require( '../../../store/index.js' ),
 	LabelData = require( '../../../store/classes/LabelData.js' ),
 	FunctionEditorField = require( './FunctionEditorField.vue' ),
 	TypeSelector = require( '../../base/TypeSelector.vue' ),
-	{ mapGetters } = require( 'vuex' );
+	{ mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-output',
@@ -78,7 +79,7 @@ module.exports = exports = defineComponent( {
 			typeZid: Constants.Z_TYPE
 		};
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getUserLangCode',
 		'getZFunctionOutput'
 	] ), {

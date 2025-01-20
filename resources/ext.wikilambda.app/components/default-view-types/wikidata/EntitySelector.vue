@@ -29,7 +29,8 @@
 const { defineComponent } = require( 'vue' );
 const { Icon, CdxLookup } = require( '@wikimedia/codex' );
 const Constants = require( '../../../Constants.js' ),
-	{ mapActions } = require( 'vuex' );
+	useMainStore = require( '../../../store/index.js' ),
+	{ mapActions } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-wikidata-entity-selector',
@@ -92,7 +93,7 @@ module.exports = exports = defineComponent( {
 			}
 		}
 	},
-	methods: Object.assign( mapActions( [
+	methods: Object.assign( {}, mapActions( useMainStore, [
 		'lookupWikidataEntities'
 	] ), {
 		/**
@@ -197,23 +198,29 @@ module.exports = exports = defineComponent( {
 				searchContinue: this.lookupConfig.searchContinue
 			};
 
-			this.lookupWikidataEntities( payload ).then( ( data ) => {
-				const { searchContinue, search } = data;
+			this.lookupWikidataEntities( payload )
+				.then( ( data ) => {
+					const { searchContinue, search } = data;
 
-				// If searchContinue is present, store it in lookupConfig
-				this.lookupConfig.searchContinue = searchContinue;
-				// Store the search term in lookupConfig
-				this.lookupConfig.searchQuery = searchTerm;
-				// Update the lookup results
-				for ( const entity of search ) {
-					this.lookupResults.push( {
-						value: entity.id,
-						label: entity.label,
-						description: entity.description,
-						title: entity.description
-					} );
-				}
-			} );
+					// If searchContinue is present, store it in lookupConfig
+					this.lookupConfig.searchContinue = searchContinue;
+					// Store the search term in lookupConfig
+					this.lookupConfig.searchQuery = searchTerm;
+					// Update the lookup results
+					for ( const entity of search ) {
+						this.lookupResults.push( {
+							value: entity.id,
+							label: entity.label,
+							description: entity.description,
+							title: entity.description
+						} );
+					}
+				} )
+				.catch( () => {
+					// Reset the lookup
+					this.lookupConfig.searchQuery = searchTerm;
+					this.lookupResults = [];
+				} );
 		}
 	} ),
 	watch: {

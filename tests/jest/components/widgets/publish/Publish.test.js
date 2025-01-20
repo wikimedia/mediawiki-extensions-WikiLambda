@@ -9,36 +9,24 @@
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	{ waitFor } = require( '@testing-library/vue' ),
-	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
 	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
-	PublishWidget = require( '../../../../../resources/ext.wikilambda.app/components/widgets/publish/Publish.vue' );
+	PublishWidget = require( '../../../../../resources/ext.wikilambda.app/components/widgets/publish/Publish.vue' ),
+	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 
 describe( 'Publish widget', () => {
-	let getters,
-		actions;
+	let store;
 
 	beforeEach( () => {
 		Object.defineProperty( window, 'location', { value: { href: '' } } );
-		getters = {
-			getCurrentZObjectId: createGetterMock( 'Z0' ),
-			getCurrentZObjectType: createGetterMock( Constants.Z_FUNCTION ),
-			getCurrentZImplementationType: createGetterMock( Constants.Z_IMPLEMENTATION_CODE ),
-			isCreateNewPage: createGetterMock( true ),
-			getUserLangZid: createGetterMock( 'Z1002' ),
-			getUserLangCode: createGetterMock( 'en' ),
-			waitForRunningParsers: createGetterMock( Promise.resolve() )
-		};
-		actions = {
-			clearValidationErrors: jest.fn(),
-			validateZObject: jest.fn( () => true ),
-			submitZObject: jest.fn(),
-			setError: jest.fn(),
-			clearAllErrors: jest.fn()
-		};
-		global.store.hotUpdate( {
-			getters: getters,
-			actions: actions
-		} );
+		store = useMainStore();
+		store.getCurrentZObjectId = 'Z0';
+		store.getCurrentZObjectType = Constants.Z_FUNCTION;
+		store.getCurrentZImplementationType = Constants.Z_IMPLEMENTATION_CODE;
+		store.isCreateNewPage = true;
+		store.getUserLangZid = 'Z1002';
+		store.getUserLangCode = 'en';
+		store.waitForRunningParsers = Promise.resolve();
+		store.validateZObject.mockReturnValue( true );
 	} );
 
 	it( 'renders without errors', () => {
@@ -63,8 +51,7 @@ describe( 'Publish widget', () => {
 	} );
 
 	it( 'does not open the publish dialog if validateZObject returns isValid false', async () => {
-		actions.validateZObject = jest.fn( () => false );
-		global.store.hotUpdate( { actions: actions } );
+		store.validateZObject.mockReturnValue( false );
 
 		const wrapper = shallowMount( PublishWidget, {
 			global: { stubs: { WlWidgetBase: false } }
@@ -108,8 +95,7 @@ describe( 'Publish widget', () => {
 	} );
 
 	it( 'redirects to main page if we cancel from a create page', async () => {
-		getters.isCreateNewPage = createGetterMock( true );
-		global.store.hotUpdate( { getters: getters } );
+		store.isCreateNewPage = true;
 
 		const wrapper = shallowMount( PublishWidget, {
 			props: { isDirty: false },
@@ -124,9 +110,8 @@ describe( 'Publish widget', () => {
 	} );
 
 	it( 'redirects to object view page if we cancel from an edit page', () => {
-		getters.isCreateNewPage = createGetterMock( false );
-		getters.getCurrentZObjectId = createGetterMock( 'Z10001' );
-		global.store.hotUpdate( { getters: getters } );
+		store.isCreateNewPage = false;
+		store.getCurrentZObjectId = 'Z10001';
 
 		const wrapper = shallowMount( PublishWidget, {
 			props: { isDirty: false },
@@ -143,10 +128,9 @@ describe( 'Publish widget', () => {
 	describe( 'Event logging', () => {
 
 		it( 'emits cancel event when leaving a create function page', async () => {
-			getters.isCreateNewPage = createGetterMock( true );
-			getters.getCurrentZObjectType = createGetterMock( 'Z8' );
-			getters.getCurrentZImplementationType = createGetterMock( undefined );
-			global.store.hotUpdate( { getters: getters } );
+			store.isCreateNewPage = true;
+			store.getCurrentZObjectType = 'Z8';
+			store.getCurrentZImplementationType = undefined;
 
 			const wrapper = shallowMount( PublishWidget, {
 				props: { isDirty: false },
@@ -158,17 +142,16 @@ describe( 'Publish widget', () => {
 			const streamName = 'mediawiki.product_metrics.wikifunctions_ui';
 			const schemaID = '/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0';
 			const action = 'cancel';
-			const interactionData = { implementationtype: 'Z14K3', zlang: 'Z1002', zobjectid: 'Z0', zobjecttype: 'Z8' };
+			const interactionData = { zlang: 'Z1002', zobjectid: 'Z0', zobjecttype: 'Z8' };
 
 			await waitFor( () => expect( mw.eventLog.submitInteraction ).toHaveBeenCalledWith( streamName, schemaID, action, interactionData ) );
 		} );
 
 		it( 'emits cancel event when leaving an edit code implementation page', async () => {
-			getters.isCreateNewPage = createGetterMock( false );
-			getters.getCurrentZObjectId = createGetterMock( 'Z10001' );
-			getters.getCurrentZObjectType = createGetterMock( 'Z14' );
-			getters.getCurrentZImplementationType = createGetterMock( 'Z14K3' );
-			global.store.hotUpdate( { getters: getters } );
+			store.isCreateNewPage = false;
+			store.getCurrentZObjectId = 'Z10001';
+			store.getCurrentZObjectType = 'Z14';
+			store.getCurrentZImplementationType = 'Z14K3';
 
 			const wrapper = shallowMount( PublishWidget, {
 				props: { isDirty: false },

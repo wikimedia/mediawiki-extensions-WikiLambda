@@ -33,9 +33,10 @@
 const { defineComponent } = require( 'vue' );
 const FunctionMetadataDialog = require( '../../widgets/function-evaluator/FunctionMetadataDialog.vue' ),
 	Constants = require( '../../../Constants.js' ),
+	useMainStore = require( '../../../store/index.js' ),
 	StatusIcon = require( '../../base/StatusIcon.vue' ),
 	icons = require( '../../../../lib/icons.json' ),
-	{ mapGetters } = require( 'vuex' );
+	{ mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-tester-table',
@@ -63,7 +64,7 @@ module.exports = exports = defineComponent( {
 			errorId: Constants.errorIds.TEST_RESULTS
 		};
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getZTesterResults',
 		'getZTesterMetadata',
 		'getLabelData'

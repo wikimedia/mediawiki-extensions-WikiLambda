@@ -10,18 +10,15 @@ const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
 	ZString = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZString.vue' ),
-	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
+	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
+	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 
 describe( 'ZString', () => {
-	let getters;
+	let store;
 	beforeEach( () => {
-		getters = {
-			getZObjectKeyByRowId: createGettersWithFunctionsMock( Constants.Z_ARGUMENT_KEY ),
-			getZStringTerminalValue: createGettersWithFunctionsMock( 'my terminating string ' )
-		};
-		global.store.hotUpdate( {
-			getters: getters
-		} );
+		store = useMainStore();
+		store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_ARGUMENT_KEY );
+		store.getZStringTerminalValue = createGettersWithFunctionsMock( 'my terminating string ' );
 	} );
 
 	describe( 'in view mode', () => {
@@ -61,14 +58,8 @@ describe( 'ZString', () => {
 			} );
 
 		it( 'takes an input and emits the value with an empty keyPath if its key is a Z_STRING_VALUE (Z6K1)', async () => {
-			getters = {
-				getZObjectKeyByRowId: createGettersWithFunctionsMock( Constants.Z_STRING_VALUE ),
-				getZStringTerminalValue: createGettersWithFunctionsMock( undefined )
-			};
-
-			await global.store.hotUpdate( {
-				getters: getters
-			} );
+			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_STRING_VALUE );
+			store.getZStringTerminalValue = createGettersWithFunctionsMock( undefined );
 
 			const wrapper = shallowMount( ZString, {
 				props: {

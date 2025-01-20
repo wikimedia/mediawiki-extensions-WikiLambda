@@ -7,8 +7,9 @@
 'use strict';
 
 const { shallowMount } = require( '@vue/test-utils' ),
-	{ createGetterMock, createGettersWithFunctionsMock } = require( '../../../helpers/getterHelpers.js' ),
+	{ createGettersWithFunctionsMock } = require( '../../../helpers/getterHelpers.js' ),
 	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
+	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' ),
 	WikidataProperty = require( '../../../../../resources/ext.wikilambda.app/components/default-view-types/wikidata/Property.vue' );
 
 const dataIcons = () => ( {
@@ -27,18 +28,14 @@ const propertyData = {
 };
 
 describe( 'WikidataProperty', () => {
-	let getters, actions;
+	let store;
+
 	beforeEach( () => {
-		getters = {
-			getPropertyData: createGettersWithFunctionsMock(),
-			getPropertyIdRow: createGettersWithFunctionsMock( { id: 1 } ),
-			getZStringTerminalValue: createGettersWithFunctionsMock( propertyId ),
-			getUserLangCode: createGetterMock( 'en' )
-		};
-		actions = {
-			fetchProperties: jest.fn()
-		};
-		global.store.hotUpdate( { actions, getters } );
+		store = useMainStore();
+		store.getPropertyData = createGettersWithFunctionsMock();
+		store.getPropertyIdRow = createGettersWithFunctionsMock( { id: 1 } );
+		store.getZStringTerminalValue = createGettersWithFunctionsMock( propertyId );
+		store.getUserLangCode = 'en';
 	} );
 
 	describe( 'in view mode', () => {
@@ -65,8 +62,8 @@ describe( 'WikidataProperty', () => {
 		} );
 
 		it( 'renders the property external link if data is available', () => {
-			getters.getPropertyData = createGettersWithFunctionsMock( propertyData );
-			global.store.hotUpdate( { getters } );
+			store.getPropertyData = createGettersWithFunctionsMock( propertyData );
+
 			const wrapper = shallowMount( WikidataProperty, {
 				props: {
 					edit: false,
@@ -108,8 +105,8 @@ describe( 'WikidataProperty', () => {
 		} );
 
 		it( 'renders blank wikidata entity selector', () => {
-			getters.getZStringTerminalValue = createGettersWithFunctionsMock();
-			global.store.hotUpdate( { getters } );
+			store.getZStringTerminalValue = createGettersWithFunctionsMock();
+
 			const wrapper = shallowMount( WikidataProperty, {
 				props: {
 					edit: true,
@@ -134,8 +131,8 @@ describe( 'WikidataProperty', () => {
 		} );
 
 		it( 'initializes wikidata entity selector', async () => {
-			getters.getPropertyData = createGettersWithFunctionsMock( propertyData );
-			global.store.hotUpdate( { getters } );
+			store.getPropertyData = createGettersWithFunctionsMock( propertyData );
+
 			const wrapper = shallowMount( WikidataProperty, {
 				props: {
 					edit: true,
@@ -149,7 +146,7 @@ describe( 'WikidataProperty', () => {
 			expect( lookup.exists() ).toBe( true );
 			expect( lookup.vm.entityId ).toBe( propertyId );
 			expect( lookup.vm.entityLabel ).toBe( propertyLabel );
-			expect( actions.fetchProperties ).toHaveBeenCalledWith( expect.anything(), { ids: [ propertyId ] } );
+			expect( store.fetchProperties ).toHaveBeenCalledWith( { ids: [ propertyId ] } );
 		} );
 
 		it( 'initializes wikidata entity selector input value with delayed fetch response', async () => {
@@ -165,13 +162,13 @@ describe( 'WikidataProperty', () => {
 			expect( lookup.vm.entityId ).toBe( propertyId );
 			expect( lookup.vm.entityLabel ).toBe( propertyId );
 
-			getters.getPropertyData = createGettersWithFunctionsMock( propertyData );
-			global.store.hotUpdate( { getters } );
+			store.getPropertyData = createGettersWithFunctionsMock( propertyData );
+
 			await wrapper.vm.$nextTick();
 
 			expect( lookup.vm.entityId ).toBe( propertyId );
 			expect( lookup.vm.entityLabel ).toBe( propertyLabel );
-			expect( actions.fetchProperties ).toHaveBeenCalledWith( expect.anything(), { ids: [ propertyId ] } );
+			expect( store.fetchProperties ).toHaveBeenCalledWith( { ids: [ propertyId ] } );
 		} );
 
 		it( 'sets property reference ID when selecting option from the menu', async () => {

@@ -69,6 +69,7 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../Constants.js' ),
+	useMainStore = require( '../store/index.js' ),
 	ZObjectKeyValue = require( '../components/default-view-types/ZObjectKeyValue.vue' ),
 	FunctionEvaluatorWidget = require( '../components/widgets/function-evaluator/FunctionEvaluator.vue' ),
 	FunctionExplorerWidget = require( '../components/widgets/function-explorer/FunctionExplorer.vue' ),
@@ -77,7 +78,7 @@ const Constants = require( '../Constants.js' ),
 	FunctionReportWidget = require( '../components/widgets/function-report/FunctionReport.vue' ),
 	eventLogUtils = require( '../mixins/eventLogUtils.js' ),
 	typeUtils = require( '../mixins/typeUtils.js' ),
-	{ mapGetters } = require( 'vuex' );
+	{ mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-default-view',
@@ -91,7 +92,7 @@ module.exports = exports = defineComponent( {
 	},
 	mixins: [ eventLogUtils, typeUtils ],
 	computed: Object.assign(
-		mapGetters( [
+		mapState( useMainStore, [
 			'getZPersistentContentRowId',
 			'getRowByKeyPath',
 			'getViewMode',

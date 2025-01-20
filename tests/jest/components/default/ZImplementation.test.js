@@ -9,22 +9,21 @@
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	ZImplementation = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZImplementation.vue' );
+	ZImplementation = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZImplementation.vue' ),
+	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 
 describe( 'ZImplementation', () => {
-	let getters;
+	let store;
 	beforeEach( () => {
-		getters = {
-			getZImplementationFunctionRowId: createGettersWithFunctionsMock( 0 ),
-			getZImplementationContentType: createGettersWithFunctionsMock( 'Z14K2' ),
-			getZImplementationContentRowId: createGettersWithFunctionsMock( 1 ),
-			getLabelData: createLabelDataMock( {
-				Z14K2: 'composition',
-				Z14K3: 'code',
-				Z14: 'Implementation'
-			} )
-		};
-		global.store.hotUpdate( { getters: getters } );
+		store = useMainStore();
+		store.getZImplementationFunctionRowId = createGettersWithFunctionsMock( 0 );
+		store.getZImplementationContentType = createGettersWithFunctionsMock( 'Z14K2' );
+		store.getZImplementationContentRowId = createGettersWithFunctionsMock( 1 );
+		store.getLabelData = createLabelDataMock( {
+			Z14K2: 'composition',
+			Z14K3: 'code',
+			Z14: 'Implementation'
+		} );
 	} );
 
 	describe( 'in view mode', () => {
@@ -77,8 +76,8 @@ describe( 'ZImplementation', () => {
 		} );
 
 		it( 'it renders the composition type for a composition', () => {
-			getters.getZImplementationContentType = createGettersWithFunctionsMock( 'Z14K2' );
-			global.store.hotUpdate( { getters: getters } );
+			store.getZImplementationContentType = createGettersWithFunctionsMock( 'Z14K2' );
+
 			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: false
@@ -96,8 +95,8 @@ describe( 'ZImplementation', () => {
 		} );
 
 		it( 'it renders the code type for a code implementation', () => {
-			getters.getZImplementationContentType = createGettersWithFunctionsMock( 'Z14K3' );
-			global.store.hotUpdate( { getters: getters } );
+			store.getZImplementationContentType = createGettersWithFunctionsMock( 'Z14K3' );
+
 			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: false
@@ -115,8 +114,8 @@ describe( 'ZImplementation', () => {
 		} );
 
 		it( 'it renders non editable function for a builtin', () => {
-			getters.getZImplementationContentType = createGettersWithFunctionsMock( 'Z14K4' );
-			global.store.hotUpdate( { getters: getters } );
+			store.getZImplementationContentType = createGettersWithFunctionsMock( 'Z14K4' );
+
 			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: false
@@ -129,8 +128,8 @@ describe( 'ZImplementation', () => {
 		} );
 
 		it( 'it renders the warning message for a builtin', () => {
-			getters.getZImplementationContentType = createGettersWithFunctionsMock( 'Z14K4' );
-			global.store.hotUpdate( { getters: getters } );
+			store.getZImplementationContentType = createGettersWithFunctionsMock( 'Z14K4' );
+
 			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: false
@@ -218,8 +217,8 @@ describe( 'ZImplementation', () => {
 		} );
 
 		it( 'it renders non editable function for a builtin', () => {
-			getters.getZImplementationContentType = createGettersWithFunctionsMock( 'Z14K4' );
-			global.store.hotUpdate( { getters: getters } );
+			store.getZImplementationContentType = createGettersWithFunctionsMock( 'Z14K4' );
+
 			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: true
@@ -238,8 +237,8 @@ describe( 'ZImplementation', () => {
 		} );
 
 		it( 'it renders the warning message for a builtin', () => {
-			getters.getZImplementationContentType = createGettersWithFunctionsMock( 'Z14K4' );
-			global.store.hotUpdate( { getters: getters } );
+			store.getZImplementationContentType = createGettersWithFunctionsMock( 'Z14K4' );
+
 			const wrapper = shallowMount( ZImplementation, {
 				props: {
 					edit: true

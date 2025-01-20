@@ -8,26 +8,22 @@
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
-	FunctionEditor = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditor.vue' );
+	FunctionEditor = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditor.vue' ),
+	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 
 describe( 'FunctionEditor', () => {
-	let getters;
+	let store;
 
 	beforeEach( () => {
-		getters = {
-			getCurrentZObjectId: createGetterMock( 'Z0' ),
-			getRowByKeyPath: createGettersWithFunctionsMock(),
-			getUserLangZid: createGetterMock( 'Z1002' ),
-			getZFunctionInputs: createGettersWithFunctionsMock( [] ),
-			getMultilingualDataLanguages: createGettersWithFunctionsMock( [ 'Z1002', 'Z1004' ] ),
-			getZFunctionOutput: createGettersWithFunctionsMock( { id: 2 } ),
-			getZObjectAsJsonById: createGettersWithFunctionsMock( 'Z6' ),
-			isCreateNewPage: createGetterMock( true )
-		};
-		global.store.hotUpdate( {
-			getters: getters
-		} );
+		store = useMainStore();
+		store.getCurrentZObjectId = 'Z0';
+		store.getRowByKeyPath = createGettersWithFunctionsMock();
+		store.getUserLangZid = 'Z1002';
+		store.getZFunctionInputs = createGettersWithFunctionsMock( [] );
+		store.getMultilingualDataLanguages = createGettersWithFunctionsMock( [ 'Z1002', 'Z1004' ] );
+		store.getZFunctionOutput = createGettersWithFunctionsMock( { id: 2 } );
+		store.getZObjectAsJsonById = createGettersWithFunctionsMock( 'Z6' );
+		store.isCreateNewPage = true;
 	} );
 
 	describe( 'function editor with initial data', () => {
@@ -61,19 +57,14 @@ describe( 'FunctionEditor', () => {
 
 	describe( 'function editor to create new function', () => {
 		beforeEach( () => {
-			getters = {
-				getCurrentZObjectId: createGetterMock( 'Z0' ),
-				getRowByKeyPath: createGettersWithFunctionsMock(),
-				getUserLangZid: createGetterMock( 'Z1002' ),
-				getZFunctionInputs: createGettersWithFunctionsMock( [] ),
-				getMultilingualDataLanguages: createGettersWithFunctionsMock( [] ),
-				getZFunctionOutput: createGettersWithFunctionsMock( undefined ),
-				getZObjectAsJsonById: createGettersWithFunctionsMock( 'Z6' ),
-				isCreateNewPage: createGetterMock( true )
-			};
-			global.store.hotUpdate( {
-				getters: getters
-			} );
+			store.getCurrentZObjectId = 'Z0';
+			store.getRowByKeyPath = createGettersWithFunctionsMock();
+			store.getUserLangZid = 'Z1002';
+			store.getZFunctionInputs = createGettersWithFunctionsMock( [] );
+			store.getMultilingualDataLanguages = createGettersWithFunctionsMock( [] );
+			store.getZFunctionOutput = createGettersWithFunctionsMock( undefined );
+			store.getZObjectAsJsonById = createGettersWithFunctionsMock( 'Z6' );
+			store.isCreateNewPage = true;
 		} );
 
 		it( 'initializes language block with user language', async () => {

@@ -13,7 +13,6 @@ const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
 	{ lookupSearchAndSelect, textInputChange, chipInputAddChip } = require( './helpers/interactionHelpers.js' ),
 	{ runSetup, runTeardown } = require( './helpers/functionEditorTestHelpers.js' ),
 	Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' ),
-	store = require( '../../../resources/ext.wikilambda.app/store/index.js' ),
 	App = require( '../../../resources/ext.wikilambda.app/components/App.vue' ),
 	expectedNoLabelFunctionPostedToApi = require( './objects/expectedNoLabelFunctionPostedToApi.js' );
 
@@ -42,7 +41,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 			findByRole,
 			getByText,
 			queryByRole
-		} = render( App, { global: { plugins: [ store ] } } );
+		} = render( App );
 
 		// ACT: Get First language block. Selected by default: English
 		const languageBlocks = await findAllByTestId( 'function-editor-language-block' );

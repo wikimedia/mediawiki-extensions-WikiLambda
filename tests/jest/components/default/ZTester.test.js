@@ -10,32 +10,22 @@ const { waitFor } = require( '@testing-library/vue' ),
 	shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
-	ZTester = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZTester.vue' );
+	ZTester = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZTester.vue' ),
+	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 
 describe( 'ZTester', () => {
-	let getters, actions;
+	let store;
 	beforeEach( () => {
-		getters = {
-			getLabelData: createLabelDataMock(),
-			getStoredObject: createGettersWithFunctionsMock(),
-			getZReferenceTerminalValue: createGettersWithFunctionsMock(),
-			getZTesterFunctionRowId: createGettersWithFunctionsMock( 1 ),
-			getZTesterCallRowId: createGettersWithFunctionsMock( 2 ),
-			getZTesterValidationRowId: createGettersWithFunctionsMock( 3 ),
-			createZObjectByType: createGettersWithFunctionsMock(),
-			isCreateNewPage: createGetterMock( false )
-		};
-		actions = {
-			fetchZids: jest.fn( () => ( {
-				then: ( callback ) => callback()
-			} ) ),
-			setZFunctionCallArguments: jest.fn()
-		};
-		global.store.hotUpdate( {
-			getters: getters,
-			actions: actions
-		} );
+		store = useMainStore();
+		store.getLabelData = createLabelDataMock();
+		store.getStoredObject = createGettersWithFunctionsMock();
+		store.getZReferenceTerminalValue = createGettersWithFunctionsMock();
+		store.getZTesterFunctionRowId = createGettersWithFunctionsMock( 1 );
+		store.getZTesterCallRowId = createGettersWithFunctionsMock( 2 );
+		store.getZTesterValidationRowId = createGettersWithFunctionsMock( 3 );
+		store.createZObjectByType = createGettersWithFunctionsMock();
+		store.isCreateNewPage = false;
+		store.fetchZids.mockResolvedValue();
 	} );
 
 	describe( 'in view mode', () => {
@@ -193,10 +183,10 @@ describe( 'ZTester', () => {
 		};
 
 		beforeEach( () => {
-			getters.isCreateNewPage = createGetterMock( true );
-			getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( functionZid );
-			getters.createObjectByType = createGettersWithFunctionsMock( blankFunctionCall );
-			getters.getStoredObject = () => ( zid ) => {
+			store.isCreateNewPage = true;
+			store.getZReferenceTerminalValue = createGettersWithFunctionsMock( functionZid );
+			store.createObjectByType = createGettersWithFunctionsMock( blankFunctionCall );
+			store.getStoredObject = ( zid ) => {
 				if ( zid === functionZid ) {
 					return functionObject;
 				} else if ( zid === typeZid ) {
@@ -204,11 +194,6 @@ describe( 'ZTester', () => {
 				}
 				return undefined;
 			};
-			actions.setZFunctionCallArguments = jest.fn();
-			global.store.hotUpdate( {
-				getters: getters,
-				actions: actions
-			} );
 		} );
 
 		it( 'sets test call and validation on initialize', async () => {
@@ -225,19 +210,18 @@ describe( 'ZTester', () => {
 				// 1. Set value for test call
 				expect( wrapper.emitted( 'set-value' )[ 0 ] ).toEqual( [ setCallPayload ] );
 				// 2. Set arguments for test call
-				expect( actions.setZFunctionCallArguments ).toHaveBeenCalledWith( expect.anything(),
+				expect( store.setZFunctionCallArguments ).toHaveBeenCalledWith(
 					setCallArguments );
 				// 3. Set value for validator call
 				expect( wrapper.emitted( 'set-value' )[ 1 ] ).toEqual( [ setValidatorPayload ] );
 				// 4. Set arguments for validator call
-				expect( actions.setZFunctionCallArguments ).toHaveBeenCalledWith( expect.anything(),
+				expect( store.setZFunctionCallArguments ).toHaveBeenCalledWith(
 					setValidatorArguments );
 			} );
 		} );
 
 		it( 'sets test call and validation on new function zid', async () => {
-			getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( undefined );
-			global.store.hotUpdate( { getters: getters } );
+			store.getZReferenceTerminalValue = createGettersWithFunctionsMock( undefined );
 
 			const wrapper = shallowMount( ZTester, {
 				props: {
@@ -252,19 +236,18 @@ describe( 'ZTester', () => {
 			expect( wrapper.emitted( 'set-value' ) ).toBeFalsy();
 
 			// Function Zid is updated
-			getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( functionZid );
-			global.store.hotUpdate( { getters: getters } );
+			store.getZReferenceTerminalValue = createGettersWithFunctionsMock( functionZid );
 
 			await waitFor( () => {
 				// 1. Set value for test call
 				expect( wrapper.emitted( 'set-value' )[ 0 ] ).toEqual( [ setCallPayload ] );
 				// 2. Set arguments for test call
-				expect( actions.setZFunctionCallArguments ).toHaveBeenCalledWith( expect.anything(),
+				expect( store.setZFunctionCallArguments ).toHaveBeenCalledWith(
 					setCallArguments );
 				// 3. Set value for validator call
 				expect( wrapper.emitted( 'set-value' )[ 1 ] ).toEqual( [ setValidatorPayload ] );
 				// 4. Set arguments for validator call
-				expect( actions.setZFunctionCallArguments ).toHaveBeenCalledWith( expect.anything(),
+				expect( store.setZFunctionCallArguments ).toHaveBeenCalledWith(
 					setValidatorArguments );
 			} );
 		} );
@@ -272,7 +255,7 @@ describe( 'ZTester', () => {
 		it( 'sets test call and clears validation when type has no equality function', async () => {
 			jest.clearAllMocks();
 			const typeWithoutEquality = { Z2K2: { Z1K1: 'Z4' } };
-			getters.getStoredObject = () => ( zid ) => {
+			store.getStoredObject = ( zid ) => {
 				if ( zid === functionZid ) {
 					return functionObject;
 				} else if ( zid === typeZid ) {
@@ -280,7 +263,6 @@ describe( 'ZTester', () => {
 				}
 				return undefined;
 			};
-			global.store.hotUpdate( { getters: getters } );
 
 			const wrapper = shallowMount( ZTester, {
 				props: {
@@ -300,12 +282,12 @@ describe( 'ZTester', () => {
 				// 1. Set value for test call
 				expect( wrapper.emitted( 'set-value' )[ 0 ] ).toEqual( [ setCallPayload ] );
 				// 2. Set arguments for test call
-				expect( actions.setZFunctionCallArguments ).toHaveBeenCalledWith( expect.anything(),
+				expect( store.setZFunctionCallArguments ).toHaveBeenCalledWith(
 					setCallArguments );
 				// 3. Set blank value for validator call
 				expect( wrapper.emitted( 'set-value' )[ 1 ] ).toEqual( [ clearValidatorPayload ] );
 				// 4. Make sure that setZFunctionCallArguments has only been called once
-				expect( actions.setZFunctionCallArguments ).toHaveBeenCalledTimes( 1 );
+				expect( store.setZFunctionCallArguments ).toHaveBeenCalledTimes( 1 );
 			} );
 		} );
 	} );

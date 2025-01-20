@@ -62,7 +62,8 @@ const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ),
 	utilsMixins = require( '../../../mixins/utilsMixins.js' ),
-	{ mapActions, mapGetters } = require( 'vuex' ),
+	{ mapActions, mapState } = require( 'pinia' ),
+	useMainStore = require( '../../../store/index.js' ),
 	icons = require( '../../../../lib/icons.json' ),
 	WidgetBase = require( '../../base/WidgetBase.vue' ),
 	FunctionMetadataDialog = require( '../function-evaluator/FunctionMetadataDialog.vue' ),
@@ -104,7 +105,7 @@ module.exports = exports = defineComponent( {
 			fetching: false
 		};
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getLabelData',
 		'getStoredObject',
 		'getZTesterMetadata'
@@ -271,7 +272,7 @@ module.exports = exports = defineComponent( {
 				this.$i18n( 'wikilambda-tester-status-run' ).text();
 		}
 	} ),
-	methods: Object.assign( mapActions( [
+	methods: Object.assign( {}, mapActions( useMainStore, [
 		'fetchZids',
 		'getTestResults'
 	] ), {

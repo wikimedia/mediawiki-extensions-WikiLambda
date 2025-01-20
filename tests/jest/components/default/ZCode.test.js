@@ -8,71 +8,56 @@
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	{ waitFor } = require( '@testing-library/vue' ),
-	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
 	ZCode = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZCode.vue' ),
-	CodeEditor = require( '../../../../resources/ext.wikilambda.app/components/base/CodeEditor.vue' );
+	CodeEditor = require( '../../../../resources/ext.wikilambda.app/components/base/CodeEditor.vue' ),
+	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 
 describe( 'ZCode', () => {
-	let getters,
-		actions;
+	let store;
 	beforeEach( () => {
-		getters = {
-			getErrors: createGettersWithFunctionsMock( [] ),
-			getRowByKeyPath: createGettersWithFunctionsMock( 1 ),
-			getLabelData: createLabelDataMock(),
-			getAllProgrammingLangs: createGetterMock(
-				[
-					{
-						Z1K1: Constants.Z_PERSISTENTOBJECT,
-						Z2K1: {
-							Z1K1: Constants.Z_STRING,
-							Z6K1: Constants.Z_PROGRAMMING_LANGUAGES.JAVASCRIPT
-						},
-						Z2K2: {
-							Z1K1: Constants.Z_PROGRAMMING_LANGUAGE,
-							Z61K1: 'javascript',
-							Z61K2: 'JavaScript'
-						}
-					},
-					{
-						Z1K1: Constants.Z_PERSISTENTOBJECT,
-						Z2K1: {
-							Z1K1: Constants.Z_STRING,
-							Z6K1: Constants.Z_PROGRAMMING_LANGUAGES.PYTHON
-						},
-						Z2K2: {
-							Z1K1: Constants.Z_PROGRAMMING_LANGUAGE,
-							Z61K1: 'python',
-							Z61K2: 'Python'
-						}
-					}
-				]
-			),
-			getZCodeProgrammingLanguageRow: createGettersWithFunctionsMock( { id: 1 } ),
-			getZCodeString: createGettersWithFunctionsMock( 'def Z10001(Z10001K1, Z10001K2):' ),
-			getZImplementationFunctionZid: createGettersWithFunctionsMock( 'Z10001' ),
-			getInputsOfFunctionZid: createGettersWithFunctionsMock( [
-				{ Z17K2: 'Z10001K1' },
-				{ Z17K2: 'Z10001K2' }
-			] ),
-			getZObjectTypeByRowId: () => ( rowId ) => rowId === 10 ? 'Z14' : 'Z9',
-			getZReferenceTerminalValue: createGettersWithFunctionsMock( 'Z610' ),
-			isCreateNewPage: createGetterMock( false )
-		};
-		actions = {
-			fetchAllZProgrammingLanguages: jest.fn(),
-			fetchZids: jest.fn(),
-			clearErrors: jest.fn(),
-			setError: jest.fn(),
-			changeType: jest.fn()
-		};
-		global.store.hotUpdate( {
-			getters: getters,
-			actions: actions
-		} );
+		store = useMainStore();
+		store.getErrors = createGettersWithFunctionsMock( [] );
+		store.getRowByKeyPath = createGettersWithFunctionsMock( 1 );
+		store.getLabelData = createLabelDataMock();
+		store.getAllProgrammingLangs = [
+			{
+				Z1K1: Constants.Z_PERSISTENTOBJECT,
+				Z2K1: {
+					Z1K1: Constants.Z_STRING,
+					Z6K1: Constants.Z_PROGRAMMING_LANGUAGES.JAVASCRIPT
+				},
+				Z2K2: {
+					Z1K1: Constants.Z_PROGRAMMING_LANGUAGE,
+					Z61K1: 'javascript',
+					Z61K2: 'JavaScript'
+				}
+			},
+			{
+				Z1K1: Constants.Z_PERSISTENTOBJECT,
+				Z2K1: {
+					Z1K1: Constants.Z_STRING,
+					Z6K1: Constants.Z_PROGRAMMING_LANGUAGES.PYTHON
+				},
+				Z2K2: {
+					Z1K1: Constants.Z_PROGRAMMING_LANGUAGE,
+					Z61K1: 'python',
+					Z61K2: 'Python'
+				}
+			}
+		];
+		store.getZCodeProgrammingLanguageRow = createGettersWithFunctionsMock( { id: 1 } );
+		store.getZCodeString = createGettersWithFunctionsMock( 'def Z10001(Z10001K1, Z10001K2):' );
+		store.getZImplementationFunctionZid = createGettersWithFunctionsMock( 'Z10001' );
+		store.getInputsOfFunctionZid = createGettersWithFunctionsMock( [
+			{ Z17K2: 'Z10001K1' },
+			{ Z17K2: 'Z10001K2' }
+		] );
+		store.getZObjectTypeByRowId = ( rowId ) => rowId === 10 ? 'Z14' : 'Z9';
+		store.getZReferenceTerminalValue = createGettersWithFunctionsMock( 'Z610' );
+		store.isCreateNewPage = false;
 	} );
 
 	describe( 'in view mode', () => {
@@ -136,11 +121,7 @@ describe( 'ZCode', () => {
 
 		describe( 'when current programming language is initialized', () => {
 			beforeEach( () => {
-				getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( 'Z610' );
-				global.store.hotUpdate( {
-					getters: getters,
-					actions: actions
-				} );
+				store.getZReferenceTerminalValue = createGettersWithFunctionsMock( 'Z610' );
 			} );
 
 			it( 'computes the programming language values', () => {
@@ -178,11 +159,7 @@ describe( 'ZCode', () => {
 
 		it( 'disables the code editor when no programming language is set on load', () => {
 			// Set initial value to undefined
-			getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( undefined );
-			global.store.hotUpdate( {
-				getters: getters,
-				actions: actions
-			} );
+			store.getZReferenceTerminalValue = createGettersWithFunctionsMock( undefined );
 			const wrapper = shallowMount( ZCode, {
 				props: {
 					parentId: 10,
@@ -201,12 +178,8 @@ describe( 'ZCode', () => {
 
 		it( 'should show a warning message when clicking the code editor and no programming language is set', async () => {
 			// Set initial value to undefined
-			getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( undefined );
-			getters.getErrors = createGettersWithFunctionsMock( [ { message: 'Select programming language', type: 'warning' } ] );
-			global.store.hotUpdate( {
-				getters: getters,
-				actions: actions
-			} );
+			store.getZReferenceTerminalValue = createGettersWithFunctionsMock( undefined );
+			store.getErrors = createGettersWithFunctionsMock( [ { message: 'Select programming language', type: 'warning' } ] );
 			const wrapper = shallowMount( ZCode, {
 				props: {
 					parentId: 10,
@@ -224,7 +197,7 @@ describe( 'ZCode', () => {
 			wrapper.findComponent( { name: 'code-editor' } ).trigger( 'click' );
 
 			await wrapper.vm.$nextTick();
-			await waitFor( () => expect( actions.setError ).toHaveBeenCalledWith( expect.anything(), {
+			await waitFor( () => expect( store.setError ).toHaveBeenCalledWith( {
 				errorMessage: 'Select programming language',
 				errorType: 'warning',
 				rowId: 1
@@ -244,11 +217,7 @@ describe( 'ZCode', () => {
 		describe( 'when current programming language is changed', () => {
 			it( 'updates the programming language to JavaScript when selected and initializes the editor with JavaScript boilerplate code', async () => {
 				// Set initial value to something other than javascript
-				getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( 'Z610' );
-				global.store.hotUpdate( {
-					getters: getters,
-					actions: actions
-				} );
+				store.getZReferenceTerminalValue = createGettersWithFunctionsMock( 'Z610' );
 
 				const wrapper = shallowMount( ZCode, {
 					props: {
@@ -276,11 +245,7 @@ describe( 'ZCode', () => {
 
 			it( 'updates the programming language to Python when selected and initializes the editor with Python boilerplate code', async () => {
 				// Set initial value to something other than python
-				getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( 'Z600' );
-				global.store.hotUpdate( {
-					getters: getters,
-					actions: actions
-				} );
+				store.getZReferenceTerminalValue = createGettersWithFunctionsMock( 'Z600' );
 
 				const wrapper = shallowMount( ZCode, {
 					props: {
@@ -330,18 +295,14 @@ describe( 'ZCode', () => {
 
 		describe( 'when parent of code is a converter', () => {
 			beforeEach( () => {
-				getters.getZObjectTypeByRowId = () => ( rowId ) => rowId === 10 ? 'Z64' : 'Z9';
-				getters.getConverterIdentity = createGettersWithFunctionsMock( 'Z12345' );
+				store.getZObjectTypeByRowId = ( rowId ) => rowId === 10 ? 'Z64' : 'Z9';
+				store.getConverterIdentity = createGettersWithFunctionsMock( 'Z12345' );
 			} );
 
 			it( 'initializes code box with the right function name and arguments', async () => {
 				// Set initial value to something other than javascript
-				getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( 'Z610' );
-				getters.isCreateNewPage = createGetterMock( false );
-				global.store.hotUpdate( {
-					getters: getters,
-					actions: actions
-				} );
+				store.getZReferenceTerminalValue = createGettersWithFunctionsMock( 'Z610' );
+				store.isCreateNewPage = false;
 
 				const wrapper = shallowMount( ZCode, {
 					props: {
@@ -373,11 +334,7 @@ describe( 'ZCode', () => {
 			} );
 
 			it( 'displays notice message when creating a new converter', async () => {
-				getters.isCreateNewPage = createGetterMock( true );
-				global.store.hotUpdate( {
-					getters: getters,
-					actions: actions
-				} );
+				store.isCreateNewPage = true;
 
 				const wrapper = shallowMount( ZCode, {
 					props: {

@@ -8,37 +8,23 @@
 
 const { waitFor } = require( '@testing-library/vue' ),
 	shallowMount = require( '@vue/test-utils' ).shallowMount,
-	createGetterMock = require( '../helpers/getterHelpers.js' ).createGetterMock,
+	useMainStore = require( '../../../resources/ext.wikilambda.app/store/index.js' ),
 	App = require( '../../../resources/ext.wikilambda.app/components/App.vue' );
 
 describe( 'App.vue', () => {
-	let actions,
-		getters,
+	let store,
 		originalLocation,
 		originalReplaceState;
 
 	beforeEach( () => {
-		actions = {
-			initializeView: jest.fn( () => ( {
-				then: ( callback ) => callback()
-			} ) ),
-			prefetchZids: jest.fn( () => ( {
-				then: ( callback ) => callback()
-			} ) ),
-			evaluateUri: jest.fn(),
-			fetchUserRights: jest.fn()
-		};
 
-		getters = {
-			isInitialized: createGetterMock( true ),
-			getCurrentView: createGetterMock( 'function-editor-view' ),
-			isCreateNewPage: createGetterMock( false )
-		};
-
-		global.store.hotUpdate( {
-			actions: actions,
-			getters: getters
-		} );
+		// Update the Pinia store with the getters and actions
+		store = useMainStore();
+		store.initializeView.mockResolvedValue();
+		store.prefetchZids.mockResolvedValue();
+		store.isInitialized = true;
+		store.isCreateNewPage = false;
+		store.getCurrentView = 'function-editor-view';
 
 		// Save the original location object and history.replaceState function
 		originalLocation = window.location;
@@ -70,10 +56,10 @@ describe( 'App.vue', () => {
 			}
 		} );
 
-		await waitFor( () => expect( actions.initializeView ).toHaveBeenCalled() );
+		await waitFor( () => expect( store.initializeView ).toHaveBeenCalled() );
 	} );
 
-	it( 'Handles popstate event correctly when there is a hash in the URL', () => {
+	it( 'Handles popstate event correctly when there is a hash in the URL', async () => {
 		window.location.href = 'http://example.com#some-hash';
 		window.location.hash = '#some-hash';
 
@@ -87,18 +73,15 @@ describe( 'App.vue', () => {
 		const popstateEvent = new PopStateEvent( 'popstate', { state: null } );
 		window.dispatchEvent( popstateEvent );
 
-		expect( actions.initializeView ).not.toHaveBeenCalled();
-		expect( actions.evaluateUri ).not.toHaveBeenCalled();
+		expect( store.initializeView ).not.toHaveBeenCalled();
+		expect( store.evaluateUri ).not.toHaveBeenCalled();
 		expect( wrapper.vm.removeHashFromURL ).toHaveBeenCalled();
 	} );
 
 	it( 'Reinitializes view when isCreateNewPage is true and popstate event is triggered', async () => {
 		window.location.href = 'http://example.com';
 
-		getters.isCreateNewPage = createGetterMock( true );
-		global.store.hotUpdate( {
-			getters: getters
-		} );
+		store.isCreateNewPage = true;
 
 		shallowMount( App, {
 			provide: {
@@ -109,10 +92,8 @@ describe( 'App.vue', () => {
 		const popstateEvent = new PopStateEvent( 'popstate' );
 		window.dispatchEvent( popstateEvent );
 
-		await waitFor( () => {
-			expect( actions.initializeView ).toHaveBeenCalled();
-			expect( actions.evaluateUri ).toHaveBeenCalled();
-		} );
+		expect( store.initializeView ).toHaveBeenCalled();
+		await waitFor( () => expect( store.evaluateUri ).toHaveBeenCalled() );
 	} );
 
 	it( 'Calls evaluateUri when popstate event is triggered and no hash is present', () => {
@@ -125,13 +106,12 @@ describe( 'App.vue', () => {
 		const popstateEvent = new PopStateEvent( 'popstate' );
 		window.dispatchEvent( popstateEvent );
 
-		expect( actions.evaluateUri ).toHaveBeenCalled();
+		expect( store.evaluateUri ).toHaveBeenCalled();
 	} );
 
 	it( 'Renders loading when isInitialized and `isAppSetup`(data property) is false', () => {
-		getters.isInitialized = createGetterMock( false );
-		global.store.hotUpdate( {
-			getters: getters
+		store.$patch( {
+			isInitialized: false
 		} );
 
 		const wrapper = shallowMount( App, {
@@ -146,6 +126,9 @@ describe( 'App.vue', () => {
 	} );
 
 	it( 'Does not render the router view when isInitialized is true but initializeView has not yet completed', () => {
+		store.$patch( {
+			isInitialized: false
+		} );
 		const wrapper = shallowMount( App, {
 			provide: {
 				viewmode: true

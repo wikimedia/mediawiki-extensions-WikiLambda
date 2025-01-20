@@ -14,7 +14,6 @@ const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
 	{ lookupSearchAndSelect } = require( './helpers/interactionHelpers.js' ),
 	{ runSetup, runTeardown } = require( './helpers/functionEditorTestHelpers.js' ),
 	Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' ),
-	store = require( '../../../resources/ext.wikilambda.app/store/index.js' ),
 	App = require( '../../../resources/ext.wikilambda.app/components/App.vue' ),
 	expectedGenericTypeFunctionPostedToApi = require( './objects/expectedGenericTypeFunctionPostedToApi.js' );
 
@@ -43,7 +42,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 			findByRole,
 			getByText,
 			queryByRole
-		} = render( App, { global: { plugins: [ store ] } } );
+		} = render( App );
 
 		const languageBlocks = await findAllByTestId( 'function-editor-language-block' );
 		const firstLanguageBlock = languageBlocks[ 0 ];

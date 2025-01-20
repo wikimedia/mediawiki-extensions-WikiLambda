@@ -8,6 +8,7 @@
 'use strict';
 
 const eventLogUtils = require( '../../../resources/ext.wikilambda.app/mixins/eventLogUtils.js' ).methods;
+const Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' );
 
 describe( 'eventLogUtils mixin', () => {
 	describe( 'removeNullUndefined', () => {
@@ -87,5 +88,13 @@ describe( 'eventLogUtils mixin', () => {
 		};
 		const result = eventLogUtils.removeNullUndefined( original );
 		expect( result ).toStrictEqual( expected );
+	} );
+
+	it( 'gets the correct namespace', () => {
+		expect( eventLogUtils.getNamespace( Constants.Z_FUNCTION ) ).toStrictEqual( 'editFunction' );
+		expect( eventLogUtils.getNamespace( Constants.Z_IMPLEMENTATION ) ).toStrictEqual( 'editImplementation' );
+		expect( eventLogUtils.getNamespace( Constants.Z_TESTER ) ).toStrictEqual( 'editTester' );
+		expect( eventLogUtils.getNamespace( Constants.Z_TYPE ) ).toStrictEqual( 'editType' );
+		expect( eventLogUtils.getNamespace() ).toStrictEqual( 'editZObject' );
 	} );
 } );

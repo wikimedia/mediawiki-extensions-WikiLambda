@@ -30,8 +30,9 @@
 const { CdxIcon, CdxSelect } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
+	useMainStore = require( '../../store/index.js' ),
 	icons = require( '../../../lib/icons.json' ),
-	{ mapGetters } = require( 'vuex' );
+	{ mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-argument-reference',
@@ -56,7 +57,7 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign(
-		mapGetters( [
+		mapState( useMainStore, [
 			'getLabelData',
 			'getRowByKeyPath',
 			'getInputsOfFunctionZid',

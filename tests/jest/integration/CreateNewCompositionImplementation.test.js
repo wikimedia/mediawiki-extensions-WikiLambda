@@ -12,7 +12,6 @@ const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
 	{ within } = require( '@testing-library/dom' ),
 	{ runSetup, runTeardown } = require( './helpers/implementationEditorTestHelpers.js' ),
 	{ lookupSearchAndSelect, clickMenuOption } = require( './helpers/interactionHelpers.js' ),
-	store = require( '../../../resources/ext.wikilambda.app/store/index.js' ),
 	App = require( '../../../resources/ext.wikilambda.app/components/App.vue' ),
 	expectedNewCompositionImplementationPostedToApi = require( './objects/expectedNewCompositionImplementationPostedToApi.js' );
 
@@ -28,7 +27,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 
 	it( 'should allow you to create a new composition implementation', async () => {
 		const { getByTestId, findByTestId } = render( App, {
-			global: { plugins: [ store ], stubs: {
+			global: { stubs: {
 				teleport: true,
 				WlFunctionEvaluatorWidget: true
 			} }

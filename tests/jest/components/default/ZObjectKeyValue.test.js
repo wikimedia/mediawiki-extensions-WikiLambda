@@ -6,69 +6,50 @@
  */
 'use strict';
 
-const shallowMount = require( '@vue/test-utils' ).shallowMount,
+const { waitFor } = require( '@testing-library/vue' ),
+	shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
+	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' ),
 	ZObjectKeyValue = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZObjectKeyValue.vue' );
 
 describe( 'ZObjectKeyValue', () => {
-	let getters,
-		actions;
+	let store;
 
 	beforeEach( () => {
-		getters = {
-			createObjectByType: createGettersWithFunctionsMock(),
-			getCurrentZObjectId: createGetterMock( 'Z0' ),
-			getDepthByRowId: createGettersWithFunctionsMock( 1 ),
-			getErrors: createGettersWithFunctionsMock( [] ),
-			getExpectedTypeOfKey: createGettersWithFunctionsMock( 'Z1' ),
-			getLabelData: createLabelDataMock(),
-			getParentRowId: createGettersWithFunctionsMock( 0 ),
-			getTypedListItemType: createGettersWithFunctionsMock( 'Z6' ),
-			getZFunctionCallFunctionId: createGettersWithFunctionsMock(),
-			getZKeyIsIdentity: createGettersWithFunctionsMock( false ),
-			getZKeyTypeRowId: createGettersWithFunctionsMock( 3 ),
-			getZObjectAsJsonById: createGettersWithFunctionsMock(),
-			getZObjectKeyByRowId: createGettersWithFunctionsMock( 'Z1K1' ),
-			getZObjectTypeByRowId: createGettersWithFunctionsMock( Constants.Z_STRING ),
-			getZObjectValueByRowId: createGettersWithFunctionsMock(),
-			getZPersistentContentRowId: createGettersWithFunctionsMock( 1 ),
-			hasParser: createGettersWithFunctionsMock( false ),
-			hasRenderer: createGettersWithFunctionsMock( false ),
-			isCreateNewPage: createGetterMock( false ),
-			isIdentityKey: createGettersWithFunctionsMock( false ),
-			isMainObject: createGettersWithFunctionsMock( true ),
-			isWikidataLiteral: createGettersWithFunctionsMock( false ),
-			isWikidataFetch: createGettersWithFunctionsMock( false ),
-			isWikidataReference: createGettersWithFunctionsMock( false ),
-			// For ZObjectKeyValueSet:
-			getChildrenByParentRowId: createGettersWithFunctionsMock( [] )
-		};
-		actions = {
-			changeType: jest.fn(),
-			clearErrors: jest.fn(),
-			clearType: jest.fn(),
-			setDirty: jest.fn(),
-			setValueByRowIdAndPath: jest.fn(),
-			setZFunctionCallArguments: jest.fn(),
-			setZImplementationContentType: jest.fn(),
-			removeItemFromTypedList: jest.fn(),
-			moveItemInTypedList: jest.fn()
-		};
-		global.store.hotUpdate( {
-			getters: getters,
-			actions: actions
-		} );
+		store = useMainStore();
+		store.createObjectByType = createGettersWithFunctionsMock();
+		store.getCurrentZObjectId = 'Z0';
+		store.getDepthByRowId = createGettersWithFunctionsMock( 1 );
+		store.getErrors = createGettersWithFunctionsMock( [] );
+		store.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z1' );
+		store.getLabelData = createLabelDataMock();
+		store.getParentRowId = createGettersWithFunctionsMock( 0 );
+		store.getTypedListItemType = createGettersWithFunctionsMock( 'Z6' );
+		store.getZFunctionCallFunctionId = createGettersWithFunctionsMock();
+		store.getZKeyIsIdentity = createGettersWithFunctionsMock( false );
+		store.getZKeyTypeRowId = createGettersWithFunctionsMock( 3 );
+		store.getZObjectAsJsonById = createGettersWithFunctionsMock();
+		store.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z1K1' );
+		store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_STRING );
+		store.getZObjectValueByRowId = createGettersWithFunctionsMock();
+		store.getZPersistentContentRowId = createGettersWithFunctionsMock( 1 );
+		store.hasParser = createGettersWithFunctionsMock( false );
+		store.hasRenderer = createGettersWithFunctionsMock( false );
+		store.isCreateNewPage = false;
+		store.isIdentityKey = createGettersWithFunctionsMock( false );
+		store.isMainObject = createGettersWithFunctionsMock( true );
+		store.isWikidataLiteral = createGettersWithFunctionsMock( false );
+		store.isWikidataFetch = createGettersWithFunctionsMock( false );
+		store.isWikidataReference = createGettersWithFunctionsMock( false );
+		store.getChildrenByParentRowId = createGettersWithFunctionsMock( [] );
+		store.setValueByRowIdAndPath.mockResolvedValue();
 	} );
 
 	describe( 'it renders the correct component for type or key', () => {
 		it( 'z monolingual string', () => {
-			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_MONOLINGUALSTRING );
-			global.store.hotUpdate( {
-				getters: getters
-			} );
+			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_MONOLINGUALSTRING );
 
 			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
@@ -86,10 +67,7 @@ describe( 'ZObjectKeyValue', () => {
 		} );
 
 		it( 'z reference', () => {
-			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
-			global.store.hotUpdate( {
-				getters: getters
-			} );
+			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
 
 			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
@@ -107,10 +85,7 @@ describe( 'ZObjectKeyValue', () => {
 		} );
 
 		it( 'z string', () => {
-			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_STRING );
-			global.store.hotUpdate( {
-				getters: getters
-			} );
+			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_STRING );
 
 			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
@@ -128,10 +103,7 @@ describe( 'ZObjectKeyValue', () => {
 		} );
 
 		it( 'z code', () => {
-			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_CODE );
-			global.store.hotUpdate( {
-				getters: getters
-			} );
+			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_CODE );
 
 			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
@@ -147,10 +119,7 @@ describe( 'ZObjectKeyValue', () => {
 		} );
 
 		it( 'z boolean', () => {
-			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_BOOLEAN );
-			global.store.hotUpdate( {
-				getters: getters
-			} );
+			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_BOOLEAN );
 
 			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
@@ -168,10 +137,7 @@ describe( 'ZObjectKeyValue', () => {
 		} );
 
 		it( 'z function call', () => {
-			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL );
-			global.store.hotUpdate( {
-				getters: getters
-			} );
+			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL );
 
 			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
@@ -189,10 +155,7 @@ describe( 'ZObjectKeyValue', () => {
 		} );
 
 		it( 'z implementation', () => {
-			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_IMPLEMENTATION );
-			global.store.hotUpdate( {
-				getters: getters
-			} );
+			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_IMPLEMENTATION );
 
 			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
@@ -210,10 +173,7 @@ describe( 'ZObjectKeyValue', () => {
 		} );
 
 		it( 'z tester', () => {
-			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_TESTER );
-			global.store.hotUpdate( {
-				getters: getters
-			} );
+			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_TESTER );
 
 			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
@@ -231,10 +191,7 @@ describe( 'ZObjectKeyValue', () => {
 		} );
 
 		it( 'z argument reference with type', () => {
-			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_ARGUMENT_REFERENCE );
-			global.store.hotUpdate( {
-				getters: getters
-			} );
+			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_ARGUMENT_REFERENCE );
 
 			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
@@ -252,11 +209,8 @@ describe( 'ZObjectKeyValue', () => {
 		} );
 
 		it( 'z argument reference with key', () => {
-			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_STRING );
-			getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_ARGUMENT_REFERENCE_KEY );
-			global.store.hotUpdate( {
-				getters: getters
-			} );
+			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_STRING );
+			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_ARGUMENT_REFERENCE_KEY );
 
 			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
@@ -274,13 +228,10 @@ describe( 'ZObjectKeyValue', () => {
 		} );
 
 		it( 'z typed list', () => {
-			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( {
+			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( {
 				Z1K1: Constants.Z_FUNCTION_CALL,
 				Z7K1: Constants.Z_TYPED_LIST,
 				Z881K1: Constants.Z_OBJECT
-			} );
-			global.store.hotUpdate( {
-				getters: getters
 			} );
 
 			const wrapper = shallowMount( ZObjectKeyValue, {
@@ -299,12 +250,9 @@ describe( 'ZObjectKeyValue', () => {
 		} );
 
 		it( 'fallback with renderer and parser', () => {
-			getters.hasRenderer = createGettersWithFunctionsMock( true );
-			getters.hasParser = createGettersWithFunctionsMock( true );
-			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z12345' );
-			global.store.hotUpdate( {
-				getters: getters
-			} );
+			store.hasRenderer = createGettersWithFunctionsMock( true );
+			store.hasParser = createGettersWithFunctionsMock( true );
+			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z12345' );
 
 			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
@@ -322,10 +270,7 @@ describe( 'ZObjectKeyValue', () => {
 		} );
 
 		it( 'fallback z-object-key-value-set', () => {
-			getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z12345' );
-			global.store.hotUpdate( {
-				getters: getters
-			} );
+			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z12345' );
 
 			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
@@ -345,11 +290,8 @@ describe( 'ZObjectKeyValue', () => {
 		describe( 'wikidata components', () => {
 			describe( 'lexeme', () => {
 				it( 'renders lexeme component for wikidata literal lexeme', () => {
-					getters.isWikidataLiteral = createGettersWithFunctionsMock( true );
-					getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_LEXEME );
-					global.store.hotUpdate( {
-						getters: getters
-					} );
+					store.isWikidataLiteral = createGettersWithFunctionsMock( true );
+					store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_LEXEME );
 
 					const wrapper = shallowMount( ZObjectKeyValue, {
 						props: {
@@ -368,12 +310,9 @@ describe( 'ZObjectKeyValue', () => {
 				} );
 
 				it( 'renders lexeme component for function call to fetch wikidata lexeme', () => {
-					getters.isWikidataFetch = createGettersWithFunctionsMock( true );
-					getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL );
-					getters.getZFunctionCallFunctionId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_FETCH_LEXEME );
-					global.store.hotUpdate( {
-						getters: getters
-					} );
+					store.isWikidataFetch = createGettersWithFunctionsMock( true );
+					store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL );
+					store.getZFunctionCallFunctionId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_FETCH_LEXEME );
 
 					const wrapper = shallowMount( ZObjectKeyValue, {
 						props: {
@@ -392,11 +331,8 @@ describe( 'ZObjectKeyValue', () => {
 				} );
 
 				it( 'renders lexeme component for wikidata lexeme reference', () => {
-					getters.isWikidataReference = createGettersWithFunctionsMock( true );
-					getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_REFERENCE_LEXEME );
-					global.store.hotUpdate( {
-						getters: getters
-					} );
+					store.isWikidataReference = createGettersWithFunctionsMock( true );
+					store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_REFERENCE_LEXEME );
 
 					const wrapper = shallowMount( ZObjectKeyValue, {
 						props: {
@@ -417,11 +353,8 @@ describe( 'ZObjectKeyValue', () => {
 
 			describe( 'lexeme form', () => {
 				it( 'renders lexeme form component for wikidata literal lexeme form', () => {
-					getters.isWikidataLiteral = createGettersWithFunctionsMock( true );
-					getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_LEXEME_FORM );
-					global.store.hotUpdate( {
-						getters: getters
-					} );
+					store.isWikidataLiteral = createGettersWithFunctionsMock( true );
+					store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_LEXEME_FORM );
 
 					const wrapper = shallowMount( ZObjectKeyValue, {
 						props: {
@@ -440,12 +373,9 @@ describe( 'ZObjectKeyValue', () => {
 				} );
 
 				it( 'renders lexeme form component for function call to fetch wikidata lexeme form', () => {
-					getters.isWikidataFetch = createGettersWithFunctionsMock( true );
-					getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL );
-					getters.getZFunctionCallFunctionId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_FETCH_LEXEME_FORM );
-					global.store.hotUpdate( {
-						getters: getters
-					} );
+					store.isWikidataFetch = createGettersWithFunctionsMock( true );
+					store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL );
+					store.getZFunctionCallFunctionId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_FETCH_LEXEME_FORM );
 
 					const wrapper = shallowMount( ZObjectKeyValue, {
 						props: {
@@ -464,11 +394,8 @@ describe( 'ZObjectKeyValue', () => {
 				} );
 
 				it( 'renders lexeme form component for wikidata lexeme form reference', () => {
-					getters.isWikidataReference = createGettersWithFunctionsMock( true );
-					getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM );
-					global.store.hotUpdate( {
-						getters: getters
-					} );
+					store.isWikidataReference = createGettersWithFunctionsMock( true );
+					store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM );
 
 					const wrapper = shallowMount( ZObjectKeyValue, {
 						props: {
@@ -489,11 +416,8 @@ describe( 'ZObjectKeyValue', () => {
 
 			describe( 'wikidata item', () => {
 				it( 'renders wikidata item component for wikidata literal item', () => {
-					getters.isWikidataLiteral = createGettersWithFunctionsMock( true );
-					getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_ITEM );
-					global.store.hotUpdate( {
-						getters: getters
-					} );
+					store.isWikidataLiteral = createGettersWithFunctionsMock( true );
+					store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_ITEM );
 
 					const wrapper = shallowMount( ZObjectKeyValue, {
 						props: {
@@ -512,12 +436,9 @@ describe( 'ZObjectKeyValue', () => {
 				} );
 
 				it( 'renders wikidata item component for function call to fetch wikidata item', () => {
-					getters.isWikidataFetch = createGettersWithFunctionsMock( true );
-					getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL );
-					getters.getZFunctionCallFunctionId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_FETCH_ITEM );
-					global.store.hotUpdate( {
-						getters: getters
-					} );
+					store.isWikidataFetch = createGettersWithFunctionsMock( true );
+					store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL );
+					store.getZFunctionCallFunctionId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_FETCH_ITEM );
 
 					const wrapper = shallowMount( ZObjectKeyValue, {
 						props: {
@@ -536,11 +457,8 @@ describe( 'ZObjectKeyValue', () => {
 				} );
 
 				it( 'renders wikidata item component for wikidata item reference', () => {
-					getters.isWikidataReference = createGettersWithFunctionsMock( true );
-					getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_REFERENCE_ITEM );
-					global.store.hotUpdate( {
-						getters: getters
-					} );
+					store.isWikidataReference = createGettersWithFunctionsMock( true );
+					store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_REFERENCE_ITEM );
 
 					const wrapper = shallowMount( ZObjectKeyValue, {
 						props: {
@@ -575,12 +493,9 @@ describe( 'ZObjectKeyValue', () => {
 
 		describe( 'mode selector', () => {
 			it( 'it loads the mode selector if key is visible', () => {
-				getters.getExpectedTypeOfKey = createGettersWithFunctionsMock( Constants.Z_TYPE );
-				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_KEY_TYPE );
-				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
-				global.store.hotUpdate( {
-					getters: getters
-				} );
+				store.getExpectedTypeOfKey = createGettersWithFunctionsMock( Constants.Z_TYPE );
+				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_KEY_TYPE );
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -599,12 +514,9 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 
 			it( 'it does not load the mode selector if key is skipped', () => {
-				getters.getExpectedTypeOfKey = createGettersWithFunctionsMock( Constants.Z_TYPE );
-				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_KEY_TYPE );
-				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
-				global.store.hotUpdate( {
-					getters: getters
-				} );
+				store.getExpectedTypeOfKey = createGettersWithFunctionsMock( Constants.Z_TYPE );
+				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_KEY_TYPE );
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -624,8 +536,7 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 
 			it( 'deletes an item list if mode selector emits delete-list-item', () => {
-				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( '2' );
-				global.store.hotUpdate( { getters: getters } );
+				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( '2' );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -643,16 +554,15 @@ describe( 'ZObjectKeyValue', () => {
 				const modeSelector = wrapper.findComponent( { name: 'wl-mode-selector' } );
 				modeSelector.vm.$emit( 'delete-list-item' );
 
-				expect( actions.setDirty ).toHaveBeenCalled();
-				expect( actions.removeItemFromTypedList ).toHaveBeenCalledWith( expect.anything(), {
+				expect( store.setDirty ).toHaveBeenCalled();
+				expect( store.removeItemFromTypedList ).toHaveBeenCalledWith( {
 					rowId: 1
 				} );
 			} );
 
 			it( 'moves a list item one position earlier in the list if mode selector emits move-before', () => {
-				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( '2' );
-				getters.getParentRowId = createGettersWithFunctionsMock( 10 );
-				global.store.hotUpdate( { getters: getters } );
+				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( '2' );
+				store.getParentRowId = createGettersWithFunctionsMock( 10 );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -670,8 +580,8 @@ describe( 'ZObjectKeyValue', () => {
 				const modeSelector = wrapper.findComponent( { name: 'wl-mode-selector' } );
 				modeSelector.vm.$emit( 'move-before' );
 
-				expect( actions.setDirty ).toHaveBeenCalled();
-				expect( actions.moveItemInTypedList ).toHaveBeenCalledWith( expect.anything(), {
+				expect( store.setDirty ).toHaveBeenCalled();
+				expect( store.moveItemInTypedList ).toHaveBeenCalledWith( {
 					parentRowId: 10,
 					key: '2',
 					offset: -1
@@ -679,9 +589,8 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 
 			it( 'moves a list item one position later in the list if mode selector emits move-after', () => {
-				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( '2' );
-				getters.getParentRowId = createGettersWithFunctionsMock( 10 );
-				global.store.hotUpdate( { getters: getters } );
+				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( '2' );
+				store.getParentRowId = createGettersWithFunctionsMock( 10 );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -699,8 +608,8 @@ describe( 'ZObjectKeyValue', () => {
 				const modeSelector = wrapper.findComponent( { name: 'wl-mode-selector' } );
 				modeSelector.vm.$emit( 'move-after' );
 
-				expect( actions.setDirty ).toHaveBeenCalled();
-				expect( actions.moveItemInTypedList ).toHaveBeenCalledWith( expect.anything(), {
+				expect( store.setDirty ).toHaveBeenCalled();
+				expect( store.moveItemInTypedList ).toHaveBeenCalledWith( {
 					parentRowId: 10,
 					key: '2',
 					offset: 1
@@ -722,9 +631,9 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 
 			it( 'disables edit if the key is the identity key of the persistent object', () => {
-				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z2K2' );
-				getters.isIdentityKey = createGettersWithFunctionsMock( true );
-				global.store.hotUpdate( { getters: getters } );
+				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z2K2' );
+				store.isIdentityKey = createGettersWithFunctionsMock( true );
+
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
 						edit: true,
@@ -736,12 +645,11 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 
 			it( 'disables edit if key is for the Typed List item type and the type is bound', () => {
-				getters.getParentRowId = createGettersWithFunctionsMock( 1 );
-				getters.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z11' );
-				getters.getZObjectKeyByRowId = () => ( id ) => ( id === 10 ) ? '0' :
+				store.getParentRowId = createGettersWithFunctionsMock( 1 );
+				store.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z11' );
+				store.getZObjectKeyByRowId = jest.fn( ( id ) => ( id === 10 ) ? '0' :
 					( id === 1 ) ? 'Z12K1' :
-						undefined;
-				global.store.hotUpdate( { getters: getters } );
+						undefined );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -754,12 +662,11 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 
 			it( 'enables edit if key is for the Typed List item type and the type is not bound', () => {
-				getters.getParentRowId = createGettersWithFunctionsMock( 1 );
-				getters.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z1' );
-				getters.getZObjectKeyByRowId = () => ( id ) => ( id === 10 ) ? '0' :
+				store.getParentRowId = createGettersWithFunctionsMock( 1 );
+				store.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z1' );
+				store.getZObjectKeyByRowId = jest.fn( ( id ) => ( id === 10 ) ? '0' :
 					( id === 1 ) ? 'Z12K1' :
-						undefined;
-				global.store.hotUpdate( { getters: getters } );
+						undefined );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -772,10 +679,9 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 
 			it( 'disables edit if key is Z3K1/Key type and Z3K4/Is identity is set to true', () => {
-				getters.getParentRowId = createGettersWithFunctionsMock( 1 );
-				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z3K1' );
-				getters.getZKeyIsIdentity = createGettersWithFunctionsMock( true );
-				global.store.hotUpdate( { getters: getters } );
+				store.getParentRowId = createGettersWithFunctionsMock( 1 );
+				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z3K1' );
+				store.getZKeyIsIdentity = createGettersWithFunctionsMock( true );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -788,10 +694,9 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 
 			it( 'enables edit if key is Z3K1/Key type and Z3K4/Is identity is set to false', () => {
-				getters.getParentRowId = createGettersWithFunctionsMock( 1 );
-				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z3K1' );
-				getters.getZKeyIsIdentity = createGettersWithFunctionsMock( false );
-				global.store.hotUpdate( { getters: getters } );
+				store.getParentRowId = createGettersWithFunctionsMock( 1 );
+				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z3K1' );
+				store.getZKeyIsIdentity = createGettersWithFunctionsMock( false );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -804,9 +709,8 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 
 			it( 'disables edit if key is Z1K1/Object type and the type is bound', () => {
-				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z1K1' );
-				getters.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z11' );
-				global.store.hotUpdate( { getters: getters } );
+				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z1K1' );
+				store.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z11' );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -819,14 +723,13 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 
 			it( 'disables edit if we are editing the type of a stored persistent object', () => {
-				getters.getParentRowId = createGettersWithFunctionsMock( 1 );
-				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z1K1' );
-				getters.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z1' );
-				getters.isCreateNewPage = createGetterMock( false );
-				getters.getZObjectKeyByRowId = () => ( id ) => ( id === 10 ) ? 'Z1K1' :
+				store.getParentRowId = createGettersWithFunctionsMock( 1 );
+				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z1K1' );
+				store.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z1' );
+				store.isCreateNewPage = false;
+				store.getZObjectKeyByRowId = jest.fn( ( id ) => ( id === 10 ) ? 'Z1K1' :
 					( id === 1 ) ? 'Z2K2' :
-						undefined;
-				global.store.hotUpdate( { getters: getters } );
+						undefined );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -839,14 +742,13 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 
 			it( 'enables edit if we are editing the type of a new persistent object', () => {
-				getters.getParentRowId = createGettersWithFunctionsMock( 1 );
-				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z1K1' );
-				getters.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z1' );
-				getters.isCreateNewPage = createGetterMock( true );
-				getters.getZObjectKeyByRowId = () => ( id ) => ( id === 10 ) ? 'Z1K1' :
+				store.getParentRowId = createGettersWithFunctionsMock( 1 );
+				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z1K1' );
+				store.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z1' );
+				store.isCreateNewPage = true;
+				store.getZObjectKeyByRowId = jest.fn( ( id ) => ( id === 10 ) ? 'Z1K1' :
 					( id === 1 ) ? 'Z2K2' :
-						undefined;
-				global.store.hotUpdate( { getters: getters } );
+						undefined );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -874,12 +776,9 @@ describe( 'ZObjectKeyValue', () => {
 
 		describe( 'mode selector', () => {
 			it( 'it does not load the mode selector even when key is visible', () => {
-				getters.getExpectedTypeOfKey = createGettersWithFunctionsMock( Constants.Z_TYPE );
-				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_KEY_TYPE );
-				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
-				global.store.hotUpdate( {
-					getters: getters
-				} );
+				store.getExpectedTypeOfKey = createGettersWithFunctionsMock( Constants.Z_TYPE );
+				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_KEY_TYPE );
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -893,12 +792,9 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 
 			it( 'it does not load the mode selector if key is skipped', () => {
-				getters.getExpectedTypeOfKey = createGettersWithFunctionsMock( Constants.Z_TYPE );
-				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_KEY_TYPE );
-				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
-				global.store.hotUpdate( {
-					getters: getters
-				} );
+				store.getExpectedTypeOfKey = createGettersWithFunctionsMock( Constants.Z_TYPE );
+				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_KEY_TYPE );
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -917,11 +813,8 @@ describe( 'ZObjectKeyValue', () => {
 
 		describe( 'expanded toggle', () => {
 			it( 'shows expansion toggle if it is not a special terminal case', () => {
-				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_KEY_TYPE );
-				getters.getExpectedTypeOfKey = createGettersWithFunctionsMock( Constants.Z_TYPE );
-				global.store.hotUpdate( {
-					getters: getters
-				} );
+				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_KEY_TYPE );
+				store.getExpectedTypeOfKey = createGettersWithFunctionsMock( Constants.Z_TYPE );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -937,12 +830,9 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 
 			it( 'shows expansion for non built-in types with renderer and parser', () => {
-				getters.hasRenderer = createGettersWithFunctionsMock( true );
-				getters.hasParser = createGettersWithFunctionsMock( true );
-				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z60' );
-				global.store.hotUpdate( {
-					getters: getters
-				} );
+				store.hasRenderer = createGettersWithFunctionsMock( true );
+				store.hasParser = createGettersWithFunctionsMock( true );
+				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z60' );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -960,10 +850,7 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 
 			it( 'disables expansion when string', () => {
-				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_STRING );
-				global.store.hotUpdate( {
-					getters: getters
-				} );
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_STRING );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -981,10 +868,7 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 
 			it( 'disables expansion when reference', () => {
-				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
-				global.store.hotUpdate( {
-					getters: getters
-				} );
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -1002,10 +886,7 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 
 			it( 'disables expansion when implementation', () => {
-				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_IMPLEMENTATION );
-				global.store.hotUpdate( {
-					getters: getters
-				} );
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_IMPLEMENTATION );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -1023,10 +904,7 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 
 			it( 'disables expansion when implementation code', () => {
-				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_IMPLEMENTATION_CODE );
-				global.store.hotUpdate( {
-					getters: getters
-				} );
+				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_IMPLEMENTATION_CODE );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -1044,10 +922,7 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 
 			it( 'disables expansion when implementation function', () => {
-				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_IMPLEMENTATION_FUNCTION );
-				global.store.hotUpdate( {
-					getters: getters
-				} );
+				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_IMPLEMENTATION_FUNCTION );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -1065,10 +940,7 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 
 			it( 'disables expansion when tester', () => {
-				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_TESTER );
-				global.store.hotUpdate( {
-					getters: getters
-				} );
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_TESTER );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -1086,10 +958,7 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 
 			it( 'disables expansion when tester function', () => {
-				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_TESTER_FUNCTION );
-				global.store.hotUpdate( {
-					getters: getters
-				} );
+				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_TESTER_FUNCTION );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -1107,10 +976,7 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 
 			it( 'disables expansion for non built-in types', () => {
-				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z60' );
-				global.store.hotUpdate( {
-					getters: getters
-				} );
+				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z60' );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -1134,11 +1000,8 @@ describe( 'ZObjectKeyValue', () => {
 		describe( 'redirect state changes', () => {
 
 			it( 'trigger set-type if the key is an object type', () => {
-				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_OBJECT_TYPE );
-				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
-				global.store.hotUpdate( {
-					getters: getters
-				} );
+				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_OBJECT_TYPE );
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -1155,13 +1018,10 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 
 			it( 'trigger set-value when type is set to typed list', () => {
-				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
-				getters.getZObjectKeyByRowId = () => ( id ) => ( id === 1 ) ? Constants.Z_FUNCTION_CALL_FUNCTION :
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
+				store.getZObjectKeyByRowId = jest.fn( ( id ) => ( id === 1 ) ? Constants.Z_FUNCTION_CALL_FUNCTION :
 					( id === 0 ) ? Constants.Z_OBJECT_TYPE :
-						undefined;
-				global.store.hotUpdate( {
-					getters: getters
-				} );
+						undefined );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -1178,11 +1038,8 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 
 			it( 'passes up responsibility if value is an array and key is Z1K1', () => {
-				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
-				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_OBJECT_TYPE );
-				global.store.hotUpdate( {
-					getters: getters
-				} );
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
+				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_OBJECT_TYPE );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -1199,13 +1056,10 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 
 			it( 'passes up responsibility if the change happens on Z3K4.Z40K1 key', () => {
-				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
-				getters.getZObjectKeyByRowId = () => ( id ) => ( id === 1 ) ? Constants.Z_BOOLEAN_IDENTITY :
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
+				store.getZObjectKeyByRowId = jest.fn( ( id ) => ( id === 1 ) ? Constants.Z_BOOLEAN_IDENTITY :
 					( id === 0 ) ? Constants.Z_KEY_IS_IDENTITY :
-						undefined;
-				global.store.hotUpdate( {
-					getters: getters
-				} );
+						undefined );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -1228,20 +1082,17 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 
 			it( 'sets Z3K1 reference to self if Z3K4 is set to true', () => {
-				getters.getCurrentZObjectId = createGetterMock( 'Z12345' );
-				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_KEY_IS_IDENTITY );
-				getters.getParentRowId = createGettersWithFunctionsMock( 0 );
-				getters.getZKeyTypeRowId = createGettersWithFunctionsMock( 2 );
-				getters.getZObjectTypeByRowId = () => ( id ) => {
+				store.getCurrentZObjectId = 'Z12345';
+				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_KEY_IS_IDENTITY );
+				store.getParentRowId = createGettersWithFunctionsMock( 0 );
+				store.getZKeyTypeRowId = createGettersWithFunctionsMock( 2 );
+				store.getZObjectTypeByRowId = jest.fn( ( id ) => {
 					const types = {
 						0: Constants.Z_KEY,
 						1: Constants.Z_BOOLEAN,
 						2: Constants.Z_REFERENCE
 					};
 					return types[ id ] || 'Z1';
-				};
-				global.store.hotUpdate( {
-					getters: getters
 				} );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
@@ -1266,19 +1117,16 @@ describe( 'ZObjectKeyValue', () => {
 
 			it( 'sets Z3K1 function call to reference of self if Z3K4 is set to true', () => {
 				const refToSelf = { Z1K1: 'Z9', Z9K1: 'Z12345' };
-				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_KEY_IS_IDENTITY );
-				getters.getZKeyTypeRowId = createGettersWithFunctionsMock( 3 );
-				getters.createObjectByType = createGettersWithFunctionsMock( refToSelf );
-				getters.getZObjectTypeByRowId = () => ( id ) => {
+				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_KEY_IS_IDENTITY );
+				store.getZKeyTypeRowId = createGettersWithFunctionsMock( 3 );
+				store.createObjectByType = createGettersWithFunctionsMock( refToSelf );
+				store.getZObjectTypeByRowId = jest.fn( ( id ) => {
 					const types = {
 						0: Constants.Z_KEY,
 						1: Constants.Z_BOOLEAN,
 						2: Constants.Z_REFERENCE
 					};
 					return types[ id ] || 'Z1';
-				};
-				global.store.hotUpdate( {
-					getters: getters
 				} );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
@@ -1304,11 +1152,8 @@ describe( 'ZObjectKeyValue', () => {
 
 		describe( 'perform simple changes', () => {
 			it( 'persists the change when occurs to the key-value pair', () => {
-				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
-				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_STRING );
-				global.store.hotUpdate( {
-					getters: getters
-				} );
+				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_STRING );
 
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
@@ -1321,24 +1166,43 @@ describe( 'ZObjectKeyValue', () => {
 				} );
 
 				wrapper.getComponent( { name: 'wl-z-string' } ).vm.$emit( 'set-value', { keyPath: [], value: 'my string value' } );
-				expect( actions.setValueByRowIdAndPath ).toHaveBeenCalledWith( expect.anything(), { keyPath: [ ], rowId: 1, value: 'my string value' } );
+				expect( store.setValueByRowIdAndPath ).toHaveBeenCalledWith( { keyPath: [ ], rowId: 1, value: 'my string value' } );
+			} );
+
+			it( 'triggers a callback when send in payload', async () => {
+				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_STRING );
+				store.setValueByRowIdAndPath.mockResolvedValue();
+				const callbackFn = jest.fn();
+
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						edit: true,
+						rowId: 1
+					},
+					global: {
+						stubs: { WlKeyValueBlock: false }
+					}
+				} );
+
+				wrapper.getComponent( { name: 'wl-z-string' } ).vm.$emit( 'set-value', { keyPath: [], value: 'my string value', callback: callbackFn } );
+				expect( store.setValueByRowIdAndPath ).toHaveBeenCalled();
+				await waitFor( () => expect( callbackFn ).toHaveBeenCalled() );
 			} );
 		} );
 
 		describe( 'page redirections', () => {
 			it( 'navigates into function editor when content type is set to function', () => {
 				const mockNavigate = jest.fn();
-				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
-				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_OBJECT );
-				actions.changeType = jest.fn();
-				actions.navigate = mockNavigate;
+				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_OBJECT );
+				store.navigate = mockNavigate;
 
 				// Create mock title element
 				const title = document.createElement( 'h1' );
 				title.setAttribute( 'id', 'firstHeading' );
 				document.body.appendChild( title );
 
-				global.store.hotUpdate( { getters: getters, actions: actions } );
 				const wrapper = shallowMount( ZObjectKeyValue, {
 					props: {
 						edit: true,
@@ -1354,9 +1218,9 @@ describe( 'ZObjectKeyValue', () => {
 
 				const keyValueSet = wrapper.findComponent( { name: 'wl-z-object-key-value-set' } );
 				keyValueSet.vm.$emit( 'set-type', { value: Constants.Z_FUNCTION } );
-				expect( mockNavigate ).toHaveBeenCalledWith( expect.anything(), { to: Constants.VIEWS.FUNCTION_EDITOR } );
-				expect( actions.changeType ).toHaveBeenCalledTimes( 1 );
-				expect( actions.changeType ).toHaveBeenCalledWith( expect.anything(), {
+				expect( mockNavigate ).toHaveBeenCalledWith( { to: Constants.VIEWS.FUNCTION_EDITOR } );
+				expect( store.changeType ).toHaveBeenCalledTimes( 1 );
+				expect( store.changeType ).toHaveBeenCalledWith( {
 					id: 1,
 					type: Constants.Z_FUNCTION,
 					literal: true,

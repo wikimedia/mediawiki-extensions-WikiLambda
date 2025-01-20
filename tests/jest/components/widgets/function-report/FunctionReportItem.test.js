@@ -8,32 +8,27 @@
 
 const mount = require( '@vue/test-utils' ).mount,
 	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
-	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
+	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
-	FunctionReportItem = require( '../../../../../resources/ext.wikilambda.app/components/widgets/function-report/FunctionReportItem.vue' );
+	FunctionReportItem = require( '../../../../../resources/ext.wikilambda.app/components/widgets/function-report/FunctionReportItem.vue' ),
+	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 
 describe( 'FunctionReportItem', () => {
-	let getters,
-		testStatus,
+	let store,
 		zFunctionId,
 		zImplementationId,
 		zTesterId,
 		reportType;
-	const returnStatus = jest.fn( () => testStatus );
 
 	beforeEach( () => {
+		store = useMainStore();
 		zFunctionId = 'Z10000';
 		zImplementationId = 'Z10001';
 		zTesterId = 'Z10002';
 		reportType = Constants.Z_TESTER;
-		getters = {
-			getZTesterResults: createGetterMock( returnStatus ),
-			getLabelData: createLabelDataMock(),
-			getUserLangCode: createGetterMock( 'en' )
-		};
-		global.store.hotUpdate( {
-			getters: getters
-		} );
+		store.getZTesterResults = createGettersWithFunctionsMock( false );
+		store.getLabelData = createLabelDataMock();
+		store.getUserLangCode = 'en';
 	} );
 
 	it( 'renders without errors', () => {
@@ -48,7 +43,7 @@ describe( 'FunctionReportItem', () => {
 		expect( wrapper.find( '.ext-wikilambda-app-function-report-item' ).exists() ).toBeTruthy();
 	} );
 
-	it( 'fetches the test result for the provided IDs from Vuex', () => {
+	it( 'fetches the test result for the provided IDs from Pinia', () => {
 		mount( FunctionReportItem, {
 			props: {
 				zFunctionId: zFunctionId,
@@ -57,7 +52,7 @@ describe( 'FunctionReportItem', () => {
 				reportType: reportType
 			}
 		} );
-		expect( returnStatus ).toHaveBeenCalledWith( zFunctionId, zTesterId, zImplementationId );
+		expect( store.getZTesterResults ).toHaveBeenCalledWith( zFunctionId, zTesterId, zImplementationId );
 	} );
 
 	it( 'displays running status when ongoing call', () => {
@@ -74,7 +69,8 @@ describe( 'FunctionReportItem', () => {
 	} );
 
 	it( 'displays passed status when result is passed', () => {
-		testStatus = true;
+		store.getZTesterResults = createGettersWithFunctionsMock( true );
+
 		const wrapper = mount( FunctionReportItem, {
 			props: {
 				zFunctionId: zFunctionId,
@@ -87,7 +83,8 @@ describe( 'FunctionReportItem', () => {
 	} );
 
 	it( 'displays failed status when result is failed', () => {
-		testStatus = false;
+		store.getZTesterResults = createGettersWithFunctionsMock( false );
+
 		const wrapper = mount( FunctionReportItem, {
 			props: {
 				zFunctionId: zFunctionId,
@@ -100,7 +97,8 @@ describe( 'FunctionReportItem', () => {
 	} );
 
 	it( 'displays pending status when implementation missing', () => {
-		testStatus = undefined;
+		store.getZTesterResults = createGettersWithFunctionsMock( undefined );
+
 		const wrapper = mount( FunctionReportItem, {
 			props: {
 				zFunctionId: zFunctionId,
@@ -113,7 +111,8 @@ describe( 'FunctionReportItem', () => {
 	} );
 
 	it( 'displays pending status when tester missing', () => {
-		testStatus = undefined;
+		store.getZTesterResults = createGettersWithFunctionsMock( undefined );
+
 		const wrapper = mount( FunctionReportItem, {
 			props: {
 				zFunctionId: zFunctionId,

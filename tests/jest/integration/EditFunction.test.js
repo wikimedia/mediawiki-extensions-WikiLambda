@@ -13,7 +13,6 @@ const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
 	{ lookupSearchAndSelect, textInputChange, chipInputAddChip } = require( './helpers/interactionHelpers.js' ),
 	{ runSetup, runTeardown } = require( './helpers/functionEditorTestHelpers.js' ),
 	Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' ),
-	store = require( '../../../resources/ext.wikilambda.app/store/index.js' ),
 	App = require( '../../../resources/ext.wikilambda.app/components/App.vue' ),
 	existingFunctionFromApi = require( './objects/existingFunctionFromApi.js' ),
 	expectedEditedFunctionPostedToApi = require( './objects/expectedEditedFunctionPostedToApi.js' );
@@ -45,7 +44,7 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 			findByRole,
 			findAllByTestId,
 			getByText
-		} = render( App, { global: { plugins: [ store ] } } );
+		} = render( App );
 
 		// ACT: Get the language blocks
 		let languageBlocks = await findAllByTestId( 'function-editor-language-block' );

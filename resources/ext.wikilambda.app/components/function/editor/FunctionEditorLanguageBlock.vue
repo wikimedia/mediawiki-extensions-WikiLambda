@@ -73,7 +73,8 @@ const FunctionEditorLanguage = require( './FunctionEditorLanguage.vue' ),
 	FunctionEditorInputs = require( './FunctionEditorInputs.vue' ),
 	FunctionEditorOutput = require( './FunctionEditorOutput.vue' ),
 	icons = require( '../../../../lib/icons.json' ),
-	{ mapGetters } = require( 'vuex' );
+	useMainStore = require( '../../../store/index.js' ),
+	{ mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-language-block',
@@ -100,7 +101,7 @@ module.exports = exports = defineComponent( {
 			icons: icons
 		};
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'isCreateNewPage',
 		'isUserLoggedIn',
 		'getLabelDataForLangCode'

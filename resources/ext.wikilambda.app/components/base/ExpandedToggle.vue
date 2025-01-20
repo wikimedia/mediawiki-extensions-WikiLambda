@@ -25,7 +25,8 @@
 const { CdxIcon, CdxButton } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const icons = require( '../../../lib/icons.json' ),
-	{ mapGetters } = require( 'vuex' );
+	useMainStore = require( '../../store/index.js' ),
+	{ mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-expanded-toggle',
@@ -51,7 +52,7 @@ module.exports = exports = defineComponent( {
 			}
 		};
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'waitForRunningParsers'
 	] ), {
 		iconClass: function () {

@@ -1,183 +1,144 @@
 /*!
- * WikiLambda unit test suite for the errors Vuex module
+ * WikiLambda unit test suite for the errors Pinia store
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
 'use strict';
 
-const errorsModule = require( '../../../../resources/ext.wikilambda.app/store/modules/errors.js' ),
-	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
-	mockErrors = {
-		// Global errors
-		0: [ {
-			type: Constants.errorTypes.WARNING,
-			code: undefined,
-			message: 'Some custom warning message'
-		}, {
-			type: Constants.errorTypes.ERROR,
-			code: undefined,
-			message: 'Some custom error message'
-		} ],
-		// Validation errors
-		10: [ {
-			type: Constants.errorTypes.ERROR,
-			code: Constants.errorCodes.MISSING_FUNCTION_OUTPUT,
-			message: undefined
-		} ]
-	};
-let context,
-	state;
+const { setActivePinia, createPinia } = require( 'pinia' );
+const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 
-describe( 'Errors Vuex module', () => {
+const mockErrors = {
+	// Global errors
+	0: [ {
+		type: Constants.errorTypes.WARNING,
+		code: undefined,
+		message: 'Some custom warning message'
+	}, {
+		type: Constants.errorTypes.ERROR,
+		code: undefined,
+		message: 'Some custom error message'
+	} ],
+	// Validation errors
+	10: [ {
+		type: Constants.errorTypes.ERROR,
+		code: Constants.errorCodes.MISSING_FUNCTION_OUTPUT,
+		message: undefined
+	} ]
+};
+
+describe( 'Errors Pinia store', () => {
+	let store;
+
 	beforeEach( () => {
-		state = JSON.parse( JSON.stringify( errorsModule.state ) );
-
-		context = Object.assign( {}, {
-			commit: jest.fn( () => {} )
-		} );
+		setActivePinia( createPinia() );
+		store = useMainStore();
+		store.errors = {};
 	} );
 
 	describe( 'Getters', () => {
 		describe( 'getAllErrors', () => {
 			it( 'returns an empty array when there are no errors', () => {
-				expect( errorsModule.getters.getAllErrors( state ) ).toEqual( [] );
+				expect( store.getAllErrors ).toEqual( [] );
 			} );
 
 			it( 'returns all errors', () => {
-				state.errors = mockErrors;
+				store.errors = mockErrors;
 				let expectErrors = [];
 				expectErrors = expectErrors.concat( mockErrors[ 0 ], mockErrors[ 10 ] );
-				expect( errorsModule.getters.getAllErrors( state ) ).toEqual( expectErrors );
+				expect( store.getAllErrors ).toEqual( expectErrors );
 			} );
 		} );
 
 		describe( 'getErrors', () => {
 			it( 'returns an empty array when there are no errors', () => {
-				expect( errorsModule.getters.getErrors( state )( 0 ) ).toEqual( [] );
+				expect( store.getErrors( 0 ) ).toEqual( [] );
 			} );
 
 			it( 'returns errors saved for a given rowId', () => {
-				state.errors = mockErrors;
-				expect( errorsModule.getters.getErrors( state )( 0 ) ).toEqual( mockErrors[ 0 ] );
+				store.errors = mockErrors;
+				expect( store.getErrors( 0 ) ).toEqual( mockErrors[ 0 ] );
 			} );
 
 			it( 'returns errors saved for a given rowId and type', () => {
-				state.errors = mockErrors;
-				expect( errorsModule.getters.getErrors( state )( 0, Constants.errorTypes.WARNING ) ).toEqual( [ mockErrors[ 0 ][ 0 ] ] );
-			} );
-		} );
-	} );
-
-	describe( 'Mutations', () => {
-		describe( 'setError', () => {
-			it( 'sets error in the state under a given rowId', () => {
-				errorsModule.mutations.setError( state, {
-					rowId: 10,
-					errorType: Constants.errorTypes.ERROR,
-					errorCode: Constants.errorCodes.MISSING_FUNCTION_OUTPUT
-				} );
-				expect( state.errors ).toEqual( { 10: mockErrors[ 10 ] } );
-			} );
-
-			it( 'sets global error if no rowId is given', () => {
-				errorsModule.mutations.setError( state, {
-					errorType: Constants.errorTypes.ERROR,
-					errorCode: Constants.errorCodes.MISSING_FUNCTION_OUTPUT
-				} );
-				expect( state.errors ).toEqual( { 0: mockErrors[ 10 ] } );
-			} );
-
-			it( 'adds an error if rowId is already present in the state', () => {
-				state.errors = {
-					0: [ {
-						type: Constants.errorTypes.WARNING,
-						code: undefined,
-						message: 'Some custom warning message'
-					} ]
-				};
-				errorsModule.mutations.setError( state, {
-					rowId: 0,
-					errorType: Constants.errorTypes.ERROR,
-					errorMessage: 'Some custom error message'
-				} );
-				expect( state.errors ).toEqual( { 0: mockErrors[ 0 ] } );
-			} );
-		} );
-
-		describe( 'clearErrorsForId', () => {
-			it( 'does nothing if the rowId has no errors in the state', () => {
-				state.errors = mockErrors;
-				errorsModule.mutations.clearErrorsForId( state, 20 );
-				expect( state.errors ).toEqual( mockErrors );
-			} );
-
-			it( 'clears all errors associated with a given rowId', () => {
-				state.errors = mockErrors;
-				errorsModule.mutations.clearErrorsForId( state, 10 );
-				expect( state.errors ).toEqual( { 0: mockErrors[ 0 ], 10: [] } );
-			} );
-		} );
-
-		describe( 'clearValidationErrors', () => {
-			it( 'does nothing if the state has no validation errors', () => {
-				state.errors = {
-					0: mockErrors[ 0 ]
-				};
-				errorsModule.mutations.clearValidationErrors( state );
-				expect( state.errors ).toEqual( { 0: mockErrors[ 0 ] } );
-			} );
-
-			it( 'clears all validation errors (not zero)', () => {
-				state.errors = mockErrors;
-				errorsModule.mutations.clearValidationErrors( state, 10 );
-				expect( state.errors ).toEqual( { 0: mockErrors[ 0 ], 10: [] } );
+				store.errors = mockErrors;
+				expect( store.getErrors( 0, Constants.errorTypes.WARNING ) ).toEqual( [ mockErrors[ 0 ][ 0 ] ] );
 			} );
 		} );
 	} );
 
 	describe( 'Actions', () => {
 		describe( 'setError', () => {
-			it( 'sets error', () => {
-				const payload = {
+			it( 'sets error in the state under a given rowId', () => {
+				store.setError( {
 					rowId: 10,
 					errorType: Constants.errorTypes.ERROR,
 					errorCode: Constants.errorCodes.MISSING_FUNCTION_OUTPUT
+				} );
+				expect( store.errors ).toEqual( { 10: mockErrors[ 10 ] } );
+			} );
+
+			it( 'sets global error if no rowId is given', () => {
+				store.setError( {
+					errorType: Constants.errorTypes.ERROR,
+					errorCode: Constants.errorCodes.MISSING_FUNCTION_OUTPUT
+				} );
+				expect( store.errors ).toEqual( { 0: mockErrors[ 10 ] } );
+			} );
+
+			it( 'adds an error if rowId is already present in the state', () => {
+				store.errors = {
+					0: [ {
+						type: Constants.errorTypes.WARNING,
+						code: undefined,
+						message: 'Some custom warning message'
+					} ]
 				};
-				errorsModule.actions.setError( context, payload );
-				expect( context.commit ).toHaveBeenCalledTimes( 1 );
-				expect( context.commit ).toHaveBeenCalledWith( 'setError', payload );
+				store.setError( {
+					rowId: 0,
+					errorType: Constants.errorTypes.ERROR,
+					errorMessage: 'Some custom error message'
+				} );
+				expect( store.errors ).toEqual( { 0: mockErrors[ 0 ] } );
 			} );
 		} );
 
 		describe( 'clearErrors', () => {
-			it( 'calls clearErrorsForId mutation with given rowId', () => {
-				errorsModule.actions.clearErrors( context, 10 );
-				expect( context.commit ).toHaveBeenCalledTimes( 1 );
-				expect( context.commit ).toHaveBeenCalledWith( 'clearErrorsForId', 10 );
+			it( 'does nothing if the rowId has no errors in the state', () => {
+				store.errors = mockErrors;
+				store.clearErrors( 20 );
+				expect( store.errors ).toEqual( mockErrors );
 			} );
 
-			it( 'calls clearErrorsForId mutation with default rowId 0', () => {
-				errorsModule.actions.clearErrors( context );
-				expect( context.commit ).toHaveBeenCalledTimes( 1 );
-				expect( context.commit ).toHaveBeenCalledWith( 'clearErrorsForId', 0 );
+			it( 'clears all errors associated with a given rowId', () => {
+				store.errors = mockErrors;
+				store.clearErrors( 10 );
+				expect( store.errors ).toEqual( { 0: mockErrors[ 0 ], 10: [] } );
 			} );
 		} );
 
 		describe( 'clearValidationErrors', () => {
-			it( 'calls clearValidationErrors mutation', () => {
-				errorsModule.actions.clearValidationErrors( context );
-				expect( context.commit ).toHaveBeenCalledTimes( 1 );
-				expect( context.commit ).toHaveBeenCalledWith( 'clearValidationErrors' );
+			it( 'does nothing if the state has no validation errors', () => {
+				store.errors = {
+					0: mockErrors[ 0 ]
+				};
+				store.clearValidationErrors();
+				expect( store.errors ).toEqual( { 0: mockErrors[ 0 ] } );
+			} );
+
+			it( 'clears all validation errors (not zero)', () => {
+				store.errors = mockErrors;
+				store.clearValidationErrors( 10 );
+				expect( store.errors ).toEqual( { 0: mockErrors[ 0 ], 10: [] } );
 			} );
 		} );
 
 		describe( 'clearAllErrors', () => {
 			it( 'clears both validation and page errors', () => {
-				errorsModule.actions.clearAllErrors( context );
-				expect( context.commit ).toHaveBeenCalledTimes( 2 );
-				expect( context.commit ).toHaveBeenCalledWith( 'clearValidationErrors' );
-				expect( context.commit ).toHaveBeenCalledWith( 'clearErrorsForId', 0 );
+				store.clearAllErrors();
+				expect( store.errors ).toEqual( {} );
 			} );
 		} );
 	} );

@@ -8,19 +8,16 @@
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	ZFunctionCall = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZFunctionCall.vue' );
+	ZFunctionCall = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZFunctionCall.vue' ),
+	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 
 describe( 'ZFunctionCall', () => {
 	describe( 'in view and edit mode', () => {
-		let getters;
+		let store;
 
 		beforeEach( () => {
-			getters = {
-				getZFunctionCallFunctionId: createGettersWithFunctionsMock( 'Z801' )
-			};
-			global.store.hotUpdate( {
-				getters: getters
-			} );
+			store = useMainStore();
+			store.getZFunctionCallFunctionId = createGettersWithFunctionsMock( 'Z801' );
 		} );
 
 		it( 'renders without errors', () => {

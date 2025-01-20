@@ -66,6 +66,7 @@
 const { CdxButton, CdxIcon, CdxMessage } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../Constants.js' ),
+	useMainStore = require( '../../store/index.js' ),
 	ExpandedToggle = require( '../base/ExpandedToggle.vue' ),
 	LocalizedLabel = require( '../base/LocalizedLabel.vue' ),
 	ModeSelector = require( '../base/ModeSelector.vue' ),
@@ -89,7 +90,7 @@ const Constants = require( '../../Constants.js' ),
 	LabelData = require( '../../store/classes/LabelData.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	errorUtils = require( '../../mixins/errorUtils.js' ),
-	{ mapActions, mapGetters } = require( 'vuex' );
+	{ mapActions, mapState } = require( 'pinia' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-object-key-value',
@@ -165,7 +166,7 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign(
-		mapGetters( [
+		mapState( useMainStore, [
 			'createObjectByType',
 			'getCurrentZObjectId',
 			'getDepthByRowId',
@@ -566,7 +567,7 @@ module.exports = exports = defineComponent( {
 			}
 		}
 	),
-	methods: Object.assign( mapActions( [
+	methods: Object.assign( {}, mapActions( useMainStore, [
 		'changeType',
 		'clearType',
 		'setDirty',

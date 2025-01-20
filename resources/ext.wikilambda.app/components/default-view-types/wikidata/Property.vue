@@ -36,9 +36,10 @@
 const { defineComponent } = require( 'vue' );
 const { CdxIcon } = require( '@wikimedia/codex' );
 const Constants = require( '../../../Constants.js' ),
+	useMainStore = require( '../../../store/index.js' ),
 	LabelData = require( '../../../store/classes/LabelData.js' ),
 	WikidataEntitySelector = require( './EntitySelector.vue' ),
-	{ mapActions, mapGetters } = require( 'vuex' ),
+	{ mapActions, mapState } = require( 'pinia' ),
 	wikidataIconSvg = require( './wikidataIconSvg.js' );
 
 module.exports = exports = defineComponent( {
@@ -68,7 +69,7 @@ module.exports = exports = defineComponent( {
 			propertyType: Constants.Z_WIKIDATA_PROPERTY
 		};
 	},
-	computed: Object.assign( mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getPropertyData',
 		'getPropertyIdRow',
 		'getUserLangCode',
@@ -149,7 +150,7 @@ module.exports = exports = defineComponent( {
 			return this.propertyLabelData ? this.propertyLabelData.label : '';
 		}
 	} ),
-	methods: Object.assign( mapActions( [
+	methods: Object.assign( {}, mapActions( useMainStore, [
 		'fetchProperties'
 	] ), {
 		/**

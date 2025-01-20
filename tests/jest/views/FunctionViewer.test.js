@@ -7,20 +7,18 @@
 'use strict';
 
 const VueTestUtils = require( '@vue/test-utils' ),
-	createGetterMock = require( '../helpers/getterHelpers.js' ).createGetterMock,
+	useMainStore = require( '../../../resources/ext.wikilambda.app/store/index.js' ),
 	FunctionViewer = require( '../../../resources/ext.wikilambda.app/views/FunctionViewer.vue' );
 
 describe( 'FunctionViewer', () => {
 	const functionZid = 'Z12345';
-	let getters;
+	let store;
 
 	beforeEach( () => {
-		getters = {
-			getCurrentZObjectId: createGetterMock( functionZid ),
-			getUserLangZid: createGetterMock( 'Z1002' ),
-			isCreateNewPage: createGetterMock( false )
-		};
-		global.store.hotUpdate( { getters: getters } );
+		store = useMainStore();
+		store.getCurrentZObjectId = functionZid;
+		store.getUserLangZid = 'Z1002';
+		store.isCreateNewPage = false;
 
 		window.mw.Uri.mockImplementation( () => ( {
 			path: '/wiki/' + functionZid

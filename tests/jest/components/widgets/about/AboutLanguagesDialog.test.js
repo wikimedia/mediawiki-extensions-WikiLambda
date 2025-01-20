@@ -9,9 +9,9 @@
 const { config, mount } = require( '@vue/test-utils' ),
 	{ waitFor } = require( '@testing-library/vue' ),
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
 	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
 	mockLookupLanguages = require( '../../../fixtures/mocks.js' ).mockLookupLanguages,
+	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' ),
 	AboutLanguagesDialog = require( '../../../../../resources/ext.wikilambda.app/components/widgets/about/AboutLanguagesDialog.vue' );
 
 // Ignore all "teleport" behavior for the purpose of testing Dialog;
@@ -21,65 +21,54 @@ config.global.stubs = {
 };
 
 describe( 'AboutLanguagesDialog', () => {
-
-	let getters,
-		actions;
+	let store;
 
 	beforeEach( () => {
-		getters = {
-			getFallbackLanguageZids: createGetterMock( [ 'Z1003', 'Z1002' ] ),
-			getLanguageIsoCodeOfZLang: () => ( langZid ) => {
-				const codes = {
-					Z1002: 'en', // English
-					Z1003: 'es', // Spanish
-					Z1314: 'eu', // Euskera
-					Z1678: 'qu', // Quechua
-					Z1787: 'it', // Italian
-					Z1272: 'hr', // Croatian
-					Z1429: 'te' // Telugu
-				};
-				return codes[ langZid ];
-			},
-			getMultilingualDataLanguages: createGettersWithFunctionsMock( [
-				'Z1002', // English
-				'Z1003', // Spanish
-				'Z1314', // Euskera
-				'Z1678', // Quechua
-				'Z1787', // Italian
-				'Z1272', // Croatian
-				'Z1429' // Telugu
-			] ),
-			// en, es, eu and qu have name, the rest don't
-			getZPersistentName: () => ( langZid ) => {
-				const names = {
-					Z1002: { id: 0, key: '1' }, // English
-					Z1003: { id: 1, key: '2' }, // Spanish
-					Z1314: { id: 2, key: '3' }, // Euskera
-					Z1678: { id: 3, key: '4' } // Quechua
-				};
-				return names[ langZid ];
-			},
-			getZMonolingualTextValue: () => ( rowId ) => {
-				const names = [ 'Name', 'Nombre', 'Izena', 'Suti' ];
-				return names[ rowId ];
-			},
-			getLabelData: createLabelDataMock( {
-				Z1002: 'English',
-				Z1003: 'Español',
-				Z1314: 'Euskera',
-				Z1678: 'Quechua',
-				Z1787: 'Italian',
-				Z1272: 'Croatian',
-				Z1429: 'Telugu'
-			} )
+		store = useMainStore();
+		store.getFallbackLanguageZids = [ 'Z1003', 'Z1002' ];
+		store.getLanguageIsoCodeOfZLang = ( langZid ) => {
+			const codes = {
+				Z1002: 'en', // English
+				Z1003: 'es', // Spanish
+				Z1314: 'eu', // Euskera
+				Z1678: 'qu', // Quechua
+				Z1787: 'it', // Italian
+				Z1272: 'hr', // Croatian
+				Z1429: 'te' // Telugu
+			};
+			return codes[ langZid ];
 		};
-
-		actions = {
-			fetchZids: jest.fn(),
-			lookupZObjectLabels: jest.fn()
+		store.getMultilingualDataLanguages = createGettersWithFunctionsMock( [
+			'Z1002', // English
+			'Z1003', // Spanish
+			'Z1314', // Euskera
+			'Z1678', // Quechua
+			'Z1787', // Italian
+			'Z1272', // Croatian
+			'Z1429' // Telugu
+		] );
+		store.getZPersistentName = ( langZid ) => {
+			const names = {
+				Z1002: { id: 0, key: '1' }, // English
+				Z1003: { id: 1, key: '2' }, // Spanish
+				Z1314: { id: 2, key: '3' }, // Euskera
+				Z1678: { id: 3, key: '4' } // Quechua
+			};
+			return names[ langZid ];
 		};
-
-		global.store.hotUpdate( { getters: getters, actions: actions } );
+		store.getZMonolingualTextValue = ( rowId ) => {
+			const names = [ 'Name', 'Nombre', 'Izena', 'Suti' ];
+			return names[ rowId ];
+		};
+		store.getLabelData = createLabelDataMock( {
+			Z1002: 'English',
+			Z1003: 'Español',
+			Z1314: 'Euskera',
+			Z1678: 'Quechua',
+			Z1787: 'Italian',
+			Z1272: 'Croatian',
+			Z1429: 'Telugu'
+		} );
 	} );
 
 	it( 'renders without errors', () => {
@@ -157,8 +146,7 @@ describe( 'AboutLanguagesDialog', () => {
 			Z1272: 'croatian', // lowercase to test case insensitivity
 			Z1429: 'Telugu'
 		};
-		getters.getLabelData = createLabelDataMock( modifiedLabelData );
-		global.store.hotUpdate( { getters: getters, actions: actions } );
+		store.getLabelData = createLabelDataMock( modifiedLabelData );
 
 		const wrapper = mount( AboutLanguagesDialog, { props: { open: true } } );
 		const list = wrapper.findAll( '.ext-wikilambda-app-about-languages-dialog__items > div' );
@@ -179,8 +167,8 @@ describe( 'AboutLanguagesDialog', () => {
 	} );
 
 	it( 'triggers language lookup when writing in the search box', async () => {
-		actions.lookupZObjectLabels = jest.fn().mockResolvedValue( mockLookupLanguages );
-		global.store.hotUpdate( { getters: getters, actions: actions } );
+		store.lookupZObjectLabels.mockResolvedValue( mockLookupLanguages );
+
 		const wrapper = mount( AboutLanguagesDialog, { props: {
 			open: true
 		} } );
@@ -202,7 +190,7 @@ describe( 'AboutLanguagesDialog', () => {
 		expect( list[ 2 ].find( '.ext-wikilambda-app-about-languages-dialog__item-field>a' ).text() ).toBe( 'Add language' );
 
 		// Fetches additional language information:
-		expect( actions.fetchZids ).toHaveBeenCalledWith( expect.anything(), { zids: [ 'Z1006', 'Z1219', 'Z1837' ] } );
+		expect( store.fetchZids ).toHaveBeenCalledWith( { zids: [ 'Z1006', 'Z1219', 'Z1837' ] } );
 	} );
 
 	it( 'emits add-language event when clicking on an item', () => {

@@ -8,7 +8,8 @@
 'use strict';
 
 const Constants = require( '../Constants.js' ),
-	{ mapActions, mapGetters } = require( 'vuex' );
+	useMainStore = require( '../store/index.js' ),
+	{ mapActions, mapState } = require( 'pinia' );
 
 module.exports = exports = {
 	data: function () {
@@ -16,7 +17,7 @@ module.exports = exports = {
 			localErrors: []
 		};
 	},
-	methods: Object.assign( {}, mapActions( [
+	methods: Object.assign( {}, mapActions( useMainStore, [
 		'clearErrors'
 	] ), {
 		/**
@@ -79,7 +80,7 @@ module.exports = exports = {
 			return errorMessage;
 		}
 	} ),
-	computed: Object.assign( {}, mapGetters( [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getErrors'
 	] ), {
 		/**

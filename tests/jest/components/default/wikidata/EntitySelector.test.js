@@ -10,15 +10,14 @@ const { shallowMount } = require( '@vue/test-utils' ),
 	{ waitFor } = require( '@testing-library/vue' ),
 	{ mockLookupLexemes } = require( '../../../fixtures/mocks.js' ),
 	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
+	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' ),
 	WikidataEntitySelector = require( '../../../../../resources/ext.wikilambda.app/components/default-view-types/wikidata/EntitySelector.vue' );
 
 describe( 'WikidataEntitySelector', () => {
-	let actions;
+	let store;
+
 	beforeEach( () => {
-		actions = {
-			lookupWikidataEntities: jest.fn()
-		};
-		global.store.hotUpdate( { actions } );
+		store = useMainStore();
 	} );
 
 	it( 'renders for lexeme without errors', () => {
@@ -113,8 +112,7 @@ describe( 'WikidataEntitySelector', () => {
 		} );
 
 		it( 'performs lookup when updating input value field', async () => {
-			actions.lookupWikidataEntities = jest.fn().mockResolvedValue( mockLookupLexemes );
-			global.store.hotUpdate( { actions } );
+			store.lookupWikidataEntities.mockResolvedValue( mockLookupLexemes );
 
 			const wrapper = shallowMount( WikidataEntitySelector, {
 				props: {
@@ -128,8 +126,8 @@ describe( 'WikidataEntitySelector', () => {
 			lookup.vm.$emit( 'update:inputValue', 'pangoli' );
 
 			// Wait for lookup API to be called:
-			await waitFor( () => expect( actions.lookupWikidataEntities )
-				.toHaveBeenCalledWith( expect.anything(), { search: 'pangoli', type: 'lexeme', searchContinue: null } ) );
+			await waitFor( () => expect( store.lookupWikidataEntities )
+				.toHaveBeenCalledWith( { search: 'pangoli', type: 'lexeme', searchContinue: null } ) );
 
 			expect( wrapper.vm.lookupConfig.searchQuery ).toBe( 'pangoli' );
 			expect( lookup.vm.menuItems.length ).toBe( 2 );
@@ -145,6 +143,28 @@ describe( 'WikidataEntitySelector', () => {
 				label: 'pangolino',
 				value: 'L1208742'
 			} );
+		} );
+
+		it( 'resets the lookup when fetch fails', async () => {
+			store.lookupWikidataEntities.mockRejectedValue( 'some error' );
+
+			const wrapper = shallowMount( WikidataEntitySelector, {
+				props: {
+					entityId: null,
+					entityLabel: '',
+					type: Constants.Z_WIKIDATA_LEXEME
+				}
+			} );
+
+			const lookup = wrapper.findComponent( { name: 'cdx-lookup' } );
+			lookup.vm.$emit( 'update:inputValue', 'pangoli' );
+
+			// Wait for lookup API to be called:
+			await waitFor( () => expect( store.lookupWikidataEntities )
+				.toHaveBeenCalledWith( { search: 'pangoli', type: 'lexeme', searchContinue: null } ) );
+
+			expect( wrapper.vm.lookupConfig.searchQuery ).toBe( 'pangoli' );
+			expect( lookup.vm.menuItems.length ).toBe( 0 );
 		} );
 	} );
 

@@ -7,8 +7,9 @@
 
 'use strict';
 
-const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
-	propertiesModule = require( '../../../../../resources/ext.wikilambda.app/store/modules/wikidata/properties.js' );
+const { setActivePinia, createPinia } = require( 'pinia' );
+const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
+const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 
 const propertyId = 'P642';
 const propertyData = {
@@ -18,49 +19,42 @@ const propertyData = {
 	}
 };
 
-describe( 'Wikidata Properties Vuex module', () => {
-	let state, getters;
+describe( 'Wikidata Properties Pinia store', () => {
+	let store;
+
+	beforeEach( () => {
+		setActivePinia( createPinia() );
+		store = useMainStore();
+		store.properties = {};
+	} );
 
 	describe( 'Getters', () => {
 		describe( 'getPropertyIdRow', () => {
-			beforeEach( () => {
-				getters = {
-					getWikidataEntityIdRow: jest.fn()
-				};
-			} );
 
 			it( 'calls getWikidataEntityIdRow for properties', () => {
-				propertiesModule.getters.getPropertyIdRow( state, getters )( 10 );
-				expect( getters.getWikidataEntityIdRow ).toHaveBeenCalledWith( 10, Constants.Z_WIKIDATA_PROPERTY );
+				Object.defineProperty( store, 'getWikidataEntityIdRow', {
+					value: jest.fn()
+				} );
+				store.getPropertyIdRow( 10 );
+				expect( store.getWikidataEntityIdRow ).toHaveBeenCalledWith( 10, Constants.Z_WIKIDATA_PROPERTY );
 			} );
 		} );
 
 		describe( 'getPropertyData', () => {
-			beforeEach( () => {
-				state = {
-					properties: {}
-				};
-			} );
 
 			it( 'returns undefined if property is not available', () => {
-				expect( propertiesModule.getters.getPropertyData( state )( propertyId ) )
-					.toEqual( undefined );
+				expect( store.getPropertyData( propertyId ) ).toEqual( undefined );
 			} );
 
 			it( 'returns property data if available', () => {
-				state.properties[ propertyId ] = propertyData;
-				expect( propertiesModule.getters.getPropertyData( state )( propertyId ) )
-					.toEqual( propertyData );
+				store.properties[ propertyId ] = propertyData;
+				expect( store.getPropertyData( propertyId ) ).toEqual( propertyData );
 			} );
 		} );
 	} );
 
-	describe( 'Mutations', () => {
-		beforeEach( () => {
-			state = {
-				properties: {}
-			};
-		} );
+	describe( 'Actions', () => {
+		let fetchMock;
 
 		describe( 'setPropertyData', () => {
 			it( 'sets property data for a given property Id', () => {
@@ -68,36 +62,28 @@ describe( 'Wikidata Properties Vuex module', () => {
 					id: propertyId,
 					data: propertyData
 				};
-				propertiesModule.mutations.setPropertyData( state, payload );
-				expect( state.properties[ propertyId ] ).toEqual( propertyData );
+				store.setPropertyData( payload );
+				expect( store.properties[ propertyId ] ).toEqual( propertyData );
 			} );
 		} );
-	} );
-
-	describe( 'Actions', () => {
-		const context = {};
-		let fetchMock;
 
 		describe( 'fetchProperties', () => {
 			beforeEach( () => {
-				state = {
-					properties: {
-						P111111: 'has data',
-						P222222: new Promise( ( resolve ) => {
-							resolve();
-						} )
-					}
+				store.properties = {
+					P111111: 'has data',
+					P222222: new Promise( ( resolve ) => {
+						resolve();
+					} )
 				};
 				fetchMock = jest.fn().mockResolvedValue( {
 					json: jest.fn().mockReturnValue( {} )
 				} );
 				// eslint-disable-next-line n/no-unsupported-features/node-builtins
 				global.fetch = fetchMock;
-				context.getters = {
-					getUserLangCode: 'en',
-					getPropertyData: propertiesModule.getters.getPropertyData( state )
-				};
-				context.commit = jest.fn();
+				// Mock the getters
+				Object.defineProperty( store, 'getUserLangCode', {
+					value: 'en'
+				} );
 			} );
 
 			it( 'exits early if property ids are already fetched or in flight', () => {
@@ -106,9 +92,8 @@ describe( 'Wikidata Properties Vuex module', () => {
 					'P222222' // Request in flight
 				];
 
-				propertiesModule.actions.fetchProperties( context, { ids: properties } );
+				store.fetchProperties( { ids: properties } );
 
-				expect( context.commit ).not.toHaveBeenCalled();
 				expect( fetchMock ).not.toHaveBeenCalled();
 			} );
 
@@ -124,22 +109,23 @@ describe( 'Wikidata Properties Vuex module', () => {
 				fetchMock = jest.fn().mockResolvedValue( {
 					json: jest.fn().mockReturnValue( expectedResponse )
 				} );
+				store.setPropertyData = jest.fn();
 				// eslint-disable-next-line n/no-unsupported-features/node-builtins
 				global.fetch = fetchMock;
 
 				const params = 'origin=*&action=wbgetentities&format=json&languages=en&languagefallback=true&ids=P333333%7CP444444';
 				const expectedUrl = `${ Constants.WIKIDATA_BASE_URL }/w/api.php?${ params }`;
 
-				const promise = propertiesModule.actions.fetchProperties( context, { ids: properties } );
+				const promise = store.fetchProperties( { ids: properties } );
 
 				expect( fetchMock ).toHaveBeenCalledWith( expectedUrl );
 
 				// Save promises while request is in flight
-				expect( context.commit ).toHaveBeenCalledWith( 'setPropertyData', {
+				expect( store.setPropertyData ).toHaveBeenCalledWith( {
 					id: 'P333333',
 					data: promise
 				} );
-				expect( context.commit ).toHaveBeenCalledWith( 'setPropertyData', {
+				expect( store.setPropertyData ).toHaveBeenCalledWith( {
 					id: 'P444444',
 					data: promise
 				} );
@@ -147,16 +133,40 @@ describe( 'Wikidata Properties Vuex module', () => {
 				const response = await promise;
 
 				// Save data when response arrives
-				expect( context.commit ).toHaveBeenCalledWith( 'setPropertyData', {
+				expect( store.setPropertyData ).toHaveBeenCalledWith( {
 					id: 'P333333',
 					data: 'this'
 				} );
-				expect( context.commit ).toHaveBeenCalledWith( 'setPropertyData', {
+				expect( store.setPropertyData ).toHaveBeenCalledWith( {
 					id: 'P444444',
 					data: 'that'
 				} );
 
 				expect( response ).toEqual( expectedResponse );
+			} );
+
+			it( 'resets ids when API fails', async () => {
+				store.properties = {
+					P111111: 'has data'
+				};
+				const properties = [
+					'P111111', // Already fetched
+					'P333333',
+					'P444444'
+				];
+
+				fetchMock = jest.fn().mockRejectedValue( 'some error' );
+				store.setPropertyData = jest.fn();
+				// eslint-disable-next-line n/no-unsupported-features/node-builtins
+				global.fetch = fetchMock;
+
+				const params = 'origin=*&action=wbgetentities&format=json&languages=en&languagefallback=true&ids=P333333%7CP444444';
+				const expectedUrl = `${ Constants.WIKIDATA_BASE_URL }/w/api.php?${ params }`;
+
+				await store.fetchProperties( { ids: properties } );
+
+				expect( fetchMock ).toHaveBeenCalledWith( expectedUrl );
+				expect( store.properties ).toEqual( { P111111: 'has data' } );
 			} );
 		} );
 	} );
