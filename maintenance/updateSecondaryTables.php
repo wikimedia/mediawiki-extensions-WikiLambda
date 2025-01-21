@@ -202,14 +202,12 @@ class UpdateSecondaryTables extends Maintenance {
 		$this->printTableInfo( 'wikilambda_ztester_results', 'wlztr_id' );
 	}
 
-	// phpcs:disable MediaWiki.Commenting.FunctionComment.MissingDocumentationPrivate
-	private function printTableInfo( $tableName, $columnName ) {
+	private function printTableInfo( string $tableName, string $columnName ) {
 		$tableInfo = $this->getTableInfo( $tableName, $columnName );
 		$this->output( "  $tableName: [$tableInfo[0], $tableInfo[1]]\n" );
 	}
 
-	// phpcs:disable MediaWiki.Commenting.FunctionComment.MissingDocumentationPrivate
-	private function getTableInfo( $tableName, $columnName ) {
+	private function getTableInfo( string $tableName, string $columnName ): array {
 		$dbr = $this->dbProvider->getReplicaDatabase();
 
 		$res = $dbr->newSelectQueryBuilder()
