@@ -11,5 +11,6 @@ CREATE TABLE /*_*/wikilambda_zobject_join (
   wlzo_related_type VARBINARY(255) NOT NULL,
   INDEX wlzo_index_main_zid_key (wlzo_main_zid, wlzo_key),
   INDEX wlzo_index_key_related_zobject (wlzo_key, wlzo_related_zobject),
+  INDEX wlzo_index_related_type (wlzo_related_type),
   PRIMARY KEY(wlzo_id)
 ) /*$wgDBTableOptions*/;
