@@ -104,4 +104,46 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		);
 	} );
 
+	it( 'allows changing the selected function call and ensures the function report testers are updated, but not executed', async () => {
+		const { findByTestId } = render( App, {
+			global: { plugins: [ store ], stubs: {
+				teleport: true,
+				WlFunctionEvaluatorWidget: true
+			} }
+		} );
+
+		//* -- Function report widget
+		const functionReportWidget = await findByTestId( 'function-report-widget' );
+		// ASSERT: The test is shown in the function report widget.
+		expect( functionReportWidget ).toHaveTextContent( 'Tester name, in English' );
+		expect( functionReportWidget ).not.toHaveTextContent( 'Untitled' );
+
+		//* -- Function call section
+		const implementationFunctionSelectContainer = await findByTestId( 'implementation-function' );
+		// ASSERT: The function specified in URL is pre-selected as the function under test.
+		expect( within( implementationFunctionSelectContainer ).getByRole( 'combobox' ) )
+			.toHaveDisplayValue( 'function name, in Chinese' );
+
+		// ACT: Select a different function to use for the new implementation
+		const implementationFunctionSelector = within( implementationFunctionSelectContainer ).getByRole( 'combobox' );
+		const functionNameToSelect = 'another function name, in Chinese';
+		await fireEvent.update( implementationFunctionSelector, 'function' );
+		await fireEvent.click( implementationFunctionSelector );
+
+		// ASSERT: The results from the API are loaded in the dropdown
+		await waitFor( () => expect( implementationFunctionSelectContainer ).toHaveTextContent( functionNameToSelect ) );
+
+		await clickMenuOption( implementationFunctionSelectContainer, functionNameToSelect );
+
+		//* -- Function report widget
+		// ASSERT: The new implementation is shown in the function report widget and the old one is not.
+		expect( functionReportWidget ).not.toHaveTextContent( 'Tester name, in English' );
+		expect( functionReportWidget ).toHaveTextContent( 'Untitled' );
+
+		// ASSERT: wikilambda_perform_test should not be called
+		expect( mw.Api ).not.toHaveBeenCalledWith( expect.objectContaining( {
+			action: 'wikilambda_perform_test'
+		} ) );
+	} );
+
 } );

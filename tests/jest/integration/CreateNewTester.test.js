@@ -10,6 +10,7 @@ require( '@testing-library/jest-dom' );
 
 const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
 	{ within } = require( '@testing-library/dom' ),
+	{ clickMenuOption } = require( './helpers/interactionHelpers.js' ),
 	store = require( '../../../resources/ext.wikilambda.app/store/index.js' ),
 	App = require( '../../../resources/ext.wikilambda.app/components/App.vue' ),
 	Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' ),
@@ -184,5 +185,48 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 			zid: undefined,
 			zobject: JSON.stringify( expectedNewTesterPostedToApi )
 		} );
+
+	} );
+
+	it( 'allows changing the selected function call and ensures the function report testers are updated, but not executed', async () => {
+		const { findByTestId } = render( App, {
+			global: { plugins: [ store ], stubs: {
+				teleport: true,
+				WlFunctionEvaluatorWidget: true
+			} }
+		} );
+
+		//* -- Function report widget
+		const functionReportWidget = await findByTestId( 'function-report-widget' );
+		// ASSERT: The implementation is shown in the function report widget.
+		expect( functionReportWidget ).toHaveTextContent( 'Implementation by composition, in English' );
+		expect( functionReportWidget ).not.toHaveTextContent( 'Untitled' );
+
+		//* -- Function call section
+		const testerFunctionSelectContainer = await findByTestId( 'tester-function-select' );
+		// ASSERT: The function specified in URL is pre-selected as the function under test.
+		expect( within( testerFunctionSelectContainer ).getByRole( 'combobox' ) )
+			.toHaveDisplayValue( 'function name, in Chinese' );
+
+		// ACT: Select a different function to use for the new tester
+		const testerFunctionSelector = within( testerFunctionSelectContainer ).getByRole( 'combobox' );
+		const functionNameToSelect = 'another function name, in Chinese';
+		await fireEvent.update( testerFunctionSelector, 'function' );
+		await fireEvent.click( testerFunctionSelector );
+
+		// ASSERT: The results from the API are loaded in the dropdown
+		await waitFor( () => expect( testerFunctionSelectContainer ).toHaveTextContent( functionNameToSelect ) );
+
+		await clickMenuOption( testerFunctionSelectContainer, functionNameToSelect );
+
+		//* -- Function report widget
+		// ASSERT: The new implementation is shown in the function report widget and the old one is not.
+		expect( functionReportWidget ).not.toHaveTextContent( 'Implementation by composition, in English' );
+		expect( functionReportWidget ).toHaveTextContent( 'Untitled' );
+
+		// ASSERT: wikilambda_perform_test should not be called
+		expect( mw.Api ).not.toHaveBeenCalledWith( expect.objectContaining( {
+			action: 'wikilambda_perform_test'
+		} ) );
 	} );
 } );
