@@ -349,7 +349,7 @@ describe( 'ZObjectSelector', () => {
 			select.vm.$emit( 'update:selected', 'Z30003' );
 
 			await wrapper.vm.$nextTick();
-			expect( wrapper.emitted() ).toHaveProperty( 'input', [ [ 'Z30003' ] ] );
+			expect( wrapper.emitted() ).toHaveProperty( 'select-item', [ [ 'Z30003' ] ] );
 		} );
 	} );
 } );

@@ -25,7 +25,7 @@
 				:return-type="returnType"
 				:exclude-zids="excludeZids"
 				data-testid="z-reference-selector"
-				@input="setValue"
+				@select-item="setValue"
 			></wl-z-object-selector>
 		</template>
 	</div>

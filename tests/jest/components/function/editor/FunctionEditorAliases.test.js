@@ -130,7 +130,7 @@ describe( 'FunctionEditorAliases', () => {
 			expect( actions.setValueByRowIdAndPath ).not.toHaveBeenCalled();
 		} );
 
-		it( 'emits updated-alias event after persisting aliases', async () => {
+		it( 'emits alias-updated event after persisting aliases', async () => {
 			const wrapper = shallowMount( FunctionEditorAliases, {
 				props: { zLanguage: 'Z1002' },
 				global: { stubs: { WlFunctionEditorField: false } }
@@ -139,7 +139,7 @@ describe( 'FunctionEditorAliases', () => {
 			const chipInput = wrapper.getComponent( { name: 'cdx-chip-input' } );
 			await chipInput.vm.$emit( 'update:input-chips', [ { value: 'alias 1' } ] );
 
-			expect( wrapper.emitted()[ 'updated-alias' ] ).toBeTruthy();
+			expect( wrapper.emitted()[ 'alias-updated' ] ).toBeTruthy();
 		} );
 
 		it( 'does nothing when currentRowId is undefined and no parentRow exists', async () => {

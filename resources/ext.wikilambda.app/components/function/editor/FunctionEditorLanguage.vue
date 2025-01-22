@@ -19,7 +19,7 @@
 				:exclude-zids="functionLanguages"
 				:selected-zid="zLanguage"
 				:type="naturalLanguageType"
-				@input="addNewLanguage"
+				@select-item="addNewLanguage"
 			></wl-z-object-selector>
 		</template>
 	</wl-function-editor-field>
@@ -45,7 +45,6 @@ module.exports = exports = defineComponent( {
 			default: ''
 		}
 	},
-	emits: [ 'change' ],
 	data: function () {
 		return {
 			naturalLanguageType: Constants.Z_NATURAL_LANGUAGE
@@ -97,7 +96,7 @@ module.exports = exports = defineComponent( {
 		 * @param {string} lang
 		 */
 		addNewLanguage: function ( lang ) {
-			this.$emit( 'change', lang );
+			this.$emit( 'language-changed', lang );
 		}
 	}
 } );

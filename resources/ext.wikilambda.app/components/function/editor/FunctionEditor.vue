@@ -16,8 +16,8 @@
 				:key="'language-block-' + langZid"
 				:index="index"
 				:z-language="langZid"
-				@set-language="setLanguage"
-				@updated-labels="setHasUpdatedLabels"
+				@language-changed="setLanguage"
+				@labels-updated="setHasUpdatedLabels"
 			></wl-function-editor-language-block>
 		</div>
 		<!-- Add Language Button -->

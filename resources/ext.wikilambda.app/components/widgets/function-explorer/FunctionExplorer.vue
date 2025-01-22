@@ -49,7 +49,7 @@
 						:placeholder="$i18n( 'wikilambda-function-typeselector-label' ).text()"
 						:selected-zid="currentFunctionZid"
 						data-testid="function-selector"
-						@input="updateSelectedFunction"
+						@select-item="updateSelectedFunction"
 					>
 					</wl-z-object-selector>
 				</template>

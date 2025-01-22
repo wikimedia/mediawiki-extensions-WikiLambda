@@ -200,7 +200,7 @@ module.exports = exports = defineComponent( {
 				} );
 			}
 
-			this.$emit( 'updated-alias' );
+			this.$emit( 'alias-updated' );
 		}
 	} )
 } );

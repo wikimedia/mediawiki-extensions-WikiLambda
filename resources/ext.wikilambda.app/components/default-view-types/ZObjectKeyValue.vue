@@ -20,7 +20,7 @@
 			:expanded-disabled="edit && disableEdit"
 			:depth="depth"
 			:no-indent="!hasPreColumn"
-			@toggle-expanded="setExpanded( !expanded )">
+			@toggle-expand="setExpanded( !expanded )">
 			<!-- Main content: either only one row with value, or top row with key and then value -->
 			<!-- Key and Mode: render only when key is shown -->
 			<template v-if="showKeyLabel" #key>

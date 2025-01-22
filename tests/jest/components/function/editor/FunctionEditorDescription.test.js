@@ -77,8 +77,8 @@ describe( 'FunctionEditorDescription', () => {
 				rowId: 2
 			} );
 
-			// ASSERT: emits updated-description
-			expect( wrapper.emitted( 'updated-description' ) ).toBeTruthy();
+			// ASSERT: emits description-updated
+			expect( wrapper.emitted( 'description-updated' ) ).toBeTruthy();
 		} );
 
 		it( 'changes the description value if it already has a description object', async () => {
@@ -99,8 +99,8 @@ describe( 'FunctionEditorDescription', () => {
 				value: 'New Function Description'
 			} );
 
-			// ASSERT: emits updated-description
-			expect( wrapper.emitted( 'updated-description' ) ).toBeTruthy();
+			// ASSERT: emits description-updated
+			expect( wrapper.emitted( 'description-updated' ) ).toBeTruthy();
 		} );
 
 		it( 'adds a new monolingual string if there is no description object', async () => {
@@ -127,8 +127,8 @@ describe( 'FunctionEditorDescription', () => {
 				append: true
 			} );
 
-			// ASSERT: emits updated-description
-			expect( wrapper.emitted( 'updated-description' ) ).toBeTruthy();
+			// ASSERT: emits description-updated
+			expect( wrapper.emitted( 'description-updated' ) ).toBeTruthy();
 		} );
 	} );
 } );

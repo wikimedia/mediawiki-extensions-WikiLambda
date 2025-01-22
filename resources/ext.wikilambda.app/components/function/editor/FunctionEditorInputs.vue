@@ -33,7 +33,7 @@
 					:can-edit-type="canEdit"
 					:is-main-language-block="isMainLanguageBlock"
 					@remove="removeItem"
-					@update-argument-label="updateArgumentLabel"
+					@argument-label-updated="updateArgumentLabel"
 				></wl-function-editor-inputs-item>
 				<cdx-button
 					v-if="canEdit"
@@ -241,10 +241,10 @@ module.exports = exports = defineComponent( {
 			this.removeItemFromTypedList( { rowId } );
 		},
 		/**
-		 * Emits the event updated-argument-label
+		 * Emits the event argument-label-updated
 		 */
 		updateArgumentLabel: function () {
-			this.$emit( 'updated-argument-label' );
+			this.$emit( 'argument-label-updated' );
 		}
 	} )
 } );

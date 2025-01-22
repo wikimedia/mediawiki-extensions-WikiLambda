@@ -269,7 +269,7 @@ module.exports = exports = defineComponent( {
 					append: true
 				} );
 			}
-			this.$emit( 'update-argument-label' );
+			this.$emit( 'argument-label-updated' );
 		}
 	} ),
 	mounted: function () {

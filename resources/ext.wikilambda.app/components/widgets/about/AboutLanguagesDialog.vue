@@ -229,7 +229,7 @@ module.exports = exports = defineComponent( {
 		},
 
 		/**
-		 * Emits the addSelectedLanguage action so that we can edit or
+		 * Emits the add-language event so that we can edit or
 		 * create multilingual data in a given language by adding a new
 		 * block in the About widget accordion.
 		 *
@@ -247,7 +247,7 @@ module.exports = exports = defineComponent( {
 		closeDialog: function () {
 			this.searchTerm = '';
 			this.lookupResults = [];
-			this.$emit( 'close' );
+			this.$emit( 'close-dialog' );
 		},
 
 		/**

@@ -96,7 +96,7 @@ describe( 'ZReference', () => {
 
 			expect( wrapper.getComponent( { name: 'wl-z-object-selector' } ).exists() ).toBeTruthy();
 
-			await wrapper.getComponent( { name: 'wl-z-object-selector' } ).vm.$emit( 'input', 'String' );
+			await wrapper.getComponent( { name: 'wl-z-object-selector' } ).vm.$emit( 'select-item', 'String' );
 
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [ 'Z9K1' ], value: 'String' } ] ] );
 		} );
@@ -117,7 +117,7 @@ describe( 'ZReference', () => {
 
 			expect( wrapper.getComponent( { name: 'wl-z-object-selector' } ).exists() ).toBeTruthy();
 
-			await wrapper.getComponent( { name: 'wl-z-object-selector' } ).vm.$emit( 'input', 'String' );
+			await wrapper.getComponent( { name: 'wl-z-object-selector' } ).vm.$emit( 'select-item', 'String' );
 
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [], value: 'String' } ] ] );
 		} );

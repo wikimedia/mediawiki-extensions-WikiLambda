@@ -24,7 +24,7 @@
 		>
 			<cdx-lookup
 				ref="languageSelectorLookup"
-				v-model:input-value="inputValue"
+				:input-value="inputValue"
 				class="ext-wikilambda-language-selector__lookup"
 				:selected="selectedLanguage"
 				:menu-items="lookupResults"
@@ -116,10 +116,11 @@ module.exports = exports = defineComponent( {
 		 * @param {string} input
 		 */
 		onInput: function ( input ) {
+			this.inputValue = input;
+
 			// If empty input, clear and exit
 			if ( !input ) {
 				this.lookupResults = [];
-				this.inputValue = '';
 				return;
 			}
 

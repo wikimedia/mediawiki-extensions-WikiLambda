@@ -46,7 +46,7 @@ describe( 'ExpandedToggle', () => {
 			wrapper.findComponent( { name: 'cdx-button' } ).trigger( 'click' );
 			expect( global.$i18n ).toHaveBeenCalledWith( 'wikilambda-toggle-expanded-view' );
 
-			await waitFor( () => expect( wrapper.emitted( 'toggle' ) ).toBeTruthy() );
+			await waitFor( () => expect( wrapper.emitted( 'toggle-expand' ) ).toBeTruthy() );
 		} );
 
 		it( 'collapses when expanded and button is clicked', async () => {
@@ -63,7 +63,7 @@ describe( 'ExpandedToggle', () => {
 			wrapper.findComponent( { name: 'cdx-button' } ).trigger( 'click' );
 			expect( global.$i18n ).toHaveBeenCalledWith( 'wikilambda-toggle-expanded-view' );
 
-			await waitFor( () => expect( wrapper.emitted( 'toggle' ) ).toBeTruthy() );
+			await waitFor( () => expect( wrapper.emitted( 'toggle-expand' ) ).toBeTruthy() );
 		} );
 	} );
 

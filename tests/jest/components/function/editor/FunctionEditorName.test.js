@@ -91,8 +91,8 @@ describe( 'FunctionEditorName', () => {
 				rowId: 2
 			} );
 
-			// ASSERT: emits updated-name
-			expect( wrapper.emitted( 'updated-name' ) ).toBeTruthy();
+			// ASSERT: emits name-updated
+			expect( wrapper.emitted( 'name-updated' ) ).toBeTruthy();
 
 			// ASSERT: calls updatePageTitle
 			expect( wrapper.vm.updatePageTitle ).toHaveBeenCalled();
@@ -121,8 +121,8 @@ describe( 'FunctionEditorName', () => {
 				value: 'New Function Name'
 			} );
 
-			// ASSERT: emits updated-name
-			expect( wrapper.emitted( 'updated-name' ) ).toBeTruthy();
+			// ASSERT: emits name-updated
+			expect( wrapper.emitted( 'name-updated' ) ).toBeTruthy();
 
 			// ASSERT: calls updatePageTitle
 			expect( wrapper.vm.updatePageTitle ).toHaveBeenCalled();
@@ -157,8 +157,8 @@ describe( 'FunctionEditorName', () => {
 				append: true
 			} );
 
-			// ASSERT: emits updated-name
-			expect( wrapper.emitted( 'updated-name' ) ).toBeTruthy();
+			// ASSERT: emits name-updated
+			expect( wrapper.emitted( 'name-updated' ) ).toBeTruthy();
 
 			// ASSERT: calls updatePageTitle
 			expect( wrapper.vm.updatePageTitle ).toHaveBeenCalled();

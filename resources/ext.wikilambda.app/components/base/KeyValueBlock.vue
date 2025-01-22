@@ -18,7 +18,7 @@
 					:class="expandToggleClass"
 					:has-expanded-mode="hasExpandedMode"
 					:expanded="expanded"
-					@toggle="toggleExpanded"
+					@toggle-expand="toggleExpand"
 				></wl-expanded-toggle>
 			</div>
 			<div
@@ -163,10 +163,10 @@ module.exports = exports = defineComponent( {
 	},
 	methods: {
 		/**
-		 * Emits the toggleExpanded event
+		 * Emits the toggle expand event
 		 */
-		toggleExpanded: function () {
-			this.$emit( 'toggleExpanded', !this.expanded );
+		toggleExpand: function () {
+			this.$emit( 'toggle-expand', !this.expanded );
 		}
 	}
 } );

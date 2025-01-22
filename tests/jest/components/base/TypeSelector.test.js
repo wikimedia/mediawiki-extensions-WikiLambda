@@ -160,7 +160,7 @@ describe( 'TypeSelector', () => {
 			} );
 
 			const lookup = wrapper.getComponent( { name: 'wl-z-object-selector' } );
-			lookup.vm.$emit( 'input', Constants.Z_STRING );
+			lookup.vm.$emit( 'select-item', Constants.Z_STRING );
 
 			// Set the selected reference
 			await waitFor( () => expect( actions.changeType ).toHaveBeenCalledTimes( 1 ) );
@@ -187,7 +187,7 @@ describe( 'TypeSelector', () => {
 			} );
 
 			const lookup = wrapper.getComponent( { name: 'wl-z-object-selector' } );
-			lookup.vm.$emit( 'input', Constants.Z_TYPED_LIST );
+			lookup.vm.$emit( 'select-item', Constants.Z_TYPED_LIST );
 
 			// Set the selected function call
 			await waitFor( () => expect( actions.changeType ).toHaveBeenCalledTimes( 1 ) );

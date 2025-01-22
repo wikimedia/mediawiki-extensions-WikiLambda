@@ -13,7 +13,7 @@
 	>
 		<!-- Dialog Header -->
 		<template #header>
-			<wl-custom-dialog-header @close="closeDialog">
+			<wl-custom-dialog-header @close-dialog="closeDialog">
 				<template #title>
 					{{ $i18n( 'wikilambda-function-evaluator-result-details' ).text() }}
 				</template>

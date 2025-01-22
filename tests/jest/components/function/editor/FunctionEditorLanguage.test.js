@@ -53,7 +53,7 @@ describe( 'FunctionEditorLanguage', () => {
 			expect( selector.props( 'disabled' ) ).toBe( false );
 		} );
 
-		it( 'emits a change event whens selecting a new language', async () => {
+		it( 'emits a language changed event whens selecting a new language', async () => {
 			const wrapper = shallowMount( FunctionEditorLanguage, {
 				props: { zLanguage: '' },
 				global: { stubs: { WlFunctionEditorField: false } }
@@ -62,12 +62,12 @@ describe( 'FunctionEditorLanguage', () => {
 			const selector = wrapper.findComponent( { name: 'wl-z-object-selector' } );
 			expect( selector.props( 'selectedZid' ) ).toBe( '' );
 
-			// ACT: select input
-			selector.vm.$emit( 'input', 'Z1002' );
+			// ACT: select item
+			selector.vm.$emit( 'select-item', 'Z1002' );
 			await wrapper.vm.$nextTick();
 
-			// ASSERT: language component emits a change event
-			expect( wrapper.emitted() ).toHaveProperty( 'change', [ [ 'Z1002' ] ] );
+			// ASSERT: language component emits a language changed event
+			expect( wrapper.emitted() ).toHaveProperty( 'language-changed', [ [ 'Z1002' ] ] );
 		} );
 	} );
 } );

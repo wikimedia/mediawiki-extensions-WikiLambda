@@ -203,7 +203,7 @@ module.exports = exports = defineComponent( {
 			}
 			// After persisting in the state, update the page title
 			this.updatePageTitle();
-			this.$emit( 'updated-name' );
+			this.$emit( 'name-updated' );
 		}
 	} ),
 	mounted: function () {

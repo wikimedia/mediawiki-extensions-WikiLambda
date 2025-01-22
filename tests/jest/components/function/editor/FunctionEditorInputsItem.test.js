@@ -149,8 +149,8 @@ describe( 'FunctionEditorInputsItem', () => {
 				rowId: 2
 			} );
 
-			// ASSERT: emits updated-argument-label
-			expect( wrapper.emitted( 'update-argument-label' ) ).toBeTruthy();
+			// ASSERT: emits argument-label-updated
+			expect( wrapper.emitted( 'argument-label-updated' ) ).toBeTruthy();
 		} );
 
 		it( 'changes the label of an input if the language already exists', async () => {
@@ -180,8 +180,8 @@ describe( 'FunctionEditorInputsItem', () => {
 				value: 'new input label'
 			} );
 
-			// ASSERT: emits updated-argument-label
-			expect( wrapper.emitted( 'update-argument-label' ) ).toBeTruthy();
+			// ASSERT: emits argument-label-updated
+			expect( wrapper.emitted( 'argument-label-updated' ) ).toBeTruthy();
 		} );
 
 		it( 'adds a new monolingual string if there is no label object for this language', async () => {
@@ -214,8 +214,8 @@ describe( 'FunctionEditorInputsItem', () => {
 				append: true
 			} );
 
-			// ASSERT: emits updated-argument-label
-			expect( wrapper.emitted( 'update-argument-label' ) ).toBeTruthy();
+			// ASSERT: emits argument-label-updated
+			expect( wrapper.emitted( 'argument-label-updated' ) ).toBeTruthy();
 		} );
 	} );
 } );

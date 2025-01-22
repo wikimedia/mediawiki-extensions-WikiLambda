@@ -6,7 +6,7 @@
 -->
 <template>
 	<cdx-lookup
-		v-model:input-value="inputValue"
+		:input-value="inputValue"
 		class="ext-wikilambda-app-wikidata-entity-selector"
 		data-testid="wikidata-entity-selector"
 		:selected="entityId"
@@ -106,6 +106,8 @@ module.exports = exports = defineComponent( {
 		 * @param {string} input
 		 */
 		onInput: function ( input ) {
+			this.inputValue = input;
+
 			// If empty input, clear and exit
 			if ( !input ) {
 				this.clearResults();

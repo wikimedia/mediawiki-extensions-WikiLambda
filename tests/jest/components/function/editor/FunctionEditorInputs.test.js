@@ -150,10 +150,10 @@ describe( 'FunctionEditorInputs', () => {
 		} );
 
 		const inputItem = wrapper.findComponent( { name: 'wl-function-editor-inputs-item' } );
-		inputItem.vm.$emit( 'update-argument-label' );
+		inputItem.vm.$emit( 'argument-label-updated' );
 		await wrapper.vm.$nextTick();
 
-		// ASSERT: does not emit updated-name
-		expect( wrapper.emitted( 'updated-argument-label' ) ).toBeTruthy();
+		// ASSERT: does not emit name-updated
+		expect( wrapper.emitted( 'argument-label-updated' ) ).toBeTruthy();
 	} );
 } );

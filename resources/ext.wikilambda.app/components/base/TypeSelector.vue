@@ -26,7 +26,7 @@
 				:type="type"
 				:return-type="type"
 				:strict-type="true"
-				@input="setValue"
+				@select-item="setValue"
 			></wl-z-object-selector>
 		</cdx-field>
 		<!-- Argument selectors -->

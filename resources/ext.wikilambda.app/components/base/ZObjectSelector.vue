@@ -21,7 +21,7 @@
 		></cdx-select>
 		<cdx-lookup
 			v-else
-			v-model:input-value="inputValue"
+			:input-value="inputValue"
 			:selected="selectedValue"
 			:disabled="disabled"
 			:placeholder="lookupPlaceholder"
@@ -115,7 +115,6 @@ module.exports = exports = defineComponent( {
 			required: false
 		}
 	},
-	emits: [ 'input' ],
 	data: function () {
 		return {
 			inputValue: '',
@@ -411,6 +410,9 @@ module.exports = exports = defineComponent( {
 			 * @param {string} input
 			 */
 			onInput: function ( input ) {
+				this.inputValue = input;
+				this.$emit( 'input-change', input || '' );
+
 				this.clearFieldErrors();
 
 				// If empty input, clear and exit
@@ -455,12 +457,12 @@ module.exports = exports = defineComponent( {
 					return;
 				}
 
-				// If we select a new value, clear errors and emit input event
-				// Once the parent responds to the input event and updates the
+				// If we select a new value, clear errors and emit select event
+				// Once the parent responds to the select event and updates the
 				// selected value, the computed property selectedValue will be
 				// updated.
 				this.clearFieldErrors();
-				this.$emit( 'input', value || '' );
+				this.$emit( 'select-item', value || '' );
 			},
 
 			/**

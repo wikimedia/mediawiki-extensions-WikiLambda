@@ -196,7 +196,7 @@ module.exports = exports = defineComponent( {
 					append: true
 				} );
 			}
-			this.$emit( 'updated-description' );
+			this.$emit( 'description-updated' );
 		}
 	} ),
 	mounted: function () {

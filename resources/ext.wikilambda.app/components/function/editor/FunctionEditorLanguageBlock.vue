@@ -15,7 +15,7 @@
 			class="ext-wikilambda-app-function-editor-language-block__row"
 			data-testid="function-editor-language-selector"
 			:z-language="zLanguage"
-			@change="changeLanguage"
+			@language-changed="onLanguageChanged"
 		></wl-function-editor-language>
 		<!-- component that displays name for a language -->
 		<wl-function-editor-name
@@ -23,7 +23,7 @@
 			data-testid="function-editor-name-input"
 			:z-language="zLanguage"
 			:lang-label-data="langLabelData"
-			@updated-name="updatedLabels"
+			@name-updated="onLabelsUpdated"
 		></wl-function-editor-name>
 		<!-- component that displays the description for a language -->
 		<wl-function-editor-description
@@ -31,14 +31,14 @@
 			data-testid="function-editor-description-input"
 			:z-language="zLanguage"
 			:lang-label-data="langLabelData"
-			@updated-description="updatedLabels"
+			@description-updated="onLabelsUpdated"
 		></wl-function-editor-description>
 		<!-- component that displays aliases for a language -->
 		<wl-function-editor-aliases
 			class="ext-wikilambda-app-function-editor-language-block__row"
 			data-testid="function-editor-alias-input"
 			:z-language="zLanguage"
-			@updated-alias="updatedLabels"
+			@alias-updated="onLabelsUpdated"
 		></wl-function-editor-aliases>
 		<!-- component that displays list of inputs for a language -->
 		<wl-function-editor-inputs
@@ -50,7 +50,7 @@
 			:lang-label-data="langLabelData"
 			:tooltip-icon="icons.cdxIconLock"
 			:tooltip-message="adminTooltipMessage"
-			@updated-argument-label="updatedLabels"
+			@argument-label-updated="onLabelsUpdated"
 		></wl-function-editor-inputs>
 		<!-- component that displays output for a language -->
 		<wl-function-editor-output
@@ -143,23 +143,23 @@ module.exports = exports = defineComponent( {
 	} ),
 	methods: {
 		/**
-		 * Emits a setLanguage event to set the language block
+		 * Emits a language changed event to set the language block
 		 * to the given language.
 		 *
 		 * @param {string} value
 		 */
-		changeLanguage: function ( value ) {
-			this.$emit( 'set-language', {
+		onLanguageChanged: function ( value ) {
+			this.$emit( 'language-changed', {
 				language: value,
 				index: this.index
 			} );
 		},
 		/**
-		 * Emits a updatedLabels event for the root function
+		 * Emits a labels updated event for the root function
 		 * definition to track label changes.
 		 */
-		updatedLabels: function () {
-			this.$emit( 'updated-labels' );
+		onLabelsUpdated: function () {
+			this.$emit( 'labels-updated' );
 		}
 	}
 } );

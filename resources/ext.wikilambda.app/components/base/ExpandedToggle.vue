@@ -69,7 +69,7 @@ module.exports = exports = defineComponent( {
 			this.waitForRunningParsers.then( () => this.clickExpandToggle( event ) );
 		},
 		clickExpandToggle: function ( event ) {
-			this.$emit( 'toggle', event );
+			this.$emit( 'toggle-expand', event );
 		}
 	}
 } );

@@ -68,7 +68,7 @@
 			<wl-about-languages-dialog
 				:open="showLanguagesDialog"
 				@add-language="addLanguage"
-				@close="showLanguagesDialog = false"
+				@close-dialog="showLanguagesDialog = false"
 			></wl-about-languages-dialog>
 			<wl-publish-dialog
 				v-if="!edit"
