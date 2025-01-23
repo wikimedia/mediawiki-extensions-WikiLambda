@@ -138,12 +138,22 @@ module.exports = exports = defineComponent( {
 		 * @return {Array} Array of codex MenuItemData objects
 		 */
 		menuItems: function () {
+			const menuItems = [];
 			// Literals and resolvers, sorted by label:
 			const resolvers = this.getResolverMenuItems();
 			const literals = this.getLiteralMenuItems();
-			const options = [ ...literals, ...resolvers ];
-			options.sort( ( a, b ) => ( a.label < b.label ) ? -1 :
-				( a.label > b.label ) ? 1 : 0 );
+			const options = [ ...literals, ...resolvers ]
+				.sort( ( a, b ) => ( a.label < b.label ) ? -1 :
+					( a.label > b.label ) ? 1 : 0 );
+
+			// If there are literals and resolvers, add them to the menu
+			if ( options.length ) {
+				menuItems.push( {
+					label: this.$i18n( 'wikilambda-mode-selector-types-group-label' ).text(),
+					hideLabel: true,
+					items: options
+				} );
+			}
 
 			// If it's a list item, add list item operations:
 			// * Move item one position before
@@ -152,27 +162,39 @@ module.exports = exports = defineComponent( {
 			if ( this.isKeyTypedListItem( this.key ) ) {
 				const isFirst = this.key === '1';
 				const isLast = this.key === String( this.listCount );
-				options.push( ...[ {
-					label: this.$i18n( 'wikilambda-move-before-list-item' ).text(),
-					value: Constants.LIST_MENU_OPTIONS.MOVE_BEFORE,
-					icon: icons.cdxIconTableMoveRowBefore,
-					disabled: isFirst,
-					class: 'ext-wikilambda-app-mode-selector__move-before'
-				}, {
-					label: this.$i18n( 'wikilambda-move-after-list-item' ).text(),
-					value: Constants.LIST_MENU_OPTIONS.MOVE_AFTER,
-					icon: icons.cdxIconTableMoveRowAfter,
-					disabled: isLast,
-					class: 'ext-wikilambda-app-mode-selector__move-after'
-				}, {
-					label: this.$i18n( 'wikilambda-delete-list-item' ).text(),
-					value: Constants.LIST_MENU_OPTIONS.DELETE_ITEM,
-					icon: icons.cdxIconTrash,
-					action: 'destructive',
-					class: 'ext-wikilambda-app-mode-selector__delete'
-				} ] );
+				const moveActionsGroup = {
+					label: this.$i18n( 'wikilambda-mode-selector-move-group-label' ).text(),
+					hideLabel: true,
+					items: [
+						{
+							label: this.$i18n( 'wikilambda-move-before-list-item' ).text(),
+							value: Constants.LIST_MENU_OPTIONS.MOVE_BEFORE,
+							icon: icons.cdxIconTableMoveRowBefore,
+							disabled: isFirst
+						}, {
+							label: this.$i18n( 'wikilambda-move-after-list-item' ).text(),
+							value: Constants.LIST_MENU_OPTIONS.MOVE_AFTER,
+							icon: icons.cdxIconTableMoveRowAfter,
+							disabled: isLast
+						}
+					]
+				};
+				const deleteActionGroup = {
+					label: this.$i18n( 'wikilambda-mode-selector-delete-group-label' ).text(),
+					hideLabel: true,
+					items: [
+						{
+							label: this.$i18n( 'wikilambda-delete-list-item' ).text(),
+							value: Constants.LIST_MENU_OPTIONS.DELETE_ITEM,
+							icon: icons.cdxIconTrash,
+							action: 'destructive'
+						}
+					]
+				};
+				menuItems.push( moveActionsGroup, deleteActionGroup );
 			}
-			return options;
+
+			return menuItems;
 		},
 		/**
 		 * If the key belongs to a typed list item, it returns the
@@ -211,7 +233,7 @@ module.exports = exports = defineComponent( {
 			}
 
 			if ( value !== this.selected ) {
-				const newType = this.menuItems.find( ( menu ) => menu.value === value );
+				const newType = this.menuItems[ 0 ].items.find( ( menu ) => menu.value === value );
 				this.$emit( 'set-type', {
 					keypath: [],
 					value: newType.type,
@@ -318,19 +340,3 @@ module.exports = exports = defineComponent( {
 	}
 } );
 </script>
-
-<style lang="less">
-@import '../../ext.wikilambda.app.variables.less';
-
-.ext-wikilambda-app-mode-selector {
-	position: relative;
-
-	.ext-wikilambda-app-mode-selector__move-before {
-		box-shadow: 0 -1px 0 0 @border-color-subtle;
-	}
-
-	.ext-wikilambda-app-mode-selector__delete {
-		box-shadow: 0 -1px 0 0 @border-color-subtle;
-	}
-}
-</style>

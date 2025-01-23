@@ -91,10 +91,10 @@ describe( 'ModeSelector', () => {
 			} );
 
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
-			expect( menu.vm.menuItems.length ).toBe( 3 );
-			expect( menu.vm.menuItems[ 0 ].value ).toBe( 'Z7' );
-			expect( menu.vm.menuItems[ 1 ].value ).toBe( 'Z6' );
-			expect( menu.vm.menuItems[ 2 ].value ).toBe( 'Z9' );
+			expect( menu.vm.menuItems[ 0 ].items.length ).toBe( 3 );
+			expect( menu.vm.menuItems[ 0 ].items[ 0 ].value ).toBe( 'Z7' );
+			expect( menu.vm.menuItems[ 0 ].items[ 1 ].value ).toBe( 'Z6' );
+			expect( menu.vm.menuItems[ 0 ].items[ 2 ].value ).toBe( 'Z9' );
 		} );
 
 		it( 'if a literal type is selected and its type is unbound', () => {
@@ -107,11 +107,11 @@ describe( 'ModeSelector', () => {
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
-			expect( menu.vm.menuItems.length ).toBe( 4 );
-			expect( menu.vm.menuItems[ 0 ].value ).toBe( 'Z7' );
-			expect( menu.vm.menuItems[ 1 ].value ).toBe( 'Z1' );
-			expect( menu.vm.menuItems[ 2 ].value ).toBe( 'Z6' );
-			expect( menu.vm.menuItems[ 3 ].value ).toBe( 'Z9' );
+			expect( menu.vm.menuItems[ 0 ].items.length ).toBe( 4 );
+			expect( menu.vm.menuItems[ 0 ].items[ 0 ].value ).toBe( 'Z7' );
+			expect( menu.vm.menuItems[ 0 ].items[ 1 ].value ).toBe( 'Z1' );
+			expect( menu.vm.menuItems[ 0 ].items[ 2 ].value ).toBe( 'Z6' );
+			expect( menu.vm.menuItems[ 0 ].items[ 3 ].value ).toBe( 'Z9' );
 		} );
 
 		it( 'if the type selector is inside a composition', () => {
@@ -125,11 +125,11 @@ describe( 'ModeSelector', () => {
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
-			expect( menu.vm.menuItems.length ).toBe( 4 );
-			expect( menu.vm.menuItems[ 0 ].value ).toBe( 'Z18' );
-			expect( menu.vm.menuItems[ 1 ].value ).toBe( 'Z7' );
-			expect( menu.vm.menuItems[ 2 ].value ).toBe( 'Z6' );
-			expect( menu.vm.menuItems[ 3 ].value ).toBe( 'Z9' );
+			expect( menu.vm.menuItems[ 0 ].items.length ).toBe( 4 );
+			expect( menu.vm.menuItems[ 0 ].items[ 0 ].value ).toBe( 'Z18' );
+			expect( menu.vm.menuItems[ 0 ].items[ 1 ].value ).toBe( 'Z7' );
+			expect( menu.vm.menuItems[ 0 ].items[ 2 ].value ).toBe( 'Z6' );
+			expect( menu.vm.menuItems[ 0 ].items[ 3 ].value ).toBe( 'Z9' );
 		} );
 
 		it( 'if the type selected is a resolver type, shows the bound type if there is one', () => {
@@ -142,10 +142,10 @@ describe( 'ModeSelector', () => {
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
-			expect( menu.vm.menuItems.length ).toBe( 3 );
-			expect( menu.vm.menuItems[ 0 ].value ).toBe( 'Z7' );
-			expect( menu.vm.menuItems[ 1 ].value ).toBe( 'Z6' );
-			expect( menu.vm.menuItems[ 2 ].value ).toBe( 'Z9' );
+			expect( menu.vm.menuItems[ 0 ].items.length ).toBe( 3 );
+			expect( menu.vm.menuItems[ 0 ].items[ 0 ].value ).toBe( 'Z7' );
+			expect( menu.vm.menuItems[ 0 ].items[ 1 ].value ).toBe( 'Z6' );
+			expect( menu.vm.menuItems[ 0 ].items[ 2 ].value ).toBe( 'Z9' );
 		} );
 
 		it( 'displays no resolvers or literal options for wikidata entities', () => {
@@ -174,9 +174,9 @@ describe( 'ModeSelector', () => {
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
-			expect( menu.vm.menuItems.length ).toBe( 2 );
-			expect( menu.vm.menuItems[ 0 ].value ).toBe( 'Z7' );
-			expect( menu.vm.menuItems[ 1 ].value ).toBe( Constants.Z_WIKIDATA_REFERENCE_LEXEME );
+			expect( menu.vm.menuItems[ 0 ].items.length ).toBe( 2 );
+			expect( menu.vm.menuItems[ 0 ].items[ 0 ].value ).toBe( 'Z7' );
+			expect( menu.vm.menuItems[ 0 ].items[ 1 ].value ).toBe( Constants.Z_WIKIDATA_REFERENCE_LEXEME );
 		} );
 
 		it( 'displays literals and resolvers for wikidata entity with unbound parent type', () => {
@@ -190,10 +190,10 @@ describe( 'ModeSelector', () => {
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
-			expect( menu.vm.menuItems.length ).toBe( 3 );
-			expect( menu.vm.menuItems[ 0 ].value ).toBe( 'Z7' );
-			expect( menu.vm.menuItems[ 1 ].value ).toBe( 'Z1' );
-			expect( menu.vm.menuItems[ 2 ].value ).toBe( 'Z9' );
+			expect( menu.vm.menuItems[ 0 ].items.length ).toBe( 3 );
+			expect( menu.vm.menuItems[ 0 ].items[ 0 ].value ).toBe( 'Z7' );
+			expect( menu.vm.menuItems[ 0 ].items[ 1 ].value ).toBe( 'Z1' );
+			expect( menu.vm.menuItems[ 0 ].items[ 2 ].value ).toBe( 'Z9' );
 		} );
 
 		it( 'displays literals and resolvers for wikidata reference with unbound parent type', () => {
@@ -206,11 +206,11 @@ describe( 'ModeSelector', () => {
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
-			expect( menu.vm.menuItems.length ).toBe( 4 );
-			expect( menu.vm.menuItems[ 0 ].value ).toBe( 'Z7' );
-			expect( menu.vm.menuItems[ 1 ].value ).toBe( 'Z1' );
-			expect( menu.vm.menuItems[ 2 ].value ).toBe( Constants.Z_WIKIDATA_REFERENCE_LEXEME );
-			expect( menu.vm.menuItems[ 3 ].value ).toBe( 'Z9' );
+			expect( menu.vm.menuItems[ 0 ].items.length ).toBe( 4 );
+			expect( menu.vm.menuItems[ 0 ].items[ 0 ].value ).toBe( 'Z7' );
+			expect( menu.vm.menuItems[ 0 ].items[ 1 ].value ).toBe( 'Z1' );
+			expect( menu.vm.menuItems[ 0 ].items[ 2 ].value ).toBe( Constants.Z_WIKIDATA_REFERENCE_LEXEME );
+			expect( menu.vm.menuItems[ 0 ].items[ 3 ].value ).toBe( 'Z9' );
 		} );
 	} );
 
@@ -265,8 +265,9 @@ describe( 'ModeSelector', () => {
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
-			expect( menu.vm.menuItems.length ).toBe( 6 );
-			expect( menu.vm.menuItems[ 5 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.DELETE_ITEM );
+			console.log( menu.vm.menuItems );
+			expect( menu.vm.menuItems.length ).toBe( 3 );
+			expect( menu.vm.menuItems[ 2 ].items[ 0 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.DELETE_ITEM );
 		} );
 
 		it( 'emits delete-list-item event  when selecting delete menu option', async () => {
@@ -289,11 +290,11 @@ describe( 'ModeSelector', () => {
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
-			expect( menu.vm.menuItems.length ).toBe( 6 );
-			expect( menu.vm.menuItems[ 3 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_BEFORE );
-			expect( menu.vm.menuItems[ 3 ].disabled ).toBe( false );
-			expect( menu.vm.menuItems[ 4 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_AFTER );
-			expect( menu.vm.menuItems[ 4 ].disabled ).toBe( false );
+			expect( menu.vm.menuItems.length ).toBe( 3 );
+			expect( menu.vm.menuItems[ 1 ].items[ 0 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_BEFORE );
+			expect( menu.vm.menuItems[ 1 ].items[ 0 ].disabled ).toBe( false );
+			expect( menu.vm.menuItems[ 1 ].items[ 1 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_AFTER );
+			expect( menu.vm.menuItems[ 1 ].items[ 1 ].disabled ).toBe( false );
 		} );
 
 		it( 'shows disabled move-before for the first item', () => {
@@ -305,11 +306,11 @@ describe( 'ModeSelector', () => {
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
-			expect( menu.vm.menuItems.length ).toBe( 6 );
-			expect( menu.vm.menuItems[ 3 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_BEFORE );
-			expect( menu.vm.menuItems[ 3 ].disabled ).toBe( true );
-			expect( menu.vm.menuItems[ 4 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_AFTER );
-			expect( menu.vm.menuItems[ 4 ].disabled ).toBe( false );
+			expect( menu.vm.menuItems.length ).toBe( 3 );
+			expect( menu.vm.menuItems[ 1 ].items[ 0 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_BEFORE );
+			expect( menu.vm.menuItems[ 1 ].items[ 0 ].disabled ).toBe( true );
+			expect( menu.vm.menuItems[ 1 ].items[ 1 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_AFTER );
+			expect( menu.vm.menuItems[ 1 ].items[ 1 ].disabled ).toBe( false );
 		} );
 
 		it( 'shows disabled move-after for the last item', () => {
@@ -321,11 +322,11 @@ describe( 'ModeSelector', () => {
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
-			expect( menu.vm.menuItems.length ).toBe( 6 );
-			expect( menu.vm.menuItems[ 3 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_BEFORE );
-			expect( menu.vm.menuItems[ 3 ].disabled ).toBe( false );
-			expect( menu.vm.menuItems[ 4 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_AFTER );
-			expect( menu.vm.menuItems[ 4 ].disabled ).toBe( true );
+			expect( menu.vm.menuItems.length ).toBe( 3 );
+			expect( menu.vm.menuItems[ 1 ].items[ 0 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_BEFORE );
+			expect( menu.vm.menuItems[ 1 ].items[ 0 ].disabled ).toBe( false );
+			expect( menu.vm.menuItems[ 1 ].items[ 1 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_AFTER );
+			expect( menu.vm.menuItems[ 1 ].items[ 1 ].disabled ).toBe( true );
 		} );
 
 		it( 'emits move-before event when selecting move-before menu option', async () => {
