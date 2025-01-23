@@ -133,7 +133,9 @@ module.exports = exports = defineComponent( {
 			}
 
 			// If the already selected value is selected again, exit early
+			// and reset the input value to the selected value (T382755).
 			if ( this.entityId === value ) {
+				this.inputValue = this.entityLabel;
 				return;
 			}
 
