@@ -120,9 +120,8 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { CdxAccordion, CdxDialog, CdxField, CdxIcon, CdxMessage, CdxSelect } = require( '@wikimedia/codex' );
 const { mapState } = require( 'pinia' );
-
+const { CdxAccordion, CdxDialog, CdxField, CdxIcon, CdxMessage, CdxSelect } = require( '../../../../codex.js' );
 const Constants = require( '../../../Constants.js' );
 const CustomDialogHeader = require( '../../base/CustomDialogHeader.vue' );
 const errorUtils = require( '../../../mixins/errorUtils.js' );

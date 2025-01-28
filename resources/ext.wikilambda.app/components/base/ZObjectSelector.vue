@@ -57,10 +57,9 @@
 </template>
 
 <script>
-const { CdxLookup, CdxMessage, CdxSelect } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
-
+const { CdxLookup, CdxSelect, CdxMessage } = require( '../../../codex.js' );
 const Constants = require( '../../Constants.js' );
 const errorUtils = require( '../../mixins/errorUtils.js' );
 const icons = require( '../../../lib/icons.json' );

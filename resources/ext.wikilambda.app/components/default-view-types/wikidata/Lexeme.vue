@@ -33,9 +33,8 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { CdxIcon } = require( '@wikimedia/codex' );
 const { mapActions, mapState } = require( 'pinia' );
-
+const { CdxIcon } = require( '../../../../codex.js' );
 const Constants = require( '../../../Constants.js' );
 const LabelData = require( '../../../store/classes/LabelData.js' );
 const useMainStore = require( '../../../store/index.js' );

@@ -33,7 +33,7 @@
 </template>
 
 <script>
-const { CdxRadio } = require( '@wikimedia/codex' );
+const { CdxRadio } = require( '../../../codex.js' );
 const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
 

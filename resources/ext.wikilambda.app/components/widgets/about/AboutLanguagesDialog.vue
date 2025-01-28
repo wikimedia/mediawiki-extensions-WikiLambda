@@ -81,9 +81,8 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { CdxButton, CdxDialog, CdxSearchInput } = require( '@wikimedia/codex' );
 const { mapActions, mapState } = require( 'pinia' );
-
+const { CdxButton, CdxDialog, CdxSearchInput } = require( '../../../../codex.js' );
 const Constants = require( '../../../Constants.js' );
 const CustomDialogHeader = require( '../../base/CustomDialogHeader.vue' );
 const LabelData = require( '../../../store/classes/LabelData.js' );

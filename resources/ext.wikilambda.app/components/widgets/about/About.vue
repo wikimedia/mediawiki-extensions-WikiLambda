@@ -91,9 +91,8 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { CdxAccordion, CdxButton, CdxIcon } = require( '@wikimedia/codex' );
 const { mapActions, mapState } = require( 'pinia' );
-
+const { CdxAccordion, CdxButton, CdxIcon } = require( '../../../../codex.js' );
 const AboutLanguageBlock = require( './AboutLanguageBlock.vue' );
 const AboutLanguagesDialog = require( './AboutLanguagesDialog.vue' );
 const Constants = require( '../../../Constants.js' );

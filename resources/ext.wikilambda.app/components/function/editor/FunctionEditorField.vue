@@ -29,7 +29,7 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { CdxIcon, CdxTooltip } = require( '@wikimedia/codex' );
+const { CdxIcon, CdxTooltip } = require( '../../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-field',

@@ -72,7 +72,7 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { CdxDialog, CdxField, CdxMessage, CdxTextInput } = require( '@wikimedia/codex' );
+const { CdxDialog, CdxField, CdxMessage, CdxTextInput } = require( '../../../../codex.js' );
 const { mapActions, mapState } = require( 'pinia' );
 
 const Constants = require( '../../../Constants.js' );

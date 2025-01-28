@@ -23,7 +23,7 @@
 </template>
 
 <script>
-const { CdxTextInput } = require( '@wikimedia/codex' );
+const { CdxTextInput } = require( '../../../codex.js' );
 const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
 

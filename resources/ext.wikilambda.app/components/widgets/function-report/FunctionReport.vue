@@ -58,9 +58,8 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { CdxButton, CdxIcon } = require( '@wikimedia/codex' );
 const { mapActions, mapState } = require( 'pinia' );
-
+const { CdxButton, CdxIcon } = require( '../../../../codex.js' );
 const Constants = require( '../../../Constants.js' );
 const FunctionMetadataDialog = require( '../function-evaluator/FunctionMetadataDialog.vue' );
 const FunctionReportItem = require( './FunctionReportItem.vue' );

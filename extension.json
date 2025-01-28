@@ -295,6 +295,7 @@
 			]
 		},
 		"ext.wikilambda.app": {
+			"class": "MediaWiki\\ResourceLoader\\CodexModule",
 			"styles": [
 				"ext.wikilambda.app/ext.wikilambda.app.variables.less",
 				"ext.wikilambda.app/ext.wikilambda.app.less"
@@ -302,7 +303,6 @@
 			"dependencies": [
 				"vue",
 				"pinia",
-				"@wikimedia/codex",
 				"jquery.uls.data",
 				"mediawiki.Title",
 				"mediawiki.api",
@@ -311,6 +311,28 @@
 				"mediawiki.user",
 				"mediawiki.Uri",
 				"oojs"
+			],
+			"codexComponents": [
+				"CdxIcon",
+				"CdxButton",
+				"CdxLookup",
+				"CdxMenuButton",
+				"CdxProgressBar",
+				"CdxCheckbox",
+				"CdxInfoChip",
+				"CdxChipInput",
+				"CdxField",
+				"CdxSelect",
+				"CdxDialog",
+				"CdxTooltip",
+				"CdxRadio",
+				"CdxMessage",
+				"CdxTable",
+				"CdxTextInput",
+				"CdxTextInput",
+				"CdxTextArea",
+				"CdxAccordion",
+				"CdxSearchInput"
 			],
 			"packageFiles": [
 				"ext.wikilambda.app/index.js",

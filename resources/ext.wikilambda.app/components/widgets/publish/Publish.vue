@@ -43,9 +43,8 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { CdxButton } = require( '@wikimedia/codex' );
 const { mapActions, mapState } = require( 'pinia' );
-
+const { CdxButton } = require( '../../../../codex.js' );
 const Constants = require( '../../../Constants.js' );
 const eventLogger = require( '../../../mixins/eventLogUtils.js' ).methods;
 const urlUtils = require( '../../../mixins/urlUtils.js' );

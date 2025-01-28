@@ -16,7 +16,7 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { CdxIcon } = require( '@wikimedia/codex' );
+const { CdxIcon } = require( '../../../codex.js' );
 const icons = require( '../../../lib/icons.json' );
 
 module.exports = exports = defineComponent( {

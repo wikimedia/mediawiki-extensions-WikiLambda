@@ -49,7 +49,7 @@
 </template>
 
 <script>
-const { CdxButton, CdxIcon, CdxTooltip } = require( '@wikimedia/codex' );
+const { CdxButton, CdxIcon, CdxTooltip } = require( '../../../../codex.js' );
 const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
 

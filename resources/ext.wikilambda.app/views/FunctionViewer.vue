@@ -41,7 +41,7 @@
 </template>
 
 <script>
-const { CdxMessage } = require( '@wikimedia/codex' );
+const { CdxMessage } = require( '../../codex.js' );
 const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
 

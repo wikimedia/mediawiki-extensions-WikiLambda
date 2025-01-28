@@ -17,8 +17,8 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { CdxIcon, CdxMenuButton } = require( '@wikimedia/codex' );
 const { mapState } = require( 'pinia' );
+const { CdxIcon, CdxMenuButton } = require( '../../../codex.js' );
 const Constants = require( '../../Constants.js' );
 const typeUtils = require( '../../mixins/typeUtils.js' );
 const useMainStore = require( '../../store/index.js' );
