@@ -354,7 +354,6 @@
 				"ext.wikilambda.app/components/base/ModeSelector.vue",
 				"ext.wikilambda.app/components/base/Pagination.vue",
 				"ext.wikilambda.app/components/base/StatusIcon.vue",
-				"ext.wikilambda.app/components/base/Table.vue",
 				"ext.wikilambda.app/components/base/TypeSelector.vue",
 				"ext.wikilambda.app/components/base/TypeToString.vue",
 				"ext.wikilambda.app/components/base/WidgetBase.vue",

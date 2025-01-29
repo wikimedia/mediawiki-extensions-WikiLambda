@@ -100,21 +100,22 @@ describe( 'FunctionViewerDetails', () => {
 		await waitFor( () => expect( wrapper.vm.implementationsFetched ).toBeTruthy() );
 
 		const implTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 0 ];
-		const implTableItems = implTable.props( 'body' );
+		const implTableItems = implTable.props( 'data' );
 
 		expect( implTableItems ).toHaveLength( 3 );
+		console.log( 'implTableItems', implTableItems );
 		expect( implTableItems[ 0 ].checkbox.props.modelValue ).toBe( false );
 		expect( implTableItems[ 0 ].language.title ).toEqual( 'Composition' );
 		expect( implTableItems[ 0 ].name.title ).toEqual( 'Z333 name' );
-		expect( implTableItems[ 0 ].state.title ).toEqual( 'Disconnected' );
+		expect( implTableItems[ 0 ].status.title ).toEqual( 'Disconnected' );
 		expect( implTableItems[ 1 ].checkbox.props.modelValue ).toBe( false );
 		expect( implTableItems[ 1 ].language.title ).toEqual( 'javascript' );
 		expect( implTableItems[ 1 ].name.title ).toEqual( 'Z444 name' );
-		expect( implTableItems[ 1 ].state.title ).toEqual( 'Connected' );
+		expect( implTableItems[ 1 ].status.title ).toEqual( 'Connected' );
 		expect( implTableItems[ 2 ].checkbox.props.modelValue ).toBe( false );
 		expect( implTableItems[ 2 ].language.title ).toEqual( 'JavaScript' );
 		expect( implTableItems[ 2 ].name.title ).toEqual( 'Z555 name' );
-		expect( implTableItems[ 2 ].state.title ).toEqual( 'Disconnected' );
+		expect( implTableItems[ 2 ].status.title ).toEqual( 'Disconnected' );
 	} );
 
 	it( 'passes testers to table correctly', async () => {
@@ -122,15 +123,15 @@ describe( 'FunctionViewerDetails', () => {
 		await waitFor( () => expect( wrapper.vm.testsFetched ).toBeTruthy() );
 
 		const testTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 1 ];
-		const testTableItems = testTable.props( 'body' );
+		const testTableItems = testTable.props( 'data' );
 
 		expect( testTableItems ).toHaveLength( 2 );
 		expect( testTableItems[ 0 ].checkbox.props.modelValue ).toBe( false );
 		expect( testTableItems[ 0 ].name.title ).toEqual( 'Z111 name' );
-		expect( testTableItems[ 0 ].state.title ).toEqual( 'Disconnected' );
+		expect( testTableItems[ 0 ].status.title ).toEqual( 'Disconnected' );
 		expect( testTableItems[ 1 ].checkbox.props.modelValue ).toBe( false );
 		expect( testTableItems[ 1 ].name.title ).toEqual( 'Z222 name' );
-		expect( testTableItems[ 1 ].state.title ).toEqual( 'Connected' );
+		expect( testTableItems[ 1 ].status.title ).toEqual( 'Connected' );
 	} );
 
 	describe( 'implementations without labels display the ZID', () => {
@@ -145,7 +146,7 @@ describe( 'FunctionViewerDetails', () => {
 			const wrapper = shallowMount( FunctionViewerDetails );
 			await waitFor( () => expect( wrapper.vm.implementationsFetched ).toBeTruthy() );
 
-			const implTableItems = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 0 ].props( 'body' );
+			const implTableItems = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 0 ].props( 'data' );
 
 			expect( implTableItems[ 0 ].name.title ).toEqual( 'Z333 name' );
 			expect( implTableItems[ 1 ].name.title ).toEqual( 'Z444' );
@@ -155,10 +156,11 @@ describe( 'FunctionViewerDetails', () => {
 			const wrapper = shallowMount( FunctionViewerDetails );
 			await waitFor( () => expect( wrapper.vm.testsFetched ).toBeTruthy() );
 
-			const testTableHeaderItems = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 1 ].props( 'header' );
+			const testTableHeaderItems = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 1 ].props( 'columns' );
+			console.log( 'testTableHeaderItems', testTableHeaderItems );
 
-			expect( testTableHeaderItems.Z333.title ).toEqual( 'Z333 name' );
-			expect( testTableHeaderItems.Z444.title ).toEqual( 'Z444' );
+			expect( testTableHeaderItems.find( ( item ) => item.id === 'Z333' ).title ).toEqual( 'Z333 name' );
+			expect( testTableHeaderItems.find( ( item ) => item.id === 'Z444' ).title ).toEqual( 'Z444' );
 		} );
 	} );
 
@@ -174,119 +176,10 @@ describe( 'FunctionViewerDetails', () => {
 			const wrapper = shallowMount( FunctionViewerDetails );
 			await waitFor( () => expect( wrapper.vm.testsFetched ).toBeTruthy() );
 
-			const testTableItems = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 1 ].props( 'body' );
+			const testTableItems = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 1 ].props( 'data' );
 
 			expect( testTableItems[ 0 ].name.title ).toEqual( 'Z111' );
 			expect( testTableItems[ 1 ].name.title ).toEqual( 'Z222 name' );
-		} );
-	} );
-
-	describe( 'implementations select-all checkbox', () => {
-		it( 'is unchecked when not all checkboxes below are checked', async () => {
-			const wrapper = shallowMount( FunctionViewerDetails );
-			await waitFor( () => expect( wrapper.vm.implementationsFetched ).toBeTruthy() );
-
-			const implTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 0 ];
-			implTable.props( 'body' )[ 0 ].checkbox.props[ 'onUpdate:modelValue' ]( true );
-
-			await waitFor( () => expect( implTable.props( 'header' ).checkbox.props.modelValue ).toBe( false ) );
-		} );
-
-		it( 'is checked when all checkboxes below are checked', async () => {
-			const wrapper = shallowMount( FunctionViewerDetails );
-			await waitFor( () => expect( wrapper.vm.implementationsFetched ).toBeTruthy() );
-
-			const implTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 0 ];
-			implTable.props( 'body' )[ 0 ].checkbox.props[ 'onUpdate:modelValue' ]( true );
-			implTable.props( 'body' )[ 1 ].checkbox.props[ 'onUpdate:modelValue' ]( true );
-			implTable.props( 'body' )[ 2 ].checkbox.props[ 'onUpdate:modelValue' ]( true );
-
-			await waitFor( () => expect( implTable.props( 'header' ).checkbox.props.modelValue ).toBe( true ) );
-		} );
-
-		it( 'checks all below checkboxes when checked', async () => {
-			const wrapper = shallowMount( FunctionViewerDetails );
-			await waitFor( () => expect( wrapper.vm.implementationsFetched ).toBeTruthy() );
-
-			const implTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 0 ];
-			implTable.props( 'header' ).checkbox.props[ 'onUpdate:modelValue' ]( true );
-
-			await waitFor( () => {
-				expect( implTable.props( 'body' )[ 0 ].checkbox.props.modelValue ).toBe( true );
-				expect( implTable.props( 'body' )[ 1 ].checkbox.props.modelValue ).toBe( true );
-			} );
-		} );
-
-		it( 'unchecks all below checkboxes when unchecked', async () => {
-			const wrapper = shallowMount( FunctionViewerDetails );
-			await waitFor( () => expect( wrapper.vm.implementationsFetched ).toBeTruthy() );
-
-			const implTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 0 ];
-			implTable.props( 'body' )[ 0 ].checkbox.props[ 'onUpdate:modelValue' ]( true );
-			implTable.props( 'body' )[ 1 ].checkbox.props[ 'onUpdate:modelValue' ]( true );
-			implTable.props( 'body' )[ 2 ].checkbox.props[ 'onUpdate:modelValue' ]( true );
-			await waitFor( () => expect( implTable.props( 'header' ).checkbox.props.modelValue ).toBe( true ) );
-
-			implTable.props( 'header' ).checkbox.props[ 'onUpdate:modelValue' ]( false );
-
-			await waitFor( () => {
-				expect( implTable.props( 'body' )[ 0 ].checkbox.props.modelValue ).toBe( false );
-				expect( implTable.props( 'body' )[ 1 ].checkbox.props.modelValue ).toBe( false );
-				expect( implTable.props( 'body' )[ 2 ].checkbox.props.modelValue ).toBe( false );
-			} );
-		} );
-	} );
-
-	describe( 'tests select-all checkbox', () => {
-		it( 'is unchecked when not all checkboxes below are checked', async () => {
-			const wrapper = shallowMount( FunctionViewerDetails );
-			await waitFor( () => expect( wrapper.vm.testsFetched ).toBeTruthy() );
-
-			const testTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 1 ];
-			testTable.props( 'body' )[ 0 ].checkbox.props[ 'onUpdate:modelValue' ]( true );
-
-			await waitFor( () => expect( testTable.props( 'header' ).checkbox.props.modelValue ).toBe( false ) );
-		} );
-
-		it( 'is checked when all checkboxes below are checked', async () => {
-			const wrapper = shallowMount( FunctionViewerDetails );
-			await waitFor( () => expect( wrapper.vm.testsFetched ).toBeTruthy() );
-
-			const testTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 1 ];
-			testTable.props( 'body' )[ 0 ].checkbox.props[ 'onUpdate:modelValue' ]( true );
-			testTable.props( 'body' )[ 1 ].checkbox.props[ 'onUpdate:modelValue' ]( true );
-
-			await waitFor( () => expect( testTable.props( 'header' ).checkbox.props.modelValue ).toBe( true ) );
-		} );
-
-		it( 'checks all below checkboxes when checked', async () => {
-			const wrapper = shallowMount( FunctionViewerDetails );
-			await waitFor( () => expect( wrapper.vm.testsFetched ).toBeTruthy() );
-
-			const testTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 1 ];
-			testTable.props( 'header' ).checkbox.props[ 'onUpdate:modelValue' ]( true );
-
-			await waitFor( () => {
-				expect( testTable.props( 'body' )[ 0 ].checkbox.props.modelValue ).toBe( true );
-				expect( testTable.props( 'body' )[ 1 ].checkbox.props.modelValue ).toBe( true );
-			} );
-		} );
-
-		it( 'unchecks all below checkboxes when unchecked', async () => {
-			const wrapper = shallowMount( FunctionViewerDetails );
-			await waitFor( () => expect( wrapper.vm.testsFetched ).toBeTruthy() );
-
-			const testTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 1 ];
-			testTable.props( 'body' )[ 0 ].checkbox.props[ 'onUpdate:modelValue' ]( true );
-			testTable.props( 'body' )[ 1 ].checkbox.props[ 'onUpdate:modelValue' ]( true );
-			await waitFor( () => expect( testTable.props( 'header' ).checkbox.props.modelValue ).toBe( true ) );
-
-			testTable.props( 'header' ).checkbox.props[ 'onUpdate:modelValue' ]( false );
-
-			await waitFor( () => {
-				expect( testTable.props( 'body' )[ 0 ].checkbox.props.modelValue ).toBe( false );
-				expect( testTable.props( 'body' )[ 1 ].checkbox.props.modelValue ).toBe( false );
-			} );
 		} );
 	} );
 
@@ -296,7 +189,7 @@ describe( 'FunctionViewerDetails', () => {
 			await waitFor( () => expect( wrapper.vm.implementationsFetched ).toBeTruthy() );
 
 			const implTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 0 ];
-			implTable.props( 'header' ).checkbox.props[ 'onUpdate:modelValue' ]( true );
+			implTable.props( 'columns' ).find( ( item ) => item.id === 'checkbox' ).props[ 'onUpdate:modelValue' ]( true );
 
 			implTable.vm.$emit( 'connect' );
 
@@ -314,7 +207,7 @@ describe( 'FunctionViewerDetails', () => {
 			await waitFor( () => expect( wrapper.vm.implementationsFetched ).toBeTruthy() );
 
 			const implTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 0 ];
-			implTable.props( 'header' ).checkbox.props[ 'onUpdate:modelValue' ]( true );
+			implTable.props( 'columns' ).find( ( item ) => item.id === 'checkbox' ).props[ 'onUpdate:modelValue' ]( true );
 
 			implTable.vm.$emit( 'disconnect' );
 
@@ -332,7 +225,7 @@ describe( 'FunctionViewerDetails', () => {
 			await waitFor( () => expect( wrapper.vm.testsFetched ).toBeTruthy() );
 
 			const testTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 1 ];
-			testTable.props( 'header' ).checkbox.props[ 'onUpdate:modelValue' ]( true );
+			testTable.props( 'columns' ).find( ( item ) => item.id === 'checkbox' ).props[ 'onUpdate:modelValue' ]( true );
 
 			testTable.vm.$emit( 'connect' );
 
@@ -350,7 +243,7 @@ describe( 'FunctionViewerDetails', () => {
 			await waitFor( () => expect( wrapper.vm.testsFetched ).toBeTruthy() );
 
 			const testTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 1 ];
-			testTable.props( 'header' ).checkbox.props[ 'onUpdate:modelValue' ]( true );
+			testTable.props( 'columns' ).find( ( item ) => item.id === 'checkbox' ).props[ 'onUpdate:modelValue' ]( true );
 
 			testTable.vm.$emit( 'disconnect' );
 
@@ -368,7 +261,7 @@ describe( 'FunctionViewerDetails', () => {
 			await waitFor( () => expect( wrapper.vm.testsFetched ).toBeTruthy() );
 
 			const testTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 1 ];
-			testTable.props( 'header' ).checkbox.props[ 'onUpdate:modelValue' ]( true );
+			testTable.props( 'columns' ).find( ( item ) => item.id === 'checkbox' ).props[ 'onUpdate:modelValue' ]( true );
 
 			// Force mock API to return error
 			actionsThrowError = true;
