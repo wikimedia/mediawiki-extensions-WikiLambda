@@ -551,10 +551,7 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		getDurationSummary: function () {
-			return this.sumValuesWithUnit( [
-				this.keyValues.get( 'orchestrationDuration' ),
-				this.keyValues.get( 'evaluationDuration' )
-			], 'ms' );
+			return this.keyValues.get( 'orchestrationDuration' );
 		},
 		/**
 		 * Returns the CPU usage section summary

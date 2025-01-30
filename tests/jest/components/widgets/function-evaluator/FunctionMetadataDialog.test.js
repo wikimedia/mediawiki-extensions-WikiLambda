@@ -110,7 +110,7 @@ describe( 'FunctionMetadataDialog', () => {
 
 			// Check header
 			expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( 'Duration' );
-			expect( section.find( '.cdx-accordion__header__description' ).text() ).toBe( '80.00 ms' );
+			expect( section.find( '.cdx-accordion__header__description' ).text() ).toBe( '70 ms' );
 
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
@@ -218,7 +218,7 @@ describe( 'FunctionMetadataDialog', () => {
 
 			// Check header
 			expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( 'Duration' );
-			expect( section.find( '.cdx-accordion__header__description' ).text() ).toBe( '70.00 ms' );
+			expect( section.find( '.cdx-accordion__header__description' ).text() ).toBe( '70 ms' );
 
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
