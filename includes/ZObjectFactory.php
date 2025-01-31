@@ -293,7 +293,7 @@ class ZObjectFactory {
 		if ( ( $typeZObject instanceof ZReference ) && ( $typeRegistry->isZTypeBuiltIn( $typeZid ) ) ) {
 			$typeName = $typeRegistry->getZObjectTypeFromKey( $typeZid );
 			$typeClass = "MediaWiki\\Extension\\WikiLambda\\ZObjects\\$typeName";
-			$objectArgs = self::createKeyValues( $objectVars, $typeName );
+			$objectArgs = self::createKeyValues( $objectVars, $typeClass );
 			// Magic:
 			return new $typeClass( ...$objectArgs );
 		}
@@ -302,7 +302,7 @@ class ZObjectFactory {
 		if ( ( $typeZObject instanceof ZFunctionCall ) && ( $typeRegistry->isZFunctionBuiltIn( $typeZid ) ) ) {
 			$builtinName = $typeRegistry->getZFunctionBuiltInName( $typeZid );
 			$builtinClass = "MediaWiki\\Extension\\WikiLambda\\ZObjects\\$builtinName";
-			$objectArgs = self::createKeyValues( $objectVars, $builtinName );
+			$objectArgs = self::createKeyValues( $objectVars, $builtinClass );
 			// Magic:
 			return new $builtinClass( $typeZObject, ...$objectArgs );
 		}
@@ -335,7 +335,7 @@ class ZObjectFactory {
 			);
 		}
 
-		$objectArgs = self::createKeyValues( $objectVars, "ZObject" );
+		$objectArgs = self::createKeyValues( $objectVars, ZObject::class );
 		return new ZObject( ...$objectArgs );
 	}
 
@@ -344,15 +344,12 @@ class ZObjectFactory {
 	 * required arguments to call the ZObject constructur
 	 *
 	 * @param array $objectVars
-	 * @param string $targetType
+	 * @param class-string $targetClass
 	 * @return array arguments to pass to the target ZObject constructor
 	 * @phan-return non-empty-array
 	 */
-	private static function createKeyValues( array $objectVars, string $targetType ) {
-		// Magic
-		$targetDefinition = call_user_func(
-			'MediaWiki\Extension\WikiLambda\ZObjects\\' . $targetType . '::getDefinition'
-		);
+	private static function createKeyValues( array $objectVars, string $targetClass ) {
+		$targetDefinition = $targetClass::getDefinition();
 
 		$creationArray = [];
 		foreach ( $targetDefinition['keys'] as $key => $settings ) {
