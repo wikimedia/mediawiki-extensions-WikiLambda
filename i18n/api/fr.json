@@ -45,6 +45,7 @@
 	"apihelp-wikifunctions_run-param-function_call": "ZObject pour l'appel de fonction à exécuter",
 	"apihelp-wikilambda_supported_programming_languages-summary": "Récupérer les langages de programmation pris en charge par l’évaluateur",
 	"apihelp-query+wikilambdasearch_functions-param-search": "Terme recherché",
+	"apihelp-query+wikilambdasearch_functions-param-limit": "Nombre maximum de résultats à renvoyer",
 	"apihelp-query+wikilambdasearch_labels-summary": "Ce générateur de listes de requêtes API permet de rechercher des libellés de Z-Objets dans une langue donnée. Il existe principalement pour assister le système de recherche anticipée.",
 	"apihelp-query+wikilambdasearch_labels-param-search": "Le terme recherché",
 	"apihelp-query+wikilambdasearch_labels-param-language": "Le code de langue MediaWiki dans laquelle rechercher.",
