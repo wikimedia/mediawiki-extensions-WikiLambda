@@ -230,9 +230,9 @@ class ZObjectAuthorization implements LoggerAwareInterface {
 		if ( array_key_exists( 'filter', $rule ) ) {
 			$filterArgs = $rule['filter'];
 			$filterClass = array_shift( $filterArgs );
-			$filterMethod = 'MediaWiki\Extension\WikiLambda\Authorization\\' . $filterClass . '::pass';
+			$callableClass = 'MediaWiki\Extension\WikiLambda\Authorization\\' . $filterClass;
 			try {
-				$pass = call_user_func( $filterMethod, $fromContent, $toContent, $title, $filterArgs );
+				$pass = $callableClass::pass( $fromContent, $toContent, $title, $filterArgs );
 			} catch ( \Exception $e ) {
 				$this->getLogger()->warning(
 					'Filter is specified in the rules but method is not available; returning false',
