@@ -100,6 +100,7 @@ module.exports = exports = {
 		 * @param {Object} payload
 		 * @param {string} payload.id
 		 * @param {Object} payload.data
+		 * @return {void}
 		 */
 		setLexemeData: function ( state, payload ) {
 			// Select only subset of Lexeme data; title, forms and lemmas
@@ -115,7 +116,7 @@ module.exports = exports = {
 		 * @param {Object} context
 		 * @param {Object} payload
 		 * @param {Array} payload.ids
-		 * @return {Promise}
+		 * @return {Promise | undefined}
 		 */
 		fetchLexemes: function ( context, payload ) {
 			// Filter out the fetched or fetching lexeme Ids

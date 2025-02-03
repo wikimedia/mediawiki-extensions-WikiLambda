@@ -142,7 +142,7 @@ module.exports = exports = defineComponent( {
 		/**
 		 * Builds the list of items that correspond to the available
 		 * languages in the object. Each item contains the language Zid
-		 * and label, the Name/Label in that languege, and the flags
+		 * and label, the Name/Label in that language, and the flags
 		 * hasMultilingualData and hasName that will condition the style.
 		 *
 		 * @return {Array}

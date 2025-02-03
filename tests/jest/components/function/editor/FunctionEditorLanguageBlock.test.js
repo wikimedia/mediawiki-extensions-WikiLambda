@@ -7,6 +7,7 @@
 'use strict';
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
+	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
 	FunctionEditorLanguageBlock = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorLanguageBlock.vue' );
@@ -16,6 +17,8 @@ describe( 'FunctionEditorLanguageBlock', () => {
 
 	beforeEach( () => {
 		getters = {
+			getLabelDataForLangCode: createLabelDataMock( { zid: null, label: null, lang: 'Z1002', langCode: 'en', langDir: 'ltr' } ),
+			getLabelData: createLabelDataMock( { Z1002: 'English' } ),
 			getZFunctionLanguages: createGettersWithFunctionsMock( [ 'Z1002', 'Z1004' ] ),
 			isCreateNewPage: createGetterMock( true ),
 			isUserLoggedIn: createGetterMock( true )

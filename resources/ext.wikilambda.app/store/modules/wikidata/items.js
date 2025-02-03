@@ -59,6 +59,7 @@ module.exports = exports = {
 		 * @param {Object} payload
 		 * @param {string} payload.id
 		 * @param {Object} payload.data
+		 * @return {void}
 		 */
 		setItemData: function ( state, payload ) {
 			// Select only subset of Wikidata Item data; title and labels
@@ -74,7 +75,7 @@ module.exports = exports = {
 		 * @param {Object} context
 		 * @param {Object} payload
 		 * @param {Array} payload.ids
-		 * @return {Promise}
+		 * @return {Promise | undefined}
 		 */
 		fetchItems: function ( context, payload ) {
 			// Filter out the fetched or fetching Wikidata Item Ids

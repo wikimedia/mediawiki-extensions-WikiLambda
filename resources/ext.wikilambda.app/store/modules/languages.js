@@ -5,6 +5,8 @@
  * @license MIT
  */
 
+const LabelData = require( '../classes/LabelData.js' );
+
 module.exports = exports = {
 	getters: {
 		/**
@@ -42,6 +44,30 @@ module.exports = exports = {
 			return mw.language.getFallbackLanguageChain()
 				.map( ( code ) => getters.getLanguageZidOfCode( code ) )
 				.filter( ( zid ) => !!zid );
+		},
+		/**
+		 * Get `LabelData` object for a given language code.
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {Function} A function that accepts a language code and returns its `LabelData`.
+		 */
+		getLabelDataForLangCode: function ( _state, getters ) {
+			/**
+			 * Build a `LabelData` object for the specified language code.
+			 *
+			 * @param {string} langCode The language code to retrieve the `LabelData` for.
+			 * @return {LabelData} The `LabelData` object containing label, language code, and directionality.
+			 */
+			function buildLabelData( langCode ) {
+				return new LabelData(
+					null,
+					null,
+					langCode,
+					getters.getLanguageIsoCodeOfZLang( langCode )
+				);
+			}
+			return buildLabelData;
 		}
 	}
 };

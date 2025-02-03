@@ -36,6 +36,8 @@
 					{{ inputLabelTitle }}
 				</template>
 				<cdx-text-input
+					:lang="inputLabel ? langLabelData.langCode : undefined"
+					:dir="inputLabel ? langLabelData.langDir : undefined"
 					:model-value="inputLabel"
 					:placeholder="inputLabelFieldPlaceholder"
 					:aria-label="inputLabelFieldPlaceholder"
@@ -114,6 +116,13 @@ module.exports = exports = defineComponent( {
 		zLanguage: {
 			type: String,
 			required: true
+		},
+		/**
+		 * Label data for the language
+		 */
+		langLabelData: {
+			type: LabelData,
+			default: null
 		}
 	},
 	data: function () {

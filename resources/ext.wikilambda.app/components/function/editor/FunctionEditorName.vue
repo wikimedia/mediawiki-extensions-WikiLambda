@@ -15,6 +15,8 @@
 		<template #body>
 			<cdx-text-input
 				:id="nameFieldId"
+				:lang="name ? langLabelData.langCode : undefined"
+				:dir="name ? langLabelData.langDir : undefined"
 				:model-value="name"
 				class="ext-wikilambda-app-function-editor-name__input"
 				:aria-label="nameLabel"
@@ -34,6 +36,7 @@
 const { CdxTextInput } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const Constants = require( '../../../Constants.js' ),
+	LabelData = require( '../../../store/classes/LabelData.js' ),
 	pageTitleUtils = require( '../../../mixins/pageTitleUtils.js' ),
 	FunctionEditorField = require( './FunctionEditorField.vue' ),
 	{ mapActions, mapGetters } = require( 'vuex' );
@@ -54,6 +57,13 @@ module.exports = exports = defineComponent( {
 		zLanguage: {
 			type: String,
 			required: true
+		},
+		/**
+		 * Label data for the language
+		 */
+		langLabelData: {
+			type: LabelData,
+			default: null
 		}
 	},
 	data: function () {

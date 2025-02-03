@@ -22,6 +22,7 @@
 			class="ext-wikilambda-app-function-editor-language-block__row"
 			data-testid="function-editor-name-input"
 			:z-language="zLanguage"
+			:lang-label-data="langLabelData"
 			@updated-name="updatedLabels"
 		></wl-function-editor-name>
 		<!-- component that displays the description for a language -->
@@ -29,6 +30,7 @@
 			class="ext-wikilambda-app-function-editor-language-block__row"
 			data-testid="function-editor-description-input"
 			:z-language="zLanguage"
+			:lang-label-data="langLabelData"
 			@updated-description="updatedLabels"
 		></wl-function-editor-description>
 		<!-- component that displays aliases for a language -->
@@ -45,6 +47,7 @@
 			:z-language="zLanguage"
 			:is-main-language-block="isMainLanguageBlock"
 			:can-edit="canEditFunction"
+			:lang-label-data="langLabelData"
 			:tooltip-icon="icons.cdxIconLock"
 			:tooltip-message="adminTooltipMessage"
 			@updated-argument-label="updatedLabels"
@@ -99,7 +102,8 @@ module.exports = exports = defineComponent( {
 	},
 	computed: Object.assign( mapGetters( [
 		'isCreateNewPage',
-		'isUserLoggedIn'
+		'isUserLoggedIn',
+		'getLabelDataForLangCode'
 	] ), {
 		/**
 		 * Returns whether the current language block is the first (main) one
@@ -127,6 +131,14 @@ module.exports = exports = defineComponent( {
 			// TODO (T299604): Instead of just "users with special permissions", once the right exists we should
 			// actually check which group has the right, fetch its display name, and display it in this text.
 			return this.$i18n( 'wikilambda-editor-fn-edit-definition-tooltip-content' ).text();
+		},
+		/**
+		 * Returns the label data of the blocks language
+		 *
+		 * @return {LabelData}
+		 */
+		langLabelData: function () {
+			return this.getLabelDataForLangCode( this.zLanguage );
 		}
 	} ),
 	methods: {

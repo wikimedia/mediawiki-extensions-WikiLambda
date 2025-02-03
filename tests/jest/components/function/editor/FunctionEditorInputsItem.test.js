@@ -7,9 +7,18 @@
 'use strict';
 
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
+	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
 	FunctionEditorInputsItem = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorInputsItem.vue' );
+
+const langLabelData = {
+	zid: 'Z1002',
+	label: 'English',
+	lang: 'Z1002',
+	langCode: 'en',
+	langDir: 'ltr'
+};
 
 describe( 'FunctionEditorInputsItem', () => {
 	let getters,
@@ -17,6 +26,7 @@ describe( 'FunctionEditorInputsItem', () => {
 
 	beforeEach( () => {
 		getters = {
+			getLabelData: createLabelDataMock( { Z1002: 'English' } ),
 			getRowByKeyPath: createGettersWithFunctionsMock(),
 			getZArgumentLabelForLanguage: createGettersWithFunctionsMock(),
 			getZArgumentTypeRowId: createGettersWithFunctionsMock( 5 ),
@@ -42,7 +52,8 @@ describe( 'FunctionEditorInputsItem', () => {
 			index: 0,
 			isMainLanguageBlock: true,
 			canEditType: true,
-			zLanguage: 'Z1002'
+			zLanguage: 'Z1002',
+			langLabelData
 		} } );
 
 		expect( wrapper.find( '.ext-wikilambda-app-function-editor-inputs-item' ).exists() ).toBeTruthy();
@@ -55,7 +66,8 @@ describe( 'FunctionEditorInputsItem', () => {
 				index: 0,
 				isMainLanguageBlock: true,
 				canEditType: true,
-				zLanguage: 'Z1002'
+				zLanguage: 'Z1002',
+				langLabelData
 			},
 			global: { stubs: { CdxField: false } }
 		} );
@@ -70,7 +82,8 @@ describe( 'FunctionEditorInputsItem', () => {
 				index: 0,
 				isMainLanguageBlock: true,
 				canEditType: true,
-				zLanguage: 'Z1002'
+				zLanguage: 'Z1002',
+				langLabelData
 			},
 			global: { stubs: { CdxField: false } }
 		} );
@@ -85,7 +98,8 @@ describe( 'FunctionEditorInputsItem', () => {
 				index: 0,
 				isMainLanguageBlock: false,
 				canEditType: true,
-				zLanguage: 'Z1002'
+				zLanguage: 'Z1002',
+				langLabelData
 			},
 			global: { stubs: { CdxField: false } }
 		} );
@@ -100,7 +114,8 @@ describe( 'FunctionEditorInputsItem', () => {
 				index: 0,
 				isMainLanguageBlock: true,
 				canEditType: true,
-				zLanguage: 'Z1002'
+				zLanguage: 'Z1002',
+				langLabelData
 			},
 			global: { stubs: { CdxButton: false } }
 		} );
@@ -118,7 +133,8 @@ describe( 'FunctionEditorInputsItem', () => {
 					index: 0,
 					isMainLanguageBlock: true,
 					canEditType: true,
-					zLanguage: 'Z1002'
+					zLanguage: 'Z1002',
+					langLabelData
 				},
 				global: { stubs: { CdxField: false } }
 			} );
@@ -146,7 +162,8 @@ describe( 'FunctionEditorInputsItem', () => {
 					index: 0,
 					isMainLanguageBlock: true,
 					canEditType: true,
-					zLanguage: 'Z1002'
+					zLanguage: 'Z1002',
+					langLabelData
 				},
 				global: { stubs: { CdxField: false } }
 			} );
@@ -177,7 +194,8 @@ describe( 'FunctionEditorInputsItem', () => {
 					index: 0,
 					isMainLanguageBlock: true,
 					canEditType: true,
-					zLanguage: 'Z1002'
+					zLanguage: 'Z1002',
+					langLabelData
 				},
 				global: { stubs: { CdxField: false } }
 			} );
