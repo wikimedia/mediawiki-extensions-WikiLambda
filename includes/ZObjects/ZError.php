@@ -99,21 +99,29 @@ class ZError extends ZObject {
 	/**
 	 * Get a human-readable one-line string that identifies the ZError information
 	 *
+	 * @param ?string $renderLanguageCode Language code in which to render the message; if not
+	 *   provided, English is used by default.
 	 * @return string ZError message
 	 */
-	public function getMessage(): string {
-		// TODO (T362236): Add the rendering language as a parameter, don't default to English
-		return ZErrorTypeRegistry::singleton()->getZErrorTypeLabel( $this->getZErrorType() );
+	public function getMessage( ?string $renderLanguageCode = 'en' ): string {
+		return ZErrorTypeRegistry::singleton()->getZErrorTypeLabel(
+			$this->getZErrorType(),
+			$renderLanguageCode
+		);
 	}
 
 	/**
 	 * Get a human-readable one-line string that identifies the ZError information
 	 *
+	 * @param ?string $renderLanguageCode Language code in which to render the message; if not
+	 *   provided, English is used by default.
 	 * @return string ZError message
 	 */
-	public function getHtmlMessage(): string {
-		// TODO (T362236): Add the rendering language as a parameter, don't default to English
-		$message = ZErrorTypeRegistry::singleton()->getZErrorTypeLabel( $this->getZErrorType() );
+	public function getHtmlMessage( ?string $renderLanguageCode = 'en' ): string {
+		$message = ZErrorTypeRegistry::singleton()->getZErrorTypeLabel(
+			$this->getZErrorType(),
+			$renderLanguageCode
+		);
 		$messages = [];
 
 		$errorType = $this->getZErrorType();
@@ -141,7 +149,7 @@ class ZError extends ZObject {
 					$messages[] = Html::rawElement(
 						'li',
 						[ 'class' => 'ext-wikilambda-app-suberror-list__item' ],
-						$subError->getHtmlMessage()
+						$subError->getHtmlMessage( $renderLanguageCode )
 					);
 				}
 			}
@@ -161,7 +169,7 @@ class ZError extends ZObject {
 			$messages[] = Html::rawElement(
 				'li',
 				[ 'class' => 'ext-wikilambda-app-suberror-list__item' ],
-				$subError->getHtmlMessage()
+				$subError->getHtmlMessage( $renderLanguageCode )
 			);
 		}
 
