@@ -449,7 +449,9 @@ module.exports = exports = defineComponent( {
 				}
 
 				// If the already selected value is selected again, exit early
+				// and reset the input value to the selected value (T382755).
 				if ( this.selectedValue === value ) {
+					this.inputValue = this.selectedLabel;
 					return;
 				}
 
@@ -487,15 +489,23 @@ module.exports = exports = defineComponent( {
 				// 4. Something is selected previously, and we blur with non-empty text field
 				//    4.a. The field text doesn't match any lookup options
 				//    4.b. The field text matches one lookup option
+				//    4.c. The field text matches the already selected label
 
 				// Logic:
 				// Nothing selected:
 				// * match?: set selectedValue
 				// * no match?: clear inputValue
 				// Something selected:
+				// * match already selected?: do nothing
 				// * match?: set selectedValue
 				// * no match?: set inputValue to selectedLabel
 
+				// If current inputValue matches selected label, do nothing:
+				if ( this.inputValue === this.selectedLabel ) {
+					return;
+				}
+
+				// Match current inputValue with available menu options:
 				const match = this.lookupResults.find( ( option ) => option.label === this.inputValue );
 				if ( match ) {
 					// Select new value
