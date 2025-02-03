@@ -8,13 +8,9 @@
 	<main class="ext-wikilambda-app-function-viewer-details">
 		<section class="ext-wikilambda-app-function-viewer-details__tables">
 			<wl-function-viewer-details-table
-				:type="implementationType"
-				:header="implementationsHeader"
-				:body="implementationsBody"
+				:columns="implementationsColumns"
+				:data="implementationsData"
 				:title="$i18n( 'wikilambda-function-implementation-table-header' ).text()"
-				:current-page="implementationsPage"
-				:total-pages="implementationsTotalPages"
-				:showing-all="implementationsShowAll"
 				:can-connect="areProposedImplementationsSelected"
 				:can-disconnect="areAvailableImplementationsSelected"
 				:empty-text="implementationsFetched ?
@@ -22,19 +18,14 @@
 				:is-loading="implementationsLoading"
 				:add-link="addImplementationLink"
 				data-testid="function-implementations-table"
-				@update-page="updateImplementationPage"
-				@reset-view="resetImplementationView"
 				@connect="connectCheckedImplementations"
 				@disconnect="disconnectCheckedImplementations"
-			></wl-function-viewer-details-table>
+			>
+			</wl-function-viewer-details-table>
 			<wl-function-viewer-details-table
-				:type="testType"
-				:header="testsHeader"
-				:body="testsBody"
+				:columns="testsColumns"
+				:data="testsData"
 				:title="$i18n( 'wikilambda-function-test-cases-table-header' ).text()"
-				:current-page="testsPage"
-				:total-pages="testsTotalPages"
-				:showing-all="testsShowAll"
 				:can-connect="areProposedTestersSelected"
 				:can-disconnect="areAvailableTestersSelected"
 				:empty-text="testsFetched ?
@@ -42,8 +33,6 @@
 				:is-loading="testsLoading"
 				:add-link="addTestLink"
 				data-testid="function-testers-table"
-				@update-page="updateTestersPage"
-				@reset-view="resetTestersView"
 				@connect="connectCheckedTests"
 				@disconnect="disconnectCheckedTests"
 			></wl-function-viewer-details-table>
@@ -91,20 +80,14 @@ module.exports = exports = defineComponent( {
 	data: function () {
 		return {
 			/* Local state for function implementations */
-			implementationType: Constants.Z_IMPLEMENTATION,
 			implementationsState: {},
-			implementationsPage: 1,
 			implementationsFetched: false,
 			implementationsLoading: false,
-			implementationsShowAll: false,
 
 			/* Local state for function tests */
-			testType: Constants.Z_TYPE,
 			testsState: {},
-			testsPage: 1,
 			testsFetched: false,
 			testsLoading: false,
-			testsShowAll: false,
 
 			currentToast: null
 		};
@@ -135,35 +118,6 @@ module.exports = exports = defineComponent( {
 		 */
 		connectedImplementations: function () {
 			return this.getConnectedImplementations( this.rowId );
-		},
-
-		/**
-		 * Zids of all the implementations visible in the table
-		 *
-		 * @return {Array}
-		 */
-		visibleImplementations: function () {
-			return this.implementationsShowAll ?
-				this.allImplementations :
-				this.paginatedImplementations[ this.implementationsPage ];
-		},
-
-		/**
-		 * Return the implementations structured into pages
-		 *
-		 * @return {Object}
-		 */
-		paginatedImplementations: function () {
-			return this.paginateList( this.allImplementations );
-		},
-
-		/**
-		 * Total number of implementation pages
-		 *
-		 * @return {number}
-		 */
-		implementationsTotalPages: function () {
-			return Object.keys( this.paginatedImplementations ).length;
 		},
 
 		/**
@@ -213,41 +167,31 @@ module.exports = exports = defineComponent( {
 		},
 
 		/**
-		 * Build the header row for the Implementations table
+		 * Build the columns for the Implementations table
 		 *
 		 * @return {Object}
 		 */
-		implementationsHeader: function () {
-			return ( this.visibleImplementations.length === 0 ) ? undefined :
+		implementationsColumns: function () {
+			if ( !this.allImplementations.length ) {
+				return undefined;
+			}
+			return [
 				{
-					checkbox: {
-						title: this.$i18n( 'wikilambda-function-implementation-selectall-label' ),
-						component: 'cdx-checkbox',
-						props: {
-							modelValue: this.areAllRowsChecked( this.implementationsState ),
-							'onUpdate:modelValue': ( value ) => this.checkAllRows( this.implementationsState, value ),
-							hideLabel: true
-						},
-						class: 'ext-wikilambda-app-function-viewer-details-table__header'
-					},
-					name: {
-						title: this.$i18n( 'wikilambda-function-implementation-name-label' ),
-						class: 'ext-wikilambda-app-function-viewer-details-table__header',
-						id: 'implementations-header-checkbox'
-					},
-					state: {
-						title: this.$i18n( 'wikilambda-function-implementation-state-label' ),
-						class: 'ext-wikilambda-app-function-viewer-details-table__header'
-					},
-					language: {
-						title: this.$i18n( 'wikilambda-function-implementation-language-label' ),
-						class: 'ext-wikilambda-app-function-viewer-details-table__header'
-					},
-					testsPassed: {
-						title: this.$i18n( 'wikilambda-function-implementation-tests-passed-label' ),
-						class: 'ext-wikilambda-app-function-viewer-details-table__header'
+					id: 'checkbox',
+					title: this.$i18n( 'wikilambda-function-implementation-selectall-label' ),
+					component: 'cdx-checkbox',
+					props: {
+						modelValue: this.areAllRowsChecked( this.implementationsState ),
+						indeterminate: this.areSomeRowsChecked( this.implementationsState ),
+						'onUpdate:modelValue': ( value ) => this.checkAllRows( this.implementationsState, value ),
+						hideLabel: true
 					}
-				};
+				},
+				{ id: 'name', title: this.$i18n( 'wikilambda-function-implementation-name-label' ) },
+				{ id: 'status', title: this.$i18n( 'wikilambda-function-implementation-state-label' ) },
+				{ id: 'language', title: this.$i18n( 'wikilambda-function-implementation-language-label' ) },
+				{ id: 'result', title: this.$i18n( 'wikilambda-function-implementation-tests-passed-label' ) }
+			];
 		},
 
 		/**
@@ -255,9 +199,9 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Array}
 		 */
-		implementationsBody: function () {
+		implementationsData: function () {
 			const tableData = [];
-			for ( const zid of this.visibleImplementations ) {
+			for ( const zid of this.allImplementations ) {
 				// Get implementation name or its zid if unnamed:
 				const implementationLabelData = this.getLabelData( zid );
 
@@ -286,7 +230,6 @@ module.exports = exports = defineComponent( {
 				}
 
 				// Build the table data for the implementations table
-
 				tableData.push( {
 					// Column 1: checkbox
 					checkbox: {
@@ -298,23 +241,22 @@ module.exports = exports = defineComponent( {
 								this.implementationsState[ zid ].checked = value;
 							},
 							hideLabel: true
-						},
-						class: 'ext-wikilambda-app-function-viewer-details-table__item',
-						id: implementationLabelData.label
+						}
+						// class: 'ext-wikilambda-app-function-viewer-details-table__item',
+						// id: implementationLabelData.label
 					},
 					// Column 2: name
 					name: {
-						title: implementationLabelData.label,
 						component: 'a',
+						title: implementationLabelData.label,
 						props: {
 							href: `/view/${ this.getUserLangCode }/${ zid }`,
 							lang: implementationLabelData.langCode,
 							dir: implementationLabelData.langDir
-						},
-						class: 'ext-wikilambda-app-function-viewer-details-table__item'
+						}
 					},
 					// Column 3: status
-					state: {
+					status: {
 						component: 'cdx-info-chip',
 						title: this.$i18n( isConnected ?
 							'wikilambda-function-implementation-state-approved' :
@@ -322,20 +264,16 @@ module.exports = exports = defineComponent( {
 						).text(),
 						props: {
 							status: isConnected ? 'success' : 'warning'
-						},
-						class: 'ext-wikilambda-app-function-viewer-details-table__item'
+						}
 					},
 					// Column 4: language
 					language: {
-						title: language,
-						class: 'ext-wikilambda-app-function-viewer-details-table__item'
+						title: language
 					},
-					// Column 4: passed tests
-					testsPassed: {
+					// Column 4: test results
+					result: {
 						title: testResults.passing + '/' + testResults.total
-					},
-					// Row class
-					class: this.implementationsState[ zid ].checked ? 'ext-wikilambda-app-function-viewer-details-table__row--active' : null
+					}
 				} );
 			}
 
@@ -358,35 +296,6 @@ module.exports = exports = defineComponent( {
 		 */
 		connectedTests: function () {
 			return this.getConnectedTests( this.rowId );
-		},
-
-		/**
-		 * Zids of all the tests visible in the table
-		 *
-		 * @return {Array}
-		 */
-		visibleTests: function () {
-			return this.testsShowAll ?
-				this.allTests :
-				this.paginatedTests[ this.testsPage ];
-		},
-
-		/**
-		 * Return the tests structured into pages
-		 *
-		 * @return {Object}
-		 */
-		paginatedTests: function () {
-			return this.paginateList( this.allTests );
-		},
-
-		/**
-		 * Total number of tests pages
-		 *
-		 * @return {number}
-		 */
-		testsTotalPages: function () {
-			return Object.keys( this.paginatedTests ).length;
 		},
 
 		/**
@@ -425,64 +334,62 @@ module.exports = exports = defineComponent( {
 		},
 
 		/**
-		 * Build the header row for the Implementations table
+		 * Build the columns for the Tests table
 		 *
 		 * @return {Object}
 		 */
-		testsHeader: function () {
-			if ( this.visibleTests.length === 0 ) {
+		testsColumns: function () {
+
+			if ( !this.allTests.length ) {
 				return undefined;
 			}
 
-			const headers = {
-				checkbox: {
+			const columns = [
+				{
+
+					id: 'checkbox',
 					title: this.$i18n( 'wikilambda-function-implementation-selectall-label' ),
 					component: 'cdx-checkbox',
 					props: {
 						modelValue: this.areAllRowsChecked( this.testsState ),
+						indeterminate: this.areSomeRowsChecked( this.testsState ),
 						'onUpdate:modelValue': ( value ) => this.checkAllRows( this.testsState, value ),
 						hideLabel: true
-					},
-					class: 'ext-wikilambda-app-function-viewer-details-table__header'
+					}
 				},
-				name: {
-					title: this.$i18n( 'wikilambda-function-implementation-name-label' ),
-					class: 'ext-wikilambda-app-function-viewer-details-table__header'
-				},
-				state: {
-					title: this.$i18n( 'wikilambda-function-implementation-state-label' ),
-					class: 'ext-wikilambda-app-function-viewer-details-table__header'
-				}
-			};
+				{ id: 'name', title: this.$i18n( 'wikilambda-function-implementation-name-label' ) },
+				{ id: 'status', title: this.$i18n( 'wikilambda-function-implementation-state-label' ) }
+			];
 
 			// Add one column for each implementation selected,
 			// or for all visble implementations if none are selected
-			for ( const zid of this.visibleImplementations ) {
+			for ( const zid of this.allImplementations ) {
 				const implementationLabelData = this.getLabelData( zid );
 				if ( this.implementationsState[ zid ].checked || !this.areAnyImplementationsChecked ) {
-					headers[ zid ] = {
+					columns.push( {
+						id: zid,
 						title: implementationLabelData.label,
 						component: 'span',
 						props: {
 							lang: implementationLabelData.langCode,
 							dir: implementationLabelData.langDir
-						},
-						class: 'ext-wikilambda-app-function-viewer-details-table__header'
-					};
+						}
+					} );
 				}
 			}
 
-			return headers;
+			return columns;
 		},
 
 		/**
+		 *
 		 * Build the content rows for the Tests table
 		 *
 		 * @return {Array}
 		 */
-		testsBody: function () {
+		testsData: function () {
 			const tableData = [];
-			for ( const zid of this.visibleTests ) {
+			for ( const zid of this.allTests ) {
 				// Get test name or its zid if unnamed:
 				const testLabelData = this.getLabelData( zid );
 
@@ -501,8 +408,7 @@ module.exports = exports = defineComponent( {
 								this.testsState[ zid ].checked = value;
 							},
 							hideLabel: true
-						},
-						class: 'ext-wikilambda-app-function-viewer-details-table__item'
+						}
 					},
 					// Column 2: name
 					name: {
@@ -512,11 +418,10 @@ module.exports = exports = defineComponent( {
 							href: `/view/${ this.getUserLangCode }/${ zid }`,
 							lang: testLabelData.langCode,
 							dir: testLabelData.langDir
-						},
-						class: 'ext-wikilambda-app-function-viewer-details-table__item'
+						}
 					},
 					// Column 3: status
-					state: {
+					status: {
 						component: 'cdx-info-chip',
 						title: this.$i18n( isConnected ?
 							'wikilambda-function-tester-state-approved' :
@@ -524,15 +429,12 @@ module.exports = exports = defineComponent( {
 						).text(),
 						props: {
 							status: isConnected ? 'success' : 'warning'
-						},
-						class: 'ext-wikilambda-app-function-viewer-details-table__item'
-					},
-					// Row class
-					class: this.testsState[ zid ].checked ? 'ext-wikilambda-app-function-viewer-details-table__row--active' : null
+						}
+					}
 				};
 
 				// Add a column per implementation selected
-				for ( const impZid of this.visibleImplementations ) {
+				for ( const impZid of this.allImplementations ) {
 					if ( this.implementationsState[ impZid ].checked || !this.areAnyImplementationsChecked ) {
 						rowData[ impZid ] = {
 							component: 'wl-function-tester-table',
@@ -540,14 +442,14 @@ module.exports = exports = defineComponent( {
 								zFunctionId: this.getCurrentZObjectId,
 								zImplementationId: impZid,
 								zTesterId: zid
-							},
-							class: 'ext-wikilambda-app-function-viewer-details-table__item'
+							}
 						};
 					}
 				}
 
 				tableData.push( rowData );
 			}
+
 			return tableData;
 		},
 
@@ -730,27 +632,6 @@ module.exports = exports = defineComponent( {
 		},
 
 		/**
-		 * Convert an array into a paginated object structure
-		 *
-		 * @param {Array} items
-		 * @return {Object}
-		 */
-		paginateList: function ( items ) {
-			const paginatedItems = {};
-			let pageNum = 1;
-			if ( items.length > 0 ) {
-				for ( let i = 0; i < items.length; i += Constants.PAGINATION_SIZE ) {
-					const endIndex = Math.min( items.length, i + Constants.PAGINATION_SIZE );
-					const pageItems = items.slice( i, endIndex );
-					paginatedItems[ pageNum ] = pageItems;
-					pageNum++;
-				}
-				return paginatedItems;
-			}
-			return { 1: items };
-		},
-
-		/**
 		 * Returns whether all the rows of the given state object are checked
 		 *
 		 * @param {Object} rows
@@ -758,6 +639,16 @@ module.exports = exports = defineComponent( {
 		 */
 		areAllRowsChecked: function ( rows ) {
 			return Object.keys( rows ).every( ( zid ) => rows[ zid ].checked );
+		},
+
+		/**
+		 * Returns whether some of the rows of the given state object are checked
+		 *
+		 * @param {Object} rows
+		 * @return {boolean}
+		 */
+		areSomeRowsChecked: function ( rows ) {
+			return Object.keys( rows ).some( ( zid ) => rows[ zid ].checked );
 		},
 
 		/**
@@ -770,38 +661,6 @@ module.exports = exports = defineComponent( {
 			for ( const zid in rows ) {
 				rows[ zid ].checked = value;
 			}
-		},
-
-		/**
-		 * Sets the current page of the implementations table
-		 *
-		 * @param {number} page
-		 */
-		updateImplementationPage: function ( page ) {
-			this.implementationsPage = page;
-		},
-
-		/**
-		 * Sets the current page of the tests table
-		 *
-		 * @param {number} page
-		 */
-		updateTestersPage: function ( page ) {
-			this.testsPage = page;
-		},
-
-		/**
-		 * Toggle the view all/view less button in the implementations table
-		 */
-		resetImplementationView: function () {
-			this.implementationsShowAll = !this.implementationsShowAll;
-		},
-
-		/**
-		 * Toggle the view all/view less button in the implementations table
-		 */
-		resetTestersView: function () {
-			this.testsShowAll = !this.testsShowAll;
 		},
 
 		/**

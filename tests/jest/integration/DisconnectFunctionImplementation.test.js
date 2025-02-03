@@ -10,6 +10,7 @@ require( '@testing-library/jest-dom' );
 
 const { fireEvent, waitFor } = require( '@testing-library/vue' ),
 	{ within } = require( '@testing-library/dom' ),
+	{ nextTick } = require( 'vue' ),
 	{ renderForFunctionViewer, runSetup, runTeardown } = require( './helpers/functionViewerDetailsTestHelpers.js' ),
 	Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' ),
 	existingFunctionFromApi = require( './objects/existingFunctionFromApi.js' ),
@@ -107,6 +108,12 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 
 		// ASSERT: The function evaluator message is shown.
 		expect( await findByTestId( 'function-evaluator-message' ) ).toHaveTextContent( 'This function has no connected implementations.' );
+
+		// Ensures state is consistent after a few ticks (fading in message and implementation state updates)
+		// This is necessary because we can not verify this targeting the UI directly
+		await nextTick();
+		await nextTick();
+		await nextTick();
 
 		// ACT: Select the first "disconnected" implementation in the table.
 		await fireEvent.update( within( firstImplementationRow ).getByRole( 'checkbox' ), true );
