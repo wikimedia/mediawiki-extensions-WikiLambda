@@ -3,12 +3,13 @@
 		"authors": [
 			"Cakkaparla",
 			"ReyLon Mrat",
+			"Tejoebāsa",
 			"YaThaWinTha"
 		]
 	},
 	"wikilambda-editor-tester-list-label": "စစ်ဆေးစာရင်း",
-	"wikilambda-functioncall-metadata-implementation-id": "လက်တွိကျကျလုပ်ဆောင်မှု ID",
-	"wikilambda-functioncall-metadata-implementation-type": "အကောင်အထည်ဖော်ခြင်းအမျိုးအစား",
+	"wikilambda-functioncall-metadata-implementation-id": "အိုင်ဒီ",
+	"wikilambda-functioncall-metadata-implementation-type": "အမျိုးအစား",
 	"wikilambda-helplink-button": "အကူအညီ",
 	"wikilambda-helplink-tooltip": "ဒေမီတာဒေတာကိုရှင်းပြထားရေ အကူအညီစာမျက်နှာမှာ သင်ဖတ်လို့ရရေ",
 	"wikilambda-publish-input-and-output-changed-impact-prompt": "<p>မင်းစော် ဒေလုပ်ဆောင်ချက်ဧ့ ထည့်သွင်းမှုအကွက်နန့် အထွက်အမျိုးအစားကို ပြောင်းလဲခရေ။ <strong>လက်ရှိလုပ်ဆောင်မှုတိနန့် စမ်းသပ်မှုတိအားလုံးကို လက်ဟိလုပ်ဆောင်မှုမှ ဖယ်ထုတ်ပါဖို့။</strong> ဆက်လက်လုပ်ဆောင်ချင်ပါလား။</p>",
