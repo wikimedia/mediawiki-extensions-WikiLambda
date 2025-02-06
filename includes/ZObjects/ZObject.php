@@ -60,14 +60,13 @@ class ZObject {
 	 * Validation of inputs to this and all other ZObject constructors is left to ZObjectFactory.
 	 *
 	 * @param ZObject $type ZReference or ZFunctionCall that resolves to the type of this ZObject
+	 * @param array|null $extraArgs
 	 */
-	public function __construct( $type ) {
-		// Fetch the extra arguments passed and affix them to the $data representation.
-		$args = func_get_args();
-		if ( count( $args ) === 1 ) {
+	public function __construct( $type, $extraArgs = null ) {
+		if ( $extraArgs === null ) {
 			$this->data[ ZTypeRegistry::Z_OBJECT_TYPE ] = $type;
 		} else {
-			$this->data = [ ZTypeRegistry::Z_OBJECT_TYPE => $type ] + $args[ 1 ];
+			$this->data = [ ZTypeRegistry::Z_OBJECT_TYPE => $type ] + $extraArgs;
 		}
 	}
 
