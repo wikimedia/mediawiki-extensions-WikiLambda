@@ -61,11 +61,12 @@ class ZErrorFactory {
 
 	/**
 	 * Joins an arbitrary number of path components via DIRECTORY_SEPARATOR.
+	 * @param string ...$pathComponents
 	 * @return string
 	 */
-	private static function joinPath(): string {
+	private static function joinPath( string ...$pathComponents ): string {
 		$components = [];
-		foreach ( func_get_args() as $component ) {
+		foreach ( $pathComponents as $component ) {
 			$component = rtrim( $component, DIRECTORY_SEPARATOR );
 			array_push( $components, $component );
 		}
