@@ -146,6 +146,38 @@ describe( 'AboutLanguagesDialog', () => {
 		expect( list[ 8 ].find( '.ext-wikilambda-app-about-languages-dialog__item-untitled' ).exists() ).toBe( true );
 	} );
 
+	it( 'sorts other languages in a case-insensitive manner', () => {
+		// Override getLabelData so that Croatian is intentionally lower-case
+		const modifiedLabelData = {
+			Z1002: 'English',
+			Z1003: 'Español',
+			Z1314: 'Euskera',
+			Z1678: 'Quechua',
+			Z1787: 'Italian',
+			Z1272: 'croatian', // lowercase to test case insensitivity
+			Z1429: 'Telugu'
+		};
+		getters.getLabelData = createLabelDataMock( modifiedLabelData );
+		global.store.hotUpdate( { getters: getters, actions: actions } );
+
+		const wrapper = mount( AboutLanguagesDialog, { props: { open: true } } );
+		const list = wrapper.findAll( '.ext-wikilambda-app-about-languages-dialog__items > div' );
+
+		// In the component, the first section ("Suggested languages") is rendered first,
+		// followed by a header for "Other languages" (list[3]),
+		// then the items for "Other languages" starting at list[4].
+		// The fallback languages (English and Español) have been removed from "Other languages".
+		// The remaining languages (by their zids) are: Z1314 (Euskera), Z1678 (Quechua),
+		// Z1787 (Italian), Z1272 (croatian), and Z1429 (Telugu).
+		// When sorted case-insensitively, the expected order is:
+		// "croatian", "Euskera", "Italian", "Quechua", "Telugu"
+		expect( list[ 4 ].find( '.ext-wikilambda-app-about-languages-dialog__item-title' ).text() ).toBe( 'croatian' );
+		expect( list[ 5 ].find( '.ext-wikilambda-app-about-languages-dialog__item-title' ).text() ).toBe( 'Euskera' );
+		expect( list[ 6 ].find( '.ext-wikilambda-app-about-languages-dialog__item-title' ).text() ).toBe( 'Italian' );
+		expect( list[ 7 ].find( '.ext-wikilambda-app-about-languages-dialog__item-title' ).text() ).toBe( 'Quechua' );
+		expect( list[ 8 ].find( '.ext-wikilambda-app-about-languages-dialog__item-title' ).text() ).toBe( 'Telugu' );
+	} );
+
 	it( 'triggers language lookup when writing in the search box', async () => {
 		actions.lookupZObjectLabels = jest.fn().mockResolvedValue( mockLookupLanguages );
 		global.store.hotUpdate( { getters: getters, actions: actions } );

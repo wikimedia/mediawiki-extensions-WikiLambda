@@ -115,7 +115,8 @@ module.exports = exports = defineComponent( {
 		'getLanguageIsoCodeOfZLang',
 		'getMultilingualDataLanguages',
 		'getZMonolingualTextValue',
-		'getZPersistentName'
+		'getZPersistentName',
+		'getUserLangCode'
 	] ), {
 		/**
 		 * Returns a list of all the fallback language Zids.
@@ -162,15 +163,7 @@ module.exports = exports = defineComponent( {
 				};
 			};
 
-			const sortByLabel = ( a, b ) => {
-				if ( a.langLabelData.label < b.langLabelData.label ) {
-					return -1;
-				}
-				if ( a.langLabelData.label > b.langLabelData.label ) {
-					return 1;
-				}
-				return 0;
-			};
+			const sortByLabel = ( a, b ) => a.langLabelData.label.localeCompare( b.langLabelData.label, this.getUserLangCode, { sensitivity: 'base' } );
 
 			const suggestedLangs = this.getFallbackLanguageZids.map( ( zid ) => buildLangItem( zid ) );
 			const otherLangs = this.allLangs.map( ( zid ) => buildLangItem( zid ) ).sort( sortByLabel );
