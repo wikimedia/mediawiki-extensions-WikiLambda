@@ -133,6 +133,8 @@ module.exports = exports = defineComponent( {
 			'getAllProgrammingLangs',
 			'getConverterIdentity',
 			'getErrors',
+			'clearErrorsByCode',
+			'hasErrorByCode',
 			'getLabelData',
 			'getRowByKeyPath',
 			'getZCodeProgrammingLanguageRow',
@@ -340,7 +342,8 @@ module.exports = exports = defineComponent( {
 			'fetchZids',
 			'fetchAllZProgrammingLanguages',
 			'clearErrors',
-			'setError'
+			'setError',
+			'getErrorMessage'
 		] ),
 		{
 			/**
@@ -387,6 +390,36 @@ module.exports = exports = defineComponent( {
 			},
 
 			/**
+			 * Checks if the code contains 'Wikifunctions.Debug' and sets or clears an error accordingly.
+			 *
+			 * @param {string} code - The code to check.
+			 */
+			checkDebugMessage( code ) {
+				const hasDebugCode = code.toLowerCase().includes( 'wikifunctions.debug' );
+
+				// If 'Wikifunctions.Debug' is not found, clear the error.
+				if ( !hasDebugCode ) {
+					this.clearErrorsByCode( {
+						rowId: 0,
+						errorCode: Constants.errorCodes.DEBUG_CODE_WARNING
+					} );
+					return;
+				}
+
+				// If the debug message error has already been set, do nothing
+				if ( this.hasErrorByCode( 0, Constants.errorCodes.DEBUG_CODE_WARNING ) ) {
+					return;
+
+				}
+				// If 'Wikifunctions.Debug' is found, set the error.
+				this.setError( {
+					rowId: 0,
+					errorType: Constants.errorTypes.WARNING,
+					errorCode: Constants.errorCodes.DEBUG_CODE_WARNING
+				} );
+			},
+
+			/**
 			 * Updates the value of the Code content key (Z16K2)
 			 *
 			 * @param {string} code
@@ -401,6 +434,7 @@ module.exports = exports = defineComponent( {
 						keyPath: [ Constants.Z_CODE_CODE, Constants.Z_STRING_VALUE ],
 						value: code
 					} );
+					this.checkDebugMessage( code );
 				}
 			},
 
@@ -428,7 +462,6 @@ module.exports = exports = defineComponent( {
 				};
 				this.hasClickedDisabledField = true;
 				this.setError( payload );
-
 			}
 		} ),
 	watch: {

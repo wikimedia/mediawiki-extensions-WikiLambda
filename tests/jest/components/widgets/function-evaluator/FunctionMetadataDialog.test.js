@@ -252,6 +252,10 @@ describe( 'FunctionMetadataDialog', () => {
 			expect( keys[ 1 ].find( 'a' ).attributes().href ).toContain( 'Z526' );
 			expect( keys[ 2 ].text() ).toContain( 'Expected result: ABC' );
 			expect( keys[ 3 ].text() ).toContain( 'Actual result: CBA' );
+
+			// Check message
+			const message = wrapper.findAllComponents( { name: 'cdx-message' } );
+			expect( message[ 0 ].text() ).toContain( 'Something not working? Try Wikifunctions.Debug to trace your code.' );
 		} );
 	} );
 

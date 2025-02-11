@@ -67,6 +67,20 @@ describe( 'Errors Pinia store', () => {
 				expect( store.getErrors( 0, Constants.errorTypes.WARNING ) ).toEqual( [ mockErrors[ 0 ][ 0 ] ] );
 			} );
 		} );
+
+		describe( 'hasErrorByCode', () => {
+			beforeEach( () => {
+				store.errors = mockErrors;
+			} );
+
+			it( 'returns false for a given rowId when an error with the provided code does not exist', () => {
+				expect( store.hasErrorByCode( 0, Constants.errorCodes.UNKNOWN_ERROR ) ).toEqual( false );
+			} );
+
+			it( 'returns true for a given rowId when an error with the provided code exists', () => {
+				expect( store.hasErrorByCode( 10, Constants.errorCodes.MISSING_FUNCTION_OUTPUT ) ).toEqual( true );
+			} );
+		} );
 	} );
 
 	describe( 'Actions', () => {
@@ -115,6 +129,20 @@ describe( 'Errors Pinia store', () => {
 			it( 'clears all errors associated with a given rowId', () => {
 				store.errors = mockErrors;
 				store.clearErrors( 10 );
+				expect( store.errors ).toEqual( { 0: mockErrors[ 0 ], 10: [] } );
+			} );
+		} );
+
+		describe( 'clearErrorsByCode', () => {
+			it( 'does nothing if the rowId has no errors in the state for the provided code', () => {
+				store.errors = mockErrors;
+				store.clearErrorsByCode( 10, Constants.errorCodes.UNKNOWN_ERROR );
+				expect( store.errors ).toEqual( mockErrors );
+			} );
+
+			it( 'clears all errors associated with a given rowId', () => {
+				store.errors = mockErrors;
+				store.clearErrorsByCode( 10, Constants.errorCodes.MISSING_FUNCTION_OUTPUT );
 				expect( store.errors ).toEqual( { 0: mockErrors[ 0 ], 10: [] } );
 			} );
 		} );

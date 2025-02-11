@@ -170,7 +170,8 @@ const Constants = {
 		FUNCTION_INPUT_OUTPUT_CHANGED: 'wikilambda-publish-input-and-output-changed-impact-prompt',
 		FUNCTION_INPUT_CHANGED: 'wikilambda-publish-input-changed-impact-prompt',
 		FUNCTION_OUTPUT_CHANGED: 'wikilambda-publish-output-changed-impact-prompt',
-		NEW_ZID_PLACEHOLDER_WARNING: 'wikilambda-editor-code-editor-zid-placeholder-error'
+		NEW_ZID_PLACEHOLDER_WARNING: 'wikilambda-editor-code-editor-zid-placeholder-error',
+		DEBUG_CODE_WARNING: 'wikilambda-editor-code-editor-debug-code-warning'
 	},
 	breakpoints = {
 		MOBILE: 320,
