@@ -63,10 +63,9 @@ class ZObject {
 	 * @param array|null $extraArgs
 	 */
 	public function __construct( $type, $extraArgs = null ) {
-		if ( $extraArgs === null ) {
-			$this->data[ ZTypeRegistry::Z_OBJECT_TYPE ] = $type;
-		} else {
-			$this->data = [ ZTypeRegistry::Z_OBJECT_TYPE => $type ] + $extraArgs;
+		$this->data = [ ZTypeRegistry::Z_OBJECT_TYPE => $type ];
+		if ( $extraArgs !== null ) {
+			$this->data += $extraArgs;
 		}
 	}
 
