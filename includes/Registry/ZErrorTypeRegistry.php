@@ -224,12 +224,21 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 	 * Gets the ZErrorType label in English
 	 *
 	 * @param string $errorType
+	 * @param string $errorLanguageCode Language code, defaulting to English
 	 * @return string
 	 * @throws ZErrorException
 	 */
-	public function getZErrorTypeLabel( string $errorType ): string {
-		if ( $this->isZErrorTypeCached( $errorType ) ) {
-			return $this->registry[ $errorType ];
+	public function getZErrorTypeLabel( string $errorType, string $errorLanguageCode = 'en' ): string {
+		$registryCacheKey = $errorType . ':' . $errorLanguageCode;
+
+		if ( $this->isZErrorTypeCached( $registryCacheKey ) ) {
+			return $this->registry[ $registryCacheKey ];
+		}
+
+		// If the language code is not known, fallback to English
+		$zLangRegistry = ZLangRegistry::singleton();
+		if ( $zLangRegistry->isLanguageKnownGivenCode( $errorLanguageCode ) === false ) {
+			$errorLanguageCode = 'en';
 		}
 
 		$zObject = $this->fetchZErrorType( $errorType );
@@ -237,9 +246,8 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 			return "Unknown error $errorType";
 		}
 
-		// TODO (T362236): Take the rendering language as a parameter, don't default to English
-		$errorLabel = $zObject->getLabels()->getStringForLanguageCode( 'en' );
-		$this->register( $errorType, $errorLabel );
+		$errorLabel = $zObject->getLabels()->getStringForLanguageCode( $errorLanguageCode );
+		$this->register( $registryCacheKey, $errorLabel );
 
 		return $errorLabel;
 	}

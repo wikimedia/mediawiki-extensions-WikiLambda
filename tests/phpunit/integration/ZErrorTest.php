@@ -102,13 +102,22 @@ EOT;
 		$errorObject = FormatJson::decode( $errorData );
 
 		$registry = ZErrorTypeRegistry::singleton();
-		$registry->register( 'Z509', 'List of errors' );
-		$registry->register( 'Z554', 'Label for a given language clashes with another Object\'s label' );
+		$registry->register( 'Z509:en', 'List of errors' );
+		$registry->register( 'Z554:en', 'Label for a given language clashes with another Object\'s label' );
+		$registry->register( 'Z509:fr', 'liste d\'erreurs' );
+		$registry->register( 'Z554:fr', 'L\'ét. d\'une langue entre en conflit avec une autre' );
 		$testObject = ZObjectFactory::create( $errorObject );
 
+		// Default language is English
 		$this->assertSame( 'List of errors', $testObject->getMessage() );
+		// Specifying English gets the right result
+		$this->assertSame( 'List of errors', $testObject->getMessage( 'en' ) );
+		// Specifying French gets the right result
+		$this->assertSame( 'liste d\'erreurs', $testObject->getMessage( 'fr' ) );
+		// Specifying an unknown language goes through the error state
+		$this->assertSame( 'Unknown error Z509', $testObject->getMessage( 'unknown' ) );
 
-		$errorsHtml = 'List of errors'
+		$errorsHtmlEn = 'List of errors'
 			. '<ul class="ext-wikilambda-app-suberror-list">'
 			. '<li class="ext-wikilambda-app-suberror-list__item">'
 			. 'Label for a given language clashes with another Object\'s label'
@@ -117,7 +126,22 @@ EOT;
 			. 'Label for a given language clashes with another Object\'s label'
 			. '</li>'
 			. '</ul>';
-		$this->assertEquals( $errorsHtml, $testObject->getHtmlMessage() );
+		// Default language is English
+		$this->assertEquals( $errorsHtmlEn, $testObject->getHtmlMessage() );
+		// Specifying English gets the right result
+		$this->assertEquals( $errorsHtmlEn, $testObject->getHtmlMessage( 'en' ) );
+
+		$errorsHtmlFr = 'liste d\'erreurs'
+			. '<ul class="ext-wikilambda-app-suberror-list">'
+			. '<li class="ext-wikilambda-app-suberror-list__item">'
+			. 'L\'ét. d\'une langue entre en conflit avec une autre'
+			. '</li>'
+			. '<li class="ext-wikilambda-app-suberror-list__item">'
+			. 'L\'ét. d\'une langue entre en conflit avec une autre'
+			. '</li>'
+			. '</ul>';
+		// Specifying French gets the right result
+		$this->assertEquals( $errorsHtmlFr, $testObject->getHtmlMessage( 'fr' ) );
 	}
 
 	public function testMessage_NotWellformed() {
@@ -125,11 +149,11 @@ EOT;
 		$errorData = file_get_contents( $errorPath );
 
 		$registry = ZErrorTypeRegistry::singleton();
-		$registry->register( 'Z502', 'Not wellformed' );
-		$registry->register( 'Z509', 'List of errors' );
-		$registry->register( 'Z526', 'Key value not wellformed' );
-		$registry->register( 'Z551', 'Schema type mismatch' );
-		$registry->register( 'Z549', 'Invalid reference' );
+		$registry->register( 'Z502:en', 'Not wellformed' );
+		$registry->register( 'Z509:en', 'List of errors' );
+		$registry->register( 'Z526:en', 'Key value not wellformed' );
+		$registry->register( 'Z551:en', 'Schema type mismatch' );
+		$registry->register( 'Z549:en', 'Invalid reference' );
 		$testObject = ZObjectFactory::create( json_decode( $errorData ) );
 
 		$this->assertSame( 'Not wellformed', $testObject->getMessage() );

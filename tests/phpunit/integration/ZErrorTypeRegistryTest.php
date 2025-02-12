@@ -110,6 +110,11 @@ class ZErrorTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 				"Z1K1": "Z11",
 				"Z11K1": "Z1002",
 				"Z11K2": "Custom error"
+			},
+			{
+				"Z1K1": "Z11",
+				"Z11K1": "Z1004",
+				"Z11K2": "erreur personnalisée"
 			}
 		]
 	}
@@ -144,10 +149,31 @@ EOT;
 			'The valid ZErrorType is found in the database and cached.'
 		);
 
+		// Register the languages so that the below works.
+		$this->registerLangs( [ 'en', 'fr' ] );
+
 		$this->assertSame(
 			'Custom error',
 			$registry->getZErrorTypeLabel( $errorType ),
-			'The valid getZErrorTypeLabel is found in the database and cached.'
+			'The valid English getZErrorTypeLabel is returned, when not specifying the language.'
+		);
+
+		$this->assertSame(
+			'Custom error',
+			$registry->getZErrorTypeLabel( $errorType, 'en' ),
+			'The valid English getZErrorTypeLabel is returned, when specifying English.'
+		);
+
+		$this->assertSame(
+			'erreur personnalisée',
+			$registry->getZErrorTypeLabel( $errorType, 'fr' ),
+			'The valid French getZErrorTypeLabel is returned, when specifying French.'
+		);
+
+		$this->assertSame(
+			'Custom error',
+			$registry->getZErrorTypeLabel( $errorType, 'unknown' ),
+			'The valid English getZErrorTypeLabel is returned, when specifying an unknown language.'
 		);
 
 		$this->assertTrue(
