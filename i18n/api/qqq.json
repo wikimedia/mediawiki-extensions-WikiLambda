@@ -19,6 +19,7 @@
 	"apihelp-wikilambda_fetch-example-multiple": "{{doc-apihelp-example|wikilambda_fetch}}\n\n{{doc-wikilambda}}",
 	"apihelp-wikilambda_fetch-example-multiple-old": "{{doc-apihelp-example|wikilambda_fetch}}\n\n{{doc-wikilambda}}",
 	"apihelp-wikilambda_function_call-param-zobject": "{{doc-apihelp-summary|query+wikilambda_function_call}}\n\n{{doc-wikilambda}}",
+	"apihelp-wikilambda_function_call-param-bypass-cache": "{{doc-apihelp-summary|query+wikilambda_function_call}}\n\n{{doc-wikilambda}}",
 	"apihelp-wikilambda_function_call-example-generic-list": "{{doc-apihelp-summary|query+wikilambda_function_call}}\n\n{{doc-wikilambda}}",
 	"apihelp-wikilambda_function_call-example-generic-pair": "{{doc-apihelp-summary|query+wikilambda_function_call}}\n\n{{doc-wikilambda}}",
 	"apihelp-wikilambda_function_call-example-generic-map": "{{doc-apihelp-summary|query+wikilambda_function_call}}\n\n{{doc-wikilambda}}",

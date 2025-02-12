@@ -114,8 +114,22 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 			WikiLambdaApiBase::dieWithZError( $zError, 403 );
 		}
 
+		$bypassCache = false;
+		$toggleCacheFlag = $params[ 'bypass-cache' ];
+		if ( $toggleCacheFlag ) {
+			if ( $userAuthority->isAllowed( 'wikilambda-bypass-cache' ) ) {
+				$bypassCache = filter_var( $toggleCacheFlag, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE );
+				$logger->info( "'bypass-cache' flag has just been toggled to: $bypassCache" );
+			} else {
+				$logger->warning( "User not permitted to toggle 'bypass-cache' flag" );
+				$this->submitFunctionCallEvent( 403, $function, $start );
+				$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
+				WikiLambdaApiBase::dieWithZError( $zError, 403 );
+			}
+		}
+
 		$work = new PoolCounterWorkViaCallback( 'WikiLambdaFunctionCall', $userName, [
-			'doWork' => function () use ( $jsonQuery, $logger ) {
+			'doWork' => function () use ( $bypassCache, $jsonQuery, $logger ) {
 				$logger->debug(
 					'ApiFunctionCall running request',
 					[
@@ -123,7 +137,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 					]
 				);
 
-				return $this->orchestrator->orchestrate( $jsonQuery );
+				return $this->orchestrator->orchestrate( $jsonQuery, $bypassCache );
 			},
 			'error' => function ( Status $status ) use ( $function, $start, $userName, $logger ) {
 				$logger->info(
@@ -205,6 +219,11 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 			'zobject' => [
 				ParamValidator::PARAM_TYPE => 'text',
 				ParamValidator::PARAM_REQUIRED => true,
+			],
+			'bypass-cache' => [
+				ParamValidator::PARAM_TYPE => 'boolean',
+				ParamValidator::PARAM_REQUIRED => false,
+				ParamValidator::PARAM_DEFAULT => false
 			]
 		];
 	}

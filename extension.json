@@ -63,6 +63,7 @@
 		"WikiLambda": "GlobalVarConfig::newInstance"
 	},
 	"AvailableRights": [
+		"wikilambda-bypass-cache",
 		"wikilambda-connect-implementation",
 		"wikilambda-connect-tester",
 		"wikilambda-create",
@@ -110,6 +111,7 @@
 	],
 	"GroupPermissions": {
 		"*": {
+			"wikilambda-bypass-cache": false,
 			"wikilambda-execute": true,
 			"wikifunctions-run": true
 		},
