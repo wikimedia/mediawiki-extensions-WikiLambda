@@ -6,8 +6,9 @@
  */
 'use strict';
 
-const { config, mount } = require( '@vue/test-utils' ),
-	LeaveEditorDialog = require( '../../../../../resources/ext.wikilambda.app/components/widgets/publish/LeaveEditorDialog.vue' );
+const { config, mount } = require( '@vue/test-utils' );
+
+const LeaveEditorDialog = require( '../../../../../resources/ext.wikilambda.app/components/widgets/publish/LeaveEditorDialog.vue' );
 
 // Ignore all "teleport" behavior for the purpose of testing Dialog;
 // see https://test-utils.vuejs.org/guide/advanced/teleport.html

@@ -17,10 +17,11 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const typeUtils = require( '../../mixins/typeUtils.js' ),
-	Constants = require( '../../Constants.js' ),
-	useMainStore = require( '../../store/index.js' ),
-	{ mapState, mapActions } = require( 'pinia' );
+const { mapActions, mapState } = require( 'pinia' );
+
+const Constants = require( '../../Constants.js' );
+const typeUtils = require( '../../mixins/typeUtils.js' );
+const useMainStore = require( '../../store/index.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-typed-list-type',

@@ -6,12 +6,12 @@
  */
 'use strict';
 
-const shallowMount = require( '@vue/test-utils' ).shallowMount,
-	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
-	ZArgumentReference = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZArgumentReference.vue' ),
-	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const { shallowMount } = require( '@vue/test-utils' );
+
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
+const ZArgumentReference = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZArgumentReference.vue' );
+const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../helpers/getterHelpers.js' );
 
 describe( 'ZArgumentReference', () => {
 	let store;

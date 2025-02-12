@@ -5,8 +5,8 @@
  * @license MIT
  */
 
-const Constants = require( '../../../Constants.js' );
 const apiUtils = require( '../../../mixins/api.js' ).methods;
+const Constants = require( '../../../Constants.js' );
 
 module.exports = {
 	state: {},

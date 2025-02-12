@@ -8,12 +8,12 @@
 
 require( '@testing-library/jest-dom' );
 
-const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
-	{ within } = require( '@testing-library/dom' ),
-	{ textInputChange } = require( './helpers/interactionHelpers.js' ),
-	{ runSetup, runTeardown } = require( './helpers/functionEditorTestHelpers.js' ),
-	Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' ),
-	App = require( '../../../resources/ext.wikilambda.app/components/App.vue' );
+const { fireEvent, render, waitFor } = require( '@testing-library/vue' );
+const { within } = require( '@testing-library/dom' );
+const App = require( '../../../resources/ext.wikilambda.app/components/App.vue' );
+const Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' );
+const { runSetup, runTeardown } = require( './helpers/functionEditorTestHelpers.js' );
+const { textInputChange } = require( './helpers/interactionHelpers.js' );
 
 describe( 'WikiLambda frontend, function-editor view, on a new function', () => {
 

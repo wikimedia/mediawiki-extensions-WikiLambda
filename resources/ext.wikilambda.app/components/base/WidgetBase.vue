@@ -32,7 +32,6 @@
 </template>
 
 <script>
-
 const { defineComponent } = require( 'vue' );
 
 module.exports = exports = defineComponent( {

@@ -7,7 +7,7 @@
 
 'use strict';
 
-const { setActivePinia, createPinia } = require( 'pinia' );
+const { createPinia, setActivePinia } = require( 'pinia' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 
 describe( 'Languages Pinia store', () => {

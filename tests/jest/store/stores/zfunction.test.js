@@ -6,11 +6,11 @@
  */
 'use strict';
 
+const { waitFor } = require( '@testing-library/vue' );
 const { setActivePinia, createPinia } = require( 'pinia' );
-const { zobjectToRows } = require( '../../helpers/zObjectTableHelpers.js' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
-const { waitFor } = require( '@testing-library/vue' );
+const { zobjectToRows } = require( '../../helpers/zObjectTableHelpers.js' );
 
 describe( 'zFunction Pinia store', () => {
 	let store;

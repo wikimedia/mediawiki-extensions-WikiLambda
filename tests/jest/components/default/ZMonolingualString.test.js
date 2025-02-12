@@ -6,14 +6,13 @@
  */
 'use strict';
 
-const shallowMount = require( '@vue/test-utils' ).shallowMount,
-	mount = require( '@vue/test-utils' ).mount,
-	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	ZMonolingualString = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZMonolingualString.vue' ),
-	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
-	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
-	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const { mount, shallowMount } = require( '@vue/test-utils' );
+const { CdxTextInput } = require( '@wikimedia/codex' );
+
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
+const ZMonolingualString = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZMonolingualString.vue' );
+const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../helpers/getterHelpers.js' );
 
 describe( 'ZMonolingualString', () => {
 	let store;

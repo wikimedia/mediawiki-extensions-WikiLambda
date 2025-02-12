@@ -7,10 +7,10 @@
  */
 'use strict';
 
+const apiUtils = require( '../../../mixins/api.js' ).methods;
 const Constants = require( '../../../Constants.js' );
 const convertTableToJson = require( '../../../mixins/zobjectUtils.js' ).methods.convertTableToJson;
 const hybridToCanonical = require( '../../../mixins/schemata.js' ).methods.hybridToCanonical;
-const apiUtils = require( '../../../mixins/api.js' ).methods;
 const isTruthyOrEqual = require( '../../../mixins/typeUtils.js' ).methods.isTruthyOrEqual;
 
 module.exports = {

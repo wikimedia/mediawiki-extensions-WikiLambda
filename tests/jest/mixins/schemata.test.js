@@ -7,14 +7,16 @@
 
 'use strict';
 
-const schemata = require( '../../../resources/ext.wikilambda.app/mixins/schemata.js' ).methods,
-	Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' ),
-	hybridToCanonical = schemata.hybridToCanonical,
-	canonicalToHybrid = schemata.canonicalToHybrid,
-	extractErrorStructure = schemata.extractErrorStructure,
-	extractZIDs = schemata.extractZIDs,
-	fs = require( 'fs' ),
-	path = require( 'path' );
+const fs = require( 'fs' );
+const path = require( 'path' );
+
+const Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' );
+const schemata = require( '../../../resources/ext.wikilambda.app/mixins/schemata.js' ).methods;
+
+const canonicalToHybrid = schemata.canonicalToHybrid;
+const extractErrorStructure = schemata.extractErrorStructure;
+const extractZIDs = schemata.extractZIDs;
+const hybridToCanonical = schemata.hybridToCanonical;
 
 describe( 'schemata mixin', () => {
 	const hybridInitialZObject = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/hybridInitialZObject.json' ) ) ),

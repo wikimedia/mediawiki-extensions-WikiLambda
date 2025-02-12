@@ -6,14 +6,15 @@
  */
 'use strict';
 
-const { render } = require( '@testing-library/vue' ),
-	App = require( '../../../../resources/ext.wikilambda.app/components/App.vue' ),
-	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
-	apiGetMock = require( './apiGetMock.js' ),
-	ApiMock = require( './apiMock.js' ),
-	existingFunctionFromApi = require( '../objects/existingFunctionFromApi.js' );
+const { render } = require( '@testing-library/vue' );
 const { createPinia } = require( 'pinia' );
 const vueTestUtils = require( '@vue/test-utils' );
+
+const ApiMock = require( './apiMock.js' );
+const apiGetMock = require( './apiGetMock.js' );
+const App = require( '../../../../resources/ext.wikilambda.app/components/App.vue' );
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
+const existingFunctionFromApi = require( '../objects/existingFunctionFromApi.js' );
 
 const initializeRootZObject =
 	new ApiMock( apiGetMock.loadZObjectsRequest, apiGetMock.loadZObjectsResponse, apiGetMock.loadZObjectsMatcher );

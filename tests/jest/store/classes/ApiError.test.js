@@ -6,8 +6,8 @@
  */
 'use strict';
 
-const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
-	ApiError = require( '../../../../resources/ext.wikilambda.app/store/classes/ApiError.js' );
+const ApiError = require( '../../../../resources/ext.wikilambda.app/store/classes/ApiError.js' );
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 
 describe( 'ApiError class', () => {
 

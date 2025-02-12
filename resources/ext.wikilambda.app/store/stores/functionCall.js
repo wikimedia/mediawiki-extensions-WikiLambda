@@ -8,8 +8,8 @@
 
 const Constants = require( '../../Constants.js' );
 const Row = require( '../classes/Row.js' );
-const { extractZIDs, hybridToCanonical } = require( '../../mixins/schemata.js' ).methods;
 const apiUtils = require( '../../mixins/api.js' ).methods;
+const { extractZIDs, hybridToCanonical } = require( '../../mixins/schemata.js' ).methods;
 
 module.exports = {
 	state: {

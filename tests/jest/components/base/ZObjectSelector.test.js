@@ -6,15 +6,13 @@
  */
 'use strict';
 
-const { waitFor } = require( '@testing-library/vue' ),
-	mount = require( '@vue/test-utils' ).mount,
-	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	mockEnumValues = require( '../../fixtures/mocks.js' ).mockEnumValues,
-	mockLookupValues = require( '../../fixtures/mocks.js' ).mockLookupValues,
-	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
-	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' ),
-	ZObjectSelector = require( '../../../../resources/ext.wikilambda.app/components/base/ZObjectSelector.vue' );
+const { waitFor } = require( '@testing-library/vue' );
+const { mount } = require( '@vue/test-utils' );
+const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../helpers/getterHelpers.js' );
+const { mockEnumValues, mockLookupValues } = require( '../../fixtures/mocks.js' );
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
+const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const ZObjectSelector = require( '../../../../resources/ext.wikilambda.app/components/base/ZObjectSelector.vue' );
 
 describe( 'ZObjectSelector', () => {
 	let store;

@@ -11,8 +11,8 @@
 
 const Constants = require( '../../Constants.js' );
 const apiUtils = require( '../../mixins/api.js' ).methods;
-const typeUtils = require( '../../mixins/typeUtils.js' ).methods;
 const LabelData = require( '../classes/LabelData.js' );
+const typeUtils = require( '../../mixins/typeUtils.js' ).methods;
 const { convertTableToJson } = require( '../../mixins/zobjectUtils.js' ).methods;
 const { hybridToCanonical } = require( '../../mixins/schemata.js' ).methods;
 

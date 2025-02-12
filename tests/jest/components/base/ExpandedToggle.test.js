@@ -6,10 +6,10 @@
  */
 'use strict';
 
-const shallowMount = require( '@vue/test-utils' ).shallowMount,
-	{ waitFor } = require( '@testing-library/vue' ),
-	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' ),
-	ExpandedToggle = require( '../../../../resources/ext.wikilambda.app/components/base/ExpandedToggle.vue' );
+const { shallowMount } = require( '@vue/test-utils' );
+const { waitFor } = require( '@testing-library/vue' );
+const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const ExpandedToggle = require( '../../../../resources/ext.wikilambda.app/components/base/ExpandedToggle.vue' );
 
 describe( 'ExpandedToggle', () => {
 	let store;

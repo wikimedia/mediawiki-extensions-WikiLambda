@@ -6,13 +6,14 @@
  */
 'use strict';
 
+const { fireEvent, render, waitFor } = require( '@testing-library/vue' );
+const { within } = require( '@testing-library/dom' );
 require( '@testing-library/jest-dom' );
-const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
-	{ within } = require( '@testing-library/dom' ),
-	{ clickMenuOption } = require( './helpers/interactionHelpers.js' ),
-	App = require( '../../../resources/ext.wikilambda.app/components/App.vue' ),
-	{ runSetup, runTeardown } = require( './helpers/testEditorTestHelpers.js' ),
-	expectedNewTesterPostedToApi = require( './objects/expectedNewTesterPostedToApi.js' );
+
+const App = require( '../../../resources/ext.wikilambda.app/components/App.vue' );
+const { clickMenuOption } = require( './helpers/interactionHelpers.js' );
+const { runSetup, runTeardown } = require( './helpers/testEditorTestHelpers.js' );
+const expectedNewTesterPostedToApi = require( './objects/expectedNewTesterPostedToApi.js' );
 
 describe( 'WikiLambda frontend, on zobject-editor view', () => {
 	let apiPostWithEditTokenMock;

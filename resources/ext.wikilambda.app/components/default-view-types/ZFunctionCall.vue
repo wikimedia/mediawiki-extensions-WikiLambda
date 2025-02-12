@@ -22,10 +22,11 @@
 <script>
 const { CdxIcon } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const ZObjectToString = require( './ZObjectToString.vue' ),
-	icons = require( '../../../lib/icons.json' ),
-	useMainStore = require( '../../store/index.js' ),
-	{ mapState } = require( 'pinia' );
+const { mapState } = require( 'pinia' );
+
+const icons = require( '../../../lib/icons.json' );
+const useMainStore = require( '../../store/index.js' );
+const ZObjectToString = require( './ZObjectToString.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-function-call',

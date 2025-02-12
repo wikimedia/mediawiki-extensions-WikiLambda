@@ -27,10 +27,11 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { Icon, CdxLookup } = require( '@wikimedia/codex' );
-const Constants = require( '../../../Constants.js' ),
-	useMainStore = require( '../../../store/index.js' ),
-	{ mapActions } = require( 'pinia' );
+const { CdxLookup, Icon } = require( '@wikimedia/codex' );
+const { mapActions } = require( 'pinia' );
+
+const Constants = require( '../../../Constants.js' );
+const useMainStore = require( '../../../store/index.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-wikidata-entity-selector',

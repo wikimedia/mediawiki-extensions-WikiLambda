@@ -65,32 +65,34 @@
 <script>
 const { CdxButton, CdxIcon, CdxMessage } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../Constants.js' ),
-	useMainStore = require( '../../store/index.js' ),
-	ExpandedToggle = require( '../base/ExpandedToggle.vue' ),
-	LocalizedLabel = require( '../base/LocalizedLabel.vue' ),
-	ModeSelector = require( '../base/ModeSelector.vue' ),
-	ZArgumentReference = require( './ZArgumentReference.vue' ),
-	ZMonolingualString = require( './ZMonolingualString.vue' ),
-	ZObjectKeyValueSet = require( './ZObjectKeyValueSet.vue' ),
-	ZObjectStringRenderer = require( './ZObjectStringRenderer.vue' ),
-	ZString = require( './ZString.vue' ),
-	ZCode = require( './ZCode.vue' ),
-	ZReference = require( './ZReference.vue' ),
-	ZBoolean = require( './ZBoolean.vue' ),
-	ZFunctionCall = require( './ZFunctionCall.vue' ),
-	ZImplementation = require( './ZImplementation.vue' ),
-	KeyValueBlock = require( '../base/KeyValueBlock.vue' ),
-	ZTester = require( './ZTester.vue' ),
-	ZTypedList = require( './ZTypedList.vue' ),
-	WikidataItem = require( './wikidata/Item.vue' ),
-	WikidataLexeme = require( './wikidata/Lexeme.vue' ),
-	WikidataLexemeForm = require( './wikidata/LexemeForm.vue' ),
-	WikidataProperty = require( './wikidata/Property.vue' ),
-	LabelData = require( '../../store/classes/LabelData.js' ),
-	typeUtils = require( '../../mixins/typeUtils.js' ),
-	errorUtils = require( '../../mixins/errorUtils.js' ),
-	{ mapActions, mapState } = require( 'pinia' );
+const { mapActions, mapState } = require( 'pinia' );
+
+const Constants = require( '../../Constants.js' );
+const errorUtils = require( '../../mixins/errorUtils.js' );
+const typeUtils = require( '../../mixins/typeUtils.js' );
+const LabelData = require( '../../store/classes/LabelData.js' );
+const useMainStore = require( '../../store/index.js' );
+
+const ExpandedToggle = require( '../base/ExpandedToggle.vue' );
+const KeyValueBlock = require( '../base/KeyValueBlock.vue' );
+const LocalizedLabel = require( '../base/LocalizedLabel.vue' );
+const ModeSelector = require( '../base/ModeSelector.vue' );
+const ZArgumentReference = require( './ZArgumentReference.vue' );
+const ZBoolean = require( './ZBoolean.vue' );
+const ZCode = require( './ZCode.vue' );
+const ZFunctionCall = require( './ZFunctionCall.vue' );
+const ZImplementation = require( './ZImplementation.vue' );
+const ZMonolingualString = require( './ZMonolingualString.vue' );
+const ZObjectKeyValueSet = require( './ZObjectKeyValueSet.vue' );
+const ZObjectStringRenderer = require( './ZObjectStringRenderer.vue' );
+const ZReference = require( './ZReference.vue' );
+const ZString = require( './ZString.vue' );
+const ZTester = require( './ZTester.vue' );
+const ZTypedList = require( './ZTypedList.vue' );
+const WikidataItem = require( './wikidata/Item.vue' );
+const WikidataLexeme = require( './wikidata/Lexeme.vue' );
+const WikidataLexemeForm = require( './wikidata/LexemeForm.vue' );
+const WikidataProperty = require( './wikidata/Property.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-object-key-value',

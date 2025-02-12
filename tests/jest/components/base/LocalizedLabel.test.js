@@ -6,11 +6,11 @@
  */
 'use strict';
 
-const shallowMount = require( '@vue/test-utils' ).shallowMount,
-	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	LabelData = require( '../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' ),
-	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' ),
-	LocalizedLabel = require( '../../../../resources/ext.wikilambda.app/components/base/LocalizedLabel.vue' );
+const { shallowMount } = require( '@vue/test-utils' );
+const { createGettersWithFunctionsMock } = require( '../../helpers/getterHelpers.js' );
+const LabelData = require( '../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' );
+const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const LocalizedLabel = require( '../../../../resources/ext.wikilambda.app/components/base/LocalizedLabel.vue' );
 
 describe( 'LocalizedLabel', () => {
 	let store;

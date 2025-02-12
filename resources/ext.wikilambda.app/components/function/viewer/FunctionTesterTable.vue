@@ -29,14 +29,14 @@
 </template>
 
 <script>
-
 const { defineComponent } = require( 'vue' );
-const FunctionMetadataDialog = require( '../../widgets/function-evaluator/FunctionMetadataDialog.vue' ),
-	Constants = require( '../../../Constants.js' ),
-	useMainStore = require( '../../../store/index.js' ),
-	StatusIcon = require( '../../base/StatusIcon.vue' ),
-	icons = require( '../../../../lib/icons.json' ),
-	{ mapState } = require( 'pinia' );
+const { mapState } = require( 'pinia' );
+
+const Constants = require( '../../../Constants.js' );
+const FunctionMetadataDialog = require( '../../widgets/function-evaluator/FunctionMetadataDialog.vue' );
+const icons = require( '../../../../lib/icons.json' );
+const StatusIcon = require( '../../base/StatusIcon.vue' );
+const useMainStore = require( '../../../store/index.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-tester-table',

@@ -10,9 +10,9 @@
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
-const Constants = require( '../Constants.js' ),
-	Row = require( '../store/classes/Row.js' ),
-	canonicalToHybrid = require( './schemata.js' ).methods.canonicalToHybrid;
+const Constants = require( '../Constants.js' );
+const Row = require( '../store/classes/Row.js' );
+const canonicalToHybrid = require( './schemata.js' ).methods.canonicalToHybrid;
 
 module.exports = exports = {
 	methods: {

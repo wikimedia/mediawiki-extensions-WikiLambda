@@ -8,8 +8,8 @@
 'use strict';
 
 const Constants = require( '../../Constants.js' );
-const typeUtils = require( '../../mixins/typeUtils.js' ).methods;
 const apiUtils = require( '../../mixins/api.js' ).methods;
+const typeUtils = require( '../../mixins/typeUtils.js' ).methods;
 
 module.exports = {
 	state: {

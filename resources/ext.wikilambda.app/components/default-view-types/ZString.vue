@@ -25,9 +25,10 @@
 <script>
 const { CdxTextInput } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../Constants.js' ),
-	useMainStore = require( '../../store/index.js' ),
-	{ mapState } = require( 'pinia' );
+const { mapState } = require( 'pinia' );
+
+const Constants = require( '../../Constants.js' );
+const useMainStore = require( '../../store/index.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-string',

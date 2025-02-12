@@ -6,12 +6,12 @@
  */
 'use strict';
 
-const shallowMount = require( '@vue/test-utils' ).shallowMount,
-	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
-	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' ),
-	ZReference = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZReference.vue' );
+const { shallowMount } = require( '@vue/test-utils' );
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
+const createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
+const createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock;
+const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const ZReference = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZReference.vue' );
 
 describe( 'ZReference', () => {
 	let store;

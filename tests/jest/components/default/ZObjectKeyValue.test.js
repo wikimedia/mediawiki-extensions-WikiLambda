@@ -6,13 +6,12 @@
  */
 'use strict';
 
-const { waitFor } = require( '@testing-library/vue' ),
-	shallowMount = require( '@vue/test-utils' ).shallowMount,
-	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
-	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' ),
-	ZObjectKeyValue = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZObjectKeyValue.vue' );
+const { waitFor } = require( '@testing-library/vue' );
+const { shallowMount } = require( '@vue/test-utils' );
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
+const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../helpers/getterHelpers.js' );
+const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const ZObjectKeyValue = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZObjectKeyValue.vue' );
 
 describe( 'ZObjectKeyValue', () => {
 	let store;

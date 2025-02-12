@@ -7,7 +7,7 @@
 
 'use strict';
 
-const utilsMixins = require( '../../../resources/ext.wikilambda.app/mixins/utilsMixins.js' );
+const { methods: utilsMixins } = require( '../../../resources/ext.wikilambda.app/mixins/utilsMixins.js' );
 
 describe( 'utilsMixins', () => {
 	describe( 'getNestedProperty', () => {
@@ -19,30 +19,30 @@ describe( 'utilsMixins', () => {
 					}
 				}
 			};
-			const result = utilsMixins.methods.getNestedProperty( obj, 'a.b.c' );
+			const result = utilsMixins.getNestedProperty( obj, 'a.b.c' );
 			expect( result ).toBe( 'value' );
 		} );
 
 		it( 'should return undefined for non-existent property', () => {
 			const obj = { a: {} };
-			const result = utilsMixins.methods.getNestedProperty( obj, 'a.b.c' );
+			const result = utilsMixins.getNestedProperty( obj, 'a.b.c' );
 			expect( result ).toBeUndefined();
 		} );
 
 		it( 'should return undefined if any part of the path is null or undefined', () => {
 			const obj = { a: null };
-			const result = utilsMixins.methods.getNestedProperty( obj, 'a.b.c' );
+			const result = utilsMixins.getNestedProperty( obj, 'a.b.c' );
 			expect( result ).toBeUndefined();
 		} );
 
 		it( 'should handle an empty path', () => {
 			const obj = { a: 'value' };
-			const result = utilsMixins.methods.getNestedProperty( obj, '' );
+			const result = utilsMixins.getNestedProperty( obj, '' );
 			expect( result ).toBeUndefined();
 		} );
 
 		it( 'should handle a non-object initial value', () => {
-			const result = utilsMixins.methods.getNestedProperty( null, 'a.b.c' );
+			const result = utilsMixins.getNestedProperty( null, 'a.b.c' );
 			expect( result ).toBeUndefined();
 		} );
 	} );
@@ -71,7 +71,7 @@ describe( 'utilsMixins', () => {
 			const message = 'wikilambda-updated-implementations-approved-summary';
 			const ZIDs = [];
 
-			const result = utilsMixins.methods.createConnectedItemsChangesSummaryMessage( message, ZIDs );
+			const result = utilsMixins.createConnectedItemsChangesSummaryMessage( message, ZIDs );
 
 			expect( result ).toBe( 'Mocked message' );
 			expect( mw.message ).toHaveBeenCalledWith( message );
@@ -83,7 +83,7 @@ describe( 'utilsMixins', () => {
 			const message = 'wikilambda-updated-implementations-approved-summary';
 			const ZIDs = [ 'Z1', 'Z2', 'Z3' ];
 
-			const result = utilsMixins.methods.createConnectedItemsChangesSummaryMessage( message, ZIDs );
+			const result = utilsMixins.createConnectedItemsChangesSummaryMessage( message, ZIDs );
 
 			expect( result ).toBe( 'Mocked message' );
 			expect( mw.message ).toHaveBeenCalledWith( message );

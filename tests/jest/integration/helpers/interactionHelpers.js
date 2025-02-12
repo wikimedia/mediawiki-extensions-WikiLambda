@@ -7,8 +7,8 @@
 
 'use strict';
 
-const { fireEvent } = require( '@testing-library/vue' ),
-	{ within } = require( '@testing-library/dom' );
+const { fireEvent } = require( '@testing-library/vue' );
+const { within } = require( '@testing-library/dom' );
 
 const clickMenuOption = async ( parentWrapper, itemText ) => {
 	const options = await within( parentWrapper ).findAllByRole( 'option', { hidden: true } );

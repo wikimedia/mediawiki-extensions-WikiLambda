@@ -6,10 +6,10 @@
  */
 'use strict';
 
-const { setActivePinia, createPinia } = require( 'pinia' );
+const { createPinia, setActivePinia } = require( 'pinia' );
 const { tableDataToRowObjects } = require( '../../helpers/zObjectTableHelpers.js' );
-const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
+const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 
 const functionCall = {
 	Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },

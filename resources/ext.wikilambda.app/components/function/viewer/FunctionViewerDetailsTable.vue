@@ -90,13 +90,14 @@
 </template>
 
 <script>
-const { CdxButton, CdxCheckbox, CdxIcon, CdxInfoChip, CdxTable } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const icons = require( '../../../../lib/icons.json' ),
-	typeUtils = require( '../../../mixins/typeUtils.js' ),
-	Constants = require( '../../../Constants.js' ),
-	useBreakpoints = require( '../../../composables/useBreakpoints.js' ),
-	FunctionTesterTable = require( './FunctionTesterTable.vue' );
+const { CdxButton, CdxCheckbox, CdxIcon, CdxInfoChip, CdxTable } = require( '@wikimedia/codex' );
+
+const Constants = require( '../../../Constants.js' );
+const FunctionTesterTable = require( './FunctionTesterTable.vue' );
+const icons = require( '../../../../lib/icons.json' );
+const typeUtils = require( '../../../mixins/typeUtils.js' );
+const useBreakpoints = require( '../../../composables/useBreakpoints.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-viewer-details-table-codex',

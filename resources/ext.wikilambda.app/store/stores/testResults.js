@@ -5,9 +5,10 @@
  * @license MIT
  */
 'use strict';
+
 const Constants = require( '../../Constants.js' );
 const apiUtils = require( '../../mixins/api.js' ).methods;
-const { hybridToCanonical, extractZIDs } = require( '../../mixins/schemata.js' ).methods;
+const { extractZIDs, hybridToCanonical } = require( '../../mixins/schemata.js' ).methods;
 
 module.exports = {
 	state: {

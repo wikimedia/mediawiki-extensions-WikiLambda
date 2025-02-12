@@ -8,8 +8,8 @@
 
 require( '@testing-library/jest-dom' );
 
-const shallowMount = require( '@vue/test-utils' ).shallowMount,
-	CodeEditor = require( '../../../../resources/ext.wikilambda.app/components/base/CodeEditor.vue' );
+const { shallowMount } = require( '@vue/test-utils' );
+const CodeEditor = require( '../../../../resources/ext.wikilambda.app/components/base/CodeEditor.vue' );
 
 describe( 'CodeEditor', () => {
 	let mockSetReadOnly,

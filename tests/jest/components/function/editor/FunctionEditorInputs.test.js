@@ -6,13 +6,12 @@
  */
 'use strict';
 
-const shallowMount = require( '@vue/test-utils' ).shallowMount,
-	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
-	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
-	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' ),
-	LabelData = require( '../../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' ),
-	FunctionEditorInputs = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorInputs.vue' );
+const { shallowMount } = require( '@vue/test-utils' );
+const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
+const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../../helpers/getterHelpers.js' );
+const FunctionEditorInputs = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorInputs.vue' );
+const LabelData = require( '../../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' );
+const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 
 const langLabelData = new LabelData( 'Z1002', 'English', 'Z1002', 'en', 'ltr' );
 

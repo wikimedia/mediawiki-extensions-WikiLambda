@@ -26,8 +26,9 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { mapState } = require( 'pinia' ),
-	useMainStore = require( '../../store/index.js' );
+const { mapState } = require( 'pinia' );
+
+const useMainStore = require( '../../store/index.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-object-key-value-set',

@@ -18,9 +18,9 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const LabelData = require( '../../store/classes/LabelData.js' ),
-	useMainStore = require( '../../store/index.js' ),
-	{ mapState } = require( 'pinia' );
+const { mapState } = require( 'pinia' );
+const LabelData = require( '../../store/classes/LabelData.js' );
+const useMainStore = require( '../../store/index.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-localized-label',

@@ -6,14 +6,14 @@
  */
 'use strict';
 
-const { CdxButton } = require( '@wikimedia/codex' ),
-	shallowMount = require( '@vue/test-utils' ).shallowMount,
-	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
-	ZTypedList = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZTypedList.vue' ),
-	ZTypedListItems = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZTypedListItems.vue' ),
-	ZTypedListType = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZTypedListType.vue' ),
-	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const { CdxButton } = require( '@wikimedia/codex' );
+const { shallowMount } = require( '@vue/test-utils' );
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
+const createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
+const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const ZTypedList = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZTypedList.vue' );
+const ZTypedListItems = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZTypedListItems.vue' );
+const ZTypedListType = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZTypedListType.vue' );
 
 describe( 'ZTypedList', () => {
 	let store;

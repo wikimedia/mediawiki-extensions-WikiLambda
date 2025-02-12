@@ -88,12 +88,13 @@
 <script>
 const { CdxMessage, CdxSelect } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../Constants.js' ),
-	useMainStore = require( '../../store/index.js' ),
-	CodeEditor = require( '../base/CodeEditor.vue' ),
-	KeyValueBlock = require( '../base/KeyValueBlock.vue' ),
-	errorUtils = require( '../../mixins/errorUtils.js' ),
-	{ mapState, mapActions } = require( 'pinia' );
+const { mapActions, mapState } = require( 'pinia' );
+
+const Constants = require( '../../Constants.js' );
+const CodeEditor = require( '../base/CodeEditor.vue' );
+const errorUtils = require( '../../mixins/errorUtils.js' );
+const KeyValueBlock = require( '../base/KeyValueBlock.vue' );
+const useMainStore = require( '../../store/index.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-code',

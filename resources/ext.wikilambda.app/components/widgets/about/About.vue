@@ -90,17 +90,18 @@
 </template>
 
 <script>
-const { CdxAccordion, CdxButton, CdxIcon } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../../Constants.js' ),
-	useMainStore = require( '../../../store/index.js' ),
-	pageTitleUtils = require( '../../../mixins/pageTitleUtils.js' ),
-	AboutLanguageBlock = require( './AboutLanguageBlock.vue' ),
-	AboutLanguagesDialog = require( './AboutLanguagesDialog.vue' ),
-	PublishDialog = require( '../publish/PublishDialog.vue' ),
-	WidgetBase = require( '../../base/WidgetBase.vue' ),
-	icons = require( '../../../../lib/icons.json' ),
-	{ mapActions, mapState } = require( 'pinia' );
+const { CdxAccordion, CdxButton, CdxIcon } = require( '@wikimedia/codex' );
+const { mapActions, mapState } = require( 'pinia' );
+
+const AboutLanguageBlock = require( './AboutLanguageBlock.vue' );
+const AboutLanguagesDialog = require( './AboutLanguagesDialog.vue' );
+const Constants = require( '../../../Constants.js' );
+const icons = require( '../../../../lib/icons.json' );
+const pageTitleUtils = require( '../../../mixins/pageTitleUtils.js' );
+const PublishDialog = require( '../publish/PublishDialog.vue' );
+const useMainStore = require( '../../../store/index.js' );
+const WidgetBase = require( '../../base/WidgetBase.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-about-widget',

@@ -6,12 +6,13 @@
  */
 'use strict';
 
-const functionCallResultFromApi = require( '../objects/functionCallResultFromApi.js' ),
-	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
-	apiGetMock = require( './apiGetMock.js' ),
-	ApiMock = require( './apiMock.js' );
 const { createPinia } = require( 'pinia' );
 const vueTestUtils = require( '@vue/test-utils' );
+
+const ApiMock = require( './apiMock.js' );
+const apiGetMock = require( './apiGetMock.js' );
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
+const functionCallResultFromApi = require( '../objects/functionCallResultFromApi.js' );
 
 const lookupZObjectTypeLabels = new ApiMock(
 	apiGetMock.functionLabelsRequest,

@@ -7,13 +7,14 @@
 
 'use strict';
 
-const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
-	fs = require( 'fs' ),
-	path = require( 'path' ),
-	existingFunctionFromApi = require( '../objects/existingFunctionFromApi.js' ),
-	existingImplementationInCodeFromApi = require( '../objects/existingImplementationInCodeFromApi.js' ),
-	existingImplementationByCompositionFromApi = require( '../objects/existingImplementationByCompositionFromApi.js' ),
-	existingTesterFromApi = require( '../objects/existingTesterFromApi.js' );
+const fs = require( 'fs' );
+const path = require( 'path' );
+
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
+const existingFunctionFromApi = require( '../objects/existingFunctionFromApi.js' );
+const existingImplementationByCompositionFromApi = require( '../objects/existingImplementationByCompositionFromApi.js' );
+const existingImplementationInCodeFromApi = require( '../objects/existingImplementationInCodeFromApi.js' );
+const existingTesterFromApi = require( '../objects/existingTesterFromApi.js' );
 
 const existingFunctionZid = existingFunctionFromApi[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
 const existingImplementationInCodeZid =

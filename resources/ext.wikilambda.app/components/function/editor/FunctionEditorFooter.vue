@@ -15,13 +15,13 @@
 </template>
 
 <script>
-
 const { defineComponent } = require( 'vue' );
-const PublishWidget = require( '../../widgets/publish/Publish.vue' ),
-	Constants = require( '../../../Constants.js' ),
-	useMainStore = require( '../../../store/index.js' ),
-	{ mapActions, mapState } = require( 'pinia' ),
-	eventLogUtils = require( '../../../mixins/eventLogUtils.js' );
+const { mapActions, mapState } = require( 'pinia' );
+
+const Constants = require( '../../../Constants.js' );
+const eventLogUtils = require( '../../../mixins/eventLogUtils.js' );
+const PublishWidget = require( '../../widgets/publish/Publish.vue' );
+const useMainStore = require( '../../../store/index.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-footer',

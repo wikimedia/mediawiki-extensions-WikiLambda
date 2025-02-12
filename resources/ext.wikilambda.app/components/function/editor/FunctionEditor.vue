@@ -45,15 +45,16 @@
 <script>
 const { CdxButton, CdxIcon } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const FunctionEditorLanguageBlock = require( './FunctionEditorLanguageBlock.vue' ),
-	FunctionEditorFooter = require( './FunctionEditorFooter.vue' ),
-	useMainStore = require( '../../../store/index.js' ),
-	icons = require( '../../../../lib/icons.json' ),
-	Constants = require( '../../../Constants.js' ),
-	eventLogUtils = require( '../../../mixins/eventLogUtils.js' ),
-	typeUtils = require( '../../../mixins/typeUtils.js' ),
-	{ hybridToCanonical } = require( '../../../mixins/schemata.js' ).methods,
-	{ mapState } = require( 'pinia' );
+const { mapState } = require( 'pinia' );
+
+const Constants = require( '../../../Constants.js' );
+const eventLogUtils = require( '../../../mixins/eventLogUtils.js' );
+const FunctionEditorFooter = require( './FunctionEditorFooter.vue' );
+const FunctionEditorLanguageBlock = require( './FunctionEditorLanguageBlock.vue' );
+const icons = require( '../../../../lib/icons.json' );
+const typeUtils = require( '../../../mixins/typeUtils.js' );
+const useMainStore = require( '../../../store/index.js' );
+const { hybridToCanonical } = require( '../../../mixins/schemata.js' ).methods;
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor',

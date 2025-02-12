@@ -54,15 +54,16 @@
 </template>
 
 <script>
-const { CdxMessage } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const FunctionViewerDetailsTable = require( './FunctionViewerDetailsTable.vue' ),
-	Constants = require( '../../../Constants.js' ),
-	useMainStore = require( '../../../store/index.js' ),
-	typeUtils = require( '../../../mixins/typeUtils.js' ),
-	errorUtils = require( '../../../mixins/errorUtils.js' ),
-	utilsMixins = require( '../../../mixins/utilsMixins.js' ),
-	{ mapState, mapActions } = require( 'pinia' );
+const { CdxMessage } = require( '@wikimedia/codex' );
+const { mapActions, mapState } = require( 'pinia' );
+
+const Constants = require( '../../../Constants.js' );
+const errorUtils = require( '../../../mixins/errorUtils.js' );
+const FunctionViewerDetailsTable = require( './FunctionViewerDetailsTable.vue' );
+const typeUtils = require( '../../../mixins/typeUtils.js' );
+const useMainStore = require( '../../../store/index.js' );
+const utilsMixins = require( '../../../mixins/utilsMixins.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-viewer-details',

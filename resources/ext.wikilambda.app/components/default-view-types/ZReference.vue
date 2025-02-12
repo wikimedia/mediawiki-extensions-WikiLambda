@@ -33,11 +33,12 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../Constants.js' ),
-	useMainStore = require( '../../store/index.js' ),
-	ZObjectSelector = require( './../base/ZObjectSelector.vue' ),
-	typeUtils = require( '../../mixins/typeUtils.js' ),
-	{ mapState } = require( 'pinia' );
+const { mapState } = require( 'pinia' );
+
+const Constants = require( '../../Constants.js' );
+const typeUtils = require( '../../mixins/typeUtils.js' );
+const useMainStore = require( '../../store/index.js' );
+const ZObjectSelector = require( './../base/ZObjectSelector.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-reference',

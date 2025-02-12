@@ -6,10 +6,11 @@
  */
 'use strict';
 
-const shallowMount = require( '@vue/test-utils' ).shallowMount,
-	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	ZFunctionCall = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZFunctionCall.vue' ),
-	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const { shallowMount } = require( '@vue/test-utils' );
+
+const ZFunctionCall = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZFunctionCall.vue' );
+const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const { createGettersWithFunctionsMock } = require( '../../helpers/getterHelpers.js' );
 
 describe( 'ZFunctionCall', () => {
 	describe( 'in view and edit mode', () => {

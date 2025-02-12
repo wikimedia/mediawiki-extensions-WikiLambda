@@ -26,13 +26,13 @@
 </template>
 
 <script>
-
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../../Constants.js' ),
-	useMainStore = require( '../../../store/index.js' ),
-	FunctionEditorField = require( './FunctionEditorField.vue' ),
-	ZObjectSelector = require( '../../base/ZObjectSelector.vue' ),
-	{ mapState } = require( 'pinia' );
+const { mapState } = require( 'pinia' );
+
+const Constants = require( '../../../Constants.js' );
+const FunctionEditorField = require( './FunctionEditorField.vue' );
+const useMainStore = require( '../../../store/index.js' );
+const ZObjectSelector = require( '../../base/ZObjectSelector.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-language',

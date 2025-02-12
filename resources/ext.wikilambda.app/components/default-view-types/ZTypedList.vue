@@ -33,11 +33,12 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const ZTypedListItems = require( './ZTypedListItems.vue' ),
-	ZTypedListType = require( './ZTypedListType.vue' ),
-	typeUtils = require( '../../mixins/typeUtils.js' ),
-	useMainStore = require( '../../store/index.js' ),
-	{ mapState } = require( 'pinia' );
+const { mapState } = require( 'pinia' );
+
+const typeUtils = require( '../../mixins/typeUtils.js' );
+const useMainStore = require( '../../store/index.js' );
+const ZTypedListItems = require( './ZTypedListItems.vue' );
+const ZTypedListType = require( './ZTypedListType.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-typed-list',

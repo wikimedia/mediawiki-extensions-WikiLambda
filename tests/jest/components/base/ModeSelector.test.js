@@ -6,14 +6,12 @@
  */
 'use strict';
 
-const { waitFor } = require( '@testing-library/vue' ),
-	shallowMount = require( '@vue/test-utils' ).shallowMount,
-	mount = require( '@vue/test-utils' ).mount,
-	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
-	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' ),
-	ModeSelector = require( '../../../../resources/ext.wikilambda.app/components/base/ModeSelector.vue' );
+const { waitFor } = require( '@testing-library/vue' );
+const { mount, shallowMount } = require( '@vue/test-utils' );
+const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../helpers/getterHelpers.js' );
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
+const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const ModeSelector = require( '../../../../resources/ext.wikilambda.app/components/base/ModeSelector.vue' );
 
 const mockLabels = {
 	Z18: 'Argument reference',

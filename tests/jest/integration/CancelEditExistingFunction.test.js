@@ -8,13 +8,13 @@
 
 require( '@testing-library/jest-dom' );
 
-const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
-	{ within } = require( '@testing-library/dom' ),
-	{ lookupSearchAndSelect, textInputChange } = require( './helpers/interactionHelpers.js' ),
-	{ runSetup, runTeardown } = require( './helpers/functionEditorTestHelpers.js' ),
-	Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' ),
-	App = require( '../../../resources/ext.wikilambda.app/components/App.vue' ),
-	existingFunctionFromApi = require( './objects/existingFunctionFromApi.js' );
+const { fireEvent, render, waitFor } = require( '@testing-library/vue' );
+const { within } = require( '@testing-library/dom' );
+const App = require( '../../../resources/ext.wikilambda.app/components/App.vue' );
+const Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' );
+const existingFunctionFromApi = require( './objects/existingFunctionFromApi.js' );
+const { runSetup, runTeardown } = require( './helpers/functionEditorTestHelpers.js' );
+const { lookupSearchAndSelect, textInputChange } = require( './helpers/interactionHelpers.js' );
 
 const functionZid = existingFunctionFromApi[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
 

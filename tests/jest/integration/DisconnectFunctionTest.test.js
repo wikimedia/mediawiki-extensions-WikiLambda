@@ -6,15 +6,15 @@
  */
 'use strict';
 
+const { fireEvent, waitFor } = require( '@testing-library/vue' );
+const { within } = require( '@testing-library/dom' );
 require( '@testing-library/jest-dom' );
 
-const { fireEvent, waitFor } = require( '@testing-library/vue' ),
-	{ within } = require( '@testing-library/dom' ),
-	{ renderForFunctionViewer, runSetup, runTeardown } = require( './helpers/functionViewerDetailsTestHelpers.js' ),
-	Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' ),
-	existingFunctionFromApi = require( './objects/existingFunctionFromApi.js' ),
-	existingImplementationByCompositionFromApi = require( './objects/existingImplementationByCompositionFromApi.js' ),
-	expected = require( './objects/expectedZFunctionWithImplementationsAndTesters.js' );
+const Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' );
+const { renderForFunctionViewer, runSetup, runTeardown } = require( './helpers/functionViewerDetailsTestHelpers.js' );
+const existingFunctionFromApi = require( './objects/existingFunctionFromApi.js' );
+const existingImplementationByCompositionFromApi = require( './objects/existingImplementationByCompositionFromApi.js' );
+const expected = require( './objects/expectedZFunctionWithImplementationsAndTesters.js' );
 
 const functionZid = existingFunctionFromApi[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
 const implementationByCompositionZid =

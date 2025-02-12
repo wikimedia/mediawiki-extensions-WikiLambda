@@ -57,11 +57,12 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../Constants.js' ),
-	useMainStore = require( '../../store/index.js' ),
-	typeUtils = require( '../../mixins/typeUtils.js' ),
-	LabelData = require( '../../store/classes/LabelData.js' ),
-	{ mapState } = require( 'pinia' );
+const { mapState } = require( 'pinia' );
+
+const Constants = require( '../../Constants.js' );
+const LabelData = require( '../../store/classes/LabelData.js' );
+const typeUtils = require( '../../mixins/typeUtils.js' );
+const useMainStore = require( '../../store/index.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-object-to-string',

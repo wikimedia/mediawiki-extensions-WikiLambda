@@ -6,18 +6,20 @@
  */
 'use strict';
 
-const loadComposable = require( '../helpers/loadComposable.js' ),
-	useBreakpoints = require( '../../../resources/ext.wikilambda.app/composables/useBreakpoints.js' ),
-	mockBreakpoints = {
-		small: 100,
-		medium: 500,
-		large: 1000
-	},
-	mockBreakpointsType = {
-		small: 'small',
-		medium: 'medium',
-		large: 'large'
-	};
+const loadComposable = require( '../helpers/loadComposable.js' );
+const useBreakpoints = require( '../../../resources/ext.wikilambda.app/composables/useBreakpoints.js' );
+
+const mockBreakpoints = {
+	small: 100,
+	medium: 500,
+	large: 1000
+};
+
+const mockBreakpointsType = {
+	small: 'small',
+	medium: 'medium',
+	large: 'large'
+};
 
 describe( 'useBreakpoints', () => {
 	let addEventListenerSpy, removeEventListenerSpy;

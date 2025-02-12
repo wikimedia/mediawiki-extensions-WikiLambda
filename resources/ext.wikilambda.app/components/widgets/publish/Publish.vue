@@ -42,17 +42,17 @@
 </template>
 
 <script>
-const { CdxButton } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../../Constants.js' ),
-	useMainStore = require( '../../../store/index.js' ),
-	WidgetBase = require( '../../base/WidgetBase.vue' ),
-	LeaveEditorDialog = require( './LeaveEditorDialog.vue' ),
-	PublishDialog = require( './PublishDialog.vue' ),
-	eventLogger = require( '../../../mixins/eventLogUtils.js' ).methods,
-	urlUtils = require( '../../../mixins/urlUtils.js' ),
-	{ mapActions } = require( 'pinia' ),
-	{ mapState } = require( 'pinia' );
+const { CdxButton } = require( '@wikimedia/codex' );
+const { mapActions, mapState } = require( 'pinia' );
+
+const Constants = require( '../../../Constants.js' );
+const eventLogger = require( '../../../mixins/eventLogUtils.js' ).methods;
+const urlUtils = require( '../../../mixins/urlUtils.js' );
+const useMainStore = require( '../../../store/index.js' );
+const LeaveEditorDialog = require( './LeaveEditorDialog.vue' );
+const PublishDialog = require( './PublishDialog.vue' );
+const WidgetBase = require( '../../base/WidgetBase.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-publish-widget',

@@ -6,13 +6,13 @@
  */
 'use strict';
 
-const shallowMount = require( '@vue/test-utils' ).shallowMount,
-	{ waitFor } = require( '@testing-library/vue' ),
-	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
-	ApiError = require( '../../../../../resources/ext.wikilambda.app/store/classes/ApiError.js' ),
-	FunctionViewerDetails = require( '../../../../../resources/ext.wikilambda.app/components/function/viewer/FunctionViewerDetails.vue' ),
-	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+const { shallowMount } = require( '@vue/test-utils' );
+const { waitFor } = require( '@testing-library/vue' );
+const createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
+const createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock;
+const ApiError = require( '../../../../../resources/ext.wikilambda.app/store/classes/ApiError.js' );
+const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+const FunctionViewerDetails = require( '../../../../../resources/ext.wikilambda.app/components/function/viewer/FunctionViewerDetails.vue' );
 
 const mockLanguages = {
 	Z444: 'javascript',

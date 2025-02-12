@@ -30,10 +30,11 @@
 <script>
 const { CdxChipInput } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../../Constants.js' ),
-	useMainStore = require( '../../../store/index.js' ),
-	FunctionEditorField = require( './FunctionEditorField.vue' ),
-	{ mapState, mapActions } = require( 'pinia' );
+const { mapActions, mapState } = require( 'pinia' );
+
+const Constants = require( '../../../Constants.js' );
+const FunctionEditorField = require( './FunctionEditorField.vue' );
+const useMainStore = require( '../../../store/index.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-aliases',

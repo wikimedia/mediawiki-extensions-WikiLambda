@@ -6,14 +6,13 @@
  */
 'use strict';
 
-const { waitFor } = require( '@testing-library/vue' ),
-	shallowMount = require( '@vue/test-utils' ).shallowMount,
-	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	mockApiZids = require( '../../fixtures/mocks.js' ).mockApiZids,
-	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
-	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' ),
-	TypeSelector = require( '../../../../resources/ext.wikilambda.app/components/base/TypeSelector.vue' );
+const { waitFor } = require( '@testing-library/vue' );
+const { shallowMount } = require( '@vue/test-utils' );
+const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../helpers/getterHelpers.js' );
+const { mockApiZids } = require( '../../fixtures/mocks.js' );
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
+const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const TypeSelector = require( '../../../../resources/ext.wikilambda.app/components/base/TypeSelector.vue' );
 
 describe( 'TypeSelector', () => {
 	let store;

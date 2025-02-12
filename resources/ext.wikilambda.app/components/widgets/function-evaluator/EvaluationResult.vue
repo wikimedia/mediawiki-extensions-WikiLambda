@@ -36,11 +36,12 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../../Constants.js' ),
-	useMainStore = require( '../../../store/index.js' ),
-	FunctionMetadataDialog = require( './FunctionMetadataDialog.vue' ),
-	ZObjectKeyValue = require( '../../default-view-types/ZObjectKeyValue.vue' ),
-	{ mapState } = require( 'pinia' );
+const { mapState } = require( 'pinia' );
+
+const Constants = require( '../../../Constants.js' );
+const FunctionMetadataDialog = require( './FunctionMetadataDialog.vue' );
+const useMainStore = require( '../../../store/index.js' );
+const ZObjectKeyValue = require( '../../default-view-types/ZObjectKeyValue.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-evaluation-result',

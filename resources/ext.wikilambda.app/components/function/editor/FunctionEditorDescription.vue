@@ -33,14 +33,14 @@
 </template>
 
 <script>
-
 const { CdxTextArea } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../../Constants.js' ),
-	useMainStore = require( '../../../store/index.js' ),
-	LabelData = require( '../../../store/classes/LabelData.js' ),
-	FunctionEditorField = require( './FunctionEditorField.vue' ),
-	{ mapActions, mapState } = require( 'pinia' );
+const { mapActions, mapState } = require( 'pinia' );
+
+const Constants = require( '../../../Constants.js' );
+const FunctionEditorField = require( './FunctionEditorField.vue' );
+const LabelData = require( '../../../store/classes/LabelData.js' );
+const useMainStore = require( '../../../store/index.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-description',

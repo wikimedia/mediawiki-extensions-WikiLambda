@@ -6,23 +6,24 @@
  */
 'use strict';
 
-const { defineStore } = require( 'pinia' ),
-	routerStore = require( './stores/router.js' ),
-	errorsStore = require( './stores/errors.js' ),
-	languagesStore = require( './stores/languages.js' ),
-	libraryStore = require( './stores/library.js' ),
-	listItemsStore = require( './stores/listItems.js' ),
-	programmingLanguagesStore = require( './stores/programmingLanguages.js' ),
-	userStore = require( './stores/user.js' ),
-	functionCallStore = require( './stores/functionCall.js' ),
-	testResultsStore = require( './stores/testResults.js' ),
-	zobjectStore = require( './stores/zobject.js' ),
-	ztypeStore = require( './stores/ztype.js' ),
-	zfunctionStore = require( './stores/zfunction.js' ),
-	wdEntitiesStore = require( './stores/wikidata/entities.js' ),
-	wdLexemesStore = require( './stores/wikidata/lexemes.js' ),
-	wdItemsStore = require( './stores/wikidata/items.js' ),
-	wdPropertiesStore = require( './stores/wikidata/properties.js' );
+const { defineStore } = require( 'pinia' );
+
+const errorsStore = require( './stores/errors.js' );
+const functionCallStore = require( './stores/functionCall.js' );
+const languagesStore = require( './stores/languages.js' );
+const libraryStore = require( './stores/library.js' );
+const listItemsStore = require( './stores/listItems.js' );
+const programmingLanguagesStore = require( './stores/programmingLanguages.js' );
+const routerStore = require( './stores/router.js' );
+const testResultsStore = require( './stores/testResults.js' );
+const userStore = require( './stores/user.js' );
+const wdEntitiesStore = require( './stores/wikidata/entities.js' );
+const wdItemsStore = require( './stores/wikidata/items.js' );
+const wdLexemesStore = require( './stores/wikidata/lexemes.js' );
+const wdPropertiesStore = require( './stores/wikidata/properties.js' );
+const zfunctionStore = require( './stores/zfunction.js' );
+const zobjectStore = require( './stores/zobject.js' );
+const ztypeStore = require( './stores/ztype.js' );
 
 module.exports = defineStore( 'main', {
 	state: () => Object.assign(

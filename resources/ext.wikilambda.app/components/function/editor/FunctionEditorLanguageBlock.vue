@@ -66,15 +66,16 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const FunctionEditorLanguage = require( './FunctionEditorLanguage.vue' ),
-	FunctionEditorName = require( './FunctionEditorName.vue' ),
-	FunctionEditorDescription = require( './FunctionEditorDescription.vue' ),
-	FunctionEditorAliases = require( './FunctionEditorAliases.vue' ),
-	FunctionEditorInputs = require( './FunctionEditorInputs.vue' ),
-	FunctionEditorOutput = require( './FunctionEditorOutput.vue' ),
-	icons = require( '../../../../lib/icons.json' ),
-	useMainStore = require( '../../../store/index.js' ),
-	{ mapState } = require( 'pinia' );
+const { mapState } = require( 'pinia' );
+
+const FunctionEditorAliases = require( './FunctionEditorAliases.vue' );
+const FunctionEditorDescription = require( './FunctionEditorDescription.vue' );
+const FunctionEditorInputs = require( './FunctionEditorInputs.vue' );
+const FunctionEditorLanguage = require( './FunctionEditorLanguage.vue' );
+const FunctionEditorName = require( './FunctionEditorName.vue' );
+const FunctionEditorOutput = require( './FunctionEditorOutput.vue' );
+const icons = require( '../../../../lib/icons.json' );
+const useMainStore = require( '../../../store/index.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-language-block',

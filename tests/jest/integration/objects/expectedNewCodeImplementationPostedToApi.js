@@ -6,8 +6,8 @@
  */
 'use strict';
 
-const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
-	existingFunctionFromApi = require( './existingFunctionFromApi.js' );
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
+const existingFunctionFromApi = require( './existingFunctionFromApi.js' );
 
 module.exports = {
 	[ Constants.Z_OBJECT_TYPE ]: Constants.Z_PERSISTENTOBJECT,

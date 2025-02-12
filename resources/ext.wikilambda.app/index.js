@@ -8,8 +8,9 @@
 
 const { createMwApp } = require( 'vue' );
 const { createPinia } = require( 'pinia' );
-const useMainStore = require( './store/index.js' );
+
 const App = require( './components/App.vue' );
+const useMainStore = require( './store/index.js' );
 
 const pinia = createPinia();
 const store = useMainStore( pinia );

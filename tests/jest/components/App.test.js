@@ -6,10 +6,11 @@
  */
 'use strict';
 
-const { waitFor } = require( '@testing-library/vue' ),
-	shallowMount = require( '@vue/test-utils' ).shallowMount,
-	useMainStore = require( '../../../resources/ext.wikilambda.app/store/index.js' ),
-	App = require( '../../../resources/ext.wikilambda.app/components/App.vue' );
+const { shallowMount } = require( '@vue/test-utils' );
+const { waitFor } = require( '@testing-library/vue' );
+
+const useMainStore = require( '../../../resources/ext.wikilambda.app/store/index.js' );
+const App = require( '../../../resources/ext.wikilambda.app/components/App.vue' );
 
 describe( 'App.vue', () => {
 	let store,

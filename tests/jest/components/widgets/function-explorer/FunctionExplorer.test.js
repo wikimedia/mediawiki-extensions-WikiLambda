@@ -6,14 +6,14 @@
  */
 'use strict';
 
-const
-	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
-	LabelData = require( '../../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' ),
-	FunctionExplorer = require( '../../../../../resources/ext.wikilambda.app/components/widgets/function-explorer/FunctionExplorer.vue' ),
-	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
-	shallowMount = require( '@vue/test-utils' ).shallowMount,
-	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+const { shallowMount } = require( '@vue/test-utils' );
+
+const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
+const FunctionExplorer = require( '../../../../../resources/ext.wikilambda.app/components/widgets/function-explorer/FunctionExplorer.vue' );
+const LabelData = require( '../../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' );
+const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+
+const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../../helpers/getterHelpers.js' );
 
 const reverseStringFunctionZid = 'Z10004';
 const reverseStringFunction = {

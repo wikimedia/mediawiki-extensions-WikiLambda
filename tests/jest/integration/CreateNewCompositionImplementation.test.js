@@ -8,12 +8,12 @@
 
 require( '@testing-library/jest-dom' );
 
-const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
-	{ within } = require( '@testing-library/dom' ),
-	{ runSetup, runTeardown } = require( './helpers/implementationEditorTestHelpers.js' ),
-	{ lookupSearchAndSelect, clickMenuOption } = require( './helpers/interactionHelpers.js' ),
-	App = require( '../../../resources/ext.wikilambda.app/components/App.vue' ),
-	expectedNewCompositionImplementationPostedToApi = require( './objects/expectedNewCompositionImplementationPostedToApi.js' );
+const { fireEvent, render, waitFor } = require( '@testing-library/vue' );
+const { within } = require( '@testing-library/dom' );
+const App = require( '../../../resources/ext.wikilambda.app/components/App.vue' );
+const expectedNewCompositionImplementationPostedToApi = require( './objects/expectedNewCompositionImplementationPostedToApi.js' );
+const { runSetup, runTeardown } = require( './helpers/implementationEditorTestHelpers.js' );
+const { lookupSearchAndSelect, clickMenuOption } = require( './helpers/interactionHelpers.js' );
 
 describe( 'WikiLambda frontend, on zobject-editor view', () => {
 	let apiPostWithEditTokenMock;

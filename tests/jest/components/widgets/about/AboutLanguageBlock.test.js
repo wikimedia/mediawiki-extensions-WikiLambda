@@ -6,11 +6,10 @@
  */
 'use strict';
 
-const { shallowMount } = require( '@vue/test-utils' ),
-	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
-	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' ),
-	AboutLanguageBlock = require( '../../../../../resources/ext.wikilambda.app/components/widgets/about/AboutLanguageBlock.vue' );
+const { shallowMount } = require( '@vue/test-utils' );
+const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../../helpers/getterHelpers.js' );
+const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+const AboutLanguageBlock = require( '../../../../../resources/ext.wikilambda.app/components/widgets/about/AboutLanguageBlock.vue' );
 
 describe( 'AboutLanguageBlock', () => {
 	let wrapper, store, viewData, fieldLangs;

@@ -9,9 +9,9 @@
  */
 'use strict';
 
-const Constants = require( '../Constants.js' ),
-	ApiError = require( '../store/classes/ApiError.js' ),
-	hybridToCanonical = require( './schemata.js' ).methods.hybridToCanonical;
+const ApiError = require( '../store/classes/ApiError.js' );
+const Constants = require( '../Constants.js' );
+const hybridToCanonical = require( './schemata.js' ).methods.hybridToCanonical;
 
 /* eslint-disable camelcase */
 module.exports = exports = {

@@ -71,13 +71,14 @@
 </template>
 
 <script>
-const { CdxField, CdxTextInput, CdxMessage, CdxDialog } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../../Constants.js' ),
-	useMainStore = require( '../../../store/index.js' ),
-	eventLogUtils = require( '../../../mixins/eventLogUtils.js' ),
-	errorUtils = require( '../../../mixins/errorUtils.js' ),
-	{ mapState, mapActions } = require( 'pinia' );
+const { CdxDialog, CdxField, CdxMessage, CdxTextInput } = require( '@wikimedia/codex' );
+const { mapActions, mapState } = require( 'pinia' );
+
+const Constants = require( '../../../Constants.js' );
+const errorUtils = require( '../../../mixins/errorUtils.js' );
+const eventLogUtils = require( '../../../mixins/eventLogUtils.js' );
+const useMainStore = require( '../../../store/index.js' );
 
 const enterKeyChar = `
 	<kbd class="ext-wikilambda-app-publish-dialog__kbd">

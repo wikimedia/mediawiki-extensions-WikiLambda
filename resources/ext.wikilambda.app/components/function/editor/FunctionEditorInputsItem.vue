@@ -67,12 +67,13 @@
 <script>
 const { CdxButton, CdxField, CdxIcon, CdxTextInput } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../../Constants.js' ),
-	useMainStore = require( '../../../store/index.js' ),
-	LabelData = require( '../../../store/classes/LabelData.js' ),
-	TypeSelector = require( '../../base/TypeSelector.vue' ),
-	{ mapActions, mapState } = require( 'pinia' ),
-	icons = require( './../../../../lib/icons.json' );
+const { mapActions, mapState } = require( 'pinia' );
+
+const Constants = require( '../../../Constants.js' );
+const icons = require( './../../../../lib/icons.json' );
+const LabelData = require( '../../../store/classes/LabelData.js' );
+const TypeSelector = require( '../../base/TypeSelector.vue' );
+const useMainStore = require( '../../../store/index.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-inputs-item',

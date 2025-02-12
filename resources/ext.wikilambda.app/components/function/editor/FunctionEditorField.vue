@@ -28,8 +28,8 @@
 </template>
 
 <script>
-const { CdxIcon, CdxTooltip } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
+const { CdxIcon, CdxTooltip } = require( '@wikimedia/codex' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-field',

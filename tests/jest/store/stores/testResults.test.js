@@ -7,8 +7,8 @@
 'use strict';
 
 const { setActivePinia, createPinia } = require( 'pinia' );
-const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
+const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 const metadata = require( '../../fixtures/metadata.js' );
 
 describe( 'testResults Pinia store', () => {

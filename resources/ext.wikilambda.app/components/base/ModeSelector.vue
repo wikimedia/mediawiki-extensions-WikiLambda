@@ -16,13 +16,13 @@
 </template>
 
 <script>
-const { CdxIcon, CdxMenuButton } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../Constants.js' ),
-	useMainStore = require( '../../store/index.js' ),
-	typeUtils = require( '../../mixins/typeUtils.js' ),
-	icons = require( '../../../lib/icons.json' ),
-	{ mapState } = require( 'pinia' );
+const { CdxIcon, CdxMenuButton } = require( '@wikimedia/codex' );
+const { mapState } = require( 'pinia' );
+const Constants = require( '../../Constants.js' );
+const typeUtils = require( '../../mixins/typeUtils.js' );
+const useMainStore = require( '../../store/index.js' );
+const icons = require( '../../../lib/icons.json' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-mode-selector',

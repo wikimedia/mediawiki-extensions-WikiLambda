@@ -6,11 +6,12 @@
  */
 'use strict';
 
-const { shallowMount } = require( '@vue/test-utils' ),
-	{ createGettersWithFunctionsMock } = require( '../../../helpers/getterHelpers.js' ),
-	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
-	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' ),
-	WikidataLexeme = require( '../../../../../resources/ext.wikilambda.app/components/default-view-types/wikidata/Lexeme.vue' );
+const { shallowMount } = require( '@vue/test-utils' );
+
+const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
+const WikidataLexeme = require( '../../../../../resources/ext.wikilambda.app/components/default-view-types/wikidata/Lexeme.vue' );
+const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+const { createGettersWithFunctionsMock } = require( '../../../helpers/getterHelpers.js' );
 
 const dataIcons = () => ( {
 	icons: {

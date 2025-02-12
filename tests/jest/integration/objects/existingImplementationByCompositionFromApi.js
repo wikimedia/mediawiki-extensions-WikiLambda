@@ -8,9 +8,9 @@
 
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 
+const compositionFunctionOne = 'Z9999';
 const functionZid = 'Z12345';
 const implementationByCompositionZid = 'Z2222';
-const compositionFunctionOne = 'Z9999';
 
 module.exports = {
 	[ Constants.Z_OBJECT_TYPE ]: Constants.Z_PERSISTENTOBJECT,

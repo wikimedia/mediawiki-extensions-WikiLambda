@@ -43,13 +43,14 @@
 <script>
 const { CdxMessage } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../Constants.js' ),
-	useMainStore = require( '../store/index.js' ),
-	AboutWidget = require( '../components/widgets/about/About.vue' ),
-	FunctionEvaluatorWidget = require( '../components/widgets/function-evaluator/FunctionEvaluator.vue' ),
-	FunctionViewerDetails = require( '../components/function/viewer/FunctionViewerDetails.vue' ),
-	eventLogUtils = require( '../mixins/eventLogUtils.js' ),
-	{ mapState } = require( 'pinia' );
+const { mapState } = require( 'pinia' );
+
+const Constants = require( '../Constants.js' );
+const AboutWidget = require( '../components/widgets/about/About.vue' );
+const FunctionEvaluatorWidget = require( '../components/widgets/function-evaluator/FunctionEvaluator.vue' );
+const FunctionViewerDetails = require( '../components/function/viewer/FunctionViewerDetails.vue' );
+const eventLogUtils = require( '../mixins/eventLogUtils.js' );
+const useMainStore = require( '../store/index.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-viewer-view',

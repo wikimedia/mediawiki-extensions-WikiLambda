@@ -10,8 +10,8 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
 const clipboardUtils = require( '../../mixins/clipboardUtils.js' );
+const { defineComponent } = require( 'vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-clipboard-manager',

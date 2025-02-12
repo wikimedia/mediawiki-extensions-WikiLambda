@@ -26,15 +26,16 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { mapState, mapActions } = require( 'pinia' ),
-	useMainStore = require( '../store/index.js' ),
-	ClipboardManager = require( './base/ClipboardManager.vue' ),
-	eventLogUtils = require( '../mixins/eventLogUtils.js' ),
-	urlUtils = require( '../mixins/urlUtils.js' ),
-	FunctionEvaluatorView = require( '../views/FunctionEvaluator.vue' ),
-	FunctionEditorView = require( '../views/FunctionEditor.vue' ),
-	FunctionViewerView = require( '../views/FunctionViewer.vue' ),
-	DefaultView = require( '../views/Default.vue' );
+const { mapActions, mapState } = require( 'pinia' );
+
+const ClipboardManager = require( './base/ClipboardManager.vue' );
+const eventLogUtils = require( '../mixins/eventLogUtils.js' );
+const FunctionEditorView = require( '../views/FunctionEditor.vue' );
+const FunctionEvaluatorView = require( '../views/FunctionEvaluator.vue' );
+const FunctionViewerView = require( '../views/FunctionViewer.vue' );
+const urlUtils = require( '../mixins/urlUtils.js' );
+const DefaultView = require( '../views/Default.vue' );
+const useMainStore = require( '../store/index.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'app',

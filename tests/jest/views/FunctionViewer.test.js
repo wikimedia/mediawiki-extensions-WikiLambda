@@ -6,9 +6,9 @@
  */
 'use strict';
 
-const VueTestUtils = require( '@vue/test-utils' ),
-	useMainStore = require( '../../../resources/ext.wikilambda.app/store/index.js' ),
-	FunctionViewer = require( '../../../resources/ext.wikilambda.app/views/FunctionViewer.vue' );
+const VueTestUtils = require( '@vue/test-utils' );
+const useMainStore = require( '../../../resources/ext.wikilambda.app/store/index.js' );
+const FunctionViewer = require( '../../../resources/ext.wikilambda.app/views/FunctionViewer.vue' );
 
 describe( 'FunctionViewer', () => {
 	const functionZid = 'Z12345';

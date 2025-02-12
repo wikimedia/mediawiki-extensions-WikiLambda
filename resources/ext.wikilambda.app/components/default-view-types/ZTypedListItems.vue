@@ -53,10 +53,11 @@
 <script>
 const { CdxButton, CdxIcon } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const LocalizedLabel = require( '../base/LocalizedLabel.vue' ),
-	KeyValueBlock = require( '../base/KeyValueBlock.vue' ),
-	LabelData = require( '../../store/classes/LabelData.js' ),
-	icons = require( '../../../lib/icons.json' );
+
+const icons = require( '../../../lib/icons.json' );
+const LabelData = require( '../../store/classes/LabelData.js' );
+const KeyValueBlock = require( '../base/KeyValueBlock.vue' );
+const LocalizedLabel = require( '../base/LocalizedLabel.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-typed-list-items',

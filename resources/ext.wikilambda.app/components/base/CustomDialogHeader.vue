@@ -31,10 +31,9 @@
 </template>
 
 <script>
-
+const { defineComponent } = require( 'vue' );
 const { CdxButton, CdxIcon } = require( '@wikimedia/codex' );
-const { defineComponent } = require( 'vue' ),
-	icons = require( '../../../lib/icons.json' );
+const icons = require( '../../../lib/icons.json' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-custom-dialog-header',

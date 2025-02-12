@@ -7,12 +7,13 @@
 
 'use strict';
 
-const shallowMount = require( '@vue/test-utils' ).shallowMount,
-	createJQueryPageTitleMocks = require( '../../../tests/jest/helpers/jqueryHelpers.js' ).createJQueryPageTitleMocks,
-	createLabelDataMock = require( '../../../tests/jest/helpers/getterHelpers.js' ).createLabelDataMock,
-	createGettersWithFunctionsMock = require( '../../../tests/jest/helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	pageTitleUtils = require( '../../../resources/ext.wikilambda.app/mixins/pageTitleUtils.js' ),
-	useMainStore = require( '../../../resources/ext.wikilambda.app/store/index.js' );
+const { shallowMount } = require( '@vue/test-utils' );
+
+const createGettersWithFunctionsMock = require( '../../../tests/jest/helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
+const createJQueryPageTitleMocks = require( '../../../tests/jest/helpers/jqueryHelpers.js' ).createJQueryPageTitleMocks;
+const createLabelDataMock = require( '../../../tests/jest/helpers/getterHelpers.js' ).createLabelDataMock;
+const pageTitleUtils = require( '../../../resources/ext.wikilambda.app/mixins/pageTitleUtils.js' );
+const useMainStore = require( '../../../resources/ext.wikilambda.app/store/index.js' );
 
 describe( 'pageTitleUtils', () => {
 	let wrapper, store;

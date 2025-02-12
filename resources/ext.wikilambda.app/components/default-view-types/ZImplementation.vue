@@ -103,13 +103,14 @@
 </template>
 
 <script>
-const { CdxRadio, CdxMessage } = require( '@wikimedia/codex' );
+const { CdxMessage, CdxRadio } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../Constants.js' ),
-	useMainStore = require( '../../store/index.js' ),
-	KeyBlock = require( '../base/KeyBlock.vue' ),
-	KeyValueBlock = require( '../base/KeyValueBlock.vue' ),
-	{ mapState } = require( 'pinia' );
+const { mapState } = require( 'pinia' );
+
+const Constants = require( '../../Constants.js' );
+const KeyBlock = require( '../base/KeyBlock.vue' );
+const KeyValueBlock = require( '../base/KeyValueBlock.vue' );
+const useMainStore = require( '../../store/index.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-implementation',

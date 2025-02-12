@@ -80,13 +80,14 @@
 </template>
 
 <script>
-const { CdxButton, CdxDialog, CdxSearchInput } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../../Constants.js' ),
-	useMainStore = require( '../../../store/index.js' ),
-	LabelData = require( '../../../store/classes/LabelData.js' ),
-	CustomDialogHeader = require( '../../base/CustomDialogHeader.vue' ),
-	{ mapActions, mapState } = require( 'pinia' );
+const { CdxButton, CdxDialog, CdxSearchInput } = require( '@wikimedia/codex' );
+const { mapActions, mapState } = require( 'pinia' );
+
+const Constants = require( '../../../Constants.js' );
+const CustomDialogHeader = require( '../../base/CustomDialogHeader.vue' );
+const LabelData = require( '../../../store/classes/LabelData.js' );
+const useMainStore = require( '../../../store/index.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-about-languages-dialog',

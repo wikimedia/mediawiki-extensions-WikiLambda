@@ -147,18 +147,18 @@
 </template>
 
 <script>
-const { CdxButton, CdxIcon } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const
-	Constants = require( '../../../Constants.js' ),
-	useMainStore = require( '../../../store/index.js' ),
-	WidgetBase = require( '../../base/WidgetBase.vue' ),
-	TypeToString = require( '../../base/TypeToString.vue' ),
-	ZObjectSelector = require( '../../base/ZObjectSelector.vue' ),
-	{ mapState } = require( 'pinia' ),
-	icons = require( '../../../../lib/icons.json' ),
-	typeUtils = require( '../../../mixins/typeUtils.js' ),
-	clipboardUtils = require( '../../../mixins/clipboardUtils.js' );
+const { CdxButton, CdxIcon } = require( '@wikimedia/codex' );
+const { mapState } = require( 'pinia' );
+
+const Constants = require( '../../../Constants.js' );
+const clipboardUtils = require( '../../../mixins/clipboardUtils.js' );
+const icons = require( '../../../../lib/icons.json' );
+const typeUtils = require( '../../../mixins/typeUtils.js' );
+const useMainStore = require( '../../../store/index.js' );
+const TypeToString = require( '../../base/TypeToString.vue' );
+const WidgetBase = require( '../../base/WidgetBase.vue' );
+const ZObjectSelector = require( '../../base/ZObjectSelector.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-explorer-widget',

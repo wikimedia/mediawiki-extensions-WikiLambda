@@ -37,12 +37,13 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../../Constants.js' ),
-	useMainStore = require( '../../../store/index.js' ),
-	LabelData = require( '../../../store/classes/LabelData.js' ),
-	FunctionEditorField = require( './FunctionEditorField.vue' ),
-	TypeSelector = require( '../../base/TypeSelector.vue' ),
-	{ mapState } = require( 'pinia' );
+const { mapState } = require( 'pinia' );
+
+const Constants = require( '../../../Constants.js' );
+const FunctionEditorField = require( './FunctionEditorField.vue' );
+const LabelData = require( '../../../store/classes/LabelData.js' );
+const TypeSelector = require( '../../base/TypeSelector.vue' );
+const useMainStore = require( '../../../store/index.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-output',

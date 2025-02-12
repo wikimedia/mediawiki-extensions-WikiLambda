@@ -7,11 +7,12 @@
 
 'use strict';
 
-const shallowMount = require( '@vue/test-utils' ).shallowMount,
-	{ waitFor } = require( '@testing-library/vue' ),
-	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
-	PublishWidget = require( '../../../../../resources/ext.wikilambda.app/components/widgets/publish/Publish.vue' ),
-	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+const { shallowMount } = require( '@vue/test-utils' );
+const { waitFor } = require( '@testing-library/vue' );
+
+const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
+const PublishWidget = require( '../../../../../resources/ext.wikilambda.app/components/widgets/publish/Publish.vue' );
+const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 
 describe( 'Publish widget', () => {
 	let store;

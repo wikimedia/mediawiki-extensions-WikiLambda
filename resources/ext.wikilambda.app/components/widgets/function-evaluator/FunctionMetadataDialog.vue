@@ -119,18 +119,19 @@
 </template>
 
 <script>
-const { CdxAccordion, CdxDialog, CdxField, CdxIcon, CdxMessage, CdxSelect } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../../Constants.js' ),
-	{ mapState } = require( 'pinia' ),
-	useMainStore = require( '../../../store/index.js' ),
-	CustomDialogHeader = require( '../../base/CustomDialogHeader.vue' ),
-	metadataConfig = require( '../../../mixins/metadata.js' ),
-	errorUtils = require( '../../../mixins/errorUtils.js' ),
-	{ extractZIDs, extractErrorStructure } = require( '../../../mixins/schemata.js' ).methods,
-	{ isValidZidFormat } = require( '../../../mixins/typeUtils.js' ).methods,
-	LabelData = require( '../../../store/classes/LabelData.js' ),
-	icons = require( '../../../../lib/icons.json' );
+const { CdxAccordion, CdxDialog, CdxField, CdxIcon, CdxMessage, CdxSelect } = require( '@wikimedia/codex' );
+const { mapState } = require( 'pinia' );
+
+const Constants = require( '../../../Constants.js' );
+const CustomDialogHeader = require( '../../base/CustomDialogHeader.vue' );
+const errorUtils = require( '../../../mixins/errorUtils.js' );
+const LabelData = require( '../../../store/classes/LabelData.js' );
+const metadataConfig = require( '../../../mixins/metadata.js' );
+const useMainStore = require( '../../../store/index.js' );
+const { extractErrorStructure, extractZIDs } = require( '../../../mixins/schemata.js' ).methods;
+const { isValidZidFormat } = require( '../../../mixins/typeUtils.js' ).methods;
+const icons = require( '../../../../lib/icons.json' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-metadata-dialog',

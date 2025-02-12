@@ -6,9 +6,9 @@
  */
 'use strict';
 
-const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
-	existingImplementationByCompositionFromApi = require( './existingImplementationByCompositionFromApi.js' ),
-	existingTesterFromApi = require( './existingTesterFromApi.js' );
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
+const existingImplementationByCompositionFromApi = require( './existingImplementationByCompositionFromApi.js' );
+const existingTesterFromApi = require( './existingTesterFromApi.js' );
 
 const zid = 'Z12345';
 const implementationByCompositionZid =

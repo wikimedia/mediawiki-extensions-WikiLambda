@@ -117,18 +117,19 @@
 </template>
 
 <script>
-const { CdxButton, CdxMessage } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../../Constants.js' ),
-	useMainStore = require( '../../../store/index.js' ),
-	EvaluationResult = require( './EvaluationResult.vue' ),
-	WidgetBase = require( '../../base/WidgetBase.vue' ),
-	ZReference = require( '../../default-view-types/ZReference.vue' ),
-	KeyBlock = require( '../../base/KeyBlock.vue' ),
-	ZObjectKeyValue = require( '../../default-view-types/ZObjectKeyValue.vue' ),
-	eventLogUtils = require( '../../../mixins/eventLogUtils.js' ),
-	errorUtils = require( '../../../mixins/errorUtils.js' ),
-	{ mapActions, mapState } = require( 'pinia' );
+const { CdxButton, CdxMessage } = require( '@wikimedia/codex' );
+const { mapActions, mapState } = require( 'pinia' );
+
+const Constants = require( '../../../Constants.js' );
+const EvaluationResult = require( './EvaluationResult.vue' );
+const eventLogUtils = require( '../../../mixins/eventLogUtils.js' );
+const errorUtils = require( '../../../mixins/errorUtils.js' );
+const KeyBlock = require( '../../base/KeyBlock.vue' );
+const useMainStore = require( '../../../store/index.js' );
+const WidgetBase = require( '../../base/WidgetBase.vue' );
+const ZObjectKeyValue = require( '../../default-view-types/ZObjectKeyValue.vue' );
+const ZReference = require( '../../default-view-types/ZReference.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-evaluator-widget',

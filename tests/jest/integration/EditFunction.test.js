@@ -6,16 +6,16 @@
  */
 'use strict';
 
+const { fireEvent, render, waitFor } = require( '@testing-library/vue' );
+const { within } = require( '@testing-library/dom' );
 require( '@testing-library/jest-dom' );
 
-const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
-	{ within } = require( '@testing-library/dom' ),
-	{ lookupSearchAndSelect, textInputChange, chipInputAddChip } = require( './helpers/interactionHelpers.js' ),
-	{ runSetup, runTeardown } = require( './helpers/functionEditorTestHelpers.js' ),
-	Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' ),
-	App = require( '../../../resources/ext.wikilambda.app/components/App.vue' ),
-	existingFunctionFromApi = require( './objects/existingFunctionFromApi.js' ),
-	expectedEditedFunctionPostedToApi = require( './objects/expectedEditedFunctionPostedToApi.js' );
+const Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' );
+const App = require( '../../../resources/ext.wikilambda.app/components/App.vue' );
+const { chipInputAddChip, lookupSearchAndSelect, textInputChange } = require( './helpers/interactionHelpers.js' );
+const { runSetup, runTeardown } = require( './helpers/functionEditorTestHelpers.js' );
+const existingFunctionFromApi = require( './objects/existingFunctionFromApi.js' );
+const expectedEditedFunctionPostedToApi = require( './objects/expectedEditedFunctionPostedToApi.js' );
 
 const functionZid = existingFunctionFromApi[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
 

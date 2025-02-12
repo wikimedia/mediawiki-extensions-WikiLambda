@@ -6,12 +6,13 @@
  */
 'use strict';
 
-const mount = require( '@vue/test-utils' ).mount,
-	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
-	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
-	FunctionReportItem = require( '../../../../../resources/ext.wikilambda.app/components/widgets/function-report/FunctionReportItem.vue' ),
-	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+const { mount } = require( '@vue/test-utils' );
+
+const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
+const FunctionReportItem = require( '../../../../../resources/ext.wikilambda.app/components/widgets/function-report/FunctionReportItem.vue' );
+const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+
+const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../../helpers/getterHelpers.js' );
 
 describe( 'FunctionReportItem', () => {
 	let store,

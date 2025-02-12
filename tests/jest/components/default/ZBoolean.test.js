@@ -7,12 +7,12 @@
 'use strict';
 
 const { CdxRadio } = require( '@wikimedia/codex' );
-const shallowMount = require( '@vue/test-utils' ).shallowMount,
-	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
-	ZBoolean = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZBoolean.vue' ),
-	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const { shallowMount } = require( '@vue/test-utils' );
+
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
+const ZBoolean = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZBoolean.vue' );
+const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../helpers/getterHelpers.js' );
 
 describe( 'ZBoolean', () => {
 	let store;

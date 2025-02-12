@@ -6,8 +6,8 @@
  */
 'use strict';
 
-const shallowMount = require( '@vue/test-utils' ).shallowMount,
-	FunctionViewerDetailsTable = require( '../../../../../resources/ext.wikilambda.app/components/function/viewer/FunctionViewerDetailsTable.vue' );
+const { shallowMount } = require( '@vue/test-utils' );
+const FunctionViewerDetailsTable = require( '../../../../../resources/ext.wikilambda.app/components/function/viewer/FunctionViewerDetailsTable.vue' );
 
 describe( 'FunctionViewerDetailsTable', () => {
 	it( 'renders without errors', () => {

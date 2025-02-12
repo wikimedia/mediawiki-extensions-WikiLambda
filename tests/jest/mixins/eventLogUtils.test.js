@@ -7,8 +7,8 @@
 
 'use strict';
 
-const eventLogUtils = require( '../../../resources/ext.wikilambda.app/mixins/eventLogUtils.js' ).methods;
 const Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' );
+const eventLogUtils = require( '../../../resources/ext.wikilambda.app/mixins/eventLogUtils.js' ).methods;
 
 describe( 'eventLogUtils mixin', () => {
 	describe( 'removeNullUndefined', () => {

@@ -6,9 +6,9 @@
  */
 'use strict';
 
-const shallowMount = require( '@vue/test-utils' ).shallowMount,
-	{ waitFor } = require( '@testing-library/vue' ),
-	Pagination = require( '../../../../resources/ext.wikilambda.app/components/base/Pagination.vue' );
+const { shallowMount } = require( '@vue/test-utils' );
+const { waitFor } = require( '@testing-library/vue' );
+const Pagination = require( '../../../../resources/ext.wikilambda.app/components/base/Pagination.vue' );
 
 describe( 'Pagination', () => {
 	describe( 'when using pagination button', () => {

@@ -7,11 +7,12 @@
 
 'use strict';
 
-const shallowMount = require( '@vue/test-utils' ).shallowMount,
-	errorUtils = require( '../../../resources/ext.wikilambda.app/mixins/errorUtils.js' ),
-	createGettersWithFunctionsMock = require( '../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' ),
-	useMainStore = require( '../../../resources/ext.wikilambda.app/store/index.js' );
+const { shallowMount } = require( '@vue/test-utils' );
+
+const Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' );
+const createGettersWithFunctionsMock = require( '../helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
+const errorUtils = require( '../../../resources/ext.wikilambda.app/mixins/errorUtils.js' );
+const useMainStore = require( '../../../resources/ext.wikilambda.app/store/index.js' );
 
 describe( 'errorUtils mixin', () => {
 	let wrapper, store;

@@ -6,10 +6,10 @@
  */
 'use strict';
 
-const shallowMount = require( '@vue/test-utils' ).shallowMount,
-	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	FunctionEditorOutput = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorOutput.vue' ),
-	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+const { shallowMount } = require( '@vue/test-utils' );
+const createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
+const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+const FunctionEditorOutput = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorOutput.vue' );
 
 describe( 'FunctionEditorOutput', () => {
 	let store;

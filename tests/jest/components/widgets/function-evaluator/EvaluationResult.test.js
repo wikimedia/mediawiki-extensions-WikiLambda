@@ -6,11 +6,11 @@
  */
 'use strict';
 
-const shallowMount = require( '@vue/test-utils' ).shallowMount,
-	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
-	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' ),
-	EvaluationResult = require( '../../../../../resources/ext.wikilambda.app/components/widgets/function-evaluator/EvaluationResult.vue' );
+const { shallowMount } = require( '@vue/test-utils' );
+const createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
+const createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock;
+const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+const EvaluationResult = require( '../../../../../resources/ext.wikilambda.app/components/widgets/function-evaluator/EvaluationResult.vue' );
 
 describe( 'EvaluationResult', () => {
 	let store;

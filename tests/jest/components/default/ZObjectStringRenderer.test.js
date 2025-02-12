@@ -6,14 +6,14 @@
  */
 'use strict';
 
-const { waitFor } = require( '@testing-library/vue' ),
-	shallowMount = require( '@vue/test-utils' ).shallowMount,
-	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
-	ZObjectStringRenderer = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZObjectStringRenderer.vue' ),
-	convertSetToMap = require( '../../fixtures/metadata.js' ).convertSetToMap,
-	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const { waitFor } = require( '@testing-library/vue' );
+const { shallowMount } = require( '@vue/test-utils' );
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
+const convertSetToMap = require( '../../fixtures/metadata.js' ).convertSetToMap;
+const createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
+const createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock;
+const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const ZObjectStringRenderer = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZObjectStringRenderer.vue' );
 
 describe( 'ZObjectStringRenderer', () => {
 	let store;

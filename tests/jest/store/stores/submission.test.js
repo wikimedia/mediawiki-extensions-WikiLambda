@@ -6,13 +6,13 @@
  */
 'use strict';
 
-const { setActivePinia, createPinia } = require( 'pinia' );
-const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
-const { zobjectToRows } = require( '../../helpers/zObjectTableHelpers.js' );
-const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const fs = require( 'fs' );
 const path = require( 'path' );
+const { setActivePinia, createPinia } = require( 'pinia' );
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const hybridToCanonical = require( '../../../../resources/ext.wikilambda.app/mixins/schemata.js' ).methods.hybridToCanonical;
+const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const { zobjectToRows } = require( '../../helpers/zObjectTableHelpers.js' );
 
 describe( 'zobject submission Pinia store', () => {
 	let store;

@@ -6,11 +6,10 @@
  */
 'use strict';
 
-const { shallowMount } = require( '@vue/test-utils' ),
-	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
-	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' ),
-	About = require( '../../../../../resources/ext.wikilambda.app/components/widgets/about/About.vue' );
+const { shallowMount } = require( '@vue/test-utils' );
+const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../../helpers/getterHelpers.js' );
+const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+const About = require( '../../../../../resources/ext.wikilambda.app/components/widgets/about/About.vue' );
 
 describe( 'About', () => {
 	let store;

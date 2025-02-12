@@ -6,11 +6,10 @@
  */
 'use strict';
 
-const shallowMount = require( '@vue/test-utils' ).shallowMount,
-	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
-	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	FunctionEditorLanguageBlock = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorLanguageBlock.vue' ),
-	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+const { shallowMount } = require( '@vue/test-utils' );
+const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../../helpers/getterHelpers.js' );
+const FunctionEditorLanguageBlock = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorLanguageBlock.vue' );
+const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 
 describe( 'FunctionEditorLanguageBlock', () => {
 	let store;

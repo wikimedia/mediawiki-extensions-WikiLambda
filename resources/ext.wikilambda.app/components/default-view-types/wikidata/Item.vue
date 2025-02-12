@@ -34,12 +34,13 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const { CdxIcon } = require( '@wikimedia/codex' );
-const Constants = require( '../../../Constants.js' ),
-	useMainStore = require( '../../../store/index.js' ),
-	LabelData = require( '../../../store/classes/LabelData.js' ),
-	WikidataEntitySelector = require( './EntitySelector.vue' ),
-	{ mapActions, mapState } = require( 'pinia' ),
-	wikidataIconSvg = require( './wikidataIconSvg.js' );
+const { mapActions, mapState } = require( 'pinia' );
+
+const Constants = require( '../../../Constants.js' );
+const LabelData = require( '../../../store/classes/LabelData.js' );
+const useMainStore = require( '../../../store/index.js' );
+const WikidataEntitySelector = require( './EntitySelector.vue' );
+const wikidataIconSvg = require( './wikidataIconSvg.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-wikidata-item',

@@ -38,14 +38,14 @@
 </template>
 
 <script>
-
 const { defineComponent } = require( 'vue' );
-const { mapState } = require( 'pinia' ),
-	useMainStore = require( '../../../store/index.js' ),
-	typeUtils = require( '../../../mixins/typeUtils.js' ),
-	StatusIcon = require( '../../base/StatusIcon.vue' ),
-	Constants = require( '../../../Constants.js' ),
-	icons = require( '../../../../lib/icons.json' );
+const { mapState } = require( 'pinia' );
+
+const Constants = require( '../../../Constants.js' );
+const StatusIcon = require( '../../base/StatusIcon.vue' );
+const icons = require( '../../../../lib/icons.json' );
+const typeUtils = require( '../../../mixins/typeUtils.js' );
+const useMainStore = require( '../../../store/index.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-report-item',

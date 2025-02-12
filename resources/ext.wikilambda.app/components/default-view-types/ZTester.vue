@@ -79,11 +79,12 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../Constants.js' ),
-	useMainStore = require( '../../store/index.js' ),
-	KeyValueBlock = require( '../base/KeyValueBlock.vue' ),
-	{ isValidZidFormat } = require( '../../mixins/typeUtils.js' ).methods,
-	{ mapActions, mapState } = require( 'pinia' );
+const { mapActions, mapState } = require( 'pinia' );
+
+const Constants = require( '../../Constants.js' );
+const KeyValueBlock = require( '../base/KeyValueBlock.vue' );
+const useMainStore = require( '../../store/index.js' );
+const { isValidZidFormat } = require( '../../mixins/typeUtils.js' ).methods;
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-tester',

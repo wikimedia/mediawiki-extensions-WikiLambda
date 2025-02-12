@@ -7,8 +7,8 @@
 
 'use strict';
 
-const typeUtils = require( '../../../resources/ext.wikilambda.app/mixins/typeUtils.js' ).methods,
-	Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' );
+const Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' );
+const typeUtils = require( '../../../resources/ext.wikilambda.app/mixins/typeUtils.js' ).methods;
 
 describe( 'typeUtils mixin', () => {
 

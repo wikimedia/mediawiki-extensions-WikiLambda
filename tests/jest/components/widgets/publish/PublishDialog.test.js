@@ -7,13 +7,15 @@
 
 'use strict';
 
-const { config, mount } = require( '@vue/test-utils' ),
-	{ waitFor } = require( '@testing-library/vue' ),
-	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	ApiError = require( '../../../../../resources/ext.wikilambda.app/store/classes/ApiError.js' ),
-	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
-	PublishDialog = require( '../../../../../resources/ext.wikilambda.app/components/widgets/publish/PublishDialog.vue' ),
-	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+const { config, mount } = require( '@vue/test-utils' );
+const { waitFor } = require( '@testing-library/vue' );
+
+const ApiError = require( '../../../../../resources/ext.wikilambda.app/store/classes/ApiError.js' );
+const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
+const PublishDialog = require( '../../../../../resources/ext.wikilambda.app/components/widgets/publish/PublishDialog.vue' );
+const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+
+const createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
 
 // Ignore all "teleport" behavior for the purpose of testing Dialog;
 // see https://test-utils.vuejs.org/guide/advanced/teleport.html

@@ -53,9 +53,9 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const ExpandedToggle = require( './ExpandedToggle.vue' ),
-	errorUtils = require( '../../mixins/errorUtils.js' ),
-	KeyBlock = require( './KeyBlock.vue' );
+const errorUtils = require( '../../mixins/errorUtils.js' );
+const ExpandedToggle = require( './ExpandedToggle.vue' );
+const KeyBlock = require( './KeyBlock.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-key-value-block',

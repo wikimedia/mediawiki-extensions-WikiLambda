@@ -6,13 +6,11 @@
  */
 'use strict';
 
-const { setActivePinia, createPinia } = require( 'pinia' );
-const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
-const LabelData = require( '../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' );
+const { createPinia, setActivePinia } = require( 'pinia' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
-const mockApiResponseFor = require( '../../fixtures/mocks.js' ).mockApiResponseFor;
-const mockApiZids = require( '../../fixtures/mocks.js' ).mockApiZids;
-const mockEnumValues = require( '../../fixtures/mocks.js' ).mockEnumValues;
+const LabelData = require( '../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' );
+const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const { mockApiResponseFor, mockApiZids, mockEnumValues } = require( '../../fixtures/mocks.js' );
 
 const mockLabels = {
 	Z1: new LabelData( 'Z1', 'Object', 'Z1002' ),

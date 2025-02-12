@@ -6,10 +6,10 @@
  */
 'use strict';
 
-const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
-	existingImplementationByCompositionFromApi = require( './existingImplementationByCompositionFromApi.js' ),
-	existingTesterFromApi = require( './existingTesterFromApi.js' ),
-	existingFunctionFromApi = require( './existingFunctionFromApi.js' );
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
+const existingFunctionFromApi = require( './existingFunctionFromApi.js' );
+const existingImplementationByCompositionFromApi = require( './existingImplementationByCompositionFromApi.js' );
+const existingTesterFromApi = require( './existingTesterFromApi.js' );
 
 const zid = existingFunctionFromApi[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
 const implementationByCompositionZid =

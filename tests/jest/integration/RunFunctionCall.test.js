@@ -6,14 +6,14 @@
  */
 'use strict';
 
+const { fireEvent, render, waitFor } = require( '@testing-library/vue' );
+const { within } = require( '@testing-library/dom' );
 require( '@testing-library/jest-dom' );
 
-const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
-	{ within } = require( '@testing-library/dom' ),
-	{ lookupSearchAndSelect } = require( './helpers/interactionHelpers.js' ),
-	{ runSetup, runTeardown } = require( './helpers/runFunctionTestHelpers.js' ),
-	App = require( '../../../resources/ext.wikilambda.app/components/App.vue' ),
-	expectedFunctionCallPostedToApi = require( './objects/expectedFunctionCallPostedToApi.js' );
+const App = require( '../../../resources/ext.wikilambda.app/components/App.vue' );
+const { lookupSearchAndSelect } = require( './helpers/interactionHelpers.js' );
+const { runSetup, runTeardown } = require( './helpers/runFunctionTestHelpers.js' );
+const expectedFunctionCallPostedToApi = require( './objects/expectedFunctionCallPostedToApi.js' );
 
 describe( 'WikiLambda frontend, running a function on Run Function Special page', () => {
 	let apiPostWithFunctionCallMock;

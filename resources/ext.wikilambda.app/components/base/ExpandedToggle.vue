@@ -22,11 +22,12 @@
 </template>
 
 <script>
-const { CdxIcon, CdxButton } = require( '@wikimedia/codex' );
+const { CdxButton, CdxIcon } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const icons = require( '../../../lib/icons.json' ),
-	useMainStore = require( '../../store/index.js' ),
-	{ mapState } = require( 'pinia' );
+const { mapState } = require( 'pinia' );
+
+const icons = require( '../../../lib/icons.json' );
+const useMainStore = require( '../../store/index.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-expanded-toggle',

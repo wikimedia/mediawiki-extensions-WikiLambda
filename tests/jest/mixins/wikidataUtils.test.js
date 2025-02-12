@@ -7,7 +7,7 @@
 
 'use strict';
 
-const wikidataUtils = require( '../../../resources/ext.wikilambda.app/mixins/wikidataUtils.js' ).methods;
+const { methods: wikidataUtils } = require( '../../../resources/ext.wikilambda.app/mixins/wikidataUtils.js' );
 
 describe( 'wikidataUtils mixin', () => {
 	describe( 'extractWikidataLexemeIds', () => {

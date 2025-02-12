@@ -6,11 +6,11 @@
  */
 'use strict';
 
-const { waitFor } = require( '@testing-library/vue' ),
-	mount = require( '@vue/test-utils' ).mount,
-	shallowMount = require( '@vue/test-utils' ).shallowMount,
-	mockLanguages = require( '../fixtures/mocks.js' ).mockLanguages,
-	LanguageSelector = require( '../../../resources/ext.wikilambda.languageselector/components/LanguageSelector.vue' );
+const { waitFor } = require( '@testing-library/vue' );
+const { mount, shallowMount } = require( '@vue/test-utils' );
+
+const mockLanguages = require( '../fixtures/mocks.js' ).mockLanguages;
+const LanguageSelector = require( '../../../resources/ext.wikilambda.languageselector/components/LanguageSelector.vue' );
 
 describe( 'LanguageSelector', () => {
 	let getMock;

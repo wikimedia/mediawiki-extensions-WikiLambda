@@ -6,12 +6,12 @@
  */
 'use strict';
 
-const { config, mount } = require( '@vue/test-utils' ),
-	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
-	FunctionMetadataDialog = require( '../../../../../resources/ext.wikilambda.app/components/widgets/function-evaluator/FunctionMetadataDialog.vue' ),
-	metadata = require( '../../../fixtures/metadata.js' ),
-	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+const { config, mount } = require( '@vue/test-utils' );
+const createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
+const createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock;
+const metadata = require( '../../../fixtures/metadata.js' );
+const FunctionMetadataDialog = require( '../../../../../resources/ext.wikilambda.app/components/widgets/function-evaluator/FunctionMetadataDialog.vue' );
+const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 
 // Ignore all "teleport" behavior for the purpose of testing Dialog;
 // see https://test-utils.vuejs.org/guide/advanced/teleport.html

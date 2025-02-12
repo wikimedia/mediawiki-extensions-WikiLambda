@@ -6,12 +6,12 @@
  */
 'use strict';
 
-const shallowMount = require( '@vue/test-utils' ).shallowMount,
-	{ waitFor } = require( '@testing-library/vue' ),
-	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
-	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' ),
-	FunctionEditorFooter = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorFooter.vue' );
+const { waitFor } = require( '@testing-library/vue' );
+const { shallowMount } = require( '@vue/test-utils' );
+const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
+const { createGettersWithFunctionsMock } = require( '../../../helpers/getterHelpers.js' );
+const FunctionEditorFooter = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorFooter.vue' );
+const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 
 describe( 'FunctionEditorFooter', () => {
 	let store;

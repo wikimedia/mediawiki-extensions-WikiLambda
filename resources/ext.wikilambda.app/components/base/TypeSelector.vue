@@ -51,12 +51,13 @@
 <script>
 const { CdxField } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../Constants.js' ),
-	useMainStore = require( '../../store/index.js' ),
-	typeUtils = require( '../../mixins/typeUtils.js' ),
-	LabelData = require( '../../store/classes/LabelData.js' ),
-	ZObjectSelector = require( './ZObjectSelector.vue' ),
-	{ mapActions, mapState } = require( 'pinia' );
+const { mapActions, mapState } = require( 'pinia' );
+
+const Constants = require( '../../Constants.js' );
+const LabelData = require( '../../store/classes/LabelData.js' );
+const typeUtils = require( '../../mixins/typeUtils.js' );
+const useMainStore = require( '../../store/index.js' );
+const ZObjectSelector = require( './ZObjectSelector.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-type-selector',

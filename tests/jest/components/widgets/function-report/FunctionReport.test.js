@@ -5,14 +5,15 @@
  * @license MIT
  */
 'use strict';
-const VueTestUtils = require( '@vue/test-utils' ),
-	{ waitFor } = require( '@testing-library/vue' ),
-	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
-	FunctionReport = require( '../../../../../resources/ext.wikilambda.app/components/widgets/function-report/FunctionReport.vue' ),
-	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
 
+const { mount } = require( '@vue/test-utils' );
+const { waitFor } = require( '@testing-library/vue' );
+
+const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
+const FunctionReport = require( '../../../../../resources/ext.wikilambda.app/components/widgets/function-report/FunctionReport.vue' );
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+
+const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../../helpers/getterHelpers.js' );
 
 describe( 'FunctionReport', () => {
 	let store;
@@ -49,7 +50,7 @@ describe( 'FunctionReport', () => {
 	} );
 
 	it( 'renders without errors', () => {
-		const wrapper = VueTestUtils.mount( FunctionReport, {
+		const wrapper = mount( FunctionReport, {
 			props: {
 				zFunctionId: '',
 				rootZid: Constants.NEW_ZID_PLACEHOLDER,
@@ -60,7 +61,7 @@ describe( 'FunctionReport', () => {
 	} );
 
 	it( 'displays no results when no implementations or testers found', () => {
-		const wrapper = VueTestUtils.mount( FunctionReport, {
+		const wrapper = mount( FunctionReport, {
 			props: {
 				zFunctionId: '',
 				rootZid: Constants.NEW_ZID_PLACEHOLDER,
@@ -72,7 +73,7 @@ describe( 'FunctionReport', () => {
 	} );
 
 	it( 'displays all available testers if a new zImplementation is being created', async () => {
-		const wrapper = VueTestUtils.mount( FunctionReport, {
+		const wrapper = mount( FunctionReport, {
 			props: {
 				zFunctionId: 'Z10000',
 				rootZid: Constants.NEW_ZID_PLACEHOLDER,
@@ -87,7 +88,7 @@ describe( 'FunctionReport', () => {
 	} );
 
 	it( 'displays all available implementations if a new zTester is being created', async () => {
-		const wrapper = VueTestUtils.mount( FunctionReport, {
+		const wrapper = mount( FunctionReport, {
 			props: {
 				zFunctionId: 'Z10000',
 				rootZid: Constants.NEW_ZID_PLACEHOLDER,
@@ -103,7 +104,7 @@ describe( 'FunctionReport', () => {
 	} );
 
 	it( 'if displayed on a ZImplementation page, only shows testers', () => {
-		const wrapper = VueTestUtils.mount( FunctionReport, {
+		const wrapper = mount( FunctionReport, {
 			props: {
 				zFunctionId: 'Z10000',
 				rootZid: 'Z10001',
@@ -116,7 +117,7 @@ describe( 'FunctionReport', () => {
 	} );
 
 	it( 'if displayed on a ZTester page, only shows ZImplementations', () => {
-		const wrapper = VueTestUtils.mount( FunctionReport, {
+		const wrapper = mount( FunctionReport, {
 			props: {
 				zFunctionId: 'Z10000',
 				rootZid: 'Z10002',
@@ -130,7 +131,7 @@ describe( 'FunctionReport', () => {
 
 	describe( 'trigger button', () => {
 		it( 'tests all the implementations for a tester page', async () => {
-			const wrapper = VueTestUtils.mount( FunctionReport, {
+			const wrapper = mount( FunctionReport, {
 				props: {
 					zFunctionId: 'Z10000',
 					rootZid: 'Z10002',
@@ -151,7 +152,7 @@ describe( 'FunctionReport', () => {
 		} );
 
 		it( 'tests all the testers for an implementation page', async () => {
-			const wrapper = VueTestUtils.mount( FunctionReport, {
+			const wrapper = mount( FunctionReport, {
 				props: {
 					zFunctionId: 'Z10000',
 					rootZid: 'Z10004',
@@ -180,7 +181,7 @@ describe( 'FunctionReport', () => {
 
 		it( 'does not trigger the tests if we are on new page', async () => {
 
-			VueTestUtils.mount( FunctionReport, {
+			mount( FunctionReport, {
 				props: {
 					zFunctionId: 'Z10000',
 					rootZid: 'Z0',
@@ -197,7 +198,7 @@ describe( 'FunctionReport', () => {
 
 		it( 'initially tests all the implementations for a tester page', async () => {
 
-			VueTestUtils.mount( FunctionReport, {
+			mount( FunctionReport, {
 				props: {
 					zFunctionId: 'Z10000',
 					rootZid: 'Z10002',
@@ -221,7 +222,7 @@ describe( 'FunctionReport', () => {
 
 		it( 'initially tests all the testers for an implementation page', async () => {
 
-			VueTestUtils.mount( FunctionReport, {
+			mount( FunctionReport, {
 				props: {
 					zFunctionId: 'Z10000',
 					rootZid: 'Z10004',

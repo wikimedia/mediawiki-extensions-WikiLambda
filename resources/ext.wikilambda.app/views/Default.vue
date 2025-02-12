@@ -68,17 +68,18 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../Constants.js' ),
-	useMainStore = require( '../store/index.js' ),
-	ZObjectKeyValue = require( '../components/default-view-types/ZObjectKeyValue.vue' ),
-	FunctionEvaluatorWidget = require( '../components/widgets/function-evaluator/FunctionEvaluator.vue' ),
-	FunctionExplorerWidget = require( '../components/widgets/function-explorer/FunctionExplorer.vue' ),
-	AboutWidget = require( '../components/widgets/about/About.vue' ),
-	PublishWidget = require( '../components/widgets/publish/Publish.vue' ),
-	FunctionReportWidget = require( '../components/widgets/function-report/FunctionReport.vue' ),
-	eventLogUtils = require( '../mixins/eventLogUtils.js' ),
-	typeUtils = require( '../mixins/typeUtils.js' ),
-	{ mapState } = require( 'pinia' );
+const { mapState } = require( 'pinia' );
+
+const Constants = require( '../Constants.js' );
+const AboutWidget = require( '../components/widgets/about/About.vue' );
+const FunctionEvaluatorWidget = require( '../components/widgets/function-evaluator/FunctionEvaluator.vue' );
+const FunctionExplorerWidget = require( '../components/widgets/function-explorer/FunctionExplorer.vue' );
+const FunctionReportWidget = require( '../components/widgets/function-report/FunctionReport.vue' );
+const PublishWidget = require( '../components/widgets/publish/Publish.vue' );
+const ZObjectKeyValue = require( '../components/default-view-types/ZObjectKeyValue.vue' );
+const eventLogUtils = require( '../mixins/eventLogUtils.js' );
+const typeUtils = require( '../mixins/typeUtils.js' );
+const useMainStore = require( '../store/index.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-default-view',

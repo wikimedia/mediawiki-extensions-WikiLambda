@@ -57,17 +57,18 @@
 </template>
 
 <script>
-const { CdxButton, CdxIcon } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../../Constants.js' ),
-	typeUtils = require( '../../../mixins/typeUtils.js' ),
-	utilsMixins = require( '../../../mixins/utilsMixins.js' ),
-	{ mapActions, mapState } = require( 'pinia' ),
-	useMainStore = require( '../../../store/index.js' ),
-	icons = require( '../../../../lib/icons.json' ),
-	WidgetBase = require( '../../base/WidgetBase.vue' ),
-	FunctionMetadataDialog = require( '../function-evaluator/FunctionMetadataDialog.vue' ),
-	FunctionReportItem = require( './FunctionReportItem.vue' );
+const { CdxButton, CdxIcon } = require( '@wikimedia/codex' );
+const { mapActions, mapState } = require( 'pinia' );
+
+const Constants = require( '../../../Constants.js' );
+const FunctionMetadataDialog = require( '../function-evaluator/FunctionMetadataDialog.vue' );
+const FunctionReportItem = require( './FunctionReportItem.vue' );
+const icons = require( '../../../../lib/icons.json' );
+const typeUtils = require( '../../../mixins/typeUtils.js' );
+const useMainStore = require( '../../../store/index.js' );
+const utilsMixins = require( '../../../mixins/utilsMixins.js' );
+const WidgetBase = require( '../../base/WidgetBase.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-report-widget',

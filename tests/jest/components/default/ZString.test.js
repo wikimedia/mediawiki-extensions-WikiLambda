@@ -6,12 +6,12 @@
  */
 'use strict';
 
-const shallowMount = require( '@vue/test-utils' ).shallowMount,
-	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
-	ZString = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZString.vue' ),
-	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
-	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const { CdxTextInput } = require( '@wikimedia/codex' );
+const { shallowMount } = require( '@vue/test-utils' );
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
+const createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
+const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const ZString = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZString.vue' );
 
 describe( 'ZString', () => {
 	let store;

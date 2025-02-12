@@ -16,6 +16,7 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
+
 const FunctionEditor = require( '../components/function/editor/FunctionEditor.vue' );
 
 module.exports = exports = defineComponent( {

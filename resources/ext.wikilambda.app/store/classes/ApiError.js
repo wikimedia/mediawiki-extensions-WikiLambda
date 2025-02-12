@@ -6,8 +6,8 @@
  */
 'use strict';
 
-const Constants = require( '../../Constants.js' ),
-	utils = require( '../../mixins/utilsMixins.js' ).methods;
+const Constants = require( '../../Constants.js' );
+const utils = require( '../../mixins/utilsMixins.js' ).methods;
 
 /**
  * ApiError class contains a set of utilities to transform any kind of

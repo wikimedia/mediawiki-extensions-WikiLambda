@@ -7,8 +7,8 @@
 'use strict';
 
 const Constants = require( '../../../Constants.js' );
-const typeUtils = require( '../../../mixins/typeUtils.js' ).methods;
 const extractZIDs = require( '../../../mixins/schemata.js' ).methods.extractZIDs;
+const typeUtils = require( '../../../mixins/typeUtils.js' ).methods;
 const url = require( '../../../mixins/urlUtils.js' ).methods;
 
 module.exports = {

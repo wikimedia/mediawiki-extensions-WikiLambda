@@ -6,13 +6,12 @@
  */
 'use strict';
 
-const { config, mount } = require( '@vue/test-utils' ),
-	{ waitFor } = require( '@testing-library/vue' ),
-	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock,
-	mockLookupLanguages = require( '../../../fixtures/mocks.js' ).mockLookupLanguages,
-	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' ),
-	AboutLanguagesDialog = require( '../../../../../resources/ext.wikilambda.app/components/widgets/about/AboutLanguagesDialog.vue' );
+const { config, mount } = require( '@vue/test-utils' );
+const { waitFor } = require( '@testing-library/vue' );
+const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../../helpers/getterHelpers.js' );
+const { mockLookupLanguages } = require( '../../../fixtures/mocks.js' );
+const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+const AboutLanguagesDialog = require( '../../../../../resources/ext.wikilambda.app/components/widgets/about/AboutLanguagesDialog.vue' );
 
 // Ignore all "teleport" behavior for the purpose of testing Dialog;
 // see https://test-utils.vuejs.org/guide/advanced/teleport.html

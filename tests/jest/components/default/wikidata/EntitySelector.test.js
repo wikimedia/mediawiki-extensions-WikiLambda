@@ -6,12 +6,13 @@
  */
 'use strict';
 
-const { shallowMount } = require( '@vue/test-utils' ),
-	{ waitFor } = require( '@testing-library/vue' ),
-	{ mockLookupLexemes } = require( '../../../fixtures/mocks.js' ),
-	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
-	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' ),
-	WikidataEntitySelector = require( '../../../../../resources/ext.wikilambda.app/components/default-view-types/wikidata/EntitySelector.vue' );
+const { shallowMount } = require( '@vue/test-utils' );
+const { waitFor } = require( '@testing-library/vue' );
+
+const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
+const WikidataEntitySelector = require( '../../../../../resources/ext.wikilambda.app/components/default-view-types/wikidata/EntitySelector.vue' );
+const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+const { mockLookupLexemes } = require( '../../../fixtures/mocks.js' );
 
 describe( 'WikidataEntitySelector', () => {
 	let store;

@@ -83,13 +83,14 @@
 <script>
 const { CdxDialog, CdxMessage, CdxTextInput } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../Constants.js' ),
-	useMainStore = require( '../../store/index.js' ),
-	ZObjectKeyValueSet = require( './ZObjectKeyValueSet.vue' ),
-	errorUtils = require( '../../mixins/errorUtils.js' ),
-	typeUtils = require( '../../mixins/typeUtils.js' ).methods,
-	{ getValueFromCanonicalZMap, hybridToCanonical } = require( '../../mixins/schemata.js' ).methods,
-	{ mapActions, mapState } = require( 'pinia' );
+const { mapActions, mapState } = require( 'pinia' );
+
+const Constants = require( '../../Constants.js' );
+const errorUtils = require( '../../mixins/errorUtils.js' );
+const typeUtils = require( '../../mixins/typeUtils.js' ).methods;
+const { getValueFromCanonicalZMap, hybridToCanonical } = require( '../../mixins/schemata.js' ).methods;
+const useMainStore = require( '../../store/index.js' );
+const ZObjectKeyValueSet = require( './ZObjectKeyValueSet.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-object-string-renderer',

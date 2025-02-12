@@ -6,8 +6,8 @@
  */
 
 const Constants = require( '../../Constants.js' );
-const createConnectedItemsChangesSummaryMessage = require( '../../mixins/utilsMixins.js' ).methods.createConnectedItemsChangesSummaryMessage;
 const apiUtils = require( '../../mixins/api.js' ).methods;
+const createConnectedItemsChangesSummaryMessage = require( '../../mixins/utilsMixins.js' ).methods.createConnectedItemsChangesSummaryMessage;
 
 module.exports = {
 	state: {},

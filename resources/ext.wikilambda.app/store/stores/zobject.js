@@ -6,17 +6,17 @@
  */
 'use strict';
 
+const Row = require( '../classes/Row.js' );
 const Constants = require( '../../Constants.js' );
-const factoryStore = require( './zobject/factory.js' );
-const currentPageStore = require( './zobject/currentPage.js' );
-const submissionStore = require( './zobject/submission.js' );
+const apiUtils = require( '../../mixins/api.js' ).methods;
+const { getParameterByName } = require( '../../mixins/urlUtils.js' ).methods;
+const { extractWikidataLexemeIds } = require( '../../mixins/wikidataUtils.js' ).methods;
+const { extractZIDs, hybridToCanonical } = require( '../../mixins/schemata.js' ).methods;
 const { findKeyInArray, isTruthyOrEqual } = require( '../../mixins/typeUtils.js' ).methods;
 const zobjectUtils = require( '../../mixins/zobjectUtils.js' ).methods;
-const apiUtils = require( '../../mixins/api.js' ).methods;
-const { extractZIDs, hybridToCanonical } = require( '../../mixins/schemata.js' ).methods;
-const { extractWikidataLexemeIds } = require( '../../mixins/wikidataUtils.js' ).methods;
-const { getParameterByName } = require( '../../mixins/urlUtils.js' ).methods;
-const Row = require( '../classes/Row.js' );
+const currentPageStore = require( './zobject/currentPage.js' );
+const factoryStore = require( './zobject/factory.js' );
+const submissionStore = require( './zobject/submission.js' );
 
 const zobjectStore = {
 	state: {

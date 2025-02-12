@@ -6,11 +6,11 @@
  */
 'use strict';
 
-const mount = require( '@vue/test-utils' ).mount,
-	createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock,
-	Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' ),
-	useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' ),
-	TypeToString = require( '../../../../resources/ext.wikilambda.app/components/base/TypeToString.vue' );
+const { mount } = require( '@vue/test-utils' );
+const { createLabelDataMock } = require( '../../helpers/getterHelpers.js' );
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
+const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const TypeToString = require( '../../../../resources/ext.wikilambda.app/components/base/TypeToString.vue' );
 
 describe( 'TypeToString', () => {
 	let store;

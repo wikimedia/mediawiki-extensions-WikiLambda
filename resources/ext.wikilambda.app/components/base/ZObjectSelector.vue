@@ -57,14 +57,15 @@
 </template>
 
 <script>
-const { CdxLookup, CdxSelect, CdxMessage } = require( '@wikimedia/codex' );
+const { CdxLookup, CdxMessage, CdxSelect } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
-const Constants = require( '../../Constants.js' ),
-	useMainStore = require( '../../store/index.js' ),
-	errorUtils = require( '../../mixins/errorUtils.js' ),
-	typeUtils = require( '../../mixins/typeUtils.js' ),
-	{ mapActions, mapState } = require( 'pinia' ),
-	icons = require( '../../../lib/icons.json' );
+const { mapActions, mapState } = require( 'pinia' );
+
+const Constants = require( '../../Constants.js' );
+const errorUtils = require( '../../mixins/errorUtils.js' );
+const icons = require( '../../../lib/icons.json' );
+const typeUtils = require( '../../mixins/typeUtils.js' );
+const useMainStore = require( '../../store/index.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-object-selector',

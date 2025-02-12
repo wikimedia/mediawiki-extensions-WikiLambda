@@ -7,8 +7,9 @@
 
 'use strict';
 
-const shallowMount = require( '@vue/test-utils' ).shallowMount,
-	clipboardUtils = require( '../../../resources/ext.wikilambda.app/mixins/clipboardUtils.js' );
+const { shallowMount } = require( '@vue/test-utils' );
+
+const clipboardUtils = require( '../../../resources/ext.wikilambda.app/mixins/clipboardUtils.js' );
 
 describe( 'clipboardUtils', () => {
 	let wrapper, copySpy, clearSpy;

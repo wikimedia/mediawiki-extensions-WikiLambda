@@ -11,8 +11,8 @@
 
 /* eslint-disable no-implicit-globals */
 
-const Constants = require( '../Constants.js' ),
-	typeUtils = require( './typeUtils.js' ).methods;
+const Constants = require( '../Constants.js' );
+const typeUtils = require( './typeUtils.js' ).methods;
 
 // Note: This is intentionally "wrong" in that it allows for Z0.
 // It excludes letters so as not to apply to keys (containing a 'K').

@@ -7,10 +7,10 @@
 'use strict';
 
 const { setActivePinia, createPinia } = require( 'pinia' );
-const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const mockApiZids = require( '../../fixtures/mocks.js' ).mockApiZids;
 const { tableDataToRowObjects, zobjectToRows } = require( '../../helpers/zObjectTableHelpers.js' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
-const mockApiZids = require( '../../fixtures/mocks.js' ).mockApiZids;
+const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 
 const blankPersistentObject = {
 	Z1K1: 'Z2',
