@@ -194,7 +194,9 @@ module.exports = exports = defineComponent( {
 .ext-wikilambda-app-function-viewer-details-table {
 	margin-bottom: @spacing-200;
 
-	.ext-wikilambda-app-function-viewer-details-table___table-container {
+	.cdx-table.ext-wikilambda-app-function-viewer-details-table___table-container {
+		overflow-wrap: unset;
+
 		.cdx-table__table {
 			thead th {
 				white-space: nowrap;
@@ -202,11 +204,9 @@ module.exports = exports = defineComponent( {
 			}
 
 			tbody td a {
-				display: block; /* Fallback for non-webkit */
 				display: -webkit-box;
 				width: max-content;
 				max-width: 244px;
-				max-height: 44.78px; /* Fallback for non-webkit */
 				-webkit-line-clamp: 2;
 				-webkit-box-orient: vertical;
 				overflow-wrap: break-word;
@@ -215,7 +215,6 @@ module.exports = exports = defineComponent( {
 
 				@media screen and ( max-width: @max-width-breakpoint-mobile ) {
 					-webkit-line-clamp: 1;
-					height: 22.39px;
 				}
 			}
 		}
