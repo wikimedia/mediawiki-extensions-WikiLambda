@@ -309,7 +309,10 @@ Constants.WIKIDATA_BUILTIN_COMPONENTS = {
 	[ Constants.Z_WIKIDATA_REFERENCE_LEXEME ]: 'wl-wikidata-lexeme',
 	[ Constants.Z_WIKIDATA_LEXEME_FORM ]: 'wl-wikidata-lexeme-form',
 	[ Constants.Z_WIKIDATA_FETCH_LEXEME_FORM ]: 'wl-wikidata-lexeme-form',
-	[ Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM ]: 'wl-wikidata-lexeme-form'
+	[ Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM ]: 'wl-wikidata-lexeme-form',
+	[ Constants.Z_WIKIDATA_PROPERTY ]: 'wl-wikidata-property',
+	[ Constants.Z_WIKIDATA_FETCH_PROPERTY ]: 'wl-wikidata-property',
+	[ Constants.Z_WIKIDATA_REFERENCE_PROPERTY ]: 'wl-wikidata-property'
 };
 
 // Wikifunctions Builtin Components

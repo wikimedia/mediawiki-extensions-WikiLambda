@@ -17,6 +17,7 @@
 		@update:selected="onSelect"
 		@update:input-value="onInput"
 		@blur="onBlur"
+		@load-more="onLoadMore"
 	>
 		<template #no-results>
 			{{ $i18n( 'wikilambda-zobjectselector-no-results' ).text() }}
@@ -61,7 +62,8 @@ module.exports = exports = defineComponent( {
 			lookupConfig: {
 				boldLabel: true,
 				searchQuery: '',
-				visibleItemLimit: 5
+				visibleItemLimit: 5,
+				searchContinue: null
 			},
 			lookupDelayTimer: null,
 			lookupDelayMs: 300
@@ -81,8 +83,9 @@ module.exports = exports = defineComponent( {
 					return this.$i18n( 'wikilambda-wikidata-lexeme-selector-placeholder' ).text();
 				case Constants.Z_WIKIDATA_LEXEME_FORM:
 					return this.$i18n( 'wikilambda-wikidata-lexeme-form-selector-placeholder' ).text();
-				case Constants.Z_WIKIDATA_LEXEME_SENSE:
 				case Constants.Z_WIKIDATA_PROPERTY:
+					return this.$i18n( 'wikilambda-wikidata-property-selector-placeholder' ).text();
+				case Constants.Z_WIKIDATA_LEXEME_SENSE:
 				case Constants.Z_WIKIDATA_STATEMENT:
 				default:
 					return this.$i18n( 'wikilambda-wikidata-entity-selector-placeholder' ).text();
@@ -98,6 +101,8 @@ module.exports = exports = defineComponent( {
 		 */
 		clearResults: function () {
 			this.lookupResults = [];
+			// Reset searchContinue when a new search is initiated
+			this.lookupConfig.searchContinue = null;
 		},
 		/**
 		 * On field input, perform a backend lookup and
@@ -109,8 +114,11 @@ module.exports = exports = defineComponent( {
 			this.inputValue = input;
 
 			// If empty input, clear and exit
+			// Clear previous results when input changes
+			this.clearResults();
+
+			// If empty input, exit
 			if ( !input ) {
-				this.clearResults();
 				return;
 			}
 
@@ -123,7 +131,7 @@ module.exports = exports = defineComponent( {
 		/**
 		 * When lookup selected value updates, emit a set-value
 		 * event so that parent ZObjectKeyValue sets the value
-		 * of the Fetch Wikidata Lexeme function call.
+		 * of the Fetch Wikidata Entity function call.
 		 * If the field is cleared, set value as empty string.
 		 *
 		 * @param {string} value
@@ -165,27 +173,44 @@ module.exports = exports = defineComponent( {
 			}
 		},
 		/**
-		 * Perform Wikidata Lexeme lookup given a search term.
+		 * Load more Wikidata Entities when the user scrolls to the bottom of the list
+		 * and there are more results to load.
+		 */
+		onLoadMore: function () {
+			if ( !this.lookupConfig.searchContinue ) {
+				// No more results to load
+				return;
+			}
+
+			// Use the existing search term stored in lookupConfig.searchQuery
+			this.getLookupResults( this.lookupConfig.searchQuery );
+		},
+		/**
+		 * Perform Wikidata Entity lookup given a search term.
 		 *
 		 * @param {string} searchTerm
 		 */
 		getLookupResults: function ( searchTerm ) {
 			const payload = {
 				search: searchTerm,
-				type: Constants.WIKIDATA_API_TYPE_VALUES[ this.type ]
+				type: Constants.WIKIDATA_API_TYPE_VALUES[ this.type ],
+				searchContinue: this.lookupConfig.searchContinue
 			};
 
 			this.lookupWikidataEntities( payload ).then( ( data ) => {
-				const { search } = data;
-				const ids = [];
+				const { searchContinue, search } = data;
+
+				// If searchContinue is present, store it in lookupConfig
+				this.lookupConfig.searchContinue = searchContinue;
+				// Store the search term in lookupConfig
 				this.lookupConfig.searchQuery = searchTerm;
-				this.lookupResults = [];
+				// Update the lookup results
 				for ( const entity of search ) {
-					ids.push( entity.id );
 					this.lookupResults.push( {
 						value: entity.id,
 						label: entity.label,
-						description: entity.description
+						description: entity.description,
+						title: entity.description
 					} );
 				}
 			} );
@@ -201,3 +226,14 @@ module.exports = exports = defineComponent( {
 	}
 } );
 </script>
+
+<style lang="less">
+.ext-wikilambda-app-wikidata-entity-selector {
+	.cdx-menu-item__text__description {
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		overflow: hidden;
+	}
+}
+</style>

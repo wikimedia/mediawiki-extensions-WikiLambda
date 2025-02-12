@@ -520,12 +520,12 @@ module.exports = exports = {
 		 * @param {Object} payload
 		 * @param {string} payload.zid
 		 * @param {Array | Promise} payload.data
-		 * @param {number | undefined} payload.continue
+		 * @param {number | undefined} payload.searchContinue
 		 */
 		setEnumData: function ( state, payload ) {
 			const zid = payload.zid;
 			const data = payload.data;
-			const continueVal = payload.continue;
+			const searchContinue = payload.searchContinue;
 
 			// Initialize the enum object if it does not exist with a Promise or Array
 			if ( !state.enums[ zid ] ) {
@@ -540,7 +540,7 @@ module.exports = exports = {
 
 			// Append new data and update continuation value
 			state.enums[ zid ].data = state.enums[ zid ].data.concat( data );
-			state.enums[ zid ].continue = continueVal;
+			state.enums[ zid ].searchContinue = searchContinue;
 		},
 		/**
 		 * @param {Object} state
@@ -577,6 +577,8 @@ module.exports = exports = {
 		 * @param {Object} context Vuex context object
 		 * @param {number} payload Object containing input(string) and type
 		 * @return {Promise}
+		 * @property {Array<Object>} labels - The search results
+		 * @property {number|null} searchContinue - The token to continue the search or null if no more results
 		 */
 		lookupZObjectLabels: function ( context, payload ) {
 			// Add user language code to the payload
@@ -584,48 +586,48 @@ module.exports = exports = {
 			return new Promise( ( resolve ) => {
 				clearTimeout( debounceZObjectLookup );
 				debounceZObjectLookup = setTimeout(
-					() => apiUtils.searchLabels( payload ).then( ( data ) => resolve( data.labels ) ),
+					() => apiUtils.searchLabels( payload ).then( ( data ) => resolve( data ) ),
 					DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT
 				);
 			} );
 		},
+
 		/**
 		 * Fetches all values stored of a given enum type.
 		 *
 		 * @param {Object} context
 		 * @param {Object} payload
 		 * @param {string} payload.type - The ZID of the enum type
-		 * @param {boolean} payload.isContinue - Whether to continue fetching the enum
 		 * @return {Promise<Object>|undefined} - Promise resolving to:
 		 * @property {Array<Object>} labels - The search results
-		 * @property {number|null} continue - The token to continue the search or null if no more results
+		 * @property {number|null} searchContinue - The token to continue the search or null if no more results
 		 */
 		fetchEnumValues: function ( context, payload ) {
-			const enumObject = context.getters.getEnum( payload.type );
-			const continueVal = enumObject ? enumObject.continue : undefined;
+			const { type } = payload;
+			const enumObject = context.getters.getEnum( type );
+			const searchContinue = enumObject ? enumObject.searchContinue : undefined;
 
-			// If the enum has already been fetched and we are not continuing, do nothing
-			// If the enum has been fetched and we are continuing, but there are no more values, do nothing
-			if ( ( enumObject && !payload.isContinue ) || ( payload.isContinue && continueVal === null ) ) {
+			// If no continuation token and the enum is already fetched, do nothing
+			if ( enumObject && !searchContinue ) {
 				return;
 			}
 			const promise = apiUtils.searchLabels( {
 				input: '',
-				type: payload.type,
+				type,
 				limit: Constants.API_ENUMS_LIMIT,
 				language: context.getters.getUserLangCode,
-				continue: continueVal
+				searchContinue
 			} ).then( ( data ) => {
 				// Set values when the request is completed
-				context.commit( 'setEnumData', { zid: payload.type, data: data.labels, continue: data.continue } );
+				context.commit( 'setEnumData', { zid: payload.type, data: data.labels, searchContinue: data.searchContinue } );
 				return data;
 			} ).catch( () => {
 				// Set empty array when the request fails, so we could retry
 				context.commit( 'setEnumData', { zid: payload.type, data: [] } );
 			} );
 
-			if ( !payload.isContinue ) {
-				// Initialize the enum with the pending promise
+			// Initialize the enum with the pending promise when it's the first request
+			if ( !searchContinue ) {
 				context.commit( 'setEnumData', { zid: payload.type, data: promise } );
 			}
 

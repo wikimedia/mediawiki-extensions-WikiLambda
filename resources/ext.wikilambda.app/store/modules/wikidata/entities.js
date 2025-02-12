@@ -124,15 +124,17 @@ module.exports = exports = {
 		 * @param {Object} context
 		 * @param {Object} payload
 		 * @param {string} search
+		 * @param {number} searchContinue
 		 * @param {string|undefined} type
 		 * @return {Promise}
 		 */
 		lookupWikidataEntities: function ( context, payload ) {
-			const { search, type = undefined } = payload;
+			const { search, searchContinue, type = undefined } = payload;
 			const request = {
 				language: context.getters.getUserLangCode,
 				search,
-				type
+				type,
+				searchContinue
 			};
 			return apiUtils.searchWikidataEntities( request );
 		}

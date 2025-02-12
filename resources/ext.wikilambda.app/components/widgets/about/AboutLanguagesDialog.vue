@@ -285,13 +285,14 @@ module.exports = exports = defineComponent( {
 			this.lookupZObjectLabels( {
 				input: substring,
 				type: Constants.Z_NATURAL_LANGUAGE
-			} ).then( ( payload ) => {
+			} ).then( ( data ) => {
+				const { labels } = data;
 				// If the string searched has changed, do not show the search result
 				if ( !this.searchTerm.includes( substring ) ) {
 					return;
 				}
 				// Compile information for every search result
-				this.lookupResults = payload
+				this.lookupResults = labels
 					.map( ( result ) => {
 						const nameRow = this.getZPersistentName( result.page_title );
 						const name = nameRow ?

@@ -384,12 +384,16 @@ describe( 'Wikidata Entities Vuex module', () => {
 
 	describe( 'Actions', () => {
 		const context = {};
+		const responseValue = {
+			search: 'some-response',
+			searchContinue: null
+		};
 		let fetchMock;
 
 		describe( 'lookupWikidataEntities', () => {
 			beforeEach( () => {
 				fetchMock = jest.fn().mockResolvedValue( {
-					json: jest.fn().mockReturnValue( 'some response' )
+					json: jest.fn().mockResolvedValue( responseValue )
 				} );
 				// eslint-disable-next-line n/no-unsupported-features/node-builtins
 				global.fetch = fetchMock;
@@ -404,7 +408,7 @@ describe( 'Wikidata Entities Vuex module', () => {
 					search: 'turtle'
 				};
 				const response = await entitiesModule.actions.lookupWikidataEntities( context, request );
-				expect( response ).toBe( 'some response' );
+				expect( response ).toEqual( responseValue );
 
 				const params = `origin=*&action=wbsearchentities&format=json&language=en&uselang=en&search=${
 					request.search }&type=${ request.type }&limit=10&props=url`;

@@ -98,7 +98,7 @@ module.exports = exports = {
 		 * @param {string} payload.returnType Retrieve also functions of a given output type
 		 * @param {boolean} payload.strictType Exclude functions that return anything/Z1
 		 * @param {string} payload.language The user language code
-		 * @param {number} payload.continue When more results are available, use this to continue
+		 * @param {number} payload.searchContinue When more results are available, use this to continue
 		 * @param {number} payload.limit The maximum number of results to return
 		 * @return {Promise<Object>|undefined}
 		 * - Promise resolving to an object with 'labels' and 'continue'
@@ -114,10 +114,10 @@ module.exports = exports = {
 				wikilambdasearch_strict_return_type: payload.strictType,
 				wikilambdasearch_language: payload.language,
 				wikilambdasearch_limit: payload.limit,
-				wikilambdasearch_continue: payload.continue
+				wikilambdasearch_continue: payload.searchContinue
 			} ).then( ( data ) => ( {
 				labels: data.query ? data.query.wikilambdasearch_labels : [],
-				continue: data.continue ? Number( data.continue.wikilambdasearch_continue ) : null
+				searchContinue: data.continue ? Number( data.continue.wikilambdasearch_continue ) : null
 			} ) );
 		},
 		/**
@@ -174,6 +174,7 @@ module.exports = exports = {
 		 * @param {string} payload.language user language code
 		 * @param {string} payload.type type of Wikidata entity
 		 * @param {string} payload.search search term
+		 * @param {number} payload.searchContinue When more results are available, use this to continue
 		 * @return {Promise}
 		 */
 		searchWikidataEntities: function ( payload ) {
@@ -188,8 +189,16 @@ module.exports = exports = {
 				limit: '10',
 				props: 'url'
 			} );
+			// Append the 'continue' parameter only if it's set
+			if ( payload.searchContinue ) {
+				params.append( 'continue', payload.searchContinue );
+			}
 			return fetch( `${ Constants.WIKIDATA_BASE_URL }/w/api.php?${ params.toString() }` )
-				.then( ( response ) => response.json() );
+				.then( ( response ) => response.json() )
+				.then( ( data ) => ( {
+					search: data.search ? data.search : [],
+					searchContinue: data[ 'search-continue' ] ? Number( data[ 'search-continue' ] ) : null
+				} ) );
 		},
 		/**
 		 * Calls the wbgetentities Wikidata Action API

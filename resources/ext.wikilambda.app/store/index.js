@@ -21,29 +21,31 @@ const { createStore } = require( 'vuex' ),
 	zfunctionModule = require( './modules/zfunction.js' ),
 	wdEntitiesModule = require( './modules/wikidata/entities.js' ),
 	wdLexemesModule = require( './modules/wikidata/lexemes.js' ),
-	wdItemsModule = require( './modules/wikidata/items.js' );
+	wdItemsModule = require( './modules/wikidata/items.js' ),
+	wdPropertiesModule = require( './modules/wikidata/properties.js' );
 
 module.exports = createStore( {
 	modules: {
 		// Router
-		router: router,
+		router,
 		// Utils
-		errorsModule: errorsModule,
-		languagesModule: languagesModule,
-		libraryModule: libraryModule,
-		listItemsModule: listItemsModule,
-		programmingLanguagesModule: programmingLanguagesModule,
-		userModule: userModule,
+		errorsModule,
+		languagesModule,
+		libraryModule,
+		listItemsModule,
+		programmingLanguagesModule,
+		userModule,
 		// Orchestrator requests
-		functionCallModule: functionCallModule,
-		testResultsModule: testResultsModule,
+		functionCallModule,
+		testResultsModule,
 		// Main ZObject: general and for some specific types
-		zobjectModule: zobjectModule,
-		ztypeModule: ztypeModule,
-		zfunctionModule: zfunctionModule,
+		zobjectModule,
+		ztypeModule,
+		zfunctionModule,
 		// Wikidata
-		wdEntitiesModule: wdEntitiesModule,
-		wdLexemesModule: wdLexemesModule,
-		wdItemsModule: wdItemsModule
+		wdEntitiesModule,
+		wdLexemesModule,
+		wdItemsModule,
+		wdPropertiesModule
 	}
 } );
