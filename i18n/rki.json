@@ -3,15 +3,16 @@
 		"authors": [
 			"Cakkaparla",
 			"ReyLon Mrat",
-			"YaThaWinTha"
+			"YaThaWinTha",
+			"Tejoebāsa"
 		]
 	},
 	"wikilambda-helplink-button": "အကူအညီ",
 	"wikilambda-helplink-tooltip": "ဒေမီတာဒေတာကိုရှင်းပြထားရေ အကူအညီစာမျက်နှာမှာ သင်ဖတ်လို့ရရေ",
 	"wikilambda-publish-input-changed-impact-prompt": "<p>ဒေလုပ်ဆောင်ချက်ဧ့ ထည့်သွင်းမှုအကွက်ကို မင်းစာ ပြောင်းလဲခရေ။ <strong>လက်ဟိ အကောင်အထည်ဖော်မှုတိနန့် စမ်းသပ်မှုတိအားလုံးကို လက်ဟိလုပ်ဆောင်မှုမှ ဖယ်ထုတ်ပါဖို့။</strong> ဆက်လက်လုပ်ဆောင်ချင်ပါလား။</p>",
 	"wikilambda-publish-input-and-output-changed-impact-prompt": "<p>မင်းစော် ဒေလုပ်ဆောင်ချက်ဧ့ ထည့်သွင်းမှုအကွက်နန့် အထွက်အမျိုးအစားကို ပြောင်းလဲခရေ။ <strong>လက်ရှိလုပ်ဆောင်မှုတိနန့် စမ်းသပ်မှုတိအားလုံးကို လက်ဟိလုပ်ဆောင်မှုမှ ဖယ်ထုတ်ပါဖို့။</strong> ဆက်လက်လုပ်ဆောင်ချင်ပါလား။</p>",
-	"wikilambda-functioncall-metadata-implementation-id": "လက်တွိကျကျလုပ်ဆောင်မှု ID",
-	"wikilambda-functioncall-metadata-implementation-type": "အကောင်အထည်ဖော်ခြင်းအမျိုးအစား",
+	"wikilambda-functioncall-metadata-implementation-id": "အိုင်ဒီ",
+	"wikilambda-functioncall-metadata-implementation-type": "အမျိုးအစား",
 	"wikilambda-editor-tester-list-label": "စစ်ဆေးစာရင်း",
 	"wikilambda-tester-selector": "စစ်ဆေးမှုကိုရွီး",
 	"wikilambda-tester-results-title": "စစ်ဆေးမှုရလဒ်",
