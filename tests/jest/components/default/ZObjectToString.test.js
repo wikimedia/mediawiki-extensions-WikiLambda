@@ -36,6 +36,7 @@ describe( 'ZObjectToString', () => {
 		store.getZFunctionCallFunctionId = createGettersWithFunctionsMock( 'Z10001' );
 		store.getZFunctionCallArguments = createGettersWithFunctionsMock( [] );
 		store.getChildrenByParentRowId = createGettersWithFunctionsMock( [] );
+		store.getRendererZid = createGettersWithFunctionsMock( undefined );
 	} );
 
 	describe( 'in view and edit mode', () => {
@@ -236,6 +237,54 @@ describe( 'ZObjectToString', () => {
 			it( 'renders each argument with another ZObjectToString component', () => {
 				const wrapper = mount( ZObjectToString );
 				expect( wrapper.findAllComponents( ZObjectToString ) ).toHaveLength( 2 );
+			} );
+
+			it( 'renders the rendered value if it has a renderer that succeeds', async () => {
+				// TODO: Implement this test
+				store.getRendererZid = createGettersWithFunctionsMock( 'Z123' );
+				store.runRenderer = jest.fn().mockResolvedValue( {
+					response: {
+						[ Constants.Z_RESPONSEENVELOPE_VALUE ]: 'Rendered Value'
+					}
+				} );
+
+				const wrapper = mount( ZObjectToString );
+
+				await waitFor( () => {
+					expect( wrapper.vm.rendererRunning ).toBe( false );
+					expect( wrapper.vm.rendererError ).toBe( false );
+					expect( wrapper.find( 'div[data-testid=object-to-string-text]' ).text() ).toBe( 'Rendered Value' );
+				} );
+			} );
+
+			it( 'renders each argument with another ZObjectToString component if the renderer API call fails', async () => {
+				store.getRendererZid = createGettersWithFunctionsMock( 'Z123' );
+				store.runRenderer = jest.fn().mockRejectedValue( new Error( 'Renderer failed' ) );
+
+				const wrapper = mount( ZObjectToString );
+
+				await waitFor( () => {
+					expect( wrapper.vm.rendererRunning ).toBe( false );
+					expect( wrapper.vm.rendererError ).toBe( true );
+					expect( wrapper.findAllComponents( ZObjectToString ) ).toHaveLength( 2 );
+				} );
+			} );
+
+			it( 'renders each argument with another ZObjectToString component if it has a renderer that returns an invalid response', async () => {
+				store.getRendererZid = createGettersWithFunctionsMock( 'Z123' );
+				store.runRenderer = jest.fn().mockResolvedValue( {
+					response: {
+						[ Constants.Z_RESPONSEENVELOPE_VALUE ]: Constants.Z_VOID
+					}
+				} );
+
+				const wrapper = mount( ZObjectToString );
+
+				await waitFor( () => {
+					expect( wrapper.vm.rendererRunning ).toBe( false );
+					expect( wrapper.vm.rendererError ).toBe( true );
+					expect( wrapper.findAllComponents( ZObjectToString ) ).toHaveLength( 2 );
+				} );
 			} );
 		} );
 	} );

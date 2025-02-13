@@ -84,13 +84,14 @@ const { mapActions, mapState } = require( 'pinia' );
 const Constants = require( '../../Constants.js' );
 const KeyValueBlock = require( '../base/KeyValueBlock.vue' );
 const useMainStore = require( '../../store/index.js' );
-const { isValidZidFormat } = require( '../../mixins/typeUtils.js' ).methods;
+const typeUtils = require( '../../mixins/typeUtils.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-tester',
 	components: {
 		'wl-key-value-block': KeyValueBlock
 	},
+	mixins: [ typeUtils ],
 	props: {
 		rowId: {
 			type: Number,
@@ -213,7 +214,7 @@ module.exports = exports = defineComponent( {
 				// Get function output type and dismiss anything that's not a reference
 				const outputType = this.storedFunction[ Constants.Z_PERSISTENTOBJECT_VALUE ][
 					Constants.Z_FUNCTION_RETURN_TYPE ];
-				if ( !outputType || ( typeof outputType !== 'string' ) || !isValidZidFormat( outputType ) ) {
+				if ( !outputType || ( typeof outputType !== 'string' ) || !this.isValidZidFormat( outputType ) ) {
 					return;
 				}
 				this.fetchZids( { zids: [ outputType ] } ).then( () => {
@@ -230,7 +231,7 @@ module.exports = exports = defineComponent( {
 		initializeTestValidation: function ( outputType ) {
 			const type = this.getStoredObject( outputType );
 			const equalityZid = type[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_EQUALITY ];
-			if ( !equalityZid || ( typeof equalityZid !== 'string' ) || !isValidZidFormat( equalityZid ) ) {
+			if ( !equalityZid || ( typeof equalityZid !== 'string' ) || !this.isValidZidFormat( equalityZid ) ) {
 				// Set to blank Function Call if the new test call output doesn't have an equality function
 				const blankFunctionCall = this.createObjectByType( { type: Constants.Z_FUNCTION_CALL } );
 				this.$emit( 'set-value', {
