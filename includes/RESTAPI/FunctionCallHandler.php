@@ -35,6 +35,7 @@ use MediaWiki\MediaWikiServices;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\Rest\Handler;
 use MediaWiki\Rest\LocalizedHttpException;
+use MediaWiki\Rest\Response;
 use MediaWiki\Rest\ResponseInterface;
 use MediaWiki\Rest\SimpleHandler;
 use MediaWiki\Title\Title;
@@ -54,7 +55,13 @@ class FunctionCallHandler extends SimpleHandler {
 	private ZObjectStore $zObjectStore;
 	private ZLangRegistry $langRegistry;
 
-	/** @inheritDoc */
+	/**
+	 * @param string $target
+	 * @param string[] $arguments
+	 * @param string $parseLang
+	 * @param string $renderLang
+	 * @return Response
+	 */
 	public function run( $target, $arguments = [], $parseLang = 'en', $renderLang = 'en' ) {
 		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
 		$this->zObjectStore = WikiLambdaServices::getZObjectStore();
@@ -167,10 +174,10 @@ class FunctionCallHandler extends SimpleHandler {
 			);
 		}
 
-		foreach ( $expectedArguments as $i => $expectedArgument ) {
+		foreach ( $expectedArguments as $inputArgumentKey => $expectedArgument ) {
 			$argumentKey = $expectedArgument->getValueByKey( ZTypeRegistry::Z_ARGUMENTDECLARATION_ID )->getZValue();
 
-			$providedArgument = $arguments[array_keys( $arguments )[$i]];
+			$providedArgument = $arguments[array_keys( $arguments )[$inputArgumentKey]];
 
 			// By default, assume that it's safe to just pass through the argument blindly
 			$argumentsForCall[$argumentKey] = $providedArgument;
@@ -205,54 +212,12 @@ class FunctionCallHandler extends SimpleHandler {
 				);
 			}
 
-			// Value is a ZID reference to something that is of the right Type
-			// TODO (T385618): Take out into a private method the code for checking argument validity, for readability
-			if ( ZObjectUtils::isValidZObjectReference( $providedArgument ) ) {
-				$referencedArgument = $this->zObjectStore
-					->fetchZObjectByTitle( Title::newFromText( $providedArgument, NS_MAIN ) );
-
-				if ( $referencedArgument === false ) {
-					// Fatal — it's a ZID but not to an extant Object.
-					$this->dieRESTfullyWithZError(
-						ZErrorFactory::createZErrorInstance(
-							ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ "data" => $providedArgument ]
-						),
-						400,
-						[ "target" => $target ]
-					);
-				}
-
-				$referencedArgumentType = $referencedArgument->getInnerZObject()->getZType();
-
-				$targetTypeObjectArray = $targetTypeObject->getZValue();
-				$expectedArgumentType = $targetTypeObjectArray[ZTypeRegistry::Z_TYPE_IDENTITY]->getZValue();
-
-				if ( $referencedArgumentType === $expectedArgumentType ) {
-					continue;
-				}
-
-				// Check if the argument is an enum: it has no parser, but it's still valid input
-				if ( $targetTypeObject->isEnumType() ) {
-					// TODO (T385617): Check that the given input is valid for this Type, somehow.
-					continue;
-				}
-
-				// Fatal — it's a ZID but not to an instance of the right Type.
-				$this->dieRESTfullyWithZError(
-					ZErrorFactory::createZErrorInstance(
-						ZErrorTypeRegistry::Z_ERROR_ARGUMENT_TYPE_MISMATCH,
-						[
-							"expected" => $expectedArgumentType,
-							"actual" => $referencedArgumentType,
-							"argument" => $i
-						]
-					),
-					400,
-					[ "target" => $target ]
-				);
-
+			// Check if the argument is a ZID to an instance of the right Type
+			if ( $this->checkArgumentValidity( $providedArgument, $targetTypeObject, $inputArgumentKey, $target ) ) {
+				continue;
 			}
 
+			// At this point, we know it's a string input to a non-string Type, so we need to parse it
 			$typeParser = $targetTypeObject->getParserFunction();
 
 			// Type has no parser
@@ -263,7 +228,7 @@ class FunctionCallHandler extends SimpleHandler {
 
 				// User is trying to use a parameter that can't be parsed from text
 				$this->dieRESTfullyWithZError(
-					ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED, [
+					ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [
 						"data" => [
 							$target,
 							$expectedArgument->getValueByKey( ZTypeRegistry::Z_ARGUMENTDECLARATION_ID ),
@@ -315,7 +280,7 @@ class FunctionCallHandler extends SimpleHandler {
 				// User is trying to use a ZFunction that returns something which doesn't have a renderer
 				$this->dieRESTfullyWithZError(
 					ZErrorFactory::createZErrorInstance(
-						ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED, [ "data" => $target ]
+						ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [ "data" => $target ]
 					),
 					400,
 					[ "target" => $target, "mode" => "output" ]
@@ -419,6 +384,71 @@ class FunctionCallHandler extends SimpleHandler {
 		throw new LocalizedHttpException(
 			new MessageValue( $messageKey, $spec ), $code, $errorData
 		);
+	}
+
+	/**
+	 * Verifies the validity of an argument with respect to the expected type.
+	 * If not valid, dies with error.
+	 *
+	 * @param string $providedArgument
+	 * @param ZType $targetTypeObject
+	 * @param string $inputArgumentKey
+	 * @param string $targetFunction
+	 * @return bool
+	 */
+	private function checkArgumentValidity(
+		$providedArgument,
+		$targetTypeObject,
+		$inputArgumentKey,
+		$targetFunction
+	): bool {
+		if ( ZObjectUtils::isValidZObjectReference( $providedArgument ) ) {
+			$referencedArgument = $this->zObjectStore
+				->fetchZObjectByTitle( Title::newFromText( $providedArgument, NS_MAIN ) );
+
+			if ( $referencedArgument === false ) {
+				// Fatal — it's a ZID but not to an extant Object.
+				$this->dieRESTfullyWithZError(
+					ZErrorFactory::createZErrorInstance(
+						ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
+						[ "data" => $providedArgument ]
+					),
+					400,
+					[ "target" => $targetFunction ]
+				);
+			}
+
+			$referencedArgumentType = $referencedArgument->getInnerZObject()->getZType();
+
+			$targetTypeObjectArray = $targetTypeObject->getZValue();
+			$expectedArgumentType = $targetTypeObjectArray[ZTypeRegistry::Z_TYPE_IDENTITY]->getZValue();
+
+			if ( $referencedArgumentType === $expectedArgumentType ) {
+				return true;
+			}
+
+			// Check if the argument is an enum: it has no parser, but it's still valid input
+			if ( $targetTypeObject->isEnumType() ) {
+				// TODO (T385617): Check that the given input is valid for this Type, somehow.
+				return true;
+			}
+
+			// Fatal — it's a ZID but not to an instance of the right Type.
+			$this->dieRESTfullyWithZError(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_ARGUMENT_TYPE_MISMATCH,
+					[
+						"expected" => $expectedArgumentType,
+						"actual" => $referencedArgumentType,
+						"argument" => $inputArgumentKey
+					]
+				),
+				400,
+				[ "target" => $targetFunction ]
+			);
+		}
+
+		return false;
 	}
 
 	/**
