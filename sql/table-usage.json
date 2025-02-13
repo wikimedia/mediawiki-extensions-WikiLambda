@@ -1,0 +1,37 @@
+[
+	{
+		"name": "wikifunctionsclient_usage",
+		"comment": "Client wiki tracking table for what pages use what Functions.",
+		"columns": [
+			{
+				"name": "wfcu_id",
+				"comment": "Unique ID for index purposes",
+				"type": "bigint",
+				"options": { "unsigned": true, "notnull": true, "autoincrement": true }
+			},
+			{
+				"name": "wfcu_targetFunction",
+				"comment": "The target Function's ZID, on Wikifunctions.org",
+				"type": "binary",
+				"options": { "length": 32, "notnull": true }
+			},
+			{
+				"name": "wfcu_targetPage",
+				"comment": "The using page on this wiki",
+				"type": "binary",
+				"options": { "length": 255, "notnull": true }
+			}
+		],
+		"indexes": [
+			{
+				"name": "wfcu_unique",
+				"columns": [
+					"wfcu_targetFunction",
+					"wfcu_targetPage"
+				],
+				"unique": true
+			}
+		],
+		"pk": [ "wfcu_id" ]
+	}
+]
