@@ -20,6 +20,7 @@
 	"apihelp-wikilambda_fetch-example-multiple": "Holt drei ZObjekte: Z1, Z2 und Z3.",
 	"apihelp-wikilambda_fetch-example-multiple-old": "Holen von Version 12 von ZObjekt Z1, Version 14 von Z2 und Version 25 von Z3.",
 	"apihelp-wikilambda_function_call-param-zobject": "ZObjekt für Funktionsaufruf",
+	"apihelp-wikilambda_function_call-param-bypass-cache": "Bypass-Cache-Flag, das ein optionaler Parameter ist, der nur für interne Spezialzwecke bestimmt ist",
 	"apihelp-wikilambda_function_call-example-generic-list": "Aufrufen einer Funktion, die das erste Element einer typisierten Liste zurückgibt",
 	"apihelp-wikilambda_function_call-example-generic-pair": "Aufrufen einer Funktion, die das zweite Element eines Typed pair&lt;String,Typed pair&lt;String,Boolean&gt;&gt; zurückgibt",
 	"apihelp-wikilambda_function_call-example-generic-map": "Aufrufen einer Funktion, die das Element einer generischen Karte an einem bestimmten Schlüssel auf eine Zeichenketten-Version seines Wertes abbildet",

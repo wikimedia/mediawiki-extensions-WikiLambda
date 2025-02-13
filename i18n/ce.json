@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Исмаил Садуев",
 			"Умар"
 		]
 	},
@@ -34,7 +35,7 @@
 	"wikilambda-editor-leave-edit-mode-header": "Хийцамаш баран раж дӀачӀагӀа",
 	"wikilambda-editor-output-title": "Хилам",
 	"wikilambda-editor-publish-dialog-header": "Гучубаха хьой бина хийцамаш",
-	"wikilambda-editor-publish-dialog-summary-help-text": "АгӀонна хӀун хийцамаш бина ахьа?",
+	"wikilambda-editor-publish-dialog-summary-help-text": "ХӀун хийцамаш бина ахь агӀонна?",
 	"wikilambda-editor-publish-dialog-summary-label": "Хийцамах лаьцна",
 	"wikilambda-editor-publish-dialog-summary-placeholder": "Доца йазде цуьнах лаьцна",
 	"wikilambda-editor-tester-list-label": "Тестийн могӀам",
