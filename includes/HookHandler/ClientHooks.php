@@ -244,10 +244,9 @@ class ClientHooks implements
 				]
 			);
 			// TODO (T385629): Different tracking for this and below?
-			// TODO (T362236): Pass in the rendering language as a parameter, don't default to English
 			// Uses message wikilambda-functioncall-error-category-desc implicitly.
 			$parser->addTrackingCategory( 'wikilambda-functioncall-error-category' );
-			$errorMessage = $zerror->getZErrorMessage();
+			$errorMessage = $zerror->getZError()->getMessage( $renderLang );
 			$ret = Html::errorBox(
 				wfMessage( 'wikilambda-functioncall-error', $errorMessage )->parseAsBlock()
 			);

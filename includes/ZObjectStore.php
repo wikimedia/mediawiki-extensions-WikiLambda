@@ -382,10 +382,16 @@ class ZObjectStore {
 				[ 'responseError' => $e ]
 			);
 
+			if ( $e instanceof ZErrorException ) {
+				// TODO (T362236): Add the rendering language as a parameter, don't default to English
+				$errorMessage = $e->getZError()->getMessage( 'en' );
+			} else {
+				$errorMessage = $e->getMessage();
+			}
+
 			$error = ZErrorFactory::createZErrorInstance(
 				ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
-				// TODO (T362236): Add the rendering language as a parameter, don't default to English
-				[ 'message' => $e->getMessage() ]
+				[ 'message' => $errorMessage ]
 			);
 			return ZObjectPage::newFatal( $error );
 		}

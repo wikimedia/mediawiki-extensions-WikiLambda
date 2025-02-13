@@ -175,7 +175,8 @@ class ZObjectContent extends AbstractContent {
 			$this->zobject = ZObjectFactory::createPersistentContent( $this->getObject() );
 		} catch ( ZErrorException $e ) {
 			// TODO (T362236): Add the rendering language as a parameter, don't default to English
-			$this->status->fatal( $e->getMessage() );
+			$errorMessage = $e->getZError()->getMessage( 'en' );
+			$this->status->fatal( $errorMessage );
 			$this->error = $e->getZError();
 		}
 	}
