@@ -69,6 +69,7 @@ class FunctionCallHandler extends SimpleHandler {
 			// Client-side code is also going to check whether it's disabled before it's installed.
 			$this->dieRESTfullyWithZError(
 				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [] ),
+				// This is an HTTP 501 because it's literally "not implemented yet", rather than necessarily user error
 				501,
 				[ "target" => $target ]
 			);
@@ -89,7 +90,7 @@ class FunctionCallHandler extends SimpleHandler {
 			// User is trying to use a function that doesn't exist
 			$this->dieRESTfullyWithZError(
 				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ "data" => $target ] ),
-				404,
+				400,
 				[ "target" => $target ]
 			);
 		}
@@ -106,7 +107,7 @@ class FunctionCallHandler extends SimpleHandler {
 						'childError' => $targetObject->getErrors()
 					]
 				),
-				404,
+				400,
 				[ "target" => $target ]
 			);
 		}
@@ -117,7 +118,7 @@ class FunctionCallHandler extends SimpleHandler {
 				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_UNKNOWN, [ "data" => $target ]
 				),
-				404,
+				400,
 				[ "target" => $target ]
 			);
 		}
@@ -216,7 +217,7 @@ class FunctionCallHandler extends SimpleHandler {
 						ZErrorFactory::createZErrorInstance(
 							ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ "data" => $providedArgument ]
 						),
-						404,
+						400,
 						[ "target" => $target ]
 					);
 				}
@@ -269,7 +270,7 @@ class FunctionCallHandler extends SimpleHandler {
 							$targetTypeZid
 						]
 					] ),
-					501,
+					400,
 					[ "target" => $target, "mode" => "input" ]
 				);
 			}
@@ -316,7 +317,7 @@ class FunctionCallHandler extends SimpleHandler {
 					ZErrorFactory::createZErrorInstance(
 						ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED, [ "data" => $target ]
 					),
-					501,
+					400,
 					[ "target" => $target, "mode" => "output" ]
 				);
 			}
@@ -337,6 +338,7 @@ class FunctionCallHandler extends SimpleHandler {
 		} catch ( WikifunctionCallException $error ) {
 			$this->dieRESTfullyWithZError(
 				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_EVALUATION, [ "data" => $error ] ),
+				// This is an HTTP 500 because it's an error when calling our "local" API, which is probably our fault
 				500,
 				[ "data" => $error ]
 			);
@@ -495,7 +497,7 @@ class FunctionCallHandler extends SimpleHandler {
 			}
 			$this->dieRESTfullyWithZError(
 				$zerror,
-				501,
+				400,
 				[ "target" => $call ]
 			);
 			throw new ZErrorException( $zerror );

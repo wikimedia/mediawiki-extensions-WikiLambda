@@ -73,7 +73,7 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testExecute_simpleIf() {
-		// The second-simplst call, a request to echo 'true' or 'false' based on the first argument
+		// The second-simplest call, a request to echo 'true' or 'false' based on the first argument
 
 		// Force-enable our code
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
@@ -118,13 +118,13 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		$handler = new FunctionCallHandler();
 
 		$this->expectExceptionObject(
-			new LocalizedHttpException( new MessageValue( 'wikilambda-zerror' ), 404, [ 'target' => 'Z421' ] )
+			new LocalizedHttpException( new MessageValue( 'wikilambda-zerror' ), 400, [ 'target' => 'Z421' ] )
 		);
 		$this->executeHandler( $handler, $request );
 	}
 
 	public function testExecute_targetFunctionNotFound() {
-		// Confirm that a 404 is returned when the target function is not found
+		// Confirm that a 400 is returned when the target function is not found
 
 		// Force-enable our code
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
@@ -134,7 +134,7 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		$handler = new FunctionCallHandler();
 
 		$this->expectExceptionObject(
-			new LocalizedHttpException( new MessageValue( 'wikilambda-zerror' ), 404, [ 'target' => 'Z0' ] )
+			new LocalizedHttpException( new MessageValue( 'wikilambda-zerror' ), 400, [ 'target' => 'Z0' ] )
 		);
 		$this->executeHandler( $handler, $request );
 	}
