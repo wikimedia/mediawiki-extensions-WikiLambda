@@ -123,6 +123,46 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->executeHandler( $handler, $request );
 	}
 
+	public function testExecute_tooFewInputs() {
+		// Confirm that a 400 is returned when the call has the wrong number of inputs
+
+		// Force-enable our code
+		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
+
+		$this->standardCall['pathParams']['arguments'] = implode( '|', [
+			base64_encode( 'Z41' ),
+			base64_encode( 'true' )
+		] );
+		$request = new RequestData( $this->standardCall );
+		$handler = new FunctionCallHandler();
+
+		$this->expectExceptionObject(
+			new LocalizedHttpException( new MessageValue( 'wikilambda-zerror' ), 400, [ 'target' => 'Z0' ] )
+		);
+		$this->executeHandler( $handler, $request );
+	}
+
+	public function testExecute_tooManyInputs() {
+		// Confirm that a 400 is returned when the call has the wrong number of inputs
+
+		// Force-enable our code
+		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
+
+		$this->standardCall['pathParams']['arguments'] = implode( '|', [
+			base64_encode( 'Z41' ),
+			base64_encode( 'true' ),
+			base64_encode( 'false' ),
+			base64_encode( 'hello' )
+		] );
+		$request = new RequestData( $this->standardCall );
+		$handler = new FunctionCallHandler();
+
+		$this->expectExceptionObject(
+			new LocalizedHttpException( new MessageValue( 'wikilambda-zerror' ), 400, [ 'target' => 'Z0' ] )
+		);
+		$this->executeHandler( $handler, $request );
+	}
+
 	public function testExecute_targetFunctionNotFound() {
 		// Confirm that a 400 is returned when the target function is not found
 
@@ -139,6 +179,22 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->executeHandler( $handler, $request );
 	}
 
+	public function testExecute_targetFunctionNotAFunction() {
+		// Confirm that a 400 is returned when the target Function is actually a Type
+
+		// Force-enable our code
+		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
+
+		$this->standardCall['pathParams']['zid'] = 'Z4';
+		$request = new RequestData( $this->standardCall );
+		$handler = new FunctionCallHandler();
+
+		$this->expectExceptionObject(
+			new LocalizedHttpException( new MessageValue( 'wikilambda-zerror' ), 400, [ 'target' => 'Z0' ] )
+		);
+		$this->executeHandler( $handler, $request );
+	}
+
 	public function testExecute_targetParseLangNotFound() {
 		// Confirm that a 400 is returned when the target language is not found
 
@@ -146,6 +202,22 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
 
 		$this->standardCall['pathParams']['parselang'] = 'madeuplanguage';
+		$request = new RequestData( $this->standardCall );
+		$handler = new FunctionCallHandler();
+
+		$this->expectExceptionObject(
+			new LocalizedHttpException( new MessageValue( 'wikilambda-zerror' ), 400, [ 'target' => 'madeuplanguage' ] )
+		);
+		$this->executeHandler( $handler, $request );
+	}
+
+	public function testExecute_targetRenderLangNotFound() {
+		// Confirm that a 400 is returned when the target language is not found
+
+		// Force-enable our code
+		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
+
+		$this->standardCall['pathParams']['renderlang'] = 'madeuplanguage';
 		$request = new RequestData( $this->standardCall );
 		$handler = new FunctionCallHandler();
 
