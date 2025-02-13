@@ -187,12 +187,25 @@ module.exports = exports = defineComponent( {
 						indeterminate: this.areSomeRowsChecked( this.implementationsState ),
 						'onUpdate:modelValue': ( value ) => this.checkAllRows( this.implementationsState, value ),
 						hideLabel: true
-					}
+					},
+					class: 'ext-wikilambda-app-function-viewer-details-table__column--checkbox'
 				},
-				{ id: 'name', title: this.$i18n( 'wikilambda-function-implementation-name-label' ) },
-				{ id: 'status', title: this.$i18n( 'wikilambda-function-implementation-state-label' ) },
-				{ id: 'language', title: this.$i18n( 'wikilambda-function-implementation-language-label' ) },
-				{ id: 'result', title: this.$i18n( 'wikilambda-function-implementation-tests-passed-label' ) }
+				{
+					id: 'name',
+					title: this.$i18n( 'wikilambda-function-implementation-name-label' )
+				},
+				{
+					id: 'status',
+					title: this.$i18n( 'wikilambda-function-implementation-state-label' )
+				},
+				{
+					id: 'language',
+					title: this.$i18n( 'wikilambda-function-implementation-language-label' )
+				},
+				{
+					id: 'result',
+					title: this.$i18n( 'wikilambda-function-implementation-tests-passed-label' )
+				}
 			];
 		},
 
@@ -357,10 +370,17 @@ module.exports = exports = defineComponent( {
 						indeterminate: this.areSomeRowsChecked( this.testsState ),
 						'onUpdate:modelValue': ( value ) => this.checkAllRows( this.testsState, value ),
 						hideLabel: true
-					}
+					},
+					class: 'ext-wikilambda-app-function-viewer-details-table__column--checkbox'
 				},
-				{ id: 'name', title: this.$i18n( 'wikilambda-function-implementation-name-label' ) },
-				{ id: 'status', title: this.$i18n( 'wikilambda-function-implementation-state-label' ) }
+				{
+					id: 'name',
+					title: this.$i18n( 'wikilambda-function-implementation-name-label' )
+				},
+				{
+					id: 'status',
+					title: this.$i18n( 'wikilambda-function-implementation-state-label' )
+				}
 			];
 
 			// Add one column for each implementation selected,
@@ -707,6 +727,10 @@ module.exports = exports = defineComponent( {
 		@media screen and ( max-width: @max-width-breakpoint-mobile ) {
 			width: @size-full;
 		}
+	}
+
+	.ext-wikilambda-app-function-viewer-details-table__column--checkbox {
+		width: @spacing-125;
 	}
 }
 </style>
