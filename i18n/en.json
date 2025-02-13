@@ -8,7 +8,7 @@
 	},
 	"wikilambda-desc": "Providing for functions to be written, managed, and evaluated on a central wiki.",
 	"action-wikifunctions-run": "run Functions in the public API",
-	"action-wikilambda-bypass-cache": "Toggle the $bypassCache flag with special internal permissions",
+	"action-wikilambda-bypass-cache": "toggle the $bypassCache flag with special internal permissions",
 	"action-wikilambda-connect-implementation": "connect an Implementation to its Function so it can be run",
 	"action-wikilambda-connect-tester": "connect a Test Case to its Function",
 	"action-wikilambda-create": "create new Objects at all",
