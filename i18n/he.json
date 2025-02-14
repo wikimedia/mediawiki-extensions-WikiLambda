@@ -455,6 +455,7 @@
 	"wikilambda-wikidata-item-selector-placeholder": "נא לבחור פריט ויקינתונים",
 	"wikilambda-wikidata-lexeme-form-selector-placeholder": "נא לבחור צורת יחידה מילונית מוויקינתונים",
 	"wikilambda-wikidata-lexeme-selector-placeholder": "נא לבחור יחידה מילונית מוויקינתונים",
+	"wikilambda-wikidata-property-selector-placeholder": "נא לבחור מאפיין ויקינתונים",
 	"wikilambda-zerror": "שגיאת מסוג $1",
 	"wikilambda-zimplememntation-composition-missing": "ההרכבה ריקה. נא לבחור פונקציה.",
 	"wikilambda-zimplementation-code-language-missing": "נא לבחור שפת תכנות תחילה.",

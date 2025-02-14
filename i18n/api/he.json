@@ -13,6 +13,7 @@
 	"apihelp-wikilambda_fetch-example-multiple": "אחזור שלושה עצמי Z‏: Z1‏, Z2, ו־Z3.",
 	"apihelp-wikilambda_fetch-example-multiple-old": "לאחזר את גרסה 12 של עצם ה־Z עם המזהה Z1, את גרסה 14 של Z2, ואת גרסה של 25 של Z3.",
 	"apihelp-wikilambda_function_call-param-zobject": "עצם ה־Z לקריאה לפונקציה",
+	"apihelp-wikilambda_function_call-param-bypass-cache": "דגל Bypass-cache שהוא פרמטר רשות לשימוש פנימי מיוחד בלבד",
 	"apihelp-wikilambda_function_call-example-generic-list": "קריאה לפונקציה שמחזירה את האיבר הראשון של רשימה מסווגת",
 	"apihelp-wikilambda_function_call-example-generic-pair": "קריאה לפונקציה שמחזירה את האיבר השני של מבנה <span dir=\"ltr\">Typed pair&lt;String,Typed pair&lt;String,Boolean&gt;&gt;</span>",
 	"apihelp-wikilambda_function_call-example-generic-map": "קריאה לפונקציה שממפה את הרכיב של מפה כללית במפתח נתון לגרסת המחרוזת של הערך שלו",
