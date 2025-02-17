@@ -71,6 +71,10 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 			return true;
 		}
 
+		$services = MediaWikiServices::getInstance();
+		$dbw = $services->getDBLoadBalancer()->getConnection( DB_PRIMARY );
+		$commentStore = $services->getCommentStore();
+
 		// Build the RecentChange attributes common to all entries regardless of page on which it's used
 		$generalAttributes = [
 			'rc_type' => RC_EXTERNAL,
@@ -93,10 +97,14 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 			// Update-specific stuff
 			'rc_bot' => $this->params['bot'],
 			'rc_timestamp' => wfTimestamp( TS_MW, $this->params['timestamp'] ),
-			// FIXME: Is this right?
-			// TODO (T383156): This should be a paramterised message with information about the change
-			'rc_comment_text' => $this->params['summary']
 		];
+
+		// Build the comment related to the change
+		// TODO (T383156): This should be a paramterised message with information about the change
+		$commentData = [];
+		$commentId = $commentStore->createComment( $dbw, $this->params['summary'], $commentData );
+
+		$generalAttributes['rc_comment_id'] = $commentId;
 
 		// Ask CentralAuth for the user ID lookup, if available.
 		$clientUserId = 0;
