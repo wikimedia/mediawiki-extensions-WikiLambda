@@ -23,7 +23,7 @@
 </template>
 
 <script>
-const { CdxDialog } = require( '@wikimedia/codex' );
+const { CdxDialog } = require( '../../../../codex.js' );
 
 // @vue/components
 module.exports = exports = {

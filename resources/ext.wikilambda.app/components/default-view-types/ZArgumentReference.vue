@@ -27,7 +27,7 @@
 </template>
 
 <script>
-const { CdxIcon, CdxSelect } = require( '@wikimedia/codex' );
+const { CdxIcon, CdxSelect } = require( '../../../codex.js' );
 const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
 

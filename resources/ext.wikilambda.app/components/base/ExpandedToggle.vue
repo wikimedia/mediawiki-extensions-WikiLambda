@@ -22,10 +22,9 @@
 </template>
 
 <script>
-const { CdxButton, CdxIcon } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
-
+const { CdxButton, CdxIcon } = require( '../../../codex.js' );
 const icons = require( '../../../lib/icons.json' );
 const useMainStore = require( '../../store/index.js' );
 

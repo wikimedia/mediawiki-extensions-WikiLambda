@@ -23,7 +23,7 @@ module.exports = {
 	],
 
 	moduleNameMapper: {
-		'codex.js': '<rootDir>/node_modules/@wikimedia/codex/dist/codex.cjs',
+		'codex.js': '<rootDir>/tests/jest/helpers/loadCodexComponents.js',
 		'icons.json': '<rootDir>/tests/jest/fixtures/icons.json'
 	},
 

@@ -91,8 +91,7 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { CdxButton, CdxCheckbox, CdxIcon, CdxInfoChip, CdxTable } = require( '@wikimedia/codex' );
-
+const { CdxButton, CdxCheckbox, CdxIcon, CdxInfoChip, CdxTable } = require( '../../../../codex.js' );
 const Constants = require( '../../../Constants.js' );
 const FunctionTesterTable = require( './FunctionTesterTable.vue' );
 const icons = require( '../../../../lib/icons.json' );

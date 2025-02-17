@@ -65,7 +65,7 @@
 </template>
 
 <script>
-const { CdxButton, CdxField, CdxIcon, CdxTextInput } = require( '@wikimedia/codex' );
+const { CdxButton, CdxField, CdxIcon, CdxTextInput } = require( '../../../../codex.js' );
 const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
 

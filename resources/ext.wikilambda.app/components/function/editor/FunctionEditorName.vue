@@ -34,9 +34,8 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { CdxTextInput } = require( '@wikimedia/codex' );
 const { mapActions, mapState } = require( 'pinia' );
-
+const { CdxTextInput } = require( '../../../../codex.js' );
 const Constants = require( '../../../Constants.js' );
 const LabelData = require( '../../../store/classes/LabelData.js' );
 const pageTitleUtils = require( '../../../mixins/pageTitleUtils.js' );

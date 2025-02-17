@@ -33,10 +33,9 @@
 </template>
 
 <script>
-const { CdxTextArea } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
-
+const { CdxTextArea } = require( '../../../../codex.js' );
 const Constants = require( '../../../Constants.js' );
 const FunctionEditorField = require( './FunctionEditorField.vue' );
 const LabelData = require( '../../../store/classes/LabelData.js' );

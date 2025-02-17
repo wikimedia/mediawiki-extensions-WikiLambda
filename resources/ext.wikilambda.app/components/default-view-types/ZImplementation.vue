@@ -103,10 +103,9 @@
 </template>
 
 <script>
-const { CdxMessage, CdxRadio } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
-
+const { CdxMessage, CdxRadio } = require( '../../../codex.js' );
 const Constants = require( '../../Constants.js' );
 const KeyBlock = require( '../base/KeyBlock.vue' );
 const KeyValueBlock = require( '../base/KeyValueBlock.vue' );

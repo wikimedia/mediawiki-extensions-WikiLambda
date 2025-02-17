@@ -28,7 +28,7 @@
 </template>
 
 <script>
-const { CdxChipInput } = require( '@wikimedia/codex' );
+const { CdxChipInput } = require( '../../../../codex.js' );
 const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
 

@@ -43,10 +43,9 @@
 </template>
 
 <script>
-const { CdxInfoChip, CdxTextInput } = require( '@wikimedia/codex' );
 const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
-
+const { CdxInfoChip, CdxTextInput } = require( '../../../codex.js' );
 const Constants = require( '../../Constants.js' );
 const useMainStore = require( '../../store/index.js' );
 

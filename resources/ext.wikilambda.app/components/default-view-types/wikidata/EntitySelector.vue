@@ -26,10 +26,10 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { CdxLookup, Icon } = require( '@wikimedia/codex' );
-const { mapActions } = require( 'pinia' );
 
+const { defineComponent } = require( 'vue' );
+const { mapActions } = require( 'pinia' );
+const { CdxLookup } = require( '../../../../codex.js' );
 const Constants = require( '../../../Constants.js' );
 const useMainStore = require( '../../../store/index.js' );
 
@@ -52,7 +52,8 @@ module.exports = exports = defineComponent( {
 			required: true
 		},
 		icon: {
-			type: Icon,
+			// TODO: add icon types from Codex. Now Codex is loaded in chunck, we can't import the 'Icon' type
+			type: String,
 			required: false,
 			default: undefined
 		}

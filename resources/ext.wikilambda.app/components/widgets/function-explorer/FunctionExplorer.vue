@@ -148,9 +148,8 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { CdxButton, CdxIcon } = require( '@wikimedia/codex' );
 const { mapState } = require( 'pinia' );
-
+const { CdxButton, CdxIcon } = require( '../../../../codex.js' );
 const Constants = require( '../../../Constants.js' );
 const clipboardUtils = require( '../../../mixins/clipboardUtils.js' );
 const icons = require( '../../../../lib/icons.json' );

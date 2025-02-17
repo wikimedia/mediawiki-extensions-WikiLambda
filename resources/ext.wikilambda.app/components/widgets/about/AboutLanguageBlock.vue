@@ -226,9 +226,8 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { CdxChipInput, CdxField, CdxTextArea, CdxTextInput } = require( '@wikimedia/codex' );
 const { mapState } = require( 'pinia' );
-
+const { CdxChipInput, CdxField, CdxTextArea, CdxTextInput } = require( '../../../../codex.js' );
 const Constants = require( '../../../Constants.js' );
 const useMainStore = require( '../../../store/index.js' );
 const ZObjectToString = require( '../../default-view-types/ZObjectToString.vue' );

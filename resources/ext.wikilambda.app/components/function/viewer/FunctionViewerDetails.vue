@@ -55,7 +55,7 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { CdxMessage } = require( '@wikimedia/codex' );
+const { CdxMessage } = require( '../../../../codex.js' );
 const { mapActions, mapState } = require( 'pinia' );
 
 const Constants = require( '../../../Constants.js' );
