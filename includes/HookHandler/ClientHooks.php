@@ -509,9 +509,10 @@ class ClientHooks implements
 			array_map( static fn ( $val ): string => base64_encode( $val ), $args )
 		);
 
-		$requestUri = $this->config->get( 'RestPath' )
-		. '/wikifunctions/v0/call'
-		. '/' . $target
+		$requestUri = $this->config->get( 'WikiLambdaClientTargetAPI' )
+			. $this->config->get( 'RestPath' )
+			. '/wikifunctions/v0/call'
+			. '/' . $target
 			. '/' . $encodedArguments
 			. '/' . $parseLang
 			. '/' . $renderLang;
