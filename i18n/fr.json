@@ -3,6 +3,7 @@
 		"authors": [
 			"Alien333",
 			"Ayack",
+			"BOKOBA VEROLY",
 			"DreZhsh",
 			"Eihel",
 			"Envlh",
@@ -288,6 +289,9 @@
 	"wikilambda-functioncall-error-nonstringoutput": "Erreur d’appel de fonction : la fonction '$1' ne produit pas une chaîne de caractères pouvant être affichée sur une page",
 	"wikilambda-functioncall-error-nonstringoutput-category": "Pages avec des appels de Wikifonctions créant des objets autres que des chaînes de caractères",
 	"wikilambda-functioncall-error-nonstringoutput-category-desc": "Pages avec des tentatives d’appels à Wikifonctions avec une fonction qui ne renvoie pas une chaîne de caractères",
+	"wikilambda-functioncall-error-unclear": "Erreur d'appel de fonction : un problème est survenu avec le système",
+	"wikilambda-functioncall-error-unclear-category": "Pages avec des appels Wikifunctions erronés sans erreur claire",
+	"wikilambda-functioncall-error-unclear-category-desc": "Pages avec des appels à Wikifunctions qui entraînent une erreur de système",
 	"wikilambda-functioncall-error-unknown": "Erreur d’appel de fonction : '$1' n’est pas un objet connu",
 	"wikilambda-functioncall-error-unknown-category": "Pages avec des appels de Wikifonctions vers des objets inconnus",
 	"wikilambda-functioncall-error-unknown-category-desc": "Pages avec des tentatives d’appels à Wikifonctions qui demandent un objet inconnu",

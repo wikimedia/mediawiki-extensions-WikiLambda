@@ -5,7 +5,8 @@
 			"Cristina S",
 			"NGC 54",
 			"Paloi Sciurala",
-			"Strainu"
+			"Strainu",
+			"Trotinel Iftode"
 		]
 	},
 	"wikilambda-desc": "Furnizarea pe wikiurile Wikimedia a unei funcții parser care rulează funcțiile scrise, gestionate și evaluate pe un wiki central.",
@@ -27,6 +28,7 @@
 	"group-functionmaintainer-member": "{{GENDER:$1|Editor|Editoare}} de cod sursă",
 	"grouppage-functioneer": "{{ns:project}}:Funcționari",
 	"grouppage-functionmaintainer": "{{ns:project}}:Editori de cod sursă",
+	"right-wikilambda-bypass-cache": "Comutați indicatorul $bypassCache cu permisiuni interne speciale",
 	"specialpages-group-wikilambda": "Pagini Wikifuncții",
 	"wikilambda-about-widget-add-language": "Adaugă limbă",
 	"wikilambda-about-widget-aliases-caption": "Apăsați Enter ↵ după fiecare alias.",

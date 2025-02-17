@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Trotinel Iftode"
+		]
+	},
+	"apihelp-wikilambda_function_call-param-bypass-cache": "Indicatorul de ignorare a memoriei cache care este un parametru opțional numai pentru uz intern special"
+}

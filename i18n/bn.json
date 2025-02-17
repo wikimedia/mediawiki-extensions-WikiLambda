@@ -464,6 +464,7 @@
 	"wikilambda-wikidata-item-selector-placeholder": "উইকিউপাত্ত আইটেম নির্বাচন করুন",
 	"wikilambda-wikidata-lexeme-form-selector-placeholder": "উইকিউপাত্ত লেক্সিম রূপ নির্বাচন করুন",
 	"wikilambda-wikidata-lexeme-selector-placeholder": "উইকিউপাত্ত লেক্সেম নির্বাচন করুন",
+	"wikilambda-wikidata-property-selector-placeholder": "উইকিউপাত্ত বৈশিষ্ট্য নির্বাচন করুন",
 	"wikilambda-zerror": "$1 ধরনের ত্রুটি",
 	"wikilambda-zimplememntation-composition-missing": "ফাংশন প্রণয়ন খালি। অনুগ্রহ করে একটি ফাংশন নির্বাচন করুন।",
 	"wikilambda-zimplementation-code-language-missing": "প্রথমে একটি প্রোগ্রামিং ভাষা নির্বাচন করুন।",
