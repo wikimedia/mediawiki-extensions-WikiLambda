@@ -33,6 +33,11 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 		'pcd' => 'Z1829',
 	];
 
+	protected function setUpAsRepoMode(): void {
+		$this->overrideConfigValue( 'WikiLambdaEnableRepoMode', true );
+		\MediaWiki\Extension\WikiLambda\Hooks::registerExtension();
+	}
+
 	/**
 	 * Inserts the given ZObjects from the builtin data collection directory
 	 *

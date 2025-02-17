@@ -7,10 +7,11 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
+namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ZObjects;
 
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectPage;
@@ -37,6 +38,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
+		$this->setUpAsRepoMode();
 		$this->zobjectStore = WikiLambdaServices::getZObjectStore();
 	}
 
