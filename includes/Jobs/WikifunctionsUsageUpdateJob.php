@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Jobs;
 use GenericParameterJob;
 use Job;
 use MediaWiki\Extension\WikiLambda\WikifunctionsClientStore;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Title\Title;
 use Psr\Log\LoggerInterface;
@@ -31,6 +32,7 @@ class WikifunctionsUsageUpdateJob extends Job implements GenericParameterJob {
 	public function __construct( array $params ) {
 		parent::__construct( 'wikifunctionsUsageUpdate', $params );
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
+		$this->wikifunctionsClientStore = WikiLambdaServices::getWikifunctionsClientStore();
 
 		$this->targetFunction = $params['targetFunction'];
 		$this->targetPage = $params['targetPage'];
