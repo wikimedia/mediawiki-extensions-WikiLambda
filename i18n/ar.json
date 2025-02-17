@@ -14,9 +14,12 @@
 			"XIDME"
 		]
 	},
+	"wikilambda-history-title": "تاريخ مراجعات \"$1\" ($2)",
 	"wikilambda-typeunavailable": "نوع غير معروف",
 	"wikilambda-persistentzobject-contents": "المحتويات",
+	"wikilambda-multilingualstring-nofallback": "لا تسميات جرى تعريفها في هذه اللغة أو حتى بدائل مقبولة",
 	"wikilambda-viewmode-nojs": "هذه الصفحة تُعرض بشكل محدود بدون جافا سكريبت.",
+	"wikilambda-reference": "إحالة",
 	"wikilambda-functioncall": "استدعاء دالة",
 	"wikilambda-edit": "عدل",
 	"wikilambda-show-more": "أظهر المزيد",
@@ -35,6 +38,7 @@
 	"wikilambda-argument-typeselector-label": "اختر نوعًا لهذا الوسيط",
 	"wikilambda-return-typeselector-label": "اختر نوعًا سيُعاد",
 	"wikilambda-editor-label-addlanguage-label": "أضف لغة",
+	"wikilambda-editor-label-removelanguage-tooltip": "إزالة هذه اللغة من هذه التسمية",
 	"wikilambda-editor-zobject-addkey": "أضف مفتاح:",
 	"wikilambda-editor-zobject-clearitem-tooltip": "أفرغ هذه القيمة",
 	"specialpages-group-wikilambda": "صفحات ويكي الدوال",
