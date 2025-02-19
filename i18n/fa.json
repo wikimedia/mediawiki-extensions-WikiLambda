@@ -40,6 +40,9 @@
 	"wikilambda-function-explorer-name-title": "نام",
 	"wikilambda-function-typeselector-label": "تابع را انتخاب کنید",
 	"wikilambda-function-view-function-button-text": "مشاهدهٔ تابع",
+	"wikilambda-functioncall-error-unclear": "خطای فراخوانی تابع: سامانه با مشکل مواجه شد",
+	"wikilambda-functioncall-error-unclear-category": "صفحه‌های دارای فراخوانی‌های ویکی‌توابع شکست‌خورده بدون خطای واضح",
+	"wikilambda-functioncall-error-unclear-category-desc": "صفحه‌های دارای فراخوانی‌های ویکی‌توابع که منجر به خطای سامانه می‌شوند",
 	"wikilambda-functioncall-metadata-cpu-usage": "استفادده از پردازنده",
 	"wikilambda-functioncall-metadata-end-time": "زمان پایان",
 	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|خطا}}",
@@ -88,5 +91,6 @@
 	"wikilambda-unknown-save-error-message": "ناتوان از انتشار. لطفاً دوباره تلاش کنید.",
 	"wikilambda-unknown-test-error-message": "ناتوان از راندن آزمون‌ها. لطفاً تازه‌سازی کنید.",
 	"wikilambda-validation-error-description-toolong": "طول توضیحات در $1 باید {{PLURAL:$2|$2 نویسه}} یا کمتر باشد.",
-	"wikilambda-validation-error-name-toolong": "طول نام در $1 باید {{PLURAL:$2|$2 نویسه}} یا کمتر باشد."
+	"wikilambda-validation-error-name-toolong": "طول نام در $1 باید {{PLURAL:$2|$2 نویسه}} یا کمتر باشد.",
+	"wikilambda-wikidata-property-selector-placeholder": "انتخاب خصوصیت ویکی‌داده"
 }
