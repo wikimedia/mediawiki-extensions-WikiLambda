@@ -6,6 +6,7 @@
 		]
 	},
 	"wikilambda-persistentzobject-contents": "Sisdoallu",
+	"wikilambda-edit": "Rievdat",
 	"wikilambda-show-more": "Čájet eambbo",
 	"wikilambda-special-listduplicateobjectlabels-language": "Giella",
 	"wikilambda-cancel": "Gaskkalduhte",
@@ -22,11 +23,14 @@
 	"wikilambda-function-definition-alias-label": "Lassenamat",
 	"wikilambda-editor-additional-details-label": "Lassedieđut",
 	"wikilambda-editor-fn-step-function-definition": "Funkšuvnna meroštallan",
+	"wikilambda-editor-fn-step-function-about": "Lassedieđut",
 	"wikilambda-editor-fn-step-function-details": "Dieđut",
 	"wikilambda-optional": "eaktodáhtolaš",
 	"wikilambda-function-viewer-aliases-show-language-button": "Čájet eanet gielaid",
 	"wikilambda-function-viewer-details-table-view-all": "Čájet buot",
 	"wikilambda-function-viewer-details-table-view-less": "Čájet unnit",
 	"wikilambda-tester-details": "Dieđut",
+	"wikilambda-about-widget-description-placeholder": "Rievdat govvádusa",
+	"wikilambda-about-widget-add-language": "Lasit giela",
 	"wikilambda-function-evaluator-result-details": "Dieđut"
 }

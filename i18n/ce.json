@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Умар"
+			"Умар",
+			"Исмаил Садуев"
 		]
 	},
 	"wikilambda-persistentzobject-contents": "Чулацам",
@@ -33,7 +34,7 @@
 	"wikilambda-code-editor-label": "Кодан редактор",
 	"wikilambda-implementation-selector": "Кхочушдар харжа",
 	"wikilambda-implementation-create-new": "Кхочушдар тӀетоха",
-	"wikilambda-function-are-you-sure-dialog-header": "Бакъалла лаьий хӀуна?",
+	"wikilambda-function-are-you-sure-dialog-header": "Хьо тешна вуй?",
 	"wikilambda-function-are-you-sure-dialog-description": "Бакъалла а лаьий хьуна, хьайн хийцамаш дӀа а ца йазбеш, хийцаран раж дӀачӀагӀа?",
 	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|ГӀалат}}",
 	"wikilambda-functioncall-metadata-errors-none": "ХӀан-хӀа",
@@ -93,7 +94,7 @@
 	"wikilambda-editor-publish-dialog-header": "Гучубаха хьой бина хийцамаш",
 	"wikilambda-editor-publish-dialog-summary-label": "Хийцамах лаьцна",
 	"wikilambda-editor-publish-dialog-summary-placeholder": "Доца йазде цуьнах лаьцна",
-	"wikilambda-editor-publish-dialog-summary-help-text": "АгӀонна хӀун хийцамаш бина ахьа?",
+	"wikilambda-editor-publish-dialog-summary-help-text": "ХӀун хийцамаш бина ахь агӀонна?",
 	"wikilambda-optional": "тӀехь дац",
 	"wikilambda-continue-editing": "Кхин дӀа тайе",
 	"wikilambda-discard-edits": "Йухадаха нисдарш",
