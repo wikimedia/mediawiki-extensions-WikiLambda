@@ -35,11 +35,16 @@ class WikifunctionsClientStore {
 				'wfcu_targetPage' => $targetPage->getDBkey(),
 				'wfcu_targetFunction' => $targetFunction,
 			] )
+			->set( [
+				'wfcu_targetFunction' => $targetFunction,
+			] )
 			->onDuplicateKeyUpdate()
 			->uniqueIndexFields( [
 				'wfcu_targetPage',
 				'wfcu_targetFunction',
 			] )
+			// We don't mind duplicates (i.e., the same Function is used twice on the same page)
+			->ignore()
 			->caller( __METHOD__ )->execute();
 
 		return (bool)$dbw->affectedRows();
