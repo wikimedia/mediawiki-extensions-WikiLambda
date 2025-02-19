@@ -87,8 +87,14 @@ global.mw = {
 						zlangZid: 'Z1002',
 						zlang: 'en'
 					};
+				case 'wgWikifunctionsBaseUrl':
+					return null;
+				case 'wgUserLanguage':
+					return 'en';
+				case 'wgPageContentLanguage':
+					return 'en';
 				default:
-					return {};
+					return null;
 			}
 		} ),
 		values: {

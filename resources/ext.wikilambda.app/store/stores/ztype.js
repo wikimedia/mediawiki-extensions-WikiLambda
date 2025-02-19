@@ -224,7 +224,10 @@ module.exports = {
 			rendererCall[ `${ payload.rendererZid }K2` ] = payload.zlang;
 
 			// 2. Run this function call by calling wikilambda_function_call_zobject and return
-			return apiUtils.performFunctionCall( rendererCall );
+			return apiUtils.performFunctionCall( {
+				functionCall: rendererCall,
+				language: this.getUserLangCode
+			} );
 		},
 
 		/**
@@ -272,7 +275,10 @@ module.exports = {
 
 			// 3. Run this function call by calling wikilambda_function_call_zobject
 			// and return the response and the Promise resolver function
-			return apiUtils.performFunctionCall( parserCall ).then( ( response ) => {
+			return apiUtils.performFunctionCall( {
+				functionCall: parserCall,
+				language: this.getUserLangCode
+			} ).then( ( response ) => {
 				response.resolver = resolver;
 				return response;
 			} ).catch( ( e ) => {
@@ -313,7 +319,10 @@ module.exports = {
 			} );
 
 			// 4. Run renderer function
-			return apiUtils.performFunctionCall( rendererCall ).then( ( data ) => {
+			return apiUtils.performFunctionCall( {
+				functionCall: rendererCall,
+				language: this.getUserLangCode
+			} ).then( ( data ) => {
 				const response = data.response[ Constants.Z_RESPONSEENVELOPE_VALUE ];
 				if ( response !== Constants.Z_VOID && typeUtils.getZObjectType( response ) === Constants.Z_STRING ) {
 					// If rendered value from the test is valid, save in examples

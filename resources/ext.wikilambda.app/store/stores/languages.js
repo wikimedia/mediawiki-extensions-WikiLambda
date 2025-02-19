@@ -6,6 +6,7 @@
  */
 'use strict';
 
+const Constants = require( '../../Constants.js' );
 const LabelData = require( '../classes/LabelData.js' );
 
 module.exports = {
@@ -18,7 +19,15 @@ module.exports = {
 		 * @return {string}
 		 */
 		getUserLangCode: function () {
-			return mw.config.get( 'wgWikiLambda' ).zlang;
+			// If wikilambda config is set up, return zlang
+			if ( this.getWikilambdaConfig.zlang ) {
+				return this.getWikilambdaConfig.zlang;
+			}
+			// Else return userLang only if it's a valid language code
+			// or default to English if it's not:
+			const userLang = mw.config.get( 'wgUserLanguage' );
+			const contentLang = mw.config.get( 'wgPageContentLanguage' );
+			return $.uls.data.languages[ userLang ] ? userLang : contentLang;
 		},
 
 		/**
@@ -27,7 +36,14 @@ module.exports = {
 		 * @return {string}
 		 */
 		getUserLangZid: function () {
-			return mw.config.get( 'wgWikiLambda' ).zlangZid;
+			// If wikilambda config is set up, return zlangZid
+			if ( this.getWikilambdaConfig.zlangZid ) {
+				return this.getWikilambdaConfig.zlangZid;
+			}
+			// Else return the Zid for getUserLangCode if it has been fetched
+			// or default to English if it hasn't:
+			const langZid = this.getLanguageZidOfCode( this.getUserLangCode );
+			return langZid || Constants.Z_NATURAL_LANGUAGE_ENGLISH;
 		},
 
 		/**

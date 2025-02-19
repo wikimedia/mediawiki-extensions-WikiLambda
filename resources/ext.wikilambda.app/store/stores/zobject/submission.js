@@ -250,7 +250,8 @@ module.exports = {
 			return apiUtils.saveZObject( {
 				zobject,
 				zid,
-				summary
+				summary,
+				language: this.getUserLangCode
 			} );
 		},
 

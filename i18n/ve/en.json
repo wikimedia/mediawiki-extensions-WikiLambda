@@ -1,10 +1,17 @@
 {
 	"@metadata": {
 		"authors": [
+			"Genoveva Galarza",
 			"James D. Forrester"
 		]
 	},
-	"wikilambda-visualeditor-wikifunctionscall-parameters": "Inputs",
-	"wikilambda-visualeditor-wikifunctionscall-target": "Function",
-	"wikilambda-visualeditor-wikifunctionscall-title": "Wikifunctions call"
+	"wikilambda-visualeditor-wikifunctionscall-title": "Function",
+	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Loading Function data...",
+	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "No Function selected.",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Search function",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Results",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "No results found",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Suggested functions",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Input string",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Function]] from Wikifunctions"
 }

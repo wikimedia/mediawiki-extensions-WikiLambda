@@ -22,6 +22,12 @@ const blankPersistentObject = {
 	}
 };
 
+const mockMWGetConfig = ( configVars ) => {
+	mw.config = {
+		get: jest.fn( ( varName ) => configVars[ varName ] || null )
+	};
+};
+
 let postMock,
 	postWithEditTokenMock;
 
@@ -34,6 +40,15 @@ describe( 'zobject Pinia store', () => {
 		store.zobject = [];
 		store.objects = mockApiZids;
 		store.errors = {};
+
+		// Mock mw.config.get
+		mockMWGetConfig( {
+			wgWikiLambda: {
+				zlang: 'en',
+				zlangZid: 'Z1002'
+			},
+			wgWikifunctionsBaseUrl: null
+		} );
 
 		// eslint-disable-next-line no-unused-vars
 		postMock = jest.fn( ( payload ) => ( {
@@ -2211,13 +2226,16 @@ describe( 'zobject Pinia store', () => {
 		describe( 'initializeView', () => {
 			it( 'calls initializeCreateNewPage when creating new page', async () => {
 				store.initializeCreateNewPage = jest.fn();
-				mw.config = {
-					get: jest.fn( () => ( {
+
+				mockMWGetConfig( {
+					wgWikiLambda: {
+						zlang: 'en',
+						zlangZid: 'Z1002',
 						createNewPage: true,
 						runFunction: false,
 						zId: null
-					} ) )
-				};
+					}
+				} );
 
 				await store.initializeView();
 
@@ -2226,13 +2244,16 @@ describe( 'zobject Pinia store', () => {
 
 			it( 'calls initializeEvaluateFunction when opening the function evaluator', async () => {
 				store.initializeEvaluateFunction = jest.fn();
-				mw.config = {
-					get: jest.fn( () => ( {
+
+				mockMWGetConfig( {
+					wgWikiLambda: {
+						zlang: 'en',
+						zlangZid: 'Z1002',
 						createNewPage: false,
 						runFunction: true,
 						zId: null
-					} ) )
-				};
+					}
+				} );
 
 				await store.initializeView();
 
@@ -2241,13 +2262,15 @@ describe( 'zobject Pinia store', () => {
 
 			it( 'calls initializeEvaluateFunction when no info available', async () => {
 				store.initializeEvaluateFunction = jest.fn();
-				mw.config = {
-					get: jest.fn( () => ( {
+				mockMWGetConfig( {
+					wgWikiLambda: {
+						zlang: 'en',
+						zlangZid: 'Z1002',
 						createNewPage: false,
 						runFunction: false,
 						zId: null
-					} ) )
-				};
+					}
+				} );
 
 				await store.initializeView();
 
@@ -2256,13 +2279,15 @@ describe( 'zobject Pinia store', () => {
 
 			it( 'calls initializeRootZObject when viewing or editing an object', async () => {
 				store.initializeRootZObject = jest.fn();
-				mw.config = {
-					get: jest.fn( () => ( {
+				mockMWGetConfig( {
+					wgWikiLambda: {
+						zlang: 'en',
+						zlangZid: 'Z1002',
 						createNewPage: false,
 						runFunction: false,
 						zId: 'Z10000'
-					} ) )
-				};
+					}
+				} );
 
 				await store.initializeView();
 

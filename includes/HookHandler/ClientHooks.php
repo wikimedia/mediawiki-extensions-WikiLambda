@@ -25,6 +25,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Html\Html;
 use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\Output\OutputPage;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 use MediaWiki\Parser\Sanitizer;
@@ -41,7 +42,8 @@ use WikiPage;
 class ClientHooks implements
 	\MediaWiki\Hook\ParserFirstCallInitHook,
 	\MediaWiki\Storage\Hook\PageSaveCompleteHook,
-	\MediaWiki\ResourceLoader\Hook\ResourceLoaderRegisterModulesHook
+	\MediaWiki\ResourceLoader\Hook\ResourceLoaderRegisterModulesHook,
+	\MediaWiki\Output\Hook\MakeGlobalVariablesScriptHook
 {
 	private Config $config;
 	private HttpRequestFactory $httpRequestFactory;
@@ -115,15 +117,26 @@ class ClientHooks implements
 	 */
 	public function parserFunctionCallback( Parser $parser, $frame, $args = [] ) {
 		// TODO (T362251): Turn $args into the request more properly, in a way that doesn't blindly trim strings.
-
 		$cleanupInput = static function ( $input ) use ( $frame ) {
 			return trim( Sanitizer::decodeCharReferences( $frame->expand( $input ) ) );
 		};
 
 		// Get the arguments from the wikitext with the HTML entities decoded and with whitespace trimmed.
-		// e.g. given an input of `{{#function:Z802 | Z41 | h&eacute;llõ |   1234}}`, $cleanedArgs will be:
+		// E.g.:
+		// * given an input of `{{#function:Z802 | Z41 | h&eacute;llõ |   1234}}`, $cleanedArgs will be:
 		//   [ 'Z802', 'héllõ', '1234' ]
-		$cleanedArgs = array_map( $cleanupInput, $args );
+		// * given an input of `{{#function:Z802|Z41|hello|1234|renderlang=es}}`, $cleanedArgs will be:
+		//   [ 'Z802', 'hello', '1234', 'renderlang' => 'es' ]
+		$cleanedArgs = [];
+		foreach ( $args as $index => $arg ) {
+			// Extract only the value
+			$splitArg = explode( '=', $cleanupInput( $arg ), 2 );
+			if ( count( $splitArg ) === 2 ) {
+				$cleanedArgs[ $splitArg[0] ] = $splitArg[1];
+			} else {
+				$cleanedArgs[ $index ] = $splitArg[0];
+			}
+		}
 
 		// Get the target function from the first argument.
 		// e.g. given an input of `{{#function:Z802|Z41|héllõ|1234}}`, $cleanedArgs[0] will be: 'Z802'
@@ -135,21 +148,26 @@ class ClientHooks implements
 		// Allow users to specify language in-line, e.g. if you want something copy-pastable
 		// or to demonstrate content in different languages. This is expected to be primarily useful for
 		// multi-lingual wikis.
-		if ( array_key_exists( 'parseLang', $cleanedArgs ) ) {
-			$parseLang = $cleanedArgs['parseLang'];
-			unset( $cleanedArgs['parseLang'] );
+		if ( array_key_exists( 'parselang', $cleanedArgs ) ) {
+			$parseLang = $cleanedArgs['parselang'];
+			unset( $cleanedArgs['parselang'] );
 		}
-		if ( array_key_exists( 'renderLang', $cleanedArgs ) ) {
-			$parseLang = $cleanedArgs['renderLang'];
-			unset( $cleanedArgs['renderLang'] );
+		if ( array_key_exists( 'renderlang', $cleanedArgs ) ) {
+			$parseLang = $cleanedArgs['renderlang'];
+			unset( $cleanedArgs['renderlang'] );
 		}
 
 		// Convert the raw unnamed arguments into the keys for the function call.
 		// e.g. given an input of `{{#function:Z802|Z41|hello|1234}}`, $arguments will be:
-		//    [ 'Z802K1' => 'Z41', 'Z802K2' => 'hello', 'Z802K3' => '1234' ]
+		// [ 'Z802K1' => 'Z41', 'Z802K2' => 'hello', 'Z802K3' => '1234' ]
 		$unkeyedArguments = array_slice( $cleanedArgs, 1 );
 		$arguments = [];
 		foreach ( $unkeyedArguments as $key => $value ) {
+			if ( !is_int( $key ) ) {
+				// Ignore any other named arguments:
+				// E.g. {{#function:Z10000|Hello|World|bad=argument|foo=bar}}
+				continue;
+			}
 			$arguments[$targetFunction . 'K' . ( $key + 1 )] = $value;
 		}
 
@@ -201,7 +219,6 @@ class ClientHooks implements
 
 		// TODO (T362254): Implement some timeout mechanism here?
 		try {
-
 			$ret = $this->objectCache->getWithSetCallback(
 				$clientCacheKey,
 				$this->objectCache::TTL_WEEK,
@@ -465,7 +482,7 @@ class ClientHooks implements
 			array_map( static fn ( $val ): string => base64_encode( $val ), $args )
 		);
 
-		$requestUri = $this->config->get( 'WikiLambdaClientTargetAPI' )
+		$requestUri = $this->getClientTargetUrl()
 			. $this->config->get( 'RestPath' )
 			. '/wikifunctions/v0/call'
 			. '/' . $target
@@ -482,6 +499,23 @@ class ClientHooks implements
 	}
 
 	/**
+	 * @param array &$vars
+	 * @param OutputPage $out
+	 */
+	public function onMakeGlobalVariablesScript( &$vars, $out ): void {
+		// Client mode is disabled, no foreign Wikifunctions url to add:
+		if ( !$this->config->get( 'WikiLambdaEnableClientMode' ) ) {
+			return;
+		}
+		// Repo mode is enabled, no foreign Wikifunctions url to add:
+		if ( $this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+			return;
+		}
+		// Pass targetUri onto JavaScript vars
+		$vars['wgWikifunctionsBaseUrl'] = $this->getClientTargetUrl();
+	}
+
+	/**
 	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/ResourceLoaderRegisterModules
 	 *
 	 * @param ResourceLoader $resourceLoader
@@ -495,14 +529,15 @@ class ClientHooks implements
 			$this->config->get( 'WikiLambdaEnableClientMode' )
 			&& ExtensionRegistry::getInstance()->isLoaded( 'VisualEditor' )
 		) {
-			$directoryName = __DIR__ . '/../../resources';
+			$directoryName = __DIR__ . '/../../resources/ext.wikilambda.visualeditor';
 
 			$files = [
-				'ext.wikilambda.visualeditor/ve.dm.WikifunctionsCallNode.js',
-				'ext.wikilambda.visualeditor/ve.ce.WikifunctionsCallNode.js',
-				'ext.wikilambda.visualeditor/ve.ui.WikifunctionsCallContextItem.js',
-				'ext.wikilambda.visualeditor/ve.ui.WikifunctionsCallDialogTool.js',
-				'ext.wikilambda.visualeditor/ve.ui.WikifunctionsCallDialog.js',
+				've.init.mw.WikifunctionsCall.js',
+				've.dm.WikifunctionsCallNode.js',
+				've.ce.WikifunctionsCallNode.js',
+				've.ui.WikifunctionsCallContextItem.js',
+				've.ui.WikifunctionsCallDialogTool.js',
+				've.ui.WikifunctionsCallDialog.js',
 			];
 
 			array_push( $files, [
@@ -523,13 +558,35 @@ class ClientHooks implements
 				'remoteExtPath' => 'WikiLambda/resources',
 				'packageFiles' => $files,
 				'messages' => [
+					'wikilambda-suggested-functions.json',
 					'wikilambda-visualeditor-wikifunctionscall-title',
-					'wikilambda-visualeditor-wikifunctionscall-target',
-					'wikilambda-visualeditor-wikifunctionscall-parameters'
+					'wikilambda-visualeditor-wikifunctionscall-popup-loading',
+					'wikilambda-visualeditor-wikifunctionscall-popup-no-function',
+					'wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder',
+					'wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title',
+					'wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title',
+					'wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results',
+					'wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder',
+					'wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer'
 				]
 			];
 
 			$resourceLoader->register( 'ext.wikilambda.visualeditor', $visualEditorWfConfig );
 		}
+	}
+
+	/**
+	 * Return the Url of the Wikilambda server instance,
+	 * and if not available in the configuration variables,
+	 * returns an empty string and logs an error.
+	 *
+	 * @return string
+	 */
+	private function getClientTargetUrl(): string {
+		$targetUrl = $this->config->get( 'WikiLambdaClientTargetAPI' );
+		if ( !$targetUrl ) {
+			$this->logger->error( __METHOD__ . ': missing configuration variable WikiLambdaClientTargetAPI' );
+		}
+		return $targetUrl ?? '';
 	}
 }

@@ -11,6 +11,7 @@ const vueTestUtils = require( '@vue/test-utils' );
 
 const ApiMock = require( './apiMock.js' );
 const apiGetMock = require( './apiGetMock.js' );
+const mockMWConfigGet = require( './mwConfigMock.js' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 
 const lookupZObjectTypeLabels = new ApiMock(
@@ -86,20 +87,15 @@ const runSetup = function ( pageConfig ) {
 		path: new window.mw.Title( pageConfig.title ).getUrl( pageConfig.queryParams )
 	} ) );
 
-	global.mw.config.get = ( endpoint ) => {
-		switch ( endpoint ) {
-			case 'wgWikiLambda':
-				return {
-					createNewPage: pageConfig.createNewPage,
-					viemode: false,
-					zlang: 'en',
-					zlangZid: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
-					zId: pageConfig.createNewPage ? 'Z0' : pageConfig.title
-				};
-			default:
-				return {};
+	global.mw.config.get = mockMWConfigGet( {
+		wgWikiLambda: {
+			createNewPage: pageConfig.createNewPage,
+			viemode: false,
+			zlang: 'en',
+			zlangZid: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
+			zId: pageConfig.createNewPage ? 'Z0' : pageConfig.title
 		}
-	};
+	} );
 
 	return {
 		apiPostWithEditTokenMock: apiPostWithEditTokenMock

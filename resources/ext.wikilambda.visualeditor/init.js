@@ -4,5 +4,3 @@
  * @copyright Abstract Wikipedia Team and others
  * @license The MIT License (MIT); see LICENSE.txt
  */
-
-mw.loader.using( 'ext.wikilambda.visualeditor' );

@@ -17,6 +17,7 @@ const programmingLanguagesStore = require( './stores/programmingLanguages.js' );
 const routerStore = require( './stores/router.js' );
 const testResultsStore = require( './stores/testResults.js' );
 const userStore = require( './stores/user.js' );
+const visualeditorStore = require( './stores/visualeditor.js' );
 const wdEntitiesStore = require( './stores/wikidata/entities.js' );
 const wdItemsStore = require( './stores/wikidata/items.js' );
 const wdLexemesStore = require( './stores/wikidata/lexemes.js' );
@@ -47,7 +48,9 @@ module.exports = defineStore( 'main', {
 		wdEntitiesStore.state,
 		wdLexemesStore.state,
 		wdItemsStore.state,
-		wdPropertiesStore.state
+		wdPropertiesStore.state,
+		// VisualEditor
+		visualeditorStore.state
 	),
 	getters: Object.assign(
 		// Router
@@ -70,7 +73,9 @@ module.exports = defineStore( 'main', {
 		wdEntitiesStore.getters,
 		wdLexemesStore.getters,
 		wdItemsStore.getters,
-		wdPropertiesStore.getters
+		wdPropertiesStore.getters,
+		// VisualEditor
+		visualeditorStore.getters
 	),
 	actions: Object.assign(
 		// Router
@@ -93,6 +98,8 @@ module.exports = defineStore( 'main', {
 		wdEntitiesStore.actions,
 		wdLexemesStore.actions,
 		wdItemsStore.actions,
-		wdPropertiesStore.actions
+		wdPropertiesStore.actions,
+		// VisualEditor
+		visualeditorStore.actions
 	)
 } );

@@ -265,7 +265,6 @@ describe( 'ModeSelector', () => {
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
-			console.log( menu.vm.menuItems );
 			expect( menu.vm.menuItems.length ).toBe( 3 );
 			expect( menu.vm.menuItems[ 2 ].items[ 0 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.DELETE_ITEM );
 		} );
