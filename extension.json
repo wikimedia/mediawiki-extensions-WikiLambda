@@ -221,6 +221,7 @@
 	"Hooks": {
 		"ParserFirstCallInit": "WikiLambdaClientHooks",
 		"PageSaveComplete": "WikiLambdaClientHooks",
+		"ResourceLoaderRegisterModules": "WikiLambdaClientHooks",
 
 		"LoadExtensionSchemaUpdates": "WikiLambdaHooks",
 
@@ -238,7 +239,8 @@
 	"MessagesDirs": {
 		"WikiLambda": [
 			"i18n",
-			"i18n/api"
+			"i18n/api",
+			"i18n/ve"
 		]
 	},
 	"ExtensionMessagesFiles": {
@@ -890,6 +892,13 @@
 	"ServiceWiringFiles": [
 		"includes/ServiceWiring.php"
 	],
+	"attributes": {
+		"VisualEditor": {
+			"PluginModules": [
+				"ext.wikilambda.visualeditor"
+			]
+		}
+	},
 	"JobClasses": {
 		"cacheTesterResults": "MediaWiki\\Extension\\WikiLambda\\Jobs\\CacheTesterResultsJob",
 		"updateImplementations": "MediaWiki\\Extension\\WikiLambda\\Jobs\\UpdateImplementationsJob",

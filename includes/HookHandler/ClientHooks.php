@@ -29,6 +29,7 @@ use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 use MediaWiki\Parser\Sanitizer;
 use MediaWiki\Registration\ExtensionRegistry;
+use MediaWiki\ResourceLoader\ResourceLoader;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Storage\EditResult;
 use MediaWiki\User\UserIdentity;
@@ -39,7 +40,8 @@ use WikiPage;
 
 class ClientHooks implements
 	\MediaWiki\Hook\ParserFirstCallInitHook,
-	\MediaWiki\Storage\Hook\PageSaveCompleteHook
+	\MediaWiki\Storage\Hook\PageSaveCompleteHook,
+	\MediaWiki\ResourceLoader\Hook\ResourceLoaderRegisterModulesHook
 {
 	private Config $config;
 	private HttpRequestFactory $httpRequestFactory;
@@ -477,5 +479,57 @@ class ClientHooks implements
 		$request = $this->httpRequestFactory->create( $requestUri, [ 'method' => 'GET' ], __METHOD__ );
 
 		return $request;
+	}
+
+	/**
+	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/ResourceLoaderRegisterModules
+	 *
+	 * @param ResourceLoader $resourceLoader
+	 * @return void
+	 */
+	public function onResourceLoaderRegisterModules( ResourceLoader $resourceLoader ): void {
+		// TODO (T386013): Once client mode is always enabled, register this statically in extension.json
+		// via the ResourceModules definition.
+
+		if (
+			$this->config->get( 'WikiLambdaEnableClientMode' )
+			&& ExtensionRegistry::getInstance()->isLoaded( 'VisualEditor' )
+		) {
+			$directoryName = __DIR__ . '/../../resources';
+
+			$files = [
+				'ext.wikilambda.visualeditor/ve.dm.WikifunctionsCallNode.js',
+				'ext.wikilambda.visualeditor/ve.ce.WikifunctionsCallNode.js',
+				'ext.wikilambda.visualeditor/ve.ui.WikifunctionsCallContextItem.js',
+				'ext.wikilambda.visualeditor/ve.ui.WikifunctionsCallDialogTool.js',
+				'ext.wikilambda.visualeditor/ve.ui.WikifunctionsCallDialog.js',
+			];
+
+			array_push( $files, [
+				'name' => 'init.js',
+				'main' => true,
+				'content' => array_reduce( $files, static function ( $carry, $file ) {
+					return "$carry\nrequire('./$file');\n";
+				}, '' ),
+			] );
+
+			$visualEditorWfConfig = [
+				'dependencies' => [
+					'ext.visualEditor.mwcore',
+					'ext.visualEditor.mwtransclusion',
+					'oojs-ui.styles.icons-editing-functions',
+				],
+				'localBasePath' => $directoryName,
+				'remoteExtPath' => 'WikiLambda/resources',
+				'packageFiles' => $files,
+				'messages' => [
+					'wikilambda-visualeditor-wikifunctionscall-title',
+					'wikilambda-visualeditor-wikifunctionscall-target',
+					'wikilambda-visualeditor-wikifunctionscall-parameters'
+				]
+			];
+
+			$resourceLoader->register( 'ext.wikilambda.visualeditor', $visualEditorWfConfig );
+		}
 	}
 }

@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"James D. Forrester"
+		]
+	},
+	"wikilambda-visualeditor-wikifunctionscall-parameters": "Label in the Wikifunctions call dialog in the visual editor, showing against the inputs to the call",
+	"wikilambda-visualeditor-wikifunctionscall-target": "Label in the Wikifunctions call dialog in the visual editor, showing against the target Function of the call",
+	"wikilambda-visualeditor-wikifunctionscall-title": "Title for the Wikifunctions call dialog in the visual editor, shown as a heading label above the call content"
+}
