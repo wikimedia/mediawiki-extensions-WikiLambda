@@ -16,9 +16,17 @@
 	"wikilambda-editor-label-addlanguage-label": "Valjii kielâ",
 	"wikilambda-editor-label-select-programming-language-label": "Valjii ohjelmistemkielâ",
 	"wikilambda-function-are-you-sure-dialog-header": "Lah-uv tun vises?",
+	"wikilambda-functioncall-metadata-programming-language": "Ohjelmistemkielâ",
+	"wikilambda-functioncall-metadata-programming-language-version": "Versio",
 	"wikilambda-metadata-language-column": "Kielâ",
+	"wikilambda-function-definition-add-other-label-languages-title": "Lasseet kielâ",
 	"wikilambda-function-implementation-language-label": "Kielâ",
 	"wikilambda-function-definition-description-label": "Kuvvim",
 	"wikilambda-optional": "valjimiävtulâš",
-	"wikilambda-renderer-api-error": "Miinii moonâi endurân. Keččâl uđđâsist."
+	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1 kielâ|$1 kielâ|$1 kielâ|$1 kiellâd}}",
+	"wikilambda-about-widget-description-placeholder": "Mute kuvvim",
+	"wikilambda-about-widget-add-language": "Lasseet kielâ",
+	"wikilambda-about-widget-search-language-placeholder": "Uusâ kielâ",
+	"wikilambda-renderer-api-error": "Miinii moonâi endurân. Keččâl uđđâsist.",
+	"wikilambda-object-selector-suggested-languages": "Iävtuttum kielah"
 }
