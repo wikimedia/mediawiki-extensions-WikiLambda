@@ -39,7 +39,7 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 				'parselang' => 'en',
 				'renderlang' => 'fr'
 			]
-			];
+		];
 	}
 
 	public function testExecute_basicEcho() {
@@ -78,11 +78,13 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		// Force-enable our code
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
 
-		$this->standardCall['pathParams']['zid'] = 'Z802';
-		$this->standardCall['pathParams']['arguments'] = implode( '|', [
+		$ourCall = $this->standardCall;
+
+		$ourCall['pathParams']['zid'] = 'Z802';
+		$ourCall['pathParams']['arguments'] = implode( '|', [
 				base64_encode( 'Z41' ), base64_encode( 'true' ), base64_encode( 'false' )
 			] );
-		$request = new RequestData( $this->standardCall );
+		$request = new RequestData( $ourCall );
 		$handler = new FunctionCallHandler();
 
 		$response = $this->executeHandler( $handler, $request );
@@ -91,10 +93,10 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->assertEquals( '{"value":"true"}', $response->getBody()->getContents() );
 
 		// … and try the other branch
-		$this->standardCall['pathParams']['arguments'] = implode( '|', [
+		$ourCall['pathParams']['arguments'] = implode( '|', [
 				base64_encode( 'Z42' ), base64_encode( 'true' ), base64_encode( 'false' )
 			] );
-		$request = new RequestData( $this->standardCall );
+		$request = new RequestData( $ourCall );
 		$handler = new FunctionCallHandler();
 
 		$response = $this->executeHandler( $handler, $request );
@@ -107,14 +109,16 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		// Force-enable our code
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
 
-		$this->standardCall['pathParams']['zid'] = 'Z802';
-		$this->standardCall['pathParams']['arguments'] = implode( '|', [
+		$ourCall = $this->standardCall;
+
+		$ourCall['pathParams']['zid'] = 'Z802';
+		$ourCall['pathParams']['arguments'] = implode( '|', [
 			base64_encode( 'Z421' ),
 			base64_encode( 'true' ),
 			base64_encode( 'false' )
 		] );
 
-		$request = new RequestData( $this->standardCall );
+		$request = new RequestData( $ourCall );
 		$handler = new FunctionCallHandler();
 
 		$this->expectExceptionObject(
@@ -129,11 +133,13 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		// Force-enable our code
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
 
-		$this->standardCall['pathParams']['arguments'] = implode( '|', [
+		$ourCall = $this->standardCall;
+		$ourCall['pathParams']['zid'] = 'Z802';
+		$ourCall['pathParams']['arguments'] = implode( '|', [
 			base64_encode( 'Z41' ),
 			base64_encode( 'true' )
 		] );
-		$request = new RequestData( $this->standardCall );
+		$request = new RequestData( $ourCall );
 		$handler = new FunctionCallHandler();
 
 		$this->expectExceptionObject(
@@ -148,13 +154,15 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		// Force-enable our code
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
 
-		$this->standardCall['pathParams']['arguments'] = implode( '|', [
+		$ourCall = $this->standardCall;
+		$ourCall['pathParams']['zid'] = 'Z802';
+		$ourCall['pathParams']['arguments'] = implode( '|', [
 			base64_encode( 'Z41' ),
 			base64_encode( 'true' ),
 			base64_encode( 'false' ),
 			base64_encode( 'hello' )
 		] );
-		$request = new RequestData( $this->standardCall );
+		$request = new RequestData( $ourCall );
 		$handler = new FunctionCallHandler();
 
 		$this->expectExceptionObject(
@@ -169,8 +177,9 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		// Force-enable our code
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
 
-		$this->standardCall['pathParams']['zid'] = 'Z0';
-		$request = new RequestData( $this->standardCall );
+		$ourCall = $this->standardCall;
+		$ourCall['pathParams']['zid'] = 'Z0';
+		$request = new RequestData( $ourCall );
 		$handler = new FunctionCallHandler();
 
 		$this->expectExceptionObject(
@@ -185,8 +194,9 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		// Force-enable our code
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
 
-		$this->standardCall['pathParams']['zid'] = 'Z4';
-		$request = new RequestData( $this->standardCall );
+		$ourCall = $this->standardCall;
+		$ourCall['pathParams']['zid'] = 'Z4';
+		$request = new RequestData( $ourCall );
 		$handler = new FunctionCallHandler();
 
 		$this->expectExceptionObject(
@@ -201,8 +211,9 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		// Force-enable our code
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
 
-		$this->standardCall['pathParams']['parselang'] = 'madeuplanguage';
-		$request = new RequestData( $this->standardCall );
+		$ourCall = $this->standardCall;
+		$ourCall['pathParams']['parselang'] = 'madeuplanguage';
+		$request = new RequestData( $ourCall );
 		$handler = new FunctionCallHandler();
 
 		$this->expectExceptionObject(
@@ -217,8 +228,9 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		// Force-enable our code
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
 
-		$this->standardCall['pathParams']['renderlang'] = 'madeuplanguage';
-		$request = new RequestData( $this->standardCall );
+		$ourCall = $this->standardCall;
+		$ourCall['pathParams']['renderlang'] = 'madeuplanguage';
+		$request = new RequestData( $ourCall );
 		$handler = new FunctionCallHandler();
 
 		$this->expectExceptionObject(
