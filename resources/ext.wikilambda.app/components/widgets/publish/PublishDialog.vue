@@ -333,7 +333,6 @@ module.exports = exports = defineComponent( {
 					errorMessage: error.messageOrFallback( Constants.errorCodes.UNKNOWN_SAVE_ERROR )
 				} );
 			} ).finally( () => {
-				// After receiving the response, log an event using Metrics Platform's core interaction events
 				const interactionData = {
 					zobjecttype: this.getCurrentZObjectType || null,
 					zobjectid: this.getCurrentZObjectId || null,

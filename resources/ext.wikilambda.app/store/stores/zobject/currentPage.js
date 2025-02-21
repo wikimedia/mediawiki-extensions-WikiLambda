@@ -162,7 +162,6 @@ module.exports = {
 		 * @param {boolean} value
 		 */
 		setDirty: function ( value = true ) {
-			// T350497 Update Wikilambda instrument to use core interaction events
 			// sending the 'change' event for the first change
 			if ( value === true && !this.isDirty ) {
 				const interactionData = {
