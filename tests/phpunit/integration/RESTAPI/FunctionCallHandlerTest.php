@@ -42,9 +42,10 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		];
 	}
 
+	/**
+	 * The simplest call, a request to echo 'foo' (parse/render languages will be ignored as they're strings)
+	 */
 	public function testExecute_basicEcho() {
-		// The simplest call, a request to echo 'foo' (parse/render languages will be ignored as they're strings)
-
 		// Force-enable our code
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
 
@@ -57,9 +58,10 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->assertEquals( '{"value":"foo"}', $response->getBody()->getContents() );
 	}
 
+	/**
+	 * Confirm that a 501 is returned when the client mode is disabled
+	 */
 	public function testExecute_clientModeDisabled() {
-		// Confirm that a 501 is returned when the client mode is disabled
-
 		// Force-disable our code
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', false );
 
@@ -72,9 +74,10 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->executeHandler( $handler, $request );
 	}
 
+	/**
+	 * The second-simplest call, a request to echo 'true' or 'false' based on the first argument
+	 */
 	public function testExecute_simpleIf() {
-		// The second-simplest call, a request to echo 'true' or 'false' based on the first argument
-
 		// Force-enable our code
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
 
@@ -103,9 +106,10 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->assertEquals( '{"value":"false"}', $response->getBody()->getContents() );
 	}
 
+	/**
+	 * Confirm that a 400 is returned when a referenced input is not found
+	 */
 	public function testExecute_referencedInputNotFound() {
-		// Confirm that a 400 is returned when a referenced input is not found
-
 		// Force-enable our code
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
 
@@ -127,9 +131,10 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->executeHandler( $handler, $request );
 	}
 
+	/**
+	 * Confirm that a 400 is returned when the call has the wrong number of inputs (2 instead of 3)
+	 */
 	public function testExecute_tooFewInputs() {
-		// Confirm that a 400 is returned when the call has the wrong number of inputs
-
 		// Force-enable our code
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
 
@@ -148,9 +153,10 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->executeHandler( $handler, $request );
 	}
 
+	/**
+	 * Confirm that a 400 is returned when the call has the wrong number of inputs (4 instead of 3)
+	 */
 	public function testExecute_tooManyInputs() {
-		// Confirm that a 400 is returned when the call has the wrong number of inputs
-
 		// Force-enable our code
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
 
@@ -171,9 +177,10 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->executeHandler( $handler, $request );
 	}
 
+	/**
+	 * Confirm that a 400 is returned when the target function is not found
+	 */
 	public function testExecute_targetFunctionNotFound() {
-		// Confirm that a 400 is returned when the target function is not found
-
 		// Force-enable our code
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
 
@@ -188,9 +195,10 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->executeHandler( $handler, $request );
 	}
 
+	/**
+	 * Confirm that a 400 is returned when the target Function is actually a Type
+	 */
 	public function testExecute_targetFunctionNotAFunction() {
-		// Confirm that a 400 is returned when the target Function is actually a Type
-
 		// Force-enable our code
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
 
@@ -205,9 +213,10 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->executeHandler( $handler, $request );
 	}
 
+	/**
+	 * Confirm that a 400 is returned when the target parsing language is not found
+	 */
 	public function testExecute_targetParseLangNotFound() {
-		// Confirm that a 400 is returned when the target language is not found
-
 		// Force-enable our code
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
 
@@ -222,9 +231,10 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->executeHandler( $handler, $request );
 	}
 
+	/**
+	 * Confirm that a 400 is returned when the target rendering language is not found
+	 */
 	public function testExecute_targetRenderLangNotFound() {
-		// Confirm that a 400 is returned when the target language is not found
-
 		// Force-enable our code
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
 
