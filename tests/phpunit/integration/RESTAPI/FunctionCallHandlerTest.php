@@ -315,11 +315,56 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 	// TESTME: Input is a string
 	// TESTME: Input is an enum
 	// TESTME: Input is parsed
-	// TESTME: Input Type doesn't have a Parser
+
+	/**
+	 * Confirm that a 400/Z503 is returned when the input Type (Z86) doesn't have a Parser
+	 */
+	public function testExecute_inputParserNotFound() {
+		// Force-enable our code
+		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
+		$this->insertZids( [ 'Z86', 'Z17', 'Z888' ] );
+
+		$ourCall = $this->standardCall;
+		$ourCall['pathParams']['zid'] = 'Z888';
+		$ourCall['pathParams']['arguments'] = implode( '|', [ base64_encode( 'a' ), base64_encode( 'b' ) ] );
+
+		$request = new RequestData( $ourCall );
+		$handler = new FunctionCallHandler( $this->zobjectStore );
+
+		try {
+			$this->executeHandler( $handler, $request );
+		} catch ( LocalizedHttpException $exception ) {
+			// Assert Z503/Not implemented yet
+			$this->assertHttpAndZError( [ 400, 'Z503', [ 'target' => 'Z888', 'mode' => 'input' ] ], $exception );
+		}
+	}
+
 	// TESTME: Input isn't any of the above
 
 	// TESTME: Output is rendered
-	// TESTME: Output Type doesn't have a Renderer
+
+	/**
+	 * Confirm that a 400/Z503 is returned when the output Type (Z40) doesn't have a Renderer
+	 */
+	public function testExecute_outputRendererNotFound() {
+		// Force-enable our code
+		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
+		$this->insertZids( [ 'Z17', 'Z40', 'Z41', 'Z42', 'Z844' ] );
+
+		$ourCall = $this->standardCall;
+		$ourCall['pathParams']['zid'] = 'Z844';
+		$ourCall['pathParams']['arguments'] = implode( '|', [ base64_encode( 'Z41' ), base64_encode( 'Z42' ) ] );
+
+		$request = new RequestData( $ourCall );
+		$handler = new FunctionCallHandler( $this->zobjectStore );
+
+		try {
+			$this->executeHandler( $handler, $request );
+		} catch ( LocalizedHttpException $exception ) {
+			// Assert Z503/Not implemented yet
+			$this->assertHttpAndZError( [ 400, 'Z503', [ 'target' => 'Z844', 'mode' => 'output' ] ], $exception );
+		}
+	}
 
 	/**
 	 * Confirm that a 400 is returned when the target parsing language is not found
