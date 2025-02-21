@@ -256,7 +256,7 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-default-view__content {
 		box-sizing: border-box;
 		padding: @spacing-75;
-		border: 1px solid #c8ccd1;
+		border: 1px solid @border-color-subtle;
 		border-radius: 2px;
 		margin-bottom: @spacing-100;
 	}
