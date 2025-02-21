@@ -95,8 +95,9 @@ class HooksTest extends WikiLambdaIntegrationTestCase {
 	protected function getRecentChangesPage(): SpecialRecentChanges {
 		return new SpecialRecentChanges(
 			$this->getServiceContainer()->getWatchedItemStore(),
-			$this->getServiceContainer()->getMessageCache(),
-			$this->getServiceContainer()->getUserOptionsLookup()
+			$this->getServiceContainer()->getMessageParser(),
+			$this->getServiceContainer()->getUserOptionsLookup(),
+			$this->getServiceContainer()->getChangeTagsStore()
 		);
 	}
 
