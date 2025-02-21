@@ -180,6 +180,24 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
+	 * Confirm that a 400 is returned when the target function is not a ZID, but maybe an attempt at an inline call
+	 */
+	public function testExecute_targetFunctionNotAZid() {
+		// Force-enable our code
+		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
+
+		$ourCall = $this->standardCall;
+		$ourCall['pathParams']['zid'] = '{Z1K1:Z8,…}';
+		$request = new RequestData( $ourCall );
+		$handler = new FunctionCallHandler();
+
+		$this->expectExceptionObject(
+			new LocalizedHttpException( new MessageValue( 'wikilambda-zerror' ), 400, [ 'target' => 'Z0' ] )
+		);
+		$this->executeHandler( $handler, $request );
+	}
+
+	/**
 	 * Confirm that a 400 is returned when the target function is not found
 	 */
 	public function testExecute_targetFunctionNotFound() {
@@ -215,7 +233,6 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->executeHandler( $handler, $request );
 	}
 
-	// TESTME: Use of an inline function
 	// TESTME: (!)Use of a non-ZObject in the main NS
 
 	// TESTME: (!)Input Type isn't a Type
