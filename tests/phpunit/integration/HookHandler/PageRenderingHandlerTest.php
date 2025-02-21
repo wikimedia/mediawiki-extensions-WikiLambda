@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\HookHandler;
 
+use Article;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\HookHandler\PageRenderingHandler;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
@@ -23,26 +24,45 @@ use MediaWiki\User\Options\UserOptionsLookup;
  */
 class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 
+	private PageRenderingHandler $pageRenderingHandler;
+
 	protected function setUp(): void {
-			parent::setUp();
-			$this->setUpAsRepoMode();
-	}
+		parent::setUp();
+		$this->setUpAsRepoMode();
 
-	public function testShowMissingObject() {
-		$title = Title::makeTitle( NS_MAIN, 'Z123456' );
+		$mockLanguageNameUtils = $this->createMock( LanguageNameUtils::class );
+		$mockLanguageNameUtils->method( 'getLanguageName' )->willReturn( '' );
 
-		$pageRenderingHandler = new PageRenderingHandler(
+		$this->pageRenderingHandler = new PageRenderingHandler(
 			$this->createNoOpMock( UserOptionsLookup::class ),
-			$this->createNoOpMock( LanguageNameUtils::class ),
+			$mockLanguageNameUtils,
 			$this->createNoOpMock( ZObjectStore::class )
 		);
+	}
 
+	public function testOnBeforeDisplayNoArticleText() {
+		$title = Title::makeTitle( NS_MAIN, 'Z123456' );
 		$context = new RequestContext();
 		$context->setTitle( $title );
 		$context->setLanguage( 'qqx' );
-		$pageRenderingHandler->showMissingObject( $context );
+
+		$article = Article::newFromTitle( $title, $context );
+
+		$this->pageRenderingHandler->onBeforeDisplayNoArticleText( $article );
 
 		$this->assertStringContainsString( '(wikilambda-noobject)', $context->getOutput()->getHTML() );
 	}
 
+	public function testOnBeforeDisplayNoArticleText_skippedOutsideNS0() {
+		$title = Title::makeTitle( NS_TALK, 'Z123456' );
+		$context = new RequestContext();
+		$context->setTitle( $title );
+		$context->setLanguage( 'qqx' );
+
+		$article = Article::newFromTitle( $title, $context );
+
+		$this->pageRenderingHandler->onBeforeDisplayNoArticleText( $article );
+
+		$this->assertStringContainsString( '', $context->getOutput()->getHTML() );
+	}
 }
