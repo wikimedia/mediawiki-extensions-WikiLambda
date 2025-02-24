@@ -24,7 +24,7 @@
 	"wikilambda-editor-argument-list-label": "Аргументийн могӀам",
 	"wikilambda-implementation-selector-code": "Код",
 	"wikilambda-implementation-selector": "Кхочушдар харжа",
-	"wikilambda-function-are-you-sure-dialog-header": "Бакъалла лаьий хӀуна?",
+	"wikilambda-function-are-you-sure-dialog-header": "Хьо тешна вуй?",
 	"wikilambda-function-are-you-sure-dialog-description": "Бакъалла а лаьий хьуна, хьайн хийцамаш дӀа а ца йазбеш, хийцаран раж дӀачӀагӀа?",
 	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|ГӀалат}}",
 	"wikilambda-functioncall-metadata-errors-none": "ХӀан-хӀа",

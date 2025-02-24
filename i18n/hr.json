@@ -44,7 +44,7 @@
 	"wikilambda-function-are-you-sure-dialog-description": "Jesi li siguran da želiš napustiti uređivanje bez objavljivanja?",
 	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|1=Pogreška|Pogreške}}",
 	"wikilambda-functioncall-metadata-errors-none": "Nema",
-	"wikilambda-functioncall-error": "Pogreška poziva funkcije: $1",
+	"wikilambda-functioncall-error": "Pogreška pri pozivu funkcije: $1",
 	"wikilambda-functioncall-error-category": "Stranice s pozivima Wikifunkcija koje su uzrokovale pogrešku",
 	"wikilambda-functioncall-error-category-desc": "Stranice s pozivima Wikifunkcija koje su uzrokovale opću pogrešku",
 	"wikilambda-tester-results-current-implementation": "Trenutna implementacija",
