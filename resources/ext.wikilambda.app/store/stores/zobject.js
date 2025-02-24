@@ -1416,7 +1416,7 @@ const zobjectStore = {
 
 				// No `zid` parameter, return.
 				if ( !defaultType || !defaultType.match( /Z[1-9]\d*$/ ) ) {
-					return Promise.resolve();
+					return;
 				}
 
 				// Else, fetch `zid` and make sure it's a type
@@ -1430,7 +1430,7 @@ const zobjectStore = {
                             defaultKeys[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ] !==
                             Constants.Z_TYPE
 						) {
-							return Promise.resolve();
+							return;
 						}
 
 						// If `zid` is a type, dispatch `changeType` action
