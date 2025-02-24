@@ -121,8 +121,7 @@ module.exports = exports = defineComponent( {
 			 * @return {string}
 			 */
 			type: function () {
-				const noArgs = true;
-				return this.typeToString( this.getZObjectTypeByRowId( this.rowId ), noArgs );
+				return this.typeToString( this.getZObjectTypeByRowId( this.rowId ), true );
 			},
 
 			/**

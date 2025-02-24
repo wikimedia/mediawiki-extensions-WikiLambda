@@ -354,12 +354,12 @@ describe( 'typeUtils mixin', () => {
 		} );
 
 		describe( 'Not a type', () => {
-			it( 'returns undefined', () => {
+			it( 'returns an empty string', () => {
 				const type = typeUtils.typeToString( {
 					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_NATURAL_LANGUAGE,
 					[ Constants.Z_NATURAL_LANGUAGE_ISO_CODE ]: 'en'
 				}, true );
-				expect( type ).toBe( undefined );
+				expect( type ).toBe( '' );
 			} );
 		} );
 	} );
