@@ -20,7 +20,9 @@
 				v-if="hasMetadata"
 				class="ext-wikilambda-app-evaluation-result__action-details"
 				role="button"
+				tabindex="0"
 				@click="showMetadata = !showMetadata"
+				@keydown.enter="showMetadata = !showMetadata"
 			>{{ $i18n( 'wikilambda-function-evaluator-result-details' ).text() }}</a>
 		</div>
 		<!-- Function Metadata Dialog -->
