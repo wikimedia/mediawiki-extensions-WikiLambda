@@ -55,11 +55,7 @@ module.exports = {
 		// Ignore index.js initialization scripts
 		'resources/ext.wikilambda.app/index.js',
 		'resources/ext.wikilambda.app/Constants.js',
-		'resources/ext.wikilambda.languageselector/index.js',
-		// These are untested base components,
-		// waiting for replacement with Codex alternatives; to drop!
-		// TODO (T373197): Replace with Codex's Table
-		'resources/ext.wikilambda.app/components/base/Table.vue'
+		'resources/ext.wikilambda.languageselector/index.js'
 	],
 
 	coverageThreshold: {
