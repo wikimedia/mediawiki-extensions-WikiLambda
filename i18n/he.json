@@ -337,7 +337,7 @@
 	"wikilambda-mode-selector-button-label": "לשנות איזה סוג של עצם זה: התייחסות לעצם קיים, הגדרה מילולית מוטבעת או קריאה לפונקציה",
 	"wikilambda-move-after-list-item": "להעביר אחרי זה",
 	"wikilambda-move-before-list-item": "להעביר לפני זה",
-	"wikilambda-multilingualstring-nofallback": "לא הוגדרה תווית בשפה הזאת וגם לא שפת גיבוי קבילה",
+	"wikilambda-multilingualstring-nofallback": "לא הוגדרה תווית בשפה הזאת וגם לא בשפת גיבוי קבילה",
 	"wikilambda-noobject": "העצם הזה אינו קיים. ביכולתך [{{fullurl:{{#Special:Log}}|page={{FULLPAGENAMEE}}}} לחפש ביומנים הקשורים] כדי למצוא לאן הוא הלך.",
 	"wikilambda-object-selector-suggested-languages": "שפות מוצעות",
 	"wikilambda-object-selector-suggested-types": "סוגים מוצעים",
