@@ -212,6 +212,7 @@
 		"PageRenderingHandler": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\PageRenderingHandler",
 			"services": [
+				"MainConfig",
 				"UserOptionsLookup",
 				"LanguageNameUtils",
 				"WikiLambdaZObjectStore"
