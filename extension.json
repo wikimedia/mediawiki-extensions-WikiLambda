@@ -376,6 +376,7 @@
 				"ext.wikilambda.app/mixins/metadata.js",
 				"ext.wikilambda.app/mixins/api.js",
 				"ext.wikilambda.app/mixins/utilsMixins.js",
+				"ext.wikilambda.app/mixins/wikidataMixin.js",
 				"ext.wikilambda.app/mixins/wikidataUtils.js",
 				"ext.wikilambda.app/composables/useBreakpoints.js",
 				"ext.wikilambda.app/views/FunctionEvaluator.vue",

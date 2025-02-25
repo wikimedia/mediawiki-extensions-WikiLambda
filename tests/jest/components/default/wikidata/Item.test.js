@@ -13,12 +13,6 @@ const WikidataItem = require( '../../../../../resources/ext.wikilambda.app/compo
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 const { createGettersWithFunctionsMock } = require( '../../../helpers/getterHelpers.js' );
 
-const dataIcons = () => ( {
-	icons: {
-		cdxIconLogoWikidata: 'wikidata',
-		cdxIconLinkExternal: 'link'
-	}
-} );
 const itemId = 'Q223044';
 const itemLabel = 'turtle';
 const itemData = {
@@ -35,6 +29,7 @@ describe( 'WikidataItem', () => {
 		store = useMainStore();
 		store.getItemData = createGettersWithFunctionsMock();
 		store.getItemIdRow = createGettersWithFunctionsMock( { id: 1 } );
+		store.getItemId = createGettersWithFunctionsMock( itemId );
 		store.getZStringTerminalValue = createGettersWithFunctionsMock( itemId );
 		store.getUserLangCode = 'en';
 	} );
@@ -45,8 +40,7 @@ describe( 'WikidataItem', () => {
 				props: {
 					edit: false,
 					type: Constants.Z_WIKIDATA_REFERENCE_ITEM
-				},
-				data: dataIcons
+				}
 			} );
 			expect( wrapper.find( '.ext-wikilambda-app-wikidata-item' ).exists() ).toBe( true );
 		} );
@@ -56,8 +50,7 @@ describe( 'WikidataItem', () => {
 				props: {
 					edit: false,
 					type: Constants.Z_FUNCTION_CALL
-				},
-				data: dataIcons
+				}
 			} );
 			expect( wrapper.find( '.ext-wikilambda-app-wikidata-item' ).exists() ).toBe( true );
 		} );
@@ -69,8 +62,7 @@ describe( 'WikidataItem', () => {
 				props: {
 					edit: false,
 					type: Constants.Z_WIKIDATA_REFERENCE_ITEM
-				},
-				data: dataIcons
+				}
 			} );
 			const link = wrapper.find( '.ext-wikilambda-app-wikidata-item__link' );
 			expect( link.exists() ).toBe( true );
@@ -83,8 +75,7 @@ describe( 'WikidataItem', () => {
 				props: {
 					edit: false,
 					type: Constants.Z_WIKIDATA_REFERENCE_ITEM
-				},
-				data: dataIcons
+				}
 			} );
 			const link = wrapper.find( '.ext-wikilambda-app-wikidata-item__link' );
 			expect( link.exists() ).toBe( true );
@@ -99,8 +90,7 @@ describe( 'WikidataItem', () => {
 				props: {
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_ITEM
-				},
-				data: dataIcons
+				}
 			} );
 			expect( wrapper.find( '.ext-wikilambda-app-wikidata-item' ).exists() ).toBe( true );
 		} );
@@ -112,8 +102,7 @@ describe( 'WikidataItem', () => {
 				props: {
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_ITEM
-				},
-				data: dataIcons
+				}
 			} );
 			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
 			expect( lookup.exists() ).toBe( true );
@@ -124,8 +113,7 @@ describe( 'WikidataItem', () => {
 				props: {
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_ITEM
-				},
-				data: dataIcons
+				}
 			} );
 			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
 			expect( lookup.exists() ).toBe( true );
@@ -138,8 +126,7 @@ describe( 'WikidataItem', () => {
 				props: {
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_ITEM
-				},
-				data: dataIcons
+				}
 			} );
 			await wrapper.vm.$nextTick();
 
@@ -155,8 +142,7 @@ describe( 'WikidataItem', () => {
 				props: {
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_ITEM
-				},
-				data: dataIcons
+				}
 			} );
 
 			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
@@ -177,8 +163,7 @@ describe( 'WikidataItem', () => {
 				props: {
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_ITEM
-				},
-				data: dataIcons
+				}
 			} );
 
 			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
@@ -199,8 +184,7 @@ describe( 'WikidataItem', () => {
 				props: {
 					edit: true,
 					type: Constants.Z_FUNCTION_CALL
-				},
-				data: dataIcons
+				}
 			} );
 
 			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );

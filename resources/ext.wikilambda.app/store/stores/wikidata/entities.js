@@ -68,6 +68,21 @@ module.exports = {
 			};
 			return findIsWikidataReference;
 		},
+
+		/**
+		 * Returns whether the rowId contains a Wikidata entity.
+		 *
+		 * @return {boolean}
+		 */
+		isWikidataEntity() {
+			const checkWikidataEntity = ( rowId ) => (
+				this.isWikidataFetch( rowId ) ||
+				this.isWikidataReference( rowId ) ||
+				this.isWikidataLiteral( rowId )
+			);
+			return checkWikidataEntity;
+		},
+
 		/**
 		 * Given the rowId of the Wikidata entity, returns
 		 * the rowId of the Wikidata entity Id string.

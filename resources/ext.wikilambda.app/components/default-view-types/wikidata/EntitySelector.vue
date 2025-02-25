@@ -13,7 +13,7 @@
 		:placeholder="lookupPlaceholder"
 		:menu-items="lookupResults"
 		:menu-config="lookupConfig"
-		:start-icon="icon"
+		:start-icon="wikidataIcon"
 		@update:selected="onSelect"
 		@update:input-value="onInput"
 		@blur="onBlur"
@@ -32,6 +32,7 @@ const { mapActions } = require( 'pinia' );
 const { CdxLookup } = require( '../../../../codex.js' );
 const Constants = require( '../../../Constants.js' );
 const useMainStore = require( '../../../store/index.js' );
+const wikidataIconSvg = require( './wikidataIconSvg.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-wikidata-entity-selector',
@@ -50,16 +51,11 @@ module.exports = exports = defineComponent( {
 		type: {
 			type: String,
 			required: true
-		},
-		icon: {
-			// TODO: add icon types from Codex. Now Codex is loaded in chunck, we can't import the 'Icon' type
-			type: String,
-			required: false,
-			default: undefined
 		}
 	},
 	data: function () {
 		return {
+			wikidataIcon: wikidataIconSvg,
 			inputValue: '',
 			lookupResults: [],
 			lookupConfig: {

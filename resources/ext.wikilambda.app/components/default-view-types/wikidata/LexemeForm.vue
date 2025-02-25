@@ -5,7 +5,9 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-app-wikidata-lexeme-form" data-testid="wikidata-lexeme-form">
+	<div
+		class="ext-wikilambda-app-wikidata-lexeme-form"
+		data-testid="wikidata-lexeme-form">
 		<div v-if="!edit" class="ext-wikilambda-app-wikidata-lexeme-form__read">
 			<cdx-icon
 				:icon="wikidataIcon"
@@ -24,7 +26,6 @@
 			v-else
 			:entity-id="lexemeFormId"
 			:entity-label="lexemeFormLabel"
-			:icon="wikidataIcon"
 			:type="lexemeFormType"
 			@select-wikidata-entity="onSelect"
 		></wl-wikidata-entity-selector>
@@ -34,11 +35,11 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
-const { CdxIcon } = require( '../../../../codex.js' );
 const Constants = require( '../../../Constants.js' );
 const LabelData = require( '../../../store/classes/LabelData.js' );
 const useMainStore = require( '../../../store/index.js' );
 const WikidataEntitySelector = require( './EntitySelector.vue' );
+const { CdxIcon } = require( '../../../../codex.js' );
 const wikidataIconSvg = require( './wikidataIconSvg.js' );
 
 module.exports = exports = defineComponent( {
@@ -70,19 +71,10 @@ module.exports = exports = defineComponent( {
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
 		'getLexemeFormData',
-		'getLexemeFormIdRow',
-		'getUserLangCode',
-		'getZStringTerminalValue'
+		'getLexemeFormId',
+		'getLexemeFormLabelData',
+		'getLexemeFormUrl'
 	] ), {
-		/**
-		 * Returns the row for the Fetch Wikidata Lexeme Identity argument is,
-		 * which will contain the string with the Wikidata Lexeme Id, if set,
-		 *
-		 * @return {Object|undefined}
-		 */
-		lexemeFormIdRow: function () {
-			return this.getLexemeFormIdRow( this.rowId );
-		},
 		/**
 		 * Returns the Lexeme Id string value, if any Lexeme is selected.
 		 * Else returns null (required as empty value for CdxLookup).
@@ -90,9 +82,7 @@ module.exports = exports = defineComponent( {
 		 * @return {string|null}
 		 */
 		lexemeFormId: function () {
-			return this.lexemeFormIdRow ?
-				this.getZStringTerminalValue( this.lexemeFormIdRow.id ) || null :
-				null;
+			return this.getLexemeFormId( this.rowId );
 		},
 		/**
 		 * Returns the Lexeme data object, if any Lexeme is selected.
@@ -106,42 +96,20 @@ module.exports = exports = defineComponent( {
 			return this.getLexemeFormData( this.lexemeFormId );
 		},
 		/**
-		 * Returns the Wikidata URL for the selected Lexeme.
+		 * Returns the Wikidata URL for the selected Lexeme Form.
 		 *
 		 * @return {string|undefined}
 		 */
 		lexemeFormUrl: function () {
-			if ( !this.lexemeFormId ) {
-				return undefined;
-			}
-			const [ lexemeId = '', formId = '' ] = this.lexemeFormId.split( '-' );
-			return `${ Constants.WIKIDATA_BASE_URL }/wiki/Lexeme:${ lexemeId }#${ formId }`;
+			return this.getLexemeFormUrl( this.lexemeFormId );
 		},
 		/**
-		 * Returns the LabelData object built from the available
-		 * lemmas in the data object of the selected Lexeme.
-		 * If a Lexeme is selected but it has no lemmas, returns
-		 * LabelData object with the Lexeme id as its display label.
-		 * If no Lexeme is selected, returns undefined.
+		 * Returns the LabelData object for the selected Lexeme Form
 		 *
 		 * @return {LabelData|undefined}
 		 */
 		lexemeFormLabelData: function () {
-			// If no selected lexeme, return undefined
-			if ( !this.lexemeFormId ) {
-				return undefined;
-			}
-			// If no lexemeFormData yet, return Lexeme Id
-			// Get best label from representations (if any)
-			const langs = this.lexemeFormData ? Object.keys( this.lexemeFormData.representations || {} ) : {};
-			if ( langs.length > 0 ) {
-				const rep = langs.includes( this.getUserLangCode ) ?
-					this.lexemeFormData.representations[ this.getUserLangCode ] :
-					this.lexemeFormData.representations[ langs[ 0 ] ];
-				return new LabelData( this.lexemeFormId, rep.value, null, rep.language );
-			}
-			// Else, return Lexeme Id as label
-			return new LabelData( this.lexemeFormId, this.lexemeFormId, null );
+			return this.getLexemeFormLabelData( this.lexemeFormId );
 		},
 		/**
 		 * Returns the string label of the selected Lexeme or
@@ -220,11 +188,6 @@ module.exports = exports = defineComponent( {
 		box-sizing: border-box;
 		/* We calculate dynamically a different padding for each font size setting */
 		padding-top: calc( calc( @min-size-interactive-pointer - var( --line-height-current ) ) / 2 );
-	}
-
-	.ext-wikilambda-app-wikidata-lexeme-form__notation {
-		margin-left: @spacing-25;
-		color: @color-subtle;
 	}
 
 	.ext-wikilambda-app-wikidata-lexeme-form__link {

@@ -10,6 +10,7 @@
 const { setActivePinia, createPinia } = require( 'pinia' );
 const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+const LabelData = require( '../../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' );
 
 const propertyId = 'P642';
 const propertyData = {
@@ -49,6 +50,50 @@ describe( 'Wikidata Properties Pinia store', () => {
 			it( 'returns property data if available', () => {
 				store.properties[ propertyId ] = propertyData;
 				expect( store.getPropertyData( propertyId ) ).toEqual( propertyData );
+			} );
+		} );
+
+		describe( 'getPropertyId', () => {
+			it( 'returns null when row is undefined', () => {
+				const rowId = undefined;
+				const expected = null;
+				expect( store.getPropertyId( rowId ) ).toEqual( expected );
+			} );
+
+			it( 'returns null when row is not found', () => {
+				const rowId = 100;
+				const expected = null;
+				expect( store.getPropertyId( rowId ) ).toEqual( expected );
+			} );
+
+			it( 'returns property ID when row is found', () => {
+				const rowId = 1;
+				const expected = 'P642';
+				Object.defineProperty( store, 'getPropertyIdRow', {
+					value: jest.fn().mockReturnValue( 2 )
+				} );
+				Object.defineProperty( store, 'getZStringTerminalValue', {
+					value: jest.fn().mockReturnValue( expected )
+				} );
+				expect( store.getPropertyId( rowId ) ).toEqual( expected );
+			} );
+		} );
+
+		describe( 'getPropertyLabelData', () => {
+			it( 'returns undefined when property ID is undefined', () => {
+				const expected = undefined;
+				expect( store.getPropertyLabelData( undefined ) ).toEqual( expected );
+			} );
+
+			it( 'returns property ID as label when property data is not available', () => {
+				const expected = new LabelData( propertyId, propertyId, null );
+				expect( store.getPropertyLabelData( propertyId ) ).toEqual( expected );
+			} );
+
+			it( 'returns property label data when property data is available', () => {
+				store.properties[ propertyId ] = propertyData;
+				const expected = new LabelData( propertyId, 'of', null, 'en' );
+				expect( store.getPropertyLabelData( propertyId ) ).toEqual( expected );
 			} );
 		} );
 	} );
@@ -166,6 +211,32 @@ describe( 'Wikidata Properties Pinia store', () => {
 				await store.fetchProperties( { ids: properties } );
 
 				expect( fetchMock ).toHaveBeenCalledWith( expectedUrl );
+				expect( store.properties ).toEqual( { P111111: 'has data' } );
+			} );
+
+			it( 'stores the resolving promise for fetching properties', async () => {
+				const properties = [ 'P333333', 'P444444' ];
+				const promise = store.fetchProperties( { ids: properties } );
+
+				expect( store.properties.P333333 ).toBe( promise );
+				expect( store.properties.P444444 ).toBe( promise );
+
+				await promise;
+			} );
+
+			it( 'removes property IDs from state when fetch fails', async () => {
+				store.properties = {
+					P111111: 'has data'
+				};
+				const properties = [ 'P333333', 'P444444' ];
+
+				fetchMock = jest.fn().mockRejectedValue( 'some error' );
+				store.setPropertyData = jest.fn();
+				// eslint-disable-next-line n/no-unsupported-features/node-builtins
+				global.fetch = fetchMock;
+
+				await store.fetchProperties( { ids: properties } );
+
 				expect( store.properties ).toEqual( { P111111: 'has data' } );
 			} );
 		} );

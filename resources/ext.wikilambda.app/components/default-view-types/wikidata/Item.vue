@@ -5,7 +5,9 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-app-wikidata-item" data-testid="wikidata-item">
+	<div
+		class="ext-wikilambda-app-wikidata-item"
+		data-testid="wikidata-item">
 		<div v-if="!edit" class="ext-wikilambda-app-wikidata-item__read">
 			<cdx-icon
 				:icon="wikidataIcon"
@@ -24,7 +26,6 @@
 			v-else
 			:entity-id="itemId"
 			:entity-label="itemLabel"
-			:icon="wikidataIcon"
 			:type="itemType"
 			@select-wikidata-entity="onSelect"
 		></wl-wikidata-entity-selector>
@@ -34,11 +35,11 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
-const { CdxIcon } = require( '../../../../codex.js' );
 const Constants = require( '../../../Constants.js' );
 const LabelData = require( '../../../store/classes/LabelData.js' );
 const useMainStore = require( '../../../store/index.js' );
 const WikidataEntitySelector = require( './EntitySelector.vue' );
+const { CdxIcon } = require( '../../../../codex.js' );
 const wikidataIconSvg = require( './wikidataIconSvg.js' );
 
 module.exports = exports = defineComponent( {
@@ -70,19 +71,10 @@ module.exports = exports = defineComponent( {
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
 		'getItemData',
-		'getItemIdRow',
-		'getUserLangCode',
-		'getZStringTerminalValue'
+		'getItemId',
+		'getItemLabelData',
+		'getItemUrl'
 	] ), {
-		/**
-		 * Returns the row where the Wikidata Item string Id value is.
-		 * If the value is unset or unfound, returns undefined.
-		 *
-		 * @return {Object|undefined}
-		 */
-		itemIdRow: function () {
-			return this.getItemIdRow( this.rowId );
-		},
 		/**
 		 * Returns the Wikidata Item Id string value, if any Item is selected.
 		 * Else returns null.
@@ -90,9 +82,7 @@ module.exports = exports = defineComponent( {
 		 * @return {string|null}
 		 */
 		itemId: function () {
-			return this.itemIdRow ?
-				this.getZStringTerminalValue( this.itemIdRow.id ) || null :
-				null;
+			return this.getItemId( this.rowId );
 		},
 		/**
 		 * Returns the Wikidata Item data object, if any Item is selected.
@@ -110,35 +100,15 @@ module.exports = exports = defineComponent( {
 		 * @return {string|undefined}
 		 */
 		itemUrl: function () {
-			return this.itemId ?
-				`${ Constants.WIKIDATA_BASE_URL }/wiki/${ this.itemId }` :
-				undefined;
+			return this.getItemUrl( this.itemId );
 		},
 		/**
-		 * Returns the LabelData object built from the available
-		 * labels in the data object of the selected Wikidata Item.
-		 * If an Item is selected but it has no labels, returns
-		 * LabelData object with the Wikidata Item id as its label.
-		 * If no Wikidata Item is selected, returns undefined.
+		 * Returns the LabelData object for the selected Item.
 		 *
 		 * @return {LabelData|undefined}
 		 */
 		itemLabelData: function () {
-			// If no selected item, return undefined
-			if ( !this.itemId ) {
-				return undefined;
-			}
-			// If no itemData yet, return item Id
-			// Get best label from labels (if any)
-			const langs = this.itemData ? Object.keys( this.itemData.labels || {} ) : {};
-			if ( langs.length > 0 ) {
-				const label = langs.includes( this.getUserLangCode ) ?
-					this.itemData.labels[ this.getUserLangCode ] :
-					this.itemData.labels[ langs[ 0 ] ];
-				return new LabelData( this.itemId, label.value, null, label.language );
-			}
-			// Else, return item Id as label
-			return new LabelData( this.itemId, this.itemId, null );
+			return this.getItemLabelData( this.itemId );
 		},
 		/**
 		 * Returns the string label of the selected Wikidata Item or
@@ -212,11 +182,6 @@ module.exports = exports = defineComponent( {
 		box-sizing: border-box;
 		/* We calculate dynamically a different padding for each font size setting */
 		padding-top: calc( calc( @min-size-interactive-pointer - var( --line-height-current ) ) / 2 );
-	}
-
-	.ext-wikilambda-app-wikidata-item__notation {
-		margin-left: @spacing-25;
-		color: @color-subtle;
 	}
 
 	.ext-wikilambda-app-wikidata-item__link {

@@ -212,6 +212,76 @@ describe( 'Wikidata Entities Pinia store', () => {
 			} );
 		} );
 
+		describe( 'isWikidataEntity', () => {
+			it( 'returns false when row is undefined', () => {
+				const rowId = undefined;
+				const expected = false;
+				expect( store.isWikidataEntity( rowId ) ).toEqual( expected );
+			} );
+
+			it( 'returns false when row is not found', () => {
+				const rowId = 100;
+				const expected = false;
+				expect( store.isWikidataEntity( rowId ) ).toEqual( expected );
+			} );
+
+			it( 'returns false when object is not a wikidata entity', () => {
+				store.zobject = zobjectToRows( {
+					Z2K2: { // rowId = 1
+						Z1K1: 'Z11',
+						Z11K1: 'Z1002',
+						Z11K2: 'not a function call'
+					}
+				} );
+				const rowId = 1;
+				const expected = false;
+				expect( store.isWikidataEntity( rowId ) ).toEqual( expected );
+			} );
+
+			it( 'returns true when object is a wikidata literal', () => {
+				store.zobject = zobjectToRows( {
+					Z2K2: { // rowId = 1
+						Z1K1: 'Z6005',
+						Z6005K1: {
+							Z1K1: 'Z6095',
+							Z6095K1: 'L333333'
+						}
+					}
+				} );
+				const rowId = 1;
+				const expected = true;
+				expect( store.isWikidataEntity( rowId ) ).toEqual( expected );
+			} );
+
+			it( 'returns true when object is a wikidata reference', () => {
+				store.zobject = zobjectToRows( {
+					Z2K2: { // rowId = 1
+						Z1K1: 'Z6095',
+						Z6095K1: 'L333333'
+					}
+				} );
+				const rowId = 1;
+				const expected = true;
+				expect( store.isWikidataEntity( rowId ) ).toEqual( expected );
+			} );
+
+			it( 'returns true when object is a wikidata fetch function call', () => {
+				store.zobject = zobjectToRows( {
+					Z2K2: { // rowId = 1
+						Z1K1: 'Z7',
+						Z7K1: 'Z6825',
+						Z6825K1: {
+							Z1K1: 'Z6095',
+							Z6095K1: 'L333333'
+						}
+					}
+				} );
+				const rowId = 1;
+				const expected = true;
+				expect( store.isWikidataEntity( rowId ) ).toEqual( expected );
+			} );
+		} );
+
 		describe( 'getWikidataEntityIdRow', () => {
 			it( 'returns undefined when row is undefined', () => {
 				const rowId = undefined;

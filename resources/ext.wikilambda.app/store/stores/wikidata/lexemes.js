@@ -8,6 +8,7 @@
 
 const apiUtils = require( '../../../mixins/api.js' ).methods;
 const Constants = require( '../../../Constants.js' );
+const LabelData = require( '../../classes/LabelData.js' );
 
 module.exports = {
 	state: {
@@ -16,7 +17,7 @@ module.exports = {
 
 	getters: {
 		/**
-		 * Returns the lexeme object of a given ID,
+		 * Returns the Lexeme object of a given ID,
 		 * the fetch Promise if the fetch request is on the fly,
 		 * or undefined if it hasn't been requested yet.
 		 *
@@ -32,7 +33,7 @@ module.exports = {
 			return findLexemeData;
 		},
 		/**
-		 * Returns the lexeme form object of a given ID,
+		 * Returns the Lexeme form object of a given ID,
 		 * or undefined if it hasn't been requested yet
 		 *
 		 * @param {Object} state
@@ -52,6 +53,27 @@ module.exports = {
 			};
 			return findLexemeFormData;
 		},
+
+		/**
+		 * Returns the Lexeme Id string value, if any Lexeme is selected.
+		 * Else returns null.
+		 *
+		 * @return {Function}
+		 */
+		getLexemeId: function () {
+			/**
+			 * @param {number} rowId
+			 * @return {string|null}
+			 */
+			const findLexemeId = ( rowId ) => {
+				const lexemeIdRow = this.getLexemeIdRow( rowId );
+				return lexemeIdRow ?
+					this.getZStringTerminalValue( lexemeIdRow.id ) || null :
+					null;
+			};
+			return findLexemeId;
+		},
+
 		/**
 		 * Given the rowId of the Wikidata Lexeme entity
 		 * returns the rowId of the Lexeme Id string.
@@ -66,6 +88,27 @@ module.exports = {
 			const findLexemeIdRow = ( rowId ) => this.getWikidataEntityIdRow( rowId, Constants.Z_WIKIDATA_LEXEME );
 			return findLexemeIdRow;
 		},
+
+		/**
+		 * Returns the Lexeme Id string value, if any Lexeme is selected.
+		 * Else returns null (required as empty value for CdxLookup).
+		 *
+		 * @return {Function}
+		 */
+		getLexemeFormId: function () {
+			/**
+			 * @param {number} rowId
+			 * @return {Object|undefined}
+			 */
+			const findLexemeFormId = ( rowId ) => {
+				const lexemeFormIdRow = this.getLexemeFormIdRow( rowId );
+				return lexemeFormIdRow ?
+					this.getZStringTerminalValue( lexemeFormIdRow.id ) || null :
+					null;
+			};
+			return findLexemeFormId;
+		},
+
 		/**
 		 * Given the rowId of the Wikidata Lexeme Form entity
 		 * returns the rowId of the Lexeme Form Id string.
@@ -82,6 +125,111 @@ module.exports = {
 				Constants.Z_WIKIDATA_LEXEME_FORM
 			);
 			return findLexemeFormIdRow;
+		},
+
+		/**
+		 * Returns the LabelData object built from the available
+		 * lemmas in the data object of the selected Lexeme.
+		 * If a Lexeme is selected but it has no lemmas, returns
+		 * LabelData object with the Lexeme id as its display label.
+		 * If no Lexeme is selected, returns undefined.
+		 *
+		 * @param {Object} state
+		 * @return {LabelData|undefined}
+		 */
+		getLexemeLabelData: function () {
+			/**
+			 * @param {string} id The lexeme ID
+			 * @return {LabelData} The `LabelData` object containing label, language code, and directionality.
+			 */
+			const findLexemeLabelData = ( id ) => {
+				// If no selected Lexeme, return undefined
+				if ( !id ) {
+					return undefined;
+				}
+				// If no lexemeData yet, return Lexeme Id
+				// Get best label from lemmas (if any)
+				const lexemeData = this.getLexemeData( id );
+				const langs = lexemeData ? Object.keys( lexemeData.lemmas || {} ) : {};
+				if ( langs.length > 0 ) {
+					const lemma = langs.includes( this.getUserLangCode ) ?
+						lexemeData.lemmas[ this.getUserLangCode ] :
+						lexemeData.lemmas[ langs[ 0 ] ];
+					return new LabelData( id, lemma.value, null, lemma.language );
+				}
+				// Else, return Lexeme Id as label
+				return new LabelData( id, id, null );
+
+			};
+			return findLexemeLabelData;
+		},
+
+		/**
+		 * Returns the LabelData object built from the available
+		 * lemmas in the data object of the selected Lexeme.
+		 * If a Lexeme is selected but it has no lemmas, returns
+		 * LabelData object with the Lexeme id as its display label.
+		 * If no Lexeme is selected, returns undefined.
+		 *
+		 * @return {LabelData|undefined}
+		 */
+		getLexemeFormLabelData: function () {
+			/**
+			 * @param {string} id The Lexeme form ID
+			 * @return {LabelData} The `LabelData` object containing label, language code, and directionality.
+			 */
+			const findLexemeFormLabelData = ( id ) => {
+				// If no selected Lexeme, return undefined
+				if ( !id ) {
+					return undefined;
+				}
+				// If no lexemeFormData yet, return Lexeme Id
+				const lexemeFormData = this.getLexemeFormData( id );
+				// Get best label from representations (if any)
+				const langs = lexemeFormData ? Object.keys( lexemeFormData.representations || {} ) : {};
+				if ( langs.length > 0 ) {
+					const rep = langs.includes( this.getUserLangCode ) ?
+						lexemeFormData.representations[ this.getUserLangCode ] :
+						lexemeFormData.representations[ langs[ 0 ] ];
+					return new LabelData( id, rep.value, null, rep.language );
+				}
+				// Else, return Lexeme Id as label
+				return new LabelData( id, id, null );
+			};
+			return findLexemeFormLabelData;
+		},
+
+		/**
+		 * Returns the URL for a given lexeme ID.
+		 *
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		getLexemeUrl: function () {
+			/**
+			 * @param {string} id
+			 * @return {string|undefined}
+			 */
+			const findLexemeUrl = ( id ) => id ? `${ Constants.WIKIDATA_BASE_URL }/wiki/Lexeme:${ id }` : undefined;
+			return findLexemeUrl;
+		},
+
+		/**
+		 * Returns the URL for a given lexeme form ID.
+		 *
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		getLexemeFormUrl: function () {
+			/**
+			 * @param {string} id
+			 * @return {string|undefined}
+			 */
+			const findLexemeFormUrl = ( id ) => {
+				const [ lexemeId = '', formId = '' ] = id.split( '-' );
+				return id ? `${ Constants.WIKIDATA_BASE_URL }/wiki/Lexeme:${ lexemeId }#${ formId }` : undefined;
+			};
+			return findLexemeFormUrl;
 		}
 	},
 

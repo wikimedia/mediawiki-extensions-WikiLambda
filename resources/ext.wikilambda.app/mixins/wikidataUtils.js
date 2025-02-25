@@ -7,6 +7,7 @@
  */
 'use strict';
 
+// TODO: move this to a /utils directory
 module.exports = exports = {
 	methods: {
 		/**

@@ -8,6 +8,7 @@
 
 const apiUtils = require( '../../../mixins/api.js' ).methods;
 const Constants = require( '../../../Constants.js' );
+const LabelData = require( '../../classes/LabelData.js' );
 
 module.exports = {
 	state: {
@@ -45,8 +46,78 @@ module.exports = {
 			 */
 			const findItemIdRow = ( rowId ) => this.getWikidataEntityIdRow( rowId, Constants.Z_WIKIDATA_ITEM );
 			return findItemIdRow;
-		}
+		},
 
+		/**
+		 * Returns the Wikidata Item Id string value, if any Item is selected.
+		 * Else returns null.
+		 *
+		 * @return {Function}
+		 */
+		getItemId: function () {
+			/**
+			 * @param {number} rowId
+			 * @return {string|null}
+			 */
+			const findItemId = ( rowId ) => {
+				const itemIdRow = this.getItemIdRow( rowId );
+				return itemIdRow ?
+					this.getZStringTerminalValue( itemIdRow.id ) || null :
+					null;
+			};
+			return findItemId;
+		},
+
+		/**
+		 * Returns the LabelData object built from the available
+		 * labels in the data object of the selected Wikidata Item.
+		 * If an Item is selected but it has no labels, returns
+		 * LabelData object with the Wikidata Item id as its label.
+		 * If no Wikidata Item is selected, returns undefined.
+		 *
+		 * @param {Object} state
+		 * @return {LabelData|undefined}
+		 */
+		getItemLabelData: function () {
+			/**
+			 * @param {string} id The item ID
+			 * @return {LabelData} The `LabelData` object containing label, language code, and directionality.
+			 */
+			const findItemLabelData = ( id ) => {
+			// If no selected item, return undefined
+				if ( !id ) {
+					return undefined;
+				}
+				// If no itemData yet, return item Id
+				// Get best label from labels (if any)
+				const itemData = this.getItemData( id );
+				const langs = itemData ? Object.keys( itemData.labels || {} ) : {};
+				if ( langs.length > 0 ) {
+					const label = langs.includes( this.getUserLangCode ) ?
+						itemData.labels[ this.getUserLangCode ] :
+						itemData.labels[ langs[ 0 ] ];
+					return new LabelData( id, label.value, null, label.language );
+				}
+				// Else, return item Id as label
+				return new LabelData( id, id, null );
+			};
+			return findItemLabelData;
+		},
+
+		/**
+		 * Returns the URL for a given item ID.
+		 *
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		getItemUrl: function () {
+			/**
+			 * @param {string} id
+			 * @return {string|undefined}
+			 */
+			const findItemUrl = ( id ) => id ? `${ Constants.WIKIDATA_BASE_URL }/wiki/${ id }` : undefined;
+			return findItemUrl;
+		}
 	},
 
 	actions: {
