@@ -471,7 +471,10 @@ class ZObjectContentHandler extends ContentHandler {
 		$zidSpan = Html::element(
 			'span',
 			[
-				'class' => 'ext-wikilambda-viewpage-header__zid'
+				'class' => 'ext-wikilambda-viewpage-header__zid',
+				'role' => 'button',
+				'tabindex' => '0',
+				'aria-live' => 'polite'
 			],
 			$title->getText()
 		);
