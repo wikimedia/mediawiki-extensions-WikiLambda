@@ -40,6 +40,10 @@ module.exports = exports = {
 		 */
 		submitInteraction: function ( action, interactionData ) {
 			if ( mw.eventLog ) {
+				// Ensure zobjecttype (if present) is a string, to avoid event validation error
+				if ( interactionData.zobjecttype && ( typeof interactionData.zobjecttype !== 'string' ) ) {
+					interactionData.zobjecttype = JSON.stringify( interactionData.zobjecttype );
+				}
 				mw.eventLog.submitInteraction(
 					'mediawiki.product_metrics.wikifunctions_ui',
 					'/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0',
