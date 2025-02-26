@@ -573,6 +573,10 @@ module.exports = exports = defineComponent( {
 			flex-direction: row;
 		}
 
+		.cdx-text-area {
+			max-width: initial;
+		}
+
 		.cdx-text-input {
 			max-width: initial;
 		}
