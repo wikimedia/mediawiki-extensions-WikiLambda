@@ -15,7 +15,7 @@
 		>
 			<!-- Dialog Header -->
 			<template #header>
-				<wl-custom-dialog-header @close="closeDialog">
+				<wl-custom-dialog-header @close-dialog="closeDialog">
 					<template #title>
 						{{ $i18n( 'wikilambda-about-widget-view-languages-title' ).text() }}
 					</template>
