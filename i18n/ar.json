@@ -298,6 +298,8 @@
 	"wikilambda-ztyped-pair-placeholder": "اختر نوع",
 	"wikilambda-ztyped-pair-key-label": "مفتاح",
 	"wikilambda-ztyped-pair-value-label": "قيمة",
+	"wikilambda-ztyped-map-placeholder": "حدد نوع الخريطة",
+	"wikilambda-ztyped-map-description": "خريطة الانواع",
 	"wikilambda-zerror": "خطأ من النوع $1",
 	"wikilambda-optional": "اختياري",
 	"wikilambda-continue-editing": "مواصلة التعديل",
