@@ -181,7 +181,7 @@ const typeUtils = {
 					// Stringify the function Zid
 					functionZid = type[ Constants.Z_FUNCTION_CALL_FUNCTION ];
 					if ( typeof functionZid === 'object' ) {
-						functionZid = typeUtils.methods.typeToString( functionZid );
+						functionZid = typeUtils.methods.typeToString( functionZid, noArgs );
 					}
 					typeString = functionZid;
 					if ( !noArgs ) {
@@ -193,7 +193,7 @@ const typeUtils = {
 						) );
 						for ( const argKey of argKeys ) {
 							argType = ( typeof type[ argKey ] === 'object' ) ?
-								typeUtils.methods.typeToString( type[ argKey ] ) :
+								typeUtils.methods.typeToString( type[ argKey ], noArgs ) :
 								type[ argKey ];
 							argTypes.push( argType );
 						}
@@ -205,7 +205,7 @@ const typeUtils = {
 
 				case Constants.Z_TYPE:
 					typeString = type[ Constants.Z_TYPE_IDENTITY ];
-					typeString = typeUtils.methods.typeToString( typeString );
+					typeString = typeUtils.methods.typeToString( typeString, noArgs );
 					break;
 
 				case Constants.Z_ARGUMENT_REFERENCE:
@@ -213,7 +213,7 @@ const typeUtils = {
 					break;
 
 				default:
-					typeString = undefined;
+					typeString = '';
 			}
 
 			return typeString;
