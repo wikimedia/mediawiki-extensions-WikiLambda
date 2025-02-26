@@ -62,12 +62,13 @@ module.exports = {
 			 * @param {string} langCode The language code to retrieve the `LabelData` for.
 			 * @return {LabelData} The `LabelData` object containing label, language code, and directionality.
 			 */
-			return ( langCode ) => new LabelData(
+			const findLabelDataForLangCode = ( langCode ) => new LabelData(
 				null,
 				null,
 				langCode,
 				this.getLanguageIsoCodeOfZLang( langCode )
 			);
+			return findLabelDataForLangCode;
 		}
 	},
 

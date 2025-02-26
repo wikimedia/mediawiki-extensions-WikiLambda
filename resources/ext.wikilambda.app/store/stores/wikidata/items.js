@@ -28,7 +28,8 @@ module.exports = {
 			 * @param {string} id
 			 * @return {Object|Promise|undefined}
 			 */
-			return ( id ) => state.items[ id ];
+			const findItemData = ( id ) => state.items[ id ];
+			return findItemData;
 		},
 
 		/**
@@ -42,7 +43,8 @@ module.exports = {
 			 * @param {number} rowId
 			 * @return {Object|undefined}
 			 */
-			return ( rowId ) => this.getWikidataEntityIdRow( rowId, Constants.Z_WIKIDATA_ITEM );
+			const findItemIdRow = ( rowId ) => this.getWikidataEntityIdRow( rowId, Constants.Z_WIKIDATA_ITEM );
+			return findItemIdRow;
 		}
 
 	},

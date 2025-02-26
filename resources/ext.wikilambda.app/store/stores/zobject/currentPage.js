@@ -71,7 +71,7 @@ module.exports = {
 				}
 				// Row is oldest ancestor, return true if id is 0
 				if ( row.parent === undefined ) {
-					return ( row.id === 0 );
+					return row.id === 0;
 				}
 				return findOldestAncestor( row.parent );
 			};

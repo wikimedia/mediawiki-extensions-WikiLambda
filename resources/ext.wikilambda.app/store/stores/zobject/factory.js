@@ -33,7 +33,7 @@ module.exports = {
 			 * @param {Array} keyList a list of types that have been seen so far
 			 * @return {Object}
 			 */
-			return ( payload, keyList = [] ) => {
+			const generateObjectByType = ( payload, keyList = [] ) => {
 				// If payload.literal is true, we are forcing creating a literal
 				// object for those types that are generally persisted and linked.
 				// We force literal when:
@@ -113,6 +113,7 @@ module.exports = {
 						return this.createGenericObject( payload, keyList );
 				}
 			};
+			return generateObjectByType;
 		},
 
 		/**
@@ -134,7 +135,7 @@ module.exports = {
 			 * @param {Array} keyList a list of types that have been seen so far
 			 * @return {Object}
 			 */
-			return ( payload, keyList = [] ) => {
+			const generateGenericObject = ( payload, keyList = [] ) => {
 				const persisted = this.getStoredObject( payload.type );
 				const value = {
 					[ Constants.Z_OBJECT_TYPE ]: payload.type
@@ -170,6 +171,7 @@ module.exports = {
 				}
 				return value;
 			};
+			return generateGenericObject;
 		},
 
 		/**
@@ -197,7 +199,7 @@ module.exports = {
 			/**
 			 * @return {Object}
 			 */
-			return () => {
+			const generateZPersistentObject = () => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_PERSISTENTOBJECT );
 				// Initialize persistent zid and blank label
@@ -213,6 +215,7 @@ module.exports = {
 				}
 				return value;
 			};
+			return generateZPersistentObject;
 		},
 
 		/**
@@ -235,7 +238,7 @@ module.exports = {
 			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
-			return ( payload ) => {
+			const generateZMonolingualString = ( payload ) => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_MONOLINGUALSTRING );
 				// Initialize monolingual string
@@ -244,6 +247,7 @@ module.exports = {
 				value[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_REFERENCE_ID ] = lang;
 				return value;
 			};
+			return generateZMonolingualString;
 		},
 
 		/**
@@ -266,7 +270,7 @@ module.exports = {
 			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
-			return ( payload ) => {
+			const generateZMonolingualStringSet = ( payload ) => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_MONOLINGUALSTRINGSET );
 				// Initialize language and first string
@@ -279,6 +283,7 @@ module.exports = {
 				}
 				return value;
 			};
+			return generateZMonolingualStringSet;
 		},
 
 		/**
@@ -303,7 +308,7 @@ module.exports = {
 			 * @param {number} payload.append
 			 * @return {Object}
 			 */
-			return ( payload ) => {
+			const generateZMultilingualString = ( payload ) => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_MULTILINGUALSTRING );
 				// Initialize first monolingual string if there's any lang or value
@@ -316,6 +321,7 @@ module.exports = {
 				}
 				return value;
 			};
+			return generateZMultilingualString;
 		},
 
 		/**
@@ -335,7 +341,9 @@ module.exports = {
 			 */
 			// No need to get scaffolding, the value is a canonical string, so
 			// either it's a blank string or a string with a value.
-			return ( payload ) => payload.value || '';
+			const generateZString = ( payload ) => payload.value || '';
+
+			return generateZString;
 		},
 
 		/**
@@ -353,13 +361,14 @@ module.exports = {
 			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
-			return ( payload ) => {
+			const generateZReference = ( payload ) => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_REFERENCE );
 				// Initialize values, if any
 				value[ Constants.Z_REFERENCE_ID ] = payload.value || '';
 				return value;
 			};
+			return generateZReference;
 		},
 
 		/**
@@ -380,13 +389,14 @@ module.exports = {
 			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
-			return ( payload ) => {
+			const generateZBoolean = ( payload ) => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_BOOLEAN );
 				// Initialize value with the boolean Zid, if any
 				value[ Constants.Z_BOOLEAN_IDENTITY ][ Constants.Z_REFERENCE_ID ] = payload.value || '';
 				return value;
 			};
+			return generateZBoolean;
 		},
 
 		/**
@@ -405,13 +415,14 @@ module.exports = {
 			/**
 			 * @return {Object}
 			 */
-			return () => {
+			const generateZType = () => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_TYPE );
 				// Initialize validator function
 				value[ Constants.Z_TYPE_VALIDATOR ][ Constants.Z_REFERENCE_ID ] = Constants.Z_VALIDATE_OBJECT;
 				return value;
 			};
+			return generateZType;
 		},
 		/**
 		 * Return a blank and initialized zArgument.
@@ -433,13 +444,14 @@ module.exports = {
 			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
-			return ( payload ) => {
+			const generateZArgument = ( payload ) => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_ARGUMENT );
 				// Initialize argument key
 				value[ Constants.Z_ARGUMENT_KEY ] = payload.value || this.getNextKey;
 				return value;
 			};
+			return generateZArgument;
 		},
 
 		/**
@@ -457,13 +469,14 @@ module.exports = {
 			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
-			return ( payload ) => {
+			const generateZFunctionCall = ( payload ) => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_FUNCTION_CALL );
 				// Initialize function zid
 				value[ Constants.Z_FUNCTION_CALL_FUNCTION ][ Constants.Z_REFERENCE_ID ] = payload.value || '';
 				return value;
 			};
+			return generateZFunctionCall;
 		},
 
 		/**
@@ -481,7 +494,7 @@ module.exports = {
 			/**
 			 * @return {Object}
 			 */
-			return () => {
+			const generateZImplementation = () => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_IMPLEMENTATION );
 				// Initialize function zid from the url parameters
@@ -489,6 +502,7 @@ module.exports = {
 				value[ Constants.Z_IMPLEMENTATION_FUNCTION ][ Constants.Z_REFERENCE_ID ] = functionZid;
 				return value;
 			};
+			return generateZImplementation;
 		},
 
 		/**
@@ -507,8 +521,8 @@ module.exports = {
 			/**
 			 * @return {Object}
 			 */
-			return () => typeUtils.getScaffolding( Constants.Z_CODE );
-
+			const generateZCode = () => typeUtils.getScaffolding( Constants.Z_CODE );
+			return generateZCode;
 		},
 
 		/**
@@ -529,7 +543,7 @@ module.exports = {
 			/**
 			 * @return {Object}
 			 */
-			return () => {
+			const generateZFunction = () => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_FUNCTION );
 				const arg = typeUtils.getScaffolding( Constants.Z_ARGUMENT );
@@ -540,6 +554,7 @@ module.exports = {
 				value[ Constants.Z_FUNCTION_ARGUMENTS ].push( arg );
 				return value;
 			};
+			return generateZFunction;
 		},
 
 		/**
@@ -564,7 +579,7 @@ module.exports = {
 			/**
 			 * @return {Object}
 			 */
-			return () => {
+			const generateZTester = () => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_TESTER );
 
@@ -573,6 +588,7 @@ module.exports = {
 				value[ Constants.Z_TESTER_FUNCTION ][ Constants.Z_REFERENCE_ID ] = functionZid;
 				return value;
 			};
+			return generateZTester;
 		},
 
 		/**
@@ -590,13 +606,14 @@ module.exports = {
 			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
-			return ( payload ) => {
+			const generateZTypedList = ( payload ) => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_TYPED_LIST );
 				// Initialize function zid from the url parameters
 				value[ 0 ][ Constants.Z_REFERENCE_ID ] = payload.value || Constants.Z_OBJECT;
 				return value;
 			};
+			return generateZTypedList;
 		},
 
 		/**
@@ -624,7 +641,7 @@ module.exports = {
 			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
-			return ( payload ) => {
+			const generateZTypedPair = ( payload ) => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_TYPED_PAIR );
 				// Initialize typed pair types
@@ -638,6 +655,7 @@ module.exports = {
 				value[ Constants.Z_TYPED_OBJECT_ELEMENT_2 ] = value2;
 				return value;
 			};
+			return generateZTypedPair;
 		},
 
 		/**
@@ -662,7 +680,7 @@ module.exports = {
 			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
-			return ( payload ) => {
+			const generateZTypedMap = ( payload ) => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_TYPED_MAP );
 
@@ -673,6 +691,7 @@ module.exports = {
 				value[ Constants.Z_OBJECT_TYPE ][ Constants.Z_TYPED_MAP_TYPE2 ][ Constants.Z_REFERENCE_ID ] = type2;
 				return value;
 			};
+			return generateZTypedMap;
 		},
 
 		/**
@@ -697,7 +716,7 @@ module.exports = {
 			 * @param {string} payload.type
 			 * @return {Object}
 			 */
-			return ( payload ) => {
+			const generateWikidataEntity = ( payload ) => {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_FUNCTION_CALL );
 				let wdRef, wdFetch, wdFetchId;
@@ -751,6 +770,7 @@ module.exports = {
 						return value;
 				}
 			};
+			return generateWikidataEntity;
 		}
 	},
 

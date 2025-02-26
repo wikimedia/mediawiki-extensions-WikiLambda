@@ -54,7 +54,8 @@ module.exports = {
 			 * @param {string} type
 			 * @return {string|undefined}
 			 */
-			return ( type ) => state.renderers[ type ];
+			const findRendererZid = ( type ) => state.renderers[ type ];
+			return findRendererZid;
 		},
 
 		/**
@@ -71,7 +72,8 @@ module.exports = {
 			 * @param {string} type
 			 * @return {string | undefined}
 			 */
-			return ( type ) => state.parsers[ type ];
+			const findParserZid = ( type ) => state.parsers[ type ];
+			return findParserZid;
 		},
 
 		/**
@@ -85,7 +87,8 @@ module.exports = {
 			 * @param {string} type
 			 * @return {boolean}
 			 */
-			return ( type ) => type in state.renderers && !!state.renderers[ type ];
+			const checkRenderer = ( type ) => type in state.renderers && !!state.renderers[ type ];
+			return checkRenderer;
 		},
 		/**
 		 * Returns whether the given type has a parser in storage
@@ -98,7 +101,8 @@ module.exports = {
 			 * @param {string} type
 			 * @return {boolean}
 			 */
-			return ( type ) => type in state.parsers && !!state.parsers[ type ];
+			const checkParser = ( type ) => type in state.parsers && !!state.parsers[ type ];
+			return checkParser;
 		},
 
 		/**
@@ -114,7 +118,7 @@ module.exports = {
 			 * @param {string|undefined} testZid
 			 * @return {Array}
 			 */
-			return ( rendererZid, testZid = undefined ) => {
+			const findRendererExamples = ( rendererZid, testZid = undefined ) => {
 				const filteredExamples = [];
 				const examples = state.rendererExamples[ rendererZid ];
 				if ( examples ) {
@@ -128,6 +132,7 @@ module.exports = {
 					filteredExamples.filter( ( item ) => item.testZid === testZid ) :
 					filteredExamples;
 			};
+			return findRendererExamples;
 		},
 
 		/**
