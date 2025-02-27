@@ -132,7 +132,7 @@ const LabelData = require( '../../../store/classes/LabelData.js' );
 const metadataConfig = require( '../../../mixins/metadata.js' );
 const useMainStore = require( '../../../store/index.js' );
 const { extractErrorStructure, extractZIDs } = require( '../../../mixins/schemata.js' ).methods;
-const { isValidZidFormat } = require( '../../../mixins/typeUtils.js' ).methods;
+const typeUtils = require( '../../../mixins/typeUtils.js' );
 const icons = require( '../../../../lib/icons.json' );
 
 module.exports = exports = defineComponent( {
@@ -146,7 +146,7 @@ module.exports = exports = defineComponent( {
 		'cdx-select': CdxSelect,
 		'wl-custom-dialog-header': CustomDialogHeader
 	},
-	mixins: [ metadataConfig, errorUtils ],
+	mixins: [ typeUtils, metadataConfig, errorUtils ],
 	props: {
 		open: {
 			type: Boolean,
@@ -558,7 +558,7 @@ module.exports = exports = defineComponent( {
 		getImplementationSummary: function () {
 			const implementationId = this.keyValues.get( 'implementationId' );
 			const zid = this.getStringValue( implementationId );
-			return isValidZidFormat( zid ) ? this.getLabelData( zid ) : '';
+			return this.isValidZidFormat( zid ) ? this.getLabelData( zid ) : '';
 		},
 		/**
 		 * Returns the duration section summary
@@ -659,7 +659,7 @@ module.exports = exports = defineComponent( {
 		 */
 		getImplementationLink: function ( value ) {
 			const zid = this.getStringValue( value );
-			if ( isValidZidFormat( zid ) ) {
+			if ( this.isValidZidFormat( zid ) ) {
 				const labelData = this.getLabelData( zid );
 				return {
 					value: labelData.labelOrUntitled,

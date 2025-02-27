@@ -46,7 +46,7 @@ const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
 const { CdxButton } = require( '../../../../codex.js' );
 const Constants = require( '../../../Constants.js' );
-const eventLogger = require( '../../../mixins/eventLogUtils.js' ).methods;
+const eventLogUtils = require( '../../../mixins/eventLogUtils.js' );
 const urlUtils = require( '../../../mixins/urlUtils.js' );
 const useMainStore = require( '../../../store/index.js' );
 const LeaveEditorDialog = require( './LeaveEditorDialog.vue' );
@@ -61,7 +61,7 @@ module.exports = exports = defineComponent( {
 		'wl-publish-dialog': PublishDialog,
 		'wl-widget-base': WidgetBase
 	},
-	mixins: [ urlUtils ],
+	mixins: [ eventLogUtils, urlUtils ],
 	props: {
 		functionSignatureChanged: {
 			type: Boolean,
@@ -238,7 +238,7 @@ module.exports = exports = defineComponent( {
 					zlang: this.getUserLangZid || null,
 					implementationtype: this.getCurrentZImplementationType || null
 				};
-				eventLogger.submitInteraction( 'cancel', interactionData );
+				this.submitInteraction( 'cancel', interactionData );
 				window.location.href = targetUrl;
 			};
 

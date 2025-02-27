@@ -6,7 +6,7 @@
 -->
 <template>
 	<div
-		v-if="hasLink"
+		v-if="( !rendererZid || rendererError ) && hasLink"
 		class="ext-wikilambda-app-object-to-string"
 		data-testid="object-to-string-link">
 		<div class="ext-wikilambda-app-object-to-string">
@@ -46,6 +46,7 @@
 	</div>
 	<div
 		v-else
+		:class="{ 'ext-wikilambda-app-object-to-string--rendering': rendererRunning }"
 		class="ext-wikilambda-app-object-to-string"
 		data-testid="object-to-string-text"
 		:lang="labelData.langCode"
@@ -58,19 +59,21 @@
 				class="ext-wikilambda-app-object-to-string__icon"
 				:icon-label="labelData.label"></cdx-icon><!--
 		--><span v-if="icon">{{ labelData.label }}</span><!--
-		--><span v-else>"{{ labelData.label }}"</span>
+		--><span v-else>{{ renderedValue || `"${labelData.label}"` }}</span>
 		</span>
 	</div>
 </template>
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { mapState } = require( 'pinia' );
+const { mapActions, mapState } = require( 'pinia' );
 const { CdxIcon } = require( '../../../codex.js' );
 
 const Constants = require( '../../Constants.js' );
 const LabelData = require( '../../store/classes/LabelData.js' );
 const typeUtils = require( '../../mixins/typeUtils.js' );
+const errorUtils = require( '../../mixins/errorUtils.js' );
+const { hybridToCanonical } = require( '../../mixins/schemata.js' ).methods;
 const useMainStore = require( '../../store/index.js' );
 const icons = require( '../../../lib/icons.json' );
 
@@ -80,13 +83,20 @@ module.exports = exports = defineComponent( {
 		'cdx-icon': CdxIcon,
 		'wl-z-object-to-string': this
 	},
-	mixins: [ typeUtils ],
+	mixins: [ typeUtils, errorUtils ],
 	props: {
 		rowId: {
 			type: Number,
 			required: false,
 			default: 0
 		}
+	},
+	data: function () {
+		return {
+			renderedValue: '',
+			rendererRunning: false,
+			rendererError: false
+		};
 	},
 	computed: Object.assign(
 		mapState( useMainStore, [
@@ -100,7 +110,10 @@ module.exports = exports = defineComponent( {
 			'getZObjectTypeByRowId',
 			'getZObjectKeyByRowId',
 			'getChildrenByParentRowId',
-			'getUserLangCode'
+			'getUserLangCode',
+			'getUserLangZid',
+			'getRendererZid',
+			'getZObjectAsJsonById'
 		] ),
 		{
 			/**
@@ -251,7 +264,9 @@ module.exports = exports = defineComponent( {
 				return (
 					this.type === Constants.Z_ARGUMENT_REFERENCE ||
 					this.type === Constants.Z_REFERENCE ||
-					this.type === Constants.Z_STRING
+					this.type === Constants.Z_STRING ||
+					// If the zobject has a renderer and no error, it's terminal
+					( this.rendererZid && !this.rendererError )
 				);
 			},
 
@@ -290,10 +305,21 @@ module.exports = exports = defineComponent( {
 			 */
 			hasChildren: function () {
 				return this.childRows.length > 0;
+			},
+
+			/**
+			 * Return renderer function Zid
+			 *
+			 * @return {string}
+			 */
+			rendererZid: function () {
+				return this.getRendererZid( this.type );
 			}
 		}
 	),
-	methods: {
+	methods: Object.assign( {}, mapActions( useMainStore, [
+		'runRenderer'
+	] ), {
 		/**
 		 * Whether a ZObject child needs a trailing comma given its index
 		 *
@@ -311,7 +337,53 @@ module.exports = exports = defineComponent( {
 		 */
 		expand: function () {
 			this.$emit( 'expand', true );
+		},
+
+		/**
+		 * Generates the rendered value of a type with renderer and
+		 */
+		generateRenderedValue: function () {
+			// Only generate rendered value once.
+			// If the rendererZid is not set, we can't render anything else
+			if ( this.rendererRunning || !this.rendererZid ) {
+				return;
+			}
+
+			this.rendererRunning = true;
+			this.renderedValue = this.$i18n( 'wikilambda-string-renderer-running' ).text();
+			const zobject = hybridToCanonical( this.getZObjectAsJsonById( this.rowId ) );
+
+			this.runRenderer( {
+				rendererZid: this.rendererZid,
+				zobject,
+				zlang: this.getUserLangZid
+			} ).then( ( data ) => {
+				const response = data.response[ Constants.Z_RESPONSEENVELOPE_VALUE ];
+				if ( response === Constants.Z_VOID || this.getZObjectType( response ) !== Constants.Z_STRING ) {
+					this.rendererError = true;
+				} else {
+					this.renderedValue = response;
+					this.rendererError = false;
+				}
+			} ).catch( () => {
+				this.rendererError = true;
+			} ).finally( () => {
+				this.rendererRunning = false;
+			} );
 		}
+	} ),
+	watch: {
+		/**
+		 * Watch the rendererZid and whenever it's updated, generate the
+		 * rendered value, in case the initial generateRenderedValue call
+		 * is called before the rendererZid has been fetched.
+		 */
+		rendererZid: function () {
+			this.generateRenderedValue();
+		}
+	},
+	mounted: function () {
+		this.generateRenderedValue();
 	}
 } );
 </script>
@@ -354,6 +426,10 @@ module.exports = exports = defineComponent( {
 		> span {
 			white-space: pre-wrap;
 		}
+	}
+
+	&--rendering {
+		color: @color-placeholder;
 	}
 }
 </style>

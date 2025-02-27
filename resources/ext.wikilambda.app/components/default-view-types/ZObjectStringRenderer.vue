@@ -87,7 +87,7 @@ const { mapActions, mapState } = require( 'pinia' );
 
 const Constants = require( '../../Constants.js' );
 const errorUtils = require( '../../mixins/errorUtils.js' );
-const typeUtils = require( '../../mixins/typeUtils.js' ).methods;
+const typeUtils = require( '../../mixins/typeUtils.js' );
 const { getValueFromCanonicalZMap, hybridToCanonical } = require( '../../mixins/schemata.js' ).methods;
 const useMainStore = require( '../../store/index.js' );
 const ZObjectKeyValueSet = require( './ZObjectKeyValueSet.vue' );
@@ -100,7 +100,7 @@ module.exports = exports = defineComponent( {
 		'cdx-text-input': CdxTextInput,
 		'wl-z-object-key-value-set': ZObjectKeyValueSet
 	},
-	mixins: [ errorUtils ],
+	mixins: [ typeUtils, errorUtils ],
 	props: {
 		rowId: {
 			type: Number,
@@ -244,7 +244,7 @@ module.exports = exports = defineComponent( {
 					};
 				} )
 				// Filter out undefined or not wellformed test objects
-				.filter( ( test ) => typeUtils.isTruthyOrEqual( test.zobject, [
+				.filter( ( test ) => this.isTruthyOrEqual( test.zobject, [
 					Constants.Z_TESTER_CALL,
 					Constants.Z_FUNCTION_CALL_FUNCTION
 				], this.rendererZid ) );
@@ -325,7 +325,7 @@ module.exports = exports = defineComponent( {
 					const errorMessage = this.extractErrorMessage( metadata );
 					this.setRendererError( errorMessage || this.$i18n( 'wikilambda-renderer-unknown-error',
 						this.rendererZid ).parse() );
-				} else if ( typeUtils.getZObjectType( response ) !== Constants.Z_STRING ) {
+				} else if ( this.getZObjectType( response ) !== Constants.Z_STRING ) {
 					// Renderer returned unexpected type:
 					// show unexpected result error and project chat footer
 					this.renderedValue = this.edit ? '' :
@@ -367,7 +367,7 @@ module.exports = exports = defineComponent( {
 					this.showExamplesLink = ( this.renderedExamples.length > 0 );
 					this.setRendererError( errorMessage || this.$i18n( 'wikilambda-parser-unknown-error',
 						this.parserZid ).parse() );
-				} else if ( typeUtils.getZObjectType( response ) !== this.type ) {
+				} else if ( this.getZObjectType( response ) !== this.type ) {
 					// Parser return unexpected type:
 					// * Resolve parser promise
 					// * show unexpected result error and project chat footer
