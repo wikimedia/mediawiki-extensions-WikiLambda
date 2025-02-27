@@ -96,7 +96,7 @@
 	"wikilambda-persistentzobject-contents": "Innhold",
 	"wikilambda-persistentzobject-description": "Begynn å opprette objektet ditt ved å velge en type nedenfor. Du kan opprette en funksjon ved å trykke på denne lenka:",
 	"wikilambda-multilingualstring-nofallback": "Ingen etikett definert på dette språket eller godkjente tilbakefallsspråk",
-	"wikilambda-viewmode-nojs": "Denne siden har begrenset visning uten Javascript.",
+	"wikilambda-viewmode-nojs": "Denne siden har begrenset visning uten JavaScript.",
 	"wikilambda-diff-incompatible": "Systemet kan ikke vise forskjellen mellom et objekt og noe som ikke er et objekt.",
 	"wikilambda-reference": "Referanse",
 	"wikilambda-functioncall": "Funksjonskall",
