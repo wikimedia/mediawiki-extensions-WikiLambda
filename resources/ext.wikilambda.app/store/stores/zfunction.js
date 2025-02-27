@@ -24,7 +24,7 @@ module.exports = {
 			 * @param {number} rowId
 			 * @return {string | undefined}
 			 */
-			return ( rowId = 0 ) => {
+			const findZFunctionIdentity = ( rowId = 0 ) => {
 				const functionZid = this.getRowByKeyPath( [
 					Constants.Z_PERSISTENTOBJECT_VALUE,
 					Constants.Z_FUNCTION_IDENTITY
@@ -33,6 +33,7 @@ module.exports = {
 					this.getZReferenceTerminalValue( functionZid.id ) :
 					undefined;
 			};
+			return findZFunctionIdentity;
 		},
 
 		/**
@@ -47,7 +48,7 @@ module.exports = {
 			 * @param {string} rowId
 			 * @return {Array}
 			 */
-			return ( rowId = 0 ) => {
+			const findZFunctionInputs = ( rowId = 0 ) => {
 				const inputsRow = this.getRowByKeyPath( [
 					Constants.Z_PERSISTENTOBJECT_VALUE,
 					Constants.Z_FUNCTION_ARGUMENTS
@@ -59,6 +60,7 @@ module.exports = {
 				// Remove benjamin type item
 				return inputs.slice( 1 );
 			};
+			return findZFunctionInputs;
 		},
 
 		/**
@@ -73,7 +75,7 @@ module.exports = {
 			 * @param {string} rowId
 			 * @return {Array} Array of Arrays of language zids
 			 */
-			return ( rowId = 0 ) => {
+			const findZFunctionInputLangs = ( rowId = 0 ) => {
 				const languages = [];
 				const inputs = this.getZFunctionInputs( rowId );
 				for ( const inputRow of inputs ) {
@@ -88,6 +90,7 @@ module.exports = {
 				}
 				return languages;
 			};
+			return findZFunctionInputLangs;
 		},
 
 		/**
@@ -102,10 +105,11 @@ module.exports = {
 			 * @param {number} rowId
 			 * @return {Object|undefined}
 			 */
-			return ( rowId = 0 ) => this.getRowByKeyPath( [
+			const findZFunctionOutput = ( rowId = 0 ) => this.getRowByKeyPath( [
 				Constants.Z_PERSISTENTOBJECT_VALUE,
 				Constants.Z_FUNCTION_RETURN_TYPE
 			], rowId );
+			return findZFunctionOutput;
 		},
 
 		/**
@@ -120,10 +124,11 @@ module.exports = {
 			 * @param {number} rowId
 			 * @return {number|undefined}
 			 */
-			return ( rowId = 0 ) => {
+			const findZArgumentTypeRowId = ( rowId = 0 ) => {
 				const argType = this.getRowByKeyPath( [ Constants.Z_ARGUMENT_TYPE ], rowId );
 				return argType ? argType.id : undefined;
 			};
+			return findZArgumentTypeRowId;
 		},
 
 		/**
@@ -136,10 +141,11 @@ module.exports = {
 			 * @param {number} rowId
 			 * @return {string|undefined}
 			 */
-			return ( rowId = 0 ) => {
+			const findZArgumentKey = ( rowId = 0 ) => {
 				const argKey = this.getRowByKeyPath( [ Constants.Z_ARGUMENT_KEY ], rowId );
 				return argKey ? this.getZStringTerminalValue( argKey.id ) : undefined;
 			};
+			return findZArgumentKey;
 		},
 
 		/**
@@ -155,7 +161,7 @@ module.exports = {
 			 * @param {string} lang
 			 * @return {Object|undefined}
 			 */
-			return ( rowId, lang ) => {
+			const findZArgumentLabelForLanguage = ( rowId, lang ) => {
 				const argLabelsRow = this.getRowByKeyPath( [
 					Constants.Z_ARGUMENT_LABEL,
 					Constants.Z_MULTILINGUALSTRING_VALUE
@@ -168,6 +174,7 @@ module.exports = {
 					return langZid === lang;
 				} );
 			};
+			return findZArgumentLabelForLanguage;
 		},
 
 		/**
@@ -181,7 +188,7 @@ module.exports = {
 			 * @param {number} rowId
 			 * @return {Array}
 			 */
-			return ( rowId = 0 ) => {
+			const findConnectedTests = ( rowId = 0 ) => {
 				const testsRow = this.getRowByKeyPath( [
 					Constants.Z_PERSISTENTOBJECT_VALUE,
 					Constants.Z_FUNCTION_TESTERS
@@ -193,6 +200,7 @@ module.exports = {
 				const childRows = this.getChildrenByParentRowId( testsRow.id ).slice( 1 );
 				return childRows.map( ( row ) => this.getZReferenceTerminalValue( row.id ) );
 			};
+			return findConnectedTests;
 		},
 
 		/**
@@ -206,7 +214,7 @@ module.exports = {
 			 * @param {string} rowId
 			 * @return {Array}
 			 */
-			return ( rowId = 0 ) => {
+			const findConnectedImplementations = ( rowId = 0 ) => {
 				const implementationsRow = this.getRowByKeyPath( [
 					Constants.Z_PERSISTENTOBJECT_VALUE,
 					Constants.Z_FUNCTION_IMPLEMENTATIONS
@@ -218,6 +226,7 @@ module.exports = {
 				const childRows = this.getChildrenByParentRowId( implementationsRow.id ).slice( 1 );
 				return childRows.map( ( row ) => this.getZReferenceTerminalValue( row.id ) );
 			};
+			return findConnectedImplementations;
 		},
 
 		/**

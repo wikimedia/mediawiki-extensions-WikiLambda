@@ -26,7 +26,8 @@ module.exports = {
 			 * @param {string} id
 			 * @return {Object|Promise|undefined}
 			 */
-			return ( id ) => state.properties[ id ];
+			const findPropertyData = ( id ) => state.properties[ id ];
+			return findPropertyData;
 		},
 
 		/**
@@ -40,7 +41,8 @@ module.exports = {
 			 * @param {number} rowId
 			 * @return {Object|undefined}
 			 */
-			return ( rowId ) => this.getWikidataEntityIdRow( rowId, Constants.Z_WIKIDATA_PROPERTY );
+			const findPropertyIdRow = ( rowId ) => this.getWikidataEntityIdRow( rowId, Constants.Z_WIKIDATA_PROPERTY );
+			return findPropertyIdRow;
 		}
 	},
 	actions: {

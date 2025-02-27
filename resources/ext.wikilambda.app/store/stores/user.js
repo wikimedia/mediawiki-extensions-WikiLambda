@@ -23,7 +23,10 @@ module.exports = {
 		 * @return {Function}
 		 */
 		userHasRight: function ( state ) {
-			return ( right ) => state.userRights !== null ? state.userRights.includes( right ) : undefined;
+			const findUserHasRight = ( right ) => state.userRights !== null ?
+				state.userRights.includes( right ) :
+				undefined;
+			return findUserHasRight;
 		},
 
 		/**

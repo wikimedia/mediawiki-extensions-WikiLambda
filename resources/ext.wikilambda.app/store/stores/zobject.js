@@ -45,10 +45,11 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {string | undefined}
 			 */
-			return ( rowId ) => {
+			const findZObjectKeyByRowId = ( rowId ) => {
 				const row = this.getRowById( rowId );
 				return row !== undefined ? row.key : undefined;
 			};
+			return findZObjectKeyByRowId;
 		},
 
 		/**
@@ -62,10 +63,11 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {string | undefined} terminal value
 			 */
-			return ( rowId ) => {
+			const findZObjectValueByRowId = ( rowId ) => {
 				const row = this.getRowById( rowId );
 				return row !== undefined && row.isTerminal() ? row.value : undefined;
 			};
+			return findZObjectValueByRowId;
 		},
 
 		/**
@@ -80,13 +82,11 @@ const zobjectStore = {
 			 * @param {number} depth
 			 * @return {number}
 			 */
-			return ( rowId, depth = 0 ) => {
-				const findDepth = ( currentRowId, currentDepth ) => {
-					const row = this.getRowById( currentRowId );
-					return !row || row.parent === undefined ? currentDepth : findDepth( row.parent, currentDepth + 1 );
-				};
-				return findDepth( rowId, depth );
+			const findDepthByRowId = ( rowId, depth = 0 ) => {
+				const row = this.getRowById( rowId );
+				return !row || row.parent === undefined ? depth : findDepthByRowId( row.parent, depth + 1 );
 			};
+			return findDepthByRowId;
 
 		},
 
@@ -100,10 +100,11 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {number | undefined}
 			 */
-			return ( rowId = 0 ) => {
+			const findZPersistentContentRowId = ( rowId = 0 ) => {
 				const row = this.getRowByKeyPath( [ Constants.Z_PERSISTENTOBJECT_VALUE ], rowId );
 				return row ? row.id : undefined;
 			};
+			return findZPersistentContentRowId;
 		},
 
 		/**
@@ -117,13 +118,14 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {Array}
 			 */
-			return ( rowId = 0 ) => {
+			const findZPersistentNameLangs = ( rowId = 0 ) => {
 				const nameRow = this.getRowByKeyPath( [
 					Constants.Z_PERSISTENTOBJECT_LABEL,
 					Constants.Z_MULTILINGUALSTRING_VALUE
 				], rowId );
 				return nameRow ? this.getZMultilingualLanguageList( nameRow.id ) : [];
 			};
+			return findZPersistentNameLangs;
 		},
 
 		/**
@@ -137,13 +139,14 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {Array}
 			 */
-			return ( rowId = 0 ) => {
+			const findZPersistentDescriptionLangs = ( rowId = 0 ) => {
 				const descriptionRow = this.getRowByKeyPath( [
 					Constants.Z_PERSISTENTOBJECT_DESCRIPTION,
 					Constants.Z_MULTILINGUALSTRING_VALUE
 				], rowId );
 				return descriptionRow ? this.getZMultilingualLanguageList( descriptionRow.id ) : [];
 			};
+			return findZPersistentDescriptionLangs;
 		},
 
 		/**
@@ -158,7 +161,7 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {Array}
 			 */
-			return ( rowId = 0 ) => {
+			const findZPersistentAliasLangs = ( rowId = 0 ) => {
 				const aliasRow = this.getRowByKeyPath( [
 					Constants.Z_PERSISTENTOBJECT_ALIASES,
 					Constants.Z_MULTILINGUALSTRINGSET_VALUE
@@ -170,6 +173,7 @@ const zobjectStore = {
 				const allAlias = this.getChildrenByParentRowId( aliasRow.id ).slice( 1 );
 				return allAlias.map( ( mono ) => this.getZMonolingualStringsetLang( mono.id ) );
 			};
+			return findZPersistentAliasLangs;
 		},
 
 		/**
@@ -186,10 +190,11 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {Object|undefined}
 			 */
-			return ( langZid, rowId = 0 ) => {
+			const findZPersistentName = ( langZid, rowId = 0 ) => {
 				const name = this.getRowByKeyPath( [ Constants.Z_PERSISTENTOBJECT_LABEL ], rowId );
 				return name ? this.getZMonolingualForLanguage( langZid, name.id ) : undefined;
 			};
+			return findZPersistentName;
 		},
 
 		/**
@@ -206,10 +211,11 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {Object|undefined}
 			 */
-			return ( langZid, rowId = 0 ) => {
+			const findZPersistentDescription = ( langZid, rowId = 0 ) => {
 				const description = this.getRowByKeyPath( [ Constants.Z_PERSISTENTOBJECT_DESCRIPTION ], rowId );
 				return description ? this.getZMonolingualForLanguage( langZid, description.id ) : undefined;
 			};
+			return findZPersistentDescription;
 		},
 
 		/**
@@ -225,10 +231,11 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {Object|undefined}
 			 */
-			return ( langZid, rowId = 0 ) => {
+			const findZPersistentAlias = ( langZid, rowId = 0 ) => {
 				const aliases = this.getRowByKeyPath( [ Constants.Z_PERSISTENTOBJECT_ALIASES ], rowId );
 				return aliases ? this.getZMonolingualStringsetForLanguage( langZid, aliases.id ) : undefined;
 			};
+			return findZPersistentAlias;
 		},
 
 		/**
@@ -243,7 +250,7 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {Array}
 			 */
-			return ( rowId = 0 ) => {
+			const findMultilingualDataLanguages = ( rowId = 0 ) => {
 				// Get languages available in name, description and alias fields
 				const nameLangs = this.getZPersistentNameLangs( rowId );
 				const descriptionLangs = this.getZPersistentDescriptionLangs( rowId );
@@ -256,6 +263,7 @@ const zobjectStore = {
 				const allLangs = nameLangs.concat( descriptionLangs, aliasLangs, ...inputLangs );
 				return [ ...new Set( allLangs ) ];
 			};
+			return findMultilingualDataLanguages;
 		},
 
 		/**
@@ -269,7 +277,11 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {string | undefined}
 			 */
-			return ( rowId ) => this.getZObjectTerminalValue( rowId, Constants.Z_STRING_VALUE );
+			const findZStringTerminalValue = ( rowId ) => this.getZObjectTerminalValue(
+				rowId,
+				Constants.Z_STRING_VALUE
+			);
+			return findZStringTerminalValue;
 		},
 
 		/**
@@ -283,7 +295,11 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {string | undefined}
 			 */
-			return ( rowId ) => this.getZObjectTerminalValue( rowId, Constants.Z_REFERENCE_ID );
+			const findZReferenceTerminalValue = ( rowId ) => this.getZObjectTerminalValue(
+				rowId,
+				Constants.Z_REFERENCE_ID
+			);
+			return findZReferenceTerminalValue;
 		},
 
 		/**
@@ -312,10 +328,11 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {string | undefined}
 			 */
-			return ( rowId ) => {
+			const findZMonolingualTextValue = ( rowId ) => {
 				const stringRow = this.getRowByKeyPath( [ Constants.Z_MONOLINGUALSTRING_VALUE ], rowId );
 				return stringRow ? this.getZStringTerminalValue( stringRow.id ) : undefined;
 			};
+			return findZMonolingualTextValue;
 		},
 
 		/**
@@ -328,7 +345,7 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {string | undefined}
 			 */
-			return ( rowId ) => {
+			const findZMonolingualLangValue = ( rowId ) => {
 				const langRow = this.getRowByKeyPath( [ Constants.Z_MONOLINGUALSTRING_LANGUAGE ], rowId );
 				if ( !langRow ) {
 					return undefined;
@@ -346,6 +363,7 @@ const zobjectStore = {
 
 				return this.getZReferenceTerminalValue( langRow.id );
 			};
+			return findZMonolingualLangValue;
 		},
 
 		/**
@@ -359,7 +377,7 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {Array}
 			 */
-			return ( rowId ) => {
+			const findZMonolingualStringsetValues = ( rowId ) => {
 				const listRow = this.getRowByKeyPath( [ Constants.Z_MONOLINGUALSTRINGSET_VALUE ], rowId );
 				if ( listRow === undefined ) {
 					return [];
@@ -370,6 +388,7 @@ const zobjectStore = {
 					value: this.getZStringTerminalValue( stringRow.id )
 				} ) );
 			};
+			return findZMonolingualStringsetValues;
 		},
 
 		/**
@@ -382,7 +401,7 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {string | undefined} rowId
 			 */
-			return ( rowId ) => {
+			const findZMonolingualStringsetLang = ( rowId ) => {
 				const langRow = this.getRowByKeyPath( [ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ], rowId );
 				if ( langRow === undefined ) {
 					return undefined;
@@ -400,6 +419,7 @@ const zobjectStore = {
 
 				return this.getZReferenceTerminalValue( langRow.id );
 			};
+			return findZMonolingualStringsetLang;
 		},
 
 		/**
@@ -412,7 +432,7 @@ const zobjectStore = {
 			 * @param {string} rowId
 			 * @return {string | undefined}
 			 */
-			return ( rowId ) => {
+			const findZFunctionCallFunctionId = ( rowId ) => {
 				const zFunction = this.getRowByKeyPath(
 					[ Constants.Z_FUNCTION_CALL_FUNCTION ],
 					rowId
@@ -422,6 +442,7 @@ const zobjectStore = {
 				}
 				return this.getZObjectTerminalValue( zFunction.id, Constants.Z_REFERENCE_ID );
 			};
+			return findZFunctionCallFunctionId;
 		},
 
 		/**
@@ -435,11 +456,12 @@ const zobjectStore = {
 			 * @param {string} rowId
 			 * @return {Array}
 			 */
-			return ( rowId ) => {
+			const findZFunctionCallArguments = ( rowId ) => {
 				const children = this.getChildrenByParentRowId( rowId );
 				return children.filter( ( row ) => row.key !== Constants.Z_OBJECT_TYPE &&
 					row.key !== Constants.Z_FUNCTION_CALL_FUNCTION );
 			};
+			return findZFunctionCallArguments;
 		},
 
 		/**
@@ -453,13 +475,14 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {number | undefined}
 			 */
-			return ( rowId ) => {
+			const findZTesterFunctionRowId = ( rowId ) => {
 				const functionRef = this.getRowByKeyPath( [ Constants.Z_TESTER_FUNCTION ], rowId );
 				if ( functionRef === undefined ) {
 					return undefined;
 				}
 				return functionRef.id;
 			};
+			return findZTesterFunctionRowId;
 		},
 
 		/**
@@ -473,13 +496,14 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {number | undefined}
 			 */
-			return ( rowId ) => {
+			const findZTesterCallRowId = ( rowId ) => {
 				const callRow = this.getRowByKeyPath( [ Constants.Z_TESTER_CALL ], rowId );
 				if ( callRow === undefined ) {
 					return undefined;
 				}
 				return callRow.id;
 			};
+			return findZTesterCallRowId;
 		},
 
 		/**
@@ -493,13 +517,14 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {number | undefined}
 			 */
-			return ( rowId ) => {
+			const findZTesterValidationRowId = ( rowId ) => {
 				const validationRow = this.getRowByKeyPath( [ Constants.Z_TESTER_VALIDATION ], rowId );
 				if ( validationRow === undefined ) {
 					return undefined;
 				}
 				return validationRow.id;
 			};
+			return findZTesterValidationRowId;
 		},
 
 		/**
@@ -513,13 +538,14 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {number | undefined}
 			 */
-			return ( rowId ) => {
+			const findZImplementationFunctionRowId = ( rowId ) => {
 				const functionRef = this.getRowByKeyPath( [ Constants.Z_IMPLEMENTATION_FUNCTION ], rowId );
 				if ( functionRef === undefined ) {
 					return undefined;
 				}
 				return functionRef.id;
 			};
+			return findZImplementationFunctionRowId;
 		},
 
 		/**
@@ -533,10 +559,11 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {number | undefined}
 			 */
-			return ( rowId ) => {
+			const findZImplementationFunctionZid = ( rowId ) => {
 				const functionRowId = this.getZImplementationFunctionRowId( rowId );
 				return functionRowId ? this.getZReferenceTerminalValue( functionRowId ) : undefined;
 			};
+			return findZImplementationFunctionZid;
 		},
 
 		/**
@@ -552,7 +579,7 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {string | undefined}
 			 */
-			return ( rowId ) => {
+			const findZImplementationContentType = ( rowId ) => {
 				const children = this.getChildrenByParentRowId( rowId );
 				// get all child keys and remove Z1K1 and Z14K1
 				const childKeys = children
@@ -568,6 +595,7 @@ const zobjectStore = {
 				// childKeys should only have one element after the filtering
 				return childKeys.length === 1 ? childKeys[ 0 ] : undefined;
 			};
+			return findZImplementationContentType;
 		},
 
 		/**
@@ -583,10 +611,11 @@ const zobjectStore = {
 			 * @param {string} key
 			 * @return {number | undefined}
 			 */
-			return ( rowId, key ) => {
+			const findZImplementationContentRowId = ( rowId, key ) => {
 				const row = this.getRowByKeyPath( [ key ], rowId );
 				return row ? row.id : undefined;
 			};
+			return findZImplementationContentRowId;
 		},
 
 		/**
@@ -599,10 +628,11 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {string | undefined}
 			 */
-			return ( rowId ) => {
+			const findZCodeString = ( rowId ) => {
 				const codeRow = this.getRowByKeyPath( [ Constants.Z_CODE_CODE ], rowId );
 				return codeRow ? this.getZStringTerminalValue( codeRow.id ) : undefined;
 			};
+			return findZCodeString;
 		},
 
 		/**
@@ -615,7 +645,11 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {Row | undefined}
 			 */
-			return ( rowId ) => this.getRowByKeyPath( [ Constants.Z_CODE_LANGUAGE ], rowId );
+			const findZCodeProgrammingLanguageRow = ( rowId ) => this.getRowByKeyPath(
+				[ Constants.Z_CODE_LANGUAGE ],
+				rowId
+			);
+			return findZCodeProgrammingLanguageRow;
 		},
 		/**
 		 * Returns the terminal reference Value of Z40K1
@@ -627,7 +661,7 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {string | undefined}
 			 */
-			return ( rowId ) => {
+			const findZBooleanValue = ( rowId ) => {
 				const booleanRow = this.getRowByKeyPath( [ Constants.Z_BOOLEAN_IDENTITY ], rowId );
 
 				if ( !booleanRow ) {
@@ -636,6 +670,7 @@ const zobjectStore = {
 
 				return this.getZReferenceTerminalValue( booleanRow.id );
 			};
+			return findZBooleanValue;
 		},
 
 		/**
@@ -720,13 +755,14 @@ const zobjectStore = {
 			 * @param {number} parentRowId
 			 * @return {string|Object|undefined}
 			 */
-			return ( parentRowId ) => {
+			const findTypedListItemType = ( parentRowId ) => {
 				const listType = this.getZObjectTypeByRowId( parentRowId );
 				if ( !listType ) {
 					return undefined;
 				}
 				return listType[ Constants.Z_TYPED_LIST_TYPE ];
 			};
+			return findTypedListItemType;
 		},
 
 		/**
@@ -742,7 +778,7 @@ const zobjectStore = {
 			 * @param {string} key
 			 * @return {Row|undefined}
 			 */
-			return ( rowId, key ) => {
+			const findMapValueByKey = ( rowId, key ) => {
 				const listRow = this.getRowByKeyPath( [ Constants.Z_TYPED_OBJECT_ELEMENT_1 ], rowId );
 				if ( !listRow ) {
 					return undefined;
@@ -760,6 +796,7 @@ const zobjectStore = {
 				}
 				return undefined;
 			};
+			return findMapValueByKey;
 		},
 
 		/**
@@ -774,9 +811,10 @@ const zobjectStore = {
 			 * @param {number|undefined} rowId
 			 * @return {Row} row
 			 */
-			return ( rowId ) => rowId === undefined ?
+			const findRowById = ( rowId ) => rowId === undefined ?
 				undefined :
 				state.zobject.find( ( item ) => item.id === rowId );
+			return findRowById;
 		},
 
 		/**
@@ -791,7 +829,8 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {Array}
 			 */
-			return ( rowId ) => state.zobject.filter( ( row ) => ( row.parent === rowId ) );
+			const findChildrenByParentRowId = ( rowId ) => state.zobject.filter( ( row ) => ( row.parent === rowId ) );
+			return findChildrenByParentRowId;
 		},
 
 		/**
@@ -807,10 +846,11 @@ const zobjectStore = {
 			 */
 			// TODO: should we check that the sequence of children keys is
 			// continuous and doesn't have any gaps?
-			return ( parentRowId ) => {
+			const findNextArrayIndex = ( parentRowId ) => {
 				const children = this.getChildrenByParentRowId( parentRowId );
 				return children.length;
 			};
+			return findNextArrayIndex;
 		},
 
 		/**
@@ -823,10 +863,11 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {number | undefined}
 			 */
-			return ( rowId ) => {
+			const findParentRowId = ( rowId ) => {
 				const row = this.getRowById( rowId );
 				return row ? row.parent : undefined;
 			};
+			return findParentRowId;
 		},
 		/**
 		 * Given a starting rowId and an array of keys that form a path,
@@ -840,7 +881,7 @@ const zobjectStore = {
 			 * @param {number} rowId starting row Id
 			 * @return {Row|undefined} resulting row or undefined if not found
 			 */
-			return ( path = [], rowId = 0 ) => {
+			const findRowByKeyPath = ( path = [], rowId = 0 ) => {
 				if ( path.length === 0 ) {
 					return this.getRowById( rowId );
 				}
@@ -852,6 +893,7 @@ const zobjectStore = {
 
 				return ( child === undefined ) ? undefined : this.getRowByKeyPath( tail, child.id );
 			};
+			return findRowByKeyPath;
 		},
 
 		/**
@@ -873,7 +915,7 @@ const zobjectStore = {
 			 * @param {string} terminalKey either string or reference terminal key
 			 * @return {string | undefined}
 			 */
-			return ( rowId, terminalKey ) => {
+			const findZObjectTerminalValue = ( rowId, terminalKey ) => {
 				const row = this.getRowById( rowId );
 				// Row not found is undefined
 				if ( row === undefined ) {
@@ -890,6 +932,7 @@ const zobjectStore = {
 					return valueRow ? this.getZObjectTerminalValue( valueRow.id, terminalKey ) : undefined;
 				}
 			};
+			return findZObjectTerminalValue;
 		},
 
 		/**
@@ -926,7 +969,7 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {boolean}
 			 */
-			return ( rowId ) => {
+			const checkIsInsideComposition = ( rowId ) => {
 				const row = this.getRowById( rowId );
 				if ( !row ) {
 					// Not found or reached the root, return false and end
@@ -936,6 +979,7 @@ const zobjectStore = {
 					true :
 					this.isInsideComposition( row.parent );
 			};
+			return checkIsInsideComposition;
 		},
 
 		/**
@@ -952,7 +996,7 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {Object|undefined}
 			 */
-			return ( langZid, rowId ) => {
+			const findZMonolingualForLanguage = ( langZid, rowId ) => {
 				const list = this.getRowByKeyPath( [ Constants.Z_MULTILINGUALSTRING_VALUE ], rowId );
 				if ( !list ) {
 					return undefined;
@@ -968,6 +1012,7 @@ const zobjectStore = {
 				}
 				return undefined;
 			};
+			return findZMonolingualForLanguage;
 		},
 
 		/**
@@ -984,7 +1029,7 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {Object|undefined}
 			 */
-			return ( langZid, rowId ) => {
+			const findZMonolingualStringsetForLanguage = ( langZid, rowId ) => {
 				const list = this.getRowByKeyPath( [ Constants.Z_MULTILINGUALSTRINGSET_VALUE ], rowId );
 				if ( !list ) {
 					return undefined;
@@ -1000,6 +1045,7 @@ const zobjectStore = {
 				}
 				return undefined;
 			};
+			return findZMonolingualStringsetForLanguage;
 		},
 
 		/**
@@ -1015,7 +1061,7 @@ const zobjectStore = {
 			 * @param {number} rowId
 			 * @return {Array}
 			 */
-			return ( rowId ) => {
+			const findZMultilingualLanguageList = ( rowId ) => {
 				const listRow = this.getRowById( rowId );
 				if ( !listRow || !listRow.isArray() ) {
 					return [];
@@ -1023,6 +1069,7 @@ const zobjectStore = {
 				const allMonolinguals = this.getChildrenByParentRowId( rowId ).slice( 1 );
 				return allMonolinguals.map( ( mono ) => this.getZMonolingualLangValue( mono.id ) );
 			};
+			return findZMultilingualLanguageList;
 		},
 
 		/**
@@ -1038,7 +1085,12 @@ const zobjectStore = {
 			 * @param {boolean} isArray
 			 * @return {Array} zObjectJson
 			 */
-			return ( id, isArray ) => zobjectUtils.convertTableToJson( state.zobject, id, isArray );
+			const findZObjectAsJsonById = ( id, isArray ) => zobjectUtils.convertTableToJson(
+				state.zobject,
+				id,
+				isArray
+			);
+			return findZObjectAsJsonById;
 		},
 
 		/**
@@ -1085,7 +1137,8 @@ const zobjectStore = {
 			 * @param {number} id
 			 * @return {number} index
 			 */
-			return ( id ) => state.zobject.findIndex( ( item ) => item.id === id );
+			const findRowIndexById = ( id ) => state.zobject.findIndex( ( item ) => item.id === id );
+			return findRowIndexById;
 		},
 
 		/**
@@ -1109,7 +1162,7 @@ const zobjectStore = {
 			 * @param {string} zid
 			 * @return {boolean}
 			 */
-			return ( zid ) => {
+			const findZKeyIsIdentity = ( zid ) => {
 				const isIdentity = this.getRowByKeyPath( [ Constants.Z_KEY_IS_IDENTITY ], zid );
 				if ( !isIdentity ) {
 					return false;
@@ -1125,6 +1178,7 @@ const zobjectStore = {
 
 				return boolValue === Constants.Z_BOOLEAN_TRUE;
 			};
+			return findZKeyIsIdentity;
 		},
 
 		/**
@@ -1137,10 +1191,11 @@ const zobjectStore = {
 			 * @param {string} rowId
 			 * @return {number | undefined}
 			 */
-			return ( rowId ) => {
+			const findZKeyTypeRowId = ( rowId ) => {
 				const keyType = this.getRowByKeyPath( [ Constants.Z_KEY_TYPE ], rowId );
 				return keyType ? keyType.id : undefined;
 			};
+			return findZKeyTypeRowId;
 		},
 
 		/**
@@ -1155,7 +1210,7 @@ const zobjectStore = {
 			 * @param {string} type
 			 * @return {string | undefined}
 			 */
-			return ( rowId, type ) => {
+			const findConverterIdentity = ( rowId, type ) => {
 				if ( type !== Constants.Z_DESERIALISER && type !== Constants.Z_SERIALISER ) {
 					return undefined;
 				}
@@ -1163,6 +1218,7 @@ const zobjectStore = {
 				const identityKeyRow = this.getRowByKeyPath( [ identityKey ], rowId );
 				return identityKeyRow ? this.getZReferenceTerminalValue( identityKeyRow.id ) : undefined;
 			};
+			return findConverterIdentity;
 		},
 
 		/**
@@ -1177,7 +1233,7 @@ const zobjectStore = {
 			 * @param {Object} fields
 			 * @return {Object} fields
 			 */
-			return ( rowId, fields = [] ) => {
+			const checkValidateGenericType = ( rowId, fields = [] ) => {
 				const mode = this.getZObjectTypeByRowId( rowId );
 				const value = ( mode === Constants.Z_REFERENCE ) ?
 					this.getZReferenceTerminalValue( rowId ) :
@@ -1196,6 +1252,7 @@ const zobjectStore = {
 				}
 				return fields;
 			};
+			return checkValidateGenericType;
 		}
 
 	},

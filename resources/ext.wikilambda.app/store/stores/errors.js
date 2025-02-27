@@ -75,10 +75,11 @@ module.exports = {
 			 * @param {string|undefined} type
 			 * @return {Array}
 			 */
-			return ( rowId, type = undefined ) => {
+			const findErrors = ( rowId, type = undefined ) => {
 				const allErrors = state.errors[ rowId ] || [];
 				return type ? allErrors.filter( ( error ) => error.type === type ) : allErrors;
 			};
+			return findErrors;
 		},
 
 		/**
@@ -93,12 +94,12 @@ module.exports = {
 			 * @param {string} code
 			 * @return {boolean}
 			 */
-			return ( rowId, code ) => {
+			const findErrorByCode = ( rowId, code ) => {
 				const allErrors = state.errors[ rowId ] || [];
 				return !!allErrors.some( ( error ) => error.code === code );
 			};
+			return findErrorByCode;
 		}
-
 	},
 
 	actions: {

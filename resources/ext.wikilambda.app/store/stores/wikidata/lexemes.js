@@ -28,7 +28,8 @@ module.exports = {
 			 * @param {string} id
 			 * @return {Object|Promise|undefined}
 			 */
-			return ( id ) => state.lexemes[ id ];
+			const findLexemeData = ( id ) => state.lexemes[ id ];
+			return findLexemeData;
 		},
 		/**
 		 * Returns the lexeme form object of a given ID,
@@ -42,13 +43,14 @@ module.exports = {
 			 * @param {string} id
 			 * @return {Object|undefined}
 			 */
-			return ( id ) => {
+			const findLexemeFormData = ( id ) => {
 				const [ lexemeId ] = id.split( '-' );
 				const lexemeData = state.lexemes[ lexemeId ];
 				return ( lexemeData && lexemeData.forms ) ?
 					lexemeData.forms.find( ( item ) => item.id === id ) :
 					undefined;
 			};
+			return findLexemeFormData;
 		},
 		/**
 		 * Given the rowId of the Wikidata Lexeme entity
@@ -61,7 +63,8 @@ module.exports = {
 			 * @param {number} rowId
 			 * @return {Object|undefined}
 			 */
-			return ( rowId ) => this.getWikidataEntityIdRow( rowId, Constants.Z_WIKIDATA_LEXEME );
+			const findLexemeIdRow = ( rowId ) => this.getWikidataEntityIdRow( rowId, Constants.Z_WIKIDATA_LEXEME );
+			return findLexemeIdRow;
 		},
 		/**
 		 * Given the rowId of the Wikidata Lexeme Form entity
@@ -74,7 +77,11 @@ module.exports = {
 			 * @param {number} rowId
 			 * @return {Object|undefined}
 			 */
-			return ( rowId ) => this.getWikidataEntityIdRow( rowId, Constants.Z_WIKIDATA_LEXEME_FORM );
+			const findLexemeFormIdRow = ( rowId ) => this.getWikidataEntityIdRow(
+				rowId,
+				Constants.Z_WIKIDATA_LEXEME_FORM
+			);
+			return findLexemeFormIdRow;
 		}
 	},
 

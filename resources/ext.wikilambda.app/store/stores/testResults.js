@@ -32,7 +32,7 @@ module.exports = {
 			 *
 			 * @return {boolean}
 			 */
-			return ( zFunctionId, zTesterId, zImplementationId ) => {
+			const findZTesterResults = ( zFunctionId, zTesterId, zImplementationId ) => {
 				const key = zFunctionId + ':' + zTesterId + ':' + zImplementationId;
 
 				const testResultErrors = this.getErrors( Constants.errorIds.TEST_RESULTS );
@@ -46,6 +46,7 @@ module.exports = {
 					( typeof result === 'object' && result[ Constants.Z_BOOLEAN_IDENTITY ] === Constants.Z_BOOLEAN_TRUE )
 				);
 			};
+			return findZTesterResults;
 		},
 
 		/**
@@ -64,10 +65,11 @@ module.exports = {
 			 *
 			 * @return {Object|undefined} metadata
 			 */
-			return ( zFunctionId, zTesterId, zImplementationId ) => {
+			const findZTesterMetadata = ( zFunctionId, zTesterId, zImplementationId ) => {
 				const key = `${ zFunctionId }:${ zTesterId }:${ zImplementationId }`;
 				return state.zTesterMetadata[ key ];
 			};
+			return findZTesterMetadata;
 		},
 
 		/**
@@ -83,7 +85,7 @@ module.exports = {
 			 *
 			 * @return {Object}
 			 */
-			return ( zid ) => {
+			const calculateZTesterPercentage = ( zid ) => {
 				const results = Object.keys( state.zTesterResults )
 					.filter( ( key ) => key.includes( zid ) && state.zTesterResults[ key ] !== undefined );
 				const total = results.length;
@@ -102,6 +104,7 @@ module.exports = {
 					percentage: percentage
 				};
 			};
+			return calculateZTesterPercentage;
 		},
 
 		/**
@@ -115,7 +118,7 @@ module.exports = {
 			 * @param {string} functionZid
 			 * @return {Array}
 			 */
-			return ( functionZid ) => {
+			const findPassingTestZids = ( functionZid ) => {
 				const connected = this.getConnectedObjects( functionZid, Constants.Z_FUNCTION_TESTERS );
 				const zids = [];
 
@@ -136,6 +139,7 @@ module.exports = {
 				}
 				return [ ...new Set( zids ) ];
 			};
+			return findPassingTestZids;
 		}
 	},
 

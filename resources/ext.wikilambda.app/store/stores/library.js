@@ -60,7 +60,7 @@ module.exports = {
 			 * @param {string} zid
 			 * @return {string}
 			 */
-			return ( zid ) => {
+			const findLanguageIsoCode = ( zid ) => {
 				if ( state.objects[ zid ] ) {
 					const zobject = state.objects[ zid ][ Constants.Z_PERSISTENTOBJECT_VALUE ];
 					const ztype = zobject[ Constants.Z_OBJECT_TYPE ];
@@ -70,6 +70,7 @@ module.exports = {
 				}
 				return zid;
 			};
+			return findLanguageIsoCode;
 		},
 
 		/**
@@ -85,7 +86,8 @@ module.exports = {
 			 * @param {string} code
 			 * @return {string|undefined}
 			 */
-			return ( code ) => state.languages[ code ];
+			const findLanguageZid = ( code ) => state.languages[ code ];
+			return findLanguageZid;
 		},
 
 		/**
@@ -100,7 +102,7 @@ module.exports = {
 			 * @param {string|undefined} key
 			 * @return {string}
 			 */
-			return ( key ) => {
+			const findExpectedType = ( key ) => {
 
 				// If the key is undefined, then this is the root object,
 				// the expected type is always Z2/Persistent object type
@@ -147,6 +149,7 @@ module.exports = {
 				// If key is a not found, a list index or a local key, return Z1/Object (any) type
 				return Constants.Z_OBJECT;
 			};
+			return findExpectedType;
 		},
 
 		/**
@@ -161,7 +164,7 @@ module.exports = {
 			 * @param {string|undefined} key
 			 * @return {boolean}
 			 */
-			return ( key ) => {
+			const checkIdentityKey = ( key ) => {
 				if ( key === undefined ) {
 					return false;
 				}
@@ -191,6 +194,7 @@ module.exports = {
 					( isIdentity[ Constants.Z_BOOLEAN_IDENTITY ] === Constants.Z_BOOLEAN_TRUE )
 				);
 			};
+			return checkIdentityKey;
 		},
 
 		/**
@@ -204,7 +208,7 @@ module.exports = {
 			 * @param {string} zid
 			 * @return {boolean}
 			 */
-			return ( zid ) => {
+			const checkEnumType = ( zid ) => {
 				if (
 					( zid === undefined ) ||
 					( Constants.EXCLUDE_FROM_ENUMS.includes( zid ) ) ||
@@ -230,6 +234,7 @@ module.exports = {
 				}
 				return false;
 			};
+			return checkEnumType;
 		},
 
 		/**
@@ -244,7 +249,8 @@ module.exports = {
 			 * @param {string} zid
 			 * @return {boolean}
 			 */
-			return ( zid ) => this.isEnumType( zid ) && !Constants.BUILTIN_ENUMS.includes( zid );
+			const checkCustomEnum = ( zid ) => this.isEnumType( zid ) && !Constants.BUILTIN_ENUMS.includes( zid );
+			return checkCustomEnum;
 		},
 		/**
 		 * Returns the persisted object for a given ZID if that was
@@ -258,7 +264,8 @@ module.exports = {
 			 * @param {string} zid of the ZPersistentObject
 			 * @return {Object|undefined} persisted ZObject
 			 */
-			return ( zid ) => state.objects[ zid ];
+			const findStoredObject = ( zid ) => state.objects[ zid ];
+			return findStoredObject;
 		},
 
 		/**
@@ -277,7 +284,7 @@ module.exports = {
 			 * @param {string} id
 			 * @return {LabelData}
 			 */
-			return ( id ) => {
+			const findLabelData = ( id ) => {
 				// If the requested language is 'qqx', return (zid) as the label
 				if ( this.getUserRequestedLang === 'qqx' && id ) {
 					return new LabelData( id, `(${ id })`, this.getUserLangZid, this.getUserLangCode );
@@ -293,6 +300,7 @@ module.exports = {
 				labelData.setLangCode( this.getLanguageIsoCodeOfZLang( labelData.lang ) );
 				return labelData;
 			};
+			return findLabelData;
 		},
 
 		/**
@@ -309,7 +317,7 @@ module.exports = {
 			 * @param {string} key
 			 * @return {Array}
 			 */
-			return ( zid, key ) => {
+			const findConnectedObjects = ( zid, key ) => {
 				const func = state.objects[ zid ];
 				if ( func ) {
 					const imps = func[ Constants.Z_PERSISTENTOBJECT_VALUE ][ key ];
@@ -317,6 +325,7 @@ module.exports = {
 				}
 				return [];
 			};
+			return findConnectedObjects;
 		},
 
 		/**
@@ -331,13 +340,14 @@ module.exports = {
 			 * @param {string} zid
 			 * @return {string|undefined}
 			 */
-			return ( zid ) => {
+			const findFunctionZid = ( zid ) => {
 				const implementation = state.objects[ zid ];
 				if ( !implementation ) {
 					return undefined;
 				}
 				return implementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_IMPLEMENTATION_FUNCTION ];
 			};
+			return findFunctionZid;
 		},
 
 		/**
@@ -354,7 +364,7 @@ module.exports = {
 			 * @param {string} zid
 			 * @return {string | undefined}
 			 */
-			return ( zid ) => {
+			const findTypeOfImplementation = ( zid ) => {
 				let implementation = state.objects[ zid ];
 				if ( !implementation ) {
 					return undefined;
@@ -371,6 +381,7 @@ module.exports = {
 				}
 				return undefined;
 			};
+			return findTypeOfImplementation;
 		},
 
 		/**
@@ -387,7 +398,7 @@ module.exports = {
 			 * @param {string} zid
 			 * @return {string | undefined}
 			 */
-			return ( zid ) => {
+			const findLanguageOfImplementation = ( zid ) => {
 				let implementation = state.objects[ zid ];
 				if ( !implementation ) {
 					return undefined;
@@ -411,6 +422,7 @@ module.exports = {
 				}
 				return undefined;
 			};
+			return findLanguageOfImplementation;
 		},
 
 		/**
@@ -427,7 +439,7 @@ module.exports = {
 			 * @param {string} zid
 			 * @return {Array}
 			 */
-			return ( zid ) => {
+			const findInputsOfFunction = ( zid ) => {
 				const func = state.objects[ zid ];
 				if ( func === undefined ) {
 					return [];
@@ -439,6 +451,7 @@ module.exports = {
 				// Remove benjamin type item
 				return obj[ Constants.Z_FUNCTION_ARGUMENTS ].slice( 1 );
 			};
+			return findInputsOfFunction;
 		},
 
 		/**
@@ -452,10 +465,11 @@ module.exports = {
 			 * @param {string} zid
 			 * @return {Array}
 			 */
-			return ( zid ) => {
+			const findEnumValues = ( zid ) => {
 				const enumObj = state.enums[ zid ];
 				return enumObj && enumObj.data instanceof Array ? enumObj.data : [];
 			};
+			return findEnumValues;
 		},
 
 		/**
@@ -469,7 +483,8 @@ module.exports = {
 			 * @param {string} zid
 			 * @return {Array}
 			 */
-			return ( zid ) => state.enums[ zid ];
+			const findEnum = ( zid ) => state.enums[ zid ];
+			return findEnum;
 		}
 	},
 

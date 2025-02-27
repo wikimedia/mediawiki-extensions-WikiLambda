@@ -22,10 +22,11 @@ module.exports = {
 			 * @param {number} rowId
 			 * @return {boolean}
 			 */
-			return ( rowId ) => {
+			const findIsWikidataLiteral = ( rowId ) => {
 				const type = this.getZObjectTypeByRowId( rowId );
 				return Constants.WIKIDATA_TYPES.includes( type );
 			};
+			return findIsWikidataLiteral;
 		},
 		/**
 		 * Returns whether the rowId contains a fetched Wikidata Entity, which
@@ -41,11 +42,12 @@ module.exports = {
 			 * @param {number} rowId
 			 * @return {boolean}
 			 */
-			return ( rowId ) => {
+			const findIsWikidataFetch = ( rowId ) => {
 				const functionCallFunction = this.getZFunctionCallFunctionId( rowId );
 				return Object.keys( Constants.WIKIDATA_FETCH_FUNCTIONS )
 					.some( ( k ) => Constants.WIKIDATA_FETCH_FUNCTIONS[ k ] === functionCallFunction );
 			};
+			return findIsWikidataFetch;
 		},
 		/**
 		 * Returns whether the rowId contains a Wikidata Reference, which
@@ -59,11 +61,12 @@ module.exports = {
 			 * @param {number} rowId
 			 * @return {boolean}
 			 */
-			return ( rowId ) => {
+			const findIsWikidataReference = ( rowId ) => {
 				const type = this.getZObjectTypeByRowId( rowId );
 				return Object.keys( Constants.WIKIDATA_REFERENCE_TYPES )
 					.some( ( k ) => Constants.WIKIDATA_REFERENCE_TYPES[ k ] === type );
 			};
+			return findIsWikidataReference;
 		},
 		/**
 		 * Given the rowId of the Wikidata entity, returns
@@ -77,7 +80,7 @@ module.exports = {
 			 * @param {string} wikidataType
 			 * @return {Object|undefined}
 			 */
-			return ( rowId, wikidataType ) => {
+			const findWikidataEntityIdRow = ( rowId, wikidataType ) => {
 				let wdReferenceRowId = rowId;
 				// Type is either Z7/Function call, a Wikidata reference type or a Wikidata type:
 				const type = this.getZObjectTypeByRowId( rowId );
@@ -104,6 +107,7 @@ module.exports = {
 				const referenceTypeIdKey = `${ referenceType }K1`;
 				return this.getRowByKeyPath( [ referenceTypeIdKey ], wdReferenceRowId );
 			};
+			return findWikidataEntityIdRow;
 		}
 	},
 
