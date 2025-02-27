@@ -49,6 +49,9 @@
 			</cdx-message>
 		</div>
 		<div v-else class="ext-wikilambda-app-function-metadata-dialog__body">
+			<cdx-message v-if="hasMetadataErrors">
+				<div v-html="$i18n( 'wikilambda-functioncall-metadata-errors-debug-hint' ).text()"></div>
+			</cdx-message>
 			<cdx-field
 				v-if="hasNestedMetadata"
 				class="ext-wikilambda-app-function-metadata-dialog__select-block">
@@ -266,7 +269,17 @@ module.exports = exports = defineComponent( {
 			return selectedMenuItem ?
 				`ext-wikilambda-app-function-metadata-dialog__selected--${ selectedMenuItem.state }` :
 				'';
+		},
+
+		/**
+		 * Returns if there are any errors in the metadata
+		 *
+		 * @return {boolean}
+		 */
+		hasMetadataErrors: function () {
+			return !!this.keyValues.get( 'errors' );
 		}
+
 	} ),
 	methods: {
 		/**
@@ -520,6 +533,7 @@ module.exports = exports = defineComponent( {
 			}
 			return metadata;
 		},
+
 		/**
 		 * Returns the error section summary
 		 *

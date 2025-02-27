@@ -76,16 +76,29 @@ module.exports = {
 			 * @return {Array}
 			 */
 			return ( rowId, type = undefined ) => {
-				const allErrors = state.errors[ rowId ];
-				if ( !allErrors ) {
-					return [];
-				}
-				if ( type ) {
-					return allErrors.filter( ( error ) => error.type === type );
-				}
-				return allErrors;
+				const allErrors = state.errors[ rowId ] || [];
+				return type ? allErrors.filter( ( error ) => error.type === type ) : allErrors;
+			};
+		},
+
+		/**
+		 * Returns if there are errors for a given rowId that have a specific code.
+		 *
+		 * @param {Object} state
+		 * @return {boolean}
+		 */
+		hasErrorByCode: function ( state ) {
+			/**
+			 * @param {number} rowId
+			 * @param {string} code
+			 * @return {boolean}
+			 */
+			return ( rowId, code ) => {
+				const allErrors = state.errors[ rowId ] || [];
+				return !!allErrors.some( ( error ) => error.code === code );
 			};
 		}
+
 	},
 
 	actions: {
@@ -100,18 +113,10 @@ module.exports = {
 		 * @param {string} payload.errorType literal string: "error" or "warning"
 		 */
 		setError: function ( payload ) {
-			if ( payload.rowId === undefined ) {
-				payload.rowId = 0;
-			}
-			if ( !( payload.rowId in this.errors ) ) {
-				this.errors[ payload.rowId ] = [];
-			}
-			const errorPayload = {
-				message: payload.errorMessage,
-				code: payload.errorCode,
-				type: payload.errorType
-			};
-			this.errors[ payload.rowId ].push( errorPayload );
+			const { rowId = 0, errorMessage, errorCode, errorType } = payload;
+
+			this.errors[ rowId ] = this.errors[ rowId ] || [];
+			this.errors[ rowId ].push( { message: errorMessage, code: errorCode, type: errorType } );
 		},
 
 		/**
@@ -122,6 +127,21 @@ module.exports = {
 		clearErrors: function ( rowId = 0 ) {
 			if ( rowId in this.errors ) {
 				this.errors[ rowId ] = [];
+			}
+		},
+
+		/**
+		 * Clears all errors for a given rowId that have a specific code
+		 *
+		 * @param {Object} payload
+		 * @param {number} payload.rowId
+		 * @param {string} payload.errorCode
+		 */
+		clearErrorsByCode: function ( payload ) {
+			const { rowId, code } = payload;
+			if ( rowId in this.errors ) {
+				this.errors[ rowId ] = this.errors[ rowId ]
+					.filter( ( error ) => error.code !== code );
 			}
 		},
 
