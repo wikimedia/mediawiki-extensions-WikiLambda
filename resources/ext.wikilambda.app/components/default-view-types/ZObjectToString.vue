@@ -51,22 +51,33 @@
 		:lang="labelData.langCode"
 		:dir="labelData.langDir"
 	>
-		"{{ labelData.label }}"
+		<span class="ext-wikilambda-app-object-to-string__icon-label">
+			<cdx-icon
+				v-if="icon"
+				:icon="icon"
+				class="ext-wikilambda-app-object-to-string__icon"
+				:icon-label="labelData.label"></cdx-icon><!--
+		--><span v-if="icon">{{ labelData.label }}</span><!--
+		--><span v-else>"{{ labelData.label }}"</span>
+		</span>
 	</div>
 </template>
 
 <script>
 const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
+const { CdxIcon } = require( '../../../codex.js' );
 
 const Constants = require( '../../Constants.js' );
 const LabelData = require( '../../store/classes/LabelData.js' );
 const typeUtils = require( '../../mixins/typeUtils.js' );
 const useMainStore = require( '../../store/index.js' );
+const icons = require( '../../../lib/icons.json' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-object-to-string',
 	components: {
+		'cdx-icon': CdxIcon,
 		'wl-z-object-to-string': this
 	},
 	mixins: [ typeUtils ],
@@ -85,6 +96,7 @@ module.exports = exports = defineComponent( {
 			'getZFunctionCallArguments',
 			'getZReferenceTerminalValue',
 			'getZStringTerminalValue',
+			'getZArgumentReferenceTerminalValue',
 			'getZObjectTypeByRowId',
 			'getZObjectKeyByRowId',
 			'getChildrenByParentRowId',
@@ -134,16 +146,18 @@ module.exports = exports = defineComponent( {
 			 * @return {string}
 			 */
 			value: function () {
-				if ( this.type === Constants.Z_FUNCTION_CALL ) {
-					return this.getZFunctionCallFunctionId( this.rowId );
+				switch ( this.type ) {
+					case Constants.Z_FUNCTION_CALL:
+						return this.getZFunctionCallFunctionId( this.rowId );
+					case Constants.Z_STRING:
+						return this.getZStringTerminalValue( this.rowId );
+					case Constants.Z_REFERENCE:
+						return this.getZReferenceTerminalValue( this.rowId );
+					case Constants.Z_ARGUMENT_REFERENCE:
+						return this.getZArgumentReferenceTerminalValue( this.rowId );
+					default:
+						return this.type;
 				}
-				if ( this.type === Constants.Z_STRING ) {
-					return this.getZStringTerminalValue( this.rowId );
-				}
-				if ( this.type === Constants.Z_REFERENCE ) {
-					return this.getZReferenceTerminalValue( this.rowId );
-				}
-				return this.type;
 			},
 
 			/**
@@ -154,9 +168,7 @@ module.exports = exports = defineComponent( {
 			 * @return {LabelData}
 			 */
 			labelData: function () {
-				return this.isBlank ?
-					LabelData.fromString( this.placeholder ) :
-					this.getLabelData( this.value );
+				return this.isBlank ? LabelData.fromString( this.placeholder ) : this.getLabelData( this.value );
 			},
 
 			/**
@@ -165,7 +177,7 @@ module.exports = exports = defineComponent( {
 			 * @return {string}
 			 */
 			link: function () {
-				return ( this.hasLink && !this.isBlank ) ? '/view/' + this.getUserLangCode + '/' + this.value : '';
+				return this.hasLink && !this.isBlank ? `/view/${ this.getUserLangCode }/${ this.value }` : '';
 			},
 
 			/**
@@ -217,7 +229,17 @@ module.exports = exports = defineComponent( {
 			 * @return {boolean}
 			 */
 			hasLink: function () {
-				return this.isBlank || ( this.type !== Constants.Z_STRING );
+				return this.isBlank ||
+					( this.type !== Constants.Z_STRING && this.type !== Constants.Z_ARGUMENT_REFERENCE );
+			},
+
+			/**
+			 * Returns whether the object is represented with an icon
+			 *
+			 * @return {string|undefined}
+			 */
+			icon: function () {
+				return this.type === Constants.Z_ARGUMENT_REFERENCE ? icons.cdxIconFunctionArgument : undefined;
 			},
 
 			/**
@@ -227,8 +249,9 @@ module.exports = exports = defineComponent( {
 			 */
 			isTerminal: function () {
 				return (
-					( this.type === Constants.Z_REFERENCE ) ||
-					( this.type === Constants.Z_STRING )
+					this.type === Constants.Z_ARGUMENT_REFERENCE ||
+					this.type === Constants.Z_REFERENCE ||
+					this.type === Constants.Z_STRING
 				);
 			},
 
@@ -238,7 +261,7 @@ module.exports = exports = defineComponent( {
 			 * @return {boolean}
 			 */
 			isBlank: function () {
-				return ( this.value === undefined );
+				return this.value === undefined;
 			},
 
 			/**
@@ -305,16 +328,32 @@ module.exports = exports = defineComponent( {
 	}
 
 	.ext-wikilambda-app-object-to-string__children {
-		white-space: nowrap; /* Prevent wrapping */
+		white-space: nowrap;
 	}
 
 	.ext-wikilambda-app-object-to-string__divider {
 		color: @color-subtle;
-		white-space: nowrap; /* Prevent wrapping */
+		white-space: nowrap;
 	}
 
 	.ext-wikilambda-app-object-to-string__blank {
 		.cdx-mixin-link();
+	}
+
+	.ext-wikilambda-app-object-to-string__icon.cdx-icon {
+		padding-right: @spacing-25;
+		position: relative;
+		top: -1px;
+		vertical-align: middle;
+	}
+
+	.ext-wikilambda-app-object-to-string__icon-label {
+		white-space: nowrap;
+		display: inline;
+
+		> span {
+			white-space: pre-wrap;
+		}
 	}
 }
 </style>

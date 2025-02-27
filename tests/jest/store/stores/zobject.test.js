@@ -594,6 +594,33 @@ describe( 'zobject Pinia store', () => {
 			} );
 		} );
 
+		describe( 'getZArgumentReferenceTerminalValue', () => {
+			it( 'returns the terminal value of a zArgumentReference when rowId corresponds to parent object row', () => {
+				store.zobject = tableDataToRowObjects( [
+					{ id: 0, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 1, key: 'Z1K1', value: Constants.Z_ARGUMENT_REFERENCE, parent: 0 },
+					{ id: 2, key: 'Z18K1', value: 1, parent: 0 },
+					{ id: 3, key: 'Z1K1', value: Constants.Z_STRING, parent: 2 },
+					{ id: 4, key: 'Z6K1', value: 'Z10001K1', parent: 2 }
+				] );
+
+				const expected = 'Z10001K1';
+				expect( store.getZArgumentReferenceTerminalValue( 0 ) ).toBe( expected );
+			} );
+
+			it( 'returns undefined if a non-existent rowId is provided', () => {
+				store.zobject = tableDataToRowObjects( [
+					{ id: 0, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 1, key: 'Z1K1', value: Constants.Z_ARGUMENT_REFERENCE, parent: 0 },
+					{ id: 2, key: 'Z18K1', value: 1, parent: 0 },
+					{ id: 3, key: 'Z1K1', value: Constants.Z_STRING, parent: 2 },
+					{ id: 4, key: 'Z6K1', value: 'Z10001K1', parent: 2 }
+				] );
+
+				expect( store.getZArgumentReferenceTerminalValue( 6 ) ).toBeUndefined();
+			} );
+		} );
+
 		describe( 'ZMonolingualString', () => {
 			describe( 'getZMonolingualTextValue', () => {
 				beforeEach( () => {
@@ -1805,33 +1832,6 @@ describe( 'zobject Pinia store', () => {
 			it( 'should return the correct depth for nested parents', () => {
 				const rowId = 18;
 				expect( store.getDepthByRowId( rowId ) ).toBe( 5 );
-			} );
-		} );
-
-		describe( 'getParentRowId', () => {
-			beforeEach( () => {
-				store.zobject = zobjectToRows( {
-					Z2K3: { // rowId = 1
-						Z1K1: 'Z12', // rowId = 2
-						Z12K1: [ 'Z11' ]
-					}
-				} );
-			} );
-
-			it( 'returns undefined if row is not found', () => {
-				expect( store.getParentRowId( 100 ) ).toBe( undefined );
-			} );
-
-			it( 'should return the parent rowId of a given rowId', () => {
-				const rowId = 2;
-
-				expect( store.getParentRowId( rowId ) ).toBe( 1 );
-			} );
-
-			it( 'should return undefined if the rowId has no parent', () => {
-				const rowId = 0;
-
-				expect( store.getParentRowId( rowId ) ).toBeUndefined();
 			} );
 		} );
 

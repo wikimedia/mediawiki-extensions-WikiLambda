@@ -273,7 +273,7 @@ const zobjectStore = {
 		},
 
 		/**
-		 * Returns the terminal value of Z6K1/String value of a ZObject
+		 * Returns the terminal value of Z9K1/Reference value of a ZObject
 		 * assumed to be a string
 		 *
 		 * @return {Function}
@@ -284,6 +284,22 @@ const zobjectStore = {
 			 * @return {string | undefined}
 			 */
 			return ( rowId ) => this.getZObjectTerminalValue( rowId, Constants.Z_REFERENCE_ID );
+		},
+
+		/**
+		 * Returns the terminal value of Z18K1/Argument Reference
+		 *
+		 * @return {Function}
+		 */
+		getZArgumentReferenceTerminalValue: function () {
+			/**
+			 * @param {number} rowId
+			 * @return {string | undefined}
+			 */
+			return ( rowId ) => {
+				const valueRow = this.getRowByKeyPath( [ Constants.Z_ARGUMENT_REFERENCE_KEY ], rowId );
+				return valueRow ? this.getZStringTerminalValue( valueRow.id ) : undefined;
+			};
 		},
 
 		/**
@@ -812,7 +828,6 @@ const zobjectStore = {
 				return row ? row.parent : undefined;
 			};
 		},
-
 		/**
 		 * Given a starting rowId and an array of keys that form a path,
 		 * follow that path down and return the resulting row.

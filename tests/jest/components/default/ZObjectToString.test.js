@@ -151,21 +151,29 @@ describe( 'ZObjectToString', () => {
 
 		describe( 'for an argument reference', () => {
 			beforeEach( () => {
-				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z6' );
-				store.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z18K1' );
-				store.getZStringTerminalValue = createGettersWithFunctionsMock( 'Z999K1' );
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z18' );
+				store.getZArgumentReferenceTerminalValue = createGettersWithFunctionsMock( 'Z999K1' );
 			} );
 
 			it( 'renders without errors', () => {
 				const wrapper = mount( ZObjectToString );
-				expect( wrapper.find( 'div[data-testid=object-to-string-text]' ).exists() ).toBe( true );
 				expect( wrapper.find( 'div[data-testid=object-to-string-link]' ).exists() ).toBe( false );
+				expect( wrapper.find( 'div[data-testid=object-to-string-text]' ).exists() ).toBe( true );
 			} );
 
-			it( 'renders the string terminal value', () => {
+			it( 'renders the link to type', () => {
 				const wrapper = mount( ZObjectToString );
-				const stringElement = wrapper.find( 'div[data-testid=object-to-string-text]' );
-				expect( stringElement.text() ).toBe( '"argument label"' );
+				const stringElement = wrapper.find( 'div[data-testid=object-to-string-text] span > span' );
+				expect( stringElement.text() ).toBe( 'argument label' );
+			} );
+
+			it( 'renders an icon for an argument reference type with the terminal value', () => {
+				const wrapper = mount( ZObjectToString );
+
+				const stringElement = wrapper.find( 'div[data-testid=object-to-string-text] span > span' );
+
+				expect( wrapper.findComponent( { name: 'cdx-icon' } ).exists() ).toBe( true );
+				expect( stringElement.text() ).toBe( 'argument label' );
 			} );
 		} );
 
