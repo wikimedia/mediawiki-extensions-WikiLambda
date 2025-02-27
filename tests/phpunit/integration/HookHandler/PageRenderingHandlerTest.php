@@ -15,8 +15,10 @@ use MediaWiki\Extension\WikiLambda\HookHandler\PageRenderingHandler;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Languages\LanguageNameUtils;
+use MediaWiki\Output\OutputPage;
 use MediaWiki\Title\Title;
 use MediaWiki\User\Options\UserOptionsLookup;
+use Skin;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\HookHandler\PageRenderingHandler
@@ -64,5 +66,26 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->pageRenderingHandler->onBeforeDisplayNoArticleText( $article );
 
 		$this->assertStringContainsString( '', $context->getOutput()->getHTML() );
+	}
+
+	public function testOnBeforePageDisplay() {
+		$title = Title::makeTitle( NS_MAIN, 'Z1' );
+
+		$mockSkin = $this->createMock( Skin::class );
+
+		$context = new RequestContext();
+		$context->setTitle( $title );
+		$context->setLanguage( 'qqx' );
+
+		$outputPage = new OutputPage( $context );
+
+		$this->pageRenderingHandler->onBeforePageDisplay( $outputPage, $mockSkin );
+
+		// We set wgUserLanguageName to the language label; make sure that's set
+		$this->assertArrayHasKey( 'wgUserLanguageName', $outputPage->getJSVars() );
+		$this->assertSame( '', $outputPage->getJSVars()['wgUserLanguageName'] );
+
+		// We register ext.wikilambda.languageselector; make sure that's set
+		$this->assertArrayContains( [ 'ext.wikilambda.languageselector' ], $outputPage->getModules() );
 	}
 }
