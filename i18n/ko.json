@@ -110,6 +110,7 @@
 	"wikilambda-functioncall-metadata-actual-result": "실제 결과",
 	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|오류}}",
 	"wikilambda-functioncall-metadata-errors-none": "없음",
+	"wikilambda-functioncall-metadata-errors-debug-hint": "작동하지 않는 것이 있나요? <code>Wikifunctions.Debug</code>를 사용하여 코드를 추적해 보세요.",
 	"wikilambda-helplink-button": "도움말",
 	"wikilambda-implementation-selector": "구현을 선택하세요",
 	"wikilambda-invalidzobjecttitle": "지정된 '$1' 제목은 객체에 유효하지 않습니다.",
