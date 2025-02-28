@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\HookHandler;
 
 use Article;
 use HtmlArmor;
+use MediaWiki\Config\Config;
 use MediaWiki\Context\IContextSource;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
@@ -34,15 +35,18 @@ class PageRenderingHandler implements
 	\MediaWiki\Output\Hook\BeforePageDisplayHook,
 	\Mediawiki\Page\Hook\BeforeDisplayNoArticleTextHook
 {
+	private Config $config;
 	private UserOptionsLookup $userOptionsLookup;
 	private LanguageNameUtils $languageNameUtils;
 	private ZObjectStore $zObjectStore;
 
 	public function __construct(
+		Config $config,
 		UserOptionsLookup $userOptionsLookup,
 		LanguageNameUtils $languageNameUtils,
 		ZObjectStore $zObjectStore
 	) {
+		$this->config = $config;
 		$this->userOptionsLookup = $userOptionsLookup;
 		$this->languageNameUtils = $languageNameUtils;
 		$this->zObjectStore = $zObjectStore;
@@ -56,6 +60,11 @@ class PageRenderingHandler implements
 	 * @inheritDoc
 	 */
 	public function onSkinTemplateNavigation__Universal( $skinTemplate, &$links ): void {
+		// We only do this in repo mode
+		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+			return;
+		}
+
 		$targetTitle = $skinTemplate->getRelevantTitle();
 
 		// For any page: Add a language control, for users to navigate to another language.
@@ -166,6 +175,11 @@ class PageRenderingHandler implements
 	public function onHtmlPageLinkRendererEnd(
 		$linkRenderer, $linkTarget, $isKnown, &$text, &$attribs, &$ret
 	) {
+		// We only do this in repo mode
+		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+			return;
+		}
+
 		// Convert the slimline LinkTarget into a full-fat Title so we can ask deeper questions
 		$targetTitle = Title::newFromLinkTarget( $linkTarget );
 		$zid = $targetTitle->getBaseText();
@@ -270,6 +284,11 @@ class PageRenderingHandler implements
 	 * @inheritDoc
 	 */
 	public function onWebRequestPathInfoRouter( $router ) {
+		// We only do this in repo mode
+		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+			return;
+		}
+
 		$router->addStrict(
 			'/view/$2/$1',
 			[ 'title' => 'Special:ViewObject/$2/$1' ]
@@ -284,6 +303,11 @@ class PageRenderingHandler implements
 	 * @return void
 	 */
 	public function onBeforePageDisplay( $out, $skin ): void {
+		// We only do this in repo mode
+		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+			return;
+		}
+
 		// Save language name in global variables, needed for language selector module
 		$userLang = $out->getLanguage();
 		$userLangName = $this->languageNameUtils->getLanguageName( $userLang->getCode() );
@@ -300,6 +324,11 @@ class PageRenderingHandler implements
 	 * @return bool
 	 */
 	public function onBeforeDisplayNoArticleText( $article ): bool {
+		// We only do this in repo mode
+		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+			return true;
+		}
+
 		$title = $article->getTitle();
 		$zid = $title->getBaseText();
 
@@ -324,7 +353,7 @@ class PageRenderingHandler implements
 	 *
 	 * @return void
 	 */
-	public function showMissingObject( $context ): void {
+	private function showMissingObject( $context ): void {
 		$text = wfMessage( 'wikilambda-noobject' )->setContext( $context )->plain();
 
 		$dir = $context->getLanguage()->getDir();

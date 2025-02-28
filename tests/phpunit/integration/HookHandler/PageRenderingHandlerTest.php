@@ -30,10 +30,14 @@ use SkinTemplate;
 class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 
 	private PageRenderingHandler $pageRenderingHandler;
+	private PageRenderingHandler $pageRenderingHandlerRepoModeOff;
 
 	protected function setUp(): void {
 		parent::setUp();
 		$this->setUpAsRepoMode();
+
+		$mockHashConfigRepoMode = $this->createMock( HashConfig::class );
+		$mockHashConfigRepoMode->method( 'get' )->with( 'WikiLambdaEnableRepoMode' )->willReturn( true );
 
 		$mockUserOptionsLookup = $this->createMock( UserOptionsLookup::class );
 		$mockUserOptionsLookup->method( 'getOption' )->willReturn( 'de' );
@@ -42,6 +46,18 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 		$mockLanguageNameUtils->method( 'getLanguageName' )->willReturn( '' );
 
 		$this->pageRenderingHandler = new PageRenderingHandler(
+			$mockHashConfigRepoMode,
+			// $mockHashConfigNotRepoMode,
+			$mockUserOptionsLookup,
+			$mockLanguageNameUtils,
+			$this->createNoOpMock( ZObjectStore::class )
+		);
+
+		$mockHashConfigNotRepoMode = $this->createMock( HashConfig::class );
+		$mockHashConfigNotRepoMode->method( 'get' )->with( 'WikiLambdaEnableRepoMode' )->willReturn( false );
+
+		$this->pageRenderingHandlerRepoModeOff = new PageRenderingHandler(
+			$mockHashConfigNotRepoMode,
 			$mockUserOptionsLookup,
 			$mockLanguageNameUtils,
 			$this->createNoOpMock( ZObjectStore::class )
@@ -57,8 +73,16 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 		$article = Article::newFromTitle( $title, $context );
 
 		$this->pageRenderingHandler->onBeforeDisplayNoArticleText( $article );
+		$this->assertStringContainsString(
+			'(wikilambda-noobject)', $context->getOutput()->getHTML(),
+			'Message for no article is changed when in repo mode'
+		);
 
-		$this->assertStringContainsString( '(wikilambda-noobject)', $context->getOutput()->getHTML() );
+		$this->pageRenderingHandlerRepoModeOff->onBeforeDisplayNoArticleText( $article );
+		$this->assertStringContainsString(
+			'', $context->getOutput()->getHTML(),
+			'Message for no article is not changed when in non-repo mode'
+		);
 	}
 
 	public function testOnBeforeDisplayNoArticleText_skippedOutsideNS0() {
@@ -70,8 +94,16 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 		$article = Article::newFromTitle( $title, $context );
 
 		$this->pageRenderingHandler->onBeforeDisplayNoArticleText( $article );
+		$this->assertStringContainsString(
+			'', $context->getOutput()->getHTML(),
+			'Message for no article is not changed when not a ZObject'
+		);
 
-		$this->assertStringContainsString( '', $context->getOutput()->getHTML() );
+		$this->pageRenderingHandlerRepoModeOff->onBeforeDisplayNoArticleText( $article );
+		$this->assertStringContainsString(
+			'', $context->getOutput()->getHTML(),
+			'Message for no article is not changed when not a ZObject in non-repo mode'
+		);
 	}
 
 	public function testOnBeforePageDisplay() {
@@ -84,15 +116,32 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 		$context->setLanguage( 'qqx' );
 
 		$outputPage = new OutputPage( $context );
-
 		$this->pageRenderingHandler->onBeforePageDisplay( $outputPage, $mockSkin );
 
-		// We set wgUserLanguageName to the language label; make sure that's set
-		$this->assertArrayHasKey( 'wgUserLanguageName', $outputPage->getJSVars() );
-		$this->assertSame( '', $outputPage->getJSVars()['wgUserLanguageName'] );
+		$this->assertArrayHasKey(
+			'wgUserLanguageName', $outputPage->getJSVars(),
+			'We set wgUserLanguageName to the language label; make sure that\'s present'
+		);
+		$this->assertSame(
+			'', $outputPage->getJSVars()['wgUserLanguageName'],
+			'We set wgUserLanguageName to the language label; make sure that\'s set to the expected value'
+		);
+		$this->assertArrayContains(
+			[ 'ext.wikilambda.languageselector' ], $outputPage->getModules(),
+			'We register ext.wikilambda.languageselector; make sure that\'s set'
+		);
 
-		// We register ext.wikilambda.languageselector; make sure that's set
-		$this->assertArrayContains( [ 'ext.wikilambda.languageselector' ], $outputPage->getModules() );
+		$outputPage = new OutputPage( $context );
+		$this->pageRenderingHandlerRepoModeOff->onBeforePageDisplay( $outputPage, $mockSkin );
+
+		$this->assertArrayNotHasKey(
+			'wgUserLanguageName', $outputPage->getJSVars(),
+			'We should not set wgUserLanguageName in non-repo mode'
+		);
+		$this->assertArrayEquals(
+			[], $outputPage->getModules(),
+			'We should not register ext.wikilambda.languageselector in non-repo mode'
+		);
 	}
 
 	public static function provideTestOnSkinTemplateNavigation() {
@@ -262,6 +311,7 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 				'talk' => [ 'href' => $talkPath ]
 			]
 		];
+		$linksOriginal = $links;
 
 		if ( $editPage !== null ) {
 			$links['views']['edit'] = [ 'href' => $editPage ];
@@ -311,6 +361,14 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->assertEquals(
 			$expectedTalk, $links['namespaces']['talk']['href'],
 			'Check that we\'ve re-written the link to the talk page correctly in the old namespaces field too'
+		);
+
+		// Re-set our fake 'links' to the original value, and test that we don't modify them in non-repo mode
+		$links = $linksOriginal;
+		$this->pageRenderingHandlerRepoModeOff->onSkinTemplateNavigation__Universal( $mockSkinTemplate, $links );
+		$this->assertEquals(
+			$linksOriginal, $links,
+			'Check that we\'ve not changed re-written the links in non-repo mode'
 		);
 	}
 }
