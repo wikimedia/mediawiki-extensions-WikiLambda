@@ -14,10 +14,14 @@ use MediaWiki\Config\HashConfig;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\HookHandler\PageRenderingHandler;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
+use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Languages\LanguageNameUtils;
+use MediaWiki\MainConfigNames;
 use MediaWiki\Output\OutputPage;
+use MediaWiki\Request\FauxRequest;
 use MediaWiki\Request\WebRequest;
+use MediaWiki\Specials\SpecialRecentChanges;
 use MediaWiki\Title\Title;
 use MediaWiki\User\Options\UserOptionsLookup;
 use Skin;
@@ -371,4 +375,238 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 			'Check that we\'ve not changed re-written the links in non-repo mode'
 		);
 	}
+
+	public function testOnHtmlPageLinkRendererEnd_notOnAWikitextPage() {
+		$linkRenderer = $this->getServiceContainer()->getLinkRenderer();
+
+		$linkResultString = $linkRenderer->makeKnownLink( Title::makeTitle( NS_MAIN, 'Z1' )	);
+
+		$this->assertStringContainsString(
+			'>Z1</a>',
+			$linkResultString,
+			'A regular LinkRenderer call to [[Z1]] shouldn\'t be modified'
+		);
+
+		$linkResultString = $linkRenderer->makeLink( Title::makeTitle( NS_MAIN, 'Z2' ) );
+
+		$this->assertStringContainsString(
+			'>Z2</a>',
+			$linkResultString,
+			'A regular LinkRenderer call to [[Z2]] shouldn\'t be modified, even if it doesn\'t exist'
+		);
+	}
+
+	public function testOnHtmlPageLinkRendererEnd_usedOnRecentChanges() {
+		// Make a RecentChange entry for us to test
+		$createdStatus = $this->editPage(
+			ZTestType::TEST_ZID, ZTestType::TEST_ENCODING, 'Example RecentChanges entry', NS_MAIN
+		);
+		$this->assertTrue( $createdStatus->isOK() );
+
+		// Set up a RequestContext to simulate being on the RecentChanges page
+		$context = RequestContext::getMain();
+		$context->setLanguage( 'en' );
+		$context->setTitle( Title::newFromText( 'TestRecentChangesPage', NS_SPECIAL ) );
+
+		$request = new FauxRequest( [ 'title' => 'Special:RecentChanges', 'uselang' => 'en' ] );
+		$context->setRequest( $request );
+
+		$rc1 = $this->getRecentChangesPage();
+		$rc1->setContext( $context );
+		$rc1->execute( null );
+
+		$this->assertStringContainsString(
+			'title="Z111">Demonstration type (<span dir="ltr">Z111</span>)</a></bdi>',
+			$rc1->getOutput()->getHTML(),
+			'The test page edit is shown in RC, labelled in English (default language) with BiDi isolation of ZID'
+		);
+
+		// TESTME: Also test that the French label is displayed correctly when the language is set to French
+		// … the below fails to get the language set consistently, with some bits in en and some in fr.
+
+		// $rc2 = $this->getRecentChangesPage();
+		// $request = new FauxRequest( [ 'title' => 'Special:RecentChanges', 'uselang' => 'fr' ] );
+		// $context->setRequest( $request );
+		// $rc2->setContext( $context );
+		// $rc2->setContentLanguage( $this->makeLanguage( 'fr' ) );
+		// $rc2->execute( null );
+
+		// $this->assertStringContainsString(
+		// 	'title="Z111">Type pour démonstration (<span dir="ltr">Z111</span>)</a></bdi>',
+		// 	$rc2->getOutput()->getHTML(),
+		// 	'The test page edit is shown in RC, labelled in French with BiDi isolation of ZID'
+		// );
+	}
+
+	public function testOnHtmlPageLinkRendererEnd_noDoubleEscape() {
+		$createdStatus = $this->editPage(
+			ZTestType::TEST_ZID, ZTestType::TEST_HTML_ESCAPE, 'Test html escape', NS_MAIN
+		);
+		$this->assertTrue( $createdStatus->isOK() );
+		$context = RequestContext::getMain();
+		$context->setTitle( Title::newFromText( __METHOD__ ) );
+		$context->setRequest( new FauxRequest );
+		// Confirm that the test page is in RC and the label was escaped exactly
+		// once.
+		$rc1 = $this->getRecentChangesPage();
+		$rc1->setContext( $context );
+		$rc1->execute( null );
+		$this->assertStringContainsString( "&lt;&lt;&lt;&gt;&gt;&gt;", $rc1->getOutput()->getHTML() );
+	}
+
+	protected function getRecentChangesPage(): SpecialRecentChanges {
+		return new SpecialRecentChanges(
+			$this->getServiceContainer()->getWatchedItemStore(),
+			$this->getServiceContainer()->getMessageParser(),
+			$this->getServiceContainer()->getUserOptionsLookup(),
+			$this->getServiceContainer()->getChangeTagsStore()
+		);
+	}
+
+	/**
+	 * @dataProvider provideChangedTargetToViewUrl
+	 * @group Broken
+	 */
+	public function testChangedTargetToViewUrl(
+		$target, $expected, $create = true, $existing = true, $label = null, $attribs = [], $query = [], $lang = 'en'
+	) {
+		$this->overrideConfigValue( MainConfigNames::ArticlePath, '/wiki/$1' );
+		$this->registerLangs( [ 'en', 'fr' ] );
+		$linkRenderer = $this->getServiceContainer()->getLinkRenderer();
+
+		$targetTitle = Title::newFromDBkey( $target );
+		$this->setUserLang( $lang );
+
+		if ( $create ) {
+			$this->insertZids( [ $target ] );
+		}
+
+		if ( $existing ) {
+			$renderedLink = $linkRenderer->makeKnownLink( $targetTitle, $label, $attribs, $query );
+		} else {
+			$renderedLink = $linkRenderer->makeBrokenLink( $targetTitle, $label, $attribs, $query );
+		}
+
+		$this->assertEquals(
+			$expected,
+			$renderedLink
+		);
+	}
+
+	public function provideChangedTargetToViewUrl() {
+		// Note that URLs with '&'s in them have them encoded to '&amp;' by the hook to be HTML-safe.
+
+		yield 'English, default label, ZID, /view link' => [
+			'Z1',
+			'<a href="/view/en/Z1" title="Z1">Object (<span dir="ltr">Z1</span>)</a>'
+		];
+
+		yield 'English, fallback redlink label, ZID, /view link' => [
+			'Z2',
+			'<a href="/wiki/Z2?action=edit&amp;uselang=en&amp;redlink=1" class="new" '
+				. 'title="Z2 (page does not exist)"><span dir="ltr">Z2</span></a>',
+			false,
+			false
+		];
+
+		yield 'English, custom label, no ZID, /view link' => [
+			'Z1',
+			'<a href="/view/en/Z1" title="Z1">hello</a>',
+			true,
+			true,
+			'hello'
+		];
+
+		yield 'English, default label, ZID, action=edit link' => [
+			'Z1',
+			'<a href="/wiki/Z1?action=edit&amp;uselang=en" title="Z1">Object (<span dir="ltr">Z1</span>)</a>',
+			true,
+			true,
+			null,
+			[],
+			[ 'action' => 'edit' ]
+		];
+
+		yield 'English, default label, ZID, action=edit link on oldid' => [
+			'Z1',
+			'<a href="/wiki/Z1?action=edit&amp;uselang=en&amp;oldid=1234" title="Z1">Object '
+				. '(<span dir="ltr">Z1</span>)</a>',
+			true,
+			true,
+			null,
+			[],
+			[ 'action' => 'edit', 'oldid' => '1234' ]
+		];
+
+		yield 'English, default label, ZID, action=history link' => [
+			'Z1',
+			'<a href="/wiki/Z1?action=history&amp;uselang=en" title="Z1">Object (<span dir="ltr">Z1</span>)</a>',
+			true,
+			true,
+			null,
+			[],
+			[ 'action' => 'history' ]
+		];
+
+		yield 'English, default label, ZID, diff=prev link' => [
+			'Z1',
+			'<a href="/wiki/Z1?uselang=en&amp;diff=prev" title="Z1">Object (<span dir="ltr">Z1</span>)</a>',
+			true,
+			true,
+			null,
+			[],
+			[ 'diff' => 'prev' ]
+		];
+
+		yield 'English, default label, ZID, oldid link' => [
+			'Z1',
+			'<a href="/wiki/Z1?uselang=en&amp;oldid=1234" title="Z1">Object (<span dir="ltr">Z1</span>)</a>',
+			true,
+			true,
+			null,
+			[],
+			[ 'oldid' => '1234' ]
+		];
+
+		yield 'English, default label, ZID, unknown GET param preserved' => [
+			'Z1',
+			'<a href="/view/en/Z1?foo=bar" title="Z1">Object (<span dir="ltr">Z1</span>)</a>',
+			true,
+			true,
+			null,
+			[],
+			[ 'foo' => 'bar' ]
+		];
+
+		yield 'French, fallback no label, ZID, /view link' => [
+			'Z1',
+			'<a href="/view/fr/Z1" title="Z1">Object (<span dir="ltr">Z1</span>)</a>',
+			true,
+			true,
+			null,
+			[],
+			[],
+			'fr'
+		];
+
+		yield 'Nonsense language, fallback no label, ZID, /view link' => [
+			'Z1',
+			'<a href="/view/en/Z1" title="Z1">Object (<span dir="ltr">Z1</span>)</a>',
+			true,
+			true,
+			null,
+			[],
+			[],
+			'hellothisisnotalanguage'
+		];
+
+		yield 'Talk pages are not over-ridden' => [
+			'Talk:Z1',
+			'<a href="/wiki/Talk:Z1" title="Talk:Z1">Talk:Z1</a>',
+			false
+		];
+
+		// …
+	}
+
 }
