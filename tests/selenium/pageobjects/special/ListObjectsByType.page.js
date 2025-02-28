@@ -35,6 +35,10 @@ class ListObjectsByType extends Page {
 		return $( '#firstHeading' );
 	}
 
+	get typeDropdown() {
+		return $( '#mw-input-type' );
+	}
+
 	get types() {
 		return {
 			function: 'Z8'
@@ -45,8 +49,11 @@ class ListObjectsByType extends Page {
 		return super.openTitle( 'Special:ListObjectsByType' );
 	}
 
-	getListType( ztype ) {
-		return $( `a[href$="/${ ztype }` );
+	async getListType( ztype ) {
+		await this.typeDropdown.click();
+		const selectedType = await $( `//*[contains(text(),"(${ ztype })")]` );
+		await selectedType.waitForExist();
+		return selectedType;
 	}
 
 	/**
@@ -55,7 +62,7 @@ class ListObjectsByType extends Page {
 	 * @return {ListFunctions} the function list Page Object Model
 	 */
 	async openFunctionsList() {
-		const listFunctionLink = this.getListType( this.types.function );
+		const listFunctionLink = await this.getListType( this.types.function );
 		await listFunctionLink.click();
 		return new ListFunctions();
 	}
