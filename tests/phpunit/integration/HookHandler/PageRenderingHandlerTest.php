@@ -10,15 +10,18 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\HookHandler;
 
 use Article;
+use MediaWiki\Config\HashConfig;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\HookHandler\PageRenderingHandler;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Languages\LanguageNameUtils;
 use MediaWiki\Output\OutputPage;
+use MediaWiki\Request\WebRequest;
 use MediaWiki\Title\Title;
 use MediaWiki\User\Options\UserOptionsLookup;
 use Skin;
+use SkinTemplate;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\HookHandler\PageRenderingHandler
@@ -32,11 +35,14 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 		parent::setUp();
 		$this->setUpAsRepoMode();
 
+		$mockUserOptionsLookup = $this->createMock( UserOptionsLookup::class );
+		$mockUserOptionsLookup->method( 'getOption' )->willReturn( 'de' );
+
 		$mockLanguageNameUtils = $this->createMock( LanguageNameUtils::class );
 		$mockLanguageNameUtils->method( 'getLanguageName' )->willReturn( '' );
 
 		$this->pageRenderingHandler = new PageRenderingHandler(
-			$this->createNoOpMock( UserOptionsLookup::class ),
+			$mockUserOptionsLookup,
 			$mockLanguageNameUtils,
 			$this->createNoOpMock( ZObjectStore::class )
 		);
@@ -87,5 +93,224 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 
 		// We register ext.wikilambda.languageselector; make sure that's set
 		$this->assertArrayContains( [ 'ext.wikilambda.languageselector' ], $outputPage->getModules() );
+	}
+
+	public static function provideTestOnSkinTemplateNavigation() {
+		return [
+			'Z1 wiki page, logged in user, English implicit view' => [
+				/* titleText */ 'Z1',
+				/* isZObject */ true,
+				/* languageCode */ null,
+				/* user */ 'WikiLambdaTestUser',
+				/* params */ [],
+				/* editPage */ '/wiki/Z1?action=edit',
+				/* expectedView */ '/view/en/Z1',
+				/* expectedEdit */ '/wiki/Z1?action=edit&uselang=en',
+				/* expectedHistory */ '/wiki/Z1?action=history&uselang=en',
+				/* expectedTalk */ '/wiki/Talk:Z1?uselang=en',
+			],
+			'Z1 view page, logged in user, English implicit view' => [
+				/* titleText */ 'Z1',
+				/* isZObject */ true,
+				/* languageCode */ null,
+				/* user */ 'WikiLambdaTestUser',
+				/* params */ [],
+				/* editPage */ '/wiki/Z1?action=edit',
+				/* expectedView */ '/view/en/Z1',
+				/* expectedEdit */ '/wiki/Z1?action=edit&uselang=en',
+				/* expectedHistory */ '/wiki/Z1?action=history&uselang=en',
+				/* expectedTalk */ '/wiki/Talk:Z1?uselang=en',
+			],
+			'Z1 view page, logged in user, English explicit view' => [
+				/* titleText */ 'Z1',
+				/* isZObject */ true,
+				/* languageCode */ 'en',
+				/* user */ 'WikiLambdaTestUser',
+				/* params */ [],
+				/* editPage */ '/wiki/Z1?action=edit',
+				/* expectedView */ '/view/en/Z1',
+				/* expectedEdit */ '/wiki/Z1?action=edit&uselang=en',
+				/* expectedHistory */ '/wiki/Z1?action=history&uselang=en',
+				/* expectedTalk */ '/wiki/Talk:Z1?uselang=en',
+			],
+			'Z1 view page, logged in user, English explicit view, extra params passed on to talk' => [
+				/* titleText */ 'Z1',
+				/* isZObject */ true,
+				/* languageCode */ 'en',
+				/* user */ 'WikiLambdaTestUser',
+				/* params */ [ 'fish' => 'chips' ],
+				/* editPage */ '/wiki/Z1?action=edit',
+				/* expectedView */ '/view/en/Z1',
+				/* expectedEdit */ '/wiki/Z1?action=edit&uselang=en',
+				/* expectedHistory */ '/wiki/Z1?action=history&uselang=en',
+				/* expectedTalk */ '/wiki/Talk:Z1?fish=chips&uselang=en',
+			],
+			'Z1 view page, logged in user, English explicit view, oldid set' => [
+				/* titleText */ 'Z1',
+				/* isZObject */ true,
+				/* languageCode */ 'en',
+				/* user */ 'WikiLambdaTestUser',
+				/* params */ [ 'oldid' => '1234' ],
+				/* editPage */ '/wiki/Z1?action=edit',
+				/* expectedView */ '/view/en/Z1',
+				/* expectedEdit */ '/wiki/Z1?action=edit&uselang=en&oldid=1234',
+				/* expectedHistory */ '/wiki/Z1?action=history&uselang=en',
+				/* expectedTalk */ '/wiki/Talk:Z1?uselang=en',
+			],
+			'Z1 view page, logged in user, French explicit view' => [
+				/* titleText */ 'Z1',
+				/* isZObject */ true,
+				/* lang */ 'en',
+				/* user */ 'WikiLambdaTestUser',
+				/* params */ [ 'uselang' => 'fr' ],
+				/* editPage */ '/wiki/Z1?action=edit',
+				/* expectedView */ '/view/fr/Z1',
+				/* expectedEdit */ '/wiki/Z1?action=edit&uselang=fr',
+				/* expectedHistory */ '/wiki/Z1?action=history&uselang=fr',
+				/* expectedTalk */ '/wiki/Talk:Z1?uselang=fr',
+			],
+			'Not a ZObject page; we shouldn\'t be modifying anything' => [
+				/* titleText */ 'Z1',
+				/* isZObject */ false,
+				/* languageCode */ 'en',
+				/* user */ 'WikiLambdaTestUser',
+				// Note: This tests that passing in a uselang has no effect when we don't do our magic
+				/* params */ [ 'uselang' => 'de' ],
+				/* editPage */ '/wiki/Talk:Z1?action=edit',
+				/* expectedView */ '/wiki/Talk:Z1?uselang=de',
+				/* expectedEdit */ '/wiki/Talk:Z1?action=edit',
+				/* expectedHistory */ '/wiki/Talk:Z1?action=history',
+				/* expectedTalk */ '/wiki/Talk:Z1',
+			],
+			'Logged out user, no edit link, German explicit view' => [
+				/* titleText */ 'Z1',
+				/* isZObject */ true,
+				/* languageCode */ 'en',
+				/* user */ '127.0.0.1',
+				/* params */ [ 'uselang' => 'de' ],
+				/* editPage */ null,
+				/* expectedView */ '/view/de/Z1',
+				/* expectedEdit */ null,
+				/* expectedHistory */ '/wiki/Z1?action=history&uselang=de',
+				/* expectedTalk */ '/wiki/Talk:Z1?uselang=de',
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider provideTestOnSkinTemplateNavigation
+	 */
+	public function testOnSkinTemplateNavigation(
+		$titleText, $isZObject, $languageCode, $userName, $params, $editPage,
+		$expectedView, $expectedEdit, $expectedHistory, $expectedTalk
+	) {
+		if ( $isZObject ) {
+			$this->insertZids( [ $titleText ] );
+			$title = Title::makeTitle( NS_MAIN, $titleText );
+		} else {
+			$title = Title::makeTitle( NS_TALK, $titleText );
+		}
+
+		$user = $this->getServiceContainer()->getUserFactory()->newFromNameOrIp( $userName );
+
+		$context = new RequestContext();
+		if ( $languageCode !== null ) {
+			$context->setLanguage( $this->makeLanguage( $languageCode ) );
+		}
+		$context->setConfig( new HashConfig( [] ) );
+		$context->setTitle( $title );
+		$context->setActionName( 'view' );
+		$context->setUser( $user );
+
+		$request = new WebRequest();
+		$request->setIP( '127.0.0.1' );
+		$context->setRequest( $request );
+
+		// We mock SkinTemplate because it's a mess; we don't mock the others because they're worse,
+		// but in different ways.
+		$mockSkinTemplate = $this->createMock( SkinTemplate::class );
+		$mockSkinTemplate->method( 'getContext' )->willReturn( $context );
+		$mockSkinTemplate->method( 'getRequest' )->willReturn( $request );
+		$mockSkinTemplate->method( 'getTitle' )->willReturn( $title );
+		$mockSkinTemplate->method( 'getRelevantTitle' )->willReturn( $title );
+
+		$mockSkinTemplate->method( 'getUser' )->willReturn( $user );
+
+		foreach ( $params as $key => $value ) {
+			$request->setVal( $key, $value );
+		}
+
+		$talkParams = array_filter( $params, static function ( $key ) {
+			// Don't include uselang or oldid in the talk page link
+			return ( $key !== 'uselang' && $key !== 'oldid' );
+		}, ARRAY_FILTER_USE_KEY );
+		$talkPath = '/wiki/Talk:' . $titleText . ( count( $talkParams ) ? '?' . wfArrayToCgi( $talkParams ) : '' );
+
+		// This is a fake set of links similar to what we'd get if we instantiated a real SkinTemplate
+		$links = [
+			'user-interface-preferences' => [],
+			'views' => [
+				'view' => [ 'href' => '/wiki/' . ( $isZObject ? '' : 'Talk:' ) . $titleText
+					 . ( count( $params ) ? '?' . wfArrayToCgi( $params ) : '' ) ],
+				'history' => [ 'href' => '/wiki/' . ( $isZObject ? '' : 'Talk:' ) . $titleText . '?action=history' ]
+			],
+			'associated-pages' => [
+				'talk' => [ 'href' => $talkPath ]
+			],
+			// Duplicated because upstream (SkinTemplate) is migrating from 'namespaces' to 'associated-pages'
+			'namespaces' => [
+				'talk' => [ 'href' => $talkPath ]
+			]
+		];
+
+		if ( $editPage !== null ) {
+			$links['views']['edit'] = [ 'href' => $editPage ];
+		}
+
+		// Trigger the behaviour we're testing
+		$this->pageRenderingHandler->onSkinTemplateNavigation__Universal( $mockSkinTemplate, $links );
+
+		// Note: The $links array is modified in-place, so we check its new value for the changes we expect
+
+		$this->assertArrayHasKey(
+			'wikifunctions-language', $links['user-interface-preferences'],
+			'Make sure our language button is registered on all pages'
+		);
+
+		$this->assertEquals(
+			$expectedView, $links['views']['view']['href'],
+			'Check that we\'ve re-written the link to the view page correctly'
+		);
+
+		if ( $expectedEdit !== null ) {
+			$this->assertEquals(
+				$expectedEdit, $links['views']['edit']['href'],
+				'Check that we\'ve re-written the link to the edit page correctly'
+			);
+		} else {
+			$this->assertArrayNotHasKey(
+				'edit', $links['views'],
+				'Check that we don\'t add an edit link if there\'s not one there, e.g. for logged-out users'
+			);
+			$this->assertArrayNotHasKey(
+				'viewsource', $links['views'],
+				'Check that we don\'t add a viewsource link, e.g. for logged-out users'
+			);
+		}
+
+		$this->assertEquals(
+			$expectedHistory, $links['views']['history']['href'],
+			'Check that we\'ve re-written the link to the history page correctly'
+		);
+
+		$this->assertEquals(
+			$expectedTalk, $links['associated-pages']['talk']['href'],
+			'Check that we\'ve re-written the link to the talk page correctly'
+		);
+
+		$this->assertEquals(
+			$expectedTalk, $links['namespaces']['talk']['href'],
+			'Check that we\'ve re-written the link to the talk page correctly in the old namespaces field too'
+		);
 	}
 }
