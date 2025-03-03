@@ -50,7 +50,7 @@
 	"apihelp-query+wikilambdaload_zobjects-param-language": "קוד השפה של מדיה־ויקי שבו צריך להחזיר את כל התוויות של עצמי Z.",
 	"apihelp-query+wikilambdaload_zobjects-param-canonical": "האם להחזיר את הצורה הקנונית או, אם זה כבוי, את הצורה הנורמלית חלקית של עצמי ה־Z המבוקשים. הנרצול החלקי כולל רשימות Z, מחרוזות חד־לשוניות Z, ומחרוזות רב־לשוניות Z.",
 	"apihelp-query+wikilambdaload_zobjects-example-full": "חיפוש עצמי ה־Z עם המזהים Z12 ו־Z4 והחזרת ייצוג ה־JSON המלא שלהם.",
-	"apihelp-query+wikilambdaload_zobjects-example-language": "חיפוש עצמי ה־Z עם המזהים Z12 ו־Z4 והחזרת התוויות שלהם מסוננות לספרדית ושפות גיבוי.",
+	"apihelp-query+wikilambdaload_zobjects-example-language": "חיפוש עצמי ה־Z עם המזהים Z12 ו־Z4 והחזרת התוויות שלהם מסוננות לספרדית ולשפות גיבוי.",
 	"apihelp-query+wikilambdaload_zobjects-example-error": "חיפוש עצמי ה־Z עם המזהים Z1 ו־Z012345789 שאינו קיים והחזרת התוויות שלהם מסוננות לספרדית ושפות גיבוי.",
 	"apihelp-query+wikilambdaload_zobjects-example-canonical": "חיפוש עצם Z עם המזהה Z12 והחזרת ייצוג שלו ב־JSON קנוני.",
 	"apierror-query+wikilambdaload_zobjects-unloadable": "ZObjectStore לא הצליח לטעון את הדף עבור \"$1\".",

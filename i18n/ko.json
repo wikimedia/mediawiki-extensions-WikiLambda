@@ -6,7 +6,8 @@
 			"Theshinster123",
 			"Ykhwong",
 			"Yunbj",
-			"렌즈"
+			"렌즈",
+			"Whatback11"
 		]
 	},
 	"wikilambda-invalidzobjecttitle": "지정된 '$1' 제목은 ZObject에 유효하지 않습니다.",
@@ -14,6 +15,7 @@
 	"wikilambda-noresult": "검색에 결과가 제공되지 않았습니다.",
 	"wikilambda-persistentzobject-contents": "내용",
 	"wikilambda-reference": "참조",
+	"wikilambda-functioncall": "함수 호출",
 	"wikilambda-edit": "편집",
 	"wikilambda-show-more": "더 보기",
 	"wikilambda-hide-more": "더 숨기기",
@@ -89,6 +91,8 @@
 	"wikilambda-function-is-not-attached": "이 객체는 객체의 함수와 연결되어 있지 않습니다.",
 	"wikilambda-function-definition-edit": "정의 편집",
 	"wikilambda-function-implementation-name-label": "이름",
+	"wikilambda-function-implementation-language-label": "언어",
+	"wikilambda-function-definition-alias-label": "다른 이름",
 	"wikilambda-function-definition-inputs-item-selector-placeholder": "유형을 선택하세요.",
 	"wikilambda-function-definition-output-label": "출력 종류",
 	"wikilambda-function-definition-output-selector": "유형을 선택하세요.",
@@ -97,6 +101,7 @@
 	"wikilambda-editor-next-button": "다음 단계",
 	"wikilambda-editor-fn-step-define": "정의",
 	"wikilambda-editor-fn-step-tests": "테스트",
+	"wikilambda-function-implementation-table-header": "구현",
 	"wikilambda-editor-fn-step-implementations": "구현체",
 	"wikilambda-editor-fn-step-function-about": "정보",
 	"wikilambda-editor-fn-step-function-details": "자세한 사항",
@@ -121,5 +126,8 @@
 	"wikilambda-function-viewer-aliases-header": "다른 이름",
 	"wikilambda-function-viewer-aliases-show-language-button": "더 많은 언어 보기",
 	"wikilambda-function-viewer-aliases-hide-language-button": "목록 숨기기",
-	"wikilambda-function-viewer-names-show-languages-button": "다른 언어로 이름 표시"
+	"wikilambda-function-viewer-names-show-languages-button": "다른 언어로 이름 표시",
+	"wikilambda-function-viewer-details-input-number": "$1 입력",
+	"wikilambda-function-viewer-details-table-view-all": "모두 보기",
+	"wikilambda-function-viewer-details-table-view-less": "덜 보기"
 }

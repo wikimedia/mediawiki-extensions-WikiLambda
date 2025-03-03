@@ -22,7 +22,7 @@
 	"wikilambda-persistentzobject-metadata": "תוויות וכינויים",
 	"wikilambda-persistentzobject-contents": "תוכן",
 	"wikilambda-persistentzobject-description": "{{GENDER:|התחל|התחילי}} את יצירת עצם ה־Z באמצעות בחירת סוג להלן. {{GENDER:|אתה יכול|את יכולה}} ליצור פונקציה באמצעות לחיצה על הקישור הבא:",
-	"wikilambda-multilingualstring-nofallback": "לא הוגדרה תווית בשפה הזאת וגם לא שפת גיבוי קבילה",
+	"wikilambda-multilingualstring-nofallback": "לא הוגדרה תווית בשפה הזאת וגם לא בשפת גיבוי קבילה",
 	"wikilambda-viewmode-nojs": "הדף הזה מוצג באופן מוגבל ללא JavaScript",
 	"wikilambda-diff-incompatible": "המערכת אינה יכולה להציג הבדלים בין עצם Z לבין משהו שאינו עצם Z.",
 	"wikilambda-reference": "התייחסות",
