@@ -14,27 +14,40 @@ const Constants = require( '../Constants.js' );
 const hybridToCanonical = require( './schemata.js' ).methods.hybridToCanonical;
 
 /* eslint-disable camelcase */
-module.exports = exports = {
+const apiUtils = {
 	methods: {
-
+		/**
+		 * FIXME add doc and tests
+		 *
+		 * @return {string}
+		 */
+		newApi: function () {
+			const foreignUrl = mw.config.get( 'wgWikifunctionsBaseUrl' );
+			return foreignUrl ?
+				new mw.ForeignApi( `${ foreignUrl }/w/api.php`, { anonymous: true } ) :
+				new mw.Api();
+		},
 		/**
 		 * Calls the wikilambda_function_call internal API
 		 * https://www.mediawiki.org/wiki/Extension:WikiLambda/API#wikilambda_function_call
 		 *
 		 * Needs error handling.
 		 *
-		 * @param {Object} zobject
+		 * @param {Object} payload
+		 * @param {Object} payload.functionCall
+		 * @param {string} payload.language
 		 * @return {Promise}
 		 */
-		performFunctionCall: function ( zobject ) {
-			const api = new mw.Api();
-			const canonicalJson = JSON.stringify( hybridToCanonical( zobject ) );
+		performFunctionCall: function ( payload ) {
+			// Can be called from client wiki
+			const api = apiUtils.methods.newApi();
+			const canonicalJson = JSON.stringify( hybridToCanonical( payload.functionCall ) );
 
 			return new Promise( ( resolve, reject ) => {
 				api.post( {
 					action: 'wikilambda_function_call',
 					wikilambda_function_call_zobject: canonicalJson,
-					uselang: mw.config.get( 'wgWikiLambda' ).zlang
+					uselang: payload.language
 				} )
 					.then( ( data ) => {
 						const maybeNormalResponse = JSON.parse( data.wikilambda_function_call.data );
@@ -48,7 +61,6 @@ module.exports = exports = {
 					.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
 			} );
 		},
-
 		/**
 		 * Calls the wikilambda_edit internal API
 		 * https://www.mediawiki.org/wiki/Extension:WikiLambda/API#wikilambda_edit
@@ -57,19 +69,25 @@ module.exports = exports = {
 		 *
 		 * @param {Object} payload
 		 * @param {Object} payload.zobject The canonical ZObject to update
-		 * @param {Object} payload.zid The zid of the object to update or undefined if new object
-		 * @param {Object} payload.summary The update summary
+		 * @param {string} payload.zid The zid of the object to update or undefined if new object
+		 * @param {string} payload.summary The update summary
+		 * @param {string} payload.language The update summary
 		 * @return {Promise}
 		 */
 		saveZObject: function ( payload ) {
+			// NO calls from client wikis: We don't use apiUtils.methods.newApi() here:
 			const api = new mw.Api();
+			// Although probably the 'postWithEditToken' is enough to stop edits from foreign wikis.
+			// Anyway, nothing that has access to saveZObject (Publish widget or Function tables)
+			// should ever be exposed to be used externally.
+
 			return new Promise( ( resolve, reject ) => {
 				api.postWithEditToken( {
 					action: 'wikilambda_edit',
 					summary: payload.summary || '',
 					zid: payload.zid,
 					zobject: JSON.stringify( payload.zobject ),
-					uselang: mw.config.get( 'wgWikiLambda' ).zlang
+					uselang: payload.language
 				} )
 					.then( ( data ) => resolve( data.wikilambda_edit ) )
 					.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
@@ -89,7 +107,9 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		fetchZObjects: function ( payload ) {
-			const api = new mw.Api();
+			// Can be called from client wiki
+			const api = apiUtils.methods.newApi();
+
 			return new Promise( ( resolve, reject ) => {
 				api.get( {
 					action: 'query',
@@ -122,7 +142,9 @@ module.exports = exports = {
 		 * - Promise resolving to an object with 'labels' and 'continue'
 		 */
 		searchLabels: function ( payload ) {
-			const api = new mw.Api();
+			// Can be called from client wiki
+			const api = apiUtils.methods.newApi();
+
 			return new Promise( ( resolve, reject ) => {
 				api.get( {
 					action: 'query',
@@ -144,6 +166,48 @@ module.exports = exports = {
 			} );
 		},
 		/**
+		 * Calls the wikilambdasearch_functions internal API
+		 * https://www.mediawiki.org/wiki/Extension:WikiLambda/API#wikilambdasearch_functions
+		 *
+		 * Doesn't need error handling.
+		 *
+		 * @param {Object} payload
+		 * @param {string} payload.search Substring to search by
+		 * @param {string} payload.language The user language code
+		 * @param {boolean} payload.renderable
+		 * @param {Array} payload.inputTypes
+		 * @param {string} payload.outputType
+		 * @param {number} payload.limit The maximum number of results to return
+		 * @param {number} payload.searchContinue When more results are available, use this to continue
+		 * @return {Promise<Object>|undefined} Promise resolving to an object with 'objects' and 'continue'
+		 */
+		searchFunctions: function ( payload ) {
+			// Can be called from client wiki
+			const api = apiUtils.methods.newApi();
+
+			return new Promise( ( resolve, reject ) => {
+				api.get( {
+					action: 'query',
+					list: 'wikilambdasearch_functions',
+					wikilambdasearch_functions_search: payload.search,
+					wikilambdasearch_functions_language: payload.language,
+					wikilambdasearch_functions_renderable: payload.renderable,
+					wikilambdasearch_functions_input_types: payload.inputTypes,
+					wikilambdasearch_functions_output_type: payload.outputType,
+					wikilambdasearch_functions_limit: payload.limit,
+					wikilambdasearch_functions_continue: payload.searchContinue
+				} )
+					.then( ( data ) => resolve( {
+						objects: data.query ? data.query.wikilambdasearch_functions : [],
+						searchContinue: data.continue ?
+							Number( data.continue.wikilambdasearch_functions_continue ) :
+							null
+					} )
+					)
+					.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
+			} );
+		},
+		/**
 		 * Calls the wikilambda_perform_test internal API
 		 * https://www.mediawiki.org/wiki/Extension:WikiLambda/API#wikilambda_perform_test
 		 *
@@ -155,7 +219,9 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		performTests: function ( payload ) {
-			const api = new mw.Api();
+			// Can be called from client wiki
+			const api = apiUtils.methods.newApi();
+
 			return new Promise( ( resolve, reject ) => {
 				api.get( {
 					action: 'wikilambda_perform_test',
@@ -163,13 +229,12 @@ module.exports = exports = {
 					wikilambda_perform_test_zimplementations: payload.implementations.join( '|' ),
 					wikilambda_perform_test_ztesters: payload.testers.join( '|' ),
 					wikilambda_perform_test_nocache: payload.nocache || false,
-					uselang: mw.config.get( 'wgWikiLambda' ).zlang
+					uselang: payload.language
 				} )
 					.then( ( data ) => resolve( data.query.wikilambda_perform_test ) )
 					.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
 			} );
 		},
-
 		/**
 		 * Calls the wikilambdafn_search internal API
 		 * https://www.mediawiki.org/wiki/Extension:WikiLambda/API#wikilambdafn_search
@@ -182,7 +247,8 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		fetchFunctionObjects( payload ) {
-			const api = new mw.Api();
+			// Can be called from client wiki
+			const api = apiUtils.methods.newApi();
 
 			return new Promise( ( resolve, reject ) => {
 				api.get( {
@@ -197,7 +263,6 @@ module.exports = exports = {
 					.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
 			} );
 		},
-
 		/**
 		 * Calls the wbsearchentities Wikidata Action API
 		 * https://www.wikidata.org/w/api.php?action=help&modules=wbsearchentities
@@ -210,6 +275,7 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		searchWikidataEntities: function ( payload ) {
+			// FIXME should we be using mw.ForeignApi here, instead of fetch?
 			const params = new URLSearchParams( {
 				origin: '*',
 				action: 'wbsearchentities',
@@ -242,6 +308,7 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		fetchWikidataEntities: function ( payload ) {
+			// FIXME should we be using mw.ForeignApi here, instead of fetch?
 			const params = new URLSearchParams( {
 				origin: '*',
 				action: 'wbgetentities',
@@ -255,3 +322,5 @@ module.exports = exports = {
 		}
 	}
 };
+
+module.exports = apiUtils;

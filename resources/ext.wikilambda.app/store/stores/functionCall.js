@@ -59,7 +59,10 @@ module.exports = {
 		 * @return {Promise}
 		 */
 		callZFunction: function ( payload ) {
-			return apiUtils.performFunctionCall( payload.functionCall ).then( ( data ) => {
+			return apiUtils.performFunctionCall( {
+				functionCall: payload.functionCall,
+				language: this.getUserLangCode
+			} ).then( ( data ) => {
 				// Asynchronously collect the necessary labels
 				const zids = extractZIDs( data.response );
 				this.fetchZids( { zids } );

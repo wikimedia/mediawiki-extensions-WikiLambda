@@ -211,6 +211,7 @@ module.exports = {
 			const testResultsPromise = apiUtils.performTests( {
 				functionZid: payload.zFunctionId,
 				nocache: payload.nocache,
+				language: this.getUserLangCode,
 				implementations,
 				testers
 			} ).then( ( results ) => {

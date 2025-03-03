@@ -11,6 +11,7 @@ const vueTestUtils = require( '@vue/test-utils' );
 
 const ApiMock = require( './apiMock.js' );
 const apiGetMock = require( './apiGetMock.js' );
+const mockMWConfigGet = require( './mwConfigMock.js' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const existingFunctionFromApi = require( '../objects/existingFunctionFromApi.js' );
 
@@ -46,22 +47,15 @@ const runSetup = function () {
 		path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl( queryParams )
 	} ) );
 
-	global.mw.config.get = ( endpoint ) => {
-		switch ( endpoint ) {
-			case 'wgWikiLambda':
-				return {
-					viewmode: false,
-					createNewPage: true,
-					zlangZid: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
-					zlang: 'en',
-					zId: Constants.Z_TESTER
-				};
-			case 'wgExtensionAssetsPath':
-				return '/w/extensions';
-			default:
-				return {};
+	global.mw.config.get = mockMWConfigGet( {
+		wgWikiLambda: {
+			viewmode: false,
+			createNewPage: true,
+			zlangZid: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
+			zlang: 'en',
+			zId: Constants.Z_TESTER
 		}
-	};
+	} );
 
 	const apiPostWithEditTokenMock = jest.fn( () => Promise.resolve( {
 		wikilambda_edit: {

@@ -223,6 +223,7 @@
 		"ParserFirstCallInit": "WikiLambdaClientHooks",
 		"PageSaveComplete": "WikiLambdaClientHooks",
 		"ResourceLoaderRegisterModules": "WikiLambdaClientHooks",
+		"MakeGlobalVariablesScript": "WikiLambdaClientHooks",
 
 		"LoadExtensionSchemaUpdates": "WikiLambdaHooks",
 
@@ -359,6 +360,7 @@
 				"ext.wikilambda.app/store/stores/user.js",
 				"ext.wikilambda.app/store/stores/functionCall.js",
 				"ext.wikilambda.app/store/stores/testResults.js",
+				"ext.wikilambda.app/store/stores/visualeditor.js",
 				"ext.wikilambda.app/store/stores/wikidata/entities.js",
 				"ext.wikilambda.app/store/stores/wikidata/items.js",
 				"ext.wikilambda.app/store/stores/wikidata/lexemes.js",
@@ -380,6 +382,7 @@
 				"ext.wikilambda.app/views/FunctionEditor.vue",
 				"ext.wikilambda.app/views/FunctionViewer.vue",
 				"ext.wikilambda.app/views/Default.vue",
+				"ext.wikilambda.app/components/index.js",
 				"ext.wikilambda.app/components/App.vue",
 				"ext.wikilambda.app/components/base/ZObjectSelector.vue",
 				"ext.wikilambda.app/components/base/ClipboardManager.vue",
@@ -431,6 +434,9 @@
 				"ext.wikilambda.app/components/function/viewer/FunctionTesterTable.vue",
 				"ext.wikilambda.app/components/function/viewer/FunctionViewerDetails.vue",
 				"ext.wikilambda.app/components/function/viewer/FunctionViewerDetailsTable.vue",
+				"ext.wikilambda.app/components/visualeditor/FunctionCallSetup.vue",
+				"ext.wikilambda.app/components/visualeditor/FunctionInputSetup.vue",
+				"ext.wikilambda.app/components/visualeditor/FunctionSelect.vue",
 				"ext.wikilambda.app/components/widgets/about/About.vue",
 				"ext.wikilambda.app/components/widgets/about/AboutLanguageBlock.vue",
 				"ext.wikilambda.app/components/widgets/about/AboutLanguagesDialog.vue",
@@ -480,7 +486,8 @@
 						"cdxIconCancel",
 						"cdxIconHistory",
 						"cdxIconNotBright",
-						"cdxIconLinkExternal"
+						"cdxIconLinkExternal",
+						"cdxIconLogoWikifunctions"
 					]
 				}
 			],

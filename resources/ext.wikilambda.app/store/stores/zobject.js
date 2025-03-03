@@ -1254,7 +1254,6 @@ const zobjectStore = {
 			};
 			return checkValidateGenericType;
 		}
-
 	},
 	actions: {
 		/**
@@ -1330,7 +1329,7 @@ const zobjectStore = {
 		},
 
 		/**
-		 * Handles the initialization of the pages given the wgWikiLambda config parameters.
+		 * Handles the initialization of the pages given wgWikiLambda config
 		 * The page can be:
 		 * 1. A Create New ZObject page, when the flag createNewPage is true-
 		 * 2. A Run Function page, when the flag runFunction is true or the
@@ -1340,10 +1339,7 @@ const zobjectStore = {
 		 * @return {Promise}
 		 */
 		initializeView: function () {
-			const editingData = mw.config.get( 'wgWikiLambda' ),
-				createNewPage = editingData.createNewPage,
-				runFunction = editingData.runFunction,
-				zId = editingData.zId;
+			const { createNewPage, runFunction, zId } = this.getWikilambdaConfig;
 
 			// If createNewPage is true, ignore runFunction and any specified ZID.
 			if ( createNewPage ) {
@@ -1985,7 +1981,6 @@ const zobjectStore = {
 			} );
 		}
 	}
-
 };
 
 module.exports = {

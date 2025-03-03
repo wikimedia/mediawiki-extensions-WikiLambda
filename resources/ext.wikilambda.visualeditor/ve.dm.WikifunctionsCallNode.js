@@ -29,17 +29,19 @@ ve.dm.WikifunctionsCallNode.static.name = 'WikifunctionsCall';
 
 ve.dm.WikifunctionsCallNode.static.inlineType = 'WikifunctionsCall';
 
+ve.dm.WikifunctionsCallNode.static.blockType = 'WikifunctionsCall';
+
 ve.dm.WikifunctionsCallNode.static.isContent = true;
 
 ve.dm.WikifunctionsCallNode.static.matchTagNames = null;
 
-ve.dm.WikifunctionsCallNode.static.matchRdfaTypes = [ 'mw:ParserFunction' ];
+// ve.dm.WikifunctionsCallNode.static.matchRdfaTypes = [ 'mw:ParserFunction' ];
+ve.dm.WikifunctionsCallNode.static.matchRdfaTypes = [ 'mw:Transclusion' ];
 
 ve.dm.WikifunctionsCallNode.static.enableAboutGrouping = true;
 
 // We use a matchFunction() to only match if it's our kind of function call
 // See ve.dm.ModelRegistry.prototype.matchElement() for the upstream logic.
-
 ve.dm.WikifunctionsCallNode.static.matchFunction = function ( domElement ) {
 	const mwDataJSON = domElement.getAttribute( 'data-mw' );
 	const mwData = mwDataJSON ? JSON.parse( mwDataJSON ) : {};
@@ -47,7 +49,7 @@ ve.dm.WikifunctionsCallNode.static.matchFunction = function ( domElement ) {
 	if ( !mwPart ) {
 		return false;
 	}
-	return ve.getProp( mwPart, 'template', 'target', 'pf' ) === 'function';
+	return ve.getProp( mwPart, 'template', 'target', 'function' ) === 'function';
 };
 
 /* Registration */

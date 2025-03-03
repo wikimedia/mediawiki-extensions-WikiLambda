@@ -358,7 +358,7 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-about-languages-dialog__title {
 		padding: @spacing-50 @spacing-150;
 		font-weight: @font-weight-bold;
-		color: @color-disabled;
+		color: @color-subtle;
 	}
 
 	.ext-wikilambda-app-about-languages-dialog__item {

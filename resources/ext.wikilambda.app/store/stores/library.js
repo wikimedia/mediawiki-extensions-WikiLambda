@@ -149,6 +149,7 @@ module.exports = {
 				// If key is a not found, a list index or a local key, return Z1/Object (any) type
 				return Constants.Z_OBJECT;
 			};
+
 			return findExpectedType;
 		},
 
@@ -485,6 +486,37 @@ module.exports = {
 			 */
 			const findEnum = ( zid ) => state.enums[ zid ];
 			return findEnum;
+		},
+
+		/**
+		 * FIXME Add doc and tests
+		 * TODO (T387361): return labelData object, with langCode and langDir
+		 *
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		getDescription: function ( state ) {
+			/**
+			 * @param {string} zid
+			 * @return {string}
+			 */
+			const findDescription = ( zid ) => {
+				const persistentObject = state.objects[ zid ];
+				if ( !persistentObject ) {
+					// No stored object
+					return undefined;
+				}
+				const multiStr = persistentObject[ Constants.Z_PERSISTENTOBJECT_DESCRIPTION ];
+				if ( !multiStr ) {
+					// No description
+					return undefined;
+				}
+				const description = multiStr[ Constants.Z_MULTILINGUALSTRING_VALUE ].slice( 1 );
+				return ( description.length > 0 ) ?
+					description[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ] :
+					undefined;
+			};
+			return findDescription;
 		}
 	},
 
@@ -580,7 +612,9 @@ module.exports = {
 		 * This is used in selectors such as ZObjectSelector or the
 		 * language selector of the About widget.
 		 *
-		 * @param {number} payload Object containing input(string) and type
+		 * @param {Object} payload
+		 * @param {string} payload.input
+		 * @param {string} payload.type
 		 * @return {Promise}
 		 * @property {Array<Object>} labels - The search results
 		 * @property {number|null} searchContinue - The token to continue the search or null if no more results
@@ -591,6 +625,29 @@ module.exports = {
 				clearTimeout( debounceZObjectLookup );
 				debounceZObjectLookup = setTimeout(
 					() => apiUtils.searchLabels( payload ).then( ( data ) => resolve( data ) ),
+					DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT
+				);
+			} );
+		},
+
+		/**
+		 * Performs a Lookup call to the database to retrieve all
+		 * Functions that match a given input and type.
+		 * This is used in the function selector for VisualEditor
+		 *
+		 * @param {Object} payload
+		 * @param {string} payload.search
+		 * @param {boolean} payload.renderable
+		 * @return {Promise}
+		 * @property {Array<Object>} labels - The search results
+		 * @property {number|null} searchContinue - The token to continue the search or null if no more results
+		 */
+		lookupFunctions: function ( payload ) {
+			payload.language = this.getUserLangCode;
+			return new Promise( ( resolve ) => {
+				clearTimeout( debounceZObjectLookup );
+				debounceZObjectLookup = setTimeout(
+					() => apiUtils.searchFunctions( payload ).then( ( data ) => resolve( data ) ),
 					DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT
 				);
 			} );

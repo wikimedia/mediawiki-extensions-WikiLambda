@@ -34,7 +34,7 @@ ve.ui.WikifunctionsCallContextItem.static.icon = 'function';
 
 ve.ui.WikifunctionsCallContextItem.static.label = OO.ui.deferMsg( 'wikilambda-visualeditor-wikifunctionscall-title' );
 
-ve.ui.WikifunctionsCallContextItem.static.modelClasses = [ ve.dm.MWWikifunctionsCallNode ];
+ve.ui.WikifunctionsCallContextItem.static.modelClasses = [ ve.dm.WikifunctionsCallNode ];
 
 ve.ui.WikifunctionsCallContextItem.static.embeddable = false;
 
@@ -47,8 +47,57 @@ ve.ui.WikifunctionsCallContextItem.static.suppresses = [ 'transclusion' ];
 /**
  * @inheritdoc
  */
-ve.ui.WikifunctionsCallContextItem.prototype.getDescription = function () {
-	return ve.ce.nodeFactory.getDescription( this.model );
+ve.ui.WikifunctionsCallContextItem.prototype.renderBody = function () {
+	// Add loading message
+	const $loading = $( '<div>' )
+		.text( OO.ui.deferMsg( 'wikilambda-visualeditor-wikifunctionscall-popup-loading' ) )
+		.css( { color: '#72777d' } );
+
+	this.$body.append( $loading );
+
+	// Make sure App is loaded before accessing piniaStore
+	ve.init.mw.WikifunctionsCall.vueAppLoaded.then( () => {
+		// Get the mw data object
+		const mwData = this.model.getAttribute( 'mw' );
+		const mwPart = ( mwData.parts || [] )[ 0 ];
+		const functionCall = ve.getProp( mwPart, 'template', 'target', 'wt' );
+		const functionId = functionCall.split( ':' )[ 1 ];
+
+		// If no function Id, fallback to parent renderer
+		if ( !functionId ) {
+			$loading.text( OO.ui.deferMsg( 'wikilambda-visualeditor-wikifunctionscall-popup-no-function' ) );
+			return;
+		}
+
+		// Request the function information
+		ve.init.mw.WikifunctionsCall.piniaStore
+			.fetchZids( { zids: [ functionId ] } )
+			.then( () => {
+				const functionLabelData = ve.init.mw.WikifunctionsCall.piniaStore.getLabelData( functionId );
+
+				const wikifunctionsUrl = mw.config.get( 'wgWikifunctionsBaseUrl' ) || '';
+				const userLangCode = mw.config.get( 'wgUserLanguage' );
+				const functionUri = `${ wikifunctionsUrl }/view/${ userLangCode }/${ functionId }`;
+
+				// TODO (T387361): getDescription full LabelData instead, so that we can set language information
+				const functionDescription = ve.init.mw.WikifunctionsCall.piniaStore.getDescription( functionId );
+
+				// Create a link to the Function.
+				const $link = $( '<a>' )
+					.attr( 'href', functionUri )
+					.attr( 'target', '_blank' )
+					.css( { 'font-weight': 'bold', display: 'block' } )
+					.text( functionLabelData.label );
+
+				// Create a Function description paragraph.
+				const $description = $( '<p>' )
+					.text( functionDescription )
+					.css( { 'margin-bottom': '0' } );
+
+				this.$body.empty().append( $link, $description );
+				this.context.updateDimensions();
+			} );
+	} );
 };
 
 /* Registration */

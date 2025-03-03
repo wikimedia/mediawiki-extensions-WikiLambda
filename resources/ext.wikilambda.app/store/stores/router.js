@@ -16,15 +16,37 @@ module.exports = {
 	},
 
 	getters: {
+		getWikilambdaConfig: function () {
+			return mw.config.get( 'wgWikiLambda' ) || {};
+		},
+		/**
+		 * Returns current loaded view if wikilambda Repo mode.
+		 * Else returns undefined.
+		 *
+		 * @param {Object} state
+		 * @return {string|undefined}
+		 */
 		getCurrentView: function ( state ) {
 			return state.currentView;
 		},
+		/**
+		 * Returns Uri query parameters
+		 *
+		 * @param {Object} state
+		 * @return {Object}
+		 */
 		getQueryParams: function ( state ) {
 			return state.queryParams;
 		},
+		/**
+		 * Returns view mode flag if wikilambda Repo mode.
+		 * Else returns undefined.
+		 *
+		 * @param {Object} state
+		 * @return {boolean|undefined}
+		 */
 		getViewMode: function () {
-			const editingData = mw.config.get( 'wgWikiLambda' );
-			return editingData.viewmode;
+			return this.getWikilambdaConfig.viewmode;
 		}
 	},
 

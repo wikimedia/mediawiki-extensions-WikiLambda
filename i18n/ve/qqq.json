@@ -1,10 +1,17 @@
 {
 	"@metadata": {
 		"authors": [
+			"Genoveva Galarza",
 			"James D. Forrester"
 		]
 	},
-	"wikilambda-visualeditor-wikifunctionscall-parameters": "Label in the Wikifunctions call dialog in the visual editor, showing against the inputs to the call",
-	"wikilambda-visualeditor-wikifunctionscall-target": "Label in the Wikifunctions call dialog in the visual editor, showing against the target Function of the call",
-	"wikilambda-visualeditor-wikifunctionscall-title": "Title for the Wikifunctions call dialog in the visual editor, shown as a heading label above the call content"
+	"wikilambda-visualeditor-wikifunctionscall-title": "Title for the Wikifunctions call dialog in the visual editor, shown as a heading label above the call content",
+	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Message to show as body in the Wikifunctions call popup in the visual editor, while the Function data is being fetched",
+	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Message to show as body in the Wikifunctions call popup in the visual editor, when there is no function selected",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Placeholder for the Function search field in the Wikifunctions insert dialog in the visual editor",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Title of the search results section in the Wikifunctions insert dialog in the visual editor",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Message to show when the Function search in the Wikifunctions insert dialog in the visual editor rendered no results",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Title of the suggested functions section in the Wikifunctions insert dialog in the visual editor",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Placeholder for the string input field in the Wikifunctions call input configuration dialog in the visual editor",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "Footer text below the Wikifunctions input configuration dialog, which links to the selected Function page in Wikifunctions.\n* $1 is the Function's identified, e.g. 'Z12345'"
 }
