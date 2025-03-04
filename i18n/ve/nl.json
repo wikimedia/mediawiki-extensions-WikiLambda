@@ -4,7 +4,13 @@
 			"McDutchie"
 		]
 	},
-	"wikilambda-visualeditor-wikifunctionscall-parameters": "Invoer",
-	"wikilambda-visualeditor-wikifunctionscall-target": "Functie",
-	"wikilambda-visualeditor-wikifunctionscall-title": "Wikifunctie-aanroep"
+	"wikilambda-visualeditor-wikifunctionscall-title": "Functie",
+	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Functiegegevens worden geladen…",
+	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Geen functie geselecteerd.",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Functie zoeken",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Resultaten",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Geen resultaten gevonden",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Voorgestelde functies",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Invoer-tekenreeks",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Functie]] van Wikifuncties"
 }

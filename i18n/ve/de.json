@@ -2,7 +2,13 @@
 	"@metadata": {
 		"authors": []
 	},
-	"wikilambda-visualeditor-wikifunctionscall-parameters": "Eingaben",
-	"wikilambda-visualeditor-wikifunctionscall-target": "Funktion",
-	"wikilambda-visualeditor-wikifunctionscall-title": "Wikifunctions-Aufruf"
+	"wikilambda-visualeditor-wikifunctionscall-title": "Funktion",
+	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Funktionsdaten werden geladen …",
+	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Keine Funktion ausgewählt.",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Funktion suchen",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Ergebnisse",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Keine Ergebnisse gefunden",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Vorgeschlagene Funktionen",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Eingabezeichenfolge",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Funktion]] aus Wikifunctions"
 }

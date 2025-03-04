@@ -4,5 +4,7 @@
 			"Milicevic01"
 		]
 	},
-	"wikilambda-visualeditor-wikifunctionscall-target": "Функција"
+	"wikilambda-visualeditor-wikifunctionscall-title": "Функција",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Резултати",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Нема резултата"
 }

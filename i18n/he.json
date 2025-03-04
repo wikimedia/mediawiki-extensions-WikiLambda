@@ -338,6 +338,7 @@
 	"wikilambda-missing-function-output-error-message": "סוג הפלט ריק. נא לבחור משהו.",
 	"wikilambda-mode-selector-button-label": "לשנות איזה סוג של עצם זה: התייחסות לעצם קיים, הגדרה מילולית מוטבעת או קריאה לפונקציה",
 	"wikilambda-mode-selector-types-group-label": "מפורשים ופותרים",
+	"wikilambda-mode-selector-move-group-label": "העברת פריטים למעלה או למטה ברשימה",
 	"wikilambda-mode-selector-delete-group-label": "מחיקת פריט מרשימה",
 	"wikilambda-move-after-list-item": "להעביר אחרי זה",
 	"wikilambda-move-before-list-item": "להעביר לפני זה",
