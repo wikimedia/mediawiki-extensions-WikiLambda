@@ -73,6 +73,10 @@ class ApiQueryFunctionsTest extends ApiTestCase {
 		[ 'Z10008', 'Z8', 'Z20003', 'Z1002', 'Renderable English lexeme', 1 ],
 		// Input: Z6, Z40, Z20002; Output: Z20003
 		[ 'Z10009', 'Z8', 'Z20003', 'Z1002', 'Renderable flagged English lexeme', 1 ],
+
+		// Renderable but not running
+		// Input: Z6, Output: Z6
+		[ 'Z10010', 'Z8', 'Z6', 'Z1002', 'Renderable but not runnable English function', 1 ],
 	];
 
 	/**
@@ -122,6 +126,10 @@ class ApiQueryFunctionsTest extends ApiTestCase {
 		[ 'Z10009', 'Z8', 'Z8K1', 'Z20002', 'Z4' ],
 		[ 'Z10009', 'Z8', 'Z8K2', 'Z20003', 'Z4' ],
 
+		// Z10010 input Z6; output Z6
+		[ 'Z10010', 'Z8', 'Z8K1', 'Z6', 'Z4' ],
+		[ 'Z10010', 'Z8', 'Z8K2', 'Z6', 'Z4' ],
+
 		// Types:
 		// Z40 is enum:
 		[ 'Z41', 'Z40', ZObjectStore::INSTANCEOFENUM, 'Z40', 'Z4' ],
@@ -134,6 +142,18 @@ class ApiQueryFunctionsTest extends ApiTestCase {
 		// Z20003: has renderer and parser
 		[ 'Z20003', 'Z4', 'Z4K5', 'Z10103', 'Z8' ],
 		[ 'Z20003', 'Z4', 'Z4K6', 'Z10104', 'Z8' ],
+
+		// Implementations:
+		[ 'Z10001', 'Z8', 'Z8K4', 'Z14', 'Z30001' ],
+		[ 'Z10002', 'Z8', 'Z8K4', 'Z14', 'Z30002' ],
+		[ 'Z10003', 'Z8', 'Z8K4', 'Z14', 'Z30003' ],
+		[ 'Z10004', 'Z8', 'Z8K4', 'Z14', 'Z30004' ],
+		[ 'Z10005', 'Z8', 'Z8K4', 'Z14', 'Z30005' ],
+		[ 'Z10006', 'Z8', 'Z8K4', 'Z14', 'Z30006' ],
+		[ 'Z10007', 'Z8', 'Z8K4', 'Z14', 'Z30007' ],
+		[ 'Z10008', 'Z8', 'Z8K4', 'Z14', 'Z30008' ],
+		[ 'Z10009', 'Z8', 'Z8K4', 'Z14', 'Z30009' ]
+		// Z10010 has no implementation
 	];
 
 	public function addDBDataOnce(): void {
@@ -223,7 +243,7 @@ class ApiQueryFunctionsTest extends ApiTestCase {
 		] );
 
 		$results = $response[0][ 'query' ][ 'wikilambdasearch_functions' ];
-		$this->assertCount( 3, $results );
+		$this->assertCount( 4, $results );
 	}
 
 	public function testStringMatch_userLang() {
@@ -236,7 +256,7 @@ class ApiQueryFunctionsTest extends ApiTestCase {
 
 		// Assert total result count
 		$results = $response[0][ 'query' ][ 'wikilambdasearch_functions' ];
-		$this->assertCount( 9, $results );
+		$this->assertCount( 10, $results );
 
 		// Assert selected labels are in user language
 		$this->assertEquals( 'English plural', $results[0][ 'label' ] );
@@ -259,7 +279,7 @@ class ApiQueryFunctionsTest extends ApiTestCase {
 
 		// Assert total result count
 		$results = $response[0][ 'query' ][ 'wikilambdasearch_functions' ];
-		$this->assertCount( 9, $results );
+		$this->assertCount( 10, $results );
 
 		// Assert selected labels are in user language or fallback
 		$this->assertEquals( 'Plural en inglés', $results[0][ 'label' ] );
@@ -321,7 +341,7 @@ class ApiQueryFunctionsTest extends ApiTestCase {
 			'wikilambdasearch_functions_input_types' => 'Z6',
 		] );
 
-		$expectedZids = [ 'Z10001', 'Z10002', 'Z10003', 'Z10004', 'Z10006', 'Z10009' ];
+		$expectedZids = [ 'Z10001', 'Z10002', 'Z10003', 'Z10004', 'Z10006', 'Z10009', 'Z10010' ];
 
 		// Assert total result count
 		$results = $response[0][ 'query' ][ 'wikilambdasearch_functions' ];
@@ -381,7 +401,7 @@ class ApiQueryFunctionsTest extends ApiTestCase {
 			'wikilambdasearch_functions_output_type' => 'Z6',
 		] );
 
-		$expectedZids = [ 'Z10001', 'Z10002', 'Z10003', 'Z10005' ];
+		$expectedZids = [ 'Z10001', 'Z10002', 'Z10003', 'Z10005', 'Z10010' ];
 
 		// Assert total result count
 		$results = $response[0][ 'query' ][ 'wikilambdasearch_functions' ];

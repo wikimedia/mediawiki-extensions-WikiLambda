@@ -881,6 +881,7 @@ class ZObjectStore {
 
 	/**
 	 * Search functions that match a series of conditions:
+	 * * are running functions (they must have connected implementations)
 	 * * have a label that partially matches the given searchTerm, and
 	 * * either have fully renderable inputs and outputs (to be used by WP integration)
 	 * * or have the specified input and output types
@@ -1506,6 +1507,12 @@ class ZObjectStore {
 			'ot.wlzo_key' => 'Z4K5'
 		];
 
+		// Inner Join with subquery that only includes running functions
+		$runningFunctionConditions = [
+			'f.wlzo_main_zid = imp.wlzo_main_zid',
+			'imp.wlzo_key' => 'Z8K4'
+		];
+
 		// Left Join with subquery that finds types with enums
 		$enumsQueryBuilder = $dbr->newSelectQueryBuilder()
 			->select( 'wlzo_main_type' )
@@ -1531,7 +1538,8 @@ class ZObjectStore {
 			->from( 'wikilambda_zobject_join', 'f' )
 			->leftJoin( 'wikilambda_zobject_join', 'it', $inputParserConditions )
 			->leftJoin( 'wikilambda_zobject_join', 'ot', $outputRendererConditions )
-			->leftJoin( $enumsQueryBuilder, 'ite', $inputEnumConditions );
+			->leftJoin( $enumsQueryBuilder, 'ite', $inputEnumConditions )
+			->join( 'wikilambda_zobject_join', 'imp', $runningFunctionConditions );
 
 		return $renderableIOQuery;
 	}
