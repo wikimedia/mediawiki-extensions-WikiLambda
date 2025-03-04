@@ -232,7 +232,7 @@ class ApiQueryZObjects extends WikiLambdaApiQueryGeneratorBase {
 				// with success=false and the error object as data
 				$pageResult->addValue( [ 'query', $this->getModuleName() ], $zid, [
 					'success' => false,
-					'data' => $e->getZError()
+					'data' => $e->getZError()->getErrorData()
 				] );
 			}
 		}

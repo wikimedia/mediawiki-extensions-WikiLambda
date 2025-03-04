@@ -10,7 +10,7 @@ const { createPinia, setActivePinia } = require( 'pinia' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const { tableDataToRowObjects, zobjectToRows } = require( '../../helpers/zObjectTableHelpers.js' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
-const { mockApiZids } = require( '../../fixtures/mocks.js' );
+const { mockStoredObjects } = require( '../../fixtures/mocks.js' );
 
 describe( 'factory Pinia store', () => {
 	let store;
@@ -19,7 +19,7 @@ describe( 'factory Pinia store', () => {
 		setActivePinia( createPinia() );
 		store = useMainStore();
 		store.zobject = [];
-		store.objects = mockApiZids;
+		store.objects = mockStoredObjects;
 		store.errors = {};
 	} );
 

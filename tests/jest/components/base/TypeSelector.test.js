@@ -9,7 +9,7 @@
 const { waitFor } = require( '@testing-library/vue' );
 const { shallowMount } = require( '@vue/test-utils' );
 const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../helpers/getterHelpers.js' );
-const { mockApiZids } = require( '../../fixtures/mocks.js' );
+const { mockStoredObjects } = require( '../../fixtures/mocks.js' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 const TypeSelector = require( '../../../../resources/ext.wikilambda.app/components/base/TypeSelector.vue' );
@@ -125,7 +125,7 @@ describe( 'TypeSelector', () => {
 
 	describe( 'on value change', () => {
 		it( 'sets a terminal value', async () => {
-			store.getStoredObject = createGettersWithFunctionsMock( mockApiZids.Z6 );
+			store.getStoredObject = createGettersWithFunctionsMock( mockStoredObjects.Z6.data );
 
 			const wrapper = shallowMount( TypeSelector, {
 				props: {
@@ -151,7 +151,7 @@ describe( 'TypeSelector', () => {
 		} );
 
 		it( 'sets a non-terminal value', async () => {
-			store.getStoredObject = createGettersWithFunctionsMock( mockApiZids.Z881 );
+			store.getStoredObject = createGettersWithFunctionsMock( mockStoredObjects.Z881.data );
 
 			const wrapper = shallowMount( TypeSelector, {
 				props: {

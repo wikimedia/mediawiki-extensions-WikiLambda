@@ -8,7 +8,7 @@
 <template>
 	<div class="ext-wikilambda-app-function-call-setup">
 		<wl-function-select
-			v-if="!hasSelectedFunction"
+			v-if="!hasValidFunction"
 			@select="selectFunction"
 		></wl-function-select>
 		<wl-function-input-setup
@@ -33,39 +33,43 @@ module.exports = exports = defineComponent( {
 		'wl-function-input-setup': FunctionInputSetup
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
+		'validateVEFunctionId',
 		'getVEFunctionId',
 		'getLabelData'
 	] ), {
 		/**
-		 * FIXME doc
+		 * Returns the function id as stored in wikitext,
+		 * or null if function is not yet selected.
 		 *
-		 * @return {string}
+		 * @return {string|null}
 		 */
 		functionZid: function () {
 			return this.getVEFunctionId;
 		},
 		/**
-		 * FIXME doc
-		 *
-		 * @return {LabelData}
-		 */
-		functionLabelData: function () {
-			return this.getLabelData( this.functionZid );
-		},
-		/**
-		 * FIXME doc
+		 * Returns if function in wikitext is selected and properly
+		 * configured (valid)
 		 *
 		 * @return {boolean}
 		 */
-		hasSelectedFunction: function () {
-			return !!this.functionZid;
+		hasValidFunction: function () {
+			return this.validateVEFunctionId;
+		},
+		/**
+		 * Returns the LabelData object of the selected valid Function Id,
+		 * or undefined if no valid Function is yet selected.
+		 *
+		 * @return {LabelData|undefined}
+		 */
+		functionLabelData: function () {
+			return this.hasValidFunction ? this.getLabelData( this.functionZid ) : undefined;
 		}
 	} ),
 	methods: Object.assign( {}, mapActions( useMainStore, [
 		'setVEFunctionId'
 	] ), {
 		/**
-		 * FIXME doc
+		 * Set the wikitext function value with the new selected Function ID
 		 *
 		 * @param {string} value
 		 */
@@ -73,7 +77,9 @@ module.exports = exports = defineComponent( {
 			this.setVEFunctionId( value );
 		},
 		/**
-		 * FIXME doc
+		 * When the function input values are updated,
+		 * emit a 'function-inputs-updated' event to VisualEditor
+		 * for the dialog "done" action button state to be updated.
 		 */
 		updateFunctionInputs: function () {
 			this.$emit( 'function-inputs-updated' );

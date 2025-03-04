@@ -52,19 +52,18 @@ module.exports = {
 		 * has been fetched and is stored in the state.
 		 * If not available, returns the input zid.
 		 *
-		 * @param {Object} state
 		 * @return {Function}
 		 */
-		getLanguageIsoCodeOfZLang: function ( state ) {
+		getLanguageIsoCodeOfZLang: function () {
 			/**
 			 * @param {string} zid
 			 * @return {string}
 			 */
 			const findLanguageIsoCode = ( zid ) => {
-				if ( state.objects[ zid ] ) {
-					const zobject = state.objects[ zid ][ Constants.Z_PERSISTENTOBJECT_VALUE ];
-					const ztype = zobject[ Constants.Z_OBJECT_TYPE ];
-					if ( ztype === Constants.Z_NATURAL_LANGUAGE ) {
+				const storedObject = this.getStoredObject( zid );
+				if ( storedObject ) {
+					const zobject = storedObject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
+					if ( zobject[ Constants.Z_OBJECT_TYPE ] === Constants.Z_NATURAL_LANGUAGE ) {
 						return zobject[ Constants.Z_NATURAL_LANGUAGE_ISO_CODE ];
 					}
 				}
@@ -94,10 +93,9 @@ module.exports = {
 		 * Given a global ZKey (ZnKm) it returns a string that reflects
 		 * its expected value type (if any). Else it returns Z1.
 		 *
-		 * @param {Object} state
 		 * @return {Function}
 		 */
-		getExpectedTypeOfKey: function ( state ) {
+		getExpectedTypeOfKey: function () {
 			/**
 			 * @param {string|undefined} key
 			 * @return {string}
@@ -115,9 +113,9 @@ module.exports = {
 				if ( typeUtils.isGlobalKey( key ) ) {
 					let type;
 					const zid = typeUtils.getZidOfGlobalKey( key );
-
-					if ( state.objects[ zid ] ) {
-						const zobject = state.objects[ zid ][ Constants.Z_PERSISTENTOBJECT_VALUE ];
+					const storedObject = this.getStoredObject( zid );
+					if ( storedObject ) {
+						const zobject = storedObject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
 						const ztype = zobject[ Constants.Z_OBJECT_TYPE ];
 
 						switch ( ztype ) {
@@ -157,10 +155,9 @@ module.exports = {
 		 * Given a key, returns whether it is set to be an identity key
 		 * (Z3K4 field is set to true/Z41)
 		 *
-		 * @param {Object} state
 		 * @return {Function}
 		 */
-		isIdentityKey: function ( state ) {
+		isIdentityKey: function () {
 			/**
 			 * @param {string|undefined} key
 			 * @return {boolean}
@@ -175,11 +172,12 @@ module.exports = {
 				}
 
 				const zid = typeUtils.getZidOfGlobalKey( key );
-				if ( !state.objects[ zid ] ) {
+				const storedObject = this.getStoredObject( zid );
+				if ( !storedObject ) {
 					return false;
 				}
 
-				const zobject = state.objects[ zid ][ Constants.Z_PERSISTENTOBJECT_VALUE ];
+				const zobject = storedObject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
 				if ( zobject[ Constants.Z_OBJECT_TYPE ] !== Constants.Z_TYPE ) {
 					return false;
 				}
@@ -201,24 +199,24 @@ module.exports = {
 		/**
 		 * Given a type zid, returns whether it has an identity key
 		 *
-		 * @param {Object} state
 		 * @return {Function}
 		 */
-		isEnumType: function ( state ) {
+		isEnumType: function () {
 			/**
 			 * @param {string} zid
 			 * @return {boolean}
 			 */
 			const checkEnumType = ( zid ) => {
+				const storedObject = this.getStoredObject( zid );
 				if (
 					( zid === undefined ) ||
 					( Constants.EXCLUDE_FROM_ENUMS.includes( zid ) ) ||
-					( !state.objects[ zid ] )
+					( !storedObject )
 				) {
 					return false;
 				}
 
-				const zobject = state.objects[ zid ][ Constants.Z_PERSISTENTOBJECT_VALUE ];
+				const zobject = storedObject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
 				if ( zobject[ Constants.Z_OBJECT_TYPE ] !== Constants.Z_TYPE ) {
 					return false;
 				}
@@ -254,8 +252,11 @@ module.exports = {
 			return checkCustomEnum;
 		},
 		/**
-		 * Returns the persisted object for a given ZID if that was
-		 * fetched from the DB and saved in the state. Else returns undefined
+		 * Returns the persisted object for a given ZID if that was successfully
+		 * fetched from the DB and saved in the state. Else returns undefined.
+		 *
+		 * If the function Zid returned an error (e.g. Zid not found), the
+		 * error was stored, but this getter will return undefined.
 		 *
 		 * @param {Object} state
 		 * @return {Function}
@@ -265,10 +266,35 @@ module.exports = {
 			 * @param {string} zid of the ZPersistentObject
 			 * @return {Object|undefined} persisted ZObject
 			 */
-			const findStoredObject = ( zid ) => state.objects[ zid ];
+			const findStoredObject = ( zid ) => {
+				const objectData = state.objects[ zid ];
+				return ( !objectData || !objectData.success ) ? undefined : objectData.data;
+			};
 			return findStoredObject;
 		},
-
+		/**
+		 * Returns the object for a given ZID that was fetched using fetchZids.
+		 * If the object was not fetched, returns undefined.
+		 * If the object was fetched but returned an error (e.g. Zid not found),
+		 * returns the error object.
+		 *
+		 * This getter is specially designed to be used from Visual Editor,
+		 * as we need to use the returned error data.
+		 *
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		getFetchedObject: function ( state ) {
+			/**
+			 * @param {string} zid of the ZPersistentObject
+			 * @return {Object|undefined} persisted ZObject
+			 */
+			const findFetchedObject = ( zid ) => {
+				const objectData = state.objects[ zid ];
+				return objectData || undefined;
+			};
+			return findFetchedObject;
+		},
 		/**
 		 * Returns the LabelData of the ID of a ZKey, ZPersistentObject or ZArgumentDeclaration.
 		 * The label is in the user selected language, if available, or else in the closest fallback.
@@ -309,17 +335,16 @@ module.exports = {
 		 * Function stored in the library, given the Function Zid and the key
 		 * identifying the object list (tests or implementations)
 		 *
-		 * @param {Object} state
 		 * @return {Function}
 		 */
-		getConnectedObjects: function ( state ) {
+		getConnectedObjects: function () {
 			/**
 			 * @param {string} zid
 			 * @param {string} key
 			 * @return {Array}
 			 */
 			const findConnectedObjects = ( zid, key ) => {
-				const func = state.objects[ zid ];
+				const func = this.getStoredObject( zid );
 				if ( func ) {
 					const imps = func[ Constants.Z_PERSISTENTOBJECT_VALUE ][ key ];
 					return imps ? imps.slice( 1 ) : [];
@@ -333,20 +358,18 @@ module.exports = {
 		 * Returns the function zid given an implementation zid
 		 * by returning the value in its Z14K1 field
 		 *
-		 * @param {Object} state
 		 * @return {Function}
 		 */
-		getFunctionZidOfImplementation: function ( state ) {
+		getFunctionZidOfImplementation: function () {
 			/**
 			 * @param {string} zid
 			 * @return {string|undefined}
 			 */
 			const findFunctionZid = ( zid ) => {
-				const implementation = state.objects[ zid ];
-				if ( !implementation ) {
-					return undefined;
-				}
-				return implementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_IMPLEMENTATION_FUNCTION ];
+				const implementation = this.getStoredObject( zid );
+				return implementation ?
+					implementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_IMPLEMENTATION_FUNCTION ] :
+					undefined;
 			};
 			return findFunctionZid;
 		},
@@ -357,20 +380,19 @@ module.exports = {
 		 * composition/Z14K2, built-in/Z14K4, or code/Z14K3.
 		 * If the implementation Zid is unknown returns undefined.
 		 *
-		 * @param {Object} state
 		 * @return {Function}
 		 */
-		getTypeOfImplementation: function ( state ) {
+		getTypeOfImplementation: function () {
 			/**
 			 * @param {string} zid
 			 * @return {string | undefined}
 			 */
 			const findTypeOfImplementation = ( zid ) => {
-				let implementation = state.objects[ zid ];
-				if ( !implementation ) {
+				const storedObject = this.getStoredObject( zid );
+				if ( !storedObject ) {
 					return undefined;
 				}
-				implementation = implementation[ Constants.Z_PERSISTENTOBJECT_VALUE ];
+				const implementation = storedObject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
 				if ( Constants.Z_IMPLEMENTATION_COMPOSITION in implementation ) {
 					return Constants.Z_IMPLEMENTATION_COMPOSITION;
 				}
@@ -391,20 +413,19 @@ module.exports = {
 		 * is not of type code (but composition or built-in) returns
 		 * undefined.
 		 *
-		 * @param {Object} state
 		 * @return {Function}
 		 */
-		getLanguageOfImplementation: function ( state ) {
+		getLanguageOfImplementation: function () {
 			/**
 			 * @param {string} zid
 			 * @return {string | undefined}
 			 */
 			const findLanguageOfImplementation = ( zid ) => {
-				let implementation = state.objects[ zid ];
-				if ( !implementation ) {
+				const storedObject = this.getStoredObject( zid );
+				if ( !storedObject ) {
 					return undefined;
 				}
-				implementation = implementation[ Constants.Z_PERSISTENTOBJECT_VALUE ];
+				const implementation = storedObject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
 				if ( Constants.Z_IMPLEMENTATION_CODE in implementation ) {
 					// If code is literal: return literal
 					if (
@@ -432,17 +453,16 @@ module.exports = {
 		 * It returns undefined if the function is not available or the
 		 * zid does not belong to a valid function.
 		 *
-		 * @param {Object} state
 		 * @return {Function}
 		 */
-		getInputsOfFunctionZid: function ( state ) {
+		getInputsOfFunctionZid: function () {
 			/**
 			 * @param {string} zid
 			 * @return {Array}
 			 */
 			const findInputsOfFunction = ( zid ) => {
-				const func = state.objects[ zid ];
-				if ( func === undefined ) {
+				const func = this.getStoredObject( zid );
+				if ( !func ) {
 					return [];
 				}
 				const obj = func[ Constants.Z_PERSISTENTOBJECT_VALUE ];
@@ -492,16 +512,15 @@ module.exports = {
 		 * FIXME Add doc and tests
 		 * TODO (T387361): return labelData object, with langCode and langDir
 		 *
-		 * @param {Object} state
 		 * @return {Function}
 		 */
-		getDescription: function ( state ) {
+		getDescription: function () {
 			/**
 			 * @param {string} zid
 			 * @return {string}
 			 */
 			const findDescription = ( zid ) => {
-				const persistentObject = state.objects[ zid ];
+				const persistentObject = this.getStoredObject( zid );
 				if ( !persistentObject ) {
 					// No stored object
 					return undefined;
@@ -540,10 +559,15 @@ module.exports = {
 		 * Add zid info to the state
 		 *
 		 * @param {Object} payload
+		 * @param {string} payload.zid
+		 * @param {Object} payload.data
+		 * @param {boolean|undefined} payload.success
+		 * @param {boolean|undefined} payload.forceUpdate
 		 */
 		setStoredObject: function ( payload ) {
-			if ( !( payload.zid in this.objects ) || payload.forceUpdate ) {
-				this.objects[ payload.zid ] = payload.info;
+			const { zid, data, success = true, forceUpdate = false } = payload;
+			if ( !( zid in this.objects ) || forceUpdate ) {
+				this.objects[ zid ] = { success, data };
 			}
 		},
 
@@ -601,7 +625,7 @@ module.exports = {
 			const zid = this.getCurrentZObjectId;
 			this.setStoredObject( {
 				zid,
-				info: zobject,
+				data: zobject,
 				forceUpdate: true
 			} );
 		},
@@ -715,7 +739,7 @@ module.exports = {
 			zids.forEach( ( zid ) => {
 				// Ignore if:
 				// * Zid is Z0
-				// * Zid has already been fetched
+				// * Zid has already been fetched (success or failure)
 				if (
 					zid &&
 					zid !== Constants.NEW_ZID_PLACEHOLDER &&
@@ -787,22 +811,25 @@ module.exports = {
 					const dependentZids = [];
 
 					returnedZids.forEach( ( zid ) => {
-						// If the requested zid returned error, do nothing
-						if ( !( 'success' in response[ zid ] ) ) {
+						// success is defined or not defined; we normalize to a boolean
+						const { data, success = undefined } = response[ zid ];
+						const successfulFetch = success !== undefined;
+						// 1. State mutation:
+						// Add zObject or error data to the state objects array
+						this.setStoredObject( {
+							zid,
+							data,
+							success: successfulFetch
+						} );
+
+						// If the requested zid returned error, exit
+						if ( !successfulFetch ) {
 							return;
 						}
 
-						// 1. State mutation:
-						// Add zObject to the state objects array
-						const persistentObject = response[ zid ].data;
-						this.setStoredObject( {
-							zid,
-							info: persistentObject
-						} );
-
 						// 2. State mutation:
 						// Add zObject label in user's selected language
-						const multiStr = persistentObject[
+						const multiStr = data[
 							Constants.Z_PERSISTENTOBJECT_LABEL
 						][ Constants.Z_MULTILINGUALSTRING_VALUE ].slice( 1 );
 
@@ -822,7 +849,7 @@ module.exports = {
 						// 3. State mutation:
 						// Add the key or argument labels from the selected language to the store
 						let objects;
-						const objectValue = persistentObject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
+						const objectValue = data[ Constants.Z_PERSISTENTOBJECT_VALUE ];
 						const zType = ( typeof objectValue === 'object' ) ?
 							objectValue[ Constants.Z_OBJECT_TYPE ] :
 							undefined;

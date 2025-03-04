@@ -7,7 +7,7 @@
 'use strict';
 
 const { setActivePinia, createPinia } = require( 'pinia' );
-const mockApiZids = require( '../../fixtures/mocks.js' ).mockApiZids;
+const { mockStoredObjects } = require( '../../fixtures/mocks.js' );
 const { tableDataToRowObjects, zobjectToRows } = require( '../../helpers/zObjectTableHelpers.js' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
@@ -38,7 +38,7 @@ describe( 'zobject Pinia store', () => {
 		setActivePinia( createPinia() );
 		store = useMainStore();
 		store.zobject = [];
-		store.objects = mockApiZids;
+		store.objects = mockStoredObjects;
 		store.errors = {};
 
 		// Mock mw.config.get
@@ -2309,7 +2309,7 @@ describe( 'zobject Pinia store', () => {
 					}
 				} ) );
 				Object.defineProperty( store, 'getStoredObject', {
-					value: () => ( { Z2K2: { Z1K1: 'Z4' } } )
+					value: () => ( { Z2K2: { Z1K1: 'Z4', Z4K2: [ 'Z3' ] } } )
 				} );
 
 				const expectedChangeTypePayload = { id: 0, type: Constants.Z_PERSISTENTOBJECT };
@@ -2342,7 +2342,7 @@ describe( 'zobject Pinia store', () => {
 				} ) );
 				store.zobject = zobjectToRows( blankPersistentObject );
 				Object.defineProperty( store, 'getStoredObject', {
-					value: () => ( { Z2K2: { Z1K1: 'Z4' } } )
+					value: () => ( { Z2K2: { Z1K1: 'Z4', Z4K2: [ 'Z3' ] } } )
 				} );
 
 				const expectedChangeTypePayload = { id: 0, type: Constants.Z_PERSISTENTOBJECT };
@@ -3541,7 +3541,7 @@ describe( 'zobject Pinia store', () => {
 
 		describe( 'setZFunctionCallArguments', () => {
 			beforeEach( () => {
-				store.objects = mockApiZids;
+				store.objects = mockStoredObjects;
 				store.zobject = zobjectToRows( {
 					Z1K1: 'Z7',
 					Z7K1: 'Z882',

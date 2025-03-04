@@ -69,7 +69,7 @@ const mockFunction = {
  * Returns builtin objects Z1, Z3, Z6, Z8, Z31, Z32, Z40, Z802, Z881, Z882, Z1003
  * And custom objects Z10001, Z10528, Z20001, Z20002, Z20003
  */
-const mockApiZids = {
+const mockZids = {
 	Z1: {
 		Z1K1: 'Z2',
 		Z2K1: {
@@ -1164,14 +1164,14 @@ const mockApiZids = {
 
 /**
  * Returns the API response object for the given zids
- * The zids must be declared in mockApiZids
+ * The zids must be declared in mockZids
  */
 const mockApiResponseFor = function ( zids ) {
 	const objects = {};
 	for( const zid of zids ) {
 		objects[ zid ] = {
-			success: '',
-			data: mockApiZids[ zid ]
+			success: true,
+			data: mockZids[ zid ]
 		};
 	}
 	return {
@@ -1181,6 +1181,47 @@ const mockApiResponseFor = function ( zids ) {
 		}
 	};
 };
+
+const mock504Error = ( zid ) => ( {
+	title: "ZID not found",
+	message: "ZID not found",
+	zerror: {
+		Z1K1: "Z5",
+		Z5K1: "Z504",
+		Z5K2: {
+			Z1K1: {
+				Z1K1: "Z7",
+				Z7K1: "Z885",
+				Z885K1: "Z504"
+			},
+			K1: {
+				Z1K1: "Z6",
+				Z6K1: zid
+			}
+		}
+	},
+	labelled: { /* not used */ }
+} );
+
+/**
+ * Returns the mocked content of the stored objects
+ * in the library store module.
+ * The zids must be declared in mockZids, if they
+ * are not, mocks a fetch that returned a Z504 error
+ */
+const mockStoredObjectsFor = function ( zids ) {
+	const objects = {};
+	for ( const zid of zids ) {
+		const mockData = mockZids[ zid ] || mock504Error( zid );
+		objects[ zid ] = {
+			success: !!mockZids[ zid ],
+			data: mockData
+		};
+	}
+	return objects;
+};
+
+const mockStoredObjects = mockStoredObjectsFor( Object.keys( mockZids ) );
 
 const mockLanguages = {
 	batchcomplete: true,
@@ -1423,7 +1464,7 @@ const mockLookupLexemes = {
 module.exports = {
 	mockFunction,
 	mockApiResponseFor,
-	mockApiZids,
+	mockStoredObjects,
 	mockLanguages,
 	mockEnumValues,
 	mockLookupValues,

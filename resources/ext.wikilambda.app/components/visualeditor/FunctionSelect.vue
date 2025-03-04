@@ -75,6 +75,7 @@ const { CdxSearchInput } = require( '../../../codex.js' );
 const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
 
+const typeUtils = require( '../../mixins/typeUtils.js' );
 const useMainStore = require( '../../store/index.js' );
 
 module.exports = exports = defineComponent( {
@@ -82,6 +83,7 @@ module.exports = exports = defineComponent( {
 	components: {
 		'cdx-search-input': CdxSearchInput
 	},
+	mixins: [ typeUtils ],
 	data: function () {
 		return {
 			searchTerm: '',
@@ -94,7 +96,7 @@ module.exports = exports = defineComponent( {
 		'getSuggestedFunctions'
 	] ), {
 		/**
-		 * FIXME doc
+		 * Returns the information of the suggested function Zids
 		 *
 		 * @return {Array}
 		 */
@@ -106,15 +108,15 @@ module.exports = exports = defineComponent( {
 			} ) );
 		},
 		/**
-		 * FIXME doc
+		 * Returns true when search term is empty and there are suggestions to show
 		 *
 		 * @return {boolean}
 		 */
 		showSuggested: function () {
-			return ( this.suggested.length > 0 ) && ( this.lookupResults.length === 0 );
+			return ( this.suggested.length > 0 ) && ( this.searchTerm.length === 0 );
 		},
 		/**
-		 * FIXME doc
+		 * Returns the array of the description objects from the lookup results
 		 *
 		 * @return {Array}
 		 */
@@ -172,12 +174,12 @@ module.exports = exports = defineComponent( {
 			} );
 		},
 		/**
-		 * FIXME doc
+		 * If the selected value is a valid Zid, emit select event
 		 *
 		 * @param {string} value
 		 */
 		selectFunction: function ( value ) {
-			if ( value ) {
+			if ( value && this.isValidZidFormat( value ) ) {
 				this.$emit( 'select', value );
 			}
 		}

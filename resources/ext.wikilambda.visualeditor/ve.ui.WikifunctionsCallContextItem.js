@@ -63,9 +63,18 @@ ve.ui.WikifunctionsCallContextItem.prototype.renderBody = function () {
 		const functionCall = ve.getProp( mwPart, 'template', 'target', 'wt' );
 		const functionId = functionCall.split( ':' )[ 1 ];
 
-		// If no function Id, fallback to parent renderer
+		// If no function Id, show "no function" error message
 		if ( !functionId ) {
-			$loading.text( OO.ui.deferMsg( 'wikilambda-visualeditor-wikifunctionscall-popup-no-function' ) );
+			$loading.text( OO.ui.deferMsg( 'wikilambda-visualeditor-wikifunctionscall-error-bad-function' ) );
+			this.context.updateDimensions();
+			return;
+		}
+
+		// If function Is is not valid, show "no valid function" error message
+		const isValidZid = ( id ) => ( /^Z\d+$/.test( id ) );
+		if ( !isValidZid( functionId ) ) {
+			$loading.text( OO.ui.deferMsg( 'wikilambda-visualeditor-wikifunctionscall-error-bad-function' ) );
+			this.context.updateDimensions();
 			return;
 		}
 
@@ -73,8 +82,24 @@ ve.ui.WikifunctionsCallContextItem.prototype.renderBody = function () {
 		ve.init.mw.WikifunctionsCall.piniaStore
 			.fetchZids( { zids: [ functionId ] } )
 			.then( () => {
-				const functionLabelData = ve.init.mw.WikifunctionsCall.piniaStore.getLabelData( functionId );
+				const fetched = ve.init.mw.WikifunctionsCall.piniaStore.getFetchedObject( functionId );
 
+				// Fetch didn't succeed
+				if ( !fetched.success ) {
+					$loading.text( OO.ui.deferMsg( 'wikilambda-visualeditor-wikifunctionscall-error-bad-function' ) );
+					this.context.updateDimensions();
+					return;
+				}
+
+				// Fetched object is not a function
+				const type = fetched.data.Z2K2.Z1K1;
+				if ( type !== 'Z8' ) {
+					$loading.text( OO.ui.deferMsg( 'wikilambda-visualeditor-wikifunctionscall-error-bad-function' ) );
+					this.context.updateDimensions();
+					return;
+				}
+
+				const functionLabelData = ve.init.mw.WikifunctionsCall.piniaStore.getLabelData( functionId );
 				const wikifunctionsUrl = mw.config.get( 'wgWikifunctionsBaseUrl' ) || '';
 				const userLangCode = mw.config.get( 'wgUserLanguage' );
 				const functionUri = `${ wikifunctionsUrl }/view/${ userLangCode }/${ functionId }`;
@@ -97,6 +122,7 @@ ve.ui.WikifunctionsCallContextItem.prototype.renderBody = function () {
 				this.$body.empty().append( $link, $description );
 				this.context.updateDimensions();
 			} );
+
 	} );
 };
 

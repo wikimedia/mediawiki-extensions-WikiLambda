@@ -10,7 +10,7 @@ const { createPinia, setActivePinia } = require( 'pinia' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const LabelData = require( '../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
-const { mockApiResponseFor, mockApiZids, mockEnumValues } = require( '../../fixtures/mocks.js' );
+const { mockApiResponseFor, mockStoredObjects, mockEnumValues } = require( '../../fixtures/mocks.js' );
 
 const mockLabels = {
 	Z1: new LabelData( 'Z1', 'Object', 'Z1002' ),
@@ -76,14 +76,14 @@ describe( 'library Pinia store', () => {
 			} );
 
 			it( 'Returns the whole object if available in the state', () => {
-				store.objects = mockApiZids;
-				expect( store.getStoredObject( 'Z6' ) ).toEqual( mockApiZids.Z6 );
+				store.objects = mockStoredObjects;
+				expect( store.getStoredObject( 'Z6' ) ).toEqual( mockStoredObjects.Z6.data );
 			} );
 		} );
 
 		describe( 'getExpectedTypeOfKey', () => {
 			beforeEach( () => {
-				store.objects = mockApiZids;
+				store.objects = mockStoredObjects;
 			} );
 
 			it( 'Returns Z_PERSISTENTOBJECT if the key is undefined', () => {
@@ -122,7 +122,7 @@ describe( 'library Pinia store', () => {
 
 		describe( 'isIdentityKey', () => {
 			beforeEach( () => {
-				store.objects = mockApiZids;
+				store.objects = mockStoredObjects;
 			} );
 
 			it( 'returns false if the key is undefined', () => {
@@ -164,7 +164,7 @@ describe( 'library Pinia store', () => {
 
 		describe( 'getLanguageIsoCodeOfZLang', () => {
 			beforeEach( () => {
-				store.objects = mockApiZids;
+				store.objects = mockStoredObjects;
 			} );
 
 			it( 'Returns the language zid if the object has not been fetched', () => {
@@ -186,29 +186,29 @@ describe( 'library Pinia store', () => {
 			} );
 
 			it( 'Returns empty array if the zid is not of a function', () => {
-				store.objects = mockApiZids;
+				store.objects = mockStoredObjects;
 				expect( store.getConnectedObjects( 'Z6', Constants.Z_FUNCTION_IMPLEMENTATIONS ) ).toEqual( [] );
 			} );
 
 			it( 'Returns array with the implementations of a given function', () => {
-				store.objects = mockApiZids;
+				store.objects = mockStoredObjects;
 				expect( store.getConnectedObjects( 'Z802', Constants.Z_FUNCTION_IMPLEMENTATIONS ) ).toEqual( [ 'Z902' ] );
 			} );
 
 			it( 'Returns array with the tests of a given function', () => {
-				store.objects = mockApiZids;
+				store.objects = mockStoredObjects;
 				expect( store.getConnectedObjects( 'Z802', Constants.Z_FUNCTION_TESTERS ) ).toEqual( [ 'Z8020', 'Z8021' ] );
 			} );
 
 			it( 'Returns empty array if key not valid', () => {
-				store.objects = mockApiZids;
+				store.objects = mockStoredObjects;
 				expect( store.getConnectedObjects( 'Z802' ) ).toEqual( [] );
 			} );
 		} );
 
 		describe( 'getInputsOfFunctionZid', () => {
 			beforeEach( () => {
-				store.objects = mockApiZids;
+				store.objects = mockStoredObjects;
 			} );
 
 			it( 'Returns empty array when the zid has not been fetched', () => {
@@ -236,7 +236,7 @@ describe( 'library Pinia store', () => {
 
 		describe( 'getFunctionZidOfImplementation', () => {
 			beforeEach( () => {
-				store.objects = mockApiZids;
+				store.objects = mockStoredObjects;
 			} );
 
 			it( 'returns undefined if the implementation is not found', () => {
@@ -263,7 +263,7 @@ describe( 'library Pinia store', () => {
 
 		describe( 'getTypeOfImplementation', () => {
 			beforeEach( () => {
-				store.objects = mockApiZids;
+				store.objects = mockStoredObjects;
 			} );
 
 			it( 'returns undefined if the implementation is not found', () => {
@@ -290,7 +290,7 @@ describe( 'library Pinia store', () => {
 
 		describe( 'getLanguageOfImplementation', () => {
 			beforeEach( () => {
-				store.objects = mockApiZids;
+				store.objects = mockStoredObjects;
 			} );
 
 			it( 'gets language of a code implementation', () => {
@@ -303,7 +303,7 @@ describe( 'library Pinia store', () => {
 
 		describe( 'isEnumType', () => {
 			beforeEach( () => {
-				store.objects = mockApiZids;
+				store.objects = mockStoredObjects;
 			} );
 
 			it( 'returns false when zid is undefined', () => {
@@ -357,7 +357,7 @@ describe( 'library Pinia store', () => {
 
 			describe( 'isCustomEnum', () => {
 				beforeEach( () => {
-					store.objects = mockApiZids;
+					store.objects = mockStoredObjects;
 					Object.defineProperty( store, 'isEnumType', {
 						value: jest.fn().mockReturnValue( true )
 					} );
@@ -606,7 +606,7 @@ describe( 'library Pinia store', () => {
 
 			it( 'Will NOT call the APi if the Zids are already fetched', () => {
 				const zids = [ 'Z1', 'Z6' ];
-				store.objects = mockApiZids;
+				store.objects = mockStoredObjects;
 
 				return store.fetchZids( { zids } ).then( () => {
 					expect( mw.Api ).toHaveBeenCalledTimes( 0 );
@@ -618,7 +618,7 @@ describe( 'library Pinia store', () => {
 				const zids = [ 'Z1', 'Z2', 'Z6' ];
 				const expectedWikiLambdaloadZids = 'Z2|Z6';
 				store.objects = {
-					Z1: mockApiZids.Z1
+					Z1: mockStoredObjects.Z1
 				};
 
 				return store.fetchZids( { zids } ).then( () => {
@@ -648,15 +648,15 @@ describe( 'library Pinia store', () => {
 				const zids = [ 'Z1', 'Z2', 'Z6' ];
 				const expectedAddZ1 = expect.objectContaining( {
 					zid: 'Z1',
-					info: expect.any( Object )
+					data: expect.any( Object )
 				} );
 				const expectedAddZ2 = expect.objectContaining( {
 					zid: 'Z2',
-					info: expect.any( Object )
+					data: expect.any( Object )
 				} );
 				const expectedAddZ6 = expect.objectContaining( {
 					zid: 'Z6',
-					info: expect.any( Object )
+					data: expect.any( Object )
 				} );
 
 				return store.fetchZids( { zids } ).then( () => {

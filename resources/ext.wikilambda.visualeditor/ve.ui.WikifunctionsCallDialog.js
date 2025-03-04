@@ -167,9 +167,17 @@ ve.ui.WikifunctionsCallDialog.prototype.getSetupProcess = function ( data ) {
  */
 ve.ui.WikifunctionsCallDialog.prototype.updateActions = function () {
 	ve.init.mw.WikifunctionsCall.vueAppLoaded.then( () => {
-		// TODO (T373118): Activate button if there's no error in the function setup dialog
-		const functionId = ve.init.mw.WikifunctionsCall.piniaStore.getVEFunctionId;
-		this.actions.setAbilities( { done: !!functionId } );
+		// Set 'done' action button status.
+		// * If editing existing function call:
+		//   * Function must be set
+		// * If inserting new function call:
+		//   * Function must be set
+		//   * Function params must be set and valid
+		const functionValid = ve.init.mw.WikifunctionsCall.piniaStore.validateVEFunctionId;
+		const functionParamsValid = this.isEditing() ? true :
+			ve.init.mw.WikifunctionsCall.piniaStore.validateVEFunctionParams;
+
+		this.actions.setAbilities( { done: functionValid && functionParamsValid } );
 	} );
 };
 
@@ -226,7 +234,8 @@ ve.ui.WikifunctionsCallDialog.prototype.getActionProcess = function ( action ) {
 				} ] );
 			}
 
-			// and close
+			// Set store VE configuration to empty values and close dialog
+			ve.init.mw.WikifunctionsCall.piniaStore.initializeVEFunctionCallEditor();
 			this.close( { action: 'done' } );
 		} );
 	}
