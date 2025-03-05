@@ -67,11 +67,18 @@ class FunctionCallHandler extends SimpleHandler {
 		$this->zObjectStore = WikiLambdaServices::getZObjectStore();
 		$this->langRegistry = ZLangRegistry::singleton();
 
-		wfDebugLog( 'wikilambda', 'Triggered REST API to evaluate a call to "' . $target . '".' );
+		$this->logger->debug(
+			__METHOD__ . ' triggered to evaluate a call to {target}',
+			[
+				'target' => $target
+			]
+		);
 
 		// 0. Check if we are disabled.
 		$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'WikiLambda' );
 		if ( !$config->get( 'WikiLambdaEnableRepoMode' ) || !$config->get( 'WikiLambdaEnableClientMode' ) ) {
+			$this->logger->info( __METHOD__ . ' called but neither repo nor client mode are enabled' );
+
 			// Note: We check for both modes here, as a very quick way to emergency-disable this everywhere.
 			// Client-side code is also going to check whether it's disabled before it's installed.
 			$this->dieRESTfullyWithZError(
@@ -84,7 +91,12 @@ class FunctionCallHandler extends SimpleHandler {
 
 		// 1. Check if we can call this requested Function at all
 		if ( !ZObjectUtils::isValidOrNullZObjectReference( $target ) ) {
-			// User is trying to use a non-ZID function, e.g. an inline one
+			$this->logger->debug(
+				__METHOD__ . ' called on {target} which is a non-ZID, e.g. an inline function',
+				[
+					'target' => $target
+				]
+			);
 			$this->dieRESTfullyWithZError(
 				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ "data" => $target ] ),
 				400,
@@ -94,7 +106,12 @@ class FunctionCallHandler extends SimpleHandler {
 
 		$targetTitle = Title::newFromText( $target, NS_MAIN );
 		if ( !( $targetTitle->exists() ) ) {
-			// User is trying to use a function that doesn't exist
+			$this->logger->debug(
+				__METHOD__ . ' called on {target} which does not exist on-wiki',
+				[
+					'target' => $target
+				]
+			);
 			$this->dieRESTfullyWithZError(
 				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ "data" => $target ] ),
 				400,
@@ -105,7 +122,13 @@ class FunctionCallHandler extends SimpleHandler {
 		$targetObject = $this->zObjectStore->fetchZObjectByTitle( $targetTitle );
 		// ZObjectStore's fetchZObjectByTitle() will return a ZObjectContent, so just check it's a valid ZObject
 		if ( !$targetObject->isValid() ) {
-			// User is trying to use an invalid ZObject or somehow non-ZObject in our namespace
+			$this->logger->warning(
+				__METHOD__ . ' called on {target} which is an invalid ZObject or somehow non-ZObject in our namespace',
+				[
+					'target' => $target,
+					'childError' => $targetObject->getErrors()->getMessage(),
+				]
+			);
 			$this->dieRESTfullyWithZError(
 				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED,
@@ -120,7 +143,13 @@ class FunctionCallHandler extends SimpleHandler {
 		}
 
 		if ( $targetObject->getZType() !== ZTypeRegistry::Z_FUNCTION ) {
-			// User is trying to use a ZObject that's not a ZFunction
+			$this->logger->debug(
+				__METHOD__ . ' called on {target} which is not a Function but a {type}',
+				[
+					'target' => $target,
+					'type' => $targetObject->getZType()
+				]
+			);
 			$this->dieRESTfullyWithZError(
 				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_UNKNOWN, [ "data" => $target ]
@@ -139,6 +168,13 @@ class FunctionCallHandler extends SimpleHandler {
 		try {
 			$parseLanguageZid = $this->langRegistry->getLanguageZidFromCode( $parseLang );
 		} catch ( ZErrorException $error ) {
+			$this->logger->debug(
+				__METHOD__ . ' called with parse language {parseLang} which is not found / errored: {error}',
+				[
+					'parseLang' => $parseLang,
+					'error' => $error->getMessage()
+				]
+			);
 			$this->dieRESTfullyWithZError(
 				$error->getZError(),
 				400,
@@ -160,6 +196,14 @@ class FunctionCallHandler extends SimpleHandler {
 		$expectedArguments = $targetFunctionArguments->getAsArray();
 
 		if ( count( $arguments ) !== count( $expectedArguments ) ) {
+			$this->logger->debug(
+				__METHOD__ . ' called on {target} with the wrong number of arguments, {givenCount} not {expectedCount}',
+				[
+					'target' => $target,
+					'givenCount' => count( $arguments ),
+					'expectedCount' => count( $expectedArguments )
+				]
+			);
 			$this->dieRESTfullyWithZError(
 				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_ARGUMENT_COUNT_MISMATCH,
@@ -203,6 +247,14 @@ class FunctionCallHandler extends SimpleHandler {
 			if ( !( $targetTypeObject instanceof ZType ) ) {
 				// It's somehow not to a Type. This is an error in the content.
 				// Mostly this is here to make phan happy.
+				$this->logger->error(
+					__METHOD__ . ' called on {target} which has a non-Type argument, {targetTypeZid} in position {pos}',
+					[
+						'target' => $target,
+						'targetTypeZid' => $targetTypeZid,
+						'pos' => $inputArgumentKey
+					]
+				);
 				$this->dieRESTfullyWithZError(
 					ZErrorFactory::createZErrorInstance(
 						ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ "data" => $targetTypeZid ]
@@ -227,6 +279,14 @@ class FunctionCallHandler extends SimpleHandler {
 				// fatalling on the first (and thus making the user fix one just to be told about the next).
 
 				// User is trying to use a parameter that can't be parsed from text
+				$this->logger->info(
+					__METHOD__ . ' called on {target} with an unparseable input, {targetTypeZid} in position {pos}',
+					[
+						'target' => $target,
+						'targetTypeZid' => $targetTypeZid,
+						'pos' => $inputArgumentKey
+					]
+				);
 				$this->dieRESTfullyWithZError(
 					ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [
 						"data" => [
@@ -256,6 +316,13 @@ class FunctionCallHandler extends SimpleHandler {
 		try {
 			$renderLanguageZid = $this->langRegistry->getLanguageZidFromCode( $renderLang );
 		} catch ( ZErrorException $error ) {
+			$this->logger->debug(
+				__METHOD__ . ' called with render language {renderLang} which is not found / errored: {error}',
+				[
+					'renderLang' => $renderLang,
+					'error' => $error->getMessage()
+				]
+			);
 			$this->dieRESTfullyWithZError(
 				$error->getZError(),
 				400,
@@ -276,8 +343,14 @@ class FunctionCallHandler extends SimpleHandler {
 
 			$rendererFunction = $targetReturnTypeObjectArray[ZTypeRegistry::Z_TYPE_RENDERER];
 			if ( $rendererFunction === false ) {
-
 				// User is trying to use a ZFunction that returns something which doesn't have a renderer
+				$this->logger->info(
+					__METHOD__ . ' called on {target} with an unrenderable output, {targetReturnType}',
+					[
+						'target' => $target,
+						'targetReturnType' => $targetReturnType
+					]
+				);
 				$this->dieRESTfullyWithZError(
 					ZErrorFactory::createZErrorInstance(
 						ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [ "data" => $target ]
@@ -301,6 +374,13 @@ class FunctionCallHandler extends SimpleHandler {
 		try {
 			$response = $this->makeRequest( json_encode( $call ), $renderLang );
 		} catch ( WikifunctionCallException $error ) {
+			$this->logger->error(
+				__METHOD__ . ' called on {target} but got a WikifunctionCallException, {error}',
+				[
+					'target' => $target,
+					'error' => $error->getMessage()
+				]
+			);
 			$this->dieRESTfullyWithZError(
 				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_EVALUATION, [ "data" => $error ] ),
 				// This is an HTTP 500 because it's an error when calling our "local" API, which is probably our fault
@@ -360,6 +440,14 @@ class FunctionCallHandler extends SimpleHandler {
 	private function dieRESTfullyWithZError( ZError $zerror, int $code = 500, array $errorData = [] ) {
 		try {
 			$errorData['errorData'] = $zerror->getErrorData();
+
+			$this->logger->debug(
+				__METHOD__ . ' called because an error happened',
+				[
+					'zerror' => $zerror->getSerialized(),
+					'error' => json_encode( $zerror->getErrorData() ),
+				]
+			);
 		} catch ( ZErrorException $e ) {
 			// Generating the human-readable error data itself threw. Oh dear.
 
@@ -408,6 +496,12 @@ class FunctionCallHandler extends SimpleHandler {
 
 			if ( $referencedArgument === false ) {
 				// Fatal — it's a ZID but not to an extant Object.
+				$this->logger->debug(
+					__METHOD__ . ' called on {providedArgument} but it doesn\'t exist',
+					[
+						'providedArgument' => $providedArgument
+					]
+				);
 				$this->dieRESTfullyWithZError(
 					ZErrorFactory::createZErrorInstance(
 						ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
@@ -430,10 +524,24 @@ class FunctionCallHandler extends SimpleHandler {
 			// Check if the argument is an enum: it has no parser, but it's still valid input
 			if ( $targetTypeObject->isEnumType() ) {
 				// TODO (T385617): Check that the given input is valid for this Type, somehow.
+				$this->logger->debug(
+					__METHOD__ . ' called on {providedArg} for an enum, {expectedArgType}; assuming correct',
+					[
+						'providedArg' => $providedArgument,
+						'expectedArgType' => $expectedArgumentType
+					]
+				);
 				return true;
 			}
 
-			// Fatal — it's a ZID but not to an instance of the right Type.
+			// Failure — it's a ZID but not to an instance of the right Type.
+			$this->logger->debug(
+				__METHOD__ . ' called on {providedArgument} but it\'s not a {expectedArgType}',
+				[
+					'providedArgument' => $providedArgument,
+					'expectedArgType' => $expectedArgumentType
+				]
+			);
 			$this->dieRESTfullyWithZError(
 				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_ARGUMENT_TYPE_MISMATCH,
@@ -525,6 +633,12 @@ class FunctionCallHandler extends SimpleHandler {
 			if ( !( $zerror instanceof ZError ) ) {
 				$zerror = ZErrorFactory::wrapMessageInZError( new ZQuote( $zerror ), $call );
 			}
+			$this->logger->debug(
+				__METHOD__ . ' got an error-ful Z22 back from the server: {error}',
+				[
+					'error' => $zerror->getSerialized()
+				]
+			);
 			$this->dieRESTfullyWithZError(
 				$zerror,
 				400,

@@ -62,7 +62,7 @@ class ApiZObjectFetcher extends WikiLambdaApiBase {
 			} else {
 				$title = Title::newFromText( $ZID, NS_MAIN );
 
-				if ( !$title || !is_a( $title, "Title" ) || !$title->exists() ) {
+				if ( !$title || !$title->exists() ) {
 					$zErrorObject = ZErrorFactory::createZErrorInstance(
 						ZErrorTypeRegistry::Z_ERROR_UNKNOWN_REFERENCE,
 						[ 'data' => $ZID ]
