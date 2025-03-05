@@ -95,8 +95,8 @@ class AboutBlock {
 	 */
 	async getAboutBlockDescription() {
 		const selector = this.aboutBlock.$( '[data-testid="about-description"]' );
-		const text = ElementActions.getText( selector );
-		return text;
+		await selector.waitForDisplayed();
+		return await ElementActions.getText( selector );
 	}
 
 	/**
