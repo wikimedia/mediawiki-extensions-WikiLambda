@@ -1,0 +1,15 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ykhwong"
+		]
+	},
+	"wikilambda-visualeditor-wikifunctionscall-title": "함수",
+	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "함수 데이터를 불러오고 있습니다...",
+	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "선택된 함수가 없습니다.",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "함수 검색",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "결과",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "결과가 없습니다",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "함수 제안",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "위키함수의 [[f:$1|함수]]"
+}

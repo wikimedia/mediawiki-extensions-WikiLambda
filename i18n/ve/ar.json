@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"Meno25"
+		]
+	},
+	"wikilambda-visualeditor-wikifunctionscall-title": "وظيفة",
+	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "جاري تحميل بيانات الوظيفة...",
+	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "لم يتم تحديد أي وظيفة.",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "وظيفة البحث",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "نتائج",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "لم يتم العثور على نتائج",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "الوظائف المقترحة",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "سلسلة الإدخال",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|دالة]] من ويكي الوظائف"
+}

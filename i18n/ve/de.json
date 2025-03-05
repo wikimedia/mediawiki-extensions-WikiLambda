@@ -10,5 +10,6 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Keine Ergebnisse gefunden",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Vorgeschlagene Funktionen",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Eingabezeichenfolge",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Funktion]] aus Wikifunctions"
+	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Funktion]] aus Wikifunctions",
+	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Funktion fehlt oder ist ungültig."
 }

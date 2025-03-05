@@ -1,0 +1,17 @@
+{
+	"@metadata": {
+		"authors": [
+			"Toliño"
+		]
+	},
+	"wikilambda-visualeditor-wikifunctionscall-title": "Función",
+	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Cargando os datos da función...",
+	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Non se seleccionou ningunha función.",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Procurar unha función",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Resultados",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Non se atopou ningún resultado",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Funcións suxeridas",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Cadea de texto de entrada",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Función]] de Wikifuncións",
+	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Falta a función ou non é válida."
+}

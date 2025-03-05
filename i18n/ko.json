@@ -116,6 +116,7 @@
 	"wikilambda-invalidzobjecttitle": "지정된 '$1' 제목은 객체에 유효하지 않습니다.",
 	"wikilambda-loading": "데이터 로드 중",
 	"wikilambda-metadata-add-alias": "다른 이름 추가",
+	"wikilambda-mode-selector-delete-group-label": "목록에서 항목 삭제",
 	"wikilambda-object-selector-suggested-languages": "제안 언어",
 	"wikilambda-object-selector-suggested-types": "제안 유형",
 	"wikilambda-optional": "선택 사항",

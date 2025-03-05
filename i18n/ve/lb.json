@@ -1,0 +1,15 @@
+{
+	"@metadata": {
+		"authors": [
+			"Volvox"
+		]
+	},
+	"wikilambda-visualeditor-wikifunctionscall-title": "Funktioun",
+	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Funktiounsdonnéeë lueden…",
+	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Keng Funktioun ausgewielt.",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Funktioun sichen",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Resultater",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Keng Resultater fonnt",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Virgeschloe Funktiounen",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Funktioun]] vu Wikifunctions"
+}
