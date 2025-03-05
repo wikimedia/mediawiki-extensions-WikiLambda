@@ -120,10 +120,37 @@ class FunctionCallHandler extends SimpleHandler {
 		}
 
 		$targetObject = $this->zObjectStore->fetchZObjectByTitle( $targetTitle );
-		// ZObjectStore's fetchZObjectByTitle() will return a ZObjectContent, so just check it's a valid ZObject
+		// ZObjectStore's fetchZObjectByTitle() returns ZObjectContent or false, so first sense-check it
+		if ( !$targetObject ) {
+			$fallbackErrorMessage = 'No ZObject returned';
+			$this->logger->warning(
+				__METHOD__ . ' called on {target} which is somehow non-ZObject in our namespace',
+				[
+					'target' => $target,
+					'childError' => $fallbackErrorMessage,
+				]
+			);
+			$this->dieRESTfullyWithZError(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED,
+					[
+						'subtype' => ZErrorTypeRegistry::Z_ERROR_KEY_VALUE_NOT_WELLFORMED,
+						// Can't use an actual child error as it's missing
+						'childError' => ZErrorFactory::createZErrorInstance(
+							ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
+							[ 'data' => $fallbackErrorMessage ]
+						)
+					]
+				),
+				400,
+				[ "target" => $target ]
+			);
+		}
+
+		// … then check it's valid
 		if ( !$targetObject->isValid() ) {
 			$this->logger->warning(
-				__METHOD__ . ' called on {target} which is an invalid ZObject or somehow non-ZObject in our namespace',
+				__METHOD__ . ' called on {target} which is an invalid ZObject',
 				[
 					'target' => $target,
 					'childError' => $targetObject->getErrors()->getMessage(),

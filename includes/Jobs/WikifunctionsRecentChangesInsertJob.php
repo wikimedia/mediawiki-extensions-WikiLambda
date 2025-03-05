@@ -1,7 +1,6 @@
 <?php
+
 /**
- * WikiLambda ZLangRegistry
- *
  * @file
  * @ingroup Extensions
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
@@ -12,6 +11,7 @@ namespace MediaWiki\Extension\WikiLambda\Jobs;
 
 use GenericParameterJob;
 use Job;
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -97,24 +97,162 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 			// Update-specific stuff
 			'rc_bot' => $this->params['bot'],
 			'rc_timestamp' => wfTimestamp( TS_MW, $this->params['timestamp'] ),
+
+			// Tag this as 'our' edit, so that our custom formatter picks it up
+			'wikifunctions-edit' => true,
 		];
 
 		// Build the comment related to the change
-		// TODO (T383156): This should be a paramterised message with information about the change
 		$commentData = [];
-		$commentId = $commentStore->createComment( $dbw, $this->params['summary'], $commentData );
+
+		$changeData = $this->params['data'];
+		$changeAction = $changeData['action'];
+
+		if ( !$changeAction || !in_array( $changeAction, [ 'delete', 'restore', 'edit' ] ) ) {
+			$this->logger->warning(
+				__CLASS__ . ' triggered for {item} with unrecognised action {action}; data error?',
+				[
+					'item' => $this->params['target'],
+					'action' => $changeAction,
+				]
+			);
+			return true;
+		}
+
+		$commentMessage = null;
+
+		if ( $changeAction !== 'edit' ) {
+			switch ( $changeData['type'] ) {
+				case ZTypeRegistry::Z_FUNCTION:
+					// Used messages:
+					// - wikilambda-recentchanges-explanation-delete-function
+					// - wikilambda-recentchanges-explanation-restore-function
+					$commentMessage = wfMessage(
+						'wikilambda-recentchanges-explanation-' . $changeAction . '-function'
+					);
+					break;
+
+				case ZTypeRegistry::Z_IMPLEMENTATION:
+					// Used messages:
+					// - wikilambda-recentchanges-explanation-delete-implementation
+					// - wikilambda-recentchanges-explanation-restore-implementation
+					$commentMessage = wfMessage(
+						'wikilambda-recentchanges-explanation-' . $changeAction . '-implementation',
+						[ $changeData['target'] ]
+					);
+					break;
+
+				case ZTypeRegistry::Z_TESTER:
+					// Used messages:
+					// - wikilambda-recentchanges-explanation-delete-tester
+					// - wikilambda-recentchanges-explanation-restore-tester
+					$commentMessage = wfMessage(
+						'wikilambda-recentchanges-explanation-' . $changeAction . '-tester',
+						[ $changeData['target'] ]
+					);
+					break;
+
+				default:
+					// Unrecognised type; just exit, and log for follow-up
+					$this->logger->warning(
+						__CLASS__ . ' triggered for {item} deletion/undeletion with unknown type {type}; data error?',
+						[
+							'item' => $this->params['target'],
+							'action' => $changeData['type'],
+						]
+					);
+					return true;
+			}
+		} else {
+			// Note: We just pick the first of multiple operations, as that's what the UX allows you to do. However, if
+			// e.g. someone did an API edit that added some Implementations & removed some Testers, we'll show only one.
+			$operations = $changeData['operations'];
+
+			switch ( $changeData['type'] ) {
+				case ZTypeRegistry::Z_FUNCTION:
+					// Changes to Functions are complex – direct errors, and changes to approved Implementations/Testers
+					$actionPath = array_key_first( $operations );
+
+					switch ( $actionPath ) {
+						case ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS:
+						case ZTypeRegistry::Z_FUNCTION_TESTERS:
+							$typeTouched = ( $actionPath === ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS )
+								? 'implementations' : 'testers';
+							$action = array_key_first( $operations[$actionPath] );
+							$affected = $operations[$actionPath][$action];
+
+							if ( $action === 'add' ) {
+								$changeAction = 'connect';
+							} elseif ( $action === 'remove' ) {
+								$changeAction = 'disconnect';
+							}
+
+							$lang = $services->getContentLanguage();
+
+							// Used messages:
+							// - wikilambda-recentchanges-explanation-connect-implementation
+							// - wikilambda-recentchanges-explanation-disconnect-implementation
+							// - wikilambda-recentchanges-explanation-connect-tester
+							// - wikilambda-recentchanges-explanation-disconnect-tester
+							$commentMessage = wfMessage(
+								'wikilambda-recentchanges-explanation-' . $changeAction . '-' . $typeTouched,
+								[ count( $affected ), $lang->listToText( $affected ) ]
+							);
+							break;
+
+						default:
+							// The edit was to something other than the approved Implementations or Testers; use generic
+							// Used message:
+							// - wikilambda-recentchanges-explanation-edit-function
+							$commentMessage = wfMessage( 'wikilambda-recentchanges-explanation-edit-function' );
+							break;
+					}
+					break;
+
+				case ZTypeRegistry::Z_IMPLEMENTATION:
+					$commentMessage = wfMessage( 'wikilambda-recentchanges-explanation-edit-implementation' );
+					break;
+
+				case ZTypeRegistry::Z_TESTER:
+					$commentMessage = wfMessage( 'wikilambda-recentchanges-explanation-edit-tester' );
+					break;
+
+				default:
+					// Unrecognised type; just exit, and log for follow-up
+					$this->logger->warning(
+						__CLASS__ . ' triggered for {item} with unrecognised type {type}; data error?',
+						[
+							'item' => $this->params['target'],
+							'action' => $changeData['type'],
+						]
+					);
+					return true;
+			}
+		}
+
+		if ( $this->params['summary'] ) {
+			$commentString = ( (bool)$commentMessage ? $commentMessage->plain() . wfMessage( 'colon-separator' ) : '' )
+				. $this->params['summary'];
+		} else {
+			$commentString = (bool)$commentMessage ? $commentMessage->plain() : '';
+		}
+
+		$commentId = $commentStore->createComment( $dbw, $commentString, $commentData );
 
 		$generalAttributes['rc_comment_id'] = $commentId;
 
 		// Ask CentralAuth for the user ID lookup, if available.
-		$clientUserId = 0;
+		$generalAttributes['rc_actor'] = 0;
 		if ( $this->centralIdLookup ) {
 			$localUser = $this->centralIdLookup->localUserFromCentralId( $this->params['user'] );
 			if ( $localUser ) {
-				$clientUserId = $localUser->getId();
+				$generalAttributes['rc_actor'] = $localUser->getId();
 			}
+			// If there's no local user, we'll fall back to id 0
+		} else {
+			// Assume the user is a local one, and use their ID directly
+			$generalAttributes['rc_actor'] = $this->params['user'];
 		}
-		$generalAttributes['rc_actor'] = $clientUserId;
 
 		foreach ( $pagesUsingFunction as $titleString ) {
 			$title = Title::newFromText( $titleString );

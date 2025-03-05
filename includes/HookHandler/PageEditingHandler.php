@@ -14,11 +14,13 @@ namespace MediaWiki\Extension\WikiLambda\HookHandler;
 use MediaWiki\Api\ApiMessage;
 use MediaWiki\CommentStore\CommentStoreComment;
 use MediaWiki\Config\Config;
+use MediaWiki\Extension\WikiLambda\Diff\ZObjectDiffer;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientFanOutQueueJob;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\RenderedRevision;
 use MediaWiki\Revision\SlotRecord;
@@ -26,8 +28,11 @@ use MediaWiki\Status\Status;
 use MediaWiki\Title\Title;
 use MediaWiki\User\User;
 use MediaWiki\User\UserIdentity;
+use Psr\Log\LoggerInterface;
 use RecentChange;
 use Wikimedia\Message\MessageSpecifier;
+use Wikimedia\Rdbms\IConnectionProvider;
+use Wikimedia\Rdbms\IReadableDatabase;
 
 class PageEditingHandler implements
 	\MediaWiki\Hook\NamespaceIsMovableHook,
@@ -36,13 +41,21 @@ class PageEditingHandler implements
 {
 	private Config $config;
 	private ZObjectStore $zObjectStore;
+	private IReadableDatabase $dbr;
+
+	private LoggerInterface $logger;
 
 	public function __construct(
 		Config $config,
+		IConnectionProvider $dbProvider,
 		ZObjectStore $zObjectStore
+
 	) {
 		$this->config = $config;
 		$this->zObjectStore = $zObjectStore;
+		$this->dbr = $dbProvider->getReplicaDatabase();
+
+		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
 	}
 
 	/**
@@ -191,15 +204,39 @@ class PageEditingHandler implements
 			return;
 		}
 
+		// Start collecting the structured data about the edit that we'll send to client wikis
+		$changeData = [];
+
+		$changeComment = $recentChange->getAttribute( 'rc_comment_text' );
+
+		// If this is a logged action, we only care the edge case of deletions; other kinds, like moves, are irrelevant
 		$logType = $recentChange->getAttribute( 'rc_log_type' );
 		if ( $logType !== null ) {
-			// If this is a logged action, we only care the edge case of deletions
 			if ( $logType === 'delete' ) {
-				// … and specifically, full page deletions and restorations, not revision deletions
+				// … and specifically, full page deletions and restorations; revision deletions don't matter, as they
+				// won't ever affect the current revision (so a previous RC entry for the creation of the newer rev will
+				// have been sent to the client wikis).
 				$logAction = $recentChange->getAttribute( 'rc_log_action' );
 				if ( $logAction !== 'restore' && $logAction !== 'delete' ) {
 					return;
 				}
+				$changeData['action'] = $logAction;
+
+				// We need to look up the comment made for the log entry in this case.
+				$changeId = $recentChange->getAttribute( 'rc_logid' );
+
+				// Ideally we'd get this from the LogFormatterFactory's method, but it appears broken for RC entries:
+				// $changeComment = $this->logFormatterFactory->newFromRow( $recentChange )->getComment();
+
+				// This walks rc_logid => log_id; log_comment_id => comment_id; then returns comment_text
+				$changeComment = $this->dbr->newSelectQueryBuilder()
+					->select( [ 'comment_text' ] )
+					->from( 'recentchanges' )
+					->where( [ 'log_id' => $changeId ] )
+					->join( 'logging', null, [ 'rc_logid = log_id' ] )
+					->join( 'comment', null, [ 'log_comment_id = comment_id' ] )
+					->caller( __METHOD__ )
+					->fetchField();
 			}
 		}
 
@@ -209,42 +246,58 @@ class PageEditingHandler implements
 			return;
 		}
 
-		$targetZObject = $this->zObjectStore->fetchZObjectByTitle( $targetTitle );
-		if ( !$targetZObject ) {
+		$newId = $recentChange->getAttribute( 'rc_this_oldid' );
+		$newTargetZObject = $this->zObjectStore->fetchZObjectByTitle( $targetTitle, $newId );
+		if ( !$newTargetZObject ) {
 			// This isn't a ZObject, so we don't care.
 			return;
 		}
 
+		$changedObject = $newTargetZObject->getZid();
+		$changeData['target'] = $changedObject;
+		$changeData['type'] = $newTargetZObject->getZType();
+
 		// (T383156): Only act if this is (a) a change to a Function or a linked Imp/Test & (b) the kind we care about.
-		$changeData = [ 'type' => $targetZObject->getZType() ];
-		switch ( $targetZObject->getZType() ) {
+		switch ( $changeData['type'] ) {
 			case ZTypeRegistry::Z_FUNCTION:
-				$changeData['target'] = $targetZObject->getZid();
-				$changeData['function'] = $targetZObject->getZid();
-				// TODO (T383156):
-				// * Filter out irrelevant changes (e.g. label changed)
-				// * Add details of what actually changed (e.g. implementation approved)
-				// * Add labels for this Function for the UX to render (? all languages)
+				// For consistency, we'll include this even when it's the Function itself that changed
+				$changeData['function'] = $changedObject;
 				break;
 
 			case ZTypeRegistry::Z_IMPLEMENTATION:
-				$changeData['target'] = $targetZObject->getZid();
-				$changeData['function'] = $targetZObject->getInnerZObject()->getValueByKey(
+				$targetFunctionZid = $newTargetZObject->getInnerZObject()->getValueByKey(
 					ZTypeRegistry::Z_IMPLEMENTATION_FUNCTION
-				);
-				// TODO (T383156):
-				// * Filter out irrelevant Implementations (only care about approved ones)
-				// * Filter out irrelevant changes (e.g. label changed)
+				)->getZValue();
+
+				$targetFunction = $this->zObjectStore->fetchZObjectByTitle(
+						Title::newFromDBkey( $targetFunctionZid )
+					)->getInnerZObject();
+				'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction $targetFunction';
+				$approvedImplementations = $targetFunction->getImplementationZids();
+				if ( !in_array( $changedObject, $approvedImplementations ) ) {
+					// This isn't an approved Implementation, so we don't care.
+					return;
+				}
+
+				$changeData['function'] = $targetFunctionZid;
 				break;
 
 			case ZTypeRegistry::Z_TESTER:
-				$changeData['target'] = $targetZObject->getInnerZObject();
-				$changeData['function'] = $targetZObject->getInnerZObject()->getValueByKey(
+				$targetFunctionZid = $newTargetZObject->getInnerZObject()->getValueByKey(
 					ZTypeRegistry::Z_TESTER_FUNCTION
-				);
-				// TODO (T383156):
-				// * Filter out irrelevant Testers (we only care about approved ones)
-				// * Filter out irrelevant changes (e.g. label changed)
+				)->getZValue();
+
+				$targetFunction = $this->zObjectStore->fetchZObjectByTitle(
+						Title::newFromDBkey( $targetFunctionZid )
+					)->getInnerZObject();
+				'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction $targetFunction';
+				$approvedTesters = $targetFunction->getTesterZids();
+				if ( !in_array( $changedObject, $approvedTesters ) ) {
+					// This isn't an approved Tester, so we don't care.
+					return;
+				}
+
+				$changeData['function'] = $targetFunctionZid;
 				break;
 
 			default:
@@ -252,20 +305,204 @@ class PageEditingHandler implements
 				return;
 		}
 
+		// Now, we construct the changes that were made in the edit we're being told about.
+		// If we've already decided above that this is a deletion/undeletion, do nothing else.
+		if ( $logType === null ) {
+			// If this has been created, short-circuit
+			if ( $recentChange->getAttribute( 'rc_new' ) ) {
+				$changeData['action'] = 'create';
+
+				$this->logger->debug(
+					__METHOD__ . ': Handled creation of {obj} revision {rev}',
+					[
+						'obj' => $changedObject,
+						'rev' => $newId
+					]
+				);
+			} else {
+				$changeData['action'] = 'edit';
+				$changeData['operations'] = [];
+
+				$oldId = $recentChange->getAttribute( 'rc_last_oldid' );
+				if ( !$oldId ) {
+					// This is a new page, so there's nothing to diff against
+					$fromContentObject = '';
+				} else {
+					$fromContentObject = $this->roundTripJson(
+						$this->zObjectStore->fetchZObjectByTitle( $targetTitle, $oldId )->getObject()
+					);
+				}
+
+				$toContentObject = $this->roundTripJson( $newTargetZObject->getObject() );
+
+				// TODO (T389090): Consider refactoring the below to use the same code as in ZObjectAuthorization?
+				$differ = new ZObjectDiffer();
+				$diffOps = $differ->doDiff( $fromContentObject, $toContentObject );
+				$flattedDiffOps = ZObjectDiffer::flattenDiff( $diffOps );
+
+				// Filter out irrelevant changes (e.g. label changed)
+				foreach ( $flattedDiffOps as $index => $diffOp ) {
+
+					$firstPathElement = ( $diffOp['path'] === [] )
+						// If the edit is a creation, the 'path' will not be useful
+						? ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE
+						: $diffOp['path'][0];
+
+					$lastPathElement = ( is_numeric( end( $diffOp['path'] ) ) )
+						// Bump up a layer if this is an array value change
+						? $diffOp['path'][count( $diffOp['path'] ) - 2]
+						: end( $diffOp['path'] );
+
+					// Discard irrelevant label/alias/etc. changes
+					if (
+						// Any changes not to the Z2K2 (e.g. label/alias/short description changes)
+						( $firstPathElement !== ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ) ||
+						// Any changes to a Z12K1 (i.e. addition/removal of a label or short description)
+						( $lastPathElement === ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ) ||
+						// Any changes to a Z11K2 (i.e. change of a label or short description)
+						( $lastPathElement === ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE ) ||
+						// Any changes to a Z32K1 (i.e. addition/removal of an alias)
+						( $lastPathElement === ZTypeRegistry::Z_MULTILINGUALSTRINGSET_VALUE ) ||
+						// Any changes to a Z31K2 (i.e. change of an alias)
+						( $lastPathElement === ZTypeRegistry::Z_MONOLINGUALSTRINGSET_VALUE )
+					) {
+						// Given the above, we don't care about this change, so skip to the next (if any)
+						unset( $flattedDiffOps[$index] );
+						continue;
+					}
+
+					// (T383156): At this point we think this is a relevant change, so build structured data about what
+					// changed (e.g. implementation approved, tester value edited) so it can be sent to client wikis.
+
+					// Edits to a Function, mostly additions/removals of Implementations or Testers
+					if ( $newTargetZObject->getZType() === ZTypeRegistry::Z_FUNCTION ) {
+
+						// $lastPathElement will be the key of the Function that was edited, probably Z8K3 (Testers)
+						// or Z8K4 (Implementations), but it could be Z8K1 (Inputs) or Z8K2 (Outputs) if someone has
+						// done an odd kind of edit e.g. via the API.
+
+						if ( !array_key_exists( $lastPathElement, $changeData['operations'] ) ) {
+							$changeData['operations'][$lastPathElement] = [];
+						}
+
+						$changeType = $diffOp['op']->getType();
+
+						// Note: We don't handle 'copy' operations, as they're invalid in our model
+						if ( !in_array( $changeType, [ 'add', 'remove', 'change' ] ) ) {
+							$this->logger->error(
+								__METHOD__ . ': Unhandled {type} diff operation on {obj} revision {rev}: {diffOp}',
+								[
+									'type' => $changeType,
+									'obj' => $changedObject,
+									'rev' => $newId,
+									'diffOp' => var_export( $diffOp, true )
+								]
+							);
+							continue;
+						}
+
+						if ( $changeType === 'add' ) {
+							$changeData['operations'][$lastPathElement][$changeType][] = $diffOp['op']->getNewValue();
+						}
+
+						if ( $changeType === 'remove' ) {
+							$changeData['operations'][$lastPathElement][$changeType][] = $diffOp['op']->getOldValue();
+						}
+
+						if ( $changeType === 'change' ) {
+							$changeData['operations'][$lastPathElement][$changeType][] = [
+								$diffOp['op']->getOldValue(),
+								$diffOp['op']->getNewValue()
+							];
+						}
+
+						$this->logger->debug(
+							__METHOD__ . ': Handled Imp/Test approval {type} diff on Function {obj} revision {rev}',
+							[
+								'type' => $diffOp['op']->getType(),
+								'obj' => $changedObject,
+								'rev' => $newId
+							]
+						);
+
+						// We've handled this change, so move on to the next
+						continue;
+					}
+
+					if (
+						// If we're covering a change to a connected Implementation/Tester, we just care that it changed
+						$newTargetZObject->getZType() === ZTypeRegistry::Z_IMPLEMENTATION ||
+						$newTargetZObject->getZType() === ZTypeRegistry::Z_TESTER
+					) {
+						$changeData['operations'][$newTargetZObject->getZType()] = $lastPathElement;
+
+						$this->logger->debug(
+							__METHOD__ . ': Handled edit of approved Imp/Test on {type} {obj} revision {rev}',
+							[
+								'type' => $newTargetZObject->getZType(),
+								'obj' => $changedObject,
+								'rev' => $newId
+							]
+						);
+
+						// We've handled this change, so move on to the next
+						continue;
+					}
+
+					$this->logger->error(
+						__METHOD__ . ': Unhandled diff operation on {changedObject} revision {revision}: {diffOp}',
+						[
+							'changedObject' => $changedObject,
+							'revision' => $newId,
+							'diffOp' => var_export( $diffOp, true )
+						]
+					);
+					return;
+				}
+
+				if ( count( $flattedDiffOps ) === 0 ) {
+					// No relevant changes left after filtering
+					$this->logger->debug(
+						__METHOD__ . ': No interesting diff operations on {changedObject} revision {revision}',
+						[
+							'changedObject' => $changedObject,
+							'revision' => $newId
+						]
+					);
+					return;
+				}
+
+				// TODO (T383156): Add labels for this Function for the UX to render (? all languages)
+			}
+		}
+
 		$generalUpdateJob = new WikifunctionsClientFanOutQueueJob( [
 			'target' => $targetPage->getDBkey(),
 			'timestamp' => $recentChange->getAttribute( 'rc_timestamp' ),
-			'summary' => $recentChange->getAttribute( 'rc_comment_text' ),
+			'summary' => $changeComment,
 			'data' => $changeData,
-			'revision' => $recentChange->getAttribute( 'rc_this_oldid' ),
+			'revision' => $newId,
 			'user' => $recentChange->getPerformerIdentity()->getId(),
 			'bot' => $recentChange->getAttribute( 'rc_bot' ),
 		] );
 
 		$jobQueueGroup = MediaWikiServices::getInstance()->getJobQueueGroup();
 		$jobQueueGroup->lazyPush( $generalUpdateJob );
+
+		// The return value isn't used, but we return something so we can show in tests that we reached this point
+		return true;
 	}
 
 	// phpcs:enable MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName
+
+	/**
+	 * Utility function to round-trip data through JSON encoding/decoding
+	 *
+	 * @param mixed $data
+	 * @return array
+	 */
+	private function roundTripJson( $data ): array {
+		return json_decode( json_encode( $data ), true );
+	}
 
 }

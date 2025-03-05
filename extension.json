@@ -202,10 +202,19 @@
 				"JobQueueGroup"
 			]
 		},
+		"WikiLambdaClientChangeHooks": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\ClientChangeHooks",
+			"services": [
+				"UserOptionsLookup",
+				"ConnectionProvider",
+				"MainConfig"
+			]
+		},
 		"PageEditingHandler": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\PageEditingHandler",
 			"services": [
 				"MainConfig",
+				"ConnectionProvider",
 				"WikiLambdaZObjectStore"
 			]
 		},
@@ -224,6 +233,12 @@
 		"PageSaveComplete": "WikiLambdaClientHooks",
 		"ResourceLoaderRegisterModules": "WikiLambdaClientHooks",
 		"MakeGlobalVariablesScript": "WikiLambdaClientHooks",
+
+		"EnhancedChangesListModifyLineData": "WikiLambdaClientChangeHooks",
+		"EnhancedChangesListModifyBlockLineData": "WikiLambdaClientChangeHooks",
+		"OldChangesListRecentChangesLine": "WikiLambdaClientChangeHooks",
+		"ChangesListSpecialPageQuery": "WikiLambdaClientChangeHooks",
+		"GetPreferences": "WikiLambdaClientChangeHooks",
 
 		"LoadExtensionSchemaUpdates": "WikiLambdaHooks",
 
@@ -913,6 +928,18 @@
 				"ext.wikilambda.visualeditor"
 			]
 		}
+	},
+	"RecentChangesFlags": {
+		"wikifunctions-edit": {
+			"letter": "wikilambda-recentchanges-edit-letter",
+			"title": "wikilambda-recentchanges-edit-title",
+			"legend": "wikilambda-recentchanges-edit-legend",
+			"grouping": "all"
+		}
+	},
+	"DefaultUserOptions": {
+		"rcshowwikifunctions": 0,
+		"wlshowwikifunctions": 0
 	},
 	"JobClasses": {
 		"cacheTesterResults": "MediaWiki\\Extension\\WikiLambda\\Jobs\\CacheTesterResultsJob",

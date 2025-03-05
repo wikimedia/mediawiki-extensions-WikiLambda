@@ -46,6 +46,8 @@ class WikifunctionsUsageUpdateJob extends Job implements GenericParameterJob {
 		);
 	}
 
+	// FIXME: Evict from page if cache job finds that parser object doesn't have our flag but
+
 	/**
 	 * @return bool
 	 */
