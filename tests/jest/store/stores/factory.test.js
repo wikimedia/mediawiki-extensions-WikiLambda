@@ -8,9 +8,7 @@
 
 const { createPinia, setActivePinia } = require( 'pinia' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
-const { tableDataToRowObjects, zobjectToRows } = require( '../../helpers/zObjectTableHelpers.js' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
-const { mockStoredObjects } = require( '../../fixtures/mocks.js' );
 const { mockWindowLocation, restoreWindowLocation } = require( '../../fixtures/location.js' );
 const { buildUrl } = require( '../../helpers/urlHelpers.js' );
 
@@ -20,9 +18,8 @@ describe( 'factory Pinia store', () => {
 	beforeEach( () => {
 		setActivePinia( createPinia() );
 		store = useMainStore();
-		store.zobject = [];
-		store.objects = mockStoredObjects;
 		store.errors = {};
+		store.objects = {};
 	} );
 
 	afterEach( () => {
@@ -35,1370 +32,901 @@ describe( 'factory Pinia store', () => {
 				Object.defineProperty( store, 'isCustomEnum', {
 					value: jest.fn( ( zid ) => zid === 'Z30000' )
 				} );
-			} );
-
-			it( 'defaults to Z9/Reference when an object has an attribute of its own type', () => {
-				const expected = {
-					Z1K1: 'Z10528',
-					Z10528K1: {
-						Z1K1: 'Z9',
-						Z9K1: ''
-					}
-				};
-				const payload = { id: 1, type: 'Z10528', link: false };
-				const result = store.createObjectByType( payload );
-				expect( result ).toEqual( expected );
-			} );
-
-			it( 'defaults to Z9/Reference when mutual reference occurs in an object\'s attribute', () => {
-				const expected = {
-					Z1K1: 'Z20001',
-					Z20001K1: {
-						Z1K1: 'Z20002',
-						Z20002K1: {
-							Z1K1: 'Z20003',
-							Z20003K1: {
-								Z1K1: 'Z9',
-								Z9K1: ''
-							}
-						}
-					}
-				};
-				const payload = { id: 1, type: 'Z20001', link: false };
-				const result = store.createObjectByType( payload );
-				expect( result ).toEqual( expected );
-			} );
-
-			it( 'does not restrict type repetition when it happens across argument branches', () => {
-				const expected = {
-					Z1K1: 'Z20004',
-					Z20004K1: '',
-					Z20004K2: '',
-					Z20004K3: ''
-				};
-				const payload = { id: 1, type: 'Z20004', link: false };
-				const result = store.createObjectByType( payload );
-				expect( result ).toEqual( expected );
-			} );
-		} );
-	} );
-
-	describe( 'Actions', () => {
-		describe( 'changeType', () => {
-			beforeEach( () => {
-				store.zobject = tableDataToRowObjects( [ { id: 0, value: Constants.ROW_VALUE_OBJECT } ] );
 				Object.defineProperty( store, 'getUserLangZid', {
 					value: 'Z1003'
 				} );
-				store.fetchZids = jest.fn();
-				store.injectZObjectFromRowId = jest.fn();
-			} );
-
-			describe( 'add linkable type when non-literal is prioritized', () => {
-				it( 'adds a link to a type', () => {
-					const payload = { id: 0, type: Constants.Z_TYPE, link: true };
-					store.changeType( payload );
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: [ 'Z1', 'Z9' ] } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( {
-						rowId: 0,
-						value: { Z1K1: 'Z9', Z9K1: '' },
-						append: false
-					} );
-				} );
-
-				it( 'adds a link to a function', () => {
-					const payload = { id: 0, type: Constants.Z_FUNCTION, link: true };
-					store.changeType( payload );
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: [ 'Z1', 'Z9' ] } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( {
-						rowId: 0,
-						value: { Z1K1: 'Z9', Z9K1: '' },
-						append: false
-					} );
-				} );
-
-				it( 'adds a literal monolingual string', () => {
-					const payload = { id: 0, type: Constants.Z_MONOLINGUALSTRING, link: true };
-					store.changeType( payload );
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: [ 'Z1', 'Z11', 'Z9' ] } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z11',
-							Z11K1: { Z1K1: 'Z9', Z9K1: '' },
-							Z11K2: ''
-						},
-						append: false
-					} );
+				Object.defineProperty( store, 'getCurrentZObjectId', {
+					value: 'Z0'
 				} );
 			} );
 
-			describe( 'add ZPersistentObject', () => {
-				it( 'adds a valid ZPersistentObject', () => {
-					store.getUserLangZid = undefined;
-					const payload = { id: 0, type: Constants.Z_PERSISTENTOBJECT };
-					store.changeType( payload );
+			describe( 'avoid infinite recursion with circular dependencies', () => {
+				it( 'defaults to Z9/Reference when a type has an attribute of its own type', () => {
+					const types = {
+						Z10001: { Z2K2: { Z1K1: 'Z4', Z4K2: [ 'Z3', { Z1K1: 'Z3', Z3K1: 'Z10001', Z3K2: 'Z10001K1' } ] } }
+					};
+					Object.defineProperty( store, 'getStoredObject', {
+						value: jest.fn( ( zid ) => types[ zid ] )
+					} );
 
-					const expectedZids = [ 'Z1', 'Z2', 'Z6', 'Z9', 'Z12', 'Z11', 'Z32', 'Z31' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z2',
-							Z2K1: { Z1K1: 'Z6', Z6K1: 'Z0' },
-							Z2K2: { Z1K1: { Z1K1: 'Z9', Z9K1: '' } },
-							Z2K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] },
-							Z2K4: { Z1K1: 'Z32', Z32K1: [ 'Z31' ] },
-							Z2K5: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
-						},
-						append: false
+					const payload = { type: 'Z10001' };
+					const expected = {
+						Z1K1: 'Z10001',
+						Z10001K1: { Z1K1: 'Z9', Z9K1: '' }
 					};
 
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
 				} );
 
-				it( 'adds a valid ZPersistentObject with set uselang', () => {
-					const payload = { id: 0, type: Constants.Z_PERSISTENTOBJECT };
-					store.changeType( payload );
+				it( 'defaults to Z9/Reference when a type has self references through different levels', () => {
+					const types = {
+						Z20001: { Z2K2: { Z1K1: 'Z4', Z4K2: [ 'Z3', { Z1K1: 'Z3', Z3K1: 'Z20002', Z3K2: 'Z20001K1' } ] } },
+						Z20002: { Z2K2: { Z1K1: 'Z4', Z4K2: [ 'Z3', { Z1K1: 'Z3', Z3K1: 'Z20003', Z3K2: 'Z20002K1' } ] } },
+						Z20003: { Z2K2: { Z1K1: 'Z4', Z4K2: [ 'Z3', { Z1K1: 'Z3', Z3K1: 'Z20002', Z3K2: 'Z20003K1' } ] } }
+					};
+					Object.defineProperty( store, 'getStoredObject', {
+						value: jest.fn( ( zid ) => types[ zid ] )
+					} );
 
-					const expectedZids = [ 'Z1', 'Z2', 'Z6', 'Z9', 'Z12', 'Z11', 'Z1003', 'Z32', 'Z31' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z2',
-							Z2K1: { Z1K1: 'Z6', Z6K1: 'Z0' },
-							Z2K2: { Z1K1: { Z1K1: 'Z9', Z9K1: '' } },
-							Z2K3: {
-								Z1K1: 'Z12',
-								Z12K1: [
-									'Z11',
-									{
-										Z1K1: 'Z11',
-										Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1003' },
-										Z11K2: ''
-									}
-								]
-							},
-							Z2K4: { Z1K1: 'Z32', Z32K1: [ 'Z31' ] },
-							Z2K5: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
-						},
-						append: false
+					const payload = { type: 'Z20001' };
+					const expected = {
+						Z1K1: 'Z20001',
+						Z20001K1: {
+							Z1K1: 'Z20002',
+							Z20002K1: {
+								Z1K1: 'Z20003',
+								Z20003K1: { Z1K1: 'Z9', Z9K1: '' }
+							}
+						}
 					};
 
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+
+				it( 'does not restrict type repetition when it happens across argument branches', () => {
+					const types = {
+						Z10001: { Z2K2: { Z1K1: 'Z4', Z4K2: [ 'Z3', { Z1K1: 'Z3', Z3K1: 'Z10001', Z3K2: 'Z10001K1' } ] } },
+						Z20004: { Z2K2: { Z1K1: 'Z4', Z4K2: [ 'Z3',
+							{ Z1K1: 'Z3', Z3K1: 'Z10001', Z3K2: 'Z20004K1' },
+							{ Z1K1: 'Z3', Z3K1: 'Z10001', Z3K2: 'Z20004K2' },
+							{ Z1K1: 'Z3', Z3K1: 'Z10001', Z3K2: 'Z20004K3' }
+						] } }
+					};
+					Object.defineProperty( store, 'getStoredObject', {
+						value: jest.fn( ( zid ) => types[ zid ] )
+					} );
+
+					const payload = { type: 'Z20004' };
+					const expected = {
+						Z1K1: 'Z20004',
+						Z20004K1: { Z1K1: 'Z10001', Z10001K1: { Z1K1: 'Z9', Z9K1: '' } },
+						Z20004K2: { Z1K1: 'Z10001', Z10001K1: { Z1K1: 'Z9', Z9K1: '' } },
+						Z20004K3: { Z1K1: 'Z10001', Z10001K1: { Z1K1: 'Z9', Z9K1: '' } }
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
 				} );
 			} );
 
-			describe( 'add ZMonolingualString', () => {
-				it( 'adds a valid ZMonolingualString with empty values', () => {
-					const payload = { id: 0, type: Constants.Z_MONOLINGUALSTRING };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z11', 'Z9' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z11',
-							Z11K1: { Z1K1: 'Z9', Z9K1: '' },
-							Z11K2: ''
-						},
-						append: false
+			describe( 'createZPersistentObject', () => {
+				it( 'creates a blank persistent object with first label in userlang', () => {
+					const payload = { type: Constants.Z_PERSISTENTOBJECT };
+					const expected = {
+						Z1K1: 'Z2',
+						Z2K1: { Z1K1: 'Z6', Z6K1: 'Z0' },
+						Z2K2: { Z1K1: { Z1K1: 'Z9', Z9K1: '' } },
+						Z2K3: { Z1K1: 'Z12', Z12K1: [ 'Z11',
+							{ Z1K1: 'Z11', Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1003' }, Z11K2: '' }
+						] },
+						Z2K4: { Z1K1: 'Z32', Z32K1: [ 'Z31' ] },
+						Z2K5: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
 					};
 
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
 				} );
 
-				it( 'adds a valid ZMonolingualString with initial values', () => {
-					const payload = { id: 0, type: Constants.Z_MONOLINGUALSTRING, lang: 'Z1004', value: 'test label' };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z11', 'Z9', 'Z1004' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z11',
-							Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1004' },
-							Z11K2: 'test label'
-						},
-						append: false
+				it( 'creates a blank persistent object with no label when userlang undefined', () => {
+					Object.defineProperty( store, 'getUserLangZid', {
+						value: undefined
+					} );
+					const payload = { type: Constants.Z_PERSISTENTOBJECT };
+					const expected = {
+						Z1K1: 'Z2',
+						Z2K1: { Z1K1: 'Z6', Z6K1: 'Z0' },
+						Z2K2: { Z1K1: { Z1K1: 'Z9', Z9K1: '' } },
+						Z2K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] },
+						Z2K4: { Z1K1: 'Z32', Z32K1: [ 'Z31' ] },
+						Z2K5: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
 					};
 
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+			} );
+
+			describe( 'createZMonolingualString', () => {
+				it( 'creates a blank monolingual string object', () => {
+					const payload = { type: Constants.Z_MONOLINGUALSTRING };
+					const expected = {
+						Z1K1: 'Z11',
+						Z11K1: { Z1K1: 'Z9', Z9K1: '' },
+						Z11K2: ''
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
 				} );
 
-				it( 'appends a valid ZMonolingualString to a list', () => {
-					store.zobject = zobjectToRows( {
+				it( 'creates a blank monolingual string object with initial values', () => {
+					const payload = {
+						type: Constants.Z_MONOLINGUALSTRING,
+						lang: 'Z1004',
+						value: 'test label'
+					};
+					const expected = {
+						Z1K1: 'Z11',
+						Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1004' },
+						Z11K2: 'test label'
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+			} );
+
+			describe( 'createZMultilingualString', () => {
+				it( 'creates a blank multilingual string object', () => {
+					const payload = { type: Constants.Z_MULTILINGUALSTRING };
+					const expected = {
+						Z1K1: 'Z12',
 						Z12K1: [ 'Z11' ]
-					} );
-					const payload = { id: 1, type: Constants.Z_MONOLINGUALSTRING, lang: 'Z1004', value: 'test label', append: true };
+					};
 
-					store.changeType( payload );
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
 
-					const expectedZids = [ 'Z1', 'Z11', 'Z9', 'Z1004' ];
-					const expectedPayload = {
-						rowId: 1,
-						value: {
+				it( 'creates a blank multilingual string object with empty monolingual', () => {
+					const payload = {
+						type: Constants.Z_MULTILINGUALSTRING,
+						value: ''
+					};
+					const expected = {
+						Z1K1: 'Z12',
+						Z12K1: [ 'Z11', {
+							Z1K1: 'Z11',
+							Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1003' },
+							Z11K2: ''
+						} ]
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+
+				it( 'creates a blank multilingual string object with initial values', () => {
+					const payload = {
+						type: Constants.Z_MULTILINGUALSTRING,
+						lang: 'Z1004',
+						value: 'test label'
+					};
+					const expected = {
+						Z1K1: 'Z12',
+						Z12K1: [ 'Z11', {
 							Z1K1: 'Z11',
 							Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1004' },
 							Z11K2: 'test label'
-						},
-						append: true
+						} ]
 					};
 
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
 				} );
 			} );
 
-			describe( 'add ZMultilingualString', () => {
-				it( 'adds a valid ZMultilingualString with empty values', () => {
-					const payload = { id: 0, type: Constants.Z_MULTILINGUALSTRING };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z12', 'Z11' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z12',
-							Z12K1: [ 'Z11' ]
-						},
-						append: false
+			describe( 'createZMonolingualStringSet', () => {
+				it( 'creates a blank monolingual stringset object', () => {
+					const payload = { type: Constants.Z_MONOLINGUALSTRINGSET };
+					const expected = {
+						Z1K1: 'Z31',
+						Z31K1: { Z1K1: 'Z9', Z9K1: '' },
+						Z31K2: [ 'Z6' ]
 					};
 
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
 				} );
 
-				it( 'adds a valid ZMultilingualString with empty monolingual', () => {
-					const payload = { id: 0, type: Constants.Z_MULTILINGUALSTRING, value: '' };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z12', 'Z11', 'Z9', 'Z1003' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z12',
-							Z12K1: [ 'Z11', {
-								Z1K1: 'Z11',
-								Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1003' },
-								Z11K2: ''
-							} ]
-						},
-						append: false
+				it( 'creates a blank monolingual stringset object with initial value', () => {
+					const payload = {
+						type: Constants.Z_MONOLINGUALSTRINGSET,
+						lang: 'Z1004',
+						value: [ 'test alias' ]
+					};
+					const expected = {
+						Z1K1: 'Z31',
+						Z31K1: { Z1K1: 'Z9', Z9K1: 'Z1004' },
+						Z31K2: [ 'Z6', 'test alias' ]
 					};
 
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
 				} );
 
-				it( 'adds a valid ZMultilingualString with initial values', () => {
-					const payload = { id: 0, type: Constants.Z_MULTILINGUALSTRING, lang: 'Z1004', value: 'test label' };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z12', 'Z11', 'Z9', 'Z1004' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z12',
-							Z12K1: [ 'Z11', {
-								Z1K1: 'Z11',
-								Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1004' },
-								Z11K2: 'test label'
-							} ]
-						},
-						append: false
+				it( 'creates a blank monolingual stringset object with two initial values', () => {
+					const payload = {
+						type: Constants.Z_MONOLINGUALSTRINGSET,
+						lang: 'Z1004',
+						value: [ 'one', 'two' ]
+					};
+					const expected = {
+						Z1K1: 'Z31',
+						Z31K1: { Z1K1: 'Z9', Z9K1: 'Z1004' },
+						Z31K2: [ 'Z6', 'one', 'two' ]
 					};
 
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
 				} );
 			} );
 
-			describe( 'add ZMonolingualStringSet', () => {
-				it( 'adds a valid ZMonolingualStringSet with empty values', () => {
-					const payload = { id: 0, type: Constants.Z_MONOLINGUALSTRINGSET };
-					store.changeType( payload );
+			describe( 'createZString', () => {
+				it( 'creates a valid empty string', () => {
+					const payload = { type: Constants.Z_STRING };
+					const expected = '';
 
-					const expectedZids = [ 'Z1', 'Z31', 'Z9', 'Z6' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z31',
-							Z31K1: { Z1K1: 'Z9', Z9K1: '' },
-							Z31K2: [ 'Z6' ]
-						},
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
 				} );
 
-				it( 'adds a valid ZMonolingualStringSet with initial value', () => {
-					const payload = { id: 0, type: Constants.Z_MONOLINGUALSTRINGSET, lang: 'Z1004', value: [ 'test alias' ] };
-					store.changeType( payload );
+				it( 'creates a valid string with initial value', () => {
+					const payload = { type: Constants.Z_STRING, value: 'Hello world' };
+					const expected = 'Hello world';
 
-					const expectedZids = [ 'Z1', 'Z31', 'Z9', 'Z1004', 'Z6' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z31',
-							Z31K1: { Z1K1: 'Z9', Z9K1: 'Z1004' },
-							Z31K2: [ 'Z6', 'test alias' ]
-						},
-						append: false
-					};
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+			} );
 
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
+			describe( 'createZReference', () => {
+				it( 'creates a blank reference', () => {
+					const payload = { type: Constants.Z_REFERENCE };
+					const expected = { Z1K1: 'Z9', Z9K1: '' };
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
 				} );
 
-				it( 'adds a valid ZMonolingualStringSet with two initial values', () => {
-					const payload = { id: 0, type: Constants.Z_MONOLINGUALSTRINGSET, lang: 'Z1004', value: [ 'one', 'two' ] };
-					store.changeType( payload );
+				it( 'creates a valid reference with initial value', () => {
+					const payload = { type: Constants.Z_REFERENCE, value: 'Z1' };
+					const expected = { Z1K1: 'Z9', Z9K1: 'Z1' };
 
-					const expectedZids = [ 'Z1', 'Z31', 'Z9', 'Z1004', 'Z6' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z31',
-							Z31K1: { Z1K1: 'Z9', Z9K1: 'Z1004' },
-							Z31K2: [ 'Z6', 'one', 'two' ]
-						},
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
 				} );
+			} );
 
-				it( 'appends a valid ZMonolingualStringSet to a ZMultilingualStringSet', () => {
-					store.zobject = zobjectToRows( {
-						Z31K1: [ 'Z31' ]
+			describe( 'createZWikidataEnum', () => {
+				const enumType = 'Z10004';
+
+				beforeEach( () => {
+					Object.defineProperty( store, 'isWikidataEnum', {
+						value: jest.fn( () => true )
 					} );
-					const payload = { id: 1, type: Constants.Z_MONOLINGUALSTRINGSET, lang: 'Z1004', value: [ 'test alias' ], append: true };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z31', 'Z9', 'Z1004', 'Z6' ];
-					const expectedPayload = {
-						rowId: 1,
-						value: {
-							Z1K1: 'Z31',
-							Z31K1: { Z1K1: 'Z9', Z9K1: 'Z1004' },
-							Z31K2: [ 'Z6', 'test alias' ]
-						},
-						append: true
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-			} );
-
-			describe( 'add ZString', () => {
-				it( 'adds a valid empty ZString', () => {
-					const payload = { id: 0, type: Constants.Z_STRING };
-					store.changeType( payload );
-
-					const expectedZids = [];
-					const expectedPayload = {
-						rowId: 0,
-						value: '',
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-
-				it( 'adds a valid prefilled ZString', () => {
-					const payload = { id: 0, type: Constants.Z_STRING, value: 'Hello world' };
-					store.changeType( payload );
-
-					const expectedZids = [];
-					const expectedPayload = {
-						rowId: 0,
-						value: 'Hello world',
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-
-				it( 'appends a valid ZString to a list', () => {
-					store.zobject = tableDataToRowObjects( [
-						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
-						{ id: 1, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 0 },
-						{ id: 2, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 1 },
-						{ id: 3, key: 'Z1K1', value: 'Z9', parent: 2 },
-						{ id: 4, key: 'Z9K1', value: 'Z1', parent: 2 }
-					] );
-					const payload = { id: 1, type: Constants.Z_STRING, value: 'Hello world', append: true };
-					store.changeType( payload );
-
-					const expectedZids = [];
-					const expectedPayload = {
-						rowId: 1,
-						value: 'Hello world',
-						append: true
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-			} );
-
-			describe( 'add ZReference', () => {
-				it( 'adds a valid empty ZReference', () => {
-					const payload = { id: 0, type: Constants.Z_REFERENCE };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z9' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z9',
-							Z9K1: ''
-						},
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-
-				it( 'adds a valid prefilled ZReference', () => {
-					const payload = { id: 0, type: Constants.Z_REFERENCE, value: 'Z1' };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z9' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z9',
-							Z9K1: 'Z1'
-						},
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-
-				it( 'appends a valid ZReference to a list', () => {
-					store.zobject = tableDataToRowObjects( [
-						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
-						{ id: 1, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 0 },
-						{ id: 2, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 1 },
-						{ id: 3, key: 'Z1K1', value: 'Z9', parent: 2 },
-						{ id: 4, key: 'Z9K1', value: 'Z4', parent: 2 }
-					] );
-					const payload = { id: 1, type: Constants.Z_REFERENCE, value: 'Z11', append: true };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z9', 'Z11' ];
-					const expectedPayload = {
-						rowId: 1,
-						value: {
-							Z1K1: 'Z9',
-							Z9K1: 'Z11'
-						},
-						append: true
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-			} );
-
-			describe( 'add ZArgument', () => {
-				it( 'adds a valid ZArgument', () => {
-					Object.defineProperty( store, 'getNextKey', {
-						value: 'Z0K1'
+					Object.defineProperty( store, 'getTypeOfWikidataEnum', {
+						value: jest.fn( () => 'Z6095' )
 					} );
-					const payload = { id: 0, type: Constants.Z_ARGUMENT };
-					store.changeType( payload );
+				} );
 
-					const expectedZids = [ 'Z1', 'Z17', 'Z9', 'Z12', 'Z11' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
+				it( 'creates a wikidata enum instance', () => {
+					const payload = { type: enumType };
+					const expected = {
+						Z1K1: 'Z10004',
+						Z10004K1: {
+							Z1K1: 'Z6095',
+							Z6095K1: ''
+						}
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+
+				it( 'creates a wikidata enum instance with an initial value', () => {
+					const payload = { type: enumType, value: 'L12345' };
+					const expected = {
+						Z1K1: 'Z10004',
+						Z10004K1: {
+							Z1K1: 'Z6095',
+							Z6095K1: 'L12345'
+						}
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+			} );
+
+			describe( 'createZBoolean', () => {
+				it( 'creates a blank boolean object', () => {
+					const payload = { type: Constants.Z_BOOLEAN };
+					const expected = {
+						Z1K1: 'Z40',
+						Z40K1: { Z1K1: 'Z9', Z9K1: '' }
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+
+				it( 'creates a boolean object with initial value', () => {
+					const payload = { type: Constants.Z_BOOLEAN, value: Constants.Z_BOOLEAN_FALSE };
+					const expected = {
+						Z1K1: 'Z40',
+						Z40K1: { Z1K1: 'Z9', Z9K1: 'Z42' }
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+			} );
+
+			describe( 'createZType', () => {
+				it( 'creates a reference by default', () => {
+					const payload = { type: Constants.Z_TYPE };
+					const expected = { Z1K1: 'Z9', Z9K1: '' };
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+
+				it( 'creates a blank type object if explicitly requested literal', () => {
+					const payload = { type: Constants.Z_TYPE, literal: true };
+					const expected = {
+						Z1K1: 'Z4',
+						Z4K1: { Z1K1: 'Z9', Z9K1: 'Z0' },
+						Z4K2: [ 'Z3' ],
+						Z4K3: { Z1K1: 'Z9', Z9K1: 'Z101' },
+						Z4K4: { Z1K1: 'Z9', Z9K1: '' },
+						Z4K5: { Z1K1: 'Z9', Z9K1: '' },
+						Z4K6: { Z1K1: 'Z9', Z9K1: '' },
+						Z4K7: [ 'Z46' ],
+						Z4K8: [ 'Z64' ]
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+			} );
+
+			describe( 'createZArgument', () => {
+				it( 'creates a blank argument object', () => {
+					const payload = { type: Constants.Z_ARGUMENT };
+					const expected = {
+						Z1K1: 'Z17',
+						Z17K1: { Z1K1: 'Z9', Z9K1: '' },
+						Z17K2: 'Z0K1',
+						Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+
+				it( 'creates an argument with initialized argument key', () => {
+					const payload = { type: Constants.Z_ARGUMENT, value: 'Z400K2' };
+					const expected = {
+						Z1K1: 'Z17',
+						Z17K1: { Z1K1: 'Z9', Z9K1: '' },
+						Z17K2: 'Z400K2',
+						Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+			} );
+
+			describe( 'createZFunctionCall', () => {
+				it( 'creates a blank function call object', () => {
+					const payload = { type: Constants.Z_FUNCTION_CALL };
+					const expected = {
+						Z1K1: 'Z7',
+						Z7K1: { Z1K1: 'Z9', Z9K1: '' }
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+
+				it( 'creates a function call object with initial function zid value', () => {
+					const payload = { type: Constants.Z_FUNCTION_CALL, value: 'Z10001' };
+					const expected = {
+						Z1K1: 'Z7',
+						Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10001' }
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+			} );
+
+			describe( 'createZImplementation', () => {
+				it( 'creates a blank reference by default', () => {
+					const payload = { type: Constants.Z_IMPLEMENTATION };
+					const expected = { Z1K1: 'Z9', Z9K1: '' };
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+
+				it( 'creates a blank implementation object if explicitly requested literal', () => {
+					const payload = { type: Constants.Z_IMPLEMENTATION, literal: true };
+					const expected = {
+						Z1K1: 'Z14',
+						Z14K1: { Z1K1: 'Z9', Z9K1: '' },
+						Z14K2: { Z1K1: 'Z7', Z7K1: { Z1K1: 'Z9', Z9K1: '' } }
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+
+				it( 'creates a blank implementation object with preset function zid if provided in the url', () => {
+					mockWindowLocation( buildUrl( Constants.PATHS.ROUTE_FORMAT_ONE, {
+						title: Constants.PATHS.CREATE_OBJECT_TITLE,
+						zid: Constants.Z_IMPLEMENTATION,
+						[ Constants.Z_IMPLEMENTATION_FUNCTION ]: 'Z10001'
+					} ) );
+
+					const payload = {
+						type: Constants.Z_IMPLEMENTATION,
+						literal: true
+					};
+					const expected = {
+						Z1K1: 'Z14',
+						Z14K1: { Z1K1: 'Z9', Z9K1: 'Z10001' },
+						Z14K2: { Z1K1: 'Z7', Z7K1: { Z1K1: 'Z9', Z9K1: '' } }
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+			} );
+
+			describe( 'createZCode', () => {
+				it( 'creates a blank code object', () => {
+					const payload = { type: Constants.Z_CODE };
+					const expected = {
+						Z1K1: 'Z16',
+						Z16K1: { Z1K1: 'Z9', Z9K1: '' },
+						Z16K2: ''
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+			} );
+
+			describe( 'createZFunction', () => {
+				it( 'creates a blank reference by default', () => {
+					const payload = { type: Constants.Z_FUNCTION };
+					const expected = { Z1K1: 'Z9', Z9K1: '' };
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+
+				it( 'creates a blank function object if explicitly requested literal', () => {
+					const payload = { type: Constants.Z_FUNCTION, literal: true };
+					const expected = {
+						Z1K1: 'Z8',
+						Z8K1: [ 'Z17', {
 							Z1K1: 'Z17',
 							Z17K1: { Z1K1: 'Z9', Z9K1: '' },
 							Z17K2: 'Z0K1',
 							Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
-						},
-						append: false
+						} ],
+						Z8K2: { Z1K1: 'Z9', Z9K1: '' },
+						Z8K3: [ 'Z20' ],
+						Z8K4: [ 'Z14' ],
+						Z8K5: { Z1K1: 'Z9', Z9K1: 'Z0' }
 					};
 
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
 				} );
 
-				it( 'adds a valid ZArgument with initial values', () => {
-					const payload = { id: 0, type: Constants.Z_ARGUMENT, value: 'Z400K2' };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z17', 'Z9', 'Z400', 'Z12', 'Z11' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z17',
-							Z17K1: { Z1K1: 'Z9', Z9K1: '' },
-							Z17K2: 'Z400K2',
-							Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
-						},
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-
-				it( 'appends a valid ZArgument to a list', () => {
-					store.zobject = tableDataToRowObjects( [
-						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
-						{ id: 1, key: 'Z8K1', value: Constants.ROW_VALUE_ARRAY, parent: 0 },
-						{ id: 2, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 1 },
-						{ id: 3, key: 'Z1K1', value: 'Z9', parent: 2 },
-						{ id: 4, key: 'Z9K1', value: 'Z17', parent: 2 }
-					] );
-					const payload = { id: 1, type: Constants.Z_ARGUMENT, value: 'Z400K2', append: true };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z17', 'Z9', 'Z400', 'Z12', 'Z11' ];
-					const expectedPayload = {
-						rowId: 1,
-						value: {
-							Z1K1: 'Z17',
-							Z17K1: { Z1K1: 'Z9', Z9K1: '' },
-							Z17K2: 'Z400K2',
-							Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
-						},
-						append: true
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-			} );
-
-			describe( 'add ZFunctionCall', () => {
-				it( 'adds a valid empty ZFunctionCall', () => {
-					const payload = { id: 0, type: Constants.Z_FUNCTION_CALL };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z7', 'Z9' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z7',
-							Z7K1: { Z1K1: 'Z9', Z9K1: '' }
-						},
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-
-				it( 'adds a valid ZFunctionCall with initial values', () => {
-					const payload = { id: 0, type: Constants.Z_FUNCTION_CALL, value: 'Z10001' };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z7', 'Z9', 'Z10001' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z7',
-							Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10001' }
-						},
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-
-				it( 'appends a valid ZFunctionCall to a list', () => {
-					store.zobject = tableDataToRowObjects( [
-						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
-						{ id: 1, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 0 },
-						{ id: 2, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 1 },
-						{ id: 3, key: 'Z1K1', value: 'Z9', parent: 2 },
-						{ id: 4, key: 'Z9K1', value: 'Z1', parent: 2 }
-					] );
-					const payload = { id: 1, type: Constants.Z_FUNCTION_CALL, value: 'Z10001', append: true };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z7', 'Z9', 'Z10001' ];
-					const expectedPayload = {
-						rowId: 1,
-						value: {
-							Z1K1: 'Z7',
-							Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10001' }
-						},
-						append: true
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-			} );
-
-			describe( 'add ZImplementation', () => {
-				it( 'adds a reference if not forced to literal', () => {
-					const payload = { id: 0, type: Constants.Z_IMPLEMENTATION };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z9' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z9',
-							Z9K1: ''
-						},
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-
-				it( 'adds a valid ZImplementation', () => {
-					const payload = { id: 0, type: Constants.Z_IMPLEMENTATION, literal: true };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z14', 'Z9', 'Z7' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z14',
-							Z14K1: { Z1K1: 'Z9', Z9K1: '' },
-							Z14K2: { Z1K1: 'Z7', Z7K1: { Z1K1: 'Z9', Z9K1: '' } }
-						},
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-
-				it( 'adds a valid ZImplementation for a given function Zid', () => {
-					const payload = { id: 0, type: Constants.Z_IMPLEMENTATION, literal: true };
-					const queryParams = {
-						zid: Constants.Z_IMPLEMENTATION,
-						Z14K1: 'Z10001'
-					};
-
-					mockWindowLocation( buildUrl( Constants.PATHS.ROUTE_FORMAT_ONE, { title: Constants.PATHS.CREATE_OBJECT_TITLE, ...queryParams } ) );
-
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z14', 'Z9', 'Z10001', 'Z7' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z14',
-							Z14K1: { Z1K1: 'Z9', Z9K1: 'Z10001' },
-							Z14K2: { Z1K1: 'Z7', Z7K1: { Z1K1: 'Z9', Z9K1: '' } }
-						},
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-			} );
-
-			describe( 'add ZFunction', () => {
-				it( 'adds a reference if not forced to literal', () => {
-					const payload = { id: 0, type: Constants.Z_FUNCTION };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z9' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z9',
-							Z9K1: ''
-						},
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-
-				it( 'adds a valid ZFunction', () => {
-					const payload = { id: 0, type: Constants.Z_FUNCTION, literal: true };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z8', 'Z17', 'Z9', 'Z12', 'Z11', 'Z20', 'Z14' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z8',
-							Z8K1: [
-								'Z17',
-								{
-									Z1K1: 'Z17',
-									Z17K1: { Z1K1: 'Z9', Z9K1: '' },
-									Z17K2: 'Z0K1',
-									Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
-								}
-							],
-							Z8K2: { Z1K1: 'Z9', Z9K1: '' },
-							Z8K3: [ 'Z20' ],
-							Z8K4: [ 'Z14' ],
-							Z8K5: { Z1K1: 'Z9', Z9K1: 'Z0' }
-						},
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-
-				it( 'adds a valid ZFunction with set zid', () => {
-					const payload = { id: 0, type: Constants.Z_FUNCTION, literal: true };
-
+				it( 'creates a blank function object with set zid', () => {
 					Object.defineProperty( store, 'getCurrentZObjectId', {
 						value: 'Z10000'
 					} );
-					store.changeType( payload );
 
-					const expectedZids = [ 'Z1', 'Z8', 'Z17', 'Z9', 'Z10000', 'Z12', 'Z11', 'Z20', 'Z14' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z8',
-							Z8K1: [
-								'Z17',
-								{
-									Z1K1: 'Z17',
-									Z17K1: { Z1K1: 'Z9', Z9K1: '' },
-									Z17K2: 'Z10000K1',
-									Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
-								}
-							],
-							Z8K2: { Z1K1: 'Z9', Z9K1: '' },
-							Z8K3: [ 'Z20' ],
-							Z8K4: [ 'Z14' ],
-							Z8K5: { Z1K1: 'Z9', Z9K1: 'Z10000' }
-						},
-						append: false
+					const payload = { type: Constants.Z_FUNCTION, literal: true };
+					const expected = {
+						Z1K1: 'Z8',
+						Z8K1: [ 'Z17', {
+							Z1K1: 'Z17',
+							Z17K1: { Z1K1: 'Z9', Z9K1: '' },
+							Z17K2: 'Z10000K1',
+							Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+						} ],
+						Z8K2: { Z1K1: 'Z9', Z9K1: '' },
+						Z8K3: [ 'Z20' ],
+						Z8K4: [ 'Z14' ],
+						Z8K5: { Z1K1: 'Z9', Z9K1: 'Z10000' }
 					};
 
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
 				} );
 			} );
 
-			describe( 'add ZType', () => {
-				it( 'adds a reference if not forced to literal', () => {
-					const payload = { id: 0, type: Constants.Z_TYPE };
-					store.changeType( payload );
+			describe( 'createZTester', () => {
+				it( 'creates a blank reference by default', () => {
+					const payload = { type: Constants.Z_TESTER };
+					const expected = { Z1K1: 'Z9', Z9K1: '' };
 
-					const expectedZids = [ 'Z1', 'Z9' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z9',
-							Z9K1: ''
-						},
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
 				} );
 
-				it( 'adds a valid ZType', () => {
-					const payload = { id: 0, type: Constants.Z_TYPE, literal: true };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z4', 'Z9', 'Z3', 'Z101', 'Z46', 'Z64' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z4',
-							Z4K1: { Z1K1: 'Z9', Z9K1: 'Z0' },
-							Z4K2: [ 'Z3' ],
-							Z4K3: { Z1K1: 'Z9', Z9K1: 'Z101' },
-							Z4K4: { Z1K1: 'Z9', Z9K1: '' },
-							Z4K5: { Z1K1: 'Z9', Z9K1: '' },
-							Z4K6: { Z1K1: 'Z9', Z9K1: '' },
-							Z4K7: [ 'Z46' ],
-							Z4K8: [ 'Z64' ]
-						},
-						append: false
+				it( 'creates a blank tester object if explicitly requested literal', () => {
+					const payload = { type: Constants.Z_TESTER, literal: true };
+					const expected = {
+						Z1K1: 'Z20',
+						Z20K1: { Z1K1: 'Z9', Z9K1: '' },
+						Z20K2: { Z1K1: 'Z7', Z7K1: { Z1K1: 'Z9', Z9K1: '' } },
+						Z20K3: { Z1K1: 'Z7', Z7K1: { Z1K1: 'Z9', Z9K1: '' } }
 					};
 
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
 				} );
 
-				it( 'appends a valid ZType to a list', () => {
-					store.zobject = tableDataToRowObjects( [
-						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
-						{ id: 1, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 0 },
-						{ id: 2, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 1 },
-						{ id: 3, key: 'Z1K1', value: 'Z9', parent: 2 },
-						{ id: 4, key: 'Z9K1', value: 'Z4', parent: 2 }
-					] );
-					const payload = { id: 1, type: Constants.Z_TYPE, append: true, literal: true };
-					store.changeType( payload );
+				it( 'creates a blank tester object with preset function zid if provided in the url', () => {
+					mockWindowLocation( buildUrl( Constants.PATHS.ROUTE_FORMAT_ONE, {
+						title: Constants.PATHS.CREATE_OBJECT_TITLE,
+						zid: Constants.Z_TESTER,
+						[ Constants.Z_TESTER_FUNCTION ]: 'Z10001'
+					} ) );
 
-					const expectedZids = [ 'Z1', 'Z4', 'Z9', 'Z3', 'Z101', 'Z46', 'Z64' ];
-					const expectedPayload = {
-						rowId: 1,
-						value: {
-							Z1K1: 'Z4',
-							Z4K1: { Z1K1: 'Z9', Z9K1: 'Z0' },
-							Z4K2: [ 'Z3' ],
-							Z4K3: { Z1K1: 'Z9', Z9K1: 'Z101' },
-							Z4K4: { Z1K1: 'Z9', Z9K1: '' },
-							Z4K5: { Z1K1: 'Z9', Z9K1: '' },
-							Z4K6: { Z1K1: 'Z9', Z9K1: '' },
-							Z4K7: [ 'Z46' ],
-							Z4K8: [ 'Z64' ]
-						},
-						append: true
+					const payload = {
+						type: Constants.Z_TESTER,
+						literal: true
+					};
+					const expected = {
+						Z1K1: 'Z20',
+						Z20K1: { Z1K1: 'Z9', Z9K1: 'Z10001' },
+						Z20K2: { Z1K1: 'Z7', Z7K1: { Z1K1: 'Z9', Z9K1: '' } },
+						Z20K3: { Z1K1: 'Z7', Z7K1: { Z1K1: 'Z9', Z9K1: '' } }
 					};
 
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
 				} );
 			} );
 
-			describe( 'add ZTypedList', () => {
-				it( 'adds a valid ZTypedList', () => {
-					const payload = { id: 0, type: Constants.Z_TYPED_LIST };
-					store.changeType( payload );
+			describe( 'createZTypedList', () => {
+				it( 'creates a blank typed list', () => {
+					const payload = { type: Constants.Z_TYPED_LIST };
+					const expected = [
+						{ Z1K1: 'Z9', Z9K1: 'Z1' }
+					];
 
-					const expectedZids = [ 'Z1', 'Z9' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: [
-							{ Z1K1: 'Z9', Z9K1: 'Z1' }
-						],
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
 				} );
 
-				it( 'adds a valid ZTypedList of a given type', () => {
-					const payload = { id: 0, type: Constants.Z_TYPED_LIST, value: 'Z11' };
-					store.changeType( payload );
+				it( 'creates a blank typed list of a given type', () => {
+					const payload = { type: Constants.Z_TYPED_LIST, value: 'Z11' };
+					const expected = [
+						{ Z1K1: 'Z9', Z9K1: 'Z11' }
+					];
 
-					const expectedZids = [ 'Z1', 'Z9', 'Z11' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: [
-							{ Z1K1: 'Z9', Z9K1: 'Z11' }
-						],
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
 				} );
 
-				it( 'appends a valid ZTypedList to a list', () => {
-					store.zobject = tableDataToRowObjects( [
-						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
-						{ id: 1, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 0 },
-						{ id: 2, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 1 },
-						{ id: 3, key: 'Z1K1', value: 'Z9', parent: 2 },
-						{ id: 4, key: 'Z9K1', value: 'Z1', parent: 2 }
-					] );
-					const payload = { id: 1, type: Constants.Z_TYPED_LIST, value: 'Z6', append: true };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z9', 'Z6' ];
-					const expectedPayload = {
-						rowId: 1,
-						value: [
-							{ Z1K1: 'Z9', Z9K1: 'Z6' }
-						],
-						append: true
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-			} );
-
-			describe( 'add ZTypedPair', () => {
-				it( 'adds a valid ZTypedPair with empty values', () => {
-					const payload = { id: 0, type: Constants.Z_TYPED_PAIR };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z7', 'Z882', 'Z9' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: {
-								Z1K1: 'Z7',
-								Z7K1: 'Z882',
-								Z882K1: { Z1K1: 'Z9', Z9K1: '' },
-								Z882K2: { Z1K1: 'Z9', Z9K1: '' }
-							},
-							K1: {},
-							K2: {}
-						},
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-
-				it( 'adds a valid ZTypedPair with initial types', () => {
-					const payload = { id: 0, type: Constants.Z_TYPED_PAIR, values: [ 'Z6', 'Z11' ] };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z7', 'Z882', 'Z9', 'Z6', 'Z11' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: {
-								Z1K1: 'Z7',
-								Z7K1: 'Z882',
-								Z882K1: { Z1K1: 'Z9', Z9K1: 'Z6' },
-								Z882K2: { Z1K1: 'Z9', Z9K1: 'Z11' }
-							},
-							K1: '',
-							K2: { Z1K1: 'Z11', Z11K1: { Z1K1: 'Z9', Z9K1: '' }, Z11K2: '' }
-						},
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-
-				it( 'appends a valid ZTypedPair to a list', () => {
-					store.zobject = tableDataToRowObjects( [
-						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
-						{ id: 1, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 0 },
-						{ id: 2, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 1 },
-						{ id: 3, key: 'Z1K1', value: 'Z9', parent: 2 },
-						{ id: 4, key: 'Z9K1', value: 'Z1', parent: 2 }
-					] );
-					const payload = { id: 1, type: Constants.Z_TYPED_PAIR, values: [ 'Z6', 'Z6' ], append: true };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z7', 'Z882', 'Z9', 'Z6' ];
-					const expectedPayload = {
-						rowId: 1,
-						value: {
-							Z1K1: {
-								Z1K1: 'Z7',
-								Z7K1: 'Z882',
-								Z882K1: { Z1K1: 'Z9', Z9K1: 'Z6' },
-								Z882K2: { Z1K1: 'Z9', Z9K1: 'Z6' }
-							},
-							K1: '',
-							K2: ''
-						},
-						append: true
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-			} );
-
-			describe( 'add ZTypedMap', () => {
-				it( 'adds a valid ZTypedMap with empty values', () => {
-					const payload = { id: 0, type: Constants.Z_TYPED_MAP };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z7', 'Z883', 'Z9' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: {
-								Z1K1: 'Z7',
-								Z7K1: 'Z883',
-								Z883K1: { Z1K1: 'Z9', Z9K1: '' },
-								Z883K2: { Z1K1: 'Z9', Z9K1: '' }
-							}
-						},
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-
-				it( 'adds a valid ZTypedMap with initial types', () => {
-					const payload = { id: 0, type: Constants.Z_TYPED_MAP, values: [ 'Z6', 'Z1' ] };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z7', 'Z883', 'Z9', 'Z6' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: {
-								Z1K1: 'Z7',
-								Z7K1: 'Z883',
-								Z883K1: { Z1K1: 'Z9', Z9K1: 'Z6' },
-								Z883K2: { Z1K1: 'Z9', Z9K1: 'Z1' }
-							}
-						},
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-
-				it( 'appends a valid ZTypedMap to a list', () => {
-					store.zobject = tableDataToRowObjects( [
-						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
-						{ id: 1, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 0 },
-						{ id: 2, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 1 },
-						{ id: 3, key: 'Z1K1', value: 'Z9', parent: 2 },
-						{ id: 4, key: 'Z9K1', value: 'Z1', parent: 2 }
-					] );
-					const payload = { id: 1, type: Constants.Z_TYPED_MAP, values: [ 'Z6', 'Z1' ], append: true };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z7', 'Z883', 'Z9', 'Z6' ];
-					const expectedPayload = {
-						rowId: 1,
-						value: {
-							Z1K1: {
-								Z1K1: 'Z7',
-								Z7K1: 'Z883',
-								Z883K1: { Z1K1: 'Z9', Z9K1: 'Z6' },
-								Z883K2: { Z1K1: 'Z9', Z9K1: 'Z1' }
-							}
-						},
-						append: true
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-			} );
-
-			describe( 'add object of generic type', () => {
-				it( 'adds a valid typed list', () => {
-					const payload = { id: 0, type: { Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z6' } };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z9', 'Z6' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: [ { Z1K1: 'Z9', Z9K1: 'Z6' } ],
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-
-				it( 'adds a valid object of a type defined by a function call', () => {
-					const payload = { id: 0, type: { Z1K1: 'Z7', Z7K1: 'Z10001', Z10001K1: 'Z6' } };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z7', 'Z10001', 'Z6' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: {
-								Z1K1: 'Z7',
-								Z7K1: 'Z10001',
-								Z10001K1: 'Z6'
-							}
-						},
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-
-				it( 'adds a valid ZTypedPair with empty values', () => {
-					const payload = { id: 0, type: { Z1K1: 'Z7', Z7K1: 'Z882', Z882K1: 'Z6', Z882K2: 'Z6' } };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z7', 'Z882', 'Z6' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: {
-								Z1K1: 'Z7',
-								Z7K1: 'Z882',
-								Z882K1: 'Z6',
-								Z882K2: 'Z6'
-							}
-						},
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-
-				it( 'adds a valid ZTypedMap with empty values', () => {
-					const payload = { id: 0, type: { Z1K1: 'Z7', Z7K1: 'Z883', Z883K1: 'Z6', Z883K2: 'Z6' } };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z7', 'Z883', 'Z6' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: {
-								Z1K1: 'Z7',
-								Z7K1: 'Z883',
-								Z883K1: 'Z6',
-								Z883K2: 'Z6'
-							}
-						},
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-			} );
-
-			describe( 'add GenericObject', () => {
-				it( 'adds a valid object of known type', () => {
-					const payload = { id: 0, type: Constants.Z_KEY };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z3', 'Z9', 'Z12', 'Z11' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z3',
-							Z3K1: { Z1K1: 'Z9', Z9K1: '' },
-							Z3K2: '',
-							Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
-						},
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-
-				it( 'adds a valid object of known type with typed lists', () => {
-					const payload = { id: 0, type: Constants.Z_MULTILINGUALSTRINGSET };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z32', 'Z9', 'Z31' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z32',
-							Z32K1: [
-								{ Z1K1: 'Z9', Z9K1: 'Z31' }
-							]
-						},
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-
-				it( 'adds a valid object of an unknown type', () => {
-					const payload = { id: 0, type: 'Z10000' };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z10000' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z10000'
-						},
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-
-				it( 'appends a valid generic object to a list', () => {
-					store.zobject = tableDataToRowObjects( [
-						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
-						{ id: 1, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 0 },
-						{ id: 2, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 1 },
-						{ id: 3, key: 'Z1K1', value: 'Z9', parent: 2 },
-						{ id: 4, key: 'Z9K1', value: 'Z1', parent: 2 }
-					] );
-					const payload = { id: 1, type: 'Z10002', append: true };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z10002' ];
-					const expectedPayload = {
-						rowId: 1,
-						value: {
-							Z1K1: 'Z10002'
-						},
-						append: true
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-
-				it( 'appends a valid generic object typed by a function call to a list', () => {
-					store.zobject = tableDataToRowObjects( [
-						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
-						{ id: 1, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 0 },
-						{ id: 2, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 1 },
-						{ id: 3, key: 'Z1K1', value: 'Z9', parent: 2 },
-						{ id: 4, key: 'Z9K1', value: 'Z1', parent: 2 }
-					] );
-					const payload = { id: 1, type: { Z1K1: 'Z7', Z7K1: 'Z10003', Z10003K1: 'Z6' }, append: true };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z7', 'Z10003', 'Z6' ];
-					const expectedPayload = {
-						rowId: 1,
-						value: {
-							Z1K1: {
-								Z1K1: 'Z7',
-								Z7K1: 'Z10003',
-								Z10003K1: 'Z6'
-							}
-						},
-						append: true
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-			} );
-
-			describe( 'Add enum value', () => {
-				it( 'adds a reference when type is an enumeration', () => {
-					const payload = { id: 0, type: 'Z30000' };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z9' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z9',
-							Z9K1: ''
-						},
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-
-				it( 'adds a literal when is explicitly requested', () => {
-					const payload = { id: 0, type: 'Z30000', literal: true };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z30000', 'Z9' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
-							Z1K1: 'Z30000',
-							Z30000K1: {
-								Z1K1: 'Z9',
-								Z9K1: ''
-							}
-						},
-						append: false
-					};
-
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
-				} );
-			} );
-
-			describe( 'Add wikidata entity', () => {
-				it( 'adds a wikidata lexeme entity represented by a wikidata fetch function call', () => {
-					const payload = { id: 0, type: Constants.Z_WIKIDATA_LEXEME };
-					store.changeType( payload );
-
-					const expectedZids = [ 'Z1', 'Z7', 'Z6825', 'Z6095' ];
-					const expectedPayload = {
-						rowId: 0,
-						value: {
+				it( 'creates a blank typed list with generic type definition input', () => {
+					const payload = {
+						type: {
 							Z1K1: 'Z7',
-							Z7K1: 'Z6825',
-							Z6825K1: {
-								Z1K1: 'Z6095',
-								Z6095K1: ''
-							}
+							Z7K1: 'Z881',
+							Z881K1: 'Z11'
+						}
+					};
+					const expected = [
+						{ Z1K1: 'Z9', Z9K1: 'Z11' }
+					];
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+			} );
+
+			describe( 'createZTypedPair', () => {
+				it( 'creates a blank typed pair', () => {
+					const payload = { type: Constants.Z_TYPED_PAIR };
+					const expected = {
+						Z1K1: {
+							Z1K1: 'Z7',
+							Z7K1: 'Z882',
+							Z882K1: { Z1K1: 'Z9', Z9K1: '' },
+							Z882K2: { Z1K1: 'Z9', Z9K1: '' }
 						},
-						append: false
+						K1: {},
+						K2: {}
 					};
 
-					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
 				} );
 
-				describe( 'Add Wikidata Enum', () => {
-					it( 'creates a Wikidata Enum object with provided value', () => {
-						Object.defineProperty( store, 'isWikidataEnum', {
-							value: jest.fn( () => true )
-						} );
-						Object.defineProperty( store, 'getTypeOfWikidataEnum', {
-							value: jest.fn( () => 'Z6095' )
-						} );
+				it( 'creates a blank typed pair with initial types', () => {
+					const payload = { type: Constants.Z_TYPED_PAIR, values: [ 'Z6', 'Z11' ] };
+					const expected = {
+						Z1K1: {
+							Z1K1: 'Z7',
+							Z7K1: 'Z882',
+							Z882K1: { Z1K1: 'Z9', Z9K1: 'Z6' },
+							Z882K2: { Z1K1: 'Z9', Z9K1: 'Z11' }
+						},
+						K1: '',
+						K2: { Z1K1: 'Z11', Z11K1: { Z1K1: 'Z9', Z9K1: '' }, Z11K2: '' }
+					};
 
-						const payload = { id: 0, type: 'Z10004', value: 'Q12345' };
-						store.changeType( payload );
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+			} );
 
-						const expectedZids = [ 'Z1', 'Z10004', 'Z6095' ];
-						const expectedPayload = {
-							rowId: 0,
-							value: {
-								Z1K1: 'Z10004',
-								Z10004K1: {
-									Z1K1: 'Z6095',
-									Z6095K1: 'Q12345'
-								}
-							},
-							append: false
-						};
+			describe( 'createZTypedMap', () => {
+				it( 'creates a blank typed map', () => {
+					const payload = { type: Constants.Z_TYPED_MAP };
+					const expected = {
+						Z1K1: {
+							Z1K1: 'Z7',
+							Z7K1: 'Z883',
+							Z883K1: { Z1K1: 'Z9', Z9K1: '' },
+							Z883K2: { Z1K1: 'Z9', Z9K1: '' }
+						}
+					};
 
-						expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
-						expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+
+				it( 'creates a typed map with initial types', () => {
+					const payload = { type: Constants.Z_TYPED_MAP, values: [ 'Z6', 'Z1' ] };
+					const expected = {
+						Z1K1: {
+							Z1K1: 'Z7',
+							Z7K1: 'Z883',
+							Z883K1: { Z1K1: 'Z9', Z9K1: 'Z6' },
+							Z883K2: { Z1K1: 'Z9', Z9K1: 'Z1' }
+						}
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+			} );
+
+			describe( 'createWikidataEntity', () => {
+				beforeEach( () => {
+					const types = {
+						Z6091: { Z2K2: { Z1K1: 'Z4', Z4K2: [ 'Z3', { Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z6091K1' } ] } },
+						Z6092: { Z2K2: { Z1K1: 'Z4', Z4K2: [ 'Z3', { Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z6092K1' } ] } },
+						Z6094: { Z2K2: { Z1K1: 'Z4', Z4K2: [ 'Z3', { Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z6094K1' } ] } },
+						Z6095: { Z2K2: { Z1K1: 'Z4', Z4K2: [ 'Z3', { Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z6095K1' } ] } }
+					};
+					Object.defineProperty( store, 'getStoredObject', {
+						value: jest.fn( ( zid ) => types[ zid ] )
 					} );
 				} );
-			} );
-		} );
 
-		describe( 'clearType', () => {
-			it( 'clears all children except Z1K1', () => {
-				store.removeRowChildren = jest.fn();
-				Object.defineProperty( store, 'getChildrenByParentRowId', {
-					value: jest.fn().mockReturnValue( [
-						{ id: 1, key: 'Z1K1' },
-						{ id: 2, key: 'Z11K1' },
-						{ id: 3, key: 'Z11K2' }
-					] )
+				it( 'creates a blank wikidata item represented as a fetch function call', () => {
+					const payload = { type: Constants.Z_WIKIDATA_ITEM };
+					const expected = {
+						Z1K1: 'Z7',
+						Z7K1: 'Z6821',
+						Z6821K1: {
+							Z1K1: 'Z6091',
+							Z6091K1: ''
+						}
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
 				} );
 
-				store.clearType( 0 );
-				expect( store.removeRowChildren ).toHaveBeenCalledTimes( 2 );
-				expect( store.removeRowChildren ).toHaveBeenCalledWith( { rowId: 2, removeParent: true } );
-				expect( store.removeRowChildren ).toHaveBeenCalledWith( { rowId: 3, removeParent: true } );
+				it( 'creates a blank wikidata lexeme represented as a fetch function call', () => {
+					const payload = { type: Constants.Z_WIKIDATA_LEXEME };
+					const expected = {
+						Z1K1: 'Z7',
+						Z7K1: 'Z6825',
+						Z6825K1: {
+							Z1K1: 'Z6095',
+							Z6095K1: ''
+						}
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+
+				it( 'creates a blank wikidata lexeme form represented as a fetch function call', () => {
+					const payload = { type: Constants.Z_WIKIDATA_LEXEME_FORM };
+					const expected = {
+						Z1K1: 'Z7',
+						Z7K1: 'Z6824',
+						Z6824K1: {
+							Z1K1: 'Z6094',
+							Z6094K1: ''
+						}
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+
+				it( 'creates a blank wikidata property represented as a fetch function call', () => {
+					const payload = { type: Constants.Z_WIKIDATA_PROPERTY };
+					const expected = {
+						Z1K1: 'Z7',
+						Z7K1: 'Z6822',
+						Z6822K1: {
+							Z1K1: 'Z6092',
+							Z6092K1: ''
+						}
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+			} );
+
+			describe( 'createGenericObject', () => {
+				it( 'creates a valid object of a type defined by a function call', () => {
+					const payload = { type: { Z1K1: 'Z7', Z7K1: 'Z10001', Z10001K1: 'Z6' } };
+					const expected = {
+						Z1K1: {
+							Z1K1: 'Z7',
+							Z7K1: 'Z10001',
+							Z10001K1: 'Z6'
+						}
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+
+				it( 'creates a valid ZTypedPair with empty values', () => {
+					const payload = { type: { Z1K1: 'Z7', Z7K1: 'Z882', Z882K1: 'Z6', Z882K2: 'Z6' } };
+					const expected = {
+						Z1K1: {
+							Z1K1: 'Z7',
+							Z7K1: 'Z882',
+							Z882K1: 'Z6',
+							Z882K2: 'Z6'
+						}
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+
+				it( 'creates a valid ZTypedMap with empty values', () => {
+					const payload = { type: { Z1K1: 'Z7', Z7K1: 'Z883', Z883K1: 'Z6', Z883K2: 'Z6' } };
+					const expected = {
+						Z1K1: {
+							Z1K1: 'Z7',
+							Z7K1: 'Z883',
+							Z883K1: 'Z6',
+							Z883K2: 'Z6'
+						}
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+
+				it( 'creates a valid object of known type', () => {
+					const types = {
+						Z3: { Z2K2: { Z1K1: 'Z4', Z4K2: [ 'Z3',
+							{ Z1K1: 'Z3', Z3K1: 'Z4', Z3K2: 'Z3K1' },
+							{ Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z3K2' },
+							{ Z1K1: 'Z3', Z3K1: 'Z12', Z3K2: 'Z3K3' },
+							{ Z1K1: 'Z3', Z3K1: 'Z40', Z3K2: 'Z3K4' }
+						] } }
+					};
+					Object.defineProperty( store, 'getStoredObject', {
+						value: jest.fn( ( zid ) => types[ zid ] )
+					} );
+
+					const payload = { type: Constants.Z_KEY };
+					const expected = {
+						Z1K1: 'Z3',
+						Z3K1: { Z1K1: 'Z9', Z9K1: '' },
+						Z3K2: '',
+						Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] },
+						Z3K4: { Z1K1: 'Z40', Z40K1: { Z1K1: 'Z9', Z9K1: '' } }
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+
+				it( 'creates a valid object of known type with typed lists', () => {
+					const types = {
+						Z32: { Z2K2: { Z1K1: 'Z4', Z4K2: [ 'Z3',
+							{ Z1K1: 'Z3', Z3K1: { Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z31' }, Z3K2: 'Z32K1' }
+						] } }
+					};
+					Object.defineProperty( store, 'getStoredObject', {
+						value: jest.fn( ( zid ) => types[ zid ] )
+					} );
+
+					const payload = { type: Constants.Z_MULTILINGUALSTRINGSET };
+					const expected = {
+						Z1K1: 'Z32',
+						Z32K1: [ { Z1K1: 'Z9', Z9K1: 'Z31' } ]
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+
+				it( 'creates a valid object of an unknown type', () => {
+					const payload = { type: 'Z10000' };
+					const expected = {
+						Z1K1: 'Z10000'
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+			} );
+
+			describe( 'custom enumerations', () => {
+				beforeEach( () => {
+					const types = {
+						Z30000: { Z2K2: { Z1K1: 'Z4', Z4K2: [ 'Z3', { Z1K1: 'Z3', Z3K1: 'Z30000', Z3K2: 'Z30000K1' } ] } }
+					};
+					Object.defineProperty( store, 'getStoredObject', {
+						value: jest.fn( ( zid ) => types[ zid ] )
+					} );
+					Object.defineProperty( store, 'isCustomEnum', {
+						value: jest.fn( () => true )
+					} );
+				} );
+
+				it( 'creates a reference when type is a custom enumeration', () => {
+					const payload = { type: 'Z30000' };
+					const expected = { Z1K1: 'Z9', Z9K1: '' };
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+
+				it( 'creates a literal when type is a custom enumeration and explicitly requested', () => {
+					const payload = { type: 'Z30000', literal: true };
+					const expected = {
+						Z1K1: 'Z30000',
+						Z30000K1: {
+							Z1K1: 'Z9',
+							Z9K1: ''
+						}
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
 			} );
 		} );
 	} );

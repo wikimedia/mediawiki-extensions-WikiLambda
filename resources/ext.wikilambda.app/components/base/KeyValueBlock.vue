@@ -1,7 +1,6 @@
 <template>
 	<div
 		class="ext-wikilambda-app-key-value-block"
-		:class="rootClasses"
 		data-testid="key-value-block">
 		<!-- Pre Column -->
 		<!-- If there are pre-buttons from the slot, render them -->
@@ -53,7 +52,10 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
+
 const errorMixin = require( '../../mixins/errorMixin.js' );
+
+// Base components
 const ExpandedToggle = require( './ExpandedToggle.vue' );
 const KeyBlock = require( './KeyBlock.vue' );
 
@@ -65,22 +67,17 @@ module.exports = exports = defineComponent( {
 	},
 	mixins: [ errorMixin ],
 	props: {
-		depth: {
-			type: Number,
-			required: false,
-			default: undefined
-		},
 		edit: {
 			type: Boolean,
 			required: false,
 			default: false
 		},
-		disableEdit: {
+		expanded: {
 			type: Boolean,
 			required: false,
 			default: false
 		},
-		expanded: {
+		disableEdit: {
 			type: Boolean,
 			required: false,
 			default: false
@@ -131,21 +128,6 @@ module.exports = exports = defineComponent( {
 				return 'edit';
 			}
 			return 'edit-disabled';
-		},
-
-		/**
-		 * Finds the correct root class
-		 *
-		 * @return {string}
-		 */
-		rootClasses: function () {
-			const classList = [];
-
-			if ( this.depth ) {
-				classList.push( `ext-wikilambda-app-key-level--${ this.depth }` );
-			}
-
-			return classList;
 		},
 
 		/**

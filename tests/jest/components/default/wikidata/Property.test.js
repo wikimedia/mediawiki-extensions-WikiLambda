@@ -10,7 +10,7 @@ const { shallowMount } = require( '@vue/test-utils' ),
 	{ createGettersWithFunctionsMock } = require( '../../../helpers/getterHelpers.js' ),
 	Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' ),
 	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' ),
-	WikidataProperty = require( '../../../../../resources/ext.wikilambda.app/components/default-view-types/wikidata/Property.vue' );
+	WikidataProperty = require( '../../../../../resources/ext.wikilambda.app/components/types/wikidata/Property.vue' );
 
 const propertyId = 'P642';
 const propertyLabel = 'of';
@@ -21,15 +21,29 @@ const propertyData = {
 	}
 };
 
+// General configuration: wikidata reference
+const keyPath = 'main.Z2K2';
+const objectValue = {
+	Z1K1: { Z1K1: 'Z9', Z9K1: 'Z6092' },
+	Z6092K1: { Z1K1: 'Z6', Z6K1: 'P642' }
+};
+
+// Fetch form
+const objectValueFetch = {
+	Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+	Z7K1: { Z1K1: 'Z9', Z9K1: 'Z6822' },
+	Z6822K1: {
+		Z1K1: { Z1K1: 'Z9', Z9K1: 'Z6092' },
+		Z6092K1: { Z1K1: 'Z6', Z6K1: 'P642' }
+	}
+};
+
 describe( 'WikidataProperty', () => {
 	let store;
 
 	beforeEach( () => {
 		store = useMainStore();
 		store.getPropertyData = createGettersWithFunctionsMock();
-		store.getPropertyIdRow = createGettersWithFunctionsMock( { id: 1 } );
-		store.getPropertyId = createGettersWithFunctionsMock( propertyId );
-		store.getZStringTerminalValue = createGettersWithFunctionsMock( propertyId );
 		store.getUserLangCode = 'en';
 	} );
 
@@ -37,6 +51,8 @@ describe( 'WikidataProperty', () => {
 		it( 'renders wikidata property reference without errors', () => {
 			const wrapper = shallowMount( WikidataProperty, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false,
 					type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY
 				}
@@ -47,6 +63,8 @@ describe( 'WikidataProperty', () => {
 		it( 'renders wikidata property fetch function without errors', () => {
 			const wrapper = shallowMount( WikidataProperty, {
 				props: {
+					keyPath,
+					objectValue: objectValueFetch,
 					edit: false,
 					type: Constants.Z_FUNCTION_CALL
 				}
@@ -59,6 +77,8 @@ describe( 'WikidataProperty', () => {
 
 			const wrapper = shallowMount( WikidataProperty, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false,
 					type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY
 				}
@@ -72,6 +92,8 @@ describe( 'WikidataProperty', () => {
 		it( 'renders the property external link if data is not available', () => {
 			const wrapper = shallowMount( WikidataProperty, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false,
 					type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY
 				}
@@ -87,6 +109,8 @@ describe( 'WikidataProperty', () => {
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( WikidataProperty, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY
 				}
@@ -95,10 +119,10 @@ describe( 'WikidataProperty', () => {
 		} );
 
 		it( 'renders blank wikidata entity selector', () => {
-			store.getZStringTerminalValue = createGettersWithFunctionsMock();
-
 			const wrapper = shallowMount( WikidataProperty, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY
 				}
@@ -110,6 +134,8 @@ describe( 'WikidataProperty', () => {
 		it( 'renders wikidata entity selector', () => {
 			const wrapper = shallowMount( WikidataProperty, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY
 				}
@@ -123,6 +149,8 @@ describe( 'WikidataProperty', () => {
 
 			const wrapper = shallowMount( WikidataProperty, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY
 				}
@@ -139,6 +167,8 @@ describe( 'WikidataProperty', () => {
 		it( 'initializes wikidata entity selector input value with delayed fetch response', async () => {
 			const wrapper = shallowMount( WikidataProperty, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY
 				}
@@ -160,6 +190,8 @@ describe( 'WikidataProperty', () => {
 		it( 'sets property reference ID when selecting option from the menu', async () => {
 			const wrapper = shallowMount( WikidataProperty, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY
 				}
@@ -181,6 +213,8 @@ describe( 'WikidataProperty', () => {
 		it( 'sets property fetch function ID when selecting option from the menu', async () => {
 			const wrapper = shallowMount( WikidataProperty, {
 				props: {
+					keyPath,
+					objectValue: objectValueFetch,
 					edit: true,
 					type: Constants.Z_FUNCTION_CALL
 				}

@@ -7,8 +7,7 @@
 'use strict';
 
 const { shallowMount } = require( '@vue/test-utils' );
-const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
-const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../../helpers/getterHelpers.js' );
+const { createGettersWithFunctionsMock } = require( '../../../helpers/getterHelpers.js' );
 const FunctionEditorInputs = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorInputs.vue' );
 const LabelData = require( '../../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' );
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
@@ -20,9 +19,7 @@ describe( 'FunctionEditorInputs', () => {
 
 	beforeEach( () => {
 		store = useMainStore();
-		store.getLabelData = createLabelDataMock( { Z1002: 'English' } );
-		store.getZFunctionInputs = createGettersWithFunctionsMock( [] );
-		store.getRowByKeyPath = createGettersWithFunctionsMock( undefined );
+		store.getZFunctionInputLabels = createGettersWithFunctionsMock( [] );
 		store.getUserLangCode = 'en';
 	} );
 
@@ -40,7 +37,6 @@ describe( 'FunctionEditorInputs', () => {
 	} );
 
 	it( 'displays the "add input" button if the user has edit permission and there are no arguments', () => {
-		store.getZFunctionInputs = createGettersWithFunctionsMock( [] );
 		const wrapper = shallowMount( FunctionEditorInputs, {
 			props: {
 				zLanguage: 'Z1002',
@@ -58,9 +54,8 @@ describe( 'FunctionEditorInputs', () => {
 	} );
 
 	it( 'displays the "add another input" button if the user has edit permissions and there is an existing input', () => {
-		store.getZFunctionInputs = createGettersWithFunctionsMock( [
-			{ id: 2, key: '1', parent: 1, value: Constants.ROW_VALUE_OBJECT }
-		] );
+		store.getZFunctionInputLabels = createGettersWithFunctionsMock( [ { key: 'Z10001K1' } ] );
+
 		const wrapper = shallowMount( FunctionEditorInputs, {
 			props: {
 				zLanguage: 'Z1002',
@@ -92,11 +87,12 @@ describe( 'FunctionEditorInputs', () => {
 	} );
 
 	it( 'displays as many input components as arguments are in the function', () => {
-		store.getZFunctionInputs = createGettersWithFunctionsMock( [
-			{ id: 2, key: '1', parent: 1, value: Constants.ROW_VALUE_OBJECT },
-			{ id: 3, key: '2', parent: 1, value: Constants.ROW_VALUE_OBJECT },
-			{ id: 4, key: '3', parent: 1, value: Constants.ROW_VALUE_OBJECT }
+		store.getZFunctionInputLabels = createGettersWithFunctionsMock( [
+			{ key: 'Z10001K1' },
+			{ key: 'Z10001K2' },
+			{ key: 'Z10001K3' }
 		] );
+
 		const wrapper = shallowMount( FunctionEditorInputs, {
 			props: {
 				zLanguage: 'Z1002',
@@ -113,9 +109,8 @@ describe( 'FunctionEditorInputs', () => {
 	} );
 
 	it( 'emits an update argument label event when an input changes its label', async () => {
-		store.getZFunctionInputs = createGettersWithFunctionsMock( [
-			{ id: 2, key: '1', parent: 1, value: Constants.ROW_VALUE_OBJECT }
-		] );
+		store.getZFunctionInputLabels = createGettersWithFunctionsMock( [ { key: 'Z10001K1' } ] );
+
 		const wrapper = shallowMount( FunctionEditorInputs, {
 			props: {
 				zLanguage: 'Z1002',
@@ -130,7 +125,6 @@ describe( 'FunctionEditorInputs', () => {
 
 		const inputItem = wrapper.findComponent( { name: 'wl-function-editor-inputs-item' } );
 		inputItem.vm.$emit( 'argument-label-updated' );
-		await wrapper.vm.$nextTick();
 
 		// ASSERT: does not emit name-updated
 		expect( wrapper.emitted( 'argument-label-updated' ) ).toBeTruthy();

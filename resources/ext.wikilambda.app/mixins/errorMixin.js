@@ -12,42 +12,20 @@ const { mapActions, mapState } = require( 'pinia' );
 const Constants = require( '../Constants.js' );
 const useMainStore = require( '../store/index.js' );
 
-const errorMixin = {
-	data: function () {
-		return {
-			localErrors: []
-		};
-	},
+module.exports = exports = {
 	methods: Object.assign( {}, mapActions( useMainStore, [
 		'clearErrors'
 	] ), {
 		/**
-		 * Set a local error for the component.
-		 *
-		 * @memberof module:ext.wikilambda.app.mixins.errorMixin
-		 * @param {Object} payload
-		 */
-		setLocalError: function ( payload ) {
-			const error = {
-				type: payload.type || Constants.ERROR_TYPES.ERROR,
-				code: payload.code || undefined,
-				message: payload.message || undefined
-			};
-			this.localErrors.push( error );
-		},
-
-		/**
-		 * Clear local errors.
-		 * If this.rowId is associated to a field (is defined
-		 * and not zero), clear the errors associated to this
+		 * If this.keyPath is associated to a field (is defined and
+		 * not at the root level), clear the errors associated to this
 		 * component.
 		 *
 		 * @memberof module:ext.wikilambda.app.mixins.errorMixin
 		 */
 		clearFieldErrors: function () {
-			this.localErrors = [];
-			if ( this.rowId && ( this.rowId > 0 ) ) {
-				this.clearErrors( this.rowId );
+			if ( this.keyPath && ( this.keyPath !== Constants.STORED_OBJECTS.MAIN ) ) {
+				this.clearErrors( this.keyPath );
 			}
 		},
 
@@ -87,20 +65,20 @@ const errorMixin = {
 		}
 	} ),
 	computed: Object.assign( {}, mapState( useMainStore, [
-		'getErrors'
+		'getChildErrorKeys',
+		'getErrors',
+		'getErrorPaths'
 	] ), {
 		/**
-		 * Returns the errors of the component rowId. This is
-		 * used for field errors, not for page errors. For that
-		 * reason, if rowId is 0 or not passed, it will return
-		 * an empty array.
+		 * Returns the errors of the component keyPath.
 		 *
 		 * @memberof module:ext.wikilambda.app.mixins.errorMixin
 		 * @return {Array}
 		 */
 		fieldErrors: function () {
-			const globalErrors = ( this.rowId && this.rowId > 0 ) ? this.getErrors( this.rowId ) : [];
-			return globalErrors.concat( this.localErrors );
+			return ( this.keyPath && ( this.keyPath !== Constants.STORED_OBJECTS.MAIN ) ) ?
+				this.getErrors( this.keyPath ) :
+				[];
 		},
 
 		/**
@@ -111,8 +89,19 @@ const errorMixin = {
 		 */
 		hasFieldErrors: function () {
 			return ( this.fieldErrors.length > 0 );
+		},
+
+		/**
+		 * Returns whether there are any errors stored
+		 * for any child fields of this field.
+		 *
+		 * @memberof module:ext.wikilambda.app.mixins.errorMixin
+		 * @return {boolean}
+		 */
+		hasChildErrors: function () {
+			return this.keyPath ?
+				this.getChildErrorKeys( this.keyPath ).length > 0 :
+				false;
 		}
 	} )
 };
-
-module.exports = errorMixin;

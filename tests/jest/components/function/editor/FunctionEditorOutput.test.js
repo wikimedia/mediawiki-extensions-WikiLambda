@@ -7,7 +7,6 @@
 'use strict';
 
 const { shallowMount } = require( '@vue/test-utils' );
-const createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 const FunctionEditorOutput = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorOutput.vue' );
 
@@ -17,8 +16,7 @@ describe( 'FunctionEditorOutput', () => {
 	beforeEach( () => {
 		store = useMainStore();
 		store.getUserLangCode = 'en';
-		store.getZFunctionOutput = createGettersWithFunctionsMock( { id: 1 } );
-		store.getZReferenceTerminalValue = createGettersWithFunctionsMock();
+		store.getZFunctionOutput = { Z1K1: 'Z9', Z9K1: 'Z6' };
 	} );
 
 	it( 'renders without errors', () => {
@@ -39,7 +37,7 @@ describe( 'FunctionEditorOutput', () => {
 		expect( wrapper.findComponent( { name: 'wl-type-selector' } ).exists() ).toBeTruthy();
 	} );
 
-	it( 'initializes the type selector component with the function output row Id', () => {
+	it( 'initializes the type selector component with the function output key path and value', () => {
 		const wrapper = shallowMount( FunctionEditorOutput, {
 			props: { canEdit: true },
 			global: { stubs: { WlFunctionEditorField: false } }
@@ -47,11 +45,11 @@ describe( 'FunctionEditorOutput', () => {
 
 		const selector = wrapper.findComponent( { name: 'wl-type-selector' } );
 		expect( selector.exists() ).toBeTruthy();
-		expect( selector.props( 'rowId' ) ).toBe( 1 );
-		expect( selector.props( 'disabled' ) ).toBe( false );
+		expect( selector.props( 'keyPath' ) ).toBe( 'main.Z2K2.Z8K2' );
+		expect( selector.props( 'objectValue' ) ).toEqual( { Z1K1: 'Z9', Z9K1: 'Z6' } );
 	} );
 
-	it( 'initializes a disabled type selector component with the function output row Id', () => {
+	it( 'initializes a disabled type selector component with the function output key path and value', () => {
 		const wrapper = shallowMount( FunctionEditorOutput, {
 			props: { canEdit: false },
 			global: { stubs: { WlFunctionEditorField: false } }
@@ -59,12 +57,13 @@ describe( 'FunctionEditorOutput', () => {
 
 		const selector = wrapper.findComponent( { name: 'wl-type-selector' } );
 		expect( selector.exists() ).toBeTruthy();
-		expect( selector.props( 'rowId' ) ).toBe( 1 );
+		expect( selector.props( 'keyPath' ) ).toBe( 'main.Z2K2.Z8K2' );
+		expect( selector.props( 'objectValue' ) ).toEqual( { Z1K1: 'Z9', Z9K1: 'Z6' } );
 		expect( selector.props( 'disabled' ) ).toBe( true );
 	} );
 
 	it( 'does not initialize a type selector component', () => {
-		store.getZFunctionOutput = createGettersWithFunctionsMock( undefined );
+		store.getZFunctionOutput = undefined;
 		const wrapper = shallowMount( FunctionEditorOutput, {
 			props: { canEdit: true },
 			global: { stubs: { WlFunctionEditorField: false } }

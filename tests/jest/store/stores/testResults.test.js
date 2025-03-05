@@ -24,7 +24,7 @@ describe( 'testResults Pinia store', () => {
 	} );
 
 	describe( 'Getters', () => {
-		describe( 'getZTesterResults', () => {
+		describe( 'getZTesterResult', () => {
 			beforeEach( () => {
 				Object.defineProperty( store, 'getErrors', {
 					value: jest.fn().mockReturnValue( [] )
@@ -32,19 +32,19 @@ describe( 'testResults Pinia store', () => {
 			} );
 
 			it( 'should get undefined when the key is not found', () => {
-				const result = store.getZTesterResults( 'Z10000', 'Z10001', 'Z10002' );
+				const result = store.getZTesterResult( 'Z10000', 'Z10001', 'Z10002' );
 				expect( result ).toBe( undefined );
 			} );
 
 			it( 'should return the test result when it is found (true)', () => {
 				store.zTesterResults[ 'Z10000:Z10001:Z10002' ] = { Z1K1: 'Z40', Z40K1: 'Z41' };
-				const result = store.getZTesterResults( 'Z10000', 'Z10001', 'Z10002' );
+				const result = store.getZTesterResult( 'Z10000', 'Z10001', 'Z10002' );
 				expect( result ).toBe( true );
 			} );
 
 			it( 'should return the test result when it is found (false)', () => {
 				store.zTesterResults[ 'Z10000:Z10001:Z10002' ] = 'Z42';
-				const result = store.getZTesterResults( 'Z10000', 'Z10001', 'Z10002' );
+				const result = store.getZTesterResult( 'Z10000', 'Z10001', 'Z10002' );
 				expect( result ).toBe( false );
 			} );
 
@@ -55,7 +55,7 @@ describe( 'testResults Pinia store', () => {
 						type: 'error'
 					} ] )
 				} );
-				const result = store.getZTesterResults( 'Z10000', 'Z10001', 'Z10002' );
+				const result = store.getZTesterResult( 'Z10000', 'Z10001', 'Z10002' );
 				expect( result ).toBe( false );
 			} );
 		} );
@@ -404,7 +404,7 @@ describe( 'testResults Pinia store', () => {
 				expect( store.setError ).toHaveBeenCalledWith( {
 					errorMessage: 'Unable to run tests. Please reload.',
 					errorType: 'error',
-					rowId: -1
+					errorId: 'tests'
 				} );
 
 				expect( Object.keys( store.zTesterResults ).length ).toEqual( 0 );
@@ -438,8 +438,8 @@ describe( 'testResults Pinia store', () => {
 				Object.defineProperty( store, 'getCurrentZObjectId', {
 					value: 'Z10001'
 				} );
-				Object.defineProperty( store, 'getZObjectAsJson', {
-					value: currentObject
+				Object.defineProperty( store, 'getJsonObject', {
+					value: () => currentObject
 				} );
 				Object.defineProperty( store, 'getViewMode', {
 					value: false
@@ -480,8 +480,8 @@ describe( 'testResults Pinia store', () => {
 				Object.defineProperty( store, 'getCurrentZObjectId', {
 					value: 'Z0'
 				} );
-				Object.defineProperty( store, 'getZObjectAsJson', {
-					value: currentObject
+				Object.defineProperty( store, 'getJsonObject', {
+					value: () => currentObject
 				} );
 				Object.defineProperty( store, 'getViewMode', {
 					value: false

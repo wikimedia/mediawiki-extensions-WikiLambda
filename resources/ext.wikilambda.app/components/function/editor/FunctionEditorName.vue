@@ -17,7 +17,7 @@
 				:id="nameFieldId"
 				:lang="name ? langLabelData.langCode : undefined"
 				:dir="name ? langLabelData.langDir : undefined"
-				:model-value="name"
+				:model-value="name ? name.value : ''"
 				class="ext-wikilambda-app-function-editor-name__input"
 				:aria-label="nameLabel"
 				:placeholder="nameFieldPlaceholder"
@@ -35,12 +35,16 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
-const { CdxTextInput } = require( '../../../../codex.js' );
+
 const Constants = require( '../../../Constants.js' );
+const useMainStore = require( '../../../store/index.js' );
 const LabelData = require( '../../../store/classes/LabelData.js' );
 const pageTitleMixin = require( '../../../mixins/pageTitleMixin.js' );
-const useMainStore = require( '../../../store/index.js' );
+
+// Function editor components
 const FunctionEditorField = require( './FunctionEditorField.vue' );
+// Codex components
+const { CdxTextInput } = require( '../../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-name',
@@ -75,38 +79,16 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
-		'getZPersistentName',
-		'getZMonolingualTextValue',
-		'getRowByKeyPath'
+		'getZPersistentName'
 	] ), {
 		/**
-		 * Returns the Name (Z2K3) row for the given language.
-		 * If the language is not set, returns undefined
+		 * Finds the Name (Z2K3) for the given language and returns
+		 * its keyPath and value if found. Else, returns undefined.
 		 *
 		 * @return {Object|undefined}
 		 */
-		nameRow: function () {
-			return this.zLanguage ? this.getZPersistentName( this.zLanguage ) : undefined;
-		},
-		/**
-		 * Returns whether this function has a name object
-		 * for the given language.
-		 *
-		 * @return {boolean}
-		 */
-		hasName: function () {
-			return !!this.nameRow;
-		},
-		/**
-		 * Returns the Name value for the given language.
-		 * If value is not available, returns empty string
-		 *
-		 * @return {string}
-		 */
 		name: function () {
-			return this.hasName ?
-				this.getZMonolingualTextValue( this.nameRow.id ) :
-				'';
+			return this.zLanguage ? this.getZPersistentName( this.zLanguage ) : undefined;
 		},
 		/**
 		 * Returns the label for the name field
@@ -144,9 +126,7 @@ module.exports = exports = defineComponent( {
 		}
 	} ),
 	methods: Object.assign( {}, mapActions( useMainStore, [
-		'changeType',
-		'removeItemFromTypedList',
-		'setValueByRowIdAndPath'
+		'setZMonolingualString'
 	] ), {
 		/**
 		 * Updates the remainingChars data property as the user types into the Z2K5 field
@@ -167,41 +147,17 @@ module.exports = exports = defineComponent( {
 				return;
 			}
 
-			const value = event.target.value;
-
-			if ( this.hasName ) {
-				if ( value === '' ) {
-					this.removeItemFromTypedList( { rowId: this.nameRow.id } );
-				} else {
-					this.setValueByRowIdAndPath( {
-						rowId: this.nameRow.id,
-						keyPath: [
-							Constants.Z_MONOLINGUALSTRING_VALUE,
-							Constants.Z_STRING_VALUE
-						],
-						value
-					} );
-				}
-			} else {
-				// If this.nameRow is undefined, there's no monolingual string
-				// for the given language, so we create a new monolingual string
-				// with the new value and append to the parent list.
-				const parentRow = this.getRowByKeyPath( [
+			this.setZMonolingualString( {
+				parentKeyPath: [
+					Constants.STORED_OBJECTS.MAIN,
 					Constants.Z_PERSISTENTOBJECT_LABEL,
 					Constants.Z_MULTILINGUALSTRING_VALUE
-				] );
-				if ( !parentRow ) {
-					// This should never happen because all Z2Kn's are initialized
-					return;
-				}
-				this.changeType( {
-					id: parentRow.id,
-					type: Constants.Z_MONOLINGUALSTRING,
-					lang: this.zLanguage,
-					value,
-					append: true
-				} );
-			}
+				],
+				itemKeyPath: this.name ? this.name.keyPath : undefined,
+				value: event.target.value,
+				lang: this.zLanguage
+			} );
+
 			// After persisting in the state, update the page title
 			this.updatePageTitle();
 			this.$emit( 'name-updated' );
@@ -209,7 +165,7 @@ module.exports = exports = defineComponent( {
 	} ),
 	mounted: function () {
 		this.$nextTick( function () {
-			this.remainingChars = this.maxLabelChars - this.name.length;
+			this.remainingChars = this.maxLabelChars - ( this.name ? this.name.value.length : 0 );
 		} );
 	},
 	beforeUnmount() {

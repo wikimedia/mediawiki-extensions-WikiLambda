@@ -19,11 +19,11 @@ describe( 'FunctionEditorName', () => {
 
 	beforeEach( () => {
 		store = useMainStore();
-		store.getUserLangZid = 'Z1002';
-		store.getFallbackLanguageZids = [ 'Z1002', 'Z1003' ];
-		store.getRowByKeyPath = createGettersWithFunctionsMock();
-		store.getZPersistentName = createGettersWithFunctionsMock( { id: 2 } );
-		store.getZMonolingualTextValue = createGettersWithFunctionsMock( 'Function name' );
+		store.getZPersistentName = createGettersWithFunctionsMock( {
+			keyPath: 'main.Z2K3.Z12K1.3.Z11K2.Z6K1',
+			value: 'Function name'
+		} );
+		store.setZMonolingualString = jest.fn();
 	} );
 
 	it( 'renders without errors', () => {
@@ -51,6 +51,20 @@ describe( 'FunctionEditorName', () => {
 		expect( input.props( 'modelValue' ) ).toBe( 'Function name' );
 	} );
 
+	it( 'renders an input box when there is no name', () => {
+		store.getZPersistentName = createGettersWithFunctionsMock();
+		const wrapper = shallowMount( FunctionEditorName, {
+			props: {
+				zLanguage: 'Z1002',
+				langLabelData
+			},
+			global: { stubs: { WlFunctionEditorField: false } }
+		} );
+
+		const input = wrapper.findComponent( { name: 'cdx-text-input' } );
+		expect( input.props( 'modelValue' ) ).toBe( '' );
+	} );
+
 	describe( 'on input', () => {
 		it( 'removes the name object if new value is empty string', async () => {
 			const wrapper = shallowMount( FunctionEditorName, {
@@ -66,11 +80,13 @@ describe( 'FunctionEditorName', () => {
 			// ACT: Change value of name input
 			const input = wrapper.findComponent( { name: 'cdx-text-input' } );
 			input.vm.$emit( 'change', { target: { value: '' } } );
-			await wrapper.vm.$nextTick();
 
-			// ASSERT: removeItemFromTypedList action runs correctly
-			expect( store.removeItemFromTypedList ).toHaveBeenCalledWith( {
-				rowId: 2
+			// ASSERT: setZMonolingualString action runs correctly
+			expect( store.setZMonolingualString ).toHaveBeenCalledWith( {
+				parentKeyPath: [ 'main', 'Z2K3', 'Z12K1' ],
+				itemKeyPath: 'main.Z2K3.Z12K1.3.Z11K2.Z6K1',
+				value: '',
+				lang: 'Z1002'
 			} );
 
 			// ASSERT: emits name-updated
@@ -96,11 +112,12 @@ describe( 'FunctionEditorName', () => {
 			input.vm.$emit( 'change', { target: { value: 'New Function Name' } } );
 			await wrapper.vm.$nextTick();
 
-			// ASSERT: setValueByRowIdAndPath action runs correctly
-			expect( store.setValueByRowIdAndPath ).toHaveBeenCalledWith( {
-				rowId: 2,
-				keyPath: [ 'Z11K2', 'Z6K1' ],
-				value: 'New Function Name'
+			// ASSERT: setZMonolingualString action runs correctly
+			expect( store.setZMonolingualString ).toHaveBeenCalledWith( {
+				parentKeyPath: [ 'main', 'Z2K3', 'Z12K1' ],
+				itemKeyPath: 'main.Z2K3.Z12K1.3.Z11K2.Z6K1',
+				value: 'New Function Name',
+				lang: 'Z1002'
 			} );
 
 			// ASSERT: emits name-updated
@@ -112,7 +129,6 @@ describe( 'FunctionEditorName', () => {
 
 		it( 'adds a new monolingual string if there is no name object', async () => {
 			store.getZPersistentName = createGettersWithFunctionsMock( undefined );
-			store.getRowByKeyPath = createGettersWithFunctionsMock( { id: 1 } );
 
 			const wrapper = shallowMount( FunctionEditorName, {
 				props: {
@@ -129,13 +145,11 @@ describe( 'FunctionEditorName', () => {
 			input.vm.$emit( 'change', { target: { value: 'New Function Name' } } );
 			await wrapper.vm.$nextTick();
 
-			// ASSERT: changeType action runs correctly
-			expect( store.changeType ).toHaveBeenCalledWith( {
-				id: 1,
-				type: 'Z11',
-				lang: 'Z1002',
+			// ASSERT: setZMonolingualString action runs correctly
+			expect( store.setZMonolingualString ).toHaveBeenCalledWith( {
+				parentKeyPath: [ 'main', 'Z2K3', 'Z12K1' ],
 				value: 'New Function Name',
-				append: true
+				lang: 'Z1002'
 			} );
 
 			// ASSERT: emits name-updated

@@ -44,11 +44,13 @@ const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
 
 const Constants = require( '../../../Constants.js' );
-const StatusIcon = require( '../../base/StatusIcon.vue' );
 const icons = require( '../../../../lib/icons.json' );
 const typeMixin = require( '../../../mixins/typeMixin.js' );
 const useMainStore = require( '../../../store/index.js' );
 const urlUtils = require( '../../../utils/urlUtils.js' );
+
+// Base components
+const StatusIcon = require( '../../base/StatusIcon.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-report-item',
@@ -57,19 +59,19 @@ module.exports = exports = defineComponent( {
 	},
 	mixins: [ typeMixin ],
 	props: {
-		zFunctionId: {
+		functionZid: {
 			type: String,
 			required: true
 		},
-		zImplementationId: {
+		implementationZid: {
 			type: String,
 			required: true
 		},
-		zTesterId: {
+		testerZid: {
 			type: String,
 			required: true
 		},
-		reportType: {
+		contentType: {
 			type: String,
 			default: Constants.Z_TESTER
 		},
@@ -80,7 +82,7 @@ module.exports = exports = defineComponent( {
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
 		'getUserLangCode',
-		'getZTesterResults',
+		'getZTesterResult',
 		'getLabelData'
 	] ), {
 		/**
@@ -89,9 +91,9 @@ module.exports = exports = defineComponent( {
 		 * @return {LabelData}
 		 */
 		titleLabelData: function () {
-			return this.reportType === Constants.Z_TESTER ?
-				this.getLabelData( this.zImplementationId ) :
-				this.getLabelData( this.zTesterId );
+			return this.contentType === Constants.Z_TESTER ?
+				this.getLabelData( this.implementationZid ) :
+				this.getLabelData( this.testerZid );
 		},
 		/**
 		 * Returns the link for the reported item
@@ -99,7 +101,7 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		titleLink: function () {
-			const zid = this.reportType === Constants.Z_TESTER ? this.zImplementationId : this.zTesterId;
+			const zid = this.contentType === Constants.Z_TESTER ? this.implementationZid : this.testerZid;
 			return urlUtils.generateViewUrl( { langCode: this.getUserLangCode, zid } );
 		},
 		/**
@@ -108,10 +110,10 @@ module.exports = exports = defineComponent( {
 		 * @return {boolean}
 		 */
 		testerStatus: function () {
-			return this.getZTesterResults(
-				this.zFunctionId,
-				this.zTesterId,
-				this.zImplementationId
+			return this.getZTesterResult(
+				this.functionZid,
+				this.testerZid,
+				this.implementationZid
 			);
 		},
 		/**
@@ -123,7 +125,7 @@ module.exports = exports = defineComponent( {
 			if ( this.fetching ) {
 				return Constants.TESTER_STATUS.RUNNING;
 			}
-			if ( !( this.zImplementationId ) || !( this.zTesterId ) ) {
+			if ( !( this.implementationZid ) || !( this.testerZid ) ) {
 				return Constants.TESTER_STATUS.READY;
 			}
 			if ( this.testerStatus === true ) {
@@ -178,8 +180,8 @@ module.exports = exports = defineComponent( {
 	methods: {
 		emitTesterKeys: function () {
 			this.$emit( 'set-keys', {
-				zImplementationId: this.zImplementationId,
-				zTesterId: this.zTesterId
+				implementationZid: this.implementationZid,
+				testerZid: this.testerZid
 			} );
 		}
 	}

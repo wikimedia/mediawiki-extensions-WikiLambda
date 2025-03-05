@@ -56,15 +56,18 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { CdxMessage } = require( '../../../../codex.js' );
 const { mapActions, mapState } = require( 'pinia' );
 
 const Constants = require( '../../../Constants.js' );
 const errorMixin = require( '../../../mixins/errorMixin.js' );
-const FunctionViewerDetailsTable = require( './FunctionViewerDetailsTable.vue' );
 const typeMixin = require( '../../../mixins/typeMixin.js' );
 const useMainStore = require( '../../../store/index.js' );
 const urlUtils = require( '../../../utils/urlUtils.js' );
+
+// Function view components
+const FunctionViewerDetailsTable = require( './FunctionViewerDetailsTable.vue' );
+// Codex components
+const { CdxMessage } = require( '../../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-viewer-details',
@@ -73,13 +76,6 @@ module.exports = exports = defineComponent( {
 		'cdx-message': CdxMessage
 	},
 	mixins: [ typeMixin, errorMixin ],
-	props: {
-		rowId: {
-			type: Number,
-			required: false,
-			default: 0
-		}
-	},
 	data: function () {
 		return {
 			/* Local state for function implementations */
@@ -112,15 +108,6 @@ module.exports = exports = defineComponent( {
 		 */
 		allImplementations: function () {
 			return Object.keys( this.implementationsState );
-		},
-
-		/**
-		 * Zids of all implementations already connected to the function
-		 *
-		 * @return {Array}
-		 */
-		connectedImplementations: function () {
-			return this.getConnectedImplementations( this.rowId );
 		},
 
 		/**
@@ -222,7 +209,7 @@ module.exports = exports = defineComponent( {
 				const implementationLabelData = this.getLabelData( zid );
 
 				// Get implementation connected state:
-				const isConnected = this.connectedImplementations.includes( zid );
+				const isConnected = this.getConnectedImplementations.includes( zid );
 
 				// Get implementation test results:
 				const testResults = this.getZTesterPercentage( zid );
@@ -303,15 +290,6 @@ module.exports = exports = defineComponent( {
 		 */
 		allTests: function () {
 			return Object.keys( this.testsState );
-		},
-
-		/**
-		 * Zids of all tests already connected to the function
-		 *
-		 * @return {Array}
-		 */
-		connectedTests: function () {
-			return this.getConnectedTests( this.rowId );
 		},
 
 		/**
@@ -417,7 +395,7 @@ module.exports = exports = defineComponent( {
 				const testLabelData = this.getLabelData( zid );
 
 				// Get test connected state:
-				const isConnected = this.connectedTests.includes( zid );
+				const isConnected = this.getConnectedTests.includes( zid );
 
 				// Build row data with first three columns:
 				const rowData = {
@@ -531,7 +509,7 @@ module.exports = exports = defineComponent( {
 			const allZids = zids === null ? this.allImplementations : zids;
 
 			for ( const zid of allZids ) {
-				const isConnected = this.connectedImplementations.includes( zid );
+				const isConnected = this.getConnectedImplementations.includes( zid );
 				this.implementationsState[ zid ] = {
 					available: isConnected,
 					checked: false
@@ -548,7 +526,7 @@ module.exports = exports = defineComponent( {
 		setTestsState: function ( zids = null ) {
 			const allZids = zids === null ? this.allTests : zids;
 			for ( const zid of allZids ) {
-				const isConnected = this.connectedTests.includes( zid );
+				const isConnected = this.getConnectedTests.includes( zid );
 				this.testsState[ zid ] = {
 					available: isConnected,
 					checked: false
@@ -566,10 +544,7 @@ module.exports = exports = defineComponent( {
 
 			this.implementationsLoading = true;
 
-			this.connectImplementations( {
-				rowId: this.rowId,
-				zids
-			} ).then( () => {
+			this.connectImplementations( { zids } ).then( () => {
 				this.closeToast();
 				this.setImplementationsState();
 			} ).catch( ( error ) => {
@@ -588,10 +563,7 @@ module.exports = exports = defineComponent( {
 			);
 
 			this.implementationsLoading = true;
-			this.disconnectImplementations( {
-				rowId: this.rowId,
-				zids
-			} ).then( () => {
+			this.disconnectImplementations( { zids } ).then( () => {
 				this.closeToast();
 				this.setImplementationsState();
 			} ).catch( ( error ) => {
@@ -609,10 +581,7 @@ module.exports = exports = defineComponent( {
 				.filter( ( zid ) => this.testsState[ zid ].checked && !this.testsState[ zid ].available );
 
 			this.testsLoading = true;
-			this.connectTests( {
-				rowId: this.rowId,
-				zids
-			} ).then( () => {
+			this.connectTests( { zids } ).then( () => {
 				this.closeToast();
 				this.setTestsState();
 			} ).catch( ( error ) => {
@@ -630,10 +599,7 @@ module.exports = exports = defineComponent( {
 				.filter( ( zid ) => this.testsState[ zid ].checked && this.testsState[ zid ].available );
 
 			this.testsLoading = true;
-			this.disconnectTests( {
-				rowId: this.rowId,
-				zids
-			} ).then( () => {
+			this.disconnectTests( { zids } ).then( () => {
 				this.closeToast();
 				this.setTestsState();
 			} ).catch( ( error ) => {

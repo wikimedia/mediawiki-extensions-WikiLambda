@@ -7,7 +7,15 @@
 'use strict';
 
 const { shallowMount } = require( '@vue/test-utils' );
-const ZTypedListItems = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZTypedListItems.vue' );
+const ZTypedListItems = require( '../../../../resources/ext.wikilambda.app/components/types/ZTypedListItems.vue' );
+
+// General use
+const keyPath = 'main.Z2K2';
+const objectValue = [
+	{ Z1K1: 'Z9', Z9K1: 'Z6' },
+	{ Z1K1: 'Z6', Z6K1: 'one' },
+	{ Z1K1: 'Z6', Z6K1: 'two' }
+];
 
 describe( 'ZTypedListItems', () => {
 
@@ -15,10 +23,11 @@ describe( 'ZTypedListItems', () => {
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( ZTypedListItems, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false,
 					expanded: false,
-					listItemType: 'Z6',
-					listItemsRowIds: [ 1, 2 ]
+					listItemType: 'Z6'
 				}
 			} );
 
@@ -28,10 +37,11 @@ describe( 'ZTypedListItems', () => {
 		it( 'renders ZObjectKeyValue for each list item', () => {
 			const wrapper = shallowMount( ZTypedListItems, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false,
 					expanded: false,
-					listItemType: 'Z6',
-					listItemsRowIds: [ 1, 2 ]
+					listItemType: 'Z6'
 				},
 				global: {
 					stubs: { WlKeyValueBlock: false }
@@ -44,10 +54,11 @@ describe( 'ZTypedListItems', () => {
 		it( 'renders list items label when expanded', () => {
 			const wrapper = shallowMount( ZTypedListItems, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false,
 					expanded: true,
-					listItemType: 'Z6',
-					listItemsRowIds: [ 1, 2 ]
+					listItemType: 'Z6'
 				},
 				global: {
 					stubs: { WlKeyValueBlock: false, WlKeyBlock: false }
@@ -63,10 +74,11 @@ describe( 'ZTypedListItems', () => {
 		it( 'does not render list items label when collapsed', () => {
 			const wrapper = shallowMount( ZTypedListItems, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false,
 					expanded: false,
-					listItemType: 'Z6',
-					listItemsRowIds: [ 1, 2 ]
+					listItemType: 'Z6'
 				}
 			} );
 
@@ -79,10 +91,11 @@ describe( 'ZTypedListItems', () => {
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( ZTypedListItems, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
 					expanded: false,
-					listItemType: 'Z6',
-					listItemsRowIds: [ 1, 2 ]
+					listItemType: 'Z6'
 				}
 			} );
 

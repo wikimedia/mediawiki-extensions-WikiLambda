@@ -7,6 +7,8 @@
 'use strict';
 
 const Constants = require( '../../Constants.js' ); // Import Constants
+const { getZObjectType } = require( '../../utils/zobjectUtils.js' );
+const { typeToString } = require( '../../utils/typeUtils.js' );
 
 module.exports = {
 	state: {
@@ -40,18 +42,20 @@ module.exports = {
 		 * Set invalid list items for a particular list ID
 		 *
 		 * @param {Object} payload
-		 * @param {boolean} payload.parentRowId
-		 * @param {boolean} payload.listItems
+		 * @param {string} payload.listId
+		 * @param {Array<string>} payload.listItems
 		 */
 		setInvalidListItems: function ( payload ) {
-			this.invalidListItems[ payload.parentRowId ] = payload.listItems;
+			this.invalidListItems[ payload.listId ] = payload.listItems;
 		},
 
 		/**
-		 * Clear invalid list items
+		 * Clear invalid list items for a particular list ID
+		 *
+		 * @param {string} listId
 		 */
-		clearInvalidListItems: function () {
-			this.invalidListItems = {};
+		clearInvalidListItems: function ( listId ) {
+			this.invalidListItems[ listId ] = [];
 		},
 
 		/**
@@ -63,40 +67,53 @@ module.exports = {
 		 *   - Marks list items with incompatible types as invalid.
 		 *
 		 * @param {Object} payload
-		 * @param {number} payload.parentRowId - The parent row ID of the list.
-		 * @param {string} payload.newListItemType - The new type of the list items.
+		 * @param {string} payload.keyPath
+		 * @param {Array} payload.objectValue
+		 * @param {Object|string} payload.newType
 		 */
-		handleListTypeChange: function ( { parentRowId, newListItemType } ) {
-			const isZObject = newListItemType === Constants.Z_OBJECT;
-			const listItemsRowIds = this.getTypedListItemsRowIds( parentRowId );
-			const hasListItems = listItemsRowIds.length > 0;
-
-			// If the type was changed to Object/Z1, clear errors and invalid items
-			if ( isZObject ) {
-				this.clearErrors( 0 );
-				this.clearInvalidListItems();
+		handleListTypeChange: function ( { keyPath, objectValue, newType } ) {
+			// objectValue must be an array with items (other than the benjamin)
+			if ( !objectValue || !Array.isArray( objectValue ) || objectValue.length <= 1 ) {
 				return;
 			}
 
-			// If the type was changed to a different type and there are list items, show a warning
-			if ( hasListItems ) {
-				// If the typed list type changed error has not been set, set it
-				if ( !this.hasErrorByCode( 0, Constants.ERROR_CODES.TYPED_LIST_TYPE_CHANGED ) ) {
-					this.setError( {
-						rowId: 0,
-						errorCode: Constants.ERROR_CODES.TYPED_LIST_TYPE_CHANGED,
-						errorType: Constants.ERROR_TYPES.WARNING
-					} );
-				}
+			const anyType = newType === Constants.Z_OBJECT;
+			const itemIndexes = Object.keys( objectValue ).slice( 1 ).map( Number );
 
-				// Set invalid list items
-				this.setInvalidListItems( {
-					parentRowId,
-					listItems: listItemsRowIds.filter(
-						( rowId ) => this.getZObjectTypeByRowId( rowId ) !== newListItemType
-					)
+			// If the type was changed to Object/Z1, clear errors and invalid items for the listId (its keyPath)
+			if ( anyType ) {
+				this.clearErrors( keyPath );
+				this.clearInvalidListItems( keyPath );
+				return;
+			}
+
+			// Set invalid list items
+			const newTypeString = typeToString( newType );
+			const listItems = [];
+			itemIndexes.forEach( ( index ) => {
+				const itemTypeString = typeToString( getZObjectType( objectValue[ index ] ) );
+				if ( newTypeString !== itemTypeString ) {
+					listItems.push( index );
+				}
+			} );
+
+			// If the type was changed to a different type and there are list items, show a warning
+			if (
+				!this.hasErrorByCode( keyPath, Constants.ERROR_CODES.TYPED_LIST_TYPE_CHANGED ) &&
+				listItems.length > 0
+			) {
+				// If the typed list type changed error has not been set, set it
+				this.setError( {
+					errorId: Constants.STORED_OBJECTS.MAIN,
+					errorCode: Constants.ERROR_CODES.TYPED_LIST_TYPE_CHANGED,
+					errorType: Constants.ERROR_TYPES.WARNING
 				} );
 			}
+
+			this.setInvalidListItems( {
+				listId: keyPath,
+				listItems
+			} );
 		}
 	}
 };

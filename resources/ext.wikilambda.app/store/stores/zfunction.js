@@ -7,226 +7,142 @@
 
 const Constants = require( '../../Constants.js' );
 const { fetchFunctionObjects } = require( '../../utils/apiUtils.js' );
+const { canonicalToHybrid } = require( '../../utils/schemata.js' );
 const { createConnectedItemsChangesSummaryMessage } = require( '../../utils/miscUtils.js' );
+const {
+	validateGenericType,
+	getZMonolingualItemForLang,
+	getZReferenceTerminalValue,
+	getZStringTerminalValue
+} = require( '../../utils/zobjectUtils.js' );
 
 module.exports = {
 	state: {},
 
 	getters: {
 		/**
-		 * Returns the function Zid of a given function given
-		 * the function rowId. If not set, returns undefined
-		 *
-		 * @return {Function}
-		 */
-		getZFunctionIdentity: function () {
-			/**
-			 * @param {number} rowId
-			 * @return {string | undefined}
-			 */
-			const findZFunctionIdentity = ( rowId = 0 ) => {
-				const functionZid = this.getRowByKeyPath( [
-					Constants.Z_PERSISTENTOBJECT_VALUE,
-					Constants.Z_FUNCTION_IDENTITY
-				], rowId );
-				return functionZid ?
-					this.getZReferenceTerminalValue( functionZid.id ) :
-					undefined;
-			};
-			return findZFunctionIdentity;
-		},
-
-		/**
-		 * Returns the list of input rows for the function given
-		 * given the root object rowId. If no rowId given, starts
-		 * from 0, which is safe to use.
+		 * Returns the list of inputs of the root function.
 		 *
 		 * @return {Function}
 		 */
 		getZFunctionInputs: function () {
+			const inputs = this.getZObjectByKeyPath( [
+				Constants.STORED_OBJECTS.MAIN,
+				Constants.Z_PERSISTENTOBJECT_VALUE,
+				Constants.Z_FUNCTION_ARGUMENTS
+			] );
+
+			if ( !Array.isArray( inputs ) || !inputs.length ) {
+				return [];
+			}
+
+			// Remove benjamin type item
+			return inputs.slice( 1 );
+		},
+
+		/**
+		 * Returns the array of input data: its label for a given language (if any)
+		 * and general input information, sorted by the input key.
+		 * For each input in the function, it returns:
+		 * * keyPath: string key path to the monolingual object that contains the input
+		 *   label for the given language, or undefined if the label doesn't exist yet.
+		 * * value: terminal text value of the input label for the given language, or
+		 *   empty string if it doesn't exist yet.
+		 * * key: terminal string value of the input key.
+		 * * type: whole content of the input type (object in hybrid form).
+		 * * typeKeyPath: string key path to the input type.
+		 *
+		 * @param {string} lang
+		 * @return {Function}
+		 */
+		getZFunctionInputLabels: function () {
 			/**
-			 * @param {string} rowId
+			 * @param {string} lang
 			 * @return {Array}
 			 */
-			const findZFunctionInputs = ( rowId = 0 ) => {
-				const inputsRow = this.getRowByKeyPath( [
-					Constants.Z_PERSISTENTOBJECT_VALUE,
-					Constants.Z_FUNCTION_ARGUMENTS
-				], rowId );
-				if ( inputsRow === undefined ) {
-					return [];
-				}
-				const inputs = this.getChildrenByParentRowId( inputsRow.id );
-				// Remove benjamin type item
-				return inputs.slice( 1 );
+			const findInputLabels = ( lang ) => {
+				const inputs = this.getZFunctionInputs;
+
+				return inputs.map( ( input, index ) => {
+					const inputKeyPath = [
+						Constants.STORED_OBJECTS.MAIN,
+						Constants.Z_PERSISTENTOBJECT_VALUE,
+						Constants.Z_FUNCTION_ARGUMENTS,
+						index + 1
+					];
+					const key = getZStringTerminalValue( input[ Constants.Z_ARGUMENT_KEY ] );
+					const type = input[ Constants.Z_ARGUMENT_TYPE ];
+					const typeKeyPath = [ ...inputKeyPath, Constants.Z_ARGUMENT_TYPE ].join( '.' );
+
+					const label = getZMonolingualItemForLang( input[ Constants.Z_ARGUMENT_LABEL ], lang );
+					const value = label ? label.value : '';
+					const keyPath = label ?
+						[
+							...inputKeyPath,
+							Constants.Z_ARGUMENT_LABEL,
+							Constants.Z_MULTILINGUALSTRING_VALUE,
+							label.index,
+							Constants.Z_MONOLINGUALSTRING_VALUE
+						].join( '.' ) :
+						undefined;
+
+					return { keyPath, value, key, type, typeKeyPath };
+				} ).sort( ( a, b ) => ( a.key < b.key ) ? -1 : ( b.key < a.key ) ? 1 : 0 );
 			};
-			return findZFunctionInputs;
+			return findInputLabels;
 		},
 
 		/**
-		 * Returns the array of language Zids that are present
-		 * for each of the function's input labels. If no arguments,
-		 * returns an empty array.
+		 * Returns the output type for the root function.
 		 *
-		 * @return {Function}
-		 */
-		getZFunctionInputLangs: function () {
-			/**
-			 * @param {string} rowId
-			 * @return {Array} Array of Arrays of language zids
-			 */
-			const findZFunctionInputLangs = ( rowId = 0 ) => {
-				const languages = [];
-				const inputs = this.getZFunctionInputs( rowId );
-				for ( const inputRow of inputs ) {
-					const inputLabelsRow = this.getRowByKeyPath( [
-						Constants.Z_ARGUMENT_LABEL,
-						Constants.Z_MULTILINGUALSTRING_VALUE
-					], inputRow.id );
-					const inputLangs = inputLabelsRow ?
-						this.getZMultilingualLanguageList( inputLabelsRow.id ) :
-						[];
-					languages.push( inputLangs );
-				}
-				return languages;
-			};
-			return findZFunctionInputLangs;
-		},
-
-		/**
-		 * Returns the output type row for the function given
-		 * given the root object rowId. If no rowId given, starts
-		 * from 0, which is safe to use.
-		 *
-		 * @return {Function}
+		 * @return {Object}
 		 */
 		getZFunctionOutput: function () {
-			/**
-			 * @param {number} rowId
-			 * @return {Object|undefined}
-			 */
-			const findZFunctionOutput = ( rowId = 0 ) => this.getRowByKeyPath( [
+			return this.getZObjectByKeyPath( [
+				Constants.STORED_OBJECTS.MAIN,
 				Constants.Z_PERSISTENTOBJECT_VALUE,
 				Constants.Z_FUNCTION_RETURN_TYPE
-			], rowId );
-			return findZFunctionOutput;
-		},
-
-		/**
-		 * Returns the input type row of an input or
-		 * argument declaration, given the rowId of the
-		 * argument/Z17 object.
-		 *
-		 * @return {Function}
-		 */
-		getZArgumentTypeRowId: function () {
-			/**
-			 * @param {number} rowId
-			 * @return {number|undefined}
-			 */
-			const findZArgumentTypeRowId = ( rowId = 0 ) => {
-				const argType = this.getRowByKeyPath( [ Constants.Z_ARGUMENT_TYPE ], rowId );
-				return argType ? argType.id : undefined;
-			};
-			return findZArgumentTypeRowId;
-		},
-
-		/**
-		 * Returns the terminal string value of the input key
-		 *
-		 * @return {Function}
-		 */
-		getZArgumentKey: function () {
-			/**
-			 * @param {number} rowId
-			 * @return {string|undefined}
-			 */
-			const findZArgumentKey = ( rowId = 0 ) => {
-				const argKey = this.getRowByKeyPath( [ Constants.Z_ARGUMENT_KEY ], rowId );
-				return argKey ? this.getZStringTerminalValue( argKey.id ) : undefined;
-			};
-			return findZArgumentKey;
-		},
-
-		/**
-		 * Returns the input label row of an input or
-		 * argument declaration, given the rowId of the
-		 * argument/Z17 object and the language Zid.
-		 *
-		 * @return {Function}
-		 */
-		getZArgumentLabelForLanguage: function () {
-			/**
-			 * @param {string} rowId
-			 * @param {string} lang
-			 * @return {Object|undefined}
-			 */
-			const findZArgumentLabelForLanguage = ( rowId, lang ) => {
-				const argLabelsRow = this.getRowByKeyPath( [
-					Constants.Z_ARGUMENT_LABEL,
-					Constants.Z_MULTILINGUALSTRING_VALUE
-				], rowId );
-				const argLabels = argLabelsRow ?
-					this.getChildrenByParentRowId( argLabelsRow.id ).slice( 1 ) :
-					[];
-				return argLabels.find( ( monolingual ) => {
-					const langZid = this.getZMonolingualLangValue( monolingual.id );
-					return langZid === lang;
-				} );
-			};
-			return findZArgumentLabelForLanguage;
+			] );
 		},
 
 		/**
 		 * Returns ZIDs for testers connected to the root function.
 		 * Note that this returns an array of only items, without the type from index 0.
 		 *
-		 * @return {Function}
+		 * @return {Array}
 		 */
 		getConnectedTests: function () {
-			/**
-			 * @param {number} rowId
-			 * @return {Array}
-			 */
-			const findConnectedTests = ( rowId = 0 ) => {
-				const testsRow = this.getRowByKeyPath( [
-					Constants.Z_PERSISTENTOBJECT_VALUE,
-					Constants.Z_FUNCTION_TESTERS
-				], rowId );
+			const tests = this.getZObjectByKeyPath( [
+				Constants.STORED_OBJECTS.MAIN,
+				Constants.Z_PERSISTENTOBJECT_VALUE,
+				Constants.Z_FUNCTION_TESTERS
+			] );
 
-				if ( !testsRow ) {
-					return [];
-				}
-				const childRows = this.getChildrenByParentRowId( testsRow.id ).slice( 1 );
-				return childRows.map( ( row ) => this.getZReferenceTerminalValue( row.id ) );
-			};
-			return findConnectedTests;
+			if ( !Array.isArray( tests ) ) {
+				return [];
+			}
+
+			return tests.slice( 1 ).map( ( test ) => getZReferenceTerminalValue( test ) );
 		},
 
 		/**
 		 * Returns ZIDs for implementations connected to the root function.
 		 * Note that this returns an array of only items, without the type from index 0.
 		 *
-		 * @return {Function}
+		 * @return {Array}
 		 */
 		getConnectedImplementations: function () {
-			/**
-			 * @param {string} rowId
-			 * @return {Array}
-			 */
-			const findConnectedImplementations = ( rowId = 0 ) => {
-				const implementationsRow = this.getRowByKeyPath( [
-					Constants.Z_PERSISTENTOBJECT_VALUE,
-					Constants.Z_FUNCTION_IMPLEMENTATIONS
-				], rowId );
+			const implementations = this.getZObjectByKeyPath( [
+				Constants.STORED_OBJECTS.MAIN,
+				Constants.Z_PERSISTENTOBJECT_VALUE,
+				Constants.Z_FUNCTION_IMPLEMENTATIONS
+			] );
 
-				if ( !implementationsRow ) {
-					return [];
-				}
-				const childRows = this.getChildrenByParentRowId( implementationsRow.id ).slice( 1 );
-				return childRows.map( ( row ) => this.getZReferenceTerminalValue( row.id ) );
-			};
-			return findConnectedImplementations;
+			if ( !implementations || !Array.isArray( implementations ) ) {
+				return [];
+			}
+
+			return implementations.slice( 1 ).map( ( test ) => getZReferenceTerminalValue( test ) );
 		},
 
 		/**
@@ -234,49 +150,61 @@ module.exports = {
 		 * Ignores those inputs that have no label and fully empty type
 		 * because it will be deleted before submission.
 		 *
+		 * @param {Object} state
 		 * @return {Array}
 		 */
-		getInvalidInputFields: function () {
-			const inputs = this.getZFunctionInputs();
-			let invalidRowIds = [];
-			for ( const inputRow of inputs ) {
-				// Get the validity state of all the type fields
-				const inputTypeRow = this.getRowByKeyPath( [ Constants.Z_ARGUMENT_TYPE ], inputRow.id );
-				const inputTypeFields = this.validateGenericType( inputTypeRow.id );
+		getValidatedInputFields: function () {
+			const keyPath = [
+				Constants.STORED_OBJECTS.MAIN,
+				Constants.Z_PERSISTENTOBJECT_VALUE,
+				Constants.Z_FUNCTION_ARGUMENTS
+			];
 
-				// Get the values of the input labels
-				const inputLabelsRow = this.getRowByKeyPath( [
-					Constants.Z_ARGUMENT_LABEL,
-					Constants.Z_MULTILINGUALSTRING_VALUE
-				], inputRow.id );
-				const inputLabelRows = this.getChildrenByParentRowId( inputLabelsRow.id ).slice( 1 );
-				const inputLabelValues = inputLabelRows
-					.map( ( row ) => this.getZMonolingualTextValue( row.id ) )
-					.filter( ( text ) => !!text );
+			// All Argument declaration/Z17 objects, skip benjamin item
+			const inputs = this.getZObjectByKeyPath( keyPath ).slice( 1 );
+			const fields = [];
 
-				// If type value is empty and fields are empty, ignore this input:
-				// because it's totally empty, the input will be erased before submission.
-				const inputTypeIsEmpty = ( inputTypeFields.filter( ( e ) => e.isValid ).length === 0 );
-				if ( inputTypeIsEmpty && inputLabelValues.length === 0 ) {
-					continue;
+			inputs.forEach( ( input, index ) => {
+				const labels = input[ Constants.Z_ARGUMENT_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ];
+				// Labels multilingual only has benjamin item
+				const noLabels = ( labels.length <= 1 );
+
+				// If there's any label, proceed and validate recursively
+				const inputIndex = String( Number( index ) + 1 );
+				const inputTypeKeyPath = [ ...keyPath, inputIndex, Constants.Z_ARGUMENT_TYPE ];
+				const inputType = input[ Constants.Z_ARGUMENT_TYPE ];
+				const inputFields = validateGenericType( inputTypeKeyPath, inputType );
+
+				// If there's no label and only one invalid field, we consider the input empty
+				// and will be deleted on pre-submission transformations, so we don't report it
+				const inputTypeUnset = inputFields.length === 1 && !inputFields[ 0 ].isValid;
+				if ( noLabels && inputTypeUnset ) {
+					return;
 				}
 
-				// Return errors to report
-				const invalidInputRowIds = inputTypeFields.filter( ( e ) => !e.isValid ).map( ( e ) => e.rowId );
-				invalidRowIds = invalidRowIds.concat( invalidInputRowIds );
-			}
-			return invalidRowIds;
+				// Else, report the input fields validation status
+				fields.push( ...inputFields );
+			} );
+
+			return fields;
 		},
 
 		/**
 		 * Returns the array of output-related field ids that are invalid.
 		 *
+		 * @param {Object} state
 		 * @return {Array}
 		 */
-		getInvalidOutputFields: function () {
-			const outputTypeRow = this.getZFunctionOutput();
-			const outputTypeFields = this.validateGenericType( outputTypeRow.id );
-			return outputTypeFields.filter( ( e ) => !e.isValid ).map( ( e ) => e.rowId );
+		getValidatedOutputFields: function () {
+			const keyPath = [
+				Constants.STORED_OBJECTS.MAIN,
+				Constants.Z_PERSISTENTOBJECT_VALUE,
+				Constants.Z_FUNCTION_RETURN_TYPE
+			];
+
+			const output = this.getZObjectByKeyPath( keyPath );
+
+			return validateGenericType( keyPath, output );
 		}
 	},
 
@@ -286,25 +214,28 @@ module.exports = {
 		 * of connected tests and persists the change.
 		 *
 		 * @param {Object} payload
-		 * @param {string} payload.rowId - the rowId of the function
 		 * @param {Array} payload.zids - the Zids of the tests to connect
 		 * @return {Promise}
 		 */
 		connectTests: function ( payload ) {
 			// Save a copy of the pre-submission ZObject in case the submission returns an error
-			const zobjectCopy = this.getZObjectCopy;
+			const zobjectCopy = JSON.parse( JSON.stringify( this.getJsonObject( Constants.STORED_OBJECTS.MAIN ) ) );
 
-			const listRow = this.getRowByKeyPath( [
-				Constants.Z_PERSISTENTOBJECT_VALUE,
-				Constants.Z_FUNCTION_TESTERS
-			], payload.rowId );
+			// Push items
+			this.pushItemsByKeyPath( {
+				keyPath: [
+					Constants.STORED_OBJECTS.MAIN,
+					Constants.Z_PERSISTENTOBJECT_VALUE,
+					Constants.Z_FUNCTION_TESTERS
+				],
+				values: payload.zids.map( ( zid ) => canonicalToHybrid( zid ) )
+			} );
 
-			this.pushValuesToList( { rowId: listRow.id, values: payload.zids } );
 			return this.submitZObject( {
 				summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-testers-approved-summary', payload.zids )
 			} ).catch( ( /* ApiError */ e ) => {
 				// Reset old ZObject if something failed
-				this.setZObject( zobjectCopy );
+				this.setJsonObject( { namespace: Constants.STORED_OBJECTS.MAIN, zobject: zobjectCopy } );
 				throw e;
 			} );
 		},
@@ -314,27 +245,30 @@ module.exports = {
 		 * of connected implementations and persists the change.
 		 *
 		 * @param {Object} payload
-		 * @param {string} payload.rowId - the rowId of the function
 		 * @param {Array} payload.zids - the Zids of the implementations to connect
 		 * @return {Promise}
 		 */
 		connectImplementations: function ( payload ) {
 			// Save a copy of the pre-submission ZObject in case the submission returns an error
-			const zobjectCopy = this.getZObjectCopy;
+			const zobjectCopy = JSON.parse( JSON.stringify( this.getJsonObject( Constants.STORED_OBJECTS.MAIN ) ) );
 
-			const listRow = this.getRowByKeyPath( [
-				Constants.Z_PERSISTENTOBJECT_VALUE,
-				Constants.Z_FUNCTION_IMPLEMENTATIONS
-			], payload.rowId );
+			// Push items
+			this.pushItemsByKeyPath( {
+				keyPath: [
+					Constants.STORED_OBJECTS.MAIN,
+					Constants.Z_PERSISTENTOBJECT_VALUE,
+					Constants.Z_FUNCTION_IMPLEMENTATIONS
+				],
+				values: payload.zids.map( ( zid ) => canonicalToHybrid( zid ) )
+			} );
 
-			this.pushValuesToList( { rowId: listRow.id, values: payload.zids } );
 			return this.submitZObject( {
 				summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-implementations-approved-summary', payload.zids )
 			} )
 				.then( () => this.updateStoredObject() )
 				.catch( ( /* ApiError */ e ) => {
 					// Reset old ZObject if something failed
-					this.setZObject( zobjectCopy );
+					this.setJsonObject( { namespace: Constants.STORED_OBJECTS.MAIN, zobject: zobjectCopy } );
 					throw e;
 				} );
 		},
@@ -344,36 +278,34 @@ module.exports = {
 		 * of connected tests and persists the change.
 		 *
 		 * @param {Object} payload
-		 * @param {Object} payload.rowId - the rowId of the function
 		 * @param {Array} payload.zids - the Zids of the tests to disconnect
 		 * @return {Promise}
 		 */
 		disconnectTests: function ( payload ) {
 			// Save a copy of the pre-submission ZObject in case the submission returns an error
-			const zobjectCopy = this.getZObjectCopy;
+			const zobjectCopy = JSON.parse( JSON.stringify( this.getJsonObject( Constants.STORED_OBJECTS.MAIN ) ) );
 
-			// Find the item rows to delete from the list
-			const listRow = this.getRowByKeyPath( [
+			// Find the item indexes to delete from the list
+			const keyPath = [
+				Constants.STORED_OBJECTS.MAIN,
 				Constants.Z_PERSISTENTOBJECT_VALUE,
 				Constants.Z_FUNCTION_TESTERS
-			], payload.rowId );
-			const listItems = this.getChildrenByParentRowId( listRow.id ).slice( 1 );
-			const deleteRows = listItems.filter( ( row ) => {
-				const reference = this.getZReferenceTerminalValue( row.id );
-				return payload.zids.includes( reference );
-			} );
+			];
 
-			// Delete items from the list and recalculate the list keys
-			for ( const row of deleteRows ) {
-				this.removeRowChildren( { rowId: row.id, removeParent: true } );
-			}
-			this.recalculateTypedListKeys( listRow.id );
+			// Find the indexes of the items to delete given the terminal zids
+			// Exclude indexes -1 (not found) or 0 (benjamin item)
+			const list = this.getZObjectByKeyPath( keyPath );
+			const indexes = payload.zids
+				.map( ( zid ) => list.findIndex( ( ref ) => getZReferenceTerminalValue( ref ) === zid ) )
+				.filter( ( index ) => index > 0 );
+
+			this.deleteListItemsByKeyPath( { keyPath, indexes } );
 
 			return this.submitZObject( {
 				summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-testers-deactivated-summary', payload.zids )
 			} ).catch( ( /* ApiError */ e ) => {
 				// Reset old ZObject if something failed
-				this.setZObject( zobjectCopy );
+				this.setJsonObject( { namespace: Constants.STORED_OBJECTS.MAIN, zobject: zobjectCopy } );
 				throw e;
 			} );
 		},
@@ -383,29 +315,27 @@ module.exports = {
 		 * of connected implementations and persists the change.
 		 *
 		 * @param {Object} payload
-		 * @param {Object} payload.rowId - the rowId of the function
 		 * @param {Array} payload.zids - the Zids of the implementations to disconnect
 		 * @return {Promise}
 		 */
 		disconnectImplementations: function ( payload ) {
-			const zobjectCopy = this.getZObjectCopy;
+			const zobjectCopy = JSON.parse( JSON.stringify( this.getJsonObject( Constants.STORED_OBJECTS.MAIN ) ) );
 
-			// Find the item rows to delete from the list
-			const listRow = this.getRowByKeyPath( [
+			// Find the item indexes to delete from the list
+			const keyPath = [
+				Constants.STORED_OBJECTS.MAIN,
 				Constants.Z_PERSISTENTOBJECT_VALUE,
 				Constants.Z_FUNCTION_IMPLEMENTATIONS
-			], payload.rowId );
-			const listItems = this.getChildrenByParentRowId( listRow.id ).slice( 1 );
-			const deleteRows = listItems.filter( ( row ) => {
-				const reference = this.getZReferenceTerminalValue( row.id );
-				return payload.zids.includes( reference );
-			} );
+			];
 
-			// Delete items from the list and recalculate the list keys
-			for ( const row of deleteRows ) {
-				this.removeRowChildren( { rowId: row.id, removeParent: true } );
-			}
-			this.recalculateTypedListKeys( listRow.id );
+			// Find the indexes of the items to delete given the terminal zids
+			// Exclude indexes -1 (not found) or 0 (benjamin item)
+			const list = this.getZObjectByKeyPath( keyPath );
+			const indexes = payload.zids
+				.map( ( zid ) => list.findIndex( ( ref ) => getZReferenceTerminalValue( ref ) === zid ) )
+				.filter( ( index ) => index > 0 );
+
+			this.deleteListItemsByKeyPath( { keyPath, indexes } );
 
 			return this.submitZObject( {
 				summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-implementations-deactivated-summary', payload.zids )
@@ -413,7 +343,7 @@ module.exports = {
 				.then( () => this.updateStoredObject() )
 				.catch( ( /* ApiError */ e ) => {
 					// Reset old ZObject if something failed
-					this.setZObject( zobjectCopy );
+					this.setJsonObject( { namespace: Constants.STORED_OBJECTS.MAIN, zobject: zobjectCopy } );
 					throw e;
 				} );
 		},

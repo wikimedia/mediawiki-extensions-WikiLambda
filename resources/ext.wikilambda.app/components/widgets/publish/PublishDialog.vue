@@ -67,7 +67,6 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { CdxDialog, CdxField, CdxMessage, CdxTextInput } = require( '../../../../codex.js' );
 const { mapActions, mapState } = require( 'pinia' );
 
 const Constants = require( '../../../Constants.js' );
@@ -75,6 +74,9 @@ const errorMixin = require( '../../../mixins/errorMixin.js' );
 const eventLogMixin = require( '../../../mixins/eventLogMixin.js' );
 const useMainStore = require( '../../../store/index.js' );
 const urlUtils = require( '../../../utils/urlUtils.js' );
+
+// Codex components
+const { CdxDialog, CdxField, CdxMessage, CdxTextInput } = require( '../../../../codex.js' );
 
 const enterKeyChar = `
 	<kbd class="ext-wikilambda-app-publish-dialog__kbd">
@@ -130,7 +132,6 @@ module.exports = exports = defineComponent( {
 		'getErrors',
 		'getUserLangZid'
 	] ), {
-
 		/**
 		 * Returns the status of the summary text field.
 		 *
@@ -146,7 +147,7 @@ module.exports = exports = defineComponent( {
 		 * @return {Array}
 		 */
 		errors: function () {
-			return this.getErrors( 0 );
+			return this.getErrors( Constants.STORED_OBJECTS.MAIN );
 		},
 
 		/**
@@ -242,7 +243,6 @@ module.exports = exports = defineComponent( {
 		'clearAllErrors'
 	] ),
 	{
-
 		/**
 		 * Handle pressing the Enter key on the summary field.
 		 *
@@ -337,7 +337,7 @@ module.exports = exports = defineComponent( {
 			} ).catch( ( /* ApiError */ error ) => {
 				this.clearAllErrors();
 				this.setError( {
-					rowId: 0,
+					errorId: Constants.STORED_OBJECTS.MAIN,
 					errorType: Constants.ERROR_TYPES.ERROR,
 					errorMessage: error.messageOrFallback( Constants.ERROR_CODES.UNKNOWN_SAVE_ERROR )
 				} );

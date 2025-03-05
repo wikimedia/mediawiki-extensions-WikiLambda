@@ -84,16 +84,6 @@ const urlUtils = {
 	getQueryParamsFromUrl: function ( url ) {
 		const searchParams = new URL( url ).searchParams;
 		return this.searchParamsToObject( searchParams );
-	},
-
-	/**
-	 * Function to get the pathname from a URL
-	 *
-	 * @param {string} url - The URL from which to extract the pathname.
-	 * @return {string} - The pathname part of the URL.
-	 */
-	getPathFromUrl: function ( url ) {
-		return new URL( url ).pathname;
 	}
 };
 

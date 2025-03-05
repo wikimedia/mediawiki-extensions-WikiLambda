@@ -32,41 +32,6 @@ module.exports = {
 		},
 
 		/**
-		 * Given the rowId of the Wikidata Property entity
-		 * returns the rowId of the Wikidata Property Id string.
-		 *
-		 * @return {Function}
-		 */
-		getPropertyIdRow: function () {
-			/**
-			 * @param {number} rowId
-			 * @return {Object|undefined}
-			 */
-			const findPropertyIdRow = ( rowId ) => this.getWikidataEntityIdRow( rowId, Constants.Z_WIKIDATA_PROPERTY );
-			return findPropertyIdRow;
-		},
-
-		/**
-		 * Returns the Wikidata Property Id string value, if any Property is selected.
-		 * Else returns null.
-		 *
-		 * @return {Function}
-		 */
-		getPropertyId: function () {
-			/**
-			 * @param {number} rowId
-			 * @return {string|null}
-			 */
-			const findPropertyId = ( rowId ) => {
-				const propertyIdRow = this.getPropertyIdRow( rowId );
-				return propertyIdRow ?
-					this.getZStringTerminalValue( propertyIdRow.id ) || null :
-					null;
-			};
-			return findPropertyId;
-		},
-
-		/**
 		 * Returns the LabelData object built from the available
 		 * labels in the data object of the selected Wikidata Property.
 		 * If an Property is selected but it has no labels, returns

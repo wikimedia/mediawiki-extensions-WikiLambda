@@ -16,18 +16,18 @@ const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../
 
 describe( 'FunctionReportItem', () => {
 	let store,
-		zFunctionId,
-		zImplementationId,
-		zTesterId,
-		reportType;
+		functionZid,
+		implementationZid,
+		testerZid,
+		contentType;
 
 	beforeEach( () => {
 		store = useMainStore();
-		zFunctionId = 'Z10000';
-		zImplementationId = 'Z10001';
-		zTesterId = 'Z10002';
-		reportType = Constants.Z_TESTER;
-		store.getZTesterResults = createGettersWithFunctionsMock( false );
+		functionZid = 'Z10000';
+		implementationZid = 'Z10001';
+		testerZid = 'Z10002';
+		contentType = Constants.Z_TESTER;
+		store.getZTesterResult = createGettersWithFunctionsMock( false );
 		store.getLabelData = createLabelDataMock();
 		store.getUserLangCode = 'en';
 	} );
@@ -35,10 +35,10 @@ describe( 'FunctionReportItem', () => {
 	it( 'renders without errors', () => {
 		const wrapper = mount( FunctionReportItem, {
 			props: {
-				zFunctionId: zFunctionId,
-				zImplementationId: zImplementationId,
-				zTesterId: zTesterId,
-				reportType: reportType
+				functionZid: functionZid,
+				implementationZid: implementationZid,
+				testerZid: testerZid,
+				contentType: contentType
 			}
 		} );
 		expect( wrapper.find( '.ext-wikilambda-app-function-report-item' ).exists() ).toBeTruthy();
@@ -47,22 +47,22 @@ describe( 'FunctionReportItem', () => {
 	it( 'fetches the test result for the provided IDs from Pinia', () => {
 		mount( FunctionReportItem, {
 			props: {
-				zFunctionId: zFunctionId,
-				zImplementationId: zImplementationId,
-				zTesterId: zTesterId,
-				reportType: reportType
+				functionZid: functionZid,
+				implementationZid: implementationZid,
+				testerZid: testerZid,
+				contentType: contentType
 			}
 		} );
-		expect( store.getZTesterResults ).toHaveBeenCalledWith( zFunctionId, zTesterId, zImplementationId );
+		expect( store.getZTesterResult ).toHaveBeenCalledWith( functionZid, testerZid, implementationZid );
 	} );
 
 	it( 'displays running status when ongoing call', () => {
 		const wrapper = mount( FunctionReportItem, {
 			props: {
-				zFunctionId: zFunctionId,
-				zImplementationId: zImplementationId,
-				zTesterId: zTesterId,
-				reportType: reportType,
+				functionZid: functionZid,
+				implementationZid: implementationZid,
+				testerZid: testerZid,
+				contentType: contentType,
 				fetching: true
 			}
 		} );
@@ -70,56 +70,56 @@ describe( 'FunctionReportItem', () => {
 	} );
 
 	it( 'displays passed status when result is passed', () => {
-		store.getZTesterResults = createGettersWithFunctionsMock( true );
+		store.getZTesterResult = createGettersWithFunctionsMock( true );
 
 		const wrapper = mount( FunctionReportItem, {
 			props: {
-				zFunctionId: zFunctionId,
-				zImplementationId: zImplementationId,
-				zTesterId: zTesterId,
-				reportType: reportType
+				functionZid: functionZid,
+				implementationZid: implementationZid,
+				testerZid: testerZid,
+				contentType: contentType
 			}
 		} );
 		expect( wrapper.find( '.ext-wikilambda-app-function-report-item__footer-status' ).text() ).toBe( 'Passed' );
 	} );
 
 	it( 'displays failed status when result is failed', () => {
-		store.getZTesterResults = createGettersWithFunctionsMock( false );
+		store.getZTesterResult = createGettersWithFunctionsMock( false );
 
 		const wrapper = mount( FunctionReportItem, {
 			props: {
-				zFunctionId: zFunctionId,
-				zImplementationId: zImplementationId,
-				zTesterId: zTesterId,
-				reportType: reportType
+				functionZid: functionZid,
+				implementationZid: implementationZid,
+				testerZid: testerZid,
+				contentType: contentType
 			}
 		} );
 		expect( wrapper.find( '.ext-wikilambda-app-function-report-item__footer-status' ).text() ).toBe( 'Failed' );
 	} );
 
 	it( 'displays pending status when implementation missing', () => {
-		store.getZTesterResults = createGettersWithFunctionsMock( undefined );
+		store.getZTesterResult = createGettersWithFunctionsMock( undefined );
 
 		const wrapper = mount( FunctionReportItem, {
 			props: {
-				zFunctionId: zFunctionId,
-				zImplementationId: '',
-				zTesterId: zTesterId,
-				reportType: reportType
+				functionZid: functionZid,
+				implementationZid: '',
+				testerZid: testerZid,
+				contentType: contentType
 			}
 		} );
 		expect( wrapper.find( '.ext-wikilambda-app-function-report-item__footer-status' ).text() ).toBe( 'Ready' );
 	} );
 
 	it( 'displays pending status when tester missing', () => {
-		store.getZTesterResults = createGettersWithFunctionsMock( undefined );
+		store.getZTesterResult = createGettersWithFunctionsMock( undefined );
 
 		const wrapper = mount( FunctionReportItem, {
 			props: {
-				zFunctionId: zFunctionId,
-				zImplementationId: zImplementationId,
-				zTesterId: '',
-				reportType: reportType
+				functionZid: functionZid,
+				implementationZid: implementationZid,
+				testerZid: '',
+				contentType: contentType
 			}
 		} );
 		expect( wrapper.find( '.ext-wikilambda-app-function-report-item__footer-status' ).text() ).toBe( 'Ready' );

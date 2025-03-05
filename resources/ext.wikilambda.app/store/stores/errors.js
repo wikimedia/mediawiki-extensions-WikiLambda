@@ -6,40 +6,42 @@
  */
 'use strict';
 
+const Constants = require( '../../Constants.js' );
+
 module.exports = {
 	state: {
 		/**
-		 * Collection of errors by rowId.
+		 * Collection of errors by errorId.
 		 *
-		 * The rowId is an internal integer identifier that
+		 * The errorId is an internal string identifier that
 		 * uniquely points at a sub-zObject represented by a
-		 * component. The root rowId (0) identifies the whole
-		 * object.
+		 * component. The root errorId ('main') identifies the
+		 * whole object.
 		 *
 		 * This permits that different app granularity levels
 		 * present errors in different ways. For example, a
 		 * text field that represents a terminal ZString object
 		 * can have an error state. This will be saved in the
-		 * error module with the unique internal rowId that
+		 * error module with the unique internal errorId that
 		 * idetifies that sub-object. The component will use
-		 * that rowId to grab all the errors associated to
+		 * that errorId to grab all the errors associated to
 		 * that field.
 		 *
 		 * Similarly, there can be a number of errors that are
 		 * general and page-wide. These errors will be saved
-		 * in the state using the root rowId (0) and can be
+		 * in the state using the root errorId and can be
 		 * presented in a top-level component such as the
 		 * Publish dialog window.
 		 *
 		 * The error object will have this shape:
 		 *
 		 * errors: {
-		 *  0: [
+		 *  main: [
 		 *    { message: "some error message", code: undefined, type: "error" },
 		 *    { message: undefined, code: "wikilambda-unknown-warning", type: "warning" },
 		 *    ...
 		 *  ],
-		 *  1: [],
+		 *  main.Z2K2.Z8K1: [],
 		 *  ...
 		 * }
 		 */
@@ -48,21 +50,18 @@ module.exports = {
 
 	getters: {
 		/**
-		 * Returns all the stored errors, flattened into an array.
+		 * Returns all the stored error Ids (which are the key paths
+		 * to the failed object.
 		 *
 		 * @param {Object} state
-		 * @return {Object}
+		 * @return {Array}
 		 */
-		getAllErrors: function ( state ) {
-			let allErrors = [];
-			for ( const rowId in state.errors ) {
-				allErrors = allErrors.concat( state.errors[ rowId ] );
-			}
-			return allErrors;
+		getErrorPaths: function ( state ) {
+			return Object.keys( state.errors );
 		},
 
 		/**
-		 * Returns all the errors for a given rowId.
+		 * Returns all the errors for a given errorId.
 		 * If error type is passed as second parameter, returns only
 		 * the errors of the type ("error" or "warning").
 		 *
@@ -71,77 +70,101 @@ module.exports = {
 		 */
 		getErrors: function ( state ) {
 			/**
-			 * @param {number} rowId
+			 * @param {string} errorId
 			 * @param {string|undefined} type
 			 * @return {Array}
 			 */
-			const findErrors = ( rowId, type = undefined ) => {
-				const allErrors = state.errors[ rowId ] || [];
+			const findErrors = ( errorId, type = undefined ) => {
+				const allErrors = state.errors[ errorId ] || [];
 				return type ? allErrors.filter( ( error ) => error.type === type ) : allErrors;
 			};
 			return findErrors;
 		},
 
 		/**
-		 * Returns if there are errors for a given rowId that have a specific code.
+		 * Returns if there are errors for a given errorId that have a specific code.
 		 *
 		 * @param {Object} state
-		 * @return {boolean}
+		 * @return {Function}
 		 */
 		hasErrorByCode: function ( state ) {
 			/**
-			 * @param {number} rowId
+			 * @param {string} errorId
 			 * @param {string} code
 			 * @return {boolean}
 			 */
-			const findErrorByCode = ( rowId, code ) => {
-				const allErrors = state.errors[ rowId ] || [];
+			const findErrorByCode = ( errorId, code ) => {
+				const allErrors = state.errors[ errorId ] || [];
 				return !!allErrors.some( ( error ) => error.code === code );
 			};
 			return findErrorByCode;
+		},
+
+		/**
+		 * Returns the errors that are child to this field.
+		 * E.g. main.Z2K2.Z14K3.Z16K1 is child to main.Z2K2.Z14K3
+		 *
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		getChildErrorKeys: function ( state ) {
+			/**
+			 * @param {string} keyPath
+			 * @return {Array}
+			 */
+			const findChildErrors = ( keyPath ) => {
+				const errorPaths = Object.keys( state.errors );
+				return errorPaths.filter( ( path ) => path.startsWith( keyPath + '.' ) );
+			};
+			return findChildErrors;
 		}
 	},
 
 	actions: {
 		/**
-		 * Set an error for a given rowId or a generic page-wide error.
-		 * Any error that's set to rowId = 0 is considered page-wide.
+		 * Set an error for a given errorId.
+		 * Any error that's set for the errorId 'main' is considered page-wide.
 		 *
 		 * @param {Object} payload
-		 * @param {number} payload.rowId
+		 * @param {string} payload.errorId
 		 * @param {string} payload.errorMessage
 		 * @param {string} payload.errorCode
 		 * @param {string} payload.errorType literal string: "error" or "warning"
 		 */
 		setError: function ( payload ) {
-			const { rowId = 0, errorMessage, errorCode, errorType } = payload;
+			const {
+				errorId = Constants.STORED_OBJECTS.MAIN,
+				errorMessage,
+				errorCode,
+				errorType
+			} = payload;
 
-			this.errors[ rowId ] = this.errors[ rowId ] || [];
-			this.errors[ rowId ].push( { message: errorMessage, code: errorCode, type: errorType } );
+			this.errors[ errorId ] = this.errors[ errorId ] || [];
+			this.errors[ errorId ].push( { message: errorMessage, code: errorCode, type: errorType } );
 		},
 
 		/**
-		 * Clears all errors for a given rowId
+		 * Clears all errors for a given errorId
 		 *
-		 * @param {number} rowId
+		 * @param {string} errorId
 		 */
-		clearErrors: function ( rowId = 0 ) {
-			if ( rowId in this.errors ) {
-				this.errors[ rowId ] = [];
+		clearErrors: function ( errorId ) {
+			if ( errorId in this.errors ) {
+				this.errors[ errorId ] = [];
 			}
 		},
 
 		/**
-		 * Clears all errors for a given rowId that have a specific code
+		 * Clears all errors for a given errorId that have a specific code
 		 *
 		 * @param {Object} payload
-		 * @param {number} payload.rowId
+		 * @param {string} payload.errorId
 		 * @param {string} payload.errorCode
 		 */
 		clearErrorsByCode: function ( payload ) {
-			const { rowId, code } = payload;
-			if ( rowId in this.errors ) {
-				this.errors[ rowId ] = this.errors[ rowId ]
+			const { errorId, code } = payload;
+			if ( errorId in this.errors ) {
+				this.errors[ errorId ] = this.errors[ errorId ]
 					.filter( ( error ) => error.code !== code );
 			}
 		},
@@ -150,9 +173,9 @@ module.exports = {
 		 * Clears field validation errors (doesn't clear global ones)
 		 */
 		clearValidationErrors: function () {
-			for ( const rowId in this.errors ) {
-				if ( rowId > 0 ) {
-					this.errors[ rowId ] = [];
+			for ( const errorId in this.errors ) {
+				if ( errorId !== Constants.STORED_OBJECTS.MAIN ) {
+					this.errors[ errorId ] = [];
 				}
 			}
 		},
@@ -162,7 +185,7 @@ module.exports = {
 		 */
 		clearAllErrors: function () {
 			this.clearValidationErrors();
-			this.clearErrors( 0 );
+			this.clearErrors( Constants.STORED_OBJECTS.MAIN );
 		}
 	}
 };

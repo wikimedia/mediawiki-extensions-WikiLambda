@@ -6,34 +6,34 @@
  */
 'use strict';
 
-const { CdxButton } = require( '@wikimedia/codex' );
 const { shallowMount } = require( '@vue/test-utils' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
-const createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
-const ZTypedList = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZTypedList.vue' );
-const ZTypedListItems = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZTypedListItems.vue' );
-const ZTypedListType = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZTypedListType.vue' );
+const ZTypedList = require( '../../../../resources/ext.wikilambda.app/components/types/ZTypedList.vue' );
+
+// General use
+const keyPath = 'main.Z2K2';
+const objectValue = [
+	{ Z1K1: 'Z9', Z9K1: 'Z6' },
+	{ Z1K1: 'Z6', Z6K1: 'one' },
+	{ Z1K1: 'Z6', Z6K1: 'two' },
+	{ Z1K1: 'Z6', Z6K1: 'three' }
+];
 
 describe( 'ZTypedList', () => {
 	let store;
 
 	beforeEach( () => {
 		store = useMainStore();
-		store.getChildrenByParentRowId = createGettersWithFunctionsMock( [
-			{ id: 28, key: '0', parent: 27, value: Constants.ROW_VALUE_OBJECT },
-			{ id: 39, key: '1', parent: 27, value: Constants.ROW_VALUE_OBJECT },
-			{ id: 41, key: '2', parent: 27, value: Constants.ROW_VALUE_OBJECT }
-		] );
-		store.getTypedListItemType = createGettersWithFunctionsMock( 'Z6' );
-		store.getUserLangZid = 'Z1002';
+		store.handleListTypeChange = jest.fn();
 	} );
 
 	describe( 'in view mode', () => {
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( ZTypedList, {
 				props: {
-					depth: 2,
+					keyPath,
+					objectValue,
 					edit: false,
 					expanded: false
 				}
@@ -45,7 +45,8 @@ describe( 'ZTypedList', () => {
 		it( 'does not render add list button', () => {
 			const wrapper = shallowMount( ZTypedList, {
 				props: {
-					depth: 2,
+					keyPath,
+					objectValue,
 					edit: false,
 					expanded: false
 				}
@@ -57,7 +58,8 @@ describe( 'ZTypedList', () => {
 		it( 'does not render the list type when not expanded', () => {
 			const wrapper = shallowMount( ZTypedList, {
 				props: {
-					depth: 2,
+					keyPath,
+					objectValue,
 					edit: false,
 					expanded: false
 				}
@@ -68,50 +70,54 @@ describe( 'ZTypedList', () => {
 		it( 'does render the list type when expanded', () => {
 			const wrapper = shallowMount( ZTypedList, {
 				props: {
-					depth: 2,
+					keyPath,
+					objectValue,
 					edit: false,
 					expanded: true
 				}
 			} );
-			expect( wrapper.getComponent( ZTypedListType ).exists() ).toBe( true );
+			expect( wrapper.getComponent( { name: 'wl-z-typed-list-type' } ).exists() ).toBe( true );
 		} );
 
 		it( 'renders the list item component when there are one or more list items', () => {
 			const wrapper = shallowMount( ZTypedList, {
 				props: {
-					depth: 2,
+					keyPath,
+					objectValue,
 					edit: false,
 					expanded: false
 				}
 			} );
 
-			expect( wrapper.findComponent( ZTypedListItems ).exists() ).toBe( true );
+			expect( wrapper.findComponent( { name: 'wl-z-typed-list-items' } ).exists() ).toBe( true );
 		} );
 
 		it( 'shows type and items when expanded', () => {
 			const wrapper = shallowMount( ZTypedList, {
 				props: {
-					depth: 2,
+					keyPath,
+					objectValue,
 					edit: false,
 					expanded: true
 				}
 			} );
 
-			expect( wrapper.findComponent( ZTypedListType ).exists() ).toBe( true );
-			expect( wrapper.findComponent( ZTypedListItems ).exists() ).toBe( true );
+			expect( wrapper.findComponent( { name: 'wl-z-typed-list-type' } ).exists() ).toBe( true );
+			expect( wrapper.findComponent( { name: 'wl-z-typed-list-items' } ).exists() ).toBe( true );
 		} );
 
 		it( 'does not show type when not expanded', () => {
 			const wrapper = shallowMount( ZTypedList, {
 				props: {
-					depth: 2,
+					keyPath,
+					objectValue,
 					edit: false,
 					expanded: false
 				}
 			} );
 
-			expect( wrapper.findComponent( ZTypedListType ).exists() ).toBe( false );
-			expect( wrapper.findComponent( ZTypedListItems ).exists() ).toBe( true );
+			expect( wrapper.findComponent( { name: 'wl-z-typed-list-type' } ).exists() ).toBe( false );
+			expect( wrapper.findComponent( { name: 'wl-z-typed-list-items' } ).exists() ).toBe( true );
 		} );
 	} );
 
@@ -119,7 +125,8 @@ describe( 'ZTypedList', () => {
 		it( 'renders the add list button', () => {
 			const wrapper = shallowMount( ZTypedList, {
 				props: {
-					depth: 2,
+					keyPath,
+					objectValue,
 					edit: true,
 					expanded: false
 				},
@@ -140,7 +147,8 @@ describe( 'ZTypedList', () => {
 		it( 'emits add-list-item when the add list item button is clicked', async () => {
 			const wrapper = shallowMount( ZTypedList, {
 				props: {
-					depth: 2,
+					keyPath,
+					objectValue,
 					edit: true,
 					expanded: false
 				},
@@ -155,8 +163,29 @@ describe( 'ZTypedList', () => {
 				}
 			} );
 
-			wrapper.get( '.ext-wikilambda-app-typed-list-items__add-button' ).getComponent( CdxButton ).vm.$emit( 'click' );
+			wrapper.get( '.ext-wikilambda-app-typed-list-items__add-button' ).getComponent( { name: 'cdx-button' } ).vm.$emit( 'click' );
 			expect( wrapper.emitted() ).toHaveProperty( 'add-list-item', [ [ { value: 'Z6' } ] ] );
+		} );
+
+		it( 'calls handleListTypeChange when type is changed', () => {
+			const wrapper = shallowMount( ZTypedList, {
+				props: {
+					keyPath,
+					objectValue,
+					edit: true,
+					expanded: true
+				}
+			} );
+
+			const mockPayload = { keyPath: [], value: Constants.Z_OBJECT };
+
+			wrapper.findComponent( { name: 'wl-z-typed-list-type' } ).vm.$emit( 'type-changed', mockPayload );
+
+			expect( store.handleListTypeChange ).toHaveBeenCalledWith( {
+				keyPath,
+				objectValue,
+				newType: Constants.Z_OBJECT
+			} );
 		} );
 	} );
 } );

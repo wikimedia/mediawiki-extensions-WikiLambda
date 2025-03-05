@@ -7,27 +7,29 @@
 <template>
 	<!-- if expanded, show toggle button -->
 	<wl-key-value-block
+		class="ext-wikilambda-app-typed-list-items"
 		:has-expanded-mode="false"
 		:expanded="expanded"
 		:has-pre-column="expanded"
 		:edit="edit"
-		class="ext-wikilambda-app-typed-list-items"
 		data-testid="z-typed-list-items">
 		<!-- if expanded, show key label -->
 		<template v-if="expanded" #key>
 			<wl-localized-label
 				:label-data="itemsLabel"
-				class="ext-wikilambda-app-typed-list-items__localized-label"></wl-localized-label>
+				class="ext-wikilambda-app-typed-list-items__localized-label"
+			></wl-localized-label>
 		</template>
 		<!-- else, simply show list of items -->
 		<template #value>
 			<wl-z-object-key-value
-				v-for="item in listItemsRowIds"
-				:key="'list-item-' + item"
+				v-for="index in listItemIndexes"
+				:key="`list-item-${ index }`"
 				class="ext-wikilambda-app-typed-list-items__block"
-				:row-id="item"
+				:key-path="`${ keyPath }.${ index }`"
+				:object-value="objectValue[ index ]"
 				:edit="edit"
-				:list-item-type="listItemType"
+				:parent-list-item-type="listItemType"
 			></wl-z-object-key-value>
 		</template>
 
@@ -38,12 +40,12 @@
 				class="ext-wikilambda-app-typed-list-items__add-button"
 			>
 				<cdx-button
-					data-testid="typed-list-add-item"
 					:title="$i18n( 'wikilambda-editor-zlist-additem-tooltip' ).text()"
 					:aria-label="$i18n( 'wikilambda-editor-zlist-additem-tooltip' ).text()"
+					data-testid="typed-list-add-item"
 					@click="addListItem"
 				>
-					<cdx-icon :icon="icons.cdxIconAdd"></cdx-icon>
+					<cdx-icon :icon="iconAdd"></cdx-icon>
 				</cdx-button>
 			</div>
 		</template>
@@ -51,13 +53,16 @@
 </template>
 
 <script>
-const { CdxButton, CdxIcon } = require( '../../../codex.js' );
 const { defineComponent } = require( 'vue' );
 
 const icons = require( '../../../lib/icons.json' );
 const LabelData = require( '../../store/classes/LabelData.js' );
+
+// Base components
 const KeyValueBlock = require( '../base/KeyValueBlock.vue' );
 const LocalizedLabel = require( '../base/LocalizedLabel.vue' );
+// Codex components
+const { CdxButton, CdxIcon } = require( '../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-typed-list-items',
@@ -68,6 +73,18 @@ module.exports = exports = defineComponent( {
 		'cdx-icon': CdxIcon
 	},
 	props: {
+		keyPath: {
+			type: String,
+			required: true
+		},
+		objectValue: {
+			type: Array,
+			required: true
+		},
+		listItemType: {
+			type: [ String, Object ],
+			required: true
+		},
 		edit: {
 			type: Boolean,
 			required: true
@@ -75,21 +92,11 @@ module.exports = exports = defineComponent( {
 		expanded: {
 			type: Boolean,
 			required: true
-		},
-		listItemType: {
-			type: [ String, Object ],
-			required: true
-		},
-		listItemsRowIds: {
-			type: Array,
-			default() {
-				return [];
-			}
 		}
 	},
 	data: function () {
 		return {
-			icons: icons
+			iconAdd: icons.cdxIconAdd
 		};
 	},
 	computed: {
@@ -101,6 +108,14 @@ module.exports = exports = defineComponent( {
 		 */
 		itemsLabel: function () {
 			return LabelData.fromString( this.$i18n( 'wikilambda-list-items-label' ).text() );
+		},
+		/**
+		 * Returns the list item indexes (all excluding zero)
+		 *
+		 * @return {Array}
+		 */
+		listItemIndexes: function () {
+			return Object.keys( this.objectValue ).slice( 1 );
 		}
 	},
 	methods: {

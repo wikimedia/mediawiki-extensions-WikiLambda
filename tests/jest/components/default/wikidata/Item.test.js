@@ -9,7 +9,7 @@
 const { shallowMount } = require( '@vue/test-utils' );
 
 const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
-const WikidataItem = require( '../../../../../resources/ext.wikilambda.app/components/default-view-types/wikidata/Item.vue' );
+const WikidataItem = require( '../../../../../resources/ext.wikilambda.app/components/types/wikidata/Item.vue' );
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 const { createGettersWithFunctionsMock } = require( '../../../helpers/getterHelpers.js' );
 
@@ -22,15 +22,29 @@ const itemData = {
 	}
 };
 
+// General configuration: wikidata reference
+const keyPath = 'main.Z2K2';
+const objectValue = {
+	Z1K1: { Z1K1: 'Z9', Z9K1: 'Z6091' },
+	Z6091K1: { Z1K1: 'Z6', Z6K1: 'Q223044' }
+};
+
+// Fetch form
+const objectValueFetch = {
+	Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+	Z7K1: { Z1K1: 'Z9', Z9K1: 'Z6821' },
+	Z6821K1: {
+		Z1K1: { Z1K1: 'Z9', Z9K1: 'Z6091' },
+		Z6091K1: { Z1K1: 'Z6', Z6K1: 'Q223044' }
+	}
+};
+
 describe( 'WikidataItem', () => {
 	let store;
 
 	beforeEach( () => {
 		store = useMainStore();
 		store.getItemData = createGettersWithFunctionsMock();
-		store.getItemIdRow = createGettersWithFunctionsMock( { id: 1 } );
-		store.getItemId = createGettersWithFunctionsMock( itemId );
-		store.getZStringTerminalValue = createGettersWithFunctionsMock( itemId );
 		store.getUserLangCode = 'en';
 	} );
 
@@ -38,6 +52,8 @@ describe( 'WikidataItem', () => {
 		it( 'renders wikidata item reference without errors', () => {
 			const wrapper = shallowMount( WikidataItem, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false,
 					type: Constants.Z_WIKIDATA_REFERENCE_ITEM
 				}
@@ -48,6 +64,8 @@ describe( 'WikidataItem', () => {
 		it( 'renders wikidata item fetch function without errors', () => {
 			const wrapper = shallowMount( WikidataItem, {
 				props: {
+					keyPath,
+					objectValue: objectValueFetch,
 					edit: false,
 					type: Constants.Z_FUNCTION_CALL
 				}
@@ -60,6 +78,8 @@ describe( 'WikidataItem', () => {
 
 			const wrapper = shallowMount( WikidataItem, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false,
 					type: Constants.Z_WIKIDATA_REFERENCE_ITEM
 				}
@@ -73,6 +93,8 @@ describe( 'WikidataItem', () => {
 		it( 'renders the item external link if data is not available', () => {
 			const wrapper = shallowMount( WikidataItem, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false,
 					type: Constants.Z_WIKIDATA_REFERENCE_ITEM
 				}
@@ -88,6 +110,8 @@ describe( 'WikidataItem', () => {
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( WikidataItem, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_ITEM
 				}
@@ -96,10 +120,10 @@ describe( 'WikidataItem', () => {
 		} );
 
 		it( 'renders blank wikidata entity selector', () => {
-			store.getZStringTerminalValue = createGettersWithFunctionsMock();
-
 			const wrapper = shallowMount( WikidataItem, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_ITEM
 				}
@@ -111,6 +135,8 @@ describe( 'WikidataItem', () => {
 		it( 'renders wikidata entity selector', () => {
 			const wrapper = shallowMount( WikidataItem, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_ITEM
 				}
@@ -124,6 +150,8 @@ describe( 'WikidataItem', () => {
 
 			const wrapper = shallowMount( WikidataItem, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_ITEM
 				}
@@ -140,6 +168,8 @@ describe( 'WikidataItem', () => {
 		it( 'initializes wikidata entity selector input value with delayed fetch response', async () => {
 			const wrapper = shallowMount( WikidataItem, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_ITEM
 				}
@@ -161,6 +191,8 @@ describe( 'WikidataItem', () => {
 		it( 'sets item reference ID when selecting option from the menu', async () => {
 			const wrapper = shallowMount( WikidataItem, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_ITEM
 				}
@@ -182,6 +214,8 @@ describe( 'WikidataItem', () => {
 		it( 'sets item fetch function ID when selecting option from the menu', async () => {
 			const wrapper = shallowMount( WikidataItem, {
 				props: {
+					keyPath,
+					objectValue: objectValueFetch,
 					edit: true,
 					type: Constants.Z_FUNCTION_CALL
 				}

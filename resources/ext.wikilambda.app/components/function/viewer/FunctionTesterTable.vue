@@ -65,7 +65,7 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
-		'getZTesterResults',
+		'getZTesterResult',
 		'getZTesterMetadata',
 		'getLabelData'
 	] ), {
@@ -75,7 +75,7 @@ module.exports = exports = defineComponent( {
 		 * @return {boolean}
 		 */
 		testerStatus: function () {
-			return this.getZTesterResults(
+			return this.getZTesterResult(
 				this.zFunctionId,
 				this.zTesterId,
 				this.zImplementationId

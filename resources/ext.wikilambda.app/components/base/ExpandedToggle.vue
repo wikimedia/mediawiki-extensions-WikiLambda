@@ -17,7 +17,7 @@
 			class="ext-wikilambda-app-expanded-toggle__icon"
 			:class="iconClass"
 			:size="hasExpandedMode ? 'small' : 'medium'"
-			:icon="hasExpandedMode ? icons.cdxIconExpand : iconBullet"
+			:icon="hasExpandedMode ? iconExpand : iconBullet"
 		></cdx-icon>
 	</cdx-button>
 </template>
@@ -25,9 +25,12 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
-const { CdxButton, CdxIcon } = require( '../../../codex.js' );
-const icons = require( '../../../lib/icons.json' );
+
 const useMainStore = require( '../../store/index.js' );
+const icons = require( '../../../lib/icons.json' );
+
+// Codex components
+const { CdxButton, CdxIcon } = require( '../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-expanded-toggle',
@@ -47,7 +50,7 @@ module.exports = exports = defineComponent( {
 	},
 	data: function () {
 		return {
-			icons: icons,
+			iconExpand: icons.cdxIconExpand,
 			iconBullet: {
 				path: 'M8 8h4v4H8z'
 			}

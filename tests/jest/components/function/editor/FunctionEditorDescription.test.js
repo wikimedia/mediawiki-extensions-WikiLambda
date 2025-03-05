@@ -19,9 +19,11 @@ describe( 'FunctionEditorDescription', () => {
 
 	beforeEach( () => {
 		store = useMainStore();
-		store.getRowByKeyPath = createGettersWithFunctionsMock();
-		store.getZPersistentDescription = createGettersWithFunctionsMock( { id: 2 } );
-		store.getZMonolingualTextValue = createGettersWithFunctionsMock( 'Function description' );
+		store.getZPersistentDescription = createGettersWithFunctionsMock( {
+			keyPath: 'main.Z2K5.Z12K1.7.Z11K2.Z6K1',
+			value: 'Function description'
+		} );
+		store.setZMonolingualString = jest.fn();
 	} );
 
 	it( 'renders without errors', () => {
@@ -43,6 +45,17 @@ describe( 'FunctionEditorDescription', () => {
 		expect( input.props( 'modelValue' ) ).toBe( 'Function description' );
 	} );
 
+	it( 'renders an input box when there is no description', () => {
+		store.getZPersistentDescription = createGettersWithFunctionsMock();
+		const wrapper = shallowMount( FunctionEditorDescription, {
+			props: { zLanguage: 'Z1002', langLabelData },
+			global: { stubs: { WlFunctionEditorField: false } }
+		} );
+
+		const input = wrapper.findComponent( { name: 'cdx-text-area' } );
+		expect( input.props( 'modelValue' ) ).toBe( '' );
+	} );
+
 	describe( 'on input', () => {
 		it( 'removes the description object if new value is empty string', async () => {
 			const wrapper = shallowMount( FunctionEditorDescription, {
@@ -53,11 +66,13 @@ describe( 'FunctionEditorDescription', () => {
 			// ACT: Change value of name input
 			const input = wrapper.findComponent( { name: 'cdx-text-area' } );
 			input.vm.$emit( 'change', { target: { value: '' } } );
-			await wrapper.vm.$nextTick();
 
-			// ASSERT: removeItemFromTypedList action runs correctly
-			expect( store.removeItemFromTypedList ).toHaveBeenCalledWith( {
-				rowId: 2
+			// ASSERT: setZMonolingualString action runs correctly
+			expect( store.setZMonolingualString ).toHaveBeenCalledWith( {
+				parentKeyPath: [ 'main', 'Z2K5', 'Z12K1' ],
+				itemKeyPath: 'main.Z2K5.Z12K1.7.Z11K2.Z6K1',
+				value: '',
+				lang: 'Z1002'
 			} );
 
 			// ASSERT: emits description-updated
@@ -73,13 +88,13 @@ describe( 'FunctionEditorDescription', () => {
 			// ACT: Change value of name input
 			const input = wrapper.findComponent( { name: 'cdx-text-area' } );
 			input.vm.$emit( 'change', { target: { value: 'New Function Description' } } );
-			await wrapper.vm.$nextTick();
 
-			// ASSERT: setValueByRowIdAndPath action runs correctly
-			expect( store.setValueByRowIdAndPath ).toHaveBeenCalledWith( {
-				rowId: 2,
-				keyPath: [ 'Z11K2', 'Z6K1' ],
-				value: 'New Function Description'
+			// ASSERT: setZMonolingualString action runs correctly
+			expect( store.setZMonolingualString ).toHaveBeenCalledWith( {
+				parentKeyPath: [ 'main', 'Z2K5', 'Z12K1' ],
+				itemKeyPath: 'main.Z2K5.Z12K1.7.Z11K2.Z6K1',
+				value: 'New Function Description',
+				lang: 'Z1002'
 			} );
 
 			// ASSERT: emits description-updated
@@ -88,7 +103,6 @@ describe( 'FunctionEditorDescription', () => {
 
 		it( 'adds a new monolingual string if there is no description object', async () => {
 			store.getZPersistentDescription = createGettersWithFunctionsMock( undefined );
-			store.getRowByKeyPath = createGettersWithFunctionsMock( { id: 1 } );
 
 			const wrapper = shallowMount( FunctionEditorDescription, {
 				props: { zLanguage: 'Z1002', langLabelData },
@@ -98,15 +112,12 @@ describe( 'FunctionEditorDescription', () => {
 			// ACT: Change value of name input
 			const input = wrapper.findComponent( { name: 'cdx-text-area' } );
 			input.vm.$emit( 'change', { target: { value: 'New Function Description' } } );
-			await wrapper.vm.$nextTick();
 
-			// ASSERT: changeType action runs correctly
-			expect( store.changeType ).toHaveBeenCalledWith( {
-				id: 1,
-				type: 'Z11',
-				lang: 'Z1002',
+			// ASSERT: setZMonolingualString action runs correctly
+			expect( store.setZMonolingualString ).toHaveBeenCalledWith( {
+				parentKeyPath: [ 'main', 'Z2K5', 'Z12K1' ],
 				value: 'New Function Description',
-				append: true
+				lang: 'Z1002'
 			} );
 
 			// ASSERT: emits description-updated

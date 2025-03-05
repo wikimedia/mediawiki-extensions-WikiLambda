@@ -115,7 +115,6 @@ module.exports = exports = defineComponent( {
 		'getLabelData',
 		'getLanguageIsoCodeOfZLang',
 		'getMultilingualDataLanguages',
-		'getZMonolingualTextValue',
 		'getZPersistentName',
 		'getUserLangCode'
 	] ), {
@@ -137,7 +136,7 @@ module.exports = exports = defineComponent( {
 		 * @return {Array}
 		 */
 		allLangs: function () {
-			return this.getMultilingualDataLanguages()
+			return this.getMultilingualDataLanguages.all
 				.filter( ( lang ) => !this.suggestedLangs.includes( lang ) );
 		},
 
@@ -151,20 +150,21 @@ module.exports = exports = defineComponent( {
 		 */
 		localItems: function () {
 			const buildLangItem = ( langZid ) => {
-				const nameRow = this.getZPersistentName( langZid );
-				const name = nameRow ?
-					this.getZMonolingualTextValue( nameRow.id ) :
-					undefined;
+				const name = this.getZPersistentName( langZid );
 				return {
 					langZid,
 					langLabelData: this.getLabelData( langZid ),
 					hasMultilingualData: true,
 					hasName: !!name,
-					name: name || this.$i18n( 'wikilambda-editor-default-name' ).text()
+					name: name ? name.value : this.$i18n( 'wikilambda-editor-default-name' ).text()
 				};
 			};
 
-			const sortByLabel = ( a, b ) => a.langLabelData.label.localeCompare( b.langLabelData.label, this.getUserLangCode, { sensitivity: 'base' } );
+			const sortByLabel = ( a, b ) => a.langLabelData.label.localeCompare(
+				b.langLabelData.label,
+				this.getUserLangCode,
+				{ sensitivity: 'base' }
+			);
 
 			const suggestedLangs = this.getFallbackLanguageZids.map( ( zid ) => buildLangItem( zid ) );
 			const otherLangs = this.allLangs.map( ( zid ) => buildLangItem( zid ) ).sort( sortByLabel );
@@ -288,10 +288,7 @@ module.exports = exports = defineComponent( {
 				// Compile information for every search result
 				this.lookupResults = labels
 					.map( ( result ) => {
-						const nameRow = this.getZPersistentName( result.page_title );
-						const name = nameRow ?
-							this.getZMonolingualTextValue( nameRow.id ) :
-							undefined;
+						const name = this.getZPersistentName( result.page_title );
 						allZids.push( result.page_title );
 						const labelData = new LabelData(
 							result.page_title,
@@ -304,7 +301,7 @@ module.exports = exports = defineComponent( {
 							langLabelData: labelData,
 							hasMultilingualData: this.hasMultilingualData( result.page_title ),
 							hasName: !!name,
-							name: name || this.$i18n( 'wikilambda-editor-default-name' ).text()
+							name: name ? name.value : this.$i18n( 'wikilambda-editor-default-name' ).text()
 						};
 					} )
 					.sort( ( a, b ) => {

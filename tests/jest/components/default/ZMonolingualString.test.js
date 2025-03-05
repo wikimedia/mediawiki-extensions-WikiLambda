@@ -10,24 +10,32 @@ const { mount, shallowMount } = require( '@vue/test-utils' );
 const { CdxTextInput } = require( '@wikimedia/codex' );
 
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
-const ZMonolingualString = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZMonolingualString.vue' );
+const ZMonolingualString = require( '../../../../resources/ext.wikilambda.app/components/types/ZMonolingualString.vue' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
-const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../helpers/getterHelpers.js' );
+const { createGettersWithFunctionsMock } = require( '../../helpers/getterHelpers.js' );
+
+// General use
+const keyPath = 'main.Z2K2';
+const objectValue = {
+	Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
+	Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1002' },
+	Z11K2: { Z1K1: 'Z6', Z6K1: 'my label' }
+};
 
 describe( 'ZMonolingualString', () => {
 	let store;
+
 	beforeEach( () => {
 		store = useMainStore();
-		store.getLabelData = createLabelDataMock();
 		store.getLanguageIsoCodeOfZLang = createGettersWithFunctionsMock( 'EN' );
-		store.getZMonolingualTextValue = createGettersWithFunctionsMock( 'my label' );
-		store.getZMonolingualLangValue = createGettersWithFunctionsMock( 'Z10002' );
 	} );
 
 	describe( 'in view mode', () => {
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( ZMonolingualString, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false
 				}
 			} );
@@ -37,6 +45,8 @@ describe( 'ZMonolingualString', () => {
 		it( 'displays a language chip', () => {
 			const wrapper = mount( ZMonolingualString, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false
 				}
 			} );
@@ -49,6 +59,8 @@ describe( 'ZMonolingualString', () => {
 		it( 'displays the label value for the language', () => {
 			const wrapper = shallowMount( ZMonolingualString, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false
 				}
 			} );
@@ -61,6 +73,8 @@ describe( 'ZMonolingualString', () => {
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( ZMonolingualString, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true
 				}
 			} );
@@ -73,6 +87,8 @@ describe( 'ZMonolingualString', () => {
 		it( 'displays a language chip', () => {
 			const wrapper = mount( ZMonolingualString, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false
 				}
 			} );
@@ -85,6 +101,8 @@ describe( 'ZMonolingualString', () => {
 		it( 'its label value can be edited and the value emitted', async () => {
 			const wrapper = shallowMount( ZMonolingualString, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true
 				}
 			} );

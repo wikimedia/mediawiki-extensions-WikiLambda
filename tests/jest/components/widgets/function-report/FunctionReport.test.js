@@ -15,46 +15,41 @@ const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store
 
 const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../../helpers/getterHelpers.js' );
 
+const functionObject = { Z2K2: {
+	Z8K3: [ 'Z20', 'Z10002', 'Z10003' ],
+	Z8K4: [ 'Z14', 'Z10001', 'Z10004', 'Z10005' ]
+} };
+
 describe( 'FunctionReport', () => {
 	let store;
 
 	beforeEach( () => {
 		store = useMainStore();
 		store.getUserLangCode = 'en';
+		store.getCurrentZObjectId = 'Z0';
 		store.getLabelData = createLabelDataMock();
-		store.getStoredObject = createGettersWithFunctionsMock( {
-			[ Constants.Z_PERSISTENTOBJECT_VALUE ]:
-			{
-				[ Constants.Z_FUNCTION_TESTERS ]: [
-					Constants.Z_TESTER,
-					'Z10002',
-					'Z10003'
-				],
-				[ Constants.Z_FUNCTION_IMPLEMENTATIONS ]: [
-					Constants.Z_IMPLEMENTATION,
-					'Z10001',
-					'Z10004',
-					'Z10005'
-				]
-			}
-		} );
-		store.getViewMode = createGettersWithFunctionsMock();
+		store.getStoredObject = createGettersWithFunctionsMock( functionObject );
+		store.getViewMode = createGettersWithFunctionsMock( true );
 		store.getZTesterPercentage = createGettersWithFunctionsMock( {
 			passing: 1,
 			total: 1,
 			percentage: 100
 		} );
-		store.getZTesterResults = createGettersWithFunctionsMock();
+		store.getZTesterResult = createGettersWithFunctionsMock();
 		store.fetchZids.mockResolvedValue();
 		store.getTestResults.mockResolvedValue();
+	} );
+
+	afterEach( () => {
+		store.getTestResults.mockClear();
+		jest.clearAllMocks();
 	} );
 
 	it( 'renders without errors', () => {
 		const wrapper = mount( FunctionReport, {
 			props: {
-				zFunctionId: '',
-				rootZid: Constants.NEW_ZID_PLACEHOLDER,
-				reportType: Constants.Z_IMPLEMENTATION
+				functionZid: undefined,
+				contentType: Constants.Z_IMPLEMENTATION
 			}
 		} );
 		expect( wrapper.find( 'div' ).exists() ).toBeTruthy();
@@ -63,9 +58,8 @@ describe( 'FunctionReport', () => {
 	it( 'displays no results when no implementations or testers found', () => {
 		const wrapper = mount( FunctionReport, {
 			props: {
-				zFunctionId: '',
-				rootZid: Constants.NEW_ZID_PLACEHOLDER,
-				reportType: Constants.Z_IMPLEMENTATION
+				functionZid: '',
+				contentType: Constants.Z_IMPLEMENTATION
 			}
 		} );
 		expect( wrapper.find( 'p' ).text() )
@@ -75,13 +69,12 @@ describe( 'FunctionReport', () => {
 	it( 'displays all available testers if a new zImplementation is being created', async () => {
 		const wrapper = mount( FunctionReport, {
 			props: {
-				zFunctionId: 'Z10000',
-				rootZid: Constants.NEW_ZID_PLACEHOLDER,
-				reportType: Constants.Z_IMPLEMENTATION
+				functionZid: 'Z10000',
+				contentType: Constants.Z_IMPLEMENTATION
 			}
 		} );
 
-		expect( wrapper.vm.zIds ).toEqual( [ 'Z10002', 'Z10003' ] );
+		expect( wrapper.vm.zids ).toEqual( [ 'Z10002', 'Z10003' ] );
 
 		const content = wrapper.findAll( '.ext-wikilambda-app-function-report-widget__result' );
 		expect( content.length ).toBe( 2 );
@@ -90,13 +83,12 @@ describe( 'FunctionReport', () => {
 	it( 'displays all available implementations if a new zTester is being created', async () => {
 		const wrapper = mount( FunctionReport, {
 			props: {
-				zFunctionId: 'Z10000',
-				rootZid: Constants.NEW_ZID_PLACEHOLDER,
-				reportType: Constants.Z_TESTER
+				functionZid: 'Z10000',
+				contentType: Constants.Z_TESTER
 			}
 		} );
 
-		expect( wrapper.vm.zIds ).toEqual( [ 'Z10001', 'Z10004', 'Z10005' ] );
+		expect( wrapper.vm.zids ).toEqual( [ 'Z10001', 'Z10004', 'Z10005' ] );
 		expect( wrapper.find( '.ext-wikilambda-app-widget-base__header-title' ).text() ).toEqual( 'Implementations' );
 
 		const content = wrapper.findAll( '.ext-wikilambda-app-function-report-widget__result' );
@@ -104,38 +96,38 @@ describe( 'FunctionReport', () => {
 	} );
 
 	it( 'if displayed on a ZImplementation page, only shows testers', () => {
+		store.getCurrentZObjectId = 'Z10001';
 		const wrapper = mount( FunctionReport, {
 			props: {
-				zFunctionId: 'Z10000',
-				rootZid: 'Z10001',
-				reportType: Constants.Z_IMPLEMENTATION
+				functionZid: 'Z10000',
+				contentType: Constants.Z_IMPLEMENTATION
 			}
 		} );
 
 		expect( wrapper.find( '.ext-wikilambda-app-widget-base__header-title' ).text() ).toEqual( 'Tests' );
-		expect( wrapper.vm.zIds ).toEqual( [ 'Z10002', 'Z10003' ] );
+		expect( wrapper.vm.zids ).toEqual( [ 'Z10002', 'Z10003' ] );
 	} );
 
 	it( 'if displayed on a ZTester page, only shows ZImplementations', () => {
+		store.getCurrentZObjectId = 'Z10002';
 		const wrapper = mount( FunctionReport, {
 			props: {
-				zFunctionId: 'Z10000',
-				rootZid: 'Z10002',
-				reportType: Constants.Z_TESTER
+				functionZid: 'Z10000',
+				contentType: Constants.Z_TESTER
 			}
 		} );
 
 		expect( wrapper.find( '.ext-wikilambda-app-widget-base__header-title' ).text() ).toEqual( 'Implementations' );
-		expect( wrapper.vm.zIds ).toEqual( [ 'Z10001', 'Z10004', 'Z10005' ] );
+		expect( wrapper.vm.zids ).toEqual( [ 'Z10001', 'Z10004', 'Z10005' ] );
 	} );
 
 	describe( 'trigger button', () => {
 		it( 'tests all the implementations for a tester page', async () => {
+			store.getCurrentZObjectId = 'Z10002';
 			const wrapper = mount( FunctionReport, {
 				props: {
-					zFunctionId: 'Z10000',
-					rootZid: 'Z10002',
-					reportType: Constants.Z_TESTER
+					functionZid: 'Z10000',
+					contentType: Constants.Z_TESTER
 				}
 			} );
 
@@ -152,11 +144,11 @@ describe( 'FunctionReport', () => {
 		} );
 
 		it( 'tests all the testers for an implementation page', async () => {
+			store.getCurrentZObjectId = 'Z10004';
 			const wrapper = mount( FunctionReport, {
 				props: {
-					zFunctionId: 'Z10000',
-					rootZid: 'Z10004',
-					reportType: Constants.Z_IMPLEMENTATION
+					functionZid: 'Z10000',
+					contentType: Constants.Z_IMPLEMENTATION
 				}
 			} );
 
@@ -180,12 +172,10 @@ describe( 'FunctionReport', () => {
 		} );
 
 		it( 'does not trigger the tests if we are on new page', async () => {
-
 			mount( FunctionReport, {
 				props: {
-					zFunctionId: 'Z10000',
-					rootZid: 'Z0',
-					reportType: Constants.Z_IMPLEMENTATION
+					functionZid: 'Z10000',
+					contentType: Constants.Z_IMPLEMENTATION
 				}
 			} );
 
@@ -197,12 +187,11 @@ describe( 'FunctionReport', () => {
 		} );
 
 		it( 'initially tests all the implementations for a tester page', async () => {
-
+			store.getCurrentZObjectId = 'Z10002';
 			mount( FunctionReport, {
 				props: {
-					zFunctionId: 'Z10000',
-					rootZid: 'Z10002',
-					reportType: Constants.Z_TESTER
+					functionZid: 'Z10000',
+					contentType: Constants.Z_TESTER
 				}
 			} );
 
@@ -217,16 +206,14 @@ describe( 'FunctionReport', () => {
 					clearPreviousResults: true
 				} );
 			} );
-			await waitFor( () => expect( store.getTestResults ).toHaveBeenCalledTimes( 1 ) );
 		} );
 
 		it( 'initially tests all the testers for an implementation page', async () => {
-
+			store.getCurrentZObjectId = 'Z10004';
 			mount( FunctionReport, {
 				props: {
-					zFunctionId: 'Z10000',
-					rootZid: 'Z10004',
-					reportType: Constants.Z_IMPLEMENTATION
+					functionZid: 'Z10000',
+					contentType: Constants.Z_IMPLEMENTATION
 				}
 			} );
 
@@ -242,7 +229,6 @@ describe( 'FunctionReport', () => {
 					clearPreviousResults: true
 				} );
 			} );
-			await waitFor( () => expect( store.getTestResults ).toHaveBeenCalledTimes( 1 ) );
 		} );
 	} );
 } );

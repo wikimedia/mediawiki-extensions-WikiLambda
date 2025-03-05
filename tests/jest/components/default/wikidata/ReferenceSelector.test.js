@@ -8,7 +8,7 @@
 
 const { shallowMount } = require( '@vue/test-utils' );
 const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
-const ReferenceSelector = require( '../../../../../resources/ext.wikilambda.app/components/default-view-types/wikidata/ReferenceSelector.vue' );
+const ReferenceSelector = require( '../../../../../resources/ext.wikilambda.app/components/types/wikidata/ReferenceSelector.vue' );
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 
 describe( 'ReferenceSelector', () => {

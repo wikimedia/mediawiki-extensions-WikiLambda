@@ -28,41 +28,32 @@ describe( 'errorMixin mixin', () => {
 			mixins: [ errorMixin ],
 			data() {
 				return {
-					rowId: 1
+					keyPath: 'main.Z2K2'
 				};
 			}
 		};
 		wrapper = shallowMount( TestComponent );
 	} );
 
-	describe( 'setLocalError', () => {
-		it( 'should add an error to localErrors', () => {
-			const payload = {
-				type: 'error',
-				code: 'Z500',
-				message: 'message1'
-			};
-			wrapper.vm.setLocalError( payload );
-
-			expect( wrapper.vm.localErrors ).toHaveLength( 1 );
-			expect( wrapper.vm.localErrors[ 0 ] ).toEqual( payload );
-		} );
-	} );
-
 	describe( 'clearFieldErrors', () => {
-		it( 'should clear localErrors and call clearErrors action if rowId is defined and greater than 0', () => {
-			wrapper.vm.localErrors = [ { type: 'error', code: 'Z500', message: 'message1' } ];
+		it( 'should call clearErrors action if keyPath is defined and is not main', () => {
+			wrapper.vm.keyPath = 'main.Z2K2';
 			wrapper.vm.clearFieldErrors();
 
-			expect( wrapper.vm.localErrors ).toHaveLength( 0 );
-			expect( store.clearErrors ).toHaveBeenCalledWith( 1 );
+			expect( store.clearErrors ).toHaveBeenCalledWith( 'main.Z2K2' );
 		} );
 
-		it( 'should not call clearErrors action if rowId is not defined or is 0', () => {
-			wrapper.vm.rowId = 0;
+		it( 'should not call clearErrors action if keyPath is not defined', () => {
+			wrapper.vm.keyPath = undefined;
 			wrapper.vm.clearFieldErrors();
 
-			expect( wrapper.vm.localErrors ).toHaveLength( 0 );
+			expect( store.clearErrors ).not.toHaveBeenCalled();
+		} );
+
+		it( 'should not call clearErrors action if keyPath is main', () => {
+			wrapper.vm.keyPath = 'main';
+			wrapper.vm.clearFieldErrors();
+
 			expect( store.clearErrors ).not.toHaveBeenCalled();
 		} );
 	} );
@@ -75,28 +66,53 @@ describe( 'errorMixin mixin', () => {
 	} );
 
 	describe( 'fieldErrors computed property', () => {
-		it( 'should return combined localErrors and global errors from store', () => {
-			const globalErrors = [ { type: 'global_error', code: 'GLOBAL', message: 'Global error' } ];
-			store.getErrors = createGettersWithFunctionsMock( globalErrors );
-
-			wrapper.vm.localErrors = [ { type: 'local_error', code: 'LOCAL', message: 'Local error' } ];
-
-			expect( wrapper.vm.fieldErrors ).toEqual( [
+		it( 'should return global errors for local key path', () => {
+			const errors = [
 				{ type: 'global_error', code: 'GLOBAL', message: 'Global error' },
 				{ type: 'local_error', code: 'LOCAL', message: 'Local error' }
-			] );
+			];
+			store.getErrors = jest.fn().mockImplementation( ( id ) => ( id === 'main.Z2K2' ) ? errors : [] );
+
+			wrapper.vm.keyPath = 'main.Z2K2';
+			expect( wrapper.vm.fieldErrors ).toEqual( errors );
 		} );
 	} );
 
 	describe( 'hasFieldErrors computed property', () => {
 		it( 'should return true if there are any fieldErrors', () => {
-			wrapper.vm.localErrors = [ { type: 'error', code: 'CODE', message: 'Error' } ];
+			const errors = [
+				{ type: 'global_error', code: 'GLOBAL', message: 'Global error' },
+				{ type: 'local_error', code: 'LOCAL', message: 'Local error' }
+			];
+			store.getErrors = jest.fn().mockImplementation( ( id ) => ( id === 'main.Z2K2' ) ? errors : [] );
+
+			wrapper.vm.keyPath = 'main.Z2K2';
 			expect( wrapper.vm.hasFieldErrors ).toBe( true );
 		} );
 
 		it( 'should return false if there are no fieldErrors', () => {
-			wrapper.vm.localErrors = [];
+			store.getErrors = jest.fn().mockReturnValue( [] );
+			wrapper.vm.keyPath = 'main.Z2K2';
 			expect( wrapper.vm.hasFieldErrors ).toBe( false );
+		} );
+	} );
+
+	describe( 'hasChildErrors', () => {
+		it( 'returns true if there are error keys that are child of current keypath', () => {
+			store.getChildErrorKeys = jest.fn().mockReturnValue( [
+				'main.Z2K2.Z12K1',
+				'main.Z2K2.Z12K1.2'
+			] );
+
+			wrapper.vm.keyPath = 'main.Z2K2';
+			expect( wrapper.vm.hasChildErrors ).toBe( true );
+		} );
+
+		it( 'returns false if there are no error keys that are child of current keypath', () => {
+			store.getChildErrorKeys = jest.fn().mockReturnValue( [] );
+
+			wrapper.vm.keyPath = 'main.Z2K5';
+			expect( wrapper.vm.hasChildErrors ).toBe( false );
 		} );
 	} );
 

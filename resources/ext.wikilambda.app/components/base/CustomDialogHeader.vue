@@ -24,7 +24,7 @@
 				:aria-label="$i18n( 'wikilambda-dialog-close' ).text()"
 				@click="$emit( 'close-dialog' )"
 			>
-				<cdx-icon :icon="icons.cdxIconClose"></cdx-icon>
+				<cdx-icon :icon="iconClose"></cdx-icon>
 			</cdx-button>
 		</div>
 	</div>
@@ -32,8 +32,11 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { CdxButton, CdxIcon } = require( '../../../codex.js' );
+
 const icons = require( '../../../lib/icons.json' );
+
+// Codex components
+const { CdxButton, CdxIcon } = require( '../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-custom-dialog-header',
@@ -43,7 +46,7 @@ module.exports = exports = defineComponent( {
 	},
 	data: function () {
 		return {
-			icons
+			iconClose: icons.cdxIconClose
 		};
 	}
 } );

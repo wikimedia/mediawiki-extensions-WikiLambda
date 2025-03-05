@@ -34,41 +34,6 @@ module.exports = {
 		},
 
 		/**
-		 * Given the rowId of the Wikidata Item entity
-		 * returns the rowId of the Wikidata Item Id string.
-		 *
-		 * @return {Function}
-		 */
-		getItemIdRow: function () {
-			/**
-			 * @param {number} rowId
-			 * @return {Object|undefined}
-			 */
-			const findItemIdRow = ( rowId ) => this.getWikidataEntityIdRow( rowId, Constants.Z_WIKIDATA_ITEM );
-			return findItemIdRow;
-		},
-
-		/**
-		 * Returns the Wikidata Item Id string value, if any Item is selected.
-		 * Else returns null.
-		 *
-		 * @return {Function}
-		 */
-		getItemId: function () {
-			/**
-			 * @param {number} rowId
-			 * @return {string|null}
-			 */
-			const findItemId = ( rowId ) => {
-				const itemIdRow = this.getItemIdRow( rowId );
-				return itemIdRow ?
-					this.getZStringTerminalValue( itemIdRow.id ) || null :
-					null;
-			};
-			return findItemId;
-		},
-
-		/**
 		 * Returns the LabelData object built from the available
 		 * labels in the data object of the selected Wikidata Item.
 		 * If an Item is selected but it has no labels, returns

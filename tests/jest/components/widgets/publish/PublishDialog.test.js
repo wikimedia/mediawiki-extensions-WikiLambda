@@ -133,7 +133,7 @@ describe( 'Publish Dialog', () => {
 
 		wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
 		await waitFor( () => expect( store.setError ).toHaveBeenCalledWith( {
-			rowId: 0,
+			errorId: 'main',
 			errorType: Constants.ERROR_TYPES.ERROR,
 			errorMessage: 'mock submission error'
 		} ) );

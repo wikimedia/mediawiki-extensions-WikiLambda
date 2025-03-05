@@ -31,10 +31,12 @@
 						{{ $i18n( 'wikilambda-persistentzobject-contents' ).text() }}
 					</div>
 					<wl-z-object-key-value
+						v-if="objectValue"
+						:key-path="initialKeyPath"
+						:object-value="objectValue"
+						:edit="edit"
 						:skip-key="true"
 						:skip-indent="true"
-						:row-id="contentRowId"
-						:edit="edit"
 					></wl-z-object-key-value>
 				</div>
 			</div>
@@ -49,17 +51,15 @@
 				<!-- Widget Function Report -->
 				<wl-function-report-widget
 					v-if="hasFunctionWidgets"
-					:z-function-id="targetFunctionZid"
-					:root-zid="persistentObjectZid"
-					:report-type="contentType"
+					:function-zid="targetFunctionZid"
+					:content-type="contentType"
 				></wl-function-report-widget>
 
 				<!-- Widget Function Evaluator -->
 				<wl-function-evaluator-widget
 					v-if="hasFunctionWidgets"
 					:function-zid="targetFunctionZid"
-					:content-row-id="contentRowId"
-					:for-implementation="isImplementationPage"
+					:content-type="contentType"
 				></wl-function-evaluator-widget>
 			</div>
 		</div>
@@ -71,15 +71,18 @@ const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
 
 const Constants = require( '../Constants.js' );
+const eventLogMixin = require( '../mixins/eventLogMixin.js' );
+const typeMixin = require( '../mixins/typeMixin.js' );
+const useMainStore = require( '../store/index.js' );
+
+// Type components
+const ZObjectKeyValue = require( '../components/types/ZObjectKeyValue.vue' );
+// Widget components
 const AboutWidget = require( '../components/widgets/about/About.vue' );
 const FunctionEvaluatorWidget = require( '../components/widgets/function-evaluator/FunctionEvaluator.vue' );
 const FunctionExplorerWidget = require( '../components/widgets/function-explorer/FunctionExplorer.vue' );
 const FunctionReportWidget = require( '../components/widgets/function-report/FunctionReport.vue' );
 const PublishWidget = require( '../components/widgets/publish/Publish.vue' );
-const ZObjectKeyValue = require( '../components/default-view-types/ZObjectKeyValue.vue' );
-const eventLogMixin = require( '../mixins/eventLogMixin.js' );
-const typeMixin = require( '../mixins/typeMixin.js' );
-const useMainStore = require( '../store/index.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-default-view',
@@ -92,118 +95,85 @@ module.exports = exports = defineComponent( {
 		'wl-z-object-key-value': ZObjectKeyValue
 	},
 	mixins: [ eventLogMixin, typeMixin ],
-	computed: Object.assign( {},
-		mapState( useMainStore, [
-			'getZPersistentContentRowId',
-			'getRowByKeyPath',
-			'getViewMode',
-			'getZObjectTypeByRowId',
-			'getZImplementationContentType',
-			'getZReferenceTerminalValue',
-			'getZStringTerminalValue',
-			'getRowByKeyPath',
-			'isDirty',
-			'isCreateNewPage',
-			'getCurrentZObjectId',
-			'getUserLangZid'
-		] ), {
-			/**
-			 * Returns whether we are in an edit page according
-			 * to the URL
-			 *
-			 * @return {boolean}
-			 */
-			edit: function () {
-				return !this.getViewMode;
-			},
+	data: function () {
+		return {
+			initialKeyPath: `${ Constants.STORED_OBJECTS.MAIN }.${ Constants.Z_PERSISTENTOBJECT_VALUE }`
+		};
+	},
+	computed: Object.assign( {}, mapState( useMainStore, [
+		'getCurrentZObjectId',
+		'getCurrentZObjectType',
+		'getCurrentTargetFunctionZid',
+		'getCurrentZImplementationType',
+		'getJsonObject',
+		'getUserLangZid',
+		'getViewMode',
+		'isCreateNewPage',
+		'isDirty'
+	] ), {
+		/**
+		 * Returns the initial persistent object content ZObject
+		 *
+		 * @return {Object|Array|undefined}
+		 */
+		objectValue: function () {
+			const jsonObject = this.getJsonObject( Constants.STORED_OBJECTS.MAIN );
+			return jsonObject ? jsonObject[ Constants.Z_PERSISTENTOBJECT_VALUE ] : undefined;
+		},
 
-			/**
-			 * Returns the rowId where the persistent object content starts
-			 *
-			 * @return {number}
-			 */
-			contentRowId: function () {
-				return this.getZPersistentContentRowId() || 0;
-			},
+		/**
+		 * Returns whether we are in an edit page according
+		 * to the URL
+		 *
+		 * @return {boolean}
+		 */
+		edit: function () {
+			return !this.getViewMode;
+		},
 
-			/**
-			 * Returns the type of the content object
-			 *
-			 * @return {string}
-			 */
-			contentType: function () {
-				return this.typeToString( this.getZObjectTypeByRowId( this.contentRowId ) );
-			},
+		/**
+		 * Returns the type of the content object
+		 *
+		 * @return {string}
+		 */
+		contentType: function () {
+			return this.typeToString( this.getCurrentZObjectType );
+		},
 
-			/**
-			 * Whether the page contains function widgets (is an
-			 * implementation or a tester page)
-			 *
-			 * @return {boolean}
-			 */
-			hasFunctionWidgets: function () {
-				return this.isImplementationPage || this.isTesterPage;
-			},
+		/**
+		 * Whether the page contains function widgets (is an
+		 * implementation or a tester page)
+		 *
+		 * @return {boolean}
+		 */
+		hasFunctionWidgets: function () {
+			return (
+				this.contentType === Constants.Z_IMPLEMENTATION ||
+				this.contentType === Constants.Z_TESTER
+			);
+		},
 
-			/**
-			 * Whether the page is an implementation page
-			 *
-			 * @return {boolean}
-			 */
-			isImplementationPage: function () {
-				return this.contentType === Constants.Z_IMPLEMENTATION;
-			},
+		/**
+		 * @return {string|undefined}
+		 */
+		persistentObjectZid: function () {
+			return this.getCurrentZObjectId;
+		},
 
-			/**
-			 * Whether the page is an implementation page
-			 *
-			 * @return {boolean}
-			 */
-			isTesterPage: function () {
-				return this.contentType === Constants.Z_TESTER;
-			},
+		/**
+		 * @return {string|undefined}
+		 */
+		targetFunctionZid: function () {
+			return this.getCurrentTargetFunctionZid;
+		},
 
-			/**
-			 * @return {string|undefined}
-			 */
-			persistentObjectZid: function () {
-				const row = this.getRowByKeyPath( [ Constants.Z_PERSISTENTOBJECT_ID ], 0 );
-				return row ? this.getZStringTerminalValue( row.id ) : undefined;
-			},
-
-			/**
-			 * @return {number|undefined}
-			 */
-			targetFunctionRowId: function () {
-				let key;
-				if ( this.contentType === Constants.Z_IMPLEMENTATION ) {
-					key = Constants.Z_IMPLEMENTATION_FUNCTION;
-				} else if ( this.contentType === Constants.Z_TESTER ) {
-					key = Constants.Z_TESTER_FUNCTION;
-				} else {
-					return undefined;
-				}
-				const row = this.getRowByKeyPath( [ key ], this.contentRowId );
-				return row ? row.id : undefined;
-			},
-
-			/**
-			 * @return {string|undefined}
-			 */
-			targetFunctionZid: function () {
-				return this.getZReferenceTerminalValue( this.targetFunctionRowId );
-			},
-
-			/**
-			 * @return {string|undefined}
-			 */
-			implementationMode: function () {
-				if ( this.contentType === Constants.Z_IMPLEMENTATION ) {
-					return this.getZImplementationContentType( this.contentRowId );
-				}
-			}
+		/**
+		 * @return {string|undefined}
+		 */
+		implementationMode: function () {
+			return this.getCurrentZImplementationType;
 		}
-	),
+	} ),
 	methods: {
 		/**
 		 * Dispatch event (via Metrics Platform) to record loading this view,

@@ -11,9 +11,10 @@
 	>
 		<wl-z-object-key-value
 			v-if="!edit"
-			:row-id="selectedEntityRowId"
+			:key-path="`${ keyPath }.${ selectedEntityKey }`"
+			:object-value="objectValue[ selectedEntityKey ]"
+			:edit="edit"
 			:skip-key="true"
-			:edit="false"
 		></wl-z-object-key-value>
 		<cdx-select
 			v-else
@@ -30,8 +31,12 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
+
 const Constants = require( '../../../Constants.js' );
+const zobjectMixin = require( '../../../mixins/zobjectMixin.js' );
 const useMainStore = require( '../../../store/index.js' );
+
+// Codex components
 const { CdxSelect } = require( '../../../../codex.js' );
 
 module.exports = exports = defineComponent( {
@@ -39,11 +44,15 @@ module.exports = exports = defineComponent( {
 	components: {
 		'cdx-select': CdxSelect
 	},
+	mixins: [ zobjectMixin ],
 	props: {
-		rowId: {
-			type: Number,
-			required: false,
-			default: 0
+		keyPath: {
+			type: String,
+			required: true
+		},
+		objectValue: {
+			type: Object,
+			required: true
 		},
 		edit: {
 			type: Boolean,
@@ -64,8 +73,6 @@ module.exports = exports = defineComponent( {
 	computed: Object.assign( {}, mapState( useMainStore, [
 		'getTypeOfWikidataEnum',
 		'getReferencesIdsOfWikidataEnum',
-		'getRowByKeyPath',
-		'getZStringTerminalValue',
 		'getWikidataEntityLabelData'
 	] ), {
 		/**
@@ -90,27 +97,27 @@ module.exports = exports = defineComponent( {
 			return this.getReferencesIdsOfWikidataEnum( this.type );
 		},
 		/**
-		 * Returns the rowId of the selected entity in the Wikidata enum
+		 * Returns the key for the selected entity
 		 * (key K1 of the wikidata enum type)
 		 *
-		 * @return {number|undefined}
+		 * @return {string}
 		 */
-		selectedEntityRowId: function () {
-			const selectedEntityKey = `${ this.type }K1`;
-			const selectedEntityRow = this.getRowByKeyPath( [ selectedEntityKey ], this.rowId );
-			return selectedEntityRow ? selectedEntityRow.id : undefined;
+		selectedEntityKey: function () {
+			return `${ this.type }K1`;
 		},
 		/**
 		 * Returns the terminal Wikidata Id of the selected entity, or undefined
 		 * if nothing is selected yet.
 		 * E.g. 'L313289'
 		 *
-		 * @return {string|undefined}
+		 * @return {string|null}
 		 */
 		selectedEntityId: function () {
-			const wikidataEntityKey = `${ this.entityType }K1`;
-			const wikidataEntityRow = this.getRowByKeyPath( [ wikidataEntityKey ], this.selectedEntityRowId );
-			return wikidataEntityRow ? this.getZStringTerminalValue( wikidataEntityRow.id ) : undefined;
+			const selectedEntity = this.objectValue[ this.selectedEntityKey ];
+			const simplifiedType = Constants.WIKIDATA_SIMPLIFIED_TYPES[ this.entityType ];
+			return selectedEntity ?
+				this.getWikidataEntityId( selectedEntity, simplifiedType ) || null :
+				null;
 		},
 		/**
 		 * Returns the placeholder text for the Wikidata enum selector.

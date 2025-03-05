@@ -8,23 +8,23 @@
 
 const { CdxTextInput } = require( '@wikimedia/codex' );
 const { shallowMount } = require( '@vue/test-utils' );
-const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
-const createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
-const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
-const ZString = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZString.vue' );
+const ZString = require( '../../../../resources/ext.wikilambda.app/components/types/ZString.vue' );
+
+// General use
+const keyPath = 'main.Z2K2.Z1K1';
+const objectValue = { Z1K1: 'Z6', Z6K1: 'my terminal string ' };
+
+// Terminal value
+const terminalKeyPath = 'main.Z2K2.Z1K1.Z6K1';
+const terminalObjectValue = 'my terminal string ';
 
 describe( 'ZString', () => {
-	let store;
-	beforeEach( () => {
-		store = useMainStore();
-		store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_ARGUMENT_KEY );
-		store.getZStringTerminalValue = createGettersWithFunctionsMock( 'my terminating string ' );
-	} );
-
 	describe( 'in view mode', () => {
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( ZString, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false
 				}
 			} );
@@ -32,37 +32,39 @@ describe( 'ZString', () => {
 			expect( wrapper.find( 'div' ).exists() ).toBe( true );
 		} );
 
-		it( 'displays the terminating string value', async () => {
+		it( 'displays the terminal string value', async () => {
 			const wrapper = shallowMount( ZString, {
 				props: {
+					keyPath: terminalKeyPath,
+					objectValue: terminalObjectValue,
 					edit: false
 				}
 			} );
 
-			expect( wrapper.find( 'p' ).text() ).toBe( '"my terminating string "' );
+			expect( wrapper.find( 'p' ).text() ).toBe( '"my terminal string "' );
 		} );
 	} );
 
 	describe( 'in edit mode', () => {
-		it( 'takes an input and emits the value with a Z_STRING_VALUE (Z6K1) keyPath if its key is not a Z_STRING_VALUE',
-			async () => {
-				const wrapper = shallowMount( ZString, {
-					props: {
-						edit: true
-					}
-				} );
-
-				await wrapper.getComponent( CdxTextInput ).vm.$emit( 'update:modelValue', 'my string value' );
-
-				expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [ 'Z6K1' ], value: 'my string value' } ] ] );
-			} );
-
-		it( 'takes an input and emits the value with an empty keyPath if its key is a Z_STRING_VALUE (Z6K1)', async () => {
-			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_STRING_VALUE );
-			store.getZStringTerminalValue = createGettersWithFunctionsMock( undefined );
-
+		it( 'emits the value with keyPath if value is a string object', async () => {
 			const wrapper = shallowMount( ZString, {
 				props: {
+					keyPath,
+					objectValue,
+					edit: true
+				}
+			} );
+
+			await wrapper.getComponent( CdxTextInput ).vm.$emit( 'update:modelValue', 'my string value' );
+
+			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [ 'Z6K1' ], value: 'my string value' } ] ] );
+		} );
+
+		it( 'emits the value with an empty keyPath if value is a terminal string', async () => {
+			const wrapper = shallowMount( ZString, {
+				props: {
+					keyPath: terminalKeyPath,
+					objectValue: terminalObjectValue,
 					edit: true
 				}
 			} );

@@ -12,7 +12,7 @@ const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/in
 
 const mockErrors = {
 	// Global errors
-	0: [ {
+	main: [ {
 		type: Constants.ERROR_TYPES.WARNING,
 		code: undefined,
 		message: 'Some custom warning message'
@@ -22,7 +22,7 @@ const mockErrors = {
 		message: 'Some custom error message'
 	} ],
 	// Validation errors
-	10: [ {
+	'main.Z2K2': [ {
 		type: Constants.ERROR_TYPES.ERROR,
 		code: Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT,
 		message: undefined
@@ -39,32 +39,19 @@ describe( 'Errors Pinia store', () => {
 	} );
 
 	describe( 'Getters', () => {
-		describe( 'getAllErrors', () => {
-			it( 'returns an empty array when there are no errors', () => {
-				expect( store.getAllErrors ).toEqual( [] );
-			} );
-
-			it( 'returns all errors', () => {
-				store.errors = mockErrors;
-				let expectErrors = [];
-				expectErrors = expectErrors.concat( mockErrors[ 0 ], mockErrors[ 10 ] );
-				expect( store.getAllErrors ).toEqual( expectErrors );
-			} );
-		} );
-
 		describe( 'getErrors', () => {
 			it( 'returns an empty array when there are no errors', () => {
-				expect( store.getErrors( 0 ) ).toEqual( [] );
+				expect( store.getErrors( 'main' ) ).toEqual( [] );
 			} );
 
-			it( 'returns errors saved for a given rowId', () => {
+			it( 'returns errors saved for a given errorId', () => {
 				store.errors = mockErrors;
-				expect( store.getErrors( 0 ) ).toEqual( mockErrors[ 0 ] );
+				expect( store.getErrors( 'main' ) ).toEqual( mockErrors.main );
 			} );
 
-			it( 'returns errors saved for a given rowId and type', () => {
+			it( 'returns errors saved for a given errorId and type', () => {
 				store.errors = mockErrors;
-				expect( store.getErrors( 0, Constants.ERROR_TYPES.WARNING ) ).toEqual( [ mockErrors[ 0 ][ 0 ] ] );
+				expect( store.getErrors( 'main', Constants.ERROR_TYPES.WARNING ) ).toEqual( [ mockErrors.main[ 0 ] ] );
 			} );
 		} );
 
@@ -73,93 +60,117 @@ describe( 'Errors Pinia store', () => {
 				store.errors = mockErrors;
 			} );
 
-			it( 'returns false for a given rowId when an error with the provided code does not exist', () => {
-				expect( store.hasErrorByCode( 0, Constants.ERROR_CODES.UNKNOWN_ERROR ) ).toEqual( false );
+			it( 'returns false for a given errorId when an error with the provided code does not exist', () => {
+				const hasError = store.hasErrorByCode( 'main', Constants.ERROR_CODES.UNKNOWN_ERROR );
+				expect( hasError ).toEqual( false );
 			} );
 
-			it( 'returns true for a given rowId when an error with the provided code exists', () => {
-				expect( store.hasErrorByCode( 10, Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT ) ).toEqual( true );
+			it( 'returns true for a given errorId when an error with the provided code exists', () => {
+				const hasError = store.hasErrorByCode( 'main.Z2K2', Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT );
+				expect( hasError ).toEqual( true );
+			} );
+		} );
+
+		describe( 'getChildErrorKeys', () => {
+			it( 'returns child keys given a keypath', () => {
+				store.errors = {
+					main: { some: 'error' },
+					'main.Z2K2': { some: 'error' },
+					'main.Z2K2.Z12K1': { some: 'error' },
+					'main.Z2K2.Z12K1.1': { some: 'error' },
+					'main.Z2K3.Z12K1': { some: 'error' }
+				};
+				const children = [
+					'main.Z2K2.Z12K1',
+					'main.Z2K2.Z12K1.1'
+				];
+				expect( store.getChildErrorKeys( 'main.Z2K2' ) ).toEqual( children );
+			} );
+
+			it( 'returns no child keys with empty errors', () => {
+				store.errors = {};
+				expect( store.getChildErrorKeys( 'main.Z2K2' ) ).toEqual( [] );
 			} );
 		} );
 	} );
 
 	describe( 'Actions', () => {
 		describe( 'setError', () => {
-			it( 'sets error in the state under a given rowId', () => {
+			it( 'sets error in the state under a given errorId', () => {
 				store.setError( {
-					rowId: 10,
+					errorId: 'main.Z2K2',
 					errorType: Constants.ERROR_TYPES.ERROR,
 					errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT
 				} );
-				expect( store.errors ).toEqual( { 10: mockErrors[ 10 ] } );
+				expect( store.errors ).toEqual( { 'main.Z2K2': mockErrors[ 'main.Z2K2' ] } );
 			} );
 
-			it( 'sets global error if no rowId is given', () => {
+			it( 'sets global error if no errorId is given', () => {
 				store.setError( {
 					errorType: Constants.ERROR_TYPES.ERROR,
 					errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT
 				} );
-				expect( store.errors ).toEqual( { 0: mockErrors[ 10 ] } );
+				expect( store.errors ).toEqual( { main: mockErrors[ 'main.Z2K2' ] } );
 			} );
 
-			it( 'adds an error if rowId is already present in the state', () => {
+			it( 'adds an error if errorId is already present in the state', () => {
 				store.errors = {
-					0: [ {
+					main: [ {
 						type: Constants.ERROR_TYPES.WARNING,
 						code: undefined,
 						message: 'Some custom warning message'
 					} ]
 				};
 				store.setError( {
-					rowId: 0,
+					errorId: 'main',
 					errorType: Constants.ERROR_TYPES.ERROR,
 					errorMessage: 'Some custom error message'
 				} );
-				expect( store.errors ).toEqual( { 0: mockErrors[ 0 ] } );
+				expect( store.errors ).toEqual( { main: mockErrors.main } );
 			} );
 		} );
 
 		describe( 'clearErrors', () => {
-			it( 'does nothing if the rowId has no errors in the state', () => {
+			it( 'does nothing if the errorId has no errors in the state', () => {
 				store.errors = mockErrors;
-				store.clearErrors( 20 );
+				store.clearErrors( 'main.non.existing.path' );
 				expect( store.errors ).toEqual( mockErrors );
 			} );
 
-			it( 'clears all errors associated with a given rowId', () => {
+			it( 'clears all errors associated with a given errorId', () => {
 				store.errors = mockErrors;
-				store.clearErrors( 10 );
-				expect( store.errors ).toEqual( { 0: mockErrors[ 0 ], 10: [] } );
+				store.clearErrors( 'main.Z2K2' );
+				expect( store.errors ).toEqual( { main: mockErrors.main, 'main.Z2K2': [] } );
 			} );
 		} );
 
 		describe( 'clearErrorsByCode', () => {
-			it( 'does nothing if the rowId has no errors in the state for the provided code', () => {
+			it( 'does nothing if the errorId has no errors in the state for the provided code', () => {
 				store.errors = mockErrors;
-				store.clearErrorsByCode( 10, Constants.ERROR_CODES.UNKNOWN_ERROR );
+				store.clearErrorsByCode( 'main.Z2K2', Constants.ERROR_CODES.UNKNOWN_ERROR );
 				expect( store.errors ).toEqual( mockErrors );
 			} );
 
-			it( 'clears all errors associated with a given rowId', () => {
+			it( 'clears all errors associated with a given errorId', () => {
 				store.errors = mockErrors;
-				store.clearErrorsByCode( 10, Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT );
-				expect( store.errors ).toEqual( { 0: mockErrors[ 0 ], 10: [] } );
+				store.clearErrorsByCode( 'main.Z2K2', Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT );
+				expect( store.errors ).toEqual( { main: mockErrors.main, 'main.Z2K2': [] } );
 			} );
 		} );
 
 		describe( 'clearValidationErrors', () => {
 			it( 'does nothing if the state has no validation errors', () => {
 				store.errors = {
-					0: mockErrors[ 0 ]
+					main: mockErrors.main
 				};
 				store.clearValidationErrors();
-				expect( store.errors ).toEqual( { 0: mockErrors[ 0 ] } );
+				expect( store.errors ).toEqual( { main: mockErrors.main } );
 			} );
 
 			it( 'clears all validation errors (not zero)', () => {
 				store.errors = mockErrors;
-				store.clearValidationErrors( 10 );
-				expect( store.errors ).toEqual( { 0: mockErrors[ 0 ], 10: [] } );
+				store.clearValidationErrors( 'main.Z2K2' );
+				expect( store.errors ).toEqual( { main: mockErrors.main, 'main.Z2K2': [] } );
 			} );
 		} );
 

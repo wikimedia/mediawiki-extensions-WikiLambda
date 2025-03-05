@@ -30,42 +30,6 @@ describe( 'Wikidata Items Pinia store', () => {
 	} );
 
 	describe( 'Getters', () => {
-		describe( 'getItemIdRow', () => {
-			it( 'calls getWikidataEntityIdRow for items', () => {
-				Object.defineProperty( store, 'getWikidataEntityIdRow', {
-					value: jest.fn()
-				} );
-				store.getItemIdRow( 10 );
-				expect( store.getWikidataEntityIdRow ).toHaveBeenCalledWith( 10, Constants.Z_WIKIDATA_ITEM );
-			} );
-		} );
-
-		describe( 'getItemId', () => {
-			it( 'returns null when row is undefined', () => {
-				const rowId = undefined;
-				const expected = null;
-				expect( store.getItemId( rowId ) ).toEqual( expected );
-			} );
-
-			it( 'returns null when row is not found', () => {
-				const rowId = 100;
-				const expected = null;
-				expect( store.getItemId( rowId ) ).toEqual( expected );
-			} );
-
-			it( 'returns item ID when row is found', () => {
-				const rowId = 1;
-				const expected = 'Q223044';
-				Object.defineProperty( store, 'getItemIdRow', {
-					value: jest.fn().mockReturnValue( 2 )
-				} );
-				Object.defineProperty( store, 'getZStringTerminalValue', {
-					value: jest.fn().mockReturnValue( expected )
-				} );
-				expect( store.getItemId( rowId ) ).toEqual( expected );
-			} );
-		} );
-
 		describe( 'getItemLabelData', () => {
 			it( 'returns undefined when item ID is undefined', () => {
 				const expected = undefined;

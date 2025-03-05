@@ -7,20 +7,18 @@
 <template>
 	<div class="ext-wikilambda-app-typed-list-type" data-testid="z-typed-list-type">
 		<wl-z-object-key-value
-			:row-id="rowId"
+			:key-path="keyPath + '.0'"
+			:object-value="objectValue"
 			:edit="edit"
-			:list-item-type="listItemType"
-			@change-event="changeType"
+			@typed-list-type-changed="$emit( 'type-changed', $event )"
 		></wl-z-object-key-value>
 	</div>
 </template>
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { mapActions } = require( 'pinia' );
 
 const typeMixin = require( '../../mixins/typeMixin.js' );
-const useMainStore = require( '../../store/index.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-typed-list-type',
@@ -29,42 +27,19 @@ module.exports = exports = defineComponent( {
 	},
 	mixins: [ typeMixin ],
 	props: {
-		rowId: {
-			type: Number,
-			required: false,
-			default: 0
+		keyPath: {
+			type: String,
+			required: true
+		},
+		objectValue: {
+			type: Object,
+			required: true
 		},
 		edit: {
 			type: Boolean,
 			required: true
-		},
-		parentRowId: {
-			type: Number,
-			default: undefined
-		},
-		listItemType: {
-			type: [ String, Object ],
-			default: null
 		}
 	},
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'handleListTypeChange'
-	] ), {
-
-		/**
-		 * Handles the change of the type of the list.
-		 *
-		 * @param {Object} payload
-		 * @param {string} payload.value - The new type of the list.
-		 * @return {void}
-		 */
-		changeType: function ( payload ) {
-			this.handleListTypeChange( {
-				parentRowId: this.parentRowId,
-				newListItemType: payload.value
-			} );
-		}
-	} ),
 	beforeCreate: function () {
 		this.$options.components[ 'wl-z-object-key-value' ] = require( './ZObjectKeyValue.vue' );
 	}

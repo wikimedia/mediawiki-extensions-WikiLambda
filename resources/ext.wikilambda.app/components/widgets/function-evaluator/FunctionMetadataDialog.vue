@@ -24,7 +24,7 @@
 				</template>
 				<template #extra>
 					<div class="ext-wikilambda-app-function-metadata-dialog__helplink">
-						<cdx-icon :icon="icons.cdxIconHelpNotice"></cdx-icon>
+						<cdx-icon :icon="iconHelpNotice"></cdx-icon>
 						<a
 							:title="tooltipMetaDataHelpLink"
 							:href="parsedMetaDataHelpLink"
@@ -166,14 +166,14 @@ module.exports = exports = defineComponent( {
 			default: undefined
 		},
 		errorId: {
-			type: Number,
+			type: String,
 			required: false,
 			default: undefined
 		}
 	},
 	data: function () {
 		return {
-			icons: icons,
+			iconHelpNotice: icons.cdxIconHelpNotice,
 			selectedMetadataPath: '0'
 		};
 	},

@@ -15,7 +15,7 @@
 			class="ext-wikilambda-language-selector__trigger"
 			@click="openLanguageSelector"
 		>
-			<cdx-icon :icon="icons.cdxIconLanguage"></cdx-icon>
+			<cdx-icon :icon="iconLanguage"></cdx-icon>
 			{{ selectedLanguageLabel }}
 		</cdx-button>
 		<div
@@ -28,7 +28,7 @@
 				class="ext-wikilambda-language-selector__lookup"
 				:selected="selectedLanguage"
 				:menu-items="lookupResults"
-				:start-icon="icons.cdxIconSearch"
+				:start-icon="iconSearch"
 				:placeholder="selectLanguagePlaceholder"
 				@update:input-value="onInput"
 				@update:selected="onSelect"
@@ -51,7 +51,8 @@ module.exports = exports = defineComponent( {
 	},
 	data: function () {
 		return {
-			icons: icons,
+			iconSearch: icons.cdxIconSearch,
+			iconLanguage: icons.cdxIconLanguage,
 			inputValue: '',
 			lookupDelayTimer: null,
 			lookupDelayMs: 300,

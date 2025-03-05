@@ -7,12 +7,14 @@
 <template>
 	<div class="ext-wikilambda-app-function-call" data-testid="z-function-call">
 		<cdx-icon
-			:icon="icon"
 			class="ext-wikilambda-app-function-call__icon"
+			:icon="icon"
 			:class="iconClass"
 		></cdx-icon>
 		<wl-z-object-to-string
-			:row-id="rowId"
+			:key-path="keyPath"
+			:object-value="objectValue"
+			:edit="edit"
 			data-testid="z-object-to-string"
 			@expand="$emit( 'expand', true )"
 		></wl-z-object-to-string>
@@ -20,13 +22,15 @@
 </template>
 
 <script>
-const { CdxIcon } = require( '../../../codex.js' );
 const { defineComponent } = require( 'vue' );
-const { mapState } = require( 'pinia' );
 
 const icons = require( '../../../lib/icons.json' );
-const useMainStore = require( '../../store/index.js' );
+const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
+
+// Type components
 const ZObjectToString = require( './ZObjectToString.vue' );
+// Codex components
+const { CdxIcon } = require( '../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-function-call',
@@ -34,11 +38,19 @@ module.exports = exports = defineComponent( {
 		'wl-z-object-to-string': ZObjectToString,
 		'cdx-icon': CdxIcon
 	},
+	mixins: [ zobjectMixin ],
 	props: {
-		rowId: {
-			type: Number,
-			required: false,
-			default: 0
+		keyPath: {
+			type: String,
+			required: true
+		},
+		objectValue: {
+			type: Object,
+			required: true
+		},
+		edit: {
+			type: Boolean,
+			required: true
 		}
 	},
 	data: function () {
@@ -46,16 +58,14 @@ module.exports = exports = defineComponent( {
 			icon: icons.cdxIconFunction
 		};
 	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getZFunctionCallFunctionId'
-	] ), {
+	computed: {
 		/**
 		 * Returns the value of the function call or undefined
 		 *
 		 * @return {string|undefined}
 		 */
 		value: function () {
-			return this.getZFunctionCallFunctionId( this.rowId );
+			return this.getZFunctionCallFunctionId( this.objectValue );
 		},
 		/**
 		 * Returns a special class name when the function call is undefined
@@ -65,7 +75,7 @@ module.exports = exports = defineComponent( {
 		iconClass: function () {
 			return !this.value ? 'ext-wikilambda-app-function-call__icon--undefined' : '';
 		}
-	} )
+	}
 } );
 </script>
 

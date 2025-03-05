@@ -7,438 +7,1906 @@
 
 'use strict';
 
-const Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' );
-const Row = require( '../../../resources/ext.wikilambda.app/store/classes/Row.js' );
-const { tableDataToRowObjects } = require( '../helpers/zObjectTableHelpers.js' );
-const { convertJsonToTable, convertTableToJson } = require( '../../../resources/ext.wikilambda.app/utils/zobjectUtils.js' );
+const zobjectUtils = require( '../../../resources/ext.wikilambda.app/utils/zobjectUtils.js' );
+const { canonicalToHybrid } = require( '../../../resources/ext.wikilambda.app/utils/schemata.js' );
 
 describe( 'zobjectUtils', () => {
 
-	describe( 'convertJsonToTable', () => {
-		describe( 'convertJsonToTable with wrong parameters', () => {
+	describe( 'getZObjectType', () => {
+		it( 'returns undefined when value is undefined', () => {
+			const zobject = undefined;
+			const expected = undefined;
+			expect( zobjectUtils.getZObjectType( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.getZObjectType( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
 
-			it( 'throws an exception when calling with parentRow but no nextAvailableId', () => {
-				const zObject = 'the stringy one';
-				const parentRow = new Row( 10, 'Z2K2', Constants.ROW_VALUE_OBJECT, 9 );
+		it( 'returns string when value is a string', () => {
+			const zobject = 'Just a string';
+			const expected = 'Z6';
+			expect( zobjectUtils.getZObjectType( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.getZObjectType( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+
+		it( 'returns reference when value matches a ZID format', () => {
+			const zobject = 'Z123';
+			const expected = 'Z9';
+			expect( zobjectUtils.getZObjectType( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.getZObjectType( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+
+		it( 'returns untyped list when value is an empty array', () => {
+			const zobject = [];
+			const expected = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z881',
+				Z881K1: 'Z1'
+			};
+			expect( zobjectUtils.getZObjectType( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.getZObjectType( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+
+		it( 'returns typed list when value is a non-empty array', () => {
+			const zobject = [ 'Z6', 'zobject' ];
+			const expected = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z881',
+				Z881K1: 'Z6'
+			};
+			expect( zobjectUtils.getZObjectType( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.getZObjectType( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+
+		it( 'returns undefined when zobject type is not defined ', () => {
+			const zobject = {};
+			const expected = undefined;
+			expect( zobjectUtils.getZObjectType( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.getZObjectType( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+
+		it( 'returns value of zobject type', () => {
+			const zobject = {
+				Z1K1: 'Z11',
+				Z11K1: 'Z1002',
+				Z11K2: 'some value'
+			};
+			const expected = 'Z11';
+			expect( zobjectUtils.getZObjectType( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.getZObjectType( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+
+		it( 'returns nested zobject type', () => {
+			const zobject = [ {
+				Z1K1: 'Z7',
+				Z7K1: 'Z882',
+				Z882K1: 'Z6',
+				Z882K2: 'Z40'
+			} ];
+			const expected = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z881',
+				Z881K1: {
+					Z1K1: 'Z7',
+					Z7K1: 'Z882',
+					Z882K1: 'Z6',
+					Z882K2: 'Z40'
+				}
+			};
+			expect( zobjectUtils.getZObjectType( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.getZObjectType( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+	} );
+
+	describe( 'resolveZObjectByKeyPath', () => {
+		describe( 'failed resolution', () => {
+			it( 'throws error when key path is empty', () => {
+				const zobject = {};
+				const keyPath = [];
 
 				expect( () => {
-					convertJsonToTable( zObject, parentRow );
-				} ).toThrow( Error );
+					zobjectUtils.resolveZObjectByKeyPath( zobject, keyPath );
+				} ).toThrowError( 'Unable to resolve key path: Key path must be a non-empty array' );
 			} );
 
-			it( 'throws an exception when calling with appendToList but no parentRow', () => {
-				const zObject = 'the stringy one';
-				const parentRow = undefined;
-				const nextAvailableId = 20;
-				const appendToList = true;
+			it( 'throws error when key path points to a non-object', () => {
+				const zobject = {
+					a: {
+						b: null
+					}
+				};
+				const keyPath = [ 'a', 'b', 'c' ];
 
 				expect( () => {
-					convertJsonToTable( zObject, parentRow, nextAvailableId, appendToList );
-				} ).toThrow( Error );
-			} );
-		} );
-
-		describe( 'convertJsonToTable without parent', () => {
-
-			it( 'converts a terminal string', () => {
-				const zObject = 'the stringy one';
-				const rows = convertJsonToTable( zObject );
-				const expected = [
-					{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
-					{ id: 1, key: 'Z1K1', value: 'Z6', parent: 0 },
-					{ id: 2, key: 'Z6K1', value: 'the stringy one', parent: 0 }
-				];
-				expect( rows ).toEqual( expected );
+					zobjectUtils.resolveZObjectByKeyPath( zobject, keyPath );
+				} ).toThrowError( 'Unable to resolve key path: Key path points to a non-object at "b"' );
 			} );
 
-			it( 'converts a reference', () => {
-				const zObject = 'Z12345';
-				const rows = convertJsonToTable( zObject );
-				const expected = [
-					{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
-					{ id: 1, key: 'Z1K1', value: 'Z9', parent: 0 },
-					{ id: 2, key: 'Z9K1', value: 'Z12345', parent: 0 }
-				];
-				expect( rows ).toEqual( expected );
-			} );
-
-			it( 'converts a typed list of strings', () => {
-				const zObject = [ 'Z6', 'stringful', 'stringlord' ];
-				const rows = convertJsonToTable( zObject );
-				const expected = [
-					{ id: 0, key: undefined, value: Constants.ROW_VALUE_ARRAY, parent: undefined },
-					{ id: 1, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
-					{ id: 2, key: 'Z1K1', value: 'Z9', parent: 1 },
-					{ id: 3, key: 'Z9K1', value: 'Z6', parent: 1 },
-					{ id: 4, key: '1', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
-					{ id: 5, key: 'Z1K1', value: 'Z6', parent: 4 },
-					{ id: 6, key: 'Z6K1', value: 'stringful', parent: 4 },
-					{ id: 7, key: '2', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
-					{ id: 8, key: 'Z1K1', value: 'Z6', parent: 7 },
-					{ id: 9, key: 'Z6K1', value: 'stringlord', parent: 7 }
-				];
-				expect( rows ).toEqual( expected );
-			} );
-
-			it( 'converts a multilevel object', () => {
-				const zObject = {
-					Z1K1: 'Z11',
-					Z11K1: {
-						Z1K1: 'Z60',
-						Z60K1: 'pang'
-					},
-					Z11K2: 'Gñeee'
+			it( 'throws error when intermediate key does not exist', () => {
+				const zobject = {
+					a: {}
 				};
-				const rows = convertJsonToTable( zObject );
-				const expected = [
-					{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
-					{ id: 1, key: 'Z1K1', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
-					{ id: 2, key: 'Z1K1', value: 'Z9', parent: 1 },
-					{ id: 3, key: 'Z9K1', value: 'Z11', parent: 1 },
-					{ id: 4, key: 'Z11K1', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
-					{ id: 5, key: 'Z1K1', value: Constants.ROW_VALUE_OBJECT, parent: 4 },
-					{ id: 6, key: 'Z1K1', value: 'Z9', parent: 5 },
-					{ id: 7, key: 'Z9K1', value: 'Z60', parent: 5 },
-					{ id: 8, key: 'Z60K1', value: Constants.ROW_VALUE_OBJECT, parent: 4 },
-					{ id: 9, key: 'Z1K1', value: 'Z6', parent: 8 },
-					{ id: 10, key: 'Z6K1', value: 'pang', parent: 8 },
-					{ id: 11, key: 'Z11K2', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
-					{ id: 12, key: 'Z1K1', value: 'Z6', parent: 11 },
-					{ id: 13, key: 'Z6K1', value: 'Gñeee', parent: 11 }
-				];
-				expect( rows ).toEqual( expected );
+				const keyPath = [ 'a', 'missingKey', 'c' ];
+
+				expect( () => {
+					zobjectUtils.resolveZObjectByKeyPath( zobject, keyPath );
+				} ).toThrowError( 'Unable to resolve key path: Key path points to a non-object at "missingKey"' );
 			} );
 		} );
 
-		describe( 'convertJsonToTable with parent', () => {
-
-			it( 'converts a terminal string', () => {
-				const zObject = 'the stringy one';
-				const parentRow = new Row( 10, 'Z2K2', Constants.ROW_VALUE_OBJECT, 9 );
-				const nextAvailableId = 20;
-
-				const rows = convertJsonToTable( zObject, parentRow, nextAvailableId );
-				const expected = [
-					{ id: 10, key: 'Z2K2', value: Constants.ROW_VALUE_OBJECT, parent: 9 },
-					{ id: 20, key: 'Z1K1', value: 'Z6', parent: 10 },
-					{ id: 21, key: 'Z6K1', value: 'the stringy one', parent: 10 }
-				];
-				expect( rows ).toEqual( expected );
-			} );
-
-			it( 'converts a reference', () => {
-				const zObject = 'Z12345';
-				const parentRow = new Row( 10, 'Z2K2', Constants.ROW_VALUE_OBJECT, 9 );
-				const nextAvailableId = 20;
-
-				const rows = convertJsonToTable( zObject, parentRow, nextAvailableId );
-				const expected = [
-					{ id: 10, key: 'Z2K2', value: Constants.ROW_VALUE_OBJECT, parent: 9 },
-					{ id: 20, key: 'Z1K1', value: 'Z9', parent: 10 },
-					{ id: 21, key: 'Z9K1', value: 'Z12345', parent: 10 }
-				];
-				expect( rows ).toEqual( expected );
-			} );
-
-			it( 'converts a typed list of strings', () => {
-				const zObject = [ 'Z6', 'stringful', 'stringlord' ];
-				const parentRow = new Row( 10, 'Z2K2', Constants.ROW_VALUE_OBJECT, 9 );
-				const nextAvailableId = 20;
-
-				const rows = convertJsonToTable( zObject, parentRow, nextAvailableId );
-				const expected = [
-					{ id: 10, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 9 },
-					{ id: 20, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 10 },
-					{ id: 21, key: 'Z1K1', value: 'Z9', parent: 20 },
-					{ id: 22, key: 'Z9K1', value: 'Z6', parent: 20 },
-					{ id: 23, key: '1', value: Constants.ROW_VALUE_OBJECT, parent: 10 },
-					{ id: 24, key: 'Z1K1', value: 'Z6', parent: 23 },
-					{ id: 25, key: 'Z6K1', value: 'stringful', parent: 23 },
-					{ id: 26, key: '2', value: Constants.ROW_VALUE_OBJECT, parent: 10 },
-					{ id: 27, key: 'Z1K1', value: 'Z6', parent: 26 },
-					{ id: 28, key: 'Z6K1', value: 'stringlord', parent: 26 }
-				];
-				expect( rows ).toEqual( expected );
-			} );
-
-			it( 'converts a multilevel object', () => {
-				const zObject = {
-					Z1K1: 'Z11',
-					Z11K1: {
-						Z1K1: 'Z60',
-						Z60K1: 'pang'
-					},
-					Z11K2: 'Gñeee'
+		describe( 'resolution via reference, not copy', () => {
+			it( 'returns a reference to the original object, not a copy', () => {
+				const zobject = {
+					a: {
+						b: {
+							c: 'initial'
+						}
+					}
 				};
-				const parentRow = new Row( 10, 'Z2K2', Constants.ROW_VALUE_OBJECT, 9 );
-				const nextAvailableId = 20;
+				const keyPath = [ 'a', 'b', 'c' ];
 
-				const rows = convertJsonToTable( zObject, parentRow, nextAvailableId );
+				const { target, finalKey } = zobjectUtils.resolveZObjectByKeyPath( zobject, keyPath );
 
-				const expected = [
-					{ id: 10, key: 'Z2K2', value: Constants.ROW_VALUE_OBJECT, parent: 9 },
-					{ id: 20, key: 'Z1K1', value: Constants.ROW_VALUE_OBJECT, parent: 10 },
-					{ id: 21, key: 'Z1K1', value: 'Z9', parent: 20 },
-					{ id: 22, key: 'Z9K1', value: 'Z11', parent: 20 },
-					{ id: 23, key: 'Z11K1', value: Constants.ROW_VALUE_OBJECT, parent: 10 },
-					{ id: 24, key: 'Z1K1', value: Constants.ROW_VALUE_OBJECT, parent: 23 },
-					{ id: 25, key: 'Z1K1', value: 'Z9', parent: 24 },
-					{ id: 26, key: 'Z9K1', value: 'Z60', parent: 24 },
-					{ id: 27, key: 'Z60K1', value: Constants.ROW_VALUE_OBJECT, parent: 23 },
-					{ id: 28, key: 'Z1K1', value: 'Z6', parent: 27 },
-					{ id: 29, key: 'Z6K1', value: 'pang', parent: 27 },
-					{ id: 30, key: 'Z11K2', value: Constants.ROW_VALUE_OBJECT, parent: 10 },
-					{ id: 31, key: 'Z1K1', value: 'Z6', parent: 30 },
-					{ id: 32, key: 'Z6K1', value: 'Gñeee', parent: 30 }
-				];
-				expect( rows ).toEqual( expected );
+				// Mutate the target via returned reference
+				target[ finalKey ] = 'modified';
+
+				// Ensure the original object reflects the change
+				expect( zobject.a.b.c ).toBe( 'modified' );
+
+				// Also confirm it’s not a deep copy
+				expect( target ).toBe( zobject.a.b );
 			} );
 		} );
 
-		describe( 'convertJsonToTable when parent is a list', () => {
-			it( 'insert a string in a parent list from index 0', () => {
-				const zObject = 'the stringy one';
-				const parentRow = new Row( 10, 'Z2K2', Constants.ROW_VALUE_ARRAY, 9 );
-				const nextAvailableId = 20;
-				const appendToList = true;
+		describe( 'successful resolution', () => {
+			it( 'returns target and final key', () => {
+				const zobject = {
+					a: {
+						b: {
+							c: 'value'
+						}
+					}
+				};
+				const keyPath = [ 'a', 'b', 'c' ];
 
-				const rows = convertJsonToTable( zObject, parentRow, nextAvailableId, appendToList );
-				const expected = [
-					{ id: 10, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 9 },
-					{ id: 20, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 10 },
-					{ id: 21, key: 'Z1K1', value: 'Z6', parent: 20 },
-					{ id: 22, key: 'Z6K1', value: 'the stringy one', parent: 20 }
-				];
-				expect( rows ).toEqual( expected );
+				const { target, finalKey } = zobjectUtils.resolveZObjectByKeyPath( zobject, keyPath );
+				expect( target ).toEqual( { c: 'value' } );
+				expect( finalKey ).toBe( 'c' );
 			} );
 
-			it( 'insert a string in a parent list from index 2', () => {
-				const zObject = 'the stringy one';
-				const parentRow = new Row( 10, 'Z2K2', Constants.ROW_VALUE_ARRAY, 9 );
-				const nextAvailableId = 20;
-				const appendToList = true;
-				const fromIndex = 2;
+			it( 'returns correct target and finalKey for single key path', () => {
+				const zobject = {
+					a: {
+						something: true
+					}
+				};
+				const keyPath = [ 'a' ];
 
-				const rows = convertJsonToTable(
-					zObject,
-					parentRow,
-					nextAvailableId,
-					appendToList,
-					fromIndex
-				);
-				const expected = [
-					{ id: 10, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 9 },
-					{ id: 20, key: '2', value: Constants.ROW_VALUE_OBJECT, parent: 10 },
-					{ id: 21, key: 'Z1K1', value: 'Z6', parent: 20 },
-					{ id: 22, key: 'Z6K1', value: 'the stringy one', parent: 20 }
-				];
-				expect( rows ).toEqual( expected );
+				const { target, finalKey } = zobjectUtils.resolveZObjectByKeyPath( zobject, keyPath );
+				expect( target ).toEqual( zobject );
+				expect( finalKey ).toBe( 'a' );
 			} );
 
-			it( 'insert a list of strings in a parent list from index 0', () => {
-				const zObject = [ 'the stringy one', 'the stringy two' ];
-				const parentRow = new Row( 10, 'Z2K2', Constants.ROW_VALUE_ARRAY, 9 );
-				const nextAvailableId = 20;
-				const appendToList = true;
+			it( 'returns correct target when terminal value is an array', () => {
+				const zobject = {
+					a: {
+						b: [ 'x', 'y', 'z' ]
+					}
+				};
+				const keyPath = [ 'a', 'b' ];
 
-				const rows = convertJsonToTable( zObject, parentRow, nextAvailableId, appendToList );
-				const expected = [
-					{ id: 10, key: 'Z2K2', parent: 9, value: Constants.ROW_VALUE_ARRAY },
-					{ id: 20, key: '0', parent: 10, value: Constants.ROW_VALUE_ARRAY },
-					{ id: 21, key: '0', parent: 20, value: Constants.ROW_VALUE_OBJECT },
-					{ id: 22, key: 'Z1K1', parent: 21, value: 'Z6' },
-					{ id: 23, key: 'Z6K1', parent: 21, value: 'the stringy one' },
-					{ id: 24, key: '1', parent: 20, value: Constants.ROW_VALUE_OBJECT },
-					{ id: 25, key: 'Z1K1', parent: 24, value: 'Z6' },
-					{ id: 26, key: 'Z6K1', parent: 24, value: 'the stringy two' }
-				];
-				expect( rows ).toEqual( expected );
+				const { target, finalKey } = zobjectUtils.resolveZObjectByKeyPath( zobject, keyPath );
+				expect( target ).toEqual( { b: [ 'x', 'y', 'z' ] } );
+				expect( finalKey ).toBe( 'b' );
 			} );
 
-			it( 'insert a list of strings in a parent list from index 2', () => {
-				const zObject = [ 'the stringy one', 'the stringy two' ];
-				const parentRow = new Row( 10, 'Z2K2', Constants.ROW_VALUE_ARRAY, 9 );
-				const nextAvailableId = 20;
-				const appendToList = true;
-				const fromIndex = 2;
+			it( 'returns correct target when terminal value is an array item', () => {
+				const zobject = {
+					a: {
+						b: [ 'x', 'y', 'z' ]
+					}
+				};
+				const keyPath = [ 'a', 'b', 1 ];
 
-				const rows = convertJsonToTable(
-					zObject,
-					parentRow,
-					nextAvailableId,
-					appendToList,
-					fromIndex
-				);
-				const expected = [
-					{ id: 10, key: 'Z2K2', parent: 9, value: Constants.ROW_VALUE_ARRAY },
-					{ id: 20, key: '2', parent: 10, value: Constants.ROW_VALUE_ARRAY },
-					{ id: 21, key: '0', parent: 20, value: Constants.ROW_VALUE_OBJECT },
-					{ id: 22, key: 'Z1K1', parent: 21, value: 'Z6' },
-					{ id: 23, key: 'Z6K1', parent: 21, value: 'the stringy one' },
-					{ id: 24, key: '1', parent: 20, value: Constants.ROW_VALUE_OBJECT },
-					{ id: 25, key: 'Z1K1', parent: 24, value: 'Z6' },
-					{ id: 26, key: 'Z6K1', parent: 24, value: 'the stringy two' }
-				];
-				expect( rows ).toEqual( expected );
+				const { target, finalKey } = zobjectUtils.resolveZObjectByKeyPath( zobject, keyPath );
+				expect( target ).toEqual( [ 'x', 'y', 'z' ] );
+				expect( finalKey ).toBe( 1 );
+				expect( target[ finalKey ] ).toBe( 'y' );
 			} );
 
-			it( 'insert a list of lists in a parent list', () => {
-				const zObject = [ [ 'first stringly list' ], [ 'second stringly list' ] ];
-				const parentRow = new Row( 10, 'Z2K2', Constants.ROW_VALUE_ARRAY, 9 );
-				const nextAvailableId = 20;
-				const appendToList = true;
+			it( 'returns correct target when terminal value is an array item (string index)', () => {
+				const zobject = {
+					a: {
+						b: [ 'x', 'y', 'z' ]
+					}
+				};
+				const keyPath = [ 'a', 'b', '1' ];
 
-				const rows = convertJsonToTable( zObject, parentRow, nextAvailableId, appendToList );
-				const expected = [
-					{ id: 10, key: 'Z2K2', parent: 9, value: Constants.ROW_VALUE_ARRAY },
-					{ id: 20, key: '0', parent: 10, value: Constants.ROW_VALUE_ARRAY },
-					{ id: 21, key: '0', parent: 20, value: Constants.ROW_VALUE_ARRAY },
-					{ id: 22, key: '0', parent: 21, value: Constants.ROW_VALUE_OBJECT },
-					{ id: 23, key: 'Z1K1', parent: 22, value: 'Z6' },
-					{ id: 24, key: 'Z6K1', parent: 22, value: 'first stringly list' },
-					{ id: 25, key: '1', parent: 20, value: Constants.ROW_VALUE_ARRAY },
-					{ id: 26, key: '0', parent: 25, value: Constants.ROW_VALUE_OBJECT },
-					{ id: 27, key: 'Z1K1', parent: 26, value: 'Z6' },
-					{ id: 28, key: 'Z6K1', parent: 26, value: 'second stringly list' }
-				];
-				expect( rows ).toEqual( expected );
+				const { target, finalKey } = zobjectUtils.resolveZObjectByKeyPath( zobject, keyPath );
+				expect( target ).toEqual( [ 'x', 'y', 'z' ] );
+				expect( finalKey ).toBe( '1' );
+				expect( target[ finalKey ] ).toBe( 'y' );
 			} );
 
-			it( 'insert a list of lists in a parent list from index 2', () => {
-				const zObject = [ [ 'first stringly list' ], [ 'second stringly list' ] ];
-				const parentRow = new Row( 10, 'Z2K2', Constants.ROW_VALUE_ARRAY, 9 );
-				const nextAvailableId = 20;
-				const appendToList = true;
-				const fromIndex = 2;
+			it( 'returns correct target when intermediate node is an array', () => {
+				const zobject = {
+					a: {
+						b: [ 'x', { c: { d: 'e' }, f: { g: 'h' } }, 'z' ]
+					}
+				};
+				const keyPath = [ 'a', 'b', 1, 'f', 'g' ];
 
-				const rows = convertJsonToTable(
-					zObject,
-					parentRow,
-					nextAvailableId,
-					appendToList,
-					fromIndex
-				);
-				const expected = [
-					{ id: 10, key: 'Z2K2', parent: 9, value: Constants.ROW_VALUE_ARRAY },
-					{ id: 20, key: '2', parent: 10, value: Constants.ROW_VALUE_ARRAY },
-					{ id: 21, key: '0', parent: 20, value: Constants.ROW_VALUE_ARRAY },
-					{ id: 22, key: '0', parent: 21, value: Constants.ROW_VALUE_OBJECT },
-					{ id: 23, key: 'Z1K1', parent: 22, value: 'Z6' },
-					{ id: 24, key: 'Z6K1', parent: 22, value: 'first stringly list' },
-					{ id: 25, key: '1', parent: 20, value: Constants.ROW_VALUE_ARRAY },
-					{ id: 26, key: '0', parent: 25, value: Constants.ROW_VALUE_OBJECT },
-					{ id: 27, key: 'Z1K1', parent: 26, value: 'Z6' },
-					{ id: 28, key: 'Z6K1', parent: 26, value: 'second stringly list' }
-				];
-				expect( rows ).toEqual( expected );
+				const { target, finalKey } = zobjectUtils.resolveZObjectByKeyPath( zobject, keyPath );
+				expect( target ).toEqual( { g: 'h' } );
+				expect( finalKey ).toBe( 'g' );
 			} );
 		} );
 	} );
 
-	describe( 'convertTableToJson', () => {
-		describe( 'when zObjectTree does NOT contain any elements whose parent matches the parentId provided', () => {
+	describe( 'getZStringTerminalValue', () => {
+		it( 'returns undefined when object is undefined', () => {
+			const zobject = undefined;
+			const expected = undefined;
 
-			describe( 'when rootIsArray is false', () => {
-				it( 'should return undefined', () => {
-					const zObjectTree = tableDataToRowObjects( [
-						{ id: 1, key: 'Z1K1', value: 'Z6', parent: 0 },
-						{ id: 2, key: 'Z6K1', value: 'the stringy one', parent: 1 }
-					] );
-					const parentId = 3;
-					const json = convertTableToJson( zObjectTree, parentId );
-					expect( json ).toBeUndefined();
-				} );
-			} );
-
-			describe( 'when rootIsArray is true', () => {
-				it( 'should return an empty array', () => {
-					const zObjectTree = tableDataToRowObjects( [
-						{ id: 1, key: 'Z1K1', value: Constants.Z_STRING, parent: 0 },
-						{ id: 2, key: 'Z6K1', value: 'the stringy one', parent: 1 }
-					] );
-					const parentId = 3;
-					const json = convertTableToJson( zObjectTree, parentId, true );
-					expect( json ).toEqual( [] );
-				} );
-			} );
+			expect( zobjectUtils.getZStringTerminalValue( zobject ) ).toBe( expected );
 		} );
 
-		describe( 'when zObjectTree contains elements whose parent matches the parentId provided', () => {
-			describe( 'when the zObjectTree contains a mix of array, object and arbitrary value elements', () => {
-				it( 'should return a valid JSON object', () => {
-					const zObjectTree = tableDataToRowObjects( [
-						{ id: 1, key: 'Z2K2', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
-						{ id: 2, key: 'Z1K1', value: Constants.Z_MULTILINGUALSTRING, parent: 1 },
-						{ id: 3, key: 'Z12K1', value: Constants.ROW_VALUE_ARRAY, parent: 1 },
-						{ id: 4, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 3 },
-						{ id: 5, key: 'Z1K1', value: Constants.Z_REFERENCE, parent: 4 },
-						{ id: 6, key: 'Z9K1', value: Constants.Z_MONOLINGUALSTRING, parent: 4 }
-					] );
+		it( 'returns empty string', () => {
+			const zobject = '';
+			const expected = '';
 
-					const json = convertTableToJson( zObjectTree, 0 );
+			expect( zobjectUtils.getZStringTerminalValue( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZStringTerminalValue( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
 
-					expect( json ).toEqual( {
-						Z2K2: {
-							Z1K1: Constants.Z_MULTILINGUALSTRING,
-							Z12K1: [
-								{ Z1K1: Constants.Z_REFERENCE, Z9K1: Constants.Z_MONOLINGUALSTRING }
-							]
-						}
-					} );
-				} );
-			} );
+		it( 'returns correct terminal value', () => {
+			const zobject = 'string value';
+			const expected = 'string value';
 
-			describe( 'when the zObjectTree contains an element that does not have a key', () => {
-				it( 'should return a valid JSON object', () => {
-					const zObjectTree = tableDataToRowObjects( [
-						{ id: 1, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: 0 }
-					] );
+			expect( zobjectUtils.getZStringTerminalValue( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZStringTerminalValue( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
 
-					const json = convertTableToJson( zObjectTree, 0 );
+		it( 'returns undefined when object is not a string', () => {
+			const zobject = { Z1K1: 'Z9', Z9K1: 'Z1002' };
+			const expected = undefined;
 
-					expect( json ).toBeUndefined();
-				} );
-			} );
+			expect( zobjectUtils.getZStringTerminalValue( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZStringTerminalValue( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+	} );
 
-			describe( 'when there are detached zobject trees in the table', () => {
-				it( 'should return a valid JSON object', () => {
-					const zObjectTree = tableDataToRowObjects( [
-						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
-						{ id: 1, key: 'Z2K2', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
-						{ id: 2, key: 'Z1K1', value: Constants.Z_STRING, parent: 1 },
-						{ id: 3, key: 'Z6K1', value: 'good string', parent: 1 },
-						{ id: 4, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
-						{ id: 5, key: 'Z2K2', value: Constants.ROW_VALUE_OBJECT, parent: 4 },
-						{ id: 6, key: 'Z1K1', value: Constants.Z_STRING, parent: 5 },
-						{ id: 7, key: 'Z6K1', value: 'detached string', parent: 5 }
-					] );
+	describe( 'getZReferenceTerminalValue', () => {
+		it( 'returns undefined when object is undefined', () => {
+			const zobject = undefined;
+			const expected = undefined;
 
-					let json;
-					json = convertTableToJson( zObjectTree );
-					expect( json ).toEqual( {
-						Z2K2: {
-							Z1K1: Constants.Z_STRING,
-							Z6K1: 'good string'
-						}
-					} );
+			expect( zobjectUtils.getZReferenceTerminalValue( zobject ) ).toBe( expected );
+		} );
 
-					json = convertTableToJson( zObjectTree, 0 );
-					expect( json ).toEqual( {
-						Z2K2: {
-							Z1K1: Constants.Z_STRING,
-							Z6K1: 'good string'
-						}
-					} );
+		it( 'returns undefined when object is not a reference', () => {
+			const zobject = '';
+			const expected = undefined;
 
-					json = convertTableToJson( zObjectTree, 4 );
-					expect( json ).toEqual( {
-						Z2K2: {
-							Z1K1: Constants.Z_STRING,
-							Z6K1: 'detached string'
-						}
-					} );
-				} );
-			} );
+			expect( zobjectUtils.getZReferenceTerminalValue( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZReferenceTerminalValue( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns correct terminal value', () => {
+			const zobject = 'Z34';
+			const expected = 'Z34';
+
+			expect( zobjectUtils.getZReferenceTerminalValue( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZReferenceTerminalValue( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns undefined when object is not a reference (but has explicit type)', () => {
+			const zobject = { Z1K1: 'Z60', Z60K1: 'es' };
+			const expected = undefined;
+
+			expect( zobjectUtils.getZReferenceTerminalValue( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZReferenceTerminalValue( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+	} );
+
+	describe( 'getZMonolingualTextValue', () => {
+		it( 'returns undefined when value is undefined', () => {
+			const zobject = undefined;
+			const expected = undefined;
+
+			expect( zobjectUtils.getZMonolingualTextValue( zobject ) ).toBe( expected );
+		} );
+
+		it( 'returns undefined when value is not an object', () => {
+			const zobject = 'not an object';
+			const expected = undefined;
+
+			expect( zobjectUtils.getZMonolingualTextValue( zobject ) ).toBe( expected );
+		} );
+
+		it( 'returns undefined when value is of the wrong type', () => {
+			const zobject = { Z1K1: 'Z60', Z60K1: 'es' };
+			const expected = undefined;
+
+			expect( zobjectUtils.getZMonolingualTextValue( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZMonolingualTextValue( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns correct terminal value', () => {
+			const zobject = { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'terminal value' };
+			const expected = 'terminal value';
+
+			expect( zobjectUtils.getZMonolingualTextValue( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZMonolingualTextValue( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns empty terminal value', () => {
+			const zobject = { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: '' };
+			const expected = '';
+
+			expect( zobjectUtils.getZMonolingualTextValue( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZMonolingualTextValue( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+	} );
+
+	describe( 'getZMonolingualLangValue', () => {
+		it( 'returns undefined when value is undefined', () => {
+			const zobject = undefined;
+			const expected = undefined;
+
+			expect( zobjectUtils.getZMonolingualLangValue( zobject ) ).toBe( expected );
+		} );
+
+		it( 'returns undefined when value is not an object', () => {
+			const zobject = 'not an object';
+			const expected = undefined;
+
+			expect( zobjectUtils.getZMonolingualLangValue( zobject ) ).toBe( expected );
+		} );
+
+		it( 'returns undefined when value is of the wrong type', () => {
+			const zobject = { Z1K1: 'Z60', Z60K1: 'es' };
+			const expected = undefined;
+
+			expect( zobjectUtils.getZMonolingualLangValue( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZMonolingualLangValue( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns empty terminal value of language reference', () => {
+			const zobject = {
+				Z1K1: 'Z11',
+				Z11K1: { Z1K1: 'Z9', Z9K1: '' },
+				Z11K2: 'terminal value'
+			};
+			const expected = '';
+
+			expect( zobjectUtils.getZMonolingualLangValue( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZMonolingualLangValue( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns correct terminal value of language reference', () => {
+			const zobject = {
+				Z1K1: 'Z11',
+				Z11K1: 'Z1002',
+				Z11K2: 'terminal value'
+			};
+			const expected = 'Z1002';
+
+			expect( zobjectUtils.getZMonolingualLangValue( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZMonolingualLangValue( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns correct terminal value of literal language', () => {
+			const zobject = {
+				Z1K1: 'Z11',
+				Z11K1: {
+					Z1K1: 'Z60',
+					Z60K1: 'ast'
+				},
+				Z11K2: 'terminal value'
+			};
+			const expected = 'ast';
+
+			expect( zobjectUtils.getZMonolingualLangValue( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZMonolingualLangValue( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+	} );
+
+	describe( 'getZLangTerminalValue', () => {
+		it( 'returns undefined when value is undefined', () => {
+			const zobject = undefined;
+			const expected = undefined;
+
+			expect( zobjectUtils.getZLangTerminalValue( zobject ) ).toBe( expected );
+		} );
+
+		it( 'returns undefined when value is of the wrong type', () => {
+			const zobject = { Z1K1: 'Z6', Z6K1: 'es' };
+			const expected = undefined;
+
+			expect( zobjectUtils.getZLangTerminalValue( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZLangTerminalValue( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns empty terminal value of literal language', () => {
+			const zobject = {
+				Z1K1: 'Z60',
+				Z60K1: ''
+			};
+			const expected = '';
+
+			expect( zobjectUtils.getZLangTerminalValue( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZLangTerminalValue( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns correct terminal value of literal language', () => {
+			const zobject = {
+				Z1K1: 'Z60',
+				Z60K1: 'eu'
+			};
+			const expected = 'eu';
+
+			expect( zobjectUtils.getZLangTerminalValue( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZLangTerminalValue( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+	} );
+
+	describe( 'getZBooleanValue', () => {
+		it( 'returns undefined when value is undefined', () => {
+			const zobject = undefined;
+			const expected = undefined;
+
+			expect( zobjectUtils.getZBooleanValue( zobject ) ).toBe( expected );
+		} );
+
+		it( 'returns terminal value when boolean is a reference', () => {
+			const zobject = 'Z41';
+			const expected = 'Z41';
+
+			expect( zobjectUtils.getZBooleanValue( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZBooleanValue( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns terminal value when boolean is a literal', () => {
+			const zobject = {
+				Z1K1: 'Z40',
+				Z40K1: 'Z42'
+			};
+			const expected = 'Z42';
+
+			expect( zobjectUtils.getZBooleanValue( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZBooleanValue( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+	} );
+
+	describe( 'getZFunctionCallFunctionId', () => {
+		it( 'returns undefined when value is undefined', () => {
+			const zobject = undefined;
+			const expected = undefined;
+
+			expect( zobjectUtils.getZFunctionCallFunctionId( zobject ) ).toBe( expected );
+		} );
+
+		it( 'returns undefined when value is of the wrong type', () => {
+			const zobject = {
+				Z1K1: 'Z40',
+				Z40K1: 'Z42'
+			};
+			const expected = undefined;
+
+			expect( zobjectUtils.getZFunctionCallFunctionId( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZFunctionCallFunctionId( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns terminal value', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z10001'
+			};
+			const expected = 'Z10001';
+
+			expect( zobjectUtils.getZFunctionCallFunctionId( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZFunctionCallFunctionId( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns terminal value when is nested', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: {
+					Z1K1: 'Z7',
+					Z7K1: 'Z10002'
+				}
+			};
+			const expected = 'Z10002';
+
+			expect( zobjectUtils.getZFunctionCallFunctionId( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZFunctionCallFunctionId( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+	} );
+
+	describe( 'getZFunctionCallArgumentKeys', () => {
+		it( 'returns empty array when value is undefined', () => {
+			const zobject = undefined;
+			const expected = [];
+
+			expect( zobjectUtils.getZFunctionCallArgumentKeys( zobject ) ).toEqual( expected );
+		} );
+
+		it( 'returns empty array when value is of the wrong type', () => {
+			const zobject = {
+				Z1K1: 'Z40',
+				Z40K1: 'Z42'
+			};
+			const expected = [];
+
+			expect( zobjectUtils.getZFunctionCallArgumentKeys( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.getZFunctionCallArgumentKeys( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+
+		it( 'returns empty array with zero-argument function call', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z10001'
+			};
+			const expected = [];
+
+			expect( zobjectUtils.getZFunctionCallArgumentKeys( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.getZFunctionCallArgumentKeys( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+
+		it( 'returns global argument keys', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z10001',
+				Z10001K1: 'one',
+				Z10001K2: 'two'
+			};
+			const expected = [ 'Z10001K1', 'Z10001K2' ];
+
+			expect( zobjectUtils.getZFunctionCallArgumentKeys( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.getZFunctionCallArgumentKeys( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+
+		it( 'returns local argument keys', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: {
+					Z1K1: 'Z7',
+					Z7K1: 'Z10001'
+				},
+				K1: 'one',
+				K2: 'two',
+				K3: 'three'
+			};
+			const expected = [ 'K1', 'K2', 'K3' ];
+
+			expect( zobjectUtils.getZFunctionCallArgumentKeys( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.getZFunctionCallArgumentKeys( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+	} );
+
+	describe( 'getZMonolingualStringsetValues', () => {
+		it( 'returns undefined when value is undefined', () => {
+			const zobject = undefined;
+			const expected = [];
+
+			expect( zobjectUtils.getZMonolingualStringsetValues( zobject ) ).toEqual( expected );
+		} );
+
+		it( 'returns undefined when value is not an object', () => {
+			const zobject = 'not an object';
+			const expected = [];
+
+			expect( zobjectUtils.getZMonolingualStringsetValues( zobject ) ).toEqual( expected );
+		} );
+
+		it( 'returns undefined when value is of the wrong type', () => {
+			const zobject = { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'terminal value' };
+			const expected = [];
+
+			expect( zobjectUtils.getZMonolingualStringsetValues( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.getZMonolingualStringsetValues( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+
+		it( 'returns correct terminal values', () => {
+			const zobject = {
+				Z1K1: 'Z31',
+				Z31K1: 'Z1002',
+				Z31K2: [ 'Z6', 'terminal value' ]
+			};
+			const expected = [ 'terminal value' ];
+
+			expect( zobjectUtils.getZMonolingualStringsetValues( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.getZMonolingualStringsetValues( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+
+		it( 'returns correct terminal values (empty array)', () => {
+			const zobject = {
+				Z1K1: 'Z31',
+				Z31K1: 'Z1002',
+				Z31K2: [ 'Z6' ]
+			};
+			const expected = [];
+
+			expect( zobjectUtils.getZMonolingualStringsetValues( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.getZMonolingualStringsetValues( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+	} );
+
+	describe( 'getZMonolingualStringsetLang', () => {
+		it( 'returns undefined when value is undefined', () => {
+			const zobject = undefined;
+			const expected = undefined;
+
+			expect( zobjectUtils.getZMonolingualStringsetLang( zobject ) ).toBe( expected );
+		} );
+
+		it( 'returns undefined when value is not an object', () => {
+			const zobject = 'not an object';
+			const expected = undefined;
+
+			expect( zobjectUtils.getZMonolingualStringsetLang( zobject ) ).toBe( expected );
+		} );
+
+		it( 'returns undefined when value is of the wrong type', () => {
+			const zobject = {
+				Z1K1: 'Z11',
+				Z11K1: 'Z1002',
+				Z11K2: 'terminal value'
+			};
+			const expected = undefined;
+
+			expect( zobjectUtils.getZMonolingualStringsetLang( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZMonolingualStringsetLang( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns empty terminal value of language reference', () => {
+			const zobject = {
+				Z1K1: 'Z31',
+				Z31K1: { Z1K1: 'Z9', Z9K1: '' },
+				Z31K2: [ 'Z6', 'terminal value' ]
+			};
+			const expected = '';
+
+			expect( zobjectUtils.getZMonolingualStringsetLang( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZMonolingualStringsetLang( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns correct terminal value of language reference', () => {
+			const zobject = {
+				Z1K1: 'Z31',
+				Z31K1: 'Z1002',
+				Z31K2: [ 'Z6' ]
+			};
+			const expected = 'Z1002';
+
+			expect( zobjectUtils.getZMonolingualStringsetLang( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZMonolingualStringsetLang( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns correct terminal value of literal language', () => {
+			const zobject = {
+				Z1K1: 'Z31',
+				Z31K1: {
+					Z1K1: 'Z60',
+					Z60K1: 'ast'
+				},
+				Z31K2: [ 'Z6' ]
+			};
+			const expected = 'ast';
+
+			expect( zobjectUtils.getZMonolingualStringsetLang( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZMonolingualStringsetLang( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+	} );
+
+	describe( 'getZArgumentReferenceTerminalValue', () => {
+		it( 'returns undefined when object is undefined', () => {
+			const zobject = undefined;
+			const expected = undefined;
+
+			expect( zobjectUtils.getZArgumentReferenceTerminalValue( zobject ) ).toBe( expected );
+		} );
+
+		it( 'returns undefined when value is not an object', () => {
+			const zobject = 'not an object';
+			const expected = undefined;
+
+			expect( zobjectUtils.getZArgumentReferenceTerminalValue( zobject ) ).toBe( expected );
+		} );
+
+		it( 'returns undefined when value is not an argument reference', () => {
+			const zobject = {
+				Z1K1: 'Z11',
+				Z11K1: 'Z1002',
+				Z11K2: 'terminal value'
+			};
+			const expected = undefined;
+
+			expect( zobjectUtils.getZArgumentReferenceTerminalValue( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZArgumentReferenceTerminalValue( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns correct terminal value', () => {
+			const zobject = {
+				Z1K1: 'Z18',
+				Z18K1: 'Z10001K1'
+			};
+			const expected = 'Z10001K1';
+
+			expect( zobjectUtils.getZArgumentReferenceTerminalValue( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZArgumentReferenceTerminalValue( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+	} );
+
+	describe( 'getZTesterFunctionZid', () => {
+		it( 'returns undefined when object is undefined', () => {
+			const zobject = undefined;
+			const expected = undefined;
+
+			expect( zobjectUtils.getZTesterFunctionZid( zobject ) ).toBe( expected );
+		} );
+
+		it( 'returns undefined when value is not an object', () => {
+			const zobject = 'not an object';
+			const expected = undefined;
+
+			expect( zobjectUtils.getZTesterFunctionZid( zobject ) ).toBe( expected );
+		} );
+
+		it( 'returns undefined when value is of the wrong type', () => {
+			const zobject = {
+				Z1K1: 'Z11',
+				Z11K1: 'Z1002',
+				Z11K2: 'terminal value'
+			};
+			const expected = undefined;
+
+			expect( zobjectUtils.getZTesterFunctionZid( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZTesterFunctionZid( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns empty terminal value', () => {
+			const zobject = {
+				Z1K1: 'Z20',
+				Z20K1: { Z1K1: 'Z9', Z9K1: '' }
+			};
+			const expected = '';
+
+			expect( zobjectUtils.getZTesterFunctionZid( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZTesterFunctionZid( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns correct terminal value', () => {
+			const zobject = {
+				Z1K1: 'Z20',
+				Z20K1: 'Z10001'
+			};
+			const expected = 'Z10001';
+
+			expect( zobjectUtils.getZTesterFunctionZid( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZTesterFunctionZid( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+	} );
+
+	describe( 'getZImplementationFunctionZid', () => {
+		it( 'returns undefined when object is undefined', () => {
+			const zobject = undefined;
+			const expected = undefined;
+
+			expect( zobjectUtils.getZImplementationFunctionZid( zobject ) ).toBe( expected );
+		} );
+
+		it( 'returns undefined when value is not an object', () => {
+			const zobject = 'not an object';
+			const expected = undefined;
+
+			expect( zobjectUtils.getZImplementationFunctionZid( zobject ) ).toBe( expected );
+		} );
+
+		it( 'returns undefined when value is not an implementation', () => {
+			const zobject = {
+				Z1K1: 'Z11',
+				Z11K1: 'Z1002',
+				Z11K2: 'terminal value'
+			};
+			const expected = undefined;
+
+			expect( zobjectUtils.getZImplementationFunctionZid( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZImplementationFunctionZid( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns empty terminal value', () => {
+			const zobject = {
+				Z1K1: 'Z14',
+				Z14K1: { Z1K1: 'Z9', Z9K1: '' }
+			};
+			const expected = '';
+
+			expect( zobjectUtils.getZImplementationFunctionZid( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZImplementationFunctionZid( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns correct terminal value', () => {
+			const zobject = {
+				Z1K1: 'Z14',
+				Z14K1: 'Z10001'
+			};
+			const expected = 'Z10001';
+
+			expect( zobjectUtils.getZImplementationFunctionZid( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZImplementationFunctionZid( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+	} );
+
+	describe( 'getZImplementationContentType', () => {
+		it( 'returns undefined when object is undefined', () => {
+			const zobject = undefined;
+			const expected = undefined;
+
+			expect( zobjectUtils.getZImplementationContentType( zobject ) ).toBe( expected );
+		} );
+
+		it( 'returns undefined when value is not an object', () => {
+			const zobject = 'not an object';
+			const expected = undefined;
+
+			expect( zobjectUtils.getZImplementationContentType( zobject ) ).toBe( expected );
+		} );
+
+		it( 'returns undefined when value is of the wrong type', () => {
+			const zobject = {
+				Z1K1: 'Z11',
+				Z11K1: 'Z1002',
+				Z11K2: 'terminal value'
+			};
+			const expected = undefined;
+
+			expect( zobjectUtils.getZImplementationContentType( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZImplementationContentType( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns undefined if content is not defined', () => {
+			const zobject = {
+				Z1K1: 'Z14',
+				Z14K1: 'Z10001'
+			};
+			const expected = undefined;
+
+			expect( zobjectUtils.getZImplementationContentType( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZImplementationContentType( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns composition as terminal value', () => {
+			const zobject = {
+				Z1K1: 'Z14',
+				Z14K1: 'Z10001',
+				Z14K2: { Z1K1: 'Z7', Z7K1: 'Z801', Z801K1: 'booh' }
+			};
+			const expected = 'Z14K2';
+
+			expect( zobjectUtils.getZImplementationContentType( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZImplementationContentType( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns code as terminal value', () => {
+			const zobject = {
+				Z1K1: 'Z14',
+				Z14K1: 'Z10001',
+				Z14K3: { Z1K1: 'Z16', Z16K1: 'Z600', Z16K2: 'some_code();' }
+			};
+			const expected = 'Z14K3';
+
+			expect( zobjectUtils.getZImplementationContentType( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZImplementationContentType( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns builtin as terminal value', () => {
+			const zobject = {
+				Z1K1: 'Z14',
+				Z14K1: 'Z10001',
+				Z14K4: 'Z90009'
+			};
+			const expected = 'Z14K4';
+
+			expect( zobjectUtils.getZImplementationContentType( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZImplementationContentType( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+	} );
+
+	describe( 'getZCodeProgrammingLanguageId', () => {
+		it( 'returns undefined when value is undefined', () => {
+			const zobject = undefined;
+			const expected = undefined;
+
+			expect( zobjectUtils.getZCodeProgrammingLanguageId( zobject ) ).toBe( expected );
+		} );
+
+		it( 'returns undefined when value is not an object', () => {
+			const zobject = 'not an object';
+			const expected = undefined;
+
+			expect( zobjectUtils.getZCodeProgrammingLanguageId( zobject ) ).toBe( expected );
+		} );
+
+		it( 'returns undefined when value is of the wrong type', () => {
+			const zobject = { Z1K1: 'Z60', Z60K1: 'es' };
+			const expected = undefined;
+
+			expect( zobjectUtils.getZCodeProgrammingLanguageId( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZCodeProgrammingLanguageId( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns empty terminal value of programming language reference', () => {
+			const zobject = {
+				Z1K1: 'Z16',
+				Z16K1: { Z1K1: 'Z9', Z9K1: '' },
+				Z16K2: 'someCode();'
+			};
+			const expected = '';
+
+			expect( zobjectUtils.getZCodeProgrammingLanguageId( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZCodeProgrammingLanguageId( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns correct terminal value of programming language reference', () => {
+			const zobject = {
+				Z1K1: 'Z16',
+				Z16K1: 'Z600',
+				Z16K2: 'someCode();'
+			};
+			const expected = 'Z600';
+
+			expect( zobjectUtils.getZCodeProgrammingLanguageId( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZCodeProgrammingLanguageId( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+	} );
+
+	describe( 'getZCodeString', () => {
+		it( 'returns undefined when value is undefined', () => {
+			const zobject = undefined;
+			const expected = undefined;
+
+			expect( zobjectUtils.getZCodeString( zobject ) ).toBe( expected );
+		} );
+
+		it( 'returns undefined when value is not an object', () => {
+			const zobject = 'not an object';
+			const expected = undefined;
+
+			expect( zobjectUtils.getZCodeString( zobject ) ).toBe( expected );
+		} );
+
+		it( 'returns undefined when value is of the wrong type', () => {
+			const zobject = { Z1K1: 'Z60', Z60K1: 'es' };
+			const expected = undefined;
+
+			expect( zobjectUtils.getZCodeString( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZCodeString( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns empty terminal value', () => {
+			const zobject = {
+				Z1K1: 'Z16',
+				Z16K1: 'Z600',
+				Z16K2: ''
+			};
+			const expected = '';
+
+			expect( zobjectUtils.getZCodeString( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZCodeString( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns correct terminal value', () => {
+			const zobject = {
+				Z1K1: 'Z16',
+				Z16K1: 'Z600',
+				Z16K2: 'someCode();'
+			};
+			const expected = 'someCode();';
+
+			expect( zobjectUtils.getZCodeString( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZCodeString( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+	} );
+
+	describe( 'getZHTMLFragmentTerminalValue', () => {
+		it( 'returns undefined when value is undefined', () => {
+			const zobject = undefined;
+			const expected = undefined;
+
+			expect( zobjectUtils.getZHTMLFragmentTerminalValue( zobject ) ).toBe( expected );
+		} );
+
+		it( 'returns undefined when value is not an object', () => {
+			const zobject = 'not an object';
+			const expected = undefined;
+
+			expect( zobjectUtils.getZHTMLFragmentTerminalValue( zobject ) ).toBe( expected );
+		} );
+
+		it( 'returns undefined when value is of the wrong type', () => {
+			const zobject = { Z1K1: 'Z60', Z60K1: 'es' };
+			const expected = undefined;
+
+			expect( zobjectUtils.getZHTMLFragmentTerminalValue( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZHTMLFragmentTerminalValue( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns empty terminal value', () => {
+			const zobject = {
+				Z1K1: 'Z89',
+				Z89K1: ''
+			};
+			const expected = '';
+
+			expect( zobjectUtils.getZHTMLFragmentTerminalValue( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZHTMLFragmentTerminalValue( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns correct terminal value', () => {
+			const zobject = {
+				Z1K1: 'Z89',
+				Z89K1: '<b>So bold</b>'
+			};
+			const expected = '<b>So bold</b>';
+
+			expect( zobjectUtils.getZHTMLFragmentTerminalValue( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZHTMLFragmentTerminalValue( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+	} );
+
+	describe( 'getZKeyIsIdentity', () => {
+		it( 'returns false when value is undefined', () => {
+			const zobject = undefined;
+			const expected = false;
+
+			expect( zobjectUtils.getZKeyIsIdentity( zobject ) ).toBe( expected );
+		} );
+
+		it( 'returns false when value is not an object', () => {
+			const zobject = 'not an object';
+			const expected = false;
+
+			expect( zobjectUtils.getZKeyIsIdentity( zobject ) ).toBe( expected );
+		} );
+
+		it( 'returns false when value is of the wrong type', () => {
+			const zobject = { Z1K1: 'Z60', Z60K1: 'es' };
+			const expected = false;
+
+			expect( zobjectUtils.getZKeyIsIdentity( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZKeyIsIdentity( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns true with literal boolean flag', () => {
+			const zobject = {
+				Z1K1: 'Z3',
+				Z3K4: {
+					Z1K1: 'Z40',
+					Z40K1: 'Z41'
+				}
+			};
+			const expected = true;
+
+			expect( zobjectUtils.getZKeyIsIdentity( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZKeyIsIdentity( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns true with referenced boolean flag', () => {
+			const zobject = {
+				Z1K1: 'Z3',
+				Z3K4: 'Z41'
+			};
+			const expected = true;
+
+			expect( zobjectUtils.getZKeyIsIdentity( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZKeyIsIdentity( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns false with literal boolean flag', () => {
+			const zobject = {
+				Z1K1: 'Z3',
+				Z3K4: {
+					Z1K1: 'Z40',
+					Z40K1: 'Z42'
+				}
+			};
+			const expected = false;
+
+			expect( zobjectUtils.getZKeyIsIdentity( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZKeyIsIdentity( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns false with referenced boolean flag', () => {
+			const zobject = {
+				Z1K1: 'Z3',
+				Z3K4: 'Z42'
+			};
+			const expected = false;
+
+			expect( zobjectUtils.getZKeyIsIdentity( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZKeyIsIdentity( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns false with empty referenced boolean flag', () => {
+			const zobject = {
+				Z1K1: 'Z3',
+				Z3K4: { Z1K1: 'Z9', Z9K1: '' }
+			};
+			const expected = false;
+
+			expect( zobjectUtils.getZKeyIsIdentity( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZKeyIsIdentity( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns false with empty literal boolean flag', () => {
+			const zobject = {
+				Z1K1: 'Z3',
+				Z3K4: {
+					Z1K1: 'Z40',
+					Z40K1: { Z1K1: 'Z9', Z9K1: '' }
+				}
+			};
+			const expected = false;
+
+			expect( zobjectUtils.getZKeyIsIdentity( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZKeyIsIdentity( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+	} );
+
+	describe( 'getZMultilingualLangs', () => {
+		it( 'returns empty array when value is undefined', () => {
+			const zobject = undefined;
+			const expected = [];
+
+			expect( zobjectUtils.getZMultilingualLangs( zobject ) ).toEqual( expected );
+		} );
+
+		it( 'returns empty array when value is not an object', () => {
+			const zobject = 'not an object';
+			const expected = [];
+
+			expect( zobjectUtils.getZMultilingualLangs( zobject ) ).toEqual( expected );
+		} );
+
+		it( 'returns empty array when value is of the wrong type', () => {
+			const zobject = { Z1K1: 'Z60', Z60K1: 'es' };
+			const expected = [];
+
+			expect( zobjectUtils.getZMultilingualLangs( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.getZMultilingualLangs( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+
+		it( 'returns empty array for empty multilingual string', () => {
+			const zobject = {
+				Z1K1: 'Z12',
+				Z12K1: [ 'Z11' ]
+			};
+			const expected = [];
+
+			expect( zobjectUtils.getZMultilingualLangs( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.getZMultilingualLangs( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+
+		it( 'returns array with language references', () => {
+			const zobject = {
+				Z1K1: 'Z12',
+				Z12K1: [ 'Z11',
+					{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'terminal one' },
+					{ Z1K1: 'Z11', Z11K1: 'Z1003', Z11K2: 'terminal two' },
+					{ Z1K1: 'Z11', Z11K1: 'Z1004', Z11K2: 'terminal three' }
+				]
+			};
+			const expected = [ 'Z1002', 'Z1003', 'Z1004' ];
+
+			expect( zobjectUtils.getZMultilingualLangs( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.getZMultilingualLangs( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+
+		it( 'returns array with language codes', () => {
+			const zobject = {
+				Z1K1: 'Z12',
+				Z12K1: [ 'Z11',
+					{ Z1K1: 'Z11', Z11K1: { Z1K1: 'Z60', Z60K1: 'ast' }, Z11K2: 'asturianu' },
+					{ Z1K1: 'Z11', Z11K1: { Z1K1: 'Z60', Z60K1: 'gl' }, Z11K2: 'galego' },
+					{ Z1K1: 'Z11', Z11K1: { Z1K1: 'Z60', Z60K1: 'eu' }, Z11K2: 'euskara' },
+					{ Z1K1: 'Z11', Z11K1: { Z1K1: 'Z60', Z60K1: 'ca' }, Z11K2: 'català' }
+				]
+			};
+			const expected = [ 'ast', 'gl', 'eu', 'ca' ];
+
+			expect( zobjectUtils.getZMultilingualLangs( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.getZMultilingualLangs( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+
+		it( 'returns array with empty languages', () => {
+			const zobject = {
+				Z1K1: 'Z12',
+				Z12K1: [ 'Z11',
+					{ Z1K1: 'Z11', Z11K1: { Z1K1: 'Z60', Z60K1: '' }, Z11K2: 'empty literal' },
+					{ Z1K1: 'Z11', Z11K1: { Z1K1: 'Z9', Z9K1: '' }, Z11K2: 'empty reference' }
+				]
+			};
+			const expected = [ '', '' ];
+
+			expect( zobjectUtils.getZMultilingualLangs( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.getZMultilingualLangs( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+	} );
+
+	describe( 'getZMultilingualStringsetLangs', () => {
+		it( 'returns empty array when value is undefined', () => {
+			const zobject = undefined;
+			const expected = [];
+
+			expect( zobjectUtils.getZMultilingualStringsetLangs( zobject ) ).toEqual( expected );
+		} );
+
+		it( 'returns empty array when value is not an object', () => {
+			const zobject = 'not an object';
+			const expected = [];
+
+			expect( zobjectUtils.getZMultilingualStringsetLangs( zobject ) ).toEqual( expected );
+		} );
+
+		it( 'returns empty array when value is of the wrong type', () => {
+			const zobject = { Z1K1: 'Z60', Z60K1: 'es' };
+			const expected = [];
+
+			expect( zobjectUtils.getZMultilingualStringsetLangs( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.getZMultilingualStringsetLangs( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+
+		it( 'returns empty array for empty multilingual string', () => {
+			const zobject = {
+				Z1K1: 'Z32',
+				Z32K1: [ 'Z31' ]
+			};
+			const expected = [];
+
+			expect( zobjectUtils.getZMultilingualStringsetLangs( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.getZMultilingualStringsetLangs( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+
+		it( 'returns array with language references', () => {
+			const zobject = {
+				Z1K1: 'Z32',
+				Z32K1: [ 'Z31',
+					{ Z1K1: 'Z31', Z31K1: 'Z1002', Z31K2: [ 'Z6', 'terminal one' ] },
+					{ Z1K1: 'Z31', Z31K1: 'Z1003', Z31K2: [ 'Z6', 'terminal two' ] },
+					{ Z1K1: 'Z31', Z31K1: 'Z1004', Z31K2: [ 'Z6', 'terminal three' ] }
+				]
+			};
+			const expected = [ 'Z1002', 'Z1003', 'Z1004' ];
+
+			expect( zobjectUtils.getZMultilingualStringsetLangs( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.getZMultilingualStringsetLangs( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+
+		it( 'returns array with language codes', () => {
+			const zobject = {
+				Z1K1: 'Z32',
+				Z32K1: [ 'Z31',
+					{ Z1K1: 'Z31', Z31K1: { Z1K1: 'Z60', Z60K1: 'ast' }, Z31K2: [ 'Z6', 'asturianu' ] },
+					{ Z1K1: 'Z31', Z31K1: { Z1K1: 'Z60', Z60K1: 'gl' }, Z31K2: [ 'Z6', 'galego' ] },
+					{ Z1K1: 'Z31', Z31K1: { Z1K1: 'Z60', Z60K1: 'eu' }, Z31K2: [ 'Z6', 'euskara' ] },
+					{ Z1K1: 'Z31', Z31K1: { Z1K1: 'Z60', Z60K1: 'ca' }, Z31K2: [ 'Z6', 'català' ] }
+				]
+			};
+			const expected = [ 'ast', 'gl', 'eu', 'ca' ];
+
+			expect( zobjectUtils.getZMultilingualStringsetLangs( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.getZMultilingualStringsetLangs( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+
+		it( 'returns array with empty languages', () => {
+			const zobject = {
+				Z1K1: 'Z32',
+				Z32K1: [ 'Z31',
+					{ Z1K1: 'Z31', Z31K1: { Z1K1: 'Z60', Z60K1: '' }, Z31K2: [ 'Z6', 'empty literal' ] },
+					{ Z1K1: 'Z31', Z31K1: { Z1K1: 'Z9', Z9K1: '' }, Z31K2: [ 'Z6', 'empty reference' ] }
+				]
+			};
+			const expected = [ '', '' ];
+
+			expect( zobjectUtils.getZMultilingualStringsetLangs( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.getZMultilingualStringsetLangs( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+	} );
+
+	describe( 'getZMonolingualItemForLang', () => {
+		it( 'returns undefined when value is undefined', () => {
+			const zobject = undefined;
+			const lang = 'Z1003';
+			const expected = undefined;
+
+			expect( zobjectUtils.getZMonolingualItemForLang( zobject, lang ) ).toEqual( expected );
+		} );
+
+		it( 'returns undefined when value is not an object', () => {
+			const zobject = 'not an object';
+			const lang = 'Z1003';
+			const expected = undefined;
+
+			expect( zobjectUtils.getZMonolingualItemForLang( zobject, lang ) ).toEqual( expected );
+		} );
+
+		it( 'returns undefined when value is of the wrong type', () => {
+			const zobject = { Z1K1: 'Z60', Z60K1: 'es' };
+			const lang = 'Z1003';
+			const expected = undefined;
+
+			expect( zobjectUtils.getZMonolingualItemForLang( zobject, lang ) ).toEqual( expected );
+			expect( zobjectUtils.getZMonolingualItemForLang( canonicalToHybrid( zobject ), lang ) ).toEqual( expected );
+		} );
+
+		it( 'returns undefined for empty multilingual string', () => {
+			const zobject = {
+				Z1K1: 'Z12',
+				Z12K1: [ 'Z11' ]
+			};
+			const lang = 'Z1003';
+			const expected = undefined;
+
+			expect( zobjectUtils.getZMonolingualItemForLang( zobject, lang ) ).toEqual( expected );
+			expect( zobjectUtils.getZMonolingualItemForLang( canonicalToHybrid( zobject ), lang ) ).toEqual( expected );
+		} );
+
+		it( 'returns undefined if the lang was not found', () => {
+			const zobject = {
+				Z1K1: 'Z12',
+				Z12K1: [ 'Z11',
+					{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'terminal one' },
+					{ Z1K1: 'Z11', Z11K1: 'Z1003', Z11K2: 'terminal two' },
+					{ Z1K1: 'Z11', Z11K1: 'Z1004', Z11K2: 'terminal three' }
+				]
+			};
+			const lang = 'Z1005';
+			const expected = undefined;
+
+			expect( zobjectUtils.getZMonolingualItemForLang( zobject, lang ) ).toEqual( expected );
+			expect( zobjectUtils.getZMonolingualItemForLang( canonicalToHybrid( zobject ), lang ) ).toEqual( expected );
+		} );
+
+		it( 'returns index and terminal value of matched object with literal languages', () => {
+			const zobject = {
+				Z1K1: 'Z12',
+				Z12K1: [ 'Z11',
+					{ Z1K1: 'Z11', Z11K1: { Z1K1: 'Z60', Z60K1: 'ast' }, Z11K2: 'asturianu' },
+					{ Z1K1: 'Z11', Z11K1: { Z1K1: 'Z60', Z60K1: 'gl' }, Z11K2: 'galego' },
+					{ Z1K1: 'Z11', Z11K1: { Z1K1: 'Z60', Z60K1: 'eu' }, Z11K2: 'euskara' },
+					{ Z1K1: 'Z11', Z11K1: { Z1K1: 'Z60', Z60K1: 'ca' }, Z11K2: 'català' }
+				]
+			};
+			const lang = 'eu';
+			const expected = { index: 3, value: 'euskara' };
+
+			expect( zobjectUtils.getZMonolingualItemForLang( zobject, lang ) ).toEqual( expected );
+			expect( zobjectUtils.getZMonolingualItemForLang( canonicalToHybrid( zobject ), lang ) ).toEqual( expected );
+		} );
+
+		it( 'returns index and terminal value of matched object with language references', () => {
+			const zobject = {
+				Z1K1: 'Z12',
+				Z12K1: [ 'Z11',
+					{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'terminal one' },
+					{ Z1K1: 'Z11', Z11K1: 'Z1003', Z11K2: 'terminal two' },
+					{ Z1K1: 'Z11', Z11K1: 'Z1004', Z11K2: 'terminal three' }
+				]
+			};
+			const lang = 'Z1003';
+			const expected = { index: 2, value: 'terminal two' };
+
+			expect( zobjectUtils.getZMonolingualItemForLang( zobject, lang ) ).toEqual( expected );
+			expect( zobjectUtils.getZMonolingualItemForLang( canonicalToHybrid( zobject ), lang ) ).toEqual( expected );
+		} );
+	} );
+
+	describe( 'getZMonolingualStringsetForLang', () => {
+		it( 'returns undefined when value is undefined', () => {
+			const zobject = undefined;
+			const lang = 'Z1003';
+			const expected = undefined;
+
+			expect( zobjectUtils.getZMonolingualStringsetForLang( zobject, lang ) ).toEqual( expected );
+		} );
+
+		it( 'returns undefined when value is not an object', () => {
+			const zobject = 'not an object';
+			const lang = 'Z1003';
+			const expected = undefined;
+
+			expect( zobjectUtils.getZMonolingualStringsetForLang( zobject, lang ) ).toEqual( expected );
+		} );
+
+		it( 'returns undefined when value is of the wrong type', () => {
+			const zobject = { Z1K1: 'Z60', Z60K1: 'es' };
+			const lang = 'Z1003';
+			const expected = undefined;
+
+			expect( zobjectUtils.getZMonolingualStringsetForLang( zobject, lang ) ).toEqual( expected );
+			expect( zobjectUtils.getZMonolingualStringsetForLang( canonicalToHybrid( zobject ), lang ) ).toEqual( expected );
+		} );
+
+		it( 'returns undefined for empty multilingual string', () => {
+			const zobject = {
+				Z1K1: 'Z32',
+				Z32K1: [ 'Z31' ]
+			};
+			const lang = 'Z1003';
+			const expected = undefined;
+
+			expect( zobjectUtils.getZMonolingualStringsetForLang( zobject, lang ) ).toEqual( expected );
+			expect( zobjectUtils.getZMonolingualStringsetForLang( canonicalToHybrid( zobject ), lang ) ).toEqual( expected );
+		} );
+
+		it( 'returns undefined if the lang was not found', () => {
+			const zobject = {
+				Z1K1: 'Z32',
+				Z32K1: [ 'Z31',
+					{ Z1K1: 'Z31', Z31K1: 'Z1002', Z31K2: [ 'Z6', 'terminal one' ] },
+					{ Z1K1: 'Z31', Z31K1: 'Z1003', Z31K2: [ 'Z6', 'terminal two' ] },
+					{ Z1K1: 'Z31', Z31K1: 'Z1004', Z31K2: [ 'Z6', 'terminal three' ] }
+				]
+			};
+			const lang = 'Z1005';
+			const expected = undefined;
+
+			expect( zobjectUtils.getZMonolingualStringsetForLang( zobject, lang ) ).toEqual( expected );
+			expect( zobjectUtils.getZMonolingualStringsetForLang( canonicalToHybrid( zobject ), lang ) ).toEqual( expected );
+		} );
+
+		it( 'returns index and terminal value of matched object with literal languages', () => {
+			const zobject = {
+				Z1K1: 'Z32',
+				Z32K1: [ 'Z31',
+					{ Z1K1: 'Z31', Z31K1: { Z1K1: 'Z60', Z60K1: 'ast' }, Z31K2: [ 'Z6', 'asturianu' ] },
+					{ Z1K1: 'Z31', Z31K1: { Z1K1: 'Z60', Z60K1: 'gl' }, Z31K2: [ 'Z6', 'galego' ] },
+					{ Z1K1: 'Z31', Z31K1: { Z1K1: 'Z60', Z60K1: 'eu' }, Z31K2: [ 'Z6', 'euskara', 'euskera' ] },
+					{ Z1K1: 'Z31', Z31K1: { Z1K1: 'Z60', Z60K1: 'ca' }, Z31K2: [ 'Z6', 'català' ] }
+				]
+			};
+			const lang = 'eu';
+			const expected = { index: 3, value: [ 'euskara', 'euskera' ] };
+
+			expect( zobjectUtils.getZMonolingualStringsetForLang( zobject, lang ) ).toEqual( expected );
+			expect( zobjectUtils.getZMonolingualStringsetForLang( canonicalToHybrid( zobject ), lang ) ).toEqual( expected );
+		} );
+
+		it( 'returns index and terminal value of matched object with language references', () => {
+			const zobject = {
+				Z1K1: 'Z32',
+				Z32K1: [ 'Z31',
+					{ Z1K1: 'Z31', Z31K1: 'Z1002', Z31K2: [ 'Z6', 'terminal one' ] },
+					{ Z1K1: 'Z31', Z31K1: 'Z1003', Z31K2: [ 'Z6', 'terminal two' ] },
+					{ Z1K1: 'Z31', Z31K1: 'Z1004', Z31K2: [ 'Z6', 'terminal three' ] }
+				]
+			};
+			const lang = 'Z1003';
+			const expected = { index: 2, value: [ 'terminal two' ] };
+
+			expect( zobjectUtils.getZMonolingualStringsetForLang( zobject, lang ) ).toEqual( expected );
+			expect( zobjectUtils.getZMonolingualStringsetForLang( canonicalToHybrid( zobject ), lang ) ).toEqual( expected );
+		} );
+	} );
+
+	describe( 'isWikidataLiteral', () => {
+		it( 'returns false when called with undefined', () => {
+			const zobject = undefined;
+			const expected = false;
+			expect( zobjectUtils.isWikidataLiteral( zobject ) ).toBe( expected );
+			expect( zobjectUtils.isWikidataLiteral( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns false when called with string', () => {
+			const zobject = 'Q123';
+			const expected = false;
+			expect( zobjectUtils.isWikidataLiteral( zobject ) ).toBe( expected );
+			expect( zobjectUtils.isWikidataLiteral( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns false when object is not a wikidata reference type', () => {
+			const zobject = {
+				Z1K1: 'Z11',
+				Z11K1: 'Z1002',
+				Z11K2: 'not a function call'
+			};
+			const expected = false;
+			expect( zobjectUtils.isWikidataLiteral( zobject ) ).toBe( expected );
+			expect( zobjectUtils.isWikidataLiteral( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns false when object is a wikidata entity represented by a fetch function call', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z6825',
+				Z6825K1: 'L111111'
+			};
+			const expected = false;
+			expect( zobjectUtils.isWikidataLiteral( zobject ) ).toBe( expected );
+			expect( zobjectUtils.isWikidataLiteral( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns false when object is a wikidata reference type', () => {
+			const zobject = {
+				Z1K1: 'Z6095',
+				Z6095K1: 'L111111'
+			};
+			const expected = false;
+			expect( zobjectUtils.isWikidataLiteral( zobject ) ).toBe( expected );
+			expect( zobjectUtils.isWikidataLiteral( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns true when object is a wikidata literal', () => {
+			const zobject = {
+				Z1K1: 'Z6005',
+				Z6005K1: {
+					Z1K1: 'Z6095',
+					Z6095K1: 'L111111'
+				}
+			};
+			const expected = true;
+			expect( zobjectUtils.isWikidataLiteral( zobject ) ).toBe( expected );
+			expect( zobjectUtils.isWikidataLiteral( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+	} );
+
+	describe( 'isWikidataFetch', () => {
+		it( 'returns false when called with undefined', () => {
+			const zobject = undefined;
+			const expected = false;
+			expect( zobjectUtils.isWikidataFetch( zobject ) ).toBe( expected );
+			expect( zobjectUtils.isWikidataFetch( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns false when called with string', () => {
+			const zobject = 'Q123';
+			const expected = false;
+			expect( zobjectUtils.isWikidataFetch( zobject ) ).toBe( expected );
+			expect( zobjectUtils.isWikidataFetch( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns false when row belongs to something other than a function call', () => {
+			const zobject = {
+				Z1K1: 'Z11',
+				Z11K1: 'Z1002',
+				Z11K2: 'not a function call'
+			};
+			const expected = false;
+			expect( zobjectUtils.isWikidataFetch( zobject ) ).toBe( expected );
+			expect( zobjectUtils.isWikidataFetch( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns false when function call is not to a wikidata fetch function', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z801',
+				Z801K1: 'some function call'
+			};
+			const expected = false;
+			expect( zobjectUtils.isWikidataFetch( zobject ) ).toBe( expected );
+			expect( zobjectUtils.isWikidataFetch( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns true when function call is to a wikidata fetch function', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z6825',
+				Z6825K1: {
+					Z1K1: 'Z6095',
+					Z6095K1: 'L111111'
+				}
+			};
+			const expected = true;
+			expect( zobjectUtils.isWikidataFetch( zobject ) ).toBe( expected );
+			expect( zobjectUtils.isWikidataFetch( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+	} );
+
+	describe( 'isWikidataReference', () => {
+		it( 'returns false when called with undefined', () => {
+			const zobject = undefined;
+			const expected = false;
+			expect( zobjectUtils.isWikidataReference( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.isWikidataReference( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns false when called with string', () => {
+			const zobject = 'Q123';
+			const expected = false;
+			expect( zobjectUtils.isWikidataReference( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.isWikidataReference( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns false when object is not a wikidata reference type', () => {
+			const zobject = {
+				Z1K1: 'Z11',
+				Z11K1: 'Z1002',
+				Z11K2: 'not a function call'
+			};
+			const expected = false;
+			expect( zobjectUtils.isWikidataReference( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.isWikidataReference( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns false when object is a wikidata entity represented by a fetch function call', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z6825',
+				Z6825K1: 'L111111'
+			};
+			const expected = false;
+			expect( zobjectUtils.isWikidataReference( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.isWikidataReference( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns false when object is a wikidata literal', () => {
+			const zobject = {
+				Z1K1: 'Z6005',
+				Z6005K1: {
+					Z1K1: 'Z6095',
+					Z6095K1: 'L111111'
+				}
+			};
+			const expected = false;
+			expect( zobjectUtils.isWikidataReference( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.isWikidataReference( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns true when object is a wikidata reference type', () => {
+			const zobject = {
+				Z1K1: 'Z6095',
+				Z6095K1: 'L111111'
+			};
+			const expected = true;
+			expect( zobjectUtils.isWikidataReference( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.isWikidataReference( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+	} );
+
+	describe( 'isWikidataEntity', () => {
+		it( 'returns false when called with undefined', () => {
+			const zobject = undefined;
+			const expected = false;
+			expect( zobjectUtils.isWikidataEntity( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.isWikidataEntity( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+
+		it( 'returns false when called with string', () => {
+			const zobject = 'Q123';
+			const expected = false;
+			expect( zobjectUtils.isWikidataEntity( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.isWikidataEntity( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+
+		it( 'returns false when object is not a wikidata entity', () => {
+			const zobject = {
+				Z1K1: 'Z11',
+				Z11K1: 'Z1002',
+				Z11K2: 'not a function call'
+			};
+			const expected = false;
+			expect( zobjectUtils.isWikidataEntity( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.isWikidataEntity( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+
+		it( 'returns true when object is a wikidata literal', () => {
+			const zobject = {
+				Z1K1: 'Z6005',
+				Z6005K1: {
+					Z1K1: 'Z6095',
+					Z6095K1: 'L111111'
+				}
+			};
+			const expected = true;
+			expect( zobjectUtils.isWikidataEntity( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.isWikidataEntity( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+
+		it( 'returns true when object is a wikidata reference', () => {
+			const zobject = {
+				Z1K1: 'Z6095',
+				Z6095K1: 'L111111'
+			};
+			const expected = true;
+			expect( zobjectUtils.isWikidataEntity( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.isWikidataEntity( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+
+		it( 'returns true when object is a wikidata fetch function call', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z6825',
+				Z6825K1: {
+					Z1K1: 'Z6095',
+					Z6095K1: 'L111111'
+				}
+			};
+			const expected = true;
+			expect( zobjectUtils.isWikidataEntity( zobject ) ).toEqual( expected );
+			expect( zobjectUtils.isWikidataEntity( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+		} );
+	} );
+
+	describe( 'getWikidataEntityId', () => {
+		it( 'returns undefined when called with undefined', () => {
+			const zobject = undefined;
+			const wikidataType = 'Z6005';
+			const expected = undefined;
+			expect( zobjectUtils.getWikidataEntityId( zobject, wikidataType ) ).toEqual( expected );
+			expect( zobjectUtils.getWikidataEntityId( canonicalToHybrid( zobject ), wikidataType ) ).toEqual( expected );
+		} );
+
+		it( 'returns undefined when called with string', () => {
+			const zobject = 'Q123';
+			const wikidataType = 'Z6005';
+			const expected = undefined;
+			expect( zobjectUtils.getWikidataEntityId( zobject, wikidataType ) ).toEqual( expected );
+			expect( zobjectUtils.getWikidataEntityId( canonicalToHybrid( zobject ), wikidataType ) ).toEqual( expected );
+		} );
+
+		it( 'returns undefined when object is not a wikidata entity', () => {
+			const zobject = {
+				Z1K1: 'Z11',
+				Z11K1: 'Z1002',
+				Z11K2: 'not a function call'
+			};
+			const wikidataType = 'Z6005';
+			const expected = undefined;
+			expect( zobjectUtils.getWikidataEntityId( zobject, wikidataType ) ).toEqual( expected );
+			expect( zobjectUtils.getWikidataEntityId( canonicalToHybrid( zobject ), wikidataType ) ).toEqual( expected );
+		} );
+
+		it( 'returns undefined when object is a function call to a different function', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z801',
+				Z801K1: 'L111111'
+			};
+			const wikidataType = 'Z6005';
+			const expected = undefined;
+			expect( zobjectUtils.getWikidataEntityId( zobject, wikidataType ) ).toEqual( expected );
+			expect( zobjectUtils.getWikidataEntityId( canonicalToHybrid( zobject ), wikidataType ) ).toEqual( expected );
+		} );
+
+		it( 'returns identity when object is a wikidata literal', () => {
+			const zobject = {
+				Z1K1: 'Z6005',
+				Z6005K1: {
+					Z1K1: 'Z6095',
+					Z6095K1: 'L111111'
+				}
+			};
+			const wikidataType = 'Z6005';
+			const expected = 'L111111';
+			expect( zobjectUtils.getWikidataEntityId( zobject, wikidataType ) ).toEqual( expected );
+			expect( zobjectUtils.getWikidataEntityId( canonicalToHybrid( zobject ), wikidataType ) ).toEqual( expected );
+		} );
+
+		it( 'returns identity when object is a wikidata reference', () => {
+			const zobject = {
+				Z1K1: 'Z6095',
+				Z6095K1: 'L111111'
+			};
+			const wikidataType = 'Z6005';
+			const expected = 'L111111';
+			expect( zobjectUtils.getWikidataEntityId( zobject, wikidataType ) ).toEqual( expected );
+			expect( zobjectUtils.getWikidataEntityId( canonicalToHybrid( zobject ), wikidataType ) ).toEqual( expected );
+		} );
+
+		it( 'returns identity when object is a wikidata fetch function call', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z6825',
+				Z6825K1: {
+					Z1K1: 'Z6095',
+					Z6095K1: 'L111111'
+				}
+			};
+			const wikidataType = 'Z6005';
+			const expected = 'L111111';
+			expect( zobjectUtils.getWikidataEntityId( zobject, wikidataType ) ).toEqual( expected );
+			expect( zobjectUtils.getWikidataEntityId( canonicalToHybrid( zobject ), wikidataType ) ).toEqual( expected );
+		} );
+	} );
+
+	describe( 'validateGenericType', () => {
+		const keyPath = [ 'main', 'Z2K2', 'Z8K2' ];
+
+		it( 'unset reference is not valid', () => {
+			const zobject = {
+				Z1K1: 'Z9',
+				Z9K1: ''
+			};
+
+			const expected = [
+				{ keyPath: 'main.Z2K2.Z8K2', isValid: false }
+			];
+
+			const canonical = zobjectUtils.validateGenericType( keyPath, zobject );
+			expect( canonical ).toEqual( expected );
+
+			const hybrid = zobjectUtils.validateGenericType( keyPath, canonicalToHybrid( zobject ) );
+			expect( hybrid ).toEqual( expected );
+		} );
+
+		it( 'set reference is valid', () => {
+			const zobject = {
+				Z1K1: 'Z9',
+				Z9K1: 'Z6'
+			};
+
+			const expected = [
+				{ keyPath: 'main.Z2K2.Z8K2', isValid: true }
+			];
+
+			const canonical = zobjectUtils.validateGenericType( keyPath, zobject );
+			expect( canonical ).toEqual( expected );
+
+			const hybrid = zobjectUtils.validateGenericType( keyPath, canonicalToHybrid( zobject ) );
+			expect( hybrid ).toEqual( expected );
+		} );
+
+		it( 'unset function call is not valid', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: { Z1K1: 'Z9', Z9K1: '' }
+			};
+
+			const expected = [
+				{ keyPath: 'main.Z2K2.Z8K2.Z7K1', isValid: false }
+			];
+
+			const canonical = zobjectUtils.validateGenericType( keyPath, zobject );
+			expect( canonical ).toEqual( expected );
+
+			const hybrid = zobjectUtils.validateGenericType( keyPath, canonicalToHybrid( zobject ) );
+			expect( hybrid ).toEqual( expected );
+		} );
+
+		it( 'unset function call argument is not valid', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z881',
+				Z881K1: { Z1K1: 'Z9', Z9K1: '' }
+			};
+
+			const expected = [
+				{ keyPath: 'main.Z2K2.Z8K2.Z7K1', isValid: true },
+				{ keyPath: 'main.Z2K2.Z8K2.Z881K1', isValid: false }
+			];
+
+			const canonical = zobjectUtils.validateGenericType( keyPath, zobject );
+			expect( canonical ).toEqual( expected );
+
+			const hybrid = zobjectUtils.validateGenericType( keyPath, canonicalToHybrid( zobject ) );
+			expect( hybrid ).toEqual( expected );
+		} );
+
+		it( 'nested function call argument is not valid', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z881',
+				Z881K1: {
+					Z1K1: 'Z7',
+					Z7K1: 'Z881',
+					Z881K1: {
+						Z1K1: 'Z9',
+						Z9K1: ''
+					}
+				}
+			};
+
+			const expected = [
+				{ keyPath: 'main.Z2K2.Z8K2.Z7K1', isValid: true },
+				{ keyPath: 'main.Z2K2.Z8K2.Z881K1.Z7K1', isValid: true },
+				{ keyPath: 'main.Z2K2.Z8K2.Z881K1.Z881K1', isValid: false }
+			];
+
+			const canonical = zobjectUtils.validateGenericType( keyPath, zobject );
+			expect( canonical ).toEqual( expected );
+
+			const hybrid = zobjectUtils.validateGenericType( keyPath, canonicalToHybrid( zobject ) );
+			expect( hybrid ).toEqual( expected );
 		} );
 	} );
 } );

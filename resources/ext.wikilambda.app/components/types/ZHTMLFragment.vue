@@ -30,24 +30,28 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { mapState } = require( 'pinia' );
 
 const Constants = require( '../../Constants.js' );
-const CodeEditor = require( '../base/CodeEditor.vue' );
+const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
 const errorMixin = require( '../../mixins/errorMixin.js' );
-const useMainStore = require( '../../store/index.js' );
+
+// Base components
+const CodeEditor = require( '../base/CodeEditor.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-code',
 	components: {
 		'code-editor': CodeEditor
 	},
-	mixins: [ errorMixin ],
+	mixins: [ errorMixin, zobjectMixin ],
 	props: {
-		rowId: {
-			type: Number,
-			required: false,
-			default: 0
+		keyPath: { // eslint-disable-line vue/no-unused-properties
+			type: String,
+			required: true
+		},
+		objectValue: {
+			type: Object,
+			required: true
 		},
 		edit: {
 			type: Boolean,
@@ -64,21 +68,16 @@ module.exports = exports = defineComponent( {
 			allowSetEditorValue: true
 		};
 	},
-	computed: Object.assign( {},
-		mapState( useMainStore, [
-			'getZHTMLFragmentTerminalValue'
-		] ),
-		{
-			/**
-			 * Returns the value of the selected reference.
-			 *
-			 * @return {string}
-			 */
-			value: function () {
-				return this.getZHTMLFragmentTerminalValue( this.rowId );
-			}
+	computed: {
+		/**
+		 * Returns the value of the selected reference.
+		 *
+		 * @return {string}
+		 */
+		value: function () {
+			return this.getZHTMLFragmentTerminalValue( this.objectValue );
 		}
-	),
+	},
 	methods: {
 		/**
 		 * Updates the value of the HTML fragment value (Z89K1)

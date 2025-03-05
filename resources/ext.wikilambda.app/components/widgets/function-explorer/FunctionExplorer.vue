@@ -35,18 +35,18 @@
 						{{ $i18n( 'wikilambda-function-explorer-name-title' ) }}
 					</h5>
 					<span
-						v-if="implementation === Constants.Z_IMPLEMENTATION_CODE"
+						v-if="implementation === implementationCode"
 						class="ext-wikilambda-app-function-explorer-widget__copyable"
 						:class="{ 'ext-wikilambda-app-function-explorer-widget__untitled': functionLabel.isUntitled }"
 						data-testid="function-zid"
-						@click.stop="copyToClipboard( functionZid )"
-					>{{ showValueOrCopiedMessage( functionZid ) }}</span>
+						@click.stop="copyToClipboard( currentFunctionZid )"
+					>{{ showValueOrCopiedMessage( currentFunctionZid ) }}</span>
 				</div>
 				<!-- Edit mode -->
 				<template v-if="edit">
 					<wl-z-object-selector
 						:key="currentFunctionZid"
-						:type="Constants.Z_FUNCTION"
+						:type="functionType"
 						:placeholder="$i18n( 'wikilambda-function-typeselector-label' ).text()"
 						:selected-zid="currentFunctionZid"
 						data-testid="function-selector"
@@ -99,7 +99,7 @@
 							></wl-type-to-string>
 						</span>
 						<span
-							v-if="implementation === Constants.Z_IMPLEMENTATION_CODE"
+							v-if="implementation === implementationCode"
 							class="ext-wikilambda-app-function-explorer-widget__copyable"
 							data-testid="function-input-zkey"
 							data-title="Click to copy"
@@ -150,16 +150,20 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
-const { CdxButton, CdxIcon } = require( '../../../../codex.js' );
+
 const Constants = require( '../../../Constants.js' );
 const clipboardMixin = require( '../../../mixins/clipboardMixin.js' );
 const icons = require( '../../../../lib/icons.json' );
 const typeMixin = require( '../../../mixins/typeMixin.js' );
 const useMainStore = require( '../../../store/index.js' );
-const TypeToString = require( '../../base/TypeToString.vue' );
-const WidgetBase = require( '../../base/WidgetBase.vue' );
-const ZObjectSelector = require( '../../base/ZObjectSelector.vue' );
 const urlUtils = require( '../../../utils/urlUtils.js' );
+
+// Base components
+const WidgetBase = require( '../../base/WidgetBase.vue' );
+const TypeToString = require( '../../base/TypeToString.vue' );
+const ZObjectSelector = require( '../../base/ZObjectSelector.vue' );
+// Codex components
+const { CdxButton, CdxIcon } = require( '../../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-explorer-widget',
@@ -190,91 +194,89 @@ module.exports = exports = defineComponent( {
 	data() {
 		return {
 			currentFunctionZid: this.functionZid,
-			Constants: Constants,
+			functionType: Constants.Z_FUNCTION,
+			implementationCode: Constants.Z_IMPLEMENTATION_CODE,
 			resetIcon: icons.cdxIconHistory
 		};
 	},
-	computed: Object.assign( {},
-		mapState( useMainStore, [
-			'getUserLangCode',
-			'getStoredObject',
-			'getInputsOfFunctionZid',
-			'getLabelData'
-		] ),
-		{
-			/**
-			 * Returns the LabelData object for the selected function Zid
-			 *
-			 * @return {LabelData}
-			 */
-			functionLabel: function () {
-				return this.getLabelData( this.currentFunctionZid );
-			},
-			/**
-			 * Returns the stored function object for the selected function Zid
-			 *
-			 * @return {Object}
-			 */
-			functionObject: function () {
-				return this.getStoredObject( this.currentFunctionZid );
-			},
-			/**
-			 * Returns the zid, type and LabelData object for each function
-			 * argument given a selected function Zid
-			 *
-			 * @return {Array}
-			 */
-			functionArguments: function () {
-				const args = this.getInputsOfFunctionZid( this.currentFunctionZid );
+	computed: Object.assign( {}, mapState( useMainStore, [
+		'getUserLangCode',
+		'getStoredObject',
+		'getInputsOfFunctionZid',
+		'getLabelData'
+	] ), {
+		/**
+		 * Returns the LabelData object for the selected function Zid
+		 *
+		 * @return {LabelData}
+		 */
+		functionLabel: function () {
+			return this.getLabelData( this.currentFunctionZid );
+		},
+		/**
+		 * Returns the stored function object for the selected function Zid
+		 *
+		 * @return {Object}
+		 */
+		functionObject: function () {
+			return this.getStoredObject( this.currentFunctionZid );
+		},
+		/**
+		 * Returns the zid, type and LabelData object for each function
+		 * argument given a selected function Zid
+		 *
+		 * @return {Array}
+		 */
+		functionArguments: function () {
+			const args = this.getInputsOfFunctionZid( this.currentFunctionZid );
 
-				return args.map( ( arg ) => {
-					const key = arg[ Constants.Z_ARGUMENT_KEY ];
-					const type = arg[ Constants.Z_ARGUMENT_TYPE ];
-					const label = this.getLabelData( key );
+			return args.map( ( arg ) => {
+				const key = arg[ Constants.Z_ARGUMENT_KEY ];
+				const type = arg[ Constants.Z_ARGUMENT_TYPE ];
+				const label = this.getLabelData( key );
 
-					return {
-						key,
-						type,
-						label
-					};
-				} );
-			},
-			/**
-			 * Returns whether the function exists and has been fetched
-			 *
-			 * @return {boolean}
-			 */
-			functionExists: function () {
-				return Boolean( this.functionObject );
-			},
-			/**
-			 * Returns the url for the selected function
-			 *
-			 * @return {string}
-			 */
-			functionUrl: function () {
-				return urlUtils.generateViewUrl( { langCode: this.getUserLangCode, zid: this.currentFunctionZid } );
-			},
-			/**
-			 * Returns the output type of the selected function
-			 *
-			 * @return {Object|string}
-			 */
-			outputType: function () {
-				return this.functionObject[ Constants.Z_PERSISTENTOBJECT_VALUE ][
-					Constants.Z_FUNCTION_RETURN_TYPE ];
-			},
-			/**
-			 * Returns whether the reset button must be disabled (the
-			 * selected function is the same as the initialized function)
-			 *
-			 * @return {boolean}
-			 */
-			resetButtonDisabled: function () {
-				return this.currentFunctionZid === this.functionZid;
-			}
+				return {
+					key,
+					type,
+					label
+				};
+			} );
+		},
+		/**
+		 * Returns whether the function exists and has been fetched
+		 *
+		 * @return {boolean}
+		 */
+		functionExists: function () {
+			return Boolean( this.functionObject );
+		},
+		/**
+		 * Returns the url for the selected function
+		 *
+		 * @return {string}
+		 */
+		functionUrl: function () {
+			return urlUtils.generateViewUrl( { langCode: this.getUserLangCode, zid: this.currentFunctionZid } );
+		},
+		/**
+		 * Returns the output type of the selected function
+		 *
+		 * @return {Object|string}
+		 */
+		outputType: function () {
+			return this.functionObject[ Constants.Z_PERSISTENTOBJECT_VALUE ][
+				Constants.Z_FUNCTION_RETURN_TYPE ];
+		},
+		/**
+		 * Returns whether the reset button must be disabled (the
+		 * selected function is the same as the initialized function)
+		 *
+		 * @return {boolean}
+		 */
+		resetButtonDisabled: function () {
+			return this.currentFunctionZid === this.functionZid;
 		}
-	),
+	} ),
 	methods: {
 		updateSelectedFunction( zIdSelected ) {
 			this.currentFunctionZid = zIdSelected;

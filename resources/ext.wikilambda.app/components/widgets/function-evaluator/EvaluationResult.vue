@@ -9,7 +9,8 @@
 		<div class="ext-wikilambda-app-evaluation-result__result">
 			<wl-z-object-key-value
 				:skip-key="true"
-				:row-id="rowId"
+				:key-path="responseKeyPath"
+				:object-value="responseObject[ responseKey ]"
 				:edit="false"
 			></wl-z-object-key-value>
 		</div>
@@ -30,7 +31,7 @@
 			v-if="hasMetadata"
 			:open="showMetadata"
 			:header-text="implementationName"
-			:metadata="getMetadata"
+			:metadata="metadata"
 			@close-dialog="showMetadata = false"
 		></wl-function-metadata-dialog>
 	</div>
@@ -41,9 +42,13 @@ const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
 
 const Constants = require( '../../../Constants.js' );
-const FunctionMetadataDialog = require( './FunctionMetadataDialog.vue' );
 const useMainStore = require( '../../../store/index.js' );
-const ZObjectKeyValue = require( '../../default-view-types/ZObjectKeyValue.vue' );
+const { hybridToCanonical } = require( '../../../utils/schemata.js' );
+
+// Type components
+const ZObjectKeyValue = require( '../../types/ZObjectKeyValue.vue' );
+// Widget components
+const FunctionMetadataDialog = require( './FunctionMetadataDialog.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-evaluation-result',
@@ -51,25 +56,30 @@ module.exports = exports = defineComponent( {
 		'wl-function-metadata-dialog': FunctionMetadataDialog,
 		'wl-z-object-key-value': ZObjectKeyValue
 	},
-	props: {
-		rowId: {
-			type: Number,
-			required: false,
-			default: undefined
-		}
-	},
 	data: function () {
 		return {
-			showMetadata: false
+			showMetadata: false,
+			responseKey: Constants.Z_RESPONSEENVELOPE_VALUE,
+			responseKeyPath: [
+				Constants.STORED_OBJECTS.RESPONSE,
+				Constants.Z_RESPONSEENVELOPE_VALUE
+			].join( '.' )
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
-		'getMetadata',
 		'getCurrentZObjectId',
+		'getCurrentZObjectType',
 		'getLabelData',
-		'getZPersistentContentRowId',
-		'getZObjectTypeByRowId'
+		'getZObjectByKeyPath'
 	] ), {
+		/**
+		 * The function call response object as set in the store
+		 *
+		 * @return {Object}
+		 */
+		responseObject: function () {
+			return this.getZObjectByKeyPath( [ Constants.STORED_OBJECTS.RESPONSE ] );
+		},
 
 		/**
 		 * Returns whether there's a metadata value
@@ -77,7 +87,20 @@ module.exports = exports = defineComponent( {
 		 * @return {boolean}
 		 */
 		hasMetadata: function () {
-			return !!this.getMetadata;
+			return this.responseObject &&
+				typeof this.responseObject === 'object' &&
+				Constants.Z_RESPONSEENVELOPE_METADATA in this.responseObject;
+		},
+
+		/**
+		 * Returns the metadata/Z22K2 object, if defined.
+		 *
+		 * @return {Object|undefined}
+		 */
+		metadata: function () {
+			return this.hasMetadata ?
+				hybridToCanonical( this.responseObject[ Constants.Z_RESPONSEENVELOPE_METADATA ] ) :
+				undefined;
 		},
 
 		/**
@@ -106,10 +129,8 @@ module.exports = exports = defineComponent( {
 		 * @return {string|undefined}
 		 */
 		implementationName: function () {
-			const contentRowId = this.getZPersistentContentRowId() || 0;
-			const contentType = this.getZObjectTypeByRowId( contentRowId );
 			// If the page is an implementation, return implementation label
-			if ( contentType === Constants.Z_IMPLEMENTATION ) {
+			if ( this.getCurrentZObjectType === Constants.Z_IMPLEMENTATION ) {
 				return this.getLabelData( this.getCurrentZObjectId );
 			}
 			return undefined;

@@ -57,6 +57,9 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	methods: {
+		/**
+		 * Initializes the internal Ace Code Editor
+		 */
 		initialize: function () {
 			this.editor = window.ace.edit( this.$refs.editor, { value: this.value } );
 			const session = this.editor.getSession();

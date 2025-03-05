@@ -20,12 +20,14 @@ module.exports = {
 
 	getters: {
 		/**
-		 * Retrieve the result value zTester a specific set of Function, tester and implementation.
+		 * Retrieves the result of running a specific set of Function, Test
+		 * and Implementation. These results are stored in the state with keys
+		 * with the format "<function id>:<test id>:<implementation id>".
 		 *
 		 * @param {Object} state
 		 * @return {Function}
 		 */
-		getZTesterResults: function ( state ) {
+		getZTesterResult: function ( state ) {
 			/**
 			 * @param {string} zFunctionId
 			 * @param {string} zTesterId
@@ -34,7 +36,7 @@ module.exports = {
 			 * @return {boolean}
 			 */
 			const findZTesterResults = ( zFunctionId, zTesterId, zImplementationId ) => {
-				const key = zFunctionId + ':' + zTesterId + ':' + zImplementationId;
+				const key = `${ zFunctionId }:${ zTesterId }:${ zImplementationId }`;
 
 				const testResultErrors = this.getErrors( Constants.ERROR_IDS.TEST_RESULTS );
 				if ( testResultErrors.length > 0 ) {
@@ -203,7 +205,7 @@ module.exports = {
 				return ( items || [] ).map( ( item ) => {
 					// if the item is the current object replace it
 					if ( !this.getViewMode && item === this.getCurrentZObjectId ) {
-						let zobject = this.getZObjectAsJson;
+						let zobject = this.getJsonObject( Constants.STORED_OBJECTS.MAIN );
 						if ( item === Constants.NEW_ZID_PLACEHOLDER ) {
 							// If this object is not yet persisted, pass only the inner object to the API, as otherwise
 							// the API will complain about the placeholder ID Z0 not existing.
@@ -269,7 +271,7 @@ module.exports = {
 				this.setTestResultsPromise( { functionZid: payload.zFunctionId } );
 			} ).catch( ( error ) => {
 				this.setError( {
-					rowId: Constants.ERROR_IDS.TEST_RESULTS,
+					errorId: Constants.ERROR_IDS.TEST_RESULTS,
 					errorType: Constants.ERROR_TYPES.ERROR,
 					errorMessage: error.messageOrFallback( Constants.ERROR_CODES.UNKNOWN_TEST_ERROR )
 				} );

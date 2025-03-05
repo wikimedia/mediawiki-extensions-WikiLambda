@@ -8,28 +8,40 @@
 
 const { shallowMount } = require( '@vue/test-utils' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
-const createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
 const createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock;
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
-const ZReference = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZReference.vue' );
+const ZReference = require( '../../../../resources/ext.wikilambda.app/components/types/ZReference.vue' );
+
+// General use
+const keyPath = 'main.Z2K2.Z1K1';
+const objectValue = { Z1K1: 'Z9', Z9K1: 'Z6' };
+
+// Terminal value
+const terminalKeyPath = 'main.Z2K2.Z1K1.Z9K1';
+const terminalObjectValue = 'Z6';
+
+// Function call function
+const functionCallKeyPath = 'main.Z2K2.Z7K1';
+
+// Root level
 
 describe( 'ZReference', () => {
 	let store;
+
 	beforeEach( () => {
 		store = useMainStore();
+		store.getUserLangCode = 'en';
 		store.getLabelData = createLabelDataMock( {
 			Z6: 'String'
 		} );
-		store.getParentRowId = createGettersWithFunctionsMock( 2 );
-		store.getZReferenceTerminalValue = createGettersWithFunctionsMock( 'Z6' );
-		store.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z1K1' );
-		store.getUserLangCode = 'en';
 	} );
 
 	describe( 'in view mode', () => {
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( ZReference, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false,
 					expectedType: Constants.Z_STRING
 				}
@@ -41,6 +53,8 @@ describe( 'ZReference', () => {
 		it( 'displays the reference link with its label if there is one', () => {
 			const wrapper = shallowMount( ZReference, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false,
 					expectedType: Constants.Z_STRING
 				}
@@ -55,6 +69,8 @@ describe( 'ZReference', () => {
 			store.getLabelData = createLabelDataMock();
 			const wrapper = shallowMount( ZReference, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false,
 					expectedType: Constants.Z_STRING
 				}
@@ -70,6 +86,8 @@ describe( 'ZReference', () => {
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( ZReference, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
 					expectedType: Constants.Z_STRING
 				}
@@ -81,6 +99,8 @@ describe( 'ZReference', () => {
 		it( 'displays a selector and emits the value with a Z_REFERENCE_ID (Z9K1) keyPath if its key is not a Z_REFERENCE_ID', async () => {
 			const wrapper = shallowMount( ZReference, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
 					expectedType: Constants.Z_STRING
 				}
@@ -94,11 +114,10 @@ describe( 'ZReference', () => {
 		} );
 
 		it( 'displays a selector and emits the value with an empty keyPath if its key is a Z_REFERENCE_ID (Z9K1)', async () => {
-			store.getZReferenceTerminalValue = createGettersWithFunctionsMock( 'Z6' );
-			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z9K1' );
-
 			const wrapper = shallowMount( ZReference, {
 				props: {
+					keyPath: terminalKeyPath,
+					objectValue: terminalObjectValue,
 					edit: true,
 					expectedType: Constants.Z_STRING
 				}
@@ -112,10 +131,10 @@ describe( 'ZReference', () => {
 		} );
 
 		it( 'binds the returnType to the selector when key is a function call function', async () => {
-			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL_FUNCTION );
-
 			const wrapper = shallowMount( ZReference, {
 				props: {
+					keyPath: functionCallKeyPath,
+					objectValue,
 					edit: true,
 					expectedType: Constants.Z_FUNCTION,
 					parentExpectedType: Constants.Z_STRING
@@ -127,10 +146,10 @@ describe( 'ZReference', () => {
 		} );
 
 		it( 'returns empty returnType when the key is a function call but parent expected type is unbound', async () => {
-			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL_FUNCTION );
-
 			const wrapper = shallowMount( ZReference, {
 				props: {
+					keyPath: functionCallKeyPath,
+					objectValue,
 					edit: true,
 					expectedType: Constants.Z_FUNCTION,
 					parentExpectedType: Constants.Z_OBJECT
@@ -142,10 +161,10 @@ describe( 'ZReference', () => {
 		} );
 
 		it( 'returns empty returnType when the key is a function call but parent expected type is a resolver', async () => {
-			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL_FUNCTION );
-
 			const wrapper = shallowMount( ZReference, {
 				props: {
+					keyPath: functionCallKeyPath,
+					objectValue,
 					edit: true,
 					expectedType: Constants.Z_FUNCTION,
 					parentExpectedType: Constants.Z_FUNCTION_CALL
@@ -157,12 +176,10 @@ describe( 'ZReference', () => {
 		} );
 
 		it( 'sets excluded zids from root persistent content', () => {
-			store.getParentRowId = createGettersWithFunctionsMock( 2 );
-			store.getZObjectKeyByRowId = jest.fn( ( rowId ) => ( rowId === 1 ) ? 'Z1K1' : 'Z2K2' );
-
 			const wrapper = shallowMount( ZReference, {
 				props: {
-					rowId: 1,
+					keyPath,
+					objectValue,
 					edit: true,
 					expectedType: 'Z4'
 				}

@@ -26,13 +26,15 @@
 </template>
 
 <script>
-
 const { defineComponent } = require( 'vue' );
 const { mapActions } = require( 'pinia' );
-const { CdxLookup } = require( '../../../../codex.js' );
+
 const Constants = require( '../../../Constants.js' );
 const useMainStore = require( '../../../store/index.js' );
 const wikidataIconSvg = require( './wikidataIconSvg.js' );
+
+// Codex components
+const { CdxLookup } = require( '../../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-wikidata-entity-selector',

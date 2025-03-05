@@ -20,11 +20,11 @@
 			</template>
 			<template #value>
 				<wl-z-object-key-value
-					:key="functionRowId"
-					:row-id="functionRowId"
+					:key-path="`${ keyPath }.${ functionKey }`"
+					:object-value="objectValue[ functionKey ]"
+					:edit="edit"
 					:skip-key="true"
 					:skip-indent="true"
-					:edit="edit"
 				></wl-z-object-key-value>
 			</template>
 		</wl-key-value-block>
@@ -43,11 +43,10 @@
 			</template>
 			<template #value>
 				<wl-z-object-key-value
-					:key="testerCallRowId"
-					:skip-key="true"
-					:row-id="testerCallRowId"
-					:error-id="testerCallRowId"
+					:key-path="`${ keyPath }.${ callKey }`"
+					:object-value="objectValue[ callKey ]"
 					:edit="edit"
+					:skip-key="true"
 				></wl-z-object-key-value>
 			</template>
 		</wl-key-value-block>
@@ -66,11 +65,10 @@
 			</template>
 			<template #value>
 				<wl-z-object-key-value
-					:key="testerValidationRowId"
-					:skip-key="true"
-					:row-id="testerValidationRowId"
-					:error-id="testerValidationRowId"
+					:key-path="`${ keyPath }.${ validationKey }`"
+					:object-value="objectValue[ validationKey ]"
 					:edit="edit"
+					:skip-key="true"
 				></wl-z-object-key-value>
 			</template>
 		</wl-key-value-block>
@@ -82,46 +80,45 @@ const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
 
 const Constants = require( '../../Constants.js' );
-const KeyValueBlock = require( '../base/KeyValueBlock.vue' );
 const useMainStore = require( '../../store/index.js' );
 const typeMixin = require( '../../mixins/typeMixin.js' );
+const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
+
+// Base components
+const KeyValueBlock = require( '../base/KeyValueBlock.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-tester',
 	components: {
 		'wl-key-value-block': KeyValueBlock
 	},
-	mixins: [ typeMixin ],
+	mixins: [ typeMixin, zobjectMixin ],
 	props: {
-		rowId: {
-			type: Number,
-			required: false,
-			default: 0
+		keyPath: {
+			type: String,
+			required: true
+		},
+		objectValue: {
+			type: [ String, Object ],
+			required: true
 		},
 		edit: {
 			type: Boolean,
 			required: true
 		}
 	},
+	data: function () {
+		return {
+			functionKey: Constants.Z_TESTER_FUNCTION,
+			callKey: Constants.Z_TESTER_CALL,
+			validationKey: Constants.Z_TESTER_VALIDATION
+		};
+	},
 	computed: Object.assign( {}, mapState( useMainStore, [
-		'createObjectByType',
 		'getLabelData',
-		'getZTesterFunctionRowId',
-		'getZTesterCallRowId',
-		'getZTesterValidationRowId',
-		'getZReferenceTerminalValue',
-		'isCreateNewPage',
-		'getStoredObject'
+		'getStoredObject',
+		'isCreateNewPage'
 	] ), {
-		/**
-		 * Returns the row Id of the target function key: Z20K1
-		 *
-		 * @return {number|undefined}
-		 */
-		functionRowId: function () {
-			return this.getZTesterFunctionRowId( this.rowId );
-		},
-
 		/**
 		 * Returns the LabelData object for the test Function/Z20K1 key
 		 *
@@ -137,7 +134,7 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		functionZid: function () {
-			return this.getZReferenceTerminalValue( this.functionRowId );
+			return this.getZTesterFunctionZid( this.objectValue );
 		},
 
 		/**
@@ -150,24 +147,6 @@ module.exports = exports = defineComponent( {
 		 */
 		storedFunction: function () {
 			return this.getStoredObject( this.functionZid );
-		},
-
-		/**
-		 * Returns the row Id of the tester call: Z20K2
-		 *
-		 * @return {number|undefined}
-		 */
-		testerCallRowId: function () {
-			return this.getZTesterCallRowId( this.rowId );
-		},
-
-		/**
-		 * Returns the row Id of the tester validation function call: Z20K3
-		 *
-		 * @return {number|undefined}
-		 */
-		testerValidationRowId: function () {
-			return this.getZTesterValidationRowId( this.rowId );
 		},
 
 		/**
@@ -190,7 +169,7 @@ module.exports = exports = defineComponent( {
 	} ),
 	methods: Object.assign( {}, mapActions( useMainStore, [
 		'fetchZids',
-		'setZFunctionCallArguments'
+		'setFunctionCallArguments'
 	] ), {
 		/**
 		 * Initializes Test call/Z20K2 with a function call to the given functionZid
@@ -207,8 +186,8 @@ module.exports = exports = defineComponent( {
 					value: this.functionZid
 				} );
 				// Set test call function arguments
-				this.setZFunctionCallArguments( {
-					parentId: this.testerCallRowId,
+				this.setFunctionCallArguments( {
+					keyPath: [ ...this.keyPath.split( '.' ), Constants.Z_TESTER_CALL ],
 					functionZid: this.functionZid
 				} );
 				// Get function output type and dismiss anything that's not a reference
@@ -229,18 +208,7 @@ module.exports = exports = defineComponent( {
 		 * @param {string} outputType
 		 */
 		initializeTestValidation: function ( outputType ) {
-			const type = this.getStoredObject( outputType );
-			const equalityZid = type[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_EQUALITY ];
-			if ( !equalityZid || ( typeof equalityZid !== 'string' ) || !this.isValidZidFormat( equalityZid ) ) {
-				// Set to blank Function Call if the new test call output doesn't have an equality function
-				const blankFunctionCall = this.createObjectByType( { type: Constants.Z_FUNCTION_CALL } );
-				this.$emit( 'set-value', {
-					keyPath: [ Constants.Z_TESTER_VALIDATION ],
-					value: blankFunctionCall
-				} );
-				return;
-			}
-			this.fetchZids( { zids: [ equalityZid ] } ).then( () => {
+			const setupValidation = ( equalityFunctionZid ) => {
 				// Set test validation function call Zid
 				this.$emit( 'set-value', {
 					keyPath: [
@@ -248,13 +216,25 @@ module.exports = exports = defineComponent( {
 						Constants.Z_FUNCTION_CALL_FUNCTION,
 						Constants.Z_REFERENCE_ID
 					],
-					value: equalityZid
+					value: equalityFunctionZid || ''
 				} );
 				// Set tester validation function arguments
-				this.setZFunctionCallArguments( {
-					parentId: this.testerValidationRowId,
-					functionZid: equalityZid
+				this.setFunctionCallArguments( {
+					keyPath: [ ...this.keyPath.split( '.' ), Constants.Z_TESTER_VALIDATION ],
+					functionZid: equalityFunctionZid || undefined
 				} );
+			};
+
+			const type = this.getStoredObject( outputType );
+			const equalityZid = type[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_EQUALITY ];
+			if ( !equalityZid || ( typeof equalityZid !== 'string' ) || !this.isValidZidFormat( equalityZid ) ) {
+				// No equality function: we set the validator function call to empty and exit
+				setupValidation();
+				return;
+			}
+			// We fetch the equality function zid and set the validator function call
+			this.fetchZids( { zids: [ equalityZid ] } ).then( () => {
+				setupValidation( equalityZid );
 			} );
 		}
 	} ),

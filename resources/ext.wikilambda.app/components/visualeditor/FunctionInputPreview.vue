@@ -47,6 +47,7 @@ const Constants = require( '../../Constants.js' );
 const { performFunctionCall } = require( '../../utils/apiUtils.js' );
 const errorMixin = require( '../../mixins/errorMixin.js' );
 const typeMixin = require( '../../mixins/typeMixin.js' );
+const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
 const { CdxAccordion, CdxIcon, CdxMessage, CdxProgressIndicator } = require( '../../../codex.js' );
 const useMainStore = require( '../../store/index.js' );
 const icons = require( '../../../lib/icons.json' );
@@ -59,7 +60,7 @@ module.exports = exports = defineComponent( {
 		'cdx-message': CdxMessage,
 		'cdx-progress-indicator': CdxProgressIndicator
 	},
-	mixins: [ typeMixin, errorMixin ],
+	mixins: [ typeMixin, errorMixin, zobjectMixin ],
 	props: {
 		/**
 		 * Function call payload.
@@ -409,7 +410,7 @@ module.exports = exports = defineComponent( {
 					}
 
 					// If the function call returns void or an unexpected type, set an error message
-					const type = this.getZObjectType( data );
+					const type = this.typeToString( this.getZObjectType( data ) );
 					const isAllowedOutputType = type !== Constants.Z_STRING || type !== Constants.Z_HTML_FRAGMENT;
 					if ( data === Constants.Z_VOID || !isAllowedOutputType ) {
 						this.functionCallError = this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-preview-error' ).text();

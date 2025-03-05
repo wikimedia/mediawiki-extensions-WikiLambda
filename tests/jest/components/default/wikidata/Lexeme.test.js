@@ -9,7 +9,7 @@
 const { shallowMount } = require( '@vue/test-utils' );
 
 const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
-const WikidataLexeme = require( '../../../../../resources/ext.wikilambda.app/components/default-view-types/wikidata/Lexeme.vue' );
+const WikidataLexeme = require( '../../../../../resources/ext.wikilambda.app/components/types/wikidata/Lexeme.vue' );
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 const { createGettersWithFunctionsMock } = require( '../../../helpers/getterHelpers.js' );
 
@@ -23,15 +23,29 @@ const lexemeData = {
 	forms: []
 };
 
+// General configuration: wikidata reference
+const keyPath = 'main.Z2K2';
+const objectValue = {
+	Z1K1: { Z1K1: 'Z9', Z9K1: 'Z6095' },
+	Z6095K1: { Z1K1: 'Z6', Z6K1: 'L333333' }
+};
+
+// Fetch form
+const objectValueFetch = {
+	Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+	Z7K1: { Z1K1: 'Z9', Z9K1: 'Z6825' },
+	Z6825K1: {
+		Z1K1: { Z1K1: 'Z9', Z9K1: 'Z6095' },
+		Z6095K1: { Z1K1: 'Z6', Z6K1: 'L333333' }
+	}
+};
+
 describe( 'WikidataLexeme', () => {
 	let store;
 
 	beforeEach( () => {
 		store = useMainStore();
 		store.getLexemeData = createGettersWithFunctionsMock();
-		store.getLexemeIdRow = createGettersWithFunctionsMock( { id: 1 } );
-		store.getLexemeId = createGettersWithFunctionsMock( lexemeId );
-		store.getZStringTerminalValue = createGettersWithFunctionsMock( lexemeId );
 		store.getUserLangCode = 'en';
 	} );
 
@@ -39,6 +53,8 @@ describe( 'WikidataLexeme', () => {
 		it( 'renders wikidata lexeme reference without errors', () => {
 			const wrapper = shallowMount( WikidataLexeme, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false,
 					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME
 				}
@@ -49,6 +65,8 @@ describe( 'WikidataLexeme', () => {
 		it( 'renders wikidata lexeme fetch function without errors', () => {
 			const wrapper = shallowMount( WikidataLexeme, {
 				props: {
+					keyPath,
+					objectValue: objectValueFetch,
 					edit: false,
 					type: Constants.Z_FUNCTION_CALL
 				}
@@ -61,6 +79,8 @@ describe( 'WikidataLexeme', () => {
 
 			const wrapper = shallowMount( WikidataLexeme, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false,
 					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME
 				}
@@ -74,6 +94,8 @@ describe( 'WikidataLexeme', () => {
 		it( 'renders the lexeme external link if data is not available', () => {
 			const wrapper = shallowMount( WikidataLexeme, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false,
 					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME
 				}
@@ -89,6 +111,8 @@ describe( 'WikidataLexeme', () => {
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( WikidataLexeme, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME
 				}
@@ -97,10 +121,10 @@ describe( 'WikidataLexeme', () => {
 		} );
 
 		it( 'renders blank wikidata entity selector', () => {
-			store.getZStringTerminalValue = createGettersWithFunctionsMock();
-
 			const wrapper = shallowMount( WikidataLexeme, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME
 				}
@@ -112,6 +136,8 @@ describe( 'WikidataLexeme', () => {
 		it( 'renders wikidata entity selector', () => {
 			const wrapper = shallowMount( WikidataLexeme, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME
 				}
@@ -125,6 +151,8 @@ describe( 'WikidataLexeme', () => {
 
 			const wrapper = shallowMount( WikidataLexeme, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME
 				}
@@ -141,6 +169,8 @@ describe( 'WikidataLexeme', () => {
 		it( 'initializes wikidata entity selector input value with delayed fetch response', async () => {
 			const wrapper = shallowMount( WikidataLexeme, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME
 				}
@@ -162,6 +192,8 @@ describe( 'WikidataLexeme', () => {
 		it( 'sets lexeme reference ID when selecting option from the menu', async () => {
 			const wrapper = shallowMount( WikidataLexeme, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME
 				}
@@ -183,6 +215,8 @@ describe( 'WikidataLexeme', () => {
 		it( 'sets lexeme fetch function ID when selecting option from the menu', async () => {
 			const wrapper = shallowMount( WikidataLexeme, {
 				props: {
+					keyPath,
+					objectValue: objectValueFetch,
 					edit: true,
 					type: Constants.Z_FUNCTION_CALL
 				}

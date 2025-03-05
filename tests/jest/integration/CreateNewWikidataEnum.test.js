@@ -60,6 +60,12 @@ describe( 'WikiLambda frontend, create Wikidata enum', () => {
 		// ACT: type and select in the zobjectselector lookup field of 'function': 'Typed enum of Wikidata references'
 		await lookupSearchAndSelect( functionSelector, 'Typed enum', 'Typed enum of Wikidata references' );
 
+		// WAIT: for the third label to appear (index 2)
+		await waitFor( () => {
+			const labels = within( content ).queryAllByTestId( 'localized-label' );
+			expect( labels.length ).toBeGreaterThan( 2 );
+		} );
+
 		// EXPECT: a field appears with label 'Wikidata reference type' and a selectbox
 		const wikidataTypeLabel = within( content ).queryAllByTestId( 'localized-label' )[ 2 ];
 		const wikidataTypeSelect = within( wikidataTypeLabel.parentElement.parentElement ).getByTestId( 'z-wikidata-enum-type-select' );
@@ -166,6 +172,12 @@ describe( 'WikiLambda frontend, create Wikidata enum', () => {
 
 		// ACT: type and select in the zobjectselector lookup field of 'function': 'Typed enum of Wikidata references'
 		await lookupSearchAndSelect( functionSelector, 'Typed enum', 'Typed enum of Wikidata references' );
+
+		// WAIT: for the third label to appear (index 2)
+		await waitFor( () => {
+			const labels = within( content ).queryAllByTestId( 'localized-label' );
+			expect( labels.length ).toBeGreaterThan( 2 );
+		} );
 
 		// EXPECT: a field appears with label 'Wikidata reference type' and a selectbox
 		const wikidataTypeLabel = within( content ).queryAllByTestId( 'localized-label' )[ 2 ];

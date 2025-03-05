@@ -37,9 +37,9 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
-const urlUtils = require( '../../utils/urlUtils.js' );
 
 const Constants = require( '../../Constants.js' );
+const urlUtils = require( '../../utils/urlUtils.js' );
 const useMainStore = require( '../../store/index.js' );
 
 module.exports = exports = defineComponent( {

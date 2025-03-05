@@ -20,7 +20,7 @@
 				@click="removeInput"
 			>
 				<cdx-icon
-					:icon="icons.cdxIconTrash"
+					:icon="iconTrash"
 					class="ext-wikilambda-app-function-editor-inputs-item__icon-trash"></cdx-icon>
 			</cdx-button>
 		</div>
@@ -36,9 +36,9 @@
 					{{ inputLabelTitle }}
 				</template>
 				<cdx-text-input
-					:lang="inputLabel ? langLabelData.langCode : undefined"
-					:dir="inputLabel ? langLabelData.langDir : undefined"
-					:model-value="inputLabel"
+					:lang="input ? langLabelData.langCode : undefined"
+					:dir="input ? langLabelData.langDir : undefined"
+					:model-value="input ? input.value : ''"
 					:placeholder="inputLabelFieldPlaceholder"
 					:aria-label="inputLabelFieldPlaceholder"
 					:maxlength="maxInputLabelChars"
@@ -51,11 +51,11 @@
 			</cdx-field>
 			<!-- Type field: only first block -->
 			<wl-type-selector
-				v-if="isMainLanguageBlock"
+				v-if="isMainLanguageBlock && input"
 				class="ext-wikilambda-app-function-editor-inputs-item__field"
 				data-testid="function-editor-input-item-type"
-				:row-id="inputTypeRowId"
-				:type="typeZid"
+				:key-path="input.typeKeyPath"
+				:object-value="input.type"
 				:label-data="inputTypeLabel"
 				:disabled="!canEditType"
 				:placeholder="inputTypeFieldPlaceholder"
@@ -65,15 +65,18 @@
 </template>
 
 <script>
-const { CdxButton, CdxField, CdxIcon, CdxTextInput } = require( '../../../../codex.js' );
 const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { mapActions } = require( 'pinia' );
 
 const Constants = require( '../../../Constants.js' );
 const icons = require( './../../../../lib/icons.json' );
 const LabelData = require( '../../../store/classes/LabelData.js' );
-const TypeSelector = require( '../../base/TypeSelector.vue' );
 const useMainStore = require( '../../../store/index.js' );
+
+// Base components
+const TypeSelector = require( '../../base/TypeSelector.vue' );
+// Codex components
+const { CdxButton, CdxField, CdxIcon, CdxTextInput } = require( '../../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-inputs-item',
@@ -85,12 +88,15 @@ module.exports = exports = defineComponent( {
 		'cdx-text-input': CdxTextInput
 	},
 	props: {
-		rowId: {
-			type: Number,
+		/**
+		 * Input data with key, type and label for the given language
+		 */
+		input: {
+			type: Object,
 			required: true
 		},
 		/**
-		 * Index for this input in the list of inputs (zero-lead)
+		 * Index for this input in the list of inputs (zero-lead, excluding benjamin item)
 		 */
 		index: {
 			type: Number,
@@ -129,18 +135,12 @@ module.exports = exports = defineComponent( {
 	},
 	data: function () {
 		return {
-			typeZid: Constants.Z_TYPE,
 			maxInputLabelChars: Constants.INPUT_CHARS_MAX,
 			remainingChars: Constants.INPUT_CHARS_MAX,
-			icons: icons
+			iconTrash: icons.cdxIconTrash
 		};
 	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getRowByKeyPath',
-		'getZArgumentLabelForLanguage',
-		'getZArgumentTypeRowId',
-		'getZMonolingualTextValue'
-	] ), {
+	computed: {
 		/**
 		 * Returns the label and index for the current input.
 		 * If not active, returns label, index and selected type.
@@ -150,26 +150,6 @@ module.exports = exports = defineComponent( {
 		inputFieldLabel: function () {
 			const inputNumber = this.index + 1;
 			return this.$i18n( 'wikilambda-function-viewer-details-input-number', inputNumber ).text();
-		},
-		/**
-		 * Returns the row of the input label in the given language
-		 * or undefined if not found.
-		 *
-		 * @return {Object|undefined}
-		 */
-		inputLabelRow: function () {
-			return this.getZArgumentLabelForLanguage( this.rowId, this.zLanguage );
-		},
-		/**
-		 * Returns the string value of the input label in the given
-		 * language or empty string if undefined.
-		 *
-		 * @return {string}
-		 */
-		inputLabel: function () {
-			return this.inputLabelRow ?
-				this.getZMonolingualTextValue( this.inputLabelRow.id ) :
-				'';
 		},
 		/**
 		 * Returns the title for the input label field
@@ -186,15 +166,6 @@ module.exports = exports = defineComponent( {
 		 */
 		inputLabelFieldPlaceholder: function () {
 			return this.$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text();
-		},
-		/**
-		 * Returns the row Id of the current input type
-		 * or undefined if not found.
-		 *
-		 * @return {number|undefined}
-		 */
-		inputTypeRowId: function () {
-			return this.getZArgumentTypeRowId( this.rowId );
 		},
 		/**
 		 * Returns the title for the input type field
@@ -214,11 +185,9 @@ module.exports = exports = defineComponent( {
 		inputTypeFieldPlaceholder: function () {
 			return this.$i18n( 'wikilambda-function-definition-inputs-item-selector-placeholder' ).text();
 		}
-	} ),
+	},
 	methods: Object.assign( {}, mapActions( useMainStore, [
-		'changeType',
-		'setValueByRowIdAndPath',
-		'removeItemFromTypedList'
+		'setZMonolingualString'
 	] ), {
 		/**
 		 * Updates the remainingChars data property as the user types into the Z2K2 field
@@ -230,10 +199,10 @@ module.exports = exports = defineComponent( {
 			this.remainingChars = this.maxInputLabelChars - length;
 		},
 		/**
-		 * Removes the input given by this rowId
+		 * Removes the input given by its index (zero-lead, excluding benjamin item)
 		 */
 		removeInput: function () {
-			this.$emit( 'remove', this.rowId );
+			this.$emit( 'remove', this.index );
 		},
 		/**
 		 * Persist the new input label in the globally stored object
@@ -241,42 +210,25 @@ module.exports = exports = defineComponent( {
 		 * @param {Object} event
 		 */
 		persistInputLabel: function ( event ) {
-			const value = event.target.value;
-			if ( this.inputLabelRow ) {
-				if ( value === '' ) {
-					this.removeItemFromTypedList( { rowId: this.inputLabelRow.id } );
-				} else {
-					this.setValueByRowIdAndPath( {
-						rowId: this.inputLabelRow.id,
-						keyPath: [
-							Constants.Z_MONOLINGUALSTRING_VALUE,
-							Constants.Z_STRING_VALUE
-						],
-						value
-					} );
-				}
-			} else {
-				// If this.inputLabelRow is undefined, there's no monolingual string
-				// for the given language, so we create a new monolingual string
-				// with the new value and append to the parent list.
-				const parentRow = this.getRowByKeyPath( [
+			this.setZMonolingualString( {
+				parentKeyPath: [
+					Constants.STORED_OBJECTS.MAIN,
+					Constants.Z_PERSISTENTOBJECT_VALUE,
+					Constants.Z_FUNCTION_ARGUMENTS,
+					String( this.index + 1 ),
 					Constants.Z_ARGUMENT_LABEL,
 					Constants.Z_MULTILINGUALSTRING_VALUE
-				], this.rowId );
-				this.changeType( {
-					id: parentRow.id,
-					type: Constants.Z_MONOLINGUALSTRING,
-					lang: this.zLanguage,
-					value,
-					append: true
-				} );
-			}
+				],
+				itemKeyPath: this.input ? this.input.keyPath : undefined,
+				value: event.target.value,
+				lang: this.zLanguage
+			} );
 			this.$emit( 'argument-label-updated' );
 		}
 	} ),
 	mounted: function () {
 		this.$nextTick( function () {
-			this.remainingChars = this.maxInputLabelChars - this.inputLabel.length;
+			this.remainingChars = this.maxInputLabelChars - ( this.input ? this.input.value.length : 0 );
 		} );
 	}
 } );

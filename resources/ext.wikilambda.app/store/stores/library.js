@@ -19,7 +19,6 @@ const {
 	getArgFromArgList,
 	isTruthyOrEqual
 } = require( '../../utils/typeUtils.js' );
-const { convertTableToJson } = require( '../../utils/zobjectUtils.js' );
 const { hybridToCanonical } = require( '../../utils/schemata.js' );
 
 const DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT = 300;
@@ -222,7 +221,7 @@ module.exports = {
 				const zobject = storedObject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
 
 				// If the zObject is not a type, return false
-				if ( zobject[ Constants.Z_OBJECT_TYPE ] !== Constants.Z_TYPE ) {
+				if ( !zobject || zobject[ Constants.Z_OBJECT_TYPE ] !== Constants.Z_TYPE ) {
 					return false;
 				}
 
@@ -264,6 +263,7 @@ module.exports = {
 				const zobject = storedObject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
 				// If the zObject is a function call and it is a Wikidata enum/Z6884, return true
 				return (
+					zobject &&
 					zobject[ Constants.Z_OBJECT_TYPE ] === Constants.Z_FUNCTION_CALL &&
 					zobject[ Constants.Z_FUNCTION_CALL_FUNCTION ] === Constants.Z_WIKIDATA_ENUM
 				);
@@ -766,7 +766,7 @@ module.exports = {
 		 * Updates the stored object in the Library with the current ZObject
 		 */
 		updateStoredObject: function () {
-			const zobject = hybridToCanonical( convertTableToJson( this.getZObjectTable ) );
+			const zobject = hybridToCanonical( this.getJsonObject( Constants.STORED_OBJECTS.MAIN ) );
 			const zid = this.getCurrentZObjectId;
 			this.setStoredObject( {
 				zid,

@@ -10,7 +10,7 @@
 'use strict';
 
 const Constants = require( '../Constants.js' );
-const { isTruthyOrEqual, getZObjectType } = require( './typeUtils.js' );
+const { isTruthyOrEqual, isValidZidFormat } = require( './typeUtils.js' );
 
 // Note: This is intentionally "wrong" in that it allows for Z0.
 // It excludes letters so as not to apply to keys (containing a 'K').
@@ -47,7 +47,11 @@ const schemataUtils = {
 				return Z9;
 			}
 
-			return '';
+			// { Z1K1: 'Z9', Z9K1: '' } should be kept as an object
+			return {
+				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+				[ Constants.Z_REFERENCE_ID ]: ''
+			};
 		}
 
 		// Given a typed list in normal form, convert its elements to canonical and return them in an array
@@ -135,7 +139,7 @@ const schemataUtils = {
 		if ( typeof zobject === 'undefined' ) {
 			return undefined;
 		} else if ( typeof zobject === 'string' ) {
-			if ( getZObjectType( zobject ) === Constants.Z_REFERENCE ) {
+			if ( isValidZidFormat( zobject ) ) {
 				hybrid = {
 					Z1K1: Constants.Z_REFERENCE,
 					Z9K1: zobject

@@ -37,26 +37,6 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 	} );
 
 	describe( 'Getters', () => {
-		describe( 'getLexemeIdRow', () => {
-			it( 'calls getWikidataEntityIdRow for lexemes', () => {
-				Object.defineProperty( store, 'getWikidataEntityIdRow', {
-					value: jest.fn()
-				} );
-				store.getLexemeIdRow( 10 );
-				expect( store.getWikidataEntityIdRow ).toHaveBeenCalledWith( 10, Constants.Z_WIKIDATA_LEXEME );
-			} );
-		} );
-
-		describe( 'getLexemeFormIdRow', () => {
-			it( 'calls getWikidataEntityIdRow for lexeme forms', () => {
-				Object.defineProperty( store, 'getWikidataEntityIdRow', {
-					value: jest.fn()
-				} );
-				store.getLexemeFormIdRow( 10 );
-				expect( store.getWikidataEntityIdRow ).toHaveBeenCalledWith( 10, Constants.Z_WIKIDATA_LEXEME_FORM );
-			} );
-		} );
-
 		describe( 'getLexemeData', () => {
 			it( 'returns undefined if lexeme is not available', () => {
 				const lexemeId = 'L333333';
@@ -91,60 +71,6 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 				const lexemeFormId = 'L333333-F5';
 				const expected = lexemeData.forms[ 0 ];
 				expect( store.getLexemeFormData( lexemeFormId ) ).toEqual( expected );
-			} );
-		} );
-
-		describe( 'getLexemeId', () => {
-			it( 'returns null when row is undefined', () => {
-				const rowId = undefined;
-				const expected = null;
-				expect( store.getLexemeId( rowId ) ).toEqual( expected );
-			} );
-
-			it( 'returns null when row is not found', () => {
-				const rowId = 100;
-				const expected = null;
-				expect( store.getLexemeId( rowId ) ).toEqual( expected );
-			} );
-
-			it( 'returns lexeme ID when row is found', () => {
-				const rowId = 1;
-				const expected = 'L333333';
-				Object.defineProperty( store, 'getLexemeIdRow', {
-					value: jest.fn().mockReturnValue( 3 )
-				} );
-				Object.defineProperty( store, 'getZStringTerminalValue', {
-					value: jest.fn().mockReturnValue( expected )
-				} );
-
-				expect( store.getLexemeId( rowId ) ).toEqual( expected );
-			} );
-		} );
-
-		describe( 'getLexemeFormId', () => {
-			it( 'returns null when row is undefined', () => {
-				const rowId = undefined;
-				const expected = null;
-				expect( store.getLexemeFormId( rowId ) ).toEqual( expected );
-			} );
-
-			it( 'returns null when row is not found', () => {
-				const rowId = 100;
-				const expected = null;
-				expect( store.getLexemeFormId( rowId ) ).toEqual( expected );
-			} );
-
-			it( 'returns lexeme form ID when row is found', () => {
-				const rowId = 1;
-				const expected = 'L333333-F5';
-				Object.defineProperty( store, 'getLexemeFormIdRow', {
-					value: jest.fn().mockReturnValue( 4 )
-				} );
-				Object.defineProperty( store, 'getZStringTerminalValue', {
-					value: jest.fn().mockReturnValue( expected )
-				} );
-
-				expect( store.getLexemeFormId( rowId ) ).toEqual( expected );
 			} );
 		} );
 

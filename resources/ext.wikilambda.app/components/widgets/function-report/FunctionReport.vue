@@ -27,17 +27,17 @@
 		<template #main>
 			<div v-if="hasItems">
 				<div
-					v-for="item in zIds"
+					v-for="item in zids"
 					:key="item"
 					class="ext-wikilambda-app-function-report-widget__items"
 				>
 					<wl-function-report-item
 						class="ext-wikilambda-app-function-report-widget__result"
-						:z-function-id="zFunctionId"
-						:z-implementation-id="isImplementationReport ? zImplementationId : item"
-						:z-tester-id="isTesterReport ? zTesterId : item"
+						:function-zid="functionZid"
+						:implementation-zid="isImplementationReport ? implementationZid : item"
+						:tester-zid="isTesterReport ? testerZid : item"
 						:fetching="fetching"
-						:report-type="reportType"
+						:content-type="contentType"
 						@set-keys="openMetricsDialog"
 					></wl-function-report-item>
 				</div>
@@ -59,15 +59,20 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
-const { CdxButton, CdxIcon } = require( '../../../../codex.js' );
+
 const Constants = require( '../../../Constants.js' );
-const FunctionMetadataDialog = require( '../function-evaluator/FunctionMetadataDialog.vue' );
-const FunctionReportItem = require( './FunctionReportItem.vue' );
 const icons = require( '../../../../lib/icons.json' );
 const typeMixin = require( '../../../mixins/typeMixin.js' );
 const { arraysAreEqual } = require( '../../../utils/miscUtils.js' );
 const useMainStore = require( '../../../store/index.js' );
+
+// Base components
 const WidgetBase = require( '../../base/WidgetBase.vue' );
+// Widget components
+const FunctionMetadataDialog = require( '../function-evaluator/FunctionMetadataDialog.vue' );
+const FunctionReportItem = require( './FunctionReportItem.vue' );
+// Codex components
+const { CdxButton, CdxIcon } = require( '../../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-report-widget',
@@ -83,30 +88,27 @@ module.exports = exports = defineComponent( {
 		viewmode: { default: false }
 	},
 	props: {
-		reportType: {
-			type: String,
-			required: true
-		},
-		zFunctionId: {
+		functionZid: {
 			type: String,
 			required: false,
-			default: ''
+			default: undefined
 		},
-		rootZid: {
+		contentType: {
 			type: String,
 			required: true
 		}
 	},
 	data: function () {
 		return {
-			activeZImplementationId: null,
-			activeZTesterId: null,
+			activeImplementationZid: null,
+			activeTesterZid: null,
 			errorId: Constants.ERROR_IDS.TEST_RESULTS,
 			showMetrics: false,
 			fetching: false
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
+		'getCurrentZObjectId',
 		'getLabelData',
 		'getStoredObject',
 		'getZTesterMetadata'
@@ -118,7 +120,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Array}
 		 */
-		zIds: function () {
+		zids: function () {
 			return this.isTesterReport ? this.implementations : this.testers;
 		},
 
@@ -128,7 +130,7 @@ module.exports = exports = defineComponent( {
 		 * @return {boolean}
 		 */
 		hasItems: function () {
-			return ( this.zFunctionId && ( this.zIds.length > 0 ) );
+			return ( this.functionZid && ( this.zids.length > 0 ) );
 		},
 
 		/**
@@ -137,7 +139,7 @@ module.exports = exports = defineComponent( {
 		 * @return {boolean}
 		 */
 		isImplementationReport: function () {
-			return this.reportType === Constants.Z_IMPLEMENTATION;
+			return this.contentType === Constants.Z_IMPLEMENTATION;
 		},
 
 		/**
@@ -146,7 +148,7 @@ module.exports = exports = defineComponent( {
 		 * @return {boolean}
 		 */
 		isTesterReport: function () {
-			return this.reportType === Constants.Z_TESTER;
+			return this.contentType === Constants.Z_TESTER;
 		},
 
 		/**
@@ -155,8 +157,8 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string|null}
 		 */
-		zImplementationId: function () {
-			return this.isImplementationReport ? this.rootZid : null;
+		implementationZid: function () {
+			return this.isImplementationReport ? this.getCurrentZObjectId : null;
 		},
 
 		/**
@@ -165,8 +167,8 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string|null}
 		 */
-		zTesterId: function () {
-			return this.isTesterReport ? this.rootZid : null;
+		testerZid: function () {
+			return this.isTesterReport ? this.getCurrentZObjectId : null;
 		},
 
 		/**
@@ -176,13 +178,13 @@ module.exports = exports = defineComponent( {
 		 * @return {Array}
 		 */
 		implementations: function () {
-			const functionObject = this.getStoredObject( this.zFunctionId );
-			if ( !this.zFunctionId || !functionObject ) {
+			const functionObject = this.getStoredObject( this.functionZid );
+			if ( !this.functionZid || !functionObject ) {
 				return [];
 			}
 
-			if ( this.zImplementationId ) {
-				return [ this.zImplementationId ];
+			if ( this.implementationZid ) {
+				return [ this.implementationZid ];
 			} else {
 				const fetched = functionObject[
 					Constants.Z_PERSISTENTOBJECT_VALUE ][
@@ -199,13 +201,13 @@ module.exports = exports = defineComponent( {
 		 * @return {Array}
 		 */
 		testers: function () {
-			const functionObject = this.getStoredObject( this.zFunctionId );
-			if ( !this.zFunctionId || !functionObject ) {
+			const functionObject = this.getStoredObject( this.functionZid );
+			if ( !this.functionZid || !functionObject ) {
 				return [];
 			}
 
-			if ( this.zTesterId ) {
-				return [ this.zTesterId ];
+			if ( this.testerZid ) {
+				return [ this.testerZid ];
 			} else {
 				const fetched = functionObject[
 					Constants.Z_PERSISTENTOBJECT_VALUE ][
@@ -219,15 +221,15 @@ module.exports = exports = defineComponent( {
 		 * Returns the metadata object for the current open metrics dialog;
 		 * else, returns null
 		 *
-		 * @return {Object | null}
+		 * @return {Object|undefined}
 		 */
 		metadata: function () {
-			return ( this.activeZTesterId && this.activeZImplementationId ) ?
+			return ( this.activeTesterZid && this.activeImplementationZid ) ?
 				this.getZTesterMetadata(
-					this.zFunctionId,
-					this.activeZTesterId,
-					this.activeZImplementationId ) :
-				null;
+					this.functionZid,
+					this.activeTesterZid,
+					this.activeImplementationZid ) :
+				undefined;
 		},
 
 		/**
@@ -236,8 +238,8 @@ module.exports = exports = defineComponent( {
 		 * @return {LabelData|undefined}
 		 */
 		activeImplementationLabelData: function () {
-			return this.activeZImplementationId ?
-				this.getLabelData( this.activeZImplementationId ) :
+			return this.activeImplementationZid ?
+				this.getLabelData( this.activeImplementationZid ) :
 				undefined;
 		},
 
@@ -283,16 +285,16 @@ module.exports = exports = defineComponent( {
 		 * @param {Object} keys
 		 */
 		openMetricsDialog: function ( keys ) {
-			this.activeZImplementationId = keys.zImplementationId;
-			this.activeZTesterId = keys.zTesterId;
+			this.activeImplementationZid = keys.implementationZid;
+			this.activeTesterZid = keys.testerZid;
 			this.showMetrics = true;
 		},
 		/**
 		 * Closes the metrics dialog
 		 */
 		closeMetricsDialog: function () {
-			this.activeZImplementationId = null;
-			this.activeZTesterId = null;
+			this.activeImplementationZid = null;
+			this.activeTesterZid = null;
 			this.showMetrics = false;
 		},
 		/**
@@ -301,7 +303,7 @@ module.exports = exports = defineComponent( {
 		runTesters: function () {
 			this.fetching = true;
 			this.getTestResults( {
-				zFunctionId: this.zFunctionId,
+				zFunctionId: this.functionZid,
 				zImplementations: this.implementations,
 				zTesters: this.testers,
 				clearPreviousResults: true
@@ -314,11 +316,13 @@ module.exports = exports = defineComponent( {
 		 * but not when we are in a new implementation or test page
 		 */
 		runInitialCall: function () {
-			if ( this.rootZid && this.rootZid !== Constants.NEW_ZID_PLACEHOLDER ) {
+			if (
+				this.getCurrentZObjectId &&
+				this.getCurrentZObjectId !== Constants.NEW_ZID_PLACEHOLDER
+			) {
 				this.runTesters();
 			}
 		}
-
 	} ),
 	watch: {
 		implementations: function ( newValue, oldValue ) {
@@ -326,7 +330,11 @@ module.exports = exports = defineComponent( {
 				this.fetchZids( { zids: this.implementations } );
 				// re-run the tests when the user changes the implementation's function Zid,
 				// except when creating a new implementation object (then only run on demand)
-				if ( oldValue.length && this.rootZid && this.rootZid !== Constants.NEW_ZID_PLACEHOLDER ) {
+				if (
+					oldValue.length &&
+					this.getCurrentZObjectId &&
+					this.getCurrentZObjectId !== Constants.NEW_ZID_PLACEHOLDER
+				) {
 					this.runTesters();
 				}
 			}
@@ -336,7 +344,11 @@ module.exports = exports = defineComponent( {
 				this.fetchZids( { zids: this.testers } );
 				// re-run the tests when the user changes the test's function Zid,
 				// except when creating a new test object (then only run on demand)
-				if ( oldValue.length && this.rootZid && this.rootZid !== Constants.NEW_ZID_PLACEHOLDER ) {
+				if (
+					oldValue.length &&
+					this.getCurrentZObjectId &&
+					this.getCurrentZObjectId !== Constants.NEW_ZID_PLACEHOLDER
+				) {
 					this.runTesters();
 				}
 			}

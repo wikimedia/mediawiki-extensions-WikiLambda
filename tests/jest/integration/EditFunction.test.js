@@ -12,7 +12,6 @@ require( '@testing-library/jest-dom' );
 
 const Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' );
 const App = require( '../../../resources/ext.wikilambda.app/components/App.vue' );
-const PublishDialog = require( '../../../resources/ext.wikilambda.app/components/widgets/publish/PublishDialog.vue' );
 const { chipInputAddChip, lookupSearchAndSelect, textInputChange } = require( './helpers/interactionHelpers.js' );
 const { runSetup, runTeardown } = require( './helpers/functionEditorTestHelpers.js' );
 const existingFunctionFromApi = require( './objects/existingFunctionFromApi.js' );
@@ -34,11 +33,6 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 		};
 		const setupResult = runSetup( pageConfig );
 		apiPostWithEditTokenMock = setupResult.apiPostWithEditTokenMock;
-
-		// Mock the navigateToPage method in PublishDialog.vue to suppress navigation errors from JSDOM
-		if ( PublishDialog && PublishDialog.methods ) {
-			jest.spyOn( PublishDialog.methods, 'navigateToPage' ).mockImplementation( () => {} );
-		}
 	} );
 
 	afterEach( () => {
@@ -121,33 +115,30 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 		const frenchAliasBlock = await within( frenchBlock ).findByTestId( 'function-editor-alias-input' );
 		await chipInputAddChip( frenchAliasBlock, 'function alias, in French' );
 
-		// TODO: Remove settimeout and use jest.useFakeTimers instead
-		setTimeout( async () => {
-			// ACT: Click publish button.
-			await fireEvent.click( getByText( 'Publish' ) );
+		// ACT: Click publish button.
+		await fireEvent.click( getByText( 'Publish' ) );
 
-			// ACT: Add a summary of your changes.
-			publishDialog = await findByRole( 'dialog' );
-			await fireEvent.update(
-				within( publishDialog ).getByLabelText( 'How did you improve this page?' ),
-				'my changes summary' );
+		// ACT: Add a summary of your changes.
+		publishDialog = await findByRole( 'dialog' );
+		await fireEvent.update(
+			within( publishDialog ).getByLabelText( 'How did you improve this page?' ),
+			'my changes summary' );
 
-			// ACT: Click publish button in dialog.
-			await fireEvent.click( within( publishDialog ).getByText( 'Publish' ) );
+		// ACT: Click publish button in dialog.
+		await fireEvent.click( within( publishDialog ).getByText( 'Publish' ) );
 
-			// ASSERT: Location is changed to page returned by API.
-			await waitFor( () => expect( window.location.href ).toEqual( '/view/en/newPage?success=true' ) );
+		// ASSERT: Location is changed to page returned by API.
+		await waitFor( () => expect( window.location.href ).toEqual( '/view/en/newPage?success=true' ) );
 
-			// ASSERT: Correct ZID and ZObject were posted to the API.
-			expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {
-				action: 'wikilambda_edit',
-				format: 'json',
-				formatversion: '2',
-				uselang: 'en',
-				summary: 'my changes summary',
-				zid: functionZid,
-				zobject: JSON.stringify( expectedEditedFunctionPostedToApi )
-			} );
-		}, 100 );
+		// ASSERT: Correct ZID and ZObject were posted to the API.
+		expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {
+			action: 'wikilambda_edit',
+			format: 'json',
+			formatversion: '2',
+			uselang: 'en',
+			summary: 'my changes summary',
+			zid: functionZid,
+			zobject: JSON.stringify( expectedEditedFunctionPostedToApi )
+		} );
 	} );
 } );

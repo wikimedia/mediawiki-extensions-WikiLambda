@@ -10,25 +10,35 @@ const { CdxRadio } = require( '@wikimedia/codex' );
 const { shallowMount } = require( '@vue/test-utils' );
 
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
-const ZBoolean = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZBoolean.vue' );
+const ZBoolean = require( '../../../../resources/ext.wikilambda.app/components/types/ZBoolean.vue' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
-const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../helpers/getterHelpers.js' );
+const { createLabelDataMock } = require( '../../helpers/getterHelpers.js' );
+
+// General use
+const keyPath = 'main.Z2K2';
+const objectValue = {
+	Z1K1: { Z1K1: 'Z9', Z9K1: 'Z40' },
+	Z40K1: { Z1K1: 'Z9', Z9K1: 'Z42' }
+};
 
 describe( 'ZBoolean', () => {
 	let store;
+
 	beforeEach( () => {
 		store = useMainStore();
-		store.getZBooleanValue = createGettersWithFunctionsMock( 'Z42' );
+		store.getUserLangCode = 'en';
 		store.getLabelData = createLabelDataMock( {
 			Z41: 'true',
 			Z42: 'false'
 		} );
-		store.getUserLangCode = 'en';
 	} );
+
 	describe( 'in view mode', () => {
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( ZBoolean, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false
 				}
 			} );
@@ -39,6 +49,8 @@ describe( 'ZBoolean', () => {
 		it( 'does not load the radio codex component', () => {
 			const wrapper = shallowMount( ZBoolean, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false
 				}
 			} );
@@ -49,6 +61,8 @@ describe( 'ZBoolean', () => {
 		it( 'displays the boolean value label', () => {
 			const wrapper = shallowMount( ZBoolean, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false
 				}
 			} );
@@ -62,6 +76,8 @@ describe( 'ZBoolean', () => {
 		it( 'loads the radio codex component', () => {
 			const wrapper = shallowMount( ZBoolean, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true
 				}
 			} );
@@ -72,6 +88,8 @@ describe( 'ZBoolean', () => {
 		it( 'changes the boolean value when selected', async () => {
 			const wrapper = shallowMount( ZBoolean, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true
 				}
 			} );

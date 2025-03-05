@@ -7,7 +7,6 @@
 'use strict';
 
 const { shallowMount } = require( '@vue/test-utils' );
-const { createGettersWithFunctionsMock } = require( '../../../helpers/getterHelpers.js' );
 const FunctionEditor = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditor.vue' );
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 
@@ -17,12 +16,15 @@ describe( 'FunctionEditor', () => {
 	beforeEach( () => {
 		store = useMainStore();
 		store.getCurrentZObjectId = 'Z0';
-		store.getRowByKeyPath = createGettersWithFunctionsMock();
 		store.getUserLangZid = 'Z1002';
-		store.getZFunctionInputs = createGettersWithFunctionsMock( [] );
-		store.getMultilingualDataLanguages = createGettersWithFunctionsMock( [ 'Z1002', 'Z1004' ] );
-		store.getZFunctionOutput = createGettersWithFunctionsMock( { id: 2 } );
-		store.getZObjectAsJsonById = createGettersWithFunctionsMock( 'Z6' );
+		store.getConnectedImplementations = [];
+		store.getConnectedTests = [];
+		store.getMultilingualDataLanguages = { all: [ 'Z1002', 'Z1004' ] };
+		store.getZFunctionInputs = [
+			{ Z1K1: { Z1K1: 'Z9', Z9K1: 'Z17' }, Z17K1: { Z1K1: 'Z9', Z9K1: 'Z6' } },
+			{ Z1K1: { Z1K1: 'Z9', Z9K1: 'Z17' }, Z17K1: { Z1K1: 'Z9', Z9K1: 'Z6' } }
+		];
+		store.getZFunctionOutput = { Z1K1: 'Z9', Z9K1: 'Z6' };
 		store.isCreateNewPage = true;
 	} );
 
@@ -57,13 +59,9 @@ describe( 'FunctionEditor', () => {
 
 	describe( 'function editor to create new function', () => {
 		beforeEach( () => {
-			store.getCurrentZObjectId = 'Z0';
-			store.getRowByKeyPath = createGettersWithFunctionsMock();
-			store.getUserLangZid = 'Z1002';
-			store.getZFunctionInputs = createGettersWithFunctionsMock( [] );
-			store.getMultilingualDataLanguages = createGettersWithFunctionsMock( [] );
-			store.getZFunctionOutput = createGettersWithFunctionsMock( undefined );
-			store.getZObjectAsJsonById = createGettersWithFunctionsMock( 'Z6' );
+			store.getZFunctionInputs = [];
+			store.getZFunctionOutput = { Z1K1: 'Z9', Z9K1: '' };
+			store.getMultilingualDataLanguages = { all: [] };
 			store.isCreateNewPage = true;
 		} );
 

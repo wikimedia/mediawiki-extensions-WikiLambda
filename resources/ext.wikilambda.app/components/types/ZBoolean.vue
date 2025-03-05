@@ -17,11 +17,12 @@
 		<template v-else>
 			<cdx-radio
 				v-for="radio in radioChoices"
-				:key="'radio-' + radio.value"
+				:key="`radio-${ radio.value }`"
 				v-model="value"
+				:name="keyPath"
 				:input-value="radio.value"
-				:name="'boolean-radios-' + rowId"
 				:inline="true"
+				:disabled="disabled"
 			>
 				<span
 					:lang="radio.labelData.langCode"
@@ -33,39 +34,48 @@
 </template>
 
 <script>
-const { CdxRadio } = require( '../../../codex.js' );
 const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
-const urlUtils = require( '../../utils/urlUtils.js' );
 
 const Constants = require( '../../Constants.js' );
+const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
 const useMainStore = require( '../../store/index.js' );
+const urlUtils = require( '../../utils/urlUtils.js' );
+
+// Codex components
+const { CdxRadio } = require( '../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-boolean',
 	components: {
 		'cdx-radio': CdxRadio
 	},
+	mixins: [ zobjectMixin ],
 	props: {
-		rowId: {
-			type: Number,
-			required: false,
-			default: 0
+		keyPath: {
+			type: String,
+			required: true
+		},
+		objectValue: {
+			type: Object,
+			required: true
 		},
 		edit: {
 			type: Boolean,
 			required: true
+		},
+		disabled: {
+			type: Boolean,
+			default: false
 		}
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
 		'getLabelData',
-		'getZBooleanValue',
 		'getUserLangCode'
-	] ),
-	{
+	] ), {
 		value: {
 			get: function () {
-				return this.getZBooleanValue( this.rowId );
+				return this.getZBooleanValue( this.objectValue );
 			},
 			set: function ( value ) {
 				this.$emit( 'set-value', {

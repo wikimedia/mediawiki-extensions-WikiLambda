@@ -7,8 +7,6 @@
 'use strict';
 
 const { createPinia, setActivePinia } = require( 'pinia' );
-const { tableDataToRowObjects } = require( '../../helpers/zObjectTableHelpers.js' );
-const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 
 const functionCall = {
@@ -37,46 +35,9 @@ describe( 'functionCall Pinia store', () => {
 	} );
 
 	describe( 'Actions', () => {
-		describe( 'initializeResultId', () => {
-			beforeEach( () => {
-				store.pushRow = jest.fn();
-				store.removeRowChildren = jest.fn();
-				store.zobject = tableDataToRowObjects( [
-					{ id: 0, key: undefined, parent: undefined, value: Constants.ROW_VALUE_OBJECT },
-					{ id: 1, key: 'Z1K1', parent: 0, value: 'Z6' },
-					{ id: 2, key: 'Z6K1', parent: 0, value: 'not a map' }
-				] );
-			} );
-
-			it( 'adds a detached row when rowId is not a valid row', () => {
-				const payload = '';
-				const expectedObject = {
-					id: 3,
-					key: undefined,
-					parent: undefined,
-					value: Constants.ROW_VALUE_OBJECT
-				};
-
-				const rowId = store.initializeResultId( payload );
-
-				expect( rowId ).toBe( 3 );
-				expect( store.pushRow ).toHaveBeenCalledWith( expectedObject );
-				expect( store.removeRowChildren ).not.toHaveBeenCalled();
-			} );
-
-			it( 'removes children when rowId is a valid row', () => {
-				const payload = 0;
-				const rowId = store.initializeResultId( payload );
-
-				expect( rowId ).toBe( 0 );
-				expect( store.pushRow ).not.toHaveBeenCalled();
-				expect( store.removeRowChildren ).toHaveBeenCalledWith( { rowId: 0 } );
-			} );
-		} );
-
 		describe( 'callZFunction', () => {
 			it( 'calls MW API for function orchestration; sets orchestrationResult', async () => {
-				store.injectZObjectFromRowId = jest.fn();
+				store.setValueByKeyPath = jest.fn();
 				store.fetchZids = jest.fn();
 
 				const expectedData = '{ "Z1K1": "Z6", "Z6K1": "present" }';
@@ -88,7 +49,7 @@ describe( 'functionCall Pinia store', () => {
 
 				await store.callZFunction( { functionCall } );
 
-				expect( store.injectZObjectFromRowId ).toHaveBeenCalled();
+				expect( store.setValueByKeyPath ).toHaveBeenCalled();
 				expect( store.fetchZids ).toHaveBeenCalled();
 				expect( postMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_function_call',
@@ -129,7 +90,7 @@ describe( 'functionCall Pinia store', () => {
 				} );
 
 				expect( store.setError ).toHaveBeenCalledWith( {
-					errorCode: undefined,
+					errorId: 'response',
 					errorMessage: 'one tissue, used',
 					errorType: 'error'
 				} );

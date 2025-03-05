@@ -7,14 +7,13 @@
 'use strict';
 
 const Constants = require( '../../../Constants.js' );
-const { extractZIDs } = require( '../../../utils/schemata.js' );
+const { getParameterByName } = require( '../../../utils/urlUtils.js' );
 const {
 	getScaffolding,
 	initializePayloadForType,
 	isGenericType,
 	isTruthyOrEqual
 } = require( '../../../utils/typeUtils.js' );
-const { getParameterByName } = require( '../../../utils/urlUtils.js' );
 
 module.exports = {
 	state: {},
@@ -30,7 +29,6 @@ module.exports = {
 			/**
 			 * @param {Object} payload
 			 * @param {string} payload.type the type of the new object to add
-			 * @param {number} payload.id the parent rowId for the new object
 			 * @param {Object} payload.value initialization values
 			 * @param {boolean} payload.append whether to append the new zobject to a list
 			 * @param {boolean} payload.literal force create a literal object: on root initialization and
@@ -50,8 +48,7 @@ module.exports = {
 				// * initializing key values
 				// * adding new items to a list
 				if ( keyList.includes( payload.type ) || ( !payload.literal && (
-					Constants.LINKED_TYPES.includes( payload.type ) ||
-                    this.isCustomEnum( payload.type )
+					Constants.LINKED_TYPES.includes( payload.type ) || this.isCustomEnum( payload.type )
 				) ) ) {
 					return this.createZReference( payload );
 				}
@@ -243,7 +240,6 @@ module.exports = {
 		createZMonolingualString: function () {
 			/**
 			 * @param {Object} payload
-			 * @param {number} payload.id
 			 * @param {string} payload.value string value of the monolingual string
 			 * @param {string} payload.lang zid of the language for the monolingual string
 			 * @param {boolean} payload.append
@@ -278,7 +274,6 @@ module.exports = {
 		createZMonolingualStringSet: function () {
 			/**
 			 * @param {Object} payload
-			 * @param {number} payload.id
 			 * @param {Array} payload.value Array list of strings for the list
 			 * @param {string} payload.lang zid of the language for the first monolingual string
 			 * @param {boolean} payload.append
@@ -316,7 +311,6 @@ module.exports = {
 		createZMultilingualString: function () {
 			/**
 			 * @param {Object} payload
-			 * @param {number} payload.id
 			 * @param {string} payload.value string value of the first monolingual string
 			 * @param {string} payload.lang zid of the language for the first monolingual string
 			 * @param {number} payload.append
@@ -353,7 +347,6 @@ module.exports = {
 		createZString: function () {
 			/**
 			 * @param {Object} payload
-			 * @param {number} payload.id
 			 * @param {string} payload.value
 			 * @param {boolean} payload.append
 			 * @return {Object}
@@ -379,7 +372,6 @@ module.exports = {
 		createZReference: function () {
 			/**
 			 * @param {Object} payload
-			 * @param {number} payload.id
 			 * @param {string} payload.value
 			 * @param {boolean} payload.append
 			 * @return {Object}
@@ -442,7 +434,6 @@ module.exports = {
 		createZBoolean: function () {
 			/**
 			 * @param {Object} payload
-			 * @param {number} payload.id
 			 * @param {string} payload.value
 			 * @param {boolean} payload.append
 			 * @return {Object}
@@ -497,7 +488,6 @@ module.exports = {
 		createZArgument: function () {
 			/**
 			 * @param {Object} payload
-			 * @param {number} payload.id
 			 * @param {string} payload.value
 			 * @param {boolean} payload.append
 			 * @return {Object}
@@ -522,7 +512,6 @@ module.exports = {
 		createZFunctionCall: function () {
 			/**
 			 * @param {Object} payload
-			 * @param {number} payload.id
 			 * @param {string} payload.value Zid of the function to call
 			 * @param {boolean} payload.append
 			 * @return {Object}
@@ -659,7 +648,6 @@ module.exports = {
 		createZTypedList: function () {
 			/**
 			 * @param {Object} payload
-			 * @param {number} payload.id
 			 * @param {string} payload.value
 			 * @param {boolean} payload.append
 			 * @return {Object}
@@ -693,7 +681,6 @@ module.exports = {
 		createZTypedPair: function () {
 			/**
 			 * @param {Object} payload
-			 * @param {number} payload.id
 			 * @param {Object} payload.values
 			 * @param {boolean} payload.isDeclaration This is used know if the values need to be initialized or not
 			 * @param {boolean} payload.append
@@ -735,7 +722,6 @@ module.exports = {
 			/**
 			 * @param {Object} payload
 			 * @param {string} payload.values
-			 * @param {number} payload.id
 			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
@@ -833,55 +819,5 @@ module.exports = {
 		}
 	},
 
-	actions: {
-		/**
-		 * Changes the type, inserts or append a specific zObject given its type.
-		 *
-		 * @param {Object} payload
-		 * @param {string} payload.type the type of the new object to add
-		 * @param {number} payload.id the parent rowId for the new object
-		 * @param {boolean} payload.append whether to append the new zobject to a list
-		 * @param {boolean} payload.literal force create a literal object: on root initialization and
-		 * mode selector explicit request
-		 * @param {Object} payload.value initialization values
-		 * @return {Promise}
-		 */
-		changeType: function ( payload ) {
-			const rootRowId = this.getZPersistentContentRowId();
-
-			// Set isRoot flag if we are changing the direct child of Z2K2
-			// Adds a new object so spyOn can be used to test the function
-			const object = Object.assign( {}, payload, { isRoot: rootRowId === payload.id } );
-			// Build the expected value to assign
-			const value = this.createObjectByType( object );
-
-			// Asynchronously fetch the necessary zids. We don't need to wait
-			// to the fetch call because these will only be needed for labels.
-			const zids = extractZIDs( value );
-			this.fetchZids( { zids } );
-
-			// Inject (replace or append) the value from a given row ID
-			return this.injectZObjectFromRowId( {
-				rowId: object.id,
-				value,
-				append: object.append || false
-			} );
-		},
-
-		/**
-		 * Clears the type, keeping the key Z1K1 and removing all other keys
-		 * given a parent rowId
-		 *
-		 * @param {number} rowId
-		 */
-		clearType: function ( rowId ) {
-			// Get children
-			const children = this.getChildrenByParentRowId( rowId );
-			// Exclude type key
-			const keys = children.filter( ( row ) => row.key !== Constants.Z_OBJECT_TYPE );
-			for ( const row of keys ) {
-				this.removeRowChildren( { rowId: row.id, removeParent: true } );
-			}
-		}
-	}
+	actions: {}
 };

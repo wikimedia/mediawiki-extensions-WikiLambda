@@ -1,32 +1,32 @@
 <!--
-	WikiLambda Vue component for Z6002/Wikidata Properties.
+	WikiLambda Vue component for Z6005/Wikidata Lexemes.
 
 	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 	@license MIT
 -->
 <template>
 	<div
-		class="ext-wikilambda-app-wikidata-property"
-		data-testid="wikidata-property">
-		<div v-if="!edit" class="ext-wikilambda-app-wikidata-property__read">
+		class="ext-wikilambda-app-wikidata-lexeme"
+		data-testid="wikidata-lexeme">
+		<div v-if="!edit" class="ext-wikilambda-app-wikidata-lexeme__read">
 			<cdx-icon
 				:icon="wikidataIcon"
-				class="ext-wikilambda-app-wikidata-property__wd-icon"
+				class="ext-wikilambda-app-wikidata-lexeme__wd-icon"
 			></cdx-icon>
 			<a
-				v-if="propertyLabelData"
-				class="ext-wikilambda-app-wikidata-property__link"
-				:href="propertyUrl"
-				:lang="propertyLabelData.langCode"
-				:dir="propertyLabelData.langDir"
+				v-if="lexemeLabelData"
+				class="ext-wikilambda-app-wikidata-lexeme__link"
+				:href="lexemeUrl"
+				:lang="lexemeLabelData.langCode"
+				:dir="lexemeLabelData.langDir"
 				target="_blank"
-			>{{ propertyLabelData.label }}</a>
+			>{{ lexemeLabelData.label }}</a>
 		</div>
 		<wl-wikidata-entity-selector
 			v-else
-			:entity-id="propertyId"
-			:entity-label="propertyLabel"
-			:type="propertyType"
+			:entity-id="lexemeId"
+			:entity-label="lexemeLabel"
+			:type="lexemeType"
 			@select-wikidata-entity="onSelect"
 		></wl-wikidata-entity-selector>
 	</div>
@@ -35,24 +35,33 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
+
+const wikidataIconSvg = require( './wikidataIconSvg.js' );
 const Constants = require( '../../../Constants.js' );
+const zobjectMixin = require( '../../../mixins/zobjectMixin.js' );
 const useMainStore = require( '../../../store/index.js' );
 const LabelData = require( '../../../store/classes/LabelData.js' );
+
+// Wikidata components
 const WikidataEntitySelector = require( './EntitySelector.vue' );
+// Codex components
 const { CdxIcon } = require( '../../../../codex.js' );
-const wikidataIconSvg = require( './wikidataIconSvg.js' );
 
 module.exports = exports = defineComponent( {
-	name: 'wl-wikidata-property',
+	name: 'wl-wikidata-lexeme',
 	components: {
-		'cdx-icon': CdxIcon,
-		'wl-wikidata-entity-selector': WikidataEntitySelector
+		'wl-wikidata-entity-selector': WikidataEntitySelector,
+		'cdx-icon': CdxIcon
 	},
+	mixins: [ zobjectMixin ],
 	props: {
-		rowId: {
-			type: Number,
-			required: false,
-			default: 0
+		keyPath: { // eslint-disable-line vue/no-unused-properties
+			type: String,
+			required: true
+		},
+		objectValue: {
+			type: Object,
+			required: true
 		},
 		edit: {
 			type: Boolean,
@@ -66,51 +75,49 @@ module.exports = exports = defineComponent( {
 	data: function () {
 		return {
 			wikidataIcon: wikidataIconSvg,
-			propertyType: Constants.Z_WIKIDATA_PROPERTY
+			lexemeType: Constants.Z_WIKIDATA_LEXEME
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
-		'getPropertyId',
-		'getPropertyLabelData',
-		'getPropertyUrl'
+		'getLexemeLabelData',
+		'getLexemeUrl'
 	] ), {
 		/**
-		 * Returns the Wikidata Property Id string value, if any Property is selected.
-		 * Else returns null.
-		 *
-		 * @return {string|null}
-		 */
-		propertyId: function () {
-			return this.getPropertyId( this.rowId );
-		},
-		/**
-		 * Returns the Wikidata URL for the selected Property.
+		 * Returns the Lexeme Id string value, if any Lexeme is selected.
 		 *
 		 * @return {string|undefined}
 		 */
-		propertyUrl: function () {
-			return this.getPropertyUrl( this.propertyId );
+		lexemeId: function () {
+			return this.getWikidataEntityId( this.objectValue, this.lexemeType );
 		},
 		/**
-		 * Returns the LabelData object for the selected Property.
+		 * Returns the Wikidata URL for the selected Lexeme.
+		 *
+		 * @return {string|undefined}
+		 */
+		lexemeUrl: function () {
+			return this.getLexemeUrl( this.lexemeId );
+		},
+		/**
+		 * Returns the LabelData object for the selected Lexeme.
 		 *
 		 * @return {LabelData|undefined}
 		 */
-		propertyLabelData: function () {
-			return this.getPropertyLabelData( this.propertyId );
+		lexemeLabelData: function () {
+			return this.getLexemeLabelData( this.lexemeId );
 		},
 		/**
-		 * Returns the string label of the selected Wikidata Property or
+		 * Returns the string label of the selected Lexeme or
 		 * an empty string if none is selected.
 		 *
 		 * @return {string}
 		 */
-		propertyLabel: function () {
-			return this.propertyLabelData ? this.propertyLabelData.label : '';
+		lexemeLabel: function () {
+			return this.lexemeLabelData ? this.lexemeLabelData.label : '';
 		}
 	} ),
 	methods: Object.assign( {}, mapActions( useMainStore, [
-		'fetchProperties'
+		'fetchLexemes'
 	] ), {
 		/**
 		 * Emit a set-value event to persist in the store
@@ -122,16 +129,16 @@ module.exports = exports = defineComponent( {
 		 * @param {string|null} value
 		 */
 		onSelect: function ( value ) {
-			// If type is Wikidata Reference:
+			// If type is Wikidata Entity Reference:
 			// * Set Reference Id
 			// Else (type is Function Call):
 			// * Set Reference Id of the Fetch Function Id argument
-			const keyPath = ( this.type === Constants.Z_WIKIDATA_REFERENCE_PROPERTY ) ? [
-				Constants.Z_WIKIDATA_REFERENCE_PROPERTY_ID,
+			const keyPath = ( this.type === Constants.Z_WIKIDATA_REFERENCE_LEXEME ) ? [
+				Constants.Z_WIKIDATA_REFERENCE_LEXEME_ID,
 				Constants.Z_STRING_VALUE
 			] : [
-				Constants.Z_WIKIDATA_FETCH_PROPERTY_ID,
-				Constants.Z_WIKIDATA_REFERENCE_PROPERTY_ID,
+				Constants.Z_WIKIDATA_FETCH_LEXEME_ID,
+				Constants.Z_WIKIDATA_REFERENCE_LEXEME_ID,
 				Constants.Z_STRING_VALUE
 			];
 
@@ -142,13 +149,15 @@ module.exports = exports = defineComponent( {
 		}
 	} ),
 	watch: {
-		propertyId: function ( id ) {
-			this.fetchProperties( { ids: [ id ] } );
+		lexemeId: function ( id ) {
+			if ( id ) {
+				this.fetchLexemes( { ids: [ id ] } );
+			}
 		}
 	},
 	mounted: function () {
-		if ( this.propertyId ) {
-			this.fetchProperties( { ids: [ this.propertyId ] } );
+		if ( this.lexemeId ) {
+			this.fetchLexemes( { ids: [ this.lexemeId ] } );
 		}
 	}
 } );
@@ -157,10 +166,10 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-app-wikidata-property {
+.ext-wikilambda-app-wikidata-lexeme {
 	--line-height-current: calc( var( --line-height-medium ) * 1em );
 
-	.ext-wikilambda-app-wikidata-property__read {
+	.ext-wikilambda-app-wikidata-lexeme__read {
 		display: flex;
 		align-items: normal;
 		min-height: @min-size-interactive-pointer;
@@ -169,11 +178,11 @@ module.exports = exports = defineComponent( {
 		padding-top: calc( calc( @min-size-interactive-pointer - var( --line-height-current ) ) / 2 );
 	}
 
-	.ext-wikilambda-app-wikidata-property__link {
+	.ext-wikilambda-app-wikidata-lexeme__link {
 		line-height: var( --line-height-current );
 	}
 
-	.ext-wikilambda-app-wikidata-property__wd-icon {
+	.ext-wikilambda-app-wikidata-lexeme__wd-icon {
 		margin: 0 @spacing-25;
 		height: var( --line-height-current );
 	}

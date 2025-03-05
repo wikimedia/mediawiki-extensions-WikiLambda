@@ -24,59 +24,6 @@ const typeUtils = {
 	},
 
 	/**
-	 * Gets the key type given its initial value.
-	 *
-	 * @param {Object|Array|string} value
-	 * @return {string}
-	 */
-	getZObjectType: function ( value ) {
-		if ( !value ) {
-			return Constants.Z_STRING;
-		} else if ( typeof ( value ) === 'object' ) {
-			if ( Array.isArray( value ) ) {
-				return Constants.Z_TYPED_LIST;
-			} else if ( Constants.Z_OBJECT_TYPE in value ) {
-				return value[ Constants.Z_OBJECT_TYPE ];
-			} else {
-				return Constants.Z_OBJECT;
-			}
-		} else {
-			if ( value.match( /^Z\d+$/ ) ) {
-				return Constants.Z_REFERENCE;
-			} else {
-				return Constants.Z_STRING;
-			}
-		}
-	},
-
-	/**
-	 * Find a specific Key within an array of object
-	 *
-	 * @param {string} key
-	 * @param {Array} array
-	 * @return {Object}
-	 */
-	findKeyInArray: function ( key, array ) {
-		// Exit early if we got a false, a non-array, or an empty array
-		if ( !key || !array || !Array.isArray( array ) || array.length === 0 ) {
-			return false;
-		}
-
-		if ( Array.isArray( key ) ) {
-			return key.map( ( k ) => typeUtils.findKeyInArray( k, array ) )
-				.filter( ( filterResult ) => !!filterResult )[ 0 ] || false;
-		} else {
-			const result = array.filter( ( item ) => item.key === key );
-
-			if ( result.length === 0 ) {
-				return false;
-			} else {
-				return result[ 0 ];
-			}
-		}
-	},
-
-	/**
 	 * Validate if a string is a valid Zid
 	 *
 	 * @param {string} zid
@@ -133,18 +80,18 @@ const typeUtils = {
 	/**
 	 * Determine if a key indicates a typed list type.
 	 *
-	 * @param {string} key
+	 * @param {string | number} key
 	 * @return {boolean}
 	 */
 	isKeyTypedListType: function ( key ) {
-		return key === '0';
+		return Number( key ) === 0;
 	},
 
 	/**
 	 * Determines if a key indicates a typed list item. This will be true when a key
 	 * is a stringified number greater than 0 (0 indicates the type of a typed list)
 	 *
-	 * @param {string} key
+	 * @param {string | number} key
 	 * @return {boolean}
 	 */
 	isKeyTypedListItem: function ( key ) {

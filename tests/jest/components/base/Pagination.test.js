@@ -164,10 +164,8 @@ describe( 'Pagination', () => {
 					},
 					data() {
 						return {
-							icons: {
-								cdxIconPrevious: 'previous',
-								cdxIconNext: 'next'
-							}
+							iconPrevious: 'P',
+							iconNext: 'N'
 						};
 					}
 				} );

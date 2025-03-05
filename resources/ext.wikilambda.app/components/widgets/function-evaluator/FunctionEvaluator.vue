@@ -21,11 +21,10 @@
 			</cdx-message>
 			<!-- Not-runnable user warning -->
 			<cdx-message
-				v-if="!hasImplementations && selectedFunctionExists"
+				v-if="!hasImplementations && isSelectedFunctionFetched"
 				type="notice"
 				class="ext-wikilambda-app-function-evaluator-widget__message"
 				data-testid="function-evaluator-message"
-
 			>
 				{{ $i18n( 'wikilambda-function-evaluation-restriction-notrunnable' ).text() }}
 			</cdx-message>
@@ -41,12 +40,13 @@
 						:dir="functionCallLabelData.langDir"
 					>{{ functionCallLabelData.label }}</label>
 				</wl-key-block>
-				<wl-z-reference
-					:row-id="selectedFunctionRowId"
+				<wl-z-object-key-value
+					:key-path="functionKeyPath"
+					:object-value="functionCall[ functionKey ]"
+					:skip-key="true"
+					:skip-indent="true"
 					:edit="true"
-					:expected-type="functionType"
-					@set-value="setFunctionZid"
-				></wl-z-reference>
+				></wl-z-object-key-value>
 			</div>
 
 			<!-- Loader for inputs + button -->
@@ -56,7 +56,7 @@
 				data-testid="function-evaluator-loader">
 				{{ $i18n( 'wikilambda-loading' ).text() }}
 			</div>
-			<div v-else-if="!selectedFunctionExists && !showFunctionSelector">
+			<div v-else-if="!isSelectedFunctionFetched && !showFunctionSelector">
 				<p v-if="forImplementation">
 					{{ $i18n( 'wikilambda-function-evaluator-no-function-selected-for-implementation' ).text() }}
 				</p>
@@ -67,7 +67,7 @@
 			<div v-else>
 				<!-- Function Inputs -->
 				<div
-					v-if="hasInputs"
+					v-if="inputKeys.length > 0"
 					class="ext-wikilambda-app-function-evaluator-widget__inputs"
 					data-testid="function-evaluator-inputs"
 				>
@@ -75,9 +75,10 @@
 						<label>{{ $i18n( 'wikilambda-function-evaluator-enter-inputs' ).text() }}</label>
 					</wl-key-block>
 					<wl-z-object-key-value
-						v-for="inputRowId in inputRowIds"
-						:key="'input-row-id-' + inputRowId"
-						:row-id="inputRowId"
+						v-for="inputKey in inputKeys"
+						:key="inputKey"
+						:key-path="getInputKeyPath( inputKey )"
+						:object-value="functionCall[ inputKey ]"
 						:edit="true"
 					></wl-z-object-key-value>
 				</div>
@@ -113,10 +114,7 @@
 						<div v-if="apiErrors.length > 0">
 							{{ getErrorMessage( apiErrors[ 0 ] ) }}
 						</div>
-						<wl-evaluation-result
-							v-else
-							:row-id="resultRowId"
-						></wl-evaluation-result>
+						<wl-evaluation-result v-else></wl-evaluation-result>
 					</template>
 				</div>
 			</div>
@@ -127,16 +125,26 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
-const { CdxButton, CdxMessage } = require( '../../../../codex.js' );
+
 const Constants = require( '../../../Constants.js' );
-const EvaluationResult = require( './EvaluationResult.vue' );
+const useMainStore = require( '../../../store/index.js' );
 const eventLogMixin = require( '../../../mixins/eventLogMixin.js' );
 const errorMixin = require( '../../../mixins/errorMixin.js' );
+const { typeToString } = require( '../../../utils/typeUtils.js' );
+const { hybridToCanonical } = require( '../../../utils/schemata.js' );
+const {
+	getZFunctionCallFunctionId,
+	getZFunctionCallArgumentKeys
+} = require( '../../../utils/zobjectUtils.js' );
+
+// Base components
 const KeyBlock = require( '../../base/KeyBlock.vue' );
-const useMainStore = require( '../../../store/index.js' );
 const WidgetBase = require( '../../base/WidgetBase.vue' );
-const ZObjectKeyValue = require( '../../default-view-types/ZObjectKeyValue.vue' );
-const ZReference = require( '../../default-view-types/ZReference.vue' );
+// Type components
+const EvaluationResult = require( './EvaluationResult.vue' );
+const ZObjectKeyValue = require( '../../types/ZObjectKeyValue.vue' );
+// Codex components
+const { CdxButton, CdxMessage } = require( '../../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-evaluator-widget',
@@ -145,7 +153,6 @@ module.exports = exports = defineComponent( {
 		'cdx-message': CdxMessage,
 		'wl-evaluation-result': EvaluationResult,
 		'wl-widget-base': WidgetBase,
-		'wl-z-reference': ZReference,
 		'wl-key-block': KeyBlock,
 		'wl-z-object-key-value': ZObjectKeyValue
 	},
@@ -156,38 +163,32 @@ module.exports = exports = defineComponent( {
 			required: false,
 			default: undefined
 		},
-		forImplementation: {
-			type: Boolean,
-			required: false,
-			default: false
-		},
-		contentRowId: {
-			type: Number,
+		contentType: {
+			type: String,
 			required: false,
 			default: undefined
 		}
 	},
 	data: function () {
 		return {
-			functionCallRowId: '',
-			resultRowId: '',
 			running: false,
 			hasResult: false,
-			functionType: Constants.Z_FUNCTION,
-			isLoading: true // Track loading state
+			isLoading: true,
+			functionKey: Constants.Z_FUNCTION_CALL_FUNCTION,
+			functionKeyPath: [
+				Constants.STORED_OBJECTS.FUNCTION_CALL,
+				Constants.Z_FUNCTION_CALL_FUNCTION
+			].join( '.' )
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
 		'getErrors',
-		'getMetadataError',
+		'hasMetadataErrors',
 		'getInputsOfFunctionZid',
 		'getConnectedObjects',
-		'getZFunctionCallArguments',
+		'getZObjectByKeyPath',
 		'getLabelData',
-		'getRowByKeyPath',
 		'getStoredObject',
-		'getZFunctionCallFunctionId',
-		'getZObjectAsJsonById',
 		'getCurrentZObjectId',
 		'getCurrentZObjectType',
 		'getUserLangZid',
@@ -196,77 +197,37 @@ module.exports = exports = defineComponent( {
 		'waitForRunningParsers'
 	] ), {
 		/**
-		 * Whether the widget has a pre-defined function
-		 *
-		 * @return {boolean}
-		 */
-		showFunctionSelector: function () {
-			return !this.forFunction && !this.forImplementation;
-		},
-
-		/**
-		 * Whether the widget has a pre-defined function
-		 *
-		 * @return {boolean}
-		 */
-		forFunction: function () {
-			return !!this.functionZid;
-		},
-
-		/**
-		 * Returns the selected function in the function call component
-		 *
-		 * @return {string | undefined}
-		 */
-		selectedFunctionZid: function () {
-			return this.getZFunctionCallFunctionId( this.functionCallRowId );
-		},
-
-		/**
-		 * Returns the stored function object for the selected function Zid
+		 * The function call as set in the store
 		 *
 		 * @return {Object}
 		 */
-		selectedFunctionObject: function () {
-			return this.getStoredObject( this.selectedFunctionZid );
+		functionCall: function () {
+			return this.getZObjectByKeyPath( [ Constants.STORED_OBJECTS.FUNCTION_CALL ] );
 		},
 
 		/**
-		 * Returns whether the function exists and has been fetched
+		 * Returns the selected function in the function call.
 		 *
-		 * @return {boolean}
+		 * @return {string|undefined}
 		 */
-		selectedFunctionExists: function () {
-			return Boolean( this.selectedFunctionObject );
+		selectedFunctionZid: function () {
+			if (
+				!this.functionCall ||
+				typeof this.functionCall !== 'object' ||
+				!( Constants.Z_FUNCTION_CALL_FUNCTION in this.functionCall )
+			) {
+				return undefined;
+			}
+			return getZFunctionCallFunctionId( this.functionCall );
 		},
 
 		/**
-		 * Returns the selected function in the function call component
-		 *
-		 * @return {string | undefined}
-		 */
-		selectedFunctionRowId: function () {
-			const row = this.getRowByKeyPath( [ Constants.Z_FUNCTION_CALL_FUNCTION ], this.functionCallRowId );
-			return row ? row.id : undefined;
-		},
-
-		/**
-		 * Returns whether there are any inputs to enter
-		 *
-		 * @return {boolean}
-		 */
-		hasInputs: function () {
-			return this.inputRowIds.length > 0;
-		},
-
-		/**
-		 * Returns the rowIds of the inputs of a function call
+		 * Returns the keys of the inputs of the function call.
 		 *
 		 * @return {Array}
 		 */
-		inputRowIds: function () {
-			return this.getZFunctionCallArguments( this.functionCallRowId )
-				.map( ( row ) => row.id );
+		inputKeys: function () {
+			return this.selectedFunctionZid ? getZFunctionCallArgumentKeys( this.functionCall ) : [];
 		},
 
 		/**
@@ -275,7 +236,7 @@ module.exports = exports = defineComponent( {
 		 * @return {Object}
 		 */
 		apiErrors: function () {
-			return this.resultRowId ? this.getErrors( this.resultRowId ) : [];
+			return this.getErrors( Constants.STORED_OBJECTS.RESPONSE );
 		},
 
 		/**
@@ -287,6 +248,24 @@ module.exports = exports = defineComponent( {
 			return this.selectedFunctionZid ?
 				this.getConnectedObjects( this.selectedFunctionZid, Constants.Z_FUNCTION_IMPLEMENTATIONS ) :
 				[];
+		},
+
+		/**
+		 * Returns whether the function exists and has been fetched
+		 *
+		 * @return {boolean}
+		 */
+		isSelectedFunctionFetched: function () {
+			return !!this.getStoredObject( this.selectedFunctionZid );
+		},
+
+		/**
+		 * Whether the widget has a pre-defined function
+		 *
+		 * @return {boolean}
+		 */
+		showFunctionSelector: function () {
+			return !this.functionZid;
 		},
 
 		/**
@@ -319,64 +298,108 @@ module.exports = exports = defineComponent( {
 		},
 
 		/**
-		 * Returns the human readable label for the function call inputs block
+		 * Returns the title of the Function Evaluator widget, depending on the type.
+		 * E.g.:
+		 * * 'Try a function' if the function is not preselected
+		 * * 'Try this function' if the function is preselected (function and tester pages)
+		 * * 'Try this implementation' if the function and implementation are preselected
+		 *   (implementation page)
 		 *
 		 * @return {string}
 		 */
 		title: function () {
-			return this.forImplementation ?
-				this.$i18n( 'wikilambda-function-evaluator-title-implementation' ).text() :
-				this.forFunction ?
-					this.$i18n( 'wikilambda-function-evaluator-title-function' ).text() :
-					this.$i18n( 'wikilambda-function-evaluator-title' ).text();
+			switch ( this.contentType ) {
+				case Constants.Z_FUNCTION:
+				case Constants.Z_TESTER:
+					return this.$i18n( 'wikilambda-function-evaluator-title-function' ).text();
+				case Constants.Z_IMPLEMENTATION:
+					return this.$i18n( 'wikilambda-function-evaluator-title-implementation' ).text();
+				default:
+					return this.$i18n( 'wikilambda-function-evaluator-title' ).text();
+			}
+		},
+
+		/**
+		 * Whether this widget is being rendered in an implementation page
+		 *
+		 * @return {boolean}
+		 */
+		forImplementation: function () {
+			return this.contentType === Constants.Z_IMPLEMENTATION;
 		}
 	} ),
 	methods: Object.assign( {}, mapActions( useMainStore, [
+		'setJsonObject',
+		'changeTypeByKeyPath',
+		'setFunctionCallArguments',
 		'clearErrors',
-		'initializeResultId',
-		'changeType',
 		'fetchZids',
-		'callZFunction',
-		'setValueByRowIdAndPath',
-		'setZFunctionCallArguments'
+		'callZFunction'
 	] ), {
+		/**
+		 * Initializes the detached objects in the zobject table
+		 * that will contain:
+		 * 1. The function call object, and
+		 * 2. The evaluator result object returned from the call
+		 *
+		 * @param {string|undefined} functionZid
+		 */
+		initialize: function ( functionZid ) {
+			this.isLoading = true;
+
+			// Clear the function call response
+			this.clearResult();
+			this.setJsonObject( {
+				namespace: Constants.STORED_OBJECTS.RESPONSE,
+				zobject: {}
+			} );
+
+			// Set blank function call object
+			this.changeTypeByKeyPath( {
+				keyPath: [ Constants.STORED_OBJECTS.FUNCTION_CALL ],
+				type: Constants.Z_FUNCTION_CALL,
+				value: functionZid || undefined
+			} );
+
+			// If we are initializing the evaluator with an functionZid
+			// we fetch the function data and then we set the arguments
+			if ( functionZid ) {
+				// Fetch the function zid first,
+				// and then fetch the argument type zids
+				this.fetchZids( { zids: [ functionZid ] } ).then( () => {
+					const inputTypeZids = this.getInputTypeZids( functionZid );
+					this.fetchZids( { zids: inputTypeZids } ).then( () => {
+						this.setFunctionCallArguments( {
+							keyPath: [ Constants.STORED_OBJECTS.FUNCTION_CALL ],
+							functionZid
+						} );
+						this.isLoading = false;
+					} );
+				} );
+			} else {
+				this.isLoading = false;
+			}
+		},
+
 		/**
 		 * Returns the ZIDs of the arguments for the given functionZid
 		 *
 		 * @param {string} functionZid
 		 * @return {Array}
 		 */
-		getArgumentZids: function ( functionZid ) {
+		getInputTypeZids: function ( functionZid ) {
 			return this.getInputsOfFunctionZid( functionZid )
-				.map( ( arg ) => arg[ Constants.Z_ARGUMENT_TYPE ] )
-				// Inputs for Typed Lists and such can be complex objects, so we filter them out
-				.filter( ( zid ) => typeof zid === 'string' );
+				.map( ( arg ) => typeToString( arg[ Constants.Z_ARGUMENT_TYPE ], true ) );
 		},
 
 		/**
-		 * Sets the function Zid in the zobject table
+		 * Returns the key path of a function call input given the input key
 		 *
-		 * @param {Object} payload
-		 * @param {Object} payload.keyPath sequence of keys till the value to edit
-		 * @param {Object | Array | string} payload.value new value
+		 * @param {string} inputKey
+		 * @return {string}
 		 */
-		setFunctionZid: function ( payload ) {
-			// The function zid was already fetched when the lookup was done
-			// So we just need to fetch the zids of the arguments
-			const argumentZids = this.getArgumentZids( payload.value );
-			this.fetchZids( { zids: argumentZids } ).then( () => {
-				// We set the arguments
-				this.setZFunctionCallArguments( {
-					parentId: this.functionCallRowId,
-					functionZid: payload.value
-				} );
-				// And we set the value of the function
-				this.setValueByRowIdAndPath( {
-					rowId: this.selectedFunctionRowId,
-					keyPath: payload.keyPath ? payload.keyPath : [],
-					value: payload.value
-				} );
-			} );
+		getInputKeyPath: function ( inputKey ) {
+			return [ Constants.STORED_OBJECTS.FUNCTION_CALL, inputKey ].join( '.' );
 		},
 
 		/**
@@ -385,7 +408,6 @@ module.exports = exports = defineComponent( {
 		clearResult: function () {
 			this.hasResult = false;
 			this.running = false;
-			this.initializeResultId( this.resultRowId );
 		},
 
 		/**
@@ -400,7 +422,7 @@ module.exports = exports = defineComponent( {
 		 * Performs the function call
 		 */
 		callFunction: function () {
-			const functionCallJson = this.getZObjectAsJsonById( this.functionCallRowId );
+			const functionCall = JSON.parse( JSON.stringify( this.functionCall ) );
 			// If we are in an implementation page, we build raw function call with raw implementation:
 			// 1. Replace Z7K1 with the whole Z8 object: we assume it's in the store
 			// 2. Replace te Z8K4 with [ Z14, implementation ]
@@ -408,104 +430,59 @@ module.exports = exports = defineComponent( {
 				const storedFunction = this.getStoredObject( this.functionZid );
 				// If user can run unsaved code, we get the raw implementation,
 				// else, we use the current persisted version by using its Zid
-				const implementation = this.userCanRunUnsavedCode ?
-					this.getZObjectAsJsonById( this.contentRowId ) :
-					this.getCurrentZObjectId;
+				const thisImplementation = () => {
+					const hybrid = this.getZObjectByKeyPath( [
+						Constants.STORED_OBJECTS.MAIN,
+						Constants.Z_PERSISTENTOBJECT_VALUE
+					] );
+					return hybridToCanonical( hybrid );
+				};
+				const implementation = this.userCanRunUnsavedCode ? thisImplementation() : this.getCurrentZObjectId;
+
 				if ( storedFunction && implementation ) {
 					const functionObject = storedFunction[ Constants.Z_PERSISTENTOBJECT_VALUE ];
 					functionObject[ Constants.Z_FUNCTION_IMPLEMENTATIONS ] = [
 						Constants.Z_IMPLEMENTATION,
 						implementation
 					];
-					functionCallJson[ Constants.Z_FUNCTION_CALL_FUNCTION ] = functionObject;
+					functionCall[ Constants.Z_FUNCTION_CALL_FUNCTION ] = functionObject;
 				}
 			}
 
 			this.running = true;
-			this.resultRowId = this.initializeResultId( this.resultRowId );
 
 			// Clear errors and perform the function call
-			this.clearErrors( this.resultRowId );
+			this.clearErrors( Constants.STORED_OBJECTS.RESPONSE );
 
 			// Perform the function call using .then() chain
 			this.callZFunction( {
-				functionCall: functionCallJson,
-				resultRowId: this.resultRowId
-			} )
-				.then( () => {
-					// Once the function call is done, update the state
-					this.running = false;
-					this.hasResult = true;
+				functionCall,
+				resultKeyPath: [ Constants.STORED_OBJECTS.RESPONSE ]
+			} ).then( () => {
+				// Once the function call is done, update the state
+				this.running = false;
+				this.hasResult = true;
 
-					// Log an event using Metrics Platform's core interaction events
-					const interactionData = {
-						zobjecttype: this.getCurrentZObjectType || null,
-						zobjectid: this.getCurrentZObjectId || null,
-						zlang: this.getUserLangZid || null,
-						selectedfunctionzid: this.selectedFunctionZid || null,
-						haserrors: !!this.getMetadataError
-					};
+				// Log an event using Metrics Platform's core interaction events
+				const interactionData = {
+					zobjecttype: this.getCurrentZObjectType || null,
+					zobjectid: this.getCurrentZObjectId || null,
+					zlang: this.getUserLangZid || null,
+					selectedfunctionzid: this.selectedFunctionZid || null,
+					haserrors: !!this.hasMetadataErrors
+				};
 
-					this.submitInteraction( 'call', interactionData );
-				} );
-
-		},
-
-		/**
-		 * Initializes the detached objects in the zobject table
-		 * that will contain:
-		 * 1. The function call object, and
-		 * 2. The evaluator result object returned from the call
-		 *
-		 * @param {string|undefined} initialFunctionZid
-		 */
-		initializeDetachedObjects: function ( initialFunctionZid ) {
-			this.isLoading = true;
-			// Initialize detached object for the function call
-			const functionCallRowId = this.initializeResultId( this.functionCallRowId );
-
-			// Set the function call scaffolding
-			this.changeType( {
-				type: Constants.Z_FUNCTION_CALL,
-				id: functionCallRowId,
-				value: initialFunctionZid || ''
+				this.submitInteraction( 'call', interactionData );
 			} );
-
-			// If we are initializing the evaluator with an initialFunctionZid
-			// we fetch the function data and then we set the arguments
-			if ( initialFunctionZid ) {
-				// Fetch the function zid first
-				// and then fetch the argument zids when the function zid is fetched
-				this.fetchZids( { zids: [ initialFunctionZid ] } ).then( () => {
-					const argumentZids = this.getArgumentZids( initialFunctionZid );
-					this.fetchZids( { zids: argumentZids } ).then( () => {
-						this.setZFunctionCallArguments( {
-							parentId: functionCallRowId,
-							functionZid: initialFunctionZid
-						} );
-						this.isLoading = false;
-					} );
-				} );
-			} else {
-				this.isLoading = false;
-			}
-
-			// Initialize detached object for the result
-			const resultRowId = this.initializeResultId( this.resultRowId );
-
-			// Set both detached rowIds to render the components
-			this.functionCallRowId = functionCallRowId;
-			this.resultRowId = resultRowId;
 		}
 	} ),
 	watch: {
-		functionZid: function ( newFunctionZid ) {
-			this.clearResult();
-			this.initializeDetachedObjects( newFunctionZid );
+		functionZid: function () {
+			this.initialize( this.functionZid );
 		}
 	},
 	mounted: function () {
-		this.initializeDetachedObjects( this.functionZid );
+		this.initialize( this.functionZid );
 	}
 } );
 </script>

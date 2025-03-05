@@ -9,8 +9,8 @@
 
 const { mapState } = require( 'pinia' );
 
-const Constants = require( '../Constants.js' );
 const useMainStore = require( '../store/index.js' );
+const { getZMonolingualLangValue } = require( '../utils/zobjectUtils.js' );
 
 module.exports = exports = {
 	data: function () {
@@ -22,11 +22,9 @@ module.exports = exports = {
 		'getFallbackLanguageZids',
 		'getLabelData',
 		'getLanguageIsoCodeOfZLang',
-		'getRowByKeyPath',
 		'getUserLangZid',
-		'getZMonolingualTextValue',
-		'getZPersistentName',
-		'getZReferenceTerminalValue'
+		'getZObjectByKeyPath',
+		'getZPersistentName'
 	] ) ),
 	methods: {
 		/**
@@ -46,15 +44,15 @@ module.exports = exports = {
 		updatePageTitleElements: function () {
 			// eslint-disable-next-line no-jquery/no-global-selector
 			const $firstHeading = $( '#firstHeading' );
-			const $langChip = $firstHeading.find( '.ext-wikilambda-editpage-header--bcp47-code-name' );
-			const $pageTitle = $firstHeading.find( '.ext-wikilambda-editpage-header-title--function-name' ).first();
+			const $langChip = $firstHeading.find( '.ext-wikilambda-editpage-header__bcp47-code-name' );
+			const $pageTitle = $firstHeading.find( '.ext-wikilambda-editpage-header__title--function-name' ).first();
 			// Update the title
 			$pageTitle
-				.toggleClass( 'ext-wikilambda-editpage-header--title-untitled', !this.pageTitleObject.title )
+				.toggleClass( 'ext-wikilambda-editpage-header__title--untitled', !this.pageTitleObject.title )
 				.text( this.pageTitleObject.title || this.$i18n( 'wikilambda-editor-default-name' ).text() );
 			// Update the language chip
 			$langChip
-				.toggleClass( 'ext-wikilambda-editpage-header--bcp47-code-hidden', !this.pageTitleObject.hasChip )
+				.toggleClass( 'ext-wikilambda-editpage-header__bcp47-code--hidden', !this.pageTitleObject.hasChip )
 				.text( this.pageTitleObject.chip )
 				.attr( 'data-title', this.pageTitleObject.chipName );
 		},
@@ -69,22 +67,22 @@ module.exports = exports = {
 		 * Finally update the title DOM elements to reflect the new state.
 		 */
 		updatePageTitleObject: function () {
-			const nameRow = this.getZPersistentName( this.getUserLangZid );
+			const name = this.getZPersistentName( this.getUserLangZid );
 			this.pageTitleObject = this.pageTitleObject || {};
 			// Is there a title in my language?
-			if ( nameRow ) {
+			if ( name ) {
 				// Yes
-				this.setPageTitleObject( nameRow, false );
+				this.setPageTitleObject( name, false );
 			} else {
 				// No
 				const fallbackLanguages = this.getFallbackLanguageZids
 					.slice( this.getFallbackLanguageZids.indexOf( this.getUserLangZid ) + 1 );
 				// Is there a title in a fallback language?
 				const hasTitle = fallbackLanguages.some( ( lang ) => {
-					const fallbackNameRow = this.getZPersistentName( lang );
+					const fallbackName = this.getZPersistentName( lang );
 					// Yes, title in a fallback language
-					if ( fallbackNameRow ) {
-						this.setPageTitleObject( fallbackNameRow, true );
+					if ( fallbackName ) {
+						this.setPageTitleObject( fallbackName, true );
 						return true;
 					}
 					// No, no title available in a fallback language
@@ -99,15 +97,16 @@ module.exports = exports = {
 		/**
 		 * Set the page title object based on the provided name object and chip flag
 		 *
-		 * @param {Object} nameRow - row for the monolingual object with the name to set
+		 * @param {Object} name - terminal value to set as a title, contains value and keyPath
 		 * @param {boolean} hasChip - flag to indicate if the language chip should be displayed
 		 */
-		setPageTitleObject: function ( nameRow, hasChip ) {
-			if ( nameRow ) {
-				const langRow = this.getRowByKeyPath( [ Constants.Z_MONOLINGUALSTRING_LANGUAGE ], nameRow.id );
-				const langZid = this.getZReferenceTerminalValue( langRow.id );
+		setPageTitleObject: function ( name, hasChip ) {
+			if ( name ) {
+				const parentKeyPath = name.keyPath.split( '.' ).slice( 0, -2 );
+				const monolingual = this.getZObjectByKeyPath( parentKeyPath );
+				const langZid = getZMonolingualLangValue( monolingual );
 				const langCode = this.getLanguageIsoCodeOfZLang( langZid );
-				this.pageTitleObject.title = this.getZMonolingualTextValue( nameRow.id );
+				this.pageTitleObject.title = name.value;
 				this.pageTitleObject.hasChip = hasChip;
 				this.pageTitleObject.chip = langCode;
 				this.pageTitleObject.chipName = this.getLabelData( langZid ).label;

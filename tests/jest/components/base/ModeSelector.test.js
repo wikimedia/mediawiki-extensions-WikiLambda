@@ -24,25 +24,32 @@ const mockLabels = {
 };
 
 describe( 'ModeSelector', () => {
-	let store;
+	let store,
+		keyPath,
+		objectValue;
 
 	beforeEach( () => {
+		// reset props
+		keyPath = undefined;
+		objectValue = undefined;
 		store = useMainStore();
+		// Getters
 		store.getLabelData = createLabelDataMock( mockLabels );
-		store.getParentRowId = createGettersWithFunctionsMock( 1 );
-		store.getChildrenByParentRowId = createGettersWithFunctionsMock( [] );
-		store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
-		store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_OBJECT_TYPE );
+		store.getParentListCount = createGettersWithFunctionsMock( 1 );
 		store.isCustomEnum = createGettersWithFunctionsMock( false );
-		store.isInsideComposition = createGettersWithFunctionsMock( false );
-		store.isWikidataFetch = createGettersWithFunctionsMock( false );
 	} );
 
 	describe( 'basic rendering', () => {
+		beforeEach( () => {
+			keyPath = 'main.Z2K2';
+			objectValue = { Z1K1: 'Z9', Z9K1: 'Z11' };
+		} );
+
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
-					rowId: 1
+					keyPath,
+					objectValue
 				}
 			} );
 			expect( wrapper.find( 'div' ).exists() ).toBe( true );
@@ -51,7 +58,8 @@ describe( 'ModeSelector', () => {
 		it( 'renders the menu button', () => {
 			const wrapper = mount( ModeSelector, {
 				props: {
-					rowId: 1
+					keyPath,
+					objectValue
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu' } );
@@ -64,7 +72,8 @@ describe( 'ModeSelector', () => {
 		it( 'opens the menu when button is clicked', async () => {
 			const wrapper = mount( ModeSelector, {
 				props: {
-					rowId: 1
+					keyPath,
+					objectValue
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu' } );
@@ -81,12 +90,15 @@ describe( 'ModeSelector', () => {
 
 	describe( 'it displays the correct options in the selector dropdown', () => {
 		it( 'if a literal type is selected and its type is bound', () => {
-			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_MONOLINGUALSTRING_VALUE );
-			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_STRING );
+			keyPath = 'main.Z2K2.Z11K2';
+			objectValue = { Z1K1: 'Z6', Z6K1: 'some string' };
+
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
-					parentExpectedType: Constants.Z_STRING
+					expectedType: Constants.Z_STRING
 				}
 			} );
 
@@ -98,12 +110,15 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'if a literal type is selected and its type is unbound', () => {
-			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
-			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_STRING );
+			keyPath = 'main.Z2K2';
+			objectValue = { Z1K1: 'Z6', Z6K1: 'some string' };
+
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
-					parentExpectedType: Constants.Z_OBJECT
+					expectedType: Constants.Z_OBJECT
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
@@ -115,13 +130,15 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'if the type selector is inside a composition', () => {
-			store.isInsideComposition = createGettersWithFunctionsMock( true );
-			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_MONOLINGUALSTRING_VALUE );
-			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_STRING );
+			keyPath = 'main.Z2K2.Z14K2.Z10001K1.Z11K2';
+			objectValue = { Z1K1: 'Z6', Z6K1: 'some string' };
+
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
-					parentExpectedType: Constants.Z_STRING
+					expectedType: Constants.Z_STRING
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
@@ -133,12 +150,15 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'if the type selected is a resolver type, shows the bound type if there is one', () => {
-			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_MONOLINGUALSTRING_VALUE );
-			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
+			keyPath = 'main.Z2K2.Z11K2';
+			objectValue = { Z1K1: 'Z9', Z9K1: '' };
+
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
-					parentExpectedType: Constants.Z_STRING
+					expectedType: Constants.Z_STRING
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
@@ -149,13 +169,22 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'displays no resolvers or literal options for wikidata entities', () => {
-			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
-			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL );
-			store.isWikidataEntity = createGettersWithFunctionsMock( true );
+			keyPath = 'main.Z2K2.Z10001K1';
+			objectValue = {
+				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+				Z7K1: { Z1K1: 'Z9', Z9K1: 'Z6825' },
+				Z6825K1: {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z6095' },
+					Z6095K1: { Z1K1: 'Z6', Z6K1: 'L42' }
+				}
+			};
+
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
-					parentExpectedType: Constants.Z_WIKIDATA_LEXEME
+					expectedType: Constants.Z_WIKIDATA_LEXEME
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
@@ -165,12 +194,18 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'displays function call and literal for wikidata references', () => {
-			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
-			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_REFERENCE_LEXEME );
+			keyPath = 'main.Z2K2.Z10001K1';
+			objectValue = {
+				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z6095' },
+				Z6095K1: { Z1K1: 'Z6', Z6K1: 'L42' }
+			};
+
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
-					parentExpectedType: Constants.Z_WIKIDATA_REFERENCE_LEXEME
+					expectedType: Constants.Z_WIKIDATA_REFERENCE_LEXEME
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
@@ -180,13 +215,22 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'displays literals and resolvers for wikidata entity with unbound parent type', () => {
-			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
-			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION_CALL );
-			store.isWikidataEntity = createGettersWithFunctionsMock( true );
+			keyPath = 'main.Z2K2';
+			objectValue = {
+				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+				Z7K1: { Z1K1: 'Z9', Z9K1: 'Z6825' },
+				Z6825K1: {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z6095' },
+					Z6095K1: { Z1K1: 'Z6', Z6K1: 'L42' }
+				}
+			};
+
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
-					parentExpectedType: Constants.Z_OBJECT
+					expectedType: Constants.Z_OBJECT
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
@@ -197,12 +241,18 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'displays literals and resolvers for wikidata reference with unbound parent type', () => {
-			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
-			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_WIKIDATA_REFERENCE_LEXEME );
+			keyPath = 'main.Z2K2';
+			objectValue = {
+				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z6095' },
+				Z6095K1: { Z1K1: 'Z6', Z6K1: 'L42' }
+			};
+
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
-					parentExpectedType: Constants.Z_OBJECT
+					expectedType: Constants.Z_OBJECT
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
@@ -215,30 +265,36 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'does not display types in EXCLUDE_FROM_LITERAL_MODE_SELECTION in the literal options', () => {
-			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
-			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION );
+			keyPath = 'main.Z2K2';
+			objectValue = {
+				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z8' }
+			};
+
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
-					edit: true,
-					parentExpectedType: Constants.Z_FUNCTION
+					keyPath,
+					objectValue,
+					edit: true
 				}
 			} );
 
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			const literalOptions = menu.vm.menuItems[ 0 ].items.filter( ( item ) => item.type === Constants.Z_FUNCTION );
-
 			expect( literalOptions.length ).toBe( 0 );
 		} );
 	} );
 
 	describe( 'set mode', () => {
 		it( 'does not emit set-type when selected is same as current', async () => {
-			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_MONOLINGUALSTRING_VALUE );
-			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
+			keyPath = 'main.Z2K2.Z11K2';
+			objectValue = { Z1K1: 'Z9', Z9K1: '' };
+
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
-					parentExpectedType: Constants.Z_STRING
+					expectedType: Constants.Z_STRING
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
@@ -246,13 +302,16 @@ describe( 'ModeSelector', () => {
 			await waitFor( () => expect( wrapper.emitted() ).not.toHaveProperty( 'set-type' ) );
 		} );
 
-		it( 'emit set-type when selected is same as current', async () => {
-			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_MONOLINGUALSTRING_VALUE );
-			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_REFERENCE );
+		it( 'emit set-type when selected is not same as current', async () => {
+			keyPath = 'main.Z2K2.Z11K2';
+			objectValue = { Z1K1: 'Z9', Z9K1: '' };
+
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
-					parentExpectedType: Constants.Z_STRING
+					expectedType: Constants.Z_STRING
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
@@ -263,22 +322,23 @@ describe( 'ModeSelector', () => {
 
 	describe( 'for list items', () => {
 		beforeEach( () => {
-			const listWithThreeItems = [
-				{ key: '0', id: 2 },
-				{ key: '1', id: 3 },
-				{ key: '2', id: 4 },
-				{ key: '3', id: 5 }
-			];
-			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( '2' );
-			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_MONOLINGUALSTRING );
-			store.getChildrenByParentRowId = createGettersWithFunctionsMock( listWithThreeItems );
+			store.getParentListCount = createGettersWithFunctionsMock( 3 );
 		} );
 
 		it( 'shows delete action as the last item', () => {
+			keyPath = 'main.Z2K2.Z12K1.2';
+			objectValue = {
+				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
+				Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1002' },
+				Z11K2: { Z1K1: 'Z6', Z6K1: 'second' }
+			};
+
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
-					parentExpectedType: Constants.Z_MONOLINGUALSTRING
+					expectedType: Constants.Z_MONOLINGUALSTRING
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
@@ -286,11 +346,20 @@ describe( 'ModeSelector', () => {
 			expect( menu.vm.menuItems[ 2 ].items[ 0 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.DELETE_ITEM );
 		} );
 
-		it( 'emits delete-list-item event  when selecting delete menu option', async () => {
+		it( 'emits delete-list-item event when selecting delete menu option', async () => {
+			keyPath = 'main.Z2K2.Z12K1.2';
+			objectValue = {
+				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
+				Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1002' },
+				Z11K2: { Z1K1: 'Z6', Z6K1: 'second' }
+			};
+
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
-					parentExpectedType: Constants.Z_MONOLINGUALSTRING
+					expectedType: Constants.Z_MONOLINGUALSTRING
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
@@ -299,10 +368,19 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'shows enabled move-before and move-after menu options', () => {
+			keyPath = 'main.Z2K2.Z12K1.2';
+			objectValue = {
+				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
+				Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1002' },
+				Z11K2: { Z1K1: 'Z6', Z6K1: 'second' }
+			};
+
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
-					parentExpectedType: Constants.Z_MONOLINGUALSTRING
+					expectedType: Constants.Z_MONOLINGUALSTRING
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
@@ -314,11 +392,19 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'shows disabled move-before for the first item', () => {
-			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( '1' );
+			keyPath = 'main.Z2K2.Z12K1.1';
+			objectValue = {
+				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
+				Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1002' },
+				Z11K2: { Z1K1: 'Z6', Z6K1: 'first' }
+			};
+
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
-					parentExpectedType: Constants.Z_MONOLINGUALSTRING
+					expectedType: Constants.Z_MONOLINGUALSTRING
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
@@ -330,11 +416,19 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'shows disabled move-after for the last item', () => {
-			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( '3' );
+			keyPath = 'main.Z2K2.Z12K1.3';
+			objectValue = {
+				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
+				Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1002' },
+				Z11K2: { Z1K1: 'Z6', Z6K1: 'third' }
+			};
+
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
-					parentExpectedType: Constants.Z_MONOLINGUALSTRING
+					expectedType: Constants.Z_MONOLINGUALSTRING
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
@@ -346,10 +440,19 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'emits move-before event when selecting move-before menu option', async () => {
+			keyPath = 'main.Z2K2.Z12K1.2';
+			objectValue = {
+				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
+				Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1002' },
+				Z11K2: { Z1K1: 'Z6', Z6K1: 'second' }
+			};
+
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
-					parentExpectedType: Constants.Z_MONOLINGUALSTRING
+					expectedType: Constants.Z_MONOLINGUALSTRING
 				}
 			} );
 
@@ -359,10 +462,19 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'emits move-after event when selecting move-after menu option', async () => {
+			keyPath = 'main.Z2K2.Z12K1.2';
+			objectValue = {
+				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
+				Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1002' },
+				Z11K2: { Z1K1: 'Z6', Z6K1: 'second' }
+			};
+
 			const wrapper = shallowMount( ModeSelector, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
-					parentExpectedType: Constants.Z_MONOLINGUALSTRING
+					expectedType: Constants.Z_MONOLINGUALSTRING
 				}
 			} );
 

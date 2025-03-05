@@ -30,8 +30,11 @@ const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
 
 const Constants = require( '../../../Constants.js' );
-const FunctionEditorField = require( './FunctionEditorField.vue' );
 const useMainStore = require( '../../../store/index.js' );
+
+// Function editor components
+const FunctionEditorField = require( './FunctionEditorField.vue' );
+// Base components
 const ZObjectSelector = require( '../../base/ZObjectSelector.vue' );
 
 module.exports = exports = defineComponent( {
@@ -61,7 +64,7 @@ module.exports = exports = defineComponent( {
 		 * @return {Array}
 		 */
 		functionLanguages: function () {
-			return this.getMultilingualDataLanguages();
+			return this.getMultilingualDataLanguages.all;
 		},
 		/**
 		 * Returns the id for the language field

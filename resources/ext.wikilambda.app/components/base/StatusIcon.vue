@@ -16,8 +16,11 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { CdxIcon } = require( '../../../codex.js' );
+
 const icons = require( '../../../lib/icons.json' );
+
+// Codex components
+const { CdxIcon } = require( '../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-status-icon',

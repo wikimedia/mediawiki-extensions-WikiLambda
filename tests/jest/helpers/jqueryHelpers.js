@@ -22,11 +22,11 @@ function createJQueryPageTitleMocks() {
 
 	const $firstHeading = {
 		find: jest.fn().mockImplementation( ( selector ) => {
-			if ( selector === '.ext-wikilambda-editpage-header-title--function-name' ) {
+			if ( selector === '.ext-wikilambda-editpage-header__title--function-name' ) {
 				return {
 					first: jest.fn().mockReturnValue( $pageTitle )
 				};
-			} else if ( selector === '.ext-wikilambda-editpage-header--bcp47-code-name' ) {
+			} else if ( selector === '.ext-wikilambda-editpage-header__bcp47-code-name' ) {
 				return $langChip;
 			}
 		} )

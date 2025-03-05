@@ -7,35 +7,47 @@
 'use strict';
 
 const { shallowMount } = require( '@vue/test-utils' );
-const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../../helpers/getterHelpers.js' );
 const FunctionEditorInputsItem = require( '../../../../../resources/ext.wikilambda.app/components/function/editor/FunctionEditorInputsItem.vue' );
 const LabelData = require( '../../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' );
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 
 const langLabelData = new LabelData( 'Z1002', 'English', 'Z1002', 'en', 'ltr' );
 
+const input = {
+	keyPath: 'main.Z2K2.Z8K1.1.Z17K3.Z12K1.1.Z11K2',
+	value: 'first string',
+	key: 'Z10000K1',
+	type: { Z1K1: 'Z9', Z9K1: 'Z6' },
+	typeKeyPath: 'main.Z2K2.Z8K1.1.Z17K1'
+};
+
+const blankInput = {
+	keyPath: undefined,
+	value: '',
+	key: 'Z10000K1',
+	type: { Z1K1: 'Z9', Z9K1: 'Z6' },
+	typeKeyPath: 'main.Z2K2.Z8K1.1.Z17K1'
+};
+
 describe( 'FunctionEditorInputsItem', () => {
 	let store;
 
 	beforeEach( () => {
 		store = useMainStore();
-		store.getLabelData = createLabelDataMock( { Z1002: 'English' } );
-		store.getRowByKeyPath = createGettersWithFunctionsMock();
-		store.getZArgumentLabelForLanguage = createGettersWithFunctionsMock();
-		store.getZArgumentTypeRowId = createGettersWithFunctionsMock( 5 );
-		store.getUserLangCode = 'en';
-		store.getZMonolingualTextValue = createGettersWithFunctionsMock( '' );
+		store.getZMonolingualString = jest.fn();
 	} );
 
 	it( 'renders without errors', () => {
-		const wrapper = shallowMount( FunctionEditorInputsItem, { props: {
-			rowId: 1,
-			index: 0,
-			isMainLanguageBlock: true,
-			canEditType: true,
-			zLanguage: 'Z1002',
-			langLabelData
-		} } );
+		const wrapper = shallowMount( FunctionEditorInputsItem, {
+			props: {
+				input,
+				index: 0,
+				isMainLanguageBlock: true,
+				canEditType: true,
+				zLanguage: 'Z1002',
+				langLabelData
+			}
+		} );
 
 		expect( wrapper.find( '.ext-wikilambda-app-function-editor-inputs-item' ).exists() ).toBeTruthy();
 	} );
@@ -43,7 +55,7 @@ describe( 'FunctionEditorInputsItem', () => {
 	it( 'has an input element ', () => {
 		const wrapper = shallowMount( FunctionEditorInputsItem, {
 			props: {
-				rowId: 1,
+				input,
 				index: 0,
 				isMainLanguageBlock: true,
 				canEditType: true,
@@ -59,7 +71,7 @@ describe( 'FunctionEditorInputsItem', () => {
 	it( 'has an type selector if is main language block ', () => {
 		const wrapper = shallowMount( FunctionEditorInputsItem, {
 			props: {
-				rowId: 1,
+				input,
 				index: 0,
 				isMainLanguageBlock: true,
 				canEditType: true,
@@ -75,7 +87,7 @@ describe( 'FunctionEditorInputsItem', () => {
 	it( 'does not have a type selector if is a secondary language block ', () => {
 		const wrapper = shallowMount( FunctionEditorInputsItem, {
 			props: {
-				rowId: 1,
+				input,
 				index: 0,
 				isMainLanguageBlock: false,
 				canEditType: true,
@@ -91,7 +103,7 @@ describe( 'FunctionEditorInputsItem', () => {
 	it( 'has one delete button if it is editable', () => {
 		const wrapper = shallowMount( FunctionEditorInputsItem, {
 			props: {
-				rowId: 1,
+				input,
 				index: 0,
 				isMainLanguageBlock: true,
 				canEditType: true,
@@ -106,11 +118,9 @@ describe( 'FunctionEditorInputsItem', () => {
 
 	describe( 'on argument label change', () => {
 		it( 'removes the input label object if new value is empty string', async () => {
-			store.getZArgumentLabelForLanguage = createGettersWithFunctionsMock( { id: 2 } );
-
 			const wrapper = shallowMount( FunctionEditorInputsItem, {
 				props: {
-					rowId: 1,
+					input,
 					index: 0,
 					isMainLanguageBlock: true,
 					canEditType: true,
@@ -121,13 +131,16 @@ describe( 'FunctionEditorInputsItem', () => {
 			} );
 
 			// ACT: Change value of label
-			const input = wrapper.findComponent( { name: 'cdx-text-input' } );
-			input.vm.$emit( 'change', { target: { value: '' } } );
+			const inputField = wrapper.findComponent( { name: 'cdx-text-input' } );
+			inputField.vm.$emit( 'change', { target: { value: '' } } );
 			await wrapper.vm.$nextTick();
 
-			// ASSERT: removeItemFromTypedList action runs correctly
-			expect( store.removeItemFromTypedList ).toHaveBeenCalledWith( {
-				rowId: 2
+			// ASSERT: setZMonolingualString action runs correctly
+			expect( store.setZMonolingualString ).toHaveBeenCalledWith( {
+				parentKeyPath: [ 'main', 'Z2K2', 'Z8K1', '1', 'Z17K3', 'Z12K1' ],
+				itemKeyPath: 'main.Z2K2.Z8K1.1.Z17K3.Z12K1.1.Z11K2',
+				value: '',
+				lang: 'Z1002'
 			} );
 
 			// ASSERT: emits argument-label-updated
@@ -135,11 +148,9 @@ describe( 'FunctionEditorInputsItem', () => {
 		} );
 
 		it( 'changes the label of an input if the language already exists', async () => {
-			store.getZArgumentLabelForLanguage = createGettersWithFunctionsMock( { id: 2 } );
-
 			const wrapper = shallowMount( FunctionEditorInputsItem, {
 				props: {
-					rowId: 1,
+					input,
 					index: 0,
 					isMainLanguageBlock: true,
 					canEditType: true,
@@ -150,15 +161,16 @@ describe( 'FunctionEditorInputsItem', () => {
 			} );
 
 			// ACT: Change value of label
-			const input = wrapper.findComponent( { name: 'cdx-text-input' } );
-			input.vm.$emit( 'change', { target: { value: 'new input label' } } );
+			const inputField = wrapper.findComponent( { name: 'cdx-text-input' } );
+			inputField.vm.$emit( 'change', { target: { value: 'new input label' } } );
 			await wrapper.vm.$nextTick();
 
-			// ASSERT: setValueByRowIdAndPath action runs correctly
-			expect( store.setValueByRowIdAndPath ).toHaveBeenCalledWith( {
-				rowId: 2,
-				keyPath: [ 'Z11K2', 'Z6K1' ],
-				value: 'new input label'
+			// ASSERT: setZMonolingualString action runs correctly
+			expect( store.setZMonolingualString ).toHaveBeenCalledWith( {
+				parentKeyPath: [ 'main', 'Z2K2', 'Z8K1', '1', 'Z17K3', 'Z12K1' ],
+				itemKeyPath: 'main.Z2K2.Z8K1.1.Z17K3.Z12K1.1.Z11K2',
+				value: 'new input label',
+				lang: 'Z1002'
 			} );
 
 			// ASSERT: emits argument-label-updated
@@ -166,12 +178,9 @@ describe( 'FunctionEditorInputsItem', () => {
 		} );
 
 		it( 'adds a new monolingual string if there is no label object for this language', async () => {
-			store.getZArgumentLabelForLanguage = createGettersWithFunctionsMock( undefined );
-			store.getRowByKeyPath = createGettersWithFunctionsMock( { id: 1 } );
-
 			const wrapper = shallowMount( FunctionEditorInputsItem, {
 				props: {
-					rowId: 1,
+					input: blankInput,
 					index: 0,
 					isMainLanguageBlock: true,
 					canEditType: true,
@@ -182,17 +191,15 @@ describe( 'FunctionEditorInputsItem', () => {
 			} );
 
 			// ACT: Change value of label
-			const input = wrapper.findComponent( { name: 'cdx-text-input' } );
-			input.vm.$emit( 'change', { target: { value: 'new input label' } } );
+			const inputField = wrapper.findComponent( { name: 'cdx-text-input' } );
+			inputField.vm.$emit( 'change', { target: { value: 'new input label' } } );
 			await wrapper.vm.$nextTick();
 
-			// ASSERT: changeType action runs correctly
-			expect( store.changeType ).toHaveBeenCalledWith( {
-				id: 1,
-				type: 'Z11',
-				lang: 'Z1002',
+			// ASSERT: setZMonolingualString action runs correctly
+			expect( store.setZMonolingualString ).toHaveBeenCalledWith( {
+				parentKeyPath: [ 'main', 'Z2K2', 'Z8K1', '1', 'Z17K3', 'Z12K1' ],
 				value: 'new input label',
-				append: true
+				lang: 'Z1002'
 			} );
 
 			// ASSERT: emits argument-label-updated

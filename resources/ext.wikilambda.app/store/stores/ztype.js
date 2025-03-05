@@ -9,7 +9,8 @@
 
 const Constants = require( '../../Constants.js' );
 const { performFunctionCall } = require( '../../utils/apiUtils.js' );
-const { getScaffolding, getZObjectType } = require( '../../utils/typeUtils.js' );
+const { getScaffolding } = require( '../../utils/typeUtils.js' );
+const { getZObjectType } = require( '../../utils/zobjectUtils.js' );
 
 module.exports = {
 	state: {

@@ -48,7 +48,7 @@
 			:is-main-language-block="isMainLanguageBlock"
 			:can-edit="canEditFunction"
 			:lang-label-data="langLabelData"
-			:tooltip-icon="icons.cdxIconLock"
+			:tooltip-icon="iconLock"
 			:tooltip-message="adminTooltipMessage"
 			@argument-label-updated="onLabelsUpdated"
 		></wl-function-editor-inputs>
@@ -58,7 +58,7 @@
 			class="ext-wikilambda-app-function-editor-language-block__row"
 			data-testid="function-editor-output"
 			:can-edit="canEditFunction"
-			:tooltip-icon="icons.cdxIconLock"
+			:tooltip-icon="iconLock"
 			:tooltip-message="adminTooltipMessage"
 		></wl-function-editor-output>
 	</div>
@@ -68,14 +68,16 @@
 const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
 
+const icons = require( '../../../../lib/icons.json' );
+const useMainStore = require( '../../../store/index.js' );
+
+// Function editor components
 const FunctionEditorAliases = require( './FunctionEditorAliases.vue' );
 const FunctionEditorDescription = require( './FunctionEditorDescription.vue' );
 const FunctionEditorInputs = require( './FunctionEditorInputs.vue' );
 const FunctionEditorLanguage = require( './FunctionEditorLanguage.vue' );
 const FunctionEditorName = require( './FunctionEditorName.vue' );
 const FunctionEditorOutput = require( './FunctionEditorOutput.vue' );
-const icons = require( '../../../../lib/icons.json' );
-const useMainStore = require( '../../../store/index.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-language-block',
@@ -99,7 +101,7 @@ module.exports = exports = defineComponent( {
 	},
 	data: function () {
 		return {
-			icons: icons
+			iconLock: icons.cdxIconLock
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [

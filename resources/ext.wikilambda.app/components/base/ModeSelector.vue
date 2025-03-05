@@ -18,11 +18,15 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
-const { CdxIcon, CdxMenuButton } = require( '../../../codex.js' );
+
 const Constants = require( '../../Constants.js' );
 const typeMixin = require( '../../mixins/typeMixin.js' );
+const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
 const useMainStore = require( '../../store/index.js' );
 const icons = require( '../../../lib/icons.json' );
+
+// Codex components
+const { CdxIcon, CdxMenuButton } = require( '../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-mode-selector',
@@ -30,14 +34,17 @@ module.exports = exports = defineComponent( {
 		'cdx-icon': CdxIcon,
 		'cdx-menu-button': CdxMenuButton
 	},
-	mixins: [ typeMixin ],
+	mixins: [ typeMixin, zobjectMixin ],
 	props: {
-		rowId: {
-			type: Number,
-			required: false,
-			default: 0
+		keyPath: {
+			type: String,
+			required: true
 		},
-		parentExpectedType: {
+		objectValue: {
+			type: [ Object, Array ],
+			required: true
+		},
+		expectedType: {
 			type: [ String, Object ],
 			required: false,
 			default: Constants.Z_OBJECT
@@ -53,31 +60,27 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
-		'getChildrenByParentRowId',
+		'getParentListCount',
 		'getLabelData',
-		'getParentRowId',
-		'getZObjectTypeByRowId',
-		'getZObjectKeyByRowId',
-		'isCustomEnum',
-		'isInsideComposition',
-		'isWikidataFetch'
+		'isCustomEnum'
 	] ), {
-		/**
-		 * Returns the key of the key-value pair of this component.
-		 *
-		 * @return {string}
-		 */
-		key: function () {
-			return this.getZObjectKeyByRowId( this.rowId );
-		},
 		/**
 		 * Returns the type of the value of the the ZObject represented
 		 * in this component. When it's not set, it's undefined.
 		 *
-		 * @return {string | Object | undefined}
+		 * @return {string|Object|undefined}
 		 */
-		type: function () {
-			return this.getZObjectTypeByRowId( this.rowId );
+		typeObject: function () {
+			return this.getZObjectType( this.objectValue );
+		},
+		/**
+		 * Returns the string representation of the ZObject type;
+		 * if the type is a function call, does not include the args.
+		 *
+		 * @return {string}
+		 */
+		typeString: function () {
+			return this.typeToString( this.typeObject, true );
 		},
 		/**
 		 * Value of the selected option or Z1/Object if unselected
@@ -85,17 +88,26 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		selected: function () {
-			return this.type ? this.typeToString( this.type, true ) : Constants.Z_OBJECT;
+			return this.typeObject ? this.typeString : Constants.Z_OBJECT;
 		},
 		/**
-		 * Whether the value is a Wikidata entity, currently
-		 * represented by a function call to one of the Wikidata
-		 * fetch functions.
+		 * Whether the value is a Wikidata entity represented by a
+		 * function call to one of the Wikidata fetch functions.
 		 *
 		 * @return {boolean}
 		 */
 		isWikidataItem: function () {
-			return this.isWikidataFetch( this.rowId );
+			return this.isWikidataFetch( this.objectValue );
+		},
+		/**
+		 * Returns whether the current path is child of an implementation
+		 * composition (Z14K2), which will determine whether
+		 * we can use argument references in its type selectors.
+		 *
+		 * @return {boolean}
+		 */
+		isInsideComposition: function () {
+			return this.keyPath.split( '.' ).includes( Constants.Z_IMPLEMENTATION_COMPOSITION );
 		},
 		/**
 		 * Whether the key expects a Wikidata item type.
@@ -103,7 +115,7 @@ module.exports = exports = defineComponent( {
 		 * @return {boolean}
 		 */
 		expectsWikidataItem: function () {
-			return Constants.WIKIDATA_TYPES.includes( this.parentExpectedType );
+			return Constants.WIKIDATA_TYPES.includes( this.expectedType );
 		},
 		/**
 		 * Returns whether the key expected type can be persisted and
@@ -112,7 +124,7 @@ module.exports = exports = defineComponent( {
 		 * @return {boolean}
 		 */
 		canBeReferenced: function () {
-			return !Constants.EXCLUDE_FROM_PERSISTENT_CONTENT.includes( this.parentExpectedType );
+			return !Constants.EXCLUDE_FROM_PERSISTENT_CONTENT.includes( this.expectedType );
 		},
 		/**
 		 * Whether the selected mode is a resolver or a literal type
@@ -203,12 +215,9 @@ module.exports = exports = defineComponent( {
 		 * @return {number}
 		 */
 		listCount: function () {
-			if ( this.isKeyTypedListItem( this.key ) ) {
-				const parentRowId = this.getParentRowId( this.rowId );
-				const children = this.getChildrenByParentRowId( parentRowId );
-				return children.length - 1;
-			}
-			return 0;
+			return this.isKeyTypedListItem( this.key ) ?
+				this.getParentListCount( this.keyPath.split( '.' ) ) :
+				0;
 		}
 	} ),
 	methods: {
@@ -273,7 +282,7 @@ module.exports = exports = defineComponent( {
 			}
 
 			// Argument reference: Only available if inside a composition
-			if ( this.isInsideComposition( this.rowId ) ) {
+			if ( this.isInsideComposition ) {
 				resolvers.push( {
 					label: this.getLabelData( Constants.Z_ARGUMENT_REFERENCE ).label,
 					value: Constants.Z_ARGUMENT_REFERENCE,
@@ -294,21 +303,21 @@ module.exports = exports = defineComponent( {
 			// Add literal parent expected type when:
 			// * Key is not Z1K1/Object type; no literal Z4/Types
 			// * Key is not "0" type of a typed list; no literal Z4/Types
-			// * Is not a custom enum type; should never be a literal, always referenced
+			// * Is not a custom enum type; enums should never be literals, always referenced
 			// * Does not expect a Wikidata entity
 			// * Is not in EXCLUDE_FROM_LITERAL_MODE_SELECTION
-			const parentTypeString = this.typeToString( this.parentExpectedType, true );
+			const parentTypeString = this.typeToString( this.expectedType, true );
 			if (
 				this.key !== Constants.Z_OBJECT_TYPE &&
 				!this.isKeyTypedListType( this.key ) &&
-				!this.isCustomEnum( this.parentExpectedType ) &&
+				!this.isCustomEnum( this.expectedType ) &&
 				!this.expectsWikidataItem &&
-				!Constants.EXCLUDE_FROM_LITERAL_MODE_SELECTION.includes( this.parentExpectedType )
+				!Constants.EXCLUDE_FROM_LITERAL_MODE_SELECTION.includes( this.expectedType )
 			) {
 				literals.push( {
 					label: this.$i18n( 'wikilambda-literal-type', this.getLabelData( parentTypeString ).label ).text(),
 					value: parentTypeString,
-					type: this.parentExpectedType,
+					type: this.expectedType,
 					icon: icons.cdxIconLiteral
 				} );
 			}
@@ -319,18 +328,17 @@ module.exports = exports = defineComponent( {
 			// * type is not a resolver (Z9/Z7/Z18), and
 			// * parent expected type is Z1/Object.
 			// * type is not in EXCLUDE_FROM_LITERAL_MODE_SELECTION
-			const typeString = this.typeToString( this.type, true );
 			if (
 				!this.isWikidataItem &&
-				!!this.type && !!typeString &&
+				!!this.typeObject && !!this.typeString &&
 				!this.isResolver &&
-				this.parentExpectedType === Constants.Z_OBJECT &&
-				!Constants.EXCLUDE_FROM_LITERAL_MODE_SELECTION.includes( this.type )
+				this.expectedType === Constants.Z_OBJECT &&
+				!Constants.EXCLUDE_FROM_LITERAL_MODE_SELECTION.includes( this.typeString )
 			) {
 				literals.push( {
-					label: this.$i18n( 'wikilambda-literal-type', this.getLabelData( typeString ).label ).text(),
-					value: typeString,
-					type: this.type,
+					label: this.$i18n( 'wikilambda-literal-type', this.getLabelData( this.typeString ).label ).text(),
+					value: this.typeString,
+					type: this.typeObject,
 					icon: icons.cdxIconLiteral
 				} );
 			}

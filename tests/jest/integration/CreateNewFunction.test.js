@@ -12,7 +12,6 @@ require( '@testing-library/jest-dom' );
 
 const Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' );
 const App = require( '../../../resources/ext.wikilambda.app/components/App.vue' );
-const PublishDialog = require( '../../../resources/ext.wikilambda.app/components/widgets/publish/PublishDialog.vue' );
 const { chipInputAddChip, lookupSearchAndSelect, textInputChange } = require( './helpers/interactionHelpers.js' );
 const { runSetup, runTeardown } = require( './helpers/functionEditorTestHelpers.js' );
 const expectedNewFunctionPostedToApi = require( './objects/expectedNewFunctionPostedToApi.js' );
@@ -30,11 +29,6 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		};
 		const setupResult = runSetup( pageConfig );
 		apiPostWithEditTokenMock = setupResult.apiPostWithEditTokenMock;
-
-		// Mock the navigateToPage method in PublishDialog.vue to suppress navigation errors from JSDOM
-		if ( PublishDialog && PublishDialog.methods ) {
-			jest.spyOn( PublishDialog.methods, 'navigateToPage' ).mockImplementation( () => {} );
-		}
 	} );
 
 	afterEach( () => {
@@ -126,26 +120,24 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		const secondFrenchArgLabel = frenchArgumentLabels[ 1 ];
 		await textInputChange( secondFrenchArgLabel, 'second argument label, in French' );
 
-		setTimeout( async () => {
-			// ACT: Click publish button.
-			await fireEvent.click( getByText( 'Publish' ) );
+		// ACT: Click publish button.
+		await fireEvent.click( getByText( 'Publish' ) );
 
-			// ACT: Click publish button in dialog.
-			await fireEvent.click( within( await findByRole( 'dialog' ) ).getByText( 'Publish' ) );
+		// ACT: Click publish button in dialog.
+		await fireEvent.click( within( await findByRole( 'dialog' ) ).getByText( 'Publish' ) );
 
-			// ASSERT: Location is changed to page returned by API.
-			await waitFor( () => expect( window.location.href ).toEqual( '/view/en/newPage?success=true' ) );
+		// ASSERT: Location is changed to page returned by API.
+		await waitFor( () => expect( window.location.href ).toEqual( '/view/en/newPage?success=true' ) );
 
-			// ASSERT: Correct ZObject was posted to the API.
-			expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {
-				action: 'wikilambda_edit',
-				format: 'json',
-				formatversion: '2',
-				uselang: 'en',
-				summary: '',
-				zid: undefined,
-				zobject: JSON.stringify( expectedNewFunctionPostedToApi )
-			} );
-		}, 100 );
+		// ASSERT: Correct ZObject was posted to the API.
+		expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {
+			action: 'wikilambda_edit',
+			format: 'json',
+			formatversion: '2',
+			uselang: 'en',
+			summary: '',
+			zid: undefined,
+			zobject: JSON.stringify( expectedNewFunctionPostedToApi )
+		} );
 	} );
 } );

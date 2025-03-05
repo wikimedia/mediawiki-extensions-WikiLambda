@@ -41,16 +41,20 @@
 </template>
 
 <script>
-const { CdxMessage } = require( '../../codex.js' );
 const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
 
 const Constants = require( '../Constants.js' );
-const AboutWidget = require( '../components/widgets/about/About.vue' );
-const FunctionEvaluatorWidget = require( '../components/widgets/function-evaluator/FunctionEvaluator.vue' );
-const FunctionViewerDetails = require( '../components/function/viewer/FunctionViewerDetails.vue' );
 const eventLogMixin = require( '../mixins/eventLogMixin.js' );
 const useMainStore = require( '../store/index.js' );
+
+// Widget components
+const AboutWidget = require( '../components/widgets/about/About.vue' );
+const FunctionEvaluatorWidget = require( '../components/widgets/function-evaluator/FunctionEvaluator.vue' );
+// Function view components
+const FunctionViewerDetails = require( '../components/function/viewer/FunctionViewerDetails.vue' );
+// Codex components
+const { CdxMessage } = require( '../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-viewer-view',

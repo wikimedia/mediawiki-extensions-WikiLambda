@@ -50,8 +50,8 @@ describe( 'FunctionViewerDetails', () => {
 		const allImplementations = [ 'Z333', 'Z444', 'Z555' ];
 
 		store = useMainStore();
-		store.getConnectedTests = createGettersWithFunctionsMock( [ 'Z222' ] );
-		store.getConnectedImplementations = createGettersWithFunctionsMock( [ 'Z444' ] );
+		store.getConnectedTests = [ 'Z222' ];
+		store.getConnectedImplementations = [ 'Z444' ];
 		store.getUserLangCode = 'Z1002';
 		store.getCurrentZObjectId = 'Z666';
 		store.getLanguageOfImplementation = jest.fn( ( zid ) => mockLanguages[ zid ] );
@@ -163,7 +163,7 @@ describe( 'FunctionViewerDetails', () => {
 
 	describe( 'connect & disconnect buttons', () => {
 		it( 'connect checked implementation, without error toast', async () => {
-			const wrapper = shallowMount( FunctionViewerDetails, { props: { rowId: 123 } } );
+			const wrapper = shallowMount( FunctionViewerDetails );
 			await waitFor( () => expect( wrapper.vm.implementationsFetched ).toBeTruthy() );
 
 			const implTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 0 ];
@@ -173,7 +173,6 @@ describe( 'FunctionViewerDetails', () => {
 
 			await waitFor( () => {
 				expect( store.connectImplementations ).toHaveBeenCalledWith( {
-					rowId: 123,
 					zids: [ 'Z333', 'Z555' ]
 				} );
 				expect( wrapper.findComponent( { name: 'cdx-message' } ).exists() ).toBe( false );
@@ -181,7 +180,7 @@ describe( 'FunctionViewerDetails', () => {
 		} );
 
 		it( 'disconnect checked implementation, without error toast', async () => {
-			const wrapper = shallowMount( FunctionViewerDetails, { props: { rowId: 123 } } );
+			const wrapper = shallowMount( FunctionViewerDetails );
 			await waitFor( () => expect( wrapper.vm.implementationsFetched ).toBeTruthy() );
 
 			const implTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 0 ];
@@ -191,7 +190,6 @@ describe( 'FunctionViewerDetails', () => {
 
 			await waitFor( () => {
 				expect( store.disconnectImplementations ).toHaveBeenCalledWith( {
-					rowId: 123,
 					zids: [ 'Z444' ]
 				} );
 				expect( wrapper.findComponent( { name: 'cdx-message' } ).exists() ).toBe( false );
@@ -199,7 +197,7 @@ describe( 'FunctionViewerDetails', () => {
 		} );
 
 		it( 'connect checked tester, without error toast', async () => {
-			const wrapper = shallowMount( FunctionViewerDetails, { props: { rowId: 123 } } );
+			const wrapper = shallowMount( FunctionViewerDetails );
 			await waitFor( () => expect( wrapper.vm.testsFetched ).toBeTruthy() );
 
 			const testTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 1 ];
@@ -209,7 +207,6 @@ describe( 'FunctionViewerDetails', () => {
 
 			await waitFor( () => {
 				expect( store.connectTests ).toHaveBeenCalledWith( {
-					rowId: 123,
 					zids: [ 'Z111' ]
 				} );
 				expect( wrapper.findComponent( { name: 'cdx-message' } ).exists() ).toBe( false );
@@ -217,7 +214,7 @@ describe( 'FunctionViewerDetails', () => {
 		} );
 
 		it( 'disconnect checked tester, without error toast', async () => {
-			const wrapper = shallowMount( FunctionViewerDetails, { props: { rowId: 123 } } );
+			const wrapper = shallowMount( FunctionViewerDetails );
 			await waitFor( () => expect( wrapper.vm.testsFetched ).toBeTruthy() );
 
 			const testTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 1 ];
@@ -227,7 +224,6 @@ describe( 'FunctionViewerDetails', () => {
 
 			await waitFor( () => {
 				expect( store.disconnectTests ).toHaveBeenCalledWith( {
-					rowId: 123,
 					zids: [ 'Z222' ]
 				} );
 				expect( wrapper.findComponent( { name: 'cdx-message' } ).exists() ).toBe( false );
@@ -235,7 +231,7 @@ describe( 'FunctionViewerDetails', () => {
 		} );
 
 		it( 'show error toast when an operation fails', async () => {
-			const wrapper = shallowMount( FunctionViewerDetails, { props: { rowId: 123 } } );
+			const wrapper = shallowMount( FunctionViewerDetails );
 			await waitFor( () => expect( wrapper.vm.testsFetched ).toBeTruthy() );
 
 			const testTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 1 ];

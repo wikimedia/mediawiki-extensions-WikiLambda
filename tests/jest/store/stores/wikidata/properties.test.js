@@ -30,17 +30,6 @@ describe( 'Wikidata Properties Pinia store', () => {
 	} );
 
 	describe( 'Getters', () => {
-		describe( 'getPropertyIdRow', () => {
-
-			it( 'calls getWikidataEntityIdRow for properties', () => {
-				Object.defineProperty( store, 'getWikidataEntityIdRow', {
-					value: jest.fn()
-				} );
-				store.getPropertyIdRow( 10 );
-				expect( store.getWikidataEntityIdRow ).toHaveBeenCalledWith( 10, Constants.Z_WIKIDATA_PROPERTY );
-			} );
-		} );
-
 		describe( 'getPropertyData', () => {
 
 			it( 'returns undefined if property is not available', () => {
@@ -50,32 +39,6 @@ describe( 'Wikidata Properties Pinia store', () => {
 			it( 'returns property data if available', () => {
 				store.properties[ propertyId ] = propertyData;
 				expect( store.getPropertyData( propertyId ) ).toEqual( propertyData );
-			} );
-		} );
-
-		describe( 'getPropertyId', () => {
-			it( 'returns null when row is undefined', () => {
-				const rowId = undefined;
-				const expected = null;
-				expect( store.getPropertyId( rowId ) ).toEqual( expected );
-			} );
-
-			it( 'returns null when row is not found', () => {
-				const rowId = 100;
-				const expected = null;
-				expect( store.getPropertyId( rowId ) ).toEqual( expected );
-			} );
-
-			it( 'returns property ID when row is found', () => {
-				const rowId = 1;
-				const expected = 'P642';
-				Object.defineProperty( store, 'getPropertyIdRow', {
-					value: jest.fn().mockReturnValue( 2 )
-				} );
-				Object.defineProperty( store, 'getZStringTerminalValue', {
-					value: jest.fn().mockReturnValue( expected )
-				} );
-				expect( store.getPropertyId( rowId ) ).toEqual( expected );
 			} );
 		} );
 

@@ -8,37 +8,23 @@
 'use strict';
 
 const {
-	isGenericType,
-	getZObjectType,
-	findKeyInArray,
 	isValidZidFormat,
-	isGlobalKey,
 	getZidOfGlobalKey,
-	getKeyFromKeyList,
-	getArgFromArgList,
 	isKeyTypedListType,
 	isKeyTypedListItem,
 	typeToString,
-	getScaffolding,
-	initializePayloadForType,
-	isTruthyOrEqual
+	getScaffolding
 } = require( '../utils/typeUtils.js' );
 
 module.exports = exports = {
 	methods: {
-		isGenericType,
-		getZObjectType,
-		findKeyInArray,
+		// NOTE: Only add into the mixin those methods
+		// that need to be accessible from components.
 		isValidZidFormat,
-		isGlobalKey,
 		getZidOfGlobalKey,
-		getKeyFromKeyList,
-		getArgFromArgList,
 		isKeyTypedListType,
 		isKeyTypedListItem,
 		typeToString,
-		getScaffolding,
-		initializePayloadForType,
-		isTruthyOrEqual
+		getScaffolding
 	}
 };

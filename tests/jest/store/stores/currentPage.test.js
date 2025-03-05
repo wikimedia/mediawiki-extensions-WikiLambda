@@ -8,8 +8,8 @@
 
 const { createPinia, setActivePinia } = require( 'pinia' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
-const { tableDataToRowObjects, zobjectToRows } = require( '../../helpers/zObjectTableHelpers.js' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const { canonicalToHybrid } = require( '../../../../resources/ext.wikilambda.app/utils/schemata.js' );
 
 describe( 'CurrentPage Pinia store', () => {
 	let store;
@@ -19,13 +19,12 @@ describe( 'CurrentPage Pinia store', () => {
 		store = useMainStore();
 
 		// Initialize the store state
-		store.zobject = [];
+		store.jsonObject = { main: {} };
 		store.currentZid = Constants.NEW_ZID_PLACEHOLDER;
 		store.createNewPage = false;
 		store.initialized = false;
 		store.dirty = false;
 		store.multilingualDataCopy = null;
-
 	} );
 
 	describe( 'Getters', () => {
@@ -64,55 +63,6 @@ describe( 'CurrentPage Pinia store', () => {
 			} );
 		} );
 
-		describe( 'isMainObject', () => {
-
-			it( 'returns false if rowId does not exist', () => {
-				store.zobject = tableDataToRowObjects( [
-					{ id: 0, parent: undefined, key: 'foo', value: 'bar' }
-				] );
-				expect( store.isMainObject( 1 ) ).toBe( false );
-			} );
-
-			it( 'returns true if rowId is the main oldest ancestor', () => {
-				store.zobject = tableDataToRowObjects( [
-					{ id: 0, parent: undefined, key: 'foo', value: 'bar' }
-				] );
-
-				expect( store.isMainObject( 0 ) ).toBe( true );
-			} );
-
-			it( 'returns false if rowId is a detached oldest ancestor', () => {
-				store.zobject = tableDataToRowObjects( [
-					{ id: 0, parent: undefined, key: 'foo', value: 'bar' },
-					{ id: 2, parent: undefined, key: 'foo', value: 'bar' }
-				] );
-
-				expect( store.isMainObject( 2 ) ).toBe( false );
-			} );
-
-			it( 'returns true if rowId is child of the main oldest ancestor', () => {
-				store.zobject = tableDataToRowObjects( [
-					{ id: 0, parent: undefined, key: 'foo', value: 'bar' },
-					{ id: 1, parent: 0, key: 'foo', value: 'bar' },
-					{ id: 2, parent: 1, key: 'foo', value: 'bar' }
-				] );
-
-				expect( store.isMainObject( 2 ) ).toBe( true );
-			} );
-
-			it( 'returns false if rowId is child of a detached oldest ancestor', () => {
-				store.zobject = tableDataToRowObjects( [
-					{ id: 0, parent: undefined, key: 'foo', value: 'bar' },
-					{ id: 1, parent: 0, key: 'foo', value: 'bar' },
-					{ id: 2, parent: undefined, key: 'foo', value: 'bar' },
-					{ id: 3, parent: 2, key: 'foo', value: 'bar' },
-					{ id: 4, parent: 3, key: 'foo', value: 'bar' }
-				] );
-
-				expect( store.isMainObject( 4 ) ).toBe( false );
-			} );
-		} );
-
 		describe( 'getCurrentZObjectId', () => {
 			it( 'returns current persisted Zid being edited or viewed', () => {
 				store.currentZid = 'Z10001';
@@ -122,39 +72,6 @@ describe( 'CurrentPage Pinia store', () => {
 			it( 'returns null Zid (Z0) if new page', () => {
 				store.currentZid = undefined;
 				expect( store.getCurrentZObjectId ).toEqual( 'Z0' );
-			} );
-		} );
-
-		describe( 'getCurrentZObjectType', () => {
-			it( 'returns the type of the persisted content', () => {
-				store.zobject = zobjectToRows( { Z2K2: { Z1K1: 'Z6' } } );
-
-				// Mock the getters
-				Object.defineProperty( store, 'getZObjectTypeByRowId', {
-					value: jest.fn()
-				} );
-				Object.defineProperty( store, 'getZPersistentContentRowId', {
-					value: jest.fn().mockReturnValue( 1 )
-				} );
-
-				expect( store.getCurrentZObjectType ).toEqual( undefined );
-				expect( store.getZPersistentContentRowId ).toHaveBeenCalled();
-				expect( store.getZObjectTypeByRowId ).toHaveBeenCalledWith( 1 );
-			} );
-		} );
-
-		describe( 'getCurrentZImplementationType', () => {
-			it( 'returns the implementation type of the persisted content', () => {
-				store.zobject = zobjectToRows( { Z2K2: { Z1K1: 'Z6' } } );
-				Object.defineProperty( store, 'getZImplementationContentType', {
-					value: jest.fn()
-				} );
-				Object.defineProperty( store, 'getZPersistentContentRowId', {
-					value: jest.fn().mockReturnValue( 1 )
-				} );
-				expect( store.getCurrentZImplementationType ).toEqual( undefined );
-				expect( store.getZPersistentContentRowId ).toHaveBeenCalled();
-				expect( store.getZImplementationContentType ).toHaveBeenCalledWith( 1 );
 			} );
 		} );
 
@@ -231,6 +148,7 @@ describe( 'CurrentPage Pinia store', () => {
 						{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'description' }
 					]
 				};
+				const inputs = [];
 				const zobject = {
 					Z1K1: 'Z2',
 					Z2K1: { Z1K1: 'Z6', Z6K1: 'Z1234' },
@@ -245,7 +163,8 @@ describe( 'CurrentPage Pinia store', () => {
 				expect( store.multilingualDataCopy ).toEqual( {
 					names,
 					descriptions,
-					aliases
+					aliases,
+					inputs
 				} );
 			} );
 		} );
@@ -261,40 +180,56 @@ describe( 'CurrentPage Pinia store', () => {
 					] },
 					descriptions: { Z1K1: 'Z12', Z12K1: [ 'Z11',
 						{ Z1K1: 'Z11', Z11K1: 'Z1004', Z11K2: 'original description' }
-					] }
+					] },
+					inputs: [
+						{ Z1K1: 'Z12', Z12K1: [ 'Z11',
+							{ Z1K1: 'Z11', Z11K1: 'Z1004', Z11K2: 'original input 1' }
+						] },
+						{ Z1K1: 'Z12', Z12K1: [ 'Z11',
+							{ Z1K1: 'Z11', Z11K1: 'Z1004', Z11K2: 'original input 2' }
+						] }
+					]
 				};
-				store.injectZObjectFromRowId = jest.fn();
+				store.setValueByKeyPath = jest.fn();
 				store.multilingualDataCopy = multilingualDataCopy;
-				store.zobject = zobjectToRows( {
-					Z2K3: { // rowId 1
-						Z1K1: 'Z12',
-						Z12K1: [ 'Z11' ]
+				store.jsonObject.main = canonicalToHybrid( {
+					Z2K2: {
+						Z1K1: 'Z8',
+						Z8K1: [ 'Z17',
+							{ Z1K1: 'Z17', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } },
+							{ Z1K1: 'Z17', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } }
+						]
 					},
-					Z2K4: { // rowId 9
-						Z1K1: 'Z32',
-						Z32K1: [ 'Z31' ]
-					},
-					Z2K5: { // rowId 17
-						Z1K1: 'Z12',
-						Z12K1: [ 'Z11' ]
-					}
+					Z2K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] },
+					Z2K4: { Z1K1: 'Z32', Z32K1: [ 'Z31' ] },
+					Z2K5: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
 				} );
 
 				store.resetMultilingualData();
 
-				expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( {
-					rowId: 1,
-					value: multilingualDataCopy.names
+				expect( store.setValueByKeyPath ).toHaveBeenCalledWith( {
+					keyPath: [ 'main', 'Z2K3' ],
+					value: canonicalToHybrid( multilingualDataCopy.names )
 				} );
 
-				expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( {
-					rowId: 9,
-					value: multilingualDataCopy.aliases
+				expect( store.setValueByKeyPath ).toHaveBeenCalledWith( {
+					keyPath: [ 'main', 'Z2K4' ],
+					value: canonicalToHybrid( multilingualDataCopy.aliases )
 				} );
 
-				expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( {
-					rowId: 17,
-					value: multilingualDataCopy.descriptions
+				expect( store.setValueByKeyPath ).toHaveBeenCalledWith( {
+					keyPath: [ 'main', 'Z2K5' ],
+					value: canonicalToHybrid( multilingualDataCopy.descriptions )
+				} );
+
+				expect( store.setValueByKeyPath ).toHaveBeenCalledWith( {
+					keyPath: [ 'main', 'Z2K2', 'Z8K1', 1, 'Z17K3' ],
+					value: canonicalToHybrid( multilingualDataCopy.inputs[ 0 ] )
+				} );
+
+				expect( store.setValueByKeyPath ).toHaveBeenCalledWith( {
+					keyPath: [ 'main', 'Z2K2', 'Z8K1', 2, 'Z17K3' ],
+					value: canonicalToHybrid( multilingualDataCopy.inputs[ 1 ] )
 				} );
 			} );
 		} );

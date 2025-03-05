@@ -9,7 +9,7 @@
 const { shallowMount } = require( '@vue/test-utils' );
 
 const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
-const WikidataLexemeForm = require( '../../../../../resources/ext.wikilambda.app/components/default-view-types/wikidata/LexemeForm.vue' );
+const WikidataLexemeForm = require( '../../../../../resources/ext.wikilambda.app/components/types/wikidata/LexemeForm.vue' );
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 const { createGettersWithFunctionsMock } = require( '../../../helpers/getterHelpers.js' );
 
@@ -25,14 +25,29 @@ const lexemeFormData = {
 	claims: {}
 };
 
+// General configuration: wikidata reference
+const keyPath = 'main.Z2K2';
+const objectValue = {
+	Z1K1: { Z1K1: 'Z9', Z9K1: 'Z6094' },
+	Z6094K1: { Z1K1: 'Z6', Z6K1: 'L333333-F5' }
+};
+
+// Fetch form
+const objectValueFetch = {
+	Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+	Z7K1: { Z1K1: 'Z9', Z9K1: 'Z6824' },
+	Z6824K1: {
+		Z1K1: { Z1K1: 'Z9', Z9K1: 'Z6094' },
+		Z6094K1: { Z1K1: 'Z6', Z6K1: 'L333333-F5' }
+	}
+};
+
 describe( 'WikidataLexemeForm', () => {
 	let store;
+
 	beforeEach( () => {
 		store = useMainStore();
 		store.getLexemeFormData = createGettersWithFunctionsMock();
-		store.getLexemeFormIdRow = createGettersWithFunctionsMock( { id: 1 } );
-		store.getLexemeFormId = createGettersWithFunctionsMock( lexemeFormId );
-		store.getZStringTerminalValue = createGettersWithFunctionsMock( lexemeFormId );
 		store.getUserLangCode = 'en';
 	} );
 
@@ -40,6 +55,8 @@ describe( 'WikidataLexemeForm', () => {
 		it( 'renders wikidata lexeme form reference without errors', () => {
 			const wrapper = shallowMount( WikidataLexemeForm, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false,
 					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM
 				}
@@ -50,6 +67,8 @@ describe( 'WikidataLexemeForm', () => {
 		it( 'renders wikidata lexeme form fetch function without errors', () => {
 			const wrapper = shallowMount( WikidataLexemeForm, {
 				props: {
+					keyPath,
+					objectValue: objectValueFetch,
 					edit: false,
 					type: Constants.Z_FUNCTION_CALL
 				}
@@ -62,6 +81,8 @@ describe( 'WikidataLexemeForm', () => {
 
 			const wrapper = shallowMount( WikidataLexemeForm, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false,
 					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM
 				}
@@ -75,6 +96,8 @@ describe( 'WikidataLexemeForm', () => {
 		it( 'renders the lexeme external link if data is not available', () => {
 			const wrapper = shallowMount( WikidataLexemeForm, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false,
 					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM
 				}
@@ -90,6 +113,8 @@ describe( 'WikidataLexemeForm', () => {
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( WikidataLexemeForm, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM
 				}
@@ -100,6 +125,8 @@ describe( 'WikidataLexemeForm', () => {
 		it( 'renders blank wikidata entity selector', () => {
 			const wrapper = shallowMount( WikidataLexemeForm, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM
 				}
@@ -111,6 +138,8 @@ describe( 'WikidataLexemeForm', () => {
 		it( 'renders wikidata entity selector', () => {
 			const wrapper = shallowMount( WikidataLexemeForm, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM
 				}
@@ -124,6 +153,8 @@ describe( 'WikidataLexemeForm', () => {
 
 			const wrapper = shallowMount( WikidataLexemeForm, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM
 				}
@@ -140,6 +171,8 @@ describe( 'WikidataLexemeForm', () => {
 		it( 'initializes wikidata entity selector input value with delayed fetch response', async () => {
 			const wrapper = shallowMount( WikidataLexemeForm, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM
 				}
@@ -161,6 +194,8 @@ describe( 'WikidataLexemeForm', () => {
 		it( 'sets lexeme form reference ID when selecting option from the menu', async () => {
 			const wrapper = shallowMount( WikidataLexemeForm, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM
 				}
@@ -182,6 +217,8 @@ describe( 'WikidataLexemeForm', () => {
 		it( 'sets lexeme form fetch function ID when selecting option from the menu', async () => {
 			const wrapper = shallowMount( WikidataLexemeForm, {
 				props: {
+					keyPath,
+					objectValue: objectValueFetch,
 					edit: true,
 					type: Constants.Z_FUNCTION_CALL
 				}

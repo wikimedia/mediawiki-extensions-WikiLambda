@@ -8,27 +8,23 @@
 
 const { shallowMount } = require( '@vue/test-utils' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
-const ZHTMLFragment = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZHTMLFragment.vue' );
-const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
-const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../helpers/getterHelpers.js' );
+const ZHTMLFragment = require( '../../../../resources/ext.wikilambda.app/components/types/ZHTMLFragment.vue' );
+
+// General use
+const keyPath = 'main.Z2K2';
+const objectValue = {
+	Z1K1: { Z1K1: 'Z9', Z9K1: 'Z89' },
+	Z89K1: { Z1K1: 'Z6', Z6K1: '<b>hello</b>' }
+};
 
 describe( 'ZHTMLFragment', () => {
-	let store;
-	beforeEach( () => {
-		store = useMainStore();
-		store.getZHTMLFragmentTerminalValue = createGettersWithFunctionsMock( '<b>hello</b>' );
-		store.getLabelData = createLabelDataMock( {
-			Z89: 'HTML Fragment'
-		} );
-		store.getUserLangCode = 'en';
-	} );
-
 	describe( 'in view mode', () => {
 		it( 'renders the code editor in read-only mode with the correct value', () => {
 			const wrapper = shallowMount( ZHTMLFragment, {
 				props: {
-					edit: false,
-					rowId: 1
+					keyPath,
+					objectValue,
+					edit: false
 				}
 			} );
 			const editor = wrapper.findComponent( { name: 'code-editor' } );
@@ -43,8 +39,9 @@ describe( 'ZHTMLFragment', () => {
 		it( 'renders the code editor in editable mode', () => {
 			const wrapper = shallowMount( ZHTMLFragment, {
 				props: {
-					edit: true,
-					rowId: 1
+					keyPath,
+					objectValue,
+					edit: true
 				}
 			} );
 			const editor = wrapper.findComponent( { name: 'code-editor' } );
@@ -57,8 +54,9 @@ describe( 'ZHTMLFragment', () => {
 		it( 'emits set-value event with correct payload when setValue is called', async () => {
 			const wrapper = shallowMount( ZHTMLFragment, {
 				props: {
-					edit: true,
-					rowId: 1
+					keyPath,
+					objectValue,
+					edit: true
 				}
 			} );
 			const editor = wrapper.findComponent( { name: 'code-editor' } );

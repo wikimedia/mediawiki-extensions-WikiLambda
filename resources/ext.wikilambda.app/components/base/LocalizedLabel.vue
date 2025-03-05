@@ -19,6 +19,7 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
+
 const LabelData = require( '../../store/classes/LabelData.js' );
 const useMainStore = require( '../../store/index.js' );
 

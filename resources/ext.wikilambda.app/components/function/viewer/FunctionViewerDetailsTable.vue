@@ -38,7 +38,7 @@
 				<div v-else>
 					<a :href="addLink" data-testid="add-link">
 						<cdx-button weight="quiet" aria-label="Add">
-							<cdx-icon :icon="icons.cdxIconAdd"></cdx-icon>
+							<cdx-icon :icon="iconAdd"></cdx-icon>
 						</cdx-button>
 					</a>
 				</div>
@@ -157,7 +157,7 @@ module.exports = exports = defineComponent( {
 	},
 	data: function () {
 		return {
-			icons: icons
+			iconAdd: icons.cdxIconAdd
 		};
 	},
 	computed: {

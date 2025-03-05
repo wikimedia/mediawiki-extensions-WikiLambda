@@ -44,14 +44,19 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
-const { CdxButton } = require( '../../../../codex.js' );
+
 const Constants = require( '../../../Constants.js' );
 const eventLogMixin = require( '../../../mixins/eventLogMixin.js' );
 const urlUtils = require( '../../../utils/urlUtils.js' );
 const useMainStore = require( '../../../store/index.js' );
+
+// Base components
+const WidgetBase = require( '../../base/WidgetBase.vue' );
+// Widget components
 const LeaveEditorDialog = require( './LeaveEditorDialog.vue' );
 const PublishDialog = require( './PublishDialog.vue' );
-const WidgetBase = require( '../../base/WidgetBase.vue' );
+// Codex components
+const { CdxButton } = require( '../../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-publish-widget',
@@ -82,6 +87,7 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
+		'getQueryParams',
 		'getCurrentZObjectId',
 		'getCurrentZObjectType',
 		'getCurrentZImplementationType',
@@ -104,6 +110,18 @@ module.exports = exports = defineComponent( {
 				zlang: this.getUserLangZid || null,
 				isdirty: this.isDirty
 			};
+		},
+		/**
+		 * If 'oldid' or 'undo' exist in the query (and are not empty), return true.
+		 * If true, this enables the Publish button without needing an event.
+		 *
+		 * @return {boolean}
+		 */
+		revertToEdit: function () {
+			return ( !this.isCreateNewPage && this.getQueryParams && (
+				( typeof this.getQueryParams.oldid === 'string' && this.getQueryParams.oldid.trim() !== '' ) ||
+				( typeof this.getQueryParams.undo === 'string' && this.getQueryParams.undo.trim() !== '' )
+			) );
 		}
 	} ),
 	methods: Object.assign( {}, mapActions( useMainStore, [
@@ -122,16 +140,6 @@ module.exports = exports = defineComponent( {
 		 */
 		closeLeaveDialog: function () {
 			this.showLeaveEditorDialog = false;
-		},
-
-		/**
-		 * If 'oldid' exists in the query, return true.
-		 * If true, this enables the Publish button without needing an event.
-		 *
-		 * @return {boolean}
-		 */
-		revertToEdit: function () {
-			return !!( urlUtils.getParameterByName( 'oldid' ) || urlUtils.getParameterByName( 'undo' ) );
 		},
 
 		/**
@@ -193,7 +201,12 @@ module.exports = exports = defineComponent( {
 			 * - the link is a button
 			 * we are staying in this page, so there's no need to handle cancelation
 			 */
-			if ( !target.href || target.target === '_blank' || urlUtils.isLinkCurrentPath( target.href ) || target.role === 'button' ) {
+			if (
+				!target.href ||
+				target.target === '_blank' ||
+				urlUtils.isLinkCurrentPath( target.href ) ||
+				target.role === 'button'
+			) {
 				return;
 			}
 			// Else, abandon the page

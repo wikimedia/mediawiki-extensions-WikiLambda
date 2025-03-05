@@ -94,6 +94,10 @@ describe( 'schemata', () => {
 		expect( hybridToCanonical( { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z400' } ) ).toEqual( 'Z400' );
 	} );
 
+	it( 'canonicalizes empty reference', () => {
+		expect( hybridToCanonical( { Z1K1: Constants.Z_REFERENCE, Z9K1: '' } ) ).toEqual( { Z1K1: Constants.Z_REFERENCE, Z9K1: '' } );
+	} );
+
 	it( 'canonicalizes real suspicious-lookin\' Z6s', () => {
 		expect( hybridToCanonical( { Z1K1: Constants.Z_STRING, Z6K1: 'Z400' } ) ).toEqual( { Z1K1: Constants.Z_STRING, Z6K1: 'Z400' } );
 	} );
@@ -182,8 +186,8 @@ describe( 'schemata', () => {
 		expect( hybridToCanonical( { Z1K1: Constants.Z_STRING } ) ).toEqual( '' );
 	} );
 
-	it( 'canonicalize an undefined reference ID as an empty string', () => {
-		expect( hybridToCanonical( { Z1K1: Constants.Z_REFERENCE } ) ).toEqual( '' );
+	it( 'canonicalize an undefined reference ID as an empty reference object', () => {
+		expect( hybridToCanonical( { Z1K1: Constants.Z_REFERENCE } ) ).toEqual( { Z1K1: Constants.Z_REFERENCE, Z9K1: '' } );
 	} );
 
 	it( 'canonicalize an undefined zobject as undefined', () => {

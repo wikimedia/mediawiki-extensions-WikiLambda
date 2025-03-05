@@ -10,8 +10,9 @@
 </template>
 
 <script>
-const clipboardMixin = require( '../../mixins/clipboardMixin.js' );
 const { defineComponent } = require( 'vue' );
+
+const clipboardMixin = require( '../../mixins/clipboardMixin.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-clipboard-manager',
@@ -77,7 +78,6 @@ module.exports = exports = defineComponent( {
 			);
 		}
 	},
-
 	mounted() {
 		window.addEventListener( 'click', this.handleEvent );
 		window.addEventListener( 'keydown', this.handleEvent );

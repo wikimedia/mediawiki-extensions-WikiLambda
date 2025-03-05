@@ -17,7 +17,7 @@
 				:id="descriptionInputId"
 				:lang="description ? langLabelData.langCode : undefined"
 				:dir="description ? langLabelData.langDir : undefined"
-				:model-value="description"
+				:model-value="description ? description.value : ''"
 				class="ext-wikilambda-app-function-editor-description__input"
 				:aria-label="descriptionLabel"
 				:placeholder="descriptionInputPlaceholder"
@@ -35,11 +35,14 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
-const { CdxTextArea } = require( '../../../../codex.js' );
 const Constants = require( '../../../Constants.js' );
-const FunctionEditorField = require( './FunctionEditorField.vue' );
 const LabelData = require( '../../../store/classes/LabelData.js' );
 const useMainStore = require( '../../../store/index.js' );
+
+// Function editor components
+const FunctionEditorField = require( './FunctionEditorField.vue' );
+// Codex components
+const { CdxTextArea } = require( '../../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-description',
@@ -68,39 +71,16 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
-		'getRowByKeyPath',
-		'getZMonolingualTextValue',
 		'getZPersistentDescription'
 	] ), {
 		/**
-		 * Returns the Short Description (Z2K5) row for the
-		 * appropriate language
+		 * Finds the Description (Z2K5) for the given language and returns
+		 * its keyPath and value if found. Else, returns undefined.
 		 *
 		 * @return {Object|undefined}
 		 */
-		descriptionRow: function () {
-			return this.zLanguage ?
-				this.getZPersistentDescription( this.zLanguage ) :
-				undefined;
-		},
-		/**
-		 * Returns true if the current zObject has a description object
-		 *
-		 * @return {boolean}
-		 */
-		hasDescription: function () {
-			return this.descriptionRow !== undefined;
-		},
-		/**
-		 * Returns the description value for the given language.
-		 * If value is not available, returns empty string
-		 *
-		 * @return {string}
-		 */
 		description: function () {
-			return this.hasDescription ?
-				this.getZMonolingualTextValue( this.descriptionRow.id ) :
-				'';
+			return this.zLanguage ? this.getZPersistentDescription( this.zLanguage ) : undefined;
 		},
 		/**
 		 * Returns the label for the description field
@@ -138,9 +118,7 @@ module.exports = exports = defineComponent( {
 		}
 	} ),
 	methods: Object.assign( {}, mapActions( useMainStore, [
-		'changeType',
-		'removeItemFromTypedList',
-		'setValueByRowIdAndPath'
+		'setZMonolingualString'
 	] ), {
 		/**
 		 * Updates the remainingChars data property as the user types into the Z2K5 field
@@ -161,47 +139,24 @@ module.exports = exports = defineComponent( {
 				return;
 			}
 
-			const value = event.target.value;
-
-			if ( this.hasDescription ) {
-				if ( value === '' ) {
-					this.removeItemFromTypedList( { rowId: this.descriptionRow.id } );
-				} else {
-					this.setValueByRowIdAndPath( {
-						rowId: this.descriptionRow.id,
-						keyPath: [
-							Constants.Z_MONOLINGUALSTRING_VALUE,
-							Constants.Z_STRING_VALUE
-						],
-						value
-					} );
-				}
-			} else {
-				// If this.descriptionRow is undefined, there's no monolingual string
-				// for the given language, so we create a new monolingual string
-				// with the new value and append to the parent list.
-				const parentRow = this.getRowByKeyPath( [
+			this.setZMonolingualString( {
+				parentKeyPath: [
+					Constants.STORED_OBJECTS.MAIN,
 					Constants.Z_PERSISTENTOBJECT_DESCRIPTION,
 					Constants.Z_MULTILINGUALSTRING_VALUE
-				] );
-				if ( !parentRow ) {
-					// This should never happen because all Z2Kn's are initialized
-					return;
-				}
-				this.changeType( {
-					id: parentRow.id,
-					type: Constants.Z_MONOLINGUALSTRING,
-					lang: this.zLanguage,
-					value,
-					append: true
-				} );
-			}
+				],
+				itemKeyPath: this.description ? this.description.keyPath : undefined,
+				value: event.target.value,
+				lang: this.zLanguage
+			} );
+
 			this.$emit( 'description-updated' );
 		}
 	} ),
 	mounted: function () {
 		this.$nextTick( function () {
-			this.remainingChars = this.maxDescriptionChars - this.description.length;
+			this.remainingChars = this.maxDescriptionChars -
+				( this.description ? this.description.value.length : 0 );
 		} );
 	},
 	beforeUnmount() {

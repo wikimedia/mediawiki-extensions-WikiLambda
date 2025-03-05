@@ -9,32 +9,47 @@
 const { shallowMount } = require( '@vue/test-utils' );
 
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
-const ZArgumentReference = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZArgumentReference.vue' );
+const ZArgumentReference = require( '../../../../resources/ext.wikilambda.app/components/types/ZArgumentReference.vue' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../helpers/getterHelpers.js' );
+
+// General use
+const keyPath = 'main.Z2K2.Z14K2';
+const objectValue = {
+	Z1K1: { Z1K1: 'Z9', Z9K1: 'Z18' },
+	Z18K1: { Z1K1: 'Z6', Z6K1: 'Z10001K1' }
+};
+
+// Empty value
+const emptyValue = {
+	Z1K1: { Z1K1: 'Z9', Z9K1: 'Z18' },
+	Z18K1: { Z1K1: 'Z6', Z6K1: '' }
+};
+
+// Terminal value
+const terminalKeyPath = 'main.Z2K2.Z14K2.Z18K1';
+const terminalValue = { Z1K1: 'Z6', Z6K1: 'Z10001K1' };
 
 describe( 'ZArgumentReference', () => {
 	let store;
 
 	beforeEach( () => {
 		store = useMainStore();
-		store.getZImplementationFunctionZid = createGettersWithFunctionsMock( 'Z10001' );
+		store.getCurrentTargetFunctionZid = 'Z10001';
 		store.getLabelData = createLabelDataMock();
-		store.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z802K1' );
-		store.getZStringTerminalValue = createGettersWithFunctionsMock( 'Z10001K1' );
-		store.getRowByKeyPath = createGettersWithFunctionsMock( { id: 2 } );
 		store.getInputsOfFunctionZid = createGettersWithFunctionsMock( [
 			{ Z17K2: 'Z10001K1' },
 			{ Z17K2: 'Z10001K2' },
 			{ Z17K2: 'Z10001K3' }
 		] );
-		store.getZPersistentContentRowId = createGettersWithFunctionsMock( 1 );
 	} );
 
 	describe( 'in view mode', () => {
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( ZArgumentReference, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false
 				}
 			} );
@@ -43,11 +58,10 @@ describe( 'ZArgumentReference', () => {
 		} );
 
 		it( 'displays empty string when nothing selected', () => {
-			store.getRowByKeyPath = createGettersWithFunctionsMock( undefined );
-			store.getZStringTerminalValue = createGettersWithFunctionsMock( undefined );
-
 			const wrapper = shallowMount( ZArgumentReference, {
 				props: {
+					keyPath,
+					objectValue: emptyValue,
 					edit: false
 				}
 			} );
@@ -59,6 +73,8 @@ describe( 'ZArgumentReference', () => {
 
 			const wrapper = shallowMount( ZArgumentReference, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false
 				}
 			} );
@@ -70,6 +86,8 @@ describe( 'ZArgumentReference', () => {
 
 			const wrapper = shallowMount( ZArgumentReference, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false
 				}
 			} );
@@ -81,6 +99,8 @@ describe( 'ZArgumentReference', () => {
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( ZArgumentReference, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true
 				}
 			} );
@@ -96,6 +116,8 @@ describe( 'ZArgumentReference', () => {
 
 			const wrapper = shallowMount( ZArgumentReference, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true
 				}
 			} );
@@ -113,11 +135,12 @@ describe( 'ZArgumentReference', () => {
 		} );
 
 		it( 'renders the selector with empty value set', () => {
-			store.getRowByKeyPath = createGettersWithFunctionsMock( undefined );
-			store.getZStringTerminalValue = createGettersWithFunctionsMock( undefined );
+			store.getInputsOfFunctionZid = createGettersWithFunctionsMock( [] );
 
 			const wrapper = shallowMount( ZArgumentReference, {
 				props: {
+					keyPath,
+					objectValue: emptyValue,
 					edit: true
 				}
 			} );
@@ -128,6 +151,8 @@ describe( 'ZArgumentReference', () => {
 		it( 'renders the selector with current value set', () => {
 			const wrapper = shallowMount( ZArgumentReference, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true
 				}
 			} );
@@ -138,6 +163,8 @@ describe( 'ZArgumentReference', () => {
 		it( 'selects a new value when the component is used for the whole Z18 object in collapsed mode', () => {
 			const wrapper = shallowMount( ZArgumentReference, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true
 				}
 			} );
@@ -153,10 +180,10 @@ describe( 'ZArgumentReference', () => {
 		} );
 
 		it( 'selects a new value when the component used for Z18K1 key', () => {
-			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z18K1' );
-
 			const wrapper = shallowMount( ZArgumentReference, {
 				props: {
+					keyPath: terminalKeyPath,
+					objectValue: terminalValue,
 					edit: true
 				}
 			} );

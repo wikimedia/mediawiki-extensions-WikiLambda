@@ -26,6 +26,7 @@ describe( 'Publish widget', () => {
 		store.getUserLangZid = 'Z1002';
 		store.getUserLangCode = 'en';
 		store.waitForRunningParsers = Promise.resolve();
+		store.clearValidationErrors.mockReturnValue( true );
 		store.validateZObject.mockReturnValue( true );
 	} );
 
@@ -126,7 +127,6 @@ describe( 'Publish widget', () => {
 	} );
 
 	describe( 'Event logging', () => {
-
 		it( 'emits cancel event when leaving a create function page', async () => {
 			store.isCreateNewPage = true;
 			store.getCurrentZObjectType = 'Z8';
@@ -167,6 +167,50 @@ describe( 'Publish widget', () => {
 
 			await waitFor( () => expect( mw.eventLog.submitInteraction ).toHaveBeenCalledWith( streamName, schemaID, action, interactionData ) );
 		} );
+	} );
 
+	describe( 'Disabling Publish button', () => {
+		it( 'disables publish button if not dirty', () => {
+			store.isCreateNewPage = false;
+			store.getQueryParams = {};
+
+			const wrapper = shallowMount( PublishWidget, {
+				props: { isDirty: false },
+				global: { stubs: { WlWidgetBase: false, CdxButton: false } }
+			} );
+
+			const button = wrapper.find( '.ext-wikilambda-app-publish-widget__publish-button' );
+			expect( button.attributes( 'disabled' ) ).toBeDefined();
+		} );
+
+		it( 'enables publish button if oldid', () => {
+			store.isCreateNewPage = false;
+			store.getQueryParams = {
+				oldid: '12345'
+			};
+
+			const wrapper = shallowMount( PublishWidget, {
+				props: { isDirty: false },
+				global: { stubs: { WlWidgetBase: false, CdxButton: false } }
+			} );
+
+			const button = wrapper.find( '.ext-wikilambda-app-publish-widget__publish-button' );
+			expect( button.attributes( 'disabled' ) ).not.toBeDefined();
+		} );
+
+		it( 'enables publish button if undo', () => {
+			store.isCreateNewPage = false;
+			store.getQueryParams = {
+				undo: '12345'
+			};
+
+			const wrapper = shallowMount( PublishWidget, {
+				props: { isDirty: false },
+				global: { stubs: { WlWidgetBase: false, CdxButton: false } }
+			} );
+
+			const button = wrapper.find( '.ext-wikilambda-app-publish-widget__publish-button' );
+			expect( button.attributes( 'disabled' ) ).not.toBeDefined();
+		} );
 	} );
 } );

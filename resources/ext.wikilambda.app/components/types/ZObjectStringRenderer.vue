@@ -49,9 +49,10 @@
 		<!-- If expanded is true, show key-value set -->
 		<template v-else>
 			<wl-z-object-key-value-set
-				:row-id="rowId"
+				:key-path="keyPath"
+				:object-value="objectValue"
 				:edit="edit"
-				:depth="depth"
+				:type="type"
 				@set-type="setType"
 			></wl-z-object-key-value-set>
 		</template>
@@ -82,17 +83,20 @@
 </template>
 
 <script>
-const { CdxDialog, CdxMessage, CdxTextInput } = require( '../../../codex.js' );
 const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
 
 const Constants = require( '../../Constants.js' );
 const errorMixin = require( '../../mixins/errorMixin.js' );
-const typeMixin = require( '../../mixins/typeMixin.js' );
-const { getValueFromCanonicalZMap, hybridToCanonical } = require( '../../utils/schemata.js' );
+const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
+const { getValueFromCanonicalZMap, canonicalToHybrid, hybridToCanonical } = require( '../../utils/schemata.js' );
 const urlUtils = require( '../../utils/urlUtils.js' );
 const useMainStore = require( '../../store/index.js' );
+
+// Type components:
 const ZObjectKeyValueSet = require( './ZObjectKeyValueSet.vue' );
+// Codex components:
+const { CdxDialog, CdxMessage, CdxTextInput } = require( '../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-object-string-renderer',
@@ -102,25 +106,23 @@ module.exports = exports = defineComponent( {
 		'cdx-text-input': CdxTextInput,
 		'wl-z-object-key-value-set': ZObjectKeyValueSet
 	},
-	mixins: [ typeMixin, errorMixin ],
+	mixins: [ errorMixin, zobjectMixin ],
 	props: {
-		rowId: {
-			type: Number,
-			required: false,
-			default: 0
+		keyPath: {
+			type: String,
+			required: true
+		},
+		objectValue: {
+			type: [ Object, Array ],
+			required: true
 		},
 		edit: {
 			type: Boolean,
 			required: true
 		},
-		depth: {
-			type: Number,
-			required: true
-		},
 		type: {
 			type: String,
-			required: false,
-			default: undefined
+			required: true
 		},
 		expanded: {
 			type: Boolean,
@@ -150,7 +152,6 @@ module.exports = exports = defineComponent( {
 		'getStoredObject',
 		'getUserLangCode',
 		'getUserLangZid',
-		'getZObjectAsJsonById',
 		'isCreateNewPage',
 		'getValidRendererTests'
 	] ), {
@@ -286,7 +287,7 @@ module.exports = exports = defineComponent( {
 				this.initializeBlankObject();
 			}
 
-			const zobject = hybridToCanonical( this.getZObjectAsJsonById( this.rowId ) );
+			const zobject = hybridToCanonical( this.objectValue );
 
 			// If zobject is blank, exit renderer.
 			if ( JSON.stringify( zobject ) === JSON.stringify( this.blankObject ) ) {
@@ -371,7 +372,7 @@ module.exports = exports = defineComponent( {
 					this.pendingPromises.push( data.resolver );
 					this.$emit( 'set-value', {
 						keyPath: [],
-						value: response,
+						value: canonicalToHybrid( response ),
 						callback: () => data.resolver.resolve()
 					} );
 				}
@@ -382,24 +383,21 @@ module.exports = exports = defineComponent( {
 		},
 		/**
 		 * Resets the parsed key-values to a blank state.
-		 * To do this, it emits a setType event with the current type
-		 * which will make the parent ZObjectKeyValue component run
-		 * the changeType action.
 		 */
 		clearParsedValue: function () {
 			this.$emit( 'set-value', {
 				keyPath: [],
-				value: this.blankObject
+				value: canonicalToHybrid( this.blankObject )
 			} );
 		},
 		/**
-		 * Saves the given error message for current rowId
+		 * Saves the given error message for current errorId
 		 *
 		 * @param {string} errorMessage
 		 */
 		setRendererError: function ( errorMessage ) {
 			this.setError( {
-				rowId: this.rowId,
+				errorId: this.keyPath,
 				errorType: Constants.ERROR_TYPES.ERROR,
 				errorMessage
 			} );
@@ -459,6 +457,8 @@ module.exports = exports = defineComponent( {
 		 * Create the model for a blank object of this type and store it locally.
 		 * This initialization will only be run once, and only when we know for
 		 * sure that the typeObject is available.
+		 * The blank object is in canonical form, but it must be transformed into
+		 * hybrid form before setting it up in the store zobject.
 		 */
 		initializeBlankObject: function () {
 			this.blankObject = hybridToCanonical( this.createObjectByType( { type: this.type } ) );

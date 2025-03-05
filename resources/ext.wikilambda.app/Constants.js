@@ -270,6 +270,110 @@ Constants.BUILTIN_COMPONENTS = {
 	[ Constants.Z_TYPED_LIST ]: 'wl-z-typed-list'
 };
 
+Constants.BUILTIN_TYPE_CONFIG = {
+	[ Constants.Z_ARGUMENT_REFERENCE ]: {
+		hasBuiltin: true,
+		component: 'wl-z-argument-reference',
+		allowExpansion: true
+	},
+	[ Constants.Z_FUNCTION_CALL ]: {
+		hasBuiltin: true,
+		component: 'wl-z-function-call',
+		allowExpansion: true
+	},
+	[ Constants.Z_HTML_FRAGMENT ]: {
+		hasBuiltin: true,
+		component: 'wl-z-html-fragment',
+		allowExpansion: false
+	},
+	[ Constants.Z_RESPONSEENVELOPE ]: {
+		hasBuiltin: false,
+		component: 'wl-z-evaluation-result',
+		allowExpansion: true
+	},
+	[ Constants.Z_IMPLEMENTATION ]: {
+		hasBuiltin: true,
+		component: 'wl-z-implementation',
+		allowExpansion: false
+	},
+	[ Constants.Z_TESTER ]: {
+		hasBuiltin: true,
+		component: 'wl-z-tester',
+		allowExpansion: false
+	},
+	[ Constants.Z_MONOLINGUALSTRING ]: {
+		hasBuiltin: true,
+		component: 'wl-z-monolingual-string',
+		allowExpansion: true
+	},
+	[ Constants.Z_STRING ]: {
+		hasBuiltin: true,
+		component: 'wl-z-string',
+		allowExpansion: false
+	},
+	[ Constants.Z_REFERENCE ]: {
+		hasBuiltin: true,
+		component: 'wl-z-reference',
+		allowExpansion: false
+	},
+	[ Constants.Z_BOOLEAN ]: {
+		hasBuiltin: true,
+		component: 'wl-z-boolean',
+		allowExpansion: true
+	},
+	[ Constants.Z_CODE ]: {
+		hasBuiltin: true,
+		component: 'wl-z-code',
+		allowExpansion: false
+	},
+	[ Constants.Z_TYPED_LIST ]: {
+		hasBuiltin: true,
+		component: 'wl-z-typed-list',
+		allowExpansion: true,
+		expandToSelf: true
+	},
+	[ Constants.Z_WIKIDATA_ITEM ]: {
+		hasBuiltin: true,
+		component: 'wl-wikidata-item',
+		allowExpansion: true
+	},
+	[ Constants.Z_WIKIDATA_REFERENCE_ITEM ]: {
+		hasBuiltin: true,
+		component: 'wl-wikidata-item',
+		allowExpansion: true
+	},
+	[ Constants.Z_WIKIDATA_LEXEME ]: {
+		hasBuiltin: true,
+		component: 'wl-wikidata-lexeme',
+		allowExpansion: true
+	},
+	[ Constants.Z_WIKIDATA_REFERENCE_LEXEME ]: {
+		hasBuiltin: true,
+		component: 'wl-wikidata-lexeme',
+		allowExpansion: true
+	},
+	[ Constants.Z_WIKIDATA_LEXEME_FORM ]: {
+		hasBuiltin: true,
+		component: 'wl-wikidata-lexeme-form',
+		allowExpansion: true
+	},
+	[ Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM ]: {
+		hasBuiltin: true,
+		component: 'wl-wikidata-lexeme-form',
+		allowExpansion: true
+	},
+	[ Constants.Z_WIKIDATA_PROPERTY ]: {
+		hasBuiltin: true,
+		component: 'wl-wikidata-property',
+		allowExpansion: true
+	},
+	[ Constants.Z_WIKIDATA_REFERENCE_PROPERTY ]: {
+		hasBuiltin: true,
+		component: 'wl-wikidata-property',
+		allowExpansion: true
+	}
+};
+
 Object.assign(
 	Constants.BUILTIN_COMPONENTS,
 	Constants.WIKIDATA_BUILTIN_COMPONENTS
@@ -333,9 +437,11 @@ Constants.ERROR_CODES = {
 	NEW_ZID_PLACEHOLDER_WARNING: 'wikilambda-editor-code-editor-zid-placeholder-error',
 	DEBUG_CODE_WARNING: 'wikilambda-editor-code-editor-debug-code-warning'
 };
+
 Constants.ERROR_IDS = {
-	TEST_RESULTS: -1
+	TEST_RESULTS: 'tests'
 };
+
 Constants.ERROR_TYPES = {
 	NOTICE: 'notice',
 	WARNING: 'warning',
@@ -386,21 +492,17 @@ Constants.EXCLUDE_FROM_SELECTOR = [
 // Types that should not be selectable as "Literal <Type>" in the Mode Selector
 // * Z4/Type
 // * Z8/Function
-// * Z60/Natural language
 // * Z61/Programming language
 // * Z50/Error type
 // * Z14/Implementation
 // * Z20/Tester
-// * Z16/Code
 // * Z46/Deserialiser
 // * Z64/Serialiser
 Constants.EXCLUDE_FROM_LITERAL_MODE_SELECTION = [
 	Constants.Z_TYPE,
 	Constants.Z_FUNCTION,
-	Constants.Z_NATURAL_LANGUAGE,
 	Constants.Z_PROGRAMMING_LANGUAGE,
 	Constants.Z_ERRORTYPE,
-	Constants.Z_CODE,
 	Constants.Z_IMPLEMENTATION,
 	Constants.Z_TESTER,
 	Constants.Z_DESERIALISER,
@@ -503,5 +605,11 @@ Constants.VE_ALLOW_EMPTY_FIELD = [
 	Constants.Z_STRING,
 	Constants.Z_GREGORIAN_CALENDAR_DATE
 ];
+
+Constants.STORED_OBJECTS = {
+	MAIN: 'main',
+	FUNCTION_CALL: 'call',
+	RESPONSE: 'response'
+};
 
 module.exports = Constants;

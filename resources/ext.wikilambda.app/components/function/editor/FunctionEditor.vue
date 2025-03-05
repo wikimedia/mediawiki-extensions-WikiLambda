@@ -27,7 +27,7 @@
 				class="ext-wikilambda-app-function-editor__action-add-language-button"
 				@click="addLanguage"
 			>
-				<cdx-icon :icon="icons.cdxIconLanguage"></cdx-icon>
+				<cdx-icon :icon="iconLanguage"></cdx-icon>
 				{{ addLanguageButtonText }}
 			</cdx-button>
 		</div>
@@ -42,18 +42,22 @@
 </template>
 
 <script>
-const { CdxButton, CdxIcon } = require( '../../../../codex.js' );
 const { defineComponent } = require( 'vue' );
 const { mapState, mapActions } = require( 'pinia' );
 
 const Constants = require( '../../../Constants.js' );
-const eventLogMixin = require( '../../../mixins/eventLogMixin.js' );
-const FunctionEditorLanguageBlock = require( './FunctionEditorLanguageBlock.vue' );
 const icons = require( '../../../../lib/icons.json' );
-const typeMixin = require( '../../../mixins/typeMixin.js' );
+const eventLogMixin = require( '../../../mixins/eventLogMixin.js' );
 const useMainStore = require( '../../../store/index.js' );
 const { hybridToCanonical } = require( '../../../utils/schemata.js' );
+const { typeToString } = require( '../../../utils/typeUtils.js' );
+
+// Function editor componetns
+const FunctionEditorLanguageBlock = require( './FunctionEditorLanguageBlock.vue' );
+// Widget components
 const PublishWidget = require( '../../widgets/publish/Publish.vue' );
+// Codex components
+const { CdxButton, CdxIcon } = require( '../../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor',
@@ -63,11 +67,10 @@ module.exports = exports = defineComponent( {
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon
 	},
-	mixins: [ eventLogMixin, typeMixin ],
+	mixins: [ eventLogMixin ],
 	data: function () {
 		return {
-			rowId: 0,
-			icons: icons,
+			iconLanguage: icons.cdxIconLanguage,
 			initialInputTypes: [],
 			initialOutputType: '',
 			hasUpdatedLabels: false,
@@ -75,16 +78,14 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
+		'getConnectedImplementations',
+		'getConnectedTests',
 		'getCurrentZObjectId',
-		'getRowByKeyPath',
+		'getMultilingualDataLanguages',
 		'getUserLangZid',
 		'getZFunctionInputs',
-		'getMultilingualDataLanguages',
 		'getZFunctionOutput',
-		'getZObjectAsJsonById',
-		'isCreateNewPage',
-		'getConnectedImplementations',
-		'getConnectedTests'
+		'isCreateNewPage'
 	] ),
 	{
 		/**
@@ -111,7 +112,7 @@ module.exports = exports = defineComponent( {
 		 * @return {boolean}
 		 */
 		hasConnectedObjects: function () {
-			return !!this.getConnectedImplementations().length || !!this.getConnectedTests().length;
+			return !!this.getConnectedImplementations.length || !!this.getConnectedTests.length;
 		},
 		/**
 		 * Returns the error code for the type of function
@@ -146,11 +147,9 @@ module.exports = exports = defineComponent( {
 		 * @return {Array}
 		 */
 		currentInputTypes: function () {
-			return this.getZFunctionInputs().map( ( inputRow ) => {
-				const inputTypeRow = this.getRowByKeyPath( [ Constants.Z_ARGUMENT_TYPE ], inputRow.id );
-				return inputTypeRow ?
-					this.getTypeStringRepresentation( inputTypeRow.id ) :
-					undefined;
+			return this.getZFunctionInputs.map( ( input ) => {
+				const inputType = hybridToCanonical( input[ Constants.Z_ARGUMENT_TYPE ] );
+				return typeToString( inputType );
 			} ).filter( ( type ) => !!type );
 		},
 		/**
@@ -160,10 +159,8 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		currentOutputType: function () {
-			const outputRow = this.getZFunctionOutput();
-			return outputRow ?
-				this.getTypeStringRepresentation( outputRow.id ) :
-				undefined;
+			const outputType = hybridToCanonical( this.getZFunctionOutput );
+			return typeToString( outputType );
 		},
 		/**
 		 * Returns whether the input types have changed from the
@@ -222,18 +219,6 @@ module.exports = exports = defineComponent( {
 			this.functionLanguages[ payload.index ] = payload.language;
 		},
 		/**
-		 * Return the string representation of the object under
-		 * the given rowId. If it's a function call, includes args (E.g.
-		 * Z881(Z6)
-		 *
-		 * @param {number} rowId
-		 * @return {string}
-		 */
-		getTypeStringRepresentation: function ( rowId ) {
-			const canonical = hybridToCanonical( this.getZObjectAsJsonById( rowId ) );
-			return this.typeToString( canonical );
-		},
-		/**
 		 * Set warnings when there are changes in the function signature
 		 * to announce that
 		 */
@@ -247,7 +232,7 @@ module.exports = exports = defineComponent( {
 			// implementations and testers will be detached
 			if ( this.functionSignatureChanged && this.hasConnectedObjects ) {
 				this.setError( {
-					rowId: 0,
+					errorId: Constants.STORED_OBJECTS.MAIN,
 					errorType: Constants.ERROR_TYPES.WARNING,
 					errorCode: this.signatureWarningCode
 				} );
@@ -259,7 +244,7 @@ module.exports = exports = defineComponent( {
 			if ( newValue === true ) {
 				const interactionData = {
 					zobjectid: this.getCurrentZObjectId,
-					zobjecttype: 'Z8',
+					zobjecttype: Constants.Z_FUNCTION,
 					zlang: this.getUserLangZid || null
 				};
 				this.submitInteraction( 'change', interactionData );
@@ -269,7 +254,7 @@ module.exports = exports = defineComponent( {
 	mounted: function () {
 		// Initialize the local array with the collection of available languages
 		// and initialize first label block with user lang if there are none.
-		this.functionLanguages = this.getMultilingualDataLanguages( this.rowId );
+		this.functionLanguages = this.getMultilingualDataLanguages.all;
 		if ( this.functionLanguages.length === 0 ) {
 			this.functionLanguages.push( this.getUserLangZid );
 		}

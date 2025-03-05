@@ -21,6 +21,7 @@
 		></cdx-select>
 		<cdx-lookup
 			v-else
+			:key="selectedValue"
 			:input-value="inputValue"
 			:selected="selectedValue"
 			:disabled="disabled"
@@ -44,7 +45,7 @@
 		>
 			<cdx-message
 				v-for="( error, index ) in fieldErrors"
-				:key="'field-error-' + rowId + '-' + index"
+				:key="`field-error-${ index }`"
 				:type="error.type"
 				:inline="true"
 			>
@@ -58,12 +59,15 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
-const { CdxLookup, CdxSelect, CdxMessage } = require( '../../../codex.js' );
+
 const Constants = require( '../../Constants.js' );
 const errorMixin = require( '../../mixins/errorMixin.js' );
-const icons = require( '../../../lib/icons.json' );
 const typeMixin = require( '../../mixins/typeMixin.js' );
 const useMainStore = require( '../../store/index.js' );
+const icons = require( '../../../lib/icons.json' );
+
+// Codex components
+const { CdxLookup, CdxSelect, CdxMessage } = require( '../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-object-selector',
@@ -74,9 +78,9 @@ module.exports = exports = defineComponent( {
 	},
 	mixins: [ errorMixin, typeMixin ],
 	props: {
-		rowId: {
-			type: Number,
-			default: 0
+		keyPath: { // eslint-disable-line vue/no-unused-properties
+			type: String,
+			default: undefined
 		},
 		selectedZid: {
 			type: String,
@@ -320,274 +324,271 @@ module.exports = exports = defineComponent( {
 			return types.length ? types : undefined;
 		}
 	} ),
-	methods: Object.assign( {},
-		mapActions( useMainStore, [
-			'lookupZObjectLabels',
-			'fetchEnumValues',
-			'fetchZids'
-		] ),
-		{
-			/**
-			 * TODO: (T388660) the selected enum might not become selected in the cdx-select
-			 * due to it being in the 'load more items'.
-			 *
-			 * Load more values for the enumeration selector when the user scrolls to the bottom of the list
-			 * and there are more results to load.
-			 */
-			onLoadMoreSelect: function () {
-				this.fetchEnumValues( { type: this.type } );
-			},
+	methods: Object.assign( {}, mapActions( useMainStore, [
+		'lookupZObjectLabels',
+		'fetchEnumValues',
+		'fetchZids'
+	] ), {
+		/**
+		 * TODO: (T388660) the selected enum might not become selected in the cdx-select
+		 * due to it being in the 'load more items'.
+		 *
+		 * Load more values for the enumeration selector when the user scrolls to the bottom of the list
+		 * and there are more results to load.
+		 */
+		onLoadMoreSelect: function () {
+			this.fetchEnumValues( { type: this.type } );
+		},
 
-			/**
-			 * Load more Lookup results when the user scrolls to the bottom of the list
-			 * and there are more results to load.
-			 */
-			onLoadMoreLookup: function () {
-				if ( !this.lookupConfig.searchContinue ) {
-					// No more results to load
+		/**
+		 * Load more Lookup results when the user scrolls to the bottom of the list
+		 * and there are more results to load.
+		 */
+		onLoadMoreLookup: function () {
+			if ( !this.lookupConfig.searchContinue ) {
+				// No more results to load
+				return;
+			}
+
+			this.getLookupResults( this.lookupConfig.searchQuery );
+		},
+
+		/**
+		 * Whether is in the input list of Zids excluded from selection.
+		 * Al the zids in the excludeZids input property must be uppercase.
+		 *
+		 * @param {string} zid
+		 * @return {boolean}
+		 */
+		isExcludedZid: function ( zid ) {
+			return ( this.excludeZids.includes( zid ) || this.isDisallowedType( zid ) );
+		},
+
+		/**
+		 * Whether is in the built-in list of Zids excluded from selection.
+		 *
+		 * @param {string} zid
+		 * @return {boolean}
+		 */
+		isDisallowedType: function ( zid ) {
+			return (
+				( this.type === Constants.Z_TYPE ) &&
+				Constants.EXCLUDE_FROM_SELECTOR.includes( zid )
+			);
+		},
+
+		/**
+		 * Handle get zObject lookup.
+		 * update lookup results with label and update in store.
+		 *
+		 * @param {string} input
+		 */
+		getLookupResults: function ( input ) {
+			this.lookupZObjectLabels( {
+				input,
+				types: this.lookupTypes,
+				returnTypes: this.lookupReturnTypes,
+				searchContinue: this.lookupConfig.searchContinue
+			} ).then( ( data ) => {
+				const { labels, searchContinue } = data;
+				// If the string searched has changed, do not show the search result
+				if ( !this.inputValue.includes( input ) ) {
 					return;
 				}
+				const zids = [];
+				// If searchContinue is present, store it in lookupConfig
+				this.lookupConfig.searchContinue = searchContinue;
+				this.lookupConfig.searchQuery = input;
+				// Update lookupResults list
+				if ( labels && labels.length > 0 ) {
+					labels.forEach( ( result ) => {
 
-				this.getLookupResults( this.lookupConfig.searchQuery );
-			},
+						// Set up codex MenuItem options
+						// https://doc.wikimedia.org/codex/latest/components/demos/menu-item.html
+						const value = result.page_title;
+						const label = this.getLabelOrZid( value, result.label );
+						const description = this.getLabelOrZid( result.page_type, result.type_label );
+						const supportingText = ( label !== result.match_label ) ? `(${ result.match_label })` : '';
 
-			/**
-			 * Whether is in the input list of Zids excluded from selection.
-			 * Al the zids in the excludeZids input property must be uppercase.
-			 *
-			 * @param {string} zid
-			 * @return {boolean}
-			 */
-			isExcludedZid: function ( zid ) {
-				return ( this.excludeZids.includes( zid ) || this.isDisallowedType( zid ) );
-			},
+						let icon;
+						// If we expect to receive functions along with other literal types, show icon
+						if ( !this.lookupTypes || ( this.lookupTypes.length > 1 &&
+							this.lookupTypes.includes( Constants.Z_FUNCTION )
+						) ) {
+							icon = ( result.page_type === Constants.Z_FUNCTION ) ?
+								icons.cdxIconFunction :
+								icons.cdxIconInstance;
+						} else {
+							icon = undefined;
+						}
 
-			/**
-			 * Whether is in the built-in list of Zids excluded from selection.
-			 *
-			 * @param {string} zid
-			 * @return {boolean}
-			 */
-			isDisallowedType: function ( zid ) {
-				return (
-					( this.type === Constants.Z_TYPE ) &&
-					Constants.EXCLUDE_FROM_SELECTOR.includes( zid )
-				);
-			},
+						// Exclude everything in the exclude Zids and disallowed types lists
+						if ( !this.isExcludedZid( value ) ) {
+							this.lookupResults.push( {
+								value,
+								label,
+								description,
+								supportingText,
+								icon
+							} );
+						}
 
-			/**
-			 * Handle get zObject lookup.
-			 * update lookup results with label and update in store.
-			 *
-			 * @param {string} input
-			 */
-			getLookupResults: function ( input ) {
-				this.lookupZObjectLabels( {
-					input,
-					types: this.lookupTypes,
-					returnTypes: this.lookupReturnTypes,
-					searchContinue: this.lookupConfig.searchContinue
-				} ).then( ( data ) => {
-					const { labels, searchContinue } = data;
-					// If the string searched has changed, do not show the search result
-					if ( !this.inputValue.includes( input ) ) {
-						return;
-					}
-					const zids = [];
-					// If searchContinue is present, store it in lookupConfig
-					this.lookupConfig.searchContinue = searchContinue;
-					this.lookupConfig.searchQuery = input;
-					// Update lookupResults list
-					if ( labels && labels.length > 0 ) {
-						labels.forEach( ( result ) => {
-
-							// Set up codex MenuItem options
-							// https://doc.wikimedia.org/codex/latest/components/demos/menu-item.html
-							const value = result.page_title;
-							const label = this.getLabelOrZid( value, result.label );
-							const description = this.getLabelOrZid( result.page_type, result.type_label );
-							const supportingText = ( label !== result.match_label ) ? `(${ result.match_label })` : '';
-
-							let icon;
-							// If we expect to receive functions along with other literal types, show icon
-							if ( !this.lookupTypes || ( this.lookupTypes.length > 1 &&
-									this.lookupTypes.includes( Constants.Z_FUNCTION )
-							) ) {
-								icon = ( result.page_type === Constants.Z_FUNCTION ) ?
-									icons.cdxIconFunction :
-									icons.cdxIconInstance;
-							} else {
-								icon = undefined;
-							}
-
-							// Exclude everything in the exclude Zids and disallowed types lists
-							if ( !this.isExcludedZid( value ) ) {
-								this.lookupResults.push( {
-									value,
-									label,
-									description,
-									supportingText,
-									icon
-								} );
-							}
-
-							// Gather all zids to request them for the data store
-							zids.push( value );
-						} );
-						// Once lookupResults are gathered, fetch and collect all the data;
-						// fetchZids makes sure that only the missing zids are requested
-						this.fetchZids( { zids } );
-					}
-				} );
-			},
-
-			/**
-			 * Returns the value when the user requested language is 'qqx',
-			 * otherwise returns the label.
-			 *
-			 * @param {string} value
-			 * @param {string} label
-			 * @return {Object}
-			 */
-			getLabelOrZid: function ( value, label ) {
-				// If the requested language is 'qqx', return (value/zid) as the label
-				if ( this.getUserRequestedLang === 'qqx' ) {
-					return `(${ value })`;
+						// Gather all zids to request them for the data store
+						zids.push( value );
+					} );
+					// Once lookupResults are gathered, fetch and collect all the data;
+					// fetchZids makes sure that only the missing zids are requested
+					this.fetchZids( { zids } );
 				}
-				return label;
-			},
+			} );
+		},
 
-			/**
-			 * Clears the ZObjectSelector lookup results.
-			 * This doesn't clear the component TextInput.
-			 */
-			clearResults: function () {
-				this.lookupResults = [];
-				// Reset searchContinue when a new search is initiated
-				this.lookupConfig.searchContinue = null;
-			},
+		/**
+		 * Returns the value when the user requested language is 'qqx',
+		 * otherwise returns the label.
+		 *
+		 * @param {string} value
+		 * @param {string} label
+		 * @return {Object}
+		 */
+		getLabelOrZid: function ( value, label ) {
+			// If the requested language is 'qqx', return (value/zid) as the label
+			if ( this.getUserRequestedLang === 'qqx' ) {
+				return `(${ value })`;
+			}
+			return label;
+		},
 
-			/**
-			 * On field input, perform a backend lookup and set the lookupResults
-			 * array. When searching for a Zid, validate and select.
-			 *
-			 * @param {string} input
-			 */
-			onInput: function ( input ) {
-				// 1. OnInput will still be called when the selectedValue changes from outside.
-				// 2. OnInput will be called with an empty string when the selectedValue does not match
-				// an item in menuItems in the cdx-lookup.
-				// 3. If #1 or #2 happens when the input is disabled, we should not do anything.
-				if ( this.disabled ) {
-					return;
-				}
-				this.inputValue = input;
-				this.$emit( 'input-change', input || '' );
+		/**
+		 * Clears the ZObjectSelector lookup results.
+		 * This doesn't clear the component TextInput.
+		 */
+		clearResults: function () {
+			this.lookupResults = [];
+			// Reset searchContinue when a new search is initiated
+			this.lookupConfig.searchContinue = null;
+		},
 
-				this.clearFieldErrors();
+		/**
+		 * On field input, perform a backend lookup and set the lookupResults
+		 * array. When searching for a Zid, validate and select.
+		 *
+		 * @param {string} input
+		 */
+		onInput: function ( input ) {
+			// 1. OnInput will still be called when the selectedValue changes from outside.
+			// 2. OnInput will be called with an empty string when the selectedValue does not match
+			// an item in menuItems in the cdx-lookup.
+			// 3. If #1 or #2 happens when the input is disabled, we should not do anything.
+			if ( this.disabled ) {
+				return;
+			}
+			this.inputValue = input;
+			this.$emit( 'input-change', input || '' );
 
-				// Clear previous results when input changes
-				this.clearResults();
+			this.clearFieldErrors();
 
-				// Just search if more than one characters
-				if ( !input || input.length < 2 ) {
-					return;
-				}
+			// Clear previous results when input changes
+			this.clearResults();
 
-				// Search after 300 ms
-				clearTimeout( this.lookupDelayTimer );
-				this.lookupDelayTimer = setTimeout( () => {
-					this.getLookupResults( input );
-				}, this.lookupDelayMs );
-			},
+			// Just search if more than one characters
+			if ( !input || input.length < 2 ) {
+				return;
+			}
 
-			/**
-			 * Model update event, sets the value of the field
-			 * either with an empty value or with a selected value
-			 * from the menu.
-			 *
-			 * @param {string | null} value
-			 */
-			onSelect: function ( value ) {
-				// T374246: update:selected events are emitted with null value
-				// whenever input changes, so we need to exit early whenever
-				// selected value is null, instead of setting the value to empty
-				// for now. When Codex fixes this issue, we'll be able to remove
-				// the following lines and restore the clear behavior.
-				if ( value === null ) {
-					return;
-				}
+			// Search after 300 ms
+			clearTimeout( this.lookupDelayTimer );
+			this.lookupDelayTimer = setTimeout( () => {
+				this.getLookupResults( input );
+			}, this.lookupDelayMs );
+		},
 
-				// If the already selected value is selected again, exit early
-				// and reset the input value to the selected value (T382755).
-				if ( this.selectedValue === value ) {
-					this.inputValue = this.selectedLabel;
-					return;
-				}
+		/**
+		 * Model update event, sets the value of the field
+		 * either with an empty value or with a selected value
+		 * from the menu.
+		 *
+		 * @param {string | null} value
+		 */
+		onSelect: function ( value ) {
+			// T374246: update:selected events are emitted with null value
+			// whenever input changes, so we need to exit early whenever
+			// selected value is null, instead of setting the value to empty
+			// for now. When Codex fixes this issue, we'll be able to remove
+			// the following lines and restore the clear behavior.
+			if ( value === null ) {
+				return;
+			}
 
-				// If we select a new value, clear errors and emit select event
-				// Once the parent responds to the select event and updates the
-				// selected value, the computed property selectedValue will be
-				// updated.
-				this.clearFieldErrors();
-				this.$emit( 'select-item', value || '' );
-			},
+			// If the already selected value is selected again, exit early
+			// and reset the input value to the selected value (T382755).
+			if ( this.selectedValue === value ) {
+				this.inputValue = this.selectedLabel;
+				return;
+			}
 
-			/**
-			 * On Lookup blur, make sure that the input and the selected values
-			 * are synchronized: If there is something written in the input but
-			 * there is nothing selected, clear the input. If the input is empty,
-			 * clear the selection
-			 */
-			onBlur: function () {
-				// On blur, these are the possible states:
-				// * inputValue is empty
-				// * inputValue is non-empty
-				// * selectedValue is empty
-				// * selectedValue is not empty
+			// If we select a new value, clear errors and emit select event
+			// Once the parent responds to the select event and updates the
+			// selected value, the computed property selectedValue will be
+			// updated.
+			this.clearFieldErrors();
+			this.$emit( 'select-item', value || '' );
+		},
 
-				// This means that the possible cases are:
-				// 1. Nothing is selected previously, and we blur with empty text field
-				// 2. Nothing is selected previously, and we blur with string in the input:
-				//    2.a. The field text doesn't match any lookup options
-				//         E.g. we write "str", nothing that we want comes in the lookup,
-				//         and we exit the field.
-				//    2.b. The field text matches one lookup option.
-				//         E.g. we write "String", we see "String" in the lookup and we exit
-				//         thinking that writing the option will be enough
-				// 3. Something is selected previously, and we blur with empty text field
-				// 4. Something is selected previously, and we blur with non-empty text field
-				//    4.a. The field text doesn't match any lookup options
-				//    4.b. The field text matches one lookup option
-				//    4.c. The field text matches the already selected label
+		/**
+		 * On Lookup blur, make sure that the input and the selected values
+		 * are synchronized: If there is something written in the input but
+		 * there is nothing selected, clear the input. If the input is empty,
+		 * clear the selection
+		 */
+		onBlur: function () {
+			// On blur, these are the possible states:
+			// * inputValue is empty
+			// * inputValue is non-empty
+			// * selectedValue is empty
+			// * selectedValue is not empty
 
-				// Logic:
-				// Nothing selected:
-				// * match?: set selectedValue
-				// * no match?: clear inputValue
-				// Something selected:
-				// * match already selected?: do nothing
-				// * match?: set selectedValue
-				// * no match?: set inputValue to selectedLabel
+			// This means that the possible cases are:
+			// 1. Nothing is selected previously, and we blur with empty text field
+			// 2. Nothing is selected previously, and we blur with string in the input:
+			//    2.a. The field text doesn't match any lookup options
+			//         E.g. we write "str", nothing that we want comes in the lookup,
+			//         and we exit the field.
+			//    2.b. The field text matches one lookup option.
+			//         E.g. we write "String", we see "String" in the lookup and we exit
+			//         thinking that writing the option will be enough
+			// 3. Something is selected previously, and we blur with empty text field
+			// 4. Something is selected previously, and we blur with non-empty text field
+			//    4.a. The field text doesn't match any lookup options
+			//    4.b. The field text matches one lookup option
+			//    4.c. The field text matches the already selected label
 
-				// If current inputValue matches selected label, do nothing:
-				if ( this.inputValue === this.selectedLabel ) {
-					return;
-				}
+			// Logic:
+			// Nothing selected:
+			// * match?: set selectedValue
+			// * no match?: clear inputValue
+			// Something selected:
+			// * match already selected?: do nothing
+			// * match?: set selectedValue
+			// * no match?: set inputValue to selectedLabel
 
-				// Match current inputValue with available menu options:
-				const match = this.lookupResults.find( ( option ) => option.label === this.inputValue );
-				if ( match ) {
-					// Select new value
-					this.onSelect( match.value );
-				} else {
-					// Reset to old value
-					this.inputValue = this.selectedLabel;
-					this.lookupConfig.searchQuery = this.selectedLabel;
-				}
+			// If current inputValue matches selected label, do nothing:
+			if ( this.inputValue === this.selectedLabel ) {
+				return;
+			}
+
+			// Match current inputValue with available menu options:
+			const match = this.lookupResults.find( ( option ) => option.label === this.inputValue );
+			if ( match ) {
+				// Select new value
+				this.onSelect( match.value );
+			} else {
+				// Reset to old value
+				this.inputValue = this.selectedLabel;
+				this.lookupConfig.searchQuery = this.selectedLabel;
 			}
 		}
-	),
+	} ),
 	watch: {
 		/**
 		 * When label of selected Zid is updated, updates

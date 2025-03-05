@@ -27,10 +27,10 @@
 						<template v-if="hasAliases">
 							<cdx-info-chip
 								v-for="( alias, index ) in visibleAliases"
-								:key="'alias-' + index"
+								:key="`alias-${ index }`"
 								class="ext-wikilambda-app-about-language-block__alias"
 								data-testid="about-alias">
-								{{ alias.value }}
+								{{ alias }}
 							</cdx-info-chip>
 							<a
 								v-if="viewData.aliases.value.length > 3 && !seeAllAliases"
@@ -57,7 +57,6 @@
 							:key="input.key"
 							class="ext-wikilambda-app-about-language-block__field-value
 								ext-wikilambda-app-about-language-block__input">
-							<!-- eslint-disable-next-line max-len -->
 							<span
 								v-if="input.value"
 								class="ext-wikilambda-app-about-language-block__input-label"
@@ -67,8 +66,14 @@
 								v-else
 								class="ext-wikilambda-app-about-language-block__input-label
 									ext-wikilambda-app-about-language-block__unavailable"
-							><!-- eslint-disable-line max-len -->{{ $i18n( 'wikilambda-editor-default-name' ).text() }}<span>{{ $i18n( 'colon-separator' ).text() }}&nbsp;</span>
-							</span><wl-z-object-to-string :row-id="input.typeRowId"></wl-z-object-to-string>
+							>{{
+								$i18n( 'wikilambda-editor-default-name' ).text()
+							}}<span>{{ $i18n( 'colon-separator' ).text() }}&nbsp;</span>
+							</span><wl-z-object-to-string
+								:key-path="input.typeKeyPath"
+								:object-value="input.type"
+								:edit="edit"
+							></wl-z-object-to-string>
 						</div>
 					</template>
 					<div v-else class="ext-wikilambda-app-about-language-block__field-value">
@@ -83,7 +88,11 @@
 						{{ $i18n( 'wikilambda-function-definition-output-label' ).text() }}
 					</div>
 					<div class="ext-wikilambda-app-about-language-block__field-value">
-						<wl-z-object-to-string :row-id="outputTypeRowId"></wl-z-object-to-string>
+						<wl-z-object-to-string
+							:key-path="outputTypeKeyPath"
+							:object-value="outputType"
+							:edit="edit"
+						></wl-z-object-to-string>
 					</div>
 				</div>
 			</div>
@@ -164,8 +173,8 @@
 				data-testid="about-aliases-field"
 			>
 				<cdx-chip-input
-					:input-chips="editData.aliases.value"
-					@update:input-chips="updateEditValue( editData.aliases, $event );
+					:input-chips="editData.aliases.value.map( ( v ) => ( { value: v } ) )"
+					@update:input-chips="updateEditValue( editData.aliases, $event.map( ( v ) => v.value ) );
 						changeEditValue();"
 				></cdx-chip-input>
 				<template #label>
@@ -230,10 +239,15 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
-const { CdxChipInput, CdxField, CdxInfoChip, CdxTextArea, CdxTextInput } = require( '../../../../codex.js' );
+
 const Constants = require( '../../../Constants.js' );
 const useMainStore = require( '../../../store/index.js' );
-const ZObjectToString = require( '../../default-view-types/ZObjectToString.vue' );
+const { getZMonolingualItemForLang } = require( '../../../utils/zobjectUtils.js' );
+
+// Type components
+const ZObjectToString = require( '../../types/ZObjectToString.vue' );
+// Codex components
+const { CdxChipInput, CdxField, CdxInfoChip, CdxTextArea, CdxTextInput } = require( '../../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-about-language-block',
@@ -274,6 +288,11 @@ module.exports = exports = defineComponent( {
 	},
 	data: function () {
 		return {
+			outputTypeKeyPath: [
+				Constants.STORED_OBJECTS.MAIN,
+				Constants.Z_PERSISTENTOBJECT_VALUE,
+				Constants.Z_FUNCTION_RETURN_TYPE
+			].join( '.' ),
 			maxNameChars: Constants.LABEL_CHARS_MAX,
 			maxInputChars: Constants.INPUT_CHARS_MAX,
 			maxDescriptionChars: Constants.DESCRIPTION_CHARS_MAX,
@@ -283,12 +302,10 @@ module.exports = exports = defineComponent( {
 	computed: Object.assign( {}, mapState( useMainStore, [
 		'getFallbackLanguageZids',
 		'getLabelData',
-		'getZArgumentLabelForLanguage',
+		'getZFunctionInputs',
 		'getZFunctionOutput',
-		'getZMonolingualTextValue',
-		'getZMonolingualStringsetValues',
-		'getZPersistentName',
 		'getZPersistentAlias',
+		'getZPersistentName',
 		'getZPersistentDescription'
 	] ), {
 		/**
@@ -313,9 +330,8 @@ module.exports = exports = defineComponent( {
 			// Return the value in the first available fallback
 			for ( const lang of this.fallbackLanguageZids ) {
 				if ( this.fieldLangs.name.includes( lang ) ) {
-					const row = this.getZPersistentName( lang );
 					return {
-						value: this.getZMonolingualTextValue( row.id ),
+						value: this.getZPersistentName( lang ).value,
 						lang: this.getLabelData( lang )
 					};
 				}
@@ -336,9 +352,8 @@ module.exports = exports = defineComponent( {
 			// Return the value in the first available fallback
 			for ( const lang of this.fallbackLanguageZids ) {
 				if ( this.fieldLangs.description.includes( lang ) ) {
-					const row = this.getZPersistentDescription( lang );
 					return {
-						value: this.getZMonolingualTextValue( row.id ),
+						value: this.getZPersistentDescription( lang ).value,
 						lang: this.getLabelData( lang )
 					};
 				}
@@ -359,9 +374,8 @@ module.exports = exports = defineComponent( {
 			// Return the value in the first available fallback
 			for ( const lang of this.fallbackLanguageZids ) {
 				if ( this.fieldLangs.aliases.includes( lang ) ) {
-					const row = this.getZPersistentAlias( lang );
 					return {
-						value: this.getZMonolingualStringsetValues( row.id ).map( ( item ) => item.value ),
+						value: this.getZPersistentAlias( lang ).value,
 						lang: this.getLabelData( lang )
 					};
 				}
@@ -383,9 +397,10 @@ module.exports = exports = defineComponent( {
 				// Return the value in the first available fallback
 				for ( const lang of this.fallbackLanguageZids ) {
 					if ( this.fieldLangs.inputs[ index ].includes( lang ) ) {
-						const row = this.getZArgumentLabelForLanguage( input.inputRowId, lang );
+						const arg = this.getZFunctionInputs[ index ];
+						const label = getZMonolingualItemForLang( arg[ Constants.Z_ARGUMENT_LABEL ], lang );
 						return {
-							value: this.getZMonolingualTextValue( row.id ),
+							value: label.value,
 							lang: this.getLabelData( lang )
 						};
 					}
@@ -475,16 +490,15 @@ module.exports = exports = defineComponent( {
 			return this.editData.inputs.map( ( input ) => this.maxInputChars - input.value.length );
 		},
 		/**
-		 * Returns the rowId of the output type
+		 * Returns the output type
 		 *
-		 * @return {number|undefined}
+		 * @return {Object|undefined}
 		 */
-		outputTypeRowId: function () {
+		outputType: function () {
 			if ( !this.isFunction ) {
 				return undefined;
 			}
-			const outputTypeRow = this.getZFunctionOutput();
-			return outputTypeRow ? outputTypeRow.id : undefined;
+			return this.getZFunctionOutput;
 		}
 	} ),
 	methods: {

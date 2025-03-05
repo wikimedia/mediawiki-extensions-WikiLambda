@@ -21,15 +21,15 @@
 		</template>
 		<template #body>
 			<wl-type-selector
-				v-if="!!outputTypeRowId"
+				v-if="!!outputType"
 				class="ext-wikilambda-app-function-editor-output__field"
 				data-testid="function-editor-output-type"
+				:key-path="outputTypeKeyPath"
+				:object-value="outputType"
 				:aria-labelledby="outputFieldId"
-				:row-id="outputTypeRowId"
 				:disabled="!canEdit"
 				:label-data="outputTypeLabel"
 				:placeholder="outputFieldPlaceholder"
-				:type="typeZid"
 			></wl-type-selector>
 		</template>
 	</wl-function-editor-field>
@@ -77,7 +77,11 @@ module.exports = exports = defineComponent( {
 	},
 	data: function () {
 		return {
-			typeZid: Constants.Z_TYPE
+			outputTypeKeyPath: [
+				Constants.STORED_OBJECTS.MAIN,
+				Constants.Z_PERSISTENTOBJECT_VALUE,
+				Constants.Z_FUNCTION_RETURN_TYPE
+			].join( '.' )
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
@@ -85,22 +89,12 @@ module.exports = exports = defineComponent( {
 		'getZFunctionOutput'
 	] ), {
 		/**
-		 * Returns the row object of the output type
-		 * of the function, or undefined if not found.
+		 * Returns the output type of the function
 		 *
-		 * @return {Object|undefined}
+		 * @return {Object}
 		 */
-		outputTypeRow: function () {
-			return this.getZFunctionOutput();
-		},
-		/**
-		 * Returns the row id of the output type
-		 * of the function, or undefined if not found.
-		 *
-		 * @return {number|undefined}
-		 */
-		outputTypeRowId: function () {
-			return this.outputTypeRow ? this.outputTypeRow.id : undefined;
+		outputType: function () {
+			return this.getZFunctionOutput;
 		},
 		/**
 		 * Returns the label for the output field

@@ -10,9 +10,11 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const { setActivePinia, createPinia } = require( 'pinia' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
-const { hybridToCanonical } = require( '../../../../resources/ext.wikilambda.app/utils/schemata.js' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
-const { zobjectToRows } = require( '../../helpers/zObjectTableHelpers.js' );
+const {
+	canonicalToHybrid,
+	hybridToCanonical
+} = require( '../../../../resources/ext.wikilambda.app/utils/schemata.js' );
 
 describe( 'zobject submission Pinia store', () => {
 	let store;
@@ -20,530 +22,564 @@ describe( 'zobject submission Pinia store', () => {
 	beforeEach( () => {
 		setActivePinia( createPinia() );
 		store = useMainStore();
-		store.zobject = [];
+		store.jsonObject = { main: {} };
 	} );
 
 	describe( 'Actions', () => {
+
 		describe( 'validateZObject', () => {
 			beforeEach( () => {
-				Object.defineProperty( store, 'getCurrentZObjectType', {
-					value: Constants.Z_FUNCTION
-				} );
-				Object.defineProperty( store, 'getZObjectAsJson', {
-					value: {}
-				} );
-				Object.defineProperty( store, 'getZPersistentContentRowId', {
-					value: jest.fn().mockReturnValue( 1 )
-				} );
-
 				store.setError = jest.fn();
 			} );
 
-			it( 'Does not set error for a valid function', () => {
-
-				Object.defineProperty( store, 'getInvalidOutputFields', {
-					value: []
-				} );
-				Object.defineProperty( store, 'getInvalidInputFields', {
-					value: []
-				} );
-
-				const isValid = store.validateZObject();
-				expect( store.setError ).toHaveBeenCalledTimes( 0 );
-				expect( isValid ).toEqual( true );
-			} );
-
-			it( 'Does not set error for an unknown zobject type', () => {
-
-				Object.defineProperty( store, 'getCurrentZObjectType', {
-					value: undefined
-				} );
-				Object.defineProperty( store, 'getInvalidOutputFields', {
-					value: []
-				} );
-				Object.defineProperty( store, 'getInvalidInputFields', {
-					value: []
-				} );
-
-				const isValid = store.validateZObject();
-				expect( store.setError ).toHaveBeenCalledTimes( 0 );
-				expect( isValid ).toEqual( true );
-			} );
-
-			it( 'Sets errors for a function with one invalid output field', () => {
-				Object.defineProperty( store, 'getInvalidOutputFields', {
-					value: [ 2 ]
-				} );
-				Object.defineProperty( store, 'getInvalidInputFields', {
-					value: []
-				} );
-
-				const mockError = {
-					rowId: 2,
-					errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT,
-					errorType: Constants.ERROR_TYPES.ERROR
-				};
-
-				const isValid = store.validateZObject();
-				expect( store.setError ).toHaveBeenCalledTimes( 1 );
-				expect( store.setError ).toHaveBeenCalledWith( mockError );
-				expect( isValid ).toEqual( false );
-			} );
-
-			it( 'Sets errors for a function with many invalid output fields', () => {
-				Object.defineProperty( store, 'getInvalidOutputFields', {
-					value: [ 2, 3 ]
-				} );
-				Object.defineProperty( store, 'getInvalidInputFields', {
-					value: []
-				} );
-
-				const mockErrors = [ {
-					rowId: 2,
-					errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT,
-					errorType: Constants.ERROR_TYPES.ERROR
-				}, {
-					rowId: 3,
-					errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT,
-					errorType: Constants.ERROR_TYPES.ERROR
-				} ];
-
-				const isValid = store.validateZObject();
-				expect( store.setError ).toHaveBeenCalledTimes( 2 );
-				expect( store.setError ).toHaveBeenCalledWith( mockErrors[ 0 ] );
-				expect( store.setError ).toHaveBeenCalledWith( mockErrors[ 1 ] );
-				expect( isValid ).toEqual( false );
-			} );
-
-			it( 'Sets errors for a function with one invalid input field', () => {
-				Object.defineProperty( store, 'getInvalidOutputFields', {
-					value: []
-				} );
-				Object.defineProperty( store, 'getInvalidInputFields', {
-					value: [ 3 ]
-				} );
-
-				const mockError = {
-					rowId: 3,
-					errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_INPUT_TYPE,
-					errorType: Constants.ERROR_TYPES.ERROR
-				};
-
-				const isValid = store.validateZObject();
-				expect( store.setError ).toHaveBeenCalledTimes( 1 );
-				expect( store.setError ).toHaveBeenCalledWith( mockError );
-				expect( isValid ).toEqual( false );
-			} );
-
-			it( 'Sets errors for a function with many invalid input fields', () => {
-				Object.defineProperty( store, 'getInvalidOutputFields', {
-					value: []
-				} );
-				Object.defineProperty( store, 'getInvalidInputFields', {
-					value: [ 3, 4 ]
-				} );
-
-				const mockErrors = [ {
-					rowId: 3,
-					errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_INPUT_TYPE,
-					errorType: Constants.ERROR_TYPES.ERROR
-				}, {
-					rowId: 4,
-					errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_INPUT_TYPE,
-					errorType: Constants.ERROR_TYPES.ERROR
-				} ];
-
-				const isValid = store.validateZObject();
-				expect( store.setError ).toHaveBeenCalledTimes( 2 );
-				expect( store.setError ).toHaveBeenCalledWith( mockErrors[ 0 ] );
-				expect( store.setError ).toHaveBeenCalledWith( mockErrors[ 1 ] );
-				expect( isValid ).toEqual( false );
-			} );
-
-			it( 'Sets errors for a function with invalid output and input fields', () => {
-				Object.defineProperty( store, 'getInvalidOutputFields', {
-					value: [ 2 ]
-				} );
-				Object.defineProperty( store, 'getInvalidInputFields', {
-					value: [ 3 ]
-				} );
-
-				const mockErrors = [ {
-					rowId: 2,
-					errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT,
-					errorType: Constants.ERROR_TYPES.ERROR
-				}, {
-					rowId: 3,
-					errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_INPUT_TYPE,
-					errorType: Constants.ERROR_TYPES.ERROR
-				} ];
-
-				const isValid = store.validateZObject();
-				expect( store.setError ).toHaveBeenCalledTimes( 2 );
-				expect( store.setError ).toHaveBeenCalledWith( mockErrors[ 0 ] );
-				expect( store.setError ).toHaveBeenCalledWith( mockErrors[ 1 ] );
-				expect( isValid ).toEqual( false );
-			} );
-		} );
-
-		describe( 'validate implementation', () => {
-			beforeEach( () => {
-				Object.defineProperty( store, 'getCurrentZObjectType', {
-					value: Constants.Z_IMPLEMENTATION
-				} );
-				Object.defineProperty( store, 'getZPersistentContentRowId', {
-					value: jest.fn().mockReturnValue( 1 )
-				} );
-				store.setError = jest.fn();
-			} );
-
-			it( 'Does not set error for a valid code implementation', () => {
-
-				Object.defineProperty( store, 'getZImplementationContentRowId', {
-					value: jest.fn().mockReturnValue( 2 )
-				} );
-				Object.defineProperty( store, 'getRowByKeyPath', {
-					value: jest.fn().mockReturnValue( { id: 3 } )
-				} );
-				Object.defineProperty( store, 'getZObjectAsJson', {
-					value: {
+			describe( 'validateZObject function', () => {
+				beforeEach( () => {
+					const basicFunction = canonicalToHybrid( {
+						Z1K1: 'Z2',
 						Z2K2: {
-							Z1K1: Constants.Z_IMPLEMENTATION,
-							Z14K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z999' },
-							Z14K3: {
-								Z1K1: Constants.Z_CODE,
-								Z16K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: Constants.Z_PROGRAMMING_LANGUAGES.PYTHON },
-								Z16K2: { Z1K1: Constants.Z_STRING, Z6K1: 'some code' }
-							}
+							Z1K1: 'Z8'
 						}
-					}
+					} );
+					Object.defineProperty( store, 'getCurrentZObjectType', {
+						value: Constants.Z_FUNCTION
+					} );
+					Object.defineProperty( store, 'getJsonObject', {
+						value: jest.fn().mockReturnValue( basicFunction )
+					} );
 				} );
 
-				const isValid = store.validateZObject();
-				expect( store.setError ).toHaveBeenCalledTimes( 0 );
-				expect( isValid ).toEqual( true );
+				it( 'Does not set error for a valid function', () => {
+					Object.defineProperty( store, 'getValidatedOutputFields', {
+						value: [ { keyPath: 'main.Z2K2.Z8K2', isValid: true } ]
+					} );
+					Object.defineProperty( store, 'getValidatedInputFields', {
+						value: [ { keyPath: 'main.Z2K2.Z8K1.1.Z17K1', isValid: true } ]
+					} );
+
+					const isValid = store.validateZObject();
+					expect( store.setError ).toHaveBeenCalledTimes( 0 );
+					expect( isValid ).toEqual( true );
+				} );
+
+				it( 'Sets errors for a function with one invalid output field', () => {
+					Object.defineProperty( store, 'getValidatedOutputFields', {
+						value: [ { keyPath: 'main.Z2K2.Z8K2', isValid: false } ]
+					} );
+					Object.defineProperty( store, 'getValidatedInputFields', {
+						value: [ { keyPath: 'main.Z2K2.Z8K1.1.Z17K1', isValid: true } ]
+					} );
+
+					const mockError = {
+						errorId: 'main.Z2K2.Z8K2',
+						errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT,
+						errorType: Constants.ERROR_TYPES.ERROR
+					};
+
+					const isValid = store.validateZObject();
+					expect( store.setError ).toHaveBeenCalledTimes( 1 );
+					expect( store.setError ).toHaveBeenCalledWith( mockError );
+					expect( isValid ).toEqual( false );
+				} );
+
+				it( 'Sets errors for a function with many invalid output fields', () => {
+					Object.defineProperty( store, 'getValidatedOutputFields', {
+						value: [
+							{ keyPath: 'main.Z2K2.Z8K2.Z7K1', isValid: false },
+							{ keyPath: 'main.Z2K2.Z8K2.Z881K1', isValid: false }
+						]
+					} );
+					Object.defineProperty( store, 'getValidatedInputFields', {
+						value: []
+					} );
+
+					const mockErrors = [ {
+						errorId: 'main.Z2K2.Z8K2.Z7K1',
+						errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT,
+						errorType: Constants.ERROR_TYPES.ERROR
+					}, {
+						errorId: 'main.Z2K2.Z8K2.Z881K1',
+						errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT,
+						errorType: Constants.ERROR_TYPES.ERROR
+					} ];
+
+					const isValid = store.validateZObject();
+					expect( store.setError ).toHaveBeenCalledTimes( 2 );
+					expect( store.setError ).toHaveBeenCalledWith( mockErrors[ 0 ] );
+					expect( store.setError ).toHaveBeenCalledWith( mockErrors[ 1 ] );
+					expect( isValid ).toEqual( false );
+				} );
+
+				it( 'Sets errors for a function with one invalid input field', () => {
+					Object.defineProperty( store, 'getValidatedOutputFields', {
+						value: [ { keyPath: 'main.Z2K2.Z8K2', isValid: true } ]
+					} );
+					Object.defineProperty( store, 'getValidatedInputFields', {
+						value: [
+							{ keyPath: 'main.Z2K2.Z8K1.1.Z17K1', isValid: true },
+							{ keyPath: 'main.Z2K2.Z8K1.2.Z17K1', isValid: false }
+						]
+					} );
+
+					const mockError = {
+						errorId: 'main.Z2K2.Z8K1.2.Z17K1',
+						errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_INPUT_TYPE,
+						errorType: Constants.ERROR_TYPES.ERROR
+					};
+
+					const isValid = store.validateZObject();
+					expect( store.setError ).toHaveBeenCalledTimes( 1 );
+					expect( store.setError ).toHaveBeenCalledWith( mockError );
+					expect( isValid ).toEqual( false );
+				} );
+
+				it( 'Sets errors for a function with many invalid input fields', () => {
+					Object.defineProperty( store, 'getValidatedOutputFields', {
+						value: [ { keyPath: 'main.Z2K2.Z8K2', isValid: true } ]
+					} );
+					Object.defineProperty( store, 'getValidatedInputFields', {
+						value: [
+							{ keyPath: 'main.Z2K2.Z8K1.1.Z17K1', isValid: true },
+							{ keyPath: 'main.Z2K2.Z8K1.2.Z17K1', isValid: false },
+							{ keyPath: 'main.Z2K2.Z8K1.3.Z17K1', isValid: false }
+						]
+					} );
+
+					const mockErrors = [ {
+						errorId: 'main.Z2K2.Z8K1.2.Z17K1',
+						errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_INPUT_TYPE,
+						errorType: Constants.ERROR_TYPES.ERROR
+					}, {
+						errorId: 'main.Z2K2.Z8K1.3.Z17K1',
+						errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_INPUT_TYPE,
+						errorType: Constants.ERROR_TYPES.ERROR
+					} ];
+
+					const isValid = store.validateZObject();
+					expect( store.setError ).toHaveBeenCalledTimes( 2 );
+					expect( store.setError ).toHaveBeenCalledWith( mockErrors[ 0 ] );
+					expect( store.setError ).toHaveBeenCalledWith( mockErrors[ 1 ] );
+					expect( isValid ).toEqual( false );
+				} );
+
+				it( 'Sets errors for a function with invalid output and input fields', () => {
+					Object.defineProperty( store, 'getValidatedOutputFields', {
+						value: [
+							{ keyPath: 'main.Z2K2.Z8K2.Z7K1', isValid: true },
+							{ keyPath: 'main.Z2K2.Z8K2.Z881K1', isValid: false }
+						]
+					} );
+					Object.defineProperty( store, 'getValidatedInputFields', {
+						value: [
+							{ keyPath: 'main.Z2K2.Z8K1.1.Z17K1', isValid: false },
+							{ keyPath: 'main.Z2K2.Z8K1.2.Z17K1', isValid: true },
+							{ keyPath: 'main.Z2K2.Z8K1.3.Z17K1', isValid: true }
+						]
+					} );
+
+					const mockErrors = [ {
+						errorId: 'main.Z2K2.Z8K2.Z881K1',
+						errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT,
+						errorType: Constants.ERROR_TYPES.ERROR
+					}, {
+						errorId: 'main.Z2K2.Z8K1.1.Z17K1',
+						errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_INPUT_TYPE,
+						errorType: Constants.ERROR_TYPES.ERROR
+					} ];
+
+					const isValid = store.validateZObject();
+					expect( store.setError ).toHaveBeenCalledTimes( 2 );
+					expect( store.setError ).toHaveBeenCalledWith( mockErrors[ 0 ] );
+					expect( store.setError ).toHaveBeenCalledWith( mockErrors[ 1 ] );
+					expect( isValid ).toEqual( false );
+				} );
 			} );
 
-			it( 'Does not set error for a valid composition implementation (function call)', () => {
-				Object.defineProperty( store, 'getZObjectAsJson', {
-					value: {
-						Z2K2: {
-							Z1K1: Constants.Z_IMPLEMENTATION,
-							Z14K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z999' },
-							Z14K2: {
-								Z1K1: Constants.Z_FUNCTION_CALL,
-								Z7K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z888' }
-							}
-						}
-					}
+			describe( 'validateZObject implementation', () => {
+				beforeEach( () => {
+					Object.defineProperty( store, 'getCurrentZObjectType', {
+						value: Constants.Z_IMPLEMENTATION
+					} );
+					Object.defineProperty( store, 'getCurrentTargetFunctionZid', {
+						value: 'Z999'
+					} );
 				} );
 
-				const isValid = store.validateZObject();
-				expect( store.setError ).toHaveBeenCalledTimes( 0 );
-				expect( isValid ).toEqual( true );
+				it( 'Does not set error for a valid code implementation', () => {
+					const storedImplementation = { Z2K2: {
+						Z1K1: 'Z14',
+						Z14K1: 'Z999',
+						Z14K3: {
+							Z1K1: 'Z16',
+							Z16K1: 'Z600',
+							Z16K2: 'some code'
+						}
+					} };
+
+					Object.defineProperty( store, 'getCurrentZImplementationType', {
+						value: Constants.Z_IMPLEMENTATION_CODE
+					} );
+					Object.defineProperty( store, 'getJsonObject', {
+						value: jest.fn().mockReturnValue( canonicalToHybrid( storedImplementation ) )
+					} );
+
+					const isValid = store.validateZObject();
+					expect( store.setError ).toHaveBeenCalledTimes( 0 );
+					expect( isValid ).toEqual( true );
+				} );
+
+				it( 'Does not set error for a valid composition implementation (function call)', () => {
+					const storedImplementation = { Z2K2: {
+						Z1K1: 'Z14',
+						Z14K1: 'Z999',
+						Z14K2: {
+							Z1K1: 'Z7',
+							Z7K1: 'Z801',
+							Z801K1: { Z1K1: 'Z18', Z18K1: 'Z999K1' }
+						}
+					} };
+
+					Object.defineProperty( store, 'getCurrentZImplementationType', {
+						value: Constants.Z_IMPLEMENTATION_COMPOSITION
+					} );
+					Object.defineProperty( store, 'getJsonObject', {
+						value: jest.fn().mockReturnValue( canonicalToHybrid( storedImplementation ) )
+					} );
+
+					const isValid = store.validateZObject();
+					expect( store.setError ).toHaveBeenCalledTimes( 0 );
+					expect( isValid ).toEqual( true );
+				} );
+
+				it( 'Does not set error for a valid composition implementation (argument reference)', () => {
+					const storedImplementation = { Z2K2: {
+						Z1K1: 'Z14',
+						Z14K1: 'Z999',
+						Z14K2: {
+							Z1K1: 'Z18',
+							Z18K1: 'Z999K1'
+						}
+					} };
+
+					Object.defineProperty( store, 'getCurrentZImplementationType', {
+						value: Constants.Z_IMPLEMENTATION_COMPOSITION
+					} );
+					Object.defineProperty( store, 'getJsonObject', {
+						value: jest.fn().mockReturnValue( canonicalToHybrid( storedImplementation ) )
+					} );
+
+					const isValid = store.validateZObject();
+					expect( store.setError ).toHaveBeenCalledTimes( 0 );
+					expect( isValid ).toEqual( true );
+				} );
+
+				it( 'Does not set error for a valid composition implementation (type)', () => {
+					const storedImplementation = { Z2K2: {
+						Z1K1: 'Z14',
+						Z14K1: 'Z999',
+						Z14K2: {
+							Z1K1: 'Z4',
+							Z4K1: 'Z999',
+							Z4K2: [ 'Z3' ]
+						}
+					} };
+
+					Object.defineProperty( store, 'getCurrentZImplementationType', {
+						value: Constants.Z_IMPLEMENTATION_COMPOSITION
+					} );
+					Object.defineProperty( store, 'getJsonObject', {
+						value: jest.fn().mockReturnValue( canonicalToHybrid( storedImplementation ) )
+					} );
+
+					const isValid = store.validateZObject();
+					expect( store.setError ).toHaveBeenCalledTimes( 0 );
+					expect( isValid ).toEqual( true );
+				} );
+
+				it( 'Does not set error for a valid builtin implementation', () => {
+					const storedImplementation = { Z2K2: {
+						Z1K1: 'Z14',
+						Z14K1: 'Z999',
+						Z14K4: 'Z888'
+					} };
+
+					Object.defineProperty( store, 'getCurrentZImplementationType', {
+						value: Constants.Z_IMPLEMENTATION_BUILT_IN
+					} );
+					Object.defineProperty( store, 'getJsonObject', {
+						value: jest.fn().mockReturnValue( canonicalToHybrid( storedImplementation ) )
+					} );
+
+					const isValid = store.validateZObject();
+					expect( store.setError ).toHaveBeenCalledTimes( 0 );
+					expect( isValid ).toEqual( true );
+				} );
+
+				it( 'Sets error for an implementation with missing target function', () => {
+					const storedImplementation = { Z2K2: {
+						Z1K1: 'Z14',
+						Z14K1: { Z1K1: 'Z9', Z9K1: '' },
+						Z14K3: {
+							Z1K1: 'Z16',
+							Z16K1: 'Z600',
+							Z16K2: 'some code'
+						}
+					} };
+
+					Object.defineProperty( store, 'getCurrentTargetFunctionZid', {
+						value: ''
+					} );
+					Object.defineProperty( store, 'getCurrentZImplementationType', {
+						value: Constants.Z_IMPLEMENTATION_CODE
+					} );
+					Object.defineProperty( store, 'getJsonObject', {
+						value: jest.fn().mockReturnValue( canonicalToHybrid( storedImplementation ) )
+					} );
+
+					const mockError = {
+						errorId: 'main.Z2K2.Z14K1',
+						errorCode: Constants.ERROR_CODES.MISSING_TARGET_FUNCTION,
+						errorType: Constants.ERROR_TYPES.ERROR
+					};
+
+					const isValid = store.validateZObject();
+					expect( store.setError ).toHaveBeenCalledTimes( 1 );
+					expect( store.setError ).toHaveBeenCalledWith( mockError );
+					expect( isValid ).toEqual( false );
+				} );
+
+				it( 'Sets error for an implementation with missing composition', () => {
+					const storedImplementation = { Z2K2: {
+						Z1K1: 'Z14',
+						Z14K1: 'Z999',
+						Z14K2: {
+							Z1K1: 'Z7',
+							Z7K1: { Z1K1: 'Z9', Z9K1: '' }
+						}
+					} };
+
+					Object.defineProperty( store, 'getCurrentZImplementationType', {
+						value: Constants.Z_IMPLEMENTATION_COMPOSITION
+					} );
+					Object.defineProperty( store, 'getJsonObject', {
+						value: jest.fn().mockReturnValue( canonicalToHybrid( storedImplementation ) )
+					} );
+
+					const mockError = {
+						errorId: 'main.Z2K2.Z14K2.Z7K1',
+						errorCode: Constants.ERROR_CODES.MISSING_IMPLEMENTATION_COMPOSITION,
+						errorType: Constants.ERROR_TYPES.ERROR
+					};
+
+					const isValid = store.validateZObject();
+					expect( store.setError ).toHaveBeenCalledTimes( 1 );
+					expect( store.setError ).toHaveBeenCalledWith( mockError );
+					expect( isValid ).toEqual( false );
+				} );
+
+				it( 'Sets error for a code implementation with missing programming language', () => {
+					const storedImplementation = { Z2K2: {
+						Z1K1: 'Z14',
+						Z14K1: 'Z999',
+						Z14K3: {
+							Z1K1: 'Z16',
+							Z16K1: { Z1K1: 'Z9', Z9K1: '' },
+							Z16K2: 'some code'
+						}
+					} };
+
+					Object.defineProperty( store, 'getCurrentZImplementationType', {
+						value: Constants.Z_IMPLEMENTATION_CODE
+					} );
+					Object.defineProperty( store, 'getJsonObject', {
+						value: jest.fn().mockReturnValue( canonicalToHybrid( storedImplementation ) )
+					} );
+
+					const mockError = {
+						errorId: 'main.Z2K2.Z14K3.Z16K1',
+						errorCode: Constants.ERROR_CODES.MISSING_IMPLEMENTATION_CODE_LANGUAGE,
+						errorType: Constants.ERROR_TYPES.ERROR
+					};
+
+					const isValid = store.validateZObject();
+					expect( store.setError ).toHaveBeenCalledTimes( 1 );
+					expect( store.setError ).toHaveBeenCalledWith( mockError );
+					expect( isValid ).toEqual( false );
+				} );
+
+				it( 'Sets error for a code implementation with missing code value', () => {
+					const storedImplementation = { Z2K2: {
+						Z1K1: 'Z14',
+						Z14K1: 'Z999',
+						Z14K3: {
+							Z1K1: 'Z16',
+							Z16K1: 'Z600',
+							Z16K2: ''
+						}
+					} };
+
+					Object.defineProperty( store, 'getCurrentZImplementationType', {
+						value: Constants.Z_IMPLEMENTATION_CODE
+					} );
+					Object.defineProperty( store, 'getJsonObject', {
+						value: jest.fn().mockReturnValue( canonicalToHybrid( storedImplementation ) )
+					} );
+
+					const mockError = {
+						errorId: 'main.Z2K2.Z14K3.Z16K2',
+						errorCode: Constants.ERROR_CODES.MISSING_IMPLEMENTATION_CODE,
+						errorType: Constants.ERROR_TYPES.ERROR
+					};
+
+					const isValid = store.validateZObject();
+					expect( store.setError ).toHaveBeenCalledTimes( 1 );
+					expect( store.setError ).toHaveBeenCalledWith( mockError );
+					expect( isValid ).toEqual( false );
+				} );
 			} );
 
-			it( 'Does not set error for a valid composition implementation (argument reference)', () => {
-				Object.defineProperty( store, 'getZObjectAsJson', {
-					value: {
-						Z2K2: {
-							Z1K1: Constants.Z_IMPLEMENTATION,
-							Z14K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z999' },
-							Z14K2: {
-								Z1K1: Constants.Z_ARGUMENT_REFERENCE,
-								Z18K1: { Z1K1: Constants.Z_STRING, Z6K1: 'Z888K1' }
-							}
+			describe( 'validateZObject tester', () => {
+				beforeEach( () => {
+					Object.defineProperty( store, 'getCurrentZObjectType', {
+						value: Constants.Z_TESTER
+					} );
+					Object.defineProperty( store, 'getCurrentTargetFunctionZid', {
+						value: 'Z999'
+					} );
+				} );
+
+				it( 'Does not set error for a valid tester', () => {
+					const storedTester = { Z2K2: {
+						Z1K1: 'Z20',
+						Z20K1: 'Z999',
+						Z20K2: {
+							Z1K1: 'Z7',
+							Z7K1: 'Z801',
+							Z801K1: 'foo'
+						},
+						Z20K3: {
+							Z1K1: 'Z7',
+							Z7K1: 'Z866',
+							Z866K2: 'foo'
 						}
-					}
+					} };
+					Object.defineProperty( store, 'getJsonObject', {
+						value: jest.fn().mockReturnValue( canonicalToHybrid( storedTester ) )
+					} );
+
+					const isValid = store.validateZObject();
+					expect( store.setError ).toHaveBeenCalledTimes( 0 );
+					expect( isValid ).toEqual( true );
 				} );
 
-				const isValid = store.validateZObject();
-				expect( store.setError ).toHaveBeenCalledTimes( 0 );
-				expect( isValid ).toEqual( true );
-			} );
-
-			it( 'Does not set error for a valid composition implementation (type)', () => {
-				Object.defineProperty( store, 'getZObjectAsJson', {
-					value: {
-						Z2K2: {
-							Z1K1: Constants.Z_IMPLEMENTATION,
-							Z14K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z999' },
-							Z14K2: {
-								Z1K1: Constants.Z_TYPE,
-								Z4K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z999' },
-								Z4K2: [ Constants.Z_KEY ]
-							}
+				it( 'Sets error for a tester with missing target function', () => {
+					const storedTester = { Z2K2: {
+						Z1K1: 'Z20',
+						Z20K1: { Z1K1: 'Z9', Z9K1: '' },
+						Z20K2: {
+							Z1K1: 'Z7',
+							Z7K1: 'Z801',
+							Z801K1: 'foo'
+						},
+						Z20K3: {
+							Z1K1: 'Z7',
+							Z7K1: 'Z866',
+							Z866K2: 'foo'
 						}
-					}
+					} };
+					Object.defineProperty( store, 'getCurrentTargetFunctionZid', {
+						value: ''
+					} );
+					Object.defineProperty( store, 'getJsonObject', {
+						value: jest.fn().mockReturnValue( canonicalToHybrid( storedTester ) )
+					} );
+
+					const mockError = {
+						errorId: 'main.Z2K2.Z20K1',
+						errorCode: Constants.ERROR_CODES.MISSING_TARGET_FUNCTION,
+						errorType: Constants.ERROR_TYPES.ERROR
+					};
+
+					const isValid = store.validateZObject();
+					expect( store.setError ).toHaveBeenCalledTimes( 1 );
+					expect( store.setError ).toHaveBeenCalledWith( mockError );
+					expect( isValid ).toEqual( false );
 				} );
 
-				const isValid = store.validateZObject();
-				expect( store.setError ).toHaveBeenCalledTimes( 0 );
-				expect( isValid ).toEqual( true );
-			} );
-
-			it( 'Does not set error for a valid builtin implementation', () => {
-				Object.defineProperty( store, 'getZObjectAsJson', {
-					value: {
-						Z2K2: {
-							Z1K1: Constants.Z_IMPLEMENTATION,
-							Z14K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z999' },
-							Z14K4: { Z1K1: Constants.Z_STRING, Z6K1: 'Z999' }
+				it( 'Sets error for a tester with missing call', () => {
+					const storedTester = { Z2K2: {
+						Z1K1: 'Z20',
+						Z20K1: 'Z999',
+						Z20K2: {
+							Z1K1: 'Z7',
+							Z7K1: { Z1K1: 'Z9', Z9K1: '' }
+						},
+						Z20K3: {
+							Z1K1: 'Z7',
+							Z7K1: 'Z866',
+							Z866K2: 'foo'
 						}
-					}
+					} };
+					Object.defineProperty( store, 'getJsonObject', {
+						value: jest.fn().mockReturnValue( canonicalToHybrid( storedTester ) )
+					} );
+
+					const mockError = {
+						errorId: 'main.Z2K2.Z20K2.Z7K1',
+						errorCode: Constants.ERROR_CODES.MISSING_TESTER_CALL,
+						errorType: Constants.ERROR_TYPES.ERROR
+					};
+
+					const isValid = store.validateZObject();
+					expect( store.setError ).toHaveBeenCalledTimes( 1 );
+					expect( store.setError ).toHaveBeenCalledWith( mockError );
+					expect( isValid ).toEqual( false );
 				} );
 
-				const isValid = store.validateZObject();
-				expect( store.setError ).toHaveBeenCalledTimes( 0 );
-				expect( isValid ).toEqual( true );
-			} );
-
-			it( 'Sets error for an implementation with missing target function', () => {
-				Object.defineProperty( store, 'getZImplementationFunctionRowId', {
-					value: jest.fn().mockReturnValue( 2 )
-				} );
-				Object.defineProperty( store, 'getZObjectAsJson', {
-					value: {
-						Z2K2: {
-							Z1K1: Constants.Z_IMPLEMENTATION,
-							Z14K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: '' },
-							Z14K4: { Z1K1: Constants.Z_STRING, Z6K1: 'Z999' }
+				it( 'Sets error for a tester with missing validation', () => {
+					const storedTester = { Z2K2: {
+						Z1K1: 'Z20',
+						Z20K1: 'Z999',
+						Z20K2: {
+							Z1K1: 'Z7',
+							Z7K1: 'Z801',
+							Z801K1: 'foo'
+						},
+						Z20K3: {
+							Z1K1: 'Z7',
+							Z7K1: { Z1K1: 'Z9', Z9K1: '' }
 						}
-					}
+					} };
+					Object.defineProperty( store, 'getJsonObject', {
+						value: jest.fn().mockReturnValue( canonicalToHybrid( storedTester ) )
+					} );
+
+					const mockError = {
+						errorId: 'main.Z2K2.Z20K3.Z7K1',
+						errorCode: Constants.ERROR_CODES.MISSING_TESTER_VALIDATION,
+						errorType: Constants.ERROR_TYPES.ERROR
+					};
+
+					const isValid = store.validateZObject();
+					expect( store.setError ).toHaveBeenCalledTimes( 1 );
+					expect( store.setError ).toHaveBeenCalledWith( mockError );
+					expect( isValid ).toEqual( false );
 				} );
-
-				const mockError = {
-					rowId: 2,
-					errorCode: Constants.ERROR_CODES.MISSING_TARGET_FUNCTION,
-					errorType: Constants.ERROR_TYPES.ERROR
-				};
-
-				const isValid = store.validateZObject();
-				expect( store.setError ).toHaveBeenCalledTimes( 1 );
-				expect( store.setError ).toHaveBeenCalledWith( mockError );
-				expect( isValid ).toEqual( false );
-			} );
-
-			it( 'Sets error for an implementation with missing composition', () => {
-				Object.defineProperty( store, 'getZImplementationContentRowId', {
-					value: jest.fn().mockReturnValue( 2 )
-				} );
-				Object.defineProperty( store, 'getZObjectAsJson', {
-					value: {
-						Z2K2: {
-							Z1K1: Constants.Z_IMPLEMENTATION,
-							Z14K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z999' },
-							Z14K2: { Z1K1: Constants.Z_FUNCTION_CALL, Z7K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: '' } }
-						}
-					}
-				} );
-
-				const mockError = {
-					rowId: 2,
-					errorCode: Constants.ERROR_CODES.MISSING_IMPLEMENTATION_COMPOSITION,
-					errorType: Constants.ERROR_TYPES.ERROR
-				};
-
-				const isValid = store.validateZObject();
-				expect( store.setError ).toHaveBeenCalledTimes( 1 );
-				expect( store.setError ).toHaveBeenCalledWith( mockError );
-				expect( isValid ).toEqual( false );
-			} );
-
-			it( 'Sets error for a code implementation with missing programming language', () => {
-
-				Object.defineProperty( store, 'getZImplementationContentRowId', {
-					value: jest.fn().mockReturnValue( 2 )
-				} );
-				Object.defineProperty( store, 'getRowByKeyPath', {
-					value: jest.fn().mockReturnValue( { id: 3 } )
-				} );
-				Object.defineProperty( store, 'getZObjectAsJson', {
-					value: {
-						Z2K2: {
-							Z1K1: Constants.Z_IMPLEMENTATION,
-							Z14K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z999' },
-							Z14K3: {
-								Z1K1: Constants.Z_CODE,
-								Z16K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: '' },
-								Z16K2: { Z1K1: Constants.Z_STRING, Z6K1: 'some code' }
-							}
-						}
-					}
-				} );
-
-				const mockError = {
-					rowId: 3,
-					errorCode: Constants.ERROR_CODES.MISSING_IMPLEMENTATION_CODE_LANGUAGE,
-					errorType: Constants.ERROR_TYPES.ERROR
-				};
-
-				const isValid = store.validateZObject();
-				expect( store.setError ).toHaveBeenCalledTimes( 1 );
-				expect( store.setError ).toHaveBeenCalledWith( mockError );
-				expect( isValid ).toEqual( false );
-			} );
-
-			it( 'Sets error for a code implementation with missing code value', () => {
-				Object.defineProperty( store, 'getZImplementationContentRowId', {
-					value: jest.fn().mockReturnValue( 2 )
-				} );
-				Object.defineProperty( store, 'getRowByKeyPath', {
-					value: jest.fn().mockReturnValue( { id: 4 } )
-				} );
-				Object.defineProperty( store, 'getZObjectAsJson', {
-					value: {
-						Z2K2: {
-							Z1K1: Constants.Z_IMPLEMENTATION,
-							Z14K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z999' },
-							Z14K3: {
-								Z1K1: Constants.Z_CODE,
-								Z16K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: Constants.Z_PROGRAMMING_LANGUAGES.PYTHON },
-								Z16K2: { Z1K1: Constants.Z_STRING, Z6K1: '' }
-							}
-						}
-					}
-				} );
-
-				const mockError = {
-					rowId: 4,
-					errorCode: Constants.ERROR_CODES.MISSING_IMPLEMENTATION_CODE,
-					errorType: Constants.ERROR_TYPES.ERROR
-				};
-
-				const isValid = store.validateZObject();
-				expect( store.setError ).toHaveBeenCalledTimes( 1 );
-				expect( store.setError ).toHaveBeenCalledWith( mockError );
-				expect( isValid ).toEqual( false );
-			} );
-		} );
-
-		describe( 'validate tester', () => {
-			beforeEach( () => {
-				Object.defineProperty( store, 'getCurrentZObjectType', {
-					value: Constants.Z_TESTER
-				} );
-				Object.defineProperty( store, 'getZPersistentContentRowId', {
-					value: jest.fn().mockReturnValue( 1 )
-				} );
-				store.setError = jest.fn();
-			} );
-
-			it( 'Does not set error for a valid tester', () => {
-				Object.defineProperty( store, 'getZObjectAsJson', {
-					value: {
-						Z2K2: {
-							Z1K1: Constants.Z_TESTER,
-							Z20K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z999' },
-							Z20K2: { Z1K1: Constants.Z_FUNCTION_CALL, Z7K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z888' } },
-							Z20K3: { Z1K1: Constants.Z_FUNCTION_CALL, Z7K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z777' } }
-						}
-					}
-				} );
-
-				const isValid = store.validateZObject();
-				expect( store.setError ).toHaveBeenCalledTimes( 0 );
-				expect( isValid ).toEqual( true );
-			} );
-
-			it( 'Sets error for a tester with missing target function', () => {
-				Object.defineProperty( store, 'getZTesterFunctionRowId', {
-					value: jest.fn().mockReturnValue( 2 )
-				} );
-				Object.defineProperty( store, 'getZObjectAsJson', {
-					value: {
-						Z2K2: {
-							Z1K1: Constants.Z_TESTER,
-							Z20K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: '' },
-							Z20K2: { Z1K1: Constants.Z_FUNCTION_CALL, Z7K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z888' } },
-							Z20K3: { Z1K1: Constants.Z_FUNCTION_CALL, Z7K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z777' } }
-						}
-					}
-				} );
-
-				const mockError = {
-					rowId: 2,
-					errorCode: Constants.ERROR_CODES.MISSING_TARGET_FUNCTION,
-					errorType: Constants.ERROR_TYPES.ERROR
-				};
-
-				const isValid = store.validateZObject();
-				expect( store.setError ).toHaveBeenCalledTimes( 1 );
-				expect( store.setError ).toHaveBeenCalledWith( mockError );
-				expect( isValid ).toEqual( false );
-			} );
-
-			it( 'Sets error for a tester with missing call', () => {
-				Object.defineProperty( store, 'getZTesterCallRowId', {
-					value: jest.fn().mockReturnValue( 3 )
-				} );
-				Object.defineProperty( store, 'getZObjectAsJson', {
-					value: {
-						Z2K2: {
-							Z1K1: Constants.Z_TESTER,
-							Z20K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z999' },
-							Z20K2: { Z1K1: Constants.Z_FUNCTION_CALL, Z7K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: '' } },
-							Z20K3: { Z1K1: Constants.Z_FUNCTION_CALL, Z7K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z777' } }
-						}
-					}
-				} );
-
-				const mockError = {
-					rowId: 3,
-					errorCode: Constants.ERROR_CODES.MISSING_TESTER_CALL,
-					errorType: Constants.ERROR_TYPES.ERROR
-				};
-
-				const isValid = store.validateZObject();
-				expect( store.setError ).toHaveBeenCalledTimes( 1 );
-				expect( store.setError ).toHaveBeenCalledWith( mockError );
-				expect( isValid ).toEqual( false );
-			} );
-
-			it( 'Sets error for a tester with missing validation', () => {
-				Object.defineProperty( store, 'getZTesterValidationRowId', {
-					value: jest.fn().mockReturnValue( 4 )
-				} );
-				Object.defineProperty( store, 'getZObjectAsJson', {
-					value: {
-						Z2K2: {
-							Z1K1: Constants.Z_TESTER,
-							Z20K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z999' },
-							Z20K2: { Z1K1: Constants.Z_FUNCTION_CALL, Z7K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z888' } },
-							Z20K3: { Z1K1: Constants.Z_FUNCTION_CALL, Z7K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: '' } }
-						}
-					}
-				} );
-
-				const mockError = {
-					rowId: 4,
-					errorCode: Constants.ERROR_CODES.MISSING_TESTER_VALIDATION,
-					errorType: Constants.ERROR_TYPES.ERROR
-				};
-
-				const isValid = store.validateZObject();
-				expect( store.setError ).toHaveBeenCalledTimes( 1 );
-				expect( store.setError ).toHaveBeenCalledWith( mockError );
-				expect( isValid ).toEqual( false );
 			} );
 		} );
 
 		describe( 'submitZObject', () => {
-			let zobject, postWithEditTokenMock;
+			let postWithEditTokenMock;
 
 			beforeEach( () => {
+				store.jsonObject = { main: {} };
+
 				postWithEditTokenMock = jest.fn( () => new Promise( ( resolve ) => {
-					resolve( {
-						wikilambda_edit: {
-							page: 'sample'
-						}
-					} );
+					resolve( { wikilambda_edit: { page: 'sample' } } );
 				} ) );
 				mw.Api = jest.fn( () => ( {
 					postWithEditToken: postWithEditTokenMock
 				} ) );
 
-				store.zobject = [];
 				Object.defineProperty( store, 'isCreateNewPage', {
 					value: true
 				} );
@@ -553,7 +589,13 @@ describe( 'zobject submission Pinia store', () => {
 			} );
 
 			it( 'submits a new zobject to create', () => {
-				store.zobject = zobjectToRows( zobject );
+				const zobject = {
+					Z1K1: 'Z2',
+					Z2K1: { Z1K1: 'Z6', Z6K1: 'Z0' },
+					Z2K2: 'some object',
+					Z2K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+				};
+				store.jsonObject.main = canonicalToHybrid( zobject );
 				store.isCreateNewPage = true;
 
 				store.submitZObject( { summary: 'A summary' } );
@@ -571,7 +613,13 @@ describe( 'zobject submission Pinia store', () => {
 			} );
 
 			it( 'submits an existing zobject to edit', () => {
-				store.zobject = zobjectToRows( zobject );
+				const zobject = {
+					Z1K1: 'Z2',
+					Z2K1: { Z1K1: 'Z6', Z6K1: 'Z999' },
+					Z2K2: 'some object',
+					Z2K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+				};
+				store.jsonObject.main = canonicalToHybrid( zobject );
 				store.isCreateNewPage = false;
 
 				store.submitZObject( { summary: 'A summary' } );
@@ -589,7 +637,13 @@ describe( 'zobject submission Pinia store', () => {
 			} );
 
 			it( 'submits an object after calling transform', () => {
-				store.zobject = zobjectToRows( zobject );
+				const zobject = {
+					Z1K1: 'Z2',
+					Z2K1: { Z1K1: 'Z6', Z6K1: 'Z999' },
+					Z2K2: 'some object',
+					Z2K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+				};
+				store.jsonObject.main = canonicalToHybrid( zobject );
 				store.isCreateNewPage = false;
 				store.transformZObjectForSubmission = jest.fn();
 
@@ -610,12 +664,11 @@ describe( 'zobject submission Pinia store', () => {
 			} );
 
 			it( 'submits a function after disconnecting implementations and testers', () => {
-
-				zobject = JSON.parse(
+				const zobject = JSON.parse(
 					fs.readFileSync( path.join( __dirname, './objects/getZFunction.json' ) )
 				).clean;
 
-				store.zobject = zobjectToRows( zobject );
+				store.jsonObject.main = canonicalToHybrid( zobject );
 				store.getCurrentZObjectId = 'Z0';
 				store.isCreateNewPage = false;
 
@@ -638,11 +691,11 @@ describe( 'zobject submission Pinia store', () => {
 			} );
 
 			it( 'submits an object after cleaning empty monolingual objects', () => {
-				zobject = JSON.parse(
+				const zobject = JSON.parse(
 					fs.readFileSync( path.join( __dirname, './objects/getZFunction.json' ) )
 				);
 
-				store.zobject = zobjectToRows( zobject.dirty );
+				store.jsonObject.main = canonicalToHybrid( zobject.dirty );
 				store.getCurrentZObjectId = 'Z0';
 				store.isCreateNewPage = false;
 
@@ -662,48 +715,52 @@ describe( 'zobject submission Pinia store', () => {
 			} );
 
 			it( 'submits an object after removing invalid list items', () => {
+				Object.defineProperty( store, 'removeEmptyMonolingualValues', {
+					value: jest.fn()
+				} );
 				const initialObject = {
-					Z2K2: [ // parent rowId 1
+					Z2K2: [
 						'Z6',
-						{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'invalid' }, // invalid rowId 5
+						{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'invalid' },
 						'valid'
 					],
 					Z2K3: {
 						Z1K1: 'Z12',
-						Z12K1: [ // parent rowId 22
+						Z12K1: [
 							'Z11',
 							{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'valid label 1' },
-							'invalid label 1', // invalid item 36
-							'invalid label 2', // invalid item 39
+							'invalid label 1',
+							'invalid label 2',
 							{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'valid label 2' }
 						]
 					}
 				};
 
-				store.zobject = zobjectToRows( initialObject );
-				store.isCreateNewPage = false;
+				store.jsonObject.main = canonicalToHybrid( initialObject );
 				store.getCurrentZObjectId = 'Z0';
+				store.isCreateNewPage = false;
+
 				Object.defineProperty( store, 'hasInvalidListItems', {
 					value: true
 				} );
 				Object.defineProperty( store, 'getInvalidListItems', {
 					value: {
-						1: [ 5 ],
-						22: [ 36, 39 ]
+						'main.Z2K2': [ 1 ],
+						'main.Z2K3.Z12K1': [ 2, 3 ]
 					}
 				} );
-				store.removeItemsFromTypedList = jest.fn();
+				store.deleteListItemsByKeyPath = jest.fn();
 				store.clearInvalidListItems = jest.fn();
 
 				store.submitZObject( { summary: 'A summary' } );
 
-				expect( store.removeItemsFromTypedList ).toHaveBeenCalledWith( {
-					parentRowId: 1,
-					listItems: [ 5 ]
+				expect( store.deleteListItemsByKeyPath ).toHaveBeenCalledWith( {
+					keyPath: [ 'main', 'Z2K2' ],
+					indexes: [ 1 ]
 				} );
-				expect( store.removeItemsFromTypedList ).toHaveBeenCalledWith( {
-					parentRowId: 22,
-					listItems: [ 36, 39 ]
+				expect( store.deleteListItemsByKeyPath ).toHaveBeenCalledWith( {
+					keyPath: [ 'main', 'Z2K3', 'Z12K1' ],
+					indexes: [ 2, 3 ]
 				} );
 				expect( store.clearInvalidListItems ).toHaveBeenCalled();
 			} );
@@ -712,37 +769,29 @@ describe( 'zobject submission Pinia store', () => {
 		describe( 'transformZObjectForSubmission', () => {
 			beforeEach( () => {
 				store.removeEmptyMonolingualValues = jest.fn();
-				store.removeEmptyArguments = jest.fn();
 				store.removeEmptyAliasValues = jest.fn();
+				store.removeEmptyArguments = jest.fn();
 				store.removeEmptyTypeFunctions = jest.fn();
+				store.deleteListItemsByKeyPath = jest.fn();
 				store.recalculateKeys = jest.fn();
 				store.clearInvalidListItems = jest.fn();
-				store.removeItemsFromTypedList = jest.fn();
 				store.disconnectFunctionObjects = jest.fn();
 				store.setEmptyIsIdentityAsFalse = jest.fn();
 
-				Object.defineProperty( store, 'getRowByKeyPath', {
-					value: jest.fn().mockReturnValue( undefined )
-				} );
-				Object.defineProperty( store, 'getZObjectTypeByRowId', {
-					value: jest.fn().mockReturnValue( undefined )
-				} );
-				Object.defineProperty( store, 'getZObjectTypeByRowId', {
-					value: jest.fn().mockReturnValue( undefined )
-				} );
-				Object.defineProperty( store, 'getChildrenByParentRowId', {
-					value: jest.fn().mockReturnValue( [ 'Z1' ] )
+				const zobject = { Z2K2: 'string object' };
+				Object.defineProperty( store, 'getJsonObject', {
+					value: jest.fn().mockReturnValue( canonicalToHybrid( zobject ) )
 				} );
 			} );
 
 			it( 'removes empty names', () => {
 				store.transformZObjectForSubmission( false );
-				expect( store.removeEmptyMonolingualValues ).toHaveBeenCalledWith( { key: 'Z2K3' } );
+				expect( store.removeEmptyMonolingualValues ).toHaveBeenCalledWith( [ 'main', 'Z2K3' ] );
 			} );
 
 			it( 'removes empty descriptions', () => {
 				store.transformZObjectForSubmission( false );
-				expect( store.removeEmptyMonolingualValues ).toHaveBeenCalledWith( { key: 'Z2K5' } );
+				expect( store.removeEmptyMonolingualValues ).toHaveBeenCalledWith( [ 'main', 'Z2K5' ] );
 			} );
 
 			it( 'removes empty aliases', () => {
@@ -756,75 +805,112 @@ describe( 'zobject submission Pinia store', () => {
 			} );
 
 			it( 'removes empty arguments if it is a function', () => {
-				store.getZObjectTypeByRowId = jest.fn().mockReturnValue( Constants.Z_FUNCTION );
-				store.getRowByKeyPath = jest.fn().mockReturnValue( { id: 1 } );
+				Object.defineProperty( store, 'getJsonObject', {
+					value: jest.fn().mockReturnValue( canonicalToHybrid( { Z2K2: { Z1K1: 'Z8' } } ) )
+				} );
 
 				store.transformZObjectForSubmission( false );
 				expect( store.removeEmptyArguments ).toHaveBeenCalled();
 			} );
 
 			it( 'removes undefined parser, renderer and equality functions if it is a type', () => {
-				store.getZObjectTypeByRowId = jest.fn().mockReturnValue( Constants.Z_TYPE );
-				store.getRowByKeyPath = jest.fn().mockReturnValue( { id: 1 } );
+				Object.defineProperty( store, 'getJsonObject', {
+					value: jest.fn().mockReturnValue( canonicalToHybrid( { Z2K2: {
+						Z1K1: 'Z4',
+						Z4K2: [ 'Z3' ]
+					} } ) )
+				} );
 
 				store.transformZObjectForSubmission( false );
-				expect( store.removeEmptyTypeFunctions ).toHaveBeenCalledWith( 1 );
+				expect( store.removeEmptyTypeFunctions ).toHaveBeenCalled();
 			} );
 
 			it( 'recalculates keys if it is a type', () => {
-				store.getZObjectTypeByRowId = jest.fn().mockReturnValue( Constants.Z_TYPE );
-				store.getRowByKeyPath = jest.fn().mockReturnValue( { id: 1 } );
+				Object.defineProperty( store, 'getJsonObject', {
+					value: jest.fn().mockReturnValue( canonicalToHybrid( { Z2K2: {
+						Z1K1: 'Z4',
+						Z4K2: [ 'Z3' ]
+					} } ) )
+				} );
 
 				store.transformZObjectForSubmission( false );
-				expect( store.recalculateKeys ).toHaveBeenCalledWith( { listRowId: 1, key: 'Z3K2' } );
+				expect( store.recalculateKeys ).toHaveBeenCalledWith( [ 'main', 'Z2K2', 'Z4K2' ] );
 			} );
 
 			it( 'sets emtpy isIdentity/Z3K4 keys to false if it is a type', () => {
-				store.getZObjectTypeByRowId = jest.fn().mockReturnValue( Constants.Z_TYPE );
-				store.getRowByKeyPath = jest.fn().mockReturnValue( { id: 1 } );
-				store.getChildrenByParentRowId = jest.fn().mockReturnValue( [ { id: 2 }, { id: 3 }, { id: 4 } ] );
+				Object.defineProperty( store, 'getJsonObject', {
+					value: jest.fn().mockReturnValue( canonicalToHybrid( { Z2K2: {
+						Z1K1: 'Z4',
+						Z4K2: [ 'Z3',
+							{ Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z999K1', Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } },
+							{ Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z999K1', Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } }
+						]
+					} } ) )
+				} );
 
 				store.transformZObjectForSubmission( false );
-				expect( store.setEmptyIsIdentityAsFalse ).toHaveBeenCalledWith( 3 );
-				expect( store.setEmptyIsIdentityAsFalse ).toHaveBeenCalledWith( 4 );
+				expect( store.setEmptyIsIdentityAsFalse ).toHaveBeenCalledWith( [ 'main', 'Z2K2', 'Z4K2', 1 ] );
+				expect( store.setEmptyIsIdentityAsFalse ).toHaveBeenCalledWith( [ 'main', 'Z2K2', 'Z4K2', 2 ] );
 			} );
 
 			it( 'removes empty key labels if it is a type', () => {
-				store.getZObjectTypeByRowId = jest.fn().mockReturnValue( Constants.Z_TYPE );
-				store.getRowByKeyPath = jest.fn().mockReturnValue( { id: 1 } );
-				store.getChildrenByParentRowId = jest.fn().mockReturnValue( [ { id: 2 }, { id: 3 }, { id: 4 } ] );
+				Object.defineProperty( store, 'getJsonObject', {
+					value: jest.fn().mockReturnValue( canonicalToHybrid( { Z2K2: {
+						Z1K1: 'Z4',
+						Z4K2: [ 'Z3',
+							{ Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z999K1', Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } },
+							{ Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z999K1', Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } }
+						]
+					} } ) )
+				} );
 
 				store.transformZObjectForSubmission( false );
-				expect( store.removeEmptyMonolingualValues ).toHaveBeenCalledWith( { rowId: 3, key: 'Z3K3' } );
-				expect( store.removeEmptyMonolingualValues ).toHaveBeenCalledWith( { rowId: 4, key: 'Z3K3' } );
+				expect( store.removeEmptyMonolingualValues ).toHaveBeenCalledWith( [ 'main', 'Z2K2', 'Z4K2', 1, 'Z3K3' ] );
+				expect( store.removeEmptyMonolingualValues ).toHaveBeenCalledWith( [ 'main', 'Z2K2', 'Z4K2', 2, 'Z3K3' ] );
 			} );
 
 			it( 'recalculates keys if it is an error type', () => {
-				store.getZObjectTypeByRowId = jest.fn().mockReturnValue( Constants.Z_ERRORTYPE );
-				store.getRowByKeyPath = jest.fn().mockReturnValue( { id: 1 } );
+				Object.defineProperty( store, 'getJsonObject', {
+					value: jest.fn().mockReturnValue( canonicalToHybrid( { Z2K2: {
+						Z1K1: 'Z50',
+						Z50K1: [ 'Z3' ]
+					} } ) )
+				} );
 
 				store.transformZObjectForSubmission( false );
-				expect( store.recalculateKeys ).toHaveBeenCalledWith( { listRowId: 1, key: 'Z3K2' } );
+				expect( store.recalculateKeys ).toHaveBeenCalledWith( [ 'main', 'Z2K2', 'Z50K1' ] );
 			} );
 
 			it( 'sets emtpy isIdentity/Z3K4 keys to false if it is an errortype', () => {
-				store.getZObjectTypeByRowId = jest.fn().mockReturnValue( Constants.Z_ERRORTYPE );
-				store.getRowByKeyPath = jest.fn().mockReturnValue( { id: 1 } );
-				store.getChildrenByParentRowId = jest.fn().mockReturnValue( [ { id: 2 }, { id: 3 }, { id: 4 } ] );
+				Object.defineProperty( store, 'getJsonObject', {
+					value: jest.fn().mockReturnValue( canonicalToHybrid( { Z2K2: {
+						Z1K1: 'Z50',
+						Z50K1: [ 'Z3',
+							{ Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z999K1', Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } },
+							{ Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z999K1', Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } }
+						]
+					} } ) )
+				} );
 
 				store.transformZObjectForSubmission( false );
-				expect( store.setEmptyIsIdentityAsFalse ).toHaveBeenCalledWith( 3 );
-				expect( store.setEmptyIsIdentityAsFalse ).toHaveBeenCalledWith( 4 );
+				expect( store.setEmptyIsIdentityAsFalse ).toHaveBeenCalledWith( [ 'main', 'Z2K2', 'Z50K1', 1 ] );
+				expect( store.setEmptyIsIdentityAsFalse ).toHaveBeenCalledWith( [ 'main', 'Z2K2', 'Z50K1', 2 ] );
 			} );
 
 			it( 'removes empty key labels if it is an errortype', () => {
-				store.getZObjectTypeByRowId = jest.fn().mockReturnValue( Constants.Z_ERRORTYPE );
-				store.getRowByKeyPath = jest.fn().mockReturnValue( { id: 1 } );
-				store.getChildrenByParentRowId = jest.fn().mockReturnValue( [ { id: 2 }, { id: 3 }, { id: 4 } ] );
+				Object.defineProperty( store, 'getJsonObject', {
+					value: jest.fn().mockReturnValue( canonicalToHybrid( { Z2K2: {
+						Z1K1: 'Z50',
+						Z50K1: [ 'Z3',
+							{ Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z999K1', Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } },
+							{ Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z999K1', Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } }
+						]
+					} } ) )
+				} );
 
 				store.transformZObjectForSubmission( false );
-				expect( store.removeEmptyMonolingualValues ).toHaveBeenCalledWith( { rowId: 3, key: 'Z3K3' } );
-				expect( store.removeEmptyMonolingualValues ).toHaveBeenCalledWith( { rowId: 4, key: 'Z3K3' } );
+				expect( store.removeEmptyMonolingualValues ).toHaveBeenCalledWith( [ 'main', 'Z2K2', 'Z50K1', 1, 'Z3K3' ] );
+				expect( store.removeEmptyMonolingualValues ).toHaveBeenCalledWith( [ 'main', 'Z2K2', 'Z50K1', 2, 'Z3K3' ] );
 			} );
 
 			it( 'removes list items marked as invalid', () => {
@@ -833,14 +919,14 @@ describe( 'zobject submission Pinia store', () => {
 				} );
 				Object.defineProperty( store, 'getInvalidListItems', {
 					value: {
-						1: [ 2 ]
+						'main.Z2K2': [ 2 ]
 					}
 				} );
 
 				store.transformZObjectForSubmission( false );
-				expect( store.removeItemsFromTypedList ).toHaveBeenCalledWith( {
-					parentRowId: 1,
-					listItems: [ 2 ]
+				expect( store.deleteListItemsByKeyPath ).toHaveBeenCalledWith( {
+					keyPath: [ 'main', 'Z2K2' ],
+					indexes: [ 2 ]
 				} );
 				expect( store.clearInvalidListItems ).toHaveBeenCalled();
 			} );
@@ -851,7 +937,7 @@ describe( 'zobject submission Pinia store', () => {
 				} );
 
 				store.transformZObjectForSubmission( false );
-				expect( store.removeItemsFromTypedList ).not.toHaveBeenCalled();
+				expect( store.deleteListItemsByKeyPath ).not.toHaveBeenCalled();
 				expect( store.clearInvalidListItems ).not.toHaveBeenCalled();
 			} );
 
@@ -867,28 +953,20 @@ describe( 'zobject submission Pinia store', () => {
 		} );
 
 		describe( 'removeEmptyMonolingualValues', () => {
-
 			it( 'does nothing when nothing is present', () => {
 				const zobject = {
 					Z2K3: {
 						Z1K1: 'Z12',
-						Z12K1: [
-							'Z11'
-						]
+						Z12K1: [ 'Z11' ]
 					}
 				};
-				store.zobject = zobjectToRows( zobject );
-				store.removeEmptyMonolingualValues( { key: 'Z2K3' } );
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.removeEmptyMonolingualValues( [
+					Constants.STORED_OBJECTS.MAIN,
+					Constants.Z_PERSISTENTOBJECT_LABEL
+				] );
 
-				const transformed = store.getZObjectAsJsonById( 0, false );
-				expect( hybridToCanonical( transformed ) ).toEqual( {
-					Z2K3: {
-						Z1K1: 'Z12',
-						Z12K1: [
-							'Z11'
-						]
-					}
-				} );
+				expect( hybridToCanonical( store.jsonObject.main ) ).toEqual( zobject );
 			} );
 
 			it( 'removes monolingual value when text is empty', () => {
@@ -902,11 +980,7 @@ describe( 'zobject submission Pinia store', () => {
 						]
 					}
 				};
-				store.zobject = zobjectToRows( zobject );
-				store.removeEmptyMonolingualValues( { key: 'Z2K3' } );
-
-				const transformed = store.getZObjectAsJsonById( 0, false );
-				expect( hybridToCanonical( transformed ) ).toEqual( {
+				const expected = {
 					Z2K3: {
 						Z1K1: 'Z12',
 						Z12K1: [
@@ -914,7 +988,14 @@ describe( 'zobject submission Pinia store', () => {
 							{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'this is good' }
 						]
 					}
-				} );
+				};
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.removeEmptyMonolingualValues( [
+					Constants.STORED_OBJECTS.MAIN,
+					Constants.Z_PERSISTENTOBJECT_LABEL
+				] );
+
+				expect( hybridToCanonical( store.jsonObject.main ) ).toEqual( expected );
 			} );
 
 			it( 'removes monolingual value when language is empty', () => {
@@ -928,11 +1009,8 @@ describe( 'zobject submission Pinia store', () => {
 						]
 					}
 				};
-				store.zobject = zobjectToRows( zobject );
-				store.removeEmptyMonolingualValues( { key: 'Z2K3' } );
 
-				const transformed = store.getZObjectAsJsonById( 0, false );
-				expect( hybridToCanonical( transformed ) ).toEqual( {
+				const expected = {
 					Z2K3: {
 						Z1K1: 'Z12',
 						Z12K1: [
@@ -940,7 +1018,14 @@ describe( 'zobject submission Pinia store', () => {
 							{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'this is good' }
 						]
 					}
-				} );
+				};
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.removeEmptyMonolingualValues( [
+					Constants.STORED_OBJECTS.MAIN,
+					Constants.Z_PERSISTENTOBJECT_LABEL
+				] );
+
+				expect( hybridToCanonical( store.jsonObject.main ) ).toEqual( expected );
 			} );
 
 			it( 'does not remove well formed monolingual values', () => {
@@ -954,20 +1039,14 @@ describe( 'zobject submission Pinia store', () => {
 						]
 					}
 				};
-				store.zobject = zobjectToRows( zobject );
-				store.removeEmptyMonolingualValues( { key: 'Z2K3' } );
 
-				const transformed = store.getZObjectAsJsonById( 0, false );
-				expect( hybridToCanonical( transformed ) ).toEqual( {
-					Z2K3: {
-						Z1K1: 'Z12',
-						Z12K1: [
-							'Z11',
-							{ Z1K1: 'Z11', Z11K1: 'Z1003', Z11K2: 'esto está bien' },
-							{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'this is good' }
-						]
-					}
-				} );
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.removeEmptyMonolingualValues( [
+					Constants.STORED_OBJECTS.MAIN,
+					Constants.Z_PERSISTENTOBJECT_LABEL
+				] );
+
+				expect( hybridToCanonical( store.jsonObject.main ) ).toEqual( zobject );
 			} );
 
 			it( 'only removes values of the given key', () => {
@@ -987,11 +1066,8 @@ describe( 'zobject submission Pinia store', () => {
 						]
 					}
 				};
-				store.zobject = zobjectToRows( zobject );
-				store.removeEmptyMonolingualValues( { key: 'Z2K3' } );
 
-				const transformed = store.getZObjectAsJsonById( 0, false );
-				expect( hybridToCanonical( transformed ) ).toEqual( {
+				const expected = {
 					Z2K3: {
 						Z1K1: 'Z12',
 						Z12K1: [ 'Z11' ]
@@ -1003,146 +1079,194 @@ describe( 'zobject submission Pinia store', () => {
 							{ Z1K1: 'Z11', Z11K1: '', Z11K2: '...but not this' }
 						]
 					}
-				} );
+				};
+
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.removeEmptyMonolingualValues( [
+					Constants.STORED_OBJECTS.MAIN,
+					Constants.Z_PERSISTENTOBJECT_LABEL
+				] );
+
+				expect( hybridToCanonical( store.jsonObject.main ) ).toEqual( expected );
 			} );
 		} );
 
 		describe( 'setEmptyIsIdentityAsFalse', () => {
-
 			it( 'does nothing when no Z3K4 key is present', () => {
-				const zobject = {
+				const zobject = { Z2K2: {
 					Z1K1: 'Z3',
 					Z3K1: 'Z6',
 					Z3K2: 'Z111K1'
-				};
-				store.zobject = zobjectToRows( zobject );
-				store.setEmptyIsIdentityAsFalse( 0 );
+				} };
 
-				const transformed = store.getZObjectAsJsonById( 0, false );
-				expect( hybridToCanonical( transformed ) ).toEqual( {
+				const expected = { Z2K2: {
 					Z1K1: 'Z3',
 					Z3K1: 'Z6',
 					Z3K2: 'Z111K1'
-				} );
+				} };
+
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.setEmptyIsIdentityAsFalse( [
+					Constants.STORED_OBJECTS.MAIN,
+					Constants.Z_PERSISTENTOBJECT_VALUE
+				] );
+
+				const updated = hybridToCanonical( store.jsonObject.main );
+				expect( updated ).toEqual( expected );
 			} );
 
 			it( 'does nothing when Z3K4 is true literal', () => {
-				const zobject = {
+				const zobject = { Z2K2: {
 					Z1K1: 'Z3',
 					Z3K1: 'Z6',
 					Z3K2: 'Z111K1',
 					Z3K4: { Z1K1: 'Z40', Z40K1: 'Z41' }
-				};
-				store.zobject = zobjectToRows( zobject );
-				store.setEmptyIsIdentityAsFalse( 0 );
+				} };
 
-				const transformed = store.getZObjectAsJsonById( 0, false );
-				expect( hybridToCanonical( transformed ) ).toEqual( {
+				const expected = { Z2K2: {
 					Z1K1: 'Z3',
 					Z3K1: 'Z6',
 					Z3K2: 'Z111K1',
 					Z3K4: { Z1K1: 'Z40', Z40K1: 'Z41' }
-				} );
+				} };
+
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.setEmptyIsIdentityAsFalse( [
+					Constants.STORED_OBJECTS.MAIN,
+					Constants.Z_PERSISTENTOBJECT_VALUE
+				] );
+
+				const updated = hybridToCanonical( store.jsonObject.main );
+				expect( updated ).toEqual( expected );
 			} );
 
 			it( 'does nothing when Z3K4 is true reference', () => {
-				const zobject = {
+				const zobject = { Z2K2: {
 					Z1K1: 'Z3',
 					Z3K1: 'Z6',
 					Z3K2: 'Z111K1',
 					Z3K4: 'Z41'
-				};
-				store.zobject = zobjectToRows( zobject );
-				store.setEmptyIsIdentityAsFalse( 0 );
+				} };
 
-				const transformed = store.getZObjectAsJsonById( 0, false );
-				expect( hybridToCanonical( transformed ) ).toEqual( {
+				const expected = { Z2K2: {
 					Z1K1: 'Z3',
 					Z3K1: 'Z6',
 					Z3K2: 'Z111K1',
 					Z3K4: 'Z41'
-				} );
+				} };
+
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.setEmptyIsIdentityAsFalse( [
+					Constants.STORED_OBJECTS.MAIN,
+					Constants.Z_PERSISTENTOBJECT_VALUE
+				] );
+
+				const updated = hybridToCanonical( store.jsonObject.main );
+				expect( updated ).toEqual( expected );
 			} );
 
 			it( 'does nothing when Z3K4 is false literal', () => {
-				const zobject = {
+				const zobject = { Z2K2: {
 					Z1K1: 'Z3',
 					Z3K1: 'Z6',
 					Z3K2: 'Z111K1',
 					Z3K4: { Z1K1: 'Z40', Z40K1: 'Z42' }
-				};
-				store.zobject = zobjectToRows( zobject );
-				store.setEmptyIsIdentityAsFalse( 0 );
+				} };
 
-				const transformed = store.getZObjectAsJsonById( 0, false );
-				expect( hybridToCanonical( transformed ) ).toEqual( {
+				const expected = { Z2K2: {
 					Z1K1: 'Z3',
 					Z3K1: 'Z6',
 					Z3K2: 'Z111K1',
 					Z3K4: { Z1K1: 'Z40', Z40K1: 'Z42' }
-				} );
+				} };
+
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.setEmptyIsIdentityAsFalse( [
+					Constants.STORED_OBJECTS.MAIN,
+					Constants.Z_PERSISTENTOBJECT_VALUE
+				] );
+
+				const updated = hybridToCanonical( store.jsonObject.main );
+				expect( updated ).toEqual( expected );
 			} );
 
 			it( 'does nothing when Z3K4 is false reference', () => {
-				const zobject = {
+				const zobject = { Z2K2: {
 					Z1K1: 'Z3',
 					Z3K1: 'Z6',
 					Z3K2: 'Z111K1',
 					Z3K4: 'Z42'
-				};
-				store.zobject = zobjectToRows( zobject );
-				store.setEmptyIsIdentityAsFalse( 0 );
+				} };
 
-				const transformed = store.getZObjectAsJsonById( 0, false );
-				expect( hybridToCanonical( transformed ) ).toEqual( {
+				const expected = { Z2K2: {
 					Z1K1: 'Z3',
 					Z3K1: 'Z6',
 					Z3K2: 'Z111K1',
 					Z3K4: 'Z42'
-				} );
+				} };
+
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.setEmptyIsIdentityAsFalse( [
+					Constants.STORED_OBJECTS.MAIN,
+					Constants.Z_PERSISTENTOBJECT_VALUE
+				] );
+
+				const updated = hybridToCanonical( store.jsonObject.main );
+				expect( updated ).toEqual( expected );
 			} );
 
 			it( 'sets to false when Z3K4 is empty literal', () => {
-				const zobject = {
+				const zobject = { Z2K2: {
 					Z1K1: 'Z3',
 					Z3K1: 'Z6',
 					Z3K2: 'Z111K1',
-					Z3K4: { Z1K1: 'Z40', Z40K1: '' }
-				};
-				store.zobject = zobjectToRows( zobject );
-				store.setEmptyIsIdentityAsFalse( 0 );
+					Z3K4: { Z1K1: 'Z40', Z40K1: { Z1K1: 'Z9', Z9K1: '' } }
+				} };
 
-				const transformed = store.getZObjectAsJsonById( 0, false );
-				expect( hybridToCanonical( transformed ) ).toEqual( {
+				const expected = { Z2K2: {
 					Z1K1: 'Z3',
 					Z3K1: 'Z6',
 					Z3K2: 'Z111K1',
 					Z3K4: { Z1K1: 'Z40', Z40K1: 'Z42' }
-				} );
+				} };
+
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.setEmptyIsIdentityAsFalse( [
+					Constants.STORED_OBJECTS.MAIN,
+					Constants.Z_PERSISTENTOBJECT_VALUE
+				] );
+
+				const updated = hybridToCanonical( store.jsonObject.main );
+				expect( updated ).toEqual( expected );
 			} );
 
 			it( 'sets to false when Z3K4 is empty reference', () => {
-				const zobject = {
+				const zobject = { Z2K2: {
 					Z1K1: 'Z3',
 					Z3K1: 'Z6',
 					Z3K2: 'Z111K1',
-					Z3K4: ''
-				};
-				store.zobject = zobjectToRows( zobject );
-				store.setEmptyIsIdentityAsFalse( 0 );
+					Z3K4: { Z1K1: 'Z9', Z9K1: '' }
+				} };
 
-				const transformed = store.getZObjectAsJsonById( 0, false );
-				expect( hybridToCanonical( transformed ) ).toEqual( {
+				const expected = { Z2K2: {
 					Z1K1: 'Z3',
 					Z3K1: 'Z6',
 					Z3K2: 'Z111K1',
 					Z3K4: 'Z42'
-				} );
+				} };
+
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.setEmptyIsIdentityAsFalse( [
+					Constants.STORED_OBJECTS.MAIN,
+					Constants.Z_PERSISTENTOBJECT_VALUE
+				] );
+
+				const updated = hybridToCanonical( store.jsonObject.main );
+				expect( updated ).toEqual( expected );
 			} );
 		} );
 
 		describe( 'removeEmptyAliasValues', () => {
-
 			it( 'removes empty strings from the stringset', () => {
 				const zobject = {
 					Z2K4: {
@@ -1154,11 +1278,8 @@ describe( 'zobject submission Pinia store', () => {
 						]
 					}
 				};
-				store.zobject = zobjectToRows( zobject );
-				store.removeEmptyAliasValues();
 
-				const transformed = store.getZObjectAsJsonById( 0, false );
-				expect( hybridToCanonical( transformed ) ).toEqual( {
+				const expected = {
 					Z2K4: {
 						Z1K1: 'Z32',
 						Z32K1: [
@@ -1167,7 +1288,15 @@ describe( 'zobject submission Pinia store', () => {
 							{ Z1K1: 'Z31', Z31K1: 'Z1002', Z31K2: [ 'Z6', 'one alias', 'another alias' ] }
 						]
 					}
-				} );
+				};
+
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.removeEmptyAliasValues( [
+					Constants.STORED_OBJECTS.MAIN,
+					Constants.Z_PERSISTENTOBJECT_ALIASES
+				] );
+
+				expect( hybridToCanonical( store.jsonObject.main ) ).toEqual( expected );
 			} );
 
 			it( 'removes alias with empty stringset', () => {
@@ -1182,11 +1311,8 @@ describe( 'zobject submission Pinia store', () => {
 						]
 					}
 				};
-				store.zobject = zobjectToRows( zobject );
-				store.removeEmptyAliasValues();
 
-				const transformed = store.getZObjectAsJsonById( 0, false );
-				expect( hybridToCanonical( transformed ) ).toEqual( {
+				const expected = {
 					Z2K4: {
 						Z1K1: 'Z32',
 						Z32K1: [
@@ -1194,7 +1320,15 @@ describe( 'zobject submission Pinia store', () => {
 							{ Z1K1: 'Z31', Z31K1: 'Z1002', Z31K2: [ 'Z6', 'this is good' ] }
 						]
 					}
-				} );
+				};
+
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.removeEmptyAliasValues( [
+					Constants.STORED_OBJECTS.MAIN,
+					Constants.Z_PERSISTENTOBJECT_ALIASES
+				] );
+
+				expect( hybridToCanonical( store.jsonObject.main ) ).toEqual( expected );
 			} );
 
 			it( 'removes alias with undefined language', () => {
@@ -1209,11 +1343,8 @@ describe( 'zobject submission Pinia store', () => {
 						]
 					}
 				};
-				store.zobject = zobjectToRows( zobject );
-				store.removeEmptyAliasValues();
 
-				const transformed = store.getZObjectAsJsonById( 0, false );
-				expect( hybridToCanonical( transformed ) ).toEqual( {
+				const expected = {
 					Z2K4: {
 						Z1K1: 'Z32',
 						Z32K1: [
@@ -1221,12 +1352,113 @@ describe( 'zobject submission Pinia store', () => {
 							{ Z1K1: 'Z31', Z31K1: 'Z1003', Z31K2: [ 'Z6', 'un alias' ] }
 						]
 					}
+				};
+
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.removeEmptyAliasValues( [
+					Constants.STORED_OBJECTS.MAIN,
+					Constants.Z_PERSISTENTOBJECT_ALIASES
+				] );
+
+				expect( hybridToCanonical( store.jsonObject.main ) ).toEqual( expected );
+			} );
+		} );
+
+		describe( 'recalculateKeys', () => {
+			beforeEach( () => {
+				Object.defineProperty( store, 'getCurrentZObjectId', {
+					value: 'Z999'
 				} );
+			} );
+
+			it( 'does not change arguments that are correctly numbered', () => {
+				const zobject = { Z2K2: {
+					Z8K1: [ 'Z17',
+						{
+							Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z999K1',
+							Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+						},
+						{
+							Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z999K2',
+							Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11', { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'label' } ] }
+						}
+					]
+				} };
+
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.recalculateKeys( [
+					Constants.STORED_OBJECTS.MAIN,
+					Constants.Z_PERSISTENTOBJECT_VALUE,
+					Constants.Z_FUNCTION_ARGUMENTS
+				] );
+
+				const updated = hybridToCanonical( store.jsonObject.main );
+				expect( updated ).toEqual( zobject );
+				expect( updated.Z2K2.Z8K1.length ).toBe( 3 );
+				expect( updated.Z2K2.Z8K1[ 1 ].Z17K2 ).toBe( 'Z999K1' );
+				expect( updated.Z2K2.Z8K1[ 2 ].Z17K2 ).toBe( 'Z999K2' );
+			} );
+
+			it( 'renumbers argument keys to sequential numbers', () => {
+				const zobject = { Z2K2: {
+					Z8K1: [ 'Z17',
+						{
+							Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z999K2',
+							Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+						},
+						{
+							Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z999K7',
+							Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11', { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'label' } ] }
+						}
+					]
+				} };
+
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.recalculateKeys( [
+					Constants.STORED_OBJECTS.MAIN,
+					Constants.Z_PERSISTENTOBJECT_VALUE,
+					Constants.Z_FUNCTION_ARGUMENTS
+				] );
+
+				const updated = hybridToCanonical( store.jsonObject.main );
+				expect( updated.Z2K2.Z8K1.length ).toBe( 3 );
+				expect( updated.Z2K2.Z8K1[ 1 ].Z17K2 ).toBe( 'Z999K1' );
+				expect( updated.Z2K2.Z8K1[ 2 ].Z17K2 ).toBe( 'Z999K2' );
+			} );
+
+			it( 'renumbers type keys', () => {
+				const zobject = { Z2K2: {
+					Z4K2: [ 'Z3',
+						{
+							Z1K1: 'Z3',
+							Z3K1: 'Z6',
+							Z3K2: 'Z999K6',
+							Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+						},
+						{
+							Z1K1: 'Z3',
+							Z3K1: 'Z6',
+							Z3K2: 'Z999K3',
+							Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+						}
+					]
+				} };
+
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.recalculateKeys( [
+					Constants.STORED_OBJECTS.MAIN,
+					Constants.Z_PERSISTENTOBJECT_VALUE,
+					Constants.Z_TYPE_KEYS
+				] );
+
+				const updated = hybridToCanonical( store.jsonObject.main );
+				expect( updated.Z2K2.Z4K2.length ).toBe( 3 );
+				expect( updated.Z2K2.Z4K2[ 1 ].Z3K2 ).toBe( 'Z999K1' );
+				expect( updated.Z2K2.Z4K2[ 2 ].Z3K2 ).toBe( 'Z999K2' );
 			} );
 		} );
 
 		describe( 'removeEmptyArguments', () => {
-
 			beforeEach( () => {
 				Object.defineProperty( store, 'getCurrentZObjectId', {
 					value: 'Z12345'
@@ -1251,11 +1483,8 @@ describe( 'zobject submission Pinia store', () => {
 						] } }
 					] }
 				};
-				store.zobject = zobjectToRows( zobject );
-				store.removeEmptyArguments();
 
-				const transformed = store.getZObjectAsJsonById( 0, false );
-				expect( hybridToCanonical( transformed ) ).toEqual( {
+				const expected = {
 					Z2K2: { Z8K1: [ 'Z17',
 						{ Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z12345K1', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11',
 							{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'input one' },
@@ -1266,7 +1495,13 @@ describe( 'zobject submission Pinia store', () => {
 							{ Z1K1: 'Z11', Z11K1: 'Z1003', Z11K2: 'segundo parámetro' }
 						] } }
 					] }
-				} );
+				};
+
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.removeEmptyArguments();
+
+				const transformed = hybridToCanonical( store.jsonObject.main );
+				expect( transformed ).toEqual( expected );
 			} );
 
 			it( 'removes arguments with empty labels and undefined type', () => {
@@ -1285,11 +1520,8 @@ describe( 'zobject submission Pinia store', () => {
 						] } }
 					] }
 				};
-				store.zobject = zobjectToRows( zobject );
-				store.removeEmptyArguments();
 
-				const transformed = store.getZObjectAsJsonById( 0, false );
-				expect( hybridToCanonical( transformed ) ).toEqual( {
+				const expected = {
 					Z2K2: { Z8K1: [ 'Z17',
 						{ Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z12345K1', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11',
 							{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'input one' }
@@ -1298,7 +1530,13 @@ describe( 'zobject submission Pinia store', () => {
 							{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'input two' }
 						] } }
 					] }
-				} );
+				};
+
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.removeEmptyArguments();
+
+				const transformed = hybridToCanonical( store.jsonObject.main );
+				expect( transformed ).toEqual( expected );
 			} );
 
 			it( 'does not remove arguments with empty labels and generic type', () => {
@@ -1312,11 +1550,8 @@ describe( 'zobject submission Pinia store', () => {
 							Z17K2: 'Z12345K2', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } }
 					] }
 				};
-				store.zobject = zobjectToRows( zobject );
-				store.removeEmptyArguments();
 
-				const transformed = store.getZObjectAsJsonById( 0, false );
-				expect( hybridToCanonical( transformed ) ).toEqual( {
+				const expected = {
 					Z2K2: { Z8K1: [ 'Z17',
 						{ Z1K1: 'Z17',
 							Z17K1: { Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z6' },
@@ -1325,30 +1560,77 @@ describe( 'zobject submission Pinia store', () => {
 							Z17K1: { Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z6' },
 							Z17K2: 'Z12345K2', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } }
 					] }
-				} );
+				};
+
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.removeEmptyArguments();
+
+				const transformed = hybridToCanonical( store.jsonObject.main );
+				expect( transformed ).toEqual( expected );
+			} );
+
+			it( 'removes arguments with multilingual list, removes empty monolinguals and rewrites keys', () => {
+				const zobject = {
+					Z2K2: { Z8K1: [ 'Z17',
+						{ Z1K1: 'Z17',
+							Z17K1: { Z1K1: 'Z9', Z9K1: '' },
+							Z17K2: 'Z12345K1', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11',
+								{ Z1K1: 'Z11', Z11K1: { Z1K1: 'Z9', Z9K1: '' }, Z11K2: 'bad monolingual' },
+								{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: '' },
+								{ Z1K1: 'Z11', Z11K1: { Z1K1: 'Z9', Z9K1: '' }, Z11K2: '' }
+							] } },
+						{ Z1K1: 'Z17',
+							Z17K1: 'Z6',
+							Z17K2: 'Z12345K2', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11',
+								{ Z1K1: 'Z11', Z11K1: { Z1K1: 'Z9', Z9K1: '' }, Z11K2: 'bad monolingual' },
+								{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: '' },
+								{ Z1K1: 'Z11', Z11K1: { Z1K1: 'Z9', Z9K1: '' }, Z11K2: '' }
+							] } },
+						{ Z1K1: 'Z17',
+							Z17K1: 'Z6',
+							Z17K2: 'Z12345K3', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11',
+								{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'was third now is second' }
+							] } }
+					] }
+				};
+
+				const expected = {
+					Z2K2: { Z8K1: [ 'Z17',
+						{ Z1K1: 'Z17',
+							Z17K1: 'Z6',
+							Z17K2: 'Z12345K1', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } },
+						{ Z1K1: 'Z17',
+							Z17K1: 'Z6',
+							Z17K2: 'Z12345K2', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11',
+								{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'was third now is second' }
+							] } }
+					] }
+				};
+
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.removeEmptyArguments();
+
+				const transformed = hybridToCanonical( store.jsonObject.main );
+				expect( transformed ).toEqual( expected );
 			} );
 		} );
 
 		describe( 'removeEmptyTypeFunctions', () => {
 
 			it( 'removes undefined validator function/Z4K3', () => {
-				const rowId = 1;
 				const zobject = {
-					Z2K2: { // rowId = 1
+					Z2K2: {
 						Z1K1: 'Z4',
 						Z4K1: 'Z12345',
 						Z4K2: [ 'Z3' ],
-						Z4K3: '',
+						Z4K3: { Z1K1: 'Z9', Z9K1: '' },
 						Z4K4: 'Z10001',
 						Z4K5: 'Z10002',
 						Z4K6: 'Z10003'
 					}
 				};
-				store.zobject = zobjectToRows( zobject );
-				store.removeEmptyTypeFunctions( rowId );
 
-				const transformed = store.getZObjectAsJsonById( 0, false );
-				expect( hybridToCanonical( transformed ) ).toEqual( {
+				const expected = {
 					Z2K2: {
 						Z1K1: 'Z4',
 						Z4K1: 'Z12345',
@@ -1357,27 +1639,29 @@ describe( 'zobject submission Pinia store', () => {
 						Z4K5: 'Z10002',
 						Z4K6: 'Z10003'
 					}
-				} );
+				};
+
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.removeEmptyTypeFunctions();
+
+				const transformed = hybridToCanonical( store.jsonObject.main );
+				expect( hybridToCanonical( transformed ) ).toEqual( expected );
 			} );
 
 			it( 'removes undefined equality function/Z4K4', () => {
-				const rowId = 1;
 				const zobject = {
-					Z2K2: { // rowId = 1
+					Z2K2: {
 						Z1K1: 'Z4',
 						Z4K1: 'Z12345',
 						Z4K2: [ 'Z3' ],
 						Z4K3: 'Z10001',
-						Z4K4: '',
+						Z4K4: { Z1K1: 'Z9', Z9K1: '' },
 						Z4K5: 'Z10002',
 						Z4K6: 'Z10003'
 					}
 				};
-				store.zobject = zobjectToRows( zobject );
-				store.removeEmptyTypeFunctions( rowId );
 
-				const transformed = store.getZObjectAsJsonById( 0, false );
-				expect( hybridToCanonical( transformed ) ).toEqual( {
+				const expected = {
 					Z2K2: {
 						Z1K1: 'Z4',
 						Z4K1: 'Z12345',
@@ -1386,27 +1670,29 @@ describe( 'zobject submission Pinia store', () => {
 						Z4K5: 'Z10002',
 						Z4K6: 'Z10003'
 					}
-				} );
+				};
+
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.removeEmptyTypeFunctions();
+
+				const transformed = hybridToCanonical( store.jsonObject.main );
+				expect( hybridToCanonical( transformed ) ).toEqual( expected );
 			} );
 
 			it( 'removes undefined renderer function/Z4K5', () => {
-				const rowId = 1;
 				const zobject = {
-					Z2K2: { // rowId = 1
+					Z2K2: {
 						Z1K1: 'Z4',
 						Z4K1: 'Z12345',
 						Z4K2: [ 'Z3' ],
 						Z4K3: 'Z10001',
 						Z4K4: 'Z10002',
-						Z4K5: '',
+						Z4K5: { Z1K1: 'Z9', Z9K1: '' },
 						Z4K6: 'Z10003'
 					}
 				};
-				store.zobject = zobjectToRows( zobject );
-				store.removeEmptyTypeFunctions( rowId );
 
-				const transformed = store.getZObjectAsJsonById( 0, false );
-				expect( hybridToCanonical( transformed ) ).toEqual( {
+				const expected = {
 					Z2K2: {
 						Z1K1: 'Z4',
 						Z4K1: 'Z12345',
@@ -1415,27 +1701,29 @@ describe( 'zobject submission Pinia store', () => {
 						Z4K4: 'Z10002',
 						Z4K6: 'Z10003'
 					}
-				} );
+				};
+
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.removeEmptyTypeFunctions();
+
+				const transformed = hybridToCanonical( store.jsonObject.main );
+				expect( hybridToCanonical( transformed ) ).toEqual( expected );
 			} );
 
 			it( 'removes undefined parser function/Z4K6', () => {
-				const rowId = 1;
 				const zobject = {
-					Z2K2: { // rowId = 1
+					Z2K2: {
 						Z1K1: 'Z4',
 						Z4K1: 'Z12345',
 						Z4K2: [ 'Z3' ],
 						Z4K3: 'Z10001',
 						Z4K4: 'Z10002',
 						Z4K5: 'Z10003',
-						Z4K6: ''
+						Z4K6: { Z1K1: 'Z9', Z9K1: '' }
 					}
 				};
-				store.zobject = zobjectToRows( zobject );
-				store.removeEmptyTypeFunctions( rowId );
 
-				const transformed = store.getZObjectAsJsonById( 0, false );
-				expect( hybridToCanonical( transformed ) ).toEqual( {
+				const expected = {
 					Z2K2: {
 						Z1K1: 'Z4',
 						Z4K1: 'Z12345',
@@ -1444,33 +1732,41 @@ describe( 'zobject submission Pinia store', () => {
 						Z4K4: 'Z10002',
 						Z4K5: 'Z10003'
 					}
-				} );
+				};
+
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.removeEmptyTypeFunctions();
+
+				const transformed = hybridToCanonical( store.jsonObject.main );
+				expect( hybridToCanonical( transformed ) ).toEqual( expected );
 			} );
 
 			it( 'removes all undefined type functions', () => {
-				const rowId = 1;
 				const zobject = {
-					Z2K2: { // rowId = 1
+					Z2K2: {
 						Z1K1: 'Z4',
 						Z4K1: 'Z12345',
 						Z4K2: [ 'Z3' ],
-						Z4K3: '',
-						Z4K4: '',
-						Z4K5: '',
-						Z4K6: ''
+						Z4K3: { Z1K1: 'Z9', Z9K1: '' },
+						Z4K4: { Z1K1: 'Z9', Z9K1: '' },
+						Z4K5: { Z1K1: 'Z9', Z9K1: '' },
+						Z4K6: { Z1K1: 'Z9', Z9K1: '' }
 					}
 				};
-				store.zobject = zobjectToRows( zobject );
-				store.removeEmptyTypeFunctions( rowId );
 
-				const transformed = store.getZObjectAsJsonById( 0, false );
-				expect( hybridToCanonical( transformed ) ).toEqual( {
+				const expected = {
 					Z2K2: {
 						Z1K1: 'Z4',
 						Z4K1: 'Z12345',
 						Z4K2: [ 'Z3' ]
 					}
-				} );
+				};
+
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.removeEmptyTypeFunctions();
+
+				const transformed = hybridToCanonical( store.jsonObject.main );
+				expect( hybridToCanonical( transformed ) ).toEqual( expected );
 			} );
 		} );
 
@@ -1483,16 +1779,19 @@ describe( 'zobject submission Pinia store', () => {
 						Z8K4: [ 'Z14', 'Z10014', 'Z10015' ]
 					}
 				};
-				store.zobject = zobjectToRows( zobject );
-				store.disconnectFunctionObjects();
 
-				const transformed = store.getZObjectAsJsonById( 0, false );
-				expect( hybridToCanonical( transformed ) ).toEqual( {
+				const expected = {
 					Z2K2: {
 						Z8K3: [ 'Z20' ],
 						Z8K4: [ 'Z14' ]
 					}
-				} );
+				};
+
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.disconnectFunctionObjects();
+
+				const transformed = hybridToCanonical( store.jsonObject.main );
+				expect( hybridToCanonical( transformed ) ).toEqual( expected );
 			} );
 
 			it( 'leaves intact when there are no implementations or testers', () => {
@@ -1502,16 +1801,19 @@ describe( 'zobject submission Pinia store', () => {
 						Z8K4: [ 'Z14' ]
 					}
 				};
-				store.zobject = zobjectToRows( zobject );
-				store.disconnectFunctionObjects();
 
-				const transformed = store.getZObjectAsJsonById( 0, false );
-				expect( hybridToCanonical( transformed ) ).toEqual( {
+				const expected = {
 					Z2K2: {
 						Z8K3: [ 'Z20' ],
 						Z8K4: [ 'Z14' ]
 					}
-				} );
+				};
+
+				store.jsonObject.main = canonicalToHybrid( zobject );
+				store.disconnectFunctionObjects();
+
+				const transformed = hybridToCanonical( store.jsonObject.main );
+				expect( hybridToCanonical( transformed ) ).toEqual( expected );
 			} );
 		} );
 	} );

@@ -35,24 +35,33 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
-const Constants = require( '../../../Constants.js' );
-const LabelData = require( '../../../store/classes/LabelData.js' );
-const useMainStore = require( '../../../store/index.js' );
-const WikidataEntitySelector = require( './EntitySelector.vue' );
-const { CdxIcon } = require( '../../../../codex.js' );
+
 const wikidataIconSvg = require( './wikidataIconSvg.js' );
+const Constants = require( '../../../Constants.js' );
+const zobjectMixin = require( '../../../mixins/zobjectMixin.js' );
+const useMainStore = require( '../../../store/index.js' );
+const LabelData = require( '../../../store/classes/LabelData.js' );
+
+// Wikidata components
+const WikidataEntitySelector = require( './EntitySelector.vue' );
+// Codex components
+const { CdxIcon } = require( '../../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-wikidata-lexeme-form',
 	components: {
-		'cdx-icon': CdxIcon,
-		'wl-wikidata-entity-selector': WikidataEntitySelector
+		'wl-wikidata-entity-selector': WikidataEntitySelector,
+		'cdx-icon': CdxIcon
 	},
+	mixins: [ zobjectMixin ],
 	props: {
-		rowId: {
-			type: Number,
-			required: false,
-			default: 0
+		keyPath: { // eslint-disable-line vue/no-unused-properties
+			type: String,
+			required: true
+		},
+		objectValue: {
+			type: Object,
+			required: true
 		},
 		edit: {
 			type: Boolean,
@@ -70,7 +79,6 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
-		'getLexemeFormId',
 		'getLexemeFormLabelData',
 		'getLexemeFormUrl'
 	] ), {
@@ -81,7 +89,7 @@ module.exports = exports = defineComponent( {
 		 * @return {string|null}
 		 */
 		lexemeFormId: function () {
-			return this.getLexemeFormId( this.rowId );
+			return this.getWikidataEntityId( this.objectValue, this.lexemeFormType );
 		},
 		/**
 		 * Returns the Wikidata URL for the selected Lexeme Form.

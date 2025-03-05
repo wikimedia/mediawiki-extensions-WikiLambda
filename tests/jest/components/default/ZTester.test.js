@@ -11,32 +11,64 @@ const { shallowMount } = require( '@vue/test-utils' );
 const createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
 const createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock;
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
-const ZTester = require( '../../../../resources/ext.wikilambda.app/components/default-view-types/ZTester.vue' );
+const ZTester = require( '../../../../resources/ext.wikilambda.app/components/types/ZTester.vue' );
+
+// General use
+const keyPath = 'main.Z2K2';
+const objectValue = {
+	Z1K1: { Z1K1: 'Z9', Z9K1: 'Z20' },
+	Z20K1: { Z1K1: 'Z9', Z9K1: 'Z10000' },
+	Z20K2: {
+		Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+		Z7K1: { Z1K1: 'Z9', Z9K1: '' }
+	},
+	Z20K3: {
+		Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+		Z7K1: { Z1K1: 'Z9', Z9K1: '' }
+	}
+};
+
+const emptyObjectValue = {
+	Z1K1: { Z1K1: 'Z9', Z9K1: 'Z20' },
+	Z20K1: { Z1K1: 'Z9', Z9K1: '' },
+	Z20K2: {
+		Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+		Z7K1: { Z1K1: 'Z9', Z9K1: '' }
+	},
+	Z20K3: {
+		Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+		Z7K1: { Z1K1: 'Z9', Z9K1: '' }
+	}
+};
+
+const globalStubs = {
+	stubs: {
+		WlKeyValueBlock: false,
+		WlKeyBlock: false
+	}
+};
 
 describe( 'ZTester', () => {
 	let store;
+
 	beforeEach( () => {
 		store = useMainStore();
 		store.getLabelData = createLabelDataMock();
 		store.getStoredObject = createGettersWithFunctionsMock();
-		store.getZReferenceTerminalValue = createGettersWithFunctionsMock();
-		store.getZTesterFunctionRowId = createGettersWithFunctionsMock( 1 );
-		store.getZTesterCallRowId = createGettersWithFunctionsMock( 2 );
-		store.getZTesterValidationRowId = createGettersWithFunctionsMock( 3 );
-		store.createZObjectByType = createGettersWithFunctionsMock();
 		store.isCreateNewPage = false;
-		store.fetchZids.mockResolvedValue();
+		store.fetchZids = jest.fn().mockResolvedValue();
+		store.setFunctionCallArguments = jest.fn();
 	} );
 
 	describe( 'in view mode', () => {
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( ZTester, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false
 				},
-				global: {
-					stubs: { WlKeyValueBlock: false }
-				}
+				global: globalStubs
 			} );
 			expect( wrapper.find( '.ext-wikilambda-app-tester' ).exists() ).toBe( true );
 		} );
@@ -44,11 +76,11 @@ describe( 'ZTester', () => {
 		it( 'renders function block', () => {
 			const wrapper = shallowMount( ZTester, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false
 				},
-				global: {
-					stubs: { WlKeyValueBlock: false }
-				}
+				global: globalStubs
 			} );
 			const functionBlock = wrapper.find( '.ext-wikilambda-app-tester__function' );
 			expect( functionBlock.exists() ).toBe( true );
@@ -58,11 +90,11 @@ describe( 'ZTester', () => {
 		it( 'renders tester call block', () => {
 			const wrapper = shallowMount( ZTester, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false
 				},
-				global: {
-					stubs: { WlKeyValueBlock: false }
-				}
+				global: globalStubs
 			} );
 			const callBlock = wrapper.find( 'div[data-testid=tester-call]' );
 			expect( callBlock.exists() ).toBe( true );
@@ -72,11 +104,11 @@ describe( 'ZTester', () => {
 		it( 'renders tester validation block', () => {
 			const wrapper = shallowMount( ZTester, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: false
 				},
-				global: {
-					stubs: { WlKeyValueBlock: false }
-				}
+				global: globalStubs
 			} );
 			const callBlock = wrapper.find( 'div[data-testid=tester-validation]' );
 			expect( callBlock.exists() ).toBe( true );
@@ -88,11 +120,11 @@ describe( 'ZTester', () => {
 		it( 'renders without errors', () => {
 			const wrapper = shallowMount( ZTester, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true
 				},
-				global: {
-					stubs: { WlKeyValueBlock: false }
-				}
+				global: globalStubs
 			} );
 			expect( wrapper.find( '.ext-wikilambda-app-tester' ).exists() ).toBe( true );
 		} );
@@ -100,11 +132,11 @@ describe( 'ZTester', () => {
 		it( 'renders function block', () => {
 			const wrapper = shallowMount( ZTester, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true
 				},
-				global: {
-					stubs: { WlKeyValueBlock: false }
-				}
+				global: globalStubs
 			} );
 			const functionBlock = wrapper.find( '.ext-wikilambda-app-tester__function' );
 			expect( functionBlock.exists() ).toBe( true );
@@ -114,11 +146,11 @@ describe( 'ZTester', () => {
 		it( 'renders tester call block', () => {
 			const wrapper = shallowMount( ZTester, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true
 				},
-				global: {
-					stubs: { WlKeyValueBlock: false }
-				}
+				global: globalStubs
 			} );
 			const callBlock = wrapper.find( 'div[data-testid=tester-call]' );
 			expect( callBlock.exists() ).toBe( true );
@@ -128,11 +160,11 @@ describe( 'ZTester', () => {
 		it( 'renders tester validation block', () => {
 			const wrapper = shallowMount( ZTester, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true
 				},
-				global: {
-					stubs: { WlKeyValueBlock: false }
-				}
+				global: globalStubs
 			} );
 			const callBlock = wrapper.find( 'div[data-testid=tester-validation]' );
 			expect( callBlock.exists() ).toBe( true );
@@ -141,36 +173,21 @@ describe( 'ZTester', () => {
 	} );
 
 	describe( 'in create mode', () => {
-
 		const functionZid = 'Z10000';
 		const typeZid = 'Z10001';
 		const equalityZid = 'Z10002';
-		const functionObject = {
-			Z2K2: {
-				Z1K1: 'Z8',
-				Z8K2: typeZid
-			}
+		const storedObjects = {
+			Z10000: { Z2K2: { Z1K1: 'Z8', Z8K2: typeZid } },
+			Z10001: { Z2K2: { Z1K1: 'Z4', Z4K4: equalityZid } }
 		};
-		const typeObject = {
-			Z2K2: {
-				Z1K1: 'Z4',
-				Z4K4: equalityZid
-			}
-		};
-		const blankFunctionCall = {
-			Z1K1: 'Z7',
-			Z7K1: {
-				Z1K1: 'Z9',
-				Z9K1: ''
-			}
-		};
+
 		// Expected payloads
 		const setCallPayload = {
 			keyPath: [ 'Z20K2', 'Z7K1', 'Z9K1' ],
 			value: functionZid
 		};
 		const setCallArguments = {
-			parentId: 2,
+			keyPath: [ 'main', 'Z2K2', 'Z20K2' ],
 			functionZid: functionZid
 		};
 		const setValidatorPayload = {
@@ -178,116 +195,99 @@ describe( 'ZTester', () => {
 			value: equalityZid
 		};
 		const setValidatorArguments = {
-			parentId: 3,
+			keyPath: [ 'main', 'Z2K2', 'Z20K3' ],
 			functionZid: equalityZid
 		};
 
 		beforeEach( () => {
 			store.isCreateNewPage = true;
-			store.getZReferenceTerminalValue = createGettersWithFunctionsMock( functionZid );
-			store.createObjectByType = createGettersWithFunctionsMock( blankFunctionCall );
-			store.getStoredObject = ( zid ) => {
-				if ( zid === functionZid ) {
-					return functionObject;
-				} else if ( zid === typeZid ) {
-					return typeObject;
-				}
-				return undefined;
-			};
+			store.getStoredObject = jest.fn().mockImplementation( ( zid ) => storedObjects[ zid ] || undefined );
 		} );
 
 		it( 'sets test call and validation on initialize', async () => {
 			const wrapper = shallowMount( ZTester, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true
 				},
-				global: {
-					stubs: { WlKeyValueBlock: false }
-				}
+				global: globalStubs
 			} );
 
 			await waitFor( () => {
 				// 1. Set value for test call
 				expect( wrapper.emitted( 'set-value' )[ 0 ] ).toEqual( [ setCallPayload ] );
 				// 2. Set arguments for test call
-				expect( store.setZFunctionCallArguments ).toHaveBeenCalledWith(
-					setCallArguments );
+				expect( store.setFunctionCallArguments ).toHaveBeenCalledWith( setCallArguments );
 				// 3. Set value for validator call
 				expect( wrapper.emitted( 'set-value' )[ 1 ] ).toEqual( [ setValidatorPayload ] );
 				// 4. Set arguments for validator call
-				expect( store.setZFunctionCallArguments ).toHaveBeenCalledWith(
-					setValidatorArguments );
+				expect( store.setFunctionCallArguments ).toHaveBeenCalledWith( setValidatorArguments );
 			} );
 		} );
 
 		it( 'sets test call and validation on new function zid', async () => {
-			store.getZReferenceTerminalValue = createGettersWithFunctionsMock( undefined );
-
 			const wrapper = shallowMount( ZTester, {
 				props: {
+					keyPath,
+					objectValue: emptyObjectValue,
 					edit: true
 				},
-				global: {
-					stubs: { WlKeyValueBlock: false }
-				}
+				global: globalStubs
 			} );
 
 			// Expect no initialization
 			expect( wrapper.emitted( 'set-value' ) ).toBeFalsy();
 
 			// Function Zid is updated
-			store.getZReferenceTerminalValue = createGettersWithFunctionsMock( functionZid );
+			wrapper.setProps( { objectValue } );
 
 			await waitFor( () => {
 				// 1. Set value for test call
 				expect( wrapper.emitted( 'set-value' )[ 0 ] ).toEqual( [ setCallPayload ] );
 				// 2. Set arguments for test call
-				expect( store.setZFunctionCallArguments ).toHaveBeenCalledWith(
-					setCallArguments );
+				expect( store.setFunctionCallArguments ).toHaveBeenCalledWith( setCallArguments );
 				// 3. Set value for validator call
 				expect( wrapper.emitted( 'set-value' )[ 1 ] ).toEqual( [ setValidatorPayload ] );
 				// 4. Set arguments for validator call
-				expect( store.setZFunctionCallArguments ).toHaveBeenCalledWith(
-					setValidatorArguments );
+				expect( store.setFunctionCallArguments ).toHaveBeenCalledWith( setValidatorArguments );
 			} );
 		} );
 
 		it( 'sets test call and clears validation when type has no equality function', async () => {
-			jest.clearAllMocks();
-			const typeWithoutEquality = { Z2K2: { Z1K1: 'Z4' } };
-			store.getStoredObject = ( zid ) => {
-				if ( zid === functionZid ) {
-					return functionObject;
-				} else if ( zid === typeZid ) {
-					return typeWithoutEquality;
-				}
-				return undefined;
+			const storedNoEquality = {
+				Z10000: { Z2K2: { Z1K1: 'Z8', Z8K2: typeZid } },
+				Z10001: { Z2K2: { Z1K1: 'Z4' } }
 			};
+			store.getStoredObject = jest.fn().mockImplementation( ( zid ) => storedNoEquality[ zid ] || undefined );
 
 			const wrapper = shallowMount( ZTester, {
 				props: {
+					keyPath,
+					objectValue,
 					edit: true
 				},
-				global: {
-					stubs: { WlKeyValueBlock: false }
-				}
+				global: globalStubs
 			} );
 
-			const clearValidatorPayload = {
-				keyPath: [ 'Z20K3' ],
-				value: blankFunctionCall
+			const setEmptyFunction = {
+				keyPath: [ 'Z20K3', 'Z7K1', 'Z9K1' ],
+				value: ''
+			};
+
+			const setEmptyArguments = {
+				keyPath: [ 'main', 'Z2K2', 'Z20K3' ]
 			};
 
 			await waitFor( () => {
 				// 1. Set value for test call
 				expect( wrapper.emitted( 'set-value' )[ 0 ] ).toEqual( [ setCallPayload ] );
 				// 2. Set arguments for test call
-				expect( store.setZFunctionCallArguments ).toHaveBeenCalledWith(
-					setCallArguments );
+				expect( store.setFunctionCallArguments ).toHaveBeenCalledWith( setCallArguments );
 				// 3. Set blank value for validator call
-				expect( wrapper.emitted( 'set-value' )[ 1 ] ).toEqual( [ clearValidatorPayload ] );
-				// 4. Make sure that setZFunctionCallArguments has only been called once
-				expect( store.setZFunctionCallArguments ).toHaveBeenCalledTimes( 1 );
+				expect( wrapper.emitted( 'set-value' )[ 1 ] ).toEqual( [ setEmptyFunction ] );
+				// 4. Remove old arguments from validator call
+				expect( store.setFunctionCallArguments ).toHaveBeenCalledWith( setEmptyArguments );
 			} );
 		} );
 	} );

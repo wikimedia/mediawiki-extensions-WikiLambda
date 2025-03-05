@@ -16,7 +16,8 @@ describe( 'AboutLanguageBlock', () => {
 
 	beforeEach( () => {
 		store = useMainStore();
-		const mockLabels = {
+		store.getFallbackLanguageZids = [ 'Z1003', 'Z1002' ];
+		store.getLabelData = createLabelDataMock( {
 			Z2K3: 'name',
 			Z2K4: 'aliases',
 			Z2K5: 'description',
@@ -26,16 +27,15 @@ describe( 'AboutLanguageBlock', () => {
 			Z11K1: 'language',
 			Z10000K1: 'first',
 			Z10000K2: 'second'
-		};
-		store.getFallbackLanguageZids = [ 'Z1003', 'Z1002' ];
-		store.getLabelData = createLabelDataMock( mockLabels );
-		store.getZArgumentLabelForLanguage = createGettersWithFunctionsMock( undefined );
-		store.getZFunctionOutput = createGettersWithFunctionsMock( { id: 30 } );
-		store.getZMonolingualTextValue = createGettersWithFunctionsMock( undefined );
-		store.getZMonolingualStringsetValues = createGettersWithFunctionsMock( [] );
+		} );
+		store.getZFunctionInputs = [];
+		store.getZFunctionOutput = { Z1K1: 'Z9', Z9K1: 'Z6' };
 		store.getZPersistentAlias = createGettersWithFunctionsMock( undefined );
 		store.getZPersistentDescription = createGettersWithFunctionsMock( undefined );
-		store.getZPersistentName = createGettersWithFunctionsMock( { id: 1 } );
+		store.getZPersistentName = createGettersWithFunctionsMock( {
+			keyPath: 'main.Z2K3.Z12K1.1.Z11K2.Z6K1',
+			value: 'Nombre'
+		} );
 	} );
 
 	afterEach( () => {
@@ -45,9 +45,12 @@ describe( 'AboutLanguageBlock', () => {
 	describe( 'Read mode', () => {
 		beforeEach( () => {
 			viewData = {
-				name: { rowId: 1, value: 'Nombre' },
-				description: { rowId: undefined, value: '' },
-				aliases: { rowId: undefined, value: [] },
+				name: {
+					keyPath: 'main.Z2K3.Z12K1.1.Z11K2.Z6K1',
+					value: 'Nombre'
+				},
+				description: { keyPath: undefined, value: '' },
+				aliases: { keyPath: undefined, value: [] },
 				inputs: []
 			};
 			fieldLangs = {
@@ -85,7 +88,10 @@ describe( 'AboutLanguageBlock', () => {
 		} );
 
 		it( 'shows placeholder for no aliases', () => {
-			viewData.description = { rowId: 2, value: 'Descripción' };
+			viewData.description = {
+				keyPath: 'main.Z2K5.Z12K1.1.Z11K2.Z6K1',
+				value: 'Descripción'
+			};
 			fieldLangs.description = [ 'Z1003' ];
 			wrapper = shallowMount( AboutLanguageBlock, { props: {
 				edit: false,
@@ -101,7 +107,10 @@ describe( 'AboutLanguageBlock', () => {
 		} );
 
 		it( 'shows placeholder for no description', () => {
-			viewData.aliases = { rowId: 3, value: [ { rowId: 4, value: 'un alias' } ] };
+			viewData.aliases = {
+				keyPath: 'main.Z2K4.Z32K1.1.Z31K2',
+				value: [ 'un alias' ]
+			};
 			fieldLangs.aliases = [ 'Z1003' ];
 			wrapper = shallowMount( AboutLanguageBlock, { props: {
 				edit: false,
@@ -117,8 +126,14 @@ describe( 'AboutLanguageBlock', () => {
 		} );
 
 		it( 'shows description and aliases', () => {
-			viewData.description = { rowId: 2, value: 'Descripción' };
-			viewData.aliases = { rowId: 3, value: [ { rowId: 4, value: 'un alias' } ] };
+			viewData.description = {
+				keyPath: 'main.Z2K5.Z12K1.1.Z11K2.Z6K1',
+				value: 'Descripción'
+			};
+			viewData.aliases = {
+				keyPath: 'main.Z2K4.Z32K1.1.Z31K2',
+				value: [ 'un alias' ]
+			};
 			fieldLangs.description = [ 'Z1003' ];
 			fieldLangs.aliases = [ 'Z1003' ];
 			wrapper = shallowMount( AboutLanguageBlock, {
@@ -145,13 +160,10 @@ describe( 'AboutLanguageBlock', () => {
 		} );
 
 		it( 'shows only three aliases when there are more', async () => {
-			viewData.aliases = { rowId: 3, value: [
-				{ rowId: 4, value: 'uno' },
-				{ rowId: 5, value: 'dos' },
-				{ rowId: 6, value: 'tres' },
-				{ rowId: 7, value: 'cuatro' },
-				{ rowId: 8, value: 'cinco' }
-			] };
+			viewData.aliases = {
+				keyPath: 'main.Z2K4.Z32K1.1.Z31K2',
+				value: [ 'uno', 'dos', 'tres', 'cuatro', 'cinco' ]
+			};
 			fieldLangs.aliases = [ 'Z1003' ];
 			wrapper = shallowMount( AboutLanguageBlock, {
 				props: {
@@ -184,10 +196,20 @@ describe( 'AboutLanguageBlock', () => {
 		} );
 
 		it( 'shows inputs and output type for functions', () => {
-			viewData.inputs = [
-				{ key: 'Z10001K1', value: '', inputRowId: 11, labelRowId: undefined, typeRowId: 13 },
-				{ key: 'Z10001K2', value: 'segundo', inputRowId: 21, labelRowId: 22, typeRowId: 23 }
-			];
+			viewData.inputs = [ {
+				keyPath: undefined,
+				value: '',
+				key: 'Z1000K1',
+				type: { Z1K1: 'Z9', Z9K1: 'Z6' },
+				typeKeyPath: 'main.Z2K2.Z8K1.1.Z17K1'
+			}, {
+				keyPath: 'main.Z2K2.Z8K1.2.Z17K3.Z12K1.1.Z11K2',
+				value: 'segundo',
+				key: 'Z1000K2',
+				type: { Z1K1: 'Z9', Z9K1: 'Z6' },
+				typeKeyPath: 'main.Z2K2.Z8K1.2.Z17K1'
+			} ];
+
 			fieldLangs.inputs = [ [ 'Z1002', 'Z1003' ], [ 'Z1002', 'Z1003' ] ];
 			wrapper = shallowMount( AboutLanguageBlock, { props: {
 				edit: false,
@@ -204,24 +226,27 @@ describe( 'AboutLanguageBlock', () => {
 			expect( inputs.length ).toBe( 2 );
 
 			expect( inputs[ 0 ].find( '.ext-wikilambda-app-about-language-block__input-label' ).text() ).toBe( 'Untitled:' );
-			expect( inputs[ 0 ].findComponent( { name: 'wl-z-object-to-string' } ).vm.rowId ).toBe( 13 );
+			expect( inputs[ 0 ].findComponent( { name: 'wl-z-object-to-string' } ).vm.keyPath ).toBe( 'main.Z2K2.Z8K1.1.Z17K1' );
+			expect( inputs[ 0 ].findComponent( { name: 'wl-z-object-to-string' } ).vm.objectValue ).toEqual( { Z1K1: 'Z9', Z9K1: 'Z6' } );
 
 			expect( inputs[ 1 ].find( '.ext-wikilambda-app-about-language-block__input-label' ).text() ).toBe( 'segundo:' );
-			expect( inputs[ 1 ].findComponent( { name: 'wl-z-object-to-string' } ).vm.rowId ).toBe( 23 );
+			expect( inputs[ 1 ].findComponent( { name: 'wl-z-object-to-string' } ).vm.keyPath ).toBe( 'main.Z2K2.Z8K1.2.Z17K1' );
+			expect( inputs[ 1 ].findComponent( { name: 'wl-z-object-to-string' } ).vm.objectValue ).toEqual( { Z1K1: 'Z9', Z9K1: 'Z6' } );
 
 			// Output type:
 			const output = functionFields.find( '.ext-wikilambda-app-about-language-block__output' );
 			expect( output.exists() ).toBe( true );
-			expect( output.findComponent( { name: 'wl-z-object-to-string' } ).vm.rowId ).toBe( 30 );
+			expect( output.findComponent( { name: 'wl-z-object-to-string' } ).vm.keyPath ).toBe( 'main.Z2K2.Z8K2' );
+			expect( output.findComponent( { name: 'wl-z-object-to-string' } ).vm.objectValue ).toEqual( { Z1K1: 'Z9', Z9K1: 'Z6' } );
 		} );
 	} );
 
 	describe( 'Edit mode', () => {
 		beforeEach( () => {
 			viewData = {
-				name: { rowId: undefined, value: '' },
-				description: { rowId: undefined, value: '' },
-				aliases: { rowId: undefined, value: [] },
+				name: { keyPath: undefined, value: '' },
+				description: { keyPath: undefined, value: '' },
+				aliases: { keyPath: undefined, value: [] },
 				inputs: []
 			};
 			fieldLangs = {
@@ -268,10 +293,19 @@ describe( 'AboutLanguageBlock', () => {
 		} );
 
 		it( 'renders edit block for function', () => {
-			viewData.inputs = [
-				{ key: 'Z10001K1', value: '', inputRowId: 11, typeRowId: 13 },
-				{ key: 'Z10001K2', value: '', inputRowId: 21, typeRowId: 23 }
-			];
+			viewData.inputs = [ {
+				keyPath: undefined,
+				value: '',
+				key: 'Z1000K1',
+				type: { Z1K1: 'Z9', Z9K1: 'Z6' },
+				typeKeyPath: 'main.Z2K2.Z8K1.1.Z17K1'
+			}, {
+				keyPath: undefined,
+				value: '',
+				key: 'Z1000K2',
+				type: { Z1K1: 'Z9', Z9K1: 'Z6' },
+				typeKeyPath: 'main.Z2K2.Z8K1.2.Z17K1'
+			} ];
 			fieldLangs.inputs = [ [], [] ];
 			wrapper = shallowMount( AboutLanguageBlock, {
 				global: { stubs: { CdxField: false } },
@@ -293,10 +327,25 @@ describe( 'AboutLanguageBlock', () => {
 
 		it( 'initializes fields with content and character counter', () => {
 			viewData = {
-				name: { rowId: 1, value: 'Name' },
-				description: { rowId: 2, value: 'Description' },
-				aliases: { rowId: 3, value: [ { rowId: 4, value: 'one alias' } ] },
-				inputs: [ { key: 'Z10001K1', value: 'input one', inputRowId: 11, typeRowId: 13 } ]
+				name: {
+					keyPath: 'main.Z2K3.Z12K1.1.Z11K2.Z6K1',
+					value: 'Name'
+				},
+				description: {
+					keyPath: 'main.Z2K5.Z12K1.1.Z11K2.Z6K1',
+					value: 'Description'
+				},
+				aliases: {
+					keyPath: 'main.Z2K4.Z32K1.1.Z31K2',
+					value: [ 'one alias' ]
+				},
+				inputs: [ {
+					keyPath: 'main.Z2K2.Z8K1.1.Z17K3.Z12K1.1.Z11K2',
+					value: 'input one',
+					key: 'Z1000K1',
+					type: { Z1K1: 'Z9', Z9K1: 'Z6' },
+					typeKeyPath: 'main.Z2K2.Z8K1.1.Z17K1'
+				} ]
 			};
 			fieldLangs = {
 				name: [ 'Z1002' ],
@@ -340,12 +389,11 @@ describe( 'AboutLanguageBlock', () => {
 			it( 'shows fallback name hint', () => {
 				fieldLangs.name = [ 'Z1003', 'Z1002' ];
 				store.getZPersistentName = ( langZid ) => {
-					const rows = { Z1003: { id: 101 }, Z1002: { id: 102 } };
-					return rows[ langZid ];
-				};
-				store.getZMonolingualTextValue = ( rowId ) => {
-					const rows = { 101: 'Nombre', 102: 'Name' };
-					return rows[ rowId ];
+					const names = {
+						Z1003: { keyPath: 'main.Z2K3.Z12K1.1.Z11K2.Z6K1', value: 'Nombre' },
+						Z1002: { keyPath: 'main.Z2K3.Z12K1.2.Z11K2.Z6K1', value: 'Name' }
+					};
+					return names[ langZid ];
 				};
 
 				wrapper = shallowMount( AboutLanguageBlock, {
@@ -369,12 +417,10 @@ describe( 'AboutLanguageBlock', () => {
 			it( 'shows fallback description hint', () => {
 				fieldLangs.description = [ 'Z1003' ];
 				store.getZPersistentDescription = ( langZid ) => {
-					const rows = { Z1003: { id: 201 } };
-					return rows[ langZid ];
-				};
-				store.getZMonolingualTextValue = ( rowId ) => {
-					const rows = { 201: 'Descripción' };
-					return rows[ rowId ];
+					const descriptions = {
+						Z1003: { keyPath: 'main.Z2K3.Z12K1.1.Z11K2.Z6K1', value: 'Descripción' }
+					};
+					return descriptions[ langZid ];
 				};
 
 				wrapper = shallowMount( AboutLanguageBlock, {
@@ -398,12 +444,10 @@ describe( 'AboutLanguageBlock', () => {
 			it( 'shows fallback aliases hint', () => {
 				fieldLangs.aliases = [ 'Z1002' ];
 				store.getZPersistentAlias = ( langZid ) => {
-					const rows = { Z1002: { id: 301 } };
-					return rows[ langZid ];
-				};
-				store.getZMonolingualStringsetValues = ( rowId ) => {
-					const rows = { 301: [ { rowId: 31, value: 'one' }, { rowId: 32, value: 'two' } ] };
-					return rows[ rowId ] || [];
+					const aliases = {
+						Z1002: { keyPath: 'main.Z2K4.Z32K1.1.Z31K2', value: [ 'one', 'two' ] }
+					};
+					return aliases[ langZid ];
 				};
 
 				wrapper = shallowMount( AboutLanguageBlock, {
@@ -425,24 +469,41 @@ describe( 'AboutLanguageBlock', () => {
 			} );
 
 			it( 'shows fallback input label hint', () => {
-				viewData.inputs = [
-					{ key: 'Z10001K1', value: 'primeru', labelRowId: 402, inputRowId: 11, typeRowId: 13 },
-					{ key: 'Z10001K2', value: '', inputRowId: 21, typeRowId: 23 },
-					{ key: 'Z10001K3', value: '', inputRowId: 31, typeRowId: 33 }
-				];
 				fieldLangs.inputs = [ [ 'Z1732', 'Z1002' ], [ 'Z1002' ], [ 'Z1002', 'Z1003' ] ];
-				store.getZArgumentLabelForLanguage = ( rowId, langZid ) => {
-					const rows = {
-						11: { Z1002: { id: 401 }, Z1732: { id: 402 } },
-						21: { Z1002: { id: 501 } },
-						31: { Z1002: { id: 601 }, Z1003: { id: 602 } }
-					};
-					return rows[ rowId ] ? rows[ rowId ][ langZid ] : undefined;
-				};
-				store.getZMonolingualTextValue = ( rowId ) => {
-					const rows = { 401: 'first', 402: 'primeru', 501: 'second', 601: 'third', 602: 'tercero' };
-					return rows[ rowId ];
-				};
+
+				viewData.inputs = [ {
+					keyPath: 'main.Z2K2.Z8K1.1.Z17K3.Z12K1.1.Z11K2',
+					value: 'primeru',
+					key: 'Z1000K1',
+					type: { Z1K1: 'Z9', Z9K1: 'Z6' },
+					typeKeyPath: 'main.Z2K2.Z8K1.1.Z17K1'
+				}, {
+					keyPath: undefined,
+					value: '',
+					key: 'Z1000K2',
+					type: { Z1K1: 'Z9', Z9K1: 'Z6' },
+					typeKeyPath: 'main.Z2K2.Z8K1.2.Z17K1'
+				}, {
+					keyPath: undefined,
+					value: '',
+					key: 'Z1000K3',
+					type: { Z1K1: 'Z9', Z9K1: 'Z6' },
+					typeKeyPath: 'main.Z2K2.Z8K1.3.Z17K1'
+				} ];
+
+				store.getZFunctionInputs = [
+					{ Z17K3: { Z12K1: [ 'Z11',
+						{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'first' },
+						{ Z1K1: 'Z11', Z11K1: 'Z1732', Z11K2: 'primeru' }
+					] } },
+					{ Z17K3: { Z12K1: [ 'Z11',
+						{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'second' }
+					] } },
+					{ Z17K3: { Z12K1: [ 'Z11',
+						{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'third' },
+						{ Z1K1: 'Z11', Z11K1: 'Z1003', Z11K2: 'tercero' }
+					] } }
+				];
 
 				wrapper = shallowMount( AboutLanguageBlock, {
 					global: { stubs: { CdxField: false } },
@@ -474,18 +535,25 @@ describe( 'AboutLanguageBlock', () => {
 		describe( 'Update and change events', () => {
 			beforeEach( () => {
 				viewData = {
-					name: { rowId: 1, value: 'Name' },
-					description: { rowId: 2, value: 'Description' },
-					aliases: { rowId: 3, value: [ { rowId: 4, value: 'one alias' } ] },
-					inputs: [
-						{
-							key: 'Z10001K1',
-							value: 'input one',
-							inputRowId: 11,
-							labelRowId: 12,
-							typeRowId: 13
-						}
-					]
+					name: {
+						keyPath: 'main.Z2K3.Z12K1.1.Z11K2.Z6K1',
+						value: 'Name'
+					},
+					description: {
+						keyPath: 'main.Z2K5.Z12K1.1.Z11K2.Z6K1',
+						value: 'Description'
+					},
+					aliases: {
+						keyPath: 'main.Z2K4.Z32K1.1.Z31K2',
+						value: [ 'one alias' ]
+					},
+					inputs: [ {
+						keyPath: 'main.Z2K2.Z8K1.1.Z17K3.Z12K1.1.Z11K2',
+						value: 'input one',
+						key: 'Z1000K1',
+						type: { Z1K1: 'Z9', Z9K1: 'Z6' },
+						typeKeyPath: 'main.Z2K2.Z8K1.1.Z17K1'
+					} ]
 				};
 				fieldLangs = {
 					name: [ 'Z1002' ],
@@ -512,7 +580,7 @@ describe( 'AboutLanguageBlock', () => {
 				input.vm.$emit( 'update:modelValue', 'Name!' );
 
 				expect( wrapper.emitted( 'update-edit-value' ) ).toEqual( [ [ {
-					data: { rowId: 1, value: 'Name' },
+					data: { keyPath: 'main.Z2K3.Z12K1.1.Z11K2.Z6K1', value: 'Name' },
 					value: 'Name!'
 				} ] ] );
 			} );
@@ -531,7 +599,7 @@ describe( 'AboutLanguageBlock', () => {
 				input.vm.$emit( 'update:modelValue', 'Description!' );
 
 				expect( wrapper.emitted( 'update-edit-value' ) ).toEqual( [ [ {
-					data: { rowId: 2, value: 'Description' },
+					data: { keyPath: 'main.Z2K5.Z12K1.1.Z11K2.Z6K1', value: 'Description' },
 					value: 'Description!'
 				} ] ] );
 			} );
@@ -551,18 +619,10 @@ describe( 'AboutLanguageBlock', () => {
 
 				expect( wrapper.emitted( 'update-edit-value' ) ).toEqual( [ [ {
 					data: {
-						rowId: 3,
-						value: [
-							{
-								rowId: 4,
-								value: 'one alias'
-							}
-						]
+						keyPath: 'main.Z2K4.Z32K1.1.Z31K2',
+						value: [ 'one alias' ]
 					},
-					value: [
-						{ value: 'one alias' },
-						{ value: 'new alias' }
-					]
+					value: [ 'one alias', 'new alias' ]
 				} ] ] );
 				expect( wrapper.emitted() ).toHaveProperty( 'change-value' );
 			} );
@@ -574,11 +634,11 @@ describe( 'AboutLanguageBlock', () => {
 
 				expect( wrapper.emitted( 'update-edit-value' ) ).toEqual( [ [ {
 					data: {
-						key: 'Z10001K1',
+						key: 'Z1000K1',
+						keyPath: 'main.Z2K2.Z8K1.1.Z17K3.Z12K1.1.Z11K2',
 						value: 'input one',
-						inputRowId: 11,
-						labelRowId: 12,
-						typeRowId: 13
+						type: { Z1K1: 'Z9', Z9K1: 'Z6' },
+						typeKeyPath: 'main.Z2K2.Z8K1.1.Z17K1'
 					},
 					value: 'input one!'
 				} ] ] );

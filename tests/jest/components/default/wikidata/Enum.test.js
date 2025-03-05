@@ -8,39 +8,39 @@
 
 const { shallowMount } = require( '@vue/test-utils' );
 const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
-const WikidataEnum = require( '../../../../../resources/ext.wikilambda.app/components/default-view-types/wikidata/Enum.vue' );
+const WikidataEnum = require( '../../../../../resources/ext.wikilambda.app/components/types/wikidata/Enum.vue' );
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+
+const enumType = 'Z111111'; // Example enum type
+const entityType = Constants.Z_WIKIDATA_REFERENCE_ITEM;
+const wikidataIds = [ 'Q111111', 'Q222222', 'Q333333' ];
+
+const keyPath = 'main.Z2K2';
+const objectValue = {
+	Z1K1: { Z1K1: 'Z9', Z9K1: 'Z111111' },
+	Z111111K1: { Z1K1: 'Z9', Z9K1: 'Z111111' }
+};
 
 describe( 'WikidataEnum', () => {
 	let store;
-	const enumType = 'Z111111'; // Example enum type
-	const entityType = Constants.Z_WIKIDATA_REFERENCE_ITEM;
-	const wikidataIds = [ 'Q111111', 'Q222222', 'Q333333' ];
 
 	beforeEach( () => {
 		store = useMainStore();
+		// Getters
 		store.getTypeOfWikidataEnum = jest.fn().mockReturnValue( entityType );
 		store.getReferencesIdsOfWikidataEnum = jest.fn().mockReturnValue( wikidataIds );
-		store.getRowByKeyPath = jest.fn().mockImplementation( ( keyPath ) => {
-			if ( keyPath[ 0 ] === `${ enumType }K1` ) {
-				return { id: 10 };
-			}
-			if ( keyPath[ 0 ] === `${ entityType }K1` ) {
-				return { id: 20 };
-			}
-			return undefined;
-		} );
-		store.getZStringTerminalValue = jest.fn().mockReturnValue( 'Q111111' );
 		store.getWikidataEntityLabelData = jest.fn().mockImplementation( ( type, id ) => ( {
 			label: `Label for ${ id }`
 		} ) );
+		// Actions
 		store.fetchWikidataEntitiesByType = jest.fn();
 	} );
 
 	it( 'renders without errors', () => {
 		const wrapper = shallowMount( WikidataEnum, {
 			props: {
-				rowId: 1,
+				keyPath,
+				objectValue,
 				edit: false,
 				type: enumType
 			}
@@ -51,7 +51,8 @@ describe( 'WikidataEnum', () => {
 	it( 'renders select in edit mode', () => {
 		const wrapper = shallowMount( WikidataEnum, {
 			props: {
-				rowId: 1,
+				keyPath,
+				objectValue,
 				edit: true,
 				type: enumType
 			}
@@ -62,7 +63,8 @@ describe( 'WikidataEnum', () => {
 	it( 'emits set-value event when selecting an enum value', async () => {
 		const wrapper = shallowMount( WikidataEnum, {
 			props: {
-				rowId: 1,
+				keyPath,
+				objectValue,
 				edit: true,
 				type: enumType
 			}
@@ -83,7 +85,8 @@ describe( 'WikidataEnum', () => {
 	it( 'shows correct menu items', () => {
 		const wrapper = shallowMount( WikidataEnum, {
 			props: {
-				rowId: 1,
+				keyPath,
+				objectValue,
 				edit: true,
 				type: enumType
 			}
@@ -99,7 +102,8 @@ describe( 'WikidataEnum', () => {
 	it( 'fetches entities on mount and when wikidataIds change', async () => {
 		const wrapper = shallowMount( WikidataEnum, {
 			props: {
-				rowId: 1,
+				keyPath,
+				objectValue,
 				edit: true,
 				type: enumType
 			}

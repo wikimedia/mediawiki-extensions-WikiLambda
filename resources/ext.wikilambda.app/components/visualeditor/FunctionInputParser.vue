@@ -29,6 +29,7 @@ const { mapState, mapActions } = require( 'pinia' );
 const Constants = require( '../../Constants.js' );
 const useMainStore = require( '../../store/index.js' );
 const typeMixin = require( '../../mixins/typeMixin.js' );
+const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-input-parser',
@@ -36,7 +37,7 @@ module.exports = exports = defineComponent( {
 		'cdx-text-input': CdxTextInput,
 		'cdx-progress-indicator': CdxProgressIndicator
 	},
-	mixins: [ typeMixin ],
+	mixins: [ typeMixin, zobjectMixin ],
 	props: {
 		value: {
 			type: String,
@@ -175,7 +176,7 @@ module.exports = exports = defineComponent( {
 						const metadata = data.response[ Constants.Z_RESPONSEENVELOPE_METADATA ];
 						const metadataErrorMessage = this.extractErrorMessage( metadata );
 						reject( metadataErrorMessage || this.getErrorMessage );
-					} else if ( this.getZObjectType( response ) !== this.inputType ) {
+					} else if ( this.typeToString( this.getZObjectType( response ) ) !== this.inputType ) {
 						// Parser return unexpected type: reject with error message
 						reject( this.getErrorMessage );
 					} else {

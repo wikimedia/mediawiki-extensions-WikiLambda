@@ -26,7 +26,7 @@
 				:disabled="currentPage === 1"
 				@click="updatePage( -1 )"
 			>
-				<cdx-icon :icon="icons.cdxIconPrevious" icon-label="Back"></cdx-icon>
+				<cdx-icon :icon="iconPrevious" icon-label="Back"></cdx-icon>
 			</cdx-button>
 			<cdx-button
 				aria-label="Next"
@@ -34,7 +34,7 @@
 				:disabled="currentPage === totalPages "
 				@click="updatePage( 1 )"
 			>
-				<cdx-icon :icon="icons.cdxIconNext" icon-label="Next"></cdx-icon>
+				<cdx-icon :icon="iconNext" icon-label="Next"></cdx-icon>
 			</cdx-button>
 		</div>
 	</div>
@@ -42,8 +42,10 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { CdxButton, CdxIcon } = require( '../../../codex.js' );
 const icons = require( '../../../lib/icons.json' );
+
+// Codex components
+const { CdxButton, CdxIcon } = require( '../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-pagination',
@@ -68,7 +70,8 @@ module.exports = exports = defineComponent( {
 	},
 	data: function () {
 		return {
-			icons: icons
+			iconNext: icons.cdxIconNext,
+			iconPrevious: icons.cdxIconPrevious
 		};
 	},
 	computed: {

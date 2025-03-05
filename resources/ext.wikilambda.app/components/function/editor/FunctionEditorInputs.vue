@@ -24,10 +24,10 @@
 			<div :aria-labelledby="inputsFieldId">
 				<wl-function-editor-inputs-item
 					v-for="( input, index ) in inputs"
-					:key="'input-' + input.id + '-lang-' + zLanguage"
+					:key="`input-${ input.key }-lang-${ zLanguage }`"
 					data-testid="function-editor-input-item"
-					:row-id="input.id"
 					:index="index"
+					:input="input"
 					:lang-label-data="langLabelData"
 					:z-language="zLanguage"
 					:can-edit-type="canEdit"
@@ -40,7 +40,7 @@
 					:class="addInputButtonClass"
 					@click="addNewItem"
 				>
-					<cdx-icon :icon="icons.cdxIconAdd"></cdx-icon>
+					<cdx-icon :icon="iconAdd"></cdx-icon>
 					{{ addNewItemText }}
 				</cdx-button>
 			</div>
@@ -49,16 +49,20 @@
 </template>
 
 <script>
-const { CdxButton, CdxIcon, CdxTooltip } = require( '../../../../codex.js' );
 const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
 
 const Constants = require( '../../../Constants.js' );
 const icons = require( './../../../../lib/icons.json' );
 const LabelData = require( '../../../store/classes/LabelData.js' );
+const useMainStore = require( '../../../store/index.js' );
+const { canonicalToHybrid } = require( '../../../utils/schemata.js' );
+
+// Function editor components
 const FunctionEditorField = require( './FunctionEditorField.vue' );
 const FunctionEditorInputsItem = require( './FunctionEditorInputsItem.vue' );
-const useMainStore = require( '../../../store/index.js' );
+// Codex components
+const { CdxButton, CdxIcon, CdxTooltip } = require( '../../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor-inputs',
@@ -72,14 +76,6 @@ module.exports = exports = defineComponent( {
 		'wl-function-editor-inputs-item': FunctionEditorInputsItem
 	},
 	props: {
-		rowId: {
-			type: Number,
-			default: 0
-		},
-		isMainLanguageBlock: {
-			type: Boolean,
-			required: true
-		},
 		/**
 		 * zID of item label language
 		 *
@@ -90,18 +86,25 @@ module.exports = exports = defineComponent( {
 			default: ''
 		},
 		/**
+		 * whether is the first language in the page
+		 */
+		isMainLanguageBlock: {
+			type: Boolean,
+			required: true
+		},
+		/**
+		 * whether user has permission to edit the function
+		 */
+		canEdit: {
+			type: Boolean,
+			default: false
+		},
+		/**
 		 * icon that will display a tooltip
 		 */
 		tooltipIcon: {
 			type: [ String, Object ],
 			default: null
-		},
-		/**
-		 * if a user has permission to edit a function
-		 */
-		canEdit: {
-			type: Boolean,
-			default: false
 		},
 		/**
 		 * message the tooltip displays
@@ -111,7 +114,7 @@ module.exports = exports = defineComponent( {
 			default: null
 		},
 		/**
-		 * Label data for the language
+		 * label data for the language
 		 */
 		langLabelData: {
 			type: LabelData,
@@ -120,32 +123,20 @@ module.exports = exports = defineComponent( {
 	},
 	data: function () {
 		return {
-			icons: icons
+			iconAdd: icons.cdxIconAdd
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
-		'getZFunctionInputs',
-		'getRowByKeyPath',
+		'getZFunctionInputLabels',
 		'getUserLangCode'
 	] ), {
 		/**
-		 * List of inputs
+		 * List of inputs, in hybrid format (without benjamin item)
 		 *
 		 * @return {Array}
 		 */
 		inputs: function () {
-			return this.getZFunctionInputs();
-		},
-		/**
-		 * Returns the rowId of the inputs list
-		 *
-		 * @return {number}
-		 */
-		inputsListRowId: function () {
-			return this.getRowByKeyPath( [
-				Constants.Z_PERSISTENTOBJECT_VALUE,
-				Constants.Z_FUNCTION_ARGUMENTS
-			], this.rowId ).id;
+			return this.getZFunctionInputLabels( this.zLanguage );
 		},
 		/**
 		 * Returns the label for the inputs field
@@ -220,27 +211,39 @@ module.exports = exports = defineComponent( {
 		}
 	} ),
 	methods: Object.assign( {}, mapActions( useMainStore, [
-		'changeType',
-		'removeItemFromTypedList'
+		'createObjectByType',
+		'pushItemsByKeyPath',
+		'deleteListItemsByKeyPath'
 	] ), {
 		/**
 		 * Add a new input item to the function inputs list
 		 */
 		addNewItem: function () {
-			this.changeType( {
-				type: Constants.Z_ARGUMENT,
-				id: this.inputsListRowId,
-				lang: this.zLanguage,
-				append: true
+			const value = canonicalToHybrid( this.createObjectByType( { type: Constants.Z_ARGUMENT } ) );
+			this.pushItemsByKeyPath( {
+				keyPath: [
+					Constants.STORED_OBJECTS.MAIN,
+					Constants.Z_PERSISTENTOBJECT_VALUE,
+					Constants.Z_FUNCTION_ARGUMENTS
+				],
+				values: [ value ]
 			} );
 		},
 		/**
 		 * Removes an item from the list of inputs
 		 *
-		 * @param {number} rowId
+		 * @param {number} index
 		 */
-		removeItem: function ( rowId ) {
-			this.removeItemFromTypedList( { rowId } );
+		removeItem: function ( index ) {
+			const itemIndex = String( ( Number( index ) + 1 ) );
+			this.deleteListItemsByKeyPath( {
+				keyPath: [
+					Constants.STORED_OBJECTS.MAIN,
+					Constants.Z_PERSISTENTOBJECT_VALUE,
+					Constants.Z_FUNCTION_ARGUMENTS
+				],
+				indexes: [ itemIndex ]
+			} );
 		},
 		/**
 		 * Emits the event argument-label-updated

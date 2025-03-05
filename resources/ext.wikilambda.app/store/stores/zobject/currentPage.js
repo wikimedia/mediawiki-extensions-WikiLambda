@@ -8,6 +8,8 @@
 
 const Constants = require( '../../../Constants.js' );
 const eventLogMixin = require( '../../../mixins/eventLogMixin.js' );
+const { canonicalToHybrid } = require( '../../../utils/schemata.js' );
+const { isTruthyOrEqual } = require( '../../../utils/typeUtils.js' );
 
 module.exports = {
 	state: {
@@ -51,34 +53,6 @@ module.exports = {
 		},
 
 		/**
-		 * Whether the given rowId is part of the main
-		 * page object or is a detached object. If the
-		 * oldest ancestor is row Id 0, then this is the
-		 * main object.
-		 *
-		 * @return {Function}
-		 */
-		isMainObject: function () {
-			/**
-			 * @param {string} rowId
-			 * @return {boolean}
-			 */
-			const findOldestAncestor = ( rowId ) => {
-				const row = this.getRowById( rowId );
-				// Row doesn't exist, return false
-				if ( row === undefined ) {
-					return false;
-				}
-				// Row is oldest ancestor, return true if id is 0
-				if ( row.parent === undefined ) {
-					return row.id === 0;
-				}
-				return findOldestAncestor( row.parent );
-			};
-			return findOldestAncestor;
-		},
-
-		/**
 		 * Returns the multilingual data initial copy
 		 * saved on initialization
 		 *
@@ -97,30 +71,6 @@ module.exports = {
 		 */
 		getCurrentZObjectId: function ( state ) {
 			return state.currentZid || Constants.NEW_ZID_PLACEHOLDER;
-		},
-
-		/**
-		 * Return the type of the root ZObject or undefined
-		 * if it's still not set
-		 *
-		 * @return {string | Object | undefined} current ZObject Type
-		 */
-		getCurrentZObjectType: function () {
-			return this.getZObjectTypeByRowId(
-				this.getZPersistentContentRowId()
-			);
-		},
-
-		/**
-		 * Return the key indicating the content type of the current implementation:
-		 * 'Z14K2' (composition), 'Z14K3' (code) or 'Z14K4' (builtin).
-		 *
-		 * @return {string | undefined} currentZImplementationContentType
-		 */
-		getCurrentZImplementationType: function () {
-			return this.getZImplementationContentType(
-				this.getZPersistentContentRowId()
-			);
 		}
 	},
 
@@ -176,17 +126,33 @@ module.exports = {
 		},
 
 		/**
-		 * Save initial multilingual data values
-		 * so that About widget knows how to reset to original
-		 * state in the case of a publish cancelation action.
+		 * Save initial multilingual data values so that the
+		 * About widget can reset everything to its original
+		 * state in the case of an edit cancelation.
+		 *
+		 * NOTE: Objects are stored in canonical form. We pass
+		 * the canonical object as input, because the root object
+		 * might not be set in the store. This is okay because we
+		 * only save the multilingual data copy on initialization.
 		 *
 		 * @param {Object} zobject
 		 */
 		saveMultilingualDataCopy: function ( zobject ) {
+			const inputLabels = [];
+
+			const path = [ Constants.Z_PERSISTENTOBJECT_VALUE, Constants.Z_OBJECT_TYPE ];
+			if ( isTruthyOrEqual( zobject, path, Constants.Z_FUNCTION ) ) {
+				const inputs = zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_ARGUMENTS ]
+					.slice( 1 );
+				// We create an array of input labels, ignoring benjaming item
+				inputLabels.push( ...inputs.map( ( arg ) => arg[ Constants.Z_ARGUMENT_LABEL ] ) );
+			}
+
 			this.multilingualDataCopy = {
 				names: zobject[ Constants.Z_PERSISTENTOBJECT_LABEL ],
 				descriptions: zobject[ Constants.Z_PERSISTENTOBJECT_DESCRIPTION ],
-				aliases: zobject[ Constants.Z_PERSISTENTOBJECT_ALIASES ]
+				aliases: zobject[ Constants.Z_PERSISTENTOBJECT_ALIASES ],
+				inputs: inputLabels
 			};
 		},
 
@@ -197,27 +163,43 @@ module.exports = {
 		resetMultilingualData: function () {
 			const initialData = this.getMultilingualDataCopy;
 
-			const nameRow = this.getRowByKeyPath( [ Constants.Z_PERSISTENTOBJECT_LABEL ], 0 );
-			if ( nameRow ) {
-				this.injectZObjectFromRowId( {
-					rowId: nameRow.id,
-					value: initialData.names
-				} );
-			}
+			this.setValueByKeyPath( {
+				keyPath: [
+					Constants.STORED_OBJECTS.MAIN,
+					Constants.Z_PERSISTENTOBJECT_LABEL
+				],
+				value: canonicalToHybrid( initialData.names )
+			} );
 
-			const descriptionRow = this.getRowByKeyPath( [ Constants.Z_PERSISTENTOBJECT_DESCRIPTION ], 0 );
-			if ( descriptionRow ) {
-				this.injectZObjectFromRowId( {
-					rowId: descriptionRow.id,
-					value: initialData.descriptions
-				} );
-			}
+			this.setValueByKeyPath( {
+				keyPath: [
+					Constants.STORED_OBJECTS.MAIN,
+					Constants.Z_PERSISTENTOBJECT_DESCRIPTION
+				],
+				value: canonicalToHybrid( initialData.descriptions )
+			} );
 
-			const aliasesRow = this.getRowByKeyPath( [ Constants.Z_PERSISTENTOBJECT_ALIASES ], 0 );
-			if ( aliasesRow ) {
-				this.injectZObjectFromRowId( {
-					rowId: aliasesRow.id,
-					value: initialData.aliases
+			this.setValueByKeyPath( {
+				keyPath: [
+					Constants.STORED_OBJECTS.MAIN,
+					Constants.Z_PERSISTENTOBJECT_ALIASES
+				],
+				value: canonicalToHybrid( initialData.aliases )
+			} );
+
+			if ( this.getCurrentZObjectType === Constants.Z_FUNCTION && Array.isArray( initialData.inputs ) ) {
+				initialData.inputs.forEach( ( labelData, index ) => {
+					const keyPath = [
+						Constants.STORED_OBJECTS.MAIN,
+						Constants.Z_PERSISTENTOBJECT_VALUE,
+						Constants.Z_FUNCTION_ARGUMENTS,
+						index + 1,
+						Constants.Z_ARGUMENT_LABEL
+					];
+					this.setValueByKeyPath( {
+						keyPath,
+						value: canonicalToHybrid( labelData )
+					} );
 				} );
 			}
 		}

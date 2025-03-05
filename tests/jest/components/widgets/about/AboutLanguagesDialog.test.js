@@ -8,7 +8,7 @@
 
 const { config, mount } = require( '@vue/test-utils' );
 const { waitFor } = require( '@testing-library/vue' );
-const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../../helpers/getterHelpers.js' );
+const { createLabelDataMock } = require( '../../../helpers/getterHelpers.js' );
 const { mockLookupLanguages } = require( '../../../fixtures/mocks.js' );
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 const AboutLanguagesDialog = require( '../../../../../resources/ext.wikilambda.app/components/widgets/about/AboutLanguagesDialog.vue' );
@@ -38,7 +38,7 @@ describe( 'AboutLanguagesDialog', () => {
 			};
 			return codes[ langZid ];
 		};
-		store.getMultilingualDataLanguages = createGettersWithFunctionsMock( [
+		store.getMultilingualDataLanguages = { all: [
 			'Z1002', // English
 			'Z1003', // Spanish
 			'Z1314', // Euskera
@@ -46,19 +46,15 @@ describe( 'AboutLanguagesDialog', () => {
 			'Z1787', // Italian
 			'Z1272', // Croatian
 			'Z1429' // Telugu
-		] );
+		] };
 		store.getZPersistentName = ( langZid ) => {
 			const names = {
-				Z1002: { id: 0, key: '1' }, // English
-				Z1003: { id: 1, key: '2' }, // Spanish
-				Z1314: { id: 2, key: '3' }, // Euskera
-				Z1678: { id: 3, key: '4' } // Quechua
+				Z1002: { keyPath: 'main.Z2K3.Z12K1.1.Z11K2.Z6K1', value: 'Name' },
+				Z1003: { keyPath: 'main.Z2K3.Z12K1.2.Z11K2.Z6K1', value: 'Nombre' },
+				Z1314: { keyPath: 'main.Z2K3.Z12K1.3.Z11K2.Z6K1', value: 'Izena' },
+				Z1678: { keyPath: 'main.Z2K3.Z12K1.4.Z11K2.Z6K1', value: 'Suti' }
 			};
 			return names[ langZid ];
-		};
-		store.getZMonolingualTextValue = ( rowId ) => {
-			const names = [ 'Name', 'Nombre', 'Izena', 'Suti' ];
-			return names[ rowId ];
 		};
 		store.getLabelData = createLabelDataMock( {
 			Z1002: 'English',
