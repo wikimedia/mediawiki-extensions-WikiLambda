@@ -19,7 +19,7 @@ const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
 
 const Constants = require( '../../../Constants.js' );
-const eventLogUtils = require( '../../../mixins/eventLogUtils.js' );
+const eventLogMixin = require( '../../../mixins/eventLogMixin.js' );
 const PublishWidget = require( '../../widgets/publish/Publish.vue' );
 const useMainStore = require( '../../../store/index.js' );
 
@@ -28,6 +28,7 @@ module.exports = exports = defineComponent( {
 	components: {
 		'wl-publish-widget': PublishWidget
 	},
+	mixins: [ eventLogMixin ],
 	props: {
 		functionInputChanged: {
 			type: Boolean,
@@ -121,7 +122,7 @@ module.exports = exports = defineComponent( {
 					zobjecttype: 'Z8',
 					zlang: this.getUserLangZid || null
 				};
-				eventLogUtils.methods.submitInteraction( 'change', interactionData );
+				this.submitInteraction( 'change', interactionData );
 			}
 		}
 	}

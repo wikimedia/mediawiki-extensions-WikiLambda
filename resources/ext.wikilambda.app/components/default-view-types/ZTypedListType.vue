@@ -20,7 +20,7 @@ const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
 
 const Constants = require( '../../Constants.js' );
-const typeUtils = require( '../../mixins/typeUtils.js' );
+const typeMixin = require( '../../mixins/typeMixin.js' );
 const useMainStore = require( '../../store/index.js' );
 
 module.exports = exports = defineComponent( {
@@ -28,7 +28,7 @@ module.exports = exports = defineComponent( {
 	components: {
 		//
 	},
-	mixins: [ typeUtils ],
+	mixins: [ typeMixin ],
 	props: {
 		rowId: {
 			type: Number,

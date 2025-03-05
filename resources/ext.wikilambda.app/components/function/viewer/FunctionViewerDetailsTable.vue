@@ -95,7 +95,7 @@ const { CdxButton, CdxCheckbox, CdxIcon, CdxInfoChip, CdxTable } = require( '../
 const Constants = require( '../../../Constants.js' );
 const FunctionTesterTable = require( './FunctionTesterTable.vue' );
 const icons = require( '../../../../lib/icons.json' );
-const typeUtils = require( '../../../mixins/typeUtils.js' );
+const typeMixin = require( '../../../mixins/typeMixin.js' );
 const useBreakpoints = require( '../../../composables/useBreakpoints.js' );
 
 module.exports = exports = defineComponent( {
@@ -108,7 +108,7 @@ module.exports = exports = defineComponent( {
 		'cdx-checkbox': CdxCheckbox,
 		'wl-function-tester-table': FunctionTesterTable
 	},
-	mixins: [ typeUtils ],
+	mixins: [ typeMixin ],
 	props: {
 		columns: {
 			type: Array,

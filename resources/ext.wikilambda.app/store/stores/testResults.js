@@ -7,8 +7,8 @@
 'use strict';
 
 const Constants = require( '../../Constants.js' );
-const apiUtils = require( '../../mixins/api.js' ).methods;
-const { extractZIDs, hybridToCanonical } = require( '../../mixins/schemata.js' ).methods;
+const { performTests } = require( '../../utils/apiUtils.js' );
+const { extractZIDs, hybridToCanonical } = require( '../../utils/schemata.js' );
 
 module.exports = {
 	state: {
@@ -208,7 +208,7 @@ module.exports = {
 			const testers = replaceCurrentObjectWithFullJSONObject.call( this, payload.zTesters )
 				.map( ( a ) => a.replace( /\|/g, '🪈' ) );
 
-			const testResultsPromise = apiUtils.performTests( {
+			const testResultsPromise = performTests( {
 				functionZid: payload.zFunctionId,
 				nocache: payload.nocache,
 				language: this.getUserLangCode,

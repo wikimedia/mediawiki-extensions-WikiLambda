@@ -7,7 +7,11 @@
 
 'use strict';
 
-const { methods: urlUtils } = require( '../../../resources/ext.wikilambda.app/mixins/urlUtils.js' );
+const {
+	getParameterByName,
+	removeHashFromURL,
+	isLinkCurrentPath
+} = require( '../../../resources/ext.wikilambda.app/utils/urlUtils.js' );
 
 describe( 'urlUtils', () => {
 	describe( 'getParameterByName', () => {
@@ -23,8 +27,8 @@ describe( 'urlUtils', () => {
 			};
 
 			// Call the getParameterByName method
-			const nameValue = urlUtils.getParameterByName( 'name' );
-			const ageValue = urlUtils.getParameterByName( 'age' );
+			const nameValue = getParameterByName( 'name' );
+			const ageValue = getParameterByName( 'age' );
 
 			// Assert the returned values
 			expect( nameValue ).toBe( 'John' );
@@ -43,7 +47,7 @@ describe( 'urlUtils', () => {
 			};
 
 			// Call the getParameterByName method with a non-existing parameter
-			const nonExistingValue = urlUtils.getParameterByName( 'email' );
+			const nonExistingValue = getParameterByName( 'email' );
 
 			// Assert the returned value is null
 			expect( nonExistingValue ).toBeNull();
@@ -63,7 +67,7 @@ describe( 'urlUtils', () => {
 			history.replaceState = mockReplaceState;
 
 			// Call the removeHashFromURL method
-			urlUtils.removeHashFromURL();
+			removeHashFromURL();
 
 			// Assert the window.location.href has been updated and replaceState was called
 			expect( mockReplaceState ).toHaveBeenCalledWith( null, '', 'http://example.com' );
@@ -85,7 +89,7 @@ describe( 'urlUtils', () => {
 			};
 
 			// Call the isLinkCurrentPath method with a link href that matches the current path
-			const isCurrentPath = urlUtils.isLinkCurrentPath( 'http://example.com/path/to/page' );
+			const isCurrentPath = isLinkCurrentPath( 'http://example.com/path/to/page' );
 
 			// Assert that the method returns true
 			expect( isCurrentPath ).toBe( true );
@@ -105,7 +109,7 @@ describe( 'urlUtils', () => {
 			};
 
 			// Call the isLinkCurrentPath method with a link href that does not match the current path
-			const isCurrentPath = urlUtils.isLinkCurrentPath( 'http://example.com/other/page' );
+			const isCurrentPath = isLinkCurrentPath( 'http://example.com/other/page' );
 
 			// Assert that the method returns false
 			expect( isCurrentPath ).toBe( false );

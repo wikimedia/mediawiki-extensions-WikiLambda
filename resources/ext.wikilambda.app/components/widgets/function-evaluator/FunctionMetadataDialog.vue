@@ -127,12 +127,12 @@ const { mapState } = require( 'pinia' );
 const { CdxAccordion, CdxDialog, CdxField, CdxIcon, CdxMessage, CdxSelect } = require( '../../../../codex.js' );
 const Constants = require( '../../../Constants.js' );
 const CustomDialogHeader = require( '../../base/CustomDialogHeader.vue' );
-const errorUtils = require( '../../../mixins/errorUtils.js' );
+const errorMixin = require( '../../../mixins/errorMixin.js' );
 const LabelData = require( '../../../store/classes/LabelData.js' );
-const metadataConfig = require( '../../../mixins/metadata.js' );
+const metadataMixin = require( '../../../mixins/metadataMixin.js' );
 const useMainStore = require( '../../../store/index.js' );
-const { extractErrorStructure, extractZIDs } = require( '../../../mixins/schemata.js' ).methods;
-const typeUtils = require( '../../../mixins/typeUtils.js' );
+const { extractErrorStructure, extractZIDs } = require( '../../../utils/schemata.js' );
+const typeMixin = require( '../../../mixins/typeMixin.js' );
 const icons = require( '../../../../lib/icons.json' );
 
 module.exports = exports = defineComponent( {
@@ -146,7 +146,7 @@ module.exports = exports = defineComponent( {
 		'cdx-select': CdxSelect,
 		'wl-custom-dialog-header': CustomDialogHeader
 	},
-	mixins: [ typeUtils, metadataConfig, errorUtils ],
+	mixins: [ typeMixin, metadataMixin, errorMixin ],
 	props: {
 		open: {
 			type: Boolean,

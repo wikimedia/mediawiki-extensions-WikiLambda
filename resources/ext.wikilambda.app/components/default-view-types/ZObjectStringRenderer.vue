@@ -86,9 +86,9 @@ const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
 
 const Constants = require( '../../Constants.js' );
-const errorUtils = require( '../../mixins/errorUtils.js' );
-const typeUtils = require( '../../mixins/typeUtils.js' );
-const { getValueFromCanonicalZMap, hybridToCanonical } = require( '../../mixins/schemata.js' ).methods;
+const errorMixin = require( '../../mixins/errorMixin.js' );
+const typeMixin = require( '../../mixins/typeMixin.js' );
+const { getValueFromCanonicalZMap, hybridToCanonical } = require( '../../utils/schemata.js' );
 const useMainStore = require( '../../store/index.js' );
 const ZObjectKeyValueSet = require( './ZObjectKeyValueSet.vue' );
 
@@ -100,7 +100,7 @@ module.exports = exports = defineComponent( {
 		'cdx-text-input': CdxTextInput,
 		'wl-z-object-key-value-set': ZObjectKeyValueSet
 	},
-	mixins: [ typeUtils, errorUtils ],
+	mixins: [ typeMixin, errorMixin ],
 	props: {
 		rowId: {
 			type: Number,

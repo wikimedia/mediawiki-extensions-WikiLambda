@@ -49,7 +49,7 @@ const Constants = require( '../Constants.js' );
 const AboutWidget = require( '../components/widgets/about/About.vue' );
 const FunctionEvaluatorWidget = require( '../components/widgets/function-evaluator/FunctionEvaluator.vue' );
 const FunctionViewerDetails = require( '../components/function/viewer/FunctionViewerDetails.vue' );
-const eventLogUtils = require( '../mixins/eventLogUtils.js' );
+const eventLogMixin = require( '../mixins/eventLogMixin.js' );
 const useMainStore = require( '../store/index.js' );
 
 module.exports = exports = defineComponent( {
@@ -60,7 +60,7 @@ module.exports = exports = defineComponent( {
 		'wl-function-viewer-details': FunctionViewerDetails,
 		'cdx-message': CdxMessage
 	},
-	mixins: [ eventLogUtils ],
+	mixins: [ eventLogMixin ],
 	data: function () {
 		return {
 			functionType: Constants.Z_FUNCTION

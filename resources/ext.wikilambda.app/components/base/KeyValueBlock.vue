@@ -53,7 +53,7 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const errorUtils = require( '../../mixins/errorUtils.js' );
+const errorMixin = require( '../../mixins/errorMixin.js' );
 const ExpandedToggle = require( './ExpandedToggle.vue' );
 const KeyBlock = require( './KeyBlock.vue' );
 
@@ -63,7 +63,7 @@ module.exports = exports = defineComponent( {
 		'wl-expanded-toggle': ExpandedToggle,
 		'wl-key-block': KeyBlock
 	},
-	mixins: [ errorUtils ],
+	mixins: [ errorMixin ],
 	props: {
 		depth: {
 			type: Number,

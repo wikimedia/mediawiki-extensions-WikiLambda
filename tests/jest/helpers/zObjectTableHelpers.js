@@ -15,7 +15,7 @@
  */
 'use strict';
 
-const zobjectUtils = require( '../../../resources/ext.wikilambda.app/mixins/zobjectUtils.js' ).methods;
+const { convertJsonToTable } = require( '../../../resources/ext.wikilambda.app/utils/zobjectUtils.js' );
 const Row = require( '../../../resources/ext.wikilambda.app/store/classes/Row.js' );
 
 const tableDataToRowObjects = function ( tableData ) {
@@ -28,7 +28,7 @@ const tableDataToRowObjects = function ( tableData ) {
 };
 
 const zobjectToRows = function ( zobject ) {
-	return zobjectUtils.convertJsonToTable( zobject );
+	return convertJsonToTable( zobject );
 };
 
 module.exports = {

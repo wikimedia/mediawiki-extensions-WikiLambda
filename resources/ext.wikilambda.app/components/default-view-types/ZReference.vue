@@ -36,7 +36,7 @@ const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
 
 const Constants = require( '../../Constants.js' );
-const typeUtils = require( '../../mixins/typeUtils.js' );
+const typeMixin = require( '../../mixins/typeMixin.js' );
 const useMainStore = require( '../../store/index.js' );
 const ZObjectSelector = require( './../base/ZObjectSelector.vue' );
 
@@ -45,7 +45,7 @@ module.exports = exports = defineComponent( {
 	components: {
 		'wl-z-object-selector': ZObjectSelector
 	},
-	mixins: [ typeUtils ],
+	mixins: [ typeMixin ],
 	props: {
 		rowId: {
 			type: Number,

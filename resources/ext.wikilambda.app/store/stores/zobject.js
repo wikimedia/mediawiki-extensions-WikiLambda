@@ -8,12 +8,12 @@
 
 const Row = require( '../classes/Row.js' );
 const Constants = require( '../../Constants.js' );
-const apiUtils = require( '../../mixins/api.js' ).methods;
-const { getParameterByName } = require( '../../mixins/urlUtils.js' ).methods;
-const { extractWikidataLexemeIds } = require( '../../mixins/wikidataUtils.js' ).methods;
-const { extractZIDs, hybridToCanonical } = require( '../../mixins/schemata.js' ).methods;
-const { findKeyInArray, isTruthyOrEqual } = require( '../../mixins/typeUtils.js' ).methods;
-const zobjectUtils = require( '../../mixins/zobjectUtils.js' ).methods;
+const { fetchZObjects } = require( '../../utils/apiUtils.js' );
+const { getParameterByName } = require( '../../utils/urlUtils.js' );
+const { extractWikidataLexemeIds } = require( '../../utils/wikidataUtils.js' );
+const { extractZIDs, hybridToCanonical } = require( '../../utils/schemata.js' );
+const { findKeyInArray, isTruthyOrEqual } = require( '../../utils/typeUtils.js' );
+const { convertJsonToTable, convertTableToJson } = require( '../../utils/zobjectUtils.js' );
 const currentPageStore = require( './zobject/currentPage.js' );
 const factoryStore = require( './zobject/factory.js' );
 const submissionStore = require( './zobject/submission.js' );
@@ -1085,7 +1085,7 @@ const zobjectStore = {
 			 * @param {boolean} isArray
 			 * @return {Array} zObjectJson
 			 */
-			const findZObjectAsJsonById = ( id, isArray ) => zobjectUtils.convertTableToJson(
+			const findZObjectAsJsonById = ( id, isArray ) => convertTableToJson(
 				state.zobject,
 				id,
 				isArray
@@ -1463,7 +1463,7 @@ const zobjectStore = {
 
 			// Calling the API without language parameter so that we get
 			// the unfiltered multilingual object
-			return apiUtils.fetchZObjects( {
+			return fetchZObjects( {
 				zids: zId,
 				revisions: revision || undefined
 			} ).then( ( response ) => {
@@ -1559,7 +1559,7 @@ const zobjectStore = {
 				}
 
 				// Convert to rows and set store:
-				const zobjectRows = zobjectUtils.convertJsonToTable( zobject );
+				const zobjectRows = convertJsonToTable( zobject );
 				this.setZObject( zobjectRows );
 
 				// Set initialized as done:
@@ -1843,9 +1843,9 @@ const zobjectStore = {
 				if ( payload.append ) {
 					// If we append to a list, calculate the index from which we need to enter the value
 					const index = this.getNextArrayIndex( payload.rowId );
-					rows = zobjectUtils.convertJsonToTable( payload.value, parentRow, nextRowId, true, index );
+					rows = convertJsonToTable( payload.value, parentRow, nextRowId, true, index );
 				} else {
-					rows = zobjectUtils.convertJsonToTable( payload.value, parentRow, nextRowId );
+					rows = convertJsonToTable( payload.value, parentRow, nextRowId );
 				}
 
 				// Reset the parent value in case it's changed
@@ -1861,7 +1861,7 @@ const zobjectStore = {
 				}
 			} else {
 				// Convert input payload.value into table rows with no parent
-				rows = zobjectUtils.convertJsonToTable( payload.value );
+				rows = convertJsonToTable( payload.value );
 			}
 
 			// Push all the rows, they already have their required IDs
@@ -1887,7 +1887,7 @@ const zobjectStore = {
 			const value = { [ payload.key ]: payload.value };
 			const parentRow = this.getRowById( payload.rowId );
 			const nextRowId = this.getNextRowId;
-			const rows = zobjectUtils.convertJsonToTable( value, parentRow, nextRowId, false, 0, false );
+			const rows = convertJsonToTable( value, parentRow, nextRowId, false, 0, false );
 
 			rows.forEach( ( row ) => {
 				this.pushRow( row );
@@ -1911,7 +1911,7 @@ const zobjectStore = {
 			let nextRowId = this.getNextRowId;
 			for ( const value of payload.values ) {
 				const nextIndex = this.getNextArrayIndex( parentRow.id );
-				const rows = zobjectUtils.convertJsonToTable( value, parentRow, nextRowId, true, nextIndex );
+				const rows = convertJsonToTable( value, parentRow, nextRowId, true, nextIndex );
 				// Discard parentRow
 				rows.shift();
 				// Push all the object rows

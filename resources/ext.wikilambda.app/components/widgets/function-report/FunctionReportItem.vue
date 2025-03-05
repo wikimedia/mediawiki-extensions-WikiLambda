@@ -44,7 +44,7 @@ const { mapState } = require( 'pinia' );
 const Constants = require( '../../../Constants.js' );
 const StatusIcon = require( '../../base/StatusIcon.vue' );
 const icons = require( '../../../../lib/icons.json' );
-const typeUtils = require( '../../../mixins/typeUtils.js' );
+const typeMixin = require( '../../../mixins/typeMixin.js' );
 const useMainStore = require( '../../../store/index.js' );
 
 module.exports = exports = defineComponent( {
@@ -52,7 +52,7 @@ module.exports = exports = defineComponent( {
 	components: {
 		'wl-status-icon': StatusIcon
 	},
-	mixins: [ typeUtils ],
+	mixins: [ typeMixin ],
 	props: {
 		zFunctionId: {
 			type: String,

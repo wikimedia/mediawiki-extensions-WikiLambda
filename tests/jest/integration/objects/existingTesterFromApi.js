@@ -71,7 +71,7 @@ const testerZObject = function ( zid ) {
 	};
 };
 
-module.exports = exports = {
+module.exports = {
 	testerZObject,
 	successTesterZid,
 	failedTesterZid

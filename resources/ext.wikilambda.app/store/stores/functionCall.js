@@ -8,8 +8,8 @@
 
 const Constants = require( '../../Constants.js' );
 const Row = require( '../classes/Row.js' );
-const apiUtils = require( '../../mixins/api.js' ).methods;
-const { extractZIDs, hybridToCanonical } = require( '../../mixins/schemata.js' ).methods;
+const { performFunctionCall } = require( '../../utils/apiUtils.js' );
+const { extractZIDs, hybridToCanonical } = require( '../../utils/schemata.js' );
 
 module.exports = {
 	state: {
@@ -59,7 +59,7 @@ module.exports = {
 		 * @return {Promise}
 		 */
 		callZFunction: function ( payload ) {
-			return apiUtils.performFunctionCall( {
+			return performFunctionCall( {
 				functionCall: payload.functionCall,
 				language: this.getUserLangCode
 			} ).then( ( data ) => {

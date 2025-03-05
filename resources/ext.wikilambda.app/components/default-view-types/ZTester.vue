@@ -84,14 +84,14 @@ const { mapActions, mapState } = require( 'pinia' );
 const Constants = require( '../../Constants.js' );
 const KeyValueBlock = require( '../base/KeyValueBlock.vue' );
 const useMainStore = require( '../../store/index.js' );
-const typeUtils = require( '../../mixins/typeUtils.js' );
+const typeMixin = require( '../../mixins/typeMixin.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-tester',
 	components: {
 		'wl-key-value-block': KeyValueBlock
 	},
-	mixins: [ typeUtils ],
+	mixins: [ typeMixin ],
 	props: {
 		rowId: {
 			type: Number,

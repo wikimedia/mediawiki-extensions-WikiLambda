@@ -7,7 +7,7 @@
 'use strict';
 
 const Constants = require( '../../Constants.js' );
-const utils = require( '../../mixins/utilsMixins.js' ).methods;
+const { getNestedProperty } = require( '../../utils/miscUtils.js' );
 
 /**
  * ApiError class contains a set of utilities to transform any kind of
@@ -35,13 +35,13 @@ class ApiError extends Error {
 	 * @return {string|undefined}
 	 */
 	get message() {
-		const error = utils.getNestedProperty( this.response, 'error' );
+		const error = getNestedProperty( this.response, 'error' );
 		if ( typeof error !== 'object' ) {
 			return undefined;
 		}
 
 		// Special treatment for ZErrors
-		const errorCode = utils.getNestedProperty( error, 'code' );
+		const errorCode = getNestedProperty( error, 'code' );
 		if ( errorCode === 'wikilambda-zerror' ) {
 			const errorMessage = this.messageForZError;
 			if ( errorMessage ) {
@@ -59,19 +59,19 @@ class ApiError extends Error {
 	 * @return {string|undefined}
 	 */
 	get messageForZError() {
-		const errorType = utils.getNestedProperty( this.response.error.zerror, Constants.Z_ERROR_TYPE );
+		const errorType = getNestedProperty( this.response.error.zerror, Constants.Z_ERROR_TYPE );
 		switch ( errorType ) {
 			// Z500: Return content of first key (message)
 			case Constants.Z_ERRORS.Z_ERROR_UNKNOWN:
-				return utils.getNestedProperty( this.response.error.zerror, `${ Constants.Z_ERROR_VALUE }.K1` );
+				return getNestedProperty( this.response.error.zerror, `${ Constants.Z_ERROR_VALUE }.K1` );
 
 			// Z548: Return content of first key (message)
 			case Constants.Z_ERRORS.Z_ERROR_INVALID_JSON:
-				return utils.getNestedProperty( this.response.error.zerror, `${ Constants.Z_ERROR_VALUE }.K1` );
+				return getNestedProperty( this.response.error.zerror, `${ Constants.Z_ERROR_VALUE }.K1` );
 
 			// Z557: Return content of first key (message)
 			case Constants.Z_ERRORS.Z_ERROR_USER_CANNOT_EDIT:
-				return utils.getNestedProperty( this.response.error.zerror, `${ Constants.Z_ERROR_VALUE }.K1` );
+				return getNestedProperty( this.response.error.zerror, `${ Constants.Z_ERROR_VALUE }.K1` );
 
 			default:
 				return undefined;

@@ -7,9 +7,14 @@
 'use strict';
 
 const Constants = require( '../../../Constants.js' );
-const extractZIDs = require( '../../../mixins/schemata.js' ).methods.extractZIDs;
-const typeUtils = require( '../../../mixins/typeUtils.js' ).methods;
-const url = require( '../../../mixins/urlUtils.js' ).methods;
+const { extractZIDs } = require( '../../../utils/schemata.js' );
+const {
+	getScaffolding,
+	initializePayloadForType,
+	isGenericType,
+	isTruthyOrEqual
+} = require( '../../../utils/typeUtils.js' );
+const { getParameterByName } = require( '../../../utils/urlUtils.js' );
 
 module.exports = {
 	state: {},
@@ -59,7 +64,7 @@ module.exports = {
 				// If payload.type is an object, we are looking at a generic type,
 				// so a type returned by a function call. Transform the payload for
 				// the special cases: List, Pair and Map
-				if ( typeUtils.isGenericType( payload.type ) ) {
+				if ( isGenericType( payload.type ) ) {
 					if ( payload.type[ Constants.Z_FUNCTION_CALL_FUNCTION ] === Constants.Z_TYPED_LIST ) {
 						const newPayload = JSON.parse( JSON.stringify( payload ) );
 						newPayload.type = Constants.Z_TYPED_LIST;
@@ -150,17 +155,17 @@ module.exports = {
 
 							// Create a reference to self it the key is the identity key of the root object
 							const isIdentityKey = !payload.isRoot ? false : (
-								typeUtils.isTruthyOrEqual( key, [
+								isTruthyOrEqual( key, [
 									Constants.Z_KEY_IS_IDENTITY
 								], Constants.Z_BOOLEAN_TRUE ) ||
-								typeUtils.isTruthyOrEqual( key, [
+								isTruthyOrEqual( key, [
 									Constants.Z_KEY_IS_IDENTITY,
 									Constants.Z_BOOLEAN_IDENTITY
 								], Constants.Z_BOOLEAN_TRUE )
 							);
 							const keyPayload = isIdentityKey ?
 								{ type: Constants.Z_REFERENCE, value: this.getCurrentZObjectId } :
-								typeUtils.initializePayloadForType( key[ Constants.Z_KEY_TYPE ] );
+								initializePayloadForType( key[ Constants.Z_KEY_TYPE ] );
 
 							// We must pass keyList array by value in here, so that the types found in an argument
 							// branch don't affect another branch, it should only restrict repetition in depth.
@@ -201,12 +206,12 @@ module.exports = {
 			 */
 			const generateZPersistentObject = () => {
 				// Get scaffolding
-				const value = typeUtils.getScaffolding( Constants.Z_PERSISTENTOBJECT );
+				const value = getScaffolding( Constants.Z_PERSISTENTOBJECT );
 				// Initialize persistent zid and blank label
 				const zid = this.getCurrentZObjectId || Constants.NEW_ZID_PLACEHOLDER;
 				value[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ] = zid;
 				if ( this.getUserLangZid ) {
-					const mono = typeUtils.getScaffolding( Constants.Z_MONOLINGUALSTRING );
+					const mono = getScaffolding( Constants.Z_MONOLINGUALSTRING );
 					mono[ Constants.Z_MONOLINGUALSTRING_VALUE ] = '';
 					mono[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][
 						Constants.Z_REFERENCE_ID ] = this.getUserLangZid;
@@ -240,7 +245,7 @@ module.exports = {
 			 */
 			const generateZMonolingualString = ( payload ) => {
 				// Get scaffolding
-				const value = typeUtils.getScaffolding( Constants.Z_MONOLINGUALSTRING );
+				const value = getScaffolding( Constants.Z_MONOLINGUALSTRING );
 				// Initialize monolingual string
 				const lang = payload.lang || '';
 				value[ Constants.Z_MONOLINGUALSTRING_VALUE ] = payload.value || '';
@@ -272,7 +277,7 @@ module.exports = {
 			 */
 			const generateZMonolingualStringSet = ( payload ) => {
 				// Get scaffolding
-				const value = typeUtils.getScaffolding( Constants.Z_MONOLINGUALSTRINGSET );
+				const value = getScaffolding( Constants.Z_MONOLINGUALSTRINGSET );
 				// Initialize language and first string
 				const lang = payload.lang || '';
 				value[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ][ Constants.Z_REFERENCE_ID ] = lang;
@@ -310,10 +315,10 @@ module.exports = {
 			 */
 			const generateZMultilingualString = ( payload ) => {
 				// Get scaffolding
-				const value = typeUtils.getScaffolding( Constants.Z_MULTILINGUALSTRING );
+				const value = getScaffolding( Constants.Z_MULTILINGUALSTRING );
 				// Initialize first monolingual string if there's any lang or value
 				if ( ( 'lang' in payload ) || ( 'value' in payload ) ) {
-					const mono = typeUtils.getScaffolding( Constants.Z_MONOLINGUALSTRING );
+					const mono = getScaffolding( Constants.Z_MONOLINGUALSTRING );
 					const lang = payload.lang || this.getUserLangZid;
 					mono[ Constants.Z_MONOLINGUALSTRING_VALUE ] = payload.value || '';
 					mono[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_REFERENCE_ID ] = lang;
@@ -363,7 +368,7 @@ module.exports = {
 			 */
 			const generateZReference = ( payload ) => {
 				// Get scaffolding
-				const value = typeUtils.getScaffolding( Constants.Z_REFERENCE );
+				const value = getScaffolding( Constants.Z_REFERENCE );
 				// Initialize values, if any
 				value[ Constants.Z_REFERENCE_ID ] = payload.value || '';
 				return value;
@@ -391,7 +396,7 @@ module.exports = {
 			 */
 			const generateZBoolean = ( payload ) => {
 				// Get scaffolding
-				const value = typeUtils.getScaffolding( Constants.Z_BOOLEAN );
+				const value = getScaffolding( Constants.Z_BOOLEAN );
 				// Initialize value with the boolean Zid, if any
 				value[ Constants.Z_BOOLEAN_IDENTITY ][ Constants.Z_REFERENCE_ID ] = payload.value || '';
 				return value;
@@ -417,7 +422,7 @@ module.exports = {
 			 */
 			const generateZType = () => {
 				// Get scaffolding
-				const value = typeUtils.getScaffolding( Constants.Z_TYPE );
+				const value = getScaffolding( Constants.Z_TYPE );
 				// Initialize validator function
 				value[ Constants.Z_TYPE_VALIDATOR ][ Constants.Z_REFERENCE_ID ] = Constants.Z_VALIDATE_OBJECT;
 				return value;
@@ -446,7 +451,7 @@ module.exports = {
 			 */
 			const generateZArgument = ( payload ) => {
 				// Get scaffolding
-				const value = typeUtils.getScaffolding( Constants.Z_ARGUMENT );
+				const value = getScaffolding( Constants.Z_ARGUMENT );
 				// Initialize argument key
 				value[ Constants.Z_ARGUMENT_KEY ] = payload.value || this.getNextKey;
 				return value;
@@ -471,7 +476,7 @@ module.exports = {
 			 */
 			const generateZFunctionCall = ( payload ) => {
 				// Get scaffolding
-				const value = typeUtils.getScaffolding( Constants.Z_FUNCTION_CALL );
+				const value = getScaffolding( Constants.Z_FUNCTION_CALL );
 				// Initialize function zid
 				value[ Constants.Z_FUNCTION_CALL_FUNCTION ][ Constants.Z_REFERENCE_ID ] = payload.value || '';
 				return value;
@@ -496,9 +501,9 @@ module.exports = {
 			 */
 			const generateZImplementation = () => {
 				// Get scaffolding
-				const value = typeUtils.getScaffolding( Constants.Z_IMPLEMENTATION );
+				const value = getScaffolding( Constants.Z_IMPLEMENTATION );
 				// Initialize function zid from the url parameters
-				const functionZid = url.getParameterByName( Constants.Z_IMPLEMENTATION_FUNCTION ) || '';
+				const functionZid = getParameterByName( Constants.Z_IMPLEMENTATION_FUNCTION ) || '';
 				value[ Constants.Z_IMPLEMENTATION_FUNCTION ][ Constants.Z_REFERENCE_ID ] = functionZid;
 				return value;
 			};
@@ -521,7 +526,7 @@ module.exports = {
 			/**
 			 * @return {Object}
 			 */
-			const generateZCode = () => typeUtils.getScaffolding( Constants.Z_CODE );
+			const generateZCode = () => getScaffolding( Constants.Z_CODE );
 			return generateZCode;
 		},
 
@@ -545,8 +550,8 @@ module.exports = {
 			 */
 			const generateZFunction = () => {
 				// Get scaffolding
-				const value = typeUtils.getScaffolding( Constants.Z_FUNCTION );
-				const arg = typeUtils.getScaffolding( Constants.Z_ARGUMENT );
+				const value = getScaffolding( Constants.Z_FUNCTION );
+				const arg = getScaffolding( Constants.Z_ARGUMENT );
 				// Initialize function identity and one empty argument
 				const functionZid = this.getCurrentZObjectId || Constants.NEW_ZID_PLACEHOLDER;
 				value[ Constants.Z_FUNCTION_IDENTITY ][ Constants.Z_REFERENCE_ID ] = functionZid;
@@ -581,10 +586,10 @@ module.exports = {
 			 */
 			const generateZTester = () => {
 				// Get scaffolding
-				const value = typeUtils.getScaffolding( Constants.Z_TESTER );
+				const value = getScaffolding( Constants.Z_TESTER );
 
 				// Initialize function zid from the url parameters
-				const functionZid = url.getParameterByName( Constants.Z_TESTER_FUNCTION ) || '';
+				const functionZid = getParameterByName( Constants.Z_TESTER_FUNCTION ) || '';
 				value[ Constants.Z_TESTER_FUNCTION ][ Constants.Z_REFERENCE_ID ] = functionZid;
 				return value;
 			};
@@ -608,7 +613,7 @@ module.exports = {
 			 */
 			const generateZTypedList = ( payload ) => {
 				// Get scaffolding
-				const value = typeUtils.getScaffolding( Constants.Z_TYPED_LIST );
+				const value = getScaffolding( Constants.Z_TYPED_LIST );
 				// Initialize function zid from the url parameters
 				value[ 0 ][ Constants.Z_REFERENCE_ID ] = payload.value || Constants.Z_OBJECT;
 				return value;
@@ -643,12 +648,12 @@ module.exports = {
 			 */
 			const generateZTypedPair = ( payload ) => {
 				// Get scaffolding
-				const value = typeUtils.getScaffolding( Constants.Z_TYPED_PAIR );
+				const value = getScaffolding( Constants.Z_TYPED_PAIR );
 				// Initialize typed pair types
 				const type1 = payload.values ? payload.values[ 0 ] : '';
 				const type2 = payload.values ? payload.values[ 1 ] : '';
-				const value1 = type1 ? typeUtils.getScaffolding( type1 ) : {};
-				const value2 = type2 ? typeUtils.getScaffolding( type2 ) : {};
+				const value1 = type1 ? getScaffolding( type1 ) : {};
+				const value2 = type2 ? getScaffolding( type2 ) : {};
 				value[ Constants.Z_OBJECT_TYPE ][ Constants.Z_TYPED_PAIR_TYPE1 ][ Constants.Z_REFERENCE_ID ] = type1;
 				value[ Constants.Z_OBJECT_TYPE ][ Constants.Z_TYPED_PAIR_TYPE2 ][ Constants.Z_REFERENCE_ID ] = type2;
 				value[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ] = value1;
@@ -682,7 +687,7 @@ module.exports = {
 			 */
 			const generateZTypedMap = ( payload ) => {
 				// Get scaffolding
-				const value = typeUtils.getScaffolding( Constants.Z_TYPED_MAP );
+				const value = getScaffolding( Constants.Z_TYPED_MAP );
 
 				// Initialize typed pair types
 				const type1 = payload.values ? payload.values[ 0 ] : '';
@@ -718,7 +723,7 @@ module.exports = {
 			 */
 			const generateWikidataEntity = ( payload ) => {
 				// Get scaffolding
-				const value = typeUtils.getScaffolding( Constants.Z_FUNCTION_CALL );
+				const value = getScaffolding( Constants.Z_FUNCTION_CALL );
 				let wdRef, wdFetch, wdFetchId;
 
 				// Set to Wikidata Entity fetch function call:

@@ -1,5 +1,5 @@
 /*!
- * WikiLambda unit test suite for the schemata mixin
+ * WikiLambda unit test suite for the schemata util
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -11,14 +11,14 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 
 const Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' );
-const schemata = require( '../../../resources/ext.wikilambda.app/mixins/schemata.js' ).methods;
+const schemata = require( '../../../resources/ext.wikilambda.app/utils/schemata.js' );
 
 const canonicalToHybrid = schemata.canonicalToHybrid;
 const extractErrorStructure = schemata.extractErrorStructure;
 const extractZIDs = schemata.extractZIDs;
 const hybridToCanonical = schemata.hybridToCanonical;
 
-describe( 'schemata mixin', () => {
+describe( 'schemata', () => {
 	const hybridInitialZObject = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/hybridInitialZObject.json' ) ) ),
 		canonicalInitialZObject = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/canonicalInitialZObject.json' ) ) ),
 		canonicalResultWithLargeZQuote = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/canonicalResultWithLargeZQuote.json' ) ) ),

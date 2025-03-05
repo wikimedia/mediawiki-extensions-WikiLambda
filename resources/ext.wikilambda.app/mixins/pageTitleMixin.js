@@ -1,6 +1,6 @@
 /**
- * WikiLambda Vue editor: Page title utils mixin
- * Mixin with util functions to change page titles outside Vue scope
+ * WikiLambda Vue editor: Page Title Mixin
+ * Mixin with functions to change page titles outside Vue scope
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT

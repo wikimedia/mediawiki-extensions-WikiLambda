@@ -7,7 +7,7 @@
 'use strict';
 
 const Constants = require( '../../Constants.js' );
-const { isValidZidFormat } = require( '../../mixins/typeUtils.js' ).methods;
+const { isValidZidFormat } = require( '../../utils/typeUtils.js' );
 
 module.exports = {
 	state: {

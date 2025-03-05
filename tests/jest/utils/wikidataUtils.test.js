@@ -1,5 +1,5 @@
 /*!
- * WikiLambda unit test suite for the wikidataUtils mixin
+ * WikiLambda unit test suite for the wikidataUtils util
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -7,9 +7,9 @@
 
 'use strict';
 
-const { methods: wikidataUtils } = require( '../../../resources/ext.wikilambda.app/mixins/wikidataUtils.js' );
+const { extractWikidataLexemeIds } = require( '../../../resources/ext.wikilambda.app/utils/wikidataUtils.js' );
 
-describe( 'wikidataUtils mixin', () => {
+describe( 'wikidataUtils', () => {
 	describe( 'extractWikidataLexemeIds', () => {
 		it( 'extracts all Lexeme IDs', () => {
 			const zobject = {
@@ -31,7 +31,7 @@ describe( 'wikidataUtils mixin', () => {
 			};
 
 			const expectedLids = [ 'L296026', 'L587336', 'L1161399' ];
-			expect( wikidataUtils.extractWikidataLexemeIds( zobject ) ).toEqual( expectedLids );
+			expect( extractWikidataLexemeIds( zobject ) ).toEqual( expectedLids );
 		} );
 	} );
 } );

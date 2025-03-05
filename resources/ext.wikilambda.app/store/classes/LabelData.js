@@ -6,7 +6,7 @@
  */
 'use strict';
 
-const typeUtils = require( '../../mixins/typeUtils.js' ).methods;
+const { isValidZidFormat } = require( '../../utils/typeUtils.js' );
 
 /**
  * LabelData class contains the information of a localized label.
@@ -72,7 +72,7 @@ class LabelData {
 	 * @return {string}
 	 */
 	get untitledString() {
-		return typeUtils.isValidZidFormat( this.zid ) ?
+		return isValidZidFormat( this.zid ) ?
 			mw.message( 'wikilambda-editor-default-name' ).text() :
 			mw.message( 'wikilambda-about-widget-unlabelled-input' ).text();
 	}

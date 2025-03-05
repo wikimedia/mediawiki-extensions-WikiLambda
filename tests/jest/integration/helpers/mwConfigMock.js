@@ -27,4 +27,4 @@ const mockMWConfigGet = ( configVars ) => {
 	return ( configVar ) => ( config[ configVar ] || null );
 };
 
-module.exports = exports = mockMWConfigGet;
+module.exports = mockMWConfigGet;

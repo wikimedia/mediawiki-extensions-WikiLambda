@@ -46,8 +46,8 @@ const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
 const { CdxButton } = require( '../../../../codex.js' );
 const Constants = require( '../../../Constants.js' );
-const eventLogUtils = require( '../../../mixins/eventLogUtils.js' );
-const urlUtils = require( '../../../mixins/urlUtils.js' );
+const eventLogMixin = require( '../../../mixins/eventLogMixin.js' );
+const { getParameterByName, isLinkCurrentPath } = require( '../../../utils/urlUtils.js' );
 const useMainStore = require( '../../../store/index.js' );
 const LeaveEditorDialog = require( './LeaveEditorDialog.vue' );
 const PublishDialog = require( './PublishDialog.vue' );
@@ -61,7 +61,7 @@ module.exports = exports = defineComponent( {
 		'wl-publish-dialog': PublishDialog,
 		'wl-widget-base': WidgetBase
 	},
-	mixins: [ eventLogUtils, urlUtils ],
+	mixins: [ eventLogMixin ],
 	props: {
 		functionSignatureChanged: {
 			type: Boolean,
@@ -131,7 +131,7 @@ module.exports = exports = defineComponent( {
 		 * @return {boolean}
 		 */
 		revertToEdit: function () {
-			return !!( this.getParameterByName( 'oldid' ) || this.getParameterByName( 'undo' ) );
+			return !!( getParameterByName( 'oldid' ) || getParameterByName( 'undo' ) );
 		},
 
 		/**
@@ -193,7 +193,7 @@ module.exports = exports = defineComponent( {
 			 * - the link is a button
 			 * we are staying in this page, so there's no need to handle cancelation
 			 */
-			if ( !target.href || target.target === '_blank' || this.isLinkCurrentPath( target.href ) || target.role === 'button' ) {
+			if ( !target.href || target.target === '_blank' || isLinkCurrentPath( target.href ) || target.role === 'button' ) {
 				return;
 			}
 			// Else, abandon the page

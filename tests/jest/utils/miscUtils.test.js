@@ -1,5 +1,5 @@
 /*!
- * WikiLambda unit test suite for the utilsMixins mixin
+ * WikiLambda unit test suite for the miscUtils util
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -7,9 +7,13 @@
 
 'use strict';
 
-const { methods: utilsMixins } = require( '../../../resources/ext.wikilambda.app/mixins/utilsMixins.js' );
+const {
+	getNestedProperty,
+	createConnectedItemsChangesSummaryMessage,
+	arraysAreEqual
+} = require( '../../../resources/ext.wikilambda.app/utils/miscUtils.js' );
 
-describe( 'utilsMixins', () => {
+describe( 'miscUtils', () => {
 	describe( 'getNestedProperty', () => {
 		it( 'should return the value of a nested property', () => {
 			const obj = {
@@ -19,30 +23,30 @@ describe( 'utilsMixins', () => {
 					}
 				}
 			};
-			const result = utilsMixins.getNestedProperty( obj, 'a.b.c' );
+			const result = getNestedProperty( obj, 'a.b.c' );
 			expect( result ).toBe( 'value' );
 		} );
 
 		it( 'should return undefined for non-existent property', () => {
 			const obj = { a: {} };
-			const result = utilsMixins.getNestedProperty( obj, 'a.b.c' );
+			const result = getNestedProperty( obj, 'a.b.c' );
 			expect( result ).toBeUndefined();
 		} );
 
 		it( 'should return undefined if any part of the path is null or undefined', () => {
 			const obj = { a: null };
-			const result = utilsMixins.getNestedProperty( obj, 'a.b.c' );
+			const result = getNestedProperty( obj, 'a.b.c' );
 			expect( result ).toBeUndefined();
 		} );
 
 		it( 'should handle an empty path', () => {
 			const obj = { a: 'value' };
-			const result = utilsMixins.getNestedProperty( obj, '' );
+			const result = getNestedProperty( obj, '' );
 			expect( result ).toBeUndefined();
 		} );
 
 		it( 'should handle a non-object initial value', () => {
-			const result = utilsMixins.getNestedProperty( null, 'a.b.c' );
+			const result = getNestedProperty( null, 'a.b.c' );
 			expect( result ).toBeUndefined();
 		} );
 	} );
@@ -71,7 +75,7 @@ describe( 'utilsMixins', () => {
 			const message = 'wikilambda-updated-implementations-approved-summary';
 			const ZIDs = [];
 
-			const result = utilsMixins.createConnectedItemsChangesSummaryMessage( message, ZIDs );
+			const result = createConnectedItemsChangesSummaryMessage( message, ZIDs );
 
 			expect( result ).toBe( 'Mocked message' );
 			expect( mw.message ).toHaveBeenCalledWith( message );
@@ -83,12 +87,49 @@ describe( 'utilsMixins', () => {
 			const message = 'wikilambda-updated-implementations-approved-summary';
 			const ZIDs = [ 'Z1', 'Z2', 'Z3' ];
 
-			const result = utilsMixins.createConnectedItemsChangesSummaryMessage( message, ZIDs );
+			const result = createConnectedItemsChangesSummaryMessage( message, ZIDs );
 
 			expect( result ).toBe( 'Mocked message' );
 			expect( mw.message ).toHaveBeenCalledWith( message );
 			expect( mw.language.listToText ).toHaveBeenCalledWith( ZIDs );
 			expect( mw.message( message ).params ).toHaveBeenCalledWith( [ 'Z1, Z2, Z3' ] );
+		} );
+	} );
+
+	describe( 'arraysAreEqual', () => {
+		it( 'should return true for two empty arrays', () => {
+			const arr1 = [];
+			const arr2 = [];
+			const result = arraysAreEqual( arr1, arr2 );
+			expect( result ).toBe( true );
+		} );
+
+		it( 'should return true for two arrays with the same elements in the same order', () => {
+			const arr1 = [ 1, 2, 3 ];
+			const arr2 = [ 1, 2, 3 ];
+			const result = arraysAreEqual( arr1, arr2 );
+			expect( result ).toBe( true );
+		} );
+
+		it( 'should return false for two arrays with different lengths', () => {
+			const arr1 = [ 1, 2, 3 ];
+			const arr2 = [ 1, 2 ];
+			const result = arraysAreEqual( arr1, arr2 );
+			expect( result ).toBe( false );
+		} );
+
+		it( 'should return false for two arrays with the same elements in different orders', () => {
+			const arr1 = [ 1, 2, 3 ];
+			const arr2 = [ 3, 2, 1 ];
+			const result = arraysAreEqual( arr1, arr2 );
+			expect( result ).toBe( false );
+		} );
+
+		it( 'should return false for two arrays with different elements', () => {
+			const arr1 = [ 1, 2, 3 ];
+			const arr2 = [ 4, 5, 6 ];
+			const result = arraysAreEqual( arr1, arr2 );
+			expect( result ).toBe( false );
 		} );
 	} );
 } );

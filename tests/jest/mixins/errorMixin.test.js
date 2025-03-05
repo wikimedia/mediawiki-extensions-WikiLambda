@@ -1,5 +1,5 @@
 /*!
- * WikiLambda unit test suite for the errorUtils mixin
+ * WikiLambda unit test suite for the errorMixin
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -11,10 +11,10 @@ const { shallowMount } = require( '@vue/test-utils' );
 
 const Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' );
 const createGettersWithFunctionsMock = require( '../helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
-const errorUtils = require( '../../../resources/ext.wikilambda.app/mixins/errorUtils.js' );
+const errorMixin = require( '../../../resources/ext.wikilambda.app/mixins/errorMixin.js' );
 const useMainStore = require( '../../../resources/ext.wikilambda.app/store/index.js' );
 
-describe( 'errorUtils mixin', () => {
+describe( 'errorMixin mixin', () => {
 	let wrapper, store;
 
 	beforeEach( () => {
@@ -25,7 +25,7 @@ describe( 'errorUtils mixin', () => {
 		// Mocking a Vue component to test the mixin
 		const TestComponent = {
 			template: '<div></div>',
-			mixins: [ errorUtils ],
+			mixins: [ errorMixin ],
 			data() {
 				return {
 					rowId: 1

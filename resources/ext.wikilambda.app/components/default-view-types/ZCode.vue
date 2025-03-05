@@ -92,7 +92,7 @@ const { mapActions, mapState } = require( 'pinia' );
 
 const Constants = require( '../../Constants.js' );
 const CodeEditor = require( '../base/CodeEditor.vue' );
-const errorUtils = require( '../../mixins/errorUtils.js' );
+const errorMixin = require( '../../mixins/errorMixin.js' );
 const KeyValueBlock = require( '../base/KeyValueBlock.vue' );
 const useMainStore = require( '../../store/index.js' );
 
@@ -104,7 +104,7 @@ module.exports = exports = defineComponent( {
 		'code-editor': CodeEditor,
 		'wl-key-value-block': KeyValueBlock
 	},
-	mixins: [ errorUtils ],
+	mixins: [ errorMixin ],
 	props: {
 		rowId: {
 			type: Number,

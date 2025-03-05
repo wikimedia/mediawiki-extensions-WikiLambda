@@ -29,11 +29,11 @@ const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
 
 const ClipboardManager = require( './base/ClipboardManager.vue' );
-const eventLogUtils = require( '../mixins/eventLogUtils.js' );
+const eventLogMixin = require( '../mixins/eventLogMixin.js' );
 const FunctionEditorView = require( '../views/FunctionEditor.vue' );
 const FunctionEvaluatorView = require( '../views/FunctionEvaluator.vue' );
 const FunctionViewerView = require( '../views/FunctionViewer.vue' );
-const urlUtils = require( '../mixins/urlUtils.js' );
+const { removeHashFromURL } = require( '../utils/urlUtils.js' );
 const DefaultView = require( '../views/Default.vue' );
 const useMainStore = require( '../store/index.js' );
 
@@ -46,7 +46,7 @@ module.exports = exports = defineComponent( {
 		'wl-default-view': DefaultView,
 		'wl-clipboard-manager': ClipboardManager
 	},
-	mixins: [ eventLogUtils, urlUtils ],
+	mixins: [ eventLogMixin ],
 	inject: {
 		viewmode: { default: false }
 	},
@@ -93,7 +93,7 @@ module.exports = exports = defineComponent( {
 			if ( window.location.hash && event.state === null ) {
 				event.preventDefault();
 				// Remove hash from url so it does not persist after navigation
-				this.removeHashFromURL();
+				removeHashFromURL();
 				return false;
 			}
 

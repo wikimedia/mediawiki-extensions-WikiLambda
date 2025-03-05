@@ -6,7 +6,7 @@
  */
 
 const Constants = require( '../../../Constants.js' );
-const apiUtils = require( '../../../mixins/api.js' ).methods;
+const { fetchWikidataEntities } = require( '../../../utils/apiUtils.js' );
 const LabelData = require( '../../classes/LabelData.js' );
 
 module.exports = {
@@ -165,7 +165,7 @@ module.exports = {
 				language: this.getUserLangCode,
 				ids: ids.join( '|' )
 			};
-			const promise = apiUtils.fetchWikidataEntities( request )
+			const promise = fetchWikidataEntities( request )
 				.then( ( data ) => {
 					// Once received, store Wikidata Property Ids with their data
 					const fetched = data.entities ? Object.keys( data.entities ) : [];

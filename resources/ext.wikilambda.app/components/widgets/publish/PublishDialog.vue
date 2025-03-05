@@ -76,8 +76,8 @@ const { CdxDialog, CdxField, CdxMessage, CdxTextInput } = require( '../../../../
 const { mapActions, mapState } = require( 'pinia' );
 
 const Constants = require( '../../../Constants.js' );
-const errorUtils = require( '../../../mixins/errorUtils.js' );
-const eventLogUtils = require( '../../../mixins/eventLogUtils.js' );
+const errorMixin = require( '../../../mixins/errorMixin.js' );
+const eventLogMixin = require( '../../../mixins/eventLogMixin.js' );
 const useMainStore = require( '../../../store/index.js' );
 
 const enterKeyChar = `
@@ -104,7 +104,7 @@ module.exports = exports = defineComponent( {
 		'cdx-message': CdxMessage,
 		'cdx-dialog': CdxDialog
 	},
-	mixins: [ eventLogUtils, errorUtils ],
+	mixins: [ eventLogMixin, errorMixin ],
 	inject: {
 		viewmode: { default: false }
 	},

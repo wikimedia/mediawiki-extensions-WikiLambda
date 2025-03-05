@@ -75,7 +75,7 @@ const { CdxSearchInput } = require( '../../../codex.js' );
 const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
 
-const typeUtils = require( '../../mixins/typeUtils.js' );
+const typeMixin = require( '../../mixins/typeMixin.js' );
 const useMainStore = require( '../../store/index.js' );
 
 module.exports = exports = defineComponent( {
@@ -83,7 +83,7 @@ module.exports = exports = defineComponent( {
 	components: {
 		'cdx-search-input': CdxSearchInput
 	},
-	mixins: [ typeUtils ],
+	mixins: [ typeMixin ],
 	data: function () {
 		return {
 			searchTerm: '',

@@ -151,9 +151,9 @@ const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
 const { CdxButton, CdxIcon } = require( '../../../../codex.js' );
 const Constants = require( '../../../Constants.js' );
-const clipboardUtils = require( '../../../mixins/clipboardUtils.js' );
+const clipboardMixin = require( '../../../mixins/clipboardMixin.js' );
 const icons = require( '../../../../lib/icons.json' );
-const typeUtils = require( '../../../mixins/typeUtils.js' );
+const typeMixin = require( '../../../mixins/typeMixin.js' );
 const useMainStore = require( '../../../store/index.js' );
 const TypeToString = require( '../../base/TypeToString.vue' );
 const WidgetBase = require( '../../base/WidgetBase.vue' );
@@ -168,7 +168,7 @@ module.exports = exports = defineComponent( {
 		'wl-widget-base': WidgetBase,
 		'wl-z-object-selector': ZObjectSelector
 	},
-	mixins: [ typeUtils, clipboardUtils ],
+	mixins: [ typeMixin, clipboardMixin ],
 	props: {
 		edit: {
 			type: Boolean,
