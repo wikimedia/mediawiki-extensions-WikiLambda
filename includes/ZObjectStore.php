@@ -1798,15 +1798,28 @@ class ZObjectStore {
 				return $responseObject;
 			}
 
-			// Something's gone wrong, somehow
+			// Something's got mis-inserted, somehow
 			$this->logger->error(
 				__METHOD__ . ' retrieved a non-ZResponseEnvelope: ' . $responseObjectString,
 				[ 'responseObject' => $responseObjectString ]
 			);
+		} catch ( ZErrorException $ze ) {
+			// Something's gone wrong in the ZObjectFactory creation
+			$this->logger->warning(
+				__METHOD__ . ' threw from ZObjectFactory; deleting: ' . $ze->getZErrorMessage(),
+				// Limit length to 10 KiB, to avoid jsonTruncated errors in production
+				[ 'throwable' => substr( var_export( $ze, true ), 0, 10240 ) ]
+			);
+
+			$dbw = $this->dbProvider->getPrimaryDatabase();
+			$dbw->newDeleteQueryBuilder()
+				->deleteFrom( 'wikilambda_ztester_results' )
+				->where( $conditions )
+				->caller( __METHOD__ )->execute();
 		} catch ( \Throwable $th ) {
 			// Something's gone differently wrong, somehow
 			$this->logger->error(
-				__METHOD__ . ' threw from ZObjectFactory: ' . $th->getMessage(),
+				__METHOD__ . ' threw a non-ZErrorException somehow: ' . $th->getMessage(),
 				// Limit length to 10 KiB, to avoid jsonTruncated errors in production
 				[ 'throwable' => substr( var_export( $th, true ), 0, 10240 ) ]
 			);
