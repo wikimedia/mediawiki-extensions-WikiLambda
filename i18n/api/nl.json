@@ -16,6 +16,7 @@
 	"apihelp-wikilambda_fetch-example-multiple": "Vraag drie ZObjecten op: Z1, Z2 en Z3.",
 	"apihelp-wikilambda_fetch-example-multiple-old": "Vraag versie 12 van het ZObject Z1, versie 14 van Z2 en versie 25 van Z3 op.",
 	"apihelp-wikilambda_function_call-param-zobject": "ZObject voor functieaanroep",
+	"apihelp-wikilambda_function_call-param-bypass-cache": "Optionele parameter voor het omzeilen van de cache, alleen voor speciaal intern gebruik",
 	"apihelp-wikilambda_function_call-example-generic-list": "Een functie aanroepen die het eerste element terugstuurt van een lijst van een bepaald type",
 	"apihelp-wikilambda_function_call-example-generic-pair": "Een functie aanroepen die het tweede element van een Typed pair&lt;String,Typed pair&lt;String,Boolean&gt;&gt;",
 	"apihelp-wikilambda_function_call-example-generic-map": "Een functie aanroepen die, aan de hand van een sleutel, een element uit een generieke conversietabel omzet naar de tekenreeksversie van de waarde ervan",
