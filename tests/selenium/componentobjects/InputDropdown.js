@@ -46,9 +46,36 @@ class InputDropdown {
 	 * @return {void}
 	 */
 	async setSelectOption( parentSelector, inputSelector, inputText ) {
+		await inputSelector.waitForDisplayed( { timeout: 15000 } );
+		await browser.waitUntil( async () => await inputSelector.isEnabled(), { timeout: 15000 } );
+
 		await ElementActions.doClick( inputSelector );
-		const optionSelector = await parentSelector.$( `bdi=${ inputText }` );
-		await ElementActions.doClick( optionSelector );
+
+		let optionElement;
+		await browser.waitUntil( async () => {
+			try {
+				optionElement = await parentSelector.$( `bdi=${ inputText }` );
+				// fallback for a different additional elector to account for test flake here
+				if ( !( await optionElement.isDisplayed() ) ) {
+					optionElement = await parentSelector.$( `//*[contains(text(), "${ inputText }")]` );
+				}
+
+				return await optionElement.isDisplayed() && await optionElement.isEnabled();
+			} catch ( error ) {
+				return false;
+			}
+		}, { timeout: 10000 } );
+
+		await optionElement.scrollIntoView();
+
+		await browser.waitUntil( async () => {
+			try {
+				await ElementActions.doClick( optionElement );
+				return true;
+			} catch ( error ) {
+				return false;
+			}
+		}, { timeout: 10000 } );
 	}
 }
 

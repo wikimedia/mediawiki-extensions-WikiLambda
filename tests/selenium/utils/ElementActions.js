@@ -27,8 +27,15 @@ class ElementActions {
 	 * @return {void}
 	 */
 	async doClick( selector ) {
-		await selector.waitForDisplayed( { timeout: 15000 } );
-		await selector.click();
+		const element = await selector;
+
+		await element.waitForDisplayed( { timeout: 15000 } );
+
+		await browser.waitUntil( async () => await element.isEnabled(), {
+			timeout: 15000
+		} );
+
+		await element.click();
 	}
 
 	/**
