@@ -229,6 +229,7 @@ class FunctionPage extends Page {
 	 * @return {void}
 	 */
 	async approveImplementation() {
+		await this.approveImplementationButton.waitForDisplayed();
 		await ElementActions.doEnabledClick( this.approveImplementationButton );
 		await browser.waitUntil( async () => {
 			const progressBar = await this.implementationProgressBar;
@@ -243,6 +244,7 @@ class FunctionPage extends Page {
 	 * @return {void}
 	 */
 	async deactivateImplementation() {
+		await this.deactivateImplementationButton.waitForDisplayed();
 		await ElementActions.doEnabledClick( this.deactivateImplementationButton );
 		await browser.waitUntil( async () => {
 			const progressBar = await this.implementationProgressBar;
