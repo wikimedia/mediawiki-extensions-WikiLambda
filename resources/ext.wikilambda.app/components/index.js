@@ -9,7 +9,10 @@
 const App = require( './App.vue' );
 const FunctionSelect = require( './visualeditor/FunctionSelect.vue' );
 const FunctionCallSetup = require( './visualeditor/FunctionCallSetup.vue' );
+const FunctionInputField = require( './visualeditor/FunctionInputField.vue' );
 const FunctionInputSetup = require( './visualeditor/FunctionInputSetup.vue' );
+const FunctionInputEnum = require( './visualeditor/FunctionInputEnum.vue' );
+const FunctionInputString = require( './visualeditor/FunctionInputString.vue' );
 
 // Export all components that we want to make visible
 // from other modules (e.g. function selection and
@@ -17,6 +20,9 @@ const FunctionInputSetup = require( './visualeditor/FunctionInputSetup.vue' );
 module.exports = {
 	App,
 	FunctionCallSetup,
+	FunctionInputField,
+	FunctionInputEnum,
+	FunctionInputString,
 	FunctionInputSetup,
 	FunctionSelect
 };

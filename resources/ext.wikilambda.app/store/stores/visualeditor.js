@@ -11,14 +11,16 @@ const { isValidZidFormat } = require( '../../utils/typeUtils.js' );
 
 module.exports = {
 	state: {
+		veEditing: false,
 		veFunctionId: null,
 		veFunctionParams: [],
+		veFunctionParamsValid: false,
 		suggestedFunctions: []
 	},
 
 	getters: {
 		/**
-		 * FIXME add doc and tests
+		 * Returns the current Visual Editor function ID.
 		 *
 		 * @param {Object} state
 		 * @return {string|null}
@@ -26,8 +28,9 @@ module.exports = {
 		getVEFunctionId: function ( state ) {
 			return state.veFunctionId;
 		},
+
 		/**
-		 * FIXME add doc and tests
+		 * Returns the current Visual Editor function parameters.
 		 *
 		 * @param {Object} state
 		 * @return {Array}
@@ -35,8 +38,19 @@ module.exports = {
 		getVEFunctionParams: function ( state ) {
 			return state.veFunctionParams;
 		},
+
 		/**
-		 * FIXME add doc and tests
+		 * Returns whether the Visual Editor is currently editing.
+		 *
+		 * @param {Object} state
+		 * @return {boolean}
+		 */
+		getVEEditing: function ( state ) {
+			return state.veEditing;
+		},
+
+		/**
+		 * Returns the list of suggested functions.
 		 *
 		 * @param {Object} state
 		 * @return {Array}
@@ -44,12 +58,13 @@ module.exports = {
 		getSuggestedFunctions: function ( state ) {
 			return state.suggestedFunctions;
 		},
+
 		/**
-		 * Returns whether the current wikitext function ID
-		 * is a known valid function ID.
+		 * Returns whether the current Visual Editor function ID
+		 * is valid and corresponds to a known function object.
 		 *
-		 * @param {Object} state
-		 * @return {boolean}
+		 * @param {Object} state - The state object.
+		 * @return {boolean} - True if the function ID is valid, otherwise false.
 		 */
 		validateVEFunctionId: function ( state ) {
 			// Return false if:
@@ -72,71 +87,96 @@ module.exports = {
 			const objectType = fetchedObject.data[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ];
 			return objectType === Constants.Z_FUNCTION;
 		},
+
 		/**
-		 * Returns whether the current wikitext function params
-		 * are valid with respect to the selected function signature
+		 * Returns whether the current Visual Editor function parameters
+		 * are valid based on the selected function signature.
 		 *
-		 * @param {Object} state
-		 * @return {boolean}
+		 * @param {Object} state - The state object.
+		 * @return {boolean} - True if the parameters are valid, otherwise false.
 		 */
-		validateVEFunctionParams: function () {
-			// TODO Validate input params
-			return true;
+		validateVEFunctionParams: function ( state ) {
+			return state.veFunctionParamsValid;
 		}
 	},
-
 	actions: {
 		/**
-		 * FIXME add doc and tests
+		 * Sets the Visual Editor function ID in the state.
 		 *
-		 * @param {string|null} functionId
+		 * @param {string|null} functionId - The function ID to set.
 		 */
 		setVEFunctionId: function ( functionId = null ) {
 			this.veFunctionId = functionId;
 		},
+
 		/**
-		 * FIXME add doc and tests
+		 * Sets the Visual Editor function parameters in the state.
 		 *
-		 * @param {Array} functionParams
+		 * @param {Array} functionParams - The function parameters to set.
 		 */
 		setVEFunctionParams: function ( functionParams = [] ) {
 			this.veFunctionParams = functionParams;
 		},
+
 		/**
-		 * FIXME add doc and tests
+		 * Sets a specific Visual Editor function parameter by index.
 		 *
-		 * @param {number} index
-		 * @param {string} param
+		 * @param {number} index - The index of the parameter to set.
+		 * @param {string} param - The parameter value to set.
 		 */
 		setVEFunctionParam: function ( index, param ) {
 			this.veFunctionParams[ index ] = param;
 		},
+
 		/**
-		 * FIXME add doc and tests
+		 * Sets the editing state of the Visual Editor.
 		 *
-		 * @param {Array} zids
+		 * @param {boolean} isEditing - True if editing, otherwise false.
 		 */
-		setSuggestedFunctions: function ( zids ) {
+		setVEEditing: function ( isEditing ) {
+			this.veEditing = isEditing;
+		},
+
+		/**
+		 * Sets the validity of the Visual Editor function parameters.
+		 *
+		 * @param {boolean} isValid - True if valid, otherwise false.
+		 */
+		setVEFunctionParamsValid: function ( isValid ) {
+			this.veFunctionParamsValid = isValid;
+		},
+
+		/**
+		 * Sets the list of suggested functions in the state.
+		 *
+		 * @param {Array} zids - Array of function ZIDs to set.
+		 */
+		setSuggestedFunctions: function ( zids = [] ) {
 			this.suggestedFunctions = zids;
 			// Fetch will only go through once
 			this.fetchZids( { zids } );
 		},
+
 		/**
-		 * FIXME add doc and tests
+		 * Initializes the Visual Editor function call editor with the given payload.
 		 *
-		 * @param {Object} payload
-		 * @param {string} payload.functionId
-		 * @param {Array} payload.functionParams
-		 * @param {Array} payload.suggestedFunctions
+		 * @param {Object} payload - The initialization payload.
+		 * @param {string} payload.functionId - The function ID to initialize with.
+		 * @param {Array} payload.functionParams - The function parameters to initialize with.
+		 * @param {Array} payload.suggestedFunctions - The suggested functions to initialize with.
+		 * @param {boolean} payload.isEditing - True if editing, otherwise false.
 		 */
 		initializeVEFunctionCallEditor: function ( payload = {} ) {
+			this.setVEEditing( payload.isEditing );
 			this.setVEFunctionId( payload.functionId );
 			this.setVEFunctionParams( payload.functionParams );
 			this.setSuggestedFunctions( payload.suggestedFunctions );
+
 			// Fetch selected function
 			if ( payload.functionId ) {
 				this.fetchZids( { zids: [ payload.functionId ] } );
 			}
 		}
+
 	}
 };

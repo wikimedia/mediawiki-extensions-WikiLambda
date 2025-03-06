@@ -567,8 +567,10 @@ class ClientHooks implements
 					'wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title',
 					'wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results',
 					'wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder',
+					'wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder',
 					'wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer',
 					'wikilambda-visualeditor-wikifunctionscall-error-bad-function',
+					'wikilambda-visualeditor-wikifunctionscall-error-enum',
 				]
 			];
 
