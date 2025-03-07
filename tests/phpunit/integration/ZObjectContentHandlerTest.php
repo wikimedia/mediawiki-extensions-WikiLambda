@@ -10,6 +10,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Content\Renderer\ContentParseParams;
+use MediaWiki\Content\TextContent;
 use MediaWiki\Content\Transform\PreSaveTransformParamsValue;
 use MediaWiki\Content\ValidationParams;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
@@ -355,6 +356,22 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 			[ 'Z111', 'Z881', 'Z3', 'Z6', 'Z1002', 'Z1004', 'Z46', 'Z64' ],
 			array_keys( $parserOutputLinks[0] ),
 			'Should have the expected 8 links in NS_MAIN'
+		);
+	}
+
+	public function testGetParserOutput_invalidContent() {
+		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+
+		$testTitle = Title::newFromText( ZTestType::TEST_ZID, NS_MAIN );
+
+		$content = new TextContent( 'hello' );
+
+		$cpoParamsWithHTML = new ContentParseParams( $testTitle, null, ParserOptions::newFromAnon(), true );
+		$parserOutputWithHTML = $handler->getParserOutput( $content, $cpoParamsWithHTML );
+
+		$this->assertStringContainsString(
+			'ext-wikilambda-view-invalidcontent', $parserOutputWithHTML->getRawText(),
+			'Should show the error content'
 		);
 	}
 
