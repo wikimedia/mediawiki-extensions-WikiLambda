@@ -12,5 +12,6 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "לא נמצאו תוצאות",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "פונקציות מוצעות",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "מחרוזת קלט",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|פונקציה]] מאתר ויקיפונקציות"
+	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|פונקציה]] מאתר ויקיפונקציות",
+	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "פונקציה חסרה או בלתי־תקינה."
 }

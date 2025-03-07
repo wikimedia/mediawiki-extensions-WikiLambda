@@ -20,6 +20,7 @@
 	"wikilambda-function-definition-add-other-label-languages-title": "Lasseet kielâ",
 	"wikilambda-function-definition-description-label": "Kuvvim",
 	"wikilambda-function-implementation-language-label": "Kielâ",
+	"wikilambda-function-implementation-select-label": "Valjii",
 	"wikilambda-functioncall-metadata-programming-language": "Ohjelmistemkielâ",
 	"wikilambda-functioncall-metadata-programming-language-version": "Versio",
 	"wikilambda-languagelabel": "Kielâ",
@@ -30,5 +31,6 @@
 	"wikilambda-renderer-api-error": "Miinii moonâi endurân. Keččâl uđđâsist.",
 	"wikilambda-savechanges": "Vuorkkii nubástusâid",
 	"wikilambda-savenew": "Vuorkkii",
-	"wikilambda-special-listduplicateobjectlabels-language": "Kielâ"
+	"wikilambda-special-listduplicateobjectlabels-language": "Kielâ",
+	"wikilambda-zobject-to-string-select-object": "Valjii $1"
 }
