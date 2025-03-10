@@ -1507,12 +1507,6 @@ class ZObjectStore {
 			'ot.wlzo_key' => 'Z4K5'
 		];
 
-		// Inner Join with subquery that only includes running functions
-		$runningFunctionConditions = [
-			'f.wlzo_main_zid = imp.wlzo_main_zid',
-			'imp.wlzo_key' => 'Z8K4'
-		];
-
 		// Left Join with subquery that finds types with enums
 		$enumsQueryBuilder = $dbr->newSelectQueryBuilder()
 			->select( 'wlzo_main_type' )
@@ -1523,6 +1517,14 @@ class ZObjectStore {
 			'f.wlzo_related_zobject = ite.wlzo_main_type',
 			'f.wlzo_key' => 'Z8K1'
 		];
+
+		// Unique implementation table subquery to only include running functions
+		$runningFunctionQueryBuilder = $dbr->newSelectQueryBuilder()
+			->select( 'wlzo_main_zid' )
+			->distinct()
+			->from( 'wikilambda_zobject_join' )
+			->where( [ 'wlzo_key' => 'Z8K4' ] );
+		$runningFunctionConditions = [ 'f.wlzo_main_zid = imp.wlzo_main_zid' ];
 
 		// Build main query
 		$renderableIOQuery = $dbr->newSelectQueryBuilder()
@@ -1539,7 +1541,7 @@ class ZObjectStore {
 			->leftJoin( 'wikilambda_zobject_join', 'it', $inputParserConditions )
 			->leftJoin( 'wikilambda_zobject_join', 'ot', $outputRendererConditions )
 			->leftJoin( $enumsQueryBuilder, 'ite', $inputEnumConditions )
-			->join( 'wikilambda_zobject_join', 'imp', $runningFunctionConditions );
+			->join( $runningFunctionQueryBuilder, 'imp', $runningFunctionConditions );
 
 		return $renderableIOQuery;
 	}
