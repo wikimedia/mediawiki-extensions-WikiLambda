@@ -152,7 +152,7 @@ class FunctionCallHandler extends SimpleHandler {
 			);
 			$this->dieRESTfullyWithZError(
 				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_UNKNOWN, [ "data" => $target ]
+					ZErrorTypeRegistry::Z_ERROR_UNKNOWN, [ "message" => $target ]
 				),
 				400,
 				[ "target" => $target ]
@@ -304,7 +304,7 @@ class FunctionCallHandler extends SimpleHandler {
 			$argumentsForCall[$argumentKey] = ( new ZFunctionCall( new ZReference( $typeParser ), [
 				$typeParser . "K1" => $providedArgument,
 				$typeParser . "K2" => $parseLanguageZid
-			] ) )->getSerialized();
+			] ) );
 		}
 
 		// 3. Set up the final, full call with all the above sub-calls embedded
@@ -337,11 +337,31 @@ class FunctionCallHandler extends SimpleHandler {
 			// Type is generic and we hope for the best (Z1)
 			$targetReturnType !== ZTypeRegistry::Z_OBJECT
 		) {
-			$targetReturnTypeObjectArray = $this->zObjectStore
+			$targetReturnTypeObject = $this->zObjectStore
 				->fetchZObjectByTitle( Title::newFromText( $targetReturnType, NS_MAIN ) )
-				->getZValue();
+				->getInnerZObject();
 
-			$rendererFunction = $targetReturnTypeObjectArray[ZTypeRegistry::Z_TYPE_RENDERER];
+			if ( !( $targetReturnTypeObject instanceof ZType ) ) {
+				// It's somehow not to a Type. This is an error in the content.
+				// Mostly this is here to make phan happy.
+				$this->logger->error(
+					__METHOD__ . ' called on {target} which has a non-Type output, {targetReturnType}',
+					[
+						'target' => $target,
+						'targetReturnType' => $targetReturnType
+					]
+				);
+				$this->dieRESTfullyWithZError(
+					ZErrorFactory::createZErrorInstance(
+						ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ "data" => $targetReturnType ]
+					),
+					400,
+					[ "target" => $target ]
+				);
+			}
+
+			$rendererFunction = $targetReturnTypeObject->getRendererFunction();
+
 			if ( $rendererFunction === false ) {
 				// User is trying to use a ZFunction that returns something which doesn't have a renderer
 				$this->logger->info(
@@ -361,9 +381,9 @@ class FunctionCallHandler extends SimpleHandler {
 			}
 
 			// At this point, we know that we must render, so wrap the function call in that
-			$call = new ZFunctionCall( new ZReference( $rendererFunction ), [
-				$typeParser . "K1" => $callObject,
-				$typeParser . "K2" => $renderLanguageZid
+			$callObject = new ZFunctionCall( new ZReference( $rendererFunction ), [
+				$rendererFunction . "K1" => $callObject,
+				$rendererFunction . "K2" => $renderLanguageZid
 			] );
 		}
 
@@ -382,9 +402,29 @@ class FunctionCallHandler extends SimpleHandler {
 				]
 			);
 			$this->dieRESTfullyWithZError(
-				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_EVALUATION, [ "data" => $error ] ),
+				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_EVALUATION, [
+					"functionCall" => $call,
+					"error" => $error->getZError(),
+				] ),
 				// This is an HTTP 500 because it's an error when calling our "local" API, which is probably our fault
 				500,
+				[ "data" => $error ]
+			);
+		} catch ( ZErrorException $error ) {
+			$this->logger->error(
+				__METHOD__ . ' called on {target} but got a ZErrorException, {error}',
+				[
+					'target' => $target,
+					'error' => $error->getMessage()
+				]
+			);
+			$this->dieRESTfullyWithZError(
+				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_EVALUATION, [
+					"functionCall" => $call,
+					"error" => $error->getZError(),
+				] ),
+				// This is an HTTP 400 because it's an error in the evaluation, probably due to a bad request
+				400,
 				[ "data" => $error ]
 			);
 		}
@@ -565,6 +605,7 @@ class FunctionCallHandler extends SimpleHandler {
 	 *
 	 * @return stdClass Currently the only permissable response objects are strings
 	 * @throws ZErrorException When the request is responded to oddly by the orchestrator
+	 * @throws WikifunctionCallException When the request is responded to oddly by the orchestrator
 	 */
 	private function makeRequest( $call, $renderLanguageCode ): stdClass {
 		// TODO (T338251): Can we do an Orchestrator call directly here using WikiLambdaApiBase::executeFunctionCall()
@@ -633,14 +674,7 @@ class FunctionCallHandler extends SimpleHandler {
 			}
 			$this->logger->debug(
 				__METHOD__ . ' got an error-ful Z22 back from the server: {error}',
-				[
-					'error' => $zerror->getSerialized()
-				]
-			);
-			$this->dieRESTfullyWithZError(
-				$zerror,
-				400,
-				[ "target" => $call ]
+				[ 'error' => $zerror->getSerialized() ]
 			);
 		}
 
