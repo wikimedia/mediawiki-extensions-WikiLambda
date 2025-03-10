@@ -10,6 +10,7 @@
 const { createPinia, setActivePinia } = require( 'pinia' );
 const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+const LabelData = require( '../../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' );
 
 const lexemeData = {
 	title: 'Lexeme:L333333',
@@ -90,6 +91,100 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 				const lexemeFormId = 'L333333-F5';
 				const expected = lexemeData.forms[ 0 ];
 				expect( store.getLexemeFormData( lexemeFormId ) ).toEqual( expected );
+			} );
+		} );
+
+		describe( 'getLexemeId', () => {
+			it( 'returns null when row is undefined', () => {
+				const rowId = undefined;
+				const expected = null;
+				expect( store.getLexemeId( rowId ) ).toEqual( expected );
+			} );
+
+			it( 'returns null when row is not found', () => {
+				const rowId = 100;
+				const expected = null;
+				expect( store.getLexemeId( rowId ) ).toEqual( expected );
+			} );
+
+			it( 'returns lexeme ID when row is found', () => {
+				const rowId = 1;
+				const expected = 'L333333';
+				Object.defineProperty( store, 'getLexemeIdRow', {
+					value: jest.fn().mockReturnValue( 3 )
+				} );
+				Object.defineProperty( store, 'getZStringTerminalValue', {
+					value: jest.fn().mockReturnValue( expected )
+				} );
+
+				expect( store.getLexemeId( rowId ) ).toEqual( expected );
+			} );
+		} );
+
+		describe( 'getLexemeFormId', () => {
+			it( 'returns null when row is undefined', () => {
+				const rowId = undefined;
+				const expected = null;
+				expect( store.getLexemeFormId( rowId ) ).toEqual( expected );
+			} );
+
+			it( 'returns null when row is not found', () => {
+				const rowId = 100;
+				const expected = null;
+				expect( store.getLexemeFormId( rowId ) ).toEqual( expected );
+			} );
+
+			it( 'returns lexeme form ID when row is found', () => {
+				const rowId = 1;
+				const expected = 'L333333-F5';
+				Object.defineProperty( store, 'getLexemeFormIdRow', {
+					value: jest.fn().mockReturnValue( 4 )
+				} );
+				Object.defineProperty( store, 'getZStringTerminalValue', {
+					value: jest.fn().mockReturnValue( expected )
+				} );
+
+				expect( store.getLexemeFormId( rowId ) ).toEqual( expected );
+			} );
+		} );
+
+		describe( 'getLexemeLabelData', () => {
+			it( 'returns undefined when lexeme ID is undefined', () => {
+				const expected = undefined;
+				expect( store.getLexemeLabelData( undefined ) ).toEqual( expected );
+			} );
+
+			it( 'returns lexeme ID as label when lexeme data is not available', () => {
+				const lexemeId = 'L333333';
+				const expected = new LabelData( lexemeId, lexemeId, null );
+				expect( store.getLexemeLabelData( lexemeId ) ).toEqual( expected );
+			} );
+
+			it( 'returns lexeme label data when lexeme data is available', () => {
+				const lexemeId = 'L333333';
+				store.lexemes[ lexemeId ] = lexemeData;
+				const expected = new LabelData( lexemeId, 'turtle', null, 'en' );
+				expect( store.getLexemeLabelData( lexemeId ) ).toEqual( expected );
+			} );
+		} );
+
+		describe( 'getLexemeFormLabelData', () => {
+			it( 'returns undefined when lexeme form ID is undefined', () => {
+				const expected = undefined;
+				expect( store.getLexemeFormLabelData( undefined ) ).toEqual( expected );
+			} );
+
+			it( 'returns lexeme form ID as label when lexeme form data is not available', () => {
+				const lexemeFormId = 'L333333-F5';
+				const expected = new LabelData( lexemeFormId, lexemeFormId, null );
+				expect( store.getLexemeFormLabelData( lexemeFormId ) ).toEqual( expected );
+			} );
+
+			it( 'returns lexeme form label data when lexeme form data is available', () => {
+				const lexemeFormId = 'L333333-F5';
+				store.lexemes.L333333 = lexemeData;
+				const expected = new LabelData( lexemeFormId, 'turtled', null, 'en' );
+				expect( store.getLexemeFormLabelData( lexemeFormId ) ).toEqual( expected );
 			} );
 		} );
 	} );
@@ -197,6 +292,33 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 
 				expect( fetchMock ).toHaveBeenCalledWith( expectedUrl );
 				expect( store.items ).toEqual( { L111111: 'has data' } );
+				expect( store.items ).toEqual( { L111111: 'has data' } );
+			} );
+
+			it( 'stores the resolving promise for fetching lexemes', async () => {
+				const lexemes = [ 'L333333', 'L444444' ];
+				const promise = store.fetchLexemes( { ids: lexemes } );
+
+				expect( store.lexemes.L333333 ).toBe( promise );
+				expect( store.lexemes.L444444 ).toBe( promise );
+
+				await promise;
+			} );
+
+			it( 'removes lexeme IDs from state when fetch fails', async () => {
+				store.lexemes = {
+					L111111: 'has data'
+				};
+				const lexemes = [ 'L333333', 'L444444' ];
+
+				fetchMock = jest.fn().mockRejectedValue( 'some error' );
+				store.setLexemeData = jest.fn();
+				// eslint-disable-next-line n/no-unsupported-features/node-builtins
+				global.fetch = fetchMock;
+
+				await store.fetchLexemes( { ids: lexemes } );
+
+				expect( store.lexemes ).toEqual( { L111111: 'has data' } );
 			} );
 		} );
 	} );

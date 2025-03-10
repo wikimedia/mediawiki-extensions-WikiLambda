@@ -12,12 +12,6 @@ const { shallowMount } = require( '@vue/test-utils' ),
 	useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' ),
 	WikidataProperty = require( '../../../../../resources/ext.wikilambda.app/components/default-view-types/wikidata/Property.vue' );
 
-const dataIcons = () => ( {
-	icons: {
-		cdxIconLogoWikidata: 'wikidata',
-		cdxIconLinkExternal: 'link'
-	}
-} );
 const propertyId = 'P642';
 const propertyLabel = 'of';
 const propertyData = {
@@ -34,6 +28,7 @@ describe( 'WikidataProperty', () => {
 		store = useMainStore();
 		store.getPropertyData = createGettersWithFunctionsMock();
 		store.getPropertyIdRow = createGettersWithFunctionsMock( { id: 1 } );
+		store.getPropertyId = createGettersWithFunctionsMock( propertyId );
 		store.getZStringTerminalValue = createGettersWithFunctionsMock( propertyId );
 		store.getUserLangCode = 'en';
 	} );
@@ -44,8 +39,7 @@ describe( 'WikidataProperty', () => {
 				props: {
 					edit: false,
 					type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY
-				},
-				data: dataIcons
+				}
 			} );
 			expect( wrapper.find( '.ext-wikilambda-app-wikidata-property' ).exists() ).toBe( true );
 		} );
@@ -55,8 +49,7 @@ describe( 'WikidataProperty', () => {
 				props: {
 					edit: false,
 					type: Constants.Z_FUNCTION_CALL
-				},
-				data: dataIcons
+				}
 			} );
 			expect( wrapper.find( '.ext-wikilambda-app-wikidata-property' ).exists() ).toBe( true );
 		} );
@@ -68,8 +61,7 @@ describe( 'WikidataProperty', () => {
 				props: {
 					edit: false,
 					type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY
-				},
-				data: dataIcons
+				}
 			} );
 			const link = wrapper.find( '.ext-wikilambda-app-wikidata-property__link' );
 			expect( link.exists() ).toBe( true );
@@ -82,8 +74,7 @@ describe( 'WikidataProperty', () => {
 				props: {
 					edit: false,
 					type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY
-				},
-				data: dataIcons
+				}
 			} );
 			const link = wrapper.find( '.ext-wikilambda-app-wikidata-property__link' );
 			expect( link.exists() ).toBe( true );
@@ -98,8 +89,7 @@ describe( 'WikidataProperty', () => {
 				props: {
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY
-				},
-				data: dataIcons
+				}
 			} );
 			expect( wrapper.find( '.ext-wikilambda-app-wikidata-property' ).exists() ).toBe( true );
 		} );
@@ -111,8 +101,7 @@ describe( 'WikidataProperty', () => {
 				props: {
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY
-				},
-				data: dataIcons
+				}
 			} );
 			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
 			expect( lookup.exists() ).toBe( true );
@@ -123,8 +112,7 @@ describe( 'WikidataProperty', () => {
 				props: {
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY
-				},
-				data: dataIcons
+				}
 			} );
 			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
 			expect( lookup.exists() ).toBe( true );
@@ -137,8 +125,7 @@ describe( 'WikidataProperty', () => {
 				props: {
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY
-				},
-				data: dataIcons
+				}
 			} );
 			await wrapper.vm.$nextTick();
 
@@ -154,8 +141,7 @@ describe( 'WikidataProperty', () => {
 				props: {
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY
-				},
-				data: dataIcons
+				}
 			} );
 
 			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
@@ -176,8 +162,7 @@ describe( 'WikidataProperty', () => {
 				props: {
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY
-				},
-				data: dataIcons
+				}
 			} );
 
 			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
@@ -198,8 +183,7 @@ describe( 'WikidataProperty', () => {
 				props: {
 					edit: true,
 					type: Constants.Z_FUNCTION_CALL
-				},
-				data: dataIcons
+				}
 			} );
 
 			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );

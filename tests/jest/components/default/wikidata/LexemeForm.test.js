@@ -13,12 +13,6 @@ const WikidataLexemeForm = require( '../../../../../resources/ext.wikilambda.app
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 const { createGettersWithFunctionsMock } = require( '../../../helpers/getterHelpers.js' );
 
-const dataIcons = () => ( {
-	icons: {
-		cdxIconLogoWikidata: 'wikidata',
-		cdxIconLinkExternal: 'link'
-	}
-} );
 const lexemeFormId = 'L333333-F5';
 const lexemeFormLabel = 'turtled';
 const [ lexemeId, formId ] = lexemeFormId.split( '-' );
@@ -37,6 +31,7 @@ describe( 'WikidataLexemeForm', () => {
 		store = useMainStore();
 		store.getLexemeFormData = createGettersWithFunctionsMock();
 		store.getLexemeFormIdRow = createGettersWithFunctionsMock( { id: 1 } );
+		store.getLexemeFormId = createGettersWithFunctionsMock( lexemeFormId );
 		store.getZStringTerminalValue = createGettersWithFunctionsMock( lexemeFormId );
 		store.getUserLangCode = 'en';
 	} );
@@ -47,8 +42,7 @@ describe( 'WikidataLexemeForm', () => {
 				props: {
 					edit: false,
 					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM
-				},
-				data: dataIcons
+				}
 			} );
 			expect( wrapper.find( '.ext-wikilambda-app-wikidata-lexeme-form' ).exists() ).toBe( true );
 		} );
@@ -58,8 +52,7 @@ describe( 'WikidataLexemeForm', () => {
 				props: {
 					edit: false,
 					type: Constants.Z_FUNCTION_CALL
-				},
-				data: dataIcons
+				}
 			} );
 			expect( wrapper.find( '.ext-wikilambda-app-wikidata-lexeme-form' ).exists() ).toBe( true );
 		} );
@@ -71,8 +64,7 @@ describe( 'WikidataLexemeForm', () => {
 				props: {
 					edit: false,
 					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM
-				},
-				data: dataIcons
+				}
 			} );
 			const link = wrapper.find( '.ext-wikilambda-app-wikidata-lexeme-form__link' );
 			expect( link.exists() ).toBe( true );
@@ -85,8 +77,7 @@ describe( 'WikidataLexemeForm', () => {
 				props: {
 					edit: false,
 					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM
-				},
-				data: dataIcons
+				}
 			} );
 			const link = wrapper.find( '.ext-wikilambda-app-wikidata-lexeme-form__link' );
 			expect( link.exists() ).toBe( true );
@@ -101,8 +92,7 @@ describe( 'WikidataLexemeForm', () => {
 				props: {
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM
-				},
-				data: dataIcons
+				}
 			} );
 			expect( wrapper.find( '.ext-wikilambda-app-wikidata-lexeme-form' ).exists() ).toBe( true );
 		} );
@@ -112,8 +102,7 @@ describe( 'WikidataLexemeForm', () => {
 				props: {
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM
-				},
-				data: dataIcons
+				}
 			} );
 			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
 			expect( lookup.exists() ).toBe( true );
@@ -124,8 +113,7 @@ describe( 'WikidataLexemeForm', () => {
 				props: {
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM
-				},
-				data: dataIcons
+				}
 			} );
 			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
 			expect( lookup.exists() ).toBe( true );
@@ -138,8 +126,7 @@ describe( 'WikidataLexemeForm', () => {
 				props: {
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM
-				},
-				data: dataIcons
+				}
 			} );
 			await wrapper.vm.$nextTick();
 
@@ -155,8 +142,7 @@ describe( 'WikidataLexemeForm', () => {
 				props: {
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM
-				},
-				data: dataIcons
+				}
 			} );
 
 			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
@@ -177,8 +163,7 @@ describe( 'WikidataLexemeForm', () => {
 				props: {
 					edit: true,
 					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM
-				},
-				data: dataIcons
+				}
 			} );
 
 			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
@@ -199,8 +184,7 @@ describe( 'WikidataLexemeForm', () => {
 				props: {
 					edit: true,
 					type: Constants.Z_FUNCTION_CALL
-				},
-				data: dataIcons
+				}
 			} );
 
 			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );

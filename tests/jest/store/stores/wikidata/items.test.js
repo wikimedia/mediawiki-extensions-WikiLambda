@@ -10,6 +10,7 @@
 const { createPinia, setActivePinia } = require( 'pinia' );
 const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+const LabelData = require( '../../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' );
 
 const itemId = 'Q223044';
 const itemData = {
@@ -36,6 +37,50 @@ describe( 'Wikidata Items Pinia store', () => {
 				} );
 				store.getItemIdRow( 10 );
 				expect( store.getWikidataEntityIdRow ).toHaveBeenCalledWith( 10, Constants.Z_WIKIDATA_ITEM );
+			} );
+		} );
+
+		describe( 'getItemId', () => {
+			it( 'returns null when row is undefined', () => {
+				const rowId = undefined;
+				const expected = null;
+				expect( store.getItemId( rowId ) ).toEqual( expected );
+			} );
+
+			it( 'returns null when row is not found', () => {
+				const rowId = 100;
+				const expected = null;
+				expect( store.getItemId( rowId ) ).toEqual( expected );
+			} );
+
+			it( 'returns item ID when row is found', () => {
+				const rowId = 1;
+				const expected = 'Q223044';
+				Object.defineProperty( store, 'getItemIdRow', {
+					value: jest.fn().mockReturnValue( 2 )
+				} );
+				Object.defineProperty( store, 'getZStringTerminalValue', {
+					value: jest.fn().mockReturnValue( expected )
+				} );
+				expect( store.getItemId( rowId ) ).toEqual( expected );
+			} );
+		} );
+
+		describe( 'getItemLabelData', () => {
+			it( 'returns undefined when item ID is undefined', () => {
+				const expected = undefined;
+				expect( store.getItemLabelData( undefined ) ).toEqual( expected );
+			} );
+
+			it( 'returns item ID as label when item data is not available', () => {
+				const expected = new LabelData( itemId, itemId, null );
+				expect( store.getItemLabelData( itemId ) ).toEqual( expected );
+			} );
+
+			it( 'returns item label data when item data is available', () => {
+				store.items[ itemId ] = itemData;
+				const expected = new LabelData( itemId, 'turtle', null, 'en' );
+				expect( store.getItemLabelData( itemId ) ).toEqual( expected );
 			} );
 		} );
 
@@ -164,6 +209,32 @@ describe( 'Wikidata Items Pinia store', () => {
 				await store.fetchItems( { ids: items } );
 
 				expect( fetchMock ).toHaveBeenCalledWith( expectedUrl );
+				expect( store.items ).toEqual( { Q111111: 'has data' } );
+			} );
+
+			it( 'stores the resolving promise for fetching items', async () => {
+				const items = [ 'Q333333', 'Q444444' ];
+				const promise = store.fetchItems( { ids: items } );
+
+				expect( store.items.Q333333 ).toBe( promise );
+				expect( store.items.Q444444 ).toBe( promise );
+
+				await promise;
+			} );
+
+			it( 'removes item IDs from state when fetch fails', async () => {
+				store.items = {
+					Q111111: 'has data'
+				};
+				const items = [ 'Q333333', 'Q444444' ];
+
+				fetchMock = jest.fn().mockRejectedValue( 'some error' );
+				store.setItemData = jest.fn();
+				// eslint-disable-next-line n/no-unsupported-features/node-builtins
+				global.fetch = fetchMock;
+
+				await store.fetchItems( { ids: items } );
+
 				expect( store.items ).toEqual( { Q111111: 'has data' } );
 			} );
 		} );

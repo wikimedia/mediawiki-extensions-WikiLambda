@@ -17,12 +17,18 @@
 				:dir="labelData.langDir"
 				@click="expand"
 			>{{ labelData.label }}</a>
-			<a
-				v-else
-				:href="link"
-				:lang="labelData.langCode"
-				:dir="labelData.langDir"
-			>{{ labelData.label }}</a>
+			<span v-else class="ext-wikilambda-app-object-to-string__icon-label">
+				<cdx-icon
+					v-if="icon"
+					:icon="icon"
+					class="ext-wikilambda-app-object-to-string__icon"
+					:icon-label="labelData.label"></cdx-icon><!--
+			--><a
+					v-tooltip:top="isWikidataType ? labelData.zid : undefined"
+					:href="link"
+					:lang="labelData.langCode"
+					:dir="labelData.langDir">{{ labelData.label }}</a>
+			</span>
 		</div
 		><span
 			v-if="hasChildren"
@@ -67,7 +73,7 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
-const { CdxIcon } = require( '../../../codex.js' );
+const { CdxIcon, CdxTooltip } = require( '../../../codex.js' );
 
 const Constants = require( '../../Constants.js' );
 const LabelData = require( '../../store/classes/LabelData.js' );
@@ -76,6 +82,8 @@ const errorUtils = require( '../../mixins/errorUtils.js' );
 const { hybridToCanonical } = require( '../../mixins/schemata.js' ).methods;
 const useMainStore = require( '../../store/index.js' );
 const icons = require( '../../../lib/icons.json' );
+const wikidataIconSvg = require( './wikidata/wikidataIconSvg.js' );
+const wikidataMixin = require( '../../mixins/wikidataMixin.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-object-to-string',
@@ -83,7 +91,10 @@ module.exports = exports = defineComponent( {
 		'cdx-icon': CdxIcon,
 		'wl-z-object-to-string': this
 	},
-	mixins: [ typeUtils, errorUtils ],
+	directives: {
+		tooltip: CdxTooltip
+	},
+	mixins: [ typeUtils, errorUtils, wikidataMixin ],
 	props: {
 		rowId: {
 			type: Number,
@@ -113,7 +124,8 @@ module.exports = exports = defineComponent( {
 			'getUserLangCode',
 			'getUserLangZid',
 			'getRendererZid',
-			'getZObjectAsJsonById'
+			'getZObjectAsJsonById',
+			'isWikidataEntity'
 		] ),
 		{
 			/**
@@ -181,7 +193,44 @@ module.exports = exports = defineComponent( {
 			 * @return {LabelData}
 			 */
 			labelData: function () {
-				return this.isBlank ? LabelData.fromString( this.placeholder ) : this.getLabelData( this.value );
+				if ( this.isBlank ) {
+					return LabelData.fromString( this.placeholder );
+				}
+				if ( this.isWikidataType ) {
+					return this.wikidataLabelData;
+				}
+				return this.getLabelData( this.value );
+			},
+
+			/**
+			 * Returns whether the object is a Wikidata entity.
+			 *
+			 * @return {boolean}
+			 */
+			isWikidataType: function () {
+				return this.isWikidataEntity( this.rowId );
+			},
+
+			/**
+			 * Returns the Wikidata mapping for the entity represented
+			 * in this component.
+			 *
+			 * @return {Object}
+			 */
+			wikidataMapping: function () {
+				return this.getWikidataMapping( this.value, this.rowId );
+			},
+
+			/**
+			 * Returns the label data for the Wikidata entity represented
+			 * in this component.
+			 *
+			 * @return {LabelData}
+			 */
+			wikidataLabelData: function () {
+				return this.wikidataMapping && this.wikidataMapping.labelData ?
+					this.wikidataMapping.labelData :
+					this.getLabelData( this.value );
 			},
 
 			/**
@@ -190,7 +239,13 @@ module.exports = exports = defineComponent( {
 			 * @return {string}
 			 */
 			link: function () {
-				return this.hasLink && !this.isBlank ? `/view/${ this.getUserLangCode }/${ this.value }` : '';
+				if ( !this.hasLink || this.isBlank ) {
+					return '';
+				}
+				if ( this.isWikidataType ) {
+					return this.wikidataMapping ? this.wikidataMapping.url : '';
+				}
+				return `/view/${ this.getUserLangCode }/${ this.value }`;
 			},
 
 			/**
@@ -252,7 +307,13 @@ module.exports = exports = defineComponent( {
 			 * @return {string|undefined}
 			 */
 			icon: function () {
-				return this.type === Constants.Z_ARGUMENT_REFERENCE ? icons.cdxIconFunctionArgument : undefined;
+				if ( this.isWikidataType ) {
+					return wikidataIconSvg;
+				}
+				if ( this.type === Constants.Z_ARGUMENT_REFERENCE ) {
+					return icons.cdxIconFunctionArgument;
+				}
+				return undefined;
 			},
 
 			/**
@@ -266,7 +327,9 @@ module.exports = exports = defineComponent( {
 					this.type === Constants.Z_REFERENCE ||
 					this.type === Constants.Z_STRING ||
 					// If the zobject has a renderer and no error, it's terminal
-					( this.rendererZid && !this.rendererError )
+					( this.rendererZid && !this.rendererError ) ||
+					// If the zobject is a wikidata entity, it's terminal
+					this.isWikidataType
 				);
 			},
 
@@ -340,7 +403,9 @@ module.exports = exports = defineComponent( {
 		},
 
 		/**
-		 * Generates the rendered value of a type with renderer and
+		 * Trigger the call to the Renderer function for this type
+		 * passing the current object values, and set the returned string
+		 * in the local renderedValue variable.
 		 */
 		generateRenderedValue: function () {
 			// Only generate rendered value once.
@@ -370,6 +435,15 @@ module.exports = exports = defineComponent( {
 			} ).finally( () => {
 				this.rendererRunning = false;
 			} );
+		},
+
+		/**
+		 * Fetch the Wikidata entity data depending on the type of the entity
+		 *
+		 * @return {Promise | undefined}
+		 */
+		fetchWikidataEntity: function () {
+			return this.wikidataMapping ? this.wikidataMapping.fetch() : undefined;
 		}
 	} ),
 	watch: {
@@ -384,6 +458,9 @@ module.exports = exports = defineComponent( {
 	},
 	mounted: function () {
 		this.generateRenderedValue();
+		if ( this.isWikidataType ) {
+			this.fetchWikidataEntity();
+		}
 	}
 } );
 </script>
@@ -423,7 +500,8 @@ module.exports = exports = defineComponent( {
 		white-space: nowrap;
 		display: inline;
 
-		> span {
+		> span,
+		> a {
 			white-space: pre-wrap;
 		}
 	}

@@ -5,7 +5,9 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-app-wikidata-property" data-testid="wikidata-property">
+	<div
+		class="ext-wikilambda-app-wikidata-property"
+		data-testid="wikidata-property">
 		<div v-if="!edit" class="ext-wikilambda-app-wikidata-property__read">
 			<cdx-icon
 				:icon="wikidataIcon"
@@ -20,26 +22,24 @@
 				target="_blank"
 			>{{ propertyLabelData.label }}</a>
 		</div>
-		<div v-else>
-			<wl-wikidata-entity-selector
-				:entity-id="propertyId"
-				:entity-label="propertyLabel"
-				:icon="wikidataIcon"
-				:type="propertyType"
-				@select-wikidata-entity="onSelect"
-			></wl-wikidata-entity-selector>
-		</div>
+		<wl-wikidata-entity-selector
+			v-else
+			:entity-id="propertyId"
+			:entity-label="propertyLabel"
+			:type="propertyType"
+			@select-wikidata-entity="onSelect"
+		></wl-wikidata-entity-selector>
 	</div>
 </template>
 
 <script>
 const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
-const { CdxIcon } = require( '../../../../codex.js' );
 const Constants = require( '../../../Constants.js' );
 const useMainStore = require( '../../../store/index.js' );
 const LabelData = require( '../../../store/classes/LabelData.js' );
 const WikidataEntitySelector = require( './EntitySelector.vue' );
+const { CdxIcon } = require( '../../../../codex.js' );
 const wikidataIconSvg = require( './wikidataIconSvg.js' );
 
 module.exports = exports = defineComponent( {
@@ -71,19 +71,10 @@ module.exports = exports = defineComponent( {
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
 		'getPropertyData',
-		'getPropertyIdRow',
+		'getPropertyId',
 		'getUserLangCode',
-		'getZStringTerminalValue'
+		'getPropertyUrl'
 	] ), {
-		/**
-		 * Returns the row where the Wikidata Property string Id value is.
-		 * If the value is unset or unfound, returns undefined.
-		 *
-		 * @return {Object|undefined}
-		 */
-		propertyIdRow: function () {
-			return this.getPropertyIdRow( this.rowId );
-		},
 		/**
 		 * Returns the Wikidata Property Id string value, if any Property is selected.
 		 * Else returns null.
@@ -91,9 +82,7 @@ module.exports = exports = defineComponent( {
 		 * @return {string|null}
 		 */
 		propertyId: function () {
-			return this.propertyIdRow ?
-				this.getZStringTerminalValue( this.propertyIdRow.id ) || null :
-				null;
+			return this.getPropertyId( this.rowId );
 		},
 		/**
 		 * Returns the Wikidata Property data object, if any Property is selected.
@@ -110,9 +99,7 @@ module.exports = exports = defineComponent( {
 		 * @return {string|undefined}
 		 */
 		propertyUrl: function () {
-			return this.propertyId ?
-				`${ Constants.WIKIDATA_BASE_URL }/wiki/Property:${ this.propertyId }` :
-				undefined;
+			return this.getPropertyUrl( this.propertyId );
 		},
 		/**
 		 * Returns the LabelData object built from the available
@@ -212,11 +199,6 @@ module.exports = exports = defineComponent( {
 		box-sizing: border-box;
 		/* We calculate dynamically a different padding for each font size setting */
 		padding-top: calc( calc( @min-size-interactive-pointer - var( --line-height-current ) ) / 2 );
-	}
-
-	.ext-wikilambda-app-wikidata-property__notation {
-		margin-left: @spacing-25;
-		color: @color-subtle;
 	}
 
 	.ext-wikilambda-app-wikidata-property__link {

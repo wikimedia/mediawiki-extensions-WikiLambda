@@ -178,6 +178,65 @@ describe( 'ZObjectToString', () => {
 			} );
 		} );
 
+		describe( 'for a Wikidata entity', () => {
+			beforeEach( () => {
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z7' );
+				store.getZFunctionCallFunctionId = createGettersWithFunctionsMock( 'Z6825' );
+			} );
+
+			it( 'renders without errors', () => {
+				const wrapper = mount( ZObjectToString );
+				expect( wrapper.find( 'div[data-testid=object-to-string-link]' ).exists() ).toBe( true );
+				expect( wrapper.find( 'div[data-testid=object-to-string-text]' ).exists() ).toBe( false );
+			} );
+
+			it( 'renders the link to Wikidata Item', () => {
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z6091' );
+				store.getItemId = createGettersWithFunctionsMock( 'Q42' );
+
+				const wrapper = mount( ZObjectToString );
+				const linkWrapper = wrapper.find( 'div[data-testid=object-to-string-link]' );
+				const referenceLink = linkWrapper.get( 'a' );
+				expect( referenceLink.attributes().href ).toBe( 'https://www.wikidata.org/wiki/Q42' );
+				expect( referenceLink.text() ).toBe( 'Q42' );
+			} );
+
+			it( 'renders the link to Wikidata Lexeme', () => {
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z7' );
+				store.getZFunctionCallFunctionId = createGettersWithFunctionsMock( 'Z6825' );
+				store.getLexemeId = createGettersWithFunctionsMock( 'L42' );
+
+				const wrapper = mount( ZObjectToString );
+				const linkWrapper = wrapper.find( 'div[data-testid=object-to-string-link]' );
+				const referenceLink = linkWrapper.get( 'a' );
+				expect( referenceLink.attributes().href ).toBe( 'https://www.wikidata.org/wiki/Lexeme:L42' );
+				expect( referenceLink.text() ).toBe( 'L42' );
+			} );
+
+			it( 'renders the link to Wikidata Lexeme Form', () => {
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z6094' );
+				store.getLexemeFormId = createGettersWithFunctionsMock( 'L42-S1' );
+
+				const wrapper = mount( ZObjectToString );
+				const linkWrapper = wrapper.find( 'div[data-testid=object-to-string-link]' );
+				const referenceLink = linkWrapper.get( 'a' );
+				expect( referenceLink.attributes().href ).toBe( 'https://www.wikidata.org/wiki/Lexeme:L42#S1' );
+				expect( referenceLink.text() ).toBe( 'L42-S1' );
+			} );
+
+			it( 'renders the link to Wikidata Property', () => {
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z7' );
+				store.getZFunctionCallFunctionId = createGettersWithFunctionsMock( 'Z6822' );
+				store.getPropertyId = createGettersWithFunctionsMock( 'P42' );
+
+				const wrapper = mount( ZObjectToString );
+				const linkWrapper = wrapper.find( 'div[data-testid=object-to-string-link]' );
+				const referenceLink = linkWrapper.get( 'a' );
+				expect( referenceLink.attributes().href ).toBe( 'https://www.wikidata.org/wiki/Property:P42' );
+				expect( referenceLink.text() ).toBe( 'P42' );
+			} );
+		} );
+
 		describe( 'for any other type', () => {
 			beforeEach( () => {
 				store.getZObjectTypeByRowId = jest.fn( ( rowId ) => {
