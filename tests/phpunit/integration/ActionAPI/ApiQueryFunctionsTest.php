@@ -152,7 +152,9 @@ class ApiQueryFunctionsTest extends ApiTestCase {
 		[ 'Z10006', 'Z8', 'Z8K4', 'Z14', 'Z30006' ],
 		[ 'Z10007', 'Z8', 'Z8K4', 'Z14', 'Z30007' ],
 		[ 'Z10008', 'Z8', 'Z8K4', 'Z14', 'Z30008' ],
-		[ 'Z10009', 'Z8', 'Z8K4', 'Z14', 'Z30009' ]
+		// Z10009 has two implementations
+		[ 'Z10009', 'Z8', 'Z8K4', 'Z14', 'Z30009' ],
+		[ 'Z10009', 'Z8', 'Z8K4', 'Z14', 'Z30010' ]
 		// Z10010 has no implementation
 	];
 
