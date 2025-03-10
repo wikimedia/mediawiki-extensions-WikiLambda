@@ -437,6 +437,9 @@ class FunctionCallHandler extends SimpleHandler {
 		];
 	}
 
+	/**
+	 * @return never
+	 */
 	private function dieRESTfullyWithZError( ZError $zerror, int $code = 500, array $errorData = [] ) {
 		try {
 			$errorData['errorData'] = $zerror->getErrorData();
@@ -462,15 +465,10 @@ class FunctionCallHandler extends SimpleHandler {
 			$errorData['errorData'] = [ 'zerror' => $zerror->getSerialized() ];
 		}
 
-		$this->dieRESTfully( 'wikilambda-zerror', [ $zerror->getZErrorType() ], $code, $errorData );
-	}
-
-	/**
-	 * @return never
-	 */
-	private function dieRESTfully( string $messageKey, array $spec, int $code, array $errorData = [] ) {
 		throw new LocalizedHttpException(
-			new MessageValue( $messageKey, $spec ), $code, $errorData
+			new MessageValue( 'wikilambda-zerror', [ $zerror->getZErrorType() ] ),
+			$code,
+			$errorData
 		);
 	}
 
@@ -644,7 +642,6 @@ class FunctionCallHandler extends SimpleHandler {
 				400,
 				[ "target" => $call ]
 			);
-			throw new ZErrorException( $zerror );
 		}
 
 		$ret = $response->getZValue();
