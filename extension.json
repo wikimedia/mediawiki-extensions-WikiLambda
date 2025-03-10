@@ -348,7 +348,7 @@
 				"CdxMessage",
 				"CdxTable",
 				"CdxTextInput",
-				"CdxTextInput",
+				"CdxProgressIndicator",
 				"CdxTextArea",
 				"CdxAccordion",
 				"CdxSearchInput"
@@ -453,6 +453,7 @@
 				"ext.wikilambda.app/components/function/viewer/FunctionViewerDetailsTable.vue",
 				"ext.wikilambda.app/components/visualeditor/FunctionCallSetup.vue",
 				"ext.wikilambda.app/components/visualeditor/FunctionInputEnum.vue",
+				"ext.wikilambda.app/components/visualeditor/FunctionInputParser.vue",
 				"ext.wikilambda.app/components/visualeditor/FunctionInputString.vue",
 				"ext.wikilambda.app/components/visualeditor/FunctionInputField.vue",
 				"ext.wikilambda.app/components/visualeditor/FunctionInputSetup.vue",

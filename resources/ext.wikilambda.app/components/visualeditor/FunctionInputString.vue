@@ -1,6 +1,6 @@
 <!--
 	WikiLambda Vue component for Visual Editor Wikifunctions function call
-	insertion and edit plugin: text input field.
+	insertion and edit plugin: string input field.
 
 	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 	@license MIT

@@ -8,6 +8,7 @@
 
 const Constants = require( '../../Constants.js' );
 const { performTests } = require( '../../utils/apiUtils.js' );
+const { isTruthyOrEqual } = require( '../../utils/typeUtils.js' );
 const { extractZIDs, hybridToCanonical } = require( '../../utils/schemata.js' );
 
 module.exports = {
@@ -140,6 +141,36 @@ module.exports = {
 				return [ ...new Set( zids ) ];
 			};
 			return findPassingTestZids;
+		},
+
+		/**
+		 * Filters the passing test ZIDs and returns an array of valid renderer tests.
+		 * A valid renderer test is well-formed and has a call to the renderer function
+		 * directly under the Test call key/Z20K1.
+		 *
+		 * @return {Function}
+		 */
+		getValidRendererTests: function () {
+			/**
+			 * @param {string} rendererZid
+			 * @return {Array}
+			 */
+			const findValidRendererTests = ( rendererZid ) => {
+				const passingTestZids = this.getPassingTestZids( rendererZid );
+				return passingTestZids
+					.map( ( zid ) => {
+						const zobject = this.getStoredObject( zid );
+						return {
+							zid,
+							zobject: zobject ? zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ] : undefined
+						};
+					} )
+					.filter( ( test ) => isTruthyOrEqual( test.zobject, [
+						Constants.Z_TESTER_CALL,
+						Constants.Z_FUNCTION_CALL_FUNCTION
+					], rendererZid ) );
+			};
+			return findValidRendererTests;
 		}
 	},
 

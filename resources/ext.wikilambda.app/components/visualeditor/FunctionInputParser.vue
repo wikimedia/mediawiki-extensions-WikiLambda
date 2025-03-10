@@ -1,0 +1,321 @@
+<!--
+	WikiLambda Vue component for Visual Editor Wikifunctions function call
+	insertion and edit plugin: parser text input field.
+
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
+	<div>
+		<cdx-text-input
+			:placeholder="placeholderValue"
+			:model-value="value"
+			:readonly="isParserRunning"
+			@update:model-value="handleUpdate"
+			@change="handleChange"
+		></cdx-text-input>
+		<cdx-progress-indicator
+			v-if="isParserRunning"
+			class="ext-wikilambda-app-function-input-parser__progress-indicator">
+			{{ $i18n( 'wikilambda-loading' ).text() }}
+		</cdx-progress-indicator>
+	</div>
+</template>
+
+<script>
+const { CdxTextInput, CdxProgressIndicator } = require( '../../../codex.js' );
+const { defineComponent } = require( 'vue' );
+const { mapState, mapActions } = require( 'pinia' );
+const Constants = require( '../../Constants.js' );
+const useMainStore = require( '../../store/index.js' );
+const typeMixin = require( '../../mixins/typeMixin.js' );
+
+module.exports = exports = defineComponent( {
+	name: 'wl-function-input-parser',
+	components: {
+		'cdx-text-input': CdxTextInput,
+		'cdx-progress-indicator': CdxProgressIndicator
+	},
+	mixins: [ typeMixin ],
+	props: {
+		argumentType: {
+			type: String,
+			required: true
+		},
+		value: {
+			type: String,
+			required: false,
+			default: ''
+		}
+	},
+	emits: [ 'update', 'input', 'validate', 'loading-start', 'loading-end' ],
+	data() {
+		return {
+			areTestsFetched: false,
+			isParserRunning: false // Track whether the parser is running
+		};
+	},
+	computed: Object.assign( {}, mapState( useMainStore, [
+		'getParserZid',
+		'getRendererZid',
+		'getRendererExamples',
+		'getUserLangZid',
+		'getValidRendererTests',
+		'getUserLangZid'
+	] ), {
+		/**
+		 * Return renderer function Zid
+		 *
+		 * @return {string}
+		 */
+		rendererZid: function () {
+			return this.getRendererZid( this.argumentType );
+		},
+		/**
+		 * Return parser function Zid
+		 *
+		 * @return {string}
+		 */
+		parserZid: function () {
+			return this.getParserZid( this.argumentType );
+		},
+		/**
+		 * Returns the rendered examples in case the renderer
+		 * tests were run.
+		 *
+		 * @return {Array}
+		 */
+		renderedExamples: function () {
+			return this.getRendererExamples( this.rendererZid );
+		},
+		/**
+		 * Return a dynamically generated placeholder for the input field
+		 * using the available tests for the renderer function. If none are
+		 * available, returns the fallback placeholder message.
+		 *
+		 * @return {string}
+		 */
+		placeholderValue: function () {
+			if ( this.renderedExamples.length > 0 ) {
+				const example = this.renderedExamples[ 0 ].result;
+				return this.$i18n( 'wikilambda-string-renderer-field-example', example ).text();
+			}
+			return '';
+		},
+		/**
+		 * Filters the passing test zids array and returns an array with the
+		 * test objects for those which are wellformed. We consider wellformed
+		 * tests those which have a call to the renderer function on the first
+		 * level, directly under the Test call key/Z20K1.
+		 *
+		 * @return {Array}
+		 */
+		validRendererTests: function () {
+			// Return an empty array if tests are not fetched
+			if ( !this.areTestsFetched ) {
+				return [];
+			}
+			return this.getValidRendererTests( this.rendererZid );
+		},
+		/**
+		 * Return error message for the parser function
+		 *
+		 * @return {string}
+		 */
+		getErrorMessage: function () {
+			return this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-error-parser', this.argumentType ).parse();
+		}
+	} ),
+	methods: Object.assign( {}, mapActions( useMainStore, [
+		'getTestResults',
+		'runParser',
+		'runRendererTest'
+	] ), {
+		/**
+		 * Validates the value by triggering the Parser function for the argument type.
+		 * Passes the current value and resolves the promise with the parsed value.
+		 *
+		 * @param {string} value - The value to validate.
+		 * @return {Promise<void>} - A promise that resolves if the value is valid or rejects with an error message.
+		 */
+		isValid: function ( value ) {
+			return new Promise( ( resolve, reject ) => {
+				this.runParser( {
+					parserZid: this.parserZid,
+					zobject: value,
+					zlang: this.getUserLangZid,
+					wait: true
+				} ).then( ( data ) => {
+					const response = data.response[ Constants.Z_RESPONSEENVELOPE_VALUE ];
+					// Resolve the parser promise because we do not have other API calls
+					// that need to wait for the parser to finish
+					data.resolver.resolve();
+					if ( response === Constants.Z_VOID ) {
+						// Parser returned void:
+						// * get error from metadata object
+						// * reject with error message
+						const metadata = data.response[ Constants.Z_RESPONSEENVELOPE_METADATA ];
+						const metadataErrorMessage = this.extractErrorMessage( metadata );
+						reject( metadataErrorMessage || this.getErrorMessage );
+					} else if ( this.getZObjectType( response ) !== this.argumentType ) {
+						// Parser return unexpected type: reject with error message
+						reject( this.getErrorMessage );
+					} else {
+						// Success: Resolve the promise
+						resolve();
+					}
+				} ).catch( () => {
+					// API error: reject with error message
+					reject( this.getErrorMessage );
+				} );
+			} );
+		},
+		/**
+		 * Handles the start of the validation process by emitting the appropriate events.
+		 * - Sets the field as invalid.
+		 * - Sets the parser running state.
+		 */
+		onValidateStart: function () {
+			this.$emit( 'validate', { isValid: false } );
+			this.isParserRunning = true;
+		},
+
+		/**
+		 * Handles the end of the validation process by resetting the parser state.
+		 * - Resets the parser running state.
+		 */
+		onValidateEnd: function () {
+			this.isParserRunning = false;
+		},
+
+		/**
+		 * Handles validation success by emitting the appropriate events.
+		 *
+		 * @param {string} value - The validated value.
+		 * @param {boolean} emitUpdate - Whether to emit the update event.
+		 */
+		onValidateSuccess: function ( value, emitUpdate ) {
+			this.$emit( 'validate', { isValid: true } );
+
+			if ( emitUpdate ) {
+				this.$emit( 'update', value );
+			}
+		},
+
+		/**
+		 * Handles validation error by emitting the appropriate events.
+		 *
+		 * @param {string} errorMessage - The error message to emit.
+		 * @param {boolean} emitUpdate - Whether to emit the update event.
+		 */
+		onValidateError: function ( errorMessage, emitUpdate ) {
+			this.$emit( 'validate', { isValid: false, errorMessage } );
+
+			if ( emitUpdate ) {
+				this.$emit( 'update', '' );
+			}
+		},
+
+		/**
+		 * Validates the value and handles the validation result.
+		 * Emits validation status and optionally updates the value if valid.
+		 *
+		 * @param {string} value - The value to validate.
+		 * @param {boolean} emitUpdate - Whether to emit the update event if the value is valid.
+		 */
+		validate: function ( value, emitUpdate = false ) {
+			if ( !value ) {
+				this.$emit( 'validate', { isValid: true } );
+				return;
+			}
+
+			this.onValidateStart();
+
+			this.isValid( value )
+				.then( () => this.onValidateSuccess( value, emitUpdate ) )
+				.catch( ( errorMessage ) => this.onValidateError( errorMessage, emitUpdate ) )
+				.finally( () => this.onValidateEnd() );
+		},
+		/**
+		 * Emits the input event with the updated value.
+		 *
+		 * @param {string} value - The updated value.
+		 */
+		handleUpdate: function ( value ) {
+			this.$emit( 'input', value );
+		},
+
+		/**
+		 * Handles the change event, validates the new value asynchronously,
+		 * and emits the update event if the value is valid.
+		 *
+		 * @param {Event} event - The change event triggered by the input field.
+		 */
+		handleChange: function ( event ) {
+			this.validate( event.target.value, true );
+		},
+
+		/**
+		 * Runs the test results for the renderer function asynchronously.
+		 * Updates the `areTestsFetched` flag during the process.
+		 * The results are gathered as reactive computed properties.
+		 */
+		generateRendererExamples: function () {
+			this.areTestsFetched = false;
+
+			this.getTestResults( {
+				zFunctionId: this.rendererZid
+			} ).then( () => {
+				// Do nothing, the results will be gathered as reactive computed properties
+			} ).finally( () => {
+				this.areTestsFetched = true;
+			} );
+		}
+	} ),
+	watch: {
+		/**
+		 * Watches the computed property `validRendererTests` and triggers the renderer function test
+		 * for each valid test. The renderer function is executed with the user language as the second input.
+		 *
+		 * @param {Array} tests
+		 */
+		validRendererTests: function ( tests ) {
+			for ( const test of tests ) {
+				this.runRendererTest( {
+					rendererZid: this.rendererZid,
+					testZid: test.zid,
+					test: test.zobject,
+					zlang: this.getUserLangZid
+				} );
+			}
+		}
+	},
+	/**
+	 * Lifecycle hook that runs after the component is mounted.
+	 * Validates the initial value and triggers the generation of renderer examples.
+	 */
+	mounted: function () {
+		if ( this.value ) {
+			this.validate( this.value );
+		}
+		this.generateRendererExamples();
+	}
+} );
+</script>
+
+<style lang="less">
+@import '../../ext.wikilambda.app.variables.less';
+
+.ext-wikilambda-app-function-input-parser__progress-indicator {
+	position: absolute;
+	right: @spacing-50;
+	bottom: @spacing-25;
+
+	.cdx-progress-indicator__indicator {
+		width: @size-icon-small;
+		height: @size-icon-small;
+		min-width: @size-icon-small;
+		min-height: @size-icon-small;
+	}
+}
+</style>

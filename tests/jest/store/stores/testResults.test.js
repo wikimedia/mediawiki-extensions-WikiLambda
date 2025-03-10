@@ -107,6 +107,53 @@ describe( 'testResults Pinia store', () => {
 				expect( result ).toEqual( [ 'Z10001', 'Z10002', 'Z10003' ] );
 			} );
 		} );
+
+		describe( 'getValidRendererTests', () => {
+			it( 'should return valid renderer tests for a given renderer Zid', () => {
+				const rendererZid = 'Z10000';
+				const passingTestZids = [ 'Z10001', 'Z10002', 'Z10003' ];
+
+				Object.defineProperty( store, 'getPassingTestZids', {
+					value: jest.fn().mockReturnValue( passingTestZids )
+				} );
+
+				Object.defineProperty( store, 'getStoredObject', {
+					value: jest.fn( ( zid ) => {
+						if ( zid === 'Z10001' ) {
+							return {
+								[ Constants.Z_PERSISTENTOBJECT_VALUE ]: {
+									[ Constants.Z_TESTER_CALL ]: {
+										[ Constants.Z_FUNCTION_CALL_FUNCTION ]: rendererZid
+									}
+								}
+							};
+						} else if ( zid === 'Z10002' ) {
+							return {
+								[ Constants.Z_PERSISTENTOBJECT_VALUE ]: {
+									[ Constants.Z_TESTER_CALL ]: {
+										[ Constants.Z_FUNCTION_CALL_FUNCTION ]: 'Z99999'
+									}
+								}
+							};
+						}
+						return null;
+					} )
+				} );
+
+				const result = store.getValidRendererTests( rendererZid );
+
+				expect( result ).toEqual( [
+					{
+						zid: 'Z10001',
+						zobject: {
+							[ Constants.Z_TESTER_CALL ]: {
+								[ Constants.Z_FUNCTION_CALL_FUNCTION ]: rendererZid
+							}
+						}
+					}
+				] );
+			} );
+		} );
 	} );
 
 	describe( 'Actions', () => {

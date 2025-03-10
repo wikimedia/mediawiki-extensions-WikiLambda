@@ -14,6 +14,7 @@ const FunctionCallSetup = require( './visualeditor/FunctionCallSetup.vue' );
 const FunctionInputField = require( './visualeditor/FunctionInputField.vue' );
 const FunctionInputSetup = require( './visualeditor/FunctionInputSetup.vue' );
 const FunctionInputEnum = require( './visualeditor/FunctionInputEnum.vue' );
+const FunctionInputParser = require( './visualeditor/FunctionInputParser.vue' );
 const FunctionInputString = require( './visualeditor/FunctionInputString.vue' );
 
 // Export all components that we want to make visible
@@ -25,6 +26,7 @@ module.exports = {
 	FunctionCallSetup,
 	FunctionInputField,
 	FunctionInputEnum,
+	FunctionInputParser,
 	FunctionInputString,
 	FunctionInputSetup,
 	FunctionSelect,

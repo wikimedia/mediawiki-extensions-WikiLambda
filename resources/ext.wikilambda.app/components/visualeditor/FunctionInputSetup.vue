@@ -25,6 +25,8 @@
 					:error-message="field.errorMessage"
 					@update="value => handleUpdate( index, value )"
 					@validate="payload => handleValidation( index, payload )"
+					@loading-start="$emit( 'loading-start' )"
+					@loading-end="$emit( 'loading-end' )"
 				></wl-function-input-field>
 			</div>
 		</div>

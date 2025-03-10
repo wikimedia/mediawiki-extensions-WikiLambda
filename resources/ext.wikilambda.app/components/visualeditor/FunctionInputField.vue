@@ -17,6 +17,8 @@
 			@input="handleInput"
 			@update="handleUpdate"
 			@validate="handleValidation"
+			@loading-start="$emit( 'loading-start' )"
+			@loading-end="$emit( 'loading-end' )"
 		></component>
 		<template #label>
 			<span
@@ -37,6 +39,7 @@ const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
 const useMainStore = require( '../../store/index.js' );
 const FunctionInputEnum = require( './FunctionInputEnum.vue' );
+const FunctionInputParser = require( './FunctionInputParser.vue' );
 const FunctionInputString = require( './FunctionInputString.vue' );
 
 module.exports = exports = defineComponent( {
@@ -44,6 +47,7 @@ module.exports = exports = defineComponent( {
 	components: {
 		'cdx-field': CdxField,
 		'wl-function-input-enum': FunctionInputEnum,
+		'wl-function-input-parser': FunctionInputParser,
 		'wl-function-input-string': FunctionInputString
 	},
 	props: {
@@ -70,10 +74,11 @@ module.exports = exports = defineComponent( {
 			default: ''
 		}
 	},
-	emits: [ 'update', 'input', 'update:modelValue', 'validate' ],
+	emits: [ 'update', 'input', 'validate', 'update:modelValue', 'loading-start', 'loading-end' ],
 	computed: Object.assign( {}, mapState( useMainStore, [
 		'getLabelData',
-		'isEnumType'
+		'isEnumType',
+		'hasParser'
 	] ), {
 		/**
 		 * Get the label data for the argument key.
@@ -89,10 +94,12 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		componentType: function () {
-			if ( this.isEnumType( this.argumentType ) ) {
+			if ( this.isEnum ) {
 				return 'wl-function-input-enum';
 			}
-			// TODO (T387371) Implement types with parsers
+			if ( this.hasParserFunction ) {
+				return 'wl-function-input-parser';
+			}
 			return 'wl-function-input-string';
 		},
 		/**
@@ -102,6 +109,22 @@ module.exports = exports = defineComponent( {
 		 */
 		status: function () {
 			return this.errorMessage ? 'error' : 'default';
+		},
+		/**
+		 * Checks if the argument type is an enumeration.
+		 *
+		 * @return {boolean}
+		 */
+		isEnum: function () {
+			return this.isEnumType( this.argumentType );
+		},
+		/**
+		 * Check if the argument has a parser and renderer
+		 *
+		 * @return {boolean}
+		 */
+		hasParserFunction: function () {
+			return this.hasParser( this.argumentType );
 		}
 	} ),
 	methods: {
@@ -122,7 +145,7 @@ module.exports = exports = defineComponent( {
 			this.$emit( 'update:modelValue', value );
 		},
 		/**
-		 * Handle the validate event and emit the error message
+		 * Handle the validate event and emit the error message.
 		 *
 		 * @param {Object} payload
 		 * @param {boolean} payload.isValid - The validation status.
@@ -134,3 +157,9 @@ module.exports = exports = defineComponent( {
 	}
 } );
 </script>
+
+<style lang="less">
+.ext-wikilambda-app-function-input-field {
+	position: relative;
+}
+</style>

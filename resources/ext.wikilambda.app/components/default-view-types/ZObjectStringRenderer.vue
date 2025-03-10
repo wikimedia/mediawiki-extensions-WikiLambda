@@ -149,7 +149,8 @@ module.exports = exports = defineComponent( {
 		'getUserLangCode',
 		'getUserLangZid',
 		'getZObjectAsJsonById',
-		'isCreateNewPage'
+		'isCreateNewPage',
+		'getValidRendererTests'
 	] ), {
 		/**
 		 * Return the stored type object
@@ -225,29 +226,10 @@ module.exports = exports = defineComponent( {
 		 * @return {Array}
 		 */
 		validRendererTests: function () {
-			// We return an empty array if not initialized so that the
-			// component forces a value change in validRendererTests on expanse
-			// and collapse, and the watch function is re-run again if it had
-			// been interrupted. This can happen if there are multiple nested
-			// ZObjectStringRenderer fields.
 			if ( !this.initialized ) {
 				return [];
 			}
-
-			return this.getPassingTestZids( this.rendererZid )
-				// For each test Zid, get the stored test object
-				.map( ( zid ) => {
-					const zobject = this.getStoredObject( zid );
-					return {
-						zid,
-						zobject: zobject ? zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ] : undefined
-					};
-				} )
-				// Filter out undefined or not wellformed test objects
-				.filter( ( test ) => this.isTruthyOrEqual( test.zobject, [
-					Constants.Z_TESTER_CALL,
-					Constants.Z_FUNCTION_CALL_FUNCTION
-				], this.rendererZid ) );
+			return this.getValidRendererTests( this.rendererZid );
 		}
 	} ),
 	methods: Object.assign( {}, mapActions( useMainStore, [
