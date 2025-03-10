@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"আফতাবুজ্জামান"
+		]
+	},
+	"wikilambda-visualeditor-wikifunctionscall-title": "ফাংশন",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "ফাংশন অনুসন্ধান",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "ফলাফল",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "কোনো ফলাফল পাওয়া যায়নি",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "প্রস্তাবিত ফাংশন",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "ইনপুট স্ট্রিং"
+}

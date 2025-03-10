@@ -1,0 +1,17 @@
+{
+	"@metadata": {
+		"authors": [
+			"JLTRY"
+		]
+	},
+	"wikilambda-visualeditor-wikifunctionscall-title": "Fonction",
+	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Chargement des données de fonction...",
+	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Aucune fonction sélectionnée.",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Fonction de recherche",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Résultats",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Aucun résultat trouvé",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Fonctions suggérées",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Chaîne d'entrée",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Fonction]] de Wikifunctions",
+	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "La fonction est manquante ou non valide."
+}

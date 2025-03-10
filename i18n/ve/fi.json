@@ -1,0 +1,17 @@
+{
+	"@metadata": {
+		"authors": [
+			"Samoasambia"
+		]
+	},
+	"wikilambda-visualeditor-wikifunctionscall-title": "Funktio",
+	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Ladataan funktion tietoja...",
+	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Ei funktiota valittuna.",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Hae funktiota",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Tulokset",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Tuloksia ei löytynyt",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Ehdotetut funktiot",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Merkkijono",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Funktio]] Wikifunctionsista",
+	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Funktio puuttuu tai se on virheellinen."
+}
