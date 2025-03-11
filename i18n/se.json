@@ -23,6 +23,7 @@
 	"wikilambda-function-definition-description-label": "Govvádus",
 	"wikilambda-function-definition-edit": "Rievdat meroštallama",
 	"wikilambda-function-evaluator-result-details": "Dieđut",
+	"wikilambda-function-implementation-select-label": "Vállje",
 	"wikilambda-function-implementation-language-label": "Giella",
 	"wikilambda-function-viewer-aliases-show-language-button": "Čájet eanet gielaid",
 	"wikilambda-function-viewer-details-table-view-all": "Čájet buot",
@@ -37,5 +38,6 @@
 	"wikilambda-savechanges": "Vurke rievdadusaid",
 	"wikilambda-savenew": "Vurke",
 	"wikilambda-special-listduplicateobjectlabels-language": "Giella",
-	"wikilambda-tester-details": "Dieđut"
+	"wikilambda-tester-details": "Dieđut",
+	"wikilambda-zobject-to-string-select-object": "Vállje $1"
 }

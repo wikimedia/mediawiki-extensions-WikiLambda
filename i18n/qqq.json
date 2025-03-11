@@ -350,7 +350,7 @@
 	"wikilambda-migration-edit-comment": "{{Ignore}}\n\nThe edit comment made by the system user when making a code type reference conversion change.",
 	"wikilambda-missing-function-input-type-error-message": "Error message for a submitted ZFunction that is missing an input type",
 	"wikilambda-missing-function-output-error-message": "Error message for a submitted ZFunction that is missing a function output",
-	"wikilambda-mode-selector-button-label": "Label for the mode selector button for accessibility, available for screen readers. Clicking on the button opens a menu to let the user change what \"mode\" of Object this is.\n\n{{doc-wikilambda}}",
+	"wikilambda-mode-selector-button-label": "Accessibility label for screen readers for the popover action menu button. Clicking on the button opens a menu to let the user change the type of object: a reference to an existing object, an inline literal definition, or a function call.",
 	"wikilambda-move-after-list-item": "Label for a button that moves a list item to later in the list",
 	"wikilambda-move-before-list-item": "Label for a button that moves a list item to earlier in the list",
 	"wikilambda-multilingualstring-nofallback": "Message shown when a multi-lingual string doesn't have a label defined for the user's language, nor for any of that language's fallbacks.",
