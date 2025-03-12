@@ -143,6 +143,7 @@ class FunctionCallHandler extends SimpleHandler {
 		}
 
 		if ( $targetObject->getZType() !== ZTypeRegistry::Z_FUNCTION ) {
+			// User is trying to use a ZObject that's not a ZFunction
 			$this->logger->debug(
 				__METHOD__ . ' called on {target} which is not a Function but a {type}',
 				[
@@ -152,7 +153,12 @@ class FunctionCallHandler extends SimpleHandler {
 			);
 			$this->dieRESTfullyWithZError(
 				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_UNKNOWN, [ "message" => $target ]
+					ZErrorTypeRegistry::Z_ERROR_ARGUMENT_TYPE_MISMATCH,
+					[
+						"expected" => ZTypeRegistry::Z_FUNCTION,
+						"actual" => $targetObject->getZType(),
+						"argument" => ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION
+					]
 				),
 				400,
 				[ "target" => $target ]
