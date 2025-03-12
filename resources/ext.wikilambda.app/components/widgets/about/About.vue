@@ -97,7 +97,7 @@ const AboutLanguageBlock = require( './AboutLanguageBlock.vue' );
 const AboutLanguagesDialog = require( './AboutLanguagesDialog.vue' );
 const Constants = require( '../../../Constants.js' );
 const icons = require( '../../../../lib/icons.json' );
-const pageTitleUtils = require( '../../../mixins/pageTitleUtils.js' );
+const pageTitleMixin = require( '../../../mixins/pageTitleMixin.js' );
 const PublishDialog = require( '../publish/PublishDialog.vue' );
 const useMainStore = require( '../../../store/index.js' );
 const WidgetBase = require( '../../base/WidgetBase.vue' );
@@ -113,7 +113,7 @@ module.exports = exports = defineComponent( {
 		'wl-publish-dialog': PublishDialog,
 		'wl-widget-base': WidgetBase
 	},
-	mixins: [ pageTitleUtils ],
+	mixins: [ pageTitleMixin ],
 	props: {
 		edit: {
 			type: Boolean,

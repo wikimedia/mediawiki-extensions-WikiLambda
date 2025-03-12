@@ -59,11 +59,10 @@ const { CdxMessage } = require( '../../../../codex.js' );
 const { mapActions, mapState } = require( 'pinia' );
 
 const Constants = require( '../../../Constants.js' );
-const errorUtils = require( '../../../mixins/errorUtils.js' );
+const errorMixin = require( '../../../mixins/errorMixin.js' );
 const FunctionViewerDetailsTable = require( './FunctionViewerDetailsTable.vue' );
-const typeUtils = require( '../../../mixins/typeUtils.js' );
+const typeMixin = require( '../../../mixins/typeMixin.js' );
 const useMainStore = require( '../../../store/index.js' );
-const utilsMixins = require( '../../../mixins/utilsMixins.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-viewer-details',
@@ -71,7 +70,7 @@ module.exports = exports = defineComponent( {
 		'wl-function-viewer-details-table': FunctionViewerDetailsTable,
 		'cdx-message': CdxMessage
 	},
-	mixins: [ typeUtils, errorUtils, utilsMixins ],
+	mixins: [ typeMixin, errorMixin ],
 	props: {
 		rowId: {
 			type: Number,

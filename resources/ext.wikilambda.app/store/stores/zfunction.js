@@ -6,8 +6,8 @@
  */
 
 const Constants = require( '../../Constants.js' );
-const apiUtils = require( '../../mixins/api.js' ).methods;
-const createConnectedItemsChangesSummaryMessage = require( '../../mixins/utilsMixins.js' ).methods.createConnectedItemsChangesSummaryMessage;
+const { fetchFunctionObjects } = require( '../../utils/apiUtils.js' );
+const { createConnectedItemsChangesSummaryMessage } = require( '../../utils/miscUtils.js' );
 
 module.exports = {
 	state: {},
@@ -426,7 +426,7 @@ module.exports = {
 		 * @return {Promise}
 		 */
 		fetchTests: function ( functionZid ) {
-			return apiUtils.fetchFunctionObjects( {
+			return fetchFunctionObjects( {
 				functionZid,
 				type: Constants.Z_TESTER
 			} ).then( ( items ) => {
@@ -444,7 +444,7 @@ module.exports = {
 		 * @return {Promise}
 		 */
 		fetchImplementations: function ( functionZid ) {
-			return apiUtils.fetchFunctionObjects( {
+			return fetchFunctionObjects( {
 				functionZid,
 				type: Constants.Z_IMPLEMENTATION
 			} ).then( ( items ) => {

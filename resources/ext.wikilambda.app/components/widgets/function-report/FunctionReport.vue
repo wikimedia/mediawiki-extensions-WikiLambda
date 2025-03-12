@@ -64,9 +64,9 @@ const Constants = require( '../../../Constants.js' );
 const FunctionMetadataDialog = require( '../function-evaluator/FunctionMetadataDialog.vue' );
 const FunctionReportItem = require( './FunctionReportItem.vue' );
 const icons = require( '../../../../lib/icons.json' );
-const typeUtils = require( '../../../mixins/typeUtils.js' );
+const typeMixin = require( '../../../mixins/typeMixin.js' );
+const { arraysAreEqual } = require( '../../../utils/miscUtils.js' );
 const useMainStore = require( '../../../store/index.js' );
-const utilsMixins = require( '../../../mixins/utilsMixins.js' );
 const WidgetBase = require( '../../base/WidgetBase.vue' );
 
 module.exports = exports = defineComponent( {
@@ -78,7 +78,7 @@ module.exports = exports = defineComponent( {
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon
 	},
-	mixins: [ typeUtils, utilsMixins ],
+	mixins: [ typeMixin ],
 	inject: {
 		viewmode: { default: false }
 	},
@@ -321,7 +321,7 @@ module.exports = exports = defineComponent( {
 	} ),
 	watch: {
 		implementations: function ( newValue, oldValue ) {
-			if ( !this.arraysAreEqual( oldValue, newValue ) ) {
+			if ( !arraysAreEqual( oldValue, newValue ) ) {
 				this.fetchZids( { zids: this.implementations } );
 				// re-run the tests when the user changes the implementation's function Zid,
 				// except when creating a new implementation object (then only run on demand)
@@ -331,7 +331,7 @@ module.exports = exports = defineComponent( {
 			}
 		},
 		testers: function ( newValue, oldValue ) {
-			if ( !this.arraysAreEqual( oldValue, newValue ) ) {
+			if ( !arraysAreEqual( oldValue, newValue ) ) {
 				this.fetchZids( { zids: this.testers } );
 				// re-run the tests when the user changes the test's function Zid,
 				// except when creating a new test object (then only run on demand)

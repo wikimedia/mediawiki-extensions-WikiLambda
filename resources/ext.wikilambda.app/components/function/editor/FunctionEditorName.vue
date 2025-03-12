@@ -38,7 +38,7 @@ const { mapActions, mapState } = require( 'pinia' );
 const { CdxTextInput } = require( '../../../../codex.js' );
 const Constants = require( '../../../Constants.js' );
 const LabelData = require( '../../../store/classes/LabelData.js' );
-const pageTitleUtils = require( '../../../mixins/pageTitleUtils.js' );
+const pageTitleMixin = require( '../../../mixins/pageTitleMixin.js' );
 const useMainStore = require( '../../../store/index.js' );
 const FunctionEditorField = require( './FunctionEditorField.vue' );
 
@@ -48,7 +48,7 @@ module.exports = exports = defineComponent( {
 		'wl-function-editor-field': FunctionEditorField,
 		'cdx-text-input': CdxTextInput
 	},
-	mixins: [ pageTitleUtils ],
+	mixins: [ pageTitleMixin ],
 	props: {
 		/**
 		 * zID of item label language

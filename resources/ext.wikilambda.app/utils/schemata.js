@@ -1,6 +1,6 @@
 /**
- * WikiLambda Vue editor: schemata mixin
- * Mixin with functions to convert zobjects between hybrid and canonical forms.
+ * WikiLambda Vue editor: schemata utilities
+ * Util with functions to convert zobjects between hybrid and canonical forms.
  * Thsse conversions are distinct from canonicalize and normalize of function-schemata; hybrid form
  * meets slightly different representational requirements of the UI layer.
  *
@@ -10,7 +10,7 @@
 'use strict';
 
 const Constants = require( '../Constants.js' );
-const typeUtils = require( './typeUtils.js' ).methods;
+const { isTruthyOrEqual, getZObjectType } = require( './typeUtils.js' );
 
 // Note: This is intentionally "wrong" in that it allows for Z0.
 // It excludes letters so as not to apply to keys (containing a 'K').
@@ -84,7 +84,7 @@ function hybridToCanonical( zobject ) {
 	} else if (
 		// Allow for typed lists in normal form, where the list's Z_OBJECT_TYPE is a function call.
 		// See also the header comments for this function.
-		typeUtils.isTruthyOrEqual( zobject, [
+		isTruthyOrEqual( zobject, [
 			Constants.Z_OBJECT_TYPE,
 			Constants.Z_FUNCTION_CALL_FUNCTION,
 			Constants.Z_REFERENCE_ID
@@ -130,7 +130,7 @@ function canonicalToHybrid( zobject ) {
 	if ( typeof zobject === 'undefined' ) {
 		return undefined;
 	} else if ( typeof zobject === 'string' ) {
-		if ( typeUtils.getZObjectType( zobject ) === Constants.Z_REFERENCE ) {
+		if ( getZObjectType( zobject ) === Constants.Z_REFERENCE ) {
 			hybrid = {
 				Z1K1: Constants.Z_REFERENCE,
 				Z9K1: zobject
@@ -366,11 +366,9 @@ function extractNestedSuberrors( zobject, errorType ) {
 }
 
 module.exports = exports = {
-	methods: {
-		hybridToCanonical: hybridToCanonical,
-		canonicalToHybrid: canonicalToHybrid,
-		getValueFromCanonicalZMap: getValueFromCanonicalZMap,
-		extractErrorStructure: extractErrorStructure,
-		extractZIDs: extractZIDs
-	}
+	hybridToCanonical,
+	canonicalToHybrid,
+	getValueFromCanonicalZMap,
+	extractZIDs,
+	extractErrorStructure
 };

@@ -89,6 +89,12 @@ module.exports = {
 			functions: 98,
 			statements: 88
 		},
+		'./resources/ext.wikilambda.app/utils': {
+			branches: 82,
+			lines: 88,
+			functions: 98,
+			statements: 88
+		},
 		'./resources/ext.wikilambda.app/store': {
 			branches: 84,
 			lines: 94,

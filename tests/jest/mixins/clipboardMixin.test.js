@@ -1,5 +1,5 @@
 /*!
- * WikiLambda unit test suite for the utilsMixins mixin
+ * WikiLambda unit test suite for the clipboardMixin
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -9,16 +9,16 @@
 
 const { shallowMount } = require( '@vue/test-utils' );
 
-const clipboardUtils = require( '../../../resources/ext.wikilambda.app/mixins/clipboardUtils.js' );
+const clipboardMixin = require( '../../../resources/ext.wikilambda.app/mixins/clipboardMixin.js' );
 
-describe( 'clipboardUtils', () => {
+describe( 'clipboardMixin', () => {
 	let wrapper, copySpy, clearSpy;
 
 	beforeEach( () => {
 		// Mocking a Vue component to test the mixin
 		const TestComponent = {
 			template: '<div></div>',
-			mixins: [ clipboardUtils ]
+			mixins: [ clipboardMixin ]
 		};
 		wrapper = shallowMount( TestComponent );
 

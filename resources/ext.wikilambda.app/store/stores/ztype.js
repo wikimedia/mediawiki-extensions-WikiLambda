@@ -8,8 +8,8 @@
 'use strict';
 
 const Constants = require( '../../Constants.js' );
-const apiUtils = require( '../../mixins/api.js' ).methods;
-const typeUtils = require( '../../mixins/typeUtils.js' ).methods;
+const { performFunctionCall } = require( '../../utils/apiUtils.js' );
+const { getScaffolding, getZObjectType } = require( '../../utils/typeUtils.js' );
 
 module.exports = {
 	state: {
@@ -218,13 +218,13 @@ module.exports = {
 			//   <rendererZid>K1: payload.zobject,
 			//   <rendererZid>K2: payload.zlang
 			// }
-			const rendererCall = typeUtils.getScaffolding( Constants.Z_FUNCTION_CALL );
+			const rendererCall = getScaffolding( Constants.Z_FUNCTION_CALL );
 			rendererCall[ Constants.Z_FUNCTION_CALL_FUNCTION ] = payload.rendererZid;
 			rendererCall[ `${ payload.rendererZid }K1` ] = payload.zobject;
 			rendererCall[ `${ payload.rendererZid }K2` ] = payload.zlang;
 
 			// 2. Run this function call by calling wikilambda_function_call_zobject and return
-			return apiUtils.performFunctionCall( {
+			return performFunctionCall( {
 				functionCall: rendererCall,
 				language: this.getUserLangCode
 			} );
@@ -257,7 +257,7 @@ module.exports = {
 			//   <parserZid>K1: payload.zobject,
 			//   <parserZid>K2: payload.zlang
 			// }
-			const parserCall = typeUtils.getScaffolding( Constants.Z_FUNCTION_CALL );
+			const parserCall = getScaffolding( Constants.Z_FUNCTION_CALL );
 			parserCall[ Constants.Z_FUNCTION_CALL_FUNCTION ] = payload.parserZid;
 			parserCall[ `${ payload.parserZid }K1` ] = payload.zobject;
 			parserCall[ `${ payload.parserZid }K2` ] = payload.zlang;
@@ -275,7 +275,7 @@ module.exports = {
 
 			// 3. Run this function call by calling wikilambda_function_call_zobject
 			// and return the response and the Promise resolver function
-			return apiUtils.performFunctionCall( {
+			return performFunctionCall( {
 				functionCall: parserCall,
 				language: this.getUserLangCode
 			} ).then( ( response ) => {
@@ -319,12 +319,12 @@ module.exports = {
 			} );
 
 			// 4. Run renderer function
-			return apiUtils.performFunctionCall( {
+			return performFunctionCall( {
 				functionCall: rendererCall,
 				language: this.getUserLangCode
 			} ).then( ( data ) => {
 				const response = data.response[ Constants.Z_RESPONSEENVELOPE_VALUE ];
-				if ( response !== Constants.Z_VOID && typeUtils.getZObjectType( response ) === Constants.Z_STRING ) {
+				if ( response !== Constants.Z_VOID && getZObjectType( response ) === Constants.Z_STRING ) {
 					// If rendered value from the test is valid, save in examples
 					this.setRendererExample( {
 						rendererZid: payload.rendererZid,

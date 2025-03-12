@@ -122,8 +122,8 @@ const { mapActions, mapState } = require( 'pinia' );
 const { CdxButton, CdxMessage } = require( '../../../../codex.js' );
 const Constants = require( '../../../Constants.js' );
 const EvaluationResult = require( './EvaluationResult.vue' );
-const eventLogUtils = require( '../../../mixins/eventLogUtils.js' );
-const errorUtils = require( '../../../mixins/errorUtils.js' );
+const eventLogMixin = require( '../../../mixins/eventLogMixin.js' );
+const errorMixin = require( '../../../mixins/errorMixin.js' );
 const KeyBlock = require( '../../base/KeyBlock.vue' );
 const useMainStore = require( '../../../store/index.js' );
 const WidgetBase = require( '../../base/WidgetBase.vue' );
@@ -141,7 +141,7 @@ module.exports = exports = defineComponent( {
 		'wl-key-block': KeyBlock,
 		'wl-z-object-key-value': ZObjectKeyValue
 	},
-	mixins: [ eventLogUtils, errorUtils ],
+	mixins: [ eventLogMixin, errorMixin ],
 	props: {
 		functionZid: {
 			type: String,

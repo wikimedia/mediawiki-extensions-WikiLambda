@@ -1,6 +1,6 @@
 /**
- * WikiLambda Vue editor: Clipboard utils mixin
- * Mixin with util functions to handle clipboard actions
+ * WikiLambda Vue editor: Clipboard Mixin
+ * Mixin with functions to handle clipboard actions
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT

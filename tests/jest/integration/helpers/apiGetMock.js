@@ -451,7 +451,7 @@ const performTestResponse = ( request ) => performTestResponseBuilder( request.w
 	request.wikilambda_perform_test_zimplementations,
 	request.wikilambda_perform_test_ztesters );
 
-module.exports = exports = {
+module.exports = {
 	createMockApi,
 	labelsMatcher,
 	labelsResponse,

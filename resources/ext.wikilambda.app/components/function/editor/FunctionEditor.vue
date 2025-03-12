@@ -48,13 +48,13 @@ const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
 
 const Constants = require( '../../../Constants.js' );
-const eventLogUtils = require( '../../../mixins/eventLogUtils.js' );
+const eventLogMixin = require( '../../../mixins/eventLogMixin.js' );
 const FunctionEditorFooter = require( './FunctionEditorFooter.vue' );
 const FunctionEditorLanguageBlock = require( './FunctionEditorLanguageBlock.vue' );
 const icons = require( '../../../../lib/icons.json' );
-const typeUtils = require( '../../../mixins/typeUtils.js' );
+const typeMixin = require( '../../../mixins/typeMixin.js' );
 const useMainStore = require( '../../../store/index.js' );
-const { hybridToCanonical } = require( '../../../mixins/schemata.js' ).methods;
+const { hybridToCanonical } = require( '../../../utils/schemata.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor',
@@ -64,7 +64,7 @@ module.exports = exports = defineComponent( {
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon
 	},
-	mixins: [ eventLogUtils, typeUtils ],
+	mixins: [ eventLogMixin, typeMixin ],
 	data: function () {
 		return {
 			rowId: 0,

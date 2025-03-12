@@ -64,19 +64,18 @@ describe( 'App.vue', () => {
 		window.location.href = 'http://example.com#some-hash';
 		window.location.hash = '#some-hash';
 
-		const wrapper = shallowMount( App, {
+		shallowMount( App, {
 			provide: {
 				viewmode: true
 			}
 		} );
-		jest.spyOn( wrapper.vm, 'removeHashFromURL' );
 
 		const popstateEvent = new PopStateEvent( 'popstate', { state: null } );
 		window.dispatchEvent( popstateEvent );
 
 		expect( store.initializeView ).not.toHaveBeenCalled();
 		expect( store.evaluateUri ).not.toHaveBeenCalled();
-		expect( wrapper.vm.removeHashFromURL ).toHaveBeenCalled();
+		expect( window.history.replaceState ).toHaveBeenCalled();
 	} );
 
 	it( 'Reinitializes view when isCreateNewPage is true and popstate event is triggered', async () => {

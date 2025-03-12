@@ -10,12 +10,12 @@
 </template>
 
 <script>
-const clipboardUtils = require( '../../mixins/clipboardUtils.js' );
+const clipboardMixin = require( '../../mixins/clipboardMixin.js' );
 const { defineComponent } = require( 'vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-clipboard-manager',
-	mixins: [ clipboardUtils ],
+	mixins: [ clipboardMixin ],
 	props: {
 		classNames: {
 			type: Array,

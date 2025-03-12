@@ -1,6 +1,6 @@
 /**
- * WikiLambda Vue editor: Event logging utils mixin
- * Mixin with util functions to handle component errors
+ * WikiLambda Vue editor: Event logging mixin
+ * Mixin with functions to handle component errors
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -51,6 +51,7 @@ module.exports = exports = {
 					this.removeNullUndefined( interactionData ) );
 			}
 		},
+
 		/**
 		 * Returns the event namespace string for particular
 		 * actions and important types, else returns generic one

@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-const apiUtils = require( '../../../mixins/api.js' ).methods;
+const { searchWikidataEntities } = require( '../../../utils/apiUtils.js' );
 const Constants = require( '../../../Constants.js' );
 
 module.exports = {
@@ -145,7 +145,7 @@ module.exports = {
 				type,
 				searchContinue
 			};
-			return apiUtils.searchWikidataEntities( request );
+			return searchWikidataEntities( request );
 		}
 	}
 };

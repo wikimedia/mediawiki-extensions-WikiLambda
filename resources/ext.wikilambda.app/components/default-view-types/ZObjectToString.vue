@@ -77,9 +77,9 @@ const { CdxIcon, CdxTooltip } = require( '../../../codex.js' );
 
 const Constants = require( '../../Constants.js' );
 const LabelData = require( '../../store/classes/LabelData.js' );
-const typeUtils = require( '../../mixins/typeUtils.js' );
-const errorUtils = require( '../../mixins/errorUtils.js' );
-const { hybridToCanonical } = require( '../../mixins/schemata.js' ).methods;
+const typeMixin = require( '../../mixins/typeMixin.js' );
+const errorMixin = require( '../../mixins/errorMixin.js' );
+const { hybridToCanonical } = require( '../../utils/schemata.js' );
 const useMainStore = require( '../../store/index.js' );
 const icons = require( '../../../lib/icons.json' );
 const wikidataIconSvg = require( './wikidata/wikidataIconSvg.js' );
@@ -94,7 +94,7 @@ module.exports = exports = defineComponent( {
 	directives: {
 		tooltip: CdxTooltip
 	},
-	mixins: [ typeUtils, errorUtils, wikidataMixin ],
+	mixins: [ typeMixin, errorMixin, wikidataMixin ],
 	props: {
 		rowId: {
 			type: Number,

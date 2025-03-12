@@ -55,7 +55,7 @@ const { mapActions, mapState } = require( 'pinia' );
 
 const Constants = require( '../../Constants.js' );
 const LabelData = require( '../../store/classes/LabelData.js' );
-const typeUtils = require( '../../mixins/typeUtils.js' );
+const typeMixin = require( '../../mixins/typeMixin.js' );
 const useMainStore = require( '../../store/index.js' );
 const ZObjectSelector = require( './ZObjectSelector.vue' );
 
@@ -65,7 +65,7 @@ module.exports = exports = defineComponent( {
 		'cdx-field': CdxField,
 		'wl-z-object-selector': ZObjectSelector
 	},
-	mixins: [ typeUtils ],
+	mixins: [ typeMixin ],
 	props: {
 		rowId: {
 			type: Number,

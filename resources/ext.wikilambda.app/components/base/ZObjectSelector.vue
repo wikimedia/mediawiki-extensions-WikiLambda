@@ -61,9 +61,9 @@ const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
 const { CdxLookup, CdxSelect, CdxMessage } = require( '../../../codex.js' );
 const Constants = require( '../../Constants.js' );
-const errorUtils = require( '../../mixins/errorUtils.js' );
+const errorMixin = require( '../../mixins/errorMixin.js' );
 const icons = require( '../../../lib/icons.json' );
-const typeUtils = require( '../../mixins/typeUtils.js' );
+const typeMixin = require( '../../mixins/typeMixin.js' );
 const useMainStore = require( '../../store/index.js' );
 
 module.exports = exports = defineComponent( {
@@ -73,7 +73,7 @@ module.exports = exports = defineComponent( {
 		'cdx-select': CdxSelect,
 		'cdx-lookup': CdxLookup
 	},
-	mixins: [ errorUtils, typeUtils ],
+	mixins: [ errorMixin, typeMixin ],
 	props: {
 		rowId: {
 			type: Number,

@@ -35,7 +35,7 @@
 const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
 
-const typeUtils = require( '../../mixins/typeUtils.js' );
+const typeMixin = require( '../../mixins/typeMixin.js' );
 const useMainStore = require( '../../store/index.js' );
 const ZTypedListItems = require( './ZTypedListItems.vue' );
 const ZTypedListType = require( './ZTypedListType.vue' );
@@ -46,7 +46,7 @@ module.exports = exports = defineComponent( {
 		'wl-z-typed-list-items': ZTypedListItems,
 		'wl-z-typed-list-type': ZTypedListType
 	},
-	mixins: [ typeUtils ],
+	mixins: [ typeMixin ],
 	props: {
 		rowId: {
 			type: Number,

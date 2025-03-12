@@ -7,11 +7,11 @@
  */
 'use strict';
 
-const apiUtils = require( '../../../mixins/api.js' ).methods;
+const { saveZObject } = require( '../../../utils/apiUtils.js' );
 const Constants = require( '../../../Constants.js' );
-const convertTableToJson = require( '../../../mixins/zobjectUtils.js' ).methods.convertTableToJson;
-const hybridToCanonical = require( '../../../mixins/schemata.js' ).methods.hybridToCanonical;
-const isTruthyOrEqual = require( '../../../mixins/typeUtils.js' ).methods.isTruthyOrEqual;
+const { convertTableToJson } = require( '../../../utils/zobjectUtils.js' );
+const { hybridToCanonical } = require( '../../../utils/schemata.js' );
+const { isTruthyOrEqual } = require( '../../../utils/typeUtils.js' );
 
 module.exports = {
 	state: {},
@@ -247,7 +247,7 @@ module.exports = {
 			const zobject = hybridToCanonical( convertTableToJson( this.getZObjectTable ) );
 			const zid = this.isCreateNewPage ? undefined : this.getCurrentZObjectId;
 
-			return apiUtils.saveZObject( {
+			return saveZObject( {
 				zobject,
 				zid,
 				summary,

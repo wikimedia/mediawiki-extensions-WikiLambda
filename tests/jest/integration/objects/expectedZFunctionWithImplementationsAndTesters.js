@@ -92,6 +92,6 @@ const zFunctionWithImplementationsAndTesters = function ( implementations, teste
 	};
 };
 
-module.exports = exports = {
+module.exports = {
 	zFunctionWithImplementationsAndTesters
 };

@@ -68,8 +68,8 @@ const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
 
 const Constants = require( '../../Constants.js' );
-const errorUtils = require( '../../mixins/errorUtils.js' );
-const typeUtils = require( '../../mixins/typeUtils.js' );
+const errorMixin = require( '../../mixins/errorMixin.js' );
+const typeMixin = require( '../../mixins/typeMixin.js' );
 const LabelData = require( '../../store/classes/LabelData.js' );
 const useMainStore = require( '../../store/index.js' );
 
@@ -121,7 +121,7 @@ module.exports = exports = defineComponent( {
 		'wl-z-tester': ZTester,
 		'wl-z-typed-list': ZTypedList
 	},
-	mixins: [ typeUtils, errorUtils ],
+	mixins: [ typeMixin, errorMixin ],
 	props: {
 		rowId: {
 			type: Number,

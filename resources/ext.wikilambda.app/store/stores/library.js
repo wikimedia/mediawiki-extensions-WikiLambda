@@ -10,11 +10,17 @@
 'use strict';
 
 const Constants = require( '../../Constants.js' );
-const apiUtils = require( '../../mixins/api.js' ).methods;
+const { searchLabels, searchFunctions, fetchZObjects } = require( '../../utils/apiUtils.js' );
 const LabelData = require( '../classes/LabelData.js' );
-const typeUtils = require( '../../mixins/typeUtils.js' ).methods;
-const { convertTableToJson } = require( '../../mixins/zobjectUtils.js' ).methods;
-const { hybridToCanonical } = require( '../../mixins/schemata.js' ).methods;
+const {
+	isGlobalKey,
+	getZidOfGlobalKey,
+	getKeyFromKeyList,
+	getArgFromArgList,
+	isTruthyOrEqual
+} = require( '../../utils/typeUtils.js' );
+const { convertTableToJson } = require( '../../utils/zobjectUtils.js' );
+const { hybridToCanonical } = require( '../../utils/schemata.js' );
 
 const DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT = 300;
 let debounceZObjectLookup = null;
@@ -110,9 +116,9 @@ module.exports = {
 
 				// TODO (T324251): if this is an array index, (an integer),
 				// should we return the expected type for the typed list?
-				if ( typeUtils.isGlobalKey( key ) ) {
+				if ( isGlobalKey( key ) ) {
 					let type;
-					const zid = typeUtils.getZidOfGlobalKey( key );
+					const zid = getZidOfGlobalKey( key );
 					const storedObject = this.getStoredObject( zid );
 					if ( storedObject ) {
 						const zobject = storedObject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
@@ -122,14 +128,14 @@ module.exports = {
 							// Return the key value type if zid belongs to a type
 							case Constants.Z_TYPE:
 								// eslint-disable-next-line no-case-declarations
-								const zkey = typeUtils.getKeyFromKeyList( key, zobject[ Constants.Z_TYPE_KEYS ] );
+								const zkey = getKeyFromKeyList( key, zobject[ Constants.Z_TYPE_KEYS ] );
 								type = zkey ? zkey[ Constants.Z_KEY_TYPE ] : Constants.Z_OBJECT;
 								break;
 
 							// Return the argument type if the zid belongs to a function
 							case Constants.Z_FUNCTION:
 								// eslint-disable-next-line no-case-declarations
-								const zarg = typeUtils.getArgFromArgList(
+								const zarg = getArgFromArgList(
 									key,
 									zobject[ Constants.Z_FUNCTION_ARGUMENTS ]
 								);
@@ -167,11 +173,11 @@ module.exports = {
 					return false;
 				}
 
-				if ( !typeUtils.isGlobalKey( key ) ) {
+				if ( !isGlobalKey( key ) ) {
 					return false;
 				}
 
-				const zid = typeUtils.getZidOfGlobalKey( key );
+				const zid = getZidOfGlobalKey( key );
 				const storedObject = this.getStoredObject( zid );
 				if ( !storedObject ) {
 					return false;
@@ -182,7 +188,7 @@ module.exports = {
 					return false;
 				}
 
-				const zkey = typeUtils.getKeyFromKeyList( key, zobject[ Constants.Z_TYPE_KEYS ] );
+				const zkey = getKeyFromKeyList( key, zobject[ Constants.Z_TYPE_KEYS ] );
 				const isIdentity = zkey[ Constants.Z_KEY_IS_IDENTITY ];
 				if ( !isIdentity ) {
 					return false;
@@ -429,7 +435,7 @@ module.exports = {
 				if ( Constants.Z_IMPLEMENTATION_CODE in implementation ) {
 					// If code is literal: return literal
 					if (
-						typeUtils.isTruthyOrEqual( implementation, [
+						isTruthyOrEqual( implementation, [
 							Constants.Z_IMPLEMENTATION_CODE,
 							Constants.Z_CODE_LANGUAGE,
 							Constants.Z_PROGRAMMING_LANGUAGE_CODE
@@ -648,7 +654,7 @@ module.exports = {
 			return new Promise( ( resolve ) => {
 				clearTimeout( debounceZObjectLookup );
 				debounceZObjectLookup = setTimeout(
-					() => apiUtils.searchLabels( payload ).then( ( data ) => resolve( data ) ),
+					() => searchLabels( payload ).then( ( data ) => resolve( data ) ),
 					DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT
 				);
 			} );
@@ -671,7 +677,7 @@ module.exports = {
 			return new Promise( ( resolve ) => {
 				clearTimeout( debounceZObjectLookup );
 				debounceZObjectLookup = setTimeout(
-					() => apiUtils.searchFunctions( payload ).then( ( data ) => resolve( data ) ),
+					() => searchFunctions( payload ).then( ( data ) => resolve( data ) ),
 					DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT
 				);
 			} );
@@ -695,7 +701,7 @@ module.exports = {
 			if ( enumObject && !searchContinue ) {
 				return;
 			}
-			const promise = apiUtils.searchLabels( {
+			const promise = searchLabels( {
 				input: '',
 				type,
 				limit: Constants.API_ENUMS_LIMIT,
@@ -801,7 +807,7 @@ module.exports = {
 		 */
 		performFetchZids: function ( payload ) {
 			return new Promise( ( resolve ) => {
-				apiUtils.fetchZObjects( {
+				fetchZObjects( {
 					zids: payload.zids.join( '|' ),
 					language: this.getUserLangCode,
 					dependencies: true

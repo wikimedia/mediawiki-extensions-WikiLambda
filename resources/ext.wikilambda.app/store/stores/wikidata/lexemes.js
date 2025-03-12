@@ -6,7 +6,7 @@
  */
 'use strict';
 
-const apiUtils = require( '../../../mixins/api.js' ).methods;
+const { fetchWikidataEntities } = require( '../../../utils/apiUtils.js' );
 const Constants = require( '../../../Constants.js' );
 const LabelData = require( '../../classes/LabelData.js' );
 
@@ -240,7 +240,7 @@ module.exports = {
 		 * @param {Object} payload
 		 * @param {string} payload.id
 		 * @param {Object} payload.data
-		 * @return {void}
+		 * @return {undefined}
 		 */
 		setLexemeData: function ( payload ) {
 			// If payload.data is a promise, store it directly
@@ -282,7 +282,7 @@ module.exports = {
 				language: this.getUserLangCode,
 				ids: ids.join( '|' )
 			};
-			const promise = apiUtils.fetchWikidataEntities( request )
+			const promise = fetchWikidataEntities( request )
 				.then( ( data ) => {
 					// Once received, store lexeme Ids with their data
 					const fetched = data.entities ? Object.keys( data.entities ) : [];

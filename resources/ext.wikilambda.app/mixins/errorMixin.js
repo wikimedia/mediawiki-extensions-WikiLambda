@@ -1,6 +1,6 @@
 /**
- * WikiLambda Vue editor: Error utils mixin
- * Mixin with util functions to handle component errors
+ * WikiLambda Vue editor: Error Mixin
+ * Mixin with functions to handle component errors
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT

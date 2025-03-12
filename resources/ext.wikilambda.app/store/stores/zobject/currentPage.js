@@ -7,7 +7,7 @@
 'use strict';
 
 const Constants = require( '../../../Constants.js' );
-const eventLogUtils = require( '../../../mixins/eventLogUtils.js' );
+const eventLogMixin = require( '../../../mixins/eventLogMixin.js' );
 
 module.exports = {
 	state: {
@@ -170,7 +170,7 @@ module.exports = {
 					implementationtype: this.getCurrentZImplementationType || null,
 					zlang: this.getUserLangZid || null
 				};
-				eventLogUtils.methods.submitInteraction( 'change', interactionData );
+				eventLogMixin.methods.submitInteraction( 'change', interactionData );
 			}
 			this.dirty = value;
 		},

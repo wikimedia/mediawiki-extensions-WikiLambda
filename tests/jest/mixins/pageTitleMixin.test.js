@@ -1,5 +1,5 @@
 /*!
- * WikiLambda unit test suite for the utilsMixins mixin
+ * WikiLambda unit test suite for the pageTitleMixin
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -9,13 +9,13 @@
 
 const { shallowMount } = require( '@vue/test-utils' );
 
-const createGettersWithFunctionsMock = require( '../../../tests/jest/helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
-const createJQueryPageTitleMocks = require( '../../../tests/jest/helpers/jqueryHelpers.js' ).createJQueryPageTitleMocks;
-const createLabelDataMock = require( '../../../tests/jest/helpers/getterHelpers.js' ).createLabelDataMock;
-const pageTitleUtils = require( '../../../resources/ext.wikilambda.app/mixins/pageTitleUtils.js' );
+const createGettersWithFunctionsMock = require( '../helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
+const createJQueryPageTitleMocks = require( '../helpers/jqueryHelpers.js' ).createJQueryPageTitleMocks;
+const createLabelDataMock = require( '../helpers/getterHelpers.js' ).createLabelDataMock;
+const pageTitleMixin = require( '../../../resources/ext.wikilambda.app/mixins/pageTitleMixin.js' );
 const useMainStore = require( '../../../resources/ext.wikilambda.app/store/index.js' );
 
-describe( 'pageTitleUtils', () => {
+describe( 'pageTitleMixin', () => {
 	let wrapper, store;
 
 	beforeEach( () => {
@@ -35,7 +35,7 @@ describe( 'pageTitleUtils', () => {
 		// Mocking a Vue component to test the mixin
 		const TestComponent = {
 			template: '<div></div>',
-			mixins: [ pageTitleUtils ]
+			mixins: [ pageTitleMixin ]
 		};
 		wrapper = shallowMount( TestComponent );
 

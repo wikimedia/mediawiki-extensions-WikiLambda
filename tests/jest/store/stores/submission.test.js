@@ -10,7 +10,7 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const { setActivePinia, createPinia } = require( 'pinia' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
-const hybridToCanonical = require( '../../../../resources/ext.wikilambda.app/mixins/schemata.js' ).methods.hybridToCanonical;
+const { hybridToCanonical } = require( '../../../../resources/ext.wikilambda.app/utils/schemata.js' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 const { zobjectToRows } = require( '../../helpers/zObjectTableHelpers.js' );
 

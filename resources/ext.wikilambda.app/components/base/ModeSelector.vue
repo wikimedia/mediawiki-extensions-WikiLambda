@@ -20,7 +20,7 @@ const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
 const { CdxIcon, CdxMenuButton } = require( '../../../codex.js' );
 const Constants = require( '../../Constants.js' );
-const typeUtils = require( '../../mixins/typeUtils.js' );
+const typeMixin = require( '../../mixins/typeMixin.js' );
 const useMainStore = require( '../../store/index.js' );
 const icons = require( '../../../lib/icons.json' );
 
@@ -30,7 +30,7 @@ module.exports = exports = defineComponent( {
 		'cdx-icon': CdxIcon,
 		'cdx-menu-button': CdxMenuButton
 	},
-	mixins: [ typeUtils ],
+	mixins: [ typeMixin ],
 	props: {
 		rowId: {
 			type: Number,

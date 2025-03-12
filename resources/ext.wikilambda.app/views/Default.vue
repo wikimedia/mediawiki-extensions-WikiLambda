@@ -77,8 +77,8 @@ const FunctionExplorerWidget = require( '../components/widgets/function-explorer
 const FunctionReportWidget = require( '../components/widgets/function-report/FunctionReport.vue' );
 const PublishWidget = require( '../components/widgets/publish/Publish.vue' );
 const ZObjectKeyValue = require( '../components/default-view-types/ZObjectKeyValue.vue' );
-const eventLogUtils = require( '../mixins/eventLogUtils.js' );
-const typeUtils = require( '../mixins/typeUtils.js' );
+const eventLogMixin = require( '../mixins/eventLogMixin.js' );
+const typeMixin = require( '../mixins/typeMixin.js' );
 const useMainStore = require( '../store/index.js' );
 
 module.exports = exports = defineComponent( {
@@ -91,7 +91,7 @@ module.exports = exports = defineComponent( {
 		'wl-function-report-widget': FunctionReportWidget,
 		'wl-z-object-key-value': ZObjectKeyValue
 	},
-	mixins: [ eventLogUtils, typeUtils ],
+	mixins: [ eventLogMixin, typeMixin ],
 	computed: Object.assign(
 		mapState( useMainStore, [
 			'getZPersistentContentRowId',
