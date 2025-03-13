@@ -122,7 +122,7 @@
 	"wikilambda-multilingualstring-nofallback": "Message shown when a multi-lingual string doesn't have a label defined for the user's language, nor for any of that language's fallbacks.",
 	"wikilambda-viewmode-nojs": "Warning shown on a ZObject page to readers who do not have JavaScript.",
 	"wikilambda-diff-incompatible": "Warning shown on a diff page when a user tries to get the differences between a ZObject and something else.",
-	"wikilambda-mode-selector-button-label": "Accessibility label for screen readers for the mode selector button for accessibility, available. Clicking on the button opens a menu to let the user change what \"mode\" of Object this is.",
+	"wikilambda-mode-selector-button-label": "Accessibility label for screen readers for the popover action menu button. Clicking on the button opens a menu to let the user change the type of object: a reference to an existing object, an inline literal definition, or a function call.",
 	"wikilambda-reference": "Label for the word [[:meta:Abstract Wikipedia/Glossary#reference|reference]].\n\n{{doc-wikilambda}}\n\n{{identical|Reference}}",
 	"wikilambda-literal-type": "Adjective for a type expressed as a literal, where $1 is the type name.\n\nNote: $1 is a noun, which can be \"function\", \"string\", \"number\", or something else. If different nouns require a different adjective in your language, for example because of the noun's gender, try to translate it in a way that would be the same with any noun, for example: \"Literal object of type $1\".",
 	"wikilambda-functioncall": "Label for the word [[:meta:Abstract Wikipedia/Glossary#function call|function call]].\n\n{{doc-wikilambda}}",

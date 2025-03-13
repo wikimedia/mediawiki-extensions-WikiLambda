@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Ajeje Brazorf"
+			"Ajeje Brazorf",
+			"GianAntonucci"
 		]
 	},
 	"wikilambda-persistentzobject-contents": "Cuntinuti",
@@ -9,7 +10,7 @@
 	"wikilambda-special-objectsbytype-typeheader": "Tutti li tipi",
 	"wikilambda-cancel": "Annulla",
 	"wikilambda-savenew": "Sarva",
-	"wikilambda-savechanges": "Sarva li canciamenti",
+	"wikilambda-savechanges": "Sarba li canci",
 	"wikilambda-editor-label-addlanguage-label": "Agghiunci lingua",
 	"wikilambda-editor-zobject-addkey": "Agghiunci chiavi:",
 	"wikilambda-implementation-selector-code": "Còdici",
