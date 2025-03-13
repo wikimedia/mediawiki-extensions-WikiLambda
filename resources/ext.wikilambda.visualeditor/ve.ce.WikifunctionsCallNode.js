@@ -28,7 +28,7 @@ ve.ce.WikifunctionsCallNode.static.name = 'WikifunctionsCall';
 
 ve.ce.WikifunctionsCallNode.static.primaryCommandName = 'wikifunctionsCall';
 
-ve.ce.WikifunctionsCallNode.static.iconWhenInvisible = 'function';
+ve.ce.WikifunctionsCallNode.static.iconWhenInvisible = 'functionObject';
 
 ve.ce.WikifunctionsCallNode.static.tagName = 'span';
 

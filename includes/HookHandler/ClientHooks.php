@@ -30,6 +30,7 @@ use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 use MediaWiki\Parser\Sanitizer;
 use MediaWiki\Registration\ExtensionRegistry;
+use MediaWiki\ResourceLoader\ImageModule;
 use MediaWiki\ResourceLoader\ResourceLoader;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Storage\EditResult;
@@ -531,6 +532,19 @@ class ClientHooks implements
 		) {
 			$directoryName = __DIR__ . '/../../resources/ext.wikilambda.visualeditor';
 
+			// First, register our custom icons so we can depend on them
+			$resourceLoader->register( 'ext.wikilambda.visualeditor.icons', [
+				'class' => ImageModule::class,
+				// We're writing to the global OOUI icon namespace for now.
+				'selector' => '.oo-ui-icon-{name}',
+				'images' => [
+					'functionObject' => [ "file" => "icons/functionObject.svg" ]
+				],
+				'localBasePath' => $directoryName,
+				'remoteExtPath' => 'WikiLambda/resources'
+			] );
+
+			// Now register our actual bundle
 			$files = [
 				've.init.mw.WikifunctionsCall.js',
 				've.dm.WikifunctionsCallNode.js',
@@ -552,7 +566,7 @@ class ClientHooks implements
 				'dependencies' => [
 					'ext.visualEditor.mwcore',
 					'ext.visualEditor.mwtransclusion',
-					'oojs-ui.styles.icons-editing-functions',
+					'ext.wikilambda.visualeditor.icons',
 				],
 				'localBasePath' => $directoryName,
 				'remoteExtPath' => 'WikiLambda/resources',

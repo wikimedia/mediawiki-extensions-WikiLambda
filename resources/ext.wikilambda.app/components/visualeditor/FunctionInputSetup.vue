@@ -37,6 +37,7 @@
 				class="ext-wikilambda-app-function-input-setup__link"
 				v-html="functionLink"
 			></span>
+			<!-- eslint-enable vue/no-v-html -->
 		</div>
 	</div>
 </template>
@@ -45,11 +46,11 @@
 const { CdxIcon } = require( '../../../codex.js' );
 const { defineComponent } = require( 'vue' );
 const { mapState, mapActions } = require( 'pinia' );
-const icons = require( '../../../lib/icons.json' );
 const useMainStore = require( '../../store/index.js' );
 const Constants = require( '../../Constants.js' );
 const FunctionInputField = require( './FunctionInputField.vue' );
 const ExpandableDescription = require( './ExpandableDescription.vue' );
+const wikifunctionsIconSvg = require( './wikifunctionsIconSvg.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-input-setup',
@@ -61,8 +62,7 @@ module.exports = exports = defineComponent( {
 	emits: [ 'update', 'loading-start', 'loading-end' ],
 	data: function () {
 		return {
-			// TODO (T373118): use color icon instead
-			icon: icons.cdxIconLogoWikifunctions,
+			icon: wikifunctionsIconSvg,
 			inputFields: [],
 			allArgumentsFetched: false
 		};
@@ -247,6 +247,7 @@ module.exports = exports = defineComponent( {
 	}
 
 	.ext-wikilambda-app-function-input-setup__footer {
+		display: flex;
 		background-color: @background-color-base;
 		padding: @spacing-75 @spacing-100;
 	}

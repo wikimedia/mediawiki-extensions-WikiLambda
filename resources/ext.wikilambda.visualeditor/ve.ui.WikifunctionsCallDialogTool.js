@@ -25,7 +25,7 @@ ve.ui.WikifunctionsCallDialogTool.static.name = 'WikifunctionsCall';
 
 ve.ui.WikifunctionsCallDialogTool.static.group = 'object';
 
-ve.ui.WikifunctionsCallDialogTool.static.icon = 'function';
+ve.ui.WikifunctionsCallDialogTool.static.icon = 'functionObject';
 
 ve.ui.WikifunctionsCallDialogTool.static.title = OO.ui.deferMsg(
 	'wikilambda-visualeditor-wikifunctionscall-title'

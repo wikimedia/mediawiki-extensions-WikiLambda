@@ -30,7 +30,7 @@ OO.inheritClass( ve.ui.WikifunctionsCallContextItem, ve.ui.LinearContextItem );
 
 ve.ui.WikifunctionsCallContextItem.static.name = 'WikifunctionsCall';
 
-ve.ui.WikifunctionsCallContextItem.static.icon = 'function';
+ve.ui.WikifunctionsCallContextItem.static.icon = 'functionObject';
 
 ve.ui.WikifunctionsCallContextItem.static.label = OO.ui.deferMsg( 'wikilambda-visualeditor-wikifunctionscall-title' );
 
