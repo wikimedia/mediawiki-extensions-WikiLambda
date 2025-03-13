@@ -11,9 +11,11 @@ namespace MediaWiki\Extension\WikiLambda\Jobs;
 
 use GenericParameterJob;
 use Job;
+use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\WikifunctionsClientStore;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
 use Psr\Log\LoggerInterface;
 
@@ -25,6 +27,7 @@ class WikifunctionsUsageUpdateJob extends Job implements GenericParameterJob {
 
 	private LoggerInterface $logger;
 	private WikifunctionsClientStore $wikifunctionsClientStore;
+	private Config $config;
 
 	private string $targetFunction;
 	private Title $targetPage;
@@ -33,6 +36,8 @@ class WikifunctionsUsageUpdateJob extends Job implements GenericParameterJob {
 		parent::__construct( 'wikifunctionsUsageUpdate', $params );
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
 		$this->wikifunctionsClientStore = WikiLambdaServices::getWikifunctionsClientStore();
+
+		$this->config = MediaWikiServices::getInstance()->getMainConfig();
 
 		$this->targetFunction = $params['targetFunction'];
 		$this->targetPage = $params['targetPage'];
@@ -50,6 +55,19 @@ class WikifunctionsUsageUpdateJob extends Job implements GenericParameterJob {
 	 * @return bool
 	 */
 	public function run() {
+		if ( !$this->config->get( 'WikiLambdaEnableClientMode' ) ) {
+			$this->logger->warning(
+				__CLASS__ . ' Triggered for {targetFunction} on {targetPage}, but skipped as not in client mode',
+				[
+					'targetFunction' => $this->targetFunction,
+					'targetPage' => $this->targetPage->getPrefixedText()
+				]
+			);
+
+			// Nothing for us to do.
+			return true;
+		}
+
 		$success = $this->wikifunctionsClientStore->insertWikifunctionsUsage(
 			$this->targetFunction,
 			$this->targetPage
