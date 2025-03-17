@@ -4,7 +4,8 @@
 			"Abijeet Patro",
 			"AnupamM",
 			"पदाति",
-			"Abijeet Patro - Normal"
+			"Abijeet Patro - Normal",
+			"Bunnypranav"
 		]
 	},
 	"wikilambda-edit": "सम्पादन",
@@ -18,7 +19,7 @@
 	"wikilambda-editor-fn-step-function-about": "बारे में",
 	"wikilambda-editor-fn-step-function-details": "विस्तृत विवरण",
 	"wikilambda-editor-name-title": "नाम",
-	"wikilambda-editor-input-default-label": "निवेश",
+	"wikilambda-editor-input-default-label": "इनपुट",
 	"wikilambda-continue-editing": "संपादन जारी रखें",
 	"wikilambda-discard-edits": "संपादन रद्द करें",
 	"wikilambda-function-viewer-details-table-view-all": "सभी देखें"
