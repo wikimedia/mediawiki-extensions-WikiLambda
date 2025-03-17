@@ -1,0 +1,17 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"wikilambda-visualeditor-wikifunctionscall-title": "Function",
+	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Carga le datos del function…",
+	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Necun function seligite.",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Function de recerca",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Resultatos",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Necun resultato trovate",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Functiones suggerite",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Catena de entrata",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Function]] de Wikifunctiones",
+	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Le function manca o non es valide."
+}
