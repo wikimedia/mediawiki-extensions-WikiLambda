@@ -148,4 +148,18 @@ class ZPersistentObjectTest extends \MediaWikiUnitTestCase {
 		];
 	}
 
+	public function getDescription() {
+		$englishReference = new ZReference( 'Z1002' );
+
+		$testObject = new ZPersistentObject(
+			new ZString( 'Z400' ),
+			new ZString( 'Demo content' ),
+			new ZMultiLingualString( [] ),
+			null,
+			null
+		);
+		$this->assertSame( null, $testObject->getDescription( $englishReference ),
+			'ZPO with no descriptions at all should return null'
+		);
+	}
 }
