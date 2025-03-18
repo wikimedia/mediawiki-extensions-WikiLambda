@@ -457,6 +457,8 @@
 				"ext.wikilambda.app/components/visualeditor/FunctionInputField.vue",
 				"ext.wikilambda.app/components/visualeditor/FunctionInputSetup.vue",
 				"ext.wikilambda.app/components/visualeditor/FunctionSelect.vue",
+				"ext.wikilambda.app/components/visualeditor/FunctionSelectItem.vue",
+				"ext.wikilambda.app/components/visualeditor/ExpandableDescription.vue",
 				"ext.wikilambda.app/components/widgets/about/About.vue",
 				"ext.wikilambda.app/components/widgets/about/AboutLanguageBlock.vue",
 				"ext.wikilambda.app/components/widgets/about/AboutLanguagesDialog.vue",

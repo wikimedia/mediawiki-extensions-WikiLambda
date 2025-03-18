@@ -17,28 +17,18 @@
 			></cdx-search-input>
 		</div>
 		<div class="ext-wikilambda-app-function-select__results">
+			<!-- Suggested items -->
 			<template v-if="showSuggested">
 				<div class="ext-wikilambda-app-function-select__title">
 					{{ $i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title' ) }}
 				</div>
-				<div
+				<wl-function-select-item
 					v-for="item in suggested"
 					:key="item.zid"
-					class="ext-wikilambda-app-function-select__item"
+					:label-data="item.labelData"
+					:description="item.description"
 					@click="selectFunction( item.zid )"
-				>
-					<p
-						class="ext-wikilambda-app-function-select__item-title"
-						:lang="item.labelData.langCode"
-						:dir="item.labelData.langDir"
-					>
-						{{ item.labelData.label }}
-					</p>
-					<p class="ext-wikilambda-app-function-select__item-description">
-						<!-- TODO (T387361): add langCode and langDir -->
-						{{ item.description }}
-					</p>
-				</div>
+				></wl-function-select-item>
 			</template>
 			<!-- Lookup results -->
 			<template v-else>
@@ -46,21 +36,13 @@
 					<div class="ext-wikilambda-app-function-select__title">
 						{{ $i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title' ) }}
 					</div>
-					<div
+					<wl-function-select-item
 						v-for="( item, index ) in lookupResults"
 						:key="item.zid"
-						class="ext-wikilambda-app-function-select__item"
+						:label="item.label"
+						:description="descriptions[index]"
 						@click="selectFunction( item.zid )"
-					>
-						<p class="ext-wikilambda-app-function-select__item-title">
-							{{ item.label }}
-						</p>
-						<p class="ext-wikilambda-app-function-select__item-description">
-							<!-- TODO (T387361): add langCode and langDir -->
-							<!-- TODO (T387362): trim description -->
-							{{ descriptions[ index ] }}
-						</p>
-					</div>
+					></wl-function-select-item>
 				</template>
 				<div v-else class="ext-wikilambda-app-function-select__no-results">
 					{{ $i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results' ) }}
@@ -77,11 +59,13 @@ const { mapActions, mapState } = require( 'pinia' );
 
 const typeMixin = require( '../../mixins/typeMixin.js' );
 const useMainStore = require( '../../store/index.js' );
+const FunctionSelectItem = require( './FunctionSelectItem.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-select',
 	components: {
-		'cdx-search-input': CdxSearchInput
+		'cdx-search-input': CdxSearchInput,
+		'wl-function-select-item': FunctionSelectItem
 	},
 	mixins: [ typeMixin ],
 	data: function () {
@@ -207,27 +191,6 @@ module.exports = exports = defineComponent( {
 
 	.ext-wikilambda-app-function-select__no-results {
 		padding: @spacing-50 @spacing-100;
-		color: @color-subtle;
-		font-weight: @font-weight-normal;
-	}
-
-	.ext-wikilambda-app-function-select__item {
-		padding: @spacing-50 @spacing-100;
-
-		&:hover {
-			cursor: pointer;
-			background-color: @background-color-interactive;
-		}
-	}
-
-	.ext-wikilambda-app-function-select__item-title {
-		margin: 0;
-		color: @color-base;
-		font-weight: @font-weight-normal;
-	}
-
-	.ext-wikilambda-app-function-select__item-description {
-		margin: 0;
 		color: @color-subtle;
 		font-weight: @font-weight-normal;
 	}

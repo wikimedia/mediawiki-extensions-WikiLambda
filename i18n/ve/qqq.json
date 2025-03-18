@@ -37,5 +37,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Placeholder for the enum select field in the Wikifunctions call input configuration dialog in the visual editor",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "Footer text below the Wikifunctions input configuration dialog, which links to the selected Function page in Wikifunctions.\n* $1 is the Function's identified, e.g. 'Z12345'",
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Error message to show in the Wikifunctions call popup in the visual editor when the function ID is missing or invalid.",
-	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Error message to show in the Wikifunctions call input configuration dialog in the visual editor when the enum field is not valid."
+	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Error message to show in the Wikifunctions call input configuration dialog in the visual editor when the enum field is not valid.",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "Label for the 'Read more' button in the visual editor to expand a description",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Label for the 'Read less' button in the visual editor to collapse a description"
 }

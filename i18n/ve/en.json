@@ -36,5 +36,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Choose an option",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Function]] from Wikifunctions",
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Function is missing or invalid.",
-	"wikilambda-visualeditor-wikifunctionscall-error-enum": "No option chosen."
+	"wikilambda-visualeditor-wikifunctionscall-error-enum": "No option chosen.",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "Read more",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Read less"
 }
