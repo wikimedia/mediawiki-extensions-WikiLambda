@@ -27,7 +27,14 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		parent::setUp();
 
 		// First, we need to insert the ZObjects we're going to try to call
-		$this->insertZids( [ 'Z1', 'Z2', 'Z6', 'Z8', 'Z17', 'Z40', 'Z41', 'Z42', 'Z801', 'Z802', 'Z1002', 'Z1004' ] );
+		$this->insertZids( [
+			// Base types
+			'Z1', 'Z2', 'Z6', 'Z8', 'Z17', 'Z40', 'Z41', 'Z42', 'Z60',
+			// Functions we use
+			'Z801', 'Z802',
+			// Languages we use
+			'Z1002', 'Z1004'
+		] );
 		$this->registerLangs( [ 'en', 'fr' ] );
 
 		$this->registerErrors( [ 'Z504' ] );
@@ -76,8 +83,6 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * The second-simplest call, a request to echo 'true' or 'false' based on the first argument
-	 *
-	 * @group Broken
 	 */
 	public function testExecute_simpleIf() {
 		// Force-enable our code
