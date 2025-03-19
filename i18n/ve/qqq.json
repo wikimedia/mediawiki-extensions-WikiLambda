@@ -1,11 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
+			"Amire80",
 			"Genoveva Galarza",
 			"James D. Forrester"
 		]
 	},
-	"wikilambda-recentchanges-edit-letter": "{{Optional}} The letter to show in the recent changes list for an edit from Wikifunctions",
+	"wikilambda-recentchanges-edit-letter": "The letter to show in the recent changes list for an edit from Wikifunctions. Short form of \"Function\".\n\n{{Rc single letters}}\n\nSee also:\n* {{msg-mw|Wikilambda-recentchanges-edit-title}}\n* {{msg-mw|Wikilambda-recentchanges-edit-legend}}",
 	"wikilambda-recentchanges-edit-title": "The label for the tool-tip over the letter that indicates in recent changes that an edit is from Wikifunctions",
 	"wikilambda-recentchanges-edit-legend": "The label to show in the recent changes list legend to explain that this indicates an edit from Wikifunctions",
 	"wikilambda-recentchanges-explanation-connect-implementation": "Message used in recent changes to describe the change made on Wikifunctions, that one or more Implementations have been connected.\n\nParameters:\n* $1: The number of Implementations connected\n* $2: The list of Implementations connected (e.g. 'Z12345' or 'Z12345, Z12346, and Z12347')",
@@ -18,13 +19,13 @@
 	"wikilambda-recentchanges-explanation-delete-function": "Message used in recent changes to describe the change made on Wikifunctions, that the definition of the Function was deleted. If a log entry was written in the deletion, it will follow this message after a {{msg-mw|colon-separator}}.",
 	"wikilambda-recentchanges-explanation-delete-implementation": "Message used in recent changes to describe the change made on Wikifunctions, that an Implementation of the Function was deleted. If a log entry was written in the deletion, it will follow this message after a {{msg-mw|colon-separator}}.\n\nParameters:\n* $1: The ZID of the deleted Implementation, e.g. 'Z12345'.",
 	"wikilambda-recentchanges-explanation-delete-tester": "Message used in recent changes to describe the change made on Wikifunctions, that a Test case of the Function was deleted. If a log entry was written in the deletion, it will follow this message after a {{msg-mw|colon-separator}}.\n\nParameters:\n* $1: The ZID of the deleted Test case, e.g. 'Z12345'.",
-	"wikilambda-recentchanges-explanation-restore-function": "Message used in recent changes to describe the change made on Wikifunctions, that the definition of the Function was deleted. If a log entry was written in the deletion, it will follow this message after a {{msg-mw|colon-separator}}.",
+	"wikilambda-recentchanges-explanation-restore-function": "Message used in recent changes to describe the change made on Wikifunctions, that the definition of the Function was undeleted. If a log entry was written in the deletion, it will follow this message after a {{msg-mw|colon-separator}}.",
 	"wikilambda-recentchanges-explanation-restore-implementation": "Message used in recent changes to describe the change made on Wikifunctions, that an Implementation of the Function was restored (undeleted). If a log entry was written in the undeletion, it will follow this message after a {{msg-mw|colon-separator}}.\n\nParameters:\n* $1: The ZID of the deleted Implementation, e.g. 'Z12345'.",
 	"wikilambda-recentchanges-explanation-restore-tester": "Message used in recent changes to describe the change made on Wikifunctions, that a Test case of the Function was restored (undeleted). If a log entry was written in the undeletion, it will follow this message after a {{msg-mw|colon-separator}}.\n\nParameters:\n* $1: The ZID of the restored Test case, e.g. 'Z12345'.",
 	"wikilambda-recentchanges-filter-label": "The label in the recent changes filter system to let you filter in or out these edits from being displayed",
 	"wikilambda-recentchanges-filter-description": "The explaination of what edits are included in the filter for Wikifunctions edits",
-	"wikilambda-recentchanges-filter-rc-pref": "The label for the preference to enable Wikifunctions edits to be shown in the recent changes list",
-	"wikilambda-recentchanges-filter-wl-pref": "The label for the preference to enable Wikifunctions edits to be shown in your watchlist",
+	"wikilambda-recentchanges-filter-rc-pref": "The label for the preference to enable Wikifunctions edits to be shown in the recent changes list. Comparable to {{msg-mw|wikibase-rc-show-wikidata-pref}}",
+	"wikilambda-recentchanges-filter-wl-pref": "The label for the preference to enable Wikifunctions edits to be shown in your watchlist. Comparable to {{msg-mw|wikibase-watchlist-show-changes-pref}}",
 	"wikilambda-visualeditor-wikifunctionscall-title": "Title for the Wikifunctions call dialog in the visual editor, shown as a heading label above the call content",
 	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Message to show as body in the Wikifunctions call popup in the visual editor, while the Function data is being fetched",
 	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Message to show as body in the Wikifunctions call popup in the visual editor, when there is no function selected",
