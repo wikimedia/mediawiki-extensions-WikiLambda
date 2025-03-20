@@ -20,7 +20,7 @@
 	"license-name": "MIT",
 	"type": "other",
 	"requires": {
-		"MediaWiki": ">= 1.43",
+		"MediaWiki": ">= 1.44",
 		"extensions": {
 			"WikimediaMessages": "*",
 			"UniversalLanguageSelector": "*"
@@ -233,20 +233,16 @@
 		"PageSaveComplete": "WikiLambdaClientHooks",
 		"ResourceLoaderRegisterModules": "WikiLambdaClientHooks",
 		"MakeGlobalVariablesScript": "WikiLambdaClientHooks",
-
 		"EnhancedChangesListModifyLineData": "WikiLambdaClientChangeHooks",
 		"EnhancedChangesListModifyBlockLineData": "WikiLambdaClientChangeHooks",
 		"OldChangesListRecentChangesLine": "WikiLambdaClientChangeHooks",
 		"ChangesListSpecialPageQuery": "WikiLambdaClientChangeHooks",
 		"GetPreferences": "WikiLambdaClientChangeHooks",
-
 		"LoadExtensionSchemaUpdates": "WikiLambdaHooks",
-
 		"getUserPermissionsErrors": "PageEditingHandler",
 		"MultiContentSave": "PageEditingHandler",
 		"NamespaceIsMovable": "PageEditingHandler",
 		"RecentChange_save": "PageEditingHandler",
-
 		"HtmlPageLinkRendererEnd": "PageRenderingHandler",
 		"SkinTemplateNavigation::Universal": "PageRenderingHandler",
 		"WebRequestPathInfoRouter": "PageRenderingHandler",
