@@ -5,6 +5,8 @@
 		]
 	},
 	"wikilambda-recentchanges-edit-legend": "Modifica da Wikifunzioni",
+	"wikilambda-recentchanges-explanation-connect-implementation": "{{PLURAL:$1|Connessa implementazione|Connesse $1 implementazioni}}: $2",
+	"wikilambda-recentchanges-explanation-disconnect-implementation": "{{PLURAL:$1|Disconnessa implementazione|Disconnesse $1 implementazioni}}: $2",
 	"wikilambda-visualeditor-wikifunctionscall-title": "Funzione",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Risultati",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Nessun risultato trovato"
