@@ -110,6 +110,16 @@ const mockZids = {
 					Z11K2: 'Object'
 				}
 			]
+		},
+		Z2K5: {
+			Z12K1: [
+				'Z11',
+				{
+					Z1K1: 'Z11',
+					Z11K1: 'Z1002',
+					Z11K2: 'Object description'
+				}
+			]
 		}
 	},
 	Z2: {

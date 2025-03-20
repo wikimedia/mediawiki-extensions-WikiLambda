@@ -18,7 +18,7 @@ const mockLabels = {
 };
 
 describe( 'library Pinia store', () => {
-	let store, getMock;
+	let store, getMock, searchFunctionsGetMock;
 
 	beforeEach( () => {
 		setActivePinia( createPinia() );
@@ -29,7 +29,21 @@ describe( 'library Pinia store', () => {
 		store.enums = {};
 		store.languages = {};
 		getMock = jest.fn().mockResolvedValue( mockApiResponseFor( [ 'Z1', 'Z2', 'Z6' ] ) );
-		mw.Api = jest.fn( () => ( { get: getMock } ) );
+		searchFunctionsGetMock = jest.fn().mockResolvedValue( {
+			query: {
+				wikilambdasearch_functions: [
+					{ page_title: 'Z100', label: 'Test Function' }
+				]
+			}
+		} );
+		mw.Api = jest.fn( () => ( {
+			get: jest.fn( ( params ) => {
+				if ( params.list === 'wikilambdasearch_functions' ) {
+					return searchFunctionsGetMock( params );
+				}
+				return getMock( params );
+			} )
+		} ) );
 	} );
 
 	describe( 'Getters', () => {
@@ -467,6 +481,55 @@ describe( 'library Pinia store', () => {
 			it( 'returns undefined when language code is not available', () => {
 				store.languages = {};
 				expect( store.getLanguageZidOfCode( 'en' ) ).toBeUndefined();
+			} );
+		} );
+
+		describe( 'getDescription', () => {
+			beforeEach( () => {
+				store.objects = mockStoredObjects;
+			} );
+
+			it( 'Returns undefined if the object is not stored', () => {
+				expect( store.getDescription( 'Z99999' ) ).toBeUndefined();
+			} );
+
+			it( 'Returns undefined if the object has no description', () => {
+				expect( store.getDescription( 'Z10001' ) ).toBeUndefined();
+			} );
+
+			it( 'Returns the first description if available', () => {
+				expect( store.getDescription( 'Z1' ) ).toBe( 'Object description' );
+			} );
+		} );
+
+		describe( 'lookupFunctions', () => {
+			beforeEach( () => {
+				jest.useFakeTimers(); // Fake timers for debounce control
+			} );
+			it( 'Debounces and calls the API with the correct parameters', async () => {
+				const payload = { search: 'Test', renderable: true };
+
+				// Call lookupFunctions and simulate debounce
+				const promise = store.lookupFunctions( payload );
+
+				// Fast-forward time to simulate debounce delay
+				jest.runAllTimers();
+
+				// Ensure searchFunctionsGetMock is called after debounce timeout
+				expect( mw.Api ).toHaveBeenCalledTimes( 1 );
+				expect( searchFunctionsGetMock ).toHaveBeenCalledWith( {
+					action: 'query',
+					list: 'wikilambdasearch_functions',
+					wikilambdasearch_functions_language: 'en',
+					wikilambdasearch_functions_renderable: true,
+					wikilambdasearch_functions_search: 'Test'
+				} );
+
+				// Resolve the promise and check results
+				await expect( promise ).resolves.toEqual( {
+					objects: [ { page_title: 'Z100', label: 'Test Function' } ],
+					searchContinue: null
+				} );
 			} );
 		} );
 	} );

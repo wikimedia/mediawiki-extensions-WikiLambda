@@ -59,9 +59,8 @@ module.exports = {
 		'resources/ext.wikilambda.languageselector/index.js',
 		// Ignore our Vector search integration
 		'resources/ext.wikilambda.languageselector/vector-2022SearchIntegration.js',
-		// TODO (T387560): Remove ignore rule of visual editor components
-		'resources/ext.wikilambda.app/store/stores/visualeditor.js',
-		'resources/ext.wikilambda.app/components/visualeditor/'
+		// Ignore VisualEditor initialization scripts
+		'resources/ext.wikilambda.visualeditor/'
 	],
 
 	coverageThreshold: {
@@ -102,12 +101,6 @@ module.exports = {
 			lines: 94,
 			functions: 97,
 			statements: 94
-		},
-		'./resources/ext.wikilambda.visualeditor': {
-			branches: 0,
-			lines: 0,
-			functions: 0,
-			statements: 0
 		}
 	},
 

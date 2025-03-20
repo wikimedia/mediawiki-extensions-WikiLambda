@@ -50,6 +50,17 @@ describe( 'Router Pinia store', () => {
 				expect( store.getViewMode ).toBe( true );
 			} );
 		} );
+
+		describe( 'getWikilambdaConfig', () => {
+			it( 'Returns the WikiLambda configuration', () => {
+				const mockConfig = { someKey: 'someValue' };
+				window.mw.config = {
+					get: jest.fn( () => mockConfig )
+				};
+
+				expect( store.getWikilambdaConfig ).toEqual( mockConfig );
+			} );
+		} );
 	} );
 
 	describe( 'Actions', () => {
