@@ -4,6 +4,11 @@
 			"Ykhwong"
 		]
 	},
+	"wikilambda-recentchanges-edit-title": "위키함수 편집",
+	"wikilambda-recentchanges-edit-legend": "위키함수에서 편집",
+	"wikilambda-recentchanges-filter-label": "위키함수 편집",
+	"wikilambda-recentchanges-filter-description": "위키함수에서 시작된 편집",
+	"wikilambda-recentchanges-filter-rc-pref": "최근 바뀜에서 위키함수 편집 보기",
 	"wikilambda-visualeditor-wikifunctionscall-title": "함수",
 	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "함수 데이터를 불러오고 있습니다...",
 	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "선택된 함수가 없습니다.",
@@ -11,5 +16,6 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "결과",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "결과가 없습니다",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "함수 제안",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "위키함수의 [[f:$1|함수]]"
+	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "위키함수의 [[f:$1|함수]]",
+	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "함수가 없거나 유효하지 않습니다."
 }
