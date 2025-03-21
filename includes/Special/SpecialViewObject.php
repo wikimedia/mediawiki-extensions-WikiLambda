@@ -154,7 +154,7 @@ class SpecialViewObject extends SpecialPage {
 			$parserOptions
 		);
 
-		$outputPage->addParserOutput( $parserOutput );
+		$outputPage->addParserOutput( $parserOutput, $parserOptions );
 
 		// Add all the see-other links to versions of this page in each of the known languages.
 		$languages = $this->zObjectStore->fetchAllZLanguageCodes();
