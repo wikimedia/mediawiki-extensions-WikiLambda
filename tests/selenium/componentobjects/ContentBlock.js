@@ -79,7 +79,7 @@ class ContentBlock {
 		await ElementActions.doClick( modeButton );
 		// the class ".cdx-menu__listbox" is from codex upstream
 		const modeSelectorMenu = await modeSelector.$( '.cdx-menu__listbox' );
-		modeSelectorMenu.waitForDisplayed();
+		await modeSelectorMenu.waitForDisplayed();
 		const optionSelector = await modeSelectorMenu.$( `bdi=${ mode }` );
 		await ElementActions.doClick( await optionSelector );
 	}
