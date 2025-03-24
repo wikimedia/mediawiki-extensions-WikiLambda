@@ -11,3 +11,7 @@ const WlLanguageSelector = require( './components/LanguageSelector.vue' );
 
 createMwApp( WlLanguageSelector )
 	.mount( '#ext-wikilambda-language-selector' );
+
+// Register our special search client for Vector 2022, so type-ahead search works
+const { vectorSearchClient } = require( './vector-2022SearchIntegration.js' );
+mw.config.set( 'wgVectorSearchClient', vectorSearchClient );
