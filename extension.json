@@ -509,6 +509,7 @@
 			],
 			"messages": [
 				"comma-separator",
+				"colon-separator",
 				"parentheses",
 				"wikilambda-metadata-help-link",
 				"wikifunctions-editing-copyrightwarning-function",

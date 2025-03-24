@@ -49,7 +49,9 @@ class Title {
 	}
 }
 
-const englishMessages = JSON.parse( fs.readFileSync( path.join( __dirname, './i18n/en.json' ) ) );
+const upstreami18n = { 'colon-separator': ':' };
+let englishMessages = JSON.parse( fs.readFileSync( path.join( __dirname, './i18n/en.json' ) ) );
+englishMessages = Object.assign( englishMessages, upstreami18n );
 
 class Mocki18n {
 	constructor( string ) {
