@@ -23,7 +23,7 @@
 	"wikilambda-implementation-selector-code": "کۆد",
 	"wikilambda-implementation-selector": "جێبەجێکردنێک دیاری بکە",
 	"wikilambda-function-are-you-sure-dialog-header": "دڵنیایت؟",
-	"wikilambda-functioncall-metadata-errors": "$1 ھەڵە",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|ھەڵە}}",
 	"wikilambda-functioncall-metadata-errors-none": "ھیچ",
 	"wikilambda-functioncall-error": "ھەڵەی بانگکردنی فەنکشن: $1",
 	"wikilambda-tester-results-current-implementation": "جێبەجێکردنی ئێستا",
