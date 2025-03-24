@@ -68,9 +68,11 @@ ve.ui.WikifunctionsCallDialog.prototype.initialize = function () {
 				'wl-function-call-setup': FunctionCallSetup
 			},
 			template: `<wl-function-call-setup
-					@function-name-updated="onFunctionNameUpdated"
-					@function-inputs-updated="onFunctionInputsUpdated"
-				></wl-function-call-setup>`,
+						@function-name-updated="onFunctionNameUpdated"
+						@function-inputs-updated="onFunctionInputsUpdated"
+						@loading-start="onLoadingStart"
+						@loading-end="onLoadingEnd"
+					></wl-function-call-setup>`,
 			methods: {
 				/**
 				 * On Function name updated, set the dialog status.
@@ -88,6 +90,20 @@ ve.ui.WikifunctionsCallDialog.prototype.initialize = function () {
 				 */
 				onFunctionInputsUpdated: function () {
 					thisDialog.updateActions();
+				},
+				/**
+				 * On Loading start, push pending.
+				 */
+				onLoadingStart: function () {
+					// ⏳ Show loading indicator
+					thisDialog.pushPending();
+				},
+				/**
+				 * On Loading end, pop pending.
+				 */
+				onLoadingEnd: function () {
+					// Remove loading indicator
+					thisDialog.popPending();
 				}
 			}
 		} );
@@ -125,10 +141,12 @@ ve.ui.WikifunctionsCallDialog.prototype.getSetupProcess = function ( data ) {
 				// No selected node: new Wikifunction with
 				// * functionId: undefined
 				// * functionParams: []
+				// * suggestedFunctions: Array
 				const functionPayload = {
 					functionId: undefined,
 					functionParams: [],
-					suggestedFunctions
+					suggestedFunctions,
+					isEditing: this.isEditing()
 				};
 				const node = this.getSelectedNode();
 
@@ -170,13 +188,12 @@ ve.ui.WikifunctionsCallDialog.prototype.updateActions = function () {
 		// Set 'done' action button status.
 		// * If editing existing function call:
 		//   * Function must be set
+		//   * Function params must be set and valid
 		// * If inserting new function call:
 		//   * Function must be set
 		//   * Function params must be set and valid
 		const functionValid = ve.init.mw.WikifunctionsCall.piniaStore.validateVEFunctionId;
-		const functionParamsValid = this.isEditing() ? true :
-			ve.init.mw.WikifunctionsCall.piniaStore.validateVEFunctionParams;
-
+		const functionParamsValid = ve.init.mw.WikifunctionsCall.piniaStore.validateVEFunctionParams;
 		this.actions.setAbilities( { done: functionValid && functionParamsValid } );
 	} );
 };
@@ -189,6 +206,17 @@ ve.ui.WikifunctionsCallDialog.prototype.getReadyProcess = function ( data ) {
 	return ve.ui.WikifunctionsCallDialog.super.prototype.getReadyProcess.call( this, data )
 		.next( () => {
 			// this.functionInput.focus();
+		} );
+};
+
+/**
+ * @inheritdoc
+ */
+ve.ui.WikifunctionsCallDialog.prototype.getTeardownProcess = function ( data ) {
+	return ve.ui.WikifunctionsCallDialog.super.prototype.getTeardownProcess.call( this, data )
+		.next( () => {
+			// Reset the store to blank values
+			ve.init.mw.WikifunctionsCall.piniaStore.initializeVEFunctionCallEditor();
 		} );
 };
 
@@ -234,8 +262,7 @@ ve.ui.WikifunctionsCallDialog.prototype.getActionProcess = function ( action ) {
 				} ] );
 			}
 
-			// Set store VE configuration to empty values and close dialog
-			ve.init.mw.WikifunctionsCall.piniaStore.initializeVEFunctionCallEditor();
+			// Close dialog, setTeardownProcess will be called and reset the store
 			this.close( { action: 'done' } );
 		} );
 	}

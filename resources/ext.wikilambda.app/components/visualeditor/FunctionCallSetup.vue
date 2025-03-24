@@ -14,6 +14,8 @@
 		<wl-function-input-setup
 			v-else
 			@update="updateFunctionInputs"
+			@loading-start="startLoading"
+			@loading-end="endLoading"
 		></wl-function-input-setup>
 	</div>
 </template>
@@ -32,6 +34,7 @@ module.exports = exports = defineComponent( {
 		'wl-function-select': FunctionSelect,
 		'wl-function-input-setup': FunctionInputSetup
 	},
+	emits: [ 'function-inputs-updated', 'function-name-updated', 'loading-start', 'loading-end' ],
 	computed: Object.assign( {}, mapState( useMainStore, [
 		'validateVEFunctionId',
 		'getVEFunctionId',
@@ -83,6 +86,20 @@ module.exports = exports = defineComponent( {
 		 */
 		updateFunctionInputs: function () {
 			this.$emit( 'function-inputs-updated' );
+		},
+		/**
+		 * When we start loading, emit a 'loading-start' event to VisualEditor
+		 * for the dialog to show a loading bar.
+		 */
+		startLoading: function () {
+			this.$emit( 'loading-start' );
+		},
+		/**
+		 * When we want to end loading, emit a 'loading-end' event to VisualEditor
+		 * for the dialog to show a loading bar.
+		 */
+		endLoading: function () {
+			this.$emit( 'loading-end' );
 		}
 	} ),
 	watch: {

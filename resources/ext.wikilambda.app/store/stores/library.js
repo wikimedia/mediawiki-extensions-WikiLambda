@@ -688,23 +688,24 @@ module.exports = {
 		 *
 		 * @param {Object} payload
 		 * @param {string} payload.type - The ZID of the enum type
-		 * @return {Promise<Object>|undefined} - Promise resolving to:
+		 * @param {number} payload.limit - The amount of enums to fetch
+		 * @return {Promise} - Promise resolving to:
 		 * @property {Array<Object>} labels - The search results
 		 * @property {number|null} searchContinue - The token to continue the search or null if no more results
 		 */
 		fetchEnumValues: function ( payload ) {
-			const { type } = payload;
+			const { type, limit } = payload;
 			const enumObject = this.getEnum( payload.type );
 			const searchContinue = enumObject ? enumObject.searchContinue : undefined;
 
 			// If no continuation token and the enum is already fetched, do nothing
 			if ( enumObject && !searchContinue ) {
-				return;
+				return Promise.resolve();
 			}
 			const promise = searchLabels( {
 				input: '',
 				type,
-				limit: Constants.API_ENUMS_LIMIT,
+				limit: limit || Constants.API_ENUMS_LIMIT,
 				language: this.getUserLangCode,
 				searchContinue
 			} ).then( ( data ) => {

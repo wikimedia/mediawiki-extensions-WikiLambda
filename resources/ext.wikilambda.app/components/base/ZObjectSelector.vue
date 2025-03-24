@@ -292,6 +292,9 @@ module.exports = exports = defineComponent( {
 		] ),
 		{
 			/**
+			 * TODO: (T388660) the selected enum might not become selected in the cdx-select
+			 * due to it being in the 'load more items'.
+			 *
 			 * Load more values for the enumeration selector when the user scrolls to the bottom of the list
 			 * and there are more results to load.
 			 */

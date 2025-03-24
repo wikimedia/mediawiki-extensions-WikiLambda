@@ -12,26 +12,18 @@
 				<!-- TODO (T387361): add langCode and langDir -->
 				{{ functionDescription }}
 			</div>
-			<div class="ext-wikilambda-app-function-input-setup__fields">
-				<cdx-field
-					v-for="( input, index ) of inputFields"
-					:key="input.key"
-					class="ext-wikilambda-app-function-input-setup__field"
-				>
-					<!-- TODO (T383106): add select field for enums -->
-					<cdx-text-input
-						:placeholder="$i18n(
-							'wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder' )"
-						:model-value="functionCallArgs[ index ]"
-						@update:model-value="setFunctionCallArg( index, $event )"
-					></cdx-text-input>
-					<template #label>
-						<span
-							:lang="input.labelData.langCode"
-							:dir="input.labelData.langDir"
-						>{{ input.labelData.label }}</span>
-					</template>
-				</cdx-field>
+			<div v-if="allArgumentsFetched" class="ext-wikilambda-app-function-input-setup__fields">
+				<wl-function-input-field
+					v-for="( field, index ) in inputFields"
+					:key="field.argumentKey"
+					v-model="field.value"
+					:is-editing="isEditing"
+					:argument-key="field.argumentKey"
+					:argument-type="field.argumentType"
+					:error-message="field.errorMessage"
+					@update="value => handleUpdate( index, value )"
+					@validate="payload => handleValidation( index, payload )"
+				></wl-function-input-field>
 			</div>
 		</div>
 		<div class="ext-wikilambda-app-function-input-setup__footer">
@@ -46,37 +38,47 @@
 </template>
 
 <script>
-const { CdxField, CdxIcon, CdxTextInput } = require( '../../../codex.js' );
+const { CdxIcon } = require( '../../../codex.js' );
 const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
-
-const Constants = require( '../../Constants.js' );
+const { mapState, mapActions } = require( 'pinia' );
 const icons = require( '../../../lib/icons.json' );
 const useMainStore = require( '../../store/index.js' );
+const Constants = require( '../../Constants.js' );
+const FunctionInputField = require( './FunctionInputField.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-input-setup',
 	components: {
-		'cdx-field': CdxField,
-		'cdx-icon': CdxIcon,
-		'cdx-text-input': CdxTextInput
+		'wl-function-input-field': FunctionInputField,
+		'cdx-icon': CdxIcon
 	},
+	emits: [ 'update', 'loading-start', 'loading-end' ],
 	data: function () {
 		return {
 			// TODO (T373118): use color icon instead
-			icon: icons.cdxIconLogoWikifunctions
+			icon: icons.cdxIconLogoWikifunctions,
+			inputFields: [],
+			allArgumentsFetched: false
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
 		'getDescription',
-		'getInputsOfFunctionZid',
-		'getLabelData',
 		'getUserLangCode',
 		'getVEFunctionId',
-		'getVEFunctionParams'
+		'getVEEditing',
+		'getVEFunctionParams',
+		'getInputsOfFunctionZid'
 	] ), {
 		/**
-		 * FIXME doc
+		 * Returns if the function is being edited.
+		 *
+		 * @return {boolean}
+		 */
+		isEditing: function () {
+			return this.getVEEditing;
+		},
+		/**
+		 * Returns the VisualEditor function ID.
 		 *
 		 * @return {string}
 		 */
@@ -84,7 +86,7 @@ module.exports = exports = defineComponent( {
 			return this.getVEFunctionId;
 		},
 		/**
-		 * FIXME doc
+		 * Returns the URL of the function in Wikifunctions.
 		 *
 		 * @return {string}
 		 */
@@ -93,7 +95,7 @@ module.exports = exports = defineComponent( {
 			return `${ wikifunctionsUrl }/view/${ this.getUserLangCode }/${ this.functionZid }`;
 		},
 		/**
-		 * FIXME doc
+		 * Returns the text for the link to the function in Wikifunctions.
 		 *
 		 * @return {string}
 		 */
@@ -104,7 +106,7 @@ module.exports = exports = defineComponent( {
 			).parse();
 		},
 		/**
-		 * FIXME doc
+		 * Returns the description of the function.
 		 *
 		 * @return {string}
 		 */
@@ -112,23 +114,7 @@ module.exports = exports = defineComponent( {
 			return this.getDescription( this.functionZid );
 		},
 		/**
-		 * FIXME doc
-		 *
-		 * @return {Array}
-		 */
-		functionCallArgs: function () {
-			// TODO (T383106) Validate enums
-			// TODO (T387371) Validate types with parsers
-			// Instead of directly passing the values set from Visual Editor,
-			// we need to validate them first, because those param values might not
-			// be valid. If they are not valid, show errors on load
-			return Array.from(
-				{ length: this.functionArguments.length },
-				( _, index ) => this.getVEFunctionParams[ index ] || null
-			);
-		},
-		/**
-		 * FIXME doc
+		 * Returns the arguments of the function.
 		 *
 		 * @return {Array}
 		 */
@@ -136,34 +122,100 @@ module.exports = exports = defineComponent( {
 			return this.getInputsOfFunctionZid( this.functionZid );
 		},
 		/**
-		 * FIXME doc
+		 * Checks if all input fields are valid.
 		 *
-		 * @return {Array}
+		 * @param {Object} state - The state object.
+		 * @return {boolean} - True if all fields are valid, otherwise false.
 		 */
-		inputFields: function () {
-			return this.functionArguments.map( ( arg ) => ( {
-				key: arg[ Constants.Z_ARGUMENT_KEY ],
-				expectedType: arg[ Constants.Z_ARGUMENT_TYPE ],
-				labelData: this.getLabelData( arg[ Constants.Z_ARGUMENT_KEY ] )
-			} ) );
+		areInputFieldsValid: function () {
+			return this.inputFields.every( ( field ) => field.isValid );
 		}
 	} ),
+
 	methods: Object.assign( {}, mapActions( useMainStore, [
-		'setVEFunctionParam'
+		'setVEFunctionParam',
+		'setVEFunctionParamsValid',
+		'fetchZids'
 	] ), {
 		/**
-		 * FIXME doc
-		 *
-		 * @param {number} index
-		 * @param {string} value
+		 * Initializes the function input fields with the current Visual Editor function parameters.
 		 */
-		setFunctionCallArg: function ( index, value ) {
-			// TODO (T383106) Validate enums, if not valid show error
-			// TODO (T387371) Validate types with parsers, if not valid show error
+		initializeInputFields: function () {
+			this.inputFields = this.functionArguments.map( ( arg, index ) => ( {
+				argumentKey: arg[ Constants.Z_ARGUMENT_KEY ],
+				argumentType: arg[ Constants.Z_ARGUMENT_TYPE ],
+				value: this.getVEFunctionParams[ index ]
+			} ) );
+		},
+		/**
+		 * Updates the value of a specific input field in the Visual Editor.
+		 *
+		 * @param {number} index - The index of the field to update.
+		 * @param {string} value - The new value for the field.
+		 */
+		handleUpdate: function ( index, value ) {
 			this.setVEFunctionParam( index, value );
-			this.$emit( 'update' );
+		},
+		/**
+		 * Handles the validation event for a specific input field.
+		 *
+		 * @param {number} index - The index of the field to validate.
+		 * @param {Object} payload
+		 * @param {boolean} payload.isValid - The validation status.
+		 * @param {string|undefined} payload.errorMessage - The error message to set, if any.
+		 */
+		handleValidation: function ( index, payload ) {
+			const field = this.inputFields[ index ];
+			if ( field ) {
+				field.isValid = payload.isValid;
+				field.errorMessage = payload.errorMessage;
+			}
+		},
+		/**
+		 * Fetches the ZIDs for all argument types.
+		 * Show a loading state in VisualEditor while fetching.
+		 *
+		 * @param {Array} args - The list of function arguments.
+		 */
+		fetchArgumentTypes: function ( args ) {
+			if ( args.length > 0 ) {
+				this.$emit( 'loading-start' );
+
+				const argumentTypes = args.map( ( arg ) => arg[ Constants.Z_ARGUMENT_TYPE ] );
+				this.fetchZids( { zids: argumentTypes } )
+					.then( () => {
+						this.allArgumentsFetched = true;
+					} )
+					.finally( () => {
+						this.$emit( 'loading-end' );
+					} );
+			}
 		}
-	} )
+
+	} ),
+	watch: {
+		/**
+		 * Watches the form validity and updates the VisualEditor validity state
+		 * so the submit button can be enabled/disabled.
+		 *
+		 * @param {boolean} isValid - The form validity status.
+		 */
+		areInputFieldsValid: function ( isValid ) {
+			this.setVEFunctionParamsValid( isValid );
+			this.$emit( 'update' );
+		},
+		/**
+		 * Watches the function arguments and fetches the ZIDs for the argument types.
+		 * Do this immediately and when the arguments change.
+		 */
+		functionArguments: {
+			immediate: true,
+			handler: 'fetchArgumentTypes'
+		}
+	},
+	mounted: function () {
+		this.initializeInputFields();
+	}
 } );
 </script>
 
