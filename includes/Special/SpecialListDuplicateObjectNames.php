@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Special;
 
 use MediaWiki\Cache\LinkBatchFactory;
 use MediaWiki\Languages\LanguageNameUtils;
+use MediaWiki\Parser\ParserOptions;
 use MediaWiki\SpecialPage\SpecialPage;
 
 class SpecialListDuplicateObjectNames extends SpecialPage {
@@ -69,6 +70,9 @@ class SpecialListDuplicateObjectNames extends SpecialPage {
 			return;
 		}
 
-		$output->addParserOutputContent( $pager->getFullOutput() );
+		$output->addParserOutputContent(
+			$pager->getFullOutput(),
+			ParserOptions::newFromContext( $this->getContext() )
+		);
 	}
 }
