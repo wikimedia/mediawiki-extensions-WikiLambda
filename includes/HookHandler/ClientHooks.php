@@ -11,7 +11,6 @@
 
 namespace MediaWiki\Extension\WikiLambda\HookHandler;
 
-use JobQueueGroup;
 use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsUsageUpdateJob;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
@@ -23,6 +22,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Html\Html;
 use MediaWiki\Http\HttpRequestFactory;
+use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Parser\Parser;
