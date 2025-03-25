@@ -28,5 +28,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Resultater",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Keng Resultater fonnt",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Virgeschloe Funktiounen",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Funktioun]] vu Wikifunctions"
+	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Wielt eng Optioun",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Funktioun]] vu Wikifunctions",
+	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Keng Optioun gewielt."
 }

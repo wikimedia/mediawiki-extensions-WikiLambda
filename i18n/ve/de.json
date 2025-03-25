@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": []
 	},
+	"wikilambda-recentchanges-edit-letter": "F",
 	"wikilambda-recentchanges-edit-title": "Wikifunktionen bearbeiten",
 	"wikilambda-recentchanges-edit-legend": "Bearbeitung aus Wikifunktions",
 	"wikilambda-recentchanges-explanation-connect-implementation": "Verbundene {{PLURAL:$1|Implementierung|$1 Implementierungen}}: $2",
@@ -29,6 +30,8 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Keine Ergebnisse gefunden",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Vorgeschlagene Funktionen",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Eingabezeichenfolge",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Wähle eine Option",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Funktion]] aus Wikifunctions",
-	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Funktion fehlt oder ist ungültig."
+	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Funktion fehlt oder ist ungültig.",
+	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Keine Option ausgewählt."
 }

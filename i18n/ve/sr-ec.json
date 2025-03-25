@@ -12,5 +12,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Резултати",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Нема резултата",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Предложене функције",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Функција]] са Викифункција"
+	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Изаберите опцију",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Функција]] са Викифункција",
+	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Ниједна опција није изабрана."
 }
