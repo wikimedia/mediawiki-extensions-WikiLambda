@@ -154,6 +154,7 @@ ve.ui.WikifunctionsCallDialog.prototype.getSetupProcess = function ( data ) {
 				// * functionId: Zid or null
 				// * functionParams: Array
 				if ( node ) {
+					// (T373253) Old-style DOM syntax, to remove
 					// Get Function Id
 					const template = ve.getProp( node, 'element', 'attributes', 'mw', 'parts', 0, 'template' );
 					const [ , functionId ] = ve.getProp( template, 'target', 'wt' ).split( ':' );
@@ -167,6 +168,20 @@ ve.ui.WikifunctionsCallDialog.prototype.getSetupProcess = function ( data ) {
 							functionParams[ parseInt( key ) - 1 ] = functionParamsObject[ key ].wt;
 						}
 					}
+
+					// (T373253) New-style DOM syntax, to enable
+					// const pf = ve.getProp(node, 'element', 'attributes', 'mw', 'parts', 0, 'parserfunction');
+					// const functionCallObject = ve.getProp( pf, 'params') || {};
+					// const functionCall = [];
+					// for (const key in functionCallObject) {
+					// if (Object.prototype.hasOwnProperty.call(functionCallObject, key)) {
+					// // Make sure that the array uses the right order (keys start at 1; 1st item is the function ID)
+					// functionParams[parseInt(key) - 1] = functionCallObject[key].wt;
+					// }
+					// }
+					// const functionId = functionCall;
+					// const functionParams = functionCall.splice(0, 1);
+
 					functionPayload.functionId = functionId;
 					functionPayload.functionParams = functionParams;
 				}
@@ -233,6 +248,7 @@ ve.ui.WikifunctionsCallDialog.prototype.getActionProcess = function ( action ) {
 			const functionParams = ve.init.mw.WikifunctionsCall.piniaStore.getVEFunctionParams;
 
 			// Place our values into the model
+			// (T373253) Old-style DOM syntax, to remove
 			const mwData = {
 				parts: [ {
 					template: {
@@ -244,6 +260,18 @@ ve.ui.WikifunctionsCallDialog.prototype.getActionProcess = function ( action ) {
 					}
 				} ]
 			};
+			// (T373253) New-style DOM syntax, to enable
+			// const mwData = {
+			// parts: [ {
+			// parserfunction: {
+			// target: { wt: 'function', key: 'function' },
+			// params: [ 1: functionId ] + functionParams.reduce( ( acc, param, index ) => {
+			// acc[ ( index + 2 ).toString() ] = { wt: param };
+			// return acc;
+			// }, {} )
+			// }
+			// } ]
+			// };
 
 			// Update the visual editor model with the new data
 			const surfaceModel = this.getFragment().getSurface();

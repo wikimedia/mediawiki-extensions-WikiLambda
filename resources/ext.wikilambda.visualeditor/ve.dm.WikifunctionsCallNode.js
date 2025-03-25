@@ -35,8 +35,10 @@ ve.dm.WikifunctionsCallNode.static.isContent = true;
 
 ve.dm.WikifunctionsCallNode.static.matchTagNames = null;
 
-// ve.dm.WikifunctionsCallNode.static.matchRdfaTypes = [ 'mw:ParserFunction' ];
+// (T373253) Old-style DOM syntax, to remove
 ve.dm.WikifunctionsCallNode.static.matchRdfaTypes = [ 'mw:Transclusion' ];
+// (T373253) New-style DOM syntax, to enable
+// ve.dm.WikifunctionsCallNode.static.matchRdfaTypes = [ 'mw:ParserFunction' ];
 
 ve.dm.WikifunctionsCallNode.static.enableAboutGrouping = true;
 
@@ -49,7 +51,10 @@ ve.dm.WikifunctionsCallNode.static.matchFunction = function ( domElement ) {
 	if ( !mwPart ) {
 		return false;
 	}
+	// (T373253) Old-style DOM syntax, to remove
 	return ve.getProp( mwPart, 'template', 'target', 'function' ) === 'function';
+	// (T373253) New-style DOM syntax, to enable
+	// return ve.getProp( mwPart, 'parserfunction', 'target', 'key' ) === 'function';
 };
 
 /* Registration */
