@@ -90,7 +90,8 @@
 						:key="'item' + itemIndex"
 						class="ext-wikilambda-app-function-metadata-dialog__key"
 					>
-						<span class="ext-wikilambda-app-function-metadata-dialog__key-title">{{ item.title }}</span>:
+						<!-- eslint-disable-next-line max-len -->
+						<span class="ext-wikilambda-app-function-metadata-dialog__key-title">{{ item.title }}</span>{{ $i18n( 'colon-separator' ).text() }}
 						<template v-if="item.value">
 							<a
 								v-if="item.url"

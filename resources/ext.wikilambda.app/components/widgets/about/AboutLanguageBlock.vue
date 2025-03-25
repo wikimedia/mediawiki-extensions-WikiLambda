@@ -56,15 +56,17 @@
 							:key="input.key"
 							class="ext-wikilambda-app-about-language-block__field-value
 								ext-wikilambda-app-about-language-block__input">
+							<!-- eslint-disable-next-line max-len -->
 							<span
 								v-if="input.value"
 								class="ext-wikilambda-app-about-language-block__input-label"
-							>{{ input.value }}<span>:</span></span>
+							>{{ input.value }}<span>{{ $i18n( 'colon-separator' ).text() }}</span>
+							</span>
 							<span
 								v-else
 								class="ext-wikilambda-app-about-language-block__input-label
 									ext-wikilambda-app-about-language-block__unavailable"
-							>{{ $i18n( 'wikilambda-editor-default-name' ).text() }}<span>:</span>
+							><!-- eslint-disable-line max-len -->{{ $i18n( 'wikilambda-editor-default-name' ).text() }}<span>{{ $i18n( 'colon-separator' ).text() }}</span>
 							</span>&nbsp;<wl-z-object-to-string :row-id="input.typeRowId"></wl-z-object-to-string>
 						</div>
 					</template>
@@ -112,7 +114,7 @@
 							<span
 								:lang="fallbackName.lang.langCode"
 								:dir="fallbackName.lang.langDir"
-							>{{ fallbackName.lang.label }}</span>:
+							>{{ fallbackName.lang.label }}</span>{{ $i18n( 'colon-separator' ).text() }}
 							{{ fallbackName.value }}
 						</template>
 					</div>
@@ -146,7 +148,7 @@
 							<span
 								:lang="fallbackDescription.lang.langCode"
 								:dir="fallbackDescription.lang.langDir"
-							>{{ fallbackDescription.lang.label }}</span>:
+							>{{ fallbackDescription.lang.label }}</span>{{ $i18n( 'colon-separator' ).text() }}
 							{{ fallbackDescription.value }}
 						</template>
 					</div>
@@ -179,7 +181,7 @@
 						<span
 							:lang="fallbackAliases.lang.langCode"
 							:dir="fallbackAliases.lang.langDir"
-						>{{ fallbackAliases.lang.label }}</span>:
+						>{{ fallbackAliases.lang.label }}</span>{{ $i18n( 'colon-separator' ).text() }}
 						{{ fallbackAliases.value.join( ', ' ) }}
 					</div>
 				</template>
@@ -210,7 +212,7 @@
 								<span
 									:lang="fallbackInputs[ index ].lang.langCode"
 									:dir="fallbackInputs[ index ].lang.langDir"
-								>{{ fallbackInputs[ index ].lang.label }}</span>:
+								>{{ fallbackInputs[ index ].lang.label }}</span>{{ $i18n( 'colon-separator' ).text() }}
 								{{ fallbackInputs[ index ].value }}
 							</template>
 						</div>
