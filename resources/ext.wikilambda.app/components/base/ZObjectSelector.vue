@@ -27,7 +27,6 @@
 			:placeholder="lookupPlaceholder"
 			:menu-items="menuItems"
 			:menu-config="lookupConfig"
-			:end-icon="lookupIcon"
 			:status="errorLookupStatus"
 			data-testid="z-object-selector-lookup"
 			@update:selected="onSelect"
@@ -239,15 +238,6 @@ module.exports = exports = defineComponent( {
 				const label = this.getLabelOrZid( value, item.label );
 				return { value, label };
 			} );
-		},
-
-		/**
-		 * Icon to display at the end of the Codex Lookup selector
-		 *
-		 * @return {string}
-		 */
-		lookupIcon: function () {
-			return icons.cdxIconExpand;
 		},
 
 		/**
@@ -577,14 +567,6 @@ module.exports = exports = defineComponent( {
 @import '../../ext.wikilambda.app.variables.less';
 
 .ext-wikilambda-app-object-selector {
-	// Style the custom chevron icon to be smaller
-	.cdx-text-input__end-icon {
-		width: @size-icon-x-small;
-		height: @size-icon-x-small;
-		min-width: @size-icon-x-small;
-		min-height: @size-icon-x-small;
-	}
-
 	.ext-wikilambda-app-object-selector__errors {
 		margin-top: @spacing-50;
 	}
