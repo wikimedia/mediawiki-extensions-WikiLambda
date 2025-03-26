@@ -57,6 +57,21 @@ ve.dm.WikifunctionsCallNode.static.matchFunction = function ( domElement ) {
 	// return ve.getProp( mwPart, 'parserfunction', 'target', 'key' ) === 'function';
 };
 
+// On initializing the data model from the DOM, initializes the isError attribute.
+ve.dm.WikifunctionsCallNode.static.toDataElement = function ( domElements ) {
+	const mwDataJSON = domElements[ 0 ].getAttribute( 'data-mw' );
+	const mwData = mwDataJSON ? JSON.parse( mwDataJSON ) : {};
+	const isError = domElements[ 0 ].classList.contains( 'cdx-message--error' );
+
+	return {
+		type: this.name,
+		attributes: {
+			mw: mwData,
+			isError
+		}
+	};
+};
+
 /* Registration */
 
 ve.dm.modelRegistry.register( ve.dm.WikifunctionsCallNode );

@@ -17,7 +17,6 @@ use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
-use MediaWiki\Extension\WikiLambda\WikifunctionCallException;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
@@ -41,6 +40,7 @@ use MediaWiki\Rest\SimpleHandler;
 use MediaWiki\Title\Title;
 use Psr\Log\LoggerInterface;
 use stdClass;
+use Throwable;
 use Wikimedia\Message\MessageValue;
 use Wikimedia\ParamValidator\ParamValidator;
 
@@ -69,9 +69,7 @@ class FunctionCallHandler extends SimpleHandler {
 
 		$this->logger->debug(
 			__METHOD__ . ' triggered to evaluate a call to {target}',
-			[
-				'target' => $target
-			]
+			[ 'target' => $target ]
 		);
 
 		// 0. Check if we are disabled.
@@ -82,10 +80,12 @@ class FunctionCallHandler extends SimpleHandler {
 			// Note: We check for both modes here, as a very quick way to emergency-disable this everywhere.
 			// Client-side code is also going to check whether it's disabled before it's installed.
 			$this->dieRESTfullyWithZError(
-				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [] ),
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [ 'data' => "WikiLambdaEnableClientMode" ]
+				),
 				// This is an HTTP 501 because it's literally "not implemented yet", rather than necessarily user error
 				501,
-				[ "target" => $target ]
+				[ 'target' => $target ]
 			);
 		}
 
@@ -93,14 +93,12 @@ class FunctionCallHandler extends SimpleHandler {
 		if ( !ZObjectUtils::isValidOrNullZObjectReference( $target ) ) {
 			$this->logger->debug(
 				__METHOD__ . ' called on {target} which is a non-ZID, e.g. an inline function',
-				[
-					'target' => $target
-				]
+				[ 'target' => $target ]
 			);
 			$this->dieRESTfullyWithZError(
-				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ "data" => $target ] ),
+				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ 'data' => $target ] ),
 				400,
-				[ "target" => $target ]
+				[ 'target' => $target ]
 			);
 		}
 
@@ -108,42 +106,26 @@ class FunctionCallHandler extends SimpleHandler {
 		if ( !( $targetTitle->exists() ) ) {
 			$this->logger->debug(
 				__METHOD__ . ' called on {target} which does not exist on-wiki',
-				[
-					'target' => $target
-				]
+				[ 'target' => $target ]
 			);
 			$this->dieRESTfullyWithZError(
-				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ "data" => $target ] ),
+				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ 'data' => $target ] ),
 				400,
-				[ "target" => $target ]
+				[ 'target' => $target ]
 			);
 		}
 
 		$targetObject = $this->zObjectStore->fetchZObjectByTitle( $targetTitle );
 		// ZObjectStore's fetchZObjectByTitle() returns ZObjectContent or false, so first sense-check it
 		if ( !$targetObject ) {
-			$fallbackErrorMessage = 'No ZObject returned';
 			$this->logger->warning(
 				__METHOD__ . ' called on {target} which is somehow non-ZObject in our namespace',
-				[
-					'target' => $target,
-					'childError' => $fallbackErrorMessage,
-				]
+				[ 'target' => $target ]
 			);
 			$this->dieRESTfullyWithZError(
-				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED,
-					[
-						'subtype' => ZErrorTypeRegistry::Z_ERROR_KEY_VALUE_NOT_WELLFORMED,
-						// Can't use an actual child error as it's missing
-						'childError' => ZErrorFactory::createZErrorInstance(
-							ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
-							[ 'data' => $fallbackErrorMessage ]
-						)
-					]
-				),
+				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ 'data' => $target ] ),
 				400,
-				[ "target" => $target ]
+				[ 'target' => $target ]
 			);
 		}
 
@@ -156,16 +138,11 @@ class FunctionCallHandler extends SimpleHandler {
 					'childError' => $targetObject->getErrors()->getMessage(),
 				]
 			);
+			// Dies with Z_ERROR_NOT_WELLFORMED
 			$this->dieRESTfullyWithZError(
-				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED,
-					[
-						'subtype' => ZErrorTypeRegistry::Z_ERROR_KEY_VALUE_NOT_WELLFORMED,
-						'childError' => $targetObject->getErrors()
-					]
-				),
+				ZErrorFactory::createValidationZError( $targetObject->getErrors() ),
 				400,
-				[ "target" => $target ]
+				[ 'target' => $target ]
 			);
 		}
 
@@ -182,17 +159,21 @@ class FunctionCallHandler extends SimpleHandler {
 				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_ARGUMENT_TYPE_MISMATCH,
 					[
-						"expected" => ZTypeRegistry::Z_FUNCTION,
-						"actual" => $targetObject->getZType(),
-						"argument" => ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION
+						'expected' => ZTypeRegistry::Z_FUNCTION,
+						'actual' => $targetObject->getZType(),
+						'argument' => $target
 					]
 				),
 				400,
-				[ "target" => $target ]
+				[
+					'target' => $target,
+					'mode' => 'function'
+				]
 			);
 		}
 
 		$targetFunction = $targetObject->getInnerZObject();
+		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction $targetFunction';
 
 		// 2. (T368604): Check for and use parsers on inputs
 
@@ -208,10 +189,11 @@ class FunctionCallHandler extends SimpleHandler {
 					'error' => $error->getMessage()
 				]
 			);
+			// Die with Z_ERROR_LANG_NOT_FOUND
 			$this->dieRESTfullyWithZError(
 				$error->getZError(),
 				400,
-				[ "target" => $parseLang ]
+				[ 'target' => $parseLang ]
 			);
 		}
 
@@ -224,10 +206,7 @@ class FunctionCallHandler extends SimpleHandler {
 		// and set up given inputs (for parsing if appropriate)
 		$argumentsForCall = [];
 
-		$targetFunctionArguments = $targetFunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_ARGUMENTS );
-		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList $targetFunctionArguments';
-		$expectedArguments = $targetFunctionArguments->getAsArray();
-
+		$expectedArguments = $targetFunction->getArgumentDeclarations();
 		if ( count( $arguments ) !== count( $expectedArguments ) ) {
 			$this->logger->debug(
 				__METHOD__ . ' called on {target} with the wrong number of arguments, {givenCount} not {expectedCount}',
@@ -241,13 +220,13 @@ class FunctionCallHandler extends SimpleHandler {
 				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_ARGUMENT_COUNT_MISMATCH,
 					[
-						"expected" => count( $expectedArguments ),
-						"actual" => count( $arguments ),
-						"arguments" => $arguments
+						'expected' => strval( count( $expectedArguments ) ),
+						'actual' => strval( count( $arguments ) ),
+						'arguments' => $arguments
 					]
 				),
 				400,
-				[ "target" => $target ]
+				[ 'target' => $target ]
 			);
 		}
 
@@ -266,8 +245,8 @@ class FunctionCallHandler extends SimpleHandler {
 				continue;
 			}
 
-			// Type is generic and we hope for the best (Z1)
-			// FIXME: Adjust API filter code to allow Z1s as well?
+			// Type is generic (Z1) and we treat it as a Z6
+			// TODO (T390678): Adjust API filter code to allow Z1s as well?
 			if ( $targetTypeZid === ZTypeRegistry::Z_OBJECT ) {
 				continue;
 			}
@@ -278,8 +257,9 @@ class FunctionCallHandler extends SimpleHandler {
 			$targetTypeObject = $targetTypeContentObject->getInnerZObject();
 
 			if ( !( $targetTypeObject instanceof ZType ) ) {
-				// It's somehow not to a Type. This is an error in the content.
-				// Mostly this is here to make phan happy.
+				// It's somehow not to a Type, because:
+				// * Argument is a generic type; the function input is not supported.
+				// * There is an error in the content; the function is not wellformed (not very likely).
 				$this->logger->error(
 					__METHOD__ . ' called on {target} which has a non-Type argument, {targetTypeZid} in position {pos}',
 					[
@@ -290,15 +270,21 @@ class FunctionCallHandler extends SimpleHandler {
 				);
 				$this->dieRESTfullyWithZError(
 					ZErrorFactory::createZErrorInstance(
-						ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ "data" => $targetTypeZid ]
+						ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [ 'data' => $target ]
 					),
 					400,
-					[ "target" => $target ]
+					[
+						'target' => $target,
+						'mode' => 'input'
+					]
 				);
 			}
 
 			// Check if the argument is a ZID to an instance of the right Type
-			if ( $this->checkArgumentValidity( $providedArgument, $targetTypeObject, $inputArgumentKey, $target ) ) {
+			// * Returns true if there's no need to parse it
+			// * Returns false if we should parse it
+			// * Dies if the type is not correct
+			if ( $this->checkArgumentValidity( $providedArgument, $targetTypeObject, $target ) ) {
 				continue;
 			}
 
@@ -307,10 +293,6 @@ class FunctionCallHandler extends SimpleHandler {
 
 			// Type has no parser
 			if ( $typeParser === false ) {
-				// At this point, we assume it's going to fail, so error on the basis that this is incorrect.
-				// TODO (T362252): Would be nicer to build a list with multiple failures in one go, rather than
-				// fatalling on the first (and thus making the user fix one just to be told about the next).
-
 				// User is trying to use a parameter that can't be parsed from text
 				$this->logger->info(
 					__METHOD__ . ' called on {target} with an unparseable input, {targetTypeZid} in position {pos}',
@@ -321,15 +303,14 @@ class FunctionCallHandler extends SimpleHandler {
 					]
 				);
 				$this->dieRESTfullyWithZError(
-					ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [
-						"data" => [
-							$target,
-							$expectedArgument->getValueByKey( ZTypeRegistry::Z_ARGUMENTDECLARATION_ID ),
-							$targetTypeZid
-						]
-					] ),
+					ZErrorFactory::createZErrorInstance(
+						ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [ 'data' => $target ]
+					),
 					400,
-					[ "target" => $target, "mode" => "input" ]
+					[
+						'target' => $target,
+						'mode' => 'input'
+					]
 				);
 			}
 
@@ -356,12 +337,14 @@ class FunctionCallHandler extends SimpleHandler {
 					'error' => $error->getMessage()
 				]
 			);
+			// Die with Z_ERROR_LANG_NOT_FOUND
 			$this->dieRESTfullyWithZError(
 				$error->getZError(),
 				400,
-				[ "target" => $renderLang ]
+				[ 'target' => $renderLang ]
 			);
 		}
+
 		// Then, actually check the return Type
 		$targetReturnType = $targetFunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_RETURN_TYPE )->getZValue();
 		if (
@@ -375,8 +358,9 @@ class FunctionCallHandler extends SimpleHandler {
 				->getInnerZObject();
 
 			if ( !( $targetReturnTypeObject instanceof ZType ) ) {
-				// It's somehow not to a Type. This is an error in the content.
-				// Mostly this is here to make phan happy.
+				// It's somehow not to a Type, because:
+				// * Output is a generic type; the function input is not supported.
+				// * There is an error in the content; the function is not wellformed (not very likely).
 				$this->logger->error(
 					__METHOD__ . ' called on {target} which has a non-Type output, {targetReturnType}',
 					[
@@ -386,10 +370,13 @@ class FunctionCallHandler extends SimpleHandler {
 				);
 				$this->dieRESTfullyWithZError(
 					ZErrorFactory::createZErrorInstance(
-						ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ "data" => $targetReturnType ]
+						ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [ 'data' => $target ]
 					),
 					400,
-					[ "target" => $target ]
+					[
+						'target' => $target,
+						'mode' => 'output'
+					]
 				);
 			}
 
@@ -406,10 +393,13 @@ class FunctionCallHandler extends SimpleHandler {
 				);
 				$this->dieRESTfullyWithZError(
 					ZErrorFactory::createZErrorInstance(
-						ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [ "data" => $target ]
+						ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [ 'data' => $target ]
 					),
 					400,
-					[ "target" => $target, "mode" => "output" ]
+					[
+						'target' => $target,
+						'mode' => 'output'
+					]
 				);
 			}
 
@@ -426,40 +416,19 @@ class FunctionCallHandler extends SimpleHandler {
 		// 6. Execute the call
 		try {
 			$response = $this->makeRequest( json_encode( $call ), $renderLang );
-		} catch ( WikifunctionCallException $error ) {
-			$this->logger->error(
-				__METHOD__ . ' called on {target} but got a WikifunctionCallException, {error}',
-				[
-					'target' => $target,
-					'error' => $error->getMessage()
-				]
-			);
-			$this->dieRESTfullyWithZError(
-				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_EVALUATION, [
-					"functionCall" => $call,
-					"error" => $error->getZError(),
-				] ),
-				// This is an HTTP 500 because it's an error when calling our "local" API, which is probably our fault
-				500,
-				[ "data" => $error ]
-			);
-		} catch ( ZErrorException $error ) {
+		} catch ( ZErrorException $e ) {
 			$this->logger->error(
 				__METHOD__ . ' called on {target} but got a ZErrorException, {error}',
 				[
 					'target' => $target,
-					'error' => $error->getMessage()
+					'error' => $e->getMessage()
 				]
 			);
-			$this->dieRESTfullyWithZError(
-				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_EVALUATION, [
-					"functionCall" => $call,
-					"error" => $error->getZError(),
-				] ),
-				// This is an HTTP 400 because it's an error in the evaluation, probably due to a bad request
-				400,
-				[ "data" => $error ]
-			);
+			// Dies with one of these ZErrors:
+			// * Z_ERROR_API_FAILURE/Z530
+			// * Z_ERROR_EVALUATION/Z507
+			// * Z_ERROR_INVALID_EVALUATION_RESULT/Z560
+			$this->dieRESTfullyWithZError( $e->getZError(), 400, [ 'data' => $e->getZError() ] );
 		}
 
 		// Finally, return the values as JSON (if not already early-returned as an error)
@@ -546,103 +515,114 @@ class FunctionCallHandler extends SimpleHandler {
 	}
 
 	/**
-	 * Verifies the validity of an argument with respect to the expected type.
-	 * If not valid, dies with error.
+	 * Verifies the validity of an argument with respect to the expected type
+	 * and returns whether it can be processed out of the box, or false if it
+	 * needs to be processed by a parser function. If not valid, dies with error.
 	 *
 	 * @param string $providedArgument
 	 * @param ZType $targetTypeObject
-	 * @param string $inputArgumentKey
 	 * @param string $targetFunction
 	 * @return bool
 	 */
 	private function checkArgumentValidity(
 		$providedArgument,
 		$targetTypeObject,
-		$inputArgumentKey,
 		$targetFunction
 	): bool {
-		if ( ZObjectUtils::isValidZObjectReference( $providedArgument ) ) {
-			$referencedArgument = $this->zObjectStore
-				->fetchZObjectByTitle( Title::newFromText( $providedArgument, NS_MAIN ) );
+		// The provided argument is a string value (not a reference): it should be parsed
+		// This excludes Z6s and Z1s as they have already been handled.
+		if ( !ZObjectUtils::isValidZObjectReference( $providedArgument ) ) {
+			return false;
+		}
 
-			if ( $referencedArgument === false ) {
-				// Fatal — it's a ZID but not to an extant Object.
-				$this->logger->debug(
-					__METHOD__ . ' called on {providedArgument} but it doesn\'t exist',
-					[
-						'providedArgument' => $providedArgument
-					]
-				);
-				$this->dieRESTfullyWithZError(
-					ZErrorFactory::createZErrorInstance(
-						ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
-						[ "data" => $providedArgument ]
-					),
-					400,
-					[ "target" => $targetFunction ]
-				);
-			}
+		// If the provided argument is a reference to a ZObject, we fetch it:
+		$referencedArgument = $this->zObjectStore
+			->fetchZObjectByTitle( Title::newFromText( $providedArgument, NS_MAIN ) );
 
-			$referencedArgumentType = $referencedArgument->getInnerZObject()->getZType();
-
-			$targetTypeObjectArray = $targetTypeObject->getZValue();
-			$expectedArgumentType = $targetTypeObjectArray[ZTypeRegistry::Z_TYPE_IDENTITY]->getZValue();
-
-			if ( $referencedArgumentType === $expectedArgumentType ) {
-				return true;
-			}
-
-			// Check if the argument is an enum: it has no parser, but it's still valid input
-			if ( $targetTypeObject->isEnumType() ) {
-				// TODO (T385617): Check that the given input is valid for this Type, somehow.
-				$this->logger->debug(
-					__METHOD__ . ' called on {providedArg} for an enum, {expectedArgType}; assuming correct',
-					[
-						'providedArg' => $providedArgument,
-						'expectedArgType' => $expectedArgumentType
-					]
-				);
-				return true;
-			}
-
-			// Failure — it's a ZID but not to an instance of the right Type.
+		if ( $referencedArgument === false ) {
+			// Fatal — it's a ZID but not to an extant Object.
 			$this->logger->debug(
-				__METHOD__ . ' called on {providedArgument} but it\'s not a {expectedArgType}',
+				__METHOD__ . ' called on {providedArgument} for function {targetFunction} but it doesn\'t exist',
 				[
 					'providedArgument' => $providedArgument,
-					'expectedArgType' => $expectedArgumentType
+					'targetFunction' => $targetFunction
+				]
+			);
+			$this->dieRESTfullyWithZError(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ 'data' => $providedArgument ]
+				),
+				400,
+				[ 'target' => $targetFunction ]
+			);
+		}
+
+		$referencedArgumentType = $referencedArgument->getInnerZObject()->getZType();
+		$expectedArgumentType = $targetTypeObject->getTypeId()->getZValue();
+
+		if ( $referencedArgumentType !== $expectedArgumentType ) {
+			// Failure — it's a ZID but not to an instance of the right Type.
+			$this->logger->debug(
+				__METHOD__ . ' called on {arg} for function {function} but it\'s not a {expectedType}',
+				[
+					'arg' => $providedArgument,
+					'function' => $targetFunction,
+					'expectedType' => $expectedArgumentType
 				]
 			);
 			$this->dieRESTfullyWithZError(
 				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_ARGUMENT_TYPE_MISMATCH,
 					[
-						"expected" => $expectedArgumentType,
-						"actual" => $referencedArgumentType,
-						"argument" => $inputArgumentKey
+						'expected' => $expectedArgumentType,
+						'actual' => $referencedArgumentType,
+						'argument' => $providedArgument
 					]
 				),
 				400,
-				[ "target" => $targetFunction ]
+				[
+					'target' => $targetFunction,
+					'mode' => 'input'
+				]
 			);
 		}
 
-		return false;
+		// If the argument is passed as reference but is not an enum,
+		// we should probably flag this, as it's a weird use case:
+		if ( !$targetTypeObject->isEnumType() ) {
+			$this->logger->debug(
+				__METHOD__ . ' found reference {arg} of non-enum type {type} as input to {function}',
+				[
+					'arg' => $providedArgument,
+					'type' => $referencedArgumentType,
+					'function' => $targetFunction
+				]
+			);
+		}
+
+		// Given argument is a reference to an instance of the expected type: it should not be parsed
+		// * e.g. Expected type is enum Boolean/Z40, given arg is True/Z41
+		// * e.g. Expected type is String/Z6, given arg is reference to a persisted Z6
+		return true;
 	}
 
 	/**
 	 * A convenience function for making a ZFunctionCall and returning its result to embed within a page.
+	 * Throws different ZErrorExceptions wrapping the ZErrors:
+	 * * Z_ERROR_API_FAILURE: for any exceptions thrown by the Api before completing the Orchestrator request
+	 * * Z_ERROR_EVALUATION: for any errors in the Orchestrator or its response
+	 * * Z_ERROR_INVALID_EVALUATION_RESULT: for successful Orchestrator response but unexpected response
 	 *
 	 * @param string $call The ZFunctionCall to make, as a JSON object turned into a string
 	 * @param string $renderLanguageCode The code of the language in which to render errors, e.g. fr
-	 *
 	 * @return stdClass Currently the only permissable response objects are strings
-	 * @throws ZErrorException When the request is responded to oddly by the orchestrator
-	 * @throws WikifunctionCallException When the request is responded to oddly by the orchestrator
+	 * @throws ZErrorException
 	 */
 	private function makeRequest( $call, $renderLanguageCode ): stdClass {
 		// TODO (T338251): Can we do an Orchestrator call directly here using WikiLambdaApiBase::executeFunctionCall()
 		// (But note that we're not an ActionAPI class, so can't extend that… Meh.)
+		// Also, consider if we can do an Orchestrator call simply calling
+		// OrchestratorRequest instead of layering APIs.
 		$api = new ApiMain( new FauxRequest() );
 		$request = new FauxRequest(
 			[
@@ -658,30 +638,48 @@ class FunctionCallHandler extends SimpleHandler {
 		$context = new DerivativeContext( RequestContext::getMain() );
 		$context->setRequest( $request );
 		$api->setContext( $context );
-		$api->execute();
+
+		// 1. Handle Exceptions thrown by ApiFunctionCall and throw Z_ERROR_API_FAILURE
+
+		// Using FauxRequest means ApiMain is internal and hence $api->execute()
+		// doesn't do any error handling. We need to catch any Throwables:
+		// * dieWithError: throws ApiUsageException with key="apierror-*"
+		// * dieWithZError: throws ApiUsageException with key="wikilambda-zerror"
+		// * other exceptions: throws MWException
+		try {
+			$api->execute();
+		} catch ( ApiUsageException $e ) {
+			$apiMessage = $e->getStatusValue()->getErrors()[0]['message'];
+			'@phan-var \MediaWiki\Api\ApiMessage $apiMessage';
+
+			// Log error message thrown by ApiFunctionCall
+			$this->logger->error(
+				__METHOD__ . ' executed ApiFunctionCall which threw an ApiUsageException: {error}',
+				[ 'error' => $e->getMessage() ]
+			);
+
+			if ( $apiMessage->getApiCode() === 'wikilambda-zerror' ) {
+				// Throw ZErrorException with Z_ERROR_API_FAILURE with propagated error:
+				$zerror = ZObjectFactory::create( $apiMessage->getApiData()[ 'zerror' ] );
+				throw new ZErrorException( ZErrorFactory::createApiFailureError( $zerror, $call ) );
+			}
+
+			// Throw ZErrorException with Z_ERROR_API_FAILURE error:
+			throw new ZErrorException( ZErrorFactory::createApiFailureError( $e->getMessage(), $call ) );
+		} catch ( Throwable $e ) {
+			// Log unhandled exception thrown by ApiFunctionCall
+			$this->logger->error(
+				__METHOD__ . ' executed ApiFunctionCall which threw an unhandled exception: {error}',
+				[ 'error' => $e->getMessage() ]
+			);
+
+			// Throw ZErrorException with Z_ERROR_API_FAILURE error:
+			throw new ZErrorException( ZErrorFactory::createApiFailureError( $e->getMessage(), $call ) );
+		}
+
 		$outerResponse = $api->getResult()->getResultData( [], [ 'Strip' => 'all' ] );
 
-		if ( isset( $outerResponse['error'] ) ) {
-			try {
-				$zerror = ZObjectFactory::create( $outerResponse['error'] );
-			} catch ( ZErrorException $e ) {
-				// Can't use $this->dieWithError() as we're static, so use the call indirectly
-				throw ApiUsageException::newWithMessage(
-					null,
-					[
-						'apierror-wikilambda_function_call-response-malformed',
-						$e->getZError()->getMessage( $renderLanguageCode )
-					],
-					null,
-					null,
-					400
-				);
-			}
-			if ( !( $zerror instanceof ZError ) ) {
-				$zerror = ZErrorFactory::wrapMessageInZError( new ZQuote( $zerror ), $call );
-			}
-			throw new ZErrorException( $zerror );
-		}
+		// 2. Handle non valid Orchestrator responses and throw Z_ERROR_EVALUATION
 
 		// Now we know that the request has not failed before it even got to the orchestrator, get the response
 		// JSON string as a ZResponseEnvelope (falling back to an empty string in case it's unset).
@@ -690,39 +688,71 @@ class FunctionCallHandler extends SimpleHandler {
 		);
 
 		if ( !( $response instanceof ZResponseEnvelope ) ) {
-			// The server's not given us a result!
+			// The server's not given us a result! This is an unexpected system error
 			$responseType = $response->getZType();
-			$zerror = ZErrorFactory::wrapMessageInZError(
+
+			// Log non valid Orchestrator response
+			$this->logger->error(
+				__METHOD__ . ' got a non-valid response from the server of type {responseType} with call: {call}',
+				[
+					'responseType' => $responseType,
+					'call' => $call
+				]
+			);
+
+			// Throw ZErrorException for evaluation error:
+			throw new ZErrorException( ZErrorFactory::wrapMessageInZError(
 				"Server returned a non-result of type '$responseType'!",
 				$call
-			);
-			throw new ZErrorException( $zerror );
+			) );
 		}
 
+		// 3. Handle valid Orchestrator responses that might have errors: throw Z_ERROR_EVALUATION
+
 		if ( $response->hasErrors() ) {
-			// If the server has responsed with a Z5/Error, show that properly.
+			// If the server has responded with a Z22 with errors, throw evaluation error
 			$zerror = $response->getErrors();
-			if ( !( $zerror instanceof ZError ) ) {
-				$zerror = ZErrorFactory::wrapMessageInZError( new ZQuote( $zerror ), $call );
-			}
+
+			// Log a debug message, Orchestrator returned a valid response but function call failed
 			$this->logger->debug(
 				__METHOD__ . ' got an error-ful Z22 back from the server: {error}',
 				[ 'error' => $zerror->getSerialized() ]
 			);
+
+			if ( !( $zerror instanceof ZError ) ) {
+				// Throw ZErrorException for evaluation error, wrap the non error in a Z500:
+				throw new ZErrorException( ZErrorFactory::wrapMessageInZError( new ZQuote( $zerror ), $call ) );
+			}
+
+			// Throw ZErrorException for evaluation error, propagate existing zerror:
+			throw new ZErrorException( ZErrorFactory::createZErrorInstance(
+				ZErrorTypeRegistry::Z_ERROR_EVALUATION,
+				[
+					'functionCall' => $call,
+					'error' => $zerror
+				]
+			) );
 		}
 
-		$ret = $response->getZValue();
+		// Response envelope value (Z22K1)
+		$responseValue = $response->getZValue();
+		if ( $responseValue->getZType() !== ZTypeRegistry::Z_STRING ) {
+			// Log a debug message, Orchestrator returned a valid response but not a string
+			$this->logger->debug(
+				__METHOD__ . ' got a non-string output from the server of type {responseType} with call: {call}',
+				[
+					'responseType' => $responseValue->getZType(),
+					'call' => $call
+				]
+			);
 
-		if ( $ret->getZTypeObject()->getZValue() === ZTypeRegistry::Z_STRING ) {
-			return (object)[ 'value' => trim( $ret->getZValue() ) ];
+			// Throw ZErrorException for invalid evaluator result
+			throw new ZErrorException( ZErrorFactory::createZErrorInstance(
+				ZErrorTypeRegistry::Z_ERROR_INVALID_EVALUATION_RESULT, [ 'result' => $responseValue ]
+			) );
 		}
 
-		// Despite checks above, response is something other than a post-render Z6/String;
-		// throw, as there's nowt else to do
-		throw new WikifunctionCallException(
-			// TODO (T385620): Make a bespoke error type
-			ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_UNKNOWN, [ "data" => 'fish' ] ),
-			'wikilambda-functioncall-error-nonstringoutput'
-		);
+		// SUCCESS! Return string output value:
+		return (object)[ 'value' => trim( $responseValue->getZValue() ) ];
 	}
 }

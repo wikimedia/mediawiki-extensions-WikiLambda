@@ -45,6 +45,36 @@ ve.ce.WikifunctionsCallNode.prototype.onSetup = function () {
 	this.$element.addClass( 've-ce-wikifunctionsCallNode' );
 };
 
+/**
+ * Overrides ve.ce.GeneratedContentNode.prototype.doneGenerating to capture the
+ * error state after the final DOM has been generated. The error state is stored
+ * in the model attributes as isError.
+ *
+ * @inheritdoc
+ */
+ve.ce.WikifunctionsCallNode.prototype.doneGenerating = function ( generatedContents, config, staged ) {
+	// Call parent first
+	ve.ce.WikifunctionsCallNode.super.prototype.doneGenerating.call( this, generatedContents, config, staged );
+
+	// Infer error state from generatedContents
+	const hasError = generatedContents[ 0 ].classList.contains( 'cdx-message--error' );
+	const hadError = this.model.getAttribute( 'isError' );
+
+	// If isError attribute changed, update the model
+	if ( hadError !== hasError ) {
+		const surfaceModel = this.focusableSurface.getModel();
+		if ( surfaceModel ) {
+			surfaceModel.change(
+				ve.dm.TransactionBuilder.static.newFromAttributeChanges(
+					surfaceModel.getDocument(),
+					this.model.getOuterRange().start,
+					{ isError: hasError }
+				)
+			);
+		}
+	}
+};
+
 /* Registration */
 
 ve.ce.nodeFactory.register( ve.ce.WikifunctionsCallNode );
