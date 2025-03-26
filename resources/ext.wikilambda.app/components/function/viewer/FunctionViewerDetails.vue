@@ -282,7 +282,7 @@ module.exports = exports = defineComponent( {
 					},
 					// Column 4: language
 					language: {
-						title: language
+						title: language || ''
 					},
 					// Column 4: test results
 					result: {
@@ -527,6 +527,7 @@ module.exports = exports = defineComponent( {
 		 */
 		setImplementationsState: function ( zids = null ) {
 			const allZids = zids === null ? this.allImplementations : zids;
+
 			for ( const zid of allZids ) {
 				const isConnected = this.connectedImplementations.includes( zid );
 				this.implementationsState[ zid ] = {

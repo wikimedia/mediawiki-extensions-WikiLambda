@@ -807,7 +807,7 @@ module.exports = {
 		 * @return {Promise}
 		 */
 		performFetchZids: function ( payload ) {
-			return new Promise( ( resolve ) => {
+			return new Promise( ( resolve, reject ) => {
 				fetchZObjects( {
 					zids: payload.zids.join( '|' ),
 					language: this.getUserLangCode,
@@ -940,6 +940,8 @@ module.exports = {
 
 					// performFetch must resolve to the list of requested zids
 					resolve( requestedZids );
+				} ).catch( ( error ) => {
+					reject( error );
 				} );
 			} );
 		},
