@@ -91,6 +91,23 @@ module.exports = exports = defineComponent( {
 			this.submitInteraction( 'edit', interactionData );
 		}
 	},
+	watch: {
+		/**
+		 * Remove the success query parameter from the URL when the success message is displayed.
+		 *
+		 * @param {boolean} value
+		 */
+		displaySuccessMessage: {
+			immediate: true,
+			handler: function ( value ) {
+				if ( value ) {
+					const newUri = new mw.Uri();
+					delete newUri.query.success;
+					history.replaceState( null, '', newUri.toString() );
+				}
+			}
+		}
+	},
 	mounted: function () {
 		// Log an event using Metrics Platform's core interaction events
 		const interactionData = {
