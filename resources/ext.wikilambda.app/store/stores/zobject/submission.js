@@ -294,9 +294,11 @@ module.exports = {
 				const keys = this.getRowByKeyPath( [ Constants.Z_TYPE_KEYS ], contentRowId );
 				this.recalculateKeys( { listRowId: keys.id, key: Constants.Z_KEY_ID } );
 				// 3. Remove empty key labels
+				// 4. Set identity keys to false if boolean is not set
 				const items = this.getChildrenByParentRowId( keys.id ).slice( 1 );
 				items.forEach( ( item ) => {
 					this.removeEmptyMonolingualValues( { key: Constants.Z_KEY_LABEL, rowId: item.id } );
+					this.setEmptyIsIdentityAsFalse( item.id );
 				} );
 			}
 
@@ -306,9 +308,11 @@ module.exports = {
 				const keys = this.getRowByKeyPath( [ Constants.Z_ERRORTYPE_KEYS ], contentRowId );
 				this.recalculateKeys( { listRowId: keys.id, key: Constants.Z_KEY_ID } );
 				// 2. Remove empty key labels
+				// 3. Set identity keys to false if boolean is not set
 				const items = this.getChildrenByParentRowId( keys.id ).slice( 1 );
 				items.forEach( ( item ) => {
 					this.removeEmptyMonolingualValues( { key: Constants.Z_KEY_LABEL, rowId: item.id } );
+					this.setEmptyIsIdentityAsFalse( item.id );
 				} );
 			}
 
@@ -328,6 +332,35 @@ module.exports = {
 			// Disconnect implementations and testers if necessary
 			if ( disconnectFunctionObjects ) {
 				this.disconnectFunctionObjects();
+			}
+		},
+
+		/**
+		 * Given a key rowId, checks its Is Identity/Z3K4 key and,
+		 * * if it doesn't exist, leaves it as it is
+		 * * if it exists, but the value is empty, set the value as False
+		 *
+		 * @param {number} rowId
+		 */
+		setEmptyIsIdentityAsFalse: function ( rowId ) {
+			const isIdentity = this.getRowByKeyPath( [ Constants.Z_KEY_IS_IDENTITY ], rowId );
+			if ( !isIdentity ) {
+				return;
+			}
+
+			const isIdentityType = this.getZObjectTypeByRowId( isIdentity.id );
+			const isIdentityValue = isIdentityType === Constants.Z_BOOLEAN ?
+				this.getZBooleanValue( isIdentity.id ) :
+				this.getZReferenceTerminalValue( isIdentity.id );
+
+			if ( !isIdentityValue ) {
+				const value = this.createZReference( { value: Constants.Z_BOOLEAN_FALSE } );
+				const keyPath = isIdentityType === Constants.Z_BOOLEAN ? [ Constants.Z_BOOLEAN_IDENTITY ] : [];
+				this.setValueByRowIdAndPath( {
+					rowId: isIdentity.id,
+					keyPath,
+					value
+				} );
 			}
 		},
 

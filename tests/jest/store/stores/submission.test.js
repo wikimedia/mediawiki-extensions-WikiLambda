@@ -709,6 +709,7 @@ describe( 'zobject submission Pinia store', () => {
 				store.clearInvalidListItems = jest.fn();
 				store.removeItemsFromTypedList = jest.fn();
 				store.disconnectFunctionObjects = jest.fn();
+				store.setEmptyIsIdentityAsFalse = jest.fn();
 
 				Object.defineProperty( store, 'getRowByKeyPath', {
 					value: jest.fn().mockReturnValue( undefined )
@@ -768,6 +769,16 @@ describe( 'zobject submission Pinia store', () => {
 				expect( store.recalculateKeys ).toHaveBeenCalledWith( { listRowId: 1, key: 'Z3K2' } );
 			} );
 
+			it( 'sets emtpy isIdentity/Z3K4 keys to false if it is a type', () => {
+				store.getZObjectTypeByRowId = jest.fn().mockReturnValue( Constants.Z_TYPE );
+				store.getRowByKeyPath = jest.fn().mockReturnValue( { id: 1 } );
+				store.getChildrenByParentRowId = jest.fn().mockReturnValue( [ { id: 2 }, { id: 3 }, { id: 4 } ] );
+
+				store.transformZObjectForSubmission( false );
+				expect( store.setEmptyIsIdentityAsFalse ).toHaveBeenCalledWith( 3 );
+				expect( store.setEmptyIsIdentityAsFalse ).toHaveBeenCalledWith( 4 );
+			} );
+
 			it( 'removes empty key labels if it is a type', () => {
 				store.getZObjectTypeByRowId = jest.fn().mockReturnValue( Constants.Z_TYPE );
 				store.getRowByKeyPath = jest.fn().mockReturnValue( { id: 1 } );
@@ -784,6 +795,16 @@ describe( 'zobject submission Pinia store', () => {
 
 				store.transformZObjectForSubmission( false );
 				expect( store.recalculateKeys ).toHaveBeenCalledWith( { listRowId: 1, key: 'Z3K2' } );
+			} );
+
+			it( 'sets emtpy isIdentity/Z3K4 keys to false if it is an errortype', () => {
+				store.getZObjectTypeByRowId = jest.fn().mockReturnValue( Constants.Z_ERRORTYPE );
+				store.getRowByKeyPath = jest.fn().mockReturnValue( { id: 1 } );
+				store.getChildrenByParentRowId = jest.fn().mockReturnValue( [ { id: 2 }, { id: 3 }, { id: 4 } ] );
+
+				store.transformZObjectForSubmission( false );
+				expect( store.setEmptyIsIdentityAsFalse ).toHaveBeenCalledWith( 3 );
+				expect( store.setEmptyIsIdentityAsFalse ).toHaveBeenCalledWith( 4 );
 			} );
 
 			it( 'removes empty key labels if it is an errortype', () => {
@@ -972,6 +993,140 @@ describe( 'zobject submission Pinia store', () => {
 							{ Z1K1: 'Z11', Z11K1: '', Z11K2: '...but not this' }
 						]
 					}
+				} );
+			} );
+		} );
+
+		describe( 'setEmptyIsIdentityAsFalse', () => {
+
+			it( 'does nothing when no Z3K4 key is present', () => {
+				const zobject = {
+					Z1K1: 'Z3',
+					Z3K1: 'Z6',
+					Z3K2: 'Z111K1'
+				};
+				store.zobject = zobjectToRows( zobject );
+				store.setEmptyIsIdentityAsFalse( 0 );
+
+				const transformed = store.getZObjectAsJsonById( 0, false );
+				expect( hybridToCanonical( transformed ) ).toEqual( {
+					Z1K1: 'Z3',
+					Z3K1: 'Z6',
+					Z3K2: 'Z111K1'
+				} );
+			} );
+
+			it( 'does nothing when Z3K4 is true literal', () => {
+				const zobject = {
+					Z1K1: 'Z3',
+					Z3K1: 'Z6',
+					Z3K2: 'Z111K1',
+					Z3K4: { Z1K1: 'Z40', Z40K1: 'Z41' }
+				};
+				store.zobject = zobjectToRows( zobject );
+				store.setEmptyIsIdentityAsFalse( 0 );
+
+				const transformed = store.getZObjectAsJsonById( 0, false );
+				expect( hybridToCanonical( transformed ) ).toEqual( {
+					Z1K1: 'Z3',
+					Z3K1: 'Z6',
+					Z3K2: 'Z111K1',
+					Z3K4: { Z1K1: 'Z40', Z40K1: 'Z41' }
+				} );
+			} );
+
+			it( 'does nothing when Z3K4 is true reference', () => {
+				const zobject = {
+					Z1K1: 'Z3',
+					Z3K1: 'Z6',
+					Z3K2: 'Z111K1',
+					Z3K4: 'Z41'
+				};
+				store.zobject = zobjectToRows( zobject );
+				store.setEmptyIsIdentityAsFalse( 0 );
+
+				const transformed = store.getZObjectAsJsonById( 0, false );
+				expect( hybridToCanonical( transformed ) ).toEqual( {
+					Z1K1: 'Z3',
+					Z3K1: 'Z6',
+					Z3K2: 'Z111K1',
+					Z3K4: 'Z41'
+				} );
+			} );
+
+			it( 'does nothing when Z3K4 is false literal', () => {
+				const zobject = {
+					Z1K1: 'Z3',
+					Z3K1: 'Z6',
+					Z3K2: 'Z111K1',
+					Z3K4: { Z1K1: 'Z40', Z40K1: 'Z42' }
+				};
+				store.zobject = zobjectToRows( zobject );
+				store.setEmptyIsIdentityAsFalse( 0 );
+
+				const transformed = store.getZObjectAsJsonById( 0, false );
+				expect( hybridToCanonical( transformed ) ).toEqual( {
+					Z1K1: 'Z3',
+					Z3K1: 'Z6',
+					Z3K2: 'Z111K1',
+					Z3K4: { Z1K1: 'Z40', Z40K1: 'Z42' }
+				} );
+			} );
+
+			it( 'does nothing when Z3K4 is false reference', () => {
+				const zobject = {
+					Z1K1: 'Z3',
+					Z3K1: 'Z6',
+					Z3K2: 'Z111K1',
+					Z3K4: 'Z42'
+				};
+				store.zobject = zobjectToRows( zobject );
+				store.setEmptyIsIdentityAsFalse( 0 );
+
+				const transformed = store.getZObjectAsJsonById( 0, false );
+				expect( hybridToCanonical( transformed ) ).toEqual( {
+					Z1K1: 'Z3',
+					Z3K1: 'Z6',
+					Z3K2: 'Z111K1',
+					Z3K4: 'Z42'
+				} );
+			} );
+
+			it( 'sets to false when Z3K4 is empty literal', () => {
+				const zobject = {
+					Z1K1: 'Z3',
+					Z3K1: 'Z6',
+					Z3K2: 'Z111K1',
+					Z3K4: { Z1K1: 'Z40', Z40K1: '' }
+				};
+				store.zobject = zobjectToRows( zobject );
+				store.setEmptyIsIdentityAsFalse( 0 );
+
+				const transformed = store.getZObjectAsJsonById( 0, false );
+				expect( hybridToCanonical( transformed ) ).toEqual( {
+					Z1K1: 'Z3',
+					Z3K1: 'Z6',
+					Z3K2: 'Z111K1',
+					Z3K4: { Z1K1: 'Z40', Z40K1: 'Z42' }
+				} );
+			} );
+
+			it( 'sets to false when Z3K4 is empty reference', () => {
+				const zobject = {
+					Z1K1: 'Z3',
+					Z3K1: 'Z6',
+					Z3K2: 'Z111K1',
+					Z3K4: ''
+				};
+				store.zobject = zobjectToRows( zobject );
+				store.setEmptyIsIdentityAsFalse( 0 );
+
+				const transformed = store.getZObjectAsJsonById( 0, false );
+				expect( hybridToCanonical( transformed ) ).toEqual( {
+					Z1K1: 'Z3',
+					Z3K1: 'Z6',
+					Z3K2: 'Z111K1',
+					Z3K4: 'Z42'
 				} );
 			} );
 		} );
