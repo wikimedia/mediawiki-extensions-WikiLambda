@@ -90,12 +90,15 @@ class ApiZObjectEditorTest extends ApiTestCase {
 		$this->expectException( ApiUsageException::class );
 		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_UNMATCHING_ZID );
 
-		$this->doApiRequestWithToken( [
-			'action' => 'wikilambda_edit',
-			'summary' => 'Summary message',
-			'zid' => 'Z888',
-			'zobject' => $data
-		] );
+		$this->doApiRequestWithToken(
+			[
+				'action' => 'wikilambda_edit',
+				'summary' => 'Summary message',
+				'zid' => 'Z888',
+				'zobject' => $data
+			],
+			null,
+			$this->getTestUser( [ 'functioneer', 'functionmaintainer' ] )->getAuthority() );
 	}
 
 	public function testCreateFailed_labelClash() {
@@ -156,12 +159,15 @@ class ApiZObjectEditorTest extends ApiTestCase {
 		// TODO (T302598): detailed errors for Z2 related validations
 		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_UNKNOWN );
 
-		$result = $this->doApiRequestWithToken( [
-			'action' => 'wikilambda_edit',
-			'zid' => $invalidZid,
-			'summary' => 'Summary message',
-			'zobject' => $data
-		] );
+		$result = $this->doApiRequestWithToken(
+			[
+				'action' => 'wikilambda_edit',
+				'zid' => $invalidZid,
+				'summary' => 'Summary message',
+				'zobject' => $data
+			],
+			null,
+			$this->getTestUser( [ 'functioneer', 'functionmaintainer' ] )->getAuthority() );
 	}
 
 	public function testUpdateFailed_invalidIdentityType() {
@@ -220,12 +226,16 @@ class ApiZObjectEditorTest extends ApiTestCase {
 		$this->expectException( ApiUsageException::class );
 		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_DISALLOWED_ROOT_ZOBJECT );
 
-		$result = $this->doApiRequestWithToken( [
-			'action' => 'wikilambda_edit',
-			'zid' => 'Z400',
-			'summary' => 'Summary message',
-			'zobject' => $data
-		] );
+		$result = $this->doApiRequestWithToken(
+			[
+				'action' => 'wikilambda_edit',
+				'zid' => 'Z400',
+				'summary' => 'Summary message',
+				'zobject' => $data
+			],
+			null,
+			$this->getTestUser( [ 'functioneer', 'functionmaintainer' ] )->getAuthority()
+		);
 	}
 
 	public function testCreateSuccess() {
@@ -292,4 +302,52 @@ class ApiZObjectEditorTest extends ApiTestCase {
 		// We compare the JSONs after decoding because it's saved prettified
 		$this->assertEquals( json_decode( $zobject->getText() ), json_decode( $data ) );
 	}
+
+	public function testCreateFailed_specifiedZIDWithoutAuth() {
+		$data = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z12345" },'
+			. ' "Z2K2": "string",'
+			. ' "Z2K3": { "Z1K1":"Z12", "Z12K1":[ "Z11", { "Z1K1":"Z11", "Z11K1":"Z1002", "Z11K2":"new label" }]}}';
+
+		$functioneerButNotMaintainerUser = $this->getTestUser( [ 'functioneer' ] )->getAuthority();
+
+		$this->expectException( ApiUsageException::class );
+		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT );
+
+		$result = $this->doApiRequestWithToken(
+			[
+				'action' => 'wikilambda_edit',
+				'zid' => 'Z12345',
+				'summary' => 'Summary message',
+				'zobject' => $data
+			],
+			null,
+			$functioneerButNotMaintainerUser
+		);
+	}
+
+	public function testCreateSuccess_specifiedZIDWithAuth() {
+		$data = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z12345" },'
+			. ' "Z2K2": "string",'
+			. ' "Z2K3": { "Z1K1":"Z12", "Z12K1":[ "Z11", { "Z1K1":"Z11", "Z11K1":"Z1002", "Z11K2":"new label" }]}}';
+
+		$superUser = $this->getTestUser( [ 'functioneer', 'functionmaintainer' ] )->getAuthority();
+
+		// throw new \RuntimeException($superUser->isAllowed('wikilambda-create-arbitrary-zid'));
+
+		$result = $this->doApiRequestWithToken(
+			[
+				'action' => 'wikilambda_edit',
+				'zid' => 'Z12345',
+				'summary' => 'Summary message',
+				'zobject' => $data
+			],
+			null,
+			$superUser
+		);
+
+		$this->assertTrue( $result[0]['wikilambda_edit']['success'] );
+		$this->assertEquals( 'Z12345', $result[0]['wikilambda_edit']['title'] );
+		$this->assertEquals( 'Z12345', $result[0]['wikilambda_edit']['page'] );
+	}
+
 }
