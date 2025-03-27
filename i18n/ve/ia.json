@@ -32,6 +32,8 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Necun resultato trovate",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Functiones suggerite",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Catena de entrata",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Elige un option",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Function]] de Wikifunctiones",
-	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Le function manca o non es valide."
+	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Le function manca o non es valide.",
+	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Necun option eligite."
 }
