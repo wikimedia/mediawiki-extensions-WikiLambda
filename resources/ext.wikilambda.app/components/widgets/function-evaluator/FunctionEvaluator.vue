@@ -171,6 +171,7 @@ module.exports = exports = defineComponent( {
 	computed: Object.assign( {}, mapState( useMainStore, [
 		'getErrors',
 		'getMetadataError',
+		'getInputsOfFunctionZid',
 		'getConnectedObjects',
 		'getZFunctionCallArguments',
 		'getLabelData',
@@ -330,23 +331,40 @@ module.exports = exports = defineComponent( {
 		'setValueByRowIdAndPath',
 		'setZFunctionCallArguments'
 	] ), {
+		/**
+		 * Returns the ZIDs of the arguments for the given functionZid
+		 *
+		 * @param {string} functionZid
+		 * @return {Array}
+		 */
+		getArgumentZids: function ( functionZid ) {
+			return this.getInputsOfFunctionZid( functionZid )
+				.map( ( arg ) => arg[ Constants.Z_ARGUMENT_TYPE ] );
+		},
 
 		/**
+		 * Sets the function Zid in the zobject table
+		 *
 		 * @param {Object} payload
 		 * @param {Object} payload.keyPath sequence of keys till the value to edit
 		 * @param {Object | Array | string} payload.value new value
 		 */
 		setFunctionZid: function ( payload ) {
-			// We set the arguments
-			this.setZFunctionCallArguments( {
-				parentId: this.functionCallRowId,
-				functionZid: payload.value
-			} );
-			// And we set the value of the function
-			this.setValueByRowIdAndPath( {
-				rowId: this.selectedFunctionRowId,
-				keyPath: payload.keyPath ? payload.keyPath : [],
-				value: payload.value
+			// The function zid was already fetched when the lookup was done
+			// So we just need to fetch the zids of the arguments
+			const argumentZids = this.getArgumentZids( payload.value );
+			this.fetchZids( { zids: argumentZids } ).then( () => {
+				// We set the arguments
+				this.setZFunctionCallArguments( {
+					parentId: this.functionCallRowId,
+					functionZid: payload.value
+				} );
+				// And we set the value of the function
+				this.setValueByRowIdAndPath( {
+					rowId: this.selectedFunctionRowId,
+					keyPath: payload.keyPath ? payload.keyPath : [],
+					value: payload.value
+				} );
 			} );
 		},
 
@@ -444,10 +462,15 @@ module.exports = exports = defineComponent( {
 			// If we are initializing the evaluator with an initialFunctionZid
 			// we fetch the function data and then we set the arguments
 			if ( initialFunctionZid ) {
+				// Fetch the function zid first
+				// and then fetch the argument zids when the function zid is fetched
 				this.fetchZids( { zids: [ initialFunctionZid ] } ).then( () => {
-					this.setZFunctionCallArguments( {
-						parentId: functionCallRowId,
-						functionZid: initialFunctionZid
+					const argumentZids = this.getArgumentZids( initialFunctionZid );
+					this.fetchZids( { zids: argumentZids } ).then( () => {
+						this.setZFunctionCallArguments( {
+							parentId: functionCallRowId,
+							functionZid: initialFunctionZid
+						} );
 					} );
 				} );
 			}
