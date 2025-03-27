@@ -68,6 +68,28 @@ const miscUtils = {
 	 */
 	arraysAreEqual: function ( arr1, arr2 ) {
 		return arr1.length === arr2.length && arr1.every( ( value, index ) => value === arr2[ index ] );
+	},
+
+	/**
+	 *
+	 * Custom throttle implementation.
+	 * Ensures a function is called at most once in the specified delay period.
+	 *
+	 * @param {Function} func - The function to throttle.
+	 * @param {number} delay - The delay in milliseconds.
+	 * @return {Function} - The throttled function.
+	 */
+	throttle: function ( func, delay ) {
+		let lastCall = 0;
+
+		return function ( ...args ) {
+			const now = Date.now();
+
+			if ( now - lastCall >= delay ) {
+				lastCall = now;
+				func.apply( this, args );
+			}
+		};
 	}
 };
 

@@ -10,7 +10,8 @@
 const {
 	getNestedProperty,
 	createConnectedItemsChangesSummaryMessage,
-	arraysAreEqual
+	arraysAreEqual,
+	throttle
 } = require( '../../../resources/ext.wikilambda.app/utils/miscUtils.js' );
 
 describe( 'miscUtils', () => {
@@ -130,6 +131,35 @@ describe( 'miscUtils', () => {
 			const arr2 = [ 4, 5, 6 ];
 			const result = arraysAreEqual( arr1, arr2 );
 			expect( result ).toBe( false );
+		} );
+	} );
+
+	describe( 'throttle', () => {
+		jest.useFakeTimers();
+
+		it( 'should call the function at most once within the delay period', () => {
+			const func = jest.fn();
+			const throttledFunc = throttle( func, 1000 );
+
+			throttledFunc();
+			throttledFunc();
+			throttledFunc();
+
+			expect( func ).toHaveBeenCalledTimes( 1 );
+
+			jest.advanceTimersByTime( 1000 );
+			throttledFunc();
+
+			expect( func ).toHaveBeenCalledTimes( 2 );
+		} );
+
+		it( 'should call the function with the correct arguments', () => {
+			const func = jest.fn();
+			const throttledFunc = throttle( func, 1000 );
+
+			throttledFunc( 'arg1', 'arg2' );
+
+			expect( func ).toHaveBeenCalledWith( 'arg1', 'arg2' );
 		} );
 	} );
 } );

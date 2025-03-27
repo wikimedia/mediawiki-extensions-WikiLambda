@@ -117,7 +117,14 @@ ve.ui.WikifunctionsCallContextItem.prototype.renderBody = function () {
 				// Create a Function description paragraph.
 				const $description = $( '<p>' )
 					.text( functionDescription )
-					.css( { 'margin-bottom': '0' } );
+					.attr( 'title', functionDescription )
+					.css( {
+						'margin-bottom': '0',
+						display: '-webkit-box',
+						'-webkit-line-clamp': '2',
+						'-webkit-box-orient': 'vertical',
+						overflow: 'hidden'
+					} );
 
 				this.$body.empty().append( $link, $description );
 				this.context.updateDimensions();

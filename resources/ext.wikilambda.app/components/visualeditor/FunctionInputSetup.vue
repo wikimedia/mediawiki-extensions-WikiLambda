@@ -8,10 +8,12 @@
 <template>
 	<div class="ext-wikilambda-app-function-input-setup">
 		<div class="ext-wikilambda-app-function-input-setup__body">
-			<div class="ext-wikilambda-app-function-input-setup__description">
-				<!-- TODO (T387361): add langCode and langDir -->
-				{{ functionDescription }}
-			</div>
+			<!-- TODO (T387361): add langCode and langDir -->
+			<wl-expandable-description
+				:can-expand="true"
+				:description="functionDescription"
+				class="ext-wikilambda-app-function-input-setup__description"
+			></wl-expandable-description>
 			<div v-if="allArgumentsFetched" class="ext-wikilambda-app-function-input-setup__fields">
 				<wl-function-input-field
 					v-for="( field, index ) in inputFields"
@@ -45,11 +47,13 @@ const icons = require( '../../../lib/icons.json' );
 const useMainStore = require( '../../store/index.js' );
 const Constants = require( '../../Constants.js' );
 const FunctionInputField = require( './FunctionInputField.vue' );
+const ExpandableDescription = require( './ExpandableDescription.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-input-setup',
 	components: {
 		'wl-function-input-field': FunctionInputField,
+		'wl-expandable-description': ExpandableDescription,
 		'cdx-icon': CdxIcon
 	},
 	emits: [ 'update', 'loading-start', 'loading-end' ],
@@ -230,6 +234,14 @@ module.exports = exports = defineComponent( {
 
 	.ext-wikilambda-app-function-input-setup__description {
 		margin-bottom: @spacing-75;
+
+		.ext-wikilambda-app-expandable-description__toggle-button {
+			background-color: @background-color-neutral-subtle;
+
+			&::before {
+				background: linear-gradient( to right, transparent, @background-color-neutral-subtle );
+			}
+		}
 	}
 
 	.ext-wikilambda-app-function-input-setup__footer {
