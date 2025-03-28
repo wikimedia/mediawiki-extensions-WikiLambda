@@ -185,7 +185,7 @@ class ZKey extends ZObject {
 			} elseif ( $isIdentity->getZType() === ZTypeRegistry::Z_BOOLEAN ) {
 				// Return true if the value of the literal Boolean is Z41/True
 				$booleanValue = $isIdentity->getValueByKey( ZTypeRegistry::Z_BOOLEAN_VALUE );
-				return ( $booleanValue->getZValue() === ZTypeRegistry::Z_BOOLEAN_TRUE );
+				return $booleanValue && ( $booleanValue->getZValue() === ZTypeRegistry::Z_BOOLEAN_TRUE );
 			}
 		}
 		return false;
