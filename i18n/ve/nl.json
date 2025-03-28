@@ -35,5 +35,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Kies een optie",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Functie]] van Wikifuncties",
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "De functie ontbreekt of is foutief.",
-	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Geen optie gekozen."
+	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Geen optie gekozen.",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "Meer lezen",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Minder lezen"
 }

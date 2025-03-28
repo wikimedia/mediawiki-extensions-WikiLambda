@@ -414,6 +414,8 @@
 	"wikilambda-typeunavailable": "Tipo no reconocido",
 	"wikilambda-unknown-save-error-message": "Se produjo algún error al intentar guardar los cambios.",
 	"wikilambda-viewmode-nojs": "Esta página se muestra de forma limitada sin JavaScript.",
+	"wikilambda-wikifunctionswiki-sidebar-createobject": "Crear un objeto",
+	"wikilambda-wikifunctionswiki-sidebar-projectchat": "Conversación del proyecto",
 	"wikilambda-zerror": "Error de tipo $1",
 	"wikilambda-zimplememntation-composition-missing": "La composición está vacía. Por favor, selecciona una función.",
 	"wikilambda-zimplementation-code-language-missing": "Selecciona un lenguaje de programación.",
