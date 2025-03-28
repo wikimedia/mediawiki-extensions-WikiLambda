@@ -78,6 +78,24 @@ class LabelData {
 	}
 
 	/**
+	 * Returns whether the label language belongs to the user selected language
+	 *
+	 * @return {boolean}
+	 */
+	get isUserLang() {
+		return !this.isUntitled && this.langCode === mw.language.getFallbackLanguageChain()[ 0 ];
+	}
+
+	/**
+	 * Returns whether the label language is anywhere in the language user fallback chain
+	 *
+	 * @return {boolean}
+	 */
+	get isFallbackLang() {
+		return !this.isUntitled && mw.language.getFallbackLanguageChain().includes( this.langCode );
+	}
+
+	/**
 	 * Build a LabelData object from a non localized string.
 	 *
 	 * @param {string} text

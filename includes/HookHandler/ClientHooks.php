@@ -588,6 +588,11 @@ class ClientHooks implements
 					'wikilambda-visualeditor-wikifunctionscall-error-parser',
 					'wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description',
 					'wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description',
+					'wikilambda-visualeditor-wikifunctionscall-info-missing-content',
+					'brackets',
+					'wikilambda-visualeditor-wikifunctionscall-no-name',
+					'wikilambda-visualeditor-wikifunctionscall-no-description',
+					'wikilambda-visualeditor-wikifunctionscall-no-input-label',
 				]
 			];
 

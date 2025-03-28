@@ -22,12 +22,18 @@
 		></component>
 		<template #label>
 			<span
+				v-if="!labelData.isUntitled"
 				:lang="labelData.langCode"
 				:dir="labelData.langDir"
 			>{{ labelData.label }}</span>
+			<span v-else class="ext-wikilambda-app-function-input-field__label--empty">
+				{{ $i18n( 'brackets',
+					$i18n( 'wikilambda-visualeditor-wikifunctionscall-no-input-label' ).text()
+				).text() }}
+			</span>
 		</template>
 		<template v-if="!!errorMessage" #error>
-			<!-- eslint-disable vue/no-v-html -->
+			<!-- eslint-disable-next-line vue/no-v-html -->
 			<span v-html="errorMessage"></span>
 		</template>
 	</cdx-field>
@@ -38,6 +44,7 @@ const { CdxField } = require( '../../../codex.js' );
 const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
 const useMainStore = require( '../../store/index.js' );
+const LabelData = require( '../../store/classes/LabelData.js' );
 const FunctionInputEnum = require( './FunctionInputEnum.vue' );
 const FunctionInputParser = require( './FunctionInputParser.vue' );
 const FunctionInputString = require( './FunctionInputString.vue' );
@@ -51,13 +58,13 @@ module.exports = exports = defineComponent( {
 		'wl-function-input-string': FunctionInputString
 	},
 	props: {
-		argumentKey: {
-			type: String,
-			required: true
-		},
 		argumentType: {
 			type: String,
 			required: true
+		},
+		labelData: {
+			type: LabelData,
+			default: undefined
 		},
 		modelValue: {
 			type: String,
@@ -76,18 +83,9 @@ module.exports = exports = defineComponent( {
 	},
 	emits: [ 'update', 'input', 'validate', 'update:modelValue', 'loading-start', 'loading-end' ],
 	computed: Object.assign( {}, mapState( useMainStore, [
-		'getLabelData',
 		'isEnumType',
 		'hasParser'
 	] ), {
-		/**
-		 * Get the label data for the argument key.
-		 *
-		 * @return {Object}
-		 */
-		labelData: function () {
-			return this.getLabelData( this.argumentKey );
-		},
 		/**
 		 * Determine the component type based on the argumentType.
 		 *
@@ -159,7 +157,13 @@ module.exports = exports = defineComponent( {
 </script>
 
 <style lang="less">
+@import '../../ext.wikilambda.app.variables.less';
+
 .ext-wikilambda-app-function-input-field {
 	position: relative;
+
+	.ext-wikilambda-app-function-input-field__label--empty {
+		color: @color-placeholder;
+	}
 }
 </style>

@@ -515,15 +515,17 @@ module.exports = {
 		},
 
 		/**
-		 * FIXME Add doc and tests
-		 * TODO (T387361): return labelData object, with langCode and langDir
+		 * Returns the object with the selected description and its language
+		 * information. Returns undefined if:
+		 * * no stored object with this zid
+		 * * stored object has no description
 		 *
 		 * @return {Function}
 		 */
 		getDescription: function () {
 			/**
 			 * @param {string} zid
-			 * @return {string}
+			 * @return {LabelData|undefined}
 			 */
 			const findDescription = ( zid ) => {
 				const persistentObject = this.getStoredObject( zid );
@@ -533,13 +535,22 @@ module.exports = {
 				}
 				const multiStr = persistentObject[ Constants.Z_PERSISTENTOBJECT_DESCRIPTION ];
 				if ( !multiStr ) {
-					// No description
+					// No description key
 					return undefined;
 				}
-				const description = multiStr[ Constants.Z_MULTILINGUALSTRING_VALUE ].slice( 1 );
-				return ( description.length > 0 ) ?
-					description[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ] :
-					undefined;
+				if ( multiStr[ Constants.Z_MULTILINGUALSTRING_VALUE ].length <= 1 ) {
+					// No description items
+					return undefined;
+				}
+
+				// First monolingual string is the userlang, fallback or first added lang:
+				const description = multiStr[ Constants.Z_MULTILINGUALSTRING_VALUE ][ 1 ];
+				return new LabelData(
+					zid,
+					description[ Constants.Z_MONOLINGUALSTRING_VALUE ],
+					description[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ],
+					this.getLanguageIsoCodeOfZLang( description[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] )
+				);
 			};
 			return findDescription;
 		}

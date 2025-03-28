@@ -10,13 +10,11 @@
 		<p
 			ref="descriptionRef"
 			class="ext-wikilambda-app-expandable-description__text"
-			:class="[
-				{
-					'ext-wikilambda-app-expandable-description__text--expanded': isExpanded
-				}
-			]"
+			:class="{ 'ext-wikilambda-app-expandable-description__text--expanded': isExpanded }"
+			:lang="description.langCode"
+			:dir="description.langDir"
 		>
-			{{ description }}
+			{{ description.label }}
 		</p>
 		<button
 			v-if="isExpandable"
@@ -34,12 +32,13 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const { throttle } = require( '../../utils/miscUtils.js' );
+const LabelData = require( '../../store/classes/LabelData.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-expandable-description',
 	props: {
 		description: {
-			type: String,
+			type: LabelData,
 			required: true
 		}
 	},

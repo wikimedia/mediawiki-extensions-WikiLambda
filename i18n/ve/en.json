@@ -39,5 +39,9 @@
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "No option chosen.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser": "Unknown Error. [[f:Talk:$1|Report issue]]",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "Read more",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Read less"
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Read less",
+	"wikilambda-visualeditor-wikifunctionscall-info-missing-content": "Help translate missing content in your language on [[f:$1|Wikifunctions]].",
+	"wikilambda-visualeditor-wikifunctionscall-no-name": "No name",
+	"wikilambda-visualeditor-wikifunctionscall-no-description": "No description",
+	"wikilambda-visualeditor-wikifunctionscall-no-input-label": "No label"
 }

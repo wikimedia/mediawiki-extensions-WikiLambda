@@ -8,20 +8,28 @@
 <template>
 	<div class="ext-wikilambda-app-function-input-setup">
 		<div class="ext-wikilambda-app-function-input-setup__body">
-			<!-- TODO (T387361): add langCode and langDir -->
+			<cdx-message v-if="hasMissingContent">
+				<!-- eslint-disable-next-line vue/no-v-html -->
+				<span v-html="missingContentMsg"></span>
+			</cdx-message>
 			<wl-expandable-description
-				:can-expand="true"
+				v-if="functionDescription"
 				:description="functionDescription"
 				class="ext-wikilambda-app-function-input-setup__description"
 			></wl-expandable-description>
+			<p v-else class="ext-wikilambda-app-function-input-setup__description--empty">
+				{{ $i18n( 'brackets',
+					$i18n( 'wikilambda-visualeditor-wikifunctionscall-no-description' ).text()
+				).text() }}
+			</p>
 			<div v-if="allArgumentsFetched" class="ext-wikilambda-app-function-input-setup__fields">
 				<wl-function-input-field
 					v-for="( field, index ) in inputFields"
 					:key="field.argumentKey"
 					v-model="field.value"
 					:is-editing="isEditing"
-					:argument-key="field.argumentKey"
 					:argument-type="field.argumentType"
+					:label-data="field.labelData"
 					:error-message="field.errorMessage"
 					@update="value => handleUpdate( index, value )"
 					@validate="payload => handleValidation( index, payload )"
@@ -32,18 +40,14 @@
 		</div>
 		<div class="ext-wikilambda-app-function-input-setup__footer">
 			<cdx-icon :icon="icon"></cdx-icon>
-			<!-- eslint-disable vue/no-v-html -->
-			<span
-				class="ext-wikilambda-app-function-input-setup__link"
-				v-html="functionLink"
-			></span>
-			<!-- eslint-enable vue/no-v-html -->
+			<!-- eslint-disable-next-line vue/no-v-html -->
+			<span class="ext-wikilambda-app-function-input-setup__link" v-html="functionLink"></span>
 		</div>
 	</div>
 </template>
 
 <script>
-const { CdxIcon } = require( '../../../codex.js' );
+const { CdxIcon, CdxMessage } = require( '../../../codex.js' );
 const { defineComponent } = require( 'vue' );
 const { mapState, mapActions } = require( 'pinia' );
 const useMainStore = require( '../../store/index.js' );
@@ -57,7 +61,8 @@ module.exports = exports = defineComponent( {
 	components: {
 		'wl-function-input-field': FunctionInputField,
 		'wl-expandable-description': ExpandableDescription,
-		'cdx-icon': CdxIcon
+		'cdx-icon': CdxIcon,
+		'cdx-message': CdxMessage
 	},
 	emits: [ 'update', 'loading-start', 'loading-end' ],
 	data: function () {
@@ -68,6 +73,7 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
+		'getLabelData',
 		'getDescription',
 		'getUserLangCode',
 		'getVEFunctionId',
@@ -112,9 +118,29 @@ module.exports = exports = defineComponent( {
 			).parse();
 		},
 		/**
-		 * Returns the description of the function.
+		 * Returns the message notifying about missing content in the user language
+		 * with a link to the Wikifunctions page for the function.
 		 *
 		 * @return {string}
+		 */
+		missingContentMsg: function () {
+			return this.$i18n(
+				'wikilambda-visualeditor-wikifunctionscall-info-missing-content',
+				this.functionZid
+			).parse();
+		},
+		/**
+		 * Returns the LabelData object for the function name
+		 *
+		 * @return {LabelData}
+		 */
+		functionName: function () {
+			return this.getLabelData( this.functionZid );
+		},
+		/**
+		 * Returns the description of the function.
+		 *
+		 * @return {LabelData}
 		 */
 		functionDescription: function () {
 			return this.getDescription( this.functionZid );
@@ -135,9 +161,22 @@ module.exports = exports = defineComponent( {
 		 */
 		areInputFieldsValid: function () {
 			return this.inputFields.every( ( field ) => field.isValid );
+		},
+		/**
+		 * Returns whether any of the shown multilingual labels
+		 * are missing in the user language. Will determine whether
+		 * to display an info box with a call to action to translate.
+		 *
+		 * @return {boolean}
+		 */
+		hasMissingContent: function () {
+			return (
+				!this.functionName.isUserLang ||
+				!this.functionDescription.isUserLang ||
+				!this.inputFields.every( ( item ) => item.labelData.isUserLang )
+			);
 		}
 	} ),
-
 	methods: Object.assign( {}, mapActions( useMainStore, [
 		'setVEFunctionParam',
 		'setVEFunctionParamsValid',
@@ -150,6 +189,7 @@ module.exports = exports = defineComponent( {
 			this.inputFields = this.functionArguments.map( ( arg, index ) => ( {
 				argumentKey: arg[ Constants.Z_ARGUMENT_KEY ],
 				argumentType: arg[ Constants.Z_ARGUMENT_TYPE ],
+				labelData: this.getLabelData( arg[ Constants.Z_ARGUMENT_KEY ] ),
 				value: this.getVEFunctionParams[ index ]
 			} ) );
 		},
@@ -197,7 +237,6 @@ module.exports = exports = defineComponent( {
 					} );
 			}
 		}
-
 	} ),
 	watch: {
 		/**
@@ -235,6 +274,7 @@ module.exports = exports = defineComponent( {
 	}
 
 	.ext-wikilambda-app-function-input-setup__description {
+		margin-top: @spacing-75;
 		margin-bottom: @spacing-75;
 
 		.ext-wikilambda-app-expandable-description__toggle-button {
@@ -244,6 +284,12 @@ module.exports = exports = defineComponent( {
 				background: linear-gradient( to right, transparent, @background-color-neutral-subtle );
 			}
 		}
+	}
+
+	.ext-wikilambda-app-function-input-setup__description--empty {
+		margin-top: @spacing-75;
+		margin-bottom: @spacing-75;
+		color: @color-placeholder;
 	}
 
 	.ext-wikilambda-app-function-input-setup__footer {
