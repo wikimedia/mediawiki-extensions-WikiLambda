@@ -199,9 +199,10 @@ module.exports = exports = defineComponent( {
 		}
 	}
 
-	.ext-wikilambda-app-key-value-block__pre-button {
+	.ext-wikilambda-app-key-value-block__pre-button.cdx-button--icon-only {
 		flex: 0 1;
 		color: @color-subtle;
+		min-width: @size-icon-small;
 
 		&--disabled {
 			color: @color-disabled;
