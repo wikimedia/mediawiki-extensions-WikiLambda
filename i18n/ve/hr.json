@@ -31,7 +31,12 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Rezultati",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Nema rezultata",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Predložene funkcije",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Niz parametra",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Unesi tekst",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Odaberi mogućnost",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Funkcija]] iz Wikifunkcija",
-	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Funkcija nedostaje ili je nevažeća."
+	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Funkcija nedostaje ili je nevažeća.",
+	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Nema izbora.",
+	"wikilambda-visualeditor-wikifunctionscall-error-parser": "Nepoznata pogreška. [[f:Talk:$1|Prijavi problem]]",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "Čitati više",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Čitati manje"
 }

@@ -29,11 +29,12 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Ergebnisse",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Keine Ergebnisse gefunden",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Vorgeschlagene Funktionen",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Eingabezeichenfolge",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Text eingeben",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Wähle eine Option",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Funktion]] aus Wikifunctions",
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Funktion fehlt oder ist ungültig.",
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Keine Option ausgewählt.",
+	"wikilambda-visualeditor-wikifunctionscall-error-parser": "Unbekannter Fehler. [[f:Talk:$1|Problem melden]]",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "Mehr lesen",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Weniger lesen"
 }

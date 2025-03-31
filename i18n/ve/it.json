@@ -10,5 +10,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-title": "Funzione",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Risultati",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Nessun risultato trovato",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Scegli un'opzione"
+	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Scegli un'opzione",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "Per saperne di più",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Leggi di meno"
 }

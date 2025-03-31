@@ -31,9 +31,12 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "תוצאות",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "לא נמצאו תוצאות",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "פונקציות מוצעות",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "מחרוזת קלט",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "נא להזין טקסט",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "נא לבחור אפשרות",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|פונקציה]] מאתר ויקיפונקציות",
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "פונקציה חסרה או בלתי־תקינה.",
-	"wikilambda-visualeditor-wikifunctionscall-error-enum": "לא נבחרה אפשרות."
+	"wikilambda-visualeditor-wikifunctionscall-error-enum": "לא נבחרה אפשרות.",
+	"wikilambda-visualeditor-wikifunctionscall-error-parser": "שגיאה לא ידועה. [[f:Talk:$1|לדווח על בעיה]]",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "לקרוא יותר",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "לקרוא פחות"
 }

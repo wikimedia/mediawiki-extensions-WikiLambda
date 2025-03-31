@@ -31,11 +31,12 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Tulokset",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Tuloksia ei löytynyt",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Ehdotetut funktiot",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Syötemerkkijono",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Syötä teksti",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Valitse vaihtoehto",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Funktio]] Wikifunctionsista",
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Funktio puuttuu tai se on virheellinen.",
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Ei valittua vaihtoehtoa.",
+	"wikilambda-visualeditor-wikifunctionscall-error-parser": "Tuntematon virhe. [[f:Talk:$1|Ilmoita ongelmasta]]",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "Näytä lisää",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Näytä vähemmän"
 }
