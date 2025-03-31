@@ -3,6 +3,7 @@
 const { shallowMount } = require( '@vue/test-utils' );
 const FunctionInputField = require( '../../../../resources/ext.wikilambda.app/components/visualeditor/FunctionInputField.vue' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const LabelData = require( '../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' );
 const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../helpers/getterHelpers.js' );
 
 describe( 'FunctionInputField', () => {
@@ -17,7 +18,7 @@ describe( 'FunctionInputField', () => {
 	it( 'renders without errors', () => {
 		const wrapper = shallowMount( FunctionInputField, {
 			props: {
-				argumentKey: 'Z123',
+				labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
 				argumentType: 'Z456',
 				isEditing: true
 			}
@@ -28,7 +29,7 @@ describe( 'FunctionInputField', () => {
 	it( 'displays the correct label', () => {
 		const wrapper = shallowMount( FunctionInputField, {
 			props: {
-				argumentKey: 'Z123',
+				labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
 				argumentType: 'Z456',
 				isEditing: true
 			},
@@ -40,7 +41,7 @@ describe( 'FunctionInputField', () => {
 	it( 'emits update event when input value changes', async () => {
 		const wrapper = shallowMount( FunctionInputField, {
 			props: {
-				argumentKey: 'Z123',
+				labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
 				argumentType: 'Z456',
 				isEditing: true
 			},
@@ -53,7 +54,7 @@ describe( 'FunctionInputField', () => {
 	it( 'emits update:modelValue event when input value changes', () => {
 		const wrapper = shallowMount( FunctionInputField, {
 			props: {
-				argumentKey: 'Z123',
+				labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
 				argumentType: 'Z456',
 				isEditing: true
 			},
@@ -66,7 +67,7 @@ describe( 'FunctionInputField', () => {
 	it( 'emits validate event when validation occurs', async () => {
 		const wrapper = shallowMount( FunctionInputField, {
 			props: {
-				argumentKey: 'Z123',
+				labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
 				argumentType: 'Z456',
 				isEditing: true
 			},
@@ -79,7 +80,7 @@ describe( 'FunctionInputField', () => {
 	it( 'computes status as "error" when errorMessage is present', () => {
 		const wrapper = shallowMount( FunctionInputField, {
 			props: {
-				argumentKey: 'Z123',
+				labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
 				argumentType: 'Z456',
 				isEditing: true,
 				errorMessage: 'An error occurred'
@@ -92,7 +93,7 @@ describe( 'FunctionInputField', () => {
 		store.isEnumType = createGettersWithFunctionsMock( true );
 		const wrapper = shallowMount( FunctionInputField, {
 			props: {
-				argumentKey: 'Z123',
+				labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
 				argumentType: 'Z456',
 				isEditing: true
 			}
@@ -104,7 +105,7 @@ describe( 'FunctionInputField', () => {
 		store.isEnumType = createGettersWithFunctionsMock( false );
 		const wrapper = shallowMount( FunctionInputField, {
 			props: {
-				argumentKey: 'Z123',
+				labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
 				argumentType: 'Z456',
 				isEditing: true
 			}

@@ -13,7 +13,11 @@ describe( 'FunctionSelect', () => {
 		store = useMainStore();
 		store.getSuggestedFunctions = [ 'Z1', 'Z2' ];
 		store.getLabelData = createLabelDataMock( { Z1: 'Function 1', Z2: 'Function 2' } );
-		store.getDescription = jest.fn( ( zid ) => `Description for ${ zid }` );
+		store.getDescription = createLabelDataMock( {
+			Z1: 'Description for Z1',
+			Z2: 'Description for Z2',
+			Z3: 'Description for Z3'
+		} );
 		store.lookupFunctions = jest.fn().mockImplementation( () => new Promise( ( resolve ) => {
 			setTimeout( () => {
 				resolve( {
@@ -35,9 +39,11 @@ describe( 'FunctionSelect', () => {
 		const wrapper = shallowMount( FunctionSelect );
 
 		expect( wrapper.find( '.ext-wikilambda-app-function-select__title' ).exists() ).toBe( true );
-		expect( wrapper.findAllComponents( { name: 'wl-function-select-item' } ).length ).toBe( 2 );
-		expect( wrapper.findAllComponents( { name: 'wl-function-select-item' } )[ 0 ].props( 'description' ) ).toBe( 'Description for Z1' );
-		expect( wrapper.findAllComponents( { name: 'wl-function-select-item' } )[ 1 ].props( 'description' ) ).toBe( 'Description for Z2' );
+
+		const items = wrapper.findAllComponents( { name: 'wl-function-select-item' } );
+		expect( items.length ).toBe( 2 );
+		expect( items[ 0 ].props( 'description' ).label ).toBe( 'Description for Z1' );
+		expect( items[ 1 ].props( 'description' ).label ).toBe( 'Description for Z2' );
 	} );
 
 	it( 'shows lookup results when search term is not empty', async () => {
@@ -50,8 +56,10 @@ describe( 'FunctionSelect', () => {
 		await waitFor( () => expect( wrapper.vm.lookupResults.length ).not.toBe( 0 ) );
 
 		expect( wrapper.find( '.ext-wikilambda-app-function-select__title' ).exists() ).toBe( true );
-		expect( wrapper.findAllComponents( { name: 'wl-function-select-item' } ).length ).toBe( 1 );
-		expect( wrapper.findAllComponents( { name: 'wl-function-select-item' } )[ 0 ].props( 'description' ) ).toBe( 'Description for Z3' );
+
+		const items = wrapper.findAllComponents( { name: 'wl-function-select-item' } );
+		expect( items.length ).toBe( 1 );
+		expect( items[ 0 ].props( 'description' ).label ).toBe( 'Description for Z3' );
 	} );
 
 	it( 'emits select event when a function is clicked', async () => {

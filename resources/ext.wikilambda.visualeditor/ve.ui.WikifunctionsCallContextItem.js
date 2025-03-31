@@ -100,19 +100,25 @@ ve.ui.WikifunctionsCallContextItem.prototype.renderBody = function () {
 				}
 
 				const functionLabelData = ve.init.mw.WikifunctionsCall.piniaStore.getLabelData( functionId );
+				const functionLabel = functionLabelData.isUntitled ?
+					OO.ui.deferMsg( 'brackets', OO.ui.msg( 'wikilambda-visualeditor-wikifunctionscall-no-name' ) ) :
+					functionLabelData.label;
+
+				const functionDescriptionData = ve.init.mw.WikifunctionsCall.piniaStore.getDescription( functionId );
+				const functionDescription = !functionDescriptionData || functionDescriptionData.isUntitled ?
+					OO.ui.deferMsg( 'brackets', OO.ui.msg( 'wikilambda-visualeditor-wikifunctionscall-no-description' ) ) :
+					functionDescriptionData.label;
+
 				const wikifunctionsUrl = mw.config.get( 'wgWikifunctionsBaseUrl' ) || '';
 				const userLangCode = mw.config.get( 'wgUserLanguage' );
 				const functionUri = `${ wikifunctionsUrl }/view/${ userLangCode }/${ functionId }`;
-
-				// TODO (T387361): getDescription full LabelData instead, so that we can set language information
-				const functionDescription = ve.init.mw.WikifunctionsCall.piniaStore.getDescription( functionId );
 
 				// Create a link to the Function.
 				const $link = $( '<a>' )
 					.attr( 'href', functionUri )
 					.attr( 'target', '_blank' )
 					.css( { 'font-weight': 'bold', display: 'block' } )
-					.text( functionLabelData.label );
+					.text( functionLabel );
 
 				// Create a Function description paragraph.
 				const $description = $( '<p>' )
@@ -125,6 +131,11 @@ ve.ui.WikifunctionsCallContextItem.prototype.renderBody = function () {
 						'-webkit-box-orient': 'vertical',
 						overflow: 'hidden'
 					} );
+
+				// Set to placeholder color if there is no descriptio
+				if ( !functionDescriptionData || functionDescriptionData.isUntitled ) {
+					$description.css( { color: '#72777d' } );
+				}
 
 				this.$body.empty().append( $link, $description );
 				this.context.updateDimensions();

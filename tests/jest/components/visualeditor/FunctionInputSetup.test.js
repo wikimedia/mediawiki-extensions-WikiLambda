@@ -10,24 +10,26 @@ describe( 'FunctionInputSetup', () => {
 	let store;
 
 	beforeEach( () => {
+		mw.language.getFallbackLanguageChain = () => [ 'en' ];
+
 		store = useMainStore();
 		store.getUserLangCode = 'en';
 		store.getVEFunctionId = 'Z13546';
-		store.getDescription = createGettersWithFunctionsMock( 'Test description' );
 		store.getInputsOfFunctionZid = createGettersWithFunctionsMock( [
 			{ Z1K1: 'Z17', Z17K1: 'Z13518', Z17K2: 'Z13546K1' },
 			{ Z1K1: 'Z17', Z17K1: 'Z13518', Z17K2: 'Z13546K2' }
 		] );
-		store.getLabelData = createLabelDataMock( { Z13546K1: 'first', Z13546K2: 'second' } );
+		store.getDescription = createLabelDataMock( { Z13546: 'Test description' } );
+		store.getLabelData = createLabelDataMock( {
+			Z13546: 'Function name',
+			Z13546K1: 'first',
+			Z13546K2: 'second'
+		} );
 		store.fetchZids.mockResolvedValue();
 	} );
 
 	it( 'renders without errors', async () => {
-		const wrapper = shallowMount( FunctionInputSetup, {
-			data() {
-				return { icon: 'cdxIconLogoWikifunctions' };
-			}
-		} );
+		const wrapper = shallowMount( FunctionInputSetup );
 
 		expect( wrapper.find( '.ext-wikilambda-app-function-input-setup' ).exists() ).toBe( true );
 		expect( wrapper.findComponent( { name: 'wl-expandable-description' } ).exists() ).toBe( true );
@@ -38,11 +40,7 @@ describe( 'FunctionInputSetup', () => {
 	} );
 
 	it( 'emits update event when input value changes', async () => {
-		const wrapper = shallowMount( FunctionInputSetup, {
-			data() {
-				return { icon: 'cdxIconLogoWikifunctions' };
-			}
-		} );
+		const wrapper = shallowMount( FunctionInputSetup );
 
 		await waitFor( () => expect( wrapper.findAllComponents( { name: 'wl-function-input-field' } ).length ).toEqual( 2 ) );
 
@@ -55,11 +53,7 @@ describe( 'FunctionInputSetup', () => {
 	it( 'renders pre-filled input values from VisualEditor', async () => {
 		store.getVEFunctionParams = [ 'value1', 'value2' ];
 
-		const wrapper = shallowMount( FunctionInputSetup, {
-			data() {
-				return { icon: 'cdxIconLogoWikifunctions' };
-			}
-		} );
+		const wrapper = shallowMount( FunctionInputSetup );
 
 		await waitFor( () => expect( wrapper.findAllComponents( { name: 'wl-function-input-field' } ).length ).toEqual( 2 ) );
 
@@ -70,11 +64,7 @@ describe( 'FunctionInputSetup', () => {
 	} );
 
 	it( 'validates input fields and updates validity state', async () => {
-		const wrapper = shallowMount( FunctionInputSetup, {
-			data() {
-				return { icon: 'cdxIconLogoWikifunctions' };
-			}
-		} );
+		const wrapper = shallowMount( FunctionInputSetup );
 
 		await waitFor( () => expect( wrapper.findAllComponents( { name: 'wl-function-input-field' } ).length ).toEqual( 2 ) );
 
@@ -84,5 +74,33 @@ describe( 'FunctionInputSetup', () => {
 
 		expect( store.setVEFunctionParamsValid ).toHaveBeenCalledWith( true );
 		expect( wrapper.emitted().update ).toBeTruthy();
+	} );
+
+	describe( 'Language fallback strategy', () => {
+		it( 'shows no missing content notice when all labels are in userlang', () => {
+			const wrapper = shallowMount( FunctionInputSetup );
+			expect( wrapper.findComponent( { name: 'cdx-message' } ).exists() ).toBe( false );
+		} );
+
+		it( 'shows missing content notice when labels are in fallback lang', () => {
+			mw.language.getFallbackLanguageChain = () => [ 'es', 'en' ];
+			const wrapper = shallowMount( FunctionInputSetup );
+			expect( wrapper.findComponent( { name: 'cdx-message' } ).exists() ).toBe( true );
+		} );
+
+		it( 'shows missing content notice when labels are in other language', () => {
+			mw.language.getFallbackLanguageChain = () => [ 'zh' ];
+			const wrapper = shallowMount( FunctionInputSetup );
+			expect( wrapper.findComponent( { name: 'cdx-message' } ).exists() ).toBe( true );
+		} );
+
+		it( 'shows missing content notice when there are no labels', () => {
+			mw.language.getFallbackLanguageChain = () => [ 'en' ];
+			store.getDescription = createLabelDataMock();
+			store.getLabelData = createLabelDataMock();
+
+			const wrapper = shallowMount( FunctionInputSetup );
+			expect( wrapper.findComponent( { name: 'cdx-message' } ).exists() ).toBe( true );
+		} );
 	} );
 } );

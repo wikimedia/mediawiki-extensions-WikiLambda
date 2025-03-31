@@ -47,6 +47,11 @@ describe( 'library Pinia store', () => {
 	} );
 
 	describe( 'Getters', () => {
+
+		beforeEach( () => {
+			global.$.uls = { data: { getDir: jest.fn( () => 'ltr' ) } };
+		} );
+
 		describe( 'getLabelData', () => {
 			it( 'Returns untitled LabelData if label is not available in the state', () => {
 				const labelData = store.getLabelData( 'Z10000' );
@@ -55,13 +60,19 @@ describe( 'library Pinia store', () => {
 				expect( labelData.label ).toEqual( 'Z10000' );
 				expect( labelData.isUntitled ).toBe( true );
 				expect( labelData.labelOrUntitled ).toBe( 'Untitled' );
+
+				// Language info
+				expect( labelData.isUserLang ).toBe( false );
+				expect( labelData.isFallbackLang ).toBe( false );
 			} );
 
-			it( 'Returns the label data if available in the state', () => {
+			it( 'Returns the label data if userlang is available in the state', () => {
 				store.labels = mockLabels;
 				Object.defineProperty( store, 'getLanguageIsoCodeOfZLang', {
 					value: jest.fn().mockReturnValue( 'en' )
 				} );
+
+				mw.language.getFallbackLanguageChain = () => [ 'en' ];
 
 				const labelData = store.getLabelData( 'Z6' );
 
@@ -69,6 +80,59 @@ describe( 'library Pinia store', () => {
 				expect( labelData.label ).toEqual( 'String' );
 				expect( labelData.isUntitled ).toBe( false );
 				expect( labelData.labelOrUntitled ).toBe( 'String' );
+
+				// Language info
+				expect( labelData.lang ).toBe( 'Z1002' );
+				expect( labelData.langCode ).toBe( 'en' );
+				expect( labelData.langDir ).toBe( 'ltr' );
+				expect( labelData.isUserLang ).toBe( true );
+				expect( labelData.isFallbackLang ).toBe( true );
+			} );
+
+			it( 'Returns the label data if fallback lang is available in the state', () => {
+				store.labels = mockLabels;
+				Object.defineProperty( store, 'getLanguageIsoCodeOfZLang', {
+					value: jest.fn().mockReturnValue( 'en' )
+				} );
+
+				mw.language.getFallbackLanguageChain = () => [ 'es', 'en' ];
+
+				const labelData = store.getLabelData( 'Z6' );
+
+				expect( labelData.zid ).toEqual( 'Z6' );
+				expect( labelData.label ).toEqual( 'String' );
+				expect( labelData.isUntitled ).toBe( false );
+				expect( labelData.labelOrUntitled ).toBe( 'String' );
+
+				// Language info
+				expect( labelData.lang ).toBe( 'Z1002' );
+				expect( labelData.langCode ).toBe( 'en' );
+				expect( labelData.langDir ).toBe( 'ltr' );
+				expect( labelData.isUserLang ).toBe( false );
+				expect( labelData.isFallbackLang ).toBe( true );
+			} );
+
+			it( 'Returns the label data if other than fallback lang is available in the state', () => {
+				store.labels = mockLabels;
+				Object.defineProperty( store, 'getLanguageIsoCodeOfZLang', {
+					value: jest.fn().mockReturnValue( 'en' )
+				} );
+
+				mw.language.getFallbackLanguageChain = () => [ 'es' ];
+
+				const labelData = store.getLabelData( 'Z6' );
+
+				expect( labelData.zid ).toEqual( 'Z6' );
+				expect( labelData.label ).toEqual( 'String' );
+				expect( labelData.isUntitled ).toBe( false );
+				expect( labelData.labelOrUntitled ).toBe( 'String' );
+
+				// Language info
+				expect( labelData.lang ).toBe( 'Z1002' );
+				expect( labelData.langCode ).toBe( 'en' );
+				expect( labelData.langDir ).toBe( 'ltr' );
+				expect( labelData.isUserLang ).toBe( false );
+				expect( labelData.isFallbackLang ).toBe( false );
 			} );
 
 			it( 'Returns raw zids when the requested language is qqx', () => {
@@ -487,6 +551,9 @@ describe( 'library Pinia store', () => {
 		describe( 'getDescription', () => {
 			beforeEach( () => {
 				store.objects = mockStoredObjects;
+				Object.defineProperty( store, 'getLanguageIsoCodeOfZLang', {
+					value: jest.fn().mockReturnValue( 'en' )
+				} );
 			} );
 
 			it( 'Returns undefined if the object is not stored', () => {
@@ -498,7 +565,18 @@ describe( 'library Pinia store', () => {
 			} );
 
 			it( 'Returns the first description if available', () => {
-				expect( store.getDescription( 'Z1' ) ).toBe( 'Object description' );
+				mw.language.getFallbackLanguageChain = () => [ 'es', 'en' ];
+
+				const descriptionData = store.getDescription( 'Z1' );
+
+				expect( descriptionData.zid ).toEqual( 'Z1' );
+				expect( descriptionData.label ).toEqual( 'Object description' );
+				expect( descriptionData.isUntitled ).toBe( false );
+				expect( descriptionData.lang ).toBe( 'Z1002' );
+				expect( descriptionData.langCode ).toBe( 'en' );
+				expect( descriptionData.langDir ).toBe( 'ltr' );
+				expect( descriptionData.isUserLang ).toBe( false );
+				expect( descriptionData.isFallbackLang ).toBe( true );
 			} );
 		} );
 

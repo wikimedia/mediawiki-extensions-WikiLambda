@@ -105,13 +105,15 @@ module.exports = exports = defineComponent( {
 	watch: {
 		/**
 		 * When function updates and we have the new name,
-		 * emit a 'function-updated' event to VisualEditor
+		 * emit a 'function-name-updated' event to VisualEditor
 		 * for the dialog title to be changed
 		 *
 		 * @param {LabelData} labelData
 		 */
 		functionLabelData: function ( labelData ) {
-			this.$emit( 'function-name-updated', labelData ? labelData.label : undefined );
+			const newTitle = ( labelData && !labelData.isUntitled ) ? labelData.label :
+				this.$i18n( 'brackets', this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-no-name' ).text() ).text();
+			this.$emit( 'function-name-updated', newTitle );
 		}
 	}
 } );

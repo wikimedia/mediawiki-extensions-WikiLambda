@@ -24,8 +24,8 @@
 		>
 			{{ label }}
 		</p>
-		<!-- TODO (T387361): add langCode and langDir -->
 		<wl-expandable-description
+			v-if="description"
 			:description="description"
 			class="ext-wikilambda-app-function-select-item__description"
 		></wl-expandable-description>
@@ -35,6 +35,7 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const ExpandableDescription = require( './ExpandableDescription.vue' );
+const LabelData = require( '../../store/classes/LabelData.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-select-item',
@@ -43,16 +44,16 @@ module.exports = exports = defineComponent( {
 	},
 	props: {
 		labelData: {
-			type: Object,
-			default: null
+			type: LabelData,
+			default: undefined
 		},
 		label: {
 			type: String,
 			default: ''
 		},
 		description: {
-			type: String,
-			default: ''
+			type: LabelData,
+			default: undefined
 		}
 	}
 } );
