@@ -38,5 +38,9 @@
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Ei valittua vaihtoehtoa.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser": "Tuntematon virhe. [[f:Talk:$1|Ilmoita ongelmasta]]",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "Näytä lisää",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Näytä vähemmän"
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Näytä vähemmän",
+	"wikilambda-visualeditor-wikifunctionscall-info-missing-content": "Auta kääntämään puuttuvaa sisältöä kielellesi [[f:$1|Wikifunctions]]issa.",
+	"wikilambda-visualeditor-wikifunctionscall-no-name": "Ei nimeä",
+	"wikilambda-visualeditor-wikifunctionscall-no-description": "Ei kuvausta",
+	"wikilambda-visualeditor-wikifunctionscall-no-input-label": "Ei nimeä"
 }
