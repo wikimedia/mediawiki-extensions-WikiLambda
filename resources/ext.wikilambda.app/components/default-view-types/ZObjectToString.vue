@@ -109,7 +109,7 @@ module.exports = exports = defineComponent( {
 			rendererError: false
 		};
 	},
-	computed: Object.assign(
+	computed: Object.assign( {},
 		mapState( useMainStore, [
 			'getLabelData',
 			'getExpectedTypeOfKey',

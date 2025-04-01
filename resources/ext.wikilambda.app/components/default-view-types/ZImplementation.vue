@@ -131,7 +131,7 @@ module.exports = exports = defineComponent( {
 		}
 	},
 
-	computed: Object.assign(
+	computed: Object.assign( {},
 		mapState( useMainStore, [
 			'getZImplementationFunctionRowId',
 			'getZImplementationContentType',

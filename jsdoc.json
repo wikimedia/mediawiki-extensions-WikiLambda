@@ -5,14 +5,7 @@
 		"packageX": "package.json",
 		"readme": "README.md",
 		"recurse": true,
-		"allowedGlobals": [
-			"clearFieldErrors",
-			"fieldErrors",
-			"getErrorMessage",
-			"extractErrorMessage",
-			"hasFieldErrors",
-			"setLocalError"
-		],
+		"allowedGlobals": [],
 		"template": "node_modules/jsdoc-wmf-theme"
 	},
 	"plugins": [

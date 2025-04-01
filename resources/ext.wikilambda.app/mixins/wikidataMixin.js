@@ -12,7 +12,7 @@ const useMainStore = require( '../store/index.js' );
 const Constants = require( '../Constants.js' );
 
 module.exports = exports = {
-	computed: Object.assign(
+	computed: Object.assign( {},
 		mapState( useMainStore, [
 			'getItemId',
 			'getItemLabelData',

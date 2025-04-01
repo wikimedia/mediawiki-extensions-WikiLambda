@@ -128,7 +128,7 @@ module.exports = exports = defineComponent( {
 			hasClickedDisabledField: false
 		};
 	},
-	computed: Object.assign(
+	computed: Object.assign( {},
 		mapState( useMainStore, [
 			'getAllProgrammingLangs',
 			'getConverterIdentity',
@@ -337,7 +337,7 @@ module.exports = exports = defineComponent( {
 			}
 		}
 	),
-	methods: Object.assign(
+	methods: Object.assign( {},
 		mapActions( useMainStore, [
 			'fetchZids',
 			'fetchAllZProgrammingLanguages',

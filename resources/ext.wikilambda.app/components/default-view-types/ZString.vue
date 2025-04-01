@@ -50,7 +50,7 @@ module.exports = exports = defineComponent( {
 		return {
 		};
 	},
-	computed: Object.assign(
+	computed: Object.assign( {},
 		mapState( useMainStore, [
 			'getZObjectKeyByRowId',
 			'getZStringTerminalValue'

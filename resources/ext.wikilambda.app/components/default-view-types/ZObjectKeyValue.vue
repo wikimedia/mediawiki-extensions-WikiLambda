@@ -167,7 +167,7 @@ module.exports = exports = defineComponent( {
 			expanded: false
 		};
 	},
-	computed: Object.assign(
+	computed: Object.assign( {},
 		mapState( useMainStore, [
 			'createObjectByType',
 			'getCurrentZObjectId',

@@ -12,7 +12,7 @@ const { mapActions, mapState } = require( 'pinia' );
 const Constants = require( '../Constants.js' );
 const useMainStore = require( '../store/index.js' );
 
-module.exports = exports = {
+const errorMixin = {
 	data: function () {
 		return {
 			localErrors: []
@@ -24,6 +24,7 @@ module.exports = exports = {
 		/**
 		 * Set a local error for the component.
 		 *
+		 * @memberof module:ext.wikilambda.app.mixins.errorMixin
 		 * @param {Object} payload
 		 */
 		setLocalError: function ( payload ) {
@@ -40,6 +41,8 @@ module.exports = exports = {
 		 * If this.rowId is associated to a field (is defined
 		 * and not zero), clear the errors associated to this
 		 * component.
+		 *
+		 * @memberof module:ext.wikilambda.app.mixins.errorMixin
 		 */
 		clearFieldErrors: function () {
 			this.localErrors = [];
@@ -52,6 +55,7 @@ module.exports = exports = {
 		 * Returns the translated message for a given error code.
 		 * Error messages can have html tags.
 		 *
+		 * @memberof module:ext.wikilambda.app.mixins.errorMixin
 		 * @param {Object} error
 		 * @return {string}
 		 */
@@ -64,6 +68,7 @@ module.exports = exports = {
 		 * Given an error response of a failed call to the API,
 		 * extract the error message per type of error.
 		 *
+		 * @memberof module:ext.wikilambda.app.mixins.errorMixin
 		 * @param {Object} error
 		 * @return {string | undefined}
 		 */
@@ -90,6 +95,7 @@ module.exports = exports = {
 		 * reason, if rowId is 0 or not passed, it will return
 		 * an empty array.
 		 *
+		 * @memberof module:ext.wikilambda.app.mixins.errorMixin
 		 * @return {Array}
 		 */
 		fieldErrors: function () {
@@ -100,6 +106,7 @@ module.exports = exports = {
 		/**
 		 * Returns whether the component is in an error state.
 		 *
+		 * @memberof module:ext.wikilambda.app.mixins.errorMixin
 		 * @return {boolean}
 		 */
 		hasFieldErrors: function () {
@@ -107,3 +114,5 @@ module.exports = exports = {
 		}
 	} )
 };
+
+module.exports = errorMixin;

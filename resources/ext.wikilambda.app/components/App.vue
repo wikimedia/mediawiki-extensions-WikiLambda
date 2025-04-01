@@ -55,14 +55,14 @@ module.exports = exports = defineComponent( {
 			isAppSetup: false
 		};
 	},
-	computed: Object.assign(
+	computed: Object.assign( {},
 		mapState( useMainStore, [
 			'isInitialized',
 			'isCreateNewPage',
 			'getCurrentView'
 		] )
 	),
-	methods: Object.assign(
+	methods: Object.assign( {},
 		mapActions( useMainStore, [
 			'initializeView',
 			'prefetchZids',

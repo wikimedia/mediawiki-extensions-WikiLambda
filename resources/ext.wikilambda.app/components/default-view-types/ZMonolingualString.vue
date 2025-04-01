@@ -72,7 +72,7 @@ module.exports = exports = defineComponent( {
 			chipWidth: 72
 		};
 	},
-	computed: Object.assign(
+	computed: Object.assign( {},
 		mapState( useMainStore, [
 			'getLanguageIsoCodeOfZLang',
 			'getZMonolingualTextValue',

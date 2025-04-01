@@ -18,7 +18,7 @@ module.exports = exports = {
 			pageTitleObject: {}
 		};
 	},
-	computed: mapState( useMainStore, [
+	computed: Object.assign( {}, mapState( useMainStore, [
 		'getFallbackLanguageZids',
 		'getLabelData',
 		'getLanguageIsoCodeOfZLang',
@@ -27,7 +27,7 @@ module.exports = exports = {
 		'getZMonolingualTextValue',
 		'getZPersistentName',
 		'getZReferenceTerminalValue'
-	] ),
+	] ) ),
 	methods: {
 		/**
 		 * Update the page title and language chip based on the provided data.

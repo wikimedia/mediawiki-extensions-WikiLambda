@@ -57,7 +57,7 @@ module.exports = exports = defineComponent( {
 			icon: icons.cdxIconFunctionArgument
 		};
 	},
-	computed: Object.assign(
+	computed: Object.assign( {},
 		mapState( useMainStore, [
 			'getLabelData',
 			'getRowByKeyPath',

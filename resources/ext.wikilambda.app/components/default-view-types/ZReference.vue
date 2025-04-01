@@ -70,7 +70,7 @@ module.exports = exports = defineComponent( {
 			default: false
 		}
 	},
-	computed: Object.assign(
+	computed: Object.assign( {},
 		mapState( useMainStore, [
 			'getLabelData',
 			'getParentRowId',

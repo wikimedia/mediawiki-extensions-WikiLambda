@@ -92,7 +92,7 @@ module.exports = exports = defineComponent( {
 		'wl-z-object-key-value': ZObjectKeyValue
 	},
 	mixins: [ eventLogMixin, typeMixin ],
-	computed: Object.assign(
+	computed: Object.assign( {},
 		mapState( useMainStore, [
 			'getZPersistentContentRowId',
 			'getRowByKeyPath',

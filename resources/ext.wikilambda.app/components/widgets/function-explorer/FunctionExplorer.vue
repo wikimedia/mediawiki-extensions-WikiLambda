@@ -193,7 +193,7 @@ module.exports = exports = defineComponent( {
 			resetIcon: icons.cdxIconHistory
 		};
 	},
-	computed: Object.assign(
+	computed: Object.assign( {},
 		mapState( useMainStore, [
 			'getUserLangCode',
 			'getStoredObject',
