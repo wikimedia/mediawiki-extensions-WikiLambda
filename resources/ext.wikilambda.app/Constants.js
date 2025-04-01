@@ -346,6 +346,31 @@ Constants.EXCLUDE_FROM_SELECTOR = [
 	Constants.Z_RESPONSEENVELOPE
 ];
 
+// EXCLUDE_FROM_LITERAL_MODE_SELECTION:
+// Types that should not be selectable as "Literal <Type>" in the Mode Selector
+// * Z4/Type
+// * Z8/Function
+// * Z60/Natural language
+// * Z61/Programming language
+// * Z50/Error type
+// * Z14/Implementation
+// * Z20/Tester
+// * Z16/Code
+// * Z46/Deserialiser
+// * Z64/Serialiser
+Constants.EXCLUDE_FROM_LITERAL_MODE_SELECTION = [
+	Constants.Z_TYPE,
+	Constants.Z_FUNCTION,
+	Constants.Z_NATURAL_LANGUAGE,
+	Constants.Z_PROGRAMMING_LANGUAGE,
+	Constants.Z_ERRORTYPE,
+	Constants.Z_CODE,
+	Constants.Z_IMPLEMENTATION,
+	Constants.Z_TESTER,
+	Constants.Z_DESERIALISER,
+	Constants.Z_SERIALISER
+];
+
 Constants.LINKED_TYPES = [
 	Constants.Z_TYPE,
 	Constants.Z_TESTER,

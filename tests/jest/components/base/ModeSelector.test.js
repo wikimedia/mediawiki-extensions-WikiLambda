@@ -211,6 +211,23 @@ describe( 'ModeSelector', () => {
 			expect( menu.vm.menuItems[ 0 ].items[ 1 ].value ).toBe( 'Z1' );
 			expect( menu.vm.menuItems[ 0 ].items[ 2 ].value ).toBe( Constants.Z_WIKIDATA_REFERENCE_LEXEME );
 			expect( menu.vm.menuItems[ 0 ].items[ 3 ].value ).toBe( 'Z9' );
+			expect( menu.vm.menuItems[ 0 ].items[ 3 ].value ).toBe( 'Z9' );
+		} );
+
+		it( 'does not display types in EXCLUDE_FROM_LITERAL_MODE_SELECTION in the literal options', () => {
+			store.getZObjectKeyByRowId = createGettersWithFunctionsMock( Constants.Z_PERSISTENTOBJECT_VALUE );
+			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_FUNCTION );
+			const wrapper = shallowMount( ModeSelector, {
+				props: {
+					edit: true,
+					parentExpectedType: Constants.Z_FUNCTION
+				}
+			} );
+
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
+			const literalOptions = menu.vm.menuItems[ 0 ].items.filter( ( item ) => item.type === Constants.Z_FUNCTION );
+
+			expect( literalOptions.length ).toBe( 0 );
 		} );
 	} );
 
