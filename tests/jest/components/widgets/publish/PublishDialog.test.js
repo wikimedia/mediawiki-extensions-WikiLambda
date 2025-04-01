@@ -141,7 +141,12 @@ describe( 'Publish Dialog', () => {
 
 	it( 'shows a keyboard warning when trying to submit with the Enter key', async () => {
 		const wrapper = mount( PublishDialog, {
-			props: { showDialog: true, functionSignatureChanged: false }
+			props: { showDialog: true, functionSignatureChanged: false },
+			global: {
+				stubs: {
+					CdxMessage: false
+				}
+			}
 		} );
 
 		wrapper.vm.summary = 'mock summary';
@@ -152,7 +157,8 @@ describe( 'Publish Dialog', () => {
 		// Simulate hitting Enter on the input element
 		await triggerKeydown( input, 'Enter', 13 );
 
-		await waitFor( () => expect( wrapper.find( '.cdx-message--warning.ext-wikilambda-app-publish-dialog__keyboard-submit-warning' ).exists() ).toBe( true ) );
+		await waitFor( () => expect( wrapper.find( '.cdx-message--warning' ).exists() ).toBe( true ) );
+		expect( wrapper.find( '.cdx-message--warning' ).text() ).toBe( 'You can press $1 $2 to publish your changes.' );
 		expect( store.submitZObject ).not.toHaveBeenCalled();
 	} );
 
