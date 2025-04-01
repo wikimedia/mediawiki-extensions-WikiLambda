@@ -6,19 +6,11 @@
 		"readme": "README.md",
 		"recurse": true,
 		"allowedGlobals": [
-			"canonicalToHybrid",
 			"clearFieldErrors",
-			"errorKeysToTraverse",
-			"extractErrorStructure",
-			"extractNestedSuberrors",
-			"extractZIDs",
 			"fieldErrors",
 			"getErrorMessage",
 			"extractErrorMessage",
-			"getValueFromCanonicalZMap",
 			"hasFieldErrors",
-			"hybridToCanonical",
-			"prefetchZids",
 			"setLocalError"
 		],
 		"template": "node_modules/jsdoc-wmf-theme"
