@@ -11,6 +11,7 @@ use MediaWiki\Api\ApiUsageException;
 use MediaWiki\Extension\EventLogging\EventLogging;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\MockOrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
@@ -51,10 +52,16 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		// TODO (T330033): Consider injecting this service rather than just fetching from main
 		$services = MediaWikiServices::getInstance();
 
-		$config = $services->getConfigFactory()->makeConfig( 'WikiLambda' );
-		$this->orchestratorHost = $config->get( 'WikiLambdaOrchestratorLocation' );
-		$client = new Client( [ "base_uri" => $this->orchestratorHost ] );
-		$this->orchestrator = new OrchestratorRequest( $client );
+		if ( defined( 'MW_PHPUNIT_TEST' ) ) {
+			// Phan is unhappy because, altough it's a sub-class, this is not loaded in prod code.
+			// @phan-suppress-next-line PhanTypeMismatchPropertyReal, PhanUndeclaredClassMethod
+			$this->orchestrator = new MockOrchestratorRequest();
+		} else {
+			$config = $services->getConfigFactory()->makeConfig( 'WikiLambda' );
+			$this->orchestratorHost = $config->get( 'WikiLambdaOrchestratorLocation' );
+			$client = new Client( [ "base_uri" => $this->orchestratorHost ] );
+			$this->orchestrator = new OrchestratorRequest( $client );
+		}
 	}
 
 	/**

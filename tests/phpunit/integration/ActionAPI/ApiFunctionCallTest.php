@@ -32,11 +32,15 @@ class ApiFunctionCallTest extends ApiTestCase {
 	}
 
 	/**
-	 * @dataProvider provideExecuteSuccessfulViaBetaCluster
-	 * TODO (T374242): Fix Beta Cluster so we can re-enable these tests.
-	 * @group Broken
+	 * Note that these are integration tests, not end-to-end tests. They never actually hit an instance
+	 * of the function-orchestrator, just a mock of it; they let us confirm that, if the orchestrator
+	 * were to be called, the response would go through the API handler as intended.
+	 *
+	 * For actual end-to-end testing of this, see the Catalyst system.
+	 *
+	 * @dataProvider provideExecuteSuccessfulViaMock
 	 */
-	public function testExecuteSuccessfulViaBetaCluster(
+	public function testExecuteSuccessfulViaMock(
 		$requestString,
 		$expectedString = null,
 		$callBack = null,
@@ -45,27 +49,24 @@ class ApiFunctionCallTest extends ApiTestCase {
 		$result = [];
 		$orchestrationResult = [];
 
-		// Beta cluster doesn't like all these tests, so retry until it does.
-		for ( $i = 0; $i < 4; $i++ ) {
-			if ( array_key_exists( 'success', $orchestrationResult ) ) {
-				break;
-			}
-			if ( $i > 0 ) {
-				sleep( pow( 2, $i ) );
-			}
-			$result = $this->doApiRequest( [
-				'action' => 'wikilambda_function_call',
-				'wikilambda_function_call_zobject' => $requestString
-			] );
-			$orchestrationResult = $result[0]['wikilambda_function_call'];
-		}
+		$result = $this->doApiRequest( [
+			'action' => 'wikilambda_function_call',
+			'wikilambda_function_call_zobject' => $requestString
+		] );
+		$orchestrationResult = $result[0]['wikilambda_function_call'];
 
 		$this->assertArrayHasKey( 'success', $orchestrationResult );
 		$this->assertTrue( $orchestrationResult['success'] );
 
 		$expected = json_decode( $expectedString, true ) ?? $expectedString;
 		$resultEnvelope = json_decode( $orchestrationResult[ 'data' ], true );
+
+		if ( !$resultEnvelope ) {
+			var_dump( $orchestrationResult );
+		}
+
 		$actualString = $resultEnvelope[ 'Z22K1' ];
+
 		$actual = $actualString;
 		$callBack ??= function ( $expected, $actual ) {
 			$this->assertEquals( $expected, $actual );
@@ -74,8 +75,8 @@ class ApiFunctionCallTest extends ApiTestCase {
 		// TODO (T314609): Also test error cases.
 	}
 
-	public static function provideExecuteSuccessfulViaBetaCluster() {
-		// TODO (T311801): Share this logic with the ApiFunctionCall examples.
+	public static function provideExecuteSuccessfulViaMock() {
+		// TODO (T311801): Items below are the user-facing examples from ApiFunctionCall; maybe share the definitons?
 		yield 'Manual echo' => [
 			'{"Z1K1": "Z7", "Z7K1": "Z801", "Z801K1": "Hello, testers!" }',
 			'Hello, testers!'
@@ -86,22 +87,20 @@ class ApiFunctionCallTest extends ApiTestCase {
 			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}"
 		];
 
-		// TODO (T371837): Fix Beta Cluster so we can re-enable this test.
-		// yield 'Invoke user-written JavaScript code' => [
-			// ZObjectUtils::readTestFile( 'evaluated-js.json' ),
-			// "13"
-		// ];
+		yield 'Invoke user-written JavaScript code' => [
+			ZObjectUtils::readTestFile( 'evaluated-js.json' ),
+			"13"
+		];
 
-		// TODO (T371837): Fix Beta Cluster so we can re-enable this test.
-		// yield 'Invoke user-written Python 3 code' => [
-			// ZObjectUtils::readTestFile( 'evaluated-python.json' ),
-			// "13"
-		// ];
+		yield 'Invoke user-written Python 3 code' => [
+			ZObjectUtils::readTestFile( 'evaluated-python.json' ),
+			"13"
+		];
 
-		// TODO (T371837): Fix Beta Cluster so we can re-enable this test.
+		// Disabled because this makes an Object key that JSON doesn't like
 		// yield 'Invoke a composition: if first argument is true, sort second; else, return it intact' => [
-			// ZObjectUtils::readTestFile( 'example-composition.json' ),
-			// '        abcddeeeefghhijklmnoooopqrrttuuvwxyz'
+		// 	ZObjectUtils::readTestFile( 'example-composition.json' ),
+		// 	'        abcddeeeefghhijklmnoooopqrrttuuvwxyz'
 		// ];
 
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
@@ -117,61 +116,54 @@ class ApiFunctionCallTest extends ApiTestCase {
 			'[{"Z1K1":"Z4","Z4K1":"Z6","Z4K2":["Z3",{"Z1K1":"Z3","Z3K1":"Z6","Z3K2":"Z6K1","Z3K3":{"Z1K1":"Z12","Z12K1":["Z11",{"Z1K1":"Z11","Z11K1":"Z1002","Z11K2":"value"}]}}],"Z4K3":"Z106","Z4K4":"Z866"},"acab","acab","bacab"]'
 		];
 
-		// TODO (T371837): Fix Beta Cluster so we can re-enable this test.
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
-		// yield 'Invoke the Apply function: given a function and a string, return the result of running the function over the string' => [
-			// ZObjectUtils::readTestFile( 'example-apply.json' ),
-			// "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
-		// ];
+		yield 'Invoke the Apply function: given a function and a string, return the result of running the function over the string' => [
+			ZObjectUtils::readTestFile( 'example-apply.json' ),
+			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
+		];
 
-		// TODO (T371837): Fix Beta Cluster so we can re-enable this test.
-		// yield 'Invoke a function that returns the first element of a typed List' => [
-			// ZObjectUtils::readTestFile( 'example-generic-list.json' ),
-			// 'who are these coming to the sacrifice'
-		// ];
+		yield 'Invoke a function that returns the first element of a typed List' => [
+			ZObjectUtils::readTestFile( 'example-generic-list.json' ),
+			'who are these coming to the sacrifice'
+		];
 
-		// TODO (T371837): Fix Beta Cluster so we can re-enable this test.
-		// yield 'Invoke a function that returns the second element of a Pair<String,Boolean>' => [
-			// ZObjectUtils::readTestFile( 'example-generic-pair.json' ),
+		yield 'Invoke a function that returns the second element of a Pair<String,Boolean>' => [
+			ZObjectUtils::readTestFile( 'example-generic-pair.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
-			// "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
-		// ];
+			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
+		];
 
-		// TODO (T371837): Fix Beta Cluster so we can re-enable this test.
-		// yield 'Invoke a function that returns the second element of a Pair<String,Pair<String,String>>' => [
-			// ZObjectUtils::readTestFile( 'example-generic-pair-2.json' ),
+		yield 'Invoke a function that returns the second element of a Pair<String,Pair<String,String>>' => [
+			ZObjectUtils::readTestFile( 'example-generic-pair-2.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
-			// '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z6"},"K1":"Where the pot\'s not","K2":"is where it\'s useful."}'
-		// ];
+			'{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z6"},"K1":"Where the pot\'s not","K2":"is where it\'s useful."}'
+		];
 
-		// TODO (T371837): Fix Beta Cluster so we can re-enable this test.
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
-		// yield 'Invoke a function that maps the element of a typed Map at a given key to a string version of its value' => [
-			// ZObjectUtils::readTestFile( 'example-generic-map.json' ),
+		yield 'Invoke a function that maps the element of a typed Map at a given key to a string version of its value' => [
+			ZObjectUtils::readTestFile( 'example-generic-map.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
-			// '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z883","Z883K1":"Z6","Z883K2":"Z6"},"K1":[{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z6"},{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z6"},"K1":"true?","K2":"true"}]}'
-		// ];
+			'{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z883","Z883K1":"Z6","Z883K2":"Z6"},"K1":[{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z6"},{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z6"},"K1":"true?","K2":"true"}]}'
+		];
 
-		// TODO (T371837): Fix Beta Cluster so we can re-enable this test.
-		// yield 'Invoke JavaScript function using a user-defined type' => [
-			// ZObjectUtils::readTestFile( 'example-user-defined-javascript.json' ),
-			// // @phpcs:ignore Generic.Files.LineLength.TooLong
-			// "{\"Z1K1\":\"Z1000000\",\"Z1000000K1\":\"5\"}"
-		// ];
+		yield 'Invoke JavaScript function using a user-defined type' => [
+			ZObjectUtils::readTestFile( 'example-user-defined-javascript.json' ),
+			// @phpcs:ignore Generic.Files.LineLength.TooLong
+			"{\"Z1K1\":\"Z1000000\",\"Z1000000K1\":\"5\"}"
+		];
 
 		$ZMillion = self::readTestFileAsArray( 'user-defined-validation-type.json' );
 		$validationZ7 = self::readTestFileAsArray( 'example-user-defined-validation.json' );
 		$ZMillion["Z4K3"]["Z8K1"][1]["Z17K1"] = $ZMillion;
 		$validationZ7["Z801K1"]["Z1K1"] = $ZMillion;
 
-		// TODO (T360076): Rewrite this to use JS instead of Python.
-		yield 'Invoke user-defined validation function implemented in Python' => [
-			json_encode( $validationZ7 ),
-			'Z24',
-			null,
-		// @phpcs:ignore Generic.Files.LineLength.TooLong
-		"{\"Z1K1\":\"Z5\",\"Z5K1\":{\"Z1K1\":\"Z518\",\"Z518K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z1000000\",\"Z4K2\":[{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"Z1000000K1\",\"Z3K3\":\"Z400\"}],\"Z4K3\":{\"Z1K1\":\"Z8\",\"Z8K1\":[{\"Z1K1\":\"Z17\",\"Z17K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z1000000\",\"Z4K2\":[{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"Z1000000K1\",\"Z3K3\":\"Z400\"}],\"Z4K3\":{\"Z1K1\":\"Z8\",\"Z8K1\":[{\"Z1K1\":\"Z17\",\"Z17K1\":\"Z1000000\",\"Z17K2\":\"Z1001K1\",\"Z17K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[]}}],\"Z8K2\":\"Z4\",\"Z8K3\":[],\"Z8K4\":[{\"Z1K1\":\"Z14\",\"Z14K1\":\"Z1001\",\"Z14K3\":{\"Z1K1\":\"Z16\",\"Z16K1\":{\"Z1K1\":\"Z61\",\"Z61K1\":\"python-3\"},\"Z16K2\":\"def Z1001(Z1001K1):\\n  if Z1001K1.Z1000000K1 != 'A':\\n    raise Exception('does that look like an A to you???')\\n  return Z1001K1\"}}],\"Z8K5\":\"Z1001\"}},\"Z17K2\":\"Z1001K1\",\"Z17K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[]}}],\"Z8K2\":\"Z4\",\"Z8K3\":[],\"Z8K4\":[{\"Z1K1\":\"Z14\",\"Z14K1\":\"Z1001\",\"Z14K3\":{\"Z1K1\":\"Z16\",\"Z16K1\":{\"Z1K1\":\"Z61\",\"Z61K1\":\"python-3\"},\"Z16K2\":\"def Z1001(Z1001K1):\\n  if Z1001K1.Z1000000K1 != 'A':\\n    raise Exception('does that look like an A to you???')\\n  return Z1001K1\"}}],\"Z8K5\":\"Z1001\"}},\"Z518K2\":{\"Z1K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z1000000\",\"Z4K2\":[{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"Z1000000K1\",\"Z3K3\":\"Z400\"}],\"Z4K3\":{\"Z1K1\":\"Z8\",\"Z8K1\":[{\"Z1K1\":\"Z17\",\"Z17K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z1000000\",\"Z4K2\":[{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"Z1000000K1\",\"Z3K3\":\"Z400\"}],\"Z4K3\":{\"Z1K1\":\"Z8\",\"Z8K1\":[{\"Z1K1\":\"Z17\",\"Z17K1\":\"Z1000000\",\"Z17K2\":\"Z1001K1\",\"Z17K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[]}}],\"Z8K2\":\"Z4\",\"Z8K3\":[],\"Z8K4\":[{\"Z1K1\":\"Z14\",\"Z14K1\":\"Z1001\",\"Z14K3\":{\"Z1K1\":\"Z16\",\"Z16K1\":{\"Z1K1\":\"Z61\",\"Z61K1\":\"python-3\"},\"Z16K2\":\"def Z1001(Z1001K1):\\n  if Z1001K1.Z1000000K1 != 'A':\\n    raise Exception('does that look like an A to you???')\\n  return Z1001K1\"}}],\"Z8K5\":\"Z1001\"}},\"Z17K2\":\"Z1001K1\",\"Z17K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[]}}],\"Z8K2\":\"Z4\",\"Z8K3\":[],\"Z8K4\":[{\"Z1K1\":\"Z14\",\"Z14K1\":\"Z1001\",\"Z14K3\":{\"Z1K1\":\"Z16\",\"Z16K1\":{\"Z1K1\":\"Z61\",\"Z61K1\":\"python-3\"},\"Z16K2\":\"def Z1001(Z1001K1):\\n  if Z1001K1.Z1000000K1 != 'A':\\n    raise Exception('does that look like an A to you???')\\n  return Z1001K1\"}}],\"Z8K5\":\"Z1001\"}},\"Z1000000K1\":\"a\"},\"Z518K3\":{\"Z1K1\":\"Z5\",\"Z5K2\":\"does that look like an A to you???\"}}}}",
-		];
+		// yield 'Invoke user-defined validation function implemented in Python' => [
+		// 	json_encode( $validationZ7 ),
+		// 	'Z24',
+		// 	null,
+		// 	// @phpcs:ignore Generic.Files.LineLength.TooLong
+		// "{\"Z1K1\":\"Z5\",\"Z5K1\":{\"Z1K1\":\"Z518\",\"Z518K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z1000000\",\"Z4K2\":[{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"Z1000000K1\",\"Z3K3\":\"Z400\"}],\"Z4K3\":{\"Z1K1\":\"Z8\",\"Z8K1\":[{\"Z1K1\":\"Z17\",\"Z17K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z1000000\",\"Z4K2\":[{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"Z1000000K1\",\"Z3K3\":\"Z400\"}],\"Z4K3\":{\"Z1K1\":\"Z8\",\"Z8K1\":[{\"Z1K1\":\"Z17\",\"Z17K1\":\"Z1000000\",\"Z17K2\":\"Z1001K1\",\"Z17K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[]}}],\"Z8K2\":\"Z4\",\"Z8K3\":[],\"Z8K4\":[{\"Z1K1\":\"Z14\",\"Z14K1\":\"Z1001\",\"Z14K3\":{\"Z1K1\":\"Z16\",\"Z16K1\":{\"Z1K1\":\"Z61\",\"Z61K1\":\"python-3\"},\"Z16K2\":\"def Z1001(Z1001K1):\\n  if Z1001K1.Z1000000K1 != 'A':\\n    raise Exception('does that look like an A to you???')\\n  return Z1001K1\"}}],\"Z8K5\":\"Z1001\"}},\"Z17K2\":\"Z1001K1\",\"Z17K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[]}}],\"Z8K2\":\"Z4\",\"Z8K3\":[],\"Z8K4\":[{\"Z1K1\":\"Z14\",\"Z14K1\":\"Z1001\",\"Z14K3\":{\"Z1K1\":\"Z16\",\"Z16K1\":{\"Z1K1\":\"Z61\",\"Z61K1\":\"python-3\"},\"Z16K2\":\"def Z1001(Z1001K1):\\n  if Z1001K1.Z1000000K1 != 'A':\\n    raise Exception('does that look like an A to you???')\\n  return Z1001K1\"}}],\"Z8K5\":\"Z1001\"}},\"Z518K2\":{\"Z1K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z1000000\",\"Z4K2\":[{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"Z1000000K1\",\"Z3K3\":\"Z400\"}],\"Z4K3\":{\"Z1K1\":\"Z8\",\"Z8K1\":[{\"Z1K1\":\"Z17\",\"Z17K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z1000000\",\"Z4K2\":[{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"Z1000000K1\",\"Z3K3\":\"Z400\"}],\"Z4K3\":{\"Z1K1\":\"Z8\",\"Z8K1\":[{\"Z1K1\":\"Z17\",\"Z17K1\":\"Z1000000\",\"Z17K2\":\"Z1001K1\",\"Z17K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[]}}],\"Z8K2\":\"Z4\",\"Z8K3\":[],\"Z8K4\":[{\"Z1K1\":\"Z14\",\"Z14K1\":\"Z1001\",\"Z14K3\":{\"Z1K1\":\"Z16\",\"Z16K1\":{\"Z1K1\":\"Z61\",\"Z61K1\":\"python-3\"},\"Z16K2\":\"def Z1001(Z1001K1):\\n  if Z1001K1.Z1000000K1 != 'A':\\n    raise Exception('does that look like an A to you???')\\n  return Z1001K1\"}}],\"Z8K5\":\"Z1001\"}},\"Z17K2\":\"Z1001K1\",\"Z17K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[]}}],\"Z8K2\":\"Z4\",\"Z8K3\":[],\"Z8K4\":[{\"Z1K1\":\"Z14\",\"Z14K1\":\"Z1001\",\"Z14K3\":{\"Z1K1\":\"Z16\",\"Z16K1\":{\"Z1K1\":\"Z61\",\"Z61K1\":\"python-3\"},\"Z16K2\":\"def Z1001(Z1001K1):\\n  if Z1001K1.Z1000000K1 != 'A':\\n    raise Exception('does that look like an A to you???')\\n  return Z1001K1\"}}],\"Z8K5\":\"Z1001\"}},\"Z1000000K1\":\"a\"},\"Z518K3\":{\"Z1K1\":\"Z5\",\"Z5K2\":\"does that look like an A to you???\"}}}}",
+		// ];
 
 		yield 'Generate a Z4/Type with a user-defined function and use that Z4/Type as a ZObject\'s Z1K1/Type' => [
 			ZObjectUtils::readTestFile( 'example-user-defined-generic-type.json' ),
@@ -204,10 +196,10 @@ class ApiFunctionCallTest extends ApiTestCase {
 			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
 		];
 
-		// yield 'Supply an implementation with an unsupported language; back off to the second' => [
-			// ZObjectUtils::readTestFile( 'example-bad-first-implementation.json' ),
-			// "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}",
-		// ];
+		yield 'Supply an implementation with an unsupported language; back off to the second' => [
+			ZObjectUtils::readTestFile( 'example-bad-first-implementation.json' ),
+			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}",
+		];
 
 		$Z823 = [
 			"Z1K1" => "Z7",
@@ -225,10 +217,8 @@ class ApiFunctionCallTest extends ApiTestCase {
 		];
 		yield 'Ensure Z823 propagates invariants' => [
 			json_encode( $Z823 ),
-			// (T368041) Temporarily switched to the wrong response, as it's failing in Beta Cluster
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
-			// "{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z1\",\"Z882K2\":\"Z1\"},\"K1\":\"the truth\",\"K2\":{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z883\",\"Z883K1\":\"Z6\",\"Z883K2\":\"Z1\"},\"K1\":[{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"implementationId\",\"K2\":{\"Z1K1\":\"Z6\",\"Z6K1\":\"Z902\"}},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"implementationType\",\"K2\":\"BuiltIn\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationMemoryUsage\",\"K2\":\"91.91 MiB\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationCpuUsage\",\"K2\":\"24.322 ms\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationStartTime\",\"K2\":\"2023-03-21T22:34:23.609Z\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationEndTime\",\"K2\":\"2023-03-21T22:34:23.642Z\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationDuration\",\"K2\":\"33 ms\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationHostname\",\"K2\":\"22ca7c26028f\"}]}}",
-			"Z24",
+			"{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z1\",\"Z882K2\":\"Z1\"},\"K1\":\"the truth\",\"K2\":{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z883\",\"Z883K1\":\"Z6\",\"Z883K2\":\"Z1\"},\"K1\":[{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"implementationId\",\"K2\":{\"Z1K1\":\"Z6\",\"Z6K1\":\"Z902\"}},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"implementationType\",\"K2\":\"BuiltIn\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationMemoryUsage\",\"K2\":\"91.91 MiB\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationCpuUsage\",\"K2\":\"24.322 ms\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationStartTime\",\"K2\":\"2023-03-21T22:34:23.609Z\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationEndTime\",\"K2\":\"2023-03-21T22:34:23.642Z\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationDuration\",\"K2\":\"33 ms\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationHostname\",\"K2\":\"22ca7c26028f\"}]}}",
 			null,
 			static function ( $expected, $actual ) {
 				self::assertEquals( $expected['Z1K1'], $actual['Z1K1'] );
