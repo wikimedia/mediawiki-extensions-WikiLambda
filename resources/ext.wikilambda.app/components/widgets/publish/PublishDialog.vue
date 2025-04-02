@@ -5,11 +5,9 @@
 	@license MIT
 -->
 <template>
-	<div
-		class="ext-wikilambda-app-publish-dialog"
-		data-testid="confirm-publish-dialog"
-	>
+	<div data-testid="confirm-publish-dialog">
 		<cdx-dialog
+			class="ext-wikilambda-app-publish-dialog"
 			data-testid="publish-dialog"
 			:open="showDialog"
 			:title="publishDialogTitle"
@@ -49,14 +47,10 @@
 					{{ $i18n( 'wikilambda-editor-publish-dialog-summary-help-text' ).text() }}
 				</template>
 
-				<cdx-message
-					v-if="hasKeyboardSubmitWarning"
-					class="ext-wikilambda-app-publish-dialog__keyboard-submit-warning"
-					type="warning"
-					:inline="true"
-				>
-					<div v-html="keyboardSubmitMessage"></div>
-				</cdx-message>
+				<template v-if="hasKeyboardSubmitWarning" #warning>
+					<!-- eslint-disable-next-line vue/no-v-html -->
+					<span v-html="keyboardSubmitMessage"></span>
+				</template>
 			</cdx-field>
 
 			<!-- Legal text -->
@@ -372,10 +366,6 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-publish-dialog__kbd-enter {
 		position: relative;
 		top: (@spacing-12 / 2);
-	}
-
-	.ext-wikilambda-app-publish-dialog__keyboard-submit-warning {
-		margin-top: @spacing-25;
 	}
 
 	.ext-wikilambda-app-publish-dialog__legal-text {
