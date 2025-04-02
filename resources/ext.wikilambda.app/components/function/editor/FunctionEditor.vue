@@ -32,35 +32,34 @@
 			</cdx-button>
 		</div>
 		<!-- Footer with Publish Widget -->
-		<!-- FIXME: No need to add a footer component -->
-		<wl-function-editor-footer
-			:is-function-dirty="isFunctionDirty"
-			:function-input-changed="inputTypeChanged"
-			:function-output-changed="outputTypeChanged"
+		<wl-publish-widget
+			class="ext-wikilambda-app-function-editor__footer"
+			:is-dirty="isFunctionDirty"
 			:function-signature-changed="functionSignatureChanged"
-		></wl-function-editor-footer>
+			@start-publish="raiseFunctionWarnings"
+		></wl-publish-widget>
 	</div>
 </template>
 
 <script>
 const { CdxButton, CdxIcon } = require( '../../../../codex.js' );
 const { defineComponent } = require( 'vue' );
-const { mapState } = require( 'pinia' );
+const { mapState, mapActions } = require( 'pinia' );
 
 const Constants = require( '../../../Constants.js' );
 const eventLogMixin = require( '../../../mixins/eventLogMixin.js' );
-const FunctionEditorFooter = require( './FunctionEditorFooter.vue' );
 const FunctionEditorLanguageBlock = require( './FunctionEditorLanguageBlock.vue' );
 const icons = require( '../../../../lib/icons.json' );
 const typeMixin = require( '../../../mixins/typeMixin.js' );
 const useMainStore = require( '../../../store/index.js' );
 const { hybridToCanonical } = require( '../../../utils/schemata.js' );
+const PublishWidget = require( '../../widgets/publish/Publish.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-editor',
 	components: {
 		'wl-function-editor-language-block': FunctionEditorLanguageBlock,
-		'wl-function-editor-footer': FunctionEditorFooter,
+		'wl-publish-widget': PublishWidget,
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon
 	},
@@ -83,7 +82,9 @@ module.exports = exports = defineComponent( {
 		'getMultilingualDataLanguages',
 		'getZFunctionOutput',
 		'getZObjectAsJsonById',
-		'isCreateNewPage'
+		'isCreateNewPage',
+		'getConnectedImplementations',
+		'getConnectedTests'
 	] ),
 	{
 		/**
@@ -103,6 +104,31 @@ module.exports = exports = defineComponent( {
 		 */
 		isFunctionDirty: function () {
 			return this.functionSignatureChanged || this.hasUpdatedLabels;
+		},
+		/**
+		 * Returns whether the function has connected objects (implementations or tests).
+		 *
+		 * @return {boolean}
+		 */
+		hasConnectedObjects: function () {
+			return !!this.getConnectedImplementations().length || !!this.getConnectedTests().length;
+		},
+		/**
+		 * Returns the error code for the type of function
+		 * signature warning to be shown to the user, depending on
+		 * whether the inputs have changed, the output, or both.
+		 *
+		 * @return {string}
+		 */
+		signatureWarningCode: function () {
+			if ( this.inputTypeChanged && this.outputTypeChanged ) {
+				return Constants.ERROR_CODES.FUNCTION_INPUT_OUTPUT_CHANGED;
+			} else if ( this.inputTypeChanged ) {
+				return Constants.ERROR_CODES.FUNCTION_INPUT_CHANGED;
+			} else if ( this.outputTypeChanged ) {
+				return Constants.ERROR_CODES.FUNCTION_OUTPUT_CHANGED;
+			}
+			return '';
 		},
 		/**
 		 * Returns the text for the button to add more languages
@@ -160,7 +186,9 @@ module.exports = exports = defineComponent( {
 			return ( this.currentOutputType !== this.initialOutputType );
 		}
 	} ),
-	methods: {
+	methods: Object.assign( {}, mapActions( useMainStore, [
+		'setError'
+	] ), {
 		/**
 		 * Saves the initial values for initialInputTypes and initialOutputType
 		 */
@@ -204,10 +232,42 @@ module.exports = exports = defineComponent( {
 		getTypeStringRepresentation: function ( rowId ) {
 			const canonical = hybridToCanonical( this.getZObjectAsJsonById( rowId ) );
 			return this.typeToString( canonical );
+		},
+		/**
+		 * Set warnings when there are changes in the function signature
+		 * to announce that
+		 */
+		raiseFunctionWarnings: function () {
+			// Only warn of changes if we are editing an existing function
+			if ( this.isCreateNewPage ) {
+				return;
+			}
+
+			// If there's changes in the function signature, warn that
+			// implementations and testers will be detached
+			if ( this.functionSignatureChanged && this.hasConnectedObjects ) {
+				this.setError( {
+					rowId: 0,
+					errorType: Constants.ERROR_TYPES.WARNING,
+					errorCode: this.signatureWarningCode
+				} );
+			}
+		}
+	} ),
+	watch: {
+		isFunctionDirty: function ( newValue ) {
+			if ( newValue === true ) {
+				const interactionData = {
+					zobjectid: this.getCurrentZObjectId,
+					zobjecttype: 'Z8',
+					zlang: this.getUserLangZid || null
+				};
+				this.submitInteraction( 'change', interactionData );
+			}
 		}
 	},
 	mounted: function () {
-		// Initializ the local array with the collection of available languages
+		// Initialize the local array with the collection of available languages
 		// and initialize first label block with user lang if there are none.
 		this.functionLanguages = this.getMultilingualDataLanguages( this.rowId );
 		if ( this.functionLanguages.length === 0 ) {
@@ -236,6 +296,10 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-function-editor__action-add-language {
 		border-bottom: 1px solid @border-color-subtle;
 		padding: @spacing-150 0;
+	}
+
+	.ext-wikilambda-app-function-editor__footer {
+		margin-top: @spacing-150;
 	}
 }
 </style>

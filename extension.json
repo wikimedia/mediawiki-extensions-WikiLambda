@@ -441,7 +441,6 @@
 				"ext.wikilambda.app/components/function/editor/FunctionEditorAliases.vue",
 				"ext.wikilambda.app/components/function/editor/FunctionEditorField.vue",
 				"ext.wikilambda.app/components/function/editor/FunctionEditorLanguageBlock.vue",
-				"ext.wikilambda.app/components/function/editor/FunctionEditorFooter.vue",
 				"ext.wikilambda.app/components/function/editor/FunctionEditorInputs.vue",
 				"ext.wikilambda.app/components/function/editor/FunctionEditorInputsItem.vue",
 				"ext.wikilambda.app/components/function/editor/FunctionEditorLanguage.vue",

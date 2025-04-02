@@ -37,7 +37,7 @@ describe( 'FunctionEditor', () => {
 			await wrapper.vm.$nextTick();
 
 			expect( wrapper.findAllComponents( { name: 'wl-function-editor-language-block' } ).length ).toEqual( 2 );
-			expect( wrapper.findComponent( { name: 'wl-function-editor-footer' } ).exists() ).toBe( true );
+			expect( wrapper.findComponent( { name: 'wl-publish-widget' } ).exists() ).toBe( true );
 		} );
 
 		it( 'creates new form inputs for another language on add button click', async () => {
