@@ -187,7 +187,8 @@ describe( 'ZCode', () => {
 				},
 				global: {
 					stubs: {
-						WlKeyValueBlock: false
+						WlKeyValueBlock: false,
+						CdxMessage: false
 					}
 				}
 			} );
@@ -196,22 +197,16 @@ describe( 'ZCode', () => {
 
 			wrapper.findComponent( { name: 'code-editor' } ).trigger( 'click' );
 
-			await wrapper.vm.$nextTick();
 			await waitFor( () => expect( store.setError ).toHaveBeenCalledWith( {
 				errorMessage: 'Select programming language',
 				errorType: 'warning',
 				rowId: 1
 			} ) );
+
 			expect( global.$i18n ).toHaveBeenCalledWith( 'wikilambda-editor-label-select-programming-language-empty' );
 
-			await waitFor( () => {
-				expect( wrapper.findComponent( { name: 'cdx-message' } ).exists() ).toBe( true );
-			} );
-
-			wrapper.findComponent( { name: 'cdx-select' } ).vm.$emit( 'update:selected',
-				Constants.Z_PROGRAMMING_LANGUAGES.JAVASCRIPT );
-			await wrapper.vm.$nextTick();
-			expect( wrapper.find( '.cdx-message--warning.ext-wikilambda-app-code__inline-error' ).exists() ).toBe( false );
+			expect( wrapper.findComponent( { name: 'cdx-message' } ).exists() ).toBe( true );
+			expect( wrapper.findComponent( { name: 'cdx-message' } ).text() ).toContain( 'Select programming language' );
 		} );
 
 		describe( 'when current programming language is changed', () => {

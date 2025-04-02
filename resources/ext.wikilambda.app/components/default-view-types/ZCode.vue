@@ -342,8 +342,7 @@ module.exports = exports = defineComponent( {
 			'fetchZids',
 			'fetchAllZProgrammingLanguages',
 			'clearErrors',
-			'setError',
-			'getErrorMessage'
+			'setError'
 		] ),
 		{
 			/**
