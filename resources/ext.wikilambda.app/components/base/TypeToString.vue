@@ -37,6 +37,7 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
+const urlUtils = require( '../../utils/urlUtils.js' );
 
 const Constants = require( '../../Constants.js' );
 const useMainStore = require( '../../store/index.js' );
@@ -86,7 +87,7 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		wikiUrl: function () {
-			return '/view/' + this.getUserLangCode + '/' + this.zid;
+			return urlUtils.generateViewUrl( { langCode: this.getUserLangCode, zid: this.zid } );
 		},
 		/**
 		 * Returns the label data of the main Zid

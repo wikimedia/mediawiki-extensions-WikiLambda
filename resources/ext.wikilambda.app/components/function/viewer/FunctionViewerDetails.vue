@@ -63,6 +63,7 @@ const errorMixin = require( '../../../mixins/errorMixin.js' );
 const FunctionViewerDetailsTable = require( './FunctionViewerDetailsTable.vue' );
 const typeMixin = require( '../../../mixins/typeMixin.js' );
 const useMainStore = require( '../../../store/index.js' );
+const urlUtils = require( '../../../utils/urlUtils.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-viewer-details',
@@ -264,7 +265,7 @@ module.exports = exports = defineComponent( {
 						component: 'a',
 						title: implementationLabelData.label,
 						props: {
-							href: `/view/${ this.getUserLangCode }/${ zid }`,
+							href: urlUtils.generateViewUrl( { langCode: this.getUserLangCode, zid } ),
 							lang: implementationLabelData.langCode,
 							dir: implementationLabelData.langDir
 						}
@@ -436,7 +437,7 @@ module.exports = exports = defineComponent( {
 						title: testLabelData.label,
 						component: 'a',
 						props: {
-							href: `/view/${ this.getUserLangCode }/${ zid }`,
+							href: urlUtils.generateViewUrl( { langCode: this.getUserLangCode, zid } ),
 							lang: testLabelData.langCode,
 							dir: testLabelData.langDir
 						}

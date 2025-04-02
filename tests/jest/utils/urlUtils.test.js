@@ -10,7 +10,8 @@
 const {
 	getParameterByName,
 	removeHashFromURL,
-	isLinkCurrentPath
+	isLinkCurrentPath,
+	generateViewUrl
 } = require( '../../../resources/ext.wikilambda.app/utils/urlUtils.js' );
 
 describe( 'urlUtils', () => {
@@ -116,6 +117,44 @@ describe( 'urlUtils', () => {
 
 			// Restore the original window.location object
 			window.location = originalLocation;
+		} );
+	} );
+
+	describe( 'generateViewUrl', () => {
+		it( 'should generate a relative URL without baseUrl', () => {
+			const url = generateViewUrl( {
+				langCode: 'en',
+				zid: 'Z123',
+				params: { foo: 'bar' }
+			} );
+			expect( url ).toBe( '/view/en/Z123?foo=bar' );
+		} );
+
+		it( 'should generate a full URL with baseUrl', () => {
+			const url = generateViewUrl( {
+				langCode: 'en',
+				zid: 'Z123',
+				params: { foo: 'bar' },
+				baseUrl: 'http://example.com'
+			} );
+			expect( url ).toBe( 'http://example.com/view/en/Z123?foo=bar' );
+		} );
+
+		it( 'should handle empty params correctly', () => {
+			const url = generateViewUrl( {
+				langCode: 'en',
+				zid: 'Z123'
+			} );
+			expect( url ).toBe( '/view/en/Z123' );
+		} );
+
+		it( 'should ensure no double slashes in the URL with baseUrl', () => {
+			const url = generateViewUrl( {
+				langCode: 'en',
+				zid: 'Z123',
+				baseUrl: 'http://example.com/'
+			} );
+			expect( url ).toBe( 'http://example.com/view/en/Z123' );
 		} );
 	} );
 } );

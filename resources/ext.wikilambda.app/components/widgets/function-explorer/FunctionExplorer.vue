@@ -61,7 +61,7 @@
 						ext-wikilambda-app-function-explorer-widget__dark-links"
 				>
 					<a
-						:href="getWikiUrl( currentFunctionZid )"
+						:href="functionUrl"
 						data-testid="function-name"
 						:lang="functionLabel.langCode"
 						:dir="functionLabel.langDir"
@@ -158,6 +158,7 @@ const useMainStore = require( '../../../store/index.js' );
 const TypeToString = require( '../../base/TypeToString.vue' );
 const WidgetBase = require( '../../base/WidgetBase.vue' );
 const ZObjectSelector = require( '../../base/ZObjectSelector.vue' );
+const urlUtils = require( '../../../utils/urlUtils.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-explorer-widget',
@@ -247,6 +248,14 @@ module.exports = exports = defineComponent( {
 				return Boolean( this.functionObject );
 			},
 			/**
+			 * Returns the url for the selected function
+			 *
+			 * @return {string}
+			 */
+			functionUrl: function () {
+				return urlUtils.generateViewUrl( { langCode: this.getUserLangCode, zid: this.currentFunctionZid } );
+			},
+			/**
 			 * Returns the output type of the selected function
 			 *
 			 * @return {Object|string}
@@ -273,11 +282,8 @@ module.exports = exports = defineComponent( {
 		resetFunction() {
 			this.currentFunctionZid = this.functionZid;
 		},
-		getWikiUrl( zid ) {
-			return '/view/' + this.getUserLangCode + '/' + zid;
-		},
 		navigateToFunction() {
-			window.open( this.getWikiUrl( this.currentFunctionZid ), '_blank' );
+			window.open( this.functionUrl, '_blank' );
 		}
 	},
 	created: function () {

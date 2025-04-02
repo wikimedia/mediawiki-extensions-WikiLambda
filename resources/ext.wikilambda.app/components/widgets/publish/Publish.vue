@@ -47,7 +47,7 @@ const { mapActions, mapState } = require( 'pinia' );
 const { CdxButton } = require( '../../../../codex.js' );
 const Constants = require( '../../../Constants.js' );
 const eventLogMixin = require( '../../../mixins/eventLogMixin.js' );
-const { getParameterByName, isLinkCurrentPath } = require( '../../../utils/urlUtils.js' );
+const urlUtils = require( '../../../utils/urlUtils.js' );
 const useMainStore = require( '../../../store/index.js' );
 const LeaveEditorDialog = require( './LeaveEditorDialog.vue' );
 const PublishDialog = require( './PublishDialog.vue' );
@@ -131,7 +131,7 @@ module.exports = exports = defineComponent( {
 		 * @return {boolean}
 		 */
 		revertToEdit: function () {
-			return !!( getParameterByName( 'oldid' ) || getParameterByName( 'undo' ) );
+			return !!( urlUtils.getParameterByName( 'oldid' ) || urlUtils.getParameterByName( 'undo' ) );
 		},
 
 		/**
@@ -165,7 +165,7 @@ module.exports = exports = defineComponent( {
 			// Get redirect url
 			const cancelTargetUrl = this.isCreateNewPage ?
 				new mw.Title( Constants.PATHS.MAIN_PAGE ).getUrl() :
-				`/view/${ this.getUserLangCode }/${ this.getCurrentZObjectId }`;
+				urlUtils.generateViewUrl( { langCode: this.getUserLangCode, zid: this.getCurrentZObjectId } );
 			this.leaveTo( cancelTargetUrl );
 		},
 
@@ -193,7 +193,7 @@ module.exports = exports = defineComponent( {
 			 * - the link is a button
 			 * we are staying in this page, so there's no need to handle cancelation
 			 */
-			if ( !target.href || target.target === '_blank' || isLinkCurrentPath( target.href ) || target.role === 'button' ) {
+			if ( !target.href || target.target === '_blank' || urlUtils.isLinkCurrentPath( target.href ) || target.role === 'button' ) {
 				return;
 			}
 			// Else, abandon the page

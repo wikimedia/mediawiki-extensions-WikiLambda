@@ -135,6 +135,7 @@ const useMainStore = require( '../../../store/index.js' );
 const { extractErrorStructure, extractZIDs } = require( '../../../utils/schemata.js' );
 const typeMixin = require( '../../../mixins/typeMixin.js' );
 const icons = require( '../../../../lib/icons.json' );
+const urlUtils = require( '../../../utils/urlUtils.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-metadata-dialog',
@@ -678,7 +679,7 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		getUrl: function ( zid ) {
-			return '/view/' + this.getUserLangCode + '/' + zid;
+			return urlUtils.generateViewUrl( { langCode: this.getUserLangCode, zid } );
 		},
 		/**
 		 * Attempts to render a relative timestamp given a

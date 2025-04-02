@@ -75,7 +75,6 @@ module.exports = exports = defineComponent( {
 	computed: Object.assign( {}, mapState( useMainStore, [
 		'getLabelData',
 		'getDescription',
-		'getUserLangCode',
 		'getVEFunctionId',
 		'getVEEditing',
 		'getVEFunctionParams',
@@ -96,15 +95,6 @@ module.exports = exports = defineComponent( {
 		 */
 		functionZid: function () {
 			return this.getVEFunctionId;
-		},
-		/**
-		 * Returns the URL of the function in Wikifunctions.
-		 *
-		 * @return {string}
-		 */
-		functionUrl: function () {
-			const wikifunctionsUrl = mw.config.get( 'wgWikifunctionsBaseUrl' ) || '';
-			return `${ wikifunctionsUrl }/view/${ this.getUserLangCode }/${ this.functionZid }`;
 		},
 		/**
 		 * Returns the text for the link to the function in Wikifunctions.

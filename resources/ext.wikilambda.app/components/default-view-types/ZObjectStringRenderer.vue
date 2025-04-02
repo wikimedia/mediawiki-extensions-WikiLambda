@@ -89,6 +89,7 @@ const Constants = require( '../../Constants.js' );
 const errorMixin = require( '../../mixins/errorMixin.js' );
 const typeMixin = require( '../../mixins/typeMixin.js' );
 const { getValueFromCanonicalZMap, hybridToCanonical } = require( '../../utils/schemata.js' );
+const urlUtils = require( '../../utils/urlUtils.js' );
 const useMainStore = require( '../../store/index.js' );
 const ZObjectKeyValueSet = require( './ZObjectKeyValueSet.vue' );
 
@@ -182,7 +183,10 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		rendererUrl: function () {
-			return '/view/' + this.getUserLangCode + '/' + this.rendererZid;
+			return urlUtils.generateViewUrl( {
+				langCode: this.getUserLangCode,
+				zid: this.rendererZid
+			} );
 		},
 		/**
 		 * Return parser function Zid

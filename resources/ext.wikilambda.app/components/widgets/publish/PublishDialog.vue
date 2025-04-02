@@ -79,6 +79,7 @@ const Constants = require( '../../../Constants.js' );
 const errorMixin = require( '../../../mixins/errorMixin.js' );
 const eventLogMixin = require( '../../../mixins/eventLogMixin.js' );
 const useMainStore = require( '../../../store/index.js' );
+const urlUtils = require( '../../../utils/urlUtils.js' );
 
 const enterKeyChar = `
 	<kbd class="ext-wikilambda-app-publish-dialog__kbd">
@@ -304,7 +305,11 @@ module.exports = exports = defineComponent( {
 			this.closeDialog();
 			window.location.href = !pageTitle ?
 				new mw.Title( Constants.PATHS.MAIN_PAGE ).getUrl() :
-				`/view/${ this.getUserLangCode }/${ pageTitle }?success=true`;
+				urlUtils.generateViewUrl( {
+					langCode: this.getUserLangCode,
+					zid: pageTitle,
+					params: { success: true }
+				} );
 		},
 
 		/**

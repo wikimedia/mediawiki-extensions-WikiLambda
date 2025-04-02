@@ -18,7 +18,7 @@ const fs = require( 'fs' ),
 // Mocking window.location.href
 Object.defineProperty( global.window, 'location', {
 	writable: true,
-	value: { href: jest.fn(), protocol: 'http:' }
+	value: { href: jest.fn(), protocol: 'http:', origin: 'http://localhost' }
 } );
 
 global.$ = require( 'jquery' );

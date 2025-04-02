@@ -36,6 +36,7 @@
 const { CdxRadio } = require( '../../../codex.js' );
 const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
+const urlUtils = require( '../../utils/urlUtils.js' );
 
 const Constants = require( '../../Constants.js' );
 const useMainStore = require( '../../store/index.js' );
@@ -90,7 +91,10 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		valueUrl: function () {
-			return '/view/' + this.getUserLangCode + '/' + this.value;
+			return urlUtils.generateViewUrl( {
+				langCode: this.getUserLangCode,
+				zid: this.value
+			} );
 		},
 		/**
 		 * Returns the radio choices for True and False, with their value
