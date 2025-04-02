@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda\PublicAPI;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
+use JsonException;
 use MediaWiki\Extension\WikiLambda\ActionAPI\WikiLambdaApiBase;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
@@ -42,7 +43,20 @@ class PublicApiRun extends WikiLambdaApiBase {
 		$params = $this->extractRequestParams();
 		$pageResult = $this->getResult();
 		$stringOfAZ = $params[ 'function_call' ];
-		$zObjectAsStdClass = json_decode( $stringOfAZ );
+
+		// (T389702) If the JSON is invalid, we need to return a 400 error rather than have PHP die
+		try {
+			$zObjectAsStdClass = json_decode( $stringOfAZ, false, 512, JSON_THROW_ON_ERROR );
+
+			if ( $zObjectAsStdClass === null ) {
+				throw new JsonException( 'Invalid JSON that did not throw, somehow' );
+			}
+		} catch ( JsonException $e ) {
+			$this->submitFunctionCallEvent( 400, null, $start );
+			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX, [] );
+			WikiLambdaApiBase::dieWithZError( $zError, 400 );
+		}
+
 		$jsonQuery = [
 			'zobject' => $zObjectAsStdClass,
 			'doValidate' => true
