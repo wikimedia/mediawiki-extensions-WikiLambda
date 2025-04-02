@@ -330,6 +330,7 @@
 	"wikilambda-list-type-change-warning": "You changed the type of one or more lists. On publish, some list items will be deleted",
 	"wikilambda-literal-type": "Literal $1",
 	"wikilambda-loading": "Loading data",
+	"wikilambda-initialize-error": "There was an error loading the page.",
 	"wikilambda-metadata-add-alias": "Add Alias",
 	"wikilambda-metadata-aka-column": "Also known as",
 	"wikilambda-metadata-all-languages": "Show all entered languages",

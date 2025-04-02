@@ -539,6 +539,7 @@
 				"wikilambda-publish-output-changed-impact-prompt",
 				"wikilambda-publish-input-and-output-changed-impact-prompt",
 				"wikilambda-loading",
+				"wikilambda-initialize-error",
 				"wikilambda-invalidzobject",
 				"wikilambda-persistentzobject-contents",
 				"wikilambda-persistentzobject-description",

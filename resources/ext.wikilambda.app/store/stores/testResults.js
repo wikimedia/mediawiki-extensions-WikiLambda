@@ -268,7 +268,6 @@ module.exports = {
 				this.fetchZids( { zids: [ ...new Set( zids ) ] } );
 				this.setTestResultsPromise( { functionZid: payload.zFunctionId } );
 			} ).catch( ( error ) => {
-				// Error does not get caught here
 				this.setError( {
 					rowId: Constants.errorIds.TEST_RESULTS,
 					errorType: Constants.errorTypes.ERROR,

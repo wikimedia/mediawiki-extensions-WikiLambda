@@ -18,6 +18,12 @@
 				:is="`wl-${getCurrentView}`"
 			></component>
 		</template>
+		<!-- Provide a nice error message when fetching zids or initializing the page fails  -->
+		<cdx-message v-else-if="hasError" type="warning">
+			{{ $i18n( 'wikilambda-initialize-error' ).text() }}<br>
+			<!-- eslint-disable vue/no-v-html -->
+			<span v-html="$i18n( 'wikilambda-renderer-error-footer-project-chat' ).parse()"></span>
+		</cdx-message>
 		<span v-else>
 			{{ $i18n( 'wikilambda-loading' ).text() }}
 		</span>
@@ -36,6 +42,7 @@ const FunctionViewerView = require( '../views/FunctionViewer.vue' );
 const { removeHashFromURL } = require( '../utils/urlUtils.js' );
 const DefaultView = require( '../views/Default.vue' );
 const useMainStore = require( '../store/index.js' );
+const { CdxMessage } = require( '../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'app',
@@ -44,7 +51,8 @@ module.exports = exports = defineComponent( {
 		'wl-function-editor-view': FunctionEditorView,
 		'wl-function-viewer-view': FunctionViewerView,
 		'wl-default-view': DefaultView,
-		'wl-clipboard-manager': ClipboardManager
+		'wl-clipboard-manager': ClipboardManager,
+		'cdx-message': CdxMessage
 	},
 	mixins: [ eventLogMixin ],
 	inject: {
@@ -52,7 +60,8 @@ module.exports = exports = defineComponent( {
 	},
 	data: function () {
 		return {
-			isAppSetup: false
+			isAppSetup: false,
+			hasError: false
 		};
 	},
 	computed: Object.assign( {},
@@ -79,10 +88,13 @@ module.exports = exports = defineComponent( {
 					.then( () => {
 						this.evaluateUri();
 						this.isAppSetup = true;
+					} )
+					.catch( () => {
+						this.hasError = true;
 					} );
 			} )
 			.catch( () => {
-			// Do nothing
+				this.hasError = true;
 			} );
 
 		window.onpopstate = function ( event ) {
