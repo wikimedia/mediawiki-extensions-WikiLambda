@@ -12,7 +12,9 @@
 			:class="{ 'ext-wikilambda-app-widget-base__header--with-action': hasHeaderAction }"
 		>
 			<!-- Header title slot -->
-			<div v-if="hasHeaderSlot" class="ext-wikilambda-app-widget-base__header-title">
+			<div
+				v-if="hasHeaderSlot"
+				class="ext-wikilambda-app-widget-base__header-title">
 				<slot name="header"></slot>
 			</div>
 			<!-- Header action slot -->
@@ -63,7 +65,9 @@ module.exports = exports = defineComponent( {
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
+		flex-wrap: wrap;
 		margin-bottom: @spacing-125;
+		margin-top: -@spacing-25;
 
 		&--with-action {
 			margin-bottom: @spacing-50;
@@ -77,13 +81,14 @@ module.exports = exports = defineComponent( {
 		font-weight: @font-weight-bold;
 		line-height: @line-height-x-small;
 		font-size: @font-size-large;
+		margin-top: @spacing-25;
+		margin-bottom: @spacing-35;
 	}
 
 	.ext-wikilambda-app-widget-base__header-action {
 		display: flex;
 		align-items: center;
 		margin-right: -@spacing-35;
-		margin-top: -@spacing-35;
 	}
 }
 </style>
