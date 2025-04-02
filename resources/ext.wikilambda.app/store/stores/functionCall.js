@@ -80,8 +80,8 @@ module.exports = {
 			} ).catch( ( error ) => {
 				this.setError( {
 					rowId: payload.resultRowId,
-					errorType: Constants.errorTypes.ERROR,
-					errorMessage: error.messageOrFallback( Constants.errorCodes.UNKNOWN_EXEC_ERROR )
+					errorType: Constants.ERROR_TYPES.ERROR,
+					errorMessage: error.messageOrFallback( Constants.ERROR_CODES.UNKNOWN_EXEC_ERROR )
 				} );
 			} );
 		}

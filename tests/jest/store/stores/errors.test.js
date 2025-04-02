@@ -13,18 +13,18 @@ const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/in
 const mockErrors = {
 	// Global errors
 	0: [ {
-		type: Constants.errorTypes.WARNING,
+		type: Constants.ERROR_TYPES.WARNING,
 		code: undefined,
 		message: 'Some custom warning message'
 	}, {
-		type: Constants.errorTypes.ERROR,
+		type: Constants.ERROR_TYPES.ERROR,
 		code: undefined,
 		message: 'Some custom error message'
 	} ],
 	// Validation errors
 	10: [ {
-		type: Constants.errorTypes.ERROR,
-		code: Constants.errorCodes.MISSING_FUNCTION_OUTPUT,
+		type: Constants.ERROR_TYPES.ERROR,
+		code: Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT,
 		message: undefined
 	} ]
 };
@@ -64,7 +64,7 @@ describe( 'Errors Pinia store', () => {
 
 			it( 'returns errors saved for a given rowId and type', () => {
 				store.errors = mockErrors;
-				expect( store.getErrors( 0, Constants.errorTypes.WARNING ) ).toEqual( [ mockErrors[ 0 ][ 0 ] ] );
+				expect( store.getErrors( 0, Constants.ERROR_TYPES.WARNING ) ).toEqual( [ mockErrors[ 0 ][ 0 ] ] );
 			} );
 		} );
 
@@ -74,11 +74,11 @@ describe( 'Errors Pinia store', () => {
 			} );
 
 			it( 'returns false for a given rowId when an error with the provided code does not exist', () => {
-				expect( store.hasErrorByCode( 0, Constants.errorCodes.UNKNOWN_ERROR ) ).toEqual( false );
+				expect( store.hasErrorByCode( 0, Constants.ERROR_CODES.UNKNOWN_ERROR ) ).toEqual( false );
 			} );
 
 			it( 'returns true for a given rowId when an error with the provided code exists', () => {
-				expect( store.hasErrorByCode( 10, Constants.errorCodes.MISSING_FUNCTION_OUTPUT ) ).toEqual( true );
+				expect( store.hasErrorByCode( 10, Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT ) ).toEqual( true );
 			} );
 		} );
 	} );
@@ -88,16 +88,16 @@ describe( 'Errors Pinia store', () => {
 			it( 'sets error in the state under a given rowId', () => {
 				store.setError( {
 					rowId: 10,
-					errorType: Constants.errorTypes.ERROR,
-					errorCode: Constants.errorCodes.MISSING_FUNCTION_OUTPUT
+					errorType: Constants.ERROR_TYPES.ERROR,
+					errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT
 				} );
 				expect( store.errors ).toEqual( { 10: mockErrors[ 10 ] } );
 			} );
 
 			it( 'sets global error if no rowId is given', () => {
 				store.setError( {
-					errorType: Constants.errorTypes.ERROR,
-					errorCode: Constants.errorCodes.MISSING_FUNCTION_OUTPUT
+					errorType: Constants.ERROR_TYPES.ERROR,
+					errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT
 				} );
 				expect( store.errors ).toEqual( { 0: mockErrors[ 10 ] } );
 			} );
@@ -105,14 +105,14 @@ describe( 'Errors Pinia store', () => {
 			it( 'adds an error if rowId is already present in the state', () => {
 				store.errors = {
 					0: [ {
-						type: Constants.errorTypes.WARNING,
+						type: Constants.ERROR_TYPES.WARNING,
 						code: undefined,
 						message: 'Some custom warning message'
 					} ]
 				};
 				store.setError( {
 					rowId: 0,
-					errorType: Constants.errorTypes.ERROR,
+					errorType: Constants.ERROR_TYPES.ERROR,
 					errorMessage: 'Some custom error message'
 				} );
 				expect( store.errors ).toEqual( { 0: mockErrors[ 0 ] } );
@@ -136,13 +136,13 @@ describe( 'Errors Pinia store', () => {
 		describe( 'clearErrorsByCode', () => {
 			it( 'does nothing if the rowId has no errors in the state for the provided code', () => {
 				store.errors = mockErrors;
-				store.clearErrorsByCode( 10, Constants.errorCodes.UNKNOWN_ERROR );
+				store.clearErrorsByCode( 10, Constants.ERROR_CODES.UNKNOWN_ERROR );
 				expect( store.errors ).toEqual( mockErrors );
 			} );
 
 			it( 'clears all errors associated with a given rowId', () => {
 				store.errors = mockErrors;
-				store.clearErrorsByCode( 10, Constants.errorCodes.MISSING_FUNCTION_OUTPUT );
+				store.clearErrorsByCode( 10, Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT );
 				expect( store.errors ).toEqual( { 0: mockErrors[ 0 ], 10: [] } );
 			} );
 		} );

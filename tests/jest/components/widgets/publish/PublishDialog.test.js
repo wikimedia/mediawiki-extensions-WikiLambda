@@ -72,11 +72,11 @@ describe( 'Publish Dialog', () => {
 		const errors = [ {
 			message: 'custom warning message',
 			code: undefined,
-			type: Constants.errorTypes.WARNING
+			type: Constants.ERROR_TYPES.WARNING
 		}, {
 			message: undefined,
-			code: Constants.errorCodes.UNKNOWN_ERROR,
-			type: Constants.errorTypes.ERROR
+			code: Constants.ERROR_CODES.UNKNOWN_ERROR,
+			type: Constants.ERROR_TYPES.ERROR
 		} ];
 		store.getErrors = createGettersWithFunctionsMock( errors );
 
@@ -134,7 +134,7 @@ describe( 'Publish Dialog', () => {
 		wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
 		await waitFor( () => expect( store.setError ).toHaveBeenCalledWith( {
 			rowId: 0,
-			errorType: Constants.errorTypes.ERROR,
+			errorType: Constants.ERROR_TYPES.ERROR,
 			errorMessage: 'mock submission error'
 		} ) );
 	} );

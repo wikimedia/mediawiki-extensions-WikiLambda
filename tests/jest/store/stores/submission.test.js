@@ -80,8 +80,8 @@ describe( 'zobject submission Pinia store', () => {
 
 				const mockError = {
 					rowId: 2,
-					errorCode: Constants.errorCodes.MISSING_FUNCTION_OUTPUT,
-					errorType: Constants.errorTypes.ERROR
+					errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT,
+					errorType: Constants.ERROR_TYPES.ERROR
 				};
 
 				const isValid = store.validateZObject();
@@ -100,12 +100,12 @@ describe( 'zobject submission Pinia store', () => {
 
 				const mockErrors = [ {
 					rowId: 2,
-					errorCode: Constants.errorCodes.MISSING_FUNCTION_OUTPUT,
-					errorType: Constants.errorTypes.ERROR
+					errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT,
+					errorType: Constants.ERROR_TYPES.ERROR
 				}, {
 					rowId: 3,
-					errorCode: Constants.errorCodes.MISSING_FUNCTION_OUTPUT,
-					errorType: Constants.errorTypes.ERROR
+					errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT,
+					errorType: Constants.ERROR_TYPES.ERROR
 				} ];
 
 				const isValid = store.validateZObject();
@@ -125,8 +125,8 @@ describe( 'zobject submission Pinia store', () => {
 
 				const mockError = {
 					rowId: 3,
-					errorCode: Constants.errorCodes.MISSING_FUNCTION_INPUT_TYPE,
-					errorType: Constants.errorTypes.ERROR
+					errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_INPUT_TYPE,
+					errorType: Constants.ERROR_TYPES.ERROR
 				};
 
 				const isValid = store.validateZObject();
@@ -145,12 +145,12 @@ describe( 'zobject submission Pinia store', () => {
 
 				const mockErrors = [ {
 					rowId: 3,
-					errorCode: Constants.errorCodes.MISSING_FUNCTION_INPUT_TYPE,
-					errorType: Constants.errorTypes.ERROR
+					errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_INPUT_TYPE,
+					errorType: Constants.ERROR_TYPES.ERROR
 				}, {
 					rowId: 4,
-					errorCode: Constants.errorCodes.MISSING_FUNCTION_INPUT_TYPE,
-					errorType: Constants.errorTypes.ERROR
+					errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_INPUT_TYPE,
+					errorType: Constants.ERROR_TYPES.ERROR
 				} ];
 
 				const isValid = store.validateZObject();
@@ -170,12 +170,12 @@ describe( 'zobject submission Pinia store', () => {
 
 				const mockErrors = [ {
 					rowId: 2,
-					errorCode: Constants.errorCodes.MISSING_FUNCTION_OUTPUT,
-					errorType: Constants.errorTypes.ERROR
+					errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT,
+					errorType: Constants.ERROR_TYPES.ERROR
 				}, {
 					rowId: 3,
-					errorCode: Constants.errorCodes.MISSING_FUNCTION_INPUT_TYPE,
-					errorType: Constants.errorTypes.ERROR
+					errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_INPUT_TYPE,
+					errorType: Constants.ERROR_TYPES.ERROR
 				} ];
 
 				const isValid = store.validateZObject();
@@ -314,8 +314,8 @@ describe( 'zobject submission Pinia store', () => {
 
 				const mockError = {
 					rowId: 2,
-					errorCode: Constants.errorCodes.MISSING_TARGET_FUNCTION,
-					errorType: Constants.errorTypes.ERROR
+					errorCode: Constants.ERROR_CODES.MISSING_TARGET_FUNCTION,
+					errorType: Constants.ERROR_TYPES.ERROR
 				};
 
 				const isValid = store.validateZObject();
@@ -340,8 +340,8 @@ describe( 'zobject submission Pinia store', () => {
 
 				const mockError = {
 					rowId: 2,
-					errorCode: Constants.errorCodes.MISSING_IMPLEMENTATION_COMPOSITION,
-					errorType: Constants.errorTypes.ERROR
+					errorCode: Constants.ERROR_CODES.MISSING_IMPLEMENTATION_COMPOSITION,
+					errorType: Constants.ERROR_TYPES.ERROR
 				};
 
 				const isValid = store.validateZObject();
@@ -374,8 +374,8 @@ describe( 'zobject submission Pinia store', () => {
 
 				const mockError = {
 					rowId: 3,
-					errorCode: Constants.errorCodes.MISSING_IMPLEMENTATION_CODE_LANGUAGE,
-					errorType: Constants.errorTypes.ERROR
+					errorCode: Constants.ERROR_CODES.MISSING_IMPLEMENTATION_CODE_LANGUAGE,
+					errorType: Constants.ERROR_TYPES.ERROR
 				};
 
 				const isValid = store.validateZObject();
@@ -407,8 +407,8 @@ describe( 'zobject submission Pinia store', () => {
 
 				const mockError = {
 					rowId: 4,
-					errorCode: Constants.errorCodes.MISSING_IMPLEMENTATION_CODE,
-					errorType: Constants.errorTypes.ERROR
+					errorCode: Constants.ERROR_CODES.MISSING_IMPLEMENTATION_CODE,
+					errorType: Constants.ERROR_TYPES.ERROR
 				};
 
 				const isValid = store.validateZObject();
@@ -463,8 +463,8 @@ describe( 'zobject submission Pinia store', () => {
 
 				const mockError = {
 					rowId: 2,
-					errorCode: Constants.errorCodes.MISSING_TARGET_FUNCTION,
-					errorType: Constants.errorTypes.ERROR
+					errorCode: Constants.ERROR_CODES.MISSING_TARGET_FUNCTION,
+					errorType: Constants.ERROR_TYPES.ERROR
 				};
 
 				const isValid = store.validateZObject();
@@ -490,8 +490,8 @@ describe( 'zobject submission Pinia store', () => {
 
 				const mockError = {
 					rowId: 3,
-					errorCode: Constants.errorCodes.MISSING_TESTER_CALL,
-					errorType: Constants.errorTypes.ERROR
+					errorCode: Constants.ERROR_CODES.MISSING_TESTER_CALL,
+					errorType: Constants.ERROR_TYPES.ERROR
 				};
 
 				const isValid = store.validateZObject();
@@ -517,8 +517,8 @@ describe( 'zobject submission Pinia store', () => {
 
 				const mockError = {
 					rowId: 4,
-					errorCode: Constants.errorCodes.MISSING_TESTER_VALIDATION,
-					errorType: Constants.errorTypes.ERROR
+					errorCode: Constants.ERROR_CODES.MISSING_TESTER_VALIDATION,
+					errorType: Constants.ERROR_TYPES.ERROR
 				};
 
 				const isValid = store.validateZObject();

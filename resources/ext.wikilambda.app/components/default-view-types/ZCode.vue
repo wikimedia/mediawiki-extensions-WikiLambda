@@ -196,8 +196,8 @@ module.exports = exports = defineComponent( {
 			 */
 			codeNotices: function () {
 				return ( this.parentType === Constants.Z_IMPLEMENTATION || !this.isCreateNewPage ) ? [] : [ {
-					type: Constants.errorTypes.NOTICE,
-					code: Constants.errorCodes.NEW_ZID_PLACEHOLDER_WARNING
+					type: Constants.ERROR_TYPES.NOTICE,
+					code: Constants.ERROR_CODES.NEW_ZID_PLACEHOLDER_WARNING
 				} ];
 			},
 
@@ -400,21 +400,21 @@ module.exports = exports = defineComponent( {
 				if ( !hasDebugCode ) {
 					this.clearErrorsByCode( {
 						rowId: 0,
-						errorCode: Constants.errorCodes.DEBUG_CODE_WARNING
+						errorCode: Constants.ERROR_CODES.DEBUG_CODE_WARNING
 					} );
 					return;
 				}
 
 				// If the debug message error has already been set, do nothing
-				if ( this.hasErrorByCode( 0, Constants.errorCodes.DEBUG_CODE_WARNING ) ) {
+				if ( this.hasErrorByCode( 0, Constants.ERROR_CODES.DEBUG_CODE_WARNING ) ) {
 					return;
 
 				}
 				// If 'Wikifunctions.Debug' is found, set the error.
 				this.setError( {
 					rowId: 0,
-					errorType: Constants.errorTypes.WARNING,
-					errorCode: Constants.errorCodes.DEBUG_CODE_WARNING
+					errorType: Constants.ERROR_TYPES.WARNING,
+					errorCode: Constants.ERROR_CODES.DEBUG_CODE_WARNING
 				} );
 			},
 
@@ -456,7 +456,7 @@ module.exports = exports = defineComponent( {
 				}
 				const payload = {
 					rowId: this.programmingLanguageRowId,
-					errorType: Constants.errorTypes.WARNING,
+					errorType: Constants.ERROR_TYPES.WARNING,
 					errorMessage: this.$i18n( 'wikilambda-editor-label-select-programming-language-empty' ).text()
 				};
 				this.hasClickedDisabledField = true;

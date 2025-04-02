@@ -323,8 +323,8 @@ module.exports = exports = defineComponent( {
 				this.clearAllErrors();
 				this.setError( {
 					rowId: 0,
-					errorType: Constants.errorTypes.ERROR,
-					errorMessage: error.messageOrFallback( Constants.errorCodes.UNKNOWN_SAVE_ERROR )
+					errorType: Constants.ERROR_TYPES.ERROR,
+					errorMessage: error.messageOrFallback( Constants.ERROR_CODES.UNKNOWN_SAVE_ERROR )
 				} );
 			} ).finally( () => {
 				const interactionData = {

@@ -100,7 +100,7 @@ module.exports = exports = defineComponent( {
 		return {
 			activeZImplementationId: null,
 			activeZTesterId: null,
-			errorId: Constants.errorIds.TEST_RESULTS,
+			errorId: Constants.ERROR_IDS.TEST_RESULTS,
 			showMetrics: false,
 			fetching: false
 		};

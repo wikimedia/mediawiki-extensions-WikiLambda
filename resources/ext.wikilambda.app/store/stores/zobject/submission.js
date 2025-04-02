@@ -47,8 +47,8 @@ module.exports = {
 						for ( const invalidRow of invalidOutputs ) {
 							this.setError( {
 								rowId: invalidRow,
-								errorCode: Constants.errorCodes.MISSING_FUNCTION_OUTPUT,
-								errorType: Constants.errorTypes.ERROR
+								errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT,
+								errorType: Constants.ERROR_TYPES.ERROR
 							} );
 						}
 						isValid = false;
@@ -60,8 +60,8 @@ module.exports = {
 						for ( const invalidRow of invalidInputs ) {
 							this.setError( {
 								rowId: invalidRow,
-								errorCode: Constants.errorCodes.MISSING_FUNCTION_INPUT_TYPE,
-								errorType: Constants.errorTypes.ERROR
+								errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_INPUT_TYPE,
+								errorType: Constants.ERROR_TYPES.ERROR
 							} );
 						}
 						isValid = false;
@@ -82,8 +82,8 @@ module.exports = {
 						rowId = this.getZImplementationFunctionRowId( contentRowId );
 						this.setError( {
 							rowId,
-							errorCode: Constants.errorCodes.MISSING_TARGET_FUNCTION,
-							errorType: Constants.errorTypes.ERROR
+							errorCode: Constants.ERROR_CODES.MISSING_TARGET_FUNCTION,
+							errorType: Constants.ERROR_TYPES.ERROR
 						} );
 						isValid = false;
 					}
@@ -120,8 +120,8 @@ module.exports = {
 							);
 							this.setError( {
 								rowId,
-								errorCode: Constants.errorCodes.MISSING_IMPLEMENTATION_COMPOSITION,
-								errorType: Constants.errorTypes.ERROR
+								errorCode: Constants.ERROR_CODES.MISSING_IMPLEMENTATION_COMPOSITION,
+								errorType: Constants.ERROR_TYPES.ERROR
 							} );
 							isValid = false;
 						}
@@ -147,8 +147,8 @@ module.exports = {
 							], rowId );
 							this.setError( {
 								rowId: langRow.id,
-								errorCode: Constants.errorCodes.MISSING_IMPLEMENTATION_CODE_LANGUAGE,
-								errorType: Constants.errorTypes.ERROR
+								errorCode: Constants.ERROR_CODES.MISSING_IMPLEMENTATION_CODE_LANGUAGE,
+								errorType: Constants.ERROR_TYPES.ERROR
 							} );
 							isValid = false;
 						}
@@ -169,8 +169,8 @@ module.exports = {
 							], rowId );
 							this.setError( {
 								rowId: codeRow.id,
-								errorCode: Constants.errorCodes.MISSING_IMPLEMENTATION_CODE,
-								errorType: Constants.errorTypes.ERROR
+								errorCode: Constants.ERROR_CODES.MISSING_IMPLEMENTATION_CODE,
+								errorType: Constants.ERROR_TYPES.ERROR
 							} );
 							isValid = false;
 						}
@@ -190,8 +190,8 @@ module.exports = {
 						rowId = this.getZTesterFunctionRowId( contentRowId );
 						this.setError( {
 							rowId,
-							errorCode: Constants.errorCodes.MISSING_TARGET_FUNCTION,
-							errorType: Constants.errorTypes.ERROR
+							errorCode: Constants.ERROR_CODES.MISSING_TARGET_FUNCTION,
+							errorType: Constants.ERROR_TYPES.ERROR
 						} );
 						isValid = false;
 					}
@@ -205,8 +205,8 @@ module.exports = {
 						rowId = this.getZTesterCallRowId( contentRowId );
 						this.setError( {
 							rowId,
-							errorCode: Constants.errorCodes.MISSING_TESTER_CALL,
-							errorType: Constants.errorTypes.ERROR
+							errorCode: Constants.ERROR_CODES.MISSING_TESTER_CALL,
+							errorType: Constants.ERROR_TYPES.ERROR
 						} );
 						isValid = false;
 					}
@@ -220,8 +220,8 @@ module.exports = {
 						rowId = this.getZTesterValidationRowId( contentRowId );
 						this.setError( {
 							rowId,
-							errorCode: Constants.errorCodes.MISSING_TESTER_VALIDATION,
-							errorType: Constants.errorTypes.ERROR
+							errorCode: Constants.ERROR_CODES.MISSING_TESTER_VALIDATION,
+							errorType: Constants.ERROR_TYPES.ERROR
 						} );
 						isValid = false;
 					}

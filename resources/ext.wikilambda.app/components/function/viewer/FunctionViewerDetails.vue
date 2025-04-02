@@ -571,7 +571,7 @@ module.exports = exports = defineComponent( {
 				this.closeToast();
 				this.setImplementationsState();
 			} ).catch( ( error ) => {
-				this.currentToast = error.messageOrFallback( Constants.errorCodes.UNKNOWN_SAVE_ERROR );
+				this.currentToast = error.messageOrFallback( Constants.ERROR_CODES.UNKNOWN_SAVE_ERROR );
 			} ).finally( () => {
 				this.implementationsLoading = false;
 			} );
@@ -593,7 +593,7 @@ module.exports = exports = defineComponent( {
 				this.closeToast();
 				this.setImplementationsState();
 			} ).catch( ( error ) => {
-				this.currentToast = error.messageOrFallback( Constants.errorCodes.UNKNOWN_SAVE_ERROR );
+				this.currentToast = error.messageOrFallback( Constants.ERROR_CODES.UNKNOWN_SAVE_ERROR );
 			} ).finally( () => {
 				this.implementationsLoading = false;
 			} );
@@ -614,7 +614,7 @@ module.exports = exports = defineComponent( {
 				this.closeToast();
 				this.setTestsState();
 			} ).catch( ( error ) => {
-				this.currentToast = error.messageOrFallback( Constants.errorCodes.UNKNOWN_SAVE_ERROR );
+				this.currentToast = error.messageOrFallback( Constants.ERROR_CODES.UNKNOWN_SAVE_ERROR );
 			} ).finally( () => {
 				this.testsLoading = false;
 			} );
@@ -635,7 +635,7 @@ module.exports = exports = defineComponent( {
 				this.closeToast();
 				this.setTestsState();
 			} ).catch( ( error ) => {
-				this.currentToast = error.messageOrFallback( Constants.errorCodes.UNKNOWN_SAVE_ERROR );
+				this.currentToast = error.messageOrFallback( Constants.ERROR_CODES.UNKNOWN_SAVE_ERROR );
 			} ).finally( () => {
 				this.testsLoading = false;
 			} );
