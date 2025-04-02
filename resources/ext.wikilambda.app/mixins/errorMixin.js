@@ -28,7 +28,7 @@ module.exports = exports = {
 		 */
 		setLocalError: function ( payload ) {
 			const error = {
-				type: payload.type || Constants.errorTypes.ERROR,
+				type: payload.type || Constants.ERROR_TYPES.ERROR,
 				code: payload.code || undefined,
 				message: payload.message || undefined
 			};

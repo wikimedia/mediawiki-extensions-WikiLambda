@@ -36,7 +36,7 @@ module.exports = {
 			const findZTesterResults = ( zFunctionId, zTesterId, zImplementationId ) => {
 				const key = zFunctionId + ':' + zTesterId + ':' + zImplementationId;
 
-				const testResultErrors = this.getErrors( Constants.errorIds.TEST_RESULTS );
+				const testResultErrors = this.getErrors( Constants.ERROR_IDS.TEST_RESULTS );
 				if ( testResultErrors.length > 0 ) {
 					return false;
 				}
@@ -231,7 +231,7 @@ module.exports = {
 				return this.testResultsPromises[ payload.zFunctionId ];
 			}
 
-			this.clearErrors( Constants.errorIds.TEST_RESULTS );
+			this.clearErrors( Constants.ERROR_IDS.TEST_RESULTS );
 
 			// (T358089) Encode any '|' characters of ZObjects so that they can be recovered after the API.
 			const implementations = replaceCurrentObjectWithFullJSONObject.call( this, payload.zImplementations )
@@ -270,9 +270,9 @@ module.exports = {
 			} ).catch( ( error ) => {
 				// Error does not get caught here
 				this.setError( {
-					rowId: Constants.errorIds.TEST_RESULTS,
-					errorType: Constants.errorTypes.ERROR,
-					errorMessage: error.messageOrFallback( Constants.errorCodes.UNKNOWN_TEST_ERROR )
+					rowId: Constants.ERROR_IDS.TEST_RESULTS,
+					errorType: Constants.ERROR_TYPES.ERROR,
+					errorMessage: error.messageOrFallback( Constants.ERROR_CODES.UNKNOWN_TEST_ERROR )
 				} );
 				this.setTestResultsPromise( { functionZid: payload.zFunctionId } );
 			} );

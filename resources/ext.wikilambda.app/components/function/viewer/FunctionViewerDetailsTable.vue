@@ -150,7 +150,7 @@ module.exports = exports = defineComponent( {
 		}
 	},
 	setup: function () {
-		const breakpoint = useBreakpoints( Constants.breakpoints );
+		const breakpoint = useBreakpoints( Constants.BREAKPOINTS );
 		return {
 			breakpoint
 		};
@@ -167,7 +167,7 @@ module.exports = exports = defineComponent( {
 		 * @return {boolean}
 		 */
 		isMobile: function () {
-			return this.breakpoint.current.value === Constants.breakpointsTypes.MOBILE;
+			return this.breakpoint.current.value === Constants.BREAKPOINT_TYPES.MOBILE;
 		}
 	},
 	methods: {

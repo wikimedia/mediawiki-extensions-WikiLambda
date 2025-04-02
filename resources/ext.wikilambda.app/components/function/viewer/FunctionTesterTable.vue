@@ -61,7 +61,7 @@ module.exports = exports = defineComponent( {
 	data: function () {
 		return {
 			showMetadata: false,
-			errorId: Constants.errorIds.TEST_RESULTS
+			errorId: Constants.ERROR_IDS.TEST_RESULTS
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
@@ -88,15 +88,15 @@ module.exports = exports = defineComponent( {
 		 */
 		status: function () {
 			if ( !( this.zImplementationId ) || !( this.zTesterId ) ) {
-				return Constants.testerStatus.READY;
+				return Constants.TESTER_STATUS.READY;
 			}
 			if ( this.testerStatus === true ) {
-				return Constants.testerStatus.PASSED;
+				return Constants.TESTER_STATUS.PASSED;
 			}
 			if ( this.testerStatus === false ) {
-				return Constants.testerStatus.FAILED;
+				return Constants.TESTER_STATUS.FAILED;
 			}
-			return Constants.testerStatus.RUNNING;
+			return Constants.TESTER_STATUS.RUNNING;
 		},
 		/**
 		 * Returns the status message
@@ -105,11 +105,11 @@ module.exports = exports = defineComponent( {
 		 */
 		statusMessage: function () {
 			switch ( this.status ) {
-				case Constants.testerStatus.READY:
+				case Constants.TESTER_STATUS.READY:
 					return this.$i18n( 'wikilambda-tester-status-ready' ).text();
-				case Constants.testerStatus.PASSED:
+				case Constants.TESTER_STATUS.PASSED:
 					return this.$i18n( 'wikilambda-tester-status-passed' ).text();
-				case Constants.testerStatus.FAILED:
+				case Constants.TESTER_STATUS.FAILED:
 					return this.$i18n( 'wikilambda-tester-status-failed' ).text();
 				default:
 					return this.$i18n( 'wikilambda-tester-status-running' ).text();

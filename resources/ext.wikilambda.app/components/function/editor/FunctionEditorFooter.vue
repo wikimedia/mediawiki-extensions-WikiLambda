@@ -80,11 +80,11 @@ module.exports = exports = defineComponent( {
 		 */
 		signatureWarningCode: function () {
 			if ( this.functionInputChanged && this.functionOutputChanged ) {
-				return Constants.errorCodes.FUNCTION_INPUT_OUTPUT_CHANGED;
+				return Constants.ERROR_CODES.FUNCTION_INPUT_OUTPUT_CHANGED;
 			} else if ( this.functionInputChanged ) {
-				return Constants.errorCodes.FUNCTION_INPUT_CHANGED;
+				return Constants.ERROR_CODES.FUNCTION_INPUT_CHANGED;
 			} else if ( this.functionOutputChanged ) {
-				return Constants.errorCodes.FUNCTION_OUTPUT_CHANGED;
+				return Constants.ERROR_CODES.FUNCTION_OUTPUT_CHANGED;
 			}
 			return '';
 		}
@@ -108,7 +108,7 @@ module.exports = exports = defineComponent( {
 			if ( this.functionSignatureChanged && this.hasConnectedObjects ) {
 				this.setError( {
 					rowId: 0,
-					errorType: Constants.errorTypes.WARNING,
+					errorType: Constants.ERROR_TYPES.WARNING,
 					errorCode: this.signatureWarningCode
 				} );
 			}

@@ -395,7 +395,7 @@ module.exports = exports = defineComponent( {
 		setRendererError: function ( errorMessage ) {
 			this.setError( {
 				rowId: this.rowId,
-				errorType: Constants.errorTypes.ERROR,
+				errorType: Constants.ERROR_TYPES.ERROR,
 				errorMessage
 			} );
 		},

@@ -63,8 +63,8 @@ describe( 'FunctionEditorFooter', () => {
 
 		const errorPayload = {
 			rowId: 0,
-			errorType: Constants.errorTypes.WARNING,
-			errorCode: Constants.errorCodes.FUNCTION_INPUT_CHANGED
+			errorType: Constants.ERROR_TYPES.WARNING,
+			errorCode: Constants.ERROR_CODES.FUNCTION_INPUT_CHANGED
 		};
 		expect( store.setError ).toHaveBeenCalledWith( errorPayload );
 	} );
@@ -92,8 +92,8 @@ describe( 'FunctionEditorFooter', () => {
 
 		const errorPayload = {
 			rowId: 0,
-			errorType: Constants.errorTypes.WARNING,
-			errorCode: Constants.errorCodes.FUNCTION_OUTPUT_CHANGED
+			errorType: Constants.ERROR_TYPES.WARNING,
+			errorCode: Constants.ERROR_CODES.FUNCTION_OUTPUT_CHANGED
 		};
 		expect( store.setError ).toHaveBeenCalledWith( errorPayload );
 	} );
@@ -121,8 +121,8 @@ describe( 'FunctionEditorFooter', () => {
 
 		const errorPayload = {
 			rowId: 0,
-			errorType: Constants.errorTypes.WARNING,
-			errorCode: Constants.errorCodes.FUNCTION_INPUT_OUTPUT_CHANGED
+			errorType: Constants.ERROR_TYPES.WARNING,
+			errorCode: Constants.ERROR_CODES.FUNCTION_INPUT_OUTPUT_CHANGED
 		};
 		expect( store.setError ).toHaveBeenCalledWith( errorPayload );
 	} );

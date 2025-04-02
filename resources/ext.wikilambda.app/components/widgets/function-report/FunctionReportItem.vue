@@ -118,18 +118,18 @@ module.exports = exports = defineComponent( {
 		 */
 		status: function () {
 			if ( this.fetching ) {
-				return Constants.testerStatus.RUNNING;
+				return Constants.TESTER_STATUS.RUNNING;
 			}
 			if ( !( this.zImplementationId ) || !( this.zTesterId ) ) {
-				return Constants.testerStatus.READY;
+				return Constants.TESTER_STATUS.READY;
 			}
 			if ( this.testerStatus === true ) {
-				return Constants.testerStatus.PASSED;
+				return Constants.TESTER_STATUS.PASSED;
 			}
 			if ( this.testerStatus === false ) {
-				return Constants.testerStatus.FAILED;
+				return Constants.TESTER_STATUS.FAILED;
 			}
-			return Constants.testerStatus.READY;
+			return Constants.TESTER_STATUS.READY;
 		},
 		/**
 		 * Returns the status message
@@ -138,11 +138,11 @@ module.exports = exports = defineComponent( {
 		 */
 		statusMessage: function () {
 			switch ( this.status ) {
-				case Constants.testerStatus.READY:
+				case Constants.TESTER_STATUS.READY:
 					return this.$i18n( 'wikilambda-tester-status-ready' ).text();
-				case Constants.testerStatus.PASSED:
+				case Constants.TESTER_STATUS.PASSED:
 					return this.$i18n( 'wikilambda-tester-status-passed' ).text();
-				case Constants.testerStatus.FAILED:
+				case Constants.TESTER_STATUS.FAILED:
 					return this.$i18n( 'wikilambda-tester-status-failed' ).text();
 				default:
 					return this.$i18n( 'wikilambda-tester-status-running' ).text();
@@ -154,10 +154,10 @@ module.exports = exports = defineComponent( {
 		 * @return {Object}
 		 */
 		statusIcon: function () {
-			if ( this.status === Constants.testerStatus.PASSED ) {
+			if ( this.status === Constants.TESTER_STATUS.PASSED ) {
 				return icons.cdxIconSuccess;
 			}
-			if ( this.status === Constants.testerStatus.FAILED ) {
+			if ( this.status === Constants.TESTER_STATUS.FAILED ) {
 				return icons.cdxIconClear;
 			}
 			// This will be used both for ready and running statuses
@@ -169,7 +169,7 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		isRunning: function () {
-			return this.status === Constants.testerStatus.RUNNING;
+			return this.status === Constants.TESTER_STATUS.RUNNING;
 		}
 	} ),
 	methods: {

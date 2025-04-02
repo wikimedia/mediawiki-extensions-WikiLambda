@@ -325,7 +325,7 @@ describe( 'ApiError class', () => {
 			const apiError = new ApiError( code, response );
 
 			const message = apiError.messageOrFallback();
-			expect( global.mw.message ).toHaveBeenCalledWith( Constants.errorCodes.UNKNOWN_ERROR );
+			expect( global.mw.message ).toHaveBeenCalledWith( Constants.ERROR_CODES.UNKNOWN_ERROR );
 			expect( message ).toBe( 'Fallback error message' );
 		} );
 	} );

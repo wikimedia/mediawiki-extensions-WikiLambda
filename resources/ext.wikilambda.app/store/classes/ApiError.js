@@ -90,7 +90,7 @@ class ApiError extends Error {
 	messageOrFallback( fallbackCode = null ) {
 		return ( this.code === 'http' && this.message ) ?
 			this.message :
-			mw.message( fallbackCode || Constants.errorCodes.UNKNOWN_ERROR ).text();
+			mw.message( fallbackCode || Constants.ERROR_CODES.UNKNOWN_ERROR ).text();
 	}
 
 	/**

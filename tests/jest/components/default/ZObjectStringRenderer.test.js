@@ -492,7 +492,7 @@ describe( 'ZObjectStringRenderer', () => {
 
 				const errorPayload = {
 					rowId: 1,
-					errorType: Constants.errorTypes.ERROR,
+					errorType: Constants.ERROR_TYPES.ERROR,
 					errorMessage: 'Some error message'
 				};
 
@@ -518,7 +518,7 @@ describe( 'ZObjectStringRenderer', () => {
 
 				const errorPayload = {
 					rowId: 1,
-					errorType: Constants.errorTypes.ERROR,
+					errorType: Constants.ERROR_TYPES.ERROR,
 					errorMessage: 'Some error message'
 				};
 
@@ -540,7 +540,7 @@ describe( 'ZObjectStringRenderer', () => {
 
 				const errorPayload = {
 					rowId: 1,
-					errorType: Constants.errorTypes.ERROR,
+					errorType: Constants.ERROR_TYPES.ERROR,
 					errorMessage: '[[$1|Display function]] returned an unexpected result.'
 				};
 
@@ -568,7 +568,7 @@ describe( 'ZObjectStringRenderer', () => {
 
 				const errorPayload = {
 					rowId: 1,
-					errorType: Constants.errorTypes.ERROR,
+					errorType: Constants.ERROR_TYPES.ERROR,
 					errorMessage: 'Some error message'
 				};
 
@@ -597,7 +597,7 @@ describe( 'ZObjectStringRenderer', () => {
 
 				const errorPayload = {
 					rowId: 1,
-					errorType: Constants.errorTypes.ERROR,
+					errorType: Constants.ERROR_TYPES.ERROR,
 					errorMessage: 'Some error message'
 				};
 
@@ -622,7 +622,7 @@ describe( 'ZObjectStringRenderer', () => {
 
 				const errorPayload = {
 					rowId: 1,
-					errorType: Constants.errorTypes.ERROR,
+					errorType: Constants.ERROR_TYPES.ERROR,
 					errorMessage: '[[$1|Reading function]] returned an unexpected result.'
 				};
 

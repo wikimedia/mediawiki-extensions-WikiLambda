@@ -114,8 +114,8 @@ module.exports = exports = defineComponent( {
 					this.hasError = true;
 					this.setError( {
 						rowId: 0,
-						errorCode: Constants.errorCodes.TYPED_LIST_TYPE_CHANGED,
-						errorType: Constants.errorTypes.WARNING
+						errorCode: Constants.ERROR_CODES.TYPED_LIST_TYPE_CHANGED,
+						errorType: Constants.ERROR_TYPES.WARNING
 					} );
 				}
 
