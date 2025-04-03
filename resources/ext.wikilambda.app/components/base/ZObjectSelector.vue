@@ -587,7 +587,6 @@ module.exports = exports = defineComponent( {
 
 	.ext-wikilambda-app-object-selector__errors {
 		margin-top: @spacing-50;
-		width: max-content;
 	}
 
 	.ext-wikilambda-app-object-selector__suggestion {
