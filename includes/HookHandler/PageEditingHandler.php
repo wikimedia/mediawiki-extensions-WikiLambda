@@ -269,9 +269,12 @@ class PageEditingHandler implements
 					ZTypeRegistry::Z_IMPLEMENTATION_FUNCTION
 				)->getZValue();
 
-				$targetFunction = $this->zObjectStore->fetchZObjectByTitle(
-						Title::newFromDBkey( $targetFunctionZid )
-					)->getInnerZObject();
+				$targetContent = $this->zObjectStore->fetchZObjectByTitle( Title::newFromDBkey( $targetFunctionZid ) );
+				if ( !( $targetContent instanceof ZObjectContent ) ) {
+					// Something has gone wrong; let's exit.
+					return;
+				}
+				$targetFunction = $targetContent->getInnerZObject();
 				'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction $targetFunction';
 				$approvedImplementations = $targetFunction->getImplementationZids();
 				if ( !in_array( $changedObject, $approvedImplementations ) ) {
@@ -287,9 +290,12 @@ class PageEditingHandler implements
 					ZTypeRegistry::Z_TESTER_FUNCTION
 				)->getZValue();
 
-				$targetFunction = $this->zObjectStore->fetchZObjectByTitle(
-						Title::newFromDBkey( $targetFunctionZid )
-					)->getInnerZObject();
+				$targetContent = $this->zObjectStore->fetchZObjectByTitle( Title::newFromDBkey( $targetFunctionZid ) );
+				if ( !( $targetContent instanceof ZObjectContent ) ) {
+					// Something has gone wrong; let's exit.
+					return;
+				}
+				$targetFunction = $targetContent->getInnerZObject();
 				'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction $targetFunction';
 				$approvedTesters = $targetFunction->getTesterZids();
 				if ( !in_array( $changedObject, $approvedTesters ) ) {
