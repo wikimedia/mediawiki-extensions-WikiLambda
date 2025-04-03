@@ -84,6 +84,7 @@ const useMainStore = require( '../../store/index.js' );
 const icons = require( '../../../lib/icons.json' );
 const wikidataIconSvg = require( './wikidata/wikidataIconSvg.js' );
 const wikidataMixin = require( '../../mixins/wikidataMixin.js' );
+const urlUtils = require( '../../utils/urlUtils.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-object-to-string',
@@ -245,7 +246,10 @@ module.exports = exports = defineComponent( {
 				if ( this.isWikidataType ) {
 					return this.wikidataMapping ? this.wikidataMapping.url : '';
 				}
-				return `/view/${ this.getUserLangCode }/${ this.value }`;
+				return urlUtils.generateViewUrl( {
+					langCode: this.getUserLangCode,
+					zid: this.value
+				} );
 			},
 
 			/**

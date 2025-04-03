@@ -46,6 +46,7 @@ const StatusIcon = require( '../../base/StatusIcon.vue' );
 const icons = require( '../../../../lib/icons.json' );
 const typeMixin = require( '../../../mixins/typeMixin.js' );
 const useMainStore = require( '../../../store/index.js' );
+const urlUtils = require( '../../../utils/urlUtils.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-report-item',
@@ -97,7 +98,7 @@ module.exports = exports = defineComponent( {
 		 */
 		titleLink: function () {
 			const zid = this.reportType === Constants.Z_TESTER ? this.zImplementationId : this.zTesterId;
-			return '/view/' + this.getUserLangCode + '/' + zid;
+			return urlUtils.generateViewUrl( { langCode: this.getUserLangCode, zid } );
 		},
 		/**
 		 * Returns whether the tester passed

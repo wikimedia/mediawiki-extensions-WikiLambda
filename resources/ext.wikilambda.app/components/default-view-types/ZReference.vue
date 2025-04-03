@@ -39,6 +39,7 @@ const Constants = require( '../../Constants.js' );
 const typeMixin = require( '../../mixins/typeMixin.js' );
 const useMainStore = require( '../../store/index.js' );
 const ZObjectSelector = require( './../base/ZObjectSelector.vue' );
+const urlUtils = require( '../../utils/urlUtils.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-reference',
@@ -104,7 +105,10 @@ module.exports = exports = defineComponent( {
 			 * @return {string}
 			 */
 			valueUrl: function () {
-				return '/view/' + this.getUserLangCode + '/' + this.value;
+				return urlUtils.generateViewUrl( {
+					langCode: this.getUserLangCode,
+					zid: this.value
+				} );
 			},
 
 			/**
