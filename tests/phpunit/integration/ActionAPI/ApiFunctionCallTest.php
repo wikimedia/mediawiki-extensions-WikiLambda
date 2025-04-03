@@ -97,11 +97,10 @@ class ApiFunctionCallTest extends ApiTestCase {
 			"13"
 		];
 
-		// Disabled because this makes an Object key that JSON doesn't like
-		// yield 'Invoke a composition: if first argument is true, sort second; else, return it intact' => [
-		// 	ZObjectUtils::readTestFile( 'example-composition.json' ),
-		// 	'        abcddeeeefghhijklmnoooopqrrttuuvwxyz'
-		// ];
+		yield 'Invoke a composition: if first argument is true, sort second; else, return it intact' => [
+			ZObjectUtils::readTestFile( 'example-composition.json' ),
+			'        abcddeeeefghhijklmnoooopqrrttuuvwxyz'
+		];
 
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
 		yield 'Invoke the \"not empty\" function as a composition: returns true iff input list contains at least one element' => [
