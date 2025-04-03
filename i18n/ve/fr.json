@@ -38,5 +38,9 @@
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Aucune option choisie.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser": "Erreur inconnue. [[f:Talk:$1|Signaler un problème]]",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "Lire la suite",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Lire moins"
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Lire moins",
+	"wikilambda-visualeditor-wikifunctionscall-info-missing-content": "Aidez à traduire le contenu manquant dans votre langue sur [[f:$1|fonctions Wiki]].",
+	"wikilambda-visualeditor-wikifunctionscall-no-name": "Pas de nom",
+	"wikilambda-visualeditor-wikifunctionscall-no-description": "Aucune description",
+	"wikilambda-visualeditor-wikifunctionscall-no-input-label": "Aucun libellé"
 }

@@ -38,5 +38,8 @@
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Keng Optioun gewielt.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser": "Onbekannte Feeler. [[f:Talk:$1|Problem mellen]]",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "Méi liesen",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Manner liesen"
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Manner liesen",
+	"wikilambda-visualeditor-wikifunctionscall-no-name": "Keen Numm",
+	"wikilambda-visualeditor-wikifunctionscall-no-description": "Keng Beschreiwung",
+	"wikilambda-visualeditor-wikifunctionscall-no-input-label": "Keng Etikett"
 }

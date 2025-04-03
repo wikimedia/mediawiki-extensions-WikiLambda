@@ -38,5 +38,9 @@
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "לא נבחרה אפשרות.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser": "שגיאה לא ידועה. [[f:Talk:$1|לדווח על בעיה]]",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "לקרוא יותר",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "לקרוא פחות"
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "לקרוא פחות",
+	"wikilambda-visualeditor-wikifunctionscall-info-missing-content": "אפשר לעזור לתרגם את התוכן שחסר בשפה שלך באתר [[f:$1|ויקיפונקציות]].",
+	"wikilambda-visualeditor-wikifunctionscall-no-name": "אין שם",
+	"wikilambda-visualeditor-wikifunctionscall-no-description": "אין תיאור",
+	"wikilambda-visualeditor-wikifunctionscall-no-input-label": "אין תווית"
 }

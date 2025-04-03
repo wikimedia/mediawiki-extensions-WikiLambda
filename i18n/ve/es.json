@@ -1,9 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Fitoschido"
+			"Fitoschido",
+			"HylianAngel"
 		]
 	},
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Elegir una opción",
-	"wikilambda-visualeditor-wikifunctionscall-error-enum": "No se eligió ninguna opción."
+	"wikilambda-visualeditor-wikifunctionscall-error-enum": "No se eligió ninguna opción.",
+	"wikilambda-visualeditor-wikifunctionscall-no-name": "Sin nombre"
 }

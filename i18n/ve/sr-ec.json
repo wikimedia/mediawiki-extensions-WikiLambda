@@ -17,5 +17,8 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Функција]] са Викифункција",
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Ниједна опција није изабрана.",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "Прочитај више",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Прочитај мање"
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Прочитај мање",
+	"wikilambda-visualeditor-wikifunctionscall-no-name": "Нема имена",
+	"wikilambda-visualeditor-wikifunctionscall-no-description": "Нема описа",
+	"wikilambda-visualeditor-wikifunctionscall-no-input-label": "Нема назива"
 }

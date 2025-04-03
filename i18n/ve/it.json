@@ -1,16 +1,45 @@
 {
 	"@metadata": {
 		"authors": [
-			"Beta16"
+			"Beta16",
+			"Dv103"
 		]
 	},
+	"wikilambda-recentchanges-edit-letter": "F",
+	"wikilambda-recentchanges-edit-title": "Modifica di Wikifunctions",
 	"wikilambda-recentchanges-edit-legend": "Modifica da Wikifunzioni",
 	"wikilambda-recentchanges-explanation-connect-implementation": "{{PLURAL:$1|Connessa implementazione|Connesse $1 implementazioni}}: $2",
+	"wikilambda-recentchanges-explanation-connect-tester": "{{PLURAL:$1|Caso di test $2 connesso|Connessi $1 casi di test: $2}}",
 	"wikilambda-recentchanges-explanation-disconnect-implementation": "{{PLURAL:$1|Disconnessa implementazione|Disconnesse $1 implementazioni}}: $2",
+	"wikilambda-recentchanges-explanation-disconnect-tester": "{{PLURAL:$1|Caso di test $2 disconnesso|Disconnessi $1 casi di test: $2}}",
+	"wikilambda-recentchanges-explanation-edit-function": "Definizione della funzione modificata",
+	"wikilambda-recentchanges-explanation-edit-implementation": "Implementazione $1 modificata",
+	"wikilambda-recentchanges-explanation-edit-tester": "Caso di test $1 modificato",
+	"wikilambda-recentchanges-explanation-delete-function": "Definizione della funzione eliminata",
+	"wikilambda-recentchanges-explanation-delete-implementation": "Implementazione $1 eliminata",
+	"wikilambda-recentchanges-explanation-delete-tester": "Caso di test $1 eliminato",
+	"wikilambda-recentchanges-explanation-restore-function": "Definizione della funzione ripristinata",
+	"wikilambda-recentchanges-explanation-restore-implementation": "Implementazione $1 ripristinata",
+	"wikilambda-recentchanges-explanation-restore-tester": "Caso di test $1 ripristinato",
+	"wikilambda-recentchanges-filter-label": "Modifiche di Wikifunctions",
+	"wikilambda-recentchanges-filter-description": "Modifiche che provengono da Wikifunctions",
 	"wikilambda-visualeditor-wikifunctionscall-title": "Funzione",
+	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Caricando i dati della funzione...",
+	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Nessuna funzione selezionata",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Cerca funzione",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Risultati",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Nessun risultato trovato",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Funzioni suggerite",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Inserisci testo",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Scegli un'opzione",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Funzione]] di Wikifunctions",
+	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "La funzione è mancante o non valida.",
+	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Nessuna opzione scelta.",
+	"wikilambda-visualeditor-wikifunctionscall-error-parser": "Errore sconosciuto. [[f:Talk:$1|Segnala problema]]",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "Per saperne di più",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Leggi di meno"
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Leggi di meno",
+	"wikilambda-visualeditor-wikifunctionscall-info-missing-content": "Aiuta a tradurre il contenuto mancante su [[f:$1|Wikifunctions]].",
+	"wikilambda-visualeditor-wikifunctionscall-no-name": "Nessun nome",
+	"wikilambda-visualeditor-wikifunctionscall-no-description": "Nessuna descrizione",
+	"wikilambda-visualeditor-wikifunctionscall-no-input-label": "Nessuna etichetta"
 }
