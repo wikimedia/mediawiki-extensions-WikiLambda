@@ -28,7 +28,7 @@
 				{{ statusMessage }}
 			</span>
 			<a
-				v-if="!isRunning"
+				v-if="!isRunning && status !== 'ready'"
 				role="button"
 				@click="emitTesterKeys"
 			>{{ $i18n( 'wikilambda-tester-details' ).text() }}
