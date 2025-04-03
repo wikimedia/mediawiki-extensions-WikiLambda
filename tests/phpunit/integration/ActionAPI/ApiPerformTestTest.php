@@ -442,6 +442,11 @@ class ApiPerformTestTest extends ApiTestCase {
 		];
 	}
 
+	/**
+	 * This now doesn't work, because we're mocking the request without trying the network.
+	 *
+	 * @group Broken
+	 */
 	public function testExecuteFailure_noServer() {
 		$this->overrideConfigValue(
 			'WikiLambdaOrchestratorLocation',
