@@ -19,6 +19,7 @@ describe( 'ZImplementation', () => {
 		store.getZImplementationFunctionRowId = createGettersWithFunctionsMock( 0 );
 		store.getZImplementationContentType = createGettersWithFunctionsMock( 'Z14K2' );
 		store.getZImplementationContentRowId = createGettersWithFunctionsMock( 1 );
+		store.getZImplementationFunctionZid = createGettersWithFunctionsMock( 'Z802' );
 		store.getLabelData = createLabelDataMock( {
 			Z14K2: 'composition',
 			Z14K3: 'code',
@@ -255,5 +256,29 @@ describe( 'ZImplementation', () => {
 			const valueBlock = typeBlock.find( '.ext-wikilambda-app-key-value-block__value' );
 			expect( valueBlock.findComponent( { name: 'cdx-message' } ).exists() ).toBe( true );
 		} );
+
+		it( 'does not render the content block and radio buttons should be disabled when function zid is not available', () => {
+			store.getZImplementationFunctionZid = createGettersWithFunctionsMock( undefined );
+			const wrapper = shallowMount( ZImplementation, {
+				props: {
+					edit: true
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false,
+						WlKeyBlock: false
+					}
+				}
+			} );
+			const contentBlock = wrapper.find( '.ext-wikilambda-app-implementation__content' );
+			expect( contentBlock.exists() ).toBe( false );
+
+			const typeBlock = wrapper.find( '.ext-wikilambda-app-implementation__type' );
+			const radioButtons = typeBlock.findAllComponents( { name: 'cdx-radio' } );
+			expect( radioButtons ).toHaveLength( 2 );
+			expect( radioButtons[ 0 ].props( 'disabled' ) ).toBe( true );
+			expect( radioButtons[ 1 ].props( 'disabled' ) ).toBe( true );
+		} );
+
 	} );
 } );

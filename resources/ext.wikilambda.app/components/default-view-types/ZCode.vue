@@ -475,6 +475,21 @@ module.exports = exports = defineComponent( {
 					this.allowSetEditorValue = false;
 				}
 			}
+		},
+		functionZid: {
+			immediate: true,
+			handler: function ( newValue, oldValue ) {
+				if ( !oldValue || newValue === oldValue ) {
+					return;
+				}
+				// If the functionZid changes, we need to update the code editor with the new boilerplate code
+				this.allowSetEditorValue = true;
+				// Reinitialize the code editor with updated boilerplate code
+				this.$emit( 'set-value', {
+					keyPath: [ Constants.Z_CODE_CODE, Constants.Z_STRING_VALUE ],
+					value: this.generateBoilerplateCode( this.programmingLanguageValue )
+				} );
+			}
 		}
 	},
 	mounted: function () {

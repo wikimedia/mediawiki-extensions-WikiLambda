@@ -89,7 +89,8 @@ module.exports = exports = defineComponent( {
 		},
 		zFunctionId: {
 			type: String,
-			required: true
+			required: false,
+			default: ''
 		},
 		rootZid: {
 			type: String,
