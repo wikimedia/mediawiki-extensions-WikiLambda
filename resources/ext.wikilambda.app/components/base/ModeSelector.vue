@@ -296,12 +296,14 @@ module.exports = exports = defineComponent( {
 			// * Key is not "0" type of a typed list; no literal Z4/Types
 			// * Is not a custom enum type; should never be a literal, always referenced
 			// * Does not expect a Wikidata entity
+			// * Is not in EXCLUDE_FROM_LITERAL_MODE_SELECTION
 			const parentTypeString = this.typeToString( this.parentExpectedType, true );
 			if (
 				this.key !== Constants.Z_OBJECT_TYPE &&
 				!this.isKeyTypedListType( this.key ) &&
 				!this.isCustomEnum( this.parentExpectedType ) &&
-				!this.expectsWikidataItem
+				!this.expectsWikidataItem &&
+				!Constants.EXCLUDE_FROM_LITERAL_MODE_SELECTION.includes( this.parentExpectedType )
 			) {
 				literals.push( {
 					label: this.$i18n( 'wikilambda-literal-type', this.getLabelData( parentTypeString ).label ).text(),
@@ -316,16 +318,14 @@ module.exports = exports = defineComponent( {
 			// * type is selected and valid,
 			// * type is not a resolver (Z9/Z7/Z18), and
 			// * parent expected type is Z1/Object.
-			// This means that whenever the parent expected type is Z1
-			// but a valid type is selected, we will be showing both:
-			// * Literal Object
-			// * Literal <Selected type>
+			// * type is not in EXCLUDE_FROM_LITERAL_MODE_SELECTION
 			const typeString = this.typeToString( this.type, true );
 			if (
 				!this.isWikidataItem &&
 				!!this.type && !!typeString &&
 				!this.isResolver &&
-				this.parentExpectedType === Constants.Z_OBJECT
+				this.parentExpectedType === Constants.Z_OBJECT &&
+				!Constants.EXCLUDE_FROM_LITERAL_MODE_SELECTION.includes( this.type )
 			) {
 				literals.push( {
 					label: this.$i18n( 'wikilambda-literal-type', this.getLabelData( typeString ).label ).text(),
