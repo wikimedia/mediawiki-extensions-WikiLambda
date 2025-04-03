@@ -27,7 +27,7 @@
 	"wikilambda-recentchanges-filter-rc-pref": "The label for the preference to enable Wikifunctions edits to be shown in the recent changes list. Comparable to {{msg-mw|wikibase-rc-show-wikidata-pref}}",
 	"wikilambda-recentchanges-filter-wl-pref": "The label for the preference to enable Wikifunctions edits to be shown in your watchlist. Comparable to {{msg-mw|wikibase-watchlist-show-changes-pref}}",
 	"wikilambda-visualeditor-wikifunctionscall-title": "Title for the Wikifunctions call dialog in the visual editor, shown as a heading label above the call content",
-	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Message to show as body in the Wikifunctions call popup in the visual editor, while the Function data is being fetched",
+	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Label for the progress indicator component rendered in the Wikifunctions call popup in the visual while the Function data is being fetched",
 	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Message to show as body in the Wikifunctions call popup in the visual editor, when there is no function selected",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Placeholder for the Function search field in the Wikifunctions insert dialog in the visual editor",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Title of the search results section in the Wikifunctions insert dialog in the visual editor",

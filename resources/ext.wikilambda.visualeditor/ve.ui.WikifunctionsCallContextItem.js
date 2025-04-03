@@ -44,14 +44,46 @@ ve.ui.WikifunctionsCallContextItem.static.suppresses = [ 'transclusion' ];
 
 /* Methods */
 
+ve.ui.WikifunctionsCallContextItem.prototype.setErrorState = function () {
+	const $errorMsg = $( '<div>' )
+		.addClass( 'cdx-message__content' )
+		.text( OO.ui.deferMsg( 'wikilambda-visualeditor-wikifunctionscall-error-bad-function' ) );
+	const $error = $( '<div>' )
+		.addClass( 'cdx-message cdx-message--inline cdx-message--error' )
+		.append( $( '<span>' ).addClass( 'cdx-message__icon' ) )
+		.append( $errorMsg );
+
+	this.context.updateDimensions();
+	this.$body.empty().append( $error );
+};
+
 /**
  * @inheritdoc
  */
 ve.ui.WikifunctionsCallContextItem.prototype.renderBody = function () {
+
+	// Show error state if the function call didn't succeed, for whatever reason.
+	// All errors (server, call, not found, wrong args, etc.) will be detected early:
+	if ( this.model.getAttribute( 'isError' ) ) {
+		this.setErrorState();
+		return;
+	}
+
 	// Add loading message
 	const $loading = $( '<div>' )
-		.text( OO.ui.deferMsg( 'wikilambda-visualeditor-wikifunctionscall-popup-loading' ) )
-		.css( { color: '#72777d' } );
+		.addClass( 'cdx-progress-indicator' )
+		.css( { justifyContent: 'center', width: '100%' } )
+		.append(
+			$( '<div>' )
+				.addClass( 'cdx-progress-indicator__indicator' )
+				.append(
+					$( '<progress>' )
+						.addClass( 'cdx-progress-indicator__indicator__progress' )
+						.attr( 'aria-label',
+							OO.ui.msg( 'wikilambda-visualeditor-wikifunctionscall-popup-loading' )
+						)
+				)
+		);
 
 	this.$body.append( $loading );
 
@@ -63,42 +95,10 @@ ve.ui.WikifunctionsCallContextItem.prototype.renderBody = function () {
 		const functionCall = ve.getProp( mwPart, 'template', 'target', 'wt' );
 		const functionId = functionCall.split( ':' )[ 1 ];
 
-		// If no function Id, show "no function" error message
-		if ( !functionId ) {
-			$loading.text( OO.ui.deferMsg( 'wikilambda-visualeditor-wikifunctionscall-error-bad-function' ) );
-			this.context.updateDimensions();
-			return;
-		}
-
-		// If function Is is not valid, show "no valid function" error message
-		const isValidZid = ( id ) => ( /^Z\d+$/.test( id ) );
-		if ( !isValidZid( functionId ) ) {
-			$loading.text( OO.ui.deferMsg( 'wikilambda-visualeditor-wikifunctionscall-error-bad-function' ) );
-			this.context.updateDimensions();
-			return;
-		}
-
 		// Request the function information
 		ve.init.mw.WikifunctionsCall.piniaStore
 			.fetchZids( { zids: [ functionId ] } )
 			.then( () => {
-				const fetched = ve.init.mw.WikifunctionsCall.piniaStore.getFetchedObject( functionId );
-
-				// Fetch didn't succeed
-				if ( !fetched.success ) {
-					$loading.text( OO.ui.deferMsg( 'wikilambda-visualeditor-wikifunctionscall-error-bad-function' ) );
-					this.context.updateDimensions();
-					return;
-				}
-
-				// Fetched object is not a function
-				const type = fetched.data.Z2K2.Z1K1;
-				if ( type !== 'Z8' ) {
-					$loading.text( OO.ui.deferMsg( 'wikilambda-visualeditor-wikifunctionscall-error-bad-function' ) );
-					this.context.updateDimensions();
-					return;
-				}
-
 				const functionLabelData = ve.init.mw.WikifunctionsCall.piniaStore.getLabelData( functionId );
 				const functionLabel = functionLabelData.isUntitled ?
 					OO.ui.deferMsg( 'brackets', OO.ui.msg( 'wikilambda-visualeditor-wikifunctionscall-no-name' ) ) :

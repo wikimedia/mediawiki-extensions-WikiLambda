@@ -17,7 +17,6 @@ use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsUsageUpdateJob;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikifunctionCallException;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
-use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
@@ -220,7 +219,7 @@ class ClientHooks implements
 
 		// TODO (T362254): Implement some timeout mechanism here?
 		try {
-			$ret = $this->objectCache->getWithSetCallback(
+			$output = $this->objectCache->getWithSetCallback(
 				$clientCacheKey,
 				$this->objectCache::TTL_WEEK,
 				function () use ( $targetFunction, $arguments, $parseLang, $renderLang ) {
@@ -228,77 +227,66 @@ class ClientHooks implements
 				}
 			);
 		} catch ( WikifunctionCallException $callException ) {
-			$error = $callException->getErrorMessageKey();
-
-			$parser->addTrackingCategory( $error . '-category' );
-
-			// TODO (T385633): This is rather messily entangled between client and server. Can we do better?
-			if ( $error === 'wikilambda-functioncall-error-nonstringinput' ) {
-				$nonStringArgument = $callException->getZError()->getZValue()[1];
-				$nonStringArgumentType = $callException->getZError()->getZValue()[2];
-				return [
-					Html::errorBox(
-						wfMessage(
-							$error,
-							$targetFunction,
-							$nonStringArgument,
-							$nonStringArgumentType
-						)->parseAsBlock()
-					),
-					'noparse' => true,
-					'isHTML' => true
-				];
-			}
+			// WikifunctionCallException: we know details of the error
+			$errorMessageKey = $callException->getErrorMessageKey();
+			$parser->addTrackingCategory( $errorMessageKey . '-category' );
+			$errorMsgWikitext = wfMessage( 'wikilambda-functioncall-error-message', [
+				 wfMessage( $errorMessageKey )->text()
+			] )->text();
 
 			return [
-				Html::errorBox( wfMessage( $error, $targetFunction )->parseAsBlock() ),
-				'noparse' => true,
-				'isRawHTML' => true
+				$this->buildErrorDom( $errorMsgWikitext ),
+				'noparse' => false,
+				'isHTML' => false
 			];
-		} catch ( ZErrorException $zerror ) {
-			$this->logger->error(
-				__METHOD__ . ' threw an ZErrorException we don\'t know how to handle: {zerror}',
-				[
-					'zerror' => $zerror->getZErrorMessage(),
-					'exception' => $zerror
-				]
-			);
-			// TODO (T385629): Different tracking for this and below?
-			// Uses message wikilambda-functioncall-error-category-desc implicitly.
-			$parser->addTrackingCategory( 'wikilambda-functioncall-error-category' );
-			$errorMessage = $zerror->getZError()->getMessage( $renderLang );
-			$ret = Html::errorBox(
-				wfMessage( 'wikilambda-functioncall-error', $errorMessage )->parseAsBlock()
-			);
 		} catch ( \Throwable $th ) {
+			// Unhandled exception: we have no details on how the error happened
 			$this->logger->error(
-				__METHOD__ . ' threw an Exception we didn\'t recognise: {error}',
+				__METHOD__ . ' threw an unhandled Exception: {error}',
 				[
 					'error' => $th->getMessage(),
 					'exception' => $th
 				]
 			);
-			// Uses message wikilambda-functioncall-error-category-desc implicitly.
-			$parser->addTrackingCategory( 'wikilambda-functioncall-error-category' );
-			// Something went wrong elsewhere; no nice translatable ZError to show, sadly.
-			$errorMessage = $th->getMessage();
 
-			$ret = Html::errorBox(
-				wfMessage( 'wikilambda-functioncall-error', $errorMessage )->parseAsBlock()
-			);
+			// Show unclear error or system failure
+			$errorMessageKey = 'wikilambda-functioncall-error-unclear';
+			$parser->addTrackingCategory( $errorMessageKey . '-category' );
+			$errorMsgWikitext = wfMessage( 'wikilambda-functioncall-error-message', [
+				 wfMessage( $errorMessageKey )->text()
+			] )->text();
+
+			return [
+				$this->buildErrorDom( $errorMsgWikitext ),
+				'noparse' => false,
+				'isHTML' => false
+			];
 		}
 
-		if ( is_string( $ret ) ) {
-			$ret = [
-				trim( $ret ),
+		if ( is_string( $output ) ) {
+			$output = [
+				trim( $output ),
 				// Don't parse this, it's plain text
 				'noparse' => true,
+				'isHTML' => true,
 				// Force content to be escaped
 				'nowiki' => true
 			];
 		}
 
-		return $ret;
+		return $output;
+	}
+
+	/**
+	 * Builds the Html representation of a failed Wikifunctions call.
+	 * Currently returning a Codex styled error box.
+	 * TODO (Q4): Build inline error element
+	 *
+	 * @param string $message code for the error message
+	 * @return string of HTML representing an error box.
+	 */
+	private function buildErrorDom( $message ) {
+		return Html::errorBox( $message );
 	}
 
 	/**
@@ -315,21 +303,19 @@ class ClientHooks implements
 		string $renderLanguageCode
 	): array {
 		$request = $this->buildRequest( $target, $arguments, $parseLanguageCode, $renderLanguageCode );
+
 		$responseStatus = $request->execute();
 
 		// Http 0: Request didn't fly
 		$httpStatusCode = $request->getStatus();
 		if ( $httpStatusCode === 0 ) {
-			throw new WikifunctionCallException(
-				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
-					[ "message" => $responseStatus->getMessages()[0]->getKey() ]
-				),
-				// Triggers use of messages:
-				// * wikilambda-functioncall-error-category
-				// * wikilambda-functioncall-error-category-desc
-				'wikilambda-functioncall-error'
+			$zerror = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
+				[ "message" => $responseStatus->getMessages()[0]->getKey() ]
 			);
+			// Triggers use of messages:
+			// * wikilambda-functioncall-error-unclear-category
+			// * wikilambda-functioncall-error-unclear-category-desc
+			throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-unclear' );
 		}
 
 		// Http 200: Response successful
@@ -351,64 +337,132 @@ class ClientHooks implements
 			'@phan-var ZError $zerror';
 			$zerrorCode = $zerror->getZErrorType();
 		} else {
-			$zerror = ZErrorFactory::createZErrorInstance(
-				ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
+			$zerror = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
 				[ "message" => $response->httpReason ]
 			);
 			// Triggers use of messages:
-			// * wikilambda-functioncall-error-unknown-category
-			// * wikilambda-functioncall-error-unknown-category-desc
+			// * wikilambda-functioncall-error-unclear-category
+			// * wikilambda-functioncall-error-unclear-category-desc
 			throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-unclear' );
 		}
 
 		switch ( $httpStatusCode ) {
-			// "We" did something wrong (likely user error in the wikitext, or in the on-wiki content on WF.org)
+			// HTTP 400: Bad Request
+			// Something is wrong with the content (e.g. in the user request or the on-wiki content on WF.org)
 			case 400:
 			case 404:
 				switch ( $zerrorCode ) {
 					case ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND:
+						// Error cases:
+						// * Function not found
+						// * Input reference not found
 						// Triggers use of messages:
-						// * wikilambda-functioncall-error-unknown-category
-						// * wikilambda-functioncall-error-unknown-category-desc
-						throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-unknown' );
+						// * wikilambda-functioncall-error-unknown-zid-category
+						// * wikilambda-functioncall-error-unknown-zid-category-desc
+						throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-unknown-zid' );
 
 					case ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED:
+						// Error cases:
+						// * Function object found but not valid
+						// Triggers use of messages:
+						// * wikilambda-functioncall-error-invalid-zobject-category
+						// * wikilambda-functioncall-error-invalid-zobject-category-desc
+						throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-invalid-zobject' );
+
+					case ZErrorTypeRegistry::Z_ERROR_ARGUMENT_TYPE_MISMATCH:
 						switch ( $response->mode ) {
-							case 'output':
+							case 'function':
+								// Error cases:
+								// * Function Zid belongs to an object of a different type
 								// Triggers use of messages:
-								// * wikilambda-functioncall-error-nonstringoutput-category
-								// * wikilambda-functioncall-error-nonstringoutput-category-desc
-								throw new WikifunctionCallException(
-									$zerror,
-									'wikilambda-functioncall-error-nonstringoutput'
-								);
+								// * wikilambda-functioncall-error-nonfunction-category
+								// * wikilambda-functioncall-error-nonfunction-category-desc
+								throw new WikifunctionCallException( $zerror,
+									'wikilambda-functioncall-error-nonfunction' );
 
 							case 'input':
+								// Error cases:
+								// * Input reference belongs to an object of an unexpected type
+								// Triggers use of messages:
+								// * wikilambda-functioncall-error-bad-input-type-category
+								// * wikilambda-functioncall-error-bad-input-type-category-desc
+								throw new WikifunctionCallException( $zerror,
+									'wikilambda-functioncall-error-bad-input-type' );
+
+							default:
+								break;
+						}
+						// Fall-back to default handling, below.
+						break;
+
+					case ZErrorTypeRegistry::Z_ERROR_LANG_NOT_FOUND:
+						// Error cases:
+						// * parser lang code not found
+						// * renderer lang code not found
+						// Triggers use of messages:
+						// * wikilambda-functioncall-error-bad-langs-category
+						// * wikilambda-functioncall-error-bad-langs-category-desc
+						throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-bad-langs' );
+
+					case ZErrorTypeRegistry::Z_ERROR_ARGUMENT_COUNT_MISMATCH:
+						// Error cases:
+						// * wrong number of arguments
+						// Triggers use of messages:
+						// * wikilambda-functioncall-error-bad-inputs-category
+						// * wikilambda-functioncall-error-bad-inputs-category-desc
+						throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-bad-inputs' );
+
+					case ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET:
+						switch ( $response->mode ) {
+							case 'input':
+								// Error cases:
+								// * input type is generic
+								// * input type has no parser
 								// Triggers use of messages:
 								// * wikilambda-functioncall-error-nonstringinput-category
 								// * wikilambda-functioncall-error-nonstringinput-category-desc
-								throw new WikifunctionCallException(
-									$zerror,
-									'wikilambda-functioncall-error-nonstringinput'
-								);
-							default:
-								// Triggers use of messages:
-								// * wikilambda-functioncall-error-invalid-zobject-category
-								// * wikilambda-functioncall-error-invalid-zobject-category-desc
-								throw new WikifunctionCallException(
-									$zerror,
-								'wikilambda-functioncall-error-invalid-zobject'
-							);
-						}
+								throw new WikifunctionCallException( $zerror,
+									'wikilambda-functioncall-error-nonstringinput' );
 
-					case ZErrorTypeRegistry::Z_ERROR_UNKNOWN:
-					case ZErrorTypeRegistry::Z_ERROR_ARGUMENT_COUNT_MISMATCH:
-					case ZErrorTypeRegistry::Z_ERROR_ARGUMENT_TYPE_MISMATCH:
-					case ZErrorTypeRegistry::Z_ERROR_LANG_NOT_FOUND:
+							case 'output':
+								// Error cases:
+								// * output type is generic
+								// * output type has no renderer
+								// Triggers use of messages:
+								// * wikilambda-functioncall-error-nonstringoutput-category
+								// * wikilambda-functioncall-error-nonstringoutput-category-desc
+								throw new WikifunctionCallException( $zerror,
+									'wikilambda-functioncall-error-nonstringoutput' );
+
+							default:
+								break;
+						}
+						// Fall-back to default handling, below.
+						break;
+
+					case ZErrorTypeRegistry::Z_ERROR_API_FAILURE:
+						// Error cases:
+						// * some error happened trying to make the request to the orchestrator
 						// Triggers use of messages:
-						// * wikilambda-functioncall-error-nonfunction-category
-						// * wikilambda-functioncall-error-nonfunction-category-desc
-						throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-invalid-zobject' );
+						// * wikilambda-functioncall-error-unclear-category
+						// * wikilambda-functioncall-error-unclear-category-desc
+						throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-unclear' );
+
+					case ZErrorTypeRegistry::Z_ERROR_EVALUATION:
+						// Error cases:
+						// * some error happened in the orchestrator
+						// Triggers use of messages:
+						// * wikilambda-functioncall-error-evaluation-category
+						// * wikilambda-functioncall-error-evaluation-category-desc
+						throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-evaluation' );
+
+					case ZErrorTypeRegistry::Z_ERROR_INVALID_EVALUATION_RESULT:
+						// Error cases:
+						// * orchestrator returned a non-error output but of wrong type
+						// Triggers use of messages:
+						// * wikilambda-functioncall-error-bad-output-category
+						// * wikilambda-functioncall-error-bad-output-category-desc
+						throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-bad-output' );
 
 					default:
 						// Non zerror, or Unknown zerror:
@@ -422,18 +476,21 @@ class ClientHooks implements
 							]
 						);
 				}
-				// Fallback to default handling, below.
+				// Fall-back to default handling, below.
 				break;
 
+			// HTTP 500: Internal Server Error
 			// Something went wrong in the server's code (not user-written code or user error)
 			case 500:
 			case 501:
 				switch ( $zerrorCode ) {
-					case ZErrorTypeRegistry::Z_ERROR_EVALUATION:
+					case ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET:
+						// Error cases:
+						// * Wikifunctions Repo service is disabled
 						// Triggers use of messages:
-						// * wikilambda-functioncall-error-category
-						// * wikilambda-functioncall-error-category-desc
-						throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error' );
+						// * wikilambda-functioncall-error-disabled-category
+						// * wikilambda-functioncall-error-disabled-category-desc
+						throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-disabled' );
 
 					default:
 						$this->logger->error(
@@ -463,6 +520,8 @@ class ClientHooks implements
 				// Fall-back to default handling, below.
 				break;
 		}
+
+		// Default handling:
 		throw new WikifunctionCallException(
 			ZErrorFactory::createZErrorInstance(
 				ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
@@ -575,11 +634,10 @@ class ClientHooks implements
 					'wikilambda-suggested-functions.json',
 					'wikilambda-visualeditor-wikifunctionscall-title',
 					'wikilambda-visualeditor-wikifunctionscall-popup-loading',
-					'wikilambda-visualeditor-wikifunctionscall-popup-no-function',
+					'wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results',
 					'wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder',
 					'wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title',
 					'wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title',
-					'wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results',
 					'wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder',
 					'wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder',
 					'wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer',
