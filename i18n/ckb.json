@@ -97,7 +97,6 @@
 	"wikilambda-function-viewer-details-table-view-less": "کەمتر ببینە",
 	"wikilambda-function-viewer-names-show-languages-button": "ناو بە زمانەکانی تر پیشان بدە",
 	"wikilambda-functioncall": "بانگکردنی فەنکشن",
-	"wikilambda-functioncall-error": "ھەڵەی بانگکردنی فەنکشن: $1",
 	"wikilambda-functioncall-metadata-cpu-usage": "بەكارهێنانی سی پی یوو",
 	"wikilambda-functioncall-metadata-duration": "ماوە",
 	"wikilambda-functioncall-metadata-end-time": "کاتی کۆتاییھاتن",

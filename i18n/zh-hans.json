@@ -272,7 +272,6 @@
 	"wikilambda-function-viewer-details-table-view-less": "查看较少",
 	"wikilambda-function-viewer-names-show-languages-button": "显示其他语言的名称",
 	"wikilambda-functioncall": "函数调用",
-	"wikilambda-functioncall-error": "函数调用错误： $1",
 	"wikilambda-functioncall-error-category": "Wikifunctions调用出错的页面",
 	"wikilambda-functioncall-metadata-actual-result": "实际结果",
 	"wikilambda-functioncall-metadata-cpu-usage": "CPU使用情况",

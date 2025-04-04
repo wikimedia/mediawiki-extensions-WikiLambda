@@ -4,6 +4,5 @@
 			"Beunice"
 		]
 	},
-	"wikilambda-functioncall-error-category": "Pages contenant des appels erronés de Wikifonctions",
-	"wikilambda-functioncall-error-nonfunction": "Erreur d’appel de fonction : le Z-Objet « $1 » n’est pas une Z-Fonction et ne peut donc pas être appelé."
+	"wikilambda-functioncall-error-category": "Pages contenant des appels erronés de Wikifonctions"
 }

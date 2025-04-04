@@ -199,7 +199,6 @@
 	"wikilambda-function-viewer-details-table-view-less": "Näytä vähemmän",
 	"wikilambda-function-viewer-names-show-languages-button": "Näytä nimi muilla kielillä",
 	"wikilambda-functioncall": "Funktiokutsu",
-	"wikilambda-functioncall-error": "Funktiokutsuvirhe: $1",
 	"wikilambda-functioncall-metadata-actual-result": "Todellinen tulos",
 	"wikilambda-functioncall-metadata-cpu-usage": "CPU:n käyttö",
 	"wikilambda-functioncall-metadata-duration": "Kesto",

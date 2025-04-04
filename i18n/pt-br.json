@@ -75,7 +75,6 @@
 	"wikilambda-function-viewer-details-table-view-less": "Ver menos",
 	"wikilambda-function-viewer-names-show-languages-button": "Mostrar nome em outros idiomas",
 	"wikilambda-functioncall": "Chamada de função",
-	"wikilambda-functioncall-error-invalid-zobject": "Erro de chamada de função: o item '$1' não é um ZObject válido, portanto não pode ser chamado",
 	"wikilambda-functioncall-error-invalid-zobject-category": "Páginas com chamadas Wikifunctions para ZObjects inválidos",
 	"wikilambda-functioncall-error-invalid-zobject-category-desc": "Páginas com tentativas de chamadas para funções Wiki com um ZObject inválido",
 	"wikilambda-helplink-button": "Ajuda",

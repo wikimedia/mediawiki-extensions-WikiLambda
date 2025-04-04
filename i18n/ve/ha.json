@@ -1,8 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
-			"Ezeone10"
+			"Ezeone10",
+			"MercyDansanda"
 		]
 	},
-	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Shigar da rubutu"
+	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Loading Bayanan Ayyuka",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Babu sakamako",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Shigar da rubutu",
+	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Shirya aikin don gyara bacewar ko ƙima mara inganci."
 }

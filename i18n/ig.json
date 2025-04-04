@@ -255,11 +255,8 @@
 	"wikilambda-function-viewer-details-table-view-less": "Lelee obere",
 	"wikilambda-function-viewer-names-show-languages-button": "Gosi aha n'asụsụ ndị ọzọ",
 	"wikilambda-functioncall": "Ọ̀kpụkpọ òkù maka ọrụ",
-	"wikilambda-functioncall-error": "Njehie ọkpụkpọ òkù maka ọrụ",
 	"wikilambda-functioncall-error-category": "Ibé ndị nwere ọkpụkpọ òkù maka ọrụ Wiki n'ezighi ezi",
 	"wikilambda-functioncall-error-category-desc": "Ibé ndị nwere ọkpụkpọ òkù gaa na ọrụ Wiki nke na-ebute mperi izugbe",
-	"wikilambda-functioncall-error-invalid-zobject": "Njehie ọkpụkpọ òkù ọrụ: ihe '$1' abụghị ihe ziri ezi, ya mere, enweghị ike ịkpọ ya",
 	"wikilambda-functioncall-error-invalid-zobject-category": "Ibé ndị nwere ọkpụkpọ òkù ọrụ Wiki gaa na ihe ndị n'abaghị uru",
-	"wikilambda-functioncall-error-invalid-zobject-category-desc": "Ibé ndị a nwara ịkpọ òkù na Wikifunctions nwere ihe n'abaghị uru",
-	"wikilambda-functioncall-error-nonfunction": "Njehie ọkpụkpọ òkù ọrụ: ihe '$1' abụghị ihe ziri ezi, ya mere, enweghị ike ịkpọ ya"
+	"wikilambda-functioncall-error-invalid-zobject-category-desc": "Ibé ndị a nwara ịkpọ òkù na Wikifunctions nwere ihe n'abaghị uru"
 }

@@ -7,7 +7,6 @@
 			"Skurz0"
 		]
 	},
-	"wikilambda-functioncall-error-invalid-zobject": "Error de crida de funció: l'element\" $1\" no és un Objecte vàlid, per tant, no es pot cridar",
 	"wikilambda-functioncall-error-invalid-zobject-category": "Les pàgines amb Wikifunctions criden objectes no vàlids",
 	"wikilambda-functioncall-error-invalid-zobject-category-desc": "Pàgines amb intents de crida a Wikifunctions amb un Objecte no vàlid",
 	"wikilambda-functioncall-metadata-implementation-name": "Nom",

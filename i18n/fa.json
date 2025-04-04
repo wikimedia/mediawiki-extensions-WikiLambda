@@ -40,7 +40,6 @@
 	"wikilambda-function-explorer-name-title": "نام",
 	"wikilambda-function-typeselector-label": "تابع را انتخاب کنید",
 	"wikilambda-function-view-function-button-text": "مشاهدهٔ تابع",
-	"wikilambda-functioncall-error-unclear": "خطای فراخوانی تابع: سامانه با مشکل مواجه شد",
 	"wikilambda-functioncall-error-unclear-category": "صفحه‌های دارای فراخوانی‌های ویکی‌توابع شکست‌خورده بدون خطای واضح",
 	"wikilambda-functioncall-error-unclear-category-desc": "صفحه‌های دارای فراخوانی‌های ویکی‌توابع که منجر به خطای سامانه می‌شوند",
 	"wikilambda-functioncall-metadata-cpu-usage": "استفادده از پردازنده",

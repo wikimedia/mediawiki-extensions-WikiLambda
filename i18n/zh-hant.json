@@ -231,7 +231,6 @@
 	"wikilambda-function-viewer-details-table-view-less": "檢視較少",
 	"wikilambda-function-viewer-names-show-languages-button": "顯示其他語言的名稱",
 	"wikilambda-functioncall": "函數呼叫",
-	"wikilambda-functioncall-error": "函數呼叫錯誤： $1",
 	"wikilambda-functioncall-error-category": "Wikifunctions呼叫出錯的頁面",
 	"wikilambda-functioncall-metadata-actual-result": "實際結果",
 	"wikilambda-functioncall-metadata-end-time": "結束時間",
