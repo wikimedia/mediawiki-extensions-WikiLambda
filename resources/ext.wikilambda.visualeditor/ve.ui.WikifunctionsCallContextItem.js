@@ -92,8 +92,8 @@ ve.ui.WikifunctionsCallContextItem.prototype.renderBody = function () {
 		// Get the mw data object
 		const mwData = this.model.getAttribute( 'mw' );
 		const mwPart = ( mwData.parts || [] )[ 0 ];
-		const functionCall = ve.getProp( mwPart, 'template', 'target', 'wt' );
-		const functionId = functionCall.split( ':' )[ 1 ];
+		const functionCall = ve.getProp( mwPart, 'parserfunction', 'params' );
+		const functionId = functionCall[ 1 ].wt;
 
 		// Request the function information
 		ve.init.mw.WikifunctionsCall.piniaStore

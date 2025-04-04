@@ -16,7 +16,6 @@ use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Language\Language;
 use MediaWiki\Logger\LoggerFactory;
-use RuntimeException;
 
 class ZMultiLingualString extends ZObject {
 
@@ -172,7 +171,7 @@ class ZMultiLingualString extends ZObject {
 				[
 					'language' => $language,
 					'value' => $value,
-					'e' => new RuntimeException()
+					'e' => new \InvalidArgumentException()
 				]
 			);
 			return;

@@ -23,7 +23,7 @@ use Psr\Log\LoggerInterface;
  * Asynchronous job to record that a page is using a function in the database,
  * which allows us to avoid a database write on an API GET.
  */
-class WikifunctionsUsageUpdateJob extends Job implements GenericParameterJob {
+class WikifunctionsClientUsageUpdateJob extends Job implements GenericParameterJob {
 
 	private LoggerInterface $logger;
 	private WikifunctionsClientStore $wikifunctionsClientStore;

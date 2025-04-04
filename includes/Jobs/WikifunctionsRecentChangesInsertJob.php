@@ -38,7 +38,7 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 		// relevant client wiki to process locally.
 
 		parent::__construct( 'wikifunctionsRecentChangesInsert', $params );
-		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
+		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
 
 		// We use a CentralIdLookupFactory if configured to convert the repo wiki's user IDs to our local wiki's
 		// ones. If null, we assume this wiki is not connected to a central system.

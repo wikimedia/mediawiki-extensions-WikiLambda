@@ -138,6 +138,9 @@ ve.ui.WikifunctionsCallDialog.prototype.getSetupProcess = function ( data ) {
 					suggestedFunctions = JSON.parse( OO.ui.msg( 'wikilambda-suggested-functions.json' ) );
 				} catch ( e ) {}
 
+				// Trim to the first five elements of the array, so it's not too long for users.
+				suggestedFunctions = suggestedFunctions.slice( 0, 5 );
+
 				// No selected node: new Wikifunction with
 				// * functionId: undefined
 				// * functionParams: []
@@ -154,36 +157,22 @@ ve.ui.WikifunctionsCallDialog.prototype.getSetupProcess = function ( data ) {
 				// * functionId: Zid or null
 				// * functionParams: Array
 				if ( node ) {
-					// (T373253) Old-style DOM syntax, to remove
-					// Get Function Id
-					const template = ve.getProp( node, 'element', 'attributes', 'mw', 'parts', 0, 'template' );
-					const [ , functionId ] = ve.getProp( template, 'target', 'wt' ).split( ':' );
+					const pf = ve.getProp( node, 'element', 'attributes', 'mw', 'parts', 0, 'parserfunction' );
+					const functionCallObject = ve.getProp( pf, 'params' ) || {};
 
 					// Get Function Params
-					const functionParamsObject = ve.getProp( template, 'params' ) || {};
 					const functionParams = [];
-					for ( const key in functionParamsObject ) {
-						if ( Object.prototype.hasOwnProperty.call( functionParamsObject, key ) ) {
-							// Make sure that the array contains items in the right order (keys start at 1)
-							functionParams[ parseInt( key ) - 1 ] = functionParamsObject[ key ].wt;
+					for ( const key in functionCallObject ) {
+						if ( Object.prototype.hasOwnProperty.call( functionCallObject, key ) ) {
+							// Make sure that the array uses the right order (keys start at 1)
+							functionParams[ parseInt( key ) - 1 ] = functionCallObject[ key ].wt;
 						}
 					}
 
-					// (T373253) New-style DOM syntax, to enable
-					// const pf = ve.getProp(node, 'element', 'attributes', 'mw', 'parts', 0, 'parserfunction');
-					// const functionCallObject = ve.getProp( pf, 'params') || {};
-					// const functionCall = [];
-					// for (const key in functionCallObject) {
-					// if (Object.prototype.hasOwnProperty.call(functionCallObject, key)) {
-					// // Make sure that the array uses the right order (keys start at 1; 1st item is the function ID)
-					// functionParams[parseInt(key) - 1] = functionCallObject[key].wt;
-					// }
-					// }
-					// const functionId = functionCall;
-					// const functionParams = functionCall.splice(0, 1);
-
-					functionPayload.functionId = functionId;
-					functionPayload.functionParams = functionParams;
+					// Get Function Id; it's just the first parameter in the array
+					functionPayload.functionId = functionParams[ 0 ];
+					// … and splice out said first argument from the rest of the parameters
+					functionPayload.functionParams = functionParams.slice( 1 );
 				}
 
 				// Set Wikifunction payload in the store
@@ -245,33 +234,25 @@ ve.ui.WikifunctionsCallDialog.prototype.getActionProcess = function ( action ) {
 		ve.init.mw.WikifunctionsCall.vueAppLoaded.then( () => {
 			// Get values from the store:
 			const functionId = ve.init.mw.WikifunctionsCall.piniaStore.getVEFunctionId;
-			const functionParams = ve.init.mw.WikifunctionsCall.piniaStore.getVEFunctionParams;
+			const functionParams = ve.init.mw.WikifunctionsCall.piniaStore.getVEFunctionParams.map(
+				// eslint-disable-next-line no-unused-vars
+				( param, _index ) => param
+			);
 
 			// Place our values into the model
-			// (T373253) Old-style DOM syntax, to remove
 			const mwData = {
 				parts: [ {
-					template: {
-						target: { wt: `#function:${ functionId }`, function: 'function' },
+					parserfunction: {
+						target: { wt: '#function', key: 'function' },
 						params: functionParams.reduce( ( acc, param, index ) => {
-							acc[ ( index + 1 ).toString() ] = { wt: param };
+							acc[ ( index + 2 ) ] = { wt: param };
 							return acc;
 						}, {} )
 					}
 				} ]
 			};
-			// (T373253) New-style DOM syntax, to enable
-			// const mwData = {
-			// parts: [ {
-			// parserfunction: {
-			// target: { wt: 'function', key: 'function' },
-			// params: [ 1: functionId ] + functionParams.reduce( ( acc, param, index ) => {
-			// acc[ ( index + 2 ).toString() ] = { wt: param };
-			// return acc;
-			// }, {} )
-			// }
-			// } ]
-			// };
+			// Add the functionId as the first parameter
+			mwData.parts[ 0 ].parserfunction.params[ 1 ] = { wt: functionId };
 
 			// Update the visual editor model with the new data
 			const surfaceModel = this.getFragment().getSurface();
