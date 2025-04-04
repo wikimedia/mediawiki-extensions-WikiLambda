@@ -238,6 +238,7 @@ class ZObjectEditAction extends Action {
 		return 'wikilambda-create';
 	}
 
+	/** @inheritDoc */
 	public function doesWrites() {
 		return true;
 	}
