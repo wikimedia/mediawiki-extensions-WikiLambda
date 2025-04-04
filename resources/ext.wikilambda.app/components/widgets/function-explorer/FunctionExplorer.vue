@@ -45,6 +45,7 @@
 				<!-- Edit mode -->
 				<template v-if="edit">
 					<wl-z-object-selector
+						:key="currentFunctionZid"
 						:type="Constants.Z_FUNCTION"
 						:placeholder="$i18n( 'wikilambda-function-typeselector-label' ).text()"
 						:selected-zid="currentFunctionZid"
@@ -189,7 +190,6 @@ module.exports = exports = defineComponent( {
 	data() {
 		return {
 			currentFunctionZid: this.functionZid,
-			initialFunctionObject: null,
 			Constants: Constants,
 			resetIcon: icons.cdxIconHistory
 		};
@@ -286,17 +286,12 @@ module.exports = exports = defineComponent( {
 			window.open( this.functionUrl, '_blank' );
 		}
 	},
-	created: function () {
-		this.$watch(
-			'functionObject',
-			( newFunctionObject ) => {
-				// Only update the initial function if a functionZid was provided
-				if ( this.functionZid ) {
-					this.initialFunctionObject = newFunctionObject || this.initialFunctionObject;
-				}
-			},
-			{ immediate: true }
-		);
+	watch: {
+		functionZid: {
+			handler() {
+				this.resetFunction();
+			}
+		}
 	}
 } );
 </script>
