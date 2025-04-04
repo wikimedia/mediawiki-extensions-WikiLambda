@@ -12,6 +12,7 @@
 namespace MediaWiki\Extension\WikiLambda\Special;
 
 use InvalidArgumentException;
+use MediaWiki\Config\ConfigException;
 use MediaWiki\Content\Renderer\ContentRenderer;
 use MediaWiki\Extension\WikiLambda\ZObjectEditingPageTrait;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
@@ -23,7 +24,6 @@ use MediaWiki\Parser\ParserOptions;
 use MediaWiki\SpecialPage\SpecialPage;
 use MediaWiki\Title\Title;
 use MediaWiki\Utils\UrlUtils;
-use RuntimeException;
 
 class SpecialViewObject extends SpecialPage {
 	use ZObjectEditingPageTrait;
@@ -180,7 +180,7 @@ class SpecialViewObject extends SpecialPage {
 		$viewURL = $this->urlUtils->expand( "/view/$targetLanguage/$targetPageName" );
 		// $viewURL can be null 'if no valid URL can be constructed', which shouldn't ever happen.
 		if ( $viewURL === null ) {
-			throw new RuntimeException( 'No valid URL could be constructed for the canonical path' );
+			throw new ConfigException( 'No valid URL could be constructed for the canonical path' );
 		}
 		$outputPage->setCanonicalUrl( $viewURL );
 
@@ -188,7 +188,6 @@ class SpecialViewObject extends SpecialPage {
 		// (T343594) The Special:WhatLinksHere weren't shown on view/en/ZXXXX pages,
 		// but they were on wiki/ZXXXX pages. Setting the flag here (lower in code) fixes it.
 		$outputPage->setArticleFlag( true );
-		// TODO (T362241): Make this help page.
 		$this->addHelpLink( 'Help:Wikifunctions/Viewing Objects' );
 
 		$this->generateZObjectPayload( $outputPage, $this->getContext(), [

@@ -53,6 +53,7 @@ ve.ce.WikifunctionsCallNode.prototype.onSetup = function () {
  * @inheritdoc
  */
 ve.ce.WikifunctionsCallNode.prototype.doneGenerating = function ( generatedContents, config, staged ) {
+
 	// Call parent first
 	ve.ce.WikifunctionsCallNode.super.prototype.doneGenerating.call( this, generatedContents, config, staged );
 

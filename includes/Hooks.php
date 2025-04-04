@@ -18,11 +18,10 @@ use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Installer\DatabaseUpdater;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\RecentChanges\RecentChange;
 use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Title\Title;
 use MediaWiki\User\User;
-use RecentChange;
-use RuntimeException;
 use Wikimedia\Services\NoSuchServiceException;
 
 class Hooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook {
@@ -163,7 +162,7 @@ class Hooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook 
 
 		$dependenciesFile = file_get_contents( $initialDataToLoadPath . 'dependencies.json' );
 		if ( $dependenciesFile === false ) {
-			throw new RuntimeException(
+			throw new ConfigException(
 				'Could not load dependencies file from function-schemata sub-repository of the WikiLambda extension.'
 					. ' Have you initiated & fetched it? Try `git submodule update --init --recursive`.'
 			);

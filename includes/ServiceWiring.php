@@ -40,6 +40,8 @@ return [
 		);
 	},
 
+	// For both repo and client wikis
+
 	'WikiLambdaZObjectStash' => static function ( MediaWikiServices $services ): BagOStuff {
 		$extensionConfig = $services->getConfigFactory()->makeConfig( 'WikiLambda' );
 		$requestedCache = $extensionConfig->get( 'WikiLambdaObjectCache' );

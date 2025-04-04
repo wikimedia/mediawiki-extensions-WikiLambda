@@ -101,7 +101,6 @@ class SpecialListFunctionsByTests extends SpecialPage {
 			'ext.wikilambda.special.styles'
 		] );
 
-		// TODO (T300519): Make this help page.
 		$this->addHelpLink( 'Help:Wikifunctions/Functions by Test status' );
 
 		// Get list of fallback language ZIDs

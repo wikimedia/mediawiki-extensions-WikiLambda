@@ -52,7 +52,7 @@
 		},
 		"WikiLambdaEnableClientMode": {
 			"description": "If true, enable the the 'client' mode of WikiLambda, providing the {{#function:…}} parser function to embed calls to Wikifunctions.",
-			"value": false
+			"value": true
 		},
 		"WikiLambdaClientTargetAPI": {
 			"description": "API to target to make function calls (to allow testing against non-standard wikis).",
@@ -197,9 +197,7 @@
 		"WikiLambdaClientHooks": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\ClientHooks",
 			"services": [
-				"MainConfig",
-				"HttpRequestFactory",
-				"JobQueueGroup"
+				"MainConfig"
 			]
 		},
 		"WikiLambdaClientChangeHooks": {
@@ -229,7 +227,6 @@
 		}
 	},
 	"Hooks": {
-		"ParserFirstCallInit": "WikiLambdaClientHooks",
 		"PageSaveComplete": "WikiLambdaClientHooks",
 		"ResourceLoaderRegisterModules": "WikiLambdaClientHooks",
 		"MakeGlobalVariablesScript": "WikiLambdaClientHooks",
@@ -938,6 +935,28 @@
 			]
 		}
 	},
+	"ParsoidModules": [
+		{
+			"name": "Wikifunctions",
+			"fragmentHandlers": [
+				{
+					"key": "function",
+					"handler": {
+						"class": "MediaWiki\\Extension\\WikiLambda\\ParserFunction\\WikifunctionsPFragmentHandler",
+						"services": [
+							"MainConfig",
+							"JobQueueGroup",
+							"WikiLambdaZObjectStash"
+						]
+					},
+					"options": {
+						"parserFunction": true,
+						"hasAsyncContent": true
+					}
+				}
+			]
+		}
+	],
 	"RecentChangesFlags": {
 		"wikifunctions-edit": {
 			"letter": "wikilambda-recentchanges-edit-letter",
@@ -954,7 +973,8 @@
 		"cacheTesterResults": "MediaWiki\\Extension\\WikiLambda\\Jobs\\CacheTesterResultsJob",
 		"updateImplementations": "MediaWiki\\Extension\\WikiLambda\\Jobs\\UpdateImplementationsJob",
 		"wikifunctionsClientFanOutQueue": "MediaWiki\\Extension\\WikiLambda\\Jobs\\WikifunctionsClientFanOutQueueJob",
-		"wikifunctionsUsageUpdate": "MediaWiki\\Extension\\WikiLambda\\Jobs\\WikifunctionsUsageUpdateJob",
+		"wikifunctionsClientUsageUpdateJob": "MediaWiki\\Extension\\WikiLambda\\Jobs\\WikifunctionsClientUsageUpdateJob",
+		"WikifunctionsClientRequestJob": "MediaWiki\\Extension\\WikiLambda\\Jobs\\WikifunctionsClientRequestJob",
 		"wikifunctionsRecentChangesInsert": "MediaWiki\\Extension\\WikiLambda\\Jobs\\WikifunctionsRecentChangesInsertJob"
 	},
 	"manifest_version": 2

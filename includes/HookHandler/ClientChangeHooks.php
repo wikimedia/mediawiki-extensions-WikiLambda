@@ -76,6 +76,7 @@ class ClientChangeHooks implements
 			return;
 		}
 
+		// XXX: FIXME.
 		throw new \RuntimeException( 'Not implemented ECLMLD' );
 
 		// …
@@ -99,6 +100,7 @@ class ClientChangeHooks implements
 			return;
 		}
 
+		// XXX: FIXME.
 		throw new \RuntimeException( 'Not implemented ECLMBLD' );
 		// …
 	}
@@ -126,6 +128,7 @@ class ClientChangeHooks implements
 			return;
 		}
 
+		// XXX: FIXME.
 		throw new \RuntimeException( 'Not implemented OCLRCD' );
 		// …
 	}

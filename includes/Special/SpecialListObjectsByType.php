@@ -101,7 +101,6 @@ class SpecialListObjectsByType extends SpecialPage {
 		$output->enableOOUI();
 		$output->addModuleStyles( [ 'mediawiki.special' ] );
 
-		// TODO (T300519): Make this help page.
 		$this->addHelpLink( 'Help:Wikifunctions/Objects by type' );
 
 		// Get list of fallback language Zids

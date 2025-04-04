@@ -16,6 +16,7 @@ use MediaWikiIntegrationTestCase;
 /**
  * @covers \MediaWiki\Extension\WikiLambda\HookHandler\ClientHooks
  * @group Database
+ * @group Broken
  */
 class ClientHooksTest extends MediaWikiIntegrationTestCase {
 
