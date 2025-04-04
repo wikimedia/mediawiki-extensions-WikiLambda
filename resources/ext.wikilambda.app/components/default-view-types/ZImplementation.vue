@@ -63,6 +63,7 @@
 								v-for="radio in radioChoices"
 								:key="'radio-' + radio.value"
 								v-model="implementationType"
+								:disabled="!functionZid"
 								:input-value="radio.value"
 								:name="'implementation-radios-' + rowId"
 								:inline="true"
@@ -79,7 +80,7 @@
 		</div>
 
 		<div
-			v-if="!isTypeBuiltin"
+			v-if="!isTypeBuiltin && functionZid"
 			class="ext-wikilambda-app-implementation__content"
 			data-testid="implementation-content"
 		>
@@ -136,6 +137,7 @@ module.exports = exports = defineComponent( {
 			'getZImplementationFunctionRowId',
 			'getZImplementationContentType',
 			'getZImplementationContentRowId',
+			'getZImplementationFunctionZid',
 			'getLabelData'
 		] ),
 		{
@@ -155,6 +157,15 @@ module.exports = exports = defineComponent( {
 			 */
 			functionLabelData: function () {
 				return this.getLabelData( Constants.Z_IMPLEMENTATION_FUNCTION );
+			},
+
+			/**
+			 * Return the zid of the target function for this implementation
+			 *
+			 * @return {string | undefined }
+			 */
+			functionZid: function () {
+				return this.getZImplementationFunctionZid( this.rowId );
 			},
 
 			/**
