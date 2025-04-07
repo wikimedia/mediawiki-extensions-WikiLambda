@@ -277,6 +277,7 @@
 	"wikilambda-functioncall-error-nonstringoutput-category-desc": "Paginas con tentativas de appello de Wikifunctiones con un function que non restitue un catena",
 	"wikilambda-functioncall-error-bad-langs-category": "Paginas con appellos a Wikifunctiones con proprietates de lingua non valide",
 	"wikilambda-functioncall-error-bad-langs-category-desc": "Paginas con tentativas de appellos a Wikifunctiones con codices de lingua incorrecte pro un del argumentos ‘parselang’ o ‘renderlang’",
+	"wikilambda-functioncall-error-bad-inputs-category": "Paginas con appellos a Wikifunctiones con un numero incorrecte de entratas",
 	"wikilambda-functioncall-metadata-accessible-title": "Dialogo que te permitte vider le metadatos del resultato del appello de function",
 	"wikilambda-functioncall-metadata-actual-result": "Resultato real",
 	"wikilambda-functioncall-metadata-cpu-usage": "Uso del CPU",

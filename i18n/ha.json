@@ -17,6 +17,7 @@
 	"wikilambda-editor-input-title": "saka bayani(s)",
 	"wikilambda-editor-input-type-placeholder": "Ierin Input",
 	"wikilambda-editor-output-title": "Output",
+	"wikilambda-functioncall-error-message": "Aikin ya kasa nuna sakamako. [[ $1 | ƙarin koyo]]",
 	"wikilambda-functioncall-error-disabled-category-desc": "Shafukan da ke da kira zuwa kiran Wikifunctions waɗanda suka gaza saboda kashe ayyukan Wiki",
 	"wikilambda-functioncall-error-evaluation-category": "Shafukan da ke da kuskuren kiran Wikifunctions saboda gazawar kimantawa",
 	"wikilambda-functioncall-error-evaluation-category-desc": "Shafukan da ke da kira zuwa kiran Wikifunctions waɗanda suka dawo da kurakuran ƙima",
