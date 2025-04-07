@@ -88,7 +88,8 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-widget-base__header-action {
 		display: flex;
 		align-items: center;
-		margin-right: -@spacing-35;
+		flex-wrap: wrap;
+		gap: @spacing-35;
 	}
 }
 </style>
