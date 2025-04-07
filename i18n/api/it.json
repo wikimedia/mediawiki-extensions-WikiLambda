@@ -1,8 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
-			"Beta16"
+			"Beta16",
+			"Dv103"
 		]
 	},
-	"apihelp-wikilambda_fetch-param-language": "La lingua in cui restituire i risultati."
+	"apihelp-wikilambda_fetch-param-language": "La lingua in cui restituire i risultati.",
+	"apihelp-wikilambda_edit-summary": "Crea o modifica uno ZObject."
 }
