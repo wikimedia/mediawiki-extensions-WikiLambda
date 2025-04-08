@@ -11,7 +11,8 @@
 			"Sabas88",
 			"Sannita",
 			"Sofia Stecchi",
-			"Stefano"
+			"Stefano",
+			"Dv103"
 		]
 	},
 	"wikilambda-desc": "Fornire funzioni da scrivere, gestire e valutare su un wiki centrale.",
@@ -280,7 +281,7 @@
 	"wikilambda-functioncall-error-unknown-category": "Pagine con chiamate di Wikifuzioni a oggetti sconosciuti",
 	"wikilambda-functioncall-error-unknown-category-desc": "Pagine con tentativi di chiamate a Wikifuzioni che richiedono un oggetto sconosciuto",
 	"wikilambda-functioncall-metadata-accessible-title": "Finestra che consente di visualizzare i metadati del risultato della funzione chiamata",
-	"wikilambda-functioncall-metadata-actual-result": "Risultato attuale",
+	"wikilambda-functioncall-metadata-actual-result": "Risultato effettivo",
 	"wikilambda-functioncall-metadata-cpu-usage": "Uso della CPU",
 	"wikilambda-functioncall-metadata-duration": "Durata",
 	"wikilambda-functioncall-metadata-end-time": "Ora di fine",
@@ -425,6 +426,7 @@
 	"wikilambda-validation-error-description-toolong": "La descrizione in $1 deve contenere {{PLURAL:$2|$2 carattere|$2 caratteri}} o meno.",
 	"wikilambda-validation-error-name-toolong": "Il nome in $1 deve contenere {{PLURAL:$2|$2 carattere|$2 caratteri}} o meno.",
 	"wikilambda-viewmode-nojs": "Questa pagina viene visualizzata in modo limitato senza JavaScript.",
+	"wikilambda-wikidata-lexeme-selector-placeholder": "Seleziona il lessema Wikidata",
 	"wikilambda-zerror": "Errore di tipo $1",
 	"wikilambda-zimplememntation-composition-missing": "La composizione è vuota. Seleziona una funzione.",
 	"wikilambda-zimplementation-code-language-missing": "Seleziona prima un linguaggio di programmazione.",
