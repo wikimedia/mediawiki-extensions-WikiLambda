@@ -278,7 +278,7 @@
 	"wikilambda-function-viewer-names-show-languages-button": "Show language button for rendering function name in other languages",
 	"wikilambda-functioncall": "Label for the word [[:meta:Abstract Wikipedia/Glossary#function call|function call]].\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-error-message": "Error shown when a wikitext function call goes wrong.\n\nParams:\n* $1 - The html link to the help page about the specific error",
-	"wikilambda-functioncall-error": "{{Optional}}\nWikitext link to the Wikifunctions usage help page",
+	"wikilambda-functioncall-error": "{{Ignored}}\nWikitext link to the Wikifunctions usage help page.",
 	"wikilambda-functioncall-error-category": "A [[:mw:Special:MyLanguage/Help:Tracking categories|tracking category]] added to a page with a function call that results in an error. Please don't add namespace prefix.\n{{Tracking category name}}",
 	"wikilambda-functioncall-error-category-desc": "Description of the generic Wikifunctions error tracking category.",
 	"wikilambda-functioncall-error-disabled": "{{Ignored}}\nWikitext link to the guide about errors caused by Wikifunctions being disabled through its configuration flags.",

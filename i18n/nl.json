@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"ABPMAB",
 			"Aranka",
 			"Daanboven",
 			"HanV",
@@ -267,7 +268,7 @@
 	"wikilambda-functioncall-error-category": "Pagina's met foutieve Wikifuncties-aanroepen",
 	"wikilambda-functioncall-error-category-desc": "Pagina's met aanroepen naar Wikifuncties die resulteren in een algemene fout",
 	"wikilambda-functioncall-error-unclear-category": "Pagina's met foutieve Wikifunctie-aanroepen zonder duidelijke fout",
-	"wikilambda-functioncall-error-unclear-category-desc": "Pagina's met Wikifunctie-aanroepen die tot een systeemfout leiden",
+	"wikilambda-functioncall-error-unclear-category-desc": "Pagina's met Wikifunctie-aanroepen die mislukten vanwege een onafgehandelde API-fout",
 	"wikilambda-functioncall-error-unknown-zid-category": "Pagina's met Wikifuncties-aanroepen naar onbekende objecten",
 	"wikilambda-functioncall-error-unknown-zid-category-desc": "Pagina's met pogingen om Wikifuncties met een onbekend object aan te roepen",
 	"wikilambda-functioncall-error-invalid-zobject-category": "Pagina's met Wikifuncties-aanroepen naar ongeldige objecten",

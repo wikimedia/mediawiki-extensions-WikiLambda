@@ -161,6 +161,9 @@
 	"wikilambda-tester-status-running": "실행 중…",
 	"wikilambda-typeunavailable": "인식할 수 없는 유형",
 	"wikilambda-wikidata-item-selector-placeholder": "위키데이터 항목 선택",
+	"wikilambda-wikifunctionswiki-sidebar-createfunction": "함수 만들기",
+	"wikilambda-wikifunctionswiki-sidebar-functioncatalogue": "함수 카탈로그",
+	"wikilambda-wikifunctionswiki-sidebar-projectstatus": "현재 상태",
 	"wikilambda-zobject-to-string-select-object": "$1 선택",
 	"wikilambda-zobjectselector-label": "객체",
 	"wikilambda-zobjectselector-no-results": "결과가 없습니다."
