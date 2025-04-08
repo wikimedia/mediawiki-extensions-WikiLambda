@@ -13,13 +13,23 @@ describe( 'FunctionInputString', () => {
 		expect( wrapper.getComponent( { name: 'cdx-text-input' } ).exists() ).toBe( true );
 	} );
 
-	it( 'emits update event when input value changes', () => {
+	it( 'emits input event when input value changes', () => {
 		const wrapper = shallowMount( FunctionInputString, {
 			props: {
 				value: 'Test value'
 			}
 		} );
 		wrapper.getComponent( { name: 'cdx-text-input' } ).vm.$emit( 'update:model-value', 'New value' );
+		expect( wrapper.emitted().input[ 0 ] ).toEqual( [ 'New value' ] );
+	} );
+
+	it( 'emits update event on input change', () => {
+		const wrapper = shallowMount( FunctionInputString, {
+			props: {
+				value: 'Test value'
+			}
+		} );
+		wrapper.getComponent( { name: 'cdx-text-input' } ).vm.$emit( 'change', { target: { value: 'New value' } } );
 		expect( wrapper.emitted().update[ 0 ] ).toEqual( [ 'New value' ] );
 	} );
 

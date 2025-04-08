@@ -32,7 +32,7 @@ describe( 'FunctionInputParser', () => {
 	it( 'renders without errors', () => {
 		const wrapper = shallowMount( FunctionInputParser, {
 			props: {
-				argumentType: typeZid,
+				inputType: typeZid,
 				value: 'Test value'
 			}
 		} );
@@ -42,7 +42,7 @@ describe( 'FunctionInputParser', () => {
 	it( 'emits input event when value changes', () => {
 		const wrapper = shallowMount( FunctionInputParser, {
 			props: {
-				argumentType: typeZid,
+				inputType: typeZid,
 				value: 'Test value'
 			}
 		} );
@@ -50,17 +50,17 @@ describe( 'FunctionInputParser', () => {
 		expect( wrapper.emitted().input[ 0 ] ).toEqual( [ 'New value' ] );
 	} );
 
-	it( 'validates the value and emits validate event on success', async () => {
+	it( 'validates the value and emits validate event on success on input change', async () => {
 		const wrapper = shallowMount( FunctionInputParser, {
 			props: {
-				argumentType: typeZid,
-				value: 'Valid value'
+				inputType: typeZid,
+				value: 'Test value'
 			}
 		} );
-		// Wait for initial validation to complete
+
 		await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( false ) );
 
-		wrapper.vm.validate( 'Valid value' );
+		wrapper.getComponent( { name: 'cdx-text-input' } ).vm.$emit( 'change', { target: { value: 'New value' } } );
 
 		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false } ] );
 		expect( wrapper.vm.isParserRunning ).toBe( true );
@@ -68,7 +68,7 @@ describe( 'FunctionInputParser', () => {
 			parserZid: 'Z30020',
 			wait: true,
 			zlang: 'Z1002',
-			zobject: 'Valid value'
+			zobject: 'New value'
 		} );
 		await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( false ) );
 		expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ { isValid: true } ] );
@@ -79,7 +79,7 @@ describe( 'FunctionInputParser', () => {
 
 		const wrapper = shallowMount( FunctionInputParser, {
 			props: {
-				argumentType: typeZid,
+				inputType: typeZid,
 				value: 'Invalid value'
 			}
 		} );
@@ -104,7 +104,7 @@ describe( 'FunctionInputParser', () => {
 	it( 'shows progress indicator while parser is running', async () => {
 		const wrapper = shallowMount( FunctionInputParser, {
 			props: {
-				argumentType: typeZid,
+				inputType: typeZid,
 				value: 'Test value'
 			}
 		} );

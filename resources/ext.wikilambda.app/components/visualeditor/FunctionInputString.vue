@@ -10,7 +10,8 @@
 		:disabled="false"
 		:placeholder="$i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder' )"
 		:model-value="value"
-		@update:model-value="handleUpdate"
+		@update:model-value="handleInput"
+		@change="handleChange"
 	></cdx-text-input>
 </template>
 
@@ -23,6 +24,7 @@ module.exports = exports = defineComponent( {
 	components: {
 		'cdx-text-input': CdxTextInput
 	},
+	inheritAttrs: false,
 	props: {
 		value: {
 			type: String,
@@ -33,13 +35,20 @@ module.exports = exports = defineComponent( {
 	emits: [ 'update', 'input', 'validate' ],
 	methods: {
 		/**
-		 * Handles the update event and validates the new value.
+		 * Handles the update model value event and emits the new value.
 		 *
-		 * @param {string} value - The new value to validate.
+		 * @param {string} value - The new value to emit.
 		 */
-		handleUpdate: function ( value ) {
+		handleInput: function ( value ) {
 			this.$emit( 'input', value );
-			this.$emit( 'update', value );
+		},
+		/**
+		 * Handles the change event and emits the new value.
+		 *
+		 * @param {Event} event - The change event triggered by the input field.
+		 */
+		handleChange: function ( event ) {
+			this.$emit( 'update', event.target.value );
 		}
 
 	},

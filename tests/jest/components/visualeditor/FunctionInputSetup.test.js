@@ -15,6 +15,7 @@ describe( 'FunctionInputSetup', () => {
 		store = useMainStore();
 		store.getUserLangCode = 'en';
 		store.getVEFunctionId = 'Z13546';
+		store.getOutputTypeOfFunctionZid = createGettersWithFunctionsMock( 'Z6' );
 		store.getInputsOfFunctionZid = createGettersWithFunctionsMock( [
 			{ Z1K1: 'Z17', Z17K1: 'Z13518', Z17K2: 'Z13546K1' },
 			{ Z1K1: 'Z17', Z17K1: 'Z13518', Z17K2: 'Z13546K2' }

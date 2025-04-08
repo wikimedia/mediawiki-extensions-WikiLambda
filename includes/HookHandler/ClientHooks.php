@@ -170,6 +170,12 @@ class ClientHooks implements
 					'wikilambda-visualeditor-wikifunctionscall-no-name',
 					'wikilambda-visualeditor-wikifunctionscall-no-description',
 					'wikilambda-visualeditor-wikifunctionscall-no-input-label',
+					'wikilambda-visualeditor-wikifunctionscall-preview-title',
+					'wikilambda-visualeditor-wikifunctionscall-preview-no-result',
+					'wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label',
+					'wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label',
+					'wikilambda-visualeditor-wikifunctionscall-preview-cancelled',
+					'wikilambda-visualeditor-wikifunctionscall-preview-error'
 				],
 				'styles' => [
 					'ext.wikilambda.visualeditor.less'

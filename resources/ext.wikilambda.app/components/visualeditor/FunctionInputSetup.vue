@@ -7,6 +7,10 @@
 -->
 <template>
 	<div class="ext-wikilambda-app-function-input-setup">
+		<wl-function-input-preview
+			v-if="allTypesFetched"
+			:payload="areInputFieldsValid ? functionCallPayload : undefined">
+		</wl-function-input-preview>
 		<div class="ext-wikilambda-app-function-input-setup__body">
 			<cdx-message v-if="hasMissingContent">
 				<!-- eslint-disable-next-line vue/no-v-html -->
@@ -22,13 +26,13 @@
 					$i18n( 'wikilambda-visualeditor-wikifunctionscall-no-description' ).text()
 				).text() }}
 			</p>
-			<div v-if="allArgumentsFetched" class="ext-wikilambda-app-function-input-setup__fields">
+			<div v-if="allTypesFetched" class="ext-wikilambda-app-function-input-setup__fields">
 				<wl-function-input-field
 					v-for="( field, index ) in inputFields"
-					:key="field.argumentKey"
+					:key="field.inputKey"
 					v-model="field.value"
 					:is-editing="isEditing"
-					:argument-type="field.argumentType"
+					:input-type="field.inputType"
 					:label-data="field.labelData"
 					:error-message="field.errorMessage"
 					@update="value => handleUpdate( index, value )"
@@ -54,6 +58,7 @@ const useMainStore = require( '../../store/index.js' );
 const Constants = require( '../../Constants.js' );
 const FunctionInputField = require( './FunctionInputField.vue' );
 const ExpandableDescription = require( './ExpandableDescription.vue' );
+const FunctionInputPreview = require( './FunctionInputPreview.vue' );
 const wikifunctionsIconSvg = require( './wikifunctionsIconSvg.js' );
 
 module.exports = exports = defineComponent( {
@@ -61,6 +66,7 @@ module.exports = exports = defineComponent( {
 	components: {
 		'wl-function-input-field': FunctionInputField,
 		'wl-expandable-description': ExpandableDescription,
+		'wl-function-input-preview': FunctionInputPreview,
 		'cdx-icon': CdxIcon,
 		'cdx-message': CdxMessage
 	},
@@ -69,7 +75,7 @@ module.exports = exports = defineComponent( {
 		return {
 			icon: wikifunctionsIconSvg,
 			inputFields: [],
-			allArgumentsFetched: false
+			allTypesFetched: false
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
@@ -78,7 +84,8 @@ module.exports = exports = defineComponent( {
 		'getVEFunctionId',
 		'getVEEditing',
 		'getVEFunctionParams',
-		'getInputsOfFunctionZid'
+		'getInputsOfFunctionZid',
+		'getOutputTypeOfFunctionZid'
 	] ), {
 		/**
 		 * Returns if the function is being edited.
@@ -136,12 +143,35 @@ module.exports = exports = defineComponent( {
 			return this.getDescription( this.functionZid );
 		},
 		/**
-		 * Returns the arguments of the function.
+		 * Returns the inputs of the function.
 		 *
 		 * @return {Array}
 		 */
-		functionArguments: function () {
+		functionInputs: function () {
 			return this.getInputsOfFunctionZid( this.functionZid );
+		},
+		/**
+		 * Returns the output type of the function.
+		 *
+		 * @return {string}
+		 */
+		functionOutputType: function () {
+			return this.getOutputTypeOfFunctionZid( this.functionZid );
+		},
+		/**
+		 * Prepares the payload for the function call.
+		 *
+		 * @return {Object} - The payload object.
+		 */
+		functionCallPayload: function () {
+			return {
+				functionZid: this.getVEFunctionId,
+				params: this.functionInputs.map( ( arg, index ) => ( {
+					type: arg[ Constants.Z_ARGUMENT_TYPE ],
+					value: this.getVEFunctionParams[ index ]
+				} ) )
+
+			};
 		},
 		/**
 		 * Checks if all input fields are valid.
@@ -173,12 +203,12 @@ module.exports = exports = defineComponent( {
 		'fetchZids'
 	] ), {
 		/**
-		 * Initializes the function input fields with the current Visual Editor function parameters.
+		 * Initializes the function input fields with the current Visual Editor function params.
 		 */
 		initializeInputFields: function () {
-			this.inputFields = this.functionArguments.map( ( arg, index ) => ( {
-				argumentKey: arg[ Constants.Z_ARGUMENT_KEY ],
-				argumentType: arg[ Constants.Z_ARGUMENT_TYPE ],
+			this.inputFields = this.functionInputs.map( ( arg, index ) => ( {
+				inputKey: arg[ Constants.Z_ARGUMENT_KEY ],
+				inputType: arg[ Constants.Z_ARGUMENT_TYPE ],
 				labelData: this.getLabelData( arg[ Constants.Z_ARGUMENT_KEY ] ),
 				value: this.getVEFunctionParams[ index ]
 			} ) );
@@ -208,19 +238,24 @@ module.exports = exports = defineComponent( {
 			}
 		},
 		/**
-		 * Fetches the ZIDs for all argument types.
+		 * Fetches the ZIDs for all input types and the output type.
 		 * Show a loading state in VisualEditor while fetching.
 		 *
-		 * @param {Array} args - The list of function arguments.
+		 * @param {Array} inputs - The list of function inputs.
+		 * @param {string} outputType - The output type of the function.
 		 */
-		fetchArgumentTypes: function ( args ) {
-			if ( args.length > 0 ) {
+		fetchInputAndOutputTypes: function ( inputs, outputType ) {
+			const zidsToFetch = [
+				...inputs.map( ( arg ) => arg[ Constants.Z_ARGUMENT_TYPE ] ),
+				outputType
+			];
+
+			if ( zidsToFetch.length > 0 ) {
 				this.$emit( 'loading-start' );
 
-				const argumentTypes = args.map( ( arg ) => arg[ Constants.Z_ARGUMENT_TYPE ] );
-				this.fetchZids( { zids: argumentTypes } )
+				this.fetchZids( { zids: zidsToFetch } )
 					.then( () => {
-						this.allArgumentsFetched = true;
+						this.allTypesFetched = true;
 					} )
 					.finally( () => {
 						this.$emit( 'loading-end' );
@@ -240,12 +275,20 @@ module.exports = exports = defineComponent( {
 			this.$emit( 'update' );
 		},
 		/**
-		 * Watches the function arguments and fetches the ZIDs for the argument types.
-		 * Do this immediately and when the arguments change.
+		 * Watches the function inputs and output type, and fetches the ZIDs for both.
+		 * Do this immediately and when the inputs or output type change.
 		 */
-		functionArguments: {
+		functionInputs: {
 			immediate: true,
-			handler: 'fetchArgumentTypes'
+			handler: function ( newInputs ) {
+				this.fetchInputAndOutputTypes( newInputs, this.functionOutputType );
+			}
+		},
+		functionOutputType: {
+			immediate: true,
+			handler: function ( newOutputType ) {
+				this.fetchInputAndOutputTypes( this.functionInputs, newOutputType );
+			}
 		}
 	},
 	mounted: function () {
