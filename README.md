@@ -263,9 +263,9 @@ only be done if we are sure that the context matches this object perfectly.
 
 WikiLambda uses two back-end services for running user-defined and built-in functions in a secure, scalable environment; a set of "evaluators" that run user-defined native code, and an "orchestrator" that receives execution requests and determines what to run.
 
-#### Default experience using Beta Wikifunctions
+#### Default experience without running local services
 
-On install, the extension will try to use the orchestrator and evaluator services of the [Beta Cluster version of Wikifunctions](https://wikifunctions.beta.wmflabs.org/). This default configuration will let you do rudimentary tests with the built-in objects, but not with custom on-wiki content (as they are pointed at the content of Beta Wikifunctions).
+On install, the extension will try to use the orchestrator and evaluator services, which you may not have running. This default configuration will let you do rudimentary tests of the system, but not proper integration or full running without the back-end services.
 
 You can test your installation by running the PHPUnit test suite as described in the MediaWiki install instructions:
 
@@ -273,9 +273,7 @@ You can test your installation by running the PHPUnit test suite as described in
 docker compose exec mediawiki composer phpunit:entrypoint -- extensions/WikiLambda/tests/phpunit/integration/ActionAPI/ApiFunctionCallTest.php
 ```
 
-If the tests all pass, your installation has successfully called the configured function orchestrator with the calls, executed them, and got the expected results back. Congratulations!
-
-You can evaluate an arbitrary function call by navigating to `localhost:8080/wiki/Special:RunFunction`, and selecting a function.
+If the tests all pass, your installation has successfully called the mocked function orchestrator with the calls, executed them, and got the expected results back. Congratulations!
 
 #### Local services
 
@@ -286,28 +284,30 @@ If you would like to use your own installation of the function orchestrator and 
 3. Set the function orchestrator environment variables in your docker-compose.override.yml file, as detailed in the [Orchestrator environment variables](#orchestrator-env) section below.
 4. Restart your docker containers
 
+You can evaluate an arbitrary function call by navigating to `localhost:8080/wiki/Special:RunFunction`, and selecting a function.
+
 <a name="orchestrator-location"></a>
 ##### Orchestrator location
 
 Your Mediawiki installation needs to know the location of your orchestrator service. This variable
-is set by default to the Beta cluster instance of function orchestrator. You can see this in the
+is set by default to the standard local name for the function orchestrator. You can see this in the
 `extension.json` file, in the `config` property:
 
 ```
  "WikiLambdaOrchestratorLocation": {
    "description": "Host and port of the function orchestrator.",
-   "value": "https://wikifunctions-orchestrator-beta.wmflabs.org:443"
+   "value": "https://mediawiki-function-orchestrator-1:6254/1/v1/evaluate"
  }
 ```
 
-To run your local orchestrator, you need to override this variable, by setting its new value
+To run your local orchestrator, you may need to override this variable, by setting its new value
 in your `LocalSettings.php` file with the correct name and port of your orchestrator container.
 
 For example, if your orchestrator is called `core-function-orchestrator-1` and its port is `6254`,
 set the configuration variable to:
 
 ```
-$wgWikiLambdaOrchestratorLocation = "http://mediawiki-function-orchestrator-1:6254/1/v1/evaluate";
+$wgWikiLambdaOrchestratorLocation = "http://core-function-orchestrator-1:6254/1/v1/evaluate";
 ```
 
 NOTE: Container names are automatically assigned by docker and often uses the name of the directory

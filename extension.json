@@ -44,7 +44,7 @@
 		},
 		"WikiLambdaOrchestratorLocation": {
 			"description": "Host and port of the function orchestrator.",
-			"value": "https://wikifunctions-orchestrator-beta.wmflabs.org:443"
+			"value": "https://mediawiki-function-orchestrator-1:6254/1/v1/evaluate"
 		},
 		"WikiLambdaObjectCache": {
 			"description": "If false, store function calls in the main MediaWiki cache; if set to another value, that will be used as the key of a cache in wgObjectCaches.",
