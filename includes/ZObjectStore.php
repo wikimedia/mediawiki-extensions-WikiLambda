@@ -11,12 +11,14 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use Exception;
+use MediaWiki\Exception\MWContentSerializationException;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Page\WikiPageFactory;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
@@ -27,7 +29,6 @@ use MediaWiki\Title\TitleFactory;
 use MediaWiki\User\User;
 use MediaWiki\User\UserGroupManager;
 use MessageLocalizer;
-use MWContentSerializationException;
 use Psr\Log\LoggerInterface;
 use Wikimedia\Rdbms\FakeResultWrapper;
 use Wikimedia\Rdbms\IConnectionProvider;
@@ -37,7 +38,6 @@ use Wikimedia\Rdbms\IResultWrapper;
 use Wikimedia\Rdbms\LikeValue;
 use Wikimedia\Rdbms\SelectQueryBuilder;
 use Wikimedia\Rdbms\Subquery;
-use WikiPage;
 
 class ZObjectStore {
 
@@ -49,6 +49,8 @@ class ZObjectStore {
 	private LoggerInterface $logger;
 
 	public const INSTANCEOFENUM = 'instanceofenum';
+
+	public const SERVICE_CACHE_KEY_PREFIX = 'WikiLambdaObjectStorage:';
 
 	/**
 	 * @param IConnectionProvider $dbProvider

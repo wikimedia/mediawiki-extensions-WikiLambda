@@ -10,7 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-use HistoryAction;
+use MediaWiki\Actions\HistoryAction;
 
 class ZObjectHistoryAction extends HistoryAction {
 	/**

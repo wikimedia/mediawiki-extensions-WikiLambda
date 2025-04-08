@@ -10,7 +10,6 @@
 
 namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
-use JobQueueGroup;
 use MediaWiki\Api\ApiMain;
 use MediaWiki\Extension\WikiLambda\Jobs\CacheTesterResultsJob;
 use MediaWiki\Extension\WikiLambda\Jobs\UpdateImplementationsJob;
@@ -27,6 +26,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedMap;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Json\FormatJson;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;

@@ -16,6 +16,7 @@ use MediaWiki\Extension\WikiLambda\Tests\HooksDataPathMock;
 use MediaWiki\Extension\WikiLambda\Tests\HooksInsertMock;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
@@ -30,6 +31,7 @@ use Wikimedia\Rdbms\SelectQueryBuilder;
  * @covers \MediaWiki\Extension\WikiLambda\Hooks
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectContentHandler
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataRemoval
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectStore
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObject
  * @group Database
@@ -891,6 +893,42 @@ EOT;
 			->fetchResultSet();
 		$size = $res->numRows();
 		$this->assertSame( $size, $numFunctions );
+	}
+
+	public function testSecondaryDataUpdate_cacheWrite() {
+		// Insert ZTestType
+		$this->registerLangs( ZTestType::TEST_LANGS );
+		$this->editPage( ZTestType::TEST_ZID, ZTestType::TEST_ENCODING, 'Insert test object', NS_MAIN );
+		$testObjectTitle = Title::newFromText( ZTestType::TEST_ZID, NS_MAIN );
+
+		// Force deferred updates from other edits so we can conflict with it.
+		DeferredUpdates::doUpdates();
+		$this->assertSame( [], DeferredUpdates::getPendingUpdates() );
+
+		$store = WikiLambdaServices::getZObjectStore();
+		$insertedObject = $store->fetchZObjectByTitle( $testObjectTitle );
+		$this->assertNotFalse( $insertedObject, 'Object was inserted into the DB' );
+
+		$cache = WikiLambdaServices::getZObjectStash();
+		$cachedObject = $cache->get( ZObjectStore::SERVICE_CACHE_KEY_PREFIX . ZTestType::TEST_ZID );
+		$this->assertNotFalse( $cachedObject, 'Object was inserted into the cache' );
+
+		$this->assertSame(
+			$insertedObject->getText(),
+			$cachedObject,
+			'Inserted Object is correctly in the cache'
+		);
+
+		$this->deletePage(
+			$this->getServiceContainer()->getWikiPageFactory()->newFromTitle( $testObjectTitle ),
+			'Test delete',
+			$this->getTestSysop()->getUser()
+		);
+
+		$insertedObject = $store->fetchZObjectByTitle( $testObjectTitle );
+		$this->assertFalse( $insertedObject, 'Object was deleted from the DB' );
+		$cachedObject = $cache->get( ZObjectStore::SERVICE_CACHE_KEY_PREFIX . ZTestType::TEST_ZID );
+		$this->assertFalse( $cachedObject, 'Object was delete from the cache' );
 	}
 
 	// TODO (T367015): Test the uncaught behaviour of MultiContentSave when a clash happens too late

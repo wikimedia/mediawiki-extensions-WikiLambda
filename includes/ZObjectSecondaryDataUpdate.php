@@ -23,6 +23,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Title\Title;
 use Psr\Log\LoggerInterface;
+use Wikimedia\ObjectCache\BagOStuff;
 
 class ZObjectSecondaryDataUpdate extends DataUpdate {
 
@@ -30,6 +31,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 	private LoggerInterface $logger;
 	private ZObjectContent $zObject;
 	private ZObjectStore $zObjectStore;
+	private BagOStuff $zObjectCache;
 
 	/**
 	 * @param Title $title
@@ -40,6 +42,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		$this->zObject = $zObject;
 		$this->zObjectStore = WikiLambdaServices::getZObjectStore();
 		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
+		$this->zObjectCache = WikiLambdaServices::getZObjectStash();
 	}
 
 	public function doUpdate() {
@@ -86,6 +89,13 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 
 		// TODO (T357552): This should write the shortform, encoded type (e.g. `Z881(Z6)`)
 		$ztype = $this->zObject->getZType();
+
+		// Store the ZObject in the object cache, for faster retrieval here and (in future) in the orchestrator
+		$this->zObjectCache->set(
+			ZObjectStore::SERVICE_CACHE_KEY_PREFIX . $zid,
+			$this->zObject->getText(),
+			$this->zObjectCache::TTL_MONTH
+		);
 
 		$innerZObject = $this->zObject->getInnerZObject();
 
