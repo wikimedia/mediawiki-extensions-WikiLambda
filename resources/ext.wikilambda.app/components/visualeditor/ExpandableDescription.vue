@@ -54,10 +54,8 @@ module.exports = exports = defineComponent( {
 		 * Checks if the description is clamped and updates `isExpandable`.
 		 */
 		checkClamped() {
-			this.$nextTick( () => {
-				const element = this.$refs.descriptionRef;
-				this.isExpandable = element && element.scrollHeight > element.clientHeight;
-			} );
+			const element = this.$refs.descriptionRef;
+			this.isExpandable = element && element.scrollHeight > element.clientHeight;
 		},
 		/**
 		 * Toggles the expanded state of the description.
@@ -79,8 +77,11 @@ module.exports = exports = defineComponent( {
 	 * Sets up resize handling and checks clamping on mount.
 	 */
 	mounted() {
+		// Use a small delay to ensure the DOM is fully rendered
+		setTimeout( () => {
+			this.checkClamped();
+		}, 10 );
 		this.throttledResizeHandler = throttle( this.checkClamped, 200 );
-		this.checkClamped();
 		window.addEventListener( 'resize', this.throttledResizeHandler );
 	},
 	/**

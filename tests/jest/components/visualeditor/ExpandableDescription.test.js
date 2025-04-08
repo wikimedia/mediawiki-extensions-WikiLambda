@@ -1,6 +1,7 @@
 'use strict';
 
 const { shallowMount } = require( '@vue/test-utils' );
+const { waitFor } = require( '@testing-library/vue' );
 const ExpandableDescription = require( '../../../../resources/ext.wikilambda.app/components/visualeditor/ExpandableDescription.vue' );
 const LabelData = require( '../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' );
 
@@ -40,7 +41,7 @@ describe( 'ExpandableDescription', () => {
 		expect( wrapper.vm.isExpanded ).toBe( false );
 	} );
 
-	it( 'checks clamping on mount', () => {
+	it( 'checks clamping on mount', async () => {
 		// Spy on the checkClamped method before mounting
 		const checkClampedSpy = jest.spyOn( ExpandableDescription.methods, 'checkClamped' );
 
@@ -50,7 +51,7 @@ describe( 'ExpandableDescription', () => {
 		} );
 
 		// Assert that checkClamped was called
-		expect( checkClampedSpy ).toHaveBeenCalled();
+		await waitFor( () => expect( checkClampedSpy ).toHaveBeenCalled() );
 	} );
 
 	it( 'updates isExpandable when description changes', async () => {
