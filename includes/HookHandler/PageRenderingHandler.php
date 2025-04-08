@@ -10,7 +10,6 @@
 
 namespace MediaWiki\Extension\WikiLambda\HookHandler;
 
-use Article;
 use HtmlArmor;
 use MediaWiki\Config\Config;
 use MediaWiki\Context\IContextSource;
@@ -24,9 +23,10 @@ use MediaWiki\Languages\LanguageNameUtils;
 use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\Linker\LinkTarget;
 use MediaWiki\Output\OutputPage;
+use MediaWiki\Page\Article;
+use MediaWiki\Skin\Skin;
 use MediaWiki\Title\Title;
 use MediaWiki\User\Options\UserOptionsLookup;
-use Skin;
 
 class PageRenderingHandler implements
 	\MediaWiki\Hook\SkinTemplateNavigation__UniversalHook,

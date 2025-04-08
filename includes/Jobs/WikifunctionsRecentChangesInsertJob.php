@@ -9,16 +9,16 @@
 
 namespace MediaWiki\Extension\WikiLambda\Jobs;
 
-use GenericParameterJob;
-use Job;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
+use MediaWiki\JobQueue\GenericParameterJob;
+use MediaWiki\JobQueue\Job;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\RecentChanges\RecentChange;
 use MediaWiki\Title\Title;
 use MediaWiki\User\CentralId\CentralIdLookup;
 use Psr\Log\LoggerInterface;
-use RecentChange;
 
 /**
  * Foo
