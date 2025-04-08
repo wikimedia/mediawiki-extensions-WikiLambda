@@ -704,13 +704,5 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-about__button-languages {
 		margin-top: @spacing-125;
 	}
-
-	.ext-wikilambda-app-about__button-cancel {
-		margin-right: @spacing-50;
-	}
-
-	.ext-wikilambda-app-about__button-publish {
-		margin-right: @spacing-25;
-	}
 }
 </style>
