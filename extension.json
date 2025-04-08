@@ -170,6 +170,22 @@
 			"wikilambda-edit-unit": true
 		}
 	},
+	"RateLimits": {
+		"wikilambda-execute": {
+			"functioneer": [
+				20,
+				60
+			],
+			"user": [
+				5,
+				60
+			],
+			"newbie": [
+				1,
+				60
+			]
+		}
+	},
 	"AddGroups": {
 		"sysop": [
 			"functioneer"
