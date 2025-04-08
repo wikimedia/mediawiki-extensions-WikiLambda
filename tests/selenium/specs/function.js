@@ -29,8 +29,7 @@
  */
 
 'use strict';
-const assert = require( 'assert' ),
-	ListObjectsByType = require( '../pageobjects/special/ListObjectsByType.page.js' ),
+const ListObjectsByType = require( '../pageobjects/special/ListObjectsByType.page.js' ),
 	FunctionForm = require( '../pageobjects/function/FunctionForm.page' ),
 	FunctionPage = require( '../pageobjects/function/Function.page' ),
 	util = require( 'wdio-mediawiki/Util' ),
@@ -107,7 +106,7 @@ describe( 'Function', () => {
 		} );
 
 		it( 'should create a new function and display the function name', async () => {
-			assert.strictEqual( await FunctionPage.functionTitle.getText(), functionTitle );
+			await expect( await FunctionPage.functionTitle.getText() ).toBe( functionTitle );
 		} );
 
 		it( 'should create a new function and display function aliases', async () => {
