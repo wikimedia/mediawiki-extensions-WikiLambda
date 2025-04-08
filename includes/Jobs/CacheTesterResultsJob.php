@@ -9,10 +9,10 @@
 
 namespace MediaWiki\Extension\WikiLambda\Jobs;
 
-use GenericParameterJob;
-use Job;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
+use MediaWiki\JobQueue\GenericParameterJob;
+use MediaWiki\JobQueue\Job;
 use MediaWiki\Logger\LoggerFactory;
 use Psr\Log\LoggerInterface;
 

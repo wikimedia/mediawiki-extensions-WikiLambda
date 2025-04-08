@@ -9,11 +9,11 @@
 
 namespace MediaWiki\Extension\WikiLambda\Jobs;
 
-use GenericParameterJob;
-use Job;
 use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\WikifunctionsClientStore;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
+use MediaWiki\JobQueue\GenericParameterJob;
+use MediaWiki\JobQueue\Job;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
