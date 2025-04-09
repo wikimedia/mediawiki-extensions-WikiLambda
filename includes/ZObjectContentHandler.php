@@ -18,6 +18,7 @@ use MediaWiki\Content\Transform\PreSaveTransformParams;
 use MediaWiki\Content\ValidationParams;
 use MediaWiki\Context\IContextSource;
 use MediaWiki\Context\RequestContext;
+use MediaWiki\Exception\MWContentSerializationException;
 use MediaWiki\Extension\WikiLambda\Diff\ZObjectContentDifferenceEngine;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
@@ -30,7 +31,6 @@ use MediaWiki\MediaWikiServices;
 use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Revision\SlotRenderingProvider;
 use MediaWiki\Title\Title;
-use MWContentSerializationException;
 use StatusValue;
 
 class ZObjectContentHandler extends ContentHandler {

@@ -11,18 +11,18 @@
 
 namespace MediaWiki\Extension\WikiLambda\HookHandler;
 
-use ChangesListBooleanFilter;
-use EnhancedChangesList;
 use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsRecentChangesInsertJob;
 use MediaWiki\Html\FormOptions;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\RecentChanges\ChangesListBooleanFilter;
+use MediaWiki\RecentChanges\EnhancedChangesList;
+use MediaWiki\RecentChanges\OldChangesList;
+use MediaWiki\RecentChanges\RecentChange;
 use MediaWiki\SpecialPage\ChangesListSpecialPage;
 use MediaWiki\User\Options\UserOptionsLookup;
 use MediaWiki\User\User;
-use OldChangesList;
 use Psr\Log\LoggerInterface;
-use RecentChange;
 use Wikimedia\Rdbms\IConnectionProvider;
 
 class ClientChangeHooks implements
