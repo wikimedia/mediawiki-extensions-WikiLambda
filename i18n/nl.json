@@ -10,7 +10,8 @@
 			"Robin van der Vliet",
 			"Romaine",
 			"Sjoerddebruin",
-			"Siebrand"
+			"Siebrand",
+			"ABPMAB"
 		]
 	},
 	"wikilambda-desc": "Voorziet Wikimedia-wiki’s van een wikitekst-parserfunctie waarmee u functies kunt aanroepen die op een centrale wiki worden geschreven, beheerd en geëvalueerd.",

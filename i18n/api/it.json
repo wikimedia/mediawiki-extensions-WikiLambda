@@ -1,10 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
-			"Beta16"
+			"Beta16",
+			"Dv103"
 		]
 	},
 	"apihelp-wikilambda_fetch-param-language": "La lingua in cui restituire i risultati.",
 	"apihelp-wikilambda_function_call-example-timeout": "Invoca una funzione che tenta di essere eseguita per sempre e quindi va in timeout nel valutatore",
+	"apihelp-wikilambda_edit-summary": "Crea o modifica uno ZObject.",
 	"apierror-wikilambda_function_call-general": "Qualcosa è andato storto: '$1'."
 }
