@@ -61,7 +61,7 @@ const errorMixin = {
 		 */
 		getErrorMessage: function ( error ) {
 			// eslint-disable-next-line mediawiki/msg-doc
-			return error.message || this.$i18n( error.code ).text();
+			return error.message || this.$i18n( error.code ).parse();
 		},
 
 		/**
