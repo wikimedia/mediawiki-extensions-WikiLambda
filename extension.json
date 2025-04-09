@@ -65,6 +65,10 @@
 		"WikiLambdaClientWikis": {
 			"description": "List of client wikis for which the repo wiki will trigger updates.",
 			"value": []
+		},
+		"WikiLambdaClientDefaultShowChanges": {
+			"description": "Whether to show Wikifunctions edits on client wikis by default.",
+			"value": false
 		}
 	},
 	"ConfigRegistry": {
@@ -225,7 +229,8 @@
 			"services": [
 				"UserOptionsLookup",
 				"ConnectionProvider",
-				"MainConfig"
+				"MainConfig",
+				"LinkRenderer"
 			]
 		},
 		"PageEditingHandler": {
@@ -253,6 +258,7 @@
 		"EnhancedChangesListModifyLineData": "WikiLambdaClientChangeHooks",
 		"EnhancedChangesListModifyBlockLineData": "WikiLambdaClientChangeHooks",
 		"OldChangesListRecentChangesLine": "WikiLambdaClientChangeHooks",
+		"ChangesListSpecialPageStructuredFilters": "WikiLambdaClientChangeHooks",
 		"ChangesListSpecialPageQuery": "WikiLambdaClientChangeHooks",
 		"GetPreferences": "WikiLambdaClientChangeHooks",
 		"LoadExtensionSchemaUpdates": "WikiLambdaHooks",
@@ -992,8 +998,8 @@
 		"cacheTesterResults": "MediaWiki\\Extension\\WikiLambda\\Jobs\\CacheTesterResultsJob",
 		"updateImplementations": "MediaWiki\\Extension\\WikiLambda\\Jobs\\UpdateImplementationsJob",
 		"wikifunctionsClientFanOutQueue": "MediaWiki\\Extension\\WikiLambda\\Jobs\\WikifunctionsClientFanOutQueueJob",
-		"wikifunctionsClientUsageUpdateJob": "MediaWiki\\Extension\\WikiLambda\\Jobs\\WikifunctionsClientUsageUpdateJob",
-		"WikifunctionsClientRequestJob": "MediaWiki\\Extension\\WikiLambda\\Jobs\\WikifunctionsClientRequestJob",
+		"wikifunctionsClientUsageUpdate": "MediaWiki\\Extension\\WikiLambda\\Jobs\\WikifunctionsClientUsageUpdateJob",
+		"wikifunctionsClientRequest": "MediaWiki\\Extension\\WikiLambda\\Jobs\\WikifunctionsClientRequestJob",
 		"wikifunctionsRecentChangesInsert": "MediaWiki\\Extension\\WikiLambda\\Jobs\\WikifunctionsRecentChangesInsertJob"
 	},
 	"manifest_version": 2

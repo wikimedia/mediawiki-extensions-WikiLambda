@@ -45,19 +45,19 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 		$this->centralIdLookup = MediaWikiServices::getInstance()->getCentralIdLookupFactory()->getNonLocalLookup();
 
 		$this->params = $params;
-
-		$this->logger->debug(
-			__CLASS__ . ' created for {targetZObject}',
-			[
-				'targetZObject' => $params['target']
-			]
-		);
 	}
 
 	public function run(): bool {
 		// What pages would the job be updating?
 		$wikifunctionsClientStore = WikiLambdaServices::getWikifunctionsClientStore();
 		$pagesUsingFunction = $wikifunctionsClientStore->fetchWikifunctionsUsage( $this->params['target'] );
+
+		$this->logger->debug(
+			__CLASS__ . ': Processing a change for {targetZObject}',
+			[
+				'targetZObject' => $this->params['target']
+			]
+		);
 
 		// Work out whether the job is still needed
 		if ( count( $pagesUsingFunction ) === 0 ) {
@@ -97,13 +97,7 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 			// Update-specific stuff
 			'rc_bot' => $this->params['bot'],
 			'rc_timestamp' => wfTimestamp( TS_MW, $this->params['timestamp'] ),
-
-			// Tag this as 'our' edit, so that our custom formatter picks it up
-			'wikifunctions-edit' => true,
 		];
-
-		// Build the comment related to the change
-		$commentData = [];
 
 		$changeData = $this->params['data'];
 		$changeAction = $changeData['action'];
@@ -113,7 +107,8 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 				__CLASS__ . ' triggered for {item} with unrecognised action {action}; data error?',
 				[
 					'item' => $this->params['target'],
-					'action' => $changeAction,
+					'action' => var_export( $this->params ),
+					// 'action' => $changeAction,
 				]
 			);
 			return true;
@@ -127,29 +122,23 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 					// Used messages:
 					// - wikilambda-recentchanges-explanation-delete-function
 					// - wikilambda-recentchanges-explanation-restore-function
-					$commentMessage = wfMessage(
-						'wikilambda-recentchanges-explanation-' . $changeAction . '-function'
-					);
+					$changeData['message'] = "wikilambda-recentchanges-explanation-$changeAction-function";
 					break;
 
 				case ZTypeRegistry::Z_IMPLEMENTATION:
 					// Used messages:
 					// - wikilambda-recentchanges-explanation-delete-implementation
 					// - wikilambda-recentchanges-explanation-restore-implementation
-					$commentMessage = wfMessage(
-						'wikilambda-recentchanges-explanation-' . $changeAction . '-implementation',
-						[ $changeData['target'] ]
-					);
+					$changeData['message'] = "wikilambda-recentchanges-explanation-$changeAction-implementation";
+					$changeData['messageParams'] = [ $changeData['target'] ];
 					break;
 
 				case ZTypeRegistry::Z_TESTER:
 					// Used messages:
 					// - wikilambda-recentchanges-explanation-delete-tester
 					// - wikilambda-recentchanges-explanation-restore-tester
-					$commentMessage = wfMessage(
-						'wikilambda-recentchanges-explanation-' . $changeAction . '-tester',
-						[ $changeData['target'] ]
-					);
+					$changeData['message'] = "wikilambda-recentchanges-explanation-$changeAction-tester";
+					$changeData['messageParams'] = [ $changeData['target'] ];
 					break;
 
 				default:
@@ -194,27 +183,23 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 							// - wikilambda-recentchanges-explanation-disconnect-implementation
 							// - wikilambda-recentchanges-explanation-connect-tester
 							// - wikilambda-recentchanges-explanation-disconnect-tester
-							$commentMessage = wfMessage(
-								'wikilambda-recentchanges-explanation-' . $changeAction . '-' . $typeTouched,
-								[ count( $affected ), $lang->listToText( $affected ) ]
-							);
+							$changeData['message'] = "wikilambda-recentchanges-explanation-$changeAction-$typeTouched";
+							$changeData['messageParams'] = [ count( $affected ), $lang->listToText( $affected ) ];
 							break;
 
 						default:
 							// The edit was to something other than the approved Implementations or Testers; use generic
-							// Used message:
-							// - wikilambda-recentchanges-explanation-edit-function
-							$commentMessage = wfMessage( 'wikilambda-recentchanges-explanation-edit-function' );
+							$changeData['message'] = 'wikilambda-recentchanges-explanation-edit-function';
 							break;
 					}
 					break;
 
 				case ZTypeRegistry::Z_IMPLEMENTATION:
-					$commentMessage = wfMessage( 'wikilambda-recentchanges-explanation-edit-implementation' );
+					$commentMessage = 'wikilambda-recentchanges-explanation-edit-implementation';
 					break;
 
 				case ZTypeRegistry::Z_TESTER:
-					$commentMessage = wfMessage( 'wikilambda-recentchanges-explanation-edit-tester' );
+					$commentMessage = 'wikilambda-recentchanges-explanation-edit-tester';
 					break;
 
 				default:
@@ -230,16 +215,11 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 			}
 		}
 
-		if ( $this->params['summary'] ) {
-			$commentString = ( (bool)$commentMessage ? $commentMessage->plain() . wfMessage( 'colon-separator' ) : '' )
-				. $this->params['summary'];
-		} else {
-			$commentString = (bool)$commentMessage ? $commentMessage->plain() : '';
-		}
+		$comment = $commentStore->createComment( $dbw, $this->params['summary'] ?? '' );
 
-		$commentId = $commentStore->createComment( $dbw, $commentString, $commentData );
-
-		$generalAttributes['rc_comment_id'] = $commentId;
+		// Ideally we'd ask the CommentStore if it has an existing Comment ID for this string and re-use that, but
+		// that facility isn't available, so we'll just insert the raw string as a new field and let RC deal.
+		$generalAttributes['rc_comment'] = $comment->text;
 
 		// Ask CentralAuth for the user ID lookup, if available.
 		$generalAttributes['rc_actor'] = 0;
@@ -254,16 +234,11 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 			$generalAttributes['rc_actor'] = $this->params['user'];
 		}
 
+		// We can't stuff non-strings into the rc_params field, so we need to JSON-ify it
+		$generalAttributes['rc_params'] = json_encode( $changeData );
+
 		foreach ( $pagesUsingFunction as $titleString ) {
 			$title = Title::newFromText( $titleString );
-
-			$this->logger->debug(
-				__METHOD__ . ": Inserting recent change for update '{source}' on page '{target}'",
-				[
-					'source' => $this->params['target'],
-					'target' => $title->getDBkey()
-				]
-			);
 
 			$titleSpecificAttribs = [
 				'rc_namespace' => $title->getNamespace(),
@@ -281,8 +256,22 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 				'rc_last_oldid' => $title->getLatestRevID(),
 			];
 
-			$changeEntry = RecentChange::newFromRow( $generalAttributes + $titleSpecificAttribs );
+			$changeAttributes = $generalAttributes + $titleSpecificAttribs;
+
+			$this->logger->debug(
+				__CLASS__ . ': Inserting a RecentChange for {targetZObject} on page {target}',
+				[
+					'targetZObject' => $this->params['target'],
+					'target' => $titleString
+				]
+			);
+
+			$changeEntry = new RecentChange();
+			$changeEntry->setAttribs( $changeAttributes );
+			$changeEntry->setExtra( $changeData );
 			$changeEntry->save();
 		}
+
+		return true;
 	}
 }

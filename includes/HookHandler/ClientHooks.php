@@ -67,7 +67,11 @@ class ClientHooks implements
 		}
 
 		// We use this hook to clear out cached tracking of Wikifunctions calls, if any.
+		// Any new entries are added by WikifunctionsClientUsageUpdateJob, which runs later.
 		$wikifunctionsClientStore = WikiLambdaServices::getWikifunctionsClientStore();
+		$this->logger->debug( __METHOD__ . ': Clearing usage tracking for {page}', [
+			'page' => $wikiPage->getTitle()->getFullText(),
+		] );
 		$wikifunctionsClientStore->deleteWikifunctionsUsage( $wikiPage->getTitle() );
 	}
 

@@ -247,6 +247,7 @@ class PageEditingHandler implements
 		}
 
 		$newId = $recentChange->getAttribute( 'rc_this_oldid' );
+		$changeData['newId'] = $newId;
 		$newTargetZObject = $this->zObjectStore->fetchZObjectByTitle( $targetTitle, $newId );
 		if ( !$newTargetZObject ) {
 			// This isn't a ZObject, so we don't care.
@@ -262,6 +263,13 @@ class PageEditingHandler implements
 			case ZTypeRegistry::Z_FUNCTION:
 				// For consistency, we'll include this even when it's the Function itself that changed
 				$changeData['function'] = $changedObject;
+				$this->logger->debug(
+					__METHOD__ . ': Handling edit to a Function {obj} revision {rev}',
+					[
+						'obj' => $changedObject,
+						'rev' => $newId
+					]
+				);
 				break;
 
 			case ZTypeRegistry::Z_IMPLEMENTATION:
@@ -281,6 +289,15 @@ class PageEditingHandler implements
 					// This isn't an approved Implementation, so we don't care.
 					return;
 				}
+
+				$this->logger->debug(
+					__METHOD__ . ': Handling edit to a connected Implementation {obj} revision {rev} of Function {fun}',
+					[
+						'obj' => $changedObject,
+						'rev' => $newId,
+						'fun' => $targetFunctionZid
+					]
+				);
 
 				$changeData['function'] = $targetFunctionZid;
 				break;
@@ -303,11 +320,27 @@ class PageEditingHandler implements
 					return;
 				}
 
+				$this->logger->debug(
+					__METHOD__ . ': Handling edit to a connected Tester {obj} revision {rev} of Function {fun}',
+					[
+						'obj' => $changedObject,
+						'rev' => $newId,
+						'fun' => $targetFunctionZid
+					]
+				);
+
 				$changeData['function'] = $targetFunctionZid;
 				break;
 
 			default:
 				// We only care about certain ZObjects
+				$this->logger->debug(
+					__METHOD__ . ': Ignoring edit to an irrelevant Object {obj} revision {rev}',
+					[
+						'obj' => $changedObject,
+						'rev' => $newId
+					]
+				);
 				return;
 		}
 
@@ -373,6 +406,14 @@ class PageEditingHandler implements
 						( $lastPathElement === ZTypeRegistry::Z_MONOLINGUALSTRINGSET_VALUE )
 					) {
 						// Given the above, we don't care about this change, so skip to the next (if any)
+						$this->logger->debug(
+							__METHOD__ . ': Ignoring label-only edit to Object {obj} revision {rev}',
+							[
+								'obj' => $changedObject,
+								'rev' => $newId
+							]
+						);
+
 						unset( $flattedDiffOps[$index] );
 						continue;
 					}
@@ -382,14 +423,6 @@ class PageEditingHandler implements
 
 					// Edits to a Function, mostly additions/removals of Implementations or Testers
 					if ( $newTargetZObject->getZType() === ZTypeRegistry::Z_FUNCTION ) {
-
-						// $lastPathElement will be the key of the Function that was edited, probably Z8K3 (Testers)
-						// or Z8K4 (Implementations), but it could be Z8K1 (Inputs) or Z8K2 (Outputs) if someone has
-						// done an odd kind of edit e.g. via the API.
-
-						if ( !array_key_exists( $lastPathElement, $changeData['operations'] ) ) {
-							$changeData['operations'][$lastPathElement] = [];
-						}
 
 						$changeType = $diffOp['op']->getType();
 
@@ -408,15 +441,17 @@ class PageEditingHandler implements
 						}
 
 						if ( $changeType === 'add' ) {
-							$changeData['operations'][$lastPathElement][$changeType][] = $diffOp['op']->getNewValue();
+							$changeData['operations'][implode( '.', $diffOp['path'] )][$changeType][] =
+								$diffOp['op']->getNewValue();
 						}
 
 						if ( $changeType === 'remove' ) {
-							$changeData['operations'][$lastPathElement][$changeType][] = $diffOp['op']->getOldValue();
+							$changeData['operations'][implode( '.', $diffOp['path'] )][$changeType][] =
+								$diffOp['op']->getOldValue();
 						}
 
 						if ( $changeType === 'change' ) {
-							$changeData['operations'][$lastPathElement][$changeType][] = [
+							$changeData['operations'][implode( '.', $diffOp['path'] )][$changeType][] = [
 								$diffOp['op']->getOldValue(),
 								$diffOp['op']->getNewValue()
 							];
@@ -440,7 +475,7 @@ class PageEditingHandler implements
 						$newTargetZObject->getZType() === ZTypeRegistry::Z_IMPLEMENTATION ||
 						$newTargetZObject->getZType() === ZTypeRegistry::Z_TESTER
 					) {
-						$changeData['operations'][$newTargetZObject->getZType()] = $lastPathElement;
+						$changeData['operations'][$newTargetZObject->getZType()] = implode( '.', $diffOp['path'] );
 
 						$this->logger->debug(
 							__METHOD__ . ': Handled edit of approved Imp/Test on {type} {obj} revision {rev}',
@@ -481,13 +516,13 @@ class PageEditingHandler implements
 				// TODO (T383156): Add labels for this Function for the UX to render (? all languages)
 			}
 		}
+		$changeData['oldId'] = $oldId ?? 0;
 
 		$generalUpdateJob = new WikifunctionsClientFanOutQueueJob( [
 			'target' => $targetPage->getDBkey(),
 			'timestamp' => $recentChange->getAttribute( 'rc_timestamp' ),
 			'summary' => $changeComment,
 			'data' => $changeData,
-			'revision' => $newId,
 			'user' => $recentChange->getPerformerIdentity()->getId(),
 			'bot' => $recentChange->getAttribute( 'rc_bot' ),
 		] );
