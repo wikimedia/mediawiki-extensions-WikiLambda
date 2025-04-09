@@ -7,11 +7,11 @@
 	},
 	"wikilambda-recentchanges-edit-letter": "ফ",
 	"wikilambda-recentchanges-filter-label": "উইকিফাংশন্স সম্পাদনা",
-	"wikilambda-visualeditor-wikifunctionscall-title": "ফাংশন",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "আরও পড়ুন",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "কোনো ফলাফল পাওয়া যায়নি",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "ফাংশন অনুসন্ধান",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "ফলাফল",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "কোনো ফলাফল পাওয়া যায়নি",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "প্রস্তাবিত ফাংশন",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "ইনপুট স্ট্রিং",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "আরও পড়ুন"
+	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "প্রস্তাবিত ফাংশন",
+	"wikilambda-visualeditor-wikifunctionscall-title": "ফাংশন"
 }

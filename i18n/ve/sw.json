@@ -4,8 +4,8 @@
 			"Joeamj"
 		]
 	},
-	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Ingiza maandishi",
-	"wikilambda-visualeditor-wikifunctionscall-error-parser": "Hitilafu Isiyojulikana. [[f:Talk:$1|Ripoti suala]]",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Soma kidogo",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "Soma zaidi",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Soma kidogo"
+	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Ingiza maandishi",
+	"wikilambda-visualeditor-wikifunctionscall-error-parser": "Hitilafu Isiyojulikana. [[f:Talk:$1|Ripoti suala]]"
 }

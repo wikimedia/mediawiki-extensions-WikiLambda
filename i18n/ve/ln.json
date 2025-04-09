@@ -4,14 +4,14 @@
 			"BOKOBA VEROLY"
 		]
 	},
-	"wikilambda-visualeditor-wikifunctionscall-title": "Mosala na yango",
-	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Chargement ya ba données ya Fonction...",
-	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Mosala moko te eponami.",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f: $1 |Mosala]] uta na Misala ya Wiki",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Ba résultats ezwami te",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Mosala ya bolukiluki",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Ba resultat",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Ba résultats ezwami te",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Mosala oyo bapesi",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Nsinga ya kokotisa",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f: $1 |Mosala]] uta na Misala ya Wiki",
-	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Mosala ezali te to ezali na ntina te."
+	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Mosala oyo bapesi",
+	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Mosala ezali te to ezali na ntina te.",
+	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Chargement ya ba données ya Fonction...",
+	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Mosala moko te eponami.",
+	"wikilambda-visualeditor-wikifunctionscall-title": "Mosala na yango"
 }

@@ -4,11 +4,11 @@
 			"Jeeputer"
 		]
 	},
-	"wikilambda-visualeditor-wikifunctionscall-title": "تابع",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|تابع]] از ویکی‌توابع",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "نتیجه‌ای یافت نشد",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "جستجو برای تابع",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "توابع پیشنهادی",
 	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "در حال بارگیری داده‌های تابع...",
 	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "تابعی انتخاب نشده است.",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "جستجو برای تابع",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "نتیجه‌ای یافت نشد",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "توابع پیشنهادی",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|تابع]] از ویکی‌توابع"
+	"wikilambda-visualeditor-wikifunctionscall-title": "تابع"
 }
