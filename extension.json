@@ -56,7 +56,7 @@
 		},
 		"WikiLambdaClientTargetAPI": {
 			"description": "API to target to make function calls (to allow testing against non-standard wikis).",
-			"value": "http://www.wikifunctions.org"
+			"value": "//www.wikifunctions.org"
 		},
 		"WikiLambdaClientWikis": {
 			"description": "List of client wikis for which the repo wiki will trigger updates.",
