@@ -85,6 +85,9 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 
 		// Schedule a job to update the usage tracking to say that we use this function on this page.
 		// We clear out the tracking each time the page is saved, via onPageSaveComplete above.
+
+		// FIXME: This will run whether or not we're a saved edit, or just a stash/edit preview. Fix by moving
+		// to page properties, which are only stored for the current revision?
 		$usageJob = new WikifunctionsClientUsageUpdateJob( [
 			'targetFunction' => $expansion['target'],
 			'targetPageText' => $extApi->getPageConfig()->getLinkTarget()->getDBkey(),

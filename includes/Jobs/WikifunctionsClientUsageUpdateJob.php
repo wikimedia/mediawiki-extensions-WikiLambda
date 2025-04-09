@@ -34,7 +34,7 @@ class WikifunctionsClientUsageUpdateJob extends Job implements GenericParameterJ
 	private int $targetPageNamespace;
 
 	public function __construct( array $params ) {
-		parent::__construct( 'wikifunctionsUsageUpdate', $params );
+		parent::__construct( 'wikifunctionsClientUsageUpdate', $params );
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
 		$this->wikifunctionsClientStore = WikiLambdaServices::getWikifunctionsClientStore();
 
@@ -54,8 +54,6 @@ class WikifunctionsClientUsageUpdateJob extends Job implements GenericParameterJ
 		);
 	}
 
-	// FIXME: Evict from page if cache job finds that parser object doesn't have our flag but
-
 	/**
 	 * @return bool
 	 */
@@ -71,7 +69,7 @@ class WikifunctionsClientUsageUpdateJob extends Job implements GenericParameterJ
 
 		if ( !$this->config->get( 'WikiLambdaEnableClientMode' ) ) {
 			$this->logger->warning(
-				__CLASS__ . ' Triggered for {targetFunction} on {targetPageNS}:{targetPage}; not in client mode.',
+				__CLASS__ . ' triggered for {targetFunction} on {targetPageNS}:{targetPage}; not in client mode.',
 				[
 					'targetFunction' => $this->targetFunction,
 					'targetPage' => $this->targetPageText,
@@ -82,6 +80,9 @@ class WikifunctionsClientUsageUpdateJob extends Job implements GenericParameterJ
 			// Nothing for us to do.
 			return true;
 		}
+
+		// FIXME: Don't proceed but evict from page if cache job finds that parser object doesn't have our flag? We
+		// have set it (on the PC, not Title) via $extApi->getMetadata()->setExtensionData( 'wikilambda', 'present' );
 
 		$success = $this->wikifunctionsClientStore->insertWikifunctionsUsage(
 			$this->targetFunction,

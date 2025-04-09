@@ -15,11 +15,12 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualStringSet;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
+use MediaWikiUnitTestCase;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject
  */
-class ZPersistentObjectTest extends \MediaWikiUnitTestCase {
+class ZPersistentObjectTest extends MediaWikiUnitTestCase {
 
 	/**
 	 * @dataProvider provideIsValid

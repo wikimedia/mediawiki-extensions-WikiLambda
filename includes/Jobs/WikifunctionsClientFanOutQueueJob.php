@@ -29,7 +29,7 @@ class WikifunctionsClientFanOutQueueJob extends Job implements GenericParameterJ
 		// This job, triggered from RecentChanges activity on the repo wiki, takes the edit and fans it out to each
 		// relevant client wiki to process locally.
 
-		parent::__construct( 'wikifunctionsClientFanOutQueueJob', $params );
+		parent::__construct( 'wikifunctionsClientFanOutQueue', $params );
 
 		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
 		$this->jobQueueGroupFactory = MediaWikiServices::getInstance()->getJobQueueGroupFactory();
@@ -70,10 +70,9 @@ class WikifunctionsClientFanOutQueueJob extends Job implements GenericParameterJ
 			// The timestamp of the edit, e.g. '20210101000000'
 			'timestamp' => $this->params['timestamp'],
 			// The edit summary of the edit on the repo wiki
-			// TODO (T383156): This should also include the parameters for information about the change
 			'summary' => $this->params['summary'],
-			// The revision ID of the edit on the repo wiki
-			'revision' => $this->params['revision'],
+			// Structured data about the edit
+			'data' => $this->params['data'],
 			// The user ID of the user that made the edit on the repo wiki
 			'user' => $this->params['user'],
 			// Whether the user that made the edit on the repo wiki did so as a bot

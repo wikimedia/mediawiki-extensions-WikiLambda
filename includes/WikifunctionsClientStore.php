@@ -32,7 +32,7 @@ class WikifunctionsClientStore {
 		$dbw->newInsertQueryBuilder()
 			->insertInto( 'wikifunctionsclient_usage' )
 			->row( [
-				'wfcu_targetPage' => $targetPage->getDBkey(),
+				'wfcu_targetPage' => $targetPage->getPrefixedText(),
 				'wfcu_targetFunction' => $targetFunction,
 			] )
 			->set( [

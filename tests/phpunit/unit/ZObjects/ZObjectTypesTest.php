@@ -25,11 +25,12 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
+use MediaWikiUnitTestCase;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObject
  */
-class ZObjectTypesTest extends \MediaWikiUnitTestCase {
+class ZObjectTypesTest extends MediaWikiUnitTestCase {
 
 	/**
 	 * @dataProvider provideZObjectTypes
