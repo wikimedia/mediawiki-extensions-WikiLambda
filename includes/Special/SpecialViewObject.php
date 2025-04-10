@@ -23,6 +23,7 @@ use MediaWiki\Output\OutputPage;
 use MediaWiki\Parser\ParserOptions;
 use MediaWiki\SpecialPage\SpecialPage;
 use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use MediaWiki\Utils\UrlUtils;
 
 class SpecialViewObject extends SpecialPage {
@@ -59,6 +60,20 @@ class SpecialViewObject extends SpecialPage {
 	 */
 	public function getDescription() {
 		return $this->msg( 'wikilambda-special-viewobject' );
+	}
+
+	/**
+	 * @inheritDoc
+	 *
+	 * @param User $user
+	 * @return bool
+	 */
+	public function userCanExecute( User $user ) {
+		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
+			// No usage allowed on client-mode wikis.
+			return false;
+		}
+		return parent::userCanExecute( $user );
 	}
 
 	/**
