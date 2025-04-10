@@ -108,6 +108,10 @@ class SpecialListFunctionsByTests extends SpecialPage {
 	 * @inheritDoc
 	 */
 	public function execute( $subpage ) {
+		if ( !$this->userCanExecute( $this->getUser() ) ) {
+			$this->displayRestrictionError();
+		}
+
 		// Get and validate page parameters
 		[ $min, $max, $connected, $pending, $pass, $fail, $excludePreDefined ] = $this->getParameters();
 
