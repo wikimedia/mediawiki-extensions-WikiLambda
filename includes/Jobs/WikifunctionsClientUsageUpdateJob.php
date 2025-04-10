@@ -42,13 +42,14 @@ class WikifunctionsClientUsageUpdateJob extends Job implements GenericParameterJ
 
 		$this->targetFunction = $params['targetFunction'];
 		$this->targetPageText = $params['targetPageText'];
+		$this->targetPageNamespace = $params['targetPageNamespace'];
 
 		$this->logger->debug(
-			__CLASS__ . ' created for {targetFunction} on {targetPage}',
+			__CLASS__ . ' created for {targetFunction} on {targetPageNS}:{targetPage}',
 			[
 				'targetFunction' => $this->targetFunction,
-				'targetPageText' => $this->targetPageText,
-				'targetPageNamespace' => $this->targetPageNamespace,
+				'targetPage' => $this->targetPageText,
+				'targetPageNS' => $this->targetPageNamespace,
 			]
 		);
 	}
@@ -60,21 +61,21 @@ class WikifunctionsClientUsageUpdateJob extends Job implements GenericParameterJ
 	 */
 	public function run() {
 		$this->logger->debug(
-			__CLASS__ . ' initiated for {targetFunction} on {targetPage}',
+			__CLASS__ . ' initiated for {targetFunction} on {targetPageNS}:{targetPage}',
 			[
 				'targetFunction' => $this->targetFunction,
-				'targetPageText' => $this->targetPageText,
-				'targetPageNamespace' => $this->targetPageNamespace,
+				'targetPage' => $this->targetPageText,
+				'targetPageNS' => $this->targetPageNamespace,
 			]
 		);
 
 		if ( !$this->config->get( 'WikiLambdaEnableClientMode' ) ) {
 			$this->logger->warning(
-				__CLASS__ . ' Triggered for {targetFunction} on {targetPage}, but skipped as not in client mode',
+				__CLASS__ . ' Triggered for {targetFunction} on {targetPageNS}:{targetPage}; not in client mode.',
 				[
 					'targetFunction' => $this->targetFunction,
-					'targetPageText' => $this->targetPageText,
-					'targetPageNamespace' => $this->targetPageNamespace,
+					'targetPage' => $this->targetPageText,
+					'targetPageNS' => $this->targetPageNamespace,
 				]
 			);
 
@@ -89,20 +90,20 @@ class WikifunctionsClientUsageUpdateJob extends Job implements GenericParameterJ
 
 		if ( $success ) {
 			$this->logger->debug(
-				__CLASS__ . ' Updated usage table for {targetFunction} on {targetPage}',
+				__CLASS__ . ' Updated usage table for {targetFunction} on {targetPageNS}:{targetPage}',
 				[
 					'targetFunction' => $this->targetFunction,
-					'targetPageText' => $this->targetPageText,
-					'targetPageNamespace' => $this->targetPageNamespace,
+					'targetPage' => $this->targetPageText,
+					'targetPageNS' => $this->targetPageNamespace,
 				]
 			);
 		} else {
 			$this->logger->info(
-				__CLASS__ . ' Didn\'t update usage table for {targetFunction} on {targetPage}, maybe already there',
+				__CLASS__ . ' Didn\'t update usage for {targetFunction} on {targetPageNS}:{targetPage}; already there?',
 				[
 					'targetFunction' => $this->targetFunction,
-					'targetPageText' => $this->targetPageText,
-					'targetPageNamespace' => $this->targetPageNamespace,
+					'targetPage' => $this->targetPageText,
+					'targetPageNS' => $this->targetPageNamespace,
 				]
 			);
 
