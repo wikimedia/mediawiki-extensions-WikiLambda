@@ -5,7 +5,7 @@
 		]
 	},
 	"wikilambda-performtest-error-nonimplementation": "Erè nan tès ou sot fè a: ' $1 ' se pa yon aplikasyon.",
-	"wikilambda-publish-input-and-output-changed-impact-prompt": "<p>Ou chanje bwat pou antre ak kalite soti fonksyon sa a. <strong>Tout aplikasyon ak tès ki egziste deja yo pral detache ak fonksyon sa a.</strong> Èske ou vle kontinye?</p>",
-	"wikilambda-publish-input-changed-impact-prompt": "<p>Ou chanje bwat pou antre nan fonksyon sa a. <strong>Tout aplikasyon ak tès ki egziste deja yo pral detache ak fonksyon sa a.</strong> Èske ou vle kontinye?</p>",
-	"wikilambda-publish-output-changed-impact-prompt": "<p>Ou chanje kalite pwodiksyon fonksyon sa a. <strong>Tout aplikasyon ak tès ki egziste deja yo pral detache ak fonksyon sa a.</strong> Èske ou vle kontinye?</p>"
+	"wikilambda-publish-input-and-output-changed-impact-prompt": "Ou chanje bwat pou antre ak kalite soti fonksyon sa a. <strong>Tout aplikasyon ak tès ki egziste deja yo pral detache ak fonksyon sa a.</strong> Èske ou vle kontinye?",
+	"wikilambda-publish-input-changed-impact-prompt": "Ou chanje bwat pou antre nan fonksyon sa a. <strong>Tout aplikasyon ak tès ki egziste deja yo pral detache ak fonksyon sa a.</strong> Èske ou vle kontinye?",
+	"wikilambda-publish-output-changed-impact-prompt": "Ou chanje kalite pwodiksyon fonksyon sa a. <strong>Tout aplikasyon ak tès ki egziste deja yo pral detache ak fonksyon sa a.</strong> Èske ou vle kontinye?"
 }
