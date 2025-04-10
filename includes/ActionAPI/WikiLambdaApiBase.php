@@ -144,13 +144,20 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		$zObjectAsString = json_encode( $zObjectAsStdClass );
 
 		if ( $zObjectAsStdClass->Z1K1 !== 'Z7' && $zObjectAsStdClass->Z1K1->Z9K1 !== 'Z7' ) {
+			$this->getLogger()->info(
+				__METHOD__ . ' prevented from executing request "{request}" for user "{user}", not a valid Z7',
+				[
+					'request' => $zObjectAsString,
+					'user' => $this->getContext()->getAuthority()->getUser()->getName(),
+				]
+			);
 			$this->dieWithError( [ "apierror-wikilambda_function_call-not-a-function" ], null, null, 400 );
 		}
 
 		$this->getLogger()->debug(
 			__METHOD__ . ' called',
 			[
-				'zObject' => $zObjectAsString,
+				'request' => $zObjectAsString,
 				'validate' => $validate,
 			]
 		);
@@ -158,6 +165,13 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		// Unlike the Special pages, we don't have a helpful userCanExecute() method
 		if ( !$this->getContext()->getAuthority()->isAllowed( 'wikilambda-execute' ) ) {
 			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
+			$this->getLogger()->info(
+				__METHOD__ . ' prevented from executing for user "{user}", user not allowed',
+				[
+					'request' => $zObjectAsString,
+					'user' => $this->getContext()->getAuthority()->getUser()->getName(),
+				]
+			);
 			self::dieWithZError( $zError, 403 );
 		}
 
@@ -186,8 +200,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			$this->getLogger()->debug(
 				__METHOD__ . ' executed successfully',
 				[
-					'zObject' => $zObjectAsString,
-					'validate' => $validate,
+					'request' => $zObjectAsString,
 					'response' => $response,
 				]
 			);
@@ -197,6 +210,15 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			try {
 				$responseObject = ZObjectFactory::create( $responseContents );
 			} catch ( ZErrorException $e ) {
+				$this->getLogger()->error(
+					__METHOD__ . ' failed to execute, server response error: {exception}',
+					[
+						'request' => $zObjectAsString,
+						'response' => $response,
+						'exception' => $e,
+					]
+				);
+
 				$this->dieWithError(
 					[
 						'apierror-wikilambda_function_call-response-malformed',
@@ -208,23 +230,36 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope $responseObject';
 			return $responseObject;
 		} catch ( ConnectException $exception ) {
+			$this->getLogger()->error(
+				__METHOD__ . ' failed to execute, server connection error: {exception}',
+				[
+					'request' => $zObjectAsString,
+					'exception' => $exception,
+				]
+			);
 			$this->dieWithError(
 				[ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ],
 				null, null, 503
 			);
 		} catch ( ClientException | ServerException $exception ) {
 			if ( $exception->getResponse()->getStatusCode() === 404 ) {
+				$this->getLogger()->error(
+					__METHOD__ . ' failed to execute, server not found error: {exception}',
+					[
+						'request' => $zObjectAsString,
+						'exception' => $exception,
+					]
+				);
 				$this->dieWithError(
 					[ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ],
 					null, null, 503
 				);
 			}
 
-			$this->getLogger()->warning(
+			$this->getLogger()->error(
 				__METHOD__ . ' failed to execute with a ClientException/ServerException: {exception}',
 				[
-					'zObject' => $zObjectAsString,
-					'validate' => $validate,
+					'request' => $zObjectAsString,
 					'exception' => $exception,
 				]
 			);
@@ -237,8 +272,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			$this->getLogger()->warning(
 				__METHOD__ . ' failed to execute with a RequestTimeoutException: {exception}',
 				[
-					'zObject' => $zObjectAsString,
-					'validate' => $validate,
+					'request' => $zObjectAsString,
 					'exception' => $exception,
 				]
 			);
@@ -253,8 +287,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			$this->getLogger()->debug(
 				__METHOD__ . ' failed to execute with a ApiUsageException: {exception}',
 				[
-					'zObject' => $zObjectAsString,
-					'validate' => $validate,
+					'request' => $zObjectAsString,
 					'exception' => $exception,
 				]
 			);
@@ -269,8 +302,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			$this->getLogger()->debug(
 				__METHOD__ . ' failed to execute with a ZErrorException: {exception}',
 				[
-					'zObject' => $zObjectAsString,
-					'validate' => $validate,
+					'request' => $zObjectAsString,
 					'exception' => $exception,
 				]
 			);
@@ -284,8 +316,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			$this->getLogger()->warning(
 				__METHOD__ . ' failed to execute with a general Exception: {exception}',
 				[
-					'zObject' => $zObjectAsString,
-					'validate' => $validate,
+					'request' => $zObjectAsString,
 					'exception' => $exception,
 				]
 			);
