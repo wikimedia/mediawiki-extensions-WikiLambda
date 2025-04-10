@@ -11,7 +11,8 @@
 			"Sabas88",
 			"Sannita",
 			"Sofia Stecchi",
-			"Stefano"
+			"Stefano",
+			"Dv103"
 		]
 	},
 	"wikilambda-desc": "Fornisce agli wiki di Wikimedia una funzione di parsing del wikitesto che permette di eseguire funzioni scritte, gestite ed eseguite su un wiki centralizzato.",
@@ -206,7 +207,7 @@
 	"wikilambda-functioncall-metadata-programming-language-version": "Versione",
 	"wikilambda-functioncall-metadata-execution-debug-logs": "Registri di esecuzione",
 	"wikilambda-functioncall-metadata-expected-result": "Risultato atteso",
-	"wikilambda-functioncall-metadata-actual-result": "Risultato attuale",
+	"wikilambda-functioncall-metadata-actual-result": "Risultato effettivo",
 	"wikilambda-functioncall-error": "Errore di chiamata alla funzione: $1",
 	"wikilambda-functioncall-error-category": "Pagine con errori nelle chiamate a Wikifunzioni",
 	"wikilambda-functioncall-error-category-desc": "Pagine con chiamate a Wikifunzioni che restituiscono un errore generale",

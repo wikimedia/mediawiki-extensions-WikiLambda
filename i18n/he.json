@@ -215,7 +215,7 @@
 	"wikilambda-functioncall-error-nonfunction-category-desc": "דפים עם ניסיונות קריאה לוויקיפונקציות עם עצם שאינו פונקציה",
 	"wikilambda-functioncall-error-nonstringoutput": "שגיאה בקריאה לפונקציה: פונקציה ששמה \"$1\" אינה פולטת מחרוזת שאפשר להציג בדף",
 	"wikilambda-functioncall-error-nonstringoutput-category": "דפים עם קריאות לוויקיפונקציות שיוצרים עצמים שאינם מחרוזת",
-	"wikilambda-functioncall-error-nonstringoutput-category-desc": "דפים שמנסים לקרוא לוויקיפונקצמות עם פונקציית Z שאינה מחזירה מחרוזת",
+	"wikilambda-functioncall-error-nonstringoutput-category-desc": "דפים שמנסים לקרוא לוויקיפונקציות עם פונקציה שאינה מחזירה מחרוזת",
 	"wikilambda-functioncall-error-nonstringinput": "שגיאה בקריאה לפונקציה: פונקציה ששמה \"$1\" מקבלת \"$3\" במקום מחרוזת בתור הקלט \"$2\", ואי־אפשר לקרוא לה",
 	"wikilambda-functioncall-error-nonstringinput-category": "דפים עם קריאות לוויקיפונקציות שמשתמשות בעצמים שאינם מחרוזות",
 	"wikilambda-functioncall-error-nonstringinput-category-desc": "דפים שמנסים לקרוא לוויקיפונקציות עם פונקציה שאינה מקבלת מחרוזת",
