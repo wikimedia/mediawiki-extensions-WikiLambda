@@ -14,6 +14,7 @@ use MediaWiki\Cache\LinkBatchFactory;
 use MediaWiki\Languages\LanguageNameUtils;
 use MediaWiki\Parser\ParserOptions;
 use MediaWiki\SpecialPage\SpecialPage;
+use MediaWiki\User\User;
 
 class SpecialListDuplicateObjectNames extends SpecialPage {
 	private LanguageNameUtils $languageNameUtils;
@@ -24,6 +25,7 @@ class SpecialListDuplicateObjectNames extends SpecialPage {
 		LinkBatchFactory $linkBatchFactory
 	) {
 		parent::__construct( 'ListDuplicateObjectNames' );
+
 		$this->languageNameUtils = $languageNameUtils;
 		$this->linkBatchFactory = $linkBatchFactory;
 	}
@@ -41,6 +43,26 @@ class SpecialListDuplicateObjectNames extends SpecialPage {
 	 */
 	public function getDescription() {
 		return $this->msg( 'wikilambda-special-listduplicateobjectlabels' );
+	}
+
+	/** @inheritDoc */
+	public function isListed() {
+		// No usage allowed on client-mode wikis.
+		return $this->getConfig()->get( 'WikiLambdaEnableRepoMode' );
+	}
+
+	/**
+	 * @inheritDoc
+	 *
+	 * @param User $user
+	 * @return bool
+	 */
+	public function userCanExecute( User $user ) {
+		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
+			// No usage allowed on client-mode wikis.
+			return false;
+		}
+		return parent::userCanExecute( $user );
 	}
 
 	/**

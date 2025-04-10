@@ -20,6 +20,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\HTMLForm\HTMLForm;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\SpecialPage\SpecialPage;
+use MediaWiki\User\User;
 
 class SpecialListMissingLabels extends SpecialPage {
 
@@ -33,6 +34,7 @@ class SpecialListMissingLabels extends SpecialPage {
 	 */
 	public function __construct( ZObjectStore $zObjectStore, LanguageFallback $languageFallback ) {
 		parent::__construct( 'ListMissingLabels' );
+
 		$this->zObjectStore = $zObjectStore;
 		$this->languageFallback = $languageFallback;
 		$this->langRegistry = ZLangRegistry::singleton();
@@ -51,6 +53,26 @@ class SpecialListMissingLabels extends SpecialPage {
 	 */
 	public function getDescription() {
 		return $this->msg( 'wikilambda-special-missinglabels' );
+	}
+
+	/** @inheritDoc */
+	public function isListed() {
+		// No usage allowed on client-mode wikis.
+		return $this->getConfig()->get( 'WikiLambdaEnableRepoMode' );
+	}
+
+	/**
+	 * @inheritDoc
+	 *
+	 * @param User $user
+	 * @return bool
+	 */
+	public function userCanExecute( User $user ) {
+		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
+			// No usage allowed on client-mode wikis.
+			return false;
+		}
+		return parent::userCanExecute( $user );
 	}
 
 	/**
