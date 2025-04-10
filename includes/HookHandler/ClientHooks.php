@@ -145,6 +145,8 @@ class ClientHooks implements
 				'packageFiles' => $files,
 				'messages' => [
 					'wikilambda-suggested-functions.json',
+					'wikilambda-visualeditor-wikifunctionscall-ce-loading',
+					'wikilambda-visualeditor-wikifunctionscall-ce-abort',
 					'wikilambda-visualeditor-wikifunctionscall-title',
 					'wikilambda-visualeditor-wikifunctionscall-popup-loading',
 					'wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results',
@@ -164,6 +166,9 @@ class ClientHooks implements
 					'wikilambda-visualeditor-wikifunctionscall-no-name',
 					'wikilambda-visualeditor-wikifunctionscall-no-description',
 					'wikilambda-visualeditor-wikifunctionscall-no-input-label',
+				],
+				'styles' => [
+					'ext.wikilambda.visualeditor.less'
 				]
 			];
 
