@@ -58,6 +58,12 @@ class SpecialCreateObject extends SpecialPage {
 		return $description;
 	}
 
+	/** @inheritDoc */
+	public function isListed() {
+		// No usage allowed on client-mode wikis.
+		return $this->getConfig()->get( 'WikiLambdaEnableRepoMode' );
+	}
+
 	/**
 	 * @inheritDoc
 	 *

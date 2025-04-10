@@ -36,6 +36,12 @@ class SpecialRunFunction extends SpecialPage {
 		return $this->msg( 'wikilambda-special-runfunction' );
 	}
 
+	/** @inheritDoc */
+	public function isListed() {
+		// No usage allowed on client-mode wikis.
+		return $this->getConfig()->get( 'WikiLambdaEnableRepoMode' );
+	}
+
 	/**
 	 * @inheritDoc
 	 *

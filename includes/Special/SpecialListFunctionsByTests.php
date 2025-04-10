@@ -16,6 +16,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\HTMLForm\HTMLForm;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\SpecialPage\SpecialPage;
+use MediaWiki\User\User;
 
 class SpecialListFunctionsByTests extends SpecialPage {
 
@@ -29,6 +30,7 @@ class SpecialListFunctionsByTests extends SpecialPage {
 	 */
 	public function __construct( ZObjectStore $zObjectStore, LanguageFallback $languageFallback ) {
 		parent::__construct( 'ListFunctionsByTests' );
+
 		$this->zObjectStore = $zObjectStore;
 		$this->languageFallback = $languageFallback;
 		$this->langRegistry = ZLangRegistry::singleton();
@@ -47,6 +49,26 @@ class SpecialListFunctionsByTests extends SpecialPage {
 	 */
 	public function getDescription() {
 		return $this->msg( 'wikilambda-special-functionsbytests' );
+	}
+
+	/** @inheritDoc */
+	public function isListed() {
+		// No usage allowed on client-mode wikis.
+		return $this->getConfig()->get( 'WikiLambdaEnableRepoMode' );
+	}
+
+	/**
+	 * @inheritDoc
+	 *
+	 * @param User $user
+	 * @return bool
+	 */
+	public function userCanExecute( User $user ) {
+		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
+			// No usage allowed on client-mode wikis.
+			return false;
+		}
+		return parent::userCanExecute( $user );
 	}
 
 	/**
