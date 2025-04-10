@@ -40,7 +40,7 @@ class SpecialViewObject extends SpecialPage {
 		UrlUtils $urlUtils,
 		ZObjectStore $zObjectStore
 	) {
-		parent::__construct( 'ViewObject', 'view', false );
+		parent::__construct( 'ViewObject', 'read', false );
 		$this->contentRenderer = $contentRenderer;
 		$this->languageFactory = $languageFactory;
 		$this->urlUtils = $urlUtils;
@@ -80,6 +80,10 @@ class SpecialViewObject extends SpecialPage {
 	 * @inheritDoc
 	 */
 	public function execute( $subPage ) {
+		if ( !$this->userCanExecute( $this->getUser() ) ) {
+			$this->displayRestrictionError();
+		}
+
 		$outputPage = $this->getOutput();
 
 		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {

@@ -111,6 +111,10 @@ class SpecialListObjectsByType extends SpecialPage {
 	 * @inheritDoc
 	 */
 	public function execute( $subpage ) {
+		if ( !$this->userCanExecute( $this->getUser() ) ) {
+			$this->displayRestrictionError();
+		}
+
 		// Get and validate page parameters
 		[ $type, $orderby, $excludePreDefined ] = $this->getParameters( $subpage );
 

@@ -69,6 +69,10 @@ class SpecialListDuplicateObjectNames extends SpecialPage {
 	 * @inheritDoc
 	 */
 	public function execute( $ignoredSubPage ) {
+		if ( !$this->userCanExecute( $this->getUser() ) ) {
+			$this->displayRestrictionError();
+		}
+
 		$this->setHeaders();
 		$this->outputHeader( 'wikilambda-special-listduplicateobjectlabels-summary' );
 
