@@ -85,7 +85,8 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		// We clear out the tracking each time the page is saved, via onPageSaveComplete above.
 		$usageJob = new WikifunctionsClientUsageUpdateJob( [
 			'targetFunction' => $expansion['target'],
-			'targetPage' => $extApi->getPageConfig()->getLinkTarget()
+			'targetPageText' => $extApi->getPageConfig()->getLinkTarget()->getDBkey(),
+			'targetPageNamespace' => $extApi->getPageConfig()->getLinkTarget()->getNamespace()
 		] );
 		$this->jobQueueGroup->lazyPush( $usageJob );
 

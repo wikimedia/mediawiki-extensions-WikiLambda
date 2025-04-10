@@ -30,7 +30,8 @@ class WikifunctionsClientUsageUpdateJob extends Job implements GenericParameterJ
 	private Config $config;
 
 	private string $targetFunction;
-	private Title $targetPage;
+	private string $targetPageText;
+	private int $targetPageNamespace;
 
 	public function __construct( array $params ) {
 		parent::__construct( 'wikifunctionsUsageUpdate', $params );
@@ -40,13 +41,14 @@ class WikifunctionsClientUsageUpdateJob extends Job implements GenericParameterJ
 		$this->config = MediaWikiServices::getInstance()->getMainConfig();
 
 		$this->targetFunction = $params['targetFunction'];
-		$this->targetPage = $params['targetPage'];
+		$this->targetPageText = $params['targetPageText'];
 
 		$this->logger->debug(
 			__CLASS__ . ' created for {targetFunction} on {targetPage}',
 			[
 				'targetFunction' => $this->targetFunction,
-				'targetPage' => $this->targetPage->getPrefixedText()
+				'targetPageText' => $this->targetPageText,
+				'targetPageNamespace' => $this->targetPageNamespace,
 			]
 		);
 	}
@@ -57,12 +59,22 @@ class WikifunctionsClientUsageUpdateJob extends Job implements GenericParameterJ
 	 * @return bool
 	 */
 	public function run() {
+		$this->logger->debug(
+			__CLASS__ . ' initiated for {targetFunction} on {targetPage}',
+			[
+				'targetFunction' => $this->targetFunction,
+				'targetPageText' => $this->targetPageText,
+				'targetPageNamespace' => $this->targetPageNamespace,
+			]
+		);
+
 		if ( !$this->config->get( 'WikiLambdaEnableClientMode' ) ) {
 			$this->logger->warning(
 				__CLASS__ . ' Triggered for {targetFunction} on {targetPage}, but skipped as not in client mode',
 				[
 					'targetFunction' => $this->targetFunction,
-					'targetPage' => $this->targetPage->getPrefixedText()
+					'targetPageText' => $this->targetPageText,
+					'targetPageNamespace' => $this->targetPageNamespace,
 				]
 			);
 
@@ -72,7 +84,7 @@ class WikifunctionsClientUsageUpdateJob extends Job implements GenericParameterJ
 
 		$success = $this->wikifunctionsClientStore->insertWikifunctionsUsage(
 			$this->targetFunction,
-			$this->targetPage
+			Title::newFromText( $this->targetPageText, $this->targetPageNamespace )
 		);
 
 		if ( $success ) {
@@ -80,7 +92,8 @@ class WikifunctionsClientUsageUpdateJob extends Job implements GenericParameterJ
 				__CLASS__ . ' Updated usage table for {targetFunction} on {targetPage}',
 				[
 					'targetFunction' => $this->targetFunction,
-					'targetPage' => $this->targetPage->getPrefixedText()
+					'targetPageText' => $this->targetPageText,
+					'targetPageNamespace' => $this->targetPageNamespace,
 				]
 			);
 		} else {
@@ -88,7 +101,8 @@ class WikifunctionsClientUsageUpdateJob extends Job implements GenericParameterJ
 				__CLASS__ . ' Didn\'t update usage table for {targetFunction} on {targetPage}, maybe already there',
 				[
 					'targetFunction' => $this->targetFunction,
-					'targetPage' => $this->targetPage->getPrefixedText()
+					'targetPageText' => $this->targetPageText,
+					'targetPageNamespace' => $this->targetPageNamespace,
 				]
 			);
 
