@@ -5,6 +5,7 @@
 			"McDutchie"
 		]
 	},
+	"wikilambda-fragment-pending": "⏳ Functie wordt aangeroepen…",
 	"wikilambda-recentchanges-edit-legend": "Bewerking vanuit Wikifuncties",
 	"wikilambda-recentchanges-edit-letter": "F",
 	"wikilambda-recentchanges-edit-title": "Wikifuncties-bewerking",
@@ -37,6 +38,10 @@
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Bewerk de functie om ontbrekende of foutieve waarden te repareren.",
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Geen optie gekozen.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser": "Onbekende fout. [[f:Talk:$1|Probleem melden]]",
+	"wikilambda-visualeditor-wikifunctionscall-info-missing-content": "Help mee met het vertalen inhoud op [[f:$1|Wikifuncties]] die in uw taal nog ontbreekt.",
+	"wikilambda-visualeditor-wikifunctionscall-no-description": "Geen beschrijving",
+	"wikilambda-visualeditor-wikifunctionscall-no-input-label": "Geen label",
+	"wikilambda-visualeditor-wikifunctionscall-no-name": "Geen naam",
 	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Functiegegevens worden geladen",
 	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Geen functie geselecteerd.",
 	"wikilambda-visualeditor-wikifunctionscall-title": "Functie"
