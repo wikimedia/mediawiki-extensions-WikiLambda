@@ -51,8 +51,12 @@
 			"value": false
 		},
 		"WikiLambdaEnableClientMode": {
-			"description": "If true, enable the the 'client' mode of WikiLambda, providing the {{#function:…}} parser function to embed calls to Wikifunctions.",
+			"description": "If true, enable the 'client' mode of WikiLambda, providing the {{#function:…}} parser function to embed calls to Wikifunctions.",
 			"value": true
+		},
+		"WikiLambdaClientModeOffline": {
+			"description": "If true, have the 'client' mode of WikiLambda emit a disabled state and use cached values, but not try to run new Functions calls.",
+			"value": false
 		},
 		"WikiLambdaClientTargetAPI": {
 			"description": "API to target to make function calls (to allow testing against non-standard wikis).",

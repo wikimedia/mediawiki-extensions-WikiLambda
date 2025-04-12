@@ -14,6 +14,7 @@ namespace MediaWiki\Extension\WikiLambda\ParserFunction;
 use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientRequestJob;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientUsageUpdateJob;
+use MediaWiki\Html\Html;
 use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
 use Psr\Log\LoggerInterface;
@@ -21,6 +22,7 @@ use Wikimedia\ObjectCache\BagOStuff;
 use Wikimedia\Parsoid\Ext\Arguments;
 use Wikimedia\Parsoid\Ext\ParsoidExtensionAPI;
 use Wikimedia\Parsoid\Ext\PFragmentHandler;
+use Wikimedia\Parsoid\Fragments\HtmlPFragment;
 use Wikimedia\Parsoid\Fragments\PFragment;
 use Wikimedia\Parsoid\Fragments\WikitextPFragment;
 
@@ -48,8 +50,8 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 	public function sourceToFragment( ParsoidExtensionAPI $extApi, Arguments $callArgs, bool $tagSyntax ) {
 		// Note: We can't hint this as `: PFragment|AsyncResult` as we're still in PHP 7.4-land
 
+		// If client mode isn't enabled on this wiki, there's nothing to do, just show an error message
 		if ( !$this->config->get( 'WikiLambdaEnableClientMode' ) ) {
-			// Nothing for us to do, show an error message in a (non-pending, final) fragment.
 			// TODO: Make this a proper error box or inline error.
 			$errorMsgString = wfMessage(
 				'wikilambda-functioncall-error-message',
@@ -207,6 +209,13 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 
 		// At this point, we know our request hasn't yet been stored in the cache, so we need to trigger it,
 		// and return a placeholder for now
+
+		// Check if SRE have set this wiki (probably all wikis) temporarily to not try to use Wikifunctions.
+		if ( $this->config->get( 'WikiLambdaClientModeOffline' ) ) {
+			return HtmlPFragment::newFromHtmlString( Html::errorBox(
+				wfMessage( 'wikilambda-fragment-disabled' )->text()
+			), null );
+		}
 
 		// This job triggers the request, will store the result in the cache. We don't pass in the location of
 		// the usage, as that's the responsibility of this class (to add tracking categories etc.) or of Parsoid

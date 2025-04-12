@@ -5,6 +5,7 @@
 			"James D. Forrester"
 		]
 	},
+	"wikilambda-fragment-disabled": "Wikifunctions calls are currently disabled. You may wish to replace this call.",
 	"wikilambda-fragment-pending": "⏳ Function is being called…",
 	"wikilambda-recentchanges-edit-legend": "Edit from Wikifunctions",
 	"wikilambda-recentchanges-edit-letter": "F",
