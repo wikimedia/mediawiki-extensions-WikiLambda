@@ -4,10 +4,9 @@
 	"scripts": {
 		"test": "grunt test && npm run test:unit",
 		"test:unit": "jest",
-		"browser-test": "wdio tests/selenium/wdio.conf.js",
 		"browser-stress-test": "wdio run tests/selenium/stress-test/basic.js",
 		"browser-stress-test:all": "node tests/selenium/stress-test/stressTest.js",
-		"selenium-test": "wdio tests/selenium/wdio.conf.js --spec tests/selenium/specs/basic.js",
+		"selenium-test": "wdio tests/selenium/wdio.conf.js",
 		"selenium-daily": "wdio tests/selenium/wdio.conf.js",
 		"doc": "jsdoc -c jsdoc.json",
 		"coverage": "npm run test:unit",
