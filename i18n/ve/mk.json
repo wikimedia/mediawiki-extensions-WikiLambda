@@ -4,6 +4,8 @@
 			"Bjankuloski06"
 		]
 	},
+	"wikilambda-fragment-disabled": "Повиците на Викифункции во моментов се оневозможени. Можеби треба да го замените овој повик.",
+	"wikilambda-fragment-pending": "⏳ Функцијата се повикува…",
 	"wikilambda-recentchanges-edit-legend": "Уреди од Викифункции",
 	"wikilambda-recentchanges-edit-letter": "Ф",
 	"wikilambda-recentchanges-edit-title": "Уредување со Викифункции",
@@ -24,6 +26,8 @@
 	"wikilambda-recentchanges-filter-label": "Уредувања од Викифункции",
 	"wikilambda-recentchanges-filter-rc-pref": "Прикажи уредувања од Викифункции во скорешните промени",
 	"wikilambda-recentchanges-filter-wl-pref": "Прикажи уредувања од Викифункции во моите набљудувани",
+	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Вчитувам",
+	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "На прегледот му требаше предолго време",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Изберете можност",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Функција]] од Викифункции",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Прочитајте помалку",

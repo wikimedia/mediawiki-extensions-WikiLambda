@@ -1,9 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Amire80"
+			"Amire80",
+			"YaronSh"
 		]
 	},
+	"wikilambda-fragment-disabled": "קריאות לוויקיפונקציות מושבתות כעת. אפשר לשקול להחליף את הקריאה הזאת.",
 	"wikilambda-fragment-pending": "⏳ מתבצעת קריאה לפונקציה...",
 	"wikilambda-recentchanges-edit-legend": "עריכה מוויקיפונקציות",
 	"wikilambda-recentchanges-edit-letter": "פ",
@@ -25,6 +27,8 @@
 	"wikilambda-recentchanges-filter-label": "עריכות של ויקיפונקציות",
 	"wikilambda-recentchanges-filter-rc-pref": "הצגת עריכות שנעשו באתר ויקיפונקציות בדף השינויים האחרונים",
 	"wikilambda-recentchanges-filter-wl-pref": "הצגת עריכות שנעשו באתר ויקיפונקציות ברשימת המעקב",
+	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "טעינה",
+	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "התצוגה המקדימה ארכה זמן רב מדי",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "נא לבחור אפשרות",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|פונקציה]] מאתר ויקיפונקציות",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "לקרוא פחות",

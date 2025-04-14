@@ -4,6 +4,7 @@
 			"Toliño"
 		]
 	},
+	"wikilambda-fragment-disabled": "Nestes intres, as chamadas a Wikifuncións están desactivadas. Se cadra queres substituír esta chamada.",
 	"wikilambda-fragment-pending": "⏳ A chamar a función…",
 	"wikilambda-recentchanges-edit-legend": "Edición de Wikifuncións",
 	"wikilambda-recentchanges-edit-letter": "F",
@@ -25,6 +26,8 @@
 	"wikilambda-recentchanges-filter-label": "Edicións de Wikifuncións",
 	"wikilambda-recentchanges-filter-rc-pref": "Amosar as edicións de Wikifuncións nos cambios recentes",
 	"wikilambda-recentchanges-filter-wl-pref": "Amosar as edicións de Wikifuncións na túa lista de vixilancia",
+	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Cargando",
+	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "A vista previa tardou demasiado",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Escolle unha opción",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Función]] de Wikifuncións",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Ler menos",

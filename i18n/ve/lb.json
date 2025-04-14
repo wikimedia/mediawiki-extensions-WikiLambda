@@ -4,6 +4,7 @@
 			"Volvox"
 		]
 	},
+	"wikilambda-fragment-disabled": "Wikifunctions-Opriff si momentan desaktivéiert. Villäicht wëllt Dir dësen Opruff ersetzen.",
 	"wikilambda-fragment-pending": "⏳ D'Funktioun gëtt opgeruff…",
 	"wikilambda-recentchanges-edit-legend": "Ännerung vu Wikifunctions",
 	"wikilambda-recentchanges-edit-letter": "F",
@@ -25,6 +26,7 @@
 	"wikilambda-recentchanges-filter-label": "Wikifunctions-Ännerungen",
 	"wikilambda-recentchanges-filter-rc-pref": "Wikifunctions-Ännerungen an de rezenten Ännerunge weisen",
 	"wikilambda-recentchanges-filter-wl-pref": "Wikifunctions-Ännerungen op Ärer Iwwerwaachungslëscht weisen",
+	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Lueden",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Wielt eng Optioun",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Funktioun]] vu Wikifunctions",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Manner liesen",
