@@ -63,12 +63,17 @@ ve.dm.WikifunctionsCallNode.static.getWikitext = function ( mwData ) {
 	return '{{' + mwData.parts[ 0 ].parserfunction.target.wt + ':' + values.join( '|' ) + '}}';
 };
 
-// On loading the data model from the DOM, set the isError attribute
+/**
+ * On loading the data model from the DOM, set additional attributes
+ * to capture the function call state:
+ * * isError: failed function call, DOM is error box
+ *
+ * @inheritdoc
+ */
 ve.dm.WikifunctionsCallNode.static.toDataElement = function ( domElements ) {
 	const mwDataJSON = domElements[ 0 ].getAttribute( 'data-mw' );
 	const mwData = mwDataJSON ? JSON.parse( mwDataJSON ) : {};
 	const isError = domElements[ 0 ].classList.contains( 'cdx-message--error' );
-
 	return {
 		type: this.name,
 		attributes: {
@@ -78,7 +83,11 @@ ve.dm.WikifunctionsCallNode.static.toDataElement = function ( domElements ) {
 	};
 };
 
-// For some reason, VE's default code for this isn't working, so let's write a quick one ourselves
+/**
+ * For some reason, VE's default code for this isn't working, so let's write a quick one ourselves
+ *
+ * @inheritdoc
+ */
 ve.dm.WikifunctionsCallNode.static.toDomElements = function ( dataElement, doc, converter ) {
 	const store = converter.getStore(),
 		originalMw = dataElement.attributes.originalMw,

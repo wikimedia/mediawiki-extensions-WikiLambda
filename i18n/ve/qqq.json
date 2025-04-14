@@ -28,6 +28,8 @@
 	"wikilambda-recentchanges-filter-label": "The label in the recent changes filter system to let you filter in or out these edits from being displayed",
 	"wikilambda-recentchanges-filter-rc-pref": "The label for the preference to enable Wikifunctions edits to be shown in the recent changes list. Comparable to {{msg-mw|wikibase-rc-show-wikidata-pref}}",
 	"wikilambda-recentchanges-filter-wl-pref": "The label for the preference to enable Wikifunctions edits to be shown in your watchlist. Comparable to {{msg-mw|wikibase-watchlist-show-changes-pref}}",
+	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "Label shown in the visual editor instead of the result when editing a Wikifunctions call and the loading took too long.",
+	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Label shown in the visual editor instead of the result when editing a Wikifunctions call while the call is being loaded.",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Placeholder for the enum select field in the Wikifunctions call input configuration dialog in the visual editor",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "Footer text below the Wikifunctions input configuration dialog, which links to the selected Function page in Wikifunctions.\n\nParameters:\n* $1: The Function ID, e.g. 'Z12345'",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Label for the 'Read less' button in the visual editor to collapse a description",

@@ -27,6 +27,8 @@
 	"wikilambda-recentchanges-filter-label": "Wikifunctions edits",
 	"wikilambda-recentchanges-filter-rc-pref": "Show Wikifunctions edits in recent changes",
 	"wikilambda-recentchanges-filter-wl-pref": "Show Wikifunctions edits in your watchlist",
+	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Loading",
+	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "Preview took too long",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Choose an option",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Function]] from Wikifunctions",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Read less",

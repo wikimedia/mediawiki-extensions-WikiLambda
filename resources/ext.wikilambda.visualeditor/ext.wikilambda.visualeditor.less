@@ -1,0 +1,43 @@
+/*!
+ * WikiLambda Visual Editor styles
+ * Uses variables from Codex Design Tokens https://doc.wikimedia.org/codex/latest/design-tokens/overview.html
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
+@import ( reference ) 'mediawiki.skin.variables.less';
+
+.ext-wikilambda-visualeditor-loading {
+	display: inline-flex;
+	align-items: baseline;
+	background-color: @background-color-neutral-subtle;
+	color: @color-base;
+	padding: 0 8px;
+	font-size: @font-size-medium;
+	font-weight: normal;
+	border: @border-subtle;
+	border-radius: @border-radius-base;
+	opacity: 0.7;
+
+	.cdx-progress-indicator {
+		margin-right: @spacing-50;
+	}
+
+	.cdx-progress-indicator__indicator {
+		width: 1rem;
+		height: 1rem;
+	}
+}
+
+.ext-wikilambda-visualeditor-abort {
+	display: inline-flex;
+	align-items: center;
+	background-color: @background-color-neutral-subtle;
+	color: @color-base;
+	padding: 2px 8px;
+	font-size: @font-size-medium;
+	font-weight: normal;
+	border: @border-subtle;
+	border-radius: @border-radius-base;
+	opacity: 0.7;
+}

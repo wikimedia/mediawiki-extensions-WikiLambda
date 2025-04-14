@@ -32,6 +32,13 @@ ve.ce.WikifunctionsCallNode.static.iconWhenInvisible = 'functionObject';
 
 ve.ce.WikifunctionsCallNode.static.tagName = 'span';
 
+ve.ce.WikifunctionsCallNode.static.reloadTime = 2000;
+
+ve.ce.WikifunctionsCallNode.static.maxRetries = 10;
+
+/* Properties */
+ve.ce.WikifunctionsCallNode.prototype.reloadTimeout = null;
+
 /* Methods */
 
 /**
@@ -46,16 +53,132 @@ ve.ce.WikifunctionsCallNode.prototype.onSetup = function () {
 };
 
 /**
+ * Builds new element for Function Call Loading state
+ *
+ * @return {jQuery}
+ */
+ve.ce.WikifunctionsCallNode.prototype.getLoadingState = function () {
+	const loadingMsg = OO.ui.msg( 'wikilambda-visualeditor-wikifunctionscall-ce-loading' );
+
+	const $loadingContainer = $( '<span>' )
+		.addClass( 'ext-wikilambda-visualeditor-loading' );
+	const $spinner = $( '<div>' )
+		.addClass( 'cdx-progress-indicator' )
+		.append(
+			$( '<div>' )
+				.addClass( 'cdx-progress-indicator__indicator' )
+				.append(
+					$( '<progress>' )
+						.addClass( 'cdx-progress-indicator__indicator__progress' )
+						.attr( 'aria-label', loadingMsg )
+				)
+		);
+
+	$loadingContainer.append( $spinner ).append( loadingMsg );
+	return $loadingContainer;
+};
+
+/**
+ * Builds new element for Function Call Abort state
+ *
+ * @return {jQuery}
+ */
+ve.ce.WikifunctionsCallNode.prototype.getAbortState = function () {
+	const abortMsg = OO.ui.msg( 'wikilambda-visualeditor-wikifunctionscall-ce-abort' );
+	const $abort = $( '<span>' )
+		.addClass( 'ext-wikilambda-visualeditor-abort' )
+		.text( abortMsg );
+
+	return $abort;
+};
+
+/**
+ * Overrides ve.ce.GeneratedContentNode.prototype.generateContents as it isn't working for us.
+ *
+ * @inheritdoc
+ */
+ve.ce.WikifunctionsCallNode.prototype.generateContents = function ( config = {} ) {
+	const deferred = ve.getProp( config, 'deferred' ) || ve.createDeferred();
+	const model = this.getModel();
+
+	// eslint-disable-next-line no-jquery/no-done-fail
+	const xhr = ve.init.target.parseWikitextFragment(
+		model.getWikitext(), true, model.getDocument()
+	).done( ( response ) => {
+		// Request not successful: render aborted state
+		if ( ve.getProp( response, 'visualeditor', 'result' ) !== 'success' ) {
+			deferred.resolve( this.getAbortState().get() );
+			return;
+		}
+
+		// Handle content as MwTransclusionNode:
+		const contentNodes = $.parseHTML(
+			response.visualeditor.content, this.model && this.getModelHtmlDocument()
+		) || [];
+		const domElements = this.constructor.static.filterRendering( contentNodes );
+
+		if ( domElements[ 0 ].classList.contains( 'mw-async-not-ready' ) ) {
+			const loading = ve.getProp( config, 'loading' );
+
+			// If loading=false, this is the first attempt:
+			// * resolve deferred promise with "Loading..." element
+			// * initialize the second forceUpdate process with loading=true in config
+			if ( !loading ) {
+				deferred.resolve( this.getLoadingState().get() );
+				config.loading = true;
+				// eslint-disable-next-line no-useless-call
+				this.forceUpdate.call( this, config );
+				return;
+			}
+
+			// If loading=true, this is the second or subsequent attempt:
+			// * the "Loading..." element is already rendered
+			// * clear the timeout if there was another pending
+			// * we won't resolve the deferred promise until we have the content
+			// * we retrigger this.generateContents with loading=true, retryCount and the second deferred
+			if ( this.reloadTimeout !== null ) {
+				clearTimeout( this.reloadTimeout );
+			}
+
+			this.reloadTimeout = setTimeout( () => {
+				// get retry count or initialize to 0
+				const retryCount = ve.getProp( config, 'retryCount' ) || 0;
+				const surfaceModel = this.focusableSurface.getModel();
+
+				// Can we keep retrying?
+				if ( surfaceModel && ( retryCount < ve.ce.WikifunctionsCallNode.static.maxRetries ) ) {
+					config.retryCount = retryCount + 1;
+					config.deferred = deferred;
+					// eslint-disable-next-line no-useless-call
+					this.generateContents.call( this, config );
+				} else {
+					deferred.resolve( this.getAbortState().get() );
+				}
+			}, ve.ce.WikifunctionsCallNode.static.reloadTime );
+
+		} else {
+			deferred.resolve( domElements );
+		}
+
+	} ).fail( () => {
+		// Failed request: render abort state
+		deferred.resolve( this.getAbortState().get() );
+	} );
+
+	return deferred.promise( { abort: xhr.abort } );
+};
+
+/**
  * Overrides ve.ce.GeneratedContentNode.prototype.doneGenerating to capture the
- * error state after the final DOM has been generated. The error state is stored
- * in the model attributes as isError.
+ * additional state attributes after the DOM fragment has been generated:
+ * * isError: failed function call, DOM is error box
  *
  * @inheritdoc
  */
 ve.ce.WikifunctionsCallNode.prototype.doneGenerating = function ( generatedContents, config, staged ) {
 
-	// Call parent first
-	ve.ce.WikifunctionsCallNode.super.prototype.doneGenerating.call( this, generatedContents, config, staged );
+	// Call parent with empty to avoid Loading state being stored permanently
+	ve.ce.WikifunctionsCallNode.super.prototype.doneGenerating.call( this, generatedContents, {}, staged );
 
 	// Infer error state from generatedContents
 	const hasError = generatedContents[ 0 ].classList.contains( 'cdx-message--error' );
