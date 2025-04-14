@@ -159,7 +159,7 @@ module.exports = exports = defineComponent( {
 		},
 
 		/**
-		 * Returns an object of type PrimaryDialogAction that describes
+		 * Returns an object of type PrimaryModalAction that describes
 		 * the action of the primary (save or publish) dialog button.
 		 *
 		 * @return {Object}
@@ -172,7 +172,7 @@ module.exports = exports = defineComponent( {
 		},
 
 		/**
-		 * Returns an object of type DialogAction that describes
+		 * Returns an object of type ModalAction that describes
 		 * the action of the secondary (cancel) button.
 		 *
 		 * @return {Object}
