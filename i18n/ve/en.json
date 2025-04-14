@@ -10,6 +10,7 @@
 	"wikilambda-recentchanges-edit-legend": "Edit from Wikifunctions",
 	"wikilambda-recentchanges-edit-letter": "F",
 	"wikilambda-recentchanges-edit-title": "Wikifunctions edit",
+	"wikilambda-recentchanges-entry-function": "Function",
 	"wikilambda-recentchanges-explanation-connect-implementation": "Connected {{PLURAL:$1|Implementation|$1 Implementations:}} $2",
 	"wikilambda-recentchanges-explanation-connect-tester": "Connected {{PLURAL:$1|Test case|$1 Test cases:}} $2",
 	"wikilambda-recentchanges-explanation-delete-function": "Deleted Function definition",
