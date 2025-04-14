@@ -143,7 +143,7 @@ ve.ce.WikifunctionsCallNode.prototype.generateContents = function ( config = {} 
 			this.reloadTimeout = setTimeout( () => {
 				// get retry count or initialize to 0
 				const retryCount = ve.getProp( config, 'retryCount' ) || 0;
-				const surfaceModel = this.focusableSurface.getModel();
+				const surfaceModel = this.focusableSurface && this.focusableSurface.getModel();
 
 				// Can we keep retrying?
 				if ( surfaceModel && ( retryCount < ve.ce.WikifunctionsCallNode.static.maxRetries ) ) {
