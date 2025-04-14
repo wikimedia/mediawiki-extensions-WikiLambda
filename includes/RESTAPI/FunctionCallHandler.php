@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\RESTAPI;
 
+use InvalidArgumentException;
 use MediaWiki\Api\ApiMain;
 use MediaWiki\Api\ApiUsageException;
 use MediaWiki\Context\DerivativeContext;
@@ -418,7 +419,14 @@ class FunctionCallHandler extends SimpleHandler {
 
 		// 6. Execute the call
 		try {
-			$response = $this->makeRequest( json_encode( $call ), $renderLang );
+			$requestCall = json_encode( $call, JSON_THROW_ON_ERROR );
+			if ( !$requestCall ) {
+				throw new InvalidArgumentException(
+					__METHOD__ . ' called on "' . $target . '" but the JSON encoding failed'
+				);
+			}
+
+			$response = $this->makeRequest( $requestCall, $renderLang );
 		} catch ( ZErrorException $e ) {
 			$this->logger->error(
 				__METHOD__ . ' called on {target} but got a ZErrorException, {error}',
