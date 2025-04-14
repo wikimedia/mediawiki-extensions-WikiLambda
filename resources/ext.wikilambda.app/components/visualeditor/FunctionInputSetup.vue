@@ -161,8 +161,8 @@ module.exports = exports = defineComponent( {
 		 */
 		hasMissingContent: function () {
 			return (
-				!this.functionName.isUserLang ||
-				!this.functionDescription.isUserLang ||
+				!this.functionName || !this.functionName.isUserLang ||
+				!this.functionDescription || !this.functionDescription.isUserLang ||
 				!this.inputFields.every( ( item ) => item.labelData.isUserLang )
 			);
 		}
