@@ -1532,4 +1532,21 @@ EOT;
 		$transformed = ZObjectUtils::replaceNullReferencePlaceholder( $initial, $zid );
 		$this->assertEquals( $expected, $transformed );
 	}
+
+	public function testNetworkSafeEncoding() {
+		$this->assertEquals(
+			'Foo',
+			ZObjectUtils::decodeStringParamFromNetwork( ZObjectUtils::encodeStringParamForNetwork( 'Foo' ) )
+		);
+
+		$this->assertEquals(
+			'Zm9vYmFy',
+			ZObjectUtils::encodeStringParamForNetwork( 'foobar' )
+		);
+
+		$this->assertEquals(
+			'IGZ8bz0gIG8_',
+			ZObjectUtils::encodeStringParamForNetwork( ' f|o=  o?' )
+		);
+	}
 }

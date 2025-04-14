@@ -1106,4 +1106,12 @@ class ZObjectUtils {
 
 		return $zObjectString;
 	}
+
+	public static function encodeStringParamForNetwork( string $input ): string {
+		return str_replace( [ '+', '/', '=' ], [ '-', '_', '' ], base64_encode( $input ) );
+	}
+
+	public static function decodeStringParamFromNetwork( string $input ): string {
+		return base64_decode( str_replace( [ '-', '_' ], [ '+', '/' ], $input ) );
+	}
 }

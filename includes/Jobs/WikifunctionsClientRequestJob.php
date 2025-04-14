@@ -17,6 +17,7 @@ use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\JobQueue\GenericParameterJob;
 use MediaWiki\JobQueue\Job;
@@ -421,7 +422,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 		// inputs with '|'s in them can be ferried across the network without
 		$encodedArguments = implode(
 			'|',
-			array_map( static fn ( $val ): string => base64_encode( $val ), $args )
+			array_map( static fn ( $val ): string => ZObjectUtils::encodeStringParamForNetwork( $val ), $args )
 		);
 
 		$requestUri = $this->getClientTargetUrl()
