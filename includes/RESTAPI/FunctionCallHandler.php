@@ -199,7 +199,10 @@ class FunctionCallHandler extends SimpleHandler {
 
 		if ( is_string( $arguments ) ) {
 			$encodedArguments = explode( '|', $arguments );
-			$arguments = array_map( static fn ( $val ): string => base64_decode( $val ), $encodedArguments );
+			$arguments = array_map(
+				static fn ( $val ): string => ZObjectUtils::decodeStringParamFromNetwork( $val ),
+				$encodedArguments
+			);
 		}
 
 		// Then, actually check the arguments' Types by looping over allowed inputs,
