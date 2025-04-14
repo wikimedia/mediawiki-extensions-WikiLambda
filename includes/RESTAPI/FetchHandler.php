@@ -44,8 +44,10 @@ class FetchHandler extends SimpleHandler {
 
 		$responseList = [];
 
-		$language = $this->getRequest()->getQueryParams()['language'];
-		$getDependencies = $this->getRequest()->getQueryParams()['getDependencies'];
+		// (T391046) Parse as null if not specified.
+		$language = $this->getRequest()->getQueryParams()['language'] ?? null;
+		// (T391046) Fallback to not recurse through dependencies if not specified.
+		$getDependencies = $this->getRequest()->getQueryParams()['getDependencies'] ?? false;
 
 		if ( count( $revisions ) > 0 && ( count( $revisions ) !== count( $ZIDs ) ) ) {
 			$zErrorObject = ZErrorFactory::createZErrorInstance(
