@@ -74,14 +74,14 @@ class FunctionCallHandler extends SimpleHandler {
 
 		// 0. Check if we are disabled.
 		$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'WikiLambda' );
-		if ( !$config->get( 'WikiLambdaEnableRepoMode' ) || !$config->get( 'WikiLambdaEnableClientMode' ) ) {
-			$this->logger->info( __METHOD__ . ' called but neither repo nor client mode are enabled' );
+		if ( !$config->get( 'WikiLambdaEnableRepoMode' ) ) {
+			$this->logger->info( __METHOD__ . ' called repo mode is not enabled' );
 
 			// Note: We check for both modes here, as a very quick way to emergency-disable this everywhere.
 			// Client-side code is also going to check whether it's disabled before it's installed.
 			$this->dieRESTfullyWithZError(
 				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [ 'data' => "WikiLambdaEnableClientMode" ]
+					ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [ 'data' => "WikiLambdaEnableRepoMode" ]
 				),
 				// This is an HTTP 501 because it's literally "not implemented yet", rather than necessarily user error
 				501,

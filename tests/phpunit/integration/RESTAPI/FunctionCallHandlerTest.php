@@ -66,11 +66,11 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
-	 * Confirm that a 501 is returned when the client mode is disabled
+	 * Confirm that a 501 is returned when the repo mode is disabled
 	 */
 	public function testExecute_clientModeDisabled() {
 		// Force-disable our code
-		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', false );
+		$this->overrideConfigValue( 'WikiLambdaEnableRepoMode', false );
 
 		$request = new RequestData( $this->standardCall );
 		$handler = new FunctionCallHandler();
