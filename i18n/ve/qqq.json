@@ -6,6 +6,7 @@
 			"James D. Forrester"
 		]
 	},
+	"wikilambda-fragment-disabled": "Message shown in article contents where a Wikifunctions call has been made but the system is offline.",
 	"wikilambda-fragment-pending": "Message shown in article contents where a Wikifunctions call has been made and is not yet available. Refreshing the page will generally make it available.",
 	"wikilambda-recentchanges-edit-legend": "The label to show in the recent changes list legend to explain that this indicates an edit from Wikifunctions",
 	"wikilambda-recentchanges-edit-letter": "The letter to show in the recent changes list for an edit from Wikifunctions. Short form of \"Function\".\n\n{{Rc single letters}}\n\nSee also:\n* {{msg-mw|Wikilambda-recentchanges-edit-title}}\n* {{msg-mw|Wikilambda-recentchanges-edit-legend}}",
