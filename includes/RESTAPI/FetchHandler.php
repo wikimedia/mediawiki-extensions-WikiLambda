@@ -188,6 +188,12 @@ class FetchHandler extends SimpleHandler {
 	public function getParamSettings() {
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 
+		// Don't try to read the supported languages from the DB on client wikis, we can't.
+		$supportedLanguageCodes =
+			( MediaWikiServices::getInstance()->getMainConfig()->get( 'WikiLambdaEnableRepoMode' ) ) ?
+				$zObjectStore->fetchAllZLanguageCodes() :
+				[];
+
 		return [
 			'zids' => [
 				self::PARAM_SOURCE => 'path',
@@ -203,7 +209,7 @@ class FetchHandler extends SimpleHandler {
 			],
 			'language' => [
 				self::PARAM_SOURCE => 'query',
-				ParamValidator::PARAM_TYPE => $zObjectStore->fetchAllZLanguageCodes(),
+				ParamValidator::PARAM_TYPE => $supportedLanguageCodes,
 				ParamValidator::PARAM_DEFAULT => null,
 				ParamValidator::PARAM_REQUIRED => false,
 			],
