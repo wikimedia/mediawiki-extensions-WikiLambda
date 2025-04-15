@@ -10,9 +10,11 @@
 
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
+use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
+use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Language\Language;
 use MediaWiki\Languages\LanguageFallback;
@@ -160,6 +162,18 @@ class ZMultiLingualStringSet extends ZObject {
 	 * @param ZMonoLingualStringSet $value The new value to set.
 	 */
 	public function setMonoLingualStringSet( ZMonoLingualStringSet $value ): void {
+		// (T391528) Don't let bad user input trigger an odd exception.
+		if ( !$value->getLanguage() || !is_string( $value->getLanguage() ) ) {
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_INVALID_LANG_CODE,
+					[
+						'lang' => $value
+					]
+				)
+			);
+		}
+
 		$this->data[ ZTypeRegistry::Z_MULTILINGUALSTRINGSET_VALUE ][ $value->getLanguage() ] = $value;
 	}
 
