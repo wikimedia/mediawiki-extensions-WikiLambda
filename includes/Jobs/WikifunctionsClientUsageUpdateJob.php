@@ -67,7 +67,13 @@ class WikifunctionsClientUsageUpdateJob extends Job implements GenericParameterJ
 			]
 		);
 
-		if ( !$this->config->get( 'WikiLambdaEnableClientMode' ) ) {
+		if (
+			// If the wgWikiLambdaEnableClientMode flag is not set, don't try to run anything
+			!$this->config->get( 'WikiLambdaEnableClientMode' ) &&
+			// … but don't do this if the server thinks the wiki isn't configured for WikiLambda at all, which will
+			// happen when one server thinks we're configured and one doesn't (i.e., we're admist a deployment)
+			$this->config->has( 'WikiLambdaEnableClientMode' )
+		) {
 			$this->logger->warning(
 				__CLASS__ . ' triggered for {targetFunction} on {targetPageNS}:{targetPage}; not in client mode.',
 				[
