@@ -352,6 +352,7 @@
 				"mediawiki.storage",
 				"mediawiki.user",
 				"mediawiki.Uri",
+				"mediawiki.util",
 				"oojs"
 			],
 			"codexComponents": [

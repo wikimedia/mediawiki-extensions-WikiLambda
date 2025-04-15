@@ -86,7 +86,7 @@ module.exports = {
 
 			const path = this.currentPath;
 			const query = Object.assign( {}, this.queryParams, { view: this.currentView } );
-			const newUriString = `${ path }?${ $.param( query ) }`;
+			const newUriString = mw.util.getUrl( path, query );
 
 			window.history.pushState( { path, query }, null, newUriString );
 		},
@@ -173,7 +173,7 @@ module.exports = {
 			if ( uri.query.view && uri.query.view !== view ) {
 				const path = uri.path;
 				const query = Object.assign( {}, uri.query, { view: view } );
-				const newUriString = `${ path }?${ $.param( query ) }`;
+				const newUriString = mw.util.getUrl( path, query );
 
 				window.history.replaceState( { path, query }, null, newUriString );
 			}
