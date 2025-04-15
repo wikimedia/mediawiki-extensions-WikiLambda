@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
+use JsonException;
 use MediaWiki\Api\ApiMain;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
@@ -41,7 +42,18 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 		$params = $this->extractRequestParams();
 		$pageResult = $this->getResult();
 		$stringOfAZ = $params[ 'zobject' ];
-		$zObjectAsStdClass = json_decode( $stringOfAZ );
+
+		try {
+			$zObjectAsStdClass = json_decode( $stringOfAZ, false, 512, JSON_THROW_ON_ERROR );
+			if ( $zObjectAsStdClass === null ) {
+				throw new JsonException( 'Invalid JSON that did not throw, somehow.' );
+			}
+		} catch ( JsonException $e ) {
+			$this->submitFunctionCallEvent( 400, null, $start );
+			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX, [] );
+			WikiLambdaApiBase::dieWithZError( $zError, 400 );
+		}
+
 		$jsonQuery = [
 			'zobject' => $zObjectAsStdClass,
 			'doValidate' => true
