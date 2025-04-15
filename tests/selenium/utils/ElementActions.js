@@ -24,18 +24,16 @@ class ElementActions {
 	 *
 	 * @async
 	 * @param {Promise<WebdriverIOElementType>} selector - selector of the element to be clicked
-	 * @return {void}
+	 * @return {boolean}
 	 */
 	async doClick( selector ) {
 		const element = await selector;
 
-		await element.waitForDisplayed( { timeout: 15000 } );
-
-		await browser.waitUntil( async () => await element.isEnabled(), {
-			timeout: 15000
-		} );
-
+		let clicked = false;
+		clicked = await element.waitForDisplayed( { timeout: 15000 } );
+		clicked = await element.waitForClickable( { timeout: 15000 } );
 		await element.click();
+		return clicked;
 	}
 
 	/**
