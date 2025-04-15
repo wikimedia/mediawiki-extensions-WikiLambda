@@ -289,17 +289,7 @@ class FunctionPage extends Page {
 	async checkImplementationsTableRow( index ) {
 		const tableRow = this.getImplementationsTableRow( index );
 		const checkBox = await tableRow.$( './td[1]//input/following-sibling::span' );
-		await browser.waitUntil(
-			async () => {
-				const classAttribute = await tableRow.getAttribute( 'class' );
-				return !classAttribute.includes( 'ext-wikilambda-app-function-viewer-details-table__row--active' );
-			},
-			{
-				timeout: 10000,
-				timeoutMsg: 'The element with the class "ext-wikilambda-app-function-viewer-details-table__row--active" is still displayed'
-			}
-		);
-
+		await this.approveImplementationButton.waitForExist( { timeout: 10000, reverse: true } );
 		await checkBox.click();
 	}
 
@@ -398,17 +388,7 @@ class FunctionPage extends Page {
 	async checkTestCasesTableRow( index ) {
 		const tableRow = this.getTestCasesTableRow( index );
 		const checkBox = await tableRow.$( './td[1]//input/following-sibling::span' );
-		await browser.waitUntil(
-			async () => {
-				const classAttribute = await tableRow.getAttribute( 'class' );
-				return !classAttribute.includes( 'ext-wikilambda-app-function-viewer-details-table__row--active' );
-			},
-			{
-				timeout: 10000,
-				timeoutMsg: 'The element with the class "ext-wikilambda-app-function-viewer-details-table__row--active" is still displayed'
-			}
-		);
-
+		await this.approveTestCaseButton.waitForExist( { timeout: 10000, reverse: true } );
 		await checkBox.click();
 	}
 
