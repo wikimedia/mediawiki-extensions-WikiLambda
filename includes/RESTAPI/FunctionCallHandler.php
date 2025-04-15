@@ -73,14 +73,8 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 		if ( !$config->get( 'WikiLambdaEnableRepoMode' ) ) {
 			$this->logger->info( __METHOD__ . ' called repo mode is not enabled' );
 
-			$this->dieRESTfullyWithZError(
-				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [ 'data' => "WikiLambdaEnableRepoMode" ]
-				),
-				// This is an HTTP 501 because it's literally "not implemented yet", rather than necessarily user error
-				501,
-				[ 'target' => $target ]
-			);
+			// WikiLambda repo code isn't loaded, so we can't use a ZError here sadly.
+			$this->dieRESTfully( 'wikilambda-restapi-disabled-repo-mode-only', [], 400 );
 		}
 
 		// 1. Check if we can call this requested Function at all

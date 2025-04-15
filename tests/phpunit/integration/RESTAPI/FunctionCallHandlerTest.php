@@ -76,7 +76,11 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		$handler = new FunctionCallHandler();
 
 		$this->expectExceptionObject(
-			new LocalizedHttpException( new MessageValue( 'wikilambda-zerror' ), 501, [ 'target' => 'madeuplanguage' ] )
+			new LocalizedHttpException(
+				new MessageValue( 'wikilambda-restapi-disabled-repo-mode-only' ),
+				400,
+				[ 'target' => 'madeuplanguage' ]
+			)
 		);
 		$this->executeHandler( $handler, $request );
 	}
