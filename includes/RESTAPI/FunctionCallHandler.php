@@ -78,8 +78,6 @@ class FunctionCallHandler extends SimpleHandler {
 		if ( !$config->get( 'WikiLambdaEnableRepoMode' ) ) {
 			$this->logger->info( __METHOD__ . ' called repo mode is not enabled' );
 
-			// Note: We check for both modes here, as a very quick way to emergency-disable this everywhere.
-			// Client-side code is also going to check whether it's disabled before it's installed.
 			$this->dieRESTfullyWithZError(
 				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [ 'data' => "WikiLambdaEnableRepoMode" ]
