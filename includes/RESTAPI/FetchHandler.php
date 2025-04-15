@@ -19,6 +19,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Rest\LocalizedHttpException;
 use MediaWiki\Rest\ResponseInterface;
 use MediaWiki\Rest\SimpleHandler;
@@ -39,6 +40,11 @@ class FetchHandler extends SimpleHandler {
 
 	/** @inheritDoc */
 	public function run( $ZIDs, $revisions = [] ) {
+		// This API is only availble on the repo installation, not client wikis
+		if ( !MediaWikiServices::getInstance()->getMainConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
+			$this->dieRESTfully( 'wikilambda-restapi-disabled-repo-mode-only', [], 400 );
+		}
+
 		$this->typeRegistry = ZTypeRegistry::singleton();
 		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
 
