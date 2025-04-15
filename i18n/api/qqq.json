@@ -103,6 +103,7 @@
 	"apihelp-wikilambda_perform_test-param-zimplementations": "{{doc-apihelp-param|wikilambda_perform_test|zimplementations}}\n\n{{doc-wikilambda}}",
 	"apihelp-wikilambda_perform_test-param-ztesters": "{{doc-apihelp-param|wikilambda_perform_test|ztesters}}\n\n{{doc-wikilambda}}",
 	"apihelp-wikilambda_perform_test-param-nocache": "{{doc-apihelp-param|wikilambda_perform_test|nocache}}\n\n{{doc-wikilambda}}",
+	"wikilambda-restapi-disabled-repo-mode-only": "Error message when using the Wikifunctions REST fetch API, shown when the request has been made to the wrong system.",
 	"wikilambda-restapi-fetch-too-many": "Error message when using the Wikifunctions REST fetch API, shown when the request is for too many Objects at once.\n\nParameters:\n* $1: The requested number of Objects.\n* $2: The maximum number allowed at once.",
 	"wikilambda-restapi-revision-mismatch": "Error message when using the Wikifunctions REST fetch API, shown when the request gives an unknown revision for an Object.\n\nParameters:\n* $1: The requested revision ID.\n* $2: The ZID of the Wikifunctions Object in question."
 }
