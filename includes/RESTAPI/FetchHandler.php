@@ -16,27 +16,21 @@ use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
-use MediaWiki\Rest\LocalizedHttpException;
 use MediaWiki\Rest\ResponseInterface;
-use MediaWiki\Rest\SimpleHandler;
 use MediaWiki\Title\Title;
-use Psr\Log\LoggerInterface;
-use Wikimedia\Message\MessageValue;
 use Wikimedia\ParamValidator\ParamValidator;
 
 /**
  * Simple REST API to fetch the latest versions of one or more ZObjects
  * via GET /wikifunctions/v0/fetch/{zids}
  */
-class FetchHandler extends SimpleHandler {
+class FetchHandler extends WikiLambdaRESTHandler {
 
 	public const MAX_REQUESTED_ZIDS = 50;
 	private ZTypeRegistry $typeRegistry;
-	private LoggerInterface $logger;
 
 	/** @inheritDoc */
 	public function run( $ZIDs, $revisions = [] ) {
@@ -222,34 +216,5 @@ class FetchHandler extends SimpleHandler {
 				ParamValidator::PARAM_REQUIRED => false,
 			],
 		];
-	}
-
-	private function dieRESTfullyWithZError( ZError $zerror, int $code = 500, array $errorData = [] ) {
-		try {
-			$errorData['errorData'] = $zerror->getErrorData();
-		} catch ( ZErrorException $e ) {
-			// Generating the human-readable error data itself threw. Oh dear.
-
-			$this->logger->warning(
-				__METHOD__ . ' called but an error was thrown when trying to report an error',
-				[
-					'zerror' => $zerror->getSerialized(),
-					'error' => $e,
-				]
-			);
-
-			$errorData['errorData'] = [ 'zerror' => $zerror->getSerialized() ];
-		}
-
-		$this->dieRESTfully( 'wikilambda-zerror', [ $zerror->getZErrorType() ], $code, $errorData );
-	}
-
-	/**
-	 * @return never
-	 */
-	private function dieRESTfully( string $messageKey, array $spec, int $code, array $errorData = [] ) {
-		throw new LocalizedHttpException(
-			new MessageValue( $messageKey, $spec ), $code, $errorData
-		);
 	}
 }

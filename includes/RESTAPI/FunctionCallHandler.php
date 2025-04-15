@@ -34,15 +34,11 @@ use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\Rest\Handler;
-use MediaWiki\Rest\LocalizedHttpException;
 use MediaWiki\Rest\Response;
 use MediaWiki\Rest\ResponseInterface;
-use MediaWiki\Rest\SimpleHandler;
 use MediaWiki\Title\Title;
-use Psr\Log\LoggerInterface;
 use stdClass;
 use Throwable;
-use Wikimedia\Message\MessageValue;
 use Wikimedia\ParamValidator\ParamValidator;
 
 /**
@@ -50,9 +46,8 @@ use Wikimedia\ParamValidator\ParamValidator;
  * in wikitext, via `GET /wikifunctions/v0/call/{zid}/{arguments}`, or more fully,
  * `GET /wikifunctions/v0/call/{zid}/{arguments}/{parselang}/{renderlang}`
  */
-class FunctionCallHandler extends SimpleHandler {
+class FunctionCallHandler extends WikiLambdaRESTHandler {
 
-	private LoggerInterface $logger;
 	private ZObjectStore $zObjectStore;
 	private ZLangRegistry $langRegistry;
 
@@ -486,41 +481,6 @@ class FunctionCallHandler extends SimpleHandler {
 				ParamValidator::PARAM_REQUIRED => false,
 			],
 		];
-	}
-
-	/**
-	 * @return never
-	 */
-	private function dieRESTfullyWithZError( ZError $zerror, int $code = 500, array $errorData = [] ) {
-		try {
-			$errorData['errorData'] = $zerror->getErrorData();
-
-			$this->logger->debug(
-				__METHOD__ . ' called because an error happened',
-				[
-					'zerror' => $zerror->getSerialized(),
-					'error' => json_encode( $zerror->getErrorData() ),
-				]
-			);
-		} catch ( ZErrorException $e ) {
-			// Generating the human-readable error data itself threw. Oh dear.
-
-			$this->logger->warning(
-				__METHOD__ . ' called but an error was thrown when trying to report an error',
-				[
-					'zerror' => $zerror->getSerialized(),
-					'error' => $e,
-				]
-			);
-
-			$errorData['errorData'] = [ 'zerror' => $zerror->getSerialized() ];
-		}
-
-		throw new LocalizedHttpException(
-			new MessageValue( 'wikilambda-zerror', [ $zerror->getZErrorType() ] ),
-			$code,
-			$errorData
-		);
 	}
 
 	/**
