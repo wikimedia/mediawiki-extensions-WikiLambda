@@ -136,20 +136,33 @@ module.exports = exports = defineComponent( {
 			return this.enumValues.some( ( item ) => item.value === value );
 		},
 		/**
-		 * Fetches all enum values for the argument type and validates the initial value if in editing mode.
+		 * Fetches all enum values for the argument type
 		 */
 		fetchAndValidateEnumValues: function () {
 			// TODO: (T388660) the selected enum might not become selected in the cdx-select
 			// due to it being in the 'load more items'.
 			// For now fetch 999 (aka: all) enum values for the argument type
 			// so that we can validate the value if the value exists in the enum values
-			this.fetchEnumValues( { type: this.argumentType, limit: 999 } ).then( () => {
-				if ( this.isEditing ) {
-					this.validate( this.value );
-				}
-			} );
+			this.fetchEnumValues( { type: this.argumentType, limit: 999 } );
 		}
 	} ),
+	watch: {
+		/**
+		 * Watcher for `enumValues` to ensure that validation is performed
+		 * only after the enum values are updated in the store. This is necessary
+		 * because the `fetchEnumValues` action is asynchronous, and the `enumValues`
+		 * computed property may not be immediately populated when the fetch completes.
+		 * By watching `enumValues`, we can trigger validation once the values are
+		 * available, ensuring that the component behaves correctly in editing mode.
+		 *
+		 * @param {Array} newEnumValues - The updated list of enum values.
+		 */
+		enumValues: function ( newEnumValues ) {
+			if ( this.isEditing && newEnumValues.length > 0 ) {
+				this.validate( this.value );
+			}
+		}
+	},
 	mounted: function () {
 		this.fetchAndValidateEnumValues();
 	}
