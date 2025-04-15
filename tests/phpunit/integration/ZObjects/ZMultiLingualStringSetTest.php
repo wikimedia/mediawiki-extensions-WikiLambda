@@ -178,6 +178,22 @@ class ZMultiLingualStringSetTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
+	public function testInvalidCreation_empty() {
+		$testObject = new ZMultiLingualStringSet( [] );
+		$this->expectException( ZErrorException::class );
+		$testObject->setMonoLingualStringSet(
+			new ZMonoLingualStringSet( new ZReference( '' ), [ new ZString( 'Test' ) ] )
+		);
+	}
+
+	public function testInvalidCreation_non_string() {
+		$testObject = new ZMultiLingualStringSet( [] );
+		$this->expectException( ZErrorException::class );
+		$testObject->setMonoLingualStringSet(
+			new ZMonoLingualStringSet( new ZReference( 1 ), [ new ZString( 'Test' ) ] )
+		);
+	}
+
 	public function testPersistentCreation() {
 		$this->registerLangs( [ 'fr' ] );
 
