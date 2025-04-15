@@ -4,6 +4,7 @@
 			"Samoasambia"
 		]
 	},
+	"wikilambda-fragment-disabled": "Wikifunctions-kutsut ovat tällä hetkellä pois käytöstä. Saatat haluta korvata tämän kutsun.",
 	"wikilambda-fragment-pending": "⏳ Funktiota kutsutaan…",
 	"wikilambda-recentchanges-edit-legend": "Muokkaus Wikifunctionsista",
 	"wikilambda-recentchanges-edit-letter": "F",
@@ -25,6 +26,8 @@
 	"wikilambda-recentchanges-filter-label": "Wikifunctions-muokkaukset",
 	"wikilambda-recentchanges-filter-rc-pref": "Näytä Wikifunctions-muokkaukset tuoreissa muutoksissa",
 	"wikilambda-recentchanges-filter-wl-pref": "Näytä Wikifunctions-muokkaukset tarkkailulistallasi",
+	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Ladataan",
+	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "Esikatselu kesti liian kauan",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Valitse vaihtoehto",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Funktio]] Wikifunctionsista",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Näytä vähemmän",

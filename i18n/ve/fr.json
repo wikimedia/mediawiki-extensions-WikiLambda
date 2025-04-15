@@ -1,10 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
+			"EmDashUser002",
 			"JLTRY"
 		]
 	},
-	"wikilambda-fragment-pending": "⏳ La fonction est appelée…",
+	"wikilambda-fragment-pending": "⏳ La fonction est en exécution…",
 	"wikilambda-recentchanges-edit-legend": "Modifier depuis Wikifunctions",
 	"wikilambda-recentchanges-edit-letter": "F",
 	"wikilambda-recentchanges-edit-title": "Wikifunctions modifier",

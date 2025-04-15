@@ -7,6 +7,7 @@
 	"wikilambda-recentchanges-edit-legend": "Bearbeitung aus Wikifunktions",
 	"wikilambda-recentchanges-edit-letter": "F",
 	"wikilambda-recentchanges-edit-title": "Wikifunktionen bearbeiten",
+	"wikilambda-recentchanges-entry-function": "Funktion",
 	"wikilambda-recentchanges-explanation-connect-implementation": "Verbundene {{PLURAL:$1|Implementierung|$1 Implementierungen}}: $2",
 	"wikilambda-recentchanges-explanation-connect-tester": "{{PLURAL:$1|Verbundener Testfall|$1 verbundene Testfälle}}: $2",
 	"wikilambda-recentchanges-explanation-delete-function": "Gelöschte Funktionsdefinition",
