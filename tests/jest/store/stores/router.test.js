@@ -23,6 +23,11 @@ describe( 'Router Pinia store', () => {
 		store.currentPath = mw.Uri().path;
 		store.currentView = Constants.VIEWS.Z_OBJECT_VIEWER;
 		store.queryParams = mw.Uri().query;
+
+		// Mock mw.util.getUrl()
+		mw.util = { getUrl: jest.fn(
+			( foo, bar ) => ( foo + '?' + Object.entries( bar ).map( ( i ) => ( i[ 0 ] + '=' + i[ 1 ] ) ).join( '&' ) )
+		) };
 	} );
 
 	describe( 'Getters', () => {
