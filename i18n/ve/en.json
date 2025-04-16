@@ -50,6 +50,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-no-name": "No name",
 	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Loading Function data",
 	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "No Function selected.",
+	"wikilambda-visualeditor-wikifunctionscall-error": "Content error",
 	"wikilambda-visualeditor-wikifunctionscall-title": "Function",
 	"wikilambda-visualeditor-wikifunctionscall-preview-title": "Preview",
 	"wikilambda-visualeditor-wikifunctionscall-preview-no-result": "Enter values to preview result.",

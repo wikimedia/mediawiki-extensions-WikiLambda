@@ -51,6 +51,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-no-name": "Placeholder for the function name when there is no label available in any language.",
 	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Label for the progress indicator component rendered in the Wikifunctions call popup in the visual while the Function data is being fetched",
 	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Message to show as body in the Wikifunctions call popup in the visual editor, when there is no function selected",
+	"wikilambda-visualeditor-wikifunctionscall-error": "Error message displayed inline in the page content when a function call fails.",
 	"wikilambda-visualeditor-wikifunctionscall-title": "Title for the Wikifunctions call dialog in the visual editor, shown as a heading label above the call content",
 	"wikilambda-visualeditor-wikifunctionscall-preview-title": "Title for the preview section in the Wikifunctions call input configuration dialog in the visual editor.",
 	"wikilambda-visualeditor-wikifunctionscall-preview-no-result": "Message to show in the preview section in the Wikifunctions call input configuration dialog in the visual editor when there is no result available.",

@@ -17,6 +17,7 @@ use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\WikiPage;
 use MediaWiki\Registration\ExtensionRegistry;
+use MediaWiki\ResourceLoader\CodexModule;
 use MediaWiki\ResourceLoader\ImageModule;
 use MediaWiki\ResourceLoader\ResourceLoader;
 use MediaWiki\Revision\RevisionRecord;
@@ -151,6 +152,7 @@ class ClientHooks implements
 					'wikilambda-suggested-functions.json',
 					'wikilambda-visualeditor-wikifunctionscall-ce-loading',
 					'wikilambda-visualeditor-wikifunctionscall-ce-abort',
+					'wikilambda-visualeditor-wikifunctionscall-error',
 					'wikilambda-visualeditor-wikifunctionscall-title',
 					'wikilambda-visualeditor-wikifunctionscall-popup-loading',
 					'wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results',
@@ -177,14 +179,43 @@ class ClientHooks implements
 					'wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label',
 					'wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label',
 					'wikilambda-visualeditor-wikifunctionscall-preview-cancelled',
-					'wikilambda-visualeditor-wikifunctionscall-preview-error'
+					'wikilambda-visualeditor-wikifunctionscall-preview-error',
+					'wikilambda-functioncall-error-message',
+					"wikilambda-functioncall-error-message-unknown",
+					"wikilambda-functioncall-error-message-not-supported",
+					"wikilambda-functioncall-error-message-bad-inputs",
+					"wikilambda-functioncall-error-message-bad-input-type",
+					"wikilambda-functioncall-error-message-bad-langs",
+					"wikilambda-functioncall-error-message-disabled",
+					"wikilambda-functioncall-error-message-system",
+					'wikilambda-functioncall-error',
+					'wikilambda-functioncall-error-evaluation',
+					"wikilambda-functioncall-error-unclear",
+					"wikilambda-functioncall-error-unknown-zid",
+					"wikilambda-functioncall-error-invalid-zobject",
+					"wikilambda-functioncall-error-nonfunction",
+					"wikilambda-functioncall-error-nonstringinput",
+					"wikilambda-functioncall-error-nonstringoutput",
+					"wikilambda-functioncall-error-bad-langs",
+					"wikilambda-functioncall-error-bad-inputs",
+					"wikilambda-functioncall-error-bad-input-type",
+					"wikilambda-functioncall-error-bad-output",
 				],
 				'styles' => [
-					'ext.wikilambda.visualeditor.less'
+					'ext.wikilambda.visualeditor.less',
 				]
 			];
 
 			$resourceLoader->register( 'ext.wikilambda.visualeditor', $visualEditorWfConfig );
+
+			// Finally, register the Codex module for the inline errors
+			$resourceLoader->register( 'ext.wikilambda.inlineerrors', [
+				'class' => CodexModule::class,
+				'codexStyleOnly' => true,
+				'codexComponents' => [
+					'CdxInfoChip',
+				],
+			] );
 		}
 	}
 
