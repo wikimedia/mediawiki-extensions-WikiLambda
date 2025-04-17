@@ -18,6 +18,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualStringSet;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualStringSet;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualStringSet
@@ -277,5 +278,349 @@ EOT
 			[ 'Article pour démonstration' ],
 			$testObject->getInnerZObject()->getAliasesForLanguage( $french )
 		);
+	}
+
+	public function testGetSerialized() {
+		$this->registerLangs( [ 'fr', 'es' ] );
+
+		$testObject = new ZMultiLingualStringSet( [
+			new ZMonoLingualStringSet(
+				new ZReference( self::ZLANG['en'] ),
+				[ new ZString( 'Demonstration item' ), new ZString( 'Another demonstration item' ) ]
+			),
+			new ZMonoLingualStringSet(
+				new ZReference( self::ZLANG['es'] ),
+				[ new ZString( 'Artículo para demostración' ), new ZString( 'Otro artículo para demostración' ) ]
+			),
+			new ZMonoLingualStringSet(
+				new ZReference( self::ZLANG['fr'] ),
+				[ new ZString( 'Article pour démonstration' ), new ZString( 'Un autre article pour démonstration' ) ]
+			)
+		] );
+
+		$expectedCanonical = json_decode(
+			<<<EOT
+{
+	"Z1K1": "Z32",
+	"Z32K1": [
+		"Z31",
+		{
+			"Z1K1": "Z31",
+			"Z31K1": "Z1002",
+			"Z31K2": [
+				"Z6",
+				"Demonstration item",
+				"Another demonstration item"
+			]
+		},
+		{
+			"Z1K1": "Z31",
+			"Z31K1": "Z1003",
+			"Z31K2": [
+				"Z6",
+				"Artículo para demostración",
+				"Otro artículo para demostración"
+			]
+		},
+		{
+			"Z1K1": "Z31",
+			"Z31K1": "Z1004",
+			"Z31K2": [
+				"Z6",
+				"Article pour démonstration",
+				"Un autre article pour démonstration"
+			]
+		}
+	]
+}
+EOT
+		);
+
+		$serializedObjectCanonical = $testObject->getSerialized( $testObject::FORM_CANONICAL );
+		$this->assertEquals( $expectedCanonical, $serializedObjectCanonical, 'Canonical serialization' );
+
+		$roundTripped = ZObjectFactory::create( $serializedObjectCanonical );
+		$this->assertEquals( $testObject, $roundTripped, 'Round trip through canonical serialization' );
+
+		$serializedObjectDefault = $testObject->getSerialized();
+		$this->assertEquals( $expectedCanonical, $serializedObjectDefault, 'Default serialization' );
+
+		$expectedNormal = json_decode(
+			<<<EOT
+{
+	"Z1K1": {
+		"Z1K1": "Z9",
+		"Z9K1": "Z32"
+	},
+	"Z32K1": {
+		"Z1K1": {
+			"Z1K1": {
+				"Z1K1": "Z9",
+				"Z9K1": "Z7"
+			},
+			"Z7K1": {
+				"Z1K1": "Z9",
+				"Z9K1": "Z881"
+			},
+			"Z881K1": {
+				"Z1K1": "Z9",
+				"Z9K1": "Z31"
+			}
+		},
+		"K1": {
+			"Z1K1": {
+				"Z1K1": "Z9",
+				"Z9K1": "Z31"
+			},
+			"Z31K1": {
+				"Z1K1": "Z9",
+				"Z9K1": "Z1002"
+			},
+			"Z31K2": {
+				"Z1K1": {
+					"Z1K1": {
+						"Z1K1": "Z9",
+						"Z9K1": "Z7"
+					},
+					"Z7K1": {
+						"Z1K1": "Z9",
+						"Z9K1": "Z881"
+					},
+					"Z881K1": {
+						"Z1K1": "Z9",
+						"Z9K1": "Z6"
+					}
+				},
+				"K1": {
+					"Z1K1": "Z6",
+					"Z6K1": "Demonstration item"
+				},
+				"K2": {
+					"Z1K1": {
+						"Z1K1": {
+							"Z1K1": "Z9",
+							"Z9K1": "Z7"
+						},
+						"Z7K1": {
+							"Z1K1": "Z9",
+							"Z9K1": "Z881"
+						},
+						"Z881K1": {
+							"Z1K1": "Z9",
+							"Z9K1": "Z6"
+						}
+					},
+					"K1": {
+						"Z1K1": "Z6",
+						"Z6K1": "Another demonstration item"
+					},
+					"K2": {
+						"Z1K1": {
+							"Z1K1": {
+								"Z1K1": "Z9",
+								"Z9K1": "Z7"
+							},
+							"Z7K1": {
+								"Z1K1": "Z9",
+								"Z9K1": "Z881"
+							},
+							"Z881K1": {
+								"Z1K1": "Z9",
+								"Z9K1": "Z6"
+							}
+						}
+					}
+				}
+			}
+		},
+		"K2": {
+			"Z1K1": {
+				"Z1K1": {
+					"Z1K1": "Z9",
+					"Z9K1": "Z7"
+				},
+				"Z7K1": {
+					"Z1K1": "Z9",
+					"Z9K1": "Z881"
+				},
+				"Z881K1": {
+					"Z1K1": "Z9",
+					"Z9K1": "Z31"
+				}
+			},
+			"K1": {
+				"Z1K1": {
+					"Z1K1": "Z9",
+					"Z9K1": "Z31"
+				},
+				"Z31K1": {
+					"Z1K1": "Z9",
+					"Z9K1": "Z1003"
+				},
+				"Z31K2": {
+					"Z1K1": {
+						"Z1K1": {
+							"Z1K1": "Z9",
+							"Z9K1": "Z7"
+						},
+						"Z7K1": {
+							"Z1K1": "Z9",
+							"Z9K1": "Z881"
+						},
+						"Z881K1": {
+							"Z1K1": "Z9",
+							"Z9K1": "Z6"
+						}
+					},
+					"K1": {
+						"Z1K1": "Z6",
+						"Z6K1": "Artículo para demostración"
+					},
+					"K2": {
+						"Z1K1": {
+							"Z1K1": {
+								"Z1K1": "Z9",
+								"Z9K1": "Z7"
+							},
+							"Z7K1": {
+								"Z1K1": "Z9",
+								"Z9K1": "Z881"
+							},
+							"Z881K1": {
+								"Z1K1": "Z9",
+								"Z9K1": "Z6"
+							}
+						},
+						"K1": {
+							"Z1K1": "Z6",
+							"Z6K1": "Otro artículo para demostración"
+						},
+						"K2": {
+							"Z1K1": {
+								"Z1K1": {
+									"Z1K1": "Z9",
+									"Z9K1": "Z7"
+								},
+								"Z7K1": {
+									"Z1K1": "Z9",
+									"Z9K1": "Z881"
+								},
+								"Z881K1": {
+									"Z1K1": "Z9",
+									"Z9K1": "Z6"
+								}
+							}
+						}
+					}
+				}
+			},
+			"K2": {
+				"Z1K1": {
+					"Z1K1": {
+						"Z1K1": "Z9",
+						"Z9K1": "Z7"
+					},
+					"Z7K1": {
+						"Z1K1": "Z9",
+						"Z9K1": "Z881"
+					},
+					"Z881K1": {
+						"Z1K1": "Z9",
+						"Z9K1": "Z31"
+					}
+				},
+				"K1": {
+					"Z1K1": {
+						"Z1K1": "Z9",
+						"Z9K1": "Z31"
+					},
+					"Z31K1": {
+						"Z1K1": "Z9",
+						"Z9K1": "Z1004"
+					},
+					"Z31K2": {
+						"Z1K1": {
+							"Z1K1": {
+								"Z1K1": "Z9",
+								"Z9K1": "Z7"
+							},
+							"Z7K1": {
+								"Z1K1": "Z9",
+								"Z9K1": "Z881"
+							},
+							"Z881K1": {
+								"Z1K1": "Z9",
+								"Z9K1": "Z6"
+							}
+						},
+						"K1": {
+							"Z1K1": "Z6",
+							"Z6K1": "Article pour démonstration"
+						},
+						"K2": {
+							"Z1K1": {
+								"Z1K1": {
+									"Z1K1": "Z9",
+									"Z9K1": "Z7"
+								},
+								"Z7K1": {
+									"Z1K1": "Z9",
+									"Z9K1": "Z881"
+								},
+								"Z881K1": {
+									"Z1K1": "Z9",
+									"Z9K1": "Z6"
+								}
+							},
+							"K1": {
+								"Z1K1": "Z6",
+								"Z6K1": "Un autre article pour démonstration"
+							},
+							"K2": {
+								"Z1K1": {
+									"Z1K1": {
+										"Z1K1": "Z9",
+										"Z9K1": "Z7"
+									},
+									"Z7K1": {
+										"Z1K1": "Z9",
+										"Z9K1": "Z881"
+									},
+									"Z881K1": {
+										"Z1K1": "Z9",
+										"Z9K1": "Z6"
+									}
+								}
+							}
+						}
+					}
+				},
+				"K2": {
+					"Z1K1": {
+						"Z1K1": {
+							"Z1K1": "Z9",
+							"Z9K1": "Z7"
+						},
+						"Z7K1": {
+							"Z1K1": "Z9",
+							"Z9K1": "Z881"
+						},
+						"Z881K1": {
+							"Z1K1": "Z9",
+							"Z9K1": "Z31"
+						}
+					}
+				}
+			}
+		}
+	}
+}
+EOT
+		);
+		$serializedObjectNormal = $testObject->getSerialized( $testObject::FORM_NORMAL );
+		$this->assertEquals( $expectedNormal, $serializedObjectNormal, 'Normal serialization' );
+
+		$roundTripped = ZObjectFactory::create( ZObjectUtils::canonicalize( $serializedObjectNormal ) );
+		$this->assertEquals( $testObject, $roundTripped, 'Round trip through normal serialization' );
 	}
 }

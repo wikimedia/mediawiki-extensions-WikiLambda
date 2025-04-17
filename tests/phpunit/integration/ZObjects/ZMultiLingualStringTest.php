@@ -19,6 +19,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString
@@ -419,5 +420,215 @@ EOT
 			'Article pour démonstration',
 			$testObject->getInnerZObject()->getStringForLanguage( $french )
 		);
+	}
+
+	public function testGetSerialized() {
+		$this->registerLangs( [ 'fr', 'pcd', 'zh' ] );
+		$testObject = new ZMultiLingualString( [
+			new ZMonoLingualString(
+				new ZReference( self::ZLANG['en'] ), new ZString( 'twelve' )
+			),
+			new ZMonoLingualString(
+				new ZReference( self::ZLANG['fr'] ), new ZString( 'douze' )
+			),
+			new ZMonoLingualString(
+				new ZReference( self::ZLANG['pcd'] ), new ZString( 'dousse' )
+			),
+			new ZMonoLingualString(
+				new ZReference( self::ZLANG['zh'] ), new ZString( '十二' )
+			),
+		] );
+
+		$expectedCanonical = json_decode(
+			<<<EOT
+{
+	"Z1K1": "Z12",
+	"Z12K1": [
+		"Z11",
+		{
+			"Z1K1": "Z11",
+			"Z11K1": "Z1002",
+			"Z11K2": "twelve"
+		},
+		{
+			"Z1K1": "Z11",
+			"Z11K1": "Z1004",
+			"Z11K2": "douze"
+		},
+		{
+			"Z1K1": "Z11",
+			"Z11K1": "Z1829",
+			"Z11K2": "dousse"
+		},
+		{
+			"Z1K1": "Z11",
+			"Z11K1": "Z1006",
+			"Z11K2": "十二"
+		}
+	]
+}
+EOT
+		);
+		$serializedObjectCanonical = $testObject->getSerialized( $testObject::FORM_CANONICAL );
+		$this->assertEquals( $expectedCanonical, $serializedObjectCanonical );
+
+		$roundTripped = ZObjectFactory::create( $serializedObjectCanonical );
+		$this->assertEquals( $testObject, $roundTripped, 'Round trip through canonical serialization' );
+
+		$serializedObjectDefault = $testObject->getSerialized();
+		$this->assertEquals( $expectedCanonical, $serializedObjectDefault );
+
+		$expectedNormal = json_decode(
+			<<<EOT
+{
+	"Z1K1": {
+		"Z1K1": "Z9",
+		"Z9K1": "Z12"
+	},
+	"Z12K1": {
+		"Z1K1": {
+			"Z1K1": {
+				"Z1K1": "Z9",
+				"Z9K1": "Z7"
+			},
+			"Z7K1": {
+				"Z1K1": "Z9",
+				"Z9K1": "Z881"
+			},
+			"Z881K1": {
+				"Z1K1": "Z9",
+				"Z9K1": "Z11"
+			}
+		},
+		"K1": {
+			"Z1K1": {
+				"Z1K1": "Z9",
+				"Z9K1": "Z11"
+			},
+			"Z11K1": {
+				"Z1K1": "Z9",
+				"Z9K1": "Z1002"
+			},
+			"Z11K2": {
+				"Z1K1": "Z6",
+				"Z6K1": "twelve"
+			}
+		},
+		"K2": {
+			"Z1K1": {
+				"Z1K1": {
+					"Z1K1": "Z9",
+					"Z9K1": "Z7"
+				},
+				"Z7K1": {
+					"Z1K1": "Z9",
+					"Z9K1": "Z881"
+				},
+				"Z881K1": {
+					"Z1K1": "Z9",
+					"Z9K1": "Z11"
+				}
+			},
+			"K1": {
+				"Z1K1": {
+					"Z1K1": "Z9",
+					"Z9K1": "Z11"
+				},
+				"Z11K1": {
+					"Z1K1": "Z9",
+					"Z9K1": "Z1004"
+				},
+				"Z11K2": {
+					"Z1K1": "Z6",
+					"Z6K1": "douze"
+				}
+			},
+			"K2": {
+				"Z1K1": {
+					"Z1K1": {
+						"Z1K1": "Z9",
+						"Z9K1": "Z7"
+					},
+					"Z7K1": {
+						"Z1K1": "Z9",
+						"Z9K1": "Z881"
+					},
+					"Z881K1": {
+						"Z1K1": "Z9",
+						"Z9K1": "Z11"
+					}
+				},
+				"K1": {
+					"Z1K1": {
+						"Z1K1": "Z9",
+						"Z9K1": "Z11"
+					},
+					"Z11K1": {
+						"Z1K1": "Z9",
+						"Z9K1": "Z1829"
+					},
+					"Z11K2": {
+						"Z1K1": "Z6",
+						"Z6K1": "dousse"
+					}
+				},
+				"K2": {
+					"Z1K1": {
+						"Z1K1": {
+							"Z1K1": "Z9",
+							"Z9K1": "Z7"
+						},
+						"Z7K1": {
+							"Z1K1": "Z9",
+							"Z9K1": "Z881"
+						},
+						"Z881K1": {
+							"Z1K1": "Z9",
+							"Z9K1": "Z11"
+						}
+					},
+					"K1": {
+						"Z1K1": {
+							"Z1K1": "Z9",
+							"Z9K1": "Z11"
+						},
+						"Z11K1": {
+							"Z1K1": "Z9",
+							"Z9K1": "Z1006"
+						},
+						"Z11K2": {
+							"Z1K1": "Z6",
+							"Z6K1": "十二"
+						}
+					},
+					"K2": {
+						"Z1K1": {
+							"Z1K1": {
+								"Z1K1": "Z9",
+								"Z9K1": "Z7"
+							},
+							"Z7K1": {
+								"Z1K1": "Z9",
+								"Z9K1": "Z881"
+							},
+							"Z881K1": {
+								"Z1K1": "Z9",
+								"Z9K1": "Z11"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+EOT
+		);
+
+		$serializedObjectNormal = $testObject->getSerialized( $testObject::FORM_NORMAL );
+		$this->assertEquals( $expectedNormal, $serializedObjectNormal );
+
+		$roundTripped = ZObjectFactory::create( ZObjectUtils::canonicalize( $serializedObjectNormal ) );
+		$this->assertEquals( $testObject, $roundTripped, 'Round trip through normal serialization' );
 	}
 }

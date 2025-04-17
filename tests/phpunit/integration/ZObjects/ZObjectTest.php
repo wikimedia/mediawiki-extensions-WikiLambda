@@ -358,4 +358,55 @@ EOT;
 			FormatJson::encode( $zerror->getHumanReadable(), true, FormatJson::UTF8_OK )
 		);
 	}
+
+	public function test_serialize() {
+		// Create type Z111
+		$this->registerLangs( ZTestType::TEST_LANGS );
+		$title = Title::newFromText( ZTestType::TEST_ZID, NS_MAIN );
+		$this->editPage( $title, ZTestType::TEST_ENCODING, "Test creation object", NS_MAIN );
+
+		$testObject = ZObjectFactory::create( (object)[
+					"Z1K1" => "Z111",
+					"Z111K1" => "first demonstration key",
+					"Z111K2" => "second demonstration key"
+		] );
+		$canonical = <<<EOT
+		{
+			"Z1K1": "Z111",
+			"Z111K1": "first demonstration key",
+			"Z111K2": "second demonstration key"
+		}
+EOT;
+		$normal = <<<EOT
+		{
+			"Z1K1": {
+				"Z1K1": "Z9",
+				"Z9K1": "Z111"
+			},
+			"Z111K1": {
+				"Z1K1": "Z6",
+				"Z6K1": "first demonstration key"
+			},
+			"Z111K2": {
+				"Z1K1": "Z6",
+				"Z6K1": "second demonstration key"
+			}
+		}
+EOT;
+
+		$serializedObjectCanonical = $testObject->getSerialized( $testObject::FORM_CANONICAL );
+		$this->assertEquals( json_decode( $canonical ), $serializedObjectCanonical, 'Canonical serialization' );
+
+		$roundTripped = ZObjectFactory::create( $serializedObjectCanonical );
+		$this->assertEquals( $testObject, $roundTripped, 'Round trip through canonical serialization' );
+
+		$serializedObjectDefault = $testObject->getSerialized();
+		$this->assertEquals( json_decode( $canonical ), $serializedObjectDefault, 'Default serialization' );
+
+		$serializedObjectNormal = $testObject->getSerialized( $testObject::FORM_NORMAL );
+		$this->assertEquals( json_decode( $normal ), $serializedObjectNormal, 'Normal serialization' );
+
+		$roundTripped = ZObjectFactory::create( ZObjectUtils::canonicalize( $serializedObjectNormal ) );
+		$this->assertEquals( $testObject, $roundTripped, 'Round trip through normal serialization' );
+	}
 }

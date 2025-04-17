@@ -12,9 +12,11 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ZObjects;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZString
@@ -187,4 +189,28 @@ class ZStringTest extends WikiLambdaIntegrationTestCase {
 		$this->assertFalse( $testObject->isValid(), 'ZStrings of non-strings are not valid' );
 	}
 
+	public function testGetSerialized() {
+		$testObject = new ZString( 'Test string' );
+
+		$serializedObjectCanonical = $testObject->getSerialized(
+			$testObject::FORM_CANONICAL,
+			'Canonical serialization'
+		);
+		$this->assertEquals( 'Test string', $serializedObjectCanonical, 'Canonical serialization' );
+
+		$roundTripped = ZObjectFactory::create( $serializedObjectCanonical );
+		$this->assertEquals( $testObject, $roundTripped, 'Round trip through canonical serialization' );
+
+		$this->assertEquals( 'Test string', $testObject->getSerialized(), 'Default serialization' );
+
+		$serializedObjectNormal = $testObject->getSerialized( $testObject::FORM_NORMAL );
+		$this->assertEquals(
+			json_decode( '{"Z1K1":"Z6","Z6K1":"Test string"}' ),
+			$serializedObjectNormal,
+			'Normal serialization'
+		);
+
+		$roundTripped = ZObjectFactory::create( ZObjectUtils::canonicalize( $serializedObjectNormal ) );
+		$this->assertEquals( $testObject, $roundTripped, 'Round trip through normal serialization' );
+	}
 }

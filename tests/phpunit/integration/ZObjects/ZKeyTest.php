@@ -20,6 +20,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZKey
@@ -41,14 +42,14 @@ class ZKeyTest extends WikiLambdaIntegrationTestCase {
 			new ZReference( self::ZLANG['en'] ),
 			new ZString( 'Demonstration item' )
 		);
-		$testLabelSet = new ZMultiLingualString( [ $testString ] );
-		$testObject = new ZKey( $testRef, $testKey, $testLabelSet );
+		$multipleLabelSet = new ZMultiLingualString( [ $testString ] );
+		$testObject = new ZKey( $testRef, $testKey, $multipleLabelSet );
 
 		$this->assertSame( 'Z3', $testObject->getZType() );
 		$this->assertSame( 'Z6', $testObject->getKeyType() );
 		$this->assertSame( 'Z6K1', $testObject->getKeyId() );
 		$this->assertSame( $testString->getString(), $testObject->getKeyLabel()->getStringForLanguageCode( 'en' ) );
-		$this->assertArrayEquals( [ $testKey, $testRef, $testLabelSet ], $testObject->getZValue() );
+		$this->assertArrayEquals( [ $testKey, $testRef, $multipleLabelSet ], $testObject->getZValue() );
 		$this->assertTrue( $testObject->isValid() );
 	}
 
@@ -212,7 +213,7 @@ EOT
 			new ZReference( self::ZLANG['fr'] ), new ZString( 'Demonstration item' )
 		);
 		$emptyLabelSet = new ZMultiLingualString( [] );
-		$testLabelSet = new ZMultiLingualString( [
+		$multipleLabelSet = new ZMultiLingualString( [
 			new ZMonoLingualString(
 				new ZReference( self::ZLANG['en'] ), new ZString( 'Demonstration item' )
 			),
@@ -261,7 +262,7 @@ EOT
 			) ], null, null, false ],
 
 			'singleton labelset' => [ $testRef, $testId, $emptyLabelSet, null, null, true ],
-			'multiple labelset' => [ $testRef, $testId, $testLabelSet, null, [ 'it', 'de', 'fr' ], true ],
+			'multiple labelset' => [ $testRef, $testId, $multipleLabelSet, null, [ 'it', 'de', 'fr' ], true ],
 
 			'invalid is identity (string)' => [ $testRef, $testId, [], 'true', null, false ],
 			'invalid is identity (bool)' => [ $testRef, $testId, [], true, null, false ],
@@ -269,6 +270,295 @@ EOT
 			'valid is identity Ref(true)' => [ $testRef, $testId, [], $trueRef, null, true ],
 			'valid is identity Ref(false)' => [ $testRef, $testId, [], $falseRef, null, true ],
 			'valid is identity Literal(true)' => [ $testRef, $testId, [], $trueLiteral, null, true ],
+		];
+	}
+
+	/**
+	 * @dataProvider provideGetSerialized
+	 */
+	public function testGetSerialized(
+		$inputType, $inputIdentity, $inputLabel, $inputLangs, $canonicalString, $normalString
+	) {
+		if ( $inputLangs ) {
+			$this->registerLangs( $inputLangs );
+		}
+
+		$expectedCanonical = json_decode( $canonicalString );
+		$expectedNormal = json_decode( $normalString );
+		$testObject = new ZKey( $inputType, $inputIdentity, $inputLabel );
+
+		$serializedObjectCanonical = $testObject->getSerialized( $testObject::FORM_CANONICAL );
+		$this->assertEquals( $expectedCanonical, $serializedObjectCanonical, 'Canonical serialization' );
+
+		$roundTripped = ZObjectFactory::create( $serializedObjectCanonical );
+		$this->assertEquals( $testObject, $roundTripped, 'Round trip through canonical serialization' );
+
+		$serializedObjectDefault = $testObject->getSerialized();
+		$this->assertEquals( $expectedCanonical, $serializedObjectDefault, 'Default serialization' );
+
+		$serializedObjectNormal = $testObject->getSerialized( $testObject::FORM_NORMAL );
+		$this->assertEquals( $expectedNormal, $serializedObjectNormal, 'Normal serialization' );
+
+		$roundTripped = ZObjectFactory::create( ZObjectUtils::canonicalize( $serializedObjectNormal ) );
+		$this->assertEquals( $testObject, $roundTripped, 'Round trip through normal serialization' );
+	}
+
+	public function provideGetSerialized() {
+		$testRef = new ZReference( 'Z6' );
+		$testId = new ZString( 'Z6K1' );
+		$emptyLabelSet = new ZMultiLingualString( [] );
+		$multipleLabelSet = new ZMultiLingualString( [
+			new ZMonoLingualString(
+				new ZReference( self::ZLANG['en'] ), new ZString( 'Demonstration item' )
+			),
+			new ZMonoLingualString(
+				new ZReference( self::ZLANG['it'] ), new ZString( 'oggetto per dimostrazione' )
+			),
+			new ZMonoLingualString(
+				new ZReference( self::ZLANG['de'] ), new ZString( 'Gegenstand zur Demonstration' )
+			),
+			new ZMonoLingualString(
+				new ZReference( self::ZLANG['fr'] ), new ZString( 'article pour démonstration' )
+			)
+		] );
+
+		return [
+			'empty labelset' => [ $testRef, $testId, $emptyLabelSet, null,
+			<<<EOT
+			{
+				"Z1K1": "Z3",
+				"Z3K1": "Z6",
+				"Z3K2": "Z6K1",
+				"Z3K3": {
+					"Z1K1": "Z12",
+					"Z12K1": ["Z11"]
+				}
+			}
+			EOT,
+			<<<EOT
+			{
+				"Z1K1": {
+					"Z1K1": "Z9",
+					"Z9K1": "Z3"
+				},
+				"Z3K1": {
+					"Z1K1": "Z9",
+					"Z9K1": "Z6"
+				},
+				"Z3K2": {
+					"Z1K1": "Z6",
+					"Z6K1": "Z6K1"
+				},
+				"Z3K3": {
+					"Z1K1": {
+						"Z1K1": "Z9",
+						"Z9K1": "Z12"
+					},
+					"Z12K1": {
+						"Z1K1": {
+							"Z1K1": {
+								"Z1K1": "Z9",
+								"Z9K1": "Z7"
+							},
+							"Z7K1": {
+								"Z1K1": "Z9",
+								"Z9K1": "Z881"
+							},
+							"Z881K1": {
+								"Z1K1": "Z9",
+								"Z9K1": "Z11"
+							}
+						}
+					}
+				}
+			}
+			EOT ],
+			'multiple labelset' => [ $testRef, $testId, $multipleLabelSet, [ 'it', 'de', 'fr' ],
+			<<<EOT
+			{
+				"Z1K1": "Z3",
+				"Z3K1": "Z6",
+				"Z3K2": "Z6K1",
+				"Z3K3": {
+					"Z1K1": "Z12",
+					"Z12K1": ["Z11", {
+						"Z1K1": "Z11",
+						"Z11K1": "Z1002",
+						"Z11K2": "Demonstration item"
+					}, {
+						"Z1K1": "Z11",
+						"Z11K1": "Z1787",
+						"Z11K2": "oggetto per dimostrazione"
+					}, {
+						"Z1K1": "Z11",
+						"Z11K1": "Z1430",
+						"Z11K2": "Gegenstand zur Demonstration"
+					}, {
+						"Z1K1": "Z11",
+						"Z11K1": "Z1004",
+						"Z11K2": "article pour démonstration"
+					}]
+				}
+			}
+			EOT,
+			<<<EOT
+			{
+				"Z1K1": {
+					"Z1K1": "Z9",
+					"Z9K1": "Z3"
+				},
+				"Z3K1": {
+					"Z1K1": "Z9",
+					"Z9K1": "Z6"
+				},
+				"Z3K2": {
+					"Z1K1": "Z6",
+					"Z6K1": "Z6K1"
+				},
+				"Z3K3": {
+					"Z1K1": {
+						"Z1K1": "Z9",
+						"Z9K1": "Z12"
+					},
+					"Z12K1": {
+						"Z1K1": {
+							"Z1K1": {
+								"Z1K1": "Z9",
+								"Z9K1": "Z7"
+							},
+							"Z7K1": {
+								"Z1K1": "Z9",
+								"Z9K1": "Z881"
+							},
+							"Z881K1": {
+								"Z1K1": "Z9",
+								"Z9K1": "Z11"
+							}
+						},
+						"K1": {
+							"Z1K1": {
+								"Z1K1": "Z9",
+								"Z9K1": "Z11"
+							},
+							"Z11K1": {
+								"Z1K1": "Z9",
+								"Z9K1": "Z1002"
+							},
+							"Z11K2": {
+								"Z1K1": "Z6",
+								"Z6K1": "Demonstration item"
+							}
+						},
+						"K2": {
+							"Z1K1": {
+								"Z1K1": {
+									"Z1K1": "Z9",
+									"Z9K1": "Z7"
+								},
+								"Z7K1": {
+									"Z1K1": "Z9",
+									"Z9K1": "Z881"
+								},
+								"Z881K1": {
+									"Z1K1": "Z9",
+									"Z9K1": "Z11"
+								}
+							},
+							"K1": {
+								"Z1K1": {
+									"Z1K1": "Z9",
+									"Z9K1": "Z11"
+								},
+								"Z11K1": {
+									"Z1K1": "Z9",
+									"Z9K1": "Z1787"
+								},
+								"Z11K2": {
+									"Z1K1": "Z6",
+									"Z6K1": "oggetto per dimostrazione"
+								}
+							},
+							"K2": {
+								"Z1K1": {
+									"Z1K1": {
+										"Z1K1": "Z9",
+										"Z9K1": "Z7"
+									},
+									"Z7K1": {
+										"Z1K1": "Z9",
+										"Z9K1": "Z881"
+									},
+									"Z881K1": {
+										"Z1K1": "Z9",
+										"Z9K1": "Z11"
+									}
+								},
+								"K1": {
+									"Z1K1": {
+										"Z1K1": "Z9",
+										"Z9K1": "Z11"
+									},
+									"Z11K1": {
+										"Z1K1": "Z9",
+										"Z9K1": "Z1430"
+									},
+									"Z11K2": {
+										"Z1K1": "Z6",
+										"Z6K1": "Gegenstand zur Demonstration"
+									}
+								},
+								"K2": {
+									"Z1K1": {
+										"Z1K1": {
+											"Z1K1": "Z9",
+											"Z9K1": "Z7"
+										},
+										"Z7K1": {
+											"Z1K1": "Z9",
+											"Z9K1": "Z881"
+										},
+										"Z881K1": {
+											"Z1K1": "Z9",
+											"Z9K1": "Z11"
+										}
+									},
+									"K1": {
+										"Z1K1": {
+											"Z1K1": "Z9",
+											"Z9K1": "Z11"
+										},
+										"Z11K1": {
+											"Z1K1": "Z9",
+											"Z9K1": "Z1004"
+										},
+										"Z11K2": {
+											"Z1K1": "Z6",
+											"Z6K1": "article pour démonstration"
+										}
+									},
+									"K2": {
+										"Z1K1": {
+											"Z1K1": {
+												"Z1K1": "Z9",
+												"Z9K1": "Z7"
+											},
+											"Z7K1": {
+												"Z1K1": "Z9",
+												"Z9K1": "Z881"
+											},
+											"Z881K1": {
+												"Z1K1": "Z9",
+												"Z9K1": "Z11"
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			EOT ],
 		];
 	}
 }
