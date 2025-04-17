@@ -7,7 +7,7 @@
 -->
 <template>
 	<div class="ext-wikilambda-app-expandable-description">
-		<p
+		<span
 			ref="descriptionRef"
 			class="ext-wikilambda-app-expandable-description__text"
 			:class="{ 'ext-wikilambda-app-expandable-description__text--expanded': isExpanded }"
@@ -15,7 +15,7 @@
 			:dir="description.langDir"
 		>
 			{{ description.label }}
-		</p>
+		</span>
 		<button
 			v-if="isExpandable"
 			type="button"
@@ -123,10 +123,12 @@ module.exports = exports = defineComponent( {
 
 	&__text {
 		margin: 0;
+		padding: 0;
 		overflow: hidden;
 		-webkit-box-orient: vertical;
 		-webkit-line-clamp: 2;
 		display: -webkit-box;
+		line-height: var( --line-height-current );
 
 		&--expanded {
 			-webkit-line-clamp: unset;
