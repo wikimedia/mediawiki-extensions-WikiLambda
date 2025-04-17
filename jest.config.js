@@ -33,6 +33,10 @@ module.exports = {
 
 	testEnvironment: 'jsdom',
 
+	testEnvironmentOptions: {
+		customExportConditions: [ 'node', 'node-addons' ]
+	},
+
 	clearMocks: true,
 
 	coverageProvider: 'v8',

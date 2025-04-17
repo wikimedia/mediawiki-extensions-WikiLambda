@@ -216,8 +216,8 @@ describe( 'Wikidata Items Pinia store', () => {
 				const items = [ 'Q333333', 'Q444444' ];
 				const promise = store.fetchItems( { ids: items } );
 
-				expect( store.items.Q333333 ).toBe( promise );
-				expect( store.items.Q444444 ).toBe( promise );
+				expect( store.items.Q333333 ).toStrictEqual( promise );
+				expect( store.items.Q444444 ).toStrictEqual( promise );
 
 				await promise;
 			} );

@@ -299,8 +299,8 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 				const lexemes = [ 'L333333', 'L444444' ];
 				const promise = store.fetchLexemes( { ids: lexemes } );
 
-				expect( store.lexemes.L333333 ).toBe( promise );
-				expect( store.lexemes.L444444 ).toBe( promise );
+				expect( store.lexemes.L333333 ).toStrictEqual( promise );
+				expect( store.lexemes.L444444 ).toStrictEqual( promise );
 
 				await promise;
 			} );
