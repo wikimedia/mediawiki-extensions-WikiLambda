@@ -114,8 +114,6 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 			return true;
 		}
 
-		$commentMessage = null;
-
 		if ( $changeAction !== 'edit' ) {
 			switch ( $changeData['type'] ) {
 				case ZTypeRegistry::Z_FUNCTION:
@@ -195,11 +193,11 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 					break;
 
 				case ZTypeRegistry::Z_IMPLEMENTATION:
-					$commentMessage = 'wikilambda-recentchanges-explanation-edit-implementation';
+					$changeData['message'] = 'wikilambda-recentchanges-explanation-edit-implementation';
 					break;
 
 				case ZTypeRegistry::Z_TESTER:
-					$commentMessage = 'wikilambda-recentchanges-explanation-edit-tester';
+					$changeData['message'] = 'wikilambda-recentchanges-explanation-edit-tester';
 					break;
 
 				default:
