@@ -3,6 +3,7 @@
 		"authors": [
 			"Ajeje Brazorf",
 			"DreZhsh",
+			"EmDashUser002",
 			"Gomoko",
 			"JLTRY",
 			"Lepticed",
@@ -107,6 +108,7 @@
 	"apihelp-wikilambda_perform_test-param-zimplementations": "La liste des identifiants de Z-MiseEnŒuvre (ou objets) à tester",
 	"apihelp-wikilambda_perform_test-param-ztesters": "La liste des identifiants des Z-Testeurs (ou objets) à tester",
 	"apihelp-wikilambda_perform_test-param-nocache": "S’il faut ou non utiliser le cache",
+	"wikilambda-restapi-disabled-repo-mode-only": "Cette API n'est disponible que sur le wiki “repo” principal, Wikifunctions.org.",
 	"wikilambda-restapi-fetch-too-many": "Vous avez demandé $1 Objets, ce qui est trop en une seule fois ($2 au maximum)",
 	"wikilambda-restapi-revision-mismatch": "Vous avez demandé la révision $1 de l'objet « $2 », elle n'a pas été trouvée"
 }

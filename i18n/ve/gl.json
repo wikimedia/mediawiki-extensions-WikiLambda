@@ -9,6 +9,7 @@
 	"wikilambda-recentchanges-edit-legend": "Edición de Wikifuncións",
 	"wikilambda-recentchanges-edit-letter": "F",
 	"wikilambda-recentchanges-edit-title": "Edición de Wikifuncións",
+	"wikilambda-recentchanges-entry-function": "Función",
 	"wikilambda-recentchanges-explanation-connect-implementation": "{{PLURAL:$1|Implementación conectada|$1 implementacións conectadas}}: $2",
 	"wikilambda-recentchanges-explanation-connect-tester": "{{PLURAL:$1|Caso de proba conectado|$1 casos de proba conectados}}: $2",
 	"wikilambda-recentchanges-explanation-delete-function": "Definición da función eliminada",

@@ -9,6 +9,7 @@
 	"wikilambda-recentchanges-edit-legend": "Muokkaus Wikifunctionsista",
 	"wikilambda-recentchanges-edit-letter": "F",
 	"wikilambda-recentchanges-edit-title": "Wikifunctions-muokkaus",
+	"wikilambda-recentchanges-entry-function": "Funktio",
 	"wikilambda-recentchanges-explanation-connect-implementation": "{{PLURAL:$1|Yhdistetty toteutus|$1 yhdistettyä toteutusta}}: $2",
 	"wikilambda-recentchanges-explanation-connect-tester": "{{PLURAL:$1|Yhdistetty testitapaus|$1 yhdistettyä testitapausta}}: $2",
 	"wikilambda-recentchanges-explanation-delete-function": "Poistettu funktion määritelmä",

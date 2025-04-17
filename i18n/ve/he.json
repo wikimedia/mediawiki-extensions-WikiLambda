@@ -10,6 +10,7 @@
 	"wikilambda-recentchanges-edit-legend": "עריכה מוויקיפונקציות",
 	"wikilambda-recentchanges-edit-letter": "פ",
 	"wikilambda-recentchanges-edit-title": "עריכה של ויקיפונקציות",
+	"wikilambda-recentchanges-entry-function": "פונקציה",
 	"wikilambda-recentchanges-explanation-connect-implementation": "{{PLURAL:$1|המימוש המחובר|$1 מימושים מחוברים:}} $2",
 	"wikilambda-recentchanges-explanation-connect-tester": "{{PLURAL:$1|מקרה הבדיקה המחובר $2|$1 מקרי בדיקה מחוברים:}} $2",
 	"wikilambda-recentchanges-explanation-delete-function": "נגדרת הפונקציה נמחקה",
