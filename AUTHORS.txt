@@ -3,60 +3,68 @@ The WikiLambda team comprises several contributors, of whom those who have commi
 * James D. Forrester <jforrester@wikimedia.org>
 * Genoveva Galarza <ggalarzaheredero@wikimedia.org>
 * Lindsay Wardell <three060@gmail.com>
+* Daphne Smit <dsmit@wikimedia.org>
 * Julia Kieserman <jkieserman@wikimedia.org>
 * Dani de Waal <ddwaal-ctr@wikimedia.org>
 * David Martin <dmartin@wikimedia.org>
 * Simone Cuomo <simone@thisdot.co>
 * Adesoji <temitopeadesoji23@gmail.com>
 * Cory Massaro <cmassaro@wikimedia.org>
-* EWright <edmund.wright@gmail.com>
-* Denny Vrandečić <dvrandecic@wikimedia.org>
-* teleosteen <florent.git@zeteo.me>
-* Grace Choi <gchoi@wikimedia.org>
 * Umherirrender <umherirrender_de.wp@web.de>
-* nik-55 <nik.xyz.in@gmail.com>
+* Edmund Wright <edmund.wright@gmail.com>
+* Denny Vrandečić <dvrandecic@wikimedia.org>
+* Grace Choi <gchoi@wikimedia.org>
+* teleosteen <florent.git@zeteo.me>
 * Vaughn Walters <vwalters@wikimedia.org>
+* nik-55 <nik.xyz.in@gmail.com>
 * Arthur P. Smith <arthurpsmith@gmail.com>
-* Daphne Smit <dsmit@wikimedia.org>
-* Gabriel Lee <chihonglee777@gmail.com>
-* Allan Jeremy <allan.jeremy@thisdot.co>
 * Amir E. Aharoni <amir.aharoni@mail.huji.ac.il>
+* Gabriel Lee <chihonglee777@gmail.com>
+* Fomafix <fomafix@googlemail.com>
+* Allan Jeremy <allan.jeremy@thisdot.co>
 * Amin Al Hazwani <aalhazwani@wikimedia.org>
 * Stef Dunlap <sdunlap@wikimedia.org>
 * Timo Tijhof <krinkle@fastmail.com>
 * DannyS712 <DannyS712.wiki@gmail.com>
+* Ed Sanders <esanders@wikimedia.org>
 * Lucas Werkmeister <mail@lucaswerkmeister.de>
 * Roan Kattouw <roan.kattouw@gmail.com>
 * Thiemo Kreuz <thiemo.kreuz@wikimedia.de>
 * Carrie Coxwell <ccoxwell@wikimedia.org>
 * Daimona Eaytoy <daimona.wiki@gmail.com>
+* Željko Filipin <zeljko.filipin@gmail.com>
+* Bartosz Dziewoński <dziewonski@fastmail.fm>
 * Derick Alangi <alangiderick@gmail.com>
-* Ed Sanders <esanders@wikimedia.org>
 * Klein Muçi <kleinmuci@gmail.com>
 * Mary Yang <myang-ctr@wikimedia.org>
-* Željko Filipin <zeljko.filipin@gmail.com>
+* Abbe98 <albin.post@gmail.com>
 * Alexander Vorwerk <zabe@avorwerk.net>
 * Anne Tomasevich <atomasevich@wikimedia.org>
-* Fomafix <fomafix@googlemail.com>
+* C. Scott Ananian <cscott@cscott.net>
 * Ori Livneh <ori.livneh@gmail.com>
+* Taavi Väänänen <hi@taavi.wtf>
 * sushrith <bogisushrith@gmail.com>
+* Aditya Kumar <adityakumar2019.ak@gmail.com>
 * Amir Sarabadani <ladsgroup@gmail.com>
 * Ammar Abdulhamid <ammarpad@yahoo.com>
-* Bartosz Dziewoński <matma.rex@gmail.com>
-* C. Scott Ananian <cscott@cscott.net>
+* Andre Klapper <a9016009@gmx.de>
 * Eric Gardner <gardner.ec@gmail.com>
 * Kosta Harlan <kharlan@wikimedia.org>
 * Marco Fossati <fossati@spaziodati.eu>
 * Michał Łazowik <mlazowik@gmail.com>
 * Reedy <reedy@wikimedia.org>
 * Santiago Faci <sfaci@wikimedia.org>
+* SomeRandomDeveloper <thisisnotmyname275@gmail.com>
+* Tyler Cipriani <tcipriani@wikimedia.org>
 * Volker E <volker.e@wikimedia.org>
 * Wandji69 <collinschuwa@gmail.com>
 * Winston Sung <winston21.sung@gmail.com>
 * appare45 <kaibatsu35.7m45@gmail.com>
 * dr0ptp4kt <abaso@wikimedia.org>
+* lwatson <lwatson@wikimedia.org>
 * osamaahmed17 <osamaahmedtahir17@gmail.com>
 * punithnayak <npunith125@gmail.com>
+* williamavery <will@willavery.net>
 
 … as well as many translation contributors, whose work is represented on TranslateWiki.net.
 
