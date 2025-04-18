@@ -5,10 +5,12 @@
 			"JLTRY"
 		]
 	},
+	"wikilambda-fragment-disabled": "Les appels à Wikifunctions sont actuellement désactivés. Vous voudrez peut-être remplacer cet appel.",
 	"wikilambda-fragment-pending": "⏳ La fonction est en exécution…",
 	"wikilambda-recentchanges-edit-legend": "Modifier depuis Wikifunctions",
 	"wikilambda-recentchanges-edit-letter": "F",
 	"wikilambda-recentchanges-edit-title": "Wikifunctions modifier",
+	"wikilambda-recentchanges-entry-function": "Fonction",
 	"wikilambda-recentchanges-explanation-connect-implementation": "Connecté {{PLURAL:$1| Implémentation| $1 Implémentations :}} $2",
 	"wikilambda-recentchanges-explanation-connect-tester": "Connecté {{PLURAL:$1| Cas de test| $1 Cas de test :}} $2",
 	"wikilambda-recentchanges-explanation-delete-function": "Définition de fonction supprimée",
@@ -26,6 +28,8 @@
 	"wikilambda-recentchanges-filter-label": "Modifications de Wikifunctions",
 	"wikilambda-recentchanges-filter-rc-pref": "Afficher les modifications de Wikifunctions dans les changements récents",
 	"wikilambda-recentchanges-filter-wl-pref": "Afficher les modifications de Wikifunctions dans votre liste de surveillance",
+	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Chargement",
+	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "L'aperçu a pris trop de temps",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Choisissez une option",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Fonction]] de Wikifunctions",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Lire moins",
