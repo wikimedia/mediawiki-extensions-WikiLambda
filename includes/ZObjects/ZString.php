@@ -25,7 +25,7 @@ class ZString extends ZObject {
 		}
 
 		if ( is_array( $value ) ) {
-			$this->data[ ZTypeRegistry::Z_STRING_VALUE ] = $value[0];
+			$this->data[ ZTypeRegistry::Z_STRING_VALUE ] = $value[0] ?? '';
 			return;
 		}
 

@@ -595,7 +595,7 @@ class ZObjectFactory {
 		}
 
 		// Invalid type: Z1K1 contains something else than a ZReference or a ZFunctionCall
-		wfDebugLog( 'WikiLambda', __METHOD__ . ': Z1K1 is not Z9 or a Z7: ' . $type->getZValue() );
+		wfDebugLog( 'WikiLambda', __METHOD__ . ': Z1K1 is not Z9 or a Z7: ' . var_export( $type->getZValue(), true ) );
 		throw new ZErrorException(
 			ZErrorFactory::createZErrorInstance(
 				ZErrorTypeRegistry::Z_ERROR_REFERENCE_VALUE_INVALID,
