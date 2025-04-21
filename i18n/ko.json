@@ -7,7 +7,8 @@
 			"Ykhwong",
 			"Yunbj",
 			"렌즈",
-			"Whatback11"
+			"Whatback11",
+			"YeBoy371"
 		]
 	},
 	"wikilambda-invalidzobjecttitle": "지정된 '$1' 제목은 ZObject에 유효하지 않습니다.",
@@ -39,6 +40,7 @@
 	"wikilambda-publishchanges": "변경사항 게시",
 	"wikilambda-savechanges": "변경사항 저장",
 	"wikilambda-summarylabel": "요약:",
+	"wikilambda-languagelabel": "언어",
 	"wikilambda-loading": "데이터 로드 중",
 	"wikilambda-editor-label-addlanguage-label": "언어 선택",
 	"wikilambda-editor-label-removelanguage-tooltip": "이 레이블에서 이 언어를 제거합니다",
@@ -89,10 +91,12 @@
 	"wikilambda-metadata-add-alias": "다른 이름 추가",
 	"wikilambda-function-is-attached": "이 객체는 객체의 함수와 연결되어 있습니다.",
 	"wikilambda-function-is-not-attached": "이 객체는 객체의 함수와 연결되어 있지 않습니다.",
+	"wikilambda-function-definition-name-label": "이름",
 	"wikilambda-function-definition-edit": "정의 편집",
 	"wikilambda-function-implementation-name-label": "이름",
 	"wikilambda-function-implementation-language-label": "언어",
 	"wikilambda-function-definition-alias-label": "다른 이름",
+	"wikilambda-function-definition-footer-label": "편집 요약",
 	"wikilambda-function-definition-inputs-item-selector-placeholder": "유형을 선택하세요.",
 	"wikilambda-function-definition-output-label": "출력 종류",
 	"wikilambda-function-definition-output-selector": "유형을 선택하세요.",
@@ -108,6 +112,7 @@
 	"wikilambda-editor-name-title": "이름",
 	"wikilambda-editor-name-aliases": "다른 이름",
 	"wikilambda-editor-input-title": "입력",
+	"wikilambda-editor-default-name": "제목 없음",
 	"wikilambda-editor-input-type-placeholder": "입력 종류",
 	"wikilambda-editor-input-label-placeholder": "이 입력의 이름은 무엇입니까?",
 	"wikilambda-editor-input-typed-list-placeholder": "리스트 타입",
