@@ -17,6 +17,7 @@ use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
 use Wikimedia\ParamValidator\ParamValidator;
 
@@ -98,8 +99,11 @@ class ApiZObjectFetcher extends WikiLambdaApiBase {
 	 * @codeCoverageIgnore
 	 */
 	protected function getAllowedParams(): array {
-		// TODO (T330033): Consider injecting this service rather than just fetching from main
-		$zObjectStore = WikiLambdaServices::getZObjectStore();
+		// Don't try to read the supported languages from the DB on client wikis, we can't.
+		$supportedLanguageCodes =
+			( MediaWikiServices::getInstance()->getMainConfig()->get( 'WikiLambdaEnableRepoMode' ) ) ?
+			WikiLambdaServices::getZObjectStore()->fetchAllZLanguageCodes() :
+			[];
 
 		return [
 			'zids' => [
@@ -112,7 +116,7 @@ class ApiZObjectFetcher extends WikiLambdaApiBase {
 				ParamValidator::PARAM_ISMULTI => true,
 			],
 			'language' => [
-				ParamValidator::PARAM_TYPE => $zObjectStore->fetchAllZLanguageCodes(),
+				ParamValidator::PARAM_TYPE => $supportedLanguageCodes,
 				ParamValidator::PARAM_REQUIRED => false,
 			]
 		];
