@@ -11,6 +11,7 @@
 			"렌즈"
 		]
 	},
+	"action-wikifunctions-run": "공개 API에서 함수 실행",
 	"action-wikilambda-create-function": "새 함수 객체 만들기",
 	"action-wikilambda-create-language": "새 자연어 객체 만들기",
 	"action-wikilambda-create-programming": "새 프로그래밍 언어 객체 만들기",
@@ -21,6 +22,7 @@
 	"content-model-zobject": "위키람다 객체",
 	"group-functionmaintainer": "유지관리자",
 	"group-functionmaintainer-member": "{{GENDER:$1|유지관리자}}",
+	"right-wikifunctions-run": "공개 API에서 함수 실행",
 	"right-wikilambda-create-function": "새 함수 객체 만들기",
 	"right-wikilambda-create-language": "새 자연어 객체 만들기",
 	"right-wikilambda-create-tester": "새 테스트 케이스 객체 만들기",
@@ -90,6 +92,8 @@
 	"wikilambda-function-definition-output-selector": "유형 선택",
 	"wikilambda-function-definition-output-type-label": "유형",
 	"wikilambda-function-details-summary-learn-more": "리뷰 과정 대해 더 알아보기",
+	"wikilambda-function-evaluation-restriction-warning": "죄송합니다! 현재 로그인한 사용자만 함수를 실행할 수 있습니다.",
+	"wikilambda-function-evaluator-run-function": "함수 실행",
 	"wikilambda-function-evaluator-running": "실행 중…",
 	"wikilambda-function-explorer-copied-text": "복사 완료!",
 	"wikilambda-function-explorer-name-title": "이름",
@@ -197,6 +201,7 @@
 	"wikilambda-tester-status-run": "실행",
 	"wikilambda-tester-status-running": "실행 중…",
 	"wikilambda-typeunavailable": "인식할 수 없는 유형",
+	"wikilambda-unknown-exec-error-message": "함수를 실행할 수 없습니다. 다시 시도해 주세요.",
 	"wikilambda-validation-error-description-toolong": "$1의 설명은 {{PLURAL:$2|$2자}} 이하여야 합니다.",
 	"wikilambda-validation-error-name-toolong": "$1의 이름은 {{PLURAL:$2|$2자}} 이하여야 합니다.",
 	"wikilambda-wikidata-item-selector-placeholder": "위키데이터 항목 선택",

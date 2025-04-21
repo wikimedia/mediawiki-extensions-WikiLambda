@@ -4,10 +4,12 @@
 			"McDutchie"
 		]
 	},
+	"wikilambda-fragment-disabled": "Le appellos a Wikifunctiones es actualmente disactivate. Considera reimplaciar iste appello.",
 	"wikilambda-fragment-pending": "⏳ Le function es appellate…",
 	"wikilambda-recentchanges-edit-legend": "Modification desde Wikifunctiones",
 	"wikilambda-recentchanges-edit-letter": "F",
 	"wikilambda-recentchanges-edit-title": "Modification Wikifunctiones",
+	"wikilambda-recentchanges-entry-function": "Function",
 	"wikilambda-recentchanges-explanation-connect-implementation": "{{PLURAL:$1|Implementation|$1 implementationes}} connectite: $2",
 	"wikilambda-recentchanges-explanation-connect-tester": "{{PLURAL:$1|Caso|$1 casos}} de test connectite: $2",
 	"wikilambda-recentchanges-explanation-delete-function": "Definition del function delite",
@@ -25,6 +27,8 @@
 	"wikilambda-recentchanges-filter-label": "Modificationes desde Wikifunctiones",
 	"wikilambda-recentchanges-filter-rc-pref": "Monstrar modificationes facite desde Wikifunctiones in le modificationes recente",
 	"wikilambda-recentchanges-filter-wl-pref": "Monstrar modificationes facite desde Wikifunctiones in tu observatorio",
+	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Cargamento in curso",
+	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "Le previsualisation ha prendite troppo de tempore",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Elige un option",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Function]] de Wikifunctiones",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Leger minus",

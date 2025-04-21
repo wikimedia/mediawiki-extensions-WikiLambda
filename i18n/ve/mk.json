@@ -9,6 +9,7 @@
 	"wikilambda-recentchanges-edit-legend": "Уреди од Викифункции",
 	"wikilambda-recentchanges-edit-letter": "Ф",
 	"wikilambda-recentchanges-edit-title": "Уредување со Викифункции",
+	"wikilambda-recentchanges-entry-function": "Функција",
 	"wikilambda-recentchanges-explanation-connect-implementation": "{{PLURAL:$1|Поврзано спроведување|Поврзани $1 спроведувања:}} $2",
 	"wikilambda-recentchanges-explanation-connect-tester": "{{PLURAL:$1|Поврзан пробен пример|Поврзани $1 пробни примери:}} $2",
 	"wikilambda-recentchanges-explanation-delete-function": "Избришана определба на функцијата",
