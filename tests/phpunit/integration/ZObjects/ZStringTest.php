@@ -59,6 +59,12 @@ class ZStringTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 'Z6', $testObject->getZType() );
 		$this->assertSame( 'Test', $testObject->getZValue() );
 
+		// Try the constructor with an empty array
+		$testObject = new ZString( [] );
+		$this->assertTrue( $testObject->isValid() );
+		$this->assertSame( 'Z6', $testObject->getZType() );
+		$this->assertSame( '', $testObject->getZValue() );
+
 		// Try the constructor with an array of strings and other things
 		$testObject = new ZString( [ 'Tests', $testObject, 'hello' ] );
 		$this->assertTrue( $testObject->isValid() );
