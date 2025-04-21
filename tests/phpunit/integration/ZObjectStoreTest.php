@@ -13,6 +13,7 @@ use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
+use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectPage;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
@@ -45,6 +46,36 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	public function testGetNextAvailableZid_first() {
 		$zid = $this->zobjectStore->getNextAvailableZid();
 		$this->assertEquals( 'Z10000', $zid );
+	}
+
+	public function testfetchZObject_valid() {
+		$zid = $this->zobjectStore->getNextAvailableZid();
+		$sysopUser = $this->getTestSysop()->getUser();
+
+		$input = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
+			. '"Z2K2": "hello",'
+			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
+		$page = $this->zobjectStore->createNewZObject(
+			RequestContext::getMain(),
+			$input,
+			'Create summary',
+			$sysopUser
+		);
+		$this->assertTrue( $page instanceof ZObjectPage );
+		$this->assertTrue( $page->isOK() );
+
+		$zObject = $this->zobjectStore->fetchZObject( $zid );
+		$this->assertTrue( $zObject instanceof ZPersistentObject );
+	}
+
+	public function testfetchZObject_missing() {
+		$this->expectException( ZErrorException::class );
+		$zObject = $this->zobjectStore->fetchZObject( 'Z400' );
+	}
+
+	public function testfetchZObject_invalid() {
+		$this->expectException( ZErrorException::class );
+		$zObject = $this->zobjectStore->fetchZObject( 'Z0' );
 	}
 
 	public function testFetchZObjectByTitle_valid() {

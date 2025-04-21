@@ -30,6 +30,7 @@ use MediaWiki\User\User;
 use MediaWiki\User\UserGroupManager;
 use MessageLocalizer;
 use Psr\Log\LoggerInterface;
+use Wikimedia\ObjectCache\BagOStuff;
 use Wikimedia\Rdbms\FakeResultWrapper;
 use Wikimedia\Rdbms\IConnectionProvider;
 use Wikimedia\Rdbms\IExpression;
@@ -47,6 +48,8 @@ class ZObjectStore {
 	private RevisionStore $revisionStore;
 	private UserGroupManager $userGroupManager;
 	private LoggerInterface $logger;
+
+	private BagOStuff $zObjectCache;
 
 	public const INSTANCEOFENUM = 'instanceofenum';
 
@@ -74,6 +77,8 @@ class ZObjectStore {
 		$this->revisionStore = $revisionStore;
 		$this->userGroupManager = $userGroupManager;
 		$this->logger = $logger;
+
+		$this->zObjectCache = WikiLambdaServices::getZObjectStash();
 	}
 
 	/**
@@ -140,6 +145,60 @@ class ZObjectStore {
 		$slot = $revision->getSlot( SlotRecord::MAIN, RevisionRecord::RAW );
 		// @phan-suppress-next-line PhanTypeMismatchReturnSuperType
 		return $slot->getContent();
+	}
+
+	/**
+	 * Get the current ZPersistentObject of a given ZID, from the cache if available
+	 *
+	 * @param string $zid
+	 * @return ZPersistentObject
+	 * @throws ZErrorException
+	 */
+	public function fetchZObject( string $zid ): ZPersistentObject {
+		$cacheKey = self::SERVICE_CACHE_KEY_PREFIX . $zid;
+
+		$cachedObject = $this->zObjectCache->get( $cacheKey );
+
+		if ( $cachedObject ) {
+			$builtObject = ZObjectFactory::create( json_decode( $cachedObject ) );
+
+			if ( $builtObject instanceof ZPersistentObject ) {
+				return $builtObject;
+			}
+
+			// Something went wrong; the fetched item isn't a ZPO? Fall-through to below.
+		}
+
+		// Cache miss somehow; let's re-fetch the object, and stash it in the cache.
+		$title = Title::newFromDBkey( $zid );
+
+		if ( !$title ) {
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_INVALID_TITLE,
+					[ 'title' => $zid ]
+				)
+			);
+		}
+
+		$zObjectContent = $this->fetchZObjectByTitle( $title );
+
+		if ( !$zObjectContent ) {
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
+					[ "data" => $zid ]
+				)
+			);
+		}
+
+		$this->zObjectCache->set(
+			$cacheKey,
+			$zObjectContent->getText(),
+			$this->zObjectCache::TTL_MONTH
+		);
+
+		return $zObjectContent->getZObject();
 	}
 
 	/**
