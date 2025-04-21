@@ -10,10 +10,11 @@
 
 namespace MediaWiki\Extension\WikiLambda\Registry;
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
-use MediaWiki\Extension\WikiLambda\ZObjectContent;
-use MediaWiki\Title\Title;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
+use MediaWiki\MediaWikiServices;
 
 /**
  * A registry service for ZErrorType
@@ -129,6 +130,48 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 	}
 
 	/**
+	 *
+	 * @param string $errorType
+	 * @param ZPersistentObject $zobject
+	 * @param string $languageCode
+	 * @return ?string
+	 */
+	protected function registerZErrorTypeLabel( $errorType, $zobject, $languageCode = 'en' ): ?string {
+		$langRegistry = ZLangRegistry::singleton();
+		if ( !$langRegistry->isLanguageKnownGivenCode( $languageCode ) ) {
+			$languageCode = 'en';
+		}
+
+		$registryKey = $errorType . ':' . $languageCode;
+
+		$language = MediaWikiServices::getInstance()
+			->getLanguageFactory()
+			->getLanguage( $languageCode );
+
+		$errorLabel = $zobject->getLabel( $language, true );
+		if ( $errorLabel ) {
+			$this->register( $registryKey, $errorLabel );
+		}
+
+		return $errorLabel;
+	}
+
+	/**
+	 * Unregisters the given error type zid from the registry
+	 * by deleting all the language entries associated for this zid
+	 *
+	 * @param string $zid
+	 */
+	public function unregister( string $zid ): void {
+		$prefix = $zid . ':';
+		foreach ( $this->registry as $errorKey => $errorLabel ) {
+			if ( str_starts_with( $errorKey, $prefix ) ) {
+				unset( $this->registry[ $errorKey ] );
+			}
+		}
+	}
+
+	/**
 	 * Check if the given ZErrorType Zid is known
 	 *
 	 * @param string $errorType
@@ -143,12 +186,17 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 			return true;
 		}
 
-		$zObject = $this->fetchZErrorType( $errorType );
-		if ( $zObject === false ) {
+		$zobject = $this->fetchZErrorType( $errorType );
+		if ( !$zobject ) {
 			return false;
 		}
 
-		$this->register( $errorType, $zObject->getLabels()->getStringForLanguageCode( 'en' ) );
+		$this->registerZErrorTypeLabel(
+			$errorType,
+			$zobject,
+			RequestContext::getMain()->getLanguage()->getCode()
+		);
+
 		return true;
 	}
 
@@ -157,39 +205,20 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 	 * exist or if the fetched object is not of the wanted type
 	 *
 	 * @param string $errorType
-	 * @return ZObjectContent|bool Found ZObject
-	 * @throws ZErrorException
+	 * @return ZPersistentObject|bool Found ZObject
 	 */
 	private function fetchZErrorType( string $errorType ) {
-		// TODO (T338253): This is quite expensive. Store this in a metadata DB table, instead of fetching it live?
-		$title = Title::newFromText( $errorType, NS_MAIN );
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
-		$zObject = $zObjectStore->fetchZObjectByTitle( $title );
 
-		if ( $zObject === false ) {
+		// This can throw a ZErrorException if the ZID is not found, which will bubble up
+		$zobjectContent = $zObjectStore->fetchZObject( $errorType );
+
+		// ZObjectContent->getZType is a shortcut to ZObjectContent->getInnerZObject->getZType
+		if ( !$zobjectContent || $zobjectContent->getZType() !== ZTypeRegistry::Z_ERRORTYPE ) {
 			return false;
-			// throw new ZErrorException(
-			// 	ZErrorFactory::createZErrorInstance(
-			// 		self::Z_ERROR_ZID_NOT_FOUND,
-			// 		[ "data" => $errorType ]
-			// 	)
-			// );
 		}
 
-		if ( $zObject->getZType() !== ZTypeRegistry::Z_ERRORTYPE ) {
-			return false;
-			// throw new ZErrorException(
-			// 	ZErrorFactory::createZErrorInstance(
-			// 		self::Z_ERROR_UNEXPECTED_ZTYPE,
-			// 		[
-			// 			"expected" => ZTypeRegistry::Z_ERRORTYPE,
-			// 			"used" => $errorType
-			// 		]
-			// 	)
-			// );
-		}
-
-		return $zObject;
+		return $zobjectContent->getZObject();
 	}
 
 	/**
@@ -208,12 +237,26 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 
 	/**
 	 * Check if the given Zid is an already cached ZErrorType (Z50)
+	 * If a language code is given, check it the label in that language is stored
 	 *
 	 * @param string $errorType
+	 * @param string|bool $langCode
 	 * @return bool
 	 */
-	public function isZErrorTypeCached( string $errorType ): bool {
-		return array_key_exists( $errorType, $this->registry );
+	private function isZErrorTypeCached( string $errorType, $langCode = false ): bool {
+		if ( $langCode ) {
+			$registryKey = $errorType . ':' . $langCode;
+			return array_key_exists( $registryKey, $this->registry );
+		}
+
+		$prefix = $errorType . ':';
+		foreach ( $this->registry as $errorKey => $errorLabel ) {
+			if ( str_starts_with( $errorKey, $prefix ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -232,28 +275,23 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 	 * @param string $errorType
 	 * @param string $errorLanguageCode Language code, defaulting to English
 	 * @return string
-	 * @throws ZErrorException
 	 */
 	public function getZErrorTypeLabel( string $errorType, string $errorLanguageCode = 'en' ): string {
 		$registryCacheKey = $errorType . ':' . $errorLanguageCode;
 
-		if ( $this->isZErrorTypeCached( $registryCacheKey ) ) {
+		if ( $this->isZErrorTypeCached( $errorType, $errorLanguageCode ) ) {
 			return $this->registry[ $registryCacheKey ];
 		}
 
-		// If the language code is not known, fallback to English
-		$zLangRegistry = ZLangRegistry::singleton();
-		if ( $zLangRegistry->isLanguageKnownGivenCode( $errorLanguageCode ) === false ) {
-			$errorLanguageCode = 'en';
-		}
-
-		$zObject = $this->fetchZErrorType( $errorType );
-		if ( $zObject === false ) {
+		$zobject = $this->fetchZErrorType( $errorType );
+		if ( !$zobject ) {
 			return "Unknown error $errorType";
 		}
 
-		$errorLabel = $zObject->getLabels()->getStringForLanguageCode( $errorLanguageCode );
-		$this->register( $registryCacheKey, $errorLabel );
+		$errorLabel = $this->registerZErrorTypeLabel( $errorType, $zobject, $errorLanguageCode );
+		if ( !$errorLabel ) {
+			return "Unknown error $errorType";
+		}
 
 		return $errorLabel;
 	}

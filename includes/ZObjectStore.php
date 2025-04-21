@@ -137,7 +137,7 @@ class ZObjectStore {
 		}
 
 		if ( !$revision ) {
-			// TODO (T300521): Handle errors by creating and returning Z5
+			// Return false: We should not throw exceptions that trigger more fetches (ZErrorException)
 			return false;
 		}
 
@@ -151,45 +151,34 @@ class ZObjectStore {
 	 * Get the current ZPersistentObject of a given ZID, from the cache if available
 	 *
 	 * @param string $zid
-	 * @return ZPersistentObject
-	 * @throws ZErrorException
+	 * @return ZObjectContent|bool Cached or persisted ZObject, false if not found or invalid
 	 */
-	public function fetchZObject( string $zid ): ZPersistentObject {
+	public function fetchZObject( string $zid ) {
 		$cacheKey = self::SERVICE_CACHE_KEY_PREFIX . $zid;
-
 		$cachedObject = $this->zObjectCache->get( $cacheKey );
 
 		if ( $cachedObject ) {
-			$builtObject = ZObjectFactory::create( json_decode( $cachedObject ) );
-
-			if ( $builtObject instanceof ZPersistentObject ) {
-				return $builtObject;
+			$cachedContent = ZObjectContentHandler::makeContent( $cachedObject, null, CONTENT_MODEL_ZOBJECT );
+			if ( $cachedContent->isValid() ) {
+				return $cachedContent;
 			}
-
-			// Something went wrong; the fetched item isn't a ZPO? Fall-through to below.
+			// Something went wrong;
+			// the object stored in the cache is not valid, delete from cache and go on
+			$this->zObjectCache->delete( $cacheKey );
 		}
 
 		// Cache miss somehow; let's re-fetch the object, and stash it in the cache.
-		$title = Title::newFromDBkey( $zid );
 
+		$title = Title::newFromText( $zid );
 		if ( !$title ) {
-			throw new ZErrorException(
-				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_INVALID_TITLE,
-					[ 'title' => $zid ]
-				)
-			);
+			// Return false: We should not throw exceptions that trigger more fetches (ZErrorException)
+			return false;
 		}
 
 		$zObjectContent = $this->fetchZObjectByTitle( $title );
-
-		if ( !$zObjectContent ) {
-			throw new ZErrorException(
-				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
-					[ "data" => $zid ]
-				)
-			);
+		if ( !$zObjectContent || !$zObjectContent->isValid() ) {
+			// Return false: We should not throw exceptions that trigger more fetches (ZErrorException)
+			return false;
 		}
 
 		$this->zObjectCache->set(
@@ -198,7 +187,7 @@ class ZObjectStore {
 			$this->zObjectCache::TTL_MONTH
 		);
 
-		return $zObjectContent->getZObject();
+		return $zObjectContent;
 	}
 
 	/**

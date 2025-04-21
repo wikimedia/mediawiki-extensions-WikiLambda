@@ -33,10 +33,12 @@ class ZErrorTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 
 	public function testCacheZErrorType() {
 		$builtinErrorType = 'Z501';
-		$customErrorType = 'Z5000';
+		$customErrorType = 'Z450';
+		$customErrorEnLabel = $customErrorType . ':en';
+
 		$registry = ZErrorTypeRegistry::singleton();
 
-		$this->runPrivateMethod( $registry, 'register', [ $customErrorType, 'error type' ] );
+		$this->runPrivateMethod( $registry, 'register', [ $customErrorEnLabel, 'error type' ] );
 		$this->assertTrue( $registry->isZErrorTypeKnown( $customErrorType ) );
 
 		$registry->unregister( 'Z505' );
@@ -61,7 +63,7 @@ class ZErrorTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 
 	public function testIsZErrorTypeKnown_typeNotFound() {
 		$registry = ZErrorTypeRegistry::singleton();
-		$errorType = 'Z5000';
+		$errorType = 'Z450';
 
 		$this->assertFalse(
 			$registry->isZErrorTypeKnown( $errorType ),
@@ -81,19 +83,19 @@ class ZErrorTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testIsZErrorTypeKnown_valid() {
-		$errorType = 'Z5000';
+		$errorType = 'Z450';
 		$errorContent = <<<EOT
 {
 	"Z1K1": "Z2",
-	"Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },
+	"Z2K1": { "Z1K1": "Z6", "Z6K1": "Z450" },
 	"Z2K2": {
 		"Z1K1": "Z50",
 		"Z50K1": [
 			"Z3",
 			{
 				"Z1K1": "Z3",
-				"Z3K1": "Z50",
-				"Z3K2": "Z502K1",
+				"Z3K1": "Z6",
+				"Z3K2": "Z450K1",
 				"Z3K3": {
 					"Z1K1": "Z12",
 					"Z12K1": [
