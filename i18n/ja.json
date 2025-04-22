@@ -19,7 +19,8 @@
 			"バレロン",
 			"春春眠眠",
 			"背番号4のエース",
-			"沈澄心"
+			"沈澄心",
+			"YeBoy371"
 		]
 	},
 	"wikilambda-desc": "ウィキメディアのウィキにウィキテキストのパーサー関数を指定して、中央のウィキで記述、管理、評価された関数の評価を呼び出します。",
@@ -113,6 +114,8 @@
 	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1の言語版}}",
 	"wikilambda-about-widget-name-placeholder": "名称を入力",
 	"wikilambda-about-widget-publish-button": "次へ移り公開",
+	"wikilambda-about-widget-view-languages-other": "他の言語",
+	"wikilambda-about-widget-view-languages-suggested": "提案された言語",
 	"wikilambda-about-widget-view-languages-title": "他言語のラベル",
 	"wikilambda-add-list-item": "項目を追加",
 	"wikilambda-add-list-item-button": "項目を追加",
@@ -330,6 +333,7 @@
 	"wikilambda-special-runfunction-nojs": "このページではJavaScriptを使用する必要があります。",
 	"wikilambda-special-runfunction-summary": "このフォームを使用すると、関数呼び出しを評価できます。",
 	"wikilambda-special-viewobject": "オブジェクトを表示",
+	"wikilambda-string-renderer-running": "実行中…",
 	"wikilambda-summarylabel": "要約:",
 	"wikilambda-tester-create-new": "新しいテストを作成する",
 	"wikilambda-tester-details": "詳細",
