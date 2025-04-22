@@ -97,6 +97,7 @@
 	"apihelp-wikilambda_perform_test-param-zimplementations": "A lista de identificadores de ZImplementation (ou obxectos) a probar",
 	"apihelp-wikilambda_perform_test-param-ztesters": "A lista de identificadores de ZTester (ou obxectos) a probar",
 	"apihelp-wikilambda_perform_test-param-nocache": "Indica se utilizar a caché ou non",
+	"wikilambda-restapi-disabled-repo-mode-only": "Esta API non está dispoñible agás no wiki do repositorio principal, Wikifunctions.org.",
 	"wikilambda-restapi-fetch-too-many": "Solicitaches $1, que son demasiados obxectos á vez (permítese un máximo de $2)",
 	"wikilambda-restapi-revision-mismatch": "Solicitaches a revisión $1 do obxecto \"$2\", que non se atopou"
 }

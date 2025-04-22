@@ -275,7 +275,7 @@
 	"wikilambda-functioncall-error-category": "Страницы с ошибочными вызовами Викифункций",
 	"wikilambda-functioncall-error-category-desc": "Страницы с вызовами Викифункций, которые приводят к общей ошибке",
 	"wikilambda-functioncall-error-unclear-category": "Страницы с ошибочными вызовами Викифункций без явной ошибки",
-	"wikilambda-functioncall-error-unclear-category-desc": "Страницы с вызовами Викифункций, которые приводят к системной ошибке",
+	"wikilambda-functioncall-error-unclear-category-desc": "Страницы с вызовами Викифункций, которые не удалось выполнить из-за необработанного сбоя API",
 	"wikilambda-functioncall-error-unknown-zid-category": "Страницы, на которых Викифункции вызывают неизвестные Объекты",
 	"wikilambda-functioncall-error-unknown-zid-category-desc": "Страницы на которых Викифункции пытаются сделать вызовы, запрашивающие неизвестный Объект",
 	"wikilambda-functioncall-error-invalid-zobject-category": "Страницы, на которых Викифункции вызывают недопустимые Объекты",
