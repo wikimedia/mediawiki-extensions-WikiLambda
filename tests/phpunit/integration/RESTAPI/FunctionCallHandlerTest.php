@@ -238,6 +238,26 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->executeHandler( $handler, $request );
 	}
 
+	/**
+	 * Confirm that a 400 is returned when the target Function is actually a Type
+	 */
+	public function testExecute_inputNotValid() {
+		// Force-enable our code
+		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
+
+		$ourCall = $this->standardCall;
+
+		// This is not base64-encoded, so it should throw an error
+		$ourCall['pathParams']['arguments'] = 'foo';
+		$request = new RequestData( $ourCall );
+		$handler = new FunctionCallHandler();
+
+		$this->expectExceptionObject(
+			new LocalizedHttpException( new MessageValue( 'wikilambda-zerror' ), 400, [ 'target' => 'Z1' ] )
+		);
+		$this->executeHandler( $handler, $request );
+	}
+
 	// TESTME: (!)Use of a non-ZObject in the main NS
 
 	// TESTME: (!)Input Type isn't a Type

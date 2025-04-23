@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\RESTAPI;
 
 use InvalidArgumentException;
+use JsonException;
 use MediaWiki\Api\ApiMain;
 use MediaWiki\Api\ApiUsageException;
 use MediaWiki\Context\DerivativeContext;
@@ -433,6 +434,24 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			// * Z_ERROR_EVALUATION/Z507
 			// * Z_ERROR_INVALID_EVALUATION_RESULT/Z560
 			$this->dieRESTfullyWithZError( $e->getZError(), 400, [ 'data' => $e->getZError() ] );
+		} catch ( JsonException $e ) {
+			$this->logger->error(
+				__METHOD__ . ' called on {target} but got a JsonException, {error}',
+				[
+					'target' => $target,
+					'error' => $e->getMessage()
+				]
+			);
+			$this->dieRESTfullyWithZError(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX, [ 'data' => $call ]
+				),
+				400,
+				[
+					'target' => $target,
+					'error' => $e->getMessage()
+				]
+			);
 		}
 
 		// Finally, return the values as JSON (if not already early-returned as an error)
