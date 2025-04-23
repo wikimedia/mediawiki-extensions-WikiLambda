@@ -78,6 +78,7 @@ ve.dm.WikifunctionsCallNode.static.toDataElement = function ( domElements ) {
 		type: this.name,
 		attributes: {
 			mw: mwData,
+			originalMw: mwDataJSON,
 			isError
 		}
 	};
@@ -105,7 +106,6 @@ ve.dm.WikifunctionsCallNode.static.toDomElements = function ( dataElement, doc, 
 		// Create the element from scratch.
 		const element = doc.createElement( 'span' );
 		element.setAttribute( 'typeof', 'mw:Transclusion mw:ParserFunction/function' );
-		element.append( 'foo' );
 		elements[ 0 ] = element;
 	}
 
@@ -115,18 +115,55 @@ ve.dm.WikifunctionsCallNode.static.toDomElements = function ( dataElement, doc, 
 };
 
 // For some reason, VE's default code for this isn't working, so let's write a quick one ourselves
-ve.dm.WikifunctionsCallNode.static.describeChanges = function ( dataElement, oldDataElement ) {
-	// If the mw data has changed, we need to update the DOM
-	if ( ve.getProp( dataElement, 'attributes', 'mw' ) !== ve.getProp( oldDataElement, 'attributes', 'mw' ) ) {
-		return {
-			type: 'update',
-			attributes: {
-				mw: dataElement.attributes.mw
-			}
-		};
-	}
+ve.dm.WikifunctionsCallNode.static.describeChanges = function ( attributeChanges ) {
+	const descriptions = [ ve.msg( 'wikilambda-visualeditor-wikifunctionscall-changedesc-title' ) ];
 
-	return null;
+	// NOTE: Only coping with Function calls in single-part transclusions for now; more complex changes
+	// will just get "Wikifunctions inputs changed" but no details.
+	if ( attributeChanges.mw.from.parts.length === 1 && attributeChanges.mw.to.parts.length === 1 ) {
+
+		const params = {};
+		let param;
+		for ( param in attributeChanges.mw.from.parts[ 0 ].parserfunction.params ) {
+			params[ param ] = { from: attributeChanges.mw.from.parts[ 0 ].parserfunction.params[ param ].wt || '' };
+		}
+		for ( param in attributeChanges.mw.to.parts[ 0 ].parserfunction.params ) {
+			params[ param ] = ve.extendObject(
+				{ to: attributeChanges.mw.to.parts[ 0 ].parserfunction.params[ param ].wt || '' },
+				params[ param ]
+			);
+		}
+
+		let paramChanges;
+		for ( param in params ) {
+			// All we know is that *something* changed, without the normal
+			// helpful just-being-given-the-changed-bits, so we have to filter
+			// this ourselves.
+			// Trim string values, and convert empty strings to undefined
+			const from = ( params[ param ].from || '' ).trim() || undefined,
+				to = ( params[ param ].to || '' ).trim() || undefined;
+			if ( from !== to ) {
+				const change = this.describeChange( param, { from: from, to: to } );
+				if ( change ) {
+					if ( !paramChanges ) {
+						paramChanges = document.createElement( 'ul' );
+						descriptions.push( paramChanges );
+					}
+					const listItem = document.createElement( 'li' );
+					if ( typeof change === 'string' ) {
+						listItem.appendChild( document.createTextNode( change ) );
+					} else {
+						change.forEach( ( node ) => {
+							listItem.appendChild( node );
+						} );
+					}
+					paramChanges.appendChild( listItem );
+				}
+			}
+		}
+
+	}
+	return descriptions;
 };
 
 /* Registration */
