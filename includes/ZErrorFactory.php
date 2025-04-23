@@ -521,7 +521,7 @@ class ZErrorFactory {
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_API_FAILURE:
-				$zErrorValue[] = new ZQuote( $payload[ 'request'] );
+				$zErrorValue[] = new ZQuote( $payload['request'] );
 				$zErrorValue[] = $payload['error'];
 				break;
 
@@ -586,15 +586,15 @@ class ZErrorFactory {
 	 * ZError or wraps a Z500 with a given message.
 	 *
 	 * @param string|ZError $error The error or message to wrap
-	 * @param \stdClass|string $call The function call that generated an API error
+	 * @param \stdClass|string $request The function call that generated an API error
 	 * @return ZError
 	 */
-	public static function createApiFailureError( $error, $call ): ZError {
+	public static function createApiFailureError( $error, $request ): ZError {
 		$wrappedError = ( $error instanceof ZError ) ? $error :
 			self::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_UNKNOWN, [ 'message' => $error ] );
 		return self::createZErrorInstance(
 			ZErrorTypeRegistry::Z_ERROR_API_FAILURE, [
-				'call' => $call,
+				'request' => $request,
 				'error' => $wrappedError
 			]
 		);
