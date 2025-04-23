@@ -23,6 +23,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\Languages\LanguageNameUtils;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\TitleFactory;
 use Psr\Log\LoggerInterface;
 use stdClass;
@@ -243,7 +244,11 @@ class ApiQueryZObjects extends WikiLambdaApiQueryGeneratorBase {
 	 * @codeCoverageIgnore
 	 */
 	protected function getAllowedParams(): array {
-		$zObjectStore = WikiLambdaServices::getZObjectStore();
+		// Don't try to read the supported languages from the DB on client wikis, we can't.
+		$supportedLanguageCodes =
+			( MediaWikiServices::getInstance()->getMainConfig()->get( 'WikiLambdaEnableRepoMode' ) ) ?
+			WikiLambdaServices::getZObjectStore()->fetchAllZLanguageCodes() :
+			[];
 
 		return [
 			'zids' => [
@@ -256,7 +261,7 @@ class ApiQueryZObjects extends WikiLambdaApiQueryGeneratorBase {
 				ParamValidator::PARAM_ISMULTI => true,
 			],
 			'language' => [
-				ParamValidator::PARAM_TYPE => $zObjectStore->fetchAllZLanguageCodes(),
+				ParamValidator::PARAM_TYPE => $supportedLanguageCodes,
 				ParamValidator::PARAM_REQUIRED => false,
 			],
 			'get_dependencies' => [
