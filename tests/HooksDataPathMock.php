@@ -1,7 +1,7 @@
 <?php
 
 /**
- * WikiLambda Hooks mock with overriden insertContentObject method.
+ * WikiLambda RepoHooks mock with overriden insertContentObject method.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -9,9 +9,9 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests;
 
-use MediaWiki\Extension\WikiLambda\Hooks;
+use MediaWiki\Extension\WikiLambda\HookHandler\RepoHooks;
 
-class HooksDataPathMock extends Hooks {
+class HooksDataPathMock extends RepoHooks {
 
 	/**
 	 * @inheritDoc
