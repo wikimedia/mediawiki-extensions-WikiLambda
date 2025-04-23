@@ -36,7 +36,7 @@ abstract class WikiLambdaApiQueryGeneratorBase extends ApiQueryGeneratorBase imp
 					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN,
 					[]
 				),
-				501
+				400
 			);
 		}
 
@@ -54,7 +54,7 @@ abstract class WikiLambdaApiQueryGeneratorBase extends ApiQueryGeneratorBase imp
 					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN,
 					[]
 				),
-				501
+				400
 			);
 		}
 

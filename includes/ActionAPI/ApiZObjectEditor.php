@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
 use MediaWiki\Api\ApiMain;
+use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
@@ -29,6 +30,17 @@ class ApiZObjectEditor extends WikiLambdaApiBase {
 	 * @inheritDoc
 	 */
 	protected function run(): void {
+		// Exit if we're running in non-repo mode (e.g. on a client wiki)
+		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
+			WikiLambdaApiBase::dieWithZError(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN,
+					[]
+				),
+				400
+			);
+		}
+
 		$user = $this->getUser();
 		$params = $this->extractRequestParams();
 

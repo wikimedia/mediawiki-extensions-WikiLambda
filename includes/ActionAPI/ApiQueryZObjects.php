@@ -163,6 +163,17 @@ class ApiQueryZObjects extends WikiLambdaApiQueryGeneratorBase {
 	 * @inheritDoc
 	 */
 	protected function run( $resultPageSet = null ) {
+		// Exit if we're running in non-repo mode (e.g. on a client wiki)
+		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
+			WikiLambdaApiBase::dieWithZError(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN,
+					[]
+				),
+				400
+			);
+		}
+
 		$params = $this->extractRequestParams();
 
 		$languages = null;

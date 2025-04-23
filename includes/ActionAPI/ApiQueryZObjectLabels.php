@@ -12,7 +12,9 @@ namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
 use MediaWiki\Api\ApiBase;
 use MediaWiki\Api\ApiQuery;
+use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
+use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
@@ -32,6 +34,17 @@ class ApiQueryZObjectLabels extends WikiLambdaApiQueryGeneratorBase {
 	 * @inheritDoc
 	 */
 	protected function run( $resultPageSet = null ) {
+		// Exit if we're running in non-repo mode (e.g. on a client wiki)
+		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
+			WikiLambdaApiBase::dieWithZError(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN,
+					[]
+				),
+				400
+			);
+		}
+
 		[
 			'search' => $searchTerm,
 			'type' => $type,

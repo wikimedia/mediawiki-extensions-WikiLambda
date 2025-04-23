@@ -75,7 +75,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN,
 					[]
 				),
-				501
+				400
 			);
 		}
 
