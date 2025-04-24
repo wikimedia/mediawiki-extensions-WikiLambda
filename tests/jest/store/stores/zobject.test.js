@@ -3977,6 +3977,32 @@ describe( 'zobject Pinia store', () => {
 				expect( store.zobject[ 10 ].key ).toBe( '4' );
 			} );
 		} );
+
+		describe( 'setZWikidataEnumTypedListType', () => {
+			beforeEach( () => {
+				store.zobject = [
+					{ id: 0, key: undefined, parent: undefined, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 1, key: 'Z1K1', parent: 0, value: 'Z9' },
+					{ id: 2, key: 'Z9K1', parent: 0, value: 'Z6884' },
+					{ id: 3, key: 'Z6884K2', parent: 2, value: Constants.ROW_VALUE_ARRAY },
+					{ id: 4, key: '0', parent: 3, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 5, key: 'Z1K1', parent: 4, value: 'Z9' },
+					{ id: 6, key: 'Z9K1', parent: 4, value: '' }
+				];
+			} );
+
+			it( 'sets the type of a Wikidata enum typed list', () => {
+				store.setZWikidataEnumTypedListType( { parentRowId: 2, value: 'Z6091' } );
+
+				expect( store.zobject[ 6 ].value ).toBe( 'Z6091' );
+			} );
+
+			it( 'does nothing if the rowId is invalid', () => {
+				store.setZWikidataEnumTypedListType( { parentRowId: 9999, value: 'Z6091' } );
+
+				expect( store.zobject[ 6 ].value ).toBe( '' );
+			} );
+		} );
 	} );
 
 } );

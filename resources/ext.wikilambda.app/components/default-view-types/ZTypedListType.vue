@@ -17,9 +17,8 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { mapActions } = require( 'pinia' );
 
-const Constants = require( '../../Constants.js' );
 const typeMixin = require( '../../mixins/typeMixin.js' );
 const useMainStore = require( '../../store/index.js' );
 
@@ -46,84 +45,24 @@ module.exports = exports = defineComponent( {
 		listItemType: {
 			type: [ String, Object ],
 			default: null
-		},
-		listItemsRowIds: {
-			type: Array,
-			default() {
-				return [];
-			}
 		}
 	},
-	data: function () {
-		return {
-			hasError: false
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getZObjectTypeByRowId'
-	] ) ),
 	methods: Object.assign( {}, mapActions( useMainStore, [
-		'setInvalidListItems',
-		'clearInvalidListItems',
-		'setError',
-		'clearErrors'
+		'handleListTypeChange'
 	] ), {
-
-		/**
-		 * Retrieves a list of items to be removed.
-		 *
-		 * @param {string} newListItemType
-		 * @return {Array} - The list of items to be removed.
-		 */
-		getListItemsForRemoval( newListItemType ) {
-			return this.listItemsRowIds
-				.filter( ( rowId ) => this.getZObjectTypeByRowId( rowId ) !== newListItemType );
-		},
 
 		/**
 		 * Handles the change of the type of the list.
 		 *
 		 * @param {Object} payload
+		 * @param {string} payload.value - The new type of the list.
 		 * @return {void}
 		 */
 		changeType: function ( payload ) {
-			/**
-			 * if the type of the list has changed:
-			 * - warn the user this will delete list items (now the 'wrong' type)
-			 * - except when the type was changed to Object/Z1: we can clear the errors
-			 * - the items that need to be deleted are the ones that are not of the new type
-			 */
-			const newListItemType = payload.value;
-			const isZObject = newListItemType === Constants.Z_OBJECT;
-			const isDifferentType = newListItemType !== this.listItemType && newListItemType !== Constants.Z_OBJECT;
-			const hasListItems = this.listItemsRowIds.length > 0;
-
-			// If the type was changed to Object/Z1, we can clear the errors
-			if ( this.hasError && isZObject ) {
-				this.hasError = false;
-				this.clearErrors( 0 );
-				this.clearInvalidListItems();
-				return;
-			}
-
-			// If the type was changed to a different type and there are list items, show a warning
-			if ( isDifferentType && hasListItems ) {
-
-				// Set the error only once
-				if ( !this.hasError ) {
-					this.hasError = true;
-					this.setError( {
-						rowId: 0,
-						errorCode: Constants.ERROR_CODES.TYPED_LIST_TYPE_CHANGED,
-						errorType: Constants.ERROR_TYPES.WARNING
-					} );
-				}
-
-				this.setInvalidListItems( {
-					parentRowId: this.parentRowId,
-					listItems: this.getListItemsForRemoval( newListItemType )
-				} );
-			}
+			this.handleListTypeChange( {
+				parentRowId: this.parentRowId,
+				newListItemType: payload.value
+			} );
 		}
 	} ),
 	beforeCreate: function () {

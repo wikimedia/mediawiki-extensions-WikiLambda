@@ -424,6 +424,13 @@ module.exports = exports = defineComponent( {
 			 * @param {string} input
 			 */
 			onInput: function ( input ) {
+				// 1. OnInput will still be called when the selectedValue changes from outside.
+				// 2. OnInput will be called with an empty string when the selectedValue does not match
+				// an item in menuItems in the cdx-lookup.
+				// 3. If #1 or #2 happens when the input is disabled, we should not do anything.
+				if ( this.disabled ) {
+					return;
+				}
 				this.inputValue = input;
 				this.$emit( 'input-change', input || '' );
 

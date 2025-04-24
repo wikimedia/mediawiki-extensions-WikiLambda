@@ -16,7 +16,6 @@
 			:row-id="itemTypeRowId"
 			:edit="edit"
 			:list-item-type="listItemType"
-			:list-items-row-ids="listItemsRowIds"
 			:parent-row-id="rowId"
 		></wl-z-typed-list-type>
 
@@ -69,7 +68,8 @@ module.exports = exports = defineComponent( {
 	computed: Object.assign( {},
 		mapState( useMainStore, [
 			'getChildrenByParentRowId',
-			'getTypedListItemType'
+			'getTypedListItemType',
+			'getTypedListItemsRowIds'
 		] ),
 		{
 			/**
@@ -101,10 +101,7 @@ module.exports = exports = defineComponent( {
 			 * @return {Array}
 			 */
 			listItemsRowIds: function () {
-				return this.getChildrenByParentRowId( this.rowId )
-					.sort( ( a, b ) => parseInt( a.key ) - parseInt( b.key ) )
-					.slice( 1 )
-					.map( ( row ) => row.id );
+				return this.getTypedListItemsRowIds( this.rowId );
 			},
 
 			/**

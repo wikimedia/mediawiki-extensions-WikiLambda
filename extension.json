@@ -465,6 +465,7 @@
 				"ext.wikilambda.app/components/default-view-types/ZTypedList.vue",
 				"ext.wikilambda.app/components/default-view-types/ZTypedListType.vue",
 				"ext.wikilambda.app/components/default-view-types/ZTypedListItems.vue",
+				"ext.wikilambda.app/components/default-view-types/wikidata/ReferenceSelector.vue",
 				"ext.wikilambda.app/components/default-view-types/wikidata/EntitySelector.vue",
 				"ext.wikilambda.app/components/default-view-types/wikidata/Item.vue",
 				"ext.wikilambda.app/components/default-view-types/wikidata/Lexeme.vue",

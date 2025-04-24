@@ -82,7 +82,6 @@ const zObjectApiResponseBuilder = ( zids, language ) => {
 		} else if ( language ) {
 			throw new Error( 'Test does not support API call with non-en language' );
 		}
-
 		response.wikilambdaload_zobjects[ zid ] = {
 			success: '',
 			data: data
@@ -198,6 +197,44 @@ const genericTypesLookupApiResponse = {
 			match_rate: 0.3,
 			label: 'Typed pair',
 			type_label: ''
+		}
+	]
+};
+
+const wikidataEnumLabelLookupApiResponse = {
+	wikilambdasearch_labels: [
+		{
+			page_id: 0,
+			page_namespace: 0,
+			page_content_model: 'zobject',
+			page_title: 'Z6884',
+			page_type: 'Z8',
+			return_type: 'Z4',
+			match_label: 'Typed enum of Wikidata references',
+			match_is_primary: '1',
+			match_lang: 'Z1002',
+			match_rate: 0.24242424242424243,
+			label: 'Typed enum of Wikidata references',
+			type_label: 'Function'
+		}
+	]
+};
+
+const functionCallLabelLookupApiResponse = {
+	wikilambdasearch_labels: [
+		{
+			page_id: 0,
+			page_namespace: 0,
+			page_content_model: 'zobject',
+			page_title: 'Z7',
+			page_type: 'Z4',
+			return_type: null,
+			match_label: 'Function call',
+			match_is_primary: '1',
+			match_lang: 'Z1002',
+			match_rate: 0.9230769230769231,
+			label: 'Function call',
+			type_label: 'Type'
 		}
 	]
 };
@@ -347,6 +384,10 @@ const labelsApiResponseBuilder = ( type, search ) => {
 		return stringLabelLookupApiResponse;
 	} else if ( type === Constants.Z_TYPE && 'Typed'.includes( search ) ) {
 		return genericTypesLookupApiResponse;
+	} else if ( type === Constants.Z_TYPE && 'Function call'.includes( search ) ) {
+		return functionCallLabelLookupApiResponse;
+	} else if ( type === Constants.Z_FUNCTION && 'Typed enum'.includes( search ) ) {
+		return wikidataEnumLabelLookupApiResponse;
 	} else if ( type === Constants.Z_FUNCTION && 'String equality'.includes( search ) ) {
 		return stringEqualityLabelLookupApiResponse;
 	} else if ( type === Constants.Z_FUNCTION && 'function name, in Chinese'.includes( search ) ) {

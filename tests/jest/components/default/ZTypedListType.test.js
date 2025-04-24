@@ -54,7 +54,7 @@ describe( 'ZTypedListType', () => {
 		const wrapper = shallowMount( ZTypedListType, {
 			props: {
 				edit: true,
-				listItemsRowIds: [ 1, 2 ]
+				parentRowId: 0
 			},
 			global: {
 				stubs: {
@@ -67,20 +67,17 @@ describe( 'ZTypedListType', () => {
 
 		wrapper.findComponent( ZObjectKeyValue ).vm.$emit( 'change-event', mockPayload );
 
-		expect( store.clearErrors ).not.toHaveBeenCalled();
-		expect( store.setError ).toHaveBeenCalled();
-		expect( store.setInvalidListItems ).toHaveBeenCalledWith(
-			{
-				parentRowId: undefined,
-				listItems: [ 1, 2 ]
-			} );
+		expect( store.handleListTypeChange ).toHaveBeenCalledWith( {
+			parentRowId: 0,
+			newListItemType: Constants.Z_CHARACTER
+		} );
 	} );
 
-	it( 'it does not set list items for removal if type changes to Z1', () => {
+	it( 'does not set list items for removal if type changes to Z1', () => {
 		const wrapper = shallowMount( ZTypedListType, {
 			props: {
 				edit: true,
-				listItemsRowIds: [ 1, 2 ]
+				parentRowId: 0
 			},
 			global: {
 				stubs: {
@@ -92,15 +89,17 @@ describe( 'ZTypedListType', () => {
 		const mockPayload = { keyPath: [], value: Constants.Z_OBJECT };
 		wrapper.findComponent( ZObjectKeyValue ).vm.$emit( 'change-event', mockPayload );
 
-		expect( store.setError ).not.toHaveBeenCalled();
-		expect( store.setInvalidListItems ).not.toHaveBeenCalled();
+		expect( store.handleListTypeChange ).toHaveBeenCalledWith( {
+			parentRowId: 0,
+			newListItemType: Constants.Z_OBJECT
+		} );
 	} );
 
-	it( 'it clears errors when type changes back to Z1 after a change', () => {
+	it( 'clears errors when type changes back to Z1 after a change', () => {
 		const wrapper = shallowMount( ZTypedListType, {
 			props: {
 				edit: true,
-				listItemsRowIds: [ 1, 2 ]
+				parentRowId: 0
 			},
 			global: {
 				stubs: {
@@ -112,13 +111,18 @@ describe( 'ZTypedListType', () => {
 		const mockPayload = { keyPath: [], value: Constants.Z_CHARACTER };
 		wrapper.findComponent( ZObjectKeyValue ).vm.$emit( 'change-event', mockPayload );
 
-		expect( store.setError ).toHaveBeenCalled();
-		expect( store.setInvalidListItems ).toHaveBeenCalled();
+		expect( store.handleListTypeChange ).toHaveBeenCalledWith( {
+			parentRowId: 0,
+			newListItemType: Constants.Z_CHARACTER
+		} );
 
 		const mockZ1Payload = { keyPath: [], value: Constants.Z_OBJECT };
 		wrapper.findComponent( ZObjectKeyValue ).vm.$emit( 'change-event', mockZ1Payload );
 
-		expect( store.clearErrors ).toHaveBeenCalled();
+		expect( store.handleListTypeChange ).toHaveBeenCalledWith( {
+			parentRowId: 0,
+			newListItemType: Constants.Z_OBJECT
+		} );
 	} );
 
 } );
