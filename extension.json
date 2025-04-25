@@ -256,22 +256,28 @@
 		"PageSaveComplete": "WikiLambdaClientHooks",
 		"ResourceLoaderRegisterModules": "WikiLambdaClientHooks",
 		"MakeGlobalVariablesScript": "WikiLambdaClientHooks",
+
 		"EnhancedChangesListModifyLineData": "WikiLambdaClientChangeHooks",
 		"EnhancedChangesListModifyBlockLineData": "WikiLambdaClientChangeHooks",
 		"OldChangesListRecentChangesLine": "WikiLambdaClientChangeHooks",
 		"ChangesListSpecialPageStructuredFilters": "WikiLambdaClientChangeHooks",
 		"ChangesListSpecialPageQuery": "WikiLambdaClientChangeHooks",
 		"GetPreferences": "WikiLambdaClientChangeHooks",
+
 		"LoadExtensionSchemaUpdates": "WikiLambdaRepoHooks",
+
 		"getUserPermissionsErrors": "PageEditingHandler",
 		"MultiContentSave": "PageEditingHandler",
 		"NamespaceIsMovable": "PageEditingHandler",
 		"RecentChange_save": "PageEditingHandler",
+
 		"HtmlPageLinkRendererEnd": "PageRenderingHandler",
 		"SkinTemplateNavigation::Universal": "PageRenderingHandler",
 		"WebRequestPathInfoRouter": "PageRenderingHandler",
 		"BeforePageDisplay": "PageRenderingHandler",
-		"BeforeDisplayNoArticleText": "PageRenderingHandler"
+		"BeforeDisplayNoArticleText": "PageRenderingHandler",
+		"ParserGetVariableValueSwitch": "PageRenderingHandler",
+		"SpecialStatsAddExtra": "PageRenderingHandler"
 	},
 	"MessagesDirs": {
 		"WikiLambda": [
