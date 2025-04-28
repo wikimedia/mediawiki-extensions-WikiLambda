@@ -28,7 +28,7 @@ use Wikimedia\Rdbms\IDBAccessObject;
 use Wikimedia\Rdbms\SelectQueryBuilder;
 
 /**
- * @covers \MediaWiki\Extension\WikiLambda\Hooks
+ * @covers \MediaWiki\Extension\WikiLambda\HookHandler\RepoHooks
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectContentHandler
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataRemoval

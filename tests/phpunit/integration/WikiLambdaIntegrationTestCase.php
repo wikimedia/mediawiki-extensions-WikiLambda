@@ -35,7 +35,7 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 
 	protected function setUpAsRepoMode(): void {
 		$this->overrideConfigValue( 'WikiLambdaEnableRepoMode', true );
-		\MediaWiki\Extension\WikiLambda\Hooks::registerExtension();
+		\MediaWiki\Extension\WikiLambda\HookHandler\RepoHooks::registerExtension();
 	}
 
 	/**

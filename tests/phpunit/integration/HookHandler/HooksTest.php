@@ -13,7 +13,7 @@ use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCa
 use MediaWiki\Title\Title;
 
 /**
- * @covers \MediaWiki\Extension\WikiLambda\Hooks
+ * @covers \MediaWiki\Extension\WikiLambda\HookHandler\RepoHooks
  * @covers \MediaWiki\Extension\WikiLambda\HookHandler\PageRenderingHandler
  * @covers \MediaWiki\Extension\WikiLambda\HookHandler\PageEditingHandler
  * @group Database

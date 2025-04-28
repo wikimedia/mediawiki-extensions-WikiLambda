@@ -92,7 +92,7 @@ class UpdateSecondaryTables extends Maintenance {
 	/**
 	 * @inheritDoc
 	 *
-	 * Note there is a function updateSecondaryTables in Hooks.php that provides similar
+	 * Note there is a function updateSecondaryTables in RepoHooks.php that provides similar
 	 * functionality (and with code that duplicates part of this, which could not
 	 * easily be avoided).
 	 */

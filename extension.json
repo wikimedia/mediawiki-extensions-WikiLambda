@@ -34,7 +34,7 @@
 		"MediaWiki\\Extension\\WikiLambda\\Tests\\": "tests/",
 		"MediaWiki\\Extension\\WikiLambda\\Tests\\Integration\\": "tests/phpunit/integration/"
 	},
-	"callback": "MediaWiki\\Extension\\WikiLambda\\Hooks::registerExtension",
+	"callback": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\RepoHooks::registerExtension",
 	"ContentHandlers": {
 		"zobject": "MediaWiki\\Extension\\WikiLambda\\ZObjectContentHandler"
 	},
@@ -216,8 +216,8 @@
 		"functionmaintainer"
 	],
 	"HookHandlers": {
-		"WikiLambdaHooks": {
-			"class": "MediaWiki\\Extension\\WikiLambda\\Hooks"
+		"WikiLambdaRepoHooks": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\RepoHooks"
 		},
 		"WikiLambdaClientHooks": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\ClientHooks",
@@ -262,7 +262,7 @@
 		"ChangesListSpecialPageStructuredFilters": "WikiLambdaClientChangeHooks",
 		"ChangesListSpecialPageQuery": "WikiLambdaClientChangeHooks",
 		"GetPreferences": "WikiLambdaClientChangeHooks",
-		"LoadExtensionSchemaUpdates": "WikiLambdaHooks",
+		"LoadExtensionSchemaUpdates": "WikiLambdaRepoHooks",
 		"getUserPermissionsErrors": "PageEditingHandler",
 		"MultiContentSave": "PageEditingHandler",
 		"NamespaceIsMovable": "PageEditingHandler",

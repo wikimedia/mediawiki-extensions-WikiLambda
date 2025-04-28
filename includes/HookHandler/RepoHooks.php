@@ -1,6 +1,7 @@
 <?php
+
 /**
- * WikiLambda extension hooks
+ * WikiLambda extension 'repo-mode' hooks
  *
  * @file
  * @ingroup Extensions
@@ -8,13 +9,18 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda;
+namespace MediaWiki\Extension\WikiLambda\HookHandler;
 
 use MediaWiki\CommentStore\CommentStoreComment;
 use MediaWiki\Config\ConfigException;
 use MediaWiki\Deferred\DeferredUpdates;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
+use MediaWiki\Extension\WikiLambda\ZErrorException;
+use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
+use MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate;
+use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Installer\DatabaseUpdater;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -24,11 +30,11 @@ use MediaWiki\Title\Title;
 use MediaWiki\User\User;
 use Wikimedia\Services\NoSuchServiceException;
 
-class Hooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook {
+class RepoHooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook {
 
 	public static function registerExtension() {
 		// We define the content model regardless of if 'repo mode' is enabled
-		require_once __DIR__ . '/defines.php';
+		require_once __DIR__ . '/../defines.php';
 
 		// Can't use MediaWikiServices or config objects yet, so use globals
 		global $wgWikiLambdaEnableRepoMode;
@@ -57,7 +63,7 @@ class Hooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook 
 	public function onLoadExtensionSchemaUpdates( $updater ) {
 		$db = $updater->getDB();
 		$type = $db->getType();
-		$dir = __DIR__ . '/../sql';
+		$dir = __DIR__ . '/../../sql';
 
 		if ( !in_array( $type, [ 'mysql', 'sqlite', 'postgres' ] ) ) {
 			wfWarn( "Database type '$type' is not supported by the WikiLambda extension." );
@@ -117,7 +123,7 @@ class Hooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook 
 	 * @return string
 	 */
 	protected static function getDataPath() {
-		return dirname( __DIR__ ) . '/function-schemata/data/definitions/';
+		return dirname( __DIR__ ) . '/../function-schemata/data/definitions/';
 	}
 
 	/**
