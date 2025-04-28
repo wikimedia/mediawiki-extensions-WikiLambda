@@ -8,7 +8,8 @@
 			"YeBoy371",
 			"Ykhwong",
 			"Yunbj",
-			"렌즈"
+			"렌즈",
+			"아라"
 		]
 	},
 	"action-wikifunctions-run": "공개 API에서 함수 실행",
@@ -174,9 +175,9 @@
 	"wikilambda-special-listduplicateobjectlabels-link": "중복된 레이블이 있는 개체 목록",
 	"wikilambda-special-objectsbytype-form-excludepredefined": "미리 정의된 객체 제외",
 	"wikilambda-special-objectsbytype-form-orderby": "정렬 기준:",
-	"wikilambda-special-objectsbytype-form-orderby-latest": "최신 항목 먼저",
+	"wikilambda-special-objectsbytype-form-orderby-latest": "최신 먼저",
 	"wikilambda-special-objectsbytype-form-orderby-name": "이름",
-	"wikilambda-special-objectsbytype-form-orderby-oldest": "과거 항목 먼저",
+	"wikilambda-special-objectsbytype-form-orderby-oldest": "최초 먼저",
 	"wikilambda-special-objectsbytype-form-type": "유형",
 	"wikilambda-special-objectsbytype-link": "인스턴스가 있는 모든 유형의 목록",
 	"wikilambda-special-runfunction": "함수 실행",

@@ -100,6 +100,7 @@
 	"apihelp-wikilambda_perform_test-param-zimplementations": "De lijst met te testen ZImplementatie-ID’s (of objecten)",
 	"apihelp-wikilambda_perform_test-param-ztesters": "De lijst met te testen ZTester-ID’s (of objecten)",
 	"apihelp-wikilambda_perform_test-param-nocache": "Of de cache gebruikt moet worden of niet",
+	"wikilambda-restapi-disabled-repo-mode-only": "Deze API is alleen beschikbaar op de hoofdwiki van de ‘repo’, Wikifunctions.org.",
 	"wikilambda-restapi-fetch-too-many": "U hebt $1 objecten aangevraagd, wat er te veel tegelijk zijn (maximaal $2 toegestaan)",
 	"wikilambda-restapi-revision-mismatch": "U heeft versie $1 van object ‘$2’ aangevraagd, maar deze is niet gevonden"
 }

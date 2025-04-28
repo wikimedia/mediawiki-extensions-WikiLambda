@@ -5,10 +5,12 @@
 			"McDutchie"
 		]
 	},
+	"wikilambda-fragment-disabled": "Wikifuncties-aanroepen zijn momenteel uitgeschakeld. Overweeg deze aanroep te vervangen.",
 	"wikilambda-fragment-pending": "⏳ Functie wordt aangeroepen…",
 	"wikilambda-recentchanges-edit-legend": "Bewerking vanuit Wikifuncties",
 	"wikilambda-recentchanges-edit-letter": "F",
 	"wikilambda-recentchanges-edit-title": "Wikifuncties-bewerking",
+	"wikilambda-recentchanges-entry-function": "Functie",
 	"wikilambda-recentchanges-explanation-connect-implementation": "{{PLURAL:$1|Implementatie|$1 implementaties}} verbonden: $2",
 	"wikilambda-recentchanges-explanation-connect-tester": "{{PLURAL:$1|Testgeval|$1 testgevallen}} verbonden: $2",
 	"wikilambda-recentchanges-explanation-delete-function": "Functiedefinitie verwijderd",
@@ -26,6 +28,8 @@
 	"wikilambda-recentchanges-filter-label": "Wikifuncties-bewerkingen",
 	"wikilambda-recentchanges-filter-rc-pref": "Wikifuncties-bewerkingen weergeven in recente wijzigingen",
 	"wikilambda-recentchanges-filter-wl-pref": "Wikifuncties-bewerkingen weergeven in uw volglijst",
+	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Aan het laden",
+	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "Voorvertoning duurde te lang",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Kies een optie",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Functie]] van Wikifuncties",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Minder lezen",
