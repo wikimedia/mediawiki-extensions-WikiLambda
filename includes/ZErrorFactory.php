@@ -217,11 +217,10 @@ class ZErrorFactory {
 	 * Create a Z5/ZError of the type Z502/Not wellformed
 	 *
 	 * @param string $right
-	 * @param ZObjectContent $content
 	 * @param int $flags whether is edit EDIT_UPDATE or create EDIT_NEW
 	 * @return ZError
 	 */
-	public static function createAuthorizationZError( $right, $content, $flags ): ZError {
+	public static function createAuthorizationZError( $right, $flags ): ZError {
 		$error = null;
 
 		switch ( $right ) {
