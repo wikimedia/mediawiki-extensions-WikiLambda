@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Avelino"
+			"Avelino",
+			"Toliño"
 		]
 	},
 	"wikilambda-performtest-error-nonimplementation": "Erro ó realizar unha proba: '$1' non se aplica.",
