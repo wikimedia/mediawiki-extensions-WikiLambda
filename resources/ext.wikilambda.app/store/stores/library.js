@@ -553,6 +553,31 @@ module.exports = {
 				);
 			};
 			return findDescription;
+		},
+
+		/**
+		 * Returns the output type of a function given its Zid.
+		 * If the object is not a function or not available, returns undefined.
+		 *
+		 * @return {Function}
+		 */
+		getOutputTypeOfFunctionZid: function () {
+			/**
+			 * @param {string} zid
+			 * @return {string|undefined}
+			 */
+			const findOutputTypeOfFunctionZid = ( zid ) => {
+				const func = this.getStoredObject( zid );
+				if ( !func ) {
+					return;
+				}
+				const obj = func[ Constants.Z_PERSISTENTOBJECT_VALUE ];
+				if ( obj[ Constants.Z_OBJECT_TYPE ] !== Constants.Z_FUNCTION ) {
+					return;
+				}
+				return obj[ Constants.Z_FUNCTION_RETURN_TYPE ];
+			};
+			return findOutputTypeOfFunctionZid;
 		}
 	},
 

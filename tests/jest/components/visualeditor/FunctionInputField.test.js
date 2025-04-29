@@ -19,7 +19,7 @@ describe( 'FunctionInputField', () => {
 		const wrapper = shallowMount( FunctionInputField, {
 			props: {
 				labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
-				argumentType: 'Z456',
+				inputType: 'Z456',
 				isEditing: true
 			}
 		} );
@@ -30,7 +30,7 @@ describe( 'FunctionInputField', () => {
 		const wrapper = shallowMount( FunctionInputField, {
 			props: {
 				labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
-				argumentType: 'Z456',
+				inputType: 'Z456',
 				isEditing: true
 			},
 			global: { stubs: { CdxField: false, CdxLabel: false } }
@@ -42,7 +42,7 @@ describe( 'FunctionInputField', () => {
 		const wrapper = shallowMount( FunctionInputField, {
 			props: {
 				labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
-				argumentType: 'Z456',
+				inputType: 'Z456',
 				isEditing: true
 			},
 			global: { stubs: { CdxField: false, CdxLabel: false } }
@@ -55,7 +55,7 @@ describe( 'FunctionInputField', () => {
 		const wrapper = shallowMount( FunctionInputField, {
 			props: {
 				labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
-				argumentType: 'Z456',
+				inputType: 'Z456',
 				isEditing: true
 			},
 			global: { stubs: { CdxField: false, CdxLabel: false } }
@@ -68,7 +68,7 @@ describe( 'FunctionInputField', () => {
 		const wrapper = shallowMount( FunctionInputField, {
 			props: {
 				labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
-				argumentType: 'Z456',
+				inputType: 'Z456',
 				isEditing: true
 			},
 			global: { stubs: { CdxField: false, CdxLabel: false } }
@@ -81,7 +81,7 @@ describe( 'FunctionInputField', () => {
 		const wrapper = shallowMount( FunctionInputField, {
 			props: {
 				labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
-				argumentType: 'Z456',
+				inputType: 'Z456',
 				isEditing: true,
 				errorMessage: 'An error occurred'
 			}
@@ -94,7 +94,7 @@ describe( 'FunctionInputField', () => {
 		const wrapper = shallowMount( FunctionInputField, {
 			props: {
 				labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
-				argumentType: 'Z456',
+				inputType: 'Z456',
 				isEditing: true
 			}
 		} );
@@ -106,7 +106,7 @@ describe( 'FunctionInputField', () => {
 		const wrapper = shallowMount( FunctionInputField, {
 			props: {
 				labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
-				argumentType: 'Z456',
+				inputType: 'Z456',
 				isEditing: true
 			}
 		} );

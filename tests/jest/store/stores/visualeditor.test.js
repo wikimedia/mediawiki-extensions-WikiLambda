@@ -109,7 +109,6 @@ describe( 'Visual Editor Pinia store', () => {
 			expect( store.veFunctionId ).toBe( 'Z801' );
 			expect( store.veFunctionParams ).toEqual( [ 'param1', 'param2' ] );
 			expect( store.suggestedFunctions ).toEqual( [ 'Z802', 'Z803' ] );
-			expect( store.fetchZids ).toHaveBeenCalledWith( { zids: [ 'Z801' ] } );
 			expect( store.fetchZids ).toHaveBeenCalledWith( { zids: [ 'Z802', 'Z803' ] } );
 		} );
 	} );

@@ -171,12 +171,6 @@ module.exports = {
 			this.setVEFunctionId( payload.functionId );
 			this.setVEFunctionParams( payload.functionParams );
 			this.setSuggestedFunctions( payload.suggestedFunctions );
-
-			// Fetch selected function
-			if ( payload.functionId ) {
-				this.fetchZids( { zids: [ payload.functionId ] } );
-			}
 		}
-
 	}
 };

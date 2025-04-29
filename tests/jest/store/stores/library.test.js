@@ -610,6 +610,22 @@ describe( 'library Pinia store', () => {
 				} );
 			} );
 		} );
+
+		describe( 'getOutputTypeOfFunctionZid', () => {
+			it( 'Returns undefined if the function is not stored', () => {
+				expect( store.getOutputTypeOfFunctionZid( 'Z99999' ) ).toBeUndefined();
+			} );
+
+			it( 'Returns undefined if the object is not a function', () => {
+				store.objects = mockStoredObjects;
+				expect( store.getOutputTypeOfFunctionZid( 'Z6' ) ).toBeUndefined();
+			} );
+
+			it( 'Returns the output type of a stored function', () => {
+				store.objects = mockStoredObjects;
+				expect( store.getOutputTypeOfFunctionZid( 'Z802' ) ).toEqual( 'Z1' );
+			} );
+		} );
 	} );
 
 	describe( 'Actions', () => {

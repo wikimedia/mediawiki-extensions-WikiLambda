@@ -51,7 +51,8 @@ class Title {
 
 const upstreami18n = { 'colon-separator': ':' };
 let englishMessages = JSON.parse( fs.readFileSync( path.join( __dirname, './i18n/en.json' ) ) );
-englishMessages = Object.assign( englishMessages, upstreami18n );
+const englishVeMessages = JSON.parse( fs.readFileSync( path.join( __dirname, './i18n/ve/en.json' ) ) );
+englishMessages = Object.assign( englishMessages, englishVeMessages, upstreami18n );
 
 class Mocki18n {
 	constructor( string ) {

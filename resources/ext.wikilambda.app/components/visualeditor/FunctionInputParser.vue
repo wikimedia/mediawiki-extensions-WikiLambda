@@ -38,7 +38,7 @@ module.exports = exports = defineComponent( {
 	},
 	mixins: [ typeMixin ],
 	props: {
-		argumentType: {
+		inputType: {
 			type: String,
 			required: true
 		},
@@ -69,7 +69,7 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		rendererZid: function () {
-			return this.getRendererZid( this.argumentType );
+			return this.getRendererZid( this.inputType );
 		},
 		/**
 		 * Return parser function Zid
@@ -77,7 +77,7 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		parserZid: function () {
-			return this.getParserZid( this.argumentType );
+			return this.getParserZid( this.inputType );
 		},
 		/**
 		 * Returns the rendered examples in case the renderer
@@ -123,7 +123,7 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		getErrorMessage: function () {
-			return this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-error-parser', this.argumentType ).parse();
+			return this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-error-parser', this.inputType ).parse();
 		}
 	} ),
 	methods: Object.assign( {}, mapActions( useMainStore, [
@@ -132,7 +132,7 @@ module.exports = exports = defineComponent( {
 		'runRendererTest'
 	] ), {
 		/**
-		 * Validates the value by triggering the Parser function for the argument type.
+		 * Validates the value by triggering the Parser function for the input type.
 		 * Passes the current value and resolves the promise with the parsed value.
 		 *
 		 * @param {string} value - The value to validate.
@@ -157,7 +157,7 @@ module.exports = exports = defineComponent( {
 						const metadata = data.response[ Constants.Z_RESPONSEENVELOPE_METADATA ];
 						const metadataErrorMessage = this.extractErrorMessage( metadata );
 						reject( metadataErrorMessage || this.getErrorMessage );
-					} else if ( this.getZObjectType( response ) !== this.argumentType ) {
+					} else if ( this.getZObjectType( response ) !== this.inputType ) {
 						// Parser return unexpected type: reject with error message
 						reject( this.getErrorMessage );
 					} else {
@@ -226,6 +226,7 @@ module.exports = exports = defineComponent( {
 		validate: function ( value, emitUpdate = false ) {
 			if ( !value ) {
 				this.$emit( 'validate', { isValid: true } );
+				this.$emit( 'update', '' );
 				return;
 			}
 

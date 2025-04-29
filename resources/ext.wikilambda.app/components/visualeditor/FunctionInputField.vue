@@ -12,7 +12,7 @@
 		<component
 			:is="componentType"
 			:value="modelValue"
-			:argument-type="argumentType"
+			:input-type="inputType"
 			:is-editing="isEditing"
 			@input="handleInput"
 			@update="handleUpdate"
@@ -58,7 +58,7 @@ module.exports = exports = defineComponent( {
 		'wl-function-input-string': FunctionInputString
 	},
 	props: {
-		argumentType: {
+		inputType: {
 			type: String,
 			required: true
 		},
@@ -87,7 +87,7 @@ module.exports = exports = defineComponent( {
 		'hasParser'
 	] ), {
 		/**
-		 * Determine the component type based on the argumentType.
+		 * Determine the component type based on the inputType.
 		 *
 		 * @return {string}
 		 */
@@ -109,20 +109,20 @@ module.exports = exports = defineComponent( {
 			return this.errorMessage ? 'error' : 'default';
 		},
 		/**
-		 * Checks if the argument type is an enumeration.
+		 * Checks if the input type is an enumeration.
 		 *
 		 * @return {boolean}
 		 */
 		isEnum: function () {
-			return this.isEnumType( this.argumentType );
+			return this.isEnumType( this.inputType );
 		},
 		/**
-		 * Check if the argument has a parser and renderer
+		 * Check if the input has a parser and renderer
 		 *
 		 * @return {boolean}
 		 */
 		hasParserFunction: function () {
-			return this.hasParser( this.argumentType );
+			return this.hasParser( this.inputType );
 		}
 	} ),
 	methods: {
