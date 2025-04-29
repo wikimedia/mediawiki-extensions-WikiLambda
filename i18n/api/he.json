@@ -97,6 +97,7 @@
 	"apihelp-wikilambda_perform_test-param-zimplementations": "רשימת מזהי מימושי Z (או עצמים) לבדיקה",
 	"apihelp-wikilambda_perform_test-param-ztesters": "רשימת מזהי בודקי Z (עצמים) לבדיקה",
 	"apihelp-wikilambda_perform_test-param-nocache": "האם להשתמש במטמון או לא",
+	"wikilambda-restapi-disabled-repo-mode-only": "ה־API הזה אינו זמין אלא רק בוויקי המאגר הראשי, Wikifunctions.org.",
 	"wikilambda-restapi-fetch-too-many": "ביקשת $1, שזה יותר מדי עצמים בו־זמנית (מותר $2 לכל היותר)",
 	"wikilambda-restapi-revision-mismatch": "ביקשת את הגרסה $1 של העצם \"$2\", שלא נמצא"
 }
