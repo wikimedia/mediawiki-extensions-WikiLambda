@@ -114,8 +114,10 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 			}
 		}
 		if ( $isUnsavedCode && !$userAuthority->isAllowed( 'wikilambda-execute-unsaved-code' ) ) {
+			$errorMessage =
+				'ApiFunctionCall rejecting a request for arbitrary execution from an unauthorised user "{user}"';
 			$logger->info(
-				'ApiFunctionCall rejecting a request for arbitrary execution from an unauthorised user "{user}"',
+				$errorMessage,
 				[
 					'user' => $userName,
 					'function' => $function
@@ -133,7 +135,8 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 				$bypassCache = filter_var( $toggleCacheFlag, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE );
 				$logger->info( "'bypass-cache' flag has just been toggled to: $bypassCache" );
 			} else {
-				$logger->warning( "User not permitted to toggle 'bypass-cache' flag" );
+				$errorMessage = "User not permitted to toggle 'bypass-cache' flag";
+				$logger->warning( $errorMessage );
 				$this->submitFunctionCallEvent( 403, $function, $start );
 				$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
 				WikiLambdaApiBase::dieWithZError( $zError, 403 );
@@ -152,14 +155,14 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 				return $this->orchestrator->orchestrate( $jsonQuery, $bypassCache );
 			},
 			'error' => function ( Status $status ) use ( $function, $start, $userName, $logger ) {
+				$errorMessage = 'ApiFunctionCall rejecting a request due to too many requests from source "{user}"';
 				$logger->info(
-					'ApiFunctionCall rejecting a request due to too many requests from source "{user}"',
+					$errorMessage,
 					[
 						'user' => $userName,
 						'function' => $function
 					]
 				);
-
 				$this->submitFunctionCallEvent( 429, $function, $start );
 				$this->dieWithError( [ "apierror-wikilambda_function_call-concurrency-limit" ], null, null, 429 );
 			}
@@ -172,8 +175,9 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 			$result['data'] = $response;
 			$result['success'] = true;
 		} catch ( ConnectException $exception ) {
+			$errorMessage = 'ApiFunctionCall failed due to a ConnectException: "{message}"';
 			$logger->warning(
-				'ApiFunctionCall failed due to a ConnectException: "{message}"',
+				$errorMessage,
 				[
 					'message' => $exception->getMessage(),
 					'exception' => $exception
@@ -192,13 +196,27 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 			$zResponseMap = ZResponseEnvelope::wrapErrorInResponseMap( $zError );
 			$zResponseObject = new ZResponseEnvelope( null, $zResponseMap );
 			$result['data'] = json_encode( $zResponseObject->getSerialized() );
+			$errorMessage = 'ApiFunctionCall failed due to a Client or Server Exception: "{message}"';
 			$logger->warning(
-				'ApiFunctionCall failed due to a Client or Server Exception: "{message}"',
+				$errorMessage,
 				[
 					'message' => $exception->getMessage(),
 					'exception' => $exception
 				]
 			);
+			$status = $exception->getResponse()->getStatusCode();
+			$this->submitFunctionCallEvent( $status, $function, $start );
+			if ( $exception instanceof ClientException ) {
+				$this->dieWithError(
+					[ "apierror-wikilambda_function_call-client-error", $this->orchestratorHost ],
+					null, null, $status
+				);
+			} elseif ( $exception instanceof ServerException ) {
+				$this->dieWithError(
+					[ "apierror-wikilambda_function_call-server-error", $this->orchestratorHost ],
+					null, null, $status
+				);
+			}
 		}
 		$pageResult->addValue( [], $this->getModuleName(), $result );
 		$this->submitFunctionCallEvent( 200, $function, $start );

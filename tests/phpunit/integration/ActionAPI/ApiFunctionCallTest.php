@@ -44,10 +44,15 @@ class ApiFunctionCallTest extends ApiTestCase {
 		$requestString,
 		$expectedString = null,
 		$callBack = null,
-		$expectedError = null
+		$expectedError = null,
+		$expectedThrownError = null
 	) {
 		$result = [];
 		$orchestrationResult = [];
+
+		if ( $expectedThrownError ) {
+			$this->expectExceptionMessage( $expectedThrownError );
+		}
 
 		$result = $this->doApiRequest( [
 			'action' => 'wikilambda_function_call',
@@ -55,8 +60,15 @@ class ApiFunctionCallTest extends ApiTestCase {
 		] );
 		$orchestrationResult = $result[0]['wikilambda_function_call'];
 
+		// TODO (T314609): Also test error cases.
+		if ( $expectedThrownError ) {
+			$this->assertArrayHasKey( 'success', $orchestrationResult );
+			$this->assertFalse( $orchestrationResult['success'] );
+			return;
+		}
+
 		$this->assertArrayHasKey( 'success', $orchestrationResult );
-		$this->assertTrue( $orchestrationResult['success'] );
+		$this->assertTrue( $orchestrationResult['success'], 'Expected success but got failure' );
 
 		$expected = json_decode( $expectedString, true ) ?? $expectedString;
 		$resultEnvelope = json_decode( $orchestrationResult[ 'data' ], true );
@@ -72,7 +84,6 @@ class ApiFunctionCallTest extends ApiTestCase {
 			$this->assertEquals( $expected, $actual );
 		};
 		$callBack( $expected, $actual );
-		// TODO (T314609): Also test error cases.
 	}
 
 	public static function provideExecuteSuccessfulViaMock() {
