@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Avelino"
+			"Avelino",
+			"Toliño"
 		]
 	},
 	"wikilambda-publish-input-changed-impact-prompt": "<p>Cambiaches o campo de entrada desta función. <strong>Todas as implementacións e probas existentes serán desvinculadas da función actual.</strong> Queres continuar?</p>",
