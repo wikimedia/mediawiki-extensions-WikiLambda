@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"!!asa,njgh"
+		]
+	},
+	"wikilambda-visualeditor-wikifunctionscall-preview-title": "Wete tango",
+	"wikilambda-visualeditor-wikifunctionscall-preview-no-result": "Tula oongushu koWete tango oshizemo.",
+	"wikilambda-visualeditor-wikifunctionscall-preview-error": "oFangshuni ita pondola ulika oshizemo. Alikana tunyadhala ishewe konima.",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "Kansela",
+	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "Tula ishewe",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Kansela"
+}

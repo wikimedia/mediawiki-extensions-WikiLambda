@@ -52,8 +52,8 @@
 	"wikilambda-visualeditor-wikifunctionscall-title": "Title for the Wikifunctions call dialog in the visual editor, shown as a heading label above the call content",
 	"wikilambda-visualeditor-wikifunctionscall-preview-title": "Title for the preview section in the Wikifunctions call input configuration dialog in the visual editor.",
 	"wikilambda-visualeditor-wikifunctionscall-preview-no-result": "Message to show in the preview section in the Wikifunctions call input configuration dialog in the visual editor when there is no result available.",
-	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "Message to show in the preview section in the Wikifunctions call input configuration dialog in the visual editor when the preview was cancelled.",
 	"wikilambda-visualeditor-wikifunctionscall-preview-error": "Message to show in the preview section in the Wikifunctions call input configuration dialog in the visual editor when the preview failed.",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "Message to show in the preview section in the Wikifunctions call input configuration dialog in the visual editor when the preview was cancelled.",
 	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "Label for the reset button in the preview section in the Wikifunctions call input configuration dialog in the visual editor, available for screen readers.",
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Label for the reset button in the preview section in the Wikifunctions call input configuration dialog in the visual editor when the reset is not allowed, available for screen readers."
 }

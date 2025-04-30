@@ -45,5 +45,11 @@
 	"wikilambda-visualeditor-wikifunctionscall-no-name": "Kein Name",
 	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Funktionsdaten werden geladen",
 	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Keine Funktion ausgewählt.",
-	"wikilambda-visualeditor-wikifunctionscall-title": "Funktion"
+	"wikilambda-visualeditor-wikifunctionscall-title": "Funktion",
+	"wikilambda-visualeditor-wikifunctionscall-preview-title": "Vorschau",
+	"wikilambda-visualeditor-wikifunctionscall-preview-no-result": "Gib Werte ein, um eine Vorschau der Ergebnisse zu erhalten.",
+	"wikilambda-visualeditor-wikifunctionscall-preview-error": "Die Funktion kann kein Ergebnis anzeigen. Bitte versuche es später erneut.",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "Abgebrochen.",
+	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "Zurücksetzen",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Abbrechen"
 }
