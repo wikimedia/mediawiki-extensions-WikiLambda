@@ -29,7 +29,7 @@ class ZPersistentObjectTest extends MediaWikiUnitTestCase {
 		$this->assertSame( $expectedValidity, $input->isValid() );
 	}
 
-	public function provideIsValid() {
+	public static function provideIsValid() {
 		$zidZString = new ZString( 'Z400' );
 		$contentObject = new ZString( 'Demo content' );
 

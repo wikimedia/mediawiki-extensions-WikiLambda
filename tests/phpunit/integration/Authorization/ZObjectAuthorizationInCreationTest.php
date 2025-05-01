@@ -138,7 +138,7 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 		}
 	}
 
-	public function provideCreateNew() {
+	public static function provideCreateNew() {
 		$typesToTry = [
 			'type (Z4 instance)' => [
 				'testedType' => 'Z4',
