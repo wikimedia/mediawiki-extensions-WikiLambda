@@ -493,7 +493,7 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	public function provideChangedTargetToViewUrl() {
+	public static function provideChangedTargetToViewUrl() {
 		// Note that URLs with '&'s in them have them encoded to '&amp;' by the hook to be HTML-safe.
 
 		yield 'English, default label, ZID, /view link' => [

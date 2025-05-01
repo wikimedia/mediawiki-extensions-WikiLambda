@@ -303,7 +303,7 @@ EOT
 		$this->assertEquals( $testObject, $roundTripped, 'Round trip through normal serialization' );
 	}
 
-	public function provideGetSerialized() {
+	public static function provideGetSerialized() {
 		$testRef = new ZReference( 'Z6' );
 		$testId = new ZString( 'Z6K1' );
 		$emptyLabelSet = new ZMultiLingualString( [] );
