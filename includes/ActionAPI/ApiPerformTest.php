@@ -280,10 +280,8 @@ class ApiPerformTest extends WikiLambdaApiBase {
 				'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedMap $testMetadata';
 
 				// Use tester to create a function call validating the output
-				$validateTestValue = $testResultObject->hasErrors() ?
-					$testResultObject->getErrors() :
-					$testResultObject->getZValue();
 
+				$validateTestValue = $testResultObject->getZValue();
 				$validateFunctionCall = $testerObject->getValueByKey( ZTypeRegistry::Z_TESTER_VALIDATION );
 				'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall $validateFunctionCall';
 
