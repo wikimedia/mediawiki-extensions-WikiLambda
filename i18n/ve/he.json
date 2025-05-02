@@ -48,5 +48,11 @@
 	"wikilambda-visualeditor-wikifunctionscall-no-name": "אין שם",
 	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "טעינת נתוני פונקציה",
 	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "לא נבחרה פונקציה.",
-	"wikilambda-visualeditor-wikifunctionscall-title": "פונקציה"
+	"wikilambda-visualeditor-wikifunctionscall-title": "פונקציה",
+	"wikilambda-visualeditor-wikifunctionscall-preview-title": "תצוגה מקדימה",
+	"wikilambda-visualeditor-wikifunctionscall-preview-no-result": "נא להזין ערכים כדי לראות תצוגה מקדימה של התוצאה.",
+	"wikilambda-visualeditor-wikifunctionscall-preview-error": "הפונקציה לא יכולה להציג תוצאה. נא לנסות שוב מאוחר יותר.",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "בוטל",
+	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "איפוס",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "ביטול"
 }
