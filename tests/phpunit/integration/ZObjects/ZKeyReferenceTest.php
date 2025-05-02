@@ -16,6 +16,8 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZKeyReference
+ *
+ * @group Database
  */
 class ZKeyReferenceTest extends WikiLambdaIntegrationTestCase {
 

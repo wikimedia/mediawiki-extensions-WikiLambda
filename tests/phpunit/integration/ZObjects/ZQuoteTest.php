@@ -15,6 +15,8 @@ use MediaWiki\Json\FormatJson;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZQuote
+ *
+ * @group Database
  */
 class ZQuoteTest extends WikiLambdaIntegrationTestCase {
 

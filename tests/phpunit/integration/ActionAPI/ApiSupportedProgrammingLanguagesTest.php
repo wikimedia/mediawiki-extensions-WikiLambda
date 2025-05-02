@@ -15,6 +15,7 @@ use MediaWiki\Tests\Api\ApiTestCase;
  * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\ApiSupportedProgrammingLanguages
  * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\WikiLambdaApiBase
  * @group API
+ * @group Database
  * @group Standalone
  */
 class ApiSupportedProgrammingLanguagesTest extends ApiTestCase {
