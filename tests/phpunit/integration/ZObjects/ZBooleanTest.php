@@ -19,6 +19,8 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZBoolean
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent
+ *
+ * @group Database
  */
 class ZBooleanTest extends WikiLambdaIntegrationTestCase {
 

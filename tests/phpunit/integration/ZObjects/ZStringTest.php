@@ -22,6 +22,8 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZString
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent
+ *
+ * @group Database
  */
 class ZStringTest extends WikiLambdaIntegrationTestCase {
 

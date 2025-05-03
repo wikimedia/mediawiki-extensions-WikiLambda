@@ -21,6 +21,8 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedMap;
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedMap
+ *
+ * @group Database
  */
 class ZResponseEnvelopeTest extends WikiLambdaIntegrationTestCase {
 

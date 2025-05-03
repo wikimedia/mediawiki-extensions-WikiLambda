@@ -36,6 +36,9 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 	protected function setUpAsRepoMode(): void {
 		$this->overrideConfigValue( 'WikiLambdaEnableRepoMode', true );
 		\MediaWiki\Extension\WikiLambda\HookHandler\RepoHooks::registerExtension();
+
+		// Always register Z504, as otherwise we get an infinite recursion of not finding Z504
+		$this->insertZids( [ 'Z504' ] );
 	}
 
 	/**
