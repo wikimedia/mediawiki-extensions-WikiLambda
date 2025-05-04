@@ -15,6 +15,7 @@ use MediaWiki\Config\Config;
 use MediaWiki\Context\IContextSource;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
@@ -24,6 +25,8 @@ use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\Linker\LinkTarget;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\Article;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
 use MediaWiki\Skin\Skin;
 use MediaWiki\Title\Title;
 use MediaWiki\User\Options\UserOptionsLookup;
@@ -32,7 +35,9 @@ class PageRenderingHandler implements
 	\MediaWiki\Hook\SkinTemplateNavigation__UniversalHook,
 	\MediaWiki\Hook\WebRequestPathInfoRouterHook,
 	\MediaWiki\Output\Hook\BeforePageDisplayHook,
-	\Mediawiki\Page\Hook\BeforeDisplayNoArticleTextHook
+	\Mediawiki\Page\Hook\BeforeDisplayNoArticleTextHook,
+	\MediaWiki\Hook\ParserGetVariableValueSwitchHook,
+	\MediaWiki\Hook\SpecialStatsAddExtraHook
 {
 	private Config $config;
 	private UserOptionsLookup $userOptionsLookup;
@@ -385,6 +390,90 @@ class PageRenderingHandler implements
 			'dir' => $dir,
 			'lang' => $lang,
 		], "\n$text\n" ) );
+	}
+
+	/**
+	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/ParserGetVariableValueSwitch
+	 *
+	 * @param Parser $parser
+	 * @param array &$variableCache
+	 * @param string $magicWordId
+	 * @param ?string &$ret
+	 * @param PPFrame|false $frame
+	 * @return bool|void
+	 */
+	public function onParserGetVariableValueSwitch( $parser, &$variableCache, $magicWordId, &$ret, $frame ) {
+		// We only do this in repo mode
+		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+			return true;
+		}
+
+		switch ( $magicWordId ) {
+			case 'magic_count_all':
+				$ret = $this->zObjectStore->getCountOfTypeInstances( ZTypeRegistry::Z_OBJECT );
+				break;
+			case 'magic_count_functions':
+				$ret = $this->zObjectStore->getCountOfTypeInstances( ZTypeRegistry::Z_FUNCTION );
+				break;
+			case 'magic_count_implementations':
+				$ret = $this->zObjectStore->getCountOfTypeInstances( ZTypeRegistry::Z_IMPLEMENTATION );
+				break;
+			case 'magic_count_testers':
+				$ret = $this->zObjectStore->getCountOfTypeInstances( ZTypeRegistry::Z_TESTER );
+				break;
+			case 'magic_count_types':
+				$ret = $this->zObjectStore->getCountOfTypeInstances( ZTypeRegistry::Z_TYPE );
+				break;
+			case 'magic_count_languages':
+				$ret = $this->zObjectStore->getCountOfTypeInstances( ZTypeRegistry::Z_LANGUAGE );
+				break;
+
+			// Unknown magic word, do nothing
+			default:
+				break;
+		}
+
+		// Speed-optimisation: cache the value for calls to the same variable in the same request
+		$variableCache[$magicWordId] = $ret;
+
+		// Permit future callbacks to run for this hook (e.g. other extensions' code).
+		return true;
+	}
+
+	/**
+	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/SpecialStatsAddExtra
+	 *
+	 * @param array &$extraStats
+	 * @param IContextSource $context
+	 */
+	public function onSpecialStatsAddExtra( &$extraStats, $context ) {
+		// We only do this in repo mode
+		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+			return;
+		}
+
+		$contentLanguage = \MediaWiki\MediaWikiServices::getInstance()->getContentLanguage();
+
+		$extraStats['wikilambda-statistics-header'] = [
+			'wikilambda-statistics-label-allobjects' => $contentLanguage->formatNum(
+				$this->zObjectStore->getCountOfTypeInstances( ZTypeRegistry::Z_OBJECT )
+			),
+			'wikilambda-statistics-label-types' => $contentLanguage->formatNum(
+				$this->zObjectStore->getCountOfTypeInstances( ZTypeRegistry::Z_TYPE )
+			),
+			'wikilambda-statistics-label-languages' => $contentLanguage->formatNum(
+				$this->zObjectStore->getCountOfTypeInstances( ZTypeRegistry::Z_LANGUAGE )
+			),
+			'wikilambda-statistics-label-functions' => $contentLanguage->formatNum(
+				$this->zObjectStore->getCountOfTypeInstances( ZTypeRegistry::Z_FUNCTION )
+			),
+			'wikilambda-statistics-label-implementations' => $contentLanguage->formatNum(
+				$this->zObjectStore->getCountOfTypeInstances( ZTypeRegistry::Z_IMPLEMENTATION )
+			),
+			'wikilambda-statistics-label-testers' => $contentLanguage->formatNum(
+				$this->zObjectStore->getCountOfTypeInstances( ZTypeRegistry::Z_TESTER )
+			),
+		];
 	}
 
 }

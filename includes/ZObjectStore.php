@@ -737,6 +737,20 @@ class ZObjectStore {
 	}
 
 	/**
+	 * Gets from the secondary database the number of all Zids belonging to a given type
+	 *
+	 * @param string $ztype
+	 * @return int
+	 */
+	public function getCountOfTypeInstances( string $ztype ): int {
+		// Special case for all ZObjects
+		if ( $ztype === ZTypeRegistry::Z_OBJECT ) {
+			return count( $this->fetchAllZids() );
+		}
+		return count( $this->fetchZidsOfType( $ztype ) );
+	}
+
+	/**
 	 * Get a list of all Zids persisted in the database
 	 *
 	 * @return string[] All persisted Zids
