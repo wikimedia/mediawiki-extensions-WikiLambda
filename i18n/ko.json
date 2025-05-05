@@ -8,7 +8,8 @@
 			"Yunbj",
 			"렌즈",
 			"Whatback11",
-			"YeBoy371"
+			"YeBoy371",
+			"아라"
 		]
 	},
 	"wikilambda-invalidzobjecttitle": "지정된 '$1' 제목은 ZObject에 유효하지 않습니다.",
@@ -88,6 +89,8 @@
 	"wikilambda-tester-run-tester": "테스터 실행",
 	"wikilambda-enable-expert-mode": "전문가 모드 활성화",
 	"wikilambda-disable-expert-mode": "전문가 모드 비활성화",
+	"wikilambda-metadata-show-languages": "라벨 상자 표시",
+	"wikilambda-metadata-hide-languages": "라벨 상자 숨기기",
 	"wikilambda-metadata-add-alias": "다른 이름 추가",
 	"wikilambda-function-is-attached": "이 객체는 객체의 함수와 연결되어 있습니다.",
 	"wikilambda-function-is-not-attached": "이 객체는 객체의 함수와 연결되어 있지 않습니다.",
