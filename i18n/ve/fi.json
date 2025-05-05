@@ -47,5 +47,11 @@
 	"wikilambda-visualeditor-wikifunctionscall-no-name": "Ei nimeä",
 	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Ladataan funktion tietoja...",
 	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Ei funktiota valittuna.",
-	"wikilambda-visualeditor-wikifunctionscall-title": "Funktio"
+	"wikilambda-visualeditor-wikifunctionscall-title": "Funktio",
+	"wikilambda-visualeditor-wikifunctionscall-preview-title": "Esikatselu",
+	"wikilambda-visualeditor-wikifunctionscall-preview-no-result": "Syötä arvot esikatsellaksesi tulosta.",
+	"wikilambda-visualeditor-wikifunctionscall-preview-error": "Funktio ei voi näyttää tulosta. Yritä myöhemmin uudelleen.",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "Peruutettu",
+	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "Nollaa",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Peruuta"
 }

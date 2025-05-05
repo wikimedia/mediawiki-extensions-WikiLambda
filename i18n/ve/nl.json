@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"ABPMAB",
-			"McDutchie"
+			"McDutchie",
+			"Siebrand"
 		]
 	},
 	"wikilambda-fragment-disabled": "Wikifuncties-aanroepen zijn momenteel uitgeschakeld. Overweeg deze aanroep te vervangen.",
@@ -48,5 +49,11 @@
 	"wikilambda-visualeditor-wikifunctionscall-no-name": "Geen naam",
 	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Functiegegevens worden geladen",
 	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Geen functie geselecteerd.",
-	"wikilambda-visualeditor-wikifunctionscall-title": "Functie"
+	"wikilambda-visualeditor-wikifunctionscall-title": "Functie",
+	"wikilambda-visualeditor-wikifunctionscall-preview-title": "Voorvertoning",
+	"wikilambda-visualeditor-wikifunctionscall-preview-no-result": "Voer waarden in om een voorbeeld van het resultaat te bekijken.",
+	"wikilambda-visualeditor-wikifunctionscall-preview-error": "De functie kan geen resultaat weergeven. Probeer het later opnieuw.",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "Geannuleerd",
+	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "Opnieuw instellen",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Annuleren"
 }

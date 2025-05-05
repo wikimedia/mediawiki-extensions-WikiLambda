@@ -5,5 +5,8 @@
 		]
 	},
 	"wikilambda-recentchanges-entry-function": "فنکشن",
-	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "لوڈ تھین٘دا پئے"
+	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "لوڈ تھین٘دا پئے",
+	"wikilambda-visualeditor-wikifunctionscall-preview-title": "پہلے ݙیکھو",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "منسوخ تھی ڳیا",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "منسوخ"
 }

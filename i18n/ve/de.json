@@ -27,6 +27,7 @@
 	"wikilambda-recentchanges-filter-wl-pref": "Wikifunctions-Änderungen in deiner Beobachtungsliste anzeigen",
 	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Lade",
 	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "Vorschau hat zu lange gedauert",
+	"wikilambda-visualeditor-wikifunctionscall-changedesc-title": "Änderungen an den Eingaben bei Wikifunctions",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Wähle eine Option",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Funktion]] aus Wikifunctions",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Weniger lesen",
