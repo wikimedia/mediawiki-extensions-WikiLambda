@@ -62,8 +62,9 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 		// Work out whether the job is still needed
 		if ( count( $pagesUsingFunction ) === 0 ) {
 			// We were triggered by the repo, but we aren't using that Function.
-			$this->logger->warning(
-				__CLASS__ . ' triggered for {item} but it is seemingly unused; data error?',
+			// Note: Until T385630 is done, this is acting-as-expected, and shouldn't be a source of concern.
+			$this->logger->debug(
+				__CLASS__ . ' triggered for {item} but it is unused; T385630 would avoid this',
 				[
 					'item' => $this->params['target'],
 				]
