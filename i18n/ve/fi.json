@@ -29,6 +29,7 @@
 	"wikilambda-recentchanges-filter-wl-pref": "Näytä Wikifunctions-muokkaukset tarkkailulistallasi",
 	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Ladataan",
 	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "Esikatselu kesti liian kauan",
+	"wikilambda-visualeditor-wikifunctionscall-changedesc-title": "muutos Wikifunctions-syötteisiin",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Valitse vaihtoehto",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Funktio]] Wikifunctionsista",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Näytä vähemmän",

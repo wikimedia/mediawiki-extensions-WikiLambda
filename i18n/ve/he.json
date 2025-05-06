@@ -30,6 +30,7 @@
 	"wikilambda-recentchanges-filter-wl-pref": "הצגת עריכות שנעשו באתר ויקיפונקציות ברשימת המעקב",
 	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "טעינה",
 	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "התצוגה המקדימה ארכה זמן רב מדי",
+	"wikilambda-visualeditor-wikifunctionscall-changedesc-title": "שינוי קלט בוויקיפונקציות",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "נא לבחור אפשרות",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|פונקציה]] מאתר ויקיפונקציות",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "לקרוא פחות",
