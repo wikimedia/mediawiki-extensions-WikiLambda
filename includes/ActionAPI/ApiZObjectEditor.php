@@ -13,6 +13,8 @@ namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 use MediaWiki\Api\ApiMain;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
+use MediaWiki\Extension\WikiLambda\ZErrorFactory;
+use MediaWiki\Title\Title;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiZObjectEditor extends WikiLambdaApiBase {
@@ -34,7 +36,6 @@ class ApiZObjectEditor extends WikiLambdaApiBase {
 		$zobject = $params[ 'zobject' ];
 
 		// If zid is set, we should be editing it, if empty or Z0, we are creating a new zobject
-		// Shall we add an aditional flag to confirm creation/edition?
 		$zid = $params[ 'zid' ];
 
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
@@ -43,8 +44,20 @@ class ApiZObjectEditor extends WikiLambdaApiBase {
 			// Create a new ZObject
 			$response = $zObjectStore->createNewZObject( $this, $zobject, $summary, $user );
 		} else {
+			// Check if the ZObject exists (i.e. someone's making an edit), and pass the correct edit flag
+			if ( Title::newFromText( $zid )->exists() ) {
+				$editFlag = EDIT_UPDATE;
+			} else {
+				// … but only for very-priviledged users, as this can cause major issues if e.g. Z99999999 was created
+				if ( !$user->isAllowed( 'wikilambda-create-arbitrary-zid' ) ) {
+					$zError = ZErrorFactory::createAuthorizationZError( 'wikilambda-edit', EDIT_NEW );
+					WikiLambdaApiBase::dieWithZError( $zError, 403 );
+				}
+				$editFlag = EDIT_NEW;
+			}
+
 			// Edit an existing ZObject
-			$response = $zObjectStore->updateZObject( $this, $zid, $zobject, $summary, $user );
+			$response = $zObjectStore->updateZObject( $this, $zid, $zobject, $summary, $user, $editFlag );
 		}
 
 		if ( !$response->isOK() ) {

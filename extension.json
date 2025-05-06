@@ -80,6 +80,7 @@
 		"wikilambda-connect-implementation",
 		"wikilambda-connect-tester",
 		"wikilambda-create",
+		"wikilambda-create-arbitrary-zid",
 		"wikilambda-create-boolean",
 		"wikilambda-create-converter",
 		"wikilambda-create-enum-value",
@@ -158,6 +159,7 @@
 			"wikilambda-edit-running-function": true
 		},
 		"functionmaintainer": {
+			"wikilambda-create-arbitrary-zid": true,
 			"wikilambda-create-enum-value": true,
 			"wikilambda-create-language": true,
 			"wikilambda-create-predefined": true,
