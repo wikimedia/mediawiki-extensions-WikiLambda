@@ -40,6 +40,8 @@ class ZObjectSecondaryDataRemoval extends DataUpdate {
 		ZObjectRegistry::unregisterZid( $zid );
 
 		// Drop the ZObject from the object cache, if set
-		WikiLambdaServices::getZObjectStash()->delete( ZObjectStore::SERVICE_CACHE_KEY_PREFIX . $zid );
+		$zObjectCache = WikiLambdaServices::getZObjectStash();
+		$cacheKey = $zObjectCache->makeKey( ZObjectStore::ZOBJECT_CACHE_KEY_PREFIX, $zid );
+		$zObjectCache->delete( $cacheKey );
 	}
 }

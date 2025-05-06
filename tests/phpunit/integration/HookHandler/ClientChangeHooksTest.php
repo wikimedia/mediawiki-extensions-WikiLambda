@@ -13,31 +13,26 @@ use MediaWiki\Context\IContextSource;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\HookHandler\ClientChangeHooks;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsRecentChangesInsertJob;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaClientIntegrationTestCase;
 use MediaWiki\Page\PageReferenceValue;
 use MediaWiki\RecentChanges\EnhancedChangesList;
 use MediaWiki\RecentChanges\RecentChange;
 use MediaWiki\User\User;
-use MediaWikiIntegrationTestCase;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\HookHandler\ClientChangeHooks
  *
  * @group Database
  */
-class ClientChangeHooksTest extends MediaWikiIntegrationTestCase {
+class ClientChangeHooksTest extends WikiLambdaClientIntegrationTestCase {
 
 	private function newClientChangeHooks(): ClientChangeHooks {
-		$this->setMwGlobals( 'wgWikiLambdaEnableClientMode', true );
-		$this->setMwGlobals( 'wgWikiLambdaClientHideDefaultChanges', true );
-
-		$hooks = new ClientChangeHooks(
+		return new ClientChangeHooks(
 			$this->getServiceContainer()->getUserOptionsLookup(),
 			$this->getServiceContainer()->getConnectionProvider(),
 			$this->getServiceContainer()->getMainConfig(),
 			$this->getServiceContainer()->getLinkRenderer()
 		);
-
-		return $hooks;
 	}
 
 	public function testOnEnhancedChangesListModifyLineData() {

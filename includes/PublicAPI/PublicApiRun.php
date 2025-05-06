@@ -116,15 +116,19 @@ class PublicApiRun extends WikiLambdaApiBase {
 			WikiLambdaApiBase::dieWithZError( $zError, 403 );
 		}
 
-		$work = new PoolCounterWorkViaCallback( 'WikiLambdaFunctionCall', $this->getUser()->getName(), [
-			'doWork' => function () use ( $jsonQuery ) {
-				return $this->orchestrator->orchestrate( $jsonQuery );
-			},
-			'error' => function ( Status $status ) use ( $function, $start ) {
-				$this->submitFunctionCallEvent( 429, $function, $start );
-				$this->dieWithError( [ "apierror-wikilambda_function_call-concurrency-limit" ], null, null, 429 );
-			}
-		] );
+		$work = new PoolCounterWorkViaCallback(
+			WikiLambdaApiBase::FUNCTIONCALL_POOL_COUNTER_TYPE,
+			$this->getUser()->getName(),
+			[
+				'doWork' => function () use ( $jsonQuery ) {
+					return $this->orchestrator->orchestrate( $jsonQuery );
+				},
+				'error' => function ( Status $status ) use ( $function, $start ) {
+					$this->submitFunctionCallEvent( 429, $function, $start );
+					$this->dieWithError( [ "apierror-wikilambda_function_call-concurrency-limit" ], null, null, 429 );
+				}
+			]
+		);
 
 		$result = [];
 		try {

@@ -26,6 +26,8 @@ class OrchestratorRequest {
 	protected string $userAgentString;
 	protected BagOStuff $objectCache;
 
+	public const FUNCTIONCALL_CACHE_KEY_PREFIX = 'WikiLambdaFunctionCall';
+
 	/**
 	 * @param ClientInterface $client GuzzleHttp Client used for requests
 	 */
@@ -65,7 +67,10 @@ class OrchestratorRequest {
 		}
 
 		return $this->objectCache->getWithSetCallback(
-			$this->objectCache->makeKey( 'WikiLambdaFunctionCall', ZObjectUtils::makeCacheKeyFromZObject( $query ) ),
+			$this->objectCache->makeKey(
+				self::FUNCTIONCALL_CACHE_KEY_PREFIX,
+				ZObjectUtils::makeCacheKeyFromZObject( $query )
+			),
 			// TODO (T338243): Is this the right timeout? Maybe TTL_DAY or TTL_MONTH instead?
 			$this->objectCache::TTL_WEEK,
 			static function () use ( $query, $guzzleClient, $requestHeaders ) {

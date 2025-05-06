@@ -38,15 +38,17 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 	private BagOStuff $objectCache;
 	private LoggerInterface $logger;
 
+	/**
+	 * @inheritDoc
+	 */
 	public function __construct( array $params ) {
-		// This job, triggered the Parsoid callback for rendering a function, tries to make a network request for the
-		// content.
+		// This job, triggered the Parsoid callback for rendering a function,
+		// tries to make a network request for the content.
 
 		parent::__construct( 'wikifunctionsClientRequest', $params );
 
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
 		$this->objectCache = WikiLambdaServices::getZObjectStash();
-
 		$this->config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'WikiLambda' );
 		$this->httpRequestFactory = MediaWikiServices::getInstance()->getHttpRequestFactory();
 
@@ -170,6 +172,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 		// Http 0: Request didn't fly
 		$httpStatusCode = $request->getStatus();
 		if ( $httpStatusCode === 0 ) {
+			// TODO (T393611): Do not use ZErrorFactory::create* or stop it from making fetches
 			$zerror = ZErrorFactory::createZErrorInstance(
 				ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
 				[ "message" => $responseStatus->getMessages()[0]->getKey() ]
@@ -182,6 +185,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 
 		// Http 200: Response successful
 		$response = json_decode( $request->getContent() );
+
 		if ( $response && $responseStatus->isOK() ) {
 			return [ $response->value ];
 		}
@@ -191,6 +195,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 		$zerror = null;
 		$zerrorCode = null;
 		if ( $response && property_exists( $response, 'errorKey' ) && $response->errorKey === 'wikilambda-zerror' ) {
+			// TODO (T393611): Do not use ZObjectFactory::create or stop it from making fetches
 			$zerror = ZObjectFactory::create( $response->errorData->zerror );
 			'@phan-var ZError $zerror';
 			$zerrorCode = $zerror->getZErrorType();
@@ -203,6 +208,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 				]
 			);
 
+			// TODO (T393611): Do not use ZErrorFactory::create* or stop it from making fetches
 			$zerror = ZErrorFactory::createZErrorInstance(
 				ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
 				[ "message" => $response->httpReason ]
@@ -406,6 +412,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 
 		// Default handling:
 		throw new WikifunctionCallException(
+			// TODO (T393611): Do not use ZErrorFactory::create* or stop it from making fetches
 			ZErrorFactory::createZErrorInstance(
 				ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
 				[ "message" => 'Something happened, but details weren\'t passed on' ]
@@ -417,6 +424,15 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 		);
 	}
 
+	/**
+	 * Returns the HTTP request to the function call REST API with the given wikifunctions call parameters.
+	 *
+	 * @param string $target
+	 * @param array $args
+	 * @param string $parseLang
+	 * @param string $renderLang
+	 * @return MWHttpRequest
+	 */
 	private function buildRequest( string $target, array $args, string $parseLang, string $renderLang ): MWHttpRequest {
 		// This is a slightly hacky way to ensure that user inputs are transmit-safe, and that e.g.
 		// inputs with '|'s in them can be ferried across the network without
@@ -425,7 +441,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 			array_map( static fn ( $val ): string => ZObjectUtils::encodeStringParamForNetwork( $val ), $args )
 		);
 
-		$requestUri = $this->getClientTargetUrl()
+		$requestUri = self::getClientTargetUrl( $this->config, $this->logger )
 			. $this->config->get( 'RestPath' )
 			. '/wikifunctions/v0/call'
 			. '/' . $target
@@ -442,16 +458,18 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 	}
 
 	/**
-	 * Return the Url of the Wikilambda server instance,
+	 * Returns the Url of the Wikilambda server instance,
 	 * and if not available in the configuration variables,
 	 * returns an empty string and logs an error.
 	 *
+	 * @param Config $config
+	 * @param LoggerInterface $logger
 	 * @return string
 	 */
-	private function getClientTargetUrl(): string {
-		$targetUrl = $this->config->get( 'WikiLambdaClientTargetAPI' );
+	public static function getClientTargetUrl( $config, $logger ): string {
+		$targetUrl = $config->get( 'WikiLambdaClientTargetAPI' );
 		if ( !$targetUrl ) {
-			$this->logger->error( __METHOD__ . ': missing configuration variable WikiLambdaClientTargetAPI' );
+			$logger->error( __METHOD__ . ': missing configuration variable WikiLambdaClientTargetAPI' );
 		}
 		return $targetUrl ?? '';
 	}

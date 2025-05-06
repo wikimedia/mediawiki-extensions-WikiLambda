@@ -33,6 +33,8 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 	private ZObjectStore $zObjectStore;
 	private BagOStuff $zObjectCache;
 
+	public const INSTANCEOFENUM_DB_KEY = 'instanceofenum';
+
 	/**
 	 * @param Title $title
 	 * @param Content $zObject
@@ -91,8 +93,9 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		$ztype = $this->zObject->getZType();
 
 		// Store the ZObject in the object cache, for faster retrieval here and (in future) in the orchestrator
+		$cacheKey = $this->zObjectCache->makeKey( ZObjectStore::ZOBJECT_CACHE_KEY_PREFIX, $zid );
 		$this->zObjectCache->set(
-			ZObjectStore::SERVICE_CACHE_KEY_PREFIX . $zid,
+			$cacheKey,
 			$this->zObject->getText(),
 			$this->zObjectCache::TTL_MONTH
 		);
@@ -154,7 +157,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		$this->zObjectStore->deleteRelatedZObjects( $zid );
 		if ( $ztype === ZTypeRegistry::Z_TYPE ) {
 			// If object is a type, remove all instanceofenum from wikilambda_zobject_join table:
-			$this->zObjectStore->deleteRelatedZObjects( null, $zid, ZObjectStore::INSTANCEOFENUM );
+			$this->zObjectStore->deleteRelatedZObjects( null, $zid, self::INSTANCEOFENUM_DB_KEY );
 		}
 		$relatedZObjects = $this->getRelatedZObjects( $zid, $ztype, $innerZObject );
 		if ( count( $relatedZObjects ) > 0 ) {
@@ -369,7 +372,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 				$relatedZObjects[] = (object)[
 					'zid' => $instance,
 					'type' => $zid,
-					'key' => ZObjectStore::INSTANCEOFENUM,
+					'key' => self::INSTANCEOFENUM_DB_KEY,
 					'related_zid' => $zid,
 					'related_type' => ZTypeRegistry::Z_TYPE
 				];
@@ -418,7 +421,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 			$relatedZObjects[] = (object)[
 				'zid' => $zid,
 				'type' => $type,
-				'key' => ZObjectStore::INSTANCEOFENUM,
+				'key' => self::INSTANCEOFENUM_DB_KEY,
 				'related_zid' => $type,
 				'related_type' => ZTypeRegistry::Z_TYPE
 			];

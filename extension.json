@@ -983,6 +983,7 @@
 						"services": [
 							"MainConfig",
 							"JobQueueGroup",
+							"HttpRequestFactory",
 							"WikiLambdaZObjectStash"
 						]
 					},

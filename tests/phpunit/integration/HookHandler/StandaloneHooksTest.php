@@ -716,7 +716,7 @@ EOT;
 			->from( 'wikilambda_zobject_join' )
 			->where( [
 				'wlzo_main_type' => $type->zid,
-				'wlzo_key' => ZObjectStore::INSTANCEOFENUM
+				'wlzo_key' => ZObjectSecondaryDataUpdate::INSTANCEOFENUM_DB_KEY
 			] )
 			->fetchResultSet();
 		$this->assertSame( 0, $rows->numRows() );
@@ -731,7 +731,7 @@ EOT;
 			->from( 'wikilambda_zobject_join' )
 			->where( [
 				'wlzo_main_type' => $type->zid,
-				'wlzo_key' => ZObjectStore::INSTANCEOFENUM
+				'wlzo_key' => ZObjectSecondaryDataUpdate::INSTANCEOFENUM_DB_KEY
 			] )
 			->fetchResultSet();
 		$this->assertSame( 1, $rows->numRows() );
@@ -749,7 +749,7 @@ EOT;
 			->from( 'wikilambda_zobject_join' )
 			->where( [
 				'wlzo_main_type' => $type->zid,
-				'wlzo_key' => ZObjectStore::INSTANCEOFENUM
+				'wlzo_key' => ZObjectSecondaryDataUpdate::INSTANCEOFENUM_DB_KEY
 			] )
 			->fetchResultSet();
 		$this->assertSame( 2, $rows->numRows() );
@@ -768,7 +768,7 @@ EOT;
 			->from( 'wikilambda_zobject_join' )
 			->where( [
 				'wlzo_main_type' => $type->zid,
-				'wlzo_key' => ZObjectStore::INSTANCEOFENUM
+				'wlzo_key' => ZObjectSecondaryDataUpdate::INSTANCEOFENUM_DB_KEY
 			] )
 			->fetchResultSet();
 		$this->assertSame( 2, $rows->numRows() );
@@ -786,7 +786,7 @@ EOT;
 			->from( 'wikilambda_zobject_join' )
 			->where( [
 				'wlzo_main_type' => $type->zid,
-				'wlzo_key' => ZObjectStore::INSTANCEOFENUM
+				'wlzo_key' => ZObjectSecondaryDataUpdate::INSTANCEOFENUM_DB_KEY
 			] )
 			->fetchResultSet();
 		$this->assertSame( 2, $rows->numRows() );
@@ -804,7 +804,7 @@ EOT;
 			->from( 'wikilambda_zobject_join' )
 			->where( [
 				'wlzo_main_type' => $type->zid,
-				'wlzo_key' => ZObjectStore::INSTANCEOFENUM
+				'wlzo_key' => ZObjectSecondaryDataUpdate::INSTANCEOFENUM_DB_KEY
 			] )
 			->fetchResultSet();
 		$this->assertSame( 0, $rows->numRows() );
@@ -819,7 +819,7 @@ EOT;
 			->from( 'wikilambda_zobject_join' )
 			->where( [
 				'wlzo_main_type' => $type->zid,
-				'wlzo_key' => ZObjectStore::INSTANCEOFENUM
+				'wlzo_key' => ZObjectSecondaryDataUpdate::INSTANCEOFENUM_DB_KEY
 			] )
 			->fetchResultSet();
 		$this->assertSame( 2, $rows->numRows() );
@@ -836,7 +836,7 @@ EOT;
 			->from( 'wikilambda_zobject_join' )
 			->where( [
 				'wlzo_main_type' => $type->zid,
-				'wlzo_key' => ZObjectStore::INSTANCEOFENUM
+				'wlzo_key' => ZObjectSecondaryDataUpdate::INSTANCEOFENUM_DB_KEY
 			] )
 			->fetchResultSet();
 		$this->assertSame( 1, $rows->numRows() );
@@ -910,7 +910,8 @@ EOT;
 		$this->assertNotFalse( $insertedObject, 'Object was inserted into the DB' );
 
 		$cache = WikiLambdaServices::getZObjectStash();
-		$cachedObject = $cache->get( ZObjectStore::SERVICE_CACHE_KEY_PREFIX . ZTestType::TEST_ZID );
+		$cacheKey = $cache->makeKey( ZObjectStore::ZOBJECT_CACHE_KEY_PREFIX, ZTestType::TEST_ZID );
+		$cachedObject = $cache->get( $cacheKey );
 		$this->assertNotFalse( $cachedObject, 'Object was inserted into the cache' );
 
 		$this->assertSame(
@@ -927,7 +928,8 @@ EOT;
 
 		$insertedObject = $store->fetchZObjectByTitle( $testObjectTitle );
 		$this->assertFalse( $insertedObject, 'Object was deleted from the DB' );
-		$cachedObject = $cache->get( ZObjectStore::SERVICE_CACHE_KEY_PREFIX . ZTestType::TEST_ZID );
+		$cacheKey = $cache->makeKey( ZObjectStore::ZOBJECT_CACHE_KEY_PREFIX, ZTestType::TEST_ZID );
+		$cachedObject = $cache->get( $cacheKey );
 		$this->assertFalse( $cachedObject, 'Object was delete from the cache' );
 	}
 
