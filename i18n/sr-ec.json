@@ -116,6 +116,7 @@
 	"wikilambda-special-createobject-nojs": "Ова страница не ради без JavaScript-а.",
 	"wikilambda-special-listduplicateobjectlabels-language": "Језик",
 	"wikilambda-special-runfunction": "Покрени функцију",
+	"wikilambda-statistics-label-languages": "Број језика",
 	"wikilambda-string-renderer-examples-title": "Примери",
 	"wikilambda-string-renderer-field-example": "Нпр. $1",
 	"wikilambda-summarylabel": "Опис:",
