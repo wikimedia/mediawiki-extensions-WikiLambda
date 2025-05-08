@@ -21,5 +21,8 @@
 	"wikilambda-visualeditor-wikifunctionscall-no-description": "Нема описа",
 	"wikilambda-visualeditor-wikifunctionscall-no-input-label": "Нема назива",
 	"wikilambda-visualeditor-wikifunctionscall-no-name": "Нема имена",
-	"wikilambda-visualeditor-wikifunctionscall-title": "Функција"
+	"wikilambda-visualeditor-wikifunctionscall-title": "Функција",
+	"wikilambda-visualeditor-wikifunctionscall-preview-title": "Преглед",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "Отказано",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Откажи"
 }
