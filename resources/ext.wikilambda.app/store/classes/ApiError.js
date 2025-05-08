@@ -153,6 +153,39 @@ class ApiError extends Error {
 		}
 		return new ApiError( code, response );
 	}
+
+	/**
+	 * Builds an ApiError object when the call was successful
+	 * but didn't return the expected data.
+	 * For example, when returning warnings, where the response
+	 * object looks like this:
+	 * {
+	 *   "warnings": {
+	 *     "result": {
+	 *       "*": "This result was truncated..."
+	 *     }
+	 *   },
+	 *   "query": []
+	 * }
+	 *
+	 * @param {Object} response
+	 * @return {ApiError}
+	 */
+	static fromMwApiSuccess( response ) {
+		const getWarningMessage = ( data ) => {
+			const warnings = getNestedProperty( data, 'warnings' );
+			if ( !warnings ) {
+				return undefined;
+			}
+			const modules = Object.keys( warnings );
+			const warning = modules
+				.map( ( module ) => warnings[ module ] )
+				.find( ( value ) => typeof value[ '*' ] === 'string' );
+			return warning ? warning[ '*' ] : undefined;
+		};
+
+		return new ApiError( 'http', { error: { message: getWarningMessage( response ) } } );
+	}
 }
 
 module.exports = exports = ApiError;

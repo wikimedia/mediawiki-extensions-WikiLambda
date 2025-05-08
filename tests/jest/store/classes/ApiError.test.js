@@ -329,4 +329,25 @@ describe( 'ApiError class', () => {
 			expect( message ).toBe( 'Fallback error message' );
 		} );
 	} );
+
+	describe( 'fromMwApiSuccess', () => {
+		it( 'transforms an Api successful response with warning into ApiError', () => {
+			const code = 'http';
+			const response = {
+				warnings: {
+					result: {
+						'*': 'This result was truncated because...'
+					}
+				},
+				query: []
+			};
+
+			try {
+				ApiError.fromMwApiSuccess( code, response );
+			} catch ( e ) {
+				expect( e instanceof ApiError ).toBe( true );
+				expect( e.message ).toBe( 'This result was truncated because...' );
+			}
+		} );
+	} );
 } );

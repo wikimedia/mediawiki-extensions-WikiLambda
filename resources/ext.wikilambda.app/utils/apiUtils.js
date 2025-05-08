@@ -225,7 +225,14 @@ const apiUtils = {
 				wikilambda_perform_test_nocache: payload.nocache || false,
 				uselang: payload.language
 			} )
-				.then( ( data ) => resolve( data.query.wikilambda_perform_test ) )
+				.then( ( data ) => {
+					if ( data.query.wikilambda_perform_test ) {
+						return resolve( data.query.wikilambda_perform_test );
+					}
+					// Successful call, but has no data:
+					// Check for warnings or build undefined error
+					return reject( ApiError.fromMwApiSuccess( data ) );
+				} )
 				.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
 		} );
 	},
