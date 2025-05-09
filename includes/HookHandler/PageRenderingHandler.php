@@ -36,6 +36,7 @@ class PageRenderingHandler implements
 	\MediaWiki\Hook\WebRequestPathInfoRouterHook,
 	\MediaWiki\Output\Hook\BeforePageDisplayHook,
 	\Mediawiki\Page\Hook\BeforeDisplayNoArticleTextHook,
+	\MediaWiki\Hook\GetMagicVariableIDsHook,
 	\MediaWiki\Hook\ParserGetVariableValueSwitchHook,
 	\MediaWiki\Hook\SpecialStatsAddExtraHook
 {
@@ -390,6 +391,21 @@ class PageRenderingHandler implements
 			'dir' => $dir,
 			'lang' => $lang,
 		], "\n$text\n" ) );
+	}
+
+	/**
+	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/GetMagicVariableIDs
+	 *
+	 * @param string[] &$variableIDs
+	 * @return void
+	 */
+	public function onGetMagicVariableIDs( &$variableIDs ): void {
+		$variableIDs[] = 'magic_count_all';
+		$variableIDs[] = 'magic_count_functions';
+		$variableIDs[] = 'magic_count_implementations';
+		$variableIDs[] = 'magic_count_testers';
+		$variableIDs[] = 'magic_count_types';
+		$variableIDs[] = 'magic_count_languages';
 	}
 
 	/**

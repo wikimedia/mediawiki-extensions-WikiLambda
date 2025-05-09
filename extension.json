@@ -278,6 +278,7 @@
 		"WebRequestPathInfoRouter": "PageRenderingHandler",
 		"BeforePageDisplay": "PageRenderingHandler",
 		"BeforeDisplayNoArticleText": "PageRenderingHandler",
+		"GetMagicVariableIDs": "PageRenderingHandler",
 		"ParserGetVariableValueSwitch": "PageRenderingHandler",
 		"SpecialStatsAddExtra": "PageRenderingHandler"
 	},
