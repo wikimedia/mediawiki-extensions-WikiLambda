@@ -21,6 +21,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
 use Wikimedia\ParamValidator\ParamValidator;
+use Wikimedia\Telemetry\SpanInterface;
 
 class ApiZObjectFetcher extends WikiLambdaApiBase {
 
@@ -50,14 +51,22 @@ class ApiZObjectFetcher extends WikiLambdaApiBase {
 		$ZIDs = $params[ 'zids' ];
 
 		$revisions = $params[ 'revisions' ];
+
+		$tracer = MediaWikiServices::getInstance()->getTracer();
+		$span = $tracer->createSpan( 'WikiLambda ApiZObjectFetcher' )
+			->setSpanKind( SpanInterface::SPAN_KIND_CLIENT )
+			->start();
+		$span->activate();
+
 		if (
 			$revisions &&
 			count( $revisions ) !== count( $ZIDs )
 		) {
+			$errorMessage = "You must specify a revision for each ZID, or none at all.";
 			$zErrorObject = ZErrorFactory::createZErrorInstance(
 				ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
 				[
-					'message' => "You must specify a revision for each ZID, or none at all."
+					'message' => $errorMessage
 				]
 			);
 			WikiLambdaApiBase::dieWithZError( $zErrorObject, HttpStatus::BAD_REQUEST );
@@ -83,17 +92,23 @@ class ApiZObjectFetcher extends WikiLambdaApiBase {
 					WikiLambdaApiBase::dieWithZError( $zErrorObject, HttpStatus::NOT_FOUND );
 				} else {
 					$revision = $revisions ? $revisions[ $index ] : null;
-
 					try {
 						$fetchedContent = ZObjectContentHandler::getExternalRepresentation(
 							$title,
 							$language,
 							$revision
 						);
+						$span->setSpanStatus( SpanInterface::SPAN_STATUS_OK );
 					} catch ( ZErrorException $e ) {
 						// This probably means that the requested revision is not known; return
 						// null for this entry rather than throwing or returning a ZError instance.
 						$fetchedContent = null;
+						$span->setSpanStatus( SpanInterface::SPAN_STATUS_ERROR )
+							->setAttributes( [
+								'exception.message' => $e->getMessage()
+							] );
+					} finally {
+						$span->end();
 					}
 
 					$this->getResult()->addValue(

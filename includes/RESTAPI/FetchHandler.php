@@ -23,6 +23,7 @@ use MediaWiki\MediaWikiServices;
 use MediaWiki\Rest\ResponseInterface;
 use MediaWiki\Title\Title;
 use Wikimedia\ParamValidator\ParamValidator;
+use Wikimedia\Telemetry\SpanInterface;
 
 /**
  * Simple REST API to fetch the latest versions of one or more ZObjects
@@ -43,6 +44,12 @@ class FetchHandler extends WikiLambdaRESTHandler {
 		$this->typeRegistry = ZTypeRegistry::singleton();
 		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
 
+		$tracer = MediaWikiServices::getInstance()->getTracer();
+		$span = $tracer->createSpan( 'WikiLambda FetchHandler' )
+			->setSpanKind( SpanInterface::SPAN_KIND_CLIENT )
+			->start();
+		$span->activate();
+
 		$responseList = [];
 
 		// (T391046) Parse as null if not specified.
@@ -51,10 +58,11 @@ class FetchHandler extends WikiLambdaRESTHandler {
 		$getDependencies = $this->getRequest()->getQueryParams()['getDependencies'] ?? false;
 
 		if ( count( $revisions ) > 0 && ( count( $revisions ) !== count( $ZIDs ) ) ) {
+			$errorMessage = "You must specify a revision for each ZID, or none at all.";
 			$zErrorObject = ZErrorFactory::createZErrorInstance(
 				ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
 				[
-					'message' => "You must specify a revision for each ZID, or none at all."
+					'message' => $errorMessage
 				]
 			);
 			$this->dieRESTfullyWithZError( $zErrorObject, HttpStatus::BAD_REQUEST );
@@ -94,13 +102,21 @@ class FetchHandler extends WikiLambdaRESTHandler {
 						$fetchedContent = ZObjectContentHandler::getExternalRepresentation(
 							$title, $language, $revision
 						);
+						$span->setSpanStatus( SpanInterface::SPAN_STATUS_OK );
 					} catch ( ZErrorException $error ) {
+						$span->setSpanStatus( SpanInterface::SPAN_STATUS_ERROR )
+							->setAttributes( [
+								'response.status_code' => 404,
+								'exception.message' => $error->getMessage()
+							] );
 						// This probably means that the requested revision is not known; return
 						// null for this entry rather than throwing or returning a ZError instance.
 						$this->dieRESTfully(
 							'wikilambda-restapi-revision-mismatch',
 							[ $revision, $ZID ],
 							HttpStatus::NOT_FOUND );
+					} finally {
+						$span->end();
 					}
 
 					$responseList[ $ZID ] = $fetchedContent;
@@ -114,7 +130,6 @@ class FetchHandler extends WikiLambdaRESTHandler {
 							$extraDependencies[] = $dep;
 						}
 					}
-
 				}
 			}
 		}
@@ -130,7 +145,6 @@ class FetchHandler extends WikiLambdaRESTHandler {
 		}
 
 		$response = $this->getResponseFactory()->createJson( $responseList );
-
 		return $response;
 	}
 

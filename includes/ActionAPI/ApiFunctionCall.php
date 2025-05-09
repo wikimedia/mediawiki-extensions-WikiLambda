@@ -21,9 +21,11 @@ use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\PoolCounter\PoolCounterWorkViaCallback;
 use MediaWiki\Status\Status;
 use Wikimedia\ParamValidator\ParamValidator;
+use Wikimedia\Telemetry\SpanInterface;
 
 class ApiFunctionCall extends WikiLambdaApiBase {
 
@@ -44,15 +46,27 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 		$pageResult = $this->getResult();
 		$stringOfAZ = $params[ 'zobject' ];
 
+		$tracer = MediaWikiServices::getInstance()->getTracer();
+		$span = $tracer->createSpan( 'WikiLambda ApiFunctionCall' )
+			->setSpanKind( SpanInterface::SPAN_KIND_CLIENT )
+			->start();
+		$span->activate();
+
 		try {
 			$zObjectAsStdClass = json_decode( $stringOfAZ, false, 512, JSON_THROW_ON_ERROR );
 			if ( $zObjectAsStdClass === null ) {
-				throw new JsonException( 'Invalid JSON that did not throw, somehow.' );
+				$errorMessage = 'Invalid JSON that did not throw, somehow.';
+				$span->setAttributes( [
+						'error.message' => $errorMessage
+					] );
+				throw new JsonException( $errorMessage );
 			}
 		} catch ( JsonException $e ) {
 			$this->submitFunctionCallEvent( HttpStatus::BAD_REQUEST, null, $start );
 			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX, [] );
 			WikiLambdaApiBase::dieWithZError( $zError, HttpStatus::BAD_REQUEST );
+		} finally {
+			$span->end();
 		}
 
 		$jsonQuery = [
@@ -155,7 +169,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 
 				return $this->orchestrator->orchestrate( $jsonQuery, $bypassCache );
 			},
-			'error' => function ( Status $status ) use ( $function, $start, $userName, $logger ) {
+			'error' => function ( Status $status ) use ( $function, $start, $userName, $logger, $span ) {
 				$errorMessage = 'ApiFunctionCall rejecting a request due to too many requests from source "{user}"';
 				$logger->info(
 					$errorMessage,
@@ -180,6 +194,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 			$response = $work->execute();
 			$result['data'] = $response;
 			$result['success'] = true;
+			$span->setSpanStatus( SpanInterface::SPAN_STATUS_OK );
 		} catch ( ConnectException $exception ) {
 			$errorMessage = 'ApiFunctionCall failed due to a ConnectException: "{message}"';
 			$logger->warning(
@@ -213,6 +228,11 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 				]
 			);
 			$status = $exception->getResponse()->getStatusCode();
+			$span->setSpanStatus( SpanInterface::SPAN_STATUS_ERROR )
+				->setAttributes( [
+					'response.status_code' => $status,
+					'exception.message' => $exception->getMessage()
+			] );
 			$this->submitFunctionCallEvent( $status, $function, $start );
 			if ( $exception instanceof ClientException ) {
 				$this->dieWithError(
@@ -225,7 +245,10 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 					null, null, $status
 				);
 			}
+		} finally {
+			$span->end();
 		}
+
 		$pageResult->addValue( [], $this->getModuleName(), $result );
 		$this->submitFunctionCallEvent( HttpStatus::OK, $function, $start );
 	}
