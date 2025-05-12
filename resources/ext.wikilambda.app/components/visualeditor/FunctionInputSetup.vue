@@ -31,10 +31,10 @@
 					v-for="( field, index ) in inputFields"
 					:key="field.inputKey"
 					v-model="field.value"
-					:is-editing="isEditing"
 					:input-type="field.inputType"
 					:label-data="field.labelData"
 					:error-message="field.errorMessage"
+					:show-validation="showValidation( field.hasChanged )"
 					@update="value => handleUpdate( index, value )"
 					@validate="payload => handleValidation( index, payload )"
 					@loading-start="$emit( 'loading-start' )"
@@ -82,19 +82,11 @@ module.exports = exports = defineComponent( {
 		'getLabelData',
 		'getDescription',
 		'getVEFunctionId',
-		'getVEEditing',
 		'getVEFunctionParams',
 		'getInputsOfFunctionZid',
-		'getOutputTypeOfFunctionZid'
+		'getOutputTypeOfFunctionZid',
+		'isNewParameterSetup'
 	] ), {
-		/**
-		 * Returns if the function is being edited.
-		 *
-		 * @return {boolean}
-		 */
-		isEditing: function () {
-			return this.getVEEditing;
-		},
 		/**
 		 * Returns the VisualEditor function ID.
 		 *
@@ -170,7 +162,6 @@ module.exports = exports = defineComponent( {
 					type: arg[ Constants.Z_ARGUMENT_TYPE ],
 					value: this.getVEFunctionParams[ index ]
 				} ) )
-
 			};
 		},
 		/**
@@ -200,17 +191,27 @@ module.exports = exports = defineComponent( {
 	methods: Object.assign( {}, mapActions( useMainStore, [
 		'setVEFunctionParam',
 		'setVEFunctionParamsValid',
+		'setVEFunctionParamsDirty',
 		'fetchZids'
 	] ), {
 		/**
 		 * Initializes the function input fields with the current Visual Editor function params.
 		 */
 		initializeInputFields: function () {
+			// Ensure veFunctionParams is at least as long as functionInputs
+			if ( this.functionInputs.length > this.getVEFunctionParams.length ) {
+				for ( let i = this.getVEFunctionParams.length; i < this.functionInputs.length; i++ ) {
+					this.setVEFunctionParam( i, '' );
+				}
+			}
+
+			// Set local inputFields array
 			this.inputFields = this.functionInputs.map( ( arg, index ) => ( {
 				inputKey: arg[ Constants.Z_ARGUMENT_KEY ],
 				inputType: arg[ Constants.Z_ARGUMENT_TYPE ],
 				labelData: this.getLabelData( arg[ Constants.Z_ARGUMENT_KEY ] ),
-				value: this.getVEFunctionParams[ index ]
+				value: this.getVEFunctionParams[ index ],
+				hasChanged: false
 			} ) );
 		},
 		/**
@@ -220,10 +221,17 @@ module.exports = exports = defineComponent( {
 		 * @param {string} value - The new value for the field.
 		 */
 		handleUpdate: function ( index, value ) {
+			this.inputFields[ index ].hasChanged = true;
 			this.setVEFunctionParam( index, value );
+			this.setVEFunctionParamsDirty();
 		},
 		/**
 		 * Handles the validation event for a specific input field.
+		 *
+		 * Fields are validated even when the validation result doesn't
+		 * need to be shown, so the isValid field is always present
+		 * in every field object, and the veFunctionParamsValid store
+		 * flag is always updated with the validity of the form.
 		 *
 		 * @param {number} index - The index of the field to validate.
 		 * @param {Object} payload
@@ -231,11 +239,8 @@ module.exports = exports = defineComponent( {
 		 * @param {string|undefined} payload.errorMessage - The error message to set, if any.
 		 */
 		handleValidation: function ( index, payload ) {
-			const field = this.inputFields[ index ];
-			if ( field ) {
-				field.isValid = payload.isValid;
-				field.errorMessage = payload.errorMessage;
-			}
+			this.inputFields[ index ].isValid = payload.isValid;
+			this.inputFields[ index ].errorMessage = payload.errorMessage;
 		},
 		/**
 		 * Fetches the ZIDs for all input types and the output type.
@@ -261,12 +266,23 @@ module.exports = exports = defineComponent( {
 						this.$emit( 'loading-end' );
 					} );
 			}
+		},
+		/**
+		 * Show validation message if:
+		 * * is not a new parameter setup screen (initialized with values)
+		 * * is blank param screen and the field has changed
+		 *
+		 * @param {boolean} hasChanged
+		 * @return {boolean}
+		 */
+		showValidation: function ( hasChanged ) {
+			return ( !this.isNewParameterSetup || hasChanged );
 		}
 	} ),
 	watch: {
 		/**
 		 * Watches the form validity and updates the VisualEditor validity state
-		 * so the submit button can be enabled/disabled.
+		 * so the submit button can be enabled/disabled depending on the state.
 		 *
 		 * @param {boolean} isValid - The form validity status.
 		 */

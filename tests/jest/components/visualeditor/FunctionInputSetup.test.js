@@ -48,7 +48,34 @@ describe( 'FunctionInputSetup', () => {
 		await wrapper.findComponent( { name: 'wl-function-input-field' } ).vm.$emit( 'update', 'new value' );
 
 		expect( store.setVEFunctionParam ).toHaveBeenCalledWith( 0, 'new value' );
+		expect( store.setVEFunctionParamsDirty ).toHaveBeenCalledWith();
 		expect( wrapper.emitted().update ).toBeTruthy();
+	} );
+
+	it( 'initializes input values on mount', async () => {
+		store.getVEFunctionParams = [ 'value1' ];
+
+		const wrapper = shallowMount( FunctionInputSetup );
+
+		await waitFor( () => expect( wrapper.findAllComponents( { name: 'wl-function-input-field' } ).length ).toEqual( 2 ) );
+
+		expect( store.setVEFunctionParam ).toHaveBeenCalledWith( 1, '' );
+
+		expect( wrapper.vm.inputFields.length ).toBe( 2 );
+		expect( wrapper.vm.inputFields[ 0 ].inputKey ).toBe( 'Z13546K1' );
+		expect( wrapper.vm.inputFields[ 0 ].inputType ).toBe( 'Z13518' );
+		expect( wrapper.vm.inputFields[ 0 ].value ).toBe( 'value1' );
+		expect( wrapper.vm.inputFields[ 0 ].hasChanged ).toBe( false );
+
+		expect( wrapper.vm.inputFields[ 1 ].inputKey ).toBe( 'Z13546K2' );
+		expect( wrapper.vm.inputFields[ 1 ].inputType ).toBe( 'Z13518' );
+		expect( wrapper.vm.inputFields[ 1 ].value ).toBe( undefined );
+		expect( wrapper.vm.inputFields[ 1 ].hasChanged ).toBe( false );
+
+		const fields = wrapper.findAllComponents( { name: 'wl-function-input-field' } );
+		expect( fields.length ).toBe( 2 );
+		expect( fields.at( 0 ).props( 'modelValue' ) ).toBe( 'value1' );
+		expect( fields.at( 1 ).props( 'modelValue' ) ).toBe( '' );
 	} );
 
 	it( 'renders pre-filled input values from VisualEditor', async () => {

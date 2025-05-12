@@ -75,15 +75,12 @@ ve.ui.WikifunctionsCallDialog.prototype.initialize = function () {
 					></wl-function-call-setup>`,
 			methods: {
 				/**
-				 * On Function name updated, set the dialog status.
+				 * On Function name updated, set the dialog title.
 				 *
 				 * @param {string} newName
 				 */
 				onFunctionNameUpdated: function ( newName ) {
-					// Update dialog title
 					thisDialog.setTitle( newName );
-					// Update dialog actions
-					thisDialog.updateActions();
 				},
 				/**
 				 * On Function setup update, set the dialog status.
@@ -148,8 +145,7 @@ ve.ui.WikifunctionsCallDialog.prototype.getSetupProcess = function ( data ) {
 				const functionPayload = {
 					functionId: undefined,
 					functionParams: [],
-					suggestedFunctions,
-					isEditing: this.isEditing()
+					suggestedFunctions
 				};
 				const node = this.getSelectedNode();
 
@@ -189,16 +185,16 @@ ve.ui.WikifunctionsCallDialog.prototype.getSetupProcess = function ( data ) {
  */
 ve.ui.WikifunctionsCallDialog.prototype.updateActions = function () {
 	ve.init.mw.WikifunctionsCall.vueAppLoaded.then( () => {
-		// Set 'done' action button status.
-		// * If editing existing function call:
-		//   * Function must be set
-		//   * Function params must be set and valid
-		// * If inserting new function call:
-		//   * Function must be set
-		//   * Function params must be set and valid
+		// Enable DONE button when:
+		// * function is valid, AND
+		// * function params are all valid, AND
+		// * we are creating a new function configuration OR we have changed an existing one.
 		const functionValid = ve.init.mw.WikifunctionsCall.piniaStore.validateVEFunctionId;
 		const functionParamsValid = ve.init.mw.WikifunctionsCall.piniaStore.validateVEFunctionParams;
-		this.actions.setAbilities( { done: functionValid && functionParamsValid } );
+		const functionParamsDirty = ve.init.mw.WikifunctionsCall.piniaStore.isParameterSetupDirty;
+		const functionParamsNew = ve.init.mw.WikifunctionsCall.piniaStore.isNewParameterSetup;
+		const newOrChanged = functionParamsNew || functionParamsDirty;
+		this.actions.setAbilities( { done: functionValid && functionParamsValid && newOrChanged } );
 	} );
 };
 

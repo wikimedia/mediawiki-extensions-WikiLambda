@@ -49,6 +49,15 @@ describe( 'FunctionCallSetup', () => {
 		expect( mockSetVEFunctionId ).toHaveBeenCalledWith( 'Z802' );
 	} );
 
+	it( 'calls setVEFunctionParams when selectFunction is triggered', () => {
+		const wrapper = shallowMount( FunctionCallSetup );
+		const mockSetVEFunctionParams = jest.spyOn( store, 'setVEFunctionParams' );
+
+		wrapper.vm.selectFunction( 'Z802' );
+		// Called with Zero arguments to reset function params to blank state
+		expect( mockSetVEFunctionParams ).toHaveBeenCalledWith();
+	} );
+
 	it( 'emits function-inputs-updated when updateFunctionInputs is triggered', () => {
 		const wrapper = shallowMount( FunctionCallSetup );
 

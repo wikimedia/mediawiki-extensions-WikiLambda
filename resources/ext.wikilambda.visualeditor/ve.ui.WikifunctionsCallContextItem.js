@@ -53,22 +53,14 @@ ve.ui.WikifunctionsCallContextItem.prototype.setErrorState = function () {
 		.append( $( '<span>' ).addClass( 'cdx-message__icon' ) )
 		.append( $errorMsg );
 
-	this.context.updateDimensions();
 	this.$body.empty().append( $error );
+	this.context.updateDimensions();
 };
 
 /**
  * @inheritdoc
  */
 ve.ui.WikifunctionsCallContextItem.prototype.renderBody = function () {
-
-	// Show error state if the function call didn't succeed, for whatever reason.
-	// All errors (server, call, not found, wrong args, etc.) will be detected early:
-	if ( this.model.getAttribute( 'isError' ) ) {
-		this.setErrorState();
-		return;
-	}
-
 	// Add loading message
 	const $loading = $( '<div>' )
 		.addClass( 'cdx-progress-indicator' )
@@ -99,6 +91,13 @@ ve.ui.WikifunctionsCallContextItem.prototype.renderBody = function () {
 		ve.init.mw.WikifunctionsCall.piniaStore
 			.fetchZids( { zids: [ functionId ] } )
 			.then( () => {
+				if ( this.model.getAttribute( 'isError' ) ) {
+					// Show error state if the function call didn't succeed, for whatever reason.
+					// Even if errors are detected earlier, we must set error state after fetching the function Zid.
+					this.setErrorState();
+					return;
+				}
+
 				const functionLabelData = ve.init.mw.WikifunctionsCall.piniaStore.getLabelData( functionId );
 				const functionLabel = functionLabelData.isUntitled ?
 					OO.ui.deferMsg( 'brackets', OO.ui.msg( 'wikilambda-visualeditor-wikifunctionscall-no-name' ) ) :

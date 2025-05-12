@@ -20,8 +20,7 @@ describe( 'FunctionInputEnum', () => {
 	it( 'renders without errors', () => {
 		const wrapper = shallowMount( FunctionInputEnum, {
 			props: {
-				inputType: mockEnumZid,
-				isEditing: true
+				inputType: mockEnumZid
 			}
 		} );
 		expect( wrapper.find( '.ext-wikilambda-app-function-input-enum' ).exists() ).toBe( true );
@@ -30,8 +29,7 @@ describe( 'FunctionInputEnum', () => {
 	it( 'displays enum values', async () => {
 		const wrapper = shallowMount( FunctionInputEnum, {
 			props: {
-				inputType: mockEnumZid,
-				isEditing: true
+				inputType: mockEnumZid
 			}
 		} );
 		await waitFor( () => expect( wrapper.getComponent( { name: 'cdx-select' } ).props( 'menuItems' ).length ).toBe( 3 ) );
@@ -40,34 +38,65 @@ describe( 'FunctionInputEnum', () => {
 	it( 'emits update event when a value is selected', () => {
 		const wrapper = shallowMount( FunctionInputEnum, {
 			props: {
-				inputType: mockEnumZid,
-				isEditing: true
+				inputType: mockEnumZid
 			}
 		} );
 		wrapper.getComponent( { name: 'cdx-select' } ).vm.$emit( 'update:selected', 'Z30003' );
 		expect( wrapper.emitted().update[ 0 ] ).toEqual( [ 'Z30003' ] );
 	} );
 
+	it( 'calls validate function on mount', async () => {
+		const wrapper = shallowMount( FunctionInputEnum, {
+			props: {
+				inputType: mockEnumZid
+			}
+		} );
+		await waitFor( () => expect( wrapper.getComponent( { name: 'cdx-select' } ).props( 'menuItems' ).length ).toBe( 3 ) );
+		expect( wrapper.emitted().validate ).toBeTruthy();
+	} );
+
+	it( 'calls validate function on blur', () => {
+		const wrapper = shallowMount( FunctionInputEnum, {
+			props: {
+				inputType: mockEnumZid
+			}
+		} );
+		wrapper.getComponent( { name: 'cdx-select' } ).vm.$emit( 'blur' );
+		expect( wrapper.emitted().validate ).toBeTruthy();
+		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false, errorMessage: 'No option chosen.' } ] );
+	} );
+
 	it( 'validates selected value', async () => {
 		const wrapper = shallowMount( FunctionInputEnum, {
 			props: {
-				inputType: mockEnumZid,
-				isEditing: true
+				inputType: mockEnumZid
 			}
 		} );
 		wrapper.getComponent( { name: 'cdx-select' } ).vm.$emit( 'update:selected', 'Z30003' );
 		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: true, errorMessage: undefined } ] );
 	} );
 
-	it( 'calls validate function on blur', () => {
+	it( 'passes validation with empty value if allowed', () => {
+		const wrapper = shallowMount( FunctionInputEnum, {
+			props: {
+				inputType: 'Z6', // just to make allowsEmptyField computed property return true
+				value: ''
+			}
+		} );
+
+		wrapper.getComponent( { name: 'cdx-select' } ).vm.$emit( 'blur' );
+		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: true, errorMessage: undefined } ] );
+	} );
+
+	it( 'fails validation with empty value if not allowed', () => {
 		const wrapper = shallowMount( FunctionInputEnum, {
 			props: {
 				inputType: mockEnumZid,
-				isEditing: true
+				value: ''
 			}
 		} );
+
 		wrapper.getComponent( { name: 'cdx-select' } ).vm.$emit( 'blur' );
-		expect( wrapper.emitted().validate ).toBeTruthy();
 		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false, errorMessage: 'No option chosen.' } ] );
 	} );
 } );

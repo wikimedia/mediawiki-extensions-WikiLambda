@@ -23,6 +23,7 @@
 const { CdxSelect } = require( '../../../codex.js' );
 const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
+const Constants = require( '../../Constants.js' );
 const useMainStore = require( '../../store/index.js' );
 const typeUtils = require( '../../utils/typeUtils.js' );
 
@@ -39,10 +40,6 @@ module.exports = exports = defineComponent( {
 		},
 		inputType: {
 			type: String,
-			required: true
-		},
-		isEditing: {
-			type: Boolean,
 			required: true
 		}
 	},
@@ -67,6 +64,14 @@ module.exports = exports = defineComponent( {
 				value: item.page_title,
 				label: item.label
 			} ) );
+		},
+		/**
+		 * Whether this input type allows for empty fields
+		 *
+		 * @return {boolean}
+		 */
+		allowsEmptyField: function () {
+			return Constants.VE_ALLOW_EMPTY_FIELD.includes( this.inputType );
 		}
 	} ),
 	methods: Object.assign( {}, mapActions( useMainStore, [
@@ -124,6 +129,9 @@ module.exports = exports = defineComponent( {
 		 * @return {boolean} - True if the value is valid, otherwise false.
 		 */
 		isValid: function ( value ) {
+			if ( !value && this.allowsEmptyField ) {
+				return true;
+			}
 			return typeUtils.isValidZidFormat( value ) && this.isValueInEnumValues( value );
 		},
 		/**
@@ -144,7 +152,7 @@ module.exports = exports = defineComponent( {
 			// For now fetch 999 (aka: all) enum values for the input type
 			// so that we can validate the value if the value exists in the enum values
 			this.fetchEnumValues( { type: this.inputType, limit: 999 } ).then( () => {
-				if ( !this.isEditing || !this.enumValues.length ) {
+				if ( !this.enumValues.length ) {
 					return;
 				}
 				this.validate( this.value );
@@ -163,7 +171,7 @@ module.exports = exports = defineComponent( {
 		 * @param {Array} newEnumValues - The updated list of enum values.
 		 */
 		enumValues: function ( newEnumValues ) {
-			if ( this.isEditing && newEnumValues.length ) {
+			if ( newEnumValues.length ) {
 				this.validate( this.value );
 			}
 		}

@@ -50,6 +50,42 @@ describe( 'FunctionInputParser', () => {
 		expect( wrapper.emitted().input[ 0 ] ).toEqual( [ 'New value' ] );
 	} );
 
+	it( 'validates on mount with non-empty value', async () => {
+		const wrapper = shallowMount( FunctionInputParser, {
+			props: {
+				inputType: typeZid,
+				value: 'Non empty value'
+			}
+		} );
+
+		// Wait for initial validation to complete
+		await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( false ) );
+		expect( store.runParser ).toHaveBeenCalledWith( {
+			parserZid: 'Z30020',
+			wait: true,
+			zlang: 'Z1002',
+			zobject: 'Non empty value'
+		} );
+	} );
+
+	it( 'validates on mount with empty value', async () => {
+		const wrapper = shallowMount( FunctionInputParser, {
+			props: {
+				inputType: typeZid,
+				value: ''
+			}
+		} );
+
+		// Wait for initial validation to complete
+		await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( false ) );
+		expect( store.runParser ).toHaveBeenCalledWith( {
+			parserZid: 'Z30020',
+			wait: true,
+			zlang: 'Z1002',
+			zobject: ''
+		} );
+	} );
+
 	it( 'validates the value and emits validate event on success on input change', async () => {
 		const wrapper = shallowMount( FunctionInputParser, {
 			props: {
@@ -114,5 +150,36 @@ describe( 'FunctionInputParser', () => {
 
 		wrapper.vm.onValidateEnd();
 		await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( false ) );
+	} );
+
+	describe( 'allowed empty types', () => {
+		it( 'validates successfully an empty value for gregorian calendar date', async () => {
+			const wrapper = shallowMount( FunctionInputParser, {
+				props: {
+					inputType: 'Z20420',
+					value: ''
+				}
+			} );
+
+			await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( false ) );
+			expect( store.runParser ).toHaveBeenCalledTimes( 1 );
+			expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ { isValid: true } ] );
+		} );
+
+		it( 'fails validation on any other empty values', async () => {
+			const wrapper = shallowMount( FunctionInputParser, {
+				props: {
+					inputType: typeZid,
+					value: ''
+				}
+			} );
+
+			await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( false ) );
+			expect( store.runParser ).toHaveBeenCalledTimes( 1 );
+			expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ {
+				isValid: false,
+				errorMessage: 'Please enter a value.'
+			} ] );
+		} );
 	} );
 } );

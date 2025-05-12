@@ -13,7 +13,6 @@
 			:is="componentType"
 			:value="modelValue"
 			:input-type="inputType"
-			:is-editing="isEditing"
 			@input="handleInput"
 			@update="handleUpdate"
 			@validate="handleValidation"
@@ -32,7 +31,7 @@
 				).text() }}
 			</span>
 		</template>
-		<template v-if="!!errorMessage" #error>
+		<template v-if="showValidation && !!errorMessage" #error>
 			<!-- eslint-disable-next-line vue/no-v-html -->
 			<span v-html="errorMessage"></span>
 		</template>
@@ -71,14 +70,14 @@ module.exports = exports = defineComponent( {
 			required: false,
 			default: ''
 		},
-		isEditing: {
-			type: Boolean,
-			required: true
-		},
 		errorMessage: {
 			type: String,
 			required: false,
 			default: ''
+		},
+		showValidation: {
+			type: Boolean,
+			required: true
 		}
 	},
 	emits: [ 'update', 'input', 'validate', 'update:modelValue', 'loading-start', 'loading-end' ],
@@ -106,7 +105,7 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		status: function () {
-			return this.errorMessage ? 'error' : 'default';
+			return this.showValidation && this.errorMessage ? 'error' : 'default';
 		},
 		/**
 		 * Checks if the input type is an enumeration.
