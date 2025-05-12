@@ -19,6 +19,7 @@
 				</span>
 			</template>
 			<wl-z-object-selector
+				:exclude-zids="excludeZids"
 				:disabled="disabled"
 				:placeholder="placeholder"
 				:row-id="rowId"
@@ -140,6 +141,16 @@ module.exports = exports = defineComponent( {
 		 */
 		genericTypeArgs: function () {
 			return this.selectedIsTerminal ? [] : this.getZFunctionCallArguments( this.rowId );
+		},
+
+		/**
+		 * Returns the zids to be excluded from the type selector.
+		 * for now, we exclude the Wikidata enum type.
+		 *
+		 * @return {Array}
+		 */
+		excludeZids: function () {
+			return [ Constants.Z_WIKIDATA_ENUM, Constants.Z_OBJECT_ENUM ];
 		}
 	} ),
 	methods: Object.assign( {}, mapActions( useMainStore, [
@@ -177,9 +188,9 @@ module.exports = exports = defineComponent( {
 			}
 			const type = this.getZObjectType( zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ] );
 
-			// If the selected object type is equal to this.type, the selection is
-			// terminal: we set a reference. If not terminal, we set a function call.
-			const mode = ( type === this.type ) ? Constants.Z_REFERENCE : Constants.Z_FUNCTION_CALL;
+			// If the selected object type is a function: we set a function call.
+			// Else: we set a reference to the selected zid.
+			const mode = type === Constants.Z_FUNCTION ? Constants.Z_FUNCTION_CALL : Constants.Z_REFERENCE;
 			this.changeType( {
 				id: this.rowId,
 				type: mode,

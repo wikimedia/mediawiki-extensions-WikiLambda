@@ -166,6 +166,9 @@ Constants.Z_WIKIDATA_FETCH_LEXEME_ID = 'Z6825K1';
 Constants.Z_WIKIDATA_FETCH_LEXEME_SENSE = 'Z6826';
 Constants.Z_WIKIDATA_FETCH_LEXEME_SENSE_ID = 'Z6826K1';
 
+// ZObject enum
+Constants.Z_OBJECT_ENUM = 'Z884';
+
 // Wikidata enum
 Constants.Z_WIKIDATA_ENUM = 'Z6884';
 Constants.Z_WIKIDATA_ENUM_TYPE = 'Z6884K1';
