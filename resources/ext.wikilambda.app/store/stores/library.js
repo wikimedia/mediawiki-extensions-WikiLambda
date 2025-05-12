@@ -107,50 +107,45 @@ module.exports = {
 			 * @return {string}
 			 */
 			const findExpectedType = ( key ) => {
-
 				// If the key is undefined, then this is the root object,
 				// the expected type is always Z2/Persistent object type
 				if ( key === undefined ) {
 					return Constants.Z_PERSISTENTOBJECT;
 				}
 
-				// TODO (T324251): if this is an array index, (an integer),
-				// should we return the expected type for the typed list?
 				if ( isGlobalKey( key ) ) {
-					let type;
 					const zid = getZidOfGlobalKey( key );
 					const storedObject = this.getStoredObject( zid );
+
 					if ( storedObject ) {
 						const zobject = storedObject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
 						const ztype = zobject[ Constants.Z_OBJECT_TYPE ];
 
 						switch ( ztype ) {
 							// Return the key value type if zid belongs to a type
-							case Constants.Z_TYPE:
-								// eslint-disable-next-line no-case-declarations
+							case Constants.Z_TYPE: {
 								const zkey = getKeyFromKeyList( key, zobject[ Constants.Z_TYPE_KEYS ] );
-								type = zkey ? zkey[ Constants.Z_KEY_TYPE ] : Constants.Z_OBJECT;
-								break;
+								return zkey ? zkey[ Constants.Z_KEY_TYPE ] : Constants.Z_OBJECT;
+							}
 
 							// Return the argument type if the zid belongs to a function
-							case Constants.Z_FUNCTION:
-								// eslint-disable-next-line no-case-declarations
-								const zarg = getArgFromArgList(
-									key,
-									zobject[ Constants.Z_FUNCTION_ARGUMENTS ]
-								);
-								type = zarg ? zarg[ Constants.Z_ARGUMENT_TYPE ] : Constants.Z_OBJECT;
-								break;
+							case Constants.Z_FUNCTION: {
+								const zarg = getArgFromArgList( key, zobject[ Constants.Z_FUNCTION_ARGUMENTS ] );
+								if ( zarg ) {
+									const type = zarg[ Constants.Z_ARGUMENT_TYPE ];
+									return type;
+								}
+								return Constants.Z_OBJECT;
+							}
 
 							// If not found, return Z1/ZObject (any) type
 							default:
 								return Constants.Z_OBJECT;
 						}
-						return type;
 					}
 				}
 
-				// If key is a not found, a list index or a local key, return Z1/Object (any) type
+				// If key is not found, a list index, or a local key, return Z1/Object (any) type
 				return Constants.Z_OBJECT;
 			};
 
@@ -214,6 +209,8 @@ module.exports = {
 			 */
 			const checkEnumType = ( zid ) => {
 				const storedObject = this.getStoredObject( zid );
+				// If the zid is undefined, excluded from enums or the object is not found,
+				// return false
 				if (
 					( zid === undefined ) ||
 					( Constants.EXCLUDE_FROM_ENUMS.includes( zid ) ) ||
@@ -223,6 +220,8 @@ module.exports = {
 				}
 
 				const zobject = storedObject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
+
+				// If the zObject is not a type, return false
 				if ( zobject[ Constants.Z_OBJECT_TYPE ] !== Constants.Z_TYPE ) {
 					return false;
 				}
@@ -240,6 +239,110 @@ module.exports = {
 				return false;
 			};
 			return checkEnumType;
+		},
+
+		/**
+		 * Given a type zid, returns whether it is an instance of a Wikidata enum/Z6884
+		 *
+		 * @return {Function}
+		 */
+		isWikidataEnum: function () {
+			/**
+			 * @param {string} zid
+			 * @return {boolean}
+			 */
+			const checkWikidataEnumType = ( zid ) => {
+				const storedObject = this.getStoredObject( zid );
+				// If the zid is undefined or the object is not found,
+				// return false
+				if (
+					( zid === undefined ) ||
+					( !storedObject )
+				) {
+					return false;
+				}
+				const zobject = storedObject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
+				// If the zObject is a function call and it is a Wikidata enum/Z6884, return true
+				return (
+					zobject[ Constants.Z_OBJECT_TYPE ] === Constants.Z_FUNCTION_CALL &&
+					zobject[ Constants.Z_FUNCTION_CALL_FUNCTION ] === Constants.Z_WIKIDATA_ENUM
+				);
+			};
+			return checkWikidataEnumType;
+		},
+
+		/**
+		 * Returns the values of  an instance of a Wikidata enum/Z6884 given its Zid.
+		 * The values are extracted from the references of the enum object.
+		 *
+		 * @return {Function}
+		 */
+		getReferencesOfWikidataEnum: function () {
+			/**
+			 * @param {string} zid - The Zid of the Wikidata enum.
+			 * @return {Array|undefined} - An array of values or undefined if not found.
+			 */
+			const findReferencesOfWikidataEnum = ( zid ) => {
+				const storedObject = this.getStoredObject( zid );
+				if (
+					zid === undefined ||
+					!storedObject
+				) {
+					return undefined;
+				}
+				return storedObject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_WIKIDATA_ENUM_REFERENCES ];
+			};
+			return findReferencesOfWikidataEnum;
+		},
+
+		/**
+		 * Returns the type of an instance of a Wikidata enum/Z6884 given its Zid.
+		 * The type is determined based on the first value in the enum's references.
+		 *
+		 * @return {Function}
+		 */
+		getTypeOfWikidataEnum: function () {
+			/**
+			 * @param {string} zid - The Zid of the Wikidata enum.
+			 * @return {string|undefined} - The type of the Wikidata enum or undefined if not found.
+			 */
+			const findTypeOfWikidataEnum = ( zid ) => {
+				const storedObject = this.getStoredObject( zid );
+				if (
+					zid === undefined ||
+					!storedObject
+				) {
+					return undefined;
+				}
+				return storedObject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_WIKIDATA_ENUM_TYPE ];
+			};
+			return findTypeOfWikidataEnum;
+		},
+
+		/**
+		 * Given a type zid, returns the list of items in an instance of a Wikidata enum/Z6884
+		 *
+		 * @return {Function}
+		 */
+		getReferencesIdsOfWikidataEnum: function () {
+			/**
+			 * @param {string} zid
+			 * @return {Array}
+			 */
+			const findReferencesIdsOfWikidataEnum = ( zid ) => {
+				const values = this.getReferencesOfWikidataEnum( zid );
+				if ( !values ) {
+					return [];
+				}
+				const type = values[ 0 ];
+				return values
+					.slice( 1 )
+					.map( ( row ) => row[ `${ type }K1` ] )
+					.filter( ( id ) => !!id );
+
+			};
+			return findReferencesIdsOfWikidataEnum;
+
 		},
 
 		/**

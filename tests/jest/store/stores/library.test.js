@@ -457,94 +457,86 @@ describe( 'library Pinia store', () => {
 			} );
 		} );
 
-		describe( 'getEnum', () => {
-			it( 'returns undefined when enum is not present in the state', () => {
-				store.enums = {};
-
-				const zid = 'Z30000';
-				const actual = store.getEnum( zid );
-				expect( actual ).toBeUndefined();
+		describe( 'isWikidataEnum', () => {
+			beforeEach( () => {
+				store.objects = mockStoredObjects;
 			} );
 
-			it( 'returns enum with promise as data when enum values are being fetched', async () => {
-				store.enums = {
-					Z30000: {
-						data: new Promise( ( resolve ) => {
-							resolve();
-						} )
-					}
-				};
-
-				const zid = 'Z30000';
-				const expected = { data: expect.any( Promise ) };
-				const actual = store.getEnum( zid );
-				expect( actual ).toEqual( expected );
+			it( 'returns false if zid is undefined', () => {
+				const zid = undefined;
+				expect( store.isWikidataEnum( zid ) ).toBe( false );
 			} );
 
-			it( 'returns enum with data when enum values are fetched and stored', () => {
-				store.enums = {
-					Z30000: {
-						data: mockEnumValues
-					}
-				};
+			it( 'returns false if object is not found', () => {
+				const zid = 'Z99999';
+				expect( store.isWikidataEnum( zid ) ).toBe( false );
+			} );
 
-				const zid = 'Z30000';
-				const expected = { data: mockEnumValues };
-				const actual = store.getEnum( zid );
-				expect( actual ).toEqual( expected );
+			it( 'returns true if object is a Wikidata enum (Z6884)', () => {
+				const zid = 'Z20009';
+				expect( store.isWikidataEnum( zid ) ).toBe( true );
+			} );
+
+			it( 'returns false if object is not a Wikidata enum', () => {
+				const zid = 'Z20008';
+				expect( store.isWikidataEnum( zid ) ).toBe( false );
 			} );
 		} );
 
-		describe( 'getEnumValues', () => {
-			it( 'returns empty array when enum zid is not present in the state', () => {
-				store.enums = {};
-
-				const zid = 'Z30000';
-				const expected = [];
-				const actual = store.getEnumValues( zid );
-				expect( actual ).toEqual( expected );
+		describe( 'getReferencesOfWikidataEnum', () => {
+			beforeEach( () => {
+				store.objects = mockStoredObjects;
+			} );
+			it( 'returns undefined if zid is undefined', () => {
+				expect( store.getReferencesOfWikidataEnum( undefined ) ).toBeUndefined();
 			} );
 
-			it( 'returns empty array when enum zid is still being fetched', () => {
-				store.enums = {
-					Z30000: {
-						data: new Promise( ( resolve ) => {
-							resolve();
-						} )
-					}
-				};
-
-				const zid = 'Z30000';
-				const expected = [];
-				const actual = store.getEnumValues( zid );
-				expect( actual ).toEqual( expected );
+			it( 'returns undefined if object is not found', () => {
+				expect( store.getReferencesOfWikidataEnum( 'Z99999' ) ).toBeUndefined();
 			} );
 
-			it( 'returns stored values when they have been fetched', () => {
-				store.enums = {
-					Z30000: {
-						data: mockEnumValues
-					}
-				};
-
-				const zid = 'Z30000';
-				const expected = mockEnumValues;
-				const actual = store.getEnumValues( zid );
-				expect( actual ).toEqual( expected );
+			it( 'returns references if present', () => {
+				const zid = 'Z20009';
+				const references = [
+					'Z6091',
+					{ Z1K1: 'Z6091', Z6091K1: 'Q499327' },
+					{ Z1K1: 'Z6091', Z6091K1: 'Q1775415' },
+					{ Z1K1: 'Z6091', Z6091K1: 'Q1775461' }
+				];
+				expect( store.getReferencesOfWikidataEnum( zid ) ).toEqual( references );
 			} );
 		} );
 
-		describe( 'getLanguageZidOfCode', () => {
-			it( 'returns stored language zid when available', () => {
-				store.languages = {
-					en: 'Z1002'
-				};
-				expect( store.getLanguageZidOfCode( 'en' ) ).toBe( 'Z1002' );
+		describe( 'getTypeOfWikidataEnum', () => {
+			beforeEach( () => {
+				store.objects = mockStoredObjects;
+			} );
+			it( 'returns undefined if zid is undefined', () => {
+				expect( store.getTypeOfWikidataEnum( undefined ) ).toBeUndefined();
 			} );
 
-			it( 'returns undefined when language code is not available', () => {
-				store.languages = {};
-				expect( store.getLanguageZidOfCode( 'en' ) ).toBeUndefined();
+			it( 'returns undefined if object is not found', () => {
+				expect( store.getTypeOfWikidataEnum( 'Z99999' ) ).toBeUndefined();
+			} );
+
+			it( 'returns first value of references as type', () => {
+				expect( store.getTypeOfWikidataEnum( 'Z20009' ) ).toBe( 'Z6091' );
+			} );
+		} );
+
+		describe( 'getReferencesIdsOfWikidataEnum', () => {
+			beforeEach( () => {
+				store.objects = mockStoredObjects;
+			} );
+			it( 'returns empty array if references are not present', () => {
+				Object.defineProperty( store, 'getReferencesOfWikidataEnum', {
+					value: jest.fn().mockReturnValue( undefined )
+				} );
+				expect( store.getReferencesIdsOfWikidataEnum( 'Z20009' ) ).toEqual( [] );
+			} );
+
+			it( 'returns array of ids from references', () => {
+				expect( store.getReferencesIdsOfWikidataEnum( 'Z20009' ) ).toEqual( [ 'Q499327', 'Q1775415', 'Q1775461' ] );
 			} );
 		} );
 

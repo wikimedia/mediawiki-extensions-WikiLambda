@@ -70,7 +70,6 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
-		'getLexemeData',
 		'getLexemeId',
 		'getLexemeLabelData',
 		'getLexemeUrl'
@@ -83,16 +82,6 @@ module.exports = exports = defineComponent( {
 		 */
 		lexemeId: function () {
 			return this.getLexemeId( this.rowId );
-		},
-		/**
-		 * Returns the Lexeme data object, if any Lexeme is selected.
-		 * Returns a Promise if the data is being fetched.
-		 * Else returns undefined.
-		 *
-		 * @return {Object|Promise|undefined}
-		 */
-		lexemeData: function () {
-			return this.getLexemeData( this.lexemeId );
 		},
 		/**
 		 * Returns the Wikidata URL for the selected Lexeme.
@@ -157,13 +146,9 @@ module.exports = exports = defineComponent( {
 			if ( id ) {
 				this.fetchLexemes( { ids: [ id ] } );
 			}
-		},
-		lexemeLabel: function ( label ) {
-			this.inputValue = label;
 		}
 	},
 	mounted: function () {
-		this.inputValue = this.lexemeLabel;
 		if ( this.lexemeId ) {
 			this.fetchLexemes( { ids: [ this.lexemeId ] } );
 		}

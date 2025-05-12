@@ -172,7 +172,7 @@ Constants.Z_OBJECT_ENUM = 'Z884';
 // Wikidata enum
 Constants.Z_WIKIDATA_ENUM = 'Z6884';
 Constants.Z_WIKIDATA_ENUM_TYPE = 'Z6884K1';
-Constants.Z_WIKIDATA_ENUM_KEYS = 'Z6884K2';
+Constants.Z_WIKIDATA_ENUM_REFERENCES = 'Z6884K2';
 Constants.Z_WIKIDATA_ENUM_IDENTITY = 'Z6884K3';
 
 // Wikidata Types
@@ -213,6 +213,22 @@ Constants.WIKIDATA_API_TYPE_VALUES = {
 	[ Constants.Z_WIKIDATA_LEXEME_SENSE ]: 'sense'
 };
 
+// Wikidata simplified types
+Constants.WIKIDATA_SIMPLIFIED_TYPES = {
+	[ Constants.Z_WIKIDATA_ITEM ]: Constants.Z_WIKIDATA_ITEM,
+	[ Constants.Z_WIKIDATA_REFERENCE_ITEM ]: Constants.Z_WIKIDATA_ITEM,
+	[ Constants.Z_WIKIDATA_FETCH_ITEM ]: Constants.Z_WIKIDATA_ITEM,
+	[ Constants.Z_WIKIDATA_LEXEME ]: Constants.Z_WIKIDATA_LEXEME,
+	[ Constants.Z_WIKIDATA_FETCH_LEXEME ]: Constants.Z_WIKIDATA_LEXEME,
+	[ Constants.Z_WIKIDATA_REFERENCE_LEXEME ]: Constants.Z_WIKIDATA_LEXEME,
+	[ Constants.Z_WIKIDATA_LEXEME_FORM ]: Constants.Z_WIKIDATA_LEXEME_FORM,
+	[ Constants.Z_WIKIDATA_FETCH_LEXEME_FORM ]: Constants.Z_WIKIDATA_LEXEME_FORM,
+	[ Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM ]: Constants.Z_WIKIDATA_LEXEME_FORM,
+	[ Constants.Z_WIKIDATA_PROPERTY ]: Constants.Z_WIKIDATA_PROPERTY,
+	[ Constants.Z_WIKIDATA_FETCH_PROPERTY ]: Constants.Z_WIKIDATA_PROPERTY,
+	[ Constants.Z_WIKIDATA_REFERENCE_PROPERTY ]: Constants.Z_WIKIDATA_PROPERTY
+};
+
 // Wikidata builtin components
 Constants.WIKIDATA_BUILTIN_COMPONENTS = {
 	[ Constants.Z_WIKIDATA_ITEM ]: 'wl-wikidata-item',
@@ -227,6 +243,14 @@ Constants.WIKIDATA_BUILTIN_COMPONENTS = {
 	[ Constants.Z_WIKIDATA_PROPERTY ]: 'wl-wikidata-property',
 	[ Constants.Z_WIKIDATA_FETCH_PROPERTY ]: 'wl-wikidata-property',
 	[ Constants.Z_WIKIDATA_REFERENCE_PROPERTY ]: 'wl-wikidata-property'
+};
+
+// Wikidata enum selector placeholders
+Constants.WIKIDATA_ENUM_PLACEHOLDER_MSG = {
+	[ Constants.Z_WIKIDATA_REFERENCE_ITEM ]: 'wikilambda-wikidata-item-selector-placeholder',
+	[ Constants.Z_WIKIDATA_REFERENCE_LEXEME ]: 'wikilambda-wikidata-lexeme-selector-placeholder',
+	[ Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM ]: 'wikilambda-wikidata-lexeme-form-selector-placeholder',
+	[ Constants.Z_WIKIDATA_REFERENCE_PROPERTY ]: 'wikilambda-wikidata-property-selector-placeholder'
 };
 
 // Wikifunctions Builtin Components

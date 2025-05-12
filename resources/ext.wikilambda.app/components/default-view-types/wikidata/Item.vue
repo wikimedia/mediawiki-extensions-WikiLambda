@@ -70,7 +70,6 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
-		'getItemData',
 		'getItemId',
 		'getItemLabelData',
 		'getItemUrl'
@@ -83,16 +82,6 @@ module.exports = exports = defineComponent( {
 		 */
 		itemId: function () {
 			return this.getItemId( this.rowId );
-		},
-		/**
-		 * Returns the Wikidata Item data object, if any Item is selected.
-		 * Returns a Promise if the data is being fetched.
-		 * Else returns undefined.
-		 *
-		 * @return {Object|Promise|undefined}
-		 */
-		itemData: function () {
-			return this.getItemData( this.itemId );
 		},
 		/**
 		 * Returns the Wikidata URL for the selected Item.
@@ -155,13 +144,9 @@ module.exports = exports = defineComponent( {
 	watch: {
 		itemId: function ( id ) {
 			this.fetchItems( { ids: [ id ] } );
-		},
-		itemLabel: function ( label ) {
-			this.inputValue = label;
 		}
 	},
 	mounted: function () {
-		this.inputValue = this.itemLabel;
 		if ( this.itemId ) {
 			this.fetchItems( { ids: [ this.itemId ] } );
 		}

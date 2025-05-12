@@ -74,7 +74,7 @@ module.exports = {
 		 *
 		 * @return {boolean}
 		 */
-		isWikidataEntity() {
+		isWikidataEntity: function () {
 			const checkWikidataEntity = ( rowId ) => (
 				this.isWikidataFetch( rowId ) ||
 				this.isWikidataReference( rowId ) ||
@@ -123,10 +123,140 @@ module.exports = {
 				return this.getRowByKeyPath( [ referenceTypeIdKey ], wdReferenceRowId );
 			};
 			return findWikidataEntityIdRow;
+		},
+
+		/**
+		 * Returns the Wikidata entity ID string for a given rowId and Wikidata type.
+		 *
+		 * @return {Function}
+		 */
+		getWikidataEntityId: function () {
+			/**
+			 * @param {number} rowId
+			 * @param {string} wikidataType
+			 * @return {string|null}
+			 */
+			const findWikidataEntityId = ( rowId, wikidataType ) => {
+				const entityIdRow = this.getWikidataEntityIdRow( rowId, wikidataType );
+				return entityIdRow ?
+					this.getZStringTerminalValue( entityIdRow.id ) || null :
+					null;
+			};
+			return findWikidataEntityId;
+		},
+
+		/**
+		 * Returns the label data for a Wikidata entity by type and id.
+		 *
+		 * @param {string} type - The Wikidata entity type.
+		 * @param {string} id - The Wikidata entity id.
+		 * @return {LabelData|undefined} The label data object, or undefined if not found.
+		 */
+		getWikidataEntityLabelData: function () {
+			/**
+			 * @param {string} type
+			 * @param {string} id
+			 * @return {LabelData|undefined}
+			 */
+			const findWikidataaEntityLabelData = ( type, id ) => {
+				switch ( type ) {
+					case Constants.Z_WIKIDATA_LEXEME:
+					case Constants.Z_WIKIDATA_REFERENCE_LEXEME:
+						return this.getLexemeLabelData( id );
+
+					case Constants.Z_WIKIDATA_LEXEME_FORM:
+					case Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM:
+						return this.getLexemeFormLabelData( id );
+
+					case Constants.Z_WIKIDATA_ITEM:
+					case Constants.Z_WIKIDATA_REFERENCE_ITEM:
+						return this.getItemLabelData( id );
+
+					case Constants.Z_WIKIDATA_PROPERTY:
+					case Constants.Z_WIKIDATA_REFERENCE_PROPERTY:
+						return this.getPropertyLabelData( id );
+
+					default:
+						return undefined;
+				}
+			};
+			return findWikidataaEntityLabelData;
+		},
+
+		/**
+		 * Returns the URL for a Wikidata entity by type and id.
+		 *
+		 * @return {Function}
+		 */
+		getWikidataEntityUrl: function () {
+			/**
+			 * @param {string} type
+			 * @param {string} id
+			 * @return {LabelData|undefined}
+			 */
+			const findWikidataEntityUrl = ( type, id ) => {
+				switch ( type ) {
+					case Constants.Z_WIKIDATA_LEXEME:
+					case Constants.Z_WIKIDATA_REFERENCE_LEXEME:
+						return this.getLexemeUrl( id );
+
+					case Constants.Z_WIKIDATA_LEXEME_FORM:
+					case Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM:
+						return this.getLexemeFormUrl( id );
+
+					case Constants.Z_WIKIDATA_ITEM:
+					case Constants.Z_WIKIDATA_REFERENCE_ITEM:
+						return this.getItemUrl( id );
+
+					case Constants.Z_WIKIDATA_PROPERTY:
+					case Constants.Z_WIKIDATA_REFERENCE_PROPERTY:
+						return this.getPropertyUrl( id );
+
+					default:
+						return undefined;
+				}
+			};
+			return findWikidataEntityUrl;
 		}
 	},
 
 	actions: {
+		/**
+		 * Fetches Wikidata entities by type.
+		 *
+		 * For lexeme forms, transforms form IDs into lexeme IDs before fetching.
+		 * Dispatches to the appropriate fetch action based on the entity type.
+		 *
+		 * @param {Object} payload
+		 * @param {string} payload.type - The Wikidata entity type.
+		 * @param {Array} payload.ids - The list of entity IDs to fetch.
+		 * @return {Promise|undefined} A promise resolving to the fetched entities, or undefined for unknown types.
+		 */
+		fetchWikidataEntitiesByType: function ( payload ) {
+			switch ( payload.type ) {
+				case Constants.Z_WIKIDATA_LEXEME:
+				case Constants.Z_WIKIDATA_REFERENCE_LEXEME:
+					return this.fetchLexemes( payload );
+
+				case Constants.Z_WIKIDATA_LEXEME_FORM:
+				case Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM:
+					// Transform lexeme form IDs into lexeme IDs:
+					payload.ids = payload.ids.map( ( id ) => id.split( '-' )[ 0 ] );
+					return this.fetchLexemes( payload );
+
+				case Constants.Z_WIKIDATA_ITEM:
+				case Constants.Z_WIKIDATA_REFERENCE_ITEM:
+					return this.fetchItems( payload );
+
+				case Constants.Z_WIKIDATA_PROPERTY:
+				case Constants.Z_WIKIDATA_REFERENCE_PROPERTY:
+					return this.fetchProperties( payload );
+
+				default:
+					return undefined;
+			}
+		},
+
 		/**
 		 * Calls Wikidata Action API to search entities by
 		 * matching the given searchTerm and entity type.

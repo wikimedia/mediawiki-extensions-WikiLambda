@@ -18,7 +18,7 @@
 		</template>
 		<template v-else>
 			<wl-wikidata-reference-selector
-				v-if="isWikidataEnumType"
+				v-if="isWikidataEnum"
 				:disabled="disabled"
 				:selected-zid="value"
 				data-testid="z-reference-wikidata-reference-selector"
@@ -175,26 +175,35 @@ module.exports = exports = defineComponent( {
 			},
 
 			/**
-			 * Returns the list of excluded Zids to restrict in the lookup
-			 * component depending on the current Key. Currently only for the
-			 * content type of Z2K2, the keys from EXCLUDE_FROM_PERSISTENT_CONTENT
-			 * are intentionally excluded.
+			 * Returns the list of Zids to exclude from the ZObjectSelector lookup,
+			 * depending on the current key and parent key.
+			 * - For Z2K2 content type, excludes keys from EXCLUDE_FROM_PERSISTENT_CONTENT.
+			 * - Excludes Wikidata enums unless selected as the direct parent of a ZObject/Z1
+			 * and is the the key of a function call function (Z7K1).
+			 * - For other cases, allows all.
 			 *
 			 * @return {Array}
 			 */
 			excludeZids: function () {
-				return (
-					( this.key === Constants.Z_OBJECT_TYPE ) &&
-					( this.parentKey === Constants.Z_PERSISTENTOBJECT_VALUE )
-				) ? Constants.EXCLUDE_FROM_PERSISTENT_CONTENT : [];
+				if ( this.key === Constants.Z_OBJECT_TYPE &&
+					this.parentKey === Constants.Z_PERSISTENTOBJECT_VALUE ) {
+					return Constants.EXCLUDE_FROM_PERSISTENT_CONTENT;
+				}
+				if (
+					this.key === Constants.Z_FUNCTION_CALL_FUNCTION &&
+					this.parentKey === Constants.Z_PERSISTENTOBJECT_VALUE
+				) {
+					return [];
+				}
+				return [ Constants.Z_WIKIDATA_ENUM ];
 			},
 
-			/*
-			 * Returns true if the expected type is a Wikidata enum type.
+			/**
+			 * Returns true if the key is a Wikidata enum type.
 			 *
-			 * @return {boolean} True if the expected type is a Wikidata enum type, false otherwise.
+			 * @return {boolean}
 			 */
-			isWikidataEnumType: function () {
+			isWikidataEnum: function () {
 				return this.key === Constants.Z_WIKIDATA_ENUM_TYPE;
 			}
 		}

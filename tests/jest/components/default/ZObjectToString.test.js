@@ -192,7 +192,7 @@ describe( 'ZObjectToString', () => {
 
 			it( 'renders the link to Wikidata Item', () => {
 				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z6091' );
-				store.getItemId = createGettersWithFunctionsMock( 'Q42' );
+				store.getWikidataEntityId = createGettersWithFunctionsMock( 'Q42' );
 
 				const wrapper = mount( ZObjectToString );
 				const linkWrapper = wrapper.find( 'div[data-testid=object-to-string-link]' );
@@ -204,7 +204,7 @@ describe( 'ZObjectToString', () => {
 			it( 'renders the link to Wikidata Lexeme', () => {
 				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z7' );
 				store.getZFunctionCallFunctionId = createGettersWithFunctionsMock( 'Z6825' );
-				store.getLexemeId = createGettersWithFunctionsMock( 'L42' );
+				store.getWikidataEntityId = createGettersWithFunctionsMock( 'L42' );
 
 				const wrapper = mount( ZObjectToString );
 				const linkWrapper = wrapper.find( 'div[data-testid=object-to-string-link]' );
@@ -215,7 +215,7 @@ describe( 'ZObjectToString', () => {
 
 			it( 'renders the link to Wikidata Lexeme Form', () => {
 				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z6094' );
-				store.getLexemeFormId = createGettersWithFunctionsMock( 'L42-S1' );
+				store.getWikidataEntityId = createGettersWithFunctionsMock( 'L42-S1' );
 
 				const wrapper = mount( ZObjectToString );
 				const linkWrapper = wrapper.find( 'div[data-testid=object-to-string-link]' );
@@ -227,7 +227,7 @@ describe( 'ZObjectToString', () => {
 			it( 'renders the link to Wikidata Property', () => {
 				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z7' );
 				store.getZFunctionCallFunctionId = createGettersWithFunctionsMock( 'Z6822' );
-				store.getPropertyId = createGettersWithFunctionsMock( 'P42' );
+				store.getWikidataEntityId = createGettersWithFunctionsMock( 'P42' );
 
 				const wrapper = mount( ZObjectToString );
 				const linkWrapper = wrapper.find( 'div[data-testid=object-to-string-link]' );

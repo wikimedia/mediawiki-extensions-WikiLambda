@@ -19,7 +19,7 @@ const wikidataEnumZObject = function ( wikidataType, entityIds ) {
 			[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
 			[ Constants.Z_FUNCTION_CALL_FUNCTION ]: Constants.Z_WIKIDATA_ENUM,
 			[ Constants.Z_WIKIDATA_ENUM_TYPE ]: wikidataType,
-			[ Constants.Z_WIKIDATA_ENUM_KEYS ]: [
+			[ Constants.Z_WIKIDATA_ENUM_REFERENCES ]: [
 				wikidataType,
 				...entityIds.map( ( id ) => ( {
 					[ Constants.Z_OBJECT_TYPE ]: wikidataType,

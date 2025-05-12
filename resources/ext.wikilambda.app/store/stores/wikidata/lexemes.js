@@ -135,12 +135,12 @@ module.exports = {
 		 * If no Lexeme is selected, returns undefined.
 		 *
 		 * @param {Object} state
-		 * @return {LabelData|undefined}
+		 * @return {Function}
 		 */
 		getLexemeLabelData: function () {
 			/**
 			 * @param {string} id The lexeme ID
-			 * @return {LabelData} The `LabelData` object containing label, language code, and directionality.
+			 * @return {LabelData|undefined} The `LabelData` object containing label, language code, and directionality.
 			 */
 			const findLexemeLabelData = ( id ) => {
 				// If no selected Lexeme, return undefined
@@ -171,12 +171,12 @@ module.exports = {
 		 * LabelData object with the Lexeme id as its display label.
 		 * If no Lexeme is selected, returns undefined.
 		 *
-		 * @return {LabelData|undefined}
+		 * @return {Function}
 		 */
 		getLexemeFormLabelData: function () {
 			/**
 			 * @param {string} id The Lexeme form ID
-			 * @return {LabelData} The `LabelData` object containing label, language code, and directionality.
+			 * @return {LabelData|undefined} The `LabelData` object containing label, language code, and directionality.
 			 */
 			const findLexemeFormLabelData = ( id ) => {
 				// If no selected Lexeme, return undefined
@@ -226,8 +226,11 @@ module.exports = {
 			 * @return {string|undefined}
 			 */
 			const findLexemeFormUrl = ( id ) => {
+				if ( !id ) {
+					return undefined;
+				}
 				const [ lexemeId = '', formId = '' ] = id.split( '-' );
-				return id ? `${ Constants.WIKIDATA_BASE_URL }/wiki/Lexeme:${ lexemeId }#${ formId }` : undefined;
+				return `${ Constants.WIKIDATA_BASE_URL }/wiki/Lexeme:${ lexemeId }#${ formId }`;
 			};
 			return findLexemeFormUrl;
 		}
