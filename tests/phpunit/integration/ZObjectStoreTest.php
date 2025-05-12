@@ -7,13 +7,11 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ZObjects;
+namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
-use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
-use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectPage;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
@@ -65,17 +63,17 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $page->isOK() );
 
 		$zObject = $this->zobjectStore->fetchZObject( $zid );
-		$this->assertTrue( $zObject instanceof ZPersistentObject );
+		$this->assertTrue( $zObject instanceof ZObjectContent );
 	}
 
 	public function testfetchZObject_missing() {
-		$this->expectException( ZErrorException::class );
 		$zObject = $this->zobjectStore->fetchZObject( 'Z400' );
+		$this->assertFalse( $zObject );
 	}
 
 	public function testfetchZObject_invalid() {
-		$this->expectException( ZErrorException::class );
 		$zObject = $this->zobjectStore->fetchZObject( 'Z0' );
+		$this->assertFalse( $zObject );
 	}
 
 	public function testFetchZObjectByTitle_valid() {
