@@ -282,6 +282,18 @@ class ApiPerformTest extends WikiLambdaApiBase {
 				// Use tester to create a function call validating the output
 
 				$validateTestValue = $testResultObject->getZValue();
+
+				// (T394107) Don't let a type error from this being invalid result in a server-side error
+				if ( !( $validateTestValue instanceof ZObject ) ) {
+					$this->dieWithError(
+						[
+							'wikilambda-performtest-error-invalidtester',
+							$testerZid
+						],
+						null, null, 400
+					);
+				}
+
 				$validateFunctionCall = $testerObject->getValueByKey( ZTypeRegistry::Z_TESTER_VALIDATION );
 				'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall $validateFunctionCall';
 
