@@ -21,7 +21,7 @@ class ZMonoLingualStringSet extends ZObject {
 	 * or ZTypedList of ZString instances. Internally this class bypasses ZTypedList
 	 * and stores an array.
 	 *
-	 * @param ZReference $language
+	 * @param ZReference|ZNaturalLanguage $language
 	 * @param ZTypedList|array $value
 	 */
 	public function __construct( $language, $value = [] ) {
@@ -117,10 +117,10 @@ class ZMonoLingualStringSet extends ZObject {
 	/**
 	 * Get the Zid that represents the language for this ZMonoLingualStringSet
 	 *
-	 * @return string Language Zid
+	 * @return string Language Zid or code
 	 */
 	public function getLanguage() {
-		return $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE ]->getZValue() ?? '';
+		return $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE ]->getZValue();
 	}
 
 	/**

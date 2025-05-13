@@ -623,4 +623,26 @@ EOT
 		$roundTripped = ZObjectFactory::create( ZObjectUtils::canonicalize( $serializedObjectNormal ) );
 		$this->assertEquals( $testObject, $roundTripped, 'Round trip through normal serialization' );
 	}
+
+	public function testOddCreations() {
+		// (T391528) This is Z86's Z2K4 value, and triggers different behaviour from the above
+		// @phpcs:ignore Generic.Files.LineLength.TooLong
+		$referenceExample = '{"Z1K1": "Z32", "Z32K1": [ "Z31", { "Z1K1": "Z31", "Z31K1": "Z1002", "Z31K2": [ "Z6", "UTF-8 code point", "Character" ] } ] }';
+		$convertedReferenceExample = ZObjectFactory::create( json_decode( $referenceExample ) );
+
+		$this->assertTrue(
+			$convertedReferenceExample->isValid(),
+			'ZObjectFactory::create() should not throw when given a Z32 with ZReferences to Z60s as a language'
+		);
+
+		// (T391329) This is Q15243209's aliases once fetched, and triggers still different behaviour from the above
+		// @phpcs:ignore Generic.Files.LineLength.TooLong
+		$wikidataExample = '{ "Z1K1": "Z32", "Z32K1": [ "Z31", { "Z1K1": "Z31", "Z31K1": { "Z1K1": "Z60", "Z60K1": "en" }, "Z31K2": [ "Z6", "heritage district", "historic center" ] } ] }';
+		$convertedWikidataExample = ZObjectFactory::create( json_decode( $wikidataExample ) );
+
+		$this->assertTrue(
+			$convertedWikidataExample->isValid(),
+			'ZObjectFactory::create() should not throw when given a Z32 with inline Z60s as a language'
+		);
+	}
 }
