@@ -32,5 +32,6 @@
 	"wikilambda-visualeditor-wikifunctionscall-title": "함수",
 	"wikilambda-visualeditor-wikifunctionscall-preview-title": "미리 보기",
 	"wikilambda-visualeditor-wikifunctionscall-preview-no-result": "결과를 미리 보려면 값을 입력하세요.",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "취소됨",
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "취소"
 }

@@ -29,6 +29,7 @@
 	"wikilambda-recentchanges-filter-wl-pref": "Monstrar modificationes facite desde Wikifunctiones in tu observatorio",
 	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Cargamento in curso",
 	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "Le previsualisation ha prendite troppo de tempore",
+	"wikilambda-visualeditor-wikifunctionscall-changedesc-title": "Cambio de entratas de Wikifunctiones",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Elige un option",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Function]] de Wikifunctiones",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Leger minus",
@@ -47,5 +48,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-no-name": "Necun nomine",
 	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Cargante le datos del function",
 	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Necun function seligite.",
-	"wikilambda-visualeditor-wikifunctionscall-title": "Function"
+	"wikilambda-visualeditor-wikifunctionscall-title": "Function",
+	"wikilambda-visualeditor-wikifunctionscall-preview-title": "Previsualisation",
+	"wikilambda-visualeditor-wikifunctionscall-preview-no-result": "Insere valores pro previsualisar le resultato."
 }
