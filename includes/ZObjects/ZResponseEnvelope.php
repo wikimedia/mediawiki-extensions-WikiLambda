@@ -21,8 +21,10 @@ class ZResponseEnvelope extends ZObject {
 	 * @param ?ZObject $metadata Meta-data response
 	 */
 	public function __construct( $response, $metadata ) {
-		$this->data[ ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE ] = $response ?? ZTypeRegistry::Z_VOID;
-		$this->data[ ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA ] = $metadata ?? ZTypeRegistry::Z_VOID;
+		$this->data[ ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE ] = $response ?? new ZReference(
+			ZTypeRegistry::Z_VOID );
+		$this->data[ ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA ] = $metadata ?? new ZReference(
+			ZTypeRegistry::Z_VOID );
 	}
 
 	/**

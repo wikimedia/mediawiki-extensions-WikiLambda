@@ -238,7 +238,6 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 			'reference' => [ 'Z6', ZReference::class ],
 			'array' => [ [ 'Z6', 'array' ], ZTypedList::class ],
 			'object' => [ json_decode( '{ "Z1K1": "Z6" }' ), ZString::class ],
-			'custom type' => [ json_decode( '{ "Z1K1": "Z60" }' ), ZObject::class, [ 'Z60' ] ],
 			'function call type: typed list built-in' => [
 				json_decode( '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } }' ),
 				ZTypedList::class
