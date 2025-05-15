@@ -77,6 +77,8 @@
 	"apihelp-wikilambda_edit-param-summary": "Editar a mensaxe de resumo",
 	"apihelp-wikilambda_edit-param-zid": "ZID do ZObject a editar. Se é \"null\", crearase un ZObject novo",
 	"apihelp-wikilambda_edit-param-zobject": "Representación en JSON do ZObject a gardar",
+	"apierror-wikilambda_function_call-client-error": "Non se puido completar a solicitude debido a un erro do cliente",
+	"apierror-wikilambda_function_call-server-error": "Non se puido completar a solicitude debido a un erro do servidor",
 	"apierror-wikilambda_function_call-not-connected": "Non se puido resolver o servidor \"$1\", probablemente porque o orquestrador non se está a executar. Consulta o ficheiro README para engadir o orquestrador á túa configuración de docker-compose.",
 	"apierror-wikilambda_function_call-concurrency-limit": "Tes demasiadas chamadas a funcións executándose nestes intres.",
 	"apierror-wikilambda_function_call-response-malformed": "Interrompeuse a resposta da chamada á función: \"$1\".",
