@@ -10,29 +10,26 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\HookHandler;
 
 use MediaWiki\Extension\WikiLambda\HookHandler\ClientHooks;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaClientIntegrationTestCase;
 use MediaWiki\Parser\Parser;
-use MediaWikiIntegrationTestCase;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\HookHandler\ClientHooks
  * @group Database
  * @group Broken
  */
-class ClientHooksTest extends MediaWikiIntegrationTestCase {
+class ClientHooksTest extends WikiLambdaClientIntegrationTestCase {
 
 	private function newClientHooks(): ClientHooks {
 		$services = $this->getServiceContainer();
 		return new ClientHooks(
 			$services->getMainConfig(),
-			$services->getService( 'HttpRequestFactory' ),
-			$services->getService( 'JobQueueGroup' )
+			$services->getHttpRequestFactory(),
+			$services->getJobQueueGroup()
 		);
 	}
 
 	public function testOnParserFirstCallInit_enabled() {
-		// Force-enable our code
-		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
-
 		$parser = $this->createMock( Parser::class );
 		$parser->expects( $this->once() )
 			->method( 'setFunctionHook' )
@@ -43,9 +40,6 @@ class ClientHooksTest extends MediaWikiIntegrationTestCase {
 	}
 
 	public function testOnParserFirstCallInit_disabled() {
-		// Force-disable our code
-		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', false );
-
 		$parser = $this->createMock( Parser::class );
 		$parser->expects( $this->never() )
 			->method( 'setFunctionHook' );

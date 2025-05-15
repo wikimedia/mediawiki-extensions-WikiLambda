@@ -10,7 +10,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
-use MediaWiki\Extension\WikiLambda\ZObjectStore;
+use MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Tests\Api\ApiTestCase;
 
@@ -132,8 +132,8 @@ class ApiQueryFunctionsTest extends ApiTestCase {
 
 		// Types:
 		// Z40 is enum:
-		[ 'Z41', 'Z40', ZObjectStore::INSTANCEOFENUM, 'Z40', 'Z4' ],
-		[ 'Z42', 'Z40', ZObjectStore::INSTANCEOFENUM, 'Z40', 'Z4' ],
+		[ 'Z41', 'Z40', ZObjectSecondaryDataUpdate::INSTANCEOFENUM_DB_KEY, 'Z40', 'Z4' ],
+		[ 'Z42', 'Z40', ZObjectSecondaryDataUpdate::INSTANCEOFENUM_DB_KEY, 'Z40', 'Z4' ],
 		// Z20000: no renderer, no parser
 		// Z20001: has renderer, no parser
 		[ 'Z20001', 'Z4', 'Z4K5', 'Z10101', 'Z8' ],

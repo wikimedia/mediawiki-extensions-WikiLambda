@@ -51,9 +51,7 @@ class ZObjectStore {
 
 	private BagOStuff $zObjectCache;
 
-	public const INSTANCEOFENUM = 'instanceofenum';
-
-	public const SERVICE_CACHE_KEY_PREFIX = 'WikiLambdaObjectStorage:';
+	public const ZOBJECT_CACHE_KEY_PREFIX = 'WikiLambdaObjectStorage';
 
 	/**
 	 * @param IConnectionProvider $dbProvider
@@ -154,7 +152,7 @@ class ZObjectStore {
 	 * @return ZObjectContent|bool Cached or persisted ZObject, false if not found or invalid
 	 */
 	public function fetchZObject( string $zid ) {
-		$cacheKey = self::SERVICE_CACHE_KEY_PREFIX . $zid;
+		$cacheKey = $this->zObjectCache->makeKey( self::ZOBJECT_CACHE_KEY_PREFIX, $zid );
 		$cachedObject = $this->zObjectCache->get( $cacheKey );
 
 		if ( $cachedObject ) {

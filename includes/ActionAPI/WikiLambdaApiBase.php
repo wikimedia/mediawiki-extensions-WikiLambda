@@ -46,6 +46,8 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	protected string $orchestratorHost;
 	protected LoggerInterface $logger;
 
+	public const FUNCTIONCALL_POOL_COUNTER_TYPE = 'WikiLambdaFunctionCall';
+
 	protected function setUp() {
 		$this->setLogger( LoggerFactory::getInstance( 'WikiLambda' ) );
 
@@ -181,7 +183,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		];
 		try {
 			$work = new PoolCounterWorkViaCallback(
-				'WikiLambdaFunctionCall',
+				self::FUNCTIONCALL_POOL_COUNTER_TYPE,
 				$this->getUser()->getName(),
 				[
 					'doWork' => function () use ( $queryArguments ) {

@@ -17,8 +17,6 @@ class WikifunctionsClientStore {
 
 	private IConnectionProvider $dbProvider;
 
-	public const INSTANCEOFENUM = 'instanceofenum';
-
 	/**
 	 * @param IConnectionProvider $dbProvider
 	 */

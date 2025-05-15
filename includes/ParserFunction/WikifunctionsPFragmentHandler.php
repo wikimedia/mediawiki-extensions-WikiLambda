@@ -14,7 +14,11 @@ namespace MediaWiki\Extension\WikiLambda\ParserFunction;
 use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientRequestJob;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientUsageUpdateJob;
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\WikifunctionCallDefaultValues;
+use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Html\Html;
+use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
 use Psr\Log\LoggerInterface;
@@ -31,14 +35,21 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 	private Config $config;
 	private JobQueueGroup $jobQueueGroup;
 	private BagOStuff $objectCache;
+	private HttpRequestFactory $httpRequestFactory;
 
 	private LoggerInterface $logger;
 
+	public const CLIENT_FUNCTIONCALL_CACHE_KEY_PREFIX = 'WikiLambdaClientFunctionCall';
+
 	public function __construct(
-		Config $config, JobQueueGroup $jobQueueGroup, BagOStuff $objectCache
+		Config $config,
+		JobQueueGroup $jobQueueGroup,
+		HttpRequestFactory $httpRequestFactory,
+		BagOStuff $objectCache
 	) {
 		$this->config = $config;
 		$this->jobQueueGroup = $jobQueueGroup;
+		$this->httpRequestFactory = $httpRequestFactory;
 		$this->objectCache = $objectCache;
 
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
@@ -63,7 +74,11 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 			return WikifunctionsPFragment::newFromLiteral( $errorMsgString, null );
 		}
 
+		// Extract arguments:
 		$expansion = $this->extractWikifunctionCallArguments( $extApi, $callArgs );
+
+		// Fill empty arguments with default values:
+		$expansion = $this->fillEmptyArgsWithDefaultValues( $expansion );
 
 		$this->logger->debug(
 			'WikiLambda client call made for {function} on {page}',
@@ -75,7 +90,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 
 		// (T362256): This is the key we use to cache on the client wiki code here, rather than only at the repo wiki.
 		$clientCacheKey = $this->objectCache->makeKey(
-			'WikiLambdaClientFunctionCall',
+			self::CLIENT_FUNCTIONCALL_CACHE_KEY_PREFIX,
 			// Note that we can't use ZObjectUtils::makeCacheKeyFromZObject here, as that's repo-mode only.
 			// This means that this cache key doesn't have the revision IDs of the referenced ZObjects.
 			json_encode( $expansion )
@@ -233,6 +248,164 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		return new WikifunctionsPendingFragment(
 			$extApi->getPageConfig()->getPageLanguageBcp47(), null
 		);
+	}
+
+	/**
+	 * Sets empty arguments with their default value (if available)
+	 *
+	 * @param array $functionCall
+	 * @return array
+	 */
+	private function fillEmptyArgsWithDefaultValues( array $functionCall ): array {
+		// 1. See if there's an empty string arg
+		// 2. If there's any:
+		//  2.1. fetch Function Zid from Memcached
+		//  2.2. fetch Function Zid from Wikifunctions
+		//  2.3. look into the argument key
+		//  2.4. check if it has a default value callback
+		//  2.5. generate default value
+		// 3. Then proceed, with new arg set for cache key, etc.
+		foreach ( $functionCall[ 'arguments' ] as $argKey => $argValue ) {
+			// If argValue is not empty, continue
+			if ( $argValue !== '' ) {
+				continue;
+			}
+
+			// 2.1. Fetch Function Zid from Memcached
+			$zobject = $this->fetchFunctionFromCache( $functionCall[ 'target' ], $argKey );
+			if ( !$zobject ) {
+				// 2.2. Fetch Function Zid from Wikifunctions
+				$zobject = $this->fetchFunctionFromWikifunctionsApi( $functionCall[ 'target' ], $argKey );
+			}
+
+			// If function is not found, return on first iteration:
+			if ( !$zobject ) {
+				return $functionCall;
+			}
+
+			// If object is not a function, return on first iteration:
+			$function = $zobject[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ];
+			if ( $function[ ZTypeRegistry::Z_OBJECT_TYPE ] !== ZTypeRegistry::Z_FUNCTION ) {
+				return $functionCall;
+			}
+
+			// 2.3. Get argument type zid
+			$args = array_slice( $function[ ZTypeRegistry::Z_FUNCTION_ARGUMENTS ], 1 );
+			$matches = array_filter( $args, static function ( $item ) use ( $argKey ) {
+				return isset( $item[ ZTypeRegistry::Z_ARGUMENTDECLARATION_ID ] ) &&
+					$item[ ZTypeRegistry::Z_ARGUMENTDECLARATION_ID ] === $argKey;
+			} );
+			$arg = reset( $matches ) ?: null;
+
+			// If argKey is not found, continue
+			if ( !$arg ) {
+				continue;
+			}
+
+			$argType = $arg[ ZTypeRegistry::Z_ARGUMENTDECLARATION_TYPE ];
+
+			// 2.4. Check if the argument type has a default value callback defined
+			if ( is_string( $argType ) && WikifunctionCallDefaultValues::hasDefaultValueCallback( $argType ) ) {
+				$defaultValueCallback = WikifunctionCallDefaultValues::getDefaultValueForType( $argType );
+				// 2.5. Generate the default value
+				$functionCall[ 'arguments' ][ $argKey ] = $defaultValueCallback();
+			}
+		}
+
+		return $functionCall;
+	}
+
+	/**
+	 * Requests the given function Zid from the cache.
+	 * Returns null if the function Zid is not cached.
+	 *
+	 * @param string $zid
+	 * @param string $argKey
+	 * @return ?array
+	 */
+	private function fetchFunctionFromCache( $zid, $argKey ): ?array {
+		$cacheKey = $this->objectCache->makeKey( ZObjectStore::ZOBJECT_CACHE_KEY_PREFIX, $zid );
+
+		$cachedObject = $this->objectCache->get( $cacheKey );
+		if ( !$cachedObject ) {
+			$this->logger->warning(
+				__METHOD__ . ' cache miss while fetching {zid} for empty argument {arg}',
+				[
+					'zid' => $zid,
+					'arg' => $argKey
+				]
+			);
+			return null;
+		}
+
+		$json = json_decode( $cachedObject, true );
+		if ( !$json ) {
+			$this->logger->warning(
+				__METHOD__ . ' failed parsing the cached Json for {zid} for empty argument {arg}',
+				[
+					'zid' => $zid,
+					'arg' => $argKey
+				]
+			);
+		}
+
+		// Return successfully parsed Json or null
+		return $json;
+	}
+
+	/**
+	 * Requests the given function Zid from the Wikifunctions ActionAPI.
+	 * Returns null if the function Zid is not found.
+	 *
+	 * @param string $zid
+	 * @param string $argKey
+	 * @return ?array
+	 */
+	private function fetchFunctionFromWikifunctionsApi( $zid, $argKey ): ?array {
+		$requestParams = [
+			'action' => 'wikilambda_fetch',
+			'format' => 'json',
+			'zids' => $zid,
+			'formatversion' => 2,
+		];
+		$baseUrl = WikifunctionsClientRequestJob::getClientTargetUrl( $this->config, $this->logger );
+		$apiUrl = wfAppendQuery( $baseUrl . wfScript( 'api' ), $requestParams );
+		$request = $this->httpRequestFactory->create( $apiUrl, [ 'method' => 'GET' ], __METHOD__ );
+
+		// Execute request:
+		$status = $request->execute();
+		$response = json_decode( $request->getContent() );
+
+		// Failed request:
+		if ( !$response || !$status->isOK() ) {
+			$httpStatusCode = $request->getStatus();
+			$this->logger->warning(
+				__METHOD__ . ' received error {status} while fetching {zid} for empty argument {arg}: {request}',
+				[
+					'status' => $httpStatusCode,
+					'zid' => $zid,
+					'arg' => $argKey,
+					'request' => $request->getFinalUrl()
+				]
+			);
+			return null;
+		}
+
+		// Successful request:
+		$json = json_decode( $response->{ $zid }->wikilambda_fetch, true );
+		if ( !$json ) {
+			$this->logger->warning(
+				__METHOD__ . ' failed parsing the Json response to fetching	{zid} for empty argument {arg}: {request}',
+				[
+					'zid' => $zid,
+					'arg' => $argKey,
+					'request' => $request->getFinalUrl()
+				]
+			);
+		}
+
+		// Return successfully parsed Json or null
+		return $json;
 	}
 
 	/**

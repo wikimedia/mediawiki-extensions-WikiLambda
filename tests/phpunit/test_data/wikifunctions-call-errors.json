@@ -1,0 +1,549 @@
+[
+	{
+		"description": "Returns ZID not found error for {{#function:join|foo|bar}}",
+		"request": {
+			"target": "join",
+			"arguments": {
+				"joinK1": "foo",
+				"joinK2": "bar"
+			},
+			"renderLang": "en",
+			"parseLang": "en"
+		},
+		"status": 400,
+		"error": "wikilambda-functioncall-error-unknown-zid",
+		"body": {
+			"target": "join",
+			"errorData": {
+				"zerror": {
+					"Z1K1": "Z5",
+					"Z5K1": "Z504",
+					"Z5K2": {
+						"Z1K1": {
+							"Z1K1": "Z7",
+							"Z7K1": "Z885",
+							"Z885K1": "Z504"
+						},
+						"K1": "join"
+					}
+				}
+			},
+			"errorKey": "wikilambda-zerror",
+			"messageTranslations": {
+				"en": "Error of type Z504"
+			},
+			"httpCode": 400,
+			"httpReason": "Bad Request"
+		}
+	},
+	{
+		"description": "Returns function type mismatch error for {{#function:Z11|foo|bar}}",
+		"request": {
+			"target": "Z11",
+			"arguments": {
+				"Z11K1": "foo",
+				"Z11K2": "bar"
+			},
+			"renderLang": "en",
+			"parseLang": "en"
+		},
+		"status": 400,
+		"error": "wikilambda-functioncall-error-nonfunction",
+		"body": {
+			"target": "Z11",
+			"mode": "function",
+			"errorData": {
+				"title": "Argument type mismatch",
+				"message": "Argument type mismatch",
+				"zerror": {
+					"Z1K1": "Z5",
+					"Z5K1": "Z506",
+					"Z5K2": {
+						"Z1K1": {
+							"Z1K1": "Z7",
+							"Z7K1": "Z885",
+							"Z885K1": "Z506"
+						},
+						"K1": "Z8",
+						"K2": "Z4",
+						"K3": {
+							"Z1K1": "Z99",
+							"Z99K1": "Z11"
+						}
+					}
+				}
+			},
+			"errorKey": "wikilambda-zerror",
+			"messageTranslations": {
+				"en": "Error of type Z506"
+			},
+			"httpCode": 400,
+			"httpReason": "Bad Request"
+		}
+	}, {
+		"description": "Returns argument type mismatch error for {{#function:Z802|Z1002|foo|bar}}",
+		"request": {
+			"target": "Z802",
+			"arguments": {
+				"Z802K1": "Z1002",
+				"Z802K2": "foo",
+				"Z802K3": "bar"
+			},
+			"renderLang": "en",
+			"parseLang": "en"
+		},
+		"status": 400,
+		"error": "wikilambda-functioncall-error-bad-input-type",
+		"body": {
+			"target": "Z801",
+			"mode": "input",
+			"errorData": {
+				"title": "Argument type mismatch",
+				"message": "Argument type mismatch",
+				"zerror": {
+					"Z1K1": "Z5",
+					"Z5K1": "Z506",
+					"Z5K2": {
+						"Z1K1": {
+							"Z1K1": "Z7",
+							"Z7K1": "Z885",
+							"Z885K1": "Z506"
+						},
+						"K1": "Z40",
+						"K2": "Z60",
+						"K3": {
+							"Z1K1": "Z99",
+							"Z99K1": "Z1002"
+						}
+					}
+				}
+			},
+			"errorKey": "wikilambda-zerror",
+			"messageTranslations": {
+				"en": "Error of type Z506"
+			},
+			"httpCode": 400,
+			"httpReason": "Bad Request"
+		}
+	},
+	{
+		"description": "Returns Not wellformed error for {{#function:Z10000|foo|bar}}",
+		"request": {
+			"target": "Z10000",
+			"arguments": {
+				"Z10000K1": "foo",
+				"Z10000K2": "bar"
+			},
+			"renderLang": "en",
+			"parseLang": "en"
+		},
+		"status": 400,
+		"error": "wikilambda-functioncall-error-invalid-zobject",
+		"body": {
+			"target": "join",
+			"errorData": {
+				"zerror": {
+					"Z1K1": "Z5",
+					"Z5K1": "Z502",
+					"Z5K2": {
+						"Z1K1": {
+							"Z1K1": "Z7",
+							"Z7K1": "Z885",
+							"Z885K1": "Z502"
+						},
+						"K1": "nested error type",
+						"K2": "nested error object"
+					}
+				}
+			},
+			"errorKey": "wikilambda-zerror",
+			"messageTranslations": {
+				"en": "Error of type Z502"
+			},
+			"httpCode": 400,
+			"httpReason": "Bad Request"
+		}
+	},
+	{
+		"description": "Returns lang not found error {{#function:Z10000|foo|bar|renderlang=foo}}",
+		"request": {
+			"target": "Z10000",
+			"arguments": {
+				"Z10000K1": "foo",
+				"Z10000K2": "bar"
+			},
+			"renderLang": "foo",
+			"parseLang": "en"
+		},
+		"status": 400,
+		"error": "wikilambda-functioncall-error-bad-langs",
+		"body": {
+			"target": "join",
+			"errorData": {
+				"zerror": {
+					"Z1K1": "Z5",
+					"Z5K1": "Z541",
+					"Z5K2": {
+						"Z1K1": {
+							"Z1K1": "Z7",
+							"Z7K1": "Z885",
+							"Z885K1": "Z541"
+						},
+						"K1": "foo"
+					}
+				}
+			},
+			"errorKey": "wikilambda-zerror",
+			"messageTranslations": {
+				"en": "Error of type Z541"
+			},
+			"httpCode": 400,
+			"httpReason": "Bad Request"
+		}
+	},
+	{
+		"description": "Returns argument count mismatch for {{#function:Z802|Z41|foo|bar|foo}}",
+		"request": {
+			"target": "Z802",
+			"arguments": {
+				"Z802K1": "Z41",
+				"Z802K2": "bar",
+				"Z802K3": "bar",
+				"Z802K4": "bar"
+			},
+			"renderLang": "en",
+			"parseLang": "en"
+		},
+		"status": 400,
+		"error": "wikilambda-functioncall-error-bad-inputs",
+		"body": {
+			"target": "Z802",
+			"errorData": {
+				"title": "Number of arguments mismatch",
+				"message": "Number of arguments mismatch",
+				"zerror": {
+					"Z1K1": "Z5",
+					"Z5K1": "Z505",
+					"Z5K2": {
+						"Z1K1": {
+							"Z1K1": "Z7",
+							"Z7K1": "Z885",
+							"Z885K1": "Z505"
+						},
+						"K1": "3",
+						"K2": "4",
+						"K3": [ "Z1", "Z41", "foo", "bar", "foo" ]
+					}
+				}
+			},
+			"errorKey": "wikilambda-zerror",
+			"messageTranslations": {
+				"en": "Error of type Z505"
+			},
+			"httpCode": 400,
+			"httpReason": "Bad Request"
+		}
+	},
+	{
+		"description": "Returns not implemented for input type {{#function:Z14329|en}}",
+		"request": {
+			"target": "Z14329",
+			"arguments": {
+				"Z14329K1": "en"
+			},
+			"renderLang": "en",
+			"parseLang": "en"
+		},
+		"status": 400,
+		"error": "wikilambda-functioncall-error-nonstringinput",
+		"body": {
+			"target": "Z14329",
+			"mode": "input",
+			"errorData": {
+				"title": "no connected implementation yet",
+				"message": "no connected implementation yet",
+				"zerror": {
+					"Z1K1": "Z5",
+					"Z5K1": "Z503",
+					"Z5K2": {
+						"Z1K1": {
+							"Z1K1": "Z7",
+							"Z7K1": "Z885",
+							"Z885K1": "Z503"
+						},
+						"K1": {
+							"Z1K1": "Z6",
+							"Z6K1": "Z14329"
+						}
+					}
+				}
+			},
+			"errorKey": "wikilambda-zerror",
+			"messageTranslations": {
+				"en": "Error of type Z503"
+			},
+			"httpCode": 400,
+			"httpReason": "Bad Request"
+		}
+	},
+	{
+		"description": "Returns not implemented for output type {{#function:Z860|en}}",
+		"request": {
+			"target": "Z860",
+			"arguments": {
+				"Z860K1": "en"
+			},
+			"renderLang": "en",
+			"parseLang": "en"
+		},
+		"status": 400,
+		"error": "wikilambda-functioncall-error-nonstringoutput",
+		"body": {
+			"target": "Z860",
+			"mode": "output",
+			"errorData": {
+				"title": "no connected implementation yet",
+				"message": "no connected implementation yet",
+				"zerror": {
+					"Z1K1": "Z5",
+					"Z5K1": "Z503",
+					"Z5K2": {
+						"Z1K1": {
+							"Z1K1": "Z7",
+							"Z7K1": "Z885",
+							"Z885K1": "Z503"
+						},
+						"K1": {
+							"Z1K1": "Z6",
+							"Z6K1": "Z860"
+						}
+					}
+				}
+			},
+			"errorKey": "wikilambda-zerror",
+			"messageTranslations": {
+				"en": "Error of type Z503"
+			},
+			"httpCode": 400,
+			"httpReason": "Bad Request"
+		}
+	},
+	{
+		"description": "Returns API failure",
+		"request": {
+			"target": "Z10000",
+			"arguments": {
+				"Z10000K1": "en",
+				"Z10000K2": "en"
+			},
+			"renderLang": "en",
+			"parseLang": "en"
+		},
+		"status": 400,
+		"error": "wikilambda-functioncall-error-unclear",
+		"body": {
+			"message": "Error: exception of type Error: Call to a member function bar() on null",
+			"exception": {
+				"id": "9345c0c4b6172cf7b20a53dc"
+			},
+			"httpCode": 500,
+			"httpReason": "Internal Server Error"
+		}
+	},
+	{
+		"description": "Returns evaluation error",
+		"request": {
+			"target": "Z10000",
+			"arguments": {
+				"Z10000K1": "foo",
+				"Z10000K2": "bar"
+			},
+			"renderLang": "en",
+			"parseLang": "en"
+		},
+		"status": 400,
+		"error": "wikilambda-functioncall-error-evaluation",
+		"body": {
+			"data": {},
+			"errorData": {
+				"title": "Error in evaluation",
+				"message": "Error in evaluation",
+				"zerror": {
+					"Z1K1": "Z5",
+					"Z5K1": "Z507",
+					"Z5K2": {
+						"Z1K1": {
+							"Z1K1": "Z7",
+							"Z7K1": "Z885",
+							"Z885K1": "Z507"
+						},
+						"K1": {
+							"Z1K1": "Z99",
+							"Z99K1": "{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z10000\",\"Z10000K1\":\"foo\",\"Z10000K2\":\"bar\"}"
+						},
+						"K2": {
+							"Z1K1": "Z5",
+							"Z5K1": "Z503",
+							"Z5K2": {
+								"Z1K1": {
+									"Z1K1": "Z7",
+									"Z7K1": "Z885",
+									"Z885K1": "Z503"
+								},
+								"Z503K1": "Z10000"
+							}
+						}
+					}
+				}
+			},
+			"errorKey": "wikilambda-zerror",
+			"messageTranslations": {
+				"en": "Error of type Z507"
+			},
+			"httpCode": 400,
+			"httpReason": "Bad Request"
+		}
+	},
+	{
+		"description": "Returns bad output (not a string)",
+		"request": {
+			"target": "Z10000",
+			"arguments": {
+				"Z10000K1": "en",
+				"Z10000K2": "en"
+			},
+			"renderLang": "en",
+			"parseLang": "en"
+		},
+		"status": 400,
+		"error": "wikilambda-functioncall-error-bad-output",
+		"body": {
+			"errorData": {
+				"title": "Invalid evaluation result",
+				"message": "Invalid evaluation result",
+				"zerror": {
+					"Z1K1": "Z5",
+					"Z5K1": "Z560",
+					"Z5K2": {
+						"Z1K1": {
+							"Z1K1": "Z7",
+							"Z7K1": "Z885",
+							"Z885K1": "Z560"
+						},
+						"K1": {
+							"Z1K1": "Z99",
+							"Z99K1": ""
+						}
+					}
+				}
+			},
+			"errorKey": "wikilambda-zerror",
+			"messageTranslations": {
+				"en": "Error of type Z560"
+			},
+			"httpCode": 400,
+			"httpReason": "Bad Request"
+		}
+	},
+	{
+		"description": "Returns disabled system",
+		"request": {
+			"target": "Z10000",
+			"arguments": {
+				"Z10000K1": "en",
+				"Z10000K2": "en"
+			},
+			"renderLang": "en",
+			"parseLang": "en"
+		},
+		"status": 500,
+		"error": "wikilambda-functioncall-error-disabled",
+		"body": {
+			"target": "Z14329",
+			"mode": "input",
+			"errorData": {
+				"title": "no connected implementation yet",
+				"message": "no connected implementation yet",
+				"zerror": {
+					"Z1K1": "Z5",
+					"Z5K1": "Z503",
+					"Z5K2": {
+						"Z1K1": {
+							"Z1K1": "Z7",
+							"Z7K1": "Z885",
+							"Z885K1": "Z503"
+						},
+						"K1": {
+							"Z1K1": "Z6",
+							"Z6K1": "Z14329"
+						}
+					}
+				}
+			},
+			"errorKey": "wikilambda-zerror",
+			"messageTranslations": {
+				"en": "Error of type Z503"
+			},
+			"httpCode": 500,
+			"httpReason": "Internal Server Error"
+		}
+	},
+	{
+		"description": "Returns fallback Zerror",
+		"request": {
+			"target": "Z10000",
+			"arguments": {
+				"Z10000K1": "en",
+				"Z10000K2": "en"
+			},
+			"renderLang": "en",
+			"parseLang": "en"
+		},
+		"status": 405,
+		"error": "wikilambda-functioncall-error",
+		"body": {
+			"target": "Z10000",
+			"errorData": {
+				"title": "something else",
+				"message": "something else",
+				"zerror": {
+					"Z1K1": "Z5",
+					"Z5K1": "Z599",
+					"Z5K2": {
+						"Z1K1": {
+							"Z1K1": "Z7",
+							"Z7K1": "Z885",
+							"Z885K1": "Z599"
+						},
+						"K1": "another untracked error"
+					}
+				}
+			},
+			"errorKey": "wikilambda-zerror",
+			"messageTranslations": {
+				"en": "Error of type Z599"
+			},
+			"httpCode": 405,
+			"httpReason": "Method not allowed"
+		}
+	},
+	{
+		"description": "Returns fallback error",
+		"request": {
+			"target": "Z10000",
+			"arguments": {
+				"Z10000K1": "en",
+				"Z10000K2": "en"
+			},
+			"renderLang": "en",
+			"parseLang": "en"
+		},
+		"status": 405,
+		"error": "wikilambda-functioncall-error-unclear",
+		"body": {
+			"errorBodyStructure": "unknown",
+			"httpCode": 405,
+			"httpReason": "Method not allowed"
+		}
+	}
+]

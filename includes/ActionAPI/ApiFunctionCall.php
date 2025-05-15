@@ -143,7 +143,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 			}
 		}
 
-		$work = new PoolCounterWorkViaCallback( 'WikiLambdaFunctionCall', $userName, [
+		$work = new PoolCounterWorkViaCallback( WikiLambdaApiBase::FUNCTIONCALL_POOL_COUNTER_TYPE, $userName, [
 			'doWork' => function () use ( $bypassCache, $jsonQuery, $logger ) {
 				$logger->debug(
 					'ApiFunctionCall running request',
