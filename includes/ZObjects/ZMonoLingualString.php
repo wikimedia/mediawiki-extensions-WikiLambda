@@ -52,15 +52,29 @@ class ZMonoLingualString extends ZObject {
 	 * @inheritDoc
 	 */
 	public function isValid(): bool {
-		if ( !( $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ] instanceof ZReference ) ) {
+		// Language can be a Reference or a literal Natural Language
+		$lang = $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ];
+		if ( !( $lang instanceof ZReference ) && !( $lang instanceof ZNaturalLanguage ) ) {
 			return false;
 		}
+
+		// If ZReference, check it's a valid language Zid
+		$langs = ZLangRegistry::singleton();
+		if ( ( $lang instanceof ZReference ) && !$langs->isValidLanguageZid( $lang->getZValue() ) ) {
+			return false;
+		}
+
+		// If ZNaturalLanguage, check it's a valid Z60 object
+		if ( ( $lang instanceof ZNaturalLanguage ) && !$lang->isValid() ) {
+			return false;
+		}
+
+		// Value should be a ZString
 		if ( !( $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE ] instanceof ZString ) ) {
 			return false;
 		}
-		// We also check validity of the language Zid.
-		$langs = ZLangRegistry::singleton();
-		return $langs->isValidLanguageZid( $this->getLanguage() );
+
+		return true;
 	}
 
 	/**
@@ -75,10 +89,10 @@ class ZMonoLingualString extends ZObject {
 	/**
 	 * Get the Zid that represents the language for this ZMonoLingualString
 	 *
-	 * @return string Language Zid
+	 * @return string Language Zid or code
 	 */
 	public function getLanguage() {
-		return $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ]->getZValue() ?? '';
+		return $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ]->getZValue();
 	}
 
 	/**

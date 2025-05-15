@@ -58,20 +58,34 @@ class ZMonoLingualStringSet extends ZObject {
 	 * @inheritDoc
 	 */
 	public function isValid(): bool {
-		if ( !( $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE ] instanceof ZReference ) ) {
+		// Language can be a Reference or a literal Natural Language
+		$lang = $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE ];
+		if ( !( $lang instanceof ZReference ) && !( $lang instanceof ZNaturalLanguage ) ) {
 			return false;
 		}
+
+		// If ZReference, check it's a valid language Zid
+		$langs = ZLangRegistry::singleton();
+		if ( ( $lang instanceof ZReference ) && !$langs->isValidLanguageZid( $lang->getZValue() ) ) {
+			return false;
+		}
+
+		// If ZNaturalLanguage, check it's a valid Z60 object
+		if ( ( $lang instanceof ZNaturalLanguage ) && !$lang->isValid() ) {
+			return false;
+		}
+
 		if ( !is_array( $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_VALUE ] ) ) {
 			return false;
 		}
+
 		foreach ( $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_VALUE ] as $value ) {
 			if ( !( $value instanceof ZString ) ) {
 				return false;
 			}
 		}
-		// We also check validity of the language Zid.
-		$langs = ZLangRegistry::singleton();
-		return $langs->isValidLanguageZid( $this->getLanguage() );
+
+		return true;
 	}
 
 	/**

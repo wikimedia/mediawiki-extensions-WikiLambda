@@ -163,7 +163,7 @@ class ZMultiLingualString extends ZObject {
 	 * @param ZMonoLingualString $value The new value to set.
 	 */
 	public function setMonoLingualString( ZMonoLingualString $value ): void {
-		$language = $value->getLanguage() ?? '';
+		$language = $value->getLanguage();
 		if ( !is_string( $language ) ) {
 			$logger = LoggerFactory::getInstance( 'WikiLambda' );
 			$logger->warning(
@@ -177,25 +177,5 @@ class ZMultiLingualString extends ZObject {
 			return;
 		}
 		$this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $language ] = $value;
-	}
-
-	/**
-	 * @param Language $language The MediaWiki language class in which the string is to be set.
-	 * @param string $value The new string to set.
-	 */
-	public function setStringForLanguage( Language $language, string $value ): void {
-		$languageCode = $language->getCode();
-		$languageZid = ZLangRegistry::singleton()->getLanguageZidFromCode( $languageCode );
-		$monolingualString = new ZMonoLingualString( new ZReference( $languageZid ), new ZString( $value ) );
-		$this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $languageZid ] = $monolingualString;
-	}
-
-	/**
-	 * @param Language $language The MediaWiki language class in which the string is to be unset.
-	 */
-	public function removeValue( Language $language ): void {
-		$languageCode = $language->getCode();
-		$languageZid = ZLangRegistry::singleton()->getLanguageZidFromCode( $languageCode );
-		unset( $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $languageZid ] );
 	}
 }

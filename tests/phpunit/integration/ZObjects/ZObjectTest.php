@@ -99,7 +99,7 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertTrue( $testObject->isTypeReference() );
 		$this->assertFalse( $testObject->isTypeFunctionCall() );
-		$this->assertFalse( $testObject->isBuiltin() );
+		$this->assertTrue( $testObject->isBuiltin() );
 		$this->assertSame( 'Z60', $testObject->getZType() );
 		$this->assertInstanceOf( ZString::class, $testObject->getValueByKey( 'Z60K1' ) );
 		$this->assertNull( $testObject->getValueByKey( 'Z60K2' ) );

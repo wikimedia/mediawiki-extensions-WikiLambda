@@ -41,19 +41,23 @@ class ZResponseEnvelopeTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertFalse( $testObject->hasErrors() );
 		$this->assertSame( $testResponse->getZValue(), $testObject->getZValue()->getZValue() );
-		$this->assertSame( ZTypeRegistry::Z_VOID, $testObject->getZMetadata() );
+		$this->assertSame( ZTypeRegistry::Z_VOID, $testObject->getZMetadata()->getZValue() );
+
+		$serialized = '{ "Z1K1": "Z22", "Z22K1": "Hello!", "Z22K2": "Z24" }';
+		$this->assertEquals( json_decode( $serialized ), $testObject->getSerialized() );
 	}
 
 	public function testCreation_constructor_error() {
 		$testError = new ZError( new ZReference( 'Z507' ), new ZString( 'error message' ) );
 		$zMap = ZResponseEnvelope::wrapErrorInResponseMap( $testError );
+
 		$testObject = new ZResponseEnvelope( null, $zMap );
 
 		$this->assertSame( ZTypeRegistry::Z_RESPONSEENVELOPE, $testObject->getZType() );
 		$this->assertTrue( $testObject instanceof ZResponseEnvelope );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertTrue( $testObject->hasErrors() );
-		$this->assertSame( ZTypeRegistry::Z_VOID, $testObject->getZValue() );
+		$this->assertSame( ZTypeRegistry::Z_VOID, $testObject->getZValue()->getZValue() );
 
 		$metadata = $testObject->getZMetadata();
 		$metadataError = $metadata->getValueGivenKey( new ZString( 'errors' ) );
@@ -62,6 +66,14 @@ class ZResponseEnvelopeTest extends WikiLambdaIntegrationTestCase {
 		$error = $testObject->getErrors();
 		$this->assertTrue( $error instanceof ZError );
 		$this->assertSame( $error->getZErrorType(), $testError->getZErrorType() );
+
+		$serialized = '{ "Z1K1": "Z22", "Z22K1": "Z24", "Z22K2":{ "Z1K1":'
+			. ' { "Z1K1": "Z7", "Z7K1": "Z883", "Z883K1": "Z6", "Z883K2": "Z1" }, "K1": ['
+			. ' { "Z1K1": "Z7", "Z7K1": "Z882", "Z882K1": "Z6", "Z882K2": "Z1" }, {'
+			. ' "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z882", "Z882K1": "Z6", "Z882K2": "Z1" },'
+			. ' "K1": "errors", '
+			. ' "K2": { "Z1K1": "Z5", "Z5K1": "Z507", "Z5K2": "error message" } } ] } }';
+		$this->assertEquals( json_decode( $serialized ), $testObject->getSerialized() );
 	}
 
 	public function testCreation_factory_working() {
