@@ -60,7 +60,6 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 	 */
 	public function sourceToFragment( ParsoidExtensionAPI $extApi, Arguments $callArgs, bool $tagSyntax ) {
 		// Note: We can't hint this as `: PFragment|AsyncResult` as we're still in PHP 7.4-land
-
 		// If client mode isn't enabled on this wiki, there's nothing to do, just show an error message
 		if ( !$this->config->get( 'WikiLambdaEnableClientMode' ) ) {
 			// TODO: Make this a proper error box or inline error.
@@ -417,17 +416,25 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 	private function extractWikifunctionCallArguments( $extApi, $arguments ): array {
 		// Get the arguments from the wikitext with the HTML entities decoded and with whitespace trimmed.
 		// E.g.:
-		// * given an input of `{{#function:Z802 | Z41 | h&eacute;llõ |   1234}}`, $cleanedArgs will be:
-		//   [ 'Z802', 'héllõ', '1234' ]
-		// * given an input of `{{#function:Z802|Z41|hello|1234|renderlang=es}}`, $cleanedArgs will be:
-		//   [ 'Z802', 'hello', '1234', 'renderlang=es' ]
+		// * unnamed arguments:
+		//   given an input of `{{#function:Z802 | Z41 | h&eacute;llõ |   1234}}`
+		//   $cleanedArgs will be: [ 'Z802', 'héllõ', '1234' ]
+		// * named arguments (renderlang and parselang):
+		//   given an input of `{{#function:Z802|Z41|hello|1234|renderlang=es}}`
+		//   $cleanedArgs will be: [ 'Z802', 'hello', '1234', 'renderlang=es' ]
+		// * trim all arguments except when arg is all whitespaces:
+		//   given an input of ``{{#function:Z15175| hello |world | }}
+		//   $cleanedArgs will be [ 'Z15175', 'hello', 'world', ' ' ]
+
+		// First call to getOrderedArgs with trim=false to find the only-whitespace arguments:
+		$rawArgs = $arguments->getOrderedArgs( $extApi, false );
+		$isOnlyWhitespace = array_map( static function ( $v ) use ( $extApi ) {
+			return trim( $v->toRawText( $extApi ) ) !== '';
+		}, array_values( $rawArgs ) );
+
 		// TODO (T390344): Switch to getNamedArgs() once Parsoid supports that
-		$cleanedArgs = $arguments->getOrderedArgs(
-			$extApi,
-			// We want all our arguments now, expanded and trimmed
-			// TODO (T362251): Deal with $arguments in a way that doesn't fully trim, e.g. for whitespace-only inputs.
-			true
-		);
+		// All arguments are expanded and trimmed, except for those which are just a whitespace
+		$cleanedArgs = $arguments->getOrderedArgs( $extApi, $isOnlyWhitespace );
 
 		// Parse and render languages are set to Parsoid's page target language by default.
 		$parseLang = $extApi->getPageConfig()->getPageLanguageBcp47()->toBcp47Code();
