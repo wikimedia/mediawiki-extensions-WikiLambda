@@ -48,11 +48,18 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 		return $mock;
 	}
 
-	public function testWikifunctionsFragment() {
+	/**
+	 * @dataProvider provideWikifunctionsFragments
+	 */
+	public function testWikifunctionsFragments( $inputArguments, $expectedRequest, $cachedFunction = null ) {
 		// Build mock dependencies for Fragment Handler constructor:
 		$mainConfig = $this->getServiceContainer()->getMainConfig();
-		$mockObjectCache = $this->createMock( BagOStuff::class );
 		$mockHttpRequestFactory = $this->createMock( HttpRequestFactory::class );
+		$mockObjectCache = $this->createMock( BagOStuff::class );
+		if ( $cachedFunction !== null ) {
+			$mockObjectCache->method( 'makeKey' )->willReturn( 'mock-cache-key' );
+			$mockObjectCache->method( 'get' )->with( 'mock-cache-key' )->willReturn( json_encode( $cachedFunction ) );
+		}
 
 		$pushedJobs = [];
 		$mockJobQueueGroup = $this->createMock( JobQueueGroup::class );
@@ -73,7 +80,7 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 
 		// Build mock arguments for sourceToFragment:
 		$extApi = new ParsoidExtensionAPI( new MockEnv( [] ), [] );
-		$mockArguments = $this->getMockArguments( [ 'Z10000', 'foo', 'bar' ] );
+		$mockArguments = $this->getMockArguments( $inputArguments );
 
 		// Call sourceToFragment:
 		$fragment = $fragmentHandler->sourceToFragment(
@@ -94,7 +101,15 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 
 		// Assert client request job
 		$requestJob = $pushedJobs[1];
-		$expectedRequest = [
+		$this->assertInstanceOf( WikifunctionsClientRequestJob::class, $requestJob );
+		$this->assertSame( $expectedRequest, $requestJob->getParams()['request'] );
+	}
+
+	public static function provideWikifunctionsFragments() {
+		// Simple call to function Join with unnamed arguments:
+		// {{#function:Z10000|foo|bar}}
+		$simpleJoinArgs = [ 'Z10000', 'foo', 'bar' ];
+		$simpleJoinRequest = [
 			'target' => 'Z10000',
 			'arguments' => [
 				'Z10000K1' => 'foo',
@@ -103,15 +118,74 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			'parseLang' => 'en',
 			'renderLang' => 'en',
 		];
-		$this->assertInstanceOf( WikifunctionsClientRequestJob::class, $requestJob );
-		$this->assertSame( $expectedRequest, $requestJob->getParams()['request'] );
-	}
+		yield 'normal function call with string arguments' => [ $simpleJoinArgs, $simpleJoinRequest ];
 
-	public function testWikifunctionsFragment_defaultDate() {
-		// Build mock dependencies for Fragment Handler constructor:
-		$mainConfig = $this->getServiceContainer()->getMainConfig();
+		// Call to function Join with unnamed and named arguments:
+		// {{#function:Z10000|foo|bar|parserlang=ast|renderlang=es|foo=bar|1=hello|2=world}}
+		$namedArgs = [ 'Z10000', 'foo', 'bar', 'parselang=ast', 'renderlang=es', 'foo=bar', '1=hello', '2=world' ];
+		$namedArgsRequest = [
+			'target' => 'Z10000',
+			'arguments' => [
+				'Z10000K1' => 'hello',
+				'Z10000K2' => 'world',
+			],
+			'parseLang' => 'ast',
+			'renderLang' => 'es',
+		];
+		yield 'function call with named arguments' => [ $namedArgs, $namedArgsRequest ];
 
-		$functionObject = [
+		// Call to function Join with empty arguments without default values:
+		// {{#function:Z10000||}}
+		$emptyArgs = [ 'Z10000', '', '' ];
+		$emptyArgsRequest = [
+			'target' => 'Z10000',
+			'arguments' => [
+				'Z10000K1' => '',
+				'Z10000K2' => '',
+			],
+			'parseLang' => 'en',
+			'renderLang' => 'en',
+		];
+		// Empty args: will request function Zid from cache:
+		$emptyArgsFunction = [
+			'Z2K2' => [
+				'Z1K1' => 'Z8',
+				'Z8K1' => [
+					'Z17',
+					[
+						'Z1K1' => 'Z17',
+						'Z17K1' => 'Z40',
+						'Z17K2' => 'Z10000K1'
+					],
+					[
+						'Z1K1' => 'Z17',
+						'Z17K1' => 'Z6',
+						'Z17K2' => 'Z10000K2'
+					]
+				]
+			]
+		];
+		yield 'function call with empty arguments' => [
+			$emptyArgs,
+			$emptyArgsRequest,
+			$emptyArgsFunction
+		];
+
+		// Call to function Join with empty arguments that have default values:
+		// {{#function:Z10000|15-01-2001|}}
+		$defaultValuesArgs = [ 'Z10000', '15-01-2001', '' ];
+		$today  = new \DateTime( 'now', new \DateTimeZone( 'UTC' ) );
+		$defaultValuesRequest = [
+			'target' => 'Z10000',
+			'arguments' => [
+				'Z10000K1' => '15-01-2001',
+				'Z10000K2' => $today->format( 'd-m-Y' )
+			],
+			'parseLang' => 'en',
+			'renderLang' => 'en',
+		];
+		// Empty args: will request function Zid from cache:
+		$defaultValuesFunction = [
 			'Z2K2' => [
 				'Z1K1' => 'Z8',
 				'Z8K1' => [
@@ -119,84 +193,20 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 					[
 						'Z1K1' => 'Z17',
 						'Z17K1' => 'Z20420',
-						'Z17K2' => 'Z20000K1'
+						'Z17K2' => 'Z10000K1'
 					],
 					[
 						'Z1K1' => 'Z17',
 						'Z17K1' => 'Z20420',
-						'Z17K2' => 'Z20000K2'
-					],
-					[
-						'Z1K1' => 'Z17',
-						'Z17K1' => 'Z6',
-						'Z17K2' => 'Z20000K3'
+						'Z17K2' => 'Z10000K2'
 					]
 				]
 			]
 		];
-
-		// Mock cache request
-		$mockObjectCache = $this->createMock( BagOStuff::class );
-		$mockObjectCache->method( 'makeKey' )->willReturn( 'mock-cache-key' );
-		$mockObjectCache->method( 'get' )->with( 'mock-cache-key' )->willReturn( json_encode( $functionObject ) );
-
-		$mockHttpRequestFactory = $this->createMock( HttpRequestFactory::class );
-		$pushedJobs = [];
-		$mockJobQueueGroup = $this->createMock( JobQueueGroup::class );
-		$mockJobQueueGroup
-			->method( 'lazyPush' )
-			->willReturnCallback( static function ( $job ) use ( &$pushedJobs ) {
-				$pushedJobs[] = $job;
-				return true;
-			} );
-
-		// Build Fragment Handler:
-		$fragmentHandler = new WikifunctionsPFragmentHandler(
-			$mainConfig,
-			$mockJobQueueGroup,
-			$mockHttpRequestFactory,
-			$mockObjectCache
-		);
-
-		// Build mock arguments for sourceToFragment:
-		$extApi = new ParsoidExtensionAPI( new MockEnv( [] ), [] );
-		$mockArguments = $this->getMockArguments( [ 'Z20000', '15-01-2001', '', '' ] );
-
-		// Call sourceToFragment:
-		$fragment = $fragmentHandler->sourceToFragment(
-			$extApi,
-			$mockArguments,
-			false
-		);
-
-		$this->assertInstanceOf( WikifunctionsPendingFragment::class, $fragment );
-
-		// Assert two jobs were pushed
-		$this->assertCount( 2, $pushedJobs );
-
-		// Assert client usage update job
-		$updateJob = $pushedJobs[0];
-		$this->assertInstanceOf( WikifunctionsClientUsageUpdateJob::class, $updateJob );
-		$this->assertSame( 'Z20000', $updateJob->getParams()['targetFunction'] );
-
-		// Assert client request job
-		$requestJob = $pushedJobs[1];
-		$today  = new \DateTime( 'now', new \DateTimeZone( 'UTC' ) );
-
-		// Expect:
-		// Z20000K2 of type Z20420: set to today's date
-		// Z20000K3 of type Z0: no default value
-		$expectedRequest = [
-			'target' => 'Z20000',
-			'arguments' => [
-				'Z20000K1' => '15-01-2001',
-				'Z20000K2' => $today->format( 'd-m-Y' ),
-				'Z20000K3' => ''
-			],
-			'parseLang' => 'en',
-			'renderLang' => 'en',
+		yield 'function call with empty arguments with default values' => [
+			$defaultValuesArgs,
+			$defaultValuesRequest,
+			$defaultValuesFunction
 		];
-		$this->assertInstanceOf( WikifunctionsClientRequestJob::class, $requestJob );
-		$this->assertSame( $expectedRequest, $requestJob->getParams()['request'] );
 	}
 }

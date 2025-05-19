@@ -420,7 +420,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		// * given an input of `{{#function:Z802 | Z41 | h&eacute;llõ |   1234}}`, $cleanedArgs will be:
 		//   [ 'Z802', 'héllõ', '1234' ]
 		// * given an input of `{{#function:Z802|Z41|hello|1234|renderlang=es}}`, $cleanedArgs will be:
-		//   [ 'Z802', 'hello', '1234', 'renderlang' => 'es' ]
+		//   [ 'Z802', 'hello', '1234', 'renderlang=es' ]
 		// TODO (T390344): Switch to getNamedArgs() once Parsoid supports that
 		$cleanedArgs = $arguments->getOrderedArgs(
 			$extApi,
@@ -454,17 +454,36 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		$unkeyedArguments = array_slice( $cleanedArgs, 1 );
 		$arguments = [];
 		foreach ( $unkeyedArguments as $key => $value ) {
-			if ( !is_int( $key ) ) {
-				// Ignore any other named arguments:
-				// E.g. {{#function:Z10000|Hello|World|bad=argument|foo=bar}}
-				continue;
-			}
 			if ( !( $value instanceof PFragment ) ) {
 				// Ignore any non-PFragment arguments that have somehow snuck in (probably nulls?)
 				continue;
 			}
-			$arguments[$targetFunction . 'K' . ( $key + 1 )] =
-				$this->convertPFragmentToZFunctionCallParameter( $value, $extApi );
+
+			$valueText = $this->convertPFragmentToZFunctionCallParameter( $value, $extApi );
+			$argKey = $targetFunction . 'K' . ( $key + 1 );
+
+			// named argument (e.g. 1=hello, foo=bar, renderlang=en)
+			if ( strpos( $valueText, '=' ) !== false ) {
+				$argKeyParts = explode( '=', $valueText, 2 );
+				// key is not numeric:
+				// * renderlang=es (save as $renderLang)
+				// * parselang=es (save as $parseLang)
+				// * any=other (ignore)
+				if ( !is_numeric( $argKeyParts[0] ) ) {
+					if ( $argKeyParts[0] === 'parselang' ) {
+						$parseLang = $argKeyParts[1];
+					} elseif ( $argKeyParts[0] === 'renderlang' ) {
+						$renderLang = $argKeyParts[1];
+					}
+					continue;
+				}
+				// key is numeric:
+				// * trust the key, keep the value
+				$argKey = $targetFunction . 'K' . $argKeyParts[0];
+				$valueText = $argKeyParts[1];
+			}
+
+			$arguments[$argKey] = $valueText;
 		}
 
 		return [
