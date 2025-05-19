@@ -205,6 +205,9 @@ class ZTypeRegistry extends ZObjectRegistry {
 		self::Z_WIKIDATA_FETCH_LEXEME
 	];
 
+	// Wikidata enum
+	public const Z_WIKIDATA_ENUM = 'Z6884';
+
 	// Keep in sync with function-schemata's `typesBuiltIntoWikiLambda`
 	private const BUILT_IN_TYPES = [
 		self::Z_OBJECT => 'ZObject',
@@ -475,14 +478,23 @@ class ZTypeRegistry extends ZObjectRegistry {
 		// to avoid going into an infinite loop:
 		$zObject = $content->getObject();
 		$innerType = $zObject->{ self::Z_PERSISTENTOBJECT_VALUE }->{ self::Z_OBJECT_TYPE };
-		if ( $innerType !== self::Z_TYPE ) {
-			return false;
+
+		// check if it's Z_TYPE
+		if ( $innerType === self::Z_TYPE ) {
+			$this->register( $key, $key );
+			return true;
 		}
 
-		// We just need to store the index in the registry for newly fetched objects
-		$this->register( $key, $key );
+		// check if it's a Z_FUNCTIONCALL to a Wikidata Enum generic type
+		if ( $innerType === self::Z_FUNCTIONCALL ) {
+			$functionZid = $zObject->{ self::Z_PERSISTENTOBJECT_VALUE }->{ self::Z_FUNCTIONCALL_FUNCTION };
+			if ( $functionZid === self::Z_WIKIDATA_ENUM ) {
+				$this->register( $key, $key );
+				return true;
+			}
+		}
 
-		return true;
+		return false;
 	}
 
 	/**
