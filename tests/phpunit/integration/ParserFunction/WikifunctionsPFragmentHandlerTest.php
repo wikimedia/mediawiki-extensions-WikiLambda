@@ -39,12 +39,18 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 	 * @param array $values
 	 */
 	protected function getMockArguments( $values ): TemplateHandlerArguments {
-		$fragments = [];
-		foreach ( $values as $value ) {
-			$fragments[] = WikitextPFragment::newFromWt( $value, null );
-		}
 		$mock = $this->createMock( TemplateHandlerArguments::class );
-		$mock->method( 'getOrderedArgs' )->willReturn( $fragments );
+		$mock
+			->method( 'getOrderedArgs' )
+			->willReturnCallback( static function ( $extApi, $expandAndTrim = true ) use ( $values ) {
+				$fragments = [];
+				// Mock getOrderedArgs by conditionally trimming the argument depending on $expandAndTrim flag
+				foreach ( $values as $i => $value ) {
+					$shouldTrim = is_array( $expandAndTrim ) ? ( $expandAndTrim[$i] ?? true ) : $expandAndTrim;
+					$fragments[] = WikitextPFragment::newFromWt( ( $shouldTrim ? trim( $value ) : $value ), null );
+				}
+				return $fragments;
+			} );
 		return $mock;
 	}
 
@@ -133,6 +139,22 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			'renderLang' => 'es',
 		];
 		yield 'function call with named arguments' => [ $namedArgs, $namedArgsRequest ];
+
+		// Call to function Join with untrimmed and trimmed arguments:
+		// {{#function:Z10000|foo|bar| |   }}
+		$trimmedArgs = [ 'Z10000', ' foo ', '  bar', ' ', '   ' ];
+		$trimmedArgsRequest = [
+			'target' => 'Z10000',
+			'arguments' => [
+				'Z10000K1' => 'foo',
+				'Z10000K2' => 'bar',
+				'Z10000K3' => ' ',
+				'Z10000K4' => '   ',
+			],
+			'parseLang' => 'en',
+			'renderLang' => 'en',
+		];
+		yield 'function call with whitespaces' => [ $trimmedArgs, $trimmedArgsRequest ];
 
 		// Call to function Join with empty arguments without default values:
 		// {{#function:Z10000||}}
