@@ -84,7 +84,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 			'WikiLambda client call made for {function} on {page}',
 			[
 				'function' => $expansion['target'],
-				'page' => $extApi->getPageConfig()->getLinkTarget()->getText()
+				'page' => $extApi->getPageConfig()->getLinkTarget()->__toString()
 			]
 		);
 
@@ -197,7 +197,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 						[
 							'error' => $errorMessageKey,
 							'targetFunction' => $expansion['target'],
-							'page' => $extApi->getPageConfig()->getLinkTarget()->getText()
+							'page' => $extApi->getPageConfig()->getLinkTarget()->__toString()
 						]
 					);
 
