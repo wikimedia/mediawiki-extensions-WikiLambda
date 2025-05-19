@@ -6,5 +6,7 @@
 	},
 	"apihelp-query+wikilambdasearch_labels-param-search": "De Sichbegrëff",
 	"apihelp-query+wikilambdasearch_labels-param-language": "De MediaWiki-Sproochcode, an deem gesicht soll ginn",
+	"apihelp-wikilambda_edit-param-zid": "ZID vum ZObjet fir z'änneren. Falls eidel (''null''), gëtt den ZObjet nei ugeluecht",
+	"apihelp-wikilambda_edit-param-zobject": "JSON-Representatioun vum ZObjet fir ze späicheren",
 	"apihelp-wikilambda_perform_test-param-nocache": "Ob de Cache benotz gi soll oder net"
 }
