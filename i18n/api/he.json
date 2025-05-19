@@ -77,6 +77,8 @@
 	"apihelp-wikilambda_edit-param-summary": "תקציר העריכה",
 	"apihelp-wikilambda_edit-param-zid": "מזהה ה־Z של עצם ה־Z שרוצים לערוך. אם זה null, עצם ה־Z ייווצר",
 	"apihelp-wikilambda_edit-param-zobject": "ייצוג JSON של עצם ה־Z שרוצים לשמור",
+	"apierror-wikilambda_function_call-client-error": "לא היה אפשר להשלים את הבקשה עקב שגיאת לקוח",
+	"apierror-wikilambda_function_call-server-error": "לא היה אפשר להשלים את הבקשה עקב שגיאת שרת",
 	"apierror-wikilambda_function_call-not-connected": "לא היה אפשר למצוא את השרת \"$1\", כנראה כי המתזמר אינו רץ. נא לבדוק את ה־README ולהוסיף את המתזמר להגדרות ה־docker-compose שלך.",
 	"apierror-wikilambda_function_call-concurrency-limit": "מתבצעות עכשיו יותר מדי קריאות לפונקציות.",
 	"apierror-wikilambda_function_call-response-malformed": "התשובה לקריאת לפונקציה הייתה מקולקלת: \"$1\".",
