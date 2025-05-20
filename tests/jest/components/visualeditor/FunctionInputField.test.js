@@ -20,7 +20,7 @@ describe( 'FunctionInputField', () => {
 			props: {
 				labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
 				inputType: 'Z456',
-				isEditing: true
+				showValidation: true
 			}
 		} );
 		expect( wrapper.find( '.ext-wikilambda-app-function-input-field' ).exists() ).toBe( true );
@@ -31,7 +31,7 @@ describe( 'FunctionInputField', () => {
 			props: {
 				labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
 				inputType: 'Z456',
-				isEditing: true
+				showValidation: true
 			},
 			global: { stubs: { CdxField: false, CdxLabel: false } }
 		} );
@@ -43,7 +43,7 @@ describe( 'FunctionInputField', () => {
 			props: {
 				labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
 				inputType: 'Z456',
-				isEditing: true
+				showValidation: true
 			},
 			global: { stubs: { CdxField: false, CdxLabel: false } }
 		} );
@@ -56,7 +56,7 @@ describe( 'FunctionInputField', () => {
 			props: {
 				labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
 				inputType: 'Z456',
-				isEditing: true
+				showValidation: true
 			},
 			global: { stubs: { CdxField: false, CdxLabel: false } }
 		} );
@@ -69,7 +69,7 @@ describe( 'FunctionInputField', () => {
 			props: {
 				labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
 				inputType: 'Z456',
-				isEditing: true
+				showValidation: true
 			},
 			global: { stubs: { CdxField: false, CdxLabel: false } }
 		} );
@@ -77,16 +77,28 @@ describe( 'FunctionInputField', () => {
 		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: true, errorMessage: undefined } ] );
 	} );
 
-	it( 'computes status as "error" when errorMessage is present', () => {
+	it( 'computes status as "error" when errorMessage is present and showValidation is true', () => {
 		const wrapper = shallowMount( FunctionInputField, {
 			props: {
 				labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
 				inputType: 'Z456',
-				isEditing: true,
+				showValidation: true,
 				errorMessage: 'An error occurred'
 			}
 		} );
 		expect( wrapper.vm.status ).toBe( 'error' );
+	} );
+
+	it( 'computes status as "default" when errorMessage is present but showValidation is false', () => {
+		const wrapper = shallowMount( FunctionInputField, {
+			props: {
+				labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
+				inputType: 'Z456',
+				showValidation: false,
+				errorMessage: 'An error occurred'
+			}
+		} );
+		expect( wrapper.vm.status ).toBe( 'default' );
 	} );
 
 	it( 'determines component type as "wl-function-input-enum" for enum types', () => {
@@ -95,7 +107,7 @@ describe( 'FunctionInputField', () => {
 			props: {
 				labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
 				inputType: 'Z456',
-				isEditing: true
+				showValidation: true
 			}
 		} );
 		expect( wrapper.vm.componentType ).toBe( 'wl-function-input-enum' );
@@ -107,7 +119,7 @@ describe( 'FunctionInputField', () => {
 			props: {
 				labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
 				inputType: 'Z456',
-				isEditing: true
+				showValidation: true
 			}
 		} );
 		expect( wrapper.vm.componentType ).toBe( 'wl-function-input-string' );

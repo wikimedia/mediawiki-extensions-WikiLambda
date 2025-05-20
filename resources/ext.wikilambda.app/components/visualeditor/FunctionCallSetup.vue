@@ -69,15 +69,18 @@ module.exports = exports = defineComponent( {
 		}
 	} ),
 	methods: Object.assign( {}, mapActions( useMainStore, [
-		'setVEFunctionId'
+		'setVEFunctionId',
+		'setVEFunctionParams'
 	] ), {
 		/**
 		 * Set the wikitext function value with the new selected Function ID
+		 * Set function params to blank state
 		 *
 		 * @param {string} value
 		 */
 		selectFunction: function ( value ) {
 			this.setVEFunctionId( value );
+			this.setVEFunctionParams();
 		},
 		/**
 		 * When the function input values are updated,

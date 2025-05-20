@@ -18,6 +18,9 @@ describe( 'Visual Editor Pinia store', () => {
 		store = useMainStore();
 		store.veFunctionId = null;
 		store.veFunctionParams = [];
+		store.veFunctionParamsValid = false;
+		store.veFunctionParamsDirty = false;
+		store.newParameterSetup = false;
 		store.suggestedFunctions = [];
 	} );
 
@@ -37,41 +40,58 @@ describe( 'Visual Editor Pinia store', () => {
 			expect( store.getSuggestedFunctions ).toEqual( [ 'Z802', 'Z803' ] );
 		} );
 
-		it( 'validateVEFunctionId returns false if function ID is invalid', () => {
-			store.veFunctionId = 'InvalidID';
-			expect( store.validateVEFunctionId ).toBe( false );
+		describe( 'validateVEFunctionId', () => {
+			it( 'validateVEFunctionId returns false if function ID is invalid', () => {
+				store.veFunctionId = 'InvalidID';
+				expect( store.validateVEFunctionId ).toBe( false );
+			} );
+
+			it( 'validateVEFunctionId returns true if function ID is valid and is a function', () => {
+				store.veFunctionId = 'Z801';
+
+				Object.defineProperty( store, 'getFetchedObject', {
+					value: () => ( {
+						success: true,
+						data: {
+							[ Constants.Z_PERSISTENTOBJECT_VALUE ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION
+							}
+						}
+					} )
+				} );
+				expect( store.validateVEFunctionId ).toBe( true );
+			} );
+
+			it( 'validateVEFunctionId returns false if fetched object is not a function', () => {
+				store.veFunctionId = 'Z801';
+
+				Object.defineProperty( store, 'getFetchedObject', {
+					value: () => ( {
+						success: true,
+						data: {
+							[ Constants.Z_PERSISTENTOBJECT_VALUE ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_BOOLEAN
+							}
+						}
+					} )
+				} );
+				expect( store.validateVEFunctionId ).toBe( false );
+			} );
 		} );
 
-		it( 'validateVEFunctionId returns true if function ID is valid and is a function', () => {
-			store.veFunctionId = 'Z801';
-
-			Object.defineProperty( store, 'getFetchedObject', {
-				value: () => ( {
-					success: true,
-					data: {
-						[ Constants.Z_PERSISTENTOBJECT_VALUE ]: {
-							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION
-						}
-					}
-				} )
-			} );
-			expect( store.validateVEFunctionId ).toBe( true );
+		it( 'validateVEFunctionParams returns the function params valid flag', () => {
+			store.veFunctionParamsValid = true;
+			expect( store.validateVEFunctionParams ).toBe( true );
 		} );
 
-		it( 'validateVEFunctionId returns false if fetched object is not a function', () => {
-			store.veFunctionId = 'Z801';
+		it( 'isNewParameterSetup returns the new function parameter setup flag', () => {
+			store.newParameterSetup = true;
+			expect( store.isNewParameterSetup ).toBe( true );
+		} );
 
-			Object.defineProperty( store, 'getFetchedObject', {
-				value: () => ( {
-					success: true,
-					data: {
-						[ Constants.Z_PERSISTENTOBJECT_VALUE ]: {
-							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_BOOLEAN
-						}
-					}
-				} )
-			} );
-			expect( store.validateVEFunctionId ).toBe( false );
+		it( 'isParameterSetupDirty returns the function parameter setup dirty flag', () => {
+			store.veFunctionParamsDirty = true;
+			expect( store.isParameterSetupDirty ).toBe( true );
 		} );
 	} );
 
@@ -81,15 +101,50 @@ describe( 'Visual Editor Pinia store', () => {
 			expect( store.veFunctionId ).toBe( 'Z123' );
 		} );
 
-		it( 'setVEFunctionParams sets the function parameters', () => {
-			store.setVEFunctionParams( [ 'param1', 'param2' ] );
-			expect( store.veFunctionParams ).toEqual( [ 'param1', 'param2' ] );
+		describe( 'setVEFunctionParams', () => {
+			it( 'sets to initial function parameters and initializes flags', () => {
+				store.veFunctionParamsDirty = true;
+				store.veFunctionParamsValid = true;
+
+				store.setVEFunctionParams( [ 'param1', 'param2' ] );
+
+				expect( store.veFunctionParams ).toEqual( [ 'param1', 'param2' ] );
+				expect( store.veFunctionParamsDirty ).toBe( false );
+				expect( store.veFunctionParamsValid ).toBe( false );
+				expect( store.newParameterSetup ).toBe( false );
+			} );
+
+			it( 'sets to blank function parameters and initializes flags', () => {
+				store.veFunctionParamsDirty = true;
+				store.veFunctionParamsValid = true;
+
+				store.setVEFunctionParams();
+
+				expect( store.veFunctionParams ).toEqual( [] );
+				expect( store.veFunctionParamsDirty ).toBe( false );
+				expect( store.veFunctionParamsValid ).toBe( false );
+				expect( store.newParameterSetup ).toBe( true );
+			} );
 		} );
 
 		it( 'setVEFunctionParam sets a specific function parameter', () => {
 			store.veFunctionParams = [ 'param1', 'param2' ];
 			store.setVEFunctionParam( 1, 'newParam' );
 			expect( store.veFunctionParams ).toEqual( [ 'param1', 'newParam' ] );
+		} );
+
+		it( 'setVEFunctionParamsValid sets the function parameters validity flag', () => {
+			store.setVEFunctionParamsValid( true );
+			expect( store.veFunctionParamsValid ).toBe( true );
+
+			store.setVEFunctionParamsValid( false );
+			expect( store.veFunctionParamsValid ).toBe( false );
+		} );
+
+		it( 'setVEFunctionParamsDirty sets the function parameters to dirty', () => {
+			store.veFunctionParamsDirty = false;
+			store.setVEFunctionParamsDirty();
+			expect( store.veFunctionParamsDirty ).toBe( true );
 		} );
 
 		it( 'setSuggestedFunctions sets the suggested functions and fetches them', () => {

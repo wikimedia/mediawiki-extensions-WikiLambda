@@ -11,10 +11,11 @@ const { isValidZidFormat } = require( '../../utils/typeUtils.js' );
 
 module.exports = {
 	state: {
-		veEditing: false,
 		veFunctionId: null,
 		veFunctionParams: [],
 		veFunctionParamsValid: false,
+		veFunctionParamsDirty: false,
+		newParameterSetup: true,
 		suggestedFunctions: []
 	},
 
@@ -37,16 +38,6 @@ module.exports = {
 		 */
 		getVEFunctionParams: function ( state ) {
 			return state.veFunctionParams;
-		},
-
-		/**
-		 * Returns whether the Visual Editor is currently editing.
-		 *
-		 * @param {Object} state
-		 * @return {boolean}
-		 */
-		getVEEditing: function ( state ) {
-			return state.veEditing;
 		},
 
 		/**
@@ -97,6 +88,31 @@ module.exports = {
 		 */
 		validateVEFunctionParams: function ( state ) {
 			return state.veFunctionParamsValid;
+		},
+
+		/**
+		 * Returns whether the function parameters setup was newly
+		 * initialized with blank values. This happens whenever a new
+		 * function zid is selected due to:
+		 * * this is a new function call insertion, or
+		 * * the function call being edited had a non-valid function id
+		 *
+		 * @param {Object} state
+		 * @return {boolean}
+		 */
+		isNewParameterSetup: function ( state ) {
+			return state.newParameterSetup;
+		},
+
+		/**
+		 * Returns whether the function parameters setup has
+		 * had any changes since initialization.
+		 *
+		 * @param {Object} state
+		 * @return {boolean}
+		 */
+		isParameterSetupDirty: function ( state ) {
+			return state.veFunctionParamsDirty;
 		}
 	},
 	actions: {
@@ -110,12 +126,17 @@ module.exports = {
 		},
 
 		/**
-		 * Sets the Visual Editor function parameters in the state.
+		 * Sets the Visual Editor function parameters in the state,
+		 * and sets all its related flags to their initial states.
 		 *
 		 * @param {Array} functionParams - The function parameters to set.
 		 */
 		setVEFunctionParams: function ( functionParams = [] ) {
 			this.veFunctionParams = functionParams;
+			// Initialize param setup flags:
+			this.veFunctionParamsValid = false;
+			this.veFunctionParamsDirty = false;
+			this.newParameterSetup = ( functionParams.length === 0 );
 		},
 
 		/**
@@ -129,21 +150,20 @@ module.exports = {
 		},
 
 		/**
-		 * Sets the editing state of the Visual Editor.
-		 *
-		 * @param {boolean} isEditing - True if editing, otherwise false.
-		 */
-		setVEEditing: function ( isEditing ) {
-			this.veEditing = isEditing;
-		},
-
-		/**
 		 * Sets the validity of the Visual Editor function parameters.
 		 *
 		 * @param {boolean} isValid - True if valid, otherwise false.
 		 */
 		setVEFunctionParamsValid: function ( isValid ) {
 			this.veFunctionParamsValid = isValid;
+		},
+
+		/**
+		 * Sets the flag that reflects whether the function parameter
+		 * setup has changed from its initial state.
+		 */
+		setVEFunctionParamsDirty: function () {
+			this.veFunctionParamsDirty = true;
 		},
 
 		/**
@@ -164,10 +184,8 @@ module.exports = {
 		 * @param {string} payload.functionId - The function ID to initialize with.
 		 * @param {Array} payload.functionParams - The function parameters to initialize with.
 		 * @param {Array} payload.suggestedFunctions - The suggested functions to initialize with.
-		 * @param {boolean} payload.isEditing - True if editing, otherwise false.
 		 */
 		initializeVEFunctionCallEditor: function ( payload = {} ) {
-			this.setVEEditing( payload.isEditing );
 			this.setVEFunctionId( payload.functionId );
 			this.setVEFunctionParams( payload.functionParams );
 			this.setSuggestedFunctions( payload.suggestedFunctions );

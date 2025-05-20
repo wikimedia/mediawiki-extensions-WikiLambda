@@ -127,7 +127,8 @@ const Constants = {
 	Z_TYPED_MAP: 'Z883',
 	Z_TYPED_MAP_TYPE1: 'Z883K1',
 	Z_TYPED_MAP_TYPE2: 'Z883K2',
-	Z_FUNCTION_CALL_TO_TYPE: 'function_call_to_type'
+	Z_FUNCTION_CALL_TO_TYPE: 'function_call_to_type',
+	Z_GREGORIAN_CALENDAR_DATE: 'Z20420'
 };
 
 // Wikidata:
@@ -456,6 +457,16 @@ Constants.Z_TYPED_OBJECTS_LIST = [
 	Constants.Z_TYPED_LIST,
 	Constants.Z_TYPED_PAIR,
 	Constants.Z_TYPED_MAP
+];
+
+// This constant should list all the Types for which empty values
+// are allowed by Visual Editor wikifunction plugin. This can be because:
+// * an empty string is a valid value for the type (e.g. Z6), or
+// * an empty string will be replaced with a default value, which should be
+//   declared and implemented in WikifunctionCallDefaultValue.php class.
+Constants.VE_ALLOW_EMPTY_FIELD = [
+	Constants.Z_STRING,
+	Constants.Z_GREGORIAN_CALENDAR_DATE
 ];
 
 module.exports = Constants;

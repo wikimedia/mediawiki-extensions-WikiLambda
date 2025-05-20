@@ -38,14 +38,14 @@ module.exports = exports = defineComponent( {
 	},
 	mixins: [ typeMixin ],
 	props: {
-		inputType: {
-			type: String,
-			required: true
-		},
 		value: {
 			type: String,
 			required: false,
 			default: ''
+		},
+		inputType: {
+			type: String,
+			required: true
 		}
 	},
 	emits: [ 'update', 'input', 'validate', 'loading-start', 'loading-end' ],
@@ -124,6 +124,14 @@ module.exports = exports = defineComponent( {
 		 */
 		getErrorMessage: function () {
 			return this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-error-parser', this.inputType ).parse();
+		},
+		/**
+		 * Whether this input type allows for empty fields
+		 *
+		 * @return {boolean}
+		 */
+		allowsEmptyField: function () {
+			return Constants.VE_ALLOW_EMPTY_FIELD.includes( this.inputType );
 		}
 	} ),
 	methods: Object.assign( {}, mapActions( useMainStore, [
@@ -140,6 +148,16 @@ module.exports = exports = defineComponent( {
 		 */
 		isValid: function ( value ) {
 			return new Promise( ( resolve, reject ) => {
+				// With empty value: if allowed, resolve; else reject
+				if ( !value ) {
+					if ( this.allowsEmptyField ) {
+						resolve();
+					} else {
+						reject( this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-error-parser-empty' ).text() );
+					}
+				}
+
+				// With non-empty value: run parser function
 				this.runParser( {
 					parserZid: this.parserZid,
 					zobject: value,
@@ -170,6 +188,7 @@ module.exports = exports = defineComponent( {
 				} );
 			} );
 		},
+
 		/**
 		 * Handles the start of the validation process by emitting the appropriate events.
 		 * - Sets the field as invalid.
@@ -190,30 +209,18 @@ module.exports = exports = defineComponent( {
 
 		/**
 		 * Handles validation success by emitting the appropriate events.
-		 *
-		 * @param {string} value - The validated value.
-		 * @param {boolean} emitUpdate - Whether to emit the update event.
 		 */
-		onValidateSuccess: function ( value, emitUpdate ) {
+		onValidateSuccess: function () {
 			this.$emit( 'validate', { isValid: true } );
-
-			if ( emitUpdate ) {
-				this.$emit( 'update', value );
-			}
 		},
 
 		/**
 		 * Handles validation error by emitting the appropriate events.
 		 *
 		 * @param {string} errorMessage - The error message to emit.
-		 * @param {boolean} emitUpdate - Whether to emit the update event.
 		 */
-		onValidateError: function ( errorMessage, emitUpdate ) {
+		onValidateError: function ( errorMessage ) {
 			this.$emit( 'validate', { isValid: false, errorMessage } );
-
-			if ( emitUpdate ) {
-				this.$emit( 'update', '' );
-			}
 		},
 
 		/**
@@ -221,22 +228,17 @@ module.exports = exports = defineComponent( {
 		 * Emits validation status and optionally updates the value if valid.
 		 *
 		 * @param {string} value - The value to validate.
-		 * @param {boolean} emitUpdate - Whether to emit the update event if the value is valid.
+		 * @param {boolean} emitUpdate - Whether to emit the update event after validation.
+		 * @return {Promise}
 		 */
-		validate: function ( value, emitUpdate = false ) {
-			if ( !value ) {
-				this.$emit( 'validate', { isValid: true } );
-				this.$emit( 'update', '' );
-				return;
-			}
-
+		validate: function ( value ) {
 			this.onValidateStart();
-
-			this.isValid( value )
-				.then( () => this.onValidateSuccess( value, emitUpdate ) )
-				.catch( ( errorMessage ) => this.onValidateError( errorMessage, emitUpdate ) )
+			return this.isValid( value )
+				.then( () => this.onValidateSuccess() )
+				.catch( ( errorMessage ) => this.onValidateError( errorMessage ) )
 				.finally( () => this.onValidateEnd() );
 		},
+
 		/**
 		 * Emits the input event with the updated value.
 		 *
@@ -248,12 +250,14 @@ module.exports = exports = defineComponent( {
 
 		/**
 		 * Handles the change event, validates the new value asynchronously,
-		 * and emits the update event if the value is valid.
+		 * and emits the update event once the validation has finished.
 		 *
 		 * @param {Event} event - The change event triggered by the input field.
 		 */
 		handleChange: function ( event ) {
-			this.validate( event.target.value, true );
+			this.validate( event.target.value ).then( () => {
+				this.$emit( 'update', event.target.value );
+			} );
 		},
 
 		/**
@@ -296,9 +300,7 @@ module.exports = exports = defineComponent( {
 	 * Validates the initial value and triggers the generation of renderer examples.
 	 */
 	mounted: function () {
-		if ( this.value ) {
-			this.validate( this.value );
-		}
+		this.validate( this.value );
 		this.generateRendererExamples();
 	}
 } );
