@@ -1,28 +1,32 @@
 {
-	"description": "User can add key labels to a type",
-	"authorized": true,
+	"attempts": [
+		{
+			"description": "User can add key labels to a type",
+			"authorized": true,
+			"groups": []
+		}
+	],
 	"rights": [
 		"edit",
 		"wikilambda-edit-key-label"
 	],
-	"groups": [],
 	"dependencies": [],
-	"zid": "Z10005",
+	"zid": "Z10000",
 	"oldValue": {
 		"Z1K1": "Z2",
 		"Z2K1": {
 			"Z1K1": "Z6",
-			"Z6K1": "Z10005"
+			"Z6K1": "Z10000"
 		},
 		"Z2K2": {
 			"Z1K1": "Z4",
-			"Z4K1": "Z10005",
+			"Z4K1": "Z10000",
 			"Z4K2": [
 				"Z3",
 				{
 					"Z1K1": "Z3",
 					"Z3K1": "Z6",
-					"Z3K2": "Z10005K1",
+					"Z3K2": "Z10000K1",
 					"Z3K3": {
 						"Z1K1": "Z12",
 						"Z12K1": [
@@ -59,17 +63,17 @@
 		"Z1K1": "Z2",
 		"Z2K1": {
 			"Z1K1": "Z6",
-			"Z6K1": "Z10005"
+			"Z6K1": "Z10000"
 		},
 		"Z2K2": {
 			"Z1K1": "Z4",
-			"Z4K1": "Z10005",
+			"Z4K1": "Z10000",
 			"Z4K2": [
 				"Z3",
 				{
 					"Z1K1": "Z3",
 					"Z3K1": "Z6",
-					"Z3K2": "Z10005K1",
+					"Z3K2": "Z10000K1",
 					"Z3K3": {
 						"Z1K1": "Z12",
 						"Z12K1": [

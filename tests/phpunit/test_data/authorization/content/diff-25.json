@@ -1,11 +1,20 @@
 {
-	"description": "Function maintainer can edit a builtin object",
-	"authorized": true,
+	"attempts": [
+		{
+			"description": "Functioneer cannot edit a builtin object",
+			"authorized": false,
+			"groups": [ "functioneer" ]
+		},
+		{
+			"description": "Function maintainer can edit a builtin object",
+			"authorized": true,
+			"groups": [ "functioneer", "functionmaintainer" ]
+		}
+	],
 	"rights": [
 		"edit",
 		"wikilambda-edit-predefined"
 	],
-	"groups": [ "functioneer", "functionmaintainer" ],
 	"dependencies": [],
 	"zid": "Z9025",
 	"oldValue": {

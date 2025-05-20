@@ -1,11 +1,20 @@
 {
-	"description": "Function maintainer can connect testers and implementations to builtin function",
-	"authorized": true,
+	"attempts": [
+		{
+			"description": "Functioneer cannot connect testers and implementations to builtin function",
+			"authorized": false,
+			"groups": [ "functioneer" ]
+		},
+		{
+			"description": "Function maintainer can connect testers and implementations to builtin function",
+			"authorized": true,
+			"groups": [ "functioneer", "functionmaintainer" ]
+		}
+	],
 	"rights": [
 		"edit",
 		"wikilambda-edit-builtin-function"
 	],
-	"groups": [ "functioneer", "functionmaintainer" ],
 	"dependencies": [ "Z17" ],
 	"zid": "Z107",
 	"oldValue": {

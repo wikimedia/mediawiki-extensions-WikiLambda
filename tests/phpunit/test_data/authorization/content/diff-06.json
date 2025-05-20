@@ -1,6 +1,16 @@
 {
-	"description": "Functioneer can connect or disconnect testers and implementations to user provided function",
-	"authorized": true,
+	"attempts": [
+		{
+			"description": "User cannot connect or disconnect testers and implementations to user provided function",
+			"authorized": false,
+			"groups": []
+		},
+		{
+			"description": "Functioneer can connect or disconnect testers and implementations to user provided function",
+			"authorized": true,
+			"groups": [ "functioneer" ]
+		}
+	],
 	"rights": [
 		"edit",
 		"wikilambda-edit-user-function",
@@ -10,14 +20,13 @@
 		"wikilambda-disconnect-tester",
 		"wikilambda-disconnect-implementation"
 	],
-	"groups": [ "functioneer" ],
 	"dependencies": [ "Z17" ],
-	"zid": "Z10006",
+	"zid": "Z10000",
 	"oldValue": {
 		"Z1K1": "Z2",
 		"Z2K1": {
 			"Z1K1": "Z6",
-			"Z6K1": "Z10006"
+			"Z6K1": "Z10000"
 		},
 		"Z2K2": {
 			"Z1K1": "Z8",
@@ -26,7 +35,7 @@
 				{
 					"Z1K1": "Z17",
 					"Z17K1": "Z3",
-					"Z17K2": "Z10006K1",
+					"Z17K2": "Z10000K1",
 					"Z17K3": {
 						"Z1K1": "Z12",
 						"Z12K1": [ "Z11" ]
@@ -36,7 +45,7 @@
 			"Z8K2": "Z3",
 			"Z8K3": [ "Z20", "Z10007", "Z10008" ],
 			"Z8K4": [ "Z14", "Z10009" ],
-			"Z8K5": "Z10006"
+			"Z8K5": "Z10000"
 		},
 		"Z2K3": {
 			"Z1K1": "Z12",
@@ -54,7 +63,7 @@
 		"Z1K1": "Z2",
 		"Z2K1": {
 			"Z1K1": "Z6",
-			"Z6K1": "Z10006"
+			"Z6K1": "Z10000"
 		},
 		"Z2K2": {
 			"Z1K1": "Z8",
@@ -63,7 +72,7 @@
 				{
 					"Z1K1": "Z17",
 					"Z17K1": "Z3",
-					"Z17K2": "Z10006K1",
+					"Z17K2": "Z10000K1",
 					"Z17K3": {
 						"Z1K1": "Z12",
 						"Z12K1": [ "Z11" ]
@@ -73,7 +82,7 @@
 			"Z8K2": "Z3",
 			"Z8K3": [ "Z20", "Z10010" ],
 			"Z8K4": [ "Z14", "Z10011", "Z100012" ],
-			"Z8K5": "Z10006"
+			"Z8K5": "Z10000"
 		},
 		"Z2K3": {
 			"Z1K1": "Z12",

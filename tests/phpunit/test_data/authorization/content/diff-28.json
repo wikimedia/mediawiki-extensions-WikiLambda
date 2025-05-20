@@ -1,27 +1,31 @@
 {
-	"description": "User can edit disconnected serialisers",
-	"authorized": true,
+	"attempts": [
+		{
+			"description": "User can edit disconnected serialisers",
+			"authorized": true,
+			"groups": []
+		}
+	],
 	"rights": [
 		"edit",
 		"wikilambda-edit-converter"
 	],
-	"groups": [],
 	"dependencies": [ "Z6", "Z16", "Z64" ],
-	"zid": "Z10028",
+	"zid": "Z10000",
 	"oldValue": {
 		"Z1K1": "Z2",
 		"Z2K1": {
 			"Z1K1": "Z6",
-			"Z6K1": "Z10028"
+			"Z6K1": "Z10000"
 		},
 		"Z2K2": {
 			"Z1K1": "Z64",
-			"Z64K1": "Z10028",
+			"Z64K1": "Z10000",
 			"Z64K2": "Z6",
 			"Z64K3": {
 				"Z1K1": "Z16",
 				"Z16K1": "Z600",
-				"Z16K2": "function Z10028(Z10028K1){return true;}"
+				"Z16K2": "function Z10000(Z10000K1){return true;}"
 			},
 			"Z64K4": "BigInt"
 		},
@@ -34,16 +38,16 @@
 		"Z1K1": "Z2",
 		"Z2K1": {
 			"Z1K1": "Z6",
-			"Z6K1": "Z10028"
+			"Z6K1": "Z10000"
 		},
 		"Z2K2": {
 			"Z1K1": "Z64",
-			"Z64K1": "Z10028",
+			"Z64K1": "Z10000",
 			"Z64K2": "Z6",
 			"Z64K3": {
 				"Z1K1": "Z16",
 				"Z16K1": "Z600",
-				"Z16K2": "function Z10028(Z10028K1){return true;}"
+				"Z16K2": "function Z10000(Z10000K1){return true;}"
 			},
 			"Z64K4": "Int"
 		},
