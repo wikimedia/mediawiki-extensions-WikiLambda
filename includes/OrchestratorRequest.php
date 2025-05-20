@@ -89,4 +89,30 @@ class OrchestratorRequest {
 		// TODO (T338242): Use getAsync here.
 		return $this->guzzleClient->get( '/1/v1/supported-programming-languages/' );
 	}
+
+	/**
+	 * @param \stdClass $Z2
+	 * @return ResponseInterface response object returned by orchestrator
+	 */
+	public function persistToCache( $Z2 ): ResponseInterface {
+		$guzzleClient = $this->guzzleClient;
+		$userAgentString = $this->userAgentString;
+
+		// (T365053) Propagate request tracing headers
+		$telemetry = Telemetry::getInstance();
+		$requestHeaders = $telemetry->getRequestHeaders();
+		$requestHeaders['User-Agent'] = $userAgentString;
+
+		$query = [
+			'ZObject' => $Z2,
+			'ZID' => $Z2->{ 'Z2K1' }->{ 'Z6K1' }
+		];
+
+		// TODO (T338242): Use postAsync here.
+		return $this->guzzleClient->post( '/1/v1/persist-to-cache/', [
+			'json' => $query,
+			'headers' => $requestHeaders
+		] );
+	}
+
 }

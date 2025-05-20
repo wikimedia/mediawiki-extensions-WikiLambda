@@ -61,4 +61,34 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 		$this->assertEquals( json_decode( $expectedString ), json_decode( $result ) );
 	}
 
+	public function testPersistToCache() {
+		$mock = new MockHandler();
+		$handler = HandlerStack::create( $mock );
+		$client = new Client( [ 'handler' => $handler ] );
+
+		$mock->append( new Response( 200, [] ) );
+
+		$inputFile = __DIR__ .
+			DIRECTORY_SEPARATOR .
+			'..' .
+			DIRECTORY_SEPARATOR .
+			'..' .
+			DIRECTORY_SEPARATOR .
+			'..' .
+			DIRECTORY_SEPARATOR .
+			'function-schemata' .
+			DIRECTORY_SEPARATOR .
+			'data' .
+			DIRECTORY_SEPARATOR .
+			'definitions' .
+			DIRECTORY_SEPARATOR .
+			'Z6.json';
+		$Z2String = file_get_contents( $inputFile );
+		$Z2ForZ6 = json_decode( $Z2String );
+
+		$orchestrator = new OrchestratorRequest( $client );
+		$result = $orchestrator->persistToCache( $Z2ForZ6 );
+		$this->assertEquals( 200, $result->getStatusCode() );
+	}
+
 }
