@@ -406,7 +406,11 @@ class RepoHooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesH
 				$title = Title::newFromText( $zid, NS_MAIN );
 				$data = json_encode( $persistentObject->getSerialized() );
 				$content = $handler::makeContent( $data, $title );
-				$update = new ZObjectSecondaryDataUpdate( $title, $content );
+				$update = new ZObjectSecondaryDataUpdate(
+					$title, $content,
+					// Not trying to update the orchestrator cache here, as we're in a maintenance script
+					null
+				);
 				DeferredUpdates::addUpdate( $update );
 			}
 			if ( $verbose ) {

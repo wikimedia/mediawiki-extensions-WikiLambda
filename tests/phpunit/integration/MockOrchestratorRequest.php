@@ -10,8 +10,10 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use GuzzleHttp\Psr7\Response;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * @codeCoverageIgnore
@@ -56,4 +58,12 @@ class MockOrchestratorRequest extends OrchestratorRequest {
 
 		return '{ "Z1K1": "Z22", "Z22K1": ' . $response . ', "Z22K2": "oopswedidnotdothisbityet" }';
 	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function persistToCache( $Z2 ): ResponseInterface {
+		return new Response();
+	}
+
 }

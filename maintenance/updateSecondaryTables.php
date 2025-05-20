@@ -170,7 +170,11 @@ class UpdateSecondaryTables extends Maintenance {
 				$title = Title::newFromText( $zid, NS_MAIN );
 				$data = json_encode( $persistentObject->getSerialized() );
 				$content = $handler::makeContent( $data, $title );
-				$update = new ZObjectSecondaryDataUpdate( $title, $content );
+				$update = new ZObjectSecondaryDataUpdate(
+					$title, $content,
+					// Not updating the orchestrator cache, as we're in a maintenance script and might over-whelm
+					null
+				);
 				DeferredUpdates::addUpdate( $update );
 				if ( !$quick ) {
 					sleep( 5 );

@@ -28,8 +28,10 @@ use Wikimedia\ObjectCache\BagOStuff;
 class ZObjectSecondaryDataUpdate extends DataUpdate {
 
 	private Title $title;
-	private LoggerInterface $logger;
 	private ZObjectContent $zObject;
+	private ?OrchestratorRequest $orchestrator;
+
+	private LoggerInterface $logger;
 	private ZObjectStore $zObjectStore;
 	private BagOStuff $zObjectCache;
 
@@ -38,10 +40,13 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 	/**
 	 * @param Title $title
 	 * @param Content $zObject
+	 * @param OrchestratorRequest|null $orchestrator
 	 */
-	public function __construct( Title $title, $zObject ) {
+	public function __construct( Title $title, $zObject, $orchestrator = null ) {
 		$this->title = $title;
 		$this->zObject = $zObject;
+		$this->orchestrator = $orchestrator;
+
 		$this->zObjectStore = WikiLambdaServices::getZObjectStore();
 		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
 		$this->zObjectCache = WikiLambdaServices::getZObjectStash();
@@ -99,6 +104,11 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 			$this->zObject->getText(),
 			$this->zObjectCache::TTL_MONTH
 		);
+
+		if ( $this->orchestrator ) {
+			$queryZ2 = $this->zObject->getObject();
+			$this->orchestrator->persistToCache( $queryZ2 );
+		}
 
 		$innerZObject = $this->zObject->getInnerZObject();
 

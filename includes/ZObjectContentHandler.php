@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use GuzzleHttp\Client;
 use InvalidArgumentException;
 use MediaWiki\Content\Content;
 use MediaWiki\Content\ContentHandler;
@@ -216,9 +217,18 @@ class ZObjectContentHandler extends ContentHandler {
 		$role,
 		SlotRenderingProvider $slotOutput
 	) {
+		$orchestrator = null;
+
+		$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'WikiLambda' );
+		if ( $config->get( 'WikiLambdaPersistBackendCache' ) ) {
+			$orchestratorHost = $config->get( 'WikiLambdaOrchestratorLocation' );
+			$client = new Client( [ "base_uri" => $orchestratorHost ] );
+			$orchestrator = new OrchestratorRequest( $client );
+		}
+
 		return array_merge(
 			parent::getSecondaryDataUpdates( $title, $content, $role, $slotOutput ),
-			[ new ZObjectSecondaryDataUpdate( $title, $content ) ]
+			[ new ZObjectSecondaryDataUpdate( $title, $content, $orchestrator ) ]
 		);
 	}
 
