@@ -1,13 +1,17 @@
 {
-	"description": "User can add a label to a key of a pre-defined type, even with missing keys",
-	"authorized": true,
+	"attempts": [
+		{
+			"description": "User can add a label to a key of a pre-defined type, even with missing keys",
+			"authorized": true,
+			"groups": []
+		}
+	],
 	"rights": [
 		"edit",
 		"wikilambda-edit-key-label",
 		"wikilambda-edit-object-description",
 		"wikilambda-edit-object-label"
 	],
-	"groups": [],
 	"dependencies": [],
 	"zid": "Z46",
 	"oldValue": {

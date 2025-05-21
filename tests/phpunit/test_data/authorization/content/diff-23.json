@@ -1,18 +1,27 @@
 {
-	"description": "Sysops can edit boolean",
-	"authorized": true,
+	"attempts": [
+		{
+			"description": "Function maintainers cannot edit boolean",
+			"authorized": false,
+			"groups": [ "functioneer", "functionmaintainer" ]
+		},
+		{
+			"description": "Sysops can edit boolean",
+			"authorized": true,
+			"groups": [ "sysop" ]
+		}
+	],
 	"rights": [
 		"edit",
 		"wikilambda-edit-boolean"
 	],
-	"groups": [ "sysop" ],
 	"dependencies": [ "Z40" ],
-	"zid": "Z10023",
+	"zid": "Z10000",
 	"oldValue": {
 		"Z1K1": "Z2",
 		"Z2K1": {
 			"Z1K1": "Z6",
-			"Z6K1": "Z10023"
+			"Z6K1": "Z10000"
 		},
 		"Z2K2": {
 			"Z1K1": "Z40",
@@ -27,7 +36,7 @@
 		"Z1K1": "Z2",
 		"Z2K1": {
 			"Z1K1": "Z6",
-			"Z6K1": "Z10023"
+			"Z6K1": "Z10000"
 		},
 		"Z2K2": {
 			"Z1K1": "Z40",

@@ -101,18 +101,20 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 			}
 
 			$diffData = json_decode( file_get_contents( $filePath ) );
-			$testData[ $filename ] = [
-				$diffData->zid,
-				$diffData->dependencies,
-				$diffData->oldValue,
-				$diffData->newValue,
-				$diffData->groups,
-				$diffData->description,
-				$diffData->authorized,
-				$diffData->rights
-			];
+
+			foreach ( $diffData->attempts as $attempt ) {
+				yield $attempt->description => [
+					$diffData->zid,
+					$diffData->dependencies,
+					$diffData->oldValue,
+					$diffData->newValue,
+					$attempt->groups,
+					$attempt->description,
+					$attempt->authorized,
+					$diffData->rights
+				];
+			}
 		}
-		return $testData;
 	}
 
 	public function testAttachedImplementationAndTest() {

@@ -1,28 +1,37 @@
 {
-	"description": "Functionmaintainers can edit a type (number of keys)",
-	"authorized": true,
+	"attempts": [
+		{
+			"description": "Functioneers can edit a type (number of keys)",
+			"authorized": false,
+			"groups": [ "functioneer" ]
+		},
+		{
+			"description": "Function maintainers can edit a type (number of keys)",
+			"authorized": true,
+			"groups": [ "functioneer", "functionmaintainer" ]
+		}
+	],
 	"rights": [
 		"edit",
 		"wikilambda-edit-type"
 	],
-	"groups": [ "functioneers", "functionmaintainer" ],
 	"dependencies": [],
-	"zid": "Z10017",
+	"zid": "Z10000",
 	"oldValue": {
 		"Z1K1": "Z2",
 		"Z2K1": {
 			"Z1K1": "Z6",
-			"Z6K1": "Z10017"
+			"Z6K1": "Z10000"
 		},
 		"Z2K2": {
 			"Z1K1": "Z4",
-			"Z4K1": "Z10017",
+			"Z4K1": "Z10000",
 			"Z4K2": [
 				"Z3",
 				{
 					"Z1K1": "Z3",
 					"Z3K1": "Z6",
-					"Z3K2": "Z10017K1",
+					"Z3K2": "Z10000K1",
 					"Z3K3": {
 						"Z1K1": "Z12",
 						"Z12K1": [ "Z11" ]
@@ -40,17 +49,17 @@
 		"Z1K1": "Z2",
 		"Z2K1": {
 			"Z1K1": "Z6",
-			"Z6K1": "Z10017"
+			"Z6K1": "Z10000"
 		},
 		"Z2K2": {
 			"Z1K1": "Z4",
-			"Z4K1": "Z10017",
+			"Z4K1": "Z10000",
 			"Z4K2": [
 				"Z3",
 				{
 					"Z1K1": "Z3",
 					"Z3K1": "Z6",
-					"Z3K2": "Z10017K1",
+					"Z3K2": "Z10000K1",
 					"Z3K3": {
 						"Z1K1": "Z12",
 						"Z12K1": [ "Z11" ]
@@ -59,7 +68,7 @@
 				{
 					"Z1K1": "Z3",
 					"Z3K1": "Z1",
-					"Z3K2": "Z10017K2",
+					"Z3K2": "Z10000K2",
 					"Z3K3": {
 						"Z1K1": "Z12",
 						"Z12K1": [ "Z11" ]

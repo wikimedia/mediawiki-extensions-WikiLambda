@@ -1,20 +1,24 @@
 {
-	"description": "User can remove labels, descriptions and aliases from an object",
-	"authorized": true,
+	"attempts": [
+		{
+			"description": "User can remove labels, descriptions and aliases from an object",
+			"authorized": true,
+			"groups": []
+		}
+	],
 	"rights": [
 		"edit",
 		"wikilambda-edit-object-label",
 		"wikilambda-edit-object-alias",
 		"wikilambda-edit-object-description"
 	],
-	"groups": [],
 	"dependencies": [],
-	"zid": "Z10003",
+	"zid": "Z10000",
 	"oldValue": {
 		"Z1K1": "Z2",
 		"Z2K1": {
 			"Z1K1": "Z6",
-			"Z6K1": "Z10003"
+			"Z6K1": "Z10000"
 		},
 		"Z2K2": "string figures",
 		"Z2K3": {
@@ -63,7 +67,7 @@
 		"Z1K1": "Z2",
 		"Z2K1": {
 			"Z1K1": "Z6",
-			"Z6K1": "Z10003"
+			"Z6K1": "Z10000"
 		},
 		"Z2K2": "string figures",
 		"Z2K3": {

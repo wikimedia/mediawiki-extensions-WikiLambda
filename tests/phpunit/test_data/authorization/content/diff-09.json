@@ -1,20 +1,29 @@
 {
-	"description": "Functioneer cannot edit function definition (arg type) if function is running",
-	"authorized": false,
+	"attempts": [
+		{
+			"description": "Functioneer cannot edit function definition (input type) if function is running",
+			"authorized": false,
+			"groups": [ "functioneer" ]
+		},
+		{
+			"description": "Function maintainer can edit function definition (input type) even when function is running",
+			"authorized": true,
+			"groups": [ "functioneer", "functionmaintainer" ]
+		}
+	],
 	"rights": [
 		"edit",
 		"wikilambda-edit-user-function",
 		"wikilambda-edit-running-function",
 		"wikilambda-edit-running-function-definition"
 	],
-	"groups": [ "functioneer" ],
 	"dependencies": [ "Z17" ],
-	"zid": "Z10009",
+	"zid": "Z10000",
 	"oldValue": {
 		"Z1K1": "Z2",
 		"Z2K1": {
 			"Z1K1": "Z6",
-			"Z6K1": "Z10009"
+			"Z6K1": "Z10000"
 		},
 		"Z2K2": {
 			"Z1K1": "Z8",
@@ -23,7 +32,7 @@
 				{
 					"Z1K1": "Z17",
 					"Z17K1": "Z3",
-					"Z17K2": "Z10009K1",
+					"Z17K2": "Z10000K1",
 					"Z17K3": {
 						"Z1K1": "Z12",
 						"Z12K1": [
@@ -40,7 +49,7 @@
 			"Z8K2": "Z6",
 			"Z8K3": [ "Z20" ],
 			"Z8K4": [ "Z14", "Z10010" ],
-			"Z8K5": "Z10009"
+			"Z8K5": "Z10000"
 		},
 		"Z2K3": {
 			"Z1K1": "Z12",
@@ -51,7 +60,7 @@
 		"Z1K1": "Z2",
 		"Z2K1": {
 			"Z1K1": "Z6",
-			"Z6K1": "Z10009"
+			"Z6K1": "Z10000"
 		},
 		"Z2K2": {
 			"Z1K1": "Z8",
@@ -60,7 +69,7 @@
 				{
 					"Z1K1": "Z17",
 					"Z17K1": "Z1",
-					"Z17K2": "Z10009K1",
+					"Z17K2": "Z10000K1",
 					"Z17K3": {
 						"Z1K1": "Z12",
 						"Z12K1": [
@@ -77,7 +86,7 @@
 			"Z8K2": "Z6",
 			"Z8K3": [ "Z20" ],
 			"Z8K4": [ "Z14", "Z10010" ],
-			"Z8K5": "Z10009"
+			"Z8K5": "Z10000"
 		},
 		"Z2K3": {
 			"Z1K1": "Z12",
