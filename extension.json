@@ -85,6 +85,8 @@
 		"wikilambda-create-converter",
 		"wikilambda-create-enum-value",
 		"wikilambda-create-function",
+		"wikilambda-create-function-call",
+		"wikilambda-create-generic-enum",
 		"wikilambda-create-implementation",
 		"wikilambda-create-language",
 		"wikilambda-create-predefined",
@@ -104,6 +106,10 @@
 		"wikilambda-edit-converter",
 		"wikilambda-edit-enum-value",
 		"wikilambda-edit-error-key-label",
+		"wikilambda-edit-function-call",
+		"wikilambda-edit-generic-enum-type",
+		"wikilambda-edit-generic-enum-item",
+		"wikilambda-edit-generic-enum-id",
 		"wikilambda-edit-implementation",
 		"wikilambda-edit-key-label",
 		"wikilambda-edit-language",
@@ -126,6 +132,8 @@
 	"GroupPermissions": {
 		"*": {
 			"wikilambda-bypass-cache": false,
+			"wikilambda-create-function-call": false,
+			"wikilambda-edit-function-call": false,
 			"wikilambda-execute": true,
 			"wikifunctions-run": true
 		},
@@ -151,11 +159,13 @@
 		"functioneer": {
 			"wikilambda-connect-implementation": true,
 			"wikilambda-connect-tester": true,
+			"wikilambda-create-generic-enum": true,
 			"wikilambda-create-type": true,
 			"wikilambda-disconnect-implementation": true,
 			"wikilambda-disconnect-tester": true,
 			"wikilambda-edit-attached-implementation": true,
 			"wikilambda-edit-attached-tester": true,
+			"wikilambda-edit-generic-enum-item": true,
 			"wikilambda-edit-running-function": true
 		},
 		"functionmaintainer": {
@@ -167,6 +177,7 @@
 			"wikilambda-edit-builtin-function": true,
 			"wikilambda-edit-connected-converter": true,
 			"wikilambda-edit-enum-value": true,
+			"wikilambda-edit-generic-enum-type": true,
 			"wikilambda-edit-language": true,
 			"wikilambda-edit-predefined": true,
 			"wikilambda-edit-programming": true,
@@ -177,6 +188,7 @@
 			"wikilambda-create-boolean": true,
 			"wikilambda-create-unit": true,
 			"wikilambda-edit-boolean": true,
+			"wikilambda-edit-generic-enum-id": true,
 			"wikilambda-edit-object-type": true,
 			"wikilambda-edit-unit": true
 		}

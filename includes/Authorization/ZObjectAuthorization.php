@@ -100,6 +100,15 @@ class ZObjectAuthorization implements LoggerAwareInterface {
 				array_push( $userRights, 'wikilambda-create-function' );
 				break;
 
+			case ZTypeRegistry::Z_FUNCTIONCALL:
+				$functionZid = $content->getInnerZObject()->getZValue();
+				if ( $functionZid === ZTypeRegistry::Z_WIKIDATA_ENUM ) {
+					array_push( $userRights, 'wikilambda-create-generic-enum' );
+				} else {
+					array_push( $userRights, 'wikilambda-create-function-call' );
+				}
+				break;
+
 			case ZTypeRegistry::Z_LANGUAGE:
 				array_push( $userRights, 'wikilambda-create-language' );
 				break;

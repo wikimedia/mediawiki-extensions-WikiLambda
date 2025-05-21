@@ -96,6 +96,45 @@
     any:
       - wikilambda-edit-unit
 
+# ========================
+# Rules for function calls
+# ========================
+
+# Change id from a wikidata enumeration
+- path: '^Z2K2\.Z6884K3(\..*)?$'
+  type: Z7
+  operations:
+    any:
+      - wikilambda-edit-generic-enum-id
+
+# Change item type from a wikidata enumeration
+- path: '^Z2K2\.Z6884K1(\..*)?$'
+  type: Z7
+  operations:
+    any:
+      - wikilambda-edit-generic-enum-type
+
+# Change item type from the list of items in a wikidata enumeration
+- path: '^Z2K2\.Z6884K2\.0(\..*)?$'
+  type: Z7
+  operations:
+    any:
+      - wikilambda-edit-generic-enum-type
+
+# Change items from a wikidata enumeration
+- path: '^Z2K2\.Z6884K2\.[1-9]\d*(\..*)?$'
+  type: Z7
+  operations:
+    any:
+      - wikilambda-edit-generic-enum-item
+
+# Change any other field from a persisted function call
+- path: '^Z2K2\.(.*)?$'
+  type: Z7
+  operations:
+    any:
+      - wikilambda-edit-function-call
+
 # ===========================
 # Rights for restricted types
 # ===========================
