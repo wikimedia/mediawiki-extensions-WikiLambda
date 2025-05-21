@@ -41,8 +41,8 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 		$this->zobjectAuthorization = WikiLambdaServices::getZObjectAuthorization();
 
 		$this->insertZids( [
-			'Z1', 'Z2', 'Z6', 'Z3', 'Z4', 'Z8', 'Z17', 'Z14', 'Z16',
-			'Z24', 'Z40', 'Z46', 'Z60', 'Z61', 'Z64', 'Z801'
+			'Z1', 'Z2', 'Z6', 'Z7', 'Z3', 'Z4', 'Z8', 'Z17', 'Z14', 'Z16',
+			'Z24', 'Z40', 'Z46', 'Z60', 'Z61', 'Z64', 'Z801', 'Z6884', 'Z6095'
 		] );
 	}
 
@@ -316,6 +316,40 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 						. '"Z2K2": { "Z1K1": "Z21" }, '
 						. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } } ',
 				'createRights' => [ 'wikilambda-create-unit' ],
+				'createAllowed' => [
+					'basic' => false, 'functioneer' => false, 'maintainer' => false, 'sysop' => false
+				],
+				'createAllowedPredefined' => [
+					'basic' => false, 'functioneer' => false, 'maintainer' => false, 'sysop' => false
+				],
+			],
+
+			// T391913: Create lightweight Wikidata enum types
+			'function call to wikidata enum type' => [
+				'testedType' => 'Z7',
+				'createContent' =>
+					'{"Z1K1":"Z2","Z2K1":{"Z1K1":"Z6","Z6K1":"Z0"},'
+					. '"Z2K2":{"Z1K1":"Z7","Z7K1":"Z6884","Z6884K1":"Z6095","Z6884K2":["Z6095",'
+					. '{"Z1K1":"Z6095","Z6095K1":"L313289"},'
+					. '{"Z1K1":"Z6095","Z6095K1":"L313272"},'
+					. '{"Z1K1":"Z6095","Z6095K1":"L338656"}],"Z6884K3":"Z0"},'
+					. '"Z2K3":{"Z1K1":"Z12","Z12K1":["Z11"]}}',
+				'createRights' => [ 'wikilambda-create-generic-enum' ],
+				'createAllowed' => [
+					'basic' => false, 'functioneer' => true, 'maintainer' => true, 'sysop' => false
+				],
+				'createAllowedPredefined' => [
+					'basic' => false, 'functioneer' => false, 'maintainer' => true, 'sysop' => false
+				],
+			],
+
+			'another function call' => [
+				'testedType' => 'Z7',
+				'createContent' =>
+					'{"Z1K1":"Z2","Z2K1":{"Z1K1":"Z6","Z6K1":"Z0"},'
+					. '"Z2K2":{"Z1K1":"Z7","Z7K1":"Z881","Z881K1":"Z6"},'
+					. '"Z2K3":{"Z1K1":"Z12","Z12K1":["Z11"]}}',
+				'createRights' => [ 'wikilambda-create-function-call' ],
 				'createAllowed' => [
 					'basic' => false, 'functioneer' => false, 'maintainer' => false, 'sysop' => false
 				],

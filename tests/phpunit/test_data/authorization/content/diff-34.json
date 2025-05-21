@@ -1,0 +1,65 @@
+{
+	"attempts": [
+		{
+			"description": "User cannot delete items from a generic enumeration type",
+			"authorized": false,
+			"groups": []
+		},
+		{
+			"description": "Functioneer can delete items from a generic enumeration type",
+			"authorized": true,
+			"groups": [ "functioneer" ]
+		}
+	],
+	"rights": [
+		"edit",
+		"wikilambda-edit-generic-enum-item"
+	],
+	"dependencies": [ "Z7", "Z6884", "Z6095" ],
+	"zid": "Z10000",
+	"oldValue": {
+		"Z1K1": "Z2",
+		"Z2K1": {
+			"Z1K1": "Z6",
+			"Z6K1": "Z10000"
+		},
+		"Z2K2": {
+			"Z1K1": "Z7",
+			"Z7K1": "Z6884",
+			"Z6884K1": "Z6095",
+			"Z6884K2": [
+				"Z6095",
+				{ "Z1K1": "Z6095", "Z6095K1": "L313289" },
+				{ "Z1K1": "Z6095", "Z6095K1": "L313272" },
+				{ "Z1K1": "Z6095", "Z6095K1": "L338656" }
+			],
+			"Z6884K3": "Z10000"
+		},
+		"Z2K3": {
+			"Z1K1": "Z12",
+			"Z12K1": [ "Z11" ]
+		}
+	},
+	"newValue": {
+		"Z1K1": "Z2",
+		"Z2K1": {
+			"Z1K1": "Z6",
+			"Z6K1": "Z10000"
+		},
+		"Z2K2": {
+			"Z1K1": "Z7",
+			"Z7K1": "Z6884",
+			"Z6884K1": "Z6095",
+			"Z6884K2": [
+				"Z6095",
+				{ "Z1K1": "Z6095", "Z6095K1": "L313289" },
+				{ "Z1K1": "Z6095", "Z6095K1": "L313272" }
+			],
+			"Z6884K3": "Z10000"
+		},
+		"Z2K3": {
+			"Z1K1": "Z12",
+			"Z12K1": [ "Z11" ]
+		}
+	}
+}
