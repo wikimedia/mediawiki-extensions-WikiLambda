@@ -1,0 +1,26 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"wikilambda-recentchanges-edit-letter": "F",
+	"wikilambda-recentchanges-filter-description": "Izmene sa Vikifunkcija",
+	"wikilambda-recentchanges-filter-label": "Izmene na Vikifunkcijama",
+	"wikilambda-recentchanges-filter-rc-pref": "Prikazuj izmene na Vikifunkcijama u skorašnjim izmenama",
+	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Učitavanje",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Izaberite opciju",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Funkcija]] sa Vikifunkcija",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Pročitaj manje",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "Pročitaj više",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Nema rezultata.",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Rezultati",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Unesite tekst",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Predložene funkcije",
+	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Nijedna opcija nije izabrana.",
+	"wikilambda-visualeditor-wikifunctionscall-no-description": "Nema opisa",
+	"wikilambda-visualeditor-wikifunctionscall-no-input-label": "Nema naziva",
+	"wikilambda-visualeditor-wikifunctionscall-no-name": "Nema imena",
+	"wikilambda-visualeditor-wikifunctionscall-title": "Funkcija",
+	"wikilambda-visualeditor-wikifunctionscall-preview-title": "Pregled",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "Otkazano",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Otkaži"
+}
