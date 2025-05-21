@@ -18,7 +18,7 @@ class ZMonoLingualString extends ZObject {
 	/**
 	 * Create a ZMonoLingualString instance given a language ZReference and a value ZString
 	 *
-	 * @param ZReference $language
+	 * @param ZReference|ZNaturalLanguage $language
 	 * @param ZString $value
 	 */
 	public function __construct( $language, $value ) {

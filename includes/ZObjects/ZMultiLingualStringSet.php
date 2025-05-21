@@ -162,8 +162,10 @@ class ZMultiLingualStringSet extends ZObject {
 	 * @param ZMonoLingualStringSet $value The new value to set.
 	 */
 	public function setMonoLingualStringSet( ZMonoLingualStringSet $value ): void {
+		$language = $value->getLanguage();
+
 		// (T391528) Don't let bad user input trigger an odd exception.
-		if ( !$value->getLanguage() || !is_string( $value->getLanguage() ) ) {
+		if ( !$language || !is_string( $language ) ) {
 			throw new ZErrorException(
 				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_INVALID_LANG_CODE,
@@ -174,7 +176,7 @@ class ZMultiLingualStringSet extends ZObject {
 			);
 		}
 
-		$this->data[ ZTypeRegistry::Z_MULTILINGUALSTRINGSET_VALUE ][ $value->getLanguage() ] = $value;
+		$this->data[ ZTypeRegistry::Z_MULTILINGUALSTRINGSET_VALUE ][ $language ] = $value;
 	}
 
 	/**
