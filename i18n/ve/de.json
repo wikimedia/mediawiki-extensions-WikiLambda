@@ -39,6 +39,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Vorgeschlagene Funktionen",
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Bearbeite die Funktion, um fehlende oder ungültige Werte zu korrigieren.",
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Keine Option ausgewählt.",
+	"wikilambda-visualeditor-wikifunctionscall-error-parser-empty": "Bitte einen Wert angeben.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser": "Unbekannter Fehler. [[f:Talk:$1|Problem melden]]",
 	"wikilambda-visualeditor-wikifunctionscall-info-missing-content": "Hilf mit, fehlende Inhalte auf [[f:$1|Wikifunctions]] in deine Sprache zu übersetzen.",
 	"wikilambda-visualeditor-wikifunctionscall-no-description": "Keine Beschreibung",

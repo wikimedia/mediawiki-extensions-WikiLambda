@@ -39,6 +39,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Virgeschloe Funktiounen",
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Ännert d'Funktioun fir feelend oder ongülteg Wäerter ze verbesseren.",
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Keng Optioun gewielt.",
+	"wikilambda-visualeditor-wikifunctionscall-error-parser-empty": "Gitt wgl. e Wäert an.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser": "Onbekannte Feeler. [[f:Talk:$1|Problem mellen]]",
 	"wikilambda-visualeditor-wikifunctionscall-no-description": "Keng Beschreiwung",
 	"wikilambda-visualeditor-wikifunctionscall-no-input-label": "Keng Etikett",

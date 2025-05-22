@@ -18,6 +18,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Унесите текст",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Предложене функције",
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Ниједна опција није изабрана.",
+	"wikilambda-visualeditor-wikifunctionscall-error-parser-empty": "Молимо унесите вредност.",
 	"wikilambda-visualeditor-wikifunctionscall-no-description": "Нема описа",
 	"wikilambda-visualeditor-wikifunctionscall-no-input-label": "Нема назива",
 	"wikilambda-visualeditor-wikifunctionscall-no-name": "Нема имена",

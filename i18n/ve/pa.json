@@ -10,7 +10,11 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "ਹੋਰ ਪੜ੍ਹੋ",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "ਕੋਈ ਨਤੀਜੇ ਨਹੀਂ ਲੱਭੇ।",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "ਨਤੀਜੇ",
+	"wikilambda-visualeditor-wikifunctionscall-error-parser-empty": "ਕਿਰਪਾ ਕਰਕੇ ਕੋਈ ਮੁੱਲ ਦਾਖਲ ਕਰੋ",
 	"wikilambda-visualeditor-wikifunctionscall-no-description": "ਕੋਈ ਵੇਰਵਾ ਨਹੀਂ",
 	"wikilambda-visualeditor-wikifunctionscall-no-name": "ਕੋਈ ਨਾਂ ਨਹੀਂ",
-	"wikilambda-visualeditor-wikifunctionscall-title": "ਕਾਰਜ"
+	"wikilambda-visualeditor-wikifunctionscall-title": "ਕਾਰਜ",
+	"wikilambda-visualeditor-wikifunctionscall-preview-title": "ਝਾਤ",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "ਰੱਦ ਕਰ ਦਿੱਤਾ ਗਿਆ",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "ਰੱਦ ਕਰੋ"
 }
