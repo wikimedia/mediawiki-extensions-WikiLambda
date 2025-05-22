@@ -47,11 +47,10 @@ class ApiQueryZObjectLabels extends WikiLambdaApiQueryGeneratorBase {
 
 		[
 			'search' => $searchTerm,
-			'type' => $type,
 			'exact' => $exact,
 			'language' => $language,
-			'return_type' => $returnType,
-			'strict_return_type' => $strictReturnType,
+			'type' => $types,
+			'return_type' => $returnTypes,
 			'limit' => $limit,
 			'continue' => $continue,
 		] = $this->extractRequestParams();
@@ -65,9 +64,8 @@ class ApiQueryZObjectLabels extends WikiLambdaApiQueryGeneratorBase {
 			$searchTerm,
 			$exact,
 			[],
-			$type,
-			$returnType,
-			$strictReturnType,
+			$types ?? [],
+			$returnTypes ?? [],
 			null,
 			$controlLimit
 		);
@@ -79,7 +77,7 @@ class ApiQueryZObjectLabels extends WikiLambdaApiQueryGeneratorBase {
 		$matchField = ZObjectUtils::isValidZObjectReference( $searchTerm ) ? 'wlzl_zobject_zid' : 'wlzl_label';
 
 		foreach ( $res as $row ) {
-			$matchRate = $hasSearchTerm ? self::getMatchRate( $searchTerm, $row->{ $matchField } ) : 0;
+			$matchRate = $hasSearchTerm ? self::getMatchRate( $searchTerm, $row->{ $matchField }, $exact ) : 0;
 
 			// If the current row is new or a better match, keep. Else, ignore.
 			if ( !array_key_exists( $row->wlzl_zobject_zid, $matches ) ||
@@ -93,7 +91,6 @@ class ApiQueryZObjectLabels extends WikiLambdaApiQueryGeneratorBase {
 					'page_content_model' => CONTENT_MODEL_ZOBJECT,
 					'page_title' => $row->wlzl_zobject_zid,
 					'page_type' => $row->wlzl_type,
-					'return_type' => $row->wlzl_return_type,
 					'match_label' => $hasSearchTerm ? $row->{ $matchField } : null,
 					'match_is_primary' => $hasSearchTerm ? $row->wlzl_label_primary : null,
 					'match_lang' => $hasSearchTerm ? $row->wlzl_language : null,
@@ -173,13 +170,11 @@ class ApiQueryZObjectLabels extends WikiLambdaApiQueryGeneratorBase {
 			],
 			'type' => [
 				ParamValidator::PARAM_TYPE => 'string',
+				ParamValidator::PARAM_ISMULTI => true,
 			],
 			'return_type' => [
 				ParamValidator::PARAM_TYPE => 'string',
-			],
-			'strict_return_type' => [
-				ParamValidator::PARAM_TYPE => 'boolean',
-				ParamValidator::PARAM_DEFAULT => false,
+				ParamValidator::PARAM_ISMULTI => true,
 			],
 			'limit' => [
 				ParamValidator::PARAM_TYPE => 'limit',
@@ -197,9 +192,14 @@ class ApiQueryZObjectLabels extends WikiLambdaApiQueryGeneratorBase {
 	/**
 	 * @param string $substring
 	 * @param string $hit
+	 * @param bool $exact
 	 * @return float
 	 */
-	private static function getMatchRate( $substring, $hit ) {
+	private static function getMatchRate( $substring, $hit, $exact = false ) {
+		if ( !$exact ) {
+			$substring = ZObjectUtils::comparableString( $substring );
+			$hit = ZObjectUtils::comparableString( $hit );
+		}
 		$distance = levenshtein( $substring, $hit );
 		$max = max( strlen( $substring ), strlen( $hit ) );
 		$percentage = ( $max - $distance ) / $max;
@@ -213,18 +213,33 @@ class ApiQueryZObjectLabels extends WikiLambdaApiQueryGeneratorBase {
 	 */
 	protected function getExamplesMessages() {
 		return [
-			'action=query&list=wikilambdasearch_labels&wikilambdasearch_search=foo&wikilambdasearch_language=en'
-				=> 'apihelp-query+wikilambda-example-simple',
-			'action=query&list=wikilambdasearch_labels&wikilambdasearch_search=foo&wikilambdasearch_language=fr'
-				. '&wikilambdasearch_nofallback=true'
-				=> 'apihelp-query+wikilambda-example-nofallback',
-			'action=query&list=wikilambdasearch_labels&wikilambdasearch_type=Z4&wikilambdasearch_language=en'
-				=> 'apihelp-query+wikilambda-example-type',
-			'action=query&list=wikilambdasearch_labels&wikilambdasearch_return_type=Z40&wikilambdasearch_language=en'
-				=> 'apihelp-query+wikilambda-example-return-type',
-			'action=query&list=wikilambdasearch_labels&wikilambdasearch_return_type=Z40'
-				. '&wikilambdasearch_strict_return_type=true&wikilambdasearch_language=en'
-				=> 'apihelp-query+wikilambda-example-strict-return-type',
+			// search "foo" in language "en"
+			'action=query&list=wikilambdasearch_labels&'
+			. ' wikilambdasearch_search=foo&'
+			. ' wikilambdasearch_language=en' => 'apihelp-query+wikilambda-example-simple',
+			// search "foo" in language "fr" without fallbacks
+			'action=query&list=wikilambdasearch_labels&'
+			. 'wikilambdasearch_search=foo&'
+			. 'wikilambdasearch_language=fr&'
+			. 'wikilambdasearch_nofallback=true' => 'apihelp-query+wikilambda-example-nofallback',
+			// Search for objects of type "Z4"
+			'action=query&list=wikilambdasearch_labels&'
+			. 'wikilambdasearch_type=Z4&'
+			. 'wikilambdasearch_language=en' => 'apihelp-query+wikilambda-example-type',
+			// Search for objects that resolve to "Z40"
+			'action=query&list=wikilambdasearch_labels&'
+			. 'wikilambdasearch_return_type=Z40&'
+			. 'wikilambdasearch_language=en' => 'apihelp-query+wikilambda-example-return-type',
+			// Search for functions that output "Z40" or "Z1"
+			'action=query&list=wikilambdasearch_labels&'
+			. 'wikilambdasearch_type=Z8&'
+			. 'wikilambdasearch_return_type=Z40|Z1&'
+			. 'wikilambdasearch_language=en' => 'apihelp-query+wikilambda-example-type-and-return-types',
+			// Search for function calls equivalent to "Z4" or literal "Z4" objects
+			'action=query&list=wikilambdasearch_labels&'
+			. 'wikilambdasearch_type=Z4|Z7&'
+			. 'wikilambdasearch_return_type=Z4&'
+			. 'wikilambdasearch_language=en' => 'apihelp-query+wikilambda-example-types-and-return-type',
 		];
 	}
 }

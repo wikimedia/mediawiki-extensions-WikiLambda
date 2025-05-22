@@ -44,7 +44,29 @@ describe( 'ZObjectSelector', () => {
 			expect( wrapper.find( 'div' ).exists() ).toBe( true );
 		} );
 
-		it( 'on lookup, sends the the selector type in the payload', async () => {
+		it( 'on lookup, sends the the type in the payload', async () => {
+			store.lookupZObjectLabels.mockResolvedValue( mockLookupValues );
+
+			const wrapper = mount( ZObjectSelector, {
+				props: {
+					type: Constants.Z_STRING
+				}
+			} );
+
+			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
+			lookup.vm.$emit( 'update:input-value', 'Stri' );
+
+			await waitFor( () => expect( store.lookupZObjectLabels ).toHaveBeenLastCalledWith(
+				{
+					input: 'Stri',
+					types: [ Constants.Z_STRING ],
+					returnTypes: undefined,
+					searchContinue: null
+				}
+			) );
+		} );
+
+		it( 'on lookup for types, sends type and return type in the payload', async () => {
 			store.lookupZObjectLabels.mockResolvedValue( mockLookupValues );
 
 			const wrapper = mount( ZObjectSelector, {
@@ -59,10 +81,9 @@ describe( 'ZObjectSelector', () => {
 			await waitFor( () => expect( store.lookupZObjectLabels ).toHaveBeenLastCalledWith(
 				{
 					input: 'Stri',
-					returnType: undefined,
-					searchContinue: null,
-					type: Constants.Z_TYPE,
-					strictType: false
+					types: [ Constants.Z_TYPE, Constants.Z_FUNCTION_CALL ],
+					returnTypes: [ Constants.Z_TYPE ],
+					searchContinue: null
 				}
 			) );
 		} );
@@ -81,10 +102,9 @@ describe( 'ZObjectSelector', () => {
 
 			const lookupPayload = {
 				input: 'text',
-				returnType: undefined,
-				searchContinue: null,
-				type: Constants.Z_TYPE,
-				strictType: false
+				types: [ Constants.Z_TYPE, Constants.Z_FUNCTION_CALL ],
+				returnTypes: [ Constants.Z_TYPE ],
+				searchContinue: null
 			};
 			const lookupItems = [ {
 				description: 'Type',

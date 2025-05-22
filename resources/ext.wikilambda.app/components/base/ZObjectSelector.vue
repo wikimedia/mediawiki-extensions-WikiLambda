@@ -82,20 +82,17 @@ module.exports = exports = defineComponent( {
 			type: String,
 			default: ''
 		},
-		disabled: {
-			type: Boolean,
-			required: false,
-			default: false
-		},
 		type: {
 			type: String,
-			default: ''
+			required: false,
+			default: undefined
 		},
 		returnType: {
 			type: String,
-			default: ''
+			required: false,
+			default: undefined
 		},
-		strictType: {
+		disabled: {
 			type: Boolean,
 			required: false,
 			default: false
@@ -272,6 +269,46 @@ module.exports = exports = defineComponent( {
 		 */
 		errorLookupStatus: function () {
 			return this.hasFieldErrors ? 'error' : 'default';
+		},
+
+		/**
+		 * Returns the array of zids to pass as the wikilambdasearch_type
+		 * parameter to the wikilambdasearch_labels API.
+		 *
+		 * @return {Array}
+		 */
+		lookupTypes: function () {
+			const types = [];
+			// If type is set, add to the array
+			if ( this.type ) {
+				types.push( this.type );
+			}
+			// If type=Z4, we allow Z7s that return Z4s
+			if ( this.type === Constants.Z_TYPE ) {
+				types.push( Constants.Z_FUNCTION_CALL );
+			}
+			// Return array of types if any
+			return types.length ? types : undefined;
+		},
+
+		/**
+		 * Returns the array of zids to pass as the wikilambdasearch_return_type
+		 * parameter to the wikilambdasearch_labels API.
+		 *
+		 * @return {Array}
+		 */
+		lookupReturnTypes: function () {
+			const types = [];
+			// If return type is set, add to the array
+			if ( this.returnType ) {
+				types.push( this.returnType );
+			}
+			// If type=Z4, we allow Z7s that return Z4s
+			if ( this.type === Constants.Z_TYPE ) {
+				types.push( Constants.Z_TYPE );
+			}
+			// Return array of return types if any
+			return types.length ? types : undefined;
 		}
 	} ),
 	methods: Object.assign( {},
@@ -338,9 +375,8 @@ module.exports = exports = defineComponent( {
 			getLookupResults: function ( input ) {
 				this.lookupZObjectLabels( {
 					input,
-					type: this.type || undefined,
-					returnType: this.returnType || undefined,
-					strictType: this.strictType,
+					types: this.lookupTypes,
+					returnTypes: this.lookupReturnTypes,
 					searchContinue: this.lookupConfig.searchContinue
 				} ).then( ( data ) => {
 					const { labels, searchContinue } = data;
@@ -362,12 +398,15 @@ module.exports = exports = defineComponent( {
 							const label = this.getLabelOrZid( value, result.label );
 							const description = this.getLabelOrZid( result.page_type, result.type_label );
 							const supportingText = ( label !== result.match_label ) ? `(${ result.match_label })` : '';
-							// If return type is set, reflect mode with icon
+
 							let icon;
-							if ( this.returnType ) {
-								icon = ( result.page_type === this.type ) ?
-									icons.cdxIconInstance :
-									icons.cdxIconFunction;
+							// If we expect to receive functions along with other literal types, show icon
+							if ( this.lookupTypes && this.lookupTypes.includes( Constants.Z_FUNCTION ) ) {
+								icon = ( result.page_type === Constants.Z_FUNCTION ) ?
+									icons.cdxIconFunction :
+									icons.cdxIconInstance;
+							} else {
+								icon = undefined;
 							}
 
 							// Exclude everything in the exclude Zids and disallowed types lists

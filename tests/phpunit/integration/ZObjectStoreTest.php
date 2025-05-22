@@ -776,13 +776,13 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		);
 
 		$res = $this->zobjectStore->searchZObjectLabels(
-			'Example', true, [ self::ZLANG['en'] ], null, null, false, null, 5000
+			'Example', true, [ self::ZLANG['en'] ], [], [], null, 5000
 		);
 		$this->assertInstanceOf( IResultWrapper::class, $res );
 		$this->assertSame( 1, $res->numRows() );
 
 		$res = $this->zobjectStore->searchZObjectLabels(
-			'Example', false, [ self::ZLANG['en'] ], null, null, false, null, 5000
+			'Example', false, [ self::ZLANG['en'] ], [], [], null, 5000
 		);
 		$this->assertInstanceOf( IResultWrapper::class, $res );
 		$this->assertSame( 3, $res->numRows() );
@@ -806,19 +806,19 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		);
 
 		$res = $this->zobjectStore->searchZObjectLabels(
-			'example', false, [ self::ZLANG['en'] ], 'Z7', null, false, null, 5000
+			'example', false, [ self::ZLANG['en'] ], [ 'Z7' ], [], null, 5000
 		);
 		$this->assertInstanceOf( IResultWrapper::class, $res );
 		$this->assertSame( 2, $res->numRows() );
 
 		$res = $this->zobjectStore->searchZObjectLabels(
-			'example', false, [ self::ZLANG['en'] ], 'Z6', null, false, null, 5000
+			'example', false, [ self::ZLANG['en'] ], [ 'Z6' ], [], null, 5000
 		);
 		$this->assertInstanceOf( IResultWrapper::class, $res );
 		$this->assertSame( 1, $res->numRows() );
 
 		$res = $this->zobjectStore->searchZObjectLabels(
-			'example', false, [ self::ZLANG['en'] ], null, 'Z6', true, null, 5000
+			'example', false, [ self::ZLANG['en'] ], [], [ 'Z6' ], null, 5000
 		);
 		$this->assertInstanceOf( IResultWrapper::class, $res );
 		$this->assertSame( 1, $res->numRows() );
@@ -830,7 +830,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->zobjectStore->insertZObjectLabels( 'Z458', 'Z6', [ self::ZLANG['fr'] => 'txt' ] );
 
 		$res = $this->zobjectStore->searchZObjectLabels(
-			'txt', false, [ self::ZLANG['en'], self::ZLANG['fr'] ], null, null, false, null, 5000
+			'txt', false, [ self::ZLANG['en'], self::ZLANG['fr'] ], [], [], null, 5000
 		);
 
 		$this->assertInstanceOf( IResultWrapper::class, $res );
@@ -851,9 +851,8 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			'label',
 			false,
 			[ self::ZLANG['en'] ],
-			null,
-			null,
-			false,
+			[],
+			[],
 			null,
 			2
 		);
@@ -872,9 +871,8 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			'label',
 			false,
 			[ self::ZLANG['en'] ],
-			null,
-			null,
-			false,
+			[],
+			[],
 			$continue,
 			2
 		);
@@ -893,9 +891,8 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			'label',
 			false,
 			[ self::ZLANG['en'] ],
-			null,
-			null,
-			false,
+			[],
+			[],
 			$continue,
 			2
 		);

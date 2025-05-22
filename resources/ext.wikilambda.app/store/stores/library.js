@@ -679,8 +679,6 @@ module.exports = {
 		 * language selector of the About widget.
 		 *
 		 * @param {Object} payload
-		 * @param {string} payload.input
-		 * @param {string} payload.type
 		 * @return {Promise}
 		 * @property {Array<Object>} labels - The search results
 		 * @property {number|null} searchContinue - The token to continue the search or null if no more results
@@ -730,7 +728,6 @@ module.exports = {
 		 * @property {number|null} searchContinue - The token to continue the search or null if no more results
 		 */
 		fetchEnumValues: function ( payload ) {
-			const { type, limit } = payload;
 			const enumObject = this.getEnum( payload.type );
 			const searchContinue = enumObject ? enumObject.searchContinue : undefined;
 
@@ -740,8 +737,8 @@ module.exports = {
 			}
 			const promise = searchLabels( {
 				input: '',
-				type,
-				limit: limit || Constants.API_ENUMS_LIMIT,
+				types: [ payload.type ],
+				limit: payload.limit || Constants.API_ENUMS_LIMIT,
 				language: this.getUserLangCode,
 				searchContinue
 			} ).then( ( data ) => {

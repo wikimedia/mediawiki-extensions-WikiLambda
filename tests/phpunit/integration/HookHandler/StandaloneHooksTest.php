@@ -843,6 +843,50 @@ EOT;
 		$this->assertEquals( 'Z20001', $rows->current()->wlzo_main_zid );
 	}
 
+	public function testOnMultiContentSave_relatedObjects_forFunctionCall() {
+		$this->insertZids( [ 'Z7', 'Z6884', 'Z6095' ] );
+		$sysopUser = $this->getTestSysop()->getUser();
+		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();
+
+		// Insert new Enum type
+		$filePath = dirname( __DIR__, 2 ) . '/test_data/object-relations-function-call.json';
+		$data = json_decode( file_get_contents( $filePath ) );
+
+		// 1. We insert the wikidata enum type:
+		$this->editPage( $data->zid, json_encode( $data->data ), 'Test wikidata enum', NS_MAIN, $sysopUser );
+
+		// Expect one Z7K1 entry:
+		$rows = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_main_zid', 'wlzo_main_type', 'wlzo_key', 'wlzo_related_zobject', 'wlzo_related_type' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [
+				'wlzo_main_zid' => $data->zid,
+				'wlzo_key' => 'Z7K1'
+			] )
+			->fetchResultSet();
+		$this->assertSame( 1, $rows->numRows() );
+		$this->assertEquals( 'Z20000', $rows->current()->wlzo_main_zid );
+		$this->assertEquals( 'Z6884', $rows->current()->wlzo_related_zobject );
+		$this->assertEquals( 'Z8', $rows->current()->wlzo_related_type );
+
+		// 2. Delete the wikidata enum type
+		$wikiPageFactory = $this->getServiceContainer()->getWikiPageFactory();
+		$title = Title::newFromText( $data->zid, NS_MAIN );
+		$page = $wikiPageFactory->newFromTitle( $title );
+		$this->deletePage( $page, 'Test delete', $sysopUser );
+
+		// Expect zero Z7K1 entries:
+		$rows = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_main_zid', 'wlzo_main_type', 'wlzo_key', 'wlzo_related_zobject', 'wlzo_related_type' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [
+				'wlzo_main_zid' => $data->zid,
+				'wlzo_key' => 'Z7K1'
+			] )
+			->fetchResultSet();
+		$this->assertSame( 0, $rows->numRows() );
+	}
+
 	public function testUpdateSecondaryTables_inserted() {
 		$updater = DatabaseUpdater::newForDB( $this->db );
 		HooksDataPathMock::createInitialContent( $updater );

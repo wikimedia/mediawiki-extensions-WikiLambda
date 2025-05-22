@@ -98,7 +98,6 @@ const chineseLabelLookupApiResponse = {
 			page_content_model: 'zobject',
 			page_title: 'Z1006',
 			page_type: 'Z60',
-			return_type: null,
 			match_label: 'Chinese',
 			match_is_primary: '1',
 			match_rate: 1,
@@ -111,7 +110,6 @@ const chineseLabelLookupApiResponse = {
 			page_content_model: 'zobject',
 			page_title: 'Z1107',
 			page_type: 'Z60',
-			return_type: null,
 			match_label: 'Chinese (Taiwan)',
 			match_is_primary: '1',
 			match_rate: 0.4375,
@@ -129,7 +127,6 @@ const frenchLabelLookupApiResponse = {
 			page_content_model: 'zobject',
 			page_title: 'Z1004',
 			page_type: 'Z60',
-			return_type: null,
 			match_label: 'French',
 			match_is_primary: '1',
 			match_lang: 'Z1002',
@@ -143,7 +140,6 @@ const frenchLabelLookupApiResponse = {
 			page_content_model: 'zobject',
 			page_title: 'Z1640',
 			page_type: 'Z60',
-			return_type: null,
 			match_label: 'Canadian French',
 			match_is_primary: '1',
 			match_lang: 'Z1002',
@@ -162,7 +158,6 @@ const genericTypesLookupApiResponse = {
 			page_content_model: 'zobject',
 			page_title: 'Z883',
 			page_type: 'Z8',
-			return_type: 'Z4',
 			match_label: 'Typed Map',
 			match_is_primary: '1',
 			match_lang: 'Z1002',
@@ -176,7 +171,6 @@ const genericTypesLookupApiResponse = {
 			page_content_model: 'zobject',
 			page_title: 'Z881',
 			page_type: 'Z8',
-			return_type: 'Z4',
 			match_label: 'Typed list',
 			match_is_primary: '1',
 			match_lang: 'Z1002',
@@ -190,7 +184,6 @@ const genericTypesLookupApiResponse = {
 			page_content_model: 'zobject',
 			page_title: 'Z882',
 			page_type: 'Z8',
-			return_type: 'Z4',
 			match_label: 'Typed pair',
 			match_is_primary: '1',
 			match_lang: 'Z1002',
@@ -209,7 +202,6 @@ const wikidataEnumLabelLookupApiResponse = {
 			page_content_model: 'zobject',
 			page_title: 'Z6884',
 			page_type: 'Z8',
-			return_type: 'Z4',
 			match_label: 'Typed enum of Wikidata references',
 			match_is_primary: '1',
 			match_lang: 'Z1002',
@@ -228,7 +220,6 @@ const functionCallLabelLookupApiResponse = {
 			page_content_model: 'zobject',
 			page_title: 'Z7',
 			page_type: 'Z4',
-			return_type: null,
 			match_label: 'Function call',
 			match_is_primary: '1',
 			match_lang: 'Z1002',
@@ -247,7 +238,6 @@ const stringLabelLookupApiResponse = {
 			page_content_model: 'zobject',
 			page_title: 'Z6',
 			page_type: 'Z4',
-			return_type: null,
 			match_label: 'String',
 			match_is_primary: '1',
 			match_lang: 'Z1002',
@@ -261,7 +251,6 @@ const stringLabelLookupApiResponse = {
 			page_content_model: 'zobject',
 			page_title: 'Z31',
 			page_type: 'Z4',
-			return_type: null,
 			match_label: 'Monolingual stringset',
 			match_is_primary: '1',
 			match_lang: 'Z1002',
@@ -280,7 +269,6 @@ const stringEqualityLabelLookupApiResponse = {
 			page_content_model: 'zobject',
 			page_title: 'Z866',
 			page_type: 'Z8',
-			return_type: 'Z40',
 			match_label: 'String equality',
 			match_is_primary: '1',
 			match_lang: 'Z1002',
@@ -294,7 +282,6 @@ const stringEqualityLabelLookupApiResponse = {
 			page_content_model: 'zobject',
 			page_title: 'Z844',
 			page_type: 'Z8',
-			return_type: 'Z40',
 			match_label: 'Boolean equality',
 			match_is_primary: '1',
 			match_lang: 'Z1002',
@@ -313,7 +300,6 @@ const functionLabelLookupApiResponse = {
 			page_content_model: 'zobject',
 			page_title: existingFunctionZid,
 			page_type: 'Z8',
-			return_type: 'Z40',
 			match_label: 'function name, in Chinese',
 			match_is_primary: '1',
 			match_lang: 'Z1002',
@@ -327,7 +313,6 @@ const functionLabelLookupApiResponse = {
 			page_content_model: 'zobject',
 			page_title: 'Z801',
 			page_type: 'Z8',
-			return_type: 'Z40',
 			match_label: 'another function name, in Chinese',
 			match_is_primary: '0.4',
 			match_lang: 'Z1002',
@@ -375,24 +360,43 @@ const performTestResponseResults = ( zFunctionId, zimplementationIds, ztesterId,
 	return testResults;
 };
 
-const labelsApiResponseBuilder = ( type, search ) => {
-	if ( type === Constants.Z_NATURAL_LANGUAGE && 'Chinese'.includes( search ) ) {
-		return chineseLabelLookupApiResponse;
-	} else if ( type === Constants.Z_NATURAL_LANGUAGE && 'French'.includes( search ) ) {
-		return frenchLabelLookupApiResponse;
-	} else if ( type === Constants.Z_TYPE && 'String'.includes( search ) ) {
-		return stringLabelLookupApiResponse;
-	} else if ( type === Constants.Z_TYPE && 'Typed'.includes( search ) ) {
-		return genericTypesLookupApiResponse;
-	} else if ( type === Constants.Z_TYPE && 'Function call'.includes( search ) ) {
-		return functionCallLabelLookupApiResponse;
-	} else if ( type === Constants.Z_FUNCTION && 'Typed enum'.includes( search ) ) {
-		return wikidataEnumLabelLookupApiResponse;
-	} else if ( type === Constants.Z_FUNCTION && 'String equality'.includes( search ) ) {
-		return stringEqualityLabelLookupApiResponse;
-	} else if ( type === Constants.Z_FUNCTION && 'function name, in Chinese'.includes( search ) ) {
-		return functionLabelLookupApiResponse;
+const labelsApiResponseBuilder = ( type = '', returnType = '', search = '' ) => {
+	const types = type.split( '|' );
+	const returnTypes = returnType.split( '|' );
+
+	// Language fields:
+	if ( types.includes( Constants.Z_NATURAL_LANGUAGE ) ) {
+		if ( 'Chinese'.includes( search ) ) {
+			return chineseLabelLookupApiResponse;
+		} else if ( 'French'.includes( search ) ) {
+			return frenchLabelLookupApiResponse;
+		}
 	}
+
+	// Type fields:
+	if ( types.includes( Constants.Z_TYPE ) || returnTypes.includes( Constants.Z_TYPE ) ) {
+		if ( 'String'.includes( search ) ) {
+			return stringLabelLookupApiResponse;
+		} else if ( 'Typed'.includes( search ) ) {
+			return genericTypesLookupApiResponse;
+		} else if ( 'Function call'.includes( search ) ) {
+			return functionCallLabelLookupApiResponse;
+		}
+	}
+
+	// Function fields:
+	if ( type.includes( Constants.Z_FUNCTION ) ) {
+		if ( 'Typed enum'.includes( search ) ) {
+			return wikidataEnumLabelLookupApiResponse;
+		} else if ( 'String equality'.includes( search ) ) {
+			return stringEqualityLabelLookupApiResponse;
+		} else if ( 'function name, in Chinese'.includes( search ) ) {
+			return functionLabelLookupApiResponse;
+		}
+	}
+
+	// Fallback: no results
+	return undefined;
 };
 
 const searchApiResponseBuilder = ( zfunctionId, type ) => {
@@ -446,15 +450,27 @@ const languageLabelsRequest = {
 	list: 'wikilambdasearch_labels',
 	wikilambdasearch_type: Constants.Z_NATURAL_LANGUAGE
 };
+const functionLabelsRequest = {
+	action: 'query',
+	list: 'wikilambdasearch_labels',
+	wikilambdasearch_type: Constants.Z_FUNCTION
+};
 const typeLabelsRequest = {
 	action: 'query',
 	list: 'wikilambdasearch_labels',
 	wikilambdasearch_type: Constants.Z_TYPE
 };
-const functionLabelsRequest = {
+const typeLabelsDefaultView = {
 	action: 'query',
 	list: 'wikilambdasearch_labels',
-	wikilambdasearch_type: Constants.Z_FUNCTION
+	wikilambdasearch_type: `${ Constants.Z_TYPE }|${ Constants.Z_FUNCTION_CALL }`,
+	wikilambdasearch_return_type: `${ Constants.Z_TYPE }`
+};
+const typeLabelsFunctionEditor = {
+	action: 'query',
+	list: 'wikilambdasearch_labels',
+	wikilambdasearch_type: undefined,
+	wikilambdasearch_return_type: `${ Constants.Z_TYPE }`
 };
 const loadZObjectsRequest = {
 	action: 'query',
@@ -479,13 +495,13 @@ const performTestRequest = {
 // Matchers
 const basicFieldMatcher =
 	( expectedRequest, actualRequest, fields ) => fields.every( ( field ) => expectedRequest[ field ] === actualRequest[ field ] );
-const labelsMatcher = ( expectedRequest, actualRequest ) => basicFieldMatcher( expectedRequest, actualRequest, [ 'action', 'list', 'wikilambdasearch_type' ] );
+const labelsMatcher = ( expectedRequest, actualRequest ) => basicFieldMatcher( expectedRequest, actualRequest, [ 'action', 'list', 'wikilambdasearch_type', 'wikilambdasearch_return_type' ] );
 const loadZObjectsMatcher = ( expectedRequest, actualRequest ) => basicFieldMatcher( expectedRequest, actualRequest, [ 'action', 'list' ] );
 const zObjectSearchMatcher = ( expectedRequest, actualRequest ) => basicFieldMatcher( expectedRequest, actualRequest, [ 'action', 'list', 'wikilambdafn_zfunction_id', 'wikilambdafn_type' ] );
 const actionMatcher = ( expectedRequest, actualRequest ) => basicFieldMatcher( expectedRequest, actualRequest, [ 'action' ] );
 
 // Responses
-const labelsResponse = ( request ) => labelsApiResponseBuilder( request.wikilambdasearch_type, request.wikilambdasearch_search );
+const labelsResponse = ( request ) => labelsApiResponseBuilder( request.wikilambdasearch_type, request.wikilambdasearch_return_type, request.wikilambdasearch_search );
 const loadZObjectsResponse = ( request ) => zObjectApiResponseBuilder( request.wikilambdaload_zids, request.wikilambdaload_language );
 const zObjectSearchResponse = ( request ) => searchApiResponseBuilder( request.wikilambdafn_zfunction_id, request.wikilambdafn_type );
 const performTestResponse = ( request ) => performTestResponseBuilder( request.wikilambda_perform_test_zfunction,
@@ -497,6 +513,8 @@ module.exports = {
 	labelsMatcher,
 	labelsResponse,
 	typeLabelsRequest,
+	typeLabelsDefaultView,
+	typeLabelsFunctionEditor,
 	languageLabelsRequest,
 	loadZObjectsMatcher,
 	loadZObjectsResponse,

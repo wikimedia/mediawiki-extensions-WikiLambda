@@ -239,7 +239,38 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 			return $this->getRelatedZObjectsOfType( $zid, $innerZObject );
 		}
 
+		if ( $innerZObject instanceof ZFunctionCall ) {
+			return $this->getRelatedZObjectsOfFunctionCall( $zid, $innerZObject );
+		}
+
 		return $this->getRelatedZObjectsOfInstance( $zid, $ztype );
+	}
+
+	/**
+	 * Return all important relations between the given function and others.
+	 * Currently returns:
+	 * * key:Z7K1: Function
+	 *
+	 * @param string $zid
+	 * @param ZFunctionCall $innerZObject
+	 * @return array Array of rows to insert in the join table
+	 */
+	private function getRelatedZObjectsOfFunctionCall( $zid, $innerZObject ) {
+		$relatedZObjects = [];
+
+		// Key:Z7K1: Get function zid
+		$functionZid = $innerZObject->getZValue();
+		if ( $functionZid ) {
+			$relatedZObjects[] = (object)[
+				'zid' => $zid,
+				'type' => ZTypeRegistry::Z_FUNCTIONCALL,
+				'key' => ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION,
+				'related_zid' => $functionZid,
+				'related_type' => ZTypeRegistry::Z_FUNCTION
+			];
+		}
+
+		return $relatedZObjects;
 	}
 
 	/**
