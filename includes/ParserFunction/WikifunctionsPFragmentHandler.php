@@ -23,7 +23,6 @@ use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
 use Psr\Log\LoggerInterface;
-use Wikimedia\ObjectCache\BagOStuff;
 use Wikimedia\Parsoid\Ext\Arguments;
 use Wikimedia\Parsoid\Ext\ParsoidExtensionAPI;
 use Wikimedia\Parsoid\Ext\PFragmentHandler;
@@ -35,7 +34,6 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 
 	private Config $config;
 	private JobQueueGroup $jobQueueGroup;
-	private BagOStuff $objectCache;
 	private HttpRequestFactory $httpRequestFactory;
 
 	/**
@@ -47,13 +45,11 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 	public function __construct(
 		Config $config,
 		JobQueueGroup $jobQueueGroup,
-		HttpRequestFactory $httpRequestFactory,
-		BagOStuff $objectCache
+		HttpRequestFactory $httpRequestFactory
 	) {
 		$this->config = $config;
 		$this->jobQueueGroup = $jobQueueGroup;
 		$this->httpRequestFactory = $httpRequestFactory;
-		$this->objectCache = $objectCache;
 
 		$this->wikifunctionsClientStore = WikiLambdaServices::getWikifunctionsClientStore();
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
@@ -93,8 +89,6 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 
 		// (T362256): This is the key we use to cache on the client wiki code here, rather than only at the repo wiki.
 		$clientCacheKey = $this->wikifunctionsClientStore->makeFunctionCallCacheKey( $expansion );
-
-		$cachedValue = $this->objectCache->get( $clientCacheKey );
 
 		// Schedule a job to update the usage tracking to say that we use this function on this page.
 		// We clear out the tracking each time the page is saved, via onPageSaveComplete above.
@@ -143,84 +137,51 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		// 	}
 		// }
 
+		$cachedValue = $this->wikifunctionsClientStore->fetchFromFunctionCallCache( $clientCacheKey );
 		if ( $cachedValue ) {
-			if ( !is_array( $cachedValue ) || !array_key_exists( 'success', $cachedValue ) ) {
-				// Corrupted/invalid cache entry, so delete it and re-trigger the request
-				$this->logger->warning(
-					'WikiLambda client cache entry for {key} is mal-formed, deleting it',
-					[
-						'key' => $clientCacheKey
-					]
-				);
-				$this->objectCache->delete( $clientCacheKey );
-			} else {
-				// Good news, this request has already been cached; examine what it is
-				if ( $cachedValue['success'] === true ) {
-					if ( $cachedValue['value'][0] !== null && is_string( $cachedValue['value'][0] ) ) {
-						$this->logger->debug(
-							'WikiLambda client cache hit for {key}, trimmed value is "{trimmedReturn}"',
-							[
-								'key' => $clientCacheKey,
-								'trimmedReturn' => substr( $cachedValue['value'][0], 0, 100 ),
-							]
-						);
-						// just return it
-						return WikifunctionsPFragment::newFromLiteral( $cachedValue['value'][0], null );
-					}
-					$this->logger->warning(
-						'WikiLambda client cache hit for {key}, but value {cachedValue} is not a string; deleting it',
-						[
-							'key' => $clientCacheKey,
-							'cachedValue' => var_export( $cachedValue, true )
-						]
-					);
-					$this->objectCache->delete( $clientCacheKey );
-				}
-				if ( !array_key_exists( 'errorMessageKey', $cachedValue ) ) {
-					// Corrupted/invalid cache entry, so delete it and re-trigger the request
-					$this->logger->warning(
-						'WikiLambda client cache entry for {key} is a failure but missing an error key; deleting it',
-						[
-							'key' => $clientCacheKey
-						]
-					);
-					$this->objectCache->delete( $clientCacheKey );
-				} else {
-					$errorMessageKey = $cachedValue['errorMessageKey'];
+			// Good news, this request has already been cached; examine what it is
 
-					$extApi->addTrackingCategory( $errorMessageKey . '-category' );
-
-					$this->logger->info(
-						'WikiLambda client request failed, returned {error} for request to {targetFunction} on {page}',
-						[
-							'error' => $errorMessageKey,
-							'targetFunction' => $expansion['target'],
-							'page' => $extApi->getPageConfig()->getLinkTarget()->__toString()
-						]
-					);
-
-					// TODO: Switch to $extApi->createPageContentI18nFragment()? Except that returns a DocumentFragment
-					$errorMsgString = wfMessage( 'wikilambda-functioncall-error-message', [
-						wfMessage( $errorMessageKey )->text()
-					] )->text();
-
-					// TODO (T391117): Rather than use Html::errorBox, build and use an inline error element
-					// TODO (T391007): Can't use HtmlPFragment for now due to missing support in Parsoid.
-					// $errorfulFragment = HtmlPFragment::newFromHtmlString(Html::errorBox($errorMsgString), null);
-					$errorfulFragment = WikitextPFragment::newFromWt(
-						'<div class="cdx-message cdx-message--block cdx-message--error">'
-							. '<div class="cdx-message__content">'
-								. $errorMsgString
-							. '</div>'
-						. '</div>',
-						null
-					);
-
-					// TODO: Do we want to have a special kind of fragment for this? We don't want to retry generally,
-					// but maybe it needs tracking or a longer-but-not-infinite TTL?
-					return $errorfulFragment;
-				}
+			if ( $cachedValue['success'] === true ) {
+				// It was a successful run! Just return it.
+				// @phan-suppress-next-line PhanTypeArraySuspiciousNullable False positive
+				return WikifunctionsPFragment::newFromLiteral( $cachedValue['value'][0], null );
 			}
+
+			// It failed for some reason; show the error message instead
+			$errorMessageKey = $cachedValue['errorMessageKey'];
+
+			$extApi->addTrackingCategory( $errorMessageKey . '-category' );
+
+			$this->logger->info(
+				'WikiLambda client request failed, returned {error} for request to {targetFunction} on {page}',
+				[
+					'error' => $errorMessageKey,
+					'targetFunction' => $expansion['target'],
+					'page' => $extApi->getPageConfig()->getLinkTarget()->__toString()
+				]
+			);
+
+			// TODO: Switch to $extApi->createPageContentI18nFragment()? Except that returns a DocumentFragment
+			$errorMsgString = wfMessage( 'wikilambda-functioncall-error-message', [
+				// @phan-suppress-next-line PhanTypeMismatchArgumentNullable False positive
+				wfMessage( $errorMessageKey )->text()
+			] )->text();
+
+			// TODO (T391117): Rather than use Html::errorBox, build and use an inline error element
+			// TODO (T391007): Can't use HtmlPFragment for now due to missing support in Parsoid.
+			// $errorfulFragment = HtmlPFragment::newFromHtmlString(Html::errorBox($errorMsgString), null);
+			$errorfulFragment = WikitextPFragment::newFromWt(
+				'<div class="cdx-message cdx-message--block cdx-message--error">'
+					. '<div class="cdx-message__content">'
+						. $errorMsgString
+					. '</div>'
+				. '</div>',
+				null
+			);
+
+			// TODO: Do we want to have a special kind of fragment for this? We don't want to retry generally,
+			// but maybe it needs tracking or a longer-but-not-infinite TTL?
+			return $errorfulFragment;
 		}
 
 		// At this point, we know our request hasn't yet been stored in the cache, so we need to trigger it,

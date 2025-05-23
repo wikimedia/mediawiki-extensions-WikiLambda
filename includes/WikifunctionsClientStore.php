@@ -142,4 +142,76 @@ class WikifunctionsClientStore {
 			json_encode( $functionCall )
 		);
 	}
+
+	/**
+	 * Store the given Function call in the cache, given its cache key.
+	 *
+	 * @param string $clientCacheKey
+	 * @return ?array{success:bool, value:?string[], errorMessageKey:?string}
+	 */
+	public function fetchFromFunctionCallCache( string $clientCacheKey ): ?array {
+		$cachedValue = $this->objectCache->get( $clientCacheKey );
+		if ( !$cachedValue ) {
+			$this->logger->info( __METHOD__ . ' cache miss while fetching {key}', [ 'key' => $clientCacheKey ] );
+			return null;
+		}
+
+		// Check for corrupted/invalid cache entries and delete them rather than returning them
+		if ( !is_array( $cachedValue ) ) {
+			$this->logger->warning(
+				'WikiLambda client cache entry for {key} is mal-formed, deleting it',
+				[
+					'key' => $clientCacheKey
+				]
+			);
+			$this->objectCache->delete( $clientCacheKey );
+			return null;
+		}
+
+		if ( !array_key_exists( 'success', $cachedValue ) || !is_bool( $cachedValue['success'] ) ) {
+			// Corrupted/invalid cache entry; delete it
+			$this->logger->warning(
+				'WikiLambda client cache entry for {key} is missing success boolean, deleting it',
+				[
+					'key' => $clientCacheKey
+				]
+			);
+			$this->objectCache->delete( $clientCacheKey );
+			return null;
+		}
+
+		if ( $cachedValue['succeess'] ) {
+			if (
+				!array_key_exists( 'value', $cachedValue ) ||
+				!is_array( $cachedValue['value'] ) ||
+				!is_string( $cachedValue['value'][0] )
+			) {
+				// Corrupted/invalid cache entry; delete it
+				$this->logger->warning(
+					'WikiLambda client cache entry for {key} is missing value string[], deleting it',
+					[
+						'key' => $clientCacheKey
+					]
+				);
+				$this->objectCache->delete( $clientCacheKey );
+				return null;
+			}
+			return $cachedValue;
+		}
+
+		// We know the success key is false, so we need to check the error message key
+
+		if ( !array_key_exists( 'errorMessageKey', $cachedValue ) || !is_string( $cachedValue['errorMessageKey'] ) ) {
+			$this->logger->warning(
+				'WikiLambda client cache entry for {key} is missing error message key string, deleting it',
+				[
+					'key' => $clientCacheKey
+				]
+			);
+			$this->objectCache->delete( $clientCacheKey );
+			return null;
+		}
+
+		return $cachedValue;
+	}
 }
