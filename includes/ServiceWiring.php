@@ -65,6 +65,8 @@ return [
 	// For client wikis
 
 	'WikifunctionsClientStore' => static function ( MediaWikiServices $services ): WikifunctionsClientStore {
-		return new WikifunctionsClientStore( $services->getDBLoadBalancerFactory() );
+		return new WikifunctionsClientStore(
+			$services->getDBLoadBalancerFactory()
+		);
 	},
 ];

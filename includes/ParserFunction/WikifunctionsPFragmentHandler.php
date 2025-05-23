@@ -16,7 +16,8 @@ use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientRequestJob;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientUsageUpdateJob;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikifunctionCallDefaultValues;
-use MediaWiki\Extension\WikiLambda\ZObjectStore;
+use MediaWiki\Extension\WikiLambda\WikifunctionsClientStore;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Html\Html;
 use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\JobQueue\JobQueueGroup;
@@ -37,6 +38,10 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 	private BagOStuff $objectCache;
 	private HttpRequestFactory $httpRequestFactory;
 
+	/**
+	 * @var WikifunctionsClientStore (but not explicitly typed, as this is a service mocked in tests)
+	 */
+	private $wikifunctionsClientStore;
 	private LoggerInterface $logger;
 
 	public const CLIENT_FUNCTIONCALL_CACHE_KEY_PREFIX = 'WikiLambdaClientFunctionCall';
@@ -52,6 +57,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		$this->httpRequestFactory = $httpRequestFactory;
 		$this->objectCache = $objectCache;
 
+		$this->wikifunctionsClientStore = WikiLambdaServices::getWikifunctionsClientStore();
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
 	}
 
@@ -271,9 +277,16 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 			}
 
 			// 2.1. Fetch Function Zid from Memcached
-			$zobject = $this->fetchFunctionFromCache( $functionCall[ 'target' ], $argKey );
+			$zobject = $this->wikifunctionsClientStore->fetchFromZObjectCache( $functionCall[ 'target' ] );
 			if ( !$zobject ) {
 				// 2.2. Fetch Function Zid from Wikifunctions
+				$this->logger->info(
+					__METHOD__ . ' cache miss while fetching {zid} for empty argument {arg}, falling back to API',
+					[
+						'zid' => $functionCall[ 'target' ],
+						'arg' => $argKey
+					]
+				);
 				$zobject = $this->fetchFunctionFromWikifunctionsApi( $functionCall[ 'target' ], $argKey );
 			}
 
@@ -315,44 +328,6 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 	}
 
 	/**
-	 * Requests the given function Zid from the cache.
-	 * Returns null if the function Zid is not cached.
-	 *
-	 * @param string $zid
-	 * @param string $argKey
-	 * @return ?array
-	 */
-	private function fetchFunctionFromCache( $zid, $argKey ): ?array {
-		$cacheKey = $this->objectCache->makeKey( ZObjectStore::ZOBJECT_CACHE_KEY_PREFIX, $zid );
-
-		$cachedObject = $this->objectCache->get( $cacheKey );
-		if ( !$cachedObject ) {
-			$this->logger->warning(
-				__METHOD__ . ' cache miss while fetching {zid} for empty argument {arg}',
-				[
-					'zid' => $zid,
-					'arg' => $argKey
-				]
-			);
-			return null;
-		}
-
-		$json = json_decode( $cachedObject, true );
-		if ( !$json ) {
-			$this->logger->warning(
-				__METHOD__ . ' failed parsing the cached Json for {zid} for empty argument {arg}',
-				[
-					'zid' => $zid,
-					'arg' => $argKey
-				]
-			);
-		}
-
-		// Return successfully parsed Json or null
-		return $json;
-	}
-
-	/**
 	 * Requests the given function Zid from the Wikifunctions ActionAPI.
 	 * Returns null if the function Zid is not found.
 	 *
@@ -370,6 +345,16 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		$baseUrl = WikifunctionsClientRequestJob::getClientTargetUrl( $this->config, $this->logger );
 		$apiUrl = wfAppendQuery( $baseUrl . wfScript( 'api' ), $requestParams );
 		$request = $this->httpRequestFactory->create( $apiUrl, [ 'method' => 'GET' ], __METHOD__ );
+
+		if ( !$request ) {
+			$this->logger->error(
+				__METHOD__ . ' failed to create a request to {url}',
+				[
+					'url' => $apiUrl
+				]
+			);
+			return null;
+		}
 
 		// Execute request:
 		$status = $request->execute();
