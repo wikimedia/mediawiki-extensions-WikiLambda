@@ -6,6 +6,7 @@
 		]
 	},
 	"wikilambda-about-widget-edit-button": "Editar",
+	"wikilambda-cancel": "Cancelar",
 	"wikilambda-performtest-error-nonimplementation": "Erro ó realizar unha proba: '$1' non se aplica.",
 	"wikilambda-publish-input-and-output-changed-impact-prompt": "Cambiaches o campo de entrada e o tipo de saída desta función. <strong>Todas as implementacións e probas existentes serán desvinculadas da función actual.</strong> Queres continuar?",
 	"wikilambda-publish-input-changed-impact-prompt": "Cambiaches o campo de entrada desta función. <strong>Todas as implementacións e probas existentes serán desvinculadas da función actual.</strong> Queres continuar?",
