@@ -190,7 +190,8 @@ module.exports = exports = defineComponent( {
 			'isMainObject',
 			'isWikidataLiteral',
 			'isWikidataFetch',
-			'isWikidataReference'
+			'isWikidataReference',
+			'getZObjectTypeByRowId'
 		] ),
 		{
 			/**
@@ -237,11 +238,18 @@ module.exports = exports = defineComponent( {
 				// 1. If parent expected type is Z1: return false (allow edit)
 				// 2. If parent expected type is Z881(Z1): return false (allow edit)
 				// 3. If parent expected type is Z881(Zn): return true (disable edit)
+				// 4. If the parent key is Z6884K2 (Wikidata enum keys), return true (disable edit)
+				//    because the type of the keys is bound to the type of the enum (Z6884K1).
 				if ( this.isKeyTypedListType( this.key ) ) {
-					return !(
-						( this.parentExpectedType === Constants.Z_OBJECT ) ||
-						( this.parentExpectedType[ Constants.Z_TYPED_LIST_TYPE ] === Constants.Z_OBJECT )
-					);
+					if ( this.parentKey === Constants.Z_WIKIDATA_ENUM_KEYS ) {
+						return true;
+					}
+
+					const isObjectType = this.parentExpectedType === Constants.Z_OBJECT;
+					const isTypedListObject =
+						this.parentExpectedType[ Constants.Z_TYPED_LIST_TYPE ] === Constants.Z_OBJECT;
+
+					return !( isObjectType || isTypedListObject );
 				}
 
 				// If the key is that of a key type/Z3K1 and:
@@ -249,6 +257,11 @@ module.exports = exports = defineComponent( {
 				// return true (disable edit)
 				if ( this.key === Constants.Z_KEY_TYPE ) {
 					return this.getZKeyIsIdentity( this.parentRowId );
+				}
+
+				// If this is the identity key of a wikidata enum, disable edit
+				if ( this.key === Constants.Z_WIKIDATA_ENUM_IDENTITY ) {
+					return true;
 				}
 
 				// If the key is that of Object type/Z1K1 and:
@@ -577,7 +590,8 @@ module.exports = exports = defineComponent( {
 		'setZImplementationContentType',
 		'removeItemFromTypedList',
 		'moveItemInTypedList',
-		'navigate'
+		'navigate',
+		'setZWikidataEnumTypedListType'
 	] ),
 	{
 		/**
@@ -738,6 +752,15 @@ module.exports = exports = defineComponent( {
 				return;
 			}
 
+			// If we are changing a Wikidata enum type, we need to update the
+			// type of its associated keys/references (Z6884K2) to match the new enum type.
+			if ( this.key === Constants.Z_WIKIDATA_ENUM_TYPE ) {
+				this.setZWikidataEnumTypedListType( {
+					parentRowId: this.parentRowId,
+					value: payload.value
+				} );
+			}
+
 			// If the value of Z7K1 changes, we need to change all keys, which
 			// probably means that we need to pass up the responsability the way we
 			// have done it with Z1K1.
@@ -796,7 +819,7 @@ module.exports = exports = defineComponent( {
 
 		/**
 		 * Generic handler to bubble up change events. This can be utilized by any component
-		 * that acts as a wrapper to ZObjectKeyValue and wants to recieve events from children.
+		 * that acts as a wrapper to ZObjectKeyValue and wants to receive events from children.
 		 *
 		 * It is currently used by ZTypedListType, to be notified of a type change to a list
 		 *

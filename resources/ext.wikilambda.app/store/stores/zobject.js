@@ -766,6 +766,24 @@ const zobjectStore = {
 		},
 
 		/**
+		 * Returns the list of typed list item row ids (without the type item)
+		 * given the parent rowId sorted by their key
+		 *
+		 * @return {Array}
+		 */
+		getTypedListItemsRowIds: function () {
+			/**
+			 * @param {string} rowId
+			 * @return {number | undefined}
+			 */
+			const findTypedListItemsRowIds = ( rowId ) => this.getChildrenByParentRowId( rowId )
+				.sort( ( a, b ) => parseInt( a.key ) - parseInt( b.key ) )
+				.slice( 1 )
+				.map( ( row ) => row.id );
+			return findTypedListItemsRowIds;
+		},
+
+		/**
 		 * Returns a particular key-value in the Metadata object given
 		 * the Metadata object rowId and a string key. Returns undefined
 		 * if nothing is found under the given key.
@@ -1735,8 +1753,13 @@ const zobjectStore = {
 			newArgs.forEach( ( arg ) => {
 				if ( !oldKeys.includes( arg[ Constants.Z_ARGUMENT_KEY ] ) ) {
 					const key = arg[ Constants.Z_ARGUMENT_KEY ];
+					// 4.c. If the key is a Wikidata enum identity, set it to the placeholder Z0
+					const presetValue = key === Constants.Z_WIKIDATA_ENUM_IDENTITY ?
+						Constants.NEW_ZID_PLACEHOLDER :
+						undefined;
 					const value = this.createObjectByType( {
-						type: arg[ Constants.Z_ARGUMENT_TYPE ]
+						type: arg[ Constants.Z_ARGUMENT_TYPE ],
+						value: presetValue
 					} );
 
 					// Asynchronously fetch the necessary zids. We don't need to wait
@@ -1775,7 +1798,7 @@ const zobjectStore = {
 				Constants.Z_IMPLEMENTATION_COMPOSITION,
 				Constants.Z_IMPLEMENTATION_BUILT_IN
 			];
-				// Remove unchecked implementation types
+			// Remove unchecked implementation types
 			for ( const key of allKeys ) {
 				if ( key !== payload.key ) {
 					const keyRow = this.getRowByKeyPath( [ key ], payload.parentId );
@@ -1794,6 +1817,31 @@ const zobjectStore = {
 				rowId: payload.parentId,
 				key: payload.key,
 				value: blankObject
+			} );
+		},
+
+		/**
+		 * Sets the type of the Wikidata enum typed list of references (Z6884K2) to the given value.
+		 *
+		 * @param {Object} payload
+		 * @param {number} payload.parentRowId - The parent row ID of the Wikidata enum.
+		 * @param {string} payload.value - The new type to set.
+		 */
+		setZWikidataEnumTypedListType: function ( payload ) {
+			const row = this.getRowByKeyPath( [ Constants.Z_WIKIDATA_ENUM_KEYS ], payload.parentRowId );
+			if ( !row ) {
+				return;
+			}
+
+			this.handleListTypeChange( {
+				parentRowId: row.id,
+				newListItemType: payload.value
+			} );
+
+			this.setValueByRowIdAndPath( {
+				rowId: row.id,
+				keyPath: [ '0', Constants.Z_REFERENCE_ID ],
+				value: payload.value
 			} );
 		},
 

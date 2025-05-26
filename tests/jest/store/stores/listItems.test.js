@@ -66,5 +66,64 @@ describe( 'ListItems Pinia store', () => {
 				expect( store.invalidListItems ).toEqual( {} );
 			} );
 		} );
+
+		describe( 'handleListTypeChange', () => {
+			beforeEach( () => {
+				Object.defineProperty( store, 'getTypedListItemsRowIds', {
+					value: jest.fn().mockReturnValue( [ 1, 2, 3 ] )
+				} );
+				Object.defineProperty( store, 'getZObjectTypeByRowId', {
+					value: jest.fn( ( rowId ) => rowId === 1 ? 'Z3' : 'Z2' )
+				} );
+			} );
+
+			it( 'sets a warning and marks invalid items when the new type is different and there are incompatible items', () => {
+				store.handleListTypeChange( {
+					parentRowId: 0,
+					newListItemType: 'Z3'
+				} );
+
+				expect( store.errors[ 0 ] ).toEqual( [ {
+					code: 'wikilambda-list-type-change-warning',
+					message: undefined,
+					type: 'warning'
+				} ] );
+
+				expect( store.invalidListItems ).toEqual( {
+					0: [ 2, 3 ]
+				} );
+			} );
+
+			it( 'clears errors and invalid items when the new type is Z1/Object', () => {
+				store.handleListTypeChange( {
+					parentRowId: 0,
+					newListItemType: 'Z3'
+				} );
+
+				expect( store.invalidListItems ).toEqual( {
+					0: [ 2, 3 ]
+				} );
+
+				store.handleListTypeChange( {
+					parentRowId: 0,
+					newListItemType: 'Z1'
+				} );
+
+				expect( store.invalidListItems ).toEqual( {} );
+			} );
+
+			it( 'does nothing if there are no list items', () => {
+				Object.defineProperty( store, 'getTypedListItemsRowIds', {
+					value: jest.fn().mockReturnValue( [ ] )
+				} );
+
+				store.handleListTypeChange( {
+					parentRowId: 0,
+					newListItemType: 'Z3'
+				} );
+
+				expect( store.invalidListItems ).toEqual( {} );
+			} );
+		} );
 	} );
 } );

@@ -408,8 +408,8 @@ module.exports = exports = defineComponent( {
 				// If the debug message error has already been set, do nothing
 				if ( this.hasErrorByCode( 0, Constants.ERROR_CODES.DEBUG_CODE_WARNING ) ) {
 					return;
-
 				}
+
 				// If 'Wikifunctions.Debug' is found, set the error.
 				this.setError( {
 					rowId: 0,

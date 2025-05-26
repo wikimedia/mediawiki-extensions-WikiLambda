@@ -17,7 +17,16 @@
 			>{{ valueLabel.label }}</a>
 		</template>
 		<template v-else>
+			<wl-wikidata-reference-selector
+				v-if="isWikidataEnumType"
+				:disabled="disabled"
+				:selected-zid="value"
+				data-testid="z-reference-wikidata-reference-selector"
+				@select-item="setValue"
+			>
+			</wl-wikidata-reference-selector>
 			<wl-z-object-selector
+				v-else
 				:disabled="disabled"
 				:row-id="rowId"
 				:selected-zid="value"
@@ -40,11 +49,13 @@ const typeMixin = require( '../../mixins/typeMixin.js' );
 const useMainStore = require( '../../store/index.js' );
 const ZObjectSelector = require( './../base/ZObjectSelector.vue' );
 const urlUtils = require( '../../utils/urlUtils.js' );
+const WikidataReferenceSelector = require( './wikidata/ReferenceSelector.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-reference',
 	components: {
-		'wl-z-object-selector': ZObjectSelector
+		'wl-z-object-selector': ZObjectSelector,
+		'wl-wikidata-reference-selector': WikidataReferenceSelector
 	},
 	mixins: [ typeMixin ],
 	props: {
@@ -176,6 +187,15 @@ module.exports = exports = defineComponent( {
 					( this.key === Constants.Z_OBJECT_TYPE ) &&
 					( this.parentKey === Constants.Z_PERSISTENTOBJECT_VALUE )
 				) ? Constants.EXCLUDE_FROM_PERSISTENT_CONTENT : [];
+			},
+
+			/**
+			 * Returns true if the expected type is a Wikidata enum type.
+			 *
+			 * @return {boolean} True if the expected type is a Wikidata enum type, false otherwise.
+			 */
+			isWikidataEnumType: function () {
+				return this.key === Constants.Z_WIKIDATA_ENUM_TYPE;
 			}
 		}
 	),
