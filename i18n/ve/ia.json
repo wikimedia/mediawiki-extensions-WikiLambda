@@ -41,6 +41,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Functiones suggerite",
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Modifica le function pro corriger valores mancante o non valide.",
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Necun option eligite.",
+	"wikilambda-visualeditor-wikifunctionscall-error-parser-empty": "Per favor insere un valor.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser": "Error incognite. [[f:Talk:$1|Signalar problema]]",
 	"wikilambda-visualeditor-wikifunctionscall-info-missing-content": "Adjuta a traducer le contento mancante in tu lingua sur [[f:$1|Wikifunctiones]].",
 	"wikilambda-visualeditor-wikifunctionscall-no-description": "Necun description",
@@ -50,5 +51,9 @@
 	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Necun function seligite.",
 	"wikilambda-visualeditor-wikifunctionscall-title": "Function",
 	"wikilambda-visualeditor-wikifunctionscall-preview-title": "Previsualisation",
-	"wikilambda-visualeditor-wikifunctionscall-preview-no-result": "Insere valores pro previsualisar le resultato."
+	"wikilambda-visualeditor-wikifunctionscall-preview-no-result": "Insere valores pro previsualisar le resultato.",
+	"wikilambda-visualeditor-wikifunctionscall-preview-error": "Le function non pote monstrar un resultato. Per favor tenta lo de novo plus tarde.",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "Cancellate",
+	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "Reinitialisar",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Cancellar"
 }

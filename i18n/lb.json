@@ -50,6 +50,7 @@
 	"right-wikilambda-create-boolean": "Nei boolesch Objeten uleeën",
 	"right-wikilambda-create-enum-value": "Nei Instanz vun engem Enum-Typ uleeën",
 	"right-wikilambda-create-function": "Nei Funktiounsobjeten uleeën",
+	"right-wikilambda-create-generic-enum": "Neie geneereschen Enum-Typ uleeën",
 	"right-wikilambda-create-implementation": "Nei Objete fir Implementéierungen uleeën",
 	"right-wikilambda-create-language": "Nei Objete fir natierlech Sproochen uleeën",
 	"right-wikilambda-create-predefined": "Nei „virdefinéiert“ Objeten uleeën (ënner Z10000)",
