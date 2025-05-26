@@ -334,7 +334,6 @@ const schemataUtils = {
 		const nested = [];
 		if ( zobject !== null && typeof zobject === 'object' ) {
 			const keysToTraverse = schemataUtils.errorKeysToTraverse.get( errorType );
-			// eslint-disable-next-line es-x/no-object-entries
 			Object.entries( zobject ).forEach( ( [ key, value ] ) => {
 				// We've already looked inside Z1K1/type; no need to look again
 				if ( key !== Constants.Z_OBJECT_TYPE &&
