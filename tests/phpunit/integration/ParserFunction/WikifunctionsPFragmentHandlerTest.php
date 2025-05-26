@@ -7,7 +7,7 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Jobs;
+namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ParserFunction;
 
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientRequestJob;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientUsageUpdateJob;
