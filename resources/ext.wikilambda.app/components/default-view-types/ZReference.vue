@@ -123,36 +123,36 @@ module.exports = exports = defineComponent( {
 			},
 
 			/**
-			 * Returns the bound type to configure the ZObjectSelector
-			 * If `returnType` is not set and `expectedType` is a valid bound type (not `Z_OBJECT`),
-			 * the bound type is returned as a string. Otherwise, returns an empty string.
-			 * The type is converted to a string with no arguments if it is a generic type.
+			 * Returns the bound type to configure the ZObjectSelector:
+			 * * if expectedType is bound: return expectedType, converted to a string
+			 *   with no arguments if it's a generic type (e.g. Z881 instead of Z881(Z6)).
+			 * * if expected type is unbound (Z1, or a resolver type like Z7, Z9 or Z18):
+			 *   return undefined
 			 *
-			 * @return {string} The bound type as a string, or an empty string if not applicable.
+			 * @return {string|undefined}
 			 */
 			type: function () {
-				return this.returnType || !this.expectedType || this.expectedType === Constants.Z_OBJECT ?
-					'' :
-					this.typeToString( this.expectedType, true );
+				const unboundTypes = [ Constants.Z_OBJECT, ...Constants.RESOLVER_TYPES ];
+				return !unboundTypes.includes( this.expectedType ) ?
+					this.typeToString( this.expectedType, true ) :
+					undefined;
 			},
 
 			/**
-			 * Returns the bound return type to configure the ZObjectSelector
-			 * If `key` is `Z_FUNCTION_CALL_FUNCTION` and `parentExpectedType` is a valid bound type
-			 * the bound return type is returned as a string. Otherwise, returns an empty string.
-			 * We understand that the parent type is unbound when it expects Z1/Object or a
-			 * resolver type (Z7/Function call, Z9/Reference, Z18/Argument reference), as they
-			 * can resolve to anything.
-			 * The type is converted to a string with no arguments if it is a generic type.
+			 * Returns the bound return type to configure the ZObjectSelector:
+			 * * If key is Z7K1/Z_FUNCTION_CALL_FUNCTION, and function call return type is bound:
+			 *   return parentExpectedType, converted to a string.
+			 * * If key is Z7K1 but function call can return anything: return undefined
+			 * * If key is not Z7K1: return undefined
 			 *
-			 * @return {string} The bound return type as a string, or an empty string if not applicable.
+			 * @return {string|undefined}
 			 */
 			returnType: function () {
 				const unboundTypes = [ Constants.Z_OBJECT, ...Constants.RESOLVER_TYPES ];
 				return ( this.key === Constants.Z_FUNCTION_CALL_FUNCTION &&
 					!unboundTypes.includes( this.parentExpectedType ) ) ?
 					this.typeToString( this.parentExpectedType, true ) :
-					'';
+					undefined;
 			},
 
 			/**
@@ -189,7 +189,7 @@ module.exports = exports = defineComponent( {
 				) ? Constants.EXCLUDE_FROM_PERSISTENT_CONTENT : [];
 			},
 
-			/**
+			/*
 			 * Returns true if the expected type is a Wikidata enum type.
 			 *
 			 * @return {boolean} True if the expected type is a Wikidata enum type, false otherwise.

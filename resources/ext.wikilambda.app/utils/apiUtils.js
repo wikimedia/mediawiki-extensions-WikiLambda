@@ -129,9 +129,8 @@ const apiUtils = {
 	 *
 	 * @param {Object} payload
 	 * @param {string} payload.input Substring to search by
-	 * @param {string} payload.type Type of objects to retrieve
-	 * @param {string} payload.returnType Retrieve also functions of a given output type
-	 * @param {boolean} payload.strictType Exclude functions that return anything/Z1
+	 * @param {Array|undefined} payload.types Types of objects to retrieve, separated by pipes
+	 * @param {Array|undefined} payload.returnTypes Return types to retrieve, separated by pipes
 	 * @param {string} payload.language The user language code
 	 * @param {number} payload.searchContinue When more results are available, use this to continue
 	 * @param {number} payload.limit The maximum number of results to return
@@ -146,9 +145,8 @@ const apiUtils = {
 				action: 'query',
 				list: 'wikilambdasearch_labels',
 				wikilambdasearch_search: payload.input,
-				wikilambdasearch_type: payload.type,
-				wikilambdasearch_return_type: payload.returnType,
-				wikilambdasearch_strict_return_type: payload.strictType,
+				wikilambdasearch_type: payload.types ? payload.types.join( '|' ) : undefined,
+				wikilambdasearch_return_type: payload.returnTypes ? payload.returnTypes.join( '|' ) : undefined,
 				wikilambdasearch_language: payload.language,
 				wikilambdasearch_limit: payload.limit,
 				wikilambdasearch_continue: payload.searchContinue

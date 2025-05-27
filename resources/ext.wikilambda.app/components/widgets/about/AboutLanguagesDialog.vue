@@ -278,7 +278,7 @@ module.exports = exports = defineComponent( {
 			const allZids = [];
 			this.lookupZObjectLabels( {
 				input: substring,
-				type: Constants.Z_NATURAL_LANGUAGE
+				types: Constants.Z_NATURAL_LANGUAGE
 			} ).then( ( data ) => {
 				const { labels } = data;
 				// If the string searched has changed, do not show the search result

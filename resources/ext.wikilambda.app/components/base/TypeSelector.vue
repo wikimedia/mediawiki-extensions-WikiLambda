@@ -23,9 +23,7 @@
 				:placeholder="placeholder"
 				:row-id="rowId"
 				:selected-zid="selectedZid"
-				:type="type"
 				:return-type="type"
-				:strict-type="true"
 				@select-item="setValue"
 			></wl-z-object-selector>
 		</cdx-field>

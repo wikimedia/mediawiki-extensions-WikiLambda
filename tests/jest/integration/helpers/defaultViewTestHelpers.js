@@ -19,7 +19,7 @@ const wikidataMock = require( './wikidataMock.js' );
 const initializeRootZObject =
 	new ApiMock( apiGetMock.loadZObjectsRequest, apiGetMock.loadZObjectsResponse, apiGetMock.loadZObjectsMatcher );
 const lookupZObjectTypeLabels =
-	new ApiMock( apiGetMock.typeLabelsRequest, apiGetMock.labelsResponse, apiGetMock.labelsMatcher );
+	new ApiMock( apiGetMock.typeLabelsDefaultView, apiGetMock.labelsResponse, apiGetMock.labelsMatcher );
 const lookupZObjectFunctionLabels =
 	new ApiMock( apiGetMock.functionLabelsRequest, apiGetMock.labelsResponse, apiGetMock.labelsMatcher );
 

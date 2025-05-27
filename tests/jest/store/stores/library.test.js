@@ -950,8 +950,6 @@ describe( 'library Pinia store', () => {
 					wikilambdasearch_limit: 10,
 					wikilambdasearch_search: '',
 					wikilambdasearch_type: 'Z30000',
-					wikilambdasearch_return_type: undefined,
-					wikilambdasearch_strict_return_type: undefined,
 					wikilambdasearch_language: 'en'
 				} );
 

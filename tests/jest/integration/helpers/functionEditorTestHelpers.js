@@ -15,7 +15,7 @@ const mockMWConfigGet = require( './mwConfigMock.js' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 
 const lookupZObjectTypeLabels = new ApiMock(
-	apiGetMock.typeLabelsRequest,
+	apiGetMock.typeLabelsFunctionEditor,
 	apiGetMock.labelsResponse,
 	apiGetMock.labelsMatcher
 );

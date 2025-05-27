@@ -898,6 +898,46 @@ class ZObjectStore {
 	}
 
 	/**
+	 * Generates a query to get the return types for all stored functions
+	 * and function calls.
+	 *
+	 * @return SelectQueryBuilder
+	 */
+	public function getReturnTypeQuery() {
+		$dbr = $this->dbProvider->getReplicaDatabase();
+
+		$caseReturnTypes = 'CASE '
+			. 'WHEN a.wlzo_main_type =' . $dbr->addQuotes( 'Z7' ) . ' THEN a.wlzo_related_zobject '
+			. 'WHEN a.wlzo_main_type =' . $dbr->addQuotes( 'Z8' ) . ' THEN a.wlzo_main_zid '
+			. 'END';
+
+		$joinConditions = [
+			'rt.wlzo_key' => 'Z8K2',
+			'rt.wlzo_main_zid = ' . $caseReturnTypes
+		];
+
+		$filterConditions = $dbr->orExpr( [
+			$dbr->andExpr( [ 'a.wlzo_main_type' => 'Z7' ] ),
+			$dbr->andExpr( [
+				'a.wlzo_main_type' => 'Z8',
+				'a.wlzo_key' => 'Z8K2'
+			] )
+		] );
+
+		$returnTypeQueryBuilder = $dbr->newSelectQueryBuilder()
+			->select( [
+				'a.wlzo_main_zid',
+				'a.wlzo_main_type',
+				'return_type' => 'rt.wlzo_related_zobject'
+			] )
+			->from( 'wikilambda_zobject_join', 'a' )
+			->leftJoin( 'wikilambda_zobject_join', 'rt', $joinConditions )
+			->where( $filterConditions );
+
+		return $returnTypeQueryBuilder;
+	}
+
+	/**
 	 * Generates a query that filters to the preferred label in the
 	 * labels table, depending on the user's language fallback chain
 	 * passed as parameter.
@@ -1083,51 +1123,35 @@ class ZObjectStore {
 	/**
 	 * Search labels in the secondary database, filtering by language Zids, type or label string.
 	 *
-	 * @param string $label Term to search in the label database
+	 * @param string $searchTerm Term to search in the label database
 	 * @param bool $exact Whether to search by exact match
 	 * @param string[] $languages List of language Zids to filter by
-	 * @param string|null $type Zid of the type to filter by. If null, don't filter by type.
-	 * @param string|null $returnType Zid of the return type to filter by. If null, don't filter by return type.
-	 * @param bool $strictReturnType Whether to exclude Z1s as return type.
+	 * @param string[] $types List of type Zids to filter by; will be aggregated with OR
+	 * @param string[] $returnTypes List of return type Zids to filter by; will be aggregated with OR
 	 * @param string|null $continue Id to start. If null, start from the first result.
 	 * @param int|null $limit Maximum number of results to return.
 	 * @return IResultWrapper
 	 */
 	public function searchZObjectLabels(
-		$label,
-		$exact,
-		$languages,
-		$type,
-		$returnType,
-		$strictReturnType,
-		$continue,
-		$limit
+		$searchTerm,
+		$exact = false,
+		$languages = [],
+		$types = [],
+		$returnTypes = [],
+		$continue = null,
+		$limit = null
 	) {
 		$dbr = $this->dbProvider->getReplicaDatabase();
-
 		$conditions = [];
+
 		// Set language filter if any
 		if ( count( $languages ) > 0 ) {
 			$conditions['wlzl_language'] = $languages;
 		}
 
-		// Set type filter
-		$typeConditions = [];
-		if ( $type !== null ) {
-			$typeConditions['wlzl_type'] = $type;
-		}
-
-		// Set returntype filter
-		if ( $returnType !== null ) {
-			$typeConditions['wlzl_return_type'] = [ $returnType ];
-			if ( !$strictReturnType ) {
-				$typeConditions['wlzl_return_type'][] = ZTypeRegistry::Z_OBJECT;
-			}
-		}
-
 		// Set type conditions
-		if ( count( $typeConditions ) > 0 ) {
-			$conditions[] = $dbr->orExpr( $typeConditions );
+		if ( count( $types ) > 0 ) {
+			$conditions[ 'wlzl_type' ] = $types;
 		}
 
 		// Set minimum id bound if we are continuing a paged result
@@ -1135,29 +1159,29 @@ class ZObjectStore {
 			$conditions[] = $dbr->expr( 'wlzl_id', '>=', $continue );
 		}
 
-		// Set search Term and column
-		if ( ZObjectUtils::isValidZObjectReference( $label ) ) {
-			$searchedColumn = 'wlzl_zobject_zid';
-			$searchTerm = $label;
+		// Set search term and search column
+		if ( ZObjectUtils::isValidZObjectReference( $searchTerm ) ) {
+			$searchColumn = 'wlzl_zobject_zid';
 		} elseif ( $exact ) {
-			$searchedColumn = 'wlzl_label';
-			$searchTerm = $label;
+			$searchColumn = 'wlzl_label';
 		} else {
-			$searchedColumn = 'wlzl_label_normalised';
-			$searchTerm = ZObjectUtils::comparableString( $label );
+			$searchColumn = 'wlzl_label_normalised';
+			$searchTerm = ZObjectUtils::comparableString( $searchTerm );
 		}
-
-		$conditions[] = $dbr->expr( $searchedColumn, IExpression::LIKE,
-			new LikeValue( $dbr->anyString(), $searchTerm, $dbr->anyString() ) );
+		$conditions[] = $dbr->expr(
+			$searchColumn,
+			IExpression::LIKE,
+			new LikeValue( $dbr->anyString(), $searchTerm, $dbr->anyString() )
+		);
 
 		// Create query builder
 		$queryBuilder = $dbr->newSelectQueryBuilder()
 			->select( [
 				'wlzl_zobject_zid',
 				'wlzl_type',
-				'wlzl_return_type',
 				'wlzl_language',
 				'wlzl_label',
+				'wlzl_label_normalised',
 				'wlzl_label_primary',
 				'wlzl_id'
 			] )
@@ -1165,6 +1189,16 @@ class ZObjectStore {
 			->where( $conditions )
 			->orderBy( 'wlzl_id', SelectQueryBuilder::SORT_ASC )
 			->orderBy( 'wlzl_label_primary', SelectQueryBuilder::SORT_DESC );
+
+		// Set return type leftJoin and field if return_types is present in the filters
+		if ( count( $returnTypes ) > 0 ) {
+			$returnTypeConditional = $dbr->conditional( 'ret.return_type IS NOT NULL', 'ret.return_type', 'wlzl_type' );
+			$returnTypeQueryBuilder = $this->getReturnTypeQuery();
+			$queryBuilder
+				->field( $returnTypeConditional, 'wlzl_return_type' )
+				->leftJoin( $returnTypeQueryBuilder, 'ret', 'wlzl_zobject_zid = ret.wlzo_main_zid' )
+				->andWhere( [ $returnTypeConditional => $returnTypes ] );
+		}
 
 		// Set limit if not null
 		if ( $limit ) {

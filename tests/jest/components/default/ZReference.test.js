@@ -123,7 +123,7 @@ describe( 'ZReference', () => {
 			} );
 
 			expect( wrapper.vm.returnType ).toBe( Constants.Z_STRING );
-			expect( wrapper.vm.type ).toBe( '' );
+			expect( wrapper.vm.type ).toBe( Constants.Z_FUNCTION );
 		} );
 
 		it( 'returns empty returnType when the key is a function call but parent expected type is unbound', async () => {
@@ -137,7 +137,7 @@ describe( 'ZReference', () => {
 				}
 			} );
 
-			expect( wrapper.vm.returnType ).toBe( '' );
+			expect( wrapper.vm.returnType ).toBe( undefined );
 			expect( wrapper.vm.type ).toBe( Constants.Z_FUNCTION );
 		} );
 
@@ -152,7 +152,7 @@ describe( 'ZReference', () => {
 				}
 			} );
 
-			expect( wrapper.vm.returnType ).toBe( '' );
+			expect( wrapper.vm.returnType ).toBe( undefined );
 			expect( wrapper.vm.type ).toBe( Constants.Z_FUNCTION );
 		} );
 
