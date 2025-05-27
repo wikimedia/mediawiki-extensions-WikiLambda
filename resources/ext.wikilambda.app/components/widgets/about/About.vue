@@ -704,5 +704,9 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-about__button-languages {
 		margin-top: @spacing-125;
 	}
+
+	.ext-wikilambda-app-about__accordion .cdx-accordion__header {
+		padding-right: @spacing-125;
+	}
 }
 </style>
