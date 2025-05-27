@@ -334,13 +334,15 @@ const schemataUtils = {
 		const nested = [];
 		if ( zobject !== null && typeof zobject === 'object' ) {
 			const keysToTraverse = schemataUtils.errorKeysToTraverse.get( errorType );
-			Object.entries( zobject ).forEach( ( [ key, value ] ) => {
-				// We've already looked inside Z1K1/type; no need to look again
-				if ( key !== Constants.Z_OBJECT_TYPE &&
-					( keysToTraverse === undefined || keysToTraverse.has( key ) ) ) {
-					nested.push( ...schemataUtils.extractErrorStructure( value ) );
+			for ( const key in zobject ) {
+				if ( Object.prototype.hasOwnProperty.call( zobject, key ) ) {
+					// We've already looked inside Z1K1/type; no need to look again
+					if ( key !== Constants.Z_OBJECT_TYPE &&
+						( keysToTraverse === undefined || keysToTraverse.has( key ) ) ) {
+						nested.push( ...schemataUtils.extractErrorStructure( zobject[ key ] ) );
+					}
 				}
-			} );
+			}
 		}
 		return nested;
 	}
