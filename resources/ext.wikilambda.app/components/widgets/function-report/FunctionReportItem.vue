@@ -8,31 +8,33 @@
 -->
 <template>
 	<div class="ext-wikilambda-app-function-report-item">
-		<div class="ext-wikilambda-app-function-report-item__header">
+		<div class="ext-wikilambda-app-function-report-item__content">
 			<wl-status-icon
+				class="ext-wikilambda-app-function-report-item__icon"
 				size="small"
 				:status="status"
 				:status-icon="statusIcon"
 			></wl-status-icon>
-			<a
-				:href="titleLink"
-				class="ext-wikilambda-app-function-report-item__title"
-				:class="{ 'ext-wikilambda-app-function-report-item__title--no-label': titleLabelData.isUntitled }"
-				:lang="titleLabelData.langCode"
-				:dir="titleLabelData.langDir"
-			>{{ titleLabelData.labelOrUntitled }}</a>
-		</div>
-
-		<div class="ext-wikilambda-app-function-report-item__footer">
-			<span class="ext-wikilambda-app-function-report-item__footer-status">
-				{{ statusMessage }}
-			</span>
-			<a
-				v-if="!isRunning && status !== 'ready'"
-				role="button"
-				@click="emitTesterKeys"
-			>{{ $i18n( 'wikilambda-tester-details' ).text() }}
-			</a>
+			<div class="ext-wikilambda-app-function-report-item__text">
+				<a
+					:href="titleLink"
+					class="ext-wikilambda-app-function-report-item__title"
+					:class="{ 'ext-wikilambda-app-function-report-item__title--no-label': titleLabelData.isUntitled }"
+					:lang="titleLabelData.langCode"
+					:dir="titleLabelData.langDir"
+				>{{ titleLabelData.labelOrUntitled }}</a>
+				<div class="ext-wikilambda-app-function-report-item__footer">
+					<span class="ext-wikilambda-app-function-report-item__footer-status">
+						{{ statusMessage }}
+					</span>
+					<a
+						v-if="!isRunning && status !== 'ready'"
+						role="button"
+						@click="emitTesterKeys"
+					>{{ $i18n( 'wikilambda-tester-details' ).text() }}
+					</a>
+				</div>
+			</div>
 		</div>
 	</div>
 </template>
@@ -188,7 +190,7 @@ module.exports = exports = defineComponent( {
 @import '../../../ext.wikilambda.app.variables.less';
 
 .ext-wikilambda-app-function-report-item {
-	.ext-wikilambda-app-function-report-item__header {
+	.ext-wikilambda-app-function-report-item__content {
 		display: flex;
 		align-items: flex-start;
 
@@ -197,9 +199,16 @@ module.exports = exports = defineComponent( {
 		}
 	}
 
+	.ext-wikilambda-app-function-report-item__icon {
+		flex-shrink: 0;
+	}
+
+	.ext-wikilambda-app-function-report-item__text {
+		margin-left: @spacing-50;
+	}
+
 	/* TODO: update with codex dark link when available */
 	.ext-wikilambda-app-function-report-item__title {
-		margin-left: @spacing-50;
 		margin-right: 0;
 		display: block;
 		color: @color-base;
@@ -215,10 +224,6 @@ module.exports = exports = defineComponent( {
 				color: @color-placeholder;
 			}
 		}
-	}
-
-	.ext-wikilambda-app-function-report-item__footer {
-		margin-left: calc( @spacing-100 + @spacing-50 );
 	}
 
 	.ext-wikilambda-app-function-report-item__footer-status {
