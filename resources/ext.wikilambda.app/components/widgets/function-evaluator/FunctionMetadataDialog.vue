@@ -792,10 +792,6 @@ module.exports = exports = defineComponent( {
 		color: @color-base;
 	}
 
-	.ext-wikilambda-app-function-metadata-dialog__content {
-		font-size: @wl-font-size-base;
-	}
-
 	.ext-wikilambda-app-function-metadata-dialog__select-block {
 		padding-bottom: @spacing-100;
 	}

@@ -133,8 +133,8 @@
 				</div>
 			</section>
 		</template>
-		<template v-if="edit && functionExists" #footer>
-			<div class="ext-wikilambda-app-function-explorer-widget__footer-wrapper">
+		<template #footer>
+			<div v-if="edit && functionExists" class="ext-wikilambda-app-function-explorer-widget__footer-wrapper">
 				<cdx-button
 					class="ext-wikilambda-app-function-explorer-widget__button-view-function"
 					action="progressive"
@@ -342,12 +342,12 @@ module.exports = exports = defineComponent( {
 		cursor: pointer;
 	}
 
-	.ext-wikilambda-app-function-explorer-widget__button-view-function {
-		font-size: @wl-font-size-base;
-	}
-
 	.ext-wikilambda-app-function-explorer-widget__button--disabled {
 		cursor: not-allowed;
+	}
+
+	.ext-wikilambda-app-function-explorer-widget__footer-wrapper {
+		margin-top: @spacing-50;
 	}
 }
 </style>
