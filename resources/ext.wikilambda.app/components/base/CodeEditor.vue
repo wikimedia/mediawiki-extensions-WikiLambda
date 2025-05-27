@@ -119,6 +119,7 @@ module.exports = exports = defineComponent( {
 		min-height: 85px;
 		z-index: 0;
 		box-sizing: @box-sizing-base;
+		font-size: calc( @font-size-medium * 0.857 );
 	}
 
 	&--disabled {
