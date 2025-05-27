@@ -216,7 +216,6 @@ module.exports = exports = defineComponent( {
 		flex: 1;
 		display: flex;
 		flex-direction: column;
-		min-height: @size-200;
 		justify-content: center;
 		position: relative;
 
