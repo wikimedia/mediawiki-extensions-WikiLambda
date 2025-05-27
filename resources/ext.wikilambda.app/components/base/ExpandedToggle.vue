@@ -16,6 +16,7 @@
 		<cdx-icon
 			class="ext-wikilambda-app-expanded-toggle__icon"
 			:class="iconClass"
+			:size="hasExpandedMode ? 'small' : 'medium'"
 			:icon="hasExpandedMode ? icons.cdxIconExpand : iconBullet"
 		></cdx-icon>
 	</cdx-button>
@@ -80,13 +81,9 @@ module.exports = exports = defineComponent( {
 @import '../../ext.wikilambda.app.variables.less';
 
 .ext-wikilambda-app-expanded-toggle {
-	width: calc( @min-size-icon-small + 2px );
-	min-width: calc( @min-size-icon-small + 2px );
 	padding: 0;
 
 	.ext-wikilambda-app-expanded-toggle__icon {
-		min-width: @min-size-icon-small;
-		min-height: @min-size-icon-small;
 		padding: 0;
 		color: @color-subtle;
 		transition: transform @transition-duration-medium @transition-timing-function-system;
@@ -97,21 +94,6 @@ module.exports = exports = defineComponent( {
 
 		&.cdx-icon {
 			color: @color-subtle;
-			width: @min-size-icon-small;
-			height: @min-size-icon-small;
-
-			svg {
-				width: @size-75;
-				height: @size-75;
-			}
-		}
-
-		// Make the bullet icon a bit bigger
-		&--disabled.cdx-icon {
-			svg {
-				width: @spacing-200;
-				height: @spacing-200;
-			}
 		}
 
 		&--collapsed.cdx-icon {

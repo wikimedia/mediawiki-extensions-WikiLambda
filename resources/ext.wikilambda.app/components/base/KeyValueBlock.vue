@@ -193,16 +193,13 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-key-value-block__pre-buttons {
 		display: flex;
 		flex-direction: row;
-
-		button {
-			flex: 0 1;
-		}
 	}
 
 	.ext-wikilambda-app-key-value-block__pre-button.cdx-button--icon-only {
-		flex: 0 1;
+		margin: 0 auto;
+		width: calc( @min-size-icon-small + 4px );
+		min-width: calc( @min-size-icon-small + 4px );
 		color: @color-subtle;
-		min-width: @size-icon-small;
 
 		&--disabled {
 			color: @color-disabled;
