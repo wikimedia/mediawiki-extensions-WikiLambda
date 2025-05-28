@@ -50,5 +50,9 @@
 	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Necun function seligite.",
 	"wikilambda-visualeditor-wikifunctionscall-title": "Function",
 	"wikilambda-visualeditor-wikifunctionscall-preview-title": "Previsualisation",
-	"wikilambda-visualeditor-wikifunctionscall-preview-no-result": "Insere valores pro previsualisar le resultato."
+	"wikilambda-visualeditor-wikifunctionscall-preview-no-result": "Insere valores pro previsualisar le resultato.",
+	"wikilambda-visualeditor-wikifunctionscall-preview-error": "Le function non pote monstrar un resultato. Per favor tenta lo de novo plus tarde.",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "Cancellate",
+	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "Reinitialisar",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Cancellar"
 }
