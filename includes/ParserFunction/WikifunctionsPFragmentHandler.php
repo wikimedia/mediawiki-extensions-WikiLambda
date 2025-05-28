@@ -44,8 +44,6 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 	private $wikifunctionsClientStore;
 	private LoggerInterface $logger;
 
-	public const CLIENT_FUNCTIONCALL_CACHE_KEY_PREFIX = 'WikiLambdaClientFunctionCall';
-
 	public function __construct(
 		Config $config,
 		JobQueueGroup $jobQueueGroup,
@@ -94,12 +92,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		);
 
 		// (T362256): This is the key we use to cache on the client wiki code here, rather than only at the repo wiki.
-		$clientCacheKey = $this->objectCache->makeKey(
-			self::CLIENT_FUNCTIONCALL_CACHE_KEY_PREFIX,
-			// Note that we can't use ZObjectUtils::makeCacheKeyFromZObject here, as that's repo-mode only.
-			// This means that this cache key doesn't have the revision IDs of the referenced ZObjects.
-			json_encode( $expansion )
-		);
+		$clientCacheKey = $this->wikifunctionsClientStore->makeFunctionCallCacheKey( $expansion );
 
 		$cachedValue = $this->objectCache->get( $clientCacheKey );
 

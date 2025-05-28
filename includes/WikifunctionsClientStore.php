@@ -23,6 +23,8 @@ class WikifunctionsClientStore {
 
 	private LoggerInterface $logger;
 
+	public const CLIENT_FUNCTIONCALL_CACHE_KEY_PREFIX = 'WikiLambdaClientFunctionCall';
+
 	/**
 	 * @param IConnectionProvider $dbProvider
 	 */
@@ -123,5 +125,21 @@ class WikifunctionsClientStore {
 
 		// Return successfully parsed JSON, or null
 		return $json;
+	}
+
+	/**
+	 * Requests the given Function call from the ZObject cache, given its cache key.
+	 * Returns null if the Function call is not available in the cache.
+	 *
+	 * @param array $functionCall
+	 * @return string
+	 */
+	public function makeFunctionCallCacheKey( array $functionCall ): string {
+		// Note that we can't use ZObjectUtils::makeCacheKeyFromZObject here, as that's repo-mode only.
+		// This means that this cache key doesn't have the revision IDs of the referenced ZObjects.
+		return $this->objectCache->makeKey(
+			self::CLIENT_FUNCTIONCALL_CACHE_KEY_PREFIX,
+			json_encode( $functionCall )
+		);
 	}
 }

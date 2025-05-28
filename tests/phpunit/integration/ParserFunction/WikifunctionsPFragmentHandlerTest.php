@@ -25,6 +25,7 @@ use Wikimedia\Parsoid\Wt2Html\TT\TemplateHandlerArguments;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentHandler
+ * @covers \MediaWiki\Extension\WikiLambda\WikifunctionsClientStore
  * @covers \MediaWiki\Extension\WikiLambda\WikifunctionCallDefaultValues
  * @group API
  * @group Database
@@ -64,12 +65,12 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 		$mockHttpRequestFactory = $this->createMock( HttpRequestFactory::class );
 		$mockObjectCache = $this->createMock( BagOStuff::class );
 		if ( $cachedFunction !== null ) {
-			$mockObjectCache->method( 'makeKey' )->willReturn( 'mock-cache-key' );
-			$mockObjectCache->method( 'get' )->with( 'mock-cache-key' )->willReturn( json_encode( $cachedFunction ) );
+			$mockObjectCache->method( 'get' )->with( 'mock-cache-key' )->willReturn( 'mock-cache-key' );
 		}
 
 		$mockClientStore = $this->createMock( WikifunctionsClientStore::class );
 		$mockClientStore->method( 'fetchFromZObjectCache' )->with( 'Z10000' )->willReturn( $cachedFunction );
+		$mockClientStore->method( 'makeFunctionCallCacheKey' )->willReturn( 'mock-cache-key' );
 
 		$this->setService( 'WikifunctionsClientStore', $mockClientStore );
 
