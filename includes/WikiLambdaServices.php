@@ -27,9 +27,11 @@ class WikiLambdaServices {
 	}
 
 	/**
+	 * Note: Not explicitly typed, as this service is mocked in tests
+	 *
 	 * @return WikifunctionsClientStore
 	 */
-	public static function getWikifunctionsClientStore(): WikifunctionsClientStore {
+	public static function getWikifunctionsClientStore() {
 		return MediaWikiServices::getInstance()->getService( 'WikifunctionsClientStore' );
 	}
 

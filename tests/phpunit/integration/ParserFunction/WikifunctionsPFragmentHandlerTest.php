@@ -14,6 +14,7 @@ use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientUsageUpdateJob;
 use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPendingFragment;
 use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentHandler;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaClientIntegrationTestCase;
+use MediaWiki\Extension\WikiLambda\WikifunctionsClientStore;
 use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\JobQueue\JobQueueGroup;
 use Wikimedia\ObjectCache\BagOStuff;
@@ -66,6 +67,11 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			$mockObjectCache->method( 'makeKey' )->willReturn( 'mock-cache-key' );
 			$mockObjectCache->method( 'get' )->with( 'mock-cache-key' )->willReturn( json_encode( $cachedFunction ) );
 		}
+
+		$mockClientStore = $this->createMock( WikifunctionsClientStore::class );
+		$mockClientStore->method( 'fetchFromZObjectCache' )->with( 'Z10000' )->willReturn( $cachedFunction );
+
+		$this->setService( 'WikifunctionsClientStore', $mockClientStore );
 
 		$pushedJobs = [];
 		$mockJobQueueGroup = $this->createMock( JobQueueGroup::class );
