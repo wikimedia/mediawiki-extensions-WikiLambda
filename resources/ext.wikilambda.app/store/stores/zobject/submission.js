@@ -72,13 +72,22 @@ module.exports = {
 				// * Implementation function is not defined (Z14K1)
 				// * Composition implementation has undefined function call (Z14K2.Z7K1)
 				// * Code implementation has undefined code string (Z14K3.Z16K2)
-				case Constants.Z_IMPLEMENTATION:
+				case Constants.Z_IMPLEMENTATION: {
+					const setValidationError = ( keyPath, errorCode ) => {
+						const impContentRowId = this.getZImplementationContentRowId( contentRowId, keyPath[ 0 ] );
+						const targetRow = this.getRowByKeyPath( keyPath.slice( 1 ), impContentRowId );
+						this.setError( {
+							rowId: targetRow ? targetRow.id : impContentRowId,
+							errorCode,
+							errorType: Constants.ERROR_TYPES.ERROR
+						} );
+						isValid = false;
+					};
 
-					// invalid if a function hasn't been defined
-					if ( !isTruthyOrEqual( innerObject, [
-						Constants.Z_IMPLEMENTATION_FUNCTION,
-						Constants.Z_REFERENCE_ID
-					] ) ) {
+					const isMissing = ( path ) => !isTruthyOrEqual( innerObject, path );
+
+					// Validate: Function not defined
+					if ( isMissing( [ Constants.Z_IMPLEMENTATION_FUNCTION, Constants.Z_REFERENCE_ID ] ) ) {
 						rowId = this.getZImplementationFunctionRowId( contentRowId );
 						this.setError( {
 							rowId,
@@ -88,94 +97,59 @@ module.exports = {
 						isValid = false;
 					}
 
-					// if implementation type is composition
-					if ( innerObject[ Constants.Z_IMPLEMENTATION_COMPOSITION ] ) {
-						// invalid if composition hasn't been defined
-						// or if composition has an undefined Z7K1
-						// or if composition has an undefined Z18K1
-						if (
-							!isTruthyOrEqual( innerObject, [ Constants.Z_IMPLEMENTATION_COMPOSITION ] ) ||
-							(
-								innerObject[ Constants.Z_IMPLEMENTATION_COMPOSITION ][
-									Constants.Z_FUNCTION_CALL_FUNCTION ] &&
-								!isTruthyOrEqual( innerObject, [
-									Constants.Z_IMPLEMENTATION_COMPOSITION,
-									Constants.Z_FUNCTION_CALL_FUNCTION,
-									Constants.Z_REFERENCE_ID
-								] )
-							) ||
-							(
-								innerObject[ Constants.Z_IMPLEMENTATION_COMPOSITION ][
-									Constants.Z_ARGUMENT_REFERENCE_KEY ] &&
-								!isTruthyOrEqual( innerObject, [
-									Constants.Z_IMPLEMENTATION_COMPOSITION,
-									Constants.Z_ARGUMENT_REFERENCE_KEY,
-									Constants.Z_STRING_VALUE
-								] )
-							)
-						) {
-							rowId = this.getZImplementationContentRowId(
-								contentRowId,
-								Constants.Z_IMPLEMENTATION_COMPOSITION
+					// Validate: Composition implementation
+					const composition = innerObject[ Constants.Z_IMPLEMENTATION_COMPOSITION ];
+					if ( composition ) {
+						const missingComposition = isMissing( [ Constants.Z_IMPLEMENTATION_COMPOSITION ] );
+						const missingCallFunction = composition[ Constants.Z_FUNCTION_CALL_FUNCTION ] &&
+							isMissing( [
+								Constants.Z_IMPLEMENTATION_COMPOSITION,
+								Constants.Z_FUNCTION_CALL_FUNCTION,
+								Constants.Z_REFERENCE_ID
+							] );
+						const missingArgKey = composition[ Constants.Z_ARGUMENT_REFERENCE_KEY ] &&
+							isMissing( [
+								Constants.Z_IMPLEMENTATION_COMPOSITION,
+								Constants.Z_ARGUMENT_REFERENCE_KEY,
+								Constants.Z_STRING_VALUE
+							] );
+
+						if ( missingComposition || missingCallFunction || missingArgKey ) {
+							setValidationError(
+								[ Constants.Z_IMPLEMENTATION_COMPOSITION ],
+								Constants.ERROR_CODES.MISSING_IMPLEMENTATION_COMPOSITION
 							);
-							this.setError( {
-								rowId,
-								errorCode: Constants.ERROR_CODES.MISSING_IMPLEMENTATION_COMPOSITION,
-								errorType: Constants.ERROR_TYPES.ERROR
-							} );
-							isValid = false;
 						}
 					}
 
-					// if implementation type is code
-					if ( innerObject[ Constants.Z_IMPLEMENTATION_CODE ] ) {
-
-						// invalid if no programming language is defined
-						const hasReferencedProgrammingLanguage = isTruthyOrEqual( innerObject, [
+					// Validate: Code implementation
+					const code = innerObject[ Constants.Z_IMPLEMENTATION_CODE ];
+					if ( code ) {
+						if ( isMissing( [
 							Constants.Z_IMPLEMENTATION_CODE,
 							Constants.Z_CODE_LANGUAGE,
 							Constants.Z_REFERENCE_ID
-						] );
-
-						if ( !hasReferencedProgrammingLanguage ) {
-							rowId = this.getZImplementationContentRowId(
-								contentRowId,
-								Constants.Z_IMPLEMENTATION_CODE
+						] ) ) {
+							setValidationError(
+								[ Constants.Z_IMPLEMENTATION_CODE, Constants.Z_CODE_LANGUAGE ],
+								Constants.ERROR_CODES.MISSING_IMPLEMENTATION_CODE_LANGUAGE
 							);
-							const langRow = this.getRowByKeyPath( [
-								Constants.Z_CODE_LANGUAGE
-							], rowId );
-							this.setError( {
-								rowId: langRow.id,
-								errorCode: Constants.ERROR_CODES.MISSING_IMPLEMENTATION_CODE_LANGUAGE,
-								errorType: Constants.ERROR_TYPES.ERROR
-							} );
-							isValid = false;
 						}
 
-						// invalid if no code is defined
-						if ( !isTruthyOrEqual( innerObject, [
+						if ( isMissing( [
 							Constants.Z_IMPLEMENTATION_CODE,
 							Constants.Z_CODE_CODE,
 							Constants.Z_STRING_VALUE
 						] ) ) {
-							rowId = this.getZImplementationContentRowId(
-								contentRowId,
-								Constants.Z_IMPLEMENTATION_CODE
+							setValidationError(
+								[ Constants.Z_IMPLEMENTATION_CODE, Constants.Z_CODE_CODE, Constants.Z_STRING_VALUE ],
+								Constants.ERROR_CODES.MISSING_IMPLEMENTATION_CODE
 							);
-							const codeRow = this.getRowByKeyPath( [
-								Constants.Z_CODE_CODE,
-								Constants.Z_STRING_VALUE
-							], rowId );
-							this.setError( {
-								rowId: codeRow.id,
-								errorCode: Constants.ERROR_CODES.MISSING_IMPLEMENTATION_CODE,
-								errorType: Constants.ERROR_TYPES.ERROR
-							} );
-							isValid = false;
 						}
 					}
+
 					return isValid;
+				}
 
 				// Validate ZTester:
 				// * Tester function is not defined (Z20K1)
