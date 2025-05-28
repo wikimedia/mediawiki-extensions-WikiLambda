@@ -121,13 +121,16 @@ describe( 'AboutLanguageBlock', () => {
 			viewData.aliases = { rowId: 3, value: [ { rowId: 4, value: 'un alias' } ] };
 			fieldLangs.description = [ 'Z1003' ];
 			fieldLangs.aliases = [ 'Z1003' ];
-			wrapper = shallowMount( AboutLanguageBlock, { props: {
-				edit: false,
-				isFunction: false,
-				language: 'Z1003',
-				viewData,
-				fieldLangs
-			} } );
+			wrapper = shallowMount( AboutLanguageBlock, {
+				props: {
+					edit: false,
+					isFunction: false,
+					language: 'Z1003',
+					viewData,
+					fieldLangs
+				},
+				global: { stubs: { CdxInfoChip: false } }
+			} );
 
 			const description = wrapper.find( '.ext-wikilambda-app-about-language-block__description' );
 			expect( description.exists() ).toBe( true );
@@ -150,13 +153,16 @@ describe( 'AboutLanguageBlock', () => {
 				{ rowId: 8, value: 'cinco' }
 			] };
 			fieldLangs.aliases = [ 'Z1003' ];
-			wrapper = shallowMount( AboutLanguageBlock, { props: {
-				edit: false,
-				isFunction: false,
-				language: 'Z1003',
-				viewData,
-				fieldLangs
-			} } );
+			wrapper = shallowMount( AboutLanguageBlock, {
+				props: {
+					edit: false,
+					isFunction: false,
+					language: 'Z1003',
+					viewData,
+					fieldLangs
+				},
+				global: { stubs: { CdxInfoChip: false } }
+			} );
 
 			let aliases = wrapper.findAll( '.ext-wikilambda-app-about-language-block__alias' );
 			let aliasMore = wrapper.find( '.ext-wikilambda-app-about-language-block__aliases-more' );

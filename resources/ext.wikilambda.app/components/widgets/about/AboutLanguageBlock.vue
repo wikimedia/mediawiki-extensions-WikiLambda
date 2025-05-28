@@ -25,12 +25,13 @@
 					<!-- Aliases block -->
 					<div class="ext-wikilambda-app-about-language-block__aliases" data-testid="about-aliases">
 						<template v-if="hasAliases">
-							<span
+							<cdx-info-chip
 								v-for="( alias, index ) in visibleAliases"
 								:key="'alias-' + index"
 								class="ext-wikilambda-app-about-language-block__alias"
-								data-testid="about-alias"
-							>{{ alias.value }}</span>
+								data-testid="about-alias">
+								{{ alias.value }}
+							</cdx-info-chip>
 							<a
 								v-if="viewData.aliases.value.length > 3 && !seeAllAliases"
 								class="ext-wikilambda-app-about-language-block__aliases-more"
@@ -229,7 +230,7 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
-const { CdxChipInput, CdxField, CdxTextArea, CdxTextInput } = require( '../../../../codex.js' );
+const { CdxChipInput, CdxField, CdxInfoChip, CdxTextArea, CdxTextInput } = require( '../../../../codex.js' );
 const Constants = require( '../../../Constants.js' );
 const useMainStore = require( '../../../store/index.js' );
 const ZObjectToString = require( '../../default-view-types/ZObjectToString.vue' );
@@ -239,6 +240,7 @@ module.exports = exports = defineComponent( {
 	components: {
 		'cdx-chip-input': CdxChipInput,
 		'cdx-field': CdxField,
+		'cdx-info-chip': CdxInfoChip,
 		'cdx-text-area': CdxTextArea,
 		'cdx-text-input': CdxTextInput,
 		'wl-z-object-to-string': ZObjectToString
@@ -535,14 +537,6 @@ module.exports = exports = defineComponent( {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 8px;
-	}
-
-	.ext-wikilambda-app-about-language-block__alias {
-		display: inline-block;
-		border-radius: @border-radius-pill;
-		border: 1px solid @border-color-subtle;
-		color: @color-subtle;
-		padding: 0 @spacing-50;
 	}
 
 	.ext-wikilambda-app-about-language-block__aliases-more {
