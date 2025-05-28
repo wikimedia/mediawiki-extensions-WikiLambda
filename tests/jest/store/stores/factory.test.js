@@ -11,6 +11,8 @@ const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.j
 const { tableDataToRowObjects, zobjectToRows } = require( '../../helpers/zObjectTableHelpers.js' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 const { mockStoredObjects } = require( '../../fixtures/mocks.js' );
+const { mockWindowLocation, restoreWindowLocation } = require( '../../fixtures/location.js' );
+const { buildUrl } = require( '../../helpers/urlHelpers.js' );
 
 describe( 'factory Pinia store', () => {
 	let store;
@@ -21,6 +23,10 @@ describe( 'factory Pinia store', () => {
 		store.zobject = [];
 		store.objects = mockStoredObjects;
 		store.errors = {};
+	} );
+
+	afterEach( () => {
+		restoreWindowLocation();
 	} );
 
 	describe( 'Getters', () => {
@@ -687,12 +693,13 @@ describe( 'factory Pinia store', () => {
 
 				it( 'adds a valid ZImplementation for a given function Zid', () => {
 					const payload = { id: 0, type: Constants.Z_IMPLEMENTATION, literal: true };
-					mw.Uri.mockImplementationOnce( () => ( {
-						query: {
-							zid: Constants.Z_IMPLEMENTATION,
-							Z14K1: 'Z10001'
-						}
-					} ) );
+					const queryParams = {
+						zid: Constants.Z_IMPLEMENTATION,
+						Z14K1: 'Z10001'
+					};
+
+					mockWindowLocation( buildUrl( Constants.PATHS.ROUTE_FORMAT_ONE, { title: Constants.PATHS.CREATE_OBJECT_TITLE, ...queryParams } ) );
+
 					store.changeType( payload );
 
 					const expectedZids = [ 'Z1', 'Z14', 'Z9', 'Z10001', 'Z7' ];

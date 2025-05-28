@@ -11,43 +11,18 @@ const { waitFor } = require( '@testing-library/vue' );
 
 const useMainStore = require( '../../../resources/ext.wikilambda.app/store/index.js' );
 const App = require( '../../../resources/ext.wikilambda.app/components/App.vue' );
+const { mockWindowLocation } = require( '../fixtures/location.js' );
 
 describe( 'App.vue', () => {
-	let store,
-		originalLocation,
-		originalReplaceState;
+	let store;
 
 	beforeEach( () => {
-
-		// Update the Pinia store with the getters and actions
 		store = useMainStore();
 		store.initializeView.mockResolvedValue();
 		store.prefetchZids.mockResolvedValue();
 		store.isInitialized = true;
 		store.isCreateNewPage = false;
 		store.getCurrentView = 'function-editor-view';
-
-		// Save the original location object and history.replaceState function
-		originalLocation = window.location;
-		originalReplaceState = window.history.replaceState;
-
-		// Mock window.location
-		delete window.location;
-		window.location = {
-			...originalLocation,
-			hash: '',
-			href: '',
-			assign: jest.fn()
-		};
-
-		// Mock history.replaceState to prevent a SecurityError
-		window.history.replaceState = jest.fn();
-	} );
-
-	afterEach( () => {
-		// Restore the original window.location and window.history.replaceState
-		window.location = originalLocation;
-		window.history.replaceState = originalReplaceState;
 	} );
 
 	it( 'Initializes the app on load', async () => {
@@ -61,8 +36,7 @@ describe( 'App.vue', () => {
 	} );
 
 	it( 'Handles popstate event correctly when there is a hash in the URL', async () => {
-		window.location.href = 'http://example.com#some-hash';
-		window.location.hash = '#some-hash';
+		mockWindowLocation( 'http://example.com#some-hash' );
 
 		shallowMount( App, {
 			provide: {
@@ -79,7 +53,7 @@ describe( 'App.vue', () => {
 	} );
 
 	it( 'Reinitializes view when isCreateNewPage is true and popstate event is triggered', async () => {
-		window.location.href = 'http://example.com';
+		mockWindowLocation( 'http://example.com' );
 
 		store.isCreateNewPage = true;
 

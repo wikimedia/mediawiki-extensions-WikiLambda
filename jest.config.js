@@ -112,5 +112,8 @@ module.exports = {
 	// before each test
 	setupFiles: [
 		'./jest.setup.js'
+	],
+	setupFilesAfterEnv: [
+		'./jest.setupAfterEnv.js'
 	]
 };

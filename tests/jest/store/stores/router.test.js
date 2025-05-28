@@ -9,6 +9,8 @@
 const { createPinia, setActivePinia } = require( 'pinia' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const { buildUrl } = require( '../../helpers/urlHelpers.js' );
+const { mockWindowLocation, restoreWindowLocation } = require( '../../fixtures/location.js' );
 
 describe( 'Router Pinia store', () => {
 	let store;
@@ -16,18 +18,18 @@ describe( 'Router Pinia store', () => {
 	const dummyQueryParams = 'DummyQueryParams';
 
 	beforeEach( () => {
-		jest.resetModules();
+		mockWindowLocation( buildUrl( Constants.PATHS.ROUTE_FORMAT_ONE ) );
 		setActivePinia( createPinia() );
 		store = useMainStore();
 
-		store.currentPath = mw.Uri().path;
+		store.currentPath = window.location.pathname;
 		store.currentView = Constants.VIEWS.Z_OBJECT_VIEWER;
-		store.queryParams = mw.Uri().query;
+		store.queryParams = {};
+	} );
 
-		// Mock mw.util.getUrl()
-		mw.util = { getUrl: jest.fn(
-			( foo, bar ) => ( foo + '?' + Object.entries( bar ).map( ( i ) => ( i[ 0 ] + '=' + i[ 1 ] ) ).join( '&' ) )
-		) };
+	afterEach( () => {
+		restoreWindowLocation();
+		jest.resetModules();
 	} );
 
 	describe( 'Getters', () => {
@@ -69,12 +71,6 @@ describe( 'Router Pinia store', () => {
 	} );
 
 	describe( 'Actions', () => {
-
-		beforeEach( () => {
-			window.history.pushState = jest.fn();
-			window.history.replaceState = jest.fn();
-		} );
-
 		describe( 'navigate', () => {
 			it( 'does not change view when view is invalid', () => {
 				const payload = {
@@ -113,7 +109,7 @@ describe( 'Router Pinia store', () => {
 						to: Constants.VIEWS.DEFAULT
 					};
 					const expectedObject = {
-						path: 'dummyPath',
+						path: '/dummyPath',
 						query: {
 							dummyParams: 'dummyValue',
 							view: Constants.VIEWS.DEFAULT
@@ -132,7 +128,7 @@ describe( 'Router Pinia store', () => {
 					const payload = {
 						to: Constants.VIEWS.DEFAULT
 					};
-					const expectedQueryString = 'dummyPath?dummyParams=dummyValue&view=default-view';
+					const expectedQueryString = 'http://localhost/dummyPath?dummyParams=dummyValue&view=default-view';
 
 					store.navigate( payload );
 
@@ -185,14 +181,11 @@ describe( 'Router Pinia store', () => {
 				describe( 'with URL Format One (/w/index.php)', () => {
 
 					it( 'When action is edit and view is not passed', () => {
-
-						window.mw.Uri.mockImplementationOnce( () => ( {
-							query: {
-								action: Constants.ACTIONS.EDIT,
-								title: 'Z0'
-							},
-							path: new window.mw.Title( 'Z0' ).getUrl( { title: 'Z0', action: Constants.ACTIONS.EDIT } )
-						} ) );
+						const queryParams = {
+							action: Constants.ACTIONS.EDIT,
+							title: 'Z0'
+						};
+						mockWindowLocation( buildUrl( Constants.PATHS.ROUTE_FORMAT_ONE, queryParams ) );
 
 						store.evaluateUri();
 
@@ -205,10 +198,7 @@ describe( 'Router Pinia store', () => {
 							title: 'Z0',
 							view: Constants.VIEWS.FUNCTION_EDITOR
 						};
-						window.mw.Uri.mockImplementationOnce( () => ( {
-							query: queryParams,
-							path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
-						} ) );
+						mockWindowLocation( buildUrl( Constants.PATHS.ROUTE_FORMAT_ONE, queryParams ) );
 
 						store.evaluateUri();
 
@@ -221,10 +211,7 @@ describe( 'Router Pinia store', () => {
 							title: 'Z0',
 							view: Constants.VIEWS.DEFAULT
 						};
-						window.mw.Uri.mockImplementationOnce( () => ( {
-							query: queryParams,
-							path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
-						} ) );
+						mockWindowLocation( buildUrl( Constants.PATHS.ROUTE_FORMAT_ONE, queryParams ) );
 
 						store.evaluateUri();
 
@@ -234,32 +221,26 @@ describe( 'Router Pinia store', () => {
 
 				describe( 'with URL Format Two (/wiki/{{title}})', () => {
 					it( 'When action is edit and view is not passed', () => {
-
 						const queryParams = {
 							action: Constants.ACTIONS.EDIT,
 							title: 'Z0'
 						};
-
-						window.mw.Uri.mockImplementationOnce( () => ( {
-							query: queryParams,
-							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
-						} ) );
+						const baseUrl = `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ queryParams.title }`;
+						mockWindowLocation( buildUrl( baseUrl, { action: queryParams.action } ) );
 
 						store.evaluateUri();
 
 						expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.FUNCTION_EDITOR );
 					} );
 
-					it( 'When action is edit and view is passed', () => {
+					it( 'When action is edit and view is passed as function editor', () => {
 						const queryParams = {
 							action: Constants.ACTIONS.EDIT,
 							title: 'Z0',
 							view: Constants.VIEWS.FUNCTION_EDITOR
 						};
-						window.mw.Uri.mockImplementationOnce( () => ( {
-							query: queryParams,
-							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
-						} ) );
+						const baseUrl = `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ queryParams.title }`;
+						mockWindowLocation( buildUrl( baseUrl, { action: queryParams.action, view: queryParams.view } ) );
 
 						store.evaluateUri();
 
@@ -272,10 +253,8 @@ describe( 'Router Pinia store', () => {
 							title: 'Z0',
 							view: Constants.VIEWS.DEFAULT
 						};
-						window.mw.Uri.mockImplementationOnce( () => ( {
-							query: queryParams,
-							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
-						} ) );
+						const baseUrl = `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ queryParams.title }`;
+						mockWindowLocation( buildUrl( baseUrl, { action: queryParams.action, view: queryParams.view } ) );
 
 						store.evaluateUri();
 
@@ -303,16 +282,11 @@ describe( 'Router Pinia store', () => {
 
 				describe( 'with URL Format One (/w/index.php)', () => {
 					it( 'When action is edit and view is not passed', () => {
-						window.mw.Uri.mockImplementationOnce( () => {
-							const queryParams = {
-								action: Constants.ACTIONS.EDIT,
-								title: 'Z0'
-							};
-							return {
-								query: queryParams,
-								path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
-							};
-						} );
+						const queryParams = {
+							action: Constants.ACTIONS.EDIT,
+							title: 'Z0'
+						};
+						mockWindowLocation( buildUrl( Constants.PATHS.ROUTE_FORMAT_ONE, queryParams ) );
 
 						store.evaluateUri();
 
@@ -325,10 +299,7 @@ describe( 'Router Pinia store', () => {
 							title: 'Z0',
 							view: Constants.VIEWS.DEFAULT
 						};
-						window.mw.Uri.mockImplementationOnce( () => ( {
-							query: queryParams,
-							path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
-						} ) );
+						mockWindowLocation( buildUrl( Constants.PATHS.ROUTE_FORMAT_ONE, queryParams ) );
 
 						store.evaluateUri();
 
@@ -346,11 +317,8 @@ describe( 'Router Pinia store', () => {
 							action: Constants.ACTIONS.EDIT,
 							title: 'Z0'
 						};
-
-						window.mw.Uri.mockImplementationOnce( () => ( {
-							query: queryParams,
-							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
-						} ) );
+						const baseUrl = `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ queryParams.title }`;
+						mockWindowLocation( buildUrl( baseUrl, { action: queryParams.action } ) );
 
 						store.evaluateUri();
 
@@ -363,10 +331,8 @@ describe( 'Router Pinia store', () => {
 							title: 'Z0',
 							view: Constants.VIEWS.DEFAULT
 						};
-						window.mw.Uri.mockImplementationOnce( () => ( {
-							query: queryParams,
-							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
-						} ) );
+						const baseUrl = `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ queryParams.title }`;
+						mockWindowLocation( buildUrl( baseUrl, { action: queryParams.action, view: queryParams.view } ) );
 
 						store.evaluateUri();
 
@@ -395,12 +361,10 @@ describe( 'Router Pinia store', () => {
 
 				describe( 'with URL Format One (/w/index.php)', () => {
 					it( 'When zobject is a function', () => {
-						window.mw.Uri.mockImplementationOnce( () => ( {
-							query: {
-								title: 'Z0'
-							},
-							path: new window.mw.Title( 'Z0' ).getUrl( { title: 'Z0' } )
-						} ) );
+						const queryParams = {
+							title: 'Z0'
+						};
+						mockWindowLocation( buildUrl( Constants.PATHS.ROUTE_FORMAT_ONE, queryParams ) );
 
 						store.evaluateUri();
 
@@ -412,10 +376,7 @@ describe( 'Router Pinia store', () => {
 							title: 'Z0',
 							view: Constants.VIEWS.FUNCTION_VIEWER
 						};
-						window.mw.Uri.mockImplementationOnce( () => ( {
-							query: queryParams,
-							path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
-						} ) );
+						mockWindowLocation( buildUrl( Constants.PATHS.ROUTE_FORMAT_ONE, queryParams ) );
 
 						store.evaluateUri();
 
@@ -427,10 +388,7 @@ describe( 'Router Pinia store', () => {
 							title: 'Z0',
 							view: Constants.VIEWS.FUNCTION_EDITOR
 						};
-						window.mw.Uri.mockImplementationOnce( () => ( {
-							query: queryParams,
-							path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
-						} ) );
+						mockWindowLocation( buildUrl( Constants.PATHS.ROUTE_FORMAT_ONE, queryParams ) );
 
 						store.evaluateUri();
 
@@ -442,10 +400,7 @@ describe( 'Router Pinia store', () => {
 							title: 'Z0',
 							view: Constants.VIEWS.DEFAULT
 						};
-						window.mw.Uri.mockImplementationOnce( () => ( {
-							query: queryParams,
-							path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
-						} ) );
+						mockWindowLocation( buildUrl( Constants.PATHS.ROUTE_FORMAT_ONE, queryParams ) );
 
 						store.evaluateUri();
 
@@ -458,10 +413,8 @@ describe( 'Router Pinia store', () => {
 						const queryParams = {
 							title: 'Z0'
 						};
-						window.mw.Uri.mockImplementationOnce( () => ( {
-							query: queryParams,
-							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
-						} ) );
+						const baseUrl = `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ queryParams.title }`;
+						mockWindowLocation( buildUrl( baseUrl ) );
 
 						store.evaluateUri();
 
@@ -473,10 +426,8 @@ describe( 'Router Pinia store', () => {
 							title: 'Z0',
 							view: Constants.VIEWS.FUNCTION_VIEWER
 						};
-						window.mw.Uri.mockImplementationOnce( () => ( {
-							query: queryParams,
-							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
-						} ) );
+						const baseUrl = `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ queryParams.title }`;
+						mockWindowLocation( buildUrl( baseUrl, { view: queryParams.view } ) );
 
 						store.evaluateUri();
 
@@ -488,10 +439,8 @@ describe( 'Router Pinia store', () => {
 							title: 'Z0',
 							view: Constants.VIEWS.FUNCTION_EDITOR
 						};
-						window.mw.Uri.mockImplementationOnce( () => ( {
-							query: queryParams,
-							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
-						} ) );
+						const baseUrl = `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ queryParams.title }`;
+						mockWindowLocation( buildUrl( baseUrl, { view: queryParams.view } ) );
 
 						store.evaluateUri();
 
@@ -503,10 +452,8 @@ describe( 'Router Pinia store', () => {
 							title: 'Z0',
 							view: Constants.VIEWS.DEFAULT
 						};
-						window.mw.Uri.mockImplementationOnce( () => ( {
-							query: queryParams,
-							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
-						} ) );
+						const baseUrl = `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ queryParams.title }`;
+						mockWindowLocation( buildUrl( baseUrl, { view: queryParams.view } ) );
 
 						store.evaluateUri();
 
@@ -531,12 +478,11 @@ describe( 'Router Pinia store', () => {
 
 				describe( 'with URL Format One (/w/index.php)', () => {
 					it( 'When view is not passed', () => {
-						window.mw.Uri.mockImplementationOnce( () => ( {
-							query: {
-								title: 'Z0'
-							},
-							path: new window.mw.Title( 'Z0' ).getUrl( { title: 'Z0', action: Constants.ACTIONS.EDIT } )
-						} ) );
+						const queryParams = {
+							title: 'Z0',
+							action: Constants.ACTIONS.EDIT
+						};
+						mockWindowLocation( buildUrl( Constants.PATHS.ROUTE_FORMAT_ONE, queryParams ) );
 
 						store.evaluateUri();
 
@@ -548,10 +494,7 @@ describe( 'Router Pinia store', () => {
 							title: 'Z0',
 							view: Constants.VIEWS.DEFAULT
 						};
-						window.mw.Uri.mockImplementationOnce( () => ( {
-							query: queryParams,
-							path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
-						} ) );
+						mockWindowLocation( buildUrl( Constants.PATHS.ROUTE_FORMAT_ONE, queryParams ) );
 
 						store.evaluateUri();
 
@@ -564,11 +507,8 @@ describe( 'Router Pinia store', () => {
 						const queryParams = {
 							title: 'Z0'
 						};
-
-						window.mw.Uri.mockImplementationOnce( () => ( {
-							query: queryParams,
-							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
-						} ) );
+						const baseUrl = `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ queryParams.title }`;
+						mockWindowLocation( buildUrl( baseUrl ) );
 
 						store.evaluateUri();
 
@@ -576,13 +516,12 @@ describe( 'Router Pinia store', () => {
 					} );
 
 					it( 'When view is passed as zobject viewer', () => {
-						window.mw.Uri.mockImplementationOnce( () => ( {
-							query: {
-								title: 'Z0',
-								view: Constants.VIEWS.DEFAULT
-							},
-							path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( { view: Constants.VIEWS.DEFAULT } )
-						} ) );
+						const queryParams = {
+							title: 'Z0',
+							view: Constants.VIEWS.DEFAULT
+						};
+						const baseUrl = `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ queryParams.title }`;
+						mockWindowLocation( buildUrl( baseUrl, { view: queryParams.view } ) );
 
 						store.evaluateUri();
 
@@ -612,12 +551,10 @@ describe( 'Router Pinia store', () => {
 				describe( 'with URL Format One (/w/index.php)', () => {
 					it( 'When zid is passed as Z8(Z_FUNCTION)', () => {
 						const queryParams = {
+							title: Constants.PATHS.CREATE_OBJECT_TITLE,
 							zid: Constants.Z_FUNCTION
 						};
-						window.mw.Uri.mockImplementationOnce( () => ( {
-							query: queryParams,
-							path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl( queryParams )
-						} ) );
+						mockWindowLocation( buildUrl( Constants.PATHS.ROUTE_FORMAT_ONE, queryParams ) );
 
 						store.evaluateUri();
 
@@ -630,10 +567,8 @@ describe( 'Router Pinia store', () => {
 						const queryParams = {
 							zid: Constants.Z_FUNCTION
 						};
-						window.mw.Uri.mockImplementationOnce( () => ( {
-							query: queryParams,
-							path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl()
-						} ) );
+						const baseUrl = `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ Constants.PATHS.CREATE_OBJECT_TITLE }`;
+						mockWindowLocation( buildUrl( baseUrl, queryParams ) );
 
 						store.evaluateUri();
 
@@ -660,14 +595,11 @@ describe( 'Router Pinia store', () => {
 				} );
 
 				it( 'with URL Format One (/w/index.php)', () => {
-					window.mw.Uri.mockImplementationOnce( () => ( {
-						query: {
-							title: Constants.PATHS.CREATE_OBJECT_TITLE,
-							zid: Constants.Z_IMPLEMENTATION
-						},
-						path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE )
-							.getUrl( { zid: Constants.Z_IMPLEMENTATION } )
-					} ) );
+					const queryParams = {
+						title: Constants.PATHS.CREATE_OBJECT_TITLE,
+						zid: Constants.Z_IMPLEMENTATION
+					};
+					mockWindowLocation( buildUrl( Constants.PATHS.ROUTE_FORMAT_ONE, queryParams ) );
 
 					store.evaluateUri();
 
@@ -675,10 +607,8 @@ describe( 'Router Pinia store', () => {
 				} );
 
 				it( 'with URL Format Two (/wiki/{{title}})', () => {
-					window.mw.Uri.mockImplementationOnce( () => ( {
-						query: {},
-						path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl()
-					} ) );
+					const baseUrl = `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ Constants.PATHS.CREATE_OBJECT_TITLE }`;
+					mockWindowLocation( buildUrl( baseUrl ) );
 
 					store.evaluateUri();
 
@@ -703,13 +633,10 @@ describe( 'Router Pinia store', () => {
 				} );
 
 				it( 'with URL Format One (/w/index.php)', () => {
-					window.mw.Uri.mockImplementationOnce( () => ( {
-						query: {
-							title: Constants.PATHS.RUN_FUNCTION_TITLE
-						},
-						path: new window.mw.Title( Constants.PATHS.RUN_FUNCTION_TITLE )
-							.getUrl( { title: Constants.PATHS.RUN_FUNCTION_TITLE } )
-					} ) );
+					const queryParams = {
+						title: Constants.PATHS.RUN_FUNCTION_TITLE
+					};
+					mockWindowLocation( buildUrl( Constants.PATHS.ROUTE_FORMAT_ONE, queryParams ) );
 
 					store.evaluateUri();
 
@@ -717,10 +644,8 @@ describe( 'Router Pinia store', () => {
 				} );
 
 				it( 'with URL Format Two (/wiki/{{title}})', () => {
-					window.mw.Uri.mockImplementationOnce( () => ( {
-						query: {},
-						path: new window.mw.Title( Constants.PATHS.RUN_FUNCTION_TITLE ).getUrl()
-					} ) );
+					const baseUrl = `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ Constants.PATHS.RUN_FUNCTION_TITLE }`;
+					mockWindowLocation( buildUrl( baseUrl ) );
 
 					store.evaluateUri();
 
@@ -730,12 +655,6 @@ describe( 'Router Pinia store', () => {
 		} );
 
 		describe( 'changeCurrentView', () => {
-			beforeEach( () => {
-				window.mw.Uri.mockImplementation( () => ( {
-					query: {}
-				} ) );
-			} );
-
 			it( 'changes the current view with the value provided', () => {
 				store.changeCurrentView( dummyView );
 
@@ -743,29 +662,29 @@ describe( 'Router Pinia store', () => {
 			} );
 
 			it( 'does not replace history state if view is not set in query param', () => {
+				mockWindowLocation( buildUrl( Constants.PATHS.ROUTE_FORMAT_ONE ) );
+
 				store.changeCurrentView( dummyView );
 
 				expect( window.history.replaceState ).not.toHaveBeenCalled();
 			} );
 
 			it( 'does not replace history state if view set in query param is the view passed', () => {
+				mockWindowLocation( buildUrl( Constants.PATHS.ROUTE_FORMAT_ONE, { view: dummyView } ) );
+
 				store.changeCurrentView( dummyView );
 
 				expect( window.history.replaceState ).not.toHaveBeenCalled();
 			} );
 
 			it( 'replace history state with current view', () => {
-				const fakePath = 'fakePath';
+				const fakePath = '/fakePath';
 				const fakeExistingValue = 'fakeValue';
-				window.mw.Uri.mockImplementation( () => ( {
-					query: {
-						view: 'initialDummyView',
-						existingDummyParams: fakeExistingValue
-					},
-					path: fakePath
-				} ) );
+				mockWindowLocation( buildUrl( fakePath, { view: 'initialDummyView', existingDummyParams: fakeExistingValue } ) );
+
 				store.changeCurrentView( dummyView );
-				expect( window.history.replaceState.mock.calls[ 0 ][ 0 ] ).toMatchObject(
+				const stateObj = window.history.replaceState.mock.calls[ 0 ][ 0 ];
+				expect( stateObj ).toMatchObject(
 					{
 						path: fakePath,
 						query: {

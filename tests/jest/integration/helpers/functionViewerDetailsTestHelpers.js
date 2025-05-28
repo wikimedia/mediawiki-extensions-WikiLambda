@@ -16,6 +16,8 @@ const mockMWConfigGet = require( './mwConfigMock.js' );
 const App = require( '../../../../resources/ext.wikilambda.app/components/App.vue' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const existingFunctionFromApi = require( '../objects/existingFunctionFromApi.js' );
+const { buildUrl } = require( '../../helpers/urlHelpers.js' );
+const { mockWindowLocation, restoreWindowLocation } = require( '../../fixtures/location.js' );
 
 const initializeRootZObject =
 	new ApiMock( apiGetMock.loadZObjectsRequest, apiGetMock.loadZObjectsResponse, apiGetMock.loadZObjectsMatcher );
@@ -31,12 +33,6 @@ const functionZid = existingFunctionFromApi[ Constants.Z_PERSISTENTOBJECT_ID ][ 
 
 const runSetup = function () {
 	jest.useFakeTimers();
-
-	Object.defineProperty( window, 'location', {
-		value: {
-			href: 'currentPage'
-		}
-	} );
 
 	// Create a real Pinia store or a testing one
 	global.store = createPinia();
@@ -58,12 +54,9 @@ const runSetup = function () {
 		] )
 	} ) );
 
-	window.mw.Uri.mockImplementation( () => ( {
-		path: '/wiki/' + functionZid,
-		query: {
-			zid: Constants.Z_FUNCTION
-		}
-	} ) );
+	// Set the URL to the function viewer page with the necessary query parameters
+	const url = buildUrl( new window.mw.Title( functionZid ).getUrl(), { zid: Constants.Z_FUNCTION } );
+	mockWindowLocation( url );
 
 	global.mw.config.get = mockMWConfigGet( {
 		wgWikiLambda: {
@@ -81,6 +74,7 @@ const runSetup = function () {
 };
 
 const runTeardown = () => {
+	restoreWindowLocation();
 	jest.runOnlyPendingTimers();
 	jest.useRealTimers();
 };

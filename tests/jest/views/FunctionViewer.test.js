@@ -9,6 +9,9 @@
 const VueTestUtils = require( '@vue/test-utils' );
 const useMainStore = require( '../../../resources/ext.wikilambda.app/store/index.js' );
 const FunctionViewer = require( '../../../resources/ext.wikilambda.app/views/FunctionViewer.vue' );
+const { buildUrl } = require( '../helpers/urlHelpers.js' );
+const Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' );
+const { mockWindowLocation, restoreWindowLocation } = require( '../fixtures/location.js' );
 
 describe( 'FunctionViewer', () => {
 	const functionZid = 'Z12345';
@@ -20,13 +23,15 @@ describe( 'FunctionViewer', () => {
 		store.getUserLangZid = 'Z1002';
 		store.isCreateNewPage = false;
 
-		window.mw.Uri.mockImplementation( () => ( {
-			path: '/wiki/' + functionZid
-		} ) );
+		mockWindowLocation( buildUrl( `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ functionZid }` ) );
 
 		VueTestUtils.config.global.mocks.$i18n = jest.fn().mockImplementation( () => ( {
 			text: jest.fn()
 		} ) );
+	} );
+
+	afterEach( () => {
+		restoreWindowLocation();
 	} );
 
 	it( 'renders without errors', () => {
@@ -42,12 +47,7 @@ describe( 'FunctionViewer', () => {
 	} );
 
 	it( 'displays success message if indicated in url', () => {
-		window.mw.Uri.mockImplementation( () => ( {
-			path: '/wiki/' + functionZid,
-			query: {
-				success: 'true'
-			}
-		} ) );
+		mockWindowLocation( buildUrl( `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ functionZid }`, { success: true } ) );
 		const wrapper = VueTestUtils.shallowMount( FunctionViewer );
 
 		expect( wrapper.find( '.ext-wikilambda-app-toast-message' ).exists() ).toBeTruthy();

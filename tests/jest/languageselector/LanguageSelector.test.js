@@ -9,8 +9,11 @@
 const { waitFor } = require( '@testing-library/vue' );
 const { mount, shallowMount } = require( '@vue/test-utils' );
 
-const mockLanguages = require( '../fixtures/mocks.js' ).mockLanguages;
+const { mockLanguages } = require( '../fixtures/mocks.js' );
+const { mockWindowLocation, restoreWindowLocation } = require( '../fixtures/location.js' );
 const LanguageSelector = require( '../../../resources/ext.wikilambda.languageselector/components/LanguageSelector.vue' );
+const { buildUrl } = require( '../helpers/urlHelpers.js' );
+const Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' );
 
 describe( 'LanguageSelector', () => {
 	let getMock;
@@ -29,11 +32,7 @@ describe( 'LanguageSelector', () => {
 			} )
 		};
 
-		// Mock mw.Uri().path and mock.Uri.extend()
-		mw.Uri = jest.fn( () => ( {
-			path: new window.mw.Title( Constants.PATHS.RUN_FUNCTION_TITLE ).getUrl(),
-			extend: jest.fn()
-		} ) );
+		mockWindowLocation( buildUrl( `/wiki/${ Constants.PATHS.RUN_FUNCTION_TITLE }` ) );
 
 		// Mock mw.Api().get().then( )
 		getMock = jest.fn( () => ( {
@@ -45,8 +44,8 @@ describe( 'LanguageSelector', () => {
 	} );
 
 	afterEach( () => {
+		restoreWindowLocation();
 		mw.config = null;
-		mw.Uri = null;
 		mw.Api = null;
 	} );
 
@@ -204,16 +203,6 @@ describe( 'LanguageSelector', () => {
 	} );
 
 	describe( 'redirects', () => {
-		const { location } = window;
-
-		beforeAll( () => {
-			delete window.location;
-			window.location = { href: '' };
-		} );
-
-		afterAll( () => {
-			window.location = location;
-		} );
 
 		it( 'does not redirect when selecting current language', async () => {
 			const wrapper = mount( LanguageSelector );
@@ -241,13 +230,8 @@ describe( 'LanguageSelector', () => {
 		} );
 
 		it( 'redirects to view/language/zid page', async () => {
-			// Configure current location
 			const currentPath = '/view/en/Z12345';
-			window.location = { href: currentPath };
-			mw.Uri = jest.fn( () => ( {
-				path: currentPath,
-				extend: jest.fn()
-			} ) );
+			mockWindowLocation( buildUrl( currentPath ) );
 
 			const wrapper = mount( LanguageSelector );
 
@@ -269,14 +253,8 @@ describe( 'LanguageSelector', () => {
 		} );
 
 		it( 'redirects to ?uselang=lang page', async () => {
-			// Configure current location
 			const currentPath = '/wiki/Z12345';
-			window.location = { href: currentPath };
-			const extendMock = jest.fn( ( payload ) => ( { toString: jest.fn( () => currentPath + '?uselang=' + payload.uselang ) } ) );
-			mw.Uri = jest.fn( () => ( {
-				path: currentPath,
-				extend: extendMock
-			} ) );
+			mockWindowLocation( buildUrl( currentPath ) );
 
 			const wrapper = mount( LanguageSelector );
 

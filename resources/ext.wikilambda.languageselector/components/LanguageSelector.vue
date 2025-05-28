@@ -95,7 +95,7 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		currentPath: function () {
-			return mw.Uri().path;
+			return window.location.pathname;
 		},
 
 		/**
@@ -195,9 +195,10 @@ module.exports = exports = defineComponent( {
 				pathParts[ 2 ] = languageCode;
 				return pathParts.join( '/' );
 			}
-			// ... or we have to use mw.Uri.extend to set or replace uselang=lang
-			const uri = mw.Uri().extend( { uselang: languageCode } );
-			return uri.toString();
+			// ... or we have to set or replace uselang=lang using native URL API
+			const url = new URL( window.location.href );
+			url.searchParams.set( 'uselang', languageCode );
+			return url.pathname + url.search;
 		},
 
 		/**
