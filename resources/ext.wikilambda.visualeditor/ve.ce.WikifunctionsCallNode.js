@@ -61,7 +61,12 @@ ve.ce.WikifunctionsCallNode.prototype.getLoadingState = function () {
 	const loadingMsg = OO.ui.msg( 'wikilambda-visualeditor-wikifunctionscall-ce-loading' );
 
 	const $loadingContainer = $( '<span>' )
-		.addClass( 'ext-wikilambda-visualeditor-loading' );
+		.addClass( 'ext-wikilambda-visualeditor-chip' );
+
+	const $loadingSpan = $( '<span>' )
+		.addClass( 'ext-wikilambda-visualeditor-chip__msg' )
+		.append( OO.ui.msg( 'wikilambda-visualeditor-wikifunctionscall-ce-loading' ) );
+
 	const $spinner = $( '<div>' )
 		.addClass( 'cdx-progress-indicator' )
 		.append(
@@ -74,7 +79,7 @@ ve.ce.WikifunctionsCallNode.prototype.getLoadingState = function () {
 				)
 		);
 
-	$loadingContainer.append( $spinner ).append( loadingMsg );
+	$loadingContainer.append( $spinner ).append( $loadingSpan );
 	return $loadingContainer;
 };
 
@@ -86,7 +91,7 @@ ve.ce.WikifunctionsCallNode.prototype.getLoadingState = function () {
 ve.ce.WikifunctionsCallNode.prototype.getAbortState = function () {
 	const abortMsg = OO.ui.msg( 'wikilambda-visualeditor-wikifunctionscall-ce-abort' );
 	const $abort = $( '<span>' )
-		.addClass( 'ext-wikilambda-visualeditor-abort' )
+		.addClass( 'ext-wikilambda-visualeditor-chip' )
 		.text( abortMsg );
 
 	return $abort;
