@@ -11,4 +11,4 @@ core_dir="$script_dir/../../../"
 set -a
 source $core_dir/.env
 
-npm run browser-test -- "$@"
+npm run selenium-test -- "$@"

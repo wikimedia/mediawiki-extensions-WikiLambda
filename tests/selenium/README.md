@@ -26,7 +26,7 @@ Refer to the [WikiLambda set-up docs](https://www.mediawiki.org/wiki/MediaWiki-D
 1. Run all the tests once using the following command:
 
     ```bash
-    npm run browser-test
+    npm run selenium-test
     ```
 
 2. Run specific test once using the following command:
@@ -34,13 +34,13 @@ Refer to the [WikiLambda set-up docs](https://www.mediawiki.org/wiki/MediaWiki-D
     - Filter by file name:
 
         ```bash
-        npm run browser-test -- --spec tests/selenium/specs/[FILE-NAME]
+        npm run selenium-test -- --spec tests/selenium/specs/[FILE-NAME]
         ```
 
     - Filter by file name and test name:
 
         ```bash
-        npm run browser-test -- --spec tests/selenium/specs/[FILE-NAME] --mochaOpts.grep [TEST-NAME]
+        npm run selenium-test -- --spec tests/selenium/specs/[FILE-NAME] --mochaOpts.grep [TEST-NAME]
         ```
 
 3. Run all the tests multiple times (default 10 times) to check the stability of the tests using the following command:

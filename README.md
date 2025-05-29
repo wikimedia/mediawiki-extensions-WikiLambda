@@ -445,7 +445,7 @@ export DISPLAY=:1
 Xvfb "$DISPLAY" -screen 0 1280x1024x24 &
 
 # run the browser tests
-npm run browser-test
+npm run selenium-test
 
 NOTE: the tests will produce some snapshot after completition (both on failure and success). This can be found on "extensions/WikiLambda/tests/selenium/log"
 ```
