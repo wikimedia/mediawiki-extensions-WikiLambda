@@ -76,7 +76,7 @@
 	"content-model-zobject": "The label used when describing the page contents for the ZObject content. See also {{msg-mw|wikilambda-emptylabel}} and {{msg-mw|content-model-wikibase-item}}.\n\n{{doc-wikilambda}}",
 	"group-functioneer": "In WikiLambda, \"functioneers\" are users who have some more rights for developing functions.\n\n{{doc-group|functioneer}}",
 	"group-functioneer-member": "In WikiLambda, \"functioneers\" are users who have some more rights for developing functions.\n\n{{doc-group|functioneer|member}}",
-	"group-functionmaintainer": "In WikiLambda, \"maintainers\" are users who have the full rights to develop and modify functions.\n\n{{doc-group|functionmaintainer}}",
+	"group-functionmaintainer": "In WikiLambda, \"maintainers\" are users who have the full rights to develop and modify functions. This group is more powerful than {{msg-mw|group-functioneer}}, and different from {{msg-mw|group-sysop}}, having more specialised tools.\n\n{{doc-group|functionmaintainer}}",
 	"group-functionmaintainer-member": "In WikiLambda, \"maintainers\" are users who have the full rights to develop and modify functions.\n\n{{doc-group|functionmaintainer|member}}",
 	"grouppage-functioneer": "In WikiLambda, \"functioneers\" are users who have some more rights for developing functions.\n\n{{doc-group|functioneer|page}}",
 	"grouppage-functionmaintainer": "In WikiLambda, \"maintainers\" are users who have the full rights to develop and modify functions.\n\n{{doc-group|functionmaintainer|page}}",

@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Gkyziridis",
 			"Sabelöga",
 			"WikiPhoenix"
 		]
@@ -8,6 +9,9 @@
 	"apihelp-wikilambda_fetch-param-language": "Språket resultat ska returneras på.",
 	"apihelp-query+wikilambdasearch_labels-param-search": "Söktermen",
 	"apihelp-query+wikilambdasearch_labels-param-language": "MediaWikis språkkod som du försöker söka i",
+	"apihelp-query+wikilambda-example-return-type": "Sök efter ZObjects av valfri typ som matchar typen 'Z40', och returnerar engelska etiketter",
+	"apihelp-query+wikilambda-example-type-and-return-types": "Sök efter funktioner som returnerar antingen 'Z40' eller 'Z1', och returnerar engelska etiketter",
+	"apihelp-query+wikilambda-example-types-and-return-type": "Sök efter ZObjects av typen 'Z4' eller ZObjects av typen 'Z7' som matchar typen 'Z4'",
 	"apihelp-wikilambda_edit-summary": "Skapa eller redigera en ZObject.",
 	"apihelp-wikilambda_edit-param-summary": "Redigera sammanfattningsmeddelande",
 	"apihelp-wikilambda_edit-param-zobject": "JSON-representation av ZObject att spara"

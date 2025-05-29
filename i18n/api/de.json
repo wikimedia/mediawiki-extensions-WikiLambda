@@ -63,7 +63,7 @@
 	"apihelp-query+wikilambda-example-simple": "Suche nach ZObjekten, deren Bezeichnung mit „foo“ auf Englisch übereinstimmt",
 	"apihelp-query+wikilambda-example-nofallback": "Sucht nach ZObjekten, deren Bezeichnung mit „foo“ auf Französisch übereinstimmt, und akzeptiert keine Fallback-Sprachen",
 	"apihelp-query+wikilambda-example-type": "Suche nach ZObjekten vom Typ „Z4“, Rückgabe von englischen Bezeichnungen",
-	"apihelp-query+wikilambda-example-return-type": "Suche nach ZObjects beliebigen Typs, die sich in den Typ „Z40“ auflösen und englische Bezeichnungen zurückgeben",
+	"apihelp-query+wikilambda-example-return-type": "Suche nach ZObjekten beliebigen Typs, die sich in den Typ „Z40“ auflösen und englische Bezeichnungen zurückgeben",
 	"apihelp-query+wikilambda-example-type-and-return-types": "Suche nach Funktionen, die entweder „Z40“ oder „Z1“ zurückgeben und englische Bezeichnungen zurückgeben",
 	"apihelp-query+wikilambda-example-types-and-return-type": "Suche nach ZObjects vom Typ „Z4“ oder ZObjects vom Typ „Z7“, die sich in den Typ „Z4“ auflösen",
 	"apihelp-query+wikilambdaload_zobjects-summary": "Sucht ZObjekte anhand ihrer ZIDs und gibt ihr JSON-Modell vollständig oder gefiltert nach einer bestimmten Sprache oder Fallbacks zurück. Wenn eine der angegebenen ZIDs nicht im Wiki vorhanden ist, wird ein Z5-Fehler anstelle des angeforderten ZObjekts zurückgegeben.",

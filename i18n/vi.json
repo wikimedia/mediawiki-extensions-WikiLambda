@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"CactiStaccingCrane",
+			"Matma Rex",
 			"Minh Nguyen",
 			"NguyenHung",
 			"Nguyenphutrong2",
@@ -52,10 +53,10 @@
 	"content-model-zobject": "Đối tượng WikiLambda",
 	"group-functioneer": "Kiểm hàm viên",
 	"group-functioneer-member": "{{GENDER:$1|}}kiểm hàm viên",
-	"group-functionmaintainer": "Bảo quản viên",
-	"group-functionmaintainer-member": "{{GENDER:$1|}}bảo quản viên",
+	"group-functionmaintainer": "Maintainers",
+	"group-functionmaintainer-member": "{{GENDER:$1|maintainer}}",
 	"grouppage-functioneer": "{{ns:project}}:Kiểm hàm viên",
-	"grouppage-functionmaintainer": "{{ns:project}}:Bảo quản viên",
+	"grouppage-functionmaintainer": "{{ns:project}}:Maintainers",
 	"right-wikilambda-connect-implementation": "kết nối trường hợp sử dụng đến hàm",
 	"right-wikilambda-connect-tester": "kết nối bài kiểm tra đến hàm",
 	"right-wikilambda-create": "Tạo các đối tượng mới",
