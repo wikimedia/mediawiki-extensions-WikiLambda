@@ -135,7 +135,7 @@ class ImplementationForm extends Page {
 	async setCodeEditor( codeInstructions ) {
 		const codeBlock = this.contentBlock.$( '[data-testid="ace-code-editor"]' );
 		await codeBlock.$( './textarea' ).waitForExist();
-		await codeBlock.$( './textarea' ).click();
+		await codeBlock.click();
 		await browser.keys( codeInstructions );
 	}
 
@@ -155,7 +155,7 @@ class ImplementationForm extends Page {
 	 */
 	async toggleCompositionBlock() {
 		const compositionBlock = await this.compositionBlock;
-		const button = await compositionBlock.$( './/button[text()="Select Function"]' );
+		const button = compositionBlock.$( '[data-testid="object-to-string-link"]' );
 		await ElementActions.doClick( button );
 	}
 

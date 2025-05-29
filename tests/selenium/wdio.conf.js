@@ -15,6 +15,7 @@ exports.config = {
 			const result = root && root.closest( selector );
 			return result ? [ result ] : [];
 		} );
+		browser.setWindowSize( 1280, 1024 );
 	}
 	// Override, or add to, the setting from wdio-mediawiki.
 	// Learn more at https://webdriver.io/docs/configurationfile/

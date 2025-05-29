@@ -24,8 +24,10 @@ describe( 'Installation checks', () => {
 		} );
 		it( 'page should exist on installation and work when logged in', async () => {
 			await LoginPage.loginAdmin();
-			await expect( browser ).toHaveUrlContaining( 'Main_Page',
-				{ message: 'Login failed' } );
+			const currentUrl = await browser.getUrl();
+			if ( !currentUrl.includes( 'Main_Page' ) ) {
+				throw new Error( 'Login failed' );
+			}
 
 			await CreateObjectPage.open();
 			await expect( await CreateObjectPage.title ).toHaveText( i18n[ 'wikilambda-special-createobject' ] );

@@ -53,7 +53,10 @@ describe( 'Dynamic Test for Implementation and Test Case Connection', () => {
 		it( 'should dynamically connect or disconnect the implementation based on its initial state', async () => {
 			await browser.deleteAllCookies();
 			await LoginPage.loginAdmin();
-			await expect( browser ).toHaveUrlContaining( 'Main_Page', { message: 'Login failed' } );
+			const currentUrl = await browser.getUrl();
+			if ( !currentUrl.includes( 'Main_Page' ) ) {
+				throw new Error( 'Login failed' );
+			}
 
 			await FunctionPage.open( functionDetails.ZId );
 			await expect( await FunctionPage.functionTitle ).toHaveText( functionDetails.ZObjectLabel );
@@ -81,7 +84,10 @@ describe( 'Dynamic Test for Implementation and Test Case Connection', () => {
 
 		it( 'should dynamically connect or disconnect the test case based on its initial state', async () => {
 			await LoginPage.loginAdmin();
-			await expect( browser ).toHaveUrlContaining( 'Main_Page', { message: 'Login failed' } );
+			const currentUrl = await browser.getUrl();
+			if ( !currentUrl.includes( 'Main_Page' ) ) {
+				throw new Error( 'Login failed' );
+			}
 
 			await FunctionPage.open( functionDetails.ZId );
 			await expect( await FunctionPage.functionTitle ).toHaveText( functionDetails.ZObjectLabel );

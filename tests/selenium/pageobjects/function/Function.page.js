@@ -181,7 +181,10 @@ class FunctionPage extends Page {
 	 * @return {void}
 	 */
 	async goToCreateNewTestLink() {
+		await this.testCasesTableBlock.waitForExist();
+		await this.addTestButton.waitForClickable();
 		await ElementActions.doClick( this.addTestButton );
+		await this.aboutBlock.waitForExist();
 	}
 
 	/**
@@ -191,6 +194,7 @@ class FunctionPage extends Page {
 	 * @return {void}
 	 */
 	async goToCreateImplementationLink() {
+		await this.implementationsTableBlock.waitForExist();
 		await ElementActions.doClick( this.addImplementationButton );
 	}
 
@@ -288,7 +292,7 @@ class FunctionPage extends Page {
 	 */
 	async checkImplementationsTableRow( index ) {
 		const tableRow = this.getImplementationsTableRow( index );
-		const checkBox = await tableRow.$( './td[1]//input/following-sibling::span' );
+		const checkBox = await tableRow.$( './td[1]//input' );
 		await this.approveImplementationButton.waitForExist( { timeout: 10000, reverse: true } );
 		await checkBox.click();
 	}
@@ -387,7 +391,7 @@ class FunctionPage extends Page {
 	 */
 	async checkTestCasesTableRow( index ) {
 		const tableRow = this.getTestCasesTableRow( index );
-		const checkBox = await tableRow.$( './td[1]//input/following-sibling::span' );
+		const checkBox = await tableRow.$( './td[1]//input' );
 		await this.approveTestCaseButton.waitForExist( { timeout: 10000, reverse: true } );
 		await checkBox.click();
 	}

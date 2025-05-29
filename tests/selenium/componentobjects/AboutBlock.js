@@ -32,6 +32,10 @@ class AboutBlock {
 		return this.languagesDialogBox.$( '[data-testid="languages-dialog"] [data-testid="search-language"]' );
 	}
 
+	get aboutDescription() {
+		return this.aboutBlock.$( '[data-testid="about-description"]' );
+	}
+
 	// #region About Block content
 
 	/**
@@ -44,6 +48,7 @@ class AboutBlock {
 	async getLanguageAccordion( language ) {
 		const accordionSelector = `.//span[text()="${ language }"]`;
 		const accordionTitle = await this.aboutBlock.$( accordionSelector );
+		await accordionTitle.waitForExist();
 		await accordionTitle.waitForDisplayed();
 		const accordionElement = await accordionTitle.custom$( 'ancestor', 'details' );
 		return accordionElement;
@@ -94,9 +99,8 @@ class AboutBlock {
 	 * @return {string}
 	 */
 	async getAboutBlockDescription() {
-		const selector = this.aboutBlock.$( '[data-testid="about-description"]' );
-		await selector.waitForDisplayed();
-		return await ElementActions.getText( selector );
+		await this.aboutDescription.waitForDisplayed();
+		return await ElementActions.getText( this.aboutDescription );
 	}
 
 	/**
@@ -133,6 +137,9 @@ class AboutBlock {
 	 */
 	async addAboutDetails( aboutDetails ) {
 		const { language, label, description, alias } = aboutDetails;
+
+		await this.aboutBlock.waitForExist();
+		await this.aboutBlock.waitForDisplayed();
 
 		// Select language block
 		const accordion = await this.getLanguageAccordion( language );

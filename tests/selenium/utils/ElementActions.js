@@ -30,8 +30,8 @@ class ElementActions {
 		const element = await selector;
 
 		let clicked = false;
-		clicked = await element.waitForDisplayed( { timeout: 15000 } );
-		clicked = await element.waitForClickable( { timeout: 15000 } );
+		clicked = await element.waitForDisplayed();
+		clicked = await element.waitForClickable();
 		await element.click();
 		return clicked;
 	}
@@ -60,6 +60,16 @@ class ElementActions {
 	async setInput( selector, inputText ) {
 		await selector.waitForDisplayed();
 		await selector.click();
+
+		// remove this hack after https://phabricator.wikimedia.org/T398360 is fixed
+		const value = await selector.getValue();
+		if ( value === 'If' ) {
+			for ( let i = 0; i < value.length; i++ ) {
+				await browser.keys( 'Backspace' );
+			}
+		}
+		// end of hack
+
 		await selector.setValue( inputText );
 	}
 

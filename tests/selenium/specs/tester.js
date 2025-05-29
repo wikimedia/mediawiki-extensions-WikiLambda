@@ -23,6 +23,7 @@ const LoginPage = require( 'wdio-mediawiki/LoginPage' );
 const FunctionPage = require( '../pageobjects/function/Function.page' );
 const TesterForm = require( '../pageobjects/tester/TesterForm.page' );
 const TesterPage = require( '../pageobjects/tester/Tester.page' );
+const AboutBlock = require( '../componentobjects/AboutBlock' );
 
 describe( 'Tester', () => {
 
@@ -84,8 +85,10 @@ describe( 'Tester', () => {
 			 * If login is successful then browser is redirected from "Special:UserLogin"
 			 * to URL containing "Main_Page"
 			 */
-			await expect( browser ).toHaveUrlContaining( 'Main_Page',
-				{ message: 'Login failed' } );
+			const currentUrl = await browser.getUrl();
+			if ( !currentUrl.includes( 'Main_Page' ) ) {
+				throw new Error( 'Login failed' );
+			}
 			await FunctionPage.open( functionDetails.ZId );
 			await FunctionPage.goToCreateNewTestLink();
 
@@ -110,9 +113,11 @@ describe( 'Tester', () => {
 			// publish the test
 			await TesterForm.publishTest();
 
-			// confirm test is successfully published
-			await expect( browser ).toHaveUrlContaining( 'success=true',
-				{ message: 'Unable to publish the test' } );
+			// wait for success redirect and confirm test is successfully published
+			await browser.waitUntil(
+				async () => ( await browser.getUrl() ).includes( 'success=true' ),
+				{ timeout: 10000, timeoutMsg: 'Unable to publish the test, success URL not found' }
+			);
 
 			// Confirm that the tester Page is open
 			await expect( await TesterPage.getTesterTitle() )
@@ -169,6 +174,9 @@ describe( 'Edit the test', () => {
 		await TesterPage.clickOnEditSourceLink();
 		await TesterForm.addAboutBlockEntries( aboutBlockEditEnglishEntries );
 		await TesterForm.publishTest();
+		await AboutBlock.aboutBlock.waitForExist();
+		await AboutBlock.aboutDescription.waitForExist();
+		await AboutBlock.aboutDescription.waitForDisplayed();
 		await expect( await TesterPage.getTesterDescription() ).toBe(
 			aboutBlockEditEnglishEntries.description,
 			{ message: `Tester page is not displaying the tester description as expected to be ${ aboutBlockEditEnglishEntries.description }` } );

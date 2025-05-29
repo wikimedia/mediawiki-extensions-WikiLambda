@@ -30,6 +30,9 @@ class InputDropdown {
 		const resolvedInputSelector = await inputSelector;
 		await inputSelector.waitForDisplayed();
 		await ElementActions.setInput( resolvedInputSelector, inputText );
+		// TODO: get rid of this hacky pause
+		// eslint-disable-next-line wdio/no-pause
+		await browser.pause( 1000 );
 		const optionSelector = await resolvedParentSelector.$( `bdi=${ inputText }` );
 		await ElementActions.doClick( optionSelector );
 	}
@@ -46,8 +49,8 @@ class InputDropdown {
 	 * @return {void}
 	 */
 	async setSelectOption( parentSelector, inputSelector, inputText ) {
-		await inputSelector.waitForDisplayed( { timeout: 15000 } );
-		await browser.waitUntil( async () => await inputSelector.isEnabled(), { timeout: 15000 } );
+		await inputSelector.waitForDisplayed();
+		await browser.waitUntil( async () => await inputSelector.isEnabled() );
 
 		await ElementActions.doClick( inputSelector );
 
@@ -64,7 +67,7 @@ class InputDropdown {
 			} catch ( error ) {
 				return false;
 			}
-		}, { timeout: 10000 } );
+		} );
 
 		await ElementActions.scrollIntoView( optionElement );
 
@@ -75,7 +78,7 @@ class InputDropdown {
 			} catch ( error ) {
 				return false;
 			}
-		}, { timeout: 10000 } );
+		} );
 	}
 }
 

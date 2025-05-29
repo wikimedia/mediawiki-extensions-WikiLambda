@@ -90,8 +90,11 @@ describe( 'Implementation (CUJ 5)', () => {
 		} );
 
 		it( 'should create and publish a new implementation', async () => {
-			await expect( browser ).toHaveUrlContaining( 'Main_Page',
-				{ message: 'Login failed' } );
+			// Wait for login redirect to complete
+			await browser.waitUntil(
+				async () => ( await browser.getUrl() ).includes( 'Main_Page' ),
+				{ timeout: 10000, timeoutMsg: 'Login failed - page did not redirect to Main_Page' }
+			);
 
 			await FunctionPage.open( functionDetails.ZId );
 			await expect( await FunctionPage.functionTitle )
@@ -113,8 +116,10 @@ describe( 'Implementation (CUJ 5)', () => {
 
 			// Publish the new implementation
 			await ImplementationForm.publishImplementation();
-			await expect( browser ).toHaveUrlContaining( 'success=true',
-				{ message: 'Unable to publish the implementation' } );
+			const successUrl = await browser.getUrl();
+			if ( !successUrl.includes( 'success=true' ) ) {
+				throw new Error( 'Unable to publish the implementation' );
+			}
 
 			// Data checks
 			await expect( await ImplementationPage.getImplementationDescription() ).toBe(
@@ -196,8 +201,11 @@ describe( 'Implementation (CUJ 5)', () => {
 		} );
 
 		it( 'should create and publish a new implementation', async () => {
-			await expect( browser ).toHaveUrlContaining( 'Main_Page',
-				{ message: 'Login failed' } );
+			// Wait for login redirect to complete
+			await browser.waitUntil(
+				async () => ( await browser.getUrl() ).includes( 'Main_Page' ),
+				{ timeout: 10000, timeoutMsg: 'Login failed - page did not redirect to Main_Page' }
+			);
 			await FunctionPage.open( functionDetails.ZId );
 			await FunctionPage.goToCreateImplementationLink();
 
@@ -216,8 +224,10 @@ describe( 'Implementation (CUJ 5)', () => {
 
 			// Publish the new implementation
 			await ImplementationForm.publishImplementation();
-			await expect( browser ).toHaveUrlContaining( 'success=true',
-				{ message: 'Unable to publish the implementation' } );
+			const successUrl = await browser.getUrl();
+			if ( !successUrl.includes( 'success=true' ) ) {
+				throw new Error( 'Unable to publish the implementation' );
+			}
 
 			// Confirm that the Implementation Page is open
 			await expect( await ImplementationPage.getImplementationTitle() )
