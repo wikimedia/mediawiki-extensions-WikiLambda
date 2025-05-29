@@ -12,6 +12,7 @@ const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../
 const { mockLookupLanguages } = require( '../../../fixtures/mocks.js' );
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 const AboutLanguagesDialog = require( '../../../../../resources/ext.wikilambda.app/components/widgets/about/AboutLanguagesDialog.vue' );
+const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
 
 // Ignore all "teleport" behavior for the purpose of testing Dialog;
 // see https://test-utils.vuejs.org/guide/advanced/teleport.html
@@ -190,6 +191,12 @@ describe( 'AboutLanguagesDialog', () => {
 
 		// Fetches additional language information:
 		expect( store.fetchZids ).toHaveBeenCalledWith( { zids: [ 'Z1006', 'Z1219', 'Z1837' ] } );
+		expect( store.lookupZObjectLabels ).toHaveBeenCalledWith(
+			expect.objectContaining( {
+				input: 'Chin',
+				types: [ Constants.Z_NATURAL_LANGUAGE ]
+			} )
+		);
 	} );
 
 	it( 'emits add-language event when clicking on an item', () => {
