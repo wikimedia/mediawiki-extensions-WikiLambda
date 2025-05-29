@@ -224,6 +224,7 @@ module.exports = exports = defineComponent( {
 			this.inputFields[ index ].hasChanged = true;
 			this.setVEFunctionParam( index, value );
 			this.setVEFunctionParamsDirty();
+			this.$emit( 'update' );
 		},
 		/**
 		 * Handles the validation event for a specific input field.
