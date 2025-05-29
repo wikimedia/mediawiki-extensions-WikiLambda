@@ -186,14 +186,11 @@ module.exports = exports = defineComponent( {
 
 .ext-wikilambda-app-monolingual-string {
 	.ext-wikilambda-app-monolingual-string__chip {
+		min-width: 32px;
+
 		&--empty {
 			border: 1px dashed @border-color-base;
-
-			// The chip is empty, so we need to make it look like a placeholder
-			.cdx-info-chip--text {
-				height: 22px;
-				min-width: 22px;
-			}
+			height: 22px;
 		}
 	}
 
@@ -216,12 +213,10 @@ module.exports = exports = defineComponent( {
 		align-items: center;
 		position: relative;
 		z-index: 3;
-		min-width: calc( 36px - 16px );
 
 		.ext-wikilambda-app-monolingual-string__chip {
 			position: absolute;
 			z-index: 3;
-			min-width: calc( 36px - 16px );
 			left: @spacing-50;
 		}
 	}
