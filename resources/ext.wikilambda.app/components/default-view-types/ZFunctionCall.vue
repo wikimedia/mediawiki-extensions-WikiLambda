@@ -80,6 +80,8 @@ module.exports = exports = defineComponent( {
 
 	.ext-wikilambda-app-function-call__icon {
 		color: @color-progressive;
+		flex: none;
+		margin-top: @size-25;
 
 		&--undefined {
 			color: @color-error;
