@@ -7,37 +7,31 @@
  */
 @import ( reference ) 'mediawiki.skin.variables.less';
 
-.ext-wikilambda-visualeditor-loading {
+.ext-wikilambda-visualeditor-chip {
+	position: relative;
 	display: inline-flex;
-	align-items: baseline;
+	align-items: normal;
 	background-color: @background-color-neutral-subtle;
 	color: @color-base;
-	padding: 0 8px;
+	padding: 2px 8px;
 	font-size: @font-size-medium;
 	font-weight: normal;
+	font-family: @font-family-base;
+	line-height: @line-height-medium;
 	border: @border-subtle;
 	border-radius: @border-radius-base;
 	opacity: 0.7;
 
+	.ext-wikilambda-visualeditor-chip__msg {
+		margin-left: @spacing-150;
+	}
+
 	.cdx-progress-indicator {
-		margin-right: @spacing-50;
+		position: absolute;
 	}
 
 	.cdx-progress-indicator__indicator {
 		width: 1rem;
 		height: 1rem;
 	}
-}
-
-.ext-wikilambda-visualeditor-abort {
-	display: inline-flex;
-	align-items: center;
-	background-color: @background-color-neutral-subtle;
-	color: @color-base;
-	padding: 2px 8px;
-	font-size: @font-size-medium;
-	font-weight: normal;
-	border: @border-subtle;
-	border-radius: @border-radius-base;
-	opacity: 0.7;
 }
