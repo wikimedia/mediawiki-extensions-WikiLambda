@@ -247,6 +247,7 @@
 	"wikilambda-ztyped-pair-placeholder": "Valitse tyyppi",
 	"wikilambda-ztyped-pair-key-label": "Avain",
 	"wikilambda-ztyped-pair-value-label": "Arvo",
+	"wikilambda-zerror": "Virhe tyyppiä $1",
 	"wikilambda-optional": "valinnainen",
 	"wikilambda-continue-editing": "Jatka muokkaamista",
 	"wikilambda-discard-edits": "Hylkää muutokset",

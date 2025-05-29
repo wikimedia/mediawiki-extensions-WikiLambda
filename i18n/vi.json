@@ -341,7 +341,7 @@
 	"wikilambda-list-item-label": "Mục $1",
 	"wikilambda-context-menu": "Bảng chọn ngữ cảnh",
 	"wikilambda-add-list-item": "Thêm mục",
-	"wikilambda-delete-list-item": "Xoá mục",
+	"wikilambda-delete-list-item": "Xóa mục",
 	"wikilambda-tester-details": "Chi tiết",
 	"wikilambda-about-widget-title": "Giới thiệu",
 	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1}}$1 ngôn ngữ",
