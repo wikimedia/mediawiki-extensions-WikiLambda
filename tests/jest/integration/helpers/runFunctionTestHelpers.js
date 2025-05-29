@@ -14,6 +14,8 @@ const apiGetMock = require( './apiGetMock.js' );
 const mockMWConfigGet = require( './mwConfigMock.js' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const functionCallResultFromApi = require( '../objects/functionCallResultFromApi.js' );
+const { buildUrl } = require( '../../helpers/urlHelpers.js' );
+const { mockWindowLocation, restoreWindowLocation } = require( '../../fixtures/location.js' );
 
 const lookupZObjectTypeLabels = new ApiMock(
 	apiGetMock.functionLabelsRequest,
@@ -35,22 +37,14 @@ const runSetup = function () {
 
 	jest.useFakeTimers().setSystemTime( new Date( '2022-11-09T19:56:53Z' ) );
 
-	// Set page url and mw.Uri mock
-	Object.defineProperty( window, 'location', {
-		value: {
-			href: 'currentPage'
-		}
-	} );
-
 	// Create a real Pinia store or a testing one
 	global.store = createPinia();
 	// Configure the Vue test utils to use our store
 	vueTestUtils.config.global.plugins = [ global.store ];
 
-	window.mw.Uri = jest.fn( () => ( {
-		path: new window.mw.Title( Constants.PATHS.RUN_FUNCTION_TITLE ).getUrl(),
-		query: {}
-	} ) );
+	// Set the URL to the run function page
+	const url = buildUrl( new window.mw.Title( Constants.PATHS.RUN_FUNCTION_TITLE ).getUrl() );
+	mockWindowLocation( url );
 
 	// Set mw.config variables
 	global.mw.config.get = mockMWConfigGet( {
@@ -63,7 +57,7 @@ const runSetup = function () {
 	} );
 
 	// Set wiki url encode mock
-	mw.internalWikiUrlencode = jest.fn( ( url ) => url );
+	mw.internalWikiUrlencode = jest.fn( ( u ) => u );
 
 	// Set function call API mocks
 	const apiPostWithFunctionCallMock = jest.fn( () => Promise.resolve( {
@@ -86,6 +80,7 @@ const runSetup = function () {
 };
 
 const runTeardown = () => {
+	restoreWindowLocation();
 	document.body.outerHTML = '';
 	jest.runOnlyPendingTimers();
 	jest.useRealTimers();

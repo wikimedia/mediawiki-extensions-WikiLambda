@@ -23,8 +23,7 @@ const urlUtils = {
 
 		if ( baseUrl ) {
 			// Ensure no double slashes when joining
-			const fullUrl = new URL( path + queryString, baseUrl );
-			return fullUrl.toString();
+			return new URL( path + queryString, baseUrl ).toString();
 		}
 
 		// Return relative path
@@ -38,8 +37,7 @@ const urlUtils = {
 	 * @return {string|null}
 	 */
 	getParameterByName: function ( name ) {
-		const uri = mw.Uri();
-		return uri.query[ name ] || null;
+		return new URL( window.location.href ).searchParams.get( name );
 	},
 
 	/**
@@ -61,8 +59,42 @@ const urlUtils = {
 		const url = window.location.href.split( '#' )[ 0 ];
 		// Use replaceState to update the URL
 		history.replaceState( null, '', url );
-	}
+	},
 
+	/**
+	 * Convert URLSearchParams to a regular object
+	 *
+	 * @param {URLSearchParams} searchParams - The URLSearchParams object to convert.
+	 * @return {Object} - An object representation of the search parameters.
+	 */
+	searchParamsToObject: function ( searchParams ) {
+		const result = {};
+		searchParams.forEach( ( value, key ) => {
+			result[ key ] = value;
+		} );
+		return result;
+	},
+
+	/**
+	 * Function to get query parameters from the current URL
+	 *
+	 * @param {string} url
+	 * @return {Object} - An object containing the query parameters from the current URL.
+	 */
+	getQueryParamsFromUrl: function ( url ) {
+		const searchParams = new URL( url ).searchParams;
+		return this.searchParamsToObject( searchParams );
+	},
+
+	/**
+	 * Function to get the pathname from a URL
+	 *
+	 * @param {string} url - The URL from which to extract the pathname.
+	 * @return {string} - The pathname part of the URL.
+	 */
+	getPathFromUrl: function ( url ) {
+		return new URL( url ).pathname;
+	}
 };
 
 module.exports = urlUtils;

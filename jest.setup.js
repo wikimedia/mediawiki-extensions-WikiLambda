@@ -9,17 +9,11 @@
 /* global jest, mockLocalStorage, $ */
 // Assign things to "global" here if you want them to be globally available during tests
 
-const fs = require( 'fs' ),
-	path = require( 'path' ),
-	Constants = require( './resources/ext.wikilambda.app/Constants.js' ),
-	vueTestUtils = require( '@vue/test-utils' ),
-	{ createTestingPinia } = require( '@pinia/testing' );
-
-// Mocking window.location.href
-Object.defineProperty( global.window, 'location', {
-	writable: true,
-	value: { href: jest.fn(), protocol: 'http:', origin: 'http://localhost' }
-} );
+const fs = require( 'fs' );
+const path = require( 'path' );
+const vueTestUtils = require( '@vue/test-utils' );
+const { createTestingPinia } = require( '@pinia/testing' );
+const Constants = require( './resources/ext.wikilambda.app/Constants.js' );
 
 global.$ = require( 'jquery' );
 

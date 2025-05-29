@@ -71,10 +71,8 @@ module.exports = exports = defineComponent( {
 		'getUserLangZid'
 	] ), {
 		displaySuccessMessage: function () {
-			if ( mw.Uri().query ) {
-				return mw.Uri().query.success === 'true';
-			}
-			return false;
+			const url = new URL( window.location.href );
+			return url.searchParams.get( 'success' ) === 'true';
 		}
 	} ),
 	methods: {
@@ -101,9 +99,9 @@ module.exports = exports = defineComponent( {
 			immediate: true,
 			handler: function ( value ) {
 				if ( value ) {
-					const newUri = new mw.Uri();
-					delete newUri.query.success;
-					history.replaceState( null, '', newUri.toString() );
+					const url = new URL( window.location.href );
+					url.searchParams.delete( 'success' );
+					history.replaceState( null, '', `${ url.pathname }${ url.search }` );
 				}
 			}
 		}

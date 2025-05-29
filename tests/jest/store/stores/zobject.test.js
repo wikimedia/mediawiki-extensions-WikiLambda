@@ -8,9 +8,11 @@
 
 const { setActivePinia, createPinia } = require( 'pinia' );
 const { mockStoredObjects } = require( '../../fixtures/mocks.js' );
+const { mockWindowLocation, restoreWindowLocation } = require( '../../fixtures/location.js' );
 const { tableDataToRowObjects, zobjectToRows } = require( '../../helpers/zObjectTableHelpers.js' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const { buildUrl } = require( '../../helpers/urlHelpers.js' );
 
 const blankPersistentObject = {
 	Z1K1: 'Z2',
@@ -73,6 +75,10 @@ describe( 'zobject Pinia store', () => {
 			postWithEditToken: postWithEditTokenMock,
 			get: getMock
 		} ) );
+	} );
+
+	afterEach( () => {
+		restoreWindowLocation();
 	} );
 
 	describe( 'Getters', () => {
@@ -2302,12 +2308,12 @@ describe( 'zobject Pinia store', () => {
 				const pushRowSpy = jest.spyOn( store, 'pushRow' );
 				const changeTypeSpy = jest.spyOn( store, 'changeType' );
 
-				mw.Uri.mockImplementationOnce( () => ( {
-					query: {
-						action: Constants.ACTIONS.EDIT,
-						title: 'Z0'
-					}
-				} ) );
+				const queryParams = {
+					action: Constants.ACTIONS.EDIT,
+					title: 'Z0'
+				};
+				const baseUrl = `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ queryParams.title }`;
+				mockWindowLocation( buildUrl( baseUrl, queryParams ) );
 				Object.defineProperty( store, 'getStoredObject', {
 					value: () => ( { Z2K2: { Z1K1: 'Z4', Z4K2: [ 'Z3' ] } } )
 				} );
@@ -2333,13 +2339,13 @@ describe( 'zobject Pinia store', () => {
 				const pushRowSpy = jest.spyOn( store, 'pushRow' );
 				const changeTypeSpy = jest.spyOn( store, 'changeType' );
 
-				mw.Uri.mockImplementationOnce( () => ( {
-					query: {
-						zid: Constants.Z_BOOLEAN,
-						action: Constants.ACTIONS.EDIT,
-						title: 'Z0'
-					}
-				} ) );
+				const queryParams = {
+					zid: Constants.Z_BOOLEAN,
+					action: Constants.ACTIONS.EDIT,
+					title: 'Z0'
+				};
+				const baseUrl = `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ queryParams.title }`;
+				mockWindowLocation( buildUrl( baseUrl, queryParams ) );
 				store.zobject = zobjectToRows( blankPersistentObject );
 				Object.defineProperty( store, 'getStoredObject', {
 					value: () => ( { Z2K2: { Z1K1: 'Z4', Z4K2: [ 'Z3' ] } } )
@@ -2364,13 +2370,13 @@ describe( 'zobject Pinia store', () => {
 			it( 'Initialize ZObject, create new page, non-ZID value as initial', async () => {
 				store.fetchZids = jest.fn().mockResolvedValue();
 				const changeTypeSpy = jest.spyOn( store, 'changeType' );
-				mw.Uri.mockImplementationOnce( () => ( {
-					query: {
-						zid: 'banana',
-						action: Constants.ACTIONS.EDIT,
-						title: 'Z0'
-					}
-				} ) );
+				const queryParams = {
+					zid: 'banana',
+					action: Constants.ACTIONS.EDIT,
+					title: 'Z0'
+				};
+				const baseUrl = `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ queryParams.title }`;
+				mockWindowLocation( buildUrl( baseUrl, queryParams ) );
 				store.zobject = zobjectToRows( blankPersistentObject );
 				Object.defineProperty( store, 'getStoredObject', {
 					value: () => undefined
@@ -2386,13 +2392,13 @@ describe( 'zobject Pinia store', () => {
 			it( 'Initialize ZObject, create new page, non-type value as initial', async () => {
 				store.fetchZids = jest.fn().mockResolvedValue();
 				const changeTypeSpy = jest.spyOn( store, 'changeType' );
-				mw.Uri.mockImplementationOnce( () => ( {
-					query: {
-						zid: 'Z801',
-						action: Constants.ACTIONS.EDIT,
-						title: 'Z0'
-					}
-				} ) );
+				const queryParams = {
+					zid: 'Z801',
+					action: Constants.ACTIONS.EDIT,
+					title: 'Z0'
+				};
+				const baseUrl = `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ queryParams.title }`;
+				mockWindowLocation( buildUrl( baseUrl, queryParams ) );
 				store.zobject = zobjectToRows( blankPersistentObject );
 				Object.defineProperty( store, 'getStoredObject', {
 					value: () => ( { Z2K2: { Z1K1: 'Z8' } } )
@@ -2408,13 +2414,13 @@ describe( 'zobject Pinia store', () => {
 			it( 'Initialize ZObject, create new page, lowercase ZID', async () => {
 				store.fetchZids = jest.fn().mockResolvedValue();
 				const changeTypeSpy = jest.spyOn( store, 'changeType' );
-				mw.Uri.mockImplementationOnce( () => ( {
-					query: {
-						zid: 'z8',
-						action: Constants.ACTIONS.EDIT,
-						title: 'Z0'
-					}
-				} ) );
+				const queryParams = {
+					zid: 'z8',
+					action: Constants.ACTIONS.EDIT,
+					title: 'Z0'
+				};
+				const baseUrl = `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ queryParams.title }`;
+				mockWindowLocation( buildUrl( baseUrl, queryParams ) );
 				store.zobject = zobjectToRows( blankPersistentObject );
 				Object.defineProperty( store, 'getStoredObject', {
 					value: () => ( { Z2K2: { Z1K1: 'Z8' } } )
@@ -2430,13 +2436,13 @@ describe( 'zobject Pinia store', () => {
 			it( 'Initialize ZObject, create new page, ZObject key passed as initial', async () => {
 				store.fetchZids = jest.fn().mockResolvedValue();
 				const changeTypeSpy = jest.spyOn( store, 'changeType' );
-				mw.Uri.mockImplementationOnce( () => ( {
-					query: {
-						zid: 'Z14K1',
-						action: Constants.ACTIONS.EDIT,
-						title: 'Z0'
-					}
-				} ) );
+				const queryParams = {
+					zid: 'Z14K1',
+					action: Constants.ACTIONS.EDIT,
+					title: 'Z0'
+				};
+				const baseUrl = `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ queryParams.title }`;
+				mockWindowLocation( buildUrl( baseUrl, queryParams ) );
 				store.zobject = zobjectToRows( blankPersistentObject );
 
 				const expectedZ2K2ChangeTypePayload = { id: 7, type: 'Z14K1' };
@@ -2449,13 +2455,13 @@ describe( 'zobject Pinia store', () => {
 			it( 'Initialize ZObject, create new page, quasi-valid ZID', async () => {
 				store.fetchZids = jest.fn().mockResolvedValue();
 				const changeTypeSpy = jest.spyOn( store, 'changeType' );
-				mw.Uri.mockImplementationOnce( () => ( {
-					query: {
-						zid: 'Z8s',
-						action: Constants.ACTIONS.EDIT,
-						title: 'Z0'
-					}
-				} ) );
+				const queryParams = {
+					zid: 'Z8s',
+					action: Constants.ACTIONS.EDIT,
+					title: 'Z0'
+				};
+				const baseUrl = `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ queryParams.title }`;
+				mockWindowLocation( buildUrl( baseUrl, queryParams ) );
 				store.zobject = zobjectToRows( blankPersistentObject );
 
 				const expectedZ2K2ChangeTypePayload = { id: 7, type: 'Z8s' };
@@ -2472,12 +2478,12 @@ describe( 'zobject Pinia store', () => {
 				} } };
 				const getMock = jest.fn().mockResolvedValueOnce( response );
 				mw.Api = jest.fn( () => ( { get: getMock } ) );
-				mw.Uri.mockImplementationOnce( () => ( {
-					query: {
-						title: 'Z10001',
-						oldid: '10002'
-					}
-				} ) );
+				const queryParams = {
+					title: 'Z10001',
+					oldid: '10002'
+				};
+				const baseUrl = `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ queryParams.title }`;
+				mockWindowLocation( buildUrl( baseUrl, queryParams ) );
 
 				const expectedPayload = {
 					action: 'query',
@@ -2501,12 +2507,11 @@ describe( 'zobject Pinia store', () => {
 				} } };
 				const getMock = jest.fn().mockResolvedValueOnce( response );
 				mw.Api = jest.fn( () => ( { get: getMock } ) );
-				mw.Uri.mockImplementationOnce( () => ( {
-					query: {
-						title: 'Z10001'
-					}
-				} ) );
-
+				const queryParams = {
+					title: 'Z10001'
+				};
+				const baseUrl = `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ queryParams.title }`;
+				mockWindowLocation( buildUrl( baseUrl, queryParams ) );
 				const expectedPayload = {
 					action: 'query',
 					list: 'wikilambdaload_zobjects',

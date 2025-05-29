@@ -7,12 +7,13 @@
 'use strict';
 
 const Constants = require( '../../Constants.js' );
+const urlUtils = require( '../../utils/urlUtils.js' );
 
 module.exports = {
 	state: {
-		currentPath: mw.Uri().path,
+		currentPath: window.location.pathname,
 		currentView: Constants.VIEWS.Z_OBJECT_VIEWER,
-		queryParams: mw.Uri().query
+		queryParams: urlUtils.getQueryParamsFromUrl( window.location.href )
 	},
 
 	getters: {
@@ -58,95 +59,61 @@ module.exports = {
 		 * @param {string} payload.to - Target view.
 		 * @param {Object} [payload.params] - Additional query parameters.
 		 */
-		navigate: function ( payload ) {
-			/**
-			 * Whether the given URI path string is a known view in Constants.VIEWS
-			 *
-			 * @param {string} view
-			 * @return {boolean}
-			 */
-			const viewIsInvalid = function ( view ) {
-				let viewExist = false;
-				Object.keys( Constants.VIEWS ).forEach( ( viewKey ) => {
-					if ( Constants.VIEWS[ viewKey ] === view ) {
-						viewExist = true;
-					}
-				} );
-				return !viewExist;
-			};
-			if ( viewIsInvalid( payload.to ) ) {
+		navigate: function ( { to, params } ) {
+			if ( !this.isValidView( to ) ) {
 				return;
 			}
 
-			this.currentView = payload.to;
+			this.currentView = to;
 
-			if ( payload.params ) {
-				this.queryParams = Object.assign( {}, this.queryParams, payload.params );
+			const url = new URL( window.location.href );
+
+			if ( params ) {
+				this.queryParams = Object.assign( {}, this.queryParams, params );
 			}
+			const newQuery = Object.assign( {}, this.queryParams, { view: this.currentView } );
 
-			const path = this.currentPath;
-			const query = Object.assign( {}, this.queryParams, { view: this.currentView } );
-			const newUriString = mw.util.getUrl( path, query );
-
-			window.history.pushState( { path, query }, null, newUriString );
+			url.pathname = this.currentPath;
+			for ( const key in newQuery ) {
+				url.searchParams.set( key, newQuery[ key ] );
+			}
+			const query = urlUtils.searchParamsToObject( url.searchParams );
+			window.history.pushState( { path: url.pathname, query }, null, url.toString() );
 		},
 
 		/**
 		 * Evaluate the Uri path and determine what View should be displayed.
 		 */
 		evaluateUri: function () {
-			const uri = mw.Uri();
+			const url = new URL( window.location.href );
+			const params = url.searchParams;
+			const path = url.pathname;
 
 			// Set title if URL is in `/wiki/{{ title }}` format
-			if ( !uri.query.title && uri.path.includes( '/wiki' ) ) {
-				const lastPathIndex = uri.path.lastIndexOf( '/' );
-				uri.query.title = uri.path.slice( lastPathIndex + 1 );
+			let title = params.get( 'title' );
+			if ( !title && path.includes( '/wiki' ) ) {
+				title = path.slice( path.lastIndexOf( '/' ) + 1 );
 			}
 
-			/**
-			 * Whether the URL is to Special Create ZObject page
-			 *
-			 * @param {Object} uriQuery The contextual mw.Uri's query sub-object
-			 * @return {boolean}
-			 */
-			const isCreatePath = ( uriQuery ) => uriQuery.title === Constants.PATHS.CREATE_OBJECT_TITLE;
-
 			// 1. if Special page Create
-			if ( isCreatePath( uri.query ) ) {
-				// I we have zid=Z8 in the uri, render function edit view
-				// Else, render default view
+			if ( this.isCreatePath( title ) ) {
+				const zid = params.get( 'zid' );
 				this.changeCurrentView(
-					uri.query.zid === Constants.Z_FUNCTION ?
+					zid && zid.toUpperCase() === Constants.Z_FUNCTION ?
 						Constants.VIEWS.FUNCTION_EDITOR :
 						Constants.VIEWS.DEFAULT
 				);
 				return;
 			}
 
-			/**
-			 * Whether the URL is to Special Evaluate Function Call page
-			 *
-			 * @param {Object} uriQuery The contextual mw.Uri's query sub-object
-			 * @return {boolean}
-			 */
-			const isEvaluateFunctionCallPath = ( uriQuery ) => uriQuery.title === Constants.PATHS.RUN_FUNCTION_TITLE;
-
 			// 2. if Special page Run Function
-			if ( isEvaluateFunctionCallPath( uri.query ) ) {
+			if ( this.isEvaluateFunctionCallPath( title ) ) {
 				this.changeCurrentView( Constants.VIEWS.FUNCTION_EVALUATOR );
 				return;
 			}
 
-			/**
-			 * Whether the Root ZObject presented in the view or edit page is a Z8/Function
-			 *
-			 * @param {Object} objectContext The ZObject context in which we're operating
-			 * @return {boolean}
-			 */
-			const isFunctionRootObject = () => this.getCurrentZObjectType === Constants.Z_FUNCTION;
-
 			// 3. if Function page (edit or view)
-			if ( isFunctionRootObject() ) {
+			if ( this.isFunctionRootObject() ) {
 				this.changeCurrentView(
 					this.getViewMode ?
 						Constants.VIEWS.FUNCTION_VIEWER :
@@ -162,21 +129,67 @@ module.exports = {
 		/**
 		 * Handle the changes of a view and replace the history state.
 		 *
-		 * @param {string} view - The new view to set.
+		 * @param {string} newView - The new view to set.
 		 */
-		changeCurrentView: function ( view ) {
-			this.currentView = view;
+		changeCurrentView: function ( newView ) {
+			this.currentView = newView;
 
-			const uri = mw.Uri();
+			const url = new URL( window.location.href );
+			const path = url.pathname;
+			const params = url.searchParams;
+			const currentView = params.get( 'view' );
 
 			// should only replace history state if path query view is set and is different from new view
-			if ( uri.query.view && uri.query.view !== view ) {
-				const path = uri.path;
-				const query = Object.assign( {}, uri.query, { view: view } );
-				const newUriString = mw.util.getUrl( path, query );
-
-				window.history.replaceState( { path, query }, null, newUriString );
+			if ( currentView && currentView !== newView ) {
+				params.set( 'view', newView );
+				const query = urlUtils.searchParamsToObject( params );
+				window.history.replaceState( { path, query }, null, url.toString() );
 			}
+		},
+
+		/**
+		 * Check if  the given url path 'view' string is a known view in Constants.VIEWS
+		 *
+		 * @param {string} view
+		 * @return {boolean}
+		 */
+		isValidView: function ( view ) {
+			for ( const key in Constants.VIEWS ) {
+				if ( Constants.VIEWS[ key ] === view ) {
+					return true;
+				}
+			}
+			return false;
+		},
+
+		/**
+		 * Check if the path is for Special:CreateZObject
+		 *
+		 * @param {string} title
+		 * @return {boolean}
+		 */
+		isCreatePath: function ( title ) {
+			return title === Constants.PATHS.CREATE_OBJECT_TITLE;
+		},
+
+		/**
+		 * Check if the path is for Special:EvaluateFunctionCall
+		 *
+		 * @param {string} title
+		 * @return {boolean}
+		 */
+		isEvaluateFunctionCallPath: function ( title ) {
+			return title === Constants.PATHS.RUN_FUNCTION_TITLE;
+		},
+
+		/**
+		 * Check if the current ZObject is a Z8/Function
+		 *
+		 * @param {string} title
+		 * @return {boolean}
+		 */
+		isFunctionRootObject: function () {
+			return this.getCurrentZObjectType === Constants.Z_FUNCTION;
 		}
 	}
 };

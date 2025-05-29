@@ -15,6 +15,8 @@ const apiGetMock = require( './apiGetMock.js' );
 const mockMWConfigGet = require( './mwConfigMock.js' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const wikidataMock = require( './wikidataMock.js' );
+const { buildUrl } = require( '../../helpers/urlHelpers.js' );
+const { mockWindowLocation, restoreWindowLocation } = require( '../../fixtures/location.js' );
 
 const initializeRootZObject =
 	new ApiMock( apiGetMock.loadZObjectsRequest, apiGetMock.loadZObjectsResponse, apiGetMock.loadZObjectsMatcher );
@@ -24,13 +26,8 @@ const lookupZObjectFunctionLabels =
 	new ApiMock( apiGetMock.functionLabelsRequest, apiGetMock.labelsResponse, apiGetMock.labelsMatcher );
 
 const runSetup = function () {
+	// Remove or comment out this line:
 	jest.useFakeTimers();
-
-	Object.defineProperty( window, 'location', {
-		value: {
-			href: '/w/index.php?title=Special:CreateObject'
-		}
-	} );
 
 	// Create a real Pinia store or a testing one
 	global.store = createPinia();
@@ -41,10 +38,9 @@ const runSetup = function () {
 		title: Constants.PATHS.CREATE_OBJECT_TITLE
 	};
 
-	window.mw.Uri.mockImplementation( () => ( {
-		query: queryParams,
-		path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl( queryParams )
-	} ) );
+	// Set the URL to the create object page with the necessary query parameters
+	const url = buildUrl( new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl( queryParams ) );
+	mockWindowLocation( url );
 
 	global.mw.config.get = mockMWConfigGet( {
 		wgWikiLambda: {
@@ -72,9 +68,9 @@ const runSetup = function () {
 
 	// Mock fetch for Wikidata APIs
 	// eslint-disable-next-line n/no-unsupported-features/node-builtins
-	global.fetch = jest.fn( ( url ) => {
-		if ( url.includes( 'wikidata.org' ) ) {
-			return wikidataMock( url );
+	global.fetch = jest.fn( ( u ) => {
+		if ( u.includes( 'wikidata.org' ) ) {
+			return wikidataMock( u );
 		}
 	} );
 
@@ -89,7 +85,9 @@ const runSetup = function () {
 
 };
 
-const runTeardown = () => {
+const runTeardown = function () {
+	restoreWindowLocation();
+	// Remove or comment out these lines:
 	jest.runOnlyPendingTimers();
 	jest.useRealTimers();
 	// Clean up the mocked fetch API

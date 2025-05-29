@@ -18,7 +18,6 @@ describe( 'Publish widget', () => {
 	let store;
 
 	beforeEach( () => {
-		Object.defineProperty( window, 'location', { value: { href: '' } } );
 		store = useMainStore();
 		store.getCurrentZObjectId = 'Z0';
 		store.getCurrentZObjectType = Constants.Z_FUNCTION;

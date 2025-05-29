@@ -29,6 +29,7 @@ describe( 'WikiLambda frontend, create Wikidata enum', () => {
 		const setupResult = runSetup( pageConfig );
 		apiPostWithEditTokenMock = setupResult.apiPostWithEditTokenMock;
 	} );
+
 	afterEach( () => {
 		runTeardown();
 	} );
@@ -113,25 +114,29 @@ describe( 'WikiLambda frontend, create Wikidata enum', () => {
 		// EXPECT: the input field of the 2nd item is set to 'feminine'
 		expect( lexemeInput2 ).toHaveValue( 'feminine 2' );
 
-		setTimeout( async () => {
-			// ACT: Click publish button.
-			await fireEvent.click( getByText( 'Publish' ) );
+		// ACT: Click publish button.
+		await fireEvent.click( getByText( 'Publish' ) );
 
-			// ACT: Click publish button in dialog.
-			await fireEvent.click( within( await findByRole( 'dialog' ) ).getByText( 'Publish' ) );
+		// ACT: Add a summary of your changes.
+		const publishDialog = await findByRole( 'dialog' );
+		await fireEvent.update(
+			within( publishDialog ).getByLabelText( 'How did you improve this page?' ),
+			'my changes summary' );
 
-			// ASSERT: Location is changed to page returned by API.
-			await waitFor( () => expect( window.location.href ).toEqual( '/view/en/newPage?success=true' ) );
+		// ACT: Click publish button in dialog.
+		await fireEvent.click( within( publishDialog ).getByText( 'Publish' ) );
 
-			// ASSERT: Correct ZObject was posted to the API.
-			expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {
-				action: 'wikilambda_edit',
-				uselang: 'en',
-				summary: '',
-				zid: undefined,
-				zobject: JSON.stringify( wikidataEnumZObject( Constants.Z_WIKIDATA_REFERENCE_LEXEME, [ 'L111111', 'L222222' ] ) )
-			} );
-		}, 100 );
+		// ASSERT: Location is changed to page returned by API.
+		await waitFor( () => expect( window.location.href ).toEqual( '/view/en/newPage?success=true' ) );
+
+		// ASSERT: Correct ZObject was posted to the API.
+		expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {
+			action: 'wikilambda_edit',
+			uselang: 'en',
+			summary: 'my changes summary',
+			zid: undefined,
+			zobject: JSON.stringify( wikidataEnumZObject( Constants.Z_WIKIDATA_REFERENCE_LEXEME, [ 'L111111', 'L222222' ] ) )
+		} );
 	} );
 
 	it( 'swaps the Wikidata type and removes incompatible list items', async () => {
@@ -218,24 +223,28 @@ describe( 'WikiLambda frontend, create Wikidata enum', () => {
 		// EXPECT: the input field of the 1st item is set to 'feminine'
 		expect( itemInput ).toHaveValue( 'feminine 1' );
 
-		setTimeout( async () => {
-			// ACT: Click publish button.
-			await fireEvent.click( getByText( 'Publish' ) );
+		// ACT: Click publish button.
+		await fireEvent.click( getByText( 'Publish' ) );
 
-			// ACT: Click publish button in dialog.
-			await fireEvent.click( within( await findByRole( 'dialog' ) ).getByText( 'Publish' ) );
+		// ACT: Add a summary of your changes.
+		const publishDialog = await findByRole( 'dialog' );
+		await fireEvent.update(
+			within( publishDialog ).getByLabelText( 'How did you improve this page?' ),
+			'my changes summary' );
 
-			// ASSERT: Location is changed to page returned by API.
-			await waitFor( () => expect( window.location.href ).toEqual( '/view/en/newPage?success=true' ) );
+		// ACT: Click publish button in dialog.
+		await fireEvent.click( within( publishDialog ).getByText( 'Publish' ) );
 
-			// ASSERT: Correct ZObject was posted to the API.
-			expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {
-				action: 'wikilambda_edit',
-				uselang: 'en',
-				summary: '',
-				zid: undefined,
-				zobject: JSON.stringify( wikidataEnumZObject( Constants.Z_WIKIDATA_REFERENCE_ITEM, [ 'Q111111' ] ) )
-			} );
-		}, 100 );
+		// ASSERT: Location is changed to page returned by API.
+		await waitFor( () => expect( window.location.href ).toEqual( '/view/en/newPage?success=true' ) );
+
+		// ASSERT: Correct ZObject was posted to the API.
+		await waitFor( () => expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {
+			action: 'wikilambda_edit',
+			uselang: 'en',
+			summary: 'my changes summary',
+			zid: undefined,
+			zobject: JSON.stringify( wikidataEnumZObject( Constants.Z_WIKIDATA_REFERENCE_ITEM, [ 'Q111111' ] ) )
+		} ) );
 	} );
 } );
