@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
 use MediaWiki\Api\ApiMain;
+use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
@@ -40,7 +41,7 @@ class ApiZObjectFetcher extends WikiLambdaApiBase {
 					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN,
 					[]
 				),
-				400
+				HttpStatus::BAD_REQUEST
 			);
 		}
 
@@ -59,7 +60,7 @@ class ApiZObjectFetcher extends WikiLambdaApiBase {
 					'message' => "You must specify a revision for each ZID, or none at all."
 				]
 			);
-			WikiLambdaApiBase::dieWithZError( $zErrorObject, 400 );
+			WikiLambdaApiBase::dieWithZError( $zErrorObject, HttpStatus::BAD_REQUEST );
 		}
 
 		$language = $params[ 'language' ];
@@ -70,7 +71,7 @@ class ApiZObjectFetcher extends WikiLambdaApiBase {
 					ZErrorTypeRegistry::Z_ERROR_INVALID_REFERENCE,
 					[ 'data' => $ZID ]
 				);
-				WikiLambdaApiBase::dieWithZError( $zErrorObject, 404 );
+				WikiLambdaApiBase::dieWithZError( $zErrorObject, HttpStatus::NOT_FOUND );
 			} else {
 				$title = Title::newFromText( $ZID, NS_MAIN );
 
@@ -79,7 +80,7 @@ class ApiZObjectFetcher extends WikiLambdaApiBase {
 						ZErrorTypeRegistry::Z_ERROR_UNKNOWN_REFERENCE,
 						[ 'data' => $ZID ]
 					);
-					WikiLambdaApiBase::dieWithZError( $zErrorObject, 404 );
+					WikiLambdaApiBase::dieWithZError( $zErrorObject, HttpStatus::NOT_FOUND );
 				} else {
 					$revision = $revisions ? $revisions[ $index ] : null;
 

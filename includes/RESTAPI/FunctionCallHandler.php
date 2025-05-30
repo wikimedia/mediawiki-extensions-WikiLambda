@@ -16,6 +16,7 @@ use MediaWiki\Api\ApiMain;
 use MediaWiki\Api\ApiUsageException;
 use MediaWiki\Context\DerivativeContext;
 use MediaWiki\Context\RequestContext;
+use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
@@ -75,7 +76,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			$this->logger->info( __METHOD__ . ' called repo mode is not enabled' );
 
 			// WikiLambda repo code isn't loaded, so we can't use a ZError here sadly.
-			$this->dieRESTfully( 'wikilambda-restapi-disabled-repo-mode-only', [], 400 );
+			$this->dieRESTfully( 'wikilambda-restapi-disabled-repo-mode-only', [], HttpStatus::BAD_REQUEST );
 		}
 
 		// 1. Check if we can call this requested Function at all
@@ -86,7 +87,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			);
 			$this->dieRESTfullyWithZError(
 				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ 'data' => $target ] ),
-				400,
+				HttpStatus::BAD_REQUEST,
 				[ 'target' => $target ]
 			);
 		}
@@ -99,7 +100,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			);
 			$this->dieRESTfullyWithZError(
 				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ 'data' => $target ] ),
-				400,
+				HttpStatus::BAD_REQUEST,
 				[ 'target' => $target ]
 			);
 		}
@@ -113,7 +114,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			);
 			$this->dieRESTfullyWithZError(
 				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ 'data' => $target ] ),
-				400,
+				HttpStatus::BAD_REQUEST,
 				[ 'target' => $target ]
 			);
 		}
@@ -130,7 +131,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			// Dies with Z_ERROR_NOT_WELLFORMED
 			$this->dieRESTfullyWithZError(
 				ZErrorFactory::createValidationZError( $targetObject->getErrors() ),
-				400,
+				HttpStatus::BAD_REQUEST,
 				[ 'target' => $target ]
 			);
 		}
@@ -153,7 +154,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 						'argument' => $target
 					]
 				),
-				400,
+				HttpStatus::BAD_REQUEST,
 				[
 					'target' => $target,
 					'mode' => 'function'
@@ -181,7 +182,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			// Die with Z_ERROR_LANG_NOT_FOUND
 			$this->dieRESTfullyWithZError(
 				$error->getZError(),
-				400,
+				HttpStatus::BAD_REQUEST,
 				[ 'target' => $parseLang ]
 			);
 		}
@@ -217,7 +218,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 						'arguments' => $arguments
 					]
 				),
-				400,
+				HttpStatus::BAD_REQUEST,
 				[ 'target' => $target ]
 			);
 		}
@@ -264,7 +265,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 					ZErrorFactory::createZErrorInstance(
 						ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [ 'data' => $target ]
 					),
-					400,
+					HttpStatus::BAD_REQUEST,
 					[
 						'target' => $target,
 						'mode' => 'input'
@@ -298,7 +299,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 					ZErrorFactory::createZErrorInstance(
 						ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [ 'data' => $target ]
 					),
-					400,
+					HttpStatus::BAD_REQUEST,
 					[
 						'target' => $target,
 						'mode' => 'input'
@@ -332,7 +333,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			// Die with Z_ERROR_LANG_NOT_FOUND
 			$this->dieRESTfullyWithZError(
 				$error->getZError(),
-				400,
+				HttpStatus::BAD_REQUEST,
 				[ 'target' => $renderLang ]
 			);
 		}
@@ -364,7 +365,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 					ZErrorFactory::createZErrorInstance(
 						ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [ 'data' => $target ]
 					),
-					400,
+					HttpStatus::BAD_REQUEST,
 					[
 						'target' => $target,
 						'mode' => 'output'
@@ -387,7 +388,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 					ZErrorFactory::createZErrorInstance(
 						ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [ 'data' => $target ]
 					),
-					400,
+					HttpStatus::BAD_REQUEST,
 					[
 						'target' => $target,
 						'mode' => 'output'
@@ -427,7 +428,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			// * Z_ERROR_API_FAILURE/Z530
 			// * Z_ERROR_EVALUATION/Z507
 			// * Z_ERROR_INVALID_EVALUATION_RESULT/Z560
-			$this->dieRESTfullyWithZError( $e->getZError(), 400, [ 'data' => $e->getZError() ] );
+			$this->dieRESTfullyWithZError( $e->getZError(), HttpStatus::BAD_REQUEST, [ 'data' => $e->getZError() ] );
 		} catch ( JsonException $e ) {
 			$this->logger->error(
 				__METHOD__ . ' called on {target} but got a JsonException, {error}',
@@ -440,7 +441,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX, [ 'data' => $call ]
 				),
-				400,
+				HttpStatus::BAD_REQUEST,
 				[
 					'target' => $target,
 					'error' => $e->getMessage()
@@ -534,7 +535,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ 'data' => $providedArgument ]
 				),
-				400,
+				HttpStatus::BAD_REQUEST,
 				[ 'target' => $targetFunction ]
 			);
 		}
@@ -561,7 +562,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 						'argument' => $providedArgument
 					]
 				),
-				400,
+				HttpStatus::BAD_REQUEST,
 				[
 					'target' => $targetFunction,
 					'mode' => 'input'

@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
 use MediaWiki\Api\ApiBase;
 use MediaWiki\Api\ApiQuery;
+use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
@@ -91,10 +92,20 @@ class ApiQueryZObjects extends WikiLambdaApiQueryGeneratorBase {
 		$page = $zObjectStore->fetchZObjectByTitle( $title, $revision );
 
 		if ( !$page ) {
-			$this->dieWithError( [ 'apierror-query+wikilambdaload_zobjects-unloadable', $zid ], null, null, 500 );
+			$this->dieWithError(
+				[ 'apierror-query+wikilambdaload_zobjects-unloadable', $zid ],
+				null,
+				null,
+				HttpStatus::INTERNAL_SERVER_ERROR
+			);
 		}
 		if ( !( $page instanceof ZObjectContent ) ) {
-			$this->dieWithError( [ 'apierror-query+wikilambdaload_zobjects-notzobject', $zid ], null, null, 400 );
+			$this->dieWithError(
+				[ 'apierror-query+wikilambdaload_zobjects-notzobject', $zid ],
+				null,
+				null,
+				HttpStatus::BAD_REQUEST
+			);
 		}
 
 		// The object was successfully retrieved
@@ -170,7 +181,7 @@ class ApiQueryZObjects extends WikiLambdaApiQueryGeneratorBase {
 					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN,
 					[]
 				),
-				400
+				HttpStatus::BAD_REQUEST
 			);
 		}
 
@@ -192,7 +203,7 @@ class ApiQueryZObjects extends WikiLambdaApiQueryGeneratorBase {
 					ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
 					[ 'message' => "You must specify a revision for each ZID, or none at all." ]
 				);
-				WikiLambdaApiBase::dieWithZError( $zErrorObject, 400 );
+				WikiLambdaApiBase::dieWithZError( $zErrorObject, HttpStatus::BAD_REQUEST );
 			}
 			foreach ( $zids as $index => $zid ) {
 				$revisionMap[ $zid ] = (int)$revisions[ $index ];

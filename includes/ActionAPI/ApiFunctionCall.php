@@ -15,6 +15,7 @@ use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
 use JsonException;
 use MediaWiki\Api\ApiMain;
+use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
@@ -49,9 +50,9 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 				throw new JsonException( 'Invalid JSON that did not throw, somehow.' );
 			}
 		} catch ( JsonException $e ) {
-			$this->submitFunctionCallEvent( 400, null, $start );
+			$this->submitFunctionCallEvent( HttpStatus::BAD_REQUEST, null, $start );
 			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX, [] );
-			WikiLambdaApiBase::dieWithZError( $zError, 400 );
+			WikiLambdaApiBase::dieWithZError( $zError, HttpStatus::BAD_REQUEST );
 		}
 
 		$jsonQuery = [
@@ -89,9 +90,9 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 		// Unlike the Special pages, we don't have a helpful userCanExecute() method
 		$userAuthority = $this->getContext()->getAuthority();
 		if ( !$userAuthority->isAllowed( 'wikilambda-execute' ) ) {
-			$this->submitFunctionCallEvent( 403, $function, $start );
+			$this->submitFunctionCallEvent( HttpStatus::FORBIDDEN, $function, $start );
 			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
-			WikiLambdaApiBase::dieWithZError( $zError, 403 );
+			WikiLambdaApiBase::dieWithZError( $zError, HttpStatus::FORBIDDEN );
 		}
 
 		// Principally used for the PoolCounter, but also logging
@@ -123,9 +124,9 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 					'function' => $function
 				]
 			);
-			$this->submitFunctionCallEvent( 403, $function, $start );
+			$this->submitFunctionCallEvent( HttpStatus::FORBIDDEN, $function, $start );
 			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
-			WikiLambdaApiBase::dieWithZError( $zError, 403 );
+			WikiLambdaApiBase::dieWithZError( $zError, HttpStatus::FORBIDDEN );
 		}
 
 		$bypassCache = false;
@@ -137,9 +138,9 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 			} else {
 				$errorMessage = "User not permitted to toggle 'bypass-cache' flag";
 				$logger->warning( $errorMessage );
-				$this->submitFunctionCallEvent( 403, $function, $start );
+				$this->submitFunctionCallEvent( HttpStatus::FORBIDDEN, $function, $start );
 				$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
-				WikiLambdaApiBase::dieWithZError( $zError, 403 );
+				WikiLambdaApiBase::dieWithZError( $zError, HttpStatus::FORBIDDEN );
 			}
 		}
 
@@ -163,8 +164,13 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 						'function' => $function
 					]
 				);
-				$this->submitFunctionCallEvent( 429, $function, $start );
-				$this->dieWithError( [ "apierror-wikilambda_function_call-concurrency-limit" ], null, null, 429 );
+				$this->submitFunctionCallEvent( HttpStatus::TOO_MANY_REQUESTS, $function, $start );
+				$this->dieWithError(
+					[ "apierror-wikilambda_function_call-concurrency-limit" ],
+					null,
+					null,
+					HttpStatus::TOO_MANY_REQUESTS
+				);
 			}
 		] );
 
@@ -183,10 +189,12 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 					'exception' => $exception
 				]
 			);
-			$this->submitFunctionCallEvent( 503, $function, $start );
+			$this->submitFunctionCallEvent( HttpStatus::SERVICE_UNAVAILABLE, $function, $start );
 			$this->dieWithError(
 				[ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ],
-				null, null, 503
+				null,
+				null,
+				HttpStatus::SERVICE_UNAVAILABLE
 			);
 		} catch ( ClientException | ServerException $exception ) {
 			$zError = ZErrorFactory::wrapMessageInZError(
@@ -219,7 +227,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 			}
 		}
 		$pageResult->addValue( [], $this->getModuleName(), $result );
-		$this->submitFunctionCallEvent( 200, $function, $start );
+		$this->submitFunctionCallEvent( HttpStatus::OK, $function, $start );
 	}
 
 	/**
