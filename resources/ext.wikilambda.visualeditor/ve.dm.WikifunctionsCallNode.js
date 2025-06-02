@@ -64,6 +64,16 @@ ve.dm.WikifunctionsCallNode.static.getWikitext = function ( mwData ) {
 };
 
 /**
+ * @inheritdoc ve.dm.GeneratedContentNode
+ */
+ve.dm.WikifunctionsCallNode.static.getHashObjectForRendering = function ( dataElement ) {
+	return {
+		type: dataElement.type,
+		mw: dataElement.attributes.mw
+	};
+};
+
+/**
  * On loading the data model from the DOM, set additional attributes
  * to capture the function call state:
  * * isError: failed function call, DOM is error box
@@ -71,21 +81,19 @@ ve.dm.WikifunctionsCallNode.static.getWikitext = function ( mwData ) {
  * @inheritdoc
  */
 ve.dm.WikifunctionsCallNode.static.toDataElement = function ( domElements ) {
-	const mwDataJSON = domElements[ 0 ].getAttribute( 'data-mw' );
-	const mwData = mwDataJSON ? JSON.parse( mwDataJSON ) : {};
+	// Parent method
+	const dataElement = ve.dm.WikifunctionsCallNode.super.static.toDataElement.apply( this, arguments );
+
 	const isError = domElements[ 0 ].classList.contains( 'cdx-message--error' );
-	return {
-		type: this.name,
-		attributes: {
-			mw: mwData,
-			originalMw: mwDataJSON,
-			isError
-		}
-	};
+	dataElement.attributes.isError = isError;
+
+	return dataElement;
 };
 
 /**
- * For some reason, VE's default code for this isn't working, so let's write a quick one ourselves
+ * For DOM generated in preview, get the dom elements stored in the
+ * hash store if a function call was done loading. Else fallback to
+ * the parent behavior (show function icon)
  *
  * @inheritdoc
  */
@@ -94,27 +102,34 @@ ve.dm.WikifunctionsCallNode.static.toDomElements = function ( dataElement, doc, 
 		originalMw = dataElement.attributes.originalMw,
 		originalDomElements = store.value( dataElement.originalDomElementsHash );
 
-	let elements = [];
-
-	if ( originalDomElements ) {
-		// If unchanged, just send back the original DOM elements so selser can skip over it
-		if ( originalMw && ve.compare( dataElement.attributes.mw, JSON.parse( originalMw ) ) ) {
-			return ve.copyDomElements( originalDomElements, doc );
-		}
-		elements = originalDomElements;
-	} else {
-		// Create the element from scratch.
-		const element = doc.createElement( 'span' );
-		element.setAttribute( 'typeof', 'mw:Transclusion mw:ParserFunction/function' );
-		elements[ 0 ] = element;
+	// Selser reuse case
+	if (
+		originalDomElements &&
+		originalMw &&
+		ve.compare( dataElement.attributes.mw, JSON.parse( originalMw ) )
+	) {
+		return ve.copyDomElements( originalDomElements, doc );
 	}
 
-	// Set our new values; note that we're assuming that the first element is our one, which isn't strictly safe
-	elements[ 0 ].setAttribute( 'data-mw', JSON.stringify( dataElement.attributes.mw ) );
-	return elements;
+	if ( converter.isForPreview() ) {
+		// We get the dom element stored with a loading=false state
+		const config = { loading: false };
+		const hash = store.hashOfValue( null, OO.getHash( [ this.getHashObjectForRendering( dataElement ), config ] ) );
+		const value = store.value( hash );
+
+		// If value is found, it was done loading
+		// Else, fallback to parent behavior (function icon)
+		if ( value ) {
+			return ve.copyDomElements( value, doc );
+		}
+	}
+
+	return ve.dm.WikifunctionsCallNode.super.static.toDomElements.apply( this, arguments );
 };
 
-// For some reason, VE's default code for this isn't working, so let's write a quick one ourselves
+/**
+ * @inheritdoc
+ */
 ve.dm.WikifunctionsCallNode.static.describeChanges = function ( attributeChanges ) {
 	const descriptions = [ ve.msg( 'wikilambda-visualeditor-wikifunctionscall-changedesc-title' ) ];
 

@@ -176,14 +176,21 @@ ve.ce.WikifunctionsCallNode.prototype.generateContents = function ( config = {} 
 /**
  * Overrides ve.ce.GeneratedContentNode.prototype.doneGenerating to capture the
  * additional state attributes after the DOM fragment has been generated:
- * * isError: failed function call, DOM is error box
+ * * isError: failed function call, DOM is error box.
+ *
+ * Additionally, it calls doneGenerating with a config object that contains the
+ * loading state. The config object is used to generate the hash key, so both
+ * the loading:true and loading:false must be stored with the same attributes
+ * but different DOM elements.
  *
  * @inheritdoc
  */
 ve.ce.WikifunctionsCallNode.prototype.doneGenerating = function ( generatedContents, config, staged ) {
+	// If done loading, reset config object with loading=false
+	const isLoading = generatedContents[ 0 ].classList.contains( 'ext-wikilambda-visualeditor-loading' );
+	const newConfig = Object.assign( {}, config || {}, { loading: isLoading } );
 
-	// Call parent with empty to avoid Loading state being stored permanently
-	ve.ce.WikifunctionsCallNode.super.prototype.doneGenerating.call( this, generatedContents, {}, staged );
+	ve.ce.WikifunctionsCallNode.super.prototype.doneGenerating.call( this, generatedContents, newConfig, staged );
 
 	// Infer error state from generatedContents
 	const hasError = generatedContents[ 0 ].classList.contains( 'cdx-message--error' );
