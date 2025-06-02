@@ -42,6 +42,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "פונקציות מוצעות",
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "נא לערוך את הפונקציה כדי לתקן ערכים חסרים או בלתי־תקינים.",
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "לא נבחרה אפשרות.",
+	"wikilambda-visualeditor-wikifunctionscall-error-parser-empty": "נא להכניס ערך.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser": "שגיאה לא ידועה. [[f:Talk:$1|לדווח על בעיה]]",
 	"wikilambda-visualeditor-wikifunctionscall-info-missing-content": "אפשר לעזור לתרגם את התוכן שחסר בשפה שלך באתר [[f:$1|ויקיפונקציות]].",
 	"wikilambda-visualeditor-wikifunctionscall-no-description": "אין תיאור",
