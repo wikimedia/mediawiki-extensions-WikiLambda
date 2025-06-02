@@ -199,7 +199,7 @@ module.exports = exports = defineComponent( {
 		color: @color-base;
 		display: flex;
 		flex-direction: row;
-		align-items: flex-start;
+		align-items: baseline;
 
 		.ext-wikilambda-app-monolingual-string__chip {
 			margin-right: @spacing-50;

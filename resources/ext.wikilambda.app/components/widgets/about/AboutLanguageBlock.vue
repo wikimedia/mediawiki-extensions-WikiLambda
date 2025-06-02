@@ -66,8 +66,8 @@
 								v-else
 								class="ext-wikilambda-app-about-language-block__input-label
 									ext-wikilambda-app-about-language-block__unavailable"
-							><!-- eslint-disable-line max-len -->{{ $i18n( 'wikilambda-editor-default-name' ).text() }}<span>{{ $i18n( 'colon-separator' ).text() }}</span>
-							</span>&nbsp;<wl-z-object-to-string :row-id="input.typeRowId"></wl-z-object-to-string>
+							><!-- eslint-disable-line max-len -->{{ $i18n( 'wikilambda-editor-default-name' ).text() }}<span>{{ $i18n( 'colon-separator' ).text() }}&nbsp;</span>
+							</span><wl-z-object-to-string :row-id="input.typeRowId"></wl-z-object-to-string>
 						</div>
 					</template>
 					<div v-else class="ext-wikilambda-app-about-language-block__field-value">

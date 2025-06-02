@@ -303,22 +303,17 @@ module.exports = exports = defineComponent( {
 		flex-direction: row;
 		margin-bottom: @spacing-100;
 		margin-right: -@spacing-35;
+		align-items: center;
 	}
 
 	.ext-wikilambda-app-function-editor-inputs-item__label {
 		flex-grow: 1;
 		font-weight: @font-weight-bold;
 		display: inline-block;
-		line-height: @size-200;
 	}
 
 	.ext-wikilambda-app-function-editor-inputs-item__action-delete {
 		flex-grow: 0;
-	}
-
-	.ext-wikilambda-app-function-editor-inputs-item__icon-trash.cdx-icon {
-		width: @size-100;
-		height: @size-100;
 	}
 
 	.ext-wikilambda-app-function-editor-inputs-item__body {
