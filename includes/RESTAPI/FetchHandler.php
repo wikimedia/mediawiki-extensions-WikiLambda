@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\RESTAPI;
 
+use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
@@ -36,7 +37,7 @@ class FetchHandler extends WikiLambdaRESTHandler {
 	public function run( $ZIDs, $revisions = [] ) {
 		// This API is only availble on the repo installation, not client wikis
 		if ( !MediaWikiServices::getInstance()->getMainConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
-			$this->dieRESTfully( 'wikilambda-restapi-disabled-repo-mode-only', [], 400 );
+			$this->dieRESTfully( 'wikilambda-restapi-disabled-repo-mode-only', [], HttpStatus::BAD_REQUEST );
 		}
 
 		$this->typeRegistry = ZTypeRegistry::singleton();
@@ -56,12 +57,16 @@ class FetchHandler extends WikiLambdaRESTHandler {
 					'message' => "You must specify a revision for each ZID, or none at all."
 				]
 			);
-			$this->dieRESTfullyWithZError( $zErrorObject, 400 );
+			$this->dieRESTfullyWithZError( $zErrorObject, HttpStatus::BAD_REQUEST );
 		}
 
 		$reqSize = count( $ZIDs );
 		if ( $reqSize > self::MAX_REQUESTED_ZIDS ) {
-			$this->dieRESTfully( 'wikilambda-restapi-fetch-too-many', [ $reqSize, self::MAX_REQUESTED_ZIDS ], 403 );
+			$this->dieRESTfully(
+				'wikilambda-restapi-fetch-too-many',
+				[ $reqSize, self::MAX_REQUESTED_ZIDS ],
+				HttpStatus::FORBIDDEN
+			);
 		}
 
 		$extraDependencies = [];
@@ -72,7 +77,7 @@ class FetchHandler extends WikiLambdaRESTHandler {
 					ZErrorTypeRegistry::Z_ERROR_INVALID_REFERENCE,
 					[ 'data' => $ZID ]
 				);
-				$this->dieRESTfullyWithZError( $zErrorObject, 404 );
+				$this->dieRESTfullyWithZError( $zErrorObject, HttpStatus::NOT_FOUND );
 			} else {
 				$title = Title::newFromText( $ZID, NS_MAIN );
 
@@ -81,7 +86,7 @@ class FetchHandler extends WikiLambdaRESTHandler {
 						ZErrorTypeRegistry::Z_ERROR_UNKNOWN_REFERENCE,
 						[ 'data' => $ZID ]
 					);
-					$this->dieRESTfullyWithZError( $zErrorObject, 404 );
+					$this->dieRESTfullyWithZError( $zErrorObject, HttpStatus::NOT_FOUND );
 				} else {
 					$revision = $revisions[$index] ?? null;
 
@@ -92,7 +97,10 @@ class FetchHandler extends WikiLambdaRESTHandler {
 					} catch ( ZErrorException $error ) {
 						// This probably means that the requested revision is not known; return
 						// null for this entry rather than throwing or returning a ZError instance.
-						$this->dieRESTfully( 'wikilambda-restapi-revision-mismatch', [ $revision, $ZID ], 404 );
+						$this->dieRESTfully(
+							'wikilambda-restapi-revision-mismatch',
+							[ $revision, $ZID ],
+							HttpStatus::NOT_FOUND );
 					}
 
 					$responseList[ $ZID ] = $fetchedContent;

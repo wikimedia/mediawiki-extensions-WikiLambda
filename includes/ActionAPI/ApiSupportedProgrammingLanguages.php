@@ -14,6 +14,7 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
 use MediaWiki\Api\ApiMain;
+use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
@@ -42,7 +43,7 @@ class ApiSupportedProgrammingLanguages extends WikiLambdaApiBase {
 					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN,
 					[]
 				),
-				400
+				HttpStatus::BAD_REQUEST
 			);
 		}
 
@@ -58,7 +59,7 @@ class ApiSupportedProgrammingLanguages extends WikiLambdaApiBase {
 				'error' => function ( Status $status ) {
 					$this->dieWithError(
 						[ "apierror-wikilambda_supported_programming_languages-concurrency-limit" ],
-						null, null, 429
+						null, null, HttpStatus::TOO_MANY_REQUESTS
 					);
 				} ] );
 
@@ -71,7 +72,7 @@ class ApiSupportedProgrammingLanguages extends WikiLambdaApiBase {
 					"apierror-wikilambda_supported_programming_languages-not-connected",
 					$this->orchestratorHost
 				],
-				null, null, 500
+				null, null, HttpStatus::INTERNAL_SERVER_ERROR
 			);
 		} catch ( ClientException | ServerException $exception ) {
 			$zError = ZErrorFactory::wrapMessageInZError( $exception->getResponse()->getReasonPhrase(), '' );

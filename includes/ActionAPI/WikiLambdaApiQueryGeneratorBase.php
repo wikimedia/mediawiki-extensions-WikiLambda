@@ -4,6 +4,7 @@ namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
 use MediaWiki\Api\ApiPageSet;
 use MediaWiki\Api\ApiQueryGeneratorBase;
+use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use Psr\Log\LoggerAwareInterface;
@@ -36,7 +37,7 @@ abstract class WikiLambdaApiQueryGeneratorBase extends ApiQueryGeneratorBase imp
 					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN,
 					[]
 				),
-				400
+				HttpStatus::BAD_REQUEST
 			);
 		}
 
@@ -54,7 +55,7 @@ abstract class WikiLambdaApiQueryGeneratorBase extends ApiQueryGeneratorBase imp
 					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN,
 					[]
 				),
-				400
+				HttpStatus::BAD_REQUEST
 			);
 		}
 
@@ -71,7 +72,7 @@ abstract class WikiLambdaApiQueryGeneratorBase extends ApiQueryGeneratorBase imp
 				ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
 				[ 'You must implement your run() method when using WikiLambdaApiBase' ]
 			),
-			501
+			HttpStatus::NOT_IMPLEMENTED
 		);
 	}
 

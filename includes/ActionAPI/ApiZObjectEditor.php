@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
 use MediaWiki\Api\ApiMain;
+use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
@@ -37,7 +38,7 @@ class ApiZObjectEditor extends WikiLambdaApiBase {
 					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN,
 					[]
 				),
-				400
+				HttpStatus::BAD_REQUEST
 			);
 		}
 
@@ -63,7 +64,7 @@ class ApiZObjectEditor extends WikiLambdaApiBase {
 				// … but only for very-priviledged users, as this can cause major issues if e.g. Z99999999 was created
 				if ( !$user->isAllowed( 'wikilambda-create-arbitrary-zid' ) ) {
 					$zError = ZErrorFactory::createAuthorizationZError( 'wikilambda-edit', EDIT_NEW );
-					WikiLambdaApiBase::dieWithZError( $zError, 403 );
+					WikiLambdaApiBase::dieWithZError( $zError, HttpStatus::FORBIDDEN );
 				}
 				$editFlag = EDIT_NEW;
 			}
@@ -73,7 +74,7 @@ class ApiZObjectEditor extends WikiLambdaApiBase {
 		}
 
 		if ( !$response->isOK() ) {
-			WikiLambdaApiBase::dieWithZError( $response->getErrors(), 400 );
+			WikiLambdaApiBase::dieWithZError( $response->getErrors(), HttpStatus::BAD_REQUEST );
 		}
 
 		$title = $response->getTitle();

@@ -15,6 +15,7 @@ use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
 use JsonException;
 use MediaWiki\Extension\WikiLambda\ActionAPI\WikiLambdaApiBase;
+use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
@@ -52,9 +53,9 @@ class PublicApiRun extends WikiLambdaApiBase {
 				throw new JsonException( 'Invalid JSON that did not throw, somehow' );
 			}
 		} catch ( JsonException $e ) {
-			$this->submitFunctionCallEvent( 400, null, $start );
+			$this->submitFunctionCallEvent( HttpStatus::BAD_REQUEST, null, $start );
 			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX, [] );
-			WikiLambdaApiBase::dieWithZError( $zError, 400 );
+			WikiLambdaApiBase::dieWithZError( $zError, HttpStatus::BAD_REQUEST );
 		}
 
 		$jsonQuery = [
@@ -91,9 +92,9 @@ class PublicApiRun extends WikiLambdaApiBase {
 		// Unlike the Special pages, we don't have a helpful userCanExecute() method
 		$userAuthority = $this->getContext()->getAuthority();
 		if ( !$userAuthority->isAllowed( 'wikifunctions-run' ) ) {
-			$this->submitFunctionCallEvent( 403, $function, $start );
+			$this->submitFunctionCallEvent( HttpStatus::FORBIDDEN, $function, $start );
 			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
-			WikiLambdaApiBase::dieWithZError( $zError, 403 );
+			WikiLambdaApiBase::dieWithZError( $zError, HttpStatus::FORBIDDEN );
 		}
 
 		// Don't allow the public API to run "unsaved code" (a custom function with the raw
@@ -111,9 +112,9 @@ class PublicApiRun extends WikiLambdaApiBase {
 			}
 		}
 		if ( $isUnsavedCode ) {
-			$this->submitFunctionCallEvent( 403, $function, $start );
+			$this->submitFunctionCallEvent( HttpStatus::FORBIDDEN, $function, $start );
 			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
-			WikiLambdaApiBase::dieWithZError( $zError, 403 );
+			WikiLambdaApiBase::dieWithZError( $zError, HttpStatus::FORBIDDEN );
 		}
 
 		$work = new PoolCounterWorkViaCallback(
@@ -124,8 +125,13 @@ class PublicApiRun extends WikiLambdaApiBase {
 					return $this->orchestrator->orchestrate( $jsonQuery );
 				},
 				'error' => function ( Status $status ) use ( $function, $start ) {
-					$this->submitFunctionCallEvent( 429, $function, $start );
-					$this->dieWithError( [ "apierror-wikilambda_function_call-concurrency-limit" ], null, null, 429 );
+					$this->submitFunctionCallEvent( HttpStatus::TOO_MANY_REQUESTS, $function, $start );
+					$this->dieWithError(
+						[ "apierror-wikilambda_function_call-concurrency-limit" ],
+						null,
+						null,
+						HttpStatus::TOO_MANY_REQUESTS
+					);
 				}
 			]
 		);
@@ -135,10 +141,10 @@ class PublicApiRun extends WikiLambdaApiBase {
 			$response = $work->execute();
 			$result['data'] = $response;
 		} catch ( ConnectException $exception ) {
-			$this->submitFunctionCallEvent( 503, $function, $start );
+			$this->submitFunctionCallEvent( HttpStatus::SERVICE_UNAVAILABLE, $function, $start );
 			$this->dieWithError(
 				[ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ],
-				null, null, 503
+				null, null, HttpStatus::SERVICE_UNAVAILABLE
 			);
 		} catch ( ClientException | ServerException $exception ) {
 			$zError = ZErrorFactory::wrapMessageInZError(
@@ -151,7 +157,7 @@ class PublicApiRun extends WikiLambdaApiBase {
 		}
 		$pageResult->addValue( [], $this->getModuleName(), $result );
 
-		$this->submitFunctionCallEvent( 200, $function, $start );
+		$this->submitFunctionCallEvent( HttpStatus::OK, $function, $start );
 	}
 
 	/**

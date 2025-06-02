@@ -9,6 +9,7 @@ use GuzzleHttp\Exception\ServerException;
 use MediaWiki\Api\ApiBase;
 use MediaWiki\Api\ApiUsageException;
 use MediaWiki\Extension\EventLogging\EventLogging;
+use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\MockOrchestratorRequest;
@@ -77,7 +78,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN,
 					[]
 				),
-				400
+				HttpStatus::BAD_REQUEST
 			);
 		}
 
@@ -94,7 +95,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 				ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
 				[ 'You must implement your run() method when using WikiLambdaApiBase' ]
 			),
-			501
+			HttpStatus::NOT_IMPLEMENTED
 		);
 	}
 
@@ -103,7 +104,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	 * @param int $code HTTP error code, defaulting to 400/Bad Request
 	 * @return never
 	 */
-	public static function dieWithZError( $zerror, $code = 400 ) {
+	public static function dieWithZError( $zerror, $code = HttpStatus::BAD_REQUEST ) {
 		try {
 			$errorData = $zerror->getErrorData();
 		} catch ( ZErrorException $e ) {
@@ -153,7 +154,12 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 					'user' => $this->getContext()->getAuthority()->getUser()->getName(),
 				]
 			);
-			$this->dieWithError( [ "apierror-wikilambda_function_call-not-a-function" ], null, null, 400 );
+			$this->dieWithError(
+				[ "apierror-wikilambda_function_call-not-a-function" ],
+				null,
+				null,
+				HttpStatus::BAD_REQUEST
+			);
 		}
 
 		$this->getLogger()->debug(
@@ -174,7 +180,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 					'user' => $this->getContext()->getAuthority()->getUser()->getName(),
 				]
 			);
-			self::dieWithZError( $zError, 403 );
+			self::dieWithZError( $zError, HttpStatus::FORBIDDEN );
 		}
 
 		$queryArguments = [
@@ -192,7 +198,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 					'error' => function ( Status $status ) {
 						$this->dieWithError(
 							[ "apierror-wikilambda_function_call-concurrency-limit" ],
-							null, null, 429
+							null, null, HttpStatus::TOO_MANY_REQUESTS
 						);
 					}
 				]
@@ -226,7 +232,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 						'apierror-wikilambda_function_call-response-malformed',
 						$e->getZErrorMessage()
 					],
-					null, null, 500
+					null, null, HttpStatus::INTERNAL_SERVER_ERROR
 				);
 			}
 			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope $responseObject';
@@ -241,10 +247,10 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			);
 			$this->dieWithError(
 				[ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ],
-				null, null, 503
+				null, null, HttpStatus::SERVICE_UNAVAILABLE
 			);
 		} catch ( ClientException | ServerException $exception ) {
-			if ( $exception->getResponse()->getStatusCode() === 404 ) {
+			if ( $exception->getResponse()->getStatusCode() === HttpStatus::NOT_FOUND ) {
 				$this->getLogger()->error(
 					__METHOD__ . ' failed to execute, server not found error: {exception}',
 					[
@@ -254,7 +260,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 				);
 				$this->dieWithError(
 					[ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ],
-					null, null, 503
+					null, null, HttpStatus::SERVICE_UNAVAILABLE
 				);
 			}
 

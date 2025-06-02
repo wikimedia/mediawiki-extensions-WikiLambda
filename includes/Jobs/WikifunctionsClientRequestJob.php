@@ -11,6 +11,7 @@ namespace MediaWiki\Extension\WikiLambda\Jobs;
 
 use Exception;
 use MediaWiki\Config\Config;
+use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikifunctionCallException;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
@@ -230,8 +231,8 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 		switch ( $httpStatusCode ) {
 			// HTTP 400: Bad Request
 			// Something is wrong with the content (e.g. in the user request or the on-wiki content on WF.org)
-			case 400:
-			case 404:
+			case HttpStatus::BAD_REQUEST:
+			case HttpStatus::NOT_FOUND:
 				switch ( $zerrorCode ) {
 					case ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND:
 						// Error cases:
@@ -370,8 +371,8 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 
 			// HTTP 500: Internal Server Error
 			// Something went wrong in the server's code (not user-written code or user error)
-			case 500:
-			case 501:
+			case HttpStatus::INTERNAL_SERVER_ERROR:
+			case HttpStatus::NOT_IMPLEMENTED:
 				switch ( $zerrorCode ) {
 					case ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET:
 						// Error cases:
