@@ -12,6 +12,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\HookHandler;
 
 use MediaWiki\Deferred\DeferredUpdates;
+use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Tests\HooksDataPathMock;
 use MediaWiki\Extension\WikiLambda\Tests\HooksInsertMock;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
@@ -437,7 +438,21 @@ EOT;
 			$zobjectUpdates = array_filter( $updates, static function ( $u ) {
 				return $u instanceof ZObjectSecondaryDataUpdate;
 			} );
-			$zobjectUpdates[0]->doUpdate();
+
+			// Add a mocked Orchestrator to the secondary update.
+			$mockOrchestratorRequest = $this->createMock( OrchestratorRequest::class );
+			$mockOrchestratorRequest->expects( $this->once() )
+				->method( 'persistToCache' )
+				->with( $this->callback( static function ( $queryZ2 ) use( $functionZid ) {
+					return $queryZ2->Z2K1->Z6K1 == $functionZid;
+				} ) );
+			$secondaryUpdate = $zobjectUpdates[0];
+			$ref = new \ReflectionProperty( $secondaryUpdate, 'orchestrator' );
+			$ref->setAccessible( true );
+			$ref->setValue( $secondaryUpdate, $mockOrchestratorRequest );
+
+			// Execute the update.
+			$secondaryUpdate->doUpdate();
 		}
 
 		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();
@@ -524,7 +539,21 @@ EOT;
 			$zobjectUpdates = array_filter( $updates, static function ( $u ) {
 				return $u instanceof ZObjectSecondaryDataUpdate;
 			} );
-			$zobjectUpdates[0]->doUpdate();
+
+			// Add a mocked Orchestrator to the secondary update.
+			$mockOrchestratorRequest = $this->createMock( OrchestratorRequest::class );
+			$mockOrchestratorRequest->expects( $this->once() )
+				->method( 'persistToCache' )
+				->with( $this->callback( static function ( $queryZ2 ) use( $functionZid ) {
+					return $queryZ2->Z2K1->Z6K1 == $functionZid;
+				} ) );
+			$secondaryUpdate = $zobjectUpdates[0];
+			$ref = new \ReflectionProperty( $secondaryUpdate, 'orchestrator' );
+			$ref->setAccessible( true );
+			$ref->setValue( $secondaryUpdate, $mockOrchestratorRequest );
+
+			// Execute the update.
+			$secondaryUpdate->doUpdate();
 		}
 
 		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();

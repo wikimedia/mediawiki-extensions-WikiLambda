@@ -70,6 +70,10 @@
 		"WikiLambdaClientDefaultShowChanges": {
 			"description": "Whether to show Wikifunctions edits on client wikis by default.",
 			"value": false
+		},
+		"WikiLambdaPersistBackendCache": {
+			"description": "Whether to persist changed objects to backend cache",
+			"value": false
 		}
 	},
 	"ConfigRegistry": {

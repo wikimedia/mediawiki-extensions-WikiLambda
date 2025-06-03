@@ -109,9 +109,10 @@ class OrchestratorRequest {
 		];
 
 		// TODO (T338242): Use postAsync here.
-		return $this->guzzleClient->post( '/1/v1/persist-to-cache/', [
+		return $this->guzzleClient->post( '/1/v1/persist-to-cache', [
 			'json' => $query,
-			'headers' => $requestHeaders
+			'headers' => $requestHeaders,
+			'http_errors' => false
 		] );
 	}
 
