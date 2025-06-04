@@ -127,7 +127,22 @@ module.exports = exports = defineComponent( {
 			 *
 			 * @type {Array|null}
 			 */
-			lastProcessedParams: null
+			lastProcessedParams: null,
+			/**
+			 * Collection of callbacks that produce default values for empty args
+			 * indexed by the argument type.
+			 *
+			 * @type {Object}
+			 */
+			defaultValueCallbacks: {
+				[ Constants.Z_GREGORIAN_CALENDAR_DATE ]: () => {
+					const today = new Date();
+					const d = today.getDate();
+					const m = today.getMonth() + 1;
+					const yyyy = today.getFullYear();
+					return `${ d }-${ m }-${ yyyy }`;
+				}
+			}
 		};
 	},
 	computed: Object.assign( {},
@@ -225,7 +240,13 @@ module.exports = exports = defineComponent( {
 		 * @return {Object|string} - The created parameter object or string.
 		 */
 		createFunctionCallParam: function ( param ) {
-			const { value, type } = param;
+			let { value } = param;
+			const { type } = param;
+
+			// Overwrite value with the default value if it's empty and type has a callback
+			if ( value === '' && this.hasDefaultValue( type ) ) {
+				value = this.getDefaultValue( type );
+			}
 
 			if ( this.hasParserZid( type ) ) {
 				return this.createParserCall( type, value );
@@ -442,6 +463,28 @@ module.exports = exports = defineComponent( {
 				this.runFunctionCall( payload );
 				this.lastProcessedParams = payload.params;
 			}
+		},
+
+		/**
+		 * Determines whether the defaultValueCallbacks config variable
+		 * has a callback function for the given type.
+		 *
+		 * @param {string} type
+		 * @return {boolean}
+		 */
+		hasDefaultValue: function ( type ) {
+			return ( type in this.defaultValueCallbacks );
+		},
+
+		/**
+		 * Runs the defaultValueCallbacks callback function for the
+		 * given type and returns the generated string.
+		 *
+		 * @param {string} type
+		 * @return {string}
+		 */
+		getDefaultValue: function ( type ) {
+			return this.defaultValueCallbacks[ type ]();
 		}
 	},
 	watch: {
