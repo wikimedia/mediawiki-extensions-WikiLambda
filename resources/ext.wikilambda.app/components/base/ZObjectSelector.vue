@@ -401,7 +401,7 @@ module.exports = exports = defineComponent( {
 
 							let icon;
 							// If we expect to receive functions along with other literal types, show icon
-							if ( this.lookupTypes && this.lookupTypes.includes( Constants.Z_FUNCTION ) ) {
+							if ( !this.lookupTypes || this.lookupTypes.includes( Constants.Z_FUNCTION ) ) {
 								icon = ( result.page_type === Constants.Z_FUNCTION ) ?
 									icons.cdxIconFunction :
 									icons.cdxIconInstance;
