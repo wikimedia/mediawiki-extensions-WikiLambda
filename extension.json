@@ -466,6 +466,7 @@
 				"ext.wikilambda.app/components/default-view-types/ZBoolean.vue",
 				"ext.wikilambda.app/components/default-view-types/ZCode.vue",
 				"ext.wikilambda.app/components/default-view-types/ZFunctionCall.vue",
+				"ext.wikilambda.app/components/default-view-types/ZHTMLFragment.vue",
 				"ext.wikilambda.app/components/default-view-types/ZImplementation.vue",
 				"ext.wikilambda.app/components/default-view-types/ZMonolingualString.vue",
 				"ext.wikilambda.app/components/default-view-types/ZObjectKeyValue.vue",

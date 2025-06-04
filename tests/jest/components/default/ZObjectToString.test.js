@@ -26,7 +26,8 @@ describe( 'ZObjectToString', () => {
 			Z11: 'Monolingual text',
 			Z1002: 'English',
 			Z10001: 'And',
-			Z999K1: 'argument label'
+			Z999K1: 'argument label',
+			Z89: 'HTML Fragment'
 		} );
 		store.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z1' );
 		store.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z6' );
@@ -78,6 +79,26 @@ describe( 'ZObjectToString', () => {
 				const referenceLink = linkWrapper.get( 'a' );
 				expect( referenceLink.attributes().href ).toBe( '/view/en/Z42' );
 				expect( referenceLink.text() ).toBe( 'False' );
+			} );
+		} );
+
+		describe( 'for a terminal html fragment', () => {
+			beforeEach( () => {
+				store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_HTML_FRAGMENT );
+				store.getZStringTerminalValue = createGettersWithFunctionsMock( '<b>hello</b>' );
+			} );
+
+			it( 'renders without errors', () => {
+				const wrapper = mount( ZObjectToString );
+				expect( wrapper.find( 'div[data-testid=object-to-string-text]' ).exists() ).toBe( false );
+				expect( wrapper.find( 'div[data-testid=object-to-string-link]' ).exists() ).toBe( true );
+			} );
+
+			it( 'renders the HTML fragment terminal value', () => {
+				const wrapper = mount( ZObjectToString );
+				const referenceLink = wrapper.get( 'a' );
+				expect( referenceLink.attributes().href ).toBe( '/view/en/Z89' );
+				expect( referenceLink.text() ).toBe( 'HTML Fragment' );
 			} );
 		} );
 

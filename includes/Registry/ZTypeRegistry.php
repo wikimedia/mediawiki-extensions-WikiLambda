@@ -155,6 +155,9 @@ class ZTypeRegistry extends ZObjectRegistry {
 	public const Z_SERIALISER_SOURCE = 'Z64K4';
 	public const Z_SERIALISER_CODE = 'Z64K5';
 
+	public const Z_HTML_FRAGMENT = 'Z89';
+	public const Z_HTML_FRAGMENT_VALUE = 'Z89K1';
+
 	public const Z_QUOTE = 'Z99';
 	public const Z_QUOTE_VALUE = 'Z99K1';
 
@@ -228,6 +231,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 		self::Z_BOOLEAN => 'ZBoolean',
 		self::Z_LANGUAGE => 'ZNaturalLanguage',
 		self::Z_QUOTE => 'ZQuote',
+		self::Z_HTML_FRAGMENT => 'ZHTMLFragment',
 	];
 
 	public const TERMINAL_KEYS = [

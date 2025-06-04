@@ -81,6 +81,7 @@ const ZArgumentReference = require( './ZArgumentReference.vue' );
 const ZBoolean = require( './ZBoolean.vue' );
 const ZCode = require( './ZCode.vue' );
 const ZFunctionCall = require( './ZFunctionCall.vue' );
+const ZHTMLFragment = require( './ZHTMLFragment.vue' );
 const ZImplementation = require( './ZImplementation.vue' );
 const ZMonolingualString = require( './ZMonolingualString.vue' );
 const ZObjectKeyValueSet = require( './ZObjectKeyValueSet.vue' );
@@ -114,6 +115,7 @@ module.exports = exports = defineComponent( {
 		'wl-z-boolean': ZBoolean,
 		'wl-z-code': ZCode,
 		'wl-z-function-call': ZFunctionCall,
+		'wl-z-html-fragment': ZHTMLFragment,
 		'wl-z-implementation': ZImplementation,
 		'wl-z-monolingual-string': ZMonolingualString,
 		'wl-z-object-key-value-set': ZObjectKeyValueSet,
@@ -473,6 +475,12 @@ module.exports = exports = defineComponent( {
 					return false;
 				}
 
+				// TERMINAL rules for HTML fragment:
+				// * no expansion allowed for HTML fragment component
+				if ( this.type === Constants.Z_HTML_FRAGMENT ) {
+					return false;
+				}
+
 				// If the type doesn't have any builting component, it must
 				// be always shown in its expanded-mode representation--the set
 				// of key values, so we won't show the expanded mode toggle.
@@ -526,6 +534,10 @@ module.exports = exports = defineComponent( {
 				// Tester doesn't have an expanded mode
 				if ( this.type === Constants.Z_TESTER ) {
 					return 'wl-z-tester';
+				}
+				// HTML Fragment doesn't have an expanded mode
+				if ( this.type === Constants.Z_HTML_FRAGMENT ) {
+					return 'wl-z-html-fragment';
 				}
 				// Wikidata Entities and References
 				if ( (

@@ -34,7 +34,8 @@ describe( 'CodeEditor', () => {
 		mockSetOption = jest.fn();
 		mockSetValue = jest.fn();
 		mockSession = jest.fn( () => ( {
-			setMode: mockSetMode
+			setMode: mockSetMode,
+			on: mockSetListener
 		} ) );
 
 		window.ace.edit = jest.fn( () => ( {
@@ -148,5 +149,94 @@ describe( 'CodeEditor', () => {
 		await wrapper.vm.$nextTick();
 
 		expect( mockSetValue ).toHaveBeenCalledWith( 'fanta', 1 );
+	} );
+
+	it( 'getDisallowedTagAnnotations flags disallowed tags', () => {
+		const wrapper = shallowMount( CodeEditor );
+		const session = {
+			doc: {
+				getAllLines: () => [
+					'<script>alert(1)</script>',
+					'<b>bold</b>',
+					'<foo>bar</foo>'
+				]
+			}
+		};
+		const annots = wrapper.vm.getDisallowedTagAnnotations( session );
+		expect( annots ).toEqual( expect.arrayContaining( [
+			expect.objectContaining( { text: expect.stringContaining( '<script>' ), type: 'error' } ),
+			expect.objectContaining( { text: expect.stringContaining( '<foo>' ), type: 'error' } )
+		] ) );
+		// Should not flag <b>
+		expect( annots.some( ( a ) => a.text.includes( '<b>' ) ) ).toBe( false );
+	} );
+
+	it( 'getEventAttributeAnnotations flags event handler attributes', () => {
+		const wrapper = shallowMount( CodeEditor );
+		const session = {
+			doc: {
+				getAllLines: () => [
+					'<div onclick="alert(1)">Click me</div>',
+					'<span onmouseover="foo()">Hover</span>',
+					'<p>Safe</p>'
+				]
+			}
+		};
+		const annots = wrapper.vm.getEventAttributeAnnotations( session );
+		expect( annots ).toEqual( expect.arrayContaining( [
+			expect.objectContaining( { text: expect.stringContaining( 'onclick' ), type: 'error' } ),
+			expect.objectContaining( { text: expect.stringContaining( 'onmouseover' ), type: 'error' } )
+		] ) );
+		// Should not flag safe lines
+		expect( annots.some( ( a ) => a.text.includes( 'Safe' ) ) ).toBe( false );
+	} );
+
+	it( 'handleHtmlAnnotations adds custom annotations for html mode', () => {
+		const wrapper = shallowMount( CodeEditor, {
+			props: { mode: 'html' }
+		} );
+		const session = {
+			getAnnotations: jest.fn( () => [
+				{ row: 0, column: 0, text: 'Some warning', type: 'warning' },
+				{ row: 1, column: 0, text: 'Doctype not allowed', type: 'error' }
+			] ),
+			doc: {
+				getAllLines: () => [
+					'<script>alert(1)</script>',
+					'<div onclick="foo()"></div>',
+					'<a href="javascript:alert(1)">link</a>'
+				]
+			},
+			setAnnotations: jest.fn()
+		};
+		wrapper.vm.editor = { session };
+
+		wrapper.vm.handleHtmlAnnotations();
+
+		// Should call setAnnotations with filtered and custom annotations
+		expect( session.setAnnotations ).toHaveBeenCalled();
+		const calledWith = session.setAnnotations.mock.calls[ 0 ][ 0 ];
+		expect( calledWith ).toEqual( expect.arrayContaining( [
+			expect.objectContaining( { code: 'DISALLOWED_HTML', type: 'error' } )
+		] ) );
+	} );
+
+	it( 'getJavaScriptUrlAnnotations flags javascript: URLs in href/src', () => {
+		const wrapper = shallowMount( CodeEditor );
+		const session = {
+			doc: {
+				getAllLines: () => [
+					'<a href="javascript:alert(1)">bad</a>',
+					'<img src="javascript:evil()">',
+					'<a href="https://example.com">good</a>'
+				]
+			}
+		};
+		const annots = wrapper.vm.getJavaScriptUrlAnnotations( session );
+		expect( annots ).toEqual( expect.arrayContaining( [
+			expect.objectContaining( { text: expect.stringContaining( 'JavaScript URLs are not allowed' ), type: 'error' } )
+		] ) );
+		// Should not flag safe URLs
+		expect( annots.some( ( a ) => a.text.includes( 'https://example.com' ) ) ).toBe( false );
 	} );
 } );

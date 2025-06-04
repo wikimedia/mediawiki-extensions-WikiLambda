@@ -54,7 +54,7 @@ class ZObjectFactory {
 		$object = $input;
 
 		// 2. If ZObject type is Z2/Z_PERSISTENT_OBJECT, get the inner object.
-		// 		If not present, throw a not wellformed error.
+		// If not present, throw a not wellformed error.
 		if ( $typeZid === ZTypeRegistry::Z_PERSISTENTOBJECT ) {
 			try {
 				$object = self::extractInnerObject( $input );
@@ -64,7 +64,6 @@ class ZObjectFactory {
 					ZErrorFactory::createValidationZError( $e->getZError() )
 				);
 			}
-
 			// Get type of the inner ZObject. If not present, throw a not wellformed error
 			try {
 				$innerTypeZObject = self::extractObjectType( $object );
@@ -78,7 +77,7 @@ class ZObjectFactory {
 		}
 
 		// 3. Make sure that the ZObject type is not one of the disallowed types
-		// 		to directly wrap in a ZPersistentObject
+		// to directly wrap in a ZPersistentObject
 		if ( in_array( $typeZid, ZTypeRegistry::DISALLOWED_ROOT_ZOBJECTS ) ) {
 			wfDebugLog( 'WikiLambda', __METHOD__ . ': banned type attempted: ' . $typeZid );
 			throw new ZErrorException(
@@ -129,7 +128,7 @@ class ZObjectFactory {
 			ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE => [ ZTypeRegistry::Z_MONOLINGUALSTRING ]
 		] );
 
-		// 4.2 Track self-reference if Z_PERSISNTENT_ID is present
+		// 4.2 Track self-reference if Z_PERSISTENT_ID is present
 		self::trackSelfReference( $persistentId->getZValue(), self::SET_SELF_ZID );
 
 		// 4.3. Create and validate inner ZObject: can throw Z502/Not wellformed

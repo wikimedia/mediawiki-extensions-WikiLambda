@@ -333,6 +333,9 @@ module.exports = exports = defineComponent( {
 				if ( this.type === Constants.Z_ARGUMENT_REFERENCE ) {
 					return icons.cdxIconFunctionArgument;
 				}
+				if ( this.type === Constants.Z_HTML_FRAGMENT ) {
+					return icons.cdxIconMarkup;
+				}
 				return undefined;
 			},
 
@@ -344,6 +347,7 @@ module.exports = exports = defineComponent( {
 			isTerminal: function () {
 				return (
 					this.type === Constants.Z_ARGUMENT_REFERENCE ||
+					this.type === Constants.Z_HTML_FRAGMENT ||
 					this.type === Constants.Z_REFERENCE ||
 					this.type === Constants.Z_STRING ||
 					// If the zobject has a renderer and no error, it's terminal

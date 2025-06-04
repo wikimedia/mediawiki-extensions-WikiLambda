@@ -190,6 +190,24 @@ describe( 'ZObjectKeyValue', () => {
 			expect( wrapper.findComponent( { name: 'wl-z-tester' } ).exists() ).toBe( true );
 		} );
 
+		it( 'z html fragment', () => {
+			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_HTML_FRAGMENT );
+
+			const wrapper = shallowMount( ZObjectKeyValue, {
+				props: {
+					rowId: 1,
+					edit: false
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false
+					}
+				}
+			} );
+
+			expect( wrapper.findComponent( { name: 'wl-z-html-fragment' } ).exists() ).toBe( true );
+		} );
+
 		it( 'z argument reference with type', () => {
 			store.getZObjectTypeByRowId = createGettersWithFunctionsMock( Constants.Z_ARGUMENT_REFERENCE );
 

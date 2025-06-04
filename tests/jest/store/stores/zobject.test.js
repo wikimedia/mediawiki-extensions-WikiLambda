@@ -642,6 +642,30 @@ describe( 'zobject Pinia store', () => {
 			} );
 		} );
 
+		describe( 'getZHTMLFragmentTerminalValue', () => {
+			it( 'returns undefined if a non-existent rowId is provided', () => {
+				expect( store.getZHTMLFragmentTerminalValue( 99 ) ).toBeUndefined();
+			} );
+
+			it( 'returns undefined if the value row does not exist', () => {
+				store.zobject = tableDataToRowObjects( [
+					{ id: 0, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 1, key: 'Z1K1', value: 'Z89', parent: 0 }
+					// No Z89K1 row
+				] );
+				expect( store.getZHTMLFragmentTerminalValue( 0 ) ).toBeUndefined();
+			} );
+
+			it( 'returns the terminal value of a ZHTMLFragment', () => {
+				store.zobject = tableDataToRowObjects( [
+					{ id: 0, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 1, key: 'Z1K1', value: 'Z89', parent: 0 },
+					{ id: 2, key: 'Z89K1', value: 'fragment value', parent: 0 }
+				] );
+				expect( store.getZHTMLFragmentTerminalValue( 0 ) ).toBe( 'fragment value' );
+			} );
+		} );
+
 		describe( 'ZMonolingualString', () => {
 			describe( 'getZMonolingualTextValue', () => {
 				beforeEach( () => {

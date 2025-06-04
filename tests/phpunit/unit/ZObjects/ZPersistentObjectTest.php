@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests;
 
+use MediaWiki\Extension\WikiLambda\ZObjects\ZHTMLFragment;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualStringSet;
@@ -91,6 +92,17 @@ class ZPersistentObjectTest extends MediaWikiUnitTestCase {
 				$emptyMultiLingualString
 			),
 			false
+		];
+
+		yield 'ZHTMLFragment as content is valid' => [
+			new ZPersistentObject(
+				$zidZString,
+				new ZHTMLFragment( '<b>hello</b>' ),
+				$emptyMultiLingualString,
+				$emptyMultiLingualStringSet,
+				$emptyMultiLingualString
+			),
+			true
 		];
 
 		yield 'ZString reference to a non-ZID is invalid' => [

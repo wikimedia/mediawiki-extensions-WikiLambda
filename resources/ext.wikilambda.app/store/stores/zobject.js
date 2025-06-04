@@ -651,6 +651,25 @@ const zobjectStore = {
 			);
 			return findZCodeProgrammingLanguageRow;
 		},
+
+		/**
+		 * Returns the terminal value of Z89K1/HTML Fragment value of a ZObject
+		 * assumed to be a string.
+		 *
+		 * @return {Function}
+		 */
+		getZHTMLFragmentTerminalValue: function () {
+			/**
+			 * @param {number} rowId
+			 * @return {string | undefined}
+			 */
+			const findZHTMLFragmentTerminalValue = ( rowId ) => {
+				const valueRow = this.getRowByKeyPath( [ Constants.Z_HTML_FRAGMENT_VALUE ], rowId );
+				return valueRow ? this.getZStringTerminalValue( valueRow.id ) : undefined;
+			};
+			return findZHTMLFragmentTerminalValue;
+		},
+
 		/**
 		 * Returns the terminal reference Value of Z40K1
 		 *
