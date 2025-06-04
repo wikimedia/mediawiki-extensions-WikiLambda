@@ -15,6 +15,7 @@
 		<cdx-text-input
 			v-else
 			v-model="value"
+			:disabled="disabled"
 			aria-label=""
 			placeholder=""
 			data-testid="text-input"
@@ -44,11 +45,11 @@ module.exports = exports = defineComponent( {
 		edit: {
 			type: Boolean,
 			required: true
+		},
+		disabled: {
+			type: Boolean,
+			default: false
 		}
-	},
-	data: function () {
-		return {
-		};
 	},
 	computed: Object.assign( {},
 		mapState( useMainStore, [

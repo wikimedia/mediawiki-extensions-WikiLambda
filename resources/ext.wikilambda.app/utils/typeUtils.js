@@ -244,11 +244,18 @@ const typeUtils = {
 	getScaffolding: function ( type ) {
 		switch ( type ) {
 			case Constants.Z_STRING:
-				// Empty string: ''
-				return '';
+				// Empty string (normal form):
+				// {
+				//  Z1K1: Z6
+				//  Z6K1: ''
+				// }
+				return {
+					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_STRING,
+					[ Constants.Z_STRING_VALUE ]: ''
+				};
 
 			case Constants.Z_REFERENCE:
-				// Empty reference:
+				// Empty reference (normal form):
 				// {
 				//  Z1K1: Z9
 				//  Z9K1: ''
