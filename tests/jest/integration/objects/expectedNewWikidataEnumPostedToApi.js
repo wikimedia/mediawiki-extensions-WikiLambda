@@ -26,7 +26,10 @@ const wikidataEnumZObject = function ( wikidataType, entityIds ) {
 					[ `${ wikidataType }K1` ]: id
 				} ) )
 			],
-			[ Constants.Z_WIKIDATA_ENUM_IDENTITY ]: Constants.NEW_ZID_PLACEHOLDER
+			[ Constants.Z_WIKIDATA_ENUM_IDENTITY ]: {
+				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_STRING,
+				[ Constants.Z_STRING_VALUE ]: Constants.NEW_ZID_PLACEHOLDER
+			}
 		},
 		[ Constants.Z_PERSISTENTOBJECT_LABEL ]: {
 			[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MULTILINGUALSTRING,

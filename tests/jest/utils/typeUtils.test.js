@@ -408,9 +408,12 @@ describe( 'typeUtils', () => {
 					}
 				} );
 			} );
-			it( `of string if type is ${ Constants.Z_STRING }`, () => {
+			it( `of normal string if type is ${ Constants.Z_STRING }`, () => {
 				const result = getScaffolding( Constants.Z_STRING );
-				expect( result ).toBe( '' );
+				expect( result ).toStrictEqual( {
+					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_STRING,
+					[ Constants.Z_STRING_VALUE ]: ''
+				} );
 			} );
 			it( `of monolingual string if type is ${ Constants.Z_MONOLINGUALSTRING }`, () => {
 				const result = getScaffolding( Constants.Z_MONOLINGUALSTRING );

@@ -211,10 +211,10 @@ module.exports = {
 				const zid = this.getCurrentZObjectId || Constants.NEW_ZID_PLACEHOLDER;
 				value[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ] = zid;
 				if ( this.getUserLangZid ) {
-					const mono = getScaffolding( Constants.Z_MONOLINGUALSTRING );
-					mono[ Constants.Z_MONOLINGUALSTRING_VALUE ] = '';
-					mono[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][
-						Constants.Z_REFERENCE_ID ] = this.getUserLangZid;
+					const mono = this.createObjectByType( {
+						type: Constants.Z_MONOLINGUALSTRING,
+						lang: this.getUserLangZid
+					} );
 					value[ Constants.Z_PERSISTENTOBJECT_LABEL ][
 						Constants.Z_MULTILINGUALSTRING_VALUE ].push( mono );
 				}
@@ -248,7 +248,10 @@ module.exports = {
 				const value = getScaffolding( Constants.Z_MONOLINGUALSTRING );
 				// Initialize monolingual string
 				const lang = payload.lang || '';
-				value[ Constants.Z_MONOLINGUALSTRING_VALUE ] = payload.value || '';
+				value[ Constants.Z_MONOLINGUALSTRING_VALUE ] = this.createObjectByType( {
+					type: Constants.Z_STRING,
+					value: payload.value
+				} );
 				value[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_REFERENCE_ID ] = lang;
 				return value;
 			};
@@ -316,12 +319,14 @@ module.exports = {
 			const generateZMultilingualString = ( payload ) => {
 				// Get scaffolding
 				const value = getScaffolding( Constants.Z_MULTILINGUALSTRING );
+
 				// Initialize first monolingual string if there's any lang or value
 				if ( ( 'lang' in payload ) || ( 'value' in payload ) ) {
-					const mono = getScaffolding( Constants.Z_MONOLINGUALSTRING );
-					const lang = payload.lang || this.getUserLangZid;
-					mono[ Constants.Z_MONOLINGUALSTRING_VALUE ] = payload.value || '';
-					mono[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_REFERENCE_ID ] = lang;
+					const mono = this.createObjectByType( {
+						type: Constants.Z_MONOLINGUALSTRING,
+						lang: payload.lang || this.getUserLangZid,
+						value: payload.value || ''
+					} );
 					value[ Constants.Z_MULTILINGUALSTRING_VALUE ].push( mono );
 				}
 				return value;
@@ -332,7 +337,10 @@ module.exports = {
 		/**
 		 * Return a blank and initialized zString
 		 * The value will result in a json representation equal to:
-		 * { Z1K1: Z6, Z6K1: payload.value }
+		 * * If payload.value is a canonical reference (matches Zn format):
+		 *   return { Z1K1: Z6, Z6K1: payload.value }
+		 * * If payload.value is a canonical string:
+		 *   return payload.value
 		 *
 		 * @return {Function}
 		 */
@@ -344,10 +352,14 @@ module.exports = {
 			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
-			// No need to get scaffolding, the value is a canonical string, so
-			// either it's a blank string or a string with a value.
-			const generateZString = ( payload ) => payload.value || '';
-
+			const generateZString = ( payload ) => {
+				if ( payload.value && payload.value.match( /^Z\d+$/ ) ) {
+					const normalString = getScaffolding( Constants.Z_STRING );
+					normalString[ Constants.Z_STRING_VALUE ] = payload.value;
+					return normalString;
+				}
+				return payload.value || '';
+			};
 			return generateZString;
 		},
 
@@ -649,11 +661,12 @@ module.exports = {
 			const generateZTypedPair = ( payload ) => {
 				// Get scaffolding
 				const value = getScaffolding( Constants.Z_TYPED_PAIR );
+
 				// Initialize typed pair types
 				const type1 = payload.values ? payload.values[ 0 ] : '';
 				const type2 = payload.values ? payload.values[ 1 ] : '';
-				const value1 = type1 ? getScaffolding( type1 ) : {};
-				const value2 = type2 ? getScaffolding( type2 ) : {};
+				const value1 = type1 ? this.createObjectByType( { type: type1 } ) : {};
+				const value2 = type2 ? this.createObjectByType( { type: type2 } ) : {};
 				value[ Constants.Z_OBJECT_TYPE ][ Constants.Z_TYPED_PAIR_TYPE1 ][ Constants.Z_REFERENCE_ID ] = type1;
 				value[ Constants.Z_OBJECT_TYPE ][ Constants.Z_TYPED_PAIR_TYPE2 ][ Constants.Z_REFERENCE_ID ] = type2;
 				value[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ] = value1;
