@@ -30,6 +30,7 @@
 	"wikilambda-recentchanges-filter-wl-pref": "Afficher les modifications de Wikifunctions dans votre liste de surveillance",
 	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Chargement",
 	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "L'aperçu a pris trop de temps",
+	"wikilambda-visualeditor-wikifunctionscall-changedesc-title": "Modification des entrées de Wikifunctions",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Choisissez une option",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Fonction]] de Wikifunctions",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Lire moins",
@@ -41,6 +42,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Fonctions suggérées",
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Modifiez la fonction pour corriger les valeurs manquantes ou non valides.",
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Aucune option choisie.",
+	"wikilambda-visualeditor-wikifunctionscall-error-parser-empty": "Veuillez saisir une valeur",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser": "Erreur inconnue. [[f:Talk:$1|Signaler un problème]]",
 	"wikilambda-visualeditor-wikifunctionscall-info-missing-content": "Aidez à traduire le contenu manquant dans votre langue sur [[f:$1|fonctions Wiki]].",
 	"wikilambda-visualeditor-wikifunctionscall-no-description": "Aucune description",
@@ -48,5 +50,11 @@
 	"wikilambda-visualeditor-wikifunctionscall-no-name": "Pas de nom",
 	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Chargement des données de fonction",
 	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Aucune fonction sélectionnée.",
-	"wikilambda-visualeditor-wikifunctionscall-title": "Fonction"
+	"wikilambda-visualeditor-wikifunctionscall-title": "Fonction",
+	"wikilambda-visualeditor-wikifunctionscall-preview-title": "Aperçu",
+	"wikilambda-visualeditor-wikifunctionscall-preview-no-result": "Saisissez des valeurs pour prévisualiser le résultat.",
+	"wikilambda-visualeditor-wikifunctionscall-preview-error": "La fonction ne peut pas afficher de résultat. Veuillez réessayer ultérieurement.",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "Annulé",
+	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "Réinitialiser",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Annuler"
 }
