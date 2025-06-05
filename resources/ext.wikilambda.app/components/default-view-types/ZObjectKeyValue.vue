@@ -90,6 +90,7 @@ const ZString = require( './ZString.vue' );
 const ZTester = require( './ZTester.vue' );
 const ZTypedList = require( './ZTypedList.vue' );
 const WikidataItem = require( './wikidata/Item.vue' );
+const WikidataEnum = require( './wikidata/Enum.vue' );
 const WikidataLexeme = require( './wikidata/Lexeme.vue' );
 const WikidataLexemeForm = require( './wikidata/LexemeForm.vue' );
 const WikidataProperty = require( './wikidata/Property.vue' );
@@ -104,6 +105,7 @@ module.exports = exports = defineComponent( {
 		'wl-key-value-block': KeyValueBlock,
 		'wl-localized-label': LocalizedLabel,
 		'wl-mode-selector': ModeSelector,
+		'wl-wikidata-enum': WikidataEnum,
 		'wl-wikidata-item': WikidataItem,
 		'wl-wikidata-lexeme': WikidataLexeme,
 		'wl-wikidata-lexeme-form': WikidataLexemeForm,
@@ -191,7 +193,7 @@ module.exports = exports = defineComponent( {
 			'isWikidataLiteral',
 			'isWikidataFetch',
 			'isWikidataReference',
-			'getZObjectTypeByRowId'
+			'isWikidataEnum'
 		] ),
 		{
 			/**
@@ -238,10 +240,10 @@ module.exports = exports = defineComponent( {
 				// 1. If parent expected type is Z1: return false (allow edit)
 				// 2. If parent expected type is Z881(Z1): return false (allow edit)
 				// 3. If parent expected type is Z881(Zn): return true (disable edit)
-				// 4. If the parent key is Z6884K2 (Wikidata enum keys), return true (disable edit)
+				// 4. If the parent key is Z6884K2 (Wikidata enum references), return true (disable edit)
 				//    because the type of the keys is bound to the type of the enum (Z6884K1).
 				if ( this.isKeyTypedListType( this.key ) ) {
-					if ( this.parentKey === Constants.Z_WIKIDATA_ENUM_KEYS ) {
+					if ( this.parentKey === Constants.Z_WIKIDATA_ENUM_REFERENCES ) {
 						return true;
 					}
 
@@ -465,6 +467,12 @@ module.exports = exports = defineComponent( {
 					return false;
 				}
 
+				// TERMINAL rules for wikidata enum selector:
+				// * type is a wikidata lightweight enum (function call to Z6884)
+				if ( this.isWikidataEnum( this.type ) ) {
+					return false;
+				}
+
 				// If the type doesn't have any builting component, it must
 				// be always shown in its expanded-mode representation--the set
 				// of key values, so we won't show the expanded mode toggle.
@@ -526,6 +534,13 @@ module.exports = exports = defineComponent( {
 					this.isWikidataLiteral( this.rowId ) ) && !!this.wikidataComponent && !this.expanded ) {
 					return this.wikidataComponent;
 				}
+				// Wikidata Enums don't have an expanded mode
+				if ( this.isWikidataEnum( this.type ) ) {
+					// Make sure to collapse the toggle due to delayed type retrieval
+					this.setExpanded( false );
+					return 'wl-wikidata-enum';
+				}
+
 				if ( ( this.type === Constants.Z_ARGUMENT_REFERENCE ) && !this.expanded ) {
 					return 'wl-z-argument-reference';
 				}
@@ -591,7 +606,7 @@ module.exports = exports = defineComponent( {
 		'removeItemFromTypedList',
 		'moveItemInTypedList',
 		'navigate',
-		'setZWikidataEnumTypedListType'
+		'setZWikidataEnumReferencesType'
 	] ),
 	{
 		/**
@@ -755,7 +770,7 @@ module.exports = exports = defineComponent( {
 			// If we are changing a Wikidata enum type, we need to update the
 			// type of its associated keys/references (Z6884K2) to match the new enum type.
 			if ( this.key === Constants.Z_WIKIDATA_ENUM_TYPE ) {
-				this.setZWikidataEnumTypedListType( {
+				this.setZWikidataEnumReferencesType( {
 					parentRowId: this.parentRowId,
 					value: payload.value
 				} );

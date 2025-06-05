@@ -42,6 +42,7 @@ describe( 'ZObjectKeyValue', () => {
 		store.isWikidataLiteral = createGettersWithFunctionsMock( false );
 		store.isWikidataFetch = createGettersWithFunctionsMock( false );
 		store.isWikidataReference = createGettersWithFunctionsMock( false );
+		store.isWikidataEnum = createGettersWithFunctionsMock( false );
 		store.getChildrenByParentRowId = createGettersWithFunctionsMock( [] );
 		store.setValueByRowIdAndPath.mockResolvedValue();
 	} );
@@ -473,6 +474,24 @@ describe( 'ZObjectKeyValue', () => {
 
 					expect( wrapper.findComponent( { name: 'wl-wikidata-item' } ).exists() ).toBe( true );
 					expect( wrapper.vm.expanded ).toBe( false );
+				} );
+
+				it( 'renders wikidata enum components with wikidata enum references', () => {
+					store.isWikidataEnum = createGettersWithFunctionsMock( true );
+					store.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z6884' );
+
+					const wrapper = shallowMount( ZObjectKeyValue, {
+						props: {
+							rowId: 1,
+							edit: false
+						},
+						global: {
+							stubs: {
+								WlKeyValueBlock: false
+							}
+						}
+					} );
+					expect( wrapper.findComponent( { name: 'wl-wikidata-enum' } ).exists() ).toBe( true );
 				} );
 			} );
 		} );

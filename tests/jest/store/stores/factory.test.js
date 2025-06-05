@@ -1351,6 +1351,36 @@ describe( 'factory Pinia store', () => {
 					expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
 					expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
 				} );
+
+				describe( 'Add Wikidata Enum', () => {
+					it( 'creates a Wikidata Enum object with provided value', () => {
+						Object.defineProperty( store, 'isWikidataEnum', {
+							value: jest.fn( () => true )
+						} );
+						Object.defineProperty( store, 'getTypeOfWikidataEnum', {
+							value: jest.fn( () => 'Z6095' )
+						} );
+
+						const payload = { id: 0, type: 'Z10004', value: 'Q12345' };
+						store.changeType( payload );
+
+						const expectedZids = [ 'Z1', 'Z10004', 'Z6095' ];
+						const expectedPayload = {
+							rowId: 0,
+							value: {
+								Z1K1: 'Z10004',
+								Z10004K1: {
+									Z1K1: 'Z6095',
+									Z6095K1: 'Q12345'
+								}
+							},
+							append: false
+						};
+
+						expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expectedZids } );
+						expect( store.injectZObjectFromRowId ).toHaveBeenCalledWith( expectedPayload );
+					} );
+				} );
 			} );
 		} );
 

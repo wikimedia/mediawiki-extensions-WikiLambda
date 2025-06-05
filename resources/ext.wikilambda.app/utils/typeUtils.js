@@ -649,6 +649,20 @@ const typeUtils = {
 					}
 				};
 
+			case Constants.Z_WIKIDATA_REFERENCE_LEXEME:
+			case Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM:
+			case Constants.Z_WIKIDATA_REFERENCE_ITEM:
+			case Constants.Z_WIKIDATA_REFERENCE_PROPERTY:
+				// Empty Wikidata reference:
+				// {
+				//  Z1K1: Z609x
+				//  Z609xK1: ''
+				// }
+				return {
+					[ Constants.Z_OBJECT_TYPE ]: type,
+					[ `${ type }K1` ]: ''
+				};
+
 			default:
 				return undefined;
 		}

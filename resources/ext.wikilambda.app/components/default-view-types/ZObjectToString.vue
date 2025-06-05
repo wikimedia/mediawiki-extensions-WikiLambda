@@ -83,7 +83,6 @@ const { hybridToCanonical } = require( '../../utils/schemata.js' );
 const useMainStore = require( '../../store/index.js' );
 const icons = require( '../../../lib/icons.json' );
 const wikidataIconSvg = require( './wikidata/wikidataIconSvg.js' );
-const wikidataMixin = require( '../../mixins/wikidataMixin.js' );
 const urlUtils = require( '../../utils/urlUtils.js' );
 
 module.exports = exports = defineComponent( {
@@ -95,7 +94,7 @@ module.exports = exports = defineComponent( {
 	directives: {
 		tooltip: CdxTooltip
 	},
-	mixins: [ typeMixin, errorMixin, wikidataMixin ],
+	mixins: [ typeMixin, errorMixin ],
 	props: {
 		rowId: {
 			type: Number,
@@ -126,7 +125,11 @@ module.exports = exports = defineComponent( {
 			'getUserLangZid',
 			'getRendererZid',
 			'getZObjectAsJsonById',
-			'isWikidataEntity'
+			'isWikidataEntity',
+			'getWikidataEntityId',
+			'getWikidataEntityLabelData',
+			'getWikidataEntityUrl',
+			'fetchWikidataEntitiesByType'
 		] ),
 		{
 			/**
@@ -213,13 +216,27 @@ module.exports = exports = defineComponent( {
 			},
 
 			/**
-			 * Returns the Wikidata mapping for the entity represented
-			 * in this component.
+			 * Returns the Wikidata type for the object represented
+			 * in this component, or undefined if it is not a Wikidata type.
 			 *
-			 * @return {Object}
+			 * @return {string|undefined}
 			 */
-			wikidataMapping: function () {
-				return this.getWikidataMapping( this.value, this.rowId );
+			wikidataType: function () {
+				return Constants.WIKIDATA_SIMPLIFIED_TYPES[ this.value ];
+			},
+
+			/**
+			 * Returns the Wikidata entity ID for the object represented
+			 * in this component, or undefined if it is not a Wikidata type.
+			 * E.g. 'L313289'
+			 *
+			 * @return {string|undefined}
+			 */
+			wikidataEntityId: function () {
+				if ( !this.isWikidataType ) {
+					return undefined;
+				}
+				return this.getWikidataEntityId( this.rowId, this.wikidataType );
 			},
 
 			/**
@@ -229,9 +246,8 @@ module.exports = exports = defineComponent( {
 			 * @return {LabelData}
 			 */
 			wikidataLabelData: function () {
-				return this.wikidataMapping && this.wikidataMapping.labelData ?
-					this.wikidataMapping.labelData :
-					this.getLabelData( this.value );
+				return this.getWikidataEntityLabelData( this.wikidataType, this.wikidataEntityId ) ||
+				this.getLabelData( this.value );
 			},
 
 			/**
@@ -244,7 +260,7 @@ module.exports = exports = defineComponent( {
 					return '';
 				}
 				if ( this.isWikidataType ) {
-					return this.wikidataMapping ? this.wikidataMapping.url : '';
+					return this.getWikidataEntityUrl( this.wikidataType, this.wikidataEntityId );
 				}
 				return urlUtils.generateViewUrl( {
 					langCode: this.getUserLangCode,
@@ -447,7 +463,7 @@ module.exports = exports = defineComponent( {
 		 * @return {Promise | undefined}
 		 */
 		fetchWikidataEntity: function () {
-			return this.wikidataMapping ? this.wikidataMapping.fetch() : undefined;
+			this.fetchWikidataEntitiesByType( { type: this.wikidataType, ids: [ this.wikidataEntityId ] } );
 		}
 	} ),
 	watch: {

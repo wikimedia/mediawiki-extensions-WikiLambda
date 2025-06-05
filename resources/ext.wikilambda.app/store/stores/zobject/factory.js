@@ -73,6 +73,12 @@ module.exports = {
 					}
 				}
 
+				// If payload.type is a Wikidata enum, we need to create a
+				// Wikidata enum object, which is a special case.
+				if ( this.isWikidataEnum( payload.type ) ) {
+					return this.createZWikidataEnum( payload );
+				}
+
 				switch ( payload.type ) {
 					case Constants.Z_REFERENCE:
 						return this.createZReference( payload );
@@ -386,6 +392,41 @@ module.exports = {
 				return value;
 			};
 			return generateZReference;
+		},
+
+		/**
+		 * Return an initialized zWikidataEnum.
+		 * The value will result in a json representation equal to:
+		 * {
+		 *   "Z1K1": "Zxxxxx",
+		 *   "ZxxxxxK1": {
+		 *     "Z1K1": "Z609x",
+		 *     "Z609xK1": payload.value ||''
+		 *   }
+		 * }
+		 *
+		 * @return {Function}
+		 */
+		createZWikidataEnum: function () {
+			/**
+			 * @param {Object} payload
+			 * @param {string} payload.type the type of the new object to add
+			 * @param {Object} payload.value initialization values
+			 * @return {Object}
+			 */
+			const generateZWikidataEnum = ( payload ) => {
+				const enumType = this.getTypeOfWikidataEnum( payload.type );
+				const enumValue = getScaffolding( enumType );
+
+				// Initialize the enum reference with the provided value
+				enumValue[ `${ enumType }K1` ] = payload.value || '';
+
+				return {
+					[ Constants.Z_OBJECT_TYPE ]: payload.type,
+					[ `${ payload.type }K1` ]: enumValue
+				};
+			};
+			return generateZWikidataEnum;
 		},
 
 		/**

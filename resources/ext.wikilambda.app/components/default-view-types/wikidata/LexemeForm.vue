@@ -70,30 +70,18 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
-		'getLexemeFormData',
 		'getLexemeFormId',
 		'getLexemeFormLabelData',
 		'getLexemeFormUrl'
 	] ), {
 		/**
-		 * Returns the Lexeme Id string value, if any Lexeme is selected.
+		 * Returns the Lexeme Form Id string value, if any Lexeme Form is selected.
 		 * Else returns null (required as empty value for CdxLookup).
 		 *
 		 * @return {string|null}
 		 */
 		lexemeFormId: function () {
 			return this.getLexemeFormId( this.rowId );
-		},
-		/**
-		 * Returns the Lexeme data object, if any Lexeme is selected.
-		 * Else returns undefined.
-		 *
-		 * FIXME: need lexemeFormData
-		 *
-		 * @return {Object|undefined}
-		 */
-		lexemeFormData: function () {
-			return this.getLexemeFormData( this.lexemeFormId );
 		},
 		/**
 		 * Returns the Wikidata URL for the selected Lexeme Form.
@@ -112,7 +100,7 @@ module.exports = exports = defineComponent( {
 			return this.getLexemeFormLabelData( this.lexemeFormId );
 		},
 		/**
-		 * Returns the string label of the selected Lexeme or
+		 * Returns the string label of the selected Lexeme Form or
 		 * an empty string if none is selected. This is needed
 		 * for the CdxLookup component initial value.
 		 *
@@ -160,13 +148,9 @@ module.exports = exports = defineComponent( {
 				const [ lexemeId ] = id.split( '-' );
 				this.fetchLexemes( { ids: [ lexemeId ] } );
 			}
-		},
-		lexemeFormLabel: function ( label ) {
-			this.inputValue = label;
 		}
 	},
 	mounted: function () {
-		this.inputValue = this.lexemeFormLabel;
 		if ( this.lexemeFormId ) {
 			const [ lexemeId ] = this.lexemeFormId.split( '-' );
 			this.fetchLexemes( { ids: [ lexemeId ] } );

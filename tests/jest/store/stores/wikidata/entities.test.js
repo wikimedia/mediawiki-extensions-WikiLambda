@@ -53,7 +53,7 @@ describe( 'Wikidata Entities Pinia store', () => {
 					Z2K2: { // rowId = 1
 						Z1K1: 'Z7',
 						Z7K1: 'Z6825',
-						Z6825K1: 'L333333'
+						Z6825K1: 'L111111'
 					}
 				} );
 				const rowId = 1;
@@ -65,7 +65,7 @@ describe( 'Wikidata Entities Pinia store', () => {
 				store.zobject = zobjectToRows( {
 					Z2K2: { // rowId = 1
 						Z1K1: 'Z6095',
-						Z6095K1: 'L333333'
+						Z6095K1: 'L111111'
 					}
 				} );
 				const rowId = 1;
@@ -79,7 +79,7 @@ describe( 'Wikidata Entities Pinia store', () => {
 						Z1K1: 'Z6005',
 						Z6005K1: {
 							Z1K1: 'Z6095',
-							Z6095K1: 'L333333'
+							Z6095K1: 'L111111'
 						}
 					}
 				} );
@@ -135,7 +135,7 @@ describe( 'Wikidata Entities Pinia store', () => {
 						Z7K1: 'Z6825',
 						Z6825K1: {
 							Z1K1: 'Z6095',
-							Z6095K1: 'L333333'
+							Z6095K1: 'L111111'
 						}
 					}
 				} );
@@ -176,7 +176,7 @@ describe( 'Wikidata Entities Pinia store', () => {
 					Z2K2: { // rowId = 1
 						Z1K1: 'Z7',
 						Z7K1: 'Z6825',
-						Z6825K1: 'L333333'
+						Z6825K1: 'L111111'
 					}
 				} );
 				const rowId = 1;
@@ -190,7 +190,7 @@ describe( 'Wikidata Entities Pinia store', () => {
 						Z1K1: 'Z6005',
 						Z6005K1: {
 							Z1K1: 'Z6095',
-							Z6095K1: 'L333333'
+							Z6095K1: 'L111111'
 						}
 					}
 				} );
@@ -203,7 +203,7 @@ describe( 'Wikidata Entities Pinia store', () => {
 				store.zobject = zobjectToRows( {
 					Z2K2: { // rowId = 1
 						Z1K1: 'Z6095',
-						Z6095K1: 'L333333'
+						Z6095K1: 'L111111'
 					}
 				} );
 				const rowId = 1;
@@ -244,7 +244,7 @@ describe( 'Wikidata Entities Pinia store', () => {
 						Z1K1: 'Z6005',
 						Z6005K1: {
 							Z1K1: 'Z6095',
-							Z6095K1: 'L333333'
+							Z6095K1: 'L111111'
 						}
 					}
 				} );
@@ -257,7 +257,7 @@ describe( 'Wikidata Entities Pinia store', () => {
 				store.zobject = zobjectToRows( {
 					Z2K2: { // rowId = 1
 						Z1K1: 'Z6095',
-						Z6095K1: 'L333333'
+						Z6095K1: 'L111111'
 					}
 				} );
 				const rowId = 1;
@@ -272,7 +272,7 @@ describe( 'Wikidata Entities Pinia store', () => {
 						Z7K1: 'Z6825',
 						Z6825K1: {
 							Z1K1: 'Z6095',
-							Z6095K1: 'L333333'
+							Z6095K1: 'L111111'
 						}
 					}
 				} );
@@ -316,7 +316,7 @@ describe( 'Wikidata Entities Pinia store', () => {
 					Z2K2: { // rowId = 1
 						Z1K1: 'Z7',
 						Z7K1: 'Z801',
-						Z801K1: 'L333333'
+						Z801K1: 'L111111'
 					}
 				} );
 				const rowId = 1;
@@ -331,7 +331,7 @@ describe( 'Wikidata Entities Pinia store', () => {
 						Z1K1: 'Z6005',
 						Z6005K1: {
 							Z1K1: 'Z6095',
-							Z6095K1: 'L333333' // rowId = 9
+							Z6095K1: 'L111111' // rowId = 9
 						}
 					}
 				} );
@@ -346,7 +346,7 @@ describe( 'Wikidata Entities Pinia store', () => {
 				store.zobject = zobjectToRows( {
 					Z2K2: { // rowId = 1
 						Z1K1: 'Z6095',
-						Z6095K1: 'L333333' // rowId = 9
+						Z6095K1: 'L111111' // rowId = 9
 					}
 				} );
 				const rowId = 1;
@@ -363,7 +363,7 @@ describe( 'Wikidata Entities Pinia store', () => {
 						Z7K1: 'Z6825',
 						Z6825K1: {
 							Z1K1: 'Z6095',
-							Z6095K1: 'L333333'
+							Z6095K1: 'L111111'
 						}
 					}
 				} );
@@ -374,6 +374,108 @@ describe( 'Wikidata Entities Pinia store', () => {
 				expect( referenceRow.key ).toBe( expectedKey );
 			} );
 		} );
+
+		describe( 'getWikidataEntityId', () => {
+			it( 'returns null when row is undefined', () => {
+				const rowId = undefined;
+				const wikidataType = 'Z6005';
+				const expected = null;
+				expect( store.getWikidataEntityId( rowId, wikidataType ) ).toEqual( expected );
+			} );
+
+			it( 'returns undefined when row is not found', () => {
+				const rowId = 100;
+				const wikidataType = 'Z6005';
+				const expected = null;
+				expect( store.getWikidataEntityId( rowId, wikidataType ) ).toEqual( expected );
+			} );
+
+			it( 'returns entity id when is a valid Wikidata format, for example a wikidata fetch function call ', () => {
+				store.zobject = zobjectToRows( {
+					Z2K2: { // rowId = 1
+						Z1K1: 'Z7',
+						Z7K1: 'Z6825',
+						Z6825K1: {
+							Z1K1: 'Z6095',
+							Z6095K1: 'L111111'
+						}
+					}
+				} );
+				const rowId = 1;
+				const wikidataType = 'Z6005';
+				const expected = 'L111111';
+				expect( store.getWikidataEntityId( rowId, wikidataType ) ).toBe( expected );
+			} );
+		} );
+
+		describe( 'getWikidataEntityLabelData', () => {
+			it( 'returns lexeme label data for lexeme types', () => {
+				const expected = { label: 'foo' };
+				Object.defineProperty( store, 'getLexemeLabelData', {
+					value: jest.fn().mockReturnValue( expected )
+				} );
+				expect( store.getWikidataEntityLabelData( Constants.Z_WIKIDATA_LEXEME, 'L111111' ) ).toEqual( expected );
+				expect( store.getWikidataEntityLabelData( Constants.Z_WIKIDATA_REFERENCE_LEXEME, 'L222222' ) ).toEqual( expected );
+			} );
+
+			it( 'returns lexeme form label data for lexeme form types', () => {
+				const expected = { label: 'bar' };
+				Object.defineProperty( store, 'getLexemeFormLabelData', {
+					value: jest.fn().mockReturnValue( expected )
+				} );
+				expect( store.getWikidataEntityLabelData( Constants.Z_WIKIDATA_LEXEME_FORM, 'L111111-F1' ) ).toEqual( expected );
+				expect( store.getWikidataEntityLabelData( Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM, 'L222222-F2' ) ).toEqual( expected );
+			} );
+
+			it( 'returns item label data for item types', () => {
+				const expected = { label: 'baz' };
+				Object.defineProperty( store, 'getItemLabelData', {
+					value: jest.fn().mockReturnValue( expected )
+				} );
+				expect( store.getWikidataEntityLabelData( Constants.Z_WIKIDATA_ITEM, 'Q111111' ) ).toEqual( expected );
+				expect( store.getWikidataEntityLabelData( Constants.Z_WIKIDATA_REFERENCE_ITEM, 'Q222222' ) ).toEqual( expected );
+			} );
+
+			it( 'returns property label data for property types', () => {
+				const expected = { label: 'qux' };
+				Object.defineProperty( store, 'getPropertyLabelData', {
+					value: jest.fn().mockReturnValue( expected )
+				} );
+				expect( store.getWikidataEntityLabelData( Constants.Z_WIKIDATA_PROPERTY, 'P111111' ) ).toEqual( expected );
+				expect( store.getWikidataEntityLabelData( Constants.Z_WIKIDATA_REFERENCE_PROPERTY, 'P222222' ) ).toEqual( expected );
+			} );
+
+			it( 'returns undefined for unknown types', () => {
+				expect( store.getWikidataEntityLabelData( Constants.Z_WIKIDATA_FETCH_ITEM, 'X111111' ) ).toBeUndefined();
+			} );
+		} );
+
+		describe( 'getWikidataEntityUrl', () => {
+			it( 'returns lexeme url for lexeme types', () => {
+				expect( store.getWikidataEntityUrl( Constants.Z_WIKIDATA_LEXEME, 'L111111' ) ).toBe( 'https://www.wikidata.org/wiki/Lexeme:L111111' );
+				expect( store.getWikidataEntityUrl( Constants.Z_WIKIDATA_REFERENCE_LEXEME, 'L222222' ) ).toBe( 'https://www.wikidata.org/wiki/Lexeme:L222222' );
+			} );
+
+			it( 'returns lexeme form url for lexeme form types', () => {
+				expect( store.getWikidataEntityUrl( Constants.Z_WIKIDATA_LEXEME_FORM, 'L111111-F1' ) ).toBe( 'https://www.wikidata.org/wiki/Lexeme:L111111#F1' );
+				expect( store.getWikidataEntityUrl( Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM, 'L222222-F2' ) ).toBe( 'https://www.wikidata.org/wiki/Lexeme:L222222#F2' );
+			} );
+
+			it( 'returns item url for item types', () => {
+				expect( store.getWikidataEntityUrl( Constants.Z_WIKIDATA_ITEM, 'Q111111' ) ).toBe( 'https://www.wikidata.org/wiki/Q111111' );
+				expect( store.getWikidataEntityUrl( Constants.Z_WIKIDATA_REFERENCE_ITEM, 'Q222222' ) ).toBe( 'https://www.wikidata.org/wiki/Q222222' );
+			} );
+
+			it( 'returns property url for property types', () => {
+				expect( store.getWikidataEntityUrl( Constants.Z_WIKIDATA_PROPERTY, 'P111111' ) ).toBe( 'https://www.wikidata.org/wiki/Property:P111111' );
+				expect( store.getWikidataEntityUrl( Constants.Z_WIKIDATA_REFERENCE_PROPERTY, 'P222222' ) ).toBe( 'https://www.wikidata.org/wiki/Property:P222222' );
+			} );
+
+			it( 'returns undefined for unknown types', () => {
+				expect( store.getWikidataEntityLabelData( Constants.Z_WIKIDATA_FETCH_ITEM, 'X111111' ) ).toBeUndefined();
+			} );
+		} );
+
 	} );
 
 	describe( 'Actions', () => {
@@ -410,5 +512,54 @@ describe( 'Wikidata Entities Pinia store', () => {
 				expect( fetchMock ).toHaveBeenCalledWith( getUrl );
 			} );
 		} );
+
+		describe( 'fetchWikidataEntitiesByType', () => {
+			it( 'calls fetchLexemes for lexeme types', () => {
+				const payload = { type: Constants.Z_WIKIDATA_LEXEME, ids: [ 'L111111' ] };
+				const fetchLexemesMock = jest.fn();
+				store.fetchLexemes = fetchLexemesMock;
+				store.fetchWikidataEntitiesByType( payload );
+				expect( fetchLexemesMock ).toHaveBeenCalledWith( payload );
+			} );
+
+			it( 'calls fetchLexemes for reference lexeme types', () => {
+				const payload = { type: Constants.Z_WIKIDATA_REFERENCE_LEXEME, ids: [ 'L222222' ] };
+				const fetchLexemesMock = jest.fn();
+				store.fetchLexemes = fetchLexemesMock;
+				store.fetchWikidataEntitiesByType( payload );
+				expect( fetchLexemesMock ).toHaveBeenCalledWith( payload );
+			} );
+
+			it( 'transforms ids and calls fetchLexemes for lexeme form types', () => {
+				const payload = { type: Constants.Z_WIKIDATA_LEXEME_FORM, ids: [ 'L111111-F1', 'L222222-F2' ] };
+				const fetchLexemesMock = jest.fn();
+				store.fetchLexemes = fetchLexemesMock;
+				store.fetchWikidataEntitiesByType( payload );
+				expect( payload.ids ).toEqual( [ 'L111111', 'L222222' ] );
+				expect( fetchLexemesMock ).toHaveBeenCalledWith( payload );
+			} );
+
+			it( 'calls fetchItems for item types', () => {
+				const payload = { type: Constants.Z_WIKIDATA_ITEM, ids: [ 'Q111111' ] };
+				const fetchItemsMock = jest.fn();
+				store.fetchItems = fetchItemsMock;
+				store.fetchWikidataEntitiesByType( payload );
+				expect( fetchItemsMock ).toHaveBeenCalledWith( payload );
+			} );
+
+			it( 'calls fetchProperties for property types', () => {
+				const payload = { type: Constants.Z_WIKIDATA_PROPERTY, ids: [ 'P111111' ] };
+				const fetchPropertiesMock = jest.fn();
+				store.fetchProperties = fetchPropertiesMock;
+				store.fetchWikidataEntitiesByType( payload );
+				expect( fetchPropertiesMock ).toHaveBeenCalledWith( payload );
+			} );
+
+			it( 'returns undefined for unknown types', () => {
+				const payload = { type: Constants.Z_WIKIDATA_FETCH_ITEM, ids: [ 'X111111' ] };
+				expect( store.fetchWikidataEntitiesByType( payload ) ).toBeUndefined();
+			} );
+		} );
+
 	} );
 } );

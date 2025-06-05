@@ -99,6 +99,7 @@ module.exports = {
 				return new LabelData( id, id, null );
 			};
 			return findPropertyLabelData;
+
 		},
 
 		/**

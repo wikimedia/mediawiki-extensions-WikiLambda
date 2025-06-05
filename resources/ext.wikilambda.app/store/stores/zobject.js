@@ -1753,12 +1753,15 @@ const zobjectStore = {
 			newArgs.forEach( ( arg ) => {
 				if ( !oldKeys.includes( arg[ Constants.Z_ARGUMENT_KEY ] ) ) {
 					const key = arg[ Constants.Z_ARGUMENT_KEY ];
+					const type = arg[ Constants.Z_ARGUMENT_TYPE ];
+
 					// 4.c. If the key is a Wikidata enum identity, set it to the placeholder Z0
 					const presetValue = key === Constants.Z_WIKIDATA_ENUM_IDENTITY ?
 						Constants.NEW_ZID_PLACEHOLDER :
 						undefined;
+
 					const value = this.createObjectByType( {
-						type: arg[ Constants.Z_ARGUMENT_TYPE ],
+						type,
 						value: presetValue
 					} );
 
@@ -1827,8 +1830,8 @@ const zobjectStore = {
 		 * @param {number} payload.parentRowId - The parent row ID of the Wikidata enum.
 		 * @param {string} payload.value - The new type to set.
 		 */
-		setZWikidataEnumTypedListType: function ( payload ) {
-			const row = this.getRowByKeyPath( [ Constants.Z_WIKIDATA_ENUM_KEYS ], payload.parentRowId );
+		setZWikidataEnumReferencesType: function ( payload ) {
+			const row = this.getRowByKeyPath( [ Constants.Z_WIKIDATA_ENUM_REFERENCES ], payload.parentRowId );
 			if ( !row ) {
 				return;
 			}

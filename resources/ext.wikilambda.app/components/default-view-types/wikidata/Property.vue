@@ -70,9 +70,8 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
-		'getPropertyData',
 		'getPropertyId',
-		'getUserLangCode',
+		'getPropertyLabelData',
 		'getPropertyUrl'
 	] ), {
 		/**
@@ -85,15 +84,6 @@ module.exports = exports = defineComponent( {
 			return this.getPropertyId( this.rowId );
 		},
 		/**
-		 * Returns the Wikidata Property data object, if any Property is selected.
-		 * Else returns undefined.
-		 *
-		 * @return {Object|undefined}
-		 */
-		propertyData: function () {
-			return this.getPropertyData( this.propertyId );
-		},
-		/**
 		 * Returns the Wikidata URL for the selected Property.
 		 *
 		 * @return {string|undefined}
@@ -102,30 +92,12 @@ module.exports = exports = defineComponent( {
 			return this.getPropertyUrl( this.propertyId );
 		},
 		/**
-		 * Returns the LabelData object built from the available
-		 * labels in the data object of the selected Wikidata Property.
-		 * If an Property is selected but it has no labels, returns
-		 * LabelData object with the Wikidata Property id as its label.
-		 * If no Wikidata Property is selected, returns undefined.
+		 * Returns the LabelData object for the selected Property.
 		 *
 		 * @return {LabelData|undefined}
 		 */
 		propertyLabelData: function () {
-			// If no selected property, return undefined
-			if ( !this.propertyId ) {
-				return undefined;
-			}
-			// If no propertyData yet, return property Id
-			// Get best label from labels (if any)
-			const langs = this.propertyData ? Object.keys( this.propertyData.labels || {} ) : {};
-			if ( langs.length > 0 ) {
-				const label = langs.includes( this.getUserLangCode ) ?
-					this.propertyData.labels[ this.getUserLangCode ] :
-					this.propertyData.labels[ langs[ 0 ] ];
-				return new LabelData( this.propertyId, label.value, null, label.language );
-			}
-			// Else, return property Id as label
-			return new LabelData( this.propertyId, this.propertyId, null );
+			return this.getPropertyLabelData( this.propertyId );
 		},
 		/**
 		 * Returns the string label of the selected Wikidata Property or
@@ -172,13 +144,9 @@ module.exports = exports = defineComponent( {
 	watch: {
 		propertyId: function ( id ) {
 			this.fetchProperties( { ids: [ id ] } );
-		},
-		propertyLabel: function ( label ) {
-			this.inputValue = label;
 		}
 	},
 	mounted: function () {
-		this.inputValue = this.propertyLabel;
 		if ( this.propertyId ) {
 			this.fetchProperties( { ids: [ this.propertyId ] } );
 		}

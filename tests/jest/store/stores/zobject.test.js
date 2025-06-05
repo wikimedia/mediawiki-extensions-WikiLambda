@@ -3983,7 +3983,7 @@ describe( 'zobject Pinia store', () => {
 			} );
 		} );
 
-		describe( 'setZWikidataEnumTypedListType', () => {
+		describe( 'setZWikidataEnumReferencesType', () => {
 			beforeEach( () => {
 				store.zobject = [
 					{ id: 0, key: undefined, parent: undefined, value: Constants.ROW_VALUE_OBJECT },
@@ -3997,13 +3997,13 @@ describe( 'zobject Pinia store', () => {
 			} );
 
 			it( 'sets the type of a Wikidata enum typed list', () => {
-				store.setZWikidataEnumTypedListType( { parentRowId: 2, value: 'Z6091' } );
+				store.setZWikidataEnumReferencesType( { parentRowId: 2, value: 'Z6091' } );
 
 				expect( store.zobject[ 6 ].value ).toBe( 'Z6091' );
 			} );
 
 			it( 'does nothing if the rowId is invalid', () => {
-				store.setZWikidataEnumTypedListType( { parentRowId: 9999, value: 'Z6091' } );
+				store.setZWikidataEnumReferencesType( { parentRowId: 9999, value: 'Z6091' } );
 
 				expect( store.zobject[ 6 ].value ).toBe( '' );
 			} );
