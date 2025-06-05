@@ -4,6 +4,7 @@ const { shallowMount } = require( '@vue/test-utils' );
 const { waitFor } = require( '@testing-library/vue' );
 const FunctionInputPreview = require( '../../../../resources/ext.wikilambda.app/components/visualeditor/FunctionInputPreview.vue' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const { createGettersWithFunctionsMock } = require( '../../helpers/getterHelpers.js' );
 
 describe( 'FunctionInputPreview', () => {
@@ -228,6 +229,53 @@ describe( 'FunctionInputPreview', () => {
 		// Wait for the result and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
 		expect( wrapper.find( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( 'some response' );
+	} );
+
+	it( 'executes a function call with an empty date and assigns default value', async () => {
+		// Set fake timers
+		jest.useFakeTimers();
+		jest.setSystemTime( new Date( '2001-01-15T12:00:00Z' ) );
+
+		store.getRendererZid = createGettersWithFunctionsMock( rendererZid );
+		const wrapper = shallowMount( FunctionInputPreview, {
+			props: {
+				payload: { functionZid, params: [ { value: '', type: Constants.Z_GREGORIAN_CALENDAR_DATE } ] }
+			},
+			global: {
+				stubs: {
+					'cdx-accordion': false
+				}
+			}
+		} );
+
+		// Simulate opening the accordion
+		const accordion = wrapper.findComponent( { name: 'cdx-accordion' } );
+		await accordion.vm.$emit( 'update:modelValue', true );
+		expect( accordion.attributes( 'open' ) ).toBeDefined();
+
+		// Verify loading state and API call
+		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( true );
+		expect( postMock ).toHaveBeenCalledWith( {
+			action: 'wikilambda_function_call',
+			wikilambda_function_call_zobject: JSON.stringify( {
+				Z1K1: 'Z7',
+				Z7K1: rendererZid,
+				[ `${ rendererZid }K1` ]: {
+					Z1K1: 'Z7',
+					Z7K1: functionZid,
+					[ `${ functionZid }K1` ]: '15-1-2001'
+				},
+				[ `${ rendererZid }K2` ]: 'Z1002'
+			} ),
+			uselang: 'en'
+		} );
+
+		// Wait for the result and verify it is displayed
+		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
+		expect( wrapper.find( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( 'some response' );
+
+		// Reset real timers
+		jest.useRealTimers();
 	} );
 
 	it( 'handles an unsuccessful function call and displays an error message', async () => {
