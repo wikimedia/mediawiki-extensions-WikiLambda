@@ -180,7 +180,7 @@ class WikifunctionsClientStore {
 			return null;
 		}
 
-		if ( $cachedValue['succeess'] ) {
+		if ( $cachedValue['success'] ) {
 			if (
 				!array_key_exists( 'value', $cachedValue ) ||
 				!is_array( $cachedValue['value'] ) ||
