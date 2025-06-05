@@ -7,7 +7,8 @@
 			"Nguyenphutrong2",
 			"Nguyễn Mạnh An",
 			"Thingofme",
-			"Yosari101"
+			"Yosari101",
+			"Matma Rex"
 		]
 	},
 	"wikilambda-desc": "Cho phép các wiki của Wikimedia sử dụng hàm với chức năng gọi các hàm được tạo ra, quản lý, và đánh giá tại wiki chung.",
@@ -15,9 +16,9 @@
 	"group-functioneer": "Kiểm hàm viên",
 	"group-functioneer-member": "{{GENDER:$1|}}kiểm hàm viên",
 	"grouppage-functioneer": "{{ns:project}}:Kiểm hàm viên",
-	"group-functionmaintainer": "Bảo quản viên",
-	"group-functionmaintainer-member": "{{GENDER:$1|}}bảo quản viên",
-	"grouppage-functionmaintainer": "{{ns:project}}:Bảo quản viên",
+	"group-functionmaintainer": "Maintainers",
+	"group-functionmaintainer-member": "{{GENDER:$1|maintainer}}",
+	"grouppage-functionmaintainer": "{{ns:project}}:Maintainers",
 	"wikilambda-history-title": "Lịch sử sửa đổi của “$1” ($2)",
 	"wikilambda-invalidzobjecttitle": "Tiêu đề '$1' không hợp lệ cho đối tượng.",
 	"wikilambda-invalidzobject": "Nội dung không phải là đối tượng hợp lệ.",
