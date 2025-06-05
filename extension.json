@@ -1000,8 +1000,7 @@
 						"services": [
 							"MainConfig",
 							"JobQueueGroup",
-							"HttpRequestFactory",
-							"WikiLambdaZObjectStash"
+							"HttpRequestFactory"
 						]
 					},
 					"options": {

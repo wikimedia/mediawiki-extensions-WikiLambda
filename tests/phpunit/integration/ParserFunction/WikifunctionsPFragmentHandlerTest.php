@@ -63,6 +63,7 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 		// Build mock dependencies for Fragment Handler constructor:
 		$mainConfig = $this->getServiceContainer()->getMainConfig();
 		$mockHttpRequestFactory = $this->createMock( HttpRequestFactory::class );
+
 		$mockObjectCache = $this->createMock( BagOStuff::class );
 		if ( $cachedFunction !== null ) {
 			$mockObjectCache->method( 'get' )->with( 'mock-cache-key' )->willReturn( 'mock-cache-key' );
@@ -87,8 +88,7 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 		$fragmentHandler = new WikifunctionsPFragmentHandler(
 			$mainConfig,
 			$mockJobQueueGroup,
-			$mockHttpRequestFactory,
-			$mockObjectCache
+			$mockHttpRequestFactory
 		);
 
 		// Build mock arguments for sourceToFragment:
