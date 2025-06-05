@@ -12,7 +12,7 @@ namespace MediaWiki\Extension\WikiLambda;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
-use MediaWiki\Http\Telemetry;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Utils\GitInfo;
 use Psr\Http\Message\ResponseInterface;
 use Wikimedia\ObjectCache\BagOStuff;
@@ -56,8 +56,8 @@ class OrchestratorRequest {
 		$userAgentString = $this->userAgentString;
 
 		// (T365053) Propagate request tracing headers
-		$telemetry = Telemetry::getInstance();
-		$requestHeaders = $telemetry->getRequestHeaders();
+		$tracer = MediaWikiServices::getInstance()->getTracer();
+		$requestHeaders = $tracer->getRequestHeaders();
 		$requestHeaders['User-Agent'] = $userAgentString;
 		if ( $bypassCache ) {
 			return $this->guzzleClient->post( '/1/v1/evaluate/', [
@@ -99,8 +99,8 @@ class OrchestratorRequest {
 		$userAgentString = $this->userAgentString;
 
 		// (T365053) Propagate request tracing headers
-		$telemetry = Telemetry::getInstance();
-		$requestHeaders = $telemetry->getRequestHeaders();
+		$tracer = MediaWikiServices::getInstance()->getTracer();
+		$requestHeaders = $tracer->getRequestHeaders();
 		$requestHeaders['User-Agent'] = $userAgentString;
 
 		$query = [
