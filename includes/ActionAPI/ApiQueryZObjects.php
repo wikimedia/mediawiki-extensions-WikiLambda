@@ -29,6 +29,7 @@ use MediaWiki\Title\TitleFactory;
 use Psr\Log\LoggerInterface;
 use stdClass;
 use Wikimedia\ParamValidator\ParamValidator;
+use Wikimedia\Telemetry\SpanInterface;
 
 class ApiQueryZObjects extends WikiLambdaApiQueryGeneratorBase {
 
@@ -196,12 +197,19 @@ class ApiQueryZObjects extends WikiLambdaApiQueryGeneratorBase {
 		$getDependencies = $params[ 'get_dependencies' ];
 		$revisionMap = [];
 
+		$tracer = MediaWikiServices::getInstance()->getTracer();
+		$span = $tracer->createSpan( 'WikiLambda ApiQueryZObjects' )
+			->setSpanKind( SpanInterface::SPAN_KIND_CLIENT )
+			->start();
+		$span->activate();
+
 		// Check that if we request revision, we request one per zid
 		if ( $revisions ) {
 			if ( count( $revisions ) !== count( $zids ) ) {
+				$errorMessage = "You must specify a revision for each ZID, or none at all.";
 				$zErrorObject = ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
-					[ 'message' => "You must specify a revision for each ZID, or none at all." ]
+					[ 'message' => $errorMessage ]
 				);
 				WikiLambdaApiBase::dieWithZError( $zErrorObject, HttpStatus::BAD_REQUEST );
 			}
@@ -250,6 +258,8 @@ class ApiQueryZObjects extends WikiLambdaApiQueryGeneratorBase {
 					'success' => true,
 					'data' => $fetchedContent
 				] );
+
+				$span->setSpanStatus( SpanInterface::SPAN_STATUS_OK );
 			} catch ( ZErrorException $e ) {
 				// If an error was thrown while fetching, we add the value to the response
 				// with success=false and the error object as data
@@ -257,6 +267,12 @@ class ApiQueryZObjects extends WikiLambdaApiQueryGeneratorBase {
 					'success' => false,
 					'data' => $e->getZError()->getErrorData()
 				] );
+				$span->setSpanStatus( SpanInterface::SPAN_STATUS_ERROR )
+					->setAttributes( [
+						'error.message' => $e->getZError()->getErrorData()
+					] );
+			} finally {
+				$span->end();
 			}
 		}
 	}
