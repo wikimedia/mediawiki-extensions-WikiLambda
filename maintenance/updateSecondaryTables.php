@@ -17,7 +17,9 @@
 
 namespace MediaWiki\Extensions\WikiLambda\Maintenance;
 
+use GuzzleHttp\Client;
 use MediaWiki\Deferred\DeferredUpdates;
+use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
@@ -82,6 +84,12 @@ class UpdateSecondaryTables extends Maintenance {
 			false
 		);
 		$this->addOption(
+			'cache',
+			'Whether to try to stash the ZObject in the function-orchestrator\'s cache (default: false)',
+			false,
+			false
+		);
+		$this->addOption(
 			'quick',
 			'Do not sleep 5 seconds after the creation of each update (default: false)',
 			false,
@@ -115,6 +123,7 @@ class UpdateSecondaryTables extends Maintenance {
 		$verbose = $this->getOption( 'verbose' );
 		$report = $this->getOption( 'report' );
 		$dryRun = $this->getOption( 'dryRun' );
+		$cache = $this->getOption( 'cache' );
 		$quick = $this->getOption( 'quick' );
 
 		if ( $all && $zType ) {
@@ -153,6 +162,22 @@ class UpdateSecondaryTables extends Maintenance {
 		}
 		$this->output( " secondary tables for " . count( $targets ) . " ZObjects\n" );
 
+		// By default, we do not update the orchestrator cache, as we're in a maintenance script and might over-whelm
+		$orchestrator = null;
+		if ( $cache ) {
+			$config = $this->getServiceContainer()->getMainConfig();
+			if ( $config->get( 'WikiLambdaPersistBackendCache' ) ) {
+				$this->output( "Sending cache updates to the function-orchestrator.\n" );
+
+				$orchestratorHost = $config->get( 'WikiLambdaOrchestratorLocation' );
+				$client = new Client( [ "base_uri" => $orchestratorHost ] );
+				$orchestrator = new OrchestratorRequest( $client );
+			} else {
+				$this->output( "ERROR: Cannot send cache updates to the function-orchestrator as it is disabled.\n" );
+				$cache = false;
+			}
+		}
+
 		$offset = 0;
 		$queryLimit = 10;
 		do {
@@ -171,9 +196,7 @@ class UpdateSecondaryTables extends Maintenance {
 				$data = json_encode( $persistentObject->getSerialized() );
 				$content = $handler::makeContent( $data, $title );
 				$update = new ZObjectSecondaryDataUpdate(
-					$title, $content,
-					// Not updating the orchestrator cache, as we're in a maintenance script and might over-whelm
-					null
+					$title, $content, $orchestrator
 				);
 				DeferredUpdates::addUpdate( $update );
 				if ( !$quick ) {
