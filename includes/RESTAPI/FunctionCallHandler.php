@@ -514,7 +514,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			$response = $this->makeRequest( $requestCall, $renderLang, $span );
 		} catch ( ZErrorException $e ) {
 			$errorMessage = __METHOD__ . ' called on {target} but got a ZErrorException, {error}';
-			$this->logger->error(
+			$this->logger->info(
 				$errorMessage,
 				[
 					'target' => $target,
