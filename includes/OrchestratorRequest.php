@@ -16,6 +16,7 @@ use MediaWiki\MediaWikiServices;
 use MediaWiki\Utils\GitInfo;
 use Psr\Http\Message\ResponseInterface;
 use Wikimedia\ObjectCache\BagOStuff;
+use Wikimedia\Telemetry\TracerInterface;
 
 /**
  * @codeCoverageIgnore
@@ -25,6 +26,7 @@ class OrchestratorRequest {
 	protected Client $guzzleClient;
 	protected string $userAgentString;
 	protected BagOStuff $objectCache;
+	protected TracerInterface $tracer;
 
 	public const FUNCTIONCALL_CACHE_KEY_PREFIX = 'WikiLambdaFunctionCall';
 
@@ -41,6 +43,7 @@ class OrchestratorRequest {
 			$this->userAgentString .= '-WL' . substr( $gitHash, 0, 8 );
 		}
 
+		$this->tracer = MediaWikiServices::getInstance()->getTracer();
 		$this->objectCache = WikiLambdaServices::getZObjectStash();
 	}
 
@@ -56,8 +59,7 @@ class OrchestratorRequest {
 		$userAgentString = $this->userAgentString;
 
 		// (T365053) Propagate request tracing headers
-		$tracer = MediaWikiServices::getInstance()->getTracer();
-		$requestHeaders = $tracer->getRequestHeaders();
+		$requestHeaders = $this->tracer->getRequestHeaders();
 		$requestHeaders['User-Agent'] = $userAgentString;
 		if ( $bypassCache ) {
 			return $this->guzzleClient->post( '/1/v1/evaluate/', [
@@ -99,8 +101,7 @@ class OrchestratorRequest {
 		$userAgentString = $this->userAgentString;
 
 		// (T365053) Propagate request tracing headers
-		$tracer = MediaWikiServices::getInstance()->getTracer();
-		$requestHeaders = $tracer->getRequestHeaders();
+		$requestHeaders = $this->tracer->getRequestHeaders();
 		$requestHeaders['User-Agent'] = $userAgentString;
 
 		$query = [
