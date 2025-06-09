@@ -57,6 +57,8 @@
 	"apihelp-query+wikilambda-example-nofallback": "Cercar ZObjects cuje etiquetta corresponde a 'foo' in francese, e non acceptar linguas de recurso",
 	"apihelp-query+wikilambda-example-type": "Cercar ZObjects del typo 'Z4', restituente etiquettas in anglese",
 	"apihelp-query+wikilambda-example-return-type": "Cercar ZObjects de qualcunque typo que se resolve in le typo ‘Z40’, restituente etiquettas in anglese",
+	"apihelp-query+wikilambda-example-type-and-return-types": "Cercar functiones que restitue o ‘Z40’ o ‘Z1’, restituente etiquettas in anglese",
+	"apihelp-query+wikilambda-example-types-and-return-type": "Cercar ZObjects del typo ‘Z4’ o ZObjects del typo ‘Z7’ que se resolve al typo ‘Z4’",
 	"apihelp-query+wikilambdaload_zobjects-summary": "Cercar ZObjects a base de lor ZIDs e restituer lor modello JSON, sia complete, sia filtrate a un lingua date o a su linguas de recurso. Si alcun del ZIDs fornite non existe in le wiki, restituera un error Z5 in loco del ZObject requestate.",
 	"apihelp-query+wikilambdaload_zobjects-param-zids": "Le ZIDs del ZObject a obtener.",
 	"apihelp-query+wikilambdaload_zobjects-param-revisions": "Le IDs de version a obtener. Debe esser vacue o corresponder al numero de ZIDs requestate.",
