@@ -92,6 +92,11 @@ module.exports = exports = defineComponent( {
 			required: false,
 			default: undefined
 		},
+		strictReturnType: {
+			type: Boolean,
+			required: false,
+			default: false
+		},
 		disabled: {
 			type: Boolean,
 			required: false,
@@ -299,13 +304,17 @@ module.exports = exports = defineComponent( {
 		 */
 		lookupReturnTypes: function () {
 			const types = [];
-			// If return type is set, add to the array
+			// If return type is set, we add type and Z1
 			if ( this.returnType ) {
 				types.push( this.returnType );
 			}
-			// If type=Z4, we allow Z7s that return Z4s
+			// If type=Z4, we allow Z7s that return Z4s or Z1s
 			if ( this.type === Constants.Z_TYPE ) {
 				types.push( Constants.Z_TYPE );
+			}
+			// If return type is defined but strictReturnType=false, we add Z1
+			if ( types.length > 0 && !this.strictReturnType ) {
+				types.push( Constants.Z_OBJECT );
 			}
 			// Return array of return types if any
 			return types.length ? types : undefined;
@@ -401,7 +410,9 @@ module.exports = exports = defineComponent( {
 
 							let icon;
 							// If we expect to receive functions along with other literal types, show icon
-							if ( !this.lookupTypes || this.lookupTypes.includes( Constants.Z_FUNCTION ) ) {
+							if ( !this.lookupTypes || ( this.lookupTypes.length > 1 &&
+									this.lookupTypes.includes( Constants.Z_FUNCTION )
+							) ) {
 								icon = ( result.page_type === Constants.Z_FUNCTION ) ?
 									icons.cdxIconFunction :
 									icons.cdxIconInstance;

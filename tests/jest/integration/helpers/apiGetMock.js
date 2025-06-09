@@ -464,7 +464,7 @@ const typeLabelsDefaultView = {
 	action: 'query',
 	list: 'wikilambdasearch_labels',
 	wikilambdasearch_type: `${ Constants.Z_TYPE }|${ Constants.Z_FUNCTION_CALL }`,
-	wikilambdasearch_return_type: `${ Constants.Z_TYPE }`
+	wikilambdasearch_return_type: `${ Constants.Z_TYPE }|${ Constants.Z_OBJECT }`
 };
 const typeLabelsFunctionEditor = {
 	action: 'query',

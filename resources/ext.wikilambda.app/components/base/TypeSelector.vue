@@ -25,6 +25,7 @@
 				:row-id="rowId"
 				:selected-zid="selectedZid"
 				:return-type="type"
+				:strict-return-type="true"
 				@select-item="setValue"
 			></wl-z-object-selector>
 		</cdx-field>

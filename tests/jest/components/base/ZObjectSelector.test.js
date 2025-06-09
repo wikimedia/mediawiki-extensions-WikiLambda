@@ -82,6 +82,29 @@ describe( 'ZObjectSelector', () => {
 				{
 					input: 'Stri',
 					types: [ Constants.Z_TYPE, Constants.Z_FUNCTION_CALL ],
+					returnTypes: [ Constants.Z_TYPE, Constants.Z_OBJECT ],
+					searchContinue: null
+				}
+			) );
+		} );
+
+		it( 'on lookup for strict types, sends type and return type in the payload', async () => {
+			store.lookupZObjectLabels.mockResolvedValue( mockLookupValues );
+
+			const wrapper = mount( ZObjectSelector, {
+				props: {
+					type: Constants.Z_TYPE,
+					strictReturnType: true
+				}
+			} );
+
+			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
+			lookup.vm.$emit( 'update:input-value', 'Stri' );
+
+			await waitFor( () => expect( store.lookupZObjectLabels ).toHaveBeenLastCalledWith(
+				{
+					input: 'Stri',
+					types: [ Constants.Z_TYPE, Constants.Z_FUNCTION_CALL ],
 					returnTypes: [ Constants.Z_TYPE ],
 					searchContinue: null
 				}
@@ -93,7 +116,8 @@ describe( 'ZObjectSelector', () => {
 
 			const wrapper = mount( ZObjectSelector, {
 				props: {
-					type: Constants.Z_TYPE
+					type: Constants.Z_TYPE,
+					strictReturnType: true
 				}
 			} );
 
