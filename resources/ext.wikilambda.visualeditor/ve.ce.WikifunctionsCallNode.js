@@ -193,7 +193,8 @@ ve.ce.WikifunctionsCallNode.prototype.doneGenerating = function ( generatedConte
 	ve.ce.WikifunctionsCallNode.super.prototype.doneGenerating.call( this, generatedContents, newConfig, staged );
 
 	// Infer error state from generatedContents
-	const hasError = generatedContents[ 0 ].classList.contains( 'cdx-message--error' );
+	const hasError = generatedContents[ 0 ].classList.contains( 'cdx-info-chip--error' );
+	const errorKey = generatedContents[ 0 ].getAttribute( 'data-error-key' );
 	const hadError = this.model.getAttribute( 'isError' );
 
 	// If isError attribute changed, update the model
@@ -204,7 +205,7 @@ ve.ce.WikifunctionsCallNode.prototype.doneGenerating = function ( generatedConte
 				ve.dm.TransactionBuilder.static.newFromAttributeChanges(
 					surfaceModel.getDocument(),
 					this.model.getOuterRange().start,
-					{ isError: hasError }
+					{ isError: hasError, errorKey }
 				)
 			);
 		}

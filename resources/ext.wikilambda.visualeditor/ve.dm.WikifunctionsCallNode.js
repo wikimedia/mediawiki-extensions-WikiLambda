@@ -77,6 +77,7 @@ ve.dm.WikifunctionsCallNode.static.getHashObjectForRendering = function ( dataEl
  * On loading the data model from the DOM, set additional attributes
  * to capture the function call state:
  * * isError: failed function call, DOM is error box
+ * * errorKey: error key for the error message
  *
  * @inheritdoc
  */
@@ -84,8 +85,10 @@ ve.dm.WikifunctionsCallNode.static.toDataElement = function ( domElements ) {
 	// Parent method
 	const dataElement = ve.dm.WikifunctionsCallNode.super.static.toDataElement.apply( this, arguments );
 
-	const isError = domElements[ 0 ].classList.contains( 'cdx-message--error' );
+	const isError = domElements[ 0 ].classList.contains( 'cdx-info-chip--error' );
+	const errorKey = domElements[ 0 ].getAttribute( 'data-error-key' );
 	dataElement.attributes.isError = isError;
+	dataElement.attributes.errorKey = errorKey;
 
 	return dataElement;
 };

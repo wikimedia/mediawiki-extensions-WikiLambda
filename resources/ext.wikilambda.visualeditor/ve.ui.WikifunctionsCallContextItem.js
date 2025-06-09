@@ -44,10 +44,56 @@ ve.ui.WikifunctionsCallContextItem.static.suppresses = [ 'transclusion' ];
 
 /* Methods */
 
-ve.ui.WikifunctionsCallContextItem.prototype.setErrorState = function () {
+/**
+ * Maps error keys to grouped error message keys.
+ *
+ * @param {string} key
+ * @return {string}
+ */
+ve.ui.WikifunctionsCallContextItem.getErrorMessageKey = function ( key ) {
+	switch ( key ) {
+		case 'wikilambda-functioncall-error-unknown-zid':
+		case 'wikilambda-functioncall-error-nonfunction':
+			return 'wikilambda-functioncall-error-message-unknown';
+		case 'wikilambda-functioncall-error-nonstringinput':
+		case 'wikilambda-functioncall-error-nonstringoutput':
+			return 'wikilambda-functioncall-error-message-not-supported';
+		case 'wikilambda-functioncall-error-bad-inputs':
+			return 'wikilambda-functioncall-error-message-bad-inputs';
+		case 'wikilambda-functioncall-error-bad-input-type':
+			return 'wikilambda-functioncall-error-message-bad-input-type';
+		case 'wikilambda-functioncall-error-bad-langs':
+			return 'wikilambda-functioncall-error-message-bad-langs';
+		case 'wikilambda-functioncall-error-disabled':
+			return 'wikilambda-functioncall-error-message-disabled';
+		case 'wikilambda-functioncall-error-bad-output':
+		case 'wikilambda-functioncall-error-evaluation':
+		case 'wikilambda-functioncall-error-unclear':
+		case 'wikilambda-functioncall-error-invalid-zobject':
+			return 'wikilambda-functioncall-error-message-system';
+		default:
+			return 'wikilambda-functioncall-error-message';
+	}
+};
+
+/**
+ * Set the error state of the context item.
+ * This is called when the function call fails to load.
+ *
+ * @param {string} errorKey
+ */
+ve.ui.WikifunctionsCallContextItem.prototype.setErrorState = function ( errorKey ) {
+	const groupedErrorMessageKey = ve.ui.WikifunctionsCallContextItem.getErrorMessageKey( errorKey );
 	const $errorMsg = $( '<div>' )
 		.addClass( 'cdx-message__content' )
-		.text( OO.ui.deferMsg( 'wikilambda-visualeditor-wikifunctionscall-error-bad-function' ) );
+		.append(
+			// eslint-disable-next-line mediawiki/msg-doc
+			mw.message( groupedErrorMessageKey,
+				// eslint-disable-next-line mediawiki/msg-doc
+				mw.message( errorKey || 'wikilambda-functioncall-error' ).text()
+			).parse()
+		);
+
 	const $error = $( '<div>' )
 		.addClass( 'cdx-message cdx-message--inline cdx-message--error' )
 		.append( $( '<span>' ).addClass( 'cdx-message__icon' ) )
@@ -83,6 +129,8 @@ ve.ui.WikifunctionsCallContextItem.prototype.renderBody = function () {
 	ve.init.mw.WikifunctionsCall.vueAppLoaded.then( () => {
 		// Get the mw data object
 		const mwData = this.model.getAttribute( 'mw' );
+		const isError = this.model.getAttribute( 'isError' );
+		const errorKey = this.model.getAttribute( 'errorKey' );
 		const mwPart = ( mwData.parts || [] )[ 0 ];
 		const functionCall = ve.getProp( mwPart, 'parserfunction', 'params' );
 		const functionId = functionCall[ 1 ].wt;
@@ -91,13 +139,15 @@ ve.ui.WikifunctionsCallContextItem.prototype.renderBody = function () {
 		ve.init.mw.WikifunctionsCall.piniaStore
 			.fetchZids( { zids: [ functionId ] } )
 			.then( () => {
-				if ( this.model.getAttribute( 'isError' ) ) {
-					// Show error state if the function call didn't succeed, for whatever reason.
-					// Even if errors are detected earlier, we must set error state after fetching the function Zid.
-					this.setErrorState();
+				// Show error state if the function call failed for any reason
+				// (e.g. server error, not found, invalid arguments, etc.),
+				// Even if errors are detected earlier, we must set error state after fetching the function Zid.
+				if ( isError ) {
+					this.setErrorState( errorKey );
 					return;
 				}
 
+				// If the function call is valid, show the function name and description.
 				const functionLabelData = ve.init.mw.WikifunctionsCall.piniaStore.getLabelData( functionId );
 				const functionLabel = functionLabelData.isUntitled ?
 					OO.ui.deferMsg( 'brackets', OO.ui.msg( 'wikilambda-visualeditor-wikifunctionscall-no-name' ) ) :

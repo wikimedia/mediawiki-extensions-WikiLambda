@@ -28,7 +28,6 @@ use Wikimedia\Parsoid\Ext\ParsoidExtensionAPI;
 use Wikimedia\Parsoid\Ext\PFragmentHandler;
 use Wikimedia\Parsoid\Fragments\HtmlPFragment;
 use Wikimedia\Parsoid\Fragments\PFragment;
-use Wikimedia\Parsoid\Fragments\WikitextPFragment;
 
 class WikifunctionsPFragmentHandler extends PFragmentHandler {
 
@@ -161,21 +160,26 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 				]
 			);
 
+			// Load ext.wikilambda.inlineerrors css
+			$extApi->getMetadata()->appendOutputStrings(
+				\MediaWiki\Parser\ParserOutputStringSets::MODULE,
+				[ 'ext.wikilambda.inlineerrors' ]
+			);
 			// TODO: Switch to $extApi->createPageContentI18nFragment()? Except that returns a DocumentFragment
-			$errorMsgString = wfMessage( 'wikilambda-functioncall-error-message', [
-				// @phan-suppress-next-line PhanTypeMismatchArgumentNullable False positive
-				wfMessage( $errorMessageKey )->text()
-			] )->text();
-
-			// TODO (T391117): Rather than use Html::errorBox, build and use an inline error element
-			// TODO (T391007): Can't use HtmlPFragment for now due to missing support in Parsoid.
-			// $errorfulFragment = HtmlPFragment::newFromHtmlString(Html::errorBox($errorMsgString), null);
-			$errorfulFragment = WikitextPFragment::newFromWt(
-				'<div class="cdx-message cdx-message--block cdx-message--error">'
-					. '<div class="cdx-message__content">'
-						. $errorMsgString
-					. '</div>'
-				. '</div>',
+			// Codex will not support inline rendering of error chips or error messages, so we need to
+			// add inline styles to align it inline with the body text and to make it scale properly.
+			$errorfulFragment = HtmlPFragment::newFromHtmlString(
+				'<span class="cdx-info-chip cdx-info-chip--error"'
+					. 'style="position:relative;line-height: var(--line-height-medium, 1.375rem); padding-left:calc('
+						. 'var(--font-size-medium, 1rem) + calc(var(--font-size-medium,1rem) - 6px));"'
+					. 'data-error-key="' . htmlspecialchars( $errorMessageKey ?? '' ) . '">'
+					. '<span class="cdx-info-chip__icon"'
+						. 'style="position:absolute;left:calc((var(--font-size-medium,1rem) - 2px) * .5);"'
+						. 'aria-hidden="true"></span>'
+					. '<span class="cdx-info-chip__text" style="font-size:var(--font-size-medium,1rem);">'
+						. wfMessage( 'wikilambda-visualeditor-wikifunctionscall-error' )->text()
+					. '</span>'
+				. '</span>',
 				null
 			);
 
