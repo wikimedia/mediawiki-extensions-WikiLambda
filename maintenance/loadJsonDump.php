@@ -88,19 +88,16 @@ class LoadJsonDump extends Maintenance {
 		$index = json_decode( $indexFile, true );
 
 		$success = 0;
-		$failure = 0;
+		$errors = [];
 
-		// If only one to insertZid, push it and exit early
+		// If only one to insertZid, replace index array with zid => revision, or exit early if not found
 		if ( $pushZid ) {
 			if ( array_key_exists( $pushZid, $index ) ) {
 				$revision = $index[ $pushZid ];
-				$filename = "$pushZid.$revision.json";
-				$response = $this->makeEdit( $titleFactory, $zObjectStore, $pushZid, $path, $filename );
-				$this->output( "The ZObject $pushZid was loaded successfully.\n" );
+				$index = [ $pushZid => $revision ];
 			} else {
 				$this->fatalError( "The Zid provided doesn't exist in the directory" );
 			}
-			return;
 		}
 
 		// Go through all the zid-version index and push one by one
@@ -108,26 +105,31 @@ class LoadJsonDump extends Maintenance {
 			$filename = "$zid.$revision.json";
 			$response = $this->makeEdit( $titleFactory, $zObjectStore, $zid, $path, $filename );
 
-			switch ( $response ) {
-				case 1:
-					$success++;
-					break;
-
-				case -1:
-					$failure++;
-					break;
-
-				default:
-					throw new RuntimeException( 'Unrecognised return value!' );
+			if ( $response->isOK ) {
+				$success++;
+				$this->output( $response->message );
+			} else {
+				// Print error immediately, but also save it for summary
+				$this->error( $response->message );
+				$errors[] = $response->message;
 			}
 		}
 
+		// Print summary:
+		// * n objects successfully created
+		// * n objects failed
+		// * details of all failures
+		$this->output( "\nDONE!\n" );
 		if ( $success > 0 ) {
 			$this->output( "$success objects were created or updated successfully.\n" );
 		}
+		if ( count( $errors ) > 0 ) {
+			$this->error( count( $errors ) . " objects failed on creation or update.\n" );
 
-		if ( $failure > 0 ) {
-			$this->fatalError( "$failure objects failed on creation or update.\n" );
+			$this->error( "Failure details:\n" );
+			foreach ( $errors as $error ) {
+				$this->error( "$error\n" );
+			}
 		}
 	}
 
@@ -139,7 +141,7 @@ class LoadJsonDump extends Maintenance {
 	 * @param string $zid
 	 * @param string $path
 	 * @param string $filename
-	 * @return int 1=success, -1=failure, 0=skipped
+	 * @return \stdClass with isOK and message properties
 	 */
 	private function makeEdit(
 		TitleFactory $titleFactory,
@@ -148,17 +150,26 @@ class LoadJsonDump extends Maintenance {
 		string $path,
 		string $filename
 	) {
+		// Prepare return object
+		$return = (object)[
+			'isOK' => true,
+			'message' => ''
+		];
+
 		$data = file_get_contents( "$path/$filename" );
 
 		if ( !$data ) {
-			$this->error( "The file $filename was not found in the path $path\n" );
-			return -1;
+			$return->isOK = false;
+			$return->message = "The file $filename was not found in the path $path\n";
+			return $return;
 		}
 
 		$title = $titleFactory->newFromText( $zid, NS_MAIN );
+
 		if ( !( $title instanceof Title ) ) {
-			$this->error( "The ZObject $zid cannot be loaded: invalid name\n" );
-			return -1;
+			$return->isOK = false;
+			$return->message = "The ZObject $zid cannot be loaded: invalid name\n";
+			return $return;
 		}
 
 		$creating = !$title->exists();
@@ -171,21 +182,20 @@ class LoadJsonDump extends Maintenance {
 		// We create or update the ZObject
 		try {
 			$zObjectStore->pushZObject( $zid, $data, $summary );
-			$this->output( ( $creating ? 'Created' : 'Updated' ) . " $zid\n" );
-			return 1;
+			$return->message = ( $creating ? "Created" : "Updated" ) . " $zid\n";
 		} catch ( ZErrorException $e ) {
-			$this->error( "Problem " . ( $creating ? 'creating' : 'updating' ) . " $zid:" );
-			$this->error( $e->getMessage() );
-			$this->error( $e->getZErrorMessage() );
-			$this->error( "\n" );
-			return -1;
+			$return->isOK = false;
+			$return->message = "❌ Problem " . ( $creating ? 'creating' : 'updating' ) . " $zid:\n"
+				. $e->getMessage() . "\n"
+				. $e->getZErrorMessage() . "\n";
 		} catch ( \Exception $e ) {
-			$this->error( "Problem " . ( $creating ? 'creating' : 'updating' ) . " $zid:" );
-			$this->error( $e->getMessage() );
-			$this->error( $e->getTraceAsString() );
-			$this->error( "\n" );
-			return -1;
+			$return->isOK = false;
+			$return->message = "❌ Problem " . ( $creating ? 'creating' : 'updating' ) . " $zid:\n"
+				. $e->getMessage() . "\n"
+				. $e->getTraceAsString() . "\n";
 		}
+
+		return $return;
 	}
 }
 
