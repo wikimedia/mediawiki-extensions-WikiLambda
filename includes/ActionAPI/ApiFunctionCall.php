@@ -260,15 +260,33 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 	 * @param string|null $function
 	 * @param float $start
 	 * @return void
-	 * @codeCoverageIgnore
 	 */
 	private function submitFunctionCallEvent( $httpStatus, $function, $start ): void {
-		$eventData = [ 'http' => [ 'status_code' => $httpStatus ] ];
+		$duration = 1000 * ( microtime( true ) - $start );
+
+		$eventData = [
+			'http' => [ 'status_code' => $httpStatus ],
+			'total_time_ms' => $duration,
+		];
 		if ( $function !== null ) {
 			$eventData['function'] = $function;
 		}
-		$eventData['total_time_ms'] = 1000 * ( microtime( true ) - $start );
+
+		// This is our submission to the Analytics / metrics system (private data stream);
+		// if EventLogging isn't enabled, this will be a no-op.
 		$this->submitMetricsEvent( 'wikilambda_function_call', $eventData );
+
+		// (T390548) This is our submission to the Prometheus / SLO system (public data stream).
+		// Note: There is already a metric stream provided out-of-the-box from us being part of the Action API,
+		// mediawiki_api_executeTiming_seconds{module="wikilambda_function_call",…}, but that does not include
+		// the HTTP status code, so we have to track our own.
+		MediaWikiServices::getInstance()->getStatsFactory()->withComponent( 'WikiLambda' )
+			// Will end up as 'mediawiki.WikiLambda.mw_to_orchestrator_api_call_seconds{status=…}'
+			->getTiming( 'mw_to_orchestrator_api_call_seconds' )
+			// Note: We intentionally don't log the function here, for cardinality reasons
+			->setLabel( 'status', (string)$httpStatus )
+			// The "observe" method takes milliseconds.
+			->observe( $duration );
 	}
 
 	/**
