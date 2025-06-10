@@ -47,6 +47,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-no-name": "Kein Name",
 	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Funktionsdaten werden geladen",
 	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Keine Funktion ausgewählt.",
+	"wikilambda-visualeditor-wikifunctionscall-error": "Inhaltsfehler",
 	"wikilambda-visualeditor-wikifunctionscall-title": "Funktion",
 	"wikilambda-visualeditor-wikifunctionscall-preview-title": "Vorschau",
 	"wikilambda-visualeditor-wikifunctionscall-preview-no-result": "Gib Werte ein, um eine Vorschau der Ergebnisse zu erhalten.",
