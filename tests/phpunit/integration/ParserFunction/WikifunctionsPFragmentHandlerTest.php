@@ -13,12 +13,14 @@ use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientRequestJob;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientUsageUpdateJob;
 use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPendingFragment;
 use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentHandler;
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaClientIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\WikifunctionsClientStore;
 use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\JobQueue\JobQueueGroup;
 use Wikimedia\ObjectCache\BagOStuff;
 use Wikimedia\Parsoid\Ext\ParsoidExtensionAPI;
+use Wikimedia\Parsoid\Fragments\HtmlPFragment;
 use Wikimedia\Parsoid\Fragments\WikitextPFragment;
 use Wikimedia\Parsoid\Mocks\MockEnv;
 use Wikimedia\Parsoid\Wt2Html\TT\TemplateHandlerArguments;
@@ -237,5 +239,148 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			$defaultValuesRequest,
 			$defaultValuesFunction
 		];
+	}
+
+	public function testReturnsHtmlFragmentWhenOutputTypeIsZ89() {
+		// Force-enable HTML output:
+		$this->overrideConfigValue( 'WikifunctionsEnableHTMLOutput', true );
+
+		$mainConfig = $this->getServiceContainer()->getMainConfig();
+		$mockHttpRequestFactory = $this->createMock( HttpRequestFactory::class );
+
+		$mockClientStore = $this->createMock( WikifunctionsClientStore::class );
+		$mockClientStore->method( 'makeFunctionCallCacheKey' )->willReturn( 'mock-cache-key' );
+		$mockClientStore->method( 'fetchFromFunctionCallCache' )->willReturn( [
+			'success' => true,
+			'type' => ZTypeRegistry::Z_HTML_FRAGMENT,
+			'value' => '
+				<b>HTML!</b><script>alert("x")</script>
+				<a href="https://af.wikipedia.org/wiki/Eenhoring">Wikipedia link</a>
+				<script>setTimeout(function(){window.alert(\'I killed visual editor\')},10000);</script>
+				<button type="button">inject buttons</button><br/>
+				<iframe
+				  width="560"
+				  height="315"
+				  src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+				  title="YouTube video player"
+				  frameborder="0"
+				  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+				  allowfullscreen>
+				</iframe><br/>
+				<img src="x" onerror="alert(\'XSS1\')"><br/>
+				<a href="javascript:alert(\'XSS2\')">Click me</a><br/>
+				<div style="background-image: url(javascript:alert(\'XSS3\'))">Test</div><br/>
+				<span style="background:#4caf50;color:white;padding:2px 6px;border-radius:4px;font-size:90%">'
+				. 'inline style galore</span><br/>
+				<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/'
+				. 'Dabin-Unicorn-Main-Product-Image.jpg/1200px-Dabin-Unicorn-Main-Product-Image.jpg" alt="unicorns"/>
+			'
+		] );
+		$this->setService( 'WikifunctionsClientStore', $mockClientStore );
+
+		$mockJobQueueGroup = $this->createMock( JobQueueGroup::class );
+		$fragmentHandler = new WikifunctionsPFragmentHandler(
+			$mainConfig,
+			$mockJobQueueGroup,
+			$mockHttpRequestFactory
+		);
+
+		$extApi = new ParsoidExtensionAPI( new MockEnv( [] ), [] );
+		$mockArguments = $this->getMockArguments( [ 'Z10000', 'foo' ] );
+
+		$fragment = $fragmentHandler->sourceToFragment(
+			$extApi,
+			$mockArguments,
+			false
+		);
+
+		$this->assertInstanceOf( HtmlPFragment::class, $fragment );
+		$html = $fragment->asHtmlString( $extApi );
+		// @phpcs:ignore Generic.Files.LineLength.TooLong
+		$this->assertStringContainsString( '<b>HTML!</b>', $html );
+		// @phpcs:ignore Generic.Files.LineLength.TooLong
+		$this->assertStringContainsString(
+			'&lt;script&gt;alert("x")&lt;/script&gt;',
+			$html
+		);
+		// @phpcs:ignore Generic.Files.LineLength.TooLong
+		$this->assertStringContainsString(
+			'&lt;a href="https://af.wikipedia.org/wiki/Eenhoring"&gt;Wikipedia link&lt;/a&gt;',
+			$html
+		);
+		// @phpcs:ignore Generic.Files.LineLength.TooLong
+		$this->assertStringContainsString(
+			'&lt;script&gt;setTimeout(function(){window.alert(\'I killed visual editor\')},10000);&lt;/script&gt;',
+			$html
+		);
+		// @phpcs:ignore Generic.Files.LineLength.TooLong
+		$this->assertStringContainsString(
+			'&lt;button type="button"&gt;inject buttons&lt;/button&gt;',
+			$html
+		);
+		// @phpcs:ignore Generic.Files.LineLength.TooLong
+		$this->assertStringContainsString( '&lt;iframe', $html );
+		$this->assertStringContainsString( '&lt;img src="x" onerror="alert(\'XSS1\')"&gt;', $html );
+		$this->assertStringContainsString( '&lt;a href="javascript:alert(\'XSS2\')"&gt;Click me&lt;/a&gt;', $html );
+		$this->assertStringContainsString( '<div style="/* insecure input */">Test</div>', $html );
+		$this->assertStringContainsString(
+			'<span style="background:#4caf50;color:white;padding:2px 6px;border-radius:4px;'
+			. 'font-size:90%">inline style galore</span>',
+			$html
+		);
+		$this->assertStringContainsString(
+			'&lt;img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/'
+			. 'Dabin-Unicorn-Main-Product-Image.jpg/1200px-Dabin-Unicorn-Main-Product-Image.jpg" alt="unicorns"/&gt;',
+			$html
+		);
+	}
+
+	public function testReturnsErrorWhenHtmlOutputDisabled() {
+		// Force-disable HTML output:
+		$this->overrideConfigValue( 'WikifunctionsEnableHTMLOutput', false );
+
+		$mainConfig = $this->getServiceContainer()->getMainConfig();
+		$mockHttpRequestFactory = $this->createMock( HttpRequestFactory::class );
+
+		$mockClientStore = $this->createMock( WikifunctionsClientStore::class );
+		$mockClientStore->method( 'makeFunctionCallCacheKey' )->willReturn( 'mock-cache-key' );
+		$mockClientStore->method( 'fetchFromFunctionCallCache' )->willReturn( [
+			'success' => true,
+			'type' => ZTypeRegistry::Z_HTML_FRAGMENT,
+			'value' => '<b>HTML!</b>'
+		] );
+		$this->setService( 'WikifunctionsClientStore', $mockClientStore );
+
+		$mockJobQueueGroup = $this->createMock( JobQueueGroup::class );
+		$fragmentHandler = new WikifunctionsPFragmentHandler(
+			$mainConfig,
+			$mockJobQueueGroup,
+			$mockHttpRequestFactory
+		);
+
+		$extApi = new ParsoidExtensionAPI( new MockEnv( [] ), [] );
+		$mockArguments = $this->getMockArguments( [ 'Z10000', 'foo' ] );
+
+		$fragment = $fragmentHandler->sourceToFragment(
+			$extApi,
+			$mockArguments,
+			false
+		);
+
+		// Should return an errorful fragment
+		$this->assertInstanceOf( HtmlPFragment::class, $fragment );
+		$html = $fragment->asHtmlString( $extApi );
+		$this->assertStringContainsString(
+			'wikilambda-functioncall-error-nonstringoutput',
+			$html
+		);
+		$this->assertStringContainsString(
+			'Content error',
+			$html
+		);
+		$this->assertStringContainsString(
+			'<span class="cdx-info-chip',
+			$html
+		);
 	}
 }

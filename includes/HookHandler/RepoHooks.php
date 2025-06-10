@@ -438,7 +438,8 @@ class RepoHooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesH
 				$services->getWikiPageFactory(),
 				$services->getRevisionStore(),
 				$services->getUserGroupManager(),
-				LoggerFactory::getInstance( 'WikiLambda' )
+				LoggerFactory::getInstance( 'WikiLambda' ),
+				$services->getMainConfig(),
 			);
 			$services->defineService(
 				'WikiLambdaZObjectStore',

@@ -409,13 +409,15 @@ module.exports = exports = defineComponent( {
 					}
 
 					// If the function call returns void or an unexpected type, set an error message
-					if ( data === Constants.Z_VOID || this.getZObjectType( data ) !== Constants.Z_STRING ) {
+					const type = this.getZObjectType( data );
+					const isAllowedOutputType = type !== Constants.Z_STRING || type !== Constants.Z_HTML_FRAGMENT;
+					if ( data === Constants.Z_VOID || !isAllowedOutputType ) {
 						this.functionCallError = this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-preview-error' ).text();
 						this.isLoading = false;
 						return;
 					}
 					// Else, set the function call result
-					this.functionCallResult = data;
+					this.functionCallResult = this.getFunctionCallResult( type, data );
 					this.isLoading = false;
 				} )
 				.catch( ( error ) => {
@@ -427,6 +429,24 @@ module.exports = exports = defineComponent( {
 					this.functionCallError = error.messageOrFallback( Constants.ERROR_CODES.UNKNOWN_EXEC_ERROR );
 					this.isLoading = false;
 				} );
+		},
+
+		/**
+		 * Retrieves the result of a function call based on its type.
+		 *
+		 * @param {string} type - The type of the function call result.
+		 * @param {string|Object} data - The data returned from the function call.
+		 * @return {string|null} - The processed result of the function call, or null if not applicable.
+		 */
+		getFunctionCallResult: function ( type, data ) {
+			if ( type === Constants.Z_STRING ) {
+				return data;
+			}
+
+			if ( type === Constants.Z_HTML_FRAGMENT ) {
+				return data[ Constants.Z_HTML_FRAGMENT_VALUE ];
+			}
+			return null;
 		},
 
 		/**

@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use Exception;
+use MediaWiki\Config\Config;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Exception\MWContentSerializationException;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
@@ -45,6 +46,7 @@ use Wikimedia\Rdbms\Subquery;
 
 class ZObjectStore {
 
+	private Config $config;
 	private IConnectionProvider $dbProvider;
 	private TitleFactory $titleFactory;
 	private WikiPageFactory $wikiPageFactory;
@@ -70,7 +72,8 @@ class ZObjectStore {
 		WikiPageFactory $wikiPageFactory,
 		RevisionStore $revisionStore,
 		UserGroupManager $userGroupManager,
-		LoggerInterface $logger
+		LoggerInterface $logger,
+		Config $config,
 	) {
 		$this->dbProvider = $dbProvider;
 		$this->titleFactory = $titleFactory;
@@ -78,6 +81,7 @@ class ZObjectStore {
 		$this->revisionStore = $revisionStore;
 		$this->userGroupManager = $userGroupManager;
 		$this->logger = $logger;
+		$this->config = $config;
 
 		$this->zObjectCache = WikiLambdaServices::getZObjectStash();
 	}
@@ -1561,7 +1565,7 @@ class ZObjectStore {
 	 * We define renderable differently for inputs and for outputs.
 	 * We understand that:
 	 * * input types are renderable if they are Z6, enums or have a parser function.
-	 * * output types are renderable if they are Z6 or have a renderer function.
+	 * * output types are renderable if they are Z6, Z89 or have a renderer function.
 	 *
 	 * @return SelectQueryBuilder
 	 */
@@ -1600,6 +1604,7 @@ class ZObjectStore {
 	 *
 	 * * For every output row (wlzo_key=Z8K2), renderable is true if:
 	 * ** output type is Z6, or
+	 * ** output type is Z89, or
 	 * ** output type has a renderer function
 	 *
 	 * * For every input row (wlzo_key=Z8K1), renderable is true if:
@@ -1612,13 +1617,30 @@ class ZObjectStore {
 	private function getRenderableIOQuery() {
 		$dbr = $this->dbProvider->getReplicaDatabase();
 
-		// Case statement conditions for the renderable column
-		$renderableCase = $dbr->conditional( $dbr->orExpr( [
+		$renderableOrExpr = [
+			// Input has parser
 			$dbr->expr( 'it.wlzo_id', '!=', null ),
+			// Output has renderer
 			$dbr->expr( 'ot.wlzo_id', '!=', null ),
+			// Input is enum
 			$dbr->expr( 'ite.wlzo_main_type', '!=', null ),
-			'f.wlzo_related_zobject' => 'Z6'
-		] ), '1', '0' );
+			// input/output is Z6
+			'f.wlzo_related_zobject' => 'Z6',
+		];
+		// Only include Z89 as renderable output if WikifunctionsEnableHTMLOutput is enabled
+		if ( $this->config->get( 'WikifunctionsEnableHTMLOutput' ) ) {
+			// Output is Z89
+			$renderableOrExpr[] = $dbr->andExpr(
+				[ 'f.wlzo_key' => 'Z8K2', 'f.wlzo_related_zobject' => 'Z89' ]
+			);
+		}
+
+		// Case statement conditions for the renderable column
+		$renderableCase = $dbr->conditional(
+			$dbr->orExpr( $renderableOrExpr ),
+			'1',
+			'0'
+		);
 
 		// Left Join with same table to see if input type has parser
 		$inputParserConditions = [

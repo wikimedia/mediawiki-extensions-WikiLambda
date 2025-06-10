@@ -23,6 +23,7 @@ use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Parser\Sanitizer;
 use MediaWiki\WikiMap\WikiMap;
 use Psr\Log\LoggerInterface;
 use Wikimedia\Parsoid\Ext\Arguments;
@@ -152,16 +153,33 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		// 		}
 		// 	}
 		// }
-
 		$cachedValue = $this->wikifunctionsClientStore->fetchFromFunctionCallCache( $clientCacheKey );
+
 		if ( $cachedValue ) {
 			// Good news, this request has already been cached; examine what it is
 
 			if ( $cachedValue['success'] === true ) {
-				// It was a successful run! Just return it.
+				// It was a successful run!
+				// If output type is Z89, return as HTML fragment;
+				if (
+					isset( $cachedValue['type'] )
+					&& $cachedValue['type'] === ZTypeRegistry::Z_HTML_FRAGMENT
+				) {
+					if ( $this->config->get( 'WikifunctionsEnableHTMLOutput' ) ) {
+						$this->statsFactoryTimer->setLabel( 'response', 'cached' )->stop();
+						$html = $this->getSanitizedHtmlFragment( $cachedValue['value'] ?? '' );
+						return HtmlPFragment::newFromHtmlString( $html, null );
+					} else {
+						$this->statsFactoryTimer->setLabel( 'response', 'cachedError' )->stop();
+						// TODO: Do we want to have a special kind of fragment for this?
+						// We don't want to retry generally,
+						// but maybe it needs tracking or a longer-but-not-infinite TTL?
+						return $this->createErrorfulFragment( 'wikilambda-functioncall-error-nonstringoutput' );
+					}
+				}
+				// Otherwise, return as literal
 				$this->statsFactoryTimer->setLabel( 'response', 'cached' )->stop();
-				// @phan-suppress-next-line PhanTypeArraySuspiciousNullable False positive
-				return WikifunctionsPFragment::newFromLiteral( $cachedValue['value'][0], null );
+				return WikifunctionsPFragment::newFromLiteral( $cachedValue['value'] ?? '', null );
 			}
 
 			// It failed for some reason; show the error message instead
@@ -184,29 +202,12 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 				\MediaWiki\Parser\ParserOutputStringSets::MODULE,
 				[ 'ext.wikilambda.inlineerrors' ]
 			);
-			// TODO: Switch to $extApi->createPageContentI18nFragment()? Except that returns a DocumentFragment
-			// Codex will not support inline rendering of error chips or error messages, so we need to
-			// add inline styles to align it inline with the body text and to make it scale properly.
-			$errorfulFragment = HtmlPFragment::newFromHtmlString(
-				'<span class="cdx-info-chip cdx-info-chip--error"'
-					. 'style="position:relative;line-height: var(--line-height-medium, 1.375rem); padding-left:calc('
-						. 'var(--font-size-medium, 1rem) + calc(var(--font-size-medium,1rem) - 6px));"'
-					. 'data-error-key="' . htmlspecialchars( $errorMessageKey ?? '' ) . '">'
-					. '<span class="cdx-info-chip__icon"'
-						. 'style="position:absolute;left:calc((var(--font-size-medium,1rem) - 2px) * .5);"'
-						. 'aria-hidden="true"></span>'
-					. '<span class="cdx-info-chip__text" style="font-size:var(--font-size-medium,1rem);">'
-						. wfMessage( 'wikilambda-visualeditor-wikifunctionscall-error' )->text()
-					. '</span>'
-				. '</span>',
-				null
-			);
 
 			$this->statsFactoryTimer->setLabel( 'response', 'cachedError' )->stop();
 
 			// TODO: Do we want to have a special kind of fragment for this? We don't want to retry generally,
 			// but maybe it needs tracking or a longer-but-not-infinite TTL?
-			return $errorfulFragment;
+			return $this->createErrorfulFragment( $errorMessageKey );
 		}
 
 		// At this point, we know our request hasn't yet been stored in the cache, so we need to trigger it,
@@ -479,5 +480,70 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 	 */
 	private function convertPFragmentToZFunctionCallParameter( PFragment $value, ParsoidExtensionAPI $extApi ): string {
 		return $value->toRawText( $extApi );
+	}
+
+	/**
+	 * Decode and sanitize a possibly JSON-encoded HTML fragment string.
+	 *
+	 * @param string $value
+	 * @return string
+	 */
+	private function getSanitizedHtmlFragment( $value ) {
+		$html = $this->decodeHtmlFragmentValue( $value );
+		return $this->sanitizeHtmlFragment( $html );
+	}
+
+	/**
+	 * Decode a possibly JSON-encoded HTML fragment string.
+	 *
+	 * @param string $value
+	 * @return string
+	 */
+	private function decodeHtmlFragmentValue( $value ) {
+		if ( !is_string( $value ) || $value === '' ) {
+			return '';
+		}
+		// Try to decode as JSON, but only use the result if it's a string
+		$decoded = json_decode( $value, true );
+		if ( is_string( $decoded ) ) {
+			return $decoded;
+		}
+		// If not JSON or not a string, return as-is
+		return $value;
+	}
+
+	/**
+	 * Sanitize an HTML fragment string using MediaWiki Sanitizer.
+	 *
+	 * @param string $html
+	 * @return string
+	 */
+	private function sanitizeHtmlFragment( $html ) {
+		return Sanitizer::removeSomeTags( $html );
+	}
+
+	/**
+	 * Helper to create an error fragment for failed function calls.
+	 *
+	 * @param ?string $errorMessageKey
+	 * @return HtmlPFragment
+	 */
+	private function createErrorfulFragment( $errorMessageKey ) {
+		// Codex will not support inline rendering of error chips or error messages, so we need to
+		// add inline styles to align it inline with the body text and to make it scale properly.
+		return HtmlPFragment::newFromHtmlString(
+			'<span class="cdx-info-chip cdx-info-chip--error"'
+				. 'style="position:relative;line-height: var(--line-height-medium, 1.375rem); padding-left:calc('
+					. 'var(--font-size-medium, 1rem) + calc(var(--font-size-medium,1rem) - 6px));"'
+				. 'data-error-key="' . htmlspecialchars( $errorMessageKey ?? '' ) . '">'
+				. '<span class="cdx-info-chip__icon"'
+					. 'style="position:absolute;left:calc((var(--font-size-medium,1rem) - 2px) * .5);"'
+					. 'aria-hidden="true"></span>'
+				. '<span class="cdx-info-chip__text" style="font-size:var(--font-size-medium,1rem);">'
+					. wfMessage( 'wikilambda-visualeditor-wikifunctionscall-error' )->text()
+				. '</span>'
+			. '</span>',
+			null
+		);
 	}
 }

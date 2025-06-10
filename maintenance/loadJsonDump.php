@@ -62,7 +62,8 @@ class LoadJsonDump extends Maintenance {
 			$services->getWikiPageFactory(),
 			$services->getRevisionStore(),
 			$services->getUserGroupManager(),
-			LoggerFactory::getInstance( 'WikiLambda' )
+			LoggerFactory::getInstance( 'WikiLambda' ),
+			$services->getMainConfig(),
 		);
 
 		// Dump path:

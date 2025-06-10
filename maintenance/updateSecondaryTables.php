@@ -113,7 +113,8 @@ class UpdateSecondaryTables extends Maintenance {
 			$services->getWikiPageFactory(),
 			$services->getRevisionStore(),
 			$services->getUserGroupManager(),
-			LoggerFactory::getInstance( 'WikiLambda' )
+			LoggerFactory::getInstance( 'WikiLambda' ),
+			$services->getMainConfig(),
 		);
 		$this->dbProvider = $services->getDBLoadBalancerFactory();
 		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );

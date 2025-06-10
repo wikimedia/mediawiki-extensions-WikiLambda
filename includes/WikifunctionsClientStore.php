@@ -147,10 +147,11 @@ class WikifunctionsClientStore {
 	 * Store the given Function call in the cache, given its cache key.
 	 *
 	 * @param string $clientCacheKey
-	 * @return ?array{success:bool, value:?string[], errorMessageKey:?string}
+	 * @return ?array{success:bool, value:?string, type:?string, errorMessageKey:?string}
 	 */
 	public function fetchFromFunctionCallCache( string $clientCacheKey ): ?array {
 		$cachedValue = $this->objectCache->get( $clientCacheKey );
+
 		if ( !$cachedValue ) {
 			$this->logger->info( __METHOD__ . ' cache miss while fetching {key}', [ 'key' => $clientCacheKey ] );
 			return null;
@@ -183,12 +184,13 @@ class WikifunctionsClientStore {
 		if ( $cachedValue['success'] ) {
 			if (
 				!array_key_exists( 'value', $cachedValue ) ||
-				!is_array( $cachedValue['value'] ) ||
-				!is_string( $cachedValue['value'][0] )
+				!array_key_exists( 'type', $cachedValue ) ||
+				!is_string( $cachedValue['value'] ) ||
+				!is_string( $cachedValue['type'] )
 			) {
 				// Corrupted/invalid cache entry; delete it
 				$this->logger->warning(
-					'WikiLambda client cache entry for {key} is missing value string[], deleting it',
+					'WikiLambda client cache entry for {key} is missing value or type, deleting it',
 					[
 						'key' => $clientCacheKey
 					]

@@ -518,4 +518,56 @@ describe( 'FunctionInputPreview', () => {
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
 		expect( wrapper.find( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( 'some response' );
 	} );
+
+	it( 'executes a function call with Z89/HTML fragment and displays the HTML fragment value', async () => {
+		// Mock output type as Z89 (HTML fragment)
+		store.getOutputTypeOfFunctionZid = createGettersWithFunctionsMock( 'Z89' );
+		// Mock the function call response to return a Z89 object
+		postMock = jest.fn( () => new Promise( ( resolve ) => {
+			resolve( {
+				wikilambda_function_call: {
+					data: JSON.stringify( {
+						[ Constants.Z_OBJECT_TYPE ]: Constants.Z_RESPONSEENVELOPE,
+						[ Constants.Z_RESPONSEENVELOPE_VALUE ]: {
+							Z1K1: 'Z89',
+							Z89K1: '<b>HTML Fragment</b>'
+						}
+					} )
+				}
+			} );
+		} ) );
+		mw.Api = jest.fn( () => ( {
+			post: postMock
+		} ) );
+
+		const wrapper = shallowMount( FunctionInputPreview, {
+			props: {
+				payload: { functionZid, params: [ { value: 'a', type: 'Z6' } ] }
+			},
+			global: {
+				stubs: {
+					'cdx-accordion': false
+				}
+			}
+		} );
+
+		// Simulate opening the accordion
+		const accordion = wrapper.findComponent( { name: 'cdx-accordion' } );
+		await accordion.vm.$emit( 'update:modelValue', true );
+		expect( accordion.attributes( 'open' ) ).toBeDefined();
+
+		// Verify loading state and API call
+		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( true );
+		expect( postMock ).toHaveBeenCalledWith( {
+			action: 'wikilambda_function_call',
+			format: 'json',
+			formatversion: '2',
+			wikilambda_function_call_zobject: JSON.stringify( { Z1K1: 'Z7', Z7K1: functionZid, [ `${ functionZid }K1` ]: 'a' } ),
+			uselang: 'en'
+		} );
+
+		// Wait for the result and verify it is displayed as the HTML fragment value
+		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
+		expect( wrapper.find( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( '<b>HTML Fragment</b>' );
+	} );
 } );

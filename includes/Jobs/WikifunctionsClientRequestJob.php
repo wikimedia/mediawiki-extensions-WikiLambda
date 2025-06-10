@@ -93,14 +93,14 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 
 		try {
 			$output = $this->remoteCall( $targetFunction, $arguments, $parseLang, $renderLang );
-
 			// We don't actually use the return value immediately, we rely on Parsoid to re-trigger the request
 			// and so use the cached value, so we just set() it.
 			$this->objectCache->set(
 				$clientCacheKey,
 				[
 					'success' => true,
-					'value' => $output
+					'value' => $output['value'],
+					'type' => $output['type'],
 				],
 				$this->objectCache::TTL_WEEK
 			);
@@ -188,7 +188,10 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 		$response = json_decode( $request->getContent() );
 
 		if ( $response && $responseStatus->isOK() ) {
-			return [ $response->value ];
+			return [
+				'value' => $response->value,
+				'type' => $response->type,
+			];
 		}
 
 		// If not OK, process error responses:

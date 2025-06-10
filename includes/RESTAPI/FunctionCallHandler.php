@@ -419,9 +419,11 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 
 		// Then, actually check the return Type
 		$targetReturnType = $targetFunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_RETURN_TYPE )->getZValue();
+
 		if (
-			// Type is always renderable (Z6)
+			// Type is always renderable (Z6 or Z89)
 			$targetReturnType !== ZTypeRegistry::Z_STRING &&
+			$targetReturnType !== ZTypeRegistry::Z_HTML_FRAGMENT &&
 			// Type is generic and we hope for the best (Z1)
 			$targetReturnType !== ZTypeRegistry::Z_OBJECT
 		) {
@@ -558,8 +560,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 		}
 
 		// Finally, return the values as JSON (if not already early-returned as an error)
-		$response = $this->getResponseFactory()->createJson( $response );
-		return $response;
+		return $this->getResponseFactory()->createJson( $response );
 	}
 
 	public function applyCacheControl( ResponseInterface $response ) {
@@ -875,7 +876,11 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 
 		// Response envelope value (Z22K1)
 		$responseValue = $response->getZValue();
-		if ( $responseValue->getZType() !== ZTypeRegistry::Z_STRING ) {
+		// If the response value is not a ZString or ZHtmlFragment, we can't handle it
+		if (
+			$responseValue->getZType() !== ZTypeRegistry::Z_STRING &&
+			$responseValue->getZType() !== ZTypeRegistry::Z_HTML_FRAGMENT
+		) {
 			// Log a debug message, Orchestrator returned a valid response but not a string
 			$errorMessage =
 				__METHOD__ . ' got a non-string output from the server of type {responseType} with call: {call}';
@@ -899,7 +904,11 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 
 		$span->setSpanStatus( SpanInterface::SPAN_STATUS_OK );
 		$span->end();
-		// SUCCESS! Return string output value:
-		return (object)[ 'value' => trim( $responseValue->getZValue() ) ];
+
+		// SUCCESS! if type is Z6 (string) or Z89 (HTML fragment), return the value
+		return (object)[
+			'value' => trim( $responseValue->getZValue() ),
+			'type' => $responseValue->getZType()
+		];
 	}
 }
