@@ -15,6 +15,7 @@ use GuzzleHttp\ClientInterface;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Utils\GitInfo;
 use Psr\Http\Message\ResponseInterface;
+use stdClass;
 use Wikimedia\ObjectCache\BagOStuff;
 use Wikimedia\Telemetry\TracerInterface;
 
@@ -31,6 +32,8 @@ class OrchestratorRequest {
 	public const FUNCTIONCALL_CACHE_KEY_PREFIX = 'WikiLambdaFunctionCall';
 
 	/**
+	 * The specialised request interface to control all network access to the function-orchestrator.
+	 *
 	 * @param ClientInterface $client GuzzleHttp Client used for requests
 	 */
 	public function __construct( ClientInterface $client ) {
@@ -48,20 +51,22 @@ class OrchestratorRequest {
 	}
 
 	/**
-	 * @param \stdClass|array $query
-	 * @param bool $bypassCache Whether to bypass the function call cache; this is only
-	 *   to be used for special circumstances, as it's potentially expensive.
-	 * @return string response object returned by orchestrator, down-cast to a string
+	 * Ask the function-orchestrator to evaluate a function call.
+	 *
+	 * @param stdClass|array $query
+	 * @param bool $bypassCache Whether to bypass the MediaWiki-side function call cache; this is
+	 *   only to be used for special circumstances, as it's potentially expensive.
+	 * @return string Response object (Z22) returned by orchestrator, down-cast to a string
 	 */
 	public function orchestrate( $query, $bypassCache = false ): string {
-		// TODO (T338242): Use postAsync here.
 		$guzzleClient = $this->guzzleClient;
-		$userAgentString = $this->userAgentString;
 
 		// (T365053) Propagate request tracing headers
 		$requestHeaders = $this->tracer->getRequestHeaders();
-		$requestHeaders['User-Agent'] = $userAgentString;
+		$requestHeaders['User-Agent'] = $this->userAgentString;
+
 		if ( $bypassCache ) {
+			// TODO (T338242): Use postAsync here.
 			return $this->guzzleClient->post( '/1/v1/evaluate/', [
 				'json' => $query,
 				'headers' => $requestHeaders,
@@ -76,6 +81,7 @@ class OrchestratorRequest {
 			// TODO (T338243): Is this the right timeout? Maybe TTL_DAY or TTL_MONTH instead?
 			$this->objectCache::TTL_WEEK,
 			static function () use ( $query, $guzzleClient, $requestHeaders ) {
+				// TODO (T338242): Use postAsync here.
 				return $guzzleClient->post( '/1/v1/evaluate/', [
 					'json' => $query,
 					'headers' => $requestHeaders,
@@ -85,7 +91,9 @@ class OrchestratorRequest {
 	}
 
 	/**
-	 * @return ResponseInterface response object returned by orchestrator
+	 * Ask the function-orchestrator for the list of programming languages with evaluators currently configured.
+	 *
+	 * @return ResponseInterface Response interface returned by orchestrator network call.
 	 */
 	public function getSupportedProgrammingLanguages(): ResponseInterface {
 		// TODO (T338242): Use getAsync here.
@@ -93,16 +101,15 @@ class OrchestratorRequest {
 	}
 
 	/**
-	 * @param \stdClass $Z2
-	 * @return ResponseInterface response object returned by orchestrator
+	 * Ask the function-orchestrator to store a Persistent ZObject (Z2) in its cache.
+	 *
+	 * @param stdClass $Z2 The ZObject to persist to cache.
+	 * @return ResponseInterface Response interface returned by orchestrator network call.
 	 */
 	public function persistToCache( $Z2 ): ResponseInterface {
-		$guzzleClient = $this->guzzleClient;
-		$userAgentString = $this->userAgentString;
-
 		// (T365053) Propagate request tracing headers
 		$requestHeaders = $this->tracer->getRequestHeaders();
-		$requestHeaders['User-Agent'] = $userAgentString;
+		$requestHeaders['User-Agent'] = $this->userAgentString;
 
 		$query = [
 			'ZObject' => $Z2,
