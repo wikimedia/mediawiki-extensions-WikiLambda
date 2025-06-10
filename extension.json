@@ -334,8 +334,7 @@
 			"styles": [],
 			"dependencies": [
 				"vue",
-				"mediawiki.api",
-				"mediawiki.Uri"
+				"mediawiki.api"
 			],
 			"codexComponents": [
 				"CdxIcon",
@@ -377,7 +376,6 @@
 				"mediawiki.router",
 				"mediawiki.storage",
 				"mediawiki.user",
-				"mediawiki.Uri",
 				"mediawiki.util",
 				"oojs"
 			],
