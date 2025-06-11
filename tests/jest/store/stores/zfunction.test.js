@@ -716,6 +716,7 @@ describe( 'zFunction Pinia store', () => {
 					action: 'query',
 					list: 'wikilambdafn_search',
 					format: 'json',
+					formatversion: '2',
 					wikilambdafn_zfunction_id: 'Z801',
 					wikilambdafn_type: 'Z20',
 					wikilambdafn_limit: 100
@@ -732,6 +733,7 @@ describe( 'zFunction Pinia store', () => {
 					action: 'query',
 					list: 'wikilambdafn_search',
 					format: 'json',
+					formatversion: '2',
 					wikilambdafn_zfunction_id: 'Z801',
 					wikilambdafn_type: 'Z14',
 					wikilambdafn_limit: 100

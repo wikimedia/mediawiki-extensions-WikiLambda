@@ -158,7 +158,7 @@ describe( 'Wikidata Properties Pinia store', () => {
 				// eslint-disable-next-line n/no-unsupported-features/node-builtins
 				global.fetch = fetchMock;
 
-				const params = 'origin=*&action=wbgetentities&format=json&languages=en&languagefallback=true&ids=P333333%7CP444444';
+				const params = 'origin=*&action=wbgetentities&format=json&formatversion=2&languages=en&languagefallback=true&ids=P333333%7CP444444';
 				const expectedUrl = `${ Constants.WIKIDATA_BASE_URL }/w/api.php?${ params }`;
 
 				const promise = store.fetchProperties( { ids: properties } );
@@ -205,7 +205,7 @@ describe( 'Wikidata Properties Pinia store', () => {
 				// eslint-disable-next-line n/no-unsupported-features/node-builtins
 				global.fetch = fetchMock;
 
-				const params = 'origin=*&action=wbgetentities&format=json&languages=en&languagefallback=true&ids=P333333%7CP444444';
+				const params = 'origin=*&action=wbgetentities&format=json&formatversion=2&languages=en&languagefallback=true&ids=P333333%7CP444444';
 				const expectedUrl = `${ Constants.WIKIDATA_BASE_URL }/w/api.php?${ params }`;
 
 				await store.fetchProperties( { ids: properties } );

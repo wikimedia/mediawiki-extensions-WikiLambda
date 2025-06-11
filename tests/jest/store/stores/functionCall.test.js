@@ -92,6 +92,8 @@ describe( 'functionCall Pinia store', () => {
 				expect( store.fetchZids ).toHaveBeenCalled();
 				expect( postMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_function_call',
+					format: 'json',
+					formatversion: '2',
 					wikilambda_function_call_zobject: JSON.stringify( canonicalFunctionCall ),
 					uselang: 'en'
 				} );
@@ -120,6 +122,8 @@ describe( 'functionCall Pinia store', () => {
 
 				expect( postMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_function_call',
+					format: 'json',
+					formatversion: '2',
 					wikilambda_function_call_zobject: JSON.stringify( canonicalFunctionCall ),
 					uselang: 'en'
 				} );

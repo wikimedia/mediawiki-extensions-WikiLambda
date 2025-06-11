@@ -245,6 +245,8 @@ describe( 'ztype Pinia store', () => {
 				store.runRenderer( payload );
 				expect( postMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_function_call',
+					format: 'json',
+					formatversion: '2',
 					wikilambda_function_call_zobject: JSON.stringify( functionCall ),
 					uselang: 'en'
 				} );
@@ -267,6 +269,8 @@ describe( 'ztype Pinia store', () => {
 				store.runParser( payload );
 				expect( postMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_function_call',
+					format: 'json',
+					formatversion: '2',
 					wikilambda_function_call_zobject: JSON.stringify( functionCall ),
 					uselang: 'en'
 				} );
@@ -288,6 +292,8 @@ describe( 'ztype Pinia store', () => {
 				store.runParser( payload );
 				expect( postMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_function_call',
+					format: 'json',
+					formatversion: '2',
 					wikilambda_function_call_zobject: JSON.stringify( functionCall ),
 					uselang: 'en'
 				} );
@@ -352,6 +358,8 @@ describe( 'ztype Pinia store', () => {
 
 				expect( postMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_function_call',
+					format: 'json',
+					formatversion: '2',
 					wikilambda_function_call_zobject: JSON.stringify( functionCall ),
 					uselang: 'en'
 				} );

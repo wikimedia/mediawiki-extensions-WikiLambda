@@ -561,6 +561,8 @@ describe( 'zobject submission Pinia store', () => {
 				expect( mw.Api ).toHaveBeenCalledTimes( 1 );
 				expect( postWithEditTokenMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_edit',
+					format: 'json',
+					formatversion: '2',
 					uselang: 'en',
 					summary: 'A summary',
 					zid: undefined,
@@ -577,6 +579,8 @@ describe( 'zobject submission Pinia store', () => {
 				expect( mw.Api ).toHaveBeenCalledTimes( 1 );
 				expect( postWithEditTokenMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_edit',
+					format: 'json',
+					formatversion: '2',
 					uselang: 'en',
 					summary: 'A summary',
 					zid: 'Z0',
@@ -596,6 +600,8 @@ describe( 'zobject submission Pinia store', () => {
 				expect( mw.Api ).toHaveBeenCalledTimes( 1 );
 				expect( postWithEditTokenMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_edit',
+					format: 'json',
+					formatversion: '2',
 					uselang: 'en',
 					summary: 'A summary',
 					zid: 'Z0',
@@ -622,6 +628,8 @@ describe( 'zobject submission Pinia store', () => {
 
 				expect( postWithEditTokenMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_edit',
+					format: 'json',
+					formatversion: '2',
 					uselang: 'en',
 					summary: 'A summary',
 					zid: 'Z0',
@@ -644,6 +652,8 @@ describe( 'zobject submission Pinia store', () => {
 
 				expect( postWithEditTokenMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_edit',
+					format: 'json',
+					formatversion: '2',
 					uselang: 'en',
 					summary: 'A summary',
 					zid: 'Z0',

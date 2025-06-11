@@ -238,7 +238,7 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 				// eslint-disable-next-line n/no-unsupported-features/node-builtins
 				global.fetch = fetchMock;
 
-				const params = 'origin=*&action=wbgetentities&format=json&languages=en&languagefallback=true&ids=L333333%7CL444444';
+				const params = 'origin=*&action=wbgetentities&format=json&formatversion=2&languages=en&languagefallback=true&ids=L333333%7CL444444';
 				const expectedUrl = `${ Constants.WIKIDATA_BASE_URL }/w/api.php?${ params }`;
 
 				const promise = store.fetchLexemes( { ids: lexemes } );
@@ -285,7 +285,7 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 				// eslint-disable-next-line n/no-unsupported-features/node-builtins
 				global.fetch = fetchMock;
 
-				const params = 'origin=*&action=wbgetentities&format=json&languages=en&languagefallback=true&ids=L333333%7CL444444';
+				const params = 'origin=*&action=wbgetentities&format=json&formatversion=2&languages=en&languagefallback=true&ids=L333333%7CL444444';
 				const expectedUrl = `${ Constants.WIKIDATA_BASE_URL }/w/api.php?${ params }`;
 
 				await store.fetchItems( { ids: items } );

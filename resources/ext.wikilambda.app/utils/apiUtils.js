@@ -45,6 +45,8 @@ const apiUtils = {
 		return new Promise( ( resolve, reject ) => {
 			api.post( {
 				action: 'wikilambda_function_call',
+				format: 'json',
+				formatversion: '2',
 				wikilambda_function_call_zobject: canonicalJson,
 				uselang: payload.language
 			} )
@@ -80,6 +82,8 @@ const apiUtils = {
 		return new Promise( ( resolve, reject ) => {
 			api.postWithEditToken( {
 				action: 'wikilambda_edit',
+				format: 'json',
+				formatversion: '2',
 				summary: payload.summary || '',
 				zid: payload.zid,
 				zobject: JSON.stringify( payload.zobject ),
@@ -111,6 +115,7 @@ const apiUtils = {
 				action: 'query',
 				list: 'wikilambdaload_zobjects',
 				format: 'json',
+				formatversion: '2',
 				wikilambdaload_zids: payload.zids,
 				wikilambdaload_revisions: payload.revisions,
 				wikilambdaload_language: payload.language,
@@ -144,6 +149,8 @@ const apiUtils = {
 			api.get( {
 				action: 'query',
 				list: 'wikilambdasearch_labels',
+				format: 'json',
+				formatversion: '2',
 				wikilambdasearch_search: payload.input,
 				wikilambdasearch_type: payload.types ? payload.types.join( '|' ) : undefined,
 				wikilambdasearch_return_type: payload.returnTypes ? payload.returnTypes.join( '|' ) : undefined,
@@ -182,6 +189,8 @@ const apiUtils = {
 			api.get( {
 				action: 'query',
 				list: 'wikilambdasearch_functions',
+				format: 'json',
+				formatversion: '2',
 				wikilambdasearch_functions_search: payload.search,
 				wikilambdasearch_functions_language: payload.language,
 				wikilambdasearch_functions_renderable: payload.renderable,
@@ -217,6 +226,8 @@ const apiUtils = {
 		return new Promise( ( resolve, reject ) => {
 			api.get( {
 				action: 'wikilambda_perform_test',
+				format: 'json',
+				formatversion: '2',
 				wikilambda_perform_test_zfunction: payload.functionZid,
 				wikilambda_perform_test_zimplementations: payload.implementations.join( '|' ),
 				wikilambda_perform_test_ztesters: payload.testers.join( '|' ),
@@ -254,6 +265,7 @@ const apiUtils = {
 				action: 'query',
 				list: 'wikilambdafn_search',
 				format: 'json',
+				formatversion: '2',
 				wikilambdafn_zfunction_id: payload.functionZid,
 				wikilambdafn_type: payload.type,
 				wikilambdafn_limit: Constants.API_LIMIT_MAX
@@ -279,6 +291,7 @@ const apiUtils = {
 			origin: '*',
 			action: 'wbsearchentities',
 			format: 'json',
+			formatversion: '2',
 			language: payload.language,
 			uselang: payload.language,
 			search: payload.search,
@@ -311,6 +324,7 @@ const apiUtils = {
 			origin: '*',
 			action: 'wbgetentities',
 			format: 'json',
+			formatversion: '2',
 			languages: [ payload.language ],
 			languagefallback: true,
 			ids: payload.ids

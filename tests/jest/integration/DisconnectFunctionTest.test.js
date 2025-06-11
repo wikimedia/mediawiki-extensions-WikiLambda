@@ -55,6 +55,8 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 		// ASSERT: Correct ZObject was posted to the API.
 		expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {
 			action: 'wikilambda_edit',
+			format: 'json',
+			formatversion: '2',
 			uselang: 'en',
 			summary: 'Removed $1 from the approved list of test cases',
 			zid: functionZid,

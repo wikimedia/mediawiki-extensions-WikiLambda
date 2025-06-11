@@ -130,6 +130,8 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		// ASSERT: Correct ZObject was posted to the API.
 		expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {
 			action: 'wikilambda_edit',
+			format: 'json',
+			formatversion: '2',
 			uselang: 'en',
 			summary: '',
 			zid: undefined,

@@ -81,6 +81,8 @@ describe( 'WikiLambda frontend, running a function on Run Function Special page'
 		await waitFor( () => expect( apiPostWithFunctionCallMock ).toHaveBeenCalledTimes( 1 ) );
 		expect( apiPostWithFunctionCallMock ).toHaveBeenCalledWith( {
 			action: 'wikilambda_function_call',
+			format: 'json',
+			formatversion: '2',
 			uselang: 'en',
 			wikilambda_function_call_zobject: JSON.stringify( expectedFunctionCallPostedToApi )
 		} );

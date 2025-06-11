@@ -288,6 +288,8 @@ describe( 'testResults Pinia store', () => {
 
 				expect( getMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_perform_test',
+					format: 'json',
+					formatversion: '2',
 					uselang: 'en',
 					wikilambda_perform_test_zfunction: zFunctionId,
 					wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
@@ -320,6 +322,8 @@ describe( 'testResults Pinia store', () => {
 
 				expect( getMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_perform_test',
+					format: 'json',
+					formatversion: '2',
 					uselang: 'en',
 					wikilambda_perform_test_zfunction: zFunctionId,
 					wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
@@ -386,6 +390,8 @@ describe( 'testResults Pinia store', () => {
 
 				expect( getMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_perform_test',
+					format: 'json',
+					formatversion: '2',
 					uselang: 'en',
 					wikilambda_perform_test_zfunction: zFunctionId,
 					wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
@@ -447,6 +453,8 @@ describe( 'testResults Pinia store', () => {
 
 				expect( getMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_perform_test',
+					format: 'json',
+					formatversion: '2',
 					uselang: 'en',
 					wikilambda_perform_test_zfunction: zFunctionId,
 					wikilambda_perform_test_zimplementations: [ JSON.stringify( currentObject ), 'Z10002' ].join( '|' ),
@@ -490,6 +498,8 @@ describe( 'testResults Pinia store', () => {
 				expect( expectedEncodedObject ).toBe( '{"lovely":"implementation🪈with🪈pipes"}' );
 				expect( getMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_perform_test',
+					format: 'json',
+					formatversion: '2',
 					uselang: 'en',
 					wikilambda_perform_test_zfunction: zFunctionId,
 					wikilambda_perform_test_zimplementations: [ expectedEncodedObject, 'Z10002' ].join( '|' ),

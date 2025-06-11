@@ -590,7 +590,13 @@ describe( 'library Pinia store', () => {
 				expect( searchFunctionsGetMock ).toHaveBeenCalledWith( {
 					action: 'query',
 					list: 'wikilambdasearch_functions',
+					format: 'json',
+					formatversion: '2',
+					wikilambdasearch_functions_continue: undefined,
+					wikilambdasearch_functions_input_types: undefined,
 					wikilambdasearch_functions_language: 'en',
+					wikilambdasearch_functions_limit: undefined,
+					wikilambdasearch_functions_output_type: undefined,
 					wikilambdasearch_functions_renderable: true,
 					wikilambdasearch_functions_search: 'Test'
 				} );
@@ -713,6 +719,7 @@ describe( 'library Pinia store', () => {
 						action: 'query',
 						list: 'wikilambdaload_zobjects',
 						format: 'json',
+						formatversion: '2',
 						wikilambdaload_zids: 'Z1',
 						wikilambdaload_language: 'en',
 						wikilambdaload_get_dependencies: 'true'
@@ -721,6 +728,7 @@ describe( 'library Pinia store', () => {
 						action: 'query',
 						list: 'wikilambdaload_zobjects',
 						format: 'json',
+						formatversion: '2',
 						wikilambdaload_zids: 'Z1002',
 						wikilambdaload_language: 'en',
 						wikilambdaload_get_dependencies: 'true'
@@ -738,6 +746,7 @@ describe( 'library Pinia store', () => {
 						action: 'query',
 						list: 'wikilambdaload_zobjects',
 						format: 'json',
+						formatversion: '2',
 						wikilambdaload_zids: expectedWikiLambdaloadZids,
 						wikilambdaload_language: 'en',
 						wikilambdaload_get_dependencies: 'true'
@@ -746,6 +755,7 @@ describe( 'library Pinia store', () => {
 						action: 'query',
 						list: 'wikilambdaload_zobjects',
 						format: 'json',
+						formatversion: '2',
 						wikilambdaload_zids: 'Z1002',
 						wikilambdaload_language: 'en',
 						wikilambdaload_get_dependencies: 'true'
@@ -777,6 +787,7 @@ describe( 'library Pinia store', () => {
 						action: 'query',
 						list: 'wikilambdaload_zobjects',
 						format: 'json',
+						formatversion: '2',
 						wikilambdaload_zids: expectedWikiLambdaloadZids,
 						wikilambdaload_language: 'en',
 						wikilambdaload_get_dependencies: 'true'
@@ -785,6 +796,7 @@ describe( 'library Pinia store', () => {
 						action: 'query',
 						list: 'wikilambdaload_zobjects',
 						format: 'json',
+						formatversion: '2',
 						wikilambdaload_zids: 'Z1002',
 						wikilambdaload_language: 'en',
 						wikilambdaload_get_dependencies: 'true'
@@ -833,6 +845,7 @@ describe( 'library Pinia store', () => {
 						action: 'query',
 						list: 'wikilambdaload_zobjects',
 						format: 'json',
+						formatversion: '2',
 						wikilambdaload_zids: batch1.join( '|' ),
 						wikilambdaload_language: 'en',
 						wikilambdaload_get_dependencies: 'true'
@@ -841,6 +854,7 @@ describe( 'library Pinia store', () => {
 						action: 'query',
 						list: 'wikilambdaload_zobjects',
 						format: 'json',
+						formatversion: '2',
 						wikilambdaload_zids: batch2.join( '|' ),
 						wikilambdaload_language: 'en',
 						wikilambdaload_get_dependencies: 'true'
@@ -849,6 +863,7 @@ describe( 'library Pinia store', () => {
 						action: 'query',
 						list: 'wikilambdaload_zobjects',
 						format: 'json',
+						formatversion: '2',
 						wikilambdaload_zids: batch3.join( '|' ),
 						wikilambdaload_language: 'en',
 						wikilambdaload_get_dependencies: 'true'
@@ -938,8 +953,11 @@ describe( 'library Pinia store', () => {
 				expect( getMock ).toHaveBeenCalledWith( {
 					action: 'query',
 					list: 'wikilambdasearch_labels',
+					format: 'json',
+					formatversion: '2',
 					wikilambdasearch_continue: undefined,
 					wikilambdasearch_limit: 10,
+					wikilambdasearch_return_type: undefined,
 					wikilambdasearch_search: '',
 					wikilambdasearch_type: 'Z30000',
 					wikilambdasearch_language: 'en'

@@ -506,7 +506,7 @@ describe( 'Wikidata Entities Pinia store', () => {
 				const response = await store.lookupWikidataEntities( request );
 				expect( response ).toEqual( responseValue );
 
-				const params = `origin=*&action=wbsearchentities&format=json&language=en&uselang=en&search=${
+				const params = `origin=*&action=wbsearchentities&format=json&formatversion=2&language=en&uselang=en&search=${
 					request.search }&type=${ request.type }&limit=10&props=url`;
 				const getUrl = `${ Constants.WIKIDATA_BASE_URL }/w/api.php?${ params }`;
 				expect( fetchMock ).toHaveBeenCalledWith( getUrl );
