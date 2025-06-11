@@ -22,12 +22,16 @@ use MediaWiki\Html\Html;
 use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
+use MediaWiki\WikiMap\WikiMap;
 use Psr\Log\LoggerInterface;
 use Wikimedia\Parsoid\Ext\Arguments;
 use Wikimedia\Parsoid\Ext\ParsoidExtensionAPI;
 use Wikimedia\Parsoid\Ext\PFragmentHandler;
 use Wikimedia\Parsoid\Fragments\HtmlPFragment;
 use Wikimedia\Parsoid\Fragments\PFragment;
+use Wikimedia\Stats\Metrics\NullMetric;
+use Wikimedia\Stats\Metrics\TimingMetric;
 
 class WikifunctionsPFragmentHandler extends PFragmentHandler {
 
@@ -40,6 +44,10 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 	 */
 	private $wikifunctionsClientStore;
 	private LoggerInterface $logger;
+	/**
+	 * @var TimingMetric|NullMetric (might be a NullMetric in some circumstances)
+	 */
+	private $statsFactoryTimer;
 
 	public function __construct(
 		Config $config,
@@ -52,12 +60,20 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 
 		$this->wikifunctionsClientStore = WikiLambdaServices::getWikifunctionsClientStore();
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
+
+		$this->statsFactoryTimer = MediaWikiServices::getInstance()->getStatsFactory()
+			// Will end up as 'mediawiki.WikiLambdaClient.parsoid_to_fragment_handler_seconds{response=…}'
+			->withComponent( 'WikiLambdaClient' )
+			->getTiming( 'parsoid_to_fragment_handler_seconds' )
+			->setLabel( 'wiki', WikiMap::getCurrentWikiId() );
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	public function sourceToFragment( ParsoidExtensionAPI $extApi, Arguments $callArgs, bool $tagSyntax ) {
+		$this->statsFactoryTimer->start();
+
 		// Note: We can't hint this as `: PFragment|AsyncResult` as we're still in PHP 7.4-land
 		// If client mode isn't enabled on this wiki, there's nothing to do, just show an error message
 		if ( !$this->config->get( 'WikiLambdaEnableClientMode' ) ) {
@@ -69,6 +85,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 				]
 			)->text();
 
+			$this->statsFactoryTimer->setLabel( 'response', 'disabled' )->stop();
 			return WikifunctionsPFragment::newFromLiteral( $errorMsgString, null );
 		}
 
@@ -142,6 +159,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 
 			if ( $cachedValue['success'] === true ) {
 				// It was a successful run! Just return it.
+				$this->statsFactoryTimer->setLabel( 'response', 'cached' )->stop();
 				// @phan-suppress-next-line PhanTypeArraySuspiciousNullable False positive
 				return WikifunctionsPFragment::newFromLiteral( $cachedValue['value'][0], null );
 			}
@@ -183,6 +201,8 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 				null
 			);
 
+			$this->statsFactoryTimer->setLabel( 'response', 'cachedError' )->stop();
+
 			// TODO: Do we want to have a special kind of fragment for this? We don't want to retry generally,
 			// but maybe it needs tracking or a longer-but-not-infinite TTL?
 			return $errorfulFragment;
@@ -193,6 +213,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 
 		// Check if SRE have set this wiki (probably all wikis) temporarily to not try to use Wikifunctions.
 		if ( $this->config->get( 'WikiLambdaClientModeOffline' ) ) {
+			$this->statsFactoryTimer->setLabel( 'response', 'offline' )->stop();
 			return HtmlPFragment::newFromHtmlString( Html::errorBox(
 				wfMessage( 'wikilambda-fragment-disabled' )->text()
 			), null );
@@ -208,6 +229,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		$this->jobQueueGroup->lazyPush( $renderJob );
 
 		// As we're async, return a "sorry, no content yet" fragment
+		$this->statsFactoryTimer->setLabel( 'response', 'pending' )->stop();
 		return new WikifunctionsPendingFragment(
 			$extApi->getPageConfig()->getPageLanguageBcp47(), null
 		);
