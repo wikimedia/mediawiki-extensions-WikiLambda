@@ -281,6 +281,7 @@
 	"wikilambda-function-viewer-names-show-languages-button": "Mostra il nome in altre lingue",
 	"wikilambda-functioncall": "Chiamata di funzione",
 	"wikilambda-functioncall-error-message": "La funzione non è in grado di visualizzare un risultato. [[$1|Scopri di più]]",
+	"wikilambda-functioncall-error-message-system": "La funzione non è disponibile a causa di un problema di sistema. Il problema dovrebbe essere risolto a breve. [[$1|Scopri di più]]",
 	"wikilambda-functioncall-error-category": "Pagine con errori nelle chiamate a Wikifunzioni",
 	"wikilambda-functioncall-error-category-desc": "Pagine con chiamate a Wikifunzioni che restituiscono un errore generale",
 	"wikilambda-functioncall-error-disabled-category": "Pagine con chiamate Wikifunctions errate a causa del sistema disabilitato",

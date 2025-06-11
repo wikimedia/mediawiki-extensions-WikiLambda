@@ -49,6 +49,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-no-name": "Ei nimeä",
 	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Ladataan funktion tietoja...",
 	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Ei funktiota valittuna.",
+	"wikilambda-visualeditor-wikifunctionscall-error": "Sisältövirhe",
 	"wikilambda-visualeditor-wikifunctionscall-title": "Funktio",
 	"wikilambda-visualeditor-wikifunctionscall-preview-title": "Esikatselu",
 	"wikilambda-visualeditor-wikifunctionscall-preview-no-result": "Syötä arvot esikatsellaksesi tulosta.",
