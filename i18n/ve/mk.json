@@ -29,6 +29,7 @@
 	"wikilambda-recentchanges-filter-wl-pref": "Прикажи уредувања од Викифункции во моите набљудувани",
 	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Вчитувам",
 	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "На прегледот му требаше предолго време",
+	"wikilambda-visualeditor-wikifunctionscall-changedesc-title": "Промена во вносот на Викифункции",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Изберете можност",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Функција]] од Викифункции",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Прочитајте помалку",
@@ -47,5 +48,11 @@
 	"wikilambda-visualeditor-wikifunctionscall-no-name": "Нема име",
 	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Вчитувам податоци за функцијата",
 	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Не е избрана функција.",
-	"wikilambda-visualeditor-wikifunctionscall-title": "Функција"
+	"wikilambda-visualeditor-wikifunctionscall-title": "Функција",
+	"wikilambda-visualeditor-wikifunctionscall-preview-title": "Преглед",
+	"wikilambda-visualeditor-wikifunctionscall-preview-no-result": "Внесете вредности за да го прегледате исходот.",
+	"wikilambda-visualeditor-wikifunctionscall-preview-error": "Функцијата не може да прикаже исход. Обидете се подоцна.",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "Откажано",
+	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "Одново",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Откажи"
 }

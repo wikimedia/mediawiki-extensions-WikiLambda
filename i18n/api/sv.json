@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Sabelöga",
-			"WikiPhoenix"
+			"WikiPhoenix",
+			"Gkyziridis"
 		]
 	},
 	"apihelp-wikilambda_fetch-param-language": "Språket resultat ska returneras på.",

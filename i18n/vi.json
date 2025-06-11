@@ -7,7 +7,8 @@
 			"Nguyenphutrong2",
 			"Nguyễn Mạnh An",
 			"Thingofme",
-			"Yosari101"
+			"Yosari101",
+			"Matma Rex"
 		]
 	},
 	"wikilambda-desc": "Cho phép các wiki của Wikimedia sử dụng hàm với chức năng gọi các hàm được tạo ra, quản lý, và đánh giá tại wiki chung.",
@@ -52,10 +53,10 @@
 	"content-model-zobject": "Đối tượng WikiLambda",
 	"group-functioneer": "Kiểm hàm viên",
 	"group-functioneer-member": "{{GENDER:$1|}}kiểm hàm viên",
-	"group-functionmaintainer": "Bảo quản viên",
-	"group-functionmaintainer-member": "{{GENDER:$1|}}bảo quản viên",
+	"group-functionmaintainer": "Maintainers",
+	"group-functionmaintainer-member": "{{GENDER:$1|maintainer}}",
 	"grouppage-functioneer": "{{ns:project}}:Kiểm hàm viên",
-	"grouppage-functionmaintainer": "{{ns:project}}:Bảo quản viên",
+	"grouppage-functionmaintainer": "{{ns:project}}:Maintainers",
 	"right-wikilambda-connect-implementation": "kết nối trường hợp sử dụng đến hàm",
 	"right-wikilambda-connect-tester": "kết nối bài kiểm tra đến hàm",
 	"right-wikilambda-create": "Tạo các đối tượng mới",
