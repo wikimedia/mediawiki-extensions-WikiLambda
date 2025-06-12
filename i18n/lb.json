@@ -224,6 +224,8 @@
 	"wikilambda-function-viewer-names-show-languages-button": "Den Numm an enger anerer Sprooch weisen",
 	"wikilambda-functioncall": "Funktiounsopruff",
 	"wikilambda-functioncall-error-message": "Dës Funktioun ka kee Resultat uweisen. [[$1|Méi gewuer ginn]]",
+	"wikilambda-functioncall-error-message-bad-langs": "De Funktiounsopruff benotzt ongülteg Sproochcoden. Ännert den Artikel mam Quelltext-Editeur fir dat ze verbesseren. [[$1|Fir méi gewuer ze ginn]]",
+	"wikilambda-functioncall-error-message-disabled": "D'Wikifunctions-Funktioune sinn am Moment desaktivéiert a ginn deemnächst aktivéiert. [[$1|Méi gewuer ginn]]",
 	"wikilambda-functioncall-error-category": "Säite mat feelerhafte Wikifunctions-Opriff",
 	"wikilambda-functioncall-error-category-desc": "Säite mat Opriff vu Wikifunctions, déi zu engem allgemeng Feeler féieren",
 	"wikilambda-functioncall-error-invalid-zobject-category": "Säite mat Wikifunctions-Opriff vun ongültegen Objeten",

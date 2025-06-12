@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Derugon",
 			"EmDashUser002",
 			"JLTRY"
 		]
@@ -50,6 +51,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-no-name": "Pas de nom",
 	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Chargement des données de fonction",
 	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Aucune fonction sélectionnée.",
+	"wikilambda-visualeditor-wikifunctionscall-error": "Erreur de contenu",
 	"wikilambda-visualeditor-wikifunctionscall-title": "Fonction",
 	"wikilambda-visualeditor-wikifunctionscall-preview-title": "Aperçu",
 	"wikilambda-visualeditor-wikifunctionscall-preview-no-result": "Saisissez des valeurs pour prévisualiser le résultat.",
