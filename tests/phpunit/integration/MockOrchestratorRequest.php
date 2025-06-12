@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use GuzzleHttp\Psr7\Response;
+use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use Psr\Http\Message\ResponseInterface;
@@ -34,7 +35,7 @@ class MockOrchestratorRequest extends OrchestratorRequest {
 	/**
 	 * @inheritDoc
 	 */
-	public function orchestrate( $query, $bypassCache = false ): string {
+	public function orchestrate( $query, $bypassCache = false ): array {
 		$key = ZObjectUtils::makeCacheKeyFromZObject( $query );
 
 		// Strip out revision counts for referenced Objects, as local dev machines may differ from fresh CI installs
@@ -56,7 +57,10 @@ class MockOrchestratorRequest extends OrchestratorRequest {
 			$response = '"' . $response . '"';
 		}
 
-		return '{ "Z1K1": "Z22", "Z22K1": ' . $response . ', "Z22K2": "oopswedidnotdothisbityet" }';
+		return [
+			'result' => '{ "Z1K1": "Z22", "Z22K1": ' . $response . ', "Z22K2": "oopswedidnotdothisbityet" }',
+			'httpStatusCode' => HttpStatus::OK
+		];
 	}
 
 	/**

@@ -56,9 +56,10 @@ class OrchestratorRequest {
 	 * @param stdClass|array $query
 	 * @param bool $bypassCache Whether to bypass the MediaWiki-side function call cache; this is
 	 *   only to be used for special circumstances, as it's potentially expensive.
-	 * @return string Response object (Z22) returned by orchestrator, down-cast to a string
+	 * @return array containing Response object (Z22) returned by orchestrator, down-cast to a string
+	 *  and the actual http status code from the Orchestrator
 	 */
-	public function orchestrate( $query, $bypassCache = false ): string {
+	public function orchestrate( $query, $bypassCache = false ): array {
 		$guzzleClient = $this->guzzleClient;
 
 		// (T365053) Propagate request tracing headers
@@ -67,10 +68,7 @@ class OrchestratorRequest {
 
 		if ( $bypassCache ) {
 			// TODO (T338242): Use postAsync here.
-			return $this->guzzleClient->post( '/1/v1/evaluate/', [
-				'json' => $query,
-				'headers' => $requestHeaders,
-			] )->getBody()->getContents();
+			return $this->handleGuzzleRequestForEvaluate( $query, $requestHeaders );
 		}
 
 		return $this->objectCache->getWithSetCallback(
@@ -80,14 +78,36 @@ class OrchestratorRequest {
 			),
 			// TODO (T338243): Is this the right timeout? Maybe TTL_DAY or TTL_MONTH instead?
 			$this->objectCache::TTL_WEEK,
-			static function () use ( $query, $guzzleClient, $requestHeaders ) {
+			function () use ( $query, $guzzleClient, $requestHeaders ) {
 				// TODO (T338242): Use postAsync here.
-				return $guzzleClient->post( '/1/v1/evaluate/', [
-					'json' => $query,
-					'headers' => $requestHeaders,
-				] )->getBody()->getContents();
+				return $this->handleGuzzleRequestForEvaluate( $query, $requestHeaders );
 			}
 		);
+	}
+
+	/**
+	 * Helper function to handle client-side HTTP error codes.
+	 *
+	 * Guzzle throws an exception on any non-2xx status, in this case returned from the Orchestrator.
+	 * ''http_errors' => false' overrides this behavior so that users will continue to see zobject response body.
+	 * However for Client/Server exceptions, we still want exceptions to be thrown
+	 *
+	 * @param stdClass|array $query
+	 * @param array $requestHeaders
+	 * @return array containing Response object (Z22) returned by orchestrator, down-cast to a string
+	 * and the actual http status code from the Orchestrator
+	 */
+	private function handleGuzzleRequestForEvaluate( $query, $requestHeaders ) {
+		$response = $this->guzzleClient->post( '/1/v1/evaluate/', [
+			'json' => $query,
+			'headers' => $requestHeaders,
+			// http errors from Orchestrator will be suppressed so that they will not throw exceptions
+			'http_errors' => false
+		] );
+		$httpStatusCode = $response->getStatusCode();
+		$responseBody = $response->getBody()->getContents();
+
+		return [ 'result' => $responseBody, 'httpStatusCode' => $httpStatusCode ];
 	}
 
 	/**

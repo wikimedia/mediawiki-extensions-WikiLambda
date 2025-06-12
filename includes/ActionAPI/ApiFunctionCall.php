@@ -192,8 +192,9 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 
 		try {
 			$response = $work->execute();
-			$result['data'] = $response;
+			$result['data'] = $response['result'];
 			$result['success'] = true;
+			$httpStatusCode = $response['httpStatusCode'];
 			$span->setSpanStatus( SpanInterface::SPAN_STATUS_OK );
 		} catch ( ConnectException $exception ) {
 			$errorMessage = 'ApiFunctionCall failed due to a ConnectException: "{message}"';
@@ -250,7 +251,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 		}
 
 		$pageResult->addValue( [], $this->getModuleName(), $result );
-		$this->submitFunctionCallEvent( HttpStatus::OK, $function, $start );
+		$this->submitFunctionCallEvent( $httpStatusCode, $function, $start );
 	}
 
 	/**

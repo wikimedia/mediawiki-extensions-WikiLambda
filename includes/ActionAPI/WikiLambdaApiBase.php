@@ -203,7 +203,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 					}
 				]
 			);
-			$response = $work->execute();
+			$response = $work->execute()['result'];
 
 			$this->getLogger()->debug(
 				__METHOD__ . ' executed successfully',
