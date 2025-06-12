@@ -1,0 +1,26 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"group-functioneer": "فنگشنیر",
+	"group-functioneer-member": "{{GENDER:$1|فنگشنیر}}",
+	"wikilambda-reference": "حَوالہٕ",
+	"wikilambda-edit": "اؠڈِٹ",
+	"wikilambda-helplink-button": "مَدَتھ",
+	"wikilambda-special-listduplicateobjectlabels-language": "زَبان",
+	"wikilambda-summarylabel": "خُلاصہٕ:",
+	"wikilambda-languagelabel": "زَبان",
+	"wikilambda-editor-label-addlanguage-label": "زَبان ہند اِنتِخاب کَرُن",
+	"wikilambda-implementation-selector-code": "کوڈ",
+	"wikilambda-editor-tester-list-label": "ٹؠسٹ فہرست",
+	"wikilambda-tester-selector": "ٹؠسٹ اکھ چُنِیوٚ",
+	"wikilambda-tester-results-title": "ٹؠسٹ نٕتیٖجہٕ",
+	"wikilambda-tester-results-percentage-label": "کُل تعداد مُکمل ٹؠسٹن ہِیوٚنٛد",
+	"wikilambda-tester-run-testers": "تمام تر ٹؠسٹ چلٲوِو",
+	"wikilambda-tester-run-tester": "ٹؠسٹ چلٲوِو",
+	"wikilambda-optional": "اِختِیٲری",
+	"wikilambda-toast-close": "بَنٛد",
+	"wikilambda-about-widget-title": "مُتلِق",
+	"wikilambda-function-evaluator-result": "نَتیٖجہٕ",
+	"wikilambda-function-evaluator-result-details": "تَفصیٖل"
+}
