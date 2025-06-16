@@ -49,6 +49,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-no-name": "Нема име",
 	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Вчитувам податоци за функцијата",
 	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Не е избрана функција.",
+	"wikilambda-visualeditor-wikifunctionscall-error": "Грешка во содржината",
 	"wikilambda-visualeditor-wikifunctionscall-title": "Функција",
 	"wikilambda-visualeditor-wikifunctionscall-preview-title": "Преглед",
 	"wikilambda-visualeditor-wikifunctionscall-preview-no-result": "Внесете вредности за да го прегледате исходот.",

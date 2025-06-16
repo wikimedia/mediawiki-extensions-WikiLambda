@@ -14,5 +14,6 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "ইনপুট স্ট্রিং",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "প্রস্তাবিত ফাংশন",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser-empty": "অনুগ্রহ করে একটি মান লিখুন।",
+	"wikilambda-visualeditor-wikifunctionscall-error": "বিষয়বস্তু ত্রুটি",
 	"wikilambda-visualeditor-wikifunctionscall-title": "ফাংশন"
 }
