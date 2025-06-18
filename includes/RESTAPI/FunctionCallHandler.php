@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\RESTAPI;
 
+use Exception;
 use InvalidArgumentException;
 use JsonException;
 use MediaWiki\Api\ApiMain;
@@ -40,7 +41,6 @@ use MediaWiki\Rest\Response;
 use MediaWiki\Rest\ResponseInterface;
 use MediaWiki\Title\Title;
 use stdClass;
-use Throwable;
 use Wikimedia\ParamValidator\ParamValidator;
 use Wikimedia\Telemetry\SpanInterface;
 
@@ -749,7 +749,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 		// 1. Handle Exceptions thrown by ApiFunctionCall and throw Z_ERROR_API_FAILURE
 
 		// Using FauxRequest means ApiMain is internal and hence $api->execute()
-		// doesn't do any error handling. We need to catch any Throwables:
+		// doesn't do any error handling. We need to catch any Exceptions:
 		// * dieWithError: throws ApiUsageException with key="apierror-*"
 		// * dieWithZError: throws ApiUsageException with key="wikilambda-zerror"
 		// * other exceptions: throws MWException
@@ -787,7 +787,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 				] );
 			// Throw ZErrorException with Z_ERROR_API_FAILURE error:
 			throw new ZErrorException( ZErrorFactory::createApiFailureError( $errorMessage, $call ) );
-		} catch ( Throwable $e ) {
+		} catch ( Exception $e ) {
 			// Log unhandled exception thrown by ApiFunctionCall
 			$errorMessage = __METHOD__ . ' executed ApiFunctionCall which threw an unhandled exception: {error}';
 			$this->logger->error(

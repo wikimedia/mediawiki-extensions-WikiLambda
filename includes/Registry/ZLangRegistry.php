@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Registry;
 
+use Exception;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
@@ -102,7 +103,7 @@ class ZLangRegistry extends ZObjectRegistry {
 	public function isLanguageKnownGivenCode( $code ): bool {
 		try {
 			$this->getLanguageZidFromCode( $code );
-		} catch ( \Throwable $th ) {
+		} catch ( Exception ) {
 			return false;
 		}
 		return true;

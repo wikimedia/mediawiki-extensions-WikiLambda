@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use Exception;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
@@ -52,7 +53,7 @@ class ZErrorFactory {
 				} else {
 					self::$errorDescriptors = [];
 				}
-			} catch ( \Exception $e ) {
+			} catch ( Exception $e ) {
 				self::$errorDescriptors = [];
 			}
 		}

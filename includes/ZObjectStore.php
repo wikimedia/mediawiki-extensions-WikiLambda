@@ -422,7 +422,7 @@ class ZObjectStore {
 		$page = $this->wikiPageFactory->newFromTitle( $title );
 		try {
 			$status = $page->doUserEditContent( $content, $user, $summary, $flags );
-		} catch ( \Exception $e ) {
+		} catch ( Exception $e ) {
 			// Error: Database or a deeper MediaWiki error, e.g. a general editing rate limit
 
 			$this->logger->warning(
@@ -1906,7 +1906,7 @@ class ZObjectStore {
 			$this->logger->warning(
 				__METHOD__ . ' threw from ZObjectFactory; deleting: ' . $ze->getZErrorMessage(),
 				// Limit length to 10 KiB, to avoid jsonTruncated errors in production
-				[ 'throwable' => substr( var_export( $ze, true ), 0, 10240 ) ]
+				[ 'exception' => substr( var_export( $ze, true ), 0, 10240 ) ]
 			);
 
 			$dbw = $this->dbProvider->getPrimaryDatabase();
@@ -1914,12 +1914,12 @@ class ZObjectStore {
 				->deleteFrom( 'wikilambda_ztester_results' )
 				->where( $conditions )
 				->caller( __METHOD__ )->execute();
-		} catch ( \Throwable $th ) {
+		} catch ( Exception $e ) {
 			// Something's gone differently wrong, somehow
 			$this->logger->error(
-				__METHOD__ . ' threw a non-ZErrorException somehow: ' . $th->getMessage(),
+				__METHOD__ . ' threw a non-ZErrorException somehow: ' . $e->getMessage(),
 				// Limit length to 10 KiB, to avoid jsonTruncated errors in production
-				[ 'throwable' => substr( var_export( $th, true ), 0, 10240 ) ]
+				[ 'exception' => substr( var_export( $e, true ), 0, 10240 ) ]
 			);
 		}
 
