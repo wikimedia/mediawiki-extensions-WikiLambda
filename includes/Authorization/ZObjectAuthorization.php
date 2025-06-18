@@ -335,14 +335,14 @@ class ZObjectAuthorization implements LoggerAwareInterface {
 	/**
 	 * @inheritDoc
 	 */
-	public function setLogger( LoggerInterface $logger ) {
+	public function setLogger( LoggerInterface $logger ): void {
 		$this->logger = $logger;
 	}
 
 	/**
 	 * @inheritDoc
 	 */
-	public function getLogger() {
+	public function getLogger(): LoggerInterface {
 		return $this->logger;
 	}
 }
