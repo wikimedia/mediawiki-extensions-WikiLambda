@@ -68,9 +68,7 @@ class ApiQueryZFunctionReferenceTest extends ApiTestCase {
 			[
 				'batchcomplete' => true,
 				'query' => [
-					'wikilambdafn_search' => [
-						false
-					]
+					'wikilambdafn_search' => []
 				]
 			], $result[0] );
 	}

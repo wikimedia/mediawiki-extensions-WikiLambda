@@ -61,10 +61,10 @@ class ApiQueryZFunctionReference extends WikiLambdaApiQueryGeneratorBase {
 		$result = $this->getResult();
 		$res = $this->zObjectStore->findReferencedZObjectsByZFunctionId( $zFunctionId, $type, $continue, $limit + 1 );
 
-		// If $res has no rows, then return false to indicate that no results were found.
-		// This is handled in the UI as an empty list.
+		// If $res has no rows, then return an empty array to indicate that no results were found.
 		if ( $res->numRows() === 0 ) {
-			$result->addValue( [ 'query', $this->getModuleName() ], null, false );
+			// Output an empty list under the module name
+			$result->addValue( [ 'query' ], $this->getModuleName(), [] );
 		}
 
 		$zids = [];
