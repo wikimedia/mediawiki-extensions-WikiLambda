@@ -99,11 +99,11 @@ class ZError extends ZObject {
 	/**
 	 * Get a human-readable one-line string that identifies the ZError information
 	 *
-	 * @param ?string $renderLanguageCode Language code in which to render the message; if not
+	 * @param string $renderLanguageCode Language code in which to render the message; if not
 	 *   provided, English is used by default.
 	 * @return string ZError message
 	 */
-	public function getMessage( ?string $renderLanguageCode = 'en' ): string {
+	public function getMessage( string $renderLanguageCode = 'en' ): string {
 		return ZErrorTypeRegistry::singleton()->getZErrorTypeLabel(
 			$this->getZErrorType(),
 			$renderLanguageCode
@@ -113,11 +113,11 @@ class ZError extends ZObject {
 	/**
 	 * Get a human-readable one-line string that identifies the ZError information
 	 *
-	 * @param ?string $renderLanguageCode Language code in which to render the message; if not
+	 * @param string $renderLanguageCode Language code in which to render the message; if not
 	 *   provided, English is used by default.
 	 * @return string ZError message
 	 */
-	public function getHtmlMessage( ?string $renderLanguageCode = 'en' ): string {
+	public function getHtmlMessage( string $renderLanguageCode = 'en' ): string {
 		$message = ZErrorTypeRegistry::singleton()->getZErrorTypeLabel(
 			$this->getZErrorType(),
 			$renderLanguageCode
