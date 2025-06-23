@@ -339,7 +339,8 @@ describe( 'ZObjectStringRenderer', () => {
 				parserZid,
 				zobject: newValue,
 				zlang: 'Z1002',
-				wait: true
+				wait: true,
+				signal: {}
 			} );
 		} );
 

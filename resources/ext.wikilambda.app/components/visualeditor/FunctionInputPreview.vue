@@ -124,11 +124,11 @@ module.exports = exports = defineComponent( {
 			 */
 			lastProcessedParams: null,
 			/**
-			 * API controller for managing function calls.
+			 * Abort Controller for managing function calls.
 			 *
 			 * @type {Object|null}
 			 */
-			apiController: null,
+			abortController: null,
 			/**
 			 * Collection of callbacks that produce default values for empty args
 			 * indexed by the argument type.
@@ -205,11 +205,11 @@ module.exports = exports = defineComponent( {
 
 		/**
 		 * Cancels the current function call by setting the `isCancelled` flag to `true`,
-		 * aborting the API controller if it exists and stopping the loading state.
+		 * aborting the Abort Controller if it exists and stopping the loading state.
 		 */
 		cancelFunctionCall: function () {
-			if ( this.apiController ) {
-				this.apiController.abort();
+			if ( this.abortController ) {
+				this.abortController.abort();
 			}
 			this.isCancelled = true;
 			this.isLoading = false;
@@ -374,12 +374,12 @@ module.exports = exports = defineComponent( {
 			const { functionZid, params } = payload;
 
 			// Cancel previous request and set up a new AbortController
-			if ( this.apiController ) {
-				this.apiController.abort();
+			if ( this.abortController ) {
+				this.abortController.abort();
 			}
 			// Create a new AbortController for the current function call
-			this.apiController = new AbortController();
-			const signal = this.apiController.signal;
+			this.abortController = new AbortController();
+			const signal = this.abortController.signal;
 
 			this.startLoading();
 
@@ -510,9 +510,9 @@ module.exports = exports = defineComponent( {
 		}
 	},
 	beforeUnmount() {
-		// Clean up the API controller if it exists
-		if ( this.apiController ) {
-			this.apiController.abort();
+		// Clean up the Abort Controller if it exists
+		if ( this.abortController ) {
+			this.abortController.abort();
 		}
 	}
 } );

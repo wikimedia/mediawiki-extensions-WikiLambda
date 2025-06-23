@@ -248,6 +248,7 @@ module.exports = {
 		 * @param {Object|Array|string} payload.zobject
 		 * @param {string} payload.zlang
 		 * @param {boolean} payload.wait whether this parser should block API calls
+		 * @param {AbortSignal} payload.signal optional signal to abort the request
 		 * @return {Promise}
 		 */
 		runParser: function ( payload ) {
@@ -269,6 +270,7 @@ module.exports = {
 			const parserPromise = new Promise( ( resolve, reject ) => {
 				resolver = { resolve, reject };
 			} );
+
 			// If we want this parser to block other API calls, we add to the parserPromise array
 			if ( payload.wait ) {
 				this.addParserPromise( parserPromise );
@@ -278,7 +280,8 @@ module.exports = {
 			// and return the response and the Promise resolver function
 			return performFunctionCall( {
 				functionCall: parserCall,
-				language: this.getUserLangCode
+				language: this.getUserLangCode,
+				signal: payload.signal
 			} ).then( ( response ) => {
 				response.resolver = resolver;
 				return response;

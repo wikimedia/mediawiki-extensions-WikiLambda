@@ -10,7 +10,6 @@
 		<cdx-text-input
 			:placeholder="placeholderValue"
 			:model-value="value"
-			:readonly="isParserRunning"
 			@update:model-value="handleUpdate"
 			@change="handleChange"
 		></cdx-text-input>
@@ -53,7 +52,8 @@ module.exports = exports = defineComponent( {
 	data() {
 		return {
 			areTestsFetched: false,
-			isParserRunning: false // Track whether the parser is running
+			isParserRunning: false, // Track whether the parser is running
+			parserAbortController: null // Track the AbortController for parser requests
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
@@ -158,12 +158,19 @@ module.exports = exports = defineComponent( {
 					}
 				}
 
+				// Cancel previous parser request if any
+				if ( this.parserAbortController ) {
+					this.parserAbortController.abort();
+				}
+				this.parserAbortController = new AbortController();
+
 				// With non-empty value: run parser function
 				this.runParser( {
 					parserZid: this.parserZid,
 					zobject: value,
 					zlang: this.getUserLangZid,
-					wait: true
+					wait: true,
+					signal: this.parserAbortController.signal
 				} ).then( ( data ) => {
 					const response = data.response[ Constants.Z_RESPONSEENVELOPE_VALUE ];
 					// Resolve the parser promise because we do not have other API calls
@@ -183,8 +190,11 @@ module.exports = exports = defineComponent( {
 						// Success: Resolve the promise
 						resolve();
 					}
-				} ).catch( () => {
-					// API error: reject with error message
+				} ).catch( ( error ) => {
+					// If the parser request was aborted, set the error code to 'abort'
+					if ( error.code === 'abort' ) {
+						reject( error.code );
+					}
 					reject( this.getErrorMessage );
 				} );
 			} );
@@ -218,10 +228,16 @@ module.exports = exports = defineComponent( {
 		/**
 		 * Handles validation error by emitting the appropriate events.
 		 *
-		 * @param {string} errorMessage - The error message to emit.
+		 * @param {string} error - The error message to emit.
 		 */
-		onValidateError: function ( errorMessage ) {
-			this.$emit( 'validate', { isValid: false, errorMessage } );
+		onValidateError: function ( error ) {
+			// If the error message is 'abort', do not emit an error
+			// because the validation was cancelled.
+			if ( error === 'abort' ) {
+				return;
+			}
+			// Otherwise, emit the error message
+			this.$emit( 'validate', { isValid: false, errorMessage: error } );
 		},
 
 		/**
@@ -236,7 +252,7 @@ module.exports = exports = defineComponent( {
 			this.onValidateStart();
 			return this.isValid( value )
 				.then( () => this.onValidateSuccess() )
-				.catch( ( errorMessage ) => this.onValidateError( errorMessage ) )
+				.catch( ( error ) => this.onValidateError( error ) )
 				.finally( () => this.onValidateEnd() );
 		},
 
@@ -303,6 +319,12 @@ module.exports = exports = defineComponent( {
 	mounted: function () {
 		this.validate( this.value );
 		this.generateRendererExamples();
+	},
+	beforeUnmount() {
+		// Cancel any ongoing parser request when the component is unmounted
+		if ( this.parserAbortController ) {
+			this.parserAbortController.abort();
+		}
 	}
 } );
 </script>

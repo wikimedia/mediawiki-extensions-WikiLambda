@@ -138,7 +138,8 @@ module.exports = exports = defineComponent( {
 			showExamplesDialog: false,
 			showExamplesLink: false,
 			showErrorFooter: false,
-			pendingPromises: []
+			pendingPromises: [],
+			parserAbortController: null // Track the AbortController for parser requests
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
@@ -336,11 +337,18 @@ module.exports = exports = defineComponent( {
 		 * in the global store.
 		 */
 		generateParsedValue: function () {
+			// Cancel previous parser request if any
+			if ( this.parserAbortController ) {
+				this.parserAbortController.abort();
+			}
+			this.parserAbortController = new AbortController();
+
 			this.runParser( {
 				parserZid: this.parserZid,
 				zobject: this.renderedValue,
 				zlang: this.getUserLangZid,
-				wait: true
+				wait: true,
+				signal: this.parserAbortController.signal
 			} ).then( ( data ) => {
 				this.clearRendererError();
 				const response = data.response[ Constants.Z_RESPONSEENVELOPE_VALUE ];
@@ -376,7 +384,11 @@ module.exports = exports = defineComponent( {
 						callback: () => data.resolver.resolve()
 					} );
 				}
-			} ).catch( () => {
+			} ).catch( ( error ) => {
+				// If the parser request was aborted, do not set an error
+				if ( error.code === 'abort' ) {
+					return;
+				}
 				this.clearRendererError();
 				this.setRendererError( this.$i18n( 'wikilambda-renderer-api-error' ).text() );
 			} );
@@ -516,6 +528,9 @@ module.exports = exports = defineComponent( {
 		this.pendingPromises.forEach( ( resolver ) => {
 			resolver.resolve();
 		} );
+		if ( this.parserAbortController ) {
+			this.parserAbortController.abort();
+		}
 	}
 } );
 </script>

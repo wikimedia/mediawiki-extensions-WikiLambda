@@ -64,7 +64,8 @@ describe( 'FunctionInputParser', () => {
 			parserZid: 'Z30020',
 			wait: true,
 			zlang: 'Z1002',
-			zobject: 'Non empty value'
+			zobject: 'Non empty value',
+			signal: {}
 		} );
 	} );
 
@@ -82,7 +83,8 @@ describe( 'FunctionInputParser', () => {
 			parserZid: 'Z30020',
 			wait: true,
 			zlang: 'Z1002',
-			zobject: ''
+			zobject: '',
+			signal: {}
 		} );
 	} );
 
@@ -104,7 +106,8 @@ describe( 'FunctionInputParser', () => {
 			parserZid: 'Z30020',
 			wait: true,
 			zlang: 'Z1002',
-			zobject: 'New value'
+			zobject: 'New value',
+			signal: {}
 		} );
 		await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( false ) );
 		expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ { isValid: true } ] );
@@ -131,7 +134,8 @@ describe( 'FunctionInputParser', () => {
 			parserZid: 'Z30020',
 			wait: true,
 			zlang: 'Z1002',
-			zobject: 'Invalid value'
+			zobject: 'Invalid value',
+			signal: {}
 		} );
 		await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( false ) );
 		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false } ] );
