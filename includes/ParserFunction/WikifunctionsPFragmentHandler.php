@@ -180,6 +180,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 
 			// Load ext.wikilambda.inlineerrors css
 			$extApi->getMetadata()->appendOutputStrings(
+				// @phan-suppress-next-line PhanTypeMismatchArgumentReal Parsoid's type hint should be updated
 				\MediaWiki\Parser\ParserOutputStringSets::MODULE,
 				[ 'ext.wikilambda.inlineerrors' ]
 			);
