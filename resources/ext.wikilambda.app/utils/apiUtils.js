@@ -36,6 +36,7 @@ const apiUtils = {
 	 * @param {Object} payload
 	 * @param {Object} payload.functionCall
 	 * @param {string} payload.language
+	 * @param {AbortSignal} payload.signal The AbortSignal to cancel the request
 	 * @return {Promise}
 	 */
 	performFunctionCall: function ( payload ) {
@@ -49,6 +50,9 @@ const apiUtils = {
 				formatversion: '2',
 				wikilambda_function_call_zobject: canonicalJson,
 				uselang: payload.language
+			}, {
+				// The AbortSignal to cancel the request
+				signal: payload.signal
 			} )
 				.then( ( data ) => {
 					const maybeNormalResponse = JSON.parse( data.wikilambda_function_call.data );

@@ -79,7 +79,8 @@ describe( 'WikiLambda frontend, running a function on Run Function Special page'
 
 		// ASSERT: The correct function call is sent to the API with the newly input values.
 		await waitFor( () => expect( apiPostWithFunctionCallMock ).toHaveBeenCalledTimes( 1 ) );
-		expect( apiPostWithFunctionCallMock ).toHaveBeenCalledWith( {
+		const call = apiPostWithFunctionCallMock.mock.calls[ 0 ][ 0 ];
+		expect( call ).toEqual( {
 			action: 'wikilambda_function_call',
 			format: 'json',
 			formatversion: '2',

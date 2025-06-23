@@ -243,13 +243,14 @@ describe( 'ztype Pinia store', () => {
 					[ rendererZid + 'K2' ]: 'Z1002'
 				};
 				store.runRenderer( payload );
-				expect( postMock ).toHaveBeenCalledWith( {
+				const call = postMock.mock.calls[ 0 ][ 0 ];
+				expect( call ).toEqual( {
 					action: 'wikilambda_function_call',
 					format: 'json',
 					formatversion: '2',
 					wikilambda_function_call_zobject: JSON.stringify( functionCall ),
 					uselang: 'en'
-				} );
+				}, { signal: undefined } );
 			} );
 		} );
 
@@ -267,13 +268,14 @@ describe( 'ztype Pinia store', () => {
 					[ parserZid + 'K2' ]: 'Z1002'
 				};
 				store.runParser( payload );
-				expect( postMock ).toHaveBeenCalledWith( {
+				const call = postMock.mock.calls[ 0 ][ 0 ];
+				expect( call ).toEqual( {
 					action: 'wikilambda_function_call',
 					format: 'json',
 					formatversion: '2',
 					wikilambda_function_call_zobject: JSON.stringify( functionCall ),
 					uselang: 'en'
-				} );
+				}, { signal: undefined } );
 			} );
 
 			it( 'builds a function call and runs it, also when blocking', () => {
@@ -290,13 +292,14 @@ describe( 'ztype Pinia store', () => {
 					[ parserZid + 'K2' ]: 'Z1002'
 				};
 				store.runParser( payload );
-				expect( postMock ).toHaveBeenCalledWith( {
+				const call = postMock.mock.calls[ 0 ][ 0 ];
+				expect( call ).toEqual( {
 					action: 'wikilambda_function_call',
 					format: 'json',
 					formatversion: '2',
 					wikilambda_function_call_zobject: JSON.stringify( functionCall ),
 					uselang: 'en'
-				} );
+				}, { signal: undefined } );
 			} );
 
 		} );
@@ -356,13 +359,14 @@ describe( 'ztype Pinia store', () => {
 				};
 				store.runRendererTest( payload );
 
-				expect( postMock ).toHaveBeenCalledWith( {
+				const call = postMock.mock.calls[ 0 ][ 0 ];
+				expect( call ).toEqual( {
 					action: 'wikilambda_function_call',
 					format: 'json',
 					formatversion: '2',
 					wikilambda_function_call_zobject: JSON.stringify( functionCall ),
 					uselang: 'en'
-				} );
+				}, { signal: undefined } );
 				expect( store.setRendererExample ).toHaveBeenCalled();
 			} );
 

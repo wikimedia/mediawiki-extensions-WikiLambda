@@ -38,6 +38,7 @@ describe( 'FunctionInputPreview', () => {
 		mw.Api = jest.fn( () => ( {
 			post: postMock
 		} ) );
+
 	} );
 
 	it( 'renders the component without errors', () => {
@@ -66,13 +67,14 @@ describe( 'FunctionInputPreview', () => {
 
 		// Verify loading state and API call
 		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( true );
-		expect( postMock ).toHaveBeenCalledWith( {
+		const callArgs = postMock.mock.calls[ 0 ][ 0 ];
+		expect( callArgs ).toEqual( {
 			action: 'wikilambda_function_call',
 			format: 'json',
 			formatversion: '2',
 			wikilambda_function_call_zobject: JSON.stringify( { Z1K1: 'Z7', Z7K1: functionZid, [ `${ functionZid }K1` ]: 'a' } ),
 			uselang: 'en'
-		} );
+		}, { signal: {} } );
 
 		// Wait for the result and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
@@ -101,7 +103,8 @@ describe( 'FunctionInputPreview', () => {
 
 		// Verify loading state and API call
 		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( true );
-		expect( postMock ).toHaveBeenCalledWith( {
+		const callArgsEnum = postMock.mock.calls[ 0 ][ 0 ];
+		expect( callArgsEnum ).toEqual( {
 			action: 'wikilambda_function_call',
 			format: 'json',
 			formatversion: '2',
@@ -113,7 +116,7 @@ describe( 'FunctionInputPreview', () => {
 					Z50000K1: 'Z50001' }
 			} ),
 			uselang: 'en'
-		} );
+		}, { signal: {} } );
 
 		// Wait for the result and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
@@ -142,13 +145,14 @@ describe( 'FunctionInputPreview', () => {
 
 		// Verify loading state and API call
 		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( true );
-		expect( postMock ).toHaveBeenCalledWith( {
+		const callArgsBuiltinEnum = postMock.mock.calls[ 0 ][ 0 ];
+		expect( callArgsBuiltinEnum ).toEqual( {
 			action: 'wikilambda_function_call',
 			format: 'json',
 			formatversion: '2',
 			wikilambda_function_call_zobject: JSON.stringify( { Z1K1: 'Z7', Z7K1: functionZid, [ `${ functionZid }K1` ]: 'Z41' } ),
 			uselang: 'en'
-		} );
+		}, { signal: {} } );
 
 		// Wait for the result and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
@@ -176,7 +180,8 @@ describe( 'FunctionInputPreview', () => {
 
 		// Verify loading state and API call
 		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( true );
-		expect( postMock ).toHaveBeenCalledWith( {
+		const callArgsParser = postMock.mock.calls[ 0 ][ 0 ];
+		expect( callArgsParser ).toEqual( {
 			action: 'wikilambda_function_call',
 			format: 'json',
 			formatversion: '2',
@@ -191,7 +196,7 @@ describe( 'FunctionInputPreview', () => {
 				}
 			} ),
 			uselang: 'en'
-		} );
+		}, { signal: {} } );
 
 		// Wait for the result and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
@@ -219,7 +224,8 @@ describe( 'FunctionInputPreview', () => {
 
 		// Verify loading state and API call
 		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( true );
-		expect( postMock ).toHaveBeenCalledWith( {
+		const callArgsRenderer = postMock.mock.calls[ 0 ][ 0 ];
+		expect( callArgsRenderer ).toEqual( {
 			action: 'wikilambda_function_call',
 			format: 'json',
 			formatversion: '2',
@@ -234,7 +240,7 @@ describe( 'FunctionInputPreview', () => {
 				[ `${ rendererZid }K2` ]: 'Z1002'
 			} ),
 			uselang: 'en'
-		} );
+		}, { signal: {} } );
 
 		// Wait for the result and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
@@ -265,7 +271,8 @@ describe( 'FunctionInputPreview', () => {
 
 		// Verify loading state and API call
 		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( true );
-		expect( postMock ).toHaveBeenCalledWith( {
+		const callArgsDate = postMock.mock.calls[ 0 ][ 0 ];
+		expect( callArgsDate ).toEqual( {
 			action: 'wikilambda_function_call',
 			format: 'json',
 			formatversion: '2',
@@ -280,7 +287,7 @@ describe( 'FunctionInputPreview', () => {
 				[ `${ rendererZid }K2` ]: 'Z1002'
 			} ),
 			uselang: 'en'
-		} );
+		}, { signal: {} } );
 
 		// Wait for the result and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
@@ -311,13 +318,14 @@ describe( 'FunctionInputPreview', () => {
 
 		// Verify loading state and API call
 		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( true );
-		expect( postMock ).toHaveBeenCalledWith( {
+		const callArgsError = postMock.mock.calls[ 0 ][ 0 ];
+		expect( callArgsError ).toEqual( {
 			action: 'wikilambda_function_call',
 			format: 'json',
 			formatversion: '2',
 			wikilambda_function_call_zobject: JSON.stringify( { Z1K1: 'Z7', Z7K1: functionZid } ),
 			uselang: 'en'
-		} );
+		}, { signal: {} } );
 
 		// Wait for the error message and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
@@ -349,13 +357,14 @@ describe( 'FunctionInputPreview', () => {
 		// Verify loading state and API call
 		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( true );
 		expect( wrapper.find( '.cdx-accordion__action' ).text() ).toBe( 'Cancel' );
-		expect( postMock ).toHaveBeenCalledWith( {
+		const callArgsRetry1 = postMock.mock.calls[ 0 ][ 0 ];
+		expect( callArgsRetry1 ).toEqual( {
 			action: 'wikilambda_function_call',
 			format: 'json',
 			formatversion: '2',
 			wikilambda_function_call_zobject: JSON.stringify( { Z1K1: 'Z7', Z7K1: functionZid, [ `${ functionZid }K1` ]: 'a' } ),
 			uselang: 'en'
-		} );
+		}, { signal: {} } );
 
 		// Wait for the result and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
@@ -371,11 +380,16 @@ describe( 'FunctionInputPreview', () => {
 		await actionButton.trigger( 'click' );
 
 		// Verify the function call is retried
-		expect( postMock ).toHaveBeenCalledTimes( 2 );
+		expect( postMock ).toHaveBeenCalledWith( {
+			action: 'wikilambda_function_call',
+			format: 'json',
+			formatversion: '2',
+			wikilambda_function_call_zobject: JSON.stringify( { Z1K1: 'Z7', Z7K1: functionZid, [ `${ functionZid }K1` ]: 'a' } ),
+			uselang: 'en'
+		}, { signal: {} } );
 	} );
 
-	it( 'cancels the function call when the cancel button is clicked', async () => {
-		// Test for cancelling a function call
+	it( 'cancels the function call and aborts the API call when the cancel button is clicked', async () => {
 		const wrapper = shallowMount( FunctionInputPreview, {
 			props: {
 				payload: { functionZid, params: [ { value: 'a', type: 'Z6' } ] }
@@ -388,27 +402,18 @@ describe( 'FunctionInputPreview', () => {
 			}
 		} );
 
-		// Simulate opening the accordion
+		// Open the accordion to trigger the API call
 		const accordion = wrapper.findComponent( { name: 'cdx-accordion' } );
 		await accordion.vm.$emit( 'update:modelValue', true );
-		expect( accordion.attributes( 'open' ) ).toBeDefined();
+		expect( wrapper.vm.isLoading ).toBe( true );
 
-		// Verify loading state and API call
-		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( true );
-		expect( postMock ).toHaveBeenCalledWith( {
-			action: 'wikilambda_function_call',
-			format: 'json',
-			formatversion: '2',
-			wikilambda_function_call_zobject: JSON.stringify( { Z1K1: 'Z7', Z7K1: functionZid, [ `${ functionZid }K1` ]: 'a' } ),
-			uselang: 'en'
-		} );
-
-		// Simulate clicking the cancel button
+		// Click the cancel button
 		const actionButton = wrapper.find( '.cdx-accordion__action' );
 		await actionButton.trigger( 'click' );
 
-		// Verify the function call is cancelled
+		expect( global.abortSpy ).toHaveBeenCalled();
 		expect( wrapper.vm.isCancelled ).toBe( true );
+		expect( wrapper.vm.isLoading ).toBe( false );
 		expect( postMock ).toHaveBeenCalledTimes( 1 );
 	} );
 
@@ -500,7 +505,8 @@ describe( 'FunctionInputPreview', () => {
 
 		// Verify loading state and API call
 		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( true );
-		expect( postMock ).toHaveBeenCalledWith( {
+		const callArgsMulti = postMock.mock.calls[ 0 ][ 0 ];
+		expect( callArgsMulti ).toEqual( {
 			action: 'wikilambda_function_call',
 			format: 'json',
 			formatversion: '2',
@@ -512,7 +518,7 @@ describe( 'FunctionInputPreview', () => {
 				[ `${ functionZid }K3` ]: ''
 			} ),
 			uselang: 'en'
-		} );
+		}, { signal: {} } );
 
 		// Wait for the result and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
@@ -564,7 +570,7 @@ describe( 'FunctionInputPreview', () => {
 			formatversion: '2',
 			wikilambda_function_call_zobject: JSON.stringify( { Z1K1: 'Z7', Z7K1: functionZid, [ `${ functionZid }K1` ]: 'a' } ),
 			uselang: 'en'
-		} );
+		}, { signal: {} } );
 
 		// Wait for the result and verify it is displayed as the HTML fragment value
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );

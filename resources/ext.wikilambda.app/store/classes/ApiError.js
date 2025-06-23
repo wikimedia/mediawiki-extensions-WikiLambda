@@ -98,15 +98,21 @@ class ApiError extends Error {
 	 * arguments into a more standard ApiError object. Since mw.Api uses jQuery
 	 * Deferreds, there can be up to four arguments:
 	 *
-	 * * jQuery AJAX failures:
-	 *   * code string is 'http'
-	 *   * arg2 contains an Object like { xhr: JQuery.jqXHR, textStatus: string, exception: string }
+	 * * ✅ jQuery AJAX failures:
+	 *   * `code` is the string `'http'`
+	 *   * `arg2` contains an object: `{ xhr: jQuery.jqXHR, textStatus: string, exception: string }`
+	 *   * If `textStatus === 'abort'`, the request was manually aborted (e.g., via `promise.abort()`)
 	 *
-	 * * API failures:
-	 *   * code string is 'internal_api_error_' + error type
-	 *   * arg2 contains a response Object like { error: { code: string, info: string, ... }, servedby: string }
-	 *   * arg3 contains the same as arg2
-	 *   * arg4 contains a JQuery.jqXHR object
+	 * * ✅ API-level errors:
+	 *   * `code` is a string like `'internal_api_error_<type>'`
+	 *   * `arg2` contains the API response object: `{ error: { code: string, info: string, ... }, servedby: string }`
+	 *   * `arg3` is usually the same as `arg2`
+	 *   * `arg4` is a `jQuery.jqXHR` object
+	 *
+	 * * ✅ AbortController-triggered cancellations (MediaWiki 1.44+):
+	 *   * `code` is a `DOMException` with `name === 'AbortError'`
+	 *   * `arg2` is the same `DOMException` object
+	 *   * This happens when a request is cancelled using an `AbortSignal` (`controller.abort()`)
 	 *
 	 * Use it as a mw.Api() Promise rejection callback function:
 	 *
@@ -132,14 +138,28 @@ class ApiError extends Error {
 	 *   } );
 	 * ```
 	 *
-	 * @param {string} code
-	 * @param {Object} arg2
-	 * @param {Object|undefined} _arg3
-	 * @param {Object|undefined} _arg4
+	 * @param {string|DOMException} code - Error code or AbortError instance
+	 * @param {Object|DOMException} arg2 - Second rejection arg, e.g. response or AbortError
+	 * @param {Object|undefined} _arg3 - Optional third argument (often same as arg2)
+	 * @param {Object|undefined} _arg4 - Optional jqXHR object
 	 * @return {ApiError}
 	 */
 	// eslint-disable-next-line no-unused-vars
 	static fromMwApiRejection( code, arg2, _arg3, _arg4 ) {
+		// Detect abort by promise.abort():
+		if ( code === 'http' && arg2 && arg2.textStatus === 'abort' ) {
+			// Return a special ApiError or throw, as desired
+			return new ApiError( 'abort', { error: { message: 'Request was aborted.' } } );
+		}
+		// Detect abort by AbortController:
+		if (
+			( code instanceof DOMException && code.name === 'AbortError' ) ||
+			( arg2 instanceof DOMException && arg2.name === 'AbortError' )
+		) {
+			return new ApiError( 'abort', { error: { message: 'Request was aborted.' } } );
+		}
+
+		// Detect other failures:
 		let response;
 		if ( code === 'http' ) {
 			// jQuery AJAX failure:

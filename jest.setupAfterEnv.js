@@ -9,11 +9,14 @@
 
 /* global beforeEach, afterEach */
 const { mockWindowLocation, restoreWindowLocation } = require( './tests/jest/fixtures/location.js' );
+const { mockAbortController, restoreAbortController } = require( './tests/jest/fixtures/abortController.js' );
 
 beforeEach( () => {
 	mockWindowLocation( 'http://localhost/' );
+	mockAbortController();
 } );
 
 afterEach( () => {
 	restoreWindowLocation();
+	restoreAbortController();
 } );

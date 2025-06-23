@@ -112,23 +112,23 @@ module.exports = exports = defineComponent( {
 			 */
 			isOpen: false,
 			/**
-			 * Flag to indicate if the function call was cancelled.
+			 * Flag to indicate if the function call was cancelled by the user.
 			 *
 			 * @type {boolean}
 			 */
 			isCancelled: false,
-			/**
-			 * Identifier for the current function call.
-			 *
-			 * @type {number}
-			 */
-			currentCallId: 0,
 			/**
 			 * Tracks the last processed params to avoid redundant function calls.
 			 *
 			 * @type {Array|null}
 			 */
 			lastProcessedParams: null,
+			/**
+			 * API controller for managing function calls.
+			 *
+			 * @type {Object|null}
+			 */
+			apiController: null,
 			/**
 			 * Collection of callbacks that produce default values for empty args
 			 * indexed by the argument type.
@@ -204,10 +204,13 @@ module.exports = exports = defineComponent( {
 		},
 
 		/**
-		 * Cancels the current function call by setting the `isCancelled` flag to `true`
-		 * and stopping the loading state.
+		 * Cancels the current function call by setting the `isCancelled` flag to `true`,
+		 * aborting the API controller if it exists and stopping the loading state.
 		 */
 		cancelFunctionCall: function () {
+			if ( this.apiController ) {
+				this.apiController.abort();
+			}
 			this.isCancelled = true;
 			this.isLoading = false;
 		},
@@ -359,33 +362,6 @@ module.exports = exports = defineComponent( {
 		},
 
 		/**
-		 * Constructs and performs the function call.
-		 * Sends the created function call object to the API.
-		 *
-		 * @param {string} functionZid - The ZID of the function to call.
-		 * @param {Array} params - The parameters for the function call.
-		 * @return {Promise} - A promise that resolves with the function call response.
-		 */
-		fetchFunctionCall: function ( functionZid, params ) {
-			const functionCall = this.constructFunctionCall( functionZid, params );
-			return performFunctionCall( {
-				functionCall,
-				language: this.getUserLangCode
-			} ).then( ( data ) => data.response[ Constants.Z_RESPONSEENVELOPE_VALUE ] );
-		},
-
-		/**
-		 * Validates if the given call ID corresponds to the current active call
-		 * and ensures the call has not been cancelled.
-		 *
-		 * @param {number} callId - The ID of the function call to validate.
-		 * @return {boolean} - Returns `true` if the call ID is valid and not cancelled, otherwise `false`.
-		 */
-		isValidCall: function ( callId ) {
-			return callId === this.currentCallId && !this.isCancelled;
-		},
-
-		/**
 		 * Executes a function call with the provided payload.
 		 * Handles API requests, error handling, and updates the component's state.
 		 *
@@ -397,36 +373,40 @@ module.exports = exports = defineComponent( {
 		runFunctionCall: function ( payload ) {
 			const { functionZid, params } = payload;
 
+			// Cancel previous request and set up a new AbortController
+			if ( this.apiController ) {
+				this.apiController.abort();
+			}
+			// Create a new AbortController for the current function call
+			this.apiController = new AbortController();
+			const signal = this.apiController.signal;
+
 			this.startLoading();
 
-			// Increment the call ID to track the latest call
-			const callId = ++this.currentCallId;
-
-			return this.fetchFunctionCall( functionZid, params )
+			return performFunctionCall( {
+				functionCall: this.constructFunctionCall( functionZid, params ),
+				language: this.getUserLangCode,
+				signal
+			} )
 				.then( ( data ) => {
-					// Only update the state if this is a valid call
-					if ( !this.isValidCall( callId ) ) {
-						return;
-					}
+					const response = data.response[ Constants.Z_RESPONSEENVELOPE_VALUE ];
 
 					// If the function call returns void or an unexpected type, set an error message
-					const type = this.typeToString( this.getZObjectType( data ) );
+					const type = this.typeToString( this.getZObjectType( response ) );
 					const isAllowedOutputType = type !== Constants.Z_STRING || type !== Constants.Z_HTML_FRAGMENT;
-					if ( data === Constants.Z_VOID || !isAllowedOutputType ) {
+					if ( response === Constants.Z_VOID || !isAllowedOutputType ) {
 						this.functionCallError = this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-preview-error' ).text();
 						this.isLoading = false;
 						return;
 					}
 					// Else, set the function call result
-					this.functionCallResult = this.getFunctionCallResult( type, data );
+					this.functionCallResult = this.getFunctionCallResult( type, response );
 					this.isLoading = false;
 				} )
 				.catch( ( error ) => {
-					// Only update the state if this is a valid call
-					if ( !this.isValidCall( callId ) ) {
+					if ( error.code === 'abort' ) {
 						return;
 					}
-					// Set a generic error message if the call fails
 					this.functionCallError = error.messageOrFallback( Constants.ERROR_CODES.UNKNOWN_EXEC_ERROR );
 					this.isLoading = false;
 				} );
@@ -527,6 +507,12 @@ module.exports = exports = defineComponent( {
 				this.processFunctionCall( newPayload );
 			},
 			deep: true
+		}
+	},
+	beforeUnmount() {
+		// Clean up the API controller if it exists
+		if ( this.apiController ) {
+			this.apiController.abort();
 		}
 	}
 } );

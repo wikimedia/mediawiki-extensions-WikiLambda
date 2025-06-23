@@ -51,7 +51,8 @@ describe( 'functionCall Pinia store', () => {
 
 				expect( store.setValueByKeyPath ).toHaveBeenCalled();
 				expect( store.fetchZids ).toHaveBeenCalled();
-				expect( postMock ).toHaveBeenCalledWith( {
+				const callArgs = postMock.mock.calls[ 0 ][ 0 ];
+				expect( callArgs ).toEqual( {
 					action: 'wikilambda_function_call',
 					format: 'json',
 					formatversion: '2',
@@ -81,7 +82,8 @@ describe( 'functionCall Pinia store', () => {
 
 				await store.callZFunction( { functionCall } );
 
-				expect( postMock ).toHaveBeenCalledWith( {
+				const callArgs = postMock.mock.calls[ 0 ][ 0 ];
+				expect( callArgs ).toEqual( {
 					action: 'wikilambda_function_call',
 					format: 'json',
 					formatversion: '2',
