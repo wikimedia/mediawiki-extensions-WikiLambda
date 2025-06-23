@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Amire80",
+			"Guycn2",
 			"YaronSh"
 		]
 	},
@@ -50,6 +51,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-no-name": "אין שם",
 	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "טעינת נתוני פונקציה",
 	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "לא נבחרה פונקציה.",
+	"wikilambda-visualeditor-wikifunctionscall-error": "שגיאת תוכן",
 	"wikilambda-visualeditor-wikifunctionscall-title": "פונקציה",
 	"wikilambda-visualeditor-wikifunctionscall-preview-title": "תצוגה מקדימה",
 	"wikilambda-visualeditor-wikifunctionscall-preview-no-result": "נא להזין ערכים כדי לראות תצוגה מקדימה של התוצאה.",

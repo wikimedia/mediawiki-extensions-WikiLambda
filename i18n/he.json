@@ -3,6 +3,7 @@
 		"authors": [
 			"Amire80",
 			"Freddy9",
+			"Guycn2",
 			"Xnet1234",
 			"YaronSh"
 		]
@@ -261,6 +262,13 @@
 	"wikilambda-function-viewer-names-show-languages-button": "הצגת השם בשפות אחרות",
 	"wikilambda-functioncall": "קריאה לפונקציה",
 	"wikilambda-functioncall-error-message": "הפונקציה אינה יכולה להציג תוצאה. [[$1|למידע נוסף]]",
+	"wikilambda-functioncall-error-message-unknown": "הפונקציה אינה קיימת. יש לערוך כדי להוסיף פונקציה חדשה. [[$1|מידע נוסף]]",
+	"wikilambda-functioncall-error-message-not-supported": "הפונקציה אינה נתמכת כעת. יש לערוך כדי להוסיף פונקציה חדשה. [[$1|מידע נוסף]]",
+	"wikilambda-functioncall-error-message-bad-inputs": "הפונקציה נקראה עם מספר שגוי של ערכי קלט. יש לערוך ולתקן את השגיאה. [[$1|מידע נוסף]]",
+	"wikilambda-functioncall-error-message-bad-input-type": "הפונקציה נקראה עם סוג קלט שגוי. יש לערוך ולתקן את השגיאה. [[$1|מידע נוסף]]",
+	"wikilambda-functioncall-error-message-bad-langs": "הקריאה לפונקציה משתמשת בקודי שפה בלתי תקינים. יש לערוך את הערך עם עורך קוד המקור כדי לתקן זאת. [[$1|מידע נוסף]]",
+	"wikilambda-functioncall-error-message-disabled": "תכונות Wikifunctions מושבתות כעת. הן יופעלו בקרוב. [[$1|מידע נוסף]]",
+	"wikilambda-functioncall-error-message-system": "הפונקציה אינה זמינה עקב תקלת מערכת. התקלה אמורה להיפתר בקרוב. [[$1|מידע נוסף]]",
 	"wikilambda-functioncall-error-category": "דפים עם קריאות לוויקיפונקציות שגרמו לשגיאות",
 	"wikilambda-functioncall-error-category-desc": "דפים עם קריאות לוויקיפונקציות שגרמו לשגיאה כללית",
 	"wikilambda-functioncall-error-disabled-category": "דפים עם קריאות לוויקיפונקציות שגרמו לשגיאות בשל מערכת מושבתת",
