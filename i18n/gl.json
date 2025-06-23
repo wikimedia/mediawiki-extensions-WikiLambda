@@ -5,5 +5,11 @@
 			"Toliño"
 		]
 	},
-	"wikilambda-cancel": "Cancelar"
+	"wikilambda-edit": "Editar",
+	"wikilambda-cancel": "Cancelar",
+	"wikilambda-savenew": "Gardar",
+	"wikilambda-languagelabel": "Lingua",
+	"wikilambda-editor-fn-step-function-about": "Acerca de",
+	"wikilambda-editor-fn-step-function-details": "Detalles",
+	"wikilambda-editor-default-name": "Sen título"
 }
