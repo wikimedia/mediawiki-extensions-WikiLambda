@@ -139,6 +139,6 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 			summary: 'my changes summary',
 			zid: functionZid,
 			zobject: JSON.stringify( expectedEditedFunctionPostedToApi )
-		} );
+		}, { signal: undefined } );
 	} );
 } );

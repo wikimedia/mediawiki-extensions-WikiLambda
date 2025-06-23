@@ -143,7 +143,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 				summary: expect.any( String ),
 				zid: undefined,
 				zobject: JSON.stringify( expectedNewCompositionImplementationPostedToApi )
-			} )
+			} ), { signal: undefined }
 		);
 	}, 50000 );
 } );

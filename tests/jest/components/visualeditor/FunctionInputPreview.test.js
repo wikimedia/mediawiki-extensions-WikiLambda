@@ -67,8 +67,7 @@ describe( 'FunctionInputPreview', () => {
 
 		// Verify loading state and API call
 		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( true );
-		const callArgs = postMock.mock.calls[ 0 ][ 0 ];
-		expect( callArgs ).toEqual( {
+		expect( postMock ).toHaveBeenCalledWith( {
 			action: 'wikilambda_function_call',
 			format: 'json',
 			formatversion: '2',
@@ -103,8 +102,7 @@ describe( 'FunctionInputPreview', () => {
 
 		// Verify loading state and API call
 		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( true );
-		const callArgsEnum = postMock.mock.calls[ 0 ][ 0 ];
-		expect( callArgsEnum ).toEqual( {
+		expect( postMock ).toHaveBeenCalledWith( {
 			action: 'wikilambda_function_call',
 			format: 'json',
 			formatversion: '2',
@@ -145,8 +143,7 @@ describe( 'FunctionInputPreview', () => {
 
 		// Verify loading state and API call
 		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( true );
-		const callArgsBuiltinEnum = postMock.mock.calls[ 0 ][ 0 ];
-		expect( callArgsBuiltinEnum ).toEqual( {
+		expect( postMock ).toHaveBeenCalledWith( {
 			action: 'wikilambda_function_call',
 			format: 'json',
 			formatversion: '2',
@@ -180,8 +177,7 @@ describe( 'FunctionInputPreview', () => {
 
 		// Verify loading state and API call
 		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( true );
-		const callArgsParser = postMock.mock.calls[ 0 ][ 0 ];
-		expect( callArgsParser ).toEqual( {
+		expect( postMock ).toHaveBeenCalledWith( {
 			action: 'wikilambda_function_call',
 			format: 'json',
 			formatversion: '2',
@@ -224,8 +220,7 @@ describe( 'FunctionInputPreview', () => {
 
 		// Verify loading state and API call
 		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( true );
-		const callArgsRenderer = postMock.mock.calls[ 0 ][ 0 ];
-		expect( callArgsRenderer ).toEqual( {
+		expect( postMock ).toHaveBeenCalledWith( {
 			action: 'wikilambda_function_call',
 			format: 'json',
 			formatversion: '2',
@@ -271,8 +266,7 @@ describe( 'FunctionInputPreview', () => {
 
 		// Verify loading state and API call
 		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( true );
-		const callArgsDate = postMock.mock.calls[ 0 ][ 0 ];
-		expect( callArgsDate ).toEqual( {
+		expect( postMock ).toHaveBeenCalledWith( {
 			action: 'wikilambda_function_call',
 			format: 'json',
 			formatversion: '2',
@@ -318,8 +312,7 @@ describe( 'FunctionInputPreview', () => {
 
 		// Verify loading state and API call
 		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( true );
-		const callArgsError = postMock.mock.calls[ 0 ][ 0 ];
-		expect( callArgsError ).toEqual( {
+		expect( postMock ).toHaveBeenCalledWith( {
 			action: 'wikilambda_function_call',
 			format: 'json',
 			formatversion: '2',
@@ -357,8 +350,7 @@ describe( 'FunctionInputPreview', () => {
 		// Verify loading state and API call
 		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( true );
 		expect( wrapper.find( '.cdx-accordion__action' ).text() ).toBe( 'Cancel' );
-		const callArgsRetry1 = postMock.mock.calls[ 0 ][ 0 ];
-		expect( callArgsRetry1 ).toEqual( {
+		expect( postMock ).toHaveBeenCalledWith( {
 			action: 'wikilambda_function_call',
 			format: 'json',
 			formatversion: '2',
@@ -505,8 +497,7 @@ describe( 'FunctionInputPreview', () => {
 
 		// Verify loading state and API call
 		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( true );
-		const callArgsMulti = postMock.mock.calls[ 0 ][ 0 ];
-		expect( callArgsMulti ).toEqual( {
+		expect( postMock ).toHaveBeenCalledWith( {
 			action: 'wikilambda_function_call',
 			format: 'json',
 			formatversion: '2',

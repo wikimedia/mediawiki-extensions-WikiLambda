@@ -295,7 +295,7 @@ describe( 'testResults Pinia store', () => {
 					wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
 					wikilambda_perform_test_ztesters: zTesters.join( '|' ),
 					wikilambda_perform_test_nocache: false
-				} );
+				}, { signal: undefined } );
 
 				expect( store.clearErrors ).toHaveBeenCalled();
 				expect( store.fetchZids ).toHaveBeenCalled();
@@ -329,7 +329,7 @@ describe( 'testResults Pinia store', () => {
 					wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
 					wikilambda_perform_test_ztesters: zTesters.join( '|' ),
 					wikilambda_perform_test_nocache: false
-				} );
+				}, { signal: undefined } );
 
 				expect( store.clearErrors ).toHaveBeenCalled();
 				expect( store.fetchZids ).toHaveBeenCalled();
@@ -397,7 +397,7 @@ describe( 'testResults Pinia store', () => {
 					wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
 					wikilambda_perform_test_ztesters: zTesters.join( '|' ),
 					wikilambda_perform_test_nocache: false
-				} );
+				}, { signal: undefined } );
 
 				expect( store.clearErrors ).toHaveBeenCalled();
 				expect( store.fetchZids ).not.toHaveBeenCalled();
@@ -460,7 +460,7 @@ describe( 'testResults Pinia store', () => {
 					wikilambda_perform_test_zimplementations: [ JSON.stringify( currentObject ), 'Z10002' ].join( '|' ),
 					wikilambda_perform_test_ztesters: zTesters.join( '|' ),
 					wikilambda_perform_test_nocache: false
-				} );
+				}, { signal: undefined } );
 				expect( store.clearErrors ).toHaveBeenCalled();
 				expect( store.fetchZids ).toHaveBeenCalled();
 			} );
@@ -505,7 +505,7 @@ describe( 'testResults Pinia store', () => {
 					wikilambda_perform_test_zimplementations: [ expectedEncodedObject, 'Z10002' ].join( '|' ),
 					wikilambda_perform_test_ztesters: zTesters.join( '|' ),
 					wikilambda_perform_test_nocache: false
-				} );
+				}, { signal: undefined } );
 				expect( store.clearErrors ).toHaveBeenCalled();
 				expect( store.fetchZids ).toHaveBeenCalled();
 			} );

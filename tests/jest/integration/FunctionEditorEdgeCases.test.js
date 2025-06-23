@@ -136,6 +136,6 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 			summary: '',
 			zid: undefined,
 			zobject: JSON.stringify( expectedNoLabelFunctionPostedToApi )
-		} );
+		}, { signal: undefined } );
 	} );
 } );

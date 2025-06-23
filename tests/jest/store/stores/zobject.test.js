@@ -897,7 +897,7 @@ describe( 'zobject Pinia store', () => {
 
 					await store.initializeRootZObject( 'Z10001' );
 
-					expect( getMock ).toHaveBeenCalledWith( expectedPayload );
+					expect( getMock ).toHaveBeenCalledWith( expectedPayload, { signal: undefined } );
 				} );
 
 				it( 'requests initial ZObject without revision', async () => {
@@ -925,7 +925,7 @@ describe( 'zobject Pinia store', () => {
 
 					await store.initializeRootZObject( 'Z10001' );
 
-					expect( getMock ).toHaveBeenCalledWith( expectedPayload );
+					expect( getMock ).toHaveBeenCalledWith( expectedPayload, { signal: undefined } );
 				} );
 
 				it( 'initializes empty description and alias fields', async () => {

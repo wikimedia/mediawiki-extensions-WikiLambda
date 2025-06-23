@@ -144,7 +144,7 @@ describe( 'WikiLambda frontend, create Wikidata enum', () => {
 			summary: 'my changes summary',
 			zid: undefined,
 			zobject: JSON.stringify( wikidataEnumZObject( Constants.Z_WIKIDATA_REFERENCE_LEXEME, [ 'L111111', 'L222222' ] ) )
-		} );
+		}, { signal: undefined } );
 	} );
 
 	it( 'swaps the Wikidata type and removes incompatible list items', async () => {
@@ -261,6 +261,6 @@ describe( 'WikiLambda frontend, create Wikidata enum', () => {
 			summary: 'my changes summary',
 			zid: undefined,
 			zobject: JSON.stringify( wikidataEnumZObject( Constants.Z_WIKIDATA_REFERENCE_ITEM, [ 'Q111111' ] ) )
-		} ) );
+		}, { signal: undefined } ) );
 	} );
 } );

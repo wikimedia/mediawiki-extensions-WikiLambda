@@ -243,8 +243,7 @@ describe( 'ztype Pinia store', () => {
 					[ rendererZid + 'K2' ]: 'Z1002'
 				};
 				store.runRenderer( payload );
-				const call = postMock.mock.calls[ 0 ][ 0 ];
-				expect( call ).toEqual( {
+				expect( postMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_function_call',
 					format: 'json',
 					formatversion: '2',
@@ -268,8 +267,7 @@ describe( 'ztype Pinia store', () => {
 					[ parserZid + 'K2' ]: 'Z1002'
 				};
 				store.runParser( payload );
-				const call = postMock.mock.calls[ 0 ][ 0 ];
-				expect( call ).toEqual( {
+				expect( postMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_function_call',
 					format: 'json',
 					formatversion: '2',
@@ -292,8 +290,7 @@ describe( 'ztype Pinia store', () => {
 					[ parserZid + 'K2' ]: 'Z1002'
 				};
 				store.runParser( payload );
-				const call = postMock.mock.calls[ 0 ][ 0 ];
-				expect( call ).toEqual( {
+				expect( postMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_function_call',
 					format: 'json',
 					formatversion: '2',
@@ -359,8 +356,7 @@ describe( 'ztype Pinia store', () => {
 				};
 				store.runRendererTest( payload );
 
-				const call = postMock.mock.calls[ 0 ][ 0 ];
-				expect( call ).toEqual( {
+				expect( postMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_function_call',
 					format: 'json',
 					formatversion: '2',

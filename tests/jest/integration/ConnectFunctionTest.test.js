@@ -69,6 +69,6 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 						[ implementationByCompositionZid ], [ existingFailedTesterZid, existingSuccessTesterZid ]
 					)
 				)
-		} ) );
+		}, { signal: undefined } ) );
 	} );
 } );

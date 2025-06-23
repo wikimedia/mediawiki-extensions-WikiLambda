@@ -609,7 +609,7 @@ describe( 'zobject submission Pinia store', () => {
 					summary: 'A summary',
 					zid: undefined,
 					zobject: JSON.stringify( zobject )
-				} );
+				}, { signal: undefined } );
 			} );
 
 			it( 'submits an existing zobject to edit', () => {
@@ -633,7 +633,7 @@ describe( 'zobject submission Pinia store', () => {
 					summary: 'A summary',
 					zid: 'Z0',
 					zobject: JSON.stringify( zobject )
-				} );
+				}, { signal: undefined } );
 			} );
 
 			it( 'submits an object after calling transform', () => {
@@ -660,7 +660,7 @@ describe( 'zobject submission Pinia store', () => {
 					summary: 'A summary',
 					zid: 'Z0',
 					zobject: JSON.stringify( zobject )
-				} );
+				}, { signal: undefined } );
 			} );
 
 			it( 'submits a function after disconnecting implementations and testers', () => {
@@ -687,7 +687,7 @@ describe( 'zobject submission Pinia store', () => {
 					summary: 'A summary',
 					zid: 'Z0',
 					zobject: JSON.stringify( zobject )
-				} );
+				}, { signal: undefined } );
 			} );
 
 			it( 'submits an object after cleaning empty monolingual objects', () => {
@@ -711,7 +711,7 @@ describe( 'zobject submission Pinia store', () => {
 					summary: 'A summary',
 					zid: 'Z0',
 					zobject: JSON.stringify( zobject.clean )
-				} );
+				}, { signal: undefined } );
 			} );
 
 			it( 'submits an object after removing invalid list items', () => {

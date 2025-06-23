@@ -557,7 +557,7 @@ describe( 'zFunction Pinia store', () => {
 					wikilambdafn_zfunction_id: 'Z801',
 					wikilambdafn_type: 'Z20',
 					wikilambdafn_limit: 100
-				} );
+				}, { signal: undefined } );
 				expect( store.fetchZids ).toHaveBeenCalledWith( { zids: [ 'Z10001', 'Z10002' ] } );
 			} );
 
@@ -574,7 +574,7 @@ describe( 'zFunction Pinia store', () => {
 					wikilambdafn_zfunction_id: 'Z801',
 					wikilambdafn_type: 'Z14',
 					wikilambdafn_limit: 100
-				} );
+				}, { signal: undefined } );
 				expect( store.fetchZids ).toHaveBeenCalledWith( { zids: [ 'Z10001', 'Z10002' ] } );
 			} );
 		} );

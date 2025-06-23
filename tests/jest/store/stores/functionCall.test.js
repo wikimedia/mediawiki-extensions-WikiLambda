@@ -51,14 +51,13 @@ describe( 'functionCall Pinia store', () => {
 
 				expect( store.setValueByKeyPath ).toHaveBeenCalled();
 				expect( store.fetchZids ).toHaveBeenCalled();
-				const callArgs = postMock.mock.calls[ 0 ][ 0 ];
-				expect( callArgs ).toEqual( {
+				expect( postMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_function_call',
 					format: 'json',
 					formatversion: '2',
 					wikilambda_function_call_zobject: JSON.stringify( canonicalFunctionCall ),
 					uselang: 'en'
-				} );
+				}, { signal: undefined } );
 			} );
 
 			it( 'calls MW API for function orchestration; sets HTTP error', async () => {
@@ -82,14 +81,13 @@ describe( 'functionCall Pinia store', () => {
 
 				await store.callZFunction( { functionCall } );
 
-				const callArgs = postMock.mock.calls[ 0 ][ 0 ];
-				expect( callArgs ).toEqual( {
+				expect( postMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_function_call',
 					format: 'json',
 					formatversion: '2',
 					wikilambda_function_call_zobject: JSON.stringify( canonicalFunctionCall ),
 					uselang: 'en'
-				} );
+				}, { signal: undefined } );
 
 				expect( store.setError ).toHaveBeenCalledWith( {
 					errorId: 'response',

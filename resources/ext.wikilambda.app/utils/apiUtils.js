@@ -77,7 +77,8 @@ const apiUtils = {
 	 * @param {Object} payload.zobject The canonical ZObject to update
 	 * @param {string} payload.zid The zid of the object to update or undefined if new object
 	 * @param {string} payload.summary The update summary
-	 * @param {string} payload.language The update summary
+	 * @param {string} payload.language The  user language code
+	 *  @param {AbortSignal} payload.signal The AbortSignal to cancel the request
 	 * @return {Promise}
 	 */
 	saveZObject: function ( payload ) {
@@ -92,6 +93,8 @@ const apiUtils = {
 				zid: payload.zid,
 				zobject: JSON.stringify( payload.zobject ),
 				uselang: payload.language
+			}, {
+				signal: payload.signal
 			} )
 				.then( ( data ) => resolve( data.wikilambda_edit ) )
 				.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
@@ -109,6 +112,7 @@ const apiUtils = {
 	 * @param {string|undefined} payload.revisions The revisions to request, separated by pipes. E.g. '100|101'
 	 * @param {string|undefined} payload.language The preferred language code or none
 	 * @param {boolean|undefined} payload.dependencies Whether to fetch their dependencies too
+	 *  @param {AbortSignal} payload.signal The AbortSignal to cancel the request
 	 * @return {Promise}
 	 */
 	fetchZObjects: function ( payload ) {
@@ -124,6 +128,8 @@ const apiUtils = {
 				wikilambdaload_revisions: payload.revisions,
 				wikilambdaload_language: payload.language,
 				wikilambdaload_get_dependencies: payload.dependencies ? 'true' : 'false'
+			}, {
+				signal: payload.signal
 			} )
 				.then( ( data ) => resolve( data.query.wikilambdaload_zobjects ) )
 				.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
@@ -143,6 +149,7 @@ const apiUtils = {
 	 * @param {string} payload.language The user language code
 	 * @param {number} payload.searchContinue When more results are available, use this to continue
 	 * @param {number} payload.limit The maximum number of results to return
+	 *  @param {AbortSignal} payload.signal The AbortSignal to cancel the request
 	 * @return {Promise<Object>|undefined}
 	 * - Promise resolving to an object with 'labels' and 'continue'
 	 */
@@ -161,6 +168,8 @@ const apiUtils = {
 				wikilambdasearch_language: payload.language,
 				wikilambdasearch_limit: payload.limit,
 				wikilambdasearch_continue: payload.searchContinue
+			}, {
+				signal: payload.signal
 			} )
 				.then( ( data ) => resolve( {
 					labels: data.query ? data.query.wikilambdasearch_labels : [],
@@ -184,6 +193,7 @@ const apiUtils = {
 	 * @param {string} payload.outputType
 	 * @param {number} payload.limit The maximum number of results to return
 	 * @param {number} payload.searchContinue When more results are available, use this to continue
+	 *  @param {AbortSignal} payload.signal The AbortSignal to cancel the request
 	 * @return {Promise<Object>|undefined} Promise resolving to an object with 'objects' and 'continue'
 	 */
 	searchFunctions: function ( payload ) {
@@ -202,6 +212,8 @@ const apiUtils = {
 				wikilambdasearch_functions_output_type: payload.outputType,
 				wikilambdasearch_functions_limit: payload.limit,
 				wikilambdasearch_functions_continue: payload.searchContinue
+			}, {
+				signal: payload.signal
 			} )
 				.then( ( data ) => resolve( {
 					objects: data.query ? data.query.wikilambdasearch_functions : [],
@@ -222,6 +234,8 @@ const apiUtils = {
 	 * @param {boolean} payload.nocache Request the orchestrator to not cache the results
 	 * @param {Array} payload.implementations List of implementations to test
 	 * @param {Array} payload.testers List of tests to run
+	 * @param {string} payload.language The user language code
+	 *  @param {AbortSignal} payload.signal The AbortSignal to cancel the request
 	 * @return {Promise}
 	 */
 	performTests: function ( payload ) {
@@ -237,6 +251,8 @@ const apiUtils = {
 				wikilambda_perform_test_ztesters: payload.testers.join( '|' ),
 				wikilambda_perform_test_nocache: payload.nocache || false,
 				uselang: payload.language
+			}, {
+				signal: payload.signal
 			} )
 				.then( ( data ) => {
 					if ( data.query.wikilambda_perform_test ) {
@@ -259,6 +275,7 @@ const apiUtils = {
 	 * @param {Object} payload
 	 * @param {string} payload.functionZid Zid of the function to test
 	 * @param {string} payload.type What type of object to fetch (Z20 or Z14)
+	 *  @param {AbortSignal} payload.signal The AbortSignal to cancel the request
 	 * @return {Promise}
 	 */
 	fetchFunctionObjects: function ( payload ) {
@@ -273,6 +290,8 @@ const apiUtils = {
 				wikilambdafn_zfunction_id: payload.functionZid,
 				wikilambdafn_type: payload.type,
 				wikilambdafn_limit: Constants.API_LIMIT_MAX
+			}, {
+				signal: payload.signal
 			} )
 				.then( ( data ) => resolve( data.query.wikilambdafn_search ) )
 				.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );

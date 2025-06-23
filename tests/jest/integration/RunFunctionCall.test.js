@@ -79,14 +79,13 @@ describe( 'WikiLambda frontend, running a function on Run Function Special page'
 
 		// ASSERT: The correct function call is sent to the API with the newly input values.
 		await waitFor( () => expect( apiPostWithFunctionCallMock ).toHaveBeenCalledTimes( 1 ) );
-		const call = apiPostWithFunctionCallMock.mock.calls[ 0 ][ 0 ];
-		expect( call ).toEqual( {
+		expect( apiPostWithFunctionCallMock ).toHaveBeenCalledWith( {
 			action: 'wikilambda_function_call',
 			format: 'json',
 			formatversion: '2',
 			uselang: 'en',
 			wikilambda_function_call_zobject: JSON.stringify( expectedFunctionCallPostedToApi )
-		} );
+		}, { signal: undefined } );
 
 		//* -- Checking the response
 		const resultBlock = await findByTestId( 'function-evaluator-result' );

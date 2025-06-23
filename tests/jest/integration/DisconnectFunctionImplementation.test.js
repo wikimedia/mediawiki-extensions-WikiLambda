@@ -60,7 +60,7 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 			zid: functionZid,
 			zobject:
 				JSON.stringify( expected.zFunctionWithImplementationsAndTesters( [], [ existingFailedTesterZid ] ) )
-		} );
+		}, { signal: undefined } );
 	} );
 
 	it( 'shows a message in the function evaluator when disconnecting all implementations', async () => {
@@ -99,7 +99,7 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 				uselang: 'en',
 				summary: 'Removed $1 from the approved list of implementations',
 				zid: functionZid
-			} )
+			} ), { signal: undefined }
 		);
 
 		// ASSERT: All rows are "Disconnected" and not active (Checkmark is not shown)
@@ -142,7 +142,7 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 			zid: functionZid,
 			zobject:
 				JSON.stringify( expected.zFunctionWithImplementationsAndTesters( [], [ existingFailedTesterZid ] ) )
-		} );
+		}, { signal: undefined } );
 
 		// ASSERT: The "disconnected" implementation is shown as disconnected.
 		expect( firstImplementationRow ).toHaveTextContent( 'Disconnected' );
@@ -172,7 +172,7 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 				uselang: 'en',
 				summary: 'Added $1 to the approved list of implementations',
 				zid: functionZid
-			} )
+			} ), { signal: undefined }
 		);
 
 		// ASSERT: The "connected" implementation is shown as connected.
