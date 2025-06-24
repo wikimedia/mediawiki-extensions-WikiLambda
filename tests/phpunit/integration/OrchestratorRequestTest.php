@@ -13,6 +13,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
+use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 
 /**
@@ -30,7 +31,7 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 		$expectedString = '{"Z1K1":{"Z1K1":"Z9","Z9K1":"Z40"},' .
 			'"Z40K1":{"Z1K1":"Z6","Z6K1":"Z42"}}';
 
-		$mock->append( new Response( 200, [], $expectedString ) );
+		$mock->append( new Response( HttpStatus::OK, [], $expectedString ) );
 
 		$inputFile = __DIR__ .
 			DIRECTORY_SEPARATOR .
@@ -43,8 +44,33 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 		$Z902 = preg_replace( '/[\s\n]/', '', $Z902 );
 
 		$orchestrator = new OrchestratorRequest( $client );
-		$result = $orchestrator->orchestrate( json_decode( $Z902 ) );
+		$result = $orchestrator->orchestrate( json_decode( $Z902 ) )['result'];
 		$this->assertEquals( json_decode( $expectedString ), json_decode( $result ) );
+	}
+
+	public function testUnsuccessfulExecute() {
+		$mock = new MockHandler();
+
+		$expectedString = 'Internal Server Error';
+		$mock->append( new Response( HttpStatus::INTERNAL_SERVER_ERROR, [], $expectedString ) );
+
+		$handler = HandlerStack::create( $mock );
+		$client = new Client( [ 'handler' => $handler ] );
+
+		$orchestrator = new OrchestratorRequest( $client );
+
+		$inputFile = __DIR__ .
+			DIRECTORY_SEPARATOR .
+			'..' .
+			DIRECTORY_SEPARATOR .
+			'test_data' .
+			DIRECTORY_SEPARATOR .
+			'example-orchestrator-timeout.json';
+		$timeout = file_get_contents( $inputFile );
+		$timeout = preg_replace( '/[\s\n]/', '', $timeout );
+
+		$result = $orchestrator->orchestrate( json_decode( $timeout ) )['result'];
+		$this->assertEquals( 'Internal Server Error', $result );
 	}
 
 	public function testSupportedProgrammingLanguages() {
@@ -54,7 +80,7 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 
 		$expectedString = '[ "python3000" ]';
 
-		$mock->append( new Response( 200, [], $expectedString ) );
+		$mock->append( new Response( HttpStatus::OK, [], $expectedString ) );
 
 		$orchestrator = new OrchestratorRequest( $client );
 		$result = $orchestrator->getSupportedProgrammingLanguages()->getBody();
@@ -66,7 +92,7 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 		$handler = HandlerStack::create( $mock );
 		$client = new Client( [ 'handler' => $handler ] );
 
-		$mock->append( new Response( 200, [] ) );
+		$mock->append( new Response( HttpStatus::OK, [] ) );
 
 		$inputFile = __DIR__ .
 			DIRECTORY_SEPARATOR .
@@ -88,7 +114,7 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 
 		$orchestrator = new OrchestratorRequest( $client );
 		$result = $orchestrator->persistToCache( $Z2ForZ6 );
-		$this->assertEquals( 200, $result->getStatusCode() );
+		$this->assertEquals( HttpStatus::OK, $result->getStatusCode() );
 	}
 
 }

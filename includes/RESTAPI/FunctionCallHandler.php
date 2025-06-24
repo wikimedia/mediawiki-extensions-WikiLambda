@@ -83,7 +83,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			$errorMessage = __METHOD__ . ' called repo mode is not enabled';
 			$this->logger->info( $errorMessage );
 			$span->setAttributes( [
-					'response.status_code' => 400,
+					'response.status_code' => HttpStatus::BAD_REQUEST,
 					'exception.message' => $errorMessage
 				] );
 			$span->end();
@@ -99,7 +99,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 				[ 'target' => $target ]
 			);
 			$span->setAttributes( [
-					'response.status_code' => 400,
+					'response.status_code' => HttpStatus::BAD_REQUEST,
 					'exception.message' => $errorMessage
 				] );
 			$span->end();
@@ -118,7 +118,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 				[ 'target' => $target ]
 			);
 			$span->setAttributes( [
-					'response.status_code' => 400,
+					'response.status_code' => HttpStatus::BAD_REQUEST,
 					'exception.message' => $errorMessage
 				] );
 			$span->end();
@@ -138,7 +138,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 				[ 'target' => $target ]
 			);
 			$span->setAttributes( [
-					'response.status_code' => 400,
+					'response.status_code' => HttpStatus::BAD_REQUEST,
 					'exception.message' => $errorMessage
 				] );
 			$span->end();
@@ -160,7 +160,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 				]
 			);
 			$span->setAttributes( [
-					'response.status_code' => 400,
+					'response.status_code' => HttpStatus::BAD_REQUEST,
 					'exception.message' => $errorMessage
 				] );
 			$span->end();
@@ -183,7 +183,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 				]
 			);
 			$span->setAttributes( [
-					'response.status_code' => 400,
+					'response.status_code' => HttpStatus::BAD_REQUEST,
 					'exception.message' => $errorMessage
 				] );
 			$span->end();
@@ -224,7 +224,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 				]
 			);
 			$span->setAttributes( [
-					'response.status_code' => 400,
+					'response.status_code' => HttpStatus::BAD_REQUEST,
 					'exception.message' => $errorMessage
 				] );
 			// Die with Z_ERROR_LANG_NOT_FOUND
@@ -262,7 +262,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 				]
 			);
 			$span->setAttributes( [
-					'response.status_code' => 400,
+					'response.status_code' => HttpStatus::BAD_REQUEST,
 					'exception.message' => $errorMessage
 				] );
 			$span->end();
@@ -321,7 +321,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 					]
 				);
 				$span->setAttributes( [
-						'response.status_code' => 400,
+						'response.status_code' => HttpStatus::BAD_REQUEST,
 						'exception.message' => $errorMessage
 					] );
 				$span->end();
@@ -362,7 +362,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 					]
 				);
 				$span->setAttributes( [
-						'response.status_code' => 400,
+						'response.status_code' => HttpStatus::BAD_REQUEST,
 						'exception.message' => $errorMessage
 					] );
 				$span->end();
@@ -404,7 +404,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 				]
 			);
 			$span->setAttributes( [
-					'response.status_code' => 400,
+					'response.status_code' => HttpStatus::BAD_REQUEST,
 					'exception.message' => $errorMessage
 				] );
 			// Die with Z_ERROR_LANG_NOT_FOUND
@@ -442,7 +442,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 					]
 				);
 				$span->setAttributes( [
-						'response.status_code' => 400,
+						'response.status_code' => HttpStatus::BAD_REQUEST,
 						'exception.message' => $errorMessage
 					] );
 				$span->end();
@@ -471,7 +471,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 					]
 				);
 				$span->setAttributes( [
-						'response.status_code' => 400,
+						'response.status_code' => HttpStatus::BAD_REQUEST,
 						'exception.message' => $errorMessage
 					] );
 				$span->end();
@@ -522,7 +522,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 				]
 			);
 			$span->setAttributes( [
-					'response.status_code' => 400,
+					'response.status_code' => HttpStatus::BAD_REQUEST,
 					'exception.message' => $errorMessage
 				] );
 			// Dies with one of these ZErrors:
@@ -540,7 +540,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 				]
 			);
 			$span->setAttributes( [
-					'response.status_code' => 400,
+					'response.status_code' => HttpStatus::BAD_REQUEST,
 					'exception.message' => $errorMessage
 				] );
 			$this->dieRESTfullyWithZError(
@@ -644,7 +644,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 				]
 			);
 			$span->setAttributes( [
-					'response.status_code' => 400,
+					'response.status_code' => HttpStatus::BAD_REQUEST,
 					'exception.message' => $errorMessage
 				] );
 			$span->end();
@@ -672,7 +672,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 				]
 			);
 			$span->setAttributes( [
-					'response.status_code' => 400,
+					'response.status_code' => HttpStatus::BAD_REQUEST,
 					'exception.message' => $errorMessage
 				] );
 			$span->end();

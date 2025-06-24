@@ -139,7 +139,8 @@ class PublicApiRun extends WikiLambdaApiBase {
 		$result = [];
 		try {
 			$response = $work->execute();
-			$result['data'] = $response;
+			$result['data'] = $response['result'];
+			$httpStatusCode = $response['httpStatusCode'];
 		} catch ( ConnectException $exception ) {
 			$this->submitFunctionCallEvent( HttpStatus::SERVICE_UNAVAILABLE, $function, $start );
 			$this->dieWithError(
@@ -157,7 +158,7 @@ class PublicApiRun extends WikiLambdaApiBase {
 		}
 		$pageResult->addValue( [], $this->getModuleName(), $result );
 
-		$this->submitFunctionCallEvent( HttpStatus::OK, $function, $start );
+		$this->submitFunctionCallEvent( $httpStatusCode, $function, $start );
 	}
 
 	/**
