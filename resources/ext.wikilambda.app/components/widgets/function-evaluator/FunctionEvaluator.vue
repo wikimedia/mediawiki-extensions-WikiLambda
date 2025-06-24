@@ -338,7 +338,10 @@ module.exports = exports = defineComponent( {
 		 * @return {Array}
 		 */
 		getArgumentZids: function ( functionZid ) {
-			return this.getInputsOfFunctionZid( functionZid ).map( ( arg ) => arg[ Constants.Z_ARGUMENT_TYPE ] );
+			return this.getInputsOfFunctionZid( functionZid )
+				.map( ( arg ) => arg[ Constants.Z_ARGUMENT_TYPE ] )
+				// Inputs for Typed Lists and such can be complex objects, so we filter them out
+				.filter( ( zid ) => typeof zid === 'string' );
 		},
 
 		/**

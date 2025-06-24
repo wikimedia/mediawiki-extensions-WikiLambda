@@ -954,19 +954,18 @@ module.exports = {
 					const dependentZids = [];
 
 					returnedZids.forEach( ( zid ) => {
-						// success is defined or not defined; we normalize to a boolean
-						const { data, success = undefined } = response[ zid ];
-						const successfulFetch = success !== undefined;
+						// success is true or false, we normalize it to boolean in case it is undefined somehow
+						const { data, success } = response[ zid ];
 						// 1. State mutation:
 						// Add zObject or error data to the state objects array
 						this.setStoredObject( {
 							zid,
 							data,
-							success: successfulFetch
+							success: !!success
 						} );
 
 						// If the requested zid returned error, exit
-						if ( !successfulFetch ) {
+						if ( !success ) {
 							return;
 						}
 

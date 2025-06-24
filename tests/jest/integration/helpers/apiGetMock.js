@@ -83,7 +83,7 @@ const zObjectApiResponseBuilder = ( zids, language ) => {
 			throw new Error( 'Test does not support API call with non-en language' );
 		}
 		response.wikilambdaload_zobjects[ zid ] = {
-			success: '',
+			success: true,
 			data: data
 		};
 	} );
