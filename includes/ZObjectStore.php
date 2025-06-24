@@ -11,12 +11,15 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use Exception;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Exception\MWContentSerializationException;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\WikiPage;
 use MediaWiki\Page\WikiPageFactory;
@@ -1509,6 +1512,34 @@ class ZObjectStore {
 	}
 
 	/**
+	 * For the given related ZObject and key, return the main ZObjects (e.g. functions) that reference it.
+	 *
+	 * @param string $relatedZid ZID of the related ZObject (e.g. implementation or tester)
+	 * @param string $key ZID of the key that indicates the relationship (e.g. Z8K4 or Z8K3)
+	 * @return string[] List of main ZIDs (e.g. function ZIDs) that reference the related ZObject via the key
+	 */
+	public function findFunctionsReferencingZObjectByKey( $relatedZid, $key ) {
+		$dbr = $this->dbProvider->getReplicaDatabase();
+
+		$conditions = [
+			'wlzo_related_zobject' => $relatedZid,
+			'wlzo_key' => $key
+		];
+		$res = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzo_main_zid' ] )
+			->from( 'wikilambda_zobject_join' )
+			->where( $conditions )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		$mainZids = [];
+		foreach ( $res as $row ) {
+			$mainZids[] = $row->wlzo_main_zid;
+		}
+		return $mainZids;
+	}
+
+	/**
 	 * Find all function Zids for which all their input and output types are renderable.
 	 * This means that:
 	 * * all their input types are either Z6/String, enums or have a parser function, and
@@ -2036,5 +2067,105 @@ class ZObjectStore {
 			->deleteFrom( 'wikilambda_zlanguages' )
 			->where( [ 'wlzlangs_zid' => $zid ] )
 			->caller( __METHOD__ )->execute();
+	}
+
+	/**
+	 * Remove a reference to an implementation or tester from a function, if needed.
+	 *
+	 * If the ZObject with $zid is an implementation or tester, this will find the function(s)
+	 * referencing it and remove the reference.
+	 *
+	 * @param string $zid
+	 */
+	public function removeFunctionReferenceIfImplementationOrTester( string $zid ): void {
+		$functionReferenceKeys = [
+			ZTypeRegistry::Z_IMPLEMENTATION => ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS,
+			ZTypeRegistry::Z_TESTER => ZTypeRegistry::Z_FUNCTION_TESTERS
+		];
+		$content = $this->fetchZObject( $zid );
+		if ( !$content || !$content->isValid() ) {
+			return;
+		}
+		$type = $content->getZType();
+		$key = $functionReferenceKeys[$type] ?? null;
+		if ( !$key ) {
+			return;
+		}
+		$functionZids = $this->findFunctionsReferencingZObjectByKey( $zid, $key );
+		$functionZid = $functionZids[0] ?? null;
+		if ( !$functionZid ) {
+			return;
+		}
+		$this->removeReferenceFromFunction( $functionZid, $key, $type, $zid );
+	}
+
+	/**
+	 * Remove the reference to the deleted implementation or tester from the function's list.
+	 *
+	 * This method updates the function to remove a reference to a deleted implementation or tester,
+	 * and saves the updated function with an appropriate summary message.
+	 *
+	 * @param string $functionZid The ZID of the function referencing the implementation or tester
+	 * @param string $key The key (Z8K4 for implementation, Z8K3 for tester)
+	 * @param string $type The type of the removed object (Z14 for implementation, Z20 for tester)
+	 * @param string $zid The ZID of the implementation or tester being removed
+	 * @return void
+	 */
+	public function removeReferenceFromFunction( string $functionZid, string $key, string $type, string $zid ) {
+		$deletionSummaries = [
+			ZTypeRegistry::Z_IMPLEMENTATION => 'wikilambda-deleted-implementations-summary',
+			ZTypeRegistry::Z_TESTER => 'wikilambda-deleted-testers-summary',
+		];
+		$title = Title::newFromText( $functionZid );
+		$content = $this->fetchZObjectByTitle( $title );
+		if ( !$content || !$content->isValid() ) {
+			return;
+		}
+		$zobject = $content->getZObject();
+		$innerZObject = $zobject->getInnerZObject();
+		$refListObj = $innerZObject->getValueByKey( $key );
+		if ( !$refListObj instanceof ZTypedList ) {
+			return;
+		}
+		// Filter out the reference to the deleted implementation or tester
+		$refList = array_values(
+			array_filter(
+				$refListObj->getAsArray(),
+				static function ( $item ) use ( $zid ) {
+					return !( $item instanceof ZReference ) || $item->getZValue() !== $zid;
+				}
+			)
+		);
+		// Update the function's list and save
+		$innerZObject->setValueByKey(
+			$key,
+			new ZTypedList(
+				ZTypedList::buildType( new ZReference( $type ) ),
+				$refList
+			)
+		);
+		// Get the appropriate summary message for the removal
+		$summary = wfMessage( 'wikilambda-deleted-unknown-summary', $zid, $type )
+			->inLanguage( 'en' )
+			->text();
+
+		if ( isset( $deletionSummaries[ $type ] ) ) {
+			$summary = wfMessage( $deletionSummaries[ $type ], $zid )
+				->inLanguage( 'en' )
+				->text();
+		} else {
+			// Error: type is not valid, nothing we can do except log
+			$this->logger->warning(
+				__METHOD__ . ' called with invalid type {type} for ZID {zid}',
+				[ 'zid' => $zid, 'type' => $type ]
+			);
+		}
+		// Update the ZObject in the store
+		$this->updateZObjectAsSystemUser(
+			RequestContext::getMain(),
+			$functionZid,
+			$zobject->__toString(),
+			$summary
+		);
 	}
 }

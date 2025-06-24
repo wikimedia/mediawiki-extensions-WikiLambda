@@ -11,6 +11,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectPage;
@@ -1233,6 +1234,31 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertEquals( [ 'Z881(Z6)' ], $res );
 	}
 
+	public function testFindFunctionsReferencingZObjectByKey() {
+		$this->injectZ401RelatedZObjects();
+
+		// Test for implementation Z10003 (should be referenced by Z401)
+		$functionsForImplementation = $this->zobjectStore->findFunctionsReferencingZObjectByKey(
+			'Z10003',
+			'Z8K4'
+		);
+		$this->assertEquals( [ 'Z401' ], $functionsForImplementation );
+
+		// Test for tester Z10002 (should be referenced by Z401)
+		$functionsForTester = $this->zobjectStore->findFunctionsReferencingZObjectByKey(
+			'Z10002',
+			'Z8K3'
+		);
+		$this->assertEquals( [ 'Z401' ], $functionsForTester );
+
+		// Test for a ZID not referenced
+		$functionsForNonexistent = $this->zobjectStore->findFunctionsReferencingZObjectByKey(
+			'Z999',
+			'Z8K4'
+		);
+		$this->assertEquals( [], $functionsForNonexistent );
+	}
+
 	public function testFindFunctionsByIOTypes() {
 		$this->injectZ401RelatedZObjects();
 		$this->injectZ402RelatedZObjects();
@@ -1596,5 +1622,121 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$res->next();
 		$this->assertEquals( 'Z4', $res->current()->wlzl_zobject_zid );
 		$this->assertEquals( 'Tipo', $res->current()->wlzl_label );
+	}
+
+	public function testRemoveFunctionReferenceIfImplementationOrTester_removesImplementationReference() {
+		$this->insertZids( [ 'Z8', 'Z14', 'Z6' ] );
+		$sysopUser = $this->getTestSysop()->getUser();
+
+		// Create an implementation ZObject (Z14)
+		$implZid = $this->zobjectStore->getNextAvailableZid();
+		$implInput = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "' . $implZid . '" },'
+			. '"Z2K2": { "Z1K1": "Z14", "Z14K1": "Z1", "Z14K4": "Z0" },'
+			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
+		$this->zobjectStore->createNewZObject(
+			RequestContext::getMain(), $implInput, 'Create implementation', $sysopUser
+		);
+
+		// Create a function ZObject (Z8) that references the implementation
+		$funcZid = $this->zobjectStore->getNextAvailableZid();
+		$funcInput = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "' . $funcZid . '" },'
+			. '"Z2K2": { "Z1K1": "Z8",'
+			. '"Z8K1": [ "Z17" ],'
+			. '"Z8K2": "Z6",'
+			. '"Z8K3": [ "Z20" ],'
+			. '"Z8K4": [ "Z14",  "' . $implZid . '" ],'
+			. '"Z8K5": "Z0" },'
+			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
+		$this->zobjectStore->createNewZObject(
+			RequestContext::getMain(), $funcInput, 'Create function', $sysopUser
+		);
+
+		// Confirm the function references the implementation
+		$funcTitle = Title::newFromText( $funcZid, NS_MAIN );
+		$funcContent = $this->zobjectStore->fetchZObjectByTitle( $funcTitle );
+		$this->assertInstanceOf( ZObjectContent::class, $funcContent );
+		$this->assertTrue( $funcContent->isValid() );
+		$funcObj = $funcContent->getZObject()->getInnerZObject();
+		$implList = $funcObj->getValueByKey( ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS );
+		$this->assertContains( $implZid, array_map(
+			static function ( $ref ) { return $ref->getZValue();
+			},
+			$implList->getAsArray()
+		) );
+
+		// Now remove the implementation reference
+		$this->zobjectStore->removeFunctionReferenceIfImplementationOrTester( $implZid );
+
+		// Refetch the function content after the update
+		$funcContent = $this->zobjectStore->fetchZObjectByTitle( $funcTitle );
+		$this->assertInstanceOf( ZObjectContent::class, $funcContent );
+		$this->assertTrue( $funcContent->isValid() );
+		$funcObj = $funcContent->getZObject() ? $funcContent->getZObject()->getInnerZObject() : null;
+		$this->assertNotNull( $funcObj, 'Function ZObject should not be null after deletion' );
+		$implList = $funcObj->getValueByKey( ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS );
+		$implZids = array_map(
+			static function ( $ref ) { return $ref->getZValue();
+			},
+			$implList->getAsArray()
+		);
+		$this->assertNotContains( $implZid, $implZids );
+	}
+
+	public function testRemoveFunctionReferenceIfImplementationOrTester_removesTesterReference() {
+		$this->insertZids( [ 'Z8', 'Z20', 'Z6' ] );
+		$store = $this->zobjectStore;
+		$sysopUser = $this->getTestSysop()->getUser();
+
+		// Create a tester ZObject (Z20)
+		$testerZid = $this->zobjectStore->getNextAvailableZid();
+		$testerInput = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "' . $testerZid . '" },'
+			. '"Z2K2": { "Z1K1": "Z20", "Z20K1": "Z1", "Z20K2": "Z0", "Z20K3": "Z0" },'
+			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
+		$this->zobjectStore->createNewZObject(
+			RequestContext::getMain(), $testerInput, 'Create tester', $sysopUser
+		);
+
+		// Create a function ZObject (Z8) that references the tester
+		$funcZid = $this->zobjectStore->getNextAvailableZid();
+		$funcInput = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "' . $funcZid . '" },'
+			. '"Z2K2": { "Z1K1": "Z8",'
+			. '"Z8K1": [ "Z17" ],'
+			. '"Z8K2": "Z1",'
+			. '"Z8K3": [ "Z20", "' . $testerZid . '" ],'
+			. '"Z8K4": [ "Z14" ],'
+			. '"Z8K5": "Z101" },'
+			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
+		$this->zobjectStore->createNewZObject(
+			RequestContext::getMain(), $funcInput, 'Create function', $sysopUser
+		);
+
+		// Confirm the function references the tester
+		$funcTitle = Title::newFromText( $funcZid, NS_MAIN );
+		$funcContent = $this->zobjectStore->fetchZObjectByTitle( $funcTitle );
+		$this->assertInstanceOf( ZObjectContent::class, $funcContent );
+		$this->assertTrue( $funcContent->isValid() );
+		$funcObj = $funcContent->getZObject()->getInnerZObject();
+		$testerList = $funcObj->getValueByKey( ZTypeRegistry::Z_FUNCTION_TESTERS );
+		$this->assertContains( $testerZid, array_map(
+			static function ( $ref ) { return $ref->getZValue();
+			},
+			$testerList->getAsArray()
+		) );
+
+		// Now remove the tester reference
+		$this->zobjectStore->removeFunctionReferenceIfImplementationOrTester( $testerZid );
+
+		// Refetch the function content after the update
+		$funcContent = $store->fetchZObjectByTitle( $funcTitle );
+		$this->assertInstanceOf( ZObjectContent::class, $funcContent );
+		$this->assertTrue( $funcContent->isValid() );
+		$funcObj = $funcContent->getZObject()->getInnerZObject();
+		$testerList = $funcObj->getValueByKey( ZTypeRegistry::Z_FUNCTION_TESTERS );
+		$testerZids = array_map(
+			static function ( $ref ) { return $ref->getZValue();
+			},
+			$testerList->getAsArray()
+		);
+		$this->assertNotContains( $testerZid, $testerZids );
 	}
 }
