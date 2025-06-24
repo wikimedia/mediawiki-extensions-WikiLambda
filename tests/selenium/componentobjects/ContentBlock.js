@@ -80,8 +80,12 @@ class ContentBlock {
 		// the class ".cdx-menu__listbox" is from codex upstream
 		const modeSelectorMenu = await modeSelector.$( '.cdx-menu__listbox' );
 		await modeSelectorMenu.waitForDisplayed();
+		await ElementActions.scrollIntoView( modeSelectorMenu );
 		const optionSelector = await modeSelectorMenu.$( `bdi=${ mode }` );
 		await ElementActions.doClick( await optionSelector );
+		// After selecting the mode, scroll back to the section so it stays in the viewport
+		const section = await this.getSectionOfContentBlock( label, parentSection );
+		await ElementActions.scrollIntoView( section );
 	}
 
 	/**
