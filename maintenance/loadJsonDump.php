@@ -47,6 +47,20 @@ class LoadJsonDump extends Maintenance {
 			false,
 			true
 		);
+
+		$this->addOption(
+			'from',
+			'Loads the objects from a lower range. Must be used along with "--to". E.g. "--from Z100 --to Z200"',
+			false,
+			true
+		);
+
+		$this->addOption(
+			'to',
+			'Loads the objects till an upper range. Must be used along with "--from". E.g. "--from Z100 --to Z200"',
+			false,
+			true
+		);
 	}
 
 	/**
@@ -77,6 +91,10 @@ class LoadJsonDump extends Maintenance {
 		// Dump only one zid:
 		$pushZid = $this->getOption( 'zid' );
 
+		// Dump zids in a given range:
+		$pushZidsFrom = $this->getOption( 'from' );
+		$pushZidsTo = $this->getOption( 'to' );
+
 		// Get data files
 		// Load Z0.json
 		$indexFile = file_get_contents( "$path/Z0.json" );
@@ -86,9 +104,20 @@ class LoadJsonDump extends Maintenance {
 				. "https://gitlab.wikimedia.org/repos/abstract-wiki/wikifunctions-content-download" );
 		}
 		$index = json_decode( $indexFile, true );
+		$index = is_array( $index ) ? $index : [];
 
 		$success = 0;
 		$errors = [];
+
+		// If inserting only from a zid, replace index array with only the zids from that one
+		if ( $pushZidsFrom && $pushZidsTo ) {
+			$lowerZid = intval( substr( $pushZidsFrom, 1 ) );
+			$upperZid = intval( substr( $pushZidsTo, 1 ) );
+			$index = array_filter( $index, static function ( $value, $key ) use ( $lowerZid, $upperZid ) {
+				$zid = intval( substr( $key, 1 ) );
+				return $zid >= $lowerZid && $zid <= $upperZid;
+			}, ARRAY_FILTER_USE_BOTH );
+		}
 
 		// If only one to insertZid, replace index array with zid => revision, or exit early if not found
 		if ( $pushZid ) {
