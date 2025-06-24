@@ -32,7 +32,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Введите текст",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Предлагаемые функции",
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Функция отсутствует, либо она неисправна.",
-	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Загрузка данных Функции...",
+	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Загрузка данных функции",
 	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Функция не выбрана.",
 	"wikilambda-visualeditor-wikifunctionscall-title": "Функция"
 }
