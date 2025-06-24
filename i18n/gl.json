@@ -6,8 +6,15 @@
 		]
 	},
 	"wikilambda-cancel": "Cancelar",
+	"wikilambda-edit": "Editar",
+	"wikilambda-editor-default-name": "Sen título",
+	"wikilambda-editor-fn-step-function-about": "Acerca de",
+	"wikilambda-editor-fn-step-function-definition": "Definición da función",
+	"wikilambda-editor-fn-step-function-details": "Detalles",
+	"wikilambda-languagelabel": "Lingua",
 	"wikilambda-performtest-error-nonimplementation": "Erro ó realizar unha proba: '$1' non se aplica.",
 	"wikilambda-publish-input-and-output-changed-impact-prompt": "<p>Cambiaches o campo de entrada e o tipo de saída desta función. <strong>Todas as implementacións e probas existentes serán desvinculadas da función actual.</strong> Queres continuar?</p>",
 	"wikilambda-publish-input-changed-impact-prompt": "<p>Cambiaches o campo de entrada desta función. <strong>Todas as implementacións e probas existentes serán desvinculadas da función actual.</strong> Queres continuar?</p>",
-	"wikilambda-publish-output-changed-impact-prompt": "<p>Cambiaches o tipo de saída desta función. <strong>Todas as implementacións e probas existentes serán desligadas da función actual.</strong> Queres continuar?</p>"
+	"wikilambda-publish-output-changed-impact-prompt": "<p>Cambiaches o tipo de saída desta función. <strong>Todas as implementacións e probas existentes serán desligadas da función actual.</strong> Queres continuar?</p>",
+	"wikilambda-savenew": "Gardar"
 }
