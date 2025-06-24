@@ -840,6 +840,8 @@
 				"wikilambda-list-type-change-warning",
 				"wikilambda-function-evaluation-restriction-notrunnable",
 				"wikilambda-function-evaluation-restriction-warning",
+				"wikilambda-function-evaluator-no-function-selected",
+				"wikilambda-function-evaluator-no-function-selected-for-implementation",
 				"wikilambda-argument-reference-selector-placeholder",
 				"wikilambda-special-createobject",
 				"wikilambda-special-create-function",
