@@ -24,7 +24,7 @@
 					class="ext-wikilambda-app-object-to-string__icon"
 					:icon-label="labelData.label"></cdx-icon><!--
 			--><a
-					v-tooltip:top="isWikidataType ? labelData.zid : undefined"
+					v-tooltip:top="isWikidataType ? labelData.zid : null"
 					:href="link"
 					:lang="labelData.langCode"
 					:dir="labelData.langDir">{{ labelData.label }}</a>
