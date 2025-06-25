@@ -61,6 +61,7 @@
 			:open="showExamplesDialog"
 			:title="$i18n( 'wikilambda-string-renderer-examples-title' ).text()"
 			:close-button-label="$i18n( 'wikilamda-dialog-close' ).text()"
+			:use-close-button="true"
 			@update:open="showExamplesDialog = false"
 		>
 			<ul class="ext-wikilambda-app-object-string-renderer__examples">

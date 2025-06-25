@@ -12,6 +12,7 @@
 			:open="showDialog"
 			:title="publishDialogTitle"
 			:close-button-label="$i18n( 'wikilambda-dialog-close' ).text()"
+			:use-close-button="true"
 			:primary-action="primaryAction"
 			:default-action="defaultAction"
 			@default="closeDialog"

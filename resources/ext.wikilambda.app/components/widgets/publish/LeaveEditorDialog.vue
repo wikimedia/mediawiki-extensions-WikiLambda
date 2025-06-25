@@ -11,6 +11,7 @@
 			:open="showDialog"
 			:title="leaveDialogTitle"
 			:close-button-label="$i18n( 'wikilambda-dialog-close' ).text()"
+			:use-close-button="true"
 			:primary-action="primaryAction"
 			:default-action="defaultAction"
 			@update:open="stayOnPage"

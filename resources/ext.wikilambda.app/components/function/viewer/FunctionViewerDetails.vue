@@ -42,6 +42,7 @@
 			class="ext-wikilambda-app-toast-message"
 		>
 			<cdx-message
+				:allow-user-dismiss="true"
 				:dismiss-button-label="$i18n( 'wikilambda-toast-close' ).text()"
 				:fade-in="true"
 				type="error"
