@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Amire80"
+			"Amire80",
+			"Okras"
 		]
 	},
 	"wikilambda-recentchanges-edit-legend": "Правка из Викифункций",
@@ -25,13 +26,13 @@
 	"wikilambda-recentchanges-filter-rc-pref": "Показывать правки Викифункций в списке свежих правок",
 	"wikilambda-recentchanges-filter-wl-pref": "Показывать правки Викифункций в вашем списке наблюдения",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Функция]] из Викифункций",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Ничего не найдено",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Ничего не найдено.",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Поиск функции",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Результаты",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Вводные строки",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Введите текст",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Предлагаемые функции",
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Функция отсутствует, либо она неисправна.",
-	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Загрузка данных Функции...",
+	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Загрузка данных функции",
 	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Функция не выбрана.",
 	"wikilambda-visualeditor-wikifunctionscall-title": "Функция"
 }
