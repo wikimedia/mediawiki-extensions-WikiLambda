@@ -66,7 +66,7 @@ class InputDropdown {
 			}
 		}, { timeout: 10000 } );
 
-		await optionElement.scrollIntoView();
+		await ElementActions.scrollIntoView( optionElement );
 
 		await browser.waitUntil( async () => {
 			try {
