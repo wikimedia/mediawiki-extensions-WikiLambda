@@ -254,6 +254,8 @@
 	"wikilambda-function-details-table-deactivate": "Text on button that deactivates the currently selected function implementations or testers. Deactivating them prevents them from being executed.",
 	"wikilambda-function-evaluation-restriction-notrunnable": "Explanation message to inform users that they will not be able to run a function as it's not complete yet",
 	"wikilambda-function-evaluation-restriction-warning": "Warning message to inform not logged in users that they will not be able to run functions",
+	"wikilambda-function-evaluator-no-function-selected-for-implementation": "Message shown when no function is selected in the Function Evaluator widget for an implementation.",
+	"wikilambda-function-evaluator-no-function-selected": "Message shown when no function is selected in the Function Evaluator widget for a function.",
 	"wikilambda-function-evaluator-enter-inputs": "The text shown in the function evaluator widget for the inputs section",
 	"wikilambda-function-evaluator-result": "The text shown in the function evaluator widget for the result section",
 	"wikilambda-function-evaluator-result-details": "Link to open the details dialog of the function evaluation result",

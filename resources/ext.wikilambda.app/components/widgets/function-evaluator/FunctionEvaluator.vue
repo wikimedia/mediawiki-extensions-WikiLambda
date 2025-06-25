@@ -51,10 +51,18 @@
 
 			<!-- Loader for inputs + button -->
 			<div
-				v-if="!selectedFunctionExists && !showFunctionSelector"
+				v-if="isLoading"
 				class="ext-wikilambda-app-function-evaluator-widget__loader"
 				data-testid="function-evaluator-loader">
 				{{ $i18n( 'wikilambda-loading' ).text() }}
+			</div>
+			<div v-else-if="!selectedFunctionExists && !showFunctionSelector">
+				<p v-if="forImplementation">
+					{{ $i18n( 'wikilambda-function-evaluator-no-function-selected-for-implementation' ).text() }}
+				</p>
+				<p v-else>
+					{{ $i18n( 'wikilambda-function-evaluator-no-function-selected' ).text() }}
+				</p>
 			</div>
 			<div v-else>
 				<!-- Function Inputs -->
@@ -165,7 +173,8 @@ module.exports = exports = defineComponent( {
 			resultRowId: '',
 			running: false,
 			hasResult: false,
-			functionType: Constants.Z_FUNCTION
+			functionType: Constants.Z_FUNCTION,
+			isLoading: true // Track loading state
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
@@ -451,6 +460,7 @@ module.exports = exports = defineComponent( {
 		 * @param {string|undefined} initialFunctionZid
 		 */
 		initializeDetachedObjects: function ( initialFunctionZid ) {
+			this.isLoading = true;
 			// Initialize detached object for the function call
 			const functionCallRowId = this.initializeResultId( this.functionCallRowId );
 
@@ -473,8 +483,11 @@ module.exports = exports = defineComponent( {
 							parentId: functionCallRowId,
 							functionZid: initialFunctionZid
 						} );
+						this.isLoading = false;
 					} );
 				} );
+			} else {
+				this.isLoading = false;
 			}
 
 			// Initialize detached object for the result
@@ -486,8 +499,9 @@ module.exports = exports = defineComponent( {
 		}
 	} ),
 	watch: {
-		selectedFunctionZid: function () {
+		functionZid: function ( newFunctionZid ) {
 			this.clearResult();
+			this.initializeDetachedObjects( newFunctionZid );
 		}
 	},
 	mounted: function () {

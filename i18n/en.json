@@ -240,6 +240,8 @@
 	"wikilambda-function-details-table-deactivate": "Disconnect",
 	"wikilambda-function-evaluation-restriction-notrunnable": "This function has no connected implementations.",
 	"wikilambda-function-evaluation-restriction-warning": "We are sorry! At the moment only logged-in users can run functions.",
+	"wikilambda-function-evaluator-no-function-selected-for-implementation": "Select a function to try this implementation.",
+	"wikilambda-function-evaluator-no-function-selected": "Select a function to try it.",
 	"wikilambda-function-evaluator-enter-inputs": "Enter inputs",
 	"wikilambda-function-evaluator-result": "Result",
 	"wikilambda-function-evaluator-result-details": "Details",
