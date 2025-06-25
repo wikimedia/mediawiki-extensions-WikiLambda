@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Authorization;
 
+use Exception;
 use MediaWiki\Extension\WikiLambda\Diff\ZObjectDiffer;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
@@ -242,7 +243,7 @@ class ZObjectAuthorization implements LoggerAwareInterface {
 			$callableClass = 'MediaWiki\Extension\WikiLambda\Authorization\\' . $filterClass;
 			try {
 				$pass = $callableClass::pass( $fromContent, $toContent, $title, $filterArgs );
-			} catch ( \Exception $e ) {
+			} catch ( Exception $e ) {
 				$this->getLogger()->warning(
 					'Filter is specified in the rules but method is not available; returning false',
 					[

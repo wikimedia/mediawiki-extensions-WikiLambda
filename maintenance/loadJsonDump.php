@@ -188,7 +188,7 @@ class LoadJsonDump extends Maintenance {
 			$return->message = "❌ Problem " . ( $creating ? 'creating' : 'updating' ) . " $zid:\n"
 				. $e->getMessage() . "\n"
 				. $e->getZErrorMessage() . "\n";
-		} catch ( \Exception $e ) {
+		} catch ( Exception $e ) {
 			$return->isOK = false;
 			$return->message = "❌ Problem " . ( $creating ? 'creating' : 'updating' ) . " $zid:\n"
 				. $e->getMessage() . "\n"

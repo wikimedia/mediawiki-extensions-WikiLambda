@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use Exception;
 use MediaWiki\Actions\HistoryAction;
 
 class ZObjectHistoryAction extends HistoryAction {
@@ -25,7 +26,7 @@ class ZObjectHistoryAction extends HistoryAction {
 		try {
 			$zObjectStore = WikiLambdaServices::getZObjectStore();
 			$targetZObject = $zObjectStore->fetchZObjectByTitle( $this->getTitle() );
-		} catch ( \Throwable $th ) {
+		} catch ( Exception ) {
 			// Something went wrong (e.g. corrupted ZObject), so fall back.
 			return parent::getPageTitle();
 		}

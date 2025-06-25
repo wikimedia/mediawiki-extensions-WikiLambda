@@ -2,6 +2,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
@@ -319,7 +320,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 				$exception->getZErrorMessage(),
 				$zObjectAsString
 			);
-		} catch ( \Exception $exception ) {
+		} catch ( Exception $exception ) {
 
 			$this->getLogger()->warning(
 				__METHOD__ . ' failed to execute with a general Exception: {exception}',
