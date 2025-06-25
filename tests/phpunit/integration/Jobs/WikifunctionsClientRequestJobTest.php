@@ -126,7 +126,7 @@ class WikifunctionsClientRequestJobTest extends WikiLambdaClientIntegrationTestC
 			'Z10000K1' => 'foo/',
 			'Z10000K2' => 'bar',
 		];
-		$body = [ 'value' => 'foo/bar' ];
+		$body = [ 'value' => 'foo/bar', 'type' => 'Z6' ];
 
 		// Mock successful/200 response
 		$this->installMockHttp( $this->makeFakeHttpRequest( json_encode( $body ) ) );
@@ -137,7 +137,10 @@ class WikifunctionsClientRequestJobTest extends WikiLambdaClientIntegrationTestC
 		// Run private remoteCall method:
 		$output = $this->runPrivateMethod( $job, 'remoteCall', [ $functionZid, $arguments, 'en', 'en' ] );
 
-		$this->assertSame( "foo/bar", $output[0] );
+		$this->assertSame(
+			[ 'value' => 'foo/bar', 'type' => 'Z6' ],
+			$output
+		);
 	}
 
 	/**

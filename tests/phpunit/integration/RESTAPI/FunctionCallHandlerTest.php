@@ -62,7 +62,7 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		$response = $this->executeHandler( $handler, $request );
 
 		$this->assertEquals( 200, $response->getStatusCode() );
-		$this->assertEquals( '{"value":"foo"}', $response->getBody()->getContents() );
+		$this->assertEquals( '{"value":"foo","type":"Z6"}', $response->getBody()->getContents() );
 	}
 
 	/**
@@ -104,7 +104,7 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		$response = $this->executeHandler( $handler, $request );
 
 		$this->assertEquals( 200, $response->getStatusCode() );
-		$this->assertEquals( '{"value":"true"}', $response->getBody()->getContents() );
+		$this->assertEquals( '{"value":"true","type":"Z6"}', $response->getBody()->getContents() );
 
 		// … and try the other branch
 		$ourCall['pathParams']['arguments'] = implode( '|', [
@@ -114,7 +114,7 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		$handler = new FunctionCallHandler();
 
 		$response = $this->executeHandler( $handler, $request );
-		$this->assertEquals( '{"value":"false"}', $response->getBody()->getContents() );
+		$this->assertEquals( '{"value":"false","type":"Z6"}', $response->getBody()->getContents() );
 	}
 
 	/**

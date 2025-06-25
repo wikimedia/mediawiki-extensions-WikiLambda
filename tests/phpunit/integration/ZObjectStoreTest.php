@@ -1132,6 +1132,74 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->zobjectStore->insertRelatedZObjects( $relatedZObjects );
 	}
 
+	private function injectZ404RelatedZObjects(): void {
+		// Function Z404:
+		// * has 1 argument of types Z6
+		// * returns Z6
+		// * has 1 connected implementation
+		$relatedZObjects = [
+			// Input types
+			(object)[
+				'zid' => 'Z404',
+				'type' => 'Z8',
+				'key' => 'Z8K1',
+				'related_zid' => 'Z6',
+				'related_type' => 'Z4'
+			],
+			// Output type
+			(object)[
+				'zid' => 'Z404',
+				'type' => 'Z8',
+				'key' => 'Z8K2',
+				'related_zid' => 'Z6',
+				'related_type' => 'Z4'
+			],
+			// Connected implementation
+			(object)[
+				'zid' => 'Z404',
+				'type' => 'Z8',
+				'key' => 'Z8K4',
+				'related_zid' => 'Z10003',
+				'related_type' => 'Z14'
+			]
+		];
+		$this->zobjectStore->insertRelatedZObjects( $relatedZObjects );
+	}
+
+	private function injectZ405RelatedZObjects(): void {
+		// Function Z405:
+		// * has 1 argument of types Z6
+		// * returns HTML Fragment/Z89
+		// * has 1 connected implementation
+		$relatedZObjects = [
+			// Input types
+			(object)[
+				'zid' => 'Z405',
+				'type' => 'Z8',
+				'key' => 'Z8K1',
+				'related_zid' => 'Z6',
+				'related_type' => 'Z4'
+			],
+			// Output type
+			(object)[
+				'zid' => 'Z405',
+				'type' => 'Z8',
+				'key' => 'Z8K2',
+				'related_zid' => 'Z89',
+				'related_type' => 'Z4'
+			],
+			// Connected implementation
+			(object)[
+				'zid' => 'Z405',
+				'type' => 'Z8',
+				'key' => 'Z8K4',
+				'related_zid' => 'Z10003',
+				'related_type' => 'Z14'
+			]
+		];
+		$this->zobjectStore->insertRelatedZObjects( $relatedZObjects );
+	}
+
 	public function testInsertRelatedZObjects() {
 		$this->injectZ401RelatedZObjects();
 		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();
@@ -1305,6 +1373,22 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$res = $this->zobjectStore->findFunctionsByIOTypes( [ 'Z6' => 2 ], 'Z881(Z5)' );
 		$this->assertCount( 0, $res );
 		$this->assertEquals( [], $res );
+	}
+
+	public function testFindFunctionsByRenderableIO() {
+		// Force-enable HTML output:
+		$this->overrideConfigValue( 'WikifunctionsEnableHTMLOutput', true );
+
+		// Insert a function with output type Z6 (String)
+		$this->injectZ404RelatedZObjects();
+		// Insert a function with output type Z89 (HTML Fragment)
+		$this->injectZ405RelatedZObjects();
+
+		$res = $this->zobjectStore->findFunctionsByRenderableIO();
+		// On postgres the result may not in order
+		sort( $res );
+		$this->assertCount( 2, $res, 'Should find Z404 (Z6 output) and Z405 (Z89 output) as renderable' );
+		$this->assertEquals( [ 'Z404', 'Z405' ], $res );
 	}
 
 	public function testFetchZFunctionReturnType() {
