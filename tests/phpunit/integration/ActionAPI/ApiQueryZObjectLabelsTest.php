@@ -141,7 +141,15 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 			'wlzl_label_normalised' => 'wikidata enumeration',
 			'wlzl_label_primary' => 1,
 			'wlzl_return_type' => null,
-		]
+		], [
+			'wlzl_zobject_zid' => 'Z900',
+			'wlzl_type' => 'Z8',
+			'wlzl_language' => self::EN,
+			'wlzl_label' => 'append element to Typed list',
+			'wlzl_label_normalised' => 'append element to typed list',
+			'wlzl_label_primary' => 1,
+			'wlzl_return_type' => 'Z881(Z1)',
+		],
 	];
 
 	/**
@@ -177,6 +185,12 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 			'wlzo_main_type' => 'Z8',
 			'wlzo_key' => 'Z8K2',
 			'wlzo_related_zobject' => 'Z4',
+			'wlzo_related_type' => 'Z4'
+		], [
+			'wlzo_main_zid' => 'Z900',
+			'wlzo_main_type' => 'Z8',
+			'wlzo_key' => 'Z8K2',
+			'wlzo_related_zobject' => 'Z881(Z1)',
 			'wlzo_related_type' => 'Z4'
 		]
 	];
@@ -281,11 +295,12 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 				'wikilambdasearch_language' => 'en',
 				'wikilambdasearch_type' => 'Z8',
 			],
-			// renders results: Z491, Z480, Z481
+			// renders results: Z491, Z480, Z481, Z900
 			[
 				[ 'Z491', 'Text of a given length' ],
 				[ 'Z480', 'Make pangolin' ],
 				[ 'Z481', 'Return anything' ],
+				[ 'Z900', 'append element to Typed list' ],
 			]
 		];
 
@@ -295,12 +310,13 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 				'wikilambdasearch_language' => 'en',
 				'wikilambdasearch_type' => 'Z8|Z10001'
 			],
-			// renders results: Z491, Z480, Z481 and Z482
+			// renders results: Z491, Z480, Z481, Z482, Z900
 			[
 				[ 'Z491', 'Text of a given length' ],
 				[ 'Z480', 'Make pangolin' ],
 				[ 'Z481', 'Return anything' ],
 				[ 'Z482', 'Anything' ],
+				[ 'Z900', 'append element to Typed list' ],
 			]
 		];
 
@@ -434,6 +450,7 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 				[ 'Z481', 'Return anything' ],
 				[ 'Z482', 'Anything' ],
 				[ 'Z483', 'Wikidata Enumeration' ],
+				[ 'Z900', 'append element to Typed list' ],
 			]
 		];
 
@@ -517,6 +534,17 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 				[ 'Z492', 'Word', 'Textitos', 0.5 ],
 				[ 'Z491', 'Text of a given length', 'Generic text', 0.3333333333333333 ],
 			]
+		];
+
+		yield 'returns functions with compound return type Z881(Z1)' => [
+			[
+				'wikilambdasearch_language' => 'en',
+				'wikilambdasearch_type' => 'Z8',
+				'wikilambdasearch_return_type' => 'Z881'
+			],
+			[
+				[ 'Z900', 'append element to Typed list' ],
+			],
 		];
 	}
 }
