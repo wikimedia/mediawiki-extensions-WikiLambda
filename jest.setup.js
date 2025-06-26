@@ -151,3 +151,15 @@ vueTestUtils.config.global.mocks = {
 };
 
 vueTestUtils.config.global.plugins = [ global.store ];
+
+// Suppress Metrics Platform event logs
+const originalLog = console.log;
+console.log = function ( ...args ) {
+	if (
+		typeof args[ 0 ] === 'string' &&
+			args[ 0 ].startsWith( 'Metrics Platform event emitted using submitInteraction' )
+	) {
+		return; // Suppress this log
+	}
+	originalLog.apply( console, args );
+};

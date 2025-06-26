@@ -12,6 +12,7 @@ require( '@testing-library/jest-dom' );
 
 const Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' );
 const App = require( '../../../resources/ext.wikilambda.app/components/App.vue' );
+const PublishDialog = require( '../../../resources/ext.wikilambda.app/components/widgets/publish/PublishDialog.vue' );
 const { chipInputAddChip, lookupSearchAndSelect, textInputChange } = require( './helpers/interactionHelpers.js' );
 const { runSetup, runTeardown } = require( './helpers/functionEditorTestHelpers.js' );
 const existingFunctionFromApi = require( './objects/existingFunctionFromApi.js' );
@@ -33,6 +34,11 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 		};
 		const setupResult = runSetup( pageConfig );
 		apiPostWithEditTokenMock = setupResult.apiPostWithEditTokenMock;
+
+		// Mock the navigateToPage method in PublishDialog.vue to suppress navigation errors from JSDOM
+		if ( PublishDialog && PublishDialog.methods ) {
+			jest.spyOn( PublishDialog.methods, 'navigateToPage' ).mockImplementation( () => {} );
+		}
 	} );
 
 	afterEach( () => {
