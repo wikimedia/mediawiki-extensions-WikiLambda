@@ -256,6 +256,8 @@
 	"wikilambda-function-details-table-deactivate": "Déconnecter",
 	"wikilambda-function-evaluation-restriction-notrunnable": "Cette fonction n'a aucune implémentation connectée.",
 	"wikilambda-function-evaluation-restriction-warning": "Nous sommes désolés ! Pour le moment, seuls les utilisateurs connectés peuvent exécuter des fonctions.",
+	"wikilambda-function-evaluator-no-function-selected-for-implementation": "Sélectionnez une fonction pour essayer cette implémentation.",
+	"wikilambda-function-evaluator-no-function-selected": "Sélectionnez une fonction pour l'essayer.",
 	"wikilambda-function-evaluator-enter-inputs": "Saisir les entrées",
 	"wikilambda-function-evaluator-result": "Résultat",
 	"wikilambda-function-evaluator-result-details": "Détails",

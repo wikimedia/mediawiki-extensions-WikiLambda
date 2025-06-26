@@ -239,6 +239,8 @@
 	"wikilambda-function-details-table-deactivate": "Trennen",
 	"wikilambda-function-evaluation-restriction-notrunnable": "Für diese Funktion gibt es keine verbundenen Implementierungen.",
 	"wikilambda-function-evaluation-restriction-warning": "Es tut uns leid! Momentan können nur angemeldete Benutzer Funktionen ausführen.",
+	"wikilambda-function-evaluator-no-function-selected-for-implementation": "Wähle eine Funktion aus, um diese Implementierung auszuprobieren.",
+	"wikilambda-function-evaluator-no-function-selected": "Wähle eine Funktion aus, um sie auszuprobieren.",
 	"wikilambda-function-evaluator-enter-inputs": "Eingaben eingeben",
 	"wikilambda-function-evaluator-result": "Ergebnis",
 	"wikilambda-function-evaluator-result-details": "Details",
