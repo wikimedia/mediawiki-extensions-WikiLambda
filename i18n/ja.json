@@ -157,7 +157,7 @@
 	"wikilambda-publish-input-changed-impact-prompt": "<p>この関数の入力フィールドを変更しました。<strong>既存のすべての実装とテストは、現在の関数から切り離されます。</strong>続行しますか?</p>",
 	"wikilambda-publish-output-changed-impact-prompt": "<p>この関数の出力タイプを変更しました。<strong>既存のすべての実装とテストは、現在の関数から切り離されます。</strong>続行しますか?</p>",
 	"wikilambda-publish-input-and-output-changed-impact-prompt": "<p>この関数の入力フィールドと出力タイプを変更しました。<strong>既存のすべての実装とテストは、現在の関数から切り離されます。</strong>続行しますか?</p>",
-	"wikilambda-loading": "データロード中",
+	"wikilambda-loading": "データを読み込み中",
 	"wikilambda-typeselector-label": "タイプを選択",
 	"wikilambda-argument-typeselector-label": "この引数のタイプを選択してください",
 	"wikilambda-function-typeselector-label": "関数を選択",
