@@ -242,6 +242,8 @@
 	"wikilambda-function-details-table-deactivate": "فصل",
 	"wikilambda-function-evaluation-restriction-notrunnable": "هذه الدالة ليس لديها تنفيذات موصولة.",
 	"wikilambda-function-evaluation-restriction-warning": "نأسف! في الوقت الحالي، فقط المستخدمين المسجّلين يمكنهم تشغيل الدوال.",
+	"wikilambda-function-evaluator-no-function-selected-for-implementation": "اختر وظيفة لمحاولة هذا التنفيذ.",
+	"wikilambda-function-evaluator-no-function-selected": "اختر دالة لتجربتها.",
 	"wikilambda-function-evaluator-enter-inputs": "أدخل المدخلات",
 	"wikilambda-function-evaluator-result": "النتيجة",
 	"wikilambda-function-evaluator-result-details": "التفاصيل",
