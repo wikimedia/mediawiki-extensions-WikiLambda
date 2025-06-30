@@ -233,6 +233,8 @@
 	"wikilambda-function-details-table-deactivate": "Disconnecter",
 	"wikilambda-function-evaluation-restriction-notrunnable": "Iste function non ha implementationes connectite.",
 	"wikilambda-function-evaluation-restriction-warning": "Nos lo regretta! Al momento, solmente usatores que ha aperite session pote executar functiones.",
+	"wikilambda-function-evaluator-no-function-selected-for-implementation": "Selige un function pro tentar iste implementation.",
+	"wikilambda-function-evaluator-no-function-selected": "Selige un function pro tentar lo.",
 	"wikilambda-function-evaluator-enter-inputs": "Entra entratas",
 	"wikilambda-function-evaluator-result": "Resultato",
 	"wikilambda-function-evaluator-result-details": "Detalios",

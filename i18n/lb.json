@@ -188,6 +188,8 @@
 	"wikilambda-function-details-table-deactivate": "Trennen",
 	"wikilambda-function-evaluation-restriction-notrunnable": "Dës Funktioun huet keng verbonnen Implementéierungen.",
 	"wikilambda-function-evaluation-restriction-warning": "Et deet eis Leed! Am Moment kënnen nëmmen ageloggte Benotzer Funktiounen ausféieren.",
+	"wikilambda-function-evaluator-no-function-selected-for-implementation": "Sicht eng Funktioun eraus fir dës Implementéierung auszeprobéieren.",
+	"wikilambda-function-evaluator-no-function-selected": "Sicht eng Funktioun eraus fir s'auszeprobéieren.",
 	"wikilambda-function-evaluator-enter-inputs": "Inputten aginn",
 	"wikilambda-function-evaluator-result": "Resultat",
 	"wikilambda-function-evaluator-result-details": "Detailer",
