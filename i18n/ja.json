@@ -84,7 +84,7 @@
 	"wikilambda-savechanges": "変更を保存",
 	"wikilambda-summarylabel": "要約:",
 	"wikilambda-languagelabel": "言語",
-	"wikilambda-loading": "データロード中",
+	"wikilambda-loading": "データを読み込み中",
 	"wikilambda-typeselector-label": "タイプを選択",
 	"wikilambda-argument-typeselector-label": "この引数のタイプを選択してください",
 	"wikilambda-function-typeselector-label": "関数を選択",
