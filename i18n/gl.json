@@ -6,6 +6,8 @@
 		]
 	},
 	"wikilambda-cancel": "Cancelar",
+	"wikilambda-confirm": "Confirmar",
+	"wikilambda-context-menu": "Menú contextual",
 	"wikilambda-edit": "Editar",
 	"wikilambda-editor-default-name": "Sen título",
 	"wikilambda-editor-fn-step-function-about": "Acerca de",
