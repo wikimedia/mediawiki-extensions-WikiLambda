@@ -208,7 +208,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 				__METHOD__ . ' encountered an error response {httpStatusCode} with a broken ZError: {response}',
 				[
 					'httpStatusCode' => $httpStatusCode,
-					'response' => var_export( $response, true )
+					'response' => $request->getContent()
 				]
 			);
 
@@ -360,12 +360,12 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 					default:
 						// Non zerror, or Unknown zerror:
 						$this->logger->error(
-							__METHOD__ . ' encountered a {$httpStatusCode} HTTP error with an unknown zerror',
+							__METHOD__ . ' encountered a {httpStatusCode} HTTP error with an unknown zerror',
 							[
-								'zerror' => $zerror->getSerialized(),
+								'zerror' => json_encode( $zerror->getSerialized() ),
 								'zerrorCode' => $zerrorCode,
 								'httpStatusCode' => $httpStatusCode,
-								'response' => $response
+								'response' => $request->getContent()
 							]
 						);
 				}
@@ -387,12 +387,12 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 
 					default:
 						$this->logger->error(
-							__METHOD__ . ' encountered a {$httpStatusCode} HTTP error with an unknown zerror',
+							__METHOD__ . ' encountered a {httpStatusCode} HTTP error with an unknown zerror',
 							[
-								'zerror' => $zerror->getSerialized(),
+								'zerror' => json_encode( $zerror->getSerialized() ),
 								'zerrorCode' => $zerrorCode,
 								'httpStatusCode' => $httpStatusCode,
-								'response' => $response
+								'response' => $request->getContent()
 							]
 						);
 						// Fall-back to default handling, below.
@@ -404,10 +404,10 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 				$this->logger->warning(
 					__METHOD__ . ' encountered an unknown HTTP error code',
 					[
-						'zerror' => $zerror->getSerialized(),
+						'zerror' => json_encode( $zerror->getSerialized() ),
 						'zerrorCode' => $zerrorCode,
 						'httpStatusCode' => $httpStatusCode,
-						'response' => $response
+						'response' => $request->getContent()
 					]
 				);
 				// Fall-back to default handling, below.
