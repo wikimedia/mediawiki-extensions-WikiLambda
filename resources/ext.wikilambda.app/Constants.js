@@ -231,43 +231,12 @@ Constants.WIKIDATA_SIMPLIFIED_TYPES = {
 	[ Constants.Z_WIKIDATA_REFERENCE_PROPERTY ]: Constants.Z_WIKIDATA_PROPERTY
 };
 
-// Wikidata builtin components
-Constants.WIKIDATA_BUILTIN_COMPONENTS = {
-	[ Constants.Z_WIKIDATA_ITEM ]: 'wl-wikidata-item',
-	[ Constants.Z_WIKIDATA_REFERENCE_ITEM ]: 'wl-wikidata-item',
-	[ Constants.Z_WIKIDATA_FETCH_ITEM ]: 'wl-wikidata-item',
-	[ Constants.Z_WIKIDATA_LEXEME ]: 'wl-wikidata-lexeme',
-	[ Constants.Z_WIKIDATA_FETCH_LEXEME ]: 'wl-wikidata-lexeme',
-	[ Constants.Z_WIKIDATA_REFERENCE_LEXEME ]: 'wl-wikidata-lexeme',
-	[ Constants.Z_WIKIDATA_LEXEME_FORM ]: 'wl-wikidata-lexeme-form',
-	[ Constants.Z_WIKIDATA_FETCH_LEXEME_FORM ]: 'wl-wikidata-lexeme-form',
-	[ Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM ]: 'wl-wikidata-lexeme-form',
-	[ Constants.Z_WIKIDATA_PROPERTY ]: 'wl-wikidata-property',
-	[ Constants.Z_WIKIDATA_FETCH_PROPERTY ]: 'wl-wikidata-property',
-	[ Constants.Z_WIKIDATA_REFERENCE_PROPERTY ]: 'wl-wikidata-property'
-};
-
 // Wikidata enum selector placeholders
 Constants.WIKIDATA_ENUM_PLACEHOLDER_MSG = {
 	[ Constants.Z_WIKIDATA_REFERENCE_ITEM ]: 'wikilambda-wikidata-item-selector-placeholder',
 	[ Constants.Z_WIKIDATA_REFERENCE_LEXEME ]: 'wikilambda-wikidata-lexeme-selector-placeholder',
 	[ Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM ]: 'wikilambda-wikidata-lexeme-form-selector-placeholder',
 	[ Constants.Z_WIKIDATA_REFERENCE_PROPERTY ]: 'wikilambda-wikidata-property-selector-placeholder'
-};
-
-// Wikifunctions Builtin Components
-Constants.BUILTIN_COMPONENTS = {
-	[ Constants.Z_ARGUMENT_REFERENCE ]: 'wl-z-argument-reference',
-	[ Constants.Z_FUNCTION_CALL ]: 'wl-z-function-call',
-	[ Constants.Z_RESPONSEENVELOPE ]: 'wl-z-evaluation-result',
-	[ Constants.Z_IMPLEMENTATION ]: 'wl-z-implementation',
-	[ Constants.Z_TESTER ]: 'wl-z-tester',
-	[ Constants.Z_MONOLINGUALSTRING ]: 'wl-z-monolingual-string',
-	[ Constants.Z_STRING ]: 'wl-z-string',
-	[ Constants.Z_REFERENCE ]: 'wl-z-reference',
-	[ Constants.Z_BOOLEAN ]: 'wl-z-boolean',
-	[ Constants.Z_CODE ]: 'wl-z-code',
-	[ Constants.Z_TYPED_LIST ]: 'wl-z-typed-list'
 };
 
 Constants.BUILTIN_TYPE_CONFIG = {
@@ -373,11 +342,6 @@ Constants.BUILTIN_TYPE_CONFIG = {
 		allowExpansion: true
 	}
 };
-
-Object.assign(
-	Constants.BUILTIN_COMPONENTS,
-	Constants.WIKIDATA_BUILTIN_COMPONENTS
-);
 
 // Types that must be considered enums
 // but have a builtin component:
