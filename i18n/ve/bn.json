@@ -5,13 +5,28 @@
 			"আফতাবুজ্জামান"
 		]
 	},
+	"wikilambda-fragment-pending": "⏳ ফাংশনটি ডাকা হচ্ছে…",
+	"wikilambda-recentchanges-edit-legend": "উইকিফাংশন্স সম্পাদনা",
 	"wikilambda-recentchanges-edit-letter": "ফ",
+	"wikilambda-recentchanges-edit-title": "উইকিফাংশন্স সম্পাদনা",
+	"wikilambda-recentchanges-entry-function": "ফাংশন",
 	"wikilambda-recentchanges-filter-label": "উইকিফাংশন্স সম্পাদনা",
+	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "লোড করা হচ্ছে",
+	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "প্রাকদর্শন খুব বেশি সময় নিয়েছে",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "একটি বিকল্প বেছে নিন",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "কম পড়ুন",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "আরও পড়ুন",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "কোনো ফলাফল পাওয়া যায়নি",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "ফাংশন অনুসন্ধান",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "ফলাফল",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "ইনপুট স্ট্রিং",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "পাঠ্য লিখুন",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "প্রস্তাবিত ফাংশন",
-	"wikilambda-visualeditor-wikifunctionscall-title": "ফাংশন"
+	"wikilambda-visualeditor-wikifunctionscall-no-description": "বিবরণ নেই",
+	"wikilambda-visualeditor-wikifunctionscall-no-input-label": "লেবেল নেই",
+	"wikilambda-visualeditor-wikifunctionscall-no-name": "নাম নেই",
+	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "ফাংশনের উপাত্ত লোড করা হচ্ছে",
+	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "কোন ফাংশন নির্বাচন করা হয়নি।",
+	"wikilambda-visualeditor-wikifunctionscall-title": "ফাংশন",
+	"wikilambda-visualeditor-wikifunctionscall-preview-title": "প্রাকদর্শন",
+	"wikilambda-visualeditor-wikifunctionscall-preview-no-result": "ফলাফলের প্রাকদর্শন দেখতে মান লিখুন।"
 }
