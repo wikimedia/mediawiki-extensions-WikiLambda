@@ -74,6 +74,9 @@ module.exports = exports = {
 		 * @return {number}
 		 */
 		depth: function () {
+			if ( !this.keyPath || typeof this.keyPath !== 'string' ) {
+				return 0;
+			}
 			const depth = ( this.keyPath.split( '.' ) || [] ).length - 1;
 			return ( depth % Constants.COLOR_NESTING_LEVELS ) + 1;
 		}
