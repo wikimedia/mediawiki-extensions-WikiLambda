@@ -17,6 +17,7 @@
 		@update:selected="onSelect"
 		@update:input-value="onInput"
 		@blur="onBlur"
+		@focus="onFocus"
 		@load-more="onLoadMore"
 	>
 		<template #no-results>
@@ -78,20 +79,9 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		lookupPlaceholder: function () {
-			switch ( this.type ) {
-				case Constants.Z_WIKIDATA_ITEM:
-					return this.$i18n( 'wikilambda-wikidata-item-selector-placeholder' ).text();
-				case Constants.Z_WIKIDATA_LEXEME:
-					return this.$i18n( 'wikilambda-wikidata-lexeme-selector-placeholder' ).text();
-				case Constants.Z_WIKIDATA_LEXEME_FORM:
-					return this.$i18n( 'wikilambda-wikidata-lexeme-form-selector-placeholder' ).text();
-				case Constants.Z_WIKIDATA_PROPERTY:
-					return this.$i18n( 'wikilambda-wikidata-property-selector-placeholder' ).text();
-				case Constants.Z_WIKIDATA_LEXEME_SENSE:
-				case Constants.Z_WIKIDATA_STATEMENT:
-				default:
-					return this.$i18n( 'wikilambda-wikidata-entity-selector-placeholder' ).text();
-			}
+			const msg = Constants.WIKIDATA_SELECTOR_PLACEHOLDER_MSG[ this.type ];
+			// eslint-disable-next-line mediawiki/msg-doc
+			return this.$i18n( msg || 'wikilambda-wikidata-entity-selector-placeholder' ).text();
 		}
 	},
 	methods: Object.assign( {}, mapActions( useMainStore, [
@@ -115,11 +105,10 @@ module.exports = exports = defineComponent( {
 		onInput: function ( input ) {
 			this.inputValue = input;
 
-			// If empty input, clear and exit
 			// Clear previous results when input changes
 			this.clearResults();
 
-			// If empty input, exit
+			// If empty input, do nothing
 			if ( !input ) {
 				return;
 			}
@@ -153,6 +142,19 @@ module.exports = exports = defineComponent( {
 
 			this.$emit( 'select-wikidata-entity', value || '' );
 		},
+
+		/**
+		 * On focus, if there is an inputValue and the lookupResults are empty,
+		 * get the lookup results for the inputValue.
+		 * This ensures that the lookup results are populated when the field is focused,
+		 * especially when the field is mounted.
+		 */
+		onFocus: function () {
+			if ( this.inputValue && !this.lookupResults.length ) {
+				this.getLookupResults( this.inputValue );
+			}
+		},
+
 		/**
 		 * On blur, select the value that matches the inputValue if valid;
 		 * else, restore the previous selected value.
@@ -209,6 +211,7 @@ module.exports = exports = defineComponent( {
 			this.lookupWikidataEntities( payload )
 				.then( ( data ) => {
 					const { searchContinue, search } = data;
+
 					this.lookupConfig.searchContinue = searchContinue;
 					this.lookupConfig.searchQuery = searchTerm;
 					for ( const entity of search ) {

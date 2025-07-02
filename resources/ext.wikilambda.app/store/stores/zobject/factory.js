@@ -117,6 +117,7 @@ module.exports = {
 					case Constants.Z_WIKIDATA_ITEM:
 					case Constants.Z_WIKIDATA_LEXEME:
 					case Constants.Z_WIKIDATA_LEXEME_FORM:
+					case Constants.Z_WIKIDATA_LEXEME_SENSE:
 					case Constants.Z_WIKIDATA_PROPERTY:
 						return this.createWikidataEntity( payload );
 					case Constants.Z_WIKIDATA_REFERENCE_ITEM:
@@ -773,59 +774,17 @@ module.exports = {
 			 * @return {Object}
 			 */
 			const generateWikidataEntity = ( payload ) => {
-				// Get scaffolding
 				const value = getScaffolding( Constants.Z_FUNCTION_CALL );
-				let wdRef, wdFetch, wdFetchId;
+				const refType = Constants.WIKIDATA_REFERENCE_TYPES[ payload.type ];
+				const fetchFunction = Constants.WIKIDATA_FETCH_FUNCTIONS[ payload.type ];
+				const fetchFunctionId = fetchFunction ? `${ fetchFunction }K1` : null;
 
-				// Set to Wikidata Entity fetch function call:
-				switch ( payload.type ) {
-					case Constants.Z_WIKIDATA_LEXEME_FORM:
-						wdRef = this.createWikidataReference( {
-							type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM,
-							value: payload.value
-						} );
-						wdFetch = Constants.Z_WIKIDATA_FETCH_LEXEME_FORM;
-						wdFetchId = Constants.Z_WIKIDATA_FETCH_LEXEME_FORM_ID;
-						value[ Constants.Z_FUNCTION_CALL_FUNCTION ] = wdFetch;
-						value[ wdFetchId ] = wdRef;
-						return value;
-					case Constants.Z_WIKIDATA_LEXEME:
-						wdRef = this.createWikidataReference( {
-							type: Constants.Z_WIKIDATA_REFERENCE_LEXEME,
-							value: payload.value
-						} );
-						wdFetch = Constants.Z_WIKIDATA_FETCH_LEXEME;
-						wdFetchId = Constants.Z_WIKIDATA_FETCH_LEXEME_ID;
-						value[ Constants.Z_FUNCTION_CALL_FUNCTION ] = wdFetch;
-						value[ wdFetchId ] = wdRef;
-						return value;
-					case Constants.Z_WIKIDATA_ITEM:
-						wdRef = this.createWikidataReference( {
-							type: Constants.Z_WIKIDATA_REFERENCE_ITEM,
-							value: payload.value
-						} );
-						wdFetch = Constants.Z_WIKIDATA_FETCH_ITEM;
-						wdFetchId = Constants.Z_WIKIDATA_FETCH_ITEM_ID;
-						value[ Constants.Z_FUNCTION_CALL_FUNCTION ] = wdFetch;
-						value[ wdFetchId ] = wdRef;
-						return value;
-					case Constants.Z_WIKIDATA_PROPERTY:
-						wdRef = this.createWikidataReference( {
-							type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY,
-							value: payload.value
-						} );
-						wdFetch = Constants.Z_WIKIDATA_FETCH_PROPERTY;
-						wdFetchId = Constants.Z_WIKIDATA_FETCH_PROPERTY_ID;
-						value[ Constants.Z_FUNCTION_CALL_FUNCTION ] = wdFetch;
-						value[ wdFetchId ] = wdRef;
-						return value;
-
-					// TODO: Future Wikidata integrations
-					// case Constants.Z_WIKIDATA_STATEMENT:
-					// case Constants.Z_WIKIDATA_LEXEME_SENSE:
-					default:
-						return value;
+				if ( refType && fetchFunction && fetchFunctionId ) {
+					const wdRef = this.createObjectByType( { type: refType, value: payload.value } );
+					value[ Constants.Z_FUNCTION_CALL_FUNCTION ] = fetchFunction;
+					value[ fetchFunctionId ] = wdRef;
 				}
+				return value;
 			};
 			return generateWikidataEntity;
 		},

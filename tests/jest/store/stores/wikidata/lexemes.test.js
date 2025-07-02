@@ -13,6 +13,40 @@ const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store
 const LabelData = require( '../../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' );
 
 const lexemeFormId = 'L333333-F5';
+
+// Test data for sense processing
+const senseWithItem = {
+	id: 'L333333-S3',
+	glosses: {
+		de: { language: 'de', value: 'german gloss' }
+	},
+	claims: {
+		P5137: [ {
+			mainsnak: {
+				datavalue: {
+					value: { id: 'Q123' }
+				}
+			}
+		} ]
+	}
+};
+
+const senseWithoutItem = {
+	id: 'L333333-S2',
+	glosses: {
+		de: { language: 'de', value: 'german gloss' }
+	},
+	claims: {}
+};
+
+const senseWithAvailableGloss = {
+	id: 'L333333-S1',
+	glosses: {
+		en: { language: 'en', value: 'english gloss' }
+	},
+	claims: {}
+};
+// Lexeme data with senses and forms
 const lexemeData = {
 	title: 'Lexeme:L333333',
 	lemmas: {
@@ -26,7 +60,31 @@ const lexemeData = {
 		},
 		grammaticalFeatures: [ 'Q1230649' ],
 		claims: {}
-	} ]
+	} ],
+	senses: [
+		senseWithAvailableGloss,
+		senseWithoutItem,
+		senseWithItem
+	]
+};
+
+// Item data for sense processing
+const itemDataWithoutLabel = {
+	id: 'L333333-S1',
+	labels: { de: { language: 'de', value: 'german label' } },
+	descriptions: {}
+};
+
+const itemDataWithLabelAndDescription = {
+	id: 'Q123',
+	labels: { en: { language: 'en', value: 'Item Label' } },
+	descriptions: { en: { language: 'en', value: 'Item Description' } }
+};
+
+const itemDataWithLabelOnly = {
+	id: 'Q123',
+	labels: { en: { language: 'en', value: 'Item Label' } },
+	descriptions: {}
 };
 
 describe( 'Wikidata Lexemes Pinia store', () => {
@@ -148,6 +206,93 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 			} );
 			it( 'returns correct URL for lexeme form', () => {
 				expect( store.getLexemeFormUrl( lexemeFormId ) ).toContain( 'Lexeme:L333333#F5' );
+			} );
+		} );
+
+		describe( 'getLexemeSenseData', () => {
+			it( 'returns undefined when lexeme sense ID is not found', () => {
+				const result = store.getLexemeSenseData( 'L333333-S9' );
+				expect( result ).toBeUndefined();
+			} );
+
+			it( 'returns undefined when lexeme has no senses', () => {
+				store.lexemes.L333333 = {
+					title: 'Lexeme:L333333',
+					lemmas: {},
+					forms: [],
+					senses: []
+				};
+
+				const result = store.getLexemeSenseData( 'L333333-S1' );
+				expect( result ).toBeUndefined();
+			} );
+
+			it( 'returns the lexeme sense data when found', () => {
+				store.senses.L333333 = lexemeData.senses;
+
+				const result = store.getLexemeSenseData( 'L333333-S1' );
+				expect( result ).toEqual( lexemeData.senses[ 0 ] );
+			} );
+		} );
+
+		describe( 'getLexemeSenseLabelData', () => {
+			beforeEach( () => {
+				Object.defineProperty( store, 'getUserLangCode', {
+					value: 'en'
+				} );
+			} );
+
+			it( 'returns undefined when lexeme sense ID is undefined', () => {
+				const result = store.getLexemeSenseLabelData( undefined );
+				expect( result ).toBeUndefined();
+			} );
+
+			it( 'returns lexeme sense ID as label when lexeme sense data is not available', () => {
+				const result = store.getLexemeSenseLabelData( 'L333333-S9' );
+				expect( result ).toEqual( new LabelData( 'L333333-S9', 'L333333-S9', null ) );
+			} );
+
+			it( 'returns lexeme sense label data in user language when available', () => {
+				store.senses.L333333 = lexemeData.senses;
+
+				const result = store.getLexemeSenseLabelData( 'L333333-S1' );
+				expect( result ).toEqual( new LabelData( 'L333333-S1', 'english gloss', null, 'en' ) );
+			} );
+
+			it( 'returns lexeme sense label data in fallback language when user language not available', () => {
+				// Change user language to German to test fallback
+				Object.defineProperty( store, 'getUserLangCode', {
+					value: 'de'
+				} );
+				store.senses.L333333 = lexemeData.senses;
+
+				const result = store.getLexemeSenseLabelData( 'L333333-S1' );
+				expect( result ).toEqual( new LabelData( 'L333333-S1', 'english gloss', null, 'en' ) );
+			} );
+
+			it( 'returns lexeme sense ID as label when no glosses available', () => {
+				// Create a sense that has no glosses
+				const senseWithoutGlosses = [
+					{
+						id: 'L333333-S1',
+						glosses: {},
+						claims: {}
+					}
+				];
+				store.senses.L333333 = senseWithoutGlosses;
+
+				const result = store.getLexemeSenseLabelData( 'L333333-S1' );
+				expect( result ).toEqual( new LabelData( 'L333333-S1', 'L333333-S1', null ) );
+			} );
+		} );
+
+		describe( 'getLexemeSenseUrl', () => {
+			it( 'returns undefined if id is not provided', () => {
+				expect( store.getLexemeSenseUrl( undefined ) ).toBeUndefined();
+				expect( store.getLexemeSenseUrl( '' ) ).toBeUndefined();
+			} );
+			it( 'returns correct URL for lexeme sense', () => {
+				expect( store.getLexemeSenseUrl( 'L333333-S1' ) ).toContain( 'Lexeme:L333333#S1' );
 			} );
 		} );
 
@@ -350,6 +495,134 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 				expect( store.setLexemeData ).toHaveBeenCalledWith( {
 					id: 'L444444',
 					data: { title: 'Lexeme:L444444', forms: [], lemmas: {} }
+				} );
+			} );
+
+			it( 'handles undefined entities correctly', async () => {
+				const lexemes = [ 'L333333' ];
+				const apiResponse = {
+					entities: {
+						L333333: undefined
+					}
+				};
+				fetchMock = jest.fn().mockResolvedValue( {
+					json: jest.fn().mockReturnValue( apiResponse )
+				} );
+				// eslint-disable-next-line n/no-unsupported-features/node-builtins
+				global.fetch = fetchMock;
+				store.setLexemeData = jest.fn();
+
+				await store.fetchLexemes( { ids: lexemes } );
+
+				// setLexemeData is called to store the promise, but not to store entity data
+				// The promise resolves but no entity data is stored because entity is undefined
+				expect( store.setLexemeData ).toHaveBeenCalledWith( {
+					id: 'L333333',
+					data: expect.any( Promise )
+				} );
+			} );
+		} );
+
+		describe( 'fetchLexemeSenseFallbackLabels', () => {
+			beforeEach( () => {
+				Object.defineProperty( store, 'getUserLangCode', {
+					value: 'en'
+				} );
+				// Initialize items store
+				store.items = {};
+			} );
+
+			it( 'returns the original sense if sense already has a gloss in user language', async () => {
+				const result = await store.fetchLexemeSenseFallbackLabels( senseWithAvailableGloss );
+				expect( result ).toBe( senseWithAvailableGloss );
+			} );
+
+			it( 'returns the original sense if sense has no item for this sense', async () => {
+				const result = await store.fetchLexemeSenseFallbackLabels( senseWithoutItem );
+				expect( result ).toBe( senseWithoutItem );
+			} );
+
+			it( 'returns the original sense when item has no label in user language', async () => {
+				store.items.Q123 = itemDataWithoutLabel;
+
+				const result = await store.fetchLexemeSenseFallbackLabels( senseWithItem );
+				expect( result ).toBe( senseWithItem );
+				expect( result.glosses.en ).toBeUndefined();
+			} );
+
+			it( 'returns the original sense when item is not in store', async () => {
+				delete store.items.Q123;
+
+				const result = await store.fetchLexemeSenseFallbackLabels( senseWithItem );
+				expect( result ).toBe( senseWithItem );
+				expect( result.glosses.en ).toBeUndefined();
+			} );
+
+			it( 'returns modified sense with fallback label when item has label and description', async () => {
+				store.items.Q123 = itemDataWithLabelAndDescription;
+
+				const result = await store.fetchLexemeSenseFallbackLabels( senseWithItem );
+				expect( result.glosses.en ).toEqual( {
+					value: 'Item Label - Item Description',
+					language: 'en'
+				} );
+			} );
+
+			it( 'returns modified sense with fallback label when item has only label', async () => {
+				store.items.Q123 = itemDataWithLabelOnly;
+
+				const result = await store.fetchLexemeSenseFallbackLabels( senseWithItem );
+				expect( result.glosses.en ).toEqual( {
+					value: 'Item Label',
+					language: 'en'
+				} );
+			} );
+		} );
+
+		describe( 'fetchLexemeSenses', () => {
+			beforeEach( () => {
+				store.lexemes = {};
+				store.senses = {};
+				store.lexemes.L333333 = lexemeData;
+				store.items.Q123 = itemDataWithLabelAndDescription;
+				const apiResponse = {
+					entities: {
+						L333333: lexemeData
+					}
+				};
+				fetchMock = jest.fn().mockResolvedValue( {
+					json: jest.fn().mockReturnValue( apiResponse )
+				} );
+				// eslint-disable-next-line n/no-unsupported-features/node-builtins
+				global.fetch = fetchMock;
+				Object.defineProperty( store, 'getUserLangCode', {
+					value: 'en'
+				} );
+				store.setLexemeSensesData = jest.fn();
+			} );
+
+			it( 'processes senses for fallback labels', async () => {
+				await store.fetchLexemeSenses( { lexemeIds: [ 'L333333' ] } );
+
+				expect( store.setLexemeSensesData ).toHaveBeenCalledWith( {
+					lexemeId: 'L333333',
+					data: [
+						senseWithAvailableGloss,
+						senseWithoutItem,
+						// English item for sense 3 added to the glosses
+						Object.assign( {}, senseWithItem, {
+							glosses: {
+								de: {
+									language: 'de',
+									value: 'german gloss'
+								},
+								en: {
+									language: 'en',
+									value: 'Item Label - Item Description'
+								}
+							}
+						} )
+					]
 				} );
 			} );
 		} );

@@ -133,9 +133,8 @@ module.exports = {
 				this.items[ payload.id ] = payload.data;
 				return;
 			}
-
-			// Otherwise, unwrap the data to select only subset of Wikidata Item data; title and labels
-			const unwrap = ( { title, labels } ) => ( { title, labels } );
+			// Otherwise, unwrap the data to select only subset of Wikidata Item data; title, labels and descriptions
+			const unwrap = ( { title, labels, descriptions } ) => ( { title, labels, descriptions } );
 			this.items[ payload.id ] = unwrap( payload.data );
 		},
 
@@ -181,12 +180,17 @@ module.exports = {
 					const fetched = data.entities ? Object.keys( data.entities ) : [];
 					fetched.forEach( ( id ) => {
 						const entity = data.entities[ id ];
-						// Check if entity exists and has a 'missing' property
-						if ( entity && typeof entity === 'object' && 'missing' in entity ) {
-							this.resetItemData( { ids: [ id ] } );
-						} else if ( entity ) {
-							this.setItemData( { id, data: entity } );
+						// If entity is undefined, do nothing
+						if ( !entity ) {
+							return;
 						}
+						// If entity has a 'missing' property, reset the item data
+						if ( typeof entity === 'object' && 'missing' in entity ) {
+							this.resetItemData( { ids: [ id ] } );
+							return;
+						}
+						// Otherwise, store the item data
+						this.setItemData( { id, data: entity } );
 					} );
 					return data;
 				} )

@@ -126,7 +126,8 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		enumSelectPlaceholder: function () {
-			const msg = Constants.WIKIDATA_ENUM_PLACEHOLDER_MSG[ this.entityType ];
+			const type = Constants.WIKIDATA_SIMPLIFIED_TYPES[ this.entityType ];
+			const msg = Constants.WIKIDATA_SELECTOR_PLACEHOLDER_MSG[ type ];
 			// eslint-disable-next-line mediawiki/msg-doc
 			return this.$i18n( msg || 'wikilambda-wikidata-entity-selector-placeholder' ).text();
 		},

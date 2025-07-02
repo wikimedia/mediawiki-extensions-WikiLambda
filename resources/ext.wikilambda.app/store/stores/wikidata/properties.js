@@ -176,12 +176,18 @@ module.exports = {
 					const fetched = data.entities ? Object.keys( data.entities ) : [];
 					fetched.forEach( ( id ) => {
 						const entity = data.entities[ id ];
-						// Check if entity exists and has a 'missing' property
-						if ( entity && typeof entity === 'object' && 'missing' in entity ) {
-							this.resetPropertyData( { ids: [ id ] } );
-						} else if ( entity ) {
-							this.setPropertyData( { id, data: entity } );
+						// If entity is undefined, do nothing
+						if ( !entity ) {
+							return;
 						}
+
+						// If entity has a 'missing' property, reset the property data
+						if ( typeof entity === 'object' && 'missing' in entity ) {
+							this.resetPropertyData( { ids: [ id ] } );
+							return;
+						}
+						// Otherwise, store the property data
+						this.setPropertyData( { id, data: entity } );
 					} );
 					return data;
 				} )

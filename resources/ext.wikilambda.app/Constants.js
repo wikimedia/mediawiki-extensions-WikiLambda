@@ -191,8 +191,8 @@ Constants.WIKIDATA_TYPES = [
 Constants.WIKIDATA_REFERENCE_TYPES = {
 	[ Constants.Z_WIKIDATA_ITEM ]: Constants.Z_WIKIDATA_REFERENCE_ITEM,
 	[ Constants.Z_WIKIDATA_PROPERTY ]: Constants.Z_WIKIDATA_REFERENCE_PROPERTY,
-	[ Constants.Z_WIKIDATA_LEXEME_FORM ]: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM,
 	[ Constants.Z_WIKIDATA_LEXEME ]: Constants.Z_WIKIDATA_REFERENCE_LEXEME,
+	[ Constants.Z_WIKIDATA_LEXEME_FORM ]: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM,
 	[ Constants.Z_WIKIDATA_LEXEME_SENSE ]: Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE
 };
 
@@ -200,8 +200,8 @@ Constants.WIKIDATA_REFERENCE_TYPES = {
 Constants.WIKIDATA_FETCH_FUNCTIONS = {
 	[ Constants.Z_WIKIDATA_ITEM ]: Constants.Z_WIKIDATA_FETCH_ITEM,
 	[ Constants.Z_WIKIDATA_PROPERTY ]: Constants.Z_WIKIDATA_FETCH_PROPERTY,
-	[ Constants.Z_WIKIDATA_LEXEME_FORM ]: Constants.Z_WIKIDATA_FETCH_LEXEME_FORM,
 	[ Constants.Z_WIKIDATA_LEXEME ]: Constants.Z_WIKIDATA_FETCH_LEXEME,
+	[ Constants.Z_WIKIDATA_LEXEME_FORM ]: Constants.Z_WIKIDATA_FETCH_LEXEME_FORM,
 	[ Constants.Z_WIKIDATA_LEXEME_SENSE ]: Constants.Z_WIKIDATA_FETCH_LEXEME_SENSE
 };
 
@@ -210,8 +210,8 @@ Constants.WIKIDATA_FETCH_FUNCTIONS = {
 Constants.WIKIDATA_API_TYPE_VALUES = {
 	[ Constants.Z_WIKIDATA_ITEM ]: 'item',
 	[ Constants.Z_WIKIDATA_PROPERTY ]: 'property',
-	[ Constants.Z_WIKIDATA_LEXEME_FORM ]: 'form',
 	[ Constants.Z_WIKIDATA_LEXEME ]: 'lexeme',
+	[ Constants.Z_WIKIDATA_LEXEME_FORM ]: 'form',
 	[ Constants.Z_WIKIDATA_LEXEME_SENSE ]: 'sense'
 };
 
@@ -226,17 +226,21 @@ Constants.WIKIDATA_SIMPLIFIED_TYPES = {
 	[ Constants.Z_WIKIDATA_LEXEME_FORM ]: Constants.Z_WIKIDATA_LEXEME_FORM,
 	[ Constants.Z_WIKIDATA_FETCH_LEXEME_FORM ]: Constants.Z_WIKIDATA_LEXEME_FORM,
 	[ Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM ]: Constants.Z_WIKIDATA_LEXEME_FORM,
+	[ Constants.Z_WIKIDATA_LEXEME_SENSE ]: Constants.Z_WIKIDATA_LEXEME_SENSE,
+	[ Constants.Z_WIKIDATA_FETCH_LEXEME_SENSE ]: Constants.Z_WIKIDATA_LEXEME_SENSE,
+	[ Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE ]: Constants.Z_WIKIDATA_LEXEME_SENSE,
 	[ Constants.Z_WIKIDATA_PROPERTY ]: Constants.Z_WIKIDATA_PROPERTY,
 	[ Constants.Z_WIKIDATA_FETCH_PROPERTY ]: Constants.Z_WIKIDATA_PROPERTY,
 	[ Constants.Z_WIKIDATA_REFERENCE_PROPERTY ]: Constants.Z_WIKIDATA_PROPERTY
 };
 
-// Wikidata enum selector placeholders
-Constants.WIKIDATA_ENUM_PLACEHOLDER_MSG = {
-	[ Constants.Z_WIKIDATA_REFERENCE_ITEM ]: 'wikilambda-wikidata-item-selector-placeholder',
-	[ Constants.Z_WIKIDATA_REFERENCE_LEXEME ]: 'wikilambda-wikidata-lexeme-selector-placeholder',
-	[ Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM ]: 'wikilambda-wikidata-lexeme-form-selector-placeholder',
-	[ Constants.Z_WIKIDATA_REFERENCE_PROPERTY ]: 'wikilambda-wikidata-property-selector-placeholder'
+// Wikidata selector placeholders
+Constants.WIKIDATA_SELECTOR_PLACEHOLDER_MSG = {
+	[ Constants.Z_WIKIDATA_ITEM ]: 'wikilambda-wikidata-item-selector-placeholder',
+	[ Constants.Z_WIKIDATA_LEXEME ]: 'wikilambda-wikidata-lexeme-selector-placeholder',
+	[ Constants.Z_WIKIDATA_LEXEME_FORM ]: 'wikilambda-wikidata-lexeme-form-selector-placeholder',
+	[ Constants.Z_WIKIDATA_LEXEME_SENSE ]: 'wikilambda-wikidata-lexeme-sense-selector-placeholder',
+	[ Constants.Z_WIKIDATA_PROPERTY ]: 'wikilambda-wikidata-property-selector-placeholder'
 };
 
 // Visual editor Wikidata input error messages
@@ -337,6 +341,16 @@ Constants.BUILTIN_TYPE_CONFIG = {
 	[ Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM ]: {
 		hasBuiltin: true,
 		component: 'wl-wikidata-lexeme-form',
+		allowExpansion: true
+	},
+	[ Constants.Z_WIKIDATA_LEXEME_SENSE ]: {
+		hasBuiltin: true,
+		component: 'wl-wikidata-lexeme-sense',
+		allowExpansion: true
+	},
+	[ Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE ]: {
+		hasBuiltin: true,
+		component: 'wl-wikidata-lexeme-sense',
 		allowExpansion: true
 	},
 	[ Constants.Z_WIKIDATA_PROPERTY ]: {

@@ -496,6 +496,7 @@
 				"ext.wikilambda.app/components/types/wikidata/Item.vue",
 				"ext.wikilambda.app/components/types/wikidata/Lexeme.vue",
 				"ext.wikilambda.app/components/types/wikidata/LexemeForm.vue",
+				"ext.wikilambda.app/components/types/wikidata/LexemeSense.vue",
 				"ext.wikilambda.app/components/types/wikidata/Property.vue",
 				"ext.wikilambda.app/components/types/wikidata/wikidataIconSvg.js",
 				"ext.wikilambda.app/components/function/editor/FunctionEditor.vue",
@@ -887,6 +888,8 @@
 				"wikilambda-wikidata-item-selector-placeholder",
 				"wikilambda-wikidata-lexeme-selector-placeholder",
 				"wikilambda-wikidata-lexeme-form-selector-placeholder",
+				"wikilambda-wikidata-lexeme-sense-selector-placeholder",
+				"wikilambda-wikidata-lexeme-sense-no-senses-message",
 				"wikilambda-wikidata-property-selector-placeholder"
 			]
 		}

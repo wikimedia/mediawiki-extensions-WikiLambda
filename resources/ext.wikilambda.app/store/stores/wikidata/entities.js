@@ -35,6 +35,10 @@ module.exports = {
 					case Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM:
 						return this.getLexemeFormLabelData( id );
 
+					case Constants.Z_WIKIDATA_LEXEME_SENSE:
+					case Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE:
+						return this.getLexemeSenseLabelData( id );
+
 					case Constants.Z_WIKIDATA_ITEM:
 					case Constants.Z_WIKIDATA_REFERENCE_ITEM:
 						return this.getItemLabelData( id );
@@ -71,6 +75,10 @@ module.exports = {
 					case Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM:
 						return this.getLexemeFormUrl( id );
 
+					case Constants.Z_WIKIDATA_LEXEME_SENSE:
+					case Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE:
+						return this.getLexemeSenseUrl( id );
+
 					case Constants.Z_WIKIDATA_ITEM:
 					case Constants.Z_WIKIDATA_REFERENCE_ITEM:
 						return this.getItemUrl( id );
@@ -100,7 +108,7 @@ module.exports = {
 			 * @param {string} id
 			 * @return {Promise<Object>}
 			 */
-			const getWikidataEntityDataAsync = ( type, id ) => {
+			const findWikidataEntityDataAsync = ( type, id ) => {
 				switch ( type ) {
 					case Constants.Z_WIKIDATA_LEXEME:
 					case Constants.Z_WIKIDATA_REFERENCE_LEXEME: {
@@ -109,9 +117,10 @@ module.exports = {
 
 					case Constants.Z_WIKIDATA_LEXEME_FORM:
 					case Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM: {
-						// For lexeme forms, we need to get the lexeme data and extract the form
 						const [ lexemeId ] = id.split( '-' );
-						return this.getLexemeDataAsync( lexemeId ).then( ( lexemeData ) => {
+						return this.getLexemeDataAsync( lexemeId ).then( () => {
+							const lexemeData = this.getLexemeData( lexemeId );
+
 							if ( lexemeData && lexemeData.forms ) {
 								const formData = lexemeData.forms.find( ( item ) => item.id === id );
 								if ( formData ) {
@@ -119,6 +128,22 @@ module.exports = {
 								}
 							}
 							throw new Error( `Lexeme form ${ id } not found` );
+						} );
+					}
+
+					case Constants.Z_WIKIDATA_LEXEME_SENSE:
+					case Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE: {
+						const [ lexemeId ] = id.split( '-' );
+						return this.getLexemeSensesDataAsync( lexemeId ).then( () => {
+							const sensesData = this.getLexemeSensesData( lexemeId );
+
+							if ( sensesData && Array.isArray( sensesData ) ) {
+								const senseData = sensesData.find( ( item ) => item.id === id );
+								if ( senseData ) {
+									return senseData;
+								}
+							}
+							throw new Error( `Lexeme sense ${ id } not found` );
 						} );
 					}
 
@@ -135,7 +160,7 @@ module.exports = {
 						return Promise.reject( new Error( `Unknown entity type: ${ type }` ) );
 				}
 			};
-			return getWikidataEntityDataAsync;
+			return findWikidataEntityDataAsync;
 		}
 	},
 
@@ -160,8 +185,19 @@ module.exports = {
 				case Constants.Z_WIKIDATA_LEXEME_FORM:
 				case Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM:
 					// Transform lexeme form IDs into lexeme IDs:
-					payload.ids = payload.ids.map( ( id ) => id.split( '-' )[ 0 ] );
+					payload.ids = payload.ids
+						.filter( ( id ) => typeof id === 'string' )
+						.map( ( id ) => id.split( '-' )[ 0 ] );
 					return this.fetchLexemes( payload );
+
+				case Constants.Z_WIKIDATA_LEXEME_SENSE:
+				case Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE:
+					// Transform lexeme sense IDs into lexeme IDs:
+					payload.ids = payload.ids
+						.filter( ( id ) => typeof id === 'string' )
+						.map( ( id ) => id.split( '-' )[ 0 ] );
+					this.fetchLexemes( payload );
+					return this.fetchLexemeSenses( { lexemeIds: payload.ids } );
 
 				case Constants.Z_WIKIDATA_ITEM:
 				case Constants.Z_WIKIDATA_REFERENCE_ITEM:

@@ -19,6 +19,7 @@ describe( 'WikidataEntitySelector', () => {
 
 	beforeEach( () => {
 		store = useMainStore();
+		store.lookupWikidataEntities.mockResolvedValue();
 	} );
 
 	it( 'renders for lexeme without errors', () => {
@@ -240,7 +241,7 @@ describe( 'WikidataEntitySelector', () => {
 				} ]
 			} );
 
-			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
+			const lookup = wrapper.findComponent( { name: 'cdx-lookup' } );
 			lookup.vm.$emit( 'blur' );
 
 			// Reset to previous value

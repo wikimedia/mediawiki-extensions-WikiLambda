@@ -105,8 +105,8 @@ describe( 'ReferenceSelector', () => {
 		expect( select.props( 'menuItems' ) ).toEqual( [
 			{ label: 'Wikidata item reference', value: Constants.Z_WIKIDATA_REFERENCE_ITEM },
 			{ label: 'Wikidata property reference', value: Constants.Z_WIKIDATA_REFERENCE_PROPERTY },
-			{ label: 'Wikidata lexeme form reference', value: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM },
 			{ label: 'Wikidata lexeme reference', value: Constants.Z_WIKIDATA_REFERENCE_LEXEME },
+			{ label: 'Wikidata lexeme form reference', value: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM },
 			{ label: 'Wikidata lexeme sense reference', value: Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE }
 		] );
 	} );

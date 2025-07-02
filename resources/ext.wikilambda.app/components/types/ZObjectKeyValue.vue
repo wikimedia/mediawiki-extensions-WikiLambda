@@ -97,6 +97,7 @@ const WikidataItem = require( './wikidata/Item.vue' );
 const WikidataEnum = require( './wikidata/Enum.vue' );
 const WikidataLexeme = require( './wikidata/Lexeme.vue' );
 const WikidataLexemeForm = require( './wikidata/LexemeForm.vue' );
+const WikidataLexemeSense = require( './wikidata/LexemeSense.vue' );
 const WikidataProperty = require( './wikidata/Property.vue' );
 
 module.exports = exports = defineComponent( {
@@ -126,7 +127,8 @@ module.exports = exports = defineComponent( {
 		'wl-wikidata-item': WikidataItem,
 		'wl-wikidata-lexeme': WikidataLexeme,
 		'wl-wikidata-lexeme-form': WikidataLexemeForm,
-		'wl-wikidata-property': WikidataProperty
+		'wl-wikidata-property': WikidataProperty,
+		'wl-wikidata-lexeme-sense': WikidataLexemeSense
 	},
 	mixins: [ typeMixin, zobjectMixin ],
 	props: {

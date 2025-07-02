@@ -535,16 +535,12 @@ module.exports = exports = defineComponent( {
 		 * @param {string} input
 		 */
 		onInput: function ( input ) {
-			// 1. OnInput will still be called when the selectedValue changes from outside.
-			// 2. OnInput will be called with an empty string when the selectedValue does not match
-			// an item in menuItems in the cdx-lookup.
-			// 3. If #1 or #2 happens when the input is disabled, we should not do anything.
-			if ( this.disabled ) {
-				return;
-			}
+			// If the input is disabled, we do not need to return early anymore.
+
 			this.inputValue = input;
 			this.$emit( 'input-change', input || '' );
 
+			// Clear field errors
 			this.clearFieldErrors();
 
 			// Clear previous results when input changes
@@ -592,6 +588,18 @@ module.exports = exports = defineComponent( {
 			// updated.
 			this.clearFieldErrors();
 			this.$emit( 'select-item', value || '' );
+		},
+
+		/**
+		 * On focus, if there is an inputValue and the lookupResults are empty,
+		 * get the lookup results for the inputValue.
+		 * This ensures that the lookup results are populated when the field is focused,
+		 * especially when the field is mounted.
+		 */
+		onFocus: function () {
+			if ( this.inputValue && !this.lookupResults.length ) {
+				this.getLookupResults( this.inputValue );
+			}
 		},
 
 		/**

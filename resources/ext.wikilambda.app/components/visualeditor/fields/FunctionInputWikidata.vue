@@ -171,32 +171,24 @@ module.exports = exports = defineComponent( {
 			this.isValidating = true;
 			this.$emit( 'validate', { isValid: false } );
 
+			// Helper function to validate and update the validation state
+			const validateAndUpdate = () => {
+				this.updateValidationState( true );
+				if ( emitUpdate ) {
+					this.$emit( 'update', entityId );
+				}
+			};
+
 			// First, try to get the entity data asynchronously
 			this.getWikidataEntityDataAsync( this.entityType, entityId )
-				.then( () => {
-					// Entity exists and is valid
-					this.updateValidationState( true );
-					if ( emitUpdate ) {
-						this.$emit( 'update', entityId );
-					}
-				} )
-				// Entity doesn't exist or there was an error
-				// Try to fetch it first, then validate again
+				// If the entity data is not found, fetch it from Wikidata
 				.catch( () => this.fetchWikidataEntitiesByType( { type: this.entityType, ids: [ entityId ] } )
-					// After fetching, try to get the entity data again
 					.then( () => this.getWikidataEntityDataAsync( this.entityType, entityId ) )
-					.then( () => {
-						// Entity exists and is valid after fetch
-						this.updateValidationState( true );
-						if ( emitUpdate ) {
-							this.$emit( 'update', entityId );
-						}
-					} )
-					.catch( () => {
-						// Entity doesn't exist or fetch failed
-						this.updateValidationState( false );
-					} )
 				)
+				// If the entity data is found, validate and update
+				.then( validateAndUpdate )
+				// If the entity data is not found or there was an error, set the validation state to false
+				.catch( () => this.updateValidationState( false ) )
 				.finally( () => {
 					this.isValidating = false;
 				} );
