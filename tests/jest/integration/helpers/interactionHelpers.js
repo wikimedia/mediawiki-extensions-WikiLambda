@@ -31,10 +31,15 @@ const lookupSearchAndSelect = async ( parentWrapper, searchText, selectText, sel
 	return await fireEvent.click( option );
 };
 
-const textInputChange = ( parentWrapper, newText ) => {
+const textInputChange = async ( parentWrapper, newText ) => {
 	const textbox = within( parentWrapper ).getByRole( 'textbox' );
-	// TODO (T370511): Using "fireEvent.change" may lead to unexpected results. Please use fireEvent.update() instead
-	return fireEvent.change( textbox, { target: { value: newText } } );
+	// Use fireEvent.update to simulate user typing (triggers input event)
+	await fireEvent.update( textbox, newText );
+	// Vue Testing Library does NOT automatically fire a change event on blur,
+	// and fireEvent.change may lead to unexpected results. Our component only updates the store on @change.
+	// So, we manually dispatch a native change event to trigger persistName.
+	const event = new Event( 'change', { bubbles: true } );
+	textbox.dispatchEvent( event );
 };
 
 const chipInputAddChip = async ( parentWrapper, newChip ) => {

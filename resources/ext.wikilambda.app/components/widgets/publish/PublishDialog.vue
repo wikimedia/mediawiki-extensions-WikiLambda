@@ -289,6 +289,21 @@ module.exports = exports = defineComponent( {
 		},
 
 		/**
+		 * Navigates to the page specified by the pageTitle parameter.
+		 *
+		 * @param {string} pageTitle The title of the page to navigate to.
+		 */
+		navigateToPage: function ( pageTitle ) {
+			window.location.href = !pageTitle ?
+				new mw.Title( Constants.PATHS.MAIN_PAGE ).getUrl() :
+				urlUtils.generateViewUrl( {
+					langCode: this.getUserLangCode,
+					zid: pageTitle,
+					params: { success: true }
+				} );
+		},
+
+		/**
 		 * Before exiting the page after successful publishing, handle
 		 * state and remove exit event listeners.
 		 *
@@ -298,13 +313,7 @@ module.exports = exports = defineComponent( {
 			this.$emit( 'before-exit' );
 			this.setDirty( false );
 			this.closeDialog();
-			window.location.href = !pageTitle ?
-				new mw.Title( Constants.PATHS.MAIN_PAGE ).getUrl() :
-				urlUtils.generateViewUrl( {
-					langCode: this.getUserLangCode,
-					zid: pageTitle,
-					params: { success: true }
-				} );
+			this.navigateToPage( pageTitle );
 		},
 
 		/**
