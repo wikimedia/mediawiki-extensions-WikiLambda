@@ -825,6 +825,37 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 1, $res->numRows() );
 	}
 
+	public function testSearchZObjectLabels_compoundReturnType() {
+		// Insert functions with return type Z881(Z1)
+		$this->insertZids( [ 'Z8', 'Z14', 'Z17', 'Z873', 'Z812' ] );
+		// Insert a function/Z8 with a return type Z881
+		$this->zobjectStore->insertZObjectLabels(
+			'Z873', 'Z8', [ self::ZLANG['en'] => 'map function' ], 'Z881'
+		);
+		// Insert a function/Z8 with a return type Z881
+		$this->zobjectStore->insertZObjectLabels(
+			'Z812', 'Z8', [ self::ZLANG['en'] => 'list without first element' ], 'Z881'
+		);
+
+		// Search for return_type=Z881 (should match Z881(Z1))
+		$res = $this->zobjectStore->searchZObjectLabels(
+			'',
+			false,
+			[ self::ZLANG['en'] ],
+			[ 'Z8' ],
+			[ 'Z881' ],
+			null,
+			10
+		);
+		$this->assertInstanceOf( IResultWrapper::class, $res );
+		$foundZids = [];
+		foreach ( $res as $row ) {
+			$foundZids[] = $row->wlzl_zobject_zid;
+		}
+		$this->assertContains( 'Z873', $foundZids );
+		$this->assertContains( 'Z812', $foundZids );
+	}
+
 	public function testSearchZObjectLabels_languages() {
 		$this->zobjectStore->insertZObjectLabels( 'Z456', 'Z6', [ self::ZLANG['en'] => 'txt' ] );
 		$this->zobjectStore->insertZObjectLabels( 'Z457', 'Z6', [ self::ZLANG['es'] => 'txt' ] );
@@ -1331,7 +1362,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->injectZ401RelatedZObjects();
 		$this->injectZ402RelatedZObjects();
 		$this->injectZ403RelatedZObjects();
-
 		// Find functions having at least one input of type Z6
 		$res = $this->zobjectStore->findFunctionsByIOTypes( [ 'Z6' => 1 ] );
 		$this->assertCount( 3, $res );

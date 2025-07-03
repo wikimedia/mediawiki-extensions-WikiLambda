@@ -1199,12 +1199,46 @@ class ZObjectStore {
 
 		// Set return type leftJoin and field if return_types is present in the filters
 		if ( count( $returnTypes ) > 0 ) {
-			$returnTypeConditional = $dbr->conditional( 'ret.return_type IS NOT NULL', 'ret.return_type', 'wlzl_type' );
+			// To support filtering by return type (including compound types like Z881(Zxxx)),
+			// we must join a subquery (aliased as 'ret') that provides the return_type for each ZObject.
+			// This join must be present before any filter referencing ret.return_type, otherwise the SQL
+			// will fail with 'Unknown column'.
+			//
+			// MediaWiki's database abstraction layer does NOT allow SQL expressions (like CASE ... END)
+			// as column names in WHERE clauses, for security and SQL injection protection. Therefore,
+			// we cannot use a conditional column for fallback logic directly in the filter.
+			//
+			// Instead, we implement fallback logic using an OR of four conditions for each returnType:
+			//   1. ret.return_type = $rt (exact match on joined return type)
+			//   2. ret.return_type LIKE $rt( (compound type match on joined return type)
+			//   3. ret.return_type IS NULL AND wlzl_type = $rt (fallback to base type if join is missing)
+			//   4. ret.return_type IS NULL AND wlzl_type LIKE $rt( (fallback to compound base type)
+			//
+			// All filter conditions are built as IExpression objects for compatibility with MediaWiki's DB layer.
+			// This approach ensures both direct and fallback return type matching in a safe, DB-compatible way.
 			$returnTypeQueryBuilder = $this->getReturnTypeQuery();
-			$queryBuilder
-				->field( $returnTypeConditional, 'wlzl_return_type' )
-				->leftJoin( $returnTypeQueryBuilder, 'ret', 'wlzl_zobject_zid = ret.wlzo_main_zid' )
-				->andWhere( [ $returnTypeConditional => $returnTypes ] );
+			$queryBuilder->leftJoin( $returnTypeQueryBuilder, 'ret', 'wlzl_zobject_zid = ret.wlzo_main_zid' );
+
+			$returnTypeOrExprs = [];
+			foreach ( $returnTypes as $rt ) {
+				$returnTypeOrExprs[] = $dbr->orExpr( [
+					$dbr->expr( 'ret.return_type', '=', $rt ),
+					$dbr->expr( 'ret.return_type', IExpression::LIKE, new LikeValue( $rt . '(', $dbr->anyString() ) ),
+					$dbr->andExpr( [
+						$dbr->expr( 'ret.return_type', '=', null ),
+						$dbr->expr( 'wlzl_type', '=', $rt )
+					] ),
+					$dbr->andExpr( [
+						$dbr->expr( 'ret.return_type', '=', null ),
+						$dbr->expr( 'wlzl_type', IExpression::LIKE, new LikeValue( $rt . '(', $dbr->anyString() ) )
+					] )
+				] );
+			}
+			if ( count( $returnTypeOrExprs ) === 1 ) {
+				$queryBuilder->andWhere( $returnTypeOrExprs[0] );
+			} else {
+				$queryBuilder->andWhere( $dbr->orExpr( $returnTypeOrExprs ) );
+			}
 		}
 
 		// Set limit if not null
