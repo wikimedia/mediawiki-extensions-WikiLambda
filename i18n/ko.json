@@ -194,6 +194,7 @@
 	"wikilambda-function-are-you-sure-dialog-description": "정말 게시하지 않고 편집을 그만 두겠습니까?",
 	"wikilambda-function-are-you-sure-dialog-header": "확실합니까?",
 	"wikilambda-function-definition-add-other-label-languages-title": "언어 추가",
+	"wikilambda-function-definition-alias-description": "다른 사람들이 함수를 쉽게 찾을 수 있도록 도와줍니다.",
 	"wikilambda-function-definition-alias-example": "다른 이름 예시를 참고하세요.",
 	"wikilambda-function-definition-alias-label": "다른 이름",
 	"wikilambda-function-definition-alias-label-new": "새 다른 이름",
