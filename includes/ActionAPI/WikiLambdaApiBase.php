@@ -108,7 +108,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	public static function dieWithZError( $zerror, $code = HttpStatus::BAD_REQUEST ) {
 		try {
 			$errorData = $zerror->getErrorData();
-		} catch ( ZErrorException $e ) {
+		} catch ( ZErrorException ) {
 			$errorData = [
 				'zerror' => $zerror->getSerialized()
 			];

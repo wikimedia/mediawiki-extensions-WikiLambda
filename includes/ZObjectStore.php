@@ -73,7 +73,7 @@ class ZObjectStore {
 		RevisionStore $revisionStore,
 		UserGroupManager $userGroupManager,
 		LoggerInterface $logger,
-		Config $config,
+		Config $config
 	) {
 		$this->dbProvider = $dbProvider;
 		$this->titleFactory = $titleFactory;

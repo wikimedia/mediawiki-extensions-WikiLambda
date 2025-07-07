@@ -60,8 +60,6 @@ class OrchestratorRequest {
 	 *  and the actual http status code from the Orchestrator
 	 */
 	public function orchestrate( $query, $bypassCache = false ): array {
-		$guzzleClient = $this->guzzleClient;
-
 		// (T365053) Propagate request tracing headers
 		$requestHeaders = $this->tracer->getRequestHeaders();
 		$requestHeaders['User-Agent'] = $this->userAgentString;
@@ -78,7 +76,7 @@ class OrchestratorRequest {
 			),
 			// TODO (T338243): Is this the right timeout? Maybe TTL_DAY or TTL_MONTH instead?
 			$this->objectCache::TTL_WEEK,
-			function () use ( $query, $guzzleClient, $requestHeaders ) {
+			function () use ( $query, $requestHeaders ) {
 				// TODO (T338242): Use postAsync here.
 				return $this->handleGuzzleRequestForEvaluate( $query, $requestHeaders );
 			}

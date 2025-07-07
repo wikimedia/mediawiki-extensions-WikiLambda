@@ -66,7 +66,7 @@ class ApiSupportedProgrammingLanguages extends WikiLambdaApiBase {
 		try {
 			$response = $work->execute();
 			$result = [ 'success' => true, 'data' => $response->getBody() ];
-		} catch ( ConnectException $exception ) {
+		} catch ( ConnectException ) {
 			$this->dieWithError(
 				[
 					"apierror-wikilambda_supported_programming_languages-not-connected",

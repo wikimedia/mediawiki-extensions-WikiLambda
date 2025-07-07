@@ -52,7 +52,7 @@ class PublicApiRun extends WikiLambdaApiBase {
 			if ( $zObjectAsStdClass === null ) {
 				throw new JsonException( 'Invalid JSON that did not throw, somehow' );
 			}
-		} catch ( JsonException $e ) {
+		} catch ( JsonException ) {
 			$this->submitFunctionCallEvent( HttpStatus::BAD_REQUEST, null, $start );
 			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX, [] );
 			WikiLambdaApiBase::dieWithZError( $zError, HttpStatus::BAD_REQUEST );
@@ -141,7 +141,7 @@ class PublicApiRun extends WikiLambdaApiBase {
 			$response = $work->execute();
 			$result['data'] = $response['result'];
 			$httpStatusCode = $response['httpStatusCode'];
-		} catch ( ConnectException $exception ) {
+		} catch ( ConnectException ) {
 			$this->submitFunctionCallEvent( HttpStatus::SERVICE_UNAVAILABLE, $function, $start );
 			$this->dieWithError(
 				[ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ],

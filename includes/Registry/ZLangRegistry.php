@@ -194,7 +194,7 @@ class ZLangRegistry extends ZObjectRegistry {
 		}
 		try {
 			$this->getLanguageCodeFromZid( $zid );
-		} catch ( ZErrorException $e ) {
+		} catch ( ZErrorException ) {
 			return false;
 		}
 		return true;
@@ -211,7 +211,7 @@ class ZLangRegistry extends ZObjectRegistry {
 		foreach ( $languageCodes as $code ) {
 			try {
 				$languageZids[] = $this->getLanguageZidFromCode( $code );
-			} catch ( ZErrorException $e ) {
+			} catch ( ZErrorException ) {
 				// We ignore the language code if it's not available as Zid
 			}
 		}

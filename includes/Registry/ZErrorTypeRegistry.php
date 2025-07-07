@@ -230,7 +230,7 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 	public function instanceOfZErrorType( string $zid ): bool {
 		try {
 			return $this->isZErrorTypeKnown( $zid );
-		} catch ( ZErrorException $e ) {
+		} catch ( ZErrorException ) {
 			return false;
 		}
 	}

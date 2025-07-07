@@ -53,7 +53,7 @@ class ZErrorFactory {
 				} else {
 					self::$errorDescriptors = [];
 				}
-			} catch ( Exception $e ) {
+			} catch ( Exception ) {
 				self::$errorDescriptors = [];
 			}
 		}

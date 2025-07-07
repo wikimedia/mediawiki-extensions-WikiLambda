@@ -61,7 +61,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 					] );
 				throw new JsonException( $errorMessage );
 			}
-		} catch ( JsonException $e ) {
+		} catch ( JsonException ) {
 			$this->submitFunctionCallEvent( HttpStatus::BAD_REQUEST, null, $start );
 			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX, [] );
 			WikiLambdaApiBase::dieWithZError( $zError, HttpStatus::BAD_REQUEST );
@@ -169,7 +169,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 
 				return $this->orchestrator->orchestrate( $jsonQuery, $bypassCache );
 			},
-			'error' => function ( Status $status ) use ( $function, $start, $userName, $logger, $span ) {
+			'error' => function ( Status $status ) use ( $function, $start, $userName, $logger ) {
 				$errorMessage = 'ApiFunctionCall rejecting a request due to too many requests from source "{user}"';
 				$logger->info(
 					$errorMessage,

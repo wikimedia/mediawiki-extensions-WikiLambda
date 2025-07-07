@@ -360,6 +360,7 @@ class ZObjectFactory {
 	 * @param class-string $targetClass
 	 * @return array arguments to pass to the target ZObject constructor
 	 * @phan-return non-empty-array
+	 * @throws ZErrorException
 	 */
 	private static function createKeyValues( array $objectVars, string $targetClass ) {
 		$targetDefinition = $targetClass::getDefinition();

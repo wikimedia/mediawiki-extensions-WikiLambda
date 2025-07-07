@@ -158,6 +158,7 @@ class ZTypedMap extends ZObject {
 	 *
 	 * @param ZObject $key A Z6 or Z39 instance to serve as the key
 	 * @param ?ZObject $value A ZObject to set; if null, no object is set
+	 * @throws ZErrorException
 	 */
 	public function setValueForKey( ZObject $key, ?ZObject $value ) {
 		if ( $value === null ) {

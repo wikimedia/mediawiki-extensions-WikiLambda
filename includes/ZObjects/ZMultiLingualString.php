@@ -111,7 +111,7 @@ class ZMultiLingualString extends ZObject {
 	public function getStringForLanguageCode( string $languageCode ): string {
 		try {
 			$languageZid = ZLangRegistry::singleton()->getLanguageZidFromCode( $languageCode );
-		} catch ( ZErrorException $e ) {
+		} catch ( ZErrorException ) {
 			return '';
 		}
 		return array_key_exists( $languageZid, $this->getZValue() )
@@ -130,7 +130,7 @@ class ZMultiLingualString extends ZObject {
 	public function isLanguageProvidedValue( string $languageCode ): bool {
 		try {
 			$languageZid = ZLangRegistry::singleton()->getLanguageZidFromCode( $languageCode );
-		} catch ( ZErrorException $e ) {
+		} catch ( ZErrorException ) {
 			return false;
 		}
 		return array_key_exists( $languageZid, $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ] ?? [] );

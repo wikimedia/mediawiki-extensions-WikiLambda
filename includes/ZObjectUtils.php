@@ -91,13 +91,13 @@ class ZObjectUtils {
 		if ( $input !== '' && ( $input[0] === '{' || $input[0] === '[' ) ) {
 			try {
 				$evaluatedInput = json_decode( $input, false, 512, JSON_THROW_ON_ERROR );
-			} catch ( JsonException $e ) {
+			} catch ( JsonException ) {
 				return false;
 			}
 
 			try {
 				$status = self::isValidZObject( $evaluatedInput );
-			} catch ( ZErrorException $e ) {
+			} catch ( ZErrorException ) {
 				$status = false;
 			}
 		}
@@ -189,7 +189,7 @@ class ZObjectUtils {
 		if ( is_object( $input ) ) {
 			try {
 				self::isValidZObjectRecord( $input );
-			} catch ( ZErrorException $e ) {
+			} catch ( ZErrorException ) {
 				return false;
 			}
 			$resolverType = $input->{ ZTypeRegistry::Z_OBJECT_TYPE };
@@ -864,6 +864,7 @@ class ZObjectUtils {
 	 * @param ZPersistentObject[] $data
 	 * @param Language $lang
 	 * @return stdClass|array|string
+	 * @throws ZErrorException
 	 */
 	public static function extractHumanReadableZObject( $zobject, $data, $lang ) {
 		if ( is_string( $zobject ) ) {

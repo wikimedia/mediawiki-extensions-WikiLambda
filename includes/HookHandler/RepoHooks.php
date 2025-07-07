@@ -280,7 +280,7 @@ class RepoHooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesH
 
 		try {
 			$content = ZObjectContentHandler::makeContent( $data, $title );
-		} catch ( ZErrorException $e ) {
+		} catch ( ZErrorException ) {
 			$updater->output( "\t❌ Unable to make a ZObject for {$title->getPrefixedText()}.\n" );
 			return false;
 		}
@@ -430,7 +430,7 @@ class RepoHooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesH
 		// If we're in the installer, it won't have registered our extension's services yet.
 		try {
 			$services->get( 'WikiLambdaZObjectStore' );
-		} catch ( NoSuchServiceException $e ) {
+		} catch ( NoSuchServiceException ) {
 
 			$zObjectStore = new ZObjectStore(
 				$services->getDBLoadBalancerFactory(),

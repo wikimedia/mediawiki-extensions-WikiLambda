@@ -103,7 +103,7 @@ class ZMultiLingualStringSet extends ZObject {
 	public function getAliasesForLanguageCode( string $languageCode ): array {
 		try {
 			$languageZid = ZLangRegistry::singleton()->getLanguageZidFromCode( $languageCode );
-		} catch ( ZErrorException $e ) {
+		} catch ( ZErrorException ) {
 			return [];
 		}
 		return array_key_exists( $languageZid, $this->getZValue() )
@@ -149,7 +149,7 @@ class ZMultiLingualStringSet extends ZObject {
 	public function isLanguageProvidedValue( string $languageCode ): bool {
 		try {
 			$languageZid = ZLangRegistry::singleton()->getLanguageZidFromCode( $languageCode );
-		} catch ( ZErrorException $e ) {
+		} catch ( ZErrorException ) {
 			return false;
 		}
 		$aliases = $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRINGSET_VALUE ][ $languageZid ] ?? [];
@@ -160,6 +160,7 @@ class ZMultiLingualStringSet extends ZObject {
 	 * Add or replace a ZMonoLingualStringSet.
 	 *
 	 * @param ZMonoLingualStringSet $value The new value to set.
+	 * @throws ZErrorException
 	 */
 	public function setMonoLingualStringSet( ZMonoLingualStringSet $value ): void {
 		$language = $value->getLanguage();

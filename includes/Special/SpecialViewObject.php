@@ -148,7 +148,7 @@ class SpecialViewObject extends SpecialPage {
 
 		try {
 			$targetLanguageObject = $this->languageFactory->getLanguage( $targetLanguage );
-		} catch ( InvalidArgumentException $e ) {
+		} catch ( InvalidArgumentException ) {
 			// (T343006) Supplied language is invalid; probably a user-error, so just exit.
 			$this->redirectToMain( $outputPage );
 			return;

@@ -184,7 +184,7 @@ class ZObjectAuthorization implements LoggerAwareInterface {
 		foreach ( $diffs as $diff ) {
 			foreach ( $rules as $rule ) {
 				if ( $this->pathMatches( $diff, $rule ) && $this->opMatches( $diff, $rule ) ) {
-					if ( $this->filterMatches( $diff, $rule, $fromContent, $toContent, $title ) ) {
+					if ( $this->filterMatches( $rule, $fromContent, $toContent, $title ) ) {
 						$theseRights = $this->getRightsByOp( $diff, $rule );
 						$userRights = array_merge( $userRights, $theseRights );
 						break;
@@ -224,18 +224,17 @@ class ZObjectAuthorization implements LoggerAwareInterface {
 	}
 
 	/**
-	 * Whether the objects being editted pass the filter specified in the rule.
+	 * Whether the objects being edited pass the filter specified in the rule.
 	 * The filter must be the class name of an implementation of the interface
 	 * ZObjectFilter.
 	 *
-	 * @param array $diff
 	 * @param array $rule
 	 * @param ZObjectContent $fromContent
 	 * @param ZObjectContent $toContent
 	 * @param Title $title
 	 * @return bool
 	 */
-	private function filterMatches( $diff, $rule, $fromContent, $toContent, $title ): bool {
+	private function filterMatches( $rule, $fromContent, $toContent, $title ): bool {
 		$pass = true;
 		if ( array_key_exists( 'filter', $rule ) ) {
 			$filterArgs = $rule['filter'];
