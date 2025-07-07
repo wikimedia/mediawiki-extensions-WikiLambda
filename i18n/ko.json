@@ -57,6 +57,7 @@
 	"wikilambda-editor-boolean-selector": "진실/거짓 선택",
 	"wikilambda-implementation-selector-code": "코드",
 	"wikilambda-implementation-selector-composition": "구성",
+	"wikilambda-implementation-selector-built-in": "내장",
 	"wikilambda-argref-default-label": "인수를 선택하세요",
 	"wikilambda-implementation-selector": "구현을 선택하세요",
 	"wikilambda-function-are-you-sure-dialog-header": "확실합니까?",
