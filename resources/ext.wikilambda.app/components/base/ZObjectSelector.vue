@@ -12,6 +12,7 @@
 	<span class="ext-wikilambda-app-object-selector" data-testid="z-object-selector">
 		<cdx-select
 			v-if="isEnum"
+			class="ext-wikilambda-app-object-selector__select"
 			:selected="selectedValue"
 			:disabled="disabled"
 			:menu-items="enumValues"
@@ -22,6 +23,7 @@
 		<cdx-lookup
 			v-else
 			:key="selectedValue"
+			class="ext-wikilambda-app-object-selector__lookup"
 			:input-value="inputValue"
 			:selected="selectedValue"
 			:disabled="disabled"
@@ -235,12 +237,16 @@ module.exports = exports = defineComponent( {
 		},
 
 		/**
-		 * Returns the menu items for the enumeration value selector
+		 * Returns the menu items for the enum selector.
+		 * By passing selected Zid to getEnumValues getter, it will manually
+		 * include this item in the enum list if:
+		 * * it's not part of the first page of enum values
+		 * * it's a valid instance of the enum type
 		 *
 		 * @return {Array}
 		 */
 		enumValues: function () {
-			return this.getEnumValues( this.type ).map( ( item ) => {
+			return this.getEnumValues( this.type, this.selectedZid ).map( ( item ) => {
 				const value = item.page_title;
 				const label = this.getLabelOrZid( value, item.label );
 				return { value, label };
@@ -331,9 +337,6 @@ module.exports = exports = defineComponent( {
 		'fetchZids'
 	] ), {
 		/**
-		 * TODO: (T388660) the selected enum might not become selected in the cdx-select
-		 * due to it being in the 'load more items'.
-		 *
 		 * Load more values for the enumeration selector when the user scrolls to the bottom of the list
 		 * and there are more results to load.
 		 */
@@ -614,14 +617,16 @@ module.exports = exports = defineComponent( {
 		 */
 		isEnum: function ( value ) {
 			if ( value ) {
-				this.fetchEnumValues( { type: this.type } );
+				// Fetch 20 enum values which usually is enough to show all enums directly
+				this.fetchEnumValues( { type: this.type, limit: 20 } );
 			}
 		}
 	},
 	mounted: function () {
 		this.inputValue = this.selectedLabel;
 		if ( this.isEnum ) {
-			this.fetchEnumValues( { type: this.type } );
+			// Fetch 20 enum values which usually is enough to show all enums directly
+			this.fetchEnumValues( { type: this.type, limit: 20 } );
 		}
 	}
 } );

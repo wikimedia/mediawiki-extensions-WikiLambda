@@ -624,6 +624,58 @@ describe( 'library Pinia store', () => {
 				expect( store.getOutputTypeOfFunctionZid( 'Z802' ) ).toEqual( 'Z1' );
 			} );
 		} );
+
+		describe( 'getEnumValues', () => {
+			beforeEach( () => {
+				store.enums = {
+					Z30000: {
+						data: mockEnumValues
+					}
+				};
+			} );
+
+			it( 'returns empty array if no enums are available', () => {
+				const expected = [];
+				expect( store.getEnumValues( 'Z20000' ) ).toEqual( expected );
+			} );
+
+			it( 'returns available enums', () => {
+				expect( store.getEnumValues( 'Z30000' ) ).toEqual( mockEnumValues );
+			} );
+
+			it( 'returns unaltered enums when selected item is present', () => {
+				expect( store.getEnumValues( 'Z30000', 'Z30001' ) ).toEqual( mockEnumValues );
+			} );
+
+			it( 'returns unaltered enums when selected item was not found', () => {
+				Object.defineProperty( store, 'getStoredObject', {
+					value: jest.fn().mockReturnValue( undefined )
+				} );
+
+				expect( store.getEnumValues( 'Z30000', 'Z12345' ) ).toEqual( mockEnumValues );
+			} );
+
+			it( 'returns unaltered enums when selected item is not an instance of the enum type', () => {
+				Object.defineProperty( store, 'getStoredObject', {
+					value: jest.fn().mockReturnValue( { Z2K2: { Z1K1: 'Z4' } } )
+				} );
+
+				expect( store.getEnumValues( 'Z30000', 'Z11' ) ).toEqual( mockEnumValues );
+			} );
+
+			it( 'returns selected enum and existing enums when selected value is valid but not present', () => {
+				Object.defineProperty( store, 'getStoredObject', {
+					value: jest.fn().mockReturnValue( { Z2K2: { Z1K1: 'Z30000' } } )
+				} );
+				Object.defineProperty( store, 'getLabelData', {
+					value: jest.fn().mockReturnValue( { label: 'April' } )
+				} );
+
+				const allEnumValues = [ { page_title: 'Z30004', label: 'April' }, ...mockEnumValues ];
+				expect( store.getEnumValues( 'Z30000', 'Z30004' ) ).toEqual( allEnumValues );
+			} );
+
+		} );
 	} );
 
 	describe( 'Actions', () => {

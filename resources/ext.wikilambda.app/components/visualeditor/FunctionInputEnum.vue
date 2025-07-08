@@ -55,12 +55,16 @@ module.exports = exports = defineComponent( {
 		'getEnumValues'
 	] ), {
 		/**
-		 * Get the enum values for the input type.
+		 * Returns the menu items for the enum selector.
+		 * By passing selected Zid to getEnumValues getter, it will manually
+		 * include this item in the enum list if:
+		 * * it's not part of the first page of enum values
+		 * * it's a valid instance of the enum type
 		 *
 		 * @return {Array}
 		 */
 		enumValues: function () {
-			return this.getEnumValues( this.inputType ).map( ( item ) => ( {
+			return this.getEnumValues( this.inputType, this.value ).map( ( item ) => ( {
 				value: item.page_title,
 				label: item.label
 			} ) );
@@ -147,11 +151,8 @@ module.exports = exports = defineComponent( {
 		 * Fetches all enum values for the input type
 		 */
 		fetchAndValidateEnumValues: function () {
-			// TODO: (T388660) the selected enum might not become selected in the cdx-select
-			// due to it being in the 'load more items'.
-			// For now fetch 999 (aka: all) enum values for the input type
-			// so that we can validate the value if the value exists in the enum values
-			this.fetchEnumValues( { type: this.inputType, limit: 999 } ).then( () => {
+			// Fetch 20 enum values which usually is enough to show all enums directly
+			this.fetchEnumValues( { type: this.inputType, limit: 20 } ).then( () => {
 				if ( !this.enumValues.length ) {
 					return;
 				}

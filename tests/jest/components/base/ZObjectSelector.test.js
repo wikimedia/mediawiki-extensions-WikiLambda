@@ -37,6 +37,7 @@ describe( 'ZObjectSelector', () => {
 				Z1672: 'Chinese (traditional)',
 				Z1645: 'Chinese (simplified)'
 			} );
+			store.fetchZids.mockResolvedValue();
 		} );
 
 		it( 'renders without errors', () => {
@@ -301,8 +302,10 @@ describe( 'ZObjectSelector', () => {
 				Z1003: 'Spanish',
 				Z1004: 'French',
 				Z1005: 'Russian',
-				Z1006: 'Chinese'
+				Z1006: 'Chinese',
+				Z30004: 'April'
 			} );
+			store.fetchZids.mockResolvedValue();
 		} );
 
 		it( 'renders without errors', () => {
@@ -341,6 +344,7 @@ describe( 'ZObjectSelector', () => {
 
 			const select = wrapper.getComponent( { name: 'cdx-select' } );
 			await waitFor( () => expect( select.props( 'menuItems' ).length ).toBe( 3 ) );
+			expect( store.getEnumValues ).toHaveBeenCalledWith( mockEnumZid, '' );
 			expect( select.props( 'menuItems' ) ).toEqual( enumMenuItems );
 		} );
 
@@ -356,6 +360,30 @@ describe( 'ZObjectSelector', () => {
 
 			await wrapper.vm.$nextTick();
 			expect( wrapper.emitted() ).toHaveProperty( 'select-item', [ [ 'Z30003' ] ] );
+		} );
+
+		it( 'prepends the selected value if not present in the batch', async () => {
+			store.getEnumValues = jest.fn().mockImplementation( ( zid, selected ) => {
+				const selectedValue = { page_title: 'Z30004', label: 'April' };
+				return ( selected === 'Z30004' ) ? [ selectedValue, ...mockEnumValues ] : mockEnumValues;
+			} );
+
+			const wrapper = mount( ZObjectSelector, {
+				props: {
+					type: mockEnumZid,
+					selectedZid: 'Z30004'
+				}
+			} );
+
+			const select = wrapper.getComponent( { name: 'cdx-select' } );
+			await waitFor( () => expect( select.props( 'menuItems' ).length ).toBe( 4 ) );
+			expect( store.getEnumValues ).toHaveBeenCalledWith( mockEnumZid, 'Z30004' );
+			expect( select.props( 'menuItems' ) ).toEqual( [
+				{ value: 'Z30004', label: 'April' },
+				{ value: 'Z30001', label: 'January' },
+				{ value: 'Z30002', label: 'February' },
+				{ value: 'Z30003', label: 'March' }
+			] );
 		} );
 	} );
 } );

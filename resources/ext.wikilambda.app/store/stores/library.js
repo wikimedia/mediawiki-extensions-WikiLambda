@@ -12,6 +12,7 @@
 const Constants = require( '../../Constants.js' );
 const { searchLabels, searchFunctions, fetchZObjects } = require( '../../utils/apiUtils.js' );
 const LabelData = require( '../classes/LabelData.js' );
+const { getZObjectType } = require( '../../utils/zobjectUtils.js' );
 const {
 	isGlobalKey,
 	getZidOfGlobalKey,
@@ -585,7 +586,10 @@ module.exports = {
 		},
 
 		/**
-		 * Returns the values of an enum with a given ZID
+		 * Returns the values of an enum with a given ZID.
+		 * If the request includes a selected Id, check that it appears
+		 * in the returned collection, and if not, manually include it
+		 * (only if it's the zid of a valid instance of the enum type)
 		 *
 		 * @param {Object} state
 		 * @return {Function}
@@ -593,11 +597,41 @@ module.exports = {
 		getEnumValues: function ( state ) {
 			/**
 			 * @param {string} zid
+			 * @param {string|undefined} selected
 			 * @return {Array}
 			 */
-			const findEnumValues = ( zid ) => {
+			const findEnumValues = ( zid, selected = undefined ) => {
 				const enumObj = state.enums[ zid ];
-				return enumObj && enumObj.data instanceof Array ? enumObj.data : [];
+				const enums = enumObj && enumObj.data instanceof Array ? enumObj.data : [];
+
+				// If there's a selected item and it is not in the initial enum collection:
+				// get the object from the store, check that it's valid, and if so, add to list
+				if ( selected ) {
+					const selectedIndex = enums.findIndex( ( item ) => item.page_title === selected );
+					if ( selectedIndex < 0 ) {
+						// Get the object from the store: it will already be fetched
+						// If selected zid does not exist: do nothing
+						const selectedObject = this.getStoredObject( selected );
+						if ( !selectedObject || !( Constants.Z_PERSISTENTOBJECT_VALUE in selectedObject ) ) {
+							return enums;
+						}
+
+						// Get the selected object type.
+						// If selected zid is not a valid instance of this enum: do nothing
+						const selectedType = getZObjectType( selectedObject[ Constants.Z_PERSISTENTOBJECT_VALUE ] );
+						if ( selectedType !== zid ) {
+							return enums;
+						}
+
+						const selectedItem = {
+							page_title: selected,
+							label: this.getLabelData( selected ).label
+						};
+						return [ selectedItem, ...enums ];
+					}
+				}
+
+				return enums;
 			};
 			return findEnumValues;
 		},
