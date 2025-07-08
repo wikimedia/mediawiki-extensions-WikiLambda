@@ -35,6 +35,16 @@ ve.ui.WikifunctionsCallDialog.static.title = OO.ui.deferMsg( 'wikilambda-visuale
 
 ve.ui.WikifunctionsCallDialog.static.modelClasses = [ ve.dm.WikifunctionsCallNode ];
 
+ve.ui.WikifunctionsCallDialog.static.actions = [
+	...ve.ui.MWExtensionDialog.static.actions,
+	{
+		action: 'back',
+		title: OO.ui.deferMsg( 'wikilambda-visualeditor-wikifunctionscall-back' ),
+		flags: [ 'safe', 'back' ],
+		modes: [ 'insert' ]
+	}
+];
+
 /* Methods */
 
 /**
@@ -112,13 +122,24 @@ ve.ui.WikifunctionsCallDialog.prototype.initialize = function () {
 };
 
 /**
- * Set the dialog title
+ * Sets the dialog title to either a generic title or to the selected function name.
  *
- * @param {string} title
+ * @param {string|undefined} title
  */
 ve.ui.WikifunctionsCallDialog.prototype.setTitle = function ( title ) {
 	const defaultTitle = OO.ui.deferMsg( 'wikilambda-visualeditor-wikifunctionscall-title' );
 	this.title.setLabel( title || defaultTitle );
+};
+
+/**
+ * @inheritdoc
+ */
+ve.ui.WikifunctionsCallDialog.prototype.getEscapeAction = function () {
+	const backOrClose = this.actions.get( { flags: [ 'back', 'close' ], visible: true } );
+	if ( backOrClose.length ) {
+		return backOrClose[ 0 ].getAction();
+	}
+	return null;
 };
 
 /**
@@ -195,6 +216,20 @@ ve.ui.WikifunctionsCallDialog.prototype.updateActions = function () {
 		const functionParamsNew = ve.init.mw.WikifunctionsCall.piniaStore.isNewParameterSetup;
 		const newOrChanged = functionParamsNew || functionParamsDirty;
 		this.actions.setAbilities( { done: functionValid && functionParamsValid && newOrChanged } );
+
+		// Replace CLOSE button with BACK button when:
+		// * we are in insert mode
+		// * we are in the second screen (function is selected and valid)
+		const isInsertMode = this.getMode() === 'insert';
+		const canGoBack = isInsertMode && functionValid;
+		const backButton = this.actions.get( { flags: [ 'back' ] } ).pop();
+		const closeButton = this.actions.get( { flags: [ 'close' ] } ).pop();
+		if ( backButton ) {
+			backButton.toggle( !!canGoBack );
+		}
+		if ( closeButton ) {
+			closeButton.toggle( !canGoBack );
+		}
 	} );
 };
 
@@ -224,8 +259,16 @@ ve.ui.WikifunctionsCallDialog.prototype.getTeardownProcess = function ( data ) {
  * @inheritdoc
  */
 ve.ui.WikifunctionsCallDialog.prototype.getActionProcess = function ( action ) {
-	if ( action === 'done' ) {
+	if ( action === 'back' ) {
+		ve.init.mw.WikifunctionsCall.vueAppLoaded.then( () => {
+			ve.init.mw.WikifunctionsCall.piniaStore.setVEFunctionId();
+			ve.init.mw.WikifunctionsCall.piniaStore.setVEFunctionParams();
+			this.updateActions();
+			this.setTitle();
+		} );
+	}
 
+	if ( action === 'done' ) {
 		// Make sure App is loaded before accessing piniaStore
 		ve.init.mw.WikifunctionsCall.vueAppLoaded.then( () => {
 			// Get values from the store:

@@ -23,7 +23,7 @@
 				<!-- Language Search block -->
 				<div class="ext-wikilambda-app-about-languages-dialog__search">
 					<cdx-search-input
-						v-model="searchTerm"
+						:model-value="searchTerm"
 						data-testid="search-language"
 						class="ext-wikilambda-app-about-languages-dialog__search-input"
 						:placeholder="searchPlaceholder"
@@ -261,6 +261,7 @@ module.exports = exports = defineComponent( {
 		 * @param {string} value
 		 */
 		updateSearchTerm: function ( value ) {
+			this.searchTerm = value;
 			if ( !value ) {
 				this.lookupResults = [];
 				return;

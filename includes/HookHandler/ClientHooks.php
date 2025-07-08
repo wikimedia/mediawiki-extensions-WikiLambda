@@ -174,6 +174,7 @@ class ClientHooks implements
 					'wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description',
 					'wikilambda-visualeditor-wikifunctionscall-info-missing-content',
 					'brackets',
+					'wikilambda-visualeditor-wikifunctionscall-back',
 					'wikilambda-visualeditor-wikifunctionscall-changedesc-title',
 					'wikilambda-visualeditor-wikifunctionscall-no-name',
 					'wikilambda-visualeditor-wikifunctionscall-no-description',

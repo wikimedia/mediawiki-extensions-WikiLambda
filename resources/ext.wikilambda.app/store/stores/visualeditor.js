@@ -15,6 +15,8 @@ module.exports = {
 		veFunctionParams: [],
 		veFunctionParamsValid: false,
 		veFunctionParamsDirty: false,
+		searchTerm: '',
+		lookupResults: [],
 		newParameterSetup: true,
 		suggestedFunctions: []
 	},
@@ -48,6 +50,26 @@ module.exports = {
 		 */
 		getSuggestedFunctions: function ( state ) {
 			return state.suggestedFunctions;
+		},
+
+		/**
+		 * Returns the current search term.
+		 *
+		 * @param {Object} state
+		 * @return {string}
+		 */
+		getSearchTerm: function ( state ) {
+			return state.searchTerm;
+		},
+
+		/**
+		 * Returns the current lookup results.
+		 *
+		 * @param {Object} state
+		 * @return {Array}
+		 */
+		getLookupResults: function ( state ) {
+			return state.lookupResults;
 		},
 
 		/**
@@ -178,6 +200,24 @@ module.exports = {
 		},
 
 		/**
+		 * Sets the current Visual Editor function search term.
+		 *
+		 * @param {string} searchTerm - The search term to set.
+		 */
+		setSearchTerm: function ( searchTerm = '' ) {
+			this.searchTerm = searchTerm;
+		},
+
+		/**
+		 * Sets the current Visual Editor function lookup results.
+		 *
+		 * @param {Array} lookupResults - The lookup results to set.
+		 */
+		setLookupResults: function ( lookupResults = [] ) {
+			this.lookupResults = lookupResults;
+		},
+
+		/**
 		 * Initializes the Visual Editor function call editor with the given payload.
 		 *
 		 * @param {Object} payload - The initialization payload.
@@ -186,9 +226,13 @@ module.exports = {
 		 * @param {Array} payload.suggestedFunctions - The suggested functions to initialize with.
 		 */
 		initializeVEFunctionCallEditor: function ( payload = {} ) {
+			// Reset the function selection
 			this.setVEFunctionId( payload.functionId );
 			this.setVEFunctionParams( payload.functionParams );
 			this.setSuggestedFunctions( payload.suggestedFunctions );
+			// Also reset the search state
+			this.setSearchTerm( '' );
+			this.setLookupResults( [] );
 		}
 	}
 };

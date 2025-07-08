@@ -29,6 +29,7 @@
 	"wikilambda-recentchanges-filter-label": "The label in the recent changes filter system to let you filter in or out these edits from being displayed",
 	"wikilambda-recentchanges-filter-rc-pref": "The label for the preference to enable Wikifunctions edits to be shown in the recent changes list. Comparable to {{msg-mw|wikibase-rc-show-wikidata-pref}}",
 	"wikilambda-recentchanges-filter-wl-pref": "The label for the preference to enable Wikifunctions edits to be shown in your watchlist. Comparable to {{msg-mw|wikibase-watchlist-show-changes-pref}}",
+	"wikilambda-visualeditor-wikifunctionscall-back": "Label for the back button in the visual editor function call dialog, which returns the user to the previous step.",
 	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Label shown in the visual editor instead of the result when editing a Wikifunctions call while the call is being loaded.",
 	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "Label shown in the visual editor instead of the result when editing a Wikifunctions call and the loading took too long.",
 	"wikilambda-visualeditor-wikifunctionscall-changedesc-title": "Label shown in the visual editor when looking at a diff, explaining that a change was made to a Wikifunctions call.",

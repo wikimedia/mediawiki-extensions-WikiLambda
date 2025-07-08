@@ -116,7 +116,9 @@ module.exports = exports = defineComponent( {
 		functionLabelData: function ( labelData ) {
 			const newTitle = ( labelData && !labelData.isUntitled ) ? labelData.label :
 				this.$i18n( 'brackets', this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-no-name' ).text() ).text();
-			this.$emit( 'function-name-updated', newTitle );
+			if ( this.functionZid ) {
+				this.$emit( 'function-name-updated', newTitle );
+			}
 		}
 	}
 } );

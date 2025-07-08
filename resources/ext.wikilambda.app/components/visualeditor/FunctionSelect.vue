@@ -10,7 +10,7 @@
 		<!-- Main function selector -->
 		<div class="ext-wikilambda-app-function-select__field">
 			<cdx-search-input
-				v-model="searchTerm"
+				:model-value="searchTerm"
 				:placeholder="$i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder' )"
 				@update:model-value="updateSearchTerm"
 				@focus="showSearchCancel = true"
@@ -70,15 +70,16 @@ module.exports = exports = defineComponent( {
 	mixins: [ typeMixin ],
 	data: function () {
 		return {
-			searchTerm: '',
-			lookupResults: [],
+			showSearchCancel: false,
 			lookupAbortController: null
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
 		'getDescription',
 		'getLabelData',
-		'getSuggestedFunctions'
+		'getSuggestedFunctions',
+		'getSearchTerm',
+		'getLookupResults'
 	] ), {
 		/**
 		 * Returns the information of the suggested function Zids
@@ -107,11 +108,29 @@ module.exports = exports = defineComponent( {
 		 */
 		descriptions: function () {
 			return this.lookupResults.map( ( item ) => this.getDescription( item.zid ) );
+		},
+		/**
+		 * Returns the current search term
+		 *
+		 * @return {string}
+		 */
+		searchTerm: function () {
+			return this.getSearchTerm;
+		},
+		/**
+		 * Returns the current lookup results
+		 *
+		 * @return {Array}
+		 */
+		lookupResults: function () {
+			return this.getLookupResults;
 		}
 	} ),
 	methods: Object.assign( {}, mapActions( useMainStore, [
 		'lookupFunctions',
-		'fetchZids'
+		'fetchZids',
+		'setSearchTerm',
+		'setLookupResults'
 	] ), {
 		/**
 		 * Update the lookupResults when there's a new search
@@ -120,11 +139,12 @@ module.exports = exports = defineComponent( {
 		 * @param {string} value
 		 */
 		updateSearchTerm: function ( value ) {
+			this.setSearchTerm( value );
 			if ( !value ) {
-				this.lookupResults = [];
+				this.setLookupResults( [] );
 				return;
 			}
-			this.getLookupResults( value );
+			this.fetchLookupResults( value );
 		},
 		/**
 		 * Triggers a lookup API to search for matches for the
@@ -133,7 +153,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} substring
 		 */
-		getLookupResults: function ( substring ) {
+		fetchLookupResults: function ( substring ) {
 			const allZids = [];
 			// Cancel previous request if any
 			if ( this.lookupAbortController ) {
@@ -146,8 +166,12 @@ module.exports = exports = defineComponent( {
 				signal: this.lookupAbortController.signal
 			} ).then( ( data ) => {
 				const { objects } = data;
+				// If the string searched has changed, do not show the search result
+				if ( !this.searchTerm.includes( substring ) ) {
+					return;
+				}
 				// Compile information for every search result
-				this.lookupResults = objects
+				const results = objects
 					.map( ( result ) => {
 						allZids.push( result.page_title );
 						return {
@@ -156,6 +180,7 @@ module.exports = exports = defineComponent( {
 							language: result.language
 						};
 					} );
+				this.setLookupResults( results );
 				// Fetch the result zid information (labels)
 				this.fetchZids( { zids: allZids } );
 			} ).catch( ( error ) => {

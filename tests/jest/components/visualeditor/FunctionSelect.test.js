@@ -28,6 +28,8 @@ describe( 'FunctionSelect', () => {
 			}, 100 ); // Simulate delay
 		} ) );
 		store.fetchZids.mockResolvedValue();
+		store.getSearchTerm = '';
+		store.getLookupResults = [];
 	} );
 
 	it( 'renders without errors', () => {
@@ -47,13 +49,23 @@ describe( 'FunctionSelect', () => {
 	} );
 
 	it( 'shows lookup results when search term is not empty', async () => {
+		store.getSearchTerm = 'Function';
+		store.getLookupResults = [ { zid: 'Z3', label: 'Function 3', language: 'en' } ];
+
 		const wrapper = shallowMount( FunctionSelect );
 
 		const searchInput = wrapper.findComponent( { name: 'cdx-search-input' } );
 		searchInput.vm.$emit( 'update:modelValue', 'Function' );
 
-		// Wait until lookupResults has content
-		await waitFor( () => expect( wrapper.vm.lookupResults.length ).not.toBe( 0 ) );
+		expect( store.lookupFunctions ).toHaveBeenCalledWith( {
+			search: 'Function',
+			renderable: true,
+			signal: expect.any( Object )
+		} );
+		await waitFor( () => expect( store.setLookupResults ).toHaveBeenCalledWith( [ { zid: 'Z3', label: 'Function 3', language: 'en' } ] ) );
+		expect( store.fetchZids ).toHaveBeenCalledWith( {
+			zids: [ 'Z3' ]
+		} );
 
 		expect( wrapper.find( '.ext-wikilambda-app-function-select__title' ).exists() ).toBe( true );
 
@@ -63,31 +75,29 @@ describe( 'FunctionSelect', () => {
 	} );
 
 	it( 'emits select event when a function is clicked', async () => {
+		store.getSearchTerm = 'Function';
+		store.getLookupResults = [ { zid: 'Z3', label: 'Function 3', language: 'en' } ];
+
 		const wrapper = shallowMount( FunctionSelect );
 
 		const searchInput = wrapper.findComponent( { name: 'cdx-search-input' } );
 		searchInput.vm.$emit( 'update:modelValue', 'Function' );
-
-		// Wait until lookupResults has content
-		await waitFor( () => expect( wrapper.vm.lookupResults.length ).not.toBe( 0 ) );
 
 		await wrapper.findComponent( { name: 'wl-function-select-item' } ).trigger( 'click' );
 		expect( wrapper.emitted().select[ 0 ] ).toEqual( [ 'Z3' ] );
 	} );
 
 	it( 'clears lookupResults when search term is cleared', async () => {
+		store.getSearchTerm = 'Function';
+
 		const wrapper = shallowMount( FunctionSelect );
 
 		const searchInput = wrapper.findComponent( { name: 'cdx-search-input' } );
-		searchInput.vm.$emit( 'update:modelValue', 'Function' );
-
-		// Wait until lookupResults has content
-		await waitFor( () => expect( wrapper.vm.lookupResults.length ).not.toBe( 0 ) );
 
 		// Clear the search term
 		searchInput.vm.$emit( 'update:modelValue', '' );
 
-		expect( wrapper.vm.lookupResults.length ).toBe( 0 );
+		expect( store.setLookupResults ).toHaveBeenCalledWith( [] );
 	} );
 
 	it( 'does not emit select event for invalid Zids', () => {

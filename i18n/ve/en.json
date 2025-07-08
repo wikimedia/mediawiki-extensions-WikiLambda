@@ -28,6 +28,7 @@
 	"wikilambda-recentchanges-filter-label": "Wikifunctions edits",
 	"wikilambda-recentchanges-filter-rc-pref": "Show Wikifunctions edits in recent changes",
 	"wikilambda-recentchanges-filter-wl-pref": "Show Wikifunctions edits in your watchlist",
+	"wikilambda-visualeditor-wikifunctionscall-back": "Back",
 	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Loading",
 	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "Preview took too long",
 	"wikilambda-visualeditor-wikifunctionscall-changedesc-title": "Wikifunctions inputs change",

@@ -1,6 +1,6 @@
 <template>
 	<cdx-accordion
-		v-model="isOpen"
+		:model-value="isOpen"
 		class="ext-wikilambda-app-function-input-preview"
 		:action-icon="actionIcon"
 		:action-button-label="actionButtonLabel"
