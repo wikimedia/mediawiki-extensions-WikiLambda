@@ -11,10 +11,12 @@
 			"Tranve",
 			"Weather Top Wizard",
 			"Winston Sung",
-			"捍粵者"
+			"捍粵者",
+			"SupaplexTW"
 		]
 	},
-	"wikilambda-desc": "為維基媒體的wiki提供wikitext解析器函數，以呼叫在中央wiki上編寫、管理和執行的函數。",
+	"wikilambda-desc": "提供在中央wiki上編寫、管理和執行的函數。",
+	"action-wikifunctions-run": "在公共 API 中執行函數",
 	"action-wikilambda-connect-implementation": "將實現與對應函數相連，使其可以執行",
 	"action-wikilambda-connect-tester": "將測試用例與對應函數相連",
 	"action-wikilambda-create": "新增物件",
