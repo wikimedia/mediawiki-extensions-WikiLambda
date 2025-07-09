@@ -31,7 +31,7 @@ abstract class ZObjectRegistry {
 	 * @codeCoverageIgnore
 	 */
 	private function __construct() {
-		$class = get_called_class();
+		$class = static::class;
 		if ( !array_key_exists( $class, self::$instances ) ) {
 			/**
 			 * @codeCoverageIgnore Our test suites always create these first in setUp(), so
@@ -41,9 +41,10 @@ abstract class ZObjectRegistry {
 		}
 	}
 
-	final public static function singleton() {
-		$class = get_called_class();
+	final public static function singleton(): static {
+		$class = static::class;
 		if ( !array_key_exists( $class, self::$instances ) ) {
+			// @phan-suppress-next-line PhanTypeInstantiateAbstract
 			self::$instances[ $class ] = new $class();
 		}
 		return self::$instances[ $class ];
