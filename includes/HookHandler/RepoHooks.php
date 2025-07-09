@@ -305,7 +305,7 @@ class RepoHooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesH
 			}
 		} else {
 			$firstError = $pageUpdater->getStatus()->getErrors()[0];
-			$error = wfMessage( $firstError[ 'message' ], $firstError[ 'params' ] );
+			$error = wfMessage( $firstError[ 'message' ], $firstError[ 'params' ] )->text();
 			$updater->output( "\t❌ Unable to make a page for {$title->getPrefixedText()}: $error\n" );
 		}
 
