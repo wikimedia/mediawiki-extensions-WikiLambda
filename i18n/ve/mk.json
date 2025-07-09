@@ -40,7 +40,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Внесете текст",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Предложени функции",
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Уредете ја функцијата за да ги исправите отсутните или неважечки вредности.",
-	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Нема избрано можност.",
+	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Не е избрана можност.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser": "Непозната грешка. [[f:Talk:$1|Пријавете го проблемот]]",
 	"wikilambda-visualeditor-wikifunctionscall-info-missing-content": "Помогнете ни да ја преведеме отсутната содржина на вашиот јазик на [[f:$1|Викифункции]].",
 	"wikilambda-visualeditor-wikifunctionscall-no-description": "Нема опис",

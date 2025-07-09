@@ -36,7 +36,7 @@
 	"action-wikilambda-edit-builtin-function": "לערוך פונקציה שמסופקת על־ידי המערכת",
 	"action-wikilambda-edit-connected-converter": "לערוך מסדיר או מפרק הסדרה מחובר",
 	"action-wikilambda-edit-converter": "לערוך מסדיר או מפרק הסדרה קיים",
-	"action-wikilambda-edit-enum-value": "ערוך מופע קיים של סוג בן־מנייה",
+	"action-wikilambda-edit-enum-value": "לערוך מופע קיים של סוג בן־מנייה",
 	"action-wikilambda-edit-error-key-label": "לערוך תוויות מפתח של סוג שגיאה קיים",
 	"action-wikilambda-edit-implementation": "לערוך עצמי מימוש קיימים",
 	"action-wikilambda-edit-key-label": "לערוך תוויות מפתח של סוג קיים",
