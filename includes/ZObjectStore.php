@@ -1580,8 +1580,15 @@ class ZObjectStore {
 	/**
 	 * Find all function Zids for which all their input and output types are renderable.
 	 * This means that:
-	 * * all their input types are either Z6/String, enums or have a parser function, and
-	 * * their output type is either Z6/String or have a renderer function.
+	 *
+	 * * all their input types are either:
+	 * ** in RENDERABLE_INPUT_TYPES (Z6/String, Wikidata types), or
+	 * ** enums, or
+	 * ** have a parser function, and
+	 *
+	 * * their output type is either:
+	 * ** in RENDERABLE_OUTPUT_TYPES (Z6/String, Z89/HTML Fragment), or
+	 * ** have a renderer function.
 	 *
 	 * @return array
 	 */
@@ -1598,8 +1605,15 @@ class ZObjectStore {
 	 *
 	 * We define renderable differently for inputs and for outputs.
 	 * We understand that:
-	 * * input types are renderable if they are Z6, enums or have a parser function.
-	 * * output types are renderable if they are Z6, Z89 or have a renderer function.
+	 *
+	 * * input types are renderable if they are:
+	 * ** in RENDERABLE_INPUT_TYPES (Z6/String, Wikidata types), or
+	 * ** enums, or
+	 * ** have a parser function, and
+	 *
+	 * * output types are renderable if they are:
+	 * ** in RENDERABLE_OUTPUT_TYPES (Z6/String, Z89/HTML Fragment), or
+	 * ** have a renderer function.
 	 *
 	 * @return SelectQueryBuilder
 	 */
@@ -1637,12 +1651,11 @@ class ZObjectStore {
 	 * boolean (1/0) value:
 	 *
 	 * * For every output row (wlzo_key=Z8K2), renderable is true if:
-	 * ** output type is Z6, or
-	 * ** output type is Z89, or
+	 * ** output type is in RENDERABLE_OUTPUT_TYPES (Z6/String, Z89/HTML Fragment), or
 	 * ** output type has a renderer function
 	 *
 	 * * For every input row (wlzo_key=Z8K1), renderable is true if:
-	 * ** input type is Z6, or
+	 * ** input type is in RENDERABLE_INPUT_TYPES (Z6/String, Wikidata types), or
 	 * ** input type is an enum, or
 	 * ** input type has a parser function
 	 *
@@ -1658,14 +1671,19 @@ class ZObjectStore {
 			$dbr->expr( 'ot.wlzo_id', '!=', null ),
 			// Input is enum
 			$dbr->expr( 'ite.wlzo_main_type', '!=', null ),
-			// input/output is Z6
-			'f.wlzo_related_zobject' => 'Z6',
 		];
-		// Only include Z89 as renderable output if WikifunctionsEnableHTMLOutput is enabled
-		if ( $this->config->get( 'WikifunctionsEnableHTMLOutput' ) ) {
-			// Output is Z89
+
+		// Add renderable input types
+		foreach ( ZTypeRegistry::getRenderableInputTypes( $this->config ) as $type ) {
 			$renderableOrExpr[] = $dbr->andExpr(
-				[ 'f.wlzo_key' => 'Z8K2', 'f.wlzo_related_zobject' => 'Z89' ]
+				[ 'f.wlzo_key' => 'Z8K1', 'f.wlzo_related_zobject' => $type ]
+			);
+		}
+
+		 // Add renderable output types
+		foreach ( ZTypeRegistry::getRenderableOutputTypes( $this->config ) as $type ) {
+			$renderableOrExpr[] = $dbr->andExpr(
+				[ 'f.wlzo_key' => 'Z8K2', 'f.wlzo_related_zobject' => $type ]
 			);
 		}
 

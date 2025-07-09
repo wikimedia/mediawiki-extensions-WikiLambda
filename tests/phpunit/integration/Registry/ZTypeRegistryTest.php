@@ -439,4 +439,24 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 		);
 		$this->assertNull( $registry->getZFunctionBuiltInName( 'Z801' ) );
 	}
+
+	public function testGetRenderableInputTypes() {
+		// Test with feature flags enabled
+		$this->overrideConfigValue( 'WikifunctionsEnableWikidataInputTypes', true );
+		$renderableTypes = ZTypeRegistry::getRenderableInputTypes( $this->getServiceContainer()->getMainConfig() );
+		$this->assertContains( ZTypeRegistry::Z_STRING, $renderableTypes );
+		$this->assertContains( ZTypeRegistry::Z_WIKIDATA_ITEM, $renderableTypes );
+		$this->assertContains( ZTypeRegistry::Z_WIKIDATA_LEXEME, $renderableTypes );
+		$this->assertContains( ZTypeRegistry::Z_WIKIDATA_REFERENCE_ITEM, $renderableTypes );
+		$this->assertContains( ZTypeRegistry::Z_WIKIDATA_REFERENCE_LEXEME, $renderableTypes );
+
+		// Test with feature flags disabled
+		$this->overrideConfigValue( 'WikifunctionsEnableWikidataInputTypes', false );
+		$renderableTypes = ZTypeRegistry::getRenderableInputTypes( $this->getServiceContainer()->getMainConfig() );
+		$this->assertContains( ZTypeRegistry::Z_STRING, $renderableTypes );
+		$this->assertNotContains( ZTypeRegistry::Z_WIKIDATA_ITEM, $renderableTypes );
+		$this->assertNotContains( ZTypeRegistry::Z_WIKIDATA_LEXEME, $renderableTypes );
+		$this->assertNotContains( ZTypeRegistry::Z_WIKIDATA_REFERENCE_ITEM, $renderableTypes );
+		$this->assertNotContains( ZTypeRegistry::Z_WIKIDATA_REFERENCE_LEXEME, $renderableTypes );
+	}
 }

@@ -78,6 +78,10 @@
 		"WikifunctionsEnableHTMLOutput": {
 			"description": "If true, allow Functions that return HTML output.",
 			"value": false
+		},
+		"WikifunctionsEnableWikidataInputTypes": {
+			"description": "If true, allow Wikidata types (Z6001, Z6005, Z6091, Z6095) as renderable input types in Visual Editor.",
+			"value": false
 		}
 	},
 	"ConfigRegistry": {

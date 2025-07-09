@@ -77,6 +77,10 @@ class ApiQueryFunctionsTest extends ApiTestCase {
 		// Renderable but not running
 		// Input: Z6, Output: Z6
 		[ 'Z10010', 'Z8', 'Z6', 'Z1002', 'Renderable but not runnable English function', 1 ],
+
+		// Renderable Wikidata types
+		[ 'Z10011', 'Z8', 'Z6', 'Z1002', 'Wikidata item to English string', 1 ],
+		[ 'Z10012', 'Z8', 'Z6', 'Z1002', 'Wikidata lexeme to English string', 1 ],
 	];
 
 	/**
@@ -130,6 +134,13 @@ class ApiQueryFunctionsTest extends ApiTestCase {
 		[ 'Z10010', 'Z8', 'Z8K1', 'Z6', 'Z4' ],
 		[ 'Z10010', 'Z8', 'Z8K2', 'Z6', 'Z4' ],
 
+		// Z10011: input Z6001 (Wikidata Item), output Z6
+		[ 'Z10011', 'Z8', 'Z8K1', 'Z6001', 'Z4' ],
+		[ 'Z10011', 'Z8', 'Z8K2', 'Z6', 'Z4' ],
+		// Z10012: input Z6005 (Wikidata Lexeme), output Z6
+		[ 'Z10012', 'Z8', 'Z8K1', 'Z6005', 'Z4' ],
+		[ 'Z10012', 'Z8', 'Z8K2', 'Z6', 'Z4' ],
+
 		// Types:
 		// Z40 is enum:
 		[ 'Z41', 'Z40', ZObjectSecondaryDataUpdate::INSTANCEOFENUM_DB_KEY, 'Z40', 'Z4' ],
@@ -154,8 +165,10 @@ class ApiQueryFunctionsTest extends ApiTestCase {
 		[ 'Z10008', 'Z8', 'Z8K4', 'Z14', 'Z30008' ],
 		// Z10009 has two implementations
 		[ 'Z10009', 'Z8', 'Z8K4', 'Z14', 'Z30009' ],
-		[ 'Z10009', 'Z8', 'Z8K4', 'Z14', 'Z30010' ]
+		[ 'Z10009', 'Z8', 'Z8K4', 'Z14', 'Z30010' ],
 		// Z10010 has no implementation
+		[ 'Z10011', 'Z8', 'Z8K4', 'Z14', 'Z30011' ],
+		[ 'Z10012', 'Z8', 'Z8K4', 'Z14', 'Z30012' ],
 	];
 
 	public function addDBDataOnce(): void {
@@ -295,6 +308,30 @@ class ApiQueryFunctionsTest extends ApiTestCase {
 	}
 
 	public function testRenderable() {
+		$this->overrideConfigValue( 'WikifunctionsEnableHTMLOutput', true );
+		$this->overrideConfigValue( 'WikifunctionsEnableWikidataInputTypes', true );
+		$response = $this->doApiRequest( [
+			'action' => 'query',
+			'list' => 'wikilambdasearch_functions',
+			'wikilambdasearch_functions_search' => 'Eng',
+			'wikilambdasearch_functions_language' => 'en',
+			'wikilambdasearch_functions_renderable' => true
+		] );
+
+		$expectedZids = [ 'Z10001', 'Z10002', 'Z10003', 'Z10007', 'Z10008', 'Z10009', 'Z10011', 'Z10012' ];
+
+		// Assert total result count
+		$results = $response[0][ 'query' ][ 'wikilambdasearch_functions' ];
+		$this->assertSameSize( $expectedZids, $results );
+
+		// Assert correct zids are returned
+		$returnedZids = $this->getReturnedZids( $results );
+		$this->assertEqualsCanonicalizing( $expectedZids, $returnedZids );
+	}
+
+	public function testRenderableWithoutFeatureFlags() {
+		$this->overrideConfigValue( 'WikifunctionsEnableHTMLOutput', false );
+		$this->overrideConfigValue( 'WikifunctionsEnableWikidataInputTypes', false );
 		$response = $this->doApiRequest( [
 			'action' => 'query',
 			'list' => 'wikilambdasearch_functions',
@@ -403,7 +440,7 @@ class ApiQueryFunctionsTest extends ApiTestCase {
 			'wikilambdasearch_functions_output_type' => 'Z6',
 		] );
 
-		$expectedZids = [ 'Z10001', 'Z10002', 'Z10003', 'Z10005', 'Z10010' ];
+		$expectedZids = [ 'Z10001', 'Z10002', 'Z10003', 'Z10005', 'Z10010', 'Z10011', 'Z10012' ];
 
 		// Assert total result count
 		$results = $response[0][ 'query' ][ 'wikilambdasearch_functions' ];

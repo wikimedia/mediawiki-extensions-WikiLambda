@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Registry;
 
+use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
@@ -196,6 +197,64 @@ class ZTypeRegistry extends ZObjectRegistry {
 		self::Z_WIKIDATA_REFERENCE_LEXEME,
 		self::Z_WIKIDATA_REFERENCE_LEXEME_SENSE
 	];
+
+	/**
+	 * Types that are considered renderable for Visual Editor integration.
+	 * These types can be used as inputs in functions that will be discoverable
+	 * in the Visual Editor menu when the renderable parameter is set to true.
+	 *
+	 * To add new renderable types, simply add them to this array.
+	 */
+	public const RENDERABLE_INPUT_TYPES = [
+		self::Z_STRING,
+	];
+
+	/**
+	 * Types that are considered renderable for Visual Editor integration.
+	 * These types can be used as outputs in functions that will be discoverable
+	 * in the Visual Editor menu when the renderable parameter is set to true.
+	 *
+	 * To add new renderable types, simply add them to this array.
+	 */
+	public const RENDERABLE_OUTPUT_TYPES = [
+		self::Z_STRING,
+	];
+
+	/**
+	 * Get the list of renderable input types, including Wikidata types if enabled.
+	 *
+	 * @param Config|null $config MediaWiki config object
+	 * @return string[] Array of renderable input type ZIDs
+	 */
+	public static function getRenderableInputTypes( ?Config $config = null ): array {
+		$types = self::RENDERABLE_INPUT_TYPES;
+
+		// Add Wikidata types if the feature flag is enabled
+		if ( $config && $config->get( 'WikifunctionsEnableWikidataInputTypes' ) ) {
+			$types = array_merge( $types, [
+				self::Z_WIKIDATA_ITEM,
+				self::Z_WIKIDATA_LEXEME,
+				self::Z_WIKIDATA_REFERENCE_ITEM,
+				self::Z_WIKIDATA_REFERENCE_LEXEME,
+			] );
+		}
+
+		return $types;
+	}
+
+	/**
+	 * Get the list of renderable output types, including HTML fragment if enabled.
+	 *
+	 * @param Config|null $config MediaWiki config object
+	 * @return string[] Array of renderable output type ZIDs
+	 */
+	public static function getRenderableOutputTypes( ?Config $config = null ): array {
+		$types = self::RENDERABLE_OUTPUT_TYPES;
+		if ( $config && $config->get( 'WikifunctionsEnableHTMLOutput' ) ) {
+			$types = array_merge( $types, [ self::Z_HTML_FRAGMENT ] );
+		}
+		return array_values( $types );
+	}
 
 	// Wikidata Entity Fetch Functions:
 	public const Z_WIKIDATA_FETCH_LEXEME_FORM = 'Z6824';
