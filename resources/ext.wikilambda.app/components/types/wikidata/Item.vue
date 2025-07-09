@@ -178,6 +178,7 @@ module.exports = exports = defineComponent( {
 
 	.ext-wikilambda-app-wikidata-item__link {
 		line-height: var( --line-height-current );
+		word-break: break-word;
 	}
 
 	.ext-wikilambda-app-wikidata-item__wd-icon {

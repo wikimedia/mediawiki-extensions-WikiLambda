@@ -200,6 +200,7 @@ module.exports = exports = defineComponent( {
 		flex-direction: column;
 		justify-content: center;
 		position: relative;
+		max-width: 100%;
 
 		// Does not indent a key-value-set's first level when no-indent is set
 		&--no-indent {

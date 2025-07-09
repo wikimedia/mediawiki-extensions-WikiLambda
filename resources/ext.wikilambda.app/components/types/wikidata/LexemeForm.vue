@@ -184,6 +184,7 @@ module.exports = exports = defineComponent( {
 
 	.ext-wikilambda-app-wikidata-lexeme-form__link {
 		line-height: var( --line-height-current );
+		word-break: break-word;
 	}
 
 	.ext-wikilambda-app-wikidata-lexeme-form__wd-icon {
