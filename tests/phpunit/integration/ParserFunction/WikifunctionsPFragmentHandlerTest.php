@@ -27,6 +27,7 @@ use Wikimedia\Parsoid\Wt2Html\TT\TemplateHandlerArguments;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentHandler
+ * @covers \MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentSanitiserTokenHandler
  * @covers \MediaWiki\Extension\WikiLambda\WikifunctionsClientStore
  * @covers \MediaWiki\Extension\WikiLambda\WikifunctionCallDefaultValues
  * @group API
@@ -254,10 +255,10 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			'success' => true,
 			'type' => ZTypeRegistry::Z_HTML_FRAGMENT,
 			'value' => '
-				<b>HTML!</b><script>alert("x")</script>
-				<a href="https://af.wikipedia.org/wiki/Eenhoring">Wikipedia link</a>
+				<b data-mw="This is a bad vector!" data-mw-foo="No, really!">HTML!</b><script>alert("x")</script>
+				<a href="https://af.wikipedia.org/wiki/Eenhoring" data-mw="Corruption!">Wikipedia link</a>
 				<script>setTimeout(function(){window.alert(\'I killed visual editor\')},10000);</script>
-				<button type="button">inject buttons</button><br/>
+				<button type="button" data-ooui="Fiddles!">inject buttons</button><br/>
 				<iframe
 				  width="560"
 				  height="315"
@@ -305,7 +306,7 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 		);
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
 		$this->assertStringContainsString(
-			'&lt;a href="https://af.wikipedia.org/wiki/Eenhoring"&gt;Wikipedia link&lt;/a&gt;',
+			'&lt;a href="https://af.wikipedia.org/wiki/Eenhoring" data-mw="Corruption!"&gt;Wikipedia link&lt;/a&gt;',
 			$html
 		);
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
@@ -315,7 +316,7 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 		);
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
 		$this->assertStringContainsString(
-			'&lt;button type="button"&gt;inject buttons&lt;/button&gt;',
+			'&lt;button type="button" data-ooui="Fiddles!"&gt;inject buttons&lt;/button&gt;',
 			$html
 		);
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
