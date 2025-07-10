@@ -323,7 +323,7 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 		$this->assertStringContainsString( '&lt;iframe', $html );
 		$this->assertStringContainsString( '&lt;img src="x" onerror="alert(\'XSS1\')"&gt;', $html );
 		$this->assertStringContainsString( '&lt;a href="javascript:alert(\'XSS2\')"&gt;Click me&lt;/a&gt;', $html );
-		$this->assertStringContainsString( '<div style="/* insecure input */">Test</div>', $html );
+		$this->assertStringContainsString( '<div>Test</div>', $html );
 		$this->assertStringContainsString(
 			'<span style="background:#4caf50;color:white;padding:2px 6px;border-radius:4px;'
 			. 'font-size:90%">inline style galore</span>',

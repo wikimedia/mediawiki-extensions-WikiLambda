@@ -110,6 +110,11 @@ class WikifunctionsPFragmentSanitiserTokenHandler extends RelayTokenHandler {
 				if ( str_starts_with( $key, 'data-' ) ) {
 					unset( $fixedAttrs[$key] );
 				}
+
+				if ( $key === 'style' && $value === "/* insecure input */" ) {
+					// Don't let the placeholder cleansed value through
+					unset( $fixedAttrs[$key] );
+				}
 			}
 
 			$attrs = new PlainAttributes( $fixedAttrs );
