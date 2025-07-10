@@ -4,7 +4,17 @@
 			"Умар"
 		]
 	},
+	"wikilambda-recentchanges-edit-title": "Викифункцеш хийцар",
 	"wikilambda-recentchanges-entry-function": "Функци",
+	"wikilambda-recentchanges-explanation-delete-function": "Функцин билгалдаккхар дӀадаьккхина",
+	"wikilambda-recentchanges-explanation-delete-implementation": "$1 Кхочушдар дӀадаьккхина",
+	"wikilambda-recentchanges-explanation-delete-tester": "ДӀадаьккхина Тестийн гӀуллакх $1",
+	"wikilambda-recentchanges-explanation-edit-implementation": "$1 Кхочушдар хийцина",
+	"wikilambda-recentchanges-explanation-edit-tester": "Хийцина Тестийн гӀуллакх $1",
+	"wikilambda-recentchanges-explanation-restore-function": "Функцин билгалдаккхар меттахӀоттийна",
+	"wikilambda-recentchanges-explanation-restore-implementation": "$1 Кхочушдар меттахӀоттийна",
+	"wikilambda-recentchanges-explanation-restore-tester": "МеттахӀоттийна Тестийн гӀуллакх $1",
+	"wikilambda-recentchanges-filter-label": "Викифункцеш хийцар",
 	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Чуйолуш",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Вариант харжа",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "Викифункцийн чуьра [[f:$1|Функци]]",
