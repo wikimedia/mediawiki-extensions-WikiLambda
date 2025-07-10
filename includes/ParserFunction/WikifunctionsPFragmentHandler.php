@@ -23,7 +23,7 @@ use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
-use MediaWiki\Parser\Sanitizer;
+use MediaWiki\Tidy\RemexCompatFormatter;
 use MediaWiki\WikiMap\WikiMap;
 use Psr\Log\LoggerInterface;
 use Wikimedia\Parsoid\Ext\Arguments;
@@ -31,6 +31,9 @@ use Wikimedia\Parsoid\Ext\ParsoidExtensionAPI;
 use Wikimedia\Parsoid\Ext\PFragmentHandler;
 use Wikimedia\Parsoid\Fragments\HtmlPFragment;
 use Wikimedia\Parsoid\Fragments\PFragment;
+use Wikimedia\RemexHtml\HTMLData;
+use Wikimedia\RemexHtml\Serializer\Serializer as RemexSerializer;
+use Wikimedia\RemexHtml\Tokenizer\Tokenizer as RemexTokenizer;
 use Wikimedia\Stats\Metrics\NullMetric;
 use Wikimedia\Stats\Metrics\TimingMetric;
 
@@ -167,7 +170,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 				) {
 					if ( $this->config->get( 'WikifunctionsEnableHTMLOutput' ) ) {
 						$this->statsFactoryTimer->setLabel( 'response', 'cached' )->stop();
-						$html = $this->getSanitizedHtmlFragment( $cachedValue['value'] ?? '' );
+						$html = $this->getSanitisedHtmlFragment( $cachedValue['value'] ?? '' );
 						return HtmlPFragment::newFromHtmlString( $html, null );
 					} else {
 						$this->statsFactoryTimer->setLabel( 'response', 'cachedError' )->stop();
@@ -483,14 +486,14 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 	}
 
 	/**
-	 * Decode and sanitize a possibly JSON-encoded HTML fragment string.
+	 * Decode and sanitise a possibly JSON-encoded HTML fragment string.
 	 *
 	 * @param string $value
 	 * @return string
 	 */
-	private function getSanitizedHtmlFragment( $value ) {
+	private function getSanitisedHtmlFragment( $value ) {
 		$html = $this->decodeHtmlFragmentValue( $value );
-		return $this->sanitizeHtmlFragment( $html );
+		return $this->sanitiseHtmlFragment( $html );
 	}
 
 	/**
@@ -513,13 +516,31 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 	}
 
 	/**
-	 * Sanitize an HTML fragment string using MediaWiki Sanitizer.
+	 * Sanitise an HTML fragment string using Remex, like MediaWiki's Sanitizer but with
+	 * more control (for both including and excluding things).
 	 *
-	 * @param string $html
+	 * @param string $text
 	 * @return string
 	 */
-	private function sanitizeHtmlFragment( $html ) {
-		return Sanitizer::removeSomeTags( $html );
+	private function sanitiseHtmlFragment( string $text ): string {
+		// Use RemexHtml to tokenize $text and remove the barred tags
+
+		$serializer = new RemexSerializer( new RemexCompatFormatter );
+
+		$tokenizer = new RemexTokenizer(
+			new WikifunctionsPFragmentSanitiserTokenHandler( $serializer, $text ),
+			$text,
+				[
+				'ignoreErrors' => true,
+				// Don't ignore char refs, as we want them to be decoded
+				'ignoreCharRefs' => false,
+				'ignoreNulls' => true,
+				'skipPreprocess' => true,
+			]
+		);
+		$tokenizer->execute( [ 'fragmentNamespace' => HTMLData::NS_HTML, 'fragmentName' => 'body', ] );
+
+		return $serializer->getResult();
 	}
 
 	/**

@@ -1,6 +1,7 @@
 {
 	"require": {
-		"diff/diff": "^3.2.0"
+		"diff/diff": "^3.2.0",
+		"wikimedia/remex-html": "^4.1.2"
 	},
 	"require-dev": {
 		"mediawiki/mediawiki-codesniffer": "47.0.0",
