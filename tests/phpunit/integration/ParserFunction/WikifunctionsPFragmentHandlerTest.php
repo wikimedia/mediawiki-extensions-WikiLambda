@@ -409,7 +409,10 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			'type' => ZTypeRegistry::Z_HTML_FRAGMENT,
 			'value' => '
 				<b data-mw="This is a bad vector!" data-mw-foo="No, really!">HTML!</b><script>alert("x")</script>
+				<a href="' . $mainConfig->get( 'Server' ) . '" target="_blank" title="This will be dropped"'
+					. ' onmouseover="alert(\'XSS1\')">A local link</a>
 				<a href="https://af.wikipedia.org/wiki/Eenhoring" data-mw="Corruption!">Wikipedia link</a>
+				<a href="https://www.google.com" target="_blank">Not a local link</a>
 				<script>setTimeout(function(){window.alert(\'I killed visual editor\')},10000);</script>
 				<button type="button" data-ooui="Fiddles!">inject buttons</button><br/>
 				<iframe
@@ -457,9 +460,16 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			'&lt;script&gt;alert("x")&lt;/script&gt;',
 			$html
 		);
-		// @phpcs:ignore Generic.Files.LineLength.TooLong
 		$this->assertStringContainsString(
-			'&lt;a href="https://af.wikipedia.org/wiki/Eenhoring" data-mw="Corruption!"&gt;Wikipedia link&lt;/a&gt;',
+			'<a href="' . $mainConfig->get( 'Server' ) . '">A local link</a>',
+			$html
+		);
+		$this->assertStringContainsString(
+			'&lt;a href="https://af.wikipedia.org/wiki/Eenhoring" data-mw="Corruption!"&gt;Wikipedia link',
+			$html
+		);
+		$this->assertStringContainsString(
+			'&lt;a href="https://www.google.com" target="_blank"&gt;Not a local link',
 			$html
 		);
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
@@ -475,7 +485,7 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
 		$this->assertStringContainsString( '&lt;iframe', $html );
 		$this->assertStringContainsString( '&lt;img src="x" onerror="alert(\'XSS1\')"&gt;', $html );
-		$this->assertStringContainsString( '&lt;a href="javascript:alert(\'XSS2\')"&gt;Click me&lt;/a&gt;', $html );
+		$this->assertStringContainsString( '&lt;a href="javascript:alert(\'XSS2\')"&gt;Click me', $html );
 		$this->assertStringContainsString( '<div>Test</div>', $html );
 		$this->assertStringContainsString(
 			'<span style="background:#4caf50;color:white;padding:2px 6px;border-radius:4px;'

@@ -11,7 +11,12 @@
 
 namespace MediaWiki\Extension\WikiLambda\ParserFunction;
 
+use MediaWiki\Extension\SiteMatrix\SiteMatrix;
+use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Parser\Sanitizer;
+use MediaWiki\Registration\ExtensionRegistry;
+use Psr\Log\LoggerInterface;
 use Wikimedia\RemexHtml\Serializer\Serializer;
 use Wikimedia\RemexHtml\Tokenizer\Attributes;
 use Wikimedia\RemexHtml\Tokenizer\PlainAttributes;
@@ -22,6 +27,8 @@ use Wikimedia\RemexHtml\TreeBuilder\TreeBuilder;
 class WikifunctionsPFragmentSanitiserTokenHandler extends RelayTokenHandler {
 
 	private string $source;
+	private array $allowedUrls = [];
+	private LoggerInterface $logger;
 
 	public function __construct( Serializer $serializer, string $source ) {
 		$this->nextHandler = new Dispatcher( new TreeBuilder( $serializer, [
@@ -31,7 +38,32 @@ class WikifunctionsPFragmentSanitiserTokenHandler extends RelayTokenHandler {
 
 		parent::__construct( $this->nextHandler );
 
+		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
+
 		$this->source = $source;
+
+		// The local server URL is always allowed, so we can link to the current wiki
+		$this->allowedUrls = [ MediaWikiServices::getInstance()->getMainConfig()->get( 'Server' ) ];
+
+		if ( ExtensionRegistry::getInstance()->isLoaded( 'SiteMatrix' ) ) {
+			// If loaded, SiteMatrix can give us a list of cluster wikis and thus their server URLs
+			$sitematrix = new SiteMatrix();
+
+			$languages = $sitematrix->getLangList();
+			$families = $sitematrix->getSites();
+			foreach ( $languages as $key => $langCode ) {
+				foreach ( $families as $family ) {
+					if ( $sitematrix->exist( $langCode, $family ) ) {
+						$this->allowedUrls[] = $sitematrix->getUrl( $langCode, $family );
+					}
+				}
+			}
+
+			$specials = $sitematrix->getSpecials();
+			foreach ( $specials as $special ) {
+				$this->allowedUrls[] = $sitematrix->getUrl( $special[0], $special[1] );
+			}
+		}
 	}
 
 	// This is our list of allowed HTML elements. It should be kept extremely minimal, and any changes should
@@ -49,6 +81,7 @@ class WikifunctionsPFragmentSanitiserTokenHandler extends RelayTokenHandler {
 		"div",
 		"span",
 		"p",
+		"a",
 
 		// Secondary content
 		"blockquote",
@@ -117,10 +150,62 @@ class WikifunctionsPFragmentSanitiserTokenHandler extends RelayTokenHandler {
 				}
 			}
 
+			$tagAllowed = true;
+
+			// Finally, we do some special handling for the <a> tag. The MediaWiki Sanitizer (above) will
+			// have only allowed through supported full URLs with supported protocols (so no relative URLs
+			// or javascript: URLs), but we want to restrict further to only known local and interwiiki links.
+			if ( $tagName === 'a' ) {
+				$parsedLink = MediaWikiServices::getInstance()->getUrlUtils()->parse( $fixedAttrs['href'] ?? '' );
+
+				if ( !$parsedLink || !isset( $parsedLink['host'] ) ) {
+					// If the link is not parseable, or has no host, we will not allow it
+					$tagAllowed = false;
+					$fixedAttrs = [];
+				} else {
+					$targetDomain = $parsedLink['scheme'] . $parsedLink['delimiter'] . $parsedLink['host'];
+
+					// Mostly for local testing!
+					if ( isset( $parsedLink['port'] ) ) {
+						$targetDomain .= ':' . $parsedLink['port'];
+					}
+
+					if ( in_array( $targetDomain, $this->allowedUrls ) ) {
+						// Allowed; over-write all other attributes
+						$fixedAttrs = [
+							'href' => $fixedAttrs['href']
+						];
+						$this->logger->debug(
+							'WikifunctionsPFragmentSanitiserTokenHandler: Allowing <a> tag with href "{targetDomain}"',
+							[
+								'rawHref' => $fixedAttrs['href'] ?? '',
+								'targetDomain' => $targetDomain,
+								'allowedDomains' => $this->allowedUrls,
+							]
+						);
+
+					} else {
+						$tagAllowed = false;
+						$this->logger->debug(
+							'WikifunctionsPFragmentSanitiserTokenHandler: Rejecting <a> tag with href "{targetDomain}"',
+							[
+								'rawHref' => $fixedAttrs['href'] ?? '',
+								'targetDomain' => $targetDomain,
+								'allowedDomains' => $this->allowedUrls,
+							]
+						);
+
+					}
+				}
+			}
+
 			$attrs = new PlainAttributes( $fixedAttrs );
 
-			$this->nextHandler->startTag( $name, $attrs, $selfClose, $sourceStart, $sourceLength );
-			return;
+			if ( $tagAllowed ) {
+				$this->nextHandler->startTag( $name, $attrs, $selfClose, $sourceStart, $sourceLength );
+				return;
+			}
+			// If the tag is not allowed, we will fall down to the below, and escape it as text
 		}
 
 		// If we've reached this point, the tag is not allowed, so we will escape it as text
