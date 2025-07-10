@@ -27,6 +27,7 @@ use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Html\Html;
 use MediaWiki\Json\FormatJson;
 use MediaWiki\Language\Language;
+use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Parser\ParserOutput;
@@ -299,6 +300,25 @@ class ZObjectContentHandler extends ContentHandler {
 			return;
 		}
 
+		// Add the ZObject's labels in each language as a page property, for cheaper reading
+		$zLangRegistry = ZLangRegistry::singleton();
+		$labels = $content->getLabels()->getValueAsList();
+		foreach ( $labels as $langZid => $label ) {
+			try {
+				$lang = $zLangRegistry->getLanguageCodeFromZid( $langZid );
+				$parserOutput->setPageProperty( "wikilambda-label-$lang", $label );
+			} catch ( ZErrorException ) {
+				// The language code is somehow not recognised; don't set a property, but log it for review
+				LoggerFactory::getInstance( 'WikiLambda' )->warning(
+					'Skipping setting page property for label in unknown language {langZid} when displaying {page}',
+					[
+						'langZid' => $langZid,
+						'page' => $content->getZObject()->getZid(),
+					]
+				);
+			}
+		}
+
 		// Add links to other ZObjects
 		// (T361701) Do this ahead of the early return, as LinkUpdater asks for the non-HTML version
 		foreach ( $content->getInnerZObject()->getLinkedZObjects() as $link ) {
@@ -321,7 +341,6 @@ class ZObjectContentHandler extends ContentHandler {
 		$parserOutput->addModuleStyles( [ 'ext.wikilambda.viewpage.styles' ] );
 		$parserOutput->addModules( [ 'ext.wikilambda.app' ] );
 
-		$zLangRegistry = ZLangRegistry::singleton();
 		$userLangCode = $userLang->getCode();
 
 		// If the userLang isn't recognised (e.g. it's qqx, or a language we don't support yet, or it's

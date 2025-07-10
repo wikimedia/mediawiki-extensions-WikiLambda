@@ -359,6 +359,40 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
+	public function testGetParserOutput_labels() {
+		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+
+		$this->registerLangs( [ 'en', 'fr' ] );
+		$this->insertZids( [ 'Z2', 'Z6', 'Z9', 'Z11', 'Z12', 'Z40' ] );
+
+		$testTitle = Title::newFromText( ZTestType::TEST_ZID, NS_MAIN );
+
+		$content = new ZObjectContent( ZTestType::TEST_ENCODING );
+
+		$cpoParamsWithHTML = new ContentParseParams( $testTitle, null, ParserOptions::newFromAnon(), true );
+		$parserOutputWithHTML = $handler->getParserOutput( $content, $cpoParamsWithHTML );
+
+		$parserPageProperties = $parserOutputWithHTML->getPageProperties();
+
+		$this->assertCount( 2, $parserPageProperties, 'Should have both labels set as properties' );
+		$this->assertArrayHasKey( 'wikilambda-label-en', $parserPageProperties, 'Should have label set for English' );
+		$this->assertSame(
+			'Demonstration type', $parserPageProperties[ 'wikilambda-label-en' ],
+			'Should have the expected label in English'
+		);
+
+		$this->assertArrayHasKey( 'wikilambda-label-fr', $parserPageProperties, 'Should have label set for French' );
+		$this->assertSame(
+			'Type pour démonstration', $parserPageProperties[ 'wikilambda-label-fr' ],
+			'Should have the expected label in French'
+		);
+
+		$this->assertArrayNotHasKey(
+			'wikilambda-label-de', $parserPageProperties,
+			'Should not have label set for German'
+		);
+	}
+
 	public function testGetParserOutput_invalidContent() {
 		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
 
