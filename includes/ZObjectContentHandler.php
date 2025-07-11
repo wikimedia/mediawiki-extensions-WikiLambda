@@ -33,6 +33,7 @@ use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Revision\SlotRenderingProvider;
 use MediaWiki\Title\Title;
 use StatusValue;
+use TextSlotDiffRenderer;
 
 class ZObjectContentHandler extends ContentHandler {
 	use ZObjectEditingPageTrait;
@@ -598,4 +599,18 @@ class ZObjectContentHandler extends ContentHandler {
 			$context, $oldContentRevisionId, $newContentRevisionId, $recentChangesId, $refreshCache, $unhide
 		);
 	}
+
+	/**
+	 * @inheritDoc
+	 */
+	protected function getSlotDiffRendererWithOptions( IContextSource $context, $options = [] ) {
+		// TODO (T362246): Dependency-inject (if we haven't replaced this by then)
+		$slotDiffRenderer = MediaWikiServices::getInstance()
+			->getContentHandlerFactory()
+			->getContentHandler( CONTENT_MODEL_TEXT )
+			->getSlotDiffRenderer( $context );
+		'@phan-var TextSlotDiffRenderer $slotDiffRenderer';
+		return $slotDiffRenderer;
+	}
+
 }

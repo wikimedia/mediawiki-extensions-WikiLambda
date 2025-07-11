@@ -37,7 +37,8 @@ class ZObjectContentDifferenceEngine extends DifferenceEngine {
 		$newText = $newContent->getText();
 		/** @var TextSlotDiffRenderer $slotDiffRenderer */
 
-		// TODO (T362246): Dependency-inject (if we haven't replaced this by then)
+		// TODO (T362246): Dependency-inject (if we haven't replaced this by then),
+		// and de-duplicate with ZObjectContentHandler::getSlotDiffRendererWithOptions()
 		$slotDiffRenderer = MediaWikiServices::getInstance()
 			->getContentHandlerFactory()
 			->getContentHandler( CONTENT_MODEL_TEXT )
