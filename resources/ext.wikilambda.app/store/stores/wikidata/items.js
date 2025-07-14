@@ -34,6 +34,39 @@ module.exports = {
 		},
 
 		/**
+		 * Returns a promise that resolves to the Wikidata Item data given its Id.
+		 * If the item is already cached, returns a resolved promise.
+		 * If the item is being fetched, returns the existing promise.
+		 * If the item hasn't been requested, returns a rejected promise.
+		 *
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		getItemDataAsync: function () {
+			/**
+			 * @param {string} id
+			 * @return {Promise<Object>}
+			 */
+			const getItemDataAsync = ( id ) => {
+				const itemData = this.getItemData( id );
+
+				// If item is already cached (not a promise), return resolved promise
+				if ( itemData && typeof itemData.then !== 'function' ) {
+					return Promise.resolve( itemData );
+				}
+
+				// If item is being fetched (is a promise), return that promise
+				if ( itemData && typeof itemData.then === 'function' ) {
+					return itemData;
+				}
+
+				// If item hasn't been requested, return rejected promise
+				return Promise.reject( new Error( `Item ${ id } not found` ) );
+			};
+			return getItemDataAsync;
+		},
+
+		/**
 		 * Returns the LabelData object built from the available
 		 * labels in the data object of the selected Wikidata Item.
 		 * If an Item is selected but it has no labels, returns
@@ -49,7 +82,7 @@ module.exports = {
 			 * @return {LabelData} The `LabelData` object containing label, language code, and directionality.
 			 */
 			const findItemLabelData = ( id ) => {
-			// If no selected item, return undefined
+				// If no selected item, return undefined
 				if ( !id ) {
 					return undefined;
 				}
@@ -127,6 +160,7 @@ module.exports = {
 		fetchItems: function ( payload ) {
 			// Filter out the fetched or fetching Wikidata Item Ids
 			const ids = payload.ids.filter( ( id ) => this.getItemData( id ) === undefined );
+
 			if ( ids.length === 0 ) {
 				// If list is empty, do nothing
 				return Promise.resolve();
@@ -137,9 +171,23 @@ module.exports = {
 			};
 			const promise = fetchWikidataEntities( request )
 				.then( ( data ) => {
+					// It might return an error for an invalid item Id,
+					// in that case, remove the Item Ids from the state
+					if ( data.error ) {
+						this.resetItemData( { ids } );
+						return data;
+					}
 					// Once received, store Wikidata Item Ids with their data
 					const fetched = data.entities ? Object.keys( data.entities ) : [];
-					fetched.forEach( ( id ) => this.setItemData( { id, data: data.entities[ id ] } ) );
+					fetched.forEach( ( id ) => {
+						const entity = data.entities[ id ];
+						// Check if entity exists and has a 'missing' property
+						if ( entity && typeof entity === 'object' && 'missing' in entity ) {
+							this.resetItemData( { ids: [ id ] } );
+						} else if ( entity ) {
+							this.setItemData( { id, data: entity } );
+						}
+					} );
 					return data;
 				} )
 				.catch( () => {

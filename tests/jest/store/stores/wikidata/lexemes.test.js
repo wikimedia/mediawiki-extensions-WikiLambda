@@ -12,14 +12,16 @@ const Constants = require( '../../../../../resources/ext.wikilambda.app/Constant
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 const LabelData = require( '../../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' );
 
+const lexemeFormId = 'L333333-F5';
 const lexemeData = {
 	title: 'Lexeme:L333333',
 	lemmas: {
 		en: { language: 'en', value: 'turtle' }
 	},
 	forms: [ {
-		id: 'L333333-F5',
+		id: lexemeFormId,
 		representations: {
+			fr: { language: 'fr', value: 'tortue' },
 			en: { language: 'en', value: 'turtled' }
 		},
 		grammaticalFeatures: [ 'Q1230649' ],
@@ -54,21 +56,18 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 
 		describe( 'getLexemeFormData', () => {
 			it( 'returns undefined if lexeme is not available', () => {
-				const lexemeFormId = 'L333333-F5';
 				const expected = undefined;
 				expect( store.getLexemeFormData( lexemeFormId ) ).toEqual( expected );
 			} );
 
 			it( 'returns undefined if lexeme form is not available', () => {
 				store.lexemes.L333333 = lexemeData;
-				const lexemeFormId = 'L333333-F3';
 				const expected = undefined;
-				expect( store.getLexemeFormData( lexemeFormId ) ).toEqual( expected );
+				expect( store.getLexemeFormData( 'L333333-F3' ) ).toEqual( expected );
 			} );
 
 			it( 'returns lexeme form data if available', () => {
 				store.lexemes.L333333 = lexemeData;
-				const lexemeFormId = 'L333333-F5';
 				const expected = lexemeData.forms[ 0 ];
 				expect( store.getLexemeFormData( lexemeFormId ) ).toEqual( expected );
 			} );
@@ -101,22 +100,105 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 			} );
 
 			it( 'returns lexeme form ID as label when lexeme form data is not available', () => {
-				const lexemeFormId = 'L333333-F5';
 				const expected = new LabelData( lexemeFormId, lexemeFormId, null );
 				expect( store.getLexemeFormLabelData( lexemeFormId ) ).toEqual( expected );
 			} );
 
-			it( 'returns lexeme form label data when lexeme form data is available', () => {
-				const lexemeFormId = 'L333333-F5';
+			it( 'returns lexeme form label data in user language when lexeme form data is available', () => {
 				store.lexemes.L333333 = lexemeData;
 				const expected = new LabelData( lexemeFormId, 'turtled', null, 'en' );
 				expect( store.getLexemeFormLabelData( lexemeFormId ) ).toEqual( expected );
+			} );
+
+			it( 'returns lexeme form label data in fallback language if user language not present when lexeme form data is available', () => {
+				Object.defineProperty( store, 'getUserLangCode', {
+					value: 'de'
+				} );
+				store.lexemes.L333333 = lexemeData;
+				const expected = new LabelData( lexemeFormId, 'tortue', null, 'fr' );
+				expect( store.getLexemeFormLabelData( lexemeFormId ) ).toEqual( expected );
+			} );
+
+			it( 'returns lexeme form ID as label if no representations', () => {
+				store.lexemes.L333333 = {
+					forms: [ {
+						id: lexemeFormId,
+						representations: {}
+					} ]
+				};
+				const expected = new LabelData( lexemeFormId, lexemeFormId, null );
+				expect( store.getLexemeFormLabelData( lexemeFormId ) ).toEqual( expected );
+			} );
+		} );
+
+		describe( 'getLexemeUrl', () => {
+			it( 'returns undefined if id is not provided', () => {
+				expect( store.getLexemeUrl( undefined ) ).toBeUndefined();
+				expect( store.getLexemeUrl( '' ) ).toBeUndefined();
+			} );
+			it( 'returns correct URL for lexeme', () => {
+				expect( store.getLexemeUrl( 'L333333' ) ).toContain( 'Lexeme:L333333' );
+			} );
+		} );
+
+		describe( 'getLexemeFormUrl', () => {
+			it( 'returns undefined if id is not provided', () => {
+				expect( store.getLexemeFormUrl( undefined ) ).toBeUndefined();
+				expect( store.getLexemeFormUrl( '' ) ).toBeUndefined();
+			} );
+			it( 'returns correct URL for lexeme form', () => {
+				expect( store.getLexemeFormUrl( lexemeFormId ) ).toContain( 'Lexeme:L333333#F5' );
+			} );
+		} );
+
+		describe( 'getLexemeDataAsync', () => {
+			it( 'returns resolved promise if lexeme is cached', async () => {
+				store.lexemes.L333333 = lexemeData;
+				const result = await store.getLexemeDataAsync( 'L333333' );
+				expect( result ).toEqual( lexemeData );
+			} );
+
+			it( 'returns in-flight promise if lexeme is being fetched', async () => {
+				let resolveFn;
+				const promise = new Promise( ( resolve ) => {
+					resolveFn = resolve;
+				} );
+				store.lexemes.L333333 = promise;
+				const resultPromise = store.getLexemeDataAsync( 'L333333' );
+				expect( resultPromise ).toBe( promise );
+				resolveFn( lexemeData );
+				expect( resultPromise ).resolves.toEqual( lexemeData );
+			} );
+
+			it( 'returns rejected promise if lexeme is not present', async () => {
+				expect( store.getLexemeDataAsync( 'L_NOT_PRESENT' ) ).rejects.toThrow( 'Lexeme L_NOT_PRESENT not found' );
 			} );
 		} );
 	} );
 
 	describe( 'Actions', () => {
 		let fetchMock;
+
+		describe( 'setLexemeData', () => {
+			it( 'stores a promise directly if data is a promise', () => {
+				const promise = Promise.resolve( 'foo' );
+				store.setLexemeData( { id: 'L999999', data: promise } );
+				expect( store.lexemes.L999999 ).toBe( promise );
+			} );
+			it( 'unwraps and stores only title, forms, and lemmas if data is an object', () => {
+				const data = { title: 'Lexeme:L999999', forms: [], lemmas: {}, extra: 'should not be stored' };
+				store.setLexemeData( { id: 'L999999', data } );
+				expect( store.lexemes.L999999 ).toEqual( { title: 'Lexeme:L999999', forms: [], lemmas: {} } );
+				expect( store.lexemes.L999999.extra ).toBeUndefined();
+			} );
+		} );
+		describe( 'resetLexemeData', () => {
+			it( 'removes lexeme data for given IDs', () => {
+				store.lexemes = { L1: 'foo', L2: 'bar', L3: 'baz' };
+				store.resetLexemeData( { ids: [ 'L1', 'L3' ] } );
+				expect( store.lexemes ).toEqual( { L2: 'bar' } );
+			} );
+		} );
 
 		describe( 'fetchLexemes', () => {
 			beforeEach( () => {
@@ -196,31 +278,6 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 				expect( response ).toEqual( expectedResponse );
 			} );
 
-			it( 'resets ids when API fails', async () => {
-				store.items = {
-					L111111: 'has data'
-				};
-				const items = [
-					'L111111', // Already fetched
-					'L333333',
-					'L444444'
-				];
-
-				fetchMock = jest.fn().mockRejectedValue( 'some error' );
-				store.setItemData = jest.fn();
-				// eslint-disable-next-line n/no-unsupported-features/node-builtins
-				global.fetch = fetchMock;
-
-				const params = 'origin=*&action=wbgetentities&format=json&formatversion=2&languages=en&languagefallback=true&ids=L333333%7CL444444';
-				const expectedUrl = `${ Constants.WIKIDATA_BASE_URL }/w/api.php?${ params }`;
-
-				await store.fetchItems( { ids: items } );
-
-				expect( fetchMock ).toHaveBeenCalledWith( expectedUrl );
-				expect( store.items ).toEqual( { L111111: 'has data' } );
-				expect( store.items ).toEqual( { L111111: 'has data' } );
-			} );
-
 			it( 'stores the resolving promise for fetching lexemes', async () => {
 				const lexemes = [ 'L333333', 'L444444' ];
 				const promise = store.fetchLexemes( { ids: lexemes } );
@@ -231,20 +288,69 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 				await promise;
 			} );
 
-			it( 'removes lexeme IDs from state when fetch fails', async () => {
+			it( 'resets ids when API fails', async () => {
 				store.lexemes = {
 					L111111: 'has data'
 				};
-				const lexemes = [ 'L333333', 'L444444' ];
+				const lexemes = [
+					'L111111', // Already fetched
+					'L333333',
+					'L444444'
+				];
 
 				fetchMock = jest.fn().mockRejectedValue( 'some error' );
 				store.setLexemeData = jest.fn();
 				// eslint-disable-next-line n/no-unsupported-features/node-builtins
 				global.fetch = fetchMock;
 
+				const params = 'origin=*&action=wbgetentities&format=json&formatversion=2&languages=en&languagefallback=true&ids=L333333%7CL444444';
+				const expectedUrl = `${ Constants.WIKIDATA_BASE_URL }/w/api.php?${ params }`;
+
 				await store.fetchLexemes( { ids: lexemes } );
 
+				expect( fetchMock ).toHaveBeenCalledWith( expectedUrl );
 				expect( store.lexemes ).toEqual( { L111111: 'has data' } );
+			} );
+
+			it( 'removes lexeme IDs and returns data when API returns error', async () => {
+				const lexemes = [ 'L333333', 'L444444' ];
+				const errorResponse = { error: 'Some error' };
+				fetchMock = jest.fn().mockResolvedValue( {
+					json: jest.fn().mockReturnValue( errorResponse )
+				} );
+				// eslint-disable-next-line n/no-unsupported-features/node-builtins
+				global.fetch = fetchMock;
+				store.setLexemeData = jest.fn();
+				store.resetLexemeData = jest.fn();
+
+				await store.fetchLexemes( { ids: lexemes } );
+
+				expect( store.resetLexemeData ).toHaveBeenCalledWith( { ids: [ 'L333333', 'L444444' ] } );
+			} );
+
+			it( 'removes a single lexeme ID when entity is missing in API response', async () => {
+				const lexemes = [ 'L333333', 'L444444' ];
+				const apiResponse = {
+					entities: {
+						L333333: { missing: '' }, // Simulate missing entity
+						L444444: { title: 'Lexeme:L444444', forms: [], lemmas: {} }
+					}
+				};
+				fetchMock = jest.fn().mockResolvedValue( {
+					json: jest.fn().mockReturnValue( apiResponse )
+				} );
+				// eslint-disable-next-line n/no-unsupported-features/node-builtins
+				global.fetch = fetchMock;
+				store.setLexemeData = jest.fn();
+				store.resetLexemeData = jest.fn();
+
+				await store.fetchLexemes( { ids: lexemes } );
+
+				expect( store.resetLexemeData ).toHaveBeenCalledWith( { ids: [ 'L333333' ] } );
+				expect( store.setLexemeData ).toHaveBeenCalledWith( {
+					id: 'L444444',
+					data: { title: 'Lexeme:L444444', forms: [], lemmas: {} }
+				} );
 			} );
 		} );
 	} );

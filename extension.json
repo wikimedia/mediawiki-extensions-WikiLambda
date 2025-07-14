@@ -511,6 +511,7 @@
 				"ext.wikilambda.app/components/visualeditor/FunctionInputField.vue",
 				"ext.wikilambda.app/components/visualeditor/FunctionInputPreview.vue",
 				"ext.wikilambda.app/components/visualeditor/FunctionInputSetup.vue",
+				"ext.wikilambda.app/components/visualeditor/FunctionInputWikidata.vue",
 				"ext.wikilambda.app/components/visualeditor/FunctionSelect.vue",
 				"ext.wikilambda.app/components/visualeditor/FunctionSelectItem.vue",
 				"ext.wikilambda.app/components/visualeditor/ExpandableDescription.vue",

@@ -59,19 +59,53 @@ describe( 'Wikidata Properties Pinia store', () => {
 				expect( store.getPropertyLabelData( propertyId ) ).toEqual( expected );
 			} );
 		} );
+
+		describe( 'getPropertyDataAsync', () => {
+			it( 'returns resolved promise if property is cached', async () => {
+				store.properties.P642 = propertyData;
+				const result = await store.getPropertyDataAsync( 'P642' );
+				expect( result ).toEqual( propertyData );
+			} );
+
+			it( 'returns in-flight promise if property is being fetched', async () => {
+				let resolveFn;
+				const promise = new Promise( ( resolve ) => {
+					resolveFn = resolve;
+				} );
+				store.properties.P642 = promise;
+				const resultPromise = store.getPropertyDataAsync( 'P642' );
+				expect( resultPromise ).toBe( promise );
+				resolveFn( propertyData );
+				expect( resultPromise ).resolves.toEqual( propertyData );
+			} );
+
+			it( 'returns rejected promise if property is not present', async () => {
+				expect( store.getPropertyDataAsync( 'P_NOT_PRESENT' ) ).rejects.toThrow( 'Property P_NOT_PRESENT not found' );
+			} );
+		} );
 	} );
 
 	describe( 'Actions', () => {
 		let fetchMock;
 
 		describe( 'setPropertyData', () => {
-			it( 'sets property data for a given property Id', () => {
-				const payload = {
-					id: propertyId,
-					data: propertyData
-				};
-				store.setPropertyData( payload );
+			it( 'stores a promise directly if data is a promise', () => {
+				const promise = Promise.resolve( 'foo' );
+				store.setPropertyData( { id: propertyId, data: promise } );
+				expect( store.properties[ propertyId ] ).toBe( promise );
+			} );
+			it( 'unwraps and stores only title and labels if data is an object', () => {
+				const data = { ...propertyData, extra: 'should not be stored' };
+				store.setPropertyData( { id: propertyId, data } );
 				expect( store.properties[ propertyId ] ).toEqual( propertyData );
+			} );
+		} );
+
+		describe( 'resetPropertyData', () => {
+			it( 'removes property data for given IDs', () => {
+				store.properties = { P1: 'foo', P2: 'bar', P3: 'baz' };
+				store.resetPropertyData( { ids: [ 'P1', 'P3' ] } );
+				expect( store.properties ).toEqual( { P2: 'bar' } );
 			} );
 		} );
 
@@ -153,6 +187,16 @@ describe( 'Wikidata Properties Pinia store', () => {
 				expect( response ).toEqual( expectedResponse );
 			} );
 
+			it( 'stores the resolving promise for fetching properties', async () => {
+				const properties = [ 'P333333', 'P444444' ];
+				const promise = store.fetchProperties( { ids: properties } );
+
+				expect( store.properties.P333333 ).toStrictEqual( promise );
+				expect( store.properties.P444444 ).toStrictEqual( promise );
+
+				await promise;
+			} );
+
 			it( 'resets ids when API fails', async () => {
 				store.properties = {
 					P111111: 'has data'
@@ -177,30 +221,45 @@ describe( 'Wikidata Properties Pinia store', () => {
 				expect( store.properties ).toEqual( { P111111: 'has data' } );
 			} );
 
-			it( 'stores the resolving promise for fetching properties', async () => {
+			it( 'removes property IDs and returns data when API returns error', async () => {
 				const properties = [ 'P333333', 'P444444' ];
-				const promise = store.fetchProperties( { ids: properties } );
-
-				expect( store.properties.P333333 ).toStrictEqual( promise );
-				expect( store.properties.P444444 ).toStrictEqual( promise );
-
-				await promise;
-			} );
-
-			it( 'removes property IDs from state when fetch fails', async () => {
-				store.properties = {
-					P111111: 'has data'
-				};
-				const properties = [ 'P333333', 'P444444' ];
-
-				fetchMock = jest.fn().mockRejectedValue( 'some error' );
-				store.setPropertyData = jest.fn();
+				const errorResponse = { error: 'Some error' };
+				fetchMock = jest.fn().mockResolvedValue( {
+					json: jest.fn().mockReturnValue( errorResponse )
+				} );
 				// eslint-disable-next-line n/no-unsupported-features/node-builtins
 				global.fetch = fetchMock;
+				store.setPropertyData = jest.fn();
+				store.resetPropertyData = jest.fn();
 
 				await store.fetchProperties( { ids: properties } );
 
-				expect( store.properties ).toEqual( { P111111: 'has data' } );
+				expect( store.resetPropertyData ).toHaveBeenCalledWith( { ids: [ 'P333333', 'P444444' ] } );
+			} );
+
+			it( 'removes a single property ID when entity is missing in API response', async () => {
+				const properties = [ 'P333333', 'P444444' ];
+				const apiResponse = {
+					entities: {
+						P333333: { missing: '' }, // Simulate missing entity
+						P444444: { title: 'Property:P444444', labels: {} }
+					}
+				};
+				fetchMock = jest.fn().mockResolvedValue( {
+					json: jest.fn().mockReturnValue( apiResponse )
+				} );
+				// eslint-disable-next-line n/no-unsupported-features/node-builtins
+				global.fetch = fetchMock;
+				store.setPropertyData = jest.fn();
+				store.resetPropertyData = jest.fn();
+
+				await store.fetchProperties( { ids: properties } );
+
+				expect( store.resetPropertyData ).toHaveBeenCalledWith( { ids: [ 'P333333' ] } );
+				expect( store.setPropertyData ).toHaveBeenCalledWith( {
+					id: 'P444444',
+					data: { title: 'Property:P444444', labels: {} }
+				} );
 			} );
 		} );
 	} );

@@ -392,6 +392,7 @@ module.exports = exports = defineComponent( {
 			} ).then( ( data ) => {
 				const { labels, searchContinue } = data;
 				// If the string searched has changed, do not show the search result
+				// TODO (T391327): Use AbortController to cancel the request when the input changes
 				if ( !this.inputValue.includes( input ) ) {
 					return;
 				}

@@ -239,6 +239,14 @@ Constants.WIKIDATA_ENUM_PLACEHOLDER_MSG = {
 	[ Constants.Z_WIKIDATA_REFERENCE_PROPERTY ]: 'wikilambda-wikidata-property-selector-placeholder'
 };
 
+// Visual editor Wikidata input error messages
+Constants.WIKIDATA_INPUT_ERROR_MSG = {
+	[ Constants.Z_WIKIDATA_ITEM ]: 'wikilambda-visualeditor-wikifunctionscall-error-wikidata-item',
+	[ Constants.Z_WIKIDATA_LEXEME ]: 'wikilambda-visualeditor-wikifunctionscall-error-wikidata-lexeme',
+	[ Constants.Z_WIKIDATA_LEXEME_FORM ]: 'wikilambda-visualeditor-wikifunctionscall-error-wikidata-lexeme-form',
+	[ Constants.Z_WIKIDATA_PROPERTY ]: 'wikilambda-visualeditor-wikifunctionscall-error-wikidata-property'
+};
+
 Constants.BUILTIN_TYPE_CONFIG = {
 	[ Constants.Z_ARGUMENT_REFERENCE ]: {
 		hasBuiltin: true,
@@ -340,6 +348,26 @@ Constants.BUILTIN_TYPE_CONFIG = {
 		hasBuiltin: true,
 		component: 'wl-wikidata-property',
 		allowExpansion: true
+	}
+};
+
+// Function input type configuration for FunctionInputField.vue
+// Maps input types to their corresponding input components
+Constants.FUNCTION_INPUT_TYPE_CONFIG = {
+	[ Constants.Z_STRING ]: {
+		component: 'wl-function-input-string'
+	},
+	[ Constants.Z_WIKIDATA_ITEM ]: {
+		component: 'wl-function-input-wikidata'
+	},
+	[ Constants.Z_WIKIDATA_REFERENCE_ITEM ]: {
+		component: 'wl-function-input-wikidata'
+	},
+	[ Constants.Z_WIKIDATA_LEXEME ]: {
+		component: 'wl-function-input-wikidata'
+	},
+	[ Constants.Z_WIKIDATA_REFERENCE_LEXEME ]: {
+		component: 'wl-function-input-wikidata'
 	}
 };
 

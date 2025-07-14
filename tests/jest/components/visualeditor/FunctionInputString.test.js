@@ -13,7 +13,7 @@ describe( 'FunctionInputString', () => {
 		expect( wrapper.getComponent( { name: 'cdx-text-input' } ).exists() ).toBe( true );
 	} );
 
-	it( 'emits input event when input value changes', () => {
+	it( 'emits input event when value changes', () => {
 		const wrapper = shallowMount( FunctionInputString, {
 			props: {
 				value: 'Test value'
@@ -23,7 +23,7 @@ describe( 'FunctionInputString', () => {
 		expect( wrapper.emitted().input[ 0 ] ).toEqual( [ 'New value' ] );
 	} );
 
-	it( 'emits update event on input change', () => {
+	it( 'emits update event when value changes', () => {
 		const wrapper = shallowMount( FunctionInputString, {
 			props: {
 				value: 'Test value'

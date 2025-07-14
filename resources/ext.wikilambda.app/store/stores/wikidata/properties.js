@@ -32,6 +32,39 @@ module.exports = {
 		},
 
 		/**
+		 * Returns a promise that resolves to the Wikidata Property data given its Id.
+		 * If the property is already cached, returns a resolved promise.
+		 * If the property is being fetched, returns the existing promise.
+		 * If the property hasn't been requested, returns a rejected promise.
+		 *
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		getPropertyDataAsync: function () {
+			/**
+			 * @param {string} id
+			 * @return {Promise<Object>}
+			 */
+			const getPropertyDataAsync = ( id ) => {
+				const propertyData = this.getPropertyData( id );
+
+				// If property is already cached (not a promise), return resolved promise
+				if ( propertyData && typeof propertyData.then !== 'function' ) {
+					return Promise.resolve( propertyData );
+				}
+
+				// If property is being fetched (is a promise), return that promise
+				if ( propertyData && typeof propertyData.then === 'function' ) {
+					return propertyData;
+				}
+
+				// If property hasn't been requested, return rejected promise
+				return Promise.reject( new Error( `Property ${ id } not found` ) );
+			};
+			return getPropertyDataAsync;
+		},
+
+		/**
 		 * Returns the LabelData object built from the available
 		 * labels in the data object of the selected Wikidata Property.
 		 * If an Property is selected but it has no labels, returns
@@ -109,7 +142,7 @@ module.exports = {
 		 * @param {Array<string>} payload.ids - An array of Wikidata Property IDs
 		 */
 		resetPropertyData: function ( payload ) {
-			payload.ids.forEach( ( id ) => delete this.items[ id ] );
+			payload.ids.forEach( ( id ) => delete this.properties[ id ] );
 		},
 
 		/**
@@ -133,9 +166,23 @@ module.exports = {
 			};
 			const promise = fetchWikidataEntities( request )
 				.then( ( data ) => {
+					// It might return an error for an invalid property Id,
+					// in that case, remove the Property Ids from the state
+					if ( data.error ) {
+						this.resetPropertyData( { ids } );
+						return data;
+					}
 					// Once received, store Wikidata Property Ids with their data
 					const fetched = data.entities ? Object.keys( data.entities ) : [];
-					fetched.forEach( ( id ) => this.setPropertyData( { id, data: data.entities[ id ] } ) );
+					fetched.forEach( ( id ) => {
+						const entity = data.entities[ id ];
+						// Check if entity exists and has a 'missing' property
+						if ( entity && typeof entity === 'object' && 'missing' in entity ) {
+							this.resetPropertyData( { ids: [ id ] } );
+						} else if ( entity ) {
+							this.setPropertyData( { id, data: entity } );
+						}
+					} );
 					return data;
 				} )
 				.catch( () => {

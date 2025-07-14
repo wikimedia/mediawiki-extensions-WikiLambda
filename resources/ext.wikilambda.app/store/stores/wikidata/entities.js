@@ -84,6 +84,58 @@ module.exports = {
 				}
 			};
 			return findWikidataEntityUrl;
+		},
+
+		/**
+		 * Returns a promise that resolves to the Wikidata entity data by type and id.
+		 * If the entity is already cached, returns a resolved promise.
+		 * If the entity is being fetched, returns the existing promise.
+		 * If the entity hasn't been requested, returns a rejected promise.
+		 *
+		 * @return {Function}
+		 */
+		getWikidataEntityDataAsync: function () {
+			/**
+			 * @param {string} type
+			 * @param {string} id
+			 * @return {Promise<Object>}
+			 */
+			const getWikidataEntityDataAsync = ( type, id ) => {
+				switch ( type ) {
+					case Constants.Z_WIKIDATA_LEXEME:
+					case Constants.Z_WIKIDATA_REFERENCE_LEXEME: {
+						return this.getLexemeDataAsync( id );
+					}
+
+					case Constants.Z_WIKIDATA_LEXEME_FORM:
+					case Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM: {
+						// For lexeme forms, we need to get the lexeme data and extract the form
+						const [ lexemeId ] = id.split( '-' );
+						return this.getLexemeDataAsync( lexemeId ).then( ( lexemeData ) => {
+							if ( lexemeData && lexemeData.forms ) {
+								const formData = lexemeData.forms.find( ( item ) => item.id === id );
+								if ( formData ) {
+									return formData;
+								}
+							}
+							throw new Error( `Lexeme form ${ id } not found` );
+						} );
+					}
+
+					case Constants.Z_WIKIDATA_ITEM:
+					case Constants.Z_WIKIDATA_REFERENCE_ITEM: {
+						return this.getItemDataAsync( id );
+					}
+
+					case Constants.Z_WIKIDATA_PROPERTY:
+					case Constants.Z_WIKIDATA_REFERENCE_PROPERTY: {
+						return this.getPropertyDataAsync( id );
+					}
+					default:
+						return Promise.reject( new Error( `Unknown entity type: ${ type }` ) );
+				}
+			};
+			return getWikidataEntityDataAsync;
 		}
 	},
 

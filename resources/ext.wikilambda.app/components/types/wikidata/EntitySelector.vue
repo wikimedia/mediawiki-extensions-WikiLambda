@@ -200,6 +200,11 @@ module.exports = exports = defineComponent( {
 
 			this.lookupWikidataEntities( payload )
 				.then( ( data ) => {
+					// If the string searched has changed, do not show the search result
+					// TODO (T391327): Use AbortController to cancel the request when the input changes
+					if ( !this.inputValue.includes( searchTerm ) ) {
+						return;
+					}
 					const { searchContinue, search } = data;
 
 					// If searchContinue is present, store it in lookupConfig

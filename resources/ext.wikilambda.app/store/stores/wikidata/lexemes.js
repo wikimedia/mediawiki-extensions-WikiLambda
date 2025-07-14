@@ -32,6 +32,39 @@ module.exports = {
 			const findLexemeData = ( id ) => state.lexemes[ id ];
 			return findLexemeData;
 		},
+
+		/**
+		 * Returns a promise that resolves to the Lexeme data given its Id.
+		 * If the lexeme is already cached, returns a resolved promise.
+		 * If the lexeme is being fetched, returns the existing promise.
+		 * If the lexeme hasn't been requested, returns a rejected promise.
+		 *
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		getLexemeDataAsync: function () {
+			/**
+			 * @param {string} id
+			 * @return {Promise<Object>}
+			 */
+			const getLexemeDataAsync = ( id ) => {
+				const lexemeData = this.getLexemeData( id );
+
+				// If lexeme is already cached (not a promise), return resolved promise
+				if ( lexemeData && typeof lexemeData.then !== 'function' ) {
+					return Promise.resolve( lexemeData );
+				}
+
+				// If lexeme is being fetched (is a promise), return that promise
+				if ( lexemeData && typeof lexemeData.then === 'function' ) {
+					return lexemeData;
+				}
+
+				// If lexeme hasn't been requested, return rejected promise
+				return Promise.reject( new Error( `Lexeme ${ id } not found` ) );
+			};
+			return getLexemeDataAsync;
+		},
 		/**
 		 * Returns the Lexeme form object of a given ID,
 		 * or undefined if it hasn't been requested yet
@@ -191,7 +224,7 @@ module.exports = {
 		 * @param {Array<string>} payload.ids - An array of Wikidata Lexeme IDs
 		 */
 		resetLexemeData: function ( payload ) {
-			payload.ids.forEach( ( id ) => delete this.items[ id ] );
+			payload.ids.forEach( ( id ) => delete this.lexemes[ id ] );
 		},
 		/**
 		 * Calls Wikidata Action API to fetch Wikidata Lexemes
@@ -204,6 +237,7 @@ module.exports = {
 		fetchLexemes: function ( payload ) {
 			// Filter out the fetched or fetching lexeme Ids
 			const ids = payload.ids.filter( ( id ) => this.getLexemeData( id ) === undefined );
+
 			if ( ids.length === 0 ) {
 				// If list is empty, do nothing
 				return Promise.resolve();
@@ -214,9 +248,25 @@ module.exports = {
 			};
 			const promise = fetchWikidataEntities( request )
 				.then( ( data ) => {
+					// It might return an error for an invalid lexeme Id,
+					// in that case, remove the Lexeme Ids from the state
+					// const fetched = data.entities ? Object.keys( data.entities ) : [];
+					// const isMissing =fetched.so
+					if ( data.error ) {
+						this.resetLexemeData( { ids } );
+						return data;
+					}
 					// Once received, store lexeme Ids with their data
 					const fetched = data.entities ? Object.keys( data.entities ) : [];
-					fetched.forEach( ( id ) => this.setLexemeData( { id, data: data.entities[ id ] } ) );
+					fetched.forEach( ( id ) => {
+						const entity = data.entities[ id ];
+						// Check if entity exists and has a 'missing' property
+						if ( entity && typeof entity === 'object' && 'missing' in entity ) {
+							this.resetLexemeData( { ids: [ id ] } );
+						} else if ( entity ) {
+							this.setLexemeData( { id, data: entity } );
+						}
+					} );
 					return data;
 				} )
 				.catch( () => {

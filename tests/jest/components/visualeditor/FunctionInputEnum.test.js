@@ -35,17 +35,18 @@ describe( 'FunctionInputEnum', () => {
 		await waitFor( () => expect( wrapper.getComponent( { name: 'cdx-select' } ).props( 'menuItems' ).length ).toBe( 3 ) );
 	} );
 
-	it( 'emits update event when a value is selected', () => {
+	it( 'emits input and update events when a value is selected', () => {
 		const wrapper = shallowMount( FunctionInputEnum, {
 			props: {
 				inputType: mockEnumZid
 			}
 		} );
 		wrapper.getComponent( { name: 'cdx-select' } ).vm.$emit( 'update:selected', 'Z30003' );
+		expect( wrapper.emitted().input[ 0 ] ).toEqual( [ 'Z30003' ] );
 		expect( wrapper.emitted().update[ 0 ] ).toEqual( [ 'Z30003' ] );
 	} );
 
-	it( 'calls validate function on mount', async () => {
+	it( 'emits validate event on mount', async () => {
 		const wrapper = shallowMount( FunctionInputEnum, {
 			props: {
 				inputType: mockEnumZid
@@ -55,7 +56,7 @@ describe( 'FunctionInputEnum', () => {
 		expect( wrapper.emitted().validate ).toBeTruthy();
 	} );
 
-	it( 'calls validate function on blur', () => {
+	it( 'emits validate event on blur', () => {
 		const wrapper = shallowMount( FunctionInputEnum, {
 			props: {
 				inputType: mockEnumZid

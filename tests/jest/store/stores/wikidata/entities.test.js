@@ -89,6 +89,57 @@ describe( 'Wikidata Entities Pinia store', () => {
 			} );
 		} );
 
+		describe( 'getWikidataEntityDataAsync', () => {
+			const lexemeId = 'L111111';
+			const lexemeData = { id: lexemeId, forms: [ { id: 'L111111-F1', foo: 'bar' } ] };
+			const itemId = 'Q111111';
+			const itemData = { id: itemId };
+			const propertyId = 'P111111';
+			const propertyData = { id: propertyId };
+			const formId = 'L111111-F1';
+
+			beforeEach( () => {
+				store.lexemes[ lexemeId ] = lexemeData;
+				store.items[ itemId ] = itemData;
+				store.properties[ propertyId ] = propertyData;
+			} );
+
+			it( 'resolves for lexeme', async () => {
+				const result = await store.getWikidataEntityDataAsync( Constants.Z_WIKIDATA_LEXEME, lexemeId );
+				expect( result ).toEqual( lexemeData );
+			} );
+			it( 'resolves for item', async () => {
+				const result = await store.getWikidataEntityDataAsync( Constants.Z_WIKIDATA_ITEM, itemId );
+				expect( result ).toEqual( itemData );
+			} );
+			it( 'resolves for property', async () => {
+				const result = await store.getWikidataEntityDataAsync( Constants.Z_WIKIDATA_PROPERTY, propertyId );
+				expect( result ).toEqual( propertyData );
+			} );
+			it( 'resolves for lexeme form', async () => {
+				const result = await store.getWikidataEntityDataAsync( Constants.Z_WIKIDATA_LEXEME_FORM, formId );
+				expect( result ).toEqual( lexemeData.forms[ 0 ] );
+			} );
+			it( 'rejects for missing lexeme', async () => {
+				expect( store.getWikidataEntityDataAsync( Constants.Z_WIKIDATA_LEXEME, 'L_NOT_PRESENT' ) ).rejects.toThrow( 'Lexeme L_NOT_PRESENT not found' );
+			} );
+			it( 'rejects for missing item', async () => {
+				expect( store.getWikidataEntityDataAsync( Constants.Z_WIKIDATA_ITEM, 'Q_NOT_PRESENT' ) ).rejects.toThrow( 'Item Q_NOT_PRESENT not found' );
+			} );
+			it( 'rejects for missing property', async () => {
+				expect( store.getWikidataEntityDataAsync( Constants.Z_WIKIDATA_PROPERTY, 'P_NOT_PRESENT' ) ).rejects.toThrow( 'Property P_NOT_PRESENT not found' );
+			} );
+			it( 'rejects for missing lexeme form', async () => {
+				store.lexemes = {
+					[ lexemeId ]: { id: lexemeId, forms: [] }
+				};
+				expect( store.getWikidataEntityDataAsync( Constants.Z_WIKIDATA_LEXEME_FORM, formId ) ).rejects.toThrow( `Lexeme form ${ formId } not found` );
+			} );
+			it( 'rejects for unknown entity type', async () => {
+				expect( store.getWikidataEntityDataAsync( 'Z_UNKNOWN', 'X1' ) ).rejects.toThrow( 'Unknown entity type: Z_UNKNOWN' );
+			} );
+		} );
+
 	} );
 
 	describe( 'Actions', () => {

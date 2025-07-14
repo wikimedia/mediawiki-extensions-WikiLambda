@@ -47,6 +47,8 @@ const LabelData = require( '../../store/classes/LabelData.js' );
 const FunctionInputEnum = require( './FunctionInputEnum.vue' );
 const FunctionInputParser = require( './FunctionInputParser.vue' );
 const FunctionInputString = require( './FunctionInputString.vue' );
+const FunctionInputWikidata = require( './FunctionInputWikidata.vue' );
+const Constants = require( '../../Constants.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-input-field',
@@ -54,7 +56,8 @@ module.exports = exports = defineComponent( {
 		'cdx-field': CdxField,
 		'wl-function-input-enum': FunctionInputEnum,
 		'wl-function-input-parser': FunctionInputParser,
-		'wl-function-input-string': FunctionInputString
+		'wl-function-input-string': FunctionInputString,
+		'wl-function-input-wikidata': FunctionInputWikidata
 	},
 	props: {
 		inputType: {
@@ -91,12 +94,20 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		componentType: function () {
+			// Check if there's a specific component configured for this input type
+			const inputConfig = Constants.FUNCTION_INPUT_TYPE_CONFIG[ this.inputType ];
+			if ( inputConfig && inputConfig.component ) {
+				return inputConfig.component;
+			}
 			if ( this.isEnum ) {
 				return 'wl-function-input-enum';
 			}
+
 			if ( this.hasParserFunction ) {
 				return 'wl-function-input-parser';
 			}
+
+			// Default fallback
 			return 'wl-function-input-string';
 		},
 		/**

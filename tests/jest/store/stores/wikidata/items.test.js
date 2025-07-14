@@ -58,19 +58,56 @@ describe( 'Wikidata Items Pinia store', () => {
 				expect( store.getItemData( itemId ) ).toEqual( itemData );
 			} );
 		} );
+
+		describe( 'getItemDataAsync', () => {
+			it( 'returns resolved promise if item is cached', async () => {
+				store.items[ itemId ] = itemData;
+				const result = await store.getItemDataAsync( itemId );
+				expect( result ).toEqual( itemData );
+			} );
+
+			it( 'returns in-flight promise if item is being fetched', async () => {
+				let resolveFn;
+				const promise = new Promise( ( resolve ) => {
+					resolveFn = resolve;
+				} );
+				store.items[ itemId ] = promise;
+				const resultPromise = store.getItemDataAsync( itemId );
+				// Should be the same promise
+				expect( resultPromise ).toBe( promise );
+				// Resolve and check
+				resolveFn( itemData );
+				expect( resultPromise ).resolves.toEqual( itemData );
+			} );
+
+			it( 'returns rejected promise if item is not present', async () => {
+				expect( store.getItemDataAsync( 'Q_NOT_PRESENT' ) ).rejects.toThrow( 'Item Q_NOT_PRESENT not found' );
+			} );
+		} );
 	} );
 
 	describe( 'Actions', () => {
 		let fetchMock;
 
 		describe( 'setItemData', () => {
-			it( 'sets item data for a given item Id', () => {
-				const payload = {
-					id: itemId,
-					data: itemData
-				};
-				store.setItemData( payload );
+			it( 'stores a promise directly if data is a promise', () => {
+				const promise = Promise.resolve( 'foo' );
+				store.setItemData( { id: itemId, data: promise } );
+				expect( store.items[ itemId ] ).toBe( promise );
+			} );
+
+			it( 'unwraps and stores only title and labels if data is an object', () => {
+				const data = { ...itemData, extra: 'should not be stored' };
+				store.setItemData( { id: itemId, data } );
 				expect( store.items[ itemId ] ).toEqual( itemData );
+			} );
+		} );
+
+		describe( 'resetItemData', () => {
+			it( 'removes item data for given IDs', () => {
+				store.items = { Q1: 'foo', Q2: 'bar', Q3: 'baz' };
+				store.resetItemData( { ids: [ 'Q1', 'Q3' ] } );
+				expect( store.items ).toEqual( { Q2: 'bar' } );
 			} );
 		} );
 
@@ -152,6 +189,16 @@ describe( 'Wikidata Items Pinia store', () => {
 				expect( response ).toEqual( expectedResponse );
 			} );
 
+			it( 'stores the resolving promise for fetching items', async () => {
+				const items = [ 'Q333333', 'Q444444' ];
+				const promise = store.fetchItems( { ids: items } );
+
+				expect( store.items.Q333333 ).toStrictEqual( promise );
+				expect( store.items.Q444444 ).toStrictEqual( promise );
+
+				await promise;
+			} );
+
 			it( 'resets ids when API fails', async () => {
 				store.items = {
 					Q111111: 'has data'
@@ -176,30 +223,45 @@ describe( 'Wikidata Items Pinia store', () => {
 				expect( store.items ).toEqual( { Q111111: 'has data' } );
 			} );
 
-			it( 'stores the resolving promise for fetching items', async () => {
+			it( 'removes item IDs and returns data when API returns error', async () => {
 				const items = [ 'Q333333', 'Q444444' ];
-				const promise = store.fetchItems( { ids: items } );
-
-				expect( store.items.Q333333 ).toStrictEqual( promise );
-				expect( store.items.Q444444 ).toStrictEqual( promise );
-
-				await promise;
-			} );
-
-			it( 'removes item IDs from state when fetch fails', async () => {
-				store.items = {
-					Q111111: 'has data'
-				};
-				const items = [ 'Q333333', 'Q444444' ];
-
-				fetchMock = jest.fn().mockRejectedValue( 'some error' );
-				store.setItemData = jest.fn();
+				const errorResponse = { error: 'Some error' };
+				fetchMock = jest.fn().mockResolvedValue( {
+					json: jest.fn().mockReturnValue( errorResponse )
+				} );
 				// eslint-disable-next-line n/no-unsupported-features/node-builtins
 				global.fetch = fetchMock;
+				store.setItemData = jest.fn();
+				store.resetItemData = jest.fn();
 
 				await store.fetchItems( { ids: items } );
 
-				expect( store.items ).toEqual( { Q111111: 'has data' } );
+				expect( store.resetItemData ).toHaveBeenCalledWith( { ids: [ 'Q333333', 'Q444444' ] } );
+			} );
+
+			it( 'removes a single item ID when entity is missing in API response', async () => {
+				const items = [ 'Q333333', 'Q444444' ];
+				const apiResponse = {
+					entities: {
+						Q333333: { missing: '' }, // Simulate missing entity
+						Q444444: { title: 'Q444444', labels: {} }
+					}
+				};
+				fetchMock = jest.fn().mockResolvedValue( {
+					json: jest.fn().mockReturnValue( apiResponse )
+				} );
+				// eslint-disable-next-line n/no-unsupported-features/node-builtins
+				global.fetch = fetchMock;
+				store.setItemData = jest.fn();
+				store.resetItemData = jest.fn();
+
+				await store.fetchItems( { ids: items } );
+
+				expect( store.resetItemData ).toHaveBeenCalledWith( { ids: [ 'Q333333' ] } );
+				expect( store.setItemData ).toHaveBeenCalledWith( {
+					id: 'Q444444',
+					data: { title: 'Q444444', labels: {} }
+				} );
 			} );
 		} );
 	} );
