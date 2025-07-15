@@ -25,7 +25,7 @@
 	"apihelp-query+wikilambdasearch_labels-param-nofallback": "Yedek dillerde değil, yalnızca verilen dilde arama yapılıp yapılmayacağı",
 	"apihelp-query+wikilambdasearch_labels-param-exact": "Tam eşleşmelerin aranıp aranmayacağı. Devre dışı bırakılırsa, giriş, büyük/küçük harfe duyarlı olmayan, Unicode normalleştirilmiş bir arama olarak alınır ve Latin karakterler üzerindeki aksanlar yok sayılır.",
 	"apihelp-query+wikilambdasearch_labels-param-type": "Eşleşmeleri belirli bir ZObject türüyle sınırlayın.",
-	"apihelp-query+wikilambdasearch_labels-param-limit": "Döndürülecek maksimum sonuç sayısı",
+	"apihelp-query+wikilambdasearch_labels-param-limit": "Döndürülecek en fazla sonuç sayısı",
 	"apihelp-query+wikilambda-example-simple": "İngilizce'de 'foo' ile eşleşen ZObjects arayın",
 	"apihelp-query+wikilambda-example-nofallback": "Fransızcada 'foo' ile eşleşen ZObjects arayın ve yedek dilleri kabul etmeyin",
 	"apihelp-query+wikilambda-example-type": "İngilizce etiketleri döndüren 'Z4' türündeki ZObject'leri arayın",

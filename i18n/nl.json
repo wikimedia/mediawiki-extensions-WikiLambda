@@ -437,7 +437,7 @@
 	"wikilambda-zobject-to-string-select-object": "Selecteer $1",
 	"wikilambda-zobjectselector-label": "Object",
 	"wikilambda-zobjectselector-no-results": "Geen resultaten gevonden.",
-	"wikilambda-ztester-missing-call-function": "Oproep is leeg. Selecteer een functie.",
+	"wikilambda-ztester-missing-call-function": "Aanroep is leeg. Selecteer een functie.",
 	"wikilambda-ztester-missing-validation-function": "Resultaatvalidatie is leeg. Selecteer een functie.",
 	"wikilambda-ztyped-map-description": "Overzicht van types",
 	"wikilambda-ztyped-map-placeholder": "Selecteer een kaarttype",
