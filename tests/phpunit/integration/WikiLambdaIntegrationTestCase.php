@@ -22,6 +22,11 @@ use MediaWikiIntegrationTestCase;
 
 abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCase {
 
+	/** @var string */
+	private $mainDataPath;
+	/** @var string */
+	private $testDataPath;
+
 	protected const ZLANG = [
 		'en' => 'Z1002',
 		'es' => 'Z1003',
@@ -33,6 +38,16 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 		'pcd' => 'Z1829',
 	];
 
+	/** @inheritDoc */
+	public function __construct( $name = null, array $data = [], $dataName = '' ) {
+		parent::__construct( $name, $data, $dataName );
+
+		$this->mainDataPath = dirname( __DIR__, 3 ) . '/function-schemata/data/definitions';
+	}
+
+	/**
+	 * Set configuration flag WikiLambdaEnableRepoMode to true
+	 */
 	protected function setUpAsRepoMode(): void {
 		$this->overrideConfigValue( 'WikiLambdaEnableRepoMode', true );
 		\MediaWiki\Extension\WikiLambda\HookHandler\RepoHooks::registerExtension();
@@ -42,16 +57,59 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 	}
 
 	/**
+	 * Set directory with definitions used for this test suite
+	 *
+	 * @param string $path
+	 */
+	protected function setTestDataPath( $path ) {
+		$this->testDataPath = $path;
+	}
+
+	/**
+	 * Given a zid, returns the zobject definition found in:
+	 * * function schemata data definitions, or
+	 * * test data definitions (if directory is configured for this test suite)
+	 * If not found in either directory, raises Exception
+	 *
+	 * @param string $zid
+	 * @return string
+	 */
+	private function getDefinition( $zid ): string {
+		$mainFile = "$this->mainDataPath/$zid.json";
+		$testFile = isset( $this->testDataPath ) ? "$this->testDataPath/$zid.json" : null;
+
+		if ( file_exists( $mainFile ) ) {
+			$data = file_get_contents( $mainFile );
+		} elseif ( isset( $this->testDataPath ) && file_exists( $testFile ) ) {
+			$data = file_get_contents( $testFile );
+		} else {
+			throw new \RuntimeException( "ZObject definition for $zid not found in main or test data paths." );
+		}
+
+		return $data;
+	}
+
+	/**
 	 * Inserts the given ZObjects from the builtin data collection directory
 	 *
 	 * @param string[] $zids
 	 */
 	protected function insertZids( $zids ): void {
-		$dataPath = dirname( __DIR__, 3 ) . '/function-schemata/data/definitions';
 		foreach ( $zids as $zid ) {
-			$data = file_get_contents( "$dataPath/$zid.json" );
+			$data = $this->getDefinition( $zid );
 			$this->editPage( $zid, $data, 'Test ZObject creation', NS_MAIN );
 		}
+	}
+
+	/**
+	 * Return the ZPersistentObject representation of a data object from the data collection directory
+	 *
+	 * @param string $zid
+	 * @return ZPersistentObject
+	 */
+	protected function getZPersistentObject( $zid ): ZPersistentObject {
+		$data = $this->getDefinition( $zid );
+		return ZObjectFactory::create( json_decode( $data ) );
 	}
 
 	/** @inheritDoc */
@@ -69,18 +127,6 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 
 		// Then call parent editPage
 		return parent::editPage( $page, $contentText, $summary, $defaultNs, $performer );
-	}
-
-	/**
-	 * Return the ZPersistentObject representation of a data object from the data collection directory
-	 *
-	 * @param string $zid
-	 * @return ZPersistentObject
-	 */
-	protected function getZPersistentObject( $zid ): ZPersistentObject {
-		$dataPath = dirname( __DIR__, 3 ) . '/function-schemata/data/definitions';
-		$data = file_get_contents( "$dataPath/$zid.json" );
-		return ZObjectFactory::create( json_decode( $data ) );
 	}
 
 	/**

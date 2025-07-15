@@ -177,25 +177,76 @@ class ZTypeRegistry extends ZObjectRegistry {
 		self::Z_WIKIDATA_ITEM,
 		self::Z_WIKIDATA_PROPERTY,
 		self::Z_WIKIDATA_STATEMENT,
-		self::Z_WIKIDATA_LEXEME_FORM,
 		self::Z_WIKIDATA_LEXEME,
+		self::Z_WIKIDATA_LEXEME_FORM,
 		self::Z_WIKIDATA_LEXEME_SENSE
 	];
 
 	// Wikidata Reference Types:
 	public const Z_WIKIDATA_REFERENCE_ITEM = 'Z6091';
+	public const Z_WIKIDATA_REFERENCE_ITEM_ID = 'Z6091K1';
 	public const Z_WIKIDATA_REFERENCE_PROPERTY = 'Z6092';
+	public const Z_WIKIDATA_REFERENCE_PROPERTY_ID = 'Z6092K1';
 	public const Z_WIKIDATA_REFERENCE_LEXEME_FORM = 'Z6094';
+	public const Z_WIKIDATA_REFERENCE_LEXEME_FORM_ID = 'Z6094K1';
 	public const Z_WIKIDATA_REFERENCE_LEXEME = 'Z6095';
 	public const Z_WIKIDATA_REFERENCE_LEXEME_ID = 'Z6095K1';
 	public const Z_WIKIDATA_REFERENCE_LEXEME_SENSE = 'Z6096';
+	public const Z_WIKIDATA_REFERENCE_LEXEME_SENSE_ID = 'Z6096K1';
 
 	public const WIKIDATA_REFERENCE_TYPES = [
 		self::Z_WIKIDATA_REFERENCE_ITEM,
 		self::Z_WIKIDATA_REFERENCE_PROPERTY,
-		self::Z_WIKIDATA_REFERENCE_LEXEME_FORM,
 		self::Z_WIKIDATA_REFERENCE_LEXEME,
+		self::Z_WIKIDATA_REFERENCE_LEXEME_FORM,
 		self::Z_WIKIDATA_REFERENCE_LEXEME_SENSE
+	];
+
+	// Wikidata Entity Fetch Functions:
+	public const Z_WIKIDATA_FETCH_ITEM = 'Z6821';
+	public const Z_WIKIDATA_FETCH_ITEM_ID = 'Z6821K1';
+	public const Z_WIKIDATA_FETCH_PROPERTY = 'Z6822';
+	public const Z_WIKIDATA_FETCH_PROPERTY_ID = 'Z6822K1';
+	public const Z_WIKIDATA_FETCH_LEXEME_FORM = 'Z6824';
+	public const Z_WIKIDATA_FETCH_LEXEME_FORM_ID = 'Z6824K1';
+	public const Z_WIKIDATA_FETCH_LEXEME = 'Z6825';
+	public const Z_WIKIDATA_FETCH_LEXEME_ID = 'Z6825K1';
+	public const Z_WIKIDATA_FETCH_LEXEME_SENSE = 'Z6826';
+	public const Z_WIKIDATA_FETCH_LEXEME_SENSE_ID = 'Z6826K1';
+
+	// Wikidata enum
+	public const Z_WIKIDATA_ENUM = 'Z6884';
+
+	/**
+	 * DRY mapping for Wikidata entity types to their fetch function and reference key.
+	 *
+	 * @internal
+	 */
+	public const WIKIDATA_ENTITY_TYPE_MAP = [
+		self::Z_WIKIDATA_ITEM => [
+			'fetch_function' => self::Z_WIKIDATA_FETCH_ITEM,
+			'fetch_key' => self::Z_WIKIDATA_FETCH_ITEM_ID,
+			'reference_type' => self::Z_WIKIDATA_REFERENCE_ITEM,
+			'reference_key' => self::Z_WIKIDATA_REFERENCE_ITEM_ID,
+		],
+		self::Z_WIKIDATA_PROPERTY => [
+			'fetch_function' => self::Z_WIKIDATA_FETCH_PROPERTY,
+			'fetch_key' => self::Z_WIKIDATA_FETCH_PROPERTY_ID,
+			'reference_type' => self::Z_WIKIDATA_REFERENCE_PROPERTY,
+			'reference_key' => self::Z_WIKIDATA_REFERENCE_PROPERTY_ID,
+		],
+		self::Z_WIKIDATA_LEXEME => [
+			'fetch_function' => self::Z_WIKIDATA_FETCH_LEXEME,
+			'fetch_key' => self::Z_WIKIDATA_FETCH_LEXEME_ID,
+			'reference_type' => self::Z_WIKIDATA_REFERENCE_LEXEME,
+			'reference_key' => self::Z_WIKIDATA_REFERENCE_LEXEME_ID,
+		],
+		self::Z_WIKIDATA_LEXEME_FORM => [
+			'fetch_function' => self::Z_WIKIDATA_FETCH_LEXEME_FORM,
+			'fetch_key' => self::Z_WIKIDATA_FETCH_LEXEME_FORM_ID,
+			'reference_type' => self::Z_WIKIDATA_REFERENCE_LEXEME_FORM,
+			'reference_key' => self::Z_WIKIDATA_REFERENCE_LEXEME_FORM_ID,
+		],
 	];
 
 	/**
@@ -255,20 +306,6 @@ class ZTypeRegistry extends ZObjectRegistry {
 		}
 		return array_values( $types );
 	}
-
-	// Wikidata Entity Fetch Functions:
-	public const Z_WIKIDATA_FETCH_LEXEME_FORM = 'Z6824';
-	public const Z_WIKIDATA_FETCH_LEXEME_FORM_ID = 'Z6824K1';
-	public const Z_WIKIDATA_FETCH_LEXEME = 'Z6825';
-	public const Z_WIKIDATA_FETCH_LEXEME_ID = 'Z6825K1';
-
-	public const WIKIDATA_FETCH_FUNCTIONS = [
-		self::Z_WIKIDATA_FETCH_LEXEME_FORM,
-		self::Z_WIKIDATA_FETCH_LEXEME
-	];
-
-	// Wikidata enum
-	public const Z_WIKIDATA_ENUM = 'Z6884';
 
 	// Keep in sync with function-schemata's `typesBuiltIntoWikiLambda`
 	private const BUILT_IN_TYPES = [

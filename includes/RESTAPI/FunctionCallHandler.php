@@ -15,21 +15,24 @@ use InvalidArgumentException;
 use JsonException;
 use MediaWiki\Api\ApiMain;
 use MediaWiki\Api\ApiUsageException;
+use MediaWiki\Config\Config;
 use MediaWiki\Context\DerivativeContext;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
-use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZFunction;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZQuote;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
@@ -54,30 +57,38 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 	private ZObjectStore $zObjectStore;
 	private ZLangRegistry $langRegistry;
 
+	public function __construct( ZObjectStore $zObjectStore ) {
+		$this->zObjectStore = $zObjectStore;
+		$this->langRegistry = ZLangRegistry::singleton();
+		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
+	}
+
 	/**
 	 * @param string $target
-	 * @param string[] $arguments
+	 * @param string $arguments
 	 * @param string $parseLang
 	 * @param string $renderLang
 	 * @return Response
 	 */
-	public function run( $target, $arguments = [], $parseLang = 'en', $renderLang = 'en' ) {
-		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
+	public function run(
+		$target,
+		$arguments = '',
+		$parseLang = 'en',
+		$renderLang = 'en'
+	) {
+		// Initial setup; logging and instrumentation
 		$tracer = MediaWikiServices::getInstance()->getTracer();
 		$span = $tracer->createSpan( 'WikiLambda FunctionCallHandler' )
 			->setSpanKind( SpanInterface::SPAN_KIND_CLIENT )
 			->start();
 		$span->activate();
 
-		$this->zObjectStore = WikiLambdaServices::getZObjectStore();
-		$this->langRegistry = ZLangRegistry::singleton();
-
 		$this->logger->debug(
 			__METHOD__ . ' triggered to evaluate a call to {target}',
 			[ 'target' => $target ]
 		);
 
-		// 0. Check if we are disabled.
+		// 0. Make sure that this call is not being run in a client instance
 		$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'WikiLambda' );
 		if ( !$config->get( 'WikiLambdaEnableRepoMode' ) ) {
 			$errorMessage = __METHOD__ . ' called repo mode is not enabled';
@@ -91,415 +102,52 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			$this->dieRESTfully( 'wikilambda-restapi-disabled-repo-mode-only', [], HttpStatus::BAD_REQUEST );
 		}
 
-		// 1. Check if we can call this requested Function at all
-		if ( !ZObjectUtils::isValidOrNullZObjectReference( $target ) ) {
-			$errorMessage = __METHOD__ . ' called on {target} which is a non-ZID, e.g. an inline function';
-			$this->logger->debug(
-				$errorMessage,
-				[ 'target' => $target ]
-			);
-			$span->setAttributes( [
-					'response.status_code' => HttpStatus::BAD_REQUEST,
-					'exception.message' => $errorMessage
-				] );
-			$span->end();
-			$this->dieRESTfullyWithZError(
-				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ 'data' => $target ] ),
-				HttpStatus::BAD_REQUEST,
-				[ 'target' => $target ]
-			);
-		}
+		// 1. Get the target function or die with ZError
+		$targetFunction = $this->getTargetFunction( $target, $span );
 
-		$targetTitle = Title::newFromText( $target, NS_MAIN );
-		if ( !( $targetTitle->exists() ) ) {
-			$errorMessage = __METHOD__ . ' called on {target} which does not exist on-wiki';
-			$this->logger->debug(
-				$errorMessage,
-				[ 'target' => $target ]
-			);
-			$span->setAttributes( [
-					'response.status_code' => HttpStatus::BAD_REQUEST,
-					'exception.message' => $errorMessage
-				] );
-			$span->end();
-			$this->dieRESTfullyWithZError(
-				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ 'data' => $target ] ),
-				HttpStatus::BAD_REQUEST,
-				[ 'target' => $target ]
-			);
-		}
+		// 2. Validate parser and renderer language codes and get their Zids
+		[ $parseLanguageZid, $renderLanguageZid ] = $this->getLanguageZids( $parseLang, $renderLang, $span );
 
-		$targetObject = $this->zObjectStore->fetchZObjectByTitle( $targetTitle );
-		// ZObjectStore's fetchZObjectByTitle() returns ZObjectContent or false, so first sense-check it
-		if ( !$targetObject ) {
-			$errorMessage = __METHOD__ . ' called on {target} which is somehow non-ZObject in our namespace';
-			$this->logger->warning(
-				$errorMessage,
-				[ 'target' => $target ]
-			);
-			$span->setAttributes( [
-					'response.status_code' => HttpStatus::BAD_REQUEST,
-					'exception.message' => $errorMessage
-				] );
-			$span->end();
-			$this->dieRESTfullyWithZError(
-				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ 'data' => $target ] ),
-				HttpStatus::BAD_REQUEST,
-				[ 'target' => $target ]
-			);
-		}
+		// 3. Build the arguments for the call given their expected types (or dies if something is wrong)
+		$argumentsForCall = $this->buildArgumentsForCall(
+			$target,
+			$arguments,
+			$parseLanguageZid,
+			$targetFunction,
+			$config,
+			$span
+		);
 
-		// … then check it's valid
-		if ( !$targetObject->isValid() ) {
-			$errorMessage = __METHOD__ . ' called on {target} which is an invalid ZObject';
-			$this->logger->warning(
-				$errorMessage,
-				[
-					'target' => $target,
-					'childError' => $targetObject->getErrors()->getMessage(),
-				]
-			);
-			$span->setAttributes( [
-					'response.status_code' => HttpStatus::BAD_REQUEST,
-					'exception.message' => $errorMessage
-				] );
-			$span->end();
-			// Dies with Z_ERROR_NOT_WELLFORMED
-			$this->dieRESTfullyWithZError(
-				ZErrorFactory::createValidationZError( $targetObject->getErrors() ),
-				HttpStatus::BAD_REQUEST,
-				[ 'target' => $target ]
-			);
-		}
-
-		if ( $targetObject->getZType() !== ZTypeRegistry::Z_FUNCTION ) {
-			// User is trying to use a ZObject that's not a ZFunction
-			$errorMessage = __METHOD__ . ' called on {target} which is not a Function but a {type}';
-			$this->logger->debug(
-				$errorMessage,
-				[
-					'target' => $target,
-					'type' => $targetObject->getZType()
-				]
-			);
-			$span->setAttributes( [
-					'response.status_code' => HttpStatus::BAD_REQUEST,
-					'exception.message' => $errorMessage
-				] );
-			$span->end();
-			$this->dieRESTfullyWithZError(
-				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_ARGUMENT_TYPE_MISMATCH,
-					[
-						'expected' => ZTypeRegistry::Z_FUNCTION,
-						'actual' => $targetObject->getZType(),
-						'argument' => $target
-					]
-				),
-				HttpStatus::BAD_REQUEST,
-				[
-					'target' => $target,
-					'mode' => 'function'
-				]
-			);
-		}
-
-		$targetFunction = $targetObject->getInnerZObject();
-		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction $targetFunction';
-
-		// 2. (T368604): Check for and use parsers on inputs
-
-		// First, check that the requested parse language is one we know of and support
-		$parseLanguageZid = 'Z1002';
-		try {
-			$parseLanguageZid = $this->langRegistry->getLanguageZidFromCode( $parseLang );
-		} catch ( ZErrorException $error ) {
-			$errorMessage =
-				__METHOD__ . ' called with parse language {parseLang} which is not found / errored: {error}';
-			$this->logger->debug(
-				$errorMessage,
-				[
-					'parseLang' => $parseLang,
-					'error' => $error->getMessage()
-				]
-			);
-			$span->setAttributes( [
-					'response.status_code' => HttpStatus::BAD_REQUEST,
-					'exception.message' => $errorMessage
-				] );
-			// Die with Z_ERROR_LANG_NOT_FOUND
-			$this->dieRESTfullyWithZError(
-				$error->getZError(),
-				HttpStatus::BAD_REQUEST,
-				[ 'target' => $parseLang ]
-			);
-		} finally {
-			$span->end();
-		}
-
-		if ( is_string( $arguments ) ) {
-			$encodedArguments = explode( '|', $arguments );
-			$arguments = array_map(
-				static fn ( $val ): string => ZObjectUtils::decodeStringParamFromNetwork( $val ),
-				$encodedArguments
-			);
-		}
-
-		// Then, actually check the arguments' Types by looping over allowed inputs,
-		// and set up given inputs (for parsing if appropriate)
-		$argumentsForCall = [];
-
-		$expectedArguments = $targetFunction->getArgumentDeclarations();
-		if ( count( $arguments ) !== count( $expectedArguments ) ) {
-			$errorMessage =
-				__METHOD__ . ' called on {target} with the wrong number of arguments, {givenCount} not {expectedCount}';
-			$this->logger->debug(
-				$errorMessage,
-				[
-					'target' => $target,
-					'givenCount' => count( $arguments ),
-					'expectedCount' => count( $expectedArguments )
-				]
-			);
-			$span->setAttributes( [
-					'response.status_code' => HttpStatus::BAD_REQUEST,
-					'exception.message' => $errorMessage
-				] );
-			$span->end();
-			$this->dieRESTfullyWithZError(
-				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_ARGUMENT_COUNT_MISMATCH,
-					[
-						'expected' => strval( count( $expectedArguments ) ),
-						'actual' => strval( count( $arguments ) ),
-						'arguments' => $arguments
-					]
-				),
-				HttpStatus::BAD_REQUEST,
-				[ 'target' => $target ]
-			);
-		}
-
-		foreach ( $expectedArguments as $inputArgumentKey => $expectedArgument ) {
-			$argumentKey = $expectedArgument->getValueByKey( ZTypeRegistry::Z_ARGUMENTDECLARATION_ID )->getZValue();
-
-			$providedArgument = $arguments[array_keys( $arguments )[$inputArgumentKey]];
-
-			// By default, assume that it's safe to just pass through the argument blindly
-			$argumentsForCall[$argumentKey] = $providedArgument;
-
-			$targetTypeZid = $expectedArgument->getValueByKey( ZTypeRegistry::Z_ARGUMENTDECLARATION_TYPE )->getZValue();
-
-			// Type is always parseable (Z6)
-			if ( $targetTypeZid === ZTypeRegistry::Z_STRING ) {
-				continue;
-			}
-
-			// Type is generic (Z1) and we treat it as a Z6
-			// TODO (T390678): Adjust API filter code to allow Z1s as well?
-			if ( $targetTypeZid === ZTypeRegistry::Z_OBJECT ) {
-				continue;
-			}
-
-			// TODO (T385619): Cache these for repeated uses of the same Type?
-			$targetTypeContentObject = $this->zObjectStore
-				->fetchZObjectByTitle( Title::newFromText( $targetTypeZid, NS_MAIN ) );
-			$targetTypeObject = $targetTypeContentObject->getInnerZObject();
-
-			if ( !( $targetTypeObject instanceof ZType ) ) {
-				// It's somehow not to a Type, because:
-				// * Argument is a generic type; the function input is not supported.
-				// * There is an error in the content; the function is not wellformed (not very likely).
-				$errorMessage =
-					__METHOD__ . ' called on {target} which has a non-Type argument, {targetTypeZid} in position {pos}';
-				$this->logger->error(
-					$errorMessage,
-					[
-						'target' => $target,
-						'targetTypeZid' => $targetTypeZid,
-						'pos' => $inputArgumentKey
-					]
-				);
-				$span->setAttributes( [
-						'response.status_code' => HttpStatus::BAD_REQUEST,
-						'exception.message' => $errorMessage
-					] );
-				$span->end();
-				$this->dieRESTfullyWithZError(
-					ZErrorFactory::createZErrorInstance(
-						ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [ 'data' => $target ]
-					),
-					HttpStatus::BAD_REQUEST,
-					[
-						'target' => $target,
-						'mode' => 'input'
-					]
-				);
-			}
-
-			// Check if the argument is a ZID to an instance of the right Type
-			// * Returns true if there's no need to parse it
-			// * Returns false if we should parse it
-			// * Dies if the type is not correct
-			if ( $this->checkArgumentValidity( $providedArgument, $targetTypeObject, $target, $span ) ) {
-				continue;
-			}
-
-			// At this point, we know it's a string input to a non-string Type, so we need to parse it
-			$typeParser = $targetTypeObject->getParserFunction();
-
-			// Type has no parser
-			if ( $typeParser === false ) {
-				// User is trying to use a parameter that can't be parsed from text
-				$errorMessage =
-					__METHOD__ . ' called on {target} with an unparseable input, {targetTypeZid} in position {pos}';
-				$this->logger->info(
-					$errorMessage,
-					[
-						'target' => $target,
-						'targetTypeZid' => $targetTypeZid,
-						'pos' => $inputArgumentKey
-					]
-				);
-				$span->setAttributes( [
-						'response.status_code' => HttpStatus::BAD_REQUEST,
-						'exception.message' => $errorMessage
-					] );
-				$span->end();
-				$this->dieRESTfullyWithZError(
-					ZErrorFactory::createZErrorInstance(
-						ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [ 'data' => $target ]
-					),
-					HttpStatus::BAD_REQUEST,
-					[
-						'target' => $target,
-						'mode' => 'input'
-					]
-				);
-			}
-
-			// At this point, we know the argument should be parsed and a parser is available, so let's schedule it
-			$argumentsForCall[$argumentKey] = ( new ZFunctionCall( new ZReference( $typeParser ), [
-				$typeParser . "K1" => $providedArgument,
-				$typeParser . "K2" => $parseLanguageZid
-			] ) );
-		}
-
-		// 3. Set up the final, full call with all the above sub-calls embedded
+		// 4. Set up the final, full call with all the above sub-calls embedded
 		$callObject = new ZFunctionCall( new ZReference( $target ), $argumentsForCall );
 
-		// 4. (T362252): Check if there's a renderer for this return type (if so, it will be used)
-		// First, check that the requested render language is one we know of and support
-		$renderLanguageZid = 'Z1002';
-		try {
-			$renderLanguageZid = $this->langRegistry->getLanguageZidFromCode( $renderLang );
-		} catch ( ZErrorException $error ) {
-			$errorMessage =
-				__METHOD__ . ' called with render language {renderLang} which is not found / errored: {error}';
-			$this->logger->debug(
-				$errorMessage,
-				[
-					'renderLang' => $renderLang,
-					'error' => $error->getMessage()
-				]
-			);
-			$span->setAttributes( [
-					'response.status_code' => HttpStatus::BAD_REQUEST,
-					'exception.message' => $errorMessage
-				] );
-			// Die with Z_ERROR_LANG_NOT_FOUND
-			$this->dieRESTfullyWithZError(
-				$error->getZError(),
-				HttpStatus::BAD_REQUEST,
-				[ 'target' => $renderLang ]
-			);
-		} finally {
-			$span->end();
-		}
-
-		// Then, actually check the return Type
+		// 5. (T362252): Check if there's a renderer for this return type (if so, it will be used)
 		$targetReturnType = $targetFunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_RETURN_TYPE )->getZValue();
 
-		if (
-			// Type is always renderable (Z6 or Z89)
-			$targetReturnType !== ZTypeRegistry::Z_STRING &&
-			$targetReturnType !== ZTypeRegistry::Z_HTML_FRAGMENT &&
-			// Type is generic and we hope for the best (Z1)
-			$targetReturnType !== ZTypeRegistry::Z_OBJECT
-		) {
-			$targetReturnTypeObject = $this->zObjectStore
-				->fetchZObjectByTitle( Title::newFromText( $targetReturnType, NS_MAIN ) )
-				->getInnerZObject();
+		// Types that can be directly rendered:
+		// * String/Z6
+		// * HTML Fragment/Z89
+		// * Object/Z1 (only when the function call returns a string)
+		$renderableOutputTypes = [
+			ZTypeRegistry::Z_STRING,
+			ZTypeRegistry::Z_HTML_FRAGMENT,
+			ZTypeRegistry::Z_OBJECT
+		];
 
-			if ( !( $targetReturnTypeObject instanceof ZType ) ) {
-				// It's somehow not to a Type, because:
-				// * Output is a generic type; the function input is not supported.
-				// * There is an error in the content; the function is not wellformed (not very likely).
-				$errorMessage = __METHOD__ . ' called on {target} which has a non-Type output, {targetReturnType}';
-				$this->logger->error(
-					$errorMessage,
-					[
-						'target' => $target,
-						'targetReturnType' => $targetReturnType
-					]
-				);
-				$span->setAttributes( [
-						'response.status_code' => HttpStatus::BAD_REQUEST,
-						'exception.message' => $errorMessage
-					] );
-				$span->end();
-				$this->dieRESTfullyWithZError(
-					ZErrorFactory::createZErrorInstance(
-						ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [ 'data' => $target ]
-					),
-					HttpStatus::BAD_REQUEST,
-					[
-						'target' => $target,
-						'mode' => 'output'
-					]
-				);
-			}
-
-			$rendererFunction = $targetReturnTypeObject->getRendererFunction();
-
-			if ( $rendererFunction === false ) {
-				// User is trying to use a ZFunction that returns something which doesn't have a renderer
-				$errorMessage = __METHOD__ . ' called on {target} with an unrenderable output, {targetReturnType}';
-				$this->logger->info(
-					$errorMessage,
-					[
-						'target' => $target,
-						'targetReturnType' => $targetReturnType
-					]
-				);
-				$span->setAttributes( [
-						'response.status_code' => HttpStatus::BAD_REQUEST,
-						'exception.message' => $errorMessage
-					] );
-				$span->end();
-				$this->dieRESTfullyWithZError(
-					ZErrorFactory::createZErrorInstance(
-						ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [ 'data' => $target ]
-					),
-					HttpStatus::BAD_REQUEST,
-					[
-						'target' => $target,
-						'mode' => 'output'
-					]
-				);
-			}
-
-			// At this point, we know that we must render, so wrap the function call in that
-			$callObject = new ZFunctionCall( new ZReference( $rendererFunction ), [
-				$rendererFunction . "K1" => $callObject,
-				$rendererFunction . "K2" => $renderLanguageZid
-			] );
+		if ( !in_array( $targetReturnType, $renderableOutputTypes ) ) {
+			$callObject = $this->buildRenderedOutput(
+				$target,
+				$targetReturnType,
+				$renderLanguageZid,
+				$callObject,
+				$span
+			);
 		}
 
-		// 5. Down-convert the ZFunctionCall Object to a stdClass object
+		// 6. Down-convert the ZFunctionCall Object to a stdClass object
 		$call = $callObject->getSerialized();
 
-		// 6. Execute the call
+		// 7. Execute the call
 		try {
 			$requestCall = json_encode( $call, JSON_THROW_ON_ERROR );
 			if ( !$requestCall ) {
@@ -563,53 +211,488 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 		return $this->getResponseFactory()->createJson( $response );
 	}
 
-	public function applyCacheControl( ResponseInterface $response ) {
-		if ( $response->getStatusCode() >= 200 && $response->getStatusCode() < 300 ) {
-			$response->setHeader( 'Cache-Control', 'public,must-revalidate,s-maxage=' . 60 * 60 * 24 );
+	/**
+	 * Verifies the validity of the given target function Zid and returns its
+	 * object (inner ZFunction object) if everything went well.
+	 *
+	 * Dies with ZError if:
+	 * * Given function Id is not a valid Zid
+	 * * Target function Zid does not exist
+	 * * Target function cannot be fetched
+	 * * Fetched target function is not valid
+	 * * Fetched target Zid does not belong to a function
+	 *
+	 * @param string $target
+	 * @param SpanInterface $span
+	 * @return ZFunction
+	 */
+	private function getTargetFunction( $target, $span ) {
+		// 1. Check if target function Id is a valid Zid
+		if ( !ZObjectUtils::isValidOrNullZObjectReference( $target ) ) {
+			$errorMessage = __METHOD__ . ' called on {target} which is a non-ZID, e.g. an inline function';
+			$this->logger->debug(
+				$errorMessage,
+				[ 'target' => $target ]
+			);
+			$span->setAttributes( [
+				'response.status_code' => HttpStatus::BAD_REQUEST,
+				'exception.message' => $errorMessage
+			] )->end();
+
+			// Dies with Z_ERROR_ZID_NOT_FOUND
+			$this->dieRESTfullyWithZError(
+				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ 'data' => $target ] ),
+				HttpStatus::BAD_REQUEST,
+				[ 'target' => $target ]
+			);
 		}
-	}
 
-	/** @inheritDoc */
-	public function needsWriteAccess(): bool {
-		// This is a rough approximation, as we have no access to the User object in the REST API, but
-		// we want the system to scale back access to this endpoint.
-		return true;
-	}
+		// 2. Check if target function Zid exists
+		$targetTitle = Title::newFromText( $target, NS_MAIN );
+		if ( !( $targetTitle->exists() ) ) {
+			$errorMessage = __METHOD__ . ' called on {target} which does not exist on-wiki';
+			$this->logger->debug(
+				$errorMessage,
+				[ 'target' => $target ]
+			);
+			$span->setAttributes( [
+				'response.status_code' => HttpStatus::BAD_REQUEST,
+				'exception.message' => $errorMessage
+			] )->end();
 
-	/** @inheritDoc */
-	public function getParamSettings() {
-		return [
-			'zid' => [
-				Handler::PARAM_SOURCE => 'path',
-				ParamValidator::PARAM_TYPE => 'string',
-				ParamValidator::PARAM_ISMULTI => false,
-				ParamValidator::PARAM_REQUIRED => true,
-			],
-			'arguments' => [
-				Handler::PARAM_SOURCE => 'path',
-				ParamValidator::PARAM_TYPE => 'string',
-				ParamValidator::PARAM_ISMULTI => false,
-				ParamValidator::PARAM_REQUIRED => true,
-			],
-			'parselang' => [
-				Handler::PARAM_SOURCE => 'path',
-				ParamValidator::PARAM_TYPE => 'string',
-				ParamValidator::PARAM_DEFAULT => 'en',
-				ParamValidator::PARAM_REQUIRED => false,
-			],
-			'renderlang' => [
-				Handler::PARAM_SOURCE => 'path',
-				ParamValidator::PARAM_TYPE => 'string',
-				ParamValidator::PARAM_DEFAULT => 'en',
-				ParamValidator::PARAM_REQUIRED => false,
-			],
-		];
+			// Dies with Z_ERROR_ZID_NOT_FOUND
+			$this->dieRESTfullyWithZError(
+				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ 'data' => $target ] ),
+				HttpStatus::BAD_REQUEST,
+				[ 'target' => $target ]
+			);
+		}
+
+		// 3. Check if target function Zid can be successfully fetched
+		$targetObject = $this->zObjectStore->fetchZObjectByTitle( $targetTitle );
+		if ( !$targetObject ) {
+			$errorMessage = __METHOD__ . ' called on {target} which is somehow non-ZObject in our namespace';
+			$this->logger->warning(
+				$errorMessage,
+				[ 'target' => $target ]
+			);
+			$span->setAttributes( [
+				'response.status_code' => HttpStatus::BAD_REQUEST,
+				'exception.message' => $errorMessage
+			] )->end();
+
+			// Dies with Z_ERROR_ZID_NOT_FOUND
+			$this->dieRESTfullyWithZError(
+				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ 'data' => $target ] ),
+				HttpStatus::BAD_REQUEST,
+				[ 'target' => $target ]
+			);
+		}
+
+		// 4. Check if target function is valid
+		if ( !$targetObject->isValid() ) {
+			$errorMessage = __METHOD__ . ' called on {target} which is an invalid ZObject';
+			$this->logger->warning(
+				$errorMessage,
+				[
+					'target' => $target,
+					'childError' => $targetObject->getErrors()->getMessage(),
+				]
+			);
+			$span->setAttributes( [
+				'response.status_code' => HttpStatus::BAD_REQUEST,
+				'exception.message' => $errorMessage
+			] )->end();
+
+			// Dies with Z_ERROR_NOT_WELLFORMED
+			$this->dieRESTfullyWithZError(
+				ZErrorFactory::createValidationZError( $targetObject->getErrors() ),
+				HttpStatus::BAD_REQUEST,
+				[ 'target' => $target ]
+			);
+		}
+
+		// 4. Check if target function is a function
+		if ( $targetObject->getZType() !== ZTypeRegistry::Z_FUNCTION ) {
+			$errorMessage = __METHOD__ . ' called on {target} which is not a Function but a {type}';
+			$this->logger->debug(
+				$errorMessage,
+				[
+					'target' => $target,
+					'type' => $targetObject->getZType()
+				]
+			);
+			$span->setAttributes( [
+				'response.status_code' => HttpStatus::BAD_REQUEST,
+				'exception.message' => $errorMessage
+			] )->end();
+
+			// Dies with Z_ERROR_ARGUMENT_TYPE_MISMATCH
+			$this->dieRESTfullyWithZError(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_ARGUMENT_TYPE_MISMATCH,
+					[
+						'expected' => ZTypeRegistry::Z_FUNCTION,
+						'actual' => $targetObject->getZType(),
+						'argument' => $target
+					]
+				),
+				HttpStatus::BAD_REQUEST,
+				[
+					'target' => $target,
+					'mode' => 'function'
+				]
+			);
+		}
+
+		// Success! Return inner ZFunction object
+		$functionObject = $targetObject->getInnerZObject();
+		'@phan-var ZFunction $functionObject';
+		return $functionObject;
 	}
 
 	/**
-	 * Verifies the validity of an argument with respect to the expected type
-	 * and returns whether it can be processed out of the box, or false if it
-	 * needs to be processed by a parser function. If not valid, dies with error.
+	 * Read parseLang and renderLang language code arguments and find their
+	 * equivalent Natural Language/Z60 Zids.
+	 * Returns an array with:
+	 * * parseLangZid (T368604): Parser language for the inputs
+	 * * renderLangZid (T362252): Renderer language for the output
+	 *
+	 * @param string $parseLang
+	 * @param string $renderLang
+	 * @param SpanInterface $span
+	 * @return array [parseLangZid, renderLangZid]
+	 */
+	private function getLanguageZids( $parseLang, $renderLang, $span ): array {
+		// 1. Check that the requested parse language is one we know of and support
+		try {
+			$parseLanguageZid = $this->langRegistry->getLanguageZidFromCode( $parseLang );
+		} catch ( ZErrorException $error ) {
+			$errorMessage =
+				__METHOD__ . ' called with parse language {parseLang} which is not found / errored: {error}';
+			$this->logger->debug(
+				$errorMessage,
+				[
+					'parseLang' => $parseLang,
+					'error' => $error->getMessage()
+				]
+			);
+			$span->setAttributes( [
+				'response.status_code' => HttpStatus::BAD_REQUEST,
+				'exception.message' => $errorMessage
+			] )->end();
+
+			// Die with Z_ERROR_LANG_NOT_FOUND
+			$this->dieRESTfullyWithZError(
+				$error->getZError(),
+				HttpStatus::BAD_REQUEST,
+				[ 'target' => $parseLang ]
+			);
+		}
+
+		// 2. Check that the requested render language is one we know of and support
+		try {
+			$renderLanguageZid = $this->langRegistry->getLanguageZidFromCode( $renderLang );
+		} catch ( ZErrorException $error ) {
+			$errorMessage =
+				__METHOD__ . ' called with render language {renderLang} which is not found / errored: {error}';
+			$this->logger->debug(
+				$errorMessage,
+				[
+					'renderLang' => $renderLang,
+					'error' => $error->getMessage()
+				]
+			);
+			$span->setAttributes( [
+				'response.status_code' => HttpStatus::BAD_REQUEST,
+				'exception.message' => $errorMessage
+			] )->end();
+
+			// Die with Z_ERROR_LANG_NOT_FOUND
+			$this->dieRESTfullyWithZError(
+				$error->getZError(),
+				HttpStatus::BAD_REQUEST,
+				[ 'target' => $renderLang ]
+			);
+		}
+
+		// Success! Both arguments are correct, return the zids
+		return [ $parseLanguageZid, $renderLanguageZid ];
+	}
+
+	/**
+	 * @param string $target
+	 * @param string $argumentsString
+	 * @param string $parseLanguageZid
+	 * @param ZFunction $targetFunction
+	 * @param Config $config
+	 * @param SpanInterface $span
+	 * @return array
+	 */
+	private function buildArgumentsForCall(
+		$target,
+		$argumentsString,
+		$parseLanguageZid,
+		$targetFunction,
+		$config,
+		$span
+	): array {
+		// 1. Split and decode arguments
+		$encodedArguments = explode( '|', $argumentsString );
+		$arguments = array_map(
+			static fn ( $val ): string => ZObjectUtils::decodeStringParamFromNetwork( $val ),
+			$encodedArguments
+		);
+
+		// 2. Check that the given input count matches with the number of arguments in the function signature
+		$expectedArguments = $targetFunction->getArgumentDeclarations();
+		if ( count( $arguments ) !== count( $expectedArguments ) ) {
+			$errorMessage =
+				__METHOD__ . ' called on {target} with the wrong number of arguments, {givenCount} not {expectedCount}';
+			$this->logger->debug(
+				$errorMessage,
+				[
+					'target' => $target,
+					'givenCount' => count( $arguments ),
+					'expectedCount' => count( $expectedArguments )
+				]
+			);
+			$span->setAttributes( [
+				'response.status_code' => HttpStatus::BAD_REQUEST,
+				'exception.message' => $errorMessage
+			] )->end();
+
+			// Die with Z_ERROR_ARGUMENT_COUNT_MISMATCH
+			$this->dieRESTfullyWithZError(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_ARGUMENT_COUNT_MISMATCH,
+					[
+						'expected' => strval( count( $expectedArguments ) ),
+						'actual' => strval( count( $arguments ) ),
+						'arguments' => $arguments
+					]
+				),
+				HttpStatus::BAD_REQUEST,
+				[ 'target' => $target ]
+			);
+		}
+
+		$argumentsForCall = [];
+
+		// 3. For each argument in the function signature:
+		//    * check that the input type is supported, and
+		//    * build the appropriate input object from the string.
+		foreach ( $expectedArguments as $expectedArgumentIndex => $expectedArgument ) {
+			$argumentKey = $expectedArgument->getValueByKey( ZTypeRegistry::Z_ARGUMENTDECLARATION_ID )->getZValue();
+			$providedArgument = $arguments[array_keys( $arguments )[$expectedArgumentIndex]];
+			$targetTypeZid = $expectedArgument->getValueByKey( ZTypeRegistry::Z_ARGUMENTDECLARATION_TYPE )->getZValue();
+
+			// A) If expected type is String/Z6 or Object/Z1: build String object (canonical or normal if zid)
+			if ( ( $targetTypeZid === ZTypeRegistry::Z_STRING ) || ( $targetTypeZid === ZTypeRegistry::Z_OBJECT ) ) {
+				$argumentsForCall[$argumentKey] = new ZString( $providedArgument );
+				continue;
+			}
+
+			// B) If Wikidata input types feature flag is enabled:
+			//    * If expected type is Wikidata entity: build wikidata fetch function call object
+			//    * If expected type is Wikidata reference: build wikidata reference object
+			if ( $config->get( 'WikifunctionsEnableWikidataInputTypes' ) ) {
+				$allowedEntityTypes = [
+					ZTypeRegistry::Z_WIKIDATA_LEXEME,
+					ZTypeRegistry::Z_WIKIDATA_ITEM
+				];
+				$allowedReferenceTypes = [
+					ZTypeRegistry::Z_WIKIDATA_REFERENCE_LEXEME,
+					ZTypeRegistry::Z_WIKIDATA_REFERENCE_ITEM
+				];
+
+				// Handle Wikidata entity types (e.g., Z6001, Z6005, etc.) as function arguments:
+				// We build a ZFunctionCall to the appropriate Wikidata fetch function (e.g., Z6825 for lexeme),
+				// with the argument being a Wikidata reference type (e.g., { Z1K1: Z6095, Z6095K1: 'L123' })
+				if ( in_array( $targetTypeZid, $allowedEntityTypes ) ) {
+					$entityMap = ZTypeRegistry::WIKIDATA_ENTITY_TYPE_MAP[$targetTypeZid] ?? null;
+					if ( $entityMap ) {
+						$referenceType = $entityMap['reference_type'];
+						$referenceKey = $entityMap['reference_key'];
+						$fetchFunction = $entityMap['fetch_function'];
+						$fetchKey = $entityMap['fetch_key'];
+
+						// Build the reference ZObject for the entity (e.g., { Z1K1: Z6095, Z6095K1: 'L123' })
+						$referenceObject = new ZObject(
+							new ZReference( $referenceType ),
+							[ $referenceKey => new ZString( $providedArgument ) ]
+						);
+						// Build the ZFunctionCall to the fetch function, passing the reference object as the argument
+						$argumentsForCall[$argumentKey] = new ZFunctionCall(
+							new ZReference( $fetchFunction ),
+							[ $fetchKey => $referenceObject ]
+						);
+						continue;
+					}
+				}
+
+				// Handle Wikidata reference types (e.g., Z6091, Z6095, etc.) as function arguments:
+				// We build a ZObject of the given Wikidata reference type.
+				if ( in_array( $targetTypeZid, $allowedReferenceTypes ) ) {
+					$argumentsForCall[$argumentKey] = new ZObject(
+						new ZReference( $targetTypeZid ),
+						[ $targetTypeZid . 'K1' => new ZString( $providedArgument ) ]
+					 );
+					continue;
+				}
+			}
+
+			// C) If any other type, build either parser function call or reference to enum instance
+			$argumentsForCall[$argumentKey] = $this->buildParsedArgument(
+				$target,
+				$targetTypeZid,
+				$argumentKey,
+				$parseLanguageZid,
+				$providedArgument,
+				$span
+			);
+		}
+
+		return $argumentsForCall;
+	}
+
+	/**
+	 * Builds the argument for any other custom type, which means that we need to
+	 * fetch the type first in order to figure out whether:
+	 * * The type is an enum or any other type that can be referenced, and the arg is a reference
+	 * * The type has a parser function so it can be parsed from an input string
+	 *
+	 * @param string $target - target function zid
+	 * @param string $targetTypeZid - target function argument type zid
+	 * @param string $argumentKey - target function argument key
+	 * @param string $parseLanguageZid - zid of the parser language
+	 * @param string $providedArgument - provided string value for the argument
+	 * @param SpanInterface $span
+	 * @return ZObject
+	 */
+	private function buildParsedArgument(
+		$target,
+		$targetTypeZid,
+		$argumentKey,
+		$parseLanguageZid,
+		$providedArgument,
+		$span
+	): ZObject {
+		// Fetch target input type to figure out if it has a parser function
+		// TODO (T385619): Cache these for repeated uses of the same Type?
+		$targetType = $this->zObjectStore->fetchZObjectByTitle( Title::newFromText( $targetTypeZid, NS_MAIN ) );
+		if ( !$targetType ) {
+			$errorMessage = __METHOD__ . ' called on {target} which has a not-found input type {typeZid} at key {key}';
+			$this->logger->warning(
+				$errorMessage,
+				[
+					'target' => $target,
+					'typeZid' => $targetTypeZid,
+					'key' => $argumentKey
+				]
+			);
+			$span->setAttributes( [
+				'response.status_code' => HttpStatus::BAD_REQUEST,
+				'exception.message' => $errorMessage
+			] )->end();
+
+			// Dies with Z_ERROR_ZID_NOT_FOUND
+			$this->dieRESTfullyWithZError(
+				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ 'data' => $target ] ),
+				HttpStatus::BAD_REQUEST,
+				[
+					'target' => $target,
+					'mode' => 'input'
+				]
+			);
+		}
+
+		$targetTypeObject = $targetType->getInnerZObject();
+		if ( !( $targetTypeObject instanceof ZType ) ) {
+			// It's somehow not to a Type, because:
+			// * Argument is a generic type; the function input is not supported.
+			// * There is an error in the content; the function is not wellformed (not very likely).
+			$errorMessage =
+				__METHOD__ . ' called on {target} which has a non-Type argument, {typeZid} at key {key}';
+			$this->logger->error(
+				$errorMessage,
+				[
+					'target' => $target,
+					'typeZid' => $targetTypeZid,
+					'key' => $argumentKey
+				]
+			);
+			$span->setAttributes( [
+				'response.status_code' => HttpStatus::BAD_REQUEST,
+				'exception.message' => $errorMessage
+			] )->end();
+
+			// Die with Z_ERROR_NOT_IMPLEMENTED_YET
+			$this->dieRESTfullyWithZError(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [ 'data' => $target ]
+				),
+				HttpStatus::BAD_REQUEST,
+				[
+					'target' => $target,
+					'mode' => 'input'
+				]
+			);
+		}
+
+		// Check if the argument is a ZID to an instance of the right Type:
+		// * if so, builds a ZReference object
+		// * if not a reference, proceeds with building parser function
+		if ( $this->isArgumentValidReference( $providedArgument, $targetTypeObject, $target, $span ) ) {
+			return new ZReference( $providedArgument );
+		}
+
+		// At this point, we know it's a string input to a non-string Type, so we need to parse it
+		$typeParser = $targetTypeObject->getParserFunction();
+
+		// Type has no parser
+		if ( $typeParser === false ) {
+			// User is trying to use a parameter that can't be parsed from text
+			$errorMessage =
+				__METHOD__ . ' called on {target} with an unparseable input, {targetTypeZid} in position {pos}';
+			$this->logger->info(
+				$errorMessage,
+				[
+					'target' => $target,
+					'targetTypeZid' => $targetTypeZid,
+					'key' => $argumentKey
+				]
+			);
+			$span->setAttributes( [
+				'response.status_code' => HttpStatus::BAD_REQUEST,
+				'exception.message' => $errorMessage
+			] )->end();
+
+			// Die with Z_ERROR_NOT_IMPLEMENTED_YET
+			$this->dieRESTfullyWithZError(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [ 'data' => $target ]
+				),
+				HttpStatus::BAD_REQUEST,
+				[
+					'target' => $target,
+					'mode' => 'input'
+				]
+			);
+		}
+
+		// At this point, we know the argument should be parsed and a parser is available, so let's schedule it
+		return new ZFunctionCall( new ZReference( $typeParser ), [
+			$typeParser . "K1" => new ZString( $providedArgument ),
+			$typeParser . "K2" => new ZReference( $parseLanguageZid )
+		] );
+	}
+
+	/**
+	 * Verifies the validity of a referenced argument with respect to the expected type:
+	 * * if the string argument is a reference to a valid type, returns true
+	 * * if the string argument is not a reference, returns false
+	 * * if it's a wrong reference or a reference to a non-valid type, dies with error
 	 *
 	 * @param string $providedArgument
 	 * @param ZType $targetTypeObject
@@ -617,7 +700,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 	 * @param SpanInterface $span
 	 * @return bool
 	 */
-	private function checkArgumentValidity(
+	private function isArgumentValidReference(
 		$providedArgument,
 		$targetTypeObject,
 		$targetFunction,
@@ -645,16 +728,20 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 				]
 			);
 			$span->setAttributes( [
-					'response.status_code' => HttpStatus::BAD_REQUEST,
-					'exception.message' => $errorMessage
-				] );
-			$span->end();
+				'response.status_code' => HttpStatus::BAD_REQUEST,
+				'exception.message' => $errorMessage
+			] )->end();
+
+			// Die with Z_ERROR_ZID_NOT_FOUND
 			$this->dieRESTfullyWithZError(
 				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ 'data' => $providedArgument ]
 				),
 				HttpStatus::BAD_REQUEST,
-				[ 'target' => $targetFunction ]
+				[
+					'target' => $targetFunction,
+					'mode' => 'input'
+				]
 			);
 		}
 
@@ -711,6 +798,119 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 		// * e.g. Expected type is enum Boolean/Z40, given arg is True/Z41
 		// * e.g. Expected type is String/Z6, given arg is reference to a persisted Z6
 		return true;
+	}
+
+	/**
+	 * Builds a renderer function call that wraps the given function call if:
+	 * * The expected output type is a valid type, and
+	 * * The output type has a renderer function
+	 *
+	 * @param string $target - zid of the target function
+	 * @param string $targetReturnType - zid of the return type of the target function
+	 * @param string $renderLanguageZid - zid of the render language
+	 * @param ZFunctionCall $callObject - function call object
+	 * @param SpanInterface $span
+	 */
+	private function buildRenderedOutput(
+		$target,
+		$targetReturnType,
+		$renderLanguageZid,
+		$callObject,
+		$span
+	): ZFunctionCall {
+		// Fetch target output type to figure out if it has a renderer function
+		$typeObject = $this->zObjectStore->fetchZObjectByTitle( Title::newFromText( $targetReturnType, NS_MAIN ) );
+		if ( !$typeObject ) {
+			$errorMessage = __METHOD__ . ' called on {target} which has a not-found output type {typeZid}';
+			$this->logger->warning(
+				$errorMessage,
+				[
+					'target' => $target,
+					'typeZid' => $targetReturnType
+				]
+			);
+			$span->setAttributes( [
+				'response.status_code' => HttpStatus::BAD_REQUEST,
+				'exception.message' => $errorMessage
+			] )->end();
+
+			// Dies with Z_ERROR_ZID_NOT_FOUND
+			$this->dieRESTfullyWithZError(
+				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ 'data' => $target ] ),
+				HttpStatus::BAD_REQUEST,
+				[
+					'target' => $target,
+					'mode' => 'output'
+				]
+			);
+		}
+
+		$targetReturnTypeObject = $typeObject->getInnerZObject();
+		if ( !( $targetReturnTypeObject instanceof ZType ) ) {
+			// It's somehow not to a Type, because:
+			// * Output is a generic type; the function input is not supported.
+			// * There is an error in the content; the function is not wellformed (not very likely).
+			$errorMessage = __METHOD__ . ' called on {target} which has a non-Type output, {targetReturnType}';
+			$this->logger->error(
+				$errorMessage,
+				[
+					'target' => $target,
+					'targetReturnType' => $targetReturnType
+				]
+			);
+			$span->setAttributes( [
+				'response.status_code' => HttpStatus::BAD_REQUEST,
+				'exception.message' => $errorMessage
+			] )->end();
+
+			// Die with Z_ERROR_NOT_IMPLEMENTED_YET
+			$this->dieRESTfullyWithZError(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [ 'data' => $target ]
+				),
+				HttpStatus::BAD_REQUEST,
+				[
+					'target' => $target,
+					'mode' => 'output'
+				]
+			);
+		}
+
+		$rendererFunction = $targetReturnTypeObject->getRendererFunction();
+
+		if ( $rendererFunction === false ) {
+			// User is trying to use a ZFunction that returns something which doesn't have a renderer
+			$errorMessage = __METHOD__ . ' called on {target} with an unrenderable output, {targetReturnType}';
+			$this->logger->info(
+				$errorMessage,
+				[
+					'target' => $target,
+					'targetReturnType' => $targetReturnType
+				]
+			);
+			$span->setAttributes( [
+				'response.status_code' => HttpStatus::BAD_REQUEST,
+				'exception.message' => $errorMessage
+			] )->end();
+
+			// Die with Z_ERROR_NOT_IMPLEMENTED_YET
+			$this->dieRESTfullyWithZError(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [ 'data' => $target ]
+				),
+				HttpStatus::BAD_REQUEST,
+				[
+					'target' => $target,
+					'mode' => 'output'
+				]
+			);
+		}
+
+		// At this point, we know that we must render, so wrap the function call in that
+		return new ZFunctionCall( new ZReference( $rendererFunction ), [
+			$rendererFunction . "K1" => $callObject,
+			$rendererFunction . "K2" => new ZReference( $renderLanguageZid )
+		] );
 	}
 
 	/**
@@ -909,6 +1109,50 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 		return (object)[
 			'value' => trim( $responseValue->getZValue() ),
 			'type' => $responseValue->getZType()
+		];
+	}
+
+	/** @inheritDoc */
+	public function applyCacheControl( ResponseInterface $response ) {
+		if ( $response->getStatusCode() >= 200 && $response->getStatusCode() < 300 ) {
+			$response->setHeader( 'Cache-Control', 'public,must-revalidate,s-maxage=' . 60 * 60 * 24 );
+		}
+	}
+
+	/** @inheritDoc */
+	public function needsWriteAccess(): bool {
+		// This is a rough approximation, as we have no access to the User object in the REST API, but
+		// we want the system to scale back access to this endpoint.
+		return true;
+	}
+
+	/** @inheritDoc */
+	public function getParamSettings() {
+		return [
+			'zid' => [
+				Handler::PARAM_SOURCE => 'path',
+				ParamValidator::PARAM_TYPE => 'string',
+				ParamValidator::PARAM_ISMULTI => false,
+				ParamValidator::PARAM_REQUIRED => true,
+			],
+			'arguments' => [
+				Handler::PARAM_SOURCE => 'path',
+				ParamValidator::PARAM_TYPE => 'string',
+				ParamValidator::PARAM_ISMULTI => false,
+				ParamValidator::PARAM_REQUIRED => true,
+			],
+			'parselang' => [
+				Handler::PARAM_SOURCE => 'path',
+				ParamValidator::PARAM_TYPE => 'string',
+				ParamValidator::PARAM_DEFAULT => 'en',
+				ParamValidator::PARAM_REQUIRED => false,
+			],
+			'renderlang' => [
+				Handler::PARAM_SOURCE => 'path',
+				ParamValidator::PARAM_TYPE => 'string',
+				ParamValidator::PARAM_DEFAULT => 'en',
+				ParamValidator::PARAM_REQUIRED => false,
+			],
 		];
 	}
 }

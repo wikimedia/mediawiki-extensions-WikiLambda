@@ -932,12 +932,18 @@
 		{
 			"path": "/wikifunctions/v0/call/{zid}/{arguments}",
 			"method": "GET",
-			"class": "MediaWiki\\Extension\\WikiLambda\\RESTAPI\\FunctionCallHandler"
+			"class": "MediaWiki\\Extension\\WikiLambda\\RESTAPI\\FunctionCallHandler",
+			"services": [
+				"WikiLambdaZObjectStore"
+			]
 		},
 		{
 			"path": "/wikifunctions/v0/call/{zid}/{arguments}/{parselang}/{renderlang}",
 			"method": "GET",
-			"class": "MediaWiki\\Extension\\WikiLambda\\RESTAPI\\FunctionCallHandler"
+			"class": "MediaWiki\\Extension\\WikiLambda\\RESTAPI\\FunctionCallHandler",
+			"services": [
+				"WikiLambdaZObjectStore"
+			]
 		}
 	],
 	"SpecialPages": {
