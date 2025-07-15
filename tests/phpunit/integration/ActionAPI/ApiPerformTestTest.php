@@ -45,7 +45,7 @@ class ApiPerformTestTest extends ApiTestCase {
 	}
 
 	private static function getTestFileContents( $fileName ): string {
-		// @codingStandardsIgnoreLine
+		// phpcs:ignore Generic.Files.LineLength.TooLong
 		$baseDir = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'test_data' . DIRECTORY_SEPARATOR . 'perform_test';
 		$fullFile = $baseDir . DIRECTORY_SEPARATOR . $fileName;
 		return file_get_contents( $fullFile );
