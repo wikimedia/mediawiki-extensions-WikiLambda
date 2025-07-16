@@ -340,7 +340,7 @@ describe( 'ZObjectStringRenderer', () => {
 				zobject: newValue,
 				zlang: 'Z1002',
 				wait: true,
-				signal: {}
+				signal: expect.any( Object )
 			} );
 		} );
 

@@ -73,7 +73,7 @@ describe( 'FunctionInputPreview', () => {
 			formatversion: '2',
 			wikilambda_function_call_zobject: JSON.stringify( { Z1K1: 'Z7', Z7K1: functionZid, [ `${ functionZid }K1` ]: 'a' } ),
 			uselang: 'en'
-		}, { signal: {} } );
+		}, { signal: expect.any( Object ) } );
 
 		// Wait for the result and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
@@ -114,7 +114,7 @@ describe( 'FunctionInputPreview', () => {
 					Z50000K1: 'Z50001' }
 			} ),
 			uselang: 'en'
-		}, { signal: {} } );
+		}, { signal: expect.any( Object ) } );
 
 		// Wait for the result and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
@@ -149,7 +149,7 @@ describe( 'FunctionInputPreview', () => {
 			formatversion: '2',
 			wikilambda_function_call_zobject: JSON.stringify( { Z1K1: 'Z7', Z7K1: functionZid, [ `${ functionZid }K1` ]: 'Z41' } ),
 			uselang: 'en'
-		}, { signal: {} } );
+		}, { signal: expect.any( Object ) } );
 
 		// Wait for the result and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
@@ -192,7 +192,7 @@ describe( 'FunctionInputPreview', () => {
 				}
 			} ),
 			uselang: 'en'
-		}, { signal: {} } );
+		}, { signal: expect.any( Object ) } );
 
 		// Wait for the result and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
@@ -235,7 +235,7 @@ describe( 'FunctionInputPreview', () => {
 				[ `${ rendererZid }K2` ]: 'Z1002'
 			} ),
 			uselang: 'en'
-		}, { signal: {} } );
+		}, { signal: expect.any( Object ) } );
 
 		// Wait for the result and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
@@ -281,7 +281,7 @@ describe( 'FunctionInputPreview', () => {
 				[ `${ rendererZid }K2` ]: 'Z1002'
 			} ),
 			uselang: 'en'
-		}, { signal: {} } );
+		}, { signal: expect.any( Object ) } );
 
 		// Wait for the result and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
@@ -318,7 +318,7 @@ describe( 'FunctionInputPreview', () => {
 			formatversion: '2',
 			wikilambda_function_call_zobject: JSON.stringify( { Z1K1: 'Z7', Z7K1: functionZid } ),
 			uselang: 'en'
-		}, { signal: {} } );
+		}, { signal: expect.any( Object ) } );
 
 		// Wait for the error message and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
@@ -356,7 +356,7 @@ describe( 'FunctionInputPreview', () => {
 			formatversion: '2',
 			wikilambda_function_call_zobject: JSON.stringify( { Z1K1: 'Z7', Z7K1: functionZid, [ `${ functionZid }K1` ]: 'a' } ),
 			uselang: 'en'
-		}, { signal: {} } );
+		}, { signal: expect.any( Object ) } );
 
 		// Wait for the result and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
@@ -378,7 +378,7 @@ describe( 'FunctionInputPreview', () => {
 			formatversion: '2',
 			wikilambda_function_call_zobject: JSON.stringify( { Z1K1: 'Z7', Z7K1: functionZid, [ `${ functionZid }K1` ]: 'a' } ),
 			uselang: 'en'
-		}, { signal: {} } );
+		}, { signal: expect.any( Object ) } );
 	} );
 
 	it( 'cancels the function call and aborts the API call when the cancel button is clicked', async () => {
@@ -509,7 +509,7 @@ describe( 'FunctionInputPreview', () => {
 				[ `${ functionZid }K3` ]: ''
 			} ),
 			uselang: 'en'
-		}, { signal: {} } );
+		}, { signal: expect.any( Object ) } );
 
 		// Wait for the result and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
@@ -561,7 +561,7 @@ describe( 'FunctionInputPreview', () => {
 			formatversion: '2',
 			wikilambda_function_call_zobject: JSON.stringify( { Z1K1: 'Z7', Z7K1: functionZid, [ `${ functionZid }K1` ]: 'a' } ),
 			uselang: 'en'
-		}, { signal: {} } );
+		}, { signal: expect.any( Object ) } );
 
 		// Wait for the result and verify it is displayed as the HTML fragment value
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );

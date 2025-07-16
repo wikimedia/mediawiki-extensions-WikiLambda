@@ -184,16 +184,15 @@ module.exports = {
 		 * @param {string} search
 		 * @param {number} searchContinue
 		 * @param {string|undefined} type
+		 * @param {AbortSignal} [signal] Optional AbortSignal to cancel the request
 		 * @return {Promise}
 		 */
 		lookupWikidataEntities: function ( payload ) {
-			const { search, searchContinue, type = undefined } = payload;
-			const request = {
-				language: this.getUserLangCode,
-				search,
-				type,
-				searchContinue
-			};
+			const request = Object.assign(
+				{},
+				payload,
+				{ language: this.getUserLangCode }
+			);
 			return searchWikidataEntities( request );
 		}
 	}

@@ -65,7 +65,7 @@ describe( 'FunctionInputParser', () => {
 			wait: true,
 			zlang: 'Z1002',
 			zobject: 'Non empty value',
-			signal: {}
+			signal: expect.any( Object )
 		} );
 	} );
 
@@ -84,7 +84,7 @@ describe( 'FunctionInputParser', () => {
 			wait: true,
 			zlang: 'Z1002',
 			zobject: '',
-			signal: {}
+			signal: expect.any( Object )
 		} );
 	} );
 
@@ -107,7 +107,7 @@ describe( 'FunctionInputParser', () => {
 			wait: true,
 			zlang: 'Z1002',
 			zobject: 'New value',
-			signal: {}
+			signal: expect.any( Object )
 		} );
 		await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( false ) );
 		expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ { isValid: true } ] );
@@ -135,7 +135,7 @@ describe( 'FunctionInputParser', () => {
 			wait: true,
 			zlang: 'Z1002',
 			zobject: 'Invalid value',
-			signal: {}
+			signal: expect.any( Object )
 		} );
 		await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( false ) );
 		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false } ] );

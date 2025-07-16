@@ -160,7 +160,7 @@ describe( 'Wikidata Properties Pinia store', () => {
 
 				const promise = store.fetchProperties( { ids: properties } );
 
-				expect( fetchMock ).toHaveBeenCalledWith( expectedUrl );
+				expect( fetchMock ).toHaveBeenCalledWith( expectedUrl, undefined );
 
 				// Save promises while request is in flight
 				expect( store.setPropertyData ).toHaveBeenCalledWith( {
@@ -217,7 +217,7 @@ describe( 'Wikidata Properties Pinia store', () => {
 
 				await store.fetchProperties( { ids: properties } );
 
-				expect( fetchMock ).toHaveBeenCalledWith( expectedUrl );
+				expect( fetchMock ).toHaveBeenCalledWith( expectedUrl, undefined );
 				expect( store.properties ).toEqual( { P111111: 'has data' } );
 			} );
 

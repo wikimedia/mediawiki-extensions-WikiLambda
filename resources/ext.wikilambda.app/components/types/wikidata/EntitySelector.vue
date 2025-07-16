@@ -67,7 +67,8 @@ module.exports = exports = defineComponent( {
 				searchContinue: null
 			},
 			lookupDelayTimer: null,
-			lookupDelayMs: 300
+			lookupDelayMs: 300,
+			lookupAbortController: null
 		};
 	},
 	computed: {
@@ -192,26 +193,24 @@ module.exports = exports = defineComponent( {
 		 * @param {string} searchTerm
 		 */
 		getLookupResults: function ( searchTerm ) {
+			// Cancel previous request if any
+			if ( this.lookupAbortController ) {
+				this.lookupAbortController.abort();
+			}
+			this.lookupAbortController = new AbortController();
+
 			const payload = {
 				search: searchTerm,
 				type: Constants.WIKIDATA_API_TYPE_VALUES[ this.type ],
-				searchContinue: this.lookupConfig.searchContinue
+				searchContinue: this.lookupConfig.searchContinue,
+				signal: this.lookupAbortController.signal
 			};
 
 			this.lookupWikidataEntities( payload )
 				.then( ( data ) => {
-					// If the string searched has changed, do not show the search result
-					// TODO (T391327): Use AbortController to cancel the request when the input changes
-					if ( !this.inputValue.includes( searchTerm ) ) {
-						return;
-					}
 					const { searchContinue, search } = data;
-
-					// If searchContinue is present, store it in lookupConfig
 					this.lookupConfig.searchContinue = searchContinue;
-					// Store the search term in lookupConfig
 					this.lookupConfig.searchQuery = searchTerm;
-					// Update the lookup results
 					for ( const entity of search ) {
 						this.lookupResults.push( {
 							value: entity.id,
@@ -221,8 +220,10 @@ module.exports = exports = defineComponent( {
 						} );
 					}
 				} )
-				.catch( () => {
-					// Reset the lookup
+				.catch( ( error ) => {
+					if ( error.code === 'abort' ) {
+						return;
+					}
 					this.lookupConfig.searchQuery = searchTerm;
 					this.lookupResults = [];
 				} );

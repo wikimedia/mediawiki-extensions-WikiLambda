@@ -162,7 +162,7 @@ describe( 'Wikidata Items Pinia store', () => {
 
 				const promise = store.fetchItems( { ids: items } );
 
-				expect( fetchMock ).toHaveBeenCalledWith( expectedUrl );
+				expect( fetchMock ).toHaveBeenCalledWith( expectedUrl, undefined );
 
 				// Save promises while request is in flight
 				expect( store.setItemData ).toHaveBeenCalledWith( {
@@ -219,7 +219,7 @@ describe( 'Wikidata Items Pinia store', () => {
 
 				await store.fetchItems( { ids: items } );
 
-				expect( fetchMock ).toHaveBeenCalledWith( expectedUrl );
+				expect( fetchMock ).toHaveBeenCalledWith( expectedUrl, undefined );
 				expect( store.items ).toEqual( { Q111111: 'has data' } );
 			} );
 

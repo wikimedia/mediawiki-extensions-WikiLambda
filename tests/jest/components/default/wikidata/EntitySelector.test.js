@@ -128,7 +128,12 @@ describe( 'WikidataEntitySelector', () => {
 
 			// Wait for lookup API to be called:
 			await waitFor( () => expect( store.lookupWikidataEntities )
-				.toHaveBeenCalledWith( { search: 'pangoli', type: 'lexeme', searchContinue: null } ) );
+				.toHaveBeenCalledWith( {
+					search: 'pangoli',
+					type: 'lexeme',
+					searchContinue: null,
+					signal: expect.any( Object )
+				} ) );
 
 			expect( wrapper.vm.lookupConfig.searchQuery ).toBe( 'pangoli' );
 			expect( lookup.vm.menuItems.length ).toBe( 2 );
@@ -162,7 +167,12 @@ describe( 'WikidataEntitySelector', () => {
 
 			// Wait for lookup API to be called:
 			await waitFor( () => expect( store.lookupWikidataEntities )
-				.toHaveBeenCalledWith( { search: 'pangoli', type: 'lexeme', searchContinue: null } ) );
+				.toHaveBeenCalledWith( {
+					search: 'pangoli',
+					type: 'lexeme',
+					searchContinue: null,
+					signal: expect.any( Object )
+				} ) );
 
 			expect( wrapper.vm.lookupConfig.searchQuery ).toBe( 'pangoli' );
 			expect( lookup.vm.menuItems.length ).toBe( 0 );

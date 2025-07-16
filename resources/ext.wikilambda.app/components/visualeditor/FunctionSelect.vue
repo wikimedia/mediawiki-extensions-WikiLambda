@@ -71,7 +71,8 @@ module.exports = exports = defineComponent( {
 	data: function () {
 		return {
 			searchTerm: '',
-			lookupResults: []
+			lookupResults: [],
+			lookupAbortController: null
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
@@ -134,16 +135,17 @@ module.exports = exports = defineComponent( {
 		 */
 		getLookupResults: function ( substring ) {
 			const allZids = [];
+			// Cancel previous request if any
+			if ( this.lookupAbortController ) {
+				this.lookupAbortController.abort();
+			}
+			this.lookupAbortController = new AbortController();
 			this.lookupFunctions( {
 				search: substring,
-				renderable: true
+				renderable: true,
+				signal: this.lookupAbortController.signal
 			} ).then( ( data ) => {
 				const { objects } = data;
-				// If the string searched has changed, do not show the search result
-				// TODO (T391327): Use AbortController to cancel the request when the input changes
-				if ( !this.searchTerm.includes( substring ) ) {
-					return;
-				}
 				// Compile information for every search result
 				this.lookupResults = objects
 					.map( ( result ) => {
@@ -156,6 +158,10 @@ module.exports = exports = defineComponent( {
 					} );
 				// Fetch the result zid information (labels)
 				this.fetchZids( { zids: allZids } );
+			} ).catch( ( error ) => {
+				if ( error.code === 'abort' ) {
+					return;
+				}
 			} );
 		},
 		/**

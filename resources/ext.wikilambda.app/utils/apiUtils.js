@@ -307,6 +307,7 @@ const apiUtils = {
 	 * @param {string} payload.type type of Wikidata entity
 	 * @param {string} payload.search search term
 	 * @param {number} payload.searchContinue When more results are available, use this to continue
+	 * @param {AbortSignal} [payload.signal] Optional AbortSignal to cancel the request
 	 * @return {Promise}
 	 */
 	searchWikidataEntities: function ( payload ) {
@@ -325,7 +326,10 @@ const apiUtils = {
 		if ( payload.searchContinue ) {
 			params.append( 'continue', payload.searchContinue );
 		}
-		return fetch( `${ Constants.WIKIDATA_BASE_URL }/w/api.php?${ params.toString() }` )
+		return fetch(
+			`${ Constants.WIKIDATA_BASE_URL }/w/api.php?${ params.toString() }`,
+			payload.signal ? { signal: payload.signal } : undefined
+		)
 			.then( ( response ) => response.json() )
 			.then( ( data ) => ( {
 				search: data.search ? data.search : [],
@@ -340,6 +344,7 @@ const apiUtils = {
 	 * @param {Object} payload
 	 * @param {string} payload.language user language code
 	 * @param {Array} payload.ids entity Ids to fetch
+	 * @param {AbortSignal} [payload.signal] Optional AbortSignal to cancel the request
 	 * @return {Promise}
 	 */
 	fetchWikidataEntities: function ( payload ) {
@@ -352,7 +357,10 @@ const apiUtils = {
 			languagefallback: true,
 			ids: payload.ids
 		} );
-		return fetch( `${ Constants.WIKIDATA_BASE_URL }/w/api.php?${ params.toString() }` )
+		return fetch(
+			`${ Constants.WIKIDATA_BASE_URL }/w/api.php?${ params.toString() }`,
+			payload.signal ? { signal: payload.signal } : undefined
+		)
 			.then( ( response ) => response.json() );
 	}
 };

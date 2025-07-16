@@ -107,7 +107,8 @@ module.exports = exports = defineComponent( {
 		return {
 			searchTerm: '',
 			lookupResults: [],
-			showSearchCancel: false
+			showSearchCancel: false,
+			lookupAbortController: null
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
@@ -276,16 +277,17 @@ module.exports = exports = defineComponent( {
 		 */
 		getLookupResults: function ( substring ) {
 			const allZids = [];
+			// Cancel previous request if any
+			if ( this.lookupAbortController ) {
+				this.lookupAbortController.abort();
+			}
+			this.lookupAbortController = new AbortController();
 			this.lookupZObjectLabels( {
 				input: substring,
-				types: [ Constants.Z_NATURAL_LANGUAGE ]
+				types: [ Constants.Z_NATURAL_LANGUAGE ],
+				signal: this.lookupAbortController.signal
 			} ).then( ( data ) => {
 				const { labels } = data;
-				// If the string searched has changed, do not show the search result
-				// TODO (T391327): Use AbortController to cancel the request when the input changes
-				if ( !this.searchTerm.includes( substring ) ) {
-					return;
-				}
 				// Compile information for every search result
 				this.lookupResults = labels
 					.map( ( result ) => {
@@ -325,6 +327,10 @@ module.exports = exports = defineComponent( {
 					} );
 				// Fetch the result zid information (labels)
 				this.fetchZids( { zids: allZids } );
+			} ).catch( ( error ) => {
+				if ( error.code === 'abort' ) {
+					return;
+				}
 			} );
 		}
 	} )

@@ -56,14 +56,13 @@ describe( 'ZObjectSelector', () => {
 			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
 			lookup.vm.$emit( 'update:input-value', 'Stri' );
 
-			await waitFor( () => expect( store.lookupZObjectLabels ).toHaveBeenLastCalledWith(
-				{
-					input: 'Stri',
-					types: [ Constants.Z_STRING ],
-					returnTypes: undefined,
-					searchContinue: null
-				}
-			) );
+			await waitFor( () => expect( store.lookupZObjectLabels ).toHaveBeenLastCalledWith( {
+				input: 'Stri',
+				types: [ Constants.Z_STRING ],
+				returnTypes: undefined,
+				searchContinue: null,
+				signal: expect.any( Object )
+			} ) );
 		} );
 
 		it( 'on lookup for types, sends type and return type in the payload', async () => {
@@ -78,14 +77,13 @@ describe( 'ZObjectSelector', () => {
 			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
 			lookup.vm.$emit( 'update:input-value', 'Stri' );
 
-			await waitFor( () => expect( store.lookupZObjectLabels ).toHaveBeenLastCalledWith(
-				{
-					input: 'Stri',
-					types: [ Constants.Z_TYPE, Constants.Z_FUNCTION_CALL ],
-					returnTypes: [ Constants.Z_TYPE, Constants.Z_OBJECT ],
-					searchContinue: null
-				}
-			) );
+			await waitFor( () => expect( store.lookupZObjectLabels ).toHaveBeenLastCalledWith( {
+				input: 'Stri',
+				types: [ Constants.Z_TYPE, Constants.Z_FUNCTION_CALL ],
+				returnTypes: [ Constants.Z_TYPE, Constants.Z_OBJECT ],
+				searchContinue: null,
+				signal: expect.any( Object )
+			} ) );
 		} );
 
 		it( 'on lookup for strict types, sends type and return type in the payload', async () => {
@@ -101,14 +99,13 @@ describe( 'ZObjectSelector', () => {
 			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
 			lookup.vm.$emit( 'update:input-value', 'Stri' );
 
-			await waitFor( () => expect( store.lookupZObjectLabels ).toHaveBeenLastCalledWith(
-				{
-					input: 'Stri',
-					types: [ Constants.Z_TYPE, Constants.Z_FUNCTION_CALL ],
-					returnTypes: [ Constants.Z_TYPE ],
-					searchContinue: null
-				}
-			) );
+			await waitFor( () => expect( store.lookupZObjectLabels ).toHaveBeenLastCalledWith( {
+				input: 'Stri',
+				types: [ Constants.Z_TYPE, Constants.Z_FUNCTION_CALL ],
+				returnTypes: [ Constants.Z_TYPE ],
+				searchContinue: null,
+				signal: expect.any( Object )
+			} ) );
 		} );
 
 		it( 'on input change, shows lookup results', async () => {
@@ -128,7 +125,8 @@ describe( 'ZObjectSelector', () => {
 				input: 'text',
 				types: [ Constants.Z_TYPE, Constants.Z_FUNCTION_CALL ],
 				returnTypes: [ Constants.Z_TYPE ],
-				searchContinue: null
+				searchContinue: null,
+				signal: expect.any( Object )
 			};
 			const lookupItems = [ {
 				description: 'Type',

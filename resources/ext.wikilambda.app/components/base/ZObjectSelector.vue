@@ -134,6 +134,7 @@ module.exports = exports = defineComponent( {
 			},
 			lookupDelayTimer: null,
 			lookupDelayMs: 300,
+			lookupAbortController: null,
 			selectConfig: {
 				visibleItemLimit: 5
 			}
@@ -384,18 +385,19 @@ module.exports = exports = defineComponent( {
 		 * @param {string} input
 		 */
 		getLookupResults: function ( input ) {
+			// Cancel previous request if any
+			if ( this.lookupAbortController ) {
+				this.lookupAbortController.abort();
+			}
+			this.lookupAbortController = new AbortController();
 			this.lookupZObjectLabels( {
 				input,
 				types: this.lookupTypes,
 				returnTypes: this.lookupReturnTypes,
-				searchContinue: this.lookupConfig.searchContinue
+				searchContinue: this.lookupConfig.searchContinue,
+				signal: this.lookupAbortController.signal
 			} ).then( ( data ) => {
 				const { labels, searchContinue } = data;
-				// If the string searched has changed, do not show the search result
-				// TODO (T391327): Use AbortController to cancel the request when the input changes
-				if ( !this.inputValue.includes( input ) ) {
-					return;
-				}
 				const zids = [];
 				// If searchContinue is present, store it in lookupConfig
 				this.lookupConfig.searchContinue = searchContinue;
@@ -403,7 +405,6 @@ module.exports = exports = defineComponent( {
 				// Update lookupResults list
 				if ( labels && labels.length > 0 ) {
 					labels.forEach( ( result ) => {
-
 						// Set up codex MenuItem options
 						// https://doc.wikimedia.org/codex/latest/components/demos/menu-item.html
 						const value = result.page_title;
@@ -440,6 +441,10 @@ module.exports = exports = defineComponent( {
 					// Once lookupResults are gathered, fetch and collect all the data;
 					// fetchZids makes sure that only the missing zids are requested
 					this.fetchZids( { zids } );
+				}
+			} ).catch( ( error ) => {
+				if ( error.code === 'abort' ) {
+					return;
 				}
 			} );
 		},

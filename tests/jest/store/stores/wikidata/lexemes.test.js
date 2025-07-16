@@ -251,7 +251,7 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 
 				const promise = store.fetchLexemes( { ids: lexemes } );
 
-				expect( fetchMock ).toHaveBeenCalledWith( expectedUrl );
+				expect( fetchMock ).toHaveBeenCalledWith( expectedUrl, undefined );
 
 				// Save promises while request is in flight
 				expect( store.setLexemeData ).toHaveBeenCalledWith( {
@@ -308,7 +308,7 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 
 				await store.fetchLexemes( { ids: lexemes } );
 
-				expect( fetchMock ).toHaveBeenCalledWith( expectedUrl );
+				expect( fetchMock ).toHaveBeenCalledWith( expectedUrl, undefined );
 				expect( store.lexemes ).toEqual( { L111111: 'has data' } );
 			} );
 
