@@ -2,18 +2,32 @@
 	"@metadata": {
 		"authors": [
 			"Borhan",
-			"আফতাবুজ্জামান"
+			"আফতাবুজ্জামান",
+			"Asked42"
 		]
 	},
-	"wikilambda-fragment-pending": "⏳ ফাংশনটি ডাকা হচ্ছে…",
+	"wikilambda-fragment-pending": "⏳ ফাংশনটি কার্যকর করা হচ্ছে…",
 	"wikilambda-recentchanges-edit-legend": "উইকিফাংশন্স সম্পাদনা",
 	"wikilambda-recentchanges-edit-letter": "ফ",
 	"wikilambda-recentchanges-edit-title": "উইকিফাংশন্স সম্পাদনা",
 	"wikilambda-recentchanges-entry-function": "ফাংশন",
+	"wikilambda-recentchanges-explanation-delete-function": "ফাংশনের সংজ্ঞা অপসারিত হয়েছে",
+	"wikilambda-recentchanges-explanation-delete-implementation": "বাস্তবায়ন অপসারিত হয়েছে $1",
+	"wikilambda-recentchanges-explanation-delete-tester": "পরীক্ষার ক্ষেত্রটি অপসারিত হয়েছে $1",
+	"wikilambda-recentchanges-explanation-disconnect-implementation": "সংযোগ বিচ্ছিন্ন {{PLURAL:$1|বাস্তবায়ন|$1টি বাস্তবায়ন:}} $2",
+	"wikilambda-recentchanges-explanation-disconnect-tester": "সংযোগ বিচ্ছিন্ন {{PLURAL:$1|পরীক্ষার ক্ষেত্র|$1টি পরীক্ষার ক্ষেত্র:}} $2",
+	"wikilambda-recentchanges-explanation-edit-function": "ফাংশনের সংজ্ঞা সম্পাদিত হয়েছে",
+	"wikilambda-recentchanges-explanation-edit-implementation": "বাস্তবায়ন সম্পাদিত হয়েছে $1",
+	"wikilambda-recentchanges-explanation-edit-tester": "পরীক্ষার ক্ষেত্র সম্পাদিত হয়েছে $1",
+	"wikilambda-recentchanges-explanation-restore-function": "ফাংশনের সংজ্ঞা পুনরুদ্ধার করা হয়েছে",
+	"wikilambda-recentchanges-explanation-restore-implementation": "বাস্তবায়ন পুনরুদ্ধার করা হয়েছে $1",
+	"wikilambda-recentchanges-explanation-restore-tester": "পরীক্ষার ক্ষেত্র পুনরুদ্ধার করা হয়েছে $1",
 	"wikilambda-recentchanges-filter-label": "উইকিফাংশন্স সম্পাদনা",
 	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "লোড করা হচ্ছে",
 	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "প্রাকদর্শন খুব বেশি সময় নিয়েছে",
+	"wikilambda-visualeditor-wikifunctionscall-changedesc-title": "উইকিফাংশনে ইনপুট পরিবর্তিত হয়েছে",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "একটি বিকল্প বেছে নিন",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "উইকিফাংশন্স থেকে একটি [[f:$1|ফাংশন]]",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "কম পড়ুন",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "আরও পড়ুন",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "কোনো ফলাফল পাওয়া যায়নি",
@@ -21,6 +35,10 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "ফলাফল",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "পাঠ্য লিখুন",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "প্রস্তাবিত ফাংশন",
+	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "অনুপস্থিত বা অবৈধ মানগুলি ঠিক করতে ফাংশনটি সম্পাদনা করুন।",
+	"wikilambda-visualeditor-wikifunctionscall-error-enum": "কোনো বিকল্প বাছাই করা হয়নি।",
+	"wikilambda-visualeditor-wikifunctionscall-error-parser": "অজানা ত্রুটি। [[f:Talk:$1|সমস্যাটি রিপোর্ট করুন]]",
+	"wikilambda-visualeditor-wikifunctionscall-info-missing-content": "[[f:$1|উইকিফাংশন্সে]] আপনার ভাষায় অনুপস্থিত বিষয়বস্তু অনুবাদ করতে সাহায্য করুন।",
 	"wikilambda-visualeditor-wikifunctionscall-no-description": "বিবরণ নেই",
 	"wikilambda-visualeditor-wikifunctionscall-no-input-label": "লেবেল নেই",
 	"wikilambda-visualeditor-wikifunctionscall-no-name": "নাম নেই",
@@ -28,5 +46,9 @@
 	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "কোন ফাংশন নির্বাচন করা হয়নি।",
 	"wikilambda-visualeditor-wikifunctionscall-title": "ফাংশন",
 	"wikilambda-visualeditor-wikifunctionscall-preview-title": "প্রাকদর্শন",
-	"wikilambda-visualeditor-wikifunctionscall-preview-no-result": "ফলাফলের প্রাকদর্শন দেখতে মান লিখুন।"
+	"wikilambda-visualeditor-wikifunctionscall-preview-no-result": "ফলাফলের প্রাকদর্শন দেখতে মান লিখুন।",
+	"wikilambda-visualeditor-wikifunctionscall-preview-error": "ফাংশনটি কোনও ফলাফল প্রদর্শন করতে পারছে না। অনুগ্রহ করে পরে আবার চেষ্টা করুন।",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "বাতিল করা হয়েছে",
+	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "পুনঃস্থাপন",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "বাতিল"
 }

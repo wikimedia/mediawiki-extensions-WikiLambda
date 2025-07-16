@@ -1,0 +1,40 @@
+{
+	"@metadata": {
+		"authors": [
+			"Умар"
+		]
+	},
+	"wikilambda-recentchanges-edit-legend": "Викифункцеш тӀера хийца",
+	"wikilambda-recentchanges-edit-letter": "Ф",
+	"wikilambda-recentchanges-edit-title": "Викифункцеш хийцар",
+	"wikilambda-recentchanges-entry-function": "Функци",
+	"wikilambda-recentchanges-explanation-delete-function": "Функцин билгалдаккхар дӀадаьккхина",
+	"wikilambda-recentchanges-explanation-delete-implementation": "$1 Кхочушдар дӀадаьккхина",
+	"wikilambda-recentchanges-explanation-delete-tester": "ДӀадаьккхина Тестийн гӀуллакх $1",
+	"wikilambda-recentchanges-explanation-edit-implementation": "$1 Кхочушдар хийцина",
+	"wikilambda-recentchanges-explanation-edit-tester": "Хийцина Тестийн гӀуллакх $1",
+	"wikilambda-recentchanges-explanation-restore-function": "Функцин билгалдаккхар меттахӀоттийна",
+	"wikilambda-recentchanges-explanation-restore-implementation": "$1 Кхочушдар меттахӀоттийна",
+	"wikilambda-recentchanges-explanation-restore-tester": "МеттахӀоттийна Тестийн гӀуллакх $1",
+	"wikilambda-recentchanges-filter-label": "Викифункцеш хийцар",
+	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Чуйолуш",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Вариант харжа",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "Викифункцийн чуьра [[f:$1|Функци]]",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "Ма-дарра",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "ХӀумма а ца карийна.",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Функцеш лахар",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Хиламаш",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Йазйе текст",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Кховдайе функцеш",
+	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Цхьа а вариант ца хаьржина.",
+	"wikilambda-visualeditor-wikifunctionscall-no-description": "Хаамаш бац",
+	"wikilambda-visualeditor-wikifunctionscall-no-input-label": "Билгало йац",
+	"wikilambda-visualeditor-wikifunctionscall-no-name": "ЦӀе йац",
+	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Функцин хаамаш чубахар",
+	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Функци ца хаьржина.",
+	"wikilambda-visualeditor-wikifunctionscall-title": "Функци",
+	"wikilambda-visualeditor-wikifunctionscall-preview-title": "Хьалххе хьажар",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "ДӀадаьккхина",
+	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "Кхоссар",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Йухайаккхар"
+}
