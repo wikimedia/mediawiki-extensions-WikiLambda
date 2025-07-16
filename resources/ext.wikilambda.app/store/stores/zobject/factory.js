@@ -47,9 +47,12 @@ module.exports = {
 				// * initializing function arguments
 				// * initializing key values
 				// * adding new items to a list
-				if ( keyList.includes( payload.type ) || ( !payload.literal && (
-					Constants.LINKED_TYPES.includes( payload.type ) || this.isCustomEnum( payload.type )
-				) ) ) {
+				const isRecursiveType = keyList.includes( payload.type );
+				const isLinkedOrCustomEnum = Constants.LINKED_TYPES.includes( payload.type ) ||
+				this.isCustomEnum( payload.type );
+				const shouldReturnReference = isRecursiveType || ( !payload.literal && isLinkedOrCustomEnum );
+
+				if ( shouldReturnReference ) {
 					return this.createZReference( payload );
 				}
 
@@ -116,6 +119,11 @@ module.exports = {
 					case Constants.Z_WIKIDATA_LEXEME_FORM:
 					case Constants.Z_WIKIDATA_PROPERTY:
 						return this.createWikidataEntity( payload );
+					case Constants.Z_WIKIDATA_REFERENCE_ITEM:
+					case Constants.Z_WIKIDATA_REFERENCE_LEXEME:
+					case Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM:
+					case Constants.Z_WIKIDATA_REFERENCE_PROPERTY:
+						return this.createWikidataReference( payload );
 					default:
 						// Explore and create new ZObject keys
 						return this.createGenericObject( payload, keyList );
@@ -753,12 +761,15 @@ module.exports = {
 		 *  }
 		 * }
 		 *
+		 * If payload.value is provided, it will be used to initialize the reference value.
+		 *
 		 * @return {Function}
 		 */
 		createWikidataEntity: function () {
 			/**
 			 * @param {Object} payload
 			 * @param {string} payload.type
+			 * @param {string|Object} [payload.value] Optional initialization value for the reference
 			 * @return {Object}
 			 */
 			const generateWikidataEntity = ( payload ) => {
@@ -768,42 +779,43 @@ module.exports = {
 
 				// Set to Wikidata Entity fetch function call:
 				switch ( payload.type ) {
-					// Wikidata Lexeme Form:
 					case Constants.Z_WIKIDATA_LEXEME_FORM:
-						wdRef = this.createObjectByType( { type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM } );
+						wdRef = this.createWikidataReference( {
+							type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM,
+							value: payload.value
+						} );
 						wdFetch = Constants.Z_WIKIDATA_FETCH_LEXEME_FORM;
 						wdFetchId = Constants.Z_WIKIDATA_FETCH_LEXEME_FORM_ID;
-
 						value[ Constants.Z_FUNCTION_CALL_FUNCTION ] = wdFetch;
 						value[ wdFetchId ] = wdRef;
 						return value;
-
-					// Wikidata Lexeme
 					case Constants.Z_WIKIDATA_LEXEME:
-						wdRef = this.createObjectByType( { type: Constants.Z_WIKIDATA_REFERENCE_LEXEME } );
+						wdRef = this.createWikidataReference( {
+							type: Constants.Z_WIKIDATA_REFERENCE_LEXEME,
+							value: payload.value
+						} );
 						wdFetch = Constants.Z_WIKIDATA_FETCH_LEXEME;
 						wdFetchId = Constants.Z_WIKIDATA_FETCH_LEXEME_ID;
-
 						value[ Constants.Z_FUNCTION_CALL_FUNCTION ] = wdFetch;
 						value[ wdFetchId ] = wdRef;
 						return value;
-
-					// Wikidata Item
 					case Constants.Z_WIKIDATA_ITEM:
-						wdRef = this.createObjectByType( { type: Constants.Z_WIKIDATA_REFERENCE_ITEM } );
+						wdRef = this.createWikidataReference( {
+							type: Constants.Z_WIKIDATA_REFERENCE_ITEM,
+							value: payload.value
+						} );
 						wdFetch = Constants.Z_WIKIDATA_FETCH_ITEM;
 						wdFetchId = Constants.Z_WIKIDATA_FETCH_ITEM_ID;
-
 						value[ Constants.Z_FUNCTION_CALL_FUNCTION ] = wdFetch;
 						value[ wdFetchId ] = wdRef;
 						return value;
-
-					// Wikidata Property
 					case Constants.Z_WIKIDATA_PROPERTY:
-						wdRef = this.createObjectByType( { type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY } );
+						wdRef = this.createWikidataReference( {
+							type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY,
+							value: payload.value
+						} );
 						wdFetch = Constants.Z_WIKIDATA_FETCH_PROPERTY;
 						wdFetchId = Constants.Z_WIKIDATA_FETCH_PROPERTY_ID;
-
 						value[ Constants.Z_FUNCTION_CALL_FUNCTION ] = wdFetch;
 						value[ wdFetchId ] = wdRef;
 						return value;
@@ -816,6 +828,26 @@ module.exports = {
 				}
 			};
 			return generateWikidataEntity;
+		},
+
+		/**
+		 * Creates a Wikidata reference object for the given type and value.
+		 *
+		 * @param {Object} payload
+		 * @param {string} payload.type - The Wikidata reference type ZID
+		 * @param {string} payload.value - The entity ID (e.g., Q42, L2, etc.)
+		 * @return {Object}
+		 */
+		createWikidataReference: function () {
+			const generateWikidataReference = ( payload ) => {
+				const idKey = `${ payload.type }K1`;
+				const value = {
+					[ Constants.Z_OBJECT_TYPE ]: payload.type,
+					[ idKey ]: payload.value || ''
+				};
+				return value;
+			};
+			return generateWikidataReference;
 		}
 	},
 

@@ -19,15 +19,39 @@ describe( 'FunctionInputPreview', () => {
 		store = useMainStore();
 		store.getUserLangCode = 'en';
 		store.getUserLangZid = 'Z1002';
-		// Mock enum type and custom enum: Default: false
-		store.isEnumType = createGettersWithFunctionsMock( false );
-		store.isCustomEnum = createGettersWithFunctionsMock( false );
 		// Mock parser and renderer ZIDs. Default: none
 		store.getParserZid = createGettersWithFunctionsMock();
 		store.getRendererZid = createGettersWithFunctionsMock();
 		// Mock the output type of the function so its valid to run the preview
 		store.getOutputTypeOfFunctionZid = createGettersWithFunctionsMock( 'Z6' );
 		store.getFetchedObject = createGettersWithFunctionsMock( { success: true } );
+		// Mock createObjectByType for all allowed types:
+		store.createObjectByType = jest.fn().mockImplementation( ( { type, value } ) => {
+			const blanks = {
+				// String
+				Z6: value || '',
+				// Custom enum
+				Z50000: value,
+				// Builtin enum (boolean)
+				Z40: { Z1K1: 'Z40', Z40K1: value },
+				// Type with renderer function (gregorian calendar date)
+				Z20420: { Z1K1: 'Z20420', Z20420K1: value },
+				// Wikidata entities and references
+				Z6091: { Z1K1: 'Z6091', Z6091K1: value },
+				Z6001: {
+					Z1K1: 'Z7',
+					Z7K1: 'Z6821',
+					Z6821K1: { Z1K1: 'Z6091', Z6091K1: value }
+				},
+				Z6095: { Z1K1: 'Z6095', Z6095K1: value },
+				Z6005: {
+					Z1K1: 'Z7',
+					Z7K1: 'Z6825',
+					Z6825K1: { Z1K1: 'Z6095', Z6095K1: value }
+				}
+			};
+			return blanks[ type ];
+		} );
 		// Mock the function call response
 		data = '{"Z1K1":"Z22","Z22K1":"some response"}';
 		postMock = jest.fn( () => new Promise( ( resolve ) => {
@@ -81,12 +105,47 @@ describe( 'FunctionInputPreview', () => {
 	} );
 
 	it( 'executes a function call with an enum parameter and displays the result', async () => {
-		// Test for a function call with an enum parameter
-		store.isEnumType = createGettersWithFunctionsMock( true );
-		store.isCustomEnum = createGettersWithFunctionsMock( false );
+		const enumType = 'Z50000';
+		const enumValue = 'Z50001';
 		const wrapper = shallowMount( FunctionInputPreview, {
 			props: {
-				payload: { functionZid, params: [ { value: 'Z50001', type: 'Z50000' } ] }
+				payload: { functionZid, params: [ { value: enumValue, type: enumType } ] }
+			},
+			global: {
+				stubs: {
+					'cdx-accordion': false
+				}
+			}
+		} );
+
+		// Simulate opening the accordion
+		const accordion = wrapper.findComponent( { name: 'cdx-accordion' } );
+		await accordion.vm.$emit( 'update:modelValue', true );
+		expect( accordion.attributes( 'open' ) ).toBeDefined();
+
+		// Verify loading state and API call
+		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( true );
+		expect( postMock ).toHaveBeenCalledWith( {
+			action: 'wikilambda_function_call',
+			format: 'json',
+			formatversion: '2',
+			wikilambda_function_call_zobject: JSON.stringify( {
+				Z1K1: 'Z7',
+				Z7K1: functionZid,
+				[ `${ functionZid }K1` ]: enumValue
+			} ),
+			uselang: 'en'
+		}, { signal: expect.any( Object ) } );
+
+		// Wait for the result and verify it is displayed
+		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
+		expect( wrapper.find( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( 'some response' );
+	} );
+
+	it( 'executes a function call with an built-in enum parameter (boolean) and displays the result', async () => {
+		const wrapper = shallowMount( FunctionInputPreview, {
+			props: {
+				payload: { functionZid, params: [ { value: 'Z41', type: 'Z40' } ] }
 			},
 			global: {
 				stubs: {
@@ -110,44 +169,10 @@ describe( 'FunctionInputPreview', () => {
 				Z1K1: 'Z7',
 				Z7K1: functionZid,
 				[ `${ functionZid }K1` ]: {
-					Z1K1: 'Z50000',
-					Z50000K1: 'Z50001' }
-			} ),
-			uselang: 'en'
-		}, { signal: expect.any( Object ) } );
-
-		// Wait for the result and verify it is displayed
-		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
-		expect( wrapper.find( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( 'some response' );
-	} );
-
-	it( 'executes a function call with an built-in enum parameter and displays the result', async () => {
-		// Test for a function call with a built-in enum parameter
-		store.isEnumType = createGettersWithFunctionsMock( true );
-		store.isCustomEnum = createGettersWithFunctionsMock( true );
-		const wrapper = shallowMount( FunctionInputPreview, {
-			props: {
-				payload: { functionZid, params: [ { value: 'Z41', type: 'Z40' } ] }
-			},
-			global: {
-				stubs: {
-					'cdx-accordion': false
+					Z1K1: 'Z40',
+					Z40K1: 'Z41'
 				}
-			}
-		} );
-
-		// Simulate opening the accordion
-		const accordion = wrapper.findComponent( { name: 'cdx-accordion' } );
-		await accordion.vm.$emit( 'update:modelValue', true );
-		expect( accordion.attributes( 'open' ) ).toBeDefined();
-
-		// Verify loading state and API call
-		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( true );
-		expect( postMock ).toHaveBeenCalledWith( {
-			action: 'wikilambda_function_call',
-			format: 'json',
-			formatversion: '2',
-			wikilambda_function_call_zobject: JSON.stringify( { Z1K1: 'Z7', Z7K1: functionZid, [ `${ functionZid }K1` ]: 'Z41' } ),
+			} ),
 			uselang: 'en'
 		}, { signal: expect.any( Object ) } );
 
@@ -248,6 +273,7 @@ describe( 'FunctionInputPreview', () => {
 		jest.setSystemTime( new Date( '2001-01-15T12:00:00Z' ) );
 
 		store.getRendererZid = createGettersWithFunctionsMock( rendererZid );
+		store.getParserZid = createGettersWithFunctionsMock( parserZid );
 		const wrapper = shallowMount( FunctionInputPreview, {
 			props: {
 				payload: { functionZid, params: [ { value: '', type: Constants.Z_GREGORIAN_CALENDAR_DATE } ] }
@@ -258,6 +284,24 @@ describe( 'FunctionInputPreview', () => {
 				}
 			}
 		} );
+
+		// The function call uses both renderer for the output and parser for the input,
+		// so the expected function call is: renderer( function_call( parser( default_value ) ) )
+		const expectedFunctionCall = {
+			Z1K1: 'Z7',
+			Z7K1: rendererZid,
+			[ `${ rendererZid }K1` ]: {
+				Z1K1: 'Z7',
+				Z7K1: functionZid,
+				[ `${ functionZid }K1` ]: {
+					Z1K1: 'Z7',
+					Z7K1: parserZid,
+					[ `${ parserZid }K1` ]: '15-1-2001',
+					[ `${ parserZid }K2` ]: 'Z1002'
+				}
+			},
+			[ `${ rendererZid }K2` ]: 'Z1002'
+		};
 
 		// Simulate opening the accordion
 		const accordion = wrapper.findComponent( { name: 'cdx-accordion' } );
@@ -270,16 +314,7 @@ describe( 'FunctionInputPreview', () => {
 			action: 'wikilambda_function_call',
 			format: 'json',
 			formatversion: '2',
-			wikilambda_function_call_zobject: JSON.stringify( {
-				Z1K1: 'Z7',
-				Z7K1: rendererZid,
-				[ `${ rendererZid }K1` ]: {
-					Z1K1: 'Z7',
-					Z7K1: functionZid,
-					[ `${ functionZid }K1` ]: '15-1-2001'
-				},
-				[ `${ rendererZid }K2` ]: 'Z1002'
-			} ),
+			wikilambda_function_call_zobject: JSON.stringify( expectedFunctionCall ),
 			uselang: 'en'
 		}, { signal: expect.any( Object ) } );
 
@@ -566,5 +601,105 @@ describe( 'FunctionInputPreview', () => {
 		// Wait for the result and verify it is displayed as the HTML fragment value
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
 		expect( wrapper.find( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( '<b>HTML Fragment</b>' );
+	} );
+
+	it( 'executes a function call with a wikidata items and item references', async () => {
+		const wrapper = shallowMount( FunctionInputPreview, {
+			props: {
+				payload: { functionZid, params: [
+					// Wikidata item
+					{ value: 'Q144', type: 'Z6001' },
+					// Wikidata item reference
+					{ value: 'Q144', type: 'Z6091' }
+				] }
+			},
+			global: {
+				stubs: {
+					'cdx-accordion': false
+				}
+			}
+		} );
+
+		const expectedEntityReference = { Z1K1: 'Z6091', Z6091K1: 'Q144' };
+		const expectedEntity = {
+			Z1K1: 'Z7',
+			Z7K1: 'Z6821',
+			Z6821K1: expectedEntityReference
+		};
+		const expectedFunctionCall = {
+			Z1K1: 'Z7',
+			Z7K1: functionZid,
+			[ `${ functionZid }K1` ]: expectedEntity,
+			[ `${ functionZid }K2` ]: expectedEntityReference
+		};
+
+		// Simulate opening the accordion
+		const accordion = wrapper.findComponent( { name: 'cdx-accordion' } );
+		await accordion.vm.$emit( 'update:modelValue', true );
+		expect( accordion.attributes( 'open' ) ).toBeDefined();
+
+		// Verify loading state and API call
+		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( true );
+		expect( postMock ).toHaveBeenCalledWith( {
+			action: 'wikilambda_function_call',
+			format: 'json',
+			formatversion: '2',
+			wikilambda_function_call_zobject: JSON.stringify( expectedFunctionCall ),
+			uselang: 'en'
+		}, { signal: {} } );
+
+		// Wait for the result and verify it is displayed
+		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
+		expect( wrapper.find( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( 'some response' );
+	} );
+
+	it( 'executes a function call with a wikidata lexemes and lexeme references', async () => {
+		const wrapper = shallowMount( FunctionInputPreview, {
+			props: {
+				payload: { functionZid, params: [
+					// Wikidata lexeme
+					{ value: 'L333333', type: 'Z6005' },
+					// Wikidata lexeme reference
+					{ value: 'L333333', type: 'Z6095' }
+				] }
+			},
+			global: {
+				stubs: {
+					'cdx-accordion': false
+				}
+			}
+		} );
+
+		const expectedEntityReference = { Z1K1: 'Z6095', Z6095K1: 'L333333' };
+		const expectedEntity = {
+			Z1K1: 'Z7',
+			Z7K1: 'Z6825',
+			Z6825K1: expectedEntityReference
+		};
+		const expectedFunctionCall = {
+			Z1K1: 'Z7',
+			Z7K1: functionZid,
+			[ `${ functionZid }K1` ]: expectedEntity,
+			[ `${ functionZid }K2` ]: expectedEntityReference
+		};
+
+		// Simulate opening the accordion
+		const accordion = wrapper.findComponent( { name: 'cdx-accordion' } );
+		await accordion.vm.$emit( 'update:modelValue', true );
+		expect( accordion.attributes( 'open' ) ).toBeDefined();
+
+		// Verify loading state and API call
+		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( true );
+		expect( postMock ).toHaveBeenCalledWith( {
+			action: 'wikilambda_function_call',
+			format: 'json',
+			formatversion: '2',
+			wikilambda_function_call_zobject: JSON.stringify( expectedFunctionCall ),
+			uselang: 'en'
+		}, { signal: {} } );
+
+		// Wait for the result and verify it is displayed
+		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
+		expect( wrapper.find( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( 'some response' );
 	} );
 } );

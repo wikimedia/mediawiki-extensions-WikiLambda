@@ -77,7 +77,7 @@ const schemataUtils = {
 
 		let canon = {};
 
-		if ( typeof zobject === 'undefined' ) {
+		if ( typeof zobject === 'undefined' || zobject === null ) {
 			return undefined;
 		} else if ( typeof zobject === 'string' ) {
 			canon = zobject;

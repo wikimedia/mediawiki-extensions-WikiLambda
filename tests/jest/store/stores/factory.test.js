@@ -718,18 +718,6 @@ describe( 'factory Pinia store', () => {
 			} );
 
 			describe( 'createWikidataEntity', () => {
-				beforeEach( () => {
-					const types = {
-						Z6091: { Z2K2: { Z1K1: 'Z4', Z4K2: [ 'Z3', { Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z6091K1' } ] } },
-						Z6092: { Z2K2: { Z1K1: 'Z4', Z4K2: [ 'Z3', { Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z6092K1' } ] } },
-						Z6094: { Z2K2: { Z1K1: 'Z4', Z4K2: [ 'Z3', { Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z6094K1' } ] } },
-						Z6095: { Z2K2: { Z1K1: 'Z4', Z4K2: [ 'Z3', { Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z6095K1' } ] } }
-					};
-					Object.defineProperty( store, 'getStoredObject', {
-						value: jest.fn( ( zid ) => types[ zid ] )
-					} );
-				} );
-
 				it( 'creates a blank wikidata item represented as a fetch function call', () => {
 					const payload = { type: Constants.Z_WIKIDATA_ITEM };
 					const expected = {
@@ -786,6 +774,72 @@ describe( 'factory Pinia store', () => {
 						}
 					};
 
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+
+				it( 'creates a wikidata item represented as a fetch function call with an initialization value', () => {
+					const payload = { type: Constants.Z_WIKIDATA_ITEM, value: 'Q42' };
+					const expected = {
+						Z1K1: 'Z7',
+						Z7K1: 'Z6821',
+						Z6821K1: {
+							Z1K1: 'Z6091',
+							Z6091K1: 'Q42'
+						}
+					};
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+			} );
+
+			describe( 'createWikidataReference', () => {
+				it( 'creates a blank Wikidata item reference', () => {
+					const payload = { type: Constants.Z_WIKIDATA_REFERENCE_ITEM };
+					const expected = {
+						Z1K1: Constants.Z_WIKIDATA_REFERENCE_ITEM,
+						Z6091K1: ''
+					};
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+
+				it( 'creates a blank Wikidata lexeme reference', () => {
+					const payload = { type: Constants.Z_WIKIDATA_REFERENCE_LEXEME };
+					const expected = {
+						Z1K1: Constants.Z_WIKIDATA_REFERENCE_LEXEME,
+						Z6095K1: ''
+					};
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+
+				it( 'creates a blank Wikidata lexeme form reference', () => {
+					const payload = { type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM };
+					const expected = {
+						Z1K1: Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM,
+						Z6094K1: ''
+					};
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+
+				it( 'creates a blank Wikidata property reference', () => {
+					const payload = { type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY };
+					const expected = {
+						Z1K1: Constants.Z_WIKIDATA_REFERENCE_PROPERTY,
+						Z6092K1: ''
+					};
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+
+				it( 'creates a Wikidata item reference with an initialization value', () => {
+					const payload = { type: Constants.Z_WIKIDATA_REFERENCE_ITEM, value: 'Q42' };
+					const expected = {
+						Z1K1: Constants.Z_WIKIDATA_REFERENCE_ITEM,
+						Z6091K1: 'Q42'
+					};
 					const result = store.createObjectByType( payload );
 					expect( result ).toEqual( expected );
 				} );

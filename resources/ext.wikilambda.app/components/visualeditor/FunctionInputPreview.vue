@@ -154,8 +154,7 @@ module.exports = exports = defineComponent( {
 			'getUserLangZid',
 			'getParserZid',
 			'getRendererZid',
-			'isCustomEnum',
-			'isEnumType'
+			'createObjectByType'
 		] ), {
 			/**
 			 * Determines the icon for the action button.
@@ -253,15 +252,17 @@ module.exports = exports = defineComponent( {
 				value = this.getDefaultValue( type );
 			}
 
+			// If the type has a parser ZID, create a parser call
 			if ( this.hasParserZid( type ) ) {
 				return this.createParserCall( type, value );
 			}
 
-			if ( this.isEnumType( type ) ) {
-				return this.createEnumParam( type, value );
-			}
-
-			return this.createDefaultParam( value );
+			// For all other types, create an object by type
+			// Except Z1, which defaults to String/Z6
+			return this.createObjectByType( {
+				type: type === Constants.Z_OBJECT ? Constants.Z_STRING : type,
+				value
+			} );
 		},
 
 		/**
@@ -278,34 +279,6 @@ module.exports = exports = defineComponent( {
 				zobject: value,
 				zlang: this.getUserLangZid
 			} );
-		},
-
-		/**
-		 * Creates an enum parameter based on its type.
-		 * Handles both custom and built-in enums.
-		 *
-		 * @param {string} type - The type of the parameter.
-		 * @param {string} value - The value of the parameter.
-		 * @return {Object|string} - The created enum parameter object or the value itself.
-		 */
-		createEnumParam: function ( type, value ) {
-			if ( this.isCustomEnum( type ) ) {
-				return value;
-			}
-			return {
-				[ Constants.Z_OBJECT_TYPE ]: type,
-				[ `${ type }K1` ]: value
-			};
-		},
-
-		/**
-		 * Creates a default parameter for types like Z6/String or Z1/Object.
-		 *
-		 * @param {string} value - The value of the parameter.
-		 * @return {string} - The value itself.
-		 */
-		createDefaultParam: function ( value ) {
-			return value || '';
 		},
 
 		/**
