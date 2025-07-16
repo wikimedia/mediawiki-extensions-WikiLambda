@@ -58,6 +58,18 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 		$this->registry->getLanguageCodeFromZid( $notFoundZid );
 	}
 
+	public function testGetLanguageCodeFromZid_blank() {
+		$blankZid = '';
+		$this->expectException( ZErrorException::class );
+		$this->registry->getLanguageCodeFromZid( $blankZid );
+	}
+
+	public function testGetLanguageCodeFromZid_badTitle() {
+		$badZid = 'Z8~~88';
+		$this->expectException( ZErrorException::class );
+		$this->registry->getLanguageCodeFromZid( $badZid );
+	}
+
 	public function testGetLanguageCodeFromZid_notValid() {
 		// We make sure that the invalid zid is saved in the database
 		$this->insertZids( [ 'Z60' ] );

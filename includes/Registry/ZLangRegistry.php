@@ -135,6 +135,15 @@ class ZLangRegistry extends ZObjectRegistry {
 		);
 
 		$title = Title::newFromText( $zid, NS_MAIN );
+		if ( !$title ) {
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
+					[ 'data' => $zid ]
+				)
+			);
+		}
+
 		$content = $zObjectStore->fetchZObjectByTitle( $title );
 		if ( !$content ) {
 			throw new ZErrorException(
