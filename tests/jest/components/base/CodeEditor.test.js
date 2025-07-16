@@ -14,6 +14,7 @@ const CodeEditor = require( '../../../../resources/ext.wikilambda.app/components
 describe( 'CodeEditor', () => {
 	let mockSetReadOnly,
 		mockSetMode,
+		mockSetUseWrapMode,
 		mockSetTheme,
 		mockSetOptions,
 		mockSetOption,
@@ -29,12 +30,14 @@ describe( 'CodeEditor', () => {
 		mockSetListener = jest.fn();
 		mockSetReadOnly = jest.fn();
 		mockSetMode = jest.fn();
+		mockSetUseWrapMode = jest.fn();
 		mockSetTheme = jest.fn();
 		mockSetOptions = jest.fn();
 		mockSetOption = jest.fn();
 		mockSetValue = jest.fn();
 		mockSession = jest.fn( () => ( {
 			setMode: mockSetMode,
+			setUseWrapMode: mockSetUseWrapMode,
 			on: mockSetListener
 		} ) );
 
@@ -65,6 +68,7 @@ describe( 'CodeEditor', () => {
 		} );
 
 		expect( wrapper.find( 'div' ).exists() ).toBe( true );
+		expect( mockSetUseWrapMode ).toHaveBeenCalledWith( true );
 		expect( mockSetReadOnly ).toHaveBeenCalledWith( true );
 		expect( mockSetMode ).toHaveBeenCalledWith( 'ace/mode/python' );
 		expect( mockSetTheme ).toHaveBeenCalledWith( 'ace/theme/chrome' );

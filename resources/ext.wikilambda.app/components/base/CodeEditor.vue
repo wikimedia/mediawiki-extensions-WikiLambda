@@ -82,6 +82,9 @@ module.exports = exports = defineComponent( {
 			// Set Language
 			session.setMode( 'ace/mode/' + this.mode );
 
+			// Wrap lines
+			session.setUseWrapMode( true );
+
 			// Listen for changes in the session annotations (warnings, errors, etc.)
 			session.on( 'changeAnnotation', () => {
 				if ( this.mode === 'html' ) {
