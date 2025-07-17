@@ -119,7 +119,8 @@ describe( 'Function', () => {
 			await inputs.map( async ( _, index ) => {
 				const expectedLabel = ARGUMENT_LABELS.ENGLISH[ index ];
 				const expectedType = INPUT_TYPES[ index ];
-				expect( await FunctionPage.getFunctionInputLabel( inputs[ index ] ) ).toBe( `${ expectedLabel }:` );
+				// eslint-disable-next-line no-trailing-spaces
+				expect( await FunctionPage.getFunctionInputLabel( inputs[ index ] ) ).toBe( `${ expectedLabel }: ` );
 				expect( await FunctionPage.getFunctionInputType( inputs[ index ] ) ).toBe( expectedType );
 			} );
 		} );
