@@ -38,11 +38,15 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 
 	it( 'handles generic types during function creation, and saves a function that concats two lists of strings', async () => {
 		const {
+			container,
 			findAllByTestId,
 			findByRole,
 			getByText,
 			queryByRole
 		} = render( App );
+
+		// Wait for loading to finish (max 5 seconds)
+		await waitFor( () => expect( container ).not.toHaveTextContent( 'Loading data' ), { timeout: 5000 } );
 
 		const languageBlocks = await findAllByTestId( 'function-editor-language-block' );
 		const firstLanguageBlock = languageBlocks[ 0 ];

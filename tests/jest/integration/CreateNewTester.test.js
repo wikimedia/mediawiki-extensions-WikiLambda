@@ -25,17 +25,15 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 	} );
 
 	it( 'allows creating a new tester', async () => {
-		const { findByTestId } = render( App, {
+		const { container, findByTestId } = render( App, {
 			global: { stubs: {
 				teleport: true,
 				WlFunctionEvaluatorWidget: true
 			} }
 		} );
 
-		await waitFor(
-			async () => await findByTestId( 'z-tester' ),
-			{ timeout: 5000 } // Wait up to 5 seconds
-		);
+		// Wait for loading to finish (max 5 seconds)
+		await waitFor( () => expect( container ).not.toHaveTextContent( 'Loading data' ), { timeout: 5000 } );
 
 		//* -- Function call section
 		// ASSERT: The function specified in URL is pre-selected as the function under test.
@@ -135,12 +133,15 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 	} );
 
 	it( 'allows changing the selected function call and ensures the function report testers are updated, but not executed', async () => {
-		const { findByTestId } = render( App, {
+		const { container, findByTestId } = render( App, {
 			global: { stubs: {
 				teleport: true,
 				WlFunctionEvaluatorWidget: true
 			} }
 		} );
+
+		// Wait for loading to finish (max 5 seconds)
+		await waitFor( () => expect( container ).not.toHaveTextContent( 'Loading data' ), { timeout: 5000 } );
 
 		//* -- Function report widget
 		const functionReportWidget = await findByTestId( 'function-report-widget' );

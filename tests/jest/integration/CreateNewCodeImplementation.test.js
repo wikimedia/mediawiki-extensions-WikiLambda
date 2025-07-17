@@ -25,17 +25,17 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 	} );
 
 	it( 'should allow you to create a new code implementation', async () => {
-		const { getByTestId, findByTestId } = render( App, {
+		const { container, getByTestId, findByTestId } = render( App, {
 			global: { stubs: {
 				teleport: true,
 				WlFunctionEvaluatorWidget: true
 			} }
 		} );
-		// const zImplementationComponent = await findByTestId( 'z-implementation' );
-		const zImplementationComponent = await waitFor(
-			async () => await findByTestId( 'z-implementation' ),
-			{ timeout: 5000 } // Wait up to 5 seconds
-		);
+
+		// Wait for loading to finish (max 5 seconds)
+		await waitFor( () => expect( container ).not.toHaveTextContent( 'Loading data' ), { timeout: 5000 } );
+
+		const zImplementationComponent = await findByTestId( 'z-implementation' );
 
 		// ACT: Select a function
 		const zReferenceSelector = await getByTestId( 'z-reference-selector' );

@@ -37,11 +37,15 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 
 	it( 'allows creating a new function, making use of most important features', async () => {
 		const {
+			container,
 			findAllByTestId,
 			findByRole,
 			getAllByTestId,
 			getByText
 		} = render( App );
+
+		// Wait for loading to finish (max 5 seconds)
+		await waitFor( () => expect( container ).not.toHaveTextContent( 'Loading data' ), { timeout: 5000 } );
 
 		// ACT: Get First language block. Selected by default: English
 		let languageBlocks = await findAllByTestId( 'function-editor-language-block' );

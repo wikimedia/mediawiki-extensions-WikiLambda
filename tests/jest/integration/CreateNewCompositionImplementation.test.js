@@ -26,12 +26,15 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 	} );
 
 	it( 'should allow you to create a new composition implementation', async () => {
-		const { getByTestId, findByTestId } = render( App, {
+		const { container, getByTestId, findByTestId } = render( App, {
 			global: { stubs: {
 				teleport: true,
 				WlFunctionEvaluatorWidget: true
 			} }
 		} );
+
+		// Wait for loading to finish (max 5 seconds)
+		await waitFor( () => expect( container ).not.toHaveTextContent( 'Loading data' ), { timeout: 5000 } );
 
 		// ACT: Select a function to add an implementation to
 		const functionBlock = await findByTestId( 'implementation-function' );
@@ -145,5 +148,5 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 				zobject: JSON.stringify( expectedNewCompositionImplementationPostedToApi )
 			} ), { signal: undefined }
 		);
-	}, 50000 );
+	} );
 } );

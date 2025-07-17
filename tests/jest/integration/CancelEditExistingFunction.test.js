@@ -36,8 +36,10 @@ describe( 'WikiLambda frontend, function-editor view, on a new function', () => 
 	} );
 
 	it( 'allows cancelling with no changes', async () => {
-		const { findByText } =
-			render( App );
+		const { container, findByText } = render( App );
+
+		// Wait for loading to finish (max 5 seconds)
+		await waitFor( () => expect( container ).not.toHaveTextContent( 'Loading data' ), { timeout: 5000 } );
 
 		// ACT: Click cancel button.
 		await fireEvent.click( await findByText( 'Cancel' ) );

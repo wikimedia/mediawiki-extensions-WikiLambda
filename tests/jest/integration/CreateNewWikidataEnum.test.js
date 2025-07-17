@@ -35,9 +35,12 @@ describe( 'WikiLambda frontend, create Wikidata enum', () => {
 	} );
 
 	it( 'successfully creates a new Wikidata enum with lexemes', async () => {
-		const { getByText, findByTestId, findByRole } = render( App, {
+		const { container, getByText, findByTestId, findByRole } = render( App, {
 			global: { stubs: { teleport: true } }
 		} );
+
+		// Wait for loading to finish (max 5 seconds)
+		await waitFor( () => expect( container ).not.toHaveTextContent( 'Loading data' ), { timeout: 5000 } );
 
 		// All actions and queries are scoped within the content area
 		const content = await findByTestId( 'content' );

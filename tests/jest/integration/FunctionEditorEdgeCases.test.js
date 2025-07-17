@@ -37,11 +37,15 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 
 	it( 'handles edge cases during editing/creation, and saves a function with no labels successfully', async () => {
 		const {
+			container,
 			findAllByTestId,
 			findByRole,
 			getByText,
 			queryByRole
 		} = render( App );
+
+		// Wait for loading to finish (max 5 seconds)
+		await waitFor( () => expect( container ).not.toHaveTextContent( 'Loading data' ), { timeout: 5000 } );
 
 		// ACT: Get First language block. Selected by default: English
 		const languageBlocks = await findAllByTestId( 'function-editor-language-block' );
