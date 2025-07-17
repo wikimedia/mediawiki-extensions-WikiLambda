@@ -112,7 +112,7 @@ ve.ui.WikifunctionsCallDialog.prototype.initialize = function () {
 };
 
 /**
- * FIXME doc
+ * Set the dialog title
  *
  * @param {string} title
  */

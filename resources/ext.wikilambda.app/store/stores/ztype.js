@@ -9,8 +9,11 @@
 
 const Constants = require( '../../Constants.js' );
 const { performFunctionCall } = require( '../../utils/apiUtils.js' );
-const { getScaffolding } = require( '../../utils/typeUtils.js' );
-const { getZObjectType } = require( '../../utils/zobjectUtils.js' );
+const {
+	getZObjectType,
+	createParserCall,
+	createRendererCall
+} = require( '../../utils/zobjectUtils.js' );
 
 module.exports = {
 	state: {
@@ -213,16 +216,7 @@ module.exports = {
 		 */
 		runRenderer: function ( payload ) {
 			// 1. Create a function call
-			// {
-			//   Z1K1: Z7,
-			//   Z7K1: payload.rendererZid,
-			//   <rendererZid>K1: payload.zobject,
-			//   <rendererZid>K2: payload.zlang
-			// }
-			const rendererCall = getScaffolding( Constants.Z_FUNCTION_CALL );
-			rendererCall[ Constants.Z_FUNCTION_CALL_FUNCTION ] = payload.rendererZid;
-			rendererCall[ `${ payload.rendererZid }K1` ] = payload.zobject;
-			rendererCall[ `${ payload.rendererZid }K2` ] = payload.zlang;
+			const rendererCall = createRendererCall( payload );
 
 			// 2. Run this function call by calling wikilambda_function_call_zobject and return
 			return performFunctionCall( {
@@ -253,16 +247,7 @@ module.exports = {
 		 */
 		runParser: function ( payload ) {
 			// 1. Create a function call
-			// {
-			//   Z1K1: Z7,
-			//   Z7K1: <parserZid>,
-			//   <parserZid>K1: payload.zobject,
-			//   <parserZid>K2: payload.zlang
-			// }
-			const parserCall = getScaffolding( Constants.Z_FUNCTION_CALL );
-			parserCall[ Constants.Z_FUNCTION_CALL_FUNCTION ] = payload.parserZid;
-			parserCall[ `${ payload.parserZid }K1` ] = payload.zobject;
-			parserCall[ `${ payload.parserZid }K2` ] = payload.zlang;
+			const parserCall = createParserCall( payload );
 
 			// 2. Add the parser promise to the parserPromises state array
 			// and keep the resolver function to be returned back to the caller.

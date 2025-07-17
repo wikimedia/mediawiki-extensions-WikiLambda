@@ -16,7 +16,7 @@ const { hybridToCanonical } = require( './schemata.js' );
 
 const apiUtils = {
 	/**
-	 * FIXME add doc and tests
+	 * Creates a new mw.Api object
 	 *
 	 * @return {string}
 	 */

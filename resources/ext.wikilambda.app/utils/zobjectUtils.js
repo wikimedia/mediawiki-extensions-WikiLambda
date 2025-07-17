@@ -16,7 +16,7 @@
  */
 const Constants = require( '../Constants.js' );
 const { hybridToCanonical } = require( './schemata.js' );
-const { isValidZidFormat } = require( './typeUtils.js' );
+const { isValidZidFormat, getScaffolding } = require( './typeUtils.js' );
 
 const zobjectUtils = {
 	/**
@@ -621,6 +621,54 @@ const zobjectUtils = {
 		}
 
 		return fields;
+	},
+
+	/**
+	 * Creates a parser call ZObject.
+	 *
+	 * {
+	 *   Z1K1: Z7,
+	 *   Z7K1: <parserZid>,
+	 *   <parserZid>K1: <zobject>,
+	 *   <parserZid>K2: <zlang>
+	 * }
+	 *
+	 * @param {Object} payload
+	 * @param {string} payload.parserZid
+	 * @param {any} payload.zobject
+	 * @param {string} payload.zlang
+	 * @return {Object}
+	 */
+	createParserCall: function ( { parserZid, zobject, zlang } ) {
+		const parserCall = getScaffolding( Constants.Z_FUNCTION_CALL );
+		parserCall[ Constants.Z_FUNCTION_CALL_FUNCTION ] = parserZid;
+		parserCall[ `${ parserZid }K1` ] = zobject;
+		parserCall[ `${ parserZid }K2` ] = zlang;
+		return parserCall;
+	},
+
+	/**
+	 * Creates a renderer call ZObject.
+	 *
+	 * {
+	 *   Z1K1: Z7,
+	 *   Z7K1: <rendererZid>,
+	 *   <rendererZid>K1: <zobject>,
+	 *   <rendererZid>K2: <zlang>
+	 * }
+	 *
+	 * @param {Object} payload
+	 * @param {string} payload.rendererZid
+	 * @param {any} payload.zobject
+	 * @param {string} payload.zlang
+	 * @return {Object}
+	 */
+	createRendererCall: function ( { rendererZid, zobject, zlang } ) {
+		const rendererCall = getScaffolding( Constants.Z_FUNCTION_CALL );
+		rendererCall[ Constants.Z_FUNCTION_CALL_FUNCTION ] = rendererZid;
+		rendererCall[ `${ rendererZid }K1` ] = zobject;
+		rendererCall[ `${ rendererZid }K2` ] = zlang;
+		return rendererCall;
 	}
 };
 

@@ -51,6 +51,7 @@ const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
 const { CdxAccordion, CdxIcon, CdxMessage, CdxProgressIndicator } = require( '../../../codex.js' );
 const useMainStore = require( '../../store/index.js' );
 const icons = require( '../../../lib/icons.json' );
+const { createParserCall, createRendererCall } = require( '../../utils/zobjectUtils.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-input-preview',
@@ -272,11 +273,11 @@ module.exports = exports = defineComponent( {
 		 */
 		createParserCall: function ( type, value ) {
 			const parserZid = this.getParserZid( type );
-			const parserCall = this.getScaffolding( Constants.Z_FUNCTION_CALL );
-			parserCall[ Constants.Z_FUNCTION_CALL_FUNCTION ] = parserZid;
-			parserCall[ `${ parserZid }K1` ] = value;
-			parserCall[ `${ parserZid }K2` ] = this.getUserLangZid;
-			return parserCall;
+			return createParserCall( {
+				parserZid,
+				zobject: value,
+				zlang: this.getUserLangZid
+			} );
 		},
 
 		/**
@@ -315,11 +316,11 @@ module.exports = exports = defineComponent( {
 		 * @return {Object} - The renderer function call object.
 		 */
 		createRendererCall: function ( rendererZid, functionCall ) {
-			const rendererCall = this.getScaffolding( Constants.Z_FUNCTION_CALL );
-			rendererCall[ Constants.Z_FUNCTION_CALL_FUNCTION ] = rendererZid;
-			rendererCall[ `${ rendererZid }K1` ] = functionCall;
-			rendererCall[ `${ rendererZid }K2` ] = this.getUserLangZid;
-			return rendererCall;
+			return createRendererCall( {
+				rendererZid,
+				zobject: functionCall,
+				zlang: this.getUserLangZid
+			} );
 		},
 
 		/**
@@ -523,12 +524,6 @@ module.exports = exports = defineComponent( {
 
 .ext-wikilambda-app-function-input-preview {
 	background-color: @background-color-progressive-subtle;
-
-	// TODO: remove this when this is fixed in Codex Accordion
-	// This causes a click on the action button to close the accordion
-	.cdx-accordion__action svg {
-		pointer-events: none;
-	}
 
 	.ext-wikilambda-app-function-input-preview__content {
 		padding: 0 @spacing-150;

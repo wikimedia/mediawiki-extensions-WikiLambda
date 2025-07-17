@@ -80,7 +80,6 @@
 					</h5>
 				</div>
 
-				<!-- TODO: Consider using v-memo to optimize -->
 				<!-- Function inputs/arguments -->
 				<div
 					v-for="arg in functionArguments"

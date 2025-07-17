@@ -363,11 +363,6 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-publish-dialog__errors {
 		margin-bottom: @spacing-200;
 	}
-	// TODO: Remove this once wikilambda-publish-input-[and-output]-changed-impact-prompt
-	// translations have removed the <p> tags
-	.ext-wikilambda-app-publish-dialog__error p {
-		margin: 0;
-	}
 
 	.ext-wikilambda-app-publish-dialog__kbd {
 		font-size: @font-size-x-small;
