@@ -7,6 +7,7 @@
 'use strict';
 
 const { shallowMount } = require( '@vue/test-utils' );
+const { waitFor } = require( '@testing-library/vue' );
 
 const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
 const FunctionExplorer = require( '../../../../../resources/ext.wikilambda.app/components/widgets/function-explorer/FunctionExplorer.vue' );
@@ -54,6 +55,7 @@ describe( 'FunctionExplorer', () => {
 		store = useMainStore();
 		store.getLabelData = createLabelDataMock( {
 			Z6: 'String',
+			Z40: 'Boolean',
 			Z881: 'Typed list',
 			Z10002: 'Is reverse string',
 			Z10002K1: 'String one',
@@ -199,67 +201,77 @@ describe( 'FunctionExplorer', () => {
 		} );
 
 		describe( 'Reset FunctionExplorer', () => {
-
 			let wrapper, resetButton;
 
-			beforeEach( () => {
-				wrapper = createFunctionExplorerWrapper(
-					{
+			describe( 'with an input functionZid', () => {
+				beforeEach( () => {
+					wrapper = createFunctionExplorerWrapper( {
 						functionZid: reverseStringFunctionZid,
 						edit: true
-					}
-				);
+					} );
+					resetButton = wrapper.find( '[data-testid="function-explorer-reset-button"]' );
+				} );
 
-				resetButton = wrapper.find( '[data-testid="function-explorer-reset-button"]' );
-			} );
+				it( 'should have a reset button', () => {
+					expect( resetButton.exists() ).toBe( true );
+				} );
 
-			it( 'should have a reset button', () => {
-				expect( resetButton.exists() ).toBe( true );
-			} );
-
-			describe( 'when a functionZid was specified in the FunctionExplorer and the reset button is clicked', () => {
-				it( 'should reset the inputs of the function to the originally selected function', () => {
-					// TODO: Change the selected function before clicking the reset button
-					// const functionSelector = wrapper.findComponent( ZObjectSelector );
+				it( 'should reset the inputs of the function to the originally selected function', async () => {
+					// Change the selected function before clicking the reset button
+					await wrapper.getComponent( { name: 'wl-z-object-selector' } ).vm.$emit( 'select-item', isReverseStringFunctionZid );
+					expect( wrapper.findAll( '[data-testid="function-input-type"]' ).length ).toBe( 2 );
 
 					resetButton.trigger( 'click' );
 
-					const inputsWrapper = wrapper.findAll( '[data-testid="function-input-type"]' );
-
-					expect( inputsWrapper.length ).toBe( 1 );
-					expect( inputsWrapper[ 0 ].text() ).toBe( 'String' );
+					await waitFor( () => expect( wrapper.findAll( '[data-testid="function-input-type"]' ).length ).toBe( 1 ) );
+					expect( wrapper.findAll( '[data-testid="function-input-type"]' )[ 0 ].text() ).toBe( 'String' );
 				} );
 
-				it( 'should reset the output of the function to the originally selected function', () => {
-					// TODO: Change the selected function before clicking the reset button
-					// const functionSelector = wrapper.findComponent( ZObjectSelector );
+				it( 'should reset the output of the function to the originally selected function', async () => {
+					// Change the selected function before clicking the reset button
+					await wrapper.getComponent( { name: 'wl-z-object-selector' } ).vm.$emit( 'select-item', isReverseStringFunctionZid );
+					expect( wrapper.find( '[data-testid="function-output"]' ).text() ).toBe( 'Boolean' );
 
 					resetButton.trigger( 'click' );
 
-					const outputWrapper = wrapper.find( '[data-testid="function-output"]' );
-
-					expect( outputWrapper.text() ).toBe( 'String' );
+					await waitFor( () => expect( wrapper.find( '[data-testid="function-output"]' ).text() ).toBe( 'String' ) );
 				} );
-
 			} );
 
-			describe( 'when a functionZid was NOT provided in the FunctionExplorer and the reset button is clicked', () => {
-				it( 'should do nothing', () => {
+			describe( 'with no input functionZid', () => {
+				beforeEach( () => {
+					wrapper = createFunctionExplorerWrapper( {
+						edit: true
+					} );
+					resetButton = wrapper.find( '[data-testid="function-explorer-reset-button"]' );
+				} );
 
+				it( 'should have a reset button', () => {
+					expect( resetButton.exists() ).toBe( true );
+				} );
+
+				it( 'should clear the selection when clicking reset button', async () => {
+					// Initializes with no selected function zid
+					expect( wrapper.vm.currentFunctionZid ).toBeFalsy();
+
+					// Selects a function zid
+					await wrapper.getComponent( { name: 'wl-z-object-selector' } ).vm.$emit( 'select-item', isReverseStringFunctionZid );
+					expect( wrapper.vm.currentFunctionZid ).toBe( isReverseStringFunctionZid );
+
+					// On reset, goes back to no selected function zid
+					resetButton.trigger( 'click' );
+					expect( wrapper.vm.currentFunctionZid ).toBeFalsy();
 				} );
 			} );
 		} );
 	} );
 
 	describe( 'Read mode', () => {
-
 		it( 'should NOT display the lookup used to select a function', () => {
-			const wrapper = createFunctionExplorerWrapper(
-				{
-					functionZid: reverseStringFunctionZid,
-					edit: false
-				}
-			);
+			const wrapper = createFunctionExplorerWrapper( {
+				functionZid: reverseStringFunctionZid,
+				edit: false
+			} );
 
 			expect( wrapper.find( '[data-testid="function-selector"]' ).exists() ).toBe( false );
 		} );
@@ -267,12 +279,10 @@ describe( 'FunctionExplorer', () => {
 		describe( 'when a valid functionZid is provided', () => {
 			let wrapper;
 			beforeEach( () => {
-				wrapper = createFunctionExplorerWrapper(
-					{
-						functionZid: reverseStringFunctionZid,
-						edit: false
-					}
-				);
+				wrapper = createFunctionExplorerWrapper( {
+					functionZid: reverseStringFunctionZid,
+					edit: false
+				} );
 			} );
 
 			it( 'displays the name of the function', () => {
@@ -314,7 +324,6 @@ describe( 'FunctionExplorer', () => {
 				expect( link.attributes() ).toHaveProperty( 'href' );
 				expect( link.attributes().href ).toContain( 'Z6' );
 			} );
-
 		} );
 	} );
 
@@ -324,9 +333,9 @@ describe( 'FunctionExplorer', () => {
 				store.getStoredObject = createGettersWithFunctionsMock();
 				store.getInputsOfFunctionZid = createGettersWithFunctionsMock( [] );
 
-				const wrapper = createFunctionExplorerWrapper(
-					{ edit: true }
-				);
+				const wrapper = createFunctionExplorerWrapper( {
+					edit: true
+				} );
 
 				const inputsWrapper = wrapper.findAll( '[data-testid="function-input-type"]' );
 				expect( inputsWrapper.length ).toBe( 0 );
