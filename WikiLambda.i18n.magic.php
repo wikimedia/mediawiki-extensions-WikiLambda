@@ -15,6 +15,10 @@ $magicWords['en'] = [
 	// Our parser function, {{#function:…}}, for client mode.
 	'function' => [ 0, 'function' ],
 
+	// Our repo-mode parser functions, {{#wikifunctionlabel:…}} & {{#wikifunctionlabeldesc:…}}.
+	'wikifunctionlabel' => [ 0, 'wikifunctionlabel' ],
+	'wikifunctionlabeldesc' => [ 0, 'wikifunctionlabeldesc' ],
+
 	// Our variable magic words, {{NUMBEROFFUNCTIONS}} etc., for repo mode.
 	'magic_count_all' => [ 0, 'NUMBEROFOBJECTS' ],
 	'magic_count_functions' => [ 0, 'NUMBEROFFUNCTIONS' ],
