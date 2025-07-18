@@ -274,6 +274,7 @@
 				"MainConfig",
 				"UserOptionsLookup",
 				"LanguageNameUtils",
+				"LanguageFactory",
 				"WikiLambdaZObjectStore"
 			]
 		}
@@ -300,7 +301,8 @@
 		"BeforeDisplayNoArticleText": "PageRenderingHandler",
 		"GetMagicVariableIDs": "PageRenderingHandler",
 		"ParserGetVariableValueSwitch": "PageRenderingHandler",
-		"SpecialStatsAddExtra": "PageRenderingHandler"
+		"SpecialStatsAddExtra": "PageRenderingHandler",
+		"ParserFirstCallInit": "PageRenderingHandler"
 	},
 	"MessagesDirs": {
 		"WikiLambda": [

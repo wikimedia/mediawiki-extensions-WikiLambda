@@ -15,10 +15,13 @@ use MediaWiki\Extension\WikiLambda\HookHandler\PageRenderingHandler;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
+use MediaWiki\Language\LanguageFactory;
 use MediaWiki\Languages\LanguageNameUtils;
 use MediaWiki\MainConfigNames;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\Article;
+use MediaWiki\Parser\ParserOptions;
+use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\Request\WebRequest;
 use MediaWiki\Skin\Skin;
@@ -26,6 +29,7 @@ use MediaWiki\Skin\SkinTemplate;
 use MediaWiki\Specials\SpecialRecentChanges;
 use MediaWiki\Title\Title;
 use MediaWiki\User\Options\UserOptionsLookup;
+use MediaWiki\User\User;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\HookHandler\PageRenderingHandler
@@ -49,11 +53,14 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 		$mockLanguageNameUtils = $this->createMock( LanguageNameUtils::class );
 		$mockLanguageNameUtils->method( 'getLanguageName' )->willReturn( '' );
 
+		$mockLanguageFactory = $this->createMock( LanguageFactory::class );
+
 		$this->pageRenderingHandler = new PageRenderingHandler(
 			$mockHashConfigRepoMode,
 			// $mockHashConfigNotRepoMode,
 			$mockUserOptionsLookup,
 			$mockLanguageNameUtils,
+			$mockLanguageFactory,
 			$this->createNoOpMock( ZObjectStore::class )
 		);
 
@@ -64,6 +71,7 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 			$mockHashConfigNotRepoMode,
 			$mockUserOptionsLookup,
 			$mockLanguageNameUtils,
+			$mockLanguageFactory,
 			$this->createNoOpMock( ZObjectStore::class )
 		);
 	}
@@ -607,6 +615,134 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 		];
 
 		// …
+	}
+
+	/**
+	 * @dataProvider provideLabelParserFunctions
+	 */
+	public function testLabelParserFunctions(
+		string $zobject, ?string $languageCode, string $expectedLabel, string $expectedLabelDescription
+	) {
+		$this->insertZids( [ 'Z1' ] );
+
+		$labelWikitext = '{{#wikifunctionlabel:' . $zobject
+			. ( $languageCode ? '|' . $languageCode : '' ) . '}}';
+		$result = $this->parseWikitextToHtml( $labelWikitext, $languageCode );
+		$this->assertSame( $expectedLabel, $result->getRawText() );
+
+		$labelDescriptionWikitext = '{{#wikifunctionlabeldesc:' . $zobject
+			. ( $languageCode ? '|' . $languageCode : '' ) . '}}';
+		$result = $this->parseWikitextToHtml( $labelDescriptionWikitext, $languageCode );
+		$this->assertSame( $expectedLabelDescription, $result->getRawText() );
+	}
+
+	public function provideLabelParserFunctions() {
+		// Invalid / malformed calls
+		yield 'Malformed request results in nothing' => [
+			// {{#wikifunctionlabel:}}
+			'',
+			null,
+			'',
+			''
+		];
+
+		yield 'Empty request results in nothing' => [
+			// {{#wikifunctionlabel:|en}}
+			'',
+			'en',
+			'',
+			''
+		];
+
+		yield 'Z0 is not a valid Object to reference' => [
+			// {{#wikifunctionlabel:Z0|en}}
+			'Z0',
+			'en',
+			"<p>Z0\n</p>",
+			"<p>Z0\n</p>"
+		];
+
+		yield 'Z!0 is not a valid Object to reference' => [
+			// {{#wikifunctionlabel:Z!0|en}}
+			'Z!0',
+			'en',
+			"<p>Z!0\n</p>",
+			"<p>Z!0\n</p>"
+		];
+
+		// Known ZObject calls
+
+		$z1 = "<p><a href=\"/wiki/Z1\" title=\"Z1\">Object (<span dir=\"ltr\" class=\"ext-wikilambda-inline-zid\">"
+			. "Z1</span>)";
+		$z1EnglishLabel = $z1 . "</a>\n</p>";
+		$z1EnglishLabelDesc = $z1 . ": <span class=\"ext-wikilambda-inline-description\">The root concept of an"
+			. " item in the Wikifunctions system, from which all other objects descend.</span></a>\n</p>";
+
+		yield 'Z1 use in English works' => [
+			// {{#wikifunctionlabel:Z1|en}}
+			'Z1',
+			'en',
+			$z1EnglishLabel,
+			$z1EnglishLabelDesc
+		];
+
+		yield 'Z1 use in French falls back (undefined by default)' => [
+			// {{#wikifunctionlabel:Z1|fr}}
+			'Z1',
+			'fr',
+			$z1EnglishLabel,
+			$z1EnglishLabelDesc
+		];
+
+		yield 'Z1 use in a made-up code falls back (undefined)' => [
+			// {{#wikifunctionlabel:Z1|qqz}}
+			'Z1',
+			'qqz',
+			$z1EnglishLabel,
+			$z1EnglishLabelDesc
+		];
+
+		yield 'Z1 use without a language code falls back' => [
+			// {{#wikifunctionlabel:Z1}}
+			'Z1',
+			null,
+			$z1EnglishLabel,
+			$z1EnglishLabelDesc
+		];
+
+		$z400 = "<p><a href=\"/index.php?title=Z400&amp;action=edit&amp;redlink=1\" class=\"new\""
+			. " title=\"Z400 (page does not exist)\">Unlabelled (<span dir=\"ltr\" class=\"ext-wikilambda-inline-zid\">"
+			. "Z400</span>)";
+		$z400EnglishLabel = $z400 . "</a>\n</p>";
+		$z400EnglishLabelDesc = $z400 . ": <span class=\"ext-wikilambda-inline-description\">Unknown</span></a>\n</p>";
+
+		// Unknown ZObject calls
+		yield 'Z400 use in English works' => [
+			// {{#wikifunctionlabel:Z400|en}}
+			'Z400',
+			'en',
+			$z400EnglishLabel,
+			$z400EnglishLabelDesc
+		];
+	}
+
+	private function parseWikitextToHtml( string $wikiText, ?string $language ): ParserOutput {
+		$language ??= 'en';
+
+		if (
+			!$this->getServiceContainer()->getLanguageNameUtils()->isSupportedLanguage( $language )
+		) {
+			$language = 'en';
+		}
+
+		$language = $this->getServiceContainer()->getLanguageFactory()->getRawLanguage( $language );
+
+		$parserOptions = new ParserOptions( User::newFromId( 0 ), $language );
+		$parser = $this->getServiceContainer()->getParserFactory()->create();
+
+		$title = Title::newFromTextThrow( 'PageRenderingHandlerTestPage', $this->getDefaultWikitextNS() );
+
+		return $parser->parse( $wikiText, $title, $parserOptions );
 	}
 
 }

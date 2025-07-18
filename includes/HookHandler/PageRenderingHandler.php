@@ -20,6 +20,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Html\Html;
+use MediaWiki\Language\LanguageFactory;
 use MediaWiki\Languages\LanguageNameUtils;
 use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\Linker\LinkTarget;
@@ -37,23 +38,27 @@ class PageRenderingHandler implements
 	\MediaWiki\Output\Hook\BeforePageDisplayHook,
 	\Mediawiki\Page\Hook\BeforeDisplayNoArticleTextHook,
 	\MediaWiki\Hook\GetMagicVariableIDsHook,
+	\MediaWiki\Hook\ParserFirstCallInitHook,
 	\MediaWiki\Hook\ParserGetVariableValueSwitchHook,
 	\MediaWiki\Hook\SpecialStatsAddExtraHook
 {
 	private Config $config;
 	private UserOptionsLookup $userOptionsLookup;
 	private LanguageNameUtils $languageNameUtils;
+	private LanguageFactory $languageFactory;
 	private ZObjectStore $zObjectStore;
 
 	public function __construct(
 		Config $config,
 		UserOptionsLookup $userOptionsLookup,
 		LanguageNameUtils $languageNameUtils,
+		LanguageFactory $languageFactory,
 		ZObjectStore $zObjectStore
 	) {
 		$this->config = $config;
 		$this->userOptionsLookup = $userOptionsLookup;
 		$this->languageNameUtils = $languageNameUtils;
+		$this->languageFactory = $languageFactory;
 		$this->zObjectStore = $zObjectStore;
 	}
 
@@ -492,4 +497,109 @@ class PageRenderingHandler implements
 		];
 	}
 
+	/** @inheritDoc */
+	public function onParserFirstCallInit( $parser ) {
+		// We only do this in repo mode
+		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+			return;
+		}
+		// Provide {{#wikifunctionlabel:Z1234|en}} that will render a link to the ZObject with its label
+		$parser->setFunctionHook( 'wikifunctionlabel', [ $this, 'parserFunctionWikifunctionLabel' ] );
+		$parser->setFunctionHook( 'wikifunctionlabeldesc', [ $this, 'parserFunctionWikifunctionLabelAndDescription' ] );
+	}
+
+	/**
+	 * Renders the output of our repo-mode parser function to show the label of a ZObject.
+	 *
+	 * Example:
+	 *   {{#wikifunctionlabel:Z1234|en}}
+	 * ->
+	 *   [[Z1234|English label of Z1234 (Z1234)]]
+	 *
+	 * @param Parser $parser
+	 * @param string $zid ZID of the ZObject to link to, defaults to 'Z1'
+	 * @param string $langCode Language code to use for the label, defaults to and will fall back to English
+	 * @return string
+	 */
+	public function parserFunctionWikifunctionLabel( $parser, $zid = 'Z1', $langCode = 'en' ): string {
+		return $this->renderParserFunctionWikifunction( $parser, $zid, $langCode, false );
+	}
+
+	/**
+	 * Renders the output of our repo-mode parser function to show the label and description of a ZObject.
+	 *
+	 * Example:
+	 *   {{#wikifunctionlabeldesc:Z1234|en}}
+	 * ->
+	 *   [[Z1234|English label of Z1234 (Z1234): English description of Z1234]]
+	 *
+	 * @param Parser $parser
+	 * @param string $zid ZID of the ZObject to link to, defaults to 'Z1'
+	 * @param string $langCode Language code to use for the label, defaults to and will fall back to English
+	 * @return string
+	 */
+	public function parserFunctionWikifunctionLabelAndDescription( $parser, $zid = 'Z1', $langCode = 'en' ): string {
+		return $this->renderParserFunctionWikifunction( $parser, $zid, $langCode, true );
+	}
+
+	/**
+	 * Renders the output of our repo-mode parser functions
+	 *
+	 * @param Parser $parser
+	 * @param string $zid ZID of the ZObject to link to, defaults to 'Z1'
+	 * @param string $langCode Language code to use for the label, defaults to and will fall back to English
+	 * @param bool $includeDescription Whether to include the description in the output
+	 * @return string
+	 */
+	private function renderParserFunctionWikifunction(
+		$parser, string $zid = 'Z1', string $langCode = 'en', bool $includeDescription = false
+	): string {
+		if ( !ZObjectUtils::isValidZObjectReference( $zid ) ) {
+			// If the ZID is not valid, return just the supplied false-ZID as plain text, escaped.
+			return htmlspecialchars( $zid );
+		}
+
+		// Start the response with a link to the ZObject.
+		$output = '[[' . $zid . '|';
+
+		$label = $this->zObjectStore->fetchZObjectLabel( $zid, $langCode, true );
+		if ( $label === null ) {
+			// If we don't have a label, we can't link to it, so just show the 'Unlabelled' ZID
+			$label = $parser->msg( 'wikilambda-repoparserfunction-unlabelled' )->text();
+		}
+		$output .= $label;
+
+		$output .= $parser->msg( 'word-separator' )->text()
+			. $parser->msg( 'parentheses' )->params(
+				'<span dir="ltr" class="ext-wikilambda-inline-zid">' . $zid . '</span>'
+			)->text();
+
+		if ( $includeDescription ) {
+			// This is an expensive operation; flag it as such.
+			$parser->incrementExpensiveFunctionCount();
+
+			$zobject = $this->zObjectStore->fetchZObject( $zid );
+
+			if ( $zobject === null || !( $zobject instanceof ZObjectContent ) || !$zobject->isValid() ) {
+				// If we can't load the ZObject, just return the label and ZID
+				$description = $parser->msg( 'wikilambda-repoparserfunction-unknown' )->text();
+			} else {
+				$language = $this->languageFactory->getLanguage( $langCode );
+
+				$description = $zobject->getZObject()->getDescription( $language, true );
+
+				if ( !$description ) {
+					// If we don't have a description, use the default one
+					$description = $parser->msg( 'wikilambda-repoparserfunction-undescribed' )->text();
+				}
+			}
+
+			$output .= $parser->msg( 'colon-separator' )->text()
+				. '<span class="ext-wikilambda-inline-description">' . $description . '</span>';
+		}
+
+		$output .= ']]';
+
+		return $output;
+	}
 }
