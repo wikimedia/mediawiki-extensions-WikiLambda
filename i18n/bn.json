@@ -290,6 +290,7 @@
 	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|ত্রুটি|ত্রুটিসমূহ}}",
 	"wikilambda-functioncall-metadata-errors-none": "কোনটিই নয়",
 	"wikilambda-functioncall-metadata-errors-summary": "ত্রুটির ধরণ",
+	"wikilambda-functioncall-metadata-errors-debug-hint": "কিছু কাজ করছে না? আপনার কোড ট্রেস করতে <code>Wikifunctions.Debug</code> ব্যবহার করে দেখুন।",
 	"wikilambda-functioncall-metadata-evaluation": "মূল্যায়ন",
 	"wikilambda-functioncall-metadata-execution": "কার্যকরকরণ",
 	"wikilambda-functioncall-metadata-execution-debug-logs": "বাস্তবায়ন ত্রুটি হীন লগ",
