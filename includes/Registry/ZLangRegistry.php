@@ -128,12 +128,6 @@ class ZLangRegistry extends ZObjectRegistry {
 		}
 
 		// Fallback to the database just in case it's somehow not cached.
-		$logger = LoggerFactory::getInstance( 'WikiLambda' );
-		$logger->warning(
-			'Called fetchLanguageCodeFromZid but not found in cache table: {zid}',
-			[ 'zid' => $zid ]
-		);
-
 		$title = Title::newFromText( $zid, NS_MAIN );
 		if ( !$title ) {
 			throw new ZErrorException(
@@ -166,6 +160,13 @@ class ZLangRegistry extends ZObjectRegistry {
 				)
 			);
 		}
+
+		// This cache miss shouldn't happen, so let's log it in case there's a pattern
+		$logger = LoggerFactory::getInstance( 'WikiLambda' );
+		$logger->warning(
+			'Called fetchLanguageCodeFromZid but not found in cache table: {zid}',
+			[ 'zid' => $zid ]
+		);
 
 		// Re-insert into the languages cache so we don't have this expensive miss again.
 		$zObjectStore->insertZLanguageToLanguagesCache( $zid, $code );
