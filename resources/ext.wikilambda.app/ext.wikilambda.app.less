@@ -9,23 +9,7 @@
 @import './ext.wikilambda.app.variables.less';
 
 .ext-wikilambda-app-link {
-	color: @color-progressive;
-
-	&:hover {
-		color: @color-progressive--hover;
-	}
-
-	&:active {
-		color: @color-progressive--active;
-	}
-
-	&:focus {
-		color: @color-progressive--focus;
-	}
-
-	&:visited {
-		color: @color-visited;
-	}
+	.cdx-mixin-link-base();
 }
 
 .ext-wikilambda-app-field-overrides {
