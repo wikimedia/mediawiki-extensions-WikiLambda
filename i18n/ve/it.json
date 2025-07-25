@@ -24,6 +24,7 @@
 	"wikilambda-recentchanges-explanation-restore-tester": "Caso di test $1 ripristinato",
 	"wikilambda-recentchanges-filter-description": "Modifiche che provengono da Wikifunctions",
 	"wikilambda-recentchanges-filter-label": "Modifiche di Wikifunctions",
+	"wikilambda-visualeditor-wikifunctionscall-back": "Indietro",
 	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Caricamento",
 	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "L'anteprima ha richiesto troppo tempo",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Scegli un'opzione",

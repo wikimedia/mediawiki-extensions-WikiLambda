@@ -29,6 +29,7 @@
 	"wikilambda-recentchanges-filter-label": "উইকিফাংশন্স সম্পাদনা",
 	"wikilambda-recentchanges-filter-rc-pref": "উইকিফাংশন্সের সম্পাদনাগুলো সাম্প্রতিক পরিবর্তনে দেখানো হোক",
 	"wikilambda-recentchanges-filter-wl-pref": "উইকিফাংশন্সের সম্পাদনাগুলো আপনার নজরতালিকায় দেখানো হোক",
+	"wikilambda-visualeditor-wikifunctionscall-back": "পিছনে",
 	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "লোড করা হচ্ছে",
 	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "প্রাকদর্শন খুব বেশি সময় নিয়েছে",
 	"wikilambda-visualeditor-wikifunctionscall-changedesc-title": "উইকিফাংশনে ইনপুট পরিবর্তিত হয়েছে",

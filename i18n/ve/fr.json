@@ -4,7 +4,8 @@
 			"Derugon",
 			"EmDashUser002",
 			"Goombiis",
-			"JLTRY"
+			"JLTRY",
+			"McDutchie"
 		]
 	},
 	"wikilambda-fragment-disabled": "Les appels à Wikifunctions sont actuellement désactivés. Vous voudrez peut-être remplacer cet appel.",
@@ -49,7 +50,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-lexeme": "Lexème Wikidata invalide.",
 	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-property": "Propriété Wikidata non valide.",
 	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-item": "Élément Wikidata non valide.",
-	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-lexeme-form": "Formulaire de lexème Wikidata non valide.",
+	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-lexeme-form": "Forme de lexème Wikidata non valide.",
 	"wikilambda-visualeditor-wikifunctionscall-info-missing-content": "Aidez à traduire le contenu manquant dans votre langue sur [[f:$1|fonctions Wiki]].",
 	"wikilambda-visualeditor-wikifunctionscall-no-description": "Aucune description",
 	"wikilambda-visualeditor-wikifunctionscall-no-input-label": "Aucun libellé",
