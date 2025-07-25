@@ -193,7 +193,7 @@ class FetchHandler extends WikiLambdaRESTHandler {
 
 	public function applyCacheControl( ResponseInterface $response ) {
 		if ( $response->getStatusCode() >= 200 && $response->getStatusCode() < 400 ) {
-			$response->setHeader( 'Cache-Control', 'public,must-revalidate,s-max-age=' . 60 * 60 * 24 );
+			$response->setHeader( 'Cache-Control', 'public,must-revalidate,s-maxage=' . 60 * 60 * 24 );
 		}
 	}
 
