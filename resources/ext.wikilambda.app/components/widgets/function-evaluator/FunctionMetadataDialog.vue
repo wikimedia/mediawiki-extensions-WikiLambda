@@ -50,7 +50,7 @@
 		</div>
 		<div v-else class="ext-wikilambda-app-function-metadata-dialog__body">
 			<cdx-message v-if="hasMetadataErrors">
-				<div v-html="$i18n( 'wikilambda-functioncall-metadata-errors-debug-hint' ).text()"></div>
+				<div v-html="$i18n( 'wikilambda-functioncall-metadata-errors-debug-hint' ).parse()"></div>
 			</cdx-message>
 			<cdx-field
 				v-if="hasNestedMetadata"

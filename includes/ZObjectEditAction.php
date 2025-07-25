@@ -14,6 +14,7 @@ use MediaWiki\Actions\Action;
 use MediaWiki\Html\Html;
 use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Skin\Skin;
 
 class ZObjectEditAction extends Action {
 	use ZObjectEditingPageTrait;
@@ -207,11 +208,12 @@ class ZObjectEditAction extends Action {
 		$zObjectLabelsWithLang = $this->getTargetZObjectWithLabels();
 
 		if ( $zObjectLabelsWithLang[ 'title' ] === 'Function' ) {
+			$url = Skin::makeInternalOrExternalUrl( $this->msg( 'wikilambda-users-help-link' )->text() );
 			$linkLabel = Html::element(
 				'a',
 				[
 					'class' => 'ext-wikilambda-editpage-header__description--link',
-					'href' => $this->msg( 'wikilambda-users-help-link' )->text()
+					'href' => $url
 				],
 				$this->msg( 'wikilambda-special-edit-function-definition-special-permission-link-label' )->text()
 			);

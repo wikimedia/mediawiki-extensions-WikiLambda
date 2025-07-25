@@ -233,7 +233,10 @@ module.exports = exports = defineComponent( {
 		 */
 		keyboardSubmitMessage: function () {
 			const isMac = /Mac|iPod|iPhone|iPad/.test( navigator.userAgent );
-			return this.$i18n( 'wikilambda-editor-publish-dialog-keyboard-submit-warning', isMac ? cmdKeyChar : ctrlKeyChar, enterKeyChar );
+			// Make sure the message is escaped, but insert the key HTML without escaping it
+			return this.$i18n( 'wikilambda-editor-publish-dialog-keyboard-submit-warning' ).escaped()
+				.replace( '$1', isMac ? cmdKeyChar : ctrlKeyChar )
+				.replace( '$2', enterKeyChar );
 		}
 	} ),
 	methods: Object.assign( {}, mapActions( useMainStore, [
