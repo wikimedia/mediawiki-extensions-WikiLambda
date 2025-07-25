@@ -296,7 +296,7 @@ EOT;
                     "Monolingual text",
                     {
                         "type": "Monolingual text",
-                        "language": "English",
+                        "language": "Z1002",
                         "text": "value"
                     }
                 ]

@@ -158,7 +158,8 @@ describe( 'Publish Dialog', () => {
 		await triggerKeydown( input, 'Enter', 13 );
 
 		await waitFor( () => expect( wrapper.find( '.cdx-message--warning' ).exists() ).toBe( true ) );
-		expect( wrapper.find( '.cdx-message--warning' ).text() ).toBe( 'You can press $1 $2 to publish your changes.' );
+		// Note: As the message is spliced into with the platform-appropriate key symbols, we regex-match.
+		expect( wrapper.find( '.cdx-message--warning' ).text() ).toMatch( /You can press/ );
 		expect( store.submitZObject ).not.toHaveBeenCalled();
 	} );
 

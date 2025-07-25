@@ -63,6 +63,10 @@ class Mocki18n {
 		return englishMessages[ this.string ];
 	}
 
+	escaped() {
+		return englishMessages[ this.string ].replace( /"/g, '&quot;' );
+	}
+
 	toString() {
 		return this.text();
 	}
