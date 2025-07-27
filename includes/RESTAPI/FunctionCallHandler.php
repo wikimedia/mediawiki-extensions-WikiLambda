@@ -42,7 +42,6 @@ use MediaWiki\Request\FauxRequest;
 use MediaWiki\Rest\Handler;
 use MediaWiki\Rest\Response;
 use MediaWiki\Rest\ResponseInterface;
-use MediaWiki\Title\Title;
 use stdClass;
 use Wikimedia\ParamValidator\ParamValidator;
 use Wikimedia\Telemetry\SpanInterface;
@@ -247,10 +246,10 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			);
 		}
 
-		// 2. Check if target function Zid exists
-		$targetTitle = Title::newFromText( $target, NS_MAIN );
-		if ( !( $targetTitle->exists() ) ) {
-			$errorMessage = __METHOD__ . ' called on {target} which does not exist on-wiki';
+		// 2. Check if target function Zid can be successfully fetched; try cache first, then DB
+		$targetObject = $this->zObjectStore->fetchZObject( $target );
+		if ( !$targetObject ) {
+			$errorMessage = __METHOD__ . ' called on {target} which is somehow non-ZObject in our namespace';
 			$this->logger->debug(
 				$errorMessage,
 				[ 'target' => $target ]
@@ -268,28 +267,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			);
 		}
 
-		// 3. Check if target function Zid can be successfully fetched
-		$targetObject = $this->zObjectStore->fetchZObjectByTitle( $targetTitle );
-		if ( !$targetObject ) {
-			$errorMessage = __METHOD__ . ' called on {target} which is somehow non-ZObject in our namespace';
-			$this->logger->warning(
-				$errorMessage,
-				[ 'target' => $target ]
-			);
-			$span->setAttributes( [
-				'response.status_code' => HttpStatus::BAD_REQUEST,
-				'exception.message' => $errorMessage
-			] )->end();
-
-			// Dies with Z_ERROR_ZID_NOT_FOUND
-			$this->dieRESTfullyWithZError(
-				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ 'data' => $target ] ),
-				HttpStatus::BAD_REQUEST,
-				[ 'target' => $target ]
-			);
-		}
-
-		// 4. Check if target function is valid
+		// 3. Check if target function is valid
 		if ( !$targetObject->isValid() ) {
 			$errorMessage = __METHOD__ . ' called on {target} which is an invalid ZObject';
 			$this->logger->warning(
@@ -312,7 +290,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			);
 		}
 
-		// 4. Check if target function is a function
+		// 5. Check if target function is a function
 		if ( $targetObject->getZType() !== ZTypeRegistry::Z_FUNCTION ) {
 			$errorMessage = __METHOD__ . ' called on {target} which is not a Function but a {type}';
 			$this->logger->debug(
@@ -578,9 +556,8 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 		$providedArgument,
 		$span
 	): ZObject {
-		// Fetch target input type to figure out if it has a parser function
-		// TODO (T385619): Cache these for repeated uses of the same Type?
-		$targetType = $this->zObjectStore->fetchZObjectByTitle( Title::newFromText( $targetTypeZid, NS_MAIN ) );
+		// Fetch target input type to figure out if it has a parser function; try cache first, else DB
+		$targetType = $this->zObjectStore->fetchZObject( $targetTypeZid );
 		if ( !$targetType ) {
 			$errorMessage = __METHOD__ . ' called on {target} which has a not-found input type {typeZid} at key {key}';
 			$this->logger->warning(
@@ -712,10 +689,8 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			return false;
 		}
 
-		// If the provided argument is a reference to a ZObject, we fetch it:
-		$referencedArgument = $this->zObjectStore
-			->fetchZObjectByTitle( Title::newFromText( $providedArgument, NS_MAIN ) );
-
+		// If the provided argument is a reference to a ZObject, we fetch it; try cache first, else DB
+		$referencedArgument = $this->zObjectStore->fetchZObject( $providedArgument );
 		if ( $referencedArgument === false ) {
 			// Fatal — it's a ZID but not to an extant Object.
 			$errorMessage =
@@ -818,8 +793,8 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 		$callObject,
 		$span
 	): ZFunctionCall {
-		// Fetch target output type to figure out if it has a renderer function
-		$typeObject = $this->zObjectStore->fetchZObjectByTitle( Title::newFromText( $targetReturnType, NS_MAIN ) );
+		// Fetch target output type to figure out if it has a renderer function; try cache first, else DB
+		$typeObject = $this->zObjectStore->fetchZObject( $targetReturnType );
 		if ( !$typeObject ) {
 			$errorMessage = __METHOD__ . ' called on {target} which has a not-found output type {typeZid}';
 			$this->logger->warning(
