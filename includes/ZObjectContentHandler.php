@@ -284,6 +284,7 @@ class ZObjectContentHandler extends ContentHandler {
 		ParserOutput &$parserOutput
 	) {
 		$userLang = RequestContext::getMain()->getLanguage();
+		$logger = LoggerFactory::getInstance( 'WikiLambda' );
 
 		// Ensure the stored content is a valid ZObject; this also populates $this->getZObject() for us
 		if ( !( $content instanceof ZObjectContent ) || !$content->isValid() ) {
@@ -309,7 +310,7 @@ class ZObjectContentHandler extends ContentHandler {
 				$parserOutput->setPageProperty( "wikilambda-label-$lang", $label );
 			} catch ( ZErrorException ) {
 				// The language code is somehow not recognised; don't set a property, but log it for review
-				LoggerFactory::getInstance( 'WikiLambda' )->warning(
+				$logger->warning(
 					'Skipping setting page property for label in unknown language {langZid} when displaying {page}',
 					[
 						'langZid' => $langZid,
@@ -323,7 +324,19 @@ class ZObjectContentHandler extends ContentHandler {
 		// (T361701) Do this ahead of the early return, as LinkUpdater asks for the non-HTML version
 		foreach ( $content->getInnerZObject()->getLinkedZObjects() as $link ) {
 			$title = Title::newFromText( $link, NS_MAIN );
-			$parserOutput->addLink( $title, $title->getArticleID() );
+
+			// (T400521) Don't try to write a null Title, but log that it happened
+			if ( !$title ) {
+				$logger->warning(
+					'Skipping setting page property for link to unknown page {link} when displaying {page}',
+					[
+						'link' => $link,
+						'page' => $content->getZObject()->getZid(),
+					]
+				);
+			} else {
+				$parserOutput->addLink( $title, $title->getArticleID() );
+			}
 		}
 
 		// Don't do further work if the requester doesn't want the HTML version generated.
