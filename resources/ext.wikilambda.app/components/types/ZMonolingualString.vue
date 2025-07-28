@@ -196,7 +196,10 @@ module.exports = exports = defineComponent( {
 
 		&--empty {
 			border: 1px dashed @border-color-base;
-			height: 22px;
+		}
+
+		&--empty::before {
+			content: '\200B';
 		}
 	}
 
