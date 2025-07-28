@@ -220,14 +220,6 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 			$zResponseMap = ZResponseEnvelope::wrapErrorInResponseMap( $zError );
 			$zResponseObject = new ZResponseEnvelope( null, $zResponseMap );
 			$result['data'] = json_encode( $zResponseObject->getSerialized() );
-			$errorMessage = 'ApiFunctionCall failed due to a Client or Server Exception: "{message}"';
-			$logger->warning(
-				$errorMessage,
-				[
-					'message' => $exception->getMessage(),
-					'exception' => $exception
-				]
-			);
 			$status = $exception->getResponse()->getStatusCode();
 			$span->setSpanStatus( SpanInterface::SPAN_STATUS_ERROR )
 				->setAttributes( [
@@ -236,11 +228,25 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 			] );
 			$this->submitFunctionCallEvent( $status, $function, $start );
 			if ( $exception instanceof ClientException ) {
+				$logger->debug(
+					'ApiFunctionCall failed due to a ClientException: "{message}"',
+					[
+						'message' => $exception->getMessage(),
+						'exception' => $exception
+					]
+				);
 				$this->dieWithError(
 					[ "apierror-wikilambda_function_call-client-error", $this->orchestratorHost ],
 					null, null, $status
 				);
 			} elseif ( $exception instanceof ServerException ) {
+				$logger->warning(
+					'ApiFunctionCall failed due to a ServerException: "{message}"',
+					[
+						'message' => $exception->getMessage(),
+						'exception' => $exception
+					]
+				);
 				$this->dieWithError(
 					[ "apierror-wikilambda_function_call-server-error", $this->orchestratorHost ],
 					null, null, $status
