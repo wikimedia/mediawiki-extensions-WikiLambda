@@ -52,10 +52,13 @@ class FetchHandler extends WikiLambdaRESTHandler {
 
 		$responseList = [];
 
+		// (T365728) Make this method call separately, so the null operator below isn't confused
+		$params = $this->getRequest()->getQueryParams();
+
 		// (T391046) Parse as null if not specified.
-		$language = $this->getRequest()->getQueryParams()['language'] ?? null;
+		$language = $params['language'] ?? null;
 		// (T391046) Fallback to not recurse through dependencies if not specified.
-		$getDependencies = $this->getRequest()->getQueryParams()['getDependencies'] ?? false;
+		$getDependencies = $params['getDependencies'] ?? false;
 
 		if ( count( $revisions ) > 0 && ( count( $revisions ) !== count( $ZIDs ) ) ) {
 			$errorMessage = "You must specify a revision for each ZID, or none at all.";
