@@ -113,7 +113,7 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 		// Assert client usage update job
 		$updateJob = $pushedJobs[0];
 		$this->assertInstanceOf( WikifunctionsClientUsageUpdateJob::class, $updateJob );
-		$this->assertSame( 'Z10000', $updateJob->getParams()['targetFunction'] );
+		$this->assertSame( $inputArguments[0], $updateJob->getParams()['targetFunction'] );
 
 		// Assert client request job
 		$requestJob = $pushedJobs[1];
@@ -240,6 +240,34 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			$defaultValuesRequest,
 			$defaultValuesFunction
 		];
+
+		// Function call with Wikidata item reference arguments:
+		// {{#function:Z6801|Q1|Q2}}
+		$itemRefArgs = [ 'Z6801', 'Q1', 'Q2' ];
+		$itemRefRequest = [
+			'target' => 'Z6801',
+			'arguments' => [
+				'Z6801K1' => 'Q1',
+				'Z6801K2' => 'Q2'
+			],
+			'parseLang' => 'en',
+			'renderLang' => 'en',
+		];
+		yield 'Function call with Wikidata item reference arguments' => [ $itemRefArgs, $itemRefRequest ];
+
+		// Function call with Wikidata lexeme reference arguments:
+		// {{#function:Z6805|L1234|L5678}}
+		$lexemeRefArgs = [ 'Z6805', 'L1234', 'L5678' ];
+		$lexemeRefRequest = [
+			'target' => 'Z6805',
+			'arguments' => [
+				'Z6805K1' => 'L1234',
+				'Z6805K2' => 'L5678'
+			],
+			'parseLang' => 'en',
+			'renderLang' => 'en',
+		];
+		yield 'Function call with Wikidata lexeme reference arguments' => [ $lexemeRefArgs, $lexemeRefRequest ];
 	}
 
 	public function testReturnsHtmlFragmentWhenOutputTypeIsZ89() {

@@ -18,11 +18,13 @@ use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikifunctionCallDefaultValues;
 use MediaWiki\Extension\WikiLambda\WikifunctionsClientStore;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Html\Html;
 use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Tidy\RemexCompatFormatter;
 use MediaWiki\WikiMap\WikiMap;
 use Psr\Log\LoggerInterface;
@@ -99,6 +101,37 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		// Fill empty arguments with default values:
 		$expansion = $this->fillEmptyArgsWithDefaultValues( $expansion );
 
+		// On Wikibase client wikis, loop over each argument, in case it's a Wikidata item reference,
+		// and mark us as a user of said item if so. Doing this after default value filling, in case
+		// the default value ends up being a Wikidata item reference (e.g. item for current page).
+		if ( ExtensionRegistry::getInstance()->isLoaded( 'WikibaseClient' ) ) {
+			// Note: An absolute reference to avoid CI issues with references to unknown classes.
+			$wikibaseEntityParser = \Wikibase\Client\WikibaseClient::getEntityIdParser();
+
+			$parserOutputProvider = new ParsoidWrappingParserOutputProvider( $extApi->getMetadata() );
+			$usageAccumulator = \Wikibase\Client\WikibaseClient::getUsageAccumulatorFactory()
+				->newFromParserOutputProvider( $parserOutputProvider );
+
+			foreach ( $expansion['arguments'] as $key => $value ) {
+				if (
+					ZObjectUtils::isValidId( $value )
+					// Short-cut to skip ZObject references which are Wikidata-esque
+					&& !ZObjectUtils::isValidZObjectReference( $value )
+				) {
+					try {
+						// Convert the string into a Wikidata `EntityId`
+						$itemId = $wikibaseEntityParser->parse( $value );
+
+						// TODO (T385631): Only track some usage, somehow?
+						$usageAccumulator->addAllUsage( $itemId );
+
+					} catch ( \Wikibase\DataModel\Entity\EntityIdParsingException ) {
+						// Not a valid Wikidata reference (e.g. "X123"), so treat as a string.
+					}
+				}
+			}
+		}
+
 		$this->logger->debug(
 			'WikiLambda client call made for {function} on {page}',
 			[
@@ -132,30 +165,6 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		// 	[ 'ext.wikilambda.client.styles' ]
 		// );
 
-		// On Wikibase client wikis, loop over each argument, in case it's a Wikidata item reference,
-		// and mark us as a user of said item if so.
-		// FIXME: Disabled as this relies on the legacy Parser
-		// if ( ExtensionRegistry::getInstance()->isLoaded( 'WikibaseClient' ) ) {
-		// 	$wikibaseEntityParser = \Wikibase\Client\WikibaseClient::getEntityIdParser();
-		// 	foreach ( $arguments as $key => $value ) {
-		// 		if (
-		// 			ZObjectUtils::isValidId( $value )
-		// 			// Short-cut to skip ZObject references which are Wikidata-esque
-		// 			&& !ZObjectUtils::isValidZObjectReference( $value )
-		// 		) {
-		// 			try {
-		// 				// Convert the string into a Wikidata `EntityId`
-		// 				$itemId = $wikibaseEntityParser->parse( $value );
-		// 				\Wikibase\Client\WikibaseClient::getUsageAccumulatorFactory()
-		// 					->newFromParser( $parser )
-		// 					// TODO (T385631): Only track some usage, somehow?
-		// 					->addAllUsage( $itemId );
-		// 			} catch ( \Wikibase\DataModel\Entity\EntityIdParsingException $error ) {
-		// 				// Not a valid Wikidata reference, so treat as a string.
-		// 			}
-		// 		}
-		// 	}
-		// }
 		$cachedValue = $this->wikifunctionsClientStore->fetchFromFunctionCallCache( $clientCacheKey );
 
 		if ( $cachedValue ) {
