@@ -94,9 +94,10 @@ ve.ui.WikifunctionsCallContextItem.prototype.setErrorState = function ( errorKey
 			).parse()
 		);
 
+	// TODO (T400631) ext-wikilambda-visualeditor-error-icon class is a temporary fix to see full icon
 	const $error = $( '<div>' )
 		.addClass( 'cdx-message cdx-message--inline cdx-message--error' )
-		.append( $( '<span>' ).addClass( 'cdx-message__icon' ) )
+		.append( $( '<span>' ).addClass( 'cdx-message__icon ext-wikilambda-visualeditor-error-icon' ) )
 		.append( $errorMsg );
 
 	this.$body.empty().append( $error );
