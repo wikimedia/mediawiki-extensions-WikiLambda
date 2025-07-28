@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Utils\GitInfo;
 use Psr\Http\Message\ResponseInterface;
@@ -69,11 +70,13 @@ class OrchestratorRequest {
 			return $this->handleGuzzleRequestForEvaluate( $query, $requestHeaders );
 		}
 
-		return $this->objectCache->getWithSetCallback(
-			$this->objectCache->makeKey(
-				self::FUNCTIONCALL_CACHE_KEY_PREFIX,
-				ZObjectUtils::makeCacheKeyFromZObject( $query )
-			),
+		$requestKey = $this->objectCache->makeKey(
+			self::FUNCTIONCALL_CACHE_KEY_PREFIX,
+			ZObjectUtils::makeCacheKeyFromZObject( $query )
+		);
+
+		$response = $this->objectCache->getWithSetCallback(
+			$requestKey,
 			// TODO (T338243): Is this the right timeout? Maybe TTL_DAY or TTL_MONTH instead?
 			$this->objectCache::TTL_WEEK,
 			function () use ( $query, $requestHeaders ) {
@@ -81,6 +84,25 @@ class OrchestratorRequest {
 				return $this->handleGuzzleRequestForEvaluate( $query, $requestHeaders );
 			}
 		);
+
+		// (T398410) Check that the response is an array
+		if ( is_array( $response ) ) {
+			return $response;
+		}
+
+		// … if not, delete from cache and return an empty response.
+		$logger = LoggerFactory::getInstance( 'WikiLambda' );
+		$logger->error(
+			'Cached orchestrator response was somehow not an array',
+			[
+				'requestKey' => $requestKey,
+				// Shortened to avoid over-loading the logging system
+				'response' => substr( var_export( $response, true ), 0, 1000 )
+			]
+		);
+
+		$this->objectCache->delete( $requestKey );
+		return [ 'result' => null, 'httpStatusCode' => 500 ];
 	}
 
 	/**
@@ -95,7 +117,7 @@ class OrchestratorRequest {
 	 * @return array containing Response object (Z22) returned by orchestrator, down-cast to a string
 	 * and the actual http status code from the Orchestrator
 	 */
-	private function handleGuzzleRequestForEvaluate( $query, $requestHeaders ) {
+	private function handleGuzzleRequestForEvaluate( $query, $requestHeaders ): array {
 		$response = $this->guzzleClient->post( '/1/v1/evaluate/', [
 			'json' => $query,
 			'headers' => $requestHeaders,
