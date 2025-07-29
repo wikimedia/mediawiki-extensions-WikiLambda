@@ -362,18 +362,6 @@ class ZObjectUtils {
 		$record = array_combine( array_map( 'trim', array_keys( $record ) ), $record );
 
 		$type = self::canonicalize( $record[ ZTypeRegistry::Z_OBJECT_TYPE ] ?? null );
-		if ( is_string( $type ) ) {
-			foreach ( $record as $key => $value ) {
-				if ( preg_match( '/^K[1-9]\d*$/', $key ) ) {
-					// $key is guaranteed to be unique, so $globalKey is unique as well
-					$globalKey = $type . $key;
-					if ( !array_key_exists( $globalKey, $record ) ) {
-						$record[$globalKey] = $value;
-						unset( $record[$key] );
-					}
-				}
-			}
-		}
 
 		uksort( $record, [ self::class, 'orderZKeyIDs' ] );
 		$record = array_map( [ self::class, 'canonicalize' ], $record );

@@ -182,7 +182,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 			],
 			'simple record with left local untrimmed key' => [
 				'{ "Z1K1": "Z60", " K1": "a" }',
-				'{ "Z1K1": "Z60", "Z60K1": "a" }'
+				'{ "Z1K1": "Z60", "K1": "a" }'
 			],
 
 			'record with embedded record with key untrimmed' => [
@@ -199,7 +199,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 			],
 			'simple record with unsorted local keys' => [
 				'{ "K1 ": "a", "Z1K1 ": "Z60" }',
-				'{ "Z1K1": "Z60", "Z60K1": "a" }'
+				'{ "Z1K1": "Z60", "K1": "a" }'
 			],
 			'escaped string' => [
 				'{ "Z1K1": "Z6", "Z6K1": "Z6" }',
@@ -279,7 +279,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 			],
 			'ZObject with local keys' => [
 				'{ "Z1K1": "Z60", "K1": "test" }',
-				'{ "Z1K1": "Z60", "Z60K1": "test" }',
+				'{ "Z1K1": "Z60", "K1": "test" }',
 			],
 			// Typed list examples
 			'empty typed list' => [
@@ -319,6 +319,22 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 					. ' "K1": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } },'
 					. ' "K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } } } }',
 				'["Z1", ["Z1"], ["Z1"]]'
+			],
+			'function call function/Z7K1 contains argument reference and function call input keys are local' => [
+				'{ "Z1K1": "Z7", "Z7K1": { "Z1K1": "Z18", "Z18K1": "Z21216K1" },'
+					. ' "K1": { "Z1K1": "Z18", "Z18K1": "Z21216K2" },'
+					. ' "K2": { "Z1K1": "Z18", "Z18K1": "Z21216K3" },'
+					. ' "K3": { "Z1K1": "Z18", "Z18K1": "Z21216K4" } }',
+				'{ "Z1K1": "Z7", "Z7K1": { "Z1K1": "Z18", "Z18K1": "Z21216K1" },'
+					. ' "K1": { "Z1K1": "Z18", "Z18K1": "Z21216K2" },'
+					. ' "K2": { "Z1K1": "Z18", "Z18K1": "Z21216K3" },'
+					. ' "K3": { "Z1K1": "Z18", "Z18K1": "Z21216K4" } }'
+			],
+			'function call function/Z7K1 contains a function call and function call input keys are local' => [
+				'{ "Z1K1": "Z7", "Z7K1": { "Z1K1": "Z17", "Z7K1": "Z801", "Z801K1": "Z10000" },'
+					. ' "K1": "foo/", "K2": "bar" }',
+				'{ "Z1K1": "Z7", "Z7K1": { "Z1K1": "Z17", "Z7K1": "Z801", "Z801K1": "Z10000" },'
+					. ' "K1": "foo/", "K2": "bar" }'
 			]
 		];
 	}
