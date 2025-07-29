@@ -31,6 +31,7 @@
 	"wikilambda-recentchanges-filter-label": "Modifications de Wikifunctions",
 	"wikilambda-recentchanges-filter-rc-pref": "Afficher les modifications de Wikifunctions dans les changements récents",
 	"wikilambda-recentchanges-filter-wl-pref": "Afficher les modifications de Wikifunctions dans votre liste de surveillance",
+	"wikilambda-visualeditor-wikifunctionscall-back": "Retour",
 	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Chargement",
 	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "L'aperçu a pris trop de temps",
 	"wikilambda-visualeditor-wikifunctionscall-changedesc-title": "Modification des entrées de Wikifunctions",
