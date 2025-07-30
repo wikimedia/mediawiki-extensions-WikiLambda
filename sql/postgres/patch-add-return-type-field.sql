@@ -3,7 +3,9 @@
 -- Do not modify this file directly.
 -- See https://www.mediawiki.org/wiki/Manual:Schema_changes
 DROP INDEX wlzl_label_searchindex;
+
 DROP INDEX wlzl_label_searchindex_strict;
+
 ALTER TABLE wikilambda_zobject_labels
   ADD wlzl_return_type TEXT DEFAULT NULL;
 

@@ -3,16 +3,18 @@
 -- Do not modify this file directly.
 -- See https://www.mediawiki.org/wiki/Manual:Schema_changes
 DROP INDEX wlzl_label_searchindex ON /*_*/wikilambda_zobject_labels;
+
 DROP INDEX wlzl_label_searchindex_strict ON /*_*/wikilambda_zobject_labels;
+
 ALTER TABLE /*_*/wikilambda_zobject_labels
   ADD wlzl_return_type VARBINARY(255) DEFAULT NULL;
 
 CREATE INDEX wlzl_label_searchindex ON /*_*/wikilambda_zobject_labels (
-    wlzl_type, wlzl_language, wlzl_label_normalised,
-    wlzl_return_type
-  );
+  wlzl_type, wlzl_language, wlzl_label_normalised,
+  wlzl_return_type
+);
 
 CREATE INDEX wlzl_label_searchindex_strict ON /*_*/wikilambda_zobject_labels (
-    wlzl_type, wlzl_language, wlzl_label,
-    wlzl_return_type
-  );
+  wlzl_type, wlzl_language, wlzl_label,
+  wlzl_return_type
+);

@@ -12,22 +12,24 @@ SELECT
   wlzl_label_normalised,
   wlzl_label_primary
 FROM /*_*/wikilambda_zobject_labels;
+
 DROP TABLE /*_*/wikilambda_zobject_labels;
 
 
 CREATE TABLE /*_*/wikilambda_zobject_labels (
-    wlzl_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    wlzl_zobject_zid BLOB NOT NULL, wlzl_type BLOB NOT NULL,
-    wlzl_language BLOB NOT NULL, wlzl_label BLOB NOT NULL,
-    wlzl_label_normalised BLOB NOT NULL,
-    wlzl_label_primary SMALLINT DEFAULT 1 NOT NULL,
-    wlzl_return_type BLOB DEFAULT NULL
-  );
+  wlzl_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  wlzl_zobject_zid BLOB NOT NULL, wlzl_type BLOB NOT NULL,
+  wlzl_language BLOB NOT NULL, wlzl_label BLOB NOT NULL,
+  wlzl_label_normalised BLOB NOT NULL,
+  wlzl_label_primary SMALLINT DEFAULT 1 NOT NULL,
+  wlzl_return_type BLOB DEFAULT NULL
+);
+
 INSERT INTO /*_*/wikilambda_zobject_labels (
-    wlzl_id, wlzl_zobject_zid, wlzl_type,
-    wlzl_language, wlzl_label, wlzl_label_normalised,
-    wlzl_label_primary
-  )
+  wlzl_id, wlzl_zobject_zid, wlzl_type,
+  wlzl_language, wlzl_label, wlzl_label_normalised,
+  wlzl_label_primary
+)
 SELECT
   wlzl_id,
   wlzl_zobject_zid,
@@ -38,14 +40,15 @@ SELECT
   wlzl_label_primary
 FROM
   /*_*/__temp__wikilambda_zobject_labels;
+
 DROP TABLE /*_*/__temp__wikilambda_zobject_labels;
 
 CREATE INDEX wlzl_label_searchindex ON /*_*/wikilambda_zobject_labels (
-    wlzl_type, wlzl_language, wlzl_label_normalised,
-    wlzl_return_type
-  );
+  wlzl_type, wlzl_language, wlzl_label_normalised,
+  wlzl_return_type
+);
 
 CREATE INDEX wlzl_label_searchindex_strict ON /*_*/wikilambda_zobject_labels (
-    wlzl_type, wlzl_language, wlzl_label,
-    wlzl_return_type
-  );
+  wlzl_type, wlzl_language, wlzl_label,
+  wlzl_return_type
+);

@@ -11,20 +11,22 @@ SELECT
   wlzo_related_zobject,
   wlzo_related_type
 FROM /*_*/wikilambda_zobject_join;
+
 DROP TABLE /*_*/wikilambda_zobject_join;
 
 
 CREATE TABLE /*_*/wikilambda_zobject_join (
-    wlzo_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    wlzo_main_zid BLOB NOT NULL, wlzo_main_type BLOB NOT NULL,
-    wlzo_key BLOB NOT NULL, wlzo_related_zobject BLOB NOT NULL,
-    wlzo_related_type BLOB NOT NULL
-  );
+  wlzo_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  wlzo_main_zid BLOB NOT NULL, wlzo_main_type BLOB NOT NULL,
+  wlzo_key BLOB NOT NULL, wlzo_related_zobject BLOB NOT NULL,
+  wlzo_related_type BLOB NOT NULL
+);
+
 INSERT INTO /*_*/wikilambda_zobject_join (
-    wlzo_id, wlzo_main_zid, wlzo_main_type,
-    wlzo_key, wlzo_related_zobject,
-    wlzo_related_type
-  )
+  wlzo_id, wlzo_main_zid, wlzo_main_type,
+  wlzo_key, wlzo_related_zobject,
+  wlzo_related_type
+)
 SELECT
   wlzo_id,
   wlzo_main_zid,
@@ -34,6 +36,7 @@ SELECT
   wlzo_related_type
 FROM
   /*_*/__temp__wikilambda_zobject_join;
+
 DROP TABLE /*_*/__temp__wikilambda_zobject_join;
 
 CREATE INDEX wlzo_index_main_zid_key ON /*_*/wikilambda_zobject_join (wlzo_main_zid, wlzo_key);
