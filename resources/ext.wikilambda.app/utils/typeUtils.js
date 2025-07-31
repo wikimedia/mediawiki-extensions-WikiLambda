@@ -44,6 +44,16 @@ const typeUtils = {
 	},
 
 	/**
+	 * Validate if a string is a valid local Key
+	 *
+	 * @param {string} key
+	 * @return {boolean}
+	 */
+	isLocalKey: function ( key ) {
+		return /^K\d+$/.test( key );
+	},
+
+	/**
 	 * Get the Zid part of a global Key
 	 *
 	 * @param {string} key

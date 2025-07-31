@@ -752,6 +752,58 @@ describe( 'ZObjectKeyValue', () => {
 					offset: 1
 				} );
 			} );
+
+			it( 'adds local argument to function call if the mode selector emits add-arg', () => {
+				keyPath = 'main.Z2K2.Z7K1';
+
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						keyPath,
+						objectValue,
+						edit: true
+					},
+					global: {
+						stubs: {
+							WlKeyValueBlock: false,
+							WlKeyBlock: false
+						}
+					}
+				} );
+
+				const modeSelector = wrapper.findComponent( { name: 'wl-mode-selector' } );
+				modeSelector.vm.$emit( 'add-arg' );
+
+				expect( store.setDirty ).toHaveBeenCalled();
+				expect( store.addLocalArgumentToFunctionCall ).toHaveBeenCalledWith( {
+					keyPath: [ 'main', 'Z2K2', 'Z7K1' ]
+				} );
+			} );
+
+			it( 'deletes local argument to function call if the mode selector emits delete-arg', () => {
+				keyPath = 'main.Z2K2.K3';
+
+				const wrapper = shallowMount( ZObjectKeyValue, {
+					props: {
+						keyPath,
+						objectValue,
+						edit: true
+					},
+					global: {
+						stubs: {
+							WlKeyValueBlock: false,
+							WlKeyBlock: false
+						}
+					}
+				} );
+
+				const modeSelector = wrapper.findComponent( { name: 'wl-mode-selector' } );
+				modeSelector.vm.$emit( 'delete-arg' );
+
+				expect( store.setDirty ).toHaveBeenCalled();
+				expect( store.deleteLocalArgumentFromFunctionCall ).toHaveBeenCalledWith( {
+					keyPath: [ 'main', 'Z2K2', 'K3' ]
+				} );
+			} );
 		} );
 
 		describe( 'disable edit', () => {

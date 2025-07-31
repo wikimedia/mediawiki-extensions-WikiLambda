@@ -34,6 +34,8 @@
 					@delete-list-item="deleteListItem"
 					@move-before="moveBefore"
 					@move-after="moveAfter"
+					@add-arg="addArgument"
+					@delete-arg="deleteArgument"
 				></wl-mode-selector>
 			</template>
 			<!-- Value: will always be rendered -->
@@ -490,10 +492,12 @@ module.exports = exports = defineComponent( {
 		}
 	} ),
 	methods: Object.assign( {}, mapActions( useMainStore, [
+		'addLocalArgumentToFunctionCall',
 		'changeTypeByKeyPath',
 		'clearTypeByKeyPath',
 		'createObjectByType',
 		'deleteListItemsByKeyPath',
+		'deleteLocalArgumentFromFunctionCall',
 		'moveListItemByKeyPath',
 		'navigate',
 		'pushItemsByKeyPath',
@@ -731,6 +735,24 @@ module.exports = exports = defineComponent( {
 			this.moveListItemByKeyPath( {
 				keyPath: this.keyPath.split( '.' ),
 				offset: 1
+			} );
+			this.setDirtyIfMainObject();
+		},
+		/**
+		 * Adds a new local argument to the function call.
+		 */
+		addArgument: function () {
+			this.addLocalArgumentToFunctionCall( {
+				keyPath: this.keyPath.split( '.' )
+			} );
+			this.setDirtyIfMainObject();
+		},
+		/**
+		 * Deletes a local argument from the function call.
+		 */
+		deleteArgument: function () {
+			this.deleteLocalArgumentFromFunctionCall( {
+				keyPath: this.keyPath.split( '.' )
 			} );
 			this.setDirtyIfMainObject();
 		},

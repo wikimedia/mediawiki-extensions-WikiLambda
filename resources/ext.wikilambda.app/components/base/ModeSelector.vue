@@ -206,6 +206,40 @@ module.exports = exports = defineComponent( {
 				menuItems.push( moveActionsGroup, deleteActionGroup );
 			}
 
+			// If we are setting a function call function Id with a non-ref,
+			// enable the option of adding args manually:
+			if ( this.key === Constants.Z_FUNCTION_CALL_FUNCTION && this.typeString !== Constants.Z_REFERENCE ) {
+				const addArgumentActionGroup = {
+					label: this.$i18n( 'wikilambda-mode-selector-local-key-group-label' ),
+					hideLabel: true,
+					items: [
+						{
+							label: this.$i18n( 'wikilambda-add-local-key-to-function-call' ).text(),
+							value: Constants.LIST_MENU_OPTIONS.ADD_ARG,
+							icon: icons.cdxIconAdd
+						}
+					]
+				};
+				menuItems.push( addArgumentActionGroup );
+			}
+
+			// If this is a local key, enable the option of removing it manually:
+			if ( this.isLocalKey( this.key ) ) {
+				const deleteArgumentActionGroup = {
+					label: this.$i18n( 'wikilambda-mode-selector-local-key-group-label' ),
+					hideLabel: true,
+					items: [
+						{
+							label: this.$i18n( 'wikilambda-delete-local-key-from-function-call' ).text(),
+							value: Constants.LIST_MENU_OPTIONS.DELETE_ARG,
+							icon: icons.cdxIconTrash,
+							action: 'destructive'
+						}
+					]
+				};
+				menuItems.push( deleteArgumentActionGroup );
+			}
+
 			return menuItems;
 		},
 		/**
@@ -238,6 +272,14 @@ module.exports = exports = defineComponent( {
 			}
 			if ( value === Constants.LIST_MENU_OPTIONS.MOVE_AFTER ) {
 				this.$emit( 'move-after' );
+				return;
+			}
+			if ( value === Constants.LIST_MENU_OPTIONS.ADD_ARG ) {
+				this.$emit( 'add-arg' );
+				return;
+			}
+			if ( value === Constants.LIST_MENU_OPTIONS.DELETE_ARG ) {
+				this.$emit( 'delete-arg' );
 				return;
 			}
 

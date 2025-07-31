@@ -8,23 +8,25 @@
 'use strict';
 
 const {
-	isValidZidFormat,
+	getScaffolding,
 	getZidOfGlobalKey,
 	isKeyTypedListType,
 	isKeyTypedListItem,
-	typeToString,
-	getScaffolding
+	isLocalKey,
+	isValidZidFormat,
+	typeToString
 } = require( '../utils/typeUtils.js' );
 
 module.exports = exports = {
 	methods: {
 		// NOTE: Only add into the mixin those methods
 		// that need to be accessible from components.
-		isValidZidFormat,
+		getScaffolding,
 		getZidOfGlobalKey,
 		isKeyTypedListType,
 		isKeyTypedListItem,
-		typeToString,
-		getScaffolding
+		isLocalKey,
+		isValidZidFormat,
+		typeToString
 	}
 };

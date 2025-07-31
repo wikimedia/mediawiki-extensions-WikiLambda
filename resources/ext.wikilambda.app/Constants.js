@@ -515,7 +515,9 @@ Constants.LINKED_TYPES = [
 Constants.LIST_MENU_OPTIONS = {
 	DELETE_ITEM: 'delete-list-item',
 	MOVE_BEFORE: 'move-before',
-	MOVE_AFTER: 'move-after'
+	MOVE_AFTER: 'move-after',
+	ADD_ARG: 'add-arg',
+	DELETE_ARG: 'delete-arg'
 };
 
 Constants.PATHS = {

@@ -483,4 +483,131 @@ describe( 'ModeSelector', () => {
 			await waitFor( () => expect( wrapper.emitted() ).toHaveProperty( 'move-after' ) );
 		} );
 	} );
+
+	describe( 'add local argument to function call', () => {
+		it( 'does not show add argument option if function call function is referenced', () => {
+			keyPath = 'main.Z2K2.Z7K1';
+			objectValue = { Z1K1: 'Z9', Z9K1: 'Z10000' };
+
+			const wrapper = shallowMount( ModeSelector, {
+				props: {
+					keyPath,
+					objectValue,
+					edit: true,
+					expectedType: Constants.Z_MONOLINGUALSTRING
+				}
+			} );
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
+			expect( menu.vm.menuItems.length ).toBe( 1 );
+		} );
+
+		it( 'shows add argument option if function call function is a function call', () => {
+			keyPath = 'main.Z2K2.Z7K1';
+			objectValue = {
+				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+				Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10000' }
+			};
+
+			const wrapper = shallowMount( ModeSelector, {
+				props: {
+					keyPath,
+					objectValue,
+					edit: true,
+					expectedType: Constants.Z_MONOLINGUALSTRING
+				}
+			} );
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
+			expect( menu.vm.menuItems[ 1 ].items.at( -1 ).value ).toBe( 'add-arg' );
+		} );
+
+		it( 'shows add argument option if function call function is an argument reference', () => {
+			keyPath = 'main.Z2K2.Z7K1';
+			objectValue = {
+				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z18' },
+				Z18K1: { Z1K1: 'Z6', Z6K1: 'Z10000K1' }
+			};
+
+			const wrapper = shallowMount( ModeSelector, {
+				props: {
+					keyPath,
+					objectValue,
+					edit: true,
+					expectedType: Constants.Z_MONOLINGUALSTRING
+				}
+			} );
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
+			expect( menu.vm.menuItems[ 1 ].items.at( -1 ).value ).toBe( 'add-arg' );
+		} );
+
+		it( 'emits add-arg event when selecting add-arg menu option', async () => {
+			keyPath = 'main.Z2K2.Z7K1';
+			objectValue = {
+				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+				Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10000' }
+			};
+
+			const wrapper = shallowMount( ModeSelector, {
+				props: {
+					keyPath,
+					objectValue,
+					edit: true,
+					expectedType: Constants.Z_MONOLINGUALSTRING
+				}
+			} );
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
+			menu.vm.$emit( 'update:selected', Constants.LIST_MENU_OPTIONS.ADD_ARG );
+			await waitFor( () => expect( wrapper.emitted() ).toHaveProperty( 'add-arg' ) );
+		} );
+	} );
+
+	describe( 'delete local argument from function call', () => {
+		it( 'does not show delete argument option if key is global', () => {
+			keyPath = 'main.Z2K2.Z10000K1';
+			objectValue = { Z1K1: 'Z6', Z6K1: 'some arg' };
+
+			const wrapper = shallowMount( ModeSelector, {
+				props: {
+					keyPath,
+					objectValue,
+					edit: true,
+					expectedType: Constants.Z_MONOLINGUALSTRING
+				}
+			} );
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
+			expect( menu.vm.menuItems.length ).toBe( 1 );
+		} );
+
+		it( 'shows delete argument option if key is local', () => {
+			keyPath = 'main.Z2K2.K1';
+			objectValue = { Z1K1: 'Z6', Z6K1: 'some arg' };
+
+			const wrapper = shallowMount( ModeSelector, {
+				props: {
+					keyPath,
+					objectValue,
+					edit: true,
+					expectedType: Constants.Z_MONOLINGUALSTRING
+				}
+			} );
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
+			expect( menu.vm.menuItems[ 1 ].items.at( -1 ).value ).toBe( 'delete-arg' );
+		} );
+
+		it( 'emits add-arg event when selecting add-arg menu option', async () => {
+			keyPath = 'main.Z2K2.K1';
+			objectValue = { Z1K1: 'Z6', Z6K1: 'some arg' };
+
+			const wrapper = shallowMount( ModeSelector, {
+				props: {
+					keyPath,
+					objectValue,
+					edit: true,
+					expectedType: Constants.Z_MONOLINGUALSTRING
+				}
+			} );
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
+			menu.vm.$emit( 'update:selected', Constants.LIST_MENU_OPTIONS.DELETE_ARG );
+			await waitFor( () => expect( wrapper.emitted() ).toHaveProperty( 'delete-arg' ) );
+		} );
+	} );
 } );

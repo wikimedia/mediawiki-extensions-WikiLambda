@@ -13,6 +13,7 @@ const {
 	isValidZidFormat,
 	typeToString,
 	isGlobalKey,
+	isLocalKey,
 	getZidOfGlobalKey,
 	getScaffolding,
 	getKeyFromKeyList,
@@ -236,6 +237,17 @@ describe( 'typeUtils', () => {
 		} );
 		it( 'return false if string is not a valid global Key', () => {
 			const result = isGlobalKey( 'Z123K12K' );
+			expect( result ).toBeFalsy();
+		} );
+	} );
+
+	describe( 'isLocalKey', () => {
+		it( 'return true if string is a valid local Key', () => {
+			const result = isLocalKey( 'K123' );
+			expect( result ).toBeTruthy();
+		} );
+		it( 'return false if string is not a valid local Key', () => {
+			const result = isLocalKey( 'Z123K12' );
 			expect( result ).toBeFalsy();
 		} );
 	} );

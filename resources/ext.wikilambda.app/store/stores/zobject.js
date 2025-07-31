@@ -11,7 +11,7 @@ const { fetchZObjects } = require( '../../utils/apiUtils.js' );
 const { getParameterByName } = require( '../../utils/urlUtils.js' );
 const { extractWikidataLexemeIds } = require( '../../utils/wikidataUtils.js' );
 const { extractZIDs, canonicalToHybrid } = require( '../../utils/schemata.js' );
-const { isTruthyOrEqual, typeToString } = require( '../../utils/typeUtils.js' );
+const { isTruthyOrEqual, typeToString, isLocalKey } = require( '../../utils/typeUtils.js' );
 const {
 	getZMonolingualItemForLang,
 	getZMonolingualStringsetForLang,
@@ -523,6 +523,84 @@ const zobjectStore = {
 			// Perform mutation:
 			const [ item ] = target.splice( index, 1 );
 			target.splice( newIndex, 0, item );
+		},
+
+		/**
+		 * Adds the next available local key (K1, K2, ...Kn) to the given function call
+		 *
+		 * @param {Object} payload
+		 * @param {Array} payload.keyPath - The key path of the function call function key
+		 */
+		addLocalArgumentToFunctionCall: function ( payload ) {
+			const { keyPath } = payload;
+			const { target } = resolveZObjectByKeyPath( this.jsonObject, keyPath );
+
+			if ( !target || typeof target !== 'object' || !( Constants.Z_FUNCTION_CALL_FUNCTION in target ) ) {
+				throw new Error( 'Unable to mutate state: Expected Function call at parent path' );
+			}
+
+			// Get all local keys in the function call
+			const localKeys = Object.keys( target ).filter( ( key ) => isLocalKey( key ) );
+
+			// Extract the numeric part and find the maximum
+			const maxIndex = localKeys.reduce( ( max, key ) => {
+				const index = parseInt( key.slice( 1 ), 10 );
+				return isNaN( index ) ? max : Math.max( max, index );
+			}, 0 );
+
+			// Construct the next key name
+			const newLocalKey = `K${ maxIndex + 1 }`;
+
+			// Construct the blank value
+			const value = this.createObjectByType( {
+				type: Constants.Z_OBJECT
+			} );
+
+			// Add the new key with value null
+			const parentPath = keyPath.slice( 0, -1 );
+			this.setValueByKeyPath( {
+				keyPath: [ ...parentPath, newLocalKey ],
+				value
+			} );
+		},
+
+		/**
+		 * Deletes the given local key from the given function call, and renumbers
+		 * all the sequential ones.
+		 *
+		 * @param {Object} payload
+		 * @param {Array} payload.keyPath - The key path of the function call argument to delete
+		 */
+		deleteLocalArgumentFromFunctionCall: function ( payload ) {
+			const { keyPath } = payload;
+			const { target, finalKey } = resolveZObjectByKeyPath( this.jsonObject, keyPath );
+
+			if ( !target || typeof target !== 'object' || !( Constants.Z_FUNCTION_CALL_FUNCTION in target ) ) {
+				throw new Error( 'Unable to mutate state: Expected Function call at parent path' );
+			}
+
+			// Perform mutation:
+			delete target[ finalKey ];
+
+			const deletedIndex = parseInt( finalKey.slice( 1 ), 10 );
+
+			const renumberKeys = Object.keys( target )
+				.filter( ( key ) => isLocalKey( key ) )
+				.filter( ( key ) => parseInt( key.slice( 1 ), 10 ) > deletedIndex );
+
+			const parentPath = keyPath.slice( 0, -1 );
+
+			renumberKeys.forEach( ( key ) => {
+				const keyIndex = parseInt( key.slice( 1 ), 10 );
+				const newKey = `K${ keyIndex - 1 }`;
+
+				const value = target[ key ];
+				delete target[ key ];
+				this.setValueByKeyPath( {
+					keyPath: [ ...parentPath, newKey ],
+					value
+				} );
+			} );
 		},
 
 		/**

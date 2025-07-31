@@ -1841,6 +1841,94 @@ describe( 'zobject Pinia store', () => {
 			} );
 		} );
 
+		describe( 'addLocalArgumentToFunctionCall', () => {
+			it( 'adds first local key to function call without keys', () => {
+				const zobject = {
+					Z2K2: {
+						Z1K1: 'Z7',
+						Z7K1: { Z1K1: 'Z18', Z18K1: 'Z10000K1' }
+					}
+				};
+				store.jsonObject.main = canonicalToHybrid( zobject );
+
+				store.addLocalArgumentToFunctionCall( {
+					keyPath: [ 'main', 'Z2K2', 'Z7K1' ]
+				} );
+
+				const canonical = hybridToCanonical( store.jsonObject.main.Z2K2 );
+				expect( canonical ).toEqual( {
+					Z1K1: 'Z7',
+					Z7K1: { Z1K1: 'Z18', Z18K1: 'Z10000K1' },
+					K1: { Z1K1: 'Z1' }
+				} );
+			} );
+
+			it( 'adds third local key to function call with two keys', () => {
+				const zobject = {
+					Z2K2: {
+						Z1K1: 'Z7',
+						Z7K1: { Z1K1: 'Z18', Z18K1: 'Z10000K1' },
+						K1: 'one',
+						K2: 'two'
+					}
+				};
+				store.jsonObject.main = canonicalToHybrid( zobject );
+
+				store.addLocalArgumentToFunctionCall( {
+					keyPath: [ 'main', 'Z2K2', 'Z7K1' ]
+				} );
+
+				const canonical = hybridToCanonical( store.jsonObject.main.Z2K2 );
+				expect( canonical ).toEqual( {
+					Z1K1: 'Z7',
+					Z7K1: { Z1K1: 'Z18', Z18K1: 'Z10000K1' },
+					K1: 'one',
+					K2: 'two',
+					K3: { Z1K1: 'Z1' }
+				} );
+			} );
+		} );
+
+		describe( 'deleteLocalArgumentFromFunctionCall', () => {
+			beforeEach( () => {
+				const zobject = {
+					Z2K2: {
+						Z1K1: 'Z7',
+						Z7K1: { Z1K1: 'Z18', Z18K1: 'Z10000K1' },
+						K1: 'one',
+						K2: { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'two' }
+					}
+				};
+				store.jsonObject.main = canonicalToHybrid( zobject );
+			} );
+
+			it( 'deletes the tail key from function call', () => {
+				store.deleteLocalArgumentFromFunctionCall( {
+					keyPath: [ 'main', 'Z2K2', 'K2' ]
+				} );
+
+				const canonical = hybridToCanonical( store.jsonObject.main.Z2K2 );
+				expect( canonical ).toEqual( {
+					Z1K1: 'Z7',
+					Z7K1: { Z1K1: 'Z18', Z18K1: 'Z10000K1' },
+					K1: 'one'
+				} );
+			} );
+
+			it( 'deletes a middle key from function call and renames the following ones', () => {
+				store.deleteLocalArgumentFromFunctionCall( {
+					keyPath: [ 'main', 'Z2K2', 'K1' ]
+				} );
+
+				const canonical = hybridToCanonical( store.jsonObject.main.Z2K2 );
+				expect( canonical ).toEqual( {
+					Z1K1: 'Z7',
+					Z7K1: { Z1K1: 'Z18', Z18K1: 'Z10000K1' },
+					K1: { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'two' }
+				} );
+			} );
+		} );
+
 		describe( 'setWikidataEnumReferenceType', () => {
 			beforeEach( () => {
 				const zobject = {
