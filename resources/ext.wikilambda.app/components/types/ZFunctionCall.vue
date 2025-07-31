@@ -60,12 +60,14 @@ module.exports = exports = defineComponent( {
 	},
 	computed: {
 		/**
-		 * Returns the value of the function call or undefined
+		 * Returns whether the function call has a blank value at some point.
+		 * It could be the direct Z7K1 value, or another unset Z18 or Z7 at
+		 * a deeper level.
 		 *
 		 * @return {string|undefined}
 		 */
-		value: function () {
-			return this.getZFunctionCallFunctionId( this.objectValue );
+		hasBlankValue: function () {
+			return !this.getZFunctionCallFunctionId( this.objectValue, true );
 		},
 		/**
 		 * Returns a special class name when the function call is undefined
@@ -73,7 +75,7 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		iconClass: function () {
-			return !this.value ? 'ext-wikilambda-app-function-call__icon--undefined' : '';
+			return this.hasBlankValue ? 'ext-wikilambda-app-function-call__icon--undefined' : '';
 		}
 	}
 } );

@@ -534,6 +534,48 @@ describe( 'zobjectUtils', () => {
 			expect( zobjectUtils.getZFunctionCallFunctionId( zobject ) ).toBe( expected );
 			expect( zobjectUtils.getZFunctionCallFunctionId( canonicalToHybrid( zobject ) ) ).toBe( expected );
 		} );
+
+		it( 'returns terminal value when Z7K1 is defined by an argument reference and nested flag is true', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: {
+					Z1K1: 'Z18',
+					Z18K1: 'Z10000K1'
+				}
+			};
+			const expected = 'Z10000K1';
+			expect( zobjectUtils.getZFunctionCallFunctionId( zobject, true ) ).toBe( expected );
+			expect( zobjectUtils.getZFunctionCallFunctionId( canonicalToHybrid( zobject ), true ) ).toBe( expected );
+		} );
+
+		it( 'returns terminal value when Z7K1 is defined by a function call and nested flag is true', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: {
+					Z1K1: 'Z7',
+					Z7K1: 'Z10002'
+				}
+			};
+			const expected = 'Z10002';
+			expect( zobjectUtils.getZFunctionCallFunctionId( zobject, true ) ).toBe( expected );
+			expect( zobjectUtils.getZFunctionCallFunctionId( canonicalToHybrid( zobject ), true ) ).toBe( expected );
+		} );
+
+		it( 'returns terminal value when Z7K1 has a deeply nested function call and nested flag is true', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: {
+					Z1K1: 'Z7',
+					Z7K1: {
+						Z1K1: 'Z7',
+						Z7K1: 'Z10003'
+					}
+				}
+			};
+			const expected = 'Z10003';
+			expect( zobjectUtils.getZFunctionCallFunctionId( zobject, true ) ).toBe( expected );
+			expect( zobjectUtils.getZFunctionCallFunctionId( canonicalToHybrid( zobject ), true ) ).toBe( expected );
+		} );
 	} );
 
 	describe( 'getZFunctionCallArgumentKeys', () => {

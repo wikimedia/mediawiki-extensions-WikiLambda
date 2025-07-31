@@ -204,15 +204,18 @@ const zobjectUtils = {
 	/**
 	 * Returns the terminal value of a function call function (Z7K1),
 	 * only when it's a direct reference.
-	 * * If Z7K1 has an argument reference, returns undefined
-	 * * If Z7K1 has a function call, returns undefined
+	 *
+	 * If nested flag is true, returns the terminal value by:
+	 * * if Z7K1 has an argument reference, returns its terminal value
+	 * * if Z7K1 has a function call, returns its terminal value recursively
 	 *
 	 * Accepts both canonical and hybrid.
 	 *
 	 * @param {Object} value
+	 * @param {boolean} nested
 	 * @return {string|undefined}
 	 */
-	getZFunctionCallFunctionId: function ( value ) {
+	getZFunctionCallFunctionId: function ( value, nested = false ) {
 		if ( !value || typeof value !== 'object' || !( Constants.Z_FUNCTION_CALL_FUNCTION in value ) ) {
 			return undefined;
 		}
@@ -220,6 +223,17 @@ const zobjectUtils = {
 
 		if ( typeof field === 'string' || ( Constants.Z_REFERENCE_ID in field ) ) {
 			return zobjectUtils.getZReferenceTerminalValue( field );
+		}
+
+		// If nested flag is true:
+		// return final value of argument reference or nested function call
+		if ( nested ) {
+			if ( Constants.Z_ARGUMENT_REFERENCE_KEY in field ) {
+				return zobjectUtils.getZArgumentReferenceTerminalValue( field );
+			}
+			if ( Constants.Z_FUNCTION_CALL_FUNCTION in field ) {
+				return zobjectUtils.getZFunctionCallFunctionId( field, true );
+			}
 		}
 
 		return undefined;
