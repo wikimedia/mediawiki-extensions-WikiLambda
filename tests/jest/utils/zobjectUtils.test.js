@@ -507,7 +507,7 @@ describe( 'zobjectUtils', () => {
 			expect( zobjectUtils.getZFunctionCallFunctionId( canonicalToHybrid( zobject ) ) ).toBe( expected );
 		} );
 
-		it( 'returns terminal value when is nested', () => {
+		it( 'returns undefined when Z7K1 is defined by a function call', () => {
 			const zobject = {
 				Z1K1: 'Z7',
 				Z7K1: {
@@ -515,7 +515,21 @@ describe( 'zobjectUtils', () => {
 					Z7K1: 'Z10002'
 				}
 			};
-			const expected = 'Z10002';
+			const expected = undefined;
+
+			expect( zobjectUtils.getZFunctionCallFunctionId( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZFunctionCallFunctionId( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
+
+		it( 'returns undefined Z7K1 is defined by an argument reference', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: {
+					Z1K1: 'Z18',
+					Z18K1: 'Z10000K1'
+				}
+			};
+			const expected = undefined;
 
 			expect( zobjectUtils.getZFunctionCallFunctionId( zobject ) ).toBe( expected );
 			expect( zobjectUtils.getZFunctionCallFunctionId( canonicalToHybrid( zobject ) ) ).toBe( expected );
@@ -1906,6 +1920,188 @@ describe( 'zobjectUtils', () => {
 			expect( canonical ).toEqual( expected );
 
 			const hybrid = zobjectUtils.validateGenericType( keyPath, canonicalToHybrid( zobject ) );
+			expect( hybrid ).toEqual( expected );
+		} );
+	} );
+
+	describe( 'validateFunctionCall', () => {
+		const keyPath = [ 'main', 'Z2K2', 'Z20K2' ];
+
+		it( 'unset arg reference is not valid', () => {
+			const zobject = {
+				Z1K1: 'Z18',
+				Z18K1: ''
+			};
+
+			const expected = [
+				{ keyPath: 'main.Z2K2.Z20K2.Z18K1', isValid: false }
+			];
+
+			const canonical = zobjectUtils.validateFunctionCall( keyPath, zobject );
+			expect( canonical ).toEqual( expected );
+
+			const hybrid = zobjectUtils.validateFunctionCall( keyPath, canonicalToHybrid( zobject ) );
+			expect( hybrid ).toEqual( expected );
+		} );
+
+		it( 'unset arg reference with no Z18K1 is not valid', () => {
+			const zobject = {
+				Z1K1: 'Z18'
+			};
+
+			const expected = [
+				{ keyPath: 'main.Z2K2.Z20K2', isValid: false }
+			];
+
+			const canonical = zobjectUtils.validateFunctionCall( keyPath, zobject );
+			expect( canonical ).toEqual( expected );
+
+			const hybrid = zobjectUtils.validateFunctionCall( keyPath, canonicalToHybrid( zobject ) );
+			expect( hybrid ).toEqual( expected );
+		} );
+
+		it( 'set arg reference is valid', () => {
+			const zobject = {
+				Z1K1: 'Z18',
+				Z18K1: 'Z10000K1'
+			};
+
+			const expected = [
+				{ keyPath: 'main.Z2K2.Z20K2.Z18K1', isValid: true }
+			];
+
+			const canonical = zobjectUtils.validateFunctionCall( keyPath, zobject );
+			expect( canonical ).toEqual( expected );
+
+			const hybrid = zobjectUtils.validateFunctionCall( keyPath, canonicalToHybrid( zobject ) );
+			expect( hybrid ).toEqual( expected );
+		} );
+
+		it( 'unset function call without Z7K1 is not valid', () => {
+			const zobject = {
+				Z1K1: 'Z7'
+			};
+
+			const expected = [
+				{ keyPath: 'main.Z2K2.Z20K2', isValid: false }
+			];
+
+			const canonical = zobjectUtils.validateFunctionCall( keyPath, zobject );
+			expect( canonical ).toEqual( expected );
+
+			const hybrid = zobjectUtils.validateFunctionCall( keyPath, canonicalToHybrid( zobject ) );
+			expect( hybrid ).toEqual( expected );
+		} );
+
+		it( 'unset function call is not valid', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: { Z1K1: 'Z9', Z9K1: '' }
+			};
+
+			const expected = [
+				{ keyPath: 'main.Z2K2.Z20K2.Z7K1', isValid: false }
+			];
+
+			const canonical = zobjectUtils.validateFunctionCall( keyPath, zobject );
+			expect( canonical ).toEqual( expected );
+
+			const hybrid = zobjectUtils.validateFunctionCall( keyPath, canonicalToHybrid( zobject ) );
+			expect( hybrid ).toEqual( expected );
+		} );
+
+		it( 'set function call is valid', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z10000'
+			};
+
+			const expected = [
+				{ keyPath: 'main.Z2K2.Z20K2.Z7K1', isValid: true }
+			];
+
+			const canonical = zobjectUtils.validateFunctionCall( keyPath, zobject );
+			expect( canonical ).toEqual( expected );
+
+			const hybrid = zobjectUtils.validateFunctionCall( keyPath, canonicalToHybrid( zobject ) );
+			expect( hybrid ).toEqual( expected );
+		} );
+
+		it( 'unset argument reference in function call is not valid', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: { Z1K1: 'Z18', Z18K1: '' }
+			};
+
+			const expected = [
+				{ keyPath: 'main.Z2K2.Z20K2.Z7K1', isValid: false },
+				{ keyPath: 'main.Z2K2.Z20K2.Z7K1.Z18K1', isValid: false }
+			];
+
+			const canonical = zobjectUtils.validateFunctionCall( keyPath, zobject );
+			expect( canonical ).toEqual( expected );
+
+			const hybrid = zobjectUtils.validateFunctionCall( keyPath, canonicalToHybrid( zobject ) );
+			expect( hybrid ).toEqual( expected );
+		} );
+
+		it( 'set argument reference in function call is valid', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: { Z1K1: 'Z18', Z18K1: 'Z10000K1' }
+			};
+
+			const expected = [
+				{ keyPath: 'main.Z2K2.Z20K2.Z7K1', isValid: true },
+				{ keyPath: 'main.Z2K2.Z20K2.Z7K1.Z18K1', isValid: true }
+			];
+
+			const canonical = zobjectUtils.validateFunctionCall( keyPath, zobject );
+			expect( canonical ).toEqual( expected );
+
+			const hybrid = zobjectUtils.validateFunctionCall( keyPath, canonicalToHybrid( zobject ) );
+			expect( hybrid ).toEqual( expected );
+		} );
+
+		it( 'unset nested function call is not valid', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: {
+					Z1K1: 'Z7',
+					Z7K1: { Z1K1: 'Z9', Z9K1: '' }
+				}
+			};
+
+			const expected = [
+				{ keyPath: 'main.Z2K2.Z20K2.Z7K1', isValid: false },
+				{ keyPath: 'main.Z2K2.Z20K2.Z7K1.Z7K1', isValid: false }
+			];
+
+			const canonical = zobjectUtils.validateFunctionCall( keyPath, zobject );
+			expect( canonical ).toEqual( expected );
+
+			const hybrid = zobjectUtils.validateFunctionCall( keyPath, canonicalToHybrid( zobject ) );
+			expect( hybrid ).toEqual( expected );
+		} );
+
+		it( 'set nested function call is valid', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: {
+					Z1K1: 'Z7',
+					Z7K1: 'Z10000'
+				}
+			};
+
+			const expected = [
+				{ keyPath: 'main.Z2K2.Z20K2.Z7K1', isValid: true },
+				{ keyPath: 'main.Z2K2.Z20K2.Z7K1.Z7K1', isValid: true }
+			];
+
+			const canonical = zobjectUtils.validateFunctionCall( keyPath, zobject );
+			expect( canonical ).toEqual( expected );
+
+			const hybrid = zobjectUtils.validateFunctionCall( keyPath, canonicalToHybrid( zobject ) );
 			expect( hybrid ).toEqual( expected );
 		} );
 	} );

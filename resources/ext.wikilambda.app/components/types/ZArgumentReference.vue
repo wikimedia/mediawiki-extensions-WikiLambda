@@ -21,8 +21,23 @@
 			:selected="argumentKey"
 			:menu-items="argumentOptions"
 			:default-label="argumentSelectorPlaceholder"
+			:status="errorSelectStatus"
 			@update:selected="setValue"
 		></cdx-select>
+		<div
+			v-if="hasFieldErrors"
+			class="ext-wikilambda-app-argument-reference__errors"
+		>
+			<cdx-message
+				v-for="( error, index ) in fieldErrors"
+				:key="`field-error-${ index }`"
+				:type="error.type"
+				:inline="true"
+			>
+				<!-- eslint-disable vue/no-v-html -->
+				<div v-html="getErrorMessage( error )"></div>
+			</cdx-message>
+		</div>
 	</div>
 </template>
 
@@ -31,20 +46,22 @@ const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
 
 const Constants = require( '../../Constants.js' );
+const errorMixin = require( '../../mixins/errorMixin.js' );
 const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
 const useMainStore = require( '../../store/index.js' );
 const icons = require( '../../../lib/icons.json' );
 
 // Codex components
-const { CdxIcon, CdxSelect } = require( '../../../codex.js' );
+const { CdxIcon, CdxMessage, CdxSelect } = require( '../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-argument-reference',
 	components: {
 		'cdx-select': CdxSelect,
-		'cdx-icon': CdxIcon
+		'cdx-icon': CdxIcon,
+		'cdx-message': CdxMessage
 	},
-	mixins: [ zobjectMixin ],
+	mixins: [ errorMixin, zobjectMixin ],
 	props: {
 		keyPath: { // eslint-disable-line vue/no-unused-properties
 			type: String,
@@ -115,6 +132,17 @@ module.exports = exports = defineComponent( {
 		 */
 		argumentSelectorPlaceholder: function () {
 			return this.$i18n( 'wikilambda-argument-reference-selector-placeholder' ).text();
+		},
+
+		/**
+		 * Status property for the Select component (ValidateStatusType).
+		 * Can take the values 'default' or 'error':
+		 * https://doc.wikimedia.org/codex/latest/components/types-and-constants.html#validationstatustype
+		 *
+		 * @return {string}
+		 */
+		errorSelectStatus: function () {
+			return this.hasFieldErrors ? 'error' : 'default';
 		}
 	} ),
 	methods: {
@@ -143,3 +171,13 @@ module.exports = exports = defineComponent( {
 } );
 
 </script>
+
+<style lang="less">
+@import '../../ext.wikilambda.app.variables.less';
+
+.ext-wikilambda-app-argument-reference {
+	.ext-wikilambda-app-argument-reference__errors {
+		margin-top: @spacing-50;
+	}
+}
+</style>

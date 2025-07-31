@@ -23,8 +23,6 @@ const zobjectUtils = {
 	 * Gets the type of a valid ZObject.
 	 * The input object can be canonical or hybrid, so it
 	 * converts to canonical first.
-	 * If the asString flag is true, it stringifies the
-	 * type expression, else it can return a string or an Object.
 	 *
 	 * @param {Object|Array|string} value
 	 * @return {string|Object|undefined}
@@ -204,7 +202,11 @@ const zobjectUtils = {
 	},
 
 	/**
-	 * Returns the terminal value of a function call function (Z7K1).
+	 * Returns the terminal value of a function call function (Z7K1),
+	 * only when it's a direct reference.
+	 * * If Z7K1 has an argument reference, returns undefined
+	 * * If Z7K1 has a function call, returns undefined
+	 *
 	 * Accepts both canonical and hybrid.
 	 *
 	 * @param {Object} value
@@ -214,12 +216,13 @@ const zobjectUtils = {
 		if ( !value || typeof value !== 'object' || !( Constants.Z_FUNCTION_CALL_FUNCTION in value ) ) {
 			return undefined;
 		}
-		// TODO: Should we recurse for nested function calls and return the most-terminal
-		// function zid? Totally depends on the use case, we should analyze and decide.
-		const zid = value[ Constants.Z_FUNCTION_CALL_FUNCTION ];
-		return ( zid && ( typeof zid === 'object' ) && ( Constants.Z_FUNCTION_CALL_FUNCTION in zid ) ) ?
-			zobjectUtils.getZFunctionCallFunctionId( zid ) :
-			zobjectUtils.getZReferenceTerminalValue( zid );
+		const field = value[ Constants.Z_FUNCTION_CALL_FUNCTION ];
+
+		if ( typeof field === 'string' || ( Constants.Z_REFERENCE_ID in field ) ) {
+			return zobjectUtils.getZReferenceTerminalValue( field );
+		}
+
+		return undefined;
 	},
 
 	/**
@@ -490,7 +493,7 @@ const zobjectUtils = {
 		if ( !value || typeof value !== 'object' || !( Constants.Z_FUNCTION_CALL_FUNCTION in value ) ) {
 			return false;
 		}
-		const functionCallFunction = zobjectUtils.getZFunctionCallFunctionId( value );
+		const functionCallFunction = zobjectUtils.getZFunctionCallFunctionId( value, true );
 		return Object.keys( Constants.WIKIDATA_FETCH_FUNCTIONS )
 			.some( ( k ) => Constants.WIKIDATA_FETCH_FUNCTIONS[ k ] === functionCallFunction );
 	},
@@ -601,7 +604,7 @@ const zobjectUtils = {
 		// If terminal value is missing, set as invalid, else valid
 		const isFunctionCall = ( Constants.Z_FUNCTION_CALL_FUNCTION in value );
 		const terminalValue = isFunctionCall ?
-			zobjectUtils.getZFunctionCallFunctionId( value ) :
+			zobjectUtils.getZFunctionCallFunctionId( value, true ) :
 			zobjectUtils.getZReferenceTerminalValue( value );
 
 		const terminalKeyPath = isFunctionCall ? [ Constants.Z_FUNCTION_CALL_FUNCTION ] : [];
@@ -621,6 +624,70 @@ const zobjectUtils = {
 		}
 
 		return fields;
+	},
+
+	/**
+	 * Recursively walks a function call and returns the
+	 * terminal field IDs and whether they are valid or not.
+	 * Returns a flat array of validated fields [ { fieldPath, isValid } ]
+	 * Terminal fields are:
+	 * * For a function call Z7, field Z7K1
+	 * * For an argument reference Z18, field Z18K1
+	 *
+	 * @param {Array} keyPath
+	 * @param {Object} value
+	 * @return {Array}
+	 */
+	validateFunctionCall: function ( keyPath, value ) {
+		// If value is overall missing: return invalid
+		if ( !value || typeof value !== 'object' ) {
+			return [ {
+				keyPath: keyPath.join( '.' ),
+				isValid: false
+			} ];
+		}
+
+		// If it has an argument reference key: Validate and exit
+		if ( Constants.Z_ARGUMENT_REFERENCE_KEY in value ) {
+			const terminalArgRef = zobjectUtils.getZArgumentReferenceTerminalValue( value );
+			return [ {
+				keyPath: [ ...keyPath, Constants.Z_ARGUMENT_REFERENCE_KEY ].join( '.' ),
+				isValid: !!terminalArgRef
+			} ];
+		}
+
+		// If it has a function call function key:
+		// * If it contains a reference: Validate and exit
+		// * If it contains an object: recurse
+		if ( Constants.Z_FUNCTION_CALL_FUNCTION in value ) {
+			const parentKeyPath = [ ...keyPath, Constants.Z_FUNCTION_CALL_FUNCTION ];
+			let terminalRef = value[ Constants.Z_FUNCTION_CALL_FUNCTION ];
+
+			if ( ( typeof terminalRef === 'object' ) && ( Constants.Z_REFERENCE_ID in terminalRef ) ) {
+				terminalRef = zobjectUtils.getZReferenceTerminalValue( terminalRef );
+			}
+
+			if ( typeof terminalRef !== 'object' ) {
+				return [ {
+					keyPath: parentKeyPath.join( '.' ),
+					isValid: !!terminalRef
+				} ];
+			}
+
+			const childFields = zobjectUtils.validateFunctionCall( parentKeyPath, terminalRef );
+			const hasErrors = childFields.some( ( field ) => !field.isValid );
+			const parentField = {
+				keyPath: parentKeyPath.join( '.' ),
+				isValid: !hasErrors
+			};
+			return [ parentField, ...childFields ];
+		}
+
+		// If it has no Z18K1 nor Z7K1: return invalid
+		return [ {
+			keyPath: keyPath.join( '.' ),
+			isValid: false
+		} ];
 	},
 
 	/**

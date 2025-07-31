@@ -12,7 +12,6 @@ const Constants = require( '../../../Constants.js' );
 const { canonicalToHybrid, hybridToCanonical } = require( '../../../utils/schemata.js' );
 const {
 	getZObjectType,
-	getZArgumentReferenceTerminalValue,
 	getZCodeString,
 	getZCodeProgrammingLanguageId,
 	getZFunctionCallFunctionId,
@@ -21,7 +20,8 @@ const {
 	getZMonolingualTextValue,
 	getZMonolingualLangValue,
 	getZStringTerminalValue,
-	getZReferenceTerminalValue
+	getZReferenceTerminalValue,
+	validateFunctionCall
 } = require( '../../../utils/zobjectUtils.js' );
 
 module.exports = {
@@ -92,23 +92,23 @@ module.exports = {
 					// Validate: Composition implementation
 					if ( implementationType === Constants.Z_IMPLEMENTATION_COMPOSITION ) {
 						const composition = innerObject[ Constants.Z_IMPLEMENTATION_COMPOSITION ];
+						// We only validate if the composition is a function call,
+						// if if's a literal object we leave validation for php side
+						// as it would be extremely complex to validate the fields.
+						if ( getZObjectType( composition ) === Constants.Z_FUNCTION_CALL ) {
+							const compositionKeyPath = [ ...innerKeyPath, Constants.Z_IMPLEMENTATION_COMPOSITION ];
+							const validatedFields = validateFunctionCall( compositionKeyPath, composition );
 
-						const missingCallFunction = composition[ Constants.Z_FUNCTION_CALL_FUNCTION ] &&
-							!getZFunctionCallFunctionId( composition );
-
-						const missingArgKey = composition[ Constants.Z_ARGUMENT_REFERENCE_KEY ] &&
-							!getZArgumentReferenceTerminalValue( composition );
-
-						if ( missingCallFunction || missingArgKey ) {
-							const lastKey = missingCallFunction ?
-								Constants.Z_FUNCTION_CALL_FUNCTION :
-								Constants.Z_ARGUMENT_REFERENCE_KEY;
-							this.setError( {
-								errorId: [ ...innerKeyPath, Constants.Z_IMPLEMENTATION_COMPOSITION, lastKey ].join( '.' ),
-								errorCode: Constants.ERROR_CODES.MISSING_IMPLEMENTATION_COMPOSITION,
-								errorType: Constants.ERROR_TYPES.ERROR
+							validatedFields.forEach( ( field ) => {
+								if ( !field.isValid ) {
+									this.setError( {
+										errorId: field.keyPath,
+										errorCode: Constants.ERROR_CODES.MISSING_IMPLEMENTATION_COMPOSITION,
+										errorType: Constants.ERROR_TYPES.ERROR
+									} );
+									isValid = false;
+								}
 							} );
-							isValid = false;
 						}
 					}
 
@@ -161,39 +161,35 @@ module.exports = {
 
 					// Validate: Tester call function call is set
 					const testerCall = innerObject[ Constants.Z_TESTER_CALL ];
-					if (
-						testerCall[ Constants.Z_FUNCTION_CALL_FUNCTION ] &&
-						!getZFunctionCallFunctionId( testerCall )
-					) {
-						this.setError( {
-							errorId: [
-								...innerKeyPath,
-								Constants.Z_TESTER_CALL,
-								Constants.Z_FUNCTION_CALL_FUNCTION
-							].join( '.' ),
-							errorCode: Constants.ERROR_CODES.MISSING_TESTER_CALL,
-							errorType: Constants.ERROR_TYPES.ERROR
-						} );
-						isValid = false;
-					}
+					const testerCallKeyPath = [ ...innerKeyPath, Constants.Z_TESTER_CALL ];
+					const testerCallFields = validateFunctionCall( testerCallKeyPath, testerCall );
+
+					testerCallFields.forEach( ( field ) => {
+						if ( !field.isValid ) {
+							this.setError( {
+								errorId: field.keyPath,
+								errorCode: Constants.ERROR_CODES.MISSING_TESTER_CALL,
+								errorType: Constants.ERROR_TYPES.ERROR
+							} );
+							isValid = false;
+						}
+					} );
 
 					// Validate: Tester validation function call is set
 					const validationCall = innerObject[ Constants.Z_TESTER_VALIDATION ];
-					if (
-						validationCall[ Constants.Z_FUNCTION_CALL_FUNCTION ] &&
-						!getZFunctionCallFunctionId( validationCall )
-					) {
-						this.setError( {
-							errorId: [
-								...innerKeyPath,
-								Constants.Z_TESTER_VALIDATION,
-								Constants.Z_FUNCTION_CALL_FUNCTION
-							].join( '.' ),
-							errorCode: Constants.ERROR_CODES.MISSING_TESTER_VALIDATION,
-							errorType: Constants.ERROR_TYPES.ERROR
-						} );
-						isValid = false;
-					}
+					const validationCallKeyPath = [ ...innerKeyPath, Constants.Z_TESTER_VALIDATION ];
+					const validationCallFields = validateFunctionCall( validationCallKeyPath, validationCall );
+
+					validationCallFields.forEach( ( field ) => {
+						if ( !field.isValid ) {
+							this.setError( {
+								errorId: field.keyPath,
+								errorCode: Constants.ERROR_CODES.MISSING_TESTER_VALIDATION,
+								errorType: Constants.ERROR_TYPES.ERROR
+							} );
+							isValid = false;
+						}
+					} );
 
 					return isValid;
 				}
