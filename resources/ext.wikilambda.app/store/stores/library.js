@@ -184,6 +184,10 @@ module.exports = {
 				}
 
 				const zkey = getKeyFromKeyList( key, zobject[ Constants.Z_TYPE_KEYS ] );
+				if ( !zkey ) {
+					return false;
+				}
+
 				const isIdentity = zkey[ Constants.Z_KEY_IS_IDENTITY ];
 				if ( !isIdentity ) {
 					return false;

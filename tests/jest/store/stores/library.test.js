@@ -231,6 +231,10 @@ describe( 'library Pinia store', () => {
 				expect( store.isIdentityKey( 'Z20007K2' ) ).toBe( false );
 			} );
 
+			it( 'returns false if the type does not have the given key', () => {
+				expect( store.isIdentityKey( 'Z20007K6' ) ).toBe( false );
+			} );
+
 			it( 'returns true if the key has is identity/Z3K4 key set to ref(true)', () => {
 				expect( store.isIdentityKey( 'Z20007K3' ) ).toBe( true );
 			} );
