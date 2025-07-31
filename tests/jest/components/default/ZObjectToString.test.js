@@ -40,6 +40,7 @@ describe( 'ZObjectToString', () => {
 			Z60: 'Language',
 			Z7K1: 'function',
 			Z11: 'Monolingual text',
+			Z801: 'Echo',
 			Z1002: 'English',
 			Z10001: 'And',
 			Z999K1: 'argument label',
@@ -47,6 +48,7 @@ describe( 'ZObjectToString', () => {
 		} );
 		// Actions
 		store.fetchWikidataEntitiesByType = jest.fn();
+		store.fetchZids = jest.fn();
 		store.runRenderer = jest.fn();
 	} );
 
@@ -59,13 +61,13 @@ describe( 'ZObjectToString', () => {
 
 			it( 'renders without errors', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-				expect( wrapper.find( 'div[data-testid=object-to-string-text]' ).exists() ).toBe( true );
-				expect( wrapper.find( 'div[data-testid=object-to-string-link]' ).exists() ).toBe( false );
+				expect( wrapper.find( 'span[data-testid=object-to-string-text]' ).exists() ).toBe( true );
+				expect( wrapper.find( 'a[data-testid=object-to-string-link]' ).exists() ).toBe( false );
 			} );
 
 			it( 'renders the string terminal value', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-				const stringElement = wrapper.find( 'div[data-testid=object-to-string-text]' );
+				const stringElement = wrapper.find( 'span[data-testid=object-to-string-text]' );
 				expect( stringElement.text() ).toBe( '"the final stringdown"' );
 			} );
 		} );
@@ -78,14 +80,13 @@ describe( 'ZObjectToString', () => {
 
 			it( 'renders without errors', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-				expect( wrapper.find( 'div[data-testid=object-to-string-link]' ).exists() ).toBe( true );
-				expect( wrapper.find( 'div[data-testid=object-to-string-text]' ).exists() ).toBe( false );
+				expect( wrapper.find( 'a[data-testid=object-to-string-link]' ).exists() ).toBe( true );
+				expect( wrapper.find( 'span[data-testid=object-to-string-text]' ).exists() ).toBe( false );
 			} );
 
 			it( 'renders the link to referred zobject', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-				const linkWrapper = wrapper.find( 'div[data-testid=object-to-string-link]' );
-				const referenceLink = linkWrapper.get( 'a' );
+				const referenceLink = wrapper.find( 'a[data-testid=object-to-string-link]' );
 				expect( referenceLink.attributes().href ).toBe( '/view/en/Z42' );
 				expect( referenceLink.text() ).toBe( 'False' );
 			} );
@@ -102,13 +103,13 @@ describe( 'ZObjectToString', () => {
 
 			it( 'renders without errors', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-				expect( wrapper.find( 'div[data-testid=object-to-string-text]' ).exists() ).toBe( false );
-				expect( wrapper.find( 'div[data-testid=object-to-string-link]' ).exists() ).toBe( true );
+				expect( wrapper.find( 'span[data-testid=object-to-string-text]' ).exists() ).toBe( false );
+				expect( wrapper.find( 'a[data-testid=object-to-string-link]' ).exists() ).toBe( true );
 			} );
 
 			it( 'renders the HTML fragment terminal value', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-				const referenceLink = wrapper.get( 'a' );
+				const referenceLink = wrapper.find( 'a[data-testid=object-to-string-link]' );
 				expect( referenceLink.attributes().href ).toBe( '/view/en/Z89' );
 				expect( referenceLink.text() ).toBe( 'HTML Fragment' );
 			} );
@@ -125,14 +126,13 @@ describe( 'ZObjectToString', () => {
 
 			it( 'renders without errors', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-				expect( wrapper.find( 'div[data-testid=object-to-string-link]' ).exists() ).toBe( true );
-				expect( wrapper.find( 'div[data-testid=object-to-string-text]' ).exists() ).toBe( false );
+				expect( wrapper.find( 'a[data-testid=object-to-string-link]' ).exists() ).toBe( true );
+				expect( wrapper.find( 'span[data-testid=object-to-string-text]' ).exists() ).toBe( false );
 			} );
 
 			it( 'renders the link to called function', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-				const linkWrapper = wrapper.find( 'div[data-testid=object-to-string-link]' );
-				const referenceLink = linkWrapper.get( 'a' );
+				const referenceLink = wrapper.find( 'a[data-testid=object-to-string-link]' );
 				expect( referenceLink.attributes().href ).toBe( '/view/en/Z10001' );
 				expect( referenceLink.text() ).toBe( 'And' );
 			} );
@@ -151,14 +151,13 @@ describe( 'ZObjectToString', () => {
 
 			it( 'renders without errors', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-				expect( wrapper.find( 'div[data-testid=object-to-string-link]' ).exists() ).toBe( true );
-				expect( wrapper.findAll( 'div[data-testid=object-to-string-text]' ) ).toHaveLength( 2 );
+				expect( wrapper.find( 'a[data-testid=object-to-string-link]' ).exists() ).toBe( true );
+				expect( wrapper.findAll( 'span[data-testid=object-to-string-text]' ) ).toHaveLength( 2 );
 			} );
 
 			it( 'renders the link to called function', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-				const linkWrapper = wrapper.find( 'div[data-testid=object-to-string-link]' );
-				const referenceLink = linkWrapper.get( 'a' );
+				const referenceLink = wrapper.find( 'a[data-testid=object-to-string-link]' );
 				expect( referenceLink.attributes().href ).toBe( '/view/en/Z10001' );
 				expect( referenceLink.text() ).toBe( 'And' );
 			} );
@@ -166,20 +165,122 @@ describe( 'ZObjectToString', () => {
 			it( 'renders comma separated arguments', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
 
-				const childElements = wrapper.findAll( '.ext-wikilambda-app-object-to-string' );
+				const childElements = wrapper.findAllComponents( { name: 'wl-z-object-to-string' } );
 				const dividerElements = wrapper.findAll( '.ext-wikilambda-app-object-to-string__divider' );
 
-				expect( childElements[ 1 ].text() ).toBe( 'And' );
+				expect( childElements.length ).toBe( 3 );
+				expect( childElements[ 0 ].text() ).toBe( 'And' );
+				expect( childElements[ 1 ].text() ).toBe( '"first arg"' );
+				expect( childElements[ 2 ].text() ).toBe( '"second arg"' );
+
 				expect( dividerElements[ 0 ].text() ).toBe( '(' );
-				expect( childElements[ 2 ].text() ).toBe( '"first arg"' );
 				expect( dividerElements[ 1 ].text() ).toBe( ',' );
-				expect( childElements[ 3 ].text() ).toBe( '"second arg"' );
 				expect( dividerElements[ 2 ].text() ).toBe( ')' );
 			} );
+		} );
 
-			it( 'renders each argument with another ZObjectToString component', () => {
+		describe( 'for a function call with function id given by a nested function call', () => {
+			beforeEach( () => {
+				keyPath = 'main.Z2K2';
+				// Echo( And )( "first arg", "second arg" )
+				objectValue = {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+					Z7K1: {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+						Z7K1: { Z1K1: 'Z9', Z9K1: 'Z801' },
+						Z801K1: { Z1K1: 'Z9', Z9K1: 'Z10001' }
+					},
+					K1: { Z1K1: 'Z6', Z6K1: 'first arg' },
+					K2: { Z1K1: 'Z6', Z6K1: 'second arg' }
+				};
+			} );
+
+			it( 'renders without errors', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-				expect( wrapper.findAllComponents( ZObjectToString ) ).toHaveLength( 2 );
+				expect( wrapper.findAll( 'a[data-testid=object-to-string-link]' ) ).toHaveLength( 2 );
+				expect( wrapper.findAll( 'span[data-testid=object-to-string-text]' ) ).toHaveLength( 2 );
+			} );
+
+			it( 'renders heading function call', () => {
+				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
+				const heading = wrapper.find( '.ext-wikilambda-app-object-to-string__parent' );
+
+				const parentElement = heading.find( '.ext-wikilambda-app-object-to-string__parent' );
+				const childElements = heading.findAll( '.ext-wikilambda-app-object-to-string__child' );
+				const dividerElements = heading.findAll( '.ext-wikilambda-app-object-to-string__divider' );
+
+				expect( parentElement.text() ).toBe( 'Echo' );
+				expect( childElements.length ).toBe( 1 );
+				expect( childElements[ 0 ].text() ).toBe( 'And' );
+				expect( dividerElements[ 0 ].text() ).toBe( '(' );
+				expect( dividerElements[ 1 ].text() ).toBe( ')' );
+			} );
+
+			it( 'renders children function call arguments', () => {
+				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
+				const children = wrapper.findAll( '.ext-wikilambda-app-object-to-string__children' );
+
+				expect( children.length ).toBe( 2 );
+				const args = children[ 1 ];
+
+				const childElements = args.findAll( '.ext-wikilambda-app-object-to-string__child' );
+				const dividerElements = args.findAll( '.ext-wikilambda-app-object-to-string__divider' );
+
+				expect( childElements.length ).toBe( 2 );
+				expect( childElements[ 0 ].text() ).toBe( '"first arg"' );
+				expect( childElements[ 1 ].text() ).toBe( '"second arg"' );
+				expect( dividerElements[ 0 ].text() ).toBe( '(' );
+				expect( dividerElements[ 1 ].text() ).toBe( ',' );
+				expect( dividerElements[ 2 ].text() ).toBe( ')' );
+			} );
+		} );
+
+		describe( 'for a function call with function id given by an argument reference', () => {
+			beforeEach( () => {
+				keyPath = 'main.Z2K2';
+				// →argument label( "first arg", "second arg" )
+				objectValue = {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+					Z7K1: {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z18' },
+						Z18K1: { Z1K1: 'Z6', Z6K1: 'Z999K1' }
+					},
+					K1: { Z1K1: 'Z6', Z6K1: 'first arg' },
+					K2: { Z1K1: 'Z6', Z6K1: 'second arg' }
+				};
+			} );
+
+			it( 'renders without errors', () => {
+				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
+				expect( wrapper.findAll( 'a[data-testid=object-to-string-link]' ) ).toHaveLength( 0 );
+				expect( wrapper.findAll( 'span[data-testid=object-to-string-text]' ) ).toHaveLength( 3 );
+			} );
+
+			it( 'renders heading argument reference', () => {
+				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
+				const heading = wrapper.find( '.ext-wikilambda-app-object-to-string__parent' );
+
+				const stringElement = heading.find( 'span[data-testid=object-to-string-text]' );
+				expect( heading.findComponent( { name: 'cdx-icon' } ).exists() ).toBe( true );
+				expect( stringElement.text() ).toBe( 'argument label' );
+			} );
+
+			it( 'renders children function call arguments', () => {
+				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
+				const children = wrapper.findAll( '.ext-wikilambda-app-object-to-string__children' );
+
+				expect( children.length ).toBe( 1 );
+				const args = children[ 0 ];
+
+				const childElements = args.findAll( '.ext-wikilambda-app-object-to-string__child' );
+				const dividerElements = args.findAll( '.ext-wikilambda-app-object-to-string__divider' );
+
+				expect( childElements.length ).toBe( 2 );
+				expect( childElements[ 0 ].text() ).toBe( '"first arg"' );
+				expect( childElements[ 1 ].text() ).toBe( '"second arg"' );
+				expect( dividerElements[ 0 ].text() ).toBe( '(' );
+				expect( dividerElements[ 1 ].text() ).toBe( ',' );
+				expect( dividerElements[ 2 ].text() ).toBe( ')' );
 			} );
 		} );
 
@@ -194,21 +295,19 @@ describe( 'ZObjectToString', () => {
 
 			it( 'renders without errors', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-				expect( wrapper.find( 'div[data-testid=object-to-string-link]' ).exists() ).toBe( false );
-				expect( wrapper.find( 'div[data-testid=object-to-string-text]' ).exists() ).toBe( true );
+				expect( wrapper.find( 'a[data-testid=object-to-string-link]' ).exists() ).toBe( false );
+				expect( wrapper.find( 'span[data-testid=object-to-string-text]' ).exists() ).toBe( true );
 			} );
 
 			it( 'renders the link to type', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-				const stringElement = wrapper.find( 'div[data-testid=object-to-string-text] span > span' );
+				const stringElement = wrapper.find( 'span[data-testid=object-to-string-text]' );
 				expect( stringElement.text() ).toBe( 'argument label' );
 			} );
 
 			it( 'renders an icon for an argument reference type with the terminal value', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-
-				const stringElement = wrapper.find( 'div[data-testid=object-to-string-text] span > span' );
-
+				const stringElement = wrapper.find( 'span[data-testid=object-to-string-text]' );
 				expect( wrapper.findComponent( { name: 'cdx-icon' } ).exists() ).toBe( true );
 				expect( stringElement.text() ).toBe( 'argument label' );
 			} );
@@ -248,8 +347,7 @@ describe( 'ZObjectToString', () => {
 					objectValue = wdReference;
 
 					const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-					const linkWrapper = wrapper.find( 'div[data-testid=object-to-string-link]' );
-					const referenceLink = linkWrapper.get( 'a' );
+					const referenceLink = wrapper.find( 'a[data-testid=object-to-string-link]' );
 					expect( wrapper.findComponent( { name: 'cdx-icon' } ).exists() ).toBe( true );
 					expect( referenceLink.attributes().href ).toBe( 'https://www.wikidata.org/wiki/Q42' );
 					expect( referenceLink.text() ).toBe( 'The Answer To The Question' );
@@ -259,8 +357,7 @@ describe( 'ZObjectToString', () => {
 					objectValue = wdFetchFunction;
 
 					const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-					const linkWrapper = wrapper.find( 'div[data-testid=object-to-string-link]' );
-					const referenceLink = linkWrapper.get( 'a' );
+					const referenceLink = wrapper.find( 'a[data-testid=object-to-string-link]' );
 					expect( wrapper.findComponent( { name: 'cdx-icon' } ).exists() ).toBe( true );
 					expect( referenceLink.attributes().href ).toBe( 'https://www.wikidata.org/wiki/Q42' );
 					expect( referenceLink.text() ).toBe( 'The Answer To The Question' );
@@ -284,8 +381,7 @@ describe( 'ZObjectToString', () => {
 					objectValue = wdReference;
 
 					const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-					const linkWrapper = wrapper.find( 'div[data-testid=object-to-string-link]' );
-					const referenceLink = linkWrapper.get( 'a' );
+					const referenceLink = wrapper.find( 'a[data-testid=object-to-string-link]' );
 					expect( wrapper.findComponent( { name: 'cdx-icon' } ).exists() ).toBe( true );
 					expect( referenceLink.attributes().href ).toBe( 'https://www.wikidata.org/wiki/Lexeme:L42' );
 					expect( referenceLink.text() ).toBe( 'answer' );
@@ -295,8 +391,7 @@ describe( 'ZObjectToString', () => {
 					objectValue = wdFetchFunction;
 
 					const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-					const linkWrapper = wrapper.find( 'div[data-testid=object-to-string-link]' );
-					const referenceLink = linkWrapper.get( 'a' );
+					const referenceLink = wrapper.find( 'a[data-testid=object-to-string-link]' );
 					expect( wrapper.findComponent( { name: 'cdx-icon' } ).exists() ).toBe( true );
 					expect( referenceLink.attributes().href ).toBe( 'https://www.wikidata.org/wiki/Lexeme:L42' );
 					expect( referenceLink.text() ).toBe( 'answer' );
@@ -320,8 +415,7 @@ describe( 'ZObjectToString', () => {
 					objectValue = wdReference;
 
 					const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-					const linkWrapper = wrapper.find( 'div[data-testid=object-to-string-link]' );
-					const referenceLink = linkWrapper.get( 'a' );
+					const referenceLink = wrapper.find( 'a[data-testid=object-to-string-link]' );
 					expect( wrapper.findComponent( { name: 'cdx-icon' } ).exists() ).toBe( true );
 					expect( referenceLink.attributes().href ).toBe( 'https://www.wikidata.org/wiki/Lexeme:L42#F1' );
 					expect( referenceLink.text() ).toBe( 'answered' );
@@ -331,8 +425,7 @@ describe( 'ZObjectToString', () => {
 					objectValue = wdFetchFunction;
 
 					const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-					const linkWrapper = wrapper.find( 'div[data-testid=object-to-string-link]' );
-					const referenceLink = linkWrapper.get( 'a' );
+					const referenceLink = wrapper.find( 'a[data-testid=object-to-string-link]' );
 					expect( wrapper.findComponent( { name: 'cdx-icon' } ).exists() ).toBe( true );
 					expect( referenceLink.attributes().href ).toBe( 'https://www.wikidata.org/wiki/Lexeme:L42#F1' );
 					expect( referenceLink.text() ).toBe( 'answered' );
@@ -356,8 +449,7 @@ describe( 'ZObjectToString', () => {
 					objectValue = wdReference;
 
 					const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-					const linkWrapper = wrapper.find( 'div[data-testid=object-to-string-link]' );
-					const referenceLink = linkWrapper.get( 'a' );
+					const referenceLink = wrapper.find( 'a[data-testid=object-to-string-link]' );
 					expect( wrapper.findComponent( { name: 'cdx-icon' } ).exists() ).toBe( true );
 					expect( referenceLink.attributes().href ).toBe( 'https://www.wikidata.org/wiki/Property:P42' );
 					expect( referenceLink.text() ).toBe( 'is answer to' );
@@ -367,8 +459,7 @@ describe( 'ZObjectToString', () => {
 					objectValue = wdFetchFunction;
 
 					const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-					const linkWrapper = wrapper.find( 'div[data-testid=object-to-string-link]' );
-					const referenceLink = linkWrapper.get( 'a' );
+					const referenceLink = wrapper.find( 'a[data-testid=object-to-string-link]' );
 					expect( wrapper.findComponent( { name: 'cdx-icon' } ).exists() ).toBe( true );
 					expect( referenceLink.attributes().href ).toBe( 'https://www.wikidata.org/wiki/Property:P42' );
 					expect( referenceLink.text() ).toBe( 'is answer to' );
@@ -389,23 +480,24 @@ describe( 'ZObjectToString', () => {
 
 			it( 'renders without errors', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-				expect( wrapper.findAll( 'div[data-testid=object-to-string-link]' ) ).toHaveLength( 2 );
-				expect( wrapper.findAll( 'div[data-testid=object-to-string-text]' ) ).toHaveLength( 1 );
+				expect( wrapper.findAll( 'a[data-testid=object-to-string-link]' ) ).toHaveLength( 2 );
+				expect( wrapper.findAll( 'span[data-testid=object-to-string-text]' ) ).toHaveLength( 1 );
 			} );
 
 			it( 'renders the link to type', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-				const linkWrapper = wrapper.find( 'div[data-testid=object-to-string-link]' );
-				const referenceLink = linkWrapper.get( 'a' );
+				const referenceLink = wrapper.find( 'a[data-testid=object-to-string-link]' );
 				expect( referenceLink.attributes().href ).toBe( '/view/en/Z11' );
 				expect( referenceLink.text() ).toBe( 'Monolingual text' );
 			} );
 
 			it( 'renders the link to referenced argument', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-				const linkWrapper = wrapper.find( 'div[data-testid=object-to-string-link]' );
-				const argWrapper = linkWrapper.find( 'div[data-testid=object-to-string-link]' );
-				const referenceLink = argWrapper.get( 'a' );
+
+				const childElements = wrapper.findAllComponents( { name: 'wl-z-object-to-string' } );
+				expect( childElements.length ).toBe( 2 );
+
+				const referenceLink = childElements[ 0 ].find( 'a[data-testid=object-to-string-link]' );
 				expect( referenceLink.attributes().href ).toBe( '/view/en/Z1002' );
 				expect( referenceLink.text() ).toBe( 'English' );
 			} );
@@ -413,14 +505,16 @@ describe( 'ZObjectToString', () => {
 			it( 'renders comma separated arguments', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
 
-				const childElements = wrapper.findAll( '.ext-wikilambda-app-object-to-string' );
+				const parentElement = wrapper.find( '.ext-wikilambda-app-object-to-string__parent' );
+				const childElements = wrapper.findAll( '.ext-wikilambda-app-object-to-string__child' );
 				const dividerElements = wrapper.findAll( '.ext-wikilambda-app-object-to-string__divider' );
 
-				expect( childElements[ 1 ].text() ).toBe( 'Monolingual text' );
+				expect( parentElement.text() ).toBe( 'Monolingual text' );
+				expect( childElements[ 0 ].text() ).toBe( 'English' );
+				expect( childElements[ 1 ].text() ).toBe( '"string value"' );
+
 				expect( dividerElements[ 0 ].text() ).toBe( '(' );
-				expect( childElements[ 2 ].text() ).toBe( 'English' );
 				expect( dividerElements[ 1 ].text() ).toBe( ',' );
-				expect( childElements[ 4 ].text() ).toBe( '"string value"' );
 				expect( dividerElements[ 2 ].text() ).toBe( ')' );
 			} );
 
@@ -443,7 +537,7 @@ describe( 'ZObjectToString', () => {
 				await waitFor( () => {
 					expect( wrapper.vm.rendererRunning ).toBe( false );
 					expect( wrapper.vm.rendererError ).toBe( false );
-					expect( wrapper.find( 'div[data-testid=object-to-string-text]' ).text() ).toBe( 'Rendered Value' );
+					expect( wrapper.find( 'span[data-testid=object-to-string-text]' ).text() ).toBe( 'Rendered Value' );
 				} );
 			} );
 
@@ -488,21 +582,27 @@ describe( 'ZObjectToString', () => {
 
 			it( 'renders without errors', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-				expect( wrapper.find( 'div[data-testid=object-to-string-link]' ).exists() ).toBe( true );
-				expect( wrapper.find( 'div[data-testid=object-to-string-text]' ).exists() ).toBe( false );
+				expect( wrapper.find( 'a[data-testid=object-to-string-link]' ).exists() ).toBe( true );
+				expect( wrapper.find( 'span[data-testid=object-to-string-text]' ).exists() ).toBe( false );
 			} );
 
-			it( 'renders the link to referred zobject', () => {
-				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-				const linkWrapper = wrapper.find( 'div[data-testid=object-to-string-link]' );
-				const referenceLink = linkWrapper.get( 'a' );
+			it( 'in edit mode: renders the call to action link to select the referred zobject', () => {
+				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: true } } );
+				const referenceLink = wrapper.find( 'a[data-testid=object-to-string-link]' );
 				expect( referenceLink.attributes().href ).toBe( undefined );
 				expect( referenceLink.text() ).toEqual( 'Select $1' );
 				expect( global.$i18n ).toHaveBeenCalledWith( 'wikilambda-zobject-to-string-select-object', 'Language' );
 			} );
 
-			it( 'triggers an expand event when clicking the link', async () => {
+			it( 'in read mode: renders the link to the referred zobject', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
+				const referenceLink = wrapper.find( 'a[data-testid=object-to-string-link]' );
+				expect( referenceLink.attributes().href ).toBe( undefined );
+				expect( referenceLink.text() ).toEqual( 'Language' );
+			} );
+
+			it( 'triggers an expand event when clicking the link', async () => {
+				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: true } } );
 				const link = wrapper.find( '.ext-wikilambda-app-object-to-string__blank' );
 				link.trigger( 'click' );
 				await waitFor( () => expect( wrapper.emitted( 'expand' ) ).toBeTruthy() );
@@ -520,17 +620,23 @@ describe( 'ZObjectToString', () => {
 
 			it( 'renders without errors', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-				expect( wrapper.find( 'div[data-testid=object-to-string-link]' ).exists() ).toBe( true );
-				expect( wrapper.find( 'div[data-testid=object-to-string-text]' ).exists() ).toBe( false );
+				expect( wrapper.find( 'a[data-testid=object-to-string-link]' ).exists() ).toBe( true );
+				expect( wrapper.find( 'span[data-testid=object-to-string-text]' ).exists() ).toBe( false );
 			} );
 
-			it( 'renders the link to called function', () => {
-				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-				const linkWrapper = wrapper.find( 'div[data-testid=object-to-string-link]' );
-				const referenceLink = linkWrapper.get( 'a' );
+			it( 'in edit mode: renders the call to action link to select a function', () => {
+				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: true } } );
+				const referenceLink = wrapper.find( 'a[data-testid=object-to-string-link]' );
 				expect( referenceLink.attributes().href ).toBe( undefined );
 				expect( referenceLink.text() ).toEqual( 'Select $1' );
 				expect( global.$i18n ).toHaveBeenCalledWith( 'wikilambda-zobject-to-string-select-object', 'Function' );
+			} );
+
+			it( 'in read mode: renders the link to function', () => {
+				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
+				const referenceLink = wrapper.find( 'a[data-testid=object-to-string-link]' );
+				expect( referenceLink.attributes().href ).toBe( undefined );
+				expect( referenceLink.text() ).toEqual( 'Function' );
 			} );
 
 			it( 'triggers an expand event when clicking the link', async () => {
