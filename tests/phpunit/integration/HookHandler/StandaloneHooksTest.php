@@ -44,6 +44,18 @@ class StandaloneHooksTest extends WikiLambdaIntegrationTestCase {
 		$this->setUpAsRepoMode();
 	}
 
+	/**
+	 * @param string|null $modelId
+	 */
+	private function buildZObjectContentHandler( ?string $modelId = null ): ZObjectContentHandler {
+		return new ZObjectContentHandler(
+			$modelId ?? CONTENT_MODEL_ZOBJECT,
+			$this->getServiceContainer()->getMainConfig(),
+			WikilambdaServices::getZObjectStore(),
+			WikilambdaServices::getZObjectStash()
+		);
+	}
+
 	public function testCreateInitialContent_called() {
 		$dataPath = dirname( __DIR__, 4 ) . '/function-schemata/data/definitions/';
 		$zidsToLoad = array_filter(
@@ -330,7 +342,7 @@ EOT;
 		$revisionRenderer = $services->getRevisionRenderer();
 		$wikiPageFactory = $services->getWikiPageFactory();
 
-		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$handler = $this->buildZObjectContentHandler();
 		$dataPath = dirname( __DIR__, 4 ) . '/function-schemata/data/definitions';
 
 		foreach ( $selectedLanguages as $key => $languageZid ) {
@@ -408,7 +420,7 @@ EOT;
 		$revisionRenderer = $services->getRevisionRenderer();
 		$wikiPageFactory = $services->getWikiPageFactory();
 
-		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$handler = $this->buildZObjectContentHandler();
 		$dataPath = dirname( __DIR__, 4 ) . '/function-schemata/data/definitions';
 
 		foreach ( $selectedFunctions as $key => $functionZid ) {
@@ -507,7 +519,7 @@ EOT;
 		$revisionRenderer = $services->getRevisionRenderer();
 		$wikiPageFactory = $services->getWikiPageFactory();
 
-		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$handler = $this->buildZObjectContentHandler();
 		$dataPath = dirname( __DIR__, 4 ) . '/function-schemata/data/definitions';
 
 		foreach ( $selectedFunctions as $key => $functionZid ) {

@@ -15,19 +15,28 @@ use MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Title\Title;
 use Psr\Log\LoggerInterface;
+use Wikimedia\ObjectCache\BagOStuff;
 
 class ZObjectSecondaryDataRemoval extends DataUpdate {
 
 	private Title $title;
 	private ZObjectStore $zObjectStore;
+	private BagOStuff $zObjectCache;
 	private LoggerInterface $logger;
 
 	/**
-	 * @inheritDoc
+	 * @param Title $title
+	 * @param ZObjectStore $zObjectStore
+	 * @param BagOStuff $zObjectCache
 	 */
-	public function __construct( Title $title ) {
+	public function __construct(
+		Title $title,
+		ZObjectStore $zObjectStore,
+		BagOStuff $zObjectCache
+	) {
 		$this->title = $title;
-		$this->zObjectStore = WikiLambdaServices::getZObjectStore();
+		$this->zObjectStore = $zObjectStore;
+		$this->zObjectCache = $zObjectCache;
 		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
 	}
 
@@ -59,8 +68,7 @@ class ZObjectSecondaryDataRemoval extends DataUpdate {
 
 		// Unregister the ZID from caches and clear object cache.
 		ZObjectRegistry::unregisterZid( $zid );
-		$zObjectCache = WikiLambdaServices::getZObjectStash();
-		$cacheKey = $zObjectCache->makeKey( ZObjectStore::ZOBJECT_CACHE_KEY_PREFIX, $zid );
-		$zObjectCache->delete( $cacheKey );
+		$cacheKey = $this->zObjectCache->makeKey( ZObjectStore::ZOBJECT_CACHE_KEY_PREFIX, $zid );
+		$this->zObjectCache->delete( $cacheKey );
 	}
 }

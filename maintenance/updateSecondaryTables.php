@@ -20,10 +20,9 @@ namespace MediaWiki\Extensions\WikiLambda\Maintenance;
 use GuzzleHttp\Client;
 use MediaWiki\Deferred\DeferredUpdates;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate;
-use MediaWiki\Extension\WikiLambda\ZObjectStore;
-use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Maintenance\Maintenance;
 use MediaWiki\Title\Title;
 use Wikimedia\Rdbms\IConnectionProvider;
@@ -37,10 +36,6 @@ require_once "$IP/maintenance/Maintenance.php";
 
 class UpdateSecondaryTables extends Maintenance {
 
-	/**
-	 * @var ZObjectStore
-	 */
-	private $zObjectStore = null;
 	private IConnectionProvider $dbProvider;
 
 	/**
@@ -105,19 +100,13 @@ class UpdateSecondaryTables extends Maintenance {
 	 * easily be avoided).
 	 */
 	public function execute() {
-		// Construct the ZObjectStore, because ServiceWiring hasn't run
 		$services = $this->getServiceContainer();
-		$this->zObjectStore = new ZObjectStore(
-			$services->getDBLoadBalancerFactory(),
-			$services->getTitleFactory(),
-			$services->getWikiPageFactory(),
-			$services->getRevisionStore(),
-			$services->getUserGroupManager(),
-			LoggerFactory::getInstance( 'WikiLambda' ),
-			$services->getMainConfig(),
-		);
 		$this->dbProvider = $services->getDBLoadBalancerFactory();
-		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		// Build ZObjectStore and ZObject BagOStuff, because ServiceWiring hasn't run
+		$zObjectStore = WikiLambdaServices::buildZObjectStore( $services );
+		$zObjectCache = WikiLambdaServices::buildZObjectStash( $services );
+		$config = $services->getMainConfig();
+		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT, $config, $zObjectStore, $zObjectCache );
 
 		$all = $this->getOption( 'all' );
 		$zType = $this->getOption( 'zType' );
@@ -146,9 +135,9 @@ class UpdateSecondaryTables extends Maintenance {
 		}
 
 		if ( $all ) {
-			$targets = $this->zObjectStore->fetchAllZids();
+			$targets = $zObjectStore->fetchAllZids();
 		} else {
-			$targets = $this->zObjectStore->fetchZidsOfType( $zType );
+			$targets = $zObjectStore->fetchZidsOfType( $zType );
 		}
 
 		if ( count( $targets ) === 0 ) {
@@ -166,7 +155,6 @@ class UpdateSecondaryTables extends Maintenance {
 		// By default, we do not update the orchestrator cache, as we're in a maintenance script and might over-whelm
 		$orchestrator = null;
 		if ( $cache ) {
-			$config = $this->getServiceContainer()->getMainConfig();
 			if ( $config->get( 'WikiLambdaPersistBackendCache' ) ) {
 				$this->output( "Sending cache updates to the function-orchestrator.\n" );
 
@@ -182,7 +170,7 @@ class UpdateSecondaryTables extends Maintenance {
 		$offset = 0;
 		$queryLimit = 10;
 		do {
-			$contents = $this->zObjectStore->fetchBatchZObjects( array_slice( $targets, $offset,
+			$contents = $zObjectStore->fetchBatchZObjects( array_slice( $targets, $offset,
 				$queryLimit ) );
 			$offset += $queryLimit;
 
@@ -197,7 +185,11 @@ class UpdateSecondaryTables extends Maintenance {
 				$data = json_encode( $persistentObject->getSerialized() );
 				$content = $handler::makeContent( $data, $title );
 				$update = new ZObjectSecondaryDataUpdate(
-					$title, $content, $orchestrator
+					$title,
+					$content,
+					$zObjectStore,
+					$zObjectCache,
+					$orchestrator
 				);
 				DeferredUpdates::addUpdate( $update );
 				if ( !$quick ) {

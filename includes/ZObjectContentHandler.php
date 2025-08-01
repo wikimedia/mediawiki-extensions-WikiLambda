@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda;
 
 use GuzzleHttp\Client;
 use InvalidArgumentException;
+use MediaWiki\Config\Config;
 use MediaWiki\Content\Content;
 use MediaWiki\Content\ContentHandler;
 use MediaWiki\Content\Renderer\ContentParseParams;
@@ -35,17 +36,29 @@ use MediaWiki\Revision\SlotRenderingProvider;
 use MediaWiki\Title\Title;
 use StatusValue;
 use TextSlotDiffRenderer;
+use Wikimedia\ObjectCache\BagOStuff;
 
 class ZObjectContentHandler extends ContentHandler {
 	use ZObjectEditingPageTrait;
 
+	private Config $config;
+	private ZObjectStore $zObjectStore;
+	private BagOStuff $zObjectCache;
+
 	/**
 	 * @param string $modelId
+	 * @param Config $config
+	 * @param ZObjectStore $zObjectStore
+	 * @param BagOStuff $zObjectCache
 	 */
-	public function __construct( $modelId ) {
+	public function __construct( $modelId, $config, $zObjectStore, $zObjectCache ) {
 		if ( $modelId !== CONTENT_MODEL_ZOBJECT ) {
 			throw new InvalidArgumentException( __CLASS__ . " initialised for invalid content model" );
 		}
+
+		$this->config = $config;
+		$this->zObjectStore = $zObjectStore;
+		$this->zObjectCache = $zObjectCache;
 
 		// Triggers use of message content-model-zobject
 		parent::__construct( CONTENT_MODEL_ZOBJECT, [ CONTENT_FORMAT_TEXT ] );
@@ -221,16 +234,21 @@ class ZObjectContentHandler extends ContentHandler {
 	) {
 		$orchestrator = null;
 
-		$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'WikiLambda' );
-		if ( $config->get( 'WikiLambdaPersistBackendCache' ) ) {
-			$orchestratorHost = $config->get( 'WikiLambdaOrchestratorLocation' );
+		if ( $this->config->get( 'WikiLambdaPersistBackendCache' ) ) {
+			$orchestratorHost = $this->config->get( 'WikiLambdaOrchestratorLocation' );
 			$client = new Client( [ "base_uri" => $orchestratorHost ] );
 			$orchestrator = new OrchestratorRequest( $client );
 		}
 
 		return array_merge(
 			parent::getSecondaryDataUpdates( $title, $content, $role, $slotOutput ),
-			[ new ZObjectSecondaryDataUpdate( $title, $content, $orchestrator ) ]
+			[ new ZObjectSecondaryDataUpdate(
+				$title,
+				$content,
+				$this->zObjectStore,
+				$this->zObjectCache,
+				$orchestrator
+			) ]
 		);
 	}
 
@@ -240,7 +258,11 @@ class ZObjectContentHandler extends ContentHandler {
 	public function getDeletionUpdates( Title $title, $role ) {
 		return array_merge(
 			parent::getDeletionUpdates( $title, $role ),
-			[ new ZObjectSecondaryDataRemoval( $title ) ]
+			[ new ZObjectSecondaryDataRemoval(
+				$title,
+				$this->zObjectStore,
+				$this->zObjectCache
+			) ]
 		);
 	}
 

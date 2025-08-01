@@ -16,6 +16,7 @@ use MediaWiki\Content\ValidationParams;
 use MediaWiki\Exception\MWContentSerializationException;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
@@ -38,16 +39,28 @@ use MediaWiki\Title\Title;
  */
 class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 
+	/**
+	 * @param string|null $modelId
+	 */
+	private function buildZObjectContentHandler( ?string $modelId = null ): ZObjectContentHandler {
+		return new ZObjectContentHandler(
+			$modelId ?? CONTENT_MODEL_ZOBJECT,
+			$this->getServiceContainer()->getMainConfig(),
+			WikilambdaServices::getZObjectStore(),
+			WikilambdaServices::getZObjectStash()
+		);
+	}
+
 	public function testWrongContentModel() {
 		$this->expectException( \InvalidArgumentException::class );
-		new ZObjectContentHandler( CONTENT_MODEL_WIKITEXT );
+		$this->buildZObjectContentHandler( CONTENT_MODEL_WIKITEXT );
 	}
 
 	/**
 	 * @dataProvider provideCanBeUsedOn
 	 */
 	public function testCanBeUsedOn( $input, $expected ) {
-		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$handler = $this->buildZObjectContentHandler();
 		$this->assertSame( $expected, $handler->canBeUsedOn( Title::newFromText( $input ) ) );
 	}
 
@@ -61,13 +74,13 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testMakeEmptyContent() {
-		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$handler = $this->buildZObjectContentHandler();
 		$testObject = $handler->makeEmptyContent();
 		$this->assertInstanceOf( ZObjectContent::class, $testObject );
 	}
 
 	public function testSerializeContent() {
-		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$handler = $this->buildZObjectContentHandler();
 		$content = $handler->makeEmptyContent();
 		$serialized = $handler->serializeContent( $content );
 		$expected = '{"Z1K1":"Z2",'
@@ -87,7 +100,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 	public function testUnserializeContent() {
 		$serialized = '{"Z1K1":"Z2","Z2K1":{"Z1K1":"Z6","Z6K1":"Z401"},'
 			. '"Z2K2":"","Z2K3":{"Z1K1":"Z12","Z12K1":["Z11"]}}';
-		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$handler = $this->buildZObjectContentHandler();
 		$testObject = $handler->unserializeContent( $serialized );
 		$this->assertInstanceOf( ZObjectContent::class, $testObject );
 		$this->assertSame( 'Z6', $testObject->getZType() );
@@ -96,7 +109,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 
 	public function testUnserializeContent_invalidJson() {
 		$notValidObjectString = 'This is not JSON!';
-		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$handler = $this->buildZObjectContentHandler();
 		$this->expectException( MWContentSerializationException::class );
 		$handler->unserializeContent( $notValidObjectString );
 	}
@@ -183,7 +196,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testGetSecondaryDataUpdates() {
-		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$handler = $this->buildZObjectContentHandler();
 		$title = Title::newFromText( ZTestType::TEST_ZID, NS_MAIN );
 		$content = ZObjectContentHandler::makeContent( ZTestType::TEST_ENCODING, $title );
 		$slotOutput = $this->createMock( SlotRenderingProvider::class );
@@ -196,7 +209,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testGetDeletionUpdates() {
-		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$handler = $this->buildZObjectContentHandler();
 		$title = Title::newFromText( ZTestType::TEST_ZID, NS_MAIN );
 
 		$updates = $handler->getDeletionUpdates( $title, SlotRecord::MAIN );
@@ -207,18 +220,18 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testSupportsDirectEditing() {
-		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$handler = $this->buildZObjectContentHandler();
 		$this->assertFalse( $handler->supportsDirectEditing() );
 	}
 
 	public function testGetActionOverrides() {
-		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$handler = $this->buildZObjectContentHandler();
 		$overrides = $handler->getActionOverrides();
 		$this->assertSame( ZObjectEditAction::class, $overrides[ 'edit' ] );
 	}
 
 	public function testPrepareSaveTransform_invalid() {
-		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$handler = $this->buildZObjectContentHandler();
 
 		$sysopUser = $this->getTestSysop()->getUser();
 		$popts = $this->createMock( ParserOptions::class );
@@ -243,7 +256,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testPrepareSaveTransform_valid() {
-		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$handler = $this->buildZObjectContentHandler();
 
 		$sysopUser = $this->getTestSysop()->getUser();
 		$popts = $this->createMock( ParserOptions::class );
@@ -283,7 +296,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testValidateSave_valid() {
-		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$handler = $this->buildZObjectContentHandler();
 
 		$testZid = 'Z401';
 		$testTitle = Title::newFromText( $testZid, NS_MAIN );
@@ -302,7 +315,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testValidateSave_invalid() {
-		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$handler = $this->buildZObjectContentHandler();
 
 		$testZid = 'Z401';
 		$testTitle = Title::newFromText( $testZid, NS_MAIN );
@@ -318,12 +331,12 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testGenerateHTMLOnEdit() {
-		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$handler = $this->buildZObjectContentHandler();
 		$this->assertFalse( $handler->generateHTMLOnEdit() );
 	}
 
 	public function testGetParserOutput_links() {
-		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$handler = $this->buildZObjectContentHandler();
 
 		$this->registerLangs( [ 'en' ] );
 		$this->insertZids( [ 'Z2', 'Z6', 'Z9', 'Z11', 'Z12', 'Z40' ] );
@@ -360,7 +373,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testGetParserOutput_labels() {
-		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$handler = $this->buildZObjectContentHandler();
 
 		$this->registerLangs( [ 'en', 'fr' ] );
 		$this->insertZids( [ 'Z2', 'Z6', 'Z9', 'Z11', 'Z12', 'Z40' ] );
@@ -394,7 +407,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testGetParserOutput_invalidContent() {
-		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$handler = $this->buildZObjectContentHandler();
 
 		$testTitle = Title::newFromText( ZTestType::TEST_ZID, NS_MAIN );
 

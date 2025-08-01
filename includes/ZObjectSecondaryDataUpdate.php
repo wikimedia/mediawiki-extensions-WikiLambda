@@ -29,27 +29,33 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 
 	private Title $title;
 	private ZObjectContent $zObject;
-	private ?OrchestratorRequest $orchestrator;
-
-	private LoggerInterface $logger;
 	private ZObjectStore $zObjectStore;
 	private BagOStuff $zObjectCache;
+	private ?OrchestratorRequest $orchestrator;
+	private LoggerInterface $logger;
 
 	public const INSTANCEOFENUM_DB_KEY = 'instanceofenum';
 
 	/**
 	 * @param Title $title
 	 * @param Content $zObject
+	 * @param ZObjectStore $zObjectStore
+	 * @param BagOStuff $zObjectCache
 	 * @param OrchestratorRequest|null $orchestrator
 	 */
-	public function __construct( Title $title, $zObject, $orchestrator = null ) {
+	public function __construct(
+		Title $title,
+		Content $zObject,
+		ZObjectStore $zObjectStore,
+		BagOStuff $zObjectCache,
+		$orchestrator = null
+	) {
 		$this->title = $title;
 		$this->zObject = $zObject;
+		$this->zObjectStore = $zObjectStore;
+		$this->zObjectCache = $zObjectCache;
 		$this->orchestrator = $orchestrator;
-
-		$this->zObjectStore = WikiLambdaServices::getZObjectStore();
 		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
-		$this->zObjectCache = WikiLambdaServices::getZObjectStash();
 	}
 
 	public function doUpdate() {

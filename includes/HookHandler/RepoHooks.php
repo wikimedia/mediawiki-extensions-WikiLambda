@@ -20,9 +20,7 @@ use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate;
-use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Installer\DatabaseUpdater;
-use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\RecentChanges\RecentChange;
 use MediaWiki\Revision\SlotRecord;
@@ -366,7 +364,8 @@ class RepoHooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesH
 
 		static::ensureZObjectStoreIsPresent( $services );
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
-		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$zObjectCache = WikiLambdaServices::getZObjectStash();
+		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT, $config, $zObjectStore, $zObjectCache );
 
 		$targets = $zObjectStore->fetchZidsOfType( $zType );
 
@@ -407,7 +406,10 @@ class RepoHooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesH
 				$data = json_encode( $persistentObject->getSerialized() );
 				$content = $handler::makeContent( $data, $title );
 				$update = new ZObjectSecondaryDataUpdate(
-					$title, $content,
+					$title,
+					$content,
+					$zObjectStore,
+					$zObjectCache,
 					// Not trying to update the orchestrator cache here, as we're in a maintenance script
 					null
 				);
@@ -431,20 +433,23 @@ class RepoHooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesH
 		try {
 			$services->get( 'WikiLambdaZObjectStore' );
 		} catch ( NoSuchServiceException ) {
-
-			$zObjectStore = new ZObjectStore(
-				$services->getDBLoadBalancerFactory(),
-				$services->getTitleFactory(),
-				$services->getWikiPageFactory(),
-				$services->getRevisionStore(),
-				$services->getUserGroupManager(),
-				LoggerFactory::getInstance( 'WikiLambda' ),
-				$services->getMainConfig(),
-			);
+			$zObjectStore = WikiLambdaServices::buildZObjectStore( $services );
 			$services->defineService(
 				'WikiLambdaZObjectStore',
 				static function () use ( $zObjectStore ) {
 					return $zObjectStore;
+				}
+			);
+		}
+
+		try {
+			$services->get( 'WikiLambdaZObjectStash' );
+		} catch ( NoSuchServiceException ) {
+			$zObjectCache = WikiLambdaServices::buildZObjectStash( $services );
+			$services->defineService(
+				'WikiLambdaZObjectStash',
+				static function () use ( $zObjectCache ) {
+					return $zObjectCache;
 				}
 			);
 		}

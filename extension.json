@@ -36,7 +36,14 @@
 	},
 	"callback": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\RepoHooks::registerExtension",
 	"ContentHandlers": {
-		"zobject": "MediaWiki\\Extension\\WikiLambda\\ZObjectContentHandler"
+		"zobject": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\ZObjectContentHandler",
+			"services": [
+				"MainConfig",
+				"WikiLambdaZObjectStore",
+				"WikiLambdaZObjectStash"
+			]
+		}
 	},
 	"config": {
 		"WikiLambdaEnableRepoMode": {
