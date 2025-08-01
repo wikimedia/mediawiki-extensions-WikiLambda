@@ -168,7 +168,7 @@ describe( 'ModeSelector', () => {
 			expect( menu.vm.menuItems[ 0 ].items[ 2 ].value ).toBe( 'Z9' );
 		} );
 
-		it( 'displays no resolvers or literal options for wikidata entities', () => {
+		it( 'displays no literal option for wikidata entities, only function call', () => {
 			keyPath = 'main.Z2K2.Z10001K1';
 			objectValue = {
 				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
@@ -188,9 +188,35 @@ describe( 'ModeSelector', () => {
 				}
 			} );
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
+			expect( menu.vm.menuItems.length ).toBe( 1 );
+			expect( menu.vm.menuItems[ 0 ].items.length ).toBe( 1 );
+			expect( menu.vm.menuItems[ 0 ].items[ 0 ].value ).toBe( 'Z7' );
+		} );
 
-			expect( menu.exists() ).toBe( false );
-			expect( wrapper.vm.menuItems.length ).toBe( 0 );
+		it( 'displays no literal option for wikidata entities, only function call or argument reference if applicable', () => {
+			keyPath = 'main.Z2K2.Z14K2.Z10001K1';
+			objectValue = {
+				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+				Z7K1: { Z1K1: 'Z9', Z9K1: 'Z6825' },
+				Z6825K1: {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z6095' },
+					Z6095K1: { Z1K1: 'Z6', Z6K1: 'L42' }
+				}
+			};
+
+			const wrapper = shallowMount( ModeSelector, {
+				props: {
+					keyPath,
+					objectValue,
+					edit: true,
+					expectedType: Constants.Z_WIKIDATA_LEXEME
+				}
+			} );
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
+			expect( menu.vm.menuItems.length ).toBe( 1 );
+			expect( menu.vm.menuItems[ 0 ].items.length ).toBe( 2 );
+			expect( menu.vm.menuItems[ 0 ].items[ 0 ].value ).toBe( 'Z18' );
+			expect( menu.vm.menuItems[ 0 ].items[ 1 ].value ).toBe( 'Z7' );
 		} );
 
 		it( 'displays function call and literal for wikidata references', () => {

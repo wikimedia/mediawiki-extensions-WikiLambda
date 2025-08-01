@@ -300,16 +300,13 @@ module.exports = exports = defineComponent( {
 		getResolverMenuItems: function () {
 			const resolvers = [];
 
-			// Function call: Always available as long as:
-			// * is not containing a wikidata entity (already a function call)
-			if ( !this.expectsWikidataItem ) {
-				resolvers.push( {
-					label: this.getLabelData( Constants.Z_FUNCTION_CALL ).label,
-					value: Constants.Z_FUNCTION_CALL,
-					type: Constants.Z_FUNCTION_CALL,
-					icon: icons.cdxIconFunction
-				} );
-			}
+			// Function call: Always available
+			resolvers.push( {
+				label: this.getLabelData( Constants.Z_FUNCTION_CALL ).label,
+				value: Constants.Z_FUNCTION_CALL,
+				type: Constants.Z_FUNCTION_CALL,
+				icon: icons.cdxIconFunction
+			} );
 
 			// Reference: Always available as long as:
 			// * is not containing a wikidata entity
