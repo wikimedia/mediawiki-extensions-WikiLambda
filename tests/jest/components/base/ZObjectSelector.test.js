@@ -281,6 +281,27 @@ describe( 'ZObjectSelector', () => {
 			// Found exact match for "Monolingual text", set as selected
 			expect( wrapper.vm.inputValue ).toBe( 'Monolingual text' );
 		} );
+
+		it( 'on initialization, show selected option in the lookup menu items', async () => {
+			const wrapper = mount( ZObjectSelector, {
+				props: {
+					type: Constants.Z_TYPE,
+					selectedZid: Constants.Z_STRING
+				}
+			} );
+
+			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
+			const selectedItem = [ {
+				label: 'String',
+				value: 'Z6',
+				description: 'Type'
+			} ];
+
+			await waitFor( () => {
+				expect( lookup.props( 'menuItems' ).length ).toBe( 1 );
+				expect( lookup.props( 'menuItems' ) ).toEqual( selectedItem );
+			} );
+		} );
 	} );
 
 	describe( 'Select', () => {

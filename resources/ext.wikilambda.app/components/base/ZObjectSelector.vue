@@ -172,13 +172,32 @@ module.exports = exports = defineComponent( {
 		},
 
 		/**
-		 * Returns lookupResults if there are any items,
-		 * else returns the suggestions for the type.
+		 * Returns an array with a menu item for the selected item, if any
+		 *
+		 * @return {Array}
+		 */
+		selectedMenuItem: function () {
+			return this.selectedZid ? [ {
+				value: this.selectedZid,
+				label: this.selectedLabel,
+				description: this.getLabelData( this.type ).label
+			} ] : [];
+		},
+
+		/**
+		 * Returns the items to show in the lookup menu:
+		 * * If user is searching for a term; show returned results or 'No results found'
+		 * * If user is just clicking on the field; show selected menu item or suggested items
 		 *
 		 * @return {Array}
 		 */
 		menuItems: function () {
-			return this.lookupResults.length > 0 ? this.lookupResults : this.suggestions;
+			// Ongoing lookup search: return results
+			if ( this.inputValue !== this.selectedLabel ) {
+				return this.lookupResults;
+			}
+			// No search: return selected item or suggestions
+			return this.selectedZid ? this.selectedMenuItem : this.suggestions;
 		},
 
 		/**
