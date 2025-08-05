@@ -253,6 +253,7 @@
 	"wikilambda-functioncall-metadata-execution-debug-logs": "Dnevniki odpravljanja napak pri izvajanju",
 	"wikilambda-functioncall-metadata-expected-result": "Pričakovani rezultat",
 	"wikilambda-functioncall-metadata-implementation-id": "ID izvedbe",
+	"wikilambda-functioncall-metadata-implementation-name": "Ime",
 	"wikilambda-functioncall-metadata-implementation-type": "Vrsta izvedbe",
 	"wikilambda-functioncall-metadata-validator-errors-summary": "Povzetek napak preverjalnika",
 	"wikilambda-helplink-button": "Pomoč",
