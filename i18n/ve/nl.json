@@ -31,6 +31,7 @@
 	"wikilambda-recentchanges-filter-wl-pref": "Wikifuncties-bewerkingen weergeven in uw volglijst",
 	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Aan het laden",
 	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "Voorvertoning duurde te lang",
+	"wikilambda-visualeditor-wikifunctionscall-changedesc-title": "Verandering invoer Wikifuncties",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Kies een optie",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Functie]] van Wikifuncties",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Minder lezen",

@@ -1,0 +1,25 @@
+{
+	"@metadata": {
+		"authors": [
+			"شاه زمان پټان"
+		]
+	},
+	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "بارېږي",
+	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "مخکتنې ډېر وخت ونیو",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "يو خوښنه ټاکل",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "لږ لوستل",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "نور لوستل",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "پايلې و نه موندل شوې.",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "پايلې",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "ليک دننه کړئ",
+	"wikilambda-visualeditor-wikifunctionscall-error-enum": "هېڅ خوښنه نه ده غوره‌شوې.",
+	"wikilambda-visualeditor-wikifunctionscall-error-parser": "ناجوته تېروتنه. [[f:Talk:$1|ستونزې خبر ورکول]]",
+	"wikilambda-visualeditor-wikifunctionscall-no-description": "څرگنداوی نشته",
+	"wikilambda-visualeditor-wikifunctionscall-no-input-label": "نښکه نشته",
+	"wikilambda-visualeditor-wikifunctionscall-no-name": "نوم نشته",
+	"wikilambda-visualeditor-wikifunctionscall-preview-title": "مخکتنه",
+	"wikilambda-visualeditor-wikifunctionscall-preview-no-result": "د پایلو د مخکتنې لپاره ارزښتونه دننه کړئ.",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "ناگارل شوی",
+	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "له‌سره‌اوڼل",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "ناگارل"
+}
