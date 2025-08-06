@@ -3,6 +3,7 @@
 		"authors": [
 			"Amire80",
 			"Guycn2",
+			"Neriah",
 			"YaronSh"
 		]
 	},
@@ -29,6 +30,7 @@
 	"wikilambda-recentchanges-filter-label": "עריכות של ויקיפונקציות",
 	"wikilambda-recentchanges-filter-rc-pref": "הצגת עריכות שנעשו באתר ויקיפונקציות בדף השינויים האחרונים",
 	"wikilambda-recentchanges-filter-wl-pref": "הצגת עריכות שנעשו באתר ויקיפונקציות ברשימת המעקב",
+	"wikilambda-visualeditor-wikifunctionscall-back": "חזרה",
 	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "טעינה",
 	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "התצוגה המקדימה ארכה זמן רב מדי",
 	"wikilambda-visualeditor-wikifunctionscall-changedesc-title": "שינוי קלט בוויקיפונקציות",
@@ -45,6 +47,8 @@
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "לא נבחרה אפשרות.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser-empty": "נא להכניס ערך.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser": "שגיאה לא ידועה. [[f:Talk:$1|לדווח על בעיה]]",
+	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-property": "מאפיין ויקינתונים לא תקין.",
+	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-item": "פריט ויקינתונים לא תקין",
 	"wikilambda-visualeditor-wikifunctionscall-info-missing-content": "אפשר לעזור לתרגם את התוכן שחסר בשפה שלך באתר [[f:$1|ויקיפונקציות]].",
 	"wikilambda-visualeditor-wikifunctionscall-no-description": "אין תיאור",
 	"wikilambda-visualeditor-wikifunctionscall-no-input-label": "אין תווית",
