@@ -12,6 +12,9 @@ namespace MediaWiki\Extension\WikiLambda;
 
 use DateTime;
 use DateTimeZone;
+use MediaWiki\Registration\ExtensionRegistry;
+use MediaWiki\Title\Title;
+use Wikimedia\Parsoid\Utils\Title as ParsoidTitle;
 
 class WikifunctionCallDefaultValues {
 
@@ -30,6 +33,8 @@ class WikifunctionCallDefaultValues {
 	private static function getDefaultValueCallbacks(): array {
 		return [
 			'Z20420' => [ self::class, 'getDefaultDate' ],
+			'Z6001' => [ self::class, 'getWikidataItem' ],
+			'Z6091' => [ self::class, 'getWikidataItem' ],
 		];
 	}
 
@@ -59,12 +64,47 @@ class WikifunctionCallDefaultValues {
 	 * Default Value Callable for Date/Z20420:
 	 * Returns today's date in the current locale in the format 'dd-mm-yyyy'
 	 *
+	 * @param array $context
 	 * @return string
 	 */
-	public static function getDefaultDate(): string {
+	public static function getDefaultDate( array $context = [] ): string {
 		global $wgLocaltimezone;
 
 		$date = new DateTime( 'now', new DateTimeZone( $wgLocaltimezone ?? 'UTC' ) );
 		return $date->format( 'd-m-Y' );
+	}
+
+	/**
+	 * Default Value Callable for Wikidata Item/Z6001 and Wikidata Item Reference/Z6091
+	 * Returns the Wikidata Item ID linked to the client page
+	 *
+	 * @param array $context
+	 */
+	public static function getWikidataItem( array $context = [] ): string {
+		// Context doesn't have info of the page title; return empty string
+		if ( !isset( $context['linkTarget'] ) ||
+			!( $context['linkTarget'] instanceof Title || $context['linkTarget'] instanceof ParsoidTitle ) ) {
+			return '';
+		}
+
+		// The extension doesn't have WikibaseClient loaded; return empty string
+		if ( !ExtensionRegistry::getInstance()->isLoaded( 'WikibaseClient' ) ) {
+			return '';
+		}
+
+		$prefixedTitle = $context['linkTarget']->getPrefixedText();
+		$wbSiteLinkLookup = \Wikibase\Client\WikibaseClient::getStore()->getSiteLinkLookup();
+		$wbClientSettings = \Wikibase\Client\WikibaseClient::getSettings();
+
+		$clientSiteGlobalID = $wbClientSettings->getSetting( 'siteGlobalID' );
+		$entityId = $wbSiteLinkLookup->getItemIdForLink( $clientSiteGlobalID, $prefixedTitle );
+
+		// No linked wikidata item; return empty string
+		if ( !$entityId ) {
+			return '';
+		}
+
+		// Success, return default value wikidata item ID; E.g. Q42
+		return $entityId->getSerialization();
 	}
 }

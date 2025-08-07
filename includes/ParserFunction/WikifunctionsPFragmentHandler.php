@@ -99,7 +99,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		$expansion = $this->extractWikifunctionCallArguments( $extApi, $callArgs );
 
 		// Fill empty arguments with default values:
-		$expansion = $this->fillEmptyArgsWithDefaultValues( $expansion );
+		$expansion = $this->fillEmptyArgsWithDefaultValues( $extApi, $expansion );
 
 		// On Wikibase client wikis, loop over each argument, in case it's a Wikidata item reference,
 		// and mark us as a user of said item if so. Doing this after default value filling, in case
@@ -252,10 +252,11 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 	/**
 	 * Sets empty arguments with their default value (if available)
 	 *
+	 * @param ParsoidExtensionAPI $extApi
 	 * @param array $functionCall
 	 * @return array
 	 */
-	private function fillEmptyArgsWithDefaultValues( array $functionCall ): array {
+	private function fillEmptyArgsWithDefaultValues( ParsoidExtensionAPI $extApi, array $functionCall ): array {
 		// 1. See if there's an empty string arg
 		// 2. If there's any:
 		//  2.1. fetch Function Zid from Memcached
@@ -313,8 +314,11 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 			// 2.4. Check if the argument type has a default value callback defined
 			if ( is_string( $argType ) && WikifunctionCallDefaultValues::hasDefaultValueCallback( $argType ) ) {
 				$defaultValueCallback = WikifunctionCallDefaultValues::getDefaultValueForType( $argType );
+				$defaultValueContext = [
+					'linkTarget' => $extApi->getPageConfig()->getLinkTarget()
+				];
 				// 2.5. Generate the default value
-				$functionCall[ 'arguments' ][ $argKey ] = $defaultValueCallback();
+				$functionCall[ 'arguments' ][ $argKey ] = $defaultValueCallback( $defaultValueContext );
 			}
 		}
 

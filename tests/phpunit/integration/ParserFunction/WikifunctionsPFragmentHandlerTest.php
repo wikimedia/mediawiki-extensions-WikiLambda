@@ -18,6 +18,13 @@ use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaClientIntegration
 use MediaWiki\Extension\WikiLambda\WikifunctionsClientStore;
 use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\JobQueue\JobQueueGroup;
+use MediaWiki\Registration\ExtensionRegistry;
+use Wikibase\Client\Store\ClientStore;
+use Wikibase\Client\Usage\UsageAccumulator;
+use Wikibase\Client\Usage\UsageAccumulatorFactory;
+use Wikibase\DataModel\Entity\EntityIdParser;
+use Wikibase\DataModel\Entity\ItemId;
+use Wikibase\Lib\Store\SiteLinkLookup;
 use Wikimedia\ObjectCache\BagOStuff;
 use Wikimedia\Parsoid\Ext\ParsoidExtensionAPI;
 use Wikimedia\Parsoid\Fragments\HtmlPFragment;
@@ -60,9 +67,49 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 	}
 
 	/**
+	 * @param string $item
+	 */
+	protected function mockWikibaseClientServices( $item ) {
+		$itemId = new ItemId( $item );
+
+		$mockSiteLinkLookup = $this->createMock( SiteLinkLookup::class );
+		$mockSiteLinkLookup
+			->method( 'getItemIdForLink' )
+			->willReturn( $itemId );
+
+		$mockWikibaseClientStore = $this->createMock( ClientStore::class );
+		$mockWikibaseClientStore
+			->method( 'getSiteLinkLookup' )
+			->willReturn( $mockSiteLinkLookup );
+
+		$mockUsageAccumulator = $this->createMock( UsageAccumulator::class );
+		$mockUsageAccumulator->method( 'addAllUsage' );
+
+		$mockUsageAccumulatorFactory = $this->createMock( UsageAccumulatorFactory::class );
+		$mockUsageAccumulatorFactory
+			->method( 'newFromParserOutputProvider' )
+			->willReturn( $mockUsageAccumulator );
+
+		$mockEntityIdParser = $this->createMock( EntityIdParser::class );
+		$mockEntityIdParser
+			->method( 'parse' )
+			->willReturnMap( [ [ $item, $itemId ] ] );
+
+		// Wire mock services
+		$this->setService( 'WikibaseClient.Store', $mockWikibaseClientStore );
+		$this->setService( 'WikibaseClient.UsageAccumulatorFactory', $mockUsageAccumulatorFactory );
+		$this->setService( 'WikibaseClient.EntityIdParser', $mockEntityIdParser );
+	}
+
+	/**
 	 * @dataProvider provideWikifunctionsFragments
 	 */
-	public function testWikifunctionsFragments( $inputArguments, $expectedRequest, $cachedFunction = null ) {
+	public function testWikifunctionsFragments(
+		$inputArguments,
+		$expectedRequest,
+		$cachedFunction = null,
+		$linkedItem = null
+	) {
 		// Build mock dependencies for Fragment Handler constructor:
 		$mainConfig = $this->getServiceContainer()->getMainConfig();
 		$mockHttpRequestFactory = $this->createMock( HttpRequestFactory::class );
@@ -75,6 +122,14 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 		$mockClientStore = $this->createMock( WikifunctionsClientStore::class );
 		$mockClientStore->method( 'fetchFromZObjectCache' )->with( 'Z10000' )->willReturn( $cachedFunction );
 		$mockClientStore->method( 'makeFunctionCallCacheKey' )->willReturn( 'mock-cache-key' );
+
+		if ( $linkedItem ) {
+			if ( !ExtensionRegistry::getInstance()->isLoaded( 'WikibaseClient' ) ) {
+				$this->markTestSkipped( 'WikibaseClient extension is not loaded' );
+			}
+
+			$this->mockWikibaseClientServices( $linkedItem );
+		}
 
 		$this->setService( 'WikifunctionsClientStore', $mockClientStore );
 
@@ -268,6 +323,45 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			'renderLang' => 'en',
 		];
 		yield 'Function call with Wikidata lexeme reference arguments' => [ $lexemeRefArgs, $lexemeRefRequest ];
+
+		// Function call with empty Wikidata item arguments:
+		// {{#function:Z10000||}}
+		$linkedItem = 'Q1';
+		$defaultItemArgs = [ 'Z10000', '', '' ];
+		$defaultItemRequest = [
+			'target' => 'Z10000',
+			'arguments' => [
+				'Z10000K1' => $linkedItem,
+				'Z10000K2' => $linkedItem
+			],
+			'parseLang' => 'en',
+			'renderLang' => 'en',
+		];
+		// Empty args: will request function Zid from cache:
+		$defaultItemFunction = [
+			'Z2K2' => [
+				'Z1K1' => 'Z8',
+				'Z8K1' => [
+					'Z17',
+					[
+						'Z1K1' => 'Z17',
+						'Z17K1' => 'Z6001',
+						'Z17K2' => 'Z10000K1'
+					],
+					[
+						'Z1K1' => 'Z17',
+						'Z17K1' => 'Z6091',
+						'Z17K2' => 'Z10000K2'
+					]
+				]
+			]
+		];
+		yield 'Function call with empty Wikidata item arguments' => [
+			$defaultItemArgs,
+			$defaultItemRequest,
+			$defaultItemFunction,
+			$linkedItem
+		];
 	}
 
 	public function testReturnsHtmlFragmentWhenOutputTypeIsZ89() {
