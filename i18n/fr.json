@@ -177,7 +177,7 @@
 	"wikilambda-create-function": "Créer une fonction",
 	"wikilambda-create-type": "Créer un type",
 	"wikilambda-delete-list-item": "Effacer l’élément",
-	"wikilambda-delete-local-key-from-function-call": "Choisissez un argument",
+	"wikilambda-delete-local-key-from-function-call": "Supprimer l’argument",
 	"wikilambda-dialog-close": "Fermer la boîte de dialogue",
 	"wikilambda-diff-incompatible": "Le système ne peut pas afficher les différences entre un objet et un non-objet.",
 	"wikilambda-discard-edits": "Abandonner les modifications",
