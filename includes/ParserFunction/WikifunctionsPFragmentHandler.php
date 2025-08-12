@@ -315,6 +315,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 			if ( is_string( $argType ) && WikifunctionCallDefaultValues::hasDefaultValueCallback( $argType ) ) {
 				$defaultValueCallback = WikifunctionCallDefaultValues::getDefaultValueForType( $argType );
 				$defaultValueContext = [
+					'contentMetadataCollector' => $extApi->getMetadata(),
 					'linkTarget' => $extApi->getPageConfig()->getLinkTarget()
 				];
 				// 2.5. Generate the default value

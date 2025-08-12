@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda;
 
 use DateTime;
 use DateTimeZone;
+use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Title\Title;
 use Wikimedia\Parsoid\Utils\Title as ParsoidTitle;
@@ -69,6 +70,14 @@ class WikifunctionCallDefaultValues {
 	 */
 	public static function getDefaultDate( array $context = [] ): string {
 		global $wgLocaltimezone;
+
+		$cmc = $context['contentMetadataCollector'] ?? null;
+		// In some test cases, $cmc will be a StubMetadataCollector rather than a ParserOutput, so we can't do this
+		if ( $cmc && $cmc instanceof ParserOutput ) {
+			// Make sure our fragment's cache expiry is set to at most 24 hours, as we're adding
+			// a one-day-variant piece of content.
+			$cmc->updateRuntimeAdaptiveExpiry( 24 * 60 * 60 );
+		}
 
 		$date = new DateTime( 'now', new DateTimeZone( $wgLocaltimezone ?? 'UTC' ) );
 		return $date->format( 'd-m-Y' );
