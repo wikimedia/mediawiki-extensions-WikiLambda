@@ -1,9 +1,22 @@
 {
 	"@metadata": {
 		"authors": [
-			"Asma"
+			"Asma",
+			"Bonnjalal00"
 		]
 	},
+	"apihelp-wikilambda_fetch-summary": "جلب هيكل جيسون لكائنات زي",
+	"apihelp-wikilambda_fetch-param-zids": "معرّفات كائن زي المطلوب جلبها",
+	"apihelp-wikilambda_fetch-param-revisions": "مراجعات معرّفات كائنات \"زي\" المطلوب جلبها. إذا لم تُحدَّد، سيتم جلب آخر المراجعات",
+	"apihelp-wikilambda_fetch-param-language": "اللغة التي سيتم بها إرجاع النتائج.",
+	"apihelp-wikilambda_fetch-example-single": "استجلاب الكيان المفرد، ز1",
+	"apihelp-wikilambda_fetch-example-single-old": "استجلاب المراجعة 12 للكيان المفرد زي",
+	"apihelp-wikilambda_fetch-example-multiple": "استجلاب ثلاث كائنات \"ز\": \"ز1\"، و\"ز2\"، و\"ز3",
+	"apihelp-wikilambda_fetch-example-multiple-old": "استجلاب المراجعة 12 للكيان ز1، و14 لـ ز2، و25 لـ ز3",
+	"apihelp-wikilambda_function_call-param-zobject": "كائن \"ز\" لاستدعاء الدالة",
+	"apihelp-wikilambda_function_call-example-generic-list": "استدعاء دالة تُرجِع العنصر الأول من قائمة مُنَوَّعَة",
+	"apihelp-wikilambda_function_call-example-generic-pair": "استدعاء دالة تُرجع العنصر الثاني لزوج مُنَوَّع زوج&lt;سلسلة محارف,مُنَوَّع زوج&lt;سلسلة محارف,قيمة منطقية&gt;&gt;",
+	"apihelp-wikilambda_function_call-example-generic-map": "استدعاء دالة تُعَيِّن قيمة عنصر قاموس عام لمفتاح محدد إلى صيغته النصية",
 	"apihelp-wikilambda_supported_programming_languages-summary": "استرجع لغات البرمجة التي يدعمها المقيم",
 	"apierror-wikilambda_supported_programming_languages-not-connected": "تعذر حل المضيف ' $1 ' ، ربما بسبب عدم تشغيل المنسق. يرجى الرجوع إلى README لإضافة المنسق إلى تكوين تكوين عامل الإرساء الخاص بك.",
 	"apierror-wikilambda_supported_programming_languages-concurrency-limit": "لقد طلبت لغات برمجة عدة مرات.",
