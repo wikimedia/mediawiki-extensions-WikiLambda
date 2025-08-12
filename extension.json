@@ -189,26 +189,24 @@
 		},
 		"functionmaintainer": {
 			"wikilambda-create-arbitrary-zid": true,
+			"wikilambda-create-boolean": true,
 			"wikilambda-create-enum-value": true,
 			"wikilambda-create-language": true,
 			"wikilambda-create-predefined": true,
 			"wikilambda-create-programming": true,
+			"wikilambda-create-unit": true,
+			"wikilambda-edit-boolean": true,
 			"wikilambda-edit-builtin-function": true,
 			"wikilambda-edit-connected-converter": true,
 			"wikilambda-edit-enum-value": true,
+			"wikilambda-edit-generic-enum-id": true,
 			"wikilambda-edit-generic-enum-type": true,
 			"wikilambda-edit-language": true,
+			"wikilambda-edit-object-type": true,
 			"wikilambda-edit-predefined": true,
 			"wikilambda-edit-programming": true,
 			"wikilambda-edit-running-function-definition": true,
-			"wikilambda-edit-type": true
-		},
-		"sysop": {
-			"wikilambda-create-boolean": true,
-			"wikilambda-create-unit": true,
-			"wikilambda-edit-boolean": true,
-			"wikilambda-edit-generic-enum-id": true,
-			"wikilambda-edit-object-type": true,
+			"wikilambda-edit-type": true,
 			"wikilambda-edit-unit": true
 		}
 	},

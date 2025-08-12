@@ -11,8 +11,8 @@
 			"groups": [ "functioneer" ]
 		},
 		{
-			"description": "Function maintainer cannot edit identifier of a generic enumeration type",
-			"authorized": false,
+			"description": "Function maintainer can edit identifier of a generic enumeration type",
+			"authorized": true,
 			"groups": [ "functioneer", "functionmaintainer" ]
 		}
 	],

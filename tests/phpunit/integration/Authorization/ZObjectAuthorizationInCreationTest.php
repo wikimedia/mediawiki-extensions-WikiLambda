@@ -49,7 +49,7 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 	/**
 	 * @dataProvider provideCreateNew
 	 *
-	 * @param string $userType One of 'basic', 'functioneer', 'maintainer', 'sysop'
+	 * @param string $userType One of 'basic', 'functioneer', 'maintainer'
 	 * @param string $zid
 	 * @param string $testedType
 	 * @param string $createContent
@@ -75,14 +75,10 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 				$user = $this->getTestUser( [ 'functioneer', 'functionmaintainer' ] )->getUser();
 				break;
 
-			case 'sysop':
-				$user = $this->getTestSysop()->getUser();
-				break;
-
 			default:
 				$this->assertFalse(
 					true,
-					"userType must be one of 'basic', 'functioneer', 'maintainer', 'sysop', instead set to '$userType'."
+					"userType must be one of 'basic', 'functioneer', or 'maintainer', instead set to '$userType'."
 				);
 		}
 
@@ -152,10 +148,10 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 					. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
 				'createRights' => [ 'wikilambda-create-type' ],
 				'createAllowed' => [
-					'basic' => false, 'functioneer' => true, 'maintainer' => true, 'sysop' => false
+					'basic' => false, 'functioneer' => true, 'maintainer' => true
 				],
 				'createAllowedPredefined' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => true, 'sysop' => false
+					'basic' => false, 'functioneer' => false, 'maintainer' => true
 				],
 				// TODO (T342357): Wire up this test rigging; currently unused
 				'modifyContent' =>
@@ -168,17 +164,17 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 					. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
 				'modifyRights' => [ 'wikilambda-edit-type' ],
 				'modifyAllowed' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => true, 'sysop' => false
+					'basic' => false, 'functioneer' => false, 'maintainer' => true
 				],
 				'modifyAllowedPredefined' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => true, 'sysop' => false
+					'basic' => false, 'functioneer' => false, 'maintainer' => true
 				],
 				'labelRights' => [ 'wikilambda-edit-object-label' ],
 				'labelAllowed' => [
-					'basic' => true, 'functioneer' => true, 'maintainer' => true, 'sysop' => true
+					'basic' => true, 'functioneer' => true, 'maintainer' => true
 				],
 				'labelAllowedPredefined' => [
-					'basic' => true, 'functioneer' => true, 'maintainer' => true, 'sysop' => true
+					'basic' => true, 'functioneer' => true, 'maintainer' => true
 				],
 			],
 
@@ -197,10 +193,10 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 					. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
 				'createRights' => [ 'wikilambda-create-function' ],
 				'createAllowed' => [
-					'basic' => true, 'functioneer' => true, 'maintainer' => true, 'sysop' => true
+					'basic' => true, 'functioneer' => true, 'maintainer' => true
 				],
 				'createAllowedPredefined' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => true, 'sysop' => false
+					'basic' => false, 'functioneer' => false, 'maintainer' => true
 				],
 			],
 
@@ -214,10 +210,10 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 					. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
 				'createRights' => [ 'wikilambda-create-implementation' ],
 				'createAllowed' => [
-					'basic' => true, 'functioneer' => true, 'maintainer' => true, 'sysop' => true
+					'basic' => true, 'functioneer' => true, 'maintainer' => true
 				],
 				'createAllowedPredefined' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => true, 'sysop' => false
+					'basic' => false, 'functioneer' => false, 'maintainer' => true
 				],
 			],
 
@@ -233,10 +229,10 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 						. '"Z2K3":{"Z1K1":"Z12","Z12K1":["Z11"]}}',
 				'createRights' => [ 'wikilambda-create-converter' ],
 				'createAllowed' => [
-					'basic' => true, 'functioneer' => true, 'maintainer' => true, 'sysop' => true
+					'basic' => true, 'functioneer' => true, 'maintainer' => true
 				],
 				'createAllowedPredefined' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => true, 'sysop' => false
+					'basic' => false, 'functioneer' => false, 'maintainer' => true
 				],
 			],
 
@@ -252,10 +248,10 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 						. '"Z2K3":{"Z1K1":"Z12","Z12K1":["Z11"]}}',
 				'createRights' => [ 'wikilambda-create-converter' ],
 				'createAllowed' => [
-					'basic' => true, 'functioneer' => true, 'maintainer' => true, 'sysop' => true
+					'basic' => true, 'functioneer' => true, 'maintainer' => true
 				],
 				'createAllowedPredefined' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => true, 'sysop' => false
+					'basic' => false, 'functioneer' => false, 'maintainer' => true
 				],
 			],
 
@@ -270,10 +266,10 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 						. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
 				'createRights' => [ 'wikilambda-create-language' ],
 				'createAllowed' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => true, 'sysop' => false
+					'basic' => false, 'functioneer' => false, 'maintainer' => true
 				],
 				'createAllowedPredefined' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => true, 'sysop' => false
+					'basic' => false, 'functioneer' => false, 'maintainer' => true
 				],
 			],
 
@@ -285,10 +281,10 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 						. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } } ',
 				'createRights' => [ 'wikilambda-create-programming' ],
 				'createAllowed' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => true, 'sysop' => false
+					'basic' => false, 'functioneer' => false, 'maintainer' => true
 				],
 				'createAllowedPredefined' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => true, 'sysop' => false
+					'basic' => false, 'functioneer' => false, 'maintainer' => true
 				],
 			],
 
@@ -301,10 +297,10 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 						. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } } ',
 				'createRights' => [ 'wikilambda-create-boolean' ],
 				'createAllowed' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => false, 'sysop' => true
+					'basic' => false, 'functioneer' => false, 'maintainer' => true
 				],
 				'createAllowedPredefined' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => false, 'sysop' => false
+					'basic' => false, 'functioneer' => false, 'maintainer' => true
 				],
 			],
 
@@ -317,10 +313,10 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 						. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } } ',
 				'createRights' => [ 'wikilambda-create-unit' ],
 				'createAllowed' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => false, 'sysop' => false
+					'basic' => false, 'functioneer' => false, 'maintainer' => false
 				],
 				'createAllowedPredefined' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => false, 'sysop' => false
+					'basic' => false, 'functioneer' => false, 'maintainer' => false
 				],
 			],
 
@@ -336,10 +332,10 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 					. '"Z2K3":{"Z1K1":"Z12","Z12K1":["Z11"]}}',
 				'createRights' => [ 'wikilambda-create-generic-enum' ],
 				'createAllowed' => [
-					'basic' => false, 'functioneer' => true, 'maintainer' => true, 'sysop' => false
+					'basic' => false, 'functioneer' => true, 'maintainer' => true
 				],
 				'createAllowedPredefined' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => true, 'sysop' => false
+					'basic' => false, 'functioneer' => false, 'maintainer' => true
 				],
 			],
 
@@ -351,10 +347,10 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 					. '"Z2K3":{"Z1K1":"Z12","Z12K1":["Z11"]}}',
 				'createRights' => [ 'wikilambda-create-function-call' ],
 				'createAllowed' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => false, 'sysop' => false
+					'basic' => false, 'functioneer' => false, 'maintainer' => false
 				],
 				'createAllowedPredefined' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => false, 'sysop' => false
+					'basic' => false, 'functioneer' => false, 'maintainer' => false
 				],
 			],
 		];

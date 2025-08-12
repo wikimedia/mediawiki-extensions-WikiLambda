@@ -1,13 +1,18 @@
 {
 	"attempts": [
 		{
-			"description": "Function maintainers cannot edit boolean",
+			"description": "Functioneers cannot edit boolean",
 			"authorized": false,
+			"groups": [ "functioneer" ]
+		},
+		{
+			"description": "Function maintainers can edit boolean",
+			"authorized": true,
 			"groups": [ "functioneer", "functionmaintainer" ]
 		},
 		{
-			"description": "Sysops can edit boolean",
-			"authorized": true,
+			"description": "Sysops cannot edit boolean",
+			"authorized": false,
 			"groups": [ "sysop" ]
 		}
 	],

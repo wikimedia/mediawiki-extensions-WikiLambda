@@ -6,13 +6,18 @@
 			"groups": []
 		},
 		{
-			"description": "Function maintainers cannot edit object type",
+			"description": "Functioneers cannot edit object type",
 			"authorized": false,
+			"groups": [ "functioneer" ]
+		},
+		{
+			"description": "Function maintainers can edit object type",
+			"authorized": true,
 			"groups": [ "functioneer", "functionmaintainer" ]
 		},
 		{
-			"description": "Sysop can edit the object type",
-			"authorized": true,
+			"description": "Sysop cannot edit the object type",
+			"authorized": false,
 			"groups": [ "sysop" ]
 		}
 	],
