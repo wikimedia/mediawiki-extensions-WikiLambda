@@ -370,6 +370,7 @@
 	"wikilambda-mode-selector-types-group-label": "Literais e resolvedores",
 	"wikilambda-mode-selector-move-group-label": "Mover os elementos arriba ou abaixo na lista",
 	"wikilambda-mode-selector-delete-group-label": "Eliminar o elemento da lista",
+	"wikilambda-mode-selector-local-key-group-label": "Claves locais de chamada de función",
 	"wikilambda-move-after-list-item": "Mover despois",
 	"wikilambda-move-before-list-item": "Mover antes",
 	"wikilambda-multilingualstring-nofallback": "Non se definiu ningunha etiqueta nesta lingua nin nas linguas alternativas",
