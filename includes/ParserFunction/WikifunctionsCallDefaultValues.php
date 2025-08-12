@@ -1,6 +1,6 @@
 <?php
 /**
- * WikiLambda WikifunctionCallDefaultValues
+ * WikiLambda extension handler for default (empty) values for our parser function
  *
  * @file
  * @ingroup Extensions
@@ -8,7 +8,7 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda;
+namespace MediaWiki\Extension\WikiLambda\ParserFunction;
 
 use DateTime;
 use DateTimeZone;
@@ -17,7 +17,7 @@ use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Title\Title;
 use Wikimedia\Parsoid\Utils\Title as ParsoidTitle;
 
-class WikifunctionCallDefaultValues {
+class WikifunctionsCallDefaultValues {
 
 	/**
 	 * Returns the map of type IDs to default value callbacks.

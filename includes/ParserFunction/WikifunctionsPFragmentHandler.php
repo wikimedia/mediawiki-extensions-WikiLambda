@@ -15,7 +15,6 @@ use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientRequestJob;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientUsageUpdateJob;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
-use MediaWiki\Extension\WikiLambda\WikifunctionCallDefaultValues;
 use MediaWiki\Extension\WikiLambda\WikifunctionsClientStore;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
@@ -312,8 +311,8 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 			$argType = $arg[ ZTypeRegistry::Z_ARGUMENTDECLARATION_TYPE ];
 
 			// 2.4. Check if the argument type has a default value callback defined
-			if ( is_string( $argType ) && WikifunctionCallDefaultValues::hasDefaultValueCallback( $argType ) ) {
-				$defaultValueCallback = WikifunctionCallDefaultValues::getDefaultValueForType( $argType );
+			if ( is_string( $argType ) && WikifunctionsCallDefaultValues::hasDefaultValueCallback( $argType ) ) {
+				$defaultValueCallback = WikifunctionsCallDefaultValues::getDefaultValueForType( $argType );
 				$defaultValueContext = [
 					'contentMetadataCollector' => $extApi->getMetadata(),
 					'linkTarget' => $extApi->getPageConfig()->getLinkTarget()

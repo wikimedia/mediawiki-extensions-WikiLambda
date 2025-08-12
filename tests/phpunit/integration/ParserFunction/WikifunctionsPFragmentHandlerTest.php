@@ -35,8 +35,8 @@ use Wikimedia\Parsoid\Wt2Html\TT\TemplateHandlerArguments;
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentHandler
  * @covers \MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentSanitiserTokenHandler
+ * @covers \MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsCallDefaultValues
  * @covers \MediaWiki\Extension\WikiLambda\WikifunctionsClientStore
- * @covers \MediaWiki\Extension\WikiLambda\WikifunctionCallDefaultValues
  * @group API
  * @group Database
  */
