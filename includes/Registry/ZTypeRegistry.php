@@ -250,20 +250,21 @@ class ZTypeRegistry extends ZObjectRegistry {
 	];
 
 	/**
-	 * Types that are considered renderable for Visual Editor integration.
+	 * Types that are considered parseable for Visual Editor integration.
 	 * These types can be used as inputs in functions that will be discoverable
-	 * in the Visual Editor menu when the renderable parameter is set to true.
+	 * in the Visual Editor menu.
 	 *
-	 * To add new renderable types, simply add them to this array.
+	 * To add new parseable types, simply add them to this array.
 	 */
-	public const RENDERABLE_INPUT_TYPES = [
+	public const PARSEABLE_INPUT_TYPES = [
 		self::Z_STRING,
+		self::Z_LANGUAGE,
 	];
 
 	/**
 	 * Types that are considered renderable for Visual Editor integration.
 	 * These types can be used as outputs in functions that will be discoverable
-	 * in the Visual Editor menu when the renderable parameter is set to true.
+	 * in the Visual Editor menu.
 	 *
 	 * To add new renderable types, simply add them to this array.
 	 */
@@ -272,13 +273,13 @@ class ZTypeRegistry extends ZObjectRegistry {
 	];
 
 	/**
-	 * Get the list of renderable input types, including Wikidata types if enabled.
+	 * Get the list of parseable input types, including Wikidata types if enabled.
 	 *
 	 * @param Config|null $config MediaWiki config object
-	 * @return string[] Array of renderable input type ZIDs
+	 * @return string[] Array of parseable input type ZIDs
 	 */
-	public static function getRenderableInputTypes( ?Config $config = null ): array {
-		$types = self::RENDERABLE_INPUT_TYPES;
+	public static function getParseableInputTypes( ?Config $config = null ): array {
+		$types = self::PARSEABLE_INPUT_TYPES;
 
 		// Add Wikidata types if the feature flag is enabled
 		if ( $config && $config->get( 'WikifunctionsEnableWikidataInputTypes' ) ) {

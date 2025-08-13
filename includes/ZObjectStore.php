@@ -1578,11 +1578,12 @@ class ZObjectStore {
 	}
 
 	/**
-	 * Find all function Zids for which all their input and output types are renderable.
+	 * Find all function Zids for which all their input and output types can
+	 * be converted from and to strings.
 	 * This means that:
 	 *
 	 * * all their input types are either:
-	 * ** in RENDERABLE_INPUT_TYPES (Z6/String, Wikidata types), or
+	 * ** in PARSEABLE_INPUT_TYPES (Z6/String, Z60/Language, Wikidata types), or
 	 * ** enums, or
 	 * ** have a parser function, and
 	 *
@@ -1600,14 +1601,13 @@ class ZObjectStore {
 
 	/**
 	 * Returns a Query that returns all the function Zids for which:
-	 * * all their inputs are of renderable type, and
+	 * * all their inputs are of parseable type, and
 	 * * their output type is renderable.
 	 *
-	 * We define renderable differently for inputs and for outputs.
 	 * We understand that:
 	 *
-	 * * input types are renderable if they are:
-	 * ** in RENDERABLE_INPUT_TYPES (Z6/String, Wikidata types), or
+	 * * input types are parseable if they are:
+	 * ** in PARSEABLE_INPUT_TYPES (Z6/String, Z60/Language, Wikidata types), or
 	 * ** enums, or
 	 * ** have a parser function, and
 	 *
@@ -1674,7 +1674,7 @@ class ZObjectStore {
 		];
 
 		// Add renderable input types
-		foreach ( ZTypeRegistry::getRenderableInputTypes( $this->config ) as $type ) {
+		foreach ( ZTypeRegistry::getParseableInputTypes( $this->config ) as $type ) {
 			$renderableOrExpr[] = $dbr->andExpr(
 				[ 'f.wlzo_key' => 'Z8K1', 'f.wlzo_related_zobject' => $type ]
 			);

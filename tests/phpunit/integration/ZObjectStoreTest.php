@@ -1299,6 +1299,40 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->zobjectStore->insertRelatedZObjects( $relatedZObjects );
 	}
 
+	private function injectZ408RelatedZObjects(): void {
+		// Function Z408:
+		// * has 1 argument of type Z60 (Natural Language)
+		// * returns Z6 (String)
+		// * has 1 connected implementation
+		$relatedZObjects = [
+			// Input types
+			(object)[
+				'zid' => 'Z408',
+				'type' => 'Z8',
+				'key' => 'Z8K1',
+				'related_zid' => 'Z60',
+				'related_type' => 'Z4'
+			],
+			// Output type
+			(object)[
+				'zid' => 'Z408',
+				'type' => 'Z8',
+				'key' => 'Z8K2',
+				'related_zid' => 'Z6',
+				'related_type' => 'Z4'
+			],
+			// Connected implementation
+			(object)[
+				'zid' => 'Z408',
+				'type' => 'Z8',
+				'key' => 'Z8K4',
+				'related_zid' => 'Z10003',
+				'related_type' => 'Z14'
+			]
+		];
+		$this->zobjectStore->insertRelatedZObjects( $relatedZObjects );
+	}
+
 	public function testInsertRelatedZObjects() {
 		$this->injectZ401RelatedZObjects();
 		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();
@@ -1487,12 +1521,14 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->injectZ406RelatedZObjects();
 		// Z6005 (Wikidata Lexeme) input, Z6 (String) output
 		$this->injectZ407RelatedZObjects();
+		// Z60 (Natural language) input, Z6 (String) output
+		$this->injectZ408RelatedZObjects();
 
 		$res = $this->zobjectStore->findFunctionsByRenderableIO();
-		// On postgres the result may not in order
+		// On postgres the result may not be in order
 		sort( $res );
-		$this->assertCount( 4, $res, 'Should find Z404, Z405, Z406, and Z407 as renderable' );
-		$this->assertEquals( [ 'Z404', 'Z405', 'Z406', 'Z407' ], $res );
+		$this->assertCount( 5, $res, 'Should find Z404, Z405, Z406, Z407 and Z408 as renderable' );
+		$this->assertEquals( [ 'Z404', 'Z405', 'Z406', 'Z407', 'Z408' ], $res );
 	}
 
 	public function testFindFunctionsByRenderableIOWithoutFeatureFlags() {
@@ -1508,12 +1544,14 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->injectZ406RelatedZObjects();
 		// Z6005 (Wikidata Lexeme) input, Z6 (String) output
 		$this->injectZ407RelatedZObjects();
+		// Z60 (Natural language) input, Z6 (String) output
+		$this->injectZ408RelatedZObjects();
 
 		$res = $this->zobjectStore->findFunctionsByRenderableIO();
-		// On postgres the result may not in order
+		// On postgres the result may not be in order
 		sort( $res );
-		$this->assertCount( 1, $res, 'Should find Z404 as renderable' );
-		$this->assertEquals( [ 'Z404' ], $res );
+		$this->assertCount( 2, $res, 'Should find Z404 and Z408 as renderable' );
+		$this->assertEquals( [ 'Z404', 'Z408' ], $res );
 	}
 
 	public function testFetchZFunctionReturnType() {
