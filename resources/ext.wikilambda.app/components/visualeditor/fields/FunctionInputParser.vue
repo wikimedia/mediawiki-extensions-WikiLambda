@@ -22,13 +22,16 @@
 </template>
 
 <script>
-const { CdxTextInput, CdxProgressIndicator } = require( '../../../codex.js' );
 const { defineComponent } = require( 'vue' );
 const { mapState, mapActions } = require( 'pinia' );
-const Constants = require( '../../Constants.js' );
-const useMainStore = require( '../../store/index.js' );
-const typeMixin = require( '../../mixins/typeMixin.js' );
-const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
+
+const Constants = require( '../../../Constants.js' );
+const useMainStore = require( '../../../store/index.js' );
+const typeMixin = require( '../../../mixins/typeMixin.js' );
+const zobjectMixin = require( '../../../mixins/zobjectMixin.js' );
+
+// Codex components
+const { CdxTextInput, CdxProgressIndicator } = require( '../../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-input-parser',
@@ -330,7 +333,7 @@ module.exports = exports = defineComponent( {
 </script>
 
 <style lang="less">
-@import '../../ext.wikilambda.app.variables.less';
+@import '../../../ext.wikilambda.app.variables.less';
 
 .ext-wikilambda-app-function-input-parser__progress-indicator {
 	position: absolute;

@@ -65,6 +65,7 @@ const { mapActions, mapState } = require( 'pinia' );
 const Constants = require( '../../Constants.js' );
 const errorMixin = require( '../../mixins/errorMixin.js' );
 const typeMixin = require( '../../mixins/typeMixin.js' );
+const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
 const useMainStore = require( '../../store/index.js' );
 const icons = require( '../../../lib/icons.json' );
 
@@ -78,7 +79,7 @@ module.exports = exports = defineComponent( {
 		'cdx-select': CdxSelect,
 		'cdx-lookup': CdxLookup
 	},
-	mixins: [ errorMixin, typeMixin ],
+	mixins: [ errorMixin, typeMixin, zobjectMixin ],
 	props: {
 		keyPath: { // eslint-disable-line vue/no-unused-properties
 			type: String,
@@ -143,10 +144,11 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
-		'getLabelData',
 		'getEnumValues',
-		'isEnumType',
-		'getUserRequestedLang'
+		'getFetchedObject',
+		'getLabelData',
+		'getUserRequestedLang',
+		'isEnumType'
 	] ), {
 		/**
 		 * Value model for the internal codex lookup component. It
@@ -172,16 +174,45 @@ module.exports = exports = defineComponent( {
 		},
 
 		/**
-		 * Returns an array with a menu item for the selected item, if any
+		 * Returns an array with a menu item for the selected item,
+		 * if the selected value is a valid option.
 		 *
 		 * @return {Array}
 		 */
 		selectedMenuItem: function () {
-			return this.selectedZid ? [ {
+			// Nothing selected; return empty array
+			if ( !this.selectedZid ) {
+				return [];
+			}
+			// Bad value (not a zid); return empty array
+			if ( !this.isValidZidFormat( this.selectedZid ) ) {
+				return [];
+			}
+			const fetched = this.getFetchedObject( this.selectedZid );
+			// Not yet fetched; return empty array
+			if ( !fetched ) {
+				return [];
+			}
+			// Zid doesn't exist (fetched and failed); return empty array
+			if ( !fetched.success ) {
+				return [];
+			}
+
+			const selectedObject = fetched.data[ Constants.Z_PERSISTENTOBJECT_VALUE ];
+			const selectedType = this.typeToString( this.getZObjectType( selectedObject ), true );
+
+			// Bad value (fetched and unmatching type); return empty array
+			if ( this.type && ( selectedType !== this.type ) ) {
+				return [];
+			}
+
+			// Selected object is fetched and matches type; return menu element
+			this.fetchZids( { zids: [ selectedType ] } );
+			return [ {
 				value: this.selectedZid,
 				label: this.selectedLabel,
-				description: this.getLabelData( this.type ).label
-			} ] : [];
+				description: this.getLabelData( selectedType ).label
+			} ];
 		},
 
 		/**

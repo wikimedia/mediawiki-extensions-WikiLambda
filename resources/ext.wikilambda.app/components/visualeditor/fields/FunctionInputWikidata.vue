@@ -25,13 +25,13 @@
 const { defineComponent } = require( 'vue' );
 const { mapState, mapActions } = require( 'pinia' );
 
-const Constants = require( '../../Constants.js' );
-const useMainStore = require( '../../store/index.js' );
+const Constants = require( '../../../Constants.js' );
+const useMainStore = require( '../../../store/index.js' );
 
 // Wikidata components
-const WikidataEntitySelector = require( '../types/wikidata/EntitySelector.vue' );
+const WikidataEntitySelector = require( '../../types/wikidata/EntitySelector.vue' );
 // Codex components
-const { CdxProgressIndicator } = require( '../../../codex.js' );
+const { CdxProgressIndicator } = require( '../../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-input-wikidata',
@@ -130,6 +130,7 @@ module.exports = exports = defineComponent( {
 			// TODO (T398733): Enable Default Value for Wikidata item and Wikidata item reference
 			if ( !value ) {
 				this.updateValidationState( this.allowsEmptyField );
+				// FIXME shouldn't we emit update when this.allowsEmptyFields && emitUpdate?
 				return;
 			}
 

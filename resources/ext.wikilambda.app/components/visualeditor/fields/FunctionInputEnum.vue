@@ -20,12 +20,15 @@
 </template>
 
 <script>
-const { CdxSelect } = require( '../../../codex.js' );
 const { defineComponent } = require( 'vue' );
 const { mapActions, mapState } = require( 'pinia' );
-const Constants = require( '../../Constants.js' );
-const useMainStore = require( '../../store/index.js' );
-const typeUtils = require( '../../utils/typeUtils.js' );
+
+const Constants = require( '../../../Constants.js' );
+const useMainStore = require( '../../../store/index.js' );
+const typeUtils = require( '../../../utils/typeUtils.js' );
+
+// Codex components
+const { CdxSelect } = require( '../../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-input-enum',

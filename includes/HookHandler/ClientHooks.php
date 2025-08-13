@@ -164,6 +164,7 @@ class ClientHooks implements
 					'wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer',
 					'wikilambda-visualeditor-wikifunctionscall-error-bad-function',
 					'wikilambda-visualeditor-wikifunctionscall-error-enum',
+					'wikilambda-visualeditor-wikifunctionscall-error-language',
 					'wikilambda-visualeditor-wikifunctionscall-error-parser',
 					'wikilambda-visualeditor-wikifunctionscall-error-parser-empty',
 					'wikilambda-visualeditor-wikifunctionscall-error-wikidata-lexeme',

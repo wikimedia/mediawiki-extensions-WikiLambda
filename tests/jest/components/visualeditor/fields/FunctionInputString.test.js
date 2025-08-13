@@ -1,7 +1,7 @@
 'use strict';
 
 const { shallowMount } = require( '@vue/test-utils' );
-const FunctionInputString = require( '../../../../resources/ext.wikilambda.app/components/visualeditor/FunctionInputString.vue' );
+const FunctionInputString = require( '../../../../../resources/ext.wikilambda.app/components/visualeditor/fields/FunctionInputString.vue' );
 
 describe( 'FunctionInputString', () => {
 	it( 'renders without errors', () => {

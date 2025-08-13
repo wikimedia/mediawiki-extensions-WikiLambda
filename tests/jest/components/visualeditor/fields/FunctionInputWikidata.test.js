@@ -2,9 +2,9 @@
 
 const { shallowMount } = require( '@vue/test-utils' );
 const { waitFor } = require( '@testing-library/vue' );
-const FunctionInputWikidata = require( '../../../../resources/ext.wikilambda.app/components/visualeditor/FunctionInputWikidata.vue' );
-const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
-const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
+const FunctionInputWikidata = require( '../../../../../resources/ext.wikilambda.app/components/visualeditor/fields/FunctionInputWikidata.vue' );
+const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
 
 describe( 'FunctionInputWikidata', () => {
 	const entityType = Constants.Z_WIKIDATA_ITEM;

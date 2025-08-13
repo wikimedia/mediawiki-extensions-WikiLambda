@@ -16,8 +16,10 @@
 </template>
 
 <script>
-const { CdxTextInput } = require( '../../../codex.js' );
 const { defineComponent } = require( 'vue' );
+
+// Codex components
+const { CdxTextInput } = require( '../../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-input-string',

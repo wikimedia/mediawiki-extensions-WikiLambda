@@ -357,6 +357,9 @@ Constants.FUNCTION_INPUT_TYPE_CONFIG = {
 	[ Constants.Z_STRING ]: {
 		component: 'wl-function-input-string'
 	},
+	[ Constants.Z_NATURAL_LANGUAGE ]: {
+		component: 'wl-function-input-language'
+	},
 	[ Constants.Z_WIKIDATA_ITEM ]: {
 		component: 'wl-function-input-wikidata'
 	},

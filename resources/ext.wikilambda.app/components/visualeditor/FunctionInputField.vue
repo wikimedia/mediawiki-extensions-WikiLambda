@@ -39,22 +39,29 @@
 </template>
 
 <script>
-const { CdxField } = require( '../../../codex.js' );
 const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
+
+const Constants = require( '../../Constants.js' );
 const useMainStore = require( '../../store/index.js' );
 const LabelData = require( '../../store/classes/LabelData.js' );
-const FunctionInputEnum = require( './FunctionInputEnum.vue' );
-const FunctionInputParser = require( './FunctionInputParser.vue' );
-const FunctionInputString = require( './FunctionInputString.vue' );
-const FunctionInputWikidata = require( './FunctionInputWikidata.vue' );
-const Constants = require( '../../Constants.js' );
+
+// Fields components
+const FunctionInputEnum = require( './fields/FunctionInputEnum.vue' );
+const FunctionInputLanguage = require( './fields/FunctionInputLanguage.vue' );
+const FunctionInputParser = require( './fields/FunctionInputParser.vue' );
+const FunctionInputString = require( './fields/FunctionInputString.vue' );
+const FunctionInputWikidata = require( './fields/FunctionInputWikidata.vue' );
+
+// Codex components
+const { CdxField } = require( '../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-input-field',
 	components: {
 		'cdx-field': CdxField,
 		'wl-function-input-enum': FunctionInputEnum,
+		'wl-function-input-language': FunctionInputLanguage,
 		'wl-function-input-parser': FunctionInputParser,
 		'wl-function-input-string': FunctionInputString,
 		'wl-function-input-wikidata': FunctionInputWikidata

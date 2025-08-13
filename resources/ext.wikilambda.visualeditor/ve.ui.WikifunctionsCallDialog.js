@@ -322,7 +322,7 @@ ve.ui.WikifunctionsCallDialog.prototype.getActionProcess = function ( action ) {
  * @inheritdoc
  */
 ve.ui.WikifunctionsCallDialog.prototype.getBodyHeight = function () {
-	return 350;
+	return 450;
 };
 
 /* Registration */

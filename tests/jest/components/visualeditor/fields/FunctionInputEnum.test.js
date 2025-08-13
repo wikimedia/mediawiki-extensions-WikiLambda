@@ -2,10 +2,10 @@
 
 const { shallowMount } = require( '@vue/test-utils' );
 const { waitFor } = require( '@testing-library/vue' );
-const FunctionInputEnum = require( '../../../../resources/ext.wikilambda.app/components/visualeditor/FunctionInputEnum.vue' );
-const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
-const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../helpers/getterHelpers.js' );
-const { mockEnumValues } = require( '../../fixtures/mocks.js' );
+const FunctionInputEnum = require( '../../../../../resources/ext.wikilambda.app/components/visualeditor/fields/FunctionInputEnum.vue' );
+const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../../helpers/getterHelpers.js' );
+const { mockEnumValues } = require( '../../../fixtures/mocks.js' );
 
 describe( 'FunctionInputEnum', () => {
 	const mockEnumZid = 'Z30000';

@@ -2,9 +2,9 @@
 
 const { shallowMount } = require( '@vue/test-utils' );
 const { waitFor } = require( '@testing-library/vue' );
-const FunctionInputParser = require( '../../../../resources/ext.wikilambda.app/components/visualeditor/FunctionInputParser.vue' );
-const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
-const { createGettersWithFunctionsMock } = require( '../../helpers/getterHelpers.js' );
+const FunctionInputParser = require( '../../../../../resources/ext.wikilambda.app/components/visualeditor/fields/FunctionInputParser.vue' );
+const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+const { createGettersWithFunctionsMock } = require( '../../../helpers/getterHelpers.js' );
 
 describe( 'FunctionInputParser', () => {
 	let store;

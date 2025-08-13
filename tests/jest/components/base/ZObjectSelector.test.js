@@ -24,6 +24,7 @@ describe( 'ZObjectSelector', () => {
 			store.isEnumType = createGettersWithFunctionsMock( false );
 			store.getErrors = createGettersWithFunctionsMock( [] );
 			store.getUserRequestedLang = 'en';
+			store.getFetchedObject = createGettersWithFunctionsMock();
 			store.getLabelData = createLabelDataMock( {
 				Z6: 'String',
 				Z4: 'Type',
@@ -283,6 +284,12 @@ describe( 'ZObjectSelector', () => {
 		} );
 
 		it( 'on initialization, show selected option in the lookup menu items', async () => {
+			// When object is fetched successfully, and it's a matching type
+			store.getFetchedObject = createGettersWithFunctionsMock( {
+				success: true,
+				data: { Z2K2: { Z1K1: 'Z4' } }
+			} );
+
 			const wrapper = mount( ZObjectSelector, {
 				props: {
 					type: Constants.Z_TYPE,
