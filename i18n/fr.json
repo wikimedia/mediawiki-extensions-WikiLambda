@@ -393,6 +393,7 @@
 	"wikilambda-mode-selector-types-group-label": "Littéraux et résolveurs",
 	"wikilambda-mode-selector-move-group-label": "Déplacer les éléments vers le haut ou vers le bas dans la liste",
 	"wikilambda-mode-selector-delete-group-label": "Supprimer l'élément de la liste",
+	"wikilambda-mode-selector-local-key-group-label": "Touches locales d'appel de fonction",
 	"wikilambda-move-after-list-item": "Déplacer après",
 	"wikilambda-move-before-list-item": "Déplacer avant",
 	"wikilambda-multilingualstring-nofallback": "Aucun libellé défini dans cette langue ni dans les langues de repli acceptées.",

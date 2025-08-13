@@ -2,12 +2,16 @@
 	"@metadata": {
 		"authors": [
 			"H78c67c",
+			"JeffreyKim",
 			"Winston Sung",
 			"Yueman"
 		]
 	},
+	"wikilambda-add-local-key-to-function-call": "加入引數",
 	"wikilambda-cancel": "取消",
+	"wikilambda-delete-local-key-from-function-call": "刪除引數",
 	"wikilambda-function-viewer-aliases-hide-language-button": "顯示少啲語言",
+	"wikilambda-mode-selector-local-key-group-label": "函數調用本地鍵",
 	"wikilambda-renderer-api-error": "有嘢出錯。請試過。",
 	"wikilambda-special-listduplicateobjectlabels-language": "語文",
 	"wikilambda-string-renderer-examples-title": "例子"
