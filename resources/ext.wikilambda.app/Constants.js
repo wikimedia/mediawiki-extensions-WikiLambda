@@ -600,7 +600,9 @@ Constants.Z_TYPED_OBJECTS_LIST = [
 //   declared and implemented in WikifunctionCallDefaultValue.php class.
 Constants.VE_ALLOW_EMPTY_FIELD = [
 	Constants.Z_STRING,
-	Constants.Z_GREGORIAN_CALENDAR_DATE
+	Constants.Z_GREGORIAN_CALENDAR_DATE,
+	Constants.Z_WIKIDATA_ITEM,
+	Constants.Z_WIKIDATA_REFERENCE_ITEM
 ];
 
 Constants.STORED_OBJECTS = {

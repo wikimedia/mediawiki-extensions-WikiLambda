@@ -127,10 +127,11 @@ module.exports = exports = defineComponent( {
 		 */
 		validate: function ( value, emitUpdate = false ) {
 			// For empty values, check if empty field is allowed
-			// TODO (T398733): Enable Default Value for Wikidata item and Wikidata item reference
 			if ( !value ) {
 				this.updateValidationState( this.allowsEmptyField );
-				// FIXME shouldn't we emit update when this.allowsEmptyFields && emitUpdate?
+				if ( emitUpdate && this.allowsEmptyField ) {
+					this.$emit( 'update', value );
+				}
 				return;
 			}
 

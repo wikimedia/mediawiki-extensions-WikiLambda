@@ -42,13 +42,25 @@ describe( 'FunctionInputWikidata', () => {
 		expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ { isValid: true } ] );
 	} );
 
-	it( 'validates on mount with empty value', async () => {
+	it( 'validates on mount with empty value (lexemes should not be empty)', async () => {
 		const wrapper = shallowMount( FunctionInputWikidata, {
-			props: { inputType: entityType, value: '' }
+			props: { inputType: Constants.Z_WIKIDATA_LEXEME, value: '' }
 		} );
 
 		await waitFor( () => expect( wrapper.vm.isValidating ).toBe( false ) );
-		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false, errorMessage: 'Invalid Wikidata Item.' } ] );
+		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ {
+			isValid: false,
+			errorMessage: 'Invalid Wikidata Lexeme.'
+		} ] );
+	} );
+
+	it( 'validates on mount with empty value (items can be empty)', async () => {
+		const wrapper = shallowMount( FunctionInputWikidata, {
+			props: { inputType: Constants.Z_WIKIDATA_ITEM, value: '' }
+		} );
+
+		await waitFor( () => expect( wrapper.vm.isValidating ).toBe( false ) );
+		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: true } ] );
 	} );
 
 	it( 'emits input, update and validate events when a value is selected', async () => {
@@ -57,8 +69,8 @@ describe( 'FunctionInputWikidata', () => {
 		} );
 		await waitFor( () => expect( wrapper.vm.isValidating ).toBe( false ) );
 
-		// Should emit invalid with error message for empty value
-		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false, errorMessage: 'Invalid Wikidata Item.' } ] );
+		// Should emit valid for the initial empty value
+		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: true } ] );
 
 		// ACT: Simulate user selecting an entity
 		wrapper.vm.onSelect( entityId );
