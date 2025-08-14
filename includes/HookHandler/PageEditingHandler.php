@@ -348,7 +348,7 @@ class PageEditingHandler implements
 		// If we've already decided above that this is a deletion/undeletion, do nothing else.
 		if ( $logType === null ) {
 			// If this has been created, short-circuit
-			if ( $recentChange->getAttribute( 'rc_new' ) ) {
+			if ( $recentChange->getAttribute( 'rc_source' ) === RecentChange::SRC_NEW ) {
 				$changeData['action'] = 'create';
 
 				$this->logger->debug(

@@ -784,8 +784,6 @@ class PageEditingHandlerTest extends WikiLambdaIntegrationTestCase {
 				return 20250301000000;
 			case 'rc_comment_text':
 				return 'Creating a new Function';
-			case 'rc_new':
-				return true;
 			case 'rc_bot':
 				return false;
 			default:
@@ -807,8 +805,6 @@ class PageEditingHandlerTest extends WikiLambdaIntegrationTestCase {
 				return 20250301000000;
 			case 'rc_comment_text':
 				return 'Restoring as it is useful';
-			case 'rc_new':
-				return false;
 			case 'rc_bot':
 				return false;
 			default:
@@ -830,8 +826,6 @@ class PageEditingHandlerTest extends WikiLambdaIntegrationTestCase {
 				return 20250301000000;
 			case 'rc_comment_text':
 				return 'Hiding naughty content';
-			case 'rc_new':
-				return false;
 			case 'rc_bot':
 				return false;
 			default:
@@ -851,8 +845,6 @@ class PageEditingHandlerTest extends WikiLambdaIntegrationTestCase {
 				return 20250301000000;
 			case 'rc_comment_text':
 				return 'Adding a label in French';
-			case 'rc_new':
-				return false;
 			case 'rc_bot':
 				return false;
 			default:
@@ -872,8 +864,6 @@ class PageEditingHandlerTest extends WikiLambdaIntegrationTestCase {
 				return 20250301000000;
 			case 'rc_comment_text':
 				return 'Adding a label in French';
-			case 'rc_new':
-				return false;
 			case 'rc_bot':
 				return false;
 			default:
@@ -893,8 +883,6 @@ class PageEditingHandlerTest extends WikiLambdaIntegrationTestCase {
 				return 20250301000000;
 			case 'rc_comment_text':
 				return 'Drop bad Implementation';
-			case 'rc_new':
-				return false;
 			case 'rc_bot':
 				return false;
 			default:
@@ -914,8 +902,6 @@ class PageEditingHandlerTest extends WikiLambdaIntegrationTestCase {
 				return 20250301000000;
 			case 'rc_comment_text':
 				return 'Swap out bad Tester for good one';
-			case 'rc_new':
-				return false;
 			case 'rc_bot':
 				return false;
 			default:

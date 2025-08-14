@@ -84,7 +84,6 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 			// Our standard flags, invariant between changes: never minor or deletes or creates
 			'rc_minor' => false,
 			'rc_deleted' => false,
-			'rc_new' => false,
 
 			// There's no patrollable state for this change entry, as it doesn't take place on this wiki
 			'rc_patrolled' => RecentChange::PRC_AUTOPATROLLED,
