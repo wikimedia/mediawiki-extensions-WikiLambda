@@ -92,7 +92,7 @@
 		}
 	},
 	"ConfigRegistry": {
-		"WikiLambda": "GlobalVarConfig::newInstance"
+		"WikiLambda": "MediaWiki\\Config\\GlobalVarConfig::newInstance"
 	},
 	"AvailableRights": [
 		"wikilambda-bypass-cache",
