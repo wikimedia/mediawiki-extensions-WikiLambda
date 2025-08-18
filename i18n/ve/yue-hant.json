@@ -1,8 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
+			"H78c67c",
 			"Yueman"
 		]
 	},
-	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "搵唔到結果。"
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "搵唔到結果。",
+	"wikilambda-visualeditor-wikifunctionscall-error-language": "未揀語言。"
 }

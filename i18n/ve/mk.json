@@ -42,6 +42,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Предложени функции",
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Уредете ја функцијата за да ги исправите отсутните или неважечки вредности.",
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Не е избрана можност.",
+	"wikilambda-visualeditor-wikifunctionscall-error-language": "Немате избрано јазик.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser-empty": "Внесете вредност.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser": "Непозната грешка. [[f:Talk:$1|Пријавете го проблемот]]",
 	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-lexeme": "Неважечка лексема на Википодатоците.",

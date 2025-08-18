@@ -45,6 +45,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "פונקציות מוצעות",
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "נא לערוך את הפונקציה כדי לתקן ערכים חסרים או בלתי־תקינים.",
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "לא נבחרה אפשרות.",
+	"wikilambda-visualeditor-wikifunctionscall-error-language": "לא נבחרה שפה.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser-empty": "נא להכניס ערך.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser": "שגיאה לא ידועה. [[f:Talk:$1|לדווח על בעיה]]",
 	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-lexeme": "יחידה מילונית לא תקינה של ויקינתונים.",

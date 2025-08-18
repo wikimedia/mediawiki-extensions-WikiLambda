@@ -44,6 +44,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "প্রস্তাবিত ফাংশন",
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "অনুপস্থিত বা অবৈধ মানগুলি ঠিক করতে ফাংশনটি সম্পাদনা করুন।",
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "কোনো বিকল্প বাছাই করা হয়নি।",
+	"wikilambda-visualeditor-wikifunctionscall-error-language": "কোনো ভাষা চয়ন করা হয়নি।",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser-empty": "অনুগ্রহ করে একটি মান লিখুন।",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser": "অজানা ত্রুটি। [[f:Talk:$1|সমস্যাটি রিপোর্ট করুন]]",
 	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-lexeme": "অবৈধ উইকিউপাত্ত লেক্সিম।",

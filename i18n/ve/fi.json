@@ -42,6 +42,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Ehdotetut funktiot",
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Muokkaa funktiota korjataksesi puuttuvat tai virheelliset arvot.",
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Ei valittua vaihtoehtoa.",
+	"wikilambda-visualeditor-wikifunctionscall-error-language": "Ei kieltä valittuna.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser-empty": "Syötä arvo.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser": "Tuntematon virhe. [[f:Talk:$1|Ilmoita ongelmasta]]",
 	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-lexeme": "Virheellinen Wikidata-lekseemi.",

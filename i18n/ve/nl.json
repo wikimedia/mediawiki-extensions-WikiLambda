@@ -44,6 +44,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Voorgestelde functies",
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Bewerk de functie om ontbrekende of foutieve waarden te repareren.",
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Geen optie gekozen.",
+	"wikilambda-visualeditor-wikifunctionscall-error-language": "Geen taal gekozen.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser-empty": "Voer een waarde in.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser": "Onbekende fout. [[f:Talk:$1|Probleem melden]]",
 	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-lexeme": "Onjuist Wikidata-lexeem.",
