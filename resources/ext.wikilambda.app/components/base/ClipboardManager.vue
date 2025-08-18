@@ -78,11 +78,11 @@ module.exports = exports = defineComponent( {
 			);
 		}
 	},
-	mounted() {
+	mounted: function () {
 		window.addEventListener( 'click', this.handleEvent );
 		window.addEventListener( 'keydown', this.handleEvent );
 	},
-	beforeUnmount() {
+	beforeUnmount: function () {
 		window.removeEventListener( 'click', this.handleEvent );
 		window.removeEventListener( 'keydown', this.handleEvent );
 	}

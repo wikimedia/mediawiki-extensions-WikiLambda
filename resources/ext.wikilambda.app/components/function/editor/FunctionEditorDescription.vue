@@ -159,7 +159,7 @@ module.exports = exports = defineComponent( {
 				( this.description ? this.description.value.length : 0 );
 		} );
 	},
-	beforeUnmount() {
+	beforeUnmount: function () {
 		// When the component is unmounted, we want to ignore any change events and not persist the data
 		this.ignoreChangeEvent = true;
 	}

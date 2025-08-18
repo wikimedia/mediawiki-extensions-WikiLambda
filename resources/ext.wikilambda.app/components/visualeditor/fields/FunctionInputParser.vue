@@ -52,7 +52,7 @@ module.exports = exports = defineComponent( {
 		}
 	},
 	emits: [ 'update', 'input', 'validate', 'loading-start', 'loading-end' ],
-	data() {
+	data: function () {
 		return {
 			areTestsFetched: false,
 			isParserRunning: false, // Track whether the parser is running
@@ -323,7 +323,7 @@ module.exports = exports = defineComponent( {
 		this.validate( this.value );
 		this.generateRendererExamples();
 	},
-	beforeUnmount() {
+	beforeUnmount: function () {
 		// Cancel any ongoing parser request when the component is unmounted
 		if ( this.parserAbortController ) {
 			this.parserAbortController.abort();

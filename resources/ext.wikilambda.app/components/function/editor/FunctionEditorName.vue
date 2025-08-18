@@ -168,7 +168,7 @@ module.exports = exports = defineComponent( {
 			this.remainingChars = this.maxLabelChars - ( this.name ? this.name.value.length : 0 );
 		} );
 	},
-	beforeUnmount() {
+	beforeUnmount: function () {
 		// When the component is unmounted, we want to ignore any change events and not persist the data
 		this.ignoreChangeEvent = true;
 	}

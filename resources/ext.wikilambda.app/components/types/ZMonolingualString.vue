@@ -179,7 +179,7 @@ module.exports = exports = defineComponent( {
 			flush: 'post'
 		}
 	},
-	mounted() {
+	mounted: function () {
 		this.chipComponent = this.$refs.chipComponent;
 		this.getAndStoreChipWidth();
 	}
