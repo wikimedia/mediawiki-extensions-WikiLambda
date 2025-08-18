@@ -2,8 +2,12 @@
 	"@metadata": {
 		"authors": [
 			"Winston Sung",
-			"H78c67c"
+			"H78c67c",
+			"JeffreyKim",
+			"Yueman"
 		]
 	},
+	"wikilambda-cancel": "取消",
+	"wikilambda-functioncall-metadata-errors-none": "冇",
 	"wikilambda-function-viewer-aliases-hide-language-button": "隱藏清單"
 }
