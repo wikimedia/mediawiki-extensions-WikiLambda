@@ -59,10 +59,7 @@ describe( 'FunctionInputLanguage', () => {
 		} );
 
 		// Emits validation result with empty value
-		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ {
-			isValid: false,
-			errorMessage: 'No language chosen.'
-		} ] );
+		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: true } ] );
 
 		// ACT: Simulate user selecting an entity
 		wrapper.getComponent( { name: 'wl-z-object-selector' } ).vm.$emit( 'select-item', 'Z1003' );
@@ -77,16 +74,13 @@ describe( 'FunctionInputLanguage', () => {
 		expect( wrapper.emitted().update[ 0 ] ).toEqual( [ 'Z1003' ] );
 	} );
 
-	it( 'fails validation with empty value', () => {
+	it( 'succeeds validation with empty value', () => {
 		const wrapper = shallowMount( FunctionInputLanguage, {
 			props: { value: '' }
 		} );
 
 		// Emits validation result synchronously
-		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ {
-			isValid: false,
-			errorMessage: 'No language chosen.'
-		} ] );
+		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: true } ] );
 	} );
 
 	it( 'fails validation with non-zid value', () => {

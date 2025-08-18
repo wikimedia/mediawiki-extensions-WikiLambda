@@ -24,18 +24,19 @@ class WikifunctionsCallDefaultValues {
 	 * Each callback should return a default value for the given type.
 	 *
 	 * To add default values for other types:
-	 * * Add a new entry in the returned array with the type zid
-	 *   as the index, and a callable as its value.
-	 * * The callable can be an anonymous function or a public static
-	 * 	 named function, which should be implemented below.
+	 * 1. Add a new entry in the returned array with the type zid
+	 *    as the index, and a callable as its value.
+	 * 2. The callable can be an anonymous function or a public static
+	 * 	  named function, which should be implemented below.
 	 *
 	 * @return array
 	 */
 	private static function getDefaultValueCallbacks(): array {
 		return [
-			'Z20420' => [ self::class, 'getDefaultDate' ],
+			'Z60' => [ self::class, 'getDefaultLanguage' ],
 			'Z6001' => [ self::class, 'getWikidataItem' ],
 			'Z6091' => [ self::class, 'getWikidataItem' ],
+			'Z20420' => [ self::class, 'getDefaultDate' ],
 		];
 	}
 
@@ -60,6 +61,22 @@ class WikifunctionsCallDefaultValues {
 	}
 
 	// Callables for each type:
+
+	/**
+	 * Default Value Callable for Language/Z60:
+	 * Returns the language of the page
+	 *
+	 * @param array $context
+	 * @return string
+	 */
+	public static function getDefaultLanguage( array $context = [] ): string {
+		// Context doesn't have the info of the page language; return empty string
+		if ( !isset( $context['pageLanguage'] ) || $context['pageLanguage'] === '' ) {
+			return '';
+		}
+		// Return page language Bcp47 code, FunctionCallHandler will convert it to zid
+		return $context[ 'pageLanguage' ];
+	}
 
 	/**
 	 * Default Value Callable for Date/Z20420:
@@ -88,6 +105,7 @@ class WikifunctionsCallDefaultValues {
 	 * Returns the Wikidata Item ID linked to the client page
 	 *
 	 * @param array $context
+	 * @return string
 	 */
 	public static function getWikidataItem( array $context = [] ): string {
 		// Context doesn't have info of the page title; return empty string

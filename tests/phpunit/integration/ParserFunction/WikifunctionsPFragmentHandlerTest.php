@@ -362,6 +362,37 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			$defaultItemFunction,
 			$linkedItem
 		];
+
+		// Function call with empty Natural language argument:
+		// {{#function:Z10000|}}
+		$defaultLangArgs = [ 'Z10000', '' ];
+		$defaultLangRequest = [
+			'target' => 'Z10000',
+			'arguments' => [
+				'Z10000K1' => 'en'
+			],
+			'parseLang' => 'en',
+			'renderLang' => 'en',
+		];
+		// Empty args: will request function Zid from cache:
+		$defaultLangFunction = [
+			'Z2K2' => [
+				'Z1K1' => 'Z8',
+				'Z8K1' => [
+					'Z17',
+					[
+						'Z1K1' => 'Z17',
+						'Z17K1' => 'Z60',
+						'Z17K2' => 'Z10000K1'
+					]
+				]
+			]
+		];
+		yield 'function call with empty Natural Language arguments' => [
+			$defaultLangArgs,
+			$defaultLangRequest,
+			$defaultLangFunction
+		];
 	}
 
 	public function testReturnsHtmlFragmentWhenOutputTypeIsZ89() {

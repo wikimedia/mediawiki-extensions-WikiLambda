@@ -105,7 +105,8 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 		$targetFunction = $this->getTargetFunction( $target, $span );
 
 		// 2. Validate parser and renderer language codes and get their Zids
-		[ $parseLanguageZid, $renderLanguageZid ] = $this->getLanguageZids( $parseLang, $renderLang, $span );
+		$parseLanguageZid = $this->getLanguageZid( $parseLang, 'parselang', $span );
+		$renderLanguageZid = $this->getLanguageZid( $renderLang, 'renderlang', $span );
 
 		// 3. Build the arguments for the call given their expected types (or dies if something is wrong)
 		$argumentsForCall = $this->buildArgumentsForCall(
@@ -330,28 +331,29 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 	}
 
 	/**
-	 * Read parseLang and renderLang language code arguments and find their
-	 * equivalent Natural Language/Z60 Zids.
-	 * Returns an array with:
-	 * * parseLangZid (T368604): Parser language for the inputs
-	 * * renderLangZid (T362252): Renderer language for the output
+	 * Read a language Bcp47 code argument and find its equivalents Natural Language/Z60 Zid.
+	 * This is called for:
+	 * * parseLang
+	 * * renderLang
+	 * * input arguments of type Z60
 	 *
-	 * @param string $parseLang
-	 * @param string $renderLang
+	 * @param string $langCode
+	 * @param string $argKey
 	 * @param SpanInterface $span
-	 * @return array [parseLangZid, renderLangZid]
+	 * @return string language zid
 	 */
-	private function getLanguageZids( $parseLang, $renderLang, $span ): array {
-		// 1. Check that the requested parse language is one we know of and support
+	private function getLanguageZid( $langCode, $argKey, $span ): string {
+		// Check that the requested language code is one we know of and support
 		try {
-			$parseLanguageZid = $this->langRegistry->getLanguageZidFromCode( $parseLang );
+			$languageZid = $this->langRegistry->getLanguageZidFromCode( $langCode );
 		} catch ( ZErrorException $error ) {
 			$errorMessage =
-				__METHOD__ . ' called with parse language {parseLang} which is not found / errored: {error}';
+				__METHOD__ . ' called with {argKey} {langCode} which is not found / errored: {error}';
 			$this->logger->debug(
 				$errorMessage,
 				[
-					'parseLang' => $parseLang,
+					'argKey' => $argKey,
+					'langCode' => $langCode,
 					'error' => $error->getMessage()
 				]
 			);
@@ -364,38 +366,12 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			$this->dieRESTfullyWithZError(
 				$error->getZError(),
 				HttpStatus::BAD_REQUEST,
-				[ 'target' => $parseLang ]
+				[ 'target' => $langCode ]
 			);
 		}
 
-		// 2. Check that the requested render language is one we know of and support
-		try {
-			$renderLanguageZid = $this->langRegistry->getLanguageZidFromCode( $renderLang );
-		} catch ( ZErrorException $error ) {
-			$errorMessage =
-				__METHOD__ . ' called with render language {renderLang} which is not found / errored: {error}';
-			$this->logger->debug(
-				$errorMessage,
-				[
-					'renderLang' => $renderLang,
-					'error' => $error->getMessage()
-				]
-			);
-			$span->setAttributes( [
-				'response.status_code' => HttpStatus::BAD_REQUEST,
-				'exception.message' => $errorMessage
-			] )->end();
-
-			// Die with Z_ERROR_LANG_NOT_FOUND
-			$this->dieRESTfullyWithZError(
-				$error->getZError(),
-				HttpStatus::BAD_REQUEST,
-				[ 'target' => $renderLang ]
-			);
-		}
-
-		// Success! Both arguments are correct, return the zids
-		return [ $parseLanguageZid, $renderLanguageZid ];
+		// Success! Return the langugae zids
+		return $languageZid;
 	}
 
 	/**
@@ -575,7 +551,9 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 
 			// Dies with Z_ERROR_ZID_NOT_FOUND
 			$this->dieRESTfullyWithZError(
-				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ 'data' => $target ] ),
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ 'data' => $targetTypeZid ]
+				),
 				HttpStatus::BAD_REQUEST,
 				[
 					'target' => $target,
@@ -622,6 +600,12 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 		// * if not a reference, proceeds with building parser function
 		if ( $this->isArgumentValidReference( $providedArgument, $targetTypeObject, $target, $span ) ) {
 			return new ZReference( $providedArgument );
+		}
+
+		// If type is a language and value is not a zid, get language zid from Bcp47code
+		if ( $targetTypeZid === ZTypeRegistry::Z_LANGUAGE ) {
+			$languageZid = $this->getLanguageZid( $providedArgument, $argumentKey, $span );
+			return new ZReference( $languageZid );
 		}
 
 		// At this point, we know it's a string input to a non-string Type, so we need to parse it

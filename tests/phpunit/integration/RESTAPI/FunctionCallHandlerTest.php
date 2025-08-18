@@ -575,39 +575,33 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
-	 * @dataProvider provideTestGetLanguageZids
+	 * @dataProvider provideTestGetLanguageZid
 	 */
-	public function testGetLanguageZids(
-		$parseLang,
-		$renderLang,
+	public function testGetLanguageZid(
+		$langCode,
 		$success,
-		$expectedParserZid,
-		$expectedRendererZid,
+		$expectedLangZid,
 		$expectedError = []
 	) {
 		$handler = new FunctionCallHandler( $this->zobjectStore );
 		$spanMock = $this->getSpanMock();
 
 		if ( $success ) {
-			$zids = $this->runPrivateMethod( $handler, 'getLanguageZids', [ $parseLang, $renderLang, $spanMock ] );
-			[ $actualParserZid, $actualRendererZid ] = $zids;
-			$this->assertSame( $expectedParserZid, $actualParserZid );
-			$this->assertSame( $expectedRendererZid, $actualRendererZid );
+			$actualLangZid = $this->runPrivateMethod( $handler, 'getLanguageZid', [ $langCode, 'argKey', $spanMock ] );
+			$this->assertSame( $expectedLangZid, $actualLangZid );
 		} else {
 			try {
-				$this->runPrivateMethod( $handler, 'getLanguageZids', [ $parseLang, $renderLang, $spanMock ] );
+				$this->runPrivateMethod( $handler, 'getLanguageZid', [ $langCode, 'argKey', $spanMock ] );
 			} catch ( LocalizedHttpException $exception ) {
 				$this->assertHttpAndZError( $expectedError, $exception );
 			}
 		}
 	}
 
-	public function provideTestGetLanguageZids() {
-		yield 'Not valid parselang raises exception' => [
+	public function provideTestGetLanguageZid() {
+		yield 'Not valid language code raises exception' => [
 			'badlang',
-			'en',
 			false,
-			null,
 			null,
 			[
 				HttpStatus::BAD_REQUEST,
@@ -616,24 +610,9 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 			]
 		];
 
-		yield 'Not valid renderlang raises exception' => [
-			'en',
-			'worselang',
-			false,
-			null,
-			null,
-			[
-				HttpStatus::BAD_REQUEST,
-				ZErrorTypeRegistry::Z_ERROR_LANG_NOT_FOUND,
-				[ 'target' => 'worselang' ]
-			]
-		];
-
-		yield 'Valid renderlang and parselang return valid zids' => [
-			'en',
+		yield 'Valid language code returns valid zid' => [
 			'fr',
 			true,
-			'Z1002',
 			'Z1004'
 		];
 	}
@@ -861,7 +840,7 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		];
 
 		yield 'Raise not implemented yet error when type zid does not have a parser' => [
-			[ $targetFunctionZid, 'Z60', $targetArgKey, $parseLangZid, 'javascript' ],
+			[ $targetFunctionZid, 'Z61', $targetArgKey, $parseLangZid, 'javascript' ],
 			false,
 			null,
 			[
@@ -869,7 +848,7 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 				ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET,
 				[ 'target' => 'Z20040', 'mode' => 'input' ]
 			],
-			[ 'Z60' ]
+			[ 'Z61' ]
 		];
 
 		yield 'Build a function call to the parser function with input and parser lang' => [
@@ -880,6 +859,26 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 			) ),
 			[],
 			[ 'Z20010' ]
+		];
+
+		yield 'Raise language not found error when unknown language code is passed to lang argument' => [
+			[ $targetFunctionZid, 'Z60', $targetArgKey, $parseLangZid, 'badlang' ],
+			false,
+			null,
+			[
+				HttpStatus::BAD_REQUEST,
+				ZErrorTypeRegistry::Z_ERROR_LANG_NOT_FOUND,
+				[ 'target' => 'badlang' ]
+			],
+			[ 'Z60' ]
+		];
+
+		yield 'Build reference to language zid when valid language code is passed to lang argument' => [
+			[ $targetFunctionZid, 'Z60', $targetArgKey, $parseLangZid, 'fr' ],
+			true,
+			new ZReference( 'Z1004' ),
+			[],
+			[ 'Z60' ]
 		];
 	}
 
