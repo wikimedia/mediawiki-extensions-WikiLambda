@@ -148,6 +148,7 @@ const apiUtils = {
 	 * @param {Array|undefined} payload.returnTypes Return types to retrieve, separated by pipes
 	 * @param {string} payload.language The user language code
 	 * @param {number} payload.searchContinue When more results are available, use this to continue
+	 * @param {boolean} payload.exact Search by exact match
 	 * @param {number} payload.limit The maximum number of results to return
 	 *  @param {AbortSignal} payload.signal The AbortSignal to cancel the request
 	 * @return {Promise<Object>|undefined}
@@ -166,6 +167,7 @@ const apiUtils = {
 				wikilambdasearch_type: payload.types ? payload.types.join( '|' ) : undefined,
 				wikilambdasearch_return_type: payload.returnTypes ? payload.returnTypes.join( '|' ) : undefined,
 				wikilambdasearch_language: payload.language,
+				wikilambdasearch_exact: payload.exact || undefined,
 				wikilambdasearch_limit: payload.limit,
 				wikilambdasearch_continue: payload.searchContinue
 			}, {

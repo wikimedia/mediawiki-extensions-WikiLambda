@@ -42,7 +42,7 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { mapState } = require( 'pinia' );
+const { mapActions, mapState } = require( 'pinia' );
 const Constants = require( '../../Constants.js' );
 const { performFunctionCall } = require( '../../utils/apiUtils.js' );
 const errorMixin = require( '../../mixins/errorMixin.js' );
@@ -74,7 +74,7 @@ module.exports = exports = defineComponent( {
 			default: null
 		}
 	},
-	data() {
+	data: function () {
 		return {
 			/**
 			 * Icon for the reset action.
@@ -143,53 +143,60 @@ module.exports = exports = defineComponent( {
 					const m = today.getMonth() + 1;
 					const yyyy = today.getFullYear();
 					return `${ d }-${ m }-${ yyyy }`;
-				}
+				},
+				[ Constants.Z_NATURAL_LANGUAGE ]: () => {
+					const langCode = mw.config.get( 'wgContentLanguage' );
+					return this.getLanguageZidOfCode( langCode ) || '';
+				},
+				[ Constants.Z_WIKIDATA_ITEM ]: () => mw.config.get( 'wgWikibaseItemId' ) || '',
+				[ Constants.Z_WIKIDATA_REFERENCE_ITEM ]: () => mw.config.get( 'wgWikibaseItemId' ) || ''
 			}
 		};
 	},
-	computed: Object.assign( {},
-		mapState( useMainStore, [
-			'getOutputTypeOfFunctionZid',
-			'getUserLangCode',
-			'getUserLangZid',
-			'getParserZid',
-			'getRendererZid',
-			'createObjectByType'
-		] ), {
-			/**
-			 * Determines the icon for the action button.
-			 *
-			 * @return {string}
-			 */
-			actionIcon: function () {
-				// If the function call is in progress, show the cancel icon.
-				if ( this.isLoading ) {
-					return this.cancelIcon;
-				}
-				// If the field is valid (payload exists) and the function call result is a string,
-				// or if there is an error or the call was cancelled, show the reset icon.
-				if ( this.payload && ( typeof this.functionCallResult === 'string' || this.functionCallError || this.isCancelled ) ) {
-					return this.resetIcon;
-				}
-				return '';
-			},
-			/**
-			 * Determines the label for the action button.
-			 *
-			 * @return {string}
-			 */
-			actionButtonLabel: function () {
-				if ( this.isLoading ) {
-					return this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label' ).text();
-				}
-				if ( this.payload && ( typeof this.functionCallResult === 'string' || this.functionCallError || this.isCancelled ) ) {
-					return this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label' ).text();
-				}
-				return '';
+	computed: Object.assign( {}, mapState( useMainStore, [
+		'getLanguageZidOfCode',
+		'getOutputTypeOfFunctionZid',
+		'getUserLangCode',
+		'getUserLangZid',
+		'getParserZid',
+		'getRendererZid',
+		'createObjectByType'
+	] ), {
+		/**
+		 * Determines the icon for the action button.
+		 *
+		 * @return {string}
+		 */
+		actionIcon: function () {
+			// If the function call is in progress, show the cancel icon.
+			if ( this.isLoading ) {
+				return this.cancelIcon;
 			}
+			// If the field is valid (payload exists) and the function call result is a string,
+			// or if there is an error or the call was cancelled, show the reset icon.
+			if ( this.payload && ( typeof this.functionCallResult === 'string' || this.functionCallError || this.isCancelled ) ) {
+				return this.resetIcon;
+			}
+			return '';
+		},
+		/**
+		 * Determines the label for the action button.
+		 *
+		 * @return {string}
+		 */
+		actionButtonLabel: function () {
+			if ( this.isLoading ) {
+				return this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label' ).text();
+			}
+			if ( this.payload && ( typeof this.functionCallResult === 'string' || this.functionCallError || this.isCancelled ) ) {
+				return this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label' ).text();
+			}
+			return '';
 		}
-	),
-	methods: {
+	} ),
+	methods: Object.assign( {}, mapActions( useMainStore, [
+		'fetchLanguageCode'
+	] ), {
 		/**
 		 * Handles the click event for the action button.
 		 * - If the component is in a loading state, cancels the current function call.
@@ -461,7 +468,7 @@ module.exports = exports = defineComponent( {
 		getDefaultValue: function ( type ) {
 			return this.defaultValueCallbacks[ type ]();
 		}
-	},
+	} ),
 	watch: {
 		/**
 		 * Watches for changes to the `isOpen` property.
@@ -483,7 +490,12 @@ module.exports = exports = defineComponent( {
 			deep: true
 		}
 	},
-	beforeUnmount() {
+	mounted: function () {
+		// Fetch language zid for content page
+		const langCode = mw.config.get( 'wgContentLanguage' );
+		this.fetchLanguageCode( langCode );
+	},
+	beforeUnmount: function () {
 		// Clean up the Abort Controller if it exists
 		if ( this.abortController ) {
 			this.abortController.abort();

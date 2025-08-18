@@ -1032,5 +1032,86 @@ describe( 'library Pinia store', () => {
 				} );
 			} );
 		} );
+
+		describe( 'fetchLanguageCode', () => {
+			beforeEach( () => {
+				store.setLanguageCode = jest.fn();
+				getMock = jest.fn( () => new Promise( ( resolve ) => {
+					const data = { query: { wikilambdasearch_labels: [ {
+						page_title: 'Z1003',
+						page_type: 'Z60',
+						match_label: 'es',
+						match_is_primary: '0',
+						match_lang: 'Z1360',
+						match_rate: 1,
+						label: 'Spanish',
+						type_label: 'Natural language'
+					} ] } };
+					resolve( data );
+				} ) );
+			} );
+
+			it( 'requests language code to labels API', async () => {
+				const langCode = 'es';
+				await store.fetchLanguageCode( langCode );
+
+				expect( getMock ).toHaveBeenCalledWith( {
+					action: 'query',
+					list: 'wikilambdasearch_labels',
+					format: 'json',
+					formatversion: '2',
+					wikilambdasearch_limit: 1,
+					wikilambdasearch_continue: undefined,
+					wikilambdasearch_exact: true,
+					wikilambdasearch_search: 'es',
+					wikilambdasearch_type: 'Z60',
+					wikilambdasearch_return_type: undefined,
+					wikilambdasearch_language: 'en'
+				} );
+			} );
+
+			it( 'sets language code and zid if query returns result', async () => {
+				const langCode = 'es';
+				await store.fetchLanguageCode( langCode );
+
+				expect( store.setLanguageCode ).toHaveBeenCalledWith( {
+					code: langCode,
+					zid: 'Z1003'
+				} );
+			} );
+
+			it( 'sets nothing if query returns no result', async () => {
+				getMock = jest.fn( () => new Promise( ( resolve ) => {
+					const data = { query: { wikilambdasearch_labels: [] } };
+					resolve( data );
+				} ) );
+
+				const langCode = 'es';
+				await store.fetchLanguageCode( langCode );
+
+				expect( store.setLanguageCode ).not.toHaveBeenCalled();
+			} );
+
+			it( 'does not set the code and zid if query does not return an exact match', async () => {
+				getMock = jest.fn( () => new Promise( ( resolve ) => {
+					const data = { query: { wikilambdasearch_labels: [ {
+						page_title: 'Z1423',
+						page_type: 'Z60',
+						match_label: 'es-formal',
+						match_is_primary: '1',
+						match_lang: 'Z1360',
+						match_rate: 0.3,
+						label: 'Formal Spanish',
+						type_label: 'Natural language'
+					} ] } };
+					resolve( data );
+				} ) );
+
+				const langCode = 'es';
+				await store.fetchLanguageCode( langCode );
+
+				expect( store.setLanguageCode ).not.toHaveBeenCalled();
+			} );
+		} );
 	} );
 } );

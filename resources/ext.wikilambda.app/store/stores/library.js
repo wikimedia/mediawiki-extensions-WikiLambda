@@ -897,6 +897,37 @@ module.exports = {
 		},
 
 		/**
+		 * Fetches a given language code using the labels API and
+		 * if found it stores locally the correspondance of language
+		 * code and language zid.
+		 *
+		 * @param {string} langCode
+		 * @return {Promise}
+		 */
+		fetchLanguageCode: function ( langCode ) {
+			const payload = {
+				language: this.getUserLangCode,
+				limit: 1,
+				exact: true,
+				types: [ Constants.Z_NATURAL_LANGUAGE ],
+				input: langCode
+			};
+
+			return searchLabels( payload ).then( ( data ) => {
+				// Make sure the returned data matches the language code:
+				// match rate is 1.0, with the matched langCode as an alias.
+				if (
+					( data.labels.length > 0 ) &&
+					( data.labels[ 0 ].match_rate === 1 ) &&
+					( data.labels[ 0 ].match_label === langCode ) &&
+					( data.labels[ 0 ].match_is_primary === '0' )
+				) {
+					this.setLanguageCode( { code: langCode, zid: data.labels[ 0 ].page_title } );
+				}
+			} );
+		},
+
+		/**
 		 * Orchestrates the calls to wikilambdaload_zobject api to fetch
 		 * a given set of ZIDs. This method takes care of the following requirements:
 		 *
