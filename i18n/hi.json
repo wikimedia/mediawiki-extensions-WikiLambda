@@ -5,7 +5,8 @@
 			"Abijeet Patro - Normal",
 			"AnupamM",
 			"पदाति",
-			"Bunnypranav"
+			"Bunnypranav",
+			"Saurmandal"
 		]
 	},
 	"action-wikifunctions-run": "सार्वजनिक API में फ़ंक्शन चलाएं",
@@ -16,6 +17,12 @@
 	"action-wikilambda-edit-object-alias": "मौजूदा ऑब्जेक्ट के उपनाम संपादित करें",
 	"action-wikilambda-edit-object-description": "मौजूदा ऑब्जेक्ट का विवरण संपादित करें",
 	"action-wikilambda-edit-object-label": "मौजूदा ऑब्जेक्ट के लेबल संपादित करें",
+	"group-functioneer": "फ़ंक्शनीयर्स",
+	"group-functioneer-member": "{{GENDER:$1|फ़ंक्शनीयर}}",
+	"group-functionmaintainer": "अनुरक्षक",
+	"group-functionmaintainer-member": "{{GENDER:$1|अनुरक्षक}}",
+	"grouppage-functioneer": "{{ns:project}}:फ़ंक्शनीयर्स",
+	"grouppage-functionmaintainer": "{{ns:project}}:अनुरक्षक",
 	"wikilambda-about-widget-view-languages-other": "अन्य भाषाएँ",
 	"wikilambda-about-widget-view-languages-suggested": "सुझावित भाषाएँ",
 	"wikilambda-cancel": "रद्द करें",
