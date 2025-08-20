@@ -9,8 +9,6 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
-use MediaWiki\Tests\Api\ApiTestCase;
-
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\ApiSupportedProgrammingLanguages
  * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\WikiLambdaApiBase
@@ -18,7 +16,7 @@ use MediaWiki\Tests\Api\ApiTestCase;
  * @group Database
  * @group Standalone
  */
-class ApiSupportedProgrammingLanguagesTest extends ApiTestCase {
+class ApiSupportedProgrammingLanguagesTest extends WikiLambdaApiTestCase {
 
 	/**
 	 * TODO (T374242): Fix Beta Cluster so we can re-enable these tests.

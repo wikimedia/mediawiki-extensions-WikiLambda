@@ -10,14 +10,13 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
-use MediaWiki\Tests\Api\ApiTestCase;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\ApiQueryZFunctionReference
  * @group Database
  * @group API
  */
-class ApiQueryZFunctionReferenceTest extends ApiTestCase {
+class ApiQueryZFunctionReferenceTest extends WikiLambdaApiTestCase {
 
 	private const EN = 'Z1002';
 	private const IT = 'Z1787';

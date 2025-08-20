@@ -13,7 +13,6 @@ use MediaWiki\Api\ApiUsageException;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
-use MediaWiki\Tests\Api\ApiTestCase;
 use MediaWiki\Title\Title;
 
 /**
@@ -21,7 +20,7 @@ use MediaWiki\Title\Title;
  * @group Database
  * @group API
  */
-class ApiQueryZObjectsTest extends ApiTestCase {
+class ApiQueryZObjectsTest extends WikiLambdaApiTestCase {
 
 	/**
 	 * @var string

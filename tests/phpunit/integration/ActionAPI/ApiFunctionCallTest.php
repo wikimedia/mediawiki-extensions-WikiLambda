@@ -10,7 +10,6 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
-use MediaWiki\Tests\Api\ApiTestCase;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\ApiFunctionCall
@@ -19,7 +18,7 @@ use MediaWiki\Tests\Api\ApiTestCase;
  * @group Standalone
  * @group Database
  */
-class ApiFunctionCallTest extends ApiTestCase {
+class ApiFunctionCallTest extends WikiLambdaApiTestCase {
 
 	/**
 	 * Reads file contents from test data directory as JSON array.

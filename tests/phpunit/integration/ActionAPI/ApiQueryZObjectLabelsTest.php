@@ -10,7 +10,6 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
-use MediaWiki\Tests\Api\ApiTestCase;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\ApiQueryZObjectLabels
@@ -18,7 +17,7 @@ use MediaWiki\Tests\Api\ApiTestCase;
  * @group Database
  * @group API
  */
-class ApiQueryZObjectLabelsTest extends ApiTestCase {
+class ApiQueryZObjectLabelsTest extends WikiLambdaApiTestCase {
 
 	private const EN = 'Z1002';
 	private const ES = 'Z1003';

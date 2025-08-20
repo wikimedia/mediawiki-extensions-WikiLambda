@@ -9,8 +9,8 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\PublicApi;
 
+use MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI\WikiLambdaApiTestCase;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
-use MediaWiki\Tests\Api\ApiTestCase;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\PublicAPI\PublicApiRun
@@ -19,7 +19,7 @@ use MediaWiki\Tests\Api\ApiTestCase;
  * @group Standalone
  * @group Database
  */
-class PublicApiRunTest extends ApiTestCase {
+class PublicApiRunTest extends WikiLambdaApiTestCase {
 
 	/**
 	 * @dataProvider provideExecuteSuccessfulViaMock

@@ -19,7 +19,6 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedMap;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedPair;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
-use MediaWiki\Tests\Api\ApiTestCase;
 use MediaWiki\Title\Title;
 use Wikimedia\Rdbms\IDBAccessObject;
 
@@ -32,7 +31,7 @@ use Wikimedia\Rdbms\IDBAccessObject;
  * @group Database
  * @group Standalone
  */
-class ApiPerformTestTest extends ApiTestCase {
+class ApiPerformTestTest extends WikiLambdaApiTestCase {
 
 	private ZObjectStore $store;
 
@@ -482,8 +481,10 @@ class ApiPerformTestTest extends ApiTestCase {
 			new ZReference( 'Z91301' ), new ZReference( 'Z91302' ) ];
 		$this->updateImplementationsList( $functionZid, $targetTitle, $initialRanking );
 		$functionRevision_1 = $targetTitle->getLatestRevID( IDBAccessObject::READ_LATEST );
-		$this->assertTrue( $functionRevision_1 > $functionRevision_0 );
-
+		$this->assertTrue(
+			$functionRevision_1 > $functionRevision_0,
+			"The latest revision $functionRevision_1 should be greater than the initial revision $functionRevision_0"
+		);
 		// 2. Prepare the arguments to maybeUpdateImplementationRanking()
 		// The structure of $implementationMap is described in comments of maybeUpdateImplementationRanking
 		$implementationMap = [];
@@ -504,21 +505,30 @@ class ApiPerformTestTest extends ApiTestCase {
 
 		if ( !$expectedRanking ) {
 			// In these cases no update should happen
-			$this->assertSame( $functionRevision_1, $targetTitle->getLatestRevID( IDBAccessObject::READ_LATEST ) );
+			$this->assertSame(
+				$functionRevision_1, $targetTitle->getLatestRevID( IDBAccessObject::READ_LATEST ),
+				'The new revision should match the latest DB revision, no update should have happened.'
+			);
 			return;
 		}
 
 		// 4. Force the UpdateImplementationsJob to run now
 		$this->runJobs( [ 'maxJobs' => 1 ], [ 'type' => 'updateImplementations' ] );
 		$functionRevision_2 = $targetTitle->getLatestRevID( IDBAccessObject::READ_LATEST );
-		$this->assertTrue( $functionRevision_2 > $functionRevision_1 );
+		$this->assertTrue(
+			$functionRevision_2 > $functionRevision_1,
+			"The new revision $functionRevision_2 should be greater than the previous revision $functionRevision_1"
+		);
 
 		// 5. Retrieve Z8K4/implementations (as ZIDs) and confirm correct
 		$targetObject = $this->store->fetchZObjectByTitle( $targetTitle );
 		$targetFunction = $targetObject->getInnerZObject();
 		'@pha-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction $targetFunction';
 		$targetImplementationZids = $targetFunction->getImplementationZids();
-		$this->assertTrue( $expectedRanking === $targetImplementationZids );
+		$this->assertTrue(
+			$expectedRanking === $targetImplementationZids,
+			'The expected ranking should match the target implementation ZIDs'
+		);
 	}
 
 	/**

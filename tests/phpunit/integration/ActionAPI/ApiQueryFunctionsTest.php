@@ -12,14 +12,13 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
-use MediaWiki\Tests\Api\ApiTestCase;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\ApiQueryFunctions
  * @group Database
  * @group API
  */
-class ApiQueryFunctionsTest extends ApiTestCase {
+class ApiQueryFunctionsTest extends WikiLambdaApiTestCase {
 
 	// Insert functions:
 	// * labels in wikilambda_zobject_labels

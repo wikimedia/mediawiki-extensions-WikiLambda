@@ -10,7 +10,6 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
 use MediaWiki\Deferred\DeferredUpdates;
-use MediaWiki\Tests\Api\ApiTestCase;
 use MediaWiki\Title\Title;
 
 /**
@@ -19,7 +18,7 @@ use MediaWiki\Title\Title;
  * @group Database
  * @group API
  */
-class ApiZObjectFetcherTest extends ApiTestCase {
+class ApiZObjectFetcherTest extends WikiLambdaApiTestCase {
 
 	public function testFailsWithMalformedTitle() {
 		$unnamable = 'nope; can\'t name it';
