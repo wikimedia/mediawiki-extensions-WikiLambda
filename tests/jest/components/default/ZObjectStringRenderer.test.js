@@ -495,8 +495,7 @@ describe( 'ZObjectStringRenderer', () => {
 			} );
 
 			const text = wrapper.findComponent( { name: 'cdx-text-input' } );
-			expect( text.attributes( 'placeholder' ) ).toBe( 'E.g. $1' );
-			expect( global.$i18n ).toHaveBeenCalledWith( 'wikilambda-string-renderer-field-example', 'example one' );
+			expect( text.attributes( 'placeholder' ) ).toBe( 'E.g. example one' );
 		} );
 
 		describe( 'renderer error handling', () => {
@@ -564,11 +563,10 @@ describe( 'ZObjectStringRenderer', () => {
 				const errorPayload = {
 					errorId: keyPath,
 					errorType: Constants.ERROR_TYPES.ERROR,
-					errorMessage: '[[$1|Display function]] returned an unexpected result.'
+					errorMessage: `[[${ rendererZid }|Display function]] returned an unexpected result.`
 				};
 
 				await waitFor( () => expect( store.setError ).toHaveBeenCalledWith( errorPayload ) );
-				expect( global.$i18n ).toHaveBeenCalledWith( 'wikilambda-renderer-unexpected-result-error', rendererZid );
 			} );
 		} );
 
@@ -646,11 +644,10 @@ describe( 'ZObjectStringRenderer', () => {
 				const errorPayload = {
 					errorId: keyPath,
 					errorType: Constants.ERROR_TYPES.ERROR,
-					errorMessage: '[[$1|Reading function]] returned an unexpected result.'
+					errorMessage: `[[${ parserZid }|Reading function]] returned an unexpected result.`
 				};
 
 				await waitFor( () => expect( store.setError ).toHaveBeenCalledWith( errorPayload ) );
-				expect( global.$i18n ).toHaveBeenCalledWith( 'wikilambda-parser-unexpected-result-error', parserZid );
 			} );
 		} );
 

@@ -590,8 +590,7 @@ describe( 'ZObjectToString', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: true } } );
 				const referenceLink = wrapper.find( 'a[data-testid=object-to-string-link]' );
 				expect( referenceLink.attributes().href ).toBe( undefined );
-				expect( referenceLink.text() ).toEqual( 'Select $1' );
-				expect( global.$i18n ).toHaveBeenCalledWith( 'wikilambda-zobject-to-string-select-object', 'Language' );
+				expect( referenceLink.text() ).toEqual( 'Select Language' );
 			} );
 
 			it( 'in read mode: renders the link to the referred zobject', () => {
@@ -628,8 +627,7 @@ describe( 'ZObjectToString', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: true } } );
 				const referenceLink = wrapper.find( 'a[data-testid=object-to-string-link]' );
 				expect( referenceLink.attributes().href ).toBe( undefined );
-				expect( referenceLink.text() ).toEqual( 'Select $1' );
-				expect( global.$i18n ).toHaveBeenCalledWith( 'wikilambda-zobject-to-string-select-object', 'Function' );
+				expect( referenceLink.text() ).toEqual( 'Select Function' );
 			} );
 
 			it( 'in read mode: renders the link to function', () => {

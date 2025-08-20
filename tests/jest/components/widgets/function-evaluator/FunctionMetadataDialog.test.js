@@ -28,6 +28,8 @@ describe( 'FunctionMetadataDialog', () => {
 		store.getUserLangCode = 'en';
 		store.getLabelData = createLabelDataMock( {
 			Z502: 'Not wellformed',
+			Z502K1: 'subtype',
+			Z523: 'Missing Z1K1',
 			Z526: 'Key value not wellformed',
 			Z801: 'Echo',
 			Z802: 'If',
@@ -69,10 +71,16 @@ describe( 'FunctionMetadataDialog', () => {
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
 			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__key' );
-			expect( keys[ 0 ].text() ).toContain( 'Name: Untitled' );
+
+			expect( keys[ 0 ].text() ).toContain( 'Name:' );
+			expect( keys[ 0 ].find( 'a' ).text() ).toBe( 'Untitled' );
 			expect( keys[ 0 ].find( 'a' ).attributes().href ).toContain( 'Z902' );
-			expect( keys[ 1 ].text() ).toContain( 'Id: Z902' );
-			expect( keys[ 2 ].text() ).toContain( 'Type: Evaluated' );
+
+			expect( keys[ 1 ].text() ).toContain( 'Id:' );
+			expect( keys[ 1 ].text() ).toContain( 'Z902' );
+
+			expect( keys[ 2 ].text() ).toContain( 'Type:' );
+			expect( keys[ 2 ].text() ).toContain( 'Evaluated' );
 		} );
 
 		it( 'renders a named implementation section', () => {
@@ -90,10 +98,16 @@ describe( 'FunctionMetadataDialog', () => {
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
 			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__key' );
-			expect( keys[ 0 ].text() ).toContain( 'Name: Javascript implementation for If' );
+
+			expect( keys[ 0 ].text() ).toContain( 'Name:' );
+			expect( keys[ 0 ].find( 'a' ).text() ).toBe( 'Javascript implementation for If' );
 			expect( keys[ 0 ].find( 'a' ).attributes().href ).toContain( 'Z902' );
-			expect( keys[ 1 ].text() ).toContain( 'Id: Z902' );
-			expect( keys[ 2 ].text() ).toContain( 'Type: Evaluated' );
+
+			expect( keys[ 1 ].text() ).toContain( 'Id:' );
+			expect( keys[ 1 ].text() ).toContain( 'Z902' );
+
+			expect( keys[ 2 ].text() ).toContain( 'Type:' );
+			expect( keys[ 2 ].text() ).toContain( 'Evaluated' );
 		} );
 
 		it( 'renders the duration section', () => {
@@ -143,9 +157,14 @@ describe( 'FunctionMetadataDialog', () => {
 			const content = section.find( '.cdx-accordion__content' );
 			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__key' );
 			expect( keys.length ).toBe( 3 );
-			expect( keys[ 0 ].text() ).toContain( 'Orchestration: 85.790 ms' );
-			expect( keys[ 1 ].text() ).toContain( 'Evaluation: 45.110 ms' );
-			expect( keys[ 2 ].text() ).toContain( 'Execution: <50 μs' );
+			expect( keys[ 0 ].text() ).toContain( 'Orchestration:' );
+			expect( keys[ 0 ].text() ).toContain( '85.790 ms' );
+
+			expect( keys[ 1 ].text() ).toContain( 'Evaluation:' );
+			expect( keys[ 1 ].text() ).toContain( '45.110 ms' );
+
+			expect( keys[ 2 ].text() ).toContain( 'Execution:' );
+			expect( keys[ 2 ].text() ).toContain( '<50 μs' );
 		} );
 
 		it( 'renders the memory usage section', () => {
@@ -163,9 +182,14 @@ describe( 'FunctionMetadataDialog', () => {
 			const content = section.find( '.cdx-accordion__content' );
 			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__key' );
 			expect( keys.length ).toBe( 3 );
-			expect( keys[ 0 ].text() ).toContain( 'Orchestration: 115.43 MiB' );
-			expect( keys[ 1 ].text() ).toContain( 'Evaluation: 15.57 MiB' );
-			expect( keys[ 2 ].text() ).toContain( 'Execution: 1 MiB' );
+			expect( keys[ 0 ].text() ).toContain( 'Orchestration:' );
+			expect( keys[ 0 ].text() ).toContain( '115.43 MiB' );
+
+			expect( keys[ 1 ].text() ).toContain( 'Evaluation:' );
+			expect( keys[ 1 ].text() ).toContain( '15.57 MiB' );
+
+			expect( keys[ 2 ].text() ).toContain( 'Execution:' );
+			expect( keys[ 2 ].text() ).toContain( '1 MiB' );
 		} );
 
 		it( 'renders the server section', () => {
@@ -182,8 +206,11 @@ describe( 'FunctionMetadataDialog', () => {
 			const content = section.find( '.cdx-accordion__content' );
 			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__key' );
 			expect( keys.length ).toBe( 2 );
-			expect( keys[ 0 ].text() ).toContain( 'Orchestration: function-orchestrator' );
-			expect( keys[ 1 ].text() ).toContain( 'Evaluation: function-evaluator-javascript' );
+			expect( keys[ 0 ].text() ).toContain( 'Orchestration:' );
+			expect( keys[ 0 ].text() ).toContain( 'function-orchestrator' );
+
+			expect( keys[ 1 ].text() ).toContain( 'Evaluation:' );
+			expect( keys[ 1 ].text() ).toContain( 'function-evaluator-javascript' );
 		} );
 
 		it( 'renders the programming language section', () => {
@@ -200,7 +227,8 @@ describe( 'FunctionMetadataDialog', () => {
 			const content = section.find( '.cdx-accordion__content' );
 			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__key' );
 			expect( keys.length ).toBe( 1 );
-			expect( keys[ 0 ].text() ).toContain( 'Version: QuickJS v0.5.0-alpha' );
+			expect( keys[ 0 ].text() ).toContain( 'Version:' );
+			expect( keys[ 0 ].text() ).toContain( 'QuickJS v0.5.0-alpha' );
 		} );
 	} );
 
@@ -240,20 +268,36 @@ describe( 'FunctionMetadataDialog', () => {
 
 			// Check header
 			expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( '{{PLURAL:$1|Error|Errors}}' );
-			expect( section.find( '.cdx-accordion__header__description' ).text() ).toBe( 'Not wellformed' );
+			expect( section.find( '.cdx-accordion__header__description' ).text() ).toBe( 'Not wellformed (subtype: "Z523")' );
 
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
 			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__key' );
-			expect( keys.length ).toBe( 4 );
-			expect( keys[ 0 ].text() ).toContain( 'Error type: Not wellformed' );
-			expect( keys[ 0 ].find( 'a' ).attributes().href ).toContain( 'Z502' );
-			expect( keys[ 1 ].text() ).toContain( 'Validation error type: Key value not wellformed' );
-			expect( keys[ 1 ].find( 'a' ).attributes().href ).toContain( 'Z526' );
-			expect( keys[ 2 ].text() ).toContain( 'Expected result: ABC' );
-			expect( keys[ 3 ].text() ).toContain( 'Actual result: CBA' );
+			expect( keys.length ).toBe( 6 );
 
-			// Check message
+			// Error type (key=errors):
+			expect( keys[ 0 ].text() ).toContain( 'Error type:' );
+			expect( keys[ 0 ].find( 'a' ).text() ).toBe( 'Not wellformed' );
+			expect( keys[ 0 ].find( 'a' ).attributes().href ).toContain( 'Z502' );
+			// Error arguments (key=errors):
+			expect( keys[ 1 ].text() ).toContain( 'subtype: "Z523"' );
+			// Error stack trace (key=errors):
+			expect( keys[ 2 ].text() ).toContain( 'Missing Z1K1' );
+			expect( keys[ 2 ].find( 'a' ).attributes().href ).toContain( 'Z523' );
+
+			// Validation error (key=validationErrors):
+			expect( keys[ 3 ].text() ).toContain( 'Validation error type:' );
+			expect( keys[ 3 ].find( 'a' ).text() ).toBe( 'Key value not wellformed' );
+			expect( keys[ 3 ].find( 'a' ).attributes().href ).toContain( 'Z526' );
+
+			// Expected result (key=expectedTestResult):
+			expect( keys[ 4 ].text() ).toContain( 'Expected result:' );
+			expect( keys[ 4 ].text() ).toContain( 'ABC' );
+			// Actual result (key=actualTestResult):
+			expect( keys[ 5 ].text() ).toContain( 'Actual result:' );
+			expect( keys[ 5 ].text() ).toContain( 'CBA' );
+
+			// Check Wikifunctions.Debug message
 			const message = wrapper.findAllComponents( { name: 'cdx-message' } );
 			expect( message[ 0 ].text() ).toContain( 'Something not working? Try Wikifunctions.Debug to trace your code.' );
 		} );

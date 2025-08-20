@@ -737,7 +737,7 @@ describe( 'library Pinia store', () => {
 		} );
 
 		describe( 'setLanguageCode', () => {
-			it( 'sets language sids indexed by language code', () => {
+			it( 'sets language zids indexed by language code', () => {
 				store.languages = {};
 				const payload = {
 					code: 'en',
@@ -975,7 +975,56 @@ describe( 'library Pinia store', () => {
 					expect( fetchZidsSpy ).toHaveBeenCalledWith( { zids: [ 'Z1002', 'Z20020', 'Z20030' ] } );
 					expect( store.setRenderer ).toHaveBeenCalledWith( { type: 'Z20002', renderer: 'Z20020' } );
 					expect( store.setParser ).toHaveBeenCalledWith( { type: 'Z20002', parser: 'Z20030' } );
+				} );
+			} );
 
+			describe( 'setLabel', () => {
+				it( 'stores error type key labels when fetching an error type', async () => {
+					const zids = [ 'Z500' ];
+					getMock = jest.fn().mockResolvedValue( mockApiResponseFor( zids ) );
+					store.setLabel = jest.fn();
+
+					await store.fetchZids( { zids } );
+
+					const nameLabel = new LabelData( 'Z500', 'Unspecified error', 'Z1002' );
+					const keyLabel = new LabelData( 'Z500K1', 'error information', 'Z1002' );
+
+					expect( store.setLabel ).toHaveBeenCalledWith( nameLabel );
+					expect( store.setLabel ).toHaveBeenCalledWith( keyLabel );
+				} );
+
+				it( 'stores type key labels when fetching a type', async () => {
+					const zids = [ 'Z31' ];
+					getMock = jest.fn().mockResolvedValue( mockApiResponseFor( zids ) );
+					store.setLabel = jest.fn();
+
+					await store.fetchZids( { zids } );
+
+					const nameLabel = new LabelData( 'Z31', 'Monolingual stringset', 'Z1002' );
+					const key1Label = new LabelData( 'Z31K1', 'language', 'Z1002' );
+					const key2Label = new LabelData( 'Z31K2', 'stringset', 'Z1002' );
+
+					expect( store.setLabel ).toHaveBeenCalledWith( nameLabel );
+					expect( store.setLabel ).toHaveBeenCalledWith( key1Label );
+					expect( store.setLabel ).toHaveBeenCalledWith( key2Label );
+				} );
+
+				it( 'stores argument labels when fetching a function', async () => {
+					const zids = [ 'Z802' ];
+					getMock = jest.fn().mockResolvedValue( mockApiResponseFor( zids ) );
+					store.setLabel = jest.fn();
+
+					await store.fetchZids( { zids } );
+
+					const nameLabel = new LabelData( 'Z802', 'If', 'Z1002' );
+					const arg1Label = new LabelData( 'Z802K1', 'condition', 'Z1002' );
+					const arg2Label = new LabelData( 'Z802K2', 'then', 'Z1002' );
+					const arg3Label = new LabelData( 'Z802K3', 'else', 'Z1002' );
+
+					expect( store.setLabel ).toHaveBeenCalledWith( nameLabel );
+					expect( store.setLabel ).toHaveBeenCalledWith( arg1Label );
+					expect( store.setLabel ).toHaveBeenCalledWith( arg2Label );
+					expect( store.setLabel ).toHaveBeenCalledWith( arg3Label );
 				} );
 			} );
 		} );

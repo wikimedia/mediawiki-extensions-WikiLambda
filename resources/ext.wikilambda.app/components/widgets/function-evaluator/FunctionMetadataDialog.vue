@@ -100,11 +100,13 @@
 								:dir="item.dir"
 								target="_blank"
 							>{{ item.value }}</a>
+							<!-- eslint-disable vue/no-v-html -->
 							<span
 								v-else
 								:lang="item.lang"
 								:dir="item.dir"
-							>{{ item.value }}</span>
+								v-html="item.value"
+							></span>
 						</template>
 						<ul v-if="item.content">
 							<li
@@ -132,7 +134,7 @@ const errorMixin = require( '../../../mixins/errorMixin.js' );
 const LabelData = require( '../../../store/classes/LabelData.js' );
 const metadataMixin = require( '../../../mixins/metadataMixin.js' );
 const useMainStore = require( '../../../store/index.js' );
-const { extractErrorStructure, extractZIDs } = require( '../../../utils/schemata.js' );
+const { extractErrorData, extractZIDs } = require( '../../../utils/schemata.js' );
 const typeMixin = require( '../../../mixins/typeMixin.js' );
 const icons = require( '../../../../lib/icons.json' );
 const urlUtils = require( '../../../utils/urlUtils.js' );
@@ -535,19 +537,31 @@ module.exports = exports = defineComponent( {
 			}
 			return metadata;
 		},
-
 		/**
-		 * Returns the error section summary
+		 * Returns the error section summary, which consists on the labelized
+		 * error type, followed by the string arguments (if any) in parenthesis:
+		 * <Error type label> (<1st arg label>: "<value>", ..., <nth arg label>: "<value>")
+		 *
+		 * E.g. 'Bad input format (expected format: "dd/m/yyyy", current value: "boo")'
 		 *
 		 * @return {LabelData|string}
 		 */
 		getErrorSummary: function () {
 			const error = this.keyValues.get( 'errors' );
-			const suberrors = extractErrorStructure( error );
+			const errorData = extractErrorData( error );
+			const colon = this.$i18n( 'colon-separator' ).text();
+			const comma = this.$i18n( 'comma-separator' ).text();
 			// Return labelized parent error type
-			if ( suberrors.length > 0 ) {
-				const errorType = suberrors[ 0 ].errorType;
-				return this.getLabelData( errorType );
+			if ( errorData ) {
+				const title = this.getLabelData( errorData.errorType ).label;
+				const args = [];
+				for ( const arg of errorData.stringArgs ) {
+					const key = this.getLabelData( arg.key ).label;
+					const value = this.$i18n( 'quotation-marks', arg.value ).text();
+					args.push( `${ key }${ colon }${ value }` );
+				}
+				const argblock = this.$i18n( 'parentheses', args.join( comma ) ).text();
+				return `${ title } ${ argblock }`;
 			}
 			// Return None if there are no errors
 			return this.$i18n( 'wikilambda-functioncall-metadata-errors-none' ).text();
@@ -622,9 +636,9 @@ module.exports = exports = defineComponent( {
 		 * @return {Object | undefined}
 		 */
 		getErrorType: function ( value ) {
-			const suberrors = extractErrorStructure( value );
-			if ( suberrors.length > 0 ) {
-				const errorType = suberrors[ 0 ].errorType;
+			const data = extractErrorData( value );
+			if ( data ) {
+				const errorType = data.errorType;
 				const errorLabelData = this.getLabelData( errorType );
 				return {
 					value: errorLabelData.label,
@@ -632,6 +646,52 @@ module.exports = exports = defineComponent( {
 					dir: errorLabelData.langDir,
 					url: this.getUrl( errorType )
 				};
+			}
+			return undefined;
+		},
+		/**
+		 * Returns the html string with the content for the error
+		 * string arguments. If there are any, the returned html will
+		 * contain an unnumbered list, where each item contains the
+		 * labelized key, followed by the value.
+		 * If there are no string arguments to list, returns undefined.
+		 *
+		 * @param {Mixed} value
+		 * @return {string | undefined}
+		 */
+		getErrorStringArgs: function ( value ) {
+			const data = extractErrorData( value );
+			if ( data && data.stringArgs && data.stringArgs.length ) {
+				const list = [];
+				for ( const arg of data.stringArgs ) {
+					const key = this.getLabelData( arg.key );
+					const keySpan = `<span dir="${ key.langDir }" lang="${ key.langCode }">${ key.labelOrUntitled }</span>`;
+					list.push( `<li>${ keySpan }: "${ arg.value }"</li>` );
+				}
+				return `<ul>${ list.join( '' ) }</ul>`;
+			}
+			return undefined;
+		},
+		/**
+		 * Returns the html string with the content for the sub-errors.
+		 * If there are any, the returned html will contain an unnumbered
+		 * list, where each item contains the labelized sub-error type.
+		 * If there are no sub-errors to list, returns undefined.
+		 *
+		 * @param {Mixed} value
+		 * @return {string | undefined}
+		 */
+		getErrorChildren: function ( value ) {
+			const data = extractErrorData( value );
+			if ( data && data.children && data.children.length ) {
+				const children = [];
+				for ( const child of data.children ) {
+					const url = this.getUrl( child.errorType );
+					const e = this.getLabelData( child.errorType );
+					const a = `<a href="${ url }" dir="${ e.langDir }" lang="${ e.langCode }">${ e.label }</a>`;
+					children.push( `<li>${ a }</li>` );
+				}
+				return `<ul>${ children.join( '' ) }</ul>`;
 			}
 			return undefined;
 		},

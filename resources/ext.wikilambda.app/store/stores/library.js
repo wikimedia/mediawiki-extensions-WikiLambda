@@ -1066,6 +1066,28 @@ module.exports = {
 							undefined;
 
 						switch ( zType ) {
+							case Constants.Z_ERRORTYPE:
+								// If the zObject is an error type, get all key labels
+								// and commit to the store
+								objects = objectValue[ Constants.Z_ERRORTYPE_KEYS ].slice( 1 );
+
+								objects.forEach( ( key ) => {
+									const keyLabels = key[
+										Constants.Z_KEY_LABEL
+									][ Constants.Z_MULTILINGUALSTRING_VALUE ].slice( 1 );
+
+									if ( keyLabels.length === 1 ) {
+										const labelData = new LabelData(
+											key[ Constants.Z_KEY_ID ],
+											keyLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ],
+											keyLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
+										);
+										dependentZids.push( keyLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] );
+										this.setLabel( labelData );
+									}
+								} );
+								break;
+
 							case Constants.Z_TYPE:
 								// If the zObject is a type, get all key labels
 								// and commit to the store
@@ -1077,7 +1099,6 @@ module.exports = {
 									][ Constants.Z_MULTILINGUALSTRING_VALUE ].slice( 1 );
 
 									if ( keyLabels.length === 1 ) {
-
 										const labelData = new LabelData(
 											key[ Constants.Z_KEY_ID ],
 											keyLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ],

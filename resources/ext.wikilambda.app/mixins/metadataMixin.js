@@ -18,6 +18,8 @@ const metadataKeys = {
 		open: true,
 		keys: [
 			{ key: 'errors', title: 'wikilambda-functioncall-metadata-errors-summary', transform: 'getErrorType' },
+			{ key: 'errors', title: 'wikilambda-functioncall-metadata-errors-args', transform: 'getErrorStringArgs' },
+			{ key: 'errors', title: 'wikilambda-functioncall-metadata-errors-children', transform: 'getErrorChildren' },
 			{ key: 'validateErrors', title: 'wikilambda-functioncall-metadata-validator-errors-summary', transform: 'getErrorType' },
 			{ key: 'expectedTestResult', title: 'wikilambda-functioncall-metadata-expected-result' },
 			{ key: 'actualTestResult', title: 'wikilambda-functioncall-metadata-actual-result' },

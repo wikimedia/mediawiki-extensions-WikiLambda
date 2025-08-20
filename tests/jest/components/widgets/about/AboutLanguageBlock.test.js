@@ -411,7 +411,8 @@ describe( 'AboutLanguageBlock', () => {
 				const field = wrapper.find( '[data-testid="about-name-field"]' );
 
 				expect( field.findComponent( { name: 'cdx-text-input' } ).props( 'modelValue' ) ).toBe( '' );
-				expect( field.find( '.cdx-field__help-text' ).text() ).toContain( 'español: Nombre' );
+				expect( field.find( '.cdx-field__help-text' ).text() ).toContain( 'español:' );
+				expect( field.find( '.cdx-field__help-text' ).text() ).toContain( 'Nombre' );
 			} );
 
 			it( 'shows fallback description hint', () => {
@@ -438,7 +439,8 @@ describe( 'AboutLanguageBlock', () => {
 				const field = wrapper.find( '[data-testid="about-description-field"]' );
 
 				expect( field.findComponent( { name: 'cdx-text-area' } ).props( 'modelValue' ) ).toBe( '' );
-				expect( field.find( '.cdx-field__help-text' ).text() ).toContain( 'español: Descripción' );
+				expect( field.find( '.cdx-field__help-text' ).text() ).toContain( 'español:' );
+				expect( field.find( '.cdx-field__help-text' ).text() ).toContain( 'Descripción' );
 			} );
 
 			it( 'shows fallback aliases hint', () => {
@@ -465,7 +467,8 @@ describe( 'AboutLanguageBlock', () => {
 				const field = wrapper.find( '[data-testid="about-aliases-field"]' );
 
 				expect( field.findComponent( { name: 'cdx-chip-input' } ).props( 'inputChips' ) ).toEqual( [] );
-				expect( field.find( '.cdx-field__help-text' ).text() ).toContain( 'English: one, two' );
+				expect( field.find( '.cdx-field__help-text' ).text() ).toContain( 'English:' );
+				expect( field.find( '.cdx-field__help-text' ).text() ).toContain( 'one, two' );
 			} );
 
 			it( 'shows fallback input label hint', () => {
@@ -525,10 +528,12 @@ describe( 'AboutLanguageBlock', () => {
 				expect( fields[ 0 ].find( '.ext-wikilambda-app-about-language-block__edit-field-caption' ).text() ).toBe( '' );
 				// Second input has fallback in English
 				expect( fields[ 1 ].findComponent( { name: 'cdx-text-input' } ).props( 'modelValue' ) ).toBe( '' );
-				expect( fields[ 1 ].find( '.cdx-field__help-text' ).text() ).toContain( 'English: second' );
+				expect( fields[ 1 ].find( '.cdx-field__help-text' ).text() ).toContain( 'English:' );
+				expect( fields[ 1 ].find( '.cdx-field__help-text' ).text() ).toContain( 'second' );
 				// Third input has fallback in Spanish and English (Spanish is the best choice)
 				expect( fields[ 2 ].findComponent( { name: 'cdx-text-input' } ).props( 'modelValue' ) ).toBe( '' );
-				expect( fields[ 2 ].find( '.cdx-field__help-text' ).text() ).toContain( 'español: tercero' );
+				expect( fields[ 2 ].find( '.cdx-field__help-text' ).text() ).toContain( 'español:' );
+				expect( fields[ 2 ].find( '.cdx-field__help-text' ).text() ).toContain( 'tercero' );
 			} );
 		} );
 

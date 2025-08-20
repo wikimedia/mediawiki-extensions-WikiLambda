@@ -129,15 +129,19 @@ const metadataErrors = convertSetToMap( {
 			},
 			Z502K1: "Z523",
 			Z502K2: {
-				Z1K1: {
-					Z1K1: "Z7",
-					Z7K1: "Z885",
-					Z885K1: "Z523"
-				},
-				Z523K1: {
-					Z1K1: "Z99",
-					Z99K1: {
-						Z6K1: "test"
+				Z1K1: "Z5",
+				Z5K1: "Z523",
+				Z5K2: {
+					Z1K1: {
+						Z1K1: "Z7",
+						Z7K1: "Z885",
+						Z885K1: "Z523"
+					},
+					Z523K1: {
+						Z1K1: "Z99",
+						Z99K1: {
+							Z6K1: "test"
+						}
 					}
 				}
 			}

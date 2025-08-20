@@ -96,7 +96,7 @@ describe( 'WikiLambda frontend, create Wikidata enum', () => {
 		const lexemeSelector1 = within( item1Label.parentElement.parentElement ).getByTestId( 'wikidata-lexeme' );
 		const lexemeInput1 = within( item1Label.parentElement.parentElement ).getByTestId( 'wikidata-entity-selector' );
 		expect( typedListItemElements1.length ).toEqual( 1 );
-		expect( item1Label ).toHaveTextContent( 'Item $1' );
+		expect( item1Label ).toHaveTextContent( 'Item 1' );
 		expect( lexemeSelector1 ).toBeInTheDocument();
 
 		// ACT: Add 1 item to the list: masculine
@@ -114,7 +114,7 @@ describe( 'WikiLambda frontend, create Wikidata enum', () => {
 		const lexemeSelector2 = within( item2Label.parentElement.parentElement ).getByTestId( 'wikidata-lexeme' );
 		const lexemeInput2 = within( item2Label.parentElement.parentElement ).getByTestId( 'wikidata-entity-selector' );
 		expect( typedListItemElements2.length ).toEqual( 2 );
-		expect( item2Label ).toHaveTextContent( 'Item $1' );
+		expect( item2Label ).toHaveTextContent( 'Item 2' );
 		expect( lexemeSelector2 ).toBeInTheDocument();
 
 		// ACT: Add 2nd item to the list: feminine
@@ -209,7 +209,7 @@ describe( 'WikiLambda frontend, create Wikidata enum', () => {
 		const lexemeSelector1 = within( item1Label.parentElement.parentElement ).getByTestId( 'wikidata-lexeme' );
 		const lexemeInput1 = within( item1Label.parentElement.parentElement ).getByTestId( 'wikidata-entity-selector' );
 		expect( typedListItemElements1.length ).toEqual( 1 );
-		expect( item1Label ).toHaveTextContent( 'Item $1' );
+		expect( item1Label ).toHaveTextContent( 'Item 1' );
 		expect( lexemeSelector1 ).toBeInTheDocument();
 
 		// ACT: Add 1 item to the list: masculine
@@ -231,7 +231,7 @@ describe( 'WikiLambda frontend, create Wikidata enum', () => {
 		const itemSelector = within( item2Label.parentElement.parentElement ).getByTestId( 'wikidata-item' );
 		const itemInput = within( item2Label.parentElement.parentElement ).getByTestId( 'wikidata-entity-selector' );
 		expect( typedListItemElements2.length ).toEqual( 2 );
-		expect( item2Label ).toHaveTextContent( 'Item $1' );
+		expect( item2Label ).toHaveTextContent( 'Item 2' );
 		expect( itemSelector ).toBeInTheDocument();
 
 		// ACT: Add 2nd item to the list: feminine

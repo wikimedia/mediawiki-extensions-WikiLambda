@@ -15,7 +15,6 @@ const { isTruthyOrEqual, isValidZidFormat } = require( './typeUtils.js' );
 // Note: This is intentionally "wrong" in that it allows for Z0.
 // It excludes letters so as not to apply to keys (containing a 'K').
 const referenceRe = /^Z0*[1-9]*\d*$/;
-const errorTypeReferenceRe = /^Z5\d{2}$/;
 
 const schemataUtils = {
 	/**
@@ -240,115 +239,71 @@ const schemataUtils = {
 		return uniqueMatches.sort( ( a, b ) => ( a.includes( 'K' ) ? ( b.includes( 'K' ) ? 0 : -1 ) : 1 ) );
 	},
 
-	// These error types have no keys whose values contain nested error content.  If a error type ZID
-	// appears here, extractErrorStructure will not search through any children of a zobject of that type.
-	errorTypesNotToTraverse: new Set( [ 'Z501', 'Z505', 'Z508', 'Z511', 'Z512', 'Z513', 'Z516',
-		'Z531', 'Z532', 'Z533', 'Z534', 'Z535', 'Z536', 'Z537', 'Z542', 'Z547', 'Z548', 'Z551', 'Z553' ] ),
-
 	/**
-	 * Traverses a ZObject to find all the suberrors.  (A suberror is a zobject
-	 * whose type is an instance of Z50/'Error type'). Example:
-	 *   { Z1K1: 'Z500', Z500K1: 'Could not find argument Z811K1' }
-	 * For each suberror found, the result includes a JS object with properties
-	 * 'errorType', 'children', and (optionally) 'explanation'.  Example:
-	 *   { errorType: 'Z500', explanation: 'Could not find argument Z811K1', children: [] }
-	 *
-	 * The 'children', if any, are additional suberrors found within the nested ZObjects of
-	 * this suberror.
-	 *
-	 * zobject is normally a Z5 in the top level call, but doesn't have to be.
+	 * Extract error information and nested error children form a parent error/Z5 object.
+	 * Returns an object with the following structure/error description:
+	 * * errorType: zid of the error type/Z50 object
+	 * * errorMessage: string built with the error type label and the string arguments
+	 * * children: nested errors found in the error value
+	 * * stringArgs: string arguments found in the error value
+	 * Children contains an array which can have zero or N items of this same structure.
 	 *
 	 * @param {Object} zobject
 	 * @return {Array} of objects
 	 */
-	extractErrorStructure: function ( zobject ) {
-
+	extractErrorData: function ( zobject ) {
 		/**
-		 * Checks if a given zobject is a suberror (a zobject whose type is an instance of Z50/'Error type').
-		 * If so, returns a JS object with keys errorType and (optionally) explanation.  If not, returns null.
-		 *
-		 * The 'explanation' is an explanatory string for this suberror.
-		 * Such strings are expected for Z500, but are also generated in the orchestrator for
-		 * some other error types. In addition to explanatory strings, a few other useful keys
-		 * with string values will show up here, e.g. Z503K1/'feature name' and Z504K1/ZID.
-		 *
-		 * Allows for the more relaxed Z5/Error format from the orchestrator, in which the suberror's
-		 * type appears directly as the value of Z1K1/type, and also the stricter format, in which
-		 * it appears in a function call to Z885/'Errortype to type'.  Z885K1 is the 'errortype' key of Z885.
-		 *
-		 * @param {Object} targetZObject
-		 * @return {Array|undefined} of objects
+		 * @param {Object} error object
+		 * @return {Object|undefined}
 		 */
-		function checkIfSuberror( targetZObject ) {
-			if (
-				typeof targetZObject === 'object' && targetZObject.Z1K1 &&
-				typeof targetZObject.Z1K1 === 'string' && targetZObject.Z1K1.match( errorTypeReferenceRe )
-			) {
-				// Handle the relaxed Z5/Error format from the orchestrator
-				const suberror = {};
-				suberror.errorType = targetZObject.Z1K1;
-				const stringKey = suberror.errorType + 'K1';
-				const k1String = targetZObject[ stringKey ];
-				if ( k1String && schemataUtils.isString( k1String ) && !schemataUtils.isZid( k1String ) ) {
-					suberror.explanation = k1String;
-				}
-				return suberror;
-			} else if (
-				typeof targetZObject === 'object' && targetZObject.Z1K1 && typeof targetZObject.Z1K1 === 'object' &&
-				targetZObject.Z1K1.Z885K1 && typeof targetZObject.Z1K1.Z885K1 === 'string' &&
-				targetZObject.Z1K1.Z885K1.match( errorTypeReferenceRe )
-			) {
-				const suberror = {};
-				suberror.errorType = targetZObject.Z1K1.Z885K1;
-				const stringKey = 'K1';
-				const k1String = targetZObject[ stringKey ];
-				if ( k1String && schemataUtils.isString( k1String ) && !schemataUtils.isZid( k1String ) ) {
-					suberror.explanation = k1String;
-				}
-				return suberror;
+		const extractNestedErrors = ( error ) => {
+			// If this object is not an error; exit
+			if ( error.Z1K1 !== Constants.Z_ERROR ) {
+				return undefined;
 			}
-			return undefined;
-		}
 
-		const subError = checkIfSuberror( zobject );
-		if ( subError ) {
-			if ( subError.explanation ) {
-				// In this special case, there won't be any nested suberrors; look no further
-				subError.children = [];
-			} else if ( schemataUtils.errorTypesNotToTraverse.has( subError.errorType ) ) {
-				// Also in this case, there won't be any nested suberrors; look no further
-				subError.children = [];
-			} else {
-				subError.children = schemataUtils.extractNestedSuberrors( zobject, subError.errorType );
-			}
-			return [ subError ];
-		}
-		return schemataUtils.extractNestedSuberrors( zobject, null );
-	},
+			// Gather error type from Z5K1/error type
+			const errorType = error[ Constants.Z_ERROR_TYPE ];
 
-	errorKeysToTraverse: new Map( [
-		[ 'Z502', new Set( [ 'Z502K2', 'K2' ] ) ], // Not wellformed, [value]
-		[ 'Z506', new Set( [ 'Z506K4', 'K4' ] ) ], // Argument type mismatch, [propagated error]
-		[ 'Z507', new Set( [ 'Z507K2', 'K2' ] ) ], // Error in evaluation, [propagated error]
-		[ 'Z517', new Set( [ 'Z517K4', 'K4' ] ) ], // Return type mismatch, [propagated error]
-		[ 'Z518', new Set( [ 'Z518K3', 'K3' ] ) ] // Object type mismatch, [propagated error]
-	] ),
+			// Gather keys from Z5K2/value, excluding Z1K1
+			const errorKeys = Object
+				.keys( error[ Constants.Z_ERROR_VALUE ] )
+				.filter( ( key ) => key !== Constants.Z_OBJECT_TYPE );
 
-	extractNestedSuberrors: function ( zobject, errorType ) {
-		const nested = [];
-		if ( zobject !== null && typeof zobject === 'object' ) {
-			const keysToTraverse = schemataUtils.errorKeysToTraverse.get( errorType );
-			for ( const key in zobject ) {
-				if ( Object.prototype.hasOwnProperty.call( zobject, key ) ) {
-					// We've already looked inside Z1K1/type; no need to look again
-					if ( key !== Constants.Z_OBJECT_TYPE &&
-						( keysToTraverse === undefined || keysToTraverse.has( key ) ) ) {
-						nested.push( ...schemataUtils.extractErrorStructure( zobject[ key ] ) );
+			// Gather string arguments and nested errors separately, and ignore all the rest
+			const stringArgs = [];
+			const children = [];
+
+			for ( const key of errorKeys ) {
+				const value = error[ Constants.Z_ERROR_VALUE ][ key ];
+				// value is a string: add it to string arguments
+				if ( typeof value === 'string' ) {
+					stringArgs.push( { key, value } );
+					continue;
+				}
+				// value is an array of errors: extract nested errors for each one
+				if ( Array.isArray( value ) && value[ 0 ] === Constants.Z_ERROR ) {
+					for ( const item of value.slice( 1 ) ) {
+						const suberrorItem = extractNestedErrors( item );
+						if ( suberrorItem ) {
+							children.push( suberrorItem );
+						}
 					}
+					continue;
+				}
+				// else; extract nested error
+				const suberror = extractNestedErrors( value );
+				if ( suberror ) {
+					children.push( suberror );
 				}
 			}
-		}
-		return nested;
+
+			return { errorType, children, stringArgs };
+		};
+
+		// Canonicalize whole error (just in case) before extracting its data
+		const canonicalError = schemataUtils.hybridToCanonical( zobject );
+		return extractNestedErrors( canonicalError );
 	}
 };
 

@@ -43,22 +43,38 @@ class Title {
 	}
 }
 
-const upstreami18n = { 'colon-separator': ':' };
+const upstreami18n = {
+	'colon-separator': ': ',
+	'comma-separator': ', ',
+	parentheses: '($1)',
+	'quotation-marks': '"$1"'
+};
 let englishMessages = JSON.parse( fs.readFileSync( path.join( __dirname, './i18n/en.json' ) ) );
 const englishVeMessages = JSON.parse( fs.readFileSync( path.join( __dirname, './i18n/ve/en.json' ) ) );
 englishMessages = Object.assign( englishMessages, englishVeMessages, upstreami18n );
 
 class Mocki18n {
-	constructor( string ) {
+	constructor( string, param ) {
 		this.string = string;
+		this.param = param || null;
+	}
+
+	interpolate( str ) {
+		if ( !str ) {
+			return '';
+		}
+		if ( this.param !== null ) {
+			return str.replace( /\$1/g, this.param );
+		}
+		return str;
 	}
 
 	text() {
-		return englishMessages[ this.string ];
+		return this.interpolate( englishMessages[ this.string ] );
 	}
 
 	escaped() {
-		return englishMessages[ this.string ].replace( /"/g, '&quot;' );
+		return this.interpolate( englishMessages[ this.string ] ).replace( /"/g, '&quot;' );
 	}
 
 	toString() {
@@ -70,7 +86,7 @@ class Mocki18n {
 	}
 
 	parse() {
-		return englishMessages[ this.string ];
+		return this.text();
 	}
 }
 
@@ -136,7 +152,7 @@ global.mw = {
 			console.log( 'Metrics Platform event emitted using submitInteraction: ' + action + ' - ' + JSON.stringify( interactionData ) );
 		} )
 	},
-	message: jest.fn( ( str ) => new Mocki18n( str ) ),
+	message: jest.fn( ( str, param ) => new Mocki18n( str, param ) ),
 	Uri: jest.fn().mockReturnValue( {
 		path: jest.fn(),
 		query: jest.fn()
@@ -147,7 +163,7 @@ global.mw = {
 };
 
 // Mock i18n & store for all tests
-global.$i18n = jest.fn( ( str ) => new Mocki18n( str ) );
+global.$i18n = jest.fn( ( str, param ) => new Mocki18n( str, param ) );
 global.store = createTestingPinia();
 
 vueTestUtils.config.global.mocks = {
