@@ -3,12 +3,15 @@
 		"authors": [
 			"H78c67c",
 			"Winston Sung",
-			"Yueman"
+			"Yueman",
+			"JeffreyKim"
 		]
 	},
 	"wikilambda-cancel": "取消",
 	"wikilambda-function-viewer-aliases-hide-language-button": "顯示少啲語言",
+	"wikilambda-functioncall-metadata-errors-none": "冇",
 	"wikilambda-renderer-api-error": "有嘢出錯。請試過。",
 	"wikilambda-special-listduplicateobjectlabels-language": "語文",
-	"wikilambda-string-renderer-examples-title": "例子"
+	"wikilambda-string-renderer-examples-title": "例子",
+	"wikilambda-zobjectselector-no-results": "搵唔到結果。"
 }
