@@ -42,6 +42,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Functiones suggerite",
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Modifica le function pro corriger valores mancante o non valide.",
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Necun option eligite.",
+	"wikilambda-visualeditor-wikifunctionscall-error-language": "Necun lingua eligite.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser-empty": "Per favor insere un valor.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser": "Error incognite. [[f:Talk:$1|Signalar problema]]",
 	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-lexeme": "Lexema Wikidata non valide.",
