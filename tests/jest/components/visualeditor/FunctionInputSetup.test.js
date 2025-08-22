@@ -120,6 +120,89 @@ describe( 'FunctionInputSetup', () => {
 		expect( wrapper.emitted().update ).toBeTruthy();
 	} );
 
+	describe( 'Prefill with selected text', () => {
+		beforeEach( () => {
+			// Default: no existing params and no selected text
+			// Need to set the default values to an empty string to avoid the prefill logic from being triggered
+			store.getVEFunctionParams = [ '' ];
+			store.getVESelectedText = '';
+		} );
+
+		it( 'prefills with selected text when there is only one input field and no existing store value', async () => {
+			store.getInputsOfFunctionZid = createGettersWithFunctionsMock( [
+				{ Z1K1: 'Z17', Z17K1: 'Z13518', Z17K2: 'Z13546K1' }
+			] );
+			store.getVESelectedText = 'selected text from editor';
+
+			const wrapper = renderFunctionInputSetup();
+
+			await waitFor( () => expect( wrapper.findAllComponents( { name: 'wl-function-input-field' } ).length ).toEqual( 1 ) );
+
+			// Should have called setVEFunctionParam with the selected text
+			expect( store.setVEFunctionParam ).toHaveBeenCalledWith( 0, 'selected text from editor' );
+
+			// Check that the input field is rendered with the selected text
+			const field = wrapper.findComponent( { name: 'wl-function-input-field' } );
+			expect( field.props( 'modelValue' ) ).toBe( 'selected text from editor' );
+		} );
+
+		it( 'does not prefill with selected text when there is an existing store value', async () => {
+			store.getInputsOfFunctionZid = createGettersWithFunctionsMock( [
+				{ Z1K1: 'Z17', Z17K1: 'Z13518', Z17K2: 'Z13546K1' }
+			] );
+			store.getVEFunctionParams = [ 'existing value' ];
+			store.getVESelectedText = 'selected text from editor';
+
+			const wrapper = renderFunctionInputSetup();
+
+			await waitFor( () => expect( wrapper.findAllComponents( { name: 'wl-function-input-field' } ).length ).toEqual( 1 ) );
+
+			// Should NOT have called setVEFunctionParam with selected text
+			expect( store.setVEFunctionParam ).not.toHaveBeenCalledWith( 0, 'selected text from editor' );
+
+			// Check that the input field uses the existing store value
+			const field = wrapper.findComponent( { name: 'wl-function-input-field' } );
+			expect( field.props( 'modelValue' ) ).toBe( 'existing value' );
+		} );
+
+		it( 'does not prefill with selected text when there are multiple input fields', async () => {
+			store.getInputsOfFunctionZid = createGettersWithFunctionsMock( [
+				{ Z1K1: 'Z17', Z17K1: 'Z13518', Z17K2: 'Z13546K1' },
+				{ Z1K1: 'Z17', Z17K1: 'Z13518', Z17K2: 'Z13546K2' }
+			] );
+			store.getVESelectedText = 'selected text from editor';
+
+			const wrapper = renderFunctionInputSetup();
+
+			await waitFor( () => expect( wrapper.findAllComponents( { name: 'wl-function-input-field' } ).length ).toEqual( 2 ) );
+
+			// Should NOT have called setVEFunctionParam with selected text
+			expect( store.setVEFunctionParam ).not.toHaveBeenCalledWith( 0, 'selected text from editor' );
+
+			// Check that input fields are empty
+			const fields = wrapper.findAllComponents( { name: 'wl-function-input-field' } );
+			expect( fields.at( 0 ).props( 'modelValue' ) ).toBe( '' );
+			expect( fields.at( 1 ).props( 'modelValue' ) ).toBe( '' );
+		} );
+
+		it( 'does not prefill when there is only one input field but no selected text', async () => {
+			store.getInputsOfFunctionZid = createGettersWithFunctionsMock( [
+				{ Z1K1: 'Z17', Z17K1: 'Z13518', Z17K2: 'Z13546K1' }
+			] );
+
+			const wrapper = renderFunctionInputSetup();
+
+			await waitFor( () => expect( wrapper.findAllComponents( { name: 'wl-function-input-field' } ).length ).toEqual( 1 ) );
+
+			// Should NOT have called setVEFunctionParam
+			expect( store.setVEFunctionParam ).not.toHaveBeenCalled();
+
+			// Check that the input field is empty
+			const field = wrapper.findComponent( { name: 'wl-function-input-field' } );
+			expect( field.props( 'modelValue' ) ).toBe( '' );
+		} );
+	} );
+
 	describe( 'Language fallback strategy', () => {
 		it( 'shows no missing content notice when all labels are in userlang', () => {
 			const wrapper = renderFunctionInputSetup();

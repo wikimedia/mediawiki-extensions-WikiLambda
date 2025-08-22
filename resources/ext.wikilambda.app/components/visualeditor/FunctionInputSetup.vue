@@ -171,21 +171,59 @@ module.exports = exports = defineComponent( {
 		 * Initializes the function input fields with the current Visual Editor function params.
 		 */
 		function initializeInputFields() {
-			// Ensure veFunctionParams is at least as long as functionInputs
+			// Ensure veFunctionParams matches functionInputs length
+			syncFunctionParamsLength();
+
+			// Check if there's only one input field and use selected text as default
+			// when there is no existing value in the store
+			const hasOnlyOneInput = functionInputs.value.length === 1;
+
+			// Set local inputFields array
+			inputFields.value = functionInputs.value.map( ( arg, index ) => {
+				// Get the existing value from the store
+				let defaultValue = store.getVEFunctionParams[ index ];
+
+				// Only prefill with selected text if:
+				// 1) only one input field
+				// 2) no existing store value
+				if ( hasOnlyOneInput && !defaultValue ) {
+					const selectedText = store.getVESelectedText;
+					if ( selectedText ) {
+						defaultValue = selectedText;
+						store.setVEFunctionParam( index, selectedText );
+					}
+				}
+
+				return buildInputField( arg, defaultValue );
+			} );
+		}
+
+		/**
+		 * Pads veFunctionParams so it's at least as long as functionInputs.
+		 */
+		function syncFunctionParamsLength() {
 			if ( functionInputs.value.length > store.getVEFunctionParams.length ) {
 				for ( let i = store.getVEFunctionParams.length; i < functionInputs.value.length; i++ ) {
 					store.setVEFunctionParam( i, '' );
 				}
 			}
+		}
 
-			// Set local inputFields array
-			inputFields.value = functionInputs.value.map( ( arg, index ) => ( {
+		/**
+		 * Builds a single input field object from an argument definition and value.
+		 *
+		 * @param {Object} arg - The argument definition.
+		 * @param {string} value - The value for the field.
+		 * @return {Object} The input field object.
+		 */
+		function buildInputField( arg, value ) {
+			return {
 				inputKey: arg[ Constants.Z_ARGUMENT_KEY ],
 				inputType: arg[ Constants.Z_ARGUMENT_TYPE ],
 				labelData: store.getLabelData( arg[ Constants.Z_ARGUMENT_KEY ] ),
-				value: store.getVEFunctionParams[ index ],
+				value,
 				hasChanged: false
-			} ) );
+			};
 		}
 
 		/**

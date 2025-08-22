@@ -7,6 +7,7 @@
 mw.loader.using( 'ext.wikilambda.visualeditor' ).then( () => {
 	mw.libs.ve.targetLoader.addPlugin( () => {
 		ve.init.mw.WikifunctionsCall = ve.init.mw.WikifunctionsCall || {};
+
 		// eslint-disable-next-line no-jquery/no-done-fail
 		ve.init.mw.WikifunctionsCall.vueAppLoaded = mw.loader.using( 'ext.wikilambda.app' )
 			.done( () => {

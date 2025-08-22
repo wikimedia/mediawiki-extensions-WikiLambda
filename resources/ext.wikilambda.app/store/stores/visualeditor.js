@@ -15,6 +15,7 @@ module.exports = {
 		veFunctionParams: [],
 		veFunctionParamsValid: false,
 		veFunctionParamsDirty: false,
+		veSelectedText: '',
 		searchTerm: '',
 		lookupResults: [],
 		newParameterSetup: true,
@@ -40,6 +41,16 @@ module.exports = {
 		 */
 		getVEFunctionParams: function ( state ) {
 			return state.veFunctionParams;
+		},
+
+		/**
+		 * Returns the text selected in Visual Editor before opening the dialog.
+		 *
+		 * @param {Object} state
+		 * @return {string}
+		 */
+		getVESelectedText: function ( state ) {
+			return state.veSelectedText;
 		},
 
 		/**
@@ -212,6 +223,15 @@ module.exports = {
 		},
 
 		/**
+		 * Sets the text selected in Visual Editor before opening the dialog.
+		 *
+		 * @param {string} selectedText - The text to set.
+		 */
+		setVESelectedText: function ( selectedText = '' ) {
+			this.veSelectedText = selectedText;
+		},
+
+		/**
 		 * Sets the Visual Editor function parameters in the state,
 		 * and sets all its related flags to their initial states.
 		 *
@@ -293,6 +313,7 @@ module.exports = {
 			// Reset the function selection
 			this.setVEFunctionId( payload.functionId );
 			this.setVEFunctionParams( payload.functionParams );
+			this.setVESelectedText( payload.selectedText );
 			this.setSuggestedFunctions( payload.suggestedFunctions );
 			// Also reset the search state
 			this.setSearchTerm( '' );

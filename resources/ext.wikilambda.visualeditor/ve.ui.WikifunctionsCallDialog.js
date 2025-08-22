@@ -143,6 +143,51 @@ ve.ui.WikifunctionsCallDialog.prototype.getEscapeAction = function () {
 };
 
 /**
+ * Capture the VisualEditor selection
+ *
+ * @return {Object|undefined} The VisualEditor range and text, or undefined if no selection is available
+ */
+ve.ui.WikifunctionsCallDialog.prototype.getLastSelection = function () {
+	// Try to capture the VisualEditor selection if available
+	if ( !ve.init || !ve.init.target ) {
+		return;
+	}
+
+	const surface = ve.init.target.getSurface();
+	if ( !surface ) {
+		return;
+	}
+
+	const surfaceModel = surface.getModel();
+	if ( !surfaceModel ) {
+		return;
+	}
+
+	const selection = surfaceModel.getSelection();
+	if ( !selection || !selection.getRange ) {
+		return;
+	}
+
+	const range = selection.getRange();
+	if ( !range || range.isCollapsed() ) {
+		return;
+	}
+
+	// Get the text content from the selection range
+	const fragment = surfaceModel.getLinearFragment( range );
+	const text = fragment.getText();
+
+	if ( !text ) {
+		return;
+	}
+
+	return {
+		range,
+		text
+	};
+};
+
+/**
  * @inheritdoc
  */
 ve.ui.WikifunctionsCallDialog.prototype.getSetupProcess = function ( data ) {
@@ -151,7 +196,7 @@ ve.ui.WikifunctionsCallDialog.prototype.getSetupProcess = function ( data ) {
 			// Wait till the Vue app is loaded, so we can access piniaStore
 			ve.init.mw.WikifunctionsCall.vueAppLoaded.then( () => {
 				// Get the suggested functions messages and parse the JSON (if any)
-				let suggestedFunctions = [];
+				let suggestedFunctions = [ 'Z20756', 'Z18428' ];
 				try {
 					suggestedFunctions = JSON.parse( OO.ui.msg( 'wikilambda-suggested-functions.json' ) );
 				} catch ( e ) {}
@@ -159,14 +204,20 @@ ve.ui.WikifunctionsCallDialog.prototype.getSetupProcess = function ( data ) {
 				// Trim to the first five elements of the array, so it's not too long for users.
 				suggestedFunctions = suggestedFunctions.slice( 0, 5 );
 
+				// Get the selected text from the captured selection
+				const lastSelection = this.getLastSelection();
+				const selectedText = lastSelection ? lastSelection.text : '';
+
 				// No selected node: new Wikifunction with
 				// * functionId: undefined
 				// * functionParams: []
 				// * suggestedFunctions: Array
+				// * selectedText: string (if any text was selected)
 				const functionPayload = {
 					functionId: undefined,
 					functionParams: [],
-					suggestedFunctions
+					suggestedFunctions,
+					selectedText
 				};
 				const node = this.getSelectedNode();
 
@@ -258,6 +309,9 @@ ve.ui.WikifunctionsCallDialog.prototype.getTeardownProcess = function ( data ) {
 		.next( () => {
 			// Reset the store to blank values
 			ve.init.mw.WikifunctionsCall.piniaStore.initializeVEFunctionCallEditor();
+
+			// Clear the captured selection
+			ve.init.mw.WikifunctionsCall.lastSelection = null;
 		} );
 };
 
@@ -310,10 +364,22 @@ ve.ui.WikifunctionsCallDialog.prototype.getActionProcess = function ( action ) {
 					)
 				);
 			} else {
-				this.getFragment().collapseToEnd().insertContent( [ {
-					type: 'WikifunctionsCall',
-					attributes: { mw: mwData }
-				} ] );
+				// If we have a previous selection, replace it with the function call
+				// Use the VisualEditor last selectionrange to replace the selected text
+				const lastSelection = this.getLastSelection();
+				if ( lastSelection && lastSelection.range ) {
+					const fragment = surfaceModel.getLinearFragment( lastSelection.range );
+					fragment.insertContent( [ {
+						type: 'WikifunctionsCall',
+						attributes: { mw: mwData }
+					} ] );
+				} else {
+					// No previous selection, insert at cursor position
+					this.getFragment().collapseToEnd().insertContent( [ {
+						type: 'WikifunctionsCall',
+						attributes: { mw: mwData }
+					} ] );
+				}
 			}
 
 			// Close dialog, setTeardownProcess will be called and reset the store
