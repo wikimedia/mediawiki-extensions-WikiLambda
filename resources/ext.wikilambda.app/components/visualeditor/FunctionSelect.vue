@@ -10,6 +10,7 @@
 		<!-- Main function selector -->
 		<div class="ext-wikilambda-app-function-select__field">
 			<cdx-search-input
+				ref="searchInput"
 				:model-value="searchTerm"
 				:placeholder="$i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder' )"
 				@update:model-value="updateSearchTerm"
@@ -198,6 +199,14 @@ module.exports = exports = defineComponent( {
 			if ( value && this.isValidZidFormat( value ) ) {
 				this.$emit( 'select', value );
 			}
+		},
+		/**
+		 * Focus the search input
+		 */
+		focusSearchInput: function () {
+			if ( this.$refs.searchInput ) {
+				this.$refs.searchInput.focus();
+			}
 		}
 	} )
 } );
@@ -217,7 +226,7 @@ module.exports = exports = defineComponent( {
 
 	.ext-wikilambda-app-function-select__title {
 		padding: @spacing-50 @spacing-100;
-		color: @color-subtle;
+		color: @color-base;
 		font-weight: @font-weight-bold;
 	}
 

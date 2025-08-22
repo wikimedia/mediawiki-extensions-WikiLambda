@@ -237,10 +237,16 @@ ve.ui.WikifunctionsCallDialog.prototype.updateActions = function () {
  * @inheritdoc
  */
 ve.ui.WikifunctionsCallDialog.prototype.getReadyProcess = function ( data ) {
-	// TODO (T373118): Replace the below with focussing the input of our Vue application
 	return ve.ui.WikifunctionsCallDialog.super.prototype.getReadyProcess.call( this, data )
 		.next( () => {
-			// this.functionInput.focus();
+			// Wait for Vue app to be loaded and then focus the search input
+			ve.init.mw.WikifunctionsCall.vueAppLoaded.then( () => {
+				// Focus the search input using jQuery
+				const $searchInput = this.$body.find( '#wikilambda-visualeditor-wikifunctionscall-app input[type="search"]' );
+				if ( $searchInput.length > 0 ) {
+					$searchInput[ 0 ].focus();
+				}
+			} );
 		} );
 };
 

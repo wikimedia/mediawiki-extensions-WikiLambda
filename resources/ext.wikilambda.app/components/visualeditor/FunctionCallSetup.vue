@@ -9,6 +9,7 @@
 	<div class="ext-wikilambda-app-function-call-setup">
 		<wl-function-select
 			v-if="!hasValidFunction"
+			ref="functionSelect"
 			@select="selectFunction"
 		></wl-function-select>
 		<wl-function-input-setup
@@ -103,6 +104,14 @@ module.exports = exports = defineComponent( {
 		 */
 		endLoading: function () {
 			this.$emit( 'loading-end' );
+		},
+		/**
+		 * Focus the search input in the function select component
+		 */
+		focusSearchInput: function () {
+			if ( this.$refs.functionSelect ) {
+				this.$refs.functionSelect.focusSearchInput();
+			}
 		}
 	} ),
 	watch: {
