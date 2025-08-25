@@ -483,6 +483,35 @@ If your function takes parameters, they can be passed in pipe-delimited, e.g.:
 
 Much further functionality is to come.
 
+### Enabling use of rich text output from embedded calls
+
+Enable the new functionality in your LocalSettings.php file:
+
+  $wgWikifunctionsEnableHTMLOutput = true;
+
+Create a Function and connected Implementation that outputs an HTML fragment, such as one that wraps a given input string in "<b>…</b>". Note that all direct use of the Function will show you HTML fragment Objects in the interface with the source HTML displayed, and never try to render it as HTML.
+
+Now try to use your new Function as an embedded call:
+
+  {{#function:Z12345|input}}
+
+You should see that the HTML is rendered into the article, suitably sanitised. For example, bad user input of `<script>…</script>` should get escaped or silently dropped (depending on how it is passed into the system), Functions that try to output unpermitted HTML like `<meta>` tags will see them dropped, and `<a>` links will only be allowed to the local server (or, if in a SiteMatrix cluster, local servers) without any attributes beyond the `href`.
+
+### Enabling use of Wikidata item references
+
+Enable the new functionality in your LocalSettings.php file:
+
+  $wgWikifunctionsEnableWikidataInputTypes = true;
+
+Create a Function and connected Implementation that uses a Wikidata item reference, such as one that displays the label of a given item in a given language. You should be able to use it directly as expected.
+
+Now try to use your new Function as an embedded call:
+
+  {{#function:Z12345|Q42|en}}
+
+Note that for embedded Function calls, we default blank language parameter values to the page content render language, and Wikidata item parameter values to the associated QID of the page on which the fragment is being rendered, if available. Consequently, on https://en.wikipedia.org/wiki/Douglas_Adams, the above could be written simply as {{#function:Z12345}}.
+
+
 ## See also
 
 <https://www.mediawiki.org/wiki/Extension:WikiLambda>
