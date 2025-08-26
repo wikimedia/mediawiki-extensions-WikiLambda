@@ -23,11 +23,37 @@ const urlUtils = {
 
 		if ( baseUrl ) {
 			// Ensure no double slashes when joining
-			return new URL( path + queryString, baseUrl ).toString();
+			return new URL( `${ path }${ queryString }`, baseUrl ).toString();
 		}
 
 		// Return relative path
 		return `${ path }${ queryString }`;
+	},
+
+	/**
+	 * Generate a URL for editing a ZObject.
+	 *
+	 * @param {Object} payload - The options for generating the URL.
+	 * @param {string} payload.langCode - The language code.
+	 * @param {string} payload.zid - The ZObject ID.
+	 * @param {Object} [payload.params] - Optional query parameters.
+	 * @param {string} [payload.hash] - Optional hash to append.
+	 * @param {string} [payload.baseUrl] - Optional base URL to prepend.
+	 * @return {string} - The generated URL.
+	 */
+	generateEditUrl: function ( { langCode, zid, params = {}, hash = undefined, baseUrl = undefined } ) {
+		const path = `/wiki/${ zid }`;
+		const query = new URLSearchParams( params ).toString();
+		const baseQuery = `?uselang=${ langCode }&action=edit`;
+		const queryString = query ? `${ baseQuery }&${ query }` : baseQuery;
+		// The App will automatically scroll to the hash
+		const hashString = hash ? `#${ hash }` : '';
+		const url = `${ path }${ queryString }${ hashString }`;
+
+		if ( baseUrl ) {
+			return new URL( url, baseUrl ).toString();
+		}
+		return url;
 	},
 
 	/**

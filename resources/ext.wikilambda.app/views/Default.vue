@@ -72,6 +72,7 @@ const { mapState } = require( 'pinia' );
 
 const Constants = require( '../Constants.js' );
 const eventLogMixin = require( '../mixins/eventLogMixin.js' );
+const scrollMixin = require( '../mixins/scrollMixin.js' );
 const typeMixin = require( '../mixins/typeMixin.js' );
 const useMainStore = require( '../store/index.js' );
 
@@ -94,7 +95,7 @@ module.exports = exports = defineComponent( {
 		'wl-function-report-widget': FunctionReportWidget,
 		'wl-z-object-key-value': ZObjectKeyValue
 	},
-	mixins: [ eventLogMixin, typeMixin ],
+	mixins: [ eventLogMixin, scrollMixin, typeMixin ],
 	data: function () {
 		return {
 			initialKeyPath: `${ Constants.STORED_OBJECTS.MAIN }.${ Constants.Z_PERSISTENTOBJECT_VALUE }`

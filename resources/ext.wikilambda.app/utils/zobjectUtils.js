@@ -398,9 +398,7 @@ const zobjectUtils = {
 	},
 
 	/**
-	 * Returns an array of all the language references or language
-	 * in the array of monolingual text objects.
-	 * Accepts both canonical and hybrid.
+	 * Returns an array of all the terminal language values in an multilingual string object.
 	 *
 	 * @param {Object} value
 	 * @return {Array}
@@ -411,6 +409,19 @@ const zobjectUtils = {
 		}
 		const monolinguals = value[ Constants.Z_MULTILINGUALSTRING_VALUE ].slice( 1 );
 		return monolinguals.map( ( monolingual ) => zobjectUtils.getZMonolingualLangValue( monolingual ) );
+	},
+
+	/**
+	 * Returns an array of all the multilingual string objects.
+	 *
+	 * @param {Object} value
+	 * @return {Array}
+	 */
+	getZMultilingualValues: function ( value ) {
+		if ( !value || typeof value !== 'object' || !( Constants.Z_MULTILINGUALSTRING_VALUE in value ) ) {
+			return [];
+		}
+		return value[ Constants.Z_MULTILINGUALSTRING_VALUE ].slice( 1 );
 	},
 
 	/**

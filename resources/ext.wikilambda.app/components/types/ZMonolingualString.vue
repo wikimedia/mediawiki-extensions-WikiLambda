@@ -62,7 +62,8 @@ module.exports = exports = defineComponent( {
 	},
 	mixins: [ typeMixin, zobjectMixin ],
 	props: {
-		keyPath: { // eslint-disable-line vue/no-unused-properties
+		// eslint-disable-next-line vue/no-unused-properties
+		keyPath: {
 			type: String,
 			required: true
 		},

@@ -287,6 +287,12 @@ Constants.BUILTIN_TYPE_CONFIG = {
 		component: 'wl-z-monolingual-string',
 		allowExpansion: true
 	},
+	[ Constants.Z_MULTILINGUALSTRING ]: {
+		hasBuiltin: true,
+		component: 'wl-z-multilingual-string',
+		allowExpansion: false,
+		expandToSelf: false
+	},
 	[ Constants.Z_STRING ]: {
 		hasBuiltin: true,
 		component: 'wl-z-string',
@@ -508,6 +514,8 @@ Constants.LINKED_TYPES = [
 	Constants.Z_DESERIALISER
 	// TODO (T296815): Constants.Z_PROGRAMMING_LANGUAGE
 ];
+
+Constants.LIST_LIMIT_MULTILINGUAL_STRING = 10;
 
 Constants.LIST_MENU_OPTIONS = {
 	DELETE_ITEM: 'delete-list-item',

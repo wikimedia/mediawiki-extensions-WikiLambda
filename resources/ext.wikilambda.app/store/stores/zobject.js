@@ -14,6 +14,7 @@ const { extractZIDs, canonicalToHybrid } = require( '../../utils/schemata.js' );
 const { isTruthyOrEqual, typeToString, isLocalKey } = require( '../../utils/typeUtils.js' );
 const {
 	getZMonolingualItemForLang,
+	getZMonolingualLangValue,
 	getZMonolingualStringsetForLang,
 	getZMultilingualLangs,
 	getZMultilingualStringsetLangs,
@@ -132,6 +133,48 @@ const zobjectStore = {
 		},
 
 		/**
+		 * Returns the list of language Zids present in the parent multilingual
+		 * string list/Z12 of the component located at the given keyPath string.
+		 * Accepts both typed-list-item paths and inner-value paths, e.g.:
+		 *  - main.Z2K2.Z12K1.2.Z11K1
+		 *  - main.Z2K2.Z12K1.2
+		 * If the keyPath is not within a Z12K1 list, returns an empty array.
+		 *
+		 * @return {Function}
+		 */
+		getLanguagesInParentMultilingualList: function () {
+			/**
+			 * @param {string} keyPath
+			 * @return {Array<string>} language Zids
+			 */
+			const findLanguagesInParentMultilingualList = ( keyPath ) => {
+				if ( !keyPath || typeof keyPath !== 'string' ) {
+					return [];
+				}
+				const parts = keyPath.split( '.' );
+				const index = parts.indexOf( Constants.Z_MULTILINGUALSTRING_VALUE );
+				if ( index === -1 ) {
+					return [];
+				}
+				// keyPath can point at the monolingual language value (…Z12K1.2.Z11K1)
+				// or at the monolingual object index (…Z12K1.2), so we
+				// slice the list of keys from the root till Z12K1.
+				const listPath = parts.slice( 0, index + 1 );
+				const list = this.getZObjectByKeyPath( listPath );
+				if ( !Array.isArray( list ) || list.length === 0 ) {
+					return [];
+				}
+
+				// slice 1 to exclude the benjamin item
+				return list
+					.slice( 1 )
+					.map( ( item ) => getZMonolingualLangValue( item ) )
+					.filter( Boolean );
+			};
+			return findLanguagesInParentMultilingualList;
+		},
+
+		/**
 		 * Returns the length of the list located in the given key path
 		 * If the list is a valid array and has more than one object (benjamin item):
 		 * returns the number of real items (excluding benjamin item. Else, returns undefined.
@@ -148,6 +191,25 @@ const zobjectStore = {
 				return ( list && Array.isArray( list ) && list.length > 0 ) ? list.length - 1 : undefined;
 			};
 			return findParentListCount;
+		},
+
+		/**
+		 * Returns the list of items in the parent list of a given key path
+		 * If the list is a valid array and has more than one object (benjamin item):
+		 * returns the number of real items (excluding benjamin item). Else, returns undefined.
+		 *
+		 * @return {Function}
+		 */
+		getParentListItems: function () {
+			/**
+			 * @param {Array} keyPath
+			 * @return {Array|undefined}
+			 */
+			const findParentListItems = ( keyPath ) => {
+				const list = this.getZObjectByKeyPath( keyPath.slice( 0, -1 ) );
+				return ( list && Array.isArray( list ) && list.length > 0 ) ? list.slice( 1 ) : undefined;
+			};
+			return findParentListItems;
 		},
 
 		/**
@@ -326,6 +388,26 @@ const zobjectStore = {
 			const nextIndex = Math.max( 0, ...current ) + 1;
 
 			return `${ zid }K${ nextIndex }`;
+		},
+
+		/**
+		 * Returns true if the current keyPath is within a multilingual string list/Z12
+		 * (i.e., its ancestor keys include Z12K1).
+		 *
+		 * @return {Function}
+		 */
+		isInMultilingualStringList: function () {
+			/**
+			 * @param {string} keyPath
+			 * @return {boolean}
+			 */
+			const findIsInMultilingualStringList = ( keyPath ) => {
+				if ( !keyPath || typeof keyPath !== 'string' ) {
+					return undefined;
+				}
+				return keyPath.split( '.' ).includes( Constants.Z_MULTILINGUALSTRING_VALUE );
+			};
+			return findIsInMultilingualStringList;
 		}
 	},
 	actions: {

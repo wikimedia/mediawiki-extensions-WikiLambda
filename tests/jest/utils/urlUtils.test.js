@@ -11,7 +11,8 @@ const {
 	getParameterByName,
 	removeHashFromURL,
 	isLinkCurrentPath,
-	generateViewUrl
+	generateViewUrl,
+	generateEditUrl
 } = require( '../../../resources/ext.wikilambda.app/utils/urlUtils.js' );
 const { mockWindowLocation } = require( '../fixtures/location.js' );
 
@@ -109,6 +110,49 @@ describe( 'urlUtils', () => {
 				baseUrl: 'http://example.com/'
 			} );
 			expect( url ).toBe( 'http://example.com/view/en/Z123' );
+		} );
+	} );
+
+	describe( 'generateEditUrl', () => {
+		it( 'should generate edit URL with hash for scroll navigation', () => {
+			const url = generateEditUrl( {
+				langCode: 'en',
+				zid: 'Z123',
+				hash: 'main-Z2K2-Z12K1'
+			} );
+
+			expect( url ).toBe( '/wiki/Z123?uselang=en&action=edit#main-Z2K2-Z12K1' );
+		} );
+
+		it( 'should generate edit URL without hash when not provided', () => {
+			const url = generateEditUrl( {
+				langCode: 'en',
+				zid: 'Z123'
+			} );
+
+			expect( url ).toBe( '/wiki/Z123?uselang=en&action=edit' );
+		} );
+
+		it( 'should combine hash with additional query parameters', () => {
+			const url = generateEditUrl( {
+				langCode: 'en',
+				zid: 'Z123',
+				params: { debug: '1', test: 'true' },
+				hash: 'main-Z2K2-Z12K1'
+			} );
+
+			expect( url ).toBe( '/wiki/Z123?uselang=en&action=edit&debug=1&test=true#main-Z2K2-Z12K1' );
+		} );
+
+		it( 'should work with base URL and hash', () => {
+			const url = generateEditUrl( {
+				langCode: 'en',
+				zid: 'Z123',
+				hash: 'main-Z2K2-Z12K1',
+				baseUrl: 'https://wikifunctions.org'
+			} );
+
+			expect( url ).toBe( 'https://wikifunctions.org/wiki/Z123?uselang=en&action=edit#main-Z2K2-Z12K1' );
 		} );
 	} );
 } );

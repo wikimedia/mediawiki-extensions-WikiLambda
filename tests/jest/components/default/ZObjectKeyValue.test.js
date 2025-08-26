@@ -307,6 +307,33 @@ describe( 'ZObjectKeyValue', () => {
 			expect( wrapper.findComponent( { name: 'wl-z-typed-list' } ).exists() ).toBe( true );
 		} );
 
+		it( 'z multilingual string', () => {
+			objectValue = {
+				Z1K1: 'Z12',
+				Z12K1: [
+					{ Z1K1: 'Z9', Z9K1: 'Z11' },
+					{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'English text' },
+					{ Z1K1: 'Z11', Z11K1: 'Z1003', Z11K2: 'Spanish text' },
+					{ Z1K1: 'Z11', Z11K1: '', Z11K2: '' }
+				]
+			};
+
+			const wrapper = shallowMount( ZObjectKeyValue, {
+				props: {
+					keyPath,
+					objectValue,
+					edit: false
+				},
+				global: {
+					stubs: {
+						WlKeyValueBlock: false
+					}
+				}
+			} );
+
+			expect( wrapper.findComponent( { name: 'wl-z-multilingual-string' } ).exists() ).toBe( true );
+		} );
+
 		it( 'fallback with renderer and parser', () => {
 			store.hasRenderer = createGettersWithFunctionsMock( true );
 			store.hasParser = createGettersWithFunctionsMock( true );

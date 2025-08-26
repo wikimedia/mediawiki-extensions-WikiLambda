@@ -603,6 +603,56 @@ describe( 'zobject Pinia store', () => {
 				expect( store.getNextKey ).toEqual( 'Z0K2' );
 			} );
 		} );
+
+		describe( 'getLanguagesInParentMultilingualList', () => {
+			beforeEach( () => {
+				const zobject = {
+					Z2K2: { Z1K1: 'Z12',
+						Z12K1: [ 'Z17',
+							{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'English text' },
+							{ Z1K1: 'Z11', Z11K1: 'Z1003', Z11K2: 'Spanish text' },
+							{ Z1K1: 'Z11', Z11K1: 'Z1004', Z11K2: 'French text' },
+							{ Z1K1: 'Z11', Z11K1: '', Z11K2: '' }
+						]
+					}
+				};
+				store.jsonObject.main = canonicalToHybrid( zobject );
+			} );
+
+			it( 'extracts languages from multilingual list with item keyPath', () => {
+				const keyPath = 'main.Z2K2.Z12K1.2.Z11K1';
+				const languages = store.getLanguagesInParentMultilingualList( keyPath );
+
+				expect( languages ).toContain( 'Z1002' );
+				expect( languages ).toContain( 'Z1003' );
+				expect( languages ).toContain( 'Z1004' );
+				expect( languages ).not.toContain( '' );
+			} );
+
+			it( 'extracts languages from multilingual list with list item keyPath', () => {
+				const keyPath = 'main.Z2K2.Z12K1.2';
+				const languages = store.getLanguagesInParentMultilingualList( keyPath );
+
+				expect( languages ).toContain( 'Z1002' );
+				expect( languages ).toContain( 'Z1003' );
+				expect( languages ).toContain( 'Z1004' );
+				expect( languages ).not.toContain( '' );
+			} );
+
+			it( 'returns empty array when multilingual list not found', () => {
+				const keyPath = 'main.Z2K2.Z99K1.2.Z11K1';
+				const languages = store.getLanguagesInParentMultilingualList( keyPath );
+
+				expect( languages ).toEqual( [] );
+			} );
+
+			it( 'returns empty array when keyPath does not contain Z12K1', () => {
+				const keyPath = 'main.Z2K2.Z8K1.2.Z11K1';
+				const languages = store.getLanguagesInParentMultilingualList( keyPath );
+
+				expect( languages ).toEqual( [] );
+			} );
+		} );
 	} );
 
 	describe( 'Actions', () => {

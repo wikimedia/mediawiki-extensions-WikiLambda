@@ -138,6 +138,34 @@ module.exports = exports = defineComponent( {
 				Constants.Z_REFERENCE
 			].includes( this.selected );
 		},
+
+		/**
+		 * Whether to allow resolvers from the menu.
+		 *
+		 * @return {boolean}
+		 */
+		allowResolvers: function () {
+			return this.parentKey !== Constants.Z_MULTILINGUALSTRING_VALUE;
+		},
+
+		/**
+		 * Whether to allow literals from the menu.
+		 *
+		 * @return {boolean}
+		 */
+		allowLiterals: function () {
+			return this.parentKey !== Constants.Z_MULTILINGUALSTRING_VALUE;
+		},
+
+		/**
+		 * Whether to allow move actions
+		 *
+		 * @return {boolean}
+		 */
+		allowMove: function () {
+			return this.parentKey !== Constants.Z_MULTILINGUALSTRING_VALUE;
+		},
+
 		/**
 		 * Returns the available options for the type mode selector.
 		 * The available options are all the available resolver types
@@ -154,7 +182,10 @@ module.exports = exports = defineComponent( {
 			// Literals and resolvers, sorted by label:
 			const resolvers = this.getResolverMenuItems();
 			const literals = this.getLiteralMenuItems();
-			const options = [ ...literals, ...resolvers ]
+			const options = [
+				...( this.allowLiterals ? literals : [] ),
+				...( this.allowResolvers ? resolvers : [] )
+			]
 				.sort( ( a, b ) => ( a.label < b.label ) ? -1 :
 					( a.label > b.label ) ? 1 : 0 );
 
@@ -203,7 +234,12 @@ module.exports = exports = defineComponent( {
 						}
 					]
 				};
-				menuItems.push( moveActionsGroup, deleteActionGroup );
+				// Only show the move actions if allowed
+				if ( this.allowMove ) {
+					menuItems.push( moveActionsGroup );
+				}
+				// Always show the delete action
+				menuItems.push( deleteActionGroup );
 			}
 
 			// If we are setting a function call function Id with a non-ref,

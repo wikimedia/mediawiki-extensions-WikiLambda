@@ -67,6 +67,7 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
+	emits: [ 'add-list-item' ],
 	computed: {
 		/**
 		 * Returns the string representation of the expected
@@ -116,8 +117,12 @@ module.exports = exports = defineComponent( {
 				newType: payload.value
 			} );
 		},
+		/**
+		 * Emits the add-list-item event to the parent
+		 *
+		 */
 		addListItem: function () {
-			this.$emit( 'add-list-item', { value: this.listItemType } );
+			this.$emit( 'add-list-item', { type: this.listItemType } );
 		}
 	} )
 } );

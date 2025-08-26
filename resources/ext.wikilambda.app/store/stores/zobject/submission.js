@@ -418,7 +418,7 @@ module.exports = {
 				return label && language;
 			} );
 
-			if ( initialList.length !== filteredList ) {
+			if ( initialList.length !== filteredList.length ) {
 				value[ Constants.Z_MULTILINGUALSTRING_VALUE ] = filteredList;
 			}
 		},

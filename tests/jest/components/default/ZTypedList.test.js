@@ -163,7 +163,7 @@ describe( 'ZTypedList', () => {
 			} );
 
 			wrapper.get( '.ext-wikilambda-app-typed-list-items__add-button' ).getComponent( { name: 'cdx-button' } ).vm.$emit( 'click' );
-			expect( wrapper.emitted() ).toHaveProperty( 'add-list-item', [ [ { value: 'Z6' } ] ] );
+			expect( wrapper.emitted() ).toHaveProperty( 'add-list-item', [ [ { type: 'Z6' } ] ] );
 		} );
 
 		it( 'calls handleListTypeChange when type is changed', () => {

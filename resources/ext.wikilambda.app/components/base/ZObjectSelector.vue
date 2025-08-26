@@ -266,14 +266,16 @@ module.exports = exports = defineComponent( {
 				disabled: true
 			} );
 
-			// Add one item per suggested Zid
+			// Add one item per suggested Zid, excluding disallowed/excluded ones
 			suggestedZids.forEach( ( zid ) => {
-				suggestions.push( {
-					value: zid,
-					label: this.getLabelData( zid ).label,
-					description: this.getLabelData( this.type ).label,
-					class: 'ext-wikilambda-app-object-selector__suggestion'
-				} );
+				if ( !this.isExcludedZid( zid ) ) {
+					suggestions.push( {
+						value: zid,
+						label: this.getLabelData( zid ).label,
+						description: this.getLabelData( this.type ).label,
+						class: 'ext-wikilambda-app-object-selector__suggestion'
+					} );
+				}
 			} );
 
 			return suggestions;
@@ -417,7 +419,7 @@ module.exports = exports = defineComponent( {
 		 * @return {boolean}
 		 */
 		isExcludedZid: function ( zid ) {
-			return ( this.excludeZids.includes( zid ) || this.isDisallowedType( zid ) );
+			return this.excludeZids.includes( zid ) || this.isDisallowedType( zid );
 		},
 
 		/**

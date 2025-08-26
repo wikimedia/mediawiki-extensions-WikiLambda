@@ -8,7 +8,10 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-app-object-key-value" data-testid="z-object-key-value">
+	<div
+		:id="idValue"
+		class="ext-wikilambda-app-object-key-value"
+		data-testid="z-object-key-value">
 		<wl-key-value-block
 			field-overrides
 			:edit="edit"
@@ -54,6 +57,7 @@
 					:parent-list-item-type="parentListItemType"
 					@set-value="setValue"
 					@set-type="setType"
+					@set-expanded="setExpanded"
 					@add-list-item="addListItem"
 					@expand="setExpanded"
 				></component>
@@ -82,6 +86,7 @@ const ModeSelector = require( '../base/ModeSelector.vue' );
 const ZString = require( './ZString.vue' );
 const ZReference = require( './ZReference.vue' );
 const ZMonolingualString = require( './ZMonolingualString.vue' );
+const ZMultilingualString = require( './ZMultilingualString.vue' );
 const ZObjectKeyValueSet = require( './ZObjectKeyValueSet.vue' );
 const ZObjectStringRenderer = require( './ZObjectStringRenderer.vue' );
 const ZTypedList = require( './ZTypedList.vue' );
@@ -114,6 +119,7 @@ module.exports = exports = defineComponent( {
 		'wl-z-string': ZString,
 		'wl-z-reference': ZReference,
 		'wl-z-monolingual-string': ZMonolingualString,
+		'wl-z-multilingual-string': ZMultilingualString,
 		'wl-z-typed-list': ZTypedList,
 		'wl-z-boolean': ZBoolean,
 		'wl-z-function-call': ZFunctionCall,
@@ -161,6 +167,11 @@ module.exports = exports = defineComponent( {
 		parentListItemType: {
 			type: [ String, Object ],
 			default: undefined
+		},
+		// Default initial expansion state
+		defaultExpanded: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data: function () {
@@ -171,7 +182,7 @@ module.exports = exports = defineComponent( {
 			 * ZObjectKeyValue component sets its data property
 			 * 'expanded' independently.
 			 */
-			expanded: false
+			expanded: this.defaultExpanded
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
@@ -183,7 +194,8 @@ module.exports = exports = defineComponent( {
 		'getLabelData',
 		'getExpectedTypeOfKey',
 		'getZObjectByKeyPath',
-		'isWikidataEnum'
+		'isWikidataEnum',
+		'isInMultilingualStringList'
 	] ), {
 
 		// ==============
@@ -214,6 +226,15 @@ module.exports = exports = defineComponent( {
 		keyLabel: function () {
 			// since the FE represents typed lists in canonical form, we need to hardcode typed list keys
 			if ( this.isKeyTypedListItem( this.key ) ) {
+				// For multilingual strings, use language name as label or "No language selected" for blanks
+				if ( this.isInMultilingualStringList( this.keyPath ) ) {
+					const langZid = this.getZMonolingualLangValue( this.objectValue );
+					if ( langZid ) {
+						return this.getLabelData( langZid );
+					} else {
+						return LabelData.fromString( this.$i18n( 'wikilambda-editor-monolingual-string-nolanguage' ).text() );
+					}
+				}
 				return LabelData.fromString( this.$i18n( 'wikilambda-list-item-label', this.key ).text() );
 			}
 			if ( this.isKeyTypedListType( this.key ) ) {
@@ -236,6 +257,7 @@ module.exports = exports = defineComponent( {
 		type: function () {
 			return this.typeToString( this.getZObjectType( this.objectValue ), true );
 		},
+
 		/**
 		 * Returns the expected (or bound) type for the value of
 		 * the key-value pair represented in this component.
@@ -491,6 +513,15 @@ module.exports = exports = defineComponent( {
 				( this.parentExpectedType !== Constants.Z_OBJECT ) ||
 				( ( this.parentKey === Constants.Z_PERSISTENTOBJECT_VALUE ) && !this.isCreateNewPage )
 			) );
+		},
+
+		/**
+		 * Returns a unique id for the DOM element.
+		 *
+		 * @return {string}
+		 */
+		idValue: function () {
+			return this.keyPath.replace( /\./g, '-' );
 		}
 	} ),
 	methods: Object.assign( {}, mapActions( useMainStore, [
@@ -698,9 +729,11 @@ module.exports = exports = defineComponent( {
 		 * Adds an item of the given value to the list
 		 *
 		 * @param {Object} payload
+		 * @param {string} payload.type
+		 * @param {string} payload.lang
 		 */
 		addListItem: function ( payload ) {
-			const value = canonicalToHybrid( this.createObjectByType( { type: payload.value } ) );
+			const value = canonicalToHybrid( this.createObjectByType( payload ) );
 			this.pushItemsByKeyPath( {
 				keyPath: this.keyPath.split( '.' ),
 				values: [ value ]

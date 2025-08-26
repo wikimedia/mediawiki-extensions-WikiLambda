@@ -352,7 +352,7 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'shows delete action as the last item', () => {
-			keyPath = 'main.Z2K2.Z12K1.2';
+			keyPath = 'main.Z2K2.Z31K1.2';
 			objectValue = {
 				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
 				Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1002' },
@@ -373,7 +373,7 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'emits delete-list-item event when selecting delete menu option', async () => {
-			keyPath = 'main.Z2K2.Z12K1.2';
+			keyPath = 'main.Z2K2.Z31K1.2';
 			objectValue = {
 				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
 				Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1002' },
@@ -394,7 +394,7 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'shows enabled move-before and move-after menu options', () => {
-			keyPath = 'main.Z2K2.Z12K1.2';
+			keyPath = 'main.Z2K2.Z31K1.2';
 			objectValue = {
 				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
 				Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1002' },
@@ -418,7 +418,7 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'shows disabled move-before for the first item', () => {
-			keyPath = 'main.Z2K2.Z12K1.1';
+			keyPath = 'main.Z2K2.Z31K1.1';
 			objectValue = {
 				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
 				Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1002' },
@@ -442,7 +442,7 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'shows disabled move-after for the last item', () => {
-			keyPath = 'main.Z2K2.Z12K1.3';
+			keyPath = 'main.Z2K2.Z31K1.3';
 			objectValue = {
 				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
 				Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1002' },
@@ -466,7 +466,7 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'emits move-before event when selecting move-before menu option', async () => {
-			keyPath = 'main.Z2K2.Z12K1.2';
+			keyPath = 'main.Z2K2.Z31K1.2';
 			objectValue = {
 				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
 				Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1002' },
@@ -488,7 +488,7 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'emits move-after event when selecting move-after menu option', async () => {
-			keyPath = 'main.Z2K2.Z12K1.2';
+			keyPath = 'main.Z2K2.Z31K1.2';
 			objectValue = {
 				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
 				Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1002' },
@@ -507,6 +507,27 @@ describe( 'ModeSelector', () => {
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			menu.vm.$emit( 'update:selected', Constants.LIST_MENU_OPTIONS.MOVE_AFTER );
 			await waitFor( () => expect( wrapper.emitted() ).toHaveProperty( 'move-after' ) );
+		} );
+
+		it( 'does only show delete menu option if list is a multilingual string list', () => {
+			keyPath = 'main.Z2K2.Z12K1.2';
+			objectValue = {
+				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
+				Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1002' },
+				Z11K2: { Z1K1: 'Z6', Z6K1: 'second' }
+			};
+
+			const wrapper = shallowMount( ModeSelector, {
+				props: {
+					keyPath,
+					objectValue,
+					edit: true,
+					expectedType: Constants.Z_MONOLINGUALSTRING
+				}
+			} );
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
+			expect( menu.vm.menuItems.length ).toBe( 1 );
+			expect( menu.vm.menuItems[ 0 ].items[ 0 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.DELETE_ITEM );
 		} );
 	} );
 
