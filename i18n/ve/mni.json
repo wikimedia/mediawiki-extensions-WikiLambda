@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Awangba Mangang"
+		]
+	},
+	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "ꯋꯥꯍꯩ-ꯋꯥꯇꯥ ꯍꯥꯞꯄꯨ",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "ꯇꯣꯛꯈꯔꯦ",
+	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "ꯑꯃꯨꯛ ꯁꯦꯝꯕ",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "ꯇꯣꯛꯄ"
+}
