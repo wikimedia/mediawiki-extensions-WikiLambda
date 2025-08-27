@@ -325,6 +325,8 @@
 	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Fout|Fouten}}",
 	"wikilambda-functioncall-metadata-errors-none": "Geen",
 	"wikilambda-functioncall-metadata-errors-summary": "Fouttype",
+	"wikilambda-functioncall-metadata-errors-args": "Foutgegevens",
+	"wikilambda-functioncall-metadata-errors-children": "Stacktrace",
 	"wikilambda-functioncall-metadata-errors-debug-hint": "Werkt er iets niet? Probeer <code>Wikifunctions.Debug</code> om uw code te traceren.",
 	"wikilambda-functioncall-metadata-evaluation": "Evaluatie",
 	"wikilambda-functioncall-metadata-execution": "Uitvoering",
