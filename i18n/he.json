@@ -319,6 +319,8 @@
 	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|שגיאה|שגיאות}}",
 	"wikilambda-functioncall-metadata-errors-none": "אין",
 	"wikilambda-functioncall-metadata-errors-summary": "סוג השגיאה",
+	"wikilambda-functioncall-metadata-errors-args": "נתוני שגיאה",
+	"wikilambda-functioncall-metadata-errors-children": "עקבת מחסנית (Stack trace)",
 	"wikilambda-functioncall-metadata-errors-debug-hint": "משהו לא עובד? אפשר לנסות להשתמש ב־<code>Wikifunctions.Debug</code> כדי לעקוב אחר הקוד שלך.",
 	"wikilambda-functioncall-metadata-evaluation": "הערכה",
 	"wikilambda-functioncall-metadata-execution": "ביצוע",

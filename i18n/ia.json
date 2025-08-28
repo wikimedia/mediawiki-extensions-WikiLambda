@@ -316,6 +316,8 @@
 	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Error|Errores}}",
 	"wikilambda-functioncall-metadata-errors-none": "Necun",
 	"wikilambda-functioncall-metadata-errors-summary": "Typo de error",
+	"wikilambda-functioncall-metadata-errors-args": "Datos del error",
+	"wikilambda-functioncall-metadata-errors-children": "Tracia del pila",
 	"wikilambda-functioncall-metadata-errors-debug-hint": "Qualcosa non functiona? Tenta <code>Wikifunctions.Debug</code> pro traciar tu codice.",
 	"wikilambda-functioncall-metadata-evaluation": "Evalutation",
 	"wikilambda-functioncall-metadata-execution": "Execution",
