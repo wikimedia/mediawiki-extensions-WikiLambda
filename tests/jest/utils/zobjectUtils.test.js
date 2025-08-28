@@ -399,11 +399,11 @@ describe( 'zobjectUtils', () => {
 				Z1K1: 'Z11',
 				Z11K1: {
 					Z1K1: 'Z60',
-					Z60K1: 'ast'
+					Z60K1: 'ext'
 				},
 				Z11K2: 'terminal value'
 			};
-			const expected = 'ast';
+			const expected = 'ext';
 
 			expect( zobjectUtils.getZMonolingualLangValue( zobject ) ).toBe( expected );
 			expect( zobjectUtils.getZMonolingualLangValue( canonicalToHybrid( zobject ) ) ).toBe( expected );
@@ -743,11 +743,11 @@ describe( 'zobjectUtils', () => {
 				Z1K1: 'Z31',
 				Z31K1: {
 					Z1K1: 'Z60',
-					Z60K1: 'ast'
+					Z60K1: 'ext'
 				},
 				Z31K2: [ 'Z6' ]
 			};
-			const expected = 'ast';
+			const expected = 'ext';
 
 			expect( zobjectUtils.getZMonolingualStringsetLang( zobject ) ).toBe( expected );
 			expect( zobjectUtils.getZMonolingualStringsetLang( canonicalToHybrid( zobject ) ) ).toBe( expected );
@@ -1262,13 +1262,13 @@ describe( 'zobjectUtils', () => {
 			const zobject = {
 				Z1K1: 'Z12',
 				Z12K1: [ 'Z11',
-					{ Z1K1: 'Z11', Z11K1: { Z1K1: 'Z60', Z60K1: 'ast' }, Z11K2: 'asturianu' },
+					{ Z1K1: 'Z11', Z11K1: { Z1K1: 'Z60', Z60K1: 'ext' }, Z11K2: 'estremeñu' },
 					{ Z1K1: 'Z11', Z11K1: { Z1K1: 'Z60', Z60K1: 'gl' }, Z11K2: 'galego' },
 					{ Z1K1: 'Z11', Z11K1: { Z1K1: 'Z60', Z60K1: 'eu' }, Z11K2: 'euskara' },
 					{ Z1K1: 'Z11', Z11K1: { Z1K1: 'Z60', Z60K1: 'ca' }, Z11K2: 'català' }
 				]
 			};
-			const expected = [ 'ast', 'gl', 'eu', 'ca' ];
+			const expected = [ 'ext', 'gl', 'eu', 'ca' ];
 
 			expect( zobjectUtils.getZMultilingualLangs( zobject ) ).toEqual( expected );
 			expect( zobjectUtils.getZMultilingualLangs( canonicalToHybrid( zobject ) ) ).toEqual( expected );
@@ -1342,13 +1342,13 @@ describe( 'zobjectUtils', () => {
 			const zobject = {
 				Z1K1: 'Z32',
 				Z32K1: [ 'Z31',
-					{ Z1K1: 'Z31', Z31K1: { Z1K1: 'Z60', Z60K1: 'ast' }, Z31K2: [ 'Z6', 'asturianu' ] },
+					{ Z1K1: 'Z31', Z31K1: { Z1K1: 'Z60', Z60K1: 'ext' }, Z31K2: [ 'Z6', 'estremeñu' ] },
 					{ Z1K1: 'Z31', Z31K1: { Z1K1: 'Z60', Z60K1: 'gl' }, Z31K2: [ 'Z6', 'galego' ] },
 					{ Z1K1: 'Z31', Z31K1: { Z1K1: 'Z60', Z60K1: 'eu' }, Z31K2: [ 'Z6', 'euskara' ] },
 					{ Z1K1: 'Z31', Z31K1: { Z1K1: 'Z60', Z60K1: 'ca' }, Z31K2: [ 'Z6', 'català' ] }
 				]
 			};
-			const expected = [ 'ast', 'gl', 'eu', 'ca' ];
+			const expected = [ 'ext', 'gl', 'eu', 'ca' ];
 
 			expect( zobjectUtils.getZMultilingualStringsetLangs( zobject ) ).toEqual( expected );
 			expect( zobjectUtils.getZMultilingualStringsetLangs( canonicalToHybrid( zobject ) ) ).toEqual( expected );
@@ -1427,7 +1427,7 @@ describe( 'zobjectUtils', () => {
 			const zobject = {
 				Z1K1: 'Z12',
 				Z12K1: [ 'Z11',
-					{ Z1K1: 'Z11', Z11K1: { Z1K1: 'Z60', Z60K1: 'ast' }, Z11K2: 'asturianu' },
+					{ Z1K1: 'Z11', Z11K1: { Z1K1: 'Z60', Z60K1: 'ext' }, Z11K2: 'estremeñu' },
 					{ Z1K1: 'Z11', Z11K1: { Z1K1: 'Z60', Z60K1: 'gl' }, Z11K2: 'galego' },
 					{ Z1K1: 'Z11', Z11K1: { Z1K1: 'Z60', Z60K1: 'eu' }, Z11K2: 'euskara' },
 					{ Z1K1: 'Z11', Z11K1: { Z1K1: 'Z60', Z60K1: 'ca' }, Z11K2: 'català' }
@@ -1515,7 +1515,7 @@ describe( 'zobjectUtils', () => {
 			const zobject = {
 				Z1K1: 'Z32',
 				Z32K1: [ 'Z31',
-					{ Z1K1: 'Z31', Z31K1: { Z1K1: 'Z60', Z60K1: 'ast' }, Z31K2: [ 'Z6', 'asturianu' ] },
+					{ Z1K1: 'Z31', Z31K1: { Z1K1: 'Z60', Z60K1: 'ext' }, Z31K2: [ 'Z6', 'estremeñu' ] },
 					{ Z1K1: 'Z31', Z31K1: { Z1K1: 'Z60', Z60K1: 'gl' }, Z31K2: [ 'Z6', 'galego' ] },
 					{ Z1K1: 'Z31', Z31K1: { Z1K1: 'Z60', Z60K1: 'eu' }, Z31K2: [ 'Z6', 'euskara', 'euskera' ] },
 					{ Z1K1: 'Z31', Z31K1: { Z1K1: 'Z60', Z60K1: 'ca' }, Z31K2: [ 'Z6', 'català' ] }

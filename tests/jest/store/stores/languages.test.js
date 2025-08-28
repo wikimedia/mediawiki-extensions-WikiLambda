@@ -45,21 +45,21 @@ describe( 'Languages Pinia store', () => {
 
 		describe( 'getFallbackLanguageZids', () => {
 			beforeAll( () => {
-				mw.language.getFallbackLanguageChain = () => [ 'ast', 'es', 'en' ];
+				mw.language.getFallbackLanguageChain = () => [ 'ext', 'es', 'en' ];
 			} );
 
 			it( 'should return the whole array if language zids are available in the store', () => {
 				Object.defineProperty( store, 'getLanguageZidOfCode', {
 					value: jest.fn().mockImplementation( ( code ) => {
 						const zids = {
-							ast: 'Z1732',
+							ext: 'Z1841',
 							es: 'Z1003',
 							en: 'Z1002'
 						};
 						return zids[ code ];
 					} )
 				} );
-				expect( store.getFallbackLanguageZids ).toEqual( [ 'Z1732', 'Z1003', 'Z1002' ] );
+				expect( store.getFallbackLanguageZids ).toEqual( [ 'Z1841', 'Z1003', 'Z1002' ] );
 			} );
 
 			it( 'should return a partial array if not all language zids are available in the store', () => {

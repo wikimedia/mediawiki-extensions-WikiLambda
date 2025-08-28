@@ -1786,12 +1786,12 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 		// Insert one language and some labels
 		$labels = [
-			'Z1732' => 'asturianu',
-			'Z1002' => 'asturian',
-			'Z1003' => 'asturiano'
+			'Z1841' => 'estremeñu',
+			'Z1002' => 'Extremaduran',
+			'Z1003' => 'estremiano'
 		];
-		$this->zobjectStore->insertZObjectLabels( 'Z1732', 'Z60', $labels );
-		$this->zobjectStore->insertZLanguageToLanguagesCache( 'Z1732', 'ast' );
+		$this->zobjectStore->insertZObjectLabels( 'Z1841', 'Z60', $labels );
+		$this->zobjectStore->insertZLanguageToLanguagesCache( 'Z1841', 'ext' );
 
 		// Insert one language and some labels
 		$labels = [
@@ -1802,16 +1802,11 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->zobjectStore->insertZLanguageToLanguagesCache( 'Z1002', 'en' );
 
 		// User language BCP47 code for returned labels
-		$userLang = 'ast';
+		$userLang = 'ext';
 		$res = $this->zobjectStore->fetchAllZLanguagesWithLabels( $userLang );
 		$this->assertSame( 3, $res->numRows() );
 
 		// Ordered by label
-		$this->assertEquals( 'Z1732', $res->current()->wlzl_zobject_zid );
-		$this->assertEquals( 'asturianu', $res->current()->wlzl_label );
-		$this->assertEquals( 'ast', $res->current()->wlzlangs_language );
-
-		$res->next();
 		$this->assertEquals( 'Z1002', $res->current()->wlzl_zobject_zid );
 		$this->assertEquals( 'english', $res->current()->wlzl_label );
 		$this->assertEquals( 'en', $res->current()->wlzlangs_language );
@@ -1820,6 +1815,11 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertEquals( 'Z1003', $res->current()->wlzl_zobject_zid );
 		$this->assertEquals( 'español', $res->current()->wlzl_label );
 		$this->assertEquals( 'es', $res->current()->wlzlangs_language );
+
+		$res->next();
+		$this->assertEquals( 'Z1841', $res->current()->wlzl_zobject_zid );
+		$this->assertEquals( 'estremeñu', $res->current()->wlzl_label );
+		$this->assertEquals( 'ext', $res->current()->wlzlangs_language );
 	}
 
 	public function testFetchAllInstancedTypes() {
@@ -1827,7 +1827,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->zobjectStore->insertZObjectLabels( 'Z10001', 'Z4', [ 'Z1002' => 'Type 1' ] );
 		$this->zobjectStore->insertZObjectLabels( 'Z10002', 'Z4', [ 'Z1002' => 'Type 2' ] );
 		$this->zobjectStore->insertZObjectLabels( 'Z4', 'Z4', [ 'Z1002' => 'Type', 'Z1003' => 'Tipo' ] );
-		$this->zobjectStore->insertZObjectLabels( 'Z60', 'Z4', [ 'Z1002' => 'Language', 'Z1732' => 'Llingua' ] );
+		$this->zobjectStore->insertZObjectLabels( 'Z60', 'Z4', [ 'Z1002' => 'Language', 'Z1841' => 'Llingua' ] );
 		$this->zobjectStore->insertZObjectLabels( 'Z8', 'Z4', [ 'Z1002' => 'Function', 'Z1004' => 'Fonction' ] );
 		// Insert instances
 		$this->zobjectStore->insertZObjectLabels( 'Z1001', 'Z60', [ 'Z1002' => 'Language 1' ] );
@@ -1842,19 +1842,19 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->zobjectStore->insertZLanguageToLanguagesCache( 'Z1002', 'en' );
 		$this->zobjectStore->insertZLanguageToLanguagesCache( 'Z1003', 'es' );
 		$this->zobjectStore->insertZLanguageToLanguagesCache( 'Z1004', 'fr' );
-		$this->zobjectStore->insertZLanguageToLanguagesCache( 'Z1732', 'ast' );
+		$this->zobjectStore->insertZLanguageToLanguagesCache( 'Z1841', 'ext' );
 		// Insert types
 		$this->zobjectStore->insertZObjectLabels( 'Z10001', 'Z4', [ 'Z1002' => 'Type 1' ] );
 		$this->zobjectStore->insertZObjectLabels( 'Z10002', 'Z4', [ 'Z1002' => 'Type 2' ] );
 		$this->zobjectStore->insertZObjectLabels( 'Z4', 'Z4', [ 'Z1002' => 'Type', 'Z1003' => 'Tipo' ] );
-		$this->zobjectStore->insertZObjectLabels( 'Z60', 'Z4', [ 'Z1002' => 'Language', 'Z1732' => 'Llingua' ] );
+		$this->zobjectStore->insertZObjectLabels( 'Z60', 'Z4', [ 'Z1002' => 'Language', 'Z1841' => 'Llingua' ] );
 		$this->zobjectStore->insertZObjectLabels( 'Z8', 'Z4', [ 'Z1002' => 'Function', 'Z1004' => 'Fonction' ] );
 		// Insert instances
 		$this->zobjectStore->insertZObjectLabels( 'Z1001', 'Z60', [ 'Z1002' => 'Language 1' ] );
 		$this->zobjectStore->insertZObjectLabels( 'Z1002', 'Z60', [ 'Z1002' => 'Language 2' ] );
 		$this->zobjectStore->insertZObjectLabels( 'Z801', 'Z8', [ 'Z1002' => 'Function 1' ] );
 
-		$userLang = 'ast';
+		$userLang = 'ext';
 		$res = $this->zobjectStore->fetchAllInstancedTypesWithLabels( $userLang );
 		$this->assertSame( 3, $res->numRows() );
 

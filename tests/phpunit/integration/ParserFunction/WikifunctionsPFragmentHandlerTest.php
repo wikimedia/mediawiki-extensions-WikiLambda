@@ -192,15 +192,15 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 		yield 'normal function call with string arguments' => [ $simpleJoinArgs, $simpleJoinRequest ];
 
 		// Call to function Join with unnamed and named arguments:
-		// {{#function:Z10000|foo|bar|parserlang=ast|renderlang=es|foo=bar|1=hello|2=world}}
-		$namedArgs = [ 'Z10000', 'foo', 'bar', 'parselang=ast', 'renderlang=es', 'foo=bar', '1=hello', '2=world' ];
+		// {{#function:Z10000|foo|bar|parserlang=ext|renderlang=es|foo=bar|1=hello|2=world}}
+		$namedArgs = [ 'Z10000', 'foo', 'bar', 'parselang=ext', 'renderlang=es', 'foo=bar', '1=hello', '2=world' ];
 		$namedArgsRequest = [
 			'target' => 'Z10000',
 			'arguments' => [
 				'Z10000K1' => 'hello',
 				'Z10000K2' => 'world',
 			],
-			'parseLang' => 'ast',
+			'parseLang' => 'ext',
 			'renderLang' => 'es',
 		];
 		yield 'function call with named arguments' => [ $namedArgs, $namedArgsRequest ];

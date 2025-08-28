@@ -29,7 +29,7 @@ describe( 'About', () => {
 		store.getLabelData = createLabelDataMock( {
 			Z1002: 'English',
 			Z1003: 'español',
-			Z1732: 'asturianu'
+			Z1841: 'estremeñu'
 		} );
 		store.getUserLangZid = 'Z1002';
 		store.getZFunctionInputLabels = createGettersWithFunctionsMock( [] );
@@ -142,9 +142,9 @@ describe( 'About', () => {
 
 		describe( 'Multilingual data available in fallback languages', () => {
 			beforeEach( () => {
-				// User language: Asturian, Fallback chain: [ Asturian, Spanish, English ]
-				store.getFallbackLanguageZids = [ 'Z1732', 'Z1003', 'Z1002' ];
-				store.getUserLangZid = 'Z1732';
+				// User language: Extremaduran, Fallback chain: [ Extremaduran, Spanish, English ]
+				store.getFallbackLanguageZids = [ 'Z1841', 'Z1003', 'Z1002' ];
+				store.getUserLangZid = 'Z1841';
 				multilingualDataLanguages.name = [ 'Z1002' ];
 				multilingualDataLanguages.all = [ 'Z1002' ];
 
@@ -170,12 +170,12 @@ describe( 'About', () => {
 
 				// User language: no title
 				expect( blocks[ 0 ].attributes( 'open' ) ).toBeDefined();
-				expect( blocks[ 0 ].find( 'summary' ).text() ).toContain( 'asturianu' );
+				expect( blocks[ 0 ].find( 'summary' ).text() ).toContain( 'estremeñu' );
 				expect( blocks[ 0 ].find( 'summary' ).text() ).toContain( 'Untitled' );
 
 				const uselangBlock = blocks[ 0 ].findComponent( { name: 'wl-about-language-block' } );
 				expect( uselangBlock.exists() ).toBe( true );
-				expect( uselangBlock.vm.language ).toBe( 'Z1732' );
+				expect( uselangBlock.vm.language ).toBe( 'Z1841' );
 				expect( uselangBlock.vm.viewData.name ).toEqual( {
 					value: ''
 				} );
@@ -197,9 +197,9 @@ describe( 'About', () => {
 
 		describe( 'Multilingual data for functions available in fallback languages', () => {
 			beforeEach( () => {
-				// User language: Asturian, Fallback chain: [ Asturian, Spanish, English ]
-				store.getFallbackLanguageZids = [ 'Z1732', 'Z1003', 'Z1002' ];
-				store.getUserLangZid = 'Z1732';
+				// User language: Extremaduran, Fallback chain: [ Extremaduran, Spanish, English ]
+				store.getFallbackLanguageZids = [ 'Z1841', 'Z1003', 'Z1002' ];
+				store.getUserLangZid = 'Z1841';
 
 				multilingualDataLanguages.all = [ 'Z1002', 'Z1003' ];
 				// Name available in English
@@ -245,12 +245,12 @@ describe( 'About', () => {
 
 				// User language: no title and no labels
 				expect( blocks[ 0 ].attributes( 'open' ) ).toBeDefined();
-				expect( blocks[ 0 ].find( 'summary' ).text() ).toContain( 'asturianu' );
+				expect( blocks[ 0 ].find( 'summary' ).text() ).toContain( 'estremeñu' );
 				expect( blocks[ 0 ].find( 'summary' ).text() ).toContain( 'Untitled' );
 
 				const uselangBlock = blocks[ 0 ].findComponent( { name: 'wl-about-language-block' } );
 				expect( uselangBlock.exists() ).toBe( true );
-				expect( uselangBlock.vm.language ).toBe( 'Z1732' );
+				expect( uselangBlock.vm.language ).toBe( 'Z1841' );
 				expect( uselangBlock.vm.viewData.name ).toEqual( {
 					keyPath: undefined,
 					value: ''
@@ -436,9 +436,9 @@ describe( 'About', () => {
 
 	describe( 'Edit page', () => {
 		beforeEach( () => {
-			// User language: Asturian, Fallback chain: [ Asturian, Spanish, English ]
-			store.getFallbackLanguageZids = [ 'Z1732', 'Z1003', 'Z1002' ];
-			store.getUserLangZid = 'Z1732';
+			// User language: Extremaduran, Fallback chain: [ Extremaduran, Spanish, English ]
+			store.getFallbackLanguageZids = [ 'Z1841', 'Z1003', 'Z1002' ];
+			store.getUserLangZid = 'Z1841';
 			multilingualDataLanguages.name = [ 'Z1002' ];
 			multilingualDataLanguages.all = [ 'Z1002' ];
 			store.getZPersistentName = createGettersWithFunctionsMock( {

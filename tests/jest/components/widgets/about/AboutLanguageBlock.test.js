@@ -23,7 +23,7 @@ describe( 'AboutLanguageBlock', () => {
 			Z2K5: 'description',
 			Z1002: 'English',
 			Z1003: 'español',
-			Z1732: 'asturianu',
+			Z1841: 'estremeñu',
 			Z11K1: 'language',
 			Z10000K1: 'first',
 			Z10000K2: 'second'
@@ -401,7 +401,7 @@ describe( 'AboutLanguageBlock', () => {
 					props: {
 						edit: true,
 						isFunction: false,
-						language: 'Z1732',
+						language: 'Z1841',
 						viewData,
 						editData: JSON.parse( JSON.stringify( viewData ) ),
 						fieldLangs
@@ -429,7 +429,7 @@ describe( 'AboutLanguageBlock', () => {
 					props: {
 						edit: true,
 						isFunction: false,
-						language: 'Z1732',
+						language: 'Z1841',
 						viewData,
 						editData: JSON.parse( JSON.stringify( viewData ) ),
 						fieldLangs
@@ -457,7 +457,7 @@ describe( 'AboutLanguageBlock', () => {
 					props: {
 						edit: true,
 						isFunction: false,
-						language: 'Z1732',
+						language: 'Z1841',
 						viewData,
 						editData: JSON.parse( JSON.stringify( viewData ) ),
 						fieldLangs
@@ -472,7 +472,7 @@ describe( 'AboutLanguageBlock', () => {
 			} );
 
 			it( 'shows fallback input label hint', () => {
-				fieldLangs.inputs = [ [ 'Z1732', 'Z1002' ], [ 'Z1002' ], [ 'Z1002', 'Z1003' ] ];
+				fieldLangs.inputs = [ [ 'Z1841', 'Z1002' ], [ 'Z1002' ], [ 'Z1002', 'Z1003' ] ];
 
 				viewData.inputs = [ {
 					keyPath: 'main.Z2K2.Z8K1.1.Z17K3.Z12K1.1.Z11K2',
@@ -497,7 +497,7 @@ describe( 'AboutLanguageBlock', () => {
 				store.getZFunctionInputs = [
 					{ Z17K3: { Z12K1: [ 'Z11',
 						{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'first' },
-						{ Z1K1: 'Z11', Z11K1: 'Z1732', Z11K2: 'primeru' }
+						{ Z1K1: 'Z11', Z11K1: 'Z1841', Z11K2: 'primeru' }
 					] } },
 					{ Z17K3: { Z12K1: [ 'Z11',
 						{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'second' }
@@ -513,7 +513,7 @@ describe( 'AboutLanguageBlock', () => {
 					props: {
 						edit: true,
 						isFunction: true,
-						language: 'Z1732',
+						language: 'Z1841',
 						viewData,
 						editData: JSON.parse( JSON.stringify( viewData ) ),
 						fieldLangs

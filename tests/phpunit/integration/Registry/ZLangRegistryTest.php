@@ -175,12 +175,12 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testGetListOfFallbacks() {
-		$this->registry->register( 'Z1732', 'ast' );
+		$this->registry->register( 'Z1841', 'ext' );
 		$this->registry->register( 'Z1003', 'es' );
 		$this->registry->register( 'Z1002', 'en' );
 
 		$languageFallback = MediaWikiServices::getInstance()->getLanguageFallback();
-		$fallbackZids = $this->registry->getListOfFallbackLanguageZids( $languageFallback, 'ast' );
-		$this->assertSame( [ 'Z1732', 'Z1003', 'Z1002' ], $fallbackZids );
+		$fallbackZids = $this->registry->getListOfFallbackLanguageZids( $languageFallback, 'ext' );
+		$this->assertSame( [ 'Z1841', 'Z1003', 'Z1002' ], $fallbackZids );
 	}
 }
