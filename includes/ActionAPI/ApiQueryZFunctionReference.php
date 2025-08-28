@@ -16,6 +16,7 @@ use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
 use Wikimedia\ParamValidator\ParamValidator;
 use Wikimedia\ParamValidator\TypeDef\IntegerDef;
@@ -135,7 +136,11 @@ class ApiQueryZFunctionReference extends WikiLambdaApiQueryGeneratorBase {
 	 * @codeCoverageIgnore
 	 */
 	protected function getExamplesMessages() {
-		$exampleZid = $this->zObjectStore->findFirstZImplementationFunction();
+		// Don't try to read the latest ZID from the DB on client wikis, we can't.
+		$exampleZid =
+			( MediaWikiServices::getInstance()->getMainConfig()->get( 'WikiLambdaEnableRepoMode' ) ) ?
+			$this->zObjectStore->findFirstZImplementationFunction() :
+			'Z10000';
 
 		return [
 			"action=query&list=wikilambdafn_search&wikilambdafn_zfunction_id=$exampleZid&wikilambdafn_type=Z14"

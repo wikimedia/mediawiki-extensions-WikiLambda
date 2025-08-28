@@ -511,7 +511,11 @@ class ApiPerformTest extends WikiLambdaApiBase {
 	 * @codeCoverageIgnore
 	 */
 	protected function getExamplesMessages() {
-		$exampleZid = $this->zObjectStore->findFirstZImplementationFunction();
+		// Don't try to read the latest ZID from the DB on client wikis, we can't.
+		$exampleZid =
+			( MediaWikiServices::getInstance()->getMainConfig()->get( 'WikiLambdaEnableRepoMode' ) ) ?
+			$this->zObjectStore->findFirstZImplementationFunction() :
+			'Z10000';
 
 		$queryPrefix = 'action=wikilambda_perform_test&format=json&wikilambda_perform_test_zfunction=';
 
