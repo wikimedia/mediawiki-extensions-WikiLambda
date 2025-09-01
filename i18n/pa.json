@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Kuldeepburjbhalaike",
-			"Cabal"
+			"Cabal",
+			"Ophyrius"
 		]
 	},
 	"wikilambda-desc": "ਵਿਕੀਮੀਡੀਆ ਵਿਕੀਆਂ ਨੂੰ ਇੱਕ ਵਿਕੀਟੈਕਸਟ ਪਾਰਸ ਕਰਨ ਵਾਲਾ ਫੰਕਸ਼ਨ ਪ੍ਰਦਾਨ ਕਰਨਾ ਜਿਸ ਨਾਲ ਇੱਕ ਕੇਂਦਰੀ ਵਿਕੀ ਉੱਤੇ ਲਿਖੇ ਅਤੇ ਮੁਲਾਂਕਣ ਕੀਤੇ ਫੰਕਸ਼ਨਾਂ ਦੇ ਮੁਲਾਂਕਣ ਨੂੰ ਕਾਲ ਕੀਤਾ ਜਾ ਸਕੇ।",
@@ -61,6 +62,7 @@
 	"wikilambda-editor-input-default-label": "ਇਨਪੁਟ",
 	"wikilambda-editor-output-title": "ਆਊਟਪੁਟ",
 	"wikilambda-ztyped-pair-placeholder": "ਕਿਸਮ ਚੁਣੋ",
+	"wikilambda-ztyped-pair-value-label": "ਮੁੱਲ",
 	"wikilambda-optional": "ਚੋਣਵਾਂ",
 	"wikilambda-continue-editing": "ਸੋਧ ਜਾਰੀ ਰੱਖੋ",
 	"wikilambda-discard-edits": "ਸੋਧਾਂ ਨੂੰ ਰੱਦ ਕਰੋ",
