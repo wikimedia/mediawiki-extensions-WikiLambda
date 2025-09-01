@@ -1056,5 +1056,10 @@
 		"wikifunctionsClientRequest": "MediaWiki\\Extension\\WikiLambda\\Jobs\\WikifunctionsClientRequestJob",
 		"wikifunctionsRecentChangesInsert": "MediaWiki\\Extension\\WikiLambda\\Jobs\\WikifunctionsRecentChangesInsertJob"
 	},
+	"RecentChangeSources": {
+		"wf": {
+			"revision": true
+		}
+	},
 	"manifest_version": 2
 }
