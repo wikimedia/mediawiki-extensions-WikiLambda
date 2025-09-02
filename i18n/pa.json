@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Cabal",
-			"Kuldeepburjbhalaike"
+			"Kuldeepburjbhalaike",
+			"Ophyrius"
 		]
 	},
 	"wikilambda-desc": "ਇੱਕ ਕੇਂਦਰੀ ਵਿਕੀ ਉੱਤੇ ਲਿਖੇ, ਪ੍ਰਬੰਧਿਤ ਅਤੇ ਮੁਲਾਂਕਣ ਕੀਤੇ ਜਾਣ ਵਾਲੇ ਕਾਰਜਾਂ ਦੀ ਵਿਵਸਥਾ ਕਰਨਾ।",
@@ -139,5 +140,6 @@
 	"wikilambda-typeunavailable": "ਅਣਪਛਾਤੀ ਕਿਸਮ",
 	"wikilambda-zobject-to-string-select-object": "$1 ਚੁਣੋ",
 	"wikilambda-zobjectselector-no-results": "ਕੋਈ ਨਤੀਜੇ ਨਹੀਂ ਲੱਭੇ",
-	"wikilambda-ztyped-pair-placeholder": "ਕਿਸਮ ਚੁਣੋ"
+	"wikilambda-ztyped-pair-placeholder": "ਕਿਸਮ ਚੁਣੋ",
+	"wikilambda-ztyped-pair-value-label": "ਮੁੱਲ"
 }
