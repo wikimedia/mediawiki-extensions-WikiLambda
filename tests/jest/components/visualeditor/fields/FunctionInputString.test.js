@@ -29,7 +29,7 @@ describe( 'FunctionInputString', () => {
 				value: 'Test value'
 			}
 		} );
-		wrapper.getComponent( { name: 'cdx-text-input' } ).vm.$emit( 'change', { target: { value: 'New value' } } );
+		wrapper.getComponent( { name: 'cdx-text-input' } ).vm.$emit( 'update:model-value', 'New value' );
 		expect( wrapper.emitted().update[ 0 ] ).toEqual( [ 'New value' ] );
 	} );
 

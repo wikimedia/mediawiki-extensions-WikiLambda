@@ -88,7 +88,10 @@ describe( 'FunctionInputParser', () => {
 		} );
 	} );
 
-	it( 'validates the value and emits validate event on success on input change', async () => {
+	it( 'on model update, debounces validation and emits validate event if succeeds', async () => {
+		// Use fake timers to test debounce
+		jest.useFakeTimers();
+
 		const wrapper = shallowMount( FunctionInputParser, {
 			props: {
 				inputType: typeZid,
@@ -96,12 +99,33 @@ describe( 'FunctionInputParser', () => {
 			}
 		} );
 
+		const handleChangeSpy = jest.spyOn( wrapper.vm, 'handleChange' );
+
+		// Wait for initial validation of input value:
 		await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( false ) );
+		expect( wrapper.vm.debounceTimer ).toBeFalsy();
 
-		wrapper.getComponent( { name: 'cdx-text-input' } ).vm.$emit( 'change', { target: { value: 'New value' } } );
+		// Update field, simulate multiple keystrokes
+		const input = wrapper.getComponent( { name: 'cdx-text-input' } );
+		input.vm.$emit( 'update:model-value', 'New va' );
+		input.vm.$emit( 'update:model-value', 'New val' );
+		input.vm.$emit( 'update:model-value', 'New valu' );
+		input.vm.$emit( 'update:model-value', 'New value' );
 
-		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false } ] );
+		// Advance timer 100ms, nothing should have happened
+		jest.advanceTimersByTime( 100 );
+		expect( wrapper.vm.isParserRunning ).toBe( false );
+		expect( handleChangeSpy ).not.toHaveBeenCalled();
+
+		// Advance timer 1000ms, validation should have started
+		jest.advanceTimersByTime( 1000 );
+		expect( handleChangeSpy ).toHaveBeenCalledTimes( 1 );
+		expect( handleChangeSpy ).toHaveBeenCalledWith( 'New value' );
+
 		expect( wrapper.vm.isParserRunning ).toBe( true );
+		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false } ] );
+
+		await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( true ) );
 		expect( store.runParser ).toHaveBeenCalledWith( {
 			parserZid: 'Z30020',
 			wait: true,
@@ -109,6 +133,7 @@ describe( 'FunctionInputParser', () => {
 			zobject: 'New value',
 			signal: expect.any( Object )
 		} );
+
 		await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( false ) );
 		expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ { isValid: true } ] );
 	} );

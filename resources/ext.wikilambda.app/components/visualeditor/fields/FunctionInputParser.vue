@@ -11,7 +11,6 @@
 			:placeholder="placeholderValue"
 			:model-value="value"
 			@update:model-value="handleUpdate"
-			@change="handleChange"
 		></cdx-text-input>
 		<cdx-progress-indicator
 			v-if="isParserRunning"
@@ -56,7 +55,9 @@ module.exports = exports = defineComponent( {
 		return {
 			areTestsFetched: false,
 			isParserRunning: false, // Track whether the parser is running
-			parserAbortController: null // Track the AbortController for parser requests
+			parserAbortController: null, // Track the AbortController for parser requests
+			debounceDelay: 1000,
+			debounceTimer: null
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
@@ -260,23 +261,34 @@ module.exports = exports = defineComponent( {
 		},
 
 		/**
-		 * Emits the input event with the updated value.
+		 * Handles the update model value event and emits:
+		 * * 'input' event, to set the local value of the field
+		 * * debounced validation, after which it emits 'update' event,
+		 *   to set the value in the store and make it available for VE
 		 *
 		 * @param {string} value - The updated value.
 		 */
 		handleUpdate: function ( value ) {
 			this.$emit( 'input', value );
+
+			// Clear debounce
+			clearTimeout( this.debounceTimer );
+
+			// Set new debounce
+			this.debounceTimer = setTimeout( () => {
+				this.handleChange( value );
+			}, this.debounceDelay );
 		},
 
 		/**
-		 * Handles the change event, validates the new value asynchronously,
-		 * and emits the update event once the validation has finished.
+		 * Vlidates the new value asynchronously and emits
+		 * the update event once the validation has finished.
 		 *
-		 * @param {Event} event - The change event triggered by the input field.
+		 * @param {string} value
 		 */
-		handleChange: function ( event ) {
-			this.validate( event.target.value ).then( () => {
-				this.$emit( 'update', event.target.value );
+		handleChange: function ( value ) {
+			this.validate( value ).then( () => {
+				this.$emit( 'update', value );
 			} );
 		},
 

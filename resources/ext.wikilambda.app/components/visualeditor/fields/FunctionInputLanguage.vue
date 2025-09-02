@@ -61,7 +61,10 @@ module.exports = exports = defineComponent( {
 		'fetchZids'
 	] ), {
 		/**
-		 * Handles the update event and validates the new value.
+		 * Handles the update event:
+		 * * emits 'input' event to set the local variable to the new value
+		 * * starts validation, which will emit 'update' event to set up the
+		 *   value in the store and make it available to VE
 		 *
 		 * @param {string} value - The new value to validate.
 		 */

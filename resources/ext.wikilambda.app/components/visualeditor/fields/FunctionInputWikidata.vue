@@ -51,7 +51,7 @@ module.exports = exports = defineComponent( {
 		}
 	},
 	emits: [ 'input', 'update', 'validate' ],
-	data() {
+	data: function () {
 		return {
 			isValidating: false
 		};
@@ -85,7 +85,6 @@ module.exports = exports = defineComponent( {
 			const labelData = this.getWikidataEntityLabelData( this.entityType, this.entityId );
 			return labelData ? labelData.label : '';
 		},
-
 		/**
 		 * Whether this input type allows for empty fields
 		 *
@@ -99,7 +98,10 @@ module.exports = exports = defineComponent( {
 		'fetchWikidataEntitiesByType'
 	] ), {
 		/**
-		 * Handle Wikidata entity selection
+		 * Handle Wikidata entity selection:
+		 * * emits 'input' event to set the local variable to the new value
+		 * * starts validation, which will emit 'update' event to set up the
+		 *   value in the store and make it available to VE
 		 *
 		 * @param {string} value - The selected entity ID
 		 */

@@ -11,7 +11,6 @@
 		:placeholder="$i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder' )"
 		:model-value="value"
 		@update:model-value="handleInput"
-		@change="handleChange"
 	></cdx-text-input>
 </template>
 
@@ -37,22 +36,16 @@ module.exports = exports = defineComponent( {
 	emits: [ 'update', 'input', 'validate' ],
 	methods: {
 		/**
-		 * Handles the update model value event and emits the new value.
+		 * Handles the update model value event and emits:
+		 * * 'input' event, to set the local value of the field
+		 * * 'update' event, to set the value in the store and make it available for VE
 		 *
 		 * @param {string} value - The new value to emit.
 		 */
 		handleInput: function ( value ) {
 			this.$emit( 'input', value );
-		},
-		/**
-		 * Handles the change event and emits the new value.
-		 *
-		 * @param {Event} event - The change event triggered by the input field.
-		 */
-		handleChange: function ( event ) {
-			this.$emit( 'update', event.target.value );
+			this.$emit( 'update', value );
 		}
-
 	},
 	mounted: function () {
 		this.$emit( 'validate', { isValid: true } );
