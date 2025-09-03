@@ -191,23 +191,6 @@ class ApiQueryZObjectLabels extends WikiLambdaApiQueryGeneratorBase {
 	}
 
 	/**
-	 * @param string $substring
-	 * @param string $hit
-	 * @param bool $exact
-	 * @return float
-	 */
-	private static function getMatchRate( $substring, $hit, $exact = false ) {
-		if ( !$exact ) {
-			$substring = ZObjectUtils::comparableString( $substring );
-			$hit = ZObjectUtils::comparableString( $hit );
-		}
-		$distance = levenshtein( $substring, $hit );
-		$max = max( strlen( $substring ), strlen( $hit ) );
-		$percentage = ( $max - $distance ) / $max;
-		return $percentage;
-	}
-
-	/**
 	 * @see ApiBase::getExamplesMessages()
 	 * @return array
 	 * @codeCoverageIgnore

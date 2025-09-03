@@ -10,6 +10,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\ApiQueryZObjectLabels
@@ -25,173 +26,61 @@ class ApiQueryZObjectLabelsTest extends WikiLambdaApiTestCase {
 	private const EGL = 'Z1726';
 
 	/**
-	 * @var array
+	 * Content of wikilambda_zobject_labels table
+	 * @var array [zid, type, returnType, language, label, primary]
 	 */
 	private $labelData = [
-		[
-			'wlzl_zobject_zid' => 'Z490',
-			'wlzl_type' => 'Z4',
-			'wlzl_language' => self::EN,
-			'wlzl_label' => 'Text',
-			'wlzl_label_normalised' => 'text',
-			'wlzl_label_primary' => 1,
-			'wlzl_return_type' => null,
-		], [
-			'wlzl_zobject_zid' => 'Z490',
-			'wlzl_type' => 'Z4',
-			'wlzl_language' => self::ES,
-			'wlzl_label' => 'Texto',
-			'wlzl_label_normalised' => 'texto',
-			'wlzl_label_primary' => 1,
-			'wlzl_return_type' => null,
-		], [
-			'wlzl_zobject_zid' => 'Z490',
-			'wlzl_type' => 'Z4',
-			'wlzl_language' => self::EN,
-			'wlzl_label' => 'Long text',
-			'wlzl_label_normalised' => 'long text',
-			'wlzl_label_primary' => 0,
-			'wlzl_return_type' => null,
-		], [
-			'wlzl_zobject_zid' => 'Z490',
-			'wlzl_type' => 'Z4',
-			'wlzl_language' => self::EN,
-			'wlzl_label' => 'Paragraph',
-			'wlzl_label_normalised' => 'paragraph',
-			'wlzl_label_primary' => 0,
-			'wlzl_return_type' => null,
-		], [
-			'wlzl_zobject_zid' => 'Z492',
-			'wlzl_type' => 'Z4',
-			'wlzl_language' => self::EN,
-			'wlzl_label' => 'Word',
-			'wlzl_label_normalised' => 'word',
-			'wlzl_label_primary' => 1,
-			'wlzl_return_type' => null,
-		], [
-			'wlzl_zobject_zid' => 'Z492',
-			'wlzl_type' => 'Z4',
-			'wlzl_language' => self::ES,
-			'wlzl_label' => 'Palabra',
-			'wlzl_label_normalised' => 'palabra',
-			'wlzl_label_primary' => 1,
-			'wlzl_return_type' => null,
-		], [
-			'wlzl_zobject_zid' => 'Z492',
-			'wlzl_type' => 'Z4',
-			'wlzl_language' => self::EN,
-			'wlzl_label' => 'Short tiny text',
-			'wlzl_label_normalised' => 'short tiny text',
-			'wlzl_label_primary' => 0,
-			'wlzl_return_type' => null,
-		], [
-			'wlzl_zobject_zid' => 'Z492',
-			'wlzl_type' => 'Z4',
-			'wlzl_language' => self::ES,
-			'wlzl_label' => 'Textitos',
-			'wlzl_label_normalised' => 'textito',
-			'wlzl_label_primary' => 0,
-			'wlzl_return_type' => null,
-		], [
-			'wlzl_zobject_zid' => 'Z491',
-			'wlzl_type' => 'Z8',
-			'wlzl_language' => self::EN,
-			'wlzl_label' => 'Text of a given length',
-			'wlzl_label_normalised' => 'text of a given length',
-			'wlzl_label_primary' => 1,
-			'wlzl_return_type' => 'Z4',
-		], [
-			'wlzl_zobject_zid' => 'Z491',
-			'wlzl_type' => 'Z8',
-			'wlzl_language' => self::EN,
-			'wlzl_label' => 'Generic text',
-			'wlzl_label_normalised' => 'generic text',
-			'wlzl_label_primary' => 0,
-			'wlzl_return_type' => 'Z4',
-		], [
-			'wlzl_zobject_zid' => 'Z480',
-			'wlzl_type' => 'Z8',
-			'wlzl_language' => self::EN,
-			'wlzl_label' => 'Make pangolin',
-			'wlzl_label_normalised' => 'make pangolin',
-			'wlzl_label_primary' => 1,
-			'wlzl_return_type' => 'Z10000',
-		], [
-			'wlzl_zobject_zid' => 'Z481',
-			'wlzl_type' => 'Z8',
-			'wlzl_language' => self::EN,
-			'wlzl_label' => 'Return anything',
-			'wlzl_label_normalised' => 'return anything',
-			'wlzl_label_primary' => 1,
-			'wlzl_return_type' => 'Z1',
-		], [
-			'wlzl_zobject_zid' => 'Z482',
-			'wlzl_type' => 'Z10001',
-			'wlzl_language' => self::EN,
-			'wlzl_label' => 'Anything',
-			'wlzl_label_normalised' => 'anything',
-			'wlzl_label_primary' => 1,
-			'wlzl_return_type' => null,
-		], [
-			'wlzl_zobject_zid' => 'Z483',
-			'wlzl_type' => 'Z7',
-			'wlzl_language' => self::EN,
-			'wlzl_label' => 'Wikidata Enumeration',
-			'wlzl_label_normalised' => 'wikidata enumeration',
-			'wlzl_label_primary' => 1,
-			'wlzl_return_type' => null,
-		], [
-			'wlzl_zobject_zid' => 'Z900',
-			'wlzl_type' => 'Z8',
-			'wlzl_language' => self::EN,
-			'wlzl_label' => 'append element to Typed list',
-			'wlzl_label_normalised' => 'append element to typed list',
-			'wlzl_label_primary' => 1,
-			'wlzl_return_type' => 'Z881(Z1)',
-		],
+		[ 'Z490', 'Z4', null, self::EN, 'Text', 1 ],
+		[ 'Z490', 'Z4', null, self::ES, 'Texto', 1 ],
+		[ 'Z490', 'Z4', null, self::EN, 'Long text', 0 ],
+		[ 'Z490', 'Z4', null, self::EN, 'Paragraph', 0 ],
+		[ 'Z492', 'Z4', null, self::EN, 'Word', 1 ],
+		[ 'Z492', 'Z4', null, self::ES, 'Palabra', 1 ],
+		[ 'Z492', 'Z4', null, self::EN, 'Short tiny text', 0 ],
+		[ 'Z492', 'Z4', null, self::ES, 'Textitos', 0 ],
+		[ 'Z491', 'Z8', 'Z4', self::EN, 'Text of a given length', 1 ],
+		[ 'Z491', 'Z8', 'Z4', self::EN, 'Generic text', 0 ],
+		[ 'Z480', 'Z8', 'Z10000', self::EN, 'Make pangolin', 1 ],
+		[ 'Z481', 'Z8', 'Z1', self::EN, 'Return anything', 1 ],
+		[ 'Z482', 'Z10001', null, self::EN, 'Anything', 1 ],
+		[ 'Z483', 'Z7', null, self::EN, 'Wikidata Enumeration', 1 ],
+		[ 'Z900', 'Z8', 'Z881(Z1)', self::EN, 'append element to Typed list', 1 ],
+
+		// Objects for testing matchRate: type=Z20000
+		[ 'Z20001', 'Z20000', null, self::EN, 'Age', 1 ],
+		[ 'Z20002', 'Z20000', null, self::EN, 'Age range', 1 ],
+		[ 'Z20003', 'Z20000', null, self::EN, 'Age in years', 1 ],
+		[ 'Z20004', 'Z20000', null, self::EN, 'Range of natural numbers', 1 ],
+		[ 'Z20005', 'Z20000', null, self::EN, 'Average', 1 ],
+		[ 'Z20006', 'Z20000', null, self::EN, 'Arrange integers', 1 ],
+
+		// Objects for testing matchRate: type=Z30000
+		[ 'Z30001', 'Z30000', null, self::EN, 'One', 1 ],
+		[ 'Z30002', 'Z30000', null, self::EN, 'Two', 1 ],
+		[ 'Z30003', 'Z30000', null, self::EN, 'Three', 1 ],
+		[ 'Z30004', 'Z30000', null, self::EN, 'One two three', 1 ],
+		[ 'Z30005', 'Z30000', null, self::EN, 'Three two one', 1 ],
+		[ 'Z30006', 'Z30000', null, self::EN, 'One four five', 1 ],
+		[ 'Z30007', 'Z30000', null, self::EN, 'Three four five', 1 ],
 	];
 
 	/**
-	 * @var array
+	 * Content of wikilambda_zobject_join table
+	 * @var array [zid, type, key, related zid, related type]
 	 */
 	private $joinData = [
-		[
-			'wlzo_main_zid' => 'Z491',
-			'wlzo_main_type' => 'Z8',
-			'wlzo_key' => 'Z8K2',
-			'wlzo_related_zobject' => 'Z4',
-			'wlzo_related_type' => 'Z4'
-		], [
-			'wlzo_main_zid' => 'Z480',
-			'wlzo_main_type' => 'Z8',
-			'wlzo_key' => 'Z8K2',
-			'wlzo_related_zobject' => 'Z10000',
-			'wlzo_related_type' => 'Z4'
-		], [
-			'wlzo_main_zid' => 'Z481',
-			'wlzo_main_type' => 'Z8',
-			'wlzo_key' => 'Z8K2',
-			'wlzo_related_zobject' => 'Z1',
-			'wlzo_related_type' => 'Z4'
-		], [
-			'wlzo_main_zid' => 'Z483',
-			'wlzo_main_type' => 'Z7',
-			'wlzo_key' => 'Z7K1',
-			'wlzo_related_zobject' => 'Z6884',
-			'wlzo_related_type' => 'Z8'
-		], [
-			'wlzo_main_zid' => 'Z6884',
-			'wlzo_main_type' => 'Z8',
-			'wlzo_key' => 'Z8K2',
-			'wlzo_related_zobject' => 'Z4',
-			'wlzo_related_type' => 'Z4'
-		], [
-			'wlzo_main_zid' => 'Z900',
-			'wlzo_main_type' => 'Z8',
-			'wlzo_key' => 'Z8K2',
-			'wlzo_related_zobject' => 'Z881(Z1)',
-			'wlzo_related_type' => 'Z4'
-		]
+		// Z491 (Text of a given length) → Z4
+		[ 'Z491', 'Z8', 'Z8K2', 'Z4', 'Z4' ],
+		// Z480 (Make pangolin) → Z10000
+		[ 'Z480', 'Z8', 'Z8K2', 'Z10000', 'Z4' ],
+		// Z481 (Return anything) → Z1
+		[ 'Z481', 'Z8', 'Z8K2', 'Z1', 'Z4' ],
+		// Z483 (Wikidata Enumeration) → Z6884
+		[ 'Z483', 'Z7', 'Z7K1', 'Z6884', 'Z8' ],
+		// Z6884 → Z4
+		[ 'Z6884', 'Z8', 'Z8K2', 'Z4', 'Z4' ],
+		// Z900 (append element to Typed list) → Z881(Z1)
+		[ 'Z900', 'Z8', 'Z8K2', 'Z881(Z1)', 'Z4' ],
 	];
 
 	public function addDBDataOnce(): void {
@@ -199,31 +88,59 @@ class ApiQueryZObjectLabelsTest extends WikiLambdaApiTestCase {
 		$langs->register( self::EN, 'en' );
 		$langs->register( self::ES, 'es' );
 
-		// Add label data
+		// Add label data:
+		$rows = [];
+		foreach ( $this->labelData as $data ) {
+			$rows[] = [
+				'wlzl_zobject_zid' => $data[0],
+				'wlzl_type' => $data[1],
+				'wlzl_return_type' => $data[2],
+				'wlzl_language' => $data[3],
+				'wlzl_label' => $data[4],
+				'wlzl_label_normalised' => ZObjectUtils::comparableString( $data[4] ),
+				'wlzl_label_primary' => $data[5]
+			];
+		}
 		$this->getDb()->newInsertQueryBuilder()
 			->insertInto( 'wikilambda_zobject_labels' )
-			->rows( $this->labelData )
+			->rows( $rows )
 			->caller( __METHOD__ )
 			->execute();
 
 		// Add join data
+		$rows = [];
+		foreach ( $this->joinData as $data ) {
+			$rows[] = [
+				'wlzo_main_zid' => $data[0],
+				'wlzo_main_type' => $data[1],
+				'wlzo_key' => $data[2],
+				'wlzo_related_zobject' => $data[3],
+				'wlzo_related_type' => $data[4]
+			];
+		}
 		$this->getDb()->newInsertQueryBuilder()
 			->insertInto( 'wikilambda_zobject_join' )
-			->rows( $this->joinData )
+			->rows( $rows )
 			->caller( __METHOD__ )
 			->execute();
 	}
 
-	private function resultFor( $zid, $resultTerm, $matchTerm = null, $matchRate = 0.0 ) {
+	private function resultFor( $zid, $resultTerm, $matchTerm = null ) {
+		$ZID = 0;
+		$TYPE = 1;
+		$LANG = 3;
+		$LABEL = 4;
+		$PRIMARY = 5;
+
 		$resultRow = null;
 		$matchRow = null;
 
 		foreach ( $this->labelData as $row ) {
-			if ( $row[ 'wlzl_zobject_zid' ] === $zid ) {
-				if ( ( $row[ 'wlzl_label' ] === $matchTerm ) || ( $row[ 'wlzl_zobject_zid' ] === $matchTerm ) ) {
+			if ( $row[$ZID] === $zid ) {
+				if ( ( $row[$LABEL] === $matchTerm ) || ( $row[$ZID] === $matchTerm ) ) {
 					$matchRow = $row;
 				}
-				if ( $row[ 'wlzl_label' ] === $resultTerm ) {
+				if ( $row[$LABEL] === $resultTerm ) {
 					$resultRow = $row;
 				}
 			}
@@ -235,14 +152,28 @@ class ApiQueryZObjectLabelsTest extends WikiLambdaApiTestCase {
 			'page_namespace' => NS_MAIN,
 			'page_content_model' => CONTENT_MODEL_ZOBJECT,
 			'page_title' => $zid,
-			'page_type' => $resultRow['wlzl_type'],
+			'page_type' => $resultRow[$TYPE],
 			'match_label' => ( $matchRow !== null ) ? $matchTerm : null,
-			'match_is_primary' => ( $matchRow !== null ) ? strval( $matchRow[ 'wlzl_label_primary' ] ) : null,
-			'match_lang' => ( $matchRow !== null ) ? $matchRow[ 'wlzl_language' ] : null,
-			'match_rate' => $matchRate,
-			'label' => $resultRow[ 'wlzl_label' ],
+			'match_is_primary' => ( $matchRow !== null ) ? strval( $matchRow[$PRIMARY] ) : null,
+			'match_lang' => ( $matchRow !== null ) ? $matchRow[$LANG] : null,
+			'label' => $resultRow[$LABEL],
 			'type_label' => null
 		];
+	}
+
+	private function unsetMatchRate( $results ) {
+		if (
+			isset( $results[ 'query' ] ) &&
+			isset( $results[ 'query' ][ 'wikilambdasearch_labels' ] ) &&
+			is_array( $results[ 'query' ][ 'wikilambdasearch_labels' ] )
+		) {
+			foreach ( $results[ 'query' ][ 'wikilambdasearch_labels' ] as &$result ) {
+				if ( isset( $result[ 'match_rate' ] ) ) {
+					unset( $result[ 'match_rate' ] );
+				}
+			}
+		}
+		return $results;
 	}
 
 	/**
@@ -256,6 +187,9 @@ class ApiQueryZObjectLabelsTest extends WikiLambdaApiTestCase {
 		], $apiParams );
 		$actualResponse = $this->doApiRequest( $request );
 
+		// Unset match rate for more stable testing
+		$actualResponse = $this->unsetMatchRate( $actualResponse[0] );
+
 		// Build expected response:
 		$expectedResponse = [ 'batchcomplete' => true ];
 		if ( count( $expectedResults ) > 0 ) {
@@ -263,8 +197,7 @@ class ApiQueryZObjectLabelsTest extends WikiLambdaApiTestCase {
 				$zid = $result[0];
 				$label = $result[1];
 				$matchLabel = count( $result ) > 2 ? $result[2] : null;
-				$matchRate = count( $result ) > 3 ? $result[3] : null;
-				return $this->resultFor( $zid, $label, $matchLabel, $matchRate );
+				return $this->resultFor( $zid, $label, $matchLabel );
 			}, $expectedResults );
 			$expectedResponse[ 'query' ] = [ 'wikilambdasearch_labels' => $results ];
 			if ( $expectedContinue ) {
@@ -272,7 +205,7 @@ class ApiQueryZObjectLabelsTest extends WikiLambdaApiTestCase {
 			}
 		}
 
-		$this->assertEquals( $expectedResponse, $actualResponse[0] );
+		$this->assertEquals( $expectedResponse, $actualResponse );
 	}
 
 	public static function provideTestSearchLabels() {
@@ -438,8 +371,10 @@ class ApiQueryZObjectLabelsTest extends WikiLambdaApiTestCase {
 		];
 
 		yield 'returns labels in the requested language or fallback' => [
+			// limit results to the first eight for better test maintainability
 			[
 				'wikilambdasearch_language' => 'es',
+				'wikilambdasearch_limit' => 8
 			],
 			[
 				[ 'Z490', 'Texto' ],
@@ -450,6 +385,11 @@ class ApiQueryZObjectLabelsTest extends WikiLambdaApiTestCase {
 				[ 'Z482', 'Anything' ],
 				[ 'Z483', 'Wikidata Enumeration' ],
 				[ 'Z900', 'append element to Typed list' ],
+			],
+			// expect continue
+			[
+				'wikilambdasearch_continue' => '1',
+				'continue' => '-||',
 			]
 		];
 
@@ -461,9 +401,9 @@ class ApiQueryZObjectLabelsTest extends WikiLambdaApiTestCase {
 			],
 			// results that match with Text and text
 			[
-				[ 'Z490', 'Text', 'Text', 1 ],
-				[ 'Z492', 'Word', 'Textitos', 0.5 ],
-				[ 'Z491', 'Text of a given length', 'Generic text', 0.3333333333333333 ],
+				[ 'Z490', 'Text', 'Text' ],
+				[ 'Z492', 'Word', 'Textitos' ],
+				[ 'Z491', 'Text of a given length', 'Text of a given length' ],
 			]
 		];
 
@@ -486,10 +426,10 @@ class ApiQueryZObjectLabelsTest extends WikiLambdaApiTestCase {
 			],
 			// match with all objects in Z48*
 			[
-				[ 'Z480', 'Make pangolin', 'Z480', 0.75 ],
-				[ 'Z481', 'Return anything', 'Z481', 0.75 ],
-				[ 'Z482', 'Anything', 'Z482', 0.75 ],
-				[ 'Z483', 'Wikidata Enumeration', 'Z483', 0.75 ],
+				[ 'Z480', 'Make pangolin', 'Z480' ],
+				[ 'Z481', 'Return anything', 'Z481' ],
+				[ 'Z482', 'Anything', 'Z482' ],
+				[ 'Z483', 'Wikidata Enumeration', 'Z483' ],
 			]
 		];
 
@@ -501,8 +441,8 @@ class ApiQueryZObjectLabelsTest extends WikiLambdaApiTestCase {
 			],
 			// match with all objects in Z48*
 			[
-				[ 'Z482', 'Anything', 'Anything', 0.375 ],
-				[ 'Z481', 'Return anything', 'Return anything', 0.2 ],
+				[ 'Z482', 'Anything', 'Anything' ],
+				[ 'Z481', 'Return anything', 'Return anything' ],
 			]
 		];
 
@@ -515,8 +455,8 @@ class ApiQueryZObjectLabelsTest extends WikiLambdaApiTestCase {
 			],
 			// results that match with Text and text
 			[
-				[ 'Z490', 'Text', 'Text', 1 ],
-				[ 'Z492', 'Word', 'Textitos', 0.5 ],
+				[ 'Z490', 'Text', 'Text' ],
+				[ 'Z492', 'Word', 'Textitos' ],
 			]
 		];
 
@@ -529,9 +469,9 @@ class ApiQueryZObjectLabelsTest extends WikiLambdaApiTestCase {
 			],
 			// results that match with Text and text
 			[
-				[ 'Z490', 'Text', 'Text', 1 ],
-				[ 'Z492', 'Word', 'Textitos', 0.5 ],
-				[ 'Z491', 'Text of a given length', 'Generic text', 0.3333333333333333 ],
+				[ 'Z490', 'Text', 'Text' ],
+				[ 'Z492', 'Word', 'Textitos' ],
+				[ 'Z491', 'Text of a given length', 'Text of a given length' ],
 			]
 		];
 
@@ -544,6 +484,106 @@ class ApiQueryZObjectLabelsTest extends WikiLambdaApiTestCase {
 			[
 				[ 'Z900', 'append element to Typed list' ],
 			],
+		];
+
+		// T400268: aggregate results of tokenized search term
+		yield 'returns all results that match both tokens of the search term' => [
+			// search for objects of that resolve to the type Z4
+			[
+				'wikilambdasearch_language' => 'en',
+				'wikilambdasearch_search' => 'enum wikidata'
+			],
+			// renders results: Z483 Wikidata enumeration
+			[
+				[ 'Z483', 'Wikidata Enumeration', 'Wikidata Enumeration' ],
+			]
+		];
+	}
+
+	/**
+	 * @dataProvider provideMatchRates
+	 */
+	public function testMatchRates( $apiParams, $expectedResults ) {
+		// Make request (do not page):
+		$request = array_merge( [
+			'action' => 'query',
+			'list' => 'wikilambdasearch_labels',
+			'wikilambdasearch_limit' => 5000
+		], $apiParams );
+
+		$actualResponse = $this->doApiRequest( $request );
+		$actualResults = $actualResponse[0][ 'query' ][ 'wikilambdasearch_labels' ];
+
+		// Make sure that the result count is the expected
+		$this->assertSameSize( $expectedResults, $actualResults );
+
+		// Make sure that the results are ordered correctly
+		foreach ( $expectedResults as $index => $expectedResult ) {
+			$actualResult = $actualResults[ $index ];
+			$this->assertSame( $expectedResult[0], $actualResult[ 'page_title' ] );
+			$this->assertSame( $expectedResult[1], $actualResult[ 'label' ] );
+			if ( $expectedResult[2] ) {
+				$this->assertSame( $expectedResult[2], $actualResult[ 'match_rate' ] );
+			}
+		}
+	}
+
+	public static function provideMatchRates() {
+		yield 'search one token string' => [
+			[
+				'wikilambdasearch_search' => 'age',
+				'wikilambdasearch_language' => 'en',
+				'wikilambdasearch_type' => 'Z20000'
+			],
+			[
+				[ 'Z20001', 'Age', 1.0 ],
+				[ 'Z20002', 'Age range', null ],
+				[ 'Z20003', 'Age in years', null ],
+				// Matches substring "age", but rated low
+				[ 'Z20005', 'Average', null ],
+			]
+		];
+
+		yield 'search multiple token string with exact match' => [
+			[
+				'wikilambdasearch_search' => 'age range',
+				'wikilambdasearch_language' => 'en',
+				'wikilambdasearch_type' => 'Z20000'
+			],
+			[
+				[ 'Z20002', 'Age range', 1.0 ],
+				[ 'Z20001', 'Age', null ],
+				[ 'Z20003', 'Age in years', null ],
+				// Matches token "range", but rated low
+				[ 'Z20004', 'Range of natural numbers', null ],
+				[ 'Z20006', 'Arrange integers', null ],
+				// Matches token "age", but rated the lowest
+				[ 'Z20005', 'Average', null ],
+			]
+		];
+
+		yield 'search multiple token string and order matches by different criteria' => [
+			[
+				'wikilambdasearch_search' => 'one two three',
+				'wikilambdasearch_language' => 'en',
+				'wikilambdasearch_type' => 'Z30000'
+			],
+			[
+				// Full match: scores 1.0
+				[ 'Z30004', 'One two three', 1.0 ],
+				// All tokens match: boosted due to full coverage
+				[ 'Z30005', 'Three two one', null ],
+				// Fully matches the first token: boosted due to position
+				[ 'Z30001', 'One', null ],
+				// Fully matches a longer token
+				[ 'Z30003', 'Three', null ],
+				// Partially matches first token at the beginning
+				[ 'Z30006', 'One four five', null ],
+				// Fully matches a shorter and middle token
+				[ 'Z30002', 'Two', null ],
+				// Partially matches one of the later tokens
+				[ 'Z30007', 'Three four five', null ],
+			]
 		];
 	}
 }

@@ -499,4 +499,46 @@ class ApiQueryFunctionsTest extends WikiLambdaApiTestCase {
 		$returnedZids = $this->getReturnedZids( $results );
 		$this->assertEqualsCanonicalizing( $expectedZids, $returnedZids );
 	}
+
+	public function testTokenizedSearch() {
+		$this->overrideConfigValue( 'WikifunctionsEnableWikidataInputTypes', true );
+		$response = $this->doApiRequest( [
+			'action' => 'query',
+			'list' => 'wikilambdasearch_functions',
+			'wikilambdasearch_functions_search' => 'phrase english',
+			'wikilambdasearch_functions_language' => 'en',
+			'wikilambdasearch_functions_renderable' => true
+		] );
+
+		$expectedZids = [
+			// Match all tokens:
+			// English gendered phrase
+			'Z10003',
+			// English possesive phrase
+			'Z10002',
+			// Match one token:
+			// English plural
+			'Z10001',
+			// Renderable English entity
+			'Z10007',
+			// Renderable English lexeme
+			'Z10008',
+			// Renderable English label
+			'Z10013',
+			// Wikidata item to English string
+			'Z10011',
+			// Renderable flagged English lexeme
+			'Z10009',
+			// Wikidata lexeme to English string
+			'Z10012',
+		];
+
+		// Assert total result count
+		$results = $response[0][ 'query' ][ 'wikilambdasearch_functions' ];
+		$this->assertSameSize( $expectedZids, $results );
+
+		// Assert correct zids are returned
+		$returnedZids = $this->getReturnedZids( $results );
+		$this->assertEqualsCanonicalizing( $expectedZids, $returnedZids );
+	}
 }

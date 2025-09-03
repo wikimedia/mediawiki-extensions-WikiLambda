@@ -139,30 +139,6 @@ class ApiQueryFunctions extends WikiLambdaApiQueryGeneratorBase {
 	}
 
 	/**
-	 * @param string $substring
-	 * @param string $hit
-	 * @return float
-	 */
-	private static function getMatchRate( $substring, $hit ) {
-		// Calculate the base match rate with the Levenshtein distance
-		$distance = levenshtein( $substring, $hit );
-		$max = max( strlen( $substring ), strlen( $hit ) );
-		$baseMatchRate = ( $max - $distance ) / $max;
-
-		// Find the position of the substring in the hit
-		$position = strpos( $hit, $substring );
-
-		// Normalize the position to a score (earlier positions get higher weight)
-		$positionScore = 1 - ( $position / strlen( $hit ) );
-
-		// Combine the base match rate and position score
-		// Adjust weight of both scores, currently at 50%
-		$finalMatchRate = $baseMatchRate * 0.5 + $positionScore * 0.5;
-
-		return $finalMatchRate;
-	}
-
-	/**
 	 * @inheritDoc
 	 * @codeCoverageIgnore
 	 */

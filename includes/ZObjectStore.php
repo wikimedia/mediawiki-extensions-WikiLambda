@@ -989,6 +989,37 @@ class ZObjectStore {
 	}
 
 	/**
+	 * Create OR aggregated LIKE statements for each token from the searchTerm.
+	 * The search term is tokenized by splitting by whitespace characters.
+	 *
+	 * @param string $searchColumn
+	 * @param string $searchTerm
+	 * @return IExpression|null
+	 */
+	private function getStringMatchCondition( $searchColumn, $searchTerm ) {
+		$dbr = $this->dbProvider->getReplicaDatabase();
+
+		$tokens = preg_split( '/\s+/', trim( $searchTerm ), -1, PREG_SPLIT_NO_EMPTY );
+
+		// Return null if there are no string match conditions
+		if ( count( $tokens ) === 0 ) {
+			return null;
+		}
+
+		$conditions = [];
+		foreach ( $tokens as $token ) {
+			$conditions[] = $dbr->expr(
+				$searchColumn,
+				IExpression::LIKE,
+				new LikeValue( $dbr->anyString(), $token, $dbr->anyString() )
+			);
+		}
+
+		// Use OR to aggregate results
+		return $dbr->orExpr( $conditions );
+	}
+
+	/**
 	 * Search functions that match a series of conditions:
 	 * * are running functions (they must have connected implementations)
 	 * * have a label that partially matches the given searchTerm, and
@@ -1028,12 +1059,11 @@ class ZObjectStore {
 			->fields( [ 'page_id', 'wlzl_zobject_zid', 'wlzl_label', 'wlzl_language' ] )
 			->andWhere( [ 'wlzl_type' => 'Z8' ] );
 
-		// Main Query searchCondition: match searchTerm substring
+		// String match condition: match tokenized searchTerm substrings (if any)
 		$searchTerm = ZObjectUtils::comparableString( $searchTerm );
 		$searchColumn = ZObjectUtils::isValidZObjectReference( $searchTerm ) ?
 			'wlzl_zobject_zid' : 'wlzl_label_normalised';
-		$searchCondition = $dbr->expr( $searchColumn, IExpression::LIKE, new LikeValue(
-			$dbr->anyString(), $searchTerm, $dbr->anyString() ) );
+		$stringMatchCondition = $this->getStringMatchCondition( $searchColumn, $searchTerm );
 
 		// Create main query builder
 		$queryBuilder = $dbr->newSelectQueryBuilder()
@@ -1052,10 +1082,12 @@ class ZObjectStore {
 			->from( 'wikilambda_zobject_labels', 'lb' )
 			// Inner join with preferred labels Subquery
 			->join( $preferredLabelsQuery, 'pl', 'lb.wlzl_zobject_zid = pl.wlzl_zobject_zid' )
-			->where( [
-				'wlzl_type' => 'Z8',
-				$searchCondition
-			] );
+			->where( [ 'wlzl_type' => 'Z8' ] );
+
+		// If stringMatchCondition is not null, add where condition
+		if ( $stringMatchCondition ) {
+			$queryBuilder->andWhere( $stringMatchCondition );
+		}
 
 		// If functionsQuery is not null, Left join and filter by wlzo_main_zid IS NOT NULL condition
 		if ( $functionsQuery ) {
@@ -1175,11 +1207,10 @@ class ZObjectStore {
 			$searchColumn = 'wlzl_label_normalised';
 			$searchTerm = ZObjectUtils::comparableString( $searchTerm );
 		}
-		$conditions[] = $dbr->expr(
-			$searchColumn,
-			IExpression::LIKE,
-			new LikeValue( $dbr->anyString(), $searchTerm, $dbr->anyString() )
-		);
+		$stringMatchCondition = $this->getStringMatchCondition( $searchColumn, $searchTerm );
+		if ( $stringMatchCondition ) {
+			$conditions[] = $this->getStringMatchCondition( $searchColumn, $searchTerm );
+		}
 
 		// Create query builder
 		$queryBuilder = $dbr->newSelectQueryBuilder()
