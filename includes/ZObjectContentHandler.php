@@ -330,13 +330,14 @@ class ZObjectContentHandler extends ContentHandler {
 			try {
 				$lang = $zLangRegistry->getLanguageCodeFromZid( $langZid );
 				$parserOutput->setPageProperty( "wikilambda-label-$lang", $label );
-			} catch ( ZErrorException ) {
+			} catch ( ZErrorException $e ) {
 				// The language code is somehow not recognised; don't set a property, but log it for review
 				$logger->warning(
 					'Skipping setting page property for label in unknown language {langZid} when displaying {page}',
 					[
 						'langZid' => $langZid,
 						'page' => $content->getZObject()->getZid(),
+						'exception' => $e
 					]
 				);
 			}
