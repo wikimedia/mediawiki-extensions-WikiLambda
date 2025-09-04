@@ -6,20 +6,15 @@
  */
 'use strict';
 
-const { config, mount } = require( '@vue/test-utils' );
+const { mount } = require( '@vue/test-utils' );
 const createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
 const createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock;
 const metadata = require( '../../../fixtures/metadata.js' );
+const { dialogGlobalStubs } = require( '../../../helpers/dialogTestHelpers.js' );
 const FunctionMetadataDialog = require( '../../../../../resources/ext.wikilambda.app/components/widgets/function-evaluator/FunctionMetadataDialog.vue' );
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 
-// Ignore all "teleport" behavior for the purpose of testing Dialog;
-// see https://test-utils.vuejs.org/guide/advanced/teleport.html
-config.global.stubs = {
-	teleport: true
-};
-
-describe( 'FunctionMetadataDialog', () => {
+describe( 'dialog', () => {
 	let store;
 
 	beforeEach( () => {
@@ -40,7 +35,10 @@ describe( 'FunctionMetadataDialog', () => {
 
 	it( 'renders without errors', () => {
 		const wrapper = mount( FunctionMetadataDialog, {
-			props: { open: true, metadata: metadata.metadataBasic }
+			props: { open: true, metadata: metadata.metadataBasic },
+			global: {
+				stubs: dialogGlobalStubs
+			}
 		} );
 
 		expect( wrapper.find( '.ext-wikilambda-app-function-metadata-dialog' ).exists() ).toBe( true );

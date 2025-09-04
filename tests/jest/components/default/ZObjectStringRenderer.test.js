@@ -8,6 +8,7 @@
 
 const { waitFor } = require( '@testing-library/vue' );
 const { shallowMount } = require( '@vue/test-utils' );
+const { dialogGlobalStubs } = require( '../../helpers/dialogTestHelpers.js' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const convertSetToMap = require( '../../fixtures/metadata.js' ).convertSetToMap;
 const createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
@@ -667,7 +668,7 @@ describe( 'ZObjectStringRenderer', () => {
 					type: typeZid,
 					expanded: false
 				},
-				global: { stubs: { CdxDialog: false, teleport: true } }
+				global: { stubs: dialogGlobalStubs }
 			} );
 
 			// Open dialog window

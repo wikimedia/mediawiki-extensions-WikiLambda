@@ -76,7 +76,7 @@ describe( 'ModeSelector', () => {
 					objectValue
 				}
 			} );
-			const menu = wrapper.findComponent( { name: 'cdx-menu' } );
+			const menu = wrapper.get( '.cdx-menu' );
 			expect( menu.isVisible() ).toBe( false );
 
 			const button = wrapper.findComponent( { name: 'cdx-toggle-button' } );

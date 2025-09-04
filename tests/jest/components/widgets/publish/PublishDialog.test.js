@@ -7,8 +7,9 @@
 
 'use strict';
 
-const { config, mount } = require( '@vue/test-utils' );
+const { mount } = require( '@vue/test-utils' );
 const { waitFor } = require( '@testing-library/vue' );
+const { dialogGlobalStubs } = require( '../../../helpers/dialogTestHelpers.js' );
 
 const ApiError = require( '../../../../../resources/ext.wikilambda.app/store/classes/ApiError.js' );
 const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
@@ -16,12 +17,6 @@ const PublishDialog = require( '../../../../../resources/ext.wikilambda.app/comp
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 
 const createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
-
-// Ignore all "teleport" behavior for the purpose of testing Dialog;
-// see https://test-utils.vuejs.org/guide/advanced/teleport.html
-config.global.stubs = {
-	teleport: true
-};
 
 describe( 'Publish Dialog', () => {
 	let store;
@@ -49,21 +44,24 @@ describe( 'Publish Dialog', () => {
 
 	it( 'renders without errors', () => {
 		const wrapper = mount( PublishDialog, {
-			props: { showDialog: true }
+			props: { showDialog: true },
+			global: { stubs: dialogGlobalStubs }
 		} );
 		expect( wrapper.find( '.ext-wikilambda-app-publish-dialog' ).exists() ).toBe( true );
 	} );
 
 	it( 'renders summary input field', () => {
 		const wrapper = mount( PublishDialog, {
-			props: { showDialog: true }
+			props: { showDialog: true },
+			global: { stubs: dialogGlobalStubs }
 		} );
 		expect( wrapper.find( '.ext-wikilambda-app-publish-dialog__summary-input' ).exists() ).toBe( true );
 	} );
 
 	it( 'renders conditional legal text', () => {
 		const wrapper = mount( PublishDialog, {
-			props: { showDialog: true }
+			props: { showDialog: true },
+			global: { stubs: dialogGlobalStubs }
 		} );
 		expect( wrapper.find( '.ext-wikilambda-app-publish-dialog__legal-text' ).exists() ).toBe( true );
 	} );
@@ -81,7 +79,8 @@ describe( 'Publish Dialog', () => {
 		store.getErrors = createGettersWithFunctionsMock( errors );
 
 		const wrapper = mount( PublishDialog, {
-			props: { showDialog: true }
+			props: { showDialog: true },
+			global: { stubs: dialogGlobalStubs }
 		} );
 
 		const messages = wrapper.findAllComponents( { name: 'cdx-message' } );
@@ -94,7 +93,8 @@ describe( 'Publish Dialog', () => {
 
 	it( 'closes the dialog when click cancel button', () => {
 		const wrapper = mount( PublishDialog, {
-			props: { showDialog: true }
+			props: { showDialog: true },
+			global: { stubs: dialogGlobalStubs }
 		} );
 
 		wrapper.find( '.cdx-dialog__footer__default-action' ).trigger( 'click' );
@@ -103,7 +103,8 @@ describe( 'Publish Dialog', () => {
 
 	it( 'proceeds to publish when click publish button', () => {
 		const wrapper = mount( PublishDialog, {
-			props: { showDialog: true, functionSignatureChanged: false }
+			props: { showDialog: true, functionSignatureChanged: false },
+			global: { stubs: dialogGlobalStubs }
 		} );
 		wrapper.vm.summary = 'mock summary';
 
@@ -116,7 +117,8 @@ describe( 'Publish Dialog', () => {
 
 	it( 'closes dialog and navigates out when submission is successful', async () => {
 		const wrapper = mount( PublishDialog, {
-			props: { showDialog: true, functionSignatureChanged: false }
+			props: { showDialog: true, functionSignatureChanged: false },
+			global: { stubs: dialogGlobalStubs }
 		} );
 
 		wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
@@ -128,7 +130,8 @@ describe( 'Publish Dialog', () => {
 		store.submitZObject.mockRejectedValue( error );
 
 		const wrapper = mount( PublishDialog, {
-			props: { showDialog: true, functionSignatureChanged: false }
+			props: { showDialog: true, functionSignatureChanged: false },
+			global: { stubs: dialogGlobalStubs }
 		} );
 
 		wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
@@ -144,6 +147,7 @@ describe( 'Publish Dialog', () => {
 			props: { showDialog: true, functionSignatureChanged: false },
 			global: {
 				stubs: {
+					...dialogGlobalStubs,
 					CdxMessage: false
 				}
 			}
@@ -166,7 +170,8 @@ describe( 'Publish Dialog', () => {
 	it( 'proceeds to publish when pressing Ctrl + Enter on Windows', async () => {
 
 		const wrapper = mount( PublishDialog, {
-			props: { showDialog: true, functionSignatureChanged: false }
+			props: { showDialog: true, functionSignatureChanged: false },
+			global: { stubs: dialogGlobalStubs }
 		} );
 
 		// Find the input element
@@ -182,7 +187,8 @@ describe( 'Publish Dialog', () => {
 	it( 'proceeds to publish when pressing CMD + Enter on Mac', async () => {
 
 		const wrapper = mount( PublishDialog, {
-			props: { showDialog: true, functionSignatureChanged: false }
+			props: { showDialog: true, functionSignatureChanged: false },
+			global: { stubs: dialogGlobalStubs }
 		} );
 
 		// Find the input element
@@ -203,7 +209,8 @@ describe( 'Publish Dialog', () => {
 			store.getCurrentZImplementationType = 'Z14K3';
 
 			const wrapper = mount( PublishDialog, {
-				props: { showDialog: true, functionSignatureChanged: false }
+				props: { showDialog: true, functionSignatureChanged: false },
+				global: { stubs: dialogGlobalStubs }
 			} );
 
 			wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
@@ -227,7 +234,8 @@ describe( 'Publish Dialog', () => {
 			store.getCurrentZImplementationType = undefined;
 
 			const wrapper = mount( PublishDialog, {
-				props: { showDialog: true, functionSignatureChanged: false }
+				props: { showDialog: true, functionSignatureChanged: false },
+				global: { stubs: dialogGlobalStubs }
 			} );
 
 			wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );

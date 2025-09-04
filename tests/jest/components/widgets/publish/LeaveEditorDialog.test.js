@@ -6,22 +6,18 @@
  */
 'use strict';
 
-const { config, mount } = require( '@vue/test-utils' );
+const { mount } = require( '@vue/test-utils' );
+const { dialogGlobalStubs } = require( '../../../helpers/dialogTestHelpers.js' );
 
 const LeaveEditorDialog = require( '../../../../../resources/ext.wikilambda.app/components/widgets/publish/LeaveEditorDialog.vue' );
-
-// Ignore all "teleport" behavior for the purpose of testing Dialog;
-// see https://test-utils.vuejs.org/guide/advanced/teleport.html
-config.global.stubs = {
-	teleport: true
-};
 
 describe( 'LeaveEditorDialog', () => {
 	it( 'renders without errors', () => {
 		const wrapper = mount( LeaveEditorDialog, {
 			props: {
-				showDialog: false
-			}
+				showDialog: true
+			},
+			global: { stubs: dialogGlobalStubs }
 		} );
 		expect( wrapper.find( '.ext-wikilambda-app-leave-editor-dialog' ).exists() ).toBe( true );
 	} );
@@ -32,10 +28,11 @@ describe( 'LeaveEditorDialog', () => {
 			props: {
 				continueCallback: mockCallback,
 				showDialog: true
-			}
+			},
+			global: { stubs: dialogGlobalStubs }
 		} );
 
-		wrapper.findComponent( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
+		wrapper.get( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
 		expect( mockCallback ).toHaveBeenCalled();
 	} );
 
@@ -43,10 +40,11 @@ describe( 'LeaveEditorDialog', () => {
 		const wrapper = mount( LeaveEditorDialog, {
 			props: {
 				showDialog: true
-			}
+			},
+			global: { stubs: dialogGlobalStubs }
 		} );
 
-		wrapper.findComponent( '.cdx-dialog__footer__default-action' ).trigger( 'click' );
+		wrapper.get( '.cdx-dialog__footer__default-action' ).trigger( 'click' );
 		expect( wrapper.emitted() ).toHaveProperty( 'close-dialog' );
 	} );
 } );

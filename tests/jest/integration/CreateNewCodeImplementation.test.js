@@ -26,10 +26,11 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 
 	it( 'should allow you to create a new code implementation', async () => {
 		const { container, getByTestId, findByTestId } = render( App, {
-			global: { stubs: {
-				teleport: true,
-				WlFunctionEvaluatorWidget: true
-			} }
+			global: {
+				stubs: {
+					WlFunctionEvaluatorWidget: true
+				}
+			}
 		} );
 
 		// Wait for loading to finish (max 5 seconds)
@@ -86,7 +87,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		await fireEvent.click( publishButton );
 
 		// ACT: Confirm publish in publish dialog that opens
-		const confirmPublishDialog = await getByTestId( 'confirm-publish-dialog' );
+		const confirmPublishDialog = await getByTestId( 'publish-dialog' );
 		const confirmPublishButton = await within( confirmPublishDialog ).findByText( 'Publish' );
 
 		await fireEvent.click( confirmPublishButton );
@@ -108,10 +109,11 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 
 	it( 'allows changing the selected function call and ensures the function report testers are updated, but not executed', async () => {
 		const { findByTestId } = render( App, {
-			global: { stubs: {
-				teleport: true,
-				WlFunctionEvaluatorWidget: true
-			} }
+			global: {
+				stubs: {
+					WlFunctionEvaluatorWidget: true
+				}
+			}
 		} );
 
 		//* -- Function report widget

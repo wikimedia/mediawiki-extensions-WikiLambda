@@ -6,19 +6,18 @@
  */
 'use strict';
 
-const { config, mount } = require( '@vue/test-utils' );
+const { mount } = require( '@vue/test-utils' );
 const { waitFor } = require( '@testing-library/vue' );
+const { dialogGlobalStubs } = require( '../../../helpers/dialogTestHelpers.js' );
 const { createLabelDataMock } = require( '../../../helpers/getterHelpers.js' );
 const { mockLookupLanguages } = require( '../../../fixtures/mocks.js' );
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 const AboutLanguagesDialog = require( '../../../../../resources/ext.wikilambda.app/components/widgets/about/AboutLanguagesDialog.vue' );
 const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
 
-// Ignore all "teleport" behavior for the purpose of testing Dialog;
+// Note: Using custom teleport stub to render content inline instead of teleporting to document body
+// This allows us to test dialog content within the component wrapper
 // see https://test-utils.vuejs.org/guide/advanced/teleport.html
-config.global.stubs = {
-	teleport: true
-};
 
 describe( 'AboutLanguagesDialog', () => {
 	let store;
@@ -68,23 +67,32 @@ describe( 'AboutLanguagesDialog', () => {
 	} );
 
 	it( 'renders without errors', () => {
-		const wrapper = mount( AboutLanguagesDialog, { props: {
-			open: true
-		} } );
+		const wrapper = mount( AboutLanguagesDialog, {
+			props: {
+				open: true
+			},
+			global: { stubs: dialogGlobalStubs }
+		} );
 		expect( wrapper.find( '.ext-wikilambda-app-about-languages-dialog' ).exists() ).toBe( true );
 	} );
 
 	it( 'renders language search box', () => {
-		const wrapper = mount( AboutLanguagesDialog, { props: {
-			open: true
-		} } );
+		const wrapper = mount( AboutLanguagesDialog, {
+			props: {
+				open: true
+			},
+			global: { stubs: dialogGlobalStubs }
+		} );
 		expect( wrapper.find( '.ext-wikilambda-app-about-languages-dialog__search' ).exists() ).toBe( true );
 	} );
 
 	it( 'renders user language and fallback chain under "Suggested languages"', () => {
-		const wrapper = mount( AboutLanguagesDialog, { props: {
-			open: true
-		} } );
+		const wrapper = mount( AboutLanguagesDialog, {
+			props: {
+				open: true
+			},
+			global: { stubs: dialogGlobalStubs }
+		} );
 
 		const list = wrapper.findAll( '.ext-wikilambda-app-about-languages-dialog__items > div' );
 
@@ -101,9 +109,12 @@ describe( 'AboutLanguagesDialog', () => {
 	} );
 
 	it( 'renders other available languages under "Other languages"', () => {
-		const wrapper = mount( AboutLanguagesDialog, { props: {
-			open: true
-		} } );
+		const wrapper = mount( AboutLanguagesDialog, {
+			props: {
+				open: true
+			},
+			global: { stubs: dialogGlobalStubs }
+		} );
 
 		const list = wrapper.findAll( '.ext-wikilambda-app-about-languages-dialog__items > div' );
 
@@ -144,7 +155,10 @@ describe( 'AboutLanguagesDialog', () => {
 		};
 		store.getLabelData = createLabelDataMock( modifiedLabelData );
 
-		const wrapper = mount( AboutLanguagesDialog, { props: { open: true } } );
+		const wrapper = mount( AboutLanguagesDialog, {
+			props: { open: true },
+			global: { stubs: dialogGlobalStubs }
+		} );
 		const list = wrapper.findAll( '.ext-wikilambda-app-about-languages-dialog__items > div' );
 
 		// In the component, the first section ("Suggested languages") is rendered first,
@@ -165,9 +179,12 @@ describe( 'AboutLanguagesDialog', () => {
 	it( 'triggers language lookup when writing in the search box', async () => {
 		store.lookupZObjectLabels.mockResolvedValue( mockLookupLanguages );
 
-		const wrapper = mount( AboutLanguagesDialog, { props: {
-			open: true
-		} } );
+		const wrapper = mount( AboutLanguagesDialog, {
+			props: {
+				open: true
+			},
+			global: { stubs: dialogGlobalStubs }
+		} );
 
 		const searchInput = wrapper.findComponent( { name: 'cdx-search-input' } );
 		searchInput.vm.$emit( 'update:modelValue', 'Chin' );
@@ -196,9 +213,12 @@ describe( 'AboutLanguagesDialog', () => {
 	} );
 
 	it( 'emits add-language event when clicking on an item', () => {
-		const wrapper = mount( AboutLanguagesDialog, { props: {
-			open: true
-		} } );
+		const wrapper = mount( AboutLanguagesDialog, {
+			props: {
+				open: true
+			},
+			global: { stubs: dialogGlobalStubs }
+		} );
 
 		const items = wrapper.findAll( '.ext-wikilambda-app-about-languages-dialog__item' );
 
