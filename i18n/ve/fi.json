@@ -36,7 +36,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Näytä vähemmän",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "Näytä lisää",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Tuloksia ei löytynyt.",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Hae funktiota",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Hae yli {{formatnum:2000}} funktion joukosta",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Tulokset",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Syötä teksti",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Ehdotetut funktiot",

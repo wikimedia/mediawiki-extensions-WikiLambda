@@ -34,7 +34,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Manner liesen",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "Méi liesen",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Keng Resultater fonnt.",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Funktioun sichen",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Ënner méi wéi {{formatnum:2000}} Funktioune sichen",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Resultater",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Text aginn",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Virgeschloe Funktiounen",

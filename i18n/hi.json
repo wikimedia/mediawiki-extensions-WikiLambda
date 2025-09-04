@@ -62,5 +62,10 @@
 	"wikilambda-tester-details": "विवरण",
 	"wikilambda-tester-status-cancel": "रद्द करें",
 	"wikilambda-tester-status-ready": "तैयार",
+	"wikilambda-wikifunctionswiki-sidebar-createfunction": "एक फ़ंक्शन बनाएँ",
+	"wikilambda-wikifunctionswiki-sidebar-createobject": "एक वस्तु बनाएँ",
+	"wikilambda-wikifunctionswiki-sidebar-functioncatalogue": "फ़ंक्शन सूची",
+	"wikilambda-wikifunctionswiki-sidebar-projectchat": "परियोजना चैट",
+	"wikilambda-wikifunctionswiki-sidebar-projectstatus": "वर्तमान स्थिति",
 	"wikilambda-zobjectselector-label": "वस्तु"
 }
