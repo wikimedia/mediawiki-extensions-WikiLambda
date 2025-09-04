@@ -16,15 +16,22 @@
 			:edit="edit"
 			:skip-key="true"
 		></wl-z-object-key-value>
-		<cdx-select
-			v-else
-			:selected="selectedEntityId"
-			:default-label="enumSelectPlaceholder"
-			:menu-items="enumSelectMenuItems"
-			:menu-config="enumSelectConfig"
-			data-testid="wikidata-enum-select"
-			@update:selected="onSelect"
-		></cdx-select>
+		<div v-else class="ext-wikilambda-app-wikidata-enum__select">
+			<cdx-select
+				:selected="selectedEntityId"
+				:default-label="enumSelectPlaceholder"
+				:menu-items="enumSelectMenuItems"
+				:menu-config="enumSelectConfig"
+				data-testid="wikidata-enum-select"
+				@update:selected="onSelect"
+			></cdx-select>
+			<cdx-progress-indicator
+				v-if="isLoading"
+				class="ext-wikilambda-app-wikidata-enum__loader"
+			>
+				{{ $i18n( 'wikilambda-loading' ).text() }}
+			</cdx-progress-indicator>
+		</div>
 	</div>
 </template>
 
@@ -37,12 +44,13 @@ const zobjectMixin = require( '../../../mixins/zobjectMixin.js' );
 const useMainStore = require( '../../../store/index.js' );
 
 // Codex components
-const { CdxSelect } = require( '../../../../codex.js' );
+const { CdxSelect, CdxProgressIndicator } = require( '../../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-wikidata-enum',
 	components: {
-		'cdx-select': CdxSelect
+		'cdx-select': CdxSelect,
+		'cdx-progress-indicator': CdxProgressIndicator
 	},
 	mixins: [ zobjectMixin ],
 	props: {
@@ -67,7 +75,8 @@ module.exports = exports = defineComponent( {
 		return {
 			enumSelectConfig: {
 				visibleItemLimit: 5
-			}
+			},
+			loadingCount: 0
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
@@ -145,6 +154,9 @@ module.exports = exports = defineComponent( {
 					value: id
 				};
 			} );
+		},
+		isLoading: function () {
+			return this.loadingCount > 0;
 		}
 	} ),
 	methods: Object.assign( mapActions( useMainStore, [
@@ -171,8 +183,15 @@ module.exports = exports = defineComponent( {
 		 * Fetches all the Wikidata entities in the selector component (only for edit)
 		 */
 		fetchEntities: function () {
-			if ( this.edit ) {
-				this.fetchWikidataEntitiesByType( { type: this.entityType, ids: this.wikidataIds } );
+			if ( !this.edit ) {
+				return;
+			}
+			const promise = this.fetchWikidataEntitiesByType( { type: this.entityType, ids: this.wikidataIds } );
+			if ( promise && typeof promise.then === 'function' ) {
+				this.loadingCount++;
+				promise.finally( () => {
+					this.loadingCount = Math.max( 0, this.loadingCount - 1 );
+				} );
 			}
 		}
 	} ),
@@ -189,3 +208,16 @@ module.exports = exports = defineComponent( {
 	}
 } );
 </script>
+
+<style lang="less">
+@import '../../../ext.wikilambda.app.variables.less';
+
+.ext-wikilambda-app-wikidata-enum {
+	.ext-wikilambda-app-wikidata-enum__select {
+		position: relative;
+		display: flex;
+		gap: @spacing-100;
+		align-items: center;
+	}
+}
+</style>

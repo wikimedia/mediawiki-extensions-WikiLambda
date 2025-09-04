@@ -105,9 +105,9 @@ describe( 'Wikidata Items Pinia store', () => {
 
 		describe( 'resetItemData', () => {
 			it( 'removes item data for given IDs', () => {
-				store.items = { Q1: 'foo', Q2: 'bar', Q3: 'baz' };
-				store.resetItemData( { ids: [ 'Q1', 'Q3' ] } );
-				expect( store.items ).toEqual( { Q2: 'bar' } );
+				store.items = { Q111111: 'foo', Q222222: 'bar', Q333333: 'baz' };
+				store.resetItemData( { ids: [ 'Q111111', 'Q333333' ] } );
+				expect( store.items ).toEqual( { Q222222: 'bar' } );
 			} );
 		} );
 
@@ -261,6 +261,21 @@ describe( 'Wikidata Items Pinia store', () => {
 				expect( store.setItemData ).toHaveBeenCalledWith( {
 					id: 'Q444444',
 					data: { title: 'Q444444', labels: {} }
+				} );
+			} );
+
+			it( 'calls the batching method with correct parameters', () => {
+				const mockFetchWikidataEntitiesBatched = jest.fn().mockReturnValue( Promise.resolve() );
+				store.fetchWikidataEntitiesBatched = mockFetchWikidataEntitiesBatched;
+
+				const items = [ 'Q333333', 'Q444444' ];
+				store.fetchItems( { ids: items } );
+
+				expect( mockFetchWikidataEntitiesBatched ).toHaveBeenCalledWith( {
+					ids: items,
+					getData: store.getItemData,
+					setData: store.setItemData,
+					resetData: store.resetItemData
 				} );
 			} );
 		} );

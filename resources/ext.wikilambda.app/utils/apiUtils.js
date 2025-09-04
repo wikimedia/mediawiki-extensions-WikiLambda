@@ -345,7 +345,7 @@ const apiUtils = {
 	 *
 	 * @param {Object} payload
 	 * @param {string} payload.language user language code
-	 * @param {Array} payload.ids entity Ids to fetch
+	 * @param {Array} payload.ids entity Ids to fetch, seperated by pipes and max 50 (API limit)
 	 * @param {AbortSignal} [payload.signal] Optional AbortSignal to cancel the request
 	 * @return {Promise}
 	 */

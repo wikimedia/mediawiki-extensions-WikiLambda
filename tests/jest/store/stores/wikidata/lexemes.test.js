@@ -339,9 +339,9 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 		} );
 		describe( 'resetLexemeData', () => {
 			it( 'removes lexeme data for given IDs', () => {
-				store.lexemes = { L1: 'foo', L2: 'bar', L3: 'baz' };
-				store.resetLexemeData( { ids: [ 'L1', 'L3' ] } );
-				expect( store.lexemes ).toEqual( { L2: 'bar' } );
+				store.lexemes = { L111111: 'foo', L222222: 'bar', L333333: 'baz' };
+				store.resetLexemeData( { ids: [ 'L111111', 'L333333' ] } );
+				expect( store.lexemes ).toEqual( { L222222: 'bar' } );
 			} );
 		} );
 
@@ -623,6 +623,21 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 							}
 						} )
 					]
+				} );
+			} );
+
+			it( 'calls the batching method with correct parameters', () => {
+				const mockFetchWikidataEntitiesBatched = jest.fn().mockReturnValue( Promise.resolve() );
+				store.fetchWikidataEntitiesBatched = mockFetchWikidataEntitiesBatched;
+
+				const lexemes = [ 'L333333', 'L444444' ];
+				store.fetchLexemes( { ids: lexemes } );
+
+				expect( mockFetchWikidataEntitiesBatched ).toHaveBeenCalledWith( {
+					ids: lexemes,
+					getData: store.getLexemeData,
+					setData: store.setLexemeData,
+					resetData: store.resetLexemeData
 				} );
 			} );
 		} );

@@ -6,7 +6,6 @@
  */
 'use strict';
 
-const { fetchWikidataEntities } = require( '../../../utils/apiUtils.js' );
 const Constants = require( '../../../Constants.js' );
 const LabelData = require( '../../classes/LabelData.js' );
 
@@ -156,52 +155,13 @@ module.exports = {
 		 * @param {Array<string>} payload.ids - An array of Wikidata Item IDs to fetch.
 		 * @return {Promise} - A promise that resolves to the fetched data.
 		 */
-		fetchItems: function ( payload ) {
-			// Filter out the fetched or fetching Wikidata Item Ids
-			const ids = payload.ids.filter( ( id ) => this.getItemData( id ) === undefined );
-
-			if ( ids.length === 0 ) {
-				// If list is empty, do nothing
-				return Promise.resolve();
-			}
-			const request = {
-				language: this.getUserLangCode,
-				ids: ids.join( '|' )
-			};
-			const promise = fetchWikidataEntities( request )
-				.then( ( data ) => {
-					// It might return an error for an invalid item Id,
-					// in that case, remove the Item Ids from the state
-					if ( data.error ) {
-						this.resetItemData( { ids } );
-						return data;
-					}
-					// Once received, store Wikidata Item Ids with their data
-					const fetched = data.entities ? Object.keys( data.entities ) : [];
-					fetched.forEach( ( id ) => {
-						const entity = data.entities[ id ];
-						// If entity is undefined, do nothing
-						if ( !entity ) {
-							return;
-						}
-						// If entity has a 'missing' property, reset the item data
-						if ( typeof entity === 'object' && 'missing' in entity ) {
-							this.resetItemData( { ids: [ id ] } );
-							return;
-						}
-						// Otherwise, store the item data
-						this.setItemData( { id, data: entity } );
-					} );
-					return data;
-				} )
-				.catch( () => {
-					// If fetch fails, remove the Item Ids from the state
-					this.resetItemData( { ids } );
-				} );
-
-			// Store Wikidata Item Ids with their resolving promise
-			ids.forEach( ( id ) => this.setItemData( { id, data: promise } ) );
-			return promise;
+		fetchItems: function ( { ids } ) {
+			return this.fetchWikidataEntitiesBatched( {
+				ids,
+				getData: this.getItemData,
+				setData: this.setItemData,
+				resetData: this.resetItemData
+			} );
 		}
 	}
 };

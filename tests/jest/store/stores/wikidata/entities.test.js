@@ -140,6 +140,190 @@ describe( 'Wikidata Entities Pinia store', () => {
 			} );
 		} );
 
+		describe( 'getWikidataBatchSize', () => {
+			it( 'returns the API limit constant for Wikidata', () => {
+				expect( store.getWikidataBatchSize ).toBe( Constants.API_LIMIT_WIKIDATA );
+			} );
+		} );
+
+		describe( 'fetchWikidataEntitiesBatched', () => {
+			let fetchMock;
+			let mockGetData;
+			let mockSetData;
+			let mockResetData;
+
+			beforeEach( () => {
+				mockGetData = jest.fn().mockReturnValue( undefined ); // No cached data
+				mockSetData = jest.fn();
+				mockResetData = jest.fn();
+				fetchMock = jest.fn().mockResolvedValue( {
+					json: jest.fn().mockReturnValue( {} )
+				} );
+				// eslint-disable-next-line n/no-unsupported-features/node-builtins
+				global.fetch = fetchMock;
+				// Mock the getters
+				Object.defineProperty( store, 'getUserLangCode', {
+					value: 'en'
+				} );
+				// Mock the batch size to 2 for easier testing
+				Object.defineProperty( store, 'getWikidataBatchSize', {
+					value: 2
+				} );
+			} );
+
+			it( 'exits early if all IDs are already fetched or in flight', () => {
+				mockGetData = jest.fn()
+					.mockReturnValueOnce( 'cached data' ) // Q111111 already cached
+					.mockReturnValueOnce( Promise.resolve() ); // Q222222 in flight
+
+				const payload = {
+					ids: [ 'Q111111', 'Q222222' ],
+					getData: mockGetData,
+					setData: mockSetData,
+					resetData: mockResetData
+				};
+
+				store.fetchWikidataEntitiesBatched( payload );
+
+				expect( fetchMock ).not.toHaveBeenCalled();
+			} );
+
+			it( 'batches requests when more than items then the limit(2) are requested', async () => {
+				const payload = {
+					ids: [ 'Q333333', 'Q444444', 'Q555555', 'Q666666', 'Q777777' ],
+					getData: mockGetData,
+					setData: mockSetData,
+					resetData: mockResetData
+				};
+
+				const batch1Response = { entities: { Q333333: 'data 1', Q444444: 'data 2' } };
+				const batch2Response = { entities: { Q555555: 'data 3', Q666666: 'data 4' } };
+				const batch3Response = { entities: { Q777777: 'data 5' } };
+
+				fetchMock = jest.fn()
+					.mockResolvedValueOnce( { json: jest.fn().mockReturnValue( batch1Response ) } )
+					.mockResolvedValueOnce( { json: jest.fn().mockReturnValue( batch2Response ) } )
+					.mockResolvedValueOnce( { json: jest.fn().mockReturnValue( batch3Response ) } );
+				// eslint-disable-next-line n/no-unsupported-features/node-builtins
+				global.fetch = fetchMock;
+
+				await store.fetchWikidataEntitiesBatched( payload );
+
+				// Should make 3 requests (batches of 2, 2, and 1)
+				expect( fetchMock ).toHaveBeenCalledTimes( 3 );
+
+				// Check that each batch was called with correct IDs
+				expect( fetchMock ).toHaveBeenNthCalledWith( 1,
+					`${ Constants.WIKIDATA_BASE_URL }/w/api.php?origin=*&action=wbgetentities&format=json&formatversion=2&languages=en&languagefallback=true&ids=Q333333%7CQ444444`,
+					undefined
+				);
+				expect( fetchMock ).toHaveBeenNthCalledWith( 2,
+					`${ Constants.WIKIDATA_BASE_URL }/w/api.php?origin=*&action=wbgetentities&format=json&formatversion=2&languages=en&languagefallback=true&ids=Q555555%7CQ666666`,
+					undefined
+				);
+				expect( fetchMock ).toHaveBeenNthCalledWith( 3,
+					`${ Constants.WIKIDATA_BASE_URL }/w/api.php?origin=*&action=wbgetentities&format=json&formatversion=2&languages=en&languagefallback=true&ids=Q777777`,
+					undefined
+				);
+
+				// Check that all items were stored
+				expect( mockSetData ).toHaveBeenCalledWith( { id: 'Q333333', data: 'data 1' } );
+				expect( mockSetData ).toHaveBeenCalledWith( { id: 'Q444444', data: 'data 2' } );
+				expect( mockSetData ).toHaveBeenCalledWith( { id: 'Q555555', data: 'data 3' } );
+				expect( mockSetData ).toHaveBeenCalledWith( { id: 'Q666666', data: 'data 4' } );
+				expect( mockSetData ).toHaveBeenCalledWith( { id: 'Q777777', data: 'data 5' } );
+			} );
+
+			it( 'handles API errors by resetting data', async () => {
+				const payload = {
+					ids: [ 'Q333333', 'Q444444' ],
+					getData: mockGetData,
+					setData: mockSetData,
+					resetData: mockResetData
+				};
+
+				const errorResponse = { error: 'Some error' };
+				fetchMock = jest.fn().mockResolvedValue( {
+					json: jest.fn().mockReturnValue( errorResponse )
+				} );
+				// eslint-disable-next-line n/no-unsupported-features/node-builtins
+				global.fetch = fetchMock;
+
+				await store.fetchWikidataEntitiesBatched( payload );
+
+				expect( mockResetData ).toHaveBeenCalledWith( { ids: [ 'Q333333', 'Q444444' ] } );
+			} );
+
+			it( 'handles missing entities by resetting individual IDs', async () => {
+				const payload = {
+					ids: [ 'Q333333', 'Q444444' ],
+					getData: mockGetData,
+					setData: mockSetData,
+					resetData: mockResetData
+				};
+
+				const apiResponse = {
+					entities: {
+						Q333333: { missing: '' }, // Simulate missing entity
+						Q444444: { title: 'Q444444', labels: {} }
+					}
+				};
+				fetchMock = jest.fn().mockResolvedValue( {
+					json: jest.fn().mockReturnValue( apiResponse )
+				} );
+				// eslint-disable-next-line n/no-unsupported-features/node-builtins
+				global.fetch = fetchMock;
+
+				await store.fetchWikidataEntitiesBatched( payload );
+
+				expect( mockResetData ).toHaveBeenCalledWith( { ids: [ 'Q333333' ] } );
+				expect( mockSetData ).toHaveBeenCalledWith( {
+					id: 'Q444444',
+					data: { title: 'Q444444', labels: {} }
+				} );
+			} );
+
+			it( 'handles network/fetch failures by resetting data', async () => {
+				const payload = {
+					ids: [ 'Q333333', 'Q444444' ],
+					getData: mockGetData,
+					setData: mockSetData,
+					resetData: mockResetData
+				};
+
+				fetchMock = jest.fn().mockRejectedValue( 'Network error' );
+				// eslint-disable-next-line n/no-unsupported-features/node-builtins
+				global.fetch = fetchMock;
+
+				await store.fetchWikidataEntitiesBatched( payload );
+
+				expect( mockResetData ).toHaveBeenCalledWith( { ids: [ 'Q333333', 'Q444444' ] } );
+			} );
+
+			it( 'stores promises for in-flight requests', async () => {
+				const payload = {
+					ids: [ 'Q333333', 'Q444444' ],
+					getData: mockGetData,
+					setData: mockSetData,
+					resetData: mockResetData
+				};
+
+				const promise = store.fetchWikidataEntitiesBatched( payload );
+
+				// Check that promises are stored for each ID
+				expect( mockSetData ).toHaveBeenCalledWith( {
+					id: 'Q333333',
+					data: promise
+				} );
+				expect( mockSetData ).toHaveBeenCalledWith( {
+					id: 'Q444444',
+					data: promise
+				} );
+
+				await promise;
+			} );
+		} );
+
 	} );
 
 	describe( 'Actions', () => {

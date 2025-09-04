@@ -6,7 +6,6 @@
  */
 
 const Constants = require( '../../../Constants.js' );
-const { fetchWikidataEntities } = require( '../../../utils/apiUtils.js' );
 const LabelData = require( '../../classes/LabelData.js' );
 
 module.exports = {
@@ -150,55 +149,16 @@ module.exports = {
 		 * given their Ids.
 		 *
 		 * @param {Object} payload
-		 * @param {Array} payload.ids
-		 * @return {Promise | undefined}
+		 * @param {Array} payload.ids - An array of Wikidata Property IDs to fetch.
+		 * @return {Promise | undefined} - A promise that resolves to the fetched data.
 		 */
-		fetchProperties: function ( payload ) {
-			// Filter out the fetched or fetching Wikidata Property Ids
-			const ids = payload.ids.filter( ( id ) => this.getPropertyData( id ) === undefined );
-			if ( ids.length === 0 ) {
-				// If list is empty, do nothing
-				return Promise.resolve();
-			}
-			const request = {
-				language: this.getUserLangCode,
-				ids: ids.join( '|' )
-			};
-			const promise = fetchWikidataEntities( request )
-				.then( ( data ) => {
-					// It might return an error for an invalid property Id,
-					// in that case, remove the Property Ids from the state
-					if ( data.error ) {
-						this.resetPropertyData( { ids } );
-						return data;
-					}
-					// Once received, store Wikidata Property Ids with their data
-					const fetched = data.entities ? Object.keys( data.entities ) : [];
-					fetched.forEach( ( id ) => {
-						const entity = data.entities[ id ];
-						// If entity is undefined, do nothing
-						if ( !entity ) {
-							return;
-						}
-
-						// If entity has a 'missing' property, reset the property data
-						if ( typeof entity === 'object' && 'missing' in entity ) {
-							this.resetPropertyData( { ids: [ id ] } );
-							return;
-						}
-						// Otherwise, store the property data
-						this.setPropertyData( { id, data: entity } );
-					} );
-					return data;
-				} )
-				.catch( () => {
-					// If fetch fails, remove the Property Ids from the state
-					this.resetPropertyData( { ids } );
-				} );
-
-			// Store Wikidata Property Ids with their resolving promise
-			ids.forEach( ( id ) => this.setPropertyData( { id, data: promise } ) );
-			return promise;
+		fetchProperties: function ( { ids } ) {
+			return this.fetchWikidataEntitiesBatched( {
+				ids,
+				getData: this.getPropertyData,
+				setData: this.setPropertyData,
+				resetData: this.resetPropertyData
+			} );
 		}
 	}
 };

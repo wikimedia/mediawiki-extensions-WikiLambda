@@ -103,9 +103,9 @@ describe( 'Wikidata Properties Pinia store', () => {
 
 		describe( 'resetPropertyData', () => {
 			it( 'removes property data for given IDs', () => {
-				store.properties = { P1: 'foo', P2: 'bar', P3: 'baz' };
-				store.resetPropertyData( { ids: [ 'P1', 'P3' ] } );
-				expect( store.properties ).toEqual( { P2: 'bar' } );
+				store.properties = { P111111: 'foo', P222222: 'bar', P333333: 'baz' };
+				store.resetPropertyData( { ids: [ 'P111111', 'P333333' ] } );
+				expect( store.properties ).toEqual( { P222222: 'bar' } );
 			} );
 		} );
 
@@ -259,6 +259,21 @@ describe( 'Wikidata Properties Pinia store', () => {
 				expect( store.setPropertyData ).toHaveBeenCalledWith( {
 					id: 'P444444',
 					data: { title: 'Property:P444444', labels: {} }
+				} );
+			} );
+
+			it( 'calls the batching method with correct parameters', () => {
+				const mockFetchWikidataEntitiesBatched = jest.fn().mockReturnValue( Promise.resolve() );
+				store.fetchWikidataEntitiesBatched = mockFetchWikidataEntitiesBatched;
+
+				const properties = [ 'P333333', 'P444444' ];
+				store.fetchProperties( { ids: properties } );
+
+				expect( mockFetchWikidataEntitiesBatched ).toHaveBeenCalledWith( {
+					ids: properties,
+					getData: store.getPropertyData,
+					setData: store.setPropertyData,
+					resetData: store.resetPropertyData
 				} );
 			} );
 		} );

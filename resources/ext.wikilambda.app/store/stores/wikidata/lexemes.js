@@ -6,7 +6,6 @@
  */
 'use strict';
 
-const { fetchWikidataEntities } = require( '../../../utils/apiUtils.js' );
 const Constants = require( '../../../Constants.js' );
 const LabelData = require( '../../classes/LabelData.js' );
 const { getNestedProperty } = require( '../../../utils/miscUtils.js' );
@@ -425,54 +424,15 @@ module.exports = {
 		 *
 		 * @param {Object} payload
 		 * @param {Array<string>} payload.ids - An array of Wikidata Lexeme IDs to fetch.
-		 * @return {Promise}
+		 * @return {Promise} - A promise that resolves to the fetched data.
 		 */
-		fetchLexemes: function ( payload ) {
-			// Filter out the fetched or fetching lexeme Ids
-			const ids = payload.ids.filter( ( id ) => this.getLexemeData( id ) === undefined );
-
-			if ( ids.length === 0 ) {
-				// If list is empty, do nothing
-				return Promise.resolve();
-			}
-			const request = {
-				language: this.getUserLangCode,
-				ids: ids.join( '|' )
-			};
-			const promise = fetchWikidataEntities( request )
-				.then( ( data ) => {
-					// It might return an error for an invalid lexeme Id,
-					// in that case, remove the Lexeme Ids from the state
-					if ( data.error ) {
-						this.resetLexemeData( { ids } );
-						return data;
-					}
-					// Once received, store lexeme Ids with their data
-					const fetched = data.entities ? Object.keys( data.entities ) : [];
-
-					fetched.forEach( ( id ) => {
-						const entity = data.entities[ id ];
-						// If entity is undefined, do nothing
-						if ( !entity ) {
-							return;
-						}
-						// If entity has a 'missing' property, reset the item data
-						if ( typeof entity === 'object' && 'missing' in entity ) {
-							this.resetLexemeData( { ids: [ id ] } );
-							return;
-						}
-						// Otherwise, store the item data
-						this.setLexemeData( { id, data: entity } );
-					} );
-					return data;
-				} )
-				.catch( () => {
-					// If fetch fails, remove the Lexeme Ids from the state
-					this.resetLexemeData( { ids } );
-				} );
-			// Store lexeme Ids with their resolving promise
-			ids.forEach( ( id ) => this.setLexemeData( { id, data: promise } ) );
-			return promise;
+		fetchLexemes: function ( { ids } ) {
+			return this.fetchWikidataEntitiesBatched( {
+				ids,
+				getData: this.getLexemeData,
+				setData: this.setLexemeData,
+				resetData: this.resetLexemeData
+			} );
 		},
 
 		/**
