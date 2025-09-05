@@ -301,6 +301,37 @@ describe( 'FunctionMetadataDialog', () => {
 			const message = wrapper.findAllComponents( { name: 'cdx-message' } );
 			expect( message[ 0 ].text() ).toContain( 'Something not working? Try Wikifunctions.Debug to trace your code.' );
 		} );
+
+		it( 'renders the expected/actual values even if the error data is missing', () => {
+			const wrapper = mount( FunctionMetadataDialog, {
+				props: { open: true, metadata: metadata.metadataDifferButNoErrors }
+			} );
+			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+			expect( sections.length ).toBe( 1 );
+			const section = sections[ 0 ];
+
+			// Check header
+			expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( '{{PLURAL:$1|Error|Errors}}' );
+			expect( section.find( '.cdx-accordion__header__description' ).text() ).toBe( 'None' );
+
+			// Check content
+			const content = section.find( '.cdx-accordion__content' );
+			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__key' );
+			expect( keys.length ).toBe( 2 );
+
+			// Expected result (key=expectedTestResult):
+			expect( keys[ 0 ].text() ).toContain( 'Expected result:' );
+			expect( keys[ 0 ].text() ).toContain( 'ABC' );
+
+			// Actual result (key=actualTestResult):
+			expect( keys[ 1 ].text() ).toContain( 'Actual result:' );
+			expect( keys[ 1 ].text() ).toContain( 'CBA' );
+
+			// No error, so no Wikifunctions.Debug message should be shown(?)
+			const message = wrapper.findAllComponents( { name: 'cdx-message' } );
+			expect( message.length ).toBe( 0 );
+			// expect( message[ 0 ].text() ).toContain( 'Something not working? Try Wikifunctions.Debug to trace your code.' );
+		} );
 	} );
 
 	describe( 'with nested metadata', () => {

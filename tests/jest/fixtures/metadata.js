@@ -170,10 +170,16 @@ const metadataErrors = convertSetToMap( {
 	actualTestResult: 'CBA'
 } );
 
+const metadataDifferButNoErrors = convertSetToMap( {
+	expectedTestResult: 'ABC',
+	actualTestResult: 'CBA'
+} );
+
 module.exports = {
 	metadataBasic,
 	metadataErrors,
 	metadataEmpty,
 	metadataNested,
+	metadataDifferButNoErrors,
 	convertSetToMap
 };

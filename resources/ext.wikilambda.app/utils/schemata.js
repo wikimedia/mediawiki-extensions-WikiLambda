@@ -257,8 +257,8 @@ const schemataUtils = {
 		 * @return {Object|undefined}
 		 */
 		const extractNestedErrors = ( error ) => {
-			// If this object is not an error; exit
-			if ( error.Z1K1 !== Constants.Z_ERROR ) {
+			// If this object is null or not an error; exit
+			if ( !error || error.Z1K1 !== Constants.Z_ERROR ) {
 				return undefined;
 			}
 
