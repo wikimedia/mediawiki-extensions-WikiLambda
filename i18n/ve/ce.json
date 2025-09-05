@@ -36,7 +36,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "КӀезиг деша",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "Ма-дарра",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "ХӀумма а ца карийна.",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Функцеш лахар",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "{{formatnum:2000}}+ функцешна йукъахь леха",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Хиламаш",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Йазйе текст",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Кховдайе функцеш",
