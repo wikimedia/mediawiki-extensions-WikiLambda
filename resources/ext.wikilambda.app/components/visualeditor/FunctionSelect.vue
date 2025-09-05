@@ -46,7 +46,18 @@
 					></wl-function-select-item>
 				</template>
 				<div v-else class="ext-wikilambda-app-function-select__no-results">
-					{{ $i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results' ) }}
+					<div class="ext-wikilambda-app-function-select__no-results-msg">
+						{{ $i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results' ) }}
+					</div>
+					<div
+						v-for="( cta, index ) in callsToAction"
+						:key="`cta-${ index }`"
+						class="ext-wikilambda-app-function-select__no-results-cta"
+					>
+						<!-- eslint-disable vue/no-v-html -->
+						<span v-html="cta.title"></span><br>
+						<span>{{ cta.description }}</span>
+					</div>
 				</div>
 			</template>
 		</div>
@@ -72,7 +83,21 @@ module.exports = exports = defineComponent( {
 	data: function () {
 		return {
 			showSearchCancel: false,
-			lookupAbortController: null
+			lookupAbortController: null,
+			callsToAction: [
+				{
+					title: this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-cta-suggest-title' ).parse(),
+					description: this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-cta-suggest-description' ).text()
+				},
+				{
+					title: this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-cta-create-title' ).parse(),
+					description: this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-cta-create-description' ).text()
+				},
+				{
+					title: this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-cta-explore-title' ).parse(),
+					description: this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-cta-explore-description' ).text()
+				}
+			]
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
@@ -230,10 +255,14 @@ module.exports = exports = defineComponent( {
 		font-weight: @font-weight-bold;
 	}
 
-	.ext-wikilambda-app-function-select__no-results {
+	.ext-wikilambda-app-function-select__no-results-msg {
 		padding: @spacing-50 @spacing-100;
 		color: @color-subtle;
-		font-weight: @font-weight-normal;
+		font-weight: @font-weight-bold;
+	}
+
+	.ext-wikilambda-app-function-select__no-results-cta {
+		padding: @spacing-50 @spacing-100;
 	}
 }
 </style>
