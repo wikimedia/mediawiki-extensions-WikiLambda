@@ -695,7 +695,6 @@ class ZObjectUtils {
 	}
 
 	/**
-	 *
 	 * @param string $key
 	 * @param \stdClass $zobject
 	 * @param ZPersistentObject[] $data

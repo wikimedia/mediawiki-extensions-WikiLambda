@@ -151,7 +151,6 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 	}
 
 	/**
-	 *
 	 * @param string $target The ZID of the function to call
 	 * @param string[] $arguments The function call parameters
 	 * @param string $parseLanguageCode The language code in which to parse inputs, e.g. 'de'

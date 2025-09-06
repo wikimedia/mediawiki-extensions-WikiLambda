@@ -22,7 +22,6 @@ trait ZObjectEditingPageTrait {
 	 * @param OutputPage $output
 	 * @param IContextSource $context
 	 * @param array $jsEditingConfigVarOverride variables to pass to the mw.config in JavaScript.
-	 *
 	 */
 	public function generateZObjectPayload(
 		OutputPage $output, IContextSource $context, array $jsEditingConfigVarOverride

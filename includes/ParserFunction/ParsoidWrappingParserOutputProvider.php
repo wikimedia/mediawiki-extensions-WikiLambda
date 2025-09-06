@@ -19,7 +19,7 @@ use Wikimedia\Parsoid\Core\ContentMetadataCollector;
 /**
  * Provides a ParserOutput for the Parsoid wrapping of the Wikifunctions content.
  *
- * @TODO: This should really be provided by Wikibase, not us, but needs must.
+ * @todo This should really be provided by Wikibase, not us, but needs must.
  */
 class ParsoidWrappingParserOutputProvider implements ParserOutputProvider {
 	private ContentMetadataCollector $contentMetadataCollector;

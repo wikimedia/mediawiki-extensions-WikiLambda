@@ -130,7 +130,6 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 	}
 
 	/**
-	 *
 	 * @param string $errorType
 	 * @param ZPersistentObject $zobject
 	 * @param string $languageCode

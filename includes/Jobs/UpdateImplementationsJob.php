@@ -21,8 +21,6 @@ use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Title\Title;
 use Psr\Log\LoggerInterface;
 
-/**
- */
 class UpdateImplementationsJob extends Job implements GenericParameterJob {
 
 	private LoggerInterface $logger;
