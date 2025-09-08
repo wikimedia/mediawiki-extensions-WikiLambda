@@ -254,6 +254,24 @@ describe( 'ZMultilingualString', () => {
 			const blankItem = items[ items.length - 1 ];
 			expect( blankItem.props( 'defaultExpanded' ) ).toBe( false );
 		} );
+
+		it( 'shows empty state when no visible items exist', () => {
+			store.getZMultilingualValues = createGettersWithFunctionsMock( [] );
+			store.getZMultilingualLangs = createGettersWithFunctionsMock( [] );
+
+			const wrapper = shallowMount( ZMultilingualString, {
+				props: {
+					keyPath,
+					objectValue: emptyObjectValue,
+					edit: false
+				},
+				global: globalStubs
+			} );
+
+			const emptyState = wrapper.find( '.ext-wikilambda-app-multilingual-string__empty-state' );
+			expect( emptyState.exists() ).toBe( true );
+			expect( emptyState.text() ).toBe( '0 items' );
+		} );
 	} );
 
 	describe( 'in edit mode', () => {
@@ -335,6 +353,24 @@ describe( 'ZMultilingualString', () => {
 			await loadMoreButton.trigger( 'click' );
 
 			expect( wrapper.vm.showLoadMoreDialog ).toBe( true );
+		} );
+
+		it( 'shows empty state when no visible items exist', () => {
+			store.getZMultilingualValues = createGettersWithFunctionsMock( [] );
+			store.getZMultilingualLangs = createGettersWithFunctionsMock( [] );
+
+			const wrapper = shallowMount( ZMultilingualString, {
+				props: {
+					keyPath,
+					objectValue: emptyObjectValue,
+					edit: false
+				},
+				global: globalStubs
+			} );
+
+			const emptyState = wrapper.find( '.ext-wikilambda-app-multilingual-string__empty-state' );
+			expect( emptyState.exists() ).toBe( true );
+			expect( emptyState.text() ).toBe( '0 items' );
 		} );
 	} );
 

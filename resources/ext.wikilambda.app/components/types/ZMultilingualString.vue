@@ -7,6 +7,14 @@
 <template>
 	<div class="ext-wikilambda-app-multilingual-string" data-testid="z-multilingual-string">
 		<div class="ext-wikilambda-app-multilingual-string__items">
+			<!-- Show empty state when no items -->
+			<div
+				v-if="visibleItems.length === 0"
+				class="ext-wikilambda-app-multilingual-string__empty-state"
+			>
+				{{ $i18n( 'wikilambda-list-empty-state' ).text() }}
+			</div>
+			<!-- Show multilingual string items -->
 			<div
 				v-for="item in visibleItems"
 				:key="item.keyPath"
@@ -484,6 +492,11 @@ module.exports = exports = defineComponent( {
 
 	.ext-wikilambda-app-multilingual-string__add-button {
 		margin-bottom: @spacing-50;
+		margin-top: @spacing-50;
+	}
+
+	.ext-wikilambda-app-multilingual-string__empty-state {
+		color: @color-placeholder;
 	}
 }
 </style>

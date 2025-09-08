@@ -22,6 +22,14 @@
 		</template>
 		<!-- else, simply show list of items -->
 		<template #value>
+			<!-- Show empty state when no items -->
+			<div
+				v-if="listItemIndexes.length === 0"
+				class="ext-wikilambda-app-typed-list-items__empty-state"
+			>
+				{{ $i18n( 'wikilambda-list-empty-state' ).text() }}
+			</div>
+			<!-- Show list items -->
 			<wl-z-object-key-value
 				v-for="index in listItemIndexes"
 				:key="`list-item-${ index }`"
@@ -137,7 +145,7 @@ module.exports = exports = defineComponent( {
 
 	.ext-wikilambda-app-typed-list-items__add-button {
 		margin-left: -@spacing-50;
-		margin-top: @spacing-75;
+		margin-top: @spacing-50;
 	}
 
 	.ext-wikilambda-app-typed-list-items__block {
@@ -146,6 +154,10 @@ module.exports = exports = defineComponent( {
 
 	.ext-wikilambda-app-typed-list-items__localized-label {
 		line-height: @spacing-200;
+	}
+
+	.ext-wikilambda-app-typed-list-items__empty-state {
+		color: @color-placeholder;
 	}
 }
 </style>

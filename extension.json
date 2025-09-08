@@ -824,6 +824,7 @@
 				"wikilambda-add-local-key-to-function-call",
 				"wikilambda-list-items-label",
 				"wikilambda-list-item-label",
+				"wikilambda-list-empty-state",
 				"wikilambda-context-menu",
 				"wikilambda-add-list-item",
 				"wikilambda-delete-list-item",

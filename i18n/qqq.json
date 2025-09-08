@@ -399,6 +399,7 @@
 	"wikilambda-list-item-label": "Label for single item in a list.\n\nParameters:\n* $1 - numerical index of the list item (starting from 1).",
 	"wikilambda-list-items-label": "Label for items in a list",
 	"wikilambda-list-items-type-label": "Label for the type of a list of items",
+	"wikilambda-list-empty-state": "Message shown when a list has no items",
 	"wikilambda-list-type-change-warning": "Warning message when the type of a typed list is changed that list items will be removed",
 	"wikilambda-literal-type": "Adjective for a type expressed as a literal, where $1 is the type name.\n\nNote: $1 is a noun, which can be \"function\", \"string\", \"number\", or something else. If different nouns require a different adjective in your language, for example because of the noun's gender, try to translate it in a way that would be the same with any noun, for example: \"Literal object of type $1\".",
 	"wikilambda-loading": "Label to inform the user that the content of the page is being loaded",
