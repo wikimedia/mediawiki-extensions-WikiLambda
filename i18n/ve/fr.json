@@ -3,9 +3,12 @@
 		"authors": [
 			"Derugon",
 			"EmDashUser002",
+			"Escargot bleu",
 			"Goombiis",
 			"JLTRY",
-			"McDutchie"
+			"McDutchie",
+			"TimHBD",
+			"VIGNERON"
 		]
 	},
 	"wikilambda-fragment-disabled": "Les appels à Wikifunctions sont actuellement désactivés. Vous voudrez peut-être remplacer cet appel.",
@@ -39,11 +42,17 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Fonction]] de Wikifunctions",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Lire moins",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "Lire la suite",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Aucun résultat trouvé.",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Fonction de recherche",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Aucun résultat. Essayez d'utiliser des termes de recherche différents.",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Chercher parmi plus de {{formatnum:2000}} fonctions",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Résultats",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Saisir le texte",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Fonctions suggérées",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-cta-suggest-title": "[[f:Wikifunctions:Project chat|Suggérer à la communauté]]",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-cta-suggest-description": "Lancez une discussion et demandez aux contributeurs de vous aider à créer la fonction",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-cta-create-title": "[[f:Special:CreateObject|Créer la fonction]]",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-cta-create-description": "Aidez à développer les Wikifunctions en créant vous-même la fonction",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-cta-explore-title": "[[f:Special:ListObjectsByType|Voir toutes les fonctions]]",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-cta-explore-description": "Découvrez la liste complète des fonctions dans Wikifunctions",
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Modifiez la fonction pour corriger les valeurs manquantes ou non valides.",
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Aucune option choisie.",
 	"wikilambda-visualeditor-wikifunctionscall-error-language": "Aucune langue choisie.",

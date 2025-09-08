@@ -316,6 +316,8 @@
 	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Erro|Erros}}",
 	"wikilambda-functioncall-metadata-errors-none": "Ningún",
 	"wikilambda-functioncall-metadata-errors-summary": "Tipo de erro",
+	"wikilambda-functioncall-metadata-errors-args": "Datos do erro",
+	"wikilambda-functioncall-metadata-errors-children": "Traza do erro",
 	"wikilambda-functioncall-metadata-errors-debug-hint": "Algo non funciona? Proba <code>Wikifunctions.Debug</code> para depurar o teu código.",
 	"wikilambda-functioncall-metadata-evaluation": "Avaliación",
 	"wikilambda-functioncall-metadata-execution": "Execución",

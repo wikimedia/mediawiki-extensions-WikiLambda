@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"GilPe",
 			"Robby",
 			"Volvox"
 		]
@@ -140,8 +141,8 @@
 	"wikilambda-editor-output-title": "Resultat",
 	"wikilambda-editor-publish-dialog-header": "Är Ännerunge publizéieren",
 	"wikilambda-editor-publish-dialog-summary-help-text": "Wéi hutt Dir dës Säit verbessert?",
-	"wikilambda-editor-publish-dialog-summary-label": "Resumé vun der Ännerung",
-	"wikilambda-editor-publish-dialog-summary-placeholder": "Gitt e kuerze Resumé an",
+	"wikilambda-editor-publish-dialog-summary-label": "Resümmee vun der Ännerung",
+	"wikilambda-editor-publish-dialog-summary-placeholder": "Gitt e kuerze Resümmee an",
 	"wikilambda-editor-tester-list-label": "Lëscht vun den Tester",
 	"wikilambda-editor-zlist-additem-tooltip": "En Element op dës Lëscht setzen",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Dëst Element vun dëser Lëscht erofhuelen",
@@ -163,7 +164,7 @@
 	"wikilambda-function-definition-description-placeholder": "Beschreiwung aginn",
 	"wikilambda-function-definition-edit": "Definitioun änneren",
 	"wikilambda-function-definition-example-title": "Beispiller fir d'Benotze vun der Funktioun",
-	"wikilambda-function-definition-footer-label": "Resumé vun der Ännerung",
+	"wikilambda-function-definition-footer-label": "Resümmee vun der Ännerung",
 	"wikilambda-function-definition-footer-placeholder": "Beschreift Är Ännerunge kuerz",
 	"wikilambda-function-definition-input-item-label": "Etikett",
 	"wikilambda-function-definition-input-item-type": "Typ",
@@ -330,7 +331,7 @@
 	"wikilambda-string-renderer-examples-title": "Beispiller",
 	"wikilambda-string-renderer-field-example": "Z.&nbsp;B. $1",
 	"wikilambda-string-renderer-running": "Leeft...",
-	"wikilambda-summarylabel": "Resumé:",
+	"wikilambda-summarylabel": "Resümmee:",
 	"wikilambda-tester-create-new": "Test derbäisetzen",
 	"wikilambda-tester-details": "Detailer",
 	"wikilambda-tester-results-current-implementation": "Aktuell Implementéierung",
