@@ -955,35 +955,49 @@ class ZObjectStore {
 	public function getPreferredLabelsQuery( $languageChain ) {
 		$dbr = $this->dbProvider->getReplicaDatabase();
 
-		// Build the CASE statement to assign language preference index
+		// Build the CASE expression to assign language preference index and select the MIN
 		$caseParts = [];
 		foreach ( $languageChain as $index => $langZid ) {
-			$caseParts[] = "WHEN wlzl_language = " .
-				$dbr->addQuotes( $langZid ) . " AND wlzl_label_primary = " .
+			$caseParts[] = "WHEN l1.wlzl_language = " .
+				$dbr->addQuotes( $langZid ) . " AND l1.wlzl_label_primary = " .
 				$dbr->addQuotes( true ) . " THEN " . ( $index + 1 );
 		}
-		$case = "CASE " . implode( " ", $caseParts ) . " ELSE " . ( count( $languageChain ) + 1 ) . " END";
+		$caseExpr = "CASE " . implode( " ", $caseParts ) . " ELSE " . ( count( $languageChain ) + 1 ) . " END";
+		$minPriorityCase = "MIN( $caseExpr )";
 
-		// Create subquery to assign priority order to the labels depending on the languageChain
-		// TODO (T379560): Do this via SQLPlatform->selectSQLText() rather than raw SQL.
-		$fields = [ '*', "ROW_NUMBER() OVER ( PARTITION BY wlzl_zobject_zid ORDER BY $case ) AS priority" ];
-		$subquery = $dbr->selectSQLText( [ 'wikilambda_zobject_labels' ], $fields, '', __METHOD__ );
+		// Create subquery to get the preferred label depending on the languageChain
+		$prefQuery = $dbr->newSelectQueryBuilder()
+			->select( [ 'l1.wlzl_zobject_zid', 'min_priority' => $minPriorityCase ] )
+			->from( 'wikilambda_zobject_labels', 'l1' )
+			->groupBy( [ 'l1.wlzl_zobject_zid' ] );
 
-		// Create query to select the most prioritary label for each zid
-		// - Join with zobject entries in the page table to order objects by creation date
-		// - Select only those rows with label priority 1
+		$prefJoinConditions = [
+			'pref.wlzl_zobject_zid = l1.wlzl_zobject_zid',
+			'pref.min_priority = ' . $caseExpr
+		];
+
 		$pageJoinConditions = [
-			'p.page_title = wlzl_zobject_zid',
+			'p.page_title = l1.wlzl_zobject_zid',
 			'p.page_namespace = ' . NS_MAIN
 		];
+
+		// Create query to select the preferred label for each zid
+		// - Join with the preferred labels table to select the most appropriate label
+		// - Join with zobject entries in the page table to order objects by creation date
 		$queryBuilder = $dbr->newSelectQueryBuilder()
 			->select( [
-				'page_id', 'wlzl_zobject_zid', 'wlzl_language', 'wlzl_label', 'wlzl_type',
-				'wlzl_label_normalised', 'wlzl_label_primary', 'wlzl_return_type'
+				'p.page_id',
+				'l1.wlzl_zobject_zid',
+				'l1.wlzl_label',
+				'l1.wlzl_language',
+				'l1.wlzl_type',
+				'l1.wlzl_label_normalised',
+				'l1.wlzl_label_primary',
+				'l1.wlzl_return_type'
 			] )
-			->from( new Subquery( $subquery ), 'preferred_labels' )
-			->leftJoin( 'page', 'p', $pageJoinConditions )
-			->where( [ 'priority' => 1 ] );
+			->from( 'wikilambda_zobject_labels', 'l1' )
+			->join( $prefQuery, 'pref', $prefJoinConditions )
+			->leftJoin( 'page', 'p', $pageJoinConditions );
 
 		return $queryBuilder;
 	}
@@ -1056,8 +1070,8 @@ class ZObjectStore {
 		$preferredLabelsQuery = $this->getPreferredLabelsQuery( $languages );
 		$preferredLabelsQuery
 			->clearFields()
-			->fields( [ 'page_id', 'wlzl_zobject_zid', 'wlzl_label', 'wlzl_language' ] )
-			->andWhere( [ 'wlzl_type' => 'Z8' ] );
+			->fields( [ 'p.page_id', 'l1.wlzl_zobject_zid', 'l1.wlzl_label', 'l1.wlzl_language' ] )
+			->andWhere( [ 'l1.wlzl_type' => 'Z8' ] );
 
 		// String match condition: match tokenized searchTerm substrings (if any)
 		$searchTerm = ZObjectUtils::comparableString( $searchTerm );
