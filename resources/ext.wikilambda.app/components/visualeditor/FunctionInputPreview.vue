@@ -195,7 +195,8 @@ module.exports = exports = defineComponent( {
 		}
 	} ),
 	methods: Object.assign( {}, mapActions( useMainStore, [
-		'fetchLanguageCode'
+		'fetchLanguageCode',
+		'submitVEInteraction'
 	] ), {
 		/**
 		 * Handles the click event for the action button.
@@ -353,6 +354,9 @@ module.exports = exports = defineComponent( {
 		 */
 		runFunctionCall: function ( payload ) {
 			const { functionZid, params } = payload;
+
+			// Track the preview action
+			this.submitVEInteraction( 'preview-change-query' );
 
 			// Cancel previous request and set up a new AbortController
 			if ( this.abortController ) {

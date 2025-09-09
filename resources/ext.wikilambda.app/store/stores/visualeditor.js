@@ -138,6 +138,21 @@ module.exports = {
 		}
 	},
 	actions: {
+
+		/**
+		 * Submit an interaction event using Metrics Platform for Visual Editor
+		 *
+		 * @param {string} action - The action to submit.
+		 * @example action: search-change-query, search-choose-function, preview-change-query, function-link-click
+		 */
+		submitVEInteraction: function ( action ) {
+			if ( window.ve && typeof window.ve.track === 'function' ) {
+				window.ve.track( 'activity.WikifunctionsCall', {
+					action
+				} );
+			}
+		},
+
 		/**
 		 * Sets the Visual Editor function ID in the state.
 		 *

@@ -156,7 +156,8 @@ module.exports = exports = defineComponent( {
 		'lookupFunctions',
 		'fetchZids',
 		'setSearchTerm',
-		'setLookupResults'
+		'setLookupResults',
+		'submitVEInteraction'
 	] ), {
 		/**
 		 * Update the lookupResults when there's a new search
@@ -171,6 +172,8 @@ module.exports = exports = defineComponent( {
 				return;
 			}
 			this.fetchLookupResults( value );
+			// Track the searching for a function
+			this.submitVEInteraction( 'search-change-query' );
 		},
 		/**
 		 * Triggers a lookup API to search for matches for the
@@ -223,6 +226,8 @@ module.exports = exports = defineComponent( {
 		selectFunction: function ( value ) {
 			if ( value && this.isValidZidFormat( value ) ) {
 				this.$emit( 'select', value );
+				// Track the selecting a function
+				this.submitVEInteraction( 'search-choose-function' );
 			}
 		},
 		/**
