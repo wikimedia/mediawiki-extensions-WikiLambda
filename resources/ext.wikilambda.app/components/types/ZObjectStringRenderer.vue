@@ -89,7 +89,7 @@ const { mapActions, mapState } = require( 'pinia' );
 const Constants = require( '../../Constants.js' );
 const errorMixin = require( '../../mixins/errorMixin.js' );
 const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
-const { getValueFromCanonicalZMap, canonicalToHybrid, hybridToCanonical } = require( '../../utils/schemata.js' );
+const { canonicalToHybrid, hybridToCanonical } = require( '../../utils/schemata.js' );
 const urlUtils = require( '../../utils/urlUtils.js' );
 const useMainStore = require( '../../store/index.js' );
 
@@ -311,16 +311,16 @@ module.exports = exports = defineComponent( {
 						this.$i18n( 'wikilambda-renderer-view-invalid-result' ).text();
 					this.showExamplesLink = ( this.renderedExamples.length > 0 );
 					const metadata = data.response[ Constants.Z_RESPONSEENVELOPE_METADATA ];
-					const errorMessage = this.extractErrorMessage( metadata );
-					this.setRendererError( errorMessage || this.$i18n( 'wikilambda-renderer-unknown-error',
-						this.rendererZid ).parse() );
+					const fallbackErrorMsg = this.$i18n( 'wikilambda-renderer-unknown-error',
+						this.rendererZid ).parse();
+					this.setErrorMessageCallback( metadata, fallbackErrorMsg, this.setFieldError );
 				} else if ( this.getZObjectType( response ) !== Constants.Z_STRING ) {
 					// Renderer returned unexpected type:
 					// show unexpected result error and project chat footer
 					this.renderedValue = this.edit ? '' :
 						this.i18n( 'wikilambda-renderer-view-invalid-result' ).text();
 					this.showErrorFooter = true;
-					this.setRendererError( this.$i18n( 'wikilambda-renderer-unexpected-result-error',
+					this.setFieldError( this.$i18n( 'wikilambda-renderer-unexpected-result-error',
 						this.rendererZid ).parse() );
 				} else {
 					// Success: Update the locally saved renderedValue with the response
@@ -328,7 +328,7 @@ module.exports = exports = defineComponent( {
 				}
 			} ).catch( () => {
 				this.clearRendererError();
-				this.setRendererError( this.$i18n( 'wikilambda-renderer-api-error' ).text() );
+				this.setFieldError( this.$i18n( 'wikilambda-renderer-api-error' ).text() );
 			} );
 		},
 		/**
@@ -358,11 +358,11 @@ module.exports = exports = defineComponent( {
 					// * get error from metadata object and show examples link
 					data.resolver.resolve();
 					this.clearParsedValue();
-					const metadata = data.response[ Constants.Z_RESPONSEENVELOPE_METADATA ];
-					const errorMessage = this.extractErrorMessage( metadata );
 					this.showExamplesLink = ( this.renderedExamples.length > 0 );
-					this.setRendererError( errorMessage || this.$i18n( 'wikilambda-parser-unknown-error',
-						this.parserZid ).parse() );
+					const metadata = data.response[ Constants.Z_RESPONSEENVELOPE_METADATA ];
+					const fallbackErrorMsg = this.$i18n( 'wikilambda-parser-unknown-error',
+						this.parserZid ).parse();
+					this.setErrorMessageCallback( metadata, fallbackErrorMsg, this.setFieldError );
 				} else if ( this.getZObjectType( response ) !== this.type ) {
 					// Parser return unexpected type:
 					// * Resolve parser promise
@@ -370,7 +370,7 @@ module.exports = exports = defineComponent( {
 					data.resolver.resolve();
 					this.clearParsedValue();
 					this.showErrorFooter = true;
-					this.setRendererError( this.$i18n( 'wikilambda-parser-unexpected-result-error',
+					this.setFieldError( this.$i18n( 'wikilambda-parser-unexpected-result-error',
 						this.parserZid ).parse() );
 				} else {
 					// Success:
@@ -390,7 +390,7 @@ module.exports = exports = defineComponent( {
 					return;
 				}
 				this.clearRendererError();
-				this.setRendererError( this.$i18n( 'wikilambda-renderer-api-error' ).text() );
+				this.setFieldError( this.$i18n( 'wikilambda-renderer-api-error' ).text() );
 			} );
 		},
 		/**
@@ -403,11 +403,11 @@ module.exports = exports = defineComponent( {
 			} );
 		},
 		/**
-		 * Saves the given error message for current errorId
+		 * Sets the given error message for current errorId
 		 *
 		 * @param {string} errorMessage
 		 */
-		setRendererError: function ( errorMessage ) {
+		setFieldError: function ( errorMessage ) {
 			this.setError( {
 				errorId: this.keyPath,
 				errorType: Constants.ERROR_TYPES.ERROR,
@@ -446,18 +446,6 @@ module.exports = exports = defineComponent( {
 				this.$emit( 'expand', false );
 				this.initialized = true;
 			}
-		},
-		/**
-		 * Given a metadata object of a failed function call, extracts the value
-		 * of the Z500K1 key and, if it contains a message, returns it
-		 *
-		 * @param {Object} metadata
-		 * @return {string}
-		 */
-		extractErrorMessage: function ( metadata ) {
-			const error = getValueFromCanonicalZMap( metadata, 'errors' );
-			const errorInfo = error[ Constants.Z_ERROR_VALUE ][ Constants.Z_GENERIC_ERROR_VALUE ];
-			return ( ( typeof errorInfo === 'string' ) && ( !!errorInfo ) ) ? errorInfo : undefined;
 		},
 		/**
 		 * Opens the dialog with the renderer examples, if any.

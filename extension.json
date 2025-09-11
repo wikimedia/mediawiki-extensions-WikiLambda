@@ -447,6 +447,7 @@
 				"ext.wikilambda.app/mixins/zobjectMixin.js",
 				"ext.wikilambda.app/composables/useBreakpoints.js",
 				"ext.wikilambda.app/utils/apiUtils.js",
+				"ext.wikilambda.app/utils/errorUtils.js",
 				"ext.wikilambda.app/utils/miscUtils.js",
 				"ext.wikilambda.app/utils/schemata.js",
 				"ext.wikilambda.app/utils/typeUtils.js",
