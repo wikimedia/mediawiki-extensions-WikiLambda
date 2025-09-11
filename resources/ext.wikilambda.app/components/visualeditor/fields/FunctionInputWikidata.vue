@@ -11,11 +11,13 @@
 			:entity-id="entityId"
 			:entity-label="entityLabel"
 			:type="entityType"
+			:disabled="shouldUseDefaultValue"
+			:placeholder="placeholder"
 			@select-wikidata-entity="onSelect"
 		></wl-wikidata-entity-selector>
 		<cdx-progress-indicator
 			v-if="isValidating"
-			class="ext-wikilambda-app-function-input-parser__progress-indicator">
+			class="ext-wikilambda-app-function-input-wikidata__progress-indicator">
 			{{ $i18n( 'wikilambda-loading' ).text() }}
 		</cdx-progress-indicator>
 	</div>
@@ -49,6 +51,21 @@ module.exports = exports = defineComponent( {
 		inputType: {
 			type: String,
 			required: true
+		},
+		shouldUseDefaultValue: {
+			type: Boolean,
+			required: false,
+			default: false
+		},
+		hasDefaultValue: {
+			type: Boolean,
+			required: false,
+			default: false
+		},
+		defaultValue: {
+			type: String,
+			required: false,
+			default: ''
 		}
 	},
 	emits: [ 'input', 'update', 'validate' ],
@@ -93,6 +110,26 @@ module.exports = exports = defineComponent( {
 		 */
 		allowsEmptyField: function () {
 			return Constants.VE_ALLOW_EMPTY_FIELD.includes( this.inputType );
+		},
+
+		/**
+		 * Returns the placeholder text.
+		 * If the default value checkbox is checked, return the default value label,
+		 * otherwise return an empty string.
+		 *
+		 * @return {string}
+		 */
+		placeholder: function () {
+			if ( this.shouldUseDefaultValue ) {
+				const entityId = this.defaultValue;
+				if ( !entityId ) {
+					return '';
+				}
+				// Get the entity label from the store
+				const labelData = this.getWikidataEntityLabelData( this.entityType, entityId );
+				return labelData ? labelData.label : entityId;
+			}
+			return '';
 		}
 	} ),
 	methods: Object.assign( {}, mapActions( useMainStore, [
@@ -128,10 +165,20 @@ module.exports = exports = defineComponent( {
 		 * @param {boolean} emitUpdate - Whether to emit the update event if valid.
 		 */
 		validate: function ( value, emitUpdate = false ) {
-			// For empty values, check if empty field is allowed
+			// If default value checkbox is checked, field is valid
+			if ( this.shouldUseDefaultValue ) {
+				this.updateValidationState( true );
+				if ( emitUpdate ) {
+					this.$emit( 'update', value );
+				}
+				return;
+			}
+
+			// For empty values, valid if: empty is allowed AND no default value available
 			if ( !value ) {
-				this.updateValidationState( this.allowsEmptyField );
-				if ( emitUpdate && this.allowsEmptyField ) {
+				const isValid = this.allowsEmptyField && !this.hasDefaultValue;
+				this.updateValidationState( isValid );
+				if ( emitUpdate && isValid ) {
 					this.$emit( 'update', value );
 				}
 				return;
@@ -192,10 +239,55 @@ module.exports = exports = defineComponent( {
 				.finally( () => {
 					this.isValidating = false;
 				} );
+		},
+
+		/**
+		 * Fetches the default value from wikidata.
+		 *
+		 * @return {void}
+		 */
+		fetchDefaultValue: function () {
+			if ( this.defaultValue ) {
+				this.fetchWikidataEntitiesByType( { type: this.entityType, ids: [ this.defaultValue ] } );
+			}
 		}
+
 	} ),
+	watch: {
+		/**
+		 * Watch for changes to shouldUseDefaultValue and re-validate
+		 *
+		 * @param {boolean} newValue - The new value of shouldUseDefaultValue
+		 */
+		shouldUseDefaultValue: function () {
+			this.validate( this.entityId );
+		}
+	},
 	mounted: function () {
+		this.fetchDefaultValue();
 		this.validate( this.entityId );
 	}
 } );
 </script>
+
+<style lang="less">
+@import '../../../ext.wikilambda.app.variables.less';
+
+.ext-wikilambda-app-function-input-wikidata {
+	position: relative;
+
+	.ext-wikilambda-app-function-input-wikidata__progress-indicator {
+		position: absolute;
+		right: @spacing-50;
+		bottom: @spacing-25;
+
+		.cdx-progress-indicator__indicator {
+			width: @size-icon-small;
+			height: @size-icon-small;
+			min-width: @size-icon-small;
+			min-height: @size-icon-small;
+		}
+	}
+}
+
+</style>

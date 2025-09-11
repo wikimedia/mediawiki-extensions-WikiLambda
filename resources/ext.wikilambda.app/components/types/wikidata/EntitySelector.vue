@@ -54,6 +54,11 @@ module.exports = exports = defineComponent( {
 		type: {
 			type: String,
 			required: true
+		},
+		placeholder: {
+			type: String,
+			required: false,
+			default: ''
 		}
 	},
 	data: function () {
@@ -79,6 +84,9 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		lookupPlaceholder: function () {
+			if ( this.placeholder ) {
+				return this.placeholder;
+			}
 			const msg = Constants.WIKIDATA_SELECTOR_PLACEHOLDER_MSG[ this.type ];
 			// eslint-disable-next-line mediawiki/msg-doc
 			return this.$i18n( msg || 'wikilambda-wikidata-entity-selector-placeholder' ).text();

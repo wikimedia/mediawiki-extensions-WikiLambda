@@ -523,6 +523,7 @@
 				"ext.wikilambda.app/components/function/viewer/FunctionViewerDetailsTable.vue",
 				"ext.wikilambda.app/components/visualeditor/ExpandableDescription.vue",
 				"ext.wikilambda.app/components/visualeditor/FunctionCallSetup.vue",
+				"ext.wikilambda.app/components/visualeditor/FunctionInputDefaultValueCheckbox.vue",
 				"ext.wikilambda.app/components/visualeditor/FunctionInputField.vue",
 				"ext.wikilambda.app/components/visualeditor/FunctionInputPreview.vue",
 				"ext.wikilambda.app/components/visualeditor/FunctionInputSetup.vue",

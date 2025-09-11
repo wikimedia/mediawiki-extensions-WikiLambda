@@ -10,6 +10,8 @@
 		class="ext-wikilambda-app-function-input-language"
 		:selected-zid="value"
 		:type="languageType"
+		:disabled="shouldUseDefaultValue"
+		:placeholder="placeholder"
 		@select-item="handleUpdate"
 	></wl-z-object-selector>
 </template>
@@ -37,6 +39,21 @@ module.exports = exports = defineComponent( {
 			type: String,
 			required: false,
 			default: ''
+		},
+		shouldUseDefaultValue: {
+			type: Boolean,
+			required: false,
+			default: false
+		},
+		hasDefaultValue: {
+			type: Boolean,
+			required: false,
+			default: false
+		},
+		defaultValue: {
+			type: String,
+			required: false,
+			default: ''
 		}
 	},
 	emits: [ 'update', 'input', 'validate' ],
@@ -47,6 +64,7 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
+		'getLabelData',
 		'getStoredObject'
 	] ), {
 		/**
@@ -56,6 +74,26 @@ module.exports = exports = defineComponent( {
 		 */
 		allowsEmptyField: function () {
 			return Constants.VE_ALLOW_EMPTY_FIELD.includes( Constants.Z_NATURAL_LANGUAGE );
+		},
+
+		/**
+		 * Returns the placeholder text.
+		 * If the default value checkbox is checked, return the default value label,
+		 * otherwise return an empty string.
+		 *
+		 * @return {string}
+		 */
+		placeholder: function () {
+			if ( this.shouldUseDefaultValue ) {
+				const langZid = this.defaultValue;
+				if ( !langZid ) {
+					return '';
+				}
+				// Get the language label using the store's getLabelData method
+				const labelData = this.getLabelData( langZid );
+				return labelData ? labelData.label : langZid;
+			}
+			return '';
 		}
 	} ),
 	methods: Object.assign( {}, mapActions( useMainStore, [
@@ -73,6 +111,7 @@ module.exports = exports = defineComponent( {
 			this.$emit( 'input', value );
 			this.validate( value, true );
 		},
+
 		/**
 		 * Updates the validation state of the field by emitting a 'validate'
 		 * event with the result of the validation and the error message (if any)
@@ -84,6 +123,7 @@ module.exports = exports = defineComponent( {
 			const error = !isValid ? ErrorData.buildErrorData( { errorMessageKey } ) : undefined;
 			this.$emit( 'validate', { isValid, error } );
 		},
+
 		/**
 		 * Validates the value and optionally emits an update event if valid.
 		 * When validation is done:
@@ -94,10 +134,20 @@ module.exports = exports = defineComponent( {
 		 * @param {boolean} emitUpdate - Whether to emit the update event if valid.
 		 */
 		validate: function ( value, emitUpdate = false ) {
-			// If value is empty; valid if empty is allowed
+			// If default value checkbox is checked, field is valid
+			if ( this.shouldUseDefaultValue ) {
+				this.updateValidationState( true );
+				if ( emitUpdate ) {
+					this.$emit( 'update', value );
+				}
+				return;
+			}
+
+			// If value is empty; valid if: empty is allowed AND no default value available
 			if ( !value ) {
-				this.updateValidationState( this.allowsEmptyField );
-				if ( emitUpdate && this.allowsEmptyField ) {
+				const isValid = this.allowsEmptyField && !this.hasDefaultValue;
+				this.updateValidationState( isValid );
+				if ( emitUpdate && isValid ) {
 					this.$emit( 'update', value );
 				}
 				return;
@@ -112,6 +162,7 @@ module.exports = exports = defineComponent( {
 			// Else, initiate asynchronous validation
 			this.validateLanguage( value, emitUpdate );
 		},
+
 		/**
 		 * Fetches the selected zid and validate that it belongs to a Natural Language.
 		 *
@@ -150,13 +201,25 @@ module.exports = exports = defineComponent( {
 					this.isValidating = false;
 				} );
 		},
+
 		/**
 		 * On field initialization, make sure suggested languages are fetched
 		 */
 		fetchSuggestedLangs: function () {
 			this.fetchZids( { zids: Constants.SUGGESTIONS.LANGUAGES } );
 		}
+
 	} ),
+	watch: {
+		/**
+		 * Watch for changes to shouldUseDefaultValue and re-validate
+		 *
+		 * @param {boolean} newValue - The new value of shouldUseDefaultValue
+		 */
+		shouldUseDefaultValue: function () {
+			this.validate( this.value );
+		}
+	},
 	mounted: function () {
 		this.fetchSuggestedLangs();
 		this.validate( this.value );

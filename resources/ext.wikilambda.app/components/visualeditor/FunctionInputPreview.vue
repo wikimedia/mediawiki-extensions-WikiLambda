@@ -42,7 +42,7 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { mapState, mapActions } = require( 'pinia' );
 const Constants = require( '../../Constants.js' );
 const { performFunctionCall } = require( '../../utils/apiUtils.js' );
 const errorMixin = require( '../../mixins/errorMixin.js' );
@@ -129,38 +129,18 @@ module.exports = exports = defineComponent( {
 			 *
 			 * @type {Object|null}
 			 */
-			abortController: null,
-			/**
-			 * Collection of callbacks that produce default values for empty args
-			 * indexed by the argument type.
-			 *
-			 * @type {Object}
-			 */
-			defaultValueCallbacks: {
-				[ Constants.Z_GREGORIAN_CALENDAR_DATE ]: () => {
-					const today = new Date();
-					const d = today.getDate();
-					const m = today.getMonth() + 1;
-					const yyyy = today.getFullYear();
-					return `${ d }-${ m }-${ yyyy }`;
-				},
-				[ Constants.Z_NATURAL_LANGUAGE ]: () => {
-					const langCode = mw.config.get( 'wgContentLanguage' );
-					return this.getLanguageZidOfCode( langCode ) || '';
-				},
-				[ Constants.Z_WIKIDATA_ITEM ]: () => mw.config.get( 'wgWikibaseItemId' ) || '',
-				[ Constants.Z_WIKIDATA_REFERENCE_ITEM ]: () => mw.config.get( 'wgWikibaseItemId' ) || ''
-			}
+			abortController: null
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
-		'getLanguageZidOfCode',
 		'getOutputTypeOfFunctionZid',
 		'getUserLangCode',
 		'getUserLangZid',
 		'getParserZid',
 		'getRendererZid',
-		'createObjectByType'
+		'createObjectByType',
+		'getDefaultValueForType',
+		'hasDefaultValueForType'
 	] ), {
 		/**
 		 * Determines the icon for the action button.
@@ -195,7 +175,6 @@ module.exports = exports = defineComponent( {
 		}
 	} ),
 	methods: Object.assign( {}, mapActions( useMainStore, [
-		'fetchLanguageCode',
 		'submitVEInteraction'
 	] ), {
 		/**
@@ -435,7 +414,8 @@ module.exports = exports = defineComponent( {
 		 */
 		shouldRunFunction: function ( payload ) {
 			return this.isOpen &&
-					payload && JSON.stringify( payload.params ) !== JSON.stringify( this.lastProcessedParams );
+					payload &&
+					JSON.stringify( payload.params ) !== JSON.stringify( this.lastProcessedParams );
 		},
 
 		/**
@@ -452,25 +432,23 @@ module.exports = exports = defineComponent( {
 		},
 
 		/**
-		 * Determines whether the defaultValueCallbacks config variable
-		 * has a callback function for the given type.
+		 * Determines whether the type has a default value.
 		 *
 		 * @param {string} type
-		 * @return {boolean}
+		 * @return {boolean} - Returns true if the type has a default value, otherwise false.
 		 */
 		hasDefaultValue: function ( type ) {
-			return ( type in this.defaultValueCallbacks );
+			return this.hasDefaultValueForType( type );
 		},
 
 		/**
-		 * Runs the defaultValueCallbacks callback function for the
-		 * given type and returns the generated string.
+		 * Returns the default value for the given type.
 		 *
 		 * @param {string} type
-		 * @return {string}
+		 * @return {string} - The default value for the type.
 		 */
 		getDefaultValue: function ( type ) {
-			return this.defaultValueCallbacks[ type ]();
+			return this.getDefaultValueForType( type );
 		}
 	} ),
 	watch: {
@@ -493,11 +471,6 @@ module.exports = exports = defineComponent( {
 			},
 			deep: true
 		}
-	},
-	mounted: function () {
-		// Fetch language zid for content page
-		const langCode = mw.config.get( 'wgContentLanguage' );
-		this.fetchLanguageCode( langCode );
 	},
 	beforeUnmount: function () {
 		// Clean up the Abort Controller if it exists

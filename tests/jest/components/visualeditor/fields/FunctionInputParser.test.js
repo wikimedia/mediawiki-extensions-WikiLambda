@@ -6,12 +6,32 @@ const FunctionInputParser = require( '../../../../../resources/ext.wikilambda.ap
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 const ErrorData = require( '../../../../../resources/ext.wikilambda.app/store/classes/ErrorData.js' );
 const { createGettersWithFunctionsMock } = require( '../../../helpers/getterHelpers.js' );
+const LabelData = require( '../../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' );
 
 describe( 'FunctionInputParser', () => {
 	let store;
 	const typeZid = 'Z30000';
 	const parserZid = 'Z30020';
 	const errorParser = new ErrorData( 'wikilambda-visualeditor-wikifunctionscall-error-parser-empty', [], null, 'error' );
+	const gregorianCalendarDateZid = 'Z20420';
+
+	const defaultProps = {
+		inputType: typeZid,
+		value: 'Test value',
+		labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
+		error: '',
+		showValidation: false
+	};
+
+	const globalStubs = { stubs: { CdxField: false, CdxLabel: false } };
+
+	const renderFunctionInputParser = ( props = {} ) => shallowMount( FunctionInputParser, {
+		props: {
+			...defaultProps,
+			...props
+		},
+		global: globalStubs
+	} );
 
 	beforeEach( () => {
 		store = useMainStore();
@@ -29,35 +49,26 @@ describe( 'FunctionInputParser', () => {
 
 		} );
 		store.getTestResults.mockResolvedValue();
+		store.getDefaultValueForType = createGettersWithFunctionsMock( '02-03-2020' );
+		store.hasDefaultValueForType = createGettersWithFunctionsMock( false );
+		// Mock isNewParameterSetup to false for tests that expect auto-checking behavior
+		store.isNewParameterSetup = false;
 	} );
 
 	it( 'renders without errors', () => {
-		const wrapper = shallowMount( FunctionInputParser, {
-			props: {
-				inputType: typeZid,
-				value: 'Test value'
-			}
-		} );
+		const wrapper = renderFunctionInputParser();
 		expect( wrapper.getComponent( { name: 'cdx-text-input' } ).exists() ).toBe( true );
 	} );
 
 	it( 'emits input event when value changes', () => {
-		const wrapper = shallowMount( FunctionInputParser, {
-			props: {
-				inputType: typeZid,
-				value: 'Test value'
-			}
-		} );
+		const wrapper = renderFunctionInputParser();
 		wrapper.getComponent( { name: 'cdx-text-input' } ).vm.$emit( 'update:model-value', 'New value' );
 		expect( wrapper.emitted().input[ 0 ] ).toEqual( [ 'New value' ] );
 	} );
 
 	it( 'validates on mount with non-empty value', async () => {
-		const wrapper = shallowMount( FunctionInputParser, {
-			props: {
-				inputType: typeZid,
-				value: 'Non empty value'
-			}
+		const wrapper = renderFunctionInputParser( {
+			value: 'Non empty value'
 		} );
 
 		// Wait for initial validation to complete
@@ -72,34 +83,25 @@ describe( 'FunctionInputParser', () => {
 	} );
 
 	it( 'validates on mount with empty value', async () => {
-		const wrapper = shallowMount( FunctionInputParser, {
-			props: {
-				inputType: typeZid,
-				value: ''
-			}
+		// Mock hasDefaultValueForType to return false so parser is called for empty value validation
+		store.hasDefaultValueForType = createGettersWithFunctionsMock( false );
+		const wrapper = renderFunctionInputParser( {
+			value: ''
 		} );
 
 		// Wait for initial validation to complete
 		await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( false ) );
-		expect( store.runParser ).toHaveBeenCalledWith( {
-			parserZid: 'Z30020',
-			wait: true,
-			zlang: 'Z1002',
-			zobject: '',
-			signal: expect.any( Object )
-		} );
+		// With no default value available and allowsEmptyField = false, parser should reject empty value
+		// without calling the parser function
+		expect( store.runParser ).not.toHaveBeenCalled();
+		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false } ] );
 	} );
 
 	it( 'on model update, debounces validation and emits validate event if succeeds', async () => {
 		// Use fake timers to test debounce
 		jest.useFakeTimers();
 
-		const wrapper = shallowMount( FunctionInputParser, {
-			props: {
-				inputType: typeZid,
-				value: 'Test value'
-			}
-		} );
+		const wrapper = renderFunctionInputParser();
 
 		const handleChangeSpy = jest.spyOn( wrapper.vm, 'handleChange' );
 
@@ -143,11 +145,8 @@ describe( 'FunctionInputParser', () => {
 	it( 'emits validate event with error message on validation failure', async () => {
 		store.runParser.mockRejectedValue( new Error( 'Invalid value' ) );
 
-		const wrapper = shallowMount( FunctionInputParser, {
-			props: {
-				inputType: typeZid,
-				value: 'Invalid value'
-			}
+		const wrapper = renderFunctionInputParser( {
+			value: 'Invalid value'
 		} );
 
 		// Wait for initial validation to complete
@@ -169,12 +168,7 @@ describe( 'FunctionInputParser', () => {
 	} );
 
 	it( 'shows progress indicator while parser is running', async () => {
-		const wrapper = shallowMount( FunctionInputParser, {
-			props: {
-				inputType: typeZid,
-				value: 'Test value'
-			}
-		} );
+		const wrapper = renderFunctionInputParser();
 
 		wrapper.vm.onValidateStart();
 		await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( true ) );
@@ -185,32 +179,53 @@ describe( 'FunctionInputParser', () => {
 
 	describe( 'allowed empty types', () => {
 		it( 'validates successfully an empty value for gregorian calendar date', async () => {
-			const wrapper = shallowMount( FunctionInputParser, {
-				props: {
-					inputType: 'Z20420',
-					value: ''
-				}
+			const wrapper = renderFunctionInputParser( {
+				inputType: gregorianCalendarDateZid,
+				value: ''
 			} );
 
 			await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( false ) );
-			expect( store.runParser ).toHaveBeenCalledTimes( 1 );
+			expect( store.runParser ).not.toHaveBeenCalled();
+			expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false } ] );
 			expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ { isValid: true } ] );
 		} );
 
 		it( 'fails validation on any other empty values', async () => {
-			const wrapper = shallowMount( FunctionInputParser, {
-				props: {
-					inputType: typeZid,
-					value: ''
-				}
+			const wrapper = renderFunctionInputParser( {
+				inputType: typeZid,
+				value: ''
 			} );
 
 			await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( false ) );
-			expect( store.runParser ).toHaveBeenCalledTimes( 1 );
+			expect( store.runParser ).not.toHaveBeenCalled();
+			expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false } ] );
 			expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ {
 				isValid: false,
 				error: errorParser
 			} ] );
+		} );
+	} );
+
+	describe( 'default value functionality', () => {
+		it( 'shows default value as placeholder when shouldUseDefaultValue is true', () => {
+			const wrapper = renderFunctionInputParser( {
+				shouldUseDefaultValue: true,
+				defaultValue: '02-03-2020'
+			} );
+
+			expect( wrapper.vm.placeholder ).toBe( '02-03-2020' );
+		} );
+
+		it( 'shows example placeholder when shouldUseDefaultValue is false and examples are available', () => {
+			// Mock rendered examples
+			store.getRendererExamples = jest.fn().mockReturnValue( [
+				{ result: 'Example result' }
+			] );
+			const wrapper = renderFunctionInputParser( {
+				shouldUseDefaultValue: false
+			} );
+
+			expect( wrapper.vm.placeholder ).toContain( 'Example result' );
 		} );
 	} );
 } );

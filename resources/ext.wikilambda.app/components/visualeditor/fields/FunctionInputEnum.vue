@@ -9,10 +9,10 @@
 	<cdx-select
 		class="ext-wikilambda-app-function-input-enum"
 		:selected="value"
-		:disabled="!enumValues.length"
+		:disabled="shouldUseDefaultValue || !enumValues.length"
 		:menu-items="enumValues"
 		:menu-config="selectConfig"
-		:default-label="$i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder' ).text()"
+		:default-label="placeholder"
 		@update:selected="handleUpdate"
 		@load-more="handleLoadMoreSelect"
 		@blur="handleBlur"
@@ -45,6 +45,21 @@ module.exports = exports = defineComponent( {
 		inputType: {
 			type: String,
 			required: true
+		},
+		shouldUseDefaultValue: {
+			type: Boolean,
+			required: false,
+			default: false
+		},
+		hasDefaultValue: {
+			type: Boolean,
+			required: false,
+			default: false
+		},
+		defaultValue: {
+			type: String,
+			required: false,
+			default: ''
 		}
 	},
 	emits: [ 'update', 'input', 'validate' ],
@@ -73,6 +88,7 @@ module.exports = exports = defineComponent( {
 				label: item.label
 			} ) );
 		},
+
 		/**
 		 * Whether this input type allows for empty fields
 		 *
@@ -80,6 +96,25 @@ module.exports = exports = defineComponent( {
 		 */
 		allowsEmptyField: function () {
 			return Constants.VE_ALLOW_EMPTY_FIELD.includes( this.inputType );
+		},
+
+		/**
+		 * Returns the placeholder text.
+		 * If the default value checkbox is checked, return the default value,
+		 * otherwise return the default placeholder text.
+		 *
+		 * @return {string}
+		 */
+		placeholder: function () {
+			if ( this.shouldUseDefaultValue ) {
+				const enumValueZid = this.defaultValue;
+				if ( !enumValueZid ) {
+					return '';
+				}
+				const enumValue = this.enumValues.find( ( item ) => item.value === enumValueZid );
+				return enumValue ? enumValue.label : enumValueZid;
+			}
+			return this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder' ).text();
 		}
 	} ),
 	methods: Object.assign( {}, mapActions( useMainStore, [
@@ -92,12 +127,14 @@ module.exports = exports = defineComponent( {
 		handleLoadMoreSelect: function () {
 			this.fetchEnumValues( { type: this.inputType } );
 		},
+
 		/**
 		 * Handles the blur event and validates the current value.
 		 */
 		handleBlur: function () {
 			this.validate( this.value );
 		},
+
 		/**
 		 * Handles the update event:
 		 * * emits 'input' event to set the local variable to the new value
@@ -110,6 +147,7 @@ module.exports = exports = defineComponent( {
 			this.$emit( 'input', value );
 			this.validate( value, true );
 		},
+
 		/**
 		 * Updates the validation state of the field.
 		 *
@@ -120,6 +158,7 @@ module.exports = exports = defineComponent( {
 			const error = !isValid ? ErrorData.buildErrorData( { errorMessageKey } ) : undefined;
 			this.$emit( 'validate', { isValid, error } );
 		},
+
 		/**
 		 * Validates the value and optionally emits an update event if valid.
 		 *
@@ -134,6 +173,7 @@ module.exports = exports = defineComponent( {
 				this.$emit( 'update', value );
 			}
 		},
+
 		/**
 		 * Check if the enum is a valid zid format and exists in enum values.
 		 *
@@ -141,11 +181,17 @@ module.exports = exports = defineComponent( {
 		 * @return {boolean} - True if the value is valid, otherwise false.
 		 */
 		isValid: function ( value ) {
-			if ( !value && this.allowsEmptyField ) {
+			// If default value checkbox is checked, field is valid
+			if ( this.shouldUseDefaultValue ) {
+				return true;
+			}
+			// If value is empty; valid if empty is allowed AND no default value available
+			if ( !value && this.allowsEmptyField && !this.hasDefaultValue ) {
 				return true;
 			}
 			return typeUtils.isValidZidFormat( value ) && this.isValueInEnumValues( value );
 		},
+
 		/**
 		 * Checks if the given value exists in the enum values.
 		 *
@@ -155,6 +201,7 @@ module.exports = exports = defineComponent( {
 		isValueInEnumValues: function ( value ) {
 			return this.enumValues.some( ( item ) => item.value === value );
 		},
+
 		/**
 		 * Fetches all enum values for the input type
 		 */
@@ -167,6 +214,7 @@ module.exports = exports = defineComponent( {
 				this.validate( this.value );
 			} );
 		}
+
 	} ),
 	watch: {
 		/**
@@ -183,6 +231,14 @@ module.exports = exports = defineComponent( {
 			if ( newEnumValues.length ) {
 				this.validate( this.value );
 			}
+		},
+		/**
+		 * Watch for changes to shouldUseDefaultValue and re-validate
+		 *
+		 * @param {boolean} newValue - The new value of shouldUseDefaultValue
+		 */
+		shouldUseDefaultValue: function () {
+			this.validate( this.value );
 		}
 	},
 	mounted: function () {
@@ -190,9 +246,3 @@ module.exports = exports = defineComponent( {
 	}
 } );
 </script>
-
-<style lang="less">
-.ext-wikilambda-app-function-input-enum {
-	width: 100%;
-}
-</style>

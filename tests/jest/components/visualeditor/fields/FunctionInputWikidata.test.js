@@ -6,6 +6,8 @@ const FunctionInputWikidata = require( '../../../../../resources/ext.wikilambda.
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 const ErrorData = require( '../../../../../resources/ext.wikilambda.app/store/classes/ErrorData.js' );
 const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
+const { createGettersWithFunctionsMock } = require( '../../../helpers/getterHelpers.js' );
+const LabelData = require( '../../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' );
 
 describe( 'FunctionInputWikidata', () => {
 	const entityType = Constants.Z_WIKIDATA_ITEM;
@@ -17,26 +19,47 @@ describe( 'FunctionInputWikidata', () => {
 
 	let store;
 
+	// Common test props configuration
+	const defaultProps = {
+		inputType: entityType,
+		value: entityId,
+		labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
+		error: '',
+		showValidation: false
+	};
+
+	// Global stubs configuration for tests that need to access CdxField and CdxLabel
+	const globalStubs = { stubs: { CdxField: false, CdxLabel: false } };
+
+	// Helper function to render FunctionInputWikidata with common configuration
+	const renderFunctionInputWikidata = ( props = {} ) => shallowMount( FunctionInputWikidata, {
+		props: {
+			...defaultProps,
+			...props
+		},
+		global: globalStubs
+	} );
+
 	beforeEach( () => {
 		store = useMainStore();
-		store.getWikidataEntityLabelData = jest.fn().mockReturnValue( { label } );
+		store.getWikidataEntityLabelData = createGettersWithFunctionsMock( { label } );
 		store.getWikidataEntityDataAsync = jest.fn().mockResolvedValue( entityData );
 		store.fetchWikidataEntitiesByType = jest.fn().mockResolvedValue();
+		store.getDefaultValueForType = createGettersWithFunctionsMock( entityId );
+		store.hasDefaultValueForType = createGettersWithFunctionsMock( false );
+		// Mock isNewParameterSetup to false for tests that expect auto-checking behavior
+		store.isNewParameterSetup = false;
 	} );
 
 	it( 'renders without errors', () => {
-		const wrapper = shallowMount( FunctionInputWikidata, {
-			props: { inputType: entityType, value: entityId }
-		} );
+		const wrapper = renderFunctionInputWikidata();
 
 		// The entity selector should be present
 		expect( wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } ).exists() ).toBe( true );
 	} );
 
 	it( 'validates on mount with non-empty value', async () => {
-		const wrapper = shallowMount( FunctionInputWikidata, {
-			props: { inputType: entityType, value: entityId }
-		} );
+		const wrapper = renderFunctionInputWikidata();
 
 		// Wait for validation to finish
 		await waitFor( () => expect( wrapper.vm.isValidating ).toBe( false ) );
@@ -47,8 +70,9 @@ describe( 'FunctionInputWikidata', () => {
 	} );
 
 	it( 'validates on mount with empty value (lexemes should not be empty)', async () => {
-		const wrapper = shallowMount( FunctionInputWikidata, {
-			props: { inputType: Constants.Z_WIKIDATA_LEXEME, value: '' }
+		const wrapper = renderFunctionInputWikidata( {
+			inputType: Constants.Z_WIKIDATA_LEXEME,
+			value: ''
 		} );
 
 		await waitFor( () => expect( wrapper.vm.isValidating ).toBe( false ) );
@@ -59,8 +83,9 @@ describe( 'FunctionInputWikidata', () => {
 	} );
 
 	it( 'validates on mount with empty value (items can be empty)', async () => {
-		const wrapper = shallowMount( FunctionInputWikidata, {
-			props: { inputType: Constants.Z_WIKIDATA_ITEM, value: '' }
+		const wrapper = renderFunctionInputWikidata( {
+			inputType: Constants.Z_WIKIDATA_ITEM,
+			value: ''
 		} );
 
 		await waitFor( () => expect( wrapper.vm.isValidating ).toBe( false ) );
@@ -68,8 +93,8 @@ describe( 'FunctionInputWikidata', () => {
 	} );
 
 	it( 'emits input, update and validate events when a value is selected', async () => {
-		const wrapper = shallowMount( FunctionInputWikidata, {
-			props: { inputType: entityType, value: '' }
+		const wrapper = renderFunctionInputWikidata( {
+			value: ''
 		} );
 		await waitFor( () => expect( wrapper.vm.isValidating ).toBe( false ) );
 
@@ -102,8 +127,8 @@ describe( 'FunctionInputWikidata', () => {
 			.mockRejectedValueOnce( new Error( 'Not found' ) )
 			.mockResolvedValueOnce( entityData );
 
-		const wrapper = shallowMount( FunctionInputWikidata, {
-			props: { inputType: entityType, value: '' }
+		const wrapper = renderFunctionInputWikidata( {
+			value: ''
 		} );
 
 		// Wait for any initial validation to finish
@@ -122,8 +147,8 @@ describe( 'FunctionInputWikidata', () => {
 	it( 'emits validate event with isValid false for invalid entity', async () => {
 		store.getWikidataEntityDataAsync = jest.fn().mockRejectedValue( new Error( 'Not found' ) );
 
-		const wrapper = shallowMount( FunctionInputWikidata, {
-			props: { inputType: entityType, value: 'Q999' }
+		const wrapper = renderFunctionInputWikidata( {
+			value: 'Q999'
 		} );
 
 		// Wait for validation to finish
@@ -139,9 +164,8 @@ describe( 'FunctionInputWikidata', () => {
 		store.getWikidataEntityDataAsync = jest.fn()
 			.mockRejectedValueOnce( new Error( 'Not found' ) )
 			.mockResolvedValueOnce( entityData );
-		const wrapper = shallowMount( FunctionInputWikidata, {
-			props: { inputType: entityType, value: entityId }
-		} );
+
+		const wrapper = renderFunctionInputWikidata();
 
 		// Wait for validation to finish
 		await waitFor( () => expect( wrapper.vm.isValidating ).toBe( false ) );
@@ -153,5 +177,26 @@ describe( 'FunctionInputWikidata', () => {
 		expect( store.fetchWikidataEntitiesByType ).toHaveBeenCalledWith( { type: entityType, ids: [ entityId ] } );
 		// Should emit valid after successful fetch
 		expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ { isValid: true } ] );
+	} );
+
+	describe( 'default value functionality', () => {
+		it( 'shows default value label as placeholder when shouldUseDefaultValue is true', () => {
+			store.getWikidataEntityLabelData = createGettersWithFunctionsMock( { zid: entityId, label: 'Universe' } );
+
+			const wrapper = renderFunctionInputWikidata( {
+				shouldUseDefaultValue: true,
+				defaultValue: entityId
+			} );
+
+			expect( wrapper.vm.placeholder ).toBe( 'Universe' );
+		} );
+
+		it( 'shows empty placeholder when shouldUseDefaultValue is false', () => {
+			const wrapper = renderFunctionInputWikidata( {
+				shouldUseDefaultValue: false
+			} );
+
+			expect( wrapper.vm.placeholder ).toBe( '' );
+		} );
 	} );
 } );

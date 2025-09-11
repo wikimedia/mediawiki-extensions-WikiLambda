@@ -6,10 +6,11 @@
 	@license MIT
 -->
 <template>
-	<div>
+	<div class="ext-wikilambda-app-function-input-parser">
 		<cdx-text-input
-			:placeholder="placeholderValue"
+			:placeholder="placeholder"
 			:model-value="value"
+			:disabled="shouldUseDefaultValue"
 			@update:model-value="handleUpdate"
 		></cdx-text-input>
 		<cdx-progress-indicator
@@ -50,6 +51,21 @@ module.exports = exports = defineComponent( {
 		inputType: {
 			type: String,
 			required: true
+		},
+		shouldUseDefaultValue: {
+			type: Boolean,
+			required: false,
+			default: false
+		},
+		hasDefaultValue: {
+			type: Boolean,
+			required: false,
+			default: false
+		},
+		defaultValue: {
+			type: String,
+			required: false,
+			default: ''
 		}
 	},
 	emits: [ 'update', 'input', 'validate', 'loading-start', 'loading-end' ],
@@ -67,8 +83,7 @@ module.exports = exports = defineComponent( {
 		'getRendererZid',
 		'getRendererExamples',
 		'getUserLangZid',
-		'getValidRendererTests',
-		'getUserLangZid'
+		'getValidRendererTests'
 	] ), {
 		/**
 		 * Return renderer function Zid
@@ -78,6 +93,7 @@ module.exports = exports = defineComponent( {
 		rendererZid: function () {
 			return this.getRendererZid( this.inputType );
 		},
+
 		/**
 		 * Return parser function Zid
 		 *
@@ -86,6 +102,7 @@ module.exports = exports = defineComponent( {
 		parserZid: function () {
 			return this.getParserZid( this.inputType );
 		},
+
 		/**
 		 * Returns the rendered examples in case the renderer
 		 * tests were run.
@@ -95,20 +112,26 @@ module.exports = exports = defineComponent( {
 		renderedExamples: function () {
 			return this.getRendererExamples( this.rendererZid );
 		},
+
 		/**
-		 * Return a dynamically generated placeholder for the input field
-		 * using the available tests for the renderer function. If none are
-		 * available, returns the fallback placeholder message.
+		 * Return the default value if the default value checkbox is checked,
+		 * otherwise return the first example of the rendered examples.
+		 * If no examples are available, return an empty string.
 		 *
 		 * @return {string}
 		 */
-		placeholderValue: function () {
+		placeholder: function () {
+			if ( this.shouldUseDefaultValue ) {
+				return this.defaultValue;
+			}
+
 			if ( this.renderedExamples.length > 0 ) {
 				const example = this.renderedExamples[ 0 ].result;
 				return this.$i18n( 'wikilambda-string-renderer-field-example', example ).text();
 			}
 			return '';
 		},
+
 		/**
 		 * Filters the passing test zids array and returns an array with the
 		 * test objects for those which are wellformed. We consider wellformed
@@ -124,6 +147,7 @@ module.exports = exports = defineComponent( {
 			}
 			return this.getValidRendererTests( this.rendererZid );
 		},
+
 		/**
 		 * Return error message for the parser function
 		 *
@@ -135,6 +159,7 @@ module.exports = exports = defineComponent( {
 				errorParams: [ this.inputType ]
 			};
 		},
+
 		/**
 		 * Whether this input type allows for empty fields
 		 *
@@ -159,15 +184,22 @@ module.exports = exports = defineComponent( {
 		 */
 		isValid: function ( value ) {
 			return new Promise( ( resolve, reject ) => {
-				// With empty value: if allowed, resolve; else reject
+				// If default value checkbox is checked, field is valid
+				if ( this.shouldUseDefaultValue ) {
+					resolve();
+					return;
+				}
+
+				// With empty value: if allowed AND no default value available, resolve; else reject
 				if ( !value ) {
-					if ( this.allowsEmptyField ) {
+					if ( this.allowsEmptyField && !this.hasDefaultValue ) {
 						resolve();
 					} else {
 						const errorMessageKey = 'wikilambda-visualeditor-wikifunctionscall-error-parser-empty';
 						const error = ErrorData.buildErrorData( { errorMessageKey } );
 						reject( error );
 					}
+					return;
 				}
 
 				// Cancel previous parser request if any
@@ -236,14 +268,12 @@ module.exports = exports = defineComponent( {
 		onValidateEnd: function () {
 			this.isParserRunning = false;
 		},
-
 		/**
 		 * Handles validation success by emitting the appropriate events.
 		 */
 		onValidateSuccess: function () {
 			this.$emit( 'validate', { isValid: true } );
 		},
-
 		/**
 		 * Handles validation error by emitting the appropriate events.
 		 *
@@ -258,7 +288,6 @@ module.exports = exports = defineComponent( {
 			// Otherwise, emit the ErrorData object
 			this.$emit( 'validate', { isValid: false, error } );
 		},
-
 		/**
 		 * Validates the value and handles the validation result.
 		 * Emits validation status and optionally updates the value if valid.
@@ -270,11 +299,18 @@ module.exports = exports = defineComponent( {
 		validate: function ( value ) {
 			this.onValidateStart();
 			return this.isValid( value )
-				.then( () => this.onValidateSuccess() )
-				.catch( ( error ) => this.onValidateError( error ) )
-				.finally( () => this.onValidateEnd() );
+				.then( () => {
+					this.onValidateSuccess();
+					this.onValidateEnd();
+				} )
+				.catch( ( error ) => {
+					this.onValidateError( error );
+					// Only call onValidateEnd if the error is not an abort
+					if ( error !== 'abort' ) {
+						this.onValidateEnd();
+					}
+				} );
 		},
-
 		/**
 		 * Handles the update model value event and emits:
 		 * * 'input' event, to set the local value of the field
@@ -294,7 +330,6 @@ module.exports = exports = defineComponent( {
 				this.handleChange( value );
 			}, this.debounceDelay );
 		},
-
 		/**
 		 * Vlidates the new value asynchronously and emits
 		 * the update event once the validation has finished.
@@ -306,7 +341,6 @@ module.exports = exports = defineComponent( {
 				this.$emit( 'update', value );
 			} );
 		},
-
 		/**
 		 * Runs the test results for the renderer function asynchronously.
 		 * Updates the `areTestsFetched` flag during the process.
@@ -325,6 +359,23 @@ module.exports = exports = defineComponent( {
 		}
 	} ),
 	watch: {
+		/**
+		 * Watch for changes to shouldUseDefaultValue and handle component-specific cleanup
+		 *
+		 * @param {boolean} newValue - The new value of shouldUseDefaultValue
+		 */
+		shouldUseDefaultValue: function ( newValue ) {
+			if ( newValue ) {
+				// Cancel any ongoing parser validation
+				if ( this.parserAbortController ) {
+					this.parserAbortController.abort();
+				}
+				// Clear any pending debounced validation
+				clearTimeout( this.debounceTimer );
+				// Reset parser state
+				this.isParserRunning = false;
+			}
+		},
 		/**
 		 * Watches the computed property `validRendererTests` and triggers the renderer function test
 		 * for each valid test. The renderer function is executed with the user language as the second input.
@@ -347,8 +398,8 @@ module.exports = exports = defineComponent( {
 	 * Validates the initial value and triggers the generation of renderer examples.
 	 */
 	mounted: function () {
-		this.validate( this.value );
 		this.generateRendererExamples();
+		this.validate( this.value );
 	},
 	beforeUnmount: function () {
 		// Cancel any ongoing parser request when the component is unmounted
@@ -362,16 +413,20 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-app-function-input-parser__progress-indicator {
-	position: absolute;
-	right: @spacing-50;
-	bottom: @spacing-25;
+.ext-wikilambda-app-function-input-parser {
+	position: relative;
 
-	.cdx-progress-indicator__indicator {
-		width: @size-icon-small;
-		height: @size-icon-small;
-		min-width: @size-icon-small;
-		min-height: @size-icon-small;
+	.ext-wikilambda-app-function-input-parser__progress-indicator {
+		position: absolute;
+		right: @spacing-50;
+		bottom: @spacing-25;
+
+		.cdx-progress-indicator__indicator {
+			width: @size-icon-small;
+			height: @size-icon-small;
+			min-width: @size-icon-small;
+			min-height: @size-icon-small;
+		}
 	}
 }
 </style>

@@ -135,6 +135,55 @@ module.exports = {
 		 */
 		isParameterSetupDirty: function ( state ) {
 			return state.veFunctionParamsDirty;
+		},
+
+		/**
+		 * Collection of callbacks that produce default values for empty args
+		 * indexed by the argument type.
+		 *
+		 * @return {Object}
+		 */
+		defaultValueCallbacks: function () {
+			return {
+				[ Constants.Z_GREGORIAN_CALENDAR_DATE ]: () => {
+					const today = new Date();
+					const d = today.getDate();
+					const m = today.getMonth() + 1;
+					const yyyy = today.getFullYear();
+					return `${ d }-${ m }-${ yyyy }`;
+				},
+				[ Constants.Z_NATURAL_LANGUAGE ]: () => {
+					const langCode = mw.config.get( 'wgContentLanguage' );
+					return this.getLanguageZidOfCode( langCode ) || '';
+				},
+				[ Constants.Z_WIKIDATA_ITEM ]: () => mw.config.get( 'wgWikibaseItemId' ) || '',
+				[ Constants.Z_WIKIDATA_REFERENCE_ITEM ]: () => mw.config.get( 'wgWikibaseItemId' ) || ''
+			};
+		},
+
+		/**
+		 * Determines whether the type has a default value callback.
+		 *
+		 * @return {Function}
+		 */
+		hasDefaultValueForType: function () {
+			const findHasDefaultValueForType = ( type ) => ( type in this.defaultValueCallbacks );
+			return findHasDefaultValueForType;
+		},
+
+		/**
+		 * Returns the default value for the type.
+		 *
+		 * @return {Function}
+		 */
+		getDefaultValueForType: function () {
+			const findDefaultValueForType = ( type ) => {
+				const defaultValueCallback = this.defaultValueCallbacks[ type ];
+				if ( defaultValueCallback ) {
+					return defaultValueCallback();
+				}
+			};
+			return findDefaultValueForType;
 		}
 	},
 	actions: {

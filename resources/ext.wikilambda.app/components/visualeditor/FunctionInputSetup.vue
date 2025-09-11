@@ -192,7 +192,8 @@ module.exports = exports = defineComponent( {
 		'setVEFunctionParam',
 		'setVEFunctionParamsValid',
 		'setVEFunctionParamsDirty',
-		'fetchZids'
+		'fetchZids',
+		'fetchLanguageCode'
 	] ), {
 		/**
 		 * Initializes the function input fields with the current Visual Editor function params.
@@ -277,7 +278,7 @@ module.exports = exports = defineComponent( {
 		 * @return {boolean}
 		 */
 		showValidation: function ( hasChanged ) {
-			return ( !this.isNewParameterSetup || hasChanged );
+			return !this.isNewParameterSetup || hasChanged;
 		}
 	} ),
 	watch: {
@@ -310,6 +311,9 @@ module.exports = exports = defineComponent( {
 	},
 	mounted: function () {
 		this.initializeInputFields();
+		// Fetch language zid for content page
+		const langCode = mw.config.get( 'wgContentLanguage' );
+		this.fetchLanguageCode( langCode );
 	}
 } );
 </script>

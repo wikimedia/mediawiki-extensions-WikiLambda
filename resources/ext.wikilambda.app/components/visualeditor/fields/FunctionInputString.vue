@@ -7,8 +7,9 @@
 -->
 <template>
 	<cdx-text-input
-		:disabled="false"
-		:placeholder="$i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder' )"
+		class="ext-wikilambda-app-function-input-string"
+		:disabled="shouldUseDefaultValue"
+		:placeholder="placeholder"
 		:model-value="value"
 		@update:model-value="handleInput"
 	></cdx-text-input>
@@ -31,9 +32,34 @@ module.exports = exports = defineComponent( {
 			type: String,
 			required: false,
 			default: ''
+		},
+		shouldUseDefaultValue: {
+			type: Boolean,
+			required: false,
+			default: false
+		},
+		defaultValue: {
+			type: String,
+			required: false,
+			default: ''
 		}
 	},
 	emits: [ 'update', 'input', 'validate' ],
+	computed: {
+		/**
+		 * Returns the placeholder text.
+		 * If the default value checkbox is checked, return the default value,
+		 * otherwise return the default placeholder text.
+		 *
+		 * @return {string}
+		 */
+		placeholder: function () {
+			if ( this.shouldUseDefaultValue ) {
+				return this.defaultValue;
+			}
+			return this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder' ).text();
+		}
+	},
 	methods: {
 		/**
 		 * Handles the update model value event and emits:
@@ -46,6 +72,7 @@ module.exports = exports = defineComponent( {
 			this.$emit( 'input', value );
 			this.$emit( 'update', value );
 		}
+
 	},
 	mounted: function () {
 		this.$emit( 'validate', { isValid: true } );

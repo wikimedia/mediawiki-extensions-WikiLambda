@@ -6,11 +6,30 @@ const FunctionInputLanguage = require( '../../../../../resources/ext.wikilambda.
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 const ErrorData = require( '../../../../../resources/ext.wikilambda.app/store/classes/ErrorData.js' );
 const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
+const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../../helpers/getterHelpers.js' );
+const LabelData = require( '../../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' );
 
 describe( 'FunctionInputLanguage', () => {
 	const errorLang = new ErrorData( 'wikilambda-visualeditor-wikifunctionscall-error-language', [], null, 'error' );
 
 	let store;
+
+	const defaultProps = {
+		inputType: 'Z60',
+		labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
+		error: '',
+		showValidation: false
+	};
+
+	const globalStubs = { stubs: { CdxField: false, CdxLabel: false } };
+
+	const renderFunctionInputLanguage = ( props = {} ) => shallowMount( FunctionInputLanguage, {
+		props: {
+			...defaultProps,
+			...props
+		},
+		global: globalStubs
+	} );
 
 	beforeEach( () => {
 		store = useMainStore();
@@ -27,23 +46,26 @@ describe( 'FunctionInputLanguage', () => {
 			// Anything else returns undefined
 			return undefined;
 		} );
+		store.getDefaultValueForType = createGettersWithFunctionsMock( 'Z1002' );
+		store.getLabelData = createLabelDataMock( { Z1002: 'English' } );
+		store.hasDefaultValueForType = createGettersWithFunctionsMock( false );
+		// Mock isNewParameterSetup to false for tests that expect auto-checking behavior
+		store.isNewParameterSetup = false;
 	} );
 
 	it( 'renders without errors', () => {
-		const wrapper = shallowMount( FunctionInputLanguage );
+		const wrapper = renderFunctionInputLanguage();
 		expect( wrapper.find( '.ext-wikilambda-app-function-input-language' ).exists() ).toBe( true );
 	} );
 
 	it( 'fetches suggested languages on initialization', () => {
-		shallowMount( FunctionInputLanguage, {
-			props: { value: '' }
-		} );
+		renderFunctionInputLanguage( { value: '' } );
 		expect( store.fetchZids ).toHaveBeenCalledWith( { zids: Constants.SUGGESTIONS.LANGUAGES } );
 	} );
 
 	it( 'triggers validation on initialization, emits validate and no update', async () => {
-		const wrapper = shallowMount( FunctionInputLanguage, {
-			props: { value: 'Z1003' }
+		const wrapper = renderFunctionInputLanguage( {
+			value: 'Z1003'
 		} );
 
 		// Wait for validation to finish
@@ -57,8 +79,8 @@ describe( 'FunctionInputLanguage', () => {
 	} );
 
 	it( 'emits input, update and validate events when a value is selected', async () => {
-		const wrapper = shallowMount( FunctionInputLanguage, {
-			props: { value: '' }
+		const wrapper = renderFunctionInputLanguage( {
+			value: ''
 		} );
 
 		// Emits validation result with empty value
@@ -78,8 +100,8 @@ describe( 'FunctionInputLanguage', () => {
 	} );
 
 	it( 'succeeds validation with empty value', () => {
-		const wrapper = shallowMount( FunctionInputLanguage, {
-			props: { value: '' }
+		const wrapper = renderFunctionInputLanguage( {
+			value: ''
 		} );
 
 		// Emits validation result synchronously
@@ -87,8 +109,8 @@ describe( 'FunctionInputLanguage', () => {
 	} );
 
 	it( 'fails validation with non-zid value', () => {
-		const wrapper = shallowMount( FunctionInputLanguage, {
-			props: { value: 'en' }
+		const wrapper = renderFunctionInputLanguage( {
+			value: 'en'
 		} );
 
 		// Emits validation result synchronously
@@ -99,8 +121,8 @@ describe( 'FunctionInputLanguage', () => {
 	} );
 
 	it( 'triggers async validation and fails for zid not found', async () => {
-		const wrapper = shallowMount( FunctionInputLanguage, {
-			props: { value: 'Z99999' }
+		const wrapper = renderFunctionInputLanguage( {
+			value: 'Z99999'
 		} );
 
 		// Emits validate=false event before async validation
@@ -117,8 +139,8 @@ describe( 'FunctionInputLanguage', () => {
 	} );
 
 	it( 'triggers async validation and fails with non-language zid', async () => {
-		const wrapper = shallowMount( FunctionInputLanguage, {
-			props: { value: 'Z11' }
+		const wrapper = renderFunctionInputLanguage( {
+			value: 'Z11'
 		} );
 
 		// Emits validate=false event before async validation
@@ -135,8 +157,8 @@ describe( 'FunctionInputLanguage', () => {
 	} );
 
 	it( 'triggers async validation and succeeds with language zid', async () => {
-		const wrapper = shallowMount( FunctionInputLanguage, {
-			props: { value: 'Z1003' }
+		const wrapper = renderFunctionInputLanguage( {
+			value: 'Z1003'
 		} );
 
 		// Emits validate=false event before async validation
@@ -147,5 +169,24 @@ describe( 'FunctionInputLanguage', () => {
 
 		// Emits validation result once finished
 		expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ { isValid: true } ] );
+	} );
+
+	describe( 'default value functionality', () => {
+		it( 'shows default value label as placeholder when shouldUseDefaultValue is true', () => {
+			const wrapper = renderFunctionInputLanguage( {
+				shouldUseDefaultValue: true,
+				defaultValue: 'Z1002'
+			} );
+
+			expect( wrapper.vm.placeholder ).toBe( 'English' );
+		} );
+
+		it( 'shows empty placeholder when shouldUseDefaultValue is false', () => {
+			const wrapper = renderFunctionInputLanguage( {
+				shouldUseDefaultValue: false
+			} );
+
+			expect( wrapper.vm.placeholder ).toBe( '' );
+		} );
 	} );
 } );
