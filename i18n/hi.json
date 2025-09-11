@@ -252,6 +252,7 @@
 	"wikilambda-function-viewer-aliases-header": "उपनाम",
 	"wikilambda-function-viewer-details-table-view-all": "सभी देखें",
 	"wikilambda-list-item-label": "आइटम $1",
+	"wikilambda-loading": "डेटा लोड हो रही है",
 	"wikilambda-string-renderer-examples-title": "उदाहरण",
 	"wikilambda-string-renderer-running": "जारी है...",
 	"wikilambda-tester-details": "विवरण",
