@@ -14,7 +14,6 @@ const Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' 
 const schemata = require( '../../../resources/ext.wikilambda.app/utils/schemata.js' );
 
 const extractZIDs = schemata.extractZIDs;
-const extractErrorData = schemata.extractErrorData;
 const hybridToCanonical = schemata.hybridToCanonical;
 const canonicalToHybrid = schemata.canonicalToHybrid;
 
@@ -29,9 +28,7 @@ describe( 'schemata', () => {
 		canonicalZList = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/canonicalZList.json' ) ) ),
 		normalZList = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/normalZList.json' ) ) ),
 		normalFunctionCall = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/normalFunctionCall.json' ) ) ),
-		canonicalFunctionCall = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/canonicalFunctionCall.json' ) ) ),
-		nestedErrorObject = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/nestedErrorObject.json' ) ) ),
-		nestedErrorObjectLocalKeys = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/nestedErrorObject_LocalKeys.json' ) ) );
+		canonicalFunctionCall = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/canonicalFunctionCall.json' ) ) );
 
 	describe( 'extractZIDs', () => {
 		it( 'extracts ZID from normal string', () => {
@@ -62,122 +59,6 @@ describe( 'schemata', () => {
 			expect( extractZIDs( canonicalZFunction ) ).toEqual(
 				[ 'Z1', 'Z2', 'Z6', 'Z10023', 'Z8', 'Z17', 'Z12', 'Z11', 'Z14', 'Z16', 'Z600' ]
 			);
-		} );
-	} );
-
-	describe( 'extractErrorData', () => {
-		it( 'returns undefined if object is not a zerror but a string', () => {
-			expect( extractErrorData( 'not a zerror' ) ).toBe( undefined );
-		} );
-
-		it( 'returns undefined if object is not a zerror but another object', () => {
-			const anotherObject = {
-				Z1K1: 'Z11',
-				Z11K1: 'Z1002',
-				Z11K2: 'something else'
-			};
-			expect( extractErrorData( anotherObject ) ).toBe( undefined );
-		} );
-
-		it( 'extracts error structure from simple error object', () => {
-			const oldSyntaxError = {
-				Z1K1: 'Z5',
-				Z5K1: 'Z500',
-				Z5K2: {
-					Z1K1: {
-						Z1K1: 'Z7',
-						Z7K1: 'Z885',
-						Z885K1: 'Z500'
-					},
-					Z500K1: 'Arbitrary handcrafted message'
-				}
-			};
-			const expectedErrorStructure = {
-				errorType: 'Z500',
-				children: [],
-				stringArgs: [
-					{ key: 'Z500K1', value: 'Arbitrary handcrafted message' }
-				]
-			};
-			expect( extractErrorData( oldSyntaxError ) ).toEqual( expectedErrorStructure );
-		} );
-
-		it( 'extracts error structure from nested error object', () => {
-			const expectedErrorStructure = {
-				errorType: 'Z502',
-				children: [ {
-					errorType: 'Z509',
-					children: [ {
-						errorType: 'Z532',
-						children: [],
-						stringArgs: []
-					}, {
-						errorType: 'Z535',
-						children: [],
-						stringArgs: []
-					}, {
-						errorType: 'Z511',
-						children: [],
-						stringArgs: []
-					} ],
-					stringArgs: []
-				} ],
-				stringArgs: [ { key: 'Z502K1', value: 'Z509' } ]
-			};
-			expect( extractErrorData( nestedErrorObject ) ).toEqual( expectedErrorStructure );
-		} );
-
-		it( 'extracts error structure from nested error object with local keys', () => {
-			const expectedErrorStructure = {
-				errorType: 'Z502',
-				children: [ {
-					errorType: 'Z509',
-					children: [ {
-						errorType: 'Z532',
-						children: [],
-						stringArgs: []
-					}, {
-						errorType: 'Z535',
-						children: [],
-						stringArgs: []
-					}, {
-						errorType: 'Z511',
-						children: [],
-						stringArgs: []
-					} ],
-					stringArgs: []
-				} ],
-				stringArgs: [ { key: 'K1', value: 'Z509' } ]
-			};
-			expect( extractErrorData( nestedErrorObjectLocalKeys ) ).toEqual( expectedErrorStructure );
-		} );
-
-		it( 'extracts error structure from custom build error object', () => {
-			const customError = {
-				Z1K1: 'Z5',
-				Z5K1: 'Z10000',
-				Z5K2: {
-					Z1K1: {
-						Z1K1: 'Z7',
-						Z7K1: 'Z885',
-						Z885K1: 'Z10000'
-					},
-					Z10000K1: 'some',
-					Z10000K2: 'custom',
-					Z10000K3: 'error'
-				}
-			};
-
-			const expectedErrorStructure = {
-				errorType: 'Z10000',
-				children: [],
-				stringArgs: [
-					{ key: 'Z10000K1', value: 'some' },
-					{ key: 'Z10000K2', value: 'custom' },
-					{ key: 'Z10000K3', value: 'error' }
-				]
-			};
-			expect( extractErrorData( customError ) ).toEqual( expectedErrorStructure );
 		} );
 	} );
 

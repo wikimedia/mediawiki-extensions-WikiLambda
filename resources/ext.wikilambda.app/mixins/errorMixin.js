@@ -11,10 +11,13 @@ const { mapActions, mapState } = require( 'pinia' );
 
 const Constants = require( '../Constants.js' );
 const useMainStore = require( '../store/index.js' );
+const { extractErrorData } = require( '../utils/errorUtils.js' );
+const { getValueFromCanonicalZMap } = require( '../utils/schemata.js' );
 
 module.exports = exports = {
 	methods: Object.assign( {}, mapActions( useMainStore, [
-		'clearErrors'
+		'clearErrors',
+		'fetchZids'
 	] ), {
 		/**
 		 * If this.keyPath is associated to a field (is defined and
@@ -43,28 +46,49 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Given an error response of a failed call to the API,
-		 * extract the error message per type of error.
+		 * Extracts the error data from metadata, builds the error message and
+		 * runs the callback function to set the error with the available error
+		 * message or the fallback message if metadata error wasn't found.
 		 *
 		 * @memberof module:ext.wikilambda.app.mixins.errorMixin
-		 * @param {Object} error
-		 * @return {string | undefined}
+		 * @param {Object|null} metadata - ZMap with metadata which may contain an errors key
+		 * @param {string} fallbackMsg - fallback error message to set if no errors key is found
+		 * @param {Function} setErrorCallback - function to set the error message when found
 		 */
-		extractErrorMessage: function ( error ) {
-			if ( !error.zerror ) {
-				return undefined;
-			}
-
-			const errorMessage = error.zerror[ Constants.Z_ERROR_VALUE ][ Constants.Z_TYPED_OBJECT_ELEMENT_1 ];
-			const errorType = error.zerror[ Constants.Z_ERROR_TYPE ];
-			if ( !errorMessage || typeof errorMessage !== 'string' || errorType !== Constants.Z_GENERIC_ERROR ) {
+		setErrorMessageCallback: function ( metadata, fallbackMsg, setErrorCallback ) {
+			// If metadata is null, apply fallback error and exit
+			if ( !metadata ) {
+				setErrorCallback( fallbackMsg );
 				return;
 			}
 
-			return errorMessage;
+			const error = getValueFromCanonicalZMap( metadata, 'errors' );
+			const errorData = extractErrorData( error );
+
+			// If metadata doesn't have error information, apply fallback error and exit
+			if ( !errorData ) {
+				setErrorCallback( fallbackMsg );
+				return;
+			}
+
+			// If error is Z500/generic and has a string (Z500)K1, show that as error message
+			if ( errorData.errorType === Constants.Z_GENERIC_ERROR && errorData.stringArgs.length ) {
+				setErrorCallback( errorData.stringArgs[ 0 ].value );
+				return;
+			}
+
+			// Finally, asynchronously fetch errorType and, if fetched, set its label as error message
+			this.fetchZids( { zids: [ errorData.errorType ] } ).then( () => {
+				const errorMsg = this.getStoredObject( errorData.errorType ) ?
+					this.getLabelData( errorData.errorType ).label :
+					fallbackMsg;
+				setErrorCallback( errorMsg );
+			} );
 		}
 	} ),
 	computed: Object.assign( {}, mapState( useMainStore, [
+		'getStoredObject',
+		'getLabelData',
 		'getChildErrorKeys',
 		'getErrors',
 		'getErrorPaths'

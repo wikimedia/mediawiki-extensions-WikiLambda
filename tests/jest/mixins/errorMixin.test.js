@@ -8,9 +8,11 @@
 'use strict';
 
 const { shallowMount } = require( '@vue/test-utils' );
+const { waitFor } = require( '@testing-library/vue' );
+const { metadataBasic, convertSetToMap } = require( '../fixtures/metadata.js' );
 
-const Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' );
 const createGettersWithFunctionsMock = require( '../helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
+const createLabelDataMock = require( '../helpers/getterHelpers.js' ).createLabelDataMock;
 const errorMixin = require( '../../../resources/ext.wikilambda.app/mixins/errorMixin.js' );
 const useMainStore = require( '../../../resources/ext.wikilambda.app/store/index.js' );
 
@@ -21,6 +23,12 @@ describe( 'errorMixin mixin', () => {
 		store = useMainStore();
 		store.getErrors = createGettersWithFunctionsMock( [] );
 		store.clearErrors = jest.fn();
+		store.fetchZids = jest.fn().mockResolvedValue();
+		store.getStoredObject = createGettersWithFunctionsMock();
+		store.getLabelData = createLabelDataMock( {
+			Z500: 'Generic error',
+			Z1500: 'Custom error'
+		} );
 
 		// Mocking a Vue component to test the mixin
 		const TestComponent = {
@@ -62,6 +70,112 @@ describe( 'errorMixin mixin', () => {
 		it( 'should return the error message from error object', () => {
 			const error = { message: 'Error occurred' };
 			expect( wrapper.vm.getErrorMessage( error ) ).toBe( 'Error occurred' );
+		} );
+	} );
+
+	describe( 'setErrorMessageCallback', () => {
+		it( 'calls callback with fallback message if there is no metadata', () => {
+			const fallbackMsg = 'fallback error message';
+			const callback = jest.fn();
+			wrapper.vm.setErrorMessageCallback( null, fallbackMsg, callback );
+			expect( callback ).toHaveBeenCalledWith( fallbackMsg );
+		} );
+
+		it( 'calls callback with fallback message if metadata has no errors', () => {
+			const fallbackMsg = 'fallback error message';
+			const callback = jest.fn();
+			wrapper.vm.setErrorMessageCallback( metadataBasic, fallbackMsg, callback );
+			expect( callback ).toHaveBeenCalledWith( fallbackMsg );
+		} );
+
+		it( 'calls callback with generic error message (global keys)', () => {
+			const callback = jest.fn();
+			const fallbackMsg = 'fallback error message';
+			const metadata = convertSetToMap( { errors: {
+				Z1K1: 'Z5',
+				Z5K1: 'Z500',
+				Z5K2: {
+					Z1K1: {
+						Z1K1: 'Z7',
+						Z7K1: 'Z885',
+						Z885K1: 'Z500'
+					},
+					Z500K1: 'some generic error message'
+				}
+			} } );
+
+			wrapper.vm.setErrorMessageCallback( metadata, fallbackMsg, callback );
+			expect( callback ).toHaveBeenCalledWith( 'some generic error message' );
+		} );
+
+		it( 'calls callback with generic error message (local keys)', () => {
+			const callback = jest.fn();
+			const fallbackMsg = 'fallback error message';
+			const metadata = convertSetToMap( { errors: {
+				Z1K1: 'Z5',
+				Z5K1: 'Z500',
+				Z5K2: {
+					Z1K1: {
+						Z1K1: 'Z7',
+						Z7K1: 'Z885',
+						Z885K1: 'Z500'
+					},
+					K1: 'some generic error message'
+				}
+			} } );
+
+			wrapper.vm.setErrorMessageCallback( metadata, fallbackMsg, callback );
+			expect( callback ).toHaveBeenCalledWith( 'some generic error message' );
+		} );
+
+		it( 'calls callback with fallback error message when generic error has non-string key', async () => {
+			const callback = jest.fn();
+			const fallbackMsg = 'fallback error message';
+			const metadata = convertSetToMap( { errors: {
+				Z1K1: 'Z5',
+				Z5K1: 'Z500',
+				Z5K2: {
+					Z1K1: {
+						Z1K1: 'Z7',
+						Z7K1: 'Z885',
+						Z885K1: 'Z500'
+					},
+					Z500K1: {
+						Z1K1: 'Z99',
+						Z99K1: 1
+					}
+				}
+			} } );
+
+			wrapper.vm.setErrorMessageCallback( metadata, fallbackMsg, callback );
+			await waitFor( () => expect( callback ).toHaveBeenCalledWith( fallbackMsg ) );
+		} );
+
+		it( 'calls callback with custom error zid was successfully fetched', async () => {
+			store.getStoredObject = jest.fn().mockReturnValue( {
+				Z1K1: 'Z2',
+				Z2K1: { Z1K1: 'Z6', Z6K1: 'Z1500' },
+				Z2K2: { Z1K1: 'Z50' }
+			} );
+
+			const callback = jest.fn();
+			const fallbackMsg = 'fallback error message';
+			const metadata = convertSetToMap( { errors: {
+				Z1K1: 'Z5',
+				Z5K1: 'Z1500',
+				Z5K2: {
+					Z1K1: {
+						Z1K1: 'Z7',
+						Z7K1: 'Z885',
+						Z885K1: 'Z1500'
+					},
+					Z1500K1: 'one arg',
+					Z1500K2: 'another arg'
+				}
+			} } );
+
+			wrapper.vm.setErrorMessageCallback( metadata, fallbackMsg, callback );
+			await waitFor( () => expect( callback ).toHaveBeenCalledWith( 'Custom error' ) );
 		} );
 	} );
 
@@ -113,32 +227,6 @@ describe( 'errorMixin mixin', () => {
 
 			wrapper.vm.keyPath = 'main.Z2K5';
 			expect( wrapper.vm.hasChildErrors ).toBe( false );
-		} );
-	} );
-
-	describe( 'extractErrorMessage', () => {
-		it( 'should return undefined if error.zerror is not defined', () => {
-			const error = {};
-			expect( wrapper.vm.extractErrorMessage( error ) ).toBeUndefined();
-		} );
-
-		it( 'should return the error message for generic errors', () => {
-			const error = {
-				zerror: {
-					Z1K1: 'Z5',
-					Z5K1: Constants.Z_GENERIC_ERROR,
-					Z5K2: {
-						Z1K1: {
-							Z1K1: 'Z7',
-							Z7K1: 'Z885',
-							Z885K1: Constants.Z_GENERIC_ERROR
-						},
-						K1: 'Description too long for language English.'
-					}
-				}
-			};
-
-			expect( wrapper.vm.extractErrorMessage( error ) ).toBe( 'Description too long for language English.' );
 		} );
 	} );
 } );

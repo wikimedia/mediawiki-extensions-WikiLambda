@@ -26,6 +26,7 @@ const { mapState, mapActions } = require( 'pinia' );
 
 const Constants = require( '../../../Constants.js' );
 const useMainStore = require( '../../../store/index.js' );
+const errorMixin = require( '../../../mixins/errorMixin.js' );
 const typeMixin = require( '../../../mixins/typeMixin.js' );
 const zobjectMixin = require( '../../../mixins/zobjectMixin.js' );
 
@@ -38,7 +39,7 @@ module.exports = exports = defineComponent( {
 		'cdx-text-input': CdxTextInput,
 		'cdx-progress-indicator': CdxProgressIndicator
 	},
-	mixins: [ typeMixin, zobjectMixin ],
+	mixins: [ errorMixin, typeMixin, zobjectMixin ],
 	props: {
 		value: {
 			type: String,
@@ -185,8 +186,7 @@ module.exports = exports = defineComponent( {
 						// * get error from metadata object
 						// * reject with error message
 						const metadata = data.response[ Constants.Z_RESPONSEENVELOPE_METADATA ];
-						const metadataErrorMessage = this.extractErrorMessage( metadata );
-						reject( metadataErrorMessage || this.getErrorMessage );
+						this.setErrorMessageCallback( metadata, this.getErrorMessage, reject );
 					} else if ( this.typeToString( this.getZObjectType( response ) ) !== this.inputType ) {
 						// Parser return unexpected type: reject with error message
 						reject( this.getErrorMessage );
