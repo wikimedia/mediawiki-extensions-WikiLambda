@@ -32,8 +32,7 @@
 			</span>
 		</template>
 		<template v-if="showValidation && !!errorMessage" #error>
-			<!-- eslint-disable-next-line vue/no-v-html -->
-			<span v-html="errorMessage"></span>
+			<div>{{ getErrorMessage( error ) }}</div>
 		</template>
 	</cdx-field>
 </template>

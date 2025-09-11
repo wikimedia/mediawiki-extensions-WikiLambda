@@ -44,12 +44,12 @@
 				class="ext-wikilambda-metadata-dialog-errors"
 				:type="error.type"
 			>
-				<!-- eslint-disable vue/no-v-html -->
-				<div v-html="getErrorMessage( error )"></div>
+				<div> {{ getErrorMessage( error ) }} </div>
 			</cdx-message>
 		</div>
 		<div v-else class="ext-wikilambda-app-function-metadata-dialog__body">
 			<cdx-message v-if="hasMetadataErrors">
+				<!-- eslint-disable vue/no-v-html -->
 				<div v-html="$i18n( 'wikilambda-functioncall-metadata-errors-debug-hint' ).parse()"></div>
 			</cdx-message>
 			<cdx-field
@@ -134,7 +134,7 @@ const errorMixin = require( '../../../mixins/errorMixin.js' );
 const LabelData = require( '../../../store/classes/LabelData.js' );
 const metadataMixin = require( '../../../mixins/metadataMixin.js' );
 const useMainStore = require( '../../../store/index.js' );
-const { extractErrorData } = require( '../../../utils/errorUtils.js' );
+const { extractErrorData, cleanUpForHTML } = require( '../../../utils/errorUtils.js' );
 const { extractZIDs } = require( '../../../utils/schemata.js' );
 const typeMixin = require( '../../../mixins/typeMixin.js' );
 const icons = require( '../../../../lib/icons.json' );
@@ -558,7 +558,7 @@ module.exports = exports = defineComponent( {
 				const args = [];
 				for ( const arg of errorData.stringArgs ) {
 					const key = this.getLabelData( arg.key ).label;
-					const value = this.$i18n( 'quotation-marks', arg.value ).text();
+					const value = this.$i18n( 'quotation-marks', cleanUpForHTML( arg.value ) ).text();
 					args.push( `${ key }${ colon }${ value }` );
 				}
 				const argblock = this.$i18n( 'parentheses', args.join( comma ) ).text();
@@ -667,7 +667,11 @@ module.exports = exports = defineComponent( {
 				for ( const arg of data.stringArgs ) {
 					const key = this.getLabelData( arg.key );
 					const keySpan = `<span dir="${ key.langDir }" lang="${ key.langCode }">${ key.labelOrUntitled }</span>`;
-					list.push( `<li>${ keySpan }: "${ arg.value }"</li>` );
+
+					// SECURITY: Escape any HTML in the argument value
+					const escapedArg = cleanUpForHTML( arg.value );
+
+					list.push( `<li>${ keySpan }: "${ escapedArg }"</li>` );
 				}
 				return `<ul>${ list.join( '' ) }</ul>`;
 			}

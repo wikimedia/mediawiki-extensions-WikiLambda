@@ -30,8 +30,7 @@
 					class="ext-wikilambda-app-publish-dialog__error"
 					:type="error.type"
 				>
-					<!-- eslint-disable vue/no-v-html -->
-					<div v-html="getErrorMessage( error )"></div>
+					<div>{{ getErrorMessage( error ) }}</div>
 				</cdx-message>
 			</div>
 
@@ -56,6 +55,7 @@
 
 			<!-- Legal text -->
 			<template #footer-text>
+				<!-- eslint-disable vue/no-v-html -->
 				<div
 					class="ext-wikilambda-app-publish-dialog__legal-text"
 					v-html="legalText"

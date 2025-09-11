@@ -75,7 +75,7 @@ const metadataChild2 = convertSetToMap( {
 				Z7K1: "Z885",
 				Z885K1: "Z500"
 			},
-			Z500K1: "some error in child function call",
+			Z500K1: "some error in child function call: <button onmouseover=\"window.location = '//www.example.com'\">",
 		}
 	},
 	// duration:
@@ -170,6 +170,21 @@ const metadataErrors = convertSetToMap( {
 	actualTestResult: 'CBA'
 } );
 
+const metadataMaliciousError = convertSetToMap( {
+	errors: {
+		Z1K1: "Z5",
+		Z5K1: "Z500",
+		Z5K2: {
+			Z1K1: {
+				Z1K1: "Z7",
+				Z7K1: "Z885",
+				Z885K1: "Z500"
+			},
+			Z500K1: "<button onmouseover=\"window.location = '//www.example.com'\">"
+		}
+	}
+} );
+
 const metadataDifferButNoErrors = convertSetToMap( {
 	expectedTestResult: 'ABC',
 	actualTestResult: 'CBA'
@@ -178,6 +193,7 @@ const metadataDifferButNoErrors = convertSetToMap( {
 module.exports = {
 	metadataBasic,
 	metadataErrors,
+	metadataMaliciousError,
 	metadataEmpty,
 	metadataNested,
 	metadataDifferButNoErrors,

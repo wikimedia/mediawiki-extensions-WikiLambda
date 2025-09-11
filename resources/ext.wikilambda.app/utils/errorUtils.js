@@ -75,6 +75,18 @@ const errorUtils = {
 		// Canonicalize whole error (just in case) before extracting its data
 		const canonicalError = hybridToCanonical( zobject );
 		return extractNestedErrors( canonicalError );
+	},
+
+	/**
+	 * Sanitize a string for safe HTML rendering.
+	 *
+	 * @param {string} input
+	 * @return {string}
+	 */
+	cleanUpForHTML: ( input ) => {
+		const div = document.createElement( 'div' );
+		div.appendChild( document.createTextNode( input ) );
+		return div.innerHTML;
 	}
 };
 
