@@ -300,6 +300,19 @@ describe( 'dialog', () => {
 			expect( message[ 0 ].text() ).toContain( 'Something not working? Try Wikifunctions.Debug to trace your code.' );
 		} );
 
+		it( 'renders the error section, but escapes bad stuff', () => {
+			const wrapper = mount( FunctionMetadataDialog, {
+				props: { open: true, metadata: metadata.metadataMaliciousError }
+			} );
+			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+			expect( sections.length ).toBe( 1 );
+			const section = sections[ 0 ];
+
+			// Check header
+			expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( '{{PLURAL:$1|Error|Errors}}' );
+			expect( section.find( '.cdx-accordion__header__description' ).text() ).toBe( 'Z500 (Z500K1: "&lt;button onmouseover="window.location = \'//www.example.com\'"&gt;")' );
+		} );
+
 		it( 'renders the expected/actual values even if the error data is missing', () => {
 			const wrapper = mount( FunctionMetadataDialog, {
 				props: { open: true, metadata: metadata.metadataDifferButNoErrors }
@@ -377,6 +390,7 @@ describe( 'dialog', () => {
 			const selector = wrapper.findComponent( { name: 'cdx-select' } );
 			expect( selector.html() ).toContain( 'ext-wikilambda-app-function-metadata-dialog__selected--pass' );
 			expect( selector.html() ).not.toContain( 'ext-wikilambda-app-function-metadata-dialog__selected--fail' );
+			expect( selector.html() ).toContain( '<bdi>If (Echo (true), Echo ("is true"), "is false")</bdi>' );
 
 			// Select second child
 			const selectedId = '0-1';
@@ -386,10 +400,14 @@ describe( 'dialog', () => {
 			// Selector class has changed from pass to fail
 			expect( selector.html() ).toContain( 'ext-wikilambda-app-function-metadata-dialog__selected--fail' );
 			expect( selector.html() ).not.toContain( 'ext-wikilambda-app-function-metadata-dialog__selected--pass' );
+			expect( selector.html() ).toContain( '<bdi>Echo</bdi>' );
 
 			// Metadata body is now reflecting a different metadata set
 			sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
 			expect( sections.length ).toBe( 3 );
+
+			// SECURITY: Ensure malicious HTML in error message values is also escaped
+			expect( sections[ 0 ].html() ).toContain( '"some error in child function call: &lt;button onmouseover="window.location = \'//www.example.com\'"&gt;"' );
 		} );
 	} );
 } );

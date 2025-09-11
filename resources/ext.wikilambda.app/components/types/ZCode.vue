@@ -42,8 +42,7 @@
 					:type="error.type"
 					:inline="true"
 				>
-					<!-- eslint-disable-next-line vue/no-v-html -->
-					<div v-html="getErrorMessage( error )"></div>
+					<div>{{ getErrorMessage( error ) }}</div>
 				</cdx-message>
 			</template>
 		</wl-key-value-block>
@@ -79,8 +78,7 @@
 					:type="error.type"
 					:inline="true"
 				>
-					<!-- eslint-disable-next-line vue/no-v-html -->
-					<div v-html="getErrorMessage( error )"></div>
+					<div>{{ getErrorMessage( error ) }}</div>
 				</cdx-message>
 			</template>
 		</wl-key-value-block>

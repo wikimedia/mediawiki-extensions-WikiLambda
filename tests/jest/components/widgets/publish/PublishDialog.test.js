@@ -91,6 +91,25 @@ describe( 'Publish Dialog', () => {
 		expect( messages[ 1 ].text() ).toBe( 'Unable to complete request. Please try again.' );
 	} );
 
+	it( 'renders escaped page errors', () => {
+		const errors = [ {
+			message: "<button onmouseover=\"window.location = '//www.example.com'\">",
+			code: undefined,
+			type: Constants.ERROR_TYPES.ERROR
+		} ];
+		store.getErrors = createGettersWithFunctionsMock( errors );
+
+		const wrapper = mount( PublishDialog, {
+			props: { showDialog: true },
+			global: { stubs: dialogGlobalStubs }
+		} );
+
+		const messages = wrapper.findAllComponents( { name: 'cdx-message' } );
+		expect( messages.length ).toBe( 1 );
+		expect( messages[ 0 ].props( 'type' ) ).toBe( 'error' );
+		expect( messages[ 0 ].text() ).toBe( '&lt;button onmouseover="window.location = \'//www.example.com\'"&gt;' );
+	} );
+
 	it( 'closes the dialog when click cancel button', () => {
 		const wrapper = mount( PublishDialog, {
 			props: { showDialog: true },

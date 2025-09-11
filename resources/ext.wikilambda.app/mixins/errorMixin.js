@@ -11,7 +11,7 @@ const { mapActions, mapState } = require( 'pinia' );
 
 const Constants = require( '../Constants.js' );
 const useMainStore = require( '../store/index.js' );
-const { extractErrorData } = require( '../utils/errorUtils.js' );
+const { extractErrorData, cleanUpForHTML } = require( '../utils/errorUtils.js' );
 const { getValueFromCanonicalZMap } = require( '../utils/schemata.js' );
 
 module.exports = exports = {
@@ -34,15 +34,18 @@ module.exports = exports = {
 
 		/**
 		 * Returns the translated message for a given error code.
-		 * Error messages can have html tags.
+		 * Raw error messages cannot have HTML tags, as they are escaped.
 		 *
 		 * @memberof module:ext.wikilambda.app.mixins.errorMixin
 		 * @param {Object} error
 		 * @return {string}
 		 */
 		getErrorMessage: function ( error ) {
+			if ( error.message ) {
+				return cleanUpForHTML( error.message );
+			}
 			// eslint-disable-next-line mediawiki/msg-doc
-			return error.message || this.$i18n( error.code ).parse();
+			return this.$i18n( error.code ).parse();
 		},
 
 		/**

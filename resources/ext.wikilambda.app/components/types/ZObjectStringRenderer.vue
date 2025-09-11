@@ -31,8 +31,7 @@
 				class="ext-wikilambda-app-object-string-renderer__error"
 			>
 				<cdx-message :type="fieldErrors[0].type" :inline="true">
-					<!-- eslint-disable vue/no-v-html -->
-					<span v-html="getErrorMessage( fieldErrors[0] )"></span>
+					<span>{{ getErrorMessage( fieldErrors[0] ) }}</span>
 				</cdx-message>
 				<a v-if="showExamplesLink" @click="openExamplesDialog">
 					{{ $i18n( 'wikilambda-string-renderer-examples-title' ).text() }}

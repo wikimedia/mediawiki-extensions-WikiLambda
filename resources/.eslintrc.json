@@ -42,6 +42,7 @@
 			"error",
 			"kebab-case"
 		],
+		"vue/no-v-html": "error",
 		"vue/no-undef-properties": "off",
 		"vue/require-explicit-emits": "off",
 		"vue/no-unsupported-features": [
