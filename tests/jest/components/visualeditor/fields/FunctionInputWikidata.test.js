@@ -4,6 +4,7 @@ const { shallowMount } = require( '@vue/test-utils' );
 const { waitFor } = require( '@testing-library/vue' );
 const FunctionInputWikidata = require( '../../../../../resources/ext.wikilambda.app/components/visualeditor/fields/FunctionInputWikidata.vue' );
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+const ErrorData = require( '../../../../../resources/ext.wikilambda.app/store/classes/ErrorData.js' );
 const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
 
 describe( 'FunctionInputWikidata', () => {
@@ -11,6 +12,9 @@ describe( 'FunctionInputWikidata', () => {
 	const entityId = 'Q123';
 	const label = 'Test Label';
 	const entityData = { id: entityId, label };
+	const errorLexeme = new ErrorData( 'wikilambda-visualeditor-wikifunctionscall-error-wikidata-lexeme', [], null, 'error' );
+	const errorItem = new ErrorData( 'wikilambda-visualeditor-wikifunctionscall-error-wikidata-item', [], null, 'error' );
+
 	let store;
 
 	beforeEach( () => {
@@ -50,7 +54,7 @@ describe( 'FunctionInputWikidata', () => {
 		await waitFor( () => expect( wrapper.vm.isValidating ).toBe( false ) );
 		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ {
 			isValid: false,
-			errorMessage: 'Invalid Wikidata Lexeme.'
+			error: errorLexeme
 		} ] );
 	} );
 
@@ -128,7 +132,7 @@ describe( 'FunctionInputWikidata', () => {
 		// Should emit invalid (while validating)
 		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false } ] );
 		// Should emit invalid with error message after fetch fails
-		expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ { isValid: false, errorMessage: 'Invalid Wikidata Item.' } ] );
+		expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ { isValid: false, error: errorItem } ] );
 	} );
 
 	it( 'tries to fetch entity if not found, then validates again', async () => {

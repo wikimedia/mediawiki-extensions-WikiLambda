@@ -30,7 +30,7 @@
 					class="ext-wikilambda-app-publish-dialog__error"
 					:type="error.type"
 				>
-					<div>{{ getErrorMessage( error ) }}</div>
+					<wl-safe-message :error="error"></wl-safe-message>
 				</cdx-message>
 			</div>
 
@@ -76,6 +76,8 @@ const eventLogMixin = require( '../../../mixins/eventLogMixin.js' );
 const useMainStore = require( '../../../store/index.js' );
 const urlUtils = require( '../../../utils/urlUtils.js' );
 
+// Base components:
+const SafeMessage = require( '../../base/SafeMessage.vue' );
 // Codex components
 const { CdxDialog, CdxField, CdxMessage, CdxTextInput } = require( '../../../../codex.js' );
 
@@ -101,7 +103,8 @@ module.exports = exports = defineComponent( {
 		'cdx-field': CdxField,
 		'cdx-text-input': CdxTextInput,
 		'cdx-message': CdxMessage,
-		'cdx-dialog': CdxDialog
+		'cdx-dialog': CdxDialog,
+		'wl-safe-message': SafeMessage
 	},
 	mixins: [ eventLogMixin, errorMixin ],
 	inject: {
@@ -343,7 +346,7 @@ module.exports = exports = defineComponent( {
 				this.setError( {
 					errorId: Constants.STORED_OBJECTS.MAIN,
 					errorType: Constants.ERROR_TYPES.ERROR,
-					errorMessage: error.messageOrFallback( Constants.ERROR_CODES.UNKNOWN_SAVE_ERROR )
+					errorMessage: error.messageOrFallback( 'wikilambda-unknown-save-error-message' )
 				} );
 			} ).finally( () => {
 				const interactionData = {

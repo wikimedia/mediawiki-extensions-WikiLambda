@@ -123,11 +123,11 @@ module.exports = exports = defineComponent( {
 		 */
 		signatureWarningCode: function () {
 			if ( this.inputTypeChanged && this.outputTypeChanged ) {
-				return Constants.ERROR_CODES.FUNCTION_INPUT_OUTPUT_CHANGED;
+				return 'wikilambda-publish-input-and-output-changed-impact-prompt';
 			} else if ( this.inputTypeChanged ) {
-				return Constants.ERROR_CODES.FUNCTION_INPUT_CHANGED;
+				return 'wikilambda-publish-input-changed-impact-prompt';
 			} else if ( this.outputTypeChanged ) {
-				return Constants.ERROR_CODES.FUNCTION_OUTPUT_CHANGED;
+				return 'wikilambda-publish-output-changed-impact-prompt';
 			}
 			return '';
 		},
@@ -234,7 +234,7 @@ module.exports = exports = defineComponent( {
 				this.setError( {
 					errorId: Constants.STORED_OBJECTS.MAIN,
 					errorType: Constants.ERROR_TYPES.WARNING,
-					errorCode: this.signatureWarningCode
+					errorMessageKey: this.signatureWarningCode
 				} );
 			}
 		}

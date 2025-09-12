@@ -71,7 +71,7 @@ describe( 'zobject submission Pinia store', () => {
 
 					const mockError = {
 						errorId: 'main.Z2K2.Z8K2',
-						errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT,
+						errorMessageKey: 'wikilambda-missing-function-output-error-message',
 						errorType: Constants.ERROR_TYPES.ERROR
 					};
 
@@ -94,11 +94,11 @@ describe( 'zobject submission Pinia store', () => {
 
 					const mockErrors = [ {
 						errorId: 'main.Z2K2.Z8K2.Z7K1',
-						errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT,
+						errorMessageKey: 'wikilambda-missing-function-output-error-message',
 						errorType: Constants.ERROR_TYPES.ERROR
 					}, {
 						errorId: 'main.Z2K2.Z8K2.Z881K1',
-						errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT,
+						errorMessageKey: 'wikilambda-missing-function-output-error-message',
 						errorType: Constants.ERROR_TYPES.ERROR
 					} ];
 
@@ -122,7 +122,7 @@ describe( 'zobject submission Pinia store', () => {
 
 					const mockError = {
 						errorId: 'main.Z2K2.Z8K1.2.Z17K1',
-						errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_INPUT_TYPE,
+						errorMessageKey: 'wikilambda-missing-function-input-type-error-message',
 						errorType: Constants.ERROR_TYPES.ERROR
 					};
 
@@ -146,11 +146,11 @@ describe( 'zobject submission Pinia store', () => {
 
 					const mockErrors = [ {
 						errorId: 'main.Z2K2.Z8K1.2.Z17K1',
-						errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_INPUT_TYPE,
+						errorMessageKey: 'wikilambda-missing-function-input-type-error-message',
 						errorType: Constants.ERROR_TYPES.ERROR
 					}, {
 						errorId: 'main.Z2K2.Z8K1.3.Z17K1',
-						errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_INPUT_TYPE,
+						errorMessageKey: 'wikilambda-missing-function-input-type-error-message',
 						errorType: Constants.ERROR_TYPES.ERROR
 					} ];
 
@@ -178,11 +178,11 @@ describe( 'zobject submission Pinia store', () => {
 
 					const mockErrors = [ {
 						errorId: 'main.Z2K2.Z8K2.Z881K1',
-						errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_OUTPUT,
+						errorMessageKey: 'wikilambda-missing-function-output-error-message',
 						errorType: Constants.ERROR_TYPES.ERROR
 					}, {
 						errorId: 'main.Z2K2.Z8K1.1.Z17K1',
-						errorCode: Constants.ERROR_CODES.MISSING_FUNCTION_INPUT_TYPE,
+						errorMessageKey: 'wikilambda-missing-function-input-type-error-message',
 						errorType: Constants.ERROR_TYPES.ERROR
 					} ];
 
@@ -337,7 +337,7 @@ describe( 'zobject submission Pinia store', () => {
 
 					const mockError = {
 						errorId: 'main.Z2K2.Z14K1',
-						errorCode: Constants.ERROR_CODES.MISSING_TARGET_FUNCTION,
+						errorMessageKey: 'wikilambda-zobject-missing-attached-function',
 						errorType: Constants.ERROR_TYPES.ERROR
 					};
 
@@ -366,7 +366,7 @@ describe( 'zobject submission Pinia store', () => {
 
 					const mockError = {
 						errorId: 'main.Z2K2.Z14K2.Z7K1',
-						errorCode: Constants.ERROR_CODES.MISSING_IMPLEMENTATION_COMPOSITION,
+						errorMessageKey: 'wikilambda-zimplememntation-composition-missing',
 						errorType: Constants.ERROR_TYPES.ERROR
 					};
 
@@ -396,7 +396,7 @@ describe( 'zobject submission Pinia store', () => {
 
 					const mockError = {
 						errorId: 'main.Z2K2.Z14K3.Z16K1',
-						errorCode: Constants.ERROR_CODES.MISSING_IMPLEMENTATION_CODE_LANGUAGE,
+						errorMessageKey: 'wikilambda-zimplementation-code-language-missing',
 						errorType: Constants.ERROR_TYPES.ERROR
 					};
 
@@ -426,7 +426,7 @@ describe( 'zobject submission Pinia store', () => {
 
 					const mockError = {
 						errorId: 'main.Z2K2.Z14K3.Z16K2',
-						errorCode: Constants.ERROR_CODES.MISSING_IMPLEMENTATION_CODE,
+						errorMessageKey: 'wikilambda-zimplementation-code-missing',
 						errorType: Constants.ERROR_TYPES.ERROR
 					};
 
@@ -495,7 +495,7 @@ describe( 'zobject submission Pinia store', () => {
 
 					const mockError = {
 						errorId: 'main.Z2K2.Z20K1',
-						errorCode: Constants.ERROR_CODES.MISSING_TARGET_FUNCTION,
+						errorMessageKey: 'wikilambda-zobject-missing-attached-function',
 						errorType: Constants.ERROR_TYPES.ERROR
 					};
 
@@ -525,7 +525,7 @@ describe( 'zobject submission Pinia store', () => {
 
 					const mockError = {
 						errorId: 'main.Z2K2.Z20K2.Z7K1',
-						errorCode: Constants.ERROR_CODES.MISSING_TESTER_CALL,
+						errorMessageKey: 'wikilambda-ztester-missing-call-function',
 						errorType: Constants.ERROR_TYPES.ERROR
 					};
 
@@ -555,7 +555,7 @@ describe( 'zobject submission Pinia store', () => {
 
 					const mockError = {
 						errorId: 'main.Z2K2.Z20K3.Z7K1',
-						errorCode: Constants.ERROR_CODES.MISSING_TESTER_VALIDATION,
+						errorMessageKey: 'wikilambda-ztester-missing-validation-function',
 						errorType: Constants.ERROR_TYPES.ERROR
 					};
 

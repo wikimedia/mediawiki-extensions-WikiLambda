@@ -4,11 +4,14 @@ const { shallowMount } = require( '@vue/test-utils' );
 const { waitFor } = require( '@testing-library/vue' );
 const FunctionInputEnum = require( '../../../../../resources/ext.wikilambda.app/components/visualeditor/fields/FunctionInputEnum.vue' );
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+const ErrorData = require( '../../../../../resources/ext.wikilambda.app/store/classes/ErrorData.js' );
 const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../../helpers/getterHelpers.js' );
 const { mockEnumValues } = require( '../../../fixtures/mocks.js' );
 
 describe( 'FunctionInputEnum', () => {
 	const mockEnumZid = 'Z30000';
+	const errorNoEnum = new ErrorData( 'wikilambda-visualeditor-wikifunctionscall-error-enum', [], null, 'error' );
+
 	let store;
 
 	beforeEach( () => {
@@ -68,7 +71,7 @@ describe( 'FunctionInputEnum', () => {
 		} );
 		wrapper.getComponent( { name: 'cdx-select' } ).vm.$emit( 'blur' );
 		expect( wrapper.emitted().validate ).toBeTruthy();
-		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false, errorMessage: 'No option chosen.' } ] );
+		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false, error: errorNoEnum } ] );
 	} );
 
 	it( 'validates selected value', async () => {
@@ -78,7 +81,7 @@ describe( 'FunctionInputEnum', () => {
 			}
 		} );
 		wrapper.getComponent( { name: 'cdx-select' } ).vm.$emit( 'update:selected', 'Z30003' );
-		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: true, errorMessage: undefined } ] );
+		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: true, error: undefined } ] );
 	} );
 
 	it( 'passes validation with empty value if allowed', () => {
@@ -90,7 +93,7 @@ describe( 'FunctionInputEnum', () => {
 		} );
 
 		wrapper.getComponent( { name: 'cdx-select' } ).vm.$emit( 'blur' );
-		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: true, errorMessage: undefined } ] );
+		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: true, error: undefined } ] );
 	} );
 
 	it( 'fails validation with empty value if not allowed', () => {
@@ -102,7 +105,7 @@ describe( 'FunctionInputEnum', () => {
 		} );
 
 		wrapper.getComponent( { name: 'cdx-select' } ).vm.$emit( 'blur' );
-		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false, errorMessage: 'No option chosen.' } ] );
+		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false, error: errorNoEnum } ] );
 	} );
 
 	it( 'fetches enum values on initialization', async () => {

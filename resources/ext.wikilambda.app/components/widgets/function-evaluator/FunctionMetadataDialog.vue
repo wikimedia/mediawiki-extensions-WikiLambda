@@ -44,7 +44,7 @@
 				class="ext-wikilambda-metadata-dialog-errors"
 				:type="error.type"
 			>
-				<div>{{ getErrorMessage( error ) }}</div>
+				<wl-safe-message :error="error"></wl-safe-message>
 			</cdx-message>
 		</div>
 		<div v-else class="ext-wikilambda-app-function-metadata-dialog__body">
@@ -85,40 +85,12 @@
 					<span v-else>{{ section.description }}</span>
 				</template>
 				<ul class="ext-wikilambda-app-function-metadata-dialog__content">
-					<li
+					<wl-function-metadata-item
 						v-for="( item, itemIndex ) in section.content"
-						:key="'item' + itemIndex"
-						class="ext-wikilambda-app-function-metadata-dialog__key"
-					>
-						<!-- eslint-disable-next-line max-len -->
-						<span class="ext-wikilambda-app-function-metadata-dialog__key-title">{{ item.title }}</span>{{ $i18n( 'colon-separator' ).text() }}
-						<template v-if="item.value">
-							<a
-								v-if="item.url"
-								:href="item.url"
-								:lang="item.lang"
-								:dir="item.dir"
-								target="_blank"
-							>{{ item.value }}</a>
-							<!-- eslint-disable vue/no-v-html -->
-							<span
-								v-else
-								:lang="item.lang"
-								:dir="item.dir"
-								v-html="item.value"
-							></span>
-							<!-- eslint-enable vue/no-v-html -->
-						</template>
-						<ul v-if="item.content">
-							<li
-								v-for="( subitem, subindex ) in item.content"
-								:key="'subitem' + subindex"
-								class="ext-wikilambda-app-function-metadata-dialog__subkey"
-							>
-								{{ subitem.title }}: {{ subitem.value }}
-							</li>
-						</ul>
-					</li>
+						:key="`item-${ itemIndex }`"
+						:key-string="`item-${ itemIndex }`"
+						:item="item"
+					></wl-function-metadata-item>
 				</ul>
 			</cdx-accordion>
 		</div>
@@ -128,18 +100,32 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const { mapState } = require( 'pinia' );
-const { CdxAccordion, CdxDialog, CdxField, CdxIcon, CdxMessage, CdxSelect } = require( '../../../../codex.js' );
+
 const Constants = require( '../../../Constants.js' );
-const CustomDialogHeader = require( '../../base/CustomDialogHeader.vue' );
 const errorMixin = require( '../../../mixins/errorMixin.js' );
-const LabelData = require( '../../../store/classes/LabelData.js' );
 const metadataMixin = require( '../../../mixins/metadataMixin.js' );
-const useMainStore = require( '../../../store/index.js' );
-const { extractErrorData, cleanUpForHTML } = require( '../../../utils/errorUtils.js' );
-const { extractZIDs } = require( '../../../utils/schemata.js' );
 const typeMixin = require( '../../../mixins/typeMixin.js' );
-const icons = require( '../../../../lib/icons.json' );
+const LabelData = require( '../../../store/classes/LabelData.js' );
+const useMainStore = require( '../../../store/index.js' );
+const { extractErrorData, escapeHtml } = require( '../../../utils/errorUtils.js' );
+const { extractZIDs } = require( '../../../utils/schemata.js' );
 const urlUtils = require( '../../../utils/urlUtils.js' );
+const icons = require( '../../../../lib/icons.json' );
+
+// Widget components
+const FunctionMetadataItem = require( './FunctionMetadataItem.vue' );
+// Base components
+const CustomDialogHeader = require( '../../base/CustomDialogHeader.vue' );
+const SafeMessage = require( '../../base/SafeMessage.vue' );
+// Codex components
+const {
+	CdxAccordion,
+	CdxDialog,
+	CdxField,
+	CdxIcon,
+	CdxMessage,
+	CdxSelect
+} = require( '../../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-metadata-dialog',
@@ -150,7 +136,9 @@ module.exports = exports = defineComponent( {
 		'cdx-icon': CdxIcon,
 		'cdx-message': CdxMessage,
 		'cdx-select': CdxSelect,
-		'wl-custom-dialog-header': CustomDialogHeader
+		'wl-custom-dialog-header': CustomDialogHeader,
+		'wl-function-metadata-item': FunctionMetadataItem,
+		'wl-safe-message': SafeMessage
 	},
 	mixins: [ typeMixin, metadataMixin, errorMixin ],
 	props: {
@@ -517,27 +505,36 @@ module.exports = exports = defineComponent( {
 						// * wikilambda-functioncall-metadata-execution
 						// * wikilambda-functioncall-metadata-programming-language-version
 						title: this.$i18n( value.title ).text(),
-						value: this.keyValues.get( value.key )
+						data: this.getTransformedValue( value )
 					};
-					// Apply transformation if needed and transform function is available
-					if ( ( 'transform' in value ) && ( value.transform in this ) ) {
-						const transformed = this[ value.transform ]( item.value );
-						if ( !!transformed && typeof transformed === 'object' ) {
-							// transformations can return an object with more values
-							// E.g. { value: 'text', url: 'http://some.link' },
-							// in such case, extend the item object.
-							Object.assign( item, transformed );
-						} else {
-							item.value = transformed;
-						}
-					}
-					// If the value is available, add to metadata
-					if ( item.value ) {
+
+					// If the data is available, add to metadata
+					if ( item.data ) {
 						metadata.push( item );
 					}
 				}
 			}
 			return metadata;
+		},
+		/**
+		 * @param {Object} item
+		 * @return {Object|undefined}
+		 */
+		getTransformedValue: function ( item ) {
+			let value = this.keyValues.get( item.key );
+
+			if ( ( 'transform' in item ) && ( item.transform in this ) ) {
+				value = this[ item.transform ]( value );
+			}
+
+			if ( !value ) {
+				return undefined;
+			}
+
+			// Wrap in text object if value is still a string
+			return ( typeof value === 'string' ) ?
+				{ type: Constants.METADATA_CONTENT_TYPE.TEXT, value } :
+				value;
 		},
 		/**
 		 * Returns the error section summary, which consists on the labelized
@@ -559,7 +556,7 @@ module.exports = exports = defineComponent( {
 				const args = [];
 				for ( const arg of errorData.stringArgs ) {
 					const key = this.getLabelData( arg.key ).label;
-					const value = this.$i18n( 'quotation-marks', cleanUpForHTML( arg.value ) ).text();
+					const value = this.$i18n( 'quotation-marks', escapeHtml( arg.value ) ).text();
 					args.push( `${ key }${ colon }${ value }` );
 				}
 				const argblock = this.$i18n( 'parentheses', args.join( comma ) ).text();
@@ -630,6 +627,7 @@ module.exports = exports = defineComponent( {
 			return `${ total.toPrecision( 4 ) } ${ unit }`;
 		},
 		/**
+		 * Transform method.
 		 * Returns the linked label of the root error from the given
 		 * key ('errors' or 'validateErrors'). Returns an object with
 		 * the properties value and url, for the template to render a link.
@@ -643,6 +641,7 @@ module.exports = exports = defineComponent( {
 				const errorType = data.errorType;
 				const errorLabelData = this.getLabelData( errorType );
 				return {
+					type: Constants.METADATA_CONTENT_TYPE.LINK,
 					value: errorLabelData.label,
 					lang: errorLabelData.langCode,
 					dir: errorLabelData.langDir,
@@ -652,40 +651,47 @@ module.exports = exports = defineComponent( {
 			return undefined;
 		},
 		/**
-		 * Returns the html string with the content for the error
+		 * Transform method.
+		 * Returns a safe HTML fragment with the content for the error
 		 * string arguments. If there are any, the returned html will
 		 * contain an unnumbered list, where each item contains the
 		 * labelized key, followed by the value.
 		 * If there are no string arguments to list, returns undefined.
 		 *
 		 * @param {Mixed} value
-		 * @return {string | undefined}
+		 * @return {Object | undefined}
 		 */
 		getErrorStringArgs: function ( value ) {
 			const data = extractErrorData( value );
 			if ( data && data.stringArgs && data.stringArgs.length ) {
 				const list = [];
+				const colon = this.$i18n( 'colon-separator' ).text();
 				for ( const arg of data.stringArgs ) {
 					const key = this.getLabelData( arg.key );
-					const keySpan = `<span dir="${ key.langDir }" lang="${ key.langCode }">${ key.labelOrUntitled }</span>`;
-
+					// SECURITY: Escape any HTML in the argument label
+					const escapedLabel = escapeHtml( key.labelOrUntitled );
+					const keySpan = `<span dir="${ key.langDir }" lang="${ key.langCode }">${ escapedLabel }</span>`;
 					// SECURITY: Escape any HTML in the argument value
-					const escapedArg = cleanUpForHTML( arg.value );
-
-					list.push( `<li>${ keySpan }: "${ escapedArg }"</li>` );
+					const escapedArg = escapeHtml( arg.value );
+					const quotedArg = this.$i18n( 'quotation-marks', escapedArg ).text();
+					list.push( `<li>${ keySpan }${ colon }${ quotedArg }</li>` );
 				}
-				return `<ul>${ list.join( '' ) }</ul>`;
+				return {
+					type: Constants.METADATA_CONTENT_TYPE.HTML,
+					value: `<ul>${ list.join( '' ) }</ul>`
+				};
 			}
 			return undefined;
 		},
 		/**
-		 * Returns the html string with the content for the sub-errors.
+		 * Transform method.
+		 * Returns a safe HTML fragment with the content for the sub-errors.
 		 * If there are any, the returned html will contain an unnumbered
 		 * list, where each item contains the labelized sub-error type.
 		 * If there are no sub-errors to list, returns undefined.
 		 *
 		 * @param {Mixed} value
-		 * @return {string | undefined}
+		 * @return {Object | undefined}
 		 */
 		getErrorChildren: function ( value ) {
 			const data = extractErrorData( value );
@@ -694,16 +700,45 @@ module.exports = exports = defineComponent( {
 				for ( const child of data.children ) {
 					const url = this.getUrl( child.errorType );
 					const e = this.getLabelData( child.errorType );
-					const a = `<a href="${ url }" dir="${ e.langDir }" lang="${ e.langCode }">${ e.label }</a>`;
+					// SECURITY: Escape any HTML in the error type label
+					const escapedLabel = escapeHtml( e.label );
+					const a = `<a href="${ url }" dir="${ e.langDir }" lang="${ e.langCode }">${ escapedLabel }</a>`;
 					children.push( `<li>${ a }</li>` );
 				}
-				return `<ul>${ children.join( '' ) }</ul>`;
+				return {
+					type: Constants.METADATA_CONTENT_TYPE.HTML,
+					value: `<ul>${ children.join( '' ) }</ul>`
+				};
 			}
 			return undefined;
 		},
 		/**
-		 * Transform method that given a mixed type value returns
-		 * a string, either by returning its Z6K1, or strigifying it
+		 * Transform method.
+		 * Given the value of implementationId, returns the name of that
+		 * implementation Id and its Url.
+		 * If the implementationId is invalid, returns undefined.
+		 *
+		 * @param {Mixed} value
+		 * @return {Object | undefined}
+		 */
+		getImplementationLink: function ( value ) {
+			const zid = this.getStringValue( value );
+			if ( this.isValidZidFormat( zid ) ) {
+				const labelData = this.getLabelData( zid );
+				return {
+					type: Constants.METADATA_CONTENT_TYPE.LINK,
+					value: labelData.labelOrUntitled,
+					lang: labelData.langCode,
+					dir: labelData.langDir,
+					url: this.getUrl( zid )
+				};
+			}
+			return undefined;
+		},
+		/**
+		 * Transform method.
+		 * Given a mixed type value returns a string
+		 * either by returning its Z6K1, or strigifying it
 		 *
 		 * @param {Mixed} value
 		 * @return {string}
@@ -718,27 +753,6 @@ module.exports = exports = defineComponent( {
 			return JSON.stringify( value );
 		},
 		/**
-		 * Transform method that given the value of implementationId,
-		 * returns the name of that implementation Id and its Url.
-		 * If the implementationId is invalid, returns undefined.
-		 *
-		 * @param {Mixed} value
-		 * @return {Object | undefined}
-		 */
-		getImplementationLink: function ( value ) {
-			const zid = this.getStringValue( value );
-			if ( this.isValidZidFormat( zid ) ) {
-				const labelData = this.getLabelData( zid );
-				return {
-					value: labelData.labelOrUntitled,
-					lang: labelData.langCode,
-					dir: labelData.langDir,
-					url: this.getUrl( zid )
-				};
-			}
-			return undefined;
-		},
-		/**
 		 * Returns the url for a given Zid
 		 *
 		 * @param {string} zid
@@ -748,76 +762,84 @@ module.exports = exports = defineComponent( {
 			return urlUtils.generateViewUrl( { langCode: this.getUserLangCode, zid } );
 		},
 		/**
+		 * Transform method.
 		 * Attempts to render a relative timestamp given a
 		 * datetime string in ISO 8601 format
 		 *
-		 * @param {string} dateTimeString
-		 * @return {string}
+		 * @param {string} input
+		 * @return {Object}
 		 */
-		toRelativeTime: function ( dateTimeString ) {
-			if ( Intl.RelativeTimeFormat ) {
-				const target = Date.parse( dateTimeString );
-				const now = Date.now();
-				const offset = now - target;
+		toRelativeTime: function ( input ) {
+			const transformDateTime = ( dateTimeString ) => {
+				if ( Intl.RelativeTimeFormat ) {
+					const target = Date.parse( dateTimeString );
+					const now = Date.now();
+					const offset = now - target;
 
-				let relativeTimeFormatter;
-				try {
-					relativeTimeFormatter = new Intl.RelativeTimeFormat( mw.config.get( 'wgUserLanguage' ) );
-				} catch ( error ) {
-					// Fall back to English if the MW locale isn't supported
-					relativeTimeFormatter = new Intl.RelativeTimeFormat( 'en' );
+					let relativeTimeFormatter;
+					try {
+						relativeTimeFormatter = new Intl.RelativeTimeFormat( mw.config.get( 'wgUserLanguage' ) );
+					} catch ( error ) {
+						// Fall back to English if the MW locale isn't supported
+						relativeTimeFormatter = new Intl.RelativeTimeFormat( 'en' );
+					}
+
+					let offsetThreshold = 1000;
+
+					// If this was within the last minute, render in seconds.
+					if ( offset < offsetThreshold * 60 ) {
+						return relativeTimeFormatter.format(
+							-Math.floor( offset / offsetThreshold ),
+							'second'
+						);
+					}
+					offsetThreshold *= 60;
+
+					// If this was within the last hour, render in minutes.
+					if ( offset < offsetThreshold * 60 ) {
+						return relativeTimeFormatter.format(
+							-Math.floor( offset / offsetThreshold ),
+							'minute'
+						);
+					}
+					offsetThreshold *= 60;
+
+					// If this was within the last day, render in hours.
+					if ( offset < offsetThreshold * 24 ) {
+						return relativeTimeFormatter.format(
+							-Math.floor( offset / offsetThreshold ),
+							'hour'
+						);
+					}
+					offsetThreshold *= 24;
+
+					// If this was within the last week, render in days.
+					if ( offset < offsetThreshold * 7 ) {
+						return relativeTimeFormatter.format(
+							-Math.floor( offset / offsetThreshold ),
+							'hour'
+						);
+					}
+					offsetThreshold *= 7;
+
+					// If this was within the last four weeks, render in weeks.
+					if ( offset < offsetThreshold * 4 ) {
+						return relativeTimeFormatter.format(
+							-Math.floor( offset / offsetThreshold ),
+							'hour'
+						);
+					}
+					offsetThreshold *= 4;
 				}
 
-				let offsetThreshold = 1000;
+				// Fallback for browsers without Intl
+				return dateTimeString.replace( 'T', ' ' ).replace( 'Z', ' (UTC)' );
+			};
 
-				// If this was within the last minute, render in seconds.
-				if ( offset < offsetThreshold * 60 ) {
-					return relativeTimeFormatter.format(
-						-Math.floor( offset / offsetThreshold ),
-						'second'
-					);
-				}
-				offsetThreshold *= 60;
-
-				// If this was within the last hour, render in minutes.
-				if ( offset < offsetThreshold * 60 ) {
-					return relativeTimeFormatter.format(
-						-Math.floor( offset / offsetThreshold ),
-						'minute'
-					);
-				}
-				offsetThreshold *= 60;
-
-				// If this was within the last day, render in hours.
-				if ( offset < offsetThreshold * 24 ) {
-					return relativeTimeFormatter.format(
-						-Math.floor( offset / offsetThreshold ),
-						'hour'
-					);
-				}
-				offsetThreshold *= 24;
-
-				// If this was within the last week, render in days.
-				if ( offset < offsetThreshold * 7 ) {
-					return relativeTimeFormatter.format(
-						-Math.floor( offset / offsetThreshold ),
-						'hour'
-					);
-				}
-				offsetThreshold *= 7;
-
-				// If this was within the last four weeks, render in weeks.
-				if ( offset < offsetThreshold * 4 ) {
-					return relativeTimeFormatter.format(
-						-Math.floor( offset / offsetThreshold ),
-						'hour'
-					);
-				}
-				offsetThreshold *= 4;
-			}
-
-			// Fallback for browsers without Intl
-			return dateTimeString.replace( 'T', ' ' ).replace( 'Z', ' (UTC)' );
+			return {
+				type: Constants.METADATA_CONTENT_TYPE.TEXT,
+				value: transformDateTime( input )
+			};
 		},
 		/**
 		 * Returns whether the given payload is an instance of LabelData

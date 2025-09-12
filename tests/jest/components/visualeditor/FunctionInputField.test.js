@@ -4,9 +4,11 @@ const { shallowMount } = require( '@vue/test-utils' );
 const FunctionInputField = require( '../../../../resources/ext.wikilambda.app/components/visualeditor/FunctionInputField.vue' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 const LabelData = require( '../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' );
+const ErrorData = require( '../../../../resources/ext.wikilambda.app/store/classes/ErrorData.js' );
 const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../helpers/getterHelpers.js' );
 
 describe( 'FunctionInputField', () => {
+	const mockErrorData = new ErrorData( null, [], 'An error occurred', 'error' );
 	let store;
 
 	beforeEach( () => {
@@ -73,29 +75,29 @@ describe( 'FunctionInputField', () => {
 			},
 			global: { stubs: { CdxField: false, CdxLabel: false } }
 		} );
-		wrapper.getComponent( { name: 'wl-function-input-string' } ).vm.$emit( 'validate', { isValid: true, errorMessage: undefined } );
-		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: true, errorMessage: undefined } ] );
+		wrapper.getComponent( { name: 'wl-function-input-string' } ).vm.$emit( 'validate', { isValid: true, error: mockErrorData } );
+		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: true, error: mockErrorData } ] );
 	} );
 
-	it( 'computes status as "error" when errorMessage is present and showValidation is true', () => {
+	it( 'computes status as "error" when erro is present and showValidation is true', () => {
 		const wrapper = shallowMount( FunctionInputField, {
 			props: {
 				labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
 				inputType: 'Z456',
 				showValidation: true,
-				errorMessage: 'An error occurred'
+				error: mockErrorData
 			}
 		} );
 		expect( wrapper.vm.status ).toBe( 'error' );
 	} );
 
-	it( 'computes status as "default" when errorMessage is present but showValidation is false', () => {
+	it( 'computes status as "default" when error is present but showValidation is false', () => {
 		const wrapper = shallowMount( FunctionInputField, {
 			props: {
 				labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
 				inputType: 'Z456',
 				showValidation: false,
-				errorMessage: 'An error occurred'
+				error: mockErrorData
 			}
 		} );
 		expect( wrapper.vm.status ).toBe( 'default' );

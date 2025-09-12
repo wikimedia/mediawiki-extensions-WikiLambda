@@ -79,14 +79,28 @@ const errorUtils = {
 
 	/**
 	 * Sanitize a string for safe HTML rendering.
+	 * Escapes dangerous characters for HTML injection: & < > " ' / ` =
+	 * Safer than DOM cleanup option.
 	 *
 	 * @param {string} input
 	 * @return {string}
 	 */
-	cleanUpForHTML: ( input ) => {
-		const div = document.createElement( 'div' );
-		div.appendChild( document.createTextNode( input ) );
-		return div.innerHTML;
+	escapeHtml: function ( input ) {
+		if ( input === null || input === undefined ) {
+			return '';
+		}
+		const s = ( typeof input === 'string' ) ? input : String( input );
+		const replacement = {
+			'&': '&amp;',
+			'<': '&lt;',
+			'>': '&gt;',
+			'"': '&quot;',
+			"'": '&#39;',
+			'/': '&#x2F;',
+			'`': '&#x60;',
+			'=': '&#x3D;'
+		};
+		return s.replace( /[&<>"'`=/]/g, ( char ) => replacement[ char ] );
 	}
 };
 

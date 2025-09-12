@@ -4,12 +4,14 @@ const { shallowMount } = require( '@vue/test-utils' );
 const { waitFor } = require( '@testing-library/vue' );
 const FunctionInputParser = require( '../../../../../resources/ext.wikilambda.app/components/visualeditor/fields/FunctionInputParser.vue' );
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+const ErrorData = require( '../../../../../resources/ext.wikilambda.app/store/classes/ErrorData.js' );
 const { createGettersWithFunctionsMock } = require( '../../../helpers/getterHelpers.js' );
 
 describe( 'FunctionInputParser', () => {
 	let store;
 	const typeZid = 'Z30000';
 	const parserZid = 'Z30020';
+	const errorParser = new ErrorData( 'wikilambda-visualeditor-wikifunctionscall-error-parser-empty', [], null, 'error' );
 
 	beforeEach( () => {
 		store = useMainStore();
@@ -207,7 +209,7 @@ describe( 'FunctionInputParser', () => {
 			expect( store.runParser ).toHaveBeenCalledTimes( 1 );
 			expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ {
 				isValid: false,
-				errorMessage: 'Please enter a value.'
+				error: errorParser
 			} ] );
 		} );
 	} );

@@ -7,7 +7,6 @@
 'use strict';
 
 const ApiError = require( '../../../../resources/ext.wikilambda.app/store/classes/ApiError.js' );
-const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 
 describe( 'ApiError class', () => {
 
@@ -325,7 +324,7 @@ describe( 'ApiError class', () => {
 			const apiError = new ApiError( code, response );
 
 			const message = apiError.messageOrFallback();
-			expect( global.mw.message ).toHaveBeenCalledWith( Constants.ERROR_CODES.UNKNOWN_ERROR );
+			expect( global.mw.message ).toHaveBeenCalledWith( 'wikilambda-unknown-error-message' );
 			expect( message ).toBe( 'Fallback error message' );
 		} );
 	} );

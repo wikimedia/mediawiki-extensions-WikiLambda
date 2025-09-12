@@ -64,7 +64,7 @@ module.exports = {
 				this.setError( {
 					errorId: Constants.STORED_OBJECTS.RESPONSE,
 					errorType: Constants.ERROR_TYPES.ERROR,
-					errorMessage: error.messageOrFallback( Constants.ERROR_CODES.UNKNOWN_EXEC_ERROR )
+					errorMessage: error.messageOrFallback( 'wikilambda-unknown-exec-error-message' )
 				} );
 			} );
 		}

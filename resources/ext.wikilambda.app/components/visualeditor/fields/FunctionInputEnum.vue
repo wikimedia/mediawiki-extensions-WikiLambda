@@ -25,6 +25,7 @@ const { mapActions, mapState } = require( 'pinia' );
 
 const Constants = require( '../../../Constants.js' );
 const useMainStore = require( '../../../store/index.js' );
+const ErrorData = require( '../../../store/classes/ErrorData.js' );
 const typeUtils = require( '../../../utils/typeUtils.js' );
 
 // Codex components
@@ -115,8 +116,9 @@ module.exports = exports = defineComponent( {
 		 * @param {boolean} isValid - The validation result.
 		 */
 		updateValidationState: function ( isValid ) {
-			const errorMessage = !isValid ? this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-error-enum' ).text() : undefined;
-			this.$emit( 'validate', { isValid, errorMessage } );
+			const errorMessageKey = 'wikilambda-visualeditor-wikifunctionscall-error-enum';
+			const error = !isValid ? ErrorData.buildErrorData( { errorMessageKey } ) : undefined;
+			this.$emit( 'validate', { isValid, error } );
 		},
 		/**
 		 * Validates the value and optionally emits an update event if valid.

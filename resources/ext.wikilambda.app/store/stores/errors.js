@@ -8,10 +8,14 @@
 
 const Constants = require( '../../Constants.js' );
 
+const { extractErrorData } = require( '../../utils/errorUtils.js' );
+const { getValueFromCanonicalZMap } = require( '../../utils/schemata.js' );
+const ErrorData = require( '../classes/ErrorData.js' );
+
 module.exports = {
 	state: {
 		/**
-		 * Collection of errors by errorId.
+		 * Collection of ErrorData objects by errorId.
 		 *
 		 * The errorId is an internal string identifier that
 		 * uniquely points at a sub-zObject represented by a
@@ -32,18 +36,6 @@ module.exports = {
 		 * in the state using the root errorId and can be
 		 * presented in a top-level component such as the
 		 * Publish dialog window.
-		 *
-		 * The error object will have this shape:
-		 *
-		 * errors: {
-		 *  main: [
-		 *    { message: "some error message", code: undefined, type: "error" },
-		 *    { message: undefined, code: "wikilambda-unknown-warning", type: "warning" },
-		 *    ...
-		 *  ],
-		 *  main.Z2K2.Z8K1: [],
-		 *  ...
-		 * }
 		 */
 		errors: {}
 	},
@@ -82,22 +74,22 @@ module.exports = {
 		},
 
 		/**
-		 * Returns if there are errors for a given errorId that have a specific code.
+		 * Returns if there are errors for a given errorId that have a specific message key.
 		 *
 		 * @param {Object} state
 		 * @return {Function}
 		 */
-		hasErrorByCode: function ( state ) {
+		hasErrorByKey: function ( state ) {
 			/**
 			 * @param {string} errorId
-			 * @param {string} code
+			 * @param {string} errorMessageKey
 			 * @return {boolean}
 			 */
-			const findErrorByCode = ( errorId, code ) => {
+			const findErrorByKey = ( errorId, errorMessageKey ) => {
 				const allErrors = state.errors[ errorId ] || [];
-				return !!allErrors.some( ( error ) => error.code === code );
+				return !!allErrors.some( ( error ) => error.messageKey === errorMessageKey );
 			};
-			return findErrorByCode;
+			return findErrorByKey;
 		},
 
 		/**
@@ -122,25 +114,78 @@ module.exports = {
 
 	actions: {
 		/**
-		 * Set an error for a given errorId.
+		 * Builds an ErrorData object and stores it for a given errorId.
 		 * Any error that's set for the errorId 'main' is considered page-wide.
 		 *
 		 * @param {Object} payload
 		 * @param {string} payload.errorId
 		 * @param {string} payload.errorMessage
-		 * @param {string} payload.errorCode
+		 * @param {string} payload.errorMessageKey
+		 * @param {string[]} payload.errorParams
 		 * @param {string} payload.errorType literal string: "error" or "warning"
 		 */
 		setError: function ( payload ) {
 			const {
 				errorId = Constants.STORED_OBJECTS.MAIN,
 				errorMessage,
-				errorCode,
-				errorType
+				errorMessageKey,
+				errorParams = [],
+				errorType = Constants.ERROR_TYPES.ERROR
 			} = payload;
 
+			const errorData = ErrorData.buildErrorData( { errorMessage, errorMessageKey, errorParams, errorType } );
+
 			this.errors[ errorId ] = this.errors[ errorId ] || [];
-			this.errors[ errorId ].push( { message: errorMessage, code: errorCode, type: errorType } );
+			this.errors[ errorId ].push( errorData );
+		},
+
+		/**
+		 * Extracts the error data from metadata, builds the error message and
+		 * runs the callback function to set the error with the available error
+		 * message or the fallback message if metadata error wasn't found.
+		 *
+		 * @param {Object} payload
+		 * @param {Object|null} payload.metadata - ZMap with metadata which may contain an errors key
+		 * @param {Object} fallbackErrorData - error to set if no errors key is found
+		 * @param {Function} errorHandler - function for handling the error when found
+		 */
+		handleMetadataError: function ( payload ) {
+			const {
+				metadata,
+				fallbackErrorData,
+				errorHandler
+			} = payload;
+
+			// If metadata is null, apply fallback error and exit
+			if ( !metadata ) {
+				errorHandler( fallbackErrorData );
+				return;
+			}
+
+			const error = getValueFromCanonicalZMap( metadata, 'errors' );
+			const errorData = extractErrorData( error );
+
+			// If metadata doesn't have error information, apply fallback error and exit
+			if ( !errorData ) {
+				errorHandler( fallbackErrorData );
+				return;
+			}
+
+			// If error is Z500/generic and has a string (Z500)K1, show that as error message
+			if ( errorData.errorType === Constants.Z_GENERIC_ERROR && errorData.stringArgs.length ) {
+				errorHandler( { errorMessage: errorData.stringArgs[ 0 ].value } );
+				return;
+			}
+
+			// Finally, asynchronously fetch errorType and, if fetched,
+			// set its label as error message
+			this.fetchZids( { zids: [ errorData.errorType ] } ).then( () => {
+				if ( this.getStoredObject( errorData.errorType ) ) {
+					errorHandler( { errorMessage: this.getLabelData( errorData.errorType ).label } );
+				} else {
+					errorHandler( fallbackErrorData );
+				}
+			} );
 		},
 
 		/**
@@ -155,17 +200,17 @@ module.exports = {
 		},
 
 		/**
-		 * Clears all errors for a given errorId that have a specific code
+		 * Clears all errors for a given errorId that have a specific key
 		 *
 		 * @param {Object} payload
 		 * @param {string} payload.errorId
-		 * @param {string} payload.errorCode
+		 * @param {string} payload.errorMessageKey
 		 */
-		clearErrorsByCode: function ( payload ) {
-			const { errorId, code } = payload;
+		clearErrorsByKey: function ( payload ) {
+			const { errorId, errorMessageKey } = payload;
 			if ( errorId in this.errors ) {
 				this.errors[ errorId ] = this.errors[ errorId ]
-					.filter( ( error ) => error.code !== code );
+					.filter( ( error ) => error.messageKey !== errorMessageKey );
 			}
 		},
 

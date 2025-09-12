@@ -392,7 +392,7 @@ module.exports = exports = defineComponent( {
 					if ( error.code === 'abort' ) {
 						return;
 					}
-					this.functionCallError = error.messageOrFallback( Constants.ERROR_CODES.UNKNOWN_EXEC_ERROR );
+					this.functionCallError = error.messageOrFallback( 'wikilambda-unknown-exec-error-message' );
 					this.isLoading = false;
 				} );
 		},

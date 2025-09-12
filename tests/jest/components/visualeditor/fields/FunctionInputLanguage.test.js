@@ -4,9 +4,12 @@ const { shallowMount } = require( '@vue/test-utils' );
 const { waitFor } = require( '@testing-library/vue' );
 const FunctionInputLanguage = require( '../../../../../resources/ext.wikilambda.app/components/visualeditor/fields/FunctionInputLanguage.vue' );
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+const ErrorData = require( '../../../../../resources/ext.wikilambda.app/store/classes/ErrorData.js' );
 const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
 
 describe( 'FunctionInputLanguage', () => {
+	const errorLang = new ErrorData( 'wikilambda-visualeditor-wikifunctionscall-error-language', [], null, 'error' );
+
 	let store;
 
 	beforeEach( () => {
@@ -91,7 +94,7 @@ describe( 'FunctionInputLanguage', () => {
 		// Emits validation result synchronously
 		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ {
 			isValid: false,
-			errorMessage: 'No language chosen.'
+			error: errorLang
 		} ] );
 	} );
 
@@ -109,7 +112,7 @@ describe( 'FunctionInputLanguage', () => {
 		// Emits validation result once finished
 		expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ {
 			isValid: false,
-			errorMessage: 'No language chosen.'
+			error: errorLang
 		} ] );
 	} );
 
@@ -127,7 +130,7 @@ describe( 'FunctionInputLanguage', () => {
 		// Emits validation result once finished
 		expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ {
 			isValid: false,
-			errorMessage: 'No language chosen.'
+			error: errorLang
 		} ] );
 	} );
 

@@ -111,9 +111,7 @@
 						{{ $i18n( 'wikilambda-function-evaluator-running' ).text() }}
 					</div>
 					<template v-else>
-						<div v-if="apiErrors.length > 0">
-							{{ getErrorMessage( apiErrors[ 0 ] ) }}
-						</div>
+						<wl-safe-message v-if="apiErrors.length > 0" :error="apiErrors[0]"></wl-safe-message>
 						<wl-evaluation-result v-else></wl-evaluation-result>
 					</template>
 				</div>
@@ -139,6 +137,7 @@ const {
 
 // Base components
 const KeyBlock = require( '../../base/KeyBlock.vue' );
+const SafeMessage = require( '../../base/SafeMessage.vue' );
 const WidgetBase = require( '../../base/WidgetBase.vue' );
 // Type components
 const EvaluationResult = require( './EvaluationResult.vue' );
@@ -152,8 +151,9 @@ module.exports = exports = defineComponent( {
 		'cdx-button': CdxButton,
 		'cdx-message': CdxMessage,
 		'wl-evaluation-result': EvaluationResult,
-		'wl-widget-base': WidgetBase,
 		'wl-key-block': KeyBlock,
+		'wl-safe-message': SafeMessage,
+		'wl-widget-base': WidgetBase,
 		'wl-z-object-key-value': ZObjectKeyValue
 	},
 	mixins: [ eventLogMixin, errorMixin ],

@@ -99,13 +99,13 @@ module.exports = {
 
 			// If the type was changed to a different type and there are list items, show a warning
 			if (
-				!this.hasErrorByCode( keyPath, Constants.ERROR_CODES.TYPED_LIST_TYPE_CHANGED ) &&
+				!this.hasErrorByKey( keyPath, 'wikilambda-list-type-change-warning' ) &&
 				listItems.length > 0
 			) {
 				// If the typed list type changed error has not been set, set it
 				this.setError( {
 					errorId: Constants.STORED_OBJECTS.MAIN,
-					errorCode: Constants.ERROR_CODES.TYPED_LIST_TYPE_CHANGED,
+					errorMessageKey: 'wikilambda-list-type-change-warning',
 					errorType: Constants.ERROR_TYPES.WARNING
 				} );
 			}

@@ -33,7 +33,7 @@
 					v-model="field.value"
 					:input-type="field.inputType"
 					:label-data="field.labelData"
-					:error-message="field.errorMessage"
+					:error="field.error"
 					:show-validation="showValidation( field.hasChanged )"
 					@update="value => handleUpdate( index, value )"
 					@validate="payload => handleValidation( index, payload )"
@@ -237,11 +237,11 @@ module.exports = exports = defineComponent( {
 		 * @param {number} index - The index of the field to validate.
 		 * @param {Object} payload
 		 * @param {boolean} payload.isValid - The validation status.
-		 * @param {string|undefined} payload.errorMessage - The error message to set, if any.
+		 * @param {string|undefined} payload.error - The error message to set, if any.
 		 */
 		handleValidation: function ( index, payload ) {
 			this.inputFields[ index ].isValid = payload.isValid;
-			this.inputFields[ index ].errorMessage = payload.errorMessage;
+			this.inputFields[ index ].error = payload.error;
 		},
 		/**
 		 * Fetches the ZIDs for all input types and the output type.

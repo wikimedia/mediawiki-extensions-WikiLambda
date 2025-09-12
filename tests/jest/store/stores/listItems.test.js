@@ -97,8 +97,9 @@ describe( 'ListItems Pinia store', () => {
 				} );
 
 				expect( store.errors.main ).toEqual( [ {
-					code: 'wikilambda-list-type-change-warning',
-					message: undefined,
+					messageKey: 'wikilambda-list-type-change-warning',
+					params: [],
+					message: null,
 					type: 'warning'
 				} ] );
 

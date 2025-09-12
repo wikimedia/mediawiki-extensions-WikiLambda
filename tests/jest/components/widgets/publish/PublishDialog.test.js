@@ -15,6 +15,7 @@ const ApiError = require( '../../../../../resources/ext.wikilambda.app/store/cla
 const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
 const PublishDialog = require( '../../../../../resources/ext.wikilambda.app/components/widgets/publish/PublishDialog.vue' );
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
+const ErrorData = require( '../../../../../resources/ext.wikilambda.app/store/classes/ErrorData.js' );
 
 const createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
 
@@ -67,15 +68,10 @@ describe( 'Publish Dialog', () => {
 	} );
 
 	it( 'renders page errors and warnings', () => {
-		const errors = [ {
-			message: 'custom warning message',
-			code: undefined,
-			type: Constants.ERROR_TYPES.WARNING
-		}, {
-			message: undefined,
-			code: Constants.ERROR_CODES.UNKNOWN_ERROR,
-			type: Constants.ERROR_TYPES.ERROR
-		} ];
+		const errors = [
+			new ErrorData( null, [], 'custom warning message', Constants.ERROR_TYPES.WARNING ),
+			new ErrorData( 'wikilambda-unknown-error-message', [], null, Constants.ERROR_TYPES.ERROR )
+		];
 		store.getErrors = createGettersWithFunctionsMock( errors );
 
 		const wrapper = mount( PublishDialog, {
@@ -91,12 +87,10 @@ describe( 'Publish Dialog', () => {
 		expect( messages[ 1 ].text() ).toBe( 'Unable to complete request. Please try again.' );
 	} );
 
-	it( 'renders escaped page errors', () => {
-		const errors = [ {
-			message: "<button onmouseover=\"window.location = '//www.example.com'\">",
-			code: undefined,
-			type: Constants.ERROR_TYPES.ERROR
-		} ];
+	it( 'renders unsafe messages as text and not as html', () => {
+		const errors = [
+			new ErrorData( null, [], "<button onmouseover=\"window.location = '//www.example.com'\">", Constants.ERROR_TYPES.ERROR )
+		];
 		store.getErrors = createGettersWithFunctionsMock( errors );
 
 		const wrapper = mount( PublishDialog, {
@@ -107,7 +101,11 @@ describe( 'Publish Dialog', () => {
 		const messages = wrapper.findAllComponents( { name: 'cdx-message' } );
 		expect( messages.length ).toBe( 1 );
 		expect( messages[ 0 ].props( 'type' ) ).toBe( 'error' );
-		expect( messages[ 0 ].text() ).toBe( '&lt;button onmouseover="window.location = \'//www.example.com\'"&gt;' );
+
+		// Check that it was rendered as text and not as html elements
+		const element = messages[ 0 ].element;
+		expect( element.querySelector( 'button' ) ).toBeNull();
+		expect( element.textContent ).toContain( '<button onmouseover="window.location = \'//www.example.com\'">' );
 	} );
 
 	it( 'closes the dialog when click cancel button', () => {
@@ -246,7 +244,7 @@ describe( 'Publish Dialog', () => {
 			const error = new ApiError( 'http', { error: { message: 'mock submission error' } } );
 
 			store.submitZObject.mockRejectedValue( error );
-			store.getErrors = createGettersWithFunctionsMock( [ { type: 'error', message: 'some error' } ] );
+			store.getErrors = createGettersWithFunctionsMock( [ new ErrorData( null, [], 'some error', 'error' ) ] );
 			store.isCreateNewPage = true;
 			store.getCurrentZObjectId = 'Z0';
 			store.getCurrentZObjectType = 'Z8';

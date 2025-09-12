@@ -27,6 +27,7 @@ const { mapState, mapActions } = require( 'pinia' );
 
 const Constants = require( '../../../Constants.js' );
 const useMainStore = require( '../../../store/index.js' );
+const ErrorData = require( '../../../store/classes/ErrorData.js' );
 
 // Wikidata components
 const WikidataEntitySelector = require( '../../types/wikidata/EntitySelector.vue' );
@@ -116,10 +117,9 @@ module.exports = exports = defineComponent( {
 		 */
 		updateValidationState: function ( isValid ) {
 			const simplifiedType = Constants.WIKIDATA_SIMPLIFIED_TYPES[ this.entityType ];
-			const errorKey = Constants.WIKIDATA_INPUT_ERROR_MSG[ simplifiedType ];
-			// eslint-disable-next-line mediawiki/msg-doc
-			const errorMessage = !isValid ? this.$i18n( errorKey ).text() : undefined;
-			this.$emit( 'validate', { isValid, errorMessage } );
+			const errorMessageKey = Constants.WIKIDATA_INPUT_ERROR_MSG[ simplifiedType ];
+			const error = !isValid ? ErrorData.buildErrorData( { errorMessageKey } ) : undefined;
+			this.$emit( 'validate', { isValid, error } );
 		},
 		/**
 		 * Validates the value and optionally emits an update event if valid.

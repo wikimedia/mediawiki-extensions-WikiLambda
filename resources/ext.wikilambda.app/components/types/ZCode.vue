@@ -42,7 +42,7 @@
 					:type="error.type"
 					:inline="true"
 				>
-					<div>{{ getErrorMessage( error ) }}</div>
+					<wl-safe-message :error="error"></wl-safe-message>
 				</cdx-message>
 			</template>
 		</wl-key-value-block>
@@ -78,7 +78,7 @@
 					:type="error.type"
 					:inline="true"
 				>
-					<div>{{ getErrorMessage( error ) }}</div>
+					<wl-safe-message :error="error"></wl-safe-message>
 				</cdx-message>
 			</template>
 		</wl-key-value-block>
@@ -91,6 +91,7 @@ const { mapActions, mapState } = require( 'pinia' );
 
 const Constants = require( '../../Constants.js' );
 const useMainStore = require( '../../store/index.js' );
+const ErrorData = require( '../../store/classes/ErrorData.js' );
 const errorMixin = require( '../../mixins/errorMixin.js' );
 const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
 const typeMixin = require( '../../mixins/typeMixin.js' );
@@ -98,6 +99,7 @@ const typeMixin = require( '../../mixins/typeMixin.js' );
 // Base components
 const CodeEditor = require( '../base/CodeEditor.vue' );
 const KeyValueBlock = require( '../base/KeyValueBlock.vue' );
+const SafeMessage = require( '../base/SafeMessage.vue' );
 // Codex components
 const { CdxMessage, CdxSelect } = require( '../../../codex.js' );
 
@@ -107,7 +109,8 @@ module.exports = exports = defineComponent( {
 		'cdx-message': CdxMessage,
 		'cdx-select': CdxSelect,
 		'code-editor': CodeEditor,
-		'wl-key-value-block': KeyValueBlock
+		'wl-key-value-block': KeyValueBlock,
+		'wl-safe-message': SafeMessage
 	},
 	mixins: [ errorMixin, zobjectMixin, typeMixin ],
 	props: {
@@ -140,7 +143,7 @@ module.exports = exports = defineComponent( {
 		'getLabelData',
 		'getCurrentTargetFunctionZid',
 		'getErrors',
-		'hasErrorByCode',
+		'hasErrorByKey',
 		'isCreateNewPage'
 	] ), {
 		/**
@@ -175,7 +178,7 @@ module.exports = exports = defineComponent( {
 		/**
 		 * Returns code field errors and notices (if any)
 		 *
-		 * @return {Array}
+		 * @return {ErrorData[]}
 		 */
 		codeErrors: function () {
 			return this.codeErrorId ?
@@ -187,13 +190,15 @@ module.exports = exports = defineComponent( {
 		 * Returns code field notices.
 		 * * When creating new implementation: "Z0 is a placeholder and will be replaced..."
 		 *
-		 * @return {Array}
+		 * @return {ErrorData[]}
 		 */
 		codeNotices: function () {
-			return ( this.parentIsImplementation || !this.isCreateNewPage ) ? [] : [ {
-				type: Constants.ERROR_TYPES.NOTICE,
-				code: Constants.ERROR_CODES.NEW_ZID_PLACEHOLDER_WARNING
-			} ];
+			return ( this.parentIsImplementation || !this.isCreateNewPage ) ? [] : [
+				ErrorData.buildErrorData( {
+					errorType: Constants.ERROR_TYPES.NOTICE,
+					errorMessageKey: 'wikilambda-editor-code-editor-zid-placeholder-error'
+				} )
+			];
 		},
 
 		/**
@@ -313,7 +318,7 @@ module.exports = exports = defineComponent( {
 	methods: Object.assign( {}, mapActions( useMainStore, [
 		'fetchZids',
 		'fetchAllZProgrammingLanguages',
-		'clearErrorsByCode',
+		'clearErrorsByKey',
 		'clearErrors',
 		'setError'
 	] ), {
@@ -370,15 +375,15 @@ module.exports = exports = defineComponent( {
 
 			// If 'Wikifunctions.Debug' is not found, clear the error.
 			if ( !hasDebugCode ) {
-				this.clearErrorsByCode( {
+				this.clearErrorsByKey( {
 					errorId: Constants.STORED_OBJECTS.MAIN,
-					errorCode: Constants.ERROR_CODES.DEBUG_CODE_WARNING
+					errorMessageKey: 'wikilambda-editor-code-editor-debug-code-warning'
 				} );
 				return;
 			}
 
 			// If the debug message error has already been set, do nothing
-			if ( this.hasErrorByCode( Constants.STORED_OBJECTS.MAIN, Constants.ERROR_CODES.DEBUG_CODE_WARNING ) ) {
+			if ( this.hasErrorByKey( Constants.STORED_OBJECTS.MAIN, 'wikilambda-editor-code-editor-debug-code-warning' ) ) {
 				return;
 			}
 
@@ -386,7 +391,7 @@ module.exports = exports = defineComponent( {
 			this.setError( {
 				errorId: Constants.STORED_OBJECTS.MAIN,
 				errorType: Constants.ERROR_TYPES.WARNING,
-				errorCode: Constants.ERROR_CODES.DEBUG_CODE_WARNING
+				errorMessageKey: 'wikilambda-editor-code-editor-debug-code-warning'
 			} );
 		},
 
@@ -429,7 +434,7 @@ module.exports = exports = defineComponent( {
 			const payload = {
 				errorId: this.programmingLangErrorId,
 				errorType: Constants.ERROR_TYPES.WARNING,
-				errorMessage: this.$i18n( 'wikilambda-editor-label-select-programming-language-empty' ).text()
+				errorMessageKey: 'wikilambda-editor-label-select-programming-language-empty'
 			};
 			this.hasClickedDisabledField = true;
 			this.setError( payload );

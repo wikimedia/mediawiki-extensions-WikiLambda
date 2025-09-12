@@ -163,6 +163,7 @@ describe( 'ZObjectStringRenderer', () => {
 		store.getErrors = createGettersWithFunctionsMock( [] );
 
 		store.getTestResults = jest.fn().mockResolvedValue();
+		store.handleMetadataError = jest.fn();
 		store.runParser = jest.fn().mockResolvedValue( parserResponse );
 		store.runRenderer = jest.fn().mockResolvedValue( rendererResponse );
 	} );
@@ -498,10 +499,15 @@ describe( 'ZObjectStringRenderer', () => {
 		} );
 
 		describe( 'renderer error handling', () => {
+			const fallbackErrorData = {
+				errorMessageKey: 'wikilambda-renderer-unknown-error',
+				errorParams: [ rendererZid ]
+			};
+
 			it( 'renderer returns void, no examples', async () => {
 				store.runRenderer = jest.fn().mockResolvedValue( errorResponse );
 
-				shallowMount( ZObjectStringRenderer, {
+				const wrapper = shallowMount( ZObjectStringRenderer, {
 					props: {
 						keyPath,
 						objectValue,
@@ -510,14 +516,15 @@ describe( 'ZObjectStringRenderer', () => {
 						expanded: false
 					}
 				} );
+				const spy = jest.spyOn( wrapper.vm, 'setFieldError' );
 
-				const errorPayload = {
-					errorId: keyPath,
-					errorType: Constants.ERROR_TYPES.ERROR,
-					errorMessage: 'Some error message'
-				};
+				await waitFor( () => expect( store.handleMetadataError ).toHaveBeenCalledWith( {
+					metadata: errorResponse.response.Z22K2,
+					fallbackErrorData,
+					errorHandler: spy
+				} ) );
 
-				await waitFor( () => expect( store.setError ).toHaveBeenCalledWith( errorPayload ) );
+				expect( wrapper.vm.showExamplesLink ).toBe( false );
 			} );
 
 			it( 'renderer returns void, available examples', async () => {
@@ -527,7 +534,7 @@ describe( 'ZObjectStringRenderer', () => {
 				] );
 				store.runRenderer = jest.fn().mockResolvedValue( errorResponse );
 
-				shallowMount( ZObjectStringRenderer, {
+				const wrapper = shallowMount( ZObjectStringRenderer, {
 					props: {
 						keyPath,
 						objectValue,
@@ -536,14 +543,15 @@ describe( 'ZObjectStringRenderer', () => {
 						expanded: false
 					}
 				} );
+				const spy = jest.spyOn( wrapper.vm, 'setFieldError' );
 
-				const errorPayload = {
-					errorId: keyPath,
-					errorType: Constants.ERROR_TYPES.ERROR,
-					errorMessage: 'Some error message'
-				};
+				await waitFor( () => expect( store.handleMetadataError ).toHaveBeenCalledWith( {
+					metadata: errorResponse.response.Z22K2,
+					fallbackErrorData,
+					errorHandler: spy
+				} ) );
 
-				await waitFor( () => expect( store.setError ).toHaveBeenCalledWith( errorPayload ) );
+				expect( wrapper.vm.showExamplesLink ).toBe( true );
 			} );
 
 			it( 'renderer returns wrong type', async () => {
@@ -562,7 +570,8 @@ describe( 'ZObjectStringRenderer', () => {
 				const errorPayload = {
 					errorId: keyPath,
 					errorType: Constants.ERROR_TYPES.ERROR,
-					errorMessage: `[[${ rendererZid }|Display function]] returned an unexpected result.`
+					errorMessageKey: 'wikilambda-renderer-unexpected-result-error',
+					errorParams: [ rendererZid ]
 				};
 
 				await waitFor( () => expect( store.setError ).toHaveBeenCalledWith( errorPayload ) );
@@ -570,6 +579,11 @@ describe( 'ZObjectStringRenderer', () => {
 		} );
 
 		describe( 'parser error handling', () => {
+			const fallbackErrorData = {
+				errorMessageKey: 'wikilambda-parser-unknown-error',
+				errorParams: [ parserZid ]
+			};
+
 			it( 'parser returns void, no examples', async () => {
 				store.runParser = jest.fn().mockResolvedValue( errorResponse );
 
@@ -582,17 +596,18 @@ describe( 'ZObjectStringRenderer', () => {
 						expanded: false
 					}
 				} );
+				const spy = jest.spyOn( wrapper.vm, 'setFieldError' );
 
 				const text = wrapper.findComponent( { name: 'cdx-text-input' } );
 				text.vm.$emit( 'change', { target: { value: 'some new value' } } );
 
-				const errorPayload = {
-					errorId: keyPath,
-					errorType: Constants.ERROR_TYPES.ERROR,
-					errorMessage: 'Some error message'
-				};
+				await waitFor( () => expect( store.handleMetadataError ).toHaveBeenCalledWith( {
+					metadata: errorResponse.response.Z22K2,
+					fallbackErrorData,
+					errorHandler: spy
+				} ) );
 
-				await waitFor( () => expect( store.setError ).toHaveBeenCalledWith( errorPayload ) );
+				expect( wrapper.vm.showExamplesLink ).toBe( false );
 			} );
 
 			it( 'parser returns void, available examples', async () => {
@@ -611,17 +626,18 @@ describe( 'ZObjectStringRenderer', () => {
 						expanded: false
 					}
 				} );
+				const spy = jest.spyOn( wrapper.vm, 'setFieldError' );
 
 				const text = wrapper.findComponent( { name: 'cdx-text-input' } );
 				text.vm.$emit( 'change', { target: { value: 'some new value' } } );
 
-				const errorPayload = {
-					errorId: keyPath,
-					errorType: Constants.ERROR_TYPES.ERROR,
-					errorMessage: 'Some error message'
-				};
+				await waitFor( () => expect( store.handleMetadataError ).toHaveBeenCalledWith( {
+					metadata: errorResponse.response.Z22K2,
+					fallbackErrorData,
+					errorHandler: spy
+				} ) );
 
-				await waitFor( () => expect( store.setError ).toHaveBeenCalledWith( errorPayload ) );
+				expect( wrapper.vm.showExamplesLink ).toBe( true );
 			} );
 
 			it( 'parser returns wrong type', async () => {
@@ -643,7 +659,8 @@ describe( 'ZObjectStringRenderer', () => {
 				const errorPayload = {
 					errorId: keyPath,
 					errorType: Constants.ERROR_TYPES.ERROR,
-					errorMessage: `[[${ parserZid }|Reading function]] returned an unexpected result.`
+					errorMessageKey: 'wikilambda-parser-unexpected-result-error',
+					errorParams: [ parserZid ]
 				};
 
 				await waitFor( () => expect( store.setError ).toHaveBeenCalledWith( errorPayload ) );

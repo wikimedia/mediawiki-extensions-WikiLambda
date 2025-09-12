@@ -13,6 +13,7 @@ const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.j
 const CodeEditor = require( '../../../../resources/ext.wikilambda.app/components/base/CodeEditor.vue' );
 const ZCode = require( '../../../../resources/ext.wikilambda.app/components/types/ZCode.vue' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const ErrorData = require( '../../../../resources/ext.wikilambda.app/store/classes/ErrorData.js' );
 const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../helpers/getterHelpers.js' );
 
 // General use
@@ -193,10 +194,9 @@ describe( 'ZCode', () => {
 		} );
 
 		it( 'should show a warning message when clicking the code editor and no programming language is set', async () => {
-			store.getErrors = createGettersWithFunctionsMock( [ {
-				message: 'Select programming language',
-				type: 'warning'
-			} ] );
+			store.getErrors = createGettersWithFunctionsMock( [
+				new ErrorData( 'wikilambda-editor-label-select-programming-language-empty', [], null, 'warning' )
+			] );
 
 			const wrapper = shallowMount( ZCode, {
 				props: {
@@ -207,7 +207,8 @@ describe( 'ZCode', () => {
 				global: {
 					stubs: {
 						WlKeyValueBlock: false,
-						CdxMessage: false
+						CdxMessage: false,
+						WlSafeMessage: false
 					}
 				}
 			} );
@@ -217,12 +218,10 @@ describe( 'ZCode', () => {
 			wrapper.findComponent( { name: 'code-editor' } ).trigger( 'click' );
 
 			await waitFor( () => expect( store.setError ).toHaveBeenCalledWith( {
-				errorMessage: 'Select programming language',
+				errorMessageKey: 'wikilambda-editor-label-select-programming-language-empty',
 				errorType: 'warning',
 				errorId: `${ keyPath }.${ Constants.Z_CODE_LANGUAGE }`
 			} ) );
-
-			expect( global.$i18n ).toHaveBeenCalledWith( 'wikilambda-editor-label-select-programming-language-empty' );
 
 			expect( wrapper.findComponent( { name: 'cdx-message' } ).exists() ).toBe( true );
 			expect( wrapper.findComponent( { name: 'cdx-message' } ).text() ).toContain( 'Select programming language' );

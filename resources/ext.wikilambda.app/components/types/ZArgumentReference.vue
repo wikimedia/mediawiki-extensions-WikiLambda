@@ -34,7 +34,7 @@
 				:type="error.type"
 				:inline="true"
 			>
-				<div>{{ getErrorMessage( error ) }}</div>
+				<wl-safe-message :error="error"></wl-safe-message>
 			</cdx-message>
 		</div>
 	</div>
@@ -50,6 +50,8 @@ const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
 const useMainStore = require( '../../store/index.js' );
 const icons = require( '../../../lib/icons.json' );
 
+// Base components:
+const SafeMessage = require( '../base/SafeMessage.vue' );
 // Codex components
 const { CdxIcon, CdxMessage, CdxSelect } = require( '../../../codex.js' );
 
@@ -58,7 +60,8 @@ module.exports = exports = defineComponent( {
 	components: {
 		'cdx-select': CdxSelect,
 		'cdx-icon': CdxIcon,
-		'cdx-message': CdxMessage
+		'cdx-message': CdxMessage,
+		'wl-safe-message': SafeMessage
 	},
 	mixins: [ errorMixin, zobjectMixin ],
 	props: {

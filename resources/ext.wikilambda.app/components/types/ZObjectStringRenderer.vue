@@ -31,7 +31,7 @@
 				class="ext-wikilambda-app-object-string-renderer__error"
 			>
 				<cdx-message :type="fieldErrors[0].type" :inline="true">
-					<span>{{ getErrorMessage( fieldErrors[0] ) }}</span>
+					<wl-safe-message :error="fieldErrors[0]"></wl-safe-message>
 				</cdx-message>
 				<a v-if="showExamplesLink" @click="openExamplesDialog">
 					{{ $i18n( 'wikilambda-string-renderer-examples-title' ).text() }}
@@ -93,6 +93,8 @@ const { canonicalToHybrid, hybridToCanonical } = require( '../../utils/schemata.
 const urlUtils = require( '../../utils/urlUtils.js' );
 const useMainStore = require( '../../store/index.js' );
 
+// Base components:
+const SafeMessage = require( '../base/SafeMessage.vue' );
 // Type components:
 const ZObjectKeyValueSet = require( './ZObjectKeyValueSet.vue' );
 // Codex components:
@@ -104,6 +106,7 @@ module.exports = exports = defineComponent( {
 		'cdx-dialog': CdxDialog,
 		'cdx-message': CdxMessage,
 		'cdx-text-input': CdxTextInput,
+		'wl-safe-message': SafeMessage,
 		'wl-z-object-key-value-set': ZObjectKeyValueSet
 	},
 	mixins: [ errorMixin, zobjectMixin ],
@@ -241,6 +244,7 @@ module.exports = exports = defineComponent( {
 	} ),
 	methods: Object.assign( {}, mapActions( useMainStore, [
 		'getTestResults',
+		'handleMetadataError',
 		'runRendererTest',
 		'runRenderer',
 		'runParser',
@@ -310,25 +314,36 @@ module.exports = exports = defineComponent( {
 					this.renderedValue = this.edit ? '' :
 						this.$i18n( 'wikilambda-renderer-view-invalid-result' ).text();
 					this.showExamplesLink = ( this.renderedExamples.length > 0 );
+
 					const metadata = data.response[ Constants.Z_RESPONSEENVELOPE_METADATA ];
-					const fallbackErrorMsg = this.$i18n( 'wikilambda-renderer-unknown-error',
-						this.rendererZid ).parse();
-					this.setErrorMessageCallback( metadata, fallbackErrorMsg, this.setFieldError );
+					const fallbackErrorData = {
+						errorMessageKey: 'wikilambda-renderer-unknown-error',
+						errorParams: [ this.rendererZid ]
+					};
+
+					this.handleMetadataError( {
+						metadata,
+						fallbackErrorData,
+						errorHandler: this.setFieldError
+					} );
+
 				} else if ( this.getZObjectType( response ) !== Constants.Z_STRING ) {
 					// Renderer returned unexpected type:
 					// show unexpected result error and project chat footer
 					this.renderedValue = this.edit ? '' :
 						this.i18n( 'wikilambda-renderer-view-invalid-result' ).text();
 					this.showErrorFooter = true;
-					this.setFieldError( this.$i18n( 'wikilambda-renderer-unexpected-result-error',
-						this.rendererZid ).parse() );
+					this.setFieldError( {
+						errorMessageKey: 'wikilambda-renderer-unexpected-result-error',
+						errorParams: [ this.rendererZid ]
+					} );
 				} else {
 					// Success: Update the locally saved renderedValue with the response
 					this.renderedValue = response;
 				}
 			} ).catch( () => {
 				this.clearRendererError();
-				this.setFieldError( this.$i18n( 'wikilambda-renderer-api-error' ).text() );
+				this.setFieldError( { errorMessageKey: 'wikilambda-renderer-api-error' } );
 			} );
 		},
 		/**
@@ -359,10 +374,19 @@ module.exports = exports = defineComponent( {
 					data.resolver.resolve();
 					this.clearParsedValue();
 					this.showExamplesLink = ( this.renderedExamples.length > 0 );
+
 					const metadata = data.response[ Constants.Z_RESPONSEENVELOPE_METADATA ];
-					const fallbackErrorMsg = this.$i18n( 'wikilambda-parser-unknown-error',
-						this.parserZid ).parse();
-					this.setErrorMessageCallback( metadata, fallbackErrorMsg, this.setFieldError );
+					const fallbackErrorData = {
+						errorMessageKey: 'wikilambda-parser-unknown-error',
+						errorParams: [ this.parserZid ]
+					};
+
+					this.handleMetadataError( {
+						metadata,
+						fallbackErrorData,
+						errorHandler: this.setFieldError
+					} );
+
 				} else if ( this.getZObjectType( response ) !== this.type ) {
 					// Parser return unexpected type:
 					// * Resolve parser promise
@@ -370,8 +394,10 @@ module.exports = exports = defineComponent( {
 					data.resolver.resolve();
 					this.clearParsedValue();
 					this.showErrorFooter = true;
-					this.setFieldError( this.$i18n( 'wikilambda-parser-unexpected-result-error',
-						this.parserZid ).parse() );
+					this.setFieldError( {
+						errorMessageKey: 'wikilambda-parser-unexpected-result-error',
+						errorParams: [ this.parserZid ]
+					} );
 				} else {
 					// Success:
 					// Parent component (ZObjectKeyValue) should:
@@ -390,7 +416,7 @@ module.exports = exports = defineComponent( {
 					return;
 				}
 				this.clearRendererError();
-				this.setFieldError( this.$i18n( 'wikilambda-renderer-api-error' ).text() );
+				this.setFieldError( { errorMessageKey: 'wikilambda-renderer-api-error' } );
 			} );
 		},
 		/**
@@ -405,14 +431,18 @@ module.exports = exports = defineComponent( {
 		/**
 		 * Sets the given error message for current errorId
 		 *
-		 * @param {string} errorMessage
+		 * @param {Object} payload
+		 * @param {string} payload.errorMessage - raw error message, unsafe for HTML rendering
+		 * @param {string} payload.errorMessageKey - i18n message, safe for HTML rendering
+		 * @param {Array} payload.errorParams - i18n message parameters (if any)
 		 */
-		setFieldError: function ( errorMessage ) {
-			this.setError( {
+		setFieldError: function ( payload ) {
+			const errorData = Object.assign( {
 				errorId: this.keyPath,
-				errorType: Constants.ERROR_TYPES.ERROR,
-				errorMessage
-			} );
+				errorType: Constants.ERROR_TYPES.ERROR
+			}, payload );
+
+			this.setError( errorData );
 		},
 		/**
 		 * Clears renderer field errors

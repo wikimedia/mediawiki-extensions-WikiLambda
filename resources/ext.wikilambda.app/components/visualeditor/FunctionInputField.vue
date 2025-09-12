@@ -31,8 +31,8 @@
 				).text() }}
 			</span>
 		</template>
-		<template v-if="showValidation && !!errorMessage" #error>
-			<div>{{ errorMessage }}</div>
+		<template v-if="showValidation && !!error" #error>
+			<wl-safe-message :error="error"></wl-safe-message>
 		</template>
 	</cdx-field>
 </template>
@@ -44,6 +44,7 @@ const { mapState } = require( 'pinia' );
 const Constants = require( '../../Constants.js' );
 const useMainStore = require( '../../store/index.js' );
 const LabelData = require( '../../store/classes/LabelData.js' );
+const ErrorData = require( '../../store/classes/ErrorData.js' );
 
 // Fields components
 const FunctionInputEnum = require( './fields/FunctionInputEnum.vue' );
@@ -51,6 +52,9 @@ const FunctionInputLanguage = require( './fields/FunctionInputLanguage.vue' );
 const FunctionInputParser = require( './fields/FunctionInputParser.vue' );
 const FunctionInputString = require( './fields/FunctionInputString.vue' );
 const FunctionInputWikidata = require( './fields/FunctionInputWikidata.vue' );
+
+// Base components
+const SafeMessage = require( '../base/SafeMessage.vue' );
 
 // Codex components
 const { CdxField } = require( '../../../codex.js' );
@@ -63,7 +67,8 @@ module.exports = exports = defineComponent( {
 		'wl-function-input-language': FunctionInputLanguage,
 		'wl-function-input-parser': FunctionInputParser,
 		'wl-function-input-string': FunctionInputString,
-		'wl-function-input-wikidata': FunctionInputWikidata
+		'wl-function-input-wikidata': FunctionInputWikidata,
+		'wl-safe-message': SafeMessage
 	},
 	props: {
 		inputType: {
@@ -79,10 +84,10 @@ module.exports = exports = defineComponent( {
 			required: false,
 			default: ''
 		},
-		errorMessage: {
-			type: String,
+		error: {
+			type: ErrorData,
 			required: false,
-			default: ''
+			default: undefined
 		},
 		showValidation: {
 			type: Boolean,
@@ -122,7 +127,7 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		status: function () {
-			return this.showValidation && this.errorMessage ? 'error' : 'default';
+			return this.showValidation && this.error ? 'error' : 'default';
 		},
 		/**
 		 * Checks if the input type is an enumeration.
@@ -163,7 +168,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {Object} payload
 		 * @param {boolean} payload.isValid - The validation status.
-		 * @param {string|undefined} payload.errorMessage - The error message.
+		 * @param {string|undefined} payload.error - The error data.
 		 */
 		handleValidation: function ( payload ) {
 			this.$emit( 'validate', payload );

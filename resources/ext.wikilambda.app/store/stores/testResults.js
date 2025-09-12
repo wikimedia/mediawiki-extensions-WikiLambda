@@ -273,7 +273,7 @@ module.exports = {
 				this.setError( {
 					errorId: Constants.ERROR_IDS.TEST_RESULTS,
 					errorType: Constants.ERROR_TYPES.ERROR,
-					errorMessage: error.messageOrFallback( Constants.ERROR_CODES.UNKNOWN_TEST_ERROR )
+					errorMessage: error.messageOrFallback( 'wikilambda-unknown-test-error-message' )
 				} );
 				this.setTestResultsPromise( { functionZid: payload.zFunctionId } );
 			} );

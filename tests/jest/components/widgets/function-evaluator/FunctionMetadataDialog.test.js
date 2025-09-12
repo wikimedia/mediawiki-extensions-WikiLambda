@@ -68,7 +68,7 @@ describe( 'dialog', () => {
 
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
-			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__key' );
+			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-item' );
 
 			expect( keys[ 0 ].text() ).toContain( 'Name:' );
 			expect( keys[ 0 ].find( 'a' ).text() ).toBe( 'Untitled' );
@@ -95,7 +95,7 @@ describe( 'dialog', () => {
 
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
-			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__key' );
+			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-item' );
 
 			expect( keys[ 0 ].text() ).toContain( 'Name:' );
 			expect( keys[ 0 ].find( 'a' ).text() ).toBe( 'Javascript implementation for If' );
@@ -123,21 +123,27 @@ describe( 'dialog', () => {
 
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
-			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__key' );
+			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__content > .ext-wikilambda-app-function-metadata-item' );
 			expect( keys.length ).toBe( 2 );
 			let subkeys;
 			// Orchestrator key:
-			expect( keys[ 0 ].find( '.ext-wikilambda-app-function-metadata-dialog__key-title' ).text() ).toContain( 'Orchestration' );
-			subkeys = keys[ 0 ].findAll( 'li' );
-			expect( subkeys[ 0 ].text() ).toContain( 'Duration: 70 ms' );
-			expect( subkeys[ 1 ].text() ).toContain( 'Start time: 4 minutes ago' );
-			expect( subkeys[ 2 ].text() ).toContain( 'End time: 4 minutes ago' );
+			expect( keys[ 0 ].find( '.ext-wikilambda-app-function-metadata-item__title' ).text() ).toContain( 'Orchestration' );
+			subkeys = keys[ 0 ].find( '.ext-wikilambda-app-function-metadata-item__content' ).findAll( 'li' );
+			expect( subkeys[ 0 ].text() ).toContain( 'Duration:' );
+			expect( subkeys[ 0 ].text() ).toContain( '70 ms' );
+			expect( subkeys[ 1 ].text() ).toContain( 'Start time:' );
+			expect( subkeys[ 1 ].text() ).toContain( '4 minutes ago' );
+			expect( subkeys[ 2 ].text() ).toContain( 'End time:' );
+			expect( subkeys[ 2 ].text() ).toContain( '4 minutes ago' );
 			// Evaluation key:
-			expect( keys[ 1 ].find( '.ext-wikilambda-app-function-metadata-dialog__key-title' ).text() ).toContain( 'Evaluation' );
-			subkeys = keys[ 1 ].findAll( 'li' );
-			expect( subkeys[ 0 ].text() ).toContain( 'Duration: 10 ms' );
-			expect( subkeys[ 1 ].text() ).toContain( 'Start time: 4 minutes ago' );
-			expect( subkeys[ 2 ].text() ).toContain( 'End time: 4 minutes ago' );
+			expect( keys[ 1 ].find( '.ext-wikilambda-app-function-metadata-item__title' ).text() ).toContain( 'Evaluation' );
+			subkeys = keys[ 1 ].find( '.ext-wikilambda-app-function-metadata-item__content' ).findAll( 'li' );
+			expect( subkeys[ 0 ].text() ).toContain( 'Duration:' );
+			expect( subkeys[ 0 ].text() ).toContain( '10 ms' );
+			expect( subkeys[ 1 ].text() ).toContain( 'Start time:' );
+			expect( subkeys[ 1 ].text() ).toContain( '4 minutes ago' );
+			expect( subkeys[ 2 ].text() ).toContain( 'End time:' );
+			expect( subkeys[ 2 ].text() ).toContain( '4 minutes ago' );
 		} );
 
 		it( 'renders the CPU usage section', () => {
@@ -153,7 +159,7 @@ describe( 'dialog', () => {
 
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
-			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__key' );
+			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-item' );
 			expect( keys.length ).toBe( 3 );
 			expect( keys[ 0 ].text() ).toContain( 'Orchestration:' );
 			expect( keys[ 0 ].text() ).toContain( '85.790 ms' );
@@ -178,7 +184,7 @@ describe( 'dialog', () => {
 
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
-			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__key' );
+			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-item' );
 			expect( keys.length ).toBe( 3 );
 			expect( keys[ 0 ].text() ).toContain( 'Orchestration:' );
 			expect( keys[ 0 ].text() ).toContain( '115.43 MiB' );
@@ -202,7 +208,7 @@ describe( 'dialog', () => {
 
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
-			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__key' );
+			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-item' );
 			expect( keys.length ).toBe( 2 );
 			expect( keys[ 0 ].text() ).toContain( 'Orchestration:' );
 			expect( keys[ 0 ].text() ).toContain( 'function-orchestrator' );
@@ -223,7 +229,7 @@ describe( 'dialog', () => {
 
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
-			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__key' );
+			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-item' );
 			expect( keys.length ).toBe( 1 );
 			expect( keys[ 0 ].text() ).toContain( 'Version:' );
 			expect( keys[ 0 ].text() ).toContain( 'QuickJS v0.5.0-alpha' );
@@ -245,13 +251,14 @@ describe( 'dialog', () => {
 
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
-			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__key' );
+			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__content > .ext-wikilambda-app-function-metadata-item' );
 			expect( keys.length ).toBe( 1 );
 			// Orchestrator key:
-			expect( keys[ 0 ].find( '.ext-wikilambda-app-function-metadata-dialog__key-title' ).text() ).toContain( 'Orchestration' );
+			expect( keys[ 0 ].find( '.ext-wikilambda-app-function-metadata-item__title' ).text() ).toContain( 'Orchestration' );
 			const subkeys = keys[ 0 ].findAll( 'li' );
 			expect( subkeys.length ).toBe( 1 );
-			expect( subkeys[ 0 ].text() ).toContain( 'Duration: 70 ms' );
+			expect( subkeys[ 0 ].text() ).toContain( 'Duration:' );
+			expect( subkeys[ 0 ].text() ).toContain( '70 ms' );
 		} );
 	} );
 
@@ -270,7 +277,7 @@ describe( 'dialog', () => {
 
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
-			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__key' );
+			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-item' );
 			expect( keys.length ).toBe( 6 );
 
 			// Error type (key=errors):
@@ -310,7 +317,8 @@ describe( 'dialog', () => {
 
 			// Check header
 			expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( '{{PLURAL:$1|Error|Errors}}' );
-			expect( section.find( '.cdx-accordion__header__description' ).text() ).toBe( 'Z500 (Z500K1: "&lt;button onmouseover="window.location = \'//www.example.com\'"&gt;")' );
+			const escapedErr = 'Z500 (Z500K1: "&lt;button onmouseover&#x3D;&quot;window.location &#x3D; &#39;&#x2F;&#x2F;www.example.com&#39;&quot;&gt;")';
+			expect( section.find( '.cdx-accordion__header__description' ).text() ).toBe( escapedErr );
 		} );
 
 		it( 'renders the expected/actual values even if the error data is missing', () => {
@@ -327,7 +335,7 @@ describe( 'dialog', () => {
 
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
-			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-dialog__key' );
+			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-item' );
 			expect( keys.length ).toBe( 2 );
 
 			// Expected result (key=expectedTestResult):

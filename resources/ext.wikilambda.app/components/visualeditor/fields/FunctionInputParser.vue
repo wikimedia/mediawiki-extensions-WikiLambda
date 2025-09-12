@@ -26,6 +26,7 @@ const { mapState, mapActions } = require( 'pinia' );
 
 const Constants = require( '../../../Constants.js' );
 const useMainStore = require( '../../../store/index.js' );
+const ErrorData = require( '../../../store/classes/ErrorData.js' );
 const errorMixin = require( '../../../mixins/errorMixin.js' );
 const typeMixin = require( '../../../mixins/typeMixin.js' );
 const zobjectMixin = require( '../../../mixins/zobjectMixin.js' );
@@ -126,10 +127,13 @@ module.exports = exports = defineComponent( {
 		/**
 		 * Return error message for the parser function
 		 *
-		 * @return {string}
+		 * @return {Object}
 		 */
-		fallbackErrorMsg: function () {
-			return this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-error-parser', this.inputType ).parse();
+		fallbackErrorData: function () {
+			return {
+				errorMessageKey: 'wikilambda-visualeditor-wikifunctionscall-error-parser',
+				errorParams: [ this.inputType ]
+			};
 		},
 		/**
 		 * Whether this input type allows for empty fields
@@ -142,6 +146,7 @@ module.exports = exports = defineComponent( {
 	} ),
 	methods: Object.assign( {}, mapActions( useMainStore, [
 		'getTestResults',
+		'handleMetadataError',
 		'runParser',
 		'runRendererTest'
 	] ), {
@@ -159,7 +164,9 @@ module.exports = exports = defineComponent( {
 					if ( this.allowsEmptyField ) {
 						resolve();
 					} else {
-						reject( this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-error-parser-empty' ).text() );
+						const errorMessageKey = 'wikilambda-visualeditor-wikifunctionscall-error-parser-empty';
+						const error = ErrorData.buildErrorData( { errorMessageKey } );
+						reject( error );
 					}
 				}
 
@@ -186,10 +193,18 @@ module.exports = exports = defineComponent( {
 						// * get error from metadata object
 						// * reject with error message
 						const metadata = data.response[ Constants.Z_RESPONSEENVELOPE_METADATA ];
-						this.setErrorMessageCallback( metadata, this.fallbackErrorMsg, reject );
+						const errorHandler = ( errorPayload ) => {
+							const errorData = ErrorData.buildErrorData( errorPayload );
+							reject( errorData );
+						};
+						this.handleMetadataError( {
+							metadata,
+							fallbackErrorData: this.fallbackErrorData,
+							errorHandler
+						} );
 					} else if ( this.typeToString( this.getZObjectType( response ) ) !== this.inputType ) {
 						// Parser return unexpected type: reject with error message
-						reject( this.fallbackErrorMsg );
+						reject( ErrorData.buildErrorData( this.fallbackErrorData ) );
 					} else {
 						// Success: Resolve the promise
 						resolve();
@@ -199,7 +214,7 @@ module.exports = exports = defineComponent( {
 					if ( error.code === 'abort' ) {
 						reject( error.code );
 					}
-					reject( this.fallbackErrorMsg );
+					reject( ErrorData.buildErrorData( this.fallbackErrorData ) );
 				} );
 			} );
 		},
@@ -232,7 +247,7 @@ module.exports = exports = defineComponent( {
 		/**
 		 * Handles validation error by emitting the appropriate events.
 		 *
-		 * @param {string} error - The error message to emit.
+		 * @param {ErrorData|string} error - The error caught
 		 */
 		onValidateError: function ( error ) {
 			// If the error message is 'abort', do not emit an error
@@ -240,8 +255,8 @@ module.exports = exports = defineComponent( {
 			if ( error === 'abort' ) {
 				return;
 			}
-			// Otherwise, emit the error message
-			this.$emit( 'validate', { isValid: false, errorMessage: error } );
+			// Otherwise, emit the ErrorData object
+			this.$emit( 'validate', { isValid: false, error } );
 		},
 
 		/**

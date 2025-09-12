@@ -427,27 +427,6 @@ Constants.BREAKPOINT_TYPES = {
 Constants.COLOR_NESTING_LEVELS = 6;
 
 // Errors
-Constants.ERROR_CODES = {
-	UNKNOWN_ERROR: 'wikilambda-unknown-error-message',
-	UNKNOWN_EXEC_ERROR: 'wikilambda-unknown-exec-error-message',
-	UNKNOWN_SAVE_ERROR: 'wikilambda-unknown-save-error-message',
-	UNKNOWN_TEST_ERROR: 'wikilambda-unknown-test-error-message',
-	MISSING_FUNCTION_OUTPUT: 'wikilambda-missing-function-output-error-message',
-	MISSING_FUNCTION_INPUT_TYPE: 'wikilambda-missing-function-input-type-error-message',
-	MISSING_TARGET_FUNCTION: 'wikilambda-zobject-missing-attached-function',
-	MISSING_IMPLEMENTATION_COMPOSITION: 'wikilambda-zimplememntation-composition-missing',
-	MISSING_IMPLEMENTATION_CODE: 'wikilambda-zimplementation-code-missing',
-	MISSING_IMPLEMENTATION_CODE_LANGUAGE: 'wikilambda-zimplementation-code-language-missing',
-	MISSING_TESTER_CALL: 'wikilambda-ztester-missing-call-function',
-	MISSING_TESTER_VALIDATION: 'wikilambda-ztester-missing-validation-function',
-	TYPED_LIST_TYPE_CHANGED: 'wikilambda-list-type-change-warning',
-	FUNCTION_INPUT_OUTPUT_CHANGED: 'wikilambda-publish-input-and-output-changed-impact-prompt',
-	FUNCTION_INPUT_CHANGED: 'wikilambda-publish-input-changed-impact-prompt',
-	FUNCTION_OUTPUT_CHANGED: 'wikilambda-publish-output-changed-impact-prompt',
-	NEW_ZID_PLACEHOLDER_WARNING: 'wikilambda-editor-code-editor-zid-placeholder-error',
-	DEBUG_CODE_WARNING: 'wikilambda-editor-code-editor-debug-code-warning'
-};
-
 Constants.ERROR_IDS = {
 	TEST_RESULTS: 'tests'
 };
@@ -625,6 +604,12 @@ Constants.STORED_OBJECTS = {
 	MAIN: 'main',
 	FUNCTION_CALL: 'call',
 	RESPONSE: 'response'
+};
+
+Constants.METADATA_CONTENT_TYPE = {
+	TEXT: 1,
+	LINK: 2,
+	HTML: 3
 };
 
 module.exports = Constants;
