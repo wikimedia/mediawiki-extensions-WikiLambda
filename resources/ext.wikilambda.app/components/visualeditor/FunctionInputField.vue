@@ -32,7 +32,7 @@
 			</span>
 		</template>
 		<template v-if="showValidation && !!errorMessage" #error>
-			<div>{{ getErrorMessage( error ) }}</div>
+			<div>{{ errorMessage }}</div>
 		</template>
 	</cdx-field>
 </template>

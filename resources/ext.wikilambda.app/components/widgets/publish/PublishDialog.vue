@@ -60,6 +60,7 @@
 					class="ext-wikilambda-app-publish-dialog__legal-text"
 					v-html="legalText"
 				></div>
+				<!-- eslint-enable vue/no-v-html -->
 			</template>
 		</cdx-dialog>
 	</div>
