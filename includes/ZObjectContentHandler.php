@@ -327,17 +327,27 @@ class ZObjectContentHandler extends ContentHandler {
 		$zLangRegistry = ZLangRegistry::singleton();
 		$labels = $content->getLabels()->getValueAsList();
 		foreach ( $labels as $langZid => $label ) {
+			if ( !$langZid ) {
+				// (T402670) Something's wrong with this label entry; skip it
+				$logger->debug(
+					'Skipping setting page property for label in blank language ZID when displaying "{page}"',
+					[
+						'page' => $content->getZObject()->getZid()
+					]
+				);
+				continue;
+			}
+
 			try {
 				$lang = $zLangRegistry->getLanguageCodeFromZid( $langZid );
 				$parserOutput->setPageProperty( "wikilambda-label-$lang", $label );
-			} catch ( ZErrorException $e ) {
+			} catch ( ZErrorException ) {
 				// The language code is somehow not recognised; don't set a property, but log it for review
 				$logger->warning(
-					'Skipping setting page property for label in unknown language {langZid} when displaying {page}',
+					'Skipping setting page property for label in unknown language "{langZid}" when displaying "{page}"',
 					[
 						'langZid' => $langZid,
-						'page' => $content->getZObject()->getZid(),
-						'exception' => $e
+						'page' => $content->getZObject()->getZid()
 					]
 				);
 			}
@@ -346,12 +356,23 @@ class ZObjectContentHandler extends ContentHandler {
 		// Add links to other ZObjects
 		// (T361701) Do this ahead of the early return, as LinkUpdater asks for the non-HTML version
 		foreach ( $content->getInnerZObject()->getLinkedZObjects() as $link ) {
+			if ( !$link ) {
+				// (T402670) Something's wrong with this link entry; skip it
+				$logger->debug(
+					'Skipping setting page property for link to blank page when displaying "{page}"',
+					[
+						'page' => $content->getZObject()->getZid()
+					]
+				);
+				continue;
+			}
+
 			$title = Title::newFromText( $link, NS_MAIN );
 
 			// (T400521) Don't try to write a null Title, but log that it happened
 			if ( !$title ) {
 				$logger->warning(
-					'Skipping setting page property for link to unknown page {link} when displaying {page}',
+					'Skipping setting page property for link to unknown page "{link}" when displaying "{page}"',
 					[
 						'link' => $link,
 						'page' => $content->getZObject()->getZid(),
