@@ -49,7 +49,7 @@
 				v-if="shouldShowNoSensesMessage"
 				inline
 			>
-				<!-- eslint-disable vue/no-v-html -->
+				<!-- eslint-disable-next-line vue/no-v-html -->
 				<div v-html="noSensesMessage"></div>
 			</cdx-message>
 		</div>
