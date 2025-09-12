@@ -44,12 +44,12 @@
 				class="ext-wikilambda-metadata-dialog-errors"
 				:type="error.type"
 			>
-				<div> {{ getErrorMessage( error ) }} </div>
+				<div>{{ getErrorMessage( error ) }}</div>
 			</cdx-message>
 		</div>
 		<div v-else class="ext-wikilambda-app-function-metadata-dialog__body">
 			<cdx-message v-if="hasMetadataErrors">
-				<!-- eslint-disable vue/no-v-html -->
+				<!-- eslint-disable-next-line vue/no-v-html -->
 				<div v-html="$i18n( 'wikilambda-functioncall-metadata-errors-debug-hint' ).parse()"></div>
 			</cdx-message>
 			<cdx-field
@@ -107,6 +107,7 @@
 								:dir="item.dir"
 								v-html="item.value"
 							></span>
+							<!-- eslint-enable vue/no-v-html -->
 						</template>
 						<ul v-if="item.content">
 							<li

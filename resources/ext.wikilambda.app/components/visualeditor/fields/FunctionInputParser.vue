@@ -128,7 +128,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string}
 		 */
-		getErrorMessage: function () {
+		fallbackErrorMsg: function () {
 			return this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-error-parser', this.inputType ).parse();
 		},
 		/**
@@ -186,10 +186,10 @@ module.exports = exports = defineComponent( {
 						// * get error from metadata object
 						// * reject with error message
 						const metadata = data.response[ Constants.Z_RESPONSEENVELOPE_METADATA ];
-						this.setErrorMessageCallback( metadata, this.getErrorMessage, reject );
+						this.setErrorMessageCallback( metadata, this.fallbackErrorMsg, reject );
 					} else if ( this.typeToString( this.getZObjectType( response ) ) !== this.inputType ) {
 						// Parser return unexpected type: reject with error message
-						reject( this.getErrorMessage );
+						reject( this.fallbackErrorMsg );
 					} else {
 						// Success: Resolve the promise
 						resolve();
@@ -199,7 +199,7 @@ module.exports = exports = defineComponent( {
 					if ( error.code === 'abort' ) {
 						reject( error.code );
 					}
-					reject( this.getErrorMessage );
+					reject( this.fallbackErrorMsg );
 				} );
 			} );
 		},

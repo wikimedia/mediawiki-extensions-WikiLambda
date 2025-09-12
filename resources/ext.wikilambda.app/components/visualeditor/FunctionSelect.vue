@@ -54,7 +54,7 @@
 						:key="`cta-${ index }`"
 						class="ext-wikilambda-app-function-select__no-results-cta"
 					>
-						<!-- eslint-disable vue/no-v-html -->
+						<!-- eslint-disable-next-line vue/no-v-html -->
 						<span v-html="cta.title"></span><br>
 						<span>{{ cta.description }}</span>
 					</div>

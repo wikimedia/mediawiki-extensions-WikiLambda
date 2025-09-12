@@ -21,7 +21,7 @@
 			v-if="hasArgs"
 			class="ext-wikilambda-app-type-to-string">
 			&nbsp;(
-			<!-- eslint-disable vue/no-v-for-template-key -->
+			<!-- eslint-disable-next-line vue/no-v-for-template-key -->
 			<template
 				v-for="( argKey, index ) in args"
 				:key="argKey"

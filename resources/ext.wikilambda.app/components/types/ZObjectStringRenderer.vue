@@ -42,6 +42,7 @@
 					class="ext-wikilambda-app-object-string-renderer__error-footer"
 					v-html="$i18n( 'wikilambda-renderer-error-footer-project-chat' ).parse()"
 				></p>
+				<!-- eslint-enable vue/no-v-html -->
 			</div>
 		</template>
 

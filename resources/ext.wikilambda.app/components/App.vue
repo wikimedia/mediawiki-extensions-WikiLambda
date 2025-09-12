@@ -21,7 +21,7 @@
 		<!-- Provide a nice error message when fetching zids or initializing the page fails  -->
 		<cdx-message v-else-if="hasError" type="warning">
 			{{ $i18n( 'wikilambda-initialize-error' ).text() }}<br>
-			<!-- eslint-disable vue/no-v-html -->
+			<!-- eslint-disable-next-line vue/no-v-html -->
 			<span v-html="$i18n( 'wikilambda-renderer-error-footer-project-chat' ).parse()"></span>
 		</cdx-message>
 		<span v-else>
