@@ -318,7 +318,7 @@
 	"wikilambda-functioncall-error-nonstringoutput-category-desc": "Pages with attempted calls to Wikifunctions with a Function that doesn't return a string",
 	"wikilambda-functioncall-error-bad-langs": "f:Special:MyLanguage/Help:Using_Wikifunctions#Invalid_language_properties",
 	"wikilambda-functioncall-error-bad-langs-category": "Pages with Wikifunctions calls with invalid language properties",
-	"wikilambda-functioncall-error-bad-langs-category-desc": "Pages with attempted calls to Wikifunctions with with wrong language codes for either of the 'parselang' or 'renderlang' arguments",
+	"wikilambda-functioncall-error-bad-langs-category-desc": "Pages with attempted calls to Wikifunctions with wrong language codes for either of the 'parselang' or 'renderlang' arguments",
 	"wikilambda-functioncall-error-bad-inputs": "f:Special:MyLanguage/Help:Using_Wikifunctions#Wrong_number_of_inputs",
 	"wikilambda-functioncall-error-bad-inputs-category": "Pages with Wikifunctions calls with wrong number of inputs",
 	"wikilambda-functioncall-error-bad-inputs-category-desc": "Pages with attempted calls to Wikifunctions with a Function call set up with the wrong number of inputs",
