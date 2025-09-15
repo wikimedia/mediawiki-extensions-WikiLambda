@@ -8,5 +8,6 @@
 	},
 	"wikilambda-persistentzobject-contents": "Съдържание",
 	"wikilambda-cancel": "Отказ",
-	"wikilambda-editor-fn-step-function-details": "Детайли"
+	"wikilambda-editor-fn-step-function-details": "Детайли",
+	"wikilambda-toast-close": "Затваряне"
 }

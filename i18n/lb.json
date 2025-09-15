@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Robby",
-			"Volvox"
+			"Volvox",
+			"GilPe"
 		]
 	},
 	"wikilambda-history-title": "Versiounsgeschicht vu(n) „$1“ ($2)",
@@ -30,7 +31,7 @@
 	"wikilambda-fallback": "Fallback-Editeur",
 	"wikilambda-publishchanges": "Ännerunge verëffentlechen",
 	"wikilambda-savechanges": "Ännerunge späicheren",
-	"wikilambda-summarylabel": "Resumé:",
+	"wikilambda-summarylabel": "Resümmee:",
 	"wikilambda-languagelabel": "Sprooch",
 	"wikilambda-publish-summary-prompt": "Beschreift wat Dir geännert hutt",
 	"wikilambda-loading": "Donnéeë gi gelueden",
@@ -89,7 +90,7 @@
 	"wikilambda-function-definition-alias-label": "Aliasen",
 	"wikilambda-function-definition-alias-example": "Aliasbeispiller weisen.",
 	"wikilambda-function-definition-footer-placeholder": "Beschreift Är Ännerunge kuerz",
-	"wikilambda-function-definition-footer-label": "Resumé vun der Ännerung",
+	"wikilambda-function-definition-footer-label": "Resümmee vun der Ännerung",
 	"wikilambda-function-definition-footer-implementation-button": "Implementatioun schreiwen",
 	"wikilambda-function-definition-inputs-item-typed-list-placeholder": "Wielt en Typ fir Är typiséiert Lëscht",
 	"wikilambda-function-definition-example-title": "Beispiller fir d'Benotze vun der Funktioun",
