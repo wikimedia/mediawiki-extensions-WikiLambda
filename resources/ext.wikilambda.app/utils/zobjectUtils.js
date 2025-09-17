@@ -761,7 +761,39 @@ const zobjectUtils = {
 		rendererCall[ `${ rendererZid }K1` ] = zobject;
 		rendererCall[ `${ rendererZid }K2` ] = zlang;
 		return rendererCall;
+	},
+
+	/**
+	 * Generic recursive walker for ZObjects.
+	 * Calls a callback for every object visited.
+	 *
+	 * @param {Object} obj - The current object
+	 * @param {Array} path - The current key path
+	 * @param {Function} visitor - A function (obj, path) => any
+	 * @return {Array} collected results from the visitor
+	 */
+	walkZObject: function ( obj, path, visitor ) {
+		const results = [];
+
+		if ( !obj || typeof obj !== 'object' ) {
+			return results;
+		}
+
+		results.push( ...( visitor( obj, path ) || [] ) );
+
+		for ( const [ key, value ] of Object.entries( obj ) ) {
+			if ( Array.isArray( value ) ) {
+				value.forEach( ( item, i ) => {
+					results.push( ...zobjectUtils.walkZObject( item, [ ...path, key, i ], visitor ) );
+				} );
+			} else if ( value && typeof value === 'object' ) {
+				results.push( ...zobjectUtils.walkZObject( value, [ ...path, key ], visitor ) );
+			}
+		}
+
+		return results;
 	}
+
 };
 
 module.exports = zobjectUtils;

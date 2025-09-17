@@ -56,7 +56,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		const implementationContentBlock = await findByTestId( 'implementation-content-block' );
 
 		const selectFunctionLinkContainer = await within( implementationContentBlock ).findByTestId( 'z-object-to-string' );
-		const selectFunctionLink = selectFunctionLinkContainer.getElementsByTagName( 'a' )[ 0 ];
+		const selectFunctionLink = selectFunctionLinkContainer.getElementsByTagName( 'button' )[ 0 ];
 
 		await fireEvent.click( selectFunctionLink );
 

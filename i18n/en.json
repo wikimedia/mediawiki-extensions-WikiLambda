@@ -208,6 +208,8 @@
 	"wikilambda-editor-zobject-addkey": "Add key:",
 	"wikilambda-editor-zobject-clearitem-tooltip": "Blank this value",
 	"wikilambda-editor-zobject-removekey-tooltip": "Remove this key/value from the Object",
+	"wikilambda-empty-reference-warning": "Enter a value.",
+	"wikilambda-empty-references-publish-warning": "Some fields contain empty values. Please review and fill in the fields before publishing.",
 	"wikilambda-expert-mode-json-label": "Current Object",
 	"wikilambda-fallback": "Fallback editor",
 	"wikilambda-function-are-you-sure-dialog-description": "Are you sure you want to leave editing mode without publishing first?",

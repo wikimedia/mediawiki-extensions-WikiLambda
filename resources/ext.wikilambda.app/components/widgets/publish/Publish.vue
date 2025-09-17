@@ -87,6 +87,7 @@ module.exports = exports = defineComponent( {
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
+		'getErrorPaths',
 		'getQueryParams',
 		'getCurrentZObjectId',
 		'getCurrentZObjectType',
@@ -126,6 +127,8 @@ module.exports = exports = defineComponent( {
 	} ),
 	methods: Object.assign( {}, mapActions( useMainStore, [
 		'clearValidationErrors',
+		'getErrors',
+		'setError',
 		'validateZObject'
 	] ), {
 		/**
@@ -158,9 +161,40 @@ module.exports = exports = defineComponent( {
 			this.clearValidationErrors();
 			const isValid = this.validateZObject();
 			if ( isValid ) {
+				this.raisePublishWarnings();
 				this.$emit( 'start-publish' );
 				this.showPublishDialog = true;
 			}
+		},
+
+		/**
+		 * Check if we should show a publish dialog warning if:
+		 * - there are empty Z9K1/references
+		 * - there is Wikifunctions.Debug code in any Z16/Code objects
+		 *
+		 * This is called only when validation passes and the publish dialog is about to open.
+		 */
+		raisePublishWarnings: function () {
+			const hasEmptyReferenceWarnings = this.hasEmptyReferenceWarnings();
+
+			if ( hasEmptyReferenceWarnings ) {
+				this.setError( {
+					errorId: Constants.STORED_OBJECTS.MAIN,
+					errorMessageKey: 'wikilambda-empty-references-publish-warning',
+					errorType: Constants.ERROR_TYPES.WARNING
+				} );
+			}
+		},
+
+		/**
+		 * Check if there are any empty reference warnings in the errors.
+		 *
+		 * @return {boolean}
+		 */
+		hasEmptyReferenceWarnings: function () {
+			return this.getErrorPaths
+				.some( ( errorId ) => this.getErrors( errorId )
+					.some( ( error ) => error.errorMessageKey === 'wikilambda-empty-reference-warning' ) );
 		},
 
 		/**

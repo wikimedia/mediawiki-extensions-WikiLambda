@@ -20,13 +20,15 @@ const Constants = require( '../../Constants.js' );
  * @property {Array} params
  * @property {string} message
  * @property {type} type
+ * @property {boolean} isPermanent
  */
 class ErrorData {
-	constructor( messageKey, params, message, type ) {
+	constructor( messageKey, params, message, type, isPermanent = false ) {
 		this.messageKey = messageKey;
 		this.params = params;
 		this.message = message;
 		this.type = type;
+		this.isPermanent = isPermanent;
 	}
 
 	/**
@@ -72,12 +74,13 @@ class ErrorData {
 			errorMessage = null,
 			errorMessageKey = null,
 			errorParams = [],
-			errorType = Constants.ERROR_TYPES.ERROR
+			errorType = Constants.ERROR_TYPES.ERROR,
+			isPermanent = false
 		} = errorPayload;
 
 		return errorMessageKey ?
-			new ErrorData( errorMessageKey, errorParams, null, errorType ) :
-			new ErrorData( null, [], errorMessage, errorType );
+			new ErrorData( errorMessageKey, errorParams, null, errorType, isPermanent ) :
+			new ErrorData( null, [], errorMessage, errorType, isPermanent );
 	}
 }
 

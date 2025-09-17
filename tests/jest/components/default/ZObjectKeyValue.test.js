@@ -7,6 +7,7 @@
 'use strict';
 
 const { shallowMount } = require( '@vue/test-utils' );
+const { waitFor } = require( '@testing-library/vue' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../helpers/getterHelpers.js' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
@@ -1234,6 +1235,111 @@ describe( 'ZObjectKeyValue', () => {
 				const toggle = wrapper.findComponent( { name: 'wl-expanded-toggle' } );
 				expect( toggle.exists() ).toBe( true );
 				expect( toggle.vm.hasExpandedMode ).toBe( false );
+			} );
+
+			describe( 'expansion for errors/warnings in field', () => {
+				it( 'expands when component has field errors', async () => {
+					objectValue = {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
+						Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1002' },
+						Z11K2: { Z1K1: 'Z6', Z6K1: 'string value' }
+					};
+
+					// Start with no errors
+					store.getErrors = jest.fn().mockReturnValue( [] );
+
+					const wrapper = shallowMount( ZObjectKeyValue, {
+						props: {
+							keyPath,
+							objectValue,
+							edit: true
+						},
+						global: {
+							stubs: { WlKeyValueBlock: false }
+						}
+					} );
+
+					// Initially should not be expanded
+					expect( wrapper.vm.isExpanded ).toBe( false );
+
+					// Now simulate errors appearing
+					store.getErrors = jest.fn().mockReturnValue( [
+						{ type: 'error', code: 'some-error' }
+					] );
+
+					// Wait for the watcher to trigger and expand the component
+					await waitFor( () => {
+						expect( wrapper.vm.isExpanded ).toBe( true );
+					} );
+				} );
+
+				it( 'expands when component has child errors', async () => {
+					objectValue = {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
+						Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1002' },
+						Z11K2: { Z1K1: 'Z6', Z6K1: 'string value' }
+					};
+
+					// Start with no child errors
+					store.getChildErrorKeys = jest.fn().mockReturnValue( [] );
+
+					const wrapper = shallowMount( ZObjectKeyValue, {
+						props: {
+							keyPath,
+							objectValue,
+							edit: true
+						},
+						global: {
+							stubs: { WlKeyValueBlock: false }
+						}
+					} );
+
+					// Initially should not be expanded
+					expect( wrapper.vm.isExpanded ).toBe( false );
+
+					// Now simulate child errors appearing
+					store.getChildErrorKeys = jest.fn().mockReturnValue( [ 'main.Z2K2.Z11K2' ] );
+
+					// Wait for the watcher to trigger and expand the component
+					await waitFor( () => {
+						expect( wrapper.vm.isExpanded ).toBe( true );
+					} );
+				} );
+
+				it( 'expands when component has warnings', async () => {
+					objectValue = {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
+						Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1002' },
+						Z11K2: { Z1K1: 'Z6', Z6K1: 'string value' }
+					};
+
+					// Start with no warnings
+					store.getErrors = jest.fn().mockReturnValue( [] );
+
+					const wrapper = shallowMount( ZObjectKeyValue, {
+						props: {
+							keyPath,
+							objectValue,
+							edit: true
+						},
+						global: {
+							stubs: { WlKeyValueBlock: false }
+						}
+					} );
+
+					// Initially should not be expanded
+					expect( wrapper.vm.isExpanded ).toBe( false );
+
+					// Now simulate warnings appearing
+					store.getErrors = jest.fn().mockReturnValue( [
+						{ type: 'warning', code: 'some-warning' }
+					] );
+
+					// Wait for the watcher to trigger and expand the component
+					await waitFor( () => {
+						expect( wrapper.vm.isExpanded ).toBe( true );
+					} );
+				} );
 			} );
 		} );
 	} );

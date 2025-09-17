@@ -28,6 +28,8 @@ describe( 'Publish widget', () => {
 		store.waitForRunningParsers = Promise.resolve();
 		store.clearValidationErrors.mockReturnValue( true );
 		store.validateZObject.mockReturnValue( true );
+		store.getErrors = jest.fn().mockReturnValue( [] );
+		store.getErrorPaths = [];
 	} );
 
 	it( 'renders without errors', () => {
@@ -211,6 +213,28 @@ describe( 'Publish widget', () => {
 
 			const button = wrapper.find( '.ext-wikilambda-app-publish-widget__publish-button' );
 			expect( button.attributes( 'disabled' ) ).not.toBeDefined();
+		} );
+	} );
+
+	describe( 'Publish warnings', () => {
+		it( 'adds empty reference warning when empty references exist', async () => {
+			// Mock empty reference warnings in errors
+			store.getErrorPaths = [ 'main.Z2K2.Z8K2' ];
+			store.getErrors = jest.fn().mockReturnValue( [
+				{ errorMessageKey: 'wikilambda-empty-reference-warning', type: 'warning' }
+			] );
+
+			const wrapper = shallowMount( PublishWidget, {
+				global: { stubs: { WlWidgetBase: false } }
+			} );
+
+			wrapper.find( '.ext-wikilambda-app-publish-widget__publish-button' ).trigger( 'click' );
+
+			await waitFor( () => expect( store.setError ).toHaveBeenCalledWith( {
+				errorId: Constants.STORED_OBJECTS.MAIN,
+				errorMessageKey: 'wikilambda-empty-references-publish-warning',
+				errorType: Constants.ERROR_TYPES.WARNING
+			} ) );
 		} );
 	} );
 } );

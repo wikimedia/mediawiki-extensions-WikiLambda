@@ -130,10 +130,17 @@ module.exports = {
 				errorMessage,
 				errorMessageKey,
 				errorParams = [],
-				errorType = Constants.ERROR_TYPES.ERROR
+				errorType = Constants.ERROR_TYPES.ERROR,
+				isPermanent = false
 			} = payload;
 
-			const errorData = ErrorData.buildErrorData( { errorMessage, errorMessageKey, errorParams, errorType } );
+			const errorData = ErrorData.buildErrorData( {
+				errorMessage,
+				errorMessageKey,
+				errorParams,
+				errorType,
+				isPermanent
+			} );
 
 			this.errors[ errorId ] = this.errors[ errorId ] || [];
 			this.errors[ errorId ].push( errorData );
@@ -192,10 +199,12 @@ module.exports = {
 		 * Clears all errors for a given errorId
 		 *
 		 * @param {string} errorId
+		 * @param {boolean} isPermanent
 		 */
-		clearErrors: function ( errorId ) {
+		clearErrors: function ( errorId, isPermanent = false ) {
 			if ( errorId in this.errors ) {
-				this.errors[ errorId ] = [];
+				this.errors[ errorId ] = this.errors[ errorId ]
+					.filter( ( error ) => error.isPermanent !== isPermanent );
 			}
 		},
 
@@ -227,10 +236,12 @@ module.exports = {
 
 		/**
 		 * Clears all errors.
+		 *
+		 * @param {boolean} isPermanent
 		 */
-		clearAllErrors: function () {
+		clearAllErrors: function ( isPermanent = false ) {
 			this.clearValidationErrors();
-			this.clearErrors( Constants.STORED_OBJECTS.MAIN );
+			this.clearErrors( Constants.STORED_OBJECTS.MAIN, isPermanent );
 		}
 	}
 };

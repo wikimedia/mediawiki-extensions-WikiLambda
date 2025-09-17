@@ -565,6 +565,139 @@ describe( 'zobject submission Pinia store', () => {
 					expect( isValid ).toEqual( false );
 				} );
 			} );
+
+			describe( 'validateZObject empty references', () => {
+				beforeEach( () => {
+					Object.defineProperty( store, 'getValidatedOutputFields', {
+						value: []
+					} );
+					Object.defineProperty( store, 'getValidatedInputFields', {
+						value: []
+					} );
+				} );
+
+				it( 'Sets warning for zobject with empty Z9K1 reference', () => {
+					const zobjectWithEmptyRef = canonicalToHybrid( {
+						Z1K1: 'Z2',
+						Z2K2: {
+							Z1K1: 'Z8',
+							Z8K2: { Z1K1: 'Z9', Z9K1: '' }
+						}
+					} );
+
+					store.jsonObject.main = zobjectWithEmptyRef;
+
+					const mockWarning = {
+						errorId: 'main.Z2K2.Z8K2',
+						errorMessageKey: 'wikilambda-empty-reference-warning',
+						errorType: Constants.ERROR_TYPES.WARNING
+					};
+
+					const isValid = store.validateZObject();
+					expect( store.setError ).toHaveBeenCalledTimes( 1 );
+					expect( store.setError ).toHaveBeenCalledWith( mockWarning );
+					// Should still be valid as it's just a warning
+					expect( isValid ).toEqual( true );
+				} );
+
+				it( 'Sets warnings for zobject with multiple empty Z9K1 references', () => {
+					const zobjectWithMultipleEmptyRefs = canonicalToHybrid( {
+						Z1K1: 'Z2',
+						Z2K2: {
+							Z1K1: 'Z8',
+							Z8K1: [
+								'Z17',
+								{
+									Z1K1: 'Z17',
+									Z17K1: { Z1K1: 'Z9', Z9K1: '' },
+									Z17K2: 'Z123K1'
+								}
+							],
+							Z8K2: { Z1K1: 'Z9', Z9K1: '' }
+						}
+					} );
+
+					store.jsonObject.main = zobjectWithMultipleEmptyRefs;
+
+					const mockWarnings = [
+						{
+							errorId: 'main.Z2K2.Z8K1.1.Z17K1',
+							errorMessageKey: 'wikilambda-empty-reference-warning',
+							errorType: Constants.ERROR_TYPES.WARNING
+						},
+						{
+							errorId: 'main.Z2K2.Z8K2',
+							errorMessageKey: 'wikilambda-empty-reference-warning',
+							errorType: Constants.ERROR_TYPES.WARNING
+						}
+					];
+
+					const isValid = store.validateZObject();
+					expect( store.setError ).toHaveBeenCalledTimes( 2 );
+					expect( store.setError ).toHaveBeenCalledWith( mockWarnings[ 0 ] );
+					expect( store.setError ).toHaveBeenCalledWith( mockWarnings[ 1 ] );
+					// Should still be valid as they're just warnings
+					expect( isValid ).toEqual( true );
+				} );
+
+				it( 'Does not set warning for zobject with valid Z9K1 references', () => {
+					const zobjectWithValidRefs = canonicalToHybrid( {
+						Z1K1: 'Z2',
+						Z2K2: {
+							Z1K1: 'Z8',
+							Z8K2: { Z1K1: 'Z9', Z9K1: 'Z6' }
+						}
+					} );
+
+					store.jsonObject.main = zobjectWithValidRefs;
+
+					const isValid = store.validateZObject();
+					expect( store.setError ).not.toHaveBeenCalled();
+					expect( isValid ).toEqual( true );
+				} );
+
+				it( 'Sets warnings for nested empty Z9K1 references', () => {
+					const zobjectWithNestedEmptyRefs = canonicalToHybrid( {
+						Z1K1: 'Z2',
+						Z2K2: {
+							Z1K1: 'Z8',
+							Z8K1: [
+								'Z17',
+								{
+									Z1K1: 'Z17',
+									Z17K1: {
+										Z1K1: 'Z7',
+										Z7K1: { Z1K1: 'Z9', Z9K1: '' },
+										Z881K1: { Z1K1: 'Z9', Z9K1: '' }
+									},
+									Z17K2: 'Z123K1'
+								}
+							]
+						}
+					} );
+
+					store.jsonObject.main = zobjectWithNestedEmptyRefs;
+
+					const mockWarnings = [
+						{
+							errorId: 'main.Z2K2.Z8K1.1.Z17K1.Z7K1',
+							errorMessageKey: 'wikilambda-empty-reference-warning',
+							errorType: Constants.ERROR_TYPES.WARNING
+						},
+						{
+							errorId: 'main.Z2K2.Z8K1.1.Z17K1.Z881K1',
+							errorMessageKey: 'wikilambda-empty-reference-warning',
+							errorType: Constants.ERROR_TYPES.WARNING
+						}
+					];
+
+					const isValid = store.validateZObject();
+					expect( store.setError ).toHaveBeenCalledTimes( 2 );
+					expect( store.setError ).toHaveBeenCalledWith( mockWarnings[ 0 ] );
+					expect( store.setError ).toHaveBeenCalledWith( mockWarnings[ 1 ] );
+					expect( isValid ).toEqual( true );
+				} );
+			} );
 		} );
 
 		describe( 'submitZObject', () => {

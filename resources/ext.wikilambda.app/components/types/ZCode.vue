@@ -391,7 +391,8 @@ module.exports = exports = defineComponent( {
 			this.setError( {
 				errorId: Constants.STORED_OBJECTS.MAIN,
 				errorType: Constants.ERROR_TYPES.WARNING,
-				errorMessageKey: 'wikilambda-editor-code-editor-debug-code-warning'
+				errorMessageKey: 'wikilambda-editor-code-editor-debug-code-warning',
+				isPermanent: true
 			} );
 		},
 

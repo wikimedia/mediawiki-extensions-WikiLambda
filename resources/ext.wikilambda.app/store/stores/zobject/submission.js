@@ -41,6 +41,8 @@ module.exports = {
 			const innerKeyPath = [ Constants.STORED_OBJECTS.MAIN, Constants.Z_PERSISTENTOBJECT_VALUE ];
 
 			let isValid = true;
+			// Track the paths that have been validated
+			const validatedPaths = new Set();
 
 			switch ( zobjectType ) {
 				// Validate ZFunction:
@@ -55,6 +57,7 @@ module.exports = {
 								errorMessageKey: 'wikilambda-missing-function-output-error-message',
 								errorType: Constants.ERROR_TYPES.ERROR
 							} );
+							validatedPaths.add( field.keyPath );
 							isValid = false;
 						}
 					} );
@@ -66,10 +69,11 @@ module.exports = {
 								errorMessageKey: 'wikilambda-missing-function-input-type-error-message',
 								errorType: Constants.ERROR_TYPES.ERROR
 							} );
+							validatedPaths.add( field.keyPath );
 							isValid = false;
 						}
 					} );
-					return isValid;
+					break;
 
 				// Validate ZImplementation:
 				// * Implementation function is not defined (Z14K1)
@@ -79,11 +83,13 @@ module.exports = {
 				case Constants.Z_IMPLEMENTATION: {
 					// Validate: Target Function not defined
 					if ( !this.getCurrentTargetFunctionZid ) {
+						const targetFunctionPath = [ ...innerKeyPath, Constants.Z_IMPLEMENTATION_FUNCTION ].join( '.' );
 						this.setError( {
-							errorId: [ ...innerKeyPath, Constants.Z_IMPLEMENTATION_FUNCTION ].join( '.' ),
+							errorId: targetFunctionPath,
 							errorMessageKey: 'wikilambda-zobject-missing-attached-function',
 							errorType: Constants.ERROR_TYPES.ERROR
 						} );
+						validatedPaths.add( targetFunctionPath );
 						isValid = false;
 					}
 
@@ -106,6 +112,7 @@ module.exports = {
 										errorMessageKey: 'wikilambda-zimplememntation-composition-missing',
 										errorType: Constants.ERROR_TYPES.ERROR
 									} );
+									validatedPaths.add( field.keyPath );
 									isValid = false;
 								}
 							} );
@@ -117,14 +124,16 @@ module.exports = {
 						const code = innerObject[ Constants.Z_IMPLEMENTATION_CODE ];
 
 						if ( !getZCodeProgrammingLanguageId( code ) ) {
+							const languagePath = [ ...innerKeyPath,
+								Constants.Z_IMPLEMENTATION_CODE,
+								Constants.Z_CODE_LANGUAGE
+							].join( '.' );
 							this.setError( {
-								errorId: [ ...innerKeyPath,
-									Constants.Z_IMPLEMENTATION_CODE,
-									Constants.Z_CODE_LANGUAGE
-								].join( '.' ),
+								errorId: languagePath,
 								errorMessageKey: 'wikilambda-zimplementation-code-language-missing',
 								errorType: Constants.ERROR_TYPES.ERROR
 							} );
+							validatedPaths.add( languagePath );
 							isValid = false;
 						}
 
@@ -141,7 +150,7 @@ module.exports = {
 						}
 					}
 
-					return isValid;
+					break;
 				}
 
 				// Validate ZTester:
@@ -151,11 +160,13 @@ module.exports = {
 				case Constants.Z_TESTER: {
 					// Validate: Target Function not defined
 					if ( !this.getCurrentTargetFunctionZid ) {
+						const targetFunctionPath = [ ...innerKeyPath, Constants.Z_TESTER_FUNCTION ].join( '.' );
 						this.setError( {
-							errorId: [ ...innerKeyPath, Constants.Z_TESTER_FUNCTION ].join( '.' ),
+							errorId: targetFunctionPath,
 							errorMessageKey: 'wikilambda-zobject-missing-attached-function',
 							errorType: Constants.ERROR_TYPES.ERROR
 						} );
+						validatedPaths.add( targetFunctionPath );
 						isValid = false;
 					}
 
@@ -171,6 +182,7 @@ module.exports = {
 								errorMessageKey: 'wikilambda-ztester-missing-call-function',
 								errorType: Constants.ERROR_TYPES.ERROR
 							} );
+							validatedPaths.add( field.keyPath );
 							isValid = false;
 						}
 					} );
@@ -187,16 +199,33 @@ module.exports = {
 								errorMessageKey: 'wikilambda-ztester-missing-validation-function',
 								errorType: Constants.ERROR_TYPES.ERROR
 							} );
+							validatedPaths.add( field.keyPath );
 							isValid = false;
 						}
 					} );
 
-					return isValid;
+					break;
 				}
 
 				default:
-					return isValid;
+					break;
 			}
+
+			// Check for empty Z9K1 references in all zobject types, excluding already validated paths
+			const emptyReferences = this.getEmptyReferencesKeyPaths();
+			emptyReferences.forEach( ( keyPath ) => {
+				// Skip if this path was already validated with a specific error
+				if ( !validatedPaths.has( keyPath ) ) {
+					this.setError( {
+						errorId: keyPath,
+						errorMessageKey: 'wikilambda-empty-reference-warning',
+						errorType: Constants.ERROR_TYPES.WARNING
+					} );
+				}
+			} );
+
+			return isValid;
+
 		},
 
 		/**

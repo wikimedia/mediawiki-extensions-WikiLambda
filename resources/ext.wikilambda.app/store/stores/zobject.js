@@ -23,7 +23,9 @@ const {
 	getZImplementationFunctionZid,
 	getZImplementationContentType,
 	getZTesterFunctionZid,
-	resolveZObjectByKeyPath
+	getZReferenceTerminalValue,
+	resolveZObjectByKeyPath,
+	walkZObject
 } = require( '../../utils/zobjectUtils.js' );
 const currentPageStore = require( './zobject/currentPage.js' );
 const factoryStore = require( './zobject/factory.js' );
@@ -408,6 +410,32 @@ const zobjectStore = {
 				return keyPath.split( '.' ).includes( Constants.Z_MULTILINGUALSTRING_VALUE );
 			};
 			return findIsInMultilingualStringList;
+		},
+
+		/**
+		 * Recursively walks a ZObject and returns all empty Z9K1 references.
+		 *
+		 * @param {Object} state - Application state containing jsonObject
+		 * @return {Function} Finder function
+		 */
+		getEmptyReferencesKeyPaths: function ( state ) {
+			/**
+			 * @param {string} namespace - Namespace to search
+			 * @return {Array} Array of key paths where empty Z9K1 references are found
+			 */
+			const findEmptyReferences = ( namespace = Constants.STORED_OBJECTS.MAIN ) => {
+				const zobject = state.jsonObject[ namespace ];
+				return walkZObject( zobject, [ namespace ], ( obj, path ) => {
+					if ( getZObjectType( obj ) === Constants.Z_REFERENCE ) {
+						const value = getZReferenceTerminalValue( obj );
+						if ( !value ) {
+							return [ path.join( '.' ) ];
+						}
+					}
+					return [];
+				} );
+			};
+			return findEmptyReferences;
 		}
 	},
 	actions: {

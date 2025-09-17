@@ -71,6 +71,7 @@ const { mapActions, mapState } = require( 'pinia' );
 
 const Constants = require( '../../Constants.js' );
 const useMainStore = require( '../../store/index.js' );
+const errorMixin = require( '../../mixins/errorMixin.js' );
 const typeMixin = require( '../../mixins/typeMixin.js' );
 const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
 const LabelData = require( '../../store/classes/LabelData.js' );
@@ -135,7 +136,7 @@ module.exports = exports = defineComponent( {
 		'wl-wikidata-property': WikidataProperty,
 		'wl-wikidata-lexeme-sense': WikidataLexemeSense
 	},
-	mixins: [ typeMixin, zobjectMixin ],
+	mixins: [ errorMixin, typeMixin, zobjectMixin ],
 	props: {
 		keyPath: {
 			type: String,
@@ -143,7 +144,8 @@ module.exports = exports = defineComponent( {
 		},
 		objectValue: {
 			type: [ Object, Array ],
-			required: true
+			required: false,
+			default: undefined
 		},
 		edit: {
 			type: Boolean,
@@ -181,7 +183,12 @@ module.exports = exports = defineComponent( {
 			 * ZObjectKeyValue component sets its data property
 			 * 'expanded' independently.
 			 */
-			expanded: this.defaultExpanded
+			expanded: this.defaultExpanded,
+			/**
+			 * Track whether this component has been auto-expanded due to errors.
+			 * This prevents forcing expansion after the user manually collapses.
+			 */
+			hasBeenAutoExpanded: false
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
@@ -428,6 +435,7 @@ module.exports = exports = defineComponent( {
 		 * * If the component cannot be expanded (layoutConfig.allowExpansion
 		 *   is false), always return false.
 		 * * Else, fall back to the local variable that captures the expanded state
+		 *   (watchers handle auto-expansion when errors appear)
 		 *
 		 * @return {boolean}
 		 */
@@ -526,6 +534,7 @@ module.exports = exports = defineComponent( {
 	methods: Object.assign( {}, mapActions( useMainStore, [
 		'addLocalArgumentToFunctionCall',
 		'changeTypeByKeyPath',
+		'clearErrors',
 		'clearTypeByKeyPath',
 		'createObjectByType',
 		'deleteListItemsByKeyPath',
@@ -845,6 +854,35 @@ module.exports = exports = defineComponent( {
 			this.expanded = value;
 		}
 
-	} )
+	} ),
+	watch: {
+		/**
+		 * Auto-expand when field errors appear (only the first time)
+		 *
+		 * @param {boolean} newValue
+		 */
+		hasFieldErrors: function ( newValue ) {
+			if ( newValue && !this.hasBeenAutoExpanded ) {
+				this.expanded = true;
+				this.hasBeenAutoExpanded = true;
+			}
+		},
+		/**
+		 * Auto-expand when child errors appear (only the first time)
+		 *
+		 * @param {boolean} newValue
+		 */
+		hasChildErrors: function ( newValue ) {
+			if ( newValue && !this.hasBeenAutoExpanded ) {
+				this.expanded = true;
+				this.hasBeenAutoExpanded = true;
+			}
+		}
+	},
+	beforeUnmount() {
+		// Clear any validation errors for this field when component unmounts
+		// This prevents stale errors when field structure changes
+		this.clearErrors( this.keyPath, true );
+	}
 } );
 </script>

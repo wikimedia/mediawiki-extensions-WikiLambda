@@ -249,7 +249,7 @@ module.exports = exports = defineComponent( {
 		'submitZObject',
 		'setError',
 		'setDirty',
-		'clearAllErrors'
+		'clearErrors'
 	] ),
 	{
 		/**
@@ -291,9 +291,9 @@ module.exports = exports = defineComponent( {
 		closeDialog: function () {
 			this.hasKeyboardSubmitWarning = false;
 
-			if ( this.hasErrors ) {
-				this.clearAllErrors();
-			}
+			// Clear all publish dialog errors/warnings (errorId: "main"), preserve field-level warnings
+			this.clearErrors( Constants.STORED_OBJECTS.MAIN );
+
 			this.$emit( 'close-dialog' );
 		},
 
@@ -321,6 +321,7 @@ module.exports = exports = defineComponent( {
 		successfulExit: function ( pageTitle ) {
 			this.$emit( 'before-exit' );
 			this.setDirty( false );
+			this.clearErrors( Constants.STORED_OBJECTS.MAIN, true );
 			this.closeDialog();
 			this.navigateToPage( pageTitle );
 		},
@@ -346,7 +347,7 @@ module.exports = exports = defineComponent( {
 			} ).then( ( response ) => {
 				this.successfulExit( response.page );
 			} ).catch( ( /* ApiError */ error ) => {
-				this.clearAllErrors();
+				this.clearErrors( Constants.STORED_OBJECTS.MAIN );
 				this.setError( {
 					errorId: Constants.STORED_OBJECTS.MAIN,
 					errorType: Constants.ERROR_TYPES.ERROR,

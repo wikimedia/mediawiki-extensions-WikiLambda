@@ -653,6 +653,84 @@ describe( 'zobject Pinia store', () => {
 				expect( languages ).toEqual( [] );
 			} );
 		} );
+
+		describe( 'getEmptyReferencesKeyPaths', () => {
+			it( 'returns empty array when no empty references exist', () => {
+				const zobject = {
+					Z1K1: 'Z2',
+					Z2K2: {
+						Z1K1: 'Z8',
+						Z8K2: { Z1K1: 'Z9', Z9K1: 'Z6' }
+					}
+				};
+				store.jsonObject.main = canonicalToHybrid( zobject );
+
+				const result = store.getEmptyReferencesKeyPaths();
+				expect( result ).toEqual( [] );
+			} );
+
+			it( 'finds single empty Z9K1 reference', () => {
+				const zobject = {
+					Z1K1: 'Z2',
+					Z2K2: {
+						Z1K1: 'Z8',
+						Z8K2: { Z1K1: 'Z9', Z9K1: '' }
+					}
+				};
+				store.jsonObject.main = canonicalToHybrid( zobject );
+
+				const result = store.getEmptyReferencesKeyPaths();
+				expect( result ).toEqual( [ 'main.Z2K2.Z8K2' ] );
+			} );
+
+			it( 'finds multiple nested empty Z9K1 references', () => {
+				const zobject = {
+					Z1K1: 'Z2',
+					Z2K2: {
+						Z1K1: 'Z8',
+						Z8K1: [
+							'Z17',
+							{
+								Z1K1: 'Z17',
+								Z17K1: { Z1K1: 'Z9', Z9K1: '' },
+								Z17K2: 'Z123K1'
+							}
+						],
+						Z8K2: { Z1K1: 'Z9', Z9K1: '' }
+					}
+				};
+				store.jsonObject.main = canonicalToHybrid( zobject );
+
+				const result = store.getEmptyReferencesKeyPaths();
+				expect( result ).toEqual( [
+					'main.Z2K2.Z8K1.1.Z17K1',
+					'main.Z2K2.Z8K2'
+				] );
+			} );
+
+			it( 'ignores non-empty Z9K1 references', () => {
+				const zobject = {
+					Z1K1: 'Z2',
+					Z2K2: {
+						Z1K1: 'Z8',
+						Z8K2: { Z1K1: 'Z9', Z9K1: 'Z6' },
+						Z8K5: { Z1K1: 'Z9', Z9K1: 'Z123' }
+					}
+				};
+				store.jsonObject.main = canonicalToHybrid( zobject );
+
+				const result = store.getEmptyReferencesKeyPaths();
+				expect( result ).toEqual( [] );
+			} );
+
+			it( 'returns empty array for empty or undefined zobject', () => {
+				store.jsonObject.main = {};
+				expect( store.getEmptyReferencesKeyPaths() ).toEqual( [] );
+
+				store.jsonObject.main = undefined;
+				expect( store.getEmptyReferencesKeyPaths() ).toEqual( [] );
+			} );
+		} );
 	} );
 
 	describe( 'Actions', () => {

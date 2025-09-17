@@ -22,14 +22,15 @@
 					@expand="expand"
 				></wl-z-object-to-string>
 				<template v-else><!--
-					--><a
+					--><button
 						v-if="isValueUnset"
+						type="button"
 						class="ext-wikilambda-app-object-to-string__blank is-red-link"
 						:lang="labelData.langCode"
 						:dir="labelData.langDir"
 						data-testid="object-to-string-link"
 						@click="expand"
-					>{{ labelData.label }}</a>
+					>{{ labelData.label }}</button>
 					<a
 						v-else-if="showLink"
 						v-tooltip:top="isWikidataType ? labelData.zid : null"
@@ -560,19 +561,6 @@ module.exports = exports = defineComponent( {
 		 */
 		rendererZid: function () {
 			this.generateRenderedValue();
-		},
-		/**
-		 * Watch the hasChildErrors computed property from the errorMixin
-		 * and throw an expand event if a child field of the function call
-		 * failed validation.
-		 *
-		 * @param {boolean} newValue
-		 * @param {boolean} oldValue
-		 */
-		hasChildErrors: function ( newValue, oldValue ) {
-			if ( oldValue === false && newValue === true ) {
-				this.$emit( 'expand', true );
-			}
 		}
 	},
 	mounted: function () {
@@ -606,6 +594,9 @@ module.exports = exports = defineComponent( {
 
 	.ext-wikilambda-app-object-to-string__blank {
 		.cdx-mixin-link();
+		border: 0;
+		background: none;
+		font-size: inherit;
 	}
 
 	.ext-wikilambda-app-object-to-string__icon.cdx-icon {

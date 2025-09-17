@@ -155,7 +155,7 @@ class ImplementationForm extends Page {
 	 */
 	async toggleCompositionBlock() {
 		const compositionBlock = await this.compositionBlock;
-		const button = await compositionBlock.$( './/a[text()="Select Function"]' );
+		const button = await compositionBlock.$( './/button[text()="Select Function"]' );
 		await ElementActions.doClick( button );
 	}
 

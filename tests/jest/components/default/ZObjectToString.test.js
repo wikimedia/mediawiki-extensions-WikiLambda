@@ -585,20 +585,20 @@ describe( 'ZObjectToString', () => {
 
 			it( 'renders without errors', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-				expect( wrapper.find( 'a[data-testid=object-to-string-link]' ).exists() ).toBe( true );
+				expect( wrapper.find( 'button[data-testid=object-to-string-link]' ).exists() ).toBe( true );
 				expect( wrapper.find( 'span[data-testid=object-to-string-text]' ).exists() ).toBe( false );
 			} );
 
-			it( 'in edit mode: renders the call to action link to select the referred zobject', () => {
+			it( 'in edit mode: renders the call to action button to select the referred zobject', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: true } } );
-				const referenceLink = wrapper.find( 'a[data-testid=object-to-string-link]' );
+				const referenceLink = wrapper.find( 'button[data-testid=object-to-string-link]' );
 				expect( referenceLink.attributes().href ).toBe( undefined );
 				expect( referenceLink.text() ).toEqual( 'Select Language' );
 			} );
 
-			it( 'in read mode: renders the link to the referred zobject', () => {
+			it( 'in read mode: renders the button to the referred zobject', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-				const referenceLink = wrapper.find( 'a[data-testid=object-to-string-link]' );
+				const referenceLink = wrapper.find( 'button[data-testid=object-to-string-link]' );
 				expect( referenceLink.attributes().href ).toBe( undefined );
 				expect( referenceLink.text() ).toEqual( 'Language' );
 			} );
@@ -622,20 +622,20 @@ describe( 'ZObjectToString', () => {
 
 			it( 'renders without errors', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-				expect( wrapper.find( 'a[data-testid=object-to-string-link]' ).exists() ).toBe( true );
+				expect( wrapper.find( 'button[data-testid=object-to-string-link]' ).exists() ).toBe( true );
 				expect( wrapper.find( 'span[data-testid=object-to-string-text]' ).exists() ).toBe( false );
 			} );
 
-			it( 'in edit mode: renders the call to action link to select a function', () => {
+			it( 'in edit mode: renders the call to action button to select a function', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: true } } );
-				const referenceLink = wrapper.find( 'a[data-testid=object-to-string-link]' );
+				const referenceLink = wrapper.find( 'button[data-testid=object-to-string-link]' );
 				expect( referenceLink.attributes().href ).toBe( undefined );
 				expect( referenceLink.text() ).toEqual( 'Select Function' );
 			} );
 
-			it( 'in read mode: renders the link to function', () => {
+			it( 'in read mode: renders the button to function', () => {
 				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue, edit: false } } );
-				const referenceLink = wrapper.find( 'a[data-testid=object-to-string-link]' );
+				const referenceLink = wrapper.find( 'button[data-testid=object-to-string-link]' );
 				expect( referenceLink.attributes().href ).toBe( undefined );
 				expect( referenceLink.text() ).toEqual( 'Function' );
 			} );
