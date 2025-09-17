@@ -37,7 +37,8 @@ use Wikimedia\Rdbms\IReadableDatabase;
 class PageEditingHandler implements
 	\MediaWiki\Hook\NamespaceIsMovableHook,
 	\MediaWiki\Storage\Hook\MultiContentSaveHook,
-	\MediaWiki\Permissions\Hook\GetUserPermissionsErrorsHook
+	\MediaWiki\Permissions\Hook\GetUserPermissionsErrorsHook,
+	\MediaWiki\Hook\RecentChange_saveHook
 {
 	private Config $config;
 	private ZObjectStore $zObjectStore;
@@ -181,8 +182,6 @@ class PageEditingHandler implements
 
 		return true;
 	}
-
-	// phpcs:disable MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName
 
 	/**
 	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/RecentChange_save
@@ -533,8 +532,6 @@ class PageEditingHandler implements
 		// The return value isn't used, but we return something so we can show in tests that we reached this point
 		return true;
 	}
-
-	// phpcs:enable MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName
 
 	/**
 	 * Utility function to round-trip data through JSON encoding/decoding

@@ -62,8 +62,6 @@ class PageRenderingHandler implements
 		$this->zObjectStore = $zObjectStore;
 	}
 
-	// phpcs:disable MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName
-
 	/**
 	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/SkinTemplateNavigation::Universal
 	 *
@@ -181,8 +179,6 @@ class PageRenderingHandler implements
 		$links['namespaces']['talk']['href'] = $talkRewrittenHref;
 		$links['associated-pages']['talk']['href'] = $talkRewrittenHref;
 	}
-
-	// phpcs:enable MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName
 
 	/**
 	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/HtmlPageLinkRendererEnd
