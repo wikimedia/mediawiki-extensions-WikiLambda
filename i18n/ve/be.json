@@ -29,6 +29,7 @@
 	"wikilambda-recentchanges-filter-wl-pref": "Паказваць праўкі Вікіфункцыяў у спісе назірання",
 	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Ідзе загрузка",
 	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "Перадпаказ заняў занадта шмат часу",
+	"wikilambda-visualeditor-wikifunctionscall-changedesc-title": "Змена ўводаў Вікіфункцыяў",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Выберыце магчымасць",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Функцыя]] з Вікіфункцыяў",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Чытаць меней",
@@ -47,5 +48,11 @@
 	"wikilambda-visualeditor-wikifunctionscall-no-name": "Няма назвы",
 	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Загрузка дадзеных Функцыі",
 	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Функцыя не выбрана.",
-	"wikilambda-visualeditor-wikifunctionscall-title": "Функцыя"
+	"wikilambda-visualeditor-wikifunctionscall-title": "Функцыя",
+	"wikilambda-visualeditor-wikifunctionscall-preview-title": "Перадпаказ",
+	"wikilambda-visualeditor-wikifunctionscall-preview-no-result": "Увядзіце значэнні для перадпаказу выніку.",
+	"wikilambda-visualeditor-wikifunctionscall-preview-error": "Функцыя не можа адлюстраваць вынік. Паўтарыце спробу пазней.",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "Адменена",
+	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "Скінуць",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Адмена"
 }
