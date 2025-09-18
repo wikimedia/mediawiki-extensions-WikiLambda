@@ -165,8 +165,6 @@ describe( 'ZObjectStringRenderer', () => {
 		store.getTestResults = jest.fn().mockResolvedValue();
 		store.runParser = jest.fn().mockResolvedValue( parserResponse );
 		store.runRenderer = jest.fn().mockResolvedValue( rendererResponse );
-		store.runRendererTest = jest.fn();
-		store.setError = jest.fn();
 	} );
 
 	describe( 'in view and edit mode', () => {

@@ -46,10 +46,6 @@ describe( 'ZObjectToString', () => {
 			Z999K1: 'argument label',
 			Z89: 'HTML Fragment'
 		} );
-		// Actions
-		store.fetchWikidataEntitiesByType = jest.fn();
-		store.fetchZids = jest.fn();
-		store.runRenderer = jest.fn();
 	} );
 
 	describe( 'in view and edit mode', () => {

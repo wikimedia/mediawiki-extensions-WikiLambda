@@ -27,10 +27,6 @@ describe( 'TypeSelector', () => {
 			Z882K1: 'first type',
 			Z882K2: 'second type'
 		} );
-		// Methods
-		store.createObjectByType = jest.fn();
-		store.setValueByKeyPath = jest.fn();
-		store.setFunctionCallArguments = jest.fn();
 	} );
 
 	describe( 'on initialization', () => {

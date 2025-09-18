@@ -23,7 +23,6 @@ describe( 'FunctionEditorDescription', () => {
 			keyPath: 'main.Z2K5.Z12K1.7.Z11K2.Z6K1',
 			value: 'Function description'
 		} );
-		store.setZMonolingualString = jest.fn();
 	} );
 
 	it( 'renders without errors', () => {

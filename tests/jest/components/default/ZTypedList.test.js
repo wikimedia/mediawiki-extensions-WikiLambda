@@ -25,7 +25,6 @@ describe( 'ZTypedList', () => {
 
 	beforeEach( () => {
 		store = useMainStore();
-		store.handleListTypeChange = jest.fn();
 	} );
 
 	describe( 'in view mode', () => {

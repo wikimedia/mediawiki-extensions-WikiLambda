@@ -73,10 +73,6 @@ describe( 'FunctionEvaluator', () => {
 		store.userCanRunUnsavedCode = true;
 		store.waitForRunningParsers = Promise.resolve();
 		// Actions
-		store.setJsonObject = jest.fn();
-		store.changeTypeByKeyPath = jest.fn();
-		store.setFunctionCallArguments = jest.fn();
-		store.clearErrors = jest.fn();
 		store.fetchZids.mockResolvedValue();
 		store.callZFunction.mockResolvedValue();
 	} );

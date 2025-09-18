@@ -57,7 +57,6 @@ describe( 'ZTester', () => {
 		store.getStoredObject = createGettersWithFunctionsMock();
 		store.isCreateNewPage = false;
 		store.fetchZids = jest.fn().mockResolvedValue();
-		store.setFunctionCallArguments = jest.fn();
 	} );
 
 	describe( 'in view mode', () => {

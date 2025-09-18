@@ -34,7 +34,6 @@ describe( 'FunctionEditorInputsItem', () => {
 
 	beforeEach( () => {
 		store = useMainStore();
-		store.getZMonolingualString = jest.fn();
 	} );
 
 	it( 'renders without errors', () => {

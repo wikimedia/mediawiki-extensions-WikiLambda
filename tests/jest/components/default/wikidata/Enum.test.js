@@ -32,8 +32,6 @@ describe( 'WikidataEnum', () => {
 		store.getWikidataEntityLabelData = jest.fn().mockImplementation( ( type, id ) => ( {
 			label: `Label for ${ id }`
 		} ) );
-		// Actions
-		store.fetchWikidataEntitiesByType = jest.fn();
 	} );
 
 	it( 'renders without errors', () => {

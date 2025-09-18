@@ -33,21 +33,6 @@ describe( 'ZObjectKeyValue', () => {
 		store.getLabelData = createLabelDataMock();
 		store.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z1' );
 		store.getZObjectByKeyPath = createGettersWithFunctionsMock();
-
-		// Actions
-		store.changeTypeByKeyPath = jest.fn();
-		store.clearTypeByKeyPath = jest.fn();
-		store.createObjectByType = jest.fn();
-		store.deleteListItemsByKeyPath = jest.fn();
-		store.moveListItemByKeyPath = jest.fn();
-		store.navigate = jest.fn();
-		store.pushItemsByKeyPath = jest.fn();
-		store.setDirty = jest.fn();
-		store.setFunctionCallArguments = jest.fn();
-		store.setImplementationContentType = jest.fn();
-		store.setKeyType = jest.fn();
-		store.setValueByKeyPath = jest.fn();
-		store.setWikidataEnumReferenceType = jest.fn();
 	} );
 
 	describe( 'it renders the correct component for type or key', () => {

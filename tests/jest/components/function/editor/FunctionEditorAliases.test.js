@@ -20,7 +20,6 @@ describe( 'FunctionEditorAliases', () => {
 			keyPath: 'main.Z2K4.Z32K1.1.Z31K2',
 			value: [ 'alias 1', 'alias 2' ]
 		} );
-		store.setZMonolingualStringset = jest.fn();
 	} );
 
 	it( 'renders without errors', () => {
