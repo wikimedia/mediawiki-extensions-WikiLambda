@@ -88,15 +88,6 @@ module.exports = exports = defineComponent( {
 		'lookupWikidataEntities'
 	] ), {
 		/**
-		 * Clears the ZObjectSelector lookup results.
-		 * This doesn't clear the component TextInput.
-		 */
-		clearResults: function () {
-			this.lookupResults = [];
-			// Reset searchContinue when a new search is initiated
-			this.lookupConfig.searchContinue = null;
-		},
-		/**
 		 * On field input, perform a backend lookup and
 		 * save the returned objects in lookupResults array.
 		 *
@@ -105,11 +96,12 @@ module.exports = exports = defineComponent( {
 		onInput: function ( input ) {
 			this.inputValue = input;
 
-			// Clear previous results when input changes
-			this.clearResults();
+			// Reset searchContinue when a new search is initiated
+			this.lookupConfig.searchContinue = null;
 
-			// If empty input, do nothing
+			// If empty input, reset lookupResults
 			if ( !input ) {
+				this.lookupResults = [];
 				return;
 			}
 
@@ -192,9 +184,9 @@ module.exports = exports = defineComponent( {
 		/**
 		 * Perform Wikidata Entity lookup given a search term.
 		 *
-		 * @param {string} searchTerm
+		 * @param {string} input
 		 */
-		getLookupResults: function ( searchTerm ) {
+		getLookupResults: function ( input ) {
 			// Cancel previous request if any
 			if ( this.lookupAbortController ) {
 				this.lookupAbortController.abort();
@@ -202,7 +194,7 @@ module.exports = exports = defineComponent( {
 			this.lookupAbortController = new AbortController();
 
 			const payload = {
-				search: searchTerm,
+				search: input,
 				type: Constants.WIKIDATA_API_TYPE_VALUES[ this.type ],
 				searchContinue: this.lookupConfig.searchContinue,
 				signal: this.lookupAbortController.signal
@@ -211,9 +203,9 @@ module.exports = exports = defineComponent( {
 			this.lookupWikidataEntities( payload )
 				.then( ( data ) => {
 					const { searchContinue, search } = data;
-
 					this.lookupConfig.searchContinue = searchContinue;
-					this.lookupConfig.searchQuery = searchTerm;
+					this.lookupConfig.searchQuery = input;
+					this.lookupResults = [];
 					for ( const entity of search ) {
 						this.lookupResults.push( {
 							value: entity.id,
@@ -227,7 +219,7 @@ module.exports = exports = defineComponent( {
 					if ( error.code === 'abort' ) {
 						return;
 					}
-					this.lookupConfig.searchQuery = searchTerm;
+					this.lookupConfig.searchQuery = input;
 					this.lookupResults = [];
 				} );
 		}

@@ -36,6 +36,7 @@
 			@update:input-value="onInput"
 			@load-more="onLoadMoreLookup"
 			@blur="onBlur"
+			@focus="onFocus"
 		>
 			<template #no-results>
 				{{ $i18n( 'wikilambda-zobjectselector-no-results' ).text() }}
@@ -225,12 +226,19 @@ module.exports = exports = defineComponent( {
 		 * @return {Array}
 		 */
 		menuItems: function () {
-			// Ongoing lookup search: return results
+			// User is actively searching (input differs from selected label)
 			if ( this.inputValue !== this.selectedLabel ) {
-				return this.lookupResults;
+				// If there's input text, show search results; otherwise show suggestions
+				return this.inputValue ? this.lookupResults : this.suggestions;
 			}
-			// No search: return selected item or suggestions
-			return this.selectedZid ? this.selectedMenuItem : this.suggestions;
+
+			// User is not searching:
+			// If nothing is selected, show suggestions
+			if ( !this.selectedZid ) {
+				return this.suggestions;
+			}
+			// Otherwise show the lookup results
+			return this.lookupResults;
 		},
 
 		/**
@@ -456,9 +464,9 @@ module.exports = exports = defineComponent( {
 			} ).then( ( data ) => {
 				const { labels, searchContinue } = data;
 				const zids = [];
-				// If searchContinue is present, store it in lookupConfig
 				this.lookupConfig.searchContinue = searchContinue;
 				this.lookupConfig.searchQuery = input;
+				this.lookupResults = [];
 				// Update lookupResults list
 				if ( labels && labels.length > 0 ) {
 					labels.forEach( ( result ) => {
@@ -503,6 +511,8 @@ module.exports = exports = defineComponent( {
 				if ( error.code === 'abort' ) {
 					return;
 				}
+				this.lookupConfig.searchQuery = input;
+				this.lookupResults = [];
 			} );
 		},
 
@@ -523,35 +533,24 @@ module.exports = exports = defineComponent( {
 		},
 
 		/**
-		 * Clears the ZObjectSelector lookup results.
-		 * This doesn't clear the component TextInput.
-		 */
-		clearResults: function () {
-			this.lookupResults = [];
-			// Reset searchContinue when a new search is initiated
-			this.lookupConfig.searchContinue = null;
-		},
-
-		/**
 		 * On field input, perform a backend lookup and set the lookupResults
 		 * array. When searching for a Zid, validate and select.
 		 *
 		 * @param {string} input
 		 */
 		onInput: function ( input ) {
-			// If the input is disabled, we do not need to return early anymore.
-
 			this.inputValue = input;
 			this.$emit( 'input-change', input || '' );
 
 			// Clear field errors
 			this.clearFieldErrors();
 
-			// Clear previous results when input changes
-			this.clearResults();
+			// Clear searchContinue when a new search is initiated
+			this.lookupConfig.searchContinue = null;
 
-			// Just search if more than one characters
-			if ( !input || input.length < 2 ) {
+			// If input is empty, reset lookupResults
+			if ( !input ) {
+				this.lookupResults = [];
 				return;
 			}
 
@@ -601,6 +600,7 @@ module.exports = exports = defineComponent( {
 		 * especially when the field is mounted.
 		 */
 		onFocus: function () {
+			// Only fetch if we have sufficient input and no cached results
 			if ( this.inputValue && !this.lookupResults.length ) {
 				this.getLookupResults( this.inputValue );
 			}

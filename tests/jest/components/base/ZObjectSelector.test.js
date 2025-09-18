@@ -282,33 +282,6 @@ describe( 'ZObjectSelector', () => {
 			// Found exact match for "Monolingual text", set as selected
 			expect( wrapper.vm.inputValue ).toBe( 'Monolingual text' );
 		} );
-
-		it( 'on initialization, show selected option in the lookup menu items', async () => {
-			// When object is fetched successfully, and it's a matching type
-			store.getFetchedObject = createGettersWithFunctionsMock( {
-				success: true,
-				data: { Z2K2: { Z1K1: 'Z4' } }
-			} );
-
-			const wrapper = mount( ZObjectSelector, {
-				props: {
-					type: Constants.Z_TYPE,
-					selectedZid: Constants.Z_STRING
-				}
-			} );
-
-			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
-			const selectedItem = [ {
-				label: 'String',
-				value: 'Z6',
-				description: 'Type'
-			} ];
-
-			await waitFor( () => {
-				expect( lookup.props( 'menuItems' ).length ).toBe( 1 );
-				expect( lookup.props( 'menuItems' ) ).toEqual( selectedItem );
-			} );
-		} );
 	} );
 
 	describe( 'Select', () => {

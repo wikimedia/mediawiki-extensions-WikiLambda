@@ -119,14 +119,9 @@ module.exports = exports = defineComponent( {
 		onInput: function ( input ) {
 			this.inputValue = input;
 
-			// If empty input, clear and exit
+			// If input is empty, reset lookupResults
 			if ( !input ) {
 				this.lookupResults = [];
-				return;
-			}
-
-			// Just search if more than one characters
-			if ( input.length < 2 ) {
 				return;
 			}
 
@@ -140,8 +135,10 @@ module.exports = exports = defineComponent( {
 		/**
 		 * Performs the languageinfo fetch and filters
 		 * the returned results for the lookup component
+		 *
+		 * @param {string} input - The search input to filter languages
 		 */
-		fetchLookupResults: function () {
+		fetchLookupResults: function ( input ) {
 			const api = new mw.Api();
 			api.get( {
 				action: 'query',
@@ -155,9 +152,9 @@ module.exports = exports = defineComponent( {
 					// Filter items that match the input substring
 					const matchedLangs = Object.keys( data.query.languageinfo )
 						.map( ( key ) => data.query.languageinfo[ key ] )
-						.filter( ( result ) => result.name.toLowerCase().includes( this.inputValue.toLowerCase() ) ||
-								result.autonym.toLowerCase().includes( this.inputValue.toLowerCase() ) ||
-								result.code.toLowerCase().includes( this.inputValue.toLowerCase() ) );
+						.filter( ( result ) => result.name.toLowerCase().includes( input.toLowerCase() ) ||
+								result.autonym.toLowerCase().includes( input.toLowerCase() ) ||
+								result.code.toLowerCase().includes( input.toLowerCase() ) );
 					// Limit lookup reults to maxItems
 					this.setLookupResults( matchedLangs.slice( 0, this.maxItems ) );
 				}

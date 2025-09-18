@@ -182,12 +182,17 @@ describe( 'LanguageSelector', () => {
 			expect( wrapper.find( '.ext-wikilambda-language-selector__lookup' ).exists() ).toBe( true );
 		} );
 
+		// Assert that the lookup results are empty
+		expect( wrapper.vm.lookupResults ).toEqual( [] );
+
 		// Input substring 'ita' in the lookup
 		const lookup = wrapper.findComponent( { name: 'cdx-lookup' } );
 		lookup.vm.$emit( 'update:input-value', 'ita' );
 
-		// Wait for the mw.Api().get to be called
 		await waitFor( () => expect( getMock ).toHaveBeenCalled() );
+
+		// Wait for the lookup results to be populated
+		await waitFor( () => expect( wrapper.vm.lookupResults.length ).toBeGreaterThan( 0 ) );
 
 		// Assert that the lookup results are filtered properly
 		expect( wrapper.vm.lookupResults ).toEqual( [

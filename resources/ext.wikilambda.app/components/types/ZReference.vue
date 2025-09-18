@@ -170,14 +170,14 @@ module.exports = exports = defineComponent( {
 		excludeZids: function () {
 			// If current reference is within a multilingual string list/Z12, exclude
 			// the languages already present in that list from the lookup.
-			// TODO (T406156): check if we do need to check is its in a typed list of type monolingual string,
-			// or if its enough to check if its in a multilingual string list.
+			// However, allow the currently selected language to remain visible.
 			if (
 				this.isKeyTypedListItem( this.parentKey ) &&
 				this.parentExpectedType === Constants.Z_MONOLINGUALSTRING &&
 				this.isInMultilingualStringList( this.keyPath )
 			) {
-				return this.getLanguagesInParentMultilingualList( this.keyPath );
+				const languagesInList = this.getLanguagesInParentMultilingualList( this.keyPath );
+				return languagesInList.filter( ( langZid ) => langZid !== this.value );
 			}
 			if ( this.key === Constants.Z_OBJECT_TYPE &&
 				this.parentKey === Constants.Z_PERSISTENTOBJECT_VALUE ) {
