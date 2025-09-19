@@ -368,9 +368,9 @@ module.exports = exports = defineComponent( {
 		 * @return {string|undefined}
 		 */
 		textValue: function () {
-			const quoteText = this.type === Constants.Z_STRING;
-			const innerText = this.renderedValue || this.labelData.label;
-			return quoteText ? `"${ innerText }"` : innerText;
+			return this.type === Constants.Z_STRING ?
+				this.$i18n( 'quotation-marks', this.value ).text() :
+				( this.renderedValue || this.labelData.label );
 		},
 
 		/**

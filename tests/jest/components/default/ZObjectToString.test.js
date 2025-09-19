@@ -66,6 +66,13 @@ describe( 'ZObjectToString', () => {
 				const stringElement = wrapper.find( 'span[data-testid=object-to-string-text]' );
 				expect( stringElement.text() ).toBe( '"the final stringdown"' );
 			} );
+
+			it( 'does not labelize the string terminal value if it has a Zid', () => {
+				const stringId = { Z1K1: 'Z6', Z6K1: 'Z10001' };
+				const wrapper = mount( ZObjectToString, { props: { keyPath, objectValue: stringId, edit: false } } );
+				const stringElement = wrapper.find( 'span[data-testid=object-to-string-text]' );
+				expect( stringElement.text() ).toBe( '"Z10001"' );
+			} );
 		} );
 
 		describe( 'for a terminal reference', () => {
