@@ -1505,6 +1505,11 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$res = $this->zobjectStore->findFunctionsByIOTypes( [ 'Z6' => 2 ], 'Z881(Z5)' );
 		$this->assertCount( 0, $res );
 		$this->assertEquals( [], $res );
+
+		// Find functions that have an output of type Z881(*)
+		$res = $this->zobjectStore->findFunctionsByIOTypes( [], 'Z881' );
+		$this->assertCount( 3, $res );
+		$this->assertEqualsCanonicalizing( [ 'Z401', 'Z402', 'Z403' ], $res );
 	}
 
 	public function testFindFunctionsByRenderableIO() {

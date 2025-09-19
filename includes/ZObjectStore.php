@@ -1879,10 +1879,17 @@ class ZObjectStore {
 	 * @return SelectQueryBuilder
 	 */
 	private function newIOTypeQuery( $dbr, $key, $type, $count ) {
-		$conditions = [
-			'wlzo_key' => $key,
-			'wlzo_related_zobject' => $type
-		];
+		// Match all related objects that are equals the given type,
+		// or the related obejcts that contain the substring "type("
+		// to include also generic types such as Z881(Z1), etc.
+		$conditions = $dbr->andExpr( [
+			$dbr->expr( 'wlzo_key', '=', $key ),
+			$dbr->orExpr( [
+				$dbr->expr( 'wlzo_related_zobject', '=', $type ),
+				$dbr->expr( 'wlzo_related_zobject', IExpression::LIKE, new LikeValue( $type . '(', $dbr->anyString() ) )
+			] )
+		] );
+
 		$query = $dbr->newSelectQueryBuilder()
 				->select( [ 'wlzo_main_zid' ] )
 				->from( 'wikilambda_zobject_join' )
