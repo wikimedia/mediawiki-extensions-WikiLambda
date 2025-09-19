@@ -509,6 +509,7 @@ Constants.LINKED_TYPES = [
 	Constants.Z_TESTER,
 	Constants.Z_IMPLEMENTATION,
 	Constants.Z_FUNCTION,
+	Constants.Z_ERRORTYPE,
 	Constants.Z_NATURAL_LANGUAGE,
 	Constants.Z_SERIALISER,
 	Constants.Z_DESERIALISER
