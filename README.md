@@ -378,6 +378,81 @@ To do this for the evaluator:
     `docker build -f .pipeline/blubber.yaml --target development-python3-all-wasm -t local-evaluator-py .`
 * Alter `mediawiki/docker-compose.override.yml` to comment out `image: docker-registry...` in the `function-evaluator` javascript and python services and uncomment the `image: local-evaluator-js:latest` and `image: local-evaluator-py:latest` lines instead.
 
+#### Memcached
+
+If you would like to enable memcached in your local deployment,
+you can use the `memcached` Docker image. In `docker-compose.override.yaml`,
+enable a separate `memcached` service:
+
+```
+services:
+  # ...
+
+  memcached:
+    image: memcached
+    ports:
+      - 11211:11211
+
+  # ...
+```
+
+`11211` is the default port used by `memcached`.
+
+Then, ensure that the appropriate environment variables are set in the
+orchestrator config. A partial `docker-compose.override.yaml` with memcached
+support looks like this:
+
+```
+services:
+  # ...
+
+  memcached:
+    image: memcached
+    ports:
+      - 11211:11211
+
+  function-orchestrator:
+    image: <some_orchestrator_image>
+    ports:
+      - 6254:6254
+    environment:
+      WIKI_API_URL: "http://wikifunctions.org/w/api.php"
+      WIKIDATA_API_URL: "https://www.wikidata.org"
+      ORCHESTRATOR_TIMEOUT_MS: 40000
+      ORCHESTRATOR_CONFIG: |
+        {
+          "useWikidata": true,
+          "wikidataImport": {
+            "qualifiers": true,
+            "references": true
+          },
+          "memcachedUri": "<memcached-container>:11211",
+          "useMemcached": true,
+          "memcachedTTL": 60000,
+          "useWikidataMemcached": true,
+          "wikidataMemcachedTTL": 60000,
+          "useBatching": true,
+  # ...
+```
+
+`useMemcached` controls whether memcached should be used at all. If this is
+true, then ZObjects will be cached locally.
+
+`memcachedUri` should be set to `$CONTAINER:$PORT`, where `$PORT` will be
+`11211` (if using the suggested memcached image) and `$CONTAINER` will be
+`core-memcached-1` (or similar, depending on the name of the MW core checkout
+directory and the name assigned to the memcached service in `docker-compose.override.yaml`).
+
+`useWikidataMemcached` will enable caching of Wikidata objects, but only if
+`useMemcached` is also `true`.
+
+`memcachedTTL` and `wikidataMemcachedTTL` are TTLs for ZObjects and Wikidata
+objects, respectively.
+
+As of this writing, the TTL parameters are in flux and may not work as expected.
+For this reason, recency suffers in local deployments, and it may be necessary
+to regularly take down the `memcached` service if testing ZObjects/Wikidata
+objects that have recently changed.
 
 ### PHPunit Tests
 
