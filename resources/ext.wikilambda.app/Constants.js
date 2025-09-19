@@ -463,6 +463,7 @@ Constants.EXCLUDE_FROM_ENUMS = [
 // * Z17/Argument declaration
 // * Z16/Code
 Constants.EXCLUDE_FROM_PERSISTENT_CONTENT = [
+	Constants.Z_ERROR,
 	Constants.Z_KEY,
 	Constants.Z_KEY_REFERENCE,
 	Constants.Z_ARGUMENT,
@@ -479,7 +480,6 @@ Constants.EXCLUDE_FROM_SELECTOR = [
 	Constants.Z_PERSISTENTOBJECT,
 	Constants.Z_REFERENCE,
 	Constants.Z_ARGUMENT_REFERENCE,
-	Constants.Z_ERROR,
 	Constants.Z_RESPONSEENVELOPE
 ];
 
