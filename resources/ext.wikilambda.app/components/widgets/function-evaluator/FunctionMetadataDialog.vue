@@ -271,11 +271,39 @@ module.exports = exports = defineComponent( {
 		 * @return {boolean}
 		 */
 		hasMetadataErrors: function () {
-			return !!this.keyValues.get( 'errors' );
+			return this.hasExplicitErrors( this.keyValues ) || this.hasTestFailure( this.keyValues );
 		}
 
 	} ),
 	methods: {
+		/**
+		 * Returns if there are explicit errors in the metadata
+		 *
+		 * @param {Map} keyValues The keyValues map to check
+		 * @return {boolean}
+		 */
+		hasExplicitErrors: function ( keyValues = new Map() ) {
+			return !!keyValues.get( 'errors' );
+		},
+
+		/**
+		 * Returns if there's a test failure (expected vs actual results differ)
+		 *
+		 * @param {Map} keyValues The keyValues map to check
+		 * @return {boolean}
+		 */
+		hasTestFailure: function ( keyValues = new Map() ) {
+			const expectedResult = keyValues.get( 'expectedTestResult' );
+			const actualResult = keyValues.get( 'actualTestResult' );
+
+			if ( expectedResult && actualResult ) {
+				const expectedValue = this.getStringValue( expectedResult );
+				const actualValue = this.getStringValue( actualResult );
+				return expectedValue !== actualValue;
+			}
+
+			return false;
+		},
 		/**
 		 * Returns the available keys present in the given metadata object
 		 *
@@ -348,9 +376,9 @@ module.exports = exports = defineComponent( {
 			path.push( index );
 			const uniqueId = path.join( '-' );
 
-			const errors = keyValues.get( 'errors' );
 			const nestedMetadata = keyValues.get( 'nestedMetadata' );
-			const state = !errors ? 'pass' : 'fail';
+			const hasErrors = this.hasExplicitErrors( keyValues ) || this.hasTestFailure( keyValues );
+			const state = !hasErrors ? 'pass' : 'fail';
 
 			const menuItems = [ {
 				label: labelizedFunctionCall,
@@ -358,7 +386,7 @@ module.exports = exports = defineComponent( {
 				style: `--menuItemLevel: ${ depth };`,
 				class: 'ext-wikilambda-app-function-metadata-dialog__menu-item ' +
 					`ext-wikilambda-app-function-metadata-dialog__menu-item--${ state }`,
-				icon: !errors ? icons.cdxIconSuccess : icons.cdxIconError,
+				icon: !hasErrors ? icons.cdxIconSuccess : icons.cdxIconError,
 				state
 			} ];
 
@@ -546,24 +574,43 @@ module.exports = exports = defineComponent( {
 		 * @return {LabelData|string}
 		 */
 		getErrorSummary: function () {
+			// Check for explicit errors first
+			if ( this.hasExplicitErrors( this.keyValues ) ) {
+				return this.getExplicitErrorSummary();
+			}
+
+			// Check for test failure
+			if ( this.hasTestFailure( this.keyValues ) ) {
+				return this.$i18n( 'wikilambda-functioncall-metadata-test-failure' ).text();
+			}
+
+			// Return None if there are no errors
+			return this.$i18n( 'wikilambda-functioncall-metadata-errors-none' ).text();
+		},
+		/**
+		 * Returns the explicit error section summary
+		 *
+		 * @return {string}
+		 */
+		getExplicitErrorSummary: function () {
 			const error = this.keyValues.get( 'errors' );
 			const errorData = extractErrorData( error );
 			const colon = this.$i18n( 'colon-separator' ).text();
 			const comma = this.$i18n( 'comma-separator' ).text();
-			// Return labelized parent error type
-			if ( errorData ) {
-				const title = this.getLabelData( errorData.errorType ).label;
-				const args = [];
-				for ( const arg of errorData.stringArgs ) {
-					const key = this.getLabelData( arg.key ).label;
-					const value = this.$i18n( 'quotation-marks', escapeHtml( arg.value ) ).text();
-					args.push( `${ key }${ colon }${ value }` );
-				}
-				const argblock = this.$i18n( 'parentheses', args.join( comma ) ).text();
-				return `${ title } ${ argblock }`;
+
+			if ( !errorData ) {
+				return '';
 			}
-			// Return None if there are no errors
-			return this.$i18n( 'wikilambda-functioncall-metadata-errors-none' ).text();
+			// Return labelized parent error type
+			const title = this.getLabelData( errorData.errorType ).label;
+			const args = [];
+			for ( const arg of errorData.stringArgs ) {
+				const key = this.getLabelData( arg.key ).label;
+				const value = this.$i18n( 'quotation-marks', escapeHtml( arg.value ) ).text();
+				args.push( `${ key }${ colon }${ value }` );
+			}
+			const argblock = this.$i18n( 'parentheses', args.join( comma ) ).text();
+			return `${ title } ${ argblock }`;
 		},
 		/**
 		 * Returns the implementation section summary

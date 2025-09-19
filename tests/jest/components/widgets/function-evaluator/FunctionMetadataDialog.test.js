@@ -321,7 +321,7 @@ describe( 'dialog', () => {
 			expect( section.find( '.cdx-accordion__header__description' ).text() ).toBe( escapedErr );
 		} );
 
-		it( 'renders the expected/actual values even if the error data is missing', () => {
+		it( 'renders the expected/actual values and shows test failure message when results differ', () => {
 			const wrapper = mount( FunctionMetadataDialog, {
 				props: { open: true, metadata: metadata.metadataDifferButNoErrors }
 			} );
@@ -329,9 +329,9 @@ describe( 'dialog', () => {
 			expect( sections.length ).toBe( 1 );
 			const section = sections[ 0 ];
 
-			// Check header
+			// Check header - should show test failure message
 			expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( '{{PLURAL:$1|Error|Errors}}' );
-			expect( section.find( '.cdx-accordion__header__description' ).text() ).toBe( 'None' );
+			expect( section.find( '.cdx-accordion__header__description' ).text() ).toBe( 'Expected result and actual result are not equal.' );
 
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
@@ -346,10 +346,10 @@ describe( 'dialog', () => {
 			expect( keys[ 1 ].text() ).toContain( 'Actual result:' );
 			expect( keys[ 1 ].text() ).toContain( 'CBA' );
 
-			// No error, so no Wikifunctions.Debug message should be shown(?)
+			// Should show Wikifunctions.Debug message since there's a test failure
 			const message = wrapper.findAllComponents( { name: 'cdx-message' } );
-			expect( message.length ).toBe( 0 );
-			// expect( message[ 0 ].text() ).toContain( 'Something not working? Try Wikifunctions.Debug to trace your code.' );
+			expect( message.length ).toBe( 1 );
+			expect( message[ 0 ].text() ).toContain( 'Something not working? Try Wikifunctions.Debug to trace your code.' );
 		} );
 	} );
 

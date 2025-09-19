@@ -343,6 +343,7 @@
 	"wikilambda-functioncall-metadata-end-time": "End time",
 	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Error|Errors}}",
 	"wikilambda-functioncall-metadata-errors-none": "None",
+	"wikilambda-functioncall-metadata-test-failure": "Expected result and actual result are not equal.",
 	"wikilambda-functioncall-metadata-errors-summary": "Error type",
 	"wikilambda-functioncall-metadata-errors-args": "Error data",
 	"wikilambda-functioncall-metadata-errors-children": "Stack trace",

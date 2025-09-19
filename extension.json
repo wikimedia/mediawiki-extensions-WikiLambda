@@ -765,6 +765,7 @@
 				"wikilambda-functioncall-metadata-errors-args",
 				"wikilambda-functioncall-metadata-errors-children",
 				"wikilambda-functioncall-metadata-errors-none",
+				"wikilambda-functioncall-metadata-test-failure",
 				"wikilambda-functioncall-metadata-errors-debug-hint",
 				"wikilambda-functioncall-metadata-validator-errors-summary",
 				"wikilambda-functioncall-metadata-implementation",
