@@ -617,8 +617,9 @@ const zobjectStore = {
 			const { keyPath } = payload;
 			const { target } = resolveZObjectByKeyPath( this.jsonObject, keyPath );
 
-			if ( !target || typeof target !== 'object' || !( Constants.Z_FUNCTION_CALL_FUNCTION in target ) ) {
-				throw new Error( 'Unable to mutate state: Expected Function call at parent path' );
+			if ( !target || typeof target !== 'object' ||
+				!( Constants.Z_FUNCTION_CALL_FUNCTION in target || Constants.Z_OBJECT_TYPE in target ) ) {
+				throw new Error( 'Unable to mutate state: Expected Function call or Object type at parent path' );
 			}
 
 			// Get all local keys in the function call
@@ -657,8 +658,9 @@ const zobjectStore = {
 			const { keyPath } = payload;
 			const { target, finalKey } = resolveZObjectByKeyPath( this.jsonObject, keyPath );
 
-			if ( !target || typeof target !== 'object' || !( Constants.Z_FUNCTION_CALL_FUNCTION in target ) ) {
-				throw new Error( 'Unable to mutate state: Expected Function call at parent path' );
+			if ( !target || typeof target !== 'object' ||
+				!( Constants.Z_FUNCTION_CALL_FUNCTION in target || Constants.Z_OBJECT_TYPE in target ) ) {
+				throw new Error( 'Unable to mutate state: Expected Function call or Object type at parent path' );
 			}
 
 			// Perform mutation:

@@ -244,7 +244,10 @@ module.exports = exports = defineComponent( {
 
 			// If we are setting a function call function Id with a non-ref,
 			// enable the option of adding args manually:
-			if ( this.key === Constants.Z_FUNCTION_CALL_FUNCTION && this.typeString !== Constants.Z_REFERENCE ) {
+			if (
+				( this.key === Constants.Z_FUNCTION_CALL_FUNCTION && this.typeString !== Constants.Z_REFERENCE ) ||
+				( this.key === Constants.Z_OBJECT_TYPE && this.typeString !== Constants.Z_REFERENCE )
+			) {
 				const addArgumentActionGroup = {
 					label: this.$i18n( 'wikilambda-mode-selector-local-key-group-label' ),
 					hideLabel: true,
