@@ -287,7 +287,7 @@
 	"wikilambda-functioncall-error-disabled-category": "Páxinas con chamadas erróneas a Wikifunctions debido á desactivación do sistema",
 	"wikilambda-functioncall-error-disabled-category-desc": "Páxinas con chamadas a Wikifuncións que fallaron debido á desactivación de Wikifuncións",
 	"wikilambda-functioncall-error-evaluation-category": "Páxinas con chamadas erróneas a Wikifuncións debido a unha avaliación fallida",
-	"wikilambda-functioncall-error-evaluation-category-desc": "Páxinas con chamadas a chamadas a Wikifuncións que devolveron erros de avaliación",
+	"wikilambda-functioncall-error-evaluation-category-desc": "Páxinas con chamadas a Wikifuncións que devolveron erros de avaliación",
 	"wikilambda-functioncall-error-unclear-category": "Páxinas con chamadas erróneas a Wikifuncións sen un erro claro",
 	"wikilambda-functioncall-error-unclear-category-desc": "Páxinas con chamadas a Wikifuncións que fallaron debido a un fallo da API non xestionado",
 	"wikilambda-functioncall-error-unknown-zid-category": "Páxinas con chamadas a Wikifuncións a obxectos descoñecidos",
