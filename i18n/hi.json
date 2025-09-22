@@ -9,6 +9,7 @@
 			"Saurmandal"
 		]
 	},
+	"wikilambda-functioncall": "फ़ंक्शन कॉल",
 	"wikilambda-edit": "सम्पादन",
 	"wikilambda-show-more": "और दिखायें",
 	"wikilambda-cancel": "रद्द करें",
@@ -26,6 +27,8 @@
 	"wikilambda-editor-boolean-selector": "सच/झूठ चुनें",
 	"wikilambda-function-are-you-sure-dialog-header": "क्या आप निश्चित हैं?",
 	"wikilambda-function-are-you-sure-dialog-description": "क्या आप वाकई में पहले प्रकाशित किए बिना सम्पादन मोड छोड़ना चाहते हैं?",
+	"wikilambda-functioncall-error-category": "त्रुटिपूर्ण विकीफ़ंक्शन्स कॉल्स वाले पृष्ठ",
+	"wikilambda-functioncall-error-category-desc": "सामान्य त्रुटि को अंजाम देने वाले विकिफ़ंक्शन्स कॉल्स वाले पृष्ठ",
 	"wikilambda-create-function": "फ़ंक्शन बनाएँ",
 	"wikilambda-create-type": "प्रकार बनाएँ",
 	"wikilambda-function-definition-name-label": "नाम",
@@ -41,6 +44,7 @@
 	"wikilambda-function-definition-example-title": "फ़ंक्शन का प्रयोग करने के उदाहरण",
 	"wikilambda-editor-additional-details-label": "अतिरिक्त जानकारी",
 	"wikilambda-editor-go-back-button": "वापस जाएँ",
+	"wikilambda-function-implementation-table-header": "कार्यान्वयन",
 	"wikilambda-editor-fn-step-function-about": "बारे में",
 	"wikilambda-editor-fn-step-function-details": "विस्तृत विवरण",
 	"wikilambda-editor-name-title": "नाम",
@@ -55,5 +59,9 @@
 	"wikilambda-continue-editing": "सम्पादन जारी रखें",
 	"wikilambda-discard-edits": "सम्पादन त्यागें",
 	"wikilambda-function-details-summary-learn-more": "समीक्षा की प्रक्रिया के बारे में अधिक जानें।",
-	"wikilambda-function-viewer-details-table-view-all": "सभी देखें"
+	"wikilambda-function-viewer-aliases-show-language-button": "और भाषाएँ दिखाएँ",
+	"wikilambda-function-viewer-names-show-languages-button": "अन्य भाषाओं में नाम दिखाएँ",
+	"wikilambda-function-viewer-details-input-number": "इनपुट $1",
+	"wikilambda-function-viewer-details-table-view-all": "सभी देखें",
+	"wikilambda-function-viewer-details-table-view-less": "कम देखें"
 }
