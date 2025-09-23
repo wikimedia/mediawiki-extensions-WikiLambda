@@ -138,7 +138,8 @@ describe( 'FunctionReport', () => {
 					zFunctionId: 'Z10000',
 					zImplementations: [ 'Z10001', 'Z10004', 'Z10005' ],
 					zTesters: [ 'Z10002' ],
-					clearPreviousResults: true
+					clearPreviousResults: true,
+					signal: expect.any( Object )
 				} );
 			} );
 		} );
@@ -159,9 +160,35 @@ describe( 'FunctionReport', () => {
 					zFunctionId: 'Z10000',
 					zImplementations: [ 'Z10004' ],
 					zTesters: [ 'Z10002', 'Z10003' ],
-					clearPreviousResults: true
+					clearPreviousResults: true,
+					signal: expect.any( Object )
 				} );
 			} );
+		} );
+
+		it( 'cancels the current request when button is clicked while fetching', async () => {
+			store.getCurrentZObjectId = 'Z10002';
+			const wrapper = mount( FunctionReport, {
+				props: {
+					functionZid: 'Z10000',
+					contentType: Constants.Z_TESTER
+				}
+			} );
+
+			// Mock getTestResults to not resolve immediately
+			store.getTestResults.mockReturnValue( new Promise( () => {} ) );
+
+			// Start a request
+			wrapper.find( 'button' ).trigger( 'click' );
+
+			// Verify we're in fetching state
+			expect( wrapper.vm.fetching ).toBe( true );
+
+			// Click cancel (same button, different behavior when fetching)
+			wrapper.find( 'button' ).trigger( 'click' );
+
+			// Verify we're no longer fetching
+			expect( wrapper.vm.fetching ).toBe( false );
 		} );
 	} );
 
@@ -203,7 +230,8 @@ describe( 'FunctionReport', () => {
 					zFunctionId: 'Z10000',
 					zImplementations: [ 'Z10001', 'Z10004', 'Z10005' ],
 					zTesters: [ 'Z10002' ],
-					clearPreviousResults: true
+					clearPreviousResults: true,
+					signal: expect.any( Object )
 				} );
 			} );
 		} );
@@ -226,7 +254,8 @@ describe( 'FunctionReport', () => {
 					zFunctionId: 'Z10000',
 					zImplementations: [ 'Z10004' ],
 					zTesters: [ 'Z10002', 'Z10003' ],
-					clearPreviousResults: true
+					clearPreviousResults: true,
+					signal: expect.any( Object )
 				} );
 			} );
 		} );

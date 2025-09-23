@@ -509,6 +509,7 @@ describe( 'testResults Pinia store', () => {
 				expect( store.clearErrors ).toHaveBeenCalled();
 				expect( store.fetchZids ).toHaveBeenCalled();
 			} );
+
 		} );
 	} );
 } );

@@ -188,6 +188,7 @@ module.exports = {
 		 *   Implementations to run
 		 * @param {boolean} payload.nocache Whether to tell the Orchestrator to cache these results
 		 * @param {boolean} payload.clearPreviousResults Whether to clear the previous results from the Pinia store
+		 * @param {AbortSignal} payload.signal The AbortSignal to cancel the request
 		 *
 		 * @return {Promise}
 		 */
@@ -246,7 +247,8 @@ module.exports = {
 				nocache: payload.nocache,
 				language: this.getUserLangCode,
 				implementations,
-				testers
+				testers,
+				signal: payload.signal
 			} ).then( ( results ) => {
 				const zids = [];
 				results.forEach( ( testResult ) => {
@@ -270,6 +272,10 @@ module.exports = {
 				this.fetchZids( { zids: [ ...new Set( zids ) ] } );
 				this.setTestResultsPromise( { functionZid: payload.zFunctionId } );
 			} ).catch( ( error ) => {
+				if ( error.code === 'abort' ) {
+					this.clearZTesterResults( payload.zFunctionId );
+					return;
+				}
 				this.setError( {
 					errorId: Constants.ERROR_IDS.TEST_RESULTS,
 					errorType: Constants.ERROR_TYPES.ERROR,

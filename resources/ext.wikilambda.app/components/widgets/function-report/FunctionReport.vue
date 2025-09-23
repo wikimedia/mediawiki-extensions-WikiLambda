@@ -104,7 +104,8 @@ module.exports = exports = defineComponent( {
 			activeTesterZid: null,
 			errorId: Constants.ERROR_IDS.TEST_RESULTS,
 			showMetrics: false,
-			fetching: false
+			fetching: false,
+			abortController: null
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
@@ -301,15 +302,46 @@ module.exports = exports = defineComponent( {
 		 * Calls the run function API with the required tester and implementation zids.
 		 */
 		runTesters: function () {
+			// If already fetching, cancel the current request
+			if ( this.fetching ) {
+				this.cancelTesters();
+				return;
+			}
+
+			// Cancel previous request if any
+			if ( this.abortController ) {
+				this.abortController.abort();
+			}
+			this.abortController = new AbortController();
+
 			this.fetching = true;
 			this.getTestResults( {
 				zFunctionId: this.functionZid,
 				zImplementations: this.implementations,
 				zTesters: this.testers,
-				clearPreviousResults: true
+				clearPreviousResults: true,
+				signal: this.abortController.signal
 			} ).then( () => {
 				this.fetching = false;
+			} ).catch( ( error ) => {
+				if ( error.code === 'abort' ) {
+					// Request was cancelled, reset fetching state
+					this.fetching = false;
+					return;
+				}
+				// Re-throw other errors
+				throw error;
 			} );
+		},
+		/**
+		 * Cancels the current test request
+		 */
+		cancelTesters: function () {
+			if ( this.abortController ) {
+				this.abortController.abort();
+				this.abortController = null;
+			}
+			this.fetching = false;
 		},
 		/**
 		 * Run the initial call only when we are in a view or edit page
