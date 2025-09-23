@@ -65,11 +65,47 @@ module.exports = exports = defineComponent( {
 		const functionLanguages = computed( () => store.getMultilingualDataLanguages.all );
 
 		/**
-		 * Whether the language selector has a value or is empty
+		 * Whether the language selector should be disabled.
+		 * Disabled when content has been entered in any field (name, description, aliases, or input labels).
+		 * The selector is enabled when the language is not set or when the content is empty.
 		 *
 		 * @return {boolean}
 		 */
-		const hasLanguage = computed( () => !!props.zLanguage );
+		const hasLanguage = computed( () => {
+			if ( !props.zLanguage ) {
+				return false;
+			}
+
+			// Check if name has content
+			const name = store.getZPersistentName( props.zLanguage );
+			if ( name && name.value && name.value.trim() !== '' ) {
+				return true;
+			}
+
+			// Check if description has content
+			const description = store.getZPersistentDescription( props.zLanguage );
+			if ( description && description.value && description.value.trim() !== '' ) {
+				return true;
+			}
+
+			// Check if aliases have content
+			const aliases = store.getZPersistentAlias( props.zLanguage );
+			if ( aliases && aliases.value && aliases.value.length > 0 ) {
+				return true;
+			}
+
+			// Check if any input labels have content
+			const inputs = store.getZFunctionInputLabels( props.zLanguage );
+			if ( inputs && inputs.length > 0 ) {
+				for ( const input of inputs ) {
+					if ( input.value && input.value.trim() !== '' ) {
+						return true;
+					}
+				}
+			}
+
+			return false;
+		} );
 
 		/**
 		 * Emits a change event when the selector is set to a new language.

@@ -40,6 +40,11 @@ describe( 'FunctionEditorLanguage', () => {
 	beforeEach( () => {
 		store = useMainStore();
 		store.getMultilingualDataLanguages = createGettersWithFunctionsMock( [ 'Z1002', 'Z1004' ] );
+		// Mock the content tracking functions
+		store.getZPersistentName = createGettersWithFunctionsMock( null );
+		store.getZPersistentDescription = createGettersWithFunctionsMock( null );
+		store.getZPersistentAlias = createGettersWithFunctionsMock( null );
+		store.getZFunctionInputLabels = createGettersWithFunctionsMock( [] );
 	} );
 
 	describe( 'function editor language block', () => {
@@ -53,7 +58,7 @@ describe( 'FunctionEditorLanguage', () => {
 
 			const selector = wrapper.findComponent( { name: 'wl-z-object-selector' } );
 			expect( selector.props( 'selectedZid' ) ).toBe( 'Z1002' );
-			expect( selector.props( 'disabled' ) ).toBe( true );
+			expect( selector.props( 'disabled' ) ).toBe( false );
 		} );
 
 		it( 'renders the selector with no value', () => {
@@ -62,6 +67,17 @@ describe( 'FunctionEditorLanguage', () => {
 			const selector = wrapper.findComponent( { name: 'wl-z-object-selector' } );
 			expect( selector.props( 'selectedZid' ) ).toBe( '' );
 			expect( selector.props( 'disabled' ) ).toBe( false );
+		} );
+
+		it( 'renders the selector as disabled when content has been entered', () => {
+			// Mock name with content
+			store.getZPersistentName = createGettersWithFunctionsMock( { value: 'Test Name' } );
+
+			const wrapper = renderFunctionEditorLanguage();
+
+			const selector = wrapper.findComponent( { name: 'wl-z-object-selector' } );
+			expect( selector.props( 'selectedZid' ) ).toBe( 'Z1002' );
+			expect( selector.props( 'disabled' ) ).toBe( true );
 		} );
 
 		it( 'emits a language changed event whens selecting a new language', async () => {
