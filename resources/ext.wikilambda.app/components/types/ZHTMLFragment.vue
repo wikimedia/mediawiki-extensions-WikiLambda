@@ -7,7 +7,7 @@
 <template>
 	<div class="ext-wikilambda-app-html-fragment" data-testid="z-html-fragment">
 		<code-editor
-			v-if="!edit && value"
+			v-if="!edit"
 			class="ext-wikilambda-app-html-fragment__code-editor"
 			mode="html"
 			:read-only="true"
