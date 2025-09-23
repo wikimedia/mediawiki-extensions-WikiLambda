@@ -164,6 +164,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 
 	public const Z_ERRORTYPE = 'Z50';
 	public const Z_ERRORTYPE_KEYS = 'Z50K1';
+	public const Z_ERRORTYPE_ID = 'Z50K2';
 
 	// Wikidata Entity Types
 	public const Z_WIKIDATA_ITEM = 'Z6001';

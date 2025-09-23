@@ -108,7 +108,8 @@ class ZErrorTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 					]
 				}
 			}
-		]
+		],
+		"Z50K2": "Z450"
 	},
 	"Z2K3": {
 		"Z1K1": "Z12",
