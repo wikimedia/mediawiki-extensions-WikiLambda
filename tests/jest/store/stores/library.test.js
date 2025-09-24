@@ -262,6 +262,36 @@ describe( 'library Pinia store', () => {
 			} );
 		} );
 
+		describe( 'getLanguageZidOfCode', () => {
+			it( 'returns ZID from store when language is available in store', () => {
+				store.languages = {
+					en: 'Z1002',
+					es: 'Z1003'
+				};
+
+				expect( store.getLanguageZidOfCode( 'en' ) ).toBe( 'Z1002' );
+				expect( store.getLanguageZidOfCode( 'es' ) ).toBe( 'Z1003' );
+			} );
+
+			it( 'falls back to server-side mapping when language not in store', () => {
+				store.languages = {
+					en: 'Z1002'
+					// 'es' not in store
+				};
+
+				expect( store.getLanguageZidOfCode( 'es' ) ).toBe( 'Z1003' );
+				expect( store.getLanguageZidOfCode( 'fr' ) ).toBe( 'Z1004' );
+				expect( store.getLanguageZidOfCode( 'ru' ) ).toBe( 'Z1005' );
+			} );
+
+			it( 'returns undefined when language not found in store or server mapping', () => {
+				store.languages = {};
+
+				expect( store.getLanguageZidOfCode( 'unknown' ) ).toBeUndefined();
+				expect( store.getLanguageZidOfCode( 'xyz' ) ).toBeUndefined();
+			} );
+		} );
+
 		describe( 'getConnectedObjects', () => {
 			it( 'Returns empty array if the zid is not available in the state', () => {
 				expect( store.getConnectedObjects( 'Z802', Constants.Z_FUNCTION_IMPLEMENTATIONS ) ).toEqual( [] );

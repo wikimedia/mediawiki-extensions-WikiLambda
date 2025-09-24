@@ -114,13 +114,41 @@ describe( 'ZMultilingualString', () => {
 		store.getUserLangZid = 'Z1002';
 		store.getFallbackLanguageZids = [ 'Z1003', 'Z1004' ];
 		store.getLabelData = createLabelDataMock( {
+			Z1001: 'Arabic',
 			Z1002: 'English',
 			Z1003: 'Spanish',
 			Z1004: 'French',
-			Z1005: 'German'
+			Z1005: 'Russian',
+			Z1006: 'Chinese'
 		} );
 		store.getZMultilingualValues = createGettersWithFunctionsMock( objectValue.Z12K1.slice( 1 ) );
 		store.getZMultilingualLangs = createGettersWithFunctionsMock( [ 'Z1002', 'Z1003', 'Z1004', '' ] );
+		store.getLanguageIsoCodeOfZLang = jest.fn().mockImplementation( ( zid ) => {
+			const zidToIsoMap = {
+				Z1001: 'ar', // Arabic
+				Z1002: 'en', // English
+				Z1003: 'es', // Spanish
+				Z1004: 'fr', // French
+				Z1005: 'ru', // Russian
+				Z1006: 'zh', // Chinese
+				Z1672: 'zh-tw', // Chinese Traditional
+				Z1645: 'zh-cn' // Chinese Simplified
+			};
+			return zidToIsoMap[ zid ];
+		} );
+		store.getLanguageZidOfCode = jest.fn().mockImplementation( ( isoCode ) => {
+			const isoToZidMap = {
+				ar: 'Z1001',
+				en: 'Z1002',
+				es: 'Z1003',
+				fr: 'Z1004',
+				ru: 'Z1005',
+				zh: 'Z1006',
+				'zh-tw': 'Z1672',
+				'zh-cn': 'Z1645'
+			};
+			return isoToZidMap[ isoCode ];
+		} );
 		store.getZMonolingualLangValue = jest.fn().mockImplementation( ( obj ) => {
 			if ( obj.Z11K1 && obj.Z11K1.Z9K1 ) {
 				return obj.Z11K1.Z9K1;
@@ -147,8 +175,6 @@ describe( 'ZMultilingualString', () => {
 				Z6K1: ''
 			}
 		} );
-		store.pushItemsByKeyPath = jest.fn();
-		store.setDirty = jest.fn();
 	} );
 
 	describe( 'in view mode', () => {
@@ -383,7 +409,7 @@ describe( 'ZMultilingualString', () => {
 		} );
 
 		it( 'falls back to first available language if no priority languages exist', () => {
-			const germanOnlyObjectValue = {
+			const russianOnlyObjectValue = {
 				Z1K1: {
 					Z1K1: 'Z9',
 					Z9K1: 'Z12'
@@ -404,17 +430,17 @@ describe( 'ZMultilingualString', () => {
 						},
 						Z11K2: {
 							Z1K1: 'Z6',
-							Z6K1: 'German only'
+							Z6K1: 'Russian only'
 						}
 					}
 				]
 			};
-			store.getZMultilingualValues = createGettersWithFunctionsMock( germanOnlyObjectValue.Z12K1.slice( 1 ) );
+			store.getZMultilingualValues = createGettersWithFunctionsMock( russianOnlyObjectValue.Z12K1.slice( 1 ) );
 			store.getZMultilingualLangs = createGettersWithFunctionsMock( [ 'Z1005' ] );
 			const wrapper = shallowMount( ZMultilingualString, {
 				props: {
 					keyPath,
-					objectValue: germanOnlyObjectValue,
+					objectValue: russianOnlyObjectValue,
 					edit: false
 				},
 				global: globalStubs
@@ -493,10 +519,10 @@ describe( 'ZMultilingualString', () => {
 			} );
 
 			// Add a language that doesn't exist in store
-			wrapper.vm.addLanguageFromDialog( 'Z1006' );
+			wrapper.vm.addLanguageFromDialog( 'Z1005' );
 
 			expect( store.pushItemsByKeyPath ).toHaveBeenCalled();
-			expect( wrapper.vm.visibleLangZids ).toContain( 'Z1006' );
+			expect( wrapper.vm.visibleLangZids ).toContain( 'Z1005' );
 		} );
 
 		it( 'prevents duplicate languages', () => {
@@ -590,22 +616,6 @@ describe( 'ZMultilingualString', () => {
 	} );
 
 	describe( 'computed properties', () => {
-		it( 'computes common languages correctly', () => {
-			const wrapper = shallowMount( ZMultilingualString, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false
-				},
-				global: globalStubs
-			} );
-
-			const commonLanguages = wrapper.vm.getCommonLanguages;
-			expect( commonLanguages ).toContain( Constants.Z_NATURAL_LANGUAGE_ENGLISH );
-			expect( commonLanguages ).toContain( Constants.Z_NATURAL_LANGUAGE_SPANISH );
-			expect( commonLanguages ).toContain( Constants.Z_NATURAL_LANGUAGE_FRENCH );
-		} );
-
 		it( 'computes load more items count correctly', () => {
 			const wrapper = shallowMount( ZMultilingualString, {
 				props: {

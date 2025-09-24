@@ -178,8 +178,9 @@ describe( 'LanguageSelector', () => {
 		wrapper.find( '.ext-wikilambda-language-selector__trigger' ).trigger( 'click' );
 
 		// Wait for lookup to be found
-		await waitFor( () => expect( wrapper.find( '.ext-wikilambda-language-selector__lookup' ).exists() ).toBe( true )
-		);
+		await waitFor( () => {
+			expect( wrapper.find( '.ext-wikilambda-language-selector__lookup' ).exists() ).toBe( true );
+		} );
 
 		// Input substring 'ita' in the lookup
 		const lookup = wrapper.findComponent( { name: 'cdx-lookup' } );

@@ -242,6 +242,7 @@ module.exports = exports = defineComponent( {
 		closeDialog: function () {
 			this.searchTerm = '';
 			this.lookupResults = [];
+			this.showSearchCancel = false;
 			this.$emit( 'close-dialog' );
 		},
 

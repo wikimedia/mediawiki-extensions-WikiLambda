@@ -136,32 +136,48 @@ module.exports = exports = defineComponent( {
 		'getUserLangCode',
 		'getCurrentZObjectId'
 	] ), {
+		/**
+		 * Returns true if the component is in the main namespace (editable mode).
+		 *
+		 * @return {boolean}
+		 */
+		isMainObject() {
+			return this.keyPath.startsWith( Constants.STORED_OBJECTS.MAIN );
+		},
 
 		/**
 		 * Returns suggested language items when there are no local items available.
 		 * These are common languages that users can add to their multilingual string.
+		 * In read-only mode (non-main namespace), only returns items already in the list.
 		 *
 		 * @return {Array} Array of suggested language items
 		 */
 		getSuggestedItems() {
-			return Constants.SUGGESTIONS.LANGUAGES.map( ( langZid ) => {
-				const langLabelData = this.getLabelData( langZid );
-				const listItem = this.items.find(
-					( itemData ) => itemData.langZid === langZid
-				);
-				const value = listItem ? listItem.value : '';
-				const isInList = !!listItem;
-				const isInVisibleList = listItem ? listItem.isInVisibleList : false;
+			return Constants.SUGGESTIONS.LANGUAGES
+				.map( ( langZid ) => {
+					const langLabelData = this.getLabelData( langZid );
+					const listItem = this.items.find(
+						( itemData ) => itemData.langZid === langZid
+					);
+					const value = listItem ? listItem.value : '';
+					const isInList = !!listItem;
+					const isInVisibleList = listItem ? listItem.isInVisibleList : false;
 
-				return {
-					langZid,
-					langLabelData,
-					isInList,
-					isInVisibleList,
-					value,
-					hasValue: false
-				};
-			} );
+					return {
+						langZid,
+						langLabelData,
+						isInList,
+						isInVisibleList,
+						value,
+						hasValue: false
+					};
+				} )
+				.filter( ( item ) => {
+					if ( !this.isMainObject && !item.isInList ) {
+						return false;
+					}
+					return true;
+				} );
 		},
 
 		/**
@@ -187,11 +203,9 @@ module.exports = exports = defineComponent( {
 
 			return this.getAvailableLanguages
 				.map( ( { langZid, value = '' } ) => {
-
 					const isInList = true; // All the items are already in the list
 					const isInVisibleList = false; // All Items are not visible in the list, we just filtered them out
 					const langLabelData = this.getLabelData( langZid );
-
 					return {
 						langZid,
 						langLabelData: langLabelData,
@@ -323,6 +337,7 @@ module.exports = exports = defineComponent( {
 		closeDialog: function () {
 			this.searchTerm = '';
 			this.lookupResults = [];
+			this.showSearchCancel = false;
 			this.$emit( 'close-dialog' );
 		},
 
@@ -377,8 +392,9 @@ module.exports = exports = defineComponent( {
 				// Compile information for every search result
 				this.lookupResults = labels
 					.map( ( result ) => {
+						const langZid = result.page_title;
 						const listItem = this.items.find(
-							( itemData ) => itemData.langZid === result.page_title
+							( itemData ) => itemData.langZid === langZid
 						);
 						const value = listItem ? listItem.value : '';
 						const isInList = !!listItem;
@@ -392,13 +408,19 @@ module.exports = exports = defineComponent( {
 							this.getLanguageIsoCodeOfZLang( result.match_lang )
 						);
 						return {
-							langZid: result.page_title,
+							langZid,
 							langLabelData,
 							isInList,
 							isInVisibleList,
 							value,
 							hasValue: !!value
 						};
+					} )
+					.filter( ( item ) => {
+						if ( !this.isMainObject && !item.isInList ) {
+							return false;
+						}
+						return true;
 					} )
 					.sort( ( a, b ) => {
 						// Sort so that not-already-added languages come first

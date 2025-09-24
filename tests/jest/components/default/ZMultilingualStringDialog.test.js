@@ -12,7 +12,7 @@ const { waitFor } = require( '@testing-library/vue' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const ZMultilingualStringDialog = require( '../../../../resources/ext.wikilambda.app/components/types/ZMultilingualStringDialog.vue' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
-const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../helpers/getterHelpers.js' );
+const { createLabelDataMock } = require( '../../helpers/getterHelpers.js' );
 const { mockWindowLocation, restoreWindowLocation } = require( '../../fixtures/location.js' );
 
 // Test data
@@ -37,8 +37,8 @@ const mockItems = [
 	},
 	{
 		langZid: 'Z1005',
-		objectValue: { Z1K1: 'Z11', Z11K1: 'Z1005', Z11K2: 'German text' },
-		value: 'German text',
+		objectValue: { Z1K1: 'Z11', Z11K1: 'Z1005', Z11K2: 'Russian text' },
+		value: 'Russian text',
 		isInVisibleList: false
 	}
 ];
@@ -61,25 +61,49 @@ describe( 'ZMultilingualStringDialog', () => {
 		store = useMainStore();
 		store.getUserLangCode = 'en';
 		store.getLabelData = createLabelDataMock( {
+			Z1001: 'Arabic',
 			Z1002: 'English',
 			Z1003: 'Spanish',
 			Z1004: 'French',
-			Z1005: 'German',
-			Z1006: 'Russian',
-			Z1007: 'Arabic',
-			Z1008: 'Chinese'
+			Z1005: 'Russian',
+			Z1006: 'Chinese'
 		} );
-		store.getLanguageIsoCodeOfZLang = createGettersWithFunctionsMock( 'en' );
+		store.getLanguageIsoCodeOfZLang = jest.fn().mockImplementation( ( zid ) => {
+			const zidToIsoMap = {
+				Z1001: 'ar', // Arabic
+				Z1002: 'en', // English
+				Z1003: 'es', // Spanish
+				Z1004: 'fr', // French
+				Z1005: 'ru', // Russian
+				Z1006: 'zh', // Chinese
+				Z1672: 'zh-tw', // Chinese Traditional
+				Z1645: 'zh-cn' // Chinese Simplified
+			};
+			return zidToIsoMap[ zid ];
+		} );
+		store.getLanguageZidOfCode = jest.fn().mockImplementation( ( isoCode ) => {
+			const isoToZidMap = {
+				ar: 'Z1001',
+				en: 'Z1002',
+				es: 'Z1003',
+				fr: 'Z1004',
+				ru: 'Z1005',
+				zh: 'Z1006',
+				'zh-tw': 'Z1672',
+				'zh-cn': 'Z1645'
+			};
+			return isoToZidMap[ isoCode ];
+		} );
 		store.fetchZids = jest.fn();
 		store.lookupZObjectLabels = jest.fn().mockResolvedValue( {
 			labels: [
 				{
-					page_title: 'Z1006',
+					page_title: 'Z1005',
 					label: 'Russian',
 					match_lang: 'Z1002'
 				},
 				{
-					page_title: 'Z1007',
+					page_title: 'Z1001',
 					label: 'Arabic',
 					match_lang: 'Z1002'
 				}
@@ -119,7 +143,7 @@ describe( 'ZMultilingualStringDialog', () => {
 
 			const localItems = wrapper.vm.localItems;
 
-			// Should not include Z1002 (English) as it's already visible
+			// Should not include 'Z1002' (English) as it's already visible
 			const availableItems = localItems.filter( ( item ) => !item.disabled && item.langZid !== 'Z1002' );
 			expect( availableItems.length ).toBeGreaterThan( 0 );
 		} );
@@ -279,7 +303,7 @@ describe( 'ZMultilingualStringDialog', () => {
 			} );
 
 			expect( store.fetchZids ).toHaveBeenCalledWith( {
-				zids: [ 'Z1006', 'Z1007' ]
+				zids: [ 'Z1005', 'Z1001' ]
 			} );
 			const visibleItems = wrapper.vm.visibleItems;
 			expect( visibleItems ).toStrictEqual( wrapper.vm.lookupResults );
@@ -297,7 +321,7 @@ describe( 'ZMultilingualStringDialog', () => {
 			} );
 
 			// First set some lookup results
-			wrapper.vm.lookupResults = [ { langZid: 'Z1006' } ];
+			wrapper.vm.lookupResults = [ { langZid: 'Z1005' } ];
 
 			// Simulate clearing search input
 			await wrapper.vm.updateSearchTerm( '' );
@@ -401,12 +425,12 @@ describe( 'ZMultilingualStringDialog', () => {
 			} );
 
 			expect( store.fetchZids ).toHaveBeenCalledWith( {
-				zids: [ 'Z1006', 'Z1007' ]
+				zids: [ 'Z1005', 'Z1001' ]
 			} );
 
 			// Simulate clicking on a lookup result item
 			const testItem = {
-				langZid: 'Z1007',
+				langZid: 'Z1001',
 				isInVisibleList: false,
 				isInList: false
 			};
@@ -431,7 +455,7 @@ describe( 'ZMultilingualStringDialog', () => {
 
 			// Set some state
 			wrapper.vm.searchTerm = 'test';
-			wrapper.vm.lookupResults = [ { langZid: 'Z1005' } ];
+			wrapper.vm.lookupResults = [ { langZid: 'Z1001' } ];
 
 			wrapper.vm.closeDialog();
 
@@ -493,10 +517,12 @@ describe( 'ZMultilingualStringDialog', () => {
 
 			const suggestedItems = wrapper.vm.getSuggestedItems;
 			const suggestedLanguageZids = suggestedItems.map( ( item ) => item.langZid );
-			expect( suggestedLanguageZids ).toContain( Constants.Z_NATURAL_LANGUAGE_ENGLISH );
-			expect( suggestedLanguageZids ).toContain( Constants.Z_NATURAL_LANGUAGE_ARABIC );
-			expect( suggestedLanguageZids ).toContain( Constants.Z_NATURAL_LANGUAGE_FRENCH );
-			expect( suggestedLanguageZids ).toContain( Constants.Z_NATURAL_LANGUAGE_RUSSIAN );
+			expect( suggestedLanguageZids ).toContain( 'Z1002' );
+			expect( suggestedLanguageZids ).toContain( 'Z1001' );
+			expect( suggestedLanguageZids ).toContain( 'Z1004' );
+			expect( suggestedLanguageZids ).toContain( 'Z1005' );
+			expect( suggestedLanguageZids ).toContain( 'Z1672' );
+			expect( suggestedLanguageZids ).toContain( 'Z1645' );
 		} );
 
 		it( 'creates suggested items with correct properties', () => {
@@ -570,7 +596,7 @@ describe( 'ZMultilingualStringDialog', () => {
 		} );
 
 		it( 'sorts lookup results correctly - not-in-list languages first', async () => {
-			// Create items that only contain English, not German
+			// Create items that only contain English, not Russian
 			const testItems = [
 				{
 					langZid: 'Z1002',
@@ -591,7 +617,7 @@ describe( 'ZMultilingualStringDialog', () => {
 					},
 					{
 						page_title: 'Z1005',
-						label: 'German',
+						label: 'Russian',
 						match_lang: 'Z1002'
 					}
 				]
@@ -610,40 +636,39 @@ describe( 'ZMultilingualStringDialog', () => {
 			} );
 
 			await wrapper.vm.getLookupResults( 'test' );
-			await wrapper.vm.$nextTick();
 
 			// Check the sorting results
 			const results = wrapper.vm.lookupResults;
 			expect( results.length ).toBe( 2 );
 
-			// Find German and English in results
-			const germanResult = results.find( ( r ) => r.langZid === 'Z1005' );
+			// Find Russian and English in results
+			const russianResult = results.find( ( r ) => r.langZid === 'Z1005' );
 			const englishResult = results.find( ( r ) => r.langZid === 'Z1002' );
 
-			expect( germanResult ).toBeDefined();
+			expect( russianResult ).toBeDefined();
 			expect( englishResult ).toBeDefined();
-			expect( germanResult.isInList ).toBe( false );
+			expect( russianResult.isInList ).toBe( false );
 			expect( englishResult.isInList ).toBe( true );
 
-			// German (not in list) should come before English (in list)
-			const germanIndex = results.findIndex( ( r ) => r.langZid === 'Z1005' );
+			// Russian (not in list) should come before English (in list)
+			const russianIndex = results.findIndex( ( r ) => r.langZid === 'Z1005' );
 			const englishIndex = results.findIndex( ( r ) => r.langZid === 'Z1002' );
-			expect( germanIndex ).toBeLessThan( englishIndex );
+			expect( russianIndex ).toBeLessThan( englishIndex );
 		} );
 
 		it( 'sorts lookup results correctly - languages with values first when both not in list', async () => {
 			const itemsWithValues = [
 				{
 					langZid: 'Z1005',
-					langLabelData: createLabelDataMock( 'Z1005', 'German', 'Z1002', 'de' ),
-					objectValue: { Z1K1: 'Z11', Z11K1: 'Z1005', Z11K2: 'German text' },
-					value: 'German text',
+					langLabelData: createLabelDataMock( 'Z1005', 'Russian', 'Z1002', 'ru' ),
+					objectValue: { Z1K1: 'Z11', Z11K1: 'Z1005', Z11K2: 'Russian text' },
+					value: 'Russian text',
 					isInVisibleList: false
 				},
 				{
-					langZid: 'Z1006',
-					langLabelData: createLabelDataMock( 'Z1006', 'Russian', 'Z1002', 'ru' ),
-					objectValue: { Z1K1: 'Z11', Z11K1: 'Z1006', Z11K2: '' },
+					langZid: 'Z1001',
+					langLabelData: createLabelDataMock( 'Z1001', 'Arabic', 'Z1002', 'ar' ),
+					objectValue: { Z1K1: 'Z11', Z11K1: 'Z1001', Z11K2: '' },
 					value: '',
 					isInVisibleList: false
 				}
@@ -653,12 +678,12 @@ describe( 'ZMultilingualStringDialog', () => {
 				labels: [
 					{
 						page_title: 'Z1005',
-						label: 'German',
+						label: 'Russian',
 						match_lang: 'Z1002'
 					},
 					{
-						page_title: 'Z1006',
-						label: 'Russian',
+						page_title: 'Z1001',
+						label: 'Arabic',
 						match_lang: 'Z1002'
 					}
 				]
@@ -680,11 +705,11 @@ describe( 'ZMultilingualStringDialog', () => {
 			await wrapper.vm.$nextTick();
 
 			const results = wrapper.vm.lookupResults;
-			// German (has value) should come before Russian (no value)
+			// Russian (has value) should come before Arabic (no value)
 			expect( results.length ).toBe( 2 );
 			expect( results[ 0 ].langZid ).toBe( 'Z1005' );
 			expect( results[ 0 ].hasValue ).toBe( true );
-			expect( results[ 1 ].langZid ).toBe( 'Z1006' );
+			expect( results[ 1 ].langZid ).toBe( 'Z1001' );
 			expect( results[ 1 ].hasValue ).toBe( false );
 		} );
 

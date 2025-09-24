@@ -437,6 +437,9 @@ class ZObjectContentHandler extends ContentHandler {
 
 		$parserOutput->setJsConfigVar( 'wgWikiLambda', $editingData );
 
+		// Add language mapping for multilingual string dialog
+		$parserOutput->setJsConfigVar( 'wgWikiLambdaLangs', $this->zObjectStore->fetchAllZLanguageObjects() );
+
 		$parserOutput->setText(
 			// Placeholder div for the Vue template.
 			Html::element( 'div', [ 'id' => 'ext-wikilambda-app' ] )

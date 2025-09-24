@@ -110,6 +110,14 @@ global.mw = {
 					return 'en';
 				case 'wgPageContentLanguage':
 					return 'en';
+				case 'wgWikiLambdaLangs':
+					return {
+						ar: 'Z1001',
+						en: 'Z1002',
+						es: 'Z1003',
+						fr: 'Z1004',
+						ru: 'Z1005'
+					};
 				default:
 					return null;
 			}

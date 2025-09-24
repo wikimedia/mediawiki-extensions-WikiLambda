@@ -9,7 +9,7 @@
 		<div class="ext-wikilambda-app-multilingual-string__items">
 			<div
 				v-for="item in visibleItems"
-				:key="item.langZid || item.keyPath"
+				:key="item.keyPath"
 				class="ext-wikilambda-app-multilingual-string__item">
 				<wl-z-object-key-value
 					class="ext-wikilambda-app-typed-list-items__block"
@@ -104,6 +104,7 @@ module.exports = exports = defineComponent( {
 	},
 	data: function () {
 		return {
+			listItemType: Constants.Z_MONOLINGUALSTRING,
 			iconLanguage: icons.cdxIconLanguage,
 			iconAdd: icons.cdxIconAdd,
 			showLoadMoreDialog: false,
@@ -112,31 +113,10 @@ module.exports = exports = defineComponent( {
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
 		'getFallbackLanguageZids',
-		'getUserLangZid'
+		'getUserLangZid',
+		'getLanguageZidOfCode',
+		'getStoredObject'
 	] ), {
-		/**
-		 * Returns the string representation of the expected type for the list items.
-		 *
-		 * @return {string}
-		 */
-		listItemType: function () {
-			return Constants.Z_MONOLINGUALSTRING;
-		},
-		/**
-		 * Returns common languages (English, Spanish, French) as ZIDs.
-		 * These are used during initial view initialization to provide
-		 * a consistent set of commonly used languages.
-		 *
-		 * @return {Array} Array of common language Z-IDs
-		 */
-		getCommonLanguages() {
-			return [
-				Constants.Z_NATURAL_LANGUAGE_ENGLISH,
-				Constants.Z_NATURAL_LANGUAGE_SPANISH,
-				Constants.Z_NATURAL_LANGUAGE_FRENCH
-			];
-		},
-
 		/**
 		 * Returns the array of all the monolingual text objects.
 		 *
@@ -176,19 +156,23 @@ module.exports = exports = defineComponent( {
 		/**
 		 * Returns all items from the store with their metadata.
 		 * Maps each store item to include index, objectValue, langZid, keyPath, and uniqueKey.
+		 * Handles conversion from ISO codes to ZIDs for consistent language references.
 		 *
 		 * @return {Array} Array of item objects with metadata
 		 */
-		allViewItems() {
+		allViewItems: function () {
 			return this.values
 				.map( ( objectValue, index ) => {
-					const langZid = this.getZMonolingualLangValue( objectValue );
+					const lang = this.getZMonolingualLangValue( objectValue );
 					const value = this.getZMonolingualTextValue( objectValue );
+					// Get the ZID for the language if it exists, otherwise use the lang (which can already be a ZID)
+					const langZid = this.getLanguageZidOfCode( lang ) || lang;
+
 					return {
-						objectValue,
+						keyPath: `${ this.listKeyPath }.${ index + 1 }`,
 						langZid,
-						value,
-						keyPath: `${ this.listKeyPath }.${ index + 1 }`
+						objectValue,
+						value
 					};
 				} );
 		},
@@ -200,7 +184,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Array} Array of items sorted by priority
 		 */
-		allViewItemsSorted() {
+		allViewItemsSorted: function () {
 			return [ ...this.allViewItems ].sort( ( a, b ) => this.sortItemsByPriority( a, b ) );
 		},
 
@@ -211,7 +195,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Array} Array of visible items
 		 */
-		visibleItems() {
+		visibleItems: function () {
 			const visible = this.visibleLangZids
 				.map( ( langZid ) => this.allViewItems.find( ( item ) => item.langZid === langZid ) )
 				.filter( Boolean );
@@ -229,7 +213,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Array} Array of items available for dialog selection
 		 */
-		dialogItems() {
+		dialogItems: function () {
 			return this.allViewItems
 				.filter( ( item ) => item.langZid )
 				.map( ( { langZid, objectValue, value } ) => ( {
@@ -243,7 +227,8 @@ module.exports = exports = defineComponent( {
 	methods: Object.assign( {}, mapActions( useMainStore, [
 		'createZMonolingualString',
 		'pushItemsByKeyPath',
-		'setDirty'
+		'setDirty',
+		'fetchZids'
 	] ), {
 		/**
 		 * Adds an item of the given value to the list
@@ -269,17 +254,16 @@ module.exports = exports = defineComponent( {
 
 		/**
 		 * Adds a language from the dialog to the typed list.
-		 * If the language already exists in the store, it's made visible.
-		 * If it doesn't exist, emits an event to add it to the store first.
-		 * Finally, adds the language ZID to the visible languages array.
+		 * Adds the language to the store if needed and adds the language's ZID to the visible list.
 		 *
-		 * @param {string} langZid
+		 * @param {string} langZid - ZID for the language
 		 */
 		addLanguageFromDialog: function ( langZid ) {
 			// If the language doesn't exist in the store, add it to the store
 			if ( !this.allViewItems.some( ( item ) => item.langZid === langZid ) ) {
 				this.addListItem( { lang: langZid } );
 			}
+			// Add the ZID to the visible list
 			this.visibleLangZids = [ ...new Set( [ ...this.visibleLangZids, langZid ] ) ];
 		},
 
@@ -343,6 +327,7 @@ module.exports = exports = defineComponent( {
 			// other langs
 			return 500;
 		},
+
 		/**
 		 * Sorts items by calculated priority, then alphabetically by langZid.
 		 *
@@ -377,32 +362,63 @@ module.exports = exports = defineComponent( {
 		/**
 		 * Initializes the multilingual string list with its initial set of visible languages.
 		 * Populates visibleLangZids with priority languages in order:
-		 * 1) User language, 2) Fallback languages, 3) Common languages (English, Spanish, French).
+		 * 1) User language, 2) Fallback languages, 3) Suggested languages.
 		 * Respects the display limit and adds a fallback item if no priority languages are found.
 		 * The remaining languages will be available through the ZMultilingualStringDialog component.
 		 */
 		initializeMultilingualStringList: function () {
-			const candidates = [
+			const candidates = [ ...new Set( [
 				this.getUserLangZid,
 				...this.getFallbackLanguageZids,
-				...this.getCommonLanguages
-			];
-			// Deduplicate while preserving order and keep only langs actually present in store
-			let visibleLangZids = [ ...new Set( candidates ) ].filter( ( l ) => this.langs.includes( l ) );
+				...Constants.SUGGESTIONS.LANGUAGES
+			] ) ];
+
+			// Filter items that match any of the candidate ZIDs
+			const matchingItems = this.allViewItemsSorted.filter(
+				( item ) => item.langZid && candidates.includes( item.langZid )
+			);
+
+			// Extract the ZIDs from matching items
+			let visibleLangZids = matchingItems.map( ( item ) => item.langZid );
+
 			// Enforce maximum length
 			visibleLangZids = visibleLangZids.slice( 0, Constants.LIST_LIMIT_MULTILINGUAL_STRING );
 
 			// Fallback to first language in list if still empty
-			if ( !visibleLangZids.length && this.allViewItemsSorted[ 0 ] && this.allViewItemsSorted[ 0 ].langZid ) {
+			if (
+				!visibleLangZids.length &&
+				this.allViewItemsSorted[ 0 ] &&
+				this.allViewItemsSorted[ 0 ].langZid
+			) {
 				visibleLangZids = [ this.allViewItemsSorted[ 0 ].langZid ];
 			}
 			this.visibleLangZids = visibleLangZids;
+		},
+
+		/**
+		 * Fetches ZIDs for languages that were converted from ISO codes to ZIDs.
+		 * This ensures that language objects are available in the store for proper display.
+		 */
+		fetchMissingLanguageZids: function () {
+			const zids = [];
+
+			// Check all items for converted languages
+			this.allViewItems.forEach( ( { langZid } ) => {
+				if ( langZid && !this.getStoredObject( langZid ) ) {
+					zids.push( langZid );
+				}
+			} );
+
+			// Fetch any missing ZIDs
+			if ( zids.length > 0 ) {
+				this.fetchZids( { zids } );
+			}
 		}
 	} ),
 	watch: {
 		/**
 		 * Watches for changes in the store to detect additions/deletions.
-		 * When objectValue changes, cleans up any stale langZids that are
+		 * When objectValue changes, cleans up any stale ZIDs that are
 		 * no longer present in the store, ensuring the visible list stays
 		 * synchronized with the actual data.
 		 */
@@ -410,19 +426,29 @@ module.exports = exports = defineComponent( {
 			/**
 			 * Keep any newly added languages visible and remove stale ones.
 			 * This ensures a blank item that gets a language stays on screen.
+			 * Handles both ZID references and literal ISO codes by normalizing to ZIDs.
 			 *
-			 * @param {Array} newLangs
-			 * @param {Array} oldLangs
+			 * @param {Array} newLangs - Can contain ZIDs or ISO codes
+			 * @param {Array} oldLangs - Can contain ZIDs or ISO codes
 			 */
 			handler: function ( newLangs = [], oldLangs = [] ) {
-				const prevLangs = Array.isArray( oldLangs ) ? oldLangs : [];
-				const addedLangs = newLangs.filter( ( lang ) => lang && !prevLangs.includes( lang ) );
+				// Convert all langs to ZIDs for consistent comparison
+				const newLangZids = newLangs
+					.map( ( lang ) => this.getLanguageZidOfCode( lang ) || lang )
+					.filter( Boolean );
 
-				// Keep only valid current langs, then append new ones (dedupe via Set)
+				const prevLangs = Array.isArray( oldLangs ) ? oldLangs : [];
+				const prevLangZids = prevLangs
+					.map( ( lang ) => this.getLanguageZidOfCode( lang ) || lang )
+					.filter( Boolean );
+
+				const addedLangZids = newLangZids.filter( ( zid ) => !prevLangZids.includes( zid ) );
+
+				// Keep only valid current ZIDs, then append new ones (dedupe via Set)
 				this.visibleLangZids = [
 					...new Set( [
-						...this.visibleLangZids.filter( ( zid ) => newLangs.includes( zid ) ),
-						...addedLangs
+						...this.visibleLangZids.filter( ( langZid ) => newLangZids.includes( langZid ) ),
+						...addedLangZids
 					] )
 				];
 			},
@@ -432,6 +458,9 @@ module.exports = exports = defineComponent( {
 	mounted: function () {
 		// Initialize the multilingual string list with priority languages
 		this.initializeMultilingualStringList();
+
+		// Fetch ZIDs for any ISO codes that were converted from literal Z60 objects
+		this.fetchMissingLanguageZids();
 	},
 	beforeCreate: function () {
 		this.$options.components[ 'wl-z-object-key-value' ] = require( './ZObjectKeyValue.vue' );
@@ -445,13 +474,16 @@ module.exports = exports = defineComponent( {
 .ext-wikilambda-app-multilingual-string {
 	margin-bottom: 0;
 
+	.ext-wikilambda-app-multilingual-string__item {
+		margin-bottom: @spacing-50;
+	}
+
 	.ext-wikilambda-app-multilingual-string__load-more {
-		margin-top: @spacing-75;
+		margin-bottom: @spacing-50;
 	}
 
 	.ext-wikilambda-app-multilingual-string__add-button {
-		margin-top: @spacing-75;
-		margin-bottom: @spacing-75;
+		margin-bottom: @spacing-50;
 	}
 }
 </style>

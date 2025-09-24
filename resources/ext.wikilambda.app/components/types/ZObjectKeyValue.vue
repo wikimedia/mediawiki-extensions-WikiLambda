@@ -57,7 +57,6 @@
 					:parent-list-item-type="parentListItemType"
 					@set-value="setValue"
 					@set-type="setType"
-					@set-expanded="setExpanded"
 					@add-list-item="addListItem"
 					@expand="setExpanded"
 				></component>
