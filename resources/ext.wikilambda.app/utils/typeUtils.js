@@ -575,7 +575,13 @@ const typeUtils = {
 				//   Z7K1: Z883,
 				//   Z883K1: { Z1K1: Z9, Z9K1: '' }
 				//   Z883K2: { Z1K1: Z9, Z9K1: '' }
-				//  }
+				//  },
+				//  K1: [ {
+				//   Z1K1: Z7,
+				//   Z7K1: Z882,
+				//   Z882K1: { Z1K1: Z9, Z9K1: '' }
+				//   Z882K2: { Z1K1: Z9, Z9K1: '' }
+				//  } ]
 				// }
 				return {
 					[ Constants.Z_OBJECT_TYPE ]: {
@@ -589,7 +595,19 @@ const typeUtils = {
 							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
 							[ Constants.Z_REFERENCE_ID ]: ''
 						}
-					}
+					},
+					[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ]: [ {
+						[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
+						[ Constants.Z_FUNCTION_CALL_FUNCTION ]: Constants.Z_TYPED_PAIR,
+						[ Constants.Z_TYPED_PAIR_TYPE1 ]: {
+							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+							[ Constants.Z_REFERENCE_ID ]: ''
+						},
+						[ Constants.Z_TYPED_PAIR_TYPE2 ]: {
+							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+							[ Constants.Z_REFERENCE_ID ]: ''
+						}
+					} ]
 				};
 
 			case Constants.Z_BOOLEAN:

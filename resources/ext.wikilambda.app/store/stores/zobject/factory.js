@@ -66,9 +66,29 @@ module.exports = {
 				// the special cases: List, Pair and Map
 				if ( isGenericType( payload.type ) ) {
 					if ( payload.type[ Constants.Z_FUNCTION_CALL_FUNCTION ] === Constants.Z_TYPED_LIST ) {
-						const newPayload = JSON.parse( JSON.stringify( payload ) );
+						const newPayload = Object.assign( {}, payload );
 						newPayload.type = Constants.Z_TYPED_LIST;
 						newPayload.value = payload.type[ Constants.Z_TYPED_LIST_TYPE ];
+						return this.createObjectByType( newPayload, keyList );
+					}
+
+					if ( payload.type[ Constants.Z_FUNCTION_CALL_FUNCTION ] === Constants.Z_TYPED_PAIR ) {
+						const newPayload = Object.assign( {}, payload );
+						newPayload.type = Constants.Z_TYPED_PAIR;
+						newPayload.values = [
+							payload.type[ Constants.Z_TYPED_PAIR_TYPE1 ],
+							payload.type[ Constants.Z_TYPED_PAIR_TYPE2 ]
+						];
+						return this.createObjectByType( newPayload, keyList );
+					}
+
+					if ( payload.type[ Constants.Z_FUNCTION_CALL_FUNCTION ] === Constants.Z_TYPED_MAP ) {
+						const newPayload = Object.assign( {}, payload );
+						newPayload.type = Constants.Z_TYPED_MAP;
+						newPayload.values = [
+							payload.type[ Constants.Z_TYPED_MAP_TYPE1 ],
+							payload.type[ Constants.Z_TYPED_MAP_TYPE2 ]
+						];
 						return this.createObjectByType( newPayload, keyList );
 					}
 				}
@@ -699,16 +719,21 @@ module.exports = {
 				// Get scaffolding
 				const value = getScaffolding( Constants.Z_TYPED_PAIR );
 
-				// Initialize typed pair types
+				// Initialize typed pair type
 				const type1 = payload.values ? payload.values[ 0 ] : '';
 				const type2 = payload.values ? payload.values[ 1 ] : '';
-				const value1 = type1 ? this.createObjectByType( { type: type1 } ) : {};
-				const value2 = type2 ? this.createObjectByType( { type: type2 } ) : {};
 				value[ Constants.Z_OBJECT_TYPE ][ Constants.Z_TYPED_PAIR_TYPE1 ][ Constants.Z_REFERENCE_ID ] = type1;
 				value[ Constants.Z_OBJECT_TYPE ][ Constants.Z_TYPED_PAIR_TYPE2 ][ Constants.Z_REFERENCE_ID ] = type2;
+
+				// K1 contains initialized object ot type1
+				// K2 contains initialized object ot type2
+				const value1 = type1 ? this.createObjectByType( { type: type1 } ) : {};
+				const value2 = type2 ? this.createObjectByType( { type: type2 } ) : {};
 				value[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ] = value1;
 				value[ Constants.Z_TYPED_OBJECT_ELEMENT_2 ] = value2;
+
 				return value;
+
 			};
 			return generateZTypedPair;
 		},
@@ -738,11 +763,17 @@ module.exports = {
 				// Get scaffolding
 				const value = getScaffolding( Constants.Z_TYPED_MAP );
 
-				// Initialize typed pair types
+				// Initialize typed map type
 				const type1 = payload.values ? payload.values[ 0 ] : '';
 				const type2 = payload.values ? payload.values[ 1 ] : '';
 				value[ Constants.Z_OBJECT_TYPE ][ Constants.Z_TYPED_MAP_TYPE1 ][ Constants.Z_REFERENCE_ID ] = type1;
 				value[ Constants.Z_OBJECT_TYPE ][ Constants.Z_TYPED_MAP_TYPE2 ][ Constants.Z_REFERENCE_ID ] = type2;
+
+				// K1 contains a typed list of pairs ( type1, type2 )
+				const benjamin = value[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ][ 0 ];
+				benjamin[ Constants.Z_TYPED_PAIR_TYPE1 ][ Constants.Z_REFERENCE_ID ] = type1;
+				benjamin[ Constants.Z_TYPED_PAIR_TYPE2 ][ Constants.Z_REFERENCE_ID ] = type2;
+
 				return value;
 			};
 			return generateZTypedMap;

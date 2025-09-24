@@ -683,6 +683,23 @@ describe( 'factory Pinia store', () => {
 					const result = store.createObjectByType( payload );
 					expect( result ).toEqual( expected );
 				} );
+
+				it( 'creates a typed pair when initial payload contains generic type', () => {
+					const payload = { type: { Z1K1: 'Z7', Z7K1: 'Z882', Z882K1: 'Z6', Z882K2: 'Z11' } };
+					const expected = {
+						Z1K1: {
+							Z1K1: 'Z7',
+							Z7K1: 'Z882',
+							Z882K1: { Z1K1: 'Z9', Z9K1: 'Z6' },
+							Z882K2: { Z1K1: 'Z9', Z9K1: 'Z11' }
+						},
+						K1: '',
+						K2: { Z1K1: 'Z11', Z11K1: { Z1K1: 'Z9', Z9K1: '' }, Z11K2: '' }
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
 			} );
 
 			describe( 'createZTypedMap', () => {
@@ -694,7 +711,13 @@ describe( 'factory Pinia store', () => {
 							Z7K1: 'Z883',
 							Z883K1: { Z1K1: 'Z9', Z9K1: '' },
 							Z883K2: { Z1K1: 'Z9', Z9K1: '' }
-						}
+						},
+						K1: [ {
+							Z1K1: 'Z7',
+							Z7K1: 'Z882',
+							Z882K1: { Z1K1: 'Z9', Z9K1: '' },
+							Z882K2: { Z1K1: 'Z9', Z9K1: '' }
+						} ]
 					};
 
 					const result = store.createObjectByType( payload );
@@ -709,7 +732,34 @@ describe( 'factory Pinia store', () => {
 							Z7K1: 'Z883',
 							Z883K1: { Z1K1: 'Z9', Z9K1: 'Z6' },
 							Z883K2: { Z1K1: 'Z9', Z9K1: 'Z1' }
-						}
+						},
+						K1: [ {
+							Z1K1: 'Z7',
+							Z7K1: 'Z882',
+							Z882K1: { Z1K1: 'Z9', Z9K1: 'Z6' },
+							Z882K2: { Z1K1: 'Z9', Z9K1: 'Z1' }
+						} ]
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+
+				it( 'creates a typed map when initial payload contains generic type', () => {
+					const payload = { type: { Z1K1: 'Z7', Z7K1: 'Z883', Z883K1: 'Z6', Z883K2: 'Z1' } };
+					const expected = {
+						Z1K1: {
+							Z1K1: 'Z7',
+							Z7K1: 'Z883',
+							Z883K1: { Z1K1: 'Z9', Z9K1: 'Z6' },
+							Z883K2: { Z1K1: 'Z9', Z9K1: 'Z1' }
+						},
+						K1: [ {
+							Z1K1: 'Z7',
+							Z7K1: 'Z882',
+							Z882K1: { Z1K1: 'Z9', Z9K1: 'Z6' },
+							Z882K2: { Z1K1: 'Z9', Z9K1: 'Z1' }
+						} ]
 					};
 
 					const result = store.createObjectByType( payload );
@@ -853,36 +903,6 @@ describe( 'factory Pinia store', () => {
 							Z1K1: 'Z7',
 							Z7K1: 'Z10001',
 							Z10001K1: 'Z6'
-						}
-					};
-
-					const result = store.createObjectByType( payload );
-					expect( result ).toEqual( expected );
-				} );
-
-				it( 'creates a valid ZTypedPair with empty values', () => {
-					const payload = { type: { Z1K1: 'Z7', Z7K1: 'Z882', Z882K1: 'Z6', Z882K2: 'Z6' } };
-					const expected = {
-						Z1K1: {
-							Z1K1: 'Z7',
-							Z7K1: 'Z882',
-							Z882K1: 'Z6',
-							Z882K2: 'Z6'
-						}
-					};
-
-					const result = store.createObjectByType( payload );
-					expect( result ).toEqual( expected );
-				} );
-
-				it( 'creates a valid ZTypedMap with empty values', () => {
-					const payload = { type: { Z1K1: 'Z7', Z7K1: 'Z883', Z883K1: 'Z6', Z883K2: 'Z6' } };
-					const expected = {
-						Z1K1: {
-							Z1K1: 'Z7',
-							Z7K1: 'Z883',
-							Z883K1: 'Z6',
-							Z883K2: 'Z6'
 						}
 					};
 
