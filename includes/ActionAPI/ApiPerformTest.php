@@ -282,8 +282,14 @@ class ApiPerformTest extends WikiLambdaApiBase {
 				'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall $testFunctionCall';
 
 				// Set the target function of the call to our modified copy of the target function with only the
-				// current implementation
-				$testFunctionCall->setValueByKey( ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION, $targetFunction );
+				// current implementation.
+				// It might not be the top level Z7K1, so descend down the nested function call to find
+				// the position of the target before setting the new value.
+				$testFunctionCall = ZObjectUtils::dereferenceZFunction(
+					$testFunctionCall,
+					$functionZid,
+					$targetFunction
+				);
 
 				// Execute the test case function call
 				$testResultObject = $this->executeFunctionCall( $testFunctionCall, true );

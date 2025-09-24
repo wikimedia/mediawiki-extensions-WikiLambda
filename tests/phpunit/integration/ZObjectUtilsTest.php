@@ -1565,4 +1565,123 @@ EOT;
 			ZObjectUtils::encodeStringParamForNetwork( ' f|o=  o?' )
 		);
 	}
+
+	/**
+	 * @dataProvider provideDereferenceZFunction
+	 */
+	public function testDereferenceZFunction( $call, $functionZid, $function, $expectedCall ) {
+		$actualCall = ZObjectUtils::dereferenceZFunction( $call, $functionZid, $function );
+		$this->assertSame(
+			json_encode( $expectedCall ),
+			json_encode( $actualCall )
+		);
+	}
+
+	public static function provideDereferenceZFunction() {
+		$functionZid = 'Z10000';
+		$mockFunction = '{ "Z1K1": "Z8", "Z8K1": [ "Z17" ], "Z8K2": "Z6",'
+			. ' "Z8K3": [ "Z20" ], "Z8K4": [ "Z14" ], "Z8K5": "Z10000" }';
+
+		// Use case: Simple test, call to target function is at the root.
+		$call = '{ "Z1K1": "Z7", "Z7K1": "Z10000", "Z10000K1": "input" }';
+		$expected = '{ "Z1K1": "Z7", "Z7K1": ' . $mockFunction . ', "Z10000K1": "input" }';
+
+		yield 'Simple function call' => [
+			json_decode( $call ),
+			$functionZid,
+			json_decode( $mockFunction ),
+			json_decode( $expected )
+		];
+
+		// Use case: Call to target function is wrapped by another, for example, when
+		// testing for results returned inside of the metadata, or testing errors,
+		// we would want to wrap the test call inside a get_metadata() or get_error()
+		$call = '{ "Z1K1": "Z7", "Z7K1": "Z10001", "Z10001K1": '
+			. '{ "Z1K1": "Z7", "Z7K1": "Z10000", "Z10000K1": "input" } }';
+		$expected = '{ "Z1K1": "Z7", "Z7K1": "Z10001", "Z10001K1": '
+			. '{ "Z1K1": "Z7", "Z7K1": ' . $mockFunction . ', "Z10000K1": "input" } }';
+
+		yield 'Wrapped function call' => [
+			json_decode( $call ),
+			$functionZid,
+			json_decode( $mockFunction ),
+			json_decode( $expected )
+		];
+
+		// Use case: Call to target function is done through a callable or callback
+		// passed to another function call. For example, apply( target_function, input )
+		// or map( list, target_function ). In this case, the target function reference
+		// will not be found as the value of a Z7K1 key, but of another key (an input to
+		// another function call)
+		$call = '{ "Z1K1": "Z7", "Z7K1": "Z10002", "Z10002K1": "Z10000", "Z10002K2": "input" }';
+		$expected = '{ "Z1K1": "Z7", "Z7K1": "Z10002", "Z10002K1": '
+			. $mockFunction . ', "Z10002K2": "input" }';
+
+		yield 'Function referenced as argument to another function call' => [
+			json_decode( $call ),
+			$functionZid,
+			json_decode( $mockFunction ),
+			json_decode( $expected )
+		];
+
+		// Use case: Function is referenced indirectly, inside a nested object.
+		// Things can get infinitely complex and be valid and useful test cases.
+		$call = '{ "Z1K1": "Z7", "Z7K1": { "Z1K1": "Z7", "Z7K1": "Z801", "Z801K1": "Z10000" },'
+			. ' "K1": "input" }';
+		$expected = '{ "Z1K1": "Z7", "Z7K1": { "Z1K1": "Z7", "Z7K1": "Z801", "Z801K1": '
+			. $mockFunction . ' }, "K1": "input" }';
+
+		yield 'Function referenced indirectly inside a nested function call' => [
+			json_decode( $call ),
+			$functionZid,
+			json_decode( $mockFunction ),
+			json_decode( $expected )
+		];
+
+		// Use case: There are normal references lying around. Should not, but
+		// currently it works, so let's keep this up.
+		$call = '{ "Z1K1": "Z7", "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z10000" }, "Z10000K1": "input" }';
+		$expected = '{ "Z1K1": "Z7", "Z7K1": ' . $mockFunction . ', "Z10000K1": "input" }';
+		yield 'Normal reference to target function' => [
+			json_decode( $call ),
+			$functionZid,
+			json_decode( $mockFunction ),
+			json_decode( $expected )
+		];
+
+		// Edge case: Direct reference
+		$call = '"Z10000"';
+		$expected = $mockFunction;
+
+		yield 'Simple reference should be replaced' => [
+			json_decode( $call ),
+			$functionZid,
+			json_decode( $mockFunction ),
+			json_decode( $expected )
+		];
+
+		// Edge case: Nothing to dereference
+		$call = '{ "Z1K1": "Z7", "Z7K1": "Z100001", "Z10001K1": "input" }';
+		$expected = '{ "Z1K1": "Z7", "Z7K1": "Z100001", "Z10001K1": "input" }';
+
+		yield 'There is nothing to be dereferenced' => [
+			json_decode( $call ),
+			$functionZid,
+			json_decode( $mockFunction ),
+			json_decode( $expected )
+		];
+
+		// Edge case: Inputs are ZObject instances instead of stdClass.
+		$call = '{ "Z1K1": "Z7", "Z7K1": "Z10000", "Z10000K1": "input" }';
+		$expected = '{ "Z1K1": "Z7", "Z7K1": ' . $mockFunction . ', "Z10000K1": "input" }';
+		$callObj = ZObjectFactory::create( json_decode( $call ) );
+		$mockFunctionObj = ZObjectFactory::create( json_decode( $mockFunction ) );
+
+		yield 'Inputs are ZObject instances' => [
+			$callObj,
+			$functionZid,
+			$mockFunctionObj,
+			json_decode( $expected )
+		];
+	}
 }

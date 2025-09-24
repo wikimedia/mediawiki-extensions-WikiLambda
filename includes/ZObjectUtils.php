@@ -1095,6 +1095,54 @@ class ZObjectUtils {
 		return $zObjectString;
 	}
 
+	/**
+	 * Walks a ZObject tree (a ZFunctionCall) and replaces references of a given
+	 * function with a given literal object.
+	 *
+	 * @param ZFunctionCall|stdClass $functionCall
+	 * @param string $functionZid
+	 * @param ZFunction|stdClass $functionObj
+	 * @return string|array|stdClass
+	 */
+	public static function dereferenceZFunction( $functionCall, $functionZid, $functionObj ) {
+		$call = ( $functionCall instanceof ZObject ) ? $functionCall->getSerialized() : $functionCall;
+		$function = ( $functionObj instanceof ZObject ) ? $functionObj->getSerialized() : $functionObj;
+
+		// Early exit condition
+		if ( $call === $functionZid ) {
+			return $function;
+		}
+
+		// If is array, recurse over each item
+		if ( is_array( $call ) ) {
+			foreach ( $call as $index => $item ) {
+				$call[$index] = self::dereferenceZFunction( $item, $functionZid, $function );
+			}
+			return $call;
+		}
+
+		// If is object, find Z7K1 key
+		if ( $call instanceof \stdClass ) {
+			$vars = get_object_vars( $call );
+
+			// Edge case: check for normal reference
+			if ( isset( $vars[ 'Z9K1'] ) && ( $vars[ 'Z9K1' ] === $functionZid ) ) {
+				return $function;
+			}
+
+			// Else, iterate through values and replace canonical
+			// references or recurse over the rest of the keys
+			foreach ( $vars as $key => $value ) {
+				if ( $value === $functionZid ) {
+					$call->$key = $function;
+				} else {
+					$call->$key = self::dereferenceZFunction( $value, $functionZid, $function );
+				}
+			}
+		}
+		return $call;
+	}
+
 	public static function encodeStringParamForNetwork( string $input ): string {
 		return str_replace( [ '+', '/', '=' ], [ '-', '_', '' ], base64_encode( $input ) );
 	}

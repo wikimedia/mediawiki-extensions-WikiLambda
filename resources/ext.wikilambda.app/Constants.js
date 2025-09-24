@@ -449,11 +449,13 @@ Constants.ERROR_TYPES = {
 // but are not considered enums:
 // * Z4/Type
 // * Z8/Function
+// * Z50/Error type
 // * Z46/Deserialiser
 // * Z64/Serialiser
 Constants.EXCLUDE_FROM_ENUMS = [
 	Constants.Z_TYPE,
 	Constants.Z_FUNCTION,
+	Constants.Z_ERRORTYPE,
 	Constants.Z_DESERIALISER,
 	Constants.Z_SERIALISER
 ];
