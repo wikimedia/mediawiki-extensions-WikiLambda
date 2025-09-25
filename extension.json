@@ -384,6 +384,7 @@
 				"jquery.uls.data",
 				"mediawiki.Title",
 				"mediawiki.api",
+				"mediawiki.jqueryMsg",
 				"mediawiki.router",
 				"mediawiki.storage",
 				"mediawiki.user",
