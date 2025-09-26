@@ -7,7 +7,7 @@
 'use strict';
 
 const { waitFor } = require( '@testing-library/vue' );
-const { shallowMount } = require( '@vue/test-utils' );
+const { flushPromises, shallowMount } = require( '@vue/test-utils' );
 const { dialogGlobalStubs } = require( '../../helpers/dialogTestHelpers.js' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const convertSetToMap = require( '../../fixtures/metadata.js' ).convertSetToMap;
@@ -233,7 +233,6 @@ describe( 'ZObjectStringRenderer', () => {
 				}
 			} );
 
-			wrapper.setData( { initialized: true } );
 			await wrapper.vm.$nextTick();
 
 			const text = wrapper.find( '[data-testid="zobject-string-renderer-text"]' );
@@ -244,6 +243,89 @@ describe( 'ZObjectStringRenderer', () => {
 			expect( keyValueSet.props( 'keyPath' ) ).toBe( keyPath );
 			expect( keyValueSet.props( 'objectValue' ) ).toEqual( objectValue );
 			expect( keyValueSet.props( 'edit' ) ).toBe( false );
+		} );
+
+		it( 'calls render only once if call is successful', async () => {
+			const rendererSpy = jest.spyOn( store, 'runRenderer' );
+
+			const wrapper = shallowMount( ZObjectStringRenderer, {
+				props: {
+					keyPath,
+					objectValue,
+					edit: false,
+					type: typeZid,
+					expanded: true
+				}
+			} );
+
+			await flushPromises();
+
+			// First render should trigger it
+			await waitFor( () => {
+				expect( rendererSpy ).toHaveBeenCalledTimes( 1 );
+				expect( rendererSpy ).toHaveBeenCalledWith( {
+					rendererZid,
+					zobject: parsedObject,
+					zlang: 'Z1002'
+				} );
+			} );
+
+			// Collapse doesn't trigger, as the first call was successful
+			await wrapper.setProps( { expanded: false } );
+			await flushPromises();
+			expect( rendererSpy ).toHaveBeenCalledTimes( 1 );
+
+			// Expand again
+			await wrapper.setProps( { expanded: true } );
+			await flushPromises();
+			expect( rendererSpy ).toHaveBeenCalledTimes( 1 );
+
+			// Collapse again, no repeated calls
+			await wrapper.setProps( { expanded: false } );
+			await flushPromises();
+			expect( rendererSpy ).toHaveBeenCalledTimes( 1 );
+		} );
+
+		it( 'calls render again if first call was not successful', async () => {
+			// Mock renderer to return an error
+			store.runRenderer = jest.fn().mockResolvedValue( errorResponse );
+			const rendererSpy = jest.spyOn( store, 'runRenderer' );
+
+			const wrapper = shallowMount( ZObjectStringRenderer, {
+				props: {
+					keyPath,
+					objectValue,
+					edit: false,
+					type: typeZid,
+					expanded: true
+				}
+			} );
+
+			await flushPromises();
+
+			// First render should trigger it
+			await waitFor( () => {
+				expect( rendererSpy ).toHaveBeenCalledTimes( 1 );
+				expect( rendererSpy ).toHaveBeenCalledWith( {
+					rendererZid,
+					zobject: parsedObject,
+					zlang: 'Z1002'
+				} );
+			} );
+
+			// Collapse triggers it again
+			await wrapper.setProps( { expanded: false } );
+			await flushPromises();
+			expect( rendererSpy ).toHaveBeenCalledTimes( 2 );
+
+			// Expand
+			await wrapper.setProps( { expanded: true } );
+			await flushPromises();
+
+			// Collapse again, rendered is called once more
+			await wrapper.setProps( { expanded: false } );
+			await flushPromises();
+			expect( rendererSpy ).toHaveBeenCalledTimes( 3 );
 		} );
 	} );
 
@@ -279,7 +361,6 @@ describe( 'ZObjectStringRenderer', () => {
 				}
 			} );
 
-			wrapper.setData( { initialized: true } );
 			await wrapper.vm.$nextTick();
 
 			const text = wrapper.findComponent( { name: 'cdx-text-input' } );
@@ -303,10 +384,9 @@ describe( 'ZObjectStringRenderer', () => {
 				}
 			} );
 
-			wrapper.setData( { initialized: true } );
 			await wrapper.vm.$nextTick();
 
-			// Make sure that the state is collapsed
+			// Make sure that the state is expanded
 			const keyValueSet = wrapper.findComponent( { name: 'wl-z-object-key-value-set' } );
 			expect( keyValueSet.exists() ).toBe( true );
 

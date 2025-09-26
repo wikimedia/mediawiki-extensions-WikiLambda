@@ -7,7 +7,7 @@
 <template>
 	<div class="ext-wikilambda-app-object-string-renderer" data-testid="z-object-string-renderer">
 		<!-- If expanded is false, show text field -->
-		<template v-if="!expanded || !initialized">
+		<template v-if="!expanded">
 			<p
 				v-if="!edit"
 				class="ext-wikilambda-app-object-string-renderer__text"
@@ -135,7 +135,8 @@ module.exports = exports = defineComponent( {
 	data: function () {
 		return {
 			blankObject: undefined,
-			initialized: false,
+			renderValueInitialized: false,
+			renderTestsInitialized: false,
 			renderedValue: '',
 			rendererRunning: false,
 			showExamplesDialog: false,
@@ -236,10 +237,19 @@ module.exports = exports = defineComponent( {
 		 * @return {Array}
 		 */
 		validRendererTests: function () {
-			if ( !this.initialized ) {
+			if ( !this.renderTestsInitialized ) {
 				return [];
 			}
 			return this.getValidRendererTests( this.rendererZid );
+		},
+		/**
+		 * Returns the string to show when rendered value fails, which will
+		 * be epty string on edit mode, and "No display value" on view
+		 *
+		 * @return {string}
+		 */
+		noRenderedValue: function () {
+			return this.edit ? '' : this.$i18n( 'wikilambda-renderer-view-invalid-result' ).text();
 		}
 	} ),
 	methods: Object.assign( {}, mapActions( useMainStore, [
@@ -276,8 +286,10 @@ module.exports = exports = defineComponent( {
 		 * in the local renderedValue variable.
 		 */
 		generateRenderedValue: function () {
-			// If we are in view mode, only generate rendered value once.
-			if ( !this.edit && this.initialized ) {
+			// If we are in view mode, only initialize rendered value once.
+			// Only when the rendered value is generated successfully we will
+			// mark it as initialized.
+			if ( !this.edit && this.renderValueInitialized ) {
 				return;
 			}
 
@@ -311,8 +323,7 @@ module.exports = exports = defineComponent( {
 				if ( response === Constants.Z_VOID ) {
 					// Renderer returned void:
 					// get error from metadata object and show examples link
-					this.renderedValue = this.edit ? '' :
-						this.$i18n( 'wikilambda-renderer-view-invalid-result' ).text();
+					this.renderedValue = this.noRenderedValue;
 					this.showExamplesLink = ( this.renderedExamples.length > 0 );
 
 					const metadata = data.response[ Constants.Z_RESPONSEENVELOPE_METADATA ];
@@ -330,8 +341,7 @@ module.exports = exports = defineComponent( {
 				} else if ( this.getZObjectType( response ) !== Constants.Z_STRING ) {
 					// Renderer returned unexpected type:
 					// show unexpected result error and project chat footer
-					this.renderedValue = this.edit ? '' :
-						this.i18n( 'wikilambda-renderer-view-invalid-result' ).text();
+					this.renderedValue = this.noRenderedValue;
 					this.showErrorFooter = true;
 					this.setFieldError( {
 						errorMessageKey: 'wikilambda-renderer-unexpected-result-error',
@@ -340,8 +350,10 @@ module.exports = exports = defineComponent( {
 				} else {
 					// Success: Update the locally saved renderedValue with the response
 					this.renderedValue = response;
+					this.renderValueInitialized = true;
 				}
 			} ).catch( () => {
+				this.renderedValue = this.noRenderedValue;
 				this.clearRendererError();
 				this.setFieldError( { errorMessageKey: 'wikilambda-renderer-api-error' } );
 			} );
@@ -470,11 +482,12 @@ module.exports = exports = defineComponent( {
 						( this.getPassingTestZids( this.rendererZid ).length === 0 )
 					);
 					this.$emit( 'expand', setExpanded );
-					this.initialized = true;
+					this.renderTestsInitialized = true;
 				} );
 			} else {
+				// For view mode we don't need to initialize the renderer examples
 				this.$emit( 'expand', false );
-				this.initialized = true;
+				this.renderTestsInitialized = true;
 			}
 		},
 		/**
