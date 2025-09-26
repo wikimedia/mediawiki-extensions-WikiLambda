@@ -260,6 +260,7 @@
 	"wikilambda-functioncall-metadata-end-time": "Sluttid",
 	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Feil}}",
 	"wikilambda-functioncall-metadata-errors-none": "Ingen",
+	"wikilambda-functioncall-metadata-test-failure": "Forventet resultat og faktisk resultat er ikke det samme.",
 	"wikilambda-functioncall-metadata-errors-summary": "Feiltype",
 	"wikilambda-functioncall-metadata-evaluation": "Evaluering",
 	"wikilambda-functioncall-metadata-expected-result": "Forventet resultat",

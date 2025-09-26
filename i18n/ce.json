@@ -323,6 +323,7 @@
 	"wikilambda-functioncall-metadata-end-time": "Чекхйаьлла хан",
 	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|ГӀалат}}",
 	"wikilambda-functioncall-metadata-errors-none": "ХӀан-хӀа",
+	"wikilambda-functioncall-metadata-test-failure": "Хьоьжуш долу жамӀ а, бакъдолу жамӀ а цхьатерра дац.",
 	"wikilambda-functioncall-metadata-errors-summary": "ГӀалатан тайпа",
 	"wikilambda-functioncall-metadata-errors-args": "ГӀалатах лаьцна хаамаш",
 	"wikilambda-functioncall-metadata-errors-children": "Стека лар",
