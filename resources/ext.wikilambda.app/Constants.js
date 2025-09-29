@@ -624,4 +624,11 @@ Constants.METADATA_CONTENT_TYPE = {
 	HTML: 3
 };
 
+Constants.QUEUE_STATUS = {
+	WAITING: 1,
+	PROCESSING: 2,
+	RESOLVED: 3,
+	REJECTED: 4
+};
+
 module.exports = Constants;

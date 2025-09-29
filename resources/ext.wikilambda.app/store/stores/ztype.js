@@ -219,10 +219,13 @@ module.exports = {
 			const rendererCall = createRendererCall( payload );
 
 			// 2. Run this function call by calling wikilambda_function_call_zobject and return
-			return performFunctionCall( {
+			const run = () => performFunctionCall( {
 				functionCall: rendererCall,
 				language: this.getUserLangCode
 			} );
+
+			const job = this.enqueue( run );
+			return job.promise;
 		},
 
 		/**
@@ -263,7 +266,7 @@ module.exports = {
 
 			// 3. Run this function call by calling wikilambda_function_call_zobject
 			// and return the response and the Promise resolver function
-			return performFunctionCall( {
+			const run = () => performFunctionCall( {
 				functionCall: parserCall,
 				language: this.getUserLangCode,
 				signal: payload.signal
@@ -274,6 +277,9 @@ module.exports = {
 				resolver.resolve();
 				throw e;
 			} );
+
+			const job = this.enqueue( run );
+			return job.promise;
 		},
 
 		/**

@@ -14,6 +14,7 @@ const languagesStore = require( './stores/languages.js' );
 const libraryStore = require( './stores/library.js' );
 const listItemsStore = require( './stores/listItems.js' );
 const programmingLanguagesStore = require( './stores/programmingLanguages.js' );
+const queueStore = require( './stores/queue.js' );
 const routerStore = require( './stores/router.js' );
 const testResultsStore = require( './stores/testResults.js' );
 const userStore = require( './stores/user.js' );
@@ -30,6 +31,8 @@ module.exports = defineStore( 'main', {
 	state: () => Object.assign(
 		// Router
 		routerStore.state,
+		// Job Queue
+		queueStore.state,
 		// Utils
 		errorsStore.state,
 		languagesStore.state,
@@ -55,6 +58,8 @@ module.exports = defineStore( 'main', {
 	getters: Object.assign(
 		// Router
 		routerStore.getters,
+		// Job Queue
+		queueStore.getters,
 		// Utils
 		errorsStore.getters,
 		languagesStore.getters,
@@ -80,6 +85,8 @@ module.exports = defineStore( 'main', {
 	actions: Object.assign(
 		// Router
 		routerStore.actions,
+		// Job Queue
+		queueStore.actions,
 		// Utils
 		errorsStore.actions,
 		languagesStore.actions,

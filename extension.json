@@ -432,6 +432,7 @@
 				"ext.wikilambda.app/store/stores/library.js",
 				"ext.wikilambda.app/store/stores/listItems.js",
 				"ext.wikilambda.app/store/stores/programmingLanguages.js",
+				"ext.wikilambda.app/store/stores/queue.js",
 				"ext.wikilambda.app/store/stores/user.js",
 				"ext.wikilambda.app/store/stores/functionCall.js",
 				"ext.wikilambda.app/store/stores/testResults.js",
