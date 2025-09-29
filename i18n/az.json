@@ -24,8 +24,16 @@
 	"wikilambda-function-are-you-sure-dialog-description": "Dəyişiklikləri yayımlamadan redaktə rejimindən çıxmaq istədiyinizdən əminsiniz?",
 	"wikilambda-create-function": "Funksiya yarat",
 	"wikilambda-create-type": "Növ yarat",
+	"wikilambda-function-definition-name-label": "Ad",
+	"wikilambda-function-definition-edit": "Təsviri redaktə et",
+	"wikilambda-function-definition-name-example": "Ad nümunələrinə bax.",
 	"wikilambda-function-definition-alias-label": "Alternativ adlar",
 	"wikilambda-function-definition-alias-example": "Alternativ ad nümunələrinə baxın.",
+	"wikilambda-function-definition-footer-placeholder": "Dəyişikliklərinizi qısaca təsvir edin",
+	"wikilambda-function-definition-footer-label": "Dəyişikliklərin izahı",
+	"wikilambda-function-definition-inputs-item-typed-list-placeholder": "Yazdığınız siyahı üçün tip seçin",
+	"wikilambda-function-definition-example-title": "Funksiyadan istifadə üçün nümunələr",
+	"wikilambda-function-definition-can-publish-message": "Tərifi tamamladınız! Aşağıdakı \"Yayımla\" düyməsinə klikləməklə işinizi yadda saxlayın",
 	"wikilambda-editor-additional-details-label": "Əlavə detallar",
 	"wikilambda-function-implementation-table-header": "Tətbiqetmələr",
 	"wikilambda-editor-fn-step-function-about": "Haqqında",
@@ -39,5 +47,7 @@
 	"wikilambda-editor-input-default-label": "daxiletmə",
 	"wikilambda-editor-output-title": "Nəticə",
 	"wikilambda-continue-editing": "Redaktəyə davam et",
-	"wikilambda-discard-edits": "Düzəlişləri ləğv et"
+	"wikilambda-discard-edits": "Düzəlişləri ləğv et",
+	"wikilambda-function-details-summary": "Hər kəs yeni bir tətbiq və ya test təklif edə bilər. Təklif olunan kod mövcud tətbiq və ya təsdiqlənmiş testə çevrilməzdən əvvəl Vikifunksiyalar icması tərəfindən nəzərdən keçirilir.",
+	"wikilambda-function-details-summary-learn-more": "Baxış prosesi haqqında daha çox məlumat əldə edin."
 }
