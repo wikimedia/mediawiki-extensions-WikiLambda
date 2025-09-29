@@ -333,6 +333,7 @@
 	"wikilambda-functioncall-metadata-end-time": "وقت الانتهاء",
 	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|خطأ|أخطاء}}",
 	"wikilambda-functioncall-metadata-errors-none": "لا شيء",
+	"wikilambda-functioncall-metadata-test-failure": "النتيجة المتوقعة والنتيجة الفعلية ليست متساوية.",
 	"wikilambda-functioncall-metadata-errors-summary": "نوع الخطأ",
 	"wikilambda-functioncall-metadata-errors-args": "بيانات الخطأ",
 	"wikilambda-functioncall-metadata-errors-children": "تتبع المكدس",

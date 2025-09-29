@@ -2,9 +2,19 @@
 	"@metadata": {
 		"authors": [
 			"Bergerdias",
-			"Cgmbo"
+			"Cgmbo",
+			"Marphy 123"
 		]
 	},
+	"wikilambda-monolingual-string-list-dialog-accessible-title": "Kusolula kubika nge na kumona mpi kutwadisa lisiti ya bansinga ya bandinga mingi",
+	"wikilambda-monolingual-string-list-dialog-title": "Bansangu na bandinga ya nkaka",
+	"wikilambda-monolingual-string-list-dialog-add-language": "Yika ndinga",
+	"wikilambda-monolingual-string-list-dialog-available": "Bandinga yina kele",
+	"wikilambda-monolingual-string-list-dialog-search-placeholder": "Bandinga ya kusosa",
+	"wikilambda-monolingual-string-list-dialog-suggested": "Bandinga ya bo ke pesa ngindu",
+	"wikilambda-editor-multilingual-string-loadmore": "{{PLURAL:$1|$1 language|$1 languages}}",
+	"wikilambda-editor-monolingual-string-nolanguage": "Bo me pona ve ndinga",
+	"wikilambda-functioncall-metadata-test-failure": "Nsuka-nsuka, beto ke vingilaka yo mpi yo ke vandaka ve kiteso mosi.",
 	"wikilambda-move-after-list-item": "Kwenda na nima",
 	"wikilambda-move-before-list-item": "Kwenda na ntwala",
 	"wikilambda-persistentzobject-contents": "Mambu ya Ke na Kati"
