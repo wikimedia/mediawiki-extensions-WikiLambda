@@ -20,7 +20,7 @@
 				<div v-if="canConnect || canDisconnect">
 					<cdx-button
 						v-if="!( isMobile && !canConnect )"
-						:disabled="!canConnect"
+						:disabled="!canConnect || isLoading"
 						data-testid="connect"
 						@click="connect"
 					>
@@ -28,7 +28,7 @@
 					</cdx-button>
 					<cdx-button
 						v-if="!( isMobile && !canDisconnect )"
-						:disabled="!canDisconnect"
+						:disabled="!canDisconnect || isLoading"
 						data-testid="disconnect"
 						@click="disconnect"
 					>
