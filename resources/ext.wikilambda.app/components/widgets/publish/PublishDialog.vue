@@ -125,7 +125,8 @@ module.exports = exports = defineComponent( {
 	data: function () {
 		return {
 			summary: '',
-			hasKeyboardSubmitWarning: false
+			hasKeyboardSubmitWarning: false,
+			isPublishing: false
 		};
 	},
 	computed: Object.assign( {}, mapState( useMainStore, [
@@ -173,7 +174,8 @@ module.exports = exports = defineComponent( {
 		primaryAction: function () {
 			return {
 				actionType: 'progressive',
-				label: this.$i18n( 'wikilambda-publishnew' ).text()
+				label: this.$i18n( 'wikilambda-publishnew' ).text(),
+				disabled: this.isPublishing
 			};
 		},
 
@@ -336,6 +338,8 @@ module.exports = exports = defineComponent( {
 			const summary = this.summary;
 			const disconnectFunctionObjects = this.functionSignatureChanged;
 
+			this.isPublishing = true;
+
 			this.submitZObject( {
 				summary,
 				disconnectFunctionObjects
@@ -349,6 +353,7 @@ module.exports = exports = defineComponent( {
 					errorMessage: error.messageOrFallback( 'wikilambda-unknown-save-error-message' )
 				} );
 			} ).finally( () => {
+				this.isPublishing = false;
 				const interactionData = {
 					zobjecttype: this.getCurrentZObjectType || null,
 					zobjectid: this.getCurrentZObjectId || null,

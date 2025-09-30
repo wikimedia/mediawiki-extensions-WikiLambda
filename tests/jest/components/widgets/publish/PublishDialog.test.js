@@ -118,7 +118,7 @@ describe( 'Publish Dialog', () => {
 		expect( wrapper.emitted( 'close-dialog' ) ).toBeTruthy();
 	} );
 
-	it( 'proceeds to publish when click publish button', () => {
+	it( 'proceeds to publish when click publish button and disables button while publishing', async () => {
 		const wrapper = mount( PublishDialog, {
 			props: { showDialog: true, functionSignatureChanged: false },
 			global: { stubs: dialogGlobalStubs }
@@ -126,10 +126,15 @@ describe( 'Publish Dialog', () => {
 		wrapper.vm.summary = 'mock summary';
 
 		wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
+
+		expect( wrapper.vm.isPublishing ).toBe( true );
+		expect( wrapper.vm.primaryAction.disabled ).toBe( true );
 		expect( store.submitZObject ).toHaveBeenCalledWith( {
 			summary: 'mock summary',
 			disconnectFunctionObjects: false
 		} );
+		await waitFor( () => expect( wrapper.vm.isPublishing ).toBe( false ) );
+		expect( wrapper.vm.primaryAction.disabled ).toBe( false );
 	} );
 
 	it( 'closes dialog and navigates out when submission is successful', async () => {
