@@ -1,5 +1,5 @@
 /*!
- * WikiLambda unit test suite for the Wikidata properties Vuex store module
+ * WikiLambda unit test suite for the Wikidata properties store module
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT

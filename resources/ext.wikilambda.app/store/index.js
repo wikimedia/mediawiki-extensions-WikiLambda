@@ -1,5 +1,5 @@
 /*!
- * WikiLambda Vue editor: Application Vuex store
+ * WikiLambda Vue editor: Application store
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT

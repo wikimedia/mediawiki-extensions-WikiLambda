@@ -78,7 +78,7 @@ const apiUtils = {
 	 * @param {string} payload.zid The zid of the object to update or undefined if new object
 	 * @param {string} payload.summary The update summary
 	 * @param {string} payload.language The  user language code
-	 *  @param {AbortSignal} payload.signal The AbortSignal to cancel the request
+	 * @param {AbortSignal} payload.signal The AbortSignal to cancel the request
 	 * @return {Promise}
 	 */
 	saveZObject: function ( payload ) {
@@ -112,7 +112,7 @@ const apiUtils = {
 	 * @param {string|undefined} payload.revisions The revisions to request, separated by pipes. E.g. '100|101'
 	 * @param {string|undefined} payload.language The preferred language code or none
 	 * @param {boolean|undefined} payload.dependencies Whether to fetch their dependencies too
-	 *  @param {AbortSignal} payload.signal The AbortSignal to cancel the request
+	 * @param {AbortSignal} payload.signal The AbortSignal to cancel the request
 	 * @return {Promise}
 	 */
 	fetchZObjects: function ( payload ) {
@@ -150,9 +150,8 @@ const apiUtils = {
 	 * @param {number} payload.searchContinue When more results are available, use this to continue
 	 * @param {boolean} payload.exact Search by exact match
 	 * @param {number} payload.limit The maximum number of results to return
-	 *  @param {AbortSignal} payload.signal The AbortSignal to cancel the request
-	 * @return {Promise<Object>|undefined}
-	 * - Promise resolving to an object with 'labels' and 'continue'
+	 * @param {AbortSignal} payload.signal The AbortSignal to cancel the request
+	 * @return {Promise<Object>|undefined} Promise resolving to an object with 'labels' and 'continue'
 	 */
 	searchLabels: function ( payload ) {
 		const api = apiUtils.newApi();
@@ -195,7 +194,7 @@ const apiUtils = {
 	 * @param {string} payload.outputType
 	 * @param {number} payload.limit The maximum number of results to return
 	 * @param {number} payload.searchContinue When more results are available, use this to continue
-	 *  @param {AbortSignal} payload.signal The AbortSignal to cancel the request
+	 * @param {AbortSignal} payload.signal The AbortSignal to cancel the request
 	 * @return {Promise<Object>|undefined} Promise resolving to an object with 'objects' and 'continue'
 	 */
 	searchFunctions: function ( payload ) {
@@ -237,7 +236,7 @@ const apiUtils = {
 	 * @param {Array} payload.implementations List of implementations to test
 	 * @param {Array} payload.testers List of tests to run
 	 * @param {string} payload.language The user language code
-	 *  @param {AbortSignal} payload.signal The AbortSignal to cancel the request
+	 * @param {AbortSignal} payload.signal The AbortSignal to cancel the request
 	 * @return {Promise}
 	 */
 	performTests: function ( payload ) {
@@ -277,7 +276,7 @@ const apiUtils = {
 	 * @param {Object} payload
 	 * @param {string} payload.functionZid Zid of the function to test
 	 * @param {string} payload.type What type of object to fetch (Z20 or Z14)
-	 *  @param {AbortSignal} payload.signal The AbortSignal to cancel the request
+	 * @param {AbortSignal} payload.signal The AbortSignal to cancel the request
 	 * @return {Promise}
 	 */
 	fetchFunctionObjects: function ( payload ) {

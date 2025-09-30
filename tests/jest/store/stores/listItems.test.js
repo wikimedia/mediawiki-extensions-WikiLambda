@@ -1,5 +1,5 @@
 /*!
- * WikiLambda unit test suite for the listItems Vuex module
+ * WikiLambda unit test suite for the listItems module
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT

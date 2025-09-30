@@ -1,5 +1,5 @@
 /*!
- * WikiLambda Vue editor: Vuex Wikidata Properties module
+ * WikiLambda Vue editor: Wikidata Properties store module
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
