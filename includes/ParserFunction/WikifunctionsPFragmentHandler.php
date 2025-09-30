@@ -23,6 +23,7 @@ use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Tidy\RemexCompatFormatter;
 use MediaWiki\WikiMap\WikiMap;
@@ -182,10 +183,10 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 						return HtmlPFragment::newFromHtmlString( $html, null );
 					} else {
 						$this->statsFactoryTimer->setLabel( 'response', 'cachedError' )->stop();
-						// TODO: Do we want to have a special kind of fragment for this?
-						// We don't want to retry generally,
-						// but maybe it needs tracking or a longer-but-not-infinite TTL?
-						return $this->createErrorfulFragment( 'wikilambda-functioncall-error-nonstringoutput' );
+						return $this->createErrorfulFragment(
+							$extApi,
+							'wikilambda-functioncall-error-nonstringoutput'
+						);
 					}
 				}
 				// Otherwise, return as literal
@@ -216,9 +217,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 
 			$this->statsFactoryTimer->setLabel( 'response', 'cachedError' )->stop();
 
-			// TODO: Do we want to have a special kind of fragment for this? We don't want to retry generally,
-			// but maybe it needs tracking or a longer-but-not-infinite TTL?
-			return $this->createErrorfulFragment( $errorMessageKey );
+			return $this->createErrorfulFragment( $extApi, $errorMessageKey );
 		}
 
 		// At this point, we know our request hasn't yet been stored in the cache, so we need to trigger it,
@@ -559,11 +558,15 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 
 	/**
 	 * Helper to create an error fragment for failed function calls.
-	 *
-	 * @param ?string $errorMessageKey
-	 * @return HtmlPFragment
 	 */
-	private function createErrorfulFragment( $errorMessageKey ) {
+	private function createErrorfulFragment( ParsoidExtensionAPI $extApi, ?string $errorMessageKey ): HTMLPFragment {
+		$cmc = $extApi->getMetadata();
+		if ( $cmc instanceof ParserOutput ) {
+			// Make sure our fragment's cache expiry is set to at most 1 hour, as we're adding an errorful piece of
+			// content that is likely to be fixed next time around, but we don't want to slam the server.
+			$cmc->updateRuntimeAdaptiveExpiry( 60 * 60 );
+		}
+
 		// Codex will not support inline rendering of error chips or error messages, so we need to
 		// add inline styles to align it inline with the body text and to make it scale properly.
 		return HtmlPFragment::newFromHtmlString(
