@@ -291,6 +291,16 @@ class ApiPerformTest extends WikiLambdaApiBase {
 					$targetFunction
 				);
 
+				if ( !$testFunctionCall ) {
+					$this->dieWithError(
+						[
+							'wikilambda-performtest-error-invalidtester',
+							$testerZid
+						],
+						null, null, HttpStatus::BAD_REQUEST
+					);
+				}
+
 				// Execute the test case function call
 				$testResultObject = $this->executeFunctionCall( $testFunctionCall, true );
 				$testMetadata = $testResultObject->getValueByKey( ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA );
@@ -313,6 +323,16 @@ class ApiPerformTest extends WikiLambdaApiBase {
 
 				$validateFunctionCall = $testerObject->getValueByKey( ZTypeRegistry::Z_TESTER_VALIDATION );
 				'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall $validateFunctionCall';
+
+				if ( !$validateFunctionCall ) {
+					$this->dieWithError(
+						[
+							'wikilambda-performtest-error-invalidtester',
+							$testerZid
+						],
+						null, null, HttpStatus::BAD_REQUEST
+					);
+				}
 
 				$targetValidationFunctionZID = $validateFunctionCall->getZValue();
 				$validateFunctionCall->setValueByKey( $targetValidationFunctionZID . 'K1', $validateTestValue );
