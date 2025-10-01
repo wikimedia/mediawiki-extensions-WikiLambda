@@ -10,20 +10,14 @@
 
 namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\ConnectException;
-use GuzzleHttp\Exception\ServerException;
 use JsonException;
 use MediaWiki\Api\ApiMain;
+use MediaWiki\Api\ApiUsageException;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
-use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
-use MediaWiki\PoolCounter\PoolCounterWorkViaCallback;
-use MediaWiki\Status\Status;
 use Wikimedia\ParamValidator\ParamValidator;
 use Wikimedia\Telemetry\SpanInterface;
 
@@ -36,87 +30,69 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 	}
 
 	/**
-	 * TODO (T338251): Use WikiLambdaApiBase::executeFunctionCall() rather than rolling our own.
-	 *
 	 * @inheritDoc
 	 */
 	protected function run() {
 		$start = microtime( true );
-		$params = $this->extractRequestParams();
-		$pageResult = $this->getResult();
-		$stringOfAZ = $params[ 'zobject' ];
 
+		// Get input parameters
+		$params = $this->extractRequestParams();
+		$zObjectString = $params[ 'zobject' ];
+
+		// Initialize output
+		$pageResult = $this->getResult();
+
+		// Initialize span
 		$tracer = MediaWikiServices::getInstance()->getTracer();
 		$span = $tracer->createSpan( 'WikiLambda ApiFunctionCall' )
 			->setSpanKind( SpanInterface::SPAN_KIND_CLIENT )
 			->start();
 		$span->activate();
 
+		// 1. JSON decode input zobject and die with ZError if invalid syntax
 		try {
-			$zObjectAsStdClass = json_decode( $stringOfAZ, false, 512, JSON_THROW_ON_ERROR );
-			if ( $zObjectAsStdClass === null ) {
-				$errorMessage = 'Invalid JSON that did not throw, somehow.';
-				$span->setAttributes( [
-						'error.message' => $errorMessage
-					] );
-				throw new JsonException( $errorMessage );
-			}
-		} catch ( JsonException ) {
+			$zObjectAsStdClass = json_decode( $zObjectString, false, 512, JSON_THROW_ON_ERROR );
+		} catch ( JsonException $e ) {
+			// (T389702) If the JSON is invalid, we return a 400 error rather than have PHP die
 			$this->submitFunctionCallEvent( HttpStatus::BAD_REQUEST, null, $start );
-			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX, [] );
+			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX, [
+				'message' => $e->getMessage(),
+				'input' => $zObjectString
+			] );
+			$span
+				->setSpanStatus( SpanInterface::SPAN_STATUS_ERROR )
+				->setAttributes( [ 'error.message' => $e->getMessage() ] )
+				->end();
 			WikiLambdaApiBase::dieWithZError( $zError, HttpStatus::BAD_REQUEST );
-		} finally {
-			$span->end();
 		}
 
-		$jsonQuery = [
-			'zobject' => $zObjectAsStdClass,
-			'doValidate' => true
+		// Cautionary canonicalization
+		$zObjectAsStdClass = ZObjectUtils::canonicalize( $zObjectAsStdClass );
+
+		// Initialize flags:
+		$flags = [
+			'validate' => true,
+			'isUnsavedCode' => false,
+			// Get bypassCache boolean flag if set to any truthy value, false otherwise
+			'bypassCache' => filter_var( $params[ 'bypass-cache' ], FILTER_VALIDATE_BOOLEAN )
 		];
 
-		$logger = LoggerFactory::getInstance( 'WikiLambda' );
-
-		// Extract the function called, as a string, for the metrics event. (It should always exist,
-		// but if not the orchestrator will return an error.)
-		$function = '';
-		if ( property_exists( $zObjectAsStdClass, 'Z7K1' ) ) {
-			if ( gettype( $zObjectAsStdClass->Z7K1 ) === 'string' ) {
-				$function = $zObjectAsStdClass->Z7K1;
-			} elseif (
-				is_object( $zObjectAsStdClass->Z7K1 ) &&
-				property_exists( $zObjectAsStdClass->Z7K1, 'Z8K5' )
-			) {
-				$function = $zObjectAsStdClass->Z7K1->Z8K5;
-			} else {
-				$logger->info(
-					'ApiFunctionCall unable to find a ZID for the function called',
-					[
-						'zobject' => $stringOfAZ
-					]
-				);
-			}
-		}
-		// Only log or submit event with $function if it's valid, to ensure privacy
-		if ( !ZObjectUtils::isValidZObjectReference( $function ) ) {
+		// Get function zid for logging
+		$function = ZObjectUtils::getFunctionZidOrNull( $zObjectAsStdClass );
+		if ( !ZObjectUtils::isValidZObjectReference( (string)$function ) ) {
 			$function = 'No valid ZID';
+			$this->getLogger()->info(
+				__METHOD__ . ' unable to find a ZID for the function called',
+				[
+					'zobject' => $zObjectString
+				]
+			);
 		}
-
-		// Unlike the Special pages, we don't have a helpful userCanExecute() method
-		$userAuthority = $this->getContext()->getAuthority();
-		if ( !$userAuthority->isAllowed( 'wikilambda-execute' ) ) {
-			$this->submitFunctionCallEvent( HttpStatus::FORBIDDEN, $function, $start );
-			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
-			WikiLambdaApiBase::dieWithZError( $zError, HttpStatus::FORBIDDEN );
-		}
-
-		// Principally used for the PoolCounter, but also logging
-		$userName = $this->getUser()->getName();
 
 		// Arbitrary implementation calls need more than wikilambda-execute;
 		// require wikilambda-execute-unsaved-code, so that it can be independently
 		// activated/deactivated (to run an arbitrary implementation, you have to
 		// pass a custom function with the raw implementation rather than a ZID string.)
-		$isUnsavedCode = false;
 		if (
 			property_exists( $zObjectAsStdClass, 'Z7K1' ) &&
 			is_object( $zObjectAsStdClass->Z7K1 ) &&
@@ -125,175 +101,66 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 		) {
 			$implementation = $zObjectAsStdClass->Z7K1->Z8K4[ 1 ];
 			if ( is_object( $implementation ) && property_exists( $implementation, 'Z14K1' ) ) {
-				$isUnsavedCode = true;
+				$flags[ 'isUnsavedCode' ] = true;
 			}
 		}
-		if ( $isUnsavedCode && !$userAuthority->isAllowed( 'wikilambda-execute-unsaved-code' ) ) {
-			$errorMessage =
-				'ApiFunctionCall rejecting a request for arbitrary execution from an unauthorised user "{user}"';
-			$logger->info(
-				$errorMessage,
-				[
-					'user' => $userName,
-					'function' => $function
-				]
-			);
-			$this->submitFunctionCallEvent( HttpStatus::FORBIDDEN, $function, $start );
-			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
-			WikiLambdaApiBase::dieWithZError( $zError, HttpStatus::FORBIDDEN );
-		}
-
-		$bypassCache = false;
-		$toggleCacheFlag = $params[ 'bypass-cache' ];
-		if ( $toggleCacheFlag ) {
-			if ( $userAuthority->isAllowed( 'wikilambda-bypass-cache' ) ) {
-				$bypassCache = filter_var( $toggleCacheFlag, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE );
-				$logger->info( "'bypass-cache' flag has just been toggled to: $bypassCache" );
-			} else {
-				$errorMessage = "User not permitted to toggle 'bypass-cache' flag";
-				$logger->warning( $errorMessage );
-				$this->submitFunctionCallEvent( HttpStatus::FORBIDDEN, $function, $start );
-				$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
-				WikiLambdaApiBase::dieWithZError( $zError, HttpStatus::FORBIDDEN );
-			}
-		}
-
-		$work = new PoolCounterWorkViaCallback( WikiLambdaApiBase::FUNCTIONCALL_POOL_COUNTER_TYPE, $userName, [
-			'doWork' => function () use ( $bypassCache, $jsonQuery, $logger ) {
-				$logger->debug(
-					'ApiFunctionCall running request',
-					[
-						'query' => $jsonQuery
-					]
-				);
-
-				return $this->orchestrator->orchestrate( $jsonQuery, $bypassCache );
-			},
-			'error' => function ( Status $status ) use ( $function, $start, $userName, $logger ) {
-				$errorMessage = 'ApiFunctionCall rejecting a request due to too many requests from source "{user}"';
-				$logger->info(
-					$errorMessage,
-					[
-						'user' => $userName,
-						'function' => $function
-					]
-				);
-				$this->submitFunctionCallEvent( HttpStatus::TOO_MANY_REQUESTS, $function, $start );
-				$this->dieWithError(
-					[ "apierror-wikilambda_function_call-concurrency-limit" ],
-					null,
-					null,
-					HttpStatus::TOO_MANY_REQUESTS
-				);
-			}
-		] );
-
-		$result = [ 'success' => false ];
 
 		try {
-			$response = $work->execute();
-			$result['data'] = $response['result'];
-			$result['success'] = true;
+			$response = $this->executeFunctionCall( $zObjectAsStdClass, $flags );
+
+			$result = [
+				'success' => true,
+				'data' => $response['result']
+			];
+
+			// Get the Http status code returned by the orchestrator, and:
+			// * For 2xx or 4xx, log it as a successful request
+			// * For 5xx (server errors), log it as a failer request
 			$httpStatusCode = $response['httpStatusCode'];
-			$span->setSpanStatus( SpanInterface::SPAN_STATUS_OK );
-		} catch ( ConnectException $exception ) {
-			$errorMessage = 'ApiFunctionCall failed due to a ConnectException: "{message}"';
-			$logger->warning(
-				$errorMessage,
+			if ( $httpStatusCode < HttpStatus::INTERNAL_SERVER_ERROR ) {
+				$span->setSpanStatus( SpanInterface::SPAN_STATUS_OK );
+			} else {
+				$result['success'] = false;
+				$span
+					->setSpanStatus( SpanInterface::SPAN_STATUS_ERROR )
+					->setAttributes( [
+						'response.status_code' => $httpStatusCode,
+						'exception.message' => $response['result']
+					] );
+			}
+
+			$pageResult->addValue( [], $this->getModuleName(), $result );
+			$this->submitFunctionCallEvent( $httpStatusCode, $function, $start );
+
+		} catch ( ApiUsageException $e ) {
+			// Whenever executeFunctionCall dies with error, we intercept it so that:
+			// * we submit a function call metrics event,
+			// * we rethrow the error
+			// * finally we end the span
+			$errorCode = $e->getCode();
+			$httpStatusCode = ( is_int( $errorCode ) && $errorCode >= 100 && $errorCode < 600 ) ?
+				$errorCode : HttpStatus::BAD_REQUEST;
+			$this->submitFunctionCallEvent( $httpStatusCode, $function, $start );
+			throw $e;
+
+		} catch ( \Throwable $e ) {
+			// Whatever we catch here is an unexpected system error:
+			// * we log accordingly as error
+			// * we rethrow the error
+			// * finally we end the span
+			$this->getLogger()->error(
+				__METHOD__ . ' caused an unexpected system failure',
 				[
-					'message' => $exception->getMessage(),
-					'exception' => $exception
+					'zobject' => $zObjectString,
+					'exception' => $e
 				]
 			);
-			$this->submitFunctionCallEvent( HttpStatus::SERVICE_UNAVAILABLE, $function, $start );
-			$this->dieWithError(
-				[ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ],
-				null,
-				null,
-				HttpStatus::SERVICE_UNAVAILABLE
-			);
-		} catch ( ClientException | ServerException $exception ) {
-			$zError = ZErrorFactory::wrapMessageInZError(
-				$exception->getResponse()->getReasonPhrase(),
-				$zObjectAsStdClass
-			);
-			$zResponseMap = ZResponseEnvelope::wrapErrorInResponseMap( $zError );
-			$zResponseObject = new ZResponseEnvelope( null, $zResponseMap );
-			$result['data'] = json_encode( $zResponseObject->getSerialized() );
-			$status = $exception->getResponse()->getStatusCode();
-			$span->setSpanStatus( SpanInterface::SPAN_STATUS_ERROR )
-				->setAttributes( [
-					'response.status_code' => $status,
-					'exception.message' => $exception->getMessage()
-			] );
-			$this->submitFunctionCallEvent( $status, $function, $start );
-			if ( $exception instanceof ClientException ) {
-				$logger->debug(
-					'ApiFunctionCall failed due to a ClientException: "{message}"',
-					[
-						'message' => $exception->getMessage(),
-						'exception' => $exception
-					]
-				);
-				$this->dieWithError(
-					[ "apierror-wikilambda_function_call-client-error", $this->orchestratorHost ],
-					null, null, $status
-				);
-			} elseif ( $exception instanceof ServerException ) {
-				$logger->warning(
-					'ApiFunctionCall failed due to a ServerException: "{message}"',
-					[
-						'message' => $exception->getMessage(),
-						'exception' => $exception
-					]
-				);
-				$this->dieWithError(
-					[ "apierror-wikilambda_function_call-server-error", $this->orchestratorHost ],
-					null, null, $status
-				);
-			}
+			throw $e;
+
 		} finally {
+			// End the span
 			$span->end();
 		}
-
-		$pageResult->addValue( [], $this->getModuleName(), $result );
-		$this->submitFunctionCallEvent( $httpStatusCode, $function, $start );
-	}
-
-	/**
-	 * Constructs and submits a metrics event representing this call.
-	 *
-	 * @param int $httpStatus
-	 * @param string|null $function
-	 * @param float $start
-	 * @return void
-	 */
-	private function submitFunctionCallEvent( $httpStatus, $function, $start ): void {
-		$duration = 1000 * ( microtime( true ) - $start );
-
-		$eventData = [
-			'http' => [ 'status_code' => $httpStatus ],
-			'total_time_ms' => $duration,
-		];
-		if ( $function !== null ) {
-			$eventData['function'] = $function;
-		}
-
-		// This is our submission to the Analytics / metrics system (private data stream);
-		// if EventLogging isn't enabled, this will be a no-op.
-		$this->submitMetricsEvent( 'wikilambda_function_call', $eventData );
-
-		// (T390548) This is our submission to the Prometheus / SLO system (public data stream).
-		// Note: There is already a metric stream provided out-of-the-box from us being part of the Action API,
-		// mediawiki_api_executeTiming_seconds{module="wikilambda_function_call",…}, but that does not include
-		// the HTTP status code, so we have to track our own.
-		MediaWikiServices::getInstance()->getStatsFactory()->withComponent( 'WikiLambda' )
-			// Will end up as 'mediawiki.WikiLambda.mw_to_orchestrator_api_call_seconds{status=…}'
-			->getTiming( 'mw_to_orchestrator_api_call_seconds' )
-			// Note: We intentionally don't log the function here, for cardinality reasons
-			->setLabel( 'status', (string)$httpStatus )
-			// The "observe" method takes milliseconds.
-			->observe( $duration );
 	}
 
 	/**

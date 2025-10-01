@@ -320,6 +320,11 @@ class ZErrorFactory {
 				$zErrorValue[] = new ZString( $payload['message'] );
 				break;
 
+			case ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX:
+				$zErrorValue[] = new ZString( $payload['message'] );
+				$zErrorValue[] = new ZString( $payload['input'] );
+				break;
+
 			case ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED:
 				$zErrorValue[] = new ZString( $payload['subtype'] );
 				$zErrorValue[] = $payload['childError'];
@@ -525,6 +530,11 @@ class ZErrorFactory {
 				$zErrorValue[] = $payload['error'];
 				break;
 
+			case ZErrorTypeRegistry::Z_ERROR_OBJECT_TYPE_MISMATCH:
+				$zErrorValue[] = new ZReference( $payload['expected'] );
+				$zErrorValue[] = new ZQuote( $payload['actual'] );
+				break;
+
 			default:
 				break;
 		}
@@ -561,13 +571,14 @@ class ZErrorFactory {
 	}
 
 	/**
-	 * Convenience method to wrap a non-error in a Z507/Evaluation ZError
+	 * Create Z507/Evaluation Error wrapping a Z500/Generic Error that
+	 * wraps a string error message.
 	 *
 	 * @param string|ZObject $message The non-error to wrap.
 	 * @param string $call The functional call context.
 	 * @return ZError
 	 */
-	public static function wrapMessageInZError( $message, $call ): ZError {
+	public static function createEvaluationError( $message, $call ): ZError {
 		$wrappedError = self::createZErrorInstance(
 			ZErrorTypeRegistry::Z_ERROR_UNKNOWN, [ 'message' => $message ]
 		);

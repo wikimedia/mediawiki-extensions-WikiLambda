@@ -11,7 +11,6 @@
 namespace MediaWiki\Extension\WikiLambda\RESTAPI;
 
 use Exception;
-use InvalidArgumentException;
 use JsonException;
 use MediaWiki\Api\ApiMain;
 use MediaWiki\Api\ApiUsageException;
@@ -150,17 +149,6 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 		// 7. Execute the call
 		try {
 			$requestCall = json_encode( $call, JSON_THROW_ON_ERROR );
-			if ( !$requestCall ) {
-				$errorMessage = __METHOD__ . ' called on "' . $target . '" but the JSON encoding failed';
-				$span->setSpanStatus( SpanInterface::SPAN_STATUS_ERROR )
-					->setAttributes( [
-						'error.message' => $errorMessage
-					] );
-				throw new InvalidArgumentException(
-					$errorMessage
-				);
-			}
-
 			$response = $this->makeRequest( $requestCall, $renderLang, $span );
 		} catch ( ZErrorException $e ) {
 			$errorMessage = __METHOD__ . ' called on {target} but got a ZErrorException, {error}';
@@ -195,7 +183,10 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 				] );
 			$this->dieRESTfullyWithZError(
 				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX, [ 'data' => $call ]
+					ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX, [
+						'input' => var_export( $call, true ),
+						'message' => $e->getMessage()
+					]
 				),
 				HttpStatus::BAD_REQUEST,
 				[
@@ -996,7 +987,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 				] );
 			$span->end();
 			// Throw ZErrorException for evaluation error:
-			throw new ZErrorException( ZErrorFactory::wrapMessageInZError(
+			throw new ZErrorException( ZErrorFactory::createEvaluationError(
 				"Server returned a non-result of type '$responseType'!",
 				$call
 			) );
@@ -1021,7 +1012,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			$span->end();
 			if ( !( $zerror instanceof ZError ) ) {
 				// Throw ZErrorException for evaluation error, wrap the non error in a Z500:
-				throw new ZErrorException( ZErrorFactory::wrapMessageInZError( new ZQuote( $zerror ), $call ) );
+				throw new ZErrorException( ZErrorFactory::createEvaluationError( new ZQuote( $zerror ), $call ) );
 			}
 
 			// Throw ZErrorException for evaluation error, propagate existing zerror:

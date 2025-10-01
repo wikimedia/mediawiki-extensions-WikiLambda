@@ -12,6 +12,8 @@ namespace MediaWiki\Extension\WikiLambda;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\TooManyRedirectsException;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Utils\GitInfo;
@@ -52,13 +54,19 @@ class OrchestratorRequest {
 	}
 
 	/**
-	 * Ask the function-orchestrator to evaluate a function call.
+	 * Ask the function-orchestrator to evaluate a function call and saves the
+	 * response in the cache (if not yet cached).
+	 *
+	 * * If bypassCache is true, sends the request directly to the orchestrator and
+	 *   does not update the cached value.
 	 *
 	 * @param stdClass|array $query
 	 * @param bool $bypassCache Whether to bypass the MediaWiki-side function call cache; this is
 	 *   only to be used for special circumstances, as it's potentially expensive.
 	 * @return array containing Response object (Z22) returned by orchestrator, down-cast to a string
 	 *  and the actual http status code from the Orchestrator
+	 * @throws ConnectException If the request fails to connect
+	 * @throws TooManyRedirectsException If the request exceeds the allowed number of redirects
 	 */
 	public function orchestrate( $query, $bypassCache = false ): array {
 		// (T365053) Propagate request tracing headers
@@ -66,7 +74,6 @@ class OrchestratorRequest {
 		$requestHeaders['User-Agent'] = $this->userAgentString;
 
 		if ( $bypassCache ) {
-			// TODO (T338242): Use postAsync here.
 			return $this->handleGuzzleRequestForEvaluate( $query, $requestHeaders );
 		}
 
@@ -80,7 +87,6 @@ class OrchestratorRequest {
 			// TODO (T338243): Is this the right timeout? Maybe TTL_DAY or TTL_MONTH instead?
 			$this->objectCache::TTL_WEEK,
 			function () use ( $query, $requestHeaders ) {
-				// TODO (T338242): Use postAsync here.
 				return $this->handleGuzzleRequestForEvaluate( $query, $requestHeaders );
 			}
 		);
@@ -108,20 +114,31 @@ class OrchestratorRequest {
 	/**
 	 * Helper function to handle client-side HTTP error codes.
 	 *
-	 * Guzzle throws an exception on any non-2xx status, in this case returned from the Orchestrator.
-	 * ''http_errors' => false' overrides this behavior so that users will continue to see zobject response body.
-	 * However for Client/Server exceptions, we still want exceptions to be thrown
+	 * Guzzle by default throws an exception on any non-2xx status, in this case returned from the Orchestrator.
+	 * By calling the post method with `http_errors => false`, 400 and 500 errors are returned in the
+	 * response payload instead of being thrown as ClientException or ServerException.
+	 *
+	 * Guzzle throws four types of exception, all extend TransferException (implements GuzzleException):
+	 * * ConnectException: in case of networking error
+	 * * ClientException: for http 400 errors; with `http_errors => false` these are not thrown.
+	 * * ServerException: for http 500 errors; with `http_errors => false` these are not thrown.
+	 * * TooManyRedirectsException: in case of too many redirects followed
+	 *
+	 * See: https://docs.guzzlephp.org/en/stable/quickstart.html#exceptions
 	 *
 	 * @param stdClass|array $query
 	 * @param array $requestHeaders
 	 * @return array containing Response object (Z22) returned by orchestrator, down-cast to a string
 	 * and the actual http status code from the Orchestrator
+	 * @throws ConnectException If the request fails to connect
+	 * @throws TooManyRedirectsException If the request exceeds the allowed number of redirects
 	 */
 	private function handleGuzzleRequestForEvaluate( $query, $requestHeaders ): array {
+		// TODO (T338242): Use postAsync here.
 		$response = $this->guzzleClient->post( '/1/v1/evaluate/', [
 			'json' => $query,
 			'headers' => $requestHeaders,
-			// http errors from Orchestrator will be suppressed so that they will not throw exceptions
+			// http 400/500 errors from Orchestrator will be suppressed so that they will not throw exceptions
 			'http_errors' => false
 		] );
 		$httpStatusCode = $response->getStatusCode();

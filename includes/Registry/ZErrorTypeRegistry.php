@@ -33,6 +33,8 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 	public const Z_ERROR_LIST = 'Z509';
 	public const Z_ERROR_MISSING_KEY = 'Z511';
 	public const Z_ERROR_MISSING_PERSISTENT_VALUE = 'Z513';
+	public const Z_ERROR_RETURN_TYPE_MISMATCH = 'Z517';
+	public const Z_ERROR_OBJECT_TYPE_MISMATCH = 'Z518';
 	public const Z_ERROR_UNDEFINED_LIST_TYPE = 'Z519';
 	public const Z_ERROR_WRONG_LIST_TYPE = 'Z520';
 	public const Z_ERROR_NOT_NUMBER_BOOLEAN_NULL = 'Z521';

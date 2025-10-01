@@ -75,7 +75,7 @@ class ApiSupportedProgrammingLanguages extends WikiLambdaApiBase {
 				null, null, HttpStatus::INTERNAL_SERVER_ERROR
 			);
 		} catch ( ClientException | ServerException $exception ) {
-			$zError = ZErrorFactory::wrapMessageInZError( $exception->getResponse()->getReasonPhrase(), '' );
+			$zError = ZErrorFactory::createEvaluationError( $exception->getResponse()->getReasonPhrase(), '' );
 			$zResponseMap = ZResponseEnvelope::wrapErrorInResponseMap( $zError );
 			$zResponseObject = new ZResponseEnvelope( null, $zResponseMap );
 			$result = [ 'data' => $zResponseObject->getSerialized() ];

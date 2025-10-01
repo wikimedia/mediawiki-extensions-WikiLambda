@@ -873,11 +873,10 @@ class ZObjectUtils {
 			// Fall through: invalid syntax error
 			throw new ZErrorException(
 				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX,
-					[
-						'data' => $zobject
-					]
-				)
+					ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX, [
+						'input' => var_export( $zobject, true ),
+						'message' => __METHOD__ . ' received a ZObject with invalid syntax'
+					] )
 			);
 		}
 
@@ -1141,6 +1140,29 @@ class ZObjectUtils {
 			}
 		}
 		return $call;
+	}
+
+	/**
+	 * Given a function call in its canonical form, returns the top level function Zid:
+	 * * when it's a referenced function, returns the zid of that reference,
+	 * * when it's a literal function, returns the terminal value of Z8K5.
+	 * If no valid Zid was found, returns null.
+	 *
+	 * @param stdClass $functionCall
+	 * @return string|null
+	 */
+	public static function getFunctionZidOrNull( $functionCall ) {
+		if ( property_exists( $functionCall, 'Z7K1' ) ) {
+			if ( gettype( $functionCall->Z7K1 ) === 'string' ) {
+				return $functionCall->Z7K1;
+			} elseif (
+				is_object( $functionCall->Z7K1 ) &&
+				property_exists( $functionCall->Z7K1, 'Z8K5' )
+			) {
+				return $functionCall->Z7K1->Z8K5;
+			}
+		}
+		return null;
 	}
 
 	public static function encodeStringParamForNetwork( string $input ): string {
