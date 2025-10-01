@@ -241,7 +241,7 @@ module.exports = exports = defineComponent( {
 		noSensesMessage: function () {
 			return this.$i18n( 'wikilambda-wikidata-lexeme-sense-no-senses-message', [ this.lexemeUrl ] )
 				.parse()
-				// FIXME: how to open the link in a new tab using MediaWiki translations?
+				// TODO (T406155): how to open the link in a new tab using MediaWiki translations?
 				.replace( '<a ', '<a target="_blank" rel="noopener" ' );
 		}
 	} ),

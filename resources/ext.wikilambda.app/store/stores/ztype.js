@@ -47,7 +47,7 @@ module.exports = {
 		/**
 		 * Returns the renderer Zid for a given type
 		 * or undefined if it does not exist.
-		 * TODO: differentiate between "it hasn't been fetched" vs.
+		 * TODO (T406159): Differentiate between "it hasn't been fetched" vs.
 		 * "it has been fetched and it doesn't exist"
 		 *
 		 * @param {Object} state
@@ -65,7 +65,7 @@ module.exports = {
 		/**
 		 * Returns the renderer Zid for a given type
 		 * or undefined if it does not exist.
-		 * TODO: differentiate between "it hasn't been fetched" vs.
+		 * TODO (T406159): Differentiate between "it hasn't been fetched" vs.
 		 * "it has been fetched and it doesn't exist"
 		 *
 		 * @param {Object} state
@@ -205,7 +205,7 @@ module.exports = {
 		/**
 		 * Given any Object/Z1 and a Language/Z60, it runs
 		 * its renderer and returns the resulting Object.
-		 * TODO: currently this will return a String/Z6 object,
+		 * TODO (T406160): currently this will return a String/Z6 object,
 		 * but in the future this can return other types)
 		 *
 		 * @param {Object} payload
@@ -237,7 +237,7 @@ module.exports = {
 		 * take place. The flag wait indicates whether the response of
 		 * this parser function should be waited for.
 		 *
-		 * TODO: currently this will accept a String/Z6 object,
+		 * TODO (T406160): currently this will accept a String/Z6 object,
 		 * but in the future it may accept other types)
 		 *
 		 * @param {Object} payload

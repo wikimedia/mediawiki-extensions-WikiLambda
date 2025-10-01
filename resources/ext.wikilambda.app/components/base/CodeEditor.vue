@@ -70,7 +70,7 @@ module.exports = exports = defineComponent( {
 			if ( basePath.slice( 0, 2 ) === '//' ) {
 				basePath = window.location.protocol + basePath;
 			}
-			// TODO: Figure a way to not have this path hardcoded, perhaps wgWikiLambdaAcePath?
+			// TODO (T406154): Figure a way to not have this path hardcoded, perhaps wgWikiLambdaAcePath?
 			window.ace.config.set( 'basePath', basePath + '/WikiLambda/resources/lib/ace/src' );
 
 			// Set readonly attribute when readonly or disabled

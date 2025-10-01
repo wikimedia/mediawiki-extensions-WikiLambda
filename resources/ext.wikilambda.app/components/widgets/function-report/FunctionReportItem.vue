@@ -209,7 +209,7 @@ module.exports = exports = defineComponent( {
 		margin-left: @spacing-50;
 	}
 
-	/* TODO: update with codex dark link when available */
+	/* TODO (T406158): Update with codex dark link when available */
 	.ext-wikilambda-app-function-report-item__title {
 		margin-right: 0;
 		display: block;

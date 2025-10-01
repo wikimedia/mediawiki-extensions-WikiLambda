@@ -170,7 +170,7 @@ module.exports = exports = defineComponent( {
 		excludeZids: function () {
 			// If current reference is within a multilingual string list/Z12, exclude
 			// the languages already present in that list from the lookup.
-			// TODO: check if we do need to check is its in a typed list of type monolingual string,
+			// TODO (T406156): check if we do need to check is its in a typed list of type monolingual string,
 			// or if its enough to check if its in a multilingual string list.
 			if (
 				this.isKeyTypedListItem( this.parentKey ) &&
