@@ -310,7 +310,7 @@ class ZObjectContentHandler extends ContentHandler {
 
 		// Ensure the stored content is a valid ZObject; this also populates $this->getZObject() for us
 		if ( !( $content instanceof ZObjectContent ) || !$content->isValid() ) {
-			$parserOutput->setText(
+			$parserOutput->setContentHolderText(
 				Html::element(
 					'div',
 					[
@@ -385,7 +385,7 @@ class ZObjectContentHandler extends ContentHandler {
 
 		// Don't do further work if the requester doesn't want the HTML version generated.
 		if ( !$cpoParams->getGenerateHtml() ) {
-			$parserOutput->setText( '' );
+			$parserOutput->setContentHolderText( '' );
 			return;
 		}
 
@@ -440,7 +440,7 @@ class ZObjectContentHandler extends ContentHandler {
 		// Add language mapping for multilingual string dialog
 		$parserOutput->setJsConfigVar( 'wgWikiLambdaLangs', $this->zObjectStore->fetchAllZLanguageObjects() );
 
-		$parserOutput->setText(
+		$parserOutput->setContentHolderText(
 			// Placeholder div for the Vue template.
 			Html::element( 'div', [ 'id' => 'ext-wikilambda-app' ] )
 			// Fallback div for the warning.
