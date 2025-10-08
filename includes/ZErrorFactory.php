@@ -535,6 +535,10 @@ class ZErrorFactory {
 				$zErrorValue[] = new ZQuote( $payload['actual'] );
 				break;
 
+			case ZErrorTypeRegistry::Z_ERROR_CONNECTION_FAILURE:
+				$zErrorValue[] = new ZString( $payload['host'] );
+				break;
+
 			default:
 				break;
 		}
@@ -608,6 +612,20 @@ class ZErrorFactory {
 				'request' => $request,
 				'error' => $wrappedError
 			]
+		);
+	}
+
+	/**
+	 * Convenience method to create a ConnectionFailureError for when the orchestrator
+	 * cannot be reached.
+	 *
+	 * @param string $host The host that could not be reached
+	 * @return ZError
+	 */
+	public static function createConnectionFailureError( $host ): ZError {
+		return self::createZErrorInstance(
+			ZErrorTypeRegistry::Z_ERROR_CONNECTION_FAILURE,
+			[ 'host' => $host ]
 		);
 	}
 }

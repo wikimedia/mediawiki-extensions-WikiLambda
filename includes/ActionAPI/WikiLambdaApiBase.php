@@ -354,10 +354,8 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 				]
 			);
 
-			$this->dieWithError(
-				[ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ],
-				null, null, HttpStatus::SERVICE_UNAVAILABLE
-			);
+			$zError = ZErrorFactory::createConnectionFailureError( $this->orchestratorHost );
+			self::dieWithZError( $zError, HttpStatus::SERVICE_UNAVAILABLE );
 
 		} catch ( TooManyRedirectsException $exception ) {
 			// TooManyRedirectsException is thrown when too many redirects are followed.

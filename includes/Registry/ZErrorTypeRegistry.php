@@ -43,6 +43,7 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 	public const Z_ERROR_TYPE_NOT_STRING_ARRAY = 'Z524';
 	public const Z_ERROR_INVALID_KEY = 'Z525';
 	public const Z_ERROR_KEY_VALUE_NOT_WELLFORMED = 'Z526';
+	public const Z_ERROR_CONNECTION_FAILURE = 'Z529';
 	public const Z_ERROR_API_FAILURE = 'Z530';
 	public const Z_ERROR_STRING_VALUE_MISSING = 'Z532';
 	public const Z_ERROR_STRING_VALUE_WRONG_TYPE = 'Z533';
@@ -93,6 +94,7 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 		'Z524' => 'Z_ERROR_TYPE_NOT_STRING_ARRAY',
 		'Z525' => 'Z_ERROR_INVALID_KEY',
 		'Z526' => 'Z_ERROR_KEY_VALUE_NOT_WELLFORMED',
+		'Z529' => 'Z_ERROR_CONNECTION_FAILURE',
 		'Z532' => 'Z_ERROR_STRING_VALUE_MISSING',
 		'Z533' => 'Z_ERROR_STRING_VALUE_WRONG_TYPE',
 		'Z535' => 'Z_ERROR_REFERENCE_VALUE_MISSING',
