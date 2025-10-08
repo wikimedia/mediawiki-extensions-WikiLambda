@@ -19,50 +19,50 @@ const objectValue = [
 
 describe( 'ZTypedListItems', () => {
 
+	/**
+	 * Helper function to render ZTypedListItems component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderZTypedListItems( props = {}, options = {} ) {
+		const defaultProps = {
+			keyPath,
+			objectValue,
+			edit: false,
+			expanded: false,
+			listItemType: 'Z6'
+		};
+		const defaultOptions = {
+			global: {
+				stubs: {
+					WlKeyValueBlock: false,
+					...options?.stubs
+				}
+			}
+		};
+		return shallowMount( ZTypedListItems, { props: { ...defaultProps, ...props }, ...defaultOptions } );
+	}
+
 	describe( 'in view mode', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( ZTypedListItems, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false,
-					expanded: false,
-					listItemType: 'Z6'
-				}
-			} );
+			const wrapper = renderZTypedListItems();
 
 			expect( wrapper.find( '.ext-wikilambda-app-typed-list-items' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders ZObjectKeyValue for each list item', () => {
-			const wrapper = shallowMount( ZTypedListItems, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false,
-					expanded: false,
-					listItemType: 'Z6'
-				},
-				global: {
-					stubs: { WlKeyValueBlock: false }
-				}
-			} );
+			const wrapper = renderZTypedListItems();
 
 			expect( wrapper.findAllComponents( { name: 'wl-z-object-key-value' } ).length ).toBe( 2 );
 		} );
 
 		it( 'renders list items label when expanded', () => {
-			const wrapper = shallowMount( ZTypedListItems, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false,
-					expanded: true,
-					listItemType: 'Z6'
-				},
-				global: {
-					stubs: { WlKeyValueBlock: false, WlKeyBlock: false }
-				}
+			const wrapper = renderZTypedListItems( {
+				expanded: true
+			}, {
+				stubs: { WlKeyBlock: false }
 			} );
 
 			const label = wrapper.findComponent( { name: 'wl-localized-label' } );
@@ -72,15 +72,7 @@ describe( 'ZTypedListItems', () => {
 		} );
 
 		it( 'does not render list items label when collapsed', () => {
-			const wrapper = shallowMount( ZTypedListItems, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false,
-					expanded: false,
-					listItemType: 'Z6'
-				}
-			} );
+			const wrapper = renderZTypedListItems();
 
 			expect( wrapper.findComponent( { name: 'wl-expanded-toggle' } ).exists() ).toBe( false );
 			expect( wrapper.findComponent( { name: 'wl-localized-label' } ).exists() ).toBe( false );
@@ -91,17 +83,8 @@ describe( 'ZTypedListItems', () => {
 				{ Z1K1: 'Z9', Z9K1: 'Z6' }
 			];
 
-			const wrapper = shallowMount( ZTypedListItems, {
-				props: {
-					keyPath,
-					objectValue: emptyObjectValue,
-					edit: false,
-					expanded: false,
-					listItemType: 'Z6'
-				},
-				global: {
-					stubs: { WlKeyValueBlock: false }
-				}
+			const wrapper = renderZTypedListItems( {
+				objectValue: emptyObjectValue
 			} );
 
 			const emptyState = wrapper.find( '.ext-wikilambda-app-typed-list-items__empty-state' );
@@ -114,17 +97,9 @@ describe( 'ZTypedListItems', () => {
 				{ Z1K1: 'Z9', Z9K1: 'Z6' }
 			];
 
-			const wrapper = shallowMount( ZTypedListItems, {
-				props: {
-					keyPath,
-					objectValue: emptyObjectValue,
-					edit: false,
-					expanded: true,
-					listItemType: 'Z6'
-				},
-				global: {
-					stubs: { WlKeyValueBlock: false }
-				}
+			const wrapper = renderZTypedListItems( {
+				objectValue: emptyObjectValue,
+				expanded: true
 			} );
 			const emptyState = wrapper.find( '.ext-wikilambda-app-typed-list-items__empty-state' );
 			expect( emptyState.exists() ).toBe( true );
@@ -134,15 +109,7 @@ describe( 'ZTypedListItems', () => {
 
 	describe( 'in edit mode', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( ZTypedListItems, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					expanded: false,
-					listItemType: 'Z6'
-				}
-			} );
+			const wrapper = renderZTypedListItems( { edit: true } );
 
 			expect( wrapper.find( '.ext-wikilambda-app-typed-list-items' ).exists() ).toBe( true );
 		} );
@@ -153,17 +120,8 @@ describe( 'ZTypedListItems', () => {
 			];
 
 			// Test view mode
-			const wrapper = shallowMount( ZTypedListItems, {
-				props: {
-					keyPath,
-					objectValue: emptyObjectValue,
-					edit: false,
-					expanded: false,
-					listItemType: 'Z6'
-				},
-				global: {
-					stubs: { WlKeyValueBlock: false }
-				}
+			const wrapper = renderZTypedListItems( {
+				objectValue: emptyObjectValue
 			} );
 
 			const emptyState = wrapper.find( '.ext-wikilambda-app-typed-list-items__empty-state' );

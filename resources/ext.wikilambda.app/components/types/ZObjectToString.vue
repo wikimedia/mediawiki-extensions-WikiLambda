@@ -73,14 +73,13 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { computed, defineComponent, inject, onMounted, ref, watch } = require( 'vue' );
 
 const wikidataIconSvg = require( './wikidata/wikidataIconSvg.js' );
 const Constants = require( '../../Constants.js' );
-const errorMixin = require( '../../mixins/errorMixin.js' );
-const typeMixin = require( '../../mixins/typeMixin.js' );
-const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
+const useError = require( '../../composables/useError.js' );
+const useType = require( '../../composables/useType.js' );
+const useZObject = require( '../../composables/useZObject.js' );
 const useMainStore = require( '../../store/index.js' );
 const LabelData = require( '../../store/classes/LabelData.js' );
 const { hybridToCanonical } = require( '../../utils/schemata.js' );
@@ -99,7 +98,6 @@ module.exports = exports = defineComponent( {
 	directives: {
 		tooltip: CdxTooltip
 	},
-	mixins: [ errorMixin, typeMixin, zobjectMixin ],
 	props: {
 		keyPath: {
 			type: String,
@@ -114,22 +112,31 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	data: function () {
-		return {
-			renderedValue: '',
-			rendererRunning: false,
-			rendererError: false
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getLabelData',
-		'getExpectedTypeOfKey',
-		'getUserLangCode',
-		'getUserLangZid',
-		'getRendererZid',
-		'getWikidataEntityLabelData',
-		'getWikidataEntityUrl'
-	] ), {
+	emits: [ 'mounted', 'expand' ],
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const { hasChildErrors } = useError( { keyPath: props.keyPath } );
+		const {
+			getWikidataEntityId,
+			getZArgumentReferenceTerminalValue,
+			getZFunctionCallArgumentKeys,
+			getZFunctionCallFunctionId,
+			getZObjectType,
+			getZReferenceTerminalValue,
+			getZStringTerminalValue,
+			isWikidataEntity,
+			isWikidataFetch,
+			key
+		} = useZObject( { keyPath: props.keyPath } );
+		const { typeToString } = useType();
+		const store = useMainStore();
+
+		// Reactive data
+		const renderedValue = ref( '' );
+		const rendererRunning = ref( false );
+		const rendererError = ref( false );
+
+		// Computed properties
 		/*
 		 * This component template adapts to all types and includes special
 		 * behaviors for some of them. When adding special rendering rules
@@ -159,7 +166,7 @@ module.exports = exports = defineComponent( {
 		 * * childKeys: []
 		 * * icon: undefined
 		 * * link: getLinkTo( object.Z9K1 )
-		 * * labelData: getLabelData( object.Z9K1 )
+		 * * labelData: store.getLabelData( object.Z9K1 )
 		 *
 		 * Z18/Argument reference:
 		 * * isValueTerminal: true
@@ -167,7 +174,7 @@ module.exports = exports = defineComponent( {
 		 * * childKeys: []
 		 * * icon: cdxIconFunctionArgument
 		 * * link: undefined
-		 * * labelData: getLabelData( object.Z18K1 )
+		 * * labelData: store.getLabelData( object.Z18K1 )
 		 *
 		 * Z7/Function call
 		 * * isValueTerminal: false
@@ -183,9 +190,53 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string}
 		 */
-		type: function () {
-			return this.typeToString( this.getZObjectType( this.objectValue ), true );
-		},
+		const type = computed( () => typeToString( getZObjectType( props.objectValue ), true ) );
+
+		/**
+		 * Returns whether the object is a Wikidata entity.
+		 *
+		 * @return {boolean}
+		 */
+		const isWikidataType = computed( () => isWikidataEntity( props.objectValue ) );
+
+		/**
+		 * Returns the Wikidata type for the object represented
+		 * in this component, or undefined if it is not a Wikidata type.
+		 *
+		 * @return {string|undefined}
+		 */
+		const wikidataType = computed( () => {
+			const wdType = isWikidataFetch( props.objectValue ) ?
+				getZFunctionCallFunctionId( props.objectValue ) :
+				type.value;
+			return Constants.WIKIDATA_SIMPLIFIED_TYPES[ wdType ];
+		} );
+
+		/**
+		 * Returns the Wikidata entity ID for the object represented
+		 * in this component, or undefined if it is not a Wikidata type.
+		 * If the terminal wikidata entity ID is unset, returns undefined.
+		 * E.g. 'L313289'
+		 *
+		 * @return {string|undefined}
+		 */
+		const wikidataEntityId = computed( () => (
+			isWikidataType.value ?
+				getWikidataEntityId( props.objectValue, wikidataType.value ) || undefined :
+				undefined
+		) );
+
+		/**
+		 * Returns the label data for the Wikidata entity represented
+		 * in this component.
+		 *
+		 * @return {LabelData|undefined}
+		 */
+		const wikidataLabelData = computed( () => store.getWikidataEntityLabelData(
+			wikidataType.value,
+			wikidataEntityId.value
+		) );
+
 		/**
 		 * Returns the value to represent in string format depending
 		 * on the type:
@@ -196,75 +247,71 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string|Object|undefined}
 		 */
-		value: function () {
-			if ( this.type === Constants.Z_STRING ) {
-				return this.getZStringTerminalValue( this.objectValue );
+		const value = computed( () => {
+			if ( type.value === Constants.Z_STRING ) {
+				return getZStringTerminalValue( props.objectValue );
 			}
 
-			if ( this.type === Constants.Z_REFERENCE ) {
-				return this.getZReferenceTerminalValue( this.objectValue ) || undefined;
+			if ( type.value === Constants.Z_REFERENCE ) {
+				return getZReferenceTerminalValue( props.objectValue ) || undefined;
 			}
 
-			if ( this.type === Constants.Z_ARGUMENT_REFERENCE ) {
-				return this.getZArgumentReferenceTerminalValue( this.objectValue ) || undefined;
+			if ( type.value === Constants.Z_ARGUMENT_REFERENCE ) {
+				return getZArgumentReferenceTerminalValue( props.objectValue ) || undefined;
 			}
 
-			if ( this.isWikidataType ) {
-				return this.wikidataEntityId;
+			if ( isWikidataType.value ) {
+				return wikidataEntityId.value;
 			}
 
-			if ( this.type === Constants.Z_FUNCTION_CALL ) {
-				return this.objectValue[ Constants.Z_FUNCTION_CALL_FUNCTION ];
+			if ( type.value === Constants.Z_FUNCTION_CALL ) {
+				return props.objectValue[ Constants.Z_FUNCTION_CALL_FUNCTION ];
 			}
 
 			// If type is empty string, return undefined value
-			return this.type || undefined;
-		},
+			return type.value || undefined;
+		} );
 		/**
 		 * Returns whether the value for this object is terminal
 		 *
 		 * @return {boolean}
 		 */
-		isValueTerminal: function () {
-			return typeof this.value !== 'object';
-		},
+		const isValueTerminal = computed( () => typeof value.value !== 'object' );
+
 		/**
 		 * Returns whether the value for this object is unset.
 		 *
 		 * @return {boolean}
 		 */
-		isValueUnset: function () {
-			return this.value === undefined;
-		},
-		/**
-		 * Returns whether the value for this object is a string
-		 * successfully rendered with a render/display function.
-		 *
-		 * @return {boolean}
-		 */
-		isValueRendered: function () {
-			return this.rendererZid && !this.rendererError;
-		},
+		const isValueUnset = computed( () => value.value === undefined );
+
 		/**
 		 * Return the renderer function Zid, if any.
 		 * Else returns undefined.
 		 *
 		 * @return {string|undefined}
 		 */
-		rendererZid: function () {
-			return this.getRendererZid( this.type );
-		},
+		const rendererZid = computed( () => store.getRendererZid( type.value ) );
+
+		/**
+		 * Returns whether the value for this object is a string
+		 * successfully rendered with a render/display function.
+		 *
+		 * @return {boolean}
+		 */
+		const isValueRendered = computed( () => rendererZid.value && !rendererError.value );
+
 		/**
 		 * If the value of this object is not terminal, returns
 		 * the key to build the recursive z-object-to-string.
 		 *
 		 * @return {string|undefined}
 		 */
-		valueKey: function () {
-			return this.type === Constants.Z_FUNCTION_CALL ?
+		const valueKey = computed( () => (
+			type.value === Constants.Z_FUNCTION_CALL ?
 				Constants.Z_FUNCTION_CALL_FUNCTION :
-				Constants.Z_OBJECT_TYPE;
-		},
+				Constants.Z_OBJECT_TYPE
+		) );
 
 		/**
 		 * If the represented object has children, returns the keys
@@ -278,31 +325,31 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Array}
 		 */
-		childKeys: function () {
+		const childKeys = computed( () => {
 			const isTerminalType = [
 				Constants.Z_ARGUMENT_REFERENCE,
 				Constants.Z_HTML_FRAGMENT,
 				Constants.Z_REFERENCE,
 				Constants.Z_STRING
-			].includes( this.type );
+			].includes( type.value );
 
 			// It will have no children in parenthesis when either:
 			// * The object is one of these types: string, reference, arg reference or html
 			// * The object is a wikidata entity
 			// * The object has a successfully rendered value
-			if ( isTerminalType || this.isWikidataType || this.isValueRendered ) {
+			if ( isTerminalType || isWikidataType.value || isValueRendered.value ) {
 				return [];
 			}
 
 			// Function calls have their arguments as children:
-			if ( this.type === Constants.Z_FUNCTION_CALL ) {
-				return this.getZFunctionCallArgumentKeys( this.objectValue );
+			if ( type.value === Constants.Z_FUNCTION_CALL ) {
+				return getZFunctionCallArgumentKeys( props.objectValue );
 			}
 
 			// Everything else will be nested down their object keys (except Z1K1):
-			return Object.keys( this.objectValue )
-				.filter( ( key ) => ( key !== Constants.Z_OBJECT_TYPE ) );
-		},
+			return Object.keys( props.objectValue )
+				.filter( ( k ) => ( k !== Constants.Z_OBJECT_TYPE ) );
+		} );
 
 		/**
 		 * Returns the icon that precedes the object value, if any.
@@ -310,18 +357,18 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string|undefined}
 		 */
-		icon: function () {
-			if ( this.isWikidataType ) {
+		const icon = computed( () => {
+			if ( isWikidataType.value ) {
 				return wikidataIconSvg;
 			}
-			if ( this.type === Constants.Z_ARGUMENT_REFERENCE ) {
+			if ( type.value === Constants.Z_ARGUMENT_REFERENCE ) {
 				return icons.cdxIconFunctionArgument;
 			}
-			if ( this.type === Constants.Z_HTML_FRAGMENT ) {
+			if ( type.value === Constants.Z_HTML_FRAGMENT ) {
 				return icons.cdxIconMarkup;
 			}
 			return undefined;
-		},
+		} );
 
 		/**
 		 * Returns whether the object represented should link to somewhere
@@ -329,50 +376,69 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {boolean|undefined}
 		 */
-		showLink: function () {
-			if ( !this.isValueTerminal ) {
+		const showLink = computed( () => {
+			if ( !isValueTerminal.value ) {
 				// If non terminal value, exit early
 				return;
 			}
 
 			return (
-				this.type !== Constants.Z_STRING &&
-				this.type !== Constants.Z_ARGUMENT_REFERENCE &&
-				!this.isValueRendered
+				type.value !== Constants.Z_STRING &&
+				type.value !== Constants.Z_ARGUMENT_REFERENCE &&
+				!isValueRendered.value
 			);
-		},
+		} );
 
 		/**
 		 * Returns the link to the object if it has any.
 		 *
 		 * @return {string|undefined}
 		 */
-		link: function () {
-			if ( !this.isValueTerminal ) {
+		const link = computed( () => {
+			if ( !isValueTerminal.value ) {
 				// If non terminal value, exit early
 				return;
 			}
 
-			if ( this.isWikidataType ) {
-				return this.getWikidataEntityUrl( this.wikidataType, this.wikidataEntityId );
+			if ( isWikidataType.value ) {
+				return store.getWikidataEntityUrl( wikidataType.value, wikidataEntityId.value );
 			}
 
 			return urlUtils.generateViewUrl( {
-				langCode: this.getUserLangCode,
-				zid: this.value
+				langCode: store.getUserLangCode,
+				zid: value.value
 			} );
-		},
+		} );
 
 		/**
-		 * Returns the text value to render when there's no link to show.
+		 * Returns a type-dependent placeholder to be printed in
+		 * cases of undefined values.
+		 * * In edit mode: shows call to action "Select <Type>"
+		 * * In read mode: shows the name of the type "<Type>"
 		 *
 		 * @return {string|undefined}
 		 */
-		textValue: function () {
-			return this.type === Constants.Z_STRING ?
-				this.$i18n( 'quotation-marks', this.value ).text() :
-				( this.renderedValue || this.labelData.label );
-		},
+		const placeholder = computed( () => {
+			if ( !isValueTerminal.value ) {
+				// If non terminal value, exit early
+				return;
+			}
+
+			let missingType = type.value;
+			if ( missingType === Constants.Z_FUNCTION_CALL ) {
+				missingType = Constants.Z_FUNCTION;
+			}
+			if ( Constants.RESOLVER_TYPES.includes( missingType ) ) {
+				missingType = store.getExpectedTypeOfKey( key.value );
+			}
+			if ( isWikidataType.value ) {
+				missingType = wikidataType.value;
+			}
+
+			const data = store.getLabelData( missingType || Constants.Z_OBJECT );
+			const ctaMessage = i18n( 'wikilambda-zobject-to-string-select-object', data.label ).text();
+			return props.edit ? LabelData.fromString( ctaMessage ) : data;
+		} );
 
 		/**
 		 * Returns the LabelData object for this object:
@@ -383,49 +449,30 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {LabelData}
 		 */
-		labelData: function () {
-			let labelData;
+		const labelData = computed( () => {
+			let data;
 
-			if ( this.isValueUnset ) {
-				labelData = this.placeholder;
-			} else if ( this.isWikidataType && !!this.wikidataEntityId ) {
-				labelData = this.wikidataLabelData;
-			} else if ( this.isValueTerminal ) {
-				labelData = this.getLabelData( this.value );
+			if ( isValueUnset.value ) {
+				data = placeholder.value;
+			} else if ( isWikidataType.value && !!wikidataEntityId.value ) {
+				data = wikidataLabelData.value;
+			} else if ( isValueTerminal.value ) {
+				data = store.getLabelData( value.value );
 			}
 
-			return labelData || this.getLabelData( this.type );
-		},
+			return data || store.getLabelData( type.value );
+		} );
 
 		/**
-		 * Returns a type-dependent placeholder to be printed in
-		 * cases of undefined values.
-		 * * In edit mode: shows call to action "Select <Type>"
-		 * * In read mode: shows the name of the type "<Type>"
+		 * Returns the text value to render when there's no link to show.
 		 *
 		 * @return {string|undefined}
 		 */
-		placeholder: function () {
-			if ( !this.isValueTerminal ) {
-				// If non terminal value, exit early
-				return;
-			}
-
-			let missingType = this.type;
-			if ( missingType === Constants.Z_FUNCTION_CALL ) {
-				missingType = Constants.Z_FUNCTION;
-			}
-			if ( Constants.RESOLVER_TYPES.includes( missingType ) ) {
-				missingType = this.getExpectedTypeOfKey( this.key );
-			}
-			if ( this.isWikidataType ) {
-				missingType = this.wikidataType;
-			}
-
-			const labelData = this.getLabelData( missingType || Constants.Z_OBJECT );
-			const ctaMessage = this.$i18n( 'wikilambda-zobject-to-string-select-object', labelData.label ).text();
-			return this.edit ? LabelData.fromString( ctaMessage ) : labelData;
-		},
+		const textValue = computed( () => (
+			type.value === Constants.Z_STRING ?
+				i18n( 'quotation-marks', value.value ).text() :
+				( renderedValue.value || labelData.value.label )
+		) );
 
 		/**
 		 * Returns special class names for:
@@ -434,140 +481,119 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Object}
 		 */
-		classNames: function () {
-			return {
-				'ext-wikilambda-app-object-to-string--rendering': this.rendererRunning,
-				'ext-wikilambda-app-object-to-string--with-icon': this.icon
-			};
-		},
+		const classNames = computed( () => ( {
+			'ext-wikilambda-app-object-to-string--rendering': rendererRunning.value,
+			'ext-wikilambda-app-object-to-string--with-icon': icon.value
+		} ) );
 
-		/**
-		 * Returns whether the object is a Wikidata entity.
-		 *
-		 * @return {boolean}
-		 */
-		isWikidataType: function () {
-			return this.isWikidataEntity( this.objectValue );
-		},
-		/**
-		 * Returns the Wikidata type for the object represented
-		 * in this component, or undefined if it is not a Wikidata type.
-		 *
-		 * @return {string|undefined}
-		 */
-		wikidataType: function () {
-			const wikidataType = this.isWikidataFetch( this.objectValue ) ?
-				this.getZFunctionCallFunctionId( this.objectValue ) :
-				this.type;
-			return Constants.WIKIDATA_SIMPLIFIED_TYPES[ wikidataType ];
-		},
-		/**
-		 * Returns the Wikidata entity ID for the object represented
-		 * in this component, or undefined if it is not a Wikidata type.
-		 * If the terminal wikidata entity ID is unset, returns undefined.
-		 * E.g. 'L313289'
-		 *
-		 * @return {string|undefined}
-		 */
-		wikidataEntityId: function () {
-			return this.isWikidataType ?
-				this.getWikidataEntityId( this.objectValue, this.wikidataType ) || undefined :
-				undefined;
-		},
-		/**
-		 * Returns the label data for the Wikidata entity represented
-		 * in this component.
-		 *
-		 * @return {LabelData|undefined}
-		 */
-		wikidataLabelData: function () {
-			return this.getWikidataEntityLabelData( this.wikidataType, this.wikidataEntityId );
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'fetchWikidataEntitiesByType',
-		'fetchZids',
-		'runRenderer'
-	] ), {
+		// Methods
 		/**
 		 * Whether a ZObject child needs a trailing comma given its index
 		 *
 		 * @param {number} index
 		 * @return {boolean}
 		 */
-		hasComma: function ( index ) {
-			return ( index + 1 ) < this.childKeys.length;
-		},
+		const hasComma = ( index ) => ( index + 1 ) < childKeys.value.length;
 
 		/**
 		 * Emits event 'expand' when an unselected value is clicked.
 		 * This will propagate the event till the nearest ZObjectKeyValue
 		 * parent, who will set the expansion flag to true.
 		 */
-		expand: function () {
-			this.$emit( 'expand', true );
-		},
+		const expand = () => {
+			emit( 'expand', true );
+		};
 
 		/**
 		 * Trigger the call to the Renderer function for this type
 		 * passing the current object values, and set the returned string
 		 * in the local renderedValue variable.
 		 */
-		generateRenderedValue: function () {
+		const generateRenderedValue = () => {
 			// Only generate rendered value once.
 			// If the rendererZid is not set, we can't render anything else
-			if ( this.rendererRunning || !this.rendererZid ) {
+			if ( rendererRunning.value || !rendererZid.value ) {
 				return;
 			}
 
-			this.rendererRunning = true;
-			this.renderedValue = this.$i18n( 'wikilambda-string-renderer-running' ).text();
-			const zobject = hybridToCanonical( this.objectValue );
+			rendererRunning.value = true;
+			renderedValue.value = i18n( 'wikilambda-string-renderer-running' ).text();
+			const zobject = hybridToCanonical( props.objectValue );
 
-			this.runRenderer( {
-				rendererZid: this.rendererZid,
+			store.runRenderer( {
+				rendererZid: rendererZid.value,
 				zobject,
-				zlang: this.getUserLangZid
+				zlang: store.getUserLangZid
 			} ).then( ( data ) => {
 				const response = data.response[ Constants.Z_RESPONSEENVELOPE_VALUE ];
-				if ( response === Constants.Z_VOID || this.getZObjectType( response ) !== Constants.Z_STRING ) {
-					this.rendererError = true;
+				if ( response === Constants.Z_VOID || getZObjectType( response ) !== Constants.Z_STRING ) {
+					rendererError.value = true;
 				} else {
-					this.renderedValue = response;
-					this.rendererError = false;
+					renderedValue.value = response;
+					rendererError.value = false;
 				}
 			} ).catch( () => {
-				this.rendererError = true;
+				rendererError.value = true;
 			} ).finally( () => {
-				this.rendererRunning = false;
+				rendererRunning.value = false;
 			} );
-		},
+		};
 
 		/**
 		 * Fetch the Wikidata entity data depending on the type of the entity
 		 *
 		 * @return {Promise | undefined}
 		 */
-		fetchWikidataEntity: function () {
-			this.fetchWikidataEntitiesByType( { type: this.wikidataType, ids: [ this.wikidataEntityId ] } );
-			this.fetchZids( { zids: [ this.wikidataType ] } );
-		}
-	} ),
-	watch: {
+		const fetchWikidataEntity = () => {
+			store.fetchWikidataEntitiesByType( { type: wikidataType.value, ids: [ wikidataEntityId.value ] } );
+			store.fetchZids( { zids: [ wikidataType.value ] } );
+		};
+
+		// Watch
 		/**
 		 * Watch the rendererZid and whenever it's updated, generate the
 		 * rendered value, in case the initial generateRenderedValue call
 		 * is called before the rendererZid has been fetched.
 		 */
-		rendererZid: function () {
-			this.generateRenderedValue();
-		}
-	},
-	mounted: function () {
-		this.generateRenderedValue();
-		if ( this.isWikidataType ) {
-			this.fetchWikidataEntity();
-		}
+		watch( rendererZid, () => {
+			generateRenderedValue();
+		} );
+
+		/**
+		 * Watch the hasChildErrors computed property from the errorMixin
+		 * and throw an expand event if a child field of the function call
+		 * failed validation.
+		 */
+		watch( hasChildErrors, ( newValue, oldValue ) => {
+			if ( oldValue === false && newValue === true ) {
+				emit( 'expand', true );
+			}
+		} );
+
+		// Lifecycle hooks
+		onMounted( () => {
+			generateRenderedValue();
+			if ( isWikidataType.value ) {
+				fetchWikidataEntity();
+			}
+		} );
+
+		// Return all properties and methods for the template
+		return {
+			childKeys,
+			classNames,
+			expand,
+			hasComma,
+			icon,
+			isValueTerminal,
+			isValueUnset,
+			isWikidataType,
+			labelData,
+			link,
+			showLink,
+			textValue,
+			valueKey
+		};
 	}
 } );
 </script>

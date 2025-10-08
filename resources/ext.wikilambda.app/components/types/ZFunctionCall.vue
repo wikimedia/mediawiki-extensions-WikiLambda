@@ -22,10 +22,10 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
+const { defineComponent, computed } = require( 'vue' );
 
 const icons = require( '../../../lib/icons.json' );
-const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
+const useZObject = require( '../../composables/useZObject.js' );
 
 // Type components
 const ZObjectToString = require( './ZObjectToString.vue' );
@@ -38,7 +38,6 @@ module.exports = exports = defineComponent( {
 		'wl-z-object-to-string': ZObjectToString,
 		'cdx-icon': CdxIcon
 	},
-	mixins: [ zobjectMixin ],
 	props: {
 		keyPath: {
 			type: String,
@@ -53,12 +52,14 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	data: function () {
-		return {
-			icon: icons.cdxIconFunction
-		};
-	},
-	computed: {
+	emits: [ 'expand' ],
+	setup( props ) {
+		// Use ZObject utilities composable
+		const { getZFunctionCallFunctionId } = useZObject( { keyPath: props.keyPath } );
+
+		// Data
+		const icon = icons.cdxIconFunction;
+
 		/**
 		 * Returns whether the function call has a blank value at some point.
 		 * It could be the direct Z7K1 value, or another unset Z18 or Z7 at
@@ -66,17 +67,19 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string|undefined}
 		 */
-		hasBlankValue: function () {
-			return !this.getZFunctionCallFunctionId( this.objectValue, true );
-		},
+		const hasBlankValue = computed( () => !getZFunctionCallFunctionId( props.objectValue, true ) );
+
 		/**
 		 * Returns a special class name when the function call is undefined
 		 *
 		 * @return {string}
 		 */
-		iconClass: function () {
-			return this.hasBlankValue ? 'ext-wikilambda-app-function-call__icon--undefined' : '';
-		}
+		const iconClass = computed( () => hasBlankValue.value ? 'ext-wikilambda-app-function-call__icon--undefined' : '' );
+
+		return {
+			icon,
+			iconClass
+		};
 	}
 } );
 </script>

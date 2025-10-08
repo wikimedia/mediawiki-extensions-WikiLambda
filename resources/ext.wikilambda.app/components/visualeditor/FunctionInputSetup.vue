@@ -22,8 +22,8 @@
 				class="ext-wikilambda-app-function-input-setup__description"
 			></wl-expandable-description>
 			<p v-else class="ext-wikilambda-app-function-input-setup__description--empty">
-				{{ $i18n( 'brackets',
-					$i18n( 'wikilambda-visualeditor-wikifunctionscall-no-description' ).text()
+				{{ i18n( 'brackets',
+					i18n( 'wikilambda-visualeditor-wikifunctionscall-no-description' ).text()
 				).text() }}
 			</p>
 			<div v-if="allTypesFetched" class="ext-wikilambda-app-function-input-setup__fields">
@@ -52,8 +52,7 @@
 
 <script>
 const { CdxIcon, CdxMessage } = require( '../../../codex.js' );
-const { defineComponent } = require( 'vue' );
-const { mapState, mapActions } = require( 'pinia' );
+const { computed, defineComponent, inject, onMounted, ref, watch } = require( 'vue' );
 const useMainStore = require( '../../store/index.js' );
 const Constants = require( '../../Constants.js' );
 const FunctionInputField = require( './FunctionInputField.vue' );
@@ -71,108 +70,91 @@ module.exports = exports = defineComponent( {
 		'cdx-message': CdxMessage
 	},
 	emits: [ 'update', 'loading-start', 'loading-end' ],
-	data: function () {
-		return {
-			icon: wikifunctionsIconSvg,
-			inputFields: [],
-			allTypesFetched: false
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getLabelData',
-		'getDescription',
-		'getVEFunctionId',
-		'getVEFunctionParams',
-		'getInputsOfFunctionZid',
-		'getOutputTypeOfFunctionZid',
-		'isNewParameterSetup'
-	] ), {
+	setup( _, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
+
+		// Reactive data
+		const icon = wikifunctionsIconSvg;
+		const inputFields = ref( [] );
+		const allTypesFetched = ref( false );
+
 		/**
 		 * Returns the VisualEditor function ID.
 		 *
 		 * @return {string}
 		 */
-		functionZid: function () {
-			return this.getVEFunctionId;
-		},
+		const functionZid = computed( () => store.getVEFunctionId );
+
 		/**
 		 * Returns the text for the link to the function in Wikifunctions.
 		 *
 		 * @return {string}
 		 */
-		functionLink: function () {
-			return this.$i18n(
-				'wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer',
-				this.functionZid
-			).parse();
-		},
+		const functionLink = computed( () => i18n(
+			'wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer',
+			functionZid.value
+		).parse() );
+
 		/**
 		 * Returns the message notifying about missing content in the user language
 		 * with a link to the Wikifunctions page for the function.
 		 *
 		 * @return {string}
 		 */
-		missingContentMsg: function () {
-			return this.$i18n(
-				'wikilambda-visualeditor-wikifunctionscall-info-missing-content',
-				this.functionZid
-			).parse();
-		},
+		const missingContentMsg = computed( () => i18n(
+			'wikilambda-visualeditor-wikifunctionscall-info-missing-content',
+			functionZid.value
+		).parse() );
+
 		/**
 		 * Returns the LabelData object for the function name
 		 *
 		 * @return {LabelData}
 		 */
-		functionName: function () {
-			return this.getLabelData( this.functionZid );
-		},
+		const functionName = computed( () => store.getLabelData( functionZid.value ) );
+
 		/**
 		 * Returns the description of the function.
 		 *
 		 * @return {LabelData}
 		 */
-		functionDescription: function () {
-			return this.getDescription( this.functionZid );
-		},
+		const functionDescription = computed( () => store.getDescription( functionZid.value ) );
+
 		/**
 		 * Returns the inputs of the function.
 		 *
 		 * @return {Array}
 		 */
-		functionInputs: function () {
-			return this.getInputsOfFunctionZid( this.functionZid );
-		},
+		const functionInputs = computed( () => store.getInputsOfFunctionZid( functionZid.value ) );
+
 		/**
 		 * Returns the output type of the function.
 		 *
 		 * @return {string}
 		 */
-		functionOutputType: function () {
-			return this.getOutputTypeOfFunctionZid( this.functionZid );
-		},
+		const functionOutputType = computed( () => store.getOutputTypeOfFunctionZid( functionZid.value ) );
+
 		/**
 		 * Prepares the payload for the function call.
 		 *
 		 * @return {Object} - The payload object.
 		 */
-		functionCallPayload: function () {
-			return {
-				functionZid: this.getVEFunctionId,
-				params: this.functionInputs.map( ( arg, index ) => ( {
-					type: arg[ Constants.Z_ARGUMENT_TYPE ],
-					value: this.getVEFunctionParams[ index ]
-				} ) )
-			};
-		},
+		const functionCallPayload = computed( () => ( {
+			functionZid: store.getVEFunctionId,
+			params: functionInputs.value.map( ( arg, index ) => ( {
+				type: arg[ Constants.Z_ARGUMENT_TYPE ],
+				value: store.getVEFunctionParams[ index ]
+			} ) )
+		} ) );
+
 		/**
 		 * Checks if all input fields are valid.
 		 *
-		 * @param {Object} state - The state object.
 		 * @return {boolean} - True if all fields are valid, otherwise false.
 		 */
-		areInputFieldsValid: function () {
-			return this.inputFields.every( ( field ) => field.isValid );
-		},
+		const areInputFieldsValid = computed( () => inputFields.value.every( ( field ) => field.isValid ) );
+
 		/**
 		 * Returns whether any of the shown multilingual labels
 		 * are missing in the user language. Will determine whether
@@ -180,53 +162,46 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {boolean}
 		 */
-		hasMissingContent: function () {
-			return (
-				!this.functionName || !this.functionName.isUserLang ||
-				!this.functionDescription || !this.functionDescription.isUserLang ||
-				!this.inputFields.every( ( item ) => item.labelData.isUserLang )
-			);
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'setVEFunctionParam',
-		'setVEFunctionParamsValid',
-		'setVEFunctionParamsDirty',
-		'fetchZids',
-		'fetchLanguageCode'
-	] ), {
+		const hasMissingContent = computed( () => (
+			!functionName.value || !functionName.value.isUserLang ||
+			!functionDescription.value || !functionDescription.value.isUserLang ||
+			!inputFields.value.every( ( item ) => item.labelData.isUserLang )
+		) );
+
 		/**
 		 * Initializes the function input fields with the current Visual Editor function params.
 		 */
-		initializeInputFields: function () {
+		function initializeInputFields() {
 			// Ensure veFunctionParams is at least as long as functionInputs
-			if ( this.functionInputs.length > this.getVEFunctionParams.length ) {
-				for ( let i = this.getVEFunctionParams.length; i < this.functionInputs.length; i++ ) {
-					this.setVEFunctionParam( i, '' );
+			if ( functionInputs.value.length > store.getVEFunctionParams.length ) {
+				for ( let i = store.getVEFunctionParams.length; i < functionInputs.value.length; i++ ) {
+					store.setVEFunctionParam( i, '' );
 				}
 			}
 
 			// Set local inputFields array
-			this.inputFields = this.functionInputs.map( ( arg, index ) => ( {
+			inputFields.value = functionInputs.value.map( ( arg, index ) => ( {
 				inputKey: arg[ Constants.Z_ARGUMENT_KEY ],
 				inputType: arg[ Constants.Z_ARGUMENT_TYPE ],
-				labelData: this.getLabelData( arg[ Constants.Z_ARGUMENT_KEY ] ),
-				value: this.getVEFunctionParams[ index ],
+				labelData: store.getLabelData( arg[ Constants.Z_ARGUMENT_KEY ] ),
+				value: store.getVEFunctionParams[ index ],
 				hasChanged: false
 			} ) );
-		},
+		}
+
 		/**
 		 * Updates the value of a specific input field in the Visual Editor.
 		 *
 		 * @param {number} index - The index of the field to update.
 		 * @param {string} value - The new value for the field.
 		 */
-		handleUpdate: function ( index, value ) {
-			this.inputFields[ index ].hasChanged = true;
-			this.setVEFunctionParam( index, value );
-			this.setVEFunctionParamsDirty();
-			this.$emit( 'update' );
-		},
+		function handleUpdate( index, value ) {
+			inputFields.value[ index ].hasChanged = true;
+			store.setVEFunctionParam( index, value );
+			store.setVEFunctionParamsDirty();
+			emit( 'update' );
+		}
+
 		/**
 		 * Handles the validation event for a specific input field.
 		 *
@@ -240,10 +215,11 @@ module.exports = exports = defineComponent( {
 		 * @param {boolean} payload.isValid - The validation status.
 		 * @param {string|undefined} payload.error - The error message to set, if any.
 		 */
-		handleValidation: function ( index, payload ) {
-			this.inputFields[ index ].isValid = payload.isValid;
-			this.inputFields[ index ].error = payload.error;
-		},
+		function handleValidation( index, payload ) {
+			inputFields.value[ index ].isValid = payload.isValid;
+			inputFields.value[ index ].error = payload.error;
+		}
+
 		/**
 		 * Fetches the ZIDs for all input types and the output type.
 		 * Show a loading state in VisualEditor while fetching.
@@ -251,24 +227,25 @@ module.exports = exports = defineComponent( {
 		 * @param {Array} inputs - The list of function inputs.
 		 * @param {string} outputType - The output type of the function.
 		 */
-		fetchInputAndOutputTypes: function ( inputs, outputType ) {
+		function fetchInputAndOutputTypes( inputs, outputType ) {
 			const zidsToFetch = [
 				...inputs.map( ( arg ) => arg[ Constants.Z_ARGUMENT_TYPE ] ),
 				outputType
 			];
 
 			if ( zidsToFetch.length > 0 ) {
-				this.$emit( 'loading-start' );
+				emit( 'loading-start' );
 
-				this.fetchZids( { zids: zidsToFetch } )
+				store.fetchZids( { zids: zidsToFetch } )
 					.then( () => {
-						this.allTypesFetched = true;
+						allTypesFetched.value = true;
 					} )
 					.finally( () => {
-						this.$emit( 'loading-end' );
+						emit( 'loading-end' );
 					} );
 			}
-		},
+		}
+
 		/**
 		 * Show validation message if:
 		 * * is not a new parameter setup screen (initialized with values)
@@ -277,43 +254,57 @@ module.exports = exports = defineComponent( {
 		 * @param {boolean} hasChanged
 		 * @return {boolean}
 		 */
-		showValidation: function ( hasChanged ) {
-			return !this.isNewParameterSetup || hasChanged;
+		function showValidation( hasChanged ) {
+			return !store.isNewParameterSetup || hasChanged;
 		}
-	} ),
-	watch: {
+
+		// Watchers
 		/**
 		 * Watches the form validity and updates the VisualEditor validity state
 		 * so the submit button can be enabled/disabled depending on the state.
 		 *
 		 * @param {boolean} isValid - The form validity status.
 		 */
-		areInputFieldsValid: function ( isValid ) {
-			this.setVEFunctionParamsValid( isValid );
-			this.$emit( 'update' );
-		},
+		watch( areInputFieldsValid, ( isValid ) => {
+			store.setVEFunctionParamsValid( isValid );
+			emit( 'update' );
+		} );
+
 		/**
 		 * Watches the function inputs and output type, and fetches the ZIDs for both.
 		 * Do this immediately and when the inputs or output type change.
 		 */
-		functionInputs: {
-			immediate: true,
-			handler: function ( newInputs ) {
-				this.fetchInputAndOutputTypes( newInputs, this.functionOutputType );
-			}
-		},
-		functionOutputType: {
-			immediate: true,
-			handler: function ( newOutputType ) {
-				this.fetchInputAndOutputTypes( this.functionInputs, newOutputType );
-			}
-		}
-	},
-	mounted: function () {
-		this.initializeInputFields();
-		// Fetch language zid for content page
-		const langCode = mw.config.get( 'wgContentLanguage' );
-		this.fetchLanguageCode( langCode );
+		watch( functionInputs, ( newInputs ) => {
+			fetchInputAndOutputTypes( newInputs, functionOutputType.value );
+		}, { immediate: true } );
+
+		watch( functionOutputType, ( newOutputType ) => {
+			fetchInputAndOutputTypes( functionInputs.value, newOutputType );
+		}, { immediate: true } );
+
+		// Lifecycle
+		onMounted( () => {
+			initializeInputFields();
+			// Fetch language zid for content page
+			const langCode = mw.config.get( 'wgContentLanguage' );
+			store.fetchLanguageCode( langCode );
+		} );
+
+		return {
+			allTypesFetched,
+			areInputFieldsValid,
+			functionCallPayload,
+			functionDescription,
+			functionLink,
+			handleUpdate,
+			handleValidation,
+			hasMissingContent,
+			icon,
+			inputFields,
+			missingContentMsg,
+			showValidation,
+			i18n
+		};
 	}
 } );
 </script>

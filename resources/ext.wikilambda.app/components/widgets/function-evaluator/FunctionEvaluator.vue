@@ -20,7 +20,7 @@
 				type="warning"
 				class="ext-wikilambda-app-function-evaluator-widget__message"
 			>
-				{{ $i18n( 'wikilambda-function-evaluation-restriction-warning' ).text() }}
+				{{ i18n( 'wikilambda-function-evaluation-restriction-warning' ).text() }}
 			</cdx-message>
 			<!-- Not-runnable user warning -->
 			<cdx-message
@@ -29,7 +29,7 @@
 				class="ext-wikilambda-app-function-evaluator-widget__message"
 				data-testid="function-evaluator-message"
 			>
-				{{ $i18n( 'wikilambda-function-evaluation-restriction-notrunnable' ).text() }}
+				{{ i18n( 'wikilambda-function-evaluation-restriction-notrunnable' ).text() }}
 			</cdx-message>
 			<!-- Function Call -->
 			<div
@@ -57,14 +57,14 @@
 				v-if="isLoading"
 				class="ext-wikilambda-app-function-evaluator-widget__loader"
 				data-testid="function-evaluator-loader">
-				{{ $i18n( 'wikilambda-loading' ).text() }}
+				{{ i18n( 'wikilambda-loading' ).text() }}
 			</div>
 			<div v-else-if="!isSelectedFunctionFetched && !showFunctionSelector">
 				<p v-if="forImplementation">
-					{{ $i18n( 'wikilambda-function-evaluator-no-function-selected-for-implementation' ).text() }}
+					{{ i18n( 'wikilambda-function-evaluator-no-function-selected-for-implementation' ).text() }}
 				</p>
 				<p v-else>
-					{{ $i18n( 'wikilambda-function-evaluator-no-function-selected' ).text() }}
+					{{ i18n( 'wikilambda-function-evaluator-no-function-selected' ).text() }}
 				</p>
 			</div>
 			<div v-else>
@@ -75,7 +75,7 @@
 					data-testid="function-evaluator-inputs"
 				>
 					<wl-key-block :key-bold="true">
-						<label>{{ $i18n( 'wikilambda-function-evaluator-enter-inputs' ).text() }}</label>
+						<label>{{ i18n( 'wikilambda-function-evaluator-enter-inputs' ).text() }}</label>
 					</wl-key-block>
 					<wl-z-object-key-value
 						v-for="inputKey in inputKeys"
@@ -95,7 +95,7 @@
 						data-testid="evaluator-run-button"
 						@click="waitAndCallFunction"
 					>
-						{{ $i18n( 'wikilambda-function-evaluator-run-function' ).text() }}
+						{{ i18n( 'wikilambda-function-evaluator-run-function' ).text() }}
 					</cdx-button>
 				</div>
 			</div>
@@ -108,10 +108,10 @@
 			>
 				<div class="ext-wikilambda-app-function-evaluator-widget__result">
 					<wl-key-block :key-bold="true">
-						<label>{{ $i18n( 'wikilambda-function-evaluator-result' ).text() }}</label>
+						<label>{{ i18n( 'wikilambda-function-evaluator-result' ).text() }}</label>
 					</wl-key-block>
 					<div v-if="running" data-testid="function-evaluator-running">
-						{{ $i18n( 'wikilambda-function-evaluator-running' ).text() }}
+						{{ i18n( 'wikilambda-function-evaluator-running' ).text() }}
 					</div>
 					<template v-else>
 						<wl-safe-message v-if="apiErrors.length > 0" :error="apiErrors[0]"></wl-safe-message>
@@ -124,14 +124,11 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { computed, defineComponent, inject, onMounted, ref, watch } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
 const useMainStore = require( '../../../store/index.js' );
-const eventLogMixin = require( '../../../mixins/eventLogMixin.js' );
-const errorMixin = require( '../../../mixins/errorMixin.js' );
-const clipboardMixin = require( '../../../mixins/clipboardMixin.js' );
+const useEventLog = require( '../../../composables/useEventLog.js' );
 const { typeToString } = require( '../../../utils/typeUtils.js' );
 const { hybridToCanonical, canonicalToHybrid, extractZIDs } = require( '../../../utils/schemata.js' );
 const {
@@ -160,7 +157,6 @@ module.exports = exports = defineComponent( {
 		'wl-widget-base': WidgetBase,
 		'wl-z-object-key-value': ZObjectKeyValue
 	},
-	mixins: [ eventLogMixin, errorMixin, clipboardMixin ],
 	props: {
 		functionZid: {
 			type: String,
@@ -178,104 +174,84 @@ module.exports = exports = defineComponent( {
 			default: null
 		}
 	},
-	data: function () {
-		return {
-			running: false,
-			hasResult: false,
-			isLoading: true,
-			functionKey: Constants.Z_FUNCTION_CALL_FUNCTION,
-			functionKeyPath: [
-				Constants.STORED_OBJECTS.FUNCTION_CALL,
-				Constants.Z_FUNCTION_CALL_FUNCTION
-			].join( '.' )
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getErrors',
-		'hasMetadataErrors',
-		'getInputsOfFunctionZid',
-		'getConnectedObjects',
-		'getZObjectByKeyPath',
-		'getLabelData',
-		'getStoredObject',
-		'getCurrentZObjectId',
-		'getCurrentZObjectType',
-		'getUserLangZid',
-		'userCanRunFunction',
-		'userCanRunUnsavedCode',
-		'waitForRunningParsers'
-	] ), {
+	setup( props ) {
+		const i18n = inject( 'i18n' );
+		const { submitInteraction } = useEventLog();
+		const store = useMainStore();
+
+		// Reactive data
+		const running = ref( false );
+		const hasResult = ref( false );
+		const isLoading = ref( true );
+		const functionKey = Constants.Z_FUNCTION_CALL_FUNCTION;
+		const functionKeyPath = [
+			Constants.STORED_OBJECTS.FUNCTION_CALL,
+			Constants.Z_FUNCTION_CALL_FUNCTION
+		].join( '.' );
+
 		/**
 		 * The function call as set in the store
 		 *
 		 * @return {Object}
 		 */
-		functionCall: function () {
-			return this.getZObjectByKeyPath( [ Constants.STORED_OBJECTS.FUNCTION_CALL ] );
-		},
+		const functionCall = computed( () => store.getZObjectByKeyPath(
+			[ Constants.STORED_OBJECTS.FUNCTION_CALL ]
+		) );
 
 		/**
 		 * Returns the selected function in the function call.
 		 *
 		 * @return {string|undefined}
 		 */
-		selectedFunctionZid: function () {
+		const selectedFunctionZid = computed( () => {
 			if (
-				!this.functionCall ||
-				typeof this.functionCall !== 'object' ||
-				!( Constants.Z_FUNCTION_CALL_FUNCTION in this.functionCall )
+				!functionCall.value ||
+				typeof functionCall.value !== 'object' ||
+				!( Constants.Z_FUNCTION_CALL_FUNCTION in functionCall.value )
 			) {
 				return undefined;
 			}
-			return getZFunctionCallFunctionId( this.functionCall );
-		},
+			return getZFunctionCallFunctionId( functionCall.value );
+		} );
 
 		/**
 		 * Returns the keys of the inputs of the function call.
 		 *
 		 * @return {Array}
 		 */
-		inputKeys: function () {
-			return this.selectedFunctionZid ? getZFunctionCallArgumentKeys( this.functionCall ) : [];
-		},
+		const inputKeys = computed( () => selectedFunctionZid.value ?
+			getZFunctionCallArgumentKeys( functionCall.value ) :
+			[] );
 
 		/**
 		 * Returns the API error returned by the orchestrator
 		 *
 		 * @return {Object}
 		 */
-		apiErrors: function () {
-			return this.getErrors( Constants.STORED_OBJECTS.RESPONSE );
-		},
+		const apiErrors = computed( () => store.getErrors( Constants.STORED_OBJECTS.RESPONSE ) );
 
 		/**
 		 * Returns the array of implementation IDs for the selected function
 		 *
 		 * @return {Array}
 		 */
-		implementations: function () {
-			return this.selectedFunctionZid ?
-				this.getConnectedObjects( this.selectedFunctionZid, Constants.Z_FUNCTION_IMPLEMENTATIONS ) :
-				[];
-		},
+		const implementations = computed( () => selectedFunctionZid.value ?
+			store.getConnectedObjects( selectedFunctionZid.value, Constants.Z_FUNCTION_IMPLEMENTATIONS ) :
+			[] );
 
 		/**
 		 * Returns whether the function exists and has been fetched
 		 *
 		 * @return {boolean}
 		 */
-		isSelectedFunctionFetched: function () {
-			return !!this.getStoredObject( this.selectedFunctionZid );
-		},
+		const isSelectedFunctionFetched = computed( () => !!store.getStoredObject( selectedFunctionZid.value ) );
 
 		/**
 		 * Whether the widget has a pre-defined function
 		 *
 		 * @return {boolean}
 		 */
-		showFunctionSelector: function () {
-			return !this.functionZid;
-		},
+		const showFunctionSelector = computed( () => !props.functionZid );
 
 		/**
 		 * Returns whether the selected Function has any implementations
@@ -283,9 +259,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {boolean}
 		 */
-		hasImplementations: function () {
-			return this.implementations.length > 0;
-		},
+		const hasImplementations = computed( () => implementations.value.length > 0 );
 
 		/**
 		 * Returns whether the function can be run, which can only happen
@@ -293,18 +267,14 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {boolean}
 		 */
-		canRunFunction: function () {
-			return this.hasImplementations && this.userCanRunFunction;
-		},
+		const canRunFunction = computed( () => hasImplementations.value && store.userCanRunFunction );
 
 		/**
 		 * Returns the human readable label for the function selector block
 		 *
 		 * @return {LabelData}
 		 */
-		functionCallLabelData: function () {
-			return this.getLabelData( Constants.Z_FUNCTION_CALL_FUNCTION );
-		},
+		const functionCallLabelData = computed( () => store.getLabelData( Constants.Z_FUNCTION_CALL_FUNCTION ) );
 
 		/**
 		 * Returns the title of the Function Evaluator widget, depending on the type.
@@ -316,47 +286,67 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string}
 		 */
-		title: function () {
-			switch ( this.contentType ) {
+		const title = computed( () => {
+			switch ( props.contentType ) {
 				case Constants.Z_FUNCTION:
 				case Constants.Z_TESTER:
-					return this.$i18n( 'wikilambda-function-evaluator-title-function' ).text();
+					return i18n( 'wikilambda-function-evaluator-title-function' ).text();
 				case Constants.Z_IMPLEMENTATION:
-					return this.$i18n( 'wikilambda-function-evaluator-title-implementation' ).text();
+					return i18n( 'wikilambda-function-evaluator-title-implementation' ).text();
 				default:
-					return this.$i18n( 'wikilambda-function-evaluator-title' ).text();
+					return i18n( 'wikilambda-function-evaluator-title' ).text();
 			}
-		},
+		} );
 
 		/**
 		 * Whether this widget is being rendered in an implementation page
 		 *
 		 * @return {boolean}
 		 */
-		forImplementation: function () {
-			return this.contentType === Constants.Z_IMPLEMENTATION;
+		const forImplementation = computed( () => props.contentType === Constants.Z_IMPLEMENTATION );
+
+		/**
+		 * Returns the ZIDs of the arguments for the given functionZid
+		 *
+		 * @param {string} functionZid
+		 * @return {Array}
+		 */
+		function getInputTypeZids( functionZid ) {
+			return store.getInputsOfFunctionZid( functionZid ).map(
+				( arg ) => typeToString( arg[ Constants.Z_ARGUMENT_TYPE ], true )
+			);
 		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'setJsonObject',
-		'changeTypeByKeyPath',
-		'setFunctionCallArguments',
-		'clearErrors',
-		'fetchZids',
-		'callZFunction'
-	] ), {
+
+		/**
+		 * Returns the key path of a function call input given the input key
+		 *
+		 * @param {string} inputKey
+		 * @return {string}
+		 */
+		function getInputKeyPath( inputKey ) {
+			return [ Constants.STORED_OBJECTS.FUNCTION_CALL, inputKey ].join( '.' );
+		}
+
+		/**
+		 * Clears the orchestration result object
+		 */
+		function clearResult() {
+			hasResult.value = false;
+			running.value = false;
+		}
+
 		/**
 		 * Fetches a function and its argument types
 		 *
 		 * @param {string} functionZid - The function ZID to fetch
 		 * @return {Promise} Promise that resolves when all data is loaded
 		 */
-		fetchFunctionAndArguments: function ( functionZid ) {
-			return this.fetchZids( { zids: [ functionZid ] } ).then( () => {
-				const inputTypeZids = this.getInputTypeZids( functionZid );
-				return this.fetchZids( { zids: inputTypeZids } );
+		function fetchFunctionAndArguments( functionZid ) {
+			return store.fetchZids( { zids: [ functionZid ] } ).then( () => {
+				const inputTypeZids = getInputTypeZids( functionZid );
+				return store.fetchZids( { zids: inputTypeZids } );
 			} );
-		},
+		}
 
 		/**
 		 * Initializes the detached objects in the zobject table
@@ -366,24 +356,24 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string|undefined} functionZid
 		 */
-		initialize: function ( functionZid ) {
-			this.isLoading = true;
+		function initialize( functionZid ) {
+			isLoading.value = true;
 
 			// Clear the function call response
-			this.clearResult();
-			this.setJsonObject( {
+			clearResult();
+			store.setJsonObject( {
 				namespace: Constants.STORED_OBJECTS.RESPONSE,
 				zobject: {}
 			} );
 
 			// If we have a shared function call from URL, set it directly
-			if ( this.sharedFunctionCall ) {
-				this.loadSharedFunctionCall();
+			if ( props.sharedFunctionCall ) {
+				loadSharedFunctionCall();
 				return;
 			}
 
 			// Set blank function call object
-			this.changeTypeByKeyPath( {
+			store.changeTypeByKeyPath( {
 				keyPath: [ Constants.STORED_OBJECTS.FUNCTION_CALL ],
 				type: Constants.Z_FUNCTION_CALL,
 				value: functionZid || undefined
@@ -392,105 +382,78 @@ module.exports = exports = defineComponent( {
 			// If we are initializing the evaluator with an functionZid
 			// we fetch the function data and then we set the arguments
 			if ( functionZid ) {
-				this.fetchFunctionAndArguments( functionZid ).then( () => {
-					this.setFunctionCallArguments( {
+				fetchFunctionAndArguments( functionZid ).then( () => {
+					store.setFunctionCallArguments( {
 						keyPath: [ Constants.STORED_OBJECTS.FUNCTION_CALL ],
 						functionZid
 					} );
-					this.isLoading = false;
+					isLoading.value = false;
 				} );
 			} else {
-				this.isLoading = false;
+				isLoading.value = false;
 			}
-		},
-
-		/**
-		 * Returns the ZIDs of the arguments for the given functionZid
-		 *
-		 * @param {string} functionZid
-		 * @return {Array}
-		 */
-		getInputTypeZids: function ( functionZid ) {
-			return this.getInputsOfFunctionZid( functionZid )
-				.map( ( arg ) => typeToString( arg[ Constants.Z_ARGUMENT_TYPE ], true ) );
-		},
-
-		/**
-		 * Returns the key path of a function call input given the input key
-		 *
-		 * @param {string} inputKey
-		 * @return {string}
-		 */
-		getInputKeyPath: function ( inputKey ) {
-			return [ Constants.STORED_OBJECTS.FUNCTION_CALL, inputKey ].join( '.' );
-		},
-
-		/**
-		 * Clears the orchestration result object
-		 */
-		clearResult: function () {
-			this.hasResult = false;
-			this.running = false;
-		},
+		}
 
 		/**
 		 * Waits for running parsers to return and persist
 		 * changes before going ahead and running the function call
 		 */
-		waitAndCallFunction: function () {
-			this.waitForRunningParsers.then( () => this.callFunction() );
-		},
+		function waitAndCallFunction() {
+			store.waitForRunningParsers.then( () => callFunction() );
+		}
 
 		/**
 		 * Loads a shared function call from the prop
 		 */
-		loadSharedFunctionCall: function () {
+		function loadSharedFunctionCall() {
 			// Get the function ZID from the shared function call
-			const functionZid = getZFunctionCallFunctionId( this.sharedFunctionCall );
+			const functionZid = getZFunctionCallFunctionId( props.sharedFunctionCall );
 
 			// Extract all ZIDs from the function call
-			const allZids = extractZIDs( this.sharedFunctionCall );
+			const allZids = extractZIDs( props.sharedFunctionCall );
 
 			// Set the entire function call object in the store at once
-			this.setJsonObject( {
+			store.setJsonObject( {
 				namespace: Constants.STORED_OBJECTS.FUNCTION_CALL,
-				zobject: canonicalToHybrid( this.sharedFunctionCall )
+				zobject: canonicalToHybrid( props.sharedFunctionCall )
 			} );
 
 			// Fetch all ZIDs mentioned in the function call, plus the function and argument types
 			Promise.all( [
-				this.fetchZids( { zids: allZids } ),
-				this.fetchFunctionAndArguments( functionZid )
+				store.fetchZids( { zids: allZids } ),
+				fetchFunctionAndArguments( functionZid )
 			] ).then( () => {
-				this.isLoading = false;
+				isLoading.value = false;
 
 				// Always auto-run when loading from shared URL
-				if ( this.canRunFunction ) {
-					this.waitAndCallFunction();
+				if ( canRunFunction.value ) {
+					waitAndCallFunction();
 				}
 			} );
-		},
+		}
 
 		/**
 		 * Performs the function call
 		 */
-		callFunction: function () {
-			const functionCall = JSON.parse( JSON.stringify( this.functionCall ) );
+		function callFunction() {
+			const funcCall = JSON.parse( JSON.stringify( functionCall.value ) );
 			// If we are in an implementation page, we build raw function call with raw implementation:
 			// 1. Replace Z7K1 with the whole Z8 object: we assume it's in the store
 			// 2. Replace te Z8K4 with [ Z14, implementation ]
-			if ( this.forImplementation ) {
-				const storedFunction = this.getStoredObject( this.functionZid );
+			if ( forImplementation.value ) {
+				const storedFunction = store.getStoredObject( props.functionZid );
 				// If user can run unsaved code, we get the raw implementation,
 				// else, we use the current persisted version by using its Zid
 				const thisImplementation = () => {
-					const hybrid = this.getZObjectByKeyPath( [
+					const hybrid = store.getZObjectByKeyPath( [
 						Constants.STORED_OBJECTS.MAIN,
 						Constants.Z_PERSISTENTOBJECT_VALUE
 					] );
 					return hybridToCanonical( hybrid );
 				};
-				const implementation = this.userCanRunUnsavedCode ? thisImplementation() : this.getCurrentZObjectId;
+				const implementation = store.userCanRunUnsavedCode ?
+					thisImplementation() :
+					store.getCurrentZObjectId;
 
 				if ( storedFunction && implementation ) {
 					const functionObject = storedFunction[ Constants.Z_PERSISTENTOBJECT_VALUE ];
@@ -498,47 +461,71 @@ module.exports = exports = defineComponent( {
 						Constants.Z_IMPLEMENTATION,
 						implementation
 					];
-					functionCall[ Constants.Z_FUNCTION_CALL_FUNCTION ] = functionObject;
+					funcCall[ Constants.Z_FUNCTION_CALL_FUNCTION ] = functionObject;
 				}
 			}
 
-			this.running = true;
+			running.value = true;
 
 			// Clear errors and perform the function call
-			this.clearErrors( Constants.STORED_OBJECTS.RESPONSE );
+			store.clearErrors( Constants.STORED_OBJECTS.RESPONSE );
 
 			// Perform the function call using .then() chain
-			this.callZFunction( {
-				functionCall,
+			store.callZFunction( {
+				functionCall: funcCall,
 				resultKeyPath: [ Constants.STORED_OBJECTS.RESPONSE ]
 			} ).then( () => {
 				// Once the function call is done, update the state
-				this.running = false;
-				this.hasResult = true;
+				running.value = false;
+				hasResult.value = true;
 
 				// Log an event using Metrics Platform's core interaction events
 				const interactionData = {
-					zobjecttype: this.getCurrentZObjectType || null,
-					zobjectid: this.getCurrentZObjectId || null,
-					zlang: this.getUserLangZid || null,
-					selectedfunctionzid: this.selectedFunctionZid || null,
-					haserrors: !!this.hasMetadataErrors
+					zobjecttype: store.getCurrentZObjectType || null,
+					zobjectid: store.getCurrentZObjectId || null,
+					zlang: store.getUserLangZid || null,
+					selectedfunctionzid: selectedFunctionZid.value || null,
+					haserrors: !!store.hasMetadataErrors
 				};
 
-				this.submitInteraction( 'call', interactionData );
+				submitInteraction( 'call', interactionData );
 			} );
 		}
-	} ),
-	watch: {
-		sharedFunctionCall: function () {
-			this.loadSharedFunctionCall();
-		},
-		functionZid: function () {
-			this.initialize( this.functionZid );
-		}
-	},
-	mounted: function () {
-		this.initialize( this.functionZid );
+
+		// Watchers
+		watch( () => props.functionZid, () => {
+			initialize( props.functionZid );
+		} );
+		watch( () => props.sharedFunctionCall, () => {
+			loadSharedFunctionCall();
+		} );
+
+		// Lifecycle
+		onMounted( () => {
+			initialize( props.functionZid );
+		} );
+
+		return {
+			apiErrors,
+			canRunFunction,
+			forImplementation,
+			functionCall,
+			functionCallLabelData,
+			functionKey,
+			functionKeyPath,
+			getInputKeyPath,
+			hasImplementations,
+			hasResult,
+			inputKeys,
+			isLoading,
+			isSelectedFunctionFetched,
+			running,
+			showFunctionSelector,
+			title,
+			userCanRunFunction: store.userCanRunFunction,
+			waitAndCallFunction,
+			i18n
+		};
 	}
 } );
 </script>

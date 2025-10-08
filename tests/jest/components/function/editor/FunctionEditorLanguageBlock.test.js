@@ -14,6 +14,21 @@ const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store
 describe( 'FunctionEditorLanguageBlock', () => {
 	let store;
 
+	function renderFunctionEditorLanguageBlock( props = {}, options = {} ) {
+		const defaultOptions = {
+			global: {
+				stubs: {
+					WlFunctionEditorField: false,
+					...options?.stubs
+				}
+			}
+		};
+		return shallowMount( FunctionEditorLanguageBlock, {
+			props,
+			...defaultOptions
+		} );
+	}
+
 	beforeEach( () => {
 		store = useMainStore();
 		store.getLabelDataForLangCode = createLabelDataMock( { zid: null, label: null, lang: 'Z1002', langCode: 'en', langDir: 'ltr' } );
@@ -25,23 +40,17 @@ describe( 'FunctionEditorLanguageBlock', () => {
 
 	describe( 'function editor language block', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( FunctionEditorLanguageBlock, {
-				props: {
-					index: 0,
-					zLanguage: 'Z1002'
-				},
-				global: { stubs: { WlFunctionEditorField: false } }
+			const wrapper = renderFunctionEditorLanguageBlock( {
+				index: 0,
+				zLanguage: 'Z1002'
 			} );
 			expect( wrapper.find( '.ext-wikilambda-app-function-editor-language-block' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders all fields for main language', async () => {
-			const wrapper = shallowMount( FunctionEditorLanguageBlock, {
-				props: {
-					index: 0,
-					zLanguage: 'Z1002'
-				},
-				global: { stubs: { WlFunctionEditorField: false } }
+			const wrapper = renderFunctionEditorLanguageBlock( {
+				index: 0,
+				zLanguage: 'Z1002'
 			} );
 
 			const lang = wrapper.findComponent( { name: 'wl-function-editor-language' } );
@@ -70,12 +79,9 @@ describe( 'FunctionEditorLanguageBlock', () => {
 		} );
 
 		it( 'renders all fields for the other languages', async () => {
-			const wrapper = shallowMount( FunctionEditorLanguageBlock, {
-				props: {
-					index: 2,
-					zLanguage: 'Z1002'
-				},
-				global: { stubs: { WlFunctionEditorField: false } }
+			const wrapper = renderFunctionEditorLanguageBlock( {
+				index: 2,
+				zLanguage: 'Z1002'
 			} );
 
 			const lang = wrapper.findComponent( { name: 'wl-function-editor-language' } );

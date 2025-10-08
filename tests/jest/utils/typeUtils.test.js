@@ -1,5 +1,5 @@
 /*!
- * WikiLambda unit test suite for the typeUtils mixin
+ * WikiLambda unit test suite for typeUtils
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT

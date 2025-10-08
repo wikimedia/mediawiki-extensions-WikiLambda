@@ -14,7 +14,7 @@
 				weight="primary"
 				@click.stop="handleCancel"
 			>
-				{{ $i18n( 'wikilambda-cancel' ).text() }}
+				{{ i18n( 'wikilambda-cancel' ).text() }}
 			</cdx-button>
 			<cdx-button
 				class="ext-wikilambda-app-publish-widget__publish-button"
@@ -23,7 +23,7 @@
 				data-testid="publish-button"
 				@click.stop="waitAndHandlePublish"
 			>
-				{{ $i18n( 'wikilambda-publishnew' ).text() }}
+				{{ i18n( 'wikilambda-publishnew' ).text() }}
 			</cdx-button>
 			<wl-publish-dialog
 				:show-dialog="showPublishDialog"
@@ -42,11 +42,10 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { computed, defineComponent, inject, onBeforeUnmount, onMounted, ref } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
-const eventLogMixin = require( '../../../mixins/eventLogMixin.js' );
+const useEventLog = require( '../../../composables/useEventLog.js' );
 const urlUtils = require( '../../../utils/urlUtils.js' );
 const useMainStore = require( '../../../store/index.js' );
 
@@ -66,7 +65,6 @@ module.exports = exports = defineComponent( {
 		'wl-publish-dialog': PublishDialog,
 		'wl-widget-base': WidgetBase
 	},
-	mixins: [ eventLogMixin ],
 	props: {
 		functionSignatureChanged: {
 			type: Boolean,
@@ -79,93 +77,73 @@ module.exports = exports = defineComponent( {
 			default: false
 		}
 	},
-	data: function () {
-		return {
-			leaveEditorCallback: undefined,
-			showLeaveEditorDialog: false,
-			showPublishDialog: false
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getErrorPaths',
-		'getQueryParams',
-		'getCurrentZObjectId',
-		'getCurrentZObjectType',
-		'getCurrentZImplementationType',
-		'getUserLangZid',
-		'getUserLangCode',
-		'isCreateNewPage',
-		'waitForRunningParsers'
-	] ), {
-		/**
-		 * Returns the eventLog data object
-		 *
-		 * @return {Object}
-		 */
-		eventData: function () {
-			return {
-				isnewzobject: this.isCreateNewPage,
-				zobjectid: this.getCurrentZObjectId,
-				zobjecttype: this.getCurrentZObjectType || null,
-				implementationtype: this.getCurrentZImplementationType || null,
-				zlang: this.getUserLangZid || null,
-				isdirty: this.isDirty
-			};
-		},
+	emits: [ 'start-cancel', 'start-publish' ],
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
+		const { submitInteraction } = useEventLog();
+
+		// Reactive data
+		const leaveEditorCallback = ref( undefined );
+		const showLeaveEditorDialog = ref( false );
+		const showPublishDialog = ref( false );
+
 		/**
 		 * If 'oldid' or 'undo' exist in the query (and are not empty), return true.
 		 * If true, this enables the Publish button without needing an event.
 		 *
 		 * @return {boolean}
 		 */
-		revertToEdit: function () {
-			return ( !this.isCreateNewPage && this.getQueryParams && (
-				( typeof this.getQueryParams.oldid === 'string' && this.getQueryParams.oldid.trim() !== '' ) ||
-				( typeof this.getQueryParams.undo === 'string' && this.getQueryParams.undo.trim() !== '' )
-			) );
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'clearValidationErrors',
-		'getErrors',
-		'setError',
-		'validateZObject'
-	] ), {
+		const revertToEdit = computed( () => ( !store.isCreateNewPage && store.getQueryParams && (
+			( typeof store.getQueryParams.oldid === 'string' && store.getQueryParams.oldid.trim() !== '' ) ||
+			( typeof store.getQueryParams.undo === 'string' && store.getQueryParams.undo.trim() !== '' )
+		) ) );
+
 		/**
 		 * Handle cancel event from Publish dialog
 		 */
-		closePublishDialog: function () {
-			this.showPublishDialog = false;
-		},
+		function closePublishDialog() {
+			showPublishDialog.value = false;
+		}
 
 		/**
 		 * Handle cancel event from Leave dialog
 		 */
-		closeLeaveDialog: function () {
-			this.showLeaveEditorDialog = false;
-		},
+		function closeLeaveDialog() {
+			showLeaveEditorDialog.value = false;
+		}
 
 		/**
 		 * Waits for running parsers to return and persist
 		 * changes before going ahead and running the function call
 		 */
-		waitAndHandlePublish: function () {
-			this.waitForRunningParsers.then( () => this.handlePublish() );
-		},
+		function waitAndHandlePublish() {
+			store.waitForRunningParsers.then( () => handlePublish() );
+		}
 
 		/**
 		 * Handle click event on Publish button: opens
 		 * the publish dialog.
 		 */
-		handlePublish: function () {
-			this.clearValidationErrors();
-			const isValid = this.validateZObject();
+		function handlePublish() {
+			store.clearValidationErrors();
+			const isValid = store.validateZObject();
 			if ( isValid ) {
-				this.raisePublishWarnings();
-				this.$emit( 'start-publish' );
-				this.showPublishDialog = true;
+				raisePublishWarnings();
+				emit( 'start-publish' );
+				showPublishDialog.value = true;
 			}
-		},
+		}
+
+		/**
+		 * Check if there are any empty reference warnings in the errors.
+		 *
+		 * @return {boolean}
+		 */
+		function hasEmptyReferenceWarnings() {
+			return store.getErrorPaths.some( ( errorId ) => store.getErrors( errorId )
+				.some( ( error ) => error.errorMessageKey === 'wikilambda-empty-reference-warning' ) );
+		}
 
 		/**
 		 * Check if we should show a publish dialog warning if:
@@ -174,42 +152,29 @@ module.exports = exports = defineComponent( {
 		 *
 		 * This is called only when validation passes and the publish dialog is about to open.
 		 */
-		raisePublishWarnings: function () {
-			const hasEmptyReferenceWarnings = this.hasEmptyReferenceWarnings();
-
-			if ( hasEmptyReferenceWarnings ) {
-				this.setError( {
+		function raisePublishWarnings() {
+			if ( hasEmptyReferenceWarnings() ) {
+				store.setError( {
 					errorId: Constants.STORED_OBJECTS.MAIN,
 					errorMessageKey: 'wikilambda-empty-references-publish-warning',
 					errorType: Constants.ERROR_TYPES.WARNING
 				} );
 			}
-		},
-
-		/**
-		 * Check if there are any empty reference warnings in the errors.
-		 *
-		 * @return {boolean}
-		 */
-		hasEmptyReferenceWarnings: function () {
-			return this.getErrorPaths
-				.some( ( errorId ) => this.getErrors( errorId )
-					.some( ( error ) => error.errorMessageKey === 'wikilambda-empty-reference-warning' ) );
-		},
+		}
 
 		/**
 		 * Handle click event on Cancel button: opens
 		 * the leave editor confirmation dialog.
 		 */
-		handleCancel: function () {
+		function handleCancel() {
 			// Emit click cancel event
-			this.$emit( 'start-cancel' );
+			emit( 'start-cancel' );
 			// Get redirect url
-			const cancelTargetUrl = this.isCreateNewPage ?
+			const cancelTargetUrl = store.isCreateNewPage ?
 				new mw.Title( Constants.PATHS.MAIN_PAGE ).getUrl() :
-				urlUtils.generateViewUrl( { langCode: this.getUserLangCode, zid: this.getCurrentZObjectId } );
-			this.leaveTo( cancelTargetUrl );
-		},
+				urlUtils.generateViewUrl( { langCode: store.getUserLangCode, zid: store.getCurrentZObjectId } );
+			leaveTo( cancelTargetUrl );
+		}
 
 		/**
 		 * Handles navigation away from the page.
@@ -218,7 +183,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {Object} e the click event
 		 */
-		handleClickAway: function ( e ) {
+		function handleClickAway( e ) {
 			let target = e.target;
 			// If the click element is not a link, exit
 			while ( target && target.tagName !== 'A' ) {
@@ -245,8 +210,8 @@ module.exports = exports = defineComponent( {
 			}
 			// Else, abandon the page
 			e.preventDefault();
-			this.leaveTo( target.href );
-		},
+			leaveTo( target.href );
+		}
 
 		/**
 		 * Handles navigation away from the page using the browser
@@ -262,11 +227,11 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {Object} e the beforeunload event
 		 */
-		handleUnload: function ( e ) {
-			if ( this.isDirty ) {
+		function handleUnload( e ) {
+			if ( props.isDirty ) {
 				e.preventDefault();
 			}
-		},
+		}
 
 		/**
 		 * Handle actions before leaving the edit page:
@@ -275,49 +240,65 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} targetUrl
 		 */
-		leaveTo: function ( targetUrl ) {
+		function leaveTo( targetUrl ) {
 			const leaveAction = () => {
-				this.removeListeners();
+				removeListeners();
 				// Log an event using Metrics Platform's core interaction events
 				const interactionData = {
-					zobjecttype: this.getCurrentZObjectType || null,
-					zobjectid: this.getCurrentZObjectId,
-					zlang: this.getUserLangZid || null,
-					implementationtype: this.getCurrentZImplementationType || null
+					zobjecttype: store.getCurrentZObjectType || null,
+					zobjectid: store.getCurrentZObjectId,
+					zlang: store.getUserLangZid || null,
+					implementationtype: store.getCurrentZImplementationType || null
 				};
-				this.submitInteraction( 'cancel', interactionData );
+				submitInteraction( 'cancel', interactionData );
 				window.location.href = targetUrl;
 			};
 
-			if ( this.isDirty ) {
-				this.leaveEditorCallback = leaveAction;
-				this.showLeaveEditorDialog = true;
+			if ( props.isDirty ) {
+				leaveEditorCallback.value = leaveAction;
+				showLeaveEditorDialog.value = true;
 			} else {
 				leaveAction();
 			}
-		},
+		}
 
 		/**
 		 * Add event listeners.
 		 */
-		addListeners: function () {
-			window.addEventListener( 'click', this.handleClickAway );
-			window.addEventListener( 'beforeunload', this.handleUnload );
-		},
+		function addListeners() {
+			window.addEventListener( 'click', handleClickAway );
+			window.addEventListener( 'beforeunload', handleUnload );
+		}
 
 		/**
 		 * Remove event listeners.
 		 */
-		removeListeners: function () {
-			window.removeEventListener( 'click', this.handleClickAway );
-			window.removeEventListener( 'beforeunload', this.handleUnload );
+		function removeListeners() {
+			window.removeEventListener( 'click', handleClickAway );
+			window.removeEventListener( 'beforeunload', handleUnload );
 		}
-	} ),
-	mounted: function () {
-		this.addListeners();
-	},
-	beforeUnmount: function () {
-		this.removeListeners();
+
+		// Lifecycle
+		onMounted( () => {
+			addListeners();
+		} );
+
+		onBeforeUnmount( () => {
+			removeListeners();
+		} );
+
+		return {
+			closeLeaveDialog,
+			closePublishDialog,
+			handleCancel,
+			leaveEditorCallback,
+			removeListeners,
+			revertToEdit,
+			showLeaveEditorDialog,
+			showPublishDialog,
+			waitAndHandlePublish,
+			i18n
+		};
 	}
 } );
 </script>

@@ -33,12 +33,11 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { defineComponent, computed, watch, onMounted } = require( 'vue' );
 
 const wikidataIconSvg = require( './wikidataIconSvg.js' );
 const Constants = require( '../../../Constants.js' );
-const zobjectMixin = require( '../../../mixins/zobjectMixin.js' );
+const useZObject = require( '../../../composables/useZObject.js' );
 const useMainStore = require( '../../../store/index.js' );
 const LabelData = require( '../../../store/classes/LabelData.js' );
 
@@ -53,9 +52,8 @@ module.exports = exports = defineComponent( {
 		'wl-wikidata-entity-selector': WikidataEntitySelector,
 		'cdx-icon': CdxIcon
 	},
-	mixins: [ zobjectMixin ],
 	props: {
-		keyPath: { // eslint-disable-line vue/no-unused-properties
+		keyPath: {
 			type: String,
 			required: true
 		},
@@ -72,53 +70,46 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	data: function () {
-		return {
-			wikidataIcon: wikidataIconSvg,
-			itemType: Constants.Z_WIKIDATA_ITEM
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getItemLabelData',
-		'getItemUrl'
-	] ), {
+	setup( props, { emit } ) {
+		// Use ZObject utilities composable
+		const { getWikidataEntityId } = useZObject( { keyPath: props.keyPath } );
+
+		// Use main store
+		const store = useMainStore();
+
+		// Data
+		const wikidataIcon = wikidataIconSvg;
+		const itemType = Constants.Z_WIKIDATA_ITEM;
+
 		/**
 		 * Returns the Wikidata Item Id string value, if any Item is selected.
 		 *
 		 * @return {string|undefined}
 		 */
-		itemId: function () {
-			return this.getWikidataEntityId( this.objectValue, this.itemType );
-		},
+		const itemId = computed( () => getWikidataEntityId( props.objectValue, itemType ) );
+
 		/**
 		 * Returns the Wikidata URL for the selected Item.
 		 *
 		 * @return {string|undefined}
 		 */
-		itemUrl: function () {
-			return this.getItemUrl( this.itemId );
-		},
+		const itemUrl = computed( () => store.getItemUrl( itemId.value ) );
+
 		/**
 		 * Returns the LabelData object for the selected Item.
 		 *
 		 * @return {LabelData|undefined}
 		 */
-		itemLabelData: function () {
-			return this.getItemLabelData( this.itemId );
-		},
+		const itemLabelData = computed( () => store.getItemLabelData( itemId.value ) );
+
 		/**
 		 * Returns the string label of the selected Wikidata Item or
 		 * an empty string if none is selected.
 		 *
 		 * @return {string}
 		 */
-		itemLabel: function () {
-			return this.itemLabelData ? this.itemLabelData.label : '';
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'fetchItems'
-	] ), {
+		const itemLabel = computed( () => itemLabelData.value ? itemLabelData.value.label : '' );
+
 		/**
 		 * Emit a set-value event to persist in the store
 		 * the changes made by a new wikidata entity selection,
@@ -128,12 +119,12 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string|null} value
 		 */
-		onSelect: function ( value ) {
+		function onSelect( value ) {
 			// If type is Wikidata Entity Reference:
 			// * Set Reference Id
 			// Else (type is Function Call):
 			// * Set Reference Id of the Fetch Function Id argument
-			const keyPath = ( this.type === Constants.Z_WIKIDATA_REFERENCE_ITEM ) ? [
+			const keyPath = ( props.type === Constants.Z_WIKIDATA_REFERENCE_ITEM ) ? [
 				Constants.Z_WIKIDATA_REFERENCE_ITEM_ID,
 				Constants.Z_STRING_VALUE
 			] : [
@@ -142,21 +133,33 @@ module.exports = exports = defineComponent( {
 				Constants.Z_STRING_VALUE
 			];
 
-			this.$emit( 'set-value', {
+			emit( 'set-value', {
 				value: value || '',
 				keyPath
 			} );
 		}
-	} ),
-	watch: {
-		itemId: function ( id ) {
-			this.fetchItems( { ids: [ id ] } );
-		}
-	},
-	mounted: function () {
-		if ( this.itemId ) {
-			this.fetchItems( { ids: [ this.itemId ] } );
-		}
+
+		// Watch itemId
+		watch( itemId, ( id ) => {
+			store.fetchItems( { ids: [ id ] } );
+		} );
+
+		// On mounted
+		onMounted( () => {
+			if ( itemId.value ) {
+				store.fetchItems( { ids: [ itemId.value ] } );
+			}
+		} );
+
+		return {
+			itemId,
+			itemLabel,
+			itemLabelData,
+			itemType,
+			itemUrl,
+			onSelect,
+			wikidataIcon
+		};
 	}
 } );
 </script>

@@ -10,7 +10,7 @@
 			<div class="ext-wikilambda-app-about-language-block__fields">
 				<!-- No descriptions or aliases message -->
 				<div v-if="!hasDescription && !hasAliases" class="ext-wikilambda-app-about-language-block__unavailable">
-					{{ $i18n( 'wikilambda-about-widget-no-descriptions-or-aliases' ).text() }}
+					{{ i18n( 'wikilambda-about-widget-no-descriptions-or-aliases' ).text() }}
 				</div>
 				<template v-else>
 					<!-- Description block -->
@@ -19,7 +19,7 @@
 							{{ viewData.description.value }}
 						</span>
 						<span v-else class="ext-wikilambda-app-about-language-block__unavailable">
-							{{ $i18n( 'wikilambda-about-widget-no-descriptions' ).text() }}
+							{{ i18n( 'wikilambda-about-widget-no-descriptions' ).text() }}
 						</span>
 					</div>
 					<!-- Aliases block -->
@@ -39,7 +39,7 @@
 							>+{{ viewData.aliases.value.length - 3 }}</a>
 						</template>
 						<span v-else class="ext-wikilambda-app-about-language-block__unavailable">
-							{{ $i18n( 'wikilambda-about-widget-no-aliases' ).text() }}
+							{{ i18n( 'wikilambda-about-widget-no-aliases' ).text() }}
 						</span>
 					</div>
 				</template>
@@ -49,7 +49,7 @@
 				<div class="ext-wikilambda-app-about-language-block__inputs">
 					<!-- Inputs -->
 					<div class="ext-wikilambda-app-about-language-block__field-title">
-						{{ $i18n( 'wikilambda-function-definition-inputs-label' ).text() }}
+						{{ i18n( 'wikilambda-function-definition-inputs-label' ).text() }}
 					</div>
 					<template v-if="viewData.inputs.length > 0">
 						<div
@@ -60,15 +60,15 @@
 							<span
 								v-if="input.value"
 								class="ext-wikilambda-app-about-language-block__input-label"
-							>{{ input.value }}<span>{{ $i18n( 'colon-separator' ).text() }}</span>
+							>{{ input.value }}<span>{{ i18n( 'colon-separator' ).text() }}</span>
 							</span>
 							<span
 								v-else
 								class="ext-wikilambda-app-about-language-block__input-label
 									ext-wikilambda-app-about-language-block__unavailable"
 							>{{
-								$i18n( 'wikilambda-editor-default-name' ).text()
-							}}<span>{{ $i18n( 'colon-separator' ).text() }}&nbsp;</span>
+								i18n( 'wikilambda-editor-default-name' ).text()
+							}}<span>{{ i18n( 'colon-separator' ).text() }}&nbsp;</span>
 							</span><wl-z-object-to-string
 								:key-path="input.typeKeyPath"
 								:object-value="input.type"
@@ -78,14 +78,14 @@
 					</template>
 					<div v-else class="ext-wikilambda-app-about-language-block__field-value">
 						<span class="ext-wikilambda-app-about-language-block__unavailable">
-							{{ $i18n( 'wikilambda-about-widget-no-inputs' ).text() }}
+							{{ i18n( 'wikilambda-about-widget-no-inputs' ).text() }}
 						</span>
 					</div>
 				</div>
 				<!-- Output -->
 				<div class="ext-wikilambda-app-about-language-block__output">
 					<div class="ext-wikilambda-app-about-language-block__field-title">
-						{{ $i18n( 'wikilambda-function-definition-output-label' ).text() }}
+						{{ i18n( 'wikilambda-function-definition-output-label' ).text() }}
 					</div>
 					<div class="ext-wikilambda-app-about-language-block__field-value">
 						<wl-z-object-to-string
@@ -106,7 +106,7 @@
 			>
 				<cdx-text-input
 					:model-value="editData.name.value"
-					:placeholder="$i18n( 'wikilambda-about-widget-name-placeholder' ).text()"
+					:placeholder="i18n( 'wikilambda-about-widget-name-placeholder' ).text()"
 					:maxlength="maxNameChars"
 					data-testid="text-input"
 					@update:model-value="updateEditValue( editData.name, $event )"
@@ -124,7 +124,7 @@
 							<span
 								:lang="fallbackName.lang.langCode"
 								:dir="fallbackName.lang.langDir"
-							>{{ fallbackName.lang.label }}</span>{{ $i18n( 'colon-separator' ).text() }}
+							>{{ fallbackName.lang.label }}</span>{{ i18n( 'colon-separator' ).text() }}
 							{{ fallbackName.value }}
 						</template>
 					</div>
@@ -140,7 +140,7 @@
 			>
 				<cdx-text-area
 					:model-value="editData.description.value"
-					:placeholder="$i18n( 'wikilambda-about-widget-description-placeholder' ).text()"
+					:placeholder="i18n( 'wikilambda-about-widget-description-placeholder' ).text()"
 					:maxlength="maxDescriptionChars"
 					data-testid="text-area"
 					@update:model-value="updateEditValue( editData.description, $event )"
@@ -158,7 +158,7 @@
 							<span
 								:lang="fallbackDescription.lang.langCode"
 								:dir="fallbackDescription.lang.langDir"
-							>{{ fallbackDescription.lang.label }}</span>{{ $i18n( 'colon-separator' ).text() }}
+							>{{ fallbackDescription.lang.label }}</span>{{ i18n( 'colon-separator' ).text() }}
 							{{ fallbackDescription.value }}
 						</template>
 					</div>
@@ -191,7 +191,7 @@
 						<span
 							:lang="fallbackAliases.lang.langCode"
 							:dir="fallbackAliases.lang.langDir"
-						>{{ fallbackAliases.lang.label }}</span>{{ $i18n( 'colon-separator' ).text() }}
+						>{{ fallbackAliases.lang.label }}</span>{{ i18n( 'colon-separator' ).text() }}
 						{{ fallbackAliases.value.join( ', ' ) }}
 					</div>
 				</template>
@@ -207,14 +207,14 @@
 				>
 					<cdx-text-input
 						:model-value="input.value"
-						:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text()"
+						:placeholder="i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text()"
 						:maxlength="maxInputChars"
 						data-testid="text-input"
 						@update:model-value="updateEditValue( input, $event )"
 						@change="changeEditValue"
 					></cdx-text-input>
 					<template #label>
-						{{ $i18n( 'wikilambda-about-widget-input-label', index + 1 ).text() }}
+						{{ i18n( 'wikilambda-about-widget-input-label', index + 1 ).text() }}
 					</template>
 					<template #help-text>
 						<div class="ext-wikilambda-app-about-language-block__edit-field-caption">
@@ -222,7 +222,7 @@
 								<span
 									:lang="fallbackInputs[ index ].lang.langCode"
 									:dir="fallbackInputs[ index ].lang.langDir"
-								>{{ fallbackInputs[ index ].lang.label }}</span>{{ $i18n( 'colon-separator' ).text() }}
+								>{{ fallbackInputs[ index ].lang.label }}</span>{{ i18n( 'colon-separator' ).text() }}
 								{{ fallbackInputs[ index ].value }}
 							</template>
 						</div>
@@ -237,8 +237,7 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapState } = require( 'pinia' );
+const { computed, defineComponent, inject, ref } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
 const useMainStore = require( '../../../store/index.js' );
@@ -286,222 +285,213 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	data: function () {
-		return {
-			outputTypeKeyPath: [
-				Constants.STORED_OBJECTS.MAIN,
-				Constants.Z_PERSISTENTOBJECT_VALUE,
-				Constants.Z_FUNCTION_RETURN_TYPE
-			].join( '.' ),
-			maxNameChars: Constants.LABEL_CHARS_MAX,
-			maxInputChars: Constants.INPUT_CHARS_MAX,
-			maxDescriptionChars: Constants.DESCRIPTION_CHARS_MAX,
-			seeAllAliases: false
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getFallbackLanguageZids',
-		'getLabelData',
-		'getZFunctionInputs',
-		'getZFunctionOutput',
-		'getZPersistentAlias',
-		'getZPersistentName',
-		'getZPersistentDescription'
-	] ), {
+	emits: [ 'change-value', 'update-edit-value' ],
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
+
+		// Reactive data
+		const outputTypeKeyPath = [
+			Constants.STORED_OBJECTS.MAIN,
+			Constants.Z_PERSISTENTOBJECT_VALUE,
+			Constants.Z_FUNCTION_RETURN_TYPE
+		].join( '.' );
+		const maxNameChars = Constants.LABEL_CHARS_MAX;
+		const maxInputChars = Constants.INPUT_CHARS_MAX;
+		const maxDescriptionChars = Constants.DESCRIPTION_CHARS_MAX;
+		const seeAllAliases = ref( false );
+
 		/**
 		 * Returns the list of fallback languages in their Zid
 		 * representation, excluding the language of the current block
 		 *
 		 * @return {Array}
 		 */
-		fallbackLanguageZids: function () {
-			return this.getFallbackLanguageZids.filter( ( zid ) => zid !== this.language );
-		},
+		const fallbackLanguageZids = computed( () => store.getFallbackLanguageZids
+			.filter( ( zid ) => zid !== props.language )
+		);
+
 		/**
 		 * Returns the name for the closest available fallback language
 		 *
 		 * @return {Object|undefined}
 		 */
-		fallbackName: function () {
+		const fallbackName = computed( () => {
 			// Don't search for fallback if the field has value
-			if ( this.viewData.name.value ) {
+			if ( props.viewData.name.value ) {
 				return undefined;
 			}
 			// Return the value in the first available fallback
-			for ( const lang of this.fallbackLanguageZids ) {
-				if ( this.fieldLangs.name.includes( lang ) ) {
+			for ( const lang of fallbackLanguageZids.value ) {
+				if ( props.fieldLangs.name.includes( lang ) ) {
 					return {
-						value: this.getZPersistentName( lang ).value,
-						lang: this.getLabelData( lang )
+						value: store.getZPersistentName( lang ).value,
+						lang: store.getLabelData( lang )
 					};
 				}
 			}
 			// Or return undefined if no value was found
 			return undefined;
-		},
+		} );
+
 		/**
 		 * Returns the description for the closest available fallback language
 		 *
 		 * @return {Object|undefined}
 		 */
-		fallbackDescription: function () {
+		const fallbackDescription = computed( () => {
 			// Don't search for fallback if the field has value
-			if ( this.viewData.description.value ) {
+			if ( props.viewData.description.value ) {
 				return undefined;
 			}
 			// Return the value in the first available fallback
-			for ( const lang of this.fallbackLanguageZids ) {
-				if ( this.fieldLangs.description.includes( lang ) ) {
+			for ( const lang of fallbackLanguageZids.value ) {
+				if ( props.fieldLangs.description.includes( lang ) ) {
 					return {
-						value: this.getZPersistentDescription( lang ).value,
-						lang: this.getLabelData( lang )
+						value: store.getZPersistentDescription( lang ).value,
+						lang: store.getLabelData( lang )
 					};
 				}
 			}
 			// Or return undefined if no value was found
 			return undefined;
-		},
+		} );
+
 		/**
 		 * Returns the alias for the closest available fallback language
 		 *
 		 * @return {Object|undefined}
 		 */
-		fallbackAliases: function () {
+		const fallbackAliases = computed( () => {
 			// Don't search for fallback if the field has value
-			if ( this.viewData.aliases.value.length > 0 ) {
+			if ( props.viewData.aliases.value.length > 0 ) {
 				return undefined;
 			}
 			// Return the value in the first available fallback
-			for ( const lang of this.fallbackLanguageZids ) {
-				if ( this.fieldLangs.aliases.includes( lang ) ) {
+			for ( const lang of fallbackLanguageZids.value ) {
+				if ( props.fieldLangs.aliases.includes( lang ) ) {
 					return {
-						value: this.getZPersistentAlias( lang ).value,
-						lang: this.getLabelData( lang )
+						value: store.getZPersistentAlias( lang ).value,
+						lang: store.getLabelData( lang )
 					};
 				}
 			}
 			// Or return undefined if no value was found
 			return undefined;
-		},
+		} );
+
 		/**
 		 * Returns the function inputs for the fallback language
 		 *
 		 * @return {Array}
 		 */
-		fallbackInputs: function () {
-			return this.viewData.inputs.map( ( input, index ) => {
-				// Don't search for fallback if the field has value
-				if ( input.value ) {
-					return undefined;
-				}
-				// Return the value in the first available fallback
-				for ( const lang of this.fallbackLanguageZids ) {
-					if ( this.fieldLangs.inputs[ index ].includes( lang ) ) {
-						const arg = this.getZFunctionInputs[ index ];
-						const label = getZMonolingualItemForLang( arg[ Constants.Z_ARGUMENT_LABEL ], lang );
-						return {
-							value: label.value,
-							lang: this.getLabelData( lang )
-						};
-					}
-				}
-				// Or return undefined if no value was found
+		const fallbackInputs = computed( () => props.viewData.inputs.map( ( input, index ) => {
+			// Don't search for fallback if the field has value
+			if ( input.value ) {
 				return undefined;
-			} );
-		},
+			}
+			// Return the value in the first available fallback
+			for ( const lang of fallbackLanguageZids.value ) {
+				if ( props.fieldLangs.inputs[ index ].includes( lang ) ) {
+					const arg = store.getZFunctionInputs[ index ];
+					const label = getZMonolingualItemForLang( arg[ Constants.Z_ARGUMENT_LABEL ], lang );
+					return {
+						value: label.value,
+						lang: store.getLabelData( lang )
+					};
+				}
+			}
+			// Or return undefined if no value was found
+			return undefined;
+		} ) );
+
 		/**
 		 * Returns the label for the name input field (Z2K3)
 		 *
 		 * @return {LabelData}
 		 */
-		nameLabelData: function () {
-			return this.getLabelData( Constants.Z_PERSISTENTOBJECT_LABEL );
-		},
+		const nameLabelData = computed( () => store.getLabelData( Constants.Z_PERSISTENTOBJECT_LABEL ) );
+
 		/**
 		 * Returns the number of characters left to reach the
 		 * label field maximum allowed.
 		 *
 		 * @return {number}
 		 */
-		nameCharsLeft: function () {
-			return this.maxNameChars - this.editData.name.value.length;
-		},
+		const nameCharsLeft = computed( () => maxNameChars - props.editData.name.value.length );
+
 		/**
 		 * Returns whether the object has any available description
 		 * (in any language)
 		 *
 		 * @return {boolean}
 		 */
-		hasDescription: function () {
-			return !!this.viewData.description.value;
-		},
+		const hasDescription = computed( () => !!props.viewData.description.value );
+
 		/**
 		 * Returns the label for the description input field (Z2K5)
 		 *
 		 * @return {LabelData}
 		 */
-		descriptionLabelData: function () {
-			return this.getLabelData( Constants.Z_PERSISTENTOBJECT_DESCRIPTION );
-		},
+		const descriptionLabelData = computed( () => store.getLabelData(
+			Constants.Z_PERSISTENTOBJECT_DESCRIPTION
+		) );
+
 		/**
 		 * Returns the number of characters left to reach the
 		 * description field maximum allowed.
 		 *
 		 * @return {number}
 		 */
-		descriptionCharsLeft: function () {
-			return this.maxDescriptionChars - this.editData.description.value.length;
-		},
+		const descriptionCharsLeft = computed( () => maxDescriptionChars - props.editData.description.value.length );
+
 		/**
 		 * Returns whether the object has any available aliases
 		 * (in any language)
 		 *
 		 * @return {boolean}
 		 */
-		hasAliases: function () {
-			return this.viewData.aliases.value.length > 0;
-		},
+		const hasAliases = computed( () => props.viewData.aliases.value.length > 0 );
+
 		/**
 		 * Returns the label for the aliases input field (Z2K4)
 		 *
 		 * @return {LabelData}
 		 */
-		aliasesLabelData: function () {
-			return this.getLabelData( Constants.Z_PERSISTENTOBJECT_ALIASES );
-		},
+		const aliasesLabelData = computed( () => store.getLabelData( Constants.Z_PERSISTENTOBJECT_ALIASES ) );
+
 		/**
 		 * Returns the visible aliases depending on
 		 * the seeAllAliases flag.
 		 *
 		 * @return {Array}
 		 */
-		visibleAliases: function () {
-			return this.seeAllAliases ?
-				this.viewData.aliases.value :
-				this.viewData.aliases.value.slice( 0, 3 );
-		},
+		const visibleAliases = computed( () => ( seeAllAliases.value ?
+			props.viewData.aliases.value :
+			props.viewData.aliases.value.slice( 0, 3 ) ) );
+
 		/**
 		 * Returns the number of characters left to reach each
 		 * input field maximum allowed.
 		 *
 		 * @return {Array}
 		 */
-		inputCharsLeft: function () {
-			return this.editData.inputs.map( ( input ) => this.maxInputChars - input.value.length );
-		},
+		const inputCharsLeft = computed( () => props.editData.inputs
+			.map( ( input ) => maxInputChars - input.value.length )
+		);
+
 		/**
 		 * Returns the output type
 		 *
 		 * @return {Object|undefined}
 		 */
-		outputType: function () {
-			if ( !this.isFunction ) {
+		const outputType = computed( () => {
+			if ( !props.isFunction ) {
 				return undefined;
 			}
-			return this.getZFunctionOutput;
-		}
-	} ),
-	methods: {
+			return store.getZFunctionOutput;
+		} );
+
 		/**
 		 * Emits an 'update-edit-value' event with the changes done to
 		 * the fields, so that the parent component can update the editData
@@ -510,9 +500,10 @@ module.exports = exports = defineComponent( {
 		 * @param {Object} data
 		 * @param {Array|string} value
 		 */
-		updateEditValue: function ( data, value ) {
-			this.$emit( 'update-edit-value', { data, value } );
-		},
+		function updateEditValue( data, value ) {
+			emit( 'update-edit-value', { data, value } );
+		}
+
 		/**
 		 * Emits a 'change-value' event every time that a field
 		 * changes its value, to trigger the parent to persist the new
@@ -521,9 +512,34 @@ module.exports = exports = defineComponent( {
 		 * whole field updates (on blur, or on chip input), so that we
 		 * don't run persistance methods for every input character.
 		 */
-		changeEditValue: function () {
-			this.$emit( 'change-value' );
+		function changeEditValue() {
+			emit( 'change-value' );
 		}
+
+		return {
+			aliasesLabelData,
+			changeEditValue,
+			descriptionCharsLeft,
+			descriptionLabelData,
+			fallbackAliases,
+			fallbackDescription,
+			fallbackInputs,
+			fallbackName,
+			hasAliases,
+			hasDescription,
+			inputCharsLeft,
+			maxDescriptionChars,
+			maxInputChars,
+			maxNameChars,
+			nameCharsLeft,
+			nameLabelData,
+			outputType,
+			outputTypeKeyPath,
+			seeAllAliases,
+			updateEditValue,
+			visibleAliases,
+			i18n
+		};
 	}
 } );
 </script>

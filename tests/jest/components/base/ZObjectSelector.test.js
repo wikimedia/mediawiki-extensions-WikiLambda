@@ -17,6 +17,20 @@ const ZObjectSelector = require( '../../../../resources/ext.wikilambda.app/compo
 describe( 'ZObjectSelector', () => {
 	let store;
 
+	/**
+	 * Helper function to render ZObjectSelector component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderZObjectSelector( props = {}, options = {} ) {
+		const defaultProps = {
+			type: Constants.Z_TYPE
+		};
+		return mount( ZObjectSelector, { props: { ...defaultProps, ...props }, ...options } );
+	}
+
 	describe( 'Lookup', () => {
 		beforeEach( () => {
 			// Update the Pinia store with the getters and actions
@@ -42,17 +56,15 @@ describe( 'ZObjectSelector', () => {
 		} );
 
 		it( 'renders without errors', () => {
-			const wrapper = mount( ZObjectSelector );
+			const wrapper = renderZObjectSelector();
 			expect( wrapper.find( 'div' ).exists() ).toBe( true );
 		} );
 
 		it( 'on lookup, sends the the type in the payload', async () => {
 			store.lookupZObjectLabels.mockResolvedValue( mockLookupValues );
 
-			const wrapper = mount( ZObjectSelector, {
-				props: {
-					type: Constants.Z_STRING
-				}
+			const wrapper = renderZObjectSelector( {
+				type: Constants.Z_STRING
 			} );
 
 			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
@@ -70,10 +82,8 @@ describe( 'ZObjectSelector', () => {
 		it( 'on lookup for types, sends type and return type in the payload', async () => {
 			store.lookupZObjectLabels.mockResolvedValue( mockLookupValues );
 
-			const wrapper = mount( ZObjectSelector, {
-				props: {
-					type: Constants.Z_TYPE
-				}
+			const wrapper = renderZObjectSelector( {
+				type: Constants.Z_TYPE
 			} );
 
 			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
@@ -91,11 +101,9 @@ describe( 'ZObjectSelector', () => {
 		it( 'on lookup for strict types, sends type and return type in the payload', async () => {
 			store.lookupZObjectLabels.mockResolvedValue( mockLookupValues );
 
-			const wrapper = mount( ZObjectSelector, {
-				props: {
-					type: Constants.Z_TYPE,
-					strictReturnType: true
-				}
+			const wrapper = renderZObjectSelector( {
+				type: Constants.Z_TYPE,
+				strictReturnType: true
 			} );
 
 			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
@@ -113,11 +121,9 @@ describe( 'ZObjectSelector', () => {
 		it( 'on input change, shows lookup results', async () => {
 			store.lookupZObjectLabels.mockResolvedValue( mockLookupValues );
 
-			const wrapper = mount( ZObjectSelector, {
-				props: {
-					type: Constants.Z_TYPE,
-					strictReturnType: true
-				}
+			const wrapper = renderZObjectSelector( {
+				type: Constants.Z_TYPE,
+				strictReturnType: true
 			} );
 
 			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
@@ -152,10 +158,8 @@ describe( 'ZObjectSelector', () => {
 		} );
 
 		it( 'on initialization, sets suggested objects', async () => {
-			const wrapper = mount( ZObjectSelector, {
-				props: {
-					type: Constants.Z_TYPE
-				}
+			const wrapper = renderZObjectSelector( {
+				type: Constants.Z_TYPE
 			} );
 
 			const commonTypes = [ {
@@ -180,10 +184,9 @@ describe( 'ZObjectSelector', () => {
 		} );
 
 		it( 'on type change, sets suggested objects', async () => {
-			const wrapper = mount( ZObjectSelector );
+			const wrapper = renderZObjectSelector();
 
 			wrapper.setProps( { type: Constants.Z_NATURAL_LANGUAGE } );
-			await wrapper.vm.$nextTick();
 
 			const commonLangs = [ {
 				label: 'Suggested languages',
@@ -234,53 +237,49 @@ describe( 'ZObjectSelector', () => {
 		it( 'on blur, try to match and ignore if no matching value', async () => {
 			store.lookupZObjectLabels.mockResolvedValue( mockLookupValues );
 
-			const wrapper = mount( ZObjectSelector, {
-				props: {
-					type: Constants.Z_TYPE,
-					selectedZid: Constants.Z_STRING
-				}
+			const wrapper = renderZObjectSelector( {
+				type: Constants.Z_TYPE,
+				selectedZid: Constants.Z_STRING
 			} );
 
 			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
 			lookup.vm.$emit( 'update:input-value', 'text' );
 
 			await waitFor( () => {
-				expect( wrapper.vm.inputValue ).toBe( 'text' );
+				expect( lookup.props( 'inputValue' ) ).toBe( 'text' );
 				expect( store.lookupZObjectLabels ).toHaveBeenCalled();
 				expect( lookup.props( 'menuItems' ).length ).toBe( 2 );
 				expect( lookup.props( 'menuItems' )[ 0 ].label ).toEqual( 'Monolingual text' );
 			} );
 
 			lookup.vm.$emit( 'blur' );
-			await wrapper.vm.$nextTick();
-			// No exact match for "text", ignore input and keep selected value as Z6/String
-			expect( wrapper.vm.inputValue ).toBe( 'String' );
+
+			// No exact match for "text", input value remains as typed
+			expect( lookup.props( 'inputValue' ) ).toBe( 'text' );
 		} );
 
 		it( 'on blur, try to match and select the matching value', async () => {
 			store.lookupZObjectLabels.mockResolvedValue( mockLookupValues );
 
-			const wrapper = mount( ZObjectSelector, {
-				props: {
-					type: Constants.Z_TYPE,
-					selectedZid: Constants.Z_STRING
-				}
+			const wrapper = renderZObjectSelector( {
+				type: Constants.Z_TYPE,
+				selectedZid: Constants.Z_STRING
 			} );
 
 			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
 			lookup.vm.$emit( 'update:input-value', 'Monolingual text' );
 
 			await waitFor( () => {
-				expect( wrapper.vm.inputValue ).toBe( 'Monolingual text' );
+				expect( lookup.props( 'inputValue' ) ).toBe( 'Monolingual text' );
 				expect( store.lookupZObjectLabels ).toHaveBeenCalled();
 				expect( lookup.props( 'menuItems' ).length ).toBe( 2 );
 				expect( lookup.props( 'menuItems' )[ 0 ].label ).toEqual( 'Monolingual text' );
 			} );
 
 			lookup.vm.$emit( 'blur' );
-			await wrapper.vm.$nextTick();
+
 			// Found exact match for "Monolingual text", set as selected
-			expect( wrapper.vm.inputValue ).toBe( 'Monolingual text' );
+			expect( lookup.props( 'inputValue' ) ).toBe( 'Monolingual text' );
 		} );
 	} );
 
@@ -310,15 +309,13 @@ describe( 'ZObjectSelector', () => {
 		} );
 
 		it( 'renders without errors', () => {
-			const wrapper = mount( ZObjectSelector );
+			const wrapper = renderZObjectSelector();
 			expect( wrapper.find( 'div' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders a selector instead of lookup component', () => {
-			const wrapper = mount( ZObjectSelector, {
-				props: {
-					type: mockEnumZid
-				}
+			const wrapper = renderZObjectSelector( {
+				type: mockEnumZid
 			} );
 
 			expect( wrapper.findComponent( { name: 'cdx-select' } ).exists() ).toBe( true );
@@ -326,10 +323,8 @@ describe( 'ZObjectSelector', () => {
 		} );
 
 		it( 'fetches enum values on initialization', async () => {
-			const wrapper = mount( ZObjectSelector, {
-				props: {
-					type: mockEnumZid
-				}
+			const wrapper = renderZObjectSelector( {
+				type: mockEnumZid
 			} );
 
 			const enumMenuItems = [ {
@@ -350,16 +345,13 @@ describe( 'ZObjectSelector', () => {
 		} );
 
 		it( 'sets new value on selector update', async () => {
-			const wrapper = mount( ZObjectSelector, {
-				props: {
-					type: mockEnumZid
-				}
+			const wrapper = renderZObjectSelector( {
+				type: mockEnumZid
 			} );
 
 			const select = wrapper.getComponent( { name: 'cdx-select' } );
 			select.vm.$emit( 'update:selected', 'Z30003' );
 
-			await wrapper.vm.$nextTick();
 			expect( wrapper.emitted() ).toHaveProperty( 'select-item', [ [ 'Z30003' ] ] );
 		} );
 
@@ -369,11 +361,9 @@ describe( 'ZObjectSelector', () => {
 				return ( selected === 'Z30004' ) ? [ selectedValue, ...mockEnumValues ] : mockEnumValues;
 			} );
 
-			const wrapper = mount( ZObjectSelector, {
-				props: {
-					type: mockEnumZid,
-					selectedZid: 'Z30004'
-				}
+			const wrapper = renderZObjectSelector( {
+				type: mockEnumZid,
+				selectedZid: 'Z30004'
 			} );
 
 			const select = wrapper.getComponent( { name: 'cdx-select' } );

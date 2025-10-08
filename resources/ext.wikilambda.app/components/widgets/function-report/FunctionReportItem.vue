@@ -31,7 +31,7 @@
 						v-if="!isRunning && status !== 'ready'"
 						role="button"
 						@click="emitTesterKeys"
-					>{{ $i18n( 'wikilambda-tester-details' ).text() }}
+					>{{ i18n( 'wikilambda-tester-details' ).text() }}
 					</a>
 				</div>
 			</div>
@@ -40,12 +40,10 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapState } = require( 'pinia' );
+const { computed, defineComponent, inject } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
 const icons = require( '../../../../lib/icons.json' );
-const typeMixin = require( '../../../mixins/typeMixin.js' );
 const useMainStore = require( '../../../store/index.js' );
 const urlUtils = require( '../../../utils/urlUtils.js' );
 
@@ -57,7 +55,6 @@ module.exports = exports = defineComponent( {
 	components: {
 		'wl-status-icon': StatusIcon
 	},
-	mixins: [ typeMixin ],
 	props: {
 		functionZid: {
 			type: String,
@@ -80,110 +77,123 @@ module.exports = exports = defineComponent( {
 			default: false
 		}
 	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getUserLangCode',
-		'getZTesterResult',
-		'getLabelData'
-	] ), {
+	emits: [ 'set-keys' ],
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
+
 		/**
 		 * Returns the label data for the item title
 		 *
 		 * @return {LabelData}
 		 */
-		titleLabelData: function () {
-			return this.contentType === Constants.Z_TESTER ?
-				this.getLabelData( this.implementationZid ) :
-				this.getLabelData( this.testerZid );
-		},
+		const titleLabelData = computed( () => props.contentType === Constants.Z_TESTER ?
+			store.getLabelData( props.implementationZid ) :
+			store.getLabelData( props.testerZid ) );
+
 		/**
 		 * Returns the link for the reported item
 		 *
 		 * @return {string}
 		 */
-		titleLink: function () {
-			const zid = this.contentType === Constants.Z_TESTER ? this.implementationZid : this.testerZid;
-			return urlUtils.generateViewUrl( { langCode: this.getUserLangCode, zid } );
-		},
+		const titleLink = computed( () => {
+			const zid = props.contentType === Constants.Z_TESTER ? props.implementationZid : props.testerZid;
+			return urlUtils.generateViewUrl( { langCode: store.getUserLangCode, zid } );
+		} );
+
 		/**
 		 * Returns whether the tester passed
 		 *
 		 * @return {boolean}
 		 */
-		testerStatus: function () {
-			return this.getZTesterResult(
-				this.functionZid,
-				this.testerZid,
-				this.implementationZid
-			);
-		},
+		const testerStatus = computed( () => store.getZTesterResult(
+			props.functionZid,
+			props.testerZid,
+			props.implementationZid
+		) );
+
 		/**
 		 * Returns the status of the test
 		 *
 		 * @return {string}
 		 */
-		status: function () {
-			if ( this.fetching ) {
+		const status = computed( () => {
+			if ( props.fetching ) {
 				return Constants.TESTER_STATUS.RUNNING;
 			}
-			if ( !( this.implementationZid ) || !( this.testerZid ) ) {
+			if ( !( props.implementationZid ) || !( props.testerZid ) ) {
 				return Constants.TESTER_STATUS.READY;
 			}
-			if ( this.testerStatus === true ) {
+			if ( testerStatus.value === true ) {
 				return Constants.TESTER_STATUS.PASSED;
 			}
-			if ( this.testerStatus === false ) {
+			if ( testerStatus.value === false ) {
 				return Constants.TESTER_STATUS.FAILED;
 			}
 			return Constants.TESTER_STATUS.READY;
-		},
+		} );
+
 		/**
 		 * Returns the status message
 		 *
 		 * @return {string}
 		 */
-		statusMessage: function () {
-			switch ( this.status ) {
+		const statusMessage = computed( () => {
+			switch ( status.value ) {
 				case Constants.TESTER_STATUS.READY:
-					return this.$i18n( 'wikilambda-tester-status-ready' ).text();
+					return i18n( 'wikilambda-tester-status-ready' ).text();
 				case Constants.TESTER_STATUS.PASSED:
-					return this.$i18n( 'wikilambda-tester-status-passed' ).text();
+					return i18n( 'wikilambda-tester-status-passed' ).text();
 				case Constants.TESTER_STATUS.FAILED:
-					return this.$i18n( 'wikilambda-tester-status-failed' ).text();
+					return i18n( 'wikilambda-tester-status-failed' ).text();
 				default:
-					return this.$i18n( 'wikilambda-tester-status-running' ).text();
+					return i18n( 'wikilambda-tester-status-running' ).text();
 			}
-		},
+		} );
+
 		/**
 		 * Returns the icon depending on the status
 		 *
 		 * @return {Object}
 		 */
-		statusIcon: function () {
-			if ( this.status === Constants.TESTER_STATUS.PASSED ) {
+		const statusIcon = computed( () => {
+			if ( status.value === Constants.TESTER_STATUS.PASSED ) {
 				return icons.cdxIconSuccess;
 			}
-			if ( this.status === Constants.TESTER_STATUS.FAILED ) {
+			if ( status.value === Constants.TESTER_STATUS.FAILED ) {
 				return icons.cdxIconClear;
 			}
 			// This will be used both for ready and running statuses
 			return icons.cdxIconClock;
-		},
+		} );
+
 		/**
 		 * Returns whether the tester is currently running
 		 *
-		 * @return {string}
+		 * @return {boolean}
 		 */
-		isRunning: function () {
-			return this.status === Constants.TESTER_STATUS.RUNNING;
-		}
-	} ),
-	methods: {
-		emitTesterKeys: function () {
-			this.$emit( 'set-keys', {
-				implementationZid: this.implementationZid,
-				testerZid: this.testerZid
+		const isRunning = computed( () => status.value === Constants.TESTER_STATUS.RUNNING );
+
+		/**
+		 * Emits set-keys event with implementation and tester zids
+		 */
+		const emitTesterKeys = () => {
+			emit( 'set-keys', {
+				implementationZid: props.implementationZid,
+				testerZid: props.testerZid
 			} );
-		}
+		};
+
+		return {
+			emitTesterKeys,
+			isRunning,
+			status,
+			statusIcon,
+			statusMessage,
+			titleLabelData,
+			titleLink,
+			i18n
+		};
 	}
 } );
 </script>

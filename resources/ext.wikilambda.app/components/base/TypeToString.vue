@@ -35,8 +35,7 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { defineComponent, computed, onMounted } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
 const urlUtils = require( '../../utils/urlUtils.js' );
@@ -50,20 +49,18 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getUserLangCode',
-		'getLabelData'
-	] ), {
+	setup( props ) {
+		const store = useMainStore();
+
 		/**
 		 * Whether the input type is a reference or a function call
 		 *
-		 * @return {boolean}
+		 * @return {string}
 		 */
-		mode: function () {
-			return ( typeof this.type === 'string' ) ?
-				Constants.Z_REFERENCE :
-				this.type[ Constants.Z_OBJECT_TYPE ];
-		},
+		const mode = computed( () => typeof props.type === 'string' ?
+			Constants.Z_REFERENCE :
+			props.type[ Constants.Z_OBJECT_TYPE ] );
+
 		/**
 		 * The first Zid to convert into link, either the reference
 		 * terminal zid, or the ID of the function call if it's a
@@ -71,32 +68,34 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string|undefined}
 		 */
-		zid: function () {
-			switch ( this.mode ) {
+		const zid = computed( () => {
+			switch ( mode.value ) {
 				case Constants.Z_REFERENCE:
-					return this.type;
+					return props.type;
 				case Constants.Z_FUNCTION_CALL:
-					return this.type[ Constants.Z_FUNCTION_CALL_FUNCTION ];
+					return props.type[ Constants.Z_FUNCTION_CALL_FUNCTION ];
 				default:
 					return undefined;
 			}
-		},
+		} );
+
 		/**
 		 * Returns the wiki URL for the main zid
 		 *
 		 * @return {string}
 		 */
-		wikiUrl: function () {
-			return urlUtils.generateViewUrl( { langCode: this.getUserLangCode, zid: this.zid } );
-		},
+		const wikiUrl = computed( () => urlUtils.generateViewUrl( {
+			langCode: store.getUserLangCode,
+			zid: zid.value
+		} ) );
+
 		/**
 		 * Returns the label data of the main Zid
 		 *
 		 * @return {LabelData}
 		 */
-		labelData: function () {
-			return this.getLabelData( this.zid );
-		},
+		const labelData = computed( () => store.getLabelData( zid.value ) );
+
 		/**
 		 * If the type is a generic type (and represented by a function
 		 * call), returns the arguments, which are all the keys excluding
@@ -104,41 +103,45 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Array}
 		 */
-		args: function () {
-			if ( this.mode === Constants.Z_FUNCTION_CALL ) {
-				return Object.keys( this.type ).filter( ( key ) => (
-					( key !== Constants.Z_OBJECT_TYPE ) &&
-						( key !== Constants.Z_FUNCTION_CALL_FUNCTION )
+		const args = computed( () => {
+			if ( mode.value === Constants.Z_FUNCTION_CALL ) {
+				return Object.keys( props.type ).filter( ( key ) => (
+					key !== Constants.Z_OBJECT_TYPE &&
+					key !== Constants.Z_FUNCTION_CALL_FUNCTION
 				) );
 			}
 			return [];
-		},
+		} );
+
 		/**
 		 * Whether there are any args to list after the main zid
 		 *
 		 * @return {boolean}
 		 */
-		hasArgs: function () {
-			return this.args.length > 0;
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'fetchZids'
-	] ), {
+		const hasArgs = computed( () => args.value.length > 0 );
+
 		/**
 		 * Whether a ZObject child needs a trailing comma given its index
 		 *
 		 * @param {number} index
 		 * @return {boolean}
 		 */
-		hasComma: function ( index ) {
-			return ( ( index + 1 ) < this.args.length );
-		}
-	} ),
-	mounted: function () {
-		if ( this.zid ) {
-			this.fetchZids( { zids: [ this.zid ] } );
-		}
+		const hasComma = ( index ) => ( ( index + 1 ) < args.value.length );
+
+		onMounted( () => {
+			if ( zid.value ) {
+				store.fetchZids( { zids: [ zid.value ] } );
+			}
+		} );
+
+		return {
+			args,
+			hasArgs,
+			hasComma,
+			labelData,
+			wikiUrl,
+			zid
+		};
 	}
 } );
 </script>

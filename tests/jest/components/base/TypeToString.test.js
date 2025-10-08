@@ -15,6 +15,20 @@ const TypeToString = require( '../../../../resources/ext.wikilambda.app/componen
 describe( 'TypeToString', () => {
 	let store;
 
+	/**
+	 * Helper function to render TypeToString component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderTypeToString( props = {}, options = {} ) {
+		const defaultProps = {
+			type: Constants.Z_STRING
+		};
+		return mount( TypeToString, { props: { ...defaultProps, ...props }, ...options } );
+	}
+
 	beforeEach( () => {
 		store = useMainStore();
 		store.getUserLangCode = 'en';
@@ -26,13 +40,9 @@ describe( 'TypeToString', () => {
 
 	describe( 'for simple type', () => {
 		it( 'renders type link', () => {
-			const wrapper = mount( TypeToString, {
-				props: {
-					type: Constants.Z_STRING
-				}
-			} );
+			const wrapper = renderTypeToString();
 
-			const link = wrapper.find( 'a' );
+			const link = wrapper.get( 'a' );
 			expect( link.text() ).toBe( 'String' );
 			expect( link.attributes() ).toHaveProperty( 'href' );
 			expect( link.attributes().href ).toContain( 'Z6' );
@@ -41,37 +51,33 @@ describe( 'TypeToString', () => {
 
 	describe( 'for generic type', () => {
 		it( 'renders type link', () => {
-			const wrapper = mount( TypeToString, {
-				props: {
-					type: {
-						Z1K1: Constants.Z_FUNCTION_CALL,
-						Z7K1: Constants.Z_TYPED_LIST,
-						Z881K1: Constants.Z_STRING
-					}
+			const wrapper = renderTypeToString( {
+				type: {
+					Z1K1: Constants.Z_FUNCTION_CALL,
+					Z7K1: Constants.Z_TYPED_LIST,
+					Z881K1: Constants.Z_STRING
 				}
 			} );
 
-			const link = wrapper.find( 'a' );
+			const link = wrapper.get( 'a' );
 			expect( link.text() ).toBe( 'Typed list' );
 			expect( link.attributes() ).toHaveProperty( 'href' );
 			expect( link.attributes().href ).toContain( 'Z881' );
 		} );
 
 		it( 'renders argument', () => {
-			const wrapper = mount( TypeToString, {
-				props: {
-					type: {
-						Z1K1: Constants.Z_FUNCTION_CALL,
-						Z7K1: Constants.Z_TYPED_LIST,
-						Z881K1: Constants.Z_STRING
-					}
+			const wrapper = renderTypeToString( {
+				type: {
+					Z1K1: Constants.Z_FUNCTION_CALL,
+					Z7K1: Constants.Z_TYPED_LIST,
+					Z881K1: Constants.Z_STRING
 				}
 			} );
 
 			const args = wrapper.findAllComponents( { name: 'wl-type-to-string' } );
 			expect( args.length ).toBe( 1 );
 
-			const link = args[ 0 ].find( 'a' );
+			const link = args[ 0 ].get( 'a' );
 			expect( link.text() ).toBe( 'String' );
 			expect( link.attributes() ).toHaveProperty( 'href' );
 			expect( link.attributes().href ).toContain( 'Z6' );

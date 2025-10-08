@@ -24,6 +24,23 @@ const objectValue = {
 describe( 'WikidataEnum', () => {
 	let store;
 
+	/**
+	 * Helper function to render WikidataEnum component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderWikidataEnum( props = {}, options = {} ) {
+		const defaultProps = {
+			keyPath,
+			objectValue,
+			edit: false,
+			type: enumType
+		};
+		return shallowMount( WikidataEnum, { props: { ...defaultProps, ...props }, ...options } );
+	}
+
 	beforeEach( () => {
 		store = useMainStore();
 		// Getters
@@ -35,41 +52,23 @@ describe( 'WikidataEnum', () => {
 	} );
 
 	it( 'renders without errors', () => {
-		const wrapper = shallowMount( WikidataEnum, {
-			props: {
-				keyPath,
-				objectValue,
-				edit: false,
-				type: enumType
-			}
-		} );
+		const wrapper = renderWikidataEnum();
+
 		expect( wrapper.find( '.ext-wikilambda-app-wikidata-enum' ).exists() ).toBe( true );
 	} );
 
 	it( 'renders select in edit mode', () => {
-		const wrapper = shallowMount( WikidataEnum, {
-			props: {
-				keyPath,
-				objectValue,
-				edit: true,
-				type: enumType
-			}
-		} );
+		const wrapper = renderWikidataEnum( { edit: true } );
+
 		expect( wrapper.findComponent( { name: 'cdx-select' } ).exists() ).toBe( true );
 	} );
 
 	it( 'emits set-value event when selecting an enum value', async () => {
-		const wrapper = shallowMount( WikidataEnum, {
-			props: {
-				keyPath,
-				objectValue,
-				edit: true,
-				type: enumType
-			}
-		} );
+		const wrapper = renderWikidataEnum( { edit: true } );
+
 		const select = wrapper.findComponent( { name: 'cdx-select' } );
 		select.vm.$emit( 'update:selected', 'Q222222' );
-		await wrapper.vm.$nextTick();
+
 		expect( wrapper.emitted()[ 'set-value' ][ 0 ][ 0 ] ).toEqual( {
 			value: 'Q222222',
 			keyPath: [
@@ -81,14 +80,8 @@ describe( 'WikidataEnum', () => {
 	} );
 
 	it( 'shows correct menu items', () => {
-		const wrapper = shallowMount( WikidataEnum, {
-			props: {
-				keyPath,
-				objectValue,
-				edit: true,
-				type: enumType
-			}
-		} );
+		const wrapper = renderWikidataEnum( { edit: true } );
+
 		const select = wrapper.findComponent( { name: 'cdx-select' } );
 		expect( select.props( 'menuItems' ) ).toEqual( [
 			{ label: 'Label for Q111111', value: 'Q111111' },
@@ -98,14 +91,8 @@ describe( 'WikidataEnum', () => {
 	} );
 
 	it( 'fetches entities on mount and when wikidataIds change', async () => {
-		const wrapper = shallowMount( WikidataEnum, {
-			props: {
-				keyPath,
-				objectValue,
-				edit: true,
-				type: enumType
-			}
-		} );
+		const wrapper = renderWikidataEnum( { edit: true } );
+
 		expect( store.fetchWikidataEntitiesByType ).toHaveBeenCalledWith( { type: entityType, ids: wikidataIds } );
 
 		// Simulate change in wikidataIds
@@ -115,7 +102,6 @@ describe( 'WikidataEnum', () => {
 		store.getReferencesIdsOfWikidataEnum.mockReturnValue( newIds );
 
 		await wrapper.setProps( { type: newType } );
-		await wrapper.vm.$nextTick();
 
 		expect( store.fetchWikidataEntitiesByType ).toHaveBeenCalledWith( { type: entityType, ids: newIds } );
 	} );

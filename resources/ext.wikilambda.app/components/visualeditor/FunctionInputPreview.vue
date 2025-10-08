@@ -7,11 +7,11 @@
 		@action-button-click="handleActionButtonClick"
 		@update:model-value="handleAccordionClick">
 		<template #title>
-			{{ $i18n( 'wikilambda-visualeditor-wikifunctionscall-preview-title' ).text() }}
+			{{ i18n( 'wikilambda-visualeditor-wikifunctionscall-preview-title' ).text() }}
 		</template>
 		<div class="ext-wikilambda-app-function-input-preview__content">
 			<cdx-progress-indicator v-if="isLoading">
-				{{ $i18n( 'wikilambda-loading' ).text() }}
+				{{ i18n( 'wikilambda-loading' ).text() }}
 			</cdx-progress-indicator>
 			<div v-else>
 				<span v-if="typeof functionCallResult === 'string'">{{ functionCallResult }}</span>
@@ -28,12 +28,12 @@
 						class="ext-wikilambda-app-function-input-preview__cancelled-icon"
 						:icon="cancelIcon"
 						size="medium"
-						:icon-label="$i18n( 'wikilambda-visualeditor-wikifunctionscall-preview-cancelled' ).text()"
+						:icon-label="i18n( 'wikilambda-visualeditor-wikifunctionscall-preview-cancelled' ).text()"
 					></cdx-icon>
-					<span> {{ $i18n( 'wikilambda-visualeditor-wikifunctionscall-preview-cancelled' ).text() }}</span>
+					<span> {{ i18n( 'wikilambda-visualeditor-wikifunctionscall-preview-cancelled' ).text() }}</span>
 				</div>
 				<span v-else class="ext-wikilambda-app-function-input-preview__no-result">
-					{{ $i18n( 'wikilambda-visualeditor-wikifunctionscall-preview-no-result' ).text() }}
+					{{ i18n( 'wikilambda-visualeditor-wikifunctionscall-preview-no-result' ).text() }}
 				</span>
 			</div>
 		</div>
@@ -41,13 +41,11 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapState, mapActions } = require( 'pinia' );
+const { computed, defineComponent, inject, onBeforeUnmount, ref, watch } = require( 'vue' );
 const Constants = require( '../../Constants.js' );
 const { performFunctionCall } = require( '../../utils/apiUtils.js' );
-const errorMixin = require( '../../mixins/errorMixin.js' );
-const typeMixin = require( '../../mixins/typeMixin.js' );
-const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
+const useType = require( '../../composables/useType.js' );
+const useZObject = require( '../../composables/useZObject.js' );
 const { CdxAccordion, CdxIcon, CdxMessage, CdxProgressIndicator } = require( '../../../codex.js' );
 const useMainStore = require( '../../store/index.js' );
 const icons = require( '../../../lib/icons.json' );
@@ -61,7 +59,6 @@ module.exports = exports = defineComponent( {
 		'cdx-message': CdxMessage,
 		'cdx-progress-indicator': CdxProgressIndicator
 	},
-	mixins: [ typeMixin, errorMixin, zobjectMixin ],
 	props: {
 		/**
 		 * Function call payload.
@@ -74,142 +71,148 @@ module.exports = exports = defineComponent( {
 			default: null
 		}
 	},
-	data: function () {
-		return {
-			/**
-			 * Icon for the reset action.
-			 *
-			 * @type {string}
-			 */
-			resetIcon: icons.cdxIconReload,
-			/**
-			 * Icon for the cancel action.
-			 *
-			 * @type {string}
-			 */
-			cancelIcon: icons.cdxIconCancel,
-			/**
-			 * Result of the function call.
-			 *
-			 * @type {string|null}
-			 */
-			functionCallResult: null,
-			/**
-			 * Error message from the function call.
-			 *
-			 * @type {string|null}
-			 */
-			functionCallError: null,
-			/**
-			 * Loading state of the function call.
-			 *
-			 * @type {boolean}
-			 */
-			isLoading: false,
-			/**
-			 * State of the accordion.
-			 *
-			 * @type {boolean}
-			 */
-			isOpen: false,
-			/**
-			 * Flag to indicate if the function call was cancelled by the user.
-			 *
-			 * @type {boolean}
-			 */
-			isCancelled: false,
-			/**
-			 * Tracks the last processed params to avoid redundant function calls.
-			 *
-			 * @type {Array|null}
-			 */
-			lastProcessedParams: null,
-			/**
-			 * Abort Controller for managing function calls.
-			 *
-			 * @type {Object|null}
-			 */
-			abortController: null
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getOutputTypeOfFunctionZid',
-		'getUserLangCode',
-		'getUserLangZid',
-		'getParserZid',
-		'getRendererZid',
-		'createObjectByType',
-		'getDefaultValueForType',
-		'hasDefaultValueForType'
-	] ), {
+	setup( props ) {
+		const i18n = inject( 'i18n' );
+		const { typeToString, getScaffolding } = useType();
+		const {
+			getZHTMLFragmentTerminalValue,
+			getZObjectType,
+			getZStringTerminalValue
+		} = useZObject( { keyPath: props.keyPath } );
+		const store = useMainStore();
+
+		// Reactive data
+		/**
+		 * Icon for the reset action.
+		 *
+		 * @type {string}
+		 */
+		const resetIcon = ref( icons.cdxIconReload );
+		/**
+		 * Icon for the cancel action.
+		 *
+		 * @type {string}
+		 */
+		const cancelIcon = ref( icons.cdxIconCancel );
+		/**
+		 * Result of the function call.
+		 *
+		 * @type {string|null}
+		 */
+		const functionCallResult = ref( null );
+		/**
+		 * Error message from the function call.
+		 *
+		 * @type {string|null}
+		 */
+		const functionCallError = ref( null );
+		/**
+		 * Loading state of the function call.
+		 *
+		 * @type {boolean}
+		 */
+		const isLoading = ref( false );
+		/**
+		 * State of the accordion.
+		 *
+		 * @type {boolean}
+		 */
+		const isOpen = ref( false );
+		/**
+		 * Flag to indicate if the function call was cancelled by the user.
+		 *
+		 * @type {boolean}
+		 */
+		const isCancelled = ref( false );
+		/**
+		 * Tracks the last processed params to avoid redundant function calls.
+		 *
+		 * @type {Array|null}
+		 */
+		const lastProcessedParams = ref( null );
+		/**
+		 * Abort Controller for managing function calls.
+		 *
+		 * @type {Object|null}
+		 */
+		const abortController = ref( null );
+		/**
+		 * Collection of callbacks that produce default values for empty args
+		 * indexed by the argument type.
+		 *
+		 * @type {Object}
+		 */
+		const defaultValueCallbacks = ref( {
+			[ Constants.Z_GREGORIAN_CALENDAR_DATE ]: () => {
+				const today = new Date();
+				const d = today.getDate();
+				const m = today.getMonth() + 1;
+				const yyyy = today.getFullYear();
+				return `${ d }-${ m }-${ yyyy }`;
+			},
+			[ Constants.Z_NATURAL_LANGUAGE ]: () => {
+				const langCode = mw.config.get( 'wgContentLanguage' );
+				return store.getLanguageZidOfCode( langCode ) || '';
+			},
+			[ Constants.Z_WIKIDATA_ITEM ]: () => mw.config.get( 'wgWikibaseItemId' ) || '',
+			[ Constants.Z_WIKIDATA_REFERENCE_ITEM ]: () => mw.config.get( 'wgWikibaseItemId' ) || ''
+		} );
+
+		// Computed properties
 		/**
 		 * Determines the icon for the action button.
 		 *
 		 * @return {string}
 		 */
-		actionIcon: function () {
+		const actionIcon = computed( () => {
 			// If the function call is in progress, show the cancel icon.
-			if ( this.isLoading ) {
-				return this.cancelIcon;
+			if ( isLoading.value ) {
+				return cancelIcon.value;
 			}
 			// If the field is valid (payload exists) and the function call result is a string,
 			// or if there is an error or the call was cancelled, show the reset icon.
-			if ( this.payload && ( typeof this.functionCallResult === 'string' || this.functionCallError || this.isCancelled ) ) {
-				return this.resetIcon;
+			if ( props.payload && ( typeof functionCallResult.value === 'string' || functionCallError.value || isCancelled.value ) ) {
+				return resetIcon.value;
 			}
 			return '';
-		},
+		} );
+
 		/**
 		 * Determines the label for the action button.
 		 *
 		 * @return {string}
 		 */
-		actionButtonLabel: function () {
-			if ( this.isLoading ) {
-				return this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label' ).text();
+		const actionButtonLabel = computed( () => {
+			if ( isLoading.value ) {
+				return i18n( 'wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label' ).text();
 			}
-			if ( this.payload && ( typeof this.functionCallResult === 'string' || this.functionCallError || this.isCancelled ) ) {
-				return this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label' ).text();
+			if ( props.payload && ( typeof functionCallResult.value === 'string' || functionCallError.value || isCancelled.value ) ) {
+				return i18n( 'wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label' ).text();
 			}
 			return '';
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'submitVEInteraction'
-	] ), {
-		/**
-		 * Handles the click event for the action button.
-		 * - If the component is in a loading state, cancels the current function call.
-		 * - Otherwise, initiates a new function call using the provided payload.
-		 */
-		handleActionButtonClick: function () {
-			if ( this.isLoading ) {
-				this.cancelFunctionCall();
-			} else {
-				this.runFunctionCall( this.payload );
-			}
-		},
+		} );
 
+		// Methods
 		/**
 		 * Cancels the current function call by setting the `isCancelled` flag to `true`,
 		 * aborting the Abort Controller if it exists and stopping the loading state.
 		 */
-		cancelFunctionCall: function () {
-			if ( this.abortController ) {
-				this.abortController.abort();
+		const cancelFunctionCall = () => {
+			if ( abortController.value ) {
+				abortController.value.abort();
 			}
-			this.isCancelled = true;
-			this.isLoading = false;
-		},
+			isCancelled.value = true;
+			isLoading.value = false;
+		};
 
 		/**
 		 * Handles the click event for the accordion.
 		 *
-		 * @param {boolean} isOpen - The new state of the accordion.
+		 * @param {boolean} value - The new state of the accordion.
 		 */
-		handleAccordionClick: function ( isOpen ) {
-			this.isOpen = isOpen;
-		},
+		const handleAccordionClick = ( value ) => {
+			isOpen.value = value;
+		};
 
 		/**
 		 * Checks if a parser ZID exists for the given type.
@@ -217,9 +220,39 @@ module.exports = exports = defineComponent( {
 		 * @param {string} type - The type of the parameter.
 		 * @return {boolean} - Returns `true` if a parser ZID exists, otherwise `false`.
 		 */
-		hasParserZid: function ( type ) {
-			return !!this.getParserZid( type );
-		},
+		const hasParserZid = ( type ) => !!store.getParserZid( type );
+
+		/**
+		 * Checks if a default value callback exists for the given type.
+		 *
+		 * @param {string} type - The type to check.
+		 * @return {boolean} - Returns `true` if a callback exists, otherwise `false`.
+		 */
+		const hasDefaultValue = ( type ) => !!defaultValueCallbacks.value[ type ];
+
+		/**
+		 * Gets the default value for the given type using the callback.
+		 *
+		 * @param {string} type - The type to get the default value for.
+		 * @return {string} - The default value.
+		 */
+		const getDefaultValue = ( type ) => defaultValueCallbacks.value[ type ]();
+
+		/**
+		 * Creates a parser call object for the given type and value.
+		 *
+		 * @param {string} type - The type of the parameter.
+		 * @param {string} value - The value of the parameter.
+		 * @return {Object} - The created parser call object.
+		 */
+		const createParserCallMethod = ( type, value ) => {
+			const parserZid = store.getParserZid( type );
+			return createParserCall( {
+				parserZid,
+				zobject: value,
+				zlang: store.getUserLangZid
+			} );
+		};
 
 		/**
 		 * Constructs the function call parameter based on its type.
@@ -230,43 +263,27 @@ module.exports = exports = defineComponent( {
 		 * @param {string} param.type - The type of the parameter.
 		 * @return {Object|string} - The created parameter object or string.
 		 */
-		createFunctionCallParam: function ( param ) {
+		const createFunctionCallParam = ( param ) => {
 			let { value } = param;
 			const { type } = param;
 
 			// Overwrite value with the default value if it's empty and type has a callback
-			if ( value === '' && this.hasDefaultValue( type ) ) {
-				value = this.getDefaultValue( type );
+			if ( value === '' && hasDefaultValue( type ) ) {
+				value = getDefaultValue( type );
 			}
 
 			// If the type has a parser ZID, create a parser call
-			if ( this.hasParserZid( type ) ) {
-				return this.createParserCall( type, value );
+			if ( hasParserZid( type ) ) {
+				return createParserCallMethod( type, value );
 			}
 
 			// For all other types, create an object by type
 			// Except Z1, which defaults to String/Z6
-			return this.createObjectByType( {
+			return store.createObjectByType( {
 				type: type === Constants.Z_OBJECT ? Constants.Z_STRING : type,
 				value
 			} );
-		},
-
-		/**
-		 * Creates a parser call object for the given type and value.
-		 *
-		 * @param {string} type - The type of the parameter.
-		 * @param {string} value - The value of the parameter.
-		 * @return {Object} - The created parser call object.
-		 */
-		createParserCall: function ( type, value ) {
-			const parserZid = this.getParserZid( type );
-			return createParserCall( {
-				parserZid,
-				zobject: value,
-				zlang: this.getUserLangZid
-			} );
-		},
+		};
 
 		/**
 		 * Creates the renderer call using the given renderer ZID and the function call.
@@ -275,13 +292,11 @@ module.exports = exports = defineComponent( {
 		 * @param {Object} functionCall - The created function call object.
 		 * @return {Object} - The renderer function call object.
 		 */
-		createRendererCall: function ( rendererZid, functionCall ) {
-			return createRendererCall( {
-				rendererZid,
-				zobject: functionCall,
-				zlang: this.getUserLangZid
-			} );
-		},
+		const createRendererCallMethod = ( rendererZid, functionCall ) => createRendererCall( {
+			rendererZid,
+			zobject: functionCall,
+			zlang: store.getUserLangZid
+		} );
 
 		/**
 		 * Creates the function call with its parameters.
@@ -290,14 +305,14 @@ module.exports = exports = defineComponent( {
 		 * @param {Array} params - The parameters for the function call.
 		 * @return {Object} - The function call object.
 		 */
-		createFunctionCall: function ( functionZid, params ) {
-			const functionCall = this.getScaffolding( Constants.Z_FUNCTION_CALL );
+		const createFunctionCallMethod = ( functionZid, params ) => {
+			const functionCall = getScaffolding( Constants.Z_FUNCTION_CALL );
 			functionCall[ Constants.Z_FUNCTION_CALL_FUNCTION ] = functionZid;
 			params.forEach( ( param, index ) => {
-				functionCall[ `${ functionZid }K${ index + 1 }` ] = this.createFunctionCallParam( param );
+				functionCall[ `${ functionZid }K${ index + 1 }` ] = createFunctionCallParam( param );
 			} );
 			return functionCall;
-		},
+		};
 
 		/**
 		 * Constructs the function call object with its parameters.
@@ -306,12 +321,12 @@ module.exports = exports = defineComponent( {
 		 * @param {Array} params - The parameters for the function call.
 		 * @return {Object} - The created function call object.
 		 */
-		constructFunctionCall: function ( functionZid, params ) {
-			const outputType = this.getOutputTypeOfFunctionZid( functionZid );
-			const rendererZid = this.getRendererZid( outputType );
+		const constructFunctionCall = ( functionZid, params ) => {
+			const outputType = store.getOutputTypeOfFunctionZid( functionZid );
+			const rendererZid = store.getRendererZid( outputType );
 
 			// Construct the main function call object
-			const functionCall = this.createFunctionCall( functionZid, params );
+			const functionCall = createFunctionCallMethod( functionZid, params );
 
 			// If no renderer is needed, return the function call as is
 			if ( !rendererZid ) {
@@ -319,8 +334,35 @@ module.exports = exports = defineComponent( {
 			}
 
 			// If a renderer is needed, wrap the function call with a renderer call
-			return this.createRendererCall( rendererZid, functionCall );
-		},
+			return createRendererCallMethod( rendererZid, functionCall );
+		};
+
+		/**
+		 * Starts the loading state and resets result/error states.
+		 */
+		const startLoading = () => {
+			isLoading.value = true;
+			functionCallResult.value = null;
+			functionCallError.value = null;
+			isCancelled.value = false;
+		};
+
+		/**
+		 * Retrieves the result of a function call based on its type.
+		 *
+		 * @param {string} type - The type of the response.
+		 * @param {Object|string} response - The response from the function call.
+		 * @return {string} - The result as a string.
+		 */
+		const getFunctionCallResult = ( type, response ) => {
+			if ( type === Constants.Z_STRING ) {
+				return getZStringTerminalValue( response );
+			}
+			if ( type === Constants.Z_HTML_FRAGMENT ) {
+				return getZHTMLFragmentTerminalValue( response );
+			}
+			return '';
+		};
 
 		/**
 		 * Executes a function call with the provided payload.
@@ -331,79 +373,50 @@ module.exports = exports = defineComponent( {
 		 * @param {Array} payload.params - The parameters to pass to the function call.
 		 * @return {Promise} - A promise that resolves when the function call completes.
 		 */
-		runFunctionCall: function ( payload ) {
+		const runFunctionCall = ( payload ) => {
 			const { functionZid, params } = payload;
 
 			// Track the preview action
-			this.submitVEInteraction( 'preview-change-query' );
+			store.submitVEInteraction( 'preview-change-query' );
 
 			// Cancel previous request and set up a new AbortController
-			if ( this.abortController ) {
-				this.abortController.abort();
+			if ( abortController.value ) {
+				abortController.value.abort();
 			}
 			// Create a new AbortController for the current function call
-			this.abortController = new AbortController();
-			const signal = this.abortController.signal;
+			abortController.value = new AbortController();
+			const signal = abortController.value.signal;
 
-			this.startLoading();
+			startLoading();
 
 			return performFunctionCall( {
-				functionCall: this.constructFunctionCall( functionZid, params ),
-				language: this.getUserLangCode,
+				functionCall: constructFunctionCall( functionZid, params ),
+				language: store.getUserLangCode,
 				signal
 			} )
 				.then( ( data ) => {
 					const response = data.response[ Constants.Z_RESPONSEENVELOPE_VALUE ];
 
 					// If the function call returns void or an unexpected type, set an error message
-					const type = this.typeToString( this.getZObjectType( response ) );
+					const type = typeToString( getZObjectType( response ) );
 					const isAllowedOutputType = type !== Constants.Z_STRING || type !== Constants.Z_HTML_FRAGMENT;
 					if ( response === Constants.Z_VOID || !isAllowedOutputType ) {
-						this.functionCallError = this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-preview-error' ).text();
-						this.isLoading = false;
+						functionCallError.value = i18n( 'wikilambda-visualeditor-wikifunctionscall-preview-error' ).text();
+						isLoading.value = false;
 						return;
 					}
 					// Else, set the function call result
-					this.functionCallResult = this.getFunctionCallResult( type, response );
-					this.isLoading = false;
+					functionCallResult.value = getFunctionCallResult( type, response );
+					isLoading.value = false;
 				} )
 				.catch( ( error ) => {
 					if ( error.code === 'abort' ) {
 						return;
 					}
-					this.functionCallError = error.messageOrFallback( 'wikilambda-unknown-exec-error-message' );
-					this.isLoading = false;
+					functionCallError.value = error.messageOrFallback( 'wikilambda-unknown-exec-error-message' );
+					isLoading.value = false;
 				} );
-		},
-
-		/**
-		 * Retrieves the result of a function call based on its type.
-		 *
-		 * @param {string} type - The type of the function call result.
-		 * @param {string|Object} data - The data returned from the function call.
-		 * @return {string|null} - The processed result of the function call, or null if not applicable.
-		 */
-		getFunctionCallResult: function ( type, data ) {
-			if ( type === Constants.Z_STRING ) {
-				return data;
-			}
-
-			if ( type === Constants.Z_HTML_FRAGMENT ) {
-				return data[ Constants.Z_HTML_FRAGMENT_VALUE ];
-			}
-			return null;
-		},
-
-		/**
-		 * Initializes the loading state for a new function call.
-		 * Resets the function call result, error messages, and cancellation flag.
-		 */
-		startLoading: function () {
-			this.functionCallResult = null;
-			this.functionCallError = null;
-			this.isCancelled = false;
-			this.isLoading = true;
-		},
+		};
 
 		/**
 		 * Determines whether the function call should be executed based on the
@@ -412,11 +425,8 @@ module.exports = exports = defineComponent( {
 		 * @param {Object} payload - The payload object containing function call details.
 		 * @return {boolean} - Returns `true` if the function call should be executed, otherwise `false`.
 		 */
-		shouldRunFunction: function ( payload ) {
-			return this.isOpen &&
-					payload &&
-					JSON.stringify( payload.params ) !== JSON.stringify( this.lastProcessedParams );
-		},
+		const shouldRunFunction = ( payload ) => isOpen.value &&
+					payload && JSON.stringify( payload.params ) !== JSON.stringify( lastProcessedParams.value );
 
 		/**
 		 * Processes the function call if the conditions for execution are met.
@@ -424,59 +434,64 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {Object} payload - The payload object containing function call details.
 		 */
-		processFunctionCall: function ( payload ) {
-			if ( this.shouldRunFunction( payload ) ) {
-				this.runFunctionCall( payload );
-				this.lastProcessedParams = payload.params;
+		const processFunctionCall = ( payload ) => {
+			if ( shouldRunFunction( payload ) ) {
+				runFunctionCall( payload );
+				lastProcessedParams.value = payload.params;
 			}
-		},
+		};
 
 		/**
-		 * Determines whether the type has a default value.
-		 *
-		 * @param {string} type
-		 * @return {boolean} - Returns true if the type has a default value, otherwise false.
+		 * Handles the click event for the action button.
+		 * - If the component is in a loading state, cancels the current function call.
+		 * - Otherwise, initiates a new function call using the provided payload.
 		 */
-		hasDefaultValue: function ( type ) {
-			return this.hasDefaultValueForType( type );
-		},
+		const handleActionButtonClick = () => {
+			if ( isLoading.value ) {
+				cancelFunctionCall();
+			} else {
+				runFunctionCall( props.payload );
+			}
+		};
 
-		/**
-		 * Returns the default value for the given type.
-		 *
-		 * @param {string} type
-		 * @return {string} - The default value for the type.
-		 */
-		getDefaultValue: function ( type ) {
-			return this.getDefaultValueForType( type );
-		}
-	} ),
-	watch: {
+		// Watch
 		/**
 		 * Watches for changes to the `isOpen` property.
 		 * When opened, triggers the function call if the payload is updated
 		 */
-		isOpen: function () {
-			this.processFunctionCall( this.payload );
-		},
+		watch( isOpen, () => {
+			processFunctionCall( props.payload );
+		} );
+
 		/**
 		 * Watches for changes to the function call payload's params.
 		 * When updated, fetches the new function call result.
-		 *
-		 * @param {Object} newPayload - The updated payload for the function call.
 		 */
-		payload: {
-			handler: function ( newPayload ) {
-				this.processFunctionCall( newPayload );
-			},
-			deep: true
-		}
-	},
-	beforeUnmount: function () {
-		// Clean up the Abort Controller if it exists
-		if ( this.abortController ) {
-			this.abortController.abort();
-		}
+		watch( () => props.payload, ( newPayload ) => {
+			processFunctionCall( newPayload );
+		}, { deep: true } );
+
+		onBeforeUnmount( () => {
+			// Clean up the Abort Controller if it exists
+			if ( abortController.value ) {
+				abortController.value.abort();
+			}
+		} );
+
+		// Return all properties and methods for the template
+		return {
+			actionButtonLabel,
+			actionIcon,
+			cancelIcon,
+			functionCallError,
+			functionCallResult,
+			handleAccordionClick,
+			handleActionButtonClick,
+			isCancelled,
+			isLoading,
+			isOpen,
+			i18n
+		};
 	}
 } );
 </script>

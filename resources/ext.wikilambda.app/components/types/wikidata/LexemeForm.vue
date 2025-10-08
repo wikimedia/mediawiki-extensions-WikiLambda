@@ -34,13 +34,12 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { computed, watch, onMounted } = require( 'vue' );
 
 const wikidataIconSvg = require( './wikidataIconSvg.js' );
 const Constants = require( '../../../Constants.js' );
-const zobjectMixin = require( '../../../mixins/zobjectMixin.js' );
+const useZObject = require( '../../../composables/useZObject.js' );
 const useMainStore = require( '../../../store/index.js' );
-const LabelData = require( '../../../store/classes/LabelData.js' );
 
 // Wikidata components
 const WikidataEntitySelector = require( './EntitySelector.vue' );
@@ -53,9 +52,9 @@ module.exports = exports = defineComponent( {
 		'wl-wikidata-entity-selector': WikidataEntitySelector,
 		'cdx-icon': CdxIcon
 	},
-	mixins: [ zobjectMixin ],
+
 	props: {
-		keyPath: { // eslint-disable-line vue/no-unused-properties
+		keyPath: {
 			type: String,
 			required: true
 		},
@@ -72,41 +71,35 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	data: function () {
-		return {
-			wikidataIcon: wikidataIconSvg,
-			lexemeFormType: Constants.Z_WIKIDATA_LEXEME_FORM
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getLexemeFormLabelData',
-		'getLexemeFormUrl'
-	] ), {
+	setup( props, { emit } ) {
+		const { getWikidataEntityId } = useZObject( { keyPath: props.keyPath } );
+		const store = useMainStore();
+
+		const wikidataIcon = wikidataIconSvg;
+		const lexemeFormType = Constants.Z_WIKIDATA_LEXEME_FORM;
+
 		/**
 		 * Returns the Lexeme Form Id string value, if any Lexeme Form is selected.
 		 * Else returns null (required as empty value for CdxLookup).
 		 *
 		 * @return {string|null}
 		 */
-		lexemeFormId: function () {
-			return this.getWikidataEntityId( this.objectValue, this.lexemeFormType );
-		},
+		const lexemeFormId = computed( () => getWikidataEntityId( props.objectValue, lexemeFormType ) );
+
 		/**
 		 * Returns the Wikidata URL for the selected Lexeme Form.
 		 *
 		 * @return {string|undefined}
 		 */
-		lexemeFormUrl: function () {
-			return this.getLexemeFormUrl( this.lexemeFormId );
-		},
+		const lexemeFormUrl = computed( () => store.getLexemeFormUrl( lexemeFormId.value ) );
+
 		/**
 		 * Returns the LabelData object for the selected Lexeme Form
 		 *
 		 * @return {LabelData|undefined}
 		 */
-		lexemeFormLabelData: function () {
-			return this.getLexemeFormLabelData( this.lexemeFormId );
-		},
+		const lexemeFormLabelData = computed( () => store.getLexemeFormLabelData( lexemeFormId.value ) );
+
 		/**
 		 * Returns the string label of the selected Lexeme Form or
 		 * an empty string if none is selected. This is needed
@@ -114,13 +107,8 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string}
 		 */
-		lexemeFormLabel: function () {
-			return this.lexemeFormLabelData ? this.lexemeFormLabelData.label : '';
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'fetchLexemes'
-	] ), {
+		const lexemeFormLabel = computed( () => lexemeFormLabelData.value ? lexemeFormLabelData.value.label : '' );
+
 		/**
 		 * Emit a set-value event to persist in the store
 		 * the changes made by a new wikidata entity selection,
@@ -130,12 +118,8 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string|null} value
 		 */
-		onSelect: function ( value ) {
-			// If type is Wikidata Entity Reference:
-			// * Set Reference Id
-			// Else (type is Function Call):
-			// * Set Reference Id of the Fetch Function Id argument
-			const keyPath = ( this.type === Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM ) ? [
+		function onSelect( value ) {
+			const keyPath = ( props.type === Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM ) ? [
 				Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM_ID,
 				Constants.Z_STRING_VALUE
 			] : [
@@ -144,25 +128,32 @@ module.exports = exports = defineComponent( {
 				Constants.Z_STRING_VALUE
 			];
 
-			this.$emit( 'set-value', {
-				value: value || '',
-				keyPath
-			} );
+			emit( 'set-value', { value: value || '', keyPath } );
 		}
-	} ),
-	watch: {
-		lexemeFormId: function ( id ) {
+
+		watch( lexemeFormId, ( id ) => {
 			if ( id ) {
 				const [ lexemeId ] = id.split( '-' );
-				this.fetchLexemes( { ids: [ lexemeId ] } );
+				store.fetchLexemes( { ids: [ lexemeId ] } );
 			}
-		}
-	},
-	mounted: function () {
-		if ( this.lexemeFormId ) {
-			const [ lexemeId ] = this.lexemeFormId.split( '-' );
-			this.fetchLexemes( { ids: [ lexemeId ] } );
-		}
+		} );
+
+		onMounted( () => {
+			if ( lexemeFormId.value ) {
+				const [ lexemeId ] = lexemeFormId.value.split( '-' );
+				store.fetchLexemes( { ids: [ lexemeId ] } );
+			}
+		} );
+
+		return {
+			lexemeFormId,
+			lexemeFormLabel,
+			lexemeFormLabelData,
+			lexemeFormType,
+			lexemeFormUrl,
+			onSelect,
+			wikidataIcon
+		};
 	}
 } );
 </script>

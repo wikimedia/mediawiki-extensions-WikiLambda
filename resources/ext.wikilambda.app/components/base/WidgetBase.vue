@@ -34,20 +34,39 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
+const { defineComponent, computed, useSlots } = require( 'vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-widget-base',
-	computed: {
-		hasHeaderSlot() {
-			return !!this.$slots.header;
-		},
-		hasHeaderAction() {
-			return !!this.$slots[ 'header-action' ];
-		},
-		hasFooterSlot() {
-			return !!this.$slots.footer;
-		}
+	setup() {
+		const slots = useSlots();
+
+		/**
+		 * Whether the header slot is provided
+		 *
+		 * @return {boolean}
+		 */
+		const hasHeaderSlot = computed( () => !!slots.header );
+
+		/**
+		 * Whether the header-action slot is provided
+		 *
+		 * @return {boolean}
+		 */
+		const hasHeaderAction = computed( () => !!slots[ 'header-action' ] );
+
+		/**
+		 * Whether the footer slot is provided
+		 *
+		 * @return {boolean}
+		 */
+		const hasFooterSlot = computed( () => !!slots.footer );
+
+		return {
+			hasFooterSlot,
+			hasHeaderAction,
+			hasHeaderSlot
+		};
 	}
 } );
 </script>

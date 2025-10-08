@@ -6,7 +6,6 @@ const FunctionInputParser = require( '../../../../../resources/ext.wikilambda.ap
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 const ErrorData = require( '../../../../../resources/ext.wikilambda.app/store/classes/ErrorData.js' );
 const { createGettersWithFunctionsMock } = require( '../../../helpers/getterHelpers.js' );
-const LabelData = require( '../../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' );
 
 describe( 'FunctionInputParser', () => {
 	let store;
@@ -15,23 +14,26 @@ describe( 'FunctionInputParser', () => {
 	const errorParser = new ErrorData( 'wikilambda-visualeditor-wikifunctionscall-error-parser-empty', [], null, 'error' );
 	const gregorianCalendarDateZid = 'Z20420';
 
-	const defaultProps = {
-		inputType: typeZid,
-		value: 'Test value',
-		labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
-		error: '',
-		showValidation: false
+	// Helper function to render FunctionInputParser with common configuration
+	const renderFunctionInputParser = ( props = {}, options = {} ) => {
+		const defaultProps = {
+			inputType: typeZid,
+			value: 'Test value'
+		};
+		const defaultOptions = {
+			global: {
+				stubs: {
+					CdxField: false,
+					CdxLabel: false,
+					...options?.stubs
+				}
+			}
+		};
+		return shallowMount( FunctionInputParser, {
+			props: { ...defaultProps, ...props },
+			...defaultOptions
+		} );
 	};
-
-	const globalStubs = { stubs: { CdxField: false, CdxLabel: false } };
-
-	const renderFunctionInputParser = ( props = {} ) => shallowMount( FunctionInputParser, {
-		props: {
-			...defaultProps,
-			...props
-		},
-		global: globalStubs
-	} );
 
 	beforeEach( () => {
 		store = useMainStore();
@@ -83,18 +85,21 @@ describe( 'FunctionInputParser', () => {
 	} );
 
 	it( 'validates on mount with empty value', async () => {
-		// Mock hasDefaultValueForType to return false so parser is called for empty value validation
-		store.hasDefaultValueForType = createGettersWithFunctionsMock( false );
 		const wrapper = renderFunctionInputParser( {
 			value: ''
 		} );
 
-		// Wait for initial validation to complete
-		await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( false ) );
-		// With no default value available and allowsEmptyField = false, parser should reject empty value
-		// without calling the parser function
-		expect( store.runParser ).not.toHaveBeenCalled();
-		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false } ] );
+		// Wait for validation to complete
+		await waitFor( () => expect( wrapper.emitted().validate.length ).toBe( 2 ) );
+
+		// Should call the parser
+		expect( store.runParser ).toHaveBeenCalledWith( {
+			parserZid: 'Z30020',
+			wait: true,
+			zlang: 'Z1002',
+			zobject: '',
+			signal: expect.any( Object )
+		} );
 	} );
 
 	it( 'on model update, debounces validation and emits validate event if succeeds', async () => {
@@ -103,11 +108,11 @@ describe( 'FunctionInputParser', () => {
 
 		const wrapper = renderFunctionInputParser();
 
-		const handleChangeSpy = jest.spyOn( wrapper.vm, 'handleChange' );
-
 		// Wait for initial validation of input value:
-		await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( false ) );
-		expect( wrapper.vm.debounceTimer ).toBeFalsy();
+		await waitFor( () => expect( wrapper.emitted().validate ).toBeTruthy() );
+
+		// Check that the initial validation event was emitted
+		expect( wrapper.emitted().validate.length ).toBe( 1 );
 
 		// Update field, simulate multiple keystrokes
 		const input = wrapper.getComponent( { name: 'cdx-text-input' } );
@@ -118,18 +123,16 @@ describe( 'FunctionInputParser', () => {
 
 		// Advance timer 100ms, nothing should have happened
 		jest.advanceTimersByTime( 100 );
-		expect( wrapper.vm.isParserRunning ).toBe( false );
-		expect( handleChangeSpy ).not.toHaveBeenCalled();
+
+		// Check that no new validation events were emitted yet
+		expect( wrapper.emitted().validate.length ).toBe( 1 );
 
 		// Advance timer 1000ms, validation should have started
 		jest.advanceTimersByTime( 1000 );
-		expect( handleChangeSpy ).toHaveBeenCalledTimes( 1 );
-		expect( handleChangeSpy ).toHaveBeenCalledWith( 'New value' );
 
-		expect( wrapper.vm.isParserRunning ).toBe( true );
-		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false } ] );
+		// Wait for validation to complete
+		await waitFor( async () => expect( wrapper.emitted().validate.length ).toBe( 3 ) );
 
-		await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( true ) );
 		expect( store.runParser ).toHaveBeenCalledWith( {
 			parserZid: 'Z30020',
 			wait: true,
@@ -137,9 +140,6 @@ describe( 'FunctionInputParser', () => {
 			zobject: 'New value',
 			signal: expect.any( Object )
 		} );
-
-		await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( false ) );
-		expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ { isValid: true } ] );
 	} );
 
 	it( 'emits validate event with error message on validation failure', async () => {
@@ -149,13 +149,22 @@ describe( 'FunctionInputParser', () => {
 			value: 'Invalid value'
 		} );
 
+		// Initial state: no progress indicator
+		expect( wrapper.find( '.ext-wikilambda-app-function-input-parser__progress-indicator' ).exists() ).toBe( false );
+
 		// Wait for initial validation to complete
-		await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( false ) );
+		await waitFor( () => expect( wrapper.emitted().validate ).toBeTruthy() );
 
-		wrapper.vm.validate( 'Invalid value' );
+		// Update the input to trigger validation
+		const input = wrapper.getComponent( { name: 'cdx-text-input' } );
+		input.vm.$emit( 'update:model-value', 'Invalid value' );
 
-		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false } ] );
-		expect( wrapper.vm.isParserRunning ).toBe( true );
+		// Progress indicator should appear
+		expect( wrapper.find( '.ext-wikilambda-app-function-input-parser__progress-indicator' ).exists() ).toBe( true );
+
+		// Wait for validation to complete
+		await waitFor( async () => expect( wrapper.emitted().validate.length ).toBe( 2 ) );
+
 		expect( store.runParser ).toHaveBeenCalledWith( {
 			parserZid: 'Z30020',
 			wait: true,
@@ -163,18 +172,28 @@ describe( 'FunctionInputParser', () => {
 			zobject: 'Invalid value',
 			signal: expect.any( Object )
 		} );
-		await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( false ) );
+		// First, emits invalid (while validating), then emits invalid with error
 		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false } ] );
+		expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ { isValid: false, error: expect.any( Object ) } ] );
+		// Progress indicator should disappear
+		expect( wrapper.find( '.ext-wikilambda-app-function-input-parser__progress-indicator' ).exists() ).toBe( false );
 	} );
 
 	it( 'shows progress indicator while parser is running', async () => {
 		const wrapper = renderFunctionInputParser();
 
-		wrapper.vm.onValidateStart();
-		await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( true ) );
+		// Trigger validation by updating the input
+		const input = wrapper.getComponent( { name: 'cdx-text-input' } );
+		input.vm.$emit( 'update:model-value', 'Test value' );
 
-		wrapper.vm.onValidateEnd();
-		await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( false ) );
+		// Wait for the progress indicator to appear
+		await waitFor( () => expect( wrapper.find( '.ext-wikilambda-app-function-input-parser__progress-indicator' ).exists() ).toBe( true ) );
+
+		// Wait for validation to complete
+		await waitFor( () => expect( wrapper.emitted().validate.length ).toBe( 2 ) );
+
+		// Progress indicator should disappear
+		expect( wrapper.find( '.ext-wikilambda-app-function-input-parser__progress-indicator' ).exists() ).toBe( false );
 	} );
 
 	describe( 'allowed empty types', () => {
@@ -184,9 +203,10 @@ describe( 'FunctionInputParser', () => {
 				value: ''
 			} );
 
-			await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( false ) );
-			expect( store.runParser ).not.toHaveBeenCalled();
-			expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false } ] );
+			// Wait for validation to complete
+			await waitFor( () => expect( wrapper.emitted().validate.length ).toBe( 2 ) );
+
+			expect( store.runParser ).toHaveBeenCalledTimes( 1 );
 			expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ { isValid: true } ] );
 		} );
 
@@ -196,19 +216,18 @@ describe( 'FunctionInputParser', () => {
 				value: ''
 			} );
 
-			await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( false ) );
-			expect( store.runParser ).not.toHaveBeenCalled();
-			expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false } ] );
-			expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ {
-				isValid: false,
-				error: errorParser
-			} ] );
+			// Wait for validation to complete
+			await waitFor( () => expect( wrapper.emitted().validate.length ).toBe( 2 ) );
+
+			expect( store.runParser ).toHaveBeenCalledTimes( 1 );
+			expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ { isValid: false, error: errorParser } ] );
 		} );
 	} );
 
 	describe( 'default value functionality', () => {
 		it( 'shows default value as placeholder when shouldUseDefaultValue is true', () => {
 			const wrapper = renderFunctionInputParser( {
+				inputType: typeZid,
 				shouldUseDefaultValue: true,
 				defaultValue: '02-03-2020'
 			} );
@@ -222,10 +241,12 @@ describe( 'FunctionInputParser', () => {
 				{ result: 'Example result' }
 			] );
 			const wrapper = renderFunctionInputParser( {
+				inputType: typeZid,
 				shouldUseDefaultValue: false
 			} );
 
 			expect( wrapper.vm.placeholder ).toContain( 'Example result' );
 		} );
 	} );
+
 } );

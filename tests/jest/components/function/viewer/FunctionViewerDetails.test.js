@@ -38,6 +38,17 @@ const mockLabels = {
 describe( 'FunctionViewerDetails', () => {
 	let store, actionsThrowError;
 
+	/**
+	 * Renders the FunctionViewerDetails component with default options
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderFunctionViewerDetails( props = {}, options = {} ) {
+		return shallowMount( FunctionViewerDetails, { props, ...options } );
+	}
+
 	beforeEach( () => {
 		actionsThrowError = false;
 
@@ -72,23 +83,27 @@ describe( 'FunctionViewerDetails', () => {
 	} );
 
 	it( 'renders without errors', () => {
-		const wrapper = shallowMount( FunctionViewerDetails );
+		const wrapper = renderFunctionViewerDetails();
 		expect( wrapper.find( '.ext-wikilambda-app-function-viewer-details' ).exists() ).toBe( true );
 	} );
 
 	it( 'loads child components', () => {
-		const wrapper = shallowMount( FunctionViewerDetails );
+		const wrapper = renderFunctionViewerDetails();
 		expect( wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } ) ).toHaveLength( 2 );
 	} );
 
 	it( 'passes implementations to table correctly', async () => {
-		const wrapper = shallowMount( FunctionViewerDetails );
-		await waitFor( () => expect( wrapper.vm.implementationsFetched ).toBeTruthy() );
+		const wrapper = renderFunctionViewerDetails();
+
+		// Wait for the implementations table to have data instead of checking internal state
+		await waitFor( () => {
+			const it = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 0 ];
+			const itItems = it.props( 'data' );
+			expect( itItems ).toHaveLength( 3 );
+		} );
 
 		const implTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 0 ];
 		const implTableItems = implTable.props( 'data' );
-
-		expect( implTableItems ).toHaveLength( 3 );
 		expect( implTableItems[ 0 ].checkbox.props.modelValue ).toBe( false );
 		expect( implTableItems[ 0 ].language.title ).toEqual( 'Composition' );
 		expect( implTableItems[ 0 ].name.title ).toEqual( 'Z333 name' );
@@ -104,13 +119,17 @@ describe( 'FunctionViewerDetails', () => {
 	} );
 
 	it( 'passes testers to table correctly', async () => {
-		const wrapper = shallowMount( FunctionViewerDetails );
-		await waitFor( () => expect( wrapper.vm.testsFetched ).toBeTruthy() );
+		const wrapper = renderFunctionViewerDetails();
+
+		// Wait for the tests table to have data instead of checking internal state
+		await waitFor( () => {
+			const tt = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 1 ];
+			const ttItems = tt.props( 'data' );
+			expect( ttItems ).toHaveLength( 2 );
+		} );
 
 		const testTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 1 ];
 		const testTableItems = testTable.props( 'data' );
-
-		expect( testTableItems ).toHaveLength( 2 );
 		expect( testTableItems[ 0 ].checkbox.props.modelValue ).toBe( false );
 		expect( testTableItems[ 0 ].name.title ).toEqual( 'Z111 name' );
 		expect( testTableItems[ 0 ].status.title ).toEqual( 'Disconnected' );
@@ -125,8 +144,14 @@ describe( 'FunctionViewerDetails', () => {
 		} );
 
 		it( 'in the implementations table', async () => {
-			const wrapper = shallowMount( FunctionViewerDetails );
-			await waitFor( () => expect( wrapper.vm.implementationsFetched ).toBeTruthy() );
+			const wrapper = renderFunctionViewerDetails();
+
+			// Wait for implementations data to be available instead of checking internal state
+			await waitFor( () => {
+				const it = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 0 ];
+				const itItems = it.props( 'data' );
+				expect( itItems ).toHaveLength( 3 );
+			} );
 
 			const implTableItems = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 0 ].props( 'data' );
 
@@ -135,8 +160,14 @@ describe( 'FunctionViewerDetails', () => {
 		} );
 
 		it( 'in the tests table header', async () => {
-			const wrapper = shallowMount( FunctionViewerDetails );
-			await waitFor( () => expect( wrapper.vm.testsFetched ).toBeTruthy() );
+			const wrapper = renderFunctionViewerDetails();
+
+			// Wait for tests data to be available instead of checking internal state
+			await waitFor( () => {
+				const tt = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 1 ];
+				const ttItems = tt.props( 'columns' );
+				expect( ttItems ).toHaveLength( 6 );
+			} );
 
 			const testTableHeaderItems = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 1 ].props( 'columns' );
 
@@ -151,8 +182,14 @@ describe( 'FunctionViewerDetails', () => {
 		} );
 
 		it( 'in the tests table rows', async () => {
-			const wrapper = shallowMount( FunctionViewerDetails );
-			await waitFor( () => expect( wrapper.vm.testsFetched ).toBeTruthy() );
+			const wrapper = renderFunctionViewerDetails();
+
+			// Wait for tests data to be available instead of checking internal state
+			await waitFor( () => {
+				const tt = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 1 ];
+				const ttItems = tt.props( 'columns' );
+				expect( ttItems ).toHaveLength( 6 );
+			} );
 
 			const testTableItems = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 1 ].props( 'data' );
 
@@ -163,8 +200,14 @@ describe( 'FunctionViewerDetails', () => {
 
 	describe( 'connect & disconnect buttons', () => {
 		it( 'connect checked implementation, without error toast', async () => {
-			const wrapper = shallowMount( FunctionViewerDetails );
-			await waitFor( () => expect( wrapper.vm.implementationsFetched ).toBeTruthy() );
+			const wrapper = renderFunctionViewerDetails();
+
+			// Wait for implementations data to be available instead of checking internal state
+			await waitFor( () => {
+				const it = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 0 ];
+				const itItems = it.props( 'data' );
+				expect( itItems ).toHaveLength( 3 );
+			} );
 
 			const implTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 0 ];
 			implTable.props( 'columns' ).find( ( item ) => item.id === 'checkbox' ).props[ 'onUpdate:modelValue' ]( true );
@@ -180,8 +223,14 @@ describe( 'FunctionViewerDetails', () => {
 		} );
 
 		it( 'disconnect checked implementation, without error toast', async () => {
-			const wrapper = shallowMount( FunctionViewerDetails );
-			await waitFor( () => expect( wrapper.vm.implementationsFetched ).toBeTruthy() );
+			const wrapper = renderFunctionViewerDetails();
+
+			// Wait for implementations data to be available instead of checking internal state
+			await waitFor( () => {
+				const it = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 0 ];
+				const itItems = it.props( 'data' );
+				expect( itItems ).toHaveLength( 3 );
+			} );
 
 			const implTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 0 ];
 			implTable.props( 'columns' ).find( ( item ) => item.id === 'checkbox' ).props[ 'onUpdate:modelValue' ]( true );
@@ -197,8 +246,14 @@ describe( 'FunctionViewerDetails', () => {
 		} );
 
 		it( 'connect checked tester, without error toast', async () => {
-			const wrapper = shallowMount( FunctionViewerDetails );
-			await waitFor( () => expect( wrapper.vm.testsFetched ).toBeTruthy() );
+			const wrapper = renderFunctionViewerDetails();
+
+			// Wait for tests data to be available instead of checking internal state
+			await waitFor( () => {
+				const tt = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 1 ];
+				const ttItems = tt.props( 'columns' );
+				expect( ttItems ).toHaveLength( 6 );
+			} );
 
 			const testTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 1 ];
 			testTable.props( 'columns' ).find( ( item ) => item.id === 'checkbox' ).props[ 'onUpdate:modelValue' ]( true );
@@ -214,8 +269,14 @@ describe( 'FunctionViewerDetails', () => {
 		} );
 
 		it( 'disconnect checked tester, without error toast', async () => {
-			const wrapper = shallowMount( FunctionViewerDetails );
-			await waitFor( () => expect( wrapper.vm.testsFetched ).toBeTruthy() );
+			const wrapper = renderFunctionViewerDetails();
+
+			// Wait for tests data to be available instead of checking internal state
+			await waitFor( () => {
+				const tt = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 1 ];
+				const ttItems = tt.props( 'columns' );
+				expect( ttItems ).toHaveLength( 6 );
+			} );
 
 			const testTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 1 ];
 			testTable.props( 'columns' ).find( ( item ) => item.id === 'checkbox' ).props[ 'onUpdate:modelValue' ]( true );
@@ -231,8 +292,14 @@ describe( 'FunctionViewerDetails', () => {
 		} );
 
 		it( 'show error toast when an operation fails', async () => {
-			const wrapper = shallowMount( FunctionViewerDetails );
-			await waitFor( () => expect( wrapper.vm.testsFetched ).toBeTruthy() );
+			const wrapper = renderFunctionViewerDetails();
+
+			// Wait for tests data to be available instead of checking internal state
+			await waitFor( () => {
+				const tt = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 1 ];
+				const ttItems = tt.props( 'columns' );
+				expect( ttItems ).toHaveLength( 6 );
+			} );
 
 			const testTable = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } )[ 1 ];
 			testTable.props( 'columns' ).find( ( item ) => item.id === 'checkbox' ).props[ 'onUpdate:modelValue' ]( true );

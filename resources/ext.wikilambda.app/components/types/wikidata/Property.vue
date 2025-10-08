@@ -34,11 +34,11 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { computed, watch, onMounted } = require( 'vue' );
 
 const wikidataIconSvg = require( './wikidataIconSvg.js' );
 const Constants = require( '../../../Constants.js' );
-const zobjectMixin = require( '../../../mixins/zobjectMixin.js' );
+const useZObject = require( '../../../composables/useZObject.js' );
 const useMainStore = require( '../../../store/index.js' );
 const LabelData = require( '../../../store/classes/LabelData.js' );
 
@@ -53,9 +53,9 @@ module.exports = exports = defineComponent( {
 		'wl-wikidata-entity-selector': WikidataEntitySelector,
 		'cdx-icon': CdxIcon
 	},
-	mixins: [ zobjectMixin ],
+
 	props: {
-		keyPath: { // eslint-disable-line vue/no-unused-properties
+		keyPath: {
 			type: String,
 			required: true
 		},
@@ -72,54 +72,42 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	data: function () {
-		return {
-			wikidataIcon: wikidataIconSvg,
-			propertyType: Constants.Z_WIKIDATA_PROPERTY
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getPropertyLabelData',
-		'getPropertyUrl'
-	] ), {
+	setup( props, { emit } ) {
+		const { getWikidataEntityId } = useZObject( { keyPath: props.keyPath } );
+		const store = useMainStore();
+
+		const wikidataIcon = wikidataIconSvg;
+		const propertyType = Constants.Z_WIKIDATA_PROPERTY;
 		/**
 		 * Returns the Wikidata Property Id string value, if any Property is selected.
 		 * Else returns null.
 		 *
 		 * @return {string|null}
 		 */
-		propertyId: function () {
-			return this.getWikidataEntityId( this.objectValue, this.propertyType );
-		},
+		const propertyId = computed( () => getWikidataEntityId( props.objectValue, propertyType ) );
+
 		/**
 		 * Returns the Wikidata URL for the selected Property.
 		 *
 		 * @return {string|undefined}
 		 */
-		propertyUrl: function () {
-			return this.getPropertyUrl( this.propertyId );
-		},
+		const propertyUrl = computed( () => store.getPropertyUrl( propertyId.value ) );
+
 		/**
 		 * Returns the LabelData object for the selected Property.
 		 *
 		 * @return {LabelData|undefined}
 		 */
-		propertyLabelData: function () {
-			return this.getPropertyLabelData( this.propertyId );
-		},
+		const propertyLabelData = computed( () => store.getPropertyLabelData( propertyId.value ) );
+
 		/**
 		 * Returns the string label of the selected Wikidata Property or
 		 * an empty string if none is selected.
 		 *
 		 * @return {string}
 		 */
-		propertyLabel: function () {
-			return this.propertyLabelData ? this.propertyLabelData.label : '';
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'fetchProperties'
-	] ), {
+		const propertyLabel = computed( () => propertyLabelData.value ? propertyLabelData.value.label : '' );
+
 		/**
 		 * Emit a set-value event to persist in the store
 		 * the changes made by a new wikidata entity selection,
@@ -129,12 +117,8 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string|null} value
 		 */
-		onSelect: function ( value ) {
-			// If type is Wikidata Reference:
-			// * Set Reference Id
-			// Else (type is Function Call):
-			// * Set Reference Id of the Fetch Function Id argument
-			const keyPath = ( this.type === Constants.Z_WIKIDATA_REFERENCE_PROPERTY ) ? [
+		function onSelect( value ) {
+			const keyPath = ( props.type === Constants.Z_WIKIDATA_REFERENCE_PROPERTY ) ? [
 				Constants.Z_WIKIDATA_REFERENCE_PROPERTY_ID,
 				Constants.Z_STRING_VALUE
 			] : [
@@ -143,21 +127,19 @@ module.exports = exports = defineComponent( {
 				Constants.Z_STRING_VALUE
 			];
 
-			this.$emit( 'set-value', {
-				value: value || '',
-				keyPath
-			} );
+			emit( 'set-value', { value: value || '', keyPath } );
 		}
-	} ),
-	watch: {
-		propertyId: function ( id ) {
-			this.fetchProperties( { ids: [ id ] } );
-		}
-	},
-	mounted: function () {
-		if ( this.propertyId ) {
-			this.fetchProperties( { ids: [ this.propertyId ] } );
-		}
+
+		watch( propertyId, ( id ) => {
+			store.fetchProperties( { ids: [ id ] } );
+		} );
+		onMounted( () => {
+			if ( propertyId.value ) {
+				store.fetchProperties( { ids: [ propertyId.value ] } );
+			}
+		} );
+
+		return { wikidataIcon, propertyType, propertyId, propertyUrl, propertyLabelData, propertyLabel, onSelect };
 	}
 } );
 </script>

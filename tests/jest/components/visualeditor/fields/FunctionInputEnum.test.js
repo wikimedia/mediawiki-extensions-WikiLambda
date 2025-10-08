@@ -7,7 +7,6 @@ const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store
 const ErrorData = require( '../../../../../resources/ext.wikilambda.app/store/classes/ErrorData.js' );
 const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../../helpers/getterHelpers.js' );
 const { mockEnumValues } = require( '../../../fixtures/mocks.js' );
-const LabelData = require( '../../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' );
 
 describe( 'FunctionInputEnum', () => {
 
@@ -15,24 +14,26 @@ describe( 'FunctionInputEnum', () => {
 	const mockEnumZid = 'Z30000';
 	const errorNoEnum = new ErrorData( 'wikilambda-visualeditor-wikifunctionscall-error-enum', [], null, 'error' );
 	const mockEnumZidWithDefault = 'Z20420';
-	const defaultProps = {
-		inputType: mockEnumZid,
-		labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
-		error: '',
-		value: '',
-		showValidation: false
-	};
-
-	const globalStubs = { stubs: { CdxField: false, CdxLabel: false } };
 
 	// Helper function to render FunctionInputEnum with common configuration
-	const renderFunctionInputEnum = ( props = {} ) => shallowMount( FunctionInputEnum, {
-		props: {
-			...defaultProps,
-			...props
-		},
-		global: globalStubs
-	} );
+	const renderFunctionInputEnum = ( props = {}, options = {} ) => {
+		const defaultProps = {
+			inputType: mockEnumZid,
+			value: ''
+		};
+		const defaultOptions = {
+			global: {
+				stubs: {
+					CdxField: false, CdxLabel: false,
+					...options?.stubs
+				}
+			}
+		};
+		return shallowMount( FunctionInputEnum, {
+			props: { ...defaultProps, ...props },
+			...defaultOptions
+		} );
+	};
 
 	beforeEach( () => {
 		store = useMainStore();

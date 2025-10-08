@@ -36,11 +36,11 @@ describe( 'useBreakpoints', () => {
 
 	describe( 'when called with emtpy values', () => {
 		it( 'return a null value as the current breakpoint', () => {
-			const result = loadComposable( () => useBreakpoints() )[ 0 ];
+			const [ result ] = loadComposable( () => useBreakpoints() );
 			expect( result.current.value ).toBe( null );
 		} );
 		it( 'return a null when resize event is triggered', () => {
-			const result = loadComposable( () => useBreakpoints() )[ 0 ];
+			const [ result ] = loadComposable( () => useBreakpoints() );
 
 			global.innerWidth = 500;
 			global.dispatchEvent( new Event( 'resize' ) );
@@ -50,15 +50,15 @@ describe( 'useBreakpoints', () => {
 	} );
 	describe( 'when called with an object of breakpoints', () => {
 		it( 'return a value as the current breakpoint', () => {
-			const result = loadComposable( () => useBreakpoints( mockBreakpoints ) )[ 0 ];
+			const [ result ] = loadComposable( () => useBreakpoints( mockBreakpoints ) );
 			expect( result.current.value ).not.toBe( null );
 		} );
 
 		it( 'return a value for each breakpoint', () => {
-			const result = loadComposable( () => useBreakpoints( mockBreakpoints ) )[ 0 ];
-			expect( mockBreakpointsType.small in result ).toBe( true );
-			expect( mockBreakpointsType.medium in result ).toBe( true );
-			expect( mockBreakpointsType.large in result ).toBe( true );
+			const [ result ] = loadComposable( () => useBreakpoints( mockBreakpoints ) );
+			expect( 'small' in result ).toBe( true );
+			expect( 'medium' in result ).toBe( true );
+			expect( 'large' in result ).toBe( true );
 		} );
 	} );
 	describe( 'when innerWidth is 700 pixel', () => {
@@ -67,19 +67,19 @@ describe( 'useBreakpoints', () => {
 		} );
 
 		it( 'return current value as medium', () => {
-			const result = loadComposable( () => useBreakpoints( mockBreakpoints ) )[ 0 ];
+			const [ result ] = loadComposable( () => useBreakpoints( mockBreakpoints ) );
 			expect( result.current.value ).toBe( mockBreakpointsType.medium );
 		} );
 		it( 'return small breakpoint as false', () => {
-			const result = loadComposable( () => useBreakpoints( mockBreakpoints ) )[ 0 ];
+			const [ result ] = loadComposable( () => useBreakpoints( mockBreakpoints ) );
 			expect( result.small.value ).toBeFalsy();
 		} );
 		it( 'return medium breakpoint as true', () => {
-			const result = loadComposable( () => useBreakpoints( mockBreakpoints ) )[ 0 ];
+			const [ result ] = loadComposable( () => useBreakpoints( mockBreakpoints ) );
 			expect( result.medium.value ).toBeTruthy();
 		} );
 		it( 'return large breakpoint as false', () => {
-			const result = loadComposable( () => useBreakpoints( mockBreakpoints ) )[ 0 ];
+			const [ result ] = loadComposable( () => useBreakpoints( mockBreakpoints ) );
 			expect( result.large.value ).toBeFalsy();
 		} );
 	} );
@@ -90,7 +90,7 @@ describe( 'useBreakpoints', () => {
 
 		it( 'updates the current value', () => {
 
-			const result = loadComposable( () => useBreakpoints( mockBreakpoints ) )[ 0 ];
+			const [ result ] = loadComposable( () => useBreakpoints( mockBreakpoints ) );
 
 			global.innerWidth = 2000;
 			global.dispatchEvent( new Event( 'resize' ) );
@@ -98,7 +98,7 @@ describe( 'useBreakpoints', () => {
 			expect( result.current.value ).toBe( mockBreakpointsType.large );
 		} );
 		it( 'updates the individual breakpoint value', () => {
-			const result = loadComposable( () => useBreakpoints( mockBreakpoints ) )[ 0 ];
+			const [ result ] = loadComposable( () => useBreakpoints( mockBreakpoints ) );
 
 			global.innerWidth = 2000;
 			global.dispatchEvent( new Event( 'resize' ) );
@@ -108,10 +108,10 @@ describe( 'useBreakpoints', () => {
 			expect( result.large.value ).toBeTruthy();
 		} );
 		it( 'removes the resize event listener when the component is unmounted', () => {
-			const app = loadComposable( () => useBreakpoints( mockBreakpoints ) )[ 1 ];
+			const wrapper = loadComposable( () => useBreakpoints( mockBreakpoints ) )[ 1 ];
 			expect( addEventListenerSpy ).toHaveBeenCalledWith( 'resize', expect.any( Function ) );
 
-			app.unmount();
+			wrapper.unmount();
 			expect( removeEventListenerSpy ).toHaveBeenCalledWith( 'resize', expect.any( Function ) );
 		} );
 	} );

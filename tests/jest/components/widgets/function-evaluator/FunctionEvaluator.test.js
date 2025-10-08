@@ -56,6 +56,25 @@ const implementationCall = {
 describe( 'FunctionEvaluator', () => {
 	let store;
 
+	/**
+	 * Helper function to render FunctionEvaluator component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderFunctionEvaluator( props = {}, options = {} ) {
+		const defaultOptions = {
+			global: {
+				stubs: {
+					WlWidgetBase: false,
+					...options?.stubs
+				}
+			}
+		};
+		return shallowMount( FunctionEvaluator, { props, ...defaultOptions } );
+	}
+
 	beforeEach( () => {
 		store = useMainStore();
 		// Getters
@@ -87,61 +106,52 @@ describe( 'FunctionEvaluator', () => {
 		} );
 
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( FunctionEvaluator );
+			const wrapper = renderFunctionEvaluator();
 
-			expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget' ).exists() ).toBe( true );
+			expect( wrapper.get( '.ext-wikilambda-app-function-evaluator-widget' ).exists() ).toBe( true );
 		} );
 
 		it( 'initializes detached objects', () => {
-			shallowMount( FunctionEvaluator );
+			renderFunctionEvaluator();
 
 			expect( store.setJsonObject ).toHaveBeenCalledTimes( 1 );
 			expect( store.changeTypeByKeyPath ).toHaveBeenCalledTimes( 1 );
 		} );
 
 		it( 'renders special page title', () => {
-			const wrapper = shallowMount( FunctionEvaluator, {
-				global: { stubs: { WlWidgetBase: false } }
-			} );
+			const wrapper = renderFunctionEvaluator();
 
-			expect( wrapper.find( '.ext-wikilambda-app-widget-base__header' ).text() ).toBe( 'Try a function' );
+			expect( wrapper.get( '.ext-wikilambda-app-widget-base__header' ).text() ).toBe( 'Try a function' );
 		} );
 
 		it( 'renders function call block', async () => {
-			const wrapper = shallowMount( FunctionEvaluator, {
-				global: { stubs: { WlWidgetBase: false } }
-			} );
+			const wrapper = renderFunctionEvaluator();
 
-			await wrapper.vm.$nextTick();
 			await waitFor( () => {
 				expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__loader' ).exists() ).toBe( false );
 			} );
 
-			const block = wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__call' );
+			const block = wrapper.get( '.ext-wikilambda-app-function-evaluator-widget__call' );
 			const component = block.findComponent( { name: 'wl-z-object-key-value' } );
 			expect( component.exists() ).toBe( true );
 			expect( component.props( 'keyPath' ) ).toBe( 'call.Z7K1' );
 		} );
 
 		it( 'renders disabled function call button', async () => {
-			const wrapper = shallowMount( FunctionEvaluator, {
-				global: { stubs: { WlWidgetBase: false } }
-			} );
+			const wrapper = renderFunctionEvaluator();
 
 			await waitFor( () => {
 				expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__loader' ).exists() ).toBe( false );
 			} );
 
-			const block = wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__run-button' );
+			const block = wrapper.get( '.ext-wikilambda-app-function-evaluator-widget__run-button' );
 			const button = block.findComponent( { name: 'cdx-button' } );
 			expect( button.exists() ).toBe( true );
 			expect( button.attributes( 'disabled' ) ).toBe( 'true' );
 		} );
 
 		it( 'does not render inputs block', async () => {
-			const wrapper = shallowMount( FunctionEvaluator, {
-				global: { stubs: { WlWidgetBase: false } }
-			} );
+			const wrapper = renderFunctionEvaluator();
 
 			await waitFor( () => {
 				expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__loader' ).exists() ).toBe( false );
@@ -151,9 +161,7 @@ describe( 'FunctionEvaluator', () => {
 		} );
 
 		it( 'does not render orchestration result block', async () => {
-			const wrapper = shallowMount( FunctionEvaluator, {
-				global: { stubs: { WlWidgetBase: false } }
-			} );
+			const wrapper = renderFunctionEvaluator();
 
 			await waitFor( () => {
 				expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__loader' ).exists() ).toBe( false );
@@ -165,30 +173,25 @@ describe( 'FunctionEvaluator', () => {
 		it( 'renders arguments when function is selected', async () => {
 			store.getZObjectByKeyPath = createGettersWithFunctionsMock( hybridFunctionCall );
 
-			const wrapper = shallowMount( FunctionEvaluator, {
-				global: { stubs: { WlWidgetBase: false } }
-			} );
+			const wrapper = renderFunctionEvaluator();
 
 			await waitFor( () => {
 				expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__loader' ).exists() ).toBe( false );
 			} );
 
-			expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__inputs' ).exists() ).toBe( true );
+			expect( wrapper.get( '.ext-wikilambda-app-function-evaluator-widget__inputs' ) ).toBeTruthy();
 		} );
 
 		it( 'renders inputs block when there are inputs to enter', async () => {
 			store.getZObjectByKeyPath = createGettersWithFunctionsMock( hybridFunctionCall );
 
-			const wrapper = shallowMount( FunctionEvaluator, {
-				global: { stubs: { WlWidgetBase: false } }
-			} );
+			const wrapper = renderFunctionEvaluator();
 
 			await waitFor( () => {
 				expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__loader' ).exists() ).toBe( false );
 			} );
 
-			const inputBlock = wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__inputs' );
-			expect( inputBlock.exists() ).toBe( true );
+			const inputBlock = wrapper.get( '.ext-wikilambda-app-function-evaluator-widget__inputs' );
 
 			const inputs = inputBlock.findAllComponents( { name: 'wl-z-object-key-value' } );
 			expect( inputs.length ).toBe( 2 );
@@ -200,15 +203,13 @@ describe( 'FunctionEvaluator', () => {
 			store.getZObjectByKeyPath = createGettersWithFunctionsMock( hybridFunctionCall );
 			store.getConnectedObjects = createGettersWithFunctionsMock( [] );
 
-			const wrapper = shallowMount( FunctionEvaluator, {
-				global: { stubs: { WlWidgetBase: false } }
-			} );
+			const wrapper = renderFunctionEvaluator();
 
 			await waitFor( () => {
 				expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__loader' ).exists() ).toBe( false );
 			} );
 
-			const block = wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__run-button' );
+			const block = wrapper.get( '.ext-wikilambda-app-function-evaluator-widget__run-button' );
 			const button = block.findComponent( { name: 'cdx-button' } );
 			expect( button.exists() ).toBe( true );
 			expect( button.attributes( 'disabled' ) ).toBe( 'true' );
@@ -218,51 +219,55 @@ describe( 'FunctionEvaluator', () => {
 			store.getZObjectByKeyPath = createGettersWithFunctionsMock( hybridFunctionCall );
 			store.getConnectedObjects = createGettersWithFunctionsMock( [ 'Z10001', 'Z10002' ] );
 
-			const wrapper = shallowMount( FunctionEvaluator, {
-				global: { stubs: { WlWidgetBase: false } }
-			} );
+			const wrapper = renderFunctionEvaluator();
 
 			await waitFor( () => {
 				expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__loader' ).exists() ).toBe( false );
 			} );
 
-			const block = wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__run-button' );
+			const block = wrapper.get( '.ext-wikilambda-app-function-evaluator-widget__run-button' );
 			const button = block.findComponent( { name: 'cdx-button' } );
 			expect( button.exists() ).toBe( true );
 			expect( button.attributes( 'disabled' ) ).toBe( 'false' );
 		} );
 
 		it( 'renders orchestration result block when there are results', async () => {
-			const wrapper = shallowMount( FunctionEvaluator, {
-				global: { stubs: { WlWidgetBase: false } }
-			} );
-
-			wrapper.vm.hasResult = true;
+			const wrapper = renderFunctionEvaluator();
 
 			await waitFor( () => {
 				expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__loader' ).exists() ).toBe( false );
 			} );
 
-			const block = wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__result' );
+			// Simulate clicking the run button to trigger a function call
+			const runButton = wrapper.get( '.ext-wikilambda-app-function-evaluator-widget__run-button' );
+			const button = runButton.findComponent( { name: 'cdx-button' } );
+			button.trigger( 'click' );
+
+			// Wait for the result to be rendered
+			await waitFor( () => {
+				expect( wrapper.get( '.ext-wikilambda-app-function-evaluator-widget__result' ) ).toBeTruthy();
+			} );
+
+			const block = wrapper.get( '.ext-wikilambda-app-function-evaluator-widget__result' );
 			const component = block.findComponent( { name: 'wl-evaluation-result' } );
 			expect( component.exists() ).toBe( true );
 		} );
 
 		it( 'clears result when selected function changes', async () => {
-			const wrapper = shallowMount( FunctionEvaluator, {
-				props: { functionZid: 'Z12345' },
-				global: { stubs: { WlWidgetBase: false } }
-			} );
+			store.getZObjectByKeyPath = createGettersWithFunctionsMock( hybridFunctionCall );
+			store.getConnectedObjects = createGettersWithFunctionsMock( [ 'Z10001', 'Z10002' ] );
+			store.getStoredObject = createGettersWithFunctionsMock( storedFunction );
+			// Mock the callZFunction with a delay to show the running state
+			store.callZFunction.mockImplementation( () => new Promise( ( resolve ) => {
+				setTimeout( () => resolve(), 100 );
+			} ) );
+			const wrapper = renderFunctionEvaluator( { functionZid: 'Z10000' } );
 
-			// Set initial result state to verify it gets cleared
-			wrapper.vm.hasResult = true;
-			wrapper.vm.running = true;
-
-			await wrapper.vm.$nextTick();
-			await waitFor( () => expect( store.fetchZids ).toHaveBeenCalledWith( { zids: [ 'Z12345' ] } ) );
+			// Wait for initial setup
+			await waitFor( () => expect( store.fetchZids ).toHaveBeenCalledWith( { zids: [ 'Z10000' ] } ) );
 			await waitFor( () => expect( store.setFunctionCallArguments ).toHaveBeenCalledWith( {
 				keyPath: [ 'call' ],
-				functionZid: 'Z12345'
+				functionZid: 'Z10000'
 			} ) );
 
 			// Wait for initial loading
@@ -270,35 +275,54 @@ describe( 'FunctionEvaluator', () => {
 				expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__loader' ).exists() ).toBe( false );
 			} );
 
-			// Verify that we have results before changing function
-			expect( wrapper.vm.hasResult ).toBe( true );
-			expect( wrapper.vm.running ).toBe( true );
+			// No result block is rendered
+			expect( wrapper.find( '[data-testid="function-evaluator-result"]' ).exists() ).toBe( false );
 
-			// Change functionZid prop to trigger watcher
-			await wrapper.setProps( { functionZid: 'Z10000' } );
+			// Trigger a function run to display results
+			const runButton = wrapper.get( '[data-testid="evaluator-run-button"]' )
+				.findComponent( { name: 'cdx-button' } );
+			await runButton.trigger( 'click' );
 
-			await waitFor( () => expect( store.fetchZids ).toHaveBeenCalledWith( { zids: [ 'Z10000' ] } ) );
+			// Shows loader
+			expect( wrapper.find( '[data-testid="function-evaluator-running"]' ).exists() ).toBe( true );
+			expect( wrapper.findComponent( { name: 'wl-evaluation-result' } ).exists() ).toBe( false );
+
+			await waitFor( () => expect( store.callZFunction ).toHaveBeenCalledTimes( 1 ) );
+
+			// Wait for the result to be rendered and the loader to disappear
+			await waitFor( () => {
+				expect( wrapper.find( '[data-testid="function-evaluator-running"]' ).exists() ).toBe( false );
+			} );
+			expect( wrapper.findComponent( { name: 'wl-evaluation-result' } ).exists() ).toBe( true );
+
+			// Now change the functionZid prop to trigger the watcher
+			await wrapper.setProps( { functionZid: 'Z12345' } );
+
+			await waitFor( () => expect( store.fetchZids ).toHaveBeenCalledWith( { zids: [ 'Z12345' ] } ) );
 			await waitFor( () => expect( store.setFunctionCallArguments ).toHaveBeenCalledWith( {
 				keyPath: [ 'call' ],
-				functionZid: 'Z10000'
+				functionZid: 'Z12345'
 			} ) );
 
-			// Verify that the result was cleared when function changed
-			expect( wrapper.vm.hasResult ).toBe( false );
-			expect( wrapper.vm.running ).toBe( false );
+			// Verify that the result block disappears when function changes
+			await waitFor( () => {
+				expect( wrapper.find( '[data-testid="function-evaluator-result"]' ).exists() ).toBe( false );
+			} );
+			expect( wrapper.find( '[data-testid="function-evaluator-running"]' ).exists() ).toBe( false );
+			expect( wrapper.findComponent( { name: 'wl-evaluation-result' } ).exists() ).toBe( false );
 		} );
 
 		it( 'calls function call when click button', async () => {
 			store.getZObjectByKeyPath = createGettersWithFunctionsMock( hybridFunctionCall );
 			store.getConnectedObjects = createGettersWithFunctionsMock( [ 'Z10001', 'Z10002' ] );
 
-			const wrapper = shallowMount( FunctionEvaluator, {
-				global: { stubs: { WlWidgetBase: false } }
+			const wrapper = renderFunctionEvaluator();
+
+			await waitFor( () => {
+				expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__loader' ).exists() ).toBe( false );
 			} );
 
-			await wrapper.vm.$nextTick();
-
-			const block = wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__run-button' );
+			const block = wrapper.get( '.ext-wikilambda-app-function-evaluator-widget__run-button' );
 			const button = block.findComponent( { name: 'cdx-button' } );
 
 			button.trigger( 'click' );
@@ -313,25 +337,19 @@ describe( 'FunctionEvaluator', () => {
 
 	describe( 'in function details page', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( FunctionEvaluator, {
-				props: { functionZid: 'Z10000', contentType: 'Z8' }
-			} );
-			expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget' ).exists() ).toBe( true );
+			const wrapper = renderFunctionEvaluator( { functionZid: 'Z10000', contentType: 'Z8' } );
+			expect( wrapper.get( '.ext-wikilambda-app-function-evaluator-widget' ) ).toBeTruthy();
 		} );
 
 		it( 'initializes detached objects', () => {
-			shallowMount( FunctionEvaluator, {
-				props: { functionZid: 'Z10000', contentType: 'Z8' }
-			} );
+			renderFunctionEvaluator( { functionZid: 'Z10000', contentType: 'Z8' } );
 
 			expect( store.setJsonObject ).toHaveBeenCalledTimes( 1 );
 			expect( store.changeTypeByKeyPath ).toHaveBeenCalledTimes( 1 );
 		} );
 
 		it( 'initializes the function arguments', async () => {
-			shallowMount( FunctionEvaluator, {
-				props: { functionZid: 'Z10000', contentType: 'Z8' }
-			} );
+			renderFunctionEvaluator( { functionZid: 'Z10000', contentType: 'Z8' } );
 
 			await waitFor( () => expect( store.fetchZids ).toHaveBeenCalledTimes( 1 ) );
 			await waitFor( () => expect( store.fetchZids ).toHaveBeenCalledWith( { zids: [ 'Z10000' ] } ) );
@@ -342,39 +360,33 @@ describe( 'FunctionEvaluator', () => {
 		} );
 
 		it( 'renders function page title', () => {
-			const wrapper = shallowMount( FunctionEvaluator, {
-				props: { functionZid: 'Z10000', contentType: 'Z8' },
-				global: { stubs: { WlWidgetBase: false } }
-			} );
+			const wrapper = renderFunctionEvaluator( { functionZid: 'Z10000', contentType: 'Z8' } );
 
-			expect( wrapper.find( '.ext-wikilambda-app-widget-base__header' ).text() ).toBe( 'Try this function' );
+			expect( wrapper.get( '.ext-wikilambda-app-widget-base__header' ).text() ).toBe( 'Try this function' );
 		} );
 
 		it( 'does not render function selector', async () => {
-			const wrapper = shallowMount( FunctionEvaluator, {
-				props: { functionZid: 'Z10000', contentType: 'Z8' },
-				global: { stubs: { WlWidgetBase: false } }
-			} );
+			const wrapper = renderFunctionEvaluator( { functionZid: 'Z10000', contentType: 'Z8' } );
 
-			await wrapper.vm.$nextTick();
+			await waitFor( () => {
+				expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__loader' ).exists() ).toBe( false );
+			} );
 
 			expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__call' ).exists() ).toBe( false );
 		} );
 
 		it( 'renders no function selected message when function does not exist', async () => {
-			const wrapper = shallowMount( FunctionEvaluator, {
-				props: { functionZid: 'Z10000', contentType: 'Z8' },
-				global: { stubs: { WlWidgetBase: false } }
-			} );
+			const wrapper = renderFunctionEvaluator( { functionZid: 'Z10000', contentType: 'Z8' } );
 
 			// Mock conditions for empty state: function doesn't exist and not showing function selector
 			store.getStoredObject = createGettersWithFunctionsMock( undefined );
-			wrapper.vm.isLoading = false;
 
-			await wrapper.vm.$nextTick();
+			await waitFor( () => {
+				expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__loader' ).exists() ).toBe( false );
+			} );
 
 			// Verify empty state message is displayed
-			const message = wrapper.find( 'p' );
+			const message = wrapper.get( 'p' );
 			expect( message.exists() ).toBe( true );
 			expect( message.text() ).toContain( 'Select a function to try it.' );
 		} );
@@ -382,36 +394,27 @@ describe( 'FunctionEvaluator', () => {
 
 	describe( 'in implementation page', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( FunctionEvaluator, {
-				props: { functionZid: 'Z10000', contentType: 'Z14' }
-			} );
+			const wrapper = renderFunctionEvaluator( { functionZid: 'Z10000', contentType: 'Z14' } );
 
-			expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget' ).exists() ).toBe( true );
+			expect( wrapper.get( '.ext-wikilambda-app-function-evaluator-widget' ) ).toBeTruthy();
 		} );
 
 		it( 'renders a loader before function is loaded', async () => {
-			const wrapper = shallowMount( FunctionEvaluator, {
-				props: { functionZid: 'Z10000', contentType: 'Z14' },
-				global: { stubs: { WlWidgetBase: false } }
-			} );
+			const wrapper = renderFunctionEvaluator( { functionZid: 'Z10000', contentType: 'Z14' } );
 
-			const loader = wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__loader' );
+			const loader = wrapper.get( '.ext-wikilambda-app-function-evaluator-widget__loader' );
 			expect( loader.exists() ).toBe( true );
 		} );
 
 		it( 'initializes detached objects', () => {
-			shallowMount( FunctionEvaluator, {
-				props: { functionZid: 'Z10000', contentType: 'Z14' }
-			} );
+			renderFunctionEvaluator( { functionZid: 'Z10000', contentType: 'Z14' } );
 
 			expect( store.setJsonObject ).toHaveBeenCalledTimes( 1 );
 			expect( store.changeTypeByKeyPath ).toHaveBeenCalledTimes( 1 );
 		} );
 
 		it( 'initializes the function arguments', async () => {
-			shallowMount( FunctionEvaluator, {
-				props: { functionZid: 'Z10000', contentType: 'Z14' }
-			} );
+			renderFunctionEvaluator( { functionZid: 'Z10000', contentType: 'Z14' } );
 
 			await waitFor( () => expect( store.fetchZids ).toHaveBeenCalledTimes( 1 ) );
 			await waitFor( () => expect( store.fetchZids ).toHaveBeenCalledWith( { zids: [ 'Z10000' ] } ) );
@@ -422,21 +425,17 @@ describe( 'FunctionEvaluator', () => {
 		} );
 
 		it( 'renders implementation page title', () => {
-			const wrapper = shallowMount( FunctionEvaluator, {
-				props: { functionZid: 'Z10000', contentType: 'Z14' },
-				global: { stubs: { WlWidgetBase: false } }
-			} );
+			const wrapper = renderFunctionEvaluator( { functionZid: 'Z10000', contentType: 'Z14' } );
 
-			expect( wrapper.find( '.ext-wikilambda-app-widget-base__header' ).text() ).toBe( 'Try this implementation' );
+			expect( wrapper.get( '.ext-wikilambda-app-widget-base__header' ).text() ).toBe( 'Try this implementation' );
 		} );
 
 		it( 'does not render function call block', async () => {
-			const wrapper = shallowMount( FunctionEvaluator, {
-				props: { functionZid: 'Z10000', contentType: 'Z14' },
-				global: { stubs: { WlWidgetBase: false } }
-			} );
+			const wrapper = renderFunctionEvaluator( { functionZid: 'Z10000', contentType: 'Z14' } );
 
-			await wrapper.vm.$nextTick();
+			await waitFor( () => {
+				expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__loader' ).exists() ).toBe( false );
+			} );
 
 			expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__call' ).exists() ).toBe( false );
 		} );
@@ -446,17 +445,14 @@ describe( 'FunctionEvaluator', () => {
 			store.getStoredObject = createGettersWithFunctionsMock( storedFunction );
 			store.getZObjectByKeyPath = ( path ) => ( path.join( '.' ) === 'call' ) ? hybridFunctionCall : storedImplementation;
 
-			const wrapper = shallowMount( FunctionEvaluator, {
-				props: { functionZid: 'Z10000', contentType: 'Z14' },
-				global: { stubs: { WlWidgetBase: false } }
-			} );
+			const wrapper = renderFunctionEvaluator( { functionZid: 'Z10000', contentType: 'Z14' } );
 
 			// Wait for initial loading
 			await waitFor( () => {
 				expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__loader' ).exists() ).toBe( false );
 			} );
 
-			const block = wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__run-button' );
+			const block = wrapper.get( '.ext-wikilambda-app-function-evaluator-widget__run-button' );
 			const button = block.findComponent( { name: 'cdx-button' } );
 			button.trigger( 'click' );
 
@@ -468,19 +464,17 @@ describe( 'FunctionEvaluator', () => {
 		} );
 
 		it( 'renders no function selected message when function does not exist', async () => {
-			const wrapper = shallowMount( FunctionEvaluator, {
-				props: { functionZid: 'Z10000', contentType: 'Z14' },
-				global: { stubs: { WlWidgetBase: false } }
-			} );
+			const wrapper = renderFunctionEvaluator( { functionZid: 'Z10000', contentType: 'Z14' } );
 
 			// Mock conditions for empty state: function doesn't exist and not showing function selector
 			store.getStoredObject = createGettersWithFunctionsMock( undefined );
-			wrapper.vm.isLoading = false;
 
-			await wrapper.vm.$nextTick();
+			await waitFor( () => {
+				expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__loader' ).exists() ).toBe( false );
+			} );
 
 			// Verify empty state message is displayed for implementation
-			const message = wrapper.find( 'p' );
+			const message = wrapper.get( 'p' );
 			expect( message.exists() ).toBe( true );
 			expect( message.text() ).toContain( 'Select a function to try this implementation.' );
 		} );

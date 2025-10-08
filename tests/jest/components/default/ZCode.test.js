@@ -10,7 +10,6 @@ const { shallowMount } = require( '@vue/test-utils' );
 const { waitFor } = require( '@testing-library/vue' );
 
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
-const CodeEditor = require( '../../../../resources/ext.wikilambda.app/components/base/CodeEditor.vue' );
 const ZCode = require( '../../../../resources/ext.wikilambda.app/components/types/ZCode.vue' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 const ErrorData = require( '../../../../resources/ext.wikilambda.app/store/classes/ErrorData.js' );
@@ -36,6 +35,33 @@ const converterKeyPath = 'main.Z2K2.Z46K3';
 
 describe( 'ZCode', () => {
 	let store;
+
+	/**
+	 * Helper function to render ZCode component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderZCode( props = {}, options = {} ) {
+		const defaultProps = {
+			keyPath,
+			objectValue,
+			edit: false
+		};
+		const defaultOptions = {
+			global: {
+				stubs: {
+					WlKeyValueBlock: false,
+					...options?.stubs
+				}
+			}
+		};
+		return shallowMount( ZCode, {
+			props: { ...defaultProps, ...props },
+			...defaultOptions
+		} );
+	}
 
 	beforeEach( () => {
 		store = useMainStore();
@@ -79,78 +105,36 @@ describe( 'ZCode', () => {
 
 	describe( 'in view mode', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( ZCode, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false
-				}
-			} );
+			const wrapper = renderZCode();
 
 			expect( wrapper.find( 'div' ).exists() ).toBe( true );
 		} );
 
 		it( 'displays the ace editor', () => {
-			const wrapper = shallowMount( ZCode, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false
-				},
-				global: {
-					stubs: {
-						WlKeyValueBlock: false
-					}
-				}
-			} );
+			const wrapper = renderZCode();
 
 			expect( wrapper.find( '.ext-wikilambda-app-code__code-editor' ).exists() ).toBe( true );
 		} );
 
 		it( 'editor is in read only mode', () => {
-			const wrapper = shallowMount( ZCode, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false
-				},
-				global: {
-					stubs: {
-						WlKeyValueBlock: false
-					}
-				}
-			} );
-			expect( wrapper.findComponent( { name: 'code-editor' } ).props( 'readOnly' ) ).toBe( true );
+			const wrapper = renderZCode();
+
+			expect( wrapper.getComponent( { name: 'code-editor' } ).props( 'readOnly' ) ).toBe( true );
 		} );
 
 		it( 'should not show a warning message when clicking the code editor', () => {
-			const wrapper = shallowMount( ZCode, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false
-				},
-				global: {
-					stubs: {
-						WlKeyValueBlock: false
-					}
-				}
-			} );
+			const wrapper = renderZCode();
+
 			wrapper.findComponent( { name: 'code-editor' } ).trigger( 'click' );
 			expect( wrapper.find( '.cdx-message--warning.ext-wikilambda-app-code__inline-error' ).exists() ).toBe( false );
 		} );
 
 		describe( 'when current programming language is initialized', () => {
-			it( 'computes the programming language values', () => {
-				const wrapper = shallowMount( ZCode, {
-					props: {
-						keyPath,
-						objectValue,
-						edit: true
-					}
-				} );
-				expect( wrapper.vm.programmingLanguageZid ).toBe( Constants.Z_PROGRAMMING_LANGUAGES.PYTHON );
-				expect( wrapper.vm.programmingLanguageLiteral ).toBe( 'python' );
+			it( 'computes the programming language value', () => {
+				const wrapper = renderZCode();
+
+				const languageDisplay = wrapper.get( '[data-testid="language-dropdown"] span' );
+				expect( languageDisplay.text() ).toBe( 'python' );
 			} );
 		} );
 
@@ -158,17 +142,8 @@ describe( 'ZCode', () => {
 
 	describe( 'in edit mode', () => {
 		it( 'enables programming language selector and code editor when not in read-only or view mode', () => {
-			const wrapper = shallowMount( ZCode, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true
-				},
-				global: {
-					stubs: {
-						WlKeyValueBlock: false
-					}
-				}
+			const wrapper = renderZCode( {
+				edit: true
 			} );
 
 			expect( wrapper.find( '.ext-wikilambda-app-code__language-selector' ).exists() ).toBe( true );
@@ -176,17 +151,9 @@ describe( 'ZCode', () => {
 		} );
 
 		it( 'disables the code editor when no programming language is set on load', () => {
-			const wrapper = shallowMount( ZCode, {
-				props: {
-					keyPath,
-					objectValue: emptyValue,
-					edit: true
-				},
-				global: {
-					stubs: {
-						WlKeyValueBlock: false
-					}
-				}
+			const wrapper = renderZCode( {
+				objectValue: emptyValue,
+				edit: true
 			} );
 
 			expect( wrapper.find( '.ext-wikilambda-app-code__language-selector' ).exists() ).toBe( true );
@@ -198,24 +165,19 @@ describe( 'ZCode', () => {
 				new ErrorData( 'wikilambda-editor-label-select-programming-language-empty', [], null, 'warning' )
 			] );
 
-			const wrapper = shallowMount( ZCode, {
-				props: {
-					keyPath,
-					objectValue: emptyValue,
-					edit: true
-				},
-				global: {
-					stubs: {
-						WlKeyValueBlock: false,
-						CdxMessage: false,
-						WlSafeMessage: false
-					}
+			const wrapper = renderZCode( {
+				objectValue: emptyValue,
+				edit: true
+			}, {
+				stubs: {
+					CdxMessage: false,
+					WlSafeMessage: false
 				}
 			} );
 
 			expect( wrapper.find( '.ext-wikilambda-app-code__language-selector' ).exists() ).toBe( true );
 
-			wrapper.findComponent( { name: 'code-editor' } ).trigger( 'click' );
+			wrapper.getComponent( { name: 'code-editor' } ).trigger( 'click' );
 
 			await waitFor( () => expect( store.setError ).toHaveBeenCalledWith( {
 				errorMessageKey: 'wikilambda-editor-label-select-programming-language-empty',
@@ -229,23 +191,12 @@ describe( 'ZCode', () => {
 
 		describe( 'when current programming language is changed', () => {
 			it( 'updates the programming language to JavaScript when selected and initializes the editor with JavaScript boilerplate code', async () => {
-				const wrapper = shallowMount( ZCode, {
-					props: {
-						keyPath,
-						objectValue,
-						edit: true
-					},
-					global: {
-						stubs: {
-							WlKeyValueBlock: false
-						}
-					}
+				const wrapper = renderZCode( {
+					edit: true
 				} );
 
 				wrapper.findComponent( { name: 'cdx-select' } )
 					.vm.$emit( 'update:selected', Constants.Z_PROGRAMMING_LANGUAGES.JAVASCRIPT );
-
-				await wrapper.vm.$nextTick();
 
 				expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ {
 					keyPath: [ Constants.Z_CODE_LANGUAGE, Constants.Z_REFERENCE_ID ],
@@ -257,22 +208,13 @@ describe( 'ZCode', () => {
 			} );
 
 			it( 'updates the programming language to Python when selected and initializes the editor with Python boilerplate code', async () => {
-
-				const wrapper = shallowMount( ZCode, {
-					props: {
-						keyPath,
-						objectValue: emptyValue,
-						edit: true
-					},
-					global: {
-						stubs: {
-							WlKeyValueBlock: false
-						}
-					}
+				const wrapper = renderZCode( {
+					objectValue: emptyValue,
+					edit: true
 				} );
+
 				wrapper.findComponent( { name: 'cdx-select' } ).vm.$emit( 'update:selected',
 					Constants.Z_PROGRAMMING_LANGUAGES.PYTHON );
-				await wrapper.vm.$nextTick();
 				expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ {
 					keyPath: [ Constants.Z_CODE_LANGUAGE, Constants.Z_REFERENCE_ID ],
 					value: Constants.Z_PROGRAMMING_LANGUAGES.PYTHON
@@ -284,20 +226,11 @@ describe( 'ZCode', () => {
 			} );
 
 			it( 'updates the code in the editor when valid code strings are inputted', async () => {
-				const wrapper = shallowMount( ZCode, {
-					props: {
-						keyPath,
-						objectValue,
-						edit: true
-					},
-					global: {
-						stubs: {
-							WlKeyValueBlock: false
-						}
-					}
+				const wrapper = renderZCode( {
+					edit: true
 				} );
-				wrapper.getComponent( CodeEditor ).vm.$emit( 'change', 'def() {}' );
-				await wrapper.vm.$nextTick();
+
+				wrapper.findComponent( { name: 'code-editor' } ).vm.$emit( 'change', 'def() {}' );
 				expect( wrapper.emitted( 'set-value' ) ).toBeTruthy();
 				expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ {
 					keyPath: [ Constants.Z_CODE_CODE, Constants.Z_STRING_VALUE ],
@@ -311,17 +244,9 @@ describe( 'ZCode', () => {
 				store.isCreateNewPage = false;
 				store.getCurrentZObjectId = 'Z12345';
 
-				const wrapper = shallowMount( ZCode, {
-					props: {
-						keyPath: converterKeyPath,
-						objectValue,
-						edit: true
-					},
-					global: {
-						stubs: {
-							WlKeyValueBlock: false
-						}
-					}
+				const wrapper = renderZCode( {
+					keyPath: converterKeyPath,
+					edit: true
 				} );
 
 				// No notice message when edit
@@ -330,8 +255,6 @@ describe( 'ZCode', () => {
 
 				wrapper.findComponent( { name: 'cdx-select' } )
 					.vm.$emit( 'update:selected', Constants.Z_PROGRAMMING_LANGUAGES.JAVASCRIPT );
-
-				await wrapper.vm.$nextTick();
 
 				expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ {
 					keyPath: [ Constants.Z_CODE_LANGUAGE, Constants.Z_REFERENCE_ID ],
@@ -345,17 +268,9 @@ describe( 'ZCode', () => {
 			it( 'displays notice message when creating a new converter', async () => {
 				store.isCreateNewPage = true;
 
-				const wrapper = shallowMount( ZCode, {
-					props: {
-						keyPath: converterKeyPath,
-						objectValue,
-						edit: true
-					},
-					global: {
-						stubs: {
-							WlKeyValueBlock: false
-						}
-					}
+				const wrapper = renderZCode( {
+					keyPath: converterKeyPath,
+					edit: true
 				} );
 
 				const message = wrapper.findComponent( { name: 'cdx-message' } );

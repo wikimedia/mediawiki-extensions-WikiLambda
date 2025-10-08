@@ -10,14 +10,14 @@
 		class="ext-wikilambda-app-code-editor"
 		:class="{ 'ext-wikilambda-app-code-editor--disabled': disabled }">
 		<div
-			ref="editor"
+			ref="editorComponent"
 			class="ext-wikilambda-app-code-editor__ace"
 			data-testid="ace-code-editor"></div>
 	</div>
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
+const { defineComponent, ref, watch, onMounted } = require( 'vue' );
 require( '../../../lib/ace/src/ace.js' );
 
 module.exports = exports = defineComponent( {
@@ -44,99 +44,17 @@ module.exports = exports = defineComponent( {
 			default: false
 		}
 	},
-	data: function () {
-		return {
-			options: {
-				minLines: 5,
-				maxLines: 20,
-				showPrintMargin: false,
-				fontSize: 12,
-				useSoftTabs: false
-			},
-			editor: null
+	emits: [ 'change' ],
+	setup( props, { emit } ) {
+		const editorComponent = ref( null );
+		const editor = ref( null );
+		const options = {
+			minLines: 5,
+			maxLines: 20,
+			showPrintMargin: false,
+			fontSize: 12,
+			useSoftTabs: false
 		};
-	},
-	methods: {
-		/**
-		 * Initializes the internal Ace Code Editor
-		 */
-		initialize: function () {
-			this.editor = window.ace.edit( this.$refs.editor, { value: this.value } );
-			const session = this.editor.getSession();
-
-			// Set base path to know where to import modules while setting language and theme
-			let basePath = mw.config.get( 'wgExtensionAssetsPath', '' );
-			// ACE doesn't understand relative links
-			if ( basePath.slice( 0, 2 ) === '//' ) {
-				basePath = window.location.protocol + basePath;
-			}
-			// TODO (T406154): Figure a way to not have this path hardcoded, perhaps wgWikiLambdaAcePath?
-			window.ace.config.set( 'basePath', basePath + '/WikiLambda/resources/lib/ace/src' );
-
-			// Set readonly attribute when readonly or disabled
-			this.editor.setReadOnly( this.readOnly || this.disabled );
-
-			// Set theme
-			this.editor.setTheme( 'ace/theme/' + this.theme );
-
-			// Set Language
-			session.setMode( 'ace/mode/' + this.mode );
-
-			// Wrap lines
-			session.setUseWrapMode( true );
-
-			// Listen for changes in the session annotations (warnings, errors, etc.)
-			session.on( 'changeAnnotation', () => {
-				if ( this.mode === 'html' ) {
-					this.handleHtmlAnnotations();
-				}
-			} );
-
-			// Set custom options
-			this.editor.setOptions( this.options );
-
-			// Set listener
-			this.editor.on( 'change', () => {
-				this.$emit( 'change', this.editor.getValue() );
-			} );
-		},
-
-		/**
-		 * Handles custom HTML annotations for disallowed tags, event attributes, and JavaScript URLs.
-		 * Called when the ACE editor's annotation changes and mode is 'html'.
-		 *
-		 * @return {void}
-		 */
-		handleHtmlAnnotations: function () {
-			const session = this.editor.session;
-			const currentAnnotations = session.getAnnotations() || [];
-
-			// Filter out doctype annotations, which are not useful for code snippets
-			const filteredAnnotations = currentAnnotations.filter( ( a ) => !/doctype/i.test( a.text ) );
-
-			let hasChanged = filteredAnnotations.length !== currentAnnotations.length;
-			const hasCustom = filteredAnnotations.some( ( a ) => a.code === 'DISALLOWED_HTML' );
-
-			if ( !hasCustom ) {
-				const customAnnotations = [
-					...this.getDisallowedTagAnnotations( session ),
-					...this.getEventAttributeAnnotations( session ),
-					...this.getJavaScriptUrlAnnotations( session )
-				];
-
-				if ( customAnnotations.length ) {
-					// Append custom annotations
-					filteredAnnotations.push( ...customAnnotations );
-					hasChanged = true;
-				}
-			}
-
-			if ( hasChanged ) {
-				// Set the new annotations
-				// This will trigger the changeAnnotation event
-				session.setAnnotations( filteredAnnotations );
-			}
-		},
 
 		/**
 		 * Returns a custom annotation object for disallowed HTML.
@@ -144,10 +62,9 @@ module.exports = exports = defineComponent( {
 		 * @param {number} row
 		 * @param {number} column
 		 * @param {string} text
-		 * @param {Object} session - ACE editor session
-		 * @return {Array} List of annotation objects
+		 * @return {Object} Annotation object
 		 */
-		createCustomAnnotation: function ( row, column, text ) {
+		function createCustomAnnotation( row, column, text ) {
 			return {
 				row,
 				column,
@@ -155,7 +72,7 @@ module.exports = exports = defineComponent( {
 				type: 'error',
 				code: 'DISALLOWED_HTML'
 			};
-		},
+		}
 
 		/**
 		 * Returns ACE annotations for disallowed HTML tags.
@@ -165,7 +82,7 @@ module.exports = exports = defineComponent( {
 		 * @param {Object} session - ACE editor session
 		 * @return {Array} List of annotation objects
 		 */
-		getDisallowedTagAnnotations: function ( session ) {
+		function getDisallowedTagAnnotations( session ) {
 			const allowedTags = new Set( [
 				'abbr', 'b', 'bdi', 'bdo', 'big', 'blockquote', 'br', 'caption',
 				'center', 'cite', 'code', 'data', 'dd', 'del', 'dfn', 'div', 'dl',
@@ -186,7 +103,7 @@ module.exports = exports = defineComponent( {
 					const tagName = match[ 1 ].toLowerCase();
 					if ( !allowedTags.has( tagName ) ) {
 						annotations.push(
-							this.createCustomAnnotation(
+							createCustomAnnotation(
 								row,
 								match.index,
 								`Usage of <${ tagName }> tags is not allowed.`
@@ -197,7 +114,7 @@ module.exports = exports = defineComponent( {
 			} );
 
 			return annotations;
-		},
+		}
 
 		/**
 		 * Returns ACE annotations for disallowed event handler attributes (e.g. onclick).
@@ -207,7 +124,7 @@ module.exports = exports = defineComponent( {
 		 * @param {Object} session - ACE editor session
 		 * @return {Array} List of annotation objects
 		 */
-		getEventAttributeAnnotations: function ( session ) {
+		function getEventAttributeAnnotations( session ) {
 			const eventAttrRegex = /\s(on\w+)\s*=\s*(['"]).*?\2/gi;
 			const lines = session.doc.getAllLines();
 			const annotations = [];
@@ -217,7 +134,7 @@ module.exports = exports = defineComponent( {
 				while ( ( match = eventAttrRegex.exec( line ) ) !== null ) {
 					const attrName = match[ 1 ];
 					annotations.push(
-						this.createCustomAnnotation(
+						createCustomAnnotation(
 							row,
 							match.index,
 							`Event handler attribute '${ attrName }' is not allowed.`
@@ -227,7 +144,7 @@ module.exports = exports = defineComponent( {
 			} );
 
 			return annotations;
-		},
+		}
 
 		/**
 		 * Returns ACE annotations for JavaScript URLs in href or src attributes.
@@ -237,7 +154,7 @@ module.exports = exports = defineComponent( {
 		 * @param {Object} session - ACE editor session
 		 * @return {Array} List of annotation objects
 		 */
-		getJavaScriptUrlAnnotations: function ( session ) {
+		function getJavaScriptUrlAnnotations( session ) {
 			// Matches href or src attributes with javascript: URLs, ignoring quotes
 			const jsHrefRegex = /\s(?:href|src)\s*=\s*(['"])\s*javascript:[^\1]*\1/gi;
 			// Matches url(javascript:...) with or without quotes, and ignores whitespace,
@@ -251,7 +168,7 @@ module.exports = exports = defineComponent( {
 				// javascript in href/src attributes
 				while ( ( match = jsHrefRegex.exec( line ) ) !== null ) {
 					annotations.push(
-						this.createCustomAnnotation(
+						createCustomAnnotation(
 							row,
 							match.index,
 							'JavaScript URLs are not allowed in attributes like href or src.'
@@ -261,7 +178,7 @@ module.exports = exports = defineComponent( {
 				// Any url(javascript:...) in inline style, style attribute, or background-image
 				while ( ( match = jsCssUrlRegex.exec( line ) ) !== null ) {
 					annotations.push(
-						this.createCustomAnnotation(
+						createCustomAnnotation(
 							row,
 							match.index,
 							'JavaScript URLs are not allowed in CSS url().'
@@ -272,26 +189,118 @@ module.exports = exports = defineComponent( {
 
 			return annotations;
 		}
-	},
-	watch: {
-		value: function ( newValue ) {
-			this.editor.setValue( newValue, 1 );
-		},
-		mode: function ( newMode ) {
-			this.editor.setOption( 'mode', 'ace/mode/' + newMode );
-		},
-		theme: function ( newTheme ) {
-			this.editor.setTheme( 'ace/theme/' + newTheme );
-		},
-		readOnly: function ( newValue ) {
-			this.editor.setReadOnly( newValue );
-		},
-		disabled: function ( newValue ) {
-			this.editor.setReadOnly( newValue );
+
+		/**
+		 * Handles custom HTML annotations for disallowed tags, event attributes, and JavaScript URLs.
+		 * Called when the ACE editor's annotation changes and mode is 'html'.
+		 *
+		 * @return {void}
+		 */
+		function handleHtmlAnnotations() {
+			const session = editor.value.session;
+			const currentAnnotations = session.getAnnotations() || [];
+
+			// Filter out doctype annotations, which are not useful for code snippets
+			const filteredAnnotations = currentAnnotations.filter( ( a ) => !/doctype/i.test( a.text ) );
+
+			let hasChanged = filteredAnnotations.length !== currentAnnotations.length;
+			const hasCustom = filteredAnnotations.some( ( a ) => a.code === 'DISALLOWED_HTML' );
+
+			if ( !hasCustom ) {
+				const customAnnotations = [
+					...getDisallowedTagAnnotations( session ),
+					...getEventAttributeAnnotations( session ),
+					...getJavaScriptUrlAnnotations( session )
+				];
+
+				if ( customAnnotations.length ) {
+					// Append custom annotations
+					filteredAnnotations.push( ...customAnnotations );
+					hasChanged = true;
+				}
+			}
+
+			if ( hasChanged ) {
+				// Set the new annotations
+				// This will trigger the changeAnnotation event
+				session.setAnnotations( filteredAnnotations );
+			}
+
 		}
-	},
-	mounted: function () {
-		this.initialize();
+
+		/**
+		 * Initializes the internal Ace Code Editor
+		 */
+		function initialize() {
+			editor.value = window.ace.edit( editorComponent.value, { value: props.value } );
+			const session = editor.value.getSession();
+
+			// Set base path to know where to import modules while setting language and theme
+			let basePath = mw.config.get( 'wgExtensionAssetsPath', '' );
+			// ACE doesn't understand relative links
+			if ( basePath.slice( 0, 2 ) === '//' ) {
+				basePath = window.location.protocol + basePath;
+			}
+			// TODO (T406154): Figure a way to not have this path hardcoded, perhaps wgWikiLambdaAcePath?
+			window.ace.config.set( 'basePath', basePath + '/WikiLambda/resources/lib/ace/src' );
+
+			// Set readonly attribute when readonly or disabled
+			editor.value.setReadOnly( props.readOnly || props.disabled );
+
+			// Set theme
+			editor.value.setTheme( 'ace/theme/' + props.theme );
+
+			// Set Language
+			session.setMode( 'ace/mode/' + props.mode );
+
+			// Wrap lines
+			session.setUseWrapMode( true );
+
+			// Listen for changes in the session annotations (warnings, errors, etc.)
+			session.on( 'changeAnnotation', () => {
+				if ( props.mode === 'html' ) {
+					handleHtmlAnnotations();
+				}
+			} );
+
+			// Set custom options
+			editor.value.setOptions( options );
+
+			// Set listener
+			editor.value.on( 'change', () => {
+				emit( 'change', editor.value.getValue() );
+			} );
+		}
+
+		// Watchers
+		watch( () => props.value, ( newValue ) => {
+			editor.value.setValue( newValue, 1 );
+		} );
+
+		watch( () => props.mode, ( newMode ) => {
+			editor.value.setOption( 'mode', 'ace/mode/' + newMode );
+		} );
+
+		watch( () => props.theme, ( newTheme ) => {
+			editor.value.setTheme( 'ace/theme/' + newTheme );
+		} );
+
+		watch( () => props.readOnly, ( newValue ) => {
+			editor.value.setReadOnly( newValue );
+		} );
+
+		watch( () => props.disabled, ( newValue ) => {
+			editor.value.setReadOnly( newValue );
+		} );
+
+		// Lifecycle
+		onMounted( () => {
+			initialize();
+		} );
+
+		return {
+			editorComponent
+		};
 	}
 } );
 </script>

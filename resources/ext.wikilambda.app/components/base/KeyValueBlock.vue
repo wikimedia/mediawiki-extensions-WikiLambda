@@ -51,9 +51,7 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-
-const errorMixin = require( '../../mixins/errorMixin.js' );
+const { defineComponent, computed } = require( 'vue' );
 
 // Base components
 const ExpandedToggle = require( './ExpandedToggle.vue' );
@@ -65,7 +63,6 @@ module.exports = exports = defineComponent( {
 		'wl-expanded-toggle': ExpandedToggle,
 		'wl-key-block': KeyBlock
 	},
-	mixins: [ errorMixin ],
 	props: {
 		edit: {
 			type: Boolean,
@@ -113,43 +110,44 @@ module.exports = exports = defineComponent( {
 			default: false
 		}
 	},
-	computed: {
-
+	setup( props, { emit } ) {
 		/**
 		 * Returns the key type based on the edit and disableEdit props
 		 *
 		 * @return {string}
 		 */
-		keyType: function () {
-			if ( !this.edit ) {
+		const keyType = computed( () => {
+			if ( !props.edit ) {
 				return 'view';
 			}
-			if ( !this.disableEdit ) {
+			if ( !props.disableEdit ) {
 				return 'edit';
 			}
 			return 'edit-disabled';
-		},
+		} );
 
 		/**
 		 * Returns the css classes that identify the expand button
 		 *
 		 * @return {Object}
 		 */
-		expandToggleClass: function () {
-			return {
-				'ext-wikilambda-app-key-value-block__pre-button': true,
-				'ext-wikilambda-app-key-value-block__pre-button--disabled': this.edit && this.disableEdit
-			};
-		}
+		const expandToggleClass = computed( () => ( {
+			'ext-wikilambda-app-key-value-block__pre-button': true,
+			'ext-wikilambda-app-key-value-block__pre-button--disabled': props.edit && props.disableEdit
+		} ) );
 
-	},
-	methods: {
 		/**
 		 * Emits the toggle expand event
 		 */
-		toggleExpand: function () {
-			this.$emit( 'toggle-expand', !this.expanded );
+		function toggleExpand() {
+			emit( 'toggle-expand', !props.expanded );
 		}
+
+		return {
+			expandToggleClass,
+			keyType,
+			toggleExpand
+		};
 	}
 } );
 </script>

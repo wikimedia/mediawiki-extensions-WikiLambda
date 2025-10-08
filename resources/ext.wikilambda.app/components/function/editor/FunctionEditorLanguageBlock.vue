@@ -65,8 +65,7 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapState } = require( 'pinia' );
+const { computed, defineComponent, inject } = require( 'vue' );
 
 const icons = require( '../../../../lib/icons.json' );
 const useMainStore = require( '../../../store/index.js' );
@@ -99,72 +98,73 @@ module.exports = exports = defineComponent( {
 			default: 0
 		}
 	},
-	data: function () {
-		return {
-			iconLock: icons.cdxIconLock
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'isCreateNewPage',
-		'isUserLoggedIn',
-		'getLabelDataForLangCode'
-	] ), {
+	emits: [ 'language-changed', 'labels-updated' ],
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
+
+		const iconLock = icons.cdxIconLock;
+
 		/**
 		 * Returns whether the current language block is the first (main) one
 		 *
 		 * @return {boolean}
 		 */
-		isMainLanguageBlock: function () {
-			return this.index === 0;
-		},
+		const isMainLanguageBlock = computed( () => props.index === 0 );
+
 		/**
 		 * Returns whether the user can edit the function
 		 *
+		 * TODO (T301667): restrict to only certain user roles
+		 *
 		 * @return {boolean}
 		 */
-		canEditFunction: function () {
-			// TODO (T301667): restrict to only certain user roles
-			return this.isCreateNewPage ? true : this.isUserLoggedIn;
-		},
+		const canEditFunction = computed( () => store.isCreateNewPage ? true : store.isUserLoggedIn );
+
 		/**
-		 * Message for admin tooltip to show in both Input and Output components
+		 * Message for admin tooltip
+		 *
+		 * TODO (T299604): Check which group has the right and display it
 		 *
 		 * @return {string}
 		 */
-		adminTooltipMessage: function () {
-			// TODO (T299604): Instead of just "users with special permissions", once the right exists we should
-			// actually check which group has the right, fetch its display name, and display it in this text.
-			return this.$i18n( 'wikilambda-editor-fn-edit-definition-tooltip-content' ).text();
-		},
+		const adminTooltipMessage = computed( () => i18n( 'wikilambda-editor-fn-edit-definition-tooltip-content' ).text() );
+
 		/**
 		 * Returns the label data of the blocks language
 		 *
 		 * @return {LabelData}
 		 */
-		langLabelData: function () {
-			return this.getLabelDataForLangCode( this.zLanguage );
-		}
-	} ),
-	methods: {
+		const langLabelData = computed( () => store.getLabelDataForLangCode( props.zLanguage ) );
+
 		/**
-		 * Emits a language changed event to set the language block
-		 * to the given language.
+		 * Emits a language changed event
 		 *
 		 * @param {string} value
 		 */
-		onLanguageChanged: function ( value ) {
-			this.$emit( 'language-changed', {
+		const onLanguageChanged = ( value ) => {
+			emit( 'language-changed', {
 				language: value,
-				index: this.index
+				index: props.index
 			} );
-		},
+		};
+
 		/**
-		 * Emits a labels updated event for the root function
-		 * definition to track label changes.
+		 * Emits a labels updated event
 		 */
-		onLabelsUpdated: function () {
-			this.$emit( 'labels-updated' );
-		}
+		const onLabelsUpdated = () => {
+			emit( 'labels-updated' );
+		};
+
+		return {
+			adminTooltipMessage,
+			canEditFunction,
+			iconLock,
+			isMainLanguageBlock,
+			langLabelData,
+			onLanguageChanged,
+			onLabelsUpdated
+		};
 	}
 } );
 </script>

@@ -17,6 +17,34 @@ const langLabelData = new LabelData( 'Z1002', 'English', 'Z1002', 'en', 'ltr' );
 describe( 'FunctionEditorInputs', () => {
 	let store;
 
+	/**
+	 * Helper function to render FunctionEditorInputs component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderFunctionEditorInputs( props = {}, options = {} ) {
+		const defaultProps = {
+			zLanguage: 'Z1002',
+			langLabelData,
+			isMainLanguageBlock: true
+		};
+		const defaultOptions = {
+			global: {
+				stubs: {
+					WlFunctionEditorField: false,
+					CdxButton: false,
+					...options?.stubs
+				}
+			}
+		};
+		return shallowMount( FunctionEditorInputs, {
+			props: { ...defaultProps, ...props },
+			...defaultOptions
+		} );
+	}
+
 	beforeEach( () => {
 		store = useMainStore();
 		store.getZFunctionInputLabels = createGettersWithFunctionsMock( [] );
@@ -24,64 +52,29 @@ describe( 'FunctionEditorInputs', () => {
 	} );
 
 	it( 'renders without errors', () => {
-		const wrapper = shallowMount( FunctionEditorInputs, {
-			props: {
-				zLanguage: 'Z1002',
-				langLabelData,
-				isMainLanguageBlock: true
-			},
-			global: { stubs: { WlFunctionEditorField: false } }
-		} );
+		const wrapper = renderFunctionEditorInputs();
 
-		expect( wrapper.find( '.ext-wikilambda-app-function-editor-inputs' ).exists() ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-app-function-editor-inputs' ).exists() ).toBe( true );
 	} );
 
 	it( 'displays the "add input" button if the user has edit permission and there are no arguments', () => {
-		const wrapper = shallowMount( FunctionEditorInputs, {
-			props: {
-				zLanguage: 'Z1002',
-				langLabelData,
-				isMainLanguageBlock: true,
-				canEdit: true
-			},
-			global: {
-				stubs: { WlFunctionEditorField: false, CdxButton: false }
-			}
-		} );
+		const wrapper = renderFunctionEditorInputs( { canEdit: true } );
 
-		expect( wrapper.find( '.ext-wikilambda-app-function-editor-inputs__action-add' ).text() )
+		expect( wrapper.get( '.ext-wikilambda-app-function-editor-inputs__action-add' ).text() )
 			.toEqual( 'Add input' );
 	} );
 
 	it( 'displays the "add another input" button if the user has edit permissions and there is an existing input', () => {
 		store.getZFunctionInputLabels = createGettersWithFunctionsMock( [ { key: 'Z10001K1' } ] );
 
-		const wrapper = shallowMount( FunctionEditorInputs, {
-			props: {
-				zLanguage: 'Z1002',
-				langLabelData,
-				isMainLanguageBlock: true,
-				canEdit: true
-			},
-			global: {
-				stubs: { WlFunctionEditorField: false, CdxButton: false }
-			}
-		} );
+		const wrapper = renderFunctionEditorInputs( { canEdit: true } );
 
-		expect( wrapper.find( '.ext-wikilambda-app-function-editor-inputs__action-add-another' ).text() )
+		expect( wrapper.get( '.ext-wikilambda-app-function-editor-inputs__action-add-another' ).text() )
 			.toEqual( 'Add another input' );
 	} );
 
 	it( 'does not display the any add button if the user does not have edit permissions', () => {
-		const wrapper = shallowMount( FunctionEditorInputs, {
-			props: {
-				zLanguage: 'Z1002',
-				langLabelData,
-				isMainLanguageBlock: true,
-				canEdit: false
-			},
-			global: { stubs: { WlFunctionEditorField: false } }
-		} );
+		const wrapper = renderFunctionEditorInputs( { canEdit: false } );
 
 		expect( wrapper.findComponent( { name: 'cdx-button' } ).exists() ).toBeFalsy();
 	} );
@@ -93,17 +86,7 @@ describe( 'FunctionEditorInputs', () => {
 			{ key: 'Z10001K3' }
 		] );
 
-		const wrapper = shallowMount( FunctionEditorInputs, {
-			props: {
-				zLanguage: 'Z1002',
-				langLabelData,
-				isMainLanguageBlock: true,
-				canEdit: true
-			},
-			global: {
-				stubs: { CdxButton: false, WlFunctionEditorField: false }
-			}
-		} );
+		const wrapper = renderFunctionEditorInputs( { canEdit: true } );
 
 		expect( wrapper.findAllComponents( { name: 'wl-function-editor-inputs-item' } ).length ).toBe( 3 );
 	} );
@@ -111,17 +94,7 @@ describe( 'FunctionEditorInputs', () => {
 	it( 'emits an update argument label event when an input changes its label', async () => {
 		store.getZFunctionInputLabels = createGettersWithFunctionsMock( [ { key: 'Z10001K1' } ] );
 
-		const wrapper = shallowMount( FunctionEditorInputs, {
-			props: {
-				zLanguage: 'Z1002',
-				langLabelData,
-				isMainLanguageBlock: true,
-				canEdit: true
-			},
-			global: {
-				stubs: { CdxButton: false, WlFunctionEditorField: false }
-			}
-		} );
+		const wrapper = renderFunctionEditorInputs( { canEdit: true } );
 
 		const inputItem = wrapper.findComponent( { name: 'wl-function-editor-inputs-item' } );
 		inputItem.vm.$emit( 'argument-label-updated' );

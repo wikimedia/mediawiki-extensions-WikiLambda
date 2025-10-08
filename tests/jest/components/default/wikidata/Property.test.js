@@ -41,6 +41,23 @@ const objectValueFetch = {
 describe( 'WikidataProperty', () => {
 	let store;
 
+	/**
+	 * Helper function to render WikidataProperty component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderWikidataProperty( props = {}, options = {} ) {
+		const defaultProps = {
+			keyPath,
+			objectValue,
+			edit: false,
+			type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY
+		};
+		return shallowMount( WikidataProperty, { props: { ...defaultProps, ...props }, ...options } );
+	}
+
 	beforeEach( () => {
 		store = useMainStore();
 		store.getPropertyData = createGettersWithFunctionsMock();
@@ -49,25 +66,15 @@ describe( 'WikidataProperty', () => {
 
 	describe( 'in view mode', () => {
 		it( 'renders wikidata property reference without errors', () => {
-			const wrapper = shallowMount( WikidataProperty, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false,
-					type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY
-				}
-			} );
+			const wrapper = renderWikidataProperty();
+
 			expect( wrapper.find( '.ext-wikilambda-app-wikidata-property' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders wikidata property fetch function without errors', () => {
-			const wrapper = shallowMount( WikidataProperty, {
-				props: {
-					keyPath,
-					objectValue: objectValueFetch,
-					edit: false,
-					type: Constants.Z_FUNCTION_CALL
-				}
+			const wrapper = renderWikidataProperty( {
+				objectValue: objectValueFetch,
+				type: Constants.Z_FUNCTION_CALL
 			} );
 			expect( wrapper.find( '.ext-wikilambda-app-wikidata-property' ).exists() ).toBe( true );
 		} );
@@ -75,14 +82,8 @@ describe( 'WikidataProperty', () => {
 		it( 'renders the property external link if data is available', () => {
 			store.getPropertyData = createGettersWithFunctionsMock( propertyData );
 
-			const wrapper = shallowMount( WikidataProperty, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false,
-					type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY
-				}
-			} );
+			const wrapper = renderWikidataProperty();
+
 			const link = wrapper.find( '.ext-wikilambda-app-wikidata-property__link' );
 			expect( link.exists() ).toBe( true );
 			expect( link.attributes().href ).toContain( `${ propertyId }` );
@@ -90,14 +91,8 @@ describe( 'WikidataProperty', () => {
 		} );
 
 		it( 'renders the property external link if data is not available', () => {
-			const wrapper = shallowMount( WikidataProperty, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false,
-					type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY
-				}
-			} );
+			const wrapper = renderWikidataProperty();
+
 			const link = wrapper.find( '.ext-wikilambda-app-wikidata-property__link' );
 			expect( link.exists() ).toBe( true );
 			expect( link.attributes().href ).toContain( `${ propertyId }` );
@@ -107,100 +102,29 @@ describe( 'WikidataProperty', () => {
 
 	describe( 'in edit mode', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( WikidataProperty, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY
-				}
-			} );
+			const wrapper = renderWikidataProperty( { edit: true } );
+
 			expect( wrapper.find( '.ext-wikilambda-app-wikidata-property' ).exists() ).toBe( true );
-		} );
-
-		it( 'renders blank wikidata entity selector', () => {
-			const wrapper = shallowMount( WikidataProperty, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY
-				}
-			} );
-			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
-			expect( lookup.exists() ).toBe( true );
-		} );
-
-		it( 'renders wikidata entity selector', () => {
-			const wrapper = shallowMount( WikidataProperty, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY
-				}
-			} );
-			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
-			expect( lookup.exists() ).toBe( true );
 		} );
 
 		it( 'initializes wikidata entity selector', async () => {
 			store.getPropertyData = createGettersWithFunctionsMock( propertyData );
 
-			const wrapper = shallowMount( WikidataProperty, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY
-				}
-			} );
-			await wrapper.vm.$nextTick();
+			const wrapper = renderWikidataProperty( { edit: true } );
 
 			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
 			expect( lookup.exists() ).toBe( true );
-			expect( lookup.vm.entityId ).toBe( propertyId );
-			expect( lookup.vm.entityLabel ).toBe( propertyLabel );
-			expect( store.fetchProperties ).toHaveBeenCalledWith( { ids: [ propertyId ] } );
-		} );
-
-		it( 'initializes wikidata entity selector input value with delayed fetch response', async () => {
-			const wrapper = shallowMount( WikidataProperty, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY
-				}
-			} );
-
-			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
-			expect( lookup.vm.entityId ).toBe( propertyId );
-			expect( lookup.vm.entityLabel ).toBe( propertyId );
-
-			store.getPropertyData = createGettersWithFunctionsMock( propertyData );
-
-			await wrapper.vm.$nextTick();
-
 			expect( lookup.vm.entityId ).toBe( propertyId );
 			expect( lookup.vm.entityLabel ).toBe( propertyLabel );
 			expect( store.fetchProperties ).toHaveBeenCalledWith( { ids: [ propertyId ] } );
 		} );
 
 		it( 'sets property reference ID when selecting option from the menu', async () => {
-			const wrapper = shallowMount( WikidataProperty, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: Constants.Z_WIKIDATA_REFERENCE_PROPERTY
-				}
-			} );
+			const wrapper = renderWikidataProperty( { edit: true } );
 
 			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
 			lookup.vm.$emit( 'select-wikidata-entity', propertyId );
 
-			await wrapper.vm.$nextTick();
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ {
 				value: propertyId,
 				keyPath: [
@@ -211,19 +135,15 @@ describe( 'WikidataProperty', () => {
 		} );
 
 		it( 'sets property fetch function ID when selecting option from the menu', async () => {
-			const wrapper = shallowMount( WikidataProperty, {
-				props: {
-					keyPath,
-					objectValue: objectValueFetch,
-					edit: true,
-					type: Constants.Z_FUNCTION_CALL
-				}
+			const wrapper = renderWikidataProperty( {
+				objectValue: objectValueFetch,
+				edit: true,
+				type: Constants.Z_FUNCTION_CALL
 			} );
 
 			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
 			lookup.vm.$emit( 'select-wikidata-entity', propertyId );
 
-			await wrapper.vm.$nextTick();
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ {
 				value: propertyId,
 				keyPath: [

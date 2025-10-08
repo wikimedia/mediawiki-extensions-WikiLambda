@@ -88,7 +88,7 @@ module.exports = {
 			functions: 95,
 			statements: 95
 		},
-		'./resources/ext.wikilambda.app/mixins': {
+		'./resources/ext.wikilambda.app/composables': {
 			branches: 82,
 			lines: 88,
 			functions: 98,

@@ -55,7 +55,8 @@ module.exports = exports = defineComponent( {
 			type: LabelData,
 			default: undefined
 		}
-	}
+	},
+	emits: [ 'click' ]
 } );
 </script>
 

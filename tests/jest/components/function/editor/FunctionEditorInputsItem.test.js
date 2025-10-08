@@ -32,84 +32,67 @@ const blankInput = {
 describe( 'FunctionEditorInputsItem', () => {
 	let store;
 
+	/**
+	 * Helper function to render FunctionEditorInputsItem component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderFunctionEditorInputsItem( props = {}, options = {} ) {
+		const defaultProps = {
+			input,
+			index: 0,
+			isMainLanguageBlock: true,
+			canEditType: true,
+			zLanguage: 'Z1002',
+			langLabelData
+		};
+		const defaultOptions = {
+			global: {
+				stubs: {
+					CdxField: false,
+					...options?.stubs
+				}
+			}
+		};
+		return shallowMount( FunctionEditorInputsItem, {
+			props: { ...defaultProps, ...props },
+			...defaultOptions
+		} );
+	}
+
 	beforeEach( () => {
 		store = useMainStore();
 	} );
 
 	it( 'renders without errors', () => {
-		const wrapper = shallowMount( FunctionEditorInputsItem, {
-			props: {
-				input,
-				index: 0,
-				isMainLanguageBlock: true,
-				canEditType: true,
-				zLanguage: 'Z1002',
-				langLabelData
-			}
-		} );
+		const wrapper = renderFunctionEditorInputsItem();
 
-		expect( wrapper.find( '.ext-wikilambda-app-function-editor-inputs-item' ).exists() ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-app-function-editor-inputs-item' ).exists() ).toBe( true );
 	} );
 
 	it( 'has an input element ', () => {
-		const wrapper = shallowMount( FunctionEditorInputsItem, {
-			props: {
-				input,
-				index: 0,
-				isMainLanguageBlock: true,
-				canEditType: true,
-				zLanguage: 'Z1002',
-				langLabelData
-			},
-			global: { stubs: { CdxField: false } }
-		} );
+		const wrapper = renderFunctionEditorInputsItem();
 
-		expect( wrapper.findComponent( { name: 'cdx-text-input' } ).exists() ).toBeTruthy();
+		expect( wrapper.findComponent( { name: 'cdx-text-input' } ).exists() ).toBe( true );
 	} );
 
 	it( 'has an type selector if is main language block ', () => {
-		const wrapper = shallowMount( FunctionEditorInputsItem, {
-			props: {
-				input,
-				index: 0,
-				isMainLanguageBlock: true,
-				canEditType: true,
-				zLanguage: 'Z1002',
-				langLabelData
-			},
-			global: { stubs: { CdxField: false } }
-		} );
+		const wrapper = renderFunctionEditorInputsItem();
 
-		expect( wrapper.findComponent( { name: 'wl-type-selector' } ).exists() ).toBeTruthy();
+		expect( wrapper.findComponent( { name: 'wl-type-selector' } ).exists() ).toBe( true );
 	} );
 
 	it( 'does not have a type selector if is a secondary language block ', () => {
-		const wrapper = shallowMount( FunctionEditorInputsItem, {
-			props: {
-				input,
-				index: 0,
-				isMainLanguageBlock: false,
-				canEditType: true,
-				zLanguage: 'Z1002',
-				langLabelData
-			},
-			global: { stubs: { CdxField: false } }
-		} );
+		const wrapper = renderFunctionEditorInputsItem( { isMainLanguageBlock: false } );
 
 		expect( wrapper.findComponent( { name: 'wl-z-object-selector' } ).exists() ).toBeFalsy();
 	} );
 
 	it( 'has one delete button if it is editable', () => {
-		const wrapper = shallowMount( FunctionEditorInputsItem, {
-			props: {
-				input,
-				index: 0,
-				isMainLanguageBlock: true,
-				canEditType: true,
-				zLanguage: 'Z1002',
-				langLabelData
-			},
-			global: { stubs: { CdxButton: false } }
+		const wrapper = renderFunctionEditorInputsItem( {}, {
+			stubs: { CdxButton: false }
 		} );
 
 		expect( wrapper.findAll( '.ext-wikilambda-app-function-editor-inputs-item__action-delete' ).length ).toBe( 1 );
@@ -117,22 +100,11 @@ describe( 'FunctionEditorInputsItem', () => {
 
 	describe( 'on argument label change', () => {
 		it( 'removes the input label object if new value is empty string', async () => {
-			const wrapper = shallowMount( FunctionEditorInputsItem, {
-				props: {
-					input,
-					index: 0,
-					isMainLanguageBlock: true,
-					canEditType: true,
-					zLanguage: 'Z1002',
-					langLabelData
-				},
-				global: { stubs: { CdxField: false } }
-			} );
+			const wrapper = renderFunctionEditorInputsItem();
 
 			// ACT: Change value of label
 			const inputField = wrapper.findComponent( { name: 'cdx-text-input' } );
 			inputField.vm.$emit( 'change', { target: { value: '' } } );
-			await wrapper.vm.$nextTick();
 
 			// ASSERT: setZMonolingualString action runs correctly
 			expect( store.setZMonolingualString ).toHaveBeenCalledWith( {
@@ -147,22 +119,11 @@ describe( 'FunctionEditorInputsItem', () => {
 		} );
 
 		it( 'changes the label of an input if the language already exists', async () => {
-			const wrapper = shallowMount( FunctionEditorInputsItem, {
-				props: {
-					input,
-					index: 0,
-					isMainLanguageBlock: true,
-					canEditType: true,
-					zLanguage: 'Z1002',
-					langLabelData
-				},
-				global: { stubs: { CdxField: false } }
-			} );
+			const wrapper = renderFunctionEditorInputsItem();
 
 			// ACT: Change value of label
 			const inputField = wrapper.findComponent( { name: 'cdx-text-input' } );
 			inputField.vm.$emit( 'change', { target: { value: 'new input label' } } );
-			await wrapper.vm.$nextTick();
 
 			// ASSERT: setZMonolingualString action runs correctly
 			expect( store.setZMonolingualString ).toHaveBeenCalledWith( {
@@ -177,22 +138,11 @@ describe( 'FunctionEditorInputsItem', () => {
 		} );
 
 		it( 'adds a new monolingual string if there is no label object for this language', async () => {
-			const wrapper = shallowMount( FunctionEditorInputsItem, {
-				props: {
-					input: blankInput,
-					index: 0,
-					isMainLanguageBlock: true,
-					canEditType: true,
-					zLanguage: 'Z1002',
-					langLabelData
-				},
-				global: { stubs: { CdxField: false } }
-			} );
+			const wrapper = renderFunctionEditorInputsItem( { input: blankInput } );
 
 			// ACT: Change value of label
 			const inputField = wrapper.findComponent( { name: 'cdx-text-input' } );
 			inputField.vm.$emit( 'change', { target: { value: 'new input label' } } );
-			await wrapper.vm.$nextTick();
 
 			// ASSERT: setZMonolingualString action runs correctly
 			expect( store.setZMonolingualString ).toHaveBeenCalledWith( {

@@ -6,7 +6,6 @@
  */
 'use strict';
 
-const { CdxTextInput } = require( '@wikimedia/codex' );
 const { shallowMount } = require( '@vue/test-utils' );
 const ZString = require( '../../../../resources/ext.wikilambda.app/components/types/ZString.vue' );
 
@@ -19,57 +18,56 @@ const terminalKeyPath = 'main.Z2K2.Z1K1.Z6K1';
 const terminalObjectValue = 'my terminal string ';
 
 describe( 'ZString', () => {
+	/**
+	 * Helper function to render ZString component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderZString( props = {}, options = {} ) {
+		const defaultProps = {
+			keyPath,
+			objectValue,
+			edit: false
+		};
+		return shallowMount( ZString, { props: { ...defaultProps, ...props }, ...options } );
+	}
+
 	describe( 'in view mode', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( ZString, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false
-				}
-			} );
+			const wrapper = renderZString();
 
 			expect( wrapper.find( 'div' ).exists() ).toBe( true );
 		} );
 
 		it( 'displays the terminal string value', async () => {
-			const wrapper = shallowMount( ZString, {
-				props: {
-					keyPath: terminalKeyPath,
-					objectValue: terminalObjectValue,
-					edit: false
-				}
+			const wrapper = renderZString( {
+				keyPath: terminalKeyPath,
+				objectValue: terminalObjectValue
 			} );
 
-			expect( wrapper.find( 'p' ).text() ).toBe( '"my terminal string "' );
+			expect( wrapper.get( 'p' ).text() ).toBe( '"my terminal string "' );
 		} );
 	} );
 
 	describe( 'in edit mode', () => {
 		it( 'emits the value with keyPath if value is a string object', async () => {
-			const wrapper = shallowMount( ZString, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true
-				}
-			} );
+			const wrapper = renderZString( { edit: true } );
 
-			await wrapper.getComponent( CdxTextInput ).vm.$emit( 'update:modelValue', 'my string value' );
+			await wrapper.getComponent( { name: 'cdx-text-input' } ).vm.$emit( 'update:modelValue', 'my string value' );
 
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [ 'Z6K1' ], value: 'my string value' } ] ] );
 		} );
 
 		it( 'emits the value with an empty keyPath if value is a terminal string', async () => {
-			const wrapper = shallowMount( ZString, {
-				props: {
-					keyPath: terminalKeyPath,
-					objectValue: terminalObjectValue,
-					edit: true
-				}
+			const wrapper = renderZString( {
+				keyPath: terminalKeyPath,
+				objectValue: terminalObjectValue,
+				edit: true
 			} );
 
-			await wrapper.getComponent( CdxTextInput ).vm.$emit( 'update:modelValue', 'my string value' );
+			await wrapper.getComponent( { name: 'cdx-text-input' } ).vm.$emit( 'update:modelValue', 'my string value' );
 
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [], value: 'my string value' } ] ] );
 		} );

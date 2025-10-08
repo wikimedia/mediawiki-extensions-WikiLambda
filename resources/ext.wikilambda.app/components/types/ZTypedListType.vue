@@ -18,14 +18,11 @@
 <script>
 const { defineComponent } = require( 'vue' );
 
-const typeMixin = require( '../../mixins/typeMixin.js' );
-
 module.exports = exports = defineComponent( {
 	name: 'wl-z-typed-list-type',
 	components: {
 		//
 	},
-	mixins: [ typeMixin ],
 	props: {
 		keyPath: {
 			type: String,
@@ -39,6 +36,12 @@ module.exports = exports = defineComponent( {
 			type: Boolean,
 			required: true
 		}
+	},
+	emits: [ 'type-changed' ],
+	setup() {
+		// Note: This component is just a wrapper that passes props to ZObjectKeyValue
+		// No setup logic needed
+		return {};
 	},
 	beforeCreate: function () {
 		this.$options.components[ 'wl-z-object-key-value' ] = require( './ZObjectKeyValue.vue' );

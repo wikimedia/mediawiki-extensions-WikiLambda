@@ -34,11 +34,10 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapState } = require( 'pinia' );
+const { defineComponent, computed } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
-const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
+const useZObject = require( '../../composables/useZObject.js' );
 const useMainStore = require( '../../store/index.js' );
 const urlUtils = require( '../../utils/urlUtils.js' );
 
@@ -50,7 +49,6 @@ module.exports = exports = defineComponent( {
 	components: {
 		'cdx-radio': CdxRadio
 	},
-	mixins: [ zobjectMixin ],
 	props: {
 		keyPath: {
 			type: String,
@@ -69,61 +67,68 @@ module.exports = exports = defineComponent( {
 			default: false
 		}
 	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getLabelData',
-		'getUserLangCode'
-	] ), {
-		value: {
-			get: function () {
-				return this.getZBooleanValue( this.objectValue );
-			},
-			set: function ( value ) {
-				this.$emit( 'set-value', {
+	emits: [ 'set-value' ],
+	setup( props, { emit } ) {
+		// Use ZObject utilities composable
+		const { getZBooleanValue } = useZObject( { keyPath: props.keyPath } );
+
+		// Use main store
+		const store = useMainStore();
+
+		// Computed properties
+		const value = computed( {
+			get: () => getZBooleanValue( props.objectValue ),
+			set: ( newValue ) => {
+				emit( 'set-value', {
 					keyPath: [
 						Constants.Z_BOOLEAN_IDENTITY,
 						Constants.Z_REFERENCE_ID
 					],
-					value
+					value: newValue
 				} );
 			}
-		},
+		} );
+
 		/**
 		 * Returns the LabelData object for the selected value of the boolean
 		 *
 		 * @return {LabelData}
 		 */
-		valueLabelData: function () {
-			return this.getLabelData( this.value );
-		},
+		const valueLabelData = computed( () => store.getLabelData( value.value ) );
+
 		/**
 		 * Returns the url for the selected boolean value
 		 *
 		 * @return {string}
 		 */
-		valueUrl: function () {
-			return urlUtils.generateViewUrl( {
-				langCode: this.getUserLangCode,
-				zid: this.value
-			} );
-		},
+		const valueUrl = computed( () => urlUtils.generateViewUrl( {
+			langCode: store.getUserLangCode,
+			zid: value.value
+		} ) );
+
 		/**
 		 * Returns the radio choices for True and False, with their value
 		 * and their LabelData object
 		 *
 		 * @return {Array}
 		 */
-		radioChoices: function () {
-			return [
-				{
-					labelData: this.getLabelData( Constants.Z_BOOLEAN_TRUE ),
-					value: Constants.Z_BOOLEAN_TRUE
-				},
-				{
-					labelData: this.getLabelData( Constants.Z_BOOLEAN_FALSE ),
-					value: Constants.Z_BOOLEAN_FALSE
-				}
-			];
-		}
-	} )
+		const radioChoices = computed( () => [
+			{
+				labelData: store.getLabelData( Constants.Z_BOOLEAN_TRUE ),
+				value: Constants.Z_BOOLEAN_TRUE
+			},
+			{
+				labelData: store.getLabelData( Constants.Z_BOOLEAN_FALSE ),
+				value: Constants.Z_BOOLEAN_FALSE
+			}
+		] );
+
+		return {
+			radioChoices,
+			value,
+			valueLabelData,
+			valueUrl
+		};
+	}
 } );
 </script>

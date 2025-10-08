@@ -11,7 +11,7 @@
 			data-testid="publish-dialog"
 			:open="showDialog"
 			:title="publishDialogTitle"
-			:close-button-label="$i18n( 'wikilambda-dialog-close' ).text()"
+			:close-button-label="i18n( 'wikilambda-dialog-close' ).text()"
 			:use-close-button="true"
 			:primary-action="primaryAction"
 			:default-action="defaultAction"
@@ -44,7 +44,7 @@
 					@keydown="handleSummaryKeydown"
 				></cdx-text-input>
 				<template #label>
-					{{ $i18n( 'wikilambda-editor-publish-dialog-summary-help-text' ).text() }}
+					{{ i18n( 'wikilambda-editor-publish-dialog-summary-help-text' ).text() }}
 				</template>
 
 				<template v-if="hasKeyboardSubmitWarning" #warning>
@@ -67,12 +67,10 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { computed, defineComponent, inject, ref } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
-const errorMixin = require( '../../../mixins/errorMixin.js' );
-const eventLogMixin = require( '../../../mixins/eventLogMixin.js' );
+const useEventLog = require( '../../../composables/useEventLog.js' );
 const useMainStore = require( '../../../store/index.js' );
 const urlUtils = require( '../../../utils/urlUtils.js' );
 
@@ -106,7 +104,6 @@ module.exports = exports = defineComponent( {
 		'cdx-dialog': CdxDialog,
 		'wl-safe-message': SafeMessage
 	},
-	mixins: [ eventLogMixin, errorMixin ],
 	inject: {
 		viewmode: { default: false }
 	},
@@ -122,38 +119,30 @@ module.exports = exports = defineComponent( {
 			default: false
 		}
 	},
-	data: function () {
-		return {
-			summary: '',
-			hasKeyboardSubmitWarning: false,
-			isPublishing: false
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getUserLangCode',
-		'getCurrentZObjectId',
-		'getCurrentZObjectType',
-		'getCurrentZImplementationType',
-		'getErrors',
-		'getUserLangZid'
-	] ), {
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const eventLogUtils = useEventLog();
+		const store = useMainStore();
+
+		// Reactive data
+		const summary = ref( '' );
+		const hasKeyboardSubmitWarning = ref( false );
+		const isPublishing = ref( false );
+
+		// Computed properties
 		/**
 		 * Returns the status of the summary text field.
 		 *
 		 * @return {string}
 		 */
-		status: function () {
-			return this.hasKeyboardSubmitWarning ? 'warning' : 'default';
-		},
+		const status = computed( () => hasKeyboardSubmitWarning.value ? 'warning' : 'default' );
 
 		/**
 		 * Returns the array of errors and warnings of the page
 		 *
 		 * @return {Array}
 		 */
-		errors: function () {
-			return this.getErrors( Constants.STORED_OBJECTS.MAIN );
-		},
+		const errors = computed( () => store.getErrors( Constants.STORED_OBJECTS.MAIN ) );
 
 		/**
 		 * Returns whether there are any errors in the page
@@ -161,9 +150,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return { boolean }
 		 */
-		hasErrors: function () {
-			return this.errors.length !== 0;
-		},
+		const hasErrors = computed( () => errors.value.length !== 0 );
 
 		/**
 		 * Returns an object of type PrimaryModalAction that describes
@@ -171,13 +158,11 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Object}
 		 */
-		primaryAction: function () {
-			return {
-				actionType: 'progressive',
-				label: this.$i18n( 'wikilambda-publishnew' ).text(),
-				disabled: this.isPublishing
-			};
-		},
+		const primaryAction = computed( () => ( {
+			actionType: 'progressive',
+			label: i18n( 'wikilambda-publishnew' ).text(),
+			disabled: isPublishing.value
+		} ) );
 
 		/**
 		 * Returns an object of type ModalAction that describes
@@ -185,38 +170,30 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Object}
 		 */
-		defaultAction: function () {
-			return {
-				label: this.$i18n( 'wikilambda-cancel' ).text()
-			};
-		},
+		const defaultAction = computed( () => ( {
+			label: i18n( 'wikilambda-cancel' ).text()
+		} ) );
 
 		/**
 		 * Returns the title for the Publish dialog
 		 *
 		 * @return {string}
 		 */
-		publishDialogTitle: function () {
-			return this.$i18n( 'wikilambda-editor-publish-dialog-header' ).text();
-		},
+		const publishDialogTitle = computed( () => i18n( 'wikilambda-editor-publish-dialog-header' ).text() );
 
 		/**
 		 * Returns the label for the summary text field
 		 *
 		 * @return {string}
 		 */
-		summaryLabel: function () {
-			return this.$i18n( 'wikilambda-editor-publish-dialog-summary-label' ).text();
-		},
+		const summaryLabel = computed( () => i18n( 'wikilambda-editor-publish-dialog-summary-label' ).text() );
 
 		/**
 		 * Returns the placeholder for the summary text field
 		 *
 		 * @return {string}
 		 */
-		summaryPlaceholder: function () {
-			return this.$i18n( 'wikilambda-editor-publish-dialog-summary-placeholder' ).text();
-		},
+		const summaryPlaceholder = computed( () => i18n( 'wikilambda-editor-publish-dialog-summary-placeholder' ).text() );
 
 		/**
 		 * Returns the legal text to display in the Publish Dialog, depending
@@ -226,91 +203,62 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return { string }
 		 */
-		legalText: function () {
-			return ( this.getCurrentZObjectType === Constants.Z_IMPLEMENTATION ) ?
-				this.$i18n( 'wikifunctions-editing-copyrightwarning-implementation' ).parse() :
-				this.$i18n( 'wikifunctions-editing-copyrightwarning-function' ).parse();
-		},
+		const legalText = computed( () => (
+			store.getCurrentZObjectType === Constants.Z_IMPLEMENTATION ?
+				i18n( 'wikifunctions-editing-copyrightwarning-implementation' ).parse() :
+				i18n( 'wikifunctions-editing-copyrightwarning-function' ).parse()
+		) );
 
 		/**
 		 * Returns a warning message which informs the user that they can submit using Ctrl/CMD + Enter;
 		 *
 		 * @return {string}
 		 */
-		keyboardSubmitMessage: function () {
+		const keyboardSubmitMessage = computed( () => {
 			const isMac = /Mac|iPod|iPhone|iPad/.test( navigator.userAgent );
 			// Make sure the message is escaped, but insert the key HTML without escaping it
-			return this.$i18n( 'wikilambda-editor-publish-dialog-keyboard-submit-warning' ).escaped()
+			return i18n( 'wikilambda-editor-publish-dialog-keyboard-submit-warning' ).escaped()
 				.replace( '$1', isMac ? cmdKeyChar : ctrlKeyChar )
 				.replace( '$2', enterKeyChar );
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'submitZObject',
-		'setError',
-		'setDirty',
-		'clearErrors'
-	] ),
-	{
+		} );
+
+		// Methods
 		/**
 		 * Handle pressing the Enter key on the summary field.
 		 *
 		 * @param {Event} event The keydown event.
 		 */
-		handleSummaryEnter: function ( event ) {
+		const handleSummaryEnter = ( event ) => {
 			event.preventDefault();
-			this.hasKeyboardSubmitWarning = true;
-		},
-
-		/**
-		 * Handles the keydown event on the summary text field.
-		 * - If the user presses Ctrl/Cmd + Enter, publishes the ZObject.
-		 * - If the user presses Enter, shows a warning message.
-		 *
-		 * @param {Event} event The keydown event.
-		 */
-		handleSummaryKeydown: function ( event ) {
-			const enterKey = event.key === 'Enter';
-
-			// If the user presses Ctrl/Cmd + Enter, publish the ZObject
-			if ( ( event.metaKey || event.ctrlKey ) && enterKey ) {
-				this.publishZObject();
-				return;
-			}
-
-			// If the user presses Enter, show a warning message
-			if ( enterKey ) {
-				this.handleSummaryEnter( event );
-			}
-		},
+			hasKeyboardSubmitWarning.value = true;
+		};
 
 		/**
 		 * Clears the error notifications and emits a close-dialog
 		 * event for the Publish widget to close the dialog.
 		 */
-		closeDialog: function () {
-			this.hasKeyboardSubmitWarning = false;
+		const closeDialog = () => {
+			hasKeyboardSubmitWarning.value = false;
 
 			// Clear all publish dialog errors/warnings (errorId: "main"), preserve field-level warnings
-			this.clearErrors( Constants.STORED_OBJECTS.MAIN );
-
-			this.$emit( 'close-dialog' );
-		},
+			store.clearErrors( Constants.STORED_OBJECTS.MAIN );
+			emit( 'close-dialog' );
+		};
 
 		/**
 		 * Navigates to the page specified by the pageTitle parameter.
 		 *
 		 * @param {string} pageTitle The title of the page to navigate to.
 		 */
-		navigateToPage: function ( pageTitle ) {
+		const navigateToPage = ( pageTitle ) => {
 			window.location.href = !pageTitle ?
 				new mw.Title( Constants.PATHS.MAIN_PAGE ).getUrl() :
 				urlUtils.generateViewUrl( {
-					langCode: this.getUserLangCode,
+					langCode: store.getUserLangCode,
 					zid: pageTitle,
 					params: { success: true }
 				} );
-		},
+		};
 
 		/**
 		 * Before exiting the page after successful publishing, handle
@@ -318,13 +266,13 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string | undefined} pageTitle
 		 */
-		successfulExit: function ( pageTitle ) {
-			this.$emit( 'before-exit' );
-			this.setDirty( false );
-			this.clearErrors( Constants.STORED_OBJECTS.MAIN, true );
-			this.closeDialog();
-			this.navigateToPage( pageTitle );
-		},
+		const successfulExit = ( pageTitle ) => {
+			emit( 'before-exit' );
+			store.setDirty( false );
+			store.clearErrors( Constants.STORED_OBJECTS.MAIN, true );
+			closeDialog();
+			navigateToPage( pageTitle );
+		};
 
 		/**
 		 * Submits the ZObject to the wikilambda_edit API
@@ -335,37 +283,79 @@ module.exports = exports = defineComponent( {
 		 * 2. If the response is successful, navigates to the ZObject
 		 *    page.
 		 */
-		publishZObject: function () {
-			const summary = this.summary;
-			const disconnectFunctionObjects = this.functionSignatureChanged;
+		const publishZObject = () => {
+			const summaryValue = summary.value;
+			const shouldDisconnectFunctionObjects = props.functionSignatureChanged;
 
-			this.isPublishing = true;
+			isPublishing.value = true;
 
-			this.submitZObject( {
-				summary,
-				disconnectFunctionObjects
+			store.submitZObject( {
+				summary: summaryValue,
+				shouldDisconnectFunctionObjects
 			} ).then( ( response ) => {
-				this.successfulExit( response.page );
+				successfulExit( response.page );
 			} ).catch( ( /* ApiError */ error ) => {
-				this.clearErrors( Constants.STORED_OBJECTS.MAIN );
-				this.setError( {
+				store.clearErrors( Constants.STORED_OBJECTS.MAIN, true );
+				store.setError( {
 					errorId: Constants.STORED_OBJECTS.MAIN,
 					errorType: Constants.ERROR_TYPES.ERROR,
 					errorMessage: error.messageOrFallback( 'wikilambda-unknown-save-error-message' )
 				} );
 			} ).finally( () => {
-				this.isPublishing = false;
+				isPublishing.value = false;
 				const interactionData = {
-					zobjecttype: this.getCurrentZObjectType || null,
-					zobjectid: this.getCurrentZObjectId || null,
-					zlang: this.getUserLangZid || null,
-					implementationtype: this.getCurrentZImplementationType || null,
-					haserrors: this.hasErrors
+					zobjecttype: store.getCurrentZObjectType || null,
+					zobjectid: store.getCurrentZObjectId || null,
+					zlang: store.getUserLangZid || null,
+					implementationtype: store.getCurrentZImplementationType || null,
+					haserrors: hasErrors.value
 				};
-				this.submitInteraction( 'publish', interactionData );
+				eventLogUtils.submitInteraction( 'publish', interactionData );
 			} );
-		}
-	} )
+		};
+
+		/**
+		 * Handles the keydown event on the summary text field.
+		 * - If the user presses Ctrl/Cmd + Enter, publishes the ZObject.
+		 * - If the user presses Enter, shows a warning message.
+		 *
+		 * @param {Event} event The keydown event.
+		 */
+		const handleSummaryKeydown = ( event ) => {
+			const enterKey = event.key === 'Enter';
+
+			// If the user presses Ctrl/Cmd + Enter, publish the ZObject
+			if ( ( event.metaKey || event.ctrlKey ) && enterKey ) {
+				publishZObject();
+				return;
+			}
+
+			// If the user presses Enter, show a warning message
+			if ( enterKey ) {
+				handleSummaryEnter( event );
+			}
+		};
+
+		// Return all properties and methods for the template
+		return {
+			closeDialog,
+			defaultAction,
+			errors,
+			handleSummaryKeydown,
+			hasErrors,
+			hasKeyboardSubmitWarning,
+			keyboardSubmitMessage,
+			legalText,
+			primaryAction,
+			publishDialogTitle,
+			publishZObject,
+			status,
+			summary,
+			summaryLabel,
+			summaryPlaceholder,
+			i18n
+		};
+	}
 } );
 </script>
 

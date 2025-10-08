@@ -27,16 +27,15 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
+const { defineComponent, computed } = require( 'vue' );
 
-const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
+const useZObject = require( '../../composables/useZObject.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-object-key-value-set',
 	components: {
 		// Leave components as an empty object to add the ObjectKeyValue later
 	},
-	mixins: [ zobjectMixin ],
 	props: {
 		keyPath: {
 			type: String,
@@ -60,23 +59,27 @@ module.exports = exports = defineComponent( {
 			default: undefined
 		}
 	},
-	computed: {
+	setup( props ) {
+		const { depth } = useZObject( { keyPath: props.keyPath } );
+
 		/**
 		 * Returns the css class that identifies the nesting level
 		 *
 		 * @return {string}
 		 */
-		nestingDepthClass: function () {
-			return `ext-wikilambda-app-key-level--${ this.depth || 0 }`;
-		},
+		const nestingDepthClass = computed( () => `ext-wikilambda-app-key-level--${ depth.value || 0 }` );
+
 		/**
 		 * Returns the array of child keys to render with ZObjectKeyValue components
 		 *
 		 * @return {Array}
 		 */
-		childKeys: function () {
-			return this.objectValue ? Object.keys( this.objectValue ) : [];
-		}
+		const childKeys = computed( () => props.objectValue ? Object.keys( props.objectValue ) : [] );
+
+		return {
+			childKeys,
+			nestingDepthClass
+		};
 	},
 	beforeCreate: function () {
 		// Need to delay require of ZObjectKeyValue to avoid loop

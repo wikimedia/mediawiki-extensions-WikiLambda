@@ -10,7 +10,7 @@
 		<cdx-dialog
 			:open="showDialog"
 			:title="leaveDialogTitle"
-			:close-button-label="$i18n( 'wikilambda-dialog-close' ).text()"
+			:close-button-label="i18n( 'wikilambda-dialog-close' ).text()"
 			:use-close-button="true"
 			:primary-action="primaryAction"
 			:default-action="defaultAction"
@@ -18,16 +18,16 @@
 			@primary="leavePage"
 			@default="stayOnPage"
 		>
-			<div>{{ $i18n( 'wikilambda-publish-lose-changes-prompt' ).text() }}</div>
+			<div>{{ i18n( 'wikilambda-publish-lose-changes-prompt' ).text() }}</div>
 		</cdx-dialog>
 	</div>
 </template>
 
 <script>
+const { computed, defineComponent, inject } = require( 'vue' );
 const { CdxDialog } = require( '../../../../codex.js' );
 
-// @vue/components
-module.exports = exports = {
+module.exports = exports = defineComponent( {
 	name: 'wl-leave-editor-dialog',
 	components: {
 		'cdx-dialog': CdxDialog
@@ -44,15 +44,16 @@ module.exports = exports = {
 			default: undefined
 		}
 	},
-	computed: {
+	emits: [ 'close-dialog', 'before-exit' ],
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+
 		/**
 		 * Returns the title for the Leave dialog
 		 *
 		 * @return {string}
 		 */
-		leaveDialogTitle: function () {
-			return this.$i18n( 'wikilambda-editor-leave-edit-mode-header' ).text();
-		},
+		const leaveDialogTitle = computed( () => i18n( 'wikilambda-editor-leave-edit-mode-header' ).text() );
 
 		/**
 		 * Returns an object of type PrimaryModalAction that describes
@@ -60,12 +61,10 @@ module.exports = exports = {
 		 *
 		 * @return {Object}
 		 */
-		primaryAction: function () {
-			return {
-				actionType: 'destructive',
-				label: this.$i18n( 'wikilambda-discard-edits' ).text()
-			};
-		},
+		const primaryAction = computed( () => ( {
+			actionType: 'destructive',
+			label: i18n( 'wikilambda-discard-edits' ).text()
+		} ) );
 
 		/**
 		 * Returns an object of type ModalAction that describes
@@ -73,30 +72,36 @@ module.exports = exports = {
 		 *
 		 * @return {Object}
 		 */
-		defaultAction: function () {
-			return {
-				label: this.$i18n( 'wikilambda-continue-editing' ).text()
-			};
-		}
-	},
-	methods: {
+		const defaultAction = computed( () => ( {
+			label: i18n( 'wikilambda-continue-editing' ).text()
+		} ) );
+
 		/**
 		 * On click "Continue editing" option, simply close the dialog
 		 */
-		stayOnPage: function () {
-			this.$emit( 'close-dialog' );
-		},
+		const stayOnPage = () => {
+			emit( 'close-dialog' );
+		};
 
 		/**
 		 * On click "Discard edits" option, handle state and event
 		 * listeners for exit and close the dialog
 		 */
-		leavePage: function () {
-			this.$emit( 'before-exit' );
-			if ( this.continueCallback ) {
-				this.continueCallback();
+		const leavePage = () => {
+			emit( 'before-exit' );
+			if ( props.continueCallback ) {
+				props.continueCallback();
 			}
-		}
+		};
+
+		return {
+			defaultAction,
+			leaveDialogTitle,
+			leavePage,
+			primaryAction,
+			stayOnPage,
+			i18n
+		};
 	}
-};
+} );
 </script>

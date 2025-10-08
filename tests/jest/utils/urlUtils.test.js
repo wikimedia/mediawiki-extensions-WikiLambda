@@ -1,5 +1,5 @@
 /*!
- * WikiLambda unit test suite for the urlUtils mixin
+ * WikiLambda unit test suite for urlUtils
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT

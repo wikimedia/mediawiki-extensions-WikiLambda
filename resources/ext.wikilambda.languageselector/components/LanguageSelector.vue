@@ -6,7 +6,7 @@
 -->
 <template>
 	<div
-		ref="languageSelector"
+		ref="languageSelectorComponent"
 		class="ext-wikilambda-language-selector"
 	>
 		<cdx-button
@@ -19,11 +19,11 @@
 			{{ selectedLanguageLabel }}
 		</cdx-button>
 		<div
-			ref="languageSelectorDropdown"
+			ref="languageSelectorDropdownComponent"
 			class="ext-wikilambda-language-selector__dropdown"
 		>
 			<cdx-lookup
-				ref="languageSelectorLookup"
+				ref="languageSelectorLookupComponent"
 				:input-value="inputValue"
 				class="ext-wikilambda-language-selector__lookup"
 				:selected="selectedLanguage"
@@ -242,7 +242,7 @@ module.exports = exports = defineComponent( {
 		 */
 		closeLanguageSelector: function () {
 			// Hide dropdown
-			const dropdown = this.$refs.languageSelectorDropdown;
+			const dropdown = this.$refs.languageSelectorDropdownComponent;
 			$( dropdown ).removeClass( 'ext-wikilambda-language-selector__dropdown--visible' );
 		},
 
@@ -251,11 +251,11 @@ module.exports = exports = defineComponent( {
 		 */
 		openLanguageSelector: function () {
 			// Display dropdown
-			const dropdown = this.$refs.languageSelectorDropdown;
+			const dropdown = this.$refs.languageSelectorDropdownComponent;
 			$( dropdown ).addClass( 'ext-wikilambda-language-selector__dropdown--visible' );
 			// Focus selector
 			// eslint-disable-next-line no-jquery/variable-pattern
-			const lookup = this.$refs.languageSelectorLookup.$el;
+			const lookup = this.$refs.languageSelectorLookupComponent.$el;
 			try {
 				// Get input element from cdx-lookup->cdx-text-input->input
 				// Wrap in try catch to avoid throwing errors in case of codex changes
@@ -274,7 +274,7 @@ module.exports = exports = defineComponent( {
 		 * @param {Object} e
 		 */
 		handleClick: function ( e ) {
-			const parent = this.$refs.languageSelector;
+			const parent = this.$refs.languageSelectorComponent;
 			if ( e.target !== parent && !parent.contains( e.target ) ) {
 				this.closeLanguageSelector();
 			}

@@ -28,6 +28,34 @@ describe( 'ModeSelector', () => {
 		keyPath,
 		objectValue;
 
+	/**
+	 * Helper function to render ModeSelector component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderModeSelector( props = {}, options = {} ) {
+		const defaultProps = {
+			edit: true
+		};
+		return shallowMount( ModeSelector, { props: { ...defaultProps, ...props }, ...options } );
+	}
+
+	/**
+	 * Helper function to fully render ModeSelector component (not shallow)
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderModeSelectorFull( props = {}, options = {} ) {
+		const defaultProps = {
+			edit: true
+		};
+		return mount( ModeSelector, { props: { ...defaultProps, ...props }, ...options } );
+	}
+
 	beforeEach( () => {
 		// reset props
 		keyPath = undefined;
@@ -46,22 +74,20 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue
-				}
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue
 			} );
+
 			expect( wrapper.find( 'div' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders the menu button', () => {
-			const wrapper = mount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue
-				}
+			const wrapper = renderModeSelectorFull( {
+				keyPath,
+				objectValue
 			} );
+
 			const menu = wrapper.findComponent( { name: 'cdx-menu' } );
 			const toggleButton = wrapper.findComponent( { name: 'cdx-toggle-button' } );
 
@@ -70,21 +96,26 @@ describe( 'ModeSelector', () => {
 		} );
 
 		it( 'opens the menu when button is clicked', async () => {
-			const wrapper = mount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue
-				}
+			const wrapper = renderModeSelectorFull( {
+				keyPath,
+				objectValue
 			} );
+
 			const menu = wrapper.get( '.cdx-menu' );
+			expect( menu.exists() ).toBe( true );
 			expect( menu.isVisible() ).toBe( false );
 
 			const button = wrapper.findComponent( { name: 'cdx-toggle-button' } );
 			button.trigger( 'click' );
 
+			// Wait for the next tick to ensure the menu is updated
 			await wrapper.vm.$nextTick();
 
-			await waitFor( () => expect( menu.isVisible() ).toBe( true ) );
+			// Wait for the menu to become visible
+			await waitFor( () => {
+				expect( menu.exists() ).toBe( true );
+				expect( menu.isVisible() ).toBe( true );
+			} );
 		} );
 	} );
 
@@ -93,13 +124,11 @@ describe( 'ModeSelector', () => {
 			keyPath = 'main.Z2K2.Z11K2';
 			objectValue = { Z1K1: 'Z6', Z6K1: 'some string' };
 
-			const wrapper = shallowMount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					expectedType: Constants.Z_STRING
-				}
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				edit: true,
+				expectedType: Constants.Z_STRING
 			} );
 
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
@@ -113,14 +142,13 @@ describe( 'ModeSelector', () => {
 			keyPath = 'main.Z2K2';
 			objectValue = { Z1K1: 'Z6', Z6K1: 'some string' };
 
-			const wrapper = shallowMount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					expectedType: Constants.Z_OBJECT
-				}
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				edit: true,
+				expectedType: Constants.Z_OBJECT
 			} );
+
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			expect( menu.vm.menuItems[ 0 ].items.length ).toBe( 4 );
 			expect( menu.vm.menuItems[ 0 ].items[ 0 ].value ).toBe( 'Z7' );
@@ -133,14 +161,13 @@ describe( 'ModeSelector', () => {
 			keyPath = 'main.Z2K2.Z14K2.Z10001K1.Z11K2';
 			objectValue = { Z1K1: 'Z6', Z6K1: 'some string' };
 
-			const wrapper = shallowMount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					expectedType: Constants.Z_STRING
-				}
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				edit: true,
+				expectedType: Constants.Z_STRING
 			} );
+
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			expect( menu.vm.menuItems[ 0 ].items.length ).toBe( 4 );
 			expect( menu.vm.menuItems[ 0 ].items[ 0 ].value ).toBe( 'Z18' );
@@ -153,14 +180,13 @@ describe( 'ModeSelector', () => {
 			keyPath = 'main.Z2K2.Z11K2';
 			objectValue = { Z1K1: 'Z9', Z9K1: '' };
 
-			const wrapper = shallowMount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					expectedType: Constants.Z_STRING
-				}
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				edit: true,
+				expectedType: Constants.Z_STRING
 			} );
+
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			expect( menu.vm.menuItems[ 0 ].items.length ).toBe( 3 );
 			expect( menu.vm.menuItems[ 0 ].items[ 0 ].value ).toBe( 'Z7' );
@@ -179,14 +205,13 @@ describe( 'ModeSelector', () => {
 				}
 			};
 
-			const wrapper = shallowMount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					expectedType: Constants.Z_WIKIDATA_LEXEME
-				}
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				edit: true,
+				expectedType: Constants.Z_WIKIDATA_LEXEME
 			} );
+
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			expect( menu.vm.menuItems.length ).toBe( 1 );
 			expect( menu.vm.menuItems[ 0 ].items.length ).toBe( 1 );
@@ -204,14 +229,13 @@ describe( 'ModeSelector', () => {
 				}
 			};
 
-			const wrapper = shallowMount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					expectedType: Constants.Z_WIKIDATA_LEXEME
-				}
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				edit: true,
+				expectedType: Constants.Z_WIKIDATA_LEXEME
 			} );
+
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			expect( menu.vm.menuItems.length ).toBe( 1 );
 			expect( menu.vm.menuItems[ 0 ].items.length ).toBe( 2 );
@@ -226,14 +250,13 @@ describe( 'ModeSelector', () => {
 				Z6095K1: { Z1K1: 'Z6', Z6K1: 'L42' }
 			};
 
-			const wrapper = shallowMount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					expectedType: Constants.Z_WIKIDATA_REFERENCE_LEXEME
-				}
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				edit: true,
+				expectedType: Constants.Z_WIKIDATA_REFERENCE_LEXEME
 			} );
+
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			expect( menu.vm.menuItems[ 0 ].items.length ).toBe( 2 );
 			expect( menu.vm.menuItems[ 0 ].items[ 0 ].value ).toBe( 'Z7' );
@@ -251,14 +274,13 @@ describe( 'ModeSelector', () => {
 				}
 			};
 
-			const wrapper = shallowMount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					expectedType: Constants.Z_OBJECT
-				}
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				edit: true,
+				expectedType: Constants.Z_OBJECT
 			} );
+
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			expect( menu.vm.menuItems[ 0 ].items.length ).toBe( 3 );
 			expect( menu.vm.menuItems[ 0 ].items[ 0 ].value ).toBe( 'Z7' );
@@ -273,14 +295,13 @@ describe( 'ModeSelector', () => {
 				Z6095K1: { Z1K1: 'Z6', Z6K1: 'L42' }
 			};
 
-			const wrapper = shallowMount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					expectedType: Constants.Z_OBJECT
-				}
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				edit: true,
+				expectedType: Constants.Z_OBJECT
 			} );
+
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			expect( menu.vm.menuItems[ 0 ].items.length ).toBe( 4 );
 			expect( menu.vm.menuItems[ 0 ].items[ 0 ].value ).toBe( 'Z7' );
@@ -296,12 +317,10 @@ describe( 'ModeSelector', () => {
 				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z8' }
 			};
 
-			const wrapper = shallowMount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true
-				}
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				edit: true
 			} );
 
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
@@ -315,14 +334,13 @@ describe( 'ModeSelector', () => {
 			keyPath = 'main.Z2K2.Z11K2';
 			objectValue = { Z1K1: 'Z9', Z9K1: '' };
 
-			const wrapper = shallowMount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					expectedType: Constants.Z_STRING
-				}
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				edit: true,
+				expectedType: Constants.Z_STRING
 			} );
+
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			menu.vm.$emit( 'update:selected', Constants.Z_REFERENCE );
 			await waitFor( () => expect( wrapper.emitted() ).not.toHaveProperty( 'set-type' ) );
@@ -332,14 +350,13 @@ describe( 'ModeSelector', () => {
 			keyPath = 'main.Z2K2.Z11K2';
 			objectValue = { Z1K1: 'Z9', Z9K1: '' };
 
-			const wrapper = shallowMount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					expectedType: Constants.Z_STRING
-				}
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				edit: true,
+				expectedType: Constants.Z_STRING
 			} );
+
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			menu.vm.$emit( 'update:selected', Constants.Z_STRING );
 			await waitFor( () => expect( wrapper.emitted() ).toHaveProperty( 'set-type' ) );
@@ -359,14 +376,13 @@ describe( 'ModeSelector', () => {
 				Z11K2: { Z1K1: 'Z6', Z6K1: 'second' }
 			};
 
-			const wrapper = shallowMount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					expectedType: Constants.Z_MONOLINGUALSTRING
-				}
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				edit: true,
+				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
+
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			expect( menu.vm.menuItems.length ).toBe( 3 );
 			expect( menu.vm.menuItems[ 2 ].items[ 0 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.DELETE_ITEM );
@@ -380,14 +396,13 @@ describe( 'ModeSelector', () => {
 				Z11K2: { Z1K1: 'Z6', Z6K1: 'second' }
 			};
 
-			const wrapper = shallowMount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					expectedType: Constants.Z_MONOLINGUALSTRING
-				}
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				edit: true,
+				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
+
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			menu.vm.$emit( 'update:selected', Constants.LIST_MENU_OPTIONS.DELETE_ITEM );
 			await waitFor( () => expect( wrapper.emitted() ).toHaveProperty( 'delete-list-item' ) );
@@ -401,14 +416,13 @@ describe( 'ModeSelector', () => {
 				Z11K2: { Z1K1: 'Z6', Z6K1: 'second' }
 			};
 
-			const wrapper = shallowMount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					expectedType: Constants.Z_MONOLINGUALSTRING
-				}
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				edit: true,
+				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
+
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			expect( menu.vm.menuItems.length ).toBe( 3 );
 			expect( menu.vm.menuItems[ 1 ].items[ 0 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_BEFORE );
@@ -425,14 +439,13 @@ describe( 'ModeSelector', () => {
 				Z11K2: { Z1K1: 'Z6', Z6K1: 'first' }
 			};
 
-			const wrapper = shallowMount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					expectedType: Constants.Z_MONOLINGUALSTRING
-				}
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				edit: true,
+				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
+
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			expect( menu.vm.menuItems.length ).toBe( 3 );
 			expect( menu.vm.menuItems[ 1 ].items[ 0 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_BEFORE );
@@ -449,14 +462,13 @@ describe( 'ModeSelector', () => {
 				Z11K2: { Z1K1: 'Z6', Z6K1: 'third' }
 			};
 
-			const wrapper = shallowMount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					expectedType: Constants.Z_MONOLINGUALSTRING
-				}
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				edit: true,
+				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
+
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			expect( menu.vm.menuItems.length ).toBe( 3 );
 			expect( menu.vm.menuItems[ 1 ].items[ 0 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_BEFORE );
@@ -473,13 +485,11 @@ describe( 'ModeSelector', () => {
 				Z11K2: { Z1K1: 'Z6', Z6K1: 'second' }
 			};
 
-			const wrapper = shallowMount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					expectedType: Constants.Z_MONOLINGUALSTRING
-				}
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				edit: true,
+				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
 
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
@@ -495,13 +505,11 @@ describe( 'ModeSelector', () => {
 				Z11K2: { Z1K1: 'Z6', Z6K1: 'second' }
 			};
 
-			const wrapper = shallowMount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					expectedType: Constants.Z_MONOLINGUALSTRING
-				}
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				edit: true,
+				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
 
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
@@ -517,14 +525,13 @@ describe( 'ModeSelector', () => {
 				Z11K2: { Z1K1: 'Z6', Z6K1: 'second' }
 			};
 
-			const wrapper = shallowMount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					expectedType: Constants.Z_MONOLINGUALSTRING
-				}
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				edit: true,
+				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
+
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			expect( menu.vm.menuItems.length ).toBe( 1 );
 			expect( menu.vm.menuItems[ 0 ].items[ 0 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.DELETE_ITEM );
@@ -536,14 +543,13 @@ describe( 'ModeSelector', () => {
 			keyPath = 'main.Z2K2.Z7K1';
 			objectValue = { Z1K1: 'Z9', Z9K1: 'Z10000' };
 
-			const wrapper = shallowMount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					expectedType: Constants.Z_MONOLINGUALSTRING
-				}
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				edit: true,
+				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
+
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			expect( menu.vm.menuItems.length ).toBe( 1 );
 		} );
@@ -555,14 +561,13 @@ describe( 'ModeSelector', () => {
 				Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10000' }
 			};
 
-			const wrapper = shallowMount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					expectedType: Constants.Z_MONOLINGUALSTRING
-				}
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				edit: true,
+				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
+
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			expect( menu.vm.menuItems[ 1 ].items.at( -1 ).value ).toBe( 'add-arg' );
 		} );
@@ -574,14 +579,13 @@ describe( 'ModeSelector', () => {
 				Z18K1: { Z1K1: 'Z6', Z6K1: 'Z10000K1' }
 			};
 
-			const wrapper = shallowMount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					expectedType: Constants.Z_MONOLINGUALSTRING
-				}
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				edit: true,
+				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
+
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			expect( menu.vm.menuItems[ 1 ].items.at( -1 ).value ).toBe( 'add-arg' );
 		} );
@@ -593,14 +597,13 @@ describe( 'ModeSelector', () => {
 				Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10000' }
 			};
 
-			const wrapper = shallowMount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					expectedType: Constants.Z_MONOLINGUALSTRING
-				}
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				edit: true,
+				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
+
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			menu.vm.$emit( 'update:selected', Constants.LIST_MENU_OPTIONS.ADD_ARG );
 			await waitFor( () => expect( wrapper.emitted() ).toHaveProperty( 'add-arg' ) );
@@ -612,14 +615,13 @@ describe( 'ModeSelector', () => {
 			keyPath = 'main.Z2K2.Z10000K1';
 			objectValue = { Z1K1: 'Z6', Z6K1: 'some arg' };
 
-			const wrapper = shallowMount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					expectedType: Constants.Z_MONOLINGUALSTRING
-				}
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				edit: true,
+				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
+
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			expect( menu.vm.menuItems.length ).toBe( 1 );
 		} );
@@ -628,14 +630,13 @@ describe( 'ModeSelector', () => {
 			keyPath = 'main.Z2K2.K1';
 			objectValue = { Z1K1: 'Z6', Z6K1: 'some arg' };
 
-			const wrapper = shallowMount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					expectedType: Constants.Z_MONOLINGUALSTRING
-				}
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				edit: true,
+				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
+
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			expect( menu.vm.menuItems[ 1 ].items.at( -1 ).value ).toBe( 'delete-arg' );
 		} );
@@ -644,14 +645,13 @@ describe( 'ModeSelector', () => {
 			keyPath = 'main.Z2K2.K1';
 			objectValue = { Z1K1: 'Z6', Z6K1: 'some arg' };
 
-			const wrapper = shallowMount( ModeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					expectedType: Constants.Z_MONOLINGUALSTRING
-				}
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				edit: true,
+				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
+
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			menu.vm.$emit( 'update:selected', Constants.LIST_MENU_OPTIONS.DELETE_ARG );
 			await waitFor( () => expect( wrapper.emitted() ).toHaveProperty( 'delete-arg' ) );

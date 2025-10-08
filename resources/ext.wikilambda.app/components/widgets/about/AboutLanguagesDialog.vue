@@ -10,14 +10,14 @@
 			:open="open"
 			data-testid="languages-dialog"
 			class="ext-wikilambda-app-about-languages-dialog"
-			:title="$i18n( 'wikilambda-about-widget-view-languages-accessible-title' ).text()"
+			:title="i18n( 'wikilambda-about-widget-view-languages-accessible-title' ).text()"
 			@update:open="closeDialog"
 		>
 			<!-- Dialog Header -->
 			<template #header>
 				<wl-custom-dialog-header @close-dialog="closeDialog">
 					<template #title>
-						{{ $i18n( 'wikilambda-about-widget-view-languages-title' ).text() }}
+						{{ i18n( 'wikilambda-about-widget-view-languages-title' ).text() }}
 					</template>
 				</wl-custom-dialog-header>
 				<!-- Language Search block -->
@@ -37,7 +37,7 @@
 						class="ext-wikilambda-app-about-languages-dialog__search-cancel"
 						@click="clearSearch"
 					>
-						{{ $i18n( 'wikilambda-cancel' ).text() }}
+						{{ i18n( 'wikilambda-cancel' ).text() }}
 					</cdx-button>
 				</div>
 			</template>
@@ -70,7 +70,7 @@
 								v-if="item.hasMultilingualData"
 								:class="{ 'ext-wikilambda-app-about-languages-dialog__item-untitled': !item.hasName }"
 							>{{ item.name }}</span>
-							<a v-else>{{ $i18n( 'wikilambda-about-widget-add-language' ).text() }}</a>
+							<a v-else>{{ i18n( 'wikilambda-about-widget-add-language' ).text() }}</a>
 						</div>
 					</div>
 				</div>
@@ -80,8 +80,7 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { computed, defineComponent, inject, ref } = require( 'vue' );
 const { CdxButton, CdxDialog, CdxSearchInput } = require( '../../../../codex.js' );
 const Constants = require( '../../../Constants.js' );
 const CustomDialogHeader = require( '../../base/CustomDialogHeader.vue' );
@@ -103,30 +102,23 @@ module.exports = exports = defineComponent( {
 			default: false
 		}
 	},
-	data: function () {
-		return {
-			searchTerm: '',
-			lookupResults: [],
-			showSearchCancel: false,
-			lookupAbortController: null
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getFallbackLanguageZids',
-		'getLabelData',
-		'getLanguageIsoCodeOfZLang',
-		'getMultilingualDataLanguages',
-		'getZPersistentName',
-		'getUserLangCode'
-	] ), {
+	emits: [ 'add-language', 'close-dialog' ],
+	setup( _, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
+
+		// Reactive data
+		const searchTerm = ref( '' );
+		const lookupResults = ref( [] );
+		const showSearchCancel = ref( false );
+		const lookupAbortController = ref( null );
+
 		/**
 		 * Returns a list of all the fallback language Zids.
 		 *
 		 * @return {Array}
 		 */
-		suggestedLangs: function () {
-			return this.getFallbackLanguageZids;
-		},
+		const suggestedLangs = computed( () => store.getFallbackLanguageZids );
 
 		/**
 		 * Returns a list of all the language Zids that are present
@@ -136,10 +128,8 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Array}
 		 */
-		allLangs: function () {
-			return this.getMultilingualDataLanguages.all
-				.filter( ( lang ) => !this.suggestedLangs.includes( lang ) );
-		},
+		const allLangs = computed( () => store.getMultilingualDataLanguages.all
+			.filter( ( lang ) => !suggestedLangs.value.includes( lang ) ) );
 
 		/**
 		 * Builds the list of items that correspond to the available
@@ -149,42 +139,42 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Array}
 		 */
-		localItems: function () {
+		const localItems = computed( () => {
 			const buildLangItem = ( langZid ) => {
-				const name = this.getZPersistentName( langZid );
+				const name = store.getZPersistentName( langZid );
 				return {
 					langZid,
-					langLabelData: this.getLabelData( langZid ),
+					langLabelData: store.getLabelData( langZid ),
 					hasMultilingualData: true,
 					hasName: !!name,
-					name: name ? name.value : this.$i18n( 'wikilambda-editor-default-name' ).text()
+					name: name ? name.value : i18n( 'wikilambda-editor-default-name' ).text()
 				};
 			};
 
 			const sortByLabel = ( a, b ) => a.langLabelData.label.localeCompare(
 				b.langLabelData.label,
-				this.getUserLangCode,
+				store.getUserLangCode,
 				{ sensitivity: 'base' }
 			);
 
-			const suggestedLangs = this.getFallbackLanguageZids.map( ( zid ) => buildLangItem( zid ) );
-			const otherLangs = this.allLangs.map( ( zid ) => buildLangItem( zid ) ).sort( sortByLabel );
+			const suggestedLangsList = store.getFallbackLanguageZids.map( ( zid ) => buildLangItem( zid ) );
+			const otherLangs = allLangs.value.map( ( zid ) => buildLangItem( zid ) ).sort( sortByLabel );
 
-			const items = [];
-			if ( suggestedLangs.length > 0 ) {
-				items.push( {
-					label: this.$i18n( 'wikilambda-about-widget-view-languages-suggested' ).text(),
+			const itemsList = [];
+			if ( suggestedLangsList.length > 0 ) {
+				itemsList.push( {
+					label: i18n( 'wikilambda-about-widget-view-languages-suggested' ).text(),
 					disabled: true
-				}, ...suggestedLangs );
+				}, ...suggestedLangsList );
 			}
 			if ( otherLangs.length > 0 ) {
-				items.push( {
-					label: this.$i18n( 'wikilambda-about-widget-view-languages-other' ).text(),
+				itemsList.push( {
+					label: i18n( 'wikilambda-about-widget-view-languages-other' ).text(),
 					disabled: true
 				}, ...otherLangs );
 			}
-			return items;
-		},
+			return itemsList;
+		} );
 
 		/**
 		 * Returns the list of items that will be rendered in the component.
@@ -193,25 +183,17 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Array}
 		 */
-		items: function () {
-			return ( this.lookupResults.length > 0 ) ?
-				this.lookupResults :
-				this.localItems;
-		},
+		const items = computed( () => ( lookupResults.value.length > 0 ) ?
+			lookupResults.value :
+			localItems.value );
 
 		/**
 		 * Returns the i18n message for the language search box placeholder
 		 *
 		 * @return {string}
 		 */
-		searchPlaceholder: function () {
-			return this.$i18n( 'wikilambda-about-widget-search-language-placeholder' ).text();
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'fetchZids',
-		'lookupZObjectLabels'
-	] ), {
+		const searchPlaceholder = computed( () => i18n( 'wikilambda-about-widget-search-language-placeholder' ).text() );
+
 		/**
 		 * Returns whether the given language Zid has any metadata
 		 * in the current object (either name, description or aliases)
@@ -219,9 +201,9 @@ module.exports = exports = defineComponent( {
 		 * @param {string} langZid
 		 * @return {boolean}
 		 */
-		hasMultilingualData: function ( langZid ) {
-			return ( this.allLangs.includes( langZid ) );
-		},
+		function hasMultilingualData( langZid ) {
+			return ( allLangs.value.includes( langZid ) );
+		}
 
 		/**
 		 * Emits the add-language event so that we can edit or
@@ -230,30 +212,30 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} lang
 		 */
-		editLanguage: function ( lang ) {
-			this.$emit( 'add-language', lang );
-			this.closeDialog();
-		},
+		function editLanguage( lang ) {
+			emit( 'add-language', lang );
+			closeDialog();
+		}
 
 		/**
 		 * Close the dialog and make sure that the selected language
 		 * and unsaved changes are cleared.
 		 */
-		closeDialog: function () {
-			this.searchTerm = '';
-			this.lookupResults = [];
-			this.showSearchCancel = false;
-			this.$emit( 'close-dialog' );
-		},
+		function closeDialog() {
+			searchTerm.value = '';
+			lookupResults.value = [];
+			showSearchCancel.value = false;
+			emit( 'close-dialog' );
+		}
 
 		/**
 		 * Clear the search field and results
 		 */
-		clearSearch: function () {
-			this.searchTerm = '';
-			this.updateSearchTerm( '' );
-			this.showSearchCancel = false;
-		},
+		function clearSearch() {
+			searchTerm.value = '';
+			updateSearchTerm( '' );
+			showSearchCancel.value = false;
+		}
 
 		/**
 		 * Update the lookupResults when there's a new search
@@ -261,14 +243,14 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} value
 		 */
-		updateSearchTerm: function ( value ) {
-			this.searchTerm = value;
+		function updateSearchTerm( value ) {
+			searchTerm.value = value;
 			if ( !value ) {
-				this.lookupResults = [];
+				lookupResults.value = [];
 				return;
 			}
-			this.getLookupResults( value );
-		},
+			getLookupResults( value );
+		}
 
 		/**
 		 * Triggers a lookup API to search for matches for the
@@ -277,36 +259,36 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} substring
 		 */
-		getLookupResults: function ( substring ) {
+		function getLookupResults( substring ) {
 			const allZids = [];
 			// Cancel previous request if any
-			if ( this.lookupAbortController ) {
-				this.lookupAbortController.abort();
+			if ( lookupAbortController.value ) {
+				lookupAbortController.value.abort();
 			}
-			this.lookupAbortController = new AbortController();
-			this.lookupZObjectLabels( {
+			lookupAbortController.value = new AbortController();
+			store.lookupZObjectLabels( {
 				input: substring,
 				types: [ Constants.Z_NATURAL_LANGUAGE ],
-				signal: this.lookupAbortController.signal
+				signal: lookupAbortController.value.signal
 			} ).then( ( data ) => {
 				const { labels } = data;
 				// Compile information for every search result
-				this.lookupResults = labels
+				lookupResults.value = labels
 					.map( ( result ) => {
-						const name = this.getZPersistentName( result.page_title );
+						const name = store.getZPersistentName( result.page_title );
 						allZids.push( result.page_title );
 						const labelData = new LabelData(
 							result.page_title,
 							result.label,
 							result.match_lang,
-							this.getLanguageIsoCodeOfZLang( result.match_lang )
+							store.getLanguageIsoCodeOfZLang( result.match_lang )
 						);
 						return {
 							langZid: result.page_title,
 							langLabelData: labelData,
-							hasMultilingualData: this.hasMultilingualData( result.page_title ),
+							hasMultilingualData: hasMultilingualData( result.page_title ),
 							hasName: !!name,
-							name: name ? name.value : this.$i18n( 'wikilambda-editor-default-name' ).text()
+							name: name ? name.value : i18n( 'wikilambda-editor-default-name' ).text()
 						};
 					} )
 					.sort( ( a, b ) => {
@@ -328,14 +310,26 @@ module.exports = exports = defineComponent( {
 						return 0;
 					} );
 				// Fetch the result zid information (labels)
-				this.fetchZids( { zids: allZids } );
+				store.fetchZids( { zids: allZids } );
 			} ).catch( ( error ) => {
 				if ( error.code === 'abort' ) {
 					return;
 				}
 			} );
 		}
-	} )
+
+		return {
+			clearSearch,
+			closeDialog,
+			editLanguage,
+			items,
+			searchPlaceholder,
+			searchTerm,
+			showSearchCancel,
+			updateSearchTerm,
+			i18n
+		};
+	}
 } );
 </script>
 

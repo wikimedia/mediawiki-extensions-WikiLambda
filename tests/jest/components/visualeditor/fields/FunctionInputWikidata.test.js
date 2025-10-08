@@ -7,7 +7,6 @@ const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store
 const ErrorData = require( '../../../../../resources/ext.wikilambda.app/store/classes/ErrorData.js' );
 const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
 const { createGettersWithFunctionsMock } = require( '../../../helpers/getterHelpers.js' );
-const LabelData = require( '../../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' );
 
 describe( 'FunctionInputWikidata', () => {
 	const entityType = Constants.Z_WIKIDATA_ITEM;
@@ -19,26 +18,26 @@ describe( 'FunctionInputWikidata', () => {
 
 	let store;
 
-	// Common test props configuration
-	const defaultProps = {
-		inputType: entityType,
-		value: entityId,
-		labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
-		error: '',
-		showValidation: false
-	};
-
-	// Global stubs configuration for tests that need to access CdxField and CdxLabel
-	const globalStubs = { stubs: { CdxField: false, CdxLabel: false } };
-
 	// Helper function to render FunctionInputWikidata with common configuration
-	const renderFunctionInputWikidata = ( props = {} ) => shallowMount( FunctionInputWikidata, {
-		props: {
-			...defaultProps,
-			...props
-		},
-		global: globalStubs
-	} );
+	const renderFunctionInputWikidata = ( props = {}, options = {} ) => {
+		const defaultProps = {
+			inputType: entityType,
+			value: entityId
+		};
+		const defaultOptions = {
+			global: {
+				stubs: {
+					CdxField: false,
+					CdxLabel: false,
+					...options?.stubs
+				}
+			}
+		};
+		return shallowMount( FunctionInputWikidata, {
+			props: { ...defaultProps, ...props },
+			...defaultOptions
+		} );
+	};
 
 	beforeEach( () => {
 		store = useMainStore();
@@ -184,6 +183,7 @@ describe( 'FunctionInputWikidata', () => {
 			store.getWikidataEntityLabelData = createGettersWithFunctionsMock( { zid: entityId, label: 'Universe' } );
 
 			const wrapper = renderFunctionInputWikidata( {
+				inputType: entityType,
 				shouldUseDefaultValue: true,
 				defaultValue: entityId
 			} );
@@ -193,10 +193,12 @@ describe( 'FunctionInputWikidata', () => {
 
 		it( 'shows empty placeholder when shouldUseDefaultValue is false', () => {
 			const wrapper = renderFunctionInputWikidata( {
+				inputType: entityType,
 				shouldUseDefaultValue: false
 			} );
 
 			expect( wrapper.vm.placeholder ).toBe( '' );
 		} );
 	} );
+
 } );

@@ -28,8 +28,7 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { computed, defineComponent, inject } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
 const useMainStore = require( '../../../store/index.js' );
@@ -56,101 +55,100 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getZPersistentAlias'
-	] ), {
+	emits: [ 'alias-updated' ],
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
+
 		/**
-		 * Finds the Alias set (Z2K4) for the given language and returns
-		 * its keyPath and value if found. Else, returns undefined.
+		 * Finds the Alias set (Z2K4) for the given language
 		 *
 		 * @return {Object|undefined}
 		 */
-		aliases: function () {
-			return this.zLanguage ? this.getZPersistentAlias( this.zLanguage ) : undefined;
-		},
+		const aliases = computed( () => props.zLanguage ? store.getZPersistentAlias( props.zLanguage ) : undefined );
+
 		/**
 		 * Returns whether there are any aliases for the selected language
 		 *
 		 * @return {boolean}
 		 */
-		hasAliases: function () {
-			return this.aliases && this.aliases.value.length > 0;
-		},
+		const hasAliases = computed( () => aliases.value && aliases.value.value.length > 0 );
+
 		/**
 		 * Returns the label for the alias field
 		 *
+		 * TODO (T335583): Replace i18n message with key label
+		 *
 		 * @return {string}
 		 */
-		aliasLabel: function () {
-			// TODO (T335583): Replace i18n message with key label
-			return this.$i18n( 'wikilambda-function-definition-alias-label' ).text();
-		},
+		const aliasLabel = computed( () => i18n( 'wikilambda-function-definition-alias-label' ).text() );
+
 		/**
 		 * Returns the label for the alias input field
 		 *
 		 * @return {string}
 		 */
-		aliasInputLabel: function () {
-			return this.$i18n( 'wikilambda-function-definition-alias-label-new' ).text();
-		},
+		const aliasInputLabel = computed( () => i18n( 'wikilambda-function-definition-alias-label-new' ).text() );
+
 		/**
 		 * Returns the "optional" caption for the alias field
 		 *
 		 * @return {string}
 		 */
-		aliasOptional: function () {
-			return this.$i18n( 'parentheses', [ this.$i18n( 'wikilambda-optional' ).text() ] ).text();
-		},
+		const aliasOptional = computed( () => i18n( 'parentheses', [ i18n( 'wikilambda-optional' ).text() ] ).text() );
+
 		/**
 		 * Returns the placeholder for the chip input field
-		 * if there are no aliases for the selected language.
-		 * Else, returns empty string.
 		 *
 		 * @return {string}
 		 */
-		aliasFieldPlaceholder: function () {
-			return this.hasAliases ? '' :
-				this.$i18n( 'wikilambda-function-definition-alias-placeholder' ).text();
-		},
+		const aliasFieldPlaceholder = computed( () => hasAliases.value ? '' :
+			i18n( 'wikilambda-function-definition-alias-placeholder' ).text() );
+
 		/**
 		 * Returns the description for the alias field
 		 *
 		 * @return {string}
 		 */
-		aliasFieldDescription: function () {
-			return this.$i18n( 'wikilambda-function-definition-alias-description' ).text();
-		},
+		const aliasFieldDescription = computed( () => i18n( 'wikilambda-function-definition-alias-description' ).text() );
+
 		/**
 		 * Returns the id for the alias field
 		 *
 		 * @return {string}
 		 */
-		aliasFieldId: function () {
-			return `ext-wikilambda-app-function-editor-aliases__input${ this.zLanguage }`;
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'setZMonolingualStringset'
-	] ), {
+		const aliasFieldId = computed( () => `ext-wikilambda-app-function-editor-aliases__input${ props.zLanguage }` );
+
 		/**
 		 * Persists the aliases in the data store.
 		 *
-		 * @param {Array} aliases list of ChipInputItem objects, with the aliases to persist
+		 * @param {Array} aliasesArray list of ChipInputItem objects
 		 */
-		persistAlias: function ( aliases ) {
-			this.setZMonolingualStringset( {
+		const persistAlias = ( aliasesArray ) => {
+			store.setZMonolingualStringset( {
 				parentKeyPath: [
 					Constants.STORED_OBJECTS.MAIN,
 					Constants.Z_PERSISTENTOBJECT_ALIASES,
 					Constants.Z_MULTILINGUALSTRINGSET_VALUE
 				],
-				itemKeyPath: this.aliases ? this.aliases.keyPath : undefined,
-				value: aliases.map( ( alias ) => alias.value ),
-				lang: this.zLanguage
+				itemKeyPath: aliases.value ? aliases.value.keyPath : undefined,
+				value: aliasesArray.map( ( alias ) => alias.value ),
+				lang: props.zLanguage
 			} );
 
-			this.$emit( 'alias-updated' );
-		}
-	} )
+			emit( 'alias-updated' );
+		};
+
+		return {
+			aliasFieldDescription,
+			aliasFieldId,
+			aliasFieldPlaceholder,
+			aliasInputLabel,
+			aliasLabel,
+			aliasOptional,
+			aliases,
+			persistAlias
+		};
+	}
 } );
 </script>

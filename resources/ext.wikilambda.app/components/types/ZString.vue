@@ -24,10 +24,10 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
+const { defineComponent, computed } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
-const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
+const useZObject = require( '../../composables/useZObject.js' );
 
 // Codex components
 const { CdxTextInput } = require( '../../../codex.js' );
@@ -37,9 +37,8 @@ module.exports = exports = defineComponent( {
 	components: {
 		'cdx-text-input': CdxTextInput
 	},
-	mixins: [ zobjectMixin ],
 	props: {
-		keyPath: { // eslint-disable-line vue/no-unused-properties
+		keyPath: {
 			type: String,
 			required: true
 		},
@@ -57,7 +56,11 @@ module.exports = exports = defineComponent( {
 			default: false
 		}
 	},
-	computed: {
+	emits: [ 'set-value' ],
+	setup( props, { emit } ) {
+		// Use ZObject utilities composable
+		const { getZStringTerminalValue, key } = useZObject( { keyPath: props.keyPath } );
+
 		/**
 		 * Computed value:
 		 * 1. Getter gets the value from the state.
@@ -68,30 +71,31 @@ module.exports = exports = defineComponent( {
 		 * logic all over the components, and builtin components are just
 		 * visual representations and have zero logic.
 		 */
-		value: {
+		const value = computed( {
 			/**
 			 * Returns the terminal value of the string represented
 			 * in this component.
 			 *
 			 * @return {string}
 			 */
-			get: function () {
-				return this.getZStringTerminalValue( this.objectValue );
-			},
+			get: () => getZStringTerminalValue( props.objectValue ),
 			/**
 			 * Emits a setValue event with the new value for the string
 			 * and the key path information depending on the object key.
 			 *
-			 * @param {string} value
+			 * @param {string} newValue
 			 */
-			set: function ( value ) {
-				const keyPath = this.key !== Constants.Z_STRING_VALUE ? [ Constants.Z_STRING_VALUE ] : [];
-				this.$emit( 'set-value', { keyPath, value } );
+			set: ( newValue ) => {
+				const keyPath = key.value !== Constants.Z_STRING_VALUE ? [ Constants.Z_STRING_VALUE ] : [];
+				emit( 'set-value', { keyPath, value: newValue } );
 			}
-		}
+		} );
+
+		return {
+			value
+		};
 	}
 } );
-
 </script>
 
 <style lang="less">

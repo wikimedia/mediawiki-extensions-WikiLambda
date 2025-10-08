@@ -16,7 +16,7 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
+const { defineComponent, inject, computed, onMounted } = require( 'vue' );
 
 // Codex components
 const { CdxTextInput } = require( '../../../../codex.js' );
@@ -45,7 +45,9 @@ module.exports = exports = defineComponent( {
 		}
 	},
 	emits: [ 'update', 'input', 'validate' ],
-	computed: {
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+
 		/**
 		 * Returns the placeholder text.
 		 * If the default value checkbox is checked, return the default value,
@@ -53,14 +55,12 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string}
 		 */
-		placeholder: function () {
-			if ( this.shouldUseDefaultValue ) {
-				return this.defaultValue;
+		const placeholder = computed( () => {
+			if ( props.shouldUseDefaultValue ) {
+				return props.defaultValue;
 			}
-			return this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder' ).text();
-		}
-	},
-	methods: {
+			return i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder' ).text();
+		} );
 		/**
 		 * Handles the update model value event and emits:
 		 * * 'input' event, to set the local value of the field
@@ -68,14 +68,19 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} value - The new value to emit.
 		 */
-		handleInput: function ( value ) {
-			this.$emit( 'input', value );
-			this.$emit( 'update', value );
-		}
+		const handleInput = ( value ) => {
+			emit( 'input', value );
+			emit( 'update', value );
+		};
 
-	},
-	mounted: function () {
-		this.$emit( 'validate', { isValid: true } );
+		onMounted( () => {
+			emit( 'validate', { isValid: true } );
+		} );
+
+		return {
+			handleInput,
+			placeholder
+		};
 	}
 } );
 </script>

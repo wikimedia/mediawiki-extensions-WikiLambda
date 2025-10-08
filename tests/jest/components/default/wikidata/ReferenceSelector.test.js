@@ -14,6 +14,21 @@ const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store
 describe( 'ReferenceSelector', () => {
 	let store;
 
+	/**
+	 * Helper function to render ReferenceSelector component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderReferenceSelector( props = {}, options = {} ) {
+		const defaultProps = {
+			selectedZid: '',
+			disabled: false
+		};
+		return shallowMount( ReferenceSelector, { props: { ...defaultProps, ...props }, ...options } );
+	}
+
 	beforeEach( () => {
 		store = useMainStore();
 		store.fetchZids = jest.fn().mockResolvedValue();
@@ -40,67 +55,42 @@ describe( 'ReferenceSelector', () => {
 	} );
 
 	it( 'renders without errors', () => {
-		const wrapper = shallowMount( ReferenceSelector, {
-			props: {
-				selectedZid: '',
-				disabled: false
-			}
-		} );
+		const wrapper = renderReferenceSelector();
+
 		expect( wrapper.find( '.ext-wikilambda-app-wikidata-reference-selector' ).exists() ).toBe( true );
 	} );
 
 	it( 'disables the select when disabled prop is true', () => {
-		const wrapper = shallowMount( ReferenceSelector, {
-			props: {
-				selectedZid: '',
-				disabled: true
-			}
-		} );
+		const wrapper = renderReferenceSelector( { disabled: true } );
+
 		const select = wrapper.findComponent( { name: 'cdx-select' } );
 		expect( select.props( 'disabled' ) ).toBe( true );
 	} );
 
 	it( 'fetches Zids on mount', () => {
-		shallowMount( ReferenceSelector, {
-			props: {
-				selectedZid: '',
-				disabled: false
-			}
-		} );
+		renderReferenceSelector();
 		expect( store.fetchZids ).toHaveBeenCalledWith( { zids: Object.values( Constants.WIKIDATA_REFERENCE_TYPES ) } );
 	} );
 
 	it( 'emits select-item event when a value is selected', async () => {
-		const wrapper = shallowMount( ReferenceSelector, {
-			props: {
-				selectedZid: '',
-				disabled: false
-			}
-		} );
+		const wrapper = renderReferenceSelector();
+
 		const select = wrapper.findComponent( { name: 'cdx-select' } );
 		select.vm.$emit( 'update:selected', Constants.Z_WIKIDATA_REFERENCE_ITEM );
 		expect( wrapper.emitted() ).toHaveProperty( 'select-item', [ [ Constants.Z_WIKIDATA_REFERENCE_ITEM ] ] );
 	} );
 
 	it( 'does not emit select-item event when the same value is selected', async () => {
-		const wrapper = shallowMount( ReferenceSelector, {
-			props: {
-				selectedZid: Constants.Z_WIKIDATA_REFERENCE_ITEM,
-				disabled: false
-			}
-		} );
+		const wrapper = renderReferenceSelector( { selectedZid: Constants.Z_WIKIDATA_REFERENCE_ITEM } );
+
 		const select = wrapper.findComponent( { name: 'cdx-select' } );
 		select.vm.$emit( 'update:selected', Constants.Z_WIKIDATA_REFERENCE_ITEM );
 		expect( wrapper.emitted() ).not.toHaveProperty( 'select-item' );
 	} );
 
 	it( 'displays the correct menu items', () => {
-		const wrapper = shallowMount( ReferenceSelector, {
-			props: {
-				selectedZid: '',
-				disabled: false
-			}
-		} );
+		const wrapper = renderReferenceSelector();
+
 		const select = wrapper.findComponent( { name: 'cdx-select' } );
 		expect( select.props( 'menuItems' ) ).toEqual( [
 			{ label: 'Wikidata item reference', value: Constants.Z_WIKIDATA_REFERENCE_ITEM },

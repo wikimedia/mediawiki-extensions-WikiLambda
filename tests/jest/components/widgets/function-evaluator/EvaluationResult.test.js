@@ -23,23 +23,33 @@ const responseObject = {
 describe( 'EvaluationResult', () => {
 	let store;
 
-	const renderEvaluationResult = ( options = {} ) => shallowMount( EvaluationResult, {
-		global: {
-			stubs: {
-				CdxButton: false
-			},
-			config: {
-				errorHandler: ( err ) => {
-					// TODO: v-tooltip is causing these error, we need to fix it.
-					// eslint-disable-next-line n/no-unsupported-features/node-builtins
-					if ( err instanceof DOMException || err.message.includes( 'insertBefore' ) || err.message.includes( 'subtree' ) ) {
-						return;
+	/**
+	 * Helper function to render EvaluationResult component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} stubs - Stubs to pass to the component
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderEvaluationResult( props = {}, stubs = { CdxButton: false } ) {
+		return shallowMount( EvaluationResult, {
+			props,
+			global: {
+				stubs: {
+					CdxButton: false,
+					...stubs
+				},
+				config: {
+					errorHandler: ( err ) => {
+						// TODO: v-tooltip is causing these error, we need to fix it.
+						// eslint-disable-next-line n/no-unsupported-features/node-builtins
+						if ( err instanceof DOMException || err.message.includes( 'insertBefore' ) || err.message.includes( 'subtree' ) ) {
+							return;
+						}
 					}
 				}
 			}
-		},
-		...options
-	} );
+		} );
+	}
 
 	beforeEach( () => {
 		store = useMainStore();
@@ -199,9 +209,7 @@ describe( 'EvaluationResult', () => {
 
 		it( 'should not render share button when contentType is Z_TESTER', () => {
 			const wrapper = renderEvaluationResult( {
-				props: {
-					contentType: Constants.Z_TESTER
-				}
+				contentType: Constants.Z_TESTER
 			} );
 
 			const buttons = wrapper.findAllComponents( { name: 'cdx-button' } );
@@ -210,9 +218,7 @@ describe( 'EvaluationResult', () => {
 
 		it( 'should not render share button when contentType is Z_IMPLEMENTATION', () => {
 			const wrapper = renderEvaluationResult( {
-				props: {
-					contentType: Constants.Z_IMPLEMENTATION
-				}
+				contentType: Constants.Z_IMPLEMENTATION
 			} );
 
 			const buttons = wrapper.findAllComponents( { name: 'cdx-button' } );
@@ -221,9 +227,7 @@ describe( 'EvaluationResult', () => {
 
 		it( 'should render share button when contentType is undefined (function page)', () => {
 			const wrapper = renderEvaluationResult( {
-				props: {
-					contentType: undefined
-				}
+				contentType: undefined
 			} );
 
 			const shareButton = wrapper.findAllComponents( { name: 'cdx-button' } )[ 1 ];

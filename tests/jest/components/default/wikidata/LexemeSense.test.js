@@ -59,6 +59,23 @@ const objectValueFetch = {
 describe( 'WikidataLexemeSense', () => {
 	let store;
 
+	/**
+	 * Helper function to render WikidataLexemeSense component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderWikidataLexemeSense( props = {}, options = {} ) {
+		const defaultProps = {
+			keyPath,
+			objectValue,
+			edit: false,
+			type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE
+		};
+		return shallowMount( WikidataLexemeSense, { props: { ...defaultProps, ...props }, ...options } );
+	}
+
 	beforeEach( () => {
 		store = useMainStore();
 		store.getLexemeSenseData = createGettersWithFunctionsMock();
@@ -71,25 +88,14 @@ describe( 'WikidataLexemeSense', () => {
 
 	describe( 'in view mode', () => {
 		it( 'renders wikidata lexeme sense reference without errors', () => {
-			const wrapper = shallowMount( WikidataLexemeSense, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false,
-					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE
-				}
-			} );
+			const wrapper = renderWikidataLexemeSense();
 			expect( wrapper.find( '.ext-wikilambda-app-wikidata-lexeme-sense' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders wikidata lexeme sense fetch function without errors', () => {
-			const wrapper = shallowMount( WikidataLexemeSense, {
-				props: {
-					keyPath,
-					objectValue: objectValueFetch,
-					edit: false,
-					type: Constants.Z_FUNCTION_CALL
-				}
+			const wrapper = renderWikidataLexemeSense( {
+				objectValue: objectValueFetch,
+				type: Constants.Z_FUNCTION_CALL
 			} );
 			expect( wrapper.find( '.ext-wikilambda-app-wikidata-lexeme-sense' ).exists() ).toBe( true );
 		} );
@@ -97,14 +103,7 @@ describe( 'WikidataLexemeSense', () => {
 		it( 'renders the lexeme sense external link if data is available', () => {
 			store.getLexemeSenseData = createGettersWithFunctionsMock( lexemeData.senses[ 1 ] );
 
-			const wrapper = shallowMount( WikidataLexemeSense, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false,
-					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE
-				}
-			} );
+			const wrapper = renderWikidataLexemeSense();
 			const link = wrapper.find( '.ext-wikilambda-app-wikidata-lexeme-sense__link' );
 			expect( link.exists() ).toBe( true );
 			expect( link.attributes().href ).toContain( `Lexeme:${ lexemeId }#${ senseId }` );
@@ -119,14 +118,7 @@ describe( 'WikidataLexemeSense', () => {
 				langDir: null
 			} );
 
-			const wrapper = shallowMount( WikidataLexemeSense, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false,
-					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE
-				}
-			} );
+			const wrapper = renderWikidataLexemeSense();
 			const link = wrapper.find( '.ext-wikilambda-app-wikidata-lexeme-sense__link' );
 			expect( link.exists() ).toBe( true );
 			expect( link.attributes().href ).toContain( `Lexeme:${ lexemeId }#${ senseId }` );
@@ -136,25 +128,15 @@ describe( 'WikidataLexemeSense', () => {
 
 	describe( 'in edit mode', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( WikidataLexemeSense, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE
-				}
+			const wrapper = renderWikidataLexemeSense( {
+				edit: true
 			} );
 			expect( wrapper.find( '.ext-wikilambda-app-wikidata-lexeme-sense' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders lexeme selector and sense selector', async () => {
-			const wrapper = shallowMount( WikidataLexemeSense, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE
-				}
+			const wrapper = renderWikidataLexemeSense( {
+				edit: true
 			} );
 
 			await waitFor( () => {
@@ -170,62 +152,51 @@ describe( 'WikidataLexemeSense', () => {
 			store.getLexemeSenseData = createGettersWithFunctionsMock( lexemeData.senses[ 1 ] );
 			store.getLexemeLabelData = createLabelDataMock( { L333333: 'run' } );
 
-			const wrapper = shallowMount( WikidataLexemeSense, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE
-				}
+			const wrapper = renderWikidataLexemeSense( {
+				edit: true
 			} );
-			await wrapper.vm.$nextTick();
 
-			const lexemeSelector = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
-			const senseSelector = wrapper.findComponent( { name: 'cdx-select' } );
+			await waitFor( () => {
+				const lexemeSelector = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
+				const senseSelector = wrapper.findComponent( { name: 'cdx-select' } );
 
-			expect( lexemeSelector.vm.entityId ).toBe( lexemeId );
-			expect( lexemeSelector.vm.entityLabel ).toBe( 'run' );
-			expect( senseSelector.vm.selected ).toBe( lexemeSenseId );
-			expect( store.fetchLexemeSenses ).toHaveBeenCalledWith( { lexemeIds: [ lexemeId ] } );
+				expect( lexemeSelector.exists() ).toBe( true );
+				expect( lexemeSelector.vm.entityId ).toBe( lexemeId );
+				expect( lexemeSelector.vm.entityLabel ).toBe( 'run' );
+				expect( senseSelector.vm.selected ).toBe( lexemeSenseId );
+				expect( store.fetchLexemeSenses ).toHaveBeenCalledWith( { lexemeIds: [ lexemeId ] } );
+			} );
 		} );
 
 		it( 'populates sense selector with available senses from lexeme', async () => {
 			store.getLexemeSensesData = createGettersWithFunctionsMock( lexemeData.senses );
 			store.getLexemeSenseData = jest.fn( ( id ) => id === 'L333333-S2' ? lexemeData.senses[ 1 ] : lexemeData.senses[ 0 ] );
 
-			const wrapper = shallowMount( WikidataLexemeSense, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE
-				}
+			const wrapper = renderWikidataLexemeSense( {
+				edit: true
 			} );
-			await wrapper.vm.$nextTick();
 
-			const senseSelector = wrapper.findComponent( { name: 'cdx-select' } );
-			expect( senseSelector.vm.menuItems ).toHaveLength( 2 );
-			expect( senseSelector.vm.menuItems[ 0 ].label ).toBe( 'to move quickly on foot' );
-			expect( senseSelector.vm.menuItems[ 0 ].value ).toBe( 'L333333-S1' );
-			expect( senseSelector.vm.menuItems[ 1 ].label ).toBe( 'to compete for an office or a position' );
-			expect( senseSelector.vm.menuItems[ 1 ].value ).toBe( 'L333333-S2' );
+			await waitFor( () => {
+				const senseSelector = wrapper.findComponent( { name: 'cdx-select' } );
+				expect( senseSelector.exists() ).toBe( true );
+				expect( senseSelector.vm.menuItems ).toHaveLength( 2 );
+				expect( senseSelector.vm.menuItems[ 0 ].label ).toBe( 'to move quickly on foot' );
+				expect( senseSelector.vm.menuItems[ 0 ].value ).toBe( 'L333333-S1' );
+				expect( senseSelector.vm.menuItems[ 1 ].label ).toBe( 'to compete for an office or a position' );
+				expect( senseSelector.vm.menuItems[ 1 ].value ).toBe( 'L333333-S2' );
+			} );
 		} );
 
 		it( 'disables sense selector when lexeme has no senses', async () => {
 			store.getLexemeLabelData = createGettersWithFunctionsMock();
 
-			const wrapper = shallowMount( WikidataLexemeSense, {
-				props: {
-					keyPath,
-					objectValue: {
-						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z6096' },
-						Z6096K1: { Z1K1: 'Z6', Z6K1: '' }
-					},
-					edit: true,
-					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE
-				}
+			const wrapper = renderWikidataLexemeSense( {
+				objectValue: {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z6096' },
+					Z6096K1: { Z1K1: 'Z6', Z6K1: '' }
+				},
+				edit: true
 			} );
-			await wrapper.vm.$nextTick();
 			const senseSelector = wrapper.findComponent( { name: 'cdx-select' } );
 			expect( senseSelector.vm.disabled ).toBe( true );
 		} );
@@ -234,28 +205,25 @@ describe( 'WikidataLexemeSense', () => {
 			// Mock empty senses data
 			store.getLexemeSensesData = createGettersWithFunctionsMock( [] );
 
-			const wrapper = shallowMount( WikidataLexemeSense, {
-				props: {
-					keyPath,
-					objectValue: {
-						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z6096' },
-						Z6096K1: { Z1K1: 'Z6', Z6K1: '' }
-					},
-					edit: true,
-					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE
-				}
+			const wrapper = renderWikidataLexemeSense( {
+				objectValue: {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z6096' },
+					Z6096K1: { Z1K1: 'Z6', Z6K1: '' }
+				},
+				edit: true
 			} );
-			await wrapper.vm.$nextTick();
 
-			// Initially has a disabled sense selector
-			const senseSelector = wrapper.findComponent( { name: 'cdx-select' } );
-			expect( senseSelector.vm.disabled ).toBe( true );
+			// Wait for component to initialize
+			await waitFor( () => {
+				const senseSelector = wrapper.findComponent( { name: 'cdx-select' } );
+				expect( senseSelector.exists() ).toBe( true );
+				// Initially has a disabled sense selector
+				expect( senseSelector.vm.disabled ).toBe( true );
+			} );
 
 			// Change lexeme
 			const lexemeSelector = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
 			lexemeSelector.vm.$emit( 'select-wikidata-entity', 'L444444' );
-
-			await wrapper.vm.$nextTick();
 
 			await waitFor( () => {
 				const message = wrapper.findComponent( { name: 'cdx-message' } );
@@ -265,19 +233,13 @@ describe( 'WikidataLexemeSense', () => {
 		} );
 
 		it( 'sets lexeme sense reference ID when selecting option from the menu', async () => {
-			const wrapper = shallowMount( WikidataLexemeSense, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE
-				}
+			const wrapper = renderWikidataLexemeSense( {
+				edit: true
 			} );
 
 			const senseSelector = wrapper.findComponent( { name: 'cdx-select' } );
 			senseSelector.vm.$emit( 'update:selected', lexemeSenseId );
 
-			await wrapper.vm.$nextTick();
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ {
 				value: lexemeSenseId,
 				keyPath: [
@@ -288,19 +250,15 @@ describe( 'WikidataLexemeSense', () => {
 		} );
 
 		it( 'sets lexeme sense fetch function ID when selecting option from the menu', async () => {
-			const wrapper = shallowMount( WikidataLexemeSense, {
-				props: {
-					keyPath,
-					objectValue: objectValueFetch,
-					edit: true,
-					type: Constants.Z_FUNCTION_CALL
-				}
+			const wrapper = renderWikidataLexemeSense( {
+				objectValue: objectValueFetch,
+				edit: true,
+				type: Constants.Z_FUNCTION_CALL
 			} );
 
 			const senseSelector = wrapper.findComponent( { name: 'cdx-select' } );
 			senseSelector.vm.$emit( 'update:selected', lexemeSenseId );
 
-			await wrapper.vm.$nextTick();
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ {
 				value: lexemeSenseId,
 				keyPath: [
@@ -314,34 +272,31 @@ describe( 'WikidataLexemeSense', () => {
 		it( 'clears sense selection when lexeme changes', async () => {
 			store.getLexemeSensesData = createGettersWithFunctionsMock( lexemeData.senses );
 
-			const wrapper = shallowMount( WikidataLexemeSense, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE
-				}
+			const wrapper = renderWikidataLexemeSense( {
+				edit: true
 			} );
-			await wrapper.vm.$nextTick();
 
-			// Initially has a sense selected
-			const senseSelector = wrapper.findComponent( { name: 'cdx-select' } );
-			expect( senseSelector.vm.selected ).toBe( lexemeSenseId );
+			await waitFor( () => {
+				// Initially has a sense selected
+				const senseSelector = wrapper.findComponent( { name: 'cdx-select' } );
+				expect( senseSelector.exists() ).toBe( true );
+				expect( senseSelector.vm.selected ).toBe( lexemeSenseId );
+			} );
 
 			// Change lexeme
 			const lexemeSelector = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
 			lexemeSelector.vm.$emit( 'select-wikidata-entity', 'L444444' );
 
-			await wrapper.vm.$nextTick();
-
 			// Should emit set-value to clear the sense
-			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ {
-				value: '',
-				keyPath: [
-					Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE_ID,
-					Constants.Z_STRING_VALUE
-				]
-			} ] ] );
+			await waitFor( () => {
+				expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ {
+					value: '',
+					keyPath: [
+						Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE_ID,
+						Constants.Z_STRING_VALUE
+					]
+				} ] ] );
+			} );
 		} );
 	} );
 } );

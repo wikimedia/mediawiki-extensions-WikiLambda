@@ -159,9 +159,12 @@ module.exports = {
 				Constants.Z_PERSISTENTOBJECT_VALUE,
 				Constants.Z_FUNCTION_ARGUMENTS
 			];
-
+			const zobject = this.getZObjectByKeyPath( keyPath );
+			if ( !zobject ) {
+				return [];
+			}
 			// All Argument declaration/Z17 objects, skip benjamin item
-			const inputs = this.getZObjectByKeyPath( keyPath ).slice( 1 );
+			const inputs = zobject.slice( 1 );
 			const fields = [];
 
 			inputs.forEach( ( input, index ) => {

@@ -7,12 +7,35 @@
 'use strict';
 
 const { shallowMount } = require( '@vue/test-utils' );
+const { waitFor } = require( '@testing-library/vue' );
 const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../../helpers/getterHelpers.js' );
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 const AboutLanguageBlock = require( '../../../../../resources/ext.wikilambda.app/components/widgets/about/AboutLanguageBlock.vue' );
 
 describe( 'AboutLanguageBlock', () => {
 	let wrapper, store, viewData, fieldLangs;
+
+	/**
+	 * Helper function to render AboutLanguageBlock component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderAboutLanguageBlock( props = {}, options = {} ) {
+		const defaultOptions = {
+			global: {
+				stubs: {
+					CdxField: false,
+					...options?.stubs
+				}
+			}
+		};
+		return shallowMount( AboutLanguageBlock, {
+			props,
+			...defaultOptions
+		} );
+	}
 
 	beforeEach( () => {
 		store = useMainStore();
@@ -62,25 +85,25 @@ describe( 'AboutLanguageBlock', () => {
 		} );
 
 		it( 'renders read block without errors', () => {
-			wrapper = shallowMount( AboutLanguageBlock, { props: {
+			wrapper = renderAboutLanguageBlock( {
 				edit: false,
 				isFunction: false,
 				language: 'Z1003',
 				viewData,
 				fieldLangs
-			} } );
+			} );
 
 			expect( wrapper.find( '.ext-wikilambda-app-about-language-block__read' ).exists() ).toBe( true );
 		} );
 
 		it( 'shows placeholder for no content', () => {
-			wrapper = shallowMount( AboutLanguageBlock, { props: {
+			wrapper = renderAboutLanguageBlock( {
 				edit: false,
 				isFunction: false,
 				language: 'Z1003',
 				viewData,
 				fieldLangs
-			} } );
+			} );
 
 			const placeholder = wrapper.find( '.ext-wikilambda-app-about-language-block__unavailable' );
 			expect( placeholder.exists() ).toBe( true );
@@ -93,13 +116,13 @@ describe( 'AboutLanguageBlock', () => {
 				value: 'Descripción'
 			};
 			fieldLangs.description = [ 'Z1003' ];
-			wrapper = shallowMount( AboutLanguageBlock, { props: {
+			wrapper = renderAboutLanguageBlock( {
 				edit: false,
 				isFunction: false,
 				language: 'Z1003',
 				viewData,
 				fieldLangs
-			} } );
+			} );
 
 			const placeholder = wrapper.find( '.ext-wikilambda-app-about-language-block__unavailable' );
 			expect( placeholder.exists() ).toBe( true );
@@ -112,13 +135,13 @@ describe( 'AboutLanguageBlock', () => {
 				value: [ 'un alias' ]
 			};
 			fieldLangs.aliases = [ 'Z1003' ];
-			wrapper = shallowMount( AboutLanguageBlock, { props: {
+			wrapper = renderAboutLanguageBlock( {
 				edit: false,
 				isFunction: false,
 				language: 'Z1003',
 				viewData,
 				fieldLangs
-			} } );
+			} );
 
 			const placeholder = wrapper.find( '.ext-wikilambda-app-about-language-block__unavailable' );
 			expect( placeholder.exists() ).toBe( true );
@@ -136,15 +159,14 @@ describe( 'AboutLanguageBlock', () => {
 			};
 			fieldLangs.description = [ 'Z1003' ];
 			fieldLangs.aliases = [ 'Z1003' ];
-			wrapper = shallowMount( AboutLanguageBlock, {
-				props: {
-					edit: false,
-					isFunction: false,
-					language: 'Z1003',
-					viewData,
-					fieldLangs
-				},
-				global: { stubs: { CdxInfoChip: false } }
+			wrapper = renderAboutLanguageBlock( {
+				edit: false,
+				isFunction: false,
+				language: 'Z1003',
+				viewData,
+				fieldLangs
+			}, {
+				stubs: { CdxInfoChip: false }
 			} );
 
 			const description = wrapper.find( '.ext-wikilambda-app-about-language-block__description' );
@@ -165,15 +187,14 @@ describe( 'AboutLanguageBlock', () => {
 				value: [ 'uno', 'dos', 'tres', 'cuatro', 'cinco' ]
 			};
 			fieldLangs.aliases = [ 'Z1003' ];
-			wrapper = shallowMount( AboutLanguageBlock, {
-				props: {
-					edit: false,
-					isFunction: false,
-					language: 'Z1003',
-					viewData,
-					fieldLangs
-				},
-				global: { stubs: { CdxInfoChip: false } }
+			wrapper = renderAboutLanguageBlock( {
+				edit: false,
+				isFunction: false,
+				language: 'Z1003',
+				viewData,
+				fieldLangs
+			}, {
+				stubs: { CdxInfoChip: false }
 			} );
 
 			let aliases = wrapper.findAll( '.ext-wikilambda-app-about-language-block__alias' );
@@ -186,13 +207,13 @@ describe( 'AboutLanguageBlock', () => {
 			expect( aliasMore.text() ).toContain( '+2' );
 
 			aliasMore.trigger( 'click' );
-			await wrapper.vm.$nextTick();
 
-			aliases = wrapper.findAll( '.ext-wikilambda-app-about-language-block__alias' );
-			aliasMore = wrapper.find( '.ext-wikilambda-app-about-language-block__aliases-more' );
-
-			expect( aliases.length ).toBe( 5 );
-			expect( aliasMore.exists() ).toBe( false );
+			await waitFor( () => {
+				aliases = wrapper.findAll( '.ext-wikilambda-app-about-language-block__alias' );
+				aliasMore = wrapper.find( '.ext-wikilambda-app-about-language-block__aliases-more' );
+				expect( aliases.length ).toBe( 5 );
+				expect( aliasMore.exists() ).toBe( false );
+			} );
 		} );
 
 		it( 'shows inputs and output type for functions', () => {
@@ -211,13 +232,13 @@ describe( 'AboutLanguageBlock', () => {
 			} ];
 
 			fieldLangs.inputs = [ [ 'Z1002', 'Z1003' ], [ 'Z1002', 'Z1003' ] ];
-			wrapper = shallowMount( AboutLanguageBlock, { props: {
+			wrapper = renderAboutLanguageBlock( {
 				edit: false,
 				isFunction: true,
 				language: 'Z1003',
 				viewData,
 				fieldLangs
-			} } );
+			} );
 
 			const functionFields = wrapper.find( '.ext-wikilambda-app-about-language-block__function-fields' );
 
@@ -226,18 +247,18 @@ describe( 'AboutLanguageBlock', () => {
 			expect( inputs.length ).toBe( 2 );
 
 			expect( inputs[ 0 ].find( '.ext-wikilambda-app-about-language-block__input-label' ).text() ).toBe( 'Untitled:' );
-			expect( inputs[ 0 ].findComponent( { name: 'wl-z-object-to-string' } ).vm.keyPath ).toBe( 'main.Z2K2.Z8K1.1.Z17K1' );
-			expect( inputs[ 0 ].findComponent( { name: 'wl-z-object-to-string' } ).vm.objectValue ).toEqual( { Z1K1: 'Z9', Z9K1: 'Z6' } );
+			expect( inputs[ 0 ].findComponent( { name: 'wl-z-object-to-string' } ).props( 'keyPath' ) ).toBe( 'main.Z2K2.Z8K1.1.Z17K1' );
+			expect( inputs[ 0 ].findComponent( { name: 'wl-z-object-to-string' } ).props( 'objectValue' ) ).toEqual( { Z1K1: 'Z9', Z9K1: 'Z6' } );
 
 			expect( inputs[ 1 ].find( '.ext-wikilambda-app-about-language-block__input-label' ).text() ).toBe( 'segundo:' );
-			expect( inputs[ 1 ].findComponent( { name: 'wl-z-object-to-string' } ).vm.keyPath ).toBe( 'main.Z2K2.Z8K1.2.Z17K1' );
-			expect( inputs[ 1 ].findComponent( { name: 'wl-z-object-to-string' } ).vm.objectValue ).toEqual( { Z1K1: 'Z9', Z9K1: 'Z6' } );
+			expect( inputs[ 1 ].findComponent( { name: 'wl-z-object-to-string' } ).props( 'keyPath' ) ).toBe( 'main.Z2K2.Z8K1.2.Z17K1' );
+			expect( inputs[ 1 ].findComponent( { name: 'wl-z-object-to-string' } ).props( 'objectValue' ) ).toEqual( { Z1K1: 'Z9', Z9K1: 'Z6' } );
 
 			// Output type:
 			const output = functionFields.find( '.ext-wikilambda-app-about-language-block__output' );
 			expect( output.exists() ).toBe( true );
-			expect( output.findComponent( { name: 'wl-z-object-to-string' } ).vm.keyPath ).toBe( 'main.Z2K2.Z8K2' );
-			expect( output.findComponent( { name: 'wl-z-object-to-string' } ).vm.objectValue ).toEqual( { Z1K1: 'Z9', Z9K1: 'Z6' } );
+			expect( output.findComponent( { name: 'wl-z-object-to-string' } ).props( 'keyPath' ) ).toBe( 'main.Z2K2.Z8K2' );
+			expect( output.findComponent( { name: 'wl-z-object-to-string' } ).props( 'objectValue' ) ).toEqual( { Z1K1: 'Z9', Z9K1: 'Z6' } );
 		} );
 	} );
 
@@ -258,32 +279,26 @@ describe( 'AboutLanguageBlock', () => {
 		} );
 
 		it( 'renders edit block without errors', () => {
-			wrapper = shallowMount( AboutLanguageBlock, {
-				global: { stubs: { CdxField: false } },
-				props: {
-					edit: true,
-					isFunction: false,
-					language: 'Z1003',
-					viewData,
-					editData: JSON.parse( JSON.stringify( viewData ) ),
-					fieldLangs
-				}
+			wrapper = renderAboutLanguageBlock( {
+				edit: true,
+				isFunction: false,
+				language: 'Z1003',
+				viewData,
+				editData: JSON.parse( JSON.stringify( viewData ) ),
+				fieldLangs
 			} );
 
 			expect( wrapper.find( '.ext-wikilambda-app-about-language-block__edit' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders edit block for non-function', () => {
-			wrapper = shallowMount( AboutLanguageBlock, {
-				global: { stubs: { CdxField: false } },
-				props: {
-					edit: true,
-					isFunction: false,
-					language: 'Z1003',
-					viewData,
-					editData: JSON.parse( JSON.stringify( viewData ) ),
-					fieldLangs
-				}
+			wrapper = renderAboutLanguageBlock( {
+				edit: true,
+				isFunction: false,
+				language: 'Z1003',
+				viewData,
+				editData: JSON.parse( JSON.stringify( viewData ) ),
+				fieldLangs
 			} );
 
 			expect( wrapper.find( '[data-testid="about-name-field"]' ).exists() ).toBe( true );
@@ -307,16 +322,13 @@ describe( 'AboutLanguageBlock', () => {
 				typeKeyPath: 'main.Z2K2.Z8K1.2.Z17K1'
 			} ];
 			fieldLangs.inputs = [ [], [] ];
-			wrapper = shallowMount( AboutLanguageBlock, {
-				global: { stubs: { CdxField: false } },
-				props: {
-					edit: true,
-					isFunction: true,
-					language: 'Z1003',
-					viewData,
-					editData: JSON.parse( JSON.stringify( viewData ) ),
-					fieldLangs
-				}
+			wrapper = renderAboutLanguageBlock( {
+				edit: true,
+				isFunction: true,
+				language: 'Z1003',
+				viewData,
+				editData: JSON.parse( JSON.stringify( viewData ) ),
+				fieldLangs
 			} );
 
 			expect( wrapper.find( '[data-testid="about-name-field"]' ).exists() ).toBe( true );
@@ -353,16 +365,13 @@ describe( 'AboutLanguageBlock', () => {
 				aliases: [ 'Z1002' ],
 				inputs: [ [ 'Z1002' ] ]
 			};
-			wrapper = shallowMount( AboutLanguageBlock, {
-				global: { stubs: { CdxField: false } },
-				props: {
-					edit: true,
-					isFunction: true,
-					language: 'Z1002',
-					viewData,
-					editData: JSON.parse( JSON.stringify( viewData ) ),
-					fieldLangs
-				}
+			wrapper = renderAboutLanguageBlock( {
+				edit: true,
+				isFunction: true,
+				language: 'Z1002',
+				viewData,
+				editData: JSON.parse( JSON.stringify( viewData ) ),
+				fieldLangs
 			} );
 
 			const name = wrapper.find( '[data-testid="about-name-field"]' );
@@ -396,16 +405,13 @@ describe( 'AboutLanguageBlock', () => {
 					return names[ langZid ];
 				};
 
-				wrapper = shallowMount( AboutLanguageBlock, {
-					global: { stubs: { CdxField: false } },
-					props: {
-						edit: true,
-						isFunction: false,
-						language: 'Z1841',
-						viewData,
-						editData: JSON.parse( JSON.stringify( viewData ) ),
-						fieldLangs
-					}
+				wrapper = renderAboutLanguageBlock( {
+					edit: true,
+					isFunction: false,
+					language: 'Z1841',
+					viewData,
+					editData: JSON.parse( JSON.stringify( viewData ) ),
+					fieldLangs
 				} );
 
 				const field = wrapper.find( '[data-testid="about-name-field"]' );
@@ -424,16 +430,13 @@ describe( 'AboutLanguageBlock', () => {
 					return descriptions[ langZid ];
 				};
 
-				wrapper = shallowMount( AboutLanguageBlock, {
-					global: { stubs: { CdxField: false } },
-					props: {
-						edit: true,
-						isFunction: false,
-						language: 'Z1841',
-						viewData,
-						editData: JSON.parse( JSON.stringify( viewData ) ),
-						fieldLangs
-					}
+				wrapper = renderAboutLanguageBlock( {
+					edit: true,
+					isFunction: false,
+					language: 'Z1841',
+					viewData,
+					editData: JSON.parse( JSON.stringify( viewData ) ),
+					fieldLangs
 				} );
 
 				const field = wrapper.find( '[data-testid="about-description-field"]' );
@@ -452,16 +455,13 @@ describe( 'AboutLanguageBlock', () => {
 					return aliases[ langZid ];
 				};
 
-				wrapper = shallowMount( AboutLanguageBlock, {
-					global: { stubs: { CdxField: false } },
-					props: {
-						edit: true,
-						isFunction: false,
-						language: 'Z1841',
-						viewData,
-						editData: JSON.parse( JSON.stringify( viewData ) ),
-						fieldLangs
-					}
+				wrapper = renderAboutLanguageBlock( {
+					edit: true,
+					isFunction: false,
+					language: 'Z1841',
+					viewData,
+					editData: JSON.parse( JSON.stringify( viewData ) ),
+					fieldLangs
 				} );
 
 				const field = wrapper.find( '[data-testid="about-aliases-field"]' );
@@ -508,16 +508,13 @@ describe( 'AboutLanguageBlock', () => {
 					] } }
 				];
 
-				wrapper = shallowMount( AboutLanguageBlock, {
-					global: { stubs: { CdxField: false } },
-					props: {
-						edit: true,
-						isFunction: true,
-						language: 'Z1841',
-						viewData,
-						editData: JSON.parse( JSON.stringify( viewData ) ),
-						fieldLangs
-					}
+				wrapper = renderAboutLanguageBlock( {
+					edit: true,
+					isFunction: true,
+					language: 'Z1841',
+					viewData,
+					editData: JSON.parse( JSON.stringify( viewData ) ),
+					fieldLangs
 				} );
 
 				const fields = wrapper.findAll( '[data-testid="about-input-field"]' );
@@ -566,16 +563,13 @@ describe( 'AboutLanguageBlock', () => {
 					aliases: [ 'Z1002' ],
 					inputs: [ [ 'Z1002' ] ]
 				};
-				wrapper = shallowMount( AboutLanguageBlock, {
-					global: { stubs: { CdxField: false } },
-					props: {
-						edit: true,
-						isFunction: true,
-						language: 'Z1002',
-						viewData,
-						editData: JSON.parse( JSON.stringify( viewData ) ),
-						fieldLangs
-					}
+				wrapper = renderAboutLanguageBlock( {
+					edit: true,
+					isFunction: true,
+					language: 'Z1002',
+					viewData,
+					editData: JSON.parse( JSON.stringify( viewData ) ),
+					fieldLangs
 				} );
 			} );
 

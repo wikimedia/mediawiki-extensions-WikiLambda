@@ -21,7 +21,7 @@
 			<cdx-button
 				weight="quiet"
 				class="cdx-dialog__header__close-button"
-				:aria-label="$i18n( 'wikilambda-dialog-close' ).text()"
+				:aria-label="i18n( 'wikilambda-dialog-close' ).text()"
 				@click="$emit( 'close-dialog' )"
 			>
 				<cdx-icon :icon="iconClose"></cdx-icon>
@@ -31,7 +31,7 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
+const { defineComponent, inject } = require( 'vue' );
 
 const icons = require( '../../../lib/icons.json' );
 
@@ -44,9 +44,14 @@ module.exports = exports = defineComponent( {
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon
 	},
-	data: function () {
+	emits: [ 'close-dialog' ],
+	setup() {
+		const i18n = inject( 'i18n' );
+		const iconClose = icons.cdxIconClose;
+
 		return {
-			iconClose: icons.cdxIconClose
+			iconClose,
+			i18n
 		};
 	}
 } );

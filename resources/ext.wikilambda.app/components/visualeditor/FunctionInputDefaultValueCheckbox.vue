@@ -17,7 +17,7 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
+const { computed, defineComponent, inject } = require( 'vue' );
 const Constants = require( '../../Constants.js' );
 
 // Codex components
@@ -39,35 +39,41 @@ module.exports = exports = defineComponent( {
 		}
 	},
 	emits: [ 'update:isChecked' ],
-	computed: {
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+
 		/**
 		 * Returns the appropriate label for the checkbox based on the input type
 		 *
 		 * @return {string}
 		 */
-		checkboxLabel: function () {
-			switch ( this.inputType ) {
+		const checkboxLabel = computed( () => {
+			switch ( props.inputType ) {
 				case Constants.Z_GREGORIAN_CALENDAR_DATE:
-					return this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-default-value-date' ).text();
+					return i18n( 'wikilambda-visualeditor-wikifunctionscall-default-value-date' ).text();
 				case Constants.Z_WIKIDATA_ITEM:
 				case Constants.Z_WIKIDATA_REFERENCE_ITEM:
-					return this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-default-value-wikidata-item' ).text();
+					return i18n( 'wikilambda-visualeditor-wikifunctionscall-default-value-wikidata-item' ).text();
 				case Constants.Z_NATURAL_LANGUAGE:
-					return this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-default-value-language' ).text();
+					return i18n( 'wikilambda-visualeditor-wikifunctionscall-default-value-language' ).text();
 				default:
 					return '';
 			}
-		}
-	},
-	methods: {
+		} );
+
 		/**
 		 * Handles checkbox change and emits the new state
 		 *
 		 * @param {boolean} isChecked
 		 */
-		handleCheckboxChange: function ( isChecked ) {
-			this.$emit( 'update:isChecked', isChecked );
+		function handleCheckboxChange( isChecked ) {
+			emit( 'update:isChecked', isChecked );
 		}
+
+		return {
+			checkboxLabel,
+			handleCheckboxChange
+		};
 	}
 } );
 </script>

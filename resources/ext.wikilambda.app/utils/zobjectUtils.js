@@ -627,7 +627,7 @@ const zobjectUtils = {
 		}
 
 		// If terminal value is missing, set as invalid, else valid
-		const isFunctionCall = ( Constants.Z_FUNCTION_CALL_FUNCTION in value );
+		const isFunctionCall = value && Constants.Z_FUNCTION_CALL_FUNCTION in value;
 		const terminalValue = isFunctionCall ?
 			zobjectUtils.getZFunctionCallFunctionId( value, true ) :
 			zobjectUtils.getZReferenceTerminalValue( value );

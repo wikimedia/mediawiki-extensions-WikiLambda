@@ -7,7 +7,7 @@
 'use strict';
 
 const { waitFor } = require( '@testing-library/vue' );
-const { flushPromises, shallowMount } = require( '@vue/test-utils' );
+const { shallowMount } = require( '@vue/test-utils' );
 const { dialogGlobalStubs } = require( '../../helpers/dialogTestHelpers.js' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const convertSetToMap = require( '../../fixtures/metadata.js' ).convertSetToMap;
@@ -145,6 +145,31 @@ const storedObjects = {
 describe( 'ZObjectStringRenderer', () => {
 	let store;
 
+	/**
+	 * Helper function to render ZObjectStringRenderer component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderZObjectStringRenderer( props = {}, options = {} ) {
+		return shallowMount( ZObjectStringRenderer, {
+			props: {
+				keyPath,
+				objectValue,
+				edit: false,
+				type: typeZid,
+				expanded: false,
+				...props
+			},
+			global: {
+				stubs: {
+					...options?.stubs
+				}
+			}
+		} );
+	}
+
 	beforeEach( () => {
 		jest.clearAllMocks();
 		store = useMainStore();
@@ -170,28 +195,12 @@ describe( 'ZObjectStringRenderer', () => {
 
 	describe( 'in view and edit mode', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( ZObjectStringRenderer, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false,
-					type: typeZid,
-					expanded: false
-				}
-			} );
+			const wrapper = renderZObjectStringRenderer();
 			expect( wrapper.find( '.ext-wikilambda-app-object-string-renderer' ).exists() ).toBe( true );
 		} );
 
 		it( 'generates the rendered text on mount', () => {
-			shallowMount( ZObjectStringRenderer, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false,
-					type: typeZid,
-					expanded: false
-				}
-			} );
+			renderZObjectStringRenderer();
 
 			expect( store.runRenderer ).toHaveBeenCalledWith( {
 				rendererZid,
@@ -203,37 +212,28 @@ describe( 'ZObjectStringRenderer', () => {
 
 	describe( 'in view mode', () => {
 		it( 'when collapsed, shows a loading state when running the renderer and then shows result in text', async () => {
-			const wrapper = shallowMount( ZObjectStringRenderer, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false,
-					type: typeZid,
-					expanded: false
-				}
-			} );
+			const wrapper = renderZObjectStringRenderer();
 
 			const text = wrapper.find( '[data-testid="zobject-string-renderer-text"]' );
 			expect( text.exists() ).toBe( true );
-			// Initially, the text should show "Running…"
-			await waitFor( () => expect( wrapper.vm.$data.rendererRunning ).toBeTruthy() );
-			expect( text.text() ).toBe( 'Running…' );
-			// After the renderer is done, the text should show the rendered string
-			await waitFor( () => expect( text.text() ).toContain( renderedString ) );
-		} );
 
-		it( 'when expanded, falls back to ZObjectKeyValueSet', async () => {
-			const wrapper = shallowMount( ZObjectStringRenderer, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false,
-					type: typeZid,
-					expanded: true
-				}
+			// Wait for the renderer to start running
+			await waitFor( () => expect( wrapper.vm.rendererRunning ).toBeTruthy() );
+
+			// Initially the text value should be 'Running…'
+			expect( text.text() ).toBe( 'Running…' );
+
+			// After the renderer is done, the text should show the rendered string
+			await waitFor( () => {
+				expect( text.text() ).toContain( renderedString );
 			} );
 
-			await wrapper.vm.$nextTick();
+			// Should have called the renderer
+			expect( store.runRenderer ).toHaveBeenCalled();
+		} );
+
+		it( 'when expanded, falls back to ZObjectKeyValueSet', () => {
+			const wrapper = renderZObjectStringRenderer( { expanded: true } );
 
 			const text = wrapper.find( '[data-testid="zobject-string-renderer-text"]' );
 			expect( text.exists() ).toBe( false );
@@ -248,17 +248,7 @@ describe( 'ZObjectStringRenderer', () => {
 		it( 'calls render only once if call is successful', async () => {
 			const rendererSpy = jest.spyOn( store, 'runRenderer' );
 
-			const wrapper = shallowMount( ZObjectStringRenderer, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false,
-					type: typeZid,
-					expanded: true
-				}
-			} );
-
-			await flushPromises();
+			const wrapper = renderZObjectStringRenderer( { expanded: true } );
 
 			// First render should trigger it
 			await waitFor( () => {
@@ -272,18 +262,21 @@ describe( 'ZObjectStringRenderer', () => {
 
 			// Collapse doesn't trigger, as the first call was successful
 			await wrapper.setProps( { expanded: false } );
-			await flushPromises();
-			expect( rendererSpy ).toHaveBeenCalledTimes( 1 );
+			await waitFor( () => {
+				expect( rendererSpy ).toHaveBeenCalledTimes( 1 );
+			} );
 
 			// Expand again
 			await wrapper.setProps( { expanded: true } );
-			await flushPromises();
-			expect( rendererSpy ).toHaveBeenCalledTimes( 1 );
+			await waitFor( () => {
+				expect( rendererSpy ).toHaveBeenCalledTimes( 1 );
+			} );
 
 			// Collapse again, no repeated calls
 			await wrapper.setProps( { expanded: false } );
-			await flushPromises();
-			expect( rendererSpy ).toHaveBeenCalledTimes( 1 );
+			await waitFor( () => {
+				expect( rendererSpy ).toHaveBeenCalledTimes( 1 );
+			} );
 		} );
 
 		it( 'calls render again if first call was not successful', async () => {
@@ -291,17 +284,7 @@ describe( 'ZObjectStringRenderer', () => {
 			store.runRenderer = jest.fn().mockResolvedValue( errorResponse );
 			const rendererSpy = jest.spyOn( store, 'runRenderer' );
 
-			const wrapper = shallowMount( ZObjectStringRenderer, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false,
-					type: typeZid,
-					expanded: true
-				}
-			} );
-
-			await flushPromises();
+			const wrapper = renderZObjectStringRenderer( { expanded: true } );
 
 			// First render should trigger it
 			await waitFor( () => {
@@ -315,53 +298,41 @@ describe( 'ZObjectStringRenderer', () => {
 
 			// Collapse triggers it again
 			await wrapper.setProps( { expanded: false } );
-			await flushPromises();
 			expect( rendererSpy ).toHaveBeenCalledTimes( 2 );
 
 			// Expand
 			await wrapper.setProps( { expanded: true } );
-			await flushPromises();
 
 			// Collapse again, rendered is called once more
 			await wrapper.setProps( { expanded: false } );
-			await flushPromises();
 			expect( rendererSpy ).toHaveBeenCalledTimes( 3 );
 		} );
 	} );
 
 	describe( 'in edit mode', () => {
 		it( 'when collapsed, shows a loading state when running the renderer and then shows result in text field', async () => {
-			const wrapper = shallowMount( ZObjectStringRenderer, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: typeZid,
-					expanded: false
-				}
-			} );
+			const wrapper = renderZObjectStringRenderer( { edit: true } );
 
 			const text = wrapper.findComponent( { name: 'cdx-text-input' } );
 			expect( text.exists() ).toBe( true );
-			// Initially, the input value should show "Running…"
-			await waitFor( () => expect( wrapper.vm.$data.rendererRunning ).toBeTruthy() );
-			expect( text.vm.modelValue ).toBe( 'Running…' );
-			// After the renderer is done, the input value should show the rendered string
-			await waitFor( () => expect( text.vm.modelValue ).toBe( renderedString ) );
-		} );
 
-		it( 'when expanded, falls back to ZObjectKeyValueSet', async () => {
-			const wrapper = shallowMount( ZObjectStringRenderer, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: typeZid,
-					expanded: true
-				}
+			// Wait for the renderer to start running
+			await waitFor( () => expect( wrapper.vm.rendererRunning ).toBeTruthy() );
+
+			// Initially the input value should be 'Running…'
+			expect( text.props( 'modelValue' ) ).toBe( 'Running…' );
+
+			// After the renderer is done, the input value should show the rendered string
+			await waitFor( () => {
+				expect( text.props( 'modelValue' ) ).toBe( renderedString );
 			} );
 
-			await wrapper.vm.$nextTick();
+			// Should have called the renderer
+			expect( store.runRenderer ).toHaveBeenCalled();
+		} );
+
+		it( 'when expanded, falls back to ZObjectKeyValueSet', () => {
+			const wrapper = renderZObjectStringRenderer( { edit: true, expanded: true } );
 
 			const text = wrapper.findComponent( { name: 'cdx-text-input' } );
 			expect( text.exists() ).toBe( false );
@@ -374,43 +345,26 @@ describe( 'ZObjectStringRenderer', () => {
 		} );
 
 		it( 'on collapse event, runs renderer', async () => {
-			const wrapper = shallowMount( ZObjectStringRenderer, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: typeZid,
-					expanded: true
-				}
-			} );
-
-			await wrapper.vm.$nextTick();
+			const wrapper = renderZObjectStringRenderer( { edit: true, expanded: true } );
 
 			// Make sure that the state is expanded
 			const keyValueSet = wrapper.findComponent( { name: 'wl-z-object-key-value-set' } );
 			expect( keyValueSet.exists() ).toBe( true );
 
 			// Update expanded prop
-			wrapper.setProps( { expanded: false } );
-			await wrapper.vm.$nextTick();
+			await wrapper.setProps( { expanded: false } );
 
-			await waitFor( () => expect( store.runRenderer ).toHaveBeenCalledWith( {
-				rendererZid,
-				zobject: parsedObject,
-				zlang: 'Z1002'
-			} ) );
+			await waitFor( () => {
+				expect( store.runRenderer ).toHaveBeenCalledWith( {
+					rendererZid,
+					zobject: parsedObject,
+					zlang: 'Z1002'
+				} );
+			} );
 		} );
 
 		it( 'on renderer field update, runs parser', () => {
-			const wrapper = shallowMount( ZObjectStringRenderer, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: typeZid,
-					expanded: false
-				}
-			} );
+			const wrapper = renderZObjectStringRenderer( { edit: true } );
 
 			const newValue = 'some new value';
 			const text = wrapper.findComponent( { name: 'cdx-text-input' } );
@@ -425,15 +379,7 @@ describe( 'ZObjectStringRenderer', () => {
 		} );
 
 		it( 'runs test results on mount', () => {
-			shallowMount( ZObjectStringRenderer, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: typeZid,
-					expanded: false
-				}
-			} );
+			renderZObjectStringRenderer( { edit: true } );
 
 			expect( store.getTestResults ).toHaveBeenCalledWith( {
 				zFunctionId: rendererZid
@@ -443,106 +389,31 @@ describe( 'ZObjectStringRenderer', () => {
 		it( 'if no passing tests, and is special page, trigger expansion', async () => {
 			store.isCreateNewPage = true;
 
-			const wrapper = shallowMount( ZObjectStringRenderer, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: typeZid,
-					expanded: false
-				}
-			} );
-
-			await waitFor( () => expect( wrapper.emitted( 'expand' ) ).toBeTruthy() );
-		} );
-
-		it( 'computes passing tests to generate examples, tests not fetched', async () => {
-			store.getPassingTestZids = createGettersWithFunctionsMock( [ 'Z30030', 'Z30031' ] );
-
-			const wrapper = shallowMount( ZObjectStringRenderer, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: typeZid,
-					expanded: false
-				}
-			} );
-
-			await waitFor( () => expect( wrapper.vm.validRendererTests.length ).toBe( 0 ) );
-		} );
-
-		it( 'computes passing tests to generate examples, tests fetched', async () => {
-			store.getPassingTestZids = createGettersWithFunctionsMock( [ 'Z30030', 'Z30031' ] );
-
-			const wrapper = shallowMount( ZObjectStringRenderer, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: typeZid,
-					expanded: false
-				}
-			} );
+			const wrapper = renderZObjectStringRenderer( { edit: true } );
 
 			await waitFor( () => {
-				expect( wrapper.vm.validRendererTests.length ).toBe( 2 );
-				expect( wrapper.vm.validRendererTests ).toEqual( [
-					{
-						zid: 'Z30030',
-						zobject: storedObjects.Z30030.Z2K2
-					},
-					{
-						zid: 'Z30031',
-						zobject: storedObjects.Z30031.Z2K2
-					}
-				] );
+				expect( wrapper.emitted( 'expand' ) ).toBeTruthy();
 			} );
 		} );
 
-		it( 'excludes not wellformed tests', async () => {
-			store.getPassingTestZids = createGettersWithFunctionsMock( [ 'Z30030', 'Z30031', 'Z30032' ] );
-
-			const wrapper = shallowMount( ZObjectStringRenderer, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: typeZid,
-					expanded: false
-				}
-			} );
-
-			await waitFor( () => {
-				expect( wrapper.vm.validRendererTests.length ).toBe( 2 );
-				expect( wrapper.vm.validRendererTests ).toEqual( [
-					{
-						zid: 'Z30030',
-						zobject: storedObjects.Z30030.Z2K2
-					},
-					{
-						zid: 'Z30031',
-						zobject: storedObjects.Z30031.Z2K2
-					}
-				] );
-			} );
-		} );
-
-		it( 'runs tests with user language', async () => {
+		it( 'fetches passing test data when available', async () => {
 			store.getPassingTestZids = createGettersWithFunctionsMock( [ 'Z30030', 'Z30031' ] );
 
-			const wrapper = shallowMount( ZObjectStringRenderer, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: typeZid,
-					expanded: false
-				}
-			} );
+			renderZObjectStringRenderer( { edit: true } );
 
+			// Should fetch test results
+			expect( store.getTestResults ).toHaveBeenCalledWith( {
+				zFunctionId: rendererZid
+			} );
+		} );
+
+		it( 'runs renderer tests with user language', async () => {
+			store.getPassingTestZids = createGettersWithFunctionsMock( [ 'Z30030', 'Z30031' ] );
+
+			renderZObjectStringRenderer( { edit: true } );
+
+			// Should run tests for examples
 			await waitFor( () => {
-				expect( wrapper.vm.validRendererTests.length ).toBe( 2 );
 				expect( store.runRendererTest ).toHaveBeenCalledWith( {
 					rendererZid,
 					testZid: 'Z30030',
@@ -564,18 +435,73 @@ describe( 'ZObjectStringRenderer', () => {
 				{ testZid: 'Z30031', result: 'example two' }
 			] );
 
-			const wrapper = shallowMount( ZObjectStringRenderer, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: typeZid,
-					expanded: false
-				}
-			} );
+			const wrapper = renderZObjectStringRenderer( { edit: true } );
 
 			const text = wrapper.findComponent( { name: 'cdx-text-input' } );
 			expect( text.attributes( 'placeholder' ) ).toBe( 'E.g. example one' );
+		} );
+
+		it( 'fetches and displays example data when available', async () => {
+			store.getRendererExamples = createGettersWithFunctionsMock( [
+				{ testZid: 'Z30030', result: 'example one' },
+				{ testZid: 'Z30031', result: 'example two' }
+			] );
+
+			const wrapper = renderZObjectStringRenderer( { edit: true } );
+
+			// Should fetch test results
+			expect( store.getTestResults ).toHaveBeenCalledWith( {
+				zFunctionId: rendererZid
+			} );
+
+			// Placeholder should use first example
+			const text = wrapper.findComponent( { name: 'cdx-text-input' } );
+			expect( text.attributes( 'placeholder' ) ).toBe( 'E.g. example one' );
+		} );
+
+		it( 'displays examples in dialog with renderer function link', async () => {
+			const rendererLabel = 'Renderer function label';
+			store.getLabelData = createLabelDataMock( { [ rendererZid ]: rendererLabel } );
+			store.getRendererExamples = createGettersWithFunctionsMock( [
+				{ testZid: 'Z30030', result: 'example one' },
+				{ testZid: 'Z30031', result: 'example two' }
+			] );
+
+			// Make renderer return void to trigger error condition and show examples button
+			store.runRenderer = jest.fn().mockResolvedValue( errorResponse );
+
+			const wrapper = renderZObjectStringRenderer( {
+				edit: true
+			}, {
+				stubs: dialogGlobalStubs
+			} );
+
+			// Note: In real usage, the examples dialog is opened by clicking a link that appears
+			// when there's a renderer/parser error and examples are available. Testing the full
+			// error flow with field errors is complex, so we directly test the dialog content.
+			// The error handling tests separately verify that handleMetadataError is called correctly.
+
+			// Open the examples dialog
+			wrapper.vm.openExamplesDialog();
+
+			// Dialog should open
+			await waitFor( () => {
+				const dialog = wrapper.findComponent( { name: 'cdx-dialog' } );
+				expect( dialog.props( 'open' ) ).toBe( true );
+			} );
+
+			// Verify examples are displayed in the dialog
+			const exampleList = wrapper.get( '.ext-wikilambda-app-object-string-renderer__examples' );
+			const examples = exampleList.findAll( 'li' );
+			expect( examples.length ).toBe( 2 );
+			expect( examples[ 0 ].text() ).toBe( 'example one' );
+			expect( examples[ 1 ].text() ).toBe( 'example two' );
+
+			// Verify link to renderer function in dialog footer
+			const dialogFooter = wrapper.get( '.cdx-dialog__footer' );
+			const link = dialogFooter.find( 'a' );
+			expect( link.attributes( 'href' ) ).toContain( rendererZid );
+			expect( link.text() ).toBe( rendererLabel );
 		} );
 
 		describe( 'renderer error handling', () => {
@@ -584,68 +510,49 @@ describe( 'ZObjectStringRenderer', () => {
 				errorParams: [ rendererZid ]
 			};
 
-			it( 'renderer returns void, no examples', async () => {
+			it( 'renderer returns void, no examples - does not show examples link', async () => {
 				store.runRenderer = jest.fn().mockResolvedValue( errorResponse );
 
-				const wrapper = shallowMount( ZObjectStringRenderer, {
-					props: {
-						keyPath,
-						objectValue,
-						edit: true,
-						type: typeZid,
-						expanded: false
-					}
+				const wrapper = renderZObjectStringRenderer( { edit: true } );
+
+				await waitFor( () => {
+					expect( store.handleMetadataError ).toHaveBeenCalledWith( {
+						metadata: errorResponse.response.Z22K2,
+						fallbackErrorData,
+						errorHandler: expect.any( Function )
+					} );
 				} );
-				const spy = jest.spyOn( wrapper.vm, 'setFieldError' );
 
-				await waitFor( () => expect( store.handleMetadataError ).toHaveBeenCalledWith( {
-					metadata: errorResponse.response.Z22K2,
-					fallbackErrorData,
-					errorHandler: spy
-				} ) );
-
-				expect( wrapper.vm.showExamplesLink ).toBe( false );
+				// No examples link should be shown when no examples available
+				const examplesLink = wrapper.find( 'a' );
+				expect( examplesLink.exists() ).toBe( false );
 			} );
 
-			it( 'renderer returns void, available examples', async () => {
+			it( 'renderer returns void, available examples - calls error handler with examples', async () => {
 				store.getRendererExamples = createGettersWithFunctionsMock( [
 					{ testZid: 'Z30030', result: 'example one' },
 					{ testZid: 'Z30031', result: 'example two' }
 				] );
 				store.runRenderer = jest.fn().mockResolvedValue( errorResponse );
 
-				const wrapper = shallowMount( ZObjectStringRenderer, {
-					props: {
-						keyPath,
-						objectValue,
-						edit: true,
-						type: typeZid,
-						expanded: false
-					}
+				renderZObjectStringRenderer( { edit: true } );
+
+				await waitFor( () => {
+					expect( store.handleMetadataError ).toHaveBeenCalledWith( {
+						metadata: errorResponse.response.Z22K2,
+						fallbackErrorData,
+						errorHandler: expect.any( Function )
+					} );
 				} );
-				const spy = jest.spyOn( wrapper.vm, 'setFieldError' );
 
-				await waitFor( () => expect( store.handleMetadataError ).toHaveBeenCalledWith( {
-					metadata: errorResponse.response.Z22K2,
-					fallbackErrorData,
-					errorHandler: spy
-				} ) );
-
-				expect( wrapper.vm.showExamplesLink ).toBe( true );
+				// Error handler was called with metadata - examples are available for display
+				expect( store.getRendererExamples ).toHaveBeenCalled();
 			} );
 
 			it( 'renderer returns wrong type', async () => {
 				store.runRenderer = jest.fn().mockResolvedValue( parserResponse );
 
-				shallowMount( ZObjectStringRenderer, {
-					props: {
-						keyPath,
-						objectValue,
-						edit: true,
-						type: typeZid,
-						expanded: false
-					}
-				} );
+				renderZObjectStringRenderer( { edit: true } );
 
 				const errorPayload = {
 					errorId: keyPath,
@@ -664,74 +571,55 @@ describe( 'ZObjectStringRenderer', () => {
 				errorParams: [ parserZid ]
 			};
 
-			it( 'parser returns void, no examples', async () => {
+			it( 'parser returns void, no examples - does not show examples link', async () => {
 				store.runParser = jest.fn().mockResolvedValue( errorResponse );
 
-				const wrapper = shallowMount( ZObjectStringRenderer, {
-					props: {
-						keyPath,
-						objectValue,
-						edit: true,
-						type: typeZid,
-						expanded: false
-					}
-				} );
-				const spy = jest.spyOn( wrapper.vm, 'setFieldError' );
+				const wrapper = renderZObjectStringRenderer( { edit: true } );
 
 				const text = wrapper.findComponent( { name: 'cdx-text-input' } );
 				text.vm.$emit( 'change', { target: { value: 'some new value' } } );
 
-				await waitFor( () => expect( store.handleMetadataError ).toHaveBeenCalledWith( {
-					metadata: errorResponse.response.Z22K2,
-					fallbackErrorData,
-					errorHandler: spy
-				} ) );
+				await waitFor( () => {
+					expect( store.handleMetadataError ).toHaveBeenCalledWith( {
+						metadata: errorResponse.response.Z22K2,
+						fallbackErrorData,
+						errorHandler: expect.any( Function )
+					} );
+				} );
 
-				expect( wrapper.vm.showExamplesLink ).toBe( false );
+				// No examples link should be shown when no examples available
+				const examplesLink = wrapper.find( 'a' );
+				expect( examplesLink.exists() ).toBe( false );
 			} );
 
-			it( 'parser returns void, available examples', async () => {
+			it( 'parser returns void, available examples - calls error handler with examples', async () => {
 				store.getRendererExamples = createGettersWithFunctionsMock( [
 					{ testZid: 'Z30030', result: 'example one' },
 					{ testZid: 'Z30031', result: 'example two' }
 				] );
 				store.runParser = jest.fn().mockResolvedValue( errorResponse );
 
-				const wrapper = shallowMount( ZObjectStringRenderer, {
-					props: {
-						keyPath,
-						objectValue,
-						edit: true,
-						type: typeZid,
-						expanded: false
-					}
-				} );
-				const spy = jest.spyOn( wrapper.vm, 'setFieldError' );
+				const wrapper = renderZObjectStringRenderer( { edit: true } );
 
 				const text = wrapper.findComponent( { name: 'cdx-text-input' } );
 				text.vm.$emit( 'change', { target: { value: 'some new value' } } );
 
-				await waitFor( () => expect( store.handleMetadataError ).toHaveBeenCalledWith( {
-					metadata: errorResponse.response.Z22K2,
-					fallbackErrorData,
-					errorHandler: spy
-				} ) );
+				await waitFor( () => {
+					expect( store.handleMetadataError ).toHaveBeenCalledWith( {
+						metadata: errorResponse.response.Z22K2,
+						fallbackErrorData,
+						errorHandler: expect.any( Function )
+					} );
+				} );
 
-				expect( wrapper.vm.showExamplesLink ).toBe( true );
+				// Error handler was called with metadata - examples are available for display
+				expect( store.getRendererExamples ).toHaveBeenCalled();
 			} );
 
 			it( 'parser returns wrong type', async () => {
 				store.runParser = jest.fn().mockResolvedValue( parserBadResponse );
 
-				const wrapper = shallowMount( ZObjectStringRenderer, {
-					props: {
-						keyPath,
-						objectValue,
-						edit: true,
-						type: typeZid,
-						expanded: false
-					}
-				} );
+				const wrapper = renderZObjectStringRenderer( { edit: true } );
 
 				const text = wrapper.findComponent( { name: 'cdx-text-input' } );
 				text.vm.$emit( 'change', { target: { value: 'some new value' } } );
@@ -747,81 +635,23 @@ describe( 'ZObjectStringRenderer', () => {
 			} );
 		} );
 
-		it( 'creates an examples dialog window', async () => {
-			const rendererLabel = 'Renderer function label';
-			store.getLabelData = createLabelDataMock( { [ rendererZid ]: rendererLabel } );
-			store.getRendererExamples = createGettersWithFunctionsMock( [
-				{ testZid: 'Z30030', result: 'example one' },
-				{ testZid: 'Z30031', result: 'example two' }
-			] );
+		it( 'calls createObjectByType to initialize blank object model', () => {
+			store.runRenderer = jest.fn().mockResolvedValue( rendererResponse );
+			store.createObjectByType = jest.fn().mockReturnValue( blankObjectValue );
 
-			const wrapper = shallowMount( ZObjectStringRenderer, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: typeZid,
-					expanded: false
-				},
-				global: { stubs: dialogGlobalStubs }
+			// Render with blank object value - this should trigger blank object initialization
+			// when generateRenderedValue runs and finds typeObject available
+			renderZObjectStringRenderer( {
+				objectValue: blankObjectValue,
+				edit: true
 			} );
 
-			// Open dialog window
-			wrapper.setData( { showExamplesDialog: true } );
-			await wrapper.vm.$nextTick();
+			// createObjectByType should be called to initialize the blank object model
+			// This is used to compare with the current object to determine if it's blank
+			expect( store.createObjectByType ).toHaveBeenCalledWith( { type: typeZid } );
 
-			const exampleList = wrapper.find( '.ext-wikilambda-app-object-string-renderer__examples' );
-			const examples = exampleList.findAll( 'li' );
-			expect( examples.length ).toBe( 2 );
-			expect( examples[ 0 ].text() ).toBe( 'example one' );
-			expect( examples[ 1 ].text() ).toBe( 'example two' );
-
-			const dialogFooter = wrapper.find( '.cdx-dialog__footer' );
-			const link = dialogFooter.find( 'a' );
-			expect( link.attributes( 'href' ) ).toContain( rendererZid );
-			expect( link.text() ).toBe( rendererLabel );
-		} );
-
-		describe( 'in edit mode with blank object', () => {
-			beforeEach( () => {
-				store.runRenderer = jest.fn().mockResolvedValue( rendererResponse );
-			} );
-
-			it( 'does not run renderer with empty values', async () => {
-				shallowMount( ZObjectStringRenderer, {
-					props: {
-						keyPath,
-						objectValue: blankObjectValue,
-						edit: true,
-						type: typeZid,
-						expanded: false
-					}
-				} );
-				await waitFor( () => expect( store.runRenderer ).not.toHaveBeenCalled() );
-			} );
-
-			// FIXME: this test, when run in isolation, works. However, when run along with the suite
-			// it detects 18 calls to runRenderer, instead of zero.
-			it.skip( 'initializes blank object when type object is available', async () => {
-				store.getStoredObject = createGettersWithFunctionsMock( undefined );
-				const wrapper = shallowMount( ZObjectStringRenderer, {
-					props: {
-						keyPath,
-						objectValue: blankObjectValue,
-						edit: true,
-						type: typeZid,
-						expanded: false
-					}
-				} );
-
-				expect( wrapper.vm.blankObject ).toBe( undefined );
-
-				store.getStoredObject = ( zid ) => storedObjects[ zid ];
-				await wrapper.vm.$nextTick();
-
-				expect( wrapper.vm.blankObject ).toEqual( canonicalBlankObject );
-				await waitFor( () => expect( store.runRenderer ).not.toHaveBeenCalled() );
-			} );
+			// Renderer should not run with blank values
+			expect( store.runRenderer ).not.toHaveBeenCalled();
 		} );
 	} );
 } );

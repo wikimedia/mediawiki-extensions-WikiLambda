@@ -42,12 +42,11 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapState, mapActions } = require( 'pinia' );
+const { computed, defineComponent, inject, onMounted, ref, watch } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
 const icons = require( '../../../../lib/icons.json' );
-const eventLogMixin = require( '../../../mixins/eventLogMixin.js' );
+const useEventLog = require( '../../../composables/useEventLog.js' );
 const useMainStore = require( '../../../store/index.js' );
 const { hybridToCanonical } = require( '../../../utils/schemata.js' );
 const { typeToString } = require( '../../../utils/typeUtils.js' );
@@ -67,78 +66,19 @@ module.exports = exports = defineComponent( {
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon
 	},
-	mixins: [ eventLogMixin ],
-	data: function () {
-		return {
-			iconLanguage: icons.cdxIconLanguage,
-			initialInputTypes: [],
-			initialOutputType: '',
-			hasUpdatedLabels: false,
-			functionLanguages: []
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getConnectedImplementations',
-		'getConnectedTests',
-		'getCurrentZObjectId',
-		'getMultilingualDataLanguages',
-		'getUserLangZid',
-		'getZFunctionInputs',
-		'getZFunctionOutput',
-		'isCreateNewPage'
-	] ),
-	{
-		/**
-		 * Returns whether there have been any changes made
-		 * in inputs or output types.
-		 *
-		 * @return {boolean}
-		 */
-		functionSignatureChanged: function () {
-			return this.inputTypeChanged || this.outputTypeChanged;
-		},
-		/**
-		 * Returns whether there have been any changes made
-		 * from the initial value of the function.
-		 *
-		 * @return {boolean}
-		 */
-		isFunctionDirty: function () {
-			return this.functionSignatureChanged || this.hasUpdatedLabels;
-		},
-		/**
-		 * Returns whether the function has connected objects (implementations or tests).
-		 *
-		 * @return {boolean}
-		 */
-		hasConnectedObjects: function () {
-			return !!this.getConnectedImplementations.length || !!this.getConnectedTests.length;
-		},
-		/**
-		 * Returns the error code for the type of function
-		 * signature warning to be shown to the user, depending on
-		 * whether the inputs have changed, the output, or both.
-		 *
-		 * @return {string}
-		 */
-		signatureWarningCode: function () {
-			if ( this.inputTypeChanged && this.outputTypeChanged ) {
-				return 'wikilambda-publish-input-and-output-changed-impact-prompt';
-			} else if ( this.inputTypeChanged ) {
-				return 'wikilambda-publish-input-changed-impact-prompt';
-			} else if ( this.outputTypeChanged ) {
-				return 'wikilambda-publish-output-changed-impact-prompt';
-			}
-			return '';
-		},
-		/**
-		 * Returns the text for the button to add more languages
-		 *
-		 * @return {string}
-		 */
-		addLanguageButtonText: function () {
-			return this.$i18n( 'wikilambda-function-definition-add-other-label-languages-title' ).text();
-		},
+	setup() {
+		const i18n = inject( 'i18n' );
+		const { submitInteraction } = useEventLog();
+		const store = useMainStore();
+
+		// Reactive data
+		const iconLanguage = icons.cdxIconLanguage;
+		const initialInputTypes = ref( [] );
+		const initialOutputType = ref( '' );
+		const hasUpdatedLabels = ref( false );
+		const functionLanguages = ref( [] );
+
+		// Computed properties
 		/**
 		 * Returns an array with the string representation of the
 		 * currently selected input types. Filters out the undefined
@@ -146,67 +86,114 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Array}
 		 */
-		currentInputTypes: function () {
-			return this.getZFunctionInputs.map( ( input ) => {
-				const inputType = hybridToCanonical( input[ Constants.Z_ARGUMENT_TYPE ] );
-				return typeToString( inputType );
-			} ).filter( ( type ) => !!type );
-		},
+		const currentInputTypes = computed( () => store.getZFunctionInputs.map( ( input ) => {
+			const inputType = hybridToCanonical( input[ Constants.Z_ARGUMENT_TYPE ] );
+			return typeToString( inputType );
+		} ).filter( ( type ) => !!type ) );
+
 		/**
 		 * Returns an the string representation of the
 		 * currently selected output type.
 		 *
 		 * @return {string}
 		 */
-		currentOutputType: function () {
-			const outputType = hybridToCanonical( this.getZFunctionOutput );
+		const currentOutputType = computed( () => {
+			const outputType = hybridToCanonical( store.getZFunctionOutput );
 			return typeToString( outputType );
-		},
+		} );
+
 		/**
 		 * Returns whether the input types have changed from the
 		 * initial value.
 		 *
 		 * @return {boolean}
 		 */
-		inputTypeChanged: function () {
-			// Return true if length is different, or if at least an item is found to be different
-			return ( this.currentInputTypes.length !== this.initialInputTypes.length ) ||
-				!!this.currentInputTypes.find( ( value, i ) => value !== this.initialInputTypes[ i ] );
-		},
+		const inputTypeChanged = computed( () => currentInputTypes.value.length !== initialInputTypes.value.length ||
+			!!currentInputTypes.value.find( ( value, i ) => value !== initialInputTypes.value[ i ] )
+		);
+
 		/**
 		 * Returns whether the output type has changed from the
 		 * initial value.
 		 *
 		 * @return {boolean}
 		 */
-		outputTypeChanged: function () {
-			return ( this.currentOutputType !== this.initialOutputType );
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'setError'
-	] ), {
+		const outputTypeChanged = computed( () => currentOutputType.value !== initialOutputType.value );
+
+		/**
+		 * Returns whether there have been any changes made
+		 * in inputs or output types.
+		 *
+		 * @return {boolean}
+		 */
+		const functionSignatureChanged = computed( () => inputTypeChanged.value || outputTypeChanged.value );
+
+		/**
+		 * Returns whether there have been any changes made
+		 * from the initial value of the function.
+		 *
+		 * @return {boolean}
+		 */
+		const isFunctionDirty = computed( () => functionSignatureChanged.value || hasUpdatedLabels.value );
+
+		/**
+		 * Returns whether the function has connected objects (implementations or tests).
+		 *
+		 * @return {boolean}
+		 */
+		const hasConnectedObjects = computed( () => !!store.getConnectedImplementations.length ||
+			!!store.getConnectedTests.length );
+
+		/**
+		 * Returns the error code for the type of function
+		 * signature warning to be shown to the user, depending on
+		 * whether the inputs have changed, the output, or both.
+		 *
+		 * @return {string}
+		 */
+		const signatureWarningCode = computed( () => {
+			if ( inputTypeChanged.value && outputTypeChanged.value ) {
+				return 'wikilambda-publish-input-and-output-changed-impact-prompt';
+			} else if ( inputTypeChanged.value ) {
+				return 'wikilambda-publish-input-changed-impact-prompt';
+			} else if ( outputTypeChanged.value ) {
+				return 'wikilambda-publish-output-changed-impact-prompt';
+			}
+			return '';
+		} );
+
+		/**
+		 * Returns the text for the button to add more languages
+		 *
+		 * @return {string}
+		 */
+		const addLanguageButtonText = computed( () => i18n( 'wikilambda-function-definition-add-other-label-languages-title' ).text() );
+
+		// Methods
 		/**
 		 * Saves the initial values for initialInputTypes and initialOutputType
 		 */
-		saveInitialFunctionSignature: function () {
-			this.initialInputTypes = this.currentInputTypes;
-			this.initialOutputType = this.currentOutputType;
-		},
+		function saveInitialFunctionSignature() {
+			initialInputTypes.value = currentInputTypes.value;
+			initialOutputType.value = currentOutputType.value;
+		}
+
 		/**
 		 * Sets the hasUpdatedLabels flag to true
 		 */
-		setHasUpdatedLabels: function () {
-			this.hasUpdatedLabels = true;
-		},
+		function setHasUpdatedLabels() {
+			hasUpdatedLabels.value = true;
+		}
+
 		/**
 		 * Adds a new entry to the functionLanguages local array.
 		 * Initiates it to "unset" language, so it just adds an
 		 * empty string.
 		 */
-		addLanguage: function () {
-			this.functionLanguages.push( '' );
-		},
+		function addLanguage() {
+			functionLanguages.value.push( '' );
+		}
+
 		/**
 		 * Sets a function definition unset language to a given
 		 * value, given its index in the functionLanguages array.
@@ -215,61 +202,76 @@ module.exports = exports = defineComponent( {
 		 * @param {number} payload.index array index
 		 * @param {string} payload.language zid
 		 */
-		setLanguage: function ( payload ) {
-			this.functionLanguages[ payload.index ] = payload.language;
-		},
+		function setLanguage( payload ) {
+			functionLanguages.value[ payload.index ] = payload.language;
+		}
+
 		/**
 		 * Set warnings when there are changes in the function signature
 		 * to announce that
 		 */
-		raiseFunctionWarnings: function () {
+		function raiseFunctionWarnings() {
 			// Only warn of changes if we are editing an existing function
-			if ( this.isCreateNewPage ) {
+			if ( store.isCreateNewPage ) {
 				return;
 			}
 
 			// If there's changes in the function signature, warn that
 			// implementations and testers will be detached
-			if ( this.functionSignatureChanged && this.hasConnectedObjects ) {
-				this.setError( {
+			if ( functionSignatureChanged.value && hasConnectedObjects.value ) {
+				store.setError( {
 					errorId: Constants.STORED_OBJECTS.MAIN,
 					errorType: Constants.ERROR_TYPES.WARNING,
-					errorMessageKey: this.signatureWarningCode
+					errorMessageKey: signatureWarningCode.value
 				} );
 			}
 		}
-	} ),
-	watch: {
-		isFunctionDirty: function ( newValue ) {
+
+		// Watchers
+		watch( isFunctionDirty, ( newValue ) => {
 			if ( newValue === true ) {
 				const interactionData = {
-					zobjectid: this.getCurrentZObjectId,
+					zobjectid: store.getCurrentZObjectId,
 					zobjecttype: Constants.Z_FUNCTION,
-					zlang: this.getUserLangZid || null
+					zlang: store.getUserLangZid || null
 				};
-				this.submitInteraction( 'change', interactionData );
+				submitInteraction( 'change', interactionData );
 			}
-		}
-	},
-	mounted: function () {
-		// Initialize the local array with the collection of available languages
-		// and initialize first label block with user lang if there are none.
-		this.functionLanguages = this.getMultilingualDataLanguages.all;
-		if ( this.functionLanguages.length === 0 ) {
-			this.functionLanguages.push( this.getUserLangZid );
-		}
+		} );
 
-		// Initialize initial state of inputs and output
-		this.saveInitialFunctionSignature();
+		// Lifecycle
+		onMounted( () => {
+			// Initialize the local array with the collection of available languages
+			// and initialize first label block with user lang if there are none.
+			functionLanguages.value = store.getMultilingualDataLanguages.all;
+			if ( functionLanguages.value.length === 0 ) {
+				functionLanguages.value.push( store.getUserLangZid );
+			}
 
-		// Log an event using Metrics Platform's core interaction events
-		const interactionData = {
-			zobjecttype: Constants.Z_FUNCTION,
-			zobjectid: this.getCurrentZObjectId || null,
-			zlang: this.getUserLangZid || null
+			// Initialize initial state of inputs and output
+			saveInitialFunctionSignature();
+
+			// Log an event using Metrics Platform's core interaction events
+			const interactionData = {
+				zobjecttype: Constants.Z_FUNCTION,
+				zobjectid: store.getCurrentZObjectId || null,
+				zlang: store.getUserLangZid || null
+			};
+			const action = store.isCreateNewPage ? 'create' : 'edit';
+			submitInteraction( action, interactionData );
+		} );
+
+		return {
+			addLanguage,
+			addLanguageButtonText,
+			functionLanguages,
+			functionSignatureChanged,
+			iconLanguage,
+			isFunctionDirty,
+			raiseFunctionWarnings,
+			setHasUpdatedLabels,
+			setLanguage
 		};
-		const action = this.isCreateNewPage ? 'create' : 'edit';
-		this.submitInteraction( action, interactionData );
 	}
 } );
 </script>

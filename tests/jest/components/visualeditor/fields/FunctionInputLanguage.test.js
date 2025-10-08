@@ -7,29 +7,32 @@ const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store
 const ErrorData = require( '../../../../../resources/ext.wikilambda.app/store/classes/ErrorData.js' );
 const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
 const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../../helpers/getterHelpers.js' );
-const LabelData = require( '../../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' );
 
 describe( 'FunctionInputLanguage', () => {
 	const errorLang = new ErrorData( 'wikilambda-visualeditor-wikifunctionscall-error-language', [], null, 'error' );
 
 	let store;
 
-	const defaultProps = {
-		inputType: 'Z60',
-		labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
-		error: '',
-		showValidation: false
+	// Helper function to render FunctionInputLanguage with common configuration
+	const renderFunctionInputLanguage = ( props = {}, options = {} ) => {
+		const defaultProps = {
+			inputType: 'Z60',
+			value: ''
+		};
+		const defaultOptions = {
+			global: {
+				stubs: {
+					CdxField: false,
+					CdxLabel: false,
+					...options?.stubs
+				}
+			}
+		};
+		return shallowMount( FunctionInputLanguage, {
+			props: { ...defaultProps, ...props },
+			...defaultOptions
+		} );
 	};
-
-	const globalStubs = { stubs: { CdxField: false, CdxLabel: false } };
-
-	const renderFunctionInputLanguage = ( props = {} ) => shallowMount( FunctionInputLanguage, {
-		props: {
-			...defaultProps,
-			...props
-		},
-		global: globalStubs
-	} );
 
 	beforeEach( () => {
 		store = useMainStore();
@@ -68,8 +71,8 @@ describe( 'FunctionInputLanguage', () => {
 			value: 'Z1003'
 		} );
 
-		// Wait for validation to finish
-		await waitFor( () => expect( wrapper.vm.isValidating ).toBe( false ) );
+		// Wait for validation to complete
+		await waitFor( () => expect( wrapper.emitted().validate.length ).toBe( 2 ) );
 
 		// First, emits invalid (while validating), then emits valid
 		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false } ] );
@@ -92,8 +95,8 @@ describe( 'FunctionInputLanguage', () => {
 		expect( wrapper.emitted().input[ 0 ] ).toEqual( [ 'Z1003' ] );
 		expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ { isValid: false } ] );
 
-		// Wait for validation to finish
-		await waitFor( () => expect( wrapper.vm.isValidating ).toBe( false ) );
+		// Wait for validation to complete
+		await waitFor( () => expect( wrapper.emitted().validate.length ).toBe( 3 ) );
 
 		expect( wrapper.emitted().validate[ 2 ] ).toEqual( [ { isValid: true } ] );
 		expect( wrapper.emitted().update[ 0 ] ).toEqual( [ 'Z1003' ] );
@@ -128,8 +131,8 @@ describe( 'FunctionInputLanguage', () => {
 		// Emits validate=false event before async validation
 		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false } ] );
 
-		// Wait for validation to finish
-		await waitFor( () => expect( wrapper.vm.isValidating ).toBe( false ) );
+		// Wait for validation to complete
+		await waitFor( () => expect( wrapper.emitted().validate.length ).toBe( 2 ) );
 
 		// Emits validation result once finished
 		expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ {
@@ -146,8 +149,8 @@ describe( 'FunctionInputLanguage', () => {
 		// Emits validate=false event before async validation
 		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false } ] );
 
-		// Wait for validation to finish
-		await waitFor( () => expect( wrapper.vm.isValidating ).toBe( false ) );
+		// Wait for validation to complete
+		await waitFor( () => expect( wrapper.emitted().validate.length ).toBe( 2 ) );
 
 		// Emits validation result once finished
 		expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ {
@@ -164,8 +167,8 @@ describe( 'FunctionInputLanguage', () => {
 		// Emits validate=false event before async validation
 		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false } ] );
 
-		// Wait for validation to finish
-		await waitFor( () => expect( wrapper.vm.isValidating ).toBe( false ) );
+		// Wait for validation to complete
+		await waitFor( () => expect( wrapper.emitted().validate.length ).toBe( 2 ) );
 
 		// Emits validation result once finished
 		expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ { isValid: true } ] );

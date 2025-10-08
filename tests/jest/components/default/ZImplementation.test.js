@@ -51,15 +51,36 @@ const builtinObjectValue = {
 	Z14K4: { Z1K1: 'Z9', Z9K1: 'Z902' }
 };
 
-const globalStubs = {
-	stubs: {
-		WlKeyValueBlock: false,
-		WlKeyBlock: false
-	}
-};
-
 describe( 'ZImplementation', () => {
 	let store;
+
+	/**
+	 * Helper function to render ZImplementation component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderZImplementation( props = {}, options = {} ) {
+		const defaultProps = {
+			keyPath,
+			objectValue,
+			edit: false
+		};
+		const defaultOptions = {
+			global: {
+				stubs: {
+					WlKeyValueBlock: false,
+					WlKeyBlock: false,
+					...options?.stubs
+				}
+			}
+		};
+		return shallowMount( ZImplementation, {
+			props: { ...defaultProps, ...props },
+			...defaultOptions
+		} );
+	}
 
 	beforeEach( () => {
 		store = useMainStore();
@@ -72,96 +93,54 @@ describe( 'ZImplementation', () => {
 
 	describe( 'in view mode', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( ZImplementation, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false
-				},
-				global: globalStubs
-			} );
+			const wrapper = renderZImplementation();
+
 			expect( wrapper.find( '.ext-wikilambda-app-implementation' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders function block', () => {
-			const wrapper = shallowMount( ZImplementation, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false
-				},
-				global: globalStubs
-			} );
+			const wrapper = renderZImplementation();
+
 			const functionBlock = wrapper.find( '.ext-wikilambda-app-implementation__function' );
 			expect( functionBlock.exists() ).toBe( true );
 			expect( functionBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 		} );
 
 		it( 'renders type block', () => {
-			const wrapper = shallowMount( ZImplementation, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false
-				},
-				global: globalStubs
-			} );
+			const wrapper = renderZImplementation();
+
 			const typeBlock = wrapper.find( '.ext-wikilambda-app-implementation__type' );
 			expect( typeBlock.exists() ).toBe( true );
 			expect( typeBlock.find( '.ext-wikilambda-app-implementation__value-text' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders content block', () => {
-			const wrapper = shallowMount( ZImplementation, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false
-				},
-				global: globalStubs
-			} );
+			const wrapper = renderZImplementation();
+
 			const contentBlock = wrapper.find( '.ext-wikilambda-app-implementation__content' );
 			expect( contentBlock.exists() ).toBe( true );
 			expect( contentBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 		} );
 
 		it( 'it renders the composition type for a composition', () => {
-			const wrapper = shallowMount( ZImplementation, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false
-				},
-				global: globalStubs
-			} );
+			const wrapper = renderZImplementation();
+
 			const typeBlock = wrapper.find( '.ext-wikilambda-app-implementation__type' );
 			expect( typeBlock.find( '.ext-wikilambda-app-key-block' ).text() ).toBe( 'Implementation' );
 			expect( typeBlock.find( '.ext-wikilambda-app-implementation__value-text' ).text() ).toBe( 'composition' );
 		} );
 
 		it( 'it renders the code type for a code implementation', () => {
-			const wrapper = shallowMount( ZImplementation, {
-				props: {
-					keyPath,
-					objectValue: codeObjectValue,
-					edit: false
-				},
-				global: globalStubs
-			} );
+			const wrapper = renderZImplementation( { objectValue: codeObjectValue } );
+
 			const typeBlock = wrapper.find( '.ext-wikilambda-app-implementation__type' );
 			expect( typeBlock.find( '.ext-wikilambda-app-key-block' ).text() ).toBe( 'Implementation' );
 			expect( typeBlock.find( '.ext-wikilambda-app-implementation__value-text' ).text() ).toBe( 'code' );
 		} );
 
 		it( 'it renders non editable function for a builtin', () => {
-			const wrapper = shallowMount( ZImplementation, {
-				props: {
-					keyPath,
-					objectValue: builtinObjectValue,
-					edit: false
-				},
-				global: globalStubs
-			} );
+			const wrapper = renderZImplementation( { objectValue: builtinObjectValue } );
+
 			const functionBlock = wrapper.find( '.ext-wikilambda-app-implementation__function' );
 			expect( functionBlock.exists() ).toBe( true );
 			expect( functionBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
@@ -169,14 +148,8 @@ describe( 'ZImplementation', () => {
 		} );
 
 		it( 'it renders the warning message for a builtin', () => {
-			const wrapper = shallowMount( ZImplementation, {
-				props: {
-					keyPath,
-					objectValue: builtinObjectValue,
-					edit: false
-				},
-				global: globalStubs
-			} );
+			const wrapper = renderZImplementation( { objectValue: builtinObjectValue } );
+
 			const typeBlock = wrapper.find( '.ext-wikilambda-app-implementation__type' );
 			expect( typeBlock.find( '.ext-wikilambda-app-key-block' ).text() ).toBe( 'Implementation' );
 			const valueBlock = typeBlock.find( '.ext-wikilambda-app-key-value-block__value' );
@@ -186,68 +159,38 @@ describe( 'ZImplementation', () => {
 
 	describe( 'in edit mode', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( ZImplementation, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true
-				},
-				global: globalStubs
-			} );
+			const wrapper = renderZImplementation( { edit: true } );
+
 			expect( wrapper.find( '.ext-wikilambda-app-implementation' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders function block', () => {
-			const wrapper = shallowMount( ZImplementation, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true
-				},
-				global: globalStubs
-			} );
+			const wrapper = renderZImplementation( { edit: true } );
+
 			const functionBlock = wrapper.find( '.ext-wikilambda-app-implementation__function' );
 			expect( functionBlock.exists() ).toBe( true );
 			expect( functionBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 		} );
 
 		it( 'renders type block', () => {
-			const wrapper = shallowMount( ZImplementation, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true
-				},
-				global: globalStubs
-			} );
+			const wrapper = renderZImplementation( { edit: true } );
+
 			const typeBlock = wrapper.find( '.ext-wikilambda-app-implementation__type' );
 			expect( typeBlock.exists() ).toBe( true );
 			expect( typeBlock.findAllComponents( { name: 'cdx-radio' } ) ).toHaveLength( 2 );
 		} );
 
 		it( 'renders content block', () => {
-			const wrapper = shallowMount( ZImplementation, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true
-				},
-				global: globalStubs
-			} );
+			const wrapper = renderZImplementation( { edit: true } );
+
 			const contentBlock = wrapper.find( '.ext-wikilambda-app-implementation__content' );
 			expect( contentBlock.exists() ).toBe( true );
 			expect( contentBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 		} );
 
 		it( 'type block has code and composition radio buttons', () => {
-			const wrapper = shallowMount( ZImplementation, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true
-				},
-				global: globalStubs
-			} );
+			const wrapper = renderZImplementation( { edit: true } );
+
 			const typeBlock = wrapper.find( '.ext-wikilambda-app-implementation__type' );
 			const radioButtons = typeBlock.findAllComponents( { name: 'cdx-radio' } );
 			expect( radioButtons ).toHaveLength( 2 );
@@ -256,14 +199,8 @@ describe( 'ZImplementation', () => {
 		} );
 
 		it( 'it renders non editable function for a builtin', () => {
-			const wrapper = shallowMount( ZImplementation, {
-				props: {
-					keyPath,
-					objectValue: builtinObjectValue,
-					edit: true
-				},
-				global: globalStubs
-			} );
+			const wrapper = renderZImplementation( { objectValue: builtinObjectValue, edit: true } );
+
 			const functionBlock = wrapper.find( '.ext-wikilambda-app-implementation__function' );
 			expect( functionBlock.exists() ).toBe( true );
 			expect( functionBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
@@ -271,29 +208,17 @@ describe( 'ZImplementation', () => {
 		} );
 
 		it( 'it renders the warning message for a builtin', () => {
-			const wrapper = shallowMount( ZImplementation, {
-				props: {
-					keyPath,
-					objectValue: builtinObjectValue,
-					edit: true
-				},
-				global: globalStubs
-			} );
-			const typeBlock = wrapper.find( '.ext-wikilambda-app-implementation__type' );
+			const wrapper = renderZImplementation( { objectValue: builtinObjectValue, edit: true } );
+
+			const typeBlock = wrapper.get( '.ext-wikilambda-app-implementation__type' );
 			expect( typeBlock.find( '.ext-wikilambda-app-key-block' ).text() ).toBe( 'Implementation' );
 			const valueBlock = typeBlock.find( '.ext-wikilambda-app-key-value-block__value' );
 			expect( valueBlock.findComponent( { name: 'cdx-message' } ).exists() ).toBe( true );
 		} );
 
 		it( 'does not render the content block and radio buttons should be disabled when function zid is not available', () => {
-			const wrapper = shallowMount( ZImplementation, {
-				props: {
-					keyPath,
-					objectValue: emptyObjectValue,
-					edit: true
-				},
-				global: globalStubs
-			} );
+			const wrapper = renderZImplementation( { objectValue: emptyObjectValue, edit: true } );
+
 			const contentBlock = wrapper.find( '.ext-wikilambda-app-implementation__content' );
 			expect( contentBlock.exists() ).toBe( false );
 

@@ -33,6 +33,22 @@ const terminalValue = { Z1K1: 'Z6', Z6K1: 'Z10001K1' };
 describe( 'ZArgumentReference', () => {
 	let store;
 
+	/**
+	 * Helper function to render ZArgumentReference component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderZArgumentReference( props = {}, options = {} ) {
+		const defaultProps = {
+			keyPath,
+			objectValue,
+			edit: false
+		};
+		return shallowMount( ZArgumentReference, { props: { ...defaultProps, ...props }, ...options } );
+	}
+
 	beforeEach( () => {
 		store = useMainStore();
 		store.getCurrentTargetFunctionZid = 'Z10001';
@@ -46,64 +62,41 @@ describe( 'ZArgumentReference', () => {
 
 	describe( 'in view mode', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( ZArgumentReference, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false
-				}
-			} );
+			const wrapper = renderZArgumentReference();
+
 			expect( wrapper.find( '.ext-wikilambda-app-argument-reference' ).exists() ).toBe( true );
 			expect( wrapper.findComponent( { name: 'cdx-icon' } ).exists() ).toBe( true );
 		} );
 
 		it( 'displays empty string when nothing selected', () => {
-			const wrapper = shallowMount( ZArgumentReference, {
-				props: {
-					keyPath,
-					objectValue: emptyValue,
-					edit: false
-				}
+			const wrapper = renderZArgumentReference( {
+				objectValue: emptyValue
 			} );
-			expect( wrapper.find( '.ext-wikilambda-app-argument-reference' ).text() ).toBe( '' );
+
+			expect( wrapper.get( '.ext-wikilambda-app-argument-reference' ).text() ).toBe( '' );
 		} );
 
 		it( 'displays the argument key when it has no label', () => {
 			store.getZStringTerminalValue = createGettersWithFunctionsMock( 'Z10001K1' );
 
-			const wrapper = shallowMount( ZArgumentReference, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false
-				}
-			} );
-			expect( wrapper.find( '.ext-wikilambda-app-argument-reference' ).text() ).toBe( 'Z10001K1' );
+			const wrapper = renderZArgumentReference();
+
+			expect( wrapper.get( '.ext-wikilambda-app-argument-reference' ).text() ).toBe( 'Z10001K1' );
 		} );
 
 		it( 'displays the argument label when available', () => {
 			store.getLabelData = createLabelDataMock( { Z10001K1: 'input' } );
 
-			const wrapper = shallowMount( ZArgumentReference, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false
-				}
-			} );
-			expect( wrapper.find( '.ext-wikilambda-app-argument-reference' ).text() ).toBe( 'input' );
+			const wrapper = renderZArgumentReference();
+
+			expect( wrapper.get( '.ext-wikilambda-app-argument-reference' ).text() ).toBe( 'input' );
 		} );
 	} );
 
 	describe( 'in edit mode', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( ZArgumentReference, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true
-				}
-			} );
+			const wrapper = renderZArgumentReference( { edit: true } );
+
 			expect( wrapper.find( '.ext-wikilambda-app-argument-reference' ).exists() ).toBe( true );
 			expect( wrapper.findComponent( { name: 'cdx-select' } ).exists() ).toBe( true );
 		} );
@@ -114,13 +107,7 @@ describe( 'ZArgumentReference', () => {
 				Z10001K2: 'second'
 			} );
 
-			const wrapper = shallowMount( ZArgumentReference, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true
-				}
-			} );
+			const wrapper = renderZArgumentReference( { edit: true } );
 
 			expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems.length ).toBe( 3 );
 			// First item Z10001K1 with label "first"
@@ -137,37 +124,22 @@ describe( 'ZArgumentReference', () => {
 		it( 'renders the selector with empty value set', () => {
 			store.getInputsOfFunctionZid = createGettersWithFunctionsMock( [] );
 
-			const wrapper = shallowMount( ZArgumentReference, {
-				props: {
-					keyPath,
-					objectValue: emptyValue,
-					edit: true
-				}
+			const wrapper = renderZArgumentReference( {
+				objectValue: emptyValue,
+				edit: true
 			} );
 
 			expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.selected ).toEqual( '' );
 		} );
 
 		it( 'renders the selector with current value set', () => {
-			const wrapper = shallowMount( ZArgumentReference, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true
-				}
-			} );
+			const wrapper = renderZArgumentReference( { edit: true } );
 
 			expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.selected ).toEqual( 'Z10001K1' );
 		} );
 
 		it( 'selects a new value when the component is used for the whole Z18 object in collapsed mode', () => {
-			const wrapper = shallowMount( ZArgumentReference, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true
-				}
-			} );
+			const wrapper = renderZArgumentReference( { edit: true } );
 
 			expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.selected ).toEqual( 'Z10001K1' );
 
@@ -180,12 +152,10 @@ describe( 'ZArgumentReference', () => {
 		} );
 
 		it( 'selects a new value when the component used for Z18K1 key', () => {
-			const wrapper = shallowMount( ZArgumentReference, {
-				props: {
-					keyPath: terminalKeyPath,
-					objectValue: terminalValue,
-					edit: true
-				}
+			const wrapper = renderZArgumentReference( {
+				keyPath: terminalKeyPath,
+				objectValue: terminalValue,
+				edit: true
 			} );
 
 			expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.selected ).toEqual( 'Z10001K1' );

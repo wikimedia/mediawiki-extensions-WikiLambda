@@ -33,8 +33,7 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { computed, defineComponent, inject, nextTick, onBeforeUnmount, onMounted, ref } = require( 'vue' );
 const Constants = require( '../../../Constants.js' );
 const LabelData = require( '../../../store/classes/LabelData.js' );
 const useMainStore = require( '../../../store/index.js' );
@@ -63,105 +62,112 @@ module.exports = exports = defineComponent( {
 			default: null
 		}
 	},
-	data: function () {
-		return {
-			ignoreChangeEvent: false,
-			maxDescriptionChars: Constants.DESCRIPTION_CHARS_MAX,
-			remainingChars: Constants.DESCRIPTION_CHARS_MAX
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getZPersistentDescription'
-	] ), {
+	emits: [ 'description-updated' ],
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
+
+		const ignoreChangeEvent = ref( false );
+		const maxDescriptionChars = Constants.DESCRIPTION_CHARS_MAX;
+		const remainingChars = ref( Constants.DESCRIPTION_CHARS_MAX );
+
 		/**
-		 * Finds the Description (Z2K5) for the given language and returns
-		 * its keyPath and value if found. Else, returns undefined.
+		 * Finds the Description (Z2K5) for the given language
 		 *
 		 * @return {Object|undefined}
 		 */
-		description: function () {
-			return this.zLanguage ? this.getZPersistentDescription( this.zLanguage ) : undefined;
-		},
+		const description = computed( () => props.zLanguage ?
+			store.getZPersistentDescription( props.zLanguage ) :
+			undefined
+		);
+
 		/**
 		 * Returns the label for the description field
 		 *
+		 * TODO (T335583): Replace i18n message with key label
+		 *
 		 * @return {string}
 		 */
-		descriptionLabel: function () {
-			// TODO (T335583): Replace i18n message with key label
-			// return this.getLabelData( Constants.Z_PERSISTENTOBJECT_DESCRIPTION );
-			return this.$i18n( 'wikilambda-function-definition-description-label' ).text();
-		},
+		const descriptionLabel = computed( () => i18n( 'wikilambda-function-definition-description-label' ).text() );
+
 		/**
 		 * Returns the i18n message for the description field placeholder
 		 *
 		 * @return {string}
 		 */
-		descriptionInputPlaceholder: function () {
-			return this.$i18n( 'wikilambda-function-definition-description-placeholder' ).text();
-		},
+		const descriptionInputPlaceholder = computed( () => i18n( 'wikilambda-function-definition-description-placeholder' ).text() );
+
 		/**
 		 * Returns the "optional" caption for the description field
 		 *
 		 * @return {string}
 		 */
-		descriptionOptional: function () {
-			return this.$i18n( 'parentheses', [ this.$i18n( 'wikilambda-optional' ).text() ] ).text();
-		},
+		const descriptionOptional = computed( () => i18n( 'parentheses', [ i18n( 'wikilambda-optional' ).text() ] ).text() );
+
 		/**
 		 * Returns the id for the input field
 		 *
 		 * @return {string}
 		 */
-		descriptionInputId: function () {
-			return `ext-wikilambda-app-function-editor-description__input${ this.zLanguage }`;
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'setZMonolingualString'
-	] ), {
+		const descriptionInputId = computed( () => `ext-wikilambda-app-function-editor-description__input${ props.zLanguage }` );
+
 		/**
-		 * Updates the remainingChars data property as the user types into the Z2K5 field
+		 * Updates the remainingChars as the user types
 		 *
-		 * @param {Event} event - the event object that is automatically passed in on input
+		 * @param {Event} event
 		 */
-		updateRemainingChars: function ( event ) {
+		const updateRemainingChars = ( event ) => {
 			const { length } = event.target.value;
-			this.remainingChars = this.maxDescriptionChars - length;
-		},
+			remainingChars.value = maxDescriptionChars - length;
+		};
+
 		/**
-		 * Persist the new name value in the globally stored object
+		 * Persist the new description value in the store
 		 *
 		 * @param {Object} event
 		 */
-		persistDescription: function ( event ) {
-			if ( this.ignoreChangeEvent ) {
+		const persistDescription = ( event ) => {
+			if ( ignoreChangeEvent.value ) {
 				return;
 			}
 
-			this.setZMonolingualString( {
+			store.setZMonolingualString( {
 				parentKeyPath: [
 					Constants.STORED_OBJECTS.MAIN,
 					Constants.Z_PERSISTENTOBJECT_DESCRIPTION,
 					Constants.Z_MULTILINGUALSTRING_VALUE
 				],
-				itemKeyPath: this.description ? this.description.keyPath : undefined,
+				itemKeyPath: description.value ? description.value.keyPath : undefined,
 				value: event.target.value,
-				lang: this.zLanguage
+				lang: props.zLanguage
 			} );
 
-			this.$emit( 'description-updated' );
-		}
-	} ),
-	mounted: function () {
-		this.$nextTick( function () {
-			this.remainingChars = this.maxDescriptionChars -
-				( this.description ? this.description.value.length : 0 );
+			emit( 'description-updated' );
+		};
+
+		onMounted( () => {
+			nextTick( () => {
+				remainingChars.value = maxDescriptionChars -
+					( description.value ? description.value.value.length : 0 );
+			} );
 		} );
-	},
-	beforeUnmount: function () {
-		// When the component is unmounted, we want to ignore any change events and not persist the data
-		this.ignoreChangeEvent = true;
+
+		onBeforeUnmount( () => {
+			// When the component is unmounted, we want to ignore any change events
+			ignoreChangeEvent.value = true;
+		} );
+
+		return {
+			description,
+			descriptionInputId,
+			descriptionInputPlaceholder,
+			descriptionLabel,
+			descriptionOptional,
+			maxDescriptionChars,
+			persistDescription,
+			remainingChars,
+			updateRemainingChars
+		};
 	}
 } );
 </script>

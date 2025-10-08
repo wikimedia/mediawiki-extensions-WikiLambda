@@ -3,28 +3,30 @@
 const { shallowMount } = require( '@vue/test-utils' );
 const FunctionInputString = require( '../../../../../resources/ext.wikilambda.app/components/visualeditor/fields/FunctionInputString.vue' );
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
-const LabelData = require( '../../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' );
 
 describe( 'FunctionInputString', () => {
 	let store;
 
-	const defaultProps = {
-		value: 'Test value',
-		inputType: 'Z6',
-		labelData: new LabelData( 'Z123K1', 'Test Label', 'Z1002', 'en' ),
-		error: '',
-		showValidation: false
+	// Helper function to render FunctionInputString with common configuration
+	const renderFunctionInputString = ( props = {}, options = {} ) => {
+		const defaultProps = {
+			value: 'Test value',
+			inputType: 'Z6'
+		};
+		const defaultOptions = {
+			global: {
+				stubs: {
+					CdxField: false,
+					CdxLabel: false,
+					...options?.stubs
+				}
+			}
+		};
+		return shallowMount( FunctionInputString, {
+			props: { ...defaultProps, ...props },
+			...defaultOptions
+		} );
 	};
-
-	const globalStubs = { stubs: { CdxField: false, CdxLabel: false } };
-
-	const renderFunctionInputString = ( props = {} ) => shallowMount( FunctionInputString, {
-		props: {
-			...defaultProps,
-			...props
-		},
-		global: globalStubs
-	} );
 
 	beforeEach( () => {
 		store = useMainStore();

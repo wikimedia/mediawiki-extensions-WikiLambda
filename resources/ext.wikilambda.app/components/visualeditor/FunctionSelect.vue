@@ -10,9 +10,8 @@
 		<!-- Main function selector -->
 		<div class="ext-wikilambda-app-function-select__field">
 			<cdx-search-input
-				ref="searchInput"
 				:model-value="searchTerm"
-				:placeholder="$i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder' )"
+				:placeholder="i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder' )"
 				@update:model-value="updateSearchTerm"
 				@focus="showSearchCancel = true"
 			></cdx-search-input>
@@ -21,7 +20,7 @@
 			<!-- Suggested items -->
 			<template v-if="showSuggested">
 				<div class="ext-wikilambda-app-function-select__title">
-					{{ $i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title' ) }}
+					{{ i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title' ) }}
 				</div>
 				<wl-function-select-item
 					v-for="item in suggested"
@@ -35,7 +34,7 @@
 			<template v-else>
 				<template v-if="lookupResults.length > 0">
 					<div class="ext-wikilambda-app-function-select__title">
-						{{ $i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title' ) }}
+						{{ i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title' ) }}
 					</div>
 					<wl-function-select-item
 						v-for="( item, index ) in lookupResults"
@@ -47,7 +46,7 @@
 				</template>
 				<div v-else class="ext-wikilambda-app-function-select__no-results">
 					<div class="ext-wikilambda-app-function-select__no-results-msg">
-						{{ $i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results' ) }}
+						{{ i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results' ) }}
 					</div>
 					<div
 						v-for="( cta, index ) in callsToAction"
@@ -66,10 +65,9 @@
 
 <script>
 const { CdxSearchInput } = require( '../../../codex.js' );
-const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { computed, defineComponent, inject, ref } = require( 'vue' );
 
-const typeMixin = require( '../../mixins/typeMixin.js' );
+const useType = require( '../../composables/useType.js' );
 const useMainStore = require( '../../store/index.js' );
 const FunctionSelectItem = require( './FunctionSelectItem.vue' );
 
@@ -79,102 +77,72 @@ module.exports = exports = defineComponent( {
 		'cdx-search-input': CdxSearchInput,
 		'wl-function-select-item': FunctionSelectItem
 	},
-	mixins: [ typeMixin ],
-	data: function () {
-		return {
-			showSearchCancel: false,
-			lookupAbortController: null,
-			callsToAction: [
-				{
-					title: this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-cta-suggest-title' ).parse(),
-					description: this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-cta-suggest-description' ).text()
-				},
-				{
-					title: this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-cta-create-title' ).parse(),
-					description: this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-cta-create-description' ).text()
-				},
-				{
-					title: this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-cta-explore-title' ).parse(),
-					description: this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-cta-explore-description' ).text()
-				}
-			]
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getDescription',
-		'getLabelData',
-		'getSuggestedFunctions',
-		'getSearchTerm',
-		'getLookupResults'
-	] ), {
+	setup( _, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const { isValidZidFormat } = useType();
+		const store = useMainStore();
+
+		// Reactive data
+		const showSearchCancel = ref( false );
+		const lookupAbortController = ref( null );
+		const callsToAction = [
+			{
+				title: i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-cta-suggest-title' ).parse(),
+				description: i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-cta-suggest-description' ).text()
+			},
+			{
+				title: i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-cta-create-title' ).parse(),
+				description: i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-cta-create-description' ).text()
+			},
+			{
+				title: i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-cta-explore-title' ).parse(),
+				description: i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-cta-explore-description' ).text()
+			}
+		];
+
+		// Computed properties
 		/**
 		 * Returns the information of the suggested function Zids
 		 *
 		 * @return {Array}
 		 */
-		suggested: function () {
-			return this.getSuggestedFunctions.map( ( zid ) => ( {
-				zid,
-				labelData: this.getLabelData( zid ),
-				description: this.getDescription( zid )
-			} ) );
-		},
-		/**
-		 * Returns true when search term is empty and there are suggestions to show
-		 *
-		 * @return {boolean}
-		 */
-		showSuggested: function () {
-			return ( this.suggested.length > 0 ) && ( this.searchTerm.length === 0 );
-		},
-		/**
-		 * Returns the array of the description objects from the lookup results
-		 *
-		 * @return {Array}
-		 */
-		descriptions: function () {
-			return this.lookupResults.map( ( item ) => this.getDescription( item.zid ) );
-		},
+		const suggested = computed( () => store.getSuggestedFunctions.map( ( zid ) => ( {
+			zid,
+			labelData: store.getLabelData( zid ),
+			description: store.getDescription( zid )
+		} ) ) );
+
 		/**
 		 * Returns the current search term
 		 *
 		 * @return {string}
 		 */
-		searchTerm: function () {
-			return this.getSearchTerm;
-		},
+		const searchTerm = computed( () => store.getSearchTerm );
+
+		/**
+		 * Returns true when search term is empty and there are suggestions to show
+		 *
+		 * @return {boolean}
+		 */
+		const showSuggested = computed( () => ( suggested.value.length > 0 ) && ( searchTerm.value.length === 0 ) );
+
 		/**
 		 * Returns the current lookup results
 		 *
 		 * @return {Array}
 		 */
-		lookupResults: function () {
-			return this.getLookupResults;
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'lookupFunctions',
-		'fetchZids',
-		'setSearchTerm',
-		'setLookupResults',
-		'submitVEInteraction'
-	] ), {
+		const lookupResults = computed( () => store.getLookupResults );
+
 		/**
-		 * Update the lookupResults when there's a new search
-		 * term in the language search box.
+		 * Returns the array of the description objects from the lookup results
 		 *
-		 * @param {string} value
+		 * @return {Array}
 		 */
-		updateSearchTerm: function ( value ) {
-			this.setSearchTerm( value );
-			if ( !value ) {
-				this.setLookupResults( [] );
-				return;
-			}
-			this.fetchLookupResults( value );
-			// Track the searching for a function
-			this.submitVEInteraction( 'search-change-query' );
-		},
+		const descriptions = computed( () => lookupResults.value
+			.map( ( item ) => store.getDescription( item.zid ) )
+		);
+
+		// Methods
 		/**
 		 * Triggers a lookup API to search for matches for the
 		 * given substring and formats the results to be shown
@@ -182,21 +150,21 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} substring
 		 */
-		fetchLookupResults: function ( substring ) {
+		function fetchLookupResults( substring ) {
 			const allZids = [];
 			// Cancel previous request if any
-			if ( this.lookupAbortController ) {
-				this.lookupAbortController.abort();
+			if ( lookupAbortController.value ) {
+				lookupAbortController.value.abort();
 			}
-			this.lookupAbortController = new AbortController();
-			this.lookupFunctions( {
+			lookupAbortController.value = new AbortController();
+			store.lookupFunctions( {
 				search: substring,
 				renderable: true,
-				signal: this.lookupAbortController.signal
+				signal: lookupAbortController.value.signal
 			} ).then( ( data ) => {
 				const { objects } = data;
 				// If the string searched has changed, do not show the search result
-				if ( !this.searchTerm.includes( substring ) ) {
+				if ( !searchTerm.value.includes( substring ) ) {
 					return;
 				}
 				// Compile information for every search result
@@ -209,36 +177,59 @@ module.exports = exports = defineComponent( {
 							language: result.language
 						};
 					} );
-				this.setLookupResults( results );
+				store.setLookupResults( results );
 				// Fetch the result zid information (labels)
-				this.fetchZids( { zids: allZids } );
+				store.fetchZids( { zids: allZids } );
 			} ).catch( ( error ) => {
 				if ( error.code === 'abort' ) {
 					return;
 				}
 			} );
-		},
+		}
+
+		/**
+		 * Update the lookupResults when there's a new search
+		 * term in the language search box.
+		 *
+		 * @param {string} value
+		 */
+		function updateSearchTerm( value ) {
+			store.setSearchTerm( value );
+			if ( !value ) {
+				store.setLookupResults( [] );
+				return;
+			}
+			fetchLookupResults( value );
+			// Track the searching for a function
+			store.submitVEInteraction( 'search-change-query' );
+		}
+
 		/**
 		 * If the selected value is a valid Zid, emit select event
 		 *
 		 * @param {string} value
 		 */
-		selectFunction: function ( value ) {
-			if ( value && this.isValidZidFormat( value ) ) {
-				this.$emit( 'select', value );
+		function selectFunction( value ) {
+			if ( value && isValidZidFormat( value ) ) {
+				emit( 'select', value );
 				// Track the selecting a function
-				this.submitVEInteraction( 'search-choose-function' );
-			}
-		},
-		/**
-		 * Focus the search input
-		 */
-		focusSearchInput: function () {
-			if ( this.$refs.searchInput ) {
-				this.$refs.searchInput.focus();
+				store.submitVEInteraction( 'search-choose-function' );
 			}
 		}
-	} )
+
+		return {
+			callsToAction,
+			descriptions,
+			lookupResults,
+			searchTerm,
+			selectFunction,
+			showSearchCancel,
+			showSuggested,
+			suggested,
+			updateSearchTerm,
+			i18n
+		};
+	}
 } );
 </script>
 

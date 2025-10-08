@@ -1,23 +1,21 @@
 /*!
- * WikiLambda unit test suite for the pageTitleMixin
+ * WikiLambda unit test suite for the usePageTitle composable.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
-
 'use strict';
 
-const { shallowMount } = require( '@vue/test-utils' );
-
+const loadComposable = require( '../helpers/loadComposable.js' );
 const createGettersWithFunctionsMock = require( '../helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
 const createJQueryPageTitleMocks = require( '../helpers/jqueryHelpers.js' ).createJQueryPageTitleMocks;
 const createLabelDataMock = require( '../helpers/getterHelpers.js' ).createLabelDataMock;
-const pageTitleMixin = require( '../../../resources/ext.wikilambda.app/mixins/pageTitleMixin.js' );
+const usePageTitle = require( '../../../resources/ext.wikilambda.app/composables/usePageTitle.js' );
 const { canonicalToHybrid } = require( '../../../resources/ext.wikilambda.app/utils/schemata.js' );
 const useMainStore = require( '../../../resources/ext.wikilambda.app/store/index.js' );
 
-describe( 'pageTitleMixin', () => {
-	let wrapper, store;
+describe( 'usePageTitle', () => {
+	let pageTitle, store;
 
 	beforeEach( () => {
 		store = useMainStore();
@@ -29,23 +27,13 @@ describe( 'pageTitleMixin', () => {
 			Z1003: 'Spanish'
 		} );
 
-		// Mocking a Vue component to test the mixin
-		const TestComponent = {
-			template: '<div></div>',
-			mixins: [ pageTitleMixin ]
-		};
-		wrapper = shallowMount( TestComponent );
+		const [ result ] = loadComposable( () => usePageTitle() );
+		pageTitle = result;
 
-		navigator.clipboard = {
-			writeText: jest.fn()
-		};
-
-		// Enable fake timers before each test
 		jest.useFakeTimers();
 	} );
 
 	afterEach( () => {
-		// Restore the original timers after each test
 		jest.useRealTimers();
 	} );
 
@@ -59,10 +47,10 @@ describe( 'pageTitleMixin', () => {
 		store.getZObjectByKeyPath = jest.fn().mockImplementation( ( keyPath ) => Number( keyPath[ keyPath.length - 1 ] ) ?
 			canonicalToHybrid( { Z1K1: 'Z11', Z11K1: 'Z1003', Z11K2: value } ) : undefined );
 
-		await wrapper.vm.updatePageTitle();
+		await pageTitle.updatePageTitle();
 
 		// ASSERT: Check if DOM manipulations were called with the correct arguments
-		expect( wrapper.vm.pageTitleObject ).toEqual( { title: value, hasChip: false, chip: 'es', chipName: 'Spanish' } );
+		expect( pageTitle.pageTitleObject.value ).toEqual( { title: value, hasChip: false, chip: 'es', chipName: 'Spanish' } );
 		expect( $pageTitle.text ).toHaveBeenCalledWith( value );
 		expect( $langChip.text ).toHaveBeenCalledWith( 'es' );
 		expect( $langChip.toggleClass ).toHaveBeenCalledWith( 'ext-wikilambda-editpage-header__bcp47-code--hidden', true );
@@ -79,10 +67,10 @@ describe( 'pageTitleMixin', () => {
 		store.getZObjectByKeyPath = jest.fn().mockImplementation( ( keyPath ) => Number( keyPath[ keyPath.length - 1 ] ) ?
 			canonicalToHybrid( { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: value } ) : undefined );
 
-		await wrapper.vm.updatePageTitle();
+		await pageTitle.updatePageTitle();
 
 		// ASSERT: Check if DOM manipulations were called with the correct arguments
-		expect( wrapper.vm.pageTitleObject ).toEqual( { title: value, hasChip: true, chip: 'en', chipName: 'English' } );
+		expect( pageTitle.pageTitleObject.value ).toEqual( { title: value, hasChip: true, chip: 'en', chipName: 'English' } );
 		expect( $pageTitle.text ).toHaveBeenCalledWith( value );
 		expect( $langChip.text ).toHaveBeenCalledWith( 'en' );
 		expect( $langChip.toggleClass ).toHaveBeenCalledWith( 'ext-wikilambda-editpage-header__bcp47-code--hidden', false );
@@ -95,10 +83,10 @@ describe( 'pageTitleMixin', () => {
 		// Set all names to be undefined:
 		store.getZPersistentName = createGettersWithFunctionsMock( undefined );
 
-		await wrapper.vm.updatePageTitle();
+		await pageTitle.updatePageTitle();
 
 		// ASSERT: Check if DOM manipulations were called with the correct arguments
-		expect( wrapper.vm.pageTitleObject ).toEqual( { title: null, hasChip: false, chip: null, chipName: null } );
+		expect( pageTitle.pageTitleObject.value ).toEqual( { title: null, hasChip: false, chip: null, chipName: null } );
 		expect( $pageTitle.text ).toHaveBeenCalledWith( 'Untitled' );
 		expect( $langChip.text ).toHaveBeenCalledWith( null );
 		expect( $langChip.toggleClass ).toHaveBeenCalledWith( 'ext-wikilambda-editpage-header__bcp47-code--hidden', true );

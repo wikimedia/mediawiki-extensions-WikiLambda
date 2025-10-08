@@ -10,14 +10,14 @@
 			:open="open"
 			data-testid="z-multilingual-string-dialog"
 			class="ext-wikilambda-app-z-multilingual-string-dialog"
-			:title="$i18n( 'wikilambda-monolingual-string-list-dialog-accessible-title' ).text()"
+			:title="i18n( 'wikilambda-monolingual-string-list-dialog-accessible-title' ).text()"
 			@update:open="closeDialog"
 		>
 			<!-- Dialog Header -->
 			<template #header>
 				<wl-custom-dialog-header @close-dialog="closeDialog">
 					<template #title>
-						{{ $i18n( 'wikilambda-monolingual-string-list-dialog-title' ).text() }}
+						{{ i18n( 'wikilambda-monolingual-string-list-dialog-title' ).text() }}
 					</template>
 				</wl-custom-dialog-header>
 				<!-- Language Search block -->
@@ -37,7 +37,7 @@
 						class="ext-wikilambda-app-z-multilingual-string-dialog__search-cancel"
 						@click="clearSearch"
 					>
-						{{ $i18n( 'wikilambda-cancel' ).text() }}
+						{{ i18n( 'wikilambda-cancel' ).text() }}
 					</cdx-button>
 				</div>
 			</template>
@@ -70,7 +70,7 @@
 							<span
 								v-else
 								class="ext-wikilambda-app-z-multilingual-string-dialog__item-add-language"
-							>{{ $i18n( 'wikilambda-monolingual-string-list-dialog-add-language' ).text() }}</span>
+							>{{ i18n( 'wikilambda-monolingual-string-list-dialog-add-language' ).text() }}</span>
 						</div>
 					</div>
 				</div>
@@ -80,14 +80,12 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { computed, defineComponent, inject, onMounted, ref, watch } = require( 'vue' );
 const { CdxButton, CdxDialog, CdxSearchInput } = require( '../../../codex.js' );
 const Constants = require( '../../Constants.js' );
 const CustomDialogHeader = require( '../base/CustomDialogHeader.vue' );
 const LabelData = require( '../../store/classes/LabelData.js' );
 const useMainStore = require( '../../store/index.js' );
-const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
 const urlUtils = require( '../../utils/urlUtils.js' );
 
 module.exports = exports = defineComponent( {
@@ -98,7 +96,6 @@ module.exports = exports = defineComponent( {
 		'cdx-search-input': CdxSearchInput,
 		'wl-custom-dialog-header': CustomDialogHeader
 	},
-	mixins: [ zobjectMixin ],
 	props: {
 		keyPath: {
 			type: String,
@@ -122,28 +119,23 @@ module.exports = exports = defineComponent( {
 		}
 	},
 	emits: [ 'add-language', 'close-dialog' ],
-	data: function () {
-		return {
-			searchTerm: '',
-			showSearchCancel: false,
-			lookupResults: [],
-			lookupAbortController: null
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getLabelData',
-		'getLanguageIsoCodeOfZLang',
-		'getUserLangCode',
-		'getCurrentZObjectId'
-	] ), {
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
+
+		// Reactive data
+		const searchTerm = ref( '' );
+		const showSearchCancel = ref( false );
+		const lookupResults = ref( [] );
+		const lookupAbortController = ref( null );
+
+		// Computed properties
 		/**
 		 * Returns true if the component is in the main namespace (editable mode).
 		 *
 		 * @return {boolean}
 		 */
-		isMainObject() {
-			return this.keyPath.startsWith( Constants.STORED_OBJECTS.MAIN );
-		},
+		const isMainObject = computed( () => props.keyPath.startsWith( Constants.STORED_OBJECTS.MAIN ) );
 
 		/**
 		 * Returns suggested language items when there are no local items available.
@@ -152,63 +144,59 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Array} Array of suggested language items
 		 */
-		getSuggestedItems() {
-			return Constants.SUGGESTIONS.LANGUAGES
-				.map( ( langZid ) => {
-					const langLabelData = this.getLabelData( langZid );
-					const listItem = this.items.find(
-						( itemData ) => itemData.langZid === langZid
-					);
-					const value = listItem ? listItem.value : '';
-					const isInList = !!listItem;
-					const isInVisibleList = listItem ? listItem.isInVisibleList : false;
+		const getSuggestedItems = computed( () => Constants.SUGGESTIONS.LANGUAGES
+			.map( ( langZid ) => {
+				const langLabelData = store.getLabelData( langZid );
+				const listItem = props.items.find(
+					( itemData ) => itemData.langZid === langZid
+				);
+				const value = listItem ? listItem.value : '';
+				const isInList = !!listItem;
+				const isInVisibleList = listItem ? listItem.isInVisibleList : false;
 
-					return {
-						langZid,
-						langLabelData,
-						isInList,
-						isInVisibleList,
-						value,
-						hasValue: false
-					};
-				} )
-				.filter( ( item ) => {
-					if ( !this.isMainObject && !item.isInList ) {
-						return false;
-					}
-					return true;
-				} );
-		},
+				return {
+					langZid,
+					langLabelData,
+					isInList,
+					isInVisibleList,
+					value,
+					hasValue: false
+				};
+			} )
+			.filter( ( item ) => {
+				if ( !isMainObject.value && !item.isInList ) {
+					return false;
+				}
+				return true;
+			} ) );
 
 		/**
 		 * Returns the list of items that are not already visible.
 		 *
 		 * @return {Array} Array of available items
 		 */
-		getAvailableLanguages() {
-			return this.items.filter( ( item ) => !item.isInVisibleList );
-		},
+		const getAvailableLanguages = computed( () => props.items.filter( ( item ) => !item.isInVisibleList ) );
 
 		/**
 		 * Returns the items available for the dialog.
 		 *
 		 * @return {Array} Array of dialog items
 		 */
-		getDialogItems() {
+		const getDialogItems = computed( () => {
 			const sortByLabel = ( a, b ) => a.langLabelData.label.localeCompare(
 				b.langLabelData.label,
-				this.getUserLangCode,
+				store.getUserLangCode,
 				{ sensitivity: 'base' }
 			);
 
-			return this.getAvailableLanguages
+			return getAvailableLanguages.value
 				.map( ( { langZid, value = '' } ) => {
 					const isInList = true; // All the items are already in the list
 					const isInVisibleList = false; // All Items are not visible in the list, we just filtered them out
-					const langLabelData = this.getLabelData( langZid );
+					const langLabelData = store.getLabelData( langZid );
 					return {
 						langZid,
-						langLabelData: langLabelData,
+						langLabelData,
 						isInList,
 						isInVisibleList,
 						value,
@@ -216,7 +204,7 @@ module.exports = exports = defineComponent( {
 					};
 				} )
 				.sort( sortByLabel );
-		},
+		} );
 
 		/**
 		 * Builds the list of items showing all available languages in the typed list
@@ -224,28 +212,28 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Array}
 		 */
-		localItems: function () {
+		const localItems = computed( () => {
 			const items = [];
 
-			const dialogItems = this.getDialogItems;
-			const suggestedItems = this.getSuggestedItems;
+			const dialogItems = getDialogItems.value;
+			const suggestedItems = getSuggestedItems.value;
 
 			if ( dialogItems.length > 0 ) {
 				// Add local items
 				items.push( {
-					label: this.$i18n( 'wikilambda-monolingual-string-list-dialog-available' ).text(),
+					label: i18n( 'wikilambda-monolingual-string-list-dialog-available' ).text(),
 					disabled: true
 				}, ...dialogItems );
 			} else {
 				// Add suggested languages
 				items.push( {
-					label: this.$i18n( 'wikilambda-monolingual-string-list-dialog-suggested' ).text(),
+					label: i18n( 'wikilambda-monolingual-string-list-dialog-suggested' ).text(),
 					disabled: true
 				}, ...suggestedItems );
 			}
 
 			return items;
-		},
+		} );
 
 		/**
 		 * Returns the list of items that will be rendered in the component.
@@ -254,51 +242,31 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Array}
 		 */
-		visibleItems: function () {
-			return ( this.lookupResults.length > 0 ) ?
-				this.lookupResults :
-				this.localItems;
-		},
+		const visibleItems = computed( () => (
+			lookupResults.value.length > 0 ?
+				lookupResults.value :
+				localItems.value
+		) );
 
 		/**
 		 * Returns the i18n message for the language search box placeholder
 		 *
 		 * @return {string}
 		 */
-		searchPlaceholder: function () {
-			return this.$i18n( 'wikilambda-monolingual-string-list-dialog-search-placeholder' ).text();
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'fetchZids',
-		'lookupZObjectLabels'
-	] ), {
+		const searchPlaceholder = computed( () => i18n( 'wikilambda-monolingual-string-list-dialog-search-placeholder' ).text() );
+
+		// Methods
 		/**
-		 * Handles clicking on an item in the dialog.
-		 * Determines the appropriate action based on item state and edit mode:
-		 * - If item is already visible: closes dialog
-		 * - If in read mode: adds language if in store, otherwise navigates to edit
-		 * - If in edit mode: adds language to the typed list
-		 *
-		 * @param {Object} item - The clicked item with langZid and other properties
-		 * @return {void}
+		 * Closes the dialog and resets its state.
+		 * Clears the search term, lookup results, and emits the 'close-dialog'
+		 * event to notify the parent component that the dialog has been closed.
 		 */
-		handleItemClick: function ( item ) {
-			// Already visible → just close dialog
-			if ( item.isInVisibleList ) {
-				return this.closeDialog();
-			}
-
-			// Read mode → either add if already in store, or navigate to edit
-			if ( !this.edit ) {
-				return item.isInList ?
-					this.addLanguage( item.langZid ) :
-					this.navigateToEdit();
-			}
-
-			// Default → add language
-			this.addLanguage( item.langZid );
-		},
+		const closeDialog = () => {
+			searchTerm.value = '';
+			lookupResults.value = [];
+			showSearchCancel.value = false;
+			emit( 'close-dialog' );
+		};
 
 		/**
 		 * Navigates to the edit page when in read mode.
@@ -306,16 +274,16 @@ module.exports = exports = defineComponent( {
 		 * This allows users to switch to edit mode to add new languages.
 		 * The hash will be used to scroll to the relevant multilingual string component.
 		 */
-		navigateToEdit: function () {
+		const navigateToEdit = () => {
 			const url = urlUtils.generateEditUrl( {
-				langCode: this.getUserLangCode,
-				zid: this.getCurrentZObjectId,
-				hash: this.keyPath.replace( /\./g, '-' )
+				langCode: store.getUserLangCode,
+				zid: store.getCurrentZObjectId,
+				hash: props.keyPath.replace( /\./g, '-' )
 			} );
 
 			// Navigate to the edit page with hash for automatic scrolling
 			window.location.href = url;
-		},
+		};
 
 		/**
 		 * Emits the 'add-language' event to notify the parent component.
@@ -324,49 +292,10 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} langZid - The ZID of the language to add
 		 */
-		addLanguage: function ( langZid ) {
-			this.$emit( 'add-language', langZid );
-			this.closeDialog();
-		},
-
-		/**
-		 * Closes the dialog and resets its state.
-		 * Clears the search term, lookup results, and emits the 'close-dialog'
-		 * event to notify the parent component that the dialog has been closed.
-		 */
-		closeDialog: function () {
-			this.searchTerm = '';
-			this.lookupResults = [];
-			this.showSearchCancel = false;
-			this.$emit( 'close-dialog' );
-		},
-
-		/**
-		 * Clears the search field and resets search-related state.
-		 * Resets the search term, clears lookup results, and hides the search cancel button.
-		 * This provides a clean slate for new searches.
-		 */
-		clearSearch: function () {
-			this.searchTerm = '';
-			this.updateSearchTerm( '' );
-			this.showSearchCancel = false;
-		},
-
-		/**
-		 * Updates the search term and triggers search results update.
-		 * When a new search term is entered, it clears previous results
-		 * and triggers a new language lookup if the term is not empty.
-		 *
-		 * @param {string} value - The new search term entered by the user
-		 */
-		updateSearchTerm: function ( value ) {
-			this.searchTerm = value;
-			if ( !value ) {
-				this.lookupResults = [];
-				return;
-			}
-			this.getLookupResults( value );
-		},
+		const addLanguage = ( langZid ) => {
+			emit( 'add-language', langZid );
+			closeDialog();
+		};
 
 		/**
 		 * Performs a language lookup search and formats the results.
@@ -376,24 +305,24 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} substring - The search term to look up
 		 */
-		getLookupResults: function ( substring ) {
+		const getLookupResults = ( substring ) => {
 			const allZids = [];
 			// Cancel previous request if any
-			if ( this.lookupAbortController ) {
-				this.lookupAbortController.abort();
+			if ( lookupAbortController.value ) {
+				lookupAbortController.value.abort();
 			}
-			this.lookupAbortController = new AbortController();
-			this.lookupZObjectLabels( {
+			lookupAbortController.value = new AbortController();
+			store.lookupZObjectLabels( {
 				input: substring,
 				types: [ Constants.Z_NATURAL_LANGUAGE ],
-				signal: this.lookupAbortController.signal
+				signal: lookupAbortController.value.signal
 			} ).then( ( data ) => {
 				const { labels } = data;
 				// Compile information for every search result
-				this.lookupResults = labels
+				lookupResults.value = labels
 					.map( ( result ) => {
 						const langZid = result.page_title;
-						const listItem = this.items.find(
+						const listItem = props.items.find(
 							( itemData ) => itemData.langZid === langZid
 						);
 						const value = listItem ? listItem.value : '';
@@ -405,7 +334,7 @@ module.exports = exports = defineComponent( {
 							result.page_title,
 							result.label,
 							result.match_lang,
-							this.getLanguageIsoCodeOfZLang( result.match_lang )
+							store.getLanguageIsoCodeOfZLang( result.match_lang )
 						);
 						return {
 							langZid,
@@ -417,7 +346,7 @@ module.exports = exports = defineComponent( {
 						};
 					} )
 					.filter( ( item ) => {
-						if ( !this.isMainObject && !item.isInList ) {
+						if ( !isMainObject.value && !item.isInList ) {
 							return false;
 						}
 						return true;
@@ -440,31 +369,100 @@ module.exports = exports = defineComponent( {
 						return 0;
 					} );
 				// Fetch the result zid information (labels)
-				this.fetchZids( { zids: allZids } );
+				store.fetchZids( { zids: allZids } );
 			} ).catch( ( error ) => {
 				if ( error.code === 'abort' ) {
 					return;
 				}
 			} );
-		},
+		};
+
+		/**
+		 * Updates the search term and triggers search results update.
+		 * When a new search term is entered, it clears previous results
+		 * and triggers a new language lookup if the term is not empty.
+		 *
+		 * @param {string} value - The new search term entered by the user
+		 */
+		const updateSearchTerm = ( value ) => {
+			searchTerm.value = value;
+			if ( !value ) {
+				lookupResults.value = [];
+				return;
+			}
+			getLookupResults( value );
+		};
+
+		/**
+		 * Clears the search field and resets search-related state.
+		 * Resets the search term, clears lookup results, and hides the search cancel button.
+		 * This provides a clean slate for new searches.
+		 */
+		const clearSearch = () => {
+			searchTerm.value = '';
+			updateSearchTerm( '' );
+			showSearchCancel.value = false;
+		};
+
+		/**
+		 * Handles clicking on an item in the dialog.
+		 * Determines the appropriate action based on item state and edit mode:
+		 * - If item is already visible: closes dialog
+		 * - If in read mode: adds language if in store, otherwise navigates to edit
+		 * - If in edit mode: adds language to the typed list
+		 *
+		 * @param {Object} item - The clicked item with langZid and other properties
+		 * @return {void}
+		 */
+		const handleItemClick = ( item ) => {
+			// Already visible → just close dialog
+			if ( item.isInVisibleList ) {
+				return closeDialog();
+			}
+
+			// Read mode → either add if already in store, or navigate to edit
+			if ( !props.edit ) {
+				return item.isInList ?
+					addLanguage( item.langZid ) :
+					navigateToEdit();
+			}
+
+			// Default → add language
+			addLanguage( item.langZid );
+		};
 
 		/**
 		 * Checks if there are no visible local items and fetches common language ZIDs if needed.
 		 * This helper method centralizes the logic for determining when to fetch common languages.
 		 */
-		fetchCommonLanguagesIfNeeded() {
-			if ( this.getAvailableLanguages.length === 0 ) {
-				this.fetchZids( { zids: Constants.SUGGESTIONS.LANGUAGES } );
+		const fetchCommonLanguagesIfNeeded = () => {
+			if ( getAvailableLanguages.value.length === 0 ) {
+				store.fetchZids( { zids: Constants.SUGGESTIONS.LANGUAGES } );
 			}
-		}
-	} ),
-	watch: {
-		items: function () {
-			this.fetchCommonLanguagesIfNeeded();
-		}
-	},
-	mounted: function () {
-		this.fetchCommonLanguagesIfNeeded();
+		};
+
+		// Watch
+		watch( () => props.items, () => {
+			fetchCommonLanguagesIfNeeded();
+		} );
+
+		// Lifecycle
+		onMounted( () => {
+			fetchCommonLanguagesIfNeeded();
+		} );
+
+		// Return all properties and methods for the template
+		return {
+			clearSearch,
+			closeDialog,
+			handleItemClick,
+			searchPlaceholder,
+			searchTerm,
+			showSearchCancel,
+			updateSearchTerm,
+			visibleItems,
+			i18n
+		};
 	}
 } );
 </script>

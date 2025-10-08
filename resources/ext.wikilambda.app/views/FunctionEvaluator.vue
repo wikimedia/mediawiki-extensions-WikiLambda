@@ -26,9 +26,9 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
+const { defineComponent, onMounted } = require( 'vue' );
 const FunctionEvaluatorWidget = require( '../components/widgets/function-evaluator/FunctionEvaluator.vue' );
-const shareUrlMixin = require( '../mixins/shareUrlMixin.js' );
+const useShareUrl = require( '../composables/useShareUrl.js' );
 const { CdxMessage } = require( '../../codex.js' );
 
 module.exports = exports = defineComponent( {
@@ -37,12 +37,23 @@ module.exports = exports = defineComponent( {
 		'cdx-message': CdxMessage,
 		'wl-function-evaluator-widget': FunctionEvaluatorWidget
 	},
-	mixins: [ shareUrlMixin ],
-	mounted: function () {
-		// Load function call from URL if present
-		this.loadFunctionCallFromUrl();
+	emits: [ 'mounted' ],
+	setup( _, { emit } ) {
+		const {
+			sharedFunctionCall,
+			shareUrlError,
+			loadFunctionCallFromUrl
+		} = useShareUrl();
+		onMounted( () => {
+			// Load function call from URL if present
+			loadFunctionCallFromUrl();
+			emit( 'mounted' );
+		} );
 
-		this.$emit( 'mounted' );
+		return {
+			sharedFunctionCall,
+			shareUrlError
+		};
 	}
 } );
 </script>

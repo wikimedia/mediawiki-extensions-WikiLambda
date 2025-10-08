@@ -6,23 +6,29 @@
  */
 'use strict';
 
-const Vue = require( 'vue' );
-const { createPinia } = require( 'pinia' );
+const { shallowMount } = require( '@vue/test-utils' );
+const { defineComponent } = require( 'vue' );
 
-module.exports = function loadComposable( composable ) {
-	let result;
-
-	const pinia = createPinia();
-	const app = Vue.createApp( {
+/**
+ * Creates a test component that uses a composable
+ *
+ * @param {Function} composable - The composable function to test
+ * @return {Array} [composableResult, wrapper] - Array containing composable result and Vue test utils wrapper
+ */
+function loadComposable( composable ) {
+	let composableResult;
+	const TestComponent = defineComponent( {
+		name: 'test-component',
+		template: '<div></div>',
 		setup() {
-			result = composable();
-			// suppress missing template warning
-			return () => {};
+			// Call the composable function and return its result
+			composableResult = composable();
+			return composableResult;
 		}
 	} );
-	app.use( pinia );
-	app.mount( document.createElement( 'div' ) );
-	// return the result and the app instance
-	// for testing provide / unmount
-	return [ result, app ];
-};
+
+	const wrapper = shallowMount( TestComponent );
+	return [ composableResult, wrapper ];
+}
+
+module.exports = loadComposable;

@@ -1,9 +1,11 @@
-/**
+/*!
  * WikiLambda Vue editor: useBreakpoints composable
  *
+ * @module ext.wikilambda.app.composables.useBreakpoints
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
+'use strict';
 
 module.exports = function useBreakpoints( breakpoints ) {
 	const { ref, onMounted, onUnmounted, computed } = require( 'vue' );

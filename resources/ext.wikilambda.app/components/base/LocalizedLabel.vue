@@ -17,8 +17,7 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapState } = require( 'pinia' );
+const { defineComponent, computed } = require( 'vue' );
 
 const LabelData = require( '../../store/classes/LabelData.js' );
 const useMainStore = require( '../../store/index.js' );
@@ -31,18 +30,20 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getUserLangZid'
-	] ), {
+	setup( props ) {
+		const store = useMainStore();
+
 		/**
 		 * Returns whether the label is in the user preferred language
 		 *
 		 * @return {boolean}
 		 */
-		isUserLang: function () {
-			return this.getUserLangZid === this.labelData.lang;
-		}
-	} )
+		const isUserLang = computed( () => store.getUserLangZid === props.labelData.lang );
+
+		return {
+			isUserLang
+		};
+	}
 } );
 </script>
 

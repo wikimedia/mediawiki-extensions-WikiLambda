@@ -43,19 +43,19 @@
 				:fade-in="true"
 				type="success"
 			>
-				{{ $i18n( 'wikilambda-publish-successful' ).text() }}
+				{{ i18n( 'wikilambda-publish-successful' ).text() }}
 			</cdx-message>
 		</div>
 	</div>
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapState } = require( 'pinia' );
+const { computed, defineComponent, inject, onMounted, watch } = require( 'vue' );
+const { storeToRefs } = require( 'pinia' );
 
 const Constants = require( '../Constants.js' );
-const eventLogMixin = require( '../mixins/eventLogMixin.js' );
-const shareUrlMixin = require( '../mixins/shareUrlMixin.js' );
+const useEventLog = require( '../composables/useEventLog.js' );
+const useShareUrl = require( '../composables/useShareUrl.js' );
 const useMainStore = require( '../store/index.js' );
 
 // Widget components
@@ -74,64 +74,77 @@ module.exports = exports = defineComponent( {
 		'wl-function-viewer-details': FunctionViewerDetails,
 		'cdx-message': CdxMessage
 	},
-	mixins: [ eventLogMixin, shareUrlMixin ],
-	data: function () {
-		return {
-			functionType: Constants.Z_FUNCTION
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getCurrentZObjectId',
-		'getUserLangZid'
-	] ), {
-		displaySuccessMessage: function () {
+	emits: [ 'mounted' ],
+	setup( _, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
+		const { getCurrentZObjectId } = storeToRefs( store );
+		const { submitInteraction } = useEventLog();
+		const {
+			sharedFunctionCall,
+			shareUrlError,
+			loadFunctionCallFromUrl
+		} = useShareUrl();
+
+		const functionType = Constants.Z_FUNCTION;
+
+		/**
+		 * Returns whether to display the success message
+		 *
+		 * @return {boolean}
+		 */
+		const displaySuccessMessage = computed( () => {
 			const url = new URL( window.location.href );
 			return url.searchParams.get( 'success' ) === 'true';
-		}
-	} ),
-	methods: {
+		} );
+
 		/**
 		 * Dispatch event after a click of the edit icon in the About widget.
 		 */
-		dispatchAboutEvent: function () {
-			// Log an event using Metrics Platform's core interaction events
+		function dispatchAboutEvent() {
 			const interactionData = {
 				zobjecttype: Constants.Z_FUNCTION,
-				zobjectid: this.getCurrentZObjectId || null,
-				zlang: this.getUserLangZid || null
+				zobjectid: store.getCurrentZObjectId || null,
+				zlang: store.getUserLangZid || null
 			};
-			this.submitInteraction( 'edit', interactionData );
+			submitInteraction( 'edit', interactionData );
 		}
-	},
-	watch: {
+
+		// Watch
 		/**
 		 * Remove the success query parameter from the URL when the success message is displayed.
-		 *
-		 * @param {boolean} value
 		 */
-		displaySuccessMessage: {
-			immediate: true,
-			handler: function ( value ) {
-				if ( value ) {
-					const url = new URL( window.location.href );
-					url.searchParams.delete( 'success' );
-					history.replaceState( null, '', `${ url.pathname }${ url.search }` );
-				}
+		watch( displaySuccessMessage, ( value ) => {
+			if ( value ) {
+				const url = new URL( window.location.href );
+				url.searchParams.delete( 'success' );
+				history.replaceState( null, '', `${ url.pathname }${ url.search }` );
 			}
-		}
-	},
-	mounted: function () {
-		// Load function call from URL if present (validate against current function)
-		this.loadFunctionCallFromUrl( this.getCurrentZObjectId );
+		}, { immediate: true } );
 
-		// Log an event using Metrics Platform's core interaction events
-		const interactionData = {
-			zobjecttype: Constants.Z_FUNCTION,
-			zobjectid: this.getCurrentZObjectId || null,
-			zlang: this.getUserLangZid || null
+		// Lifecycle
+		onMounted( () => {
+			// Load function call from URL if present (validate against current function)
+			loadFunctionCallFromUrl( getCurrentZObjectId.value );
+			// Load function call from URL if present (validate against current function)
+			const interactionData = {
+				zobjecttype: Constants.Z_FUNCTION,
+				zobjectid: store.getCurrentZObjectId || null,
+				zlang: store.getUserLangZid || null
+			};
+			submitInteraction( 'view', interactionData );
+			emit( 'mounted' );
+		} );
+
+		return {
+			displaySuccessMessage,
+			dispatchAboutEvent,
+			functionType,
+			getCurrentZObjectId,
+			i18n,
+			shareUrlError,
+			sharedFunctionCall
 		};
-		this.submitInteraction( 'view', interactionData );
-		this.$emit( 'mounted' );
 	}
 } );
 </script>

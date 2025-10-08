@@ -50,14 +50,14 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { defineComponent, computed } = require( 'vue' );
+const { storeToRefs } = require( 'pinia' );
 
 const Constants = require( '../../Constants.js' );
 const LabelData = require( '../../store/classes/LabelData.js' );
 const useMainStore = require( '../../store/index.js' );
-const typeMixin = require( '../../mixins/typeMixin.js' );
-const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
+const useType = require( '../../composables/useType.js' );
+const useZObject = require( '../../composables/useZObject.js' );
 
 // Base components
 const ZObjectSelector = require( './ZObjectSelector.vue' );
@@ -70,7 +70,6 @@ module.exports = exports = defineComponent( {
 		'cdx-field': CdxField,
 		'wl-z-object-selector': ZObjectSelector
 	},
-	mixins: [ typeMixin, zobjectMixin ],
 	props: {
 		keyPath: {
 			type: String,
@@ -98,74 +97,72 @@ module.exports = exports = defineComponent( {
 			default: null
 		}
 	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getExpectedTypeOfKey',
-		'getLabelData',
-		'getStoredObject'
-	] ), {
+	setup( props ) {
+		const { typeToString } = useType();
+		const {
+			getZFunctionCallArgumentKeys,
+			getZFunctionCallFunctionId,
+			getZReferenceTerminalValue,
+			getZObjectType
+		} = useZObject( { keyPath: props.keyPath } );
+		const store = useMainStore();
+		const { getExpectedTypeOfKey, getLabelData } = storeToRefs( store );
+
+		// Computed properties
 		/**
 		 * Returns the string type (mode) of the selected value,
 		 * which can be a Reference/Z9 or a Function call/Z7.
 		 *
 		 * @return {string}
 		 */
-		selectedMode: function () {
-			return this.typeToString( this.getZObjectType( this.objectValue ) );
-		},
+		const selectedMode = computed( () => typeToString( getZObjectType( props.objectValue ) ) );
+
 		/**
 		 * Returns whether the selected value is terminal
 		 * (Reference/Z9) or non-terminal (Function call/Z7).
 		 *
 		 * @return {boolean}
 		 */
-		selectedIsTerminal: function () {
-			return this.selectedMode === Constants.Z_REFERENCE;
-		},
+		const selectedIsTerminal = computed( () => selectedMode.value === Constants.Z_REFERENCE );
+
 		/**
 		 * Returns the selected value.
 		 *
 		 * @return {string}
 		 */
-		selectedZid: function () {
-			// If terminal, return the Zid of the selected reference;
-			// else, return the Zid of the selected function call.
-			return this.selectedIsTerminal ?
-				this.getZReferenceTerminalValue( this.objectValue ) :
-				this.getZFunctionCallFunctionId( this.objectValue );
-		},
+		const selectedZid = computed( () => selectedIsTerminal.value ?
+			getZReferenceTerminalValue( props.objectValue ) :
+			getZFunctionCallFunctionId( props.objectValue ) );
+
 		/**
 		 * Returns the arguments of generic type function call
 		 *
 		 * @return {Array}
 		 */
-		genericTypeArgKeys: function () {
-			return this.selectedIsTerminal ? [] : this.getZFunctionCallArgumentKeys( this.objectValue );
-		},
+		const genericTypeArgKeys = computed( () => selectedIsTerminal.value ?
+			[] :
+			getZFunctionCallArgumentKeys( props.objectValue ) );
+
 		/**
 		 * Returns the zids to be excluded from the type selector.
 		 * for now, we exclude the Wikidata enum type.
 		 *
 		 * @return {Array}
 		 */
-		excludeZids: function () {
-			return [ Constants.Z_WIKIDATA_ENUM, Constants.Z_OBJECT_ENUM ];
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'createObjectByType',
-		'setValueByKeyPath',
-		'setFunctionCallArguments'
-	] ), {
+		const excludeZids = computed( () => [ Constants.Z_WIKIDATA_ENUM, Constants.Z_OBJECT_ENUM ] );
+
+		// Methods
 		/**
 		 * Clears the type selector and persist a blank reference value
 		 */
-		clearValue: function () {
-			const value = this.createObjectByType( { type: Constants.Z_REFERENCE } );
-			this.setValueByKeyPath( {
-				keyPath: this.keyPath.split( '.' ),
+		function clearValue() {
+			const value = store.createObjectByType( { type: Constants.Z_REFERENCE } );
+			store.setValueByKeyPath( {
+				keyPath: props.keyPath.split( '.' ),
 				value
 			} );
-		},
+		}
+
 		/**
 		 * Persists the selected value in the global store.
 		 * If the selected value is of the required type, we persist as a reference
@@ -174,38 +171,50 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} zid
 		 */
-		setValue: function ( zid ) {
+		function setValue( zid ) {
 			if ( !zid ) {
-				this.clearValue();
+				clearValue();
 				return;
 			}
 
-			const zobject = this.getStoredObject( zid );
+			const zobject = store.getStoredObject( zid );
 			if ( !zobject ) {
 				// This should not happen, the objects are requested as soon as the
 				// lookup menu is displayed, so they should be available by now.
 				return;
 			}
-			const type = this.getZObjectType( zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ] );
+			const type = getZObjectType( zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ] );
 
 			// If the selected zid is a function: we set a function call with Z7K1 set to the selected zid.
 			// Else: we set a reference with Z9K1 set to the selected zid.
 			const mode = type === Constants.Z_FUNCTION ? Constants.Z_FUNCTION_CALL : Constants.Z_REFERENCE;
-			const value = this.createObjectByType( { type: mode, value: zid } );
-			this.setValueByKeyPath( {
-				keyPath: this.keyPath.split( '.' ),
+			const value = store.createObjectByType( { type: mode, value: zid } );
+			store.setValueByKeyPath( {
+				keyPath: props.keyPath.split( '.' ),
 				value
 			} );
 
 			// Additionally, if the selected object is a function call, we also set up its arguments:
 			if ( mode === Constants.Z_FUNCTION_CALL ) {
-				this.setFunctionCallArguments( {
-					keyPath: this.keyPath.split( '.' ),
+				store.setFunctionCallArguments( {
+					keyPath: props.keyPath.split( '.' ),
 					functionZid: zid
 				} );
 			}
 		}
-	} )
+
+		return {
+		// Reactive store data
+			getExpectedTypeOfKey,
+			getLabelData,
+			// Other data
+			excludeZids,
+			genericTypeArgKeys,
+			selectedIsTerminal,
+			selectedZid,
+			setValue
+		};
+	}
 } );
 </script>
 

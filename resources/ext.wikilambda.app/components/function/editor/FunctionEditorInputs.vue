@@ -49,8 +49,7 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { computed, defineComponent, inject } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
 const icons = require( './../../../../lib/icons.json' );
@@ -121,106 +120,94 @@ module.exports = exports = defineComponent( {
 			default: null
 		}
 	},
-	data: function () {
-		return {
-			iconAdd: icons.cdxIconAdd
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getZFunctionInputLabels',
-		'getUserLangCode'
-	] ), {
+	emits: [ 'argument-label-updated' ],
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
+
+		// Reactive data
+		const iconAdd = icons.cdxIconAdd;
+
 		/**
 		 * List of inputs, in hybrid format (without benjamin item)
 		 *
 		 * @return {Array}
 		 */
-		inputs: function () {
-			return this.getZFunctionInputLabels( this.zLanguage );
-		},
+		const inputs = computed( () => store.getZFunctionInputLabels( props.zLanguage ) );
+
 		/**
 		 * Returns the label for the inputs field
 		 *
+		 * TODO (T335583): Replace i18n message with key label
+		 * return store.getLabelData( Constants.Z_FUNCTION_ARGUMENTS );
+		 *
 		 * @return {string}
 		 */
-		inputsLabel: function () {
-			// TODO (T335583): Replace i18n message with key label
-			// return this.getLabelData( Constants.Z_FUNCTION_ARGUMENTS );
-			return this.$i18n( 'wikilambda-function-definition-inputs-label' ).text();
-		},
+		const inputsLabel = computed( () => i18n( 'wikilambda-function-definition-inputs-label' ).text() );
+
 		/**
 		 * Returns the "optional" caption for the inputs field
 		 *
 		 * @return {string}
 		 */
-		inputsOptional: function () {
-			return this.$i18n( 'parentheses', [ this.$i18n( 'wikilambda-optional' ).text() ] ).text();
-		},
+		const inputsOptional = computed( () => i18n( 'parentheses', [ i18n( 'wikilambda-optional' ).text() ] ).text() );
+
 		/**
 		 * Returns the id for the input field
 		 *
 		 * @return {string}
 		 */
-		inputsFieldId: function () {
-			return `ext-wikilambda-app-function-editor-inputs__label-${ this.zLanguage }`;
-		},
+		const inputsFieldId = computed( () => `ext-wikilambda-app-function-editor-inputs__label-${ props.zLanguage }` );
+
 		/**
 		 * Returns the description for the inputs field
 		 *
 		 * @return {string}
 		 */
-		inputsFieldDescription: function () {
-			return this.$i18n( 'wikilambda-function-definition-inputs-description' ).text();
-		},
+		const inputsFieldDescription = computed( () => i18n( 'wikilambda-function-definition-inputs-description' ).text() );
+
 		/**
 		 * Returns the URL to the Special page List Object by Type
 		 *
 		 * @return {string}
 		 */
-		listObjectsUrl: function () {
-			return new mw.Title( Constants.PATHS.LIST_OBJECTS_BY_TYPE_TYPE )
-				.getUrl( { uselang: this.getUserLangCode } );
-		},
+		const listObjectsUrl = computed( () => new mw.Title( Constants.PATHS.LIST_OBJECTS_BY_TYPE_TYPE )
+			.getUrl( { uselang: store.getUserLangCode } )
+		);
+
 		/**
 		 * Returns the text for the link to the Special page List Object by Type
 		 *
 		 * @return {string}
 		 */
-		listObjectsLink: function () {
-			return this.$i18n( 'wikilambda-function-definition-input-types' ).text();
-		},
+		const listObjectsLink = computed( () => i18n( 'wikilambda-function-definition-input-types' ).text() );
+
 		/**
 		 * Returns the text of the button to add a new input
 		 *
 		 * @return {string}
 		 */
-		addNewItemText: function () {
-			return this.inputs.length === 0 ?
-				this.$i18n( 'wikilambda-function-definition-inputs-item-add-first-input-button' ).text() :
-				this.$i18n( 'wikilambda-function-definition-inputs-item-add-input-button' ).text();
-		},
+		const addNewItemText = computed( () => inputs.value.length === 0 ?
+			i18n( 'wikilambda-function-definition-inputs-item-add-first-input-button' ).text() :
+			i18n( 'wikilambda-function-definition-inputs-item-add-input-button' ).text()
+		);
+
 		/**
 		 * Returns the class name of the button to add a new input
 		 *
 		 * @return {string}
 		 */
-		addInputButtonClass: function () {
-			return this.inputs.length === 0 ?
-				'ext-wikilambda-app-function-editor-inputs__action-add' :
-				'ext-wikilambda-app-function-editor-inputs__action-add-another';
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'createObjectByType',
-		'pushItemsByKeyPath',
-		'deleteListItemsByKeyPath'
-	] ), {
+		const addInputButtonClass = computed( () => inputs.value.length === 0 ?
+			'ext-wikilambda-app-function-editor-inputs__action-add' :
+			'ext-wikilambda-app-function-editor-inputs__action-add-another'
+		);
+
 		/**
 		 * Add a new input item to the function inputs list
 		 */
-		addNewItem: function () {
-			const value = canonicalToHybrid( this.createObjectByType( { type: Constants.Z_ARGUMENT } ) );
-			this.pushItemsByKeyPath( {
+		function addNewItem() {
+			const value = canonicalToHybrid( store.createObjectByType( { type: Constants.Z_ARGUMENT } ) );
+			store.pushItemsByKeyPath( {
 				keyPath: [
 					Constants.STORED_OBJECTS.MAIN,
 					Constants.Z_PERSISTENTOBJECT_VALUE,
@@ -228,15 +215,16 @@ module.exports = exports = defineComponent( {
 				],
 				values: [ value ]
 			} );
-		},
+		}
+
 		/**
 		 * Removes an item from the list of inputs
 		 *
 		 * @param {number} index
 		 */
-		removeItem: function ( index ) {
+		function removeItem( index ) {
 			const itemIndex = String( ( Number( index ) + 1 ) );
-			this.deleteListItemsByKeyPath( {
+			store.deleteListItemsByKeyPath( {
 				keyPath: [
 					Constants.STORED_OBJECTS.MAIN,
 					Constants.Z_PERSISTENTOBJECT_VALUE,
@@ -244,13 +232,30 @@ module.exports = exports = defineComponent( {
 				],
 				indexes: [ itemIndex ]
 			} );
-		},
+		}
+
 		/**
 		 * Emits the event argument-label-updated
 		 */
-		updateArgumentLabel: function () {
-			this.$emit( 'argument-label-updated' );
+		function updateArgumentLabel() {
+			emit( 'argument-label-updated' );
 		}
-	} )
+
+		return {
+			addInputButtonClass,
+			addNewItem,
+			addNewItemText,
+			iconAdd,
+			inputs,
+			inputsFieldDescription,
+			inputsFieldId,
+			inputsLabel,
+			inputsOptional,
+			listObjectsLink,
+			listObjectsUrl,
+			removeItem,
+			updateArgumentLabel
+		};
+	}
 } );
 </script>

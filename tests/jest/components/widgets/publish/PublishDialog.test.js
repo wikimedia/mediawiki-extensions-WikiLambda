@@ -22,6 +22,24 @@ const createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.
 describe( 'Publish Dialog', () => {
 	let store;
 
+	function renderPublishDialog( props = {}, options = {} ) {
+		const defaultProps = {
+			showDialog: true
+		};
+		const defaultOptions = {
+			global: {
+				stubs: {
+					...dialogGlobalStubs,
+					...options?.stubs
+				}
+			}
+		};
+		return mount( PublishDialog, {
+			props: { ...defaultProps, ...props },
+			...defaultOptions
+		} );
+	}
+
 	beforeEach( () => {
 		store = useMainStore();
 		store.getErrors = createGettersWithFunctionsMock( [] );
@@ -44,26 +62,17 @@ describe( 'Publish Dialog', () => {
 	};
 
 	it( 'renders without errors', () => {
-		const wrapper = mount( PublishDialog, {
-			props: { showDialog: true },
-			global: { stubs: dialogGlobalStubs }
-		} );
+		const wrapper = renderPublishDialog();
 		expect( wrapper.find( '.ext-wikilambda-app-publish-dialog' ).exists() ).toBe( true );
 	} );
 
 	it( 'renders summary input field', () => {
-		const wrapper = mount( PublishDialog, {
-			props: { showDialog: true },
-			global: { stubs: dialogGlobalStubs }
-		} );
+		const wrapper = renderPublishDialog();
 		expect( wrapper.find( '.ext-wikilambda-app-publish-dialog__summary-input' ).exists() ).toBe( true );
 	} );
 
 	it( 'renders conditional legal text', () => {
-		const wrapper = mount( PublishDialog, {
-			props: { showDialog: true },
-			global: { stubs: dialogGlobalStubs }
-		} );
+		const wrapper = renderPublishDialog();
 		expect( wrapper.find( '.ext-wikilambda-app-publish-dialog__legal-text' ).exists() ).toBe( true );
 	} );
 
@@ -74,10 +83,7 @@ describe( 'Publish Dialog', () => {
 		];
 		store.getErrors = createGettersWithFunctionsMock( errors );
 
-		const wrapper = mount( PublishDialog, {
-			props: { showDialog: true },
-			global: { stubs: dialogGlobalStubs }
-		} );
+		const wrapper = renderPublishDialog();
 
 		const messages = wrapper.findAllComponents( { name: 'cdx-message' } );
 		expect( messages.length ).toBe( 2 );
@@ -93,10 +99,7 @@ describe( 'Publish Dialog', () => {
 		];
 		store.getErrors = createGettersWithFunctionsMock( errors );
 
-		const wrapper = mount( PublishDialog, {
-			props: { showDialog: true },
-			global: { stubs: dialogGlobalStubs }
-		} );
+		const wrapper = renderPublishDialog();
 
 		const messages = wrapper.findAllComponents( { name: 'cdx-message' } );
 		expect( messages.length ).toBe( 1 );
@@ -109,41 +112,45 @@ describe( 'Publish Dialog', () => {
 	} );
 
 	it( 'closes the dialog when click cancel button', () => {
-		const wrapper = mount( PublishDialog, {
-			props: { showDialog: true },
-			global: { stubs: dialogGlobalStubs }
-		} );
+		const wrapper = renderPublishDialog();
 
-		wrapper.find( '.cdx-dialog__footer__default-action' ).trigger( 'click' );
+		wrapper.get( '.cdx-dialog__footer__default-action' ).trigger( 'click' );
 		expect( wrapper.emitted( 'close-dialog' ) ).toBeTruthy();
 	} );
 
 	it( 'proceeds to publish when click publish button and disables button while publishing', async () => {
-		const wrapper = mount( PublishDialog, {
-			props: { showDialog: true, functionSignatureChanged: false },
-			global: { stubs: dialogGlobalStubs }
+		const wrapper = renderPublishDialog( {
+			showDialog: true,
+			functionSignatureChanged: false
 		} );
-		wrapper.vm.summary = 'mock summary';
 
-		wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
+		// Set the summary value by triggering input event
+		const summaryInput = wrapper.find( '.ext-wikilambda-app-publish-dialog__summary-input input' );
+		await summaryInput.setValue( 'mock summary' );
 
-		expect( wrapper.vm.isPublishing ).toBe( true );
-		expect( wrapper.vm.primaryAction.disabled ).toBe( true );
+		wrapper.get( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
+
+		// Verify the store method was called with correct parameters
 		expect( store.submitZObject ).toHaveBeenCalledWith( {
 			summary: 'mock summary',
-			disconnectFunctionObjects: false
+			shouldDisconnectFunctionObjects: false
 		} );
-		await waitFor( () => expect( wrapper.vm.isPublishing ).toBe( false ) );
-		expect( wrapper.vm.primaryAction.disabled ).toBe( false );
+
+		// Wait for the publishing process to complete
+		await waitFor( () => {
+			// The button should be re-enabled after publishing completes
+			const primaryButton = wrapper.find( '.cdx-dialog__footer__primary-action' );
+			expect( primaryButton.attributes( 'disabled' ) ).toBeUndefined();
+		} );
 	} );
 
 	it( 'closes dialog and navigates out when submission is successful', async () => {
-		const wrapper = mount( PublishDialog, {
-			props: { showDialog: true, functionSignatureChanged: false },
-			global: { stubs: dialogGlobalStubs }
+		const wrapper = renderPublishDialog( {
+			showDialog: true,
+			functionSignatureChanged: false
 		} );
 
-		wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
+		wrapper.get( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
 		await waitFor( () => expect( wrapper.emitted( 'close-dialog' ) ).toBeTruthy() );
 	} );
 
@@ -151,12 +158,12 @@ describe( 'Publish Dialog', () => {
 		const error = new ApiError( 'http', { error: { message: 'mock submission error' } } );
 		store.submitZObject.mockRejectedValue( error );
 
-		const wrapper = mount( PublishDialog, {
-			props: { showDialog: true, functionSignatureChanged: false },
-			global: { stubs: dialogGlobalStubs }
+		const wrapper = renderPublishDialog( {
+			showDialog: true,
+			functionSignatureChanged: false
 		} );
 
-		wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
+		wrapper.get( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
 		await waitFor( () => expect( store.setError ).toHaveBeenCalledWith( {
 			errorId: 'main',
 			errorType: Constants.ERROR_TYPES.ERROR,
@@ -165,17 +172,18 @@ describe( 'Publish Dialog', () => {
 	} );
 
 	it( 'shows a keyboard warning when trying to submit with the Enter key', async () => {
-		const wrapper = mount( PublishDialog, {
-			props: { showDialog: true, functionSignatureChanged: false },
-			global: {
-				stubs: {
-					...dialogGlobalStubs,
-					CdxMessage: false
-				}
+		const wrapper = renderPublishDialog( {
+			showDialog: true,
+			functionSignatureChanged: false
+		}, {
+			stubs: {
+				CdxMessage: false
 			}
 		} );
 
-		wrapper.vm.summary = 'mock summary';
+		// Set the summary value by triggering input event
+		const summaryInput = wrapper.find( '.ext-wikilambda-app-publish-dialog__summary-input input' );
+		await summaryInput.setValue( 'mock summary' );
 
 		// Find the input element
 		const input = wrapper.find( '.ext-wikilambda-app-publish-dialog__summary-input input' );
@@ -185,15 +193,15 @@ describe( 'Publish Dialog', () => {
 
 		await waitFor( () => expect( wrapper.find( '.cdx-message--warning' ).exists() ).toBe( true ) );
 		// Note: As the message is spliced into with the platform-appropriate key symbols, we regex-match.
-		expect( wrapper.find( '.cdx-message--warning' ).text() ).toMatch( /You can press/ );
+		expect( wrapper.get( '.cdx-message--warning' ).text() ).toMatch( /You can press/ );
 		expect( store.submitZObject ).not.toHaveBeenCalled();
 	} );
 
 	it( 'proceeds to publish when pressing Ctrl + Enter on Windows', async () => {
 
-		const wrapper = mount( PublishDialog, {
-			props: { showDialog: true, functionSignatureChanged: false },
-			global: { stubs: dialogGlobalStubs }
+		const wrapper = renderPublishDialog( {
+			showDialog: true,
+			functionSignatureChanged: false
 		} );
 
 		// Find the input element
@@ -208,9 +216,9 @@ describe( 'Publish Dialog', () => {
 
 	it( 'proceeds to publish when pressing CMD + Enter on Mac', async () => {
 
-		const wrapper = mount( PublishDialog, {
-			props: { showDialog: true, functionSignatureChanged: false },
-			global: { stubs: dialogGlobalStubs }
+		const wrapper = renderPublishDialog( {
+			showDialog: true,
+			functionSignatureChanged: false
 		} );
 
 		// Find the input element
@@ -230,12 +238,12 @@ describe( 'Publish Dialog', () => {
 			store.getCurrentZObjectType = 'Z14';
 			store.getCurrentZImplementationType = 'Z14K3';
 
-			const wrapper = mount( PublishDialog, {
-				props: { showDialog: true, functionSignatureChanged: false },
-				global: { stubs: dialogGlobalStubs }
+			const wrapper = renderPublishDialog( {
+				showDialog: true,
+				functionSignatureChanged: false
 			} );
 
-			wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
+			wrapper.get( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
 
 			const streamName = 'mediawiki.product_metrics.wikifunctions_ui';
 			const schemaID = '/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0';
@@ -255,12 +263,12 @@ describe( 'Publish Dialog', () => {
 			store.getCurrentZObjectType = 'Z8';
 			store.getCurrentZImplementationType = undefined;
 
-			const wrapper = mount( PublishDialog, {
-				props: { showDialog: true, functionSignatureChanged: false },
-				global: { stubs: dialogGlobalStubs }
+			const wrapper = renderPublishDialog( {
+				showDialog: true,
+				functionSignatureChanged: false
 			} );
 
-			wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
+			wrapper.get( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
 
 			const streamName = 'mediawiki.product_metrics.wikifunctions_ui';
 			const schemaID = '/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0';

@@ -17,6 +17,22 @@ const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store
 describe( 'Publish widget', () => {
 	let store;
 
+	function renderPublish( props = {}, options = {} ) {
+		const defaultOptions = {
+			global: {
+				stubs: {
+					WlWidgetBase: false,
+					CdxButton: false,
+					...options?.stubs
+				}
+			}
+		};
+		return shallowMount( PublishWidget, {
+			props,
+			...defaultOptions
+		} );
+	}
+
 	beforeEach( () => {
 		store = useMainStore();
 		store.getCurrentZObjectId = 'Z0';
@@ -33,21 +49,18 @@ describe( 'Publish widget', () => {
 	} );
 
 	it( 'renders without errors', () => {
-		const wrapper = shallowMount( PublishWidget, {
-			global: { stubs: { WlWidgetBase: false } }
-		} );
+		const wrapper = renderPublish();
 
 		expect( wrapper.find( '.ext-wikilambda-app-publish-widget' ).exists() ).toBe( true );
 	} );
 
 	it( 'opens the publish dialog if validateZObject returns isValid true', async () => {
-		const wrapper = shallowMount( PublishWidget, {
-			props: { isDirty: true },
-			global: { stubs: { WlWidgetBase: false, CdxButton: false } }
+		const wrapper = renderPublish( {
+			isDirty: true
 		} );
 		const publishDialog = wrapper.findComponent( { name: 'wl-publish-dialog' } );
 
-		wrapper.find( '.ext-wikilambda-app-publish-widget__publish-button' ).trigger( 'click' );
+		wrapper.get( '.ext-wikilambda-app-publish-widget__publish-button' ).trigger( 'click' );
 
 		await waitFor( () => expect( publishDialog.props( 'showDialog' ) ).toBe( true ) );
 		expect( wrapper.emitted( 'start-publish' ) ).toBeTruthy();
@@ -56,76 +69,75 @@ describe( 'Publish widget', () => {
 	it( 'does not open the publish dialog if validateZObject returns isValid false', async () => {
 		store.validateZObject.mockReturnValue( false );
 
-		const wrapper = shallowMount( PublishWidget, {
-			global: { stubs: { WlWidgetBase: false } }
-		} );
+		const wrapper = renderPublish();
 
-		wrapper.find( '.ext-wikilambda-app-publish-widget__publish-button' ).trigger( 'click' );
+		wrapper.get( '.ext-wikilambda-app-publish-widget__publish-button' ).trigger( 'click' );
 
 		const publishDialog = wrapper.findComponent( { name: 'wl-publish-dialog' } );
 		await waitFor( () => expect( publishDialog.props( 'showDialog' ) ).toBe( false ) );
 	} );
 
 	it( 'opens the leave confirmation dialog if page is dirty', async () => {
-		const wrapper = shallowMount( PublishWidget, {
-			props: { isDirty: true },
-			global: { stubs: { WlWidgetBase: false, CdxButton: false } }
+		const wrapper = renderPublish( {
+			isDirty: true
 		} );
 
-		wrapper.find( '.ext-wikilambda-app-publish-widget__cancel-button' ).trigger( 'click' );
+		wrapper.get( '.ext-wikilambda-app-publish-widget__cancel-button' ).trigger( 'click' );
 
 		const leaveDialog = wrapper.findComponent( { name: 'wl-leave-editor-dialog' } );
 		await waitFor( () => expect( leaveDialog.props( 'showDialog' ) ).toBe( true ) );
 
 		expect( wrapper.emitted( 'start-cancel' ) ).toBeTruthy();
-		expect( wrapper.vm.leaveEditorCallback ).toBeDefined();
 	} );
 
 	it( 'leaves immediately if page is not dirty', async () => {
-		const wrapper = shallowMount( PublishWidget, {
-			props: { isDirty: false },
-			global: { stubs: { WlWidgetBase: false, CdxButton: false } }
+		const wrapper = renderPublish( {
+			isDirty: false
 		} );
 
-		wrapper.find( '.ext-wikilambda-app-publish-widget__cancel-button' ).trigger( 'click' );
+		wrapper.get( '.ext-wikilambda-app-publish-widget__cancel-button' ).trigger( 'click' );
 
 		const leaveDialog = wrapper.findComponent( { name: 'wl-leave-editor-dialog' } );
-		await waitFor( () => expect( window.location.href ).not.toEqual( '' ) );
-		expect( wrapper.emitted( 'start-cancel' ) ).toBeTruthy();
+
+		// Verify that the leave dialog is not shown (showDialog should be false)
 		expect( leaveDialog.props( 'showDialog' ) ).toBe( false );
-		expect( wrapper.vm.leaveEditorCallback ).toBeUndefined();
-		expect( wrapper.vm.showLeaveEditorDialog ).toBe( false );
+
+		// Verify that navigation occurs immediately
+		await waitFor( () => expect( window.location.href ).toEqual( '/wiki/Wikifunctions:Main_Page' ) );
+		expect( wrapper.emitted( 'start-cancel' ) ).toBeTruthy();
 	} );
 
 	it( 'redirects to main page if we cancel from a create page', async () => {
 		store.isCreateNewPage = true;
 
-		const wrapper = shallowMount( PublishWidget, {
-			props: { isDirty: false },
-			global: { stubs: { WlWidgetBase: false, CdxButton: false } }
+		const wrapper = renderPublish( {
+			isDirty: false
 		} );
 
-		wrapper.vm.leaveTo = jest.fn();
-		wrapper.find( '.ext-wikilambda-app-publish-widget__cancel-button' ).trigger( 'click' );
+		wrapper.get( '.ext-wikilambda-app-publish-widget__cancel-button' ).trigger( 'click' );
 
-		const targetUrl = '/wiki/Wikifunctions:Main_Page';
-		expect( wrapper.vm.leaveTo ).toHaveBeenCalledWith( targetUrl );
+		// Wait for navigation to occur and verify the correct URL
+		await waitFor( () => {
+			expect( window.location.href ).toBe( '/wiki/Wikifunctions:Main_Page' );
+		} );
+
 	} );
 
-	it( 'redirects to object view page if we cancel from an edit page', () => {
+	it( 'redirects to object view page if we cancel from an edit page', async () => {
 		store.isCreateNewPage = false;
 		store.getCurrentZObjectId = 'Z10001';
 
-		const wrapper = shallowMount( PublishWidget, {
-			props: { isDirty: false },
-			global: { stubs: { WlWidgetBase: false, CdxButton: false } }
+		const wrapper = renderPublish( {
+			isDirty: false
 		} );
 
-		wrapper.vm.leaveTo = jest.fn();
-		wrapper.find( '.ext-wikilambda-app-publish-widget__cancel-button' ).trigger( 'click' );
+		wrapper.get( '.ext-wikilambda-app-publish-widget__cancel-button' ).trigger( 'click' );
 
-		const targetUrl = '/view/en/Z10001';
-		expect( wrapper.vm.leaveTo ).toHaveBeenCalledWith( targetUrl );
+		// Wait for navigation to occur and verify the correct URL
+		await waitFor( () => {
+			expect( window.location.href ).toBe( '/view/en/Z10001' );
+		} );
+
 	} );
 
 	describe( 'Event logging', () => {
@@ -134,12 +146,11 @@ describe( 'Publish widget', () => {
 			store.getCurrentZObjectType = 'Z8';
 			store.getCurrentZImplementationType = undefined;
 
-			const wrapper = shallowMount( PublishWidget, {
-				props: { isDirty: false },
-				global: { stubs: { WlWidgetBase: false, CdxButton: false } }
+			const wrapper = renderPublish( {
+				isDirty: false
 			} );
 
-			wrapper.find( '.ext-wikilambda-app-publish-widget__cancel-button' ).trigger( 'click' );
+			wrapper.get( '.ext-wikilambda-app-publish-widget__cancel-button' ).trigger( 'click' );
 
 			const streamName = 'mediawiki.product_metrics.wikifunctions_ui';
 			const schemaID = '/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0';
@@ -155,12 +166,11 @@ describe( 'Publish widget', () => {
 			store.getCurrentZObjectType = 'Z14';
 			store.getCurrentZImplementationType = 'Z14K3';
 
-			const wrapper = shallowMount( PublishWidget, {
-				props: { isDirty: false },
-				global: { stubs: { WlWidgetBase: false, CdxButton: false } }
+			const wrapper = renderPublish( {
+				isDirty: false
 			} );
 
-			wrapper.find( '.ext-wikilambda-app-publish-widget__cancel-button' ).trigger( 'click' );
+			wrapper.get( '.ext-wikilambda-app-publish-widget__cancel-button' ).trigger( 'click' );
 
 			const streamName = 'mediawiki.product_metrics.wikifunctions_ui';
 			const schemaID = '/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0';
@@ -176,9 +186,8 @@ describe( 'Publish widget', () => {
 			store.isCreateNewPage = false;
 			store.getQueryParams = {};
 
-			const wrapper = shallowMount( PublishWidget, {
-				props: { isDirty: false },
-				global: { stubs: { WlWidgetBase: false, CdxButton: false } }
+			const wrapper = renderPublish( {
+				isDirty: false
 			} );
 
 			const button = wrapper.find( '.ext-wikilambda-app-publish-widget__publish-button' );
@@ -191,9 +200,8 @@ describe( 'Publish widget', () => {
 				oldid: '12345'
 			};
 
-			const wrapper = shallowMount( PublishWidget, {
-				props: { isDirty: false },
-				global: { stubs: { WlWidgetBase: false, CdxButton: false } }
+			const wrapper = renderPublish( {
+				isDirty: false
 			} );
 
 			const button = wrapper.find( '.ext-wikilambda-app-publish-widget__publish-button' );
@@ -206,9 +214,8 @@ describe( 'Publish widget', () => {
 				undo: '12345'
 			};
 
-			const wrapper = shallowMount( PublishWidget, {
-				props: { isDirty: false },
-				global: { stubs: { WlWidgetBase: false, CdxButton: false } }
+			const wrapper = renderPublish( {
+				isDirty: false
 			} );
 
 			const button = wrapper.find( '.ext-wikilambda-app-publish-widget__publish-button' );
@@ -224,9 +231,7 @@ describe( 'Publish widget', () => {
 				{ errorMessageKey: 'wikilambda-empty-reference-warning', type: 'warning' }
 			] );
 
-			const wrapper = shallowMount( PublishWidget, {
-				global: { stubs: { WlWidgetBase: false } }
-			} );
+			const wrapper = renderPublish( { isDirty: true } );
 
 			wrapper.find( '.ext-wikilambda-app-publish-widget__publish-button' ).trigger( 'click' );
 

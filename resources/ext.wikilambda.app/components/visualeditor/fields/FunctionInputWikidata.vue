@@ -18,14 +18,13 @@
 		<cdx-progress-indicator
 			v-if="isValidating"
 			class="ext-wikilambda-app-function-input-wikidata__progress-indicator">
-			{{ $i18n( 'wikilambda-loading' ).text() }}
+			{{ i18n( 'wikilambda-loading' ).text() }}
 		</cdx-progress-indicator>
 	</div>
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapState, mapActions } = require( 'pinia' );
+const { computed, defineComponent, inject, onMounted, ref } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
 const useMainStore = require( '../../../store/index.js' );
@@ -69,203 +68,169 @@ module.exports = exports = defineComponent( {
 		}
 	},
 	emits: [ 'input', 'update', 'validate' ],
-	data: function () {
-		return {
-			isValidating: false
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getWikidataEntityLabelData',
-		'getWikidataEntityDataAsync'
-	] ), {
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
+
+		const isValidating = ref( false );
+
 		/**
 		 * Get the Wikidata entity type based on the input type
 		 *
 		 * @return {string}
 		 */
-		entityType: function () {
-			return Constants.WIKIDATA_SIMPLIFIED_TYPES[ this.inputType ];
-		},
+		const entityType = computed( () => Constants.WIKIDATA_SIMPLIFIED_TYPES[ props.inputType ] );
+
 		/**
 		 * Get the current entity ID from the value
 		 *
 		 * @return {string|null}
 		 */
-		entityId: function () {
-			return this.value || null;
-		},
+		const entityId = computed( () => props.value || null );
+
 		/**
-		 * Get the current entity label using getWikidataEntityLabelData
+		 * Get the current entity label
 		 *
 		 * @return {string}
 		 */
-		entityLabel: function () {
-			const labelData = this.getWikidataEntityLabelData( this.entityType, this.entityId );
+		const entityLabel = computed( () => {
+			const labelData = store.getWikidataEntityLabelData( entityType.value, entityId.value );
 			return labelData ? labelData.label : '';
-		},
+		} );
+
 		/**
 		 * Whether this input type allows for empty fields
 		 *
 		 * @return {boolean}
 		 */
-		allowsEmptyField: function () {
-			return Constants.VE_ALLOW_EMPTY_FIELD.includes( this.inputType );
-		},
+		const allowsEmptyField = computed( () => Constants.VE_ALLOW_EMPTY_FIELD.includes( props.inputType ) );
 
 		/**
-		 * Returns the placeholder text.
-		 * If the default value checkbox is checked, return the default value label,
-		 * otherwise return an empty string.
+		 * Updates the validation state
 		 *
-		 * @return {string}
+		 * @param {boolean} isValid
 		 */
-		placeholder: function () {
-			if ( this.shouldUseDefaultValue ) {
-				const entityId = this.defaultValue;
-				if ( !entityId ) {
+		const placeholder = computed( () => {
+			if ( props.shouldUseDefaultValue ) {
+				const defaultValueId = props.defaultValue;
+				if ( !defaultValueId ) {
 					return '';
 				}
 				// Get the entity label from the store
-				const labelData = this.getWikidataEntityLabelData( this.entityType, entityId );
-				return labelData ? labelData.label : entityId;
+				const labelData = store.getWikidataEntityLabelData( entityType.value, defaultValueId );
+				return labelData ? labelData.label : defaultValueId;
 			}
 			return '';
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'fetchWikidataEntitiesByType'
-	] ), {
+		} );
 		/**
-		 * Handle Wikidata entity selection:
-		 * * emits 'input' event to set the local variable to the new value
-		 * * starts validation, which will emit 'update' event to set up the
-		 *   value in the store and make it available to VE
+		 * Updates the validation state
 		 *
-		 * @param {string} value - The selected entity ID
+		 * @param {boolean} isValid
 		 */
-		onSelect: function ( value ) {
-			this.$emit( 'input', value );
-			this.validateEntity( value, true );
-		},
-		/**
-		 * Updates the validation state of the field.
-		 *
-		 * @param {boolean} isValid - The validation result.
-		 */
-		updateValidationState: function ( isValid ) {
-			const simplifiedType = Constants.WIKIDATA_SIMPLIFIED_TYPES[ this.entityType ];
+		const updateValidationState = ( isValid ) => {
+			const simplifiedType = Constants.WIKIDATA_SIMPLIFIED_TYPES[ entityType.value ];
 			const errorMessageKey = Constants.WIKIDATA_INPUT_ERROR_MSG[ simplifiedType ];
 			const error = !isValid ? ErrorData.buildErrorData( { errorMessageKey } ) : undefined;
-			this.$emit( 'validate', { isValid, error } );
-		},
+			emit( 'validate', { isValid, error } );
+		};
+
 		/**
-		 * Validates the value and optionally emits an update event if valid.
+		 * Validates a Wikidata entity ID
 		 *
-		 * @param {string} value - The value to validate.
-		 * @param {boolean} emitUpdate - Whether to emit the update event if valid.
+		 * @param {string} entityIdValue
+		 * @param {boolean} emitUpdate
 		 */
-		validate: function ( value, emitUpdate = false ) {
-			// If default value checkbox is checked, field is valid
-			if ( this.shouldUseDefaultValue ) {
-				this.updateValidationState( true );
+		const validateEntity = ( entityIdValue, emitUpdate = false ) => {
+			// Set validating state and emit invalid until we get a response
+			isValidating.value = true;
+			emit( 'validate', { isValid: false } );
+
+			// Helper function to validate and update the validation state
+			const validateAndUpdate = () => {
+				updateValidationState( true );
 				if ( emitUpdate ) {
-					this.$emit( 'update', value );
+					emit( 'update', entityIdValue );
+				}
+			};
+
+			// First, try to get the entity data asynchronously
+			store.getWikidataEntityDataAsync( entityType.value, entityIdValue )
+				// If the entity data is not found, fetch it from Wikidata
+				.catch( () => store.fetchWikidataEntitiesByType( { type: entityType.value, ids: [ entityIdValue ] } )
+					.then( () => store.getWikidataEntityDataAsync( entityType.value, entityIdValue ) )
+				)
+				// If the entity data is found, validate and update
+				.then( validateAndUpdate )
+				// If the entity data is not found or there was an error, set the validation state to false
+				.catch( () => updateValidationState( false ) )
+				.finally( () => {
+					isValidating.value = false;
+				} );
+		};
+
+		/**
+		 * Validates the value
+		 *
+		 * @param {string} value
+		 * @param {boolean} emitUpdate
+		 */
+		const validate = ( value, emitUpdate = false ) => {
+			// If default value checkbox is checked, field is valid
+			if ( props.shouldUseDefaultValue ) {
+				updateValidationState( true );
+				if ( emitUpdate ) {
+					emit( 'update', value );
 				}
 				return;
 			}
 
-			// For empty values, valid if: empty is allowed AND no default value available
+			// For empty values, check if empty field is allowed
 			if ( !value ) {
-				const isValid = this.allowsEmptyField && !this.hasDefaultValue;
-				this.updateValidationState( isValid );
+				const isValid = allowsEmptyField.value && !props.hasDefaultValue;
+				updateValidationState( isValid );
 				if ( emitUpdate && isValid ) {
-					this.$emit( 'update', value );
+					emit( 'update', value );
 				}
 				return;
 			}
 
 			// For non-empty values, validate the entity
-			this.validateEntity( value, emitUpdate );
-		},
+			validateEntity( value, emitUpdate );
+		};
+
 		/**
-		 * Validates a Wikidata entity ID by checking if it exists and is of the correct type.
+		 * Handle Wikidata entity selection
 		 *
-		 * This method performs asynchronous validation using a two-step process:
-		 * 1. First attempts to retrieve the entity from the local cache
-		 * 2. If not found, fetches the entity from Wikidata and validates again
-		 *
-		 * The two-step process is necessary because:
-		 * - The store manages entity fetching through promises to prevent duplicate API calls
-		 * - When fetchWikidataEntitiesByType is called, it first adds a promise to the store
-		 * - If the same entity is already being fetched, the existing promise is returned
-		 * - If the entity is already cached, the promise resolves immediately
-		 * - Only if the entity hasn't been requested yet it makes a new API call
-		 * - This prevents race conditions and unnecessary duplicate requests
-		 *
-		 * During validation:
-		 * - Sets the component's validating state to true
-		 * - Initially emits an invalid validation state
-		 * - Updates validation state to true if entity is found and valid
-		 * - Updates validation state to false if entity doesn't exist or is invalid
-		 * - Optionally emits an update event if validation succeeds and emitUpdate is true
-		 * - Always resets the validating state when complete
-		 *
-		 * @param {string} entityId - The Wikidata entity ID to validate (e.g., 'Q42', 'L123', 'P31')
-		 * @param {boolean} [emitUpdate=false] - Whether to emit an 'update' event if validation succeeds
+		 * @param {string} value
 		 */
-		validateEntity: function ( entityId, emitUpdate = false ) {
-			// Set validating state and emit invalid until we get a response
-			this.isValidating = true;
-			this.$emit( 'validate', { isValid: false } );
-
-			// Helper function to validate and update the validation state
-			const validateAndUpdate = () => {
-				this.updateValidationState( true );
-				if ( emitUpdate ) {
-					this.$emit( 'update', entityId );
-				}
-			};
-
-			// First, try to get the entity data asynchronously
-			this.getWikidataEntityDataAsync( this.entityType, entityId )
-				// If the entity data is not found, fetch it from Wikidata
-				.catch( () => this.fetchWikidataEntitiesByType( { type: this.entityType, ids: [ entityId ] } )
-					.then( () => this.getWikidataEntityDataAsync( this.entityType, entityId ) )
-				)
-				// If the entity data is found, validate and update
-				.then( validateAndUpdate )
-				// If the entity data is not found or there was an error, set the validation state to false
-				.catch( () => this.updateValidationState( false ) )
-				.finally( () => {
-					this.isValidating = false;
-				} );
-		},
+		const onSelect = ( value ) => {
+			emit( 'input', value );
+			validateEntity( value, true );
+		};
 
 		/**
 		 * Fetches the default value from wikidata.
-		 *
-		 * @return {void}
 		 */
-		fetchDefaultValue: function () {
-			if ( this.defaultValue ) {
-				this.fetchWikidataEntitiesByType( { type: this.entityType, ids: [ this.defaultValue ] } );
+		const fetchDefaultValue = () => {
+			if ( props.defaultValue ) {
+				store.fetchWikidataEntitiesByType( { type: entityType.value, ids: [ props.defaultValue ] } );
 			}
-		}
+		};
 
-	} ),
-	watch: {
-		/**
-		 * Watch for changes to shouldUseDefaultValue and re-validate
-		 *
-		 * @param {boolean} newValue - The new value of shouldUseDefaultValue
-		 */
-		shouldUseDefaultValue: function () {
-			this.validate( this.entityId );
-		}
-	},
-	mounted: function () {
-		this.fetchDefaultValue();
-		this.validate( this.entityId );
+		onMounted( () => {
+			fetchDefaultValue();
+			validate( entityId.value );
+		} );
+
+		return {
+			entityId,
+			entityLabel,
+			entityType,
+			placeholder,
+			isValidating,
+			onSelect,
+			i18n
+		};
 	}
 } );
 </script>

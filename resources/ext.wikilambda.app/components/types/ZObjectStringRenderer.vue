@@ -33,14 +33,19 @@
 				<cdx-message :type="fieldErrors[0].type" :inline="true">
 					<wl-safe-message :error="fieldErrors[0]"></wl-safe-message>
 				</cdx-message>
-				<a v-if="showExamplesLink" @click="openExamplesDialog">
-					{{ $i18n( 'wikilambda-string-renderer-examples-title' ).text() }}
-				</a>
+				<cdx-button
+					v-if="showExamplesLink"
+					weight="quiet"
+					action="progressive"
+					class="ext-wikilambda-app-object-string-renderer__examples-link"
+					@click="openExamplesDialog">
+					{{ i18n( 'wikilambda-string-renderer-examples-title' ).text() }}
+				</cdx-button>
 				<!-- eslint-disable vue/no-v-html -->
 				<p
 					v-if="showErrorFooter"
 					class="ext-wikilambda-app-object-string-renderer__error-footer"
-					v-html="$i18n( 'wikilambda-renderer-error-footer-project-chat' ).parse()"
+					v-html="i18n( 'wikilambda-renderer-error-footer-project-chat' ).parse()"
 				></p>
 				<!-- eslint-enable vue/no-v-html -->
 			</div>
@@ -60,8 +65,8 @@
 		<!-- Renderer examples dialog -->
 		<cdx-dialog
 			:open="showExamplesDialog"
-			:title="$i18n( 'wikilambda-string-renderer-examples-title' ).text()"
-			:close-button-label="$i18n( 'wikilamda-dialog-close' ).text()"
+			:title="i18n( 'wikilambda-string-renderer-examples-title' ).text()"
+			:close-button-label="i18n( 'wikilamda-dialog-close' ).text()"
 			:use-close-button="true"
 			@update:open="showExamplesDialog = false"
 		>
@@ -83,12 +88,11 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { computed, defineComponent, inject, onBeforeUnmount, onMounted, ref, watch } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
-const errorMixin = require( '../../mixins/errorMixin.js' );
-const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
+const useError = require( '../../composables/useError.js' );
+const useZObject = require( '../../composables/useZObject.js' );
 const { canonicalToHybrid, hybridToCanonical } = require( '../../utils/schemata.js' );
 const urlUtils = require( '../../utils/urlUtils.js' );
 const useMainStore = require( '../../store/index.js' );
@@ -98,18 +102,18 @@ const SafeMessage = require( '../base/SafeMessage.vue' );
 // Type components:
 const ZObjectKeyValueSet = require( './ZObjectKeyValueSet.vue' );
 // Codex components:
-const { CdxDialog, CdxMessage, CdxTextInput } = require( '../../../codex.js' );
+const { CdxButton, CdxDialog, CdxMessage, CdxTextInput } = require( '../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-object-string-renderer',
 	components: {
 		'cdx-dialog': CdxDialog,
+		'cdx-button': CdxButton,
 		'cdx-message': CdxMessage,
 		'cdx-text-input': CdxTextInput,
 		'wl-safe-message': SafeMessage,
 		'wl-z-object-key-value-set': ZObjectKeyValueSet
 	},
-	mixins: [ errorMixin, zobjectMixin ],
 	props: {
 		keyPath: {
 			type: String,
@@ -132,86 +136,71 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	data: function () {
-		return {
-			blankObject: undefined,
-			renderValueInitialized: false,
-			renderTestsInitialized: false,
-			renderedValue: '',
-			rendererRunning: false,
-			showExamplesDialog: false,
-			showExamplesLink: false,
-			showErrorFooter: false,
-			pendingPromises: [],
-			parserAbortController: null // Track the AbortController for parser requests
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'createObjectByType',
-		'getCurrentView',
-		'getLabelData',
-		'getPassingTestZids',
-		'getParserZid',
-		'getRendererZid',
-		'getRendererExamples',
-		'getStoredObject',
-		'getUserLangCode',
-		'getUserLangZid',
-		'isCreateNewPage',
-		'getValidRendererTests'
-	] ), {
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const { getZObjectType } = useZObject( { keyPath: props.keyPath } );
+		const { hasFieldErrors, fieldErrors, clearFieldErrors } = useError( { keyPath: props.keyPath } );
+		const store = useMainStore();
+
+		// Reactive data
+		const blankObject = ref( undefined );
+		const renderValueInitialized = ref( false );
+		const renderTestsInitialized = ref( false );
+		const renderedValue = ref( '' );
+		const rendererRunning = ref( false );
+		const showExamplesDialog = ref( false );
+		const showExamplesLink = ref( false );
+		const showErrorFooter = ref( false );
+		const pendingPromises = ref( [] );
+		const parserAbortController = ref( null );
+
+		// Computed properties
 		/**
 		 * Return the stored type object
 		 *
 		 * @return {Object}
 		 */
-		typeObject: function () {
-			return this.getStoredObject( this.type );
-		},
+		const typeObject = computed( () => store.getStoredObject( props.type ) );
+
 		/**
 		 * Return renderer function Zid
 		 *
 		 * @return {string}
 		 */
-		rendererZid: function () {
-			return this.getRendererZid( this.type );
-		},
+		const rendererZid = computed( () => store.getRendererZid( props.type ) );
+
 		/**
 		 * Return renderer LabelData
 		 *
 		 * @return {LabelData}
 		 */
-		rendererLabel: function () {
-			return this.getLabelData( this.rendererZid );
-		},
+		const rendererLabel = computed( () => store.getLabelData( rendererZid.value ) );
+
 		/**
 		 * Return the url for the renderer wiki page
 		 *
 		 * @return {string}
 		 */
-		rendererUrl: function () {
-			return urlUtils.generateViewUrl( {
-				langCode: this.getUserLangCode,
-				zid: this.rendererZid
-			} );
-		},
+		const rendererUrl = computed( () => urlUtils.generateViewUrl( {
+			langCode: store.getUserLangCode,
+			zid: rendererZid.value
+		} ) );
+
 		/**
 		 * Return parser function Zid
 		 *
 		 * @return {string}
 		 */
-		parserZid: function () {
-			return this.getParserZid( this.type );
-		},
+		const parserZid = computed( () => store.getParserZid( props.type ) );
+
 		/**
 		 * Returns the rendered examples in case the renderer
 		 * tests were run.
 		 *
 		 * @return {Array}
 		 */
-		renderedExamples: function () {
-			return this.getRendererExamples( this.rendererZid );
-		},
+		const renderedExamples = computed( () => store.getRendererExamples( rendererZid.value ) );
+
 		/**
 		 * Return a dynamically generated placeholder for the renderer field
 		 * using the available tests for the renderer function. If none are
@@ -221,13 +210,14 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string}
 		 */
-		placeholderValue: function () {
-			if ( this.renderedExamples.length > 0 ) {
-				const example = this.renderedExamples[ 0 ].result;
-				return this.$i18n( 'wikilambda-string-renderer-field-example', example ).text();
+		const placeholderValue = computed( () => {
+			if ( renderedExamples.value.length > 0 ) {
+				const example = renderedExamples.value[ 0 ].result;
+				return i18n( 'wikilambda-string-renderer-field-example', example ).text();
 			}
 			return '';
-		},
+		} );
+
 		/**
 		 * Filters the passing test zids array and returns an array with the
 		 * test objects for those which are wellformed. We consider wellformed
@@ -236,39 +226,70 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Array}
 		 */
-		validRendererTests: function () {
-			if ( !this.renderTestsInitialized ) {
+		const validRendererTests = computed( () => {
+			if ( !renderTestsInitialized.value ) {
 				return [];
 			}
-			return this.getValidRendererTests( this.rendererZid );
-		},
+			return store.getValidRendererTests( rendererZid.value );
+		} );
+
 		/**
 		 * Returns the string to show when rendered value fails, which will
 		 * be epty string on edit mode, and "No display value" on view
 		 *
 		 * @return {string}
 		 */
-		noRenderedValue: function () {
-			return this.edit ? '' : this.$i18n( 'wikilambda-renderer-view-invalid-result' ).text();
+		const noRenderedValue = computed( () => props.edit ? '' : i18n( 'wikilambda-renderer-view-invalid-result' ).text() );
+
+		// Methods
+		/**
+		 * Sets the given error message for current errorId
+		 *
+		 * @param {Object} payload
+		 * @param {string} payload.errorMessage - raw error message, unsafe for HTML rendering
+		 * @param {string} payload.errorMessageKey - i18n message, safe for HTML rendering
+		 * @param {Array} payload.errorParams - i18n message parameters (if any)
+		 */
+		function setFieldError( payload ) {
+			const errorData = Object.assign( {
+				errorId: props.keyPath,
+				errorType: Constants.ERROR_TYPES.ERROR
+			}, payload );
+
+			store.setError( errorData );
 		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'getTestResults',
-		'handleMetadataError',
-		'runRendererTest',
-		'runRenderer',
-		'runParser',
-		'setError'
-	] ), {
+
+		/**
+		 * Clears renderer field errors
+		 */
+		function clearRendererError() {
+			showExamplesLink.value = false;
+			showErrorFooter.value = false;
+			rendererRunning.value = false;
+			clearFieldErrors();
+		}
+
+		/**
+		 * Create the model for a blank object of this type and store it locally.
+		 * This initialization will only be run once, and only when we know for
+		 * sure that the typeObject is available.
+		 * The blank object is in canonical form, but it must be transformed into
+		 * hybrid form before setting it up in the store zobject.
+		 */
+		function initializeBlankObject() {
+			blankObject.value = hybridToCanonical( store.createObjectByType( { type: props.type } ) );
+		}
+
 		/**
 		 * If the object type is changed, surface the event so that
 		 * the ZObjectKeyValue parent component makes the type change.
 		 *
 		 * @param {Object} payload
 		 */
-		setType: function ( payload ) {
-			this.$emit( 'set-type', payload );
-		},
+		function setType( payload ) {
+			emit( 'set-type', payload );
+		}
+
 		/**
 		 * Update the local renderedValue variable with the new
 		 * value and trigger the function call to generate the new
@@ -276,147 +297,147 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {Object} event
 		 */
-		setRenderedValue: function ( event ) {
-			this.renderedValue = event.target.value;
-			this.generateParsedValue();
-		},
+		function setRenderedValue( event ) {
+			renderedValue.value = event.target.value;
+			generateParsedValue();
+		}
 		/**
 		 * Trigger the call to the Renderer function for this type
 		 * passing the current object values, and set the returned string
 		 * in the local renderedValue variable.
 		 */
-		generateRenderedValue: function () {
+		function generateRenderedValue() {
 			// If we are in view mode, only initialize rendered value once.
 			// Only when the rendered value is generated successfully we will
 			// mark it as initialized.
-			if ( !this.edit && this.renderValueInitialized ) {
+			if ( !props.edit && renderValueInitialized.value ) {
 				return;
 			}
 
 			// If we are in edit mode, only generate rendered value if the object is not
 			// blank. For this we need to wait till the typeObject has been fetched.
-			if ( this.edit && !this.typeObject ) {
+			if ( props.edit && !typeObject.value ) {
 				return;
 			}
 
 			// If typeObject is available, initialize the model blank object.
-			if ( this.typeObject && !this.blankObject ) {
-				this.initializeBlankObject();
+			if ( typeObject.value && !blankObject.value ) {
+				initializeBlankObject();
 			}
 
-			const zobject = hybridToCanonical( this.objectValue );
+			const zobject = hybridToCanonical( props.objectValue );
 
 			// If zobject is blank, exit renderer.
-			if ( JSON.stringify( zobject ) === JSON.stringify( this.blankObject ) ) {
+			if ( JSON.stringify( zobject ) === JSON.stringify( blankObject.value ) ) {
 				return;
 			}
-			this.rendererRunning = true;
-			this.renderedValue = this.$i18n( 'wikilambda-string-renderer-running' ).text();
+			rendererRunning.value = true;
+			renderedValue.value = i18n( 'wikilambda-string-renderer-running' ).text();
 
-			this.runRenderer( {
-				rendererZid: this.rendererZid,
+			store.runRenderer( {
+				rendererZid: rendererZid.value,
 				zobject,
-				zlang: this.getUserLangZid
+				zlang: store.getUserLangZid
 			} ).then( ( data ) => {
-				this.clearRendererError();
+				clearRendererError();
 				const response = data.response[ Constants.Z_RESPONSEENVELOPE_VALUE ];
 				if ( response === Constants.Z_VOID ) {
 					// Renderer returned void:
 					// get error from metadata object and show examples link
-					this.renderedValue = this.noRenderedValue;
-					this.showExamplesLink = ( this.renderedExamples.length > 0 );
+					renderedValue.value = noRenderedValue.value;
+					showExamplesLink.value = renderedExamples.value.length > 0;
 
 					const metadata = data.response[ Constants.Z_RESPONSEENVELOPE_METADATA ];
 					const fallbackErrorData = {
 						errorMessageKey: 'wikilambda-renderer-unknown-error',
-						errorParams: [ this.rendererZid ]
+						errorParams: [ rendererZid.value ]
 					};
 
-					this.handleMetadataError( {
+					store.handleMetadataError( {
 						metadata,
 						fallbackErrorData,
-						errorHandler: this.setFieldError
+						errorHandler: setFieldError
 					} );
 
-				} else if ( this.getZObjectType( response ) !== Constants.Z_STRING ) {
+				} else if ( getZObjectType( response ) !== Constants.Z_STRING ) {
 					// Renderer returned unexpected type:
 					// show unexpected result error and project chat footer
-					this.renderedValue = this.noRenderedValue;
-					this.showErrorFooter = true;
-					this.setFieldError( {
+					renderedValue.value = noRenderedValue.value;
+					showErrorFooter.value = true;
+					setFieldError( {
 						errorMessageKey: 'wikilambda-renderer-unexpected-result-error',
-						errorParams: [ this.rendererZid ]
+						errorParams: [ rendererZid.value ]
 					} );
 				} else {
 					// Success: Update the locally saved renderedValue with the response
-					this.renderedValue = response;
-					this.renderValueInitialized = true;
+					renderedValue.value = response;
+					renderValueInitialized.value = true;
 				}
 			} ).catch( () => {
-				this.renderedValue = this.noRenderedValue;
-				this.clearRendererError();
-				this.setFieldError( { errorMessageKey: 'wikilambda-renderer-api-error' } );
+				renderedValue.value = noRenderedValue.value;
+				clearRendererError();
+				setFieldError( { errorMessageKey: 'wikilambda-renderer-api-error' } );
 			} );
-		},
+		}
 		/**
 		 * Trigger the call to the Parser function for this type
 		 * passing the current rendererValue, and set the returned object
 		 * in the global store.
 		 */
-		generateParsedValue: function () {
+		function generateParsedValue() {
 			// Cancel previous parser request if any
-			if ( this.parserAbortController ) {
-				this.parserAbortController.abort();
+			if ( parserAbortController.value ) {
+				parserAbortController.value.abort();
 			}
-			this.parserAbortController = new AbortController();
+			parserAbortController.value = new AbortController();
 
-			this.runParser( {
-				parserZid: this.parserZid,
-				zobject: this.renderedValue,
-				zlang: this.getUserLangZid,
+			store.runParser( {
+				parserZid: parserZid.value,
+				zobject: renderedValue.value,
+				zlang: store.getUserLangZid,
 				wait: true,
-				signal: this.parserAbortController.signal
+				signal: parserAbortController.value.signal
 			} ).then( ( data ) => {
-				this.clearRendererError();
+				clearRendererError();
 				const response = data.response[ Constants.Z_RESPONSEENVELOPE_VALUE ];
 				if ( response === Constants.Z_VOID ) {
 					// Parser returned void:
 					// * Resolve parser promise
 					// * get error from metadata object and show examples link
 					data.resolver.resolve();
-					this.clearParsedValue();
-					this.showExamplesLink = ( this.renderedExamples.length > 0 );
+					clearParsedValue();
+					showExamplesLink.value = renderedExamples.value.length > 0;
 
 					const metadata = data.response[ Constants.Z_RESPONSEENVELOPE_METADATA ];
 					const fallbackErrorData = {
 						errorMessageKey: 'wikilambda-parser-unknown-error',
-						errorParams: [ this.parserZid ]
+						errorParams: [ parserZid.value ]
 					};
 
-					this.handleMetadataError( {
+					store.handleMetadataError( {
 						metadata,
 						fallbackErrorData,
-						errorHandler: this.setFieldError
+						errorHandler: setFieldError
 					} );
 
-				} else if ( this.getZObjectType( response ) !== this.type ) {
+				} else if ( getZObjectType( response ) !== props.type ) {
 					// Parser return unexpected type:
 					// * Resolve parser promise
 					// * show unexpected result error and project chat footer
 					data.resolver.resolve();
-					this.clearParsedValue();
-					this.showErrorFooter = true;
-					this.setFieldError( {
+					clearParsedValue();
+					showErrorFooter.value = true;
+					setFieldError( {
 						errorMessageKey: 'wikilambda-parser-unexpected-result-error',
-						errorParams: [ this.parserZid ]
+						errorParams: [ parserZid.value ]
 					} );
 				} else {
 					// Success:
 					// Parent component (ZObjectKeyValue) should:
 					// * Set the value of the returned ZObject
 					// * Resolve parser promise once the changes are persisted
-					this.pendingPromises.push( data.resolver );
-					this.$emit( 'set-value', {
+					pendingPromises.value.push( data.resolver );
+					emit( 'set-value', {
 						keyPath: [],
 						value: canonicalToHybrid( response ),
 						callback: () => data.resolver.resolve()
@@ -427,141 +448,127 @@ module.exports = exports = defineComponent( {
 				if ( error.code === 'abort' ) {
 					return;
 				}
-				this.clearRendererError();
-				this.setFieldError( { errorMessageKey: 'wikilambda-renderer-api-error' } );
+				clearRendererError();
+				setFieldError( { errorMessageKey: 'wikilambda-renderer-api-error' } );
 			} );
-		},
+		}
+
 		/**
 		 * Resets the parsed key-values to a blank state.
 		 */
-		clearParsedValue: function () {
-			this.$emit( 'set-value', {
+		function clearParsedValue() {
+			emit( 'set-value', {
 				keyPath: [],
-				value: canonicalToHybrid( this.blankObject )
+				value: canonicalToHybrid( blankObject.value )
 			} );
-		},
-		/**
-		 * Sets the given error message for current errorId
-		 *
-		 * @param {Object} payload
-		 * @param {string} payload.errorMessage - raw error message, unsafe for HTML rendering
-		 * @param {string} payload.errorMessageKey - i18n message, safe for HTML rendering
-		 * @param {Array} payload.errorParams - i18n message parameters (if any)
-		 */
-		setFieldError: function ( payload ) {
-			const errorData = Object.assign( {
-				errorId: this.keyPath,
-				errorType: Constants.ERROR_TYPES.ERROR
-			}, payload );
+		}
 
-			this.setError( errorData );
-		},
-		/**
-		 * Clears renderer field errors
-		 */
-		clearRendererError: function () {
-			this.showExamplesLink = false;
-			this.showErrorFooter = false;
-			this.rendererRunning = false;
-			this.clearFieldErrors();
-		},
 		/**
 		 * Runs the test results for the renderer function. This
 		 * call must be treated asynchronously, so all the results
 		 * will be gathered as reactive computed properties.
 		 */
-		generateRendererExamples: function () {
-			if ( this.edit ) {
-				this.getTestResults( {
-					zFunctionId: this.rendererZid
+		function generateRendererExamples() {
+			if ( props.edit ) {
+				store.getTestResults( {
+					zFunctionId: rendererZid.value
 				} ).then( () => {
-					// At this point getPassingTestZids is already returning the existing tests.
-					// If none exist and we are creating a new object, expand to key-value set
-					const setExpanded = (
-						( this.isCreateNewPage || this.getCurrentView === Constants.VIEWS.FUNCTION_EVALUATOR ) &&
-						( this.getPassingTestZids( this.rendererZid ).length === 0 )
-					);
-					this.$emit( 'expand', setExpanded );
-					this.renderTestsInitialized = true;
+					// At this point store.getPassingTestZids is already returning the existing tests.
+				// If none exist and we are creating a new object, expand to key-value set
+					const isNewOrEvaluator = store.isCreateNewPage ||
+					store.getCurrentView === Constants.VIEWS.FUNCTION_EVALUATOR;
+					const hasNoPassingTests = store.getPassingTestZids( rendererZid.value ).length === 0;
+					const setExpanded = isNewOrEvaluator && hasNoPassingTests;
+					emit( 'expand', setExpanded );
+					renderTestsInitialized.value = true;
 				} );
 			} else {
 				// For view mode we don't need to initialize the renderer examples
-				this.$emit( 'expand', false );
-				this.renderTestsInitialized = true;
+				emit( 'expand', false );
+				renderTestsInitialized.value = true;
 			}
-		},
+		}
+
 		/**
 		 * Opens the dialog with the renderer examples, if any.
 		 */
-		openExamplesDialog: function () {
-			this.showExamplesDialog = true;
-		},
-		/**
-		 * Create the model for a blank object of this type and store it locally.
-		 * This initialization will only be run once, and only when we know for
-		 * sure that the typeObject is available.
-		 * The blank object is in canonical form, but it must be transformed into
-		 * hybrid form before setting it up in the store zobject.
-		 */
-		initializeBlankObject: function () {
-			this.blankObject = hybridToCanonical( this.createObjectByType( { type: this.type } ) );
+		function openExamplesDialog() {
+			showExamplesDialog.value = true;
 		}
-	} ),
-	watch: {
+
 		/**
 		 * Watch the prop expanded. When the field is collapsed
 		 * generate the rendered value. When the field is expanded
 		 * we clear the renderer errors.
-		 *
-		 * @param {boolean} value
 		 */
-		expanded: function ( value ) {
+		watch( () => props.expanded, ( value ) => {
 			if ( value === false ) {
-				this.generateRenderedValue();
+				generateRenderedValue();
 			} else {
-				if ( this.edit ) {
-					this.clearRendererError();
+				if ( props.edit ) {
+					clearRendererError();
 				}
 			}
-		},
+		} );
+
 		/**
 		 * Watch the computed property validRendererTests and whenever those
 		 * are updated, run the renderer function test with the user language
 		 * as second input.
-		 *
-		 * @param {Array} tests
 		 */
-		validRendererTests: function ( tests ) {
+		watch( validRendererTests, ( tests ) => {
 			for ( const test of tests ) {
-				this.runRendererTest( {
-					rendererZid: this.rendererZid,
+				store.runRendererTest( {
+					rendererZid: rendererZid.value,
 					testZid: test.zid,
 					test: test.zobject,
-					zlang: this.getUserLangZid
+					zlang: store.getUserLangZid
 				} );
 			}
-		},
+		} );
+
 		/**
 		 * Watch the typeObject and whenever it's updated, generate the
 		 * rendered value, in case the initial generateRenderedValue call
 		 * is called before the type object has been fetched.
 		 */
-		typeObject: function () {
-			this.generateRenderedValue();
-		}
-	},
-	mounted: function () {
-		this.generateRenderedValue();
-		this.generateRendererExamples();
-	},
-	beforeUnmount: function () {
-		// In the case of an abrupt unmount, resolve all pending promises
-		this.pendingPromises.forEach( ( resolver ) => {
-			resolver.resolve();
+		watch( typeObject, () => {
+			generateRenderedValue();
 		} );
-		if ( this.parserAbortController ) {
-			this.parserAbortController.abort();
-		}
+
+		// Lifecycle
+		onMounted( () => {
+			generateRenderedValue();
+			generateRendererExamples();
+		} );
+
+		onBeforeUnmount( () => {
+			// In the case of an abrupt unmount, resolve all pending promises
+			pendingPromises.value.forEach( ( resolver ) => {
+				resolver.resolve();
+			} );
+			if ( parserAbortController.value ) {
+				parserAbortController.value.abort();
+			}
+		} );
+
+		return {
+			fieldErrors,
+			hasFieldErrors,
+			openExamplesDialog,
+			placeholderValue,
+			renderedExamples,
+			renderedValue,
+			rendererLabel,
+			rendererRunning,
+			rendererUrl,
+			setRenderedValue,
+			setType,
+			showErrorFooter,
+			showExamplesDialog,
+			showExamplesLink,
+			i18n
+		};
 	}
 } );
 </script>

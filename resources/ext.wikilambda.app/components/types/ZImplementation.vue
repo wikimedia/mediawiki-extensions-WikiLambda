@@ -46,7 +46,7 @@
 				<cdx-message
 					v-if="isTypeBuiltin"
 					:inline="true">
-					{{ $i18n( 'wikilambda-implementation-selector-none' ).text() }}
+					{{ i18n( 'wikilambda-implementation-selector-none' ).text() }}
 				</cdx-message>
 				<!-- Show radio button for code or composition -->
 				<template v-else>
@@ -108,12 +108,11 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapState } = require( 'pinia' );
+const { computed, defineComponent, inject } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
 const useMainStore = require( '../../store/index.js' );
-const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
+const useZObject = require( '../../composables/useZObject.js' );
 
 // Base components
 const KeyValueBlock = require( '../base/KeyValueBlock.vue' );
@@ -127,7 +126,6 @@ module.exports = exports = defineComponent( {
 		'cdx-radio': CdxRadio,
 		'wl-key-value-block': KeyValueBlock
 	},
-	mixins: [ zobjectMixin ],
 	props: {
 		keyPath: {
 			type: String,
@@ -142,97 +140,87 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	data: function () {
-		return {
-			functionKey: Constants.Z_IMPLEMENTATION_FUNCTION
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getLabelData'
-	] ), {
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const {
+			getZImplementationContentType,
+			getZImplementationFunctionZid
+		} = useZObject( { keyPath: props.keyPath } );
+		const store = useMainStore();
+
+		// Data
+		const functionKey = Constants.Z_IMPLEMENTATION_FUNCTION;
+
+		// Computed properties
 		/**
 		 * Returns the LabelData object for the implementation Function/Z14K1 key
 		 *
 		 * @return {LabelData}
 		 */
-		functionLabelData: function () {
-			return this.getLabelData( Constants.Z_IMPLEMENTATION_FUNCTION );
-		},
+		const functionLabelData = computed( () => store.getLabelData( Constants.Z_IMPLEMENTATION_FUNCTION ) );
 
 		/**
 		 * Return the zid of the target function for this implementation
 		 *
 		 * @return {string | undefined }
 		 */
-		functionZid: function () {
-			return this.getZImplementationFunctionZid( this.objectValue );
-		},
+		const functionZid = computed( () => getZImplementationFunctionZid( props.objectValue ) );
 
 		/**
 		 * Active implementation key, that which contains the implementation
 		 * content. The values are Z14K2 for composition, Z14K3 for code or
 		 * Z14K4 for built-in.
 		 */
-		implementationType: {
+		const implementationType = computed( {
 			/**
 			 * Returns the implementation type or key which is selected
 			 *
 			 * @return {string}
 			 */
-			get: function () {
-				return this.getZImplementationContentType( this.objectValue );
-			},
+			get: () => getZImplementationContentType( props.objectValue ),
 			/**
 			 * Sets the implementation type and initializes the value
 			 * to a blank scaffolding depending on what key is selected
 			 *
 			 * @param {string} value
 			 */
-			set: function ( value ) {
-				if ( this.edit ) {
-					this.$emit( 'set-value', {
+			set: ( value ) => {
+				if ( props.edit ) {
+					emit( 'set-value', {
 						keyPath: [ value ],
 						value: ''
 					} );
 				}
 			}
-		},
+		} );
 
 		/**
 		 * Returns the LabelData object for the implementation type
 		 *
 		 * @return {LabelData}
 		 */
-		implementationTypeLabelData: function () {
-			return this.getLabelData( this.implementationType );
-		},
+		const implementationTypeLabelData = computed( () => store.getLabelData( implementationType.value ) );
 
 		/**
 		 * Returns the LabelData object for the type zid Implementation/Z14
 		 *
 		 * @return {LabelData}
 		 */
-		implementationLabelData: function () {
-			return this.getLabelData( Constants.Z_IMPLEMENTATION );
-		},
+		const implementationLabelData = computed( () => store.getLabelData( Constants.Z_IMPLEMENTATION ) );
 
 		/**
 		 * Whether the implementation content is of type code (Z14K3)
 		 *
 		 * @return {boolean}
 		 */
-		isTypeCode: function () {
-			return ( this.implementationType === Constants.Z_IMPLEMENTATION_CODE );
-		},
+		const isTypeCode = computed( () => implementationType.value === Constants.Z_IMPLEMENTATION_CODE );
 
 		/**
 		 * Whether the implementation content is of type builtin (Z14K4)
 		 *
 		 * @return {boolean}
 		 */
-		isTypeBuiltin: function () {
-			return ( this.implementationType === Constants.Z_IMPLEMENTATION_BUILT_IN );
-		},
+		const isTypeBuiltin = computed( () => implementationType.value === Constants.Z_IMPLEMENTATION_BUILT_IN );
 
 		/**
 		 * Returns the formatted choices for the Codex Radio component
@@ -240,19 +228,30 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Array}
 		 */
-		radioChoices: function () {
-			return [
-				{
-					labelData: this.getLabelData( Constants.Z_IMPLEMENTATION_CODE ),
-					value: Constants.Z_IMPLEMENTATION_CODE
-				},
-				{
-					labelData: this.getLabelData( Constants.Z_IMPLEMENTATION_COMPOSITION ),
-					value: Constants.Z_IMPLEMENTATION_COMPOSITION
-				}
-			];
-		}
-	} ),
+		const radioChoices = computed( () => [
+			{
+				labelData: store.getLabelData( Constants.Z_IMPLEMENTATION_CODE ),
+				value: Constants.Z_IMPLEMENTATION_CODE
+			},
+			{
+				labelData: store.getLabelData( Constants.Z_IMPLEMENTATION_COMPOSITION ),
+				value: Constants.Z_IMPLEMENTATION_COMPOSITION
+			}
+		] );
+
+		return {
+			functionKey,
+			functionLabelData,
+			functionZid,
+			implementationLabelData,
+			implementationType,
+			implementationTypeLabelData,
+			isTypeBuiltin,
+			isTypeCode,
+			radioChoices,
+			i18n
+		};
+	},
 	beforeCreate: function () {
 		// Need to delay require of ZObjectKeyValue to avoid loop
 		this.$options.components[ 'wl-z-object-key-value' ] = require( './ZObjectKeyValue.vue' );

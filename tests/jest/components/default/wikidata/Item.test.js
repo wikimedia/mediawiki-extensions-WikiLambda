@@ -42,6 +42,23 @@ const objectValueFetch = {
 describe( 'WikidataItem', () => {
 	let store;
 
+	/**
+	 * Helper function to render WikidataItem component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderWikidataItem( props = {}, options = {} ) {
+		const defaultProps = {
+			keyPath,
+			objectValue,
+			edit: false,
+			type: Constants.Z_WIKIDATA_REFERENCE_ITEM
+		};
+		return shallowMount( WikidataItem, { props: { ...defaultProps, ...props }, ...options } );
+	}
+
 	beforeEach( () => {
 		store = useMainStore();
 		store.getItemData = createGettersWithFunctionsMock();
@@ -50,40 +67,25 @@ describe( 'WikidataItem', () => {
 
 	describe( 'in view mode', () => {
 		it( 'renders wikidata item reference without errors', () => {
-			const wrapper = shallowMount( WikidataItem, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false,
-					type: Constants.Z_WIKIDATA_REFERENCE_ITEM
-				}
-			} );
+			const wrapper = renderWikidataItem();
+
 			expect( wrapper.find( '.ext-wikilambda-app-wikidata-item' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders wikidata item fetch function without errors', () => {
-			const wrapper = shallowMount( WikidataItem, {
-				props: {
-					keyPath,
-					objectValue: objectValueFetch,
-					edit: false,
-					type: Constants.Z_FUNCTION_CALL
-				}
+			const wrapper = renderWikidataItem( {
+				objectValue: objectValueFetch,
+				type: Constants.Z_FUNCTION_CALL
 			} );
+
 			expect( wrapper.find( '.ext-wikilambda-app-wikidata-item' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders the item external link if data is available', () => {
 			store.getItemData = createGettersWithFunctionsMock( itemData );
 
-			const wrapper = shallowMount( WikidataItem, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false,
-					type: Constants.Z_WIKIDATA_REFERENCE_ITEM
-				}
-			} );
+			const wrapper = renderWikidataItem();
+
 			const link = wrapper.find( '.ext-wikilambda-app-wikidata-item__link' );
 			expect( link.exists() ).toBe( true );
 			expect( link.attributes().href ).toContain( `${ itemId }` );
@@ -91,14 +93,8 @@ describe( 'WikidataItem', () => {
 		} );
 
 		it( 'renders the item external link if data is not available', () => {
-			const wrapper = shallowMount( WikidataItem, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false,
-					type: Constants.Z_WIKIDATA_REFERENCE_ITEM
-				}
-			} );
+			const wrapper = renderWikidataItem();
+
 			const link = wrapper.find( '.ext-wikilambda-app-wikidata-item__link' );
 			expect( link.exists() ).toBe( true );
 			expect( link.attributes().href ).toContain( `${ itemId }` );
@@ -108,100 +104,29 @@ describe( 'WikidataItem', () => {
 
 	describe( 'in edit mode', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( WikidataItem, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: Constants.Z_WIKIDATA_REFERENCE_ITEM
-				}
-			} );
+			const wrapper = renderWikidataItem( { edit: true } );
+
 			expect( wrapper.find( '.ext-wikilambda-app-wikidata-item' ).exists() ).toBe( true );
-		} );
-
-		it( 'renders blank wikidata entity selector', () => {
-			const wrapper = shallowMount( WikidataItem, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: Constants.Z_WIKIDATA_REFERENCE_ITEM
-				}
-			} );
-			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
-			expect( lookup.exists() ).toBe( true );
-		} );
-
-		it( 'renders wikidata entity selector', () => {
-			const wrapper = shallowMount( WikidataItem, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: Constants.Z_WIKIDATA_REFERENCE_ITEM
-				}
-			} );
-			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
-			expect( lookup.exists() ).toBe( true );
 		} );
 
 		it( 'initializes wikidata entity selector', async () => {
 			store.getItemData = createGettersWithFunctionsMock( itemData );
 
-			const wrapper = shallowMount( WikidataItem, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: Constants.Z_WIKIDATA_REFERENCE_ITEM
-				}
-			} );
-			await wrapper.vm.$nextTick();
+			const wrapper = renderWikidataItem( { edit: true } );
 
 			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
 			expect( lookup.exists() ).toBe( true );
-			expect( lookup.vm.entityId ).toBe( itemId );
-			expect( lookup.vm.entityLabel ).toBe( itemLabel );
-			expect( store.fetchItems ).toHaveBeenCalledWith( { ids: [ itemId ] } );
-		} );
-
-		it( 'initializes wikidata entity selector input value with delayed fetch response', async () => {
-			const wrapper = shallowMount( WikidataItem, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: Constants.Z_WIKIDATA_REFERENCE_ITEM
-				}
-			} );
-
-			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
-			expect( lookup.vm.entityId ).toBe( itemId );
-			expect( lookup.vm.entityLabel ).toBe( itemId );
-
-			store.getItemData = createGettersWithFunctionsMock( itemData );
-
-			await wrapper.vm.$nextTick();
-
 			expect( lookup.vm.entityId ).toBe( itemId );
 			expect( lookup.vm.entityLabel ).toBe( itemLabel );
 			expect( store.fetchItems ).toHaveBeenCalledWith( { ids: [ itemId ] } );
 		} );
 
 		it( 'sets item reference ID when selecting option from the menu', async () => {
-			const wrapper = shallowMount( WikidataItem, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: Constants.Z_WIKIDATA_REFERENCE_ITEM
-				}
-			} );
+			const wrapper = renderWikidataItem( { edit: true } );
 
 			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
 			lookup.vm.$emit( 'select-wikidata-entity', itemId );
 
-			await wrapper.vm.$nextTick();
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ {
 				value: itemId,
 				keyPath: [
@@ -212,19 +137,15 @@ describe( 'WikidataItem', () => {
 		} );
 
 		it( 'sets item fetch function ID when selecting option from the menu', async () => {
-			const wrapper = shallowMount( WikidataItem, {
-				props: {
-					keyPath,
-					objectValue: objectValueFetch,
-					edit: true,
-					type: Constants.Z_FUNCTION_CALL
-				}
+			const wrapper = renderWikidataItem( {
+				objectValue: objectValueFetch,
+				edit: true,
+				type: Constants.Z_FUNCTION_CALL
 			} );
 
 			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
 			lookup.vm.$emit( 'select-wikidata-entity', itemId );
 
-			await wrapper.vm.$nextTick();
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ {
 				value: itemId,
 				keyPath: [

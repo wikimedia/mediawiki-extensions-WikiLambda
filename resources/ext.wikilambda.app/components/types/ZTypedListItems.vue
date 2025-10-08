@@ -27,7 +27,7 @@
 				v-if="listItemIndexes.length === 0"
 				class="ext-wikilambda-app-typed-list-items__empty-state"
 			>
-				{{ $i18n( 'wikilambda-list-empty-state' ).text() }}
+				{{ i18n( 'wikilambda-list-empty-state' ).text() }}
 			</div>
 			<!-- Show list items -->
 			<wl-z-object-key-value
@@ -48,8 +48,8 @@
 				class="ext-wikilambda-app-typed-list-items__add-button"
 			>
 				<cdx-button
-					:title="$i18n( 'wikilambda-editor-zlist-additem-tooltip' ).text()"
-					:aria-label="$i18n( 'wikilambda-editor-zlist-additem-tooltip' ).text()"
+					:title="i18n( 'wikilambda-editor-zlist-additem-tooltip' ).text()"
+					:aria-label="i18n( 'wikilambda-editor-zlist-additem-tooltip' ).text()"
 					data-testid="typed-list-add-item"
 					@click="addListItem"
 				>
@@ -61,7 +61,7 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
+const { computed, defineComponent, inject } = require( 'vue' );
 
 const icons = require( '../../../lib/icons.json' );
 const LabelData = require( '../../store/classes/LabelData.js' );
@@ -102,34 +102,41 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	data: function () {
-		return {
-			iconAdd: icons.cdxIconAdd
-		};
-	},
-	computed: {
+	emits: [ 'add-list-item' ],
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+
+		const iconAdd = icons.cdxIconAdd;
+
 		/**
 		 * Returns the key label for the list of items.
 		 * Since the FE represents typed lists as benjamin arrays, this must be hardcoded
 		 *
-		 * @return {string}
+		 * @return {LabelData}
 		 */
-		itemsLabel: function () {
-			return LabelData.fromString( this.$i18n( 'wikilambda-list-items-label' ).text() );
-		},
+		const itemsLabel = computed( () => LabelData.fromString( i18n( 'wikilambda-list-items-label' ).text() ) );
+
 		/**
 		 * Returns the list item indexes (all excluding zero)
 		 *
 		 * @return {Array}
 		 */
-		listItemIndexes: function () {
-			return Object.keys( this.objectValue ).slice( 1 );
-		}
-	},
-	methods: {
-		addListItem: function () {
-			this.$emit( 'add-list-item' );
-		}
+		const listItemIndexes = computed( () => Object.keys( props.objectValue ).slice( 1 ) );
+
+		/**
+		 * Emits add-list-item event
+		 */
+		const addListItem = () => {
+			emit( 'add-list-item' );
+		};
+
+		return {
+			addListItem,
+			iconAdd,
+			itemsLabel,
+			listItemIndexes,
+			i18n
+		};
 	},
 	beforeCreate: function () {
 		this.$options.components[ 'wl-z-object-key-value' ] = require( './ZObjectKeyValue.vue' );

@@ -19,37 +19,38 @@ const objectValue = {
 };
 
 describe( 'ZFunctionCall', () => {
+	/**
+	 * Helper function to render ZFunctionCall component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderZFunctionCall( props = {}, options = {} ) {
+		const defaultProps = {
+			keyPath,
+			objectValue,
+			edit: true
+		};
+		return shallowMount( ZFunctionCall, { props: { ...defaultProps, ...props }, ...options } );
+	}
+
 	describe( 'in view and edit mode', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( ZFunctionCall, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true
-				}
-			} );
+			const wrapper = renderZFunctionCall();
+
 			expect( wrapper.find( '.ext-wikilambda-app-function-call' ).exists() ).toBe( true );
 		} );
 
 		it( 'displays a function call icon', () => {
-			const wrapper = shallowMount( ZFunctionCall, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true
-				}
-			} );
+			const wrapper = renderZFunctionCall();
+
 			expect( wrapper.findComponent( { name: 'cdx-icon' } ).exists() ).toBe( true );
 		} );
 
 		it( 'renders the ZObjectToString component', () => {
-			const wrapper = shallowMount( ZFunctionCall, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true
-				}
-			} );
+			const wrapper = renderZFunctionCall();
+
 			expect( wrapper.findComponent( { name: 'wl-z-object-to-string' } ).exists() ).toBe( true );
 		} );
 	} );

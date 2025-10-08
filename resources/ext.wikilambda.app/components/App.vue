@@ -6,12 +6,6 @@
 -->
 <template>
 	<div id="ext-wikilambda-app" class="ext-wikilambda-app">
-		<wl-clipboard-manager
-			:class-names="[
-				'ext-wikilambda-viewpage-header__zid',
-				'ext-wikilambda-editpage-header__zid'
-			]">
-		</wl-clipboard-manager>
 		<template v-if="isInitialized && isAppSetup">
 			<!-- Append wl- prefix to the router current view, to help reference component correctly -->
 			<component
@@ -20,28 +14,26 @@
 		</template>
 		<!-- Provide a nice error message when fetching zids or initializing the page fails  -->
 		<cdx-message v-else-if="hasError" type="warning">
-			{{ $i18n( 'wikilambda-initialize-error' ).text() }}<br>
+			{{ i18n( 'wikilambda-initialize-error' ).text() }}<br>
 			<!-- eslint-disable-next-line vue/no-v-html -->
-			<span v-html="$i18n( 'wikilambda-renderer-error-footer-project-chat' ).parse()"></span>
+			<span v-html="i18n( 'wikilambda-renderer-error-footer-project-chat' ).parse()"></span>
 		</cdx-message>
 		<span v-else>
-			{{ $i18n( 'wikilambda-loading' ).text() }}
+			{{ i18n( 'wikilambda-loading' ).text() }}
 		</span>
 	</div>
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
-
-const ClipboardManager = require( './base/ClipboardManager.vue' );
-const eventLogMixin = require( '../mixins/eventLogMixin.js' );
+const { defineComponent, inject, onMounted, ref } = require( 'vue' );
+const { storeToRefs } = require( 'pinia' );
 const FunctionEditorView = require( '../views/FunctionEditor.vue' );
 const FunctionEvaluatorView = require( '../views/FunctionEvaluator.vue' );
 const FunctionViewerView = require( '../views/FunctionViewer.vue' );
 const { removeHashFromURL } = require( '../utils/urlUtils.js' );
 const DefaultView = require( '../views/Default.vue' );
 const useMainStore = require( '../store/index.js' );
+const useClipboardManager = require( '../composables/useClipboardManager.js' );
 const { CdxMessage } = require( '../../codex.js' );
 
 module.exports = exports = defineComponent( {
@@ -51,76 +43,73 @@ module.exports = exports = defineComponent( {
 		'wl-function-editor-view': FunctionEditorView,
 		'wl-function-viewer-view': FunctionViewerView,
 		'wl-default-view': DefaultView,
-		'wl-clipboard-manager': ClipboardManager,
 		'cdx-message': CdxMessage
 	},
-	mixins: [ eventLogMixin ],
-	inject: {
-		viewmode: { default: false }
-	},
-	data: function () {
+	setup() {
+		const i18n = inject( 'i18n' );
+		const isAppSetup = ref( false );
+		const hasError = ref( false );
+
+		const store = useMainStore();
+		const { isInitialized, getCurrentView } = storeToRefs( store );
+
+		// Set up global clipboard manager for copyable elements
+		useClipboardManager( {
+			classNames: [ 'ext-wikilambda-viewpage-header__zid', 'ext-wikilambda-editpage-header__zid' ]
+		} );
+
+		onMounted( () => {
+			store.fetchUserRights();
+			store.prefetchZids()
+				.then( () => {
+					store.initializeView()
+						.then( () => {
+							store.evaluateUri();
+							isAppSetup.value = true;
+						} )
+						.catch( () => {
+							hasError.value = true;
+						} );
+				} )
+				.catch( () => {
+					hasError.value = true;
+				} );
+
+			window.onpopstate = function ( event ) {
+				/**
+				 * Prevent reinitializing the view when there is a hash in the URL,
+				 * this is most likely when using a a11y SkipLink.
+				 */
+				if ( window.location.hash && event.state === null ) {
+					event.preventDefault();
+					// Remove hash from url so it does not persist after navigation
+					removeHashFromURL();
+					return false;
+				}
+
+				// Reinitialize zObject if current page/zObject is new and user changes route
+				if ( store.isCreateNewPage ) {
+					store.initializeView()
+						.then( () => store.evaluateUri() )
+						.catch( () => {
+						// Do nothing
+						} );
+					return;
+				}
+
+				store.evaluateUri();
+			};
+		} );
+
 		return {
-			isAppSetup: false,
-			hasError: false
+			// Reactive store data
+			getCurrentView,
+			isInitialized,
+			// Other data
+			hasError,
+			i18n,
+			isAppSetup
 		};
-	},
-	computed: Object.assign( {},
-		mapState( useMainStore, [
-			'isInitialized',
-			'isCreateNewPage',
-			'getCurrentView'
-		] )
-	),
-	methods: Object.assign( {},
-		mapActions( useMainStore, [
-			'initializeView',
-			'prefetchZids',
-			'fetchUserRights',
-			'evaluateUri'
-		] )
-	),
-	created: function () {
-		// Set zobject
-		this.fetchUserRights();
-		this.prefetchZids()
-			.then( () => {
-				this.initializeView()
-					.then( () => {
-						this.evaluateUri();
-						this.isAppSetup = true;
-					} )
-					.catch( () => {
-						this.hasError = true;
-					} );
-			} )
-			.catch( () => {
-				this.hasError = true;
-			} );
-
-		window.onpopstate = function ( event ) {
-			/**
-			 * Prevent reinitializing the view when there is a hash in the URL,
-			 * this is most likely when using a a11y SkipLink.
-			 */
-			if ( window.location.hash && event.state === null ) {
-				event.preventDefault();
-				// Remove hash from url so it does not persist after navigation
-				removeHashFromURL();
-				return false;
-			}
-
-			// Reinitialize zObject if current page/zObject is new and user changes route
-			if ( this.isCreateNewPage ) {
-				this.initializeView()
-					.then( () => this.evaluateUri() )
-					.catch( () => {
-					// Do nothing
-					} );
-				return;
-			}
-
-			this.evaluateUri();
-		}.bind( this );
 	}
 } );
 </script>

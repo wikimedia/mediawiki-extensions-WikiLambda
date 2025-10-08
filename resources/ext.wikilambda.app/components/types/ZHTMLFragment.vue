@@ -29,11 +29,10 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
+const { defineComponent, computed, ref, watch } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
-const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
-const errorMixin = require( '../../mixins/errorMixin.js' );
+const useZObject = require( '../../composables/useZObject.js' );
 
 // Base components
 const CodeEditor = require( '../base/CodeEditor.vue' );
@@ -43,9 +42,8 @@ module.exports = exports = defineComponent( {
 	components: {
 		'code-editor': CodeEditor
 	},
-	mixins: [ errorMixin, zobjectMixin ],
 	props: {
-		keyPath: { // eslint-disable-line vue/no-unused-properties
+		keyPath: {
 			type: String,
 			required: true
 		},
@@ -62,29 +60,26 @@ module.exports = exports = defineComponent( {
 			default: false
 		}
 	},
-	data: function () {
-		return {
-			editorValue: '',
-			allowSetEditorValue: true
-		};
-	},
-	computed: {
+	setup( props, { emit } ) {
+		const { getZHTMLFragmentTerminalValue } = useZObject( { keyPath: props.keyPath } );
+
+		// Reactive data
+		const editorValue = ref( '' );
+		const allowSetEditorValue = ref( true );
+
 		/**
 		 * Returns the value of the selected reference.
 		 *
 		 * @return {string}
 		 */
-		value: function () {
-			return this.getZHTMLFragmentTerminalValue( this.objectValue );
-		}
-	},
-	methods: {
+		const value = computed( () => getZHTMLFragmentTerminalValue( props.objectValue ) );
+
 		/**
 		 * Updates the value of the HTML fragment value (Z89K1)
 		 *
-		 * @param {string} value
+		 * @param {string} newValue
 		 */
-		setValue: function ( value ) {
+		function setValue( newValue ) {
 			/**
 			 * Update the value of the HTML fragment (Z89K1) with the new value.
 			 *
@@ -95,28 +90,30 @@ module.exports = exports = defineComponent( {
 			 * If there is an error, we do not emit the 'set-value' event.
 			 * This is to prevent the code editor from being updated with an invalid value.
 			 */
-			if ( typeof value !== 'object' ) {
-				this.$emit( 'set-value', {
+			if ( typeof newValue !== 'object' ) {
+				emit( 'set-value', {
 					keyPath: [ Constants.Z_HTML_FRAGMENT_VALUE, Constants.Z_STRING_VALUE ],
-					value
+					value: newValue
 				} );
 			}
 		}
 
-	},
-	watch: {
-		value: {
-			immediate: true,
-			handler: function () {
-				// Check allowSetEditorValue to ensure we only set value in the editor when its current value should be
-				// overridden (e.g. when the editor is first loaded). Ensuring this
-				// prevents a bug that moves the cursor to the end of the editor on every keypress.
-				if ( this.allowSetEditorValue ) {
-					this.editorValue = this.value || '';
-					this.allowSetEditorValue = false;
-				}
+		// Watchers
+		watch( value, () => {
+			// Check allowSetEditorValue to ensure we only set value in the editor when its current value should be
+			// overridden (e.g. when the editor is first loaded). Ensuring this
+			// prevents a bug that moves the cursor to the end of the editor on every keypress.
+			if ( allowSetEditorValue.value ) {
+				editorValue.value = value.value || '';
+				allowSetEditorValue.value = false;
 			}
-		}
+		}, { immediate: true } );
+
+		return {
+			editorValue,
+			setValue,
+			value
+		};
 	}
 } );
 </script>

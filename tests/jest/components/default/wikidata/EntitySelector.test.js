@@ -14,8 +14,57 @@ const WikidataEntitySelector = require( '../../../../../resources/ext.wikilambda
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 const { mockLookupLexemes } = require( '../../../fixtures/mocks.js' );
 
+// Mock data constants
+const mockTurtleLookupResults = {
+	search: [
+		{
+			id: 'L45131',
+			description: 'English, noun',
+			label: 'turtle'
+		},
+		{
+			id: 'L333333',
+			description: 'English, verb',
+			label: 'turtle'
+		}
+	],
+	searchContinue: null
+};
+
+const mockPangolinLookupResults = {
+	search: [
+		{
+			id: 'L290326',
+			description: 'English, noun',
+			label: 'pangolin'
+		},
+		{
+			id: 'L1208742',
+			description: 'Italian, noun',
+			label: 'pangolino'
+		}
+	],
+	searchContinue: null
+};
+
 describe( 'WikidataEntitySelector', () => {
 	let store;
+
+	/**
+	 * Helper function to render WikidataEntitySelector component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderEntitySelector( props = {}, options = {} ) {
+		const defaultProps = {
+			entityId: null,
+			entityLabel: '',
+			type: Constants.Z_WIKIDATA_LEXEME
+		};
+		return shallowMount( WikidataEntitySelector, { props: { ...defaultProps, ...props }, ...options } );
+	}
 
 	beforeEach( () => {
 		store = useMainStore();
@@ -23,128 +72,112 @@ describe( 'WikidataEntitySelector', () => {
 	} );
 
 	it( 'renders for lexeme without errors', () => {
-		const wrapper = shallowMount( WikidataEntitySelector, {
-			props: {
-				entityId: null,
-				entityLabel: '',
-				type: Constants.Z_WIKIDATA_LEXEME
-			}
-		} );
+		const wrapper = renderEntitySelector();
+
 		expect( wrapper.find( '.ext-wikilambda-app-wikidata-entity-selector' ).exists() ).toBe( true );
 	} );
 
 	it( 'renders for lexeme form without errors', () => {
-		const wrapper = shallowMount( WikidataEntitySelector, {
-			props: {
-				entityId: null,
-				entityLabel: '',
-				type: Constants.Z_WIKIDATA_LEXEME_FORM
-			}
+		const wrapper = renderEntitySelector( {
+			type: Constants.Z_WIKIDATA_LEXEME_FORM
 		} );
+
 		expect( wrapper.find( '.ext-wikilambda-app-wikidata-entity-selector' ).exists() ).toBe( true );
 	} );
 
 	it( 'renders for item without errors', () => {
-		const wrapper = shallowMount( WikidataEntitySelector, {
-			props: {
-				entityId: null,
-				entityLabel: '',
-				type: Constants.Z_WIKIDATA_ITEM
-			}
+		const wrapper = renderEntitySelector( {
+			type: Constants.Z_WIKIDATA_ITEM
 		} );
+
 		expect( wrapper.find( '.ext-wikilambda-app-wikidata-entity-selector' ).exists() ).toBe( true );
 	} );
 
 	it( 'initializes selected lexeme', async () => {
-		const wrapper = shallowMount( WikidataEntitySelector, {
-			props: {
-				entityId: 'L333333',
-				entityLabel: 'turtle',
-				type: Constants.Z_WIKIDATA_LEXEME
-			}
+		const wrapper = renderEntitySelector( {
+			entityId: 'L333333',
+			entityLabel: 'turtle'
 		} );
 
-		await wrapper.vm.$nextTick();
 		const lookup = wrapper.findComponent( { name: 'cdx-lookup' } );
-
-		expect( lookup.exists() ).toBe( true );
-		expect( lookup.vm.selected ).toBe( 'L333333' );
-		expect( lookup.vm.inputValue ).toBe( 'turtle' );
+		await waitFor( () => {
+			expect( lookup.exists() ).toBe( true );
+			expect( lookup.props( 'selected' ) ).toBe( 'L333333' );
+			expect( lookup.props( 'inputValue' ) ).toBe( 'turtle' );
+		} );
 	} );
 
 	it( 're-initializes selected lexeme', async () => {
-		const wrapper = shallowMount( WikidataEntitySelector, {
-			props: {
-				entityId: null,
-				entityLabel: '',
-				type: Constants.Z_WIKIDATA_LEXEME
-			}
-		} );
+		const wrapper = renderEntitySelector();
 
 		const lookup = wrapper.findComponent( { name: 'cdx-lookup' } );
 
-		expect( lookup.vm.inputValue ).toBe( '' );
-		wrapper.setProps( { entityId: 'L333333', entityLabel: 'turtle' } );
-		await wrapper.vm.$nextTick();
+		expect( lookup.props( 'inputValue' ) ).toBe( '' );
 
-		expect( lookup.exists() ).toBe( true );
-		expect( lookup.vm.selected ).toBe( 'L333333' );
-		expect( lookup.vm.inputValue ).toBe( 'turtle' );
+		wrapper.setProps( { entityId: 'L333333', entityLabel: 'turtle' } );
+
+		await waitFor( () => {
+			expect( lookup.props( 'selected' ) ).toBe( 'L333333' );
+			expect( lookup.props( 'inputValue' ) ).toBe( 'turtle' );
+		} );
 	} );
 
 	describe( 'on update inputValue', () => {
-		it( 'clears lookup results when clearing the input field', () => {
-			const wrapper = shallowMount( WikidataEntitySelector, {
-				props: {
-					entityId: 'L333333',
-					entityLabel: 'turtle',
-					type: Constants.Z_WIKIDATA_LEXEME
-				}
+		it( 'clears lookup results when clearing the input field', async () => {
+			store.lookupWikidataEntities.mockResolvedValue( mockLookupLexemes );
+
+			const wrapper = renderEntitySelector( {
+				entityId: 'L333333',
+				entityLabel: 'turtle'
 			} );
 
-			wrapper.setData( { lookupResults: [ {
-				description: 'English, noun',
-				label: 'pangolin',
-				value: 'L290326'
-			} ] } );
-
 			const lookup = wrapper.findComponent( { name: 'cdx-lookup' } );
+
+			// First, populate lookup results by entering text
+			lookup.vm.$emit( 'update:inputValue', 'pangoli' );
+
+			// Wait for the debounced lookup to complete
+			await waitFor( () => {
+				// Test that the lookup component is working by checking if it exists and has the right input value
+				expect( lookup.props( 'inputValue' ) ).toBe( 'pangoli' );
+				expect( lookup.props( 'menuItems' ).length ).toBe( 2 );
+			} );
+
+			// Now clear the input
 			lookup.vm.$emit( 'update:inputValue', '' );
-			expect( wrapper.vm.lookupResults.length ).toBe( 0 );
+
+			// Verify results are cleared by checking the lookup component
+			await waitFor( () => {
+				expect( lookup.props( 'inputValue' ) ).toBe( '' );
+			} );
+			expect( lookup.props( 'menuItems' ).length ).toBe( 0 );
 		} );
 
 		it( 'performs lookup when updating input value field', async () => {
 			store.lookupWikidataEntities.mockResolvedValue( mockLookupLexemes );
 
-			const wrapper = shallowMount( WikidataEntitySelector, {
-				props: {
-					entityId: null,
-					entityLabel: '',
-					type: Constants.Z_WIKIDATA_LEXEME
-				}
-			} );
+			const wrapper = renderEntitySelector();
 
 			const lookup = wrapper.findComponent( { name: 'cdx-lookup' } );
 			lookup.vm.$emit( 'update:inputValue', 'pangoli' );
 
 			// Wait for lookup API to be called:
-			await waitFor( () => expect( store.lookupWikidataEntities )
-				.toHaveBeenCalledWith( {
-					search: 'pangoli',
-					type: 'lexeme',
-					searchContinue: null,
-					signal: expect.any( Object )
-				} ) );
+			await waitFor( () => expect( store.lookupWikidataEntities ).toHaveBeenCalledWith( {
+				search: 'pangoli',
+				type: 'lexeme',
+				searchContinue: null,
+				signal: expect.any( Object )
+			} ) );
 
-			expect( wrapper.vm.lookupConfig.searchQuery ).toBe( 'pangoli' );
-			expect( lookup.vm.menuItems.length ).toBe( 2 );
-			expect( lookup.vm.menuItems[ 0 ] ).toEqual( {
+			expect( lookup.props( 'inputValue' ) ).toBe( 'pangoli' );
+			expect( lookup.props( 'menuItems' ).length ).toBe( 2 );
+			expect( lookup.props( 'menuItems' )[ 0 ] ).toEqual( {
 				description: 'English, noun',
 				title: 'English, noun', // Added to show in htmlattribute
 				label: 'pangolin',
 				value: 'L290326'
 			} );
-			expect( lookup.vm.menuItems[ 1 ] ).toEqual( {
+			expect( lookup.props( 'menuItems' )[ 1 ] ).toEqual( {
 				description: 'Italian, noun',
 				title: 'Italian, noun', // Added to show in htmlattribute
 				label: 'pangolino',
@@ -155,13 +188,7 @@ describe( 'WikidataEntitySelector', () => {
 		it( 'resets the lookup when fetch fails', async () => {
 			store.lookupWikidataEntities.mockRejectedValue( 'some error' );
 
-			const wrapper = shallowMount( WikidataEntitySelector, {
-				props: {
-					entityId: null,
-					entityLabel: '',
-					type: Constants.Z_WIKIDATA_LEXEME
-				}
-			} );
+			const wrapper = renderEntitySelector();
 
 			const lookup = wrapper.findComponent( { name: 'cdx-lookup' } );
 			lookup.vm.$emit( 'update:inputValue', 'pangoli' );
@@ -175,160 +202,158 @@ describe( 'WikidataEntitySelector', () => {
 					signal: expect.any( Object )
 				} ) );
 
-			expect( wrapper.vm.lookupConfig.searchQuery ).toBe( 'pangoli' );
-			expect( lookup.vm.menuItems.length ).toBe( 0 );
+			expect( lookup.props( 'inputValue' ) ).toBe( 'pangoli' );
+			expect( lookup.props( 'menuItems' ).length ).toBe( 0 );
 		} );
 	} );
 
 	describe( 'on blur', () => {
-		it( 'does nothing when input value is the same as selected value', () => {
-			const wrapper = shallowMount( WikidataEntitySelector, {
-				props: {
-					entityId: 'L333333',
-					entityLabel: 'turtle',
-					type: Constants.Z_WIKIDATA_LEXEME
-				}
-			} );
+		beforeEach( () => {
+			jest.useFakeTimers();
+		} );
 
-			// Previously selected value: turtle
-			expect( wrapper.vm.inputValue ).toBe( 'turtle' );
+		afterEach( () => {
+			jest.useRealTimers();
+		} );
 
-			// Search for "turtle" generated two results
-			wrapper.setData( {
-				inputValue: 'turtle',
-				lookupResults: [ {
-					description: 'English, noun',
-					label: 'turtle',
-					value: 'L45131'
-				}, {
-					description: 'English, verb',
-					label: 'turtle',
-					value: 'L333333'
-				} ]
+		it( 'does nothing when input value is the same as selected value', async () => {
+			// Mock lookup to return two "turtle" results
+			store.lookupWikidataEntities.mockResolvedValue( mockTurtleLookupResults );
+
+			const wrapper = renderEntitySelector( {
+				entityId: 'L333333',
+				entityLabel: 'turtle'
 			} );
 
 			const lookup = wrapper.findComponent( { name: 'cdx-lookup' } );
+
+			await waitFor( () => {
+				// Previously selected value: turtle
+				expect( lookup.props( 'inputValue' ) ).toBe( 'turtle' );
+			} );
+			// Search for "turtle" which generates two results
+			lookup.vm.$emit( 'update:inputValue', 'turtle' );
+
+			// Run all pending timers (including the 300ms debounce)
+			jest.runAllTimers();
+
+			// Wait for lookup results to be populated
+			await waitFor( () => {
+				// Test that lookup results are available by checking component state
+				expect( lookup.props( 'menuItems' ).length ).toBe( 2 );
+			} );
+
+			// Blur without selecting anything
 			lookup.vm.$emit( 'blur' );
 
-			// Do nothing
-			expect( wrapper.vm.inputValue ).toBe( 'turtle' );
+			// Do nothing - input value stays the same
+			expect( lookup.props( 'inputValue' ) ).toBe( 'turtle' );
 			expect( wrapper.emitted() ).not.toHaveProperty( 'select-wikidata-entity' );
 		} );
 
-		it( 'resets to previous value when input has no match', () => {
-			const wrapper = shallowMount( WikidataEntitySelector, {
-				props: {
-					entityId: 'L333333',
-					entityLabel: 'turtle',
-					type: Constants.Z_WIKIDATA_LEXEME
-				}
-			} );
+		it( 'resets to previous value when input has no match', async () => {
+			// Mock lookup to return "pangolin" results
+			store.lookupWikidataEntities.mockResolvedValue( mockPangolinLookupResults );
 
-			// Previously selected value: turtle
-			expect( wrapper.vm.inputValue ).toBe( 'turtle' );
-
-			// Search for "pangol" generated two results: none fully match
-			wrapper.setData( {
-				inputValue: 'pangol',
-				lookupResults: [ {
-					description: 'English, noun',
-					label: 'pangolin',
-					value: 'L290326'
-				}, {
-					description: 'Italian, noun',
-					label: 'pangolino',
-					value: 'L1208742'
-				} ]
+			const wrapper = renderEntitySelector( {
+				entityId: 'L333333',
+				entityLabel: 'turtle'
 			} );
 
 			const lookup = wrapper.findComponent( { name: 'cdx-lookup' } );
+
+			await waitFor( () => {
+				// Previously selected value: turtle
+				expect( lookup.props( 'inputValue' ) ).toBe( 'turtle' );
+			} );
+
+			// Search for "pangol" which generates two results: none fully match
+			lookup.vm.$emit( 'update:inputValue', 'pangol' );
+
+			// Run all pending timers (including the 300ms debounce)
+			jest.runAllTimers();
+
+			// Wait for lookup results to be populated
+			await waitFor( () => {
+				// Test that lookup results are available by checking component state
+				expect( lookup.props( 'menuItems' ).length ).toBe( 2 );
+			} );
+
+			// Blur without selecting anything
 			lookup.vm.$emit( 'blur' );
 
 			// Reset to previous value
-			expect( wrapper.vm.inputValue ).toBe( 'turtle' );
+
+			await waitFor( () => {
+				expect( lookup.props( 'inputValue' ) ).toBe( 'turtle' );
+			} );
 		} );
 
-		it( 'sets new value when input has a match', () => {
-			const wrapper = shallowMount( WikidataEntitySelector, {
-				props: {
-					entityId: 'L333333',
-					entityLabel: 'turtle',
-					type: Constants.Z_WIKIDATA_LEXEME
-				}
-			} );
+		it( 'sets new value when input has a match', async () => {
+			// Mock lookup to return "pangolin" results
+			store.lookupWikidataEntities.mockResolvedValue( mockPangolinLookupResults );
 
-			// Previously selected value: turtle
-			expect( wrapper.vm.inputValue ).toBe( 'turtle' );
-
-			// Search for "pangolin" generated two results: one fully matches
-			wrapper.setData( {
-				inputValue: 'pangolin',
-				lookupResults: [ {
-					description: 'English, noun',
-					label: 'pangolin',
-					value: 'L290326'
-				}, {
-					description: 'Italian, noun',
-					label: 'pangolino',
-					value: 'L1208742'
-				} ]
+			const wrapper = renderEntitySelector( {
+				entityId: 'L333333',
+				entityLabel: 'turtle'
 			} );
 
 			const lookup = wrapper.findComponent( { name: 'cdx-lookup' } );
+
+			await waitFor( () => {
+				// Previously selected value: turtle
+				expect( lookup.props( 'inputValue' ) ).toBe( 'turtle' );
+			} );
+
+			// Search for "pangolin" which generates two results: one fully matches
+			lookup.vm.$emit( 'update:inputValue', 'pangolin' );
+
+			// Run all pending timers (including the 300ms debounce)
+			jest.runAllTimers();
+
+			// Wait for lookup results to be populated
+			await waitFor( () => {
+				// Test that lookup results are available by checking component state
+				expect( lookup.props( 'menuItems' ).length ).toBe( 2 );
+			} );
+
+			// Blur without selecting anything from the menu
 			lookup.vm.$emit( 'blur' );
 
-			// Set new value
-			expect( wrapper.vm.inputValue ).toBe( 'pangolin' );
+			// Set new value because input exactly matches a result
+			expect( lookup.props( 'inputValue' ) ).toBe( 'pangolin' );
 			expect( wrapper.emitted() ).toHaveProperty( 'select-wikidata-entity', [ [ 'L290326' ] ] );
 		} );
 	} );
 
 	describe( 'on update selected', () => {
 		it( 'does nothing if lookup emits empty select event', async () => {
-			const wrapper = shallowMount( WikidataEntitySelector, {
-				props: {
-					entityId: null,
-					entityLabel: '',
-					type: Constants.Z_WIKIDATA_LEXEME
-				}
-			} );
+			const wrapper = renderEntitySelector();
 
 			const lookup = wrapper.findComponent( { name: 'cdx-lookup' } );
 			lookup.vm.$emit( 'update:selected', null );
 
-			await wrapper.vm.$nextTick();
 			expect( wrapper.emitted() ).not.toHaveProperty( 'select-wikidata-entity' );
 		} );
 
 		it( 'does nothing if lookup emits already selected value', async () => {
-			const wrapper = shallowMount( WikidataEntitySelector, {
-				props: {
-					entityId: 'L333333',
-					entityLabel: 'turtle',
-					type: Constants.Z_WIKIDATA_LEXEME
-				}
+			const wrapper = renderEntitySelector( {
+				entityId: 'L333333',
+				entityLabel: 'turtle'
 			} );
 
 			const lookup = wrapper.findComponent( { name: 'cdx-lookup' } );
 			lookup.vm.$emit( 'update:selected', 'L333333' );
 
-			await wrapper.vm.$nextTick();
 			expect( wrapper.emitted() ).not.toHaveProperty( 'select-wikidata-entity' );
 		} );
 
 		it( 'emits select event when when selecting valid option from the menu', async () => {
-			const wrapper = shallowMount( WikidataEntitySelector, {
-				props: {
-					entityId: null,
-					entityLabel: '',
-					type: Constants.Z_WIKIDATA_LEXEME
-				}
-			} );
+			const wrapper = renderEntitySelector();
 
 			const lookup = wrapper.findComponent( { name: 'cdx-lookup' } );
 			lookup.vm.$emit( 'update:selected', 'L1208742' );
 
-			await wrapper.vm.$nextTick();
 			expect( wrapper.emitted() ).toHaveProperty( 'select-wikidata-entity', [ [ 'L1208742' ] ] );
 		} );
 	} );

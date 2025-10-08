@@ -41,15 +41,37 @@ const emptyObjectValue = {
 	}
 };
 
-const globalStubs = {
-	stubs: {
-		WlKeyValueBlock: false,
-		WlKeyBlock: false
-	}
-};
-
 describe( 'ZTester', () => {
 	let store;
+
+	/**
+	 * Helper function to render ZTester component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderZTester( props = {}, options = {} ) {
+		const defaultProps = {
+			keyPath,
+			objectValue,
+			edit: false
+		};
+		const defaultOptions = {
+			global: {
+				stubs: {
+					WlKeyValueBlock: false,
+					WlKeyBlock: false,
+					...options?.stubs
+				}
+			}
+
+		};
+		return shallowMount( ZTester, {
+			props: { ...defaultProps, ...props },
+			...defaultOptions
+		} );
+	}
 
 	beforeEach( () => {
 		store = useMainStore();
@@ -61,54 +83,30 @@ describe( 'ZTester', () => {
 
 	describe( 'in view mode', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( ZTester, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false
-				},
-				global: globalStubs
-			} );
+			const wrapper = renderZTester();
+
 			expect( wrapper.find( '.ext-wikilambda-app-tester' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders function block', () => {
-			const wrapper = shallowMount( ZTester, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false
-				},
-				global: globalStubs
-			} );
+			const wrapper = renderZTester();
+
 			const functionBlock = wrapper.find( '.ext-wikilambda-app-tester__function' );
 			expect( functionBlock.exists() ).toBe( true );
 			expect( functionBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 		} );
 
 		it( 'renders tester call block', () => {
-			const wrapper = shallowMount( ZTester, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false
-				},
-				global: globalStubs
-			} );
+			const wrapper = renderZTester();
+
 			const callBlock = wrapper.find( 'div[data-testid=tester-call]' );
 			expect( callBlock.exists() ).toBe( true );
 			expect( callBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 		} );
 
 		it( 'renders tester validation block', () => {
-			const wrapper = shallowMount( ZTester, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false
-				},
-				global: globalStubs
-			} );
+			const wrapper = renderZTester();
+
 			const callBlock = wrapper.find( 'div[data-testid=tester-validation]' );
 			expect( callBlock.exists() ).toBe( true );
 			expect( callBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
@@ -117,54 +115,30 @@ describe( 'ZTester', () => {
 
 	describe( 'in edit mode', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( ZTester, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true
-				},
-				global: globalStubs
-			} );
+			const wrapper = renderZTester( { edit: true } );
+
 			expect( wrapper.find( '.ext-wikilambda-app-tester' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders function block', () => {
-			const wrapper = shallowMount( ZTester, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true
-				},
-				global: globalStubs
-			} );
+			const wrapper = renderZTester( { edit: true } );
+
 			const functionBlock = wrapper.find( '.ext-wikilambda-app-tester__function' );
 			expect( functionBlock.exists() ).toBe( true );
 			expect( functionBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 		} );
 
 		it( 'renders tester call block', () => {
-			const wrapper = shallowMount( ZTester, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true
-				},
-				global: globalStubs
-			} );
+			const wrapper = renderZTester( { edit: true } );
+
 			const callBlock = wrapper.find( 'div[data-testid=tester-call]' );
 			expect( callBlock.exists() ).toBe( true );
 			expect( callBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 		} );
 
 		it( 'renders tester validation block', () => {
-			const wrapper = shallowMount( ZTester, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true
-				},
-				global: globalStubs
-			} );
+			const wrapper = renderZTester( { edit: true } );
+
 			const callBlock = wrapper.find( 'div[data-testid=tester-validation]' );
 			expect( callBlock.exists() ).toBe( true );
 			expect( callBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
@@ -204,14 +178,7 @@ describe( 'ZTester', () => {
 		} );
 
 		it( 'sets test call and validation on initialize', async () => {
-			const wrapper = shallowMount( ZTester, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true
-				},
-				global: globalStubs
-			} );
+			const wrapper = renderZTester( { edit: true } );
 
 			await waitFor( () => {
 				// 1. Set value for test call
@@ -226,14 +193,7 @@ describe( 'ZTester', () => {
 		} );
 
 		it( 'sets test call and validation on new function zid', async () => {
-			const wrapper = shallowMount( ZTester, {
-				props: {
-					keyPath,
-					objectValue: emptyObjectValue,
-					edit: true
-				},
-				global: globalStubs
-			} );
+			const wrapper = renderZTester( { objectValue: emptyObjectValue, edit: true } );
 
 			// Expect no initialization
 			expect( wrapper.emitted( 'set-value' ) ).toBeFalsy();
@@ -260,14 +220,7 @@ describe( 'ZTester', () => {
 			};
 			store.getStoredObject = jest.fn().mockImplementation( ( zid ) => storedNoEquality[ zid ] || undefined );
 
-			const wrapper = shallowMount( ZTester, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true
-				},
-				global: globalStubs
-			} );
+			const wrapper = renderZTester( { edit: true } );
 
 			const setEmptyFunction = {
 				keyPath: [ 'Z20K3', 'Z7K1', 'Z9K1' ],

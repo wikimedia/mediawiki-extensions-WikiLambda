@@ -35,7 +35,7 @@
 			<cdx-text-input
 				v-model="text"
 				class="ext-wikilambda-app-monolingual-string__input"
-				:placeholder="$i18n( 'wikilambda-edit-monolingual-text-placeholder' ).text()"
+				:placeholder="i18n( 'wikilambda-edit-monolingual-text-placeholder' ).text()"
 			>
 			</cdx-text-input>
 		</div>
@@ -43,13 +43,11 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapState } = require( 'pinia' );
+const { computed, defineComponent, inject, onMounted, ref, watch } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
 const useMainStore = require( '../../store/index.js' );
-const typeMixin = require( '../../mixins/typeMixin.js' );
-const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
+const useZObject = require( '../../composables/useZObject.js' );
 
 // Codex components
 const { CdxInfoChip, CdxTextInput } = require( '../../../codex.js' );
@@ -60,9 +58,7 @@ module.exports = exports = defineComponent( {
 		'cdx-text-input': CdxTextInput,
 		'cdx-info-chip': CdxInfoChip
 	},
-	mixins: [ typeMixin, zobjectMixin ],
 	props: {
-		// eslint-disable-next-line vue/no-unused-properties
 		keyPath: {
 			type: String,
 			required: true
@@ -76,15 +72,16 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	data: function () {
-		return {
-			chipComponent: null,
-			chipWidth: 72
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getLanguageIsoCodeOfZLang'
-	] ), {
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const { getZMonolingualTextValue, getZMonolingualLangValue } = useZObject( { keyPath: props.keyPath } );
+		const store = useMainStore();
+
+		// Reactive data
+		const chipComponent = ref( null );
+		const chipWidth = ref( 72 );
+
+		// Computed properties
 		/**
 		 * Computed value:
 		 * 1. Getter gets the value from the state.
@@ -95,24 +92,22 @@ module.exports = exports = defineComponent( {
 		 * logic all over the components, and builtin components are just
 		 * visual representations and have zero logic.
 		 */
-		text: {
+		const text = computed( {
 			/**
 			 * Returns the terminal value of the string represented
 			 * in this component.
 			 *
 			 * @return {string}
 			 */
-			get: function () {
-				return this.getZMonolingualTextValue( this.objectValue );
-			},
+			get: () => getZMonolingualTextValue( props.objectValue ),
 			/**
 			 * Emits a setValue event with the new value for the string
 			 * and the key path information depending on the object key.
 			 *
 			 * @param {string} value
 			 */
-			set: function ( value ) {
-				this.$emit( 'set-value', {
+			set: ( value ) => {
+				emit( 'set-value', {
 					keyPath: [
 						Constants.Z_MONOLINGUALSTRING_VALUE,
 						Constants.Z_STRING_VALUE
@@ -120,7 +115,7 @@ module.exports = exports = defineComponent( {
 					value
 				} );
 			}
-		},
+		} );
 
 		/**
 		 * Returns the language Zid of the Monolingual string
@@ -129,9 +124,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string}
 		 */
-		lang: function () {
-			return this.getZMonolingualLangValue( this.objectValue );
-		},
+		const lang = computed( () => getZMonolingualLangValue( props.objectValue ) );
 
 		/**
 		 * Return the text that identifies the language in which
@@ -141,48 +134,53 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string}
 		 */
-		langIso: function () {
-			return this.getLanguageIsoCodeOfZLang( this.lang ) || '';
-		},
+		const langIso = computed( () => store.getLanguageIsoCodeOfZLang( lang.value ) || '' );
+
 		/**
 		 * Returns the dynamically calculated width of the inner language chip
 		 *
 		 * @return {string}
 		 */
-		inputCssVariablesStyle: function () {
-			return {
-				'--chipWidthPx': `${ this.chipWidth }px`
-			};
-		},
+		const inputCssVariablesStyle = computed( () => ( {
+			'--chipWidthPx': `${ chipWidth.value }px`
+		} ) );
+
 		/**
 		 * Whether the language is still not defined, so langIso is an empty string
 		 *
 		 * @return {boolean}
 		 */
-		hasEmptyLang: function () {
-			return ( this.langIso === '' );
-		}
-	} ),
-	methods: {
-		getAndStoreChipWidth() {
-			if ( !this.chipComponent ) {
+		const hasEmptyLang = computed( () => langIso.value === '' );
+
+		// Methods
+		function getAndStoreChipWidth() {
+			if ( !chipComponent.value ) {
 				return;
 			}
-			this.chipWidth = this.chipComponent.$el.offsetWidth;
+			chipWidth.value = chipComponent.value.$el.offsetWidth;
 		}
-	},
-	watch: {
-		langIso: {
-			handler: function () {
-				this.getAndStoreChipWidth();
-			},
+
+		// Watchers
+		watch( langIso, () => {
+			getAndStoreChipWidth();
+		}, {
 			immediate: true,
 			flush: 'post'
-		}
-	},
-	mounted: function () {
-		this.chipComponent = this.$refs.chipComponent;
-		this.getAndStoreChipWidth();
+		} );
+
+		// Lifecycle
+		onMounted( () => {
+			getAndStoreChipWidth();
+		} );
+
+		return {
+			chipComponent,
+			hasEmptyLang,
+			inputCssVariablesStyle,
+			langIso,
+			text,
+			i18n
+		};
 	}
 } );
 

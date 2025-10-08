@@ -29,8 +29,7 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapState } = require( 'pinia' );
+const { computed, defineComponent, inject, ref } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
 const FunctionMetadataDialog = require( '../../widgets/function-evaluator/FunctionMetadataDialog.vue' );
@@ -58,110 +57,114 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	data: function () {
-		return {
-			showMetadata: false,
-			errorId: Constants.ERROR_IDS.TEST_RESULTS
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getZTesterResult',
-		'getZTesterMetadata',
-		'getLabelData'
-	] ), {
+	setup( props ) {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
+
+		const showMetadata = ref( false );
+		const errorId = Constants.ERROR_IDS.TEST_RESULTS;
+
 		/**
 		 * Returns whether the tester passed
 		 *
 		 * @return {boolean}
 		 */
-		testerStatus: function () {
-			return this.getZTesterResult(
-				this.zFunctionId,
-				this.zTesterId,
-				this.zImplementationId
-			);
-		},
+		const testerStatus = computed( () => store.getZTesterResult(
+			props.zFunctionId,
+			props.zTesterId,
+			props.zImplementationId
+		) );
+
 		/**
 		 * Returns the status of the test
 		 *
 		 * @return {string}
 		 */
-		status: function () {
-			if ( !( this.zImplementationId ) || !( this.zTesterId ) ) {
+		const status = computed( () => {
+			if ( !( props.zImplementationId ) || !( props.zTesterId ) ) {
 				return Constants.TESTER_STATUS.READY;
 			}
-			if ( this.testerStatus === true ) {
+			if ( testerStatus.value === true ) {
 				return Constants.TESTER_STATUS.PASSED;
 			}
-			if ( this.testerStatus === false ) {
+			if ( testerStatus.value === false ) {
 				return Constants.TESTER_STATUS.FAILED;
 			}
 			return Constants.TESTER_STATUS.RUNNING;
-		},
+		} );
+
 		/**
 		 * Returns the status message
 		 *
 		 * @return {string}
 		 */
-		statusMessage: function () {
-			switch ( this.status ) {
+		const statusMessage = computed( () => {
+			switch ( status.value ) {
 				case Constants.TESTER_STATUS.READY:
-					return this.$i18n( 'wikilambda-tester-status-ready' ).text();
+					return i18n( 'wikilambda-tester-status-ready' ).text();
 				case Constants.TESTER_STATUS.PASSED:
-					return this.$i18n( 'wikilambda-tester-status-passed' ).text();
+					return i18n( 'wikilambda-tester-status-passed' ).text();
 				case Constants.TESTER_STATUS.FAILED:
-					return this.$i18n( 'wikilambda-tester-status-failed' ).text();
+					return i18n( 'wikilambda-tester-status-failed' ).text();
 				default:
-					return this.$i18n( 'wikilambda-tester-status-running' ).text();
+					return i18n( 'wikilambda-tester-status-running' ).text();
 			}
-		},
+		} );
+
 		/**
 		 * Returns the icon depending on the status
 		 *
 		 * @return {Object}
 		 */
-		statusIcon: function () {
-			if ( this.testerStatus === true ) {
+		const statusIcon = computed( () => {
+			if ( testerStatus.value === true ) {
 				return icons.cdxIconCheck;
 			}
-			if ( this.testerStatus === false ) {
+			if ( testerStatus.value === false ) {
 				return icons.cdxIconClose;
 			}
 			// This will be used both for ready and running statuses
 			return icons.cdxIconAlert;
-		},
+		} );
+
 		/**
 		 * Returns the tester metadata if stored, else returns undefined
 		 *
 		 * @return {Object|undefined}
 		 */
-		metadata: function () {
-			return this.getZTesterMetadata(
-				this.zFunctionId,
-				this.zTesterId,
-				this.zImplementationId
-			);
-		},
+		const metadata = computed( () => store.getZTesterMetadata(
+			props.zFunctionId,
+			props.zTesterId,
+			props.zImplementationId
+		) );
+
 		/**
-		 * Returns the LabelData object of the implementation Zid,
-		 * if any, else returns undefined.
+		 * Returns the LabelData object of the implementation Zid
 		 *
 		 * @return {LabelData|undefined}
 		 */
-		implementationLabelData: function () {
-			return this.zImplementationId ?
-				this.getLabelData( this.zImplementationId ) :
-				undefined;
-		}
-	} ),
-	methods: {
-		handleMessageIconClick: function () {
-			if ( !this.showMetadata ) {
-				this.showMetadata = true;
-			} else {
-				this.showMetadata = false;
-			}
-		}
+		const implementationLabelData = computed( () => props.zImplementationId ?
+			store.getLabelData( props.zImplementationId ) :
+			undefined );
+
+		/**
+		 * Toggles the metadata dialog
+		 */
+		const handleMessageIconClick = () => {
+			showMetadata.value = !showMetadata.value;
+		};
+
+		return {
+			errorId,
+			handleMessageIconClick,
+			implementationLabelData,
+			metadata,
+			showMetadata,
+			status,
+			statusIcon,
+			statusMessage,
+			testerStatus
+		};
 	}
 } );
 </script>

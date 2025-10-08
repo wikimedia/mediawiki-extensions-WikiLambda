@@ -31,11 +31,10 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapActions } = require( 'pinia' );
+const { defineComponent, computed } = require( 'vue' );
 
 const { hybridToCanonical } = require( '../../utils/schemata.js' );
-const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
+const useZObject = require( '../../composables/useZObject.js' );
 const useMainStore = require( '../../store/index.js' );
 
 // Type components
@@ -48,7 +47,6 @@ module.exports = exports = defineComponent( {
 		'wl-z-typed-list-items': ZTypedListItems,
 		'wl-z-typed-list-type': ZTypedListType
 	},
-	mixins: [ zobjectMixin ],
 	props: {
 		keyPath: {
 			type: String,
@@ -68,7 +66,13 @@ module.exports = exports = defineComponent( {
 		}
 	},
 	emits: [ 'add-list-item' ],
-	computed: {
+	setup( props, { emit } ) {
+		// Use ZObject utilities composable
+		const { depth } = useZObject( { keyPath: props.keyPath } );
+
+		// Use main store
+		const store = useMainStore();
+
 		/**
 		 * Returns the string representation of the expected
 		 * type for the list items.
@@ -80,27 +84,23 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string}
 		 */
-		listItemType: function () {
-			return hybridToCanonical( this.objectValue[ 0 ] );
-		},
+		const listItemType = computed( () => hybridToCanonical( props.objectValue[ 0 ] ) );
+
 		/**
 		 * Returns the css class that identifies the nesting level
 		 *
 		 * @return {string[]}
 		 */
-		nestingDepthClass: function () {
-			if ( this.expanded ) {
+		const nestingDepthClass = computed( () => {
+			if ( props.expanded ) {
 				return [
 					'ext-wikilambda-app-object-key-value-set',
-					`ext-wikilambda-app-key-level--${ this.depth || 0 }`
+					`ext-wikilambda-app-key-level--${ depth || 0 }`
 				];
 			}
 			return [];
-		}
-	},
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'handleListTypeChange'
-	] ), {
+		} );
+
 		/**
 		 * When the typed list item type (benjamin item) has
 		 * changed, we keep track of the items that were present
@@ -110,20 +110,28 @@ module.exports = exports = defineComponent( {
 		 * @param {Object} payload
 		 * @param {string} payload.value new type
 		 */
-		onTypeChange: function ( payload ) {
-			this.handleListTypeChange( {
-				keyPath: this.keyPath,
-				objectValue: this.objectValue,
+		function onTypeChange( payload ) {
+			store.handleListTypeChange( {
+				keyPath: props.keyPath,
+				objectValue: props.objectValue,
 				newType: payload.value
 			} );
-		},
+		}
+
 		/**
 		 * Emits the add-list-item event to the parent
 		 *
 		 */
-		addListItem: function () {
-			this.$emit( 'add-list-item', { type: this.listItemType } );
+		function addListItem() {
+			emit( 'add-list-item', { type: listItemType.value } );
 		}
-	} )
+
+		return {
+			addListItem,
+			listItemType,
+			nestingDepthClass,
+			onTypeChange
+		};
+	}
 } );
 </script>

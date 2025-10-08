@@ -24,7 +24,7 @@
 						data-testid="connect"
 						@click="connect"
 					>
-						<label> {{ $i18n( 'wikilambda-function-details-table-approve' ).text() }} </label>
+						<label> {{ i18n( 'wikilambda-function-details-table-approve' ).text() }} </label>
 					</cdx-button>
 					<cdx-button
 						v-if="!( isMobile && !canDisconnect )"
@@ -32,7 +32,7 @@
 						data-testid="disconnect"
 						@click="disconnect"
 					>
-						<label> {{ $i18n( 'wikilambda-function-details-table-deactivate' ).text() }} </label>
+						<label> {{ i18n( 'wikilambda-function-details-table-deactivate' ).text() }} </label>
 					</cdx-button>
 				</div>
 				<div v-else>
@@ -90,12 +90,11 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
+const { computed, defineComponent, inject } = require( 'vue' );
 const { CdxButton, CdxCheckbox, CdxIcon, CdxInfoChip, CdxTable } = require( '../../../../codex.js' );
 const Constants = require( '../../../Constants.js' );
 const FunctionTesterTable = require( './FunctionTesterTable.vue' );
 const icons = require( '../../../../lib/icons.json' );
-const typeMixin = require( '../../../mixins/typeMixin.js' );
 const useBreakpoints = require( '../../../composables/useBreakpoints.js' );
 
 module.exports = exports = defineComponent( {
@@ -108,7 +107,6 @@ module.exports = exports = defineComponent( {
 		'cdx-checkbox': CdxCheckbox,
 		'wl-function-tester-table': FunctionTesterTable
 	},
-	mixins: [ typeMixin ],
 	props: {
 		columns: {
 			type: Array,
@@ -149,40 +147,39 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	setup: function () {
+	setup( _, { emit } ) {
+		const i18n = inject( 'i18n' );
 		const breakpoint = useBreakpoints( Constants.BREAKPOINTS );
-		return {
-			breakpoint
-		};
-	},
-	data: function () {
-		return {
-			iconAdd: icons.cdxIconAdd
-		};
-	},
-	computed: {
+		const iconAdd = icons.cdxIconAdd;
+
 		/**
 		 * Whether the display is of the size of a mobile screen
 		 *
 		 * @return {boolean}
 		 */
-		isMobile: function () {
-			return this.breakpoint.current.value === Constants.BREAKPOINT_TYPES.MOBILE;
-		}
-	},
-	methods: {
+		const isMobile = computed( () => breakpoint.current.value === Constants.BREAKPOINT_TYPES.MOBILE );
+
 		/**
 		 * Emits an event when the connect button is clicked
 		 */
-		connect: function () {
-			this.$emit( 'connect' );
-		},
+		function connect() {
+			emit( 'connect' );
+		}
+
 		/**
 		 * Emits an event when the disconnect button is clicked
 		 */
-		disconnect: function () {
-			this.$emit( 'disconnect' );
+		function disconnect() {
+			emit( 'disconnect' );
 		}
+
+		return {
+			connect,
+			disconnect,
+			iconAdd,
+			isMobile,
+			i18n
+		};
 	}
 } );
 </script>
@@ -207,6 +204,7 @@ module.exports = exports = defineComponent( {
 				width: max-content;
 				max-width: 244px;
 				-webkit-line-clamp: 2;
+				line-clamp: 2;
 				-webkit-box-orient: vertical;
 				overflow-wrap: break-word;
 				overflow: hidden;
@@ -214,6 +212,7 @@ module.exports = exports = defineComponent( {
 
 				@media screen and ( max-width: @max-width-breakpoint-mobile ) {
 					-webkit-line-clamp: 1;
+					line-clamp: 1;
 				}
 			}
 		}

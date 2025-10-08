@@ -57,12 +57,11 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { computed, defineComponent, inject, onMounted, ref, watch } = require( 'vue' );
 
 const wikidataIconSvg = require( './wikidataIconSvg.js' );
 const Constants = require( '../../../Constants.js' );
-const zobjectMixin = require( '../../../mixins/zobjectMixin.js' );
+const useZObject = require( '../../../composables/useZObject.js' );
 const useMainStore = require( '../../../store/index.js' );
 
 // Wikidata components
@@ -78,9 +77,8 @@ module.exports = exports = defineComponent( {
 		'cdx-select': CdxSelect,
 		'cdx-message': CdxMessage
 	},
-	mixins: [ zobjectMixin ],
 	props: {
-		keyPath: { // eslint-disable-line vue/no-unused-properties
+		keyPath: {
 			type: String,
 			required: true
 		},
@@ -97,109 +95,96 @@ module.exports = exports = defineComponent( {
 			default: false
 		}
 	},
-	data: function () {
-		return {
-			wikidataIcon: wikidataIconSvg,
-			lexemeType: Constants.Z_WIKIDATA_LEXEME,
-			lexemeSenseType: Constants.Z_WIKIDATA_LEXEME_SENSE,
-			lexemeSenseSelectConfig: {
-				visibleItemLimit: 5
-			},
-			lexemeId: null,
-			isInitialized: false,
-			isLexemeLoading: false
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getLexemeSenseLabelData',
-		'getLexemeSenseUrl',
-		'getLexemeSensesData',
-		'getLexemeLabelData'
-	] ), {
-		/**
-		 * Returns the initial Lexeme Id string value, if any Lexeme Sense is selected on load.
-		 *
-		 * @return {string|null}
-		 */
-		initialLexemeId: function () {
-			/**
-			 * Returns the Lexeme Id string value, if any Lexeme Sense is selected.
-			 *
-			 * @return {string|null}
-			 */
-			if ( this.lexemeSenseId ) {
-				const [ lexemeId ] = this.lexemeSenseId.split( '-' );
-				return lexemeId;
-			}
-			return null;
-		},
-		/**
-		 * Returns the LabelData object for the selected Lexeme.
-		 *
-		 * @return {LabelData|undefined}
-		 */
-		lexemeLabelData: function () {
-			return this.getLexemeLabelData( this.lexemeId );
-		},
-		/**
-		 * Returns the string label of the selected Lexeme or an empty string if none is selected.
-		 *
-		 * @return {string}
-		 */
-		lexemeLabel: function () {
-			return this.lexemeLabelData ? this.lexemeLabelData.label : '';
-		},
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+
+		const { getWikidataEntityId } = useZObject( { keyPath: props.keyPath } );
+		const store = useMainStore();
+
+		// Reactive data
+		const wikidataIcon = wikidataIconSvg;
+		const lexemeType = Constants.Z_WIKIDATA_LEXEME;
+		const lexemeSenseType = Constants.Z_WIKIDATA_LEXEME_SENSE;
+		const lexemeSenseSelectConfig = { visibleItemLimit: 5 };
+		const lexemeId = ref( null );
+		const isInitialized = ref( false );
+		const isLexemeLoading = ref( false );
+
 		/**
 		 * Returns the Lexeme Sense Id string value, if any Lexeme Sense is selected.
 		 * Else returns null (required as empty value for CdxLookup).
 		 *
 		 * @return {string|null}
 		 */
-		lexemeSenseId: function () {
-			return this.getWikidataEntityId( this.objectValue, this.lexemeSenseType );
-		},
+		const lexemeSenseId = computed( () => getWikidataEntityId( props.objectValue, lexemeSenseType ) );
+
+		/**
+		 * Returns the initial Lexeme Id string value, if any Lexeme Sense is selected on load.
+		 *
+		 * @return {string|null}
+		 */
+		const initialLexemeId = computed( () => {
+			if ( lexemeSenseId.value ) {
+				const [ id ] = lexemeSenseId.value.split( '-' );
+				return id;
+			}
+			return null;
+		} );
+
+		/**
+		 * Returns the LabelData object for the selected Lexeme.
+		 *
+		 * @return {LabelData|undefined}
+		 */
+		const lexemeLabelData = computed( () => store.getLexemeLabelData( lexemeId.value ) );
+
+		/**
+		 * Returns the string label of the selected Lexeme or an empty string if none is selected.
+		 *
+		 * @return {string}
+		 */
+		const lexemeLabel = computed( () => lexemeLabelData.value ? lexemeLabelData.value.label : '' );
+
+		/**
+		 * Returns the Wikidata URL for the selected lexeme.
+		 *
+		 * @return {string|undefined}
+		 */
+		const lexemeUrl = computed( () => lexemeId.value ?
+			`${ Constants.WIKIDATA_BASE_URL }/wiki/Lexeme:${ lexemeId.value }` :
+			undefined
+		);
+
 		/**
 		 * Returns the Wikidata URL for the selected Lexeme Sense.
 		 *
 		 * @return {string|undefined}
 		 */
-		lexemeSenseUrl: function () {
-			return this.getLexemeSenseUrl( this.lexemeSenseId );
-		},
+		const lexemeSenseUrl = computed( () => store.getLexemeSenseUrl( lexemeSenseId.value ) );
+
 		/**
 		 * Returns the LabelData object for the selected Lexeme Sense.
 		 *
 		 * @return {LabelData|undefined}
 		 */
-		lexemeSenseLabelData: function () {
-			return this.getLexemeSenseLabelData( this.lexemeSenseId );
-		},
-		/**
-		 * Returns the string label of the selected Lexeme Sense or an empty string if none is selected.
-		 * This is needed for the CdxLookup component initial value.
-		 *
-		 * @return {string}
-		 */
-		lexemeSenseLabel: function () {
-			return this.lexemeSenseLabelData ? this.lexemeSenseLabelData.label : '';
-		},
+		const lexemeSenseLabelData = computed( () => store.getLexemeSenseLabelData( lexemeSenseId.value ) );
+
 		/**
 		 * Returns the menu items for the senses of the selected lexeme.
-		 * Each item has a label (from getLexemeSenseLabelData) and value (the sense id).
+		 * Each item has a label (from store.getLexemeSenseLabelData) and value (the sense id).
 		 *
 		 * @return {Array<{label: string, value: string}>}
 		 */
-		lexemeSenseSelectMenuItems: function () {
-			if ( !this.lexemeId ) {
+		const lexemeSenseSelectMenuItems = computed( () => {
+			if ( !lexemeId.value ) {
 				return [];
 			}
-			const sensesData = this.getLexemeSensesData( this.lexemeId );
-
+			const sensesData = store.getLexemeSensesData( lexemeId.value );
 			if ( !sensesData || !Array.isArray( sensesData ) ) {
 				return [];
 			}
 			return sensesData.map( ( sense ) => {
-				const labelData = this.getLexemeSenseLabelData( sense.id );
+				const labelData = store.getLexemeSenseLabelData( sense.id );
 				const ids = sense.id.split( '-' );
 				return {
 					label: labelData ? labelData.label : sense.id,
@@ -207,81 +192,72 @@ module.exports = exports = defineComponent( {
 					description: ids[ 1 ]
 				};
 			} );
-		},
+		} );
+
 		/**
 		 * Returns the placeholder for the senses select dropdown.
 		 *
 		 * @return {string}
 		 */
-		lexemeSenseSelectPlaceholder: function () {
-			return this.$i18n( 'wikilambda-wikidata-lexeme-sense-selector-placeholder' ).text();
-		},
-		/**
-		 * Returns the Wikidata URL for the selected lexeme.
-		 *
-		 * @return {string|undefined}
-		 */
-		lexemeUrl: function () {
-			return this.lexemeId ? `${ Constants.WIKIDATA_BASE_URL }/wiki/Lexeme:${ this.lexemeId }` : undefined;
-		},
+		const lexemeSenseSelectPlaceholder = computed( () => i18n(
+			'wikilambda-wikidata-lexeme-sense-selector-placeholder'
+		).text() );
+
 		/**
 		 * Returns true if we should show the "no senses" message.
 		 * Only shows when lexeme is selected, not loading, and has no senses.
 		 *
 		 * @return {boolean}
 		 */
-		shouldShowNoSensesMessage: function () {
-			return this.lexemeId && !this.isLexemeLoading && !this.lexemeSenseSelectMenuItems.length;
-		},
+		const shouldShowNoSensesMessage = computed( () => lexemeId.value &&
+			!isLexemeLoading.value &&
+			!lexemeSenseSelectMenuItems.value.length
+		);
+
 		/**
 		 * Returns the localized "no senses" message with the Wikidata link.
 		 *
 		 * @return {string}
 		 */
-		noSensesMessage: function () {
-			return this.$i18n( 'wikilambda-wikidata-lexeme-sense-no-senses-message', [ this.lexemeUrl ] )
-				.parse()
-				// TODO (T406155): how to open the link in a new tab using MediaWiki translations?
-				.replace( '<a ', '<a target="_blank" rel="noopener" ' );
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'fetchLexemes',
-		'fetchLexemeSenses'
-	] ), {
+		const noSensesMessage = computed( () => i18n(
+			'wikilambda-wikidata-lexeme-sense-no-senses-message',
+			[ lexemeUrl.value ]
+		)
+			.parse()
+			// TODO (T406155): how to open the link in a new tab using MediaWiki translations?
+			.replace( '<a ', '<a target="_blank" rel="noopener" ' )
+		);
+
 		/**
 		 * Fetch lexeme data and senses data and set loading state.
 		 *
 		 * @param {string} id - Lexeme ID to fetch
 		 */
-		loadLexemeWithSenses: function ( id ) {
-			this.isLexemeLoading = true;
-			this.fetchLexemes( { ids: [ id ] } );
-			this.fetchLexemeSenses( { lexemeIds: [ id ] } )
+		function loadLexemeWithSenses( id ) {
+			isLexemeLoading.value = true;
+			store.fetchLexemes( { ids: [ id ] } );
+			store.fetchLexemeSenses( { lexemeIds: [ id ] } )
 				.finally( () => {
-					this.isLexemeLoading = false;
+					isLexemeLoading.value = false;
 				} );
-		},
+		}
+
 		/**
 		 * Handles selection of a lexeme from the entity selector.
 		 * Updates lexemeId, fetches the lexeme, and clears the sense selection.
 		 *
 		 * @param {string} value
 		 */
-		onSelectLexeme: function ( value ) {
-			// If the same lexeme is selected, do nothing
-			if ( value === this.lexemeId ) {
+		function onSelectLexeme( value ) {
+			if ( value === lexemeId.value ) {
 				return;
 			}
-			this.lexemeId = value;
+			lexemeId.value = value;
+			loadLexemeWithSenses( value );
 
-			// Load the lexeme and senses data
-			this.loadLexemeWithSenses( value );
-
-			// When lexeme changes, clear the sense selection
-			this.$emit( 'set-value', {
+			emit( 'set-value', {
 				value: '',
-				keyPath: ( this.type === Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE ) ? [
+				keyPath: ( props.type === Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE ) ? [
 					Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE_ID,
 					Constants.Z_STRING_VALUE
 				] : [
@@ -290,15 +266,16 @@ module.exports = exports = defineComponent( {
 					Constants.Z_STRING_VALUE
 				]
 			} );
-		},
+		}
+
 		/**
 		 * Handles selection of a lexeme sense from the senses dropdown.
 		 * Emits a set-value event to persist the change.
 		 *
 		 * @param {string|null} value
 		 */
-		onSelectLexemeSense: function ( value ) {
-			const keyPath = ( this.type === Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE ) ? [
+		function onSelectLexemeSense( value ) {
+			const keyPath = ( props.type === Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE ) ? [
 				Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE_ID,
 				Constants.Z_STRING_VALUE
 			] : [
@@ -306,47 +283,52 @@ module.exports = exports = defineComponent( {
 				Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE_ID,
 				Constants.Z_STRING_VALUE
 			];
-			this.$emit( 'set-value', {
-				value: value || '',
-				keyPath
-			} );
+			emit( 'set-value', { value: value || '', keyPath } );
 		}
-	} ),
-	watch: {
-		/**
-		 * When the Lexeme Sense ID changes, update lexemeId and fetch the corresponding lexeme data.
-		 *
-		 * @param {string|null} id
-		 */
-		lexemeSenseId: function ( id ) {
+
+		// Watchers
+		watch( lexemeSenseId, ( id ) => {
 			if ( id ) {
-				const [ lexemeId ] = id.split( '-' );
-				this.lexemeId = lexemeId;
-				this.loadLexemeWithSenses( lexemeId );
+				const [ newLexemeId ] = id.split( '-' );
+				lexemeId.value = newLexemeId;
+				loadLexemeWithSenses( newLexemeId );
 			}
-		},
-		/**
-		 * When lexemeId changes, fetch the lexeme data.
-		 *
-		 * @param {string|null} id
-		 */
-		lexemeId: function ( id ) {
-			if ( id ) {
-				this.loadLexemeWithSenses( id );
+		} );
+
+		watch( () => lexemeSenseSelectMenuItems.value.length, ( hasItems ) => {
+			if ( hasItems && !isInitialized.value ) {
+				isInitialized.value = true;
 			}
-		}
-	},
-	mounted: function () {
-		/**
-		 * On mount, set lexemeId from initialLexemeId if available and fetch the lexeme data.
-		 */
-		if ( this.initialLexemeId ) {
-			this.lexemeId = this.initialLexemeId;
-			this.loadLexemeWithSenses( this.initialLexemeId );
-		}
-		// We need to set isInitialized to true after the lexemeId is set
-		// because the entity selector will otherwise be rendered with an empty value.
-		this.isInitialized = true;
+		} );
+
+		// Lifecycle
+		onMounted( () => {
+			if ( initialLexemeId.value ) {
+				lexemeId.value = initialLexemeId.value;
+				loadLexemeWithSenses( initialLexemeId.value );
+			}
+			// We need to set isInitialized to true after the lexemeId is set
+			// because the entity selector will otherwise be rendered with an empty value.
+			isInitialized.value = true;
+		} );
+
+		return {
+			isInitialized,
+			lexemeId,
+			lexemeLabel,
+			lexemeSenseId,
+			lexemeSenseLabelData,
+			lexemeSenseSelectConfig,
+			lexemeSenseSelectMenuItems,
+			lexemeSenseSelectPlaceholder,
+			lexemeSenseUrl,
+			lexemeType,
+			noSensesMessage,
+			onSelectLexeme,
+			onSelectLexemeSense,
+			shouldShowNoSensesMessage,
+			wikidataIcon
+		};
 	}
 } );
 </script>

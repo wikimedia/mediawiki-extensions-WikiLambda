@@ -15,7 +15,7 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
+const { defineComponent, onMounted } = require( 'vue' );
 
 const FunctionEditor = require( '../components/function/editor/FunctionEditor.vue' );
 
@@ -24,8 +24,13 @@ module.exports = exports = defineComponent( {
 	components: {
 		'wl-function-editor': FunctionEditor
 	},
-	mounted: function () {
-		this.$emit( 'mounted' );
+	emits: [ 'mounted' ],
+	setup( _, { emit } ) {
+		onMounted( () => {
+			emit( 'mounted' );
+		} );
+
+		return {};
 	}
 } );
 </script>

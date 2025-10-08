@@ -23,11 +23,25 @@ const functionObject = { Z2K2: {
 describe( 'FunctionReport', () => {
 	let store;
 
+	function renderFunctionReport( props = {}, options = {} ) {
+		return mount( FunctionReport, {
+			props,
+			...options
+		} );
+	}
+
 	beforeEach( () => {
 		store = useMainStore();
 		store.getUserLangCode = 'en';
 		store.getCurrentZObjectId = 'Z0';
-		store.getLabelData = createLabelDataMock();
+		store.getLabelData = createLabelDataMock( {
+			Z10000: 'Test Function',
+			Z10001: 'Test Implementation 1',
+			Z10002: 'Test Tester 1',
+			Z10003: 'Test Tester 2',
+			Z10004: 'Test Implementation 2',
+			Z10005: 'Test Implementation 3'
+		} );
 		store.getStoredObject = createGettersWithFunctionsMock( functionObject );
 		store.getViewMode = createGettersWithFunctionsMock( true );
 		store.getZTesterPercentage = createGettersWithFunctionsMock( {
@@ -46,92 +60,90 @@ describe( 'FunctionReport', () => {
 	} );
 
 	it( 'renders without errors', () => {
-		const wrapper = mount( FunctionReport, {
-			props: {
-				functionZid: undefined,
-				contentType: Constants.Z_IMPLEMENTATION
-			}
+		const wrapper = renderFunctionReport( {
+			functionZid: undefined,
+			contentType: Constants.Z_IMPLEMENTATION
 		} );
-		expect( wrapper.find( 'div' ).exists() ).toBeTruthy();
+		expect( wrapper.find( 'div' ).exists() ).toBe( true );
 	} );
 
 	it( 'displays no results when no implementations or testers found', () => {
-		const wrapper = mount( FunctionReport, {
-			props: {
-				functionZid: '',
-				contentType: Constants.Z_IMPLEMENTATION
-			}
+		const wrapper = renderFunctionReport( {
+			functionZid: '',
+			contentType: Constants.Z_IMPLEMENTATION
 		} );
-		expect( wrapper.find( 'p' ).text() )
+		expect( wrapper.get( 'p' ).text() )
 			.toBe( 'No test results found. Please add an implementation and a test to see results.' );
 	} );
 
 	it( 'displays all available testers if a new zImplementation is being created', async () => {
-		const wrapper = mount( FunctionReport, {
-			props: {
-				functionZid: 'Z10000',
-				contentType: Constants.Z_IMPLEMENTATION
-			}
+		const wrapper = renderFunctionReport( {
+			functionZid: 'Z10000',
+			contentType: Constants.Z_IMPLEMENTATION
 		} );
 
-		expect( wrapper.vm.zids ).toEqual( [ 'Z10002', 'Z10003' ] );
-
+		// Check that the correct number of testers are displayed
 		const content = wrapper.findAll( '.ext-wikilambda-app-function-report-widget__result' );
 		expect( content.length ).toBe( 2 );
+		expect( content.at( 0 ).text() ).toContain( 'Test Tester 1' );
+		expect( content.at( 1 ).text() ).toContain( 'Test Tester 2' );
 	} );
 
 	it( 'displays all available implementations if a new zTester is being created', async () => {
-		const wrapper = mount( FunctionReport, {
-			props: {
-				functionZid: 'Z10000',
-				contentType: Constants.Z_TESTER
-			}
+		const wrapper = renderFunctionReport( {
+			functionZid: 'Z10000',
+			contentType: Constants.Z_TESTER
 		} );
 
-		expect( wrapper.vm.zids ).toEqual( [ 'Z10001', 'Z10004', 'Z10005' ] );
-		expect( wrapper.find( '.ext-wikilambda-app-widget-base__header-title' ).text() ).toEqual( 'Implementations' );
+		expect( wrapper.get( '.ext-wikilambda-app-widget-base__header-title' ).text() ).toEqual( 'Implementations' );
 
 		const content = wrapper.findAll( '.ext-wikilambda-app-function-report-widget__result' );
 		expect( content.length ).toBe( 3 );
+		expect( content.at( 0 ).text() ).toContain( 'Test Implementation 1' );
+		expect( content.at( 1 ).text() ).toContain( 'Test Implementation 2' );
+		expect( content.at( 2 ).text() ).toContain( 'Test Implementation 3' );
 	} );
 
 	it( 'if displayed on a ZImplementation page, only shows testers', () => {
 		store.getCurrentZObjectId = 'Z10001';
-		const wrapper = mount( FunctionReport, {
-			props: {
-				functionZid: 'Z10000',
-				contentType: Constants.Z_IMPLEMENTATION
-			}
+		const wrapper = renderFunctionReport( {
+			functionZid: 'Z10000',
+			contentType: Constants.Z_IMPLEMENTATION
 		} );
 
-		expect( wrapper.find( '.ext-wikilambda-app-widget-base__header-title' ).text() ).toEqual( 'Tests' );
-		expect( wrapper.vm.zids ).toEqual( [ 'Z10002', 'Z10003' ] );
+		expect( wrapper.get( '.ext-wikilambda-app-widget-base__header-title' ).text() ).toEqual( 'Tests' );
+		// Check that the correct number of testers are displayed
+		const content = wrapper.findAll( '.ext-wikilambda-app-function-report-widget__result' );
+		expect( content.length ).toBe( 2 );
+		expect( content.at( 0 ).text() ).toContain( 'Test Tester 1' );
+		expect( content.at( 1 ).text() ).toContain( 'Test Tester 2' );
 	} );
 
 	it( 'if displayed on a ZTester page, only shows ZImplementations', () => {
 		store.getCurrentZObjectId = 'Z10002';
-		const wrapper = mount( FunctionReport, {
-			props: {
-				functionZid: 'Z10000',
-				contentType: Constants.Z_TESTER
-			}
+		const wrapper = renderFunctionReport( {
+			functionZid: 'Z10000',
+			contentType: Constants.Z_TESTER
 		} );
 
-		expect( wrapper.find( '.ext-wikilambda-app-widget-base__header-title' ).text() ).toEqual( 'Implementations' );
-		expect( wrapper.vm.zids ).toEqual( [ 'Z10001', 'Z10004', 'Z10005' ] );
+		expect( wrapper.get( '.ext-wikilambda-app-widget-base__header-title' ).text() ).toEqual( 'Implementations' );
+		// Check that the correct number of implementations are displayed
+		const content = wrapper.findAll( '.ext-wikilambda-app-function-report-widget__result' );
+		expect( content.length ).toBe( 3 );
+		expect( content.at( 0 ).text() ).toContain( 'Test Implementation 1' );
+		expect( content.at( 1 ).text() ).toContain( 'Test Implementation 2' );
+		expect( content.at( 2 ).text() ).toContain( 'Test Implementation 3' );
 	} );
 
 	describe( 'trigger button', () => {
 		it( 'tests all the implementations for a tester page', async () => {
 			store.getCurrentZObjectId = 'Z10002';
-			const wrapper = mount( FunctionReport, {
-				props: {
-					functionZid: 'Z10000',
-					contentType: Constants.Z_TESTER
-				}
+			const wrapper = renderFunctionReport( {
+				functionZid: 'Z10000',
+				contentType: Constants.Z_TESTER
 			} );
 
-			wrapper.find( 'button' ).trigger( 'click' );
+			wrapper.get( 'button' ).trigger( 'click' );
 
 			await waitFor( () => {
 				expect( store.getTestResults ).toHaveBeenCalledWith( {
@@ -146,14 +158,12 @@ describe( 'FunctionReport', () => {
 
 		it( 'tests all the testers for an implementation page', async () => {
 			store.getCurrentZObjectId = 'Z10004';
-			const wrapper = mount( FunctionReport, {
-				props: {
-					functionZid: 'Z10000',
-					contentType: Constants.Z_IMPLEMENTATION
-				}
+			const wrapper = renderFunctionReport( {
+				functionZid: 'Z10000',
+				contentType: Constants.Z_IMPLEMENTATION
 			} );
 
-			wrapper.find( 'button' ).trigger( 'click' );
+			wrapper.get( 'button' ).trigger( 'click' );
 
 			await waitFor( () => {
 				expect( store.getTestResults ).toHaveBeenCalledWith( {
@@ -168,27 +178,25 @@ describe( 'FunctionReport', () => {
 
 		it( 'cancels the current request when button is clicked while fetching', async () => {
 			store.getCurrentZObjectId = 'Z10002';
-			const wrapper = mount( FunctionReport, {
-				props: {
-					functionZid: 'Z10000',
-					contentType: Constants.Z_TESTER
-				}
+			const wrapper = renderFunctionReport( {
+				functionZid: 'Z10000',
+				contentType: Constants.Z_TESTER
 			} );
 
 			// Mock getTestResults to not resolve immediately
 			store.getTestResults.mockReturnValue( new Promise( () => {} ) );
 
 			// Start a request
-			wrapper.find( 'button' ).trigger( 'click' );
+			wrapper.get( 'button' ).trigger( 'click' );
 
 			// Verify we're in fetching state
-			expect( wrapper.vm.fetching ).toBe( true );
+			await waitFor( () => expect( wrapper.get( '.ext-wikilambda-app-function-report-item' ).text() ).toContain( 'Running…' ) );
 
 			// Click cancel (same button, different behavior when fetching)
-			wrapper.find( 'button' ).trigger( 'click' );
+			wrapper.get( 'button' ).trigger( 'click' );
 
 			// Verify we're no longer fetching
-			expect( wrapper.vm.fetching ).toBe( false );
+			await waitFor( () => expect( wrapper.get( '.ext-wikilambda-app-function-report-item' ).text() ).toContain( 'Test Implementation 1' ) );
 		} );
 	} );
 
@@ -199,11 +207,9 @@ describe( 'FunctionReport', () => {
 		} );
 
 		it( 'does not trigger the tests if we are on new page', async () => {
-			mount( FunctionReport, {
-				props: {
-					functionZid: 'Z10000',
-					contentType: Constants.Z_IMPLEMENTATION
-				}
+			renderFunctionReport( {
+				functionZid: 'Z10000',
+				contentType: Constants.Z_IMPLEMENTATION
 			} );
 
 			// Wait for fetchZids to be called and then run all timers
@@ -215,11 +221,9 @@ describe( 'FunctionReport', () => {
 
 		it( 'initially tests all the implementations for a tester page', async () => {
 			store.getCurrentZObjectId = 'Z10002';
-			mount( FunctionReport, {
-				props: {
-					functionZid: 'Z10000',
-					contentType: Constants.Z_TESTER
-				}
+			renderFunctionReport( {
+				functionZid: 'Z10000',
+				contentType: Constants.Z_TESTER
 			} );
 
 			await waitFor( () => expect( store.fetchZids ).toHaveBeenCalled() );
@@ -238,11 +242,9 @@ describe( 'FunctionReport', () => {
 
 		it( 'initially tests all the testers for an implementation page', async () => {
 			store.getCurrentZObjectId = 'Z10004';
-			mount( FunctionReport, {
-				props: {
-					functionZid: 'Z10000',
-					contentType: Constants.Z_IMPLEMENTATION
-				}
+			renderFunctionReport( {
+				functionZid: 'Z10000',
+				contentType: Constants.Z_IMPLEMENTATION
 			} );
 
 			// Wait for fetchZids to be called and then run all timers

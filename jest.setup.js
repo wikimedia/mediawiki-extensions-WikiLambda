@@ -171,12 +171,16 @@ global.mw = {
 
 // Mock i18n & store for all tests
 global.$i18n = jest.fn( ( str, param ) => new Mocki18n( str, param ) );
-global.store = createTestingPinia();
 
 vueTestUtils.config.global.mocks = {
 	$i18n: global.$i18n
 };
 
+vueTestUtils.config.global.provide = {
+	i18n: global.$i18n // ✅ This makes inject('i18n') work in Composition API tests
+};
+
+global.store = createTestingPinia();
 vueTestUtils.config.global.plugins = [ global.store ];
 
 // Suppress Metrics Platform event logs

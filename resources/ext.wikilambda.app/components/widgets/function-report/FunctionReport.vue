@@ -50,19 +50,17 @@
 				></wl-function-metadata-dialog>
 			</div>
 			<div v-else>
-				<p> {{ $i18n( 'wikilambda-tester-no-results' ).text() }} </p>
+				<p> {{ i18n( 'wikilambda-tester-no-results' ).text() }} </p>
 			</div>
 		</template>
 	</wl-widget-base>
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { computed, defineComponent, inject, onMounted, ref, watch } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
 const icons = require( '../../../../lib/icons.json' );
-const typeMixin = require( '../../../mixins/typeMixin.js' );
 const { arraysAreEqual } = require( '../../../utils/miscUtils.js' );
 const useMainStore = require( '../../../store/index.js' );
 
@@ -83,7 +81,6 @@ module.exports = exports = defineComponent( {
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon
 	},
-	mixins: [ typeMixin ],
 	inject: {
 		viewmode: { default: false }
 	},
@@ -98,59 +95,32 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	data: function () {
-		return {
-			activeImplementationZid: null,
-			activeTesterZid: null,
-			errorId: Constants.ERROR_IDS.TEST_RESULTS,
-			showMetrics: false,
-			fetching: false,
-			abortController: null
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getCurrentZObjectId',
-		'getLabelData',
-		'getStoredObject',
-		'getZTesterMetadata'
-	] ), {
-		/**
-		 * Returns the items that must be tested. If we are in an implementation page
-		 * returns the tester zids. If we are in a tester page, returns the implementation
-		 * zids.
-		 *
-		 * @return {Array}
-		 */
-		zids: function () {
-			return this.isTesterReport ? this.implementations : this.testers;
-		},
+	setup( props ) {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
 
-		/**
-		 * Returns whether there are any items to test.
-		 *
-		 * @return {boolean}
-		 */
-		hasItems: function () {
-			return ( this.functionZid && ( this.zids.length > 0 ) );
-		},
+		// Reactive data
+		const activeImplementationZid = ref( null );
+		const activeTesterZid = ref( null );
+		const errorId = ref( Constants.ERROR_IDS.TEST_RESULTS );
+		const showMetrics = ref( false );
+		const fetching = ref( false );
+		const abortController = ref( null );
 
+		// Computed properties
 		/**
 		 * Whether it is a report for an implementation page.
 		 *
 		 * @return {boolean}
 		 */
-		isImplementationReport: function () {
-			return this.contentType === Constants.Z_IMPLEMENTATION;
-		},
+		const isImplementationReport = computed( () => props.contentType === Constants.Z_IMPLEMENTATION );
 
 		/**
 		 * Whether it is a report for a tester page.
 		 *
 		 * @return {boolean}
 		 */
-		isTesterReport: function () {
-			return this.contentType === Constants.Z_TESTER;
-		},
+		const isTesterReport = computed( () => props.contentType === Constants.Z_TESTER );
 
 		/**
 		 * Returns the selected Implementation zid if we are in an implementation
@@ -158,9 +128,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string|null}
 		 */
-		implementationZid: function () {
-			return this.isImplementationReport ? this.getCurrentZObjectId : null;
-		},
+		const implementationZid = computed( () => isImplementationReport.value ? store.getCurrentZObjectId : null );
 
 		/**
 		 * Returns the selected Tester zid if we are in a tester page;
@@ -168,9 +136,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string|null}
 		 */
-		testerZid: function () {
-			return this.isTesterReport ? this.getCurrentZObjectId : null;
-		},
+		const testerZid = computed( () => isTesterReport.value ? store.getCurrentZObjectId : null );
 
 		/**
 		 * Returns the list of implementation zids in the persisted
@@ -178,14 +144,14 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Array}
 		 */
-		implementations: function () {
-			const functionObject = this.getStoredObject( this.functionZid );
-			if ( !this.functionZid || !functionObject ) {
+		const implementations = computed( () => {
+			const functionObject = store.getStoredObject( props.functionZid );
+			if ( !props.functionZid || !functionObject ) {
 				return [];
 			}
 
-			if ( this.implementationZid ) {
-				return [ this.implementationZid ];
+			if ( implementationZid.value ) {
+				return [ implementationZid.value ];
 			} else {
 				const fetched = functionObject[
 					Constants.Z_PERSISTENTOBJECT_VALUE ][
@@ -193,7 +159,7 @@ module.exports = exports = defineComponent( {
 				// Slice off the first item in the canonical form array; this is a string representing the type.
 				return Array.isArray( fetched ) ? fetched.slice( 1 ) : [];
 			}
-		},
+		} );
 
 		/**
 		 * Returns the list of tester zids in the persisted
@@ -201,14 +167,14 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Array}
 		 */
-		testers: function () {
-			const functionObject = this.getStoredObject( this.functionZid );
-			if ( !this.functionZid || !functionObject ) {
+		const testers = computed( () => {
+			const functionObject = store.getStoredObject( props.functionZid );
+			if ( !props.functionZid || !functionObject ) {
 				return [];
 			}
 
-			if ( this.testerZid ) {
-				return [ this.testerZid ];
+			if ( testerZid.value ) {
+				return [ testerZid.value ];
 			} else {
 				const fetched = functionObject[
 					Constants.Z_PERSISTENTOBJECT_VALUE ][
@@ -216,7 +182,23 @@ module.exports = exports = defineComponent( {
 				// Slice off the first item in the canonical form array; this is a string representing the type.
 				return Array.isArray( fetched ) ? fetched.slice( 1 ) : [];
 			}
-		},
+		} );
+
+		/**
+		 * Returns the items that must be tested. If we are in an implementation page
+		 * returns the tester zids. If we are in a tester page, returns the implementation
+		 * zids.
+		 *
+		 * @return {Array}
+		 */
+		const zids = computed( () => isTesterReport.value ? implementations.value : testers.value );
+
+		/**
+		 * Returns whether there are any items to test.
+		 *
+		 * @return {boolean}
+		 */
+		const hasItems = computed( () => props.functionZid && zids.value.length > 0 );
 
 		/**
 		 * Returns the metadata object for the current open metrics dialog;
@@ -224,25 +206,25 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Object|undefined}
 		 */
-		metadata: function () {
-			return ( this.activeTesterZid && this.activeImplementationZid ) ?
-				this.getZTesterMetadata(
-					this.functionZid,
-					this.activeTesterZid,
-					this.activeImplementationZid ) :
-				undefined;
-		},
+		const metadata = computed( () => (
+			activeTesterZid.value && activeImplementationZid.value ?
+				store.getZTesterMetadata(
+					props.functionZid,
+					activeTesterZid.value,
+					activeImplementationZid.value ) :
+				undefined
+		) );
 
 		/**
 		 * Returns the label data of the implementation for the current open metrics dialog
 		 *
 		 * @return {LabelData|undefined}
 		 */
-		activeImplementationLabelData: function () {
-			return this.activeImplementationZid ?
-				this.getLabelData( this.activeImplementationZid ) :
-				undefined;
-		},
+		const activeImplementationLabelData = computed( () => (
+			activeImplementationZid.value ?
+				store.getLabelData( activeImplementationZid.value ) :
+				undefined
+		) );
 
 		/**
 		 * Returns the icon for the top right corner of the widget,
@@ -250,147 +232,170 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string}
 		 */
-		reloadIcon: function () {
-			return this.fetching ? icons.cdxIconCancel : icons.cdxIconReload;
-		},
+		const reloadIcon = computed( () => fetching.value ? icons.cdxIconCancel : icons.cdxIconReload );
 
 		/**
 		 * Returns the title of the widget, depending on the page type
 		 *
 		 * @return {string}
 		 */
-		title: function () {
-			return this.isTesterReport ?
-				this.$i18n( 'wikilambda-function-implementation-table-header' ).text() :
-				this.$i18n( 'wikilambda-function-test-cases-table-header' ).text();
-		},
+		const title = computed( () => (
+			isTesterReport.value ?
+				i18n( 'wikilambda-function-implementation-table-header' ).text() :
+				i18n( 'wikilambda-function-test-cases-table-header' ).text()
+		) );
 
 		/**
 		 * Returns the label of the reload button
 		 *
 		 * @return {string}
 		 */
-		reloadLabel: function () {
-			return this.fetching ?
-				this.$i18n( 'wikilambda-tester-status-cancel' ).text() :
-				this.$i18n( 'wikilambda-tester-status-run' ).text();
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'fetchZids',
-		'getTestResults'
-	] ), {
+		const reloadLabel = computed( () => (
+			fetching.value ?
+				i18n( 'wikilambda-tester-status-cancel' ).text() :
+				i18n( 'wikilambda-tester-status-run' ).text()
+		) );
+
+		// Methods
 		/**
 		 * Sets the target zids and opens the metrics dialog
 		 *
 		 * @param {Object} keys
 		 */
-		openMetricsDialog: function ( keys ) {
-			this.activeImplementationZid = keys.implementationZid;
-			this.activeTesterZid = keys.testerZid;
-			this.showMetrics = true;
-		},
+		const openMetricsDialog = ( keys ) => {
+			activeImplementationZid.value = keys.implementationZid;
+			activeTesterZid.value = keys.testerZid;
+			showMetrics.value = true;
+		};
+
 		/**
 		 * Closes the metrics dialog
 		 */
-		closeMetricsDialog: function () {
-			this.activeImplementationZid = null;
-			this.activeTesterZid = null;
-			this.showMetrics = false;
-		},
+		const closeMetricsDialog = () => {
+			activeImplementationZid.value = null;
+			activeTesterZid.value = null;
+			showMetrics.value = false;
+		};
+		/**
+		 * Cancels the current test request
+		 */
+		const cancelTesters = () => {
+			if ( abortController.value ) {
+				abortController.value.abort();
+				abortController.value = null;
+			}
+			fetching.value = false;
+		};
+
 		/**
 		 * Calls the run function API with the required tester and implementation zids.
 		 */
-		runTesters: function () {
+		const runTesters = () => {
 			// If already fetching, cancel the current request
-			if ( this.fetching ) {
-				this.cancelTesters();
+			if ( fetching.value ) {
+				cancelTesters();
 				return;
 			}
 
 			// Cancel previous request if any
-			if ( this.abortController ) {
-				this.abortController.abort();
+			if ( abortController.value ) {
+				abortController.value.abort();
 			}
-			this.abortController = new AbortController();
+			abortController.value = new AbortController();
 
-			this.fetching = true;
-			this.getTestResults( {
-				zFunctionId: this.functionZid,
-				zImplementations: this.implementations,
-				zTesters: this.testers,
+			fetching.value = true;
+			store.getTestResults( {
+				zFunctionId: props.functionZid,
+				zImplementations: implementations.value,
+				zTesters: testers.value,
 				clearPreviousResults: true,
-				signal: this.abortController.signal
+				signal: abortController.value.signal
 			} ).then( () => {
-				this.fetching = false;
+				fetching.value = false;
 			} ).catch( ( error ) => {
 				if ( error.code === 'abort' ) {
 					// Request was cancelled, reset fetching state
-					this.fetching = false;
+					fetching.value = false;
 					return;
 				}
 				// Re-throw other errors
 				throw error;
 			} );
-		},
-		/**
-		 * Cancels the current test request
-		 */
-		cancelTesters: function () {
-			if ( this.abortController ) {
-				this.abortController.abort();
-				this.abortController = null;
-			}
-			this.fetching = false;
-		},
+		};
+
 		/**
 		 * Run the initial call only when we are in a view or edit page
 		 * but not when we are in a new implementation or test page
 		 */
-		runInitialCall: function () {
+		const runInitialCall = () => {
 			if (
-				this.getCurrentZObjectId &&
-				this.getCurrentZObjectId !== Constants.NEW_ZID_PLACEHOLDER
+				store.getCurrentZObjectId &&
+				store.getCurrentZObjectId !== Constants.NEW_ZID_PLACEHOLDER
 			) {
-				this.runTesters();
+				runTesters();
 			}
-		}
-	} ),
-	watch: {
-		implementations: function ( newValue, oldValue ) {
+		};
+
+		// Watch
+		watch( implementations, ( newValue, oldValue ) => {
 			if ( !arraysAreEqual( oldValue, newValue ) ) {
-				this.fetchZids( { zids: this.implementations } );
+				store.fetchZids( { zids: implementations.value } );
 				// re-run the tests when the user changes the implementation's function Zid,
 				// except when creating a new implementation object (then only run on demand)
 				if (
 					oldValue.length &&
-					this.getCurrentZObjectId &&
-					this.getCurrentZObjectId !== Constants.NEW_ZID_PLACEHOLDER
+				store.getCurrentZObjectId &&
+				store.getCurrentZObjectId !== Constants.NEW_ZID_PLACEHOLDER
 				) {
-					this.runTesters();
+					runTesters();
 				}
 			}
-		},
-		testers: function ( newValue, oldValue ) {
+		} );
+
+		watch( testers, ( newValue, oldValue ) => {
 			if ( !arraysAreEqual( oldValue, newValue ) ) {
-				this.fetchZids( { zids: this.testers } );
+				store.fetchZids( { zids: testers.value } );
 				// re-run the tests when the user changes the test's function Zid,
 				// except when creating a new test object (then only run on demand)
 				if (
 					oldValue.length &&
-					this.getCurrentZObjectId &&
-					this.getCurrentZObjectId !== Constants.NEW_ZID_PLACEHOLDER
+					store.getCurrentZObjectId &&
+					store.getCurrentZObjectId !== Constants.NEW_ZID_PLACEHOLDER
 				) {
-					this.runTesters();
+					runTesters();
 				}
 			}
-		}
-	},
-	mounted: function () {
-		this.fetchZids( { zids: this.implementations.concat( this.testers ) } )
-			.then( () => {
-				setTimeout( this.runInitialCall, 1000 );
-			} );
+		} );
+
+		// Lifecycle
+		onMounted( () => {
+			store.fetchZids( { zids: implementations.value.concat( testers.value ) } )
+				.then( () => {
+					setTimeout( runInitialCall, 1000 );
+				} );
+		} );
+
+		// Return all properties and methods for the template
+		return {
+			activeImplementationLabelData,
+			closeMetricsDialog,
+			errorId,
+			fetching,
+			hasItems,
+			implementationZid,
+			isImplementationReport,
+			isTesterReport,
+			metadata,
+			openMetricsDialog,
+			reloadIcon,
+			reloadLabel,
+			runTesters,
+			showMetrics,
+			testerZid,
+			title,
+			zids,
+			i18n
+		};
 	}
 } );
 </script>

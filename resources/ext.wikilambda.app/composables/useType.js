@@ -1,7 +1,8 @@
-/**
- * WikiLambda Vue editor: Type Mixin
- * Mixin with functions to change page titles outside Vue scope
+/*!
+ * Type utility composable for Vue 3 Composition API.
+ * Provides type-related utility functions
  *
+ * @module ext.wikilambda.app.composables.useType
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
@@ -17,10 +18,13 @@ const {
 	typeToString
 } = require( '../utils/typeUtils.js' );
 
-module.exports = exports = {
-	methods: {
-		// NOTE: Only add into the mixin those methods
-		// that need to be accessible from components.
+/**
+ * Type utility composable
+ *
+ * @return {Object} Type utility composable API
+ */
+module.exports = function useType() {
+	return {
 		getScaffolding,
 		getZidOfGlobalKey,
 		isKeyTypedListType,
@@ -28,5 +32,5 @@ module.exports = exports = {
 		isLocalKey,
 		isValidZidFormat,
 		typeToString
-	}
+	};
 };

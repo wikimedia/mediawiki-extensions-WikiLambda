@@ -39,7 +39,7 @@
 			@focus="onFocus"
 		>
 			<template #no-results>
-				{{ $i18n( 'wikilambda-zobjectselector-no-results' ).text() }}
+				{{ i18n( 'wikilambda-zobjectselector-no-results' ).text() }}
 			</template>
 		</cdx-lookup>
 		<div
@@ -59,14 +59,11 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { computed, defineComponent, inject, onMounted, ref, watch } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
-const errorMixin = require( '../../mixins/errorMixin.js' );
-const typeMixin = require( '../../mixins/typeMixin.js' );
-const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
 const useMainStore = require( '../../store/index.js' );
+const useError = require( '../../composables/useError.js' );
 const icons = require( '../../../lib/icons.json' );
 
 // Base components
@@ -82,9 +79,8 @@ module.exports = exports = defineComponent( {
 		'cdx-lookup': CdxLookup,
 		'wl-safe-message': SafeMessage
 	},
-	mixins: [ errorMixin, typeMixin, zobjectMixin ],
 	props: {
-		keyPath: { // eslint-disable-line vue/no-unused-properties
+		keyPath: {
 			type: String,
 			default: undefined
 		},
@@ -128,40 +124,36 @@ module.exports = exports = defineComponent( {
 			required: false
 		}
 	},
-	data: function () {
-		return {
-			inputValue: '',
-			lookupResults: [],
-			lookupConfig: {
-				boldLabel: true,
-				searchQuery: '',
-				visibleItemLimit: 5,
-				searchContinue: null
-			},
-			lookupDelayTimer: null,
-			lookupDelayMs: 300,
-			lookupAbortController: null,
-			selectConfig: {
-				visibleItemLimit: 5
-			}
+	emits: [ 'select-item', 'blur', 'input-change' ],
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
+		const { hasFieldErrors, fieldErrors, clearFieldErrors } = useError( { keyPath: props.keyPath } );
+
+		// Reactive data
+		const inputValue = ref( '' );
+		const lookupResults = ref( [] );
+		const lookupConfig = ref( {
+			boldLabel: true,
+			searchQuery: '',
+			visibleItemLimit: 5,
+			searchContinue: null
+		} );
+		const lookupDelayTimer = ref( null );
+		const lookupDelayMs = 300;
+		const lookupAbortController = ref( null );
+		const selectConfig = {
+			visibleItemLimit: 5
 		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getEnumValues',
-		'getFetchedObject',
-		'getLabelData',
-		'getUserRequestedLang',
-		'isEnumType'
-	] ), {
+
+		// Computed properties
 		/**
 		 * Value model for the internal codex lookup component. It
 		 * must be null or the value (Zid) of the selected MenuItem.
 		 *
 		 * @return {string}
 		 */
-		selectedValue: function () {
-			return this.selectedZid || null;
-		},
+		const selectedValue = computed( () => props.selectedZid || null );
 
 		/**
 		 * Human readable label for the selected Zid in the
@@ -170,53 +162,101 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string}
 		 */
-		selectedLabel: function () {
-			return this.selectedZid ?
-				this.getLabelData( this.selectedZid ).label :
-				'';
-		},
+		const selectedLabel = computed( () => props.selectedZid ?
+			store.getLabelData( props.selectedZid ).label :
+			'' );
 
 		/**
-		 * Returns an array with a menu item for the selected item,
-		 * if the selected value is a valid option.
+		 * Returns whether the type is an enumeration
+		 *
+		 * @return {boolean}
+		 */
+		const isEnum = computed( () => store.isEnumType( props.type ) );
+
+		// Helper method for getLabelOrZid (defined early for use in computed)
+		/**
+		 * Returns the label for the given value if it exists, otherwise returns the value itself.
+		 * If the requested language is 'qqx', return (value/zid) as the label.
+		 *
+		 * @param {string} value - The ZID value
+		 * @param {string} label - The label text
+		 * @return {string}
+		 */
+		const getLabelOrZid = ( value, label ) => {
+			// If the requested language is 'qqx', return (value/zid) as the label
+			if ( store.getUserRequestedLang === 'qqx' ) {
+				return `(${ value })`;
+			}
+			return label;
+		};
+
+		/**
+		 * Whether is in the built-in list of Zids excluded from selection.
+		 *
+		 * @param {string} zid
+		 * @return {boolean}
+		 */
+		const isDisallowedType = ( zid ) => (
+			( props.type === Constants.Z_TYPE ) &&
+			Constants.EXCLUDE_FROM_SELECTOR.includes( zid )
+		);
+
+		/**
+		 * Helper method for checking if a ZID is excluded.
+		 * Al the zids in the excludeZids input property must be uppercase.
+		 *
+		 * @param {string} zid
+		 * @return {boolean}
+		 */
+		const isExcludedZid = ( zid ) => props.excludeZids.includes( zid ) || isDisallowedType( zid );
+
+		/**
+		 * Returns the computed suggestions for the given type.
 		 *
 		 * @return {Array}
 		 */
-		selectedMenuItem: function () {
-			// Nothing selected; return empty array
-			if ( !this.selectedZid ) {
-				return [];
-			}
-			// Bad value (not a zid); return empty array
-			if ( !this.isValidZidFormat( this.selectedZid ) ) {
-				return [];
-			}
-			const fetched = this.getFetchedObject( this.selectedZid );
-			// Not yet fetched; return empty array
-			if ( !fetched ) {
-				return [];
-			}
-			// Zid doesn't exist (fetched and failed); return empty array
-			if ( !fetched.success ) {
+		const suggestions = computed( () => {
+			if ( !props.type ) {
 				return [];
 			}
 
-			const selectedObject = fetched.data[ Constants.Z_PERSISTENTOBJECT_VALUE ];
-			const selectedType = this.typeToString( this.getZObjectType( selectedObject ), true );
-
-			// Bad value (fetched and unmatching type); return empty array
-			if ( this.type && ( selectedType !== this.type ) ) {
-				return [];
+			let title = '';
+			let suggestedZids = [];
+			switch ( props.type ) {
+				case Constants.Z_NATURAL_LANGUAGE:
+					title = i18n( 'wikilambda-object-selector-suggested-languages' ).text();
+					suggestedZids = Constants.SUGGESTIONS.LANGUAGES;
+					break;
+				case Constants.Z_TYPE:
+					title = i18n( 'wikilambda-object-selector-suggested-types' ).text();
+					suggestedZids = Constants.SUGGESTIONS.TYPES;
+					break;
+				default:
+					return [];
 			}
 
-			// Selected object is fetched and matches type; return menu element
-			this.fetchZids( { zids: [ selectedType ] } );
-			return [ {
-				value: this.selectedZid,
-				label: this.selectedLabel,
-				description: this.getLabelData( selectedType ).label
-			} ];
-		},
+			const suggestionsList = [];
+			// Add dropdown title
+			suggestionsList.push( {
+				label: title,
+				value: 'suggestion',
+				disabled: true
+			} );
+
+			// Add one item per suggested Zid, excluding disallowed/excluded ones
+			suggestedZids.forEach( ( zid ) => {
+				if ( !isExcludedZid( zid ) ) {
+					suggestionsList.push( {
+						value: zid,
+						label: store.getLabelData( zid ).label,
+						description: store.getLabelData( props.type ).label,
+						class: 'ext-wikilambda-app-object-selector__suggestion'
+					} );
+				}
+			} );
+
+			return suggestionsList;
+		} );
 
 		/**
 		 * Returns the items to show in the lookup menu:
@@ -225,95 +265,36 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Array}
 		 */
-		menuItems: function () {
+		const menuItems = computed( () => {
 			// User is actively searching (input differs from selected label)
-			if ( this.inputValue !== this.selectedLabel ) {
+			if ( inputValue.value !== selectedLabel.value ) {
 				// If there's input text, show search results; otherwise show suggestions
-				return this.inputValue ? this.lookupResults : this.suggestions;
+				return inputValue.value ? lookupResults.value : suggestions.value;
 			}
 
 			// User is not searching:
 			// If nothing is selected, show suggestions
-			if ( !this.selectedZid ) {
-				return this.suggestions;
+			if ( !props.selectedZid ) {
+				return suggestions.value;
 			}
 			// Otherwise show the lookup results
-			return this.lookupResults;
-		},
-
-		/**
-		 * Returns the computed suggestions for the given type.
-		 *
-		 * @return {Array}
-		 */
-		suggestions: function () {
-			if ( !this.type ) {
-				return [];
-			}
-
-			let title = '';
-			let suggestedZids = [];
-			switch ( this.type ) {
-				case Constants.Z_NATURAL_LANGUAGE:
-					title = this.$i18n( 'wikilambda-object-selector-suggested-languages' ).text();
-					suggestedZids = Constants.SUGGESTIONS.LANGUAGES;
-					break;
-				case Constants.Z_TYPE:
-					title = this.$i18n( 'wikilambda-object-selector-suggested-types' ).text();
-					suggestedZids = Constants.SUGGESTIONS.TYPES;
-					break;
-				default:
-					return [];
-			}
-
-			const suggestions = [];
-			// Add dropdown title
-			suggestions.push( {
-				label: title,
-				value: 'suggestion',
-				disabled: true
-			} );
-
-			// Add one item per suggested Zid, excluding disallowed/excluded ones
-			suggestedZids.forEach( ( zid ) => {
-				if ( !this.isExcludedZid( zid ) ) {
-					suggestions.push( {
-						value: zid,
-						label: this.getLabelData( zid ).label,
-						description: this.getLabelData( this.type ).label,
-						class: 'ext-wikilambda-app-object-selector__suggestion'
-					} );
-				}
-			} );
-
-			return suggestions;
-		},
-
-		/**
-		 * Returns whether the type is an enumeration
-		 *
-		 * @return {boolean}
-		 */
-		isEnum: function () {
-			return this.isEnumType( this.type );
-		},
+			return lookupResults.value;
+		} );
 
 		/**
 		 * Returns the menu items for the enum selector.
-		 * By passing selected Zid to getEnumValues getter, it will manually
+		 * By passing selected Zid to store.getEnumValues getter, it will manually
 		 * include this item in the enum list if:
 		 * * it's not part of the first page of enum values
 		 * * it's a valid instance of the enum type
 		 *
 		 * @return {Array}
 		 */
-		enumValues: function () {
-			return this.getEnumValues( this.type, this.selectedZid ).map( ( item ) => {
-				const value = item.page_title;
-				const label = this.getLabelOrZid( value, item.label );
-				return { value, label };
-			} );
-		},
+		const enumValues = computed( () => store.getEnumValues( props.type, props.selectedZid ).map( ( item ) => {
+			const value = item.page_title;
+			const label = getLabelOrZid( value, item.label );
+			return { value, label };
+		} ) );
 
 		/**
 		 * Returns the placeholder for the Lookup selector, either
@@ -322,21 +303,21 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string}
 		 */
-		lookupPlaceholder: function () {
-			if ( this.placeholder ) {
-				return this.placeholder;
+		const lookupPlaceholder = computed( () => {
+			if ( props.placeholder ) {
+				return props.placeholder;
 			}
-			switch ( this.type ) {
+			switch ( props.type ) {
 				case Constants.Z_FUNCTION:
-					return this.$i18n( 'wikilambda-function-typeselector-label' ).text();
+					return i18n( 'wikilambda-function-typeselector-label' ).text();
 				case Constants.Z_NATURAL_LANGUAGE:
-					return this.$i18n( 'wikilambda-editor-label-addlanguage-label' ).text();
+					return i18n( 'wikilambda-editor-label-addlanguage-label' ).text();
 				case Constants.Z_TYPE:
-					return this.$i18n( 'wikilambda-typeselector-label' ).text();
+					return i18n( 'wikilambda-typeselector-label' ).text();
 				default:
-					return this.$i18n( 'wikilambda-zobjectselector-label' ).text();
+					return i18n( 'wikilambda-zobjectselector-label' ).text();
 			}
-		},
+		} );
 
 		/**
 		 * Status property for the Lookup component (ValidateStatusType).
@@ -345,20 +326,20 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string}
 		 */
-		errorLookupStatus: function () {
-			if ( !this.hasFieldErrors ) {
+		const errorLookupStatus = computed( () => {
+			if ( !hasFieldErrors.value ) {
 				return 'default';
 			}
 
 			// Check if any field error is of type 'error'
-			const hasError = this.fieldErrors.some( ( error ) => error.type === 'error' );
+			const hasError = fieldErrors.value.some( ( error ) => error.type === 'error' );
 			if ( hasError ) {
 				return 'error';
 			}
 
 			// All field errors are warnings
 			return 'warning';
-		},
+		} );
 
 		/**
 		 * Returns the array of zids to pass as the wikilambdasearch_type
@@ -366,19 +347,19 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Array}
 		 */
-		lookupTypes: function () {
+		const lookupTypes = computed( () => {
 			const types = [];
 			// If type is set, add to the array
-			if ( this.type ) {
-				types.push( this.type );
+			if ( props.type ) {
+				types.push( props.type );
 			}
 			// If type=Z4, we allow Z7s that return Z4s
-			if ( this.type === Constants.Z_TYPE ) {
+			if ( props.type === Constants.Z_TYPE ) {
 				types.push( Constants.Z_FUNCTION_CALL );
 			}
 			// Return array of types if any
 			return types.length ? types : undefined;
-		},
+		} );
 
 		/**
 		 * Returns the array of zids to pass as the wikilambdasearch_return_type
@@ -386,73 +367,32 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Array}
 		 */
-		lookupReturnTypes: function () {
+		const lookupReturnTypes = computed( () => {
 			const types = [];
 			// If return type is set, we add type and Z1
-			if ( this.returnType ) {
-				types.push( this.returnType );
+			if ( props.returnType ) {
+				types.push( props.returnType );
 			}
 			// If type=Z4, we allow Z7s that return Z4s or Z1s
-			if ( this.type === Constants.Z_TYPE ) {
+			if ( props.type === Constants.Z_TYPE ) {
 				types.push( Constants.Z_TYPE );
 			}
 			// If return type is defined but strictReturnType=false, we add Z1
-			if ( types.length > 0 && !this.strictReturnType ) {
+			if ( types.length > 0 && !props.strictReturnType ) {
 				types.push( Constants.Z_OBJECT );
 			}
 			// Return array of return types if any
 			return types.length ? types : undefined;
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'lookupZObjectLabels',
-		'fetchEnumValues',
-		'fetchZids'
-	] ), {
+		} );
+
+		// Methods
 		/**
 		 * Load more values for the enumeration selector when the user scrolls to the bottom of the list
 		 * and there are more results to load.
 		 */
-		onLoadMoreSelect: function () {
-			this.fetchEnumValues( { type: this.type } );
-		},
-
-		/**
-		 * Load more Lookup results when the user scrolls to the bottom of the list
-		 * and there are more results to load.
-		 */
-		onLoadMoreLookup: function () {
-			if ( !this.lookupConfig.searchContinue ) {
-				// No more results to load
-				return;
-			}
-
-			this.getLookupResults( this.lookupConfig.searchQuery );
-		},
-
-		/**
-		 * Whether is in the input list of Zids excluded from selection.
-		 * Al the zids in the excludeZids input property must be uppercase.
-		 *
-		 * @param {string} zid
-		 * @return {boolean}
-		 */
-		isExcludedZid: function ( zid ) {
-			return this.excludeZids.includes( zid ) || this.isDisallowedType( zid );
-		},
-
-		/**
-		 * Whether is in the built-in list of Zids excluded from selection.
-		 *
-		 * @param {string} zid
-		 * @return {boolean}
-		 */
-		isDisallowedType: function ( zid ) {
-			return (
-				( this.type === Constants.Z_TYPE ) &&
-				Constants.EXCLUDE_FROM_SELECTOR.includes( zid )
-			);
-		},
+		const onLoadMoreSelect = () => {
+			store.fetchEnumValues( { type: props.type } );
+		};
 
 		/**
 		 * Handle get zObject lookup.
@@ -460,38 +400,39 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} input
 		 */
-		getLookupResults: function ( input ) {
+		const getLookupResults = ( input ) => {
 			// Cancel previous request if any
-			if ( this.lookupAbortController ) {
-				this.lookupAbortController.abort();
+			if ( lookupAbortController.value ) {
+				lookupAbortController.value.abort();
 			}
-			this.lookupAbortController = new AbortController();
-			this.lookupZObjectLabels( {
+			lookupAbortController.value = new AbortController();
+			store.lookupZObjectLabels( {
 				input,
-				types: this.lookupTypes,
-				returnTypes: this.lookupReturnTypes,
-				searchContinue: this.lookupConfig.searchContinue,
-				signal: this.lookupAbortController.signal
+				types: lookupTypes.value,
+				returnTypes: lookupReturnTypes.value,
+				searchContinue: lookupConfig.value.searchContinue,
+				signal: lookupAbortController.value.signal
 			} ).then( ( data ) => {
 				const { labels, searchContinue } = data;
 				const zids = [];
-				this.lookupConfig.searchContinue = searchContinue;
-				this.lookupConfig.searchQuery = input;
-				this.lookupResults = [];
+				// If searchContinue is present, store it in lookupConfig
+				lookupConfig.value.searchContinue = searchContinue;
+				lookupConfig.value.searchQuery = input;
+				lookupResults.value = [];
 				// Update lookupResults list
 				if ( labels && labels.length > 0 ) {
 					labels.forEach( ( result ) => {
 						// Set up codex MenuItem options
 						// https://doc.wikimedia.org/codex/latest/components/demos/menu-item.html
 						const value = result.page_title;
-						const label = this.getLabelOrZid( value, result.label );
-						const description = this.getLabelOrZid( result.page_type, result.type_label );
+						const label = getLabelOrZid( value, result.label );
+						const description = getLabelOrZid( result.page_type, result.type_label );
 						const supportingText = ( label !== result.match_label ) ? `(${ result.match_label })` : '';
 
 						let icon;
 						// If we expect to receive functions along with other literal types, show icon
-						if ( !this.lookupTypes || ( this.lookupTypes.length > 1 &&
-							this.lookupTypes.includes( Constants.Z_FUNCTION )
+						if ( !lookupTypes.value || ( lookupTypes.value.length > 1 &&
+							lookupTypes.value.includes( Constants.Z_FUNCTION )
 						) ) {
 							icon = ( result.page_type === Constants.Z_FUNCTION ) ?
 								icons.cdxIconFunction :
@@ -501,8 +442,8 @@ module.exports = exports = defineComponent( {
 						}
 
 						// Exclude everything in the exclude Zids and disallowed types lists
-						if ( !this.isExcludedZid( value ) ) {
-							this.lookupResults.push( {
+						if ( !isExcludedZid( value ) ) {
+							lookupResults.value.push( {
 								value,
 								label,
 								description,
@@ -515,33 +456,30 @@ module.exports = exports = defineComponent( {
 						zids.push( value );
 					} );
 					// Once lookupResults are gathered, fetch and collect all the data;
-					// fetchZids makes sure that only the missing zids are requested
-					this.fetchZids( { zids } );
+					// store.fetchZids makes sure that only the missing zids are requested
+					store.fetchZids( { zids } );
 				}
 			} ).catch( ( error ) => {
 				if ( error.code === 'abort' ) {
 					return;
 				}
-				this.lookupConfig.searchQuery = input;
-				this.lookupResults = [];
+				lookupConfig.value.searchQuery = input;
+				lookupResults.value = [];
 			} );
-		},
+		};
 
 		/**
-		 * Returns the value when the user requested language is 'qqx',
-		 * otherwise returns the label.
-		 *
-		 * @param {string} value
-		 * @param {string} label
-		 * @return {Object}
+		 * Load more Lookup results when the user scrolls to the bottom of the list
+		 * and there are more results to load.
 		 */
-		getLabelOrZid: function ( value, label ) {
-			// If the requested language is 'qqx', return (value/zid) as the label
-			if ( this.getUserRequestedLang === 'qqx' ) {
-				return `(${ value })`;
+		const onLoadMoreLookup = () => {
+			if ( !lookupConfig.value.searchContinue ) {
+				// No more results to load
+				return;
 			}
-			return label;
-		},
+
+			getLookupResults( lookupConfig.value.searchQuery );
+		};
 
 		/**
 		 * On field input, perform a backend lookup and set the lookupResults
@@ -549,28 +487,40 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} input
 		 */
-		onInput: function ( input ) {
-			this.inputValue = input;
-			this.$emit( 'input-change', input || '' );
+		const onInput = ( input ) => {
+			inputValue.value = input;
+			emit( 'input-change', input || '' );
 
 			// Clear field errors
-			this.clearFieldErrors();
+			clearFieldErrors();
 
 			// Clear searchContinue when a new search is initiated
-			this.lookupConfig.searchContinue = null;
+			lookupConfig.value.searchContinue = null;
 
 			// If input is empty, reset lookupResults
 			if ( !input ) {
-				this.lookupResults = [];
+				lookupResults.value = [];
 				return;
 			}
 
 			// Search after 300 ms
-			clearTimeout( this.lookupDelayTimer );
-			this.lookupDelayTimer = setTimeout( () => {
-				this.getLookupResults( input );
-			}, this.lookupDelayMs );
-		},
+			clearTimeout( lookupDelayTimer.value );
+			lookupDelayTimer.value = setTimeout( () => {
+				getLookupResults( input );
+			}, lookupDelayMs );
+		};
+
+		/**
+		 * On focus, if there is an inputValue and the lookupResults are empty,
+		 * get the lookup results for the inputValue.
+		 * This ensures that the lookup results are populated when the field is focused,
+		 * especially when the field is mounted.
+		 */
+		const onFocus = () => {
+			if ( inputValue.value && !lookupResults.value.length ) {
+				getLookupResults( inputValue.value );
+			}
+		};
 
 		/**
 		 * Model update event, sets the value of the field
@@ -579,7 +529,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string | null} value
 		 */
-		onSelect: function ( value ) {
+		const onSelect = ( value ) => {
 			// T374246: update:selected events are emitted with null value
 			// whenever input changes, so we need to exit early whenever
 			// selected value is null, instead of setting the value to empty
@@ -591,8 +541,8 @@ module.exports = exports = defineComponent( {
 
 			// If the already selected value is selected again, exit early
 			// and reset the input value to the selected value (T382755).
-			if ( this.selectedValue === value ) {
-				this.inputValue = this.selectedLabel;
+			if ( selectedValue.value === value ) {
+				inputValue.value = selectedLabel.value;
 				return;
 			}
 
@@ -600,30 +550,14 @@ module.exports = exports = defineComponent( {
 			// Once the parent responds to the select event and updates the
 			// selected value, the computed property selectedValue will be
 			// updated.
-			this.clearFieldErrors();
-			this.$emit( 'select-item', value || '' );
-		},
+			clearFieldErrors();
+			emit( 'select-item', value || '' );
+		};
 
 		/**
-		 * On focus, if there is an inputValue and the lookupResults are empty,
-		 * get the lookup results for the inputValue.
-		 * This ensures that the lookup results are populated when the field is focused,
-		 * especially when the field is mounted.
+		 * On blur, handle various states of input and selection
 		 */
-		onFocus: function () {
-			// Only fetch if we have sufficient input and no cached results
-			if ( this.inputValue && !this.lookupResults.length ) {
-				this.getLookupResults( this.inputValue );
-			}
-		},
-
-		/**
-		 * On Lookup blur, make sure that the input and the selected values
-		 * are synchronized: If there is something written in the input but
-		 * there is nothing selected, clear the input. If the input is empty,
-		 * clear the selection
-		 */
-		onBlur: function () {
+		const onBlur = () => {
 			// On blur, these are the possible states:
 			// * inputValue is empty
 			// * inputValue is non-empty
@@ -655,52 +589,73 @@ module.exports = exports = defineComponent( {
 			// * no match?: set inputValue to selectedLabel
 
 			// If current inputValue matches selected label, do nothing:
-			if ( this.inputValue === this.selectedLabel ) {
+			if ( inputValue.value === selectedLabel.value ) {
 				return;
 			}
 
 			// Match current inputValue with available menu options:
-			const match = this.lookupResults.find( ( option ) => option.label === this.inputValue );
+			const match = lookupResults.value.find( ( option ) => option.label === inputValue.value );
 			if ( match ) {
 				// Select new value
-				this.onSelect( match.value );
+				onSelect( match.value );
 			} else {
 				// Reset to old value
-				this.inputValue = this.selectedLabel;
-				this.lookupConfig.searchQuery = this.selectedLabel;
+				inputValue.value = selectedLabel.value;
+				lookupConfig.value.searchQuery = selectedLabel.value;
 			}
-		}
-	} ),
-	watch: {
+		};
+
+		// Watch
 		/**
 		 * When label of selected Zid is updated, updates
 		 * the input value shown in the field.
-		 *
-		 * @param {string} label
 		 */
-		selectedLabel: function ( label ) {
-			this.inputValue = label;
-		},
+		watch( selectedLabel, ( label ) => {
+			inputValue.value = label;
+		} );
+
 		/**
 		 * When isEnum flag changes (due to a type change, or
 		 * due to delayed retrieval of type data), it initializes
 		 * the fetching of the enum values.
-		 *
-		 * @param {boolean} value
 		 */
-		isEnum: function ( value ) {
+		watch( isEnum, ( value ) => {
 			if ( value ) {
 				// Fetch 20 enum values which usually is enough to show all enums directly
-				this.fetchEnumValues( { type: this.type, limit: 20 } );
+				store.fetchEnumValues( { type: props.type, limit: 20 } );
 			}
-		}
-	},
-	mounted: function () {
-		this.inputValue = this.selectedLabel;
-		if ( this.isEnum ) {
-			// Fetch 20 enum values which usually is enough to show all enums directly
-			this.fetchEnumValues( { type: this.type, limit: 20 } );
-		}
+		} );
+
+		// Lifecycle
+		onMounted( () => {
+			inputValue.value = selectedLabel.value;
+			if ( isEnum.value ) {
+				// Fetch 20 enum values which usually is enough to show all enums directly
+				store.fetchEnumValues( { type: props.type, limit: 20 } );
+			}
+		} );
+
+		// Return all properties and methods for the template
+		return {
+			enumValues,
+			errorLookupStatus,
+			fieldErrors,
+			hasFieldErrors,
+			inputValue,
+			isEnum,
+			lookupConfig,
+			lookupPlaceholder,
+			menuItems,
+			onBlur,
+			onFocus,
+			onInput,
+			onLoadMoreLookup,
+			onLoadMoreSelect,
+			onSelect,
+			selectConfig,
+			selectedValue,
+			i18n
+		};
 	}
 } );
 </script>

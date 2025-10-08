@@ -40,12 +40,11 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapState } = require( 'pinia' );
+const { defineComponent, computed } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
-const typeMixin = require( '../../mixins/typeMixin.js' );
-const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
+const useType = require( '../../composables/useType.js' );
+const useZObject = require( '../../composables/useZObject.js' );
 const useMainStore = require( '../../store/index.js' );
 const urlUtils = require( '../../utils/urlUtils.js' );
 
@@ -59,7 +58,6 @@ module.exports = exports = defineComponent( {
 		'wl-z-object-selector': ZObjectSelector,
 		'wl-wikidata-reference-selector': WikidataReferenceSelector
 	},
-	mixins: [ typeMixin, zobjectMixin ],
 	props: {
 		keyPath: {
 			type: String,
@@ -87,20 +85,18 @@ module.exports = exports = defineComponent( {
 			default: false
 		}
 	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getLabelData',
-		'getUserLangCode',
-		'getLanguagesInParentMultilingualList',
-		'isInMultilingualStringList'
-	] ), {
+	setup( props, { emit } ) {
+		const { typeToString, isKeyTypedListItem } = useType();
+		const { getZReferenceTerminalValue, key, parentKey } = useZObject( { keyPath: props.keyPath } );
+		const store = useMainStore();
+
+		// Computed properties
 		/**
 		 * Returns the value of the selected reference.
 		 *
 		 * @return {string}
 		 */
-		value: function () {
-			return this.getZReferenceTerminalValue( this.objectValue );
-		},
+		const value = computed( () => getZReferenceTerminalValue( props.objectValue ) );
 
 		/**
 		 * Returns the string value of the label for the selected reference.
@@ -108,21 +104,17 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {LabelData|undefined}
 		 */
-		valueLabel: function () {
-			return this.value ? this.getLabelData( this.value ) : undefined;
-		},
+		const valueLabel = computed( () => value.value ? store.getLabelData( value.value ) : undefined );
 
 		/**
 		 * Returns the link to the page of the selected reference.
 		 *
 		 * @return {string}
 		 */
-		valueUrl: function () {
-			return urlUtils.generateViewUrl( {
-				langCode: this.getUserLangCode,
-				zid: this.value
-			} );
-		},
+		const valueUrl = computed( () => urlUtils.generateViewUrl( {
+			langCode: store.getUserLangCode,
+			zid: value.value
+		} ) );
 
 		/**
 		 * Returns the bound type to configure the ZObjectSelector:
@@ -133,12 +125,12 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string|undefined}
 		 */
-		type: function () {
+		const type = computed( () => {
 			const unboundTypes = [ Constants.Z_OBJECT, ...Constants.RESOLVER_TYPES ];
-			return !unboundTypes.includes( this.expectedType ) ?
-				this.typeToString( this.expectedType, true ) :
+			return !unboundTypes.includes( props.expectedType ) ?
+				typeToString( props.expectedType, true ) :
 				undefined;
-		},
+		} );
 
 		/**
 		 * Returns the bound return type to configure the ZObjectSelector:
@@ -149,13 +141,13 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string|undefined}
 		 */
-		returnType: function () {
+		const returnType = computed( () => {
 			const unboundTypes = [ Constants.Z_OBJECT, ...Constants.RESOLVER_TYPES ];
-			return ( this.key === Constants.Z_FUNCTION_CALL_FUNCTION &&
-				!unboundTypes.includes( this.parentExpectedType ) ) ?
-				this.typeToString( this.parentExpectedType, true ) :
+			return ( key.value === Constants.Z_FUNCTION_CALL_FUNCTION &&
+				!unboundTypes.includes( props.parentExpectedType ) ) ?
+				typeToString( props.parentExpectedType, true ) :
 				undefined;
-		},
+		} );
 
 		/**
 		 * Returns the list of Zids to exclude from the ZObjectSelector lookup,
@@ -167,53 +159,61 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Array}
 		 */
-		excludeZids: function () {
+		const excludeZids = computed( () => {
 			// If current reference is within a multilingual string list/Z12, exclude
 			// the languages already present in that list from the lookup.
 			// However, allow the currently selected language to remain visible.
 			if (
-				this.isKeyTypedListItem( this.parentKey ) &&
-				this.parentExpectedType === Constants.Z_MONOLINGUALSTRING &&
-				this.isInMultilingualStringList( this.keyPath )
+				isKeyTypedListItem( parentKey.value ) &&
+				props.parentExpectedType === Constants.Z_MONOLINGUALSTRING &&
+				store.isInMultilingualStringList( props.keyPath )
 			) {
-				const languagesInList = this.getLanguagesInParentMultilingualList( this.keyPath );
-				return languagesInList.filter( ( langZid ) => langZid !== this.value );
+				const languagesInList = store.getLanguagesInParentMultilingualList( props.keyPath );
+				return languagesInList.filter( ( langZid ) => langZid !== value.value );
 			}
-			if ( this.key === Constants.Z_OBJECT_TYPE &&
-				this.parentKey === Constants.Z_PERSISTENTOBJECT_VALUE ) {
+			if ( key.value === Constants.Z_OBJECT_TYPE &&
+				parentKey.value === Constants.Z_PERSISTENTOBJECT_VALUE ) {
 				return Constants.EXCLUDE_FROM_PERSISTENT_CONTENT;
 			}
 			if (
-				this.key === Constants.Z_FUNCTION_CALL_FUNCTION &&
-				this.parentKey === Constants.Z_PERSISTENTOBJECT_VALUE
+				key.value === Constants.Z_FUNCTION_CALL_FUNCTION &&
+				parentKey.value === Constants.Z_PERSISTENTOBJECT_VALUE
 			) {
 				return [];
 			}
 			return [ Constants.Z_WIKIDATA_ENUM ];
-		},
+		} );
 
 		/**
 		 * Returns true if the key is a Wikidata enum type.
 		 *
 		 * @return {boolean}
 		 */
-		isWikidataEnum: function () {
-			return this.key === Constants.Z_WIKIDATA_ENUM_TYPE;
-		}
-	} ),
-	methods: {
+		const isWikidataEnum = computed( () => key.value === Constants.Z_WIKIDATA_ENUM_TYPE );
+
 		/**
 		 * Emits the event setValue so that ZObjectKey can update
 		 * the terminal value in the ZObject data table. ZObjectSelector
 		 * input event will always be called with a valid value from the
 		 * lookup list, never with an empty value.
 		 *
-		 * @param {string} value
+		 * @param {string} newValue
 		 */
-		setValue: function ( value ) {
-			const keyPath = this.key !== Constants.Z_REFERENCE_ID ? [ Constants.Z_REFERENCE_ID ] : [];
-			this.$emit( 'set-value', { keyPath, value } );
+		function setValue( newValue ) {
+			const keyPath = key.value !== Constants.Z_REFERENCE_ID ? [ Constants.Z_REFERENCE_ID ] : [];
+			emit( 'set-value', { keyPath, value: newValue } );
 		}
+
+		return {
+			excludeZids,
+			isWikidataEnum,
+			returnType,
+			setValue,
+			type,
+			value,
+			valueLabel,
+			valueUrl
+		};
 	}
 } );
 

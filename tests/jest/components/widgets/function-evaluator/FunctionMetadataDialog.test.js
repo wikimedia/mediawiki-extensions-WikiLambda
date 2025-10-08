@@ -7,6 +7,7 @@
 'use strict';
 
 const { mount } = require( '@vue/test-utils' );
+const { waitFor } = require( '@testing-library/vue' );
 const createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
 const createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock;
 const metadata = require( '../../../fixtures/metadata.js' );
@@ -16,6 +17,23 @@ const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store
 
 describe( 'dialog', () => {
 	let store;
+
+	function renderFunctionMetadataDialog( props = {}, options = {} ) {
+		const defaultProps = {
+			open: true
+		};
+		const defaultOptions = {
+			global: {
+				stubs: {
+					...options?.stubs
+				}
+			}
+		};
+		return mount( FunctionMetadataDialog, {
+			props: { ...defaultProps, ...props },
+			...defaultOptions
+		} );
+	}
 
 	beforeEach( () => {
 		store = useMainStore();
@@ -34,30 +52,24 @@ describe( 'dialog', () => {
 	} );
 
 	it( 'renders without errors', () => {
-		const wrapper = mount( FunctionMetadataDialog, {
-			props: { open: true, metadata: metadata.metadataBasic },
-			global: {
-				stubs: dialogGlobalStubs
-			}
-		} );
+		const wrapper = renderFunctionMetadataDialog(
+			{ metadata: metadata.metadataBasic },
+			{ stubs: dialogGlobalStubs }
+		);
 
 		expect( wrapper.find( '.ext-wikilambda-app-function-metadata-dialog' ).exists() ).toBe( true );
 	} );
 
 	describe( 'with basic metadata', () => {
 		it( 'does not render function call selector correctly', () => {
-			const wrapper = mount( FunctionMetadataDialog, {
-				props: { open: true, metadata: metadata.metadataBasic }
-			} );
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataBasic } );
 
 			const selector = wrapper.findComponent( { name: 'cdx-select' } );
 			expect( selector.exists() ).toBe( false );
 		} );
 
 		it( 'renders an untitled implementation section', () => {
-			const wrapper = mount( FunctionMetadataDialog, {
-				props: { open: true, metadata: metadata.metadataBasic }
-			} );
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataBasic } );
 
 			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
 			const section = sections[ 0 ];
@@ -83,9 +95,7 @@ describe( 'dialog', () => {
 
 		it( 'renders a named implementation section', () => {
 			store.getLabelData = createLabelDataMock( { Z902: 'Javascript implementation for If' } );
-			const wrapper = mount( FunctionMetadataDialog, {
-				props: { open: true, metadata: metadata.metadataBasic }
-			} );
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataBasic } );
 			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
 			const section = sections[ 0 ];
 
@@ -111,9 +121,7 @@ describe( 'dialog', () => {
 		it( 'renders the duration section', () => {
 			// Set fake timer
 			jest.useFakeTimers().setSystemTime( new Date( '2024-02-16T12:30:00.000Z' ) );
-			const wrapper = mount( FunctionMetadataDialog, {
-				props: { open: true, metadata: metadata.metadataBasic }
-			} );
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataBasic } );
 			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
 			const section = sections[ 1 ];
 
@@ -147,9 +155,7 @@ describe( 'dialog', () => {
 		} );
 
 		it( 'renders the CPU usage section', () => {
-			const wrapper = mount( FunctionMetadataDialog, {
-				props: { open: true, metadata: metadata.metadataBasic }
-			} );
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataBasic } );
 			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
 			const section = sections[ 2 ];
 
@@ -172,9 +178,7 @@ describe( 'dialog', () => {
 		} );
 
 		it( 'renders the memory usage section', () => {
-			const wrapper = mount( FunctionMetadataDialog, {
-				props: { open: true, metadata: metadata.metadataBasic }
-			} );
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataBasic } );
 			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
 			const section = sections[ 3 ];
 
@@ -197,9 +201,7 @@ describe( 'dialog', () => {
 		} );
 
 		it( 'renders the server section', () => {
-			const wrapper = mount( FunctionMetadataDialog, {
-				props: { open: true, metadata: metadata.metadataBasic }
-			} );
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataBasic } );
 			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
 			const section = sections[ 4 ];
 
@@ -218,9 +220,7 @@ describe( 'dialog', () => {
 		} );
 
 		it( 'renders the programming language section', () => {
-			const wrapper = mount( FunctionMetadataDialog, {
-				props: { open: true, metadata: metadata.metadataBasic }
-			} );
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataBasic } );
 			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
 			const section = sections[ 5 ];
 
@@ -238,9 +238,7 @@ describe( 'dialog', () => {
 
 	describe( 'with incomplete metadata', () => {
 		it( 'only renders sections with available keys', () => {
-			const wrapper = mount( FunctionMetadataDialog, {
-				props: { open: true, metadata: metadata.metadataEmpty }
-			} );
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataEmpty } );
 			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
 			expect( sections.length ).toBe( 1 );
 			const section = sections[ 0 ];
@@ -264,9 +262,7 @@ describe( 'dialog', () => {
 
 	describe( 'with error metadata', () => {
 		it( 'renders the error section', () => {
-			const wrapper = mount( FunctionMetadataDialog, {
-				props: { open: true, metadata: metadata.metadataErrors }
-			} );
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataErrors } );
 			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
 			expect( sections.length ).toBe( 1 );
 			const section = sections[ 0 ];
@@ -308,9 +304,7 @@ describe( 'dialog', () => {
 		} );
 
 		it( 'renders the error section, but escapes bad stuff', () => {
-			const wrapper = mount( FunctionMetadataDialog, {
-				props: { open: true, metadata: metadata.metadataMaliciousError }
-			} );
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataMaliciousError } );
 			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
 			expect( sections.length ).toBe( 1 );
 			const section = sections[ 0 ];
@@ -322,9 +316,7 @@ describe( 'dialog', () => {
 		} );
 
 		it( 'renders the expected/actual values and shows test failure message when results differ', () => {
-			const wrapper = mount( FunctionMetadataDialog, {
-				props: { open: true, metadata: metadata.metadataDifferButNoErrors }
-			} );
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataDifferButNoErrors } );
 			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
 			expect( sections.length ).toBe( 1 );
 			const section = sections[ 0 ];
@@ -355,9 +347,7 @@ describe( 'dialog', () => {
 
 	describe( 'with nested metadata', () => {
 		it( 'renders function call selector correctly', () => {
-			const wrapper = mount( FunctionMetadataDialog, {
-				props: { open: true, metadata: metadata.metadataNested }
-			} );
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataNested } );
 
 			// Selector is rendered
 			const selector = wrapper.findComponent( { name: 'cdx-select' } );
@@ -387,10 +377,9 @@ describe( 'dialog', () => {
 		} );
 
 		it( 'selects a child function call', async () => {
-			const wrapper = mount( FunctionMetadataDialog, {
-				props: { open: true, metadata: metadata.metadataNested }
-			} );
-			expect( wrapper.vm.selectedMetadataPath ).toBe( '0' );
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataNested } );
+			// Check that the initial metadata path is set correctly
+			expect( wrapper.findComponent( { name: 'cdx-select' } ).props( 'selected' ) ).toBe( '0' );
 
 			let sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
 			expect( sections.length ).toBe( 2 );
@@ -403,10 +392,12 @@ describe( 'dialog', () => {
 			// Select second child
 			const selectedId = '0-1';
 			selector.vm.$emit( 'update:selected', selectedId );
-			await wrapper.vm.$nextTick();
 
 			// Selector class has changed from pass to fail
-			expect( selector.html() ).toContain( 'ext-wikilambda-app-function-metadata-dialog__selected--fail' );
+			await waitFor( () => {
+				expect( selector.html() ).toContain( 'ext-wikilambda-app-function-metadata-dialog__selected--fail' );
+			} );
+
 			expect( selector.html() ).not.toContain( 'ext-wikilambda-app-function-metadata-dialog__selected--pass' );
 			expect( selector.html() ).toContain( '<bdi>Echo</bdi>' );
 

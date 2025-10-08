@@ -26,8 +26,7 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapState } = require( 'pinia' );
+const { computed, defineComponent, inject } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
 const useMainStore = require( '../../../store/index.js' );
@@ -49,59 +48,62 @@ module.exports = exports = defineComponent( {
 			default: ''
 		}
 	},
-	data: function () {
-		return {
-			naturalLanguageType: Constants.Z_NATURAL_LANGUAGE
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getMultilingualDataLanguages'
-	] ), {
+	emits: [ 'language-changed' ],
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
+
+		const naturalLanguageType = Constants.Z_NATURAL_LANGUAGE;
+
 		/**
 		 * Returns the available languages for the function definition,
 		 * which includes Name, Description, Aliases and Input labels.
 		 *
 		 * @return {Array}
 		 */
-		functionLanguages: function () {
-			return this.getMultilingualDataLanguages.all;
-		},
+		const functionLanguages = computed( () => store.getMultilingualDataLanguages.all );
+
 		/**
 		 * Returns the id for the language field
 		 *
 		 * @return {string}
 		 */
-		languageFieldId: function () {
-			return 'ext-wikilambda-app-function-editor-language__label-id';
-		},
+		const languageFieldId = computed( () => 'ext-wikilambda-app-function-editor-language__label-id' );
+
 		/**
 		 * Returns the label for the language field
 		 *
+		 * TODO (T335583): Replace i18n message with key label
+		 * return getLabelData( Constants.Z_MONOLINGUALSTRING_LANGUAGE );
+		 *
 		 * @return {string}
 		 */
-		languageLabel: function () {
-			// TODO (T335583): Replace i18n message with key label
-			// return this.getLabelData( Constants.Z_MONOLINGUALSTRING_LANGUAGE );
-			return this.$i18n( 'wikilambda-languagelabel' ).text();
-		},
+		const languageLabel = computed( () => i18n( 'wikilambda-languagelabel' ).text() );
+
 		/**
 		 * Whether the language selector has a value or is empty
 		 *
 		 * @return {boolean}
 		 */
-		hasLanguage: function () {
-			return !!this.zLanguage;
-		}
-	} ),
-	methods: {
+		const hasLanguage = computed( () => !!props.zLanguage );
+
 		/**
 		 * Emits a change event when the selector is set to a new language.
 		 *
 		 * @param {string} lang
 		 */
-		addNewLanguage: function ( lang ) {
-			this.$emit( 'language-changed', lang );
-		}
+		const addNewLanguage = ( lang ) => {
+			emit( 'language-changed', lang );
+		};
+
+		return {
+			addNewLanguage,
+			functionLanguages,
+			hasLanguage,
+			languageFieldId,
+			languageLabel,
+			naturalLanguageType
+		};
 	}
 } );
 </script>

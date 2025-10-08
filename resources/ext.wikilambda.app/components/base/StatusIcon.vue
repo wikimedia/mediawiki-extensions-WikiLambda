@@ -15,7 +15,7 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
+const { defineComponent, computed } = require( 'vue' );
 
 const icons = require( '../../../lib/icons.json' );
 
@@ -41,15 +41,17 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	computed: {
+	setup( props ) {
 		/**
 		 * Returns the class for the icon depending on the status
 		 *
 		 * @return {string}
 		 */
-		statusIconClass() {
-			return `ext-wikilambda-app-status-icon--${ this.status }`;
-		}
+		const statusIconClass = computed( () => `ext-wikilambda-app-status-icon--${ props.status }` );
+
+		return {
+			statusIconClass
+		};
 	}
 } );
 </script>

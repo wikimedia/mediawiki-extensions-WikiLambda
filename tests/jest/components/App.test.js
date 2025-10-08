@@ -16,6 +16,19 @@ const { mockWindowLocation } = require( '../fixtures/location.js' );
 describe( 'App.vue', () => {
 	let store;
 
+	function renderApp( props = {}, options = {} ) {
+		const defaultOptions = {
+			provide: {
+				viewmode: true
+			}
+		};
+		return shallowMount( App, {
+			props,
+			...defaultOptions,
+			...options
+		} );
+	}
+
 	beforeEach( () => {
 		store = useMainStore();
 		store.initializeView.mockResolvedValue();
@@ -26,11 +39,7 @@ describe( 'App.vue', () => {
 	} );
 
 	it( 'Initializes the app on load', async () => {
-		shallowMount( App, {
-			provide: {
-				viewmode: true
-			}
-		} );
+		renderApp();
 
 		await waitFor( () => expect( store.initializeView ).toHaveBeenCalled() );
 	} );
@@ -38,11 +47,7 @@ describe( 'App.vue', () => {
 	it( 'Handles popstate event correctly when there is a hash in the URL', async () => {
 		mockWindowLocation( 'http://example.com#some-hash' );
 
-		shallowMount( App, {
-			provide: {
-				viewmode: true
-			}
-		} );
+		renderApp();
 
 		const popstateEvent = new PopStateEvent( 'popstate', { state: null } );
 		window.dispatchEvent( popstateEvent );
@@ -57,11 +62,7 @@ describe( 'App.vue', () => {
 
 		store.isCreateNewPage = true;
 
-		shallowMount( App, {
-			provide: {
-				viewmode: true
-			}
-		} );
+		renderApp();
 
 		const popstateEvent = new PopStateEvent( 'popstate' );
 		window.dispatchEvent( popstateEvent );
@@ -71,11 +72,7 @@ describe( 'App.vue', () => {
 	} );
 
 	it( 'Calls evaluateUri when popstate event is triggered and no hash is present', () => {
-		shallowMount( App, {
-			provide: {
-				viewmode: true
-			}
-		} );
+		renderApp();
 
 		const popstateEvent = new PopStateEvent( 'popstate' );
 		window.dispatchEvent( popstateEvent );
@@ -88,11 +85,7 @@ describe( 'App.vue', () => {
 			isInitialized: false
 		} );
 
-		const wrapper = shallowMount( App, {
-			provide: {
-				viewmode: true
-			}
-		} );
+		const wrapper = renderApp();
 
 		expect( wrapper.componentVM.isAppSetup ).toBe( false );
 		expect( wrapper.findComponent( { name: 'wl-function-editor-view' } ).exists() ).toBe( false );
@@ -103,22 +96,14 @@ describe( 'App.vue', () => {
 		store.$patch( {
 			isInitialized: false
 		} );
-		const wrapper = shallowMount( App, {
-			provide: {
-				viewmode: true
-			}
-		} );
+		const wrapper = renderApp();
 
 		expect( wrapper.componentVM.isAppSetup ).toBe( false );
 		expect( wrapper.findComponent( { name: 'wl-function-editor-view' } ).exists() ).toBe( false );
 	} );
 
 	it( 'Renders the router view when isInitialized is true and initializeView has completed', async () => {
-		const wrapper = shallowMount( App, {
-			provide: {
-				viewmode: true
-			}
-		} );
+		const wrapper = renderApp();
 
 		await waitFor( () => {
 			expect( wrapper.componentVM.isAppSetup ).toBe( true );

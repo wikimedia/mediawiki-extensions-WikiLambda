@@ -7,7 +7,7 @@
 <template>
 	<wl-widget-base class="ext-wikilambda-app-function-explorer-widget" data-testid="function-explorer-widget">
 		<template #header>
-			{{ $i18n( 'wikilambda-function-explorer-title' ).text() }}
+			{{ i18n( 'wikilambda-function-explorer-title' ).text() }}
 		</template>
 		<template #header-action>
 			<cdx-button
@@ -15,7 +15,7 @@
 				weight="quiet"
 				class="ext-wikilambda-app-function-explorer-widget__button"
 				:class="{ 'ext-wikilambda-app-function-explorer-widget__button--disabled': resetButtonDisabled }"
-				:aria-label="$i18n( 'wikilambda-function-explorer-accessible-label' ).text()"
+				:aria-label="i18n( 'wikilambda-function-explorer-accessible-label' ).text()"
 				:disabled="resetButtonDisabled"
 				data-testid="function-explorer-reset-button"
 				@click="resetFunction"
@@ -32,7 +32,7 @@
 					ext-wikilambda-app-function-explorer-widget__space-between
 					ext-wikilambda-app-function-explorer-widget__function-name-wrapper">
 					<h5 class="ext-wikilambda-app-function-explorer-widget__heading-no-spacing">
-						{{ $i18n( 'wikilambda-function-explorer-name-title' ) }}
+						{{ i18n( 'wikilambda-function-explorer-name-title' ) }}
 					</h5>
 					<span
 						v-if="implementation === implementationCode"
@@ -47,7 +47,7 @@
 					<wl-z-object-selector
 						:key="currentFunctionZid"
 						:type="functionType"
-						:placeholder="$i18n( 'wikilambda-function-typeselector-label' ).text()"
+						:placeholder="i18n( 'wikilambda-function-typeselector-label' ).text()"
 						:selected-zid="currentFunctionZid"
 						data-testid="function-selector"
 						@select-item="updateSelectedFunction"
@@ -76,7 +76,7 @@
 			<section v-if="functionExists && functionArguments.length">
 				<div class="ext-wikilambda-app-function-explorer-widget__function-inputs-title-wrapper">
 					<h5 class="ext-wikilambda-app-function-explorer-widget__heading-no-spacing">
-						{{ $i18n( 'wikilambda-function-inputs-title' ).text() }}
+						{{ i18n( 'wikilambda-function-inputs-title' ).text() }}
 					</h5>
 				</div>
 
@@ -119,7 +119,7 @@
 
 				<div class="ext-wikilambda-app-function-explorer-widget__function-outputs-title-wrapper">
 					<h5 class="ext-wikilambda-app-function-explorer-widget__heading-no-spacing">
-						{{ $i18n( 'wikilambda-function-definition-output-label' ).text() }}
+						{{ i18n( 'wikilambda-function-definition-output-label' ).text() }}
 					</h5>
 					<span
 						class="ext-wikilambda-app-function-explorer-widget__type
@@ -139,7 +139,7 @@
 					action="progressive"
 					data-testid="button-view-function"
 					@click="navigateToFunction">
-					{{ $i18n( 'wikilambda-function-view-function-button-text' ).text() }}
+					{{ i18n( 'wikilambda-function-view-function-button-text' ).text() }}
 				</cdx-button>
 			</div>
 		</template>
@@ -147,14 +147,12 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapState } = require( 'pinia' );
+const { computed, defineComponent, inject, ref, watch } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
-const clipboardMixin = require( '../../../mixins/clipboardMixin.js' );
 const icons = require( '../../../../lib/icons.json' );
-const typeMixin = require( '../../../mixins/typeMixin.js' );
 const useMainStore = require( '../../../store/index.js' );
+const useClipboard = require( '../../../composables/useClipboard.js' );
 const urlUtils = require( '../../../utils/urlUtils.js' );
 
 // Base components
@@ -173,7 +171,6 @@ module.exports = exports = defineComponent( {
 		'wl-widget-base': WidgetBase,
 		'wl-z-object-selector': ZObjectSelector
 	},
-	mixins: [ typeMixin, clipboardMixin ],
 	props: {
 		edit: {
 			type: Boolean,
@@ -190,109 +187,123 @@ module.exports = exports = defineComponent( {
 			default: null
 		}
 	},
-	data() {
-		return {
-			currentFunctionZid: this.functionZid,
-			functionType: Constants.Z_FUNCTION,
-			implementationCode: Constants.Z_IMPLEMENTATION_CODE,
-			resetIcon: icons.cdxIconHistory
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getUserLangCode',
-		'getStoredObject',
-		'getInputsOfFunctionZid',
-		'getLabelData'
-	] ), {
+	setup( props ) {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
+		const { copyToClipboard, showValueOrCopiedMessage } = useClipboard();
+
+		// Reactive data
+		const currentFunctionZid = ref( props.functionZid );
+		const functionType = Constants.Z_FUNCTION;
+		const implementationCode = Constants.Z_IMPLEMENTATION_CODE;
+		const resetIcon = icons.cdxIconHistory;
+
+		// Computed properties
 		/**
 		 * Returns the LabelData object for the selected function Zid
 		 *
 		 * @return {LabelData}
 		 */
-		functionLabel: function () {
-			return this.getLabelData( this.currentFunctionZid );
-		},
+		const functionLabel = computed( () => store.getLabelData( currentFunctionZid.value ) );
+
 		/**
 		 * Returns the stored function object for the selected function Zid
 		 *
 		 * @return {Object}
 		 */
-		functionObject: function () {
-			return this.getStoredObject( this.currentFunctionZid );
-		},
+		const functionObject = computed( () => store.getStoredObject( currentFunctionZid.value ) );
+
 		/**
 		 * Returns the zid, type and LabelData object for each function
 		 * argument given a selected function Zid
 		 *
 		 * @return {Array}
 		 */
-		functionArguments: function () {
-			const args = this.getInputsOfFunctionZid( this.currentFunctionZid );
+		const functionArguments = computed( () => {
+			const args = store.getInputsOfFunctionZid( currentFunctionZid.value );
 
 			return args.map( ( arg ) => {
 				const key = arg[ Constants.Z_ARGUMENT_KEY ];
 				const type = arg[ Constants.Z_ARGUMENT_TYPE ];
-				const label = this.getLabelData( key );
+				const label = store.getLabelData( key );
 
 				return {
 					key,
-					type,
-					label
+					label,
+					type
 				};
 			} );
-		},
+		} );
+
 		/**
 		 * Returns whether the function exists and has been fetched
 		 *
 		 * @return {boolean}
 		 */
-		functionExists: function () {
-			return Boolean( this.functionObject );
-		},
+		const functionExists = computed( () => Boolean( functionObject.value ) );
+
 		/**
 		 * Returns the url for the selected function
 		 *
 		 * @return {string}
 		 */
-		functionUrl: function () {
-			return urlUtils.generateViewUrl( { langCode: this.getUserLangCode, zid: this.currentFunctionZid } );
-		},
+		const functionUrl = computed( () => urlUtils.generateViewUrl( {
+			langCode: store.getUserLangCode,
+			zid: currentFunctionZid.value
+		} ) );
+
 		/**
 		 * Returns the output type of the selected function
 		 *
 		 * @return {Object|string}
 		 */
-		outputType: function () {
-			return this.functionObject[ Constants.Z_PERSISTENTOBJECT_VALUE ][
-				Constants.Z_FUNCTION_RETURN_TYPE ];
-		},
+		const outputType = computed( () => functionObject.value[ Constants.Z_PERSISTENTOBJECT_VALUE ][
+			Constants.Z_FUNCTION_RETURN_TYPE ] );
+
 		/**
 		 * Returns whether the reset button must be disabled (the
 		 * selected function is the same as the initialized function)
 		 *
 		 * @return {boolean}
 		 */
-		resetButtonDisabled: function () {
-			return this.currentFunctionZid === this.functionZid;
+		const resetButtonDisabled = computed( () => currentFunctionZid.value === props.functionZid );
+
+		// Methods
+		function updateSelectedFunction( zIdSelected ) {
+			currentFunctionZid.value = zIdSelected;
 		}
-	} ),
-	methods: {
-		updateSelectedFunction( zIdSelected ) {
-			this.currentFunctionZid = zIdSelected;
-		},
-		resetFunction() {
-			this.currentFunctionZid = this.functionZid;
-		},
-		navigateToFunction() {
-			window.open( this.functionUrl, '_blank' );
+
+		function resetFunction() {
+			currentFunctionZid.value = props.functionZid;
 		}
-	},
-	watch: {
-		functionZid: {
-			handler() {
-				this.resetFunction();
-			}
+
+		function navigateToFunction() {
+			window.open( functionUrl.value, '_blank' );
 		}
+
+		// Watchers
+		watch( () => props.functionZid, () => {
+			resetFunction();
+		} );
+
+		return {
+			copyToClipboard,
+			currentFunctionZid,
+			functionArguments,
+			functionExists,
+			functionLabel,
+			functionType,
+			functionUrl,
+			implementationCode,
+			navigateToFunction,
+			outputType,
+			resetButtonDisabled,
+			resetFunction,
+			resetIcon,
+			showValueOrCopiedMessage,
+			updateSelectedFunction,
+			i18n
+		};
 	}
 } );
 </script>

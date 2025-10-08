@@ -14,6 +14,18 @@ const LocalizedLabel = require( '../../../../resources/ext.wikilambda.app/compon
 
 describe( 'LocalizedLabel', () => {
 	let store;
+
+	/**
+	 * Helper function to render LocalizedLabel component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderLocalizedLabel( props = {}, options = {} ) {
+		return shallowMount( LocalizedLabel, { props, ...options } );
+	}
+
 	beforeEach( () => {
 		store = useMainStore();
 		store.getUserLangZid = 'Z1002';
@@ -24,21 +36,17 @@ describe( 'LocalizedLabel', () => {
 		const englishLabel = new LabelData( 'Z1K1', 'type', 'Z1002', 'en' );
 
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( LocalizedLabel, {
-				props: {
-					labelData: englishLabel
-				}
+			const wrapper = renderLocalizedLabel( {
+				labelData: englishLabel
 			} );
 
 			expect( wrapper.find( 'label' ).exists() ).toBe( true );
-			expect( wrapper.find( 'label' ).text() ).toContain( 'type' );
+			expect( wrapper.get( 'label' ).text() ).toContain( 'type' );
 		} );
 
 		it( 'hides the language chip', () => {
-			const wrapper = shallowMount( LocalizedLabel, {
-				props: {
-					labelData: englishLabel
-				}
+			const wrapper = renderLocalizedLabel( {
+				labelData: englishLabel
 			} );
 
 			expect( wrapper.find( '.ext-wikilambda-app-localized-label__chip' ).exists() ).toBe( false );
@@ -49,25 +57,21 @@ describe( 'LocalizedLabel', () => {
 		const spanishLabel = new LabelData( 'Z1K1', 'tipo', 'Z1003', 'es' );
 
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( LocalizedLabel, {
-				props: {
-					labelData: spanishLabel
-				}
+			const wrapper = renderLocalizedLabel( {
+				labelData: spanishLabel
 			} );
 
 			expect( wrapper.find( 'label' ).exists() ).toBe( true );
-			expect( wrapper.find( 'label' ).text() ).toContain( 'tipo' );
+			expect( wrapper.get( 'label' ).text() ).toContain( 'tipo' );
 		} );
 
 		it( 'shows a language chip', () => {
-			const wrapper = shallowMount( LocalizedLabel, {
-				props: {
-					labelData: spanishLabel
-				}
+			const wrapper = renderLocalizedLabel( {
+				labelData: spanishLabel
 			} );
 
 			expect( wrapper.find( '.ext-wikilambda-app-localized-label__chip' ).exists() ).toBe( true );
-			expect( wrapper.find( '.ext-wikilambda-app-localized-label__chip' ).text() ).toBe( 'es' );
+			expect( wrapper.get( '.ext-wikilambda-app-localized-label__chip' ).text() ).toBe( 'es' );
 		} );
 	} );
 } );

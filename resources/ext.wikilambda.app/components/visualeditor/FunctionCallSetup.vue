@@ -9,7 +9,7 @@
 	<div class="ext-wikilambda-app-function-call-setup">
 		<wl-function-select
 			v-if="!hasValidFunction"
-			ref="functionSelect"
+			ref="functionSelectComponent"
 			@select="selectFunction"
 		></wl-function-select>
 		<wl-function-input-setup
@@ -22,8 +22,7 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { computed, defineComponent, inject, ref, watch } = require( 'vue' );
 
 const useMainStore = require( '../../store/index.js' );
 const FunctionSelect = require( './FunctionSelect.vue' );
@@ -36,99 +35,91 @@ module.exports = exports = defineComponent( {
 		'wl-function-input-setup': FunctionInputSetup
 	},
 	emits: [ 'function-inputs-updated', 'function-name-updated', 'loading-start', 'loading-end' ],
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'validateVEFunctionId',
-		'getVEFunctionId',
-		'getLabelData'
-	] ), {
+	setup( _, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
+
+		const functionSelectComponent = ref( null );
+
 		/**
 		 * Returns the function id as stored in wikitext,
 		 * or null if function is not yet selected.
 		 *
 		 * @return {string|null}
 		 */
-		functionZid: function () {
-			return this.getVEFunctionId;
-		},
+		const functionZid = computed( () => store.getVEFunctionId );
+
 		/**
 		 * Returns if function in wikitext is selected and properly
 		 * configured (valid)
 		 *
 		 * @return {boolean}
 		 */
-		hasValidFunction: function () {
-			return this.validateVEFunctionId;
-		},
+		const hasValidFunction = computed( () => store.validateVEFunctionId );
+
 		/**
 		 * Returns the LabelData object of the selected valid Function Id,
 		 * or undefined if no valid Function is yet selected.
 		 *
 		 * @return {LabelData|undefined}
 		 */
-		functionLabelData: function () {
-			return this.hasValidFunction ? this.getLabelData( this.functionZid ) : undefined;
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'setVEFunctionId',
-		'setVEFunctionParams'
-	] ), {
+		const functionLabelData = computed( () => hasValidFunction.value ?
+			store.getLabelData( functionZid.value ) :
+			undefined );
+
 		/**
 		 * Set the wikitext function value with the new selected Function ID
 		 * Set function params to blank state
 		 *
 		 * @param {string} value
 		 */
-		selectFunction: function ( value ) {
-			this.setVEFunctionId( value );
-			this.setVEFunctionParams();
-		},
+		const selectFunction = ( value ) => {
+			store.setVEFunctionId( value );
+			store.setVEFunctionParams();
+		};
+
 		/**
 		 * When the function input values are updated,
 		 * emit a 'function-inputs-updated' event to VisualEditor
-		 * for the dialog "done" action button state to be updated.
 		 */
-		updateFunctionInputs: function () {
-			this.$emit( 'function-inputs-updated' );
-		},
+		const updateFunctionInputs = () => {
+			emit( 'function-inputs-updated' );
+		};
+
 		/**
 		 * When we start loading, emit a 'loading-start' event to VisualEditor
-		 * for the dialog to show a loading bar.
 		 */
-		startLoading: function () {
-			this.$emit( 'loading-start' );
-		},
+		const startLoading = () => {
+			emit( 'loading-start' );
+		};
+
 		/**
 		 * When we want to end loading, emit a 'loading-end' event to VisualEditor
-		 * for the dialog to show a loading bar.
 		 */
-		endLoading: function () {
-			this.$emit( 'loading-end' );
-		},
-		/**
-		 * Focus the search input in the function select component
-		 */
-		focusSearchInput: function () {
-			if ( this.$refs.functionSelect ) {
-				this.$refs.functionSelect.focusSearchInput();
-			}
-		}
-	} ),
-	watch: {
+		const endLoading = () => {
+			emit( 'loading-end' );
+		};
+
 		/**
 		 * When function updates and we have the new name,
 		 * emit a 'function-name-updated' event to VisualEditor
-		 * for the dialog title to be changed
-		 *
-		 * @param {LabelData} labelData
 		 */
-		functionLabelData: function ( labelData ) {
+		watch( functionLabelData, ( labelData ) => {
 			const newTitle = ( labelData && !labelData.isUntitled ) ? labelData.label :
-				this.$i18n( 'brackets', this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-no-name' ).text() ).text();
-			if ( this.functionZid ) {
-				this.$emit( 'function-name-updated', newTitle );
+				i18n( 'brackets', i18n( 'wikilambda-visualeditor-wikifunctionscall-no-name' ).text() ).text();
+			if ( functionZid.value ) {
+				emit( 'function-name-updated', newTitle );
 			}
-		}
+		} );
+
+		return {
+			endLoading,
+			functionSelectComponent,
+			hasValidFunction,
+			selectFunction,
+			startLoading,
+			updateFunctionInputs
+		};
 	}
 } );
 </script>

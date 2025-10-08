@@ -8,7 +8,7 @@
 <template>
 	<div class="ext-wikilambda-app-expandable-description">
 		<span
-			ref="descriptionRef"
+			ref="descriptionComponent"
 			class="ext-wikilambda-app-expandable-description__text"
 			:class="{ 'ext-wikilambda-app-expandable-description__text--expanded': isExpanded }"
 			:lang="description.langCode"
@@ -23,14 +23,14 @@
 			@click.stop="toggleExpanded"
 		>
 			{{ isExpanded ?
-				$i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description' ) :
-				$i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description' ) }}
+				i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description' ) :
+				i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description' ) }}
 		</button>
 	</div>
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
+const { defineComponent, inject, onBeforeUnmount, onMounted, ref, watch } = require( 'vue' );
 const { throttle } = require( '../../utils/miscUtils.js' );
 const LabelData = require( '../../store/classes/LabelData.js' );
 
@@ -42,53 +42,62 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	data: function () {
-		return {
-			isExpanded: false,
-			isExpandable: false,
-			throttledResizeHandler: null
-		};
-	},
-	methods: {
+	setup( props ) {
+		const i18n = inject( 'i18n' );
+		const isExpanded = ref( false );
+		const isExpandable = ref( false );
+		const throttledResizeHandler = ref( null );
+		const descriptionComponent = ref( null );
+
 		/**
 		 * Checks if the description is clamped and updates `isExpandable`.
 		 */
-		checkClamped: function () {
-			const element = this.$refs.descriptionRef;
-			this.isExpandable = element && element.scrollHeight > element.clientHeight;
-		},
+		const checkClamped = () => {
+			const element = descriptionComponent.value;
+			isExpandable.value = element && element.scrollHeight > element.clientHeight;
+		};
+
 		/**
 		 * Toggles the expanded state of the description.
 		 */
-		toggleExpanded: function () {
-			this.isExpanded = !this.isExpanded;
-		}
-	},
-	watch: {
+		const toggleExpanded = () => {
+			isExpanded.value = !isExpanded.value;
+		};
+
 		/**
 		 * Re-checks clamping when the description changes.
 		 * This is needed because on mounted the scrollHeight and clientHeight might be 0
 		 */
-		description: function () {
-			this.checkClamped();
-		}
-	},
-	/**
-	 * Sets up resize handling and checks clamping on mount.
-	 */
-	mounted: function () {
-		// Use a small delay to ensure the DOM is fully rendered
-		setTimeout( () => {
-			this.checkClamped();
-		}, 10 );
-		this.throttledResizeHandler = throttle( this.checkClamped, 200 );
-		window.addEventListener( 'resize', this.throttledResizeHandler );
-	},
-	/**
-	 * Cleans up resize handling before unmounting.
-	 */
-	beforeUnmount: function () {
-		window.removeEventListener( 'resize', this.throttledResizeHandler );
+		watch( () => props.description, () => {
+			checkClamped();
+		} );
+
+		/**
+		 * Sets up resize handling and checks clamping on mount.
+		 */
+		onMounted( () => {
+			// Use a small delay to ensure the DOM is fully rendered
+			setTimeout( () => {
+				checkClamped();
+			}, 10 );
+			throttledResizeHandler.value = throttle( checkClamped, 200 );
+			window.addEventListener( 'resize', throttledResizeHandler.value );
+		} );
+
+		/**
+		 * Cleans up resize handling before unmounting.
+		 */
+		onBeforeUnmount( () => {
+			window.removeEventListener( 'resize', throttledResizeHandler.value );
+		} );
+
+		return {
+			descriptionComponent,
+			isExpandable,
+			isExpanded,
+			toggleExpanded,
+			i18n
+		};
 	}
 } );
 </script>
@@ -127,11 +136,13 @@ module.exports = exports = defineComponent( {
 		overflow: hidden;
 		-webkit-box-orient: vertical;
 		-webkit-line-clamp: 2;
+		line-clamp: 2;
 		display: -webkit-box;
 		line-height: var( --line-height-current );
 
 		&--expanded {
 			-webkit-line-clamp: unset;
+			line-clamp: unset;
 			display: block;
 
 			& + .ext-wikilambda-app-expandable-description__toggle-button {

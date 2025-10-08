@@ -9,6 +9,13 @@ const { waitFor } = require( '@testing-library/vue' );
 describe( 'FunctionSelect', () => {
 	let store;
 
+	function renderFunctionSelect( props = {}, options = {} ) {
+		return shallowMount( FunctionSelect, {
+			props,
+			...options
+		} );
+	}
+
 	beforeEach( () => {
 		store = useMainStore();
 		store.getSuggestedFunctions = [ 'Z1', 'Z2' ];
@@ -33,12 +40,12 @@ describe( 'FunctionSelect', () => {
 	} );
 
 	it( 'renders without errors', () => {
-		const wrapper = shallowMount( FunctionSelect );
+		const wrapper = renderFunctionSelect();
 		expect( wrapper.find( '.ext-wikilambda-app-function-select' ).exists() ).toBe( true );
 	} );
 
 	it( 'shows suggested functions when search term is empty', () => {
-		const wrapper = shallowMount( FunctionSelect );
+		const wrapper = renderFunctionSelect();
 
 		expect( wrapper.find( '.ext-wikilambda-app-function-select__title' ).exists() ).toBe( true );
 
@@ -52,7 +59,7 @@ describe( 'FunctionSelect', () => {
 		store.getSearchTerm = 'Function';
 		store.getLookupResults = [ { zid: 'Z3', label: 'Function 3', language: 'en' } ];
 
-		const wrapper = shallowMount( FunctionSelect );
+		const wrapper = renderFunctionSelect();
 
 		const searchInput = wrapper.findComponent( { name: 'cdx-search-input' } );
 		searchInput.vm.$emit( 'update:modelValue', 'Function' );
@@ -78,7 +85,7 @@ describe( 'FunctionSelect', () => {
 		store.getSearchTerm = 'Function';
 		store.getLookupResults = [ { zid: 'Z3', label: 'Function 3', language: 'en' } ];
 
-		const wrapper = shallowMount( FunctionSelect );
+		const wrapper = renderFunctionSelect();
 
 		const searchInput = wrapper.findComponent( { name: 'cdx-search-input' } );
 		searchInput.vm.$emit( 'update:modelValue', 'Function' );
@@ -90,7 +97,7 @@ describe( 'FunctionSelect', () => {
 	it( 'clears lookupResults when search term is cleared', async () => {
 		store.getSearchTerm = 'Function';
 
-		const wrapper = shallowMount( FunctionSelect );
+		const wrapper = renderFunctionSelect();
 
 		const searchInput = wrapper.findComponent( { name: 'cdx-search-input' } );
 
@@ -100,10 +107,15 @@ describe( 'FunctionSelect', () => {
 		expect( store.setLookupResults ).toHaveBeenCalledWith( [] );
 	} );
 
-	it( 'does not emit select event for invalid Zids', () => {
-		const wrapper = shallowMount( FunctionSelect );
+	it( 'does not emit select event for invalid Zids', async () => {
+		store.getSuggestedFunctions = [ 'invalidZid' ];
+		store.getLabelData = createLabelDataMock( { invalidZid: 'Invalid function' } );
+		store.getDescription = createLabelDataMock( { invalidZid: 'Description for invalid function' } );
 
-		wrapper.vm.selectFunction( 'invalidZid' );
+		const wrapper = renderFunctionSelect();
+
+		const item = wrapper.getComponent( { name: 'wl-function-select-item' } );
+		await item.trigger( 'click' );
 
 		expect( wrapper.emitted().select ).toBeFalsy();
 	} );

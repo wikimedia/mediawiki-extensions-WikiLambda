@@ -14,6 +14,29 @@ const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store
 describe( 'FunctionEditorLanguage', () => {
 	let store;
 
+	/**
+	 * Helper function to render FunctionEditorLanguage component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderFunctionEditorLanguage( props = {}, options = {} ) {
+		const defaultProps = { zLanguage: 'Z1002' };
+		const defaultOptions = {
+			global: {
+				stubs: {
+					WlFunctionEditorField: false,
+					...options?.stubs
+				}
+			}
+		};
+		return shallowMount( FunctionEditorLanguage, {
+			props: { ...defaultProps, ...props },
+			...defaultOptions
+		} );
+	}
+
 	beforeEach( () => {
 		store = useMainStore();
 		store.getMultilingualDataLanguages = createGettersWithFunctionsMock( [ 'Z1002', 'Z1004' ] );
@@ -21,18 +44,12 @@ describe( 'FunctionEditorLanguage', () => {
 
 	describe( 'function editor language block', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( FunctionEditorLanguage, {
-				props: { zLanguage: 'Z1002' },
-				global: { stubs: { WlFunctionEditorField: false } }
-			} );
+			const wrapper = renderFunctionEditorLanguage();
 			expect( wrapper.find( '.ext-wikilambda-app-function-editor-language' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders the selector with initial value', () => {
-			const wrapper = shallowMount( FunctionEditorLanguage, {
-				props: { zLanguage: 'Z1002' },
-				global: { stubs: { WlFunctionEditorField: false } }
-			} );
+			const wrapper = renderFunctionEditorLanguage();
 
 			const selector = wrapper.findComponent( { name: 'wl-z-object-selector' } );
 			expect( selector.props( 'selectedZid' ) ).toBe( 'Z1002' );
@@ -40,10 +57,7 @@ describe( 'FunctionEditorLanguage', () => {
 		} );
 
 		it( 'renders the selector with no value', () => {
-			const wrapper = shallowMount( FunctionEditorLanguage, {
-				props: { zLanguage: '' },
-				global: { stubs: { WlFunctionEditorField: false } }
-			} );
+			const wrapper = renderFunctionEditorLanguage( { zLanguage: '' } );
 
 			const selector = wrapper.findComponent( { name: 'wl-z-object-selector' } );
 			expect( selector.props( 'selectedZid' ) ).toBe( '' );
@@ -51,17 +65,13 @@ describe( 'FunctionEditorLanguage', () => {
 		} );
 
 		it( 'emits a language changed event whens selecting a new language', async () => {
-			const wrapper = shallowMount( FunctionEditorLanguage, {
-				props: { zLanguage: '' },
-				global: { stubs: { WlFunctionEditorField: false } }
-			} );
+			const wrapper = renderFunctionEditorLanguage( { zLanguage: '' } );
 
 			const selector = wrapper.findComponent( { name: 'wl-z-object-selector' } );
 			expect( selector.props( 'selectedZid' ) ).toBe( '' );
 
 			// ACT: select item
 			selector.vm.$emit( 'select-item', 'Z1002' );
-			await wrapper.vm.$nextTick();
 
 			// ASSERT: language component emits a language changed event
 			expect( wrapper.emitted() ).toHaveProperty( 'language-changed', [ [ 'Z1002' ] ] );

@@ -10,6 +10,25 @@ const { createGettersWithFunctionsMock } = require( '../../helpers/getterHelpers
 describe( 'FunctionInputPreview', () => {
 	let store;
 
+	/**
+	 * Helper function to render FunctionInputPreview component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderFunctionInputPreview( props = {}, options = {} ) {
+		const defaultOptions = {
+			global: {
+				stubs: { ...options?.stubs }
+			}
+		};
+		return shallowMount( FunctionInputPreview, {
+			props,
+			...defaultOptions
+		} );
+	}
+
 	const functionZid = 'Z30000';
 	const rendererZid = 'Z30010';
 	const parserZid = 'Z30020';
@@ -67,20 +86,17 @@ describe( 'FunctionInputPreview', () => {
 
 	it( 'renders the component without errors', () => {
 		// Test to ensure the component renders correctly
-		const wrapper = shallowMount( FunctionInputPreview );
+		const wrapper = renderFunctionInputPreview();
 		expect( wrapper.find( '.ext-wikilambda-app-function-input-preview' ).exists() ).toBe( true );
 	} );
 
 	it( 'executes a function call with a string parameter and displays the result', async () => {
 		// Test for a function call with a simple string parameter
-		const wrapper = shallowMount( FunctionInputPreview, {
-			props: {
-				payload: { functionZid, params: [ { value: 'a', type: 'Z6' } ] }
-			},
-			global: {
-				stubs: {
-					'cdx-accordion': false
-				}
+		const wrapper = renderFunctionInputPreview( {
+			payload: { functionZid, params: [ { value: 'a', type: 'Z6' } ] }
+		}, {
+			stubs: {
+				'cdx-accordion': false
 			}
 		} );
 
@@ -101,20 +117,17 @@ describe( 'FunctionInputPreview', () => {
 
 		// Wait for the result and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
-		expect( wrapper.find( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( 'some response' );
+		expect( wrapper.get( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( 'some response' );
 	} );
 
 	it( 'executes a function call with an enum parameter and displays the result', async () => {
 		const enumType = 'Z50000';
 		const enumValue = 'Z50001';
-		const wrapper = shallowMount( FunctionInputPreview, {
-			props: {
-				payload: { functionZid, params: [ { value: enumValue, type: enumType } ] }
-			},
-			global: {
-				stubs: {
-					'cdx-accordion': false
-				}
+		const wrapper = renderFunctionInputPreview( {
+			payload: { functionZid, params: [ { value: enumValue, type: enumType } ] }
+		}, {
+			stubs: {
+				'cdx-accordion': false
 			}
 		} );
 
@@ -139,18 +152,15 @@ describe( 'FunctionInputPreview', () => {
 
 		// Wait for the result and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
-		expect( wrapper.find( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( 'some response' );
+		expect( wrapper.get( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( 'some response' );
 	} );
 
 	it( 'executes a function call with an built-in enum parameter (boolean) and displays the result', async () => {
-		const wrapper = shallowMount( FunctionInputPreview, {
-			props: {
-				payload: { functionZid, params: [ { value: 'Z41', type: 'Z40' } ] }
-			},
-			global: {
-				stubs: {
-					'cdx-accordion': false
-				}
+		const wrapper = renderFunctionInputPreview( {
+			payload: { functionZid, params: [ { value: 'Z41', type: 'Z40' } ] }
+		}, {
+			stubs: {
+				'cdx-accordion': false
 			}
 		} );
 
@@ -178,20 +188,17 @@ describe( 'FunctionInputPreview', () => {
 
 		// Wait for the result and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
-		expect( wrapper.find( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( 'some response' );
+		expect( wrapper.get( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( 'some response' );
 	} );
 
 	it( 'executes a function call with a parameter requiring a parser and displays the result', async () => {
 		// Test for a function call with a parameter that requires a parser
 		store.getParserZid = createGettersWithFunctionsMock( parserZid );
-		const wrapper = shallowMount( FunctionInputPreview, {
-			props: {
-				payload: { functionZid, params: [ { value: '4', type: 'Z40010' } ] }
-			},
-			global: {
-				stubs: {
-					'cdx-accordion': false
-				}
+		const wrapper = renderFunctionInputPreview( {
+			payload: { functionZid, params: [ { value: '4', type: 'Z40010' } ] }
+		}, {
+			stubs: {
+				'cdx-accordion': false
 			}
 		} );
 
@@ -221,20 +228,17 @@ describe( 'FunctionInputPreview', () => {
 
 		// Wait for the result and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
-		expect( wrapper.find( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( 'some response' );
+		expect( wrapper.get( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( 'some response' );
 	} );
 
 	it( 'executes a function call for a function with a renderer and displays the result', async () => {
 		// Test for a function call with a renderer
 		store.getRendererZid = createGettersWithFunctionsMock( rendererZid );
-		const wrapper = shallowMount( FunctionInputPreview, {
-			props: {
-				payload: { functionZid, params: [ { value: 'renderedValue', type: 'Z6' } ] }
-			},
-			global: {
-				stubs: {
-					'cdx-accordion': false
-				}
+		const wrapper = renderFunctionInputPreview( {
+			payload: { functionZid, params: [ { value: 'renderedValue', type: 'Z6' } ] }
+		}, {
+			stubs: {
+				'cdx-accordion': false
 			}
 		} );
 
@@ -264,7 +268,7 @@ describe( 'FunctionInputPreview', () => {
 
 		// Wait for the result and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
-		expect( wrapper.find( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( 'some response' );
+		expect( wrapper.get( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( 'some response' );
 	} );
 
 	it( 'executes a function call with an empty date and assigns default value', async () => {
@@ -274,14 +278,11 @@ describe( 'FunctionInputPreview', () => {
 
 		store.getRendererZid = createGettersWithFunctionsMock( rendererZid );
 		store.getParserZid = createGettersWithFunctionsMock( parserZid );
-		const wrapper = shallowMount( FunctionInputPreview, {
-			props: {
-				payload: { functionZid, params: [ { value: '', type: Constants.Z_GREGORIAN_CALENDAR_DATE } ] }
-			},
-			global: {
-				stubs: {
-					'cdx-accordion': false
-				}
+		const wrapper = renderFunctionInputPreview( {
+			payload: { functionZid, params: [ { value: '', type: Constants.Z_GREGORIAN_CALENDAR_DATE } ] }
+		}, {
+			stubs: {
+				'cdx-accordion': false
 			}
 		} );
 
@@ -320,7 +321,7 @@ describe( 'FunctionInputPreview', () => {
 
 		// Wait for the result and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
-		expect( wrapper.find( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( 'some response' );
+		expect( wrapper.get( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( 'some response' );
 
 		// Reset real timers
 		jest.useRealTimers();
@@ -329,14 +330,11 @@ describe( 'FunctionInputPreview', () => {
 	it( 'handles an unsuccessful function call and displays an error message', async () => {
 		// Test for handling an unsuccessful function call
 		data = '{"Z1K1":"Z22","Z22K1":"Z24"}';
-		const wrapper = shallowMount( FunctionInputPreview, {
-			props: {
-				payload: { functionZid, params: [] }
-			},
-			global: {
-				stubs: {
-					'cdx-accordion': false
-				}
+		const wrapper = renderFunctionInputPreview( {
+			payload: { functionZid, params: [] }
+		}, {
+			stubs: {
+				'cdx-accordion': false
 			}
 		} );
 
@@ -364,16 +362,13 @@ describe( 'FunctionInputPreview', () => {
 
 	it( 'retries the function call when the retry button is clicked', async () => {
 		// Test for retrying a function call
-		const wrapper = shallowMount( FunctionInputPreview, {
-			props: {
-				payload: { functionZid, params: [ { value: 'a', type: 'Z6' } ] }
-			},
-			global: {
-				stubs: {
-					'cdx-accordion': false,
-					'cdx-button': false,
-					'cdx-icon': false
-				}
+		const wrapper = renderFunctionInputPreview( {
+			payload: { functionZid, params: [ { value: 'a', type: 'Z6' } ] }
+		}, {
+			stubs: {
+				'cdx-accordion': false,
+				'cdx-button': false,
+				'cdx-icon': false
 			}
 		} );
 
@@ -384,7 +379,7 @@ describe( 'FunctionInputPreview', () => {
 
 		// Verify loading state and API call
 		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( true );
-		expect( wrapper.find( '.cdx-accordion__action' ).text() ).toBe( 'Cancel' );
+		expect( wrapper.get( '.cdx-accordion__action' ).text() ).toBe( 'Cancel' );
 		expect( postMock ).toHaveBeenCalledWith( {
 			action: 'wikilambda_function_call',
 			format: 'json',
@@ -395,7 +390,7 @@ describe( 'FunctionInputPreview', () => {
 
 		// Wait for the result and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
-		expect( wrapper.find( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( 'some response' );
+		expect( wrapper.get( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( 'some response' );
 
 		// Simulate opening the accordion again (somehow it gets closed (rerender?))
 		await accordion.vm.$emit( 'update:modelValue', true );
@@ -417,30 +412,29 @@ describe( 'FunctionInputPreview', () => {
 	} );
 
 	it( 'cancels the function call and aborts the API call when the cancel button is clicked', async () => {
-		const wrapper = shallowMount( FunctionInputPreview, {
-			props: {
-				payload: { functionZid, params: [ { value: 'a', type: 'Z6' } ] }
-			},
-			global: {
-				stubs: {
-					'cdx-accordion': false,
-					'cdx-button': false
-				}
+		const wrapper = renderFunctionInputPreview( {
+			payload: { functionZid, params: [ { value: 'a', type: 'Z6' } ] }
+		}, {
+			stubs: {
+				'cdx-accordion': false,
+				'cdx-button': false
 			}
 		} );
 
 		// Open the accordion to trigger the API call
 		const accordion = wrapper.findComponent( { name: 'cdx-accordion' } );
 		await accordion.vm.$emit( 'update:modelValue', true );
-		expect( wrapper.vm.isLoading ).toBe( true );
+
+		// Check that loading indicator is shown
+		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( true );
 
 		// Click the cancel button
 		const actionButton = wrapper.find( '.cdx-accordion__action' );
 		await actionButton.trigger( 'click' );
 
 		expect( global.abortSpy ).toHaveBeenCalled();
-		expect( wrapper.vm.isCancelled ).toBe( true );
-		expect( wrapper.vm.isLoading ).toBe( false );
+		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false );
+		expect( wrapper.get( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( 'some response' );
 		expect( postMock ).toHaveBeenCalledTimes( 1 );
 	} );
 
@@ -448,15 +442,12 @@ describe( 'FunctionInputPreview', () => {
 		// Test for handling a failed API call
 		postMock = jest.fn( () => Promise.reject( new Error( 'API call failed' ) ) );
 
-		const wrapper = shallowMount( FunctionInputPreview, {
-			props: {
-				payload: { functionZid: 'Z123', params: [ { value: 'a', type: 'Z6' } ] }
-			},
-			global: {
-				stubs: {
-					'cdx-accordion': false,
-					'cdx-message': false
-				}
+		const wrapper = renderFunctionInputPreview( {
+			payload: { functionZid: 'Z123', params: [ { value: 'a', type: 'Z6' } ] }
+		}, {
+			stubs: {
+				'cdx-accordion': false,
+				'cdx-message': false
 			}
 		} );
 
@@ -479,14 +470,11 @@ describe( 'FunctionInputPreview', () => {
 
 	it( 'does not process a function call if the payload parameters remain unchanged', async () => {
 		// Test to ensure no function call is made if the payload parameters remain unchanged
-		const wrapper = shallowMount( FunctionInputPreview, {
-			props: {
-				payload: { functionZid, params: [ { value: 'a', type: 'Z6' } ] }
-			},
-			global: {
-				stubs: {
-					'cdx-accordion': false
-				}
+		const wrapper = renderFunctionInputPreview( {
+			payload: { functionZid, params: [ { value: 'a', type: 'Z6' } ] }
+		}, {
+			stubs: {
+				'cdx-accordion': false
 			}
 		} );
 
@@ -507,21 +495,18 @@ describe( 'FunctionInputPreview', () => {
 
 	it( 'executes a function call with multiple parameters including empty, null, and undefined values', async () => {
 		// Test for a function call with multiple empty parameters
-		const wrapper = shallowMount( FunctionInputPreview, {
-			props: {
-				payload: {
-					functionZid,
-					params: [
-						{ value: '', type: 'Z6' }, // Empty string
-						{ value: null, type: 'Z6' }, // Null value
-						{ value: undefined, type: 'Z6' } // Undefined value
-					]
-				}
-			},
-			global: {
-				stubs: {
-					'cdx-accordion': false
-				}
+		const wrapper = renderFunctionInputPreview( {
+			payload: {
+				functionZid,
+				params: [
+					{ value: '', type: 'Z6' }, // Empty string
+					{ value: null, type: 'Z6' }, // Null value
+					{ value: undefined, type: 'Z6' } // Undefined value
+				]
+			}
+		}, {
+			stubs: {
+				'cdx-accordion': false
 			}
 		} );
 
@@ -548,7 +533,7 @@ describe( 'FunctionInputPreview', () => {
 
 		// Wait for the result and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
-		expect( wrapper.find( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( 'some response' );
+		expect( wrapper.get( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( 'some response' );
 	} );
 
 	it( 'executes a function call with Z89/HTML fragment and displays the HTML fragment value', async () => {
@@ -572,14 +557,11 @@ describe( 'FunctionInputPreview', () => {
 			post: postMock
 		} ) );
 
-		const wrapper = shallowMount( FunctionInputPreview, {
-			props: {
-				payload: { functionZid, params: [ { value: 'a', type: 'Z6' } ] }
-			},
-			global: {
-				stubs: {
-					'cdx-accordion': false
-				}
+		const wrapper = renderFunctionInputPreview( {
+			payload: { functionZid, params: [ { value: 'a', type: 'Z6' } ] }
+		}, {
+			stubs: {
+				'cdx-accordion': false
 			}
 		} );
 
@@ -600,23 +582,20 @@ describe( 'FunctionInputPreview', () => {
 
 		// Wait for the result and verify it is displayed as the HTML fragment value
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
-		expect( wrapper.find( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( '<b>HTML Fragment</b>' );
+		expect( wrapper.get( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( '<b>HTML Fragment</b>' );
 	} );
 
 	it( 'executes a function call with a wikidata items and item references', async () => {
-		const wrapper = shallowMount( FunctionInputPreview, {
-			props: {
-				payload: { functionZid, params: [
-					// Wikidata item
-					{ value: 'Q144', type: 'Z6001' },
-					// Wikidata item reference
-					{ value: 'Q144', type: 'Z6091' }
-				] }
-			},
-			global: {
-				stubs: {
-					'cdx-accordion': false
-				}
+		const wrapper = renderFunctionInputPreview( {
+			payload: { functionZid, params: [
+				// Wikidata item
+				{ value: 'Q144', type: 'Z6001' },
+				// Wikidata item reference
+				{ value: 'Q144', type: 'Z6091' }
+			] }
+		}, {
+			stubs: {
+				'cdx-accordion': false
 			}
 		} );
 
@@ -650,23 +629,20 @@ describe( 'FunctionInputPreview', () => {
 
 		// Wait for the result and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
-		expect( wrapper.find( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( 'some response' );
+		expect( wrapper.get( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( 'some response' );
 	} );
 
 	it( 'executes a function call with a wikidata lexemes and lexeme references', async () => {
-		const wrapper = shallowMount( FunctionInputPreview, {
-			props: {
-				payload: { functionZid, params: [
-					// Wikidata lexeme
-					{ value: 'L333333', type: 'Z6005' },
-					// Wikidata lexeme reference
-					{ value: 'L333333', type: 'Z6095' }
-				] }
-			},
-			global: {
-				stubs: {
-					'cdx-accordion': false
-				}
+		const wrapper = renderFunctionInputPreview( {
+			payload: { functionZid, params: [
+				// Wikidata lexeme
+				{ value: 'L333333', type: 'Z6005' },
+				// Wikidata lexeme reference
+				{ value: 'L333333', type: 'Z6095' }
+			] }
+		}, {
+			stubs: {
+				'cdx-accordion': false
 			}
 		} );
 
@@ -700,6 +676,6 @@ describe( 'FunctionInputPreview', () => {
 
 		// Wait for the result and verify it is displayed
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
-		expect( wrapper.find( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( 'some response' );
+		expect( wrapper.get( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( 'some response' );
 	} );
 } );

@@ -17,6 +17,29 @@ const langLabelData = new LabelData( 'Z1002', 'English', 'Z1002', 'en', 'ltr' );
 describe( 'FunctionEditorDescription', () => {
 	let store;
 
+	/**
+	 * Helper function to render FunctionEditorDescription component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderFunctionEditorDescription( props = {}, options = {} ) {
+		const defaultProps = { zLanguage: 'Z1002', langLabelData };
+		const defaultOptions = {
+			global: {
+				stubs: {
+					WlFunctionEditorField: false,
+					...options?.stubs
+				}
+			}
+		};
+		return shallowMount( FunctionEditorDescription, {
+			props: { ...defaultProps, ...props },
+			...defaultOptions
+		} );
+	}
+
 	beforeEach( () => {
 		store = useMainStore();
 		store.getZPersistentDescription = createGettersWithFunctionsMock( {
@@ -26,19 +49,13 @@ describe( 'FunctionEditorDescription', () => {
 	} );
 
 	it( 'renders without errors', () => {
-		const wrapper = shallowMount( FunctionEditorDescription, {
-			props: { zLanguage: 'Z1002', langLabelData },
-			global: { stubs: { WlFunctionEditorField: false } }
-		} );
+		const wrapper = renderFunctionEditorDescription();
 
-		expect( wrapper.find( '.ext-wikilambda-app-function-editor-description' ).exists() ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-app-function-editor-description' ).exists() ).toBe( true );
 	} );
 
 	it( 'renders an initialized input box', () => {
-		const wrapper = shallowMount( FunctionEditorDescription, {
-			props: { zLanguage: 'Z1002', langLabelData },
-			global: { stubs: { WlFunctionEditorField: false } }
-		} );
+		const wrapper = renderFunctionEditorDescription();
 
 		const input = wrapper.findComponent( { name: 'cdx-text-area' } );
 		expect( input.props( 'modelValue' ) ).toBe( 'Function description' );
@@ -46,10 +63,7 @@ describe( 'FunctionEditorDescription', () => {
 
 	it( 'renders an input box when there is no description', () => {
 		store.getZPersistentDescription = createGettersWithFunctionsMock();
-		const wrapper = shallowMount( FunctionEditorDescription, {
-			props: { zLanguage: 'Z1002', langLabelData },
-			global: { stubs: { WlFunctionEditorField: false } }
-		} );
+		const wrapper = renderFunctionEditorDescription();
 
 		const input = wrapper.findComponent( { name: 'cdx-text-area' } );
 		expect( input.props( 'modelValue' ) ).toBe( '' );
@@ -57,10 +71,7 @@ describe( 'FunctionEditorDescription', () => {
 
 	describe( 'on input', () => {
 		it( 'removes the description object if new value is empty string', async () => {
-			const wrapper = shallowMount( FunctionEditorDescription, {
-				props: { zLanguage: 'Z1002', langLabelData },
-				global: { stubs: { WlFunctionEditorField: false } }
-			} );
+			const wrapper = renderFunctionEditorDescription();
 
 			// ACT: Change value of name input
 			const input = wrapper.findComponent( { name: 'cdx-text-area' } );
@@ -79,10 +90,7 @@ describe( 'FunctionEditorDescription', () => {
 		} );
 
 		it( 'changes the description value if it already has a description object', async () => {
-			const wrapper = shallowMount( FunctionEditorDescription, {
-				props: { zLanguage: 'Z1002', langLabelData },
-				global: { stubs: { WlFunctionEditorField: false } }
-			} );
+			const wrapper = renderFunctionEditorDescription();
 
 			// ACT: Change value of name input
 			const input = wrapper.findComponent( { name: 'cdx-text-area' } );
@@ -103,10 +111,7 @@ describe( 'FunctionEditorDescription', () => {
 		it( 'adds a new monolingual string if there is no description object', async () => {
 			store.getZPersistentDescription = createGettersWithFunctionsMock( undefined );
 
-			const wrapper = shallowMount( FunctionEditorDescription, {
-				props: { zLanguage: 'Z1002', langLabelData },
-				global: { stubs: { WlFunctionEditorField: false } }
-			} );
+			const wrapper = renderFunctionEditorDescription();
 
 			// ACT: Change value of name input
 			const input = wrapper.findComponent( { name: 'cdx-text-area' } );

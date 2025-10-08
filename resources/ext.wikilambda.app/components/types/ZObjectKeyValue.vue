@@ -66,14 +66,13 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { computed, defineComponent, inject, onBeforeUnmount, ref, watch } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
 const useMainStore = require( '../../store/index.js' );
-const errorMixin = require( '../../mixins/errorMixin.js' );
-const typeMixin = require( '../../mixins/typeMixin.js' );
-const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
+const useError = require( '../../composables/useError.js' );
+const useType = require( '../../composables/useType.js' );
+const useZObject = require( '../../composables/useZObject.js' );
 const LabelData = require( '../../store/classes/LabelData.js' );
 const { canonicalToHybrid } = require( '../../utils/schemata.js' );
 
@@ -136,7 +135,6 @@ module.exports = exports = defineComponent( {
 		'wl-wikidata-property': WikidataProperty,
 		'wl-wikidata-lexeme-sense': WikidataLexemeSense
 	},
-	mixins: [ errorMixin, typeMixin, zobjectMixin ],
 	props: {
 		keyPath: {
 			type: String,
@@ -175,53 +173,53 @@ module.exports = exports = defineComponent( {
 			default: false
 		}
 	},
-	data: function () {
-		return {
-			/**
-			 * Expanded is a property of the key-value and it
-			 * passes down only into its direct child. Every
-			 * ZObjectKeyValue component sets its data property
-			 * 'expanded' independently.
-			 */
-			expanded: this.defaultExpanded,
-			/**
-			 * Track whether this component has been auto-expanded due to errors.
-			 * This prevents forcing expansion after the user manually collapses.
-			 */
-			hasBeenAutoExpanded: false
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'isIdentityKey',
-		'isCreateNewPage',
-		'hasRenderer',
-		'hasParser',
-		'getCurrentZObjectId',
-		'getLabelData',
-		'getExpectedTypeOfKey',
-		'getZObjectByKeyPath',
-		'isWikidataEnum',
-		'isInMultilingualStringList'
-	] ), {
+	emits: [ 'set-value', 'set-type', 'add-list-item', 'typed-list-type-changed' ],
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
+		const { typeToString, isKeyTypedListItem, isKeyTypedListType } = useType();
+		const {
+			getZKeyIsIdentity,
+			getZMonolingualLangValue,
+			getZObjectType,
+			isWikidataFetch,
+			key,
+			parentKey,
+			getZFunctionCallFunctionId
+		} = useZObject( { keyPath: props.keyPath } );
+		const { hasFieldErrors, hasChildErrors } = useError( { keyPath: props.keyPath } );
 
-		// ==============
-		// Key properties
-		// ==============
+		/**
+		 * Expanded is a property of the key-value and it
+		 * passes down only into its direct child. Every
+		 * ZObjectKeyValue component sets its data property
+		 * 'expanded' independently.
+		 */
+		const expanded = ref( props.defaultExpanded );
 
+		// Computed properties
+		/**
+		 * Track whether this component has been auto-expanded due to errors.
+		 * This prevents forcing expansion after the user manually collapses.
+		 */
+		const hasBeenAutoExpanded = ref( false );
+
+		// Computed properties
 		/**
 		 * Returns whether to show the key label or not
 		 *
 		 * @return {boolean}
 		 */
-		showKeyLabel: function () {
-			if ( this.skipKey ) {
+		const showKeyLabel = computed( () => {
+			if ( props.skipKey ) {
 				return false;
 			}
-			if ( this.isKeyTypedListItem( this.key ) ) {
-				return this.edit || this.expanded;
+			if ( isKeyTypedListItem( key.value ) ) {
+				return props.edit || expanded.value;
 			}
 			return true;
-		},
+		} );
+
 		/**
 		 * Returns the label data object of the given key.
 		 * * If the key is a numeral, return hardcoded typed list labels
@@ -229,29 +227,25 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {LabelData}
 		 */
-		keyLabel: function () {
+		const keyLabel = computed( () => {
 			// since the FE represents typed lists in canonical form, we need to hardcode typed list keys
-			if ( this.isKeyTypedListItem( this.key ) ) {
+			if ( isKeyTypedListItem( key.value ) ) {
 				// For multilingual strings, use language name as label or "No language selected" for blanks
-				if ( this.isInMultilingualStringList( this.keyPath ) ) {
-					const langZid = this.getZMonolingualLangValue( this.objectValue );
+				if ( store.isInMultilingualStringList( props.keyPath ) ) {
+					const langZid = getZMonolingualLangValue( props.objectValue );
 					if ( langZid ) {
-						return this.getLabelData( langZid );
+						return store.getLabelData( langZid );
 					} else {
-						return LabelData.fromString( this.$i18n( 'wikilambda-editor-monolingual-string-nolanguage' ).text() );
+						return LabelData.fromString( i18n( 'wikilambda-editor-monolingual-string-nolanguage' ).text() );
 					}
 				}
-				return LabelData.fromString( this.$i18n( 'wikilambda-list-item-label', this.key ).text() );
+				return LabelData.fromString( i18n( 'wikilambda-list-item-label', key.value ).text() );
 			}
-			if ( this.isKeyTypedListType( this.key ) ) {
-				return LabelData.fromString( this.$i18n( 'wikilambda-list-items-type-label' ).text() );
+			if ( isKeyTypedListType( key.value ) ) {
+				return LabelData.fromString( i18n( 'wikilambda-list-items-type-label' ).text() );
 			}
-			return this.getLabelData( this.key );
-		},
-
-		// ===============
-		// Type properties
-		// ===============
+			return store.getLabelData( key.value );
+		} );
 
 		/**
 		 * Returns the type of the object represented in this node,
@@ -260,9 +254,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string}
 		 */
-		type: function () {
-			return this.typeToString( this.getZObjectType( this.objectValue ), true );
-		},
+		const type = computed( () => typeToString( getZObjectType( props.objectValue ), true ) );
 
 		/**
 		 * Returns the expected (or bound) type for the value of
@@ -270,20 +262,20 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string|Object|undefined}
 		 */
-		expectedType: function () {
+		const expectedType = computed( () => {
 			// If key is a numerical index, this is the key of a typed list type/item
 			// 1. If index is zero, it should always expect a Z4/Type
-			if ( this.isKeyTypedListType( this.key ) ) {
+			if ( isKeyTypedListType( key.value ) ) {
 				return Constants.Z_TYPE;
 			}
 			// 2. If index is > zero, the type of each item must be whatever
 			// the type of the list is, or Z1 if parentListItemType is undefined
-			if ( this.isKeyTypedListItem( this.key ) ) {
-				return this.parentListItemType || Constants.Z_OBJECT;
+			if ( isKeyTypedListItem( key.value ) ) {
+				return props.parentListItemType || Constants.Z_OBJECT;
 			}
 			// If ZnKn shaped key, get expected from the key definition
-			return this.key ? this.getExpectedTypeOfKey( this.key ) : undefined;
-		},
+			return key.value ? store.getExpectedTypeOfKey( key.value ) : undefined;
+		} );
 
 		/**
 		 * Returns the expected type of the parent key. If the key is of
@@ -291,23 +283,19 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string|Object|undefined}
 		 */
-		parentExpectedType: function () {
+		const parentExpectedType = computed( () => {
 			// If parent key is a numerical index, it's the key of a typed list type/item
 			// 1. If index is zero, it should always expect a Z4/Type in any mode
-			if ( this.isKeyTypedListType( this.parentKey ) ) {
+			if ( isKeyTypedListType( parentKey.value ) ) {
 				return Constants.Z_TYPE;
 			}
 			// 2. If item index (not zero), it should expect the typed list type
-			if ( this.isKeyTypedListItem( this.parentKey ) ) {
-				return this.parentListItemType || Constants.Z_OBJECT;
+			if ( isKeyTypedListItem( parentKey.value ) ) {
+				return props.parentListItemType || Constants.Z_OBJECT;
 			}
 			// If ZnKn shaped key, get expected from the key definition
-			return this.parentKey ? this.getExpectedTypeOfKey( this.parentKey ) : undefined;
-		},
-
-		// ===================================
-		// Configuration and layout properties
-		// ===================================
+			return parentKey.value ? store.getExpectedTypeOfKey( parentKey.value ) : undefined;
+		} );
 
 		/**
 		 * Returns the layout configuration for the object value.
@@ -342,25 +330,25 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Object}
 		 */
-		layoutConfig: function () {
-			// Intial layout config, by type or blank:
+		const layoutConfig = computed( () => {
+			// Initial layout config, by type or blank:
 			const layout = Object.assign( {
 				hasBuiltin: false,
 				component: null,
 				allowExpansion: true
-			}, Constants.BUILTIN_TYPE_CONFIG[ this.type ] || {} );
+			}, Constants.BUILTIN_TYPE_CONFIG[ type.value ] || {} );
 
 			// Set layout config for terminal key of Argument Reference
 			// If type is string, but key is argument reference key (Z18K1), we render
 			// the value using the argument reference component, but configure it as terminal
-			if ( this.key === Constants.Z_ARGUMENT_REFERENCE_KEY ) {
+			if ( key.value === Constants.Z_ARGUMENT_REFERENCE_KEY ) {
 				return Object.assign( {},
 					Constants.BUILTIN_TYPE_CONFIG[ Constants.Z_ARGUMENT_REFERENCE ],
 					{ allowExpansion: false }
 				);
 			}
 
-			if ( this.isWikidataEnum( this.type ) ) {
+			if ( store.isWikidataEnum( type.value ) ) {
 				return {
 					hasBuiltin: true,
 					component: 'wl-wikidata-enum',
@@ -371,8 +359,8 @@ module.exports = exports = defineComponent( {
 			// Set layout config for Wikidata fetch functions:
 			// If type is function call, but the call is to a fetch Wikidata entity
 			// we use the layout config of the the Wikidata component instead of the Function Call one
-			if ( this.isWikidataFetch( this.objectValue ) ) {
-				const fetchFunctionZid = this.getZFunctionCallFunctionId( this.objectValue );
+			if ( isWikidataFetch( props.objectValue ) ) {
+				const fetchFunctionZid = getZFunctionCallFunctionId( props.objectValue );
 				const wdType = Constants.WIKIDATA_SIMPLIFIED_TYPES[ fetchFunctionZid ];
 				return Constants.BUILTIN_TYPE_CONFIG[ wdType ];
 			}
@@ -380,7 +368,7 @@ module.exports = exports = defineComponent( {
 			// Set layout config for types with renderer:
 			// If there's no built-in component yet, check if the type has a string renderer.
 			// The renderer component will allow expansion but will handle expansion internally.
-			if ( !layout.component && this.hasRenderer( this.type ) && this.hasParser( this.type ) ) {
+			if ( !layout.component && store.hasRenderer( type.value ) && store.hasParser( type.value ) ) {
 				// TODO (T359669): Currently there are no type distinctions between renderers,
 				// all are string renderers. Whenever we create more types of renderers,
 				// we should consider checking the right type in here.
@@ -393,7 +381,8 @@ module.exports = exports = defineComponent( {
 			}
 
 			return layout;
-		},
+		} );
+
 		/**
 		 * Returns the name of the child component to render, depending on:
 		 * * the layoutConfig, which depends on the type
@@ -401,7 +390,8 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string}
 		 */
-		renderComponent: function () {
+		const renderComponent = computed( () => {
+			const config = layoutConfig.value;
 			// Generic component configuration.
 			// Render the builtin component, when:
 			// * there's a layoutConfig for this type, and
@@ -410,24 +400,24 @@ module.exports = exports = defineComponent( {
 			//   it is currently collapsed, or
 			//   it is expanded, but it's handled internally by the builtin component
 			if (
-				this.layoutConfig &&
-				this.layoutConfig.hasBuiltin &&
-				( !this.layoutConfig.allowExpansion || !this.isExpanded || this.layoutConfig.expandToSelf )
+				config &&
+				config.hasBuiltin &&
+				( !config.allowExpansion || !expanded.value || config.expandToSelf )
 			) {
-				return this.layoutConfig.component;
+				return config.component;
 			}
 
 			// If there's no builtin component or renderer, always show expanded mode
 			return 'wl-z-object-key-value-set';
-		},
+		} );
+
 		/**
 		 * Whether to show the expansion toggle icon (chevron) or a bullet icon.
 		 *
 		 * @return {boolean}
 		 */
-		hasToggle: function () {
-			return this.layoutConfig.hasBuiltin && this.layoutConfig.allowExpansion;
-		},
+		const hasToggle = computed( () => layoutConfig.value.hasBuiltin && layoutConfig.value.allowExpansion );
+
 		/**
 		 * Whether the component is expanded or collapsed.
 		 * * If the component cannot be collapsed (layoutConfig.hasBuiltin
@@ -439,76 +429,73 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {boolean}
 		 */
-		isExpanded: function () {
+		const isExpanded = computed( () => {
 			// If there's no builtin, always expanded:
-			if ( !this.layoutConfig.hasBuiltin ) {
+			if ( !layoutConfig.value.hasBuiltin ) {
 				return true;
 			}
 			// If expanded is disallowed, always collapsed:
-			if ( !this.layoutConfig.allowExpansion ) {
+			if ( !layoutConfig.value.allowExpansion ) {
 				return false;
 			}
 			// Else, expanded state as stored locally:
-			return this.expanded;
-		},
+			return expanded.value;
+		} );
+
 		/**
 		 * Whether the main block is preceded by the button and
 		 * indentation column.
 		 *
 		 * @return {boolean}
 		 */
-		hasPreColumn: function () {
-			return !this.skipIndent || this.hasToggle;
-		},
+		const hasPreColumn = computed( () => !props.skipIndent || hasToggle.value );
+
 		/**
-		 * Returns whether we want to disable the edit mode for a given key-value.
-		 * Note that this is not the same thing as bounding the type, or disabling
-		 * expanded mode. This does not coerce the component to render in view mode,
-		 * just disables the selectability of the component.
+		 * Returns whether the key-value should be in disabled edit mode
 		 *
 		 * @return {boolean}
 		 */
-		disableEdit: function () {
+		const disableEdit = computed( () => {
 			// If parentDisableEdit, all children must disableEdit=true
-			if ( this.parentDisableEdit ) {
+			if ( props.parentDisableEdit ) {
 				return true;
 			}
 
 			// If this is the identity key of the root object, disableEdit=true
 			// E.g. Z4K1
 			if (
-				this.isIdentityKey( this.key ) &&
-				( this.parentKey === Constants.Z_PERSISTENTOBJECT_VALUE )
+				store.isIdentityKey( key.value ) &&
+				( parentKey.value === Constants.Z_PERSISTENTOBJECT_VALUE )
 			) {
 				return true;
 			}
 
 			// If the key is that of a typed list type (zero)
-			if ( this.isKeyTypedListType( this.key ) ) {
+			if ( isKeyTypedListType( key.value ) ) {
 				// 1. If the parent key is Z6884K2 (Wikidata enum references), disableEdit=true
 				//    because the type of the keys is bound to the type of the enum (Z6884K1).
-				if ( this.parentKey === Constants.Z_WIKIDATA_ENUM_REFERENCES ) {
+				if ( parentKey.value === Constants.Z_WIKIDATA_ENUM_REFERENCES ) {
 					return true;
 				}
 
 				// 2. If parent expected type is Z1: disableEdit=false
 				// 3. If parent expected type is Z881(Z1): disableEdit=false
 				// 4. If parent expected type is Z881(Zn): disableEdit=true
-				const parentUnbound = this.parentExpectedType === Constants.Z_OBJECT;
+				const parentUnbound = parentExpectedType.value === Constants.Z_OBJECT;
 				const parentUnboundList =
-					this.parentExpectedType[ Constants.Z_TYPED_LIST_TYPE ] === Constants.Z_OBJECT;
+					parentExpectedType.value[ Constants.Z_TYPED_LIST_TYPE ] === Constants.Z_OBJECT;
 
 				return !( parentUnbound || parentUnboundList );
 			}
 
 			// If the key is "Key type"/Z3K1 and the sister key "Is identity"/Z3K4 is true, disableEdit=true
-			if ( this.key === Constants.Z_KEY_TYPE ) {
-				const parentObjectValue = this.getZObjectByKeyPath( this.keyPath.split( '.' ).slice( 0, -1 ) );
-				return this.getZKeyIsIdentity( parentObjectValue );
+			if ( key.value === Constants.Z_KEY_TYPE ) {
+				const parentObjectValue = store.getZObjectByKeyPath( props.keyPath.split( '.' ).slice( 0, -1 ) );
+				return getZKeyIsIdentity( parentObjectValue );
 			}
 
 			// If this is the identity key of a wikidata enum, disableEdit=true
-			if ( this.key === Constants.Z_WIKIDATA_ENUM_IDENTITY ) {
+			if ( key.value === Constants.Z_WIKIDATA_ENUM_IDENTITY ) {
 				return true;
 			}
 
@@ -516,43 +503,60 @@ module.exports = exports = defineComponent( {
 			// * the parent type is bound, or
 			// * the parent key is Z2K2 and we are editing this object
 			// return disableEdit=true
-			return ( ( this.key === Constants.Z_OBJECT_TYPE ) && (
-				( this.parentExpectedType !== Constants.Z_OBJECT ) ||
-				( ( this.parentKey === Constants.Z_PERSISTENTOBJECT_VALUE ) && !this.isCreateNewPage )
-			) );
-		},
+			return key.value === Constants.Z_OBJECT_TYPE && (
+				parentExpectedType.value !== Constants.Z_OBJECT ||
+				( parentKey.value === Constants.Z_PERSISTENTOBJECT_VALUE && !store.isCreateNewPage )
+			);
+		} );
 
 		/**
-		 * Returns a unique id for the DOM element.
+		 * Returns the id value for the key-value div
 		 *
 		 * @return {string}
 		 */
-		idValue: function () {
-			return this.keyPath.replace( /\./g, '-' );
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'addLocalArgumentToFunctionCall',
-		'changeTypeByKeyPath',
-		'clearErrors',
-		'clearTypeByKeyPath',
-		'createObjectByType',
-		'deleteListItemsByKeyPath',
-		'deleteLocalArgumentFromFunctionCall',
-		'moveListItemByKeyPath',
-		'navigate',
-		'pushItemsByKeyPath',
-		'setDirty',
-		'setFunctionCallArguments',
-		'setImplementationContentType',
-		'setKeyType',
-		'setValueByKeyPath',
-		'setWikidataEnumReferenceType'
-	] ), {
+		const idValue = computed( () => props.keyPath.replace( /\./g, '-' ) );
 
-		// =============
-		// Value updates
-		// =============
+		// Methods
+
+		/**
+		 * If the current object is the main object, set the dirty flag to true.
+		 */
+		const setDirtyIfMainObject = () => {
+			if ( props.keyPath.split( '.' )[ 0 ] === Constants.STORED_OBJECTS.MAIN ) {
+				store.setDirty();
+			}
+		};
+
+		/**
+		 * If the current object is the main object and we are creating a new page,
+		 * set the page title to the appropriate create page title.
+		 *
+		 * @param {string} typeValue
+		 */
+		const setPageCreateTitle = ( typeValue ) => {
+			// If this is an edit existing object page, do nothing
+			if ( !store.isCreateNewPage ) {
+				return;
+			}
+			let pageTitle;
+			switch ( typeValue ) {
+				case Constants.Z_TYPE:
+					pageTitle = i18n( 'wikilambda-special-create-type' ).text();
+					break;
+				case Constants.Z_FUNCTION:
+					pageTitle = i18n( 'wikilambda-special-create-function' ).text();
+					break;
+				case Constants.Z_IMPLEMENTATION:
+					pageTitle = i18n( 'wikilambda-special-create-implementation' ).text();
+					break;
+				case Constants.Z_TESTER:
+					pageTitle = i18n( 'wikilambda-special-create-test' ).text();
+					break;
+				default:
+					pageTitle = i18n( 'wikilambda-special-createobject' ).text();
+			}
+			document.getElementById( 'firstHeading' ).textContent = pageTitle;
+		};
 
 		/**
 		 * Handles the modification of the ZObject when the changed key-value
@@ -564,27 +568,27 @@ module.exports = exports = defineComponent( {
 		 * @param {Object|Array|string} payload.value new type to create
 		 * @param {boolean|undefined} payload.literal force new type to be created as literal
 		 */
-		setType: function ( payload ) {
+		const setType = ( payload ) => {
 			// If setType with no payload, clear the current object of
 			// all its keys, except the Object type/Z1K1, and exit
 			if ( !payload ) {
-				this.clearTypeByKeyPath( { keyPath: this.keyPath.split( '.' ) } );
+				store.clearTypeByKeyPath( { keyPath: props.keyPath.split( '.' ) } );
 				return;
 			}
 
 			// If payload.value is reference or string, set expanded to false;
 			// else, set expanded to true by default.
-			this.expanded = (
+			expanded.value = (
 				( payload.value !== Constants.Z_REFERENCE ) &&
 				( payload.value !== Constants.Z_STRING )
 			);
 
 			// Force literal object if it's root object or request comes from mode selector
-			const literal = payload.literal || this.key === Constants.Z_PERSISTENTOBJECT_VALUE;
+			const literal = payload.literal || key.value === Constants.Z_PERSISTENTOBJECT_VALUE;
 
 			// Set the type
-			this.changeTypeByKeyPath( {
-				keyPath: this.keyPath.split( '.' ),
+			store.changeTypeByKeyPath( {
+				keyPath: props.keyPath.split( '.' ),
 				type: payload.value,
 				literal
 			} );
@@ -592,43 +596,43 @@ module.exports = exports = defineComponent( {
 			// If we are setting the type of a Z1K1 key, we are changing the mode,
 			// which means that we need to propagate and change the parent type
 			// to clear the keys: emit a setType event with no payload
-			if ( this.key === Constants.Z_OBJECT_TYPE ) {
-				this.$emit( 'set-type' );
+			if ( key.value === Constants.Z_OBJECT_TYPE ) {
+				emit( 'set-type' );
 			}
 
 			// If we change the type of a Z7K1 key, is as if we cleared its
 			// value, so we need to clear the function call arguments.
-			if ( this.key === Constants.Z_FUNCTION_CALL_FUNCTION ) {
-				this.setFunctionCallArguments( {
-					keyPath: this.keyPath.split( '.' ).slice( 0, -1 ) // keyPath of the Z7
+			if ( key.value === Constants.Z_FUNCTION_CALL_FUNCTION ) {
+				store.setFunctionCallArguments( {
+					keyPath: props.keyPath.split( '.' ).slice( 0, -1 ) // keyPath of the Z7
 				} );
 			}
 
 			// If we are setting Z2K2 type
-			if ( this.key === Constants.Z_PERSISTENTOBJECT_VALUE ) {
+			if ( key.value === Constants.Z_PERSISTENTOBJECT_VALUE ) {
 				// check if we need to reset the page title
-				this.setPageCreateTitle( payload.value );
+				setPageCreateTitle( payload.value );
 				// if we set it to Function/Z8, redirect to function editor
 				if ( payload.value === Constants.Z_FUNCTION ) {
-					this.navigate( { to: Constants.VIEWS.FUNCTION_EDITOR } );
+					store.navigate( { to: Constants.VIEWS.FUNCTION_EDITOR } );
 					return;
 				}
 			}
 
 			// Else remain in default view page and set to dirty
-			this.setDirtyIfMainObject();
-		},
+			setDirtyIfMainObject();
+		};
+
 		/**
-		 * Handles the modification of the state value for the key-value
-		 * represented in this component. Depending on the whether this
-		 * change involves further changes, it will emit the event further
-		 * up.
+		 * Handles the modification of the ZObject when the changed key-value
+		 * is a value.
 		 *
 		 * @param {Object} payload
-		 * @param {Object} payload.keyPath sequence of keys till the value to edit
-		 * @param {Object | Array | string} payload.value new value
+		 * @param {Array} payload.keyPath path to the key to change
+		 * @param {Object|Array|string} payload.value new value to set
+		 * @param {Function} payload.callback optional callback to execute after mutation
 		 */
-		setValue: function ( payload ) {
+		const setValue = ( payload ) => {
 			// If value is null or undefined, do nothing
 			if ( payload.value === null || payload.value === undefined ) {
 				return;
@@ -638,88 +642,88 @@ module.exports = exports = defineComponent( {
 			// If we are setting a Z1K1 as typed list, this means we need to
 			// render the typed list component: we delegate change to the parent;
 			if (
-				( this.key === Constants.Z_FUNCTION_CALL_FUNCTION ) &&
-				( this.parentKey === Constants.Z_OBJECT_TYPE ) &&
+				( key.value === Constants.Z_FUNCTION_CALL_FUNCTION ) &&
+				( parentKey.value === Constants.Z_OBJECT_TYPE ) &&
 				( payload.value === Constants.Z_TYPED_LIST )
 			) {
-				this.$emit( 'set-value', { keyPath: [], value: [ Constants.Z_OBJECT ] } );
+				emit( 'set-value', { keyPath: [], value: [ Constants.Z_OBJECT ] } );
 				return;
 			}
 
 			// If the key Z3K4/identity.Z40K1 changed, fully delegate the mutation to the parent
 			if (
-				( this.key === Constants.Z_BOOLEAN_IDENTITY ) &&
-				( this.parentKey === Constants.Z_KEY_IS_IDENTITY )
+				( key.value === Constants.Z_BOOLEAN_IDENTITY ) &&
+				( parentKey.value === Constants.Z_KEY_IS_IDENTITY )
 			) {
-				payload.keyPath = [ this.key, ...payload.keyPath ];
-				this.$emit( 'set-value', payload );
+				payload.keyPath = [ key.value, ...payload.keyPath ];
+				emit( 'set-value', payload );
 				return;
 			}
 
 			// If we are changing an implementation type, we need to clear
 			// the unselected key and fill the other one with a blank value.
-			if ( this.type === Constants.Z_IMPLEMENTATION ) {
-				this.setImplementationContentType( {
-					keyPath: [ ...this.keyPath.split( '.' ), ...payload.keyPath ]
+			if ( type.value === Constants.Z_IMPLEMENTATION ) {
+				store.setImplementationContentType( {
+					keyPath: [ ...props.keyPath.split( '.' ), ...payload.keyPath ]
 				} );
 				// Exit early; there's no value to set
 				return;
 			}
 
 			// PROCEED WITH THE MUTATION:
-			this.setValueByKeyPath( {
-				keyPath: [ ...this.keyPath.split( '.' ), ...payload.keyPath ],
+			store.setValueByKeyPath( {
+				keyPath: [ ...props.keyPath.split( '.' ), ...payload.keyPath ],
 				value: payload.value
 			} );
 
 			// EXTRA ACTIONS, ADITIONAL TO MAIN MUTATION:
 			// If the value of Z1K1 has changed, tell parent key to change its type
-			if ( this.key === Constants.Z_OBJECT_TYPE ) {
+			if ( key.value === Constants.Z_OBJECT_TYPE ) {
 				if ( Array.isArray( payload.value ) ) {
 					// When selecting Z1K1=(Z7K1=Z881), Z7K1 emits set-value to its parent Z1K1.
 					// If Z1K1 receives a payload.value of a new array, it should again delegate
 					// to its parent to set the list value:
-					this.$emit( 'set-value', payload );
+					emit( 'set-value', payload );
 				} else {
 					// Every other change on Z1K1 must be handled by the setType of the parent:
-					this.$emit( 'set-type', payload );
+					emit( 'set-type', payload );
 				}
 			}
 
 			// If the key Z3K4/identity changed, ask the parent to set Z3K1/type
 			if (
-				( this.key === Constants.Z_KEY_IS_IDENTITY ) &&
+				( key.value === Constants.Z_KEY_IS_IDENTITY ) &&
 				( payload.value === Constants.Z_BOOLEAN_TRUE )
 			) {
-				this.setKeyType( {
-					keyPath: this.keyPath.split( '.' ),
-					value: this.getCurrentZObjectId
+				store.setKeyType( {
+					keyPath: props.keyPath.split( '.' ),
+					value: store.getCurrentZObjectId
 				} );
 			}
 
 			// If a Wikidata enum reference type (Z6884K1) has changed, we update the type
 			// of its associated keys/references (Z6884K2) to match the new enum type.
-			if ( this.key === Constants.Z_WIKIDATA_ENUM_TYPE ) {
+			if ( key.value === Constants.Z_WIKIDATA_ENUM_TYPE ) {
 				// Keypath of the parent, without the last key:
-				this.setWikidataEnumReferenceType( {
-					keyPath: this.keyPath.split( '.' ).slice( 0, -1 ),
+				store.setWikidataEnumReferenceType( {
+					keyPath: props.keyPath.split( '.' ).slice( 0, -1 ),
 					value: payload.value
 				} );
 			}
 
 			// If the value of Z7K1 has changed, we need to remove old arguments and set
 			// new ones, for which we propagate event so the parent node can handle it
-			if ( this.key === Constants.Z_FUNCTION_CALL_FUNCTION ) {
-				this.setFunctionCallArguments( {
-					keyPath: this.keyPath.split( '.' ).slice( 0, -1 ), // keyPath of the Z7
+			if ( key.value === Constants.Z_FUNCTION_CALL_FUNCTION ) {
+				store.setFunctionCallArguments( {
+					keyPath: props.keyPath.split( '.' ).slice( 0, -1 ), // keyPath of the Z7
 					functionZid: payload.value
 				} );
 			}
 
 			// If the type of a typed list has changed, propagate event to the parent
 			// ZTypedList component so that it marks items as potentially invalid
-			if ( this.isKeyTypedListType( this.key ) ) {
-				this.$emit( 'typed-list-type-changed', payload );
+			if ( isKeyTypedListType( key.value ) ) {
+				emit( 'typed-list-type-changed', payload );
 			}
 
 			// All mutations have been done, if payload has a callback, execute it.
@@ -730,119 +734,86 @@ module.exports = exports = defineComponent( {
 				payload.callback();
 			}
 
-			// Mutation done, set object as dirty
-			this.setDirtyIfMainObject();
-		},
+			setDirtyIfMainObject();
+		};
+
 		/**
-		 * Adds an item of the given value to the list
+		 * Handles the modification of the ZObject when the changed key-value
+		 * is a typed list and the user adds a new item.
 		 *
 		 * @param {Object} payload
-		 * @param {string} payload.type
-		 * @param {string} payload.lang
 		 */
-		addListItem: function ( payload ) {
-			const value = canonicalToHybrid( this.createObjectByType( payload ) );
-			this.pushItemsByKeyPath( {
-				keyPath: this.keyPath.split( '.' ),
+		const addListItem = ( payload ) => {
+			const value = canonicalToHybrid( store.createObjectByType( payload ) );
+			store.pushItemsByKeyPath( {
+				keyPath: props.keyPath.split( '.' ),
 				values: [ value ]
 			} );
-			this.setDirtyIfMainObject();
-		},
+			setDirtyIfMainObject();
+		};
+
 		/**
-		 * Deletes this item from the list.
+		 * Handles the modification of the ZObject when the changed key-value
+		 * is a typed list item and the user deletes it.
 		 * TODO (T331132): Create a 'revert delete' workflow.
 		 */
-		deleteListItem: function () {
-			const listKeyPath = this.keyPath.split( '.' ).slice( 0, -1 );
-			const lastItem = this.keyPath.split( '.' ).slice( -1 );
-			this.deleteListItemsByKeyPath( {
+		const deleteListItem = () => {
+			const listKeyPath = props.keyPath.split( '.' ).slice( 0, -1 );
+			const lastItem = props.keyPath.split( '.' ).slice( -1 );
+			store.deleteListItemsByKeyPath( {
 				keyPath: listKeyPath,
 				indexes: lastItem
 			} );
-			this.setDirtyIfMainObject();
-		},
+			setDirtyIfMainObject();
+		};
+
 		/**
-		 * Moves this item one position before in the list.
+		 * Handles the modification of the ZObject when the changed key-value
+		 * is a typed list item and the user moves it before the previous item.
 		 */
-		moveBefore: function () {
-			this.moveListItemByKeyPath( {
-				keyPath: this.keyPath.split( '.' ),
+		const moveBefore = () => {
+			store.moveListItemByKeyPath( {
+				keyPath: props.keyPath.split( '.' ),
 				offset: -1
 			} );
-			this.setDirtyIfMainObject();
-		},
+			setDirtyIfMainObject();
+		};
+
 		/**
-		 * Moves this item one position after in the list.
+		 * Handles the modification of the ZObject when the changed key-value
+		 * is a typed list item and the user moves it after the next item.
 		 */
-		moveAfter: function () {
-			this.moveListItemByKeyPath( {
-				keyPath: this.keyPath.split( '.' ),
+		const moveAfter = () => {
+			store.moveListItemByKeyPath( {
+				keyPath: props.keyPath.split( '.' ),
 				offset: 1
 			} );
-			this.setDirtyIfMainObject();
-		},
-		/**
-		 * Adds a new local argument to the function call.
-		 */
-		addArgument: function () {
-			this.addLocalArgumentToFunctionCall( {
-				keyPath: this.keyPath.split( '.' )
-			} );
-			this.setDirtyIfMainObject();
-		},
-		/**
-		 * Deletes a local argument from the function call.
-		 */
-		deleteArgument: function () {
-			this.deleteLocalArgumentFromFunctionCall( {
-				keyPath: this.keyPath.split( '.' )
-			} );
-			this.setDirtyIfMainObject();
-		},
-		/**
-		 * Sets object isDirty flag as true only if the changes
-		 * are made in the main page object.
-		 */
-		setDirtyIfMainObject: function () {
-			if ( this.keyPath.split( '.' )[ 0 ] === Constants.STORED_OBJECTS.MAIN ) {
-				this.setDirty();
-			}
-		},
-
-		// ================================
-		// Configuration and layout methods
-		// ================================
+			setDirtyIfMainObject();
+		};
 
 		/**
-		 * Sets the page title to a more specific string for types,
-		 * functions, implementations and tests.
+		 * Handles the modification of the ZObject when the changed key-value
+		 * is a function call and the user adds a new argument.
+		 */
+		const addArgument = () => {
+			store.addLocalArgumentToFunctionCall( { keyPath: props.keyPath.split( '.' ) } );
+			setDirtyIfMainObject();
+		};
+
+		/**
+		 * Handles the modification of the ZObject when the changed key-value
+		 * is a function call and the user deletes an argument.
 		 *
-		 * @param {string} type
+		 * @param {string} argKey
 		 */
-		setPageCreateTitle: function ( type ) {
-			// If this is an edit existing object page, do nothing
-			if ( !this.isCreateNewPage ) {
-				return;
-			}
-			let pageTitle;
-			switch ( type ) {
-				case Constants.Z_TYPE:
-					pageTitle = this.$i18n( 'wikilambda-special-create-type' ).text();
-					break;
-				case Constants.Z_FUNCTION:
-					pageTitle = this.$i18n( 'wikilambda-special-create-function' ).text();
-					break;
-				case Constants.Z_IMPLEMENTATION:
-					pageTitle = this.$i18n( 'wikilambda-special-create-implementation' ).text();
-					break;
-				case Constants.Z_TESTER:
-					pageTitle = this.$i18n( 'wikilambda-special-create-test' ).text();
-					break;
-				default:
-					pageTitle = this.$i18n( 'wikilambda-special-createobject' ).text();
-			}
-			document.getElementById( 'firstHeading' ).textContent = pageTitle;
-		},
+		const deleteArgument = ( argKey ) => {
+			store.deleteLocalArgumentFromFunctionCall( {
+				keyPath: props.keyPath.split( '.' ),
+				key: argKey
+			} );
+			setDirtyIfMainObject();
+		};
+
 		/**
 		 * Sets the expanded flag to a given value. If the type
 		 * cannot be expanded (because it's terminal), it persistently
@@ -850,39 +821,69 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {boolean} value
 		 */
-		setExpanded: function ( value ) {
-			this.expanded = value;
-		}
+		const setExpanded = ( value ) => {
+			expanded.value = value;
+		};
 
-	} ),
-	watch: {
 		/**
 		 * Auto-expand when field errors appear (only the first time)
 		 *
 		 * @param {boolean} newValue
 		 */
-		hasFieldErrors: function ( newValue ) {
-			if ( newValue && !this.hasBeenAutoExpanded ) {
-				this.expanded = true;
-				this.hasBeenAutoExpanded = true;
+		watch( hasFieldErrors, ( newValue ) => {
+			if ( newValue && !hasBeenAutoExpanded.value ) {
+				expanded.value = true;
+				hasBeenAutoExpanded.value = true;
 			}
-		},
+		} );
+
 		/**
 		 * Auto-expand when child errors appear (only the first time)
 		 *
 		 * @param {boolean} newValue
 		 */
-		hasChildErrors: function ( newValue ) {
-			if ( newValue && !this.hasBeenAutoExpanded ) {
-				this.expanded = true;
-				this.hasBeenAutoExpanded = true;
+		watch( hasChildErrors, ( newValue ) => {
+			if ( newValue && !hasBeenAutoExpanded.value ) {
+				expanded.value = true;
+				hasBeenAutoExpanded.value = true;
 			}
-		}
-	},
-	beforeUnmount() {
-		// Clear any validation errors for this field when component unmounts
-		// This prevents stale errors when field structure changes
-		this.clearErrors( this.keyPath, true );
+		} );
+
+		onBeforeUnmount( () => {
+			store.clearErrors( props.keyPath, true );
+		} );
+
+		// Return all properties and methods for the template
+		return {
+			addArgument,
+			addListItem,
+			deleteArgument,
+			deleteListItem,
+			disableEdit,
+			expectedType,
+			hasPreColumn,
+			hasToggle,
+			idValue,
+			isExpanded,
+			keyLabel,
+			moveAfter,
+			moveBefore,
+			parentExpectedType,
+			renderComponent,
+			setExpanded,
+			setType,
+			setValue,
+			showKeyLabel,
+			type
+		};
 	}
 } );
 </script>
+
+<style lang="less">
+@import '../../ext.wikilambda.app.variables.less';
+
+.ext-wikilambda-app-object-key-value {
+	width: 100%;
+}
+</style>

@@ -6,7 +6,6 @@
  */
 'use strict';
 
-const { CdxRadio } = require( '@wikimedia/codex' );
 const { shallowMount } = require( '@vue/test-utils' );
 
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
@@ -24,6 +23,22 @@ const objectValue = {
 describe( 'ZBoolean', () => {
 	let store;
 
+	/**
+	 * Helper function to render ZBoolean component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderZBoolean( props = {}, options = {} ) {
+		const defaultProps = {
+			keyPath,
+			objectValue,
+			edit: false
+		};
+		return shallowMount( ZBoolean, { props: { ...defaultProps, ...props }, ...options } );
+	}
+
 	beforeEach( () => {
 		store = useMainStore();
 		store.getUserLangCode = 'en';
@@ -35,67 +50,37 @@ describe( 'ZBoolean', () => {
 
 	describe( 'in view mode', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( ZBoolean, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false
-				}
-			} );
+			const wrapper = renderZBoolean();
 
 			expect( wrapper.find( 'div' ).exists() ).toBe( true );
 		} );
 
 		it( 'does not load the radio codex component', () => {
-			const wrapper = shallowMount( ZBoolean, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false
-				}
-			} );
+			const wrapper = renderZBoolean();
 
 			expect( wrapper.findComponent( { name: 'cdx-radio' } ).exists() ).toBe( false );
 		} );
 
 		it( 'displays the boolean value label', () => {
-			const wrapper = shallowMount( ZBoolean, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false
-				}
-			} );
+			const wrapper = renderZBoolean();
 
 			expect( wrapper.find( '.ext-wikilambda-app-link' ).exists() ).toBe( true );
-			expect( wrapper.find( '.ext-wikilambda-app-link' ).text() ).toBe( 'false' );
+			expect( wrapper.get( '.ext-wikilambda-app-link' ).text() ).toBe( 'false' );
 		} );
 	} );
 
 	describe( 'in edit mode', () => {
 		it( 'loads the radio codex component', () => {
-			const wrapper = shallowMount( ZBoolean, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true
-				}
-			} );
+			const wrapper = renderZBoolean( { edit: true } );
 
-			expect( wrapper.findComponent( CdxRadio ).exists() ).toBe( true );
+			expect( wrapper.findComponent( { name: 'cdx-radio' } ).exists() ).toBe( true );
 		} );
 
 		it( 'changes the boolean value when selected', async () => {
-			const wrapper = shallowMount( ZBoolean, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true
-				}
-			} );
+			const wrapper = renderZBoolean( { edit: true } );
 
-			expect( wrapper.getComponent( CdxRadio ).exists() ).toBeTruthy();
-			await wrapper.getComponent( CdxRadio ).vm.$emit( 'update:modelValue', 'Z41' );
+			expect( wrapper.getComponent( { name: 'cdx-radio' } ).exists() ).toBe( true );
+			await wrapper.getComponent( { name: 'cdx-radio' } ).vm.$emit( 'update:modelValue', 'Z41' );
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [ Constants.Z_BOOLEAN_IDENTITY, Constants.Z_REFERENCE_ID ], value: 'Z41' } ] ] );
 
 		} );

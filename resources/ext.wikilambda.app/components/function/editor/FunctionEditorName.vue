@@ -33,13 +33,12 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { computed, defineComponent, inject, nextTick, onBeforeUnmount, onMounted, ref } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
 const useMainStore = require( '../../../store/index.js' );
 const LabelData = require( '../../../store/classes/LabelData.js' );
-const pageTitleMixin = require( '../../../mixins/pageTitleMixin.js' );
+const usePageTitle = require( '../../../composables/usePageTitle.js' );
 
 // Function editor components
 const FunctionEditorField = require( './FunctionEditorField.vue' );
@@ -52,7 +51,6 @@ module.exports = exports = defineComponent( {
 		'wl-function-editor-field': FunctionEditorField,
 		'cdx-text-input': CdxTextInput
 	},
-	mixins: [ pageTitleMixin ],
 	props: {
 		/**
 		 * zID of item label language
@@ -71,106 +69,119 @@ module.exports = exports = defineComponent( {
 			default: null
 		}
 	},
-	data: function () {
-		return {
-			ignoreChangeEvent: false,
-			maxLabelChars: Constants.LABEL_CHARS_MAX,
-			remainingChars: Constants.LABEL_CHARS_MAX
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getZPersistentName'
-	] ), {
+	emits: [ 'name-updated' ],
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
+		const { updatePageTitle } = usePageTitle();
+
+		// Reactive data
+		const ignoreChangeEvent = ref( false );
+		const maxLabelChars = Constants.LABEL_CHARS_MAX;
+		const remainingChars = ref( Constants.LABEL_CHARS_MAX );
+
+		// Computed properties
 		/**
 		 * Finds the Name (Z2K3) for the given language and returns
 		 * its keyPath and value if found. Else, returns undefined.
 		 *
 		 * @return {Object|undefined}
 		 */
-		name: function () {
-			return this.zLanguage ? this.getZPersistentName( this.zLanguage ) : undefined;
-		},
+		const name = computed( () => props.zLanguage ? store.getZPersistentName( props.zLanguage ) : undefined );
+
 		/**
 		 * Returns the label for the name field
 		 *
+		 *
+		 * TODO (T335583): Replace i18n message with key label
+		 * return getLabelData( Constants.Z_PERSISTENTOBJECT_LABEL );
+		 *
 		 * @return {string}
 		 */
-		nameLabel: function () {
-			// TODO (T335583): Replace i18n message with key label
-			// return this.getLabelData( Constants.Z_PERSISTENTOBJECT_LABEL );
-			return this.$i18n( 'wikilambda-function-definition-name-label' ).text();
-		},
+		const nameLabel = computed( () => i18n( 'wikilambda-function-definition-name-label' ).text() );
+
 		/**
 		 * Returns the i18n message for the name field placeholder
 		 *
 		 * @return {string}
 		 */
-		nameFieldPlaceholder: function () {
-			return this.$i18n( 'wikilambda-function-definition-name-placeholder' ).text();
-		},
+		const nameFieldPlaceholder = computed( () => i18n( 'wikilambda-function-definition-name-placeholder' ).text() );
+
 		/**
 		 * Returns the "optional" caption for the name field
 		 *
 		 * @return {string}
 		 */
-		nameOptional: function () {
-			return this.$i18n( 'parentheses', [ this.$i18n( 'wikilambda-optional' ).text() ] ).text();
-		},
+		const nameOptional = computed( () => i18n( 'parentheses', [ i18n( 'wikilambda-optional' ).text() ] ).text() );
+
 		/**
 		 * Returns the id for the input field
 		 *
 		 * @return {string}
 		 */
-		nameFieldId: function () {
-			return `ext-wikilambda-app-function-editor-name__input-${ this.zLanguage }`;
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'setZMonolingualString'
-	] ), {
+		const nameFieldId = computed( () => `ext-wikilambda-app-function-editor-name__input-${ props.zLanguage }` );
+
+		// Methods
 		/**
 		 * Updates the remainingChars data property as the user types into the Z2K5 field
 		 *
 		 * @param {Event} event - the event object that is automatically passed in on input
 		 */
-		updateRemainingChars: function ( event ) {
+		const updateRemainingChars = ( event ) => {
 			const { length } = event.target.value;
-			this.remainingChars = this.maxLabelChars - length;
-		},
+			remainingChars.value = maxLabelChars - length;
+		};
+
 		/**
 		 * Persist the new name value in the globally stored object
 		 *
 		 * @param {Object} event
 		 */
-		persistName: function ( event ) {
-			if ( this.ignoreChangeEvent ) {
+		const persistName = ( event ) => {
+			if ( ignoreChangeEvent.value ) {
 				return;
 			}
 
-			this.setZMonolingualString( {
+			store.setZMonolingualString( {
 				parentKeyPath: [
 					Constants.STORED_OBJECTS.MAIN,
 					Constants.Z_PERSISTENTOBJECT_LABEL,
 					Constants.Z_MULTILINGUALSTRING_VALUE
 				],
-				itemKeyPath: this.name ? this.name.keyPath : undefined,
+				itemKeyPath: name.value ? name.value.keyPath : undefined,
 				value: event.target.value,
-				lang: this.zLanguage
+				lang: props.zLanguage
 			} );
 
 			// After persisting in the state, update the page title
-			this.updatePageTitle();
-			this.$emit( 'name-updated' );
-		}
-	} ),
-	mounted: function () {
-		this.$nextTick( function () {
-			this.remainingChars = this.maxLabelChars - ( this.name ? this.name.value.length : 0 );
+			updatePageTitle();
+			emit( 'name-updated' );
+		};
+
+		// Lifecycle
+		onMounted( () => {
+			nextTick( () => {
+				remainingChars.value = maxLabelChars - ( name.value ? name.value.length : 0 );
+			} );
 		} );
-	},
-	beforeUnmount: function () {
-		// When the component is unmounted, we want to ignore any change events and not persist the data
-		this.ignoreChangeEvent = true;
+
+		onBeforeUnmount( () => {
+			// When the component is unmounted, we want to ignore any change events and not persist the data
+			ignoreChangeEvent.value = true;
+		} );
+
+		// Return all properties and methods for the template
+		return {
+			maxLabelChars,
+			name,
+			nameFieldId,
+			nameFieldPlaceholder,
+			nameLabel,
+			nameOptional,
+			persistName,
+			remainingChars,
+			updateRemainingChars
+		};
 	}
 } );
 </script>

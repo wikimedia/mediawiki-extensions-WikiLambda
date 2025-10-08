@@ -7,7 +7,7 @@
 'use strict';
 
 const Constants = require( '../../../Constants.js' );
-const eventLogMixin = require( '../../../mixins/eventLogMixin.js' );
+const eventLogUtils = require( '../../../utils/eventLogUtils.js' );
 const { canonicalToHybrid } = require( '../../../utils/schemata.js' );
 const { isTruthyOrEqual } = require( '../../../utils/typeUtils.js' );
 
@@ -120,7 +120,8 @@ module.exports = {
 					implementationtype: this.getCurrentZImplementationType || null,
 					zlang: this.getUserLangZid || null
 				};
-				eventLogMixin.methods.submitInteraction( 'change', interactionData );
+				// Submit interaction event via eventLogUtils
+				eventLogUtils.submitInteraction( 'change', interactionData );
 			}
 			this.dirty = value;
 		},

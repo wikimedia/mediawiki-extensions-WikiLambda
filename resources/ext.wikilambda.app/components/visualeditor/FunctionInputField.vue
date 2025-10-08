@@ -30,8 +30,8 @@
 					:dir="labelData.langDir"
 				>{{ labelData.label }}</span>
 				<span v-else class="ext-wikilambda-app-function-input-field__label--empty">
-					{{ $i18n( 'brackets',
-						$i18n( 'wikilambda-visualeditor-wikifunctionscall-no-input-label' ).text()
+					{{ i18n( 'brackets',
+						i18n( 'wikilambda-visualeditor-wikifunctionscall-no-input-label' ).text()
 					).text() }}
 				</span>
 			</template>
@@ -50,8 +50,7 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapState } = require( 'pinia' );
+const { computed, defineComponent, inject, ref, onMounted } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
 const useMainStore = require( '../../store/index.js' );
@@ -68,6 +67,8 @@ const FunctionInputParser = require( './fields/FunctionInputParser.vue' );
 const FunctionInputString = require( './fields/FunctionInputString.vue' );
 const FunctionInputWikidata = require( './fields/FunctionInputWikidata.vue' );
 const FunctionInputDefaultValueCheckbox = require( './FunctionInputDefaultValueCheckbox.vue' );
+
+// Base components
 const SafeMessage = require( '../base/SafeMessage.vue' );
 
 module.exports = exports = defineComponent( {
@@ -107,136 +108,140 @@ module.exports = exports = defineComponent( {
 		}
 	},
 	emits: [ 'update', 'input', 'validate', 'update:modelValue', 'loading-start', 'loading-end' ],
-	data: function () {
-		return {
-			shouldUseDefaultValue: false
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'isEnumType',
-		'hasParser',
-		'hasDefaultValueForType',
-		'getDefaultValueForType',
-		'isNewParameterSetup'
-	] ), {
-		/**
-		 * Determine the component type based on the inputType.
-		 *
-		 * @return {string}
-		 */
-		componentType: function () {
-			// Check if there's a specific component configured for this input type
-			const inputConfig = Constants.FUNCTION_INPUT_TYPE_CONFIG[ this.inputType ];
-			if ( inputConfig && inputConfig.component ) {
-				return inputConfig.component;
-			}
-			if ( this.isEnum ) {
-				return 'wl-function-input-enum';
-			}
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
+		const shouldUseDefaultValue = ref( false );
 
-			if ( this.hasParserFunction ) {
-				return 'wl-function-input-parser';
-			}
-
-			// Default fallback
-			return 'wl-function-input-string';
-		},
 		/**
-		 * Checks if the input type is an enumeration.
+		 * Checks if the input type is an enumeration
 		 *
 		 * @return {boolean}
 		 */
-		isEnum: function () {
-			return this.isEnumType( this.inputType );
-		},
+		const isEnum = computed( () => store.isEnumType( props.inputType ) );
+
 		/**
 		 * Check if the input has a parser and renderer
 		 *
 		 * @return {boolean}
 		 */
-		hasParserFunction: function () {
-			return this.hasParser( this.inputType );
-		},
+		const hasParserFunction = computed( () => store.hasParser( props.inputType ) );
+
 		/**
 		 * Whether this input type has a default value
 		 *
 		 * @return {boolean}
 		 */
-		hasDefaultValue: function () {
-			return this.hasDefaultValueForType( this.inputType );
-		},
+		const hasDefaultValue = computed( () => store.hasDefaultValueForType( props.inputType ) );
+
 		/**
 		 * Returns the default value for the input type.
 		 *
 		 * @return {string}
 		 */
-		getDefaultValue: function () {
-			return this.getDefaultValueForType( this.inputType );
-		},
+		const getDefaultValue = computed( () => store.getDefaultValueForType( props.inputType ) );
+
 		/**
-		 * Return the status of the field.
+		 * Return the status of the field
 		 *
 		 * @return {string}
 		 */
-		status: function () {
-			return this.showValidation && this.error ? 'error' : 'default';
+		const status = computed( () => props.showValidation && props.error ? 'error' : 'default' );
+
+		/**
+		 * Determine the component type based on the inputType
+		 *
+		 * @return {string}
+		 */
+		const componentType = computed( () => {
+			// Check if there's a specific component configured for this input type
+			const inputConfig = Constants.FUNCTION_INPUT_TYPE_CONFIG[ props.inputType ];
+			if ( inputConfig && inputConfig.component ) {
+				return inputConfig.component;
+			}
+			if ( isEnum.value ) {
+				return 'wl-function-input-enum';
+			}
+
+			if ( hasParserFunction.value ) {
+				return 'wl-function-input-parser';
+			}
+
+			// Default fallback
+			return 'wl-function-input-string';
+		} );
+
+		/**
+		 * Handle the update event
+		 *
+		 * @param {string} value
+		 */
+		function handleUpdate( value ) {
+			emit( 'update', value );
 		}
-	} ),
-	methods: {
+
 		/**
-		 * Handle the update event and emit the updated value.
+		 * Handle the input event
 		 *
-		 * @param {string} value - The new value.
+		 * @param {string} value
 		 */
-		handleUpdate: function ( value ) {
-			this.$emit( 'update', value );
-		},
+		function handleInput( value ) {
+			emit( 'update:modelValue', value );
+		}
+
 		/**
-		 * Handle the input event and emit the updated value.
-		 *
-		 * @param {string} value - The new value.
-		 */
-		handleInput: function ( value ) {
-			this.$emit( 'update:modelValue', value );
-		},
-		/**
-		 * Handle the validate event and emit the error message.
+		 * Handle the validate event
 		 *
 		 * @param {Object} payload
-		 * @param {boolean} payload.isValid - The validation status.
-		 * @param {string|undefined} payload.error - The error data.
 		 */
-		handleValidation: function ( payload ) {
-			this.$emit( 'validate', payload );
-		},
+		function handleValidation( payload ) {
+			emit( 'validate', payload );
+		}
+
 		/**
 		 * Check the default value checkbox.
 		 *
 		 * @param {boolean} isChecked - Whether the checkbox is checked.
 		 */
-		checkDefaultValue: function ( isChecked ) {
-			this.shouldUseDefaultValue = !!isChecked;
+		function checkDefaultValue( isChecked ) {
+			shouldUseDefaultValue.value = !!isChecked;
 
 			// When checkbox is checked:
 			// * we just assume the value is valid for simplicity
 			// * set the field value to empty and emit it
-			this.$emit( 'validate', { isValid: !!isChecked } );
-			this.$emit( 'update:modelValue', '' );
-			this.$emit( 'update', '' );
-		},
+			emit( 'validate', { isValid: !!isChecked } );
+			emit( 'update:modelValue', '' );
+			emit( 'update', '' );
+		}
+
 		/**
 		 * Initialize shouldUseDefaultValue if field is empty and has a default value.
 		 * Only auto-check the default value when editing an existing function, not when creating a new one.
 		 * This only sets the internal state without emitting events - validation happens naturally through mounted.
 		 */
-		initializeDefaultValue: function () {
-			if ( !this.modelValue && this.hasDefaultValueForType( this.inputType ) && !this.isNewParameterSetup ) {
-				this.shouldUseDefaultValue = true;
+		function initializeDefaultValue() {
+			if ( !props.modelValue && store.hasDefaultValueForType( props.inputType ) && !store.isNewParameterSetup ) {
+				shouldUseDefaultValue.value = true;
 			}
 		}
-	},
-	beforeMount: function () {
-		this.initializeDefaultValue();
+
+		// Lifecycle
+		onMounted( () => {
+			initializeDefaultValue();
+		} );
+
+		return {
+			checkDefaultValue,
+			componentType,
+			getDefaultValue,
+			hasDefaultValue,
+			handleInput,
+			handleUpdate,
+			handleValidation,
+			i18n,
+			shouldUseDefaultValue,
+			status
+		};
 	}
 } );
 </script>

@@ -20,8 +20,7 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { computed, defineComponent, inject, onMounted, watch } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
 const useMainStore = require( '../../../store/index.js' );
@@ -63,41 +62,30 @@ module.exports = exports = defineComponent( {
 		}
 	},
 	emits: [ 'update', 'input', 'validate' ],
-	data: function () {
-		return {
-			selectConfig: {
-				visibleItemLimit: 5
-			}
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
+
+		const selectConfig = {
+			visibleItemLimit: 5
 		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getEnumValues'
-	] ), {
+
 		/**
 		 * Returns the menu items for the enum selector.
-		 * By passing selected Zid to getEnumValues getter, it will manually
-		 * include this item in the enum list if:
-		 * * it's not part of the first page of enum values
-		 * * it's a valid instance of the enum type
 		 *
 		 * @return {Array}
 		 */
-		enumValues: function () {
-			return this.getEnumValues( this.inputType, this.value ).map( ( item ) => ( {
-				value: item.page_title,
-				label: item.label
-			} ) );
-		},
+		const enumValues = computed( () => store.getEnumValues( props.inputType, props.value ).map( ( item ) => ( {
+			value: item.page_title,
+			label: item.label
+		} ) ) );
 
 		/**
 		 * Whether this input type allows for empty fields
 		 *
 		 * @return {boolean}
 		 */
-		allowsEmptyField: function () {
-			return Constants.VE_ALLOW_EMPTY_FIELD.includes( this.inputType );
-		},
-
+		const allowsEmptyField = computed( () => Constants.VE_ALLOW_EMPTY_FIELD.includes( props.inputType ) );
 		/**
 		 * Returns the placeholder text.
 		 * If the default value checkbox is checked, return the default value,
@@ -105,74 +93,24 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string}
 		 */
-		placeholder: function () {
-			if ( this.shouldUseDefaultValue ) {
-				const enumValueZid = this.defaultValue;
+		const placeholder = computed( () => {
+			if ( props.shouldUseDefaultValue ) {
+				const enumValueZid = props.defaultValue;
 				if ( !enumValueZid ) {
 					return '';
 				}
-				const enumValue = this.enumValues.find( ( item ) => item.value === enumValueZid );
+				const enumValue = enumValues.value.find( ( item ) => item.value === enumValueZid );
 				return enumValue ? enumValue.label : enumValueZid;
 			}
-			return this.$i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder' ).text();
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'fetchEnumValues'
-	] ), {
+			return i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder' ).text();
+		} );
 		/**
-		 * Load more values for the enumeration selector when the user scrolls to the bottom of the list
-		 * and there are more results to load.
-		 */
-		handleLoadMoreSelect: function () {
-			this.fetchEnumValues( { type: this.inputType } );
-		},
-
-		/**
-		 * Handles the blur event and validates the current value.
-		 */
-		handleBlur: function () {
-			this.validate( this.value );
-		},
-
-		/**
-		 * Handles the update event:
-		 * * emits 'input' event to set the local variable to the new value
-		 * * starts validation, which will emit 'update' event to set up the
-		 *   value in the store and make it available to VE
+		 * Checks if the given value exists in the enum values.
 		 *
-		 * @param {string} value - The new value to validate.
+		 * @param {string} value - The value to check.
+		 * @return {boolean} - True if the value exists, otherwise false.
 		 */
-		handleUpdate: function ( value ) {
-			this.$emit( 'input', value );
-			this.validate( value, true );
-		},
-
-		/**
-		 * Updates the validation state of the field.
-		 *
-		 * @param {boolean} isValid - The validation result.
-		 */
-		updateValidationState: function ( isValid ) {
-			const errorMessageKey = 'wikilambda-visualeditor-wikifunctionscall-error-enum';
-			const error = !isValid ? ErrorData.buildErrorData( { errorMessageKey } ) : undefined;
-			this.$emit( 'validate', { isValid, error } );
-		},
-
-		/**
-		 * Validates the value and optionally emits an update event if valid.
-		 *
-		 * @param {string} value - The value to validate.
-		 * @param {boolean} emitUpdate - Whether to emit the update event if valid.
-		 */
-		validate: function ( value, emitUpdate = false ) {
-			const isValid = this.isValid( value );
-			this.updateValidationState( isValid );
-
-			if ( emitUpdate && isValid ) {
-				this.$emit( 'update', value );
-			}
-		},
+		const isValueInEnumValues = ( value ) => enumValues.value.some( ( item ) => item.value === value );
 
 		/**
 		 * Check if the enum is a valid zid format and exists in enum values.
@@ -180,69 +118,111 @@ module.exports = exports = defineComponent( {
 		 * @param {string} value - The value to validate.
 		 * @return {boolean} - True if the value is valid, otherwise false.
 		 */
-		isValid: function ( value ) {
+		const isValid = ( value ) => {
 			// If default value checkbox is checked, field is valid
-			if ( this.shouldUseDefaultValue ) {
+			if ( props.shouldUseDefaultValue ) {
 				return true;
 			}
 			// If value is empty; valid if empty is allowed AND no default value available
-			if ( !value && this.allowsEmptyField && !this.hasDefaultValue ) {
+			if ( !value && allowsEmptyField.value && !props.hasDefaultValue ) {
 				return true;
 			}
-			return typeUtils.isValidZidFormat( value ) && this.isValueInEnumValues( value );
-		},
+			return typeUtils.isValidZidFormat( value ) && isValueInEnumValues( value );
+		};
 
 		/**
-		 * Checks if the given value exists in the enum values.
+		 * Updates the validation state of the field.
 		 *
-		 * @param {string} value - The value to check.
-		 * @return {boolean} - True if the value exists, otherwise false.
+		 * @param {boolean} isValidValue - The validation result.
 		 */
-		isValueInEnumValues: function ( value ) {
-			return this.enumValues.some( ( item ) => item.value === value );
-		},
+		const updateValidationState = ( isValidValue ) => {
+			const errorMessageKey = 'wikilambda-visualeditor-wikifunctionscall-error-enum';
+			const error = !isValidValue ? ErrorData.buildErrorData( { errorMessageKey } ) : undefined;
+			emit( 'validate', { isValid: isValidValue, error } );
+		};
+
+		/**
+		 * Validates the value and optionally emits an update event if valid.
+		 *
+		 * @param {string} value - The value to validate.
+		 * @param {boolean} emitUpdate - Whether to emit the update event if valid.
+		 */
+		const validate = ( value, emitUpdate = false ) => {
+			const isValidValue = isValid( value );
+			updateValidationState( isValidValue );
+
+			if ( emitUpdate && isValidValue ) {
+				emit( 'update', value );
+			}
+		};
+
+		/**
+		 * Load more values for the enumeration selector
+		 */
+		const handleLoadMoreSelect = () => {
+			store.fetchEnumValues( { type: props.inputType } );
+		};
+
+		/**
+		 * Handles the blur event and validates the current value.
+		 */
+		const handleBlur = () => {
+			validate( props.value );
+		};
+
+		/**
+		 * Handles the update event
+		 *
+		 * @param {string} value - The new value to validate.
+		 */
+		const handleUpdate = ( value ) => {
+			emit( 'input', value );
+			validate( value, true );
+		};
 
 		/**
 		 * Fetches all enum values for the input type
 		 */
-		fetchAndValidateEnumValues: function () {
+		const fetchAndValidateEnumValues = () => {
 			// Fetch 20 enum values which usually is enough to show all enums directly
-			this.fetchEnumValues( { type: this.inputType, limit: 20 } ).then( () => {
-				if ( !this.enumValues.length ) {
+			store.fetchEnumValues( { type: props.inputType, limit: 20 } ).then( () => {
+				if ( !enumValues.value.length ) {
 					return;
 				}
-				this.validate( this.value );
+				validate( props.value );
 			} );
-		}
+		};
 
-	} ),
-	watch: {
 		/**
-		 * Watcher for `enumValues` to ensure that validation is performed
-		 * only after the enum values are updated in the store. This is necessary
-		 * because the `fetchEnumValues` action in `fetchAndValidateEnumValues` is asynchronous,
-		 * and the `enumValues` computed property may not be immediately populated when the fetch completes.
-		 * By watching `enumValues`, we can trigger validation once the values are
-		 * available, ensuring that the component behaves correctly in editing mode.
-		 *
-		 * @param {Array} newEnumValues - The updated list of enum values.
+		 * Watcher for `enumValues` to ensure validation after store update
 		 */
-		enumValues: function ( newEnumValues ) {
+		watch( enumValues, ( newEnumValues ) => {
 			if ( newEnumValues.length ) {
-				this.validate( this.value );
+				validate( props.value );
 			}
-		},
+		} );
+
 		/**
 		 * Watch for changes to shouldUseDefaultValue and re-validate
 		 *
 		 * @param {boolean} newValue - The new value of shouldUseDefaultValue
 		 */
-		shouldUseDefaultValue: function () {
-			this.validate( this.value );
-		}
-	},
-	mounted: function () {
-		this.fetchAndValidateEnumValues();
+		watch( () => props.shouldUseDefaultValue, () => {
+			validate( props.value );
+		} );
+
+		onMounted( () => {
+			fetchAndValidateEnumValues();
+		} );
+
+		return {
+			enumValues,
+			handleBlur,
+			handleLoadMoreSelect,
+			handleUpdate,
+			placeholder,
+			selectConfig
+		};
 	}
 } );
 </script>

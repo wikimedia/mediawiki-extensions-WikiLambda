@@ -76,13 +76,12 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { defineComponent, computed, watch, onMounted } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
 const useMainStore = require( '../../store/index.js' );
-const typeMixin = require( '../../mixins/typeMixin.js' );
-const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
+const useType = require( '../../composables/useType.js' );
+const useZObject = require( '../../composables/useZObject.js' );
 
 // Base components
 const KeyValueBlock = require( '../base/KeyValueBlock.vue' );
@@ -92,7 +91,6 @@ module.exports = exports = defineComponent( {
 	components: {
 		'wl-key-value-block': KeyValueBlock
 	},
-	mixins: [ typeMixin, zobjectMixin ],
 	props: {
 		keyPath: {
 			type: String,
@@ -107,35 +105,30 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	data: function () {
-		return {
-			functionKey: Constants.Z_TESTER_FUNCTION,
-			callKey: Constants.Z_TESTER_CALL,
-			validationKey: Constants.Z_TESTER_VALIDATION
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getLabelData',
-		'getStoredObject',
-		'isCreateNewPage'
-	] ), {
+	setup( props, { emit } ) {
+		const { isValidZidFormat } = useType();
+		const { getZTesterFunctionZid } = useZObject( { keyPath: props.keyPath } );
+		const store = useMainStore();
+
+		// Data
+		const functionKey = Constants.Z_TESTER_FUNCTION;
+		const callKey = Constants.Z_TESTER_CALL;
+		const validationKey = Constants.Z_TESTER_VALIDATION;
+
+		// Computed properties
 		/**
 		 * Returns the LabelData object for the test Function/Z20K1 key
 		 *
 		 * @return {LabelData}
 		 */
-		functionLabelData: function () {
-			return this.getLabelData( Constants.Z_TESTER_FUNCTION );
-		},
+		const functionLabelData = computed( () => store.getLabelData( Constants.Z_TESTER_FUNCTION ) );
 
 		/**
 		 * Returns the Zid of the selected function/Z20K1
 		 *
 		 * @return {string}
 		 */
-		functionZid: function () {
-			return this.getZTesterFunctionZid( this.objectValue );
-		},
+		const functionZid = computed( () => getZTesterFunctionZid( props.objectValue ) );
 
 		/**
 		 * Returns the stored function object given the selected function Zid.
@@ -145,72 +138,33 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Object|undefined}
 		 */
-		storedFunction: function () {
-			return this.getStoredObject( this.functionZid );
-		},
+		const storedFunction = computed( () => store.getStoredObject( functionZid.value ) );
 
 		/**
 		 * Returns the label data for the tester call key
 		 *
 		 * @return {LabelData}
 		 */
-		testerCallLabelData: function () {
-			return this.getLabelData( Constants.Z_TESTER_CALL );
-		},
+		const testerCallLabelData = computed( () => store.getLabelData( Constants.Z_TESTER_CALL ) );
 
 		/**
 		 * Returns the label data for the tester validation key
 		 *
 		 * @return {LabelData}
 		 */
-		testerValidationLabelData: function () {
-			return this.getLabelData( Constants.Z_TESTER_VALIDATION );
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'fetchZids',
-		'setFunctionCallArguments'
-	] ), {
-		/**
-		 * Initializes Test call/Z20K2 with a function call to the given functionZid
-		 */
-		initializeTestCall: function () {
-			if ( this.isCreateNewPage && !!this.functionZid ) {
-				// Set test call function call Zid
-				this.$emit( 'set-value', {
-					keyPath: [
-						Constants.Z_TESTER_CALL,
-						Constants.Z_FUNCTION_CALL_FUNCTION,
-						Constants.Z_REFERENCE_ID
-					],
-					value: this.functionZid
-				} );
-				// Set test call function arguments
-				this.setFunctionCallArguments( {
-					keyPath: [ ...this.keyPath.split( '.' ), Constants.Z_TESTER_CALL ],
-					functionZid: this.functionZid
-				} );
-				// Get function output type and dismiss anything that's not a reference
-				const outputType = this.storedFunction[ Constants.Z_PERSISTENTOBJECT_VALUE ][
-					Constants.Z_FUNCTION_RETURN_TYPE ];
-				if ( !outputType || ( typeof outputType !== 'string' ) || !this.isValidZidFormat( outputType ) ) {
-					return;
-				}
-				this.fetchZids( { zids: [ outputType ] } ).then( () => {
-					this.initializeTestValidation( outputType );
-				} );
-			}
-		},
+		const testerValidationLabelData = computed( () => store.getLabelData( Constants.Z_TESTER_VALIDATION ) );
+
+		// Methods
 		/**
 		 * Initializes Test validator/Z20K3 with a function call to the equality function
 		 * of the type returned by the Test call/Z20K2, which is passed as input parameter.
 		 *
 		 * @param {string} outputType
 		 */
-		initializeTestValidation: function ( outputType ) {
+		function initializeTestValidation( outputType ) {
 			const setupValidation = ( equalityFunctionZid ) => {
 				// Set test validation function call Zid
-				this.$emit( 'set-value', {
+				emit( 'set-value', {
 					keyPath: [
 						Constants.Z_TESTER_VALIDATION,
 						Constants.Z_FUNCTION_CALL_FUNCTION,
@@ -219,40 +173,82 @@ module.exports = exports = defineComponent( {
 					value: equalityFunctionZid || ''
 				} );
 				// Set tester validation function arguments
-				this.setFunctionCallArguments( {
-					keyPath: [ ...this.keyPath.split( '.' ), Constants.Z_TESTER_VALIDATION ],
+				store.setFunctionCallArguments( {
+					keyPath: [ ...props.keyPath.split( '.' ), Constants.Z_TESTER_VALIDATION ],
 					functionZid: equalityFunctionZid || undefined
 				} );
 			};
 
-			const type = this.getStoredObject( outputType );
+			const type = store.getStoredObject( outputType );
 			const equalityZid = type[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_EQUALITY ];
-			if ( !equalityZid || ( typeof equalityZid !== 'string' ) || !this.isValidZidFormat( equalityZid ) ) {
+			if ( !equalityZid || ( typeof equalityZid !== 'string' ) || !isValidZidFormat( equalityZid ) ) {
 				// No equality function: we set the validator function call to empty and exit
 				setupValidation();
 				return;
 			}
 			// We fetch the equality function zid and set the validator function call
-			this.fetchZids( { zids: [ equalityZid ] } ).then( () => {
+			store.fetchZids( { zids: [ equalityZid ] } ).then( () => {
 				setupValidation( equalityZid );
 			} );
 		}
-	} ),
-	watch: {
-		storedFunction: function ( newFunction ) {
-			if ( newFunction ) {
-				this.initializeTestCall();
+
+		/**
+		 * Initializes Test call/Z20K2 with a function call to the given functionZid
+		 */
+		function initializeTestCall() {
+			if ( store.isCreateNewPage && !!functionZid.value ) {
+				// Set test call function call Zid
+				emit( 'set-value', {
+					keyPath: [
+						Constants.Z_TESTER_CALL,
+						Constants.Z_FUNCTION_CALL_FUNCTION,
+						Constants.Z_REFERENCE_ID
+					],
+					value: functionZid.value
+				} );
+				// Set test call function arguments
+				store.setFunctionCallArguments( {
+					keyPath: [ ...props.keyPath.split( '.' ), Constants.Z_TESTER_CALL ],
+					functionZid: functionZid.value
+				} );
+				// Get function output type and dismiss anything that's not a reference
+				const outputType = storedFunction.value[ Constants.Z_PERSISTENTOBJECT_VALUE ][
+					Constants.Z_FUNCTION_RETURN_TYPE ];
+				if ( !outputType || ( typeof outputType !== 'string' ) || !isValidZidFormat( outputType ) ) {
+					return;
+				}
+				store.fetchZids( { zids: [ outputType ] } ).then( () => {
+					initializeTestValidation( outputType );
+				} );
 			}
 		}
+
+		// Watchers
+		watch( storedFunction, ( newFunction ) => {
+			if ( newFunction ) {
+				initializeTestCall();
+			}
+		} );
+
+		// Lifecycle
+		onMounted( () => {
+			if ( storedFunction.value ) {
+				initializeTestCall();
+			}
+		} );
+
+		return {
+			callKey,
+			functionKey,
+			functionLabelData,
+			testerCallLabelData,
+			testerValidationLabelData,
+			validationKey
+		};
 	},
 	beforeCreate: function () {
 		// Need to delay require of ZObjectKeyValue to avoid loop
 		this.$options.components[ 'wl-z-object-key-value' ] = require( './ZObjectKeyValue.vue' );
-	},
-	mounted: function () {
-		if ( this.storedFunction ) {
-			this.initializeTestCall();
-		}
 	}
 } );
 </script>

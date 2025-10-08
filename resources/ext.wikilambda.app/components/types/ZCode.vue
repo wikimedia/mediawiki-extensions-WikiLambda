@@ -28,8 +28,8 @@
 						v-else
 						:selected="programmingLanguageValue"
 						:menu-items="programmingLanguageMenuItems"
-						:default-label="$i18n( 'wikilambda-editor-label-select-programming-language-label' ).text()"
-						:status="( programmingLanguageErrors.length > 0 ) ? 'error' : 'default'"
+						:default-label="i18n( 'wikilambda-editor-label-select-programming-language-label' ).text()"
+						:status="programmingLanguageErrors.length > 0 ? 'error' : 'default'"
 						@update:selected="onProgrammingLanguageChange"
 					></cdx-select>
 				</div>
@@ -86,15 +86,13 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { computed, defineComponent, inject, onMounted, ref, watch } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
 const useMainStore = require( '../../store/index.js' );
 const ErrorData = require( '../../store/classes/ErrorData.js' );
-const errorMixin = require( '../../mixins/errorMixin.js' );
-const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
-const typeMixin = require( '../../mixins/typeMixin.js' );
+const useZObject = require( '../../composables/useZObject.js' );
+const useType = require( '../../composables/useType.js' );
 
 // Base components
 const CodeEditor = require( '../base/CodeEditor.vue' );
@@ -112,7 +110,6 @@ module.exports = exports = defineComponent( {
 		'wl-key-value-block': KeyValueBlock,
 		'wl-safe-message': SafeMessage
 	},
-	mixins: [ errorMixin, zobjectMixin, typeMixin ],
 	props: {
 		keyPath: {
 			type: String,
@@ -127,43 +124,34 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	data: function () {
-		return {
-			editorValue: '',
-			allowSetEditorValue: true,
-			hasClickedDisabledField: false,
-			codeErrorId: `${ this.keyPath }.${ Constants.Z_CODE_CODE }`,
-			programmingLangErrorId: `${ this.keyPath }.${ Constants.Z_CODE_LANGUAGE }`
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getAllProgrammingLangs',
-		'getCurrentZObjectId',
-		'getInputsOfFunctionZid',
-		'getLabelData',
-		'getCurrentTargetFunctionZid',
-		'getErrors',
-		'hasErrorByKey',
-		'isCreateNewPage'
-	] ), {
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const { getZidOfGlobalKey } = useType();
+		const { getZCodeString, key, getZCodeProgrammingLanguageId } = useZObject( { keyPath: props.keyPath } );
+		const store = useMainStore();
+
+		// Reactive data
+		const editorValue = ref( '' );
+		const allowSetEditorValue = ref( true );
+		const hasClickedDisabledField = ref( false );
+		const codeErrorId = `${ props.keyPath }.${ Constants.Z_CODE_CODE }`;
+		const programmingLangErrorId = `${ props.keyPath }.${ Constants.Z_CODE_LANGUAGE }`;
+
+		// Computed properties
 		/**
 		 * Whether the parent is an implementation (Z14).
 		 * The parent can be either an implementations (Z14) or a converter (Z46, Z64)
 		 *
 		 * @return {string}
 		 */
-		parentIsImplementation: function () {
-			return ( this.getZidOfGlobalKey( this.key ) === Constants.Z_IMPLEMENTATION );
-		},
+		const parentIsImplementation = computed( () => getZidOfGlobalKey( key.value ) === Constants.Z_IMPLEMENTATION );
 
 		/**
 		 * Returns the label of the key Z16K2
 		 *
 		 * @return {LabelData}
 		 */
-		codeLabelData: function () {
-			return this.getLabelData( Constants.Z_CODE_CODE );
-		},
+		const codeLabelData = computed( () => store.getLabelData( Constants.Z_CODE_CODE ) );
 
 		/**
 		 * Terminal string with the code of the function
@@ -171,20 +159,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string | undefined}
 		 */
-		codeValue: function () {
-			return this.getZCodeString( this.objectValue );
-		},
-
-		/**
-		 * Returns code field errors and notices (if any)
-		 *
-		 * @return {ErrorData[]}
-		 */
-		codeErrors: function () {
-			return this.codeErrorId ?
-				[ ...this.codeNotices, ...this.getErrors( this.codeErrorId ) ] :
-				this.codeNotices;
-		},
+		const codeValue = computed( () => getZCodeString( props.objectValue ) );
 
 		/**
 		 * Returns code field notices.
@@ -192,32 +167,66 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {ErrorData[]}
 		 */
-		codeNotices: function () {
-			return ( this.parentIsImplementation || !this.isCreateNewPage ) ? [] : [
-				ErrorData.buildErrorData( {
-					errorType: Constants.ERROR_TYPES.NOTICE,
-					errorMessageKey: 'wikilambda-editor-code-editor-zid-placeholder-error'
-				} )
-			];
-		},
+		const codeNotices = computed( () => ( parentIsImplementation.value || !store.isCreateNewPage ) ? [] : [
+			ErrorData.buildErrorData( {
+				errorType: Constants.ERROR_TYPES.NOTICE,
+				errorMessageKey: 'wikilambda-editor-code-editor-zid-placeholder-error'
+			} )
+		] );
+
+		/**
+		 * Returns code field errors and notices (if any)
+		 *
+		 * @return {ErrorData[]}
+		 */
+		const codeErrors = computed( () => codeErrorId ?
+			[ ...codeNotices.value, ...store.getErrors( codeErrorId ) ] :
+			codeNotices.value );
 
 		/**
 		 * Returns the label of the key Z16K1
 		 *
 		 * @return {LabelData}
 		 */
-		programmingLanguageLabelData: function () {
-			return this.getLabelData( Constants.Z_CODE_LANGUAGE );
-		},
+		const programmingLanguageLabelData = computed( () => store.getLabelData( Constants.Z_CODE_LANGUAGE ) );
 
 		/**
 		 * Returns the Zid of the programming language selected, or undefined if unselected
 		 *
 		 * @return {string | undefined}
 		 */
-		programmingLanguageZid: function () {
-			return this.getZCodeProgrammingLanguageId( this.objectValue );
-		},
+		const programmingLanguageZid = computed( () => getZCodeProgrammingLanguageId( props.objectValue ) );
+
+		/**
+		 * Returns the appropriately formatted menu items to load the cdx-select
+		 * component with the different programming language options
+		 *
+		 * @return {Array}
+		 */
+		const programmingLanguageMenuItems = computed( () => {
+			const programmingLangs = [];
+			if ( store.getAllProgrammingLangs.length > 0 ) {
+				for ( const lang of store.getAllProgrammingLangs ) {
+					programmingLangs.push( {
+						label: lang[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_PROGRAMMING_LANGUAGE_CODE ],
+						value: lang[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ]
+					} );
+				}
+			}
+			return programmingLangs;
+		} );
+
+		/**
+		 * Zid of the selected programming language or empty string if not set
+		 */
+		const programmingLanguageValue = computed( {
+			get: () => !programmingLanguageZid.value ? '' : programmingLanguageZid.value,
+			set: ( val ) => {
+				if ( val !== programmingLanguageValue.value ) {
+					selectLanguage( val );
+				}
+			}
+		} );
 
 		/**
 		 * Returns the literal of the programming language selected in the Menu Items array by its zid,
@@ -225,36 +234,18 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string}
 		 */
-		programmingLanguageLiteral: function () {
-			const menuObject = this.programmingLanguageMenuItems
-				.find( ( item ) => item.value === this.programmingLanguageValue );
+		const programmingLanguageLiteral = computed( () => {
+			const menuObject = programmingLanguageMenuItems.value
+				.find( ( item ) => item.value === programmingLanguageValue.value );
 			return menuObject ? menuObject.label : undefined;
-		},
-
-		/**
-		 * Zid of the selected programming language or empty string if not set
-		 *
-		 * @return {string}
-		 */
-		programmingLanguageValue: {
-			get: function () {
-				return !this.programmingLanguageZid ? '' : this.programmingLanguageZid;
-			},
-			set: function ( val ) {
-				if ( val !== this.programmingLanguageValue ) {
-					this.selectLanguage( val );
-				}
-			}
-		},
+		} );
 
 		/**
 		 * Returns programming language errors
 		 *
 		 * @return {Array}
 		 */
-		programmingLanguageErrors: function () {
-			return this.getErrors( this.programmingLangErrorId );
-		},
+		const programmingLanguageErrors = computed( () => store.getErrors( programmingLangErrorId ) );
 
 		/**
 		 * If parent is Implementation/Z14:
@@ -264,11 +255,9 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string | undefined }
 		 */
-		functionZid: function () {
-			return this.parentIsImplementation ?
-				this.getCurrentTargetFunctionZid :
-				this.getCurrentZObjectId;
-		},
+		const functionZid = computed( () => parentIsImplementation.value ?
+			store.getCurrentTargetFunctionZid :
+			store.getCurrentZObjectId );
 
 		/**
 		 * If parent is Implementation/Z14:
@@ -280,64 +269,27 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Array}
 		 */
-		functionArgumentKeys: function () {
-			return this.parentIsImplementation ?
-				this.getInputsOfFunctionZid( this.functionZid ).map( ( arg ) => arg[ Constants.Z_ARGUMENT_KEY ] ) :
-				[ `${ this.functionZid }K1` ];
-		},
+		const functionArgumentKeys = computed( () => parentIsImplementation.value ?
+			store.getInputsOfFunctionZid( functionZid.value ).map( ( arg ) => arg[ Constants.Z_ARGUMENT_KEY ] ) :
+			[ `${ functionZid.value }K1` ] );
 
-		/**
-		 * Returns the appropriately formatted menu items to load the cdx-select
-		 * component with the different programming language options
-		 *
-		 * @return {Array}
-		 */
-		programmingLanguageMenuItems: function () {
-			const programmingLangs = [];
-			if ( this.getAllProgrammingLangs.length > 0 ) {
-				for ( const lang of this.getAllProgrammingLangs ) {
-					programmingLangs.push(
-						{
-							label: lang[
-								Constants.Z_PERSISTENTOBJECT_VALUE
-							][
-								Constants.Z_PROGRAMMING_LANGUAGE_CODE
-							],
-							value: lang[
-								Constants.Z_PERSISTENTOBJECT_ID
-							][
-								Constants.Z_STRING_VALUE
-							]
-						}
-					);
-				}
-			}
-			return programmingLangs;
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'fetchZids',
-		'fetchAllZProgrammingLanguages',
-		'clearErrorsByKey',
-		'clearErrors',
-		'setError'
-	] ), {
+		// Methods
 		/**
 		 * Generates boilerplate code based on the selected programming language.
 		 *
 		 * @param {string} language - The programming language selected.
 		 * @return {string} The generated boilerplate code.
 		 */
-		generateBoilerplateCode( language ) {
+		function generateBoilerplateCode( language ) {
 			switch ( language ) {
 				case Constants.Z_PROGRAMMING_LANGUAGES.JAVASCRIPT:
-					return `function ${ this.functionZid }( ${ this.functionArgumentKeys.join( ', ' ) } ) {\n\n}`;
+					return `function ${ functionZid.value }( ${ functionArgumentKeys.value.join( ', ' ) } ) {\n\n}`;
 				case Constants.Z_PROGRAMMING_LANGUAGES.PYTHON:
-					return `def ${ this.functionZid }(${ this.functionArgumentKeys.join( ', ' ) }):\n\t`;
+					return `def ${ functionZid.value }(${ functionArgumentKeys.value.join( ', ' ) }):\n\t`;
 				default:
 					return '';
 			}
-		},
+		}
 
 		/**
 		 * Sets the value of the Code programming language key (Z16K1) and
@@ -345,13 +297,13 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} value
 		 */
-		selectLanguage: function ( value ) {
-			this.allowSetEditorValue = true;
+		function selectLanguage( value ) {
+			allowSetEditorValue.value = true;
 
 			// clear errors for language field
-			this.clearErrors( this.programmingLangErrorId );
+			store.clearErrors( programmingLangErrorId );
 
-			this.$emit( 'set-value', {
+			emit( 'set-value', {
 				keyPath: [
 					Constants.Z_CODE_LANGUAGE,
 					Constants.Z_REFERENCE_ID
@@ -359,23 +311,23 @@ module.exports = exports = defineComponent( {
 				value
 			} );
 
-			this.$emit( 'set-value', {
+			emit( 'set-value', {
 				keyPath: [ Constants.Z_CODE_CODE, Constants.Z_STRING_VALUE ],
-				value: this.generateBoilerplateCode( value )
+				value: generateBoilerplateCode( value )
 			} );
-		},
+		}
 
 		/**
 		 * Checks if the code contains 'Wikifunctions.Debug' and sets or clears an error accordingly.
 		 *
 		 * @param {string} code - The code to check.
 		 */
-		checkDebugMessage( code ) {
+		function checkDebugMessage( code ) {
 			const hasDebugCode = code.toLowerCase().includes( 'wikifunctions.debug' );
 
 			// If 'Wikifunctions.Debug' is not found, clear the error.
 			if ( !hasDebugCode ) {
-				this.clearErrorsByKey( {
+				store.clearErrorsByKey( {
 					errorId: Constants.STORED_OBJECTS.MAIN,
 					errorMessageKey: 'wikilambda-editor-code-editor-debug-code-warning'
 				} );
@@ -383,98 +335,111 @@ module.exports = exports = defineComponent( {
 			}
 
 			// If the debug message error has already been set, do nothing
-			if ( this.hasErrorByKey( Constants.STORED_OBJECTS.MAIN, 'wikilambda-editor-code-editor-debug-code-warning' ) ) {
+			if ( store.hasErrorByKey( Constants.STORED_OBJECTS.MAIN, 'wikilambda-editor-code-editor-debug-code-warning' ) ) {
 				return;
 			}
 
 			// If 'Wikifunctions.Debug' is found, set the error.
-			this.setError( {
+			store.setError( {
 				errorId: Constants.STORED_OBJECTS.MAIN,
 				errorType: Constants.ERROR_TYPES.WARNING,
 				errorMessageKey: 'wikilambda-editor-code-editor-debug-code-warning',
 				isPermanent: true
 			} );
-		},
+		}
 
 		/**
 		 * Updates the value of the Code content key (Z16K2)
 		 *
 		 * @param {string} code
 		 */
-		updateCode: function ( code ) {
+		function updateCode( code ) {
 			// there is an edge case where acejs will trigger an empty change that we process as an event object
 			// we don't want to update our object with that bad data
 			// TODO (T324605): this deserves a deeper investigation
 			if ( typeof code !== 'object' ) {
-				this.clearErrors( this.codeErrorId );
-				this.$emit( 'set-value', {
+				store.clearErrors( codeErrorId );
+				emit( 'set-value', {
 					keyPath: [ Constants.Z_CODE_CODE, Constants.Z_STRING_VALUE ],
 					value: code
 				} );
-				this.checkDebugMessage( code );
+				checkDebugMessage( code );
 			}
-		},
+		}
 
 		/**
 		 * Handles the change event of the programming language dropdown
 		 *
 		 * @param {string} newValue
 		 */
-		onProgrammingLanguageChange: function ( newValue ) {
-			this.programmingLanguageValue = newValue;
-			this.clearErrors( this.programmingLangErrorId );
-		},
+		function onProgrammingLanguageChange( newValue ) {
+			programmingLanguageValue.value = newValue;
+			store.clearErrors( programmingLangErrorId );
+		}
 
 		/**
 		 * Checks if a programming language is set
 		 */
-		checkCode: function () {
-			if ( !this.edit || this.programmingLanguageValue || this.hasClickedDisabledField ) {
+		function checkCode() {
+			if ( !props.edit || programmingLanguageValue.value || hasClickedDisabledField.value ) {
 				return;
 			}
 			const payload = {
-				errorId: this.programmingLangErrorId,
+				errorId: programmingLangErrorId,
 				errorType: Constants.ERROR_TYPES.WARNING,
 				errorMessageKey: 'wikilambda-editor-label-select-programming-language-empty'
 			};
-			this.hasClickedDisabledField = true;
-			this.setError( payload );
+			hasClickedDisabledField.value = true;
+			store.setError( payload );
 		}
-	} ),
-	watch: {
-		codeValue: {
-			immediate: true,
-			handler: function () {
-				// Check allowSetEditorValue to ensure we only set value in the editor when its current value should be
-				// overridden (e.g. when the editor is first loaded, or when the language changes). Ensuring this
-				// prevents a bug that moves the cursor to the end of the editor on every keypress.
-				if ( this.allowSetEditorValue ) {
-					this.editorValue = this.codeValue || '';
-					this.allowSetEditorValue = false;
-				}
+
+		// Watchers
+		watch( codeValue, () => {
+			// Check allowSetEditorValue to ensure we only set value in the editor when its current value should be
+			// overridden (e.g. when the editor is first loaded, or when the language changes). Ensuring this
+			// prevents a bug that moves the cursor to the end of the editor on every keypress.
+			if ( allowSetEditorValue.value ) {
+				editorValue.value = codeValue.value || '';
+				allowSetEditorValue.value = false;
 			}
-		},
-		functionZid: {
-			immediate: true,
-			handler: function ( newValue, oldValue ) {
-				if ( !oldValue || newValue === oldValue ) {
-					return;
-				}
-				// If the functionZid changes, we need to update the code editor with the new boilerplate code
-				this.allowSetEditorValue = true;
-				// Reinitialize the code editor with updated boilerplate code
-				this.$emit( 'set-value', {
-					keyPath: [ Constants.Z_CODE_CODE, Constants.Z_STRING_VALUE ],
-					value: this.generateBoilerplateCode( this.programmingLanguageValue )
-				} );
+		}, { immediate: true } );
+
+		watch( functionZid, ( newValue, oldValue ) => {
+			if ( !oldValue || newValue === oldValue ) {
+				return;
 			}
-		}
-	},
-	mounted: function () {
-		this.fetchZids( { zids: [ Constants.Z_CODE ] } );
-		if ( this.getAllProgrammingLangs.length <= 0 ) {
-			this.fetchAllZProgrammingLanguages();
-		}
+			// If the functionZid changes, we need to update the code editor with the new boilerplate code
+			allowSetEditorValue.value = true;
+			// Reinitialize the code editor with updated boilerplate code
+			emit( 'set-value', {
+				keyPath: [ Constants.Z_CODE_CODE, Constants.Z_STRING_VALUE ],
+				value: generateBoilerplateCode( programmingLanguageValue.value )
+			} );
+		}, { immediate: true } );
+
+		// Lifecycle
+		onMounted( () => {
+			store.fetchZids( { zids: [ Constants.Z_CODE ] } );
+			if ( store.getAllProgrammingLangs.length <= 0 ) {
+				store.fetchAllZProgrammingLanguages();
+			}
+		} );
+
+		return {
+			checkCode,
+			codeErrors,
+			codeLabelData,
+			editorValue,
+			onProgrammingLanguageChange,
+			parentIsImplementation,
+			programmingLanguageErrors,
+			programmingLanguageLabelData,
+			programmingLanguageLiteral,
+			programmingLanguageMenuItems,
+			programmingLanguageValue,
+			updateCode,
+			i18n
+		};
 	}
 } );
 </script>

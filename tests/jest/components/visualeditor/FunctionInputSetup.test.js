@@ -9,6 +9,17 @@ const FunctionInputSetup = require( '../../../../resources/ext.wikilambda.app/co
 describe( 'FunctionInputSetup', () => {
 	let store;
 
+	/**
+	 * Helper function to render FunctionInputSetup component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderFunctionInputSetup( props = {}, options = {} ) {
+		return shallowMount( FunctionInputSetup, { props, ...options } );
+	}
+
 	beforeEach( () => {
 		mw.language.getFallbackLanguageChain = () => [ 'en' ];
 
@@ -30,7 +41,7 @@ describe( 'FunctionInputSetup', () => {
 	} );
 
 	it( 'renders without errors', async () => {
-		const wrapper = shallowMount( FunctionInputSetup );
+		const wrapper = renderFunctionInputSetup();
 
 		expect( wrapper.find( '.ext-wikilambda-app-function-input-setup' ).exists() ).toBe( true );
 		expect( wrapper.findComponent( { name: 'wl-expandable-description' } ).exists() ).toBe( true );
@@ -41,7 +52,7 @@ describe( 'FunctionInputSetup', () => {
 	} );
 
 	it( 'emits update event when input value changes', async () => {
-		const wrapper = shallowMount( FunctionInputSetup );
+		const wrapper = renderFunctionInputSetup();
 
 		await waitFor( () => expect( wrapper.findAllComponents( { name: 'wl-function-input-field' } ).length ).toEqual( 2 ) );
 
@@ -55,44 +66,49 @@ describe( 'FunctionInputSetup', () => {
 	it( 'initializes input values on mount', async () => {
 		store.getVEFunctionParams = [ 'value1' ];
 
-		const wrapper = shallowMount( FunctionInputSetup );
+		const wrapper = renderFunctionInputSetup();
 
 		await waitFor( () => expect( wrapper.findAllComponents( { name: 'wl-function-input-field' } ).length ).toEqual( 2 ) );
 
 		expect( store.setVEFunctionParam ).toHaveBeenCalledWith( 1, '' );
 
-		expect( wrapper.vm.inputFields.length ).toBe( 2 );
-		expect( wrapper.vm.inputFields[ 0 ].inputKey ).toBe( 'Z13546K1' );
-		expect( wrapper.vm.inputFields[ 0 ].inputType ).toBe( 'Z13518' );
-		expect( wrapper.vm.inputFields[ 0 ].value ).toBe( 'value1' );
-		expect( wrapper.vm.inputFields[ 0 ].hasChanged ).toBe( false );
-
-		expect( wrapper.vm.inputFields[ 1 ].inputKey ).toBe( 'Z13546K2' );
-		expect( wrapper.vm.inputFields[ 1 ].inputType ).toBe( 'Z13518' );
-		expect( wrapper.vm.inputFields[ 1 ].value ).toBe( undefined );
-		expect( wrapper.vm.inputFields[ 1 ].hasChanged ).toBe( false );
-
+		// Check that the input fields are rendered with correct props
 		const fields = wrapper.findAllComponents( { name: 'wl-function-input-field' } );
 		expect( fields.length ).toBe( 2 );
+
+		// Check first field configuration
 		expect( fields.at( 0 ).props( 'modelValue' ) ).toBe( 'value1' );
+		expect( fields.at( 0 ).props( 'inputType' ) ).toBe( 'Z13518' );
+		expect( fields.at( 0 ).props( 'showValidation' ) ).toBe( false );
+
+		// Check second field configuration
 		expect( fields.at( 1 ).props( 'modelValue' ) ).toBe( '' );
+		expect( fields.at( 1 ).props( 'inputType' ) ).toBe( 'Z13518' );
+		expect( fields.at( 1 ).props( 'showValidation' ) ).toBe( false );
 	} );
 
 	it( 'renders pre-filled input values from VisualEditor', async () => {
 		store.getVEFunctionParams = [ 'value1', 'value2' ];
 
-		const wrapper = shallowMount( FunctionInputSetup );
+		const wrapper = renderFunctionInputSetup();
 
 		await waitFor( () => expect( wrapper.findAllComponents( { name: 'wl-function-input-field' } ).length ).toEqual( 2 ) );
 
 		const fields = wrapper.findAllComponents( { name: 'wl-function-input-field' } );
 
+		// Check first field configuration
 		expect( fields.at( 0 ).props( 'modelValue' ) ).toBe( 'value1' );
+		expect( fields.at( 0 ).props( 'inputType' ) ).toBe( 'Z13518' );
+		expect( fields.at( 0 ).props( 'showValidation' ) ).toBe( false );
+
+		// Check second field configuration
 		expect( fields.at( 1 ).props( 'modelValue' ) ).toBe( 'value2' );
+		expect( fields.at( 1 ).props( 'inputType' ) ).toBe( 'Z13518' );
+		expect( fields.at( 1 ).props( 'showValidation' ) ).toBe( false );
 	} );
 
 	it( 'validates input fields and updates validity state', async () => {
-		const wrapper = shallowMount( FunctionInputSetup );
+		const wrapper = renderFunctionInputSetup();
 
 		await waitFor( () => expect( wrapper.findAllComponents( { name: 'wl-function-input-field' } ).length ).toEqual( 2 ) );
 
@@ -106,19 +122,19 @@ describe( 'FunctionInputSetup', () => {
 
 	describe( 'Language fallback strategy', () => {
 		it( 'shows no missing content notice when all labels are in userlang', () => {
-			const wrapper = shallowMount( FunctionInputSetup );
+			const wrapper = renderFunctionInputSetup();
 			expect( wrapper.findComponent( { name: 'cdx-message' } ).exists() ).toBe( false );
 		} );
 
 		it( 'shows missing content notice when labels are in fallback lang', () => {
 			mw.language.getFallbackLanguageChain = () => [ 'es', 'en' ];
-			const wrapper = shallowMount( FunctionInputSetup );
+			const wrapper = renderFunctionInputSetup();
 			expect( wrapper.findComponent( { name: 'cdx-message' } ).exists() ).toBe( true );
 		} );
 
 		it( 'shows missing content notice when labels are in other language', () => {
 			mw.language.getFallbackLanguageChain = () => [ 'zh' ];
-			const wrapper = shallowMount( FunctionInputSetup );
+			const wrapper = renderFunctionInputSetup();
 			expect( wrapper.findComponent( { name: 'cdx-message' } ).exists() ).toBe( true );
 		} );
 
@@ -127,7 +143,7 @@ describe( 'FunctionInputSetup', () => {
 			store.getDescription = createLabelDataMock();
 			store.getLabelData = createLabelDataMock();
 
-			const wrapper = shallowMount( FunctionInputSetup );
+			const wrapper = renderFunctionInputSetup();
 			expect( wrapper.findComponent( { name: 'cdx-message' } ).exists() ).toBe( true );
 		} );
 	} );

@@ -41,12 +41,11 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapState } = require( 'pinia' );
+const { computed, defineComponent, inject } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
-const errorMixin = require( '../../mixins/errorMixin.js' );
-const zobjectMixin = require( '../../mixins/zobjectMixin.js' );
+const useError = require( '../../composables/useError.js' );
+const useZObject = require( '../../composables/useZObject.js' );
 const useMainStore = require( '../../store/index.js' );
 const icons = require( '../../../lib/icons.json' );
 
@@ -63,9 +62,8 @@ module.exports = exports = defineComponent( {
 		'cdx-message': CdxMessage,
 		'wl-safe-message': SafeMessage
 	},
-	mixins: [ errorMixin, zobjectMixin ],
 	props: {
-		keyPath: { // eslint-disable-line vue/no-unused-properties
+		keyPath: {
 			type: String,
 			required: true
 		},
@@ -78,27 +76,29 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	data: function () {
-		return {
-			icon: icons.cdxIconFunctionArgument
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getLabelData',
-		'getCurrentTargetFunctionZid',
-		'getInputsOfFunctionZid'
-	] ), {
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const { hasFieldErrors, fieldErrors } = useError( { keyPath: props.keyPath } );
+		const {
+			getZArgumentReferenceTerminalValue,
+			getZStringTerminalValue,
+			key
+		} = useZObject( { keyPath: props.keyPath } );
+		const store = useMainStore();
+
+		// Data
+		const icon = icons.cdxIconFunctionArgument;
+
+		// Computed properties
 		/**
 		 * Returns the key of the selected argument reference,
 		 * if any. Else, returns empty string.
 		 *
 		 * @return {string}
 		 */
-		argumentKey: function () {
-			return this.key === Constants.Z_ARGUMENT_REFERENCE_KEY ?
-				this.getZStringTerminalValue( this.objectValue ) :
-				this.getZArgumentReferenceTerminalValue( this.objectValue );
-		},
+		const argumentKey = computed( () => key.value === Constants.Z_ARGUMENT_REFERENCE_KEY ?
+			getZStringTerminalValue( props.objectValue ) :
+			getZArgumentReferenceTerminalValue( props.objectValue ) );
 
 		/**
 		 * Returns the label of the selected argument reference,
@@ -106,9 +106,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {LabelData}
 		 */
-		argumentLabelData: function () {
-			return this.getLabelData( this.argumentKey );
-		},
+		const argumentLabelData = computed( () => store.getLabelData( argumentKey.value ) );
 
 		/**
 		 * Returns the available argument references options
@@ -118,23 +116,21 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Array} Array of codex MenuItemData objects
 		 */
-		argumentOptions: function () {
-			return this.getInputsOfFunctionZid( this.getCurrentTargetFunctionZid )
-				.map( ( arg ) => ( {
-					value: arg[ Constants.Z_ARGUMENT_KEY ],
-					label: this.getLabelData( arg[ Constants.Z_ARGUMENT_KEY ] ).label,
-					icon: icons.cdxIconFunctionArgument
-				} ) );
-		},
+		const argumentOptions = computed( () => store.getInputsOfFunctionZid(
+			store.getCurrentTargetFunctionZid
+		)
+			.map( ( arg ) => ( {
+				value: arg[ Constants.Z_ARGUMENT_KEY ],
+				label: store.getLabelData( arg[ Constants.Z_ARGUMENT_KEY ] ).label,
+				icon: icons.cdxIconFunctionArgument
+			} ) ) );
 
 		/**
 		 * Returns the placeholder for the argument reference selector
 		 *
 		 * @return {string}
 		 */
-		argumentSelectorPlaceholder: function () {
-			return this.$i18n( 'wikilambda-argument-reference-selector-placeholder' ).text();
-		},
+		const argumentSelectorPlaceholder = computed( () => i18n( 'wikilambda-argument-reference-selector-placeholder' ).text() );
 
 		/**
 		 * Status property for the Select component (ValidateStatusType).
@@ -143,11 +139,8 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string}
 		 */
-		errorSelectStatus: function () {
-			return this.hasFieldErrors ? 'error' : 'default';
-		}
-	} ),
-	methods: {
+		const errorSelectStatus = computed( () => hasFieldErrors.value ? 'error' : 'default' );
+
 		/**
 		 * Emits the event setValue so that ZObjectKey can update
 		 * the terminal value in the ZObject data table. This component can
@@ -157,9 +150,9 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} value
 		 */
-		setValue: function ( value ) {
+		function setValue( value ) {
 			let keyPath;
-			if ( this.key === Constants.Z_ARGUMENT_REFERENCE_KEY ) {
+			if ( key.value === Constants.Z_ARGUMENT_REFERENCE_KEY ) {
 				keyPath = [ Constants.Z_STRING_VALUE ];
 			} else {
 				keyPath = [
@@ -167,8 +160,20 @@ module.exports = exports = defineComponent( {
 					Constants.Z_STRING_VALUE
 				];
 			}
-			this.$emit( 'set-value', { keyPath, value } );
+			emit( 'set-value', { keyPath, value } );
 		}
+
+		return {
+			argumentKey,
+			argumentLabelData,
+			argumentOptions,
+			argumentSelectorPlaceholder,
+			errorSelectStatus,
+			fieldErrors,
+			hasFieldErrors,
+			icon,
+			setValue
+		};
 	}
 } );
 

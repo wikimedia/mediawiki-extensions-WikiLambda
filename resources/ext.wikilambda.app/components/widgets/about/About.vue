@@ -8,7 +8,7 @@
 	<wl-widget-base class="ext-wikilambda-app-about" data-testid="about-widget">
 		<!-- Widget header -->
 		<template #header>
-			{{ $i18n( 'wikilambda-about-widget-title' ).text() }}
+			{{ i18n( 'wikilambda-about-widget-title' ).text() }}
 		</template>
 		<template #header-action>
 			<cdx-button
@@ -17,15 +17,15 @@
 				action="default"
 				@click="resetEditState"
 			>
-				{{ $i18n( 'wikilambda-cancel' ).text() }}
+				{{ i18n( 'wikilambda-cancel' ).text() }}
 			</cdx-button>
 			<cdx-button
-				v-if="isEditing & !edit"
+				v-if="isEditing && !edit"
 				class="ext-wikilambda-app-about__button-publish"
 				action="progressive"
 				@click="saveAllChanges"
 			>
-				{{ $i18n( 'wikilambda-publishnew' ).text() }}
+				{{ i18n( 'wikilambda-publishnew' ).text() }}
 			</cdx-button>
 		</template>
 
@@ -41,7 +41,7 @@
 				class="ext-wikilambda-app-about__accordion"
 				action-always-visible
 				data-testid="about-language-accordion"
-				:action-button-label="$i18n( 'wikilambda-about-widget-edit-button' ).text()"
+				:action-button-label="i18n( 'wikilambda-about-widget-edit-button' ).text()"
 				@action-button-click="initializeEdit( index )"
 				@toggle="displayLanguage.open = $event"
 			>
@@ -83,7 +83,7 @@
 			<div class="ext-wikilambda-app-about__button-languages">
 				<cdx-button data-testid="languages-button" @click="openLanguagesDialog">
 					<cdx-icon :icon="iconLanguage"></cdx-icon>
-					{{ $i18n( 'wikilambda-about-widget-language-count-button', languageCount ).text() }}
+					{{ i18n( 'wikilambda-about-widget-language-count-button', languageCount ).text() }}
 				</cdx-button>
 			</div>
 		</template>
@@ -91,12 +91,11 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { computed, defineComponent, inject, onMounted, ref, watch } = require( 'vue' );
 
 const icons = require( '../../../../lib/icons.json' );
 const Constants = require( '../../../Constants.js' );
-const pageTitleMixin = require( '../../../mixins/pageTitleMixin.js' );
+const usePageTitle = require( '../../../composables/usePageTitle.js' );
 const useMainStore = require( '../../../store/index.js' );
 
 // Base components
@@ -119,7 +118,6 @@ module.exports = exports = defineComponent( {
 		'wl-publish-dialog': PublishDialog,
 		'wl-widget-base': WidgetBase
 	},
-	mixins: [ pageTitleMixin ],
 	props: {
 		edit: {
 			type: Boolean,
@@ -130,235 +128,38 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	data: function () {
-		return {
-			iconEdit: icons.cdxIconEdit,
-			iconLanguage: icons.cdxIconLanguage,
-			displayLanguages: [],
-			showLanguagesDialog: false,
-			showPublishDialog: false
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getFallbackLanguageZids',
-		'getLabelData',
-		'getMultilingualDataLanguages',
-		'getUserLangZid',
-		'getZFunctionInputLabels',
-		'getZPersistentName',
-		'getZPersistentDescription',
-		'getZPersistentAlias',
-		'isCreateNewPage',
-		'isDirty',
-		'isUserLoggedIn'
-	] ), {
-		/**
-		 * Returns a computed array of the multilingual data for
-		 * the languages selected for display, as per their persisted
-		 * state in the global store.
-		 *
-		 * @return {Array}
-		 */
-		displayData: function () {
-			return this.displayLanguages.map( ( lang ) => this.getMultilingualDataForLanguage( lang.zid ) );
-		},
-		/**
-		 * Returns whether the user can edit the function
-		 *
-		 * @return {boolean}
-		 */
-		canEditObject: function () {
-			// TODO (T301667): restrict to only certain user roles
-			return this.isCreateNewPage ? true : this.isUserLoggedIn;
-		},
-		/**
-		 * Returns whether any of the language blocks is being edited
-		 *
-		 * @return {boolean}
-		 */
-		isEditing: function () {
-			return !!this.displayLanguages.find( ( item ) => item.edit );
-		},
-		/**
-		 * Returns the available languages for each field
-		 *
-		 * @return {Object}
-		 */
-		fieldLangs: function () {
-			const { name, description, aliases, inputs } = this.getMultilingualDataLanguages;
-			return { name, description, aliases, inputs };
-		},
-		/**
-		 * Returns a list of all the language Zids that are present in
-		 * the multilingual data collection (must have at least a name,
-		 * a description, a set of aliases or an input label in case the
-		 * object is a function).
-		 *
-		 * @return {Array}
-		 */
-		allLangs: function () {
-			return this.getMultilingualDataLanguages.all;
-		},
-		/**
-		 * Returns the count of the list of unique available languages
-		 *
-		 * @return {number}
-		 */
-		languageCount: function () {
-			return this.allLangs.length;
-		},
+	emits: [ 'edit-multilingual-data', 'publish-multilingual-data', 'cancel-edit' ],
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
+		const { updatePageTitle } = usePageTitle();
+
+		// Reactive data
+		const iconEdit = icons.cdxIconEdit;
+		const iconLanguage = icons.cdxIconLanguage;
+		const displayLanguages = ref( [] );
+		const showLanguagesDialog = ref( false );
+		const showPublishDialog = ref( false );
+
+		// Computed properties
 		/**
 		 * Returns whether the current object is a function
 		 *
 		 * @return {boolean}
 		 */
-		isFunction: function () {
-			return this.type === Constants.Z_FUNCTION;
-		},
-		/**
-		 * Returns the list of fallback languages in their Zid
-		 * representation, excluding the first (user selected language)
-		 *
-		 * @return {Array}
-		 */
-		fallbackLanguageZids: function () {
-			return this.getFallbackLanguageZids.slice( 1 );
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'setZMonolingualString',
-		'setZMonolingualStringset',
-		'resetMultilingualData',
-		'setDirty'
-	] ), {
-		/**
-		 * Opens the AboutLanguagesDialog
-		 */
-		openLanguagesDialog: function () {
-			this.showLanguagesDialog = true;
-		},
-		/**
-		 * Adds the selected language to the collection
-		 * of displayed languages.
-		 *
-		 * @param {string} newLang
-		 */
-		addLanguage: function ( newLang ) {
-			// Ignore if already displayed
-			const found = this.displayLanguages.find( ( lang ) => lang.zid === newLang );
-			if ( found ) {
-				return;
-			}
-			this.displayLanguages.push( {
-				zid: newLang,
-				edit: this.edit,
-				open: false,
-				editData: this.edit ?
-					this.editCopy( this.getMultilingualDataForLanguage( newLang ).viewData ) :
-					undefined
-			} );
-		},
-		/**
-		 * Initialize the local editable data collection for a given
-		 * language block given its index.
-		 *
-		 * @param {number} index
-		 */
-		initializeEdit: function ( index ) {
-			this.displayLanguages[ index ].edit = true;
-			this.displayLanguages[ index ].open = true;
-			this.displayLanguages[ index ].editData = this.editCopy( this.displayData[ index ].viewData );
-			this.$emit( 'edit-multilingual-data' );
-		},
-		/**
-		 * Restores original view state and cancels publish
-		 * action. This only happens when we are in a view page
-		 * and after editing information, we proceed to publish
-		 * and then we cancel.
-		 */
-		cancelPublish: function () {
-			if ( this.isDirty ) {
-				this.resetMultilingualData();
-			}
-			this.showPublishDialog = false;
-		},
-		/**
-		 * Initializes the collection of languages to display in
-		 * the About widget, according to the following logic:
-		 * * The user language will always be shown first, in an expanded state.
-		 * * If the user language doesn't have complete multilingual data, one or
-		 *   more fallback languges will be added to the display.
-		 * Each item also includes their local state:
-		 * * edit state flag
-		 * * edit data values
-		 */
-		initializeDisplayLanguages: function () {
-			// 1. Always start with user language
-			this.displayLanguages = [ {
-				zid: this.getUserLangZid,
-				edit: this.edit,
-				open: true,
-				editData: this.edit ?
-					this.editCopy( this.getMultilingualDataForLanguage( this.getUserLangZid ).viewData ) :
-					undefined
-			} ];
+		const isFunction = computed( () => props.type === Constants.Z_FUNCTION );
 
-			// 2. If important info in main language is complete, exit
-			let missingName = !this.fieldLangs.name.includes( this.getUserLangZid );
-			let missingInputs = this.fieldLangs.inputs.filter( ( langs ) => !langs.includes( this.getUserLangZid ) );
-			if ( !missingName && missingInputs.length === 0 ) {
-				return;
-			}
-
-			// 3. Collect fallback languages to cover up for missing fields
-			let addBlocks = [];
-			for ( const langZid of this.fallbackLanguageZids ) {
-				// 3.1. If everything is complete, exit loop
-				if ( !missingName && missingInputs.length === 0 ) {
-					break;
-				}
-
-				// 3.2. If we are still missing a fallback name, check if we have it in this language
-				if ( missingName ) {
-					if ( this.fieldLangs.name.includes( langZid ) ) {
-						addBlocks.push( langZid );
-						missingName = false;
-					}
-				}
-
-				// 3.3. For each missing input labels, check if we have it in this language
-				const availableInputs = missingInputs.filter( ( input ) => input.includes( langZid ) );
-				if ( availableInputs.length > 0 ) {
-					addBlocks.push( langZid );
-					missingInputs = missingInputs.filter( ( input ) => !input.includes( langZid ) );
-				}
-			}
-
-			// 4. Remove duplicates and add fallback languages to language blocks
-			addBlocks = [ ...new Set( addBlocks ) ];
-			addBlocks.forEach( ( langZid ) => {
-				this.displayLanguages.push( {
-					zid: langZid,
-					edit: this.edit,
-					open: false,
-					editData: this.edit ?
-						this.editCopy( this.getMultilingualDataForLanguage( langZid ).viewData ) :
-						undefined
-				} );
-			} );
-		},
 		/**
-		 * Returns a collection fo all multilingual data fields and
-		 * their values for a given language
+		 * Returns the multilingual data for a given language
 		 *
 		 * @param {string} langZid
 		 * @return {Object}
 		 */
-		getMultilingualDataForLanguage: function ( langZid ) {
-			const name = this.getZPersistentName( langZid );
-			const description = this.getZPersistentDescription( langZid );
-			const aliases = this.getZPersistentAlias( langZid );
-			const inputs = this.isFunction ? this.getZFunctionInputLabels( langZid ) : [];
+		function getMultilingualDataForLanguage( langZid ) {
+			const name = store.getZPersistentName( langZid );
+			const description = store.getZPersistentDescription( langZid );
+			const aliases = store.getZPersistentAlias( langZid );
+			const inputs = isFunction.value ? store.getZFunctionInputLabels( langZid ) : [];
 
 			const data = {
 				name: {
@@ -377,33 +178,227 @@ module.exports = exports = defineComponent( {
 			};
 
 			return {
-				title: this.getLabelData( langZid ).label,
+				title: store.getLabelData( langZid ).label,
 				hasName: !!data.name.value,
-				name: data.name.value || this.$i18n( 'wikilambda-editor-default-name' ).text(),
+				name: data.name.value || i18n( 'wikilambda-editor-default-name' ).text(),
 				viewData: data
 			};
-		},
+		}
+
+		/**
+		 * Returns a computed array of the multilingual data for
+		 * the languages selected for display, as per their persisted
+		 * state in the global store.
+		 *
+		 * @return {Array}
+		 */
+		const displayData = computed( () => displayLanguages.value.map(
+			( lang ) => getMultilingualDataForLanguage( lang.zid )
+		) );
+
+		/**
+		 * Returns whether the user can edit the function
+		 *
+		 * @return {boolean}
+		 */
+		const canEditObject = computed( () => ( store.isCreateNewPage ? true : store.isUserLoggedIn ) );
+
+		/**
+		 * Returns whether any of the language blocks is being edited
+		 *
+		 * @return {boolean}
+		 */
+		const isEditing = computed( () => !!displayLanguages.value.find( ( item ) => item.edit ) );
+
+		/**
+		 * Returns the available languages for each field
+		 *
+		 * @return {Object}
+		 */
+		const fieldLangs = computed( () => {
+			const { name, description, aliases, inputs } = store.getMultilingualDataLanguages;
+			return { name, description, aliases, inputs };
+		} );
+
+		/**
+		 * Returns a list of all the language Zids that are present in
+		 * the multilingual data collection (must have at least a name,
+		 * a description, a set of aliases or an input label in case the
+		 * object is a function).
+		 *
+		 * @return {Array}
+		 */
+		const allLangs = computed( () => store.getMultilingualDataLanguages.all );
+
+		/**
+		 * Returns the count of the list of unique available languages
+		 *
+		 * @return {number}
+		 */
+		const languageCount = computed( () => allLangs.value.length );
+
+		/**
+		 * Returns the list of fallback languages in their Zid
+		 * representation, excluding the first (user selected language)
+		 *
+		 * @return {Array}
+		 */
+		const fallbackLanguageZids = computed( () => store.getFallbackLanguageZids.slice( 1 ) );
+
+		/**
+		 * Creates a deep copy of the edit data
+		 *
+		 * @param {Object} data
+		 * @return {Object}
+		 */
+		function editCopy( data ) {
+			return JSON.parse( JSON.stringify( data ) );
+		}
+
+		/**
+		 * Opens the AboutLanguagesDialog
+		 */
+		function openLanguagesDialog() {
+			showLanguagesDialog.value = true;
+		}
+
+		/**
+		 * Adds the selected language to the collection
+		 * of displayed languages.
+		 *
+		 * @param {string} newLang
+		 */
+		function addLanguage( newLang ) {
+			// Ignore if already displayed
+			const found = displayLanguages.value.find( ( lang ) => lang.zid === newLang );
+			if ( found ) {
+				return;
+			}
+			displayLanguages.value.push( {
+				zid: newLang,
+				edit: props.edit,
+				open: false,
+				editData: props.edit ?
+					editCopy( getMultilingualDataForLanguage( newLang ).viewData ) :
+					undefined
+			} );
+		}
+
+		/**
+		 * Initialize the local editable data collection for a given
+		 * language block given its index.
+		 *
+		 * @param {number} index
+		 */
+		function initializeEdit( index ) {
+			displayLanguages.value[ index ].edit = true;
+			displayLanguages.value[ index ].open = true;
+			displayLanguages.value[ index ].editData = editCopy( displayData.value[ index ].viewData );
+			emit( 'edit-multilingual-data' );
+		}
+
+		/**
+		 * Restores original view state and cancels publish
+		 * action. This only happens when we are in a view page
+		 * and after editing information, we proceed to publish
+		 * and then we cancel.
+		 */
+		function cancelPublish() {
+			if ( store.isDirty ) {
+				store.resetMultilingualData();
+			}
+			showPublishDialog.value = false;
+		}
+
+		/**
+		 * Initializes the collection of languages to display in
+		 * the About widget, according to the following logic:
+		 * * The user language will always be shown first, in an expanded state.
+		 * * If the user language doesn't have complete multilingual data, one or
+		 *   more fallback languges will be added to the display.
+		 * Each item also includes their local state:
+		 * * edit state flag
+		 * * edit data values
+		 */
+		function initializeDisplayLanguages() {
+			// 1. Always start with user language
+			displayLanguages.value = [ {
+				zid: store.getUserLangZid,
+				edit: props.edit,
+				open: true,
+				editData: props.edit ?
+					editCopy( getMultilingualDataForLanguage( store.getUserLangZid ).viewData ) :
+					undefined
+			} ];
+
+			// 2. If important info in main language is complete, exit
+			let missingName = !fieldLangs.value.name.includes( store.getUserLangZid );
+			let missingInputs = fieldLangs.value.inputs.filter( ( langs ) => !langs.includes( store.getUserLangZid ) );
+			if ( !missingName && missingInputs.length === 0 ) {
+				return;
+			}
+
+			// 3. Collect fallback languages to cover up for missing fields
+			let addBlocks = [];
+			for ( const langZid of fallbackLanguageZids.value ) {
+				// 3.1. If everything is complete, exit loop
+				if ( !missingName && missingInputs.length === 0 ) {
+					break;
+				}
+
+				// 3.2. If we are still missing a fallback name, check if we have it in this language
+				if ( missingName ) {
+					if ( fieldLangs.value.name.includes( langZid ) ) {
+						addBlocks.push( langZid );
+						missingName = false;
+					}
+				}
+
+				// 3.3. For each missing input labels, check if we have it in this language
+				const availableInputs = missingInputs.filter( ( input ) => input.includes( langZid ) );
+				if ( availableInputs.length > 0 ) {
+					addBlocks.push( langZid );
+					missingInputs = missingInputs.filter( ( input ) => !input.includes( langZid ) );
+				}
+			}
+
+			// 4. Remove duplicates and add fallback languages to language blocks
+			addBlocks = [ ...new Set( addBlocks ) ];
+			addBlocks.forEach( ( langZid ) => {
+				displayLanguages.value.push( {
+					zid: langZid,
+					edit: props.edit,
+					open: false,
+					editData: props.edit ?
+						editCopy( getMultilingualDataForLanguage( langZid ).viewData ) :
+						undefined
+				} );
+			} );
+		}
+
 		/**
 		 * Discards all edits and sets all language blocks to view mode.
 		 */
-		resetEditState: function () {
-			this.displayLanguages.forEach( ( lang ) => {
+		function resetEditState() {
+			displayLanguages.value.forEach( ( lang ) => {
 				lang.edit = false;
 				lang.editData = undefined;
 			} );
-		},
+		}
+
 		/**
 		 * Only in view pages (functions and others):
 		 * Persists all accummulated changes in the store and initiates publish process.
 		 * Triggered when user clicks the "Publish" button from the About widget header.
 		 */
-		saveAllChanges: function () {
-			if ( this.edit ) {
+		function saveAllChanges() {
+			if ( props.edit ) {
 				return;
 			}
-			this.persistState();
-			this.showPublishDialog = true;
-		},
+			persistState();
+			showPublishDialog.value = true;
+		}
+
 		/**
 		 * Only in edit page (non functions):
 		 * Persists a field change in the store and updates the page title if needed.
@@ -411,27 +406,102 @@ module.exports = exports = defineComponent( {
 		 * are persisted as they are entered, and published when the page Publish
 		 * button is clicked.
 		 */
-		saveFieldChange: function () {
-			if ( !this.edit ) {
+		function saveFieldChange() {
+			if ( !props.edit ) {
 				return;
 			}
-			this.persistState();
-		},
+			persistState();
+		}
+
+		/**
+		 * Persist in the global state a new value for name in the given language
+		 *
+		 * @param {string|undefined} itemKeyPath
+		 * @param {string} value
+		 * @param {string} lang
+		 */
+		function persistName( itemKeyPath, value, lang ) {
+			const parentKeyPath = [
+				Constants.STORED_OBJECTS.MAIN,
+				Constants.Z_PERSISTENTOBJECT_LABEL,
+				Constants.Z_MULTILINGUALSTRING_VALUE
+			];
+			store.setZMonolingualString( { parentKeyPath, itemKeyPath, value, lang } );
+			// After persisting in the state, update the page title
+			updatePageTitle();
+			store.setDirty( true );
+		}
+
+		/**
+		 * Persist in the global state a new value for description in the given language
+		 *
+		 * @param {string|undefined} itemKeyPath
+		 * @param {string} value
+		 * @param {string} lang
+		 */
+		function persistDescription( itemKeyPath, value, lang ) {
+			const parentKeyPath = [
+				Constants.STORED_OBJECTS.MAIN,
+				Constants.Z_PERSISTENTOBJECT_DESCRIPTION,
+				Constants.Z_MULTILINGUALSTRING_VALUE
+			];
+			store.setZMonolingualString( { parentKeyPath, itemKeyPath, value, lang } );
+			store.setDirty( true );
+		}
+
+		/**
+		 * Persist in the global state a new value for aliases in the given language
+		 *
+		 * @param {string|undefined} itemKeyPath
+		 * @param {Array} value
+		 * @param {string} lang
+		 */
+		function persistAlias( itemKeyPath, value, lang ) {
+			const parentKeyPath = [
+				Constants.STORED_OBJECTS.MAIN,
+				Constants.Z_PERSISTENTOBJECT_ALIASES,
+				Constants.Z_MULTILINGUALSTRINGSET_VALUE
+			];
+			store.setZMonolingualStringset( { parentKeyPath, itemKeyPath, value, lang } );
+			store.setDirty( true );
+		}
+
+		/**
+		 * Persist in the global state a new value for an input label in the given language
+		 *
+		 * @param {string|undefined} itemKeyPath
+		 * @param {number} index
+		 * @param {string} value
+		 * @param {string} lang
+		 */
+		function persistInputLabel( itemKeyPath, index, value, lang ) {
+			const parentKeyPath = [
+				Constants.STORED_OBJECTS.MAIN,
+				Constants.Z_PERSISTENTOBJECT_VALUE,
+				Constants.Z_FUNCTION_ARGUMENTS,
+				index,
+				Constants.Z_ARGUMENT_LABEL,
+				Constants.Z_MULTILINGUALSTRING_VALUE
+			];
+			store.setZMonolingualString( { parentKeyPath, itemKeyPath, value, lang } );
+			store.setDirty( true );
+		}
+
 		/**
 		 * For each language being edited, persists all changes
 		 * in the store.
 		 */
-		persistState: function () {
-			this.displayLanguages.forEach( ( lang, index ) => {
+		function persistState() {
+			displayLanguages.value.forEach( ( lang, index ) => {
 				// If language block is in edit mode, persist
 				// all changes that have a different edit and view value.
 				if ( lang.edit ) {
-					const viewData = this.displayData[ index ].viewData;
+					const viewData = displayData.value[ index ].viewData;
 					const editData = lang.editData;
 
 					// Persist name if it changed
 					if ( viewData.name.value !== editData.name.value ) {
-						this.persistName(
+						persistName(
 							viewData.name.keyPath,
 							editData.name.value,
 							lang.zid
@@ -440,7 +510,7 @@ module.exports = exports = defineComponent( {
 
 					// Persist description if it changed
 					if ( viewData.description.value !== editData.description.value ) {
-						this.persistDescription(
+						persistDescription(
 							viewData.description.keyPath,
 							editData.description.value,
 							lang.zid
@@ -452,7 +522,7 @@ module.exports = exports = defineComponent( {
 						JSON.stringify( viewData.aliases.value ) !==
 						JSON.stringify( editData.aliases.value )
 					) {
-						this.persistAlias(
+						persistAlias(
 							viewData.aliases.keyPath,
 							editData.aliases.value,
 							lang.zid
@@ -462,7 +532,7 @@ module.exports = exports = defineComponent( {
 					// Persist input labels if they changed
 					for ( const input in editData.inputs ) {
 						if ( viewData.inputs[ input ].value !== editData.inputs[ input ].value ) {
-							this.persistInputLabel(
+							persistInputLabel(
 								viewData.inputs[ input ].keyPath,
 								Number( input ) + 1,
 								editData.inputs[ input ].value,
@@ -472,77 +542,8 @@ module.exports = exports = defineComponent( {
 					}
 				}
 			} );
-		},
-		/**
-		 * Persist in the global state a new value for name in the given language
-		 *
-		 * @param {string|undefined} itemKeyPath
-		 * @param {string} value
-		 * @param {string} lang
-		 */
-		persistName: function ( itemKeyPath, value, lang ) {
-			const parentKeyPath = [
-				Constants.STORED_OBJECTS.MAIN,
-				Constants.Z_PERSISTENTOBJECT_LABEL,
-				Constants.Z_MULTILINGUALSTRING_VALUE
-			];
-			this.setZMonolingualString( { parentKeyPath, itemKeyPath, value, lang } );
-			// After persisting in the state, update the page title
-			this.updatePageTitle();
-			this.setDirty( true );
-		},
-		/**
-		 * Persist in the global state a new value for description in the given language
-		 *
-		 * @param {string|undefined} itemKeyPath
-		 * @param {string} value
-		 * @param {string} lang
-		 */
-		persistDescription: function ( itemKeyPath, value, lang ) {
-			const parentKeyPath = [
-				Constants.STORED_OBJECTS.MAIN,
-				Constants.Z_PERSISTENTOBJECT_DESCRIPTION,
-				Constants.Z_MULTILINGUALSTRING_VALUE
-			];
-			this.setZMonolingualString( { parentKeyPath, itemKeyPath, value, lang } );
-			this.setDirty( true );
-		},
-		/**
-		 * Persist in the global state a new value for aliases in the given language
-		 *
-		 * @param {string|undefined} itemKeyPath
-		 * @param {Array} value
-		 * @param {string} lang
-		 */
-		persistAlias: function ( itemKeyPath, value, lang ) {
-			const parentKeyPath = [
-				Constants.STORED_OBJECTS.MAIN,
-				Constants.Z_PERSISTENTOBJECT_ALIASES,
-				Constants.Z_MULTILINGUALSTRINGSET_VALUE
-			];
-			this.setZMonolingualStringset( { parentKeyPath, itemKeyPath, value, lang } );
-			this.setDirty( true );
-		},
-		/**
-		 * Persist in the global state a new value for an input label in the given language
-		 *
-		 * @param {string|undefined} itemKeyPath
-		 * @param {number} index
-		 * @param {string} value
-		 * @param {string} lang
-		 */
-		persistInputLabel: function ( itemKeyPath, index, value, lang ) {
-			const parentKeyPath = [
-				Constants.STORED_OBJECTS.MAIN,
-				Constants.Z_PERSISTENTOBJECT_VALUE,
-				Constants.Z_FUNCTION_ARGUMENTS,
-				index,
-				Constants.Z_ARGUMENT_LABEL,
-				Constants.Z_MULTILINGUALSTRING_VALUE
-			];
-			this.setZMonolingualString( { parentKeyPath, itemKeyPath, value, lang } );
-			this.setDirty( true );
-		},
+		}
+
 		/**
 		 * Persists locally all the changes in the Language Block fields
 		 *
@@ -550,9 +551,10 @@ module.exports = exports = defineComponent( {
 		 * @param {Object} payload.data
 		 * @param {Array|string} payload.value
 		 */
-		updateEditValue: function ( payload ) {
+		function updateEditValue( payload ) {
 			payload.data.value = payload.value;
-		},
+		}
+
 		/**
 		 * Returns special class for the accordion description
 		 * depending on the availability of the title.
@@ -560,27 +562,43 @@ module.exports = exports = defineComponent( {
 		 * @param {boolean} hasName
 		 * @return {string}
 		 */
-		accordionDescriptionClass: function ( hasName ) {
+		function accordionDescriptionClass( hasName ) {
 			return hasName ? '' : 'ext-wikilambda-app-about__accordion--untitled';
-		},
-		/**
-		 * Creates a value deep copy of the input string
-		 * to be temporarily editable but not alter the store.
-		 *
-		 * @param {Object} viewObject
-		 * @return {Object}
-		 */
-		editCopy( viewObject ) {
-			return JSON.parse( JSON.stringify( viewObject ) );
 		}
-	} ),
-	watch: {
-		fallbackLanguageZids: function () {
-			this.initializeDisplayLanguages();
-		}
-	},
-	mounted: function () {
-		this.initializeDisplayLanguages();
+
+		// Watchers
+		watch( fallbackLanguageZids, () => {
+			initializeDisplayLanguages();
+		} );
+
+		// Lifecycle
+		onMounted( () => {
+			initializeDisplayLanguages();
+		} );
+
+		return {
+			accordionDescriptionClass,
+			addLanguage,
+			canEditObject,
+			cancelPublish,
+			displayData,
+			displayLanguages,
+			fieldLangs,
+			iconEdit,
+			iconLanguage,
+			initializeEdit,
+			isEditing,
+			isFunction,
+			languageCount,
+			openLanguagesDialog,
+			resetEditState,
+			saveAllChanges,
+			saveFieldChange,
+			showLanguagesDialog,
+			showPublishDialog,
+			updateEditValue,
+			i18n
+		};
 	}
 } );
 </script>

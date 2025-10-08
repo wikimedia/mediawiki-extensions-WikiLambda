@@ -7,7 +7,6 @@
 'use strict';
 
 const { mount, shallowMount } = require( '@vue/test-utils' );
-const { CdxTextInput } = require( '@wikimedia/codex' );
 
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const ZMonolingualString = require( '../../../../resources/ext.wikilambda.app/components/types/ZMonolingualString.vue' );
@@ -25,6 +24,38 @@ const objectValue = {
 describe( 'ZMonolingualString', () => {
 	let store;
 
+	/**
+	 * Helper function to render ZMonolingualString component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderZMonolingualString( props = {}, options = {} ) {
+		const defaultProps = {
+			keyPath,
+			objectValue,
+			edit: false
+		};
+		return shallowMount( ZMonolingualString, { props: { ...defaultProps, ...props }, ...options } );
+	}
+
+	/**
+	 * Helper function to fully render ZMonolingualString component (not shallow)
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderZMonolingualStringFull( props = {}, options = {} ) {
+		const defaultProps = {
+			keyPath,
+			objectValue,
+			edit: false
+		};
+		return mount( ZMonolingualString, { props: { ...defaultProps, ...props }, ...options } );
+	}
+
 	beforeEach( () => {
 		store = useMainStore();
 		store.getLanguageIsoCodeOfZLang = createGettersWithFunctionsMock( 'EN' );
@@ -32,52 +63,28 @@ describe( 'ZMonolingualString', () => {
 
 	describe( 'in view mode', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( ZMonolingualString, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false
-				}
-			} );
+			const wrapper = renderZMonolingualString();
 			expect( wrapper.find( 'div' ).exists() ).toBe( true );
 		} );
 
 		it( 'displays a language chip', () => {
-			const wrapper = mount( ZMonolingualString, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false
-				}
-			} );
+			const wrapper = renderZMonolingualStringFull();
 
-			expect( wrapper.find( '.ext-wikilambda-app-monolingual-string__chip' ).exists() ).toBeTruthy();
+			expect( wrapper.find( '.ext-wikilambda-app-monolingual-string__chip' ).exists() ).toBe( true );
 
-			expect( wrapper.find( '.ext-wikilambda-app-monolingual-string__chip' ).text() ).toBe( 'EN' );
+			expect( wrapper.get( '.ext-wikilambda-app-monolingual-string__chip' ).text() ).toBe( 'EN' );
 		} );
 
 		it( 'displays the label value for the language', () => {
-			const wrapper = shallowMount( ZMonolingualString, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false
-				}
-			} );
+			const wrapper = renderZMonolingualString();
 
-			expect( wrapper.find( '.ext-wikilambda-app-monolingual-string__view-mode' ).text() ).toContain( 'my label' );
+			expect( wrapper.get( '.ext-wikilambda-app-monolingual-string__view-mode' ).text() ).toContain( 'my label' );
 		} );
 	} );
 
 	describe( 'in edit mode', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( ZMonolingualString, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true
-				}
-			} );
+			const wrapper = renderZMonolingualString( { edit: true } );
 
 			expect( wrapper.find( 'div' ).exists() ).toBe( true );
 			expect( wrapper.findComponent( { name: 'cdx-text-input' } ).exists() ).toBe( true );
@@ -85,29 +92,17 @@ describe( 'ZMonolingualString', () => {
 		} );
 
 		it( 'displays a language chip', () => {
-			const wrapper = mount( ZMonolingualString, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false
-				}
-			} );
+			const wrapper = renderZMonolingualStringFull();
 
-			expect( wrapper.find( '.ext-wikilambda-app-monolingual-string__chip' ).exists() ).toBeTruthy();
+			expect( wrapper.find( '.ext-wikilambda-app-monolingual-string__chip' ).exists() ).toBe( true );
 
-			expect( wrapper.find( '.ext-wikilambda-app-monolingual-string__chip' ).text() ).toBe( 'EN' );
+			expect( wrapper.get( '.ext-wikilambda-app-monolingual-string__chip' ).text() ).toBe( 'EN' );
 		} );
 
 		it( 'its label value can be edited and the value emitted', async () => {
-			const wrapper = shallowMount( ZMonolingualString, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true
-				}
-			} );
+			const wrapper = renderZMonolingualString( { edit: true } );
 
-			await wrapper.getComponent( CdxTextInput ).vm.$emit( 'update:modelValue', 'my new label' );
+			await wrapper.getComponent( { name: 'cdx-text-input' } ).vm.$emit( 'update:modelValue', 'my new label' );
 
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [ Constants.Z_MONOLINGUALSTRING_VALUE,
 				Constants.Z_STRING_VALUE ], value: 'my new label' } ] ] );

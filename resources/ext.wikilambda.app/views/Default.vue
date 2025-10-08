@@ -28,7 +28,7 @@
 				<!-- Persistent Object content block -->
 				<div class="ext-wikilambda-app-default-view__content" data-testid="content">
 					<div class="ext-wikilambda-app-default-view__title">
-						{{ $i18n( 'wikilambda-persistentzobject-contents' ).text() }}
+						{{ i18n( 'wikilambda-persistentzobject-contents' ).text() }}
 					</div>
 					<wl-z-object-key-value
 						v-if="objectValue"
@@ -67,13 +67,12 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapState } = require( 'pinia' );
+const { computed, defineComponent, inject, onMounted } = require( 'vue' );
+const { storeToRefs } = require( 'pinia' );
 
 const Constants = require( '../Constants.js' );
-const eventLogMixin = require( '../mixins/eventLogMixin.js' );
-const scrollMixin = require( '../mixins/scrollMixin.js' );
-const typeMixin = require( '../mixins/typeMixin.js' );
+const useEventLog = require( '../composables/useEventLog.js' );
+const useType = require( '../composables/useType.js' );
 const useMainStore = require( '../store/index.js' );
 
 // Type components
@@ -95,87 +94,61 @@ module.exports = exports = defineComponent( {
 		'wl-function-report-widget': FunctionReportWidget,
 		'wl-z-object-key-value': ZObjectKeyValue
 	},
-	mixins: [ eventLogMixin, scrollMixin, typeMixin ],
-	data: function () {
-		return {
-			initialKeyPath: `${ Constants.STORED_OBJECTS.MAIN }.${ Constants.Z_PERSISTENTOBJECT_VALUE }`
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getCurrentZObjectId',
-		'getCurrentZObjectType',
-		'getCurrentTargetFunctionZid',
-		'getCurrentZImplementationType',
-		'getJsonObject',
-		'getUserLangZid',
-		'getViewMode',
-		'isCreateNewPage',
-		'isDirty'
-	] ), {
+	emits: [ 'mounted' ],
+	setup( _, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
+		const { isDirty } = storeToRefs( store );
+		const { submitInteraction } = useEventLog();
+		const { typeToString } = useType();
+
+		// Reactive data
+		const initialKeyPath = `${ Constants.STORED_OBJECTS.MAIN }.${ Constants.Z_PERSISTENTOBJECT_VALUE }`;
+
+		// Computed properties
 		/**
 		 * Returns the initial persistent object content ZObject
 		 *
 		 * @return {Object|Array|undefined}
 		 */
-		objectValue: function () {
-			const jsonObject = this.getJsonObject( Constants.STORED_OBJECTS.MAIN );
+		const objectValue = computed( () => {
+			const jsonObject = store.getJsonObject( Constants.STORED_OBJECTS.MAIN );
 			return jsonObject ? jsonObject[ Constants.Z_PERSISTENTOBJECT_VALUE ] : undefined;
-		},
+		} );
 
 		/**
-		 * Returns whether we are in an edit page according
-		 * to the URL
+		 * Returns whether we are in an edit page according to the URL
 		 *
 		 * @return {boolean}
 		 */
-		edit: function () {
-			return !this.getViewMode;
-		},
+		const edit = computed( () => !store.getViewMode );
 
 		/**
 		 * Returns the type of the content object
 		 *
 		 * @return {string}
 		 */
-		contentType: function () {
-			return this.typeToString( this.getCurrentZObjectType );
-		},
+		const contentType = computed( () => typeToString( store.getCurrentZObjectType ) );
 
 		/**
-		 * Whether the page contains function widgets (is an
-		 * implementation or a tester page)
+		 * Whether the page contains function widgets (is an implementation or a tester page)
 		 *
 		 * @return {boolean}
 		 */
-		hasFunctionWidgets: function () {
-			return (
-				this.contentType === Constants.Z_IMPLEMENTATION ||
-				this.contentType === Constants.Z_TESTER
-			);
-		},
+		const hasFunctionWidgets = computed( () => contentType.value === Constants.Z_IMPLEMENTATION ||
+				contentType.value === Constants.Z_TESTER );
 
 		/**
 		 * @return {string|undefined}
 		 */
-		persistentObjectZid: function () {
-			return this.getCurrentZObjectId;
-		},
+		const targetFunctionZid = computed( () => store.getCurrentTargetFunctionZid );
 
 		/**
 		 * @return {string|undefined}
 		 */
-		targetFunctionZid: function () {
-			return this.getCurrentTargetFunctionZid;
-		},
+		const implementationMode = computed( () => store.getCurrentZImplementationType );
 
-		/**
-		 * @return {string|undefined}
-		 */
-		implementationMode: function () {
-			return this.getCurrentZImplementationType;
-		}
-	} ),
-	methods: {
+		// Methods
 		/**
 		 * Dispatch event (via Metrics Platform) to record loading this view,
 		 * or editing the About widget content.
@@ -185,37 +158,55 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} editValue
 		 */
-		dispatchLoadEvent: function ( editValue ) {
+		function dispatchLoadEvent( editValue ) {
 			// Log an event using Metrics Platform's core interaction events
 			const interactionData = {
-				zobjecttype: this.contentType || null,
-				zobjectid: this.getCurrentZObjectId || null,
-				zlang: this.getUserLangZid || null
+				zobjecttype: contentType.value || null,
+				zobjectid: store.getCurrentZObjectId || null,
+				zlang: store.getUserLangZid || null
 			};
 			let action = '';
 			if ( !editValue ) {
 				action = 'view';
 			} else {
-				action = this.isCreateNewPage ? 'create' : 'edit';
+				action = store.isCreateNewPage ? 'create' : 'edit';
 			}
-			this.submitInteraction( action, interactionData );
-		},
+			submitInteraction( action, interactionData );
+		}
+
 		/**
-		 * This method handles a click of the edit-icon in the About widget. If this.edit = false,
+		 * This method handles a click of the edit-icon in the About widget. If edit = false,
 		 * we regard this click as the beginning of an edit journey of the current ZObject. But if
-		 * we are already in edit mode (this.edit = true), this journey has already begun and the
+		 * we are already in edit mode (edit = true), this journey has already begun and the
 		 * appropriate event has already been dispatched.
 		 * TODO (T352141): Consider counting "About info" editing separately
 		 */
-		dispatchLoadEventForEditMultilingualData: function () {
-			if ( !this.edit ) {
-				this.dispatchLoadEvent( true );
+		function dispatchLoadEventForEditMultilingualData() {
+			if ( !edit.value ) {
+				dispatchLoadEvent( true );
 			}
 		}
-	},
-	mounted: function () {
-		this.dispatchLoadEvent( this.edit );
-		this.$emit( 'mounted' );
+
+		// Lifecycle
+		onMounted( () => {
+			dispatchLoadEvent( edit.value );
+			emit( 'mounted' );
+		} );
+
+		return {
+			// Reactive store data
+			isDirty,
+			// Other data
+			contentType,
+			dispatchLoadEventForEditMultilingualData,
+			edit,
+			hasFunctionWidgets,
+			i18n,
+			implementationMode,
+			initialKeyPath,
+			objectValue,
+			targetFunctionZid
+		};
 	}
 } );
 </script>

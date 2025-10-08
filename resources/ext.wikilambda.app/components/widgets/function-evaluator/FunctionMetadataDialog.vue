@@ -7,7 +7,7 @@
 <template>
 	<cdx-dialog
 		class="ext-wikilambda-app-function-metadata-dialog"
-		:title="$i18n( 'wikilambda-functioncall-metadata-accessible-title' ).text()"
+		:title="i18n( 'wikilambda-functioncall-metadata-accessible-title' ).text()"
 		:open="open"
 		@update:open="closeDialog"
 	>
@@ -15,7 +15,7 @@
 		<template #header>
 			<wl-custom-dialog-header @close-dialog="closeDialog">
 				<template #title>
-					{{ $i18n( 'wikilambda-function-evaluator-result-details' ).text() }}
+					{{ i18n( 'wikilambda-function-evaluator-result-details' ).text() }}
 				</template>
 				<template v-if="headerText" #subtitle>
 					<span :lang="headerText.langCode" :dir="headerText.langDir">
@@ -29,7 +29,7 @@
 							:title="tooltipMetaDataHelpLink"
 							:href="parsedMetaDataHelpLink"
 							target="_blank">
-							{{ $i18n( 'wikilambda-helplink-button' ).text() }}
+							{{ i18n( 'wikilambda-helplink-button' ).text() }}
 						</a>
 					</div>
 				</template>
@@ -50,7 +50,7 @@
 		<div v-else class="ext-wikilambda-app-function-metadata-dialog__body">
 			<cdx-message v-if="hasMetadataErrors">
 				<!-- eslint-disable-next-line vue/no-v-html -->
-				<div v-html="$i18n( 'wikilambda-functioncall-metadata-errors-debug-hint' ).parse()"></div>
+				<div v-html="i18n( 'wikilambda-functioncall-metadata-errors-debug-hint' ).parse()"></div>
 			</cdx-message>
 			<cdx-field
 				v-if="hasNestedMetadata"
@@ -63,7 +63,7 @@
 					@update:selected="setSelectedMetadata"
 				></cdx-select>
 				<template #label>
-					{{ $i18n( 'wikilambda-functioncall-metadata-select-label' ).text() }}
+					{{ i18n( 'wikilambda-functioncall-metadata-select-label' ).text() }}
 				</template>
 			</cdx-field>
 
@@ -98,13 +98,10 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapState } = require( 'pinia' );
+const { computed, defineComponent, inject, ref } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
-const errorMixin = require( '../../../mixins/errorMixin.js' );
-const metadataMixin = require( '../../../mixins/metadataMixin.js' );
-const typeMixin = require( '../../../mixins/typeMixin.js' );
+const { metadataKeys } = require( '../../../utils/metadataUtils.js' );
 const LabelData = require( '../../../store/classes/LabelData.js' );
 const useMainStore = require( '../../../store/index.js' );
 const { extractErrorData, escapeHtml } = require( '../../../utils/errorUtils.js' );
@@ -140,7 +137,6 @@ module.exports = exports = defineComponent( {
 		'wl-function-metadata-item': FunctionMetadataItem,
 		'wl-safe-message': SafeMessage
 	},
-	mixins: [ typeMixin, metadataMixin, errorMixin ],
 	props: {
 		open: {
 			type: Boolean,
@@ -163,154 +159,30 @@ module.exports = exports = defineComponent( {
 			default: undefined
 		}
 	},
-	data: function () {
-		return {
-			iconHelpNotice: icons.cdxIconHelpNotice,
-			selectedMetadataPath: '0'
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getErrors',
-		'getLabelData',
-		'getUserLangCode',
-		'getFunctionZidOfImplementation'
-	] ), {
+	emits: [ 'close-dialog' ],
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
+
+		// Reactive data
+		const iconHelpNotice = icons.cdxIconHelpNotice;
+		const selectedMetadataPath = ref( '0' );
+
 		/**
 		 * Returns all api errors saved in the store by the errorId passed
 		 * as a property. If none or errorId is undefined, returns emtpy array.
 		 *
 		 * @return {Array}
 		 */
-		apiErrors: function () {
-			return this.errorId !== undefined ? this.getErrors( this.errorId ) : [];
-		},
-		/**
-		 * Returns whether the root level metadata object has
-		 * nested metadata children.
-		 *
-		 * @return {boolean}
-		 */
-		hasNestedMetadata: function () {
-			const keyValues = this.getKeyValues( this.metadata );
-			return keyValues ? keyValues.has( 'nestedMetadata' ) : false;
-		},
-		/**
-		 * Returns the selected metadata collection given the
-		 * currently selected function Call Id that identifies it.
-		 * If no collection matches the Id, the parent metadata object
-		 * is returned.
-		 *
-		 * @return {Object}
-		 */
-		selectedMetadata: function () {
-			let selectedMetadata;
-			if ( this.hasNestedMetadata ) {
-				selectedMetadata = this.findMetadata( this.metadata, this.selectedMetadataPath );
-			}
-			return selectedMetadata || this.metadata;
-		},
-		/**
-		 * Returns the help link from the Metadata dialog
-		 *
-		 * @return {string}
-		 */
-		tooltipMetaDataHelpLink: function () {
-			return this.$i18n( 'wikilambda-helplink-tooltip' ).text();
-		},
-		/**
-		 * Returns the parsed help link from the Metadata dialog
-		 *
-		 * @return {string}
-		 */
-		parsedMetaDataHelpLink: function () {
-			const unformattedLink = this.$i18n( 'wikilambda-metadata-help-link' ).text();
-			return mw.internalWikiUrlencode( unformattedLink );
-		},
-		/**
-		 * Returns the available keys present in the metadata object
-		 *
-		 * @return {Map|undefined}
-		 */
-		keyValues: function () {
-			return this.getKeyValues( this.selectedMetadata );
-		},
-		/**
-		 * @return {Array}
-		 */
-		sections: function () {
-			if ( !this.keyValues ) {
-				return [];
-			}
-			return this.compileSections( this.metadataKeys );
-		},
-		/**
-		 * Returns the parent-level menuItems array for the dialog selector.
-		 *
-		 * @return {Array}
-		 */
-		functionMenuItems: function () {
-			return this.hasNestedMetadata ? this.generateFunctionMenuItems( this.metadata ) : [];
-		},
-		/**
-		 * Returns the class of the selected menuItem,
-		 * to identify its passing/failing state.
-		 *
-		 * @return {string}
-		 */
-		selectedMenuItemClass: function () {
-			const selectedMenuItem = this.functionMenuItems
-				.find( ( menuItem ) => menuItem.value === this.selectedMetadataPath );
-			return selectedMenuItem ?
-				`ext-wikilambda-app-function-metadata-dialog__selected--${ selectedMenuItem.state }` :
-				'';
-		},
+		const apiErrors = computed( () => ( props.errorId !== undefined ? store.getErrors( props.errorId ) : [] ) );
 
-		/**
-		 * Returns if there are any errors in the metadata
-		 *
-		 * @return {boolean}
-		 */
-		hasMetadataErrors: function () {
-			return this.hasExplicitErrors( this.keyValues ) || this.hasTestFailure( this.keyValues );
-		}
-
-	} ),
-	methods: {
-		/**
-		 * Returns if there are explicit errors in the metadata
-		 *
-		 * @param {Map} keyValues The keyValues map to check
-		 * @return {boolean}
-		 */
-		hasExplicitErrors: function ( keyValues = new Map() ) {
-			return !!keyValues.get( 'errors' );
-		},
-
-		/**
-		 * Returns if there's a test failure (expected vs actual results differ)
-		 *
-		 * @param {Map} keyValues The keyValues map to check
-		 * @return {boolean}
-		 */
-		hasTestFailure: function ( keyValues = new Map() ) {
-			const expectedResult = keyValues.get( 'expectedTestResult' );
-			const actualResult = keyValues.get( 'actualTestResult' );
-
-			if ( expectedResult && actualResult ) {
-				const expectedValue = this.getStringValue( expectedResult );
-				const actualValue = this.getStringValue( actualResult );
-				return expectedValue !== actualValue;
-			}
-
-			return false;
-		},
 		/**
 		 * Returns the available keys present in the given metadata object
 		 *
 		 * @param {Object} metadata
 		 * @return {Map|undefined}
 		 */
-		getKeyValues: function ( metadata ) {
+		function getKeyValues( metadata ) {
 			// TODO (T368531) Checking typeof metadata as a safeguard;
 			// metadata should always be an object.
 			if ( !metadata || ( typeof metadata !== 'object' ) ) {
@@ -329,7 +201,148 @@ module.exports = exports = defineComponent( {
 				pair[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ],
 				pair[ Constants.Z_TYPED_OBJECT_ELEMENT_2 ]
 			] ) );
-		},
+		}
+
+		/**
+		 * Returns whether the root level metadata object has
+		 * nested metadata children.
+		 *
+		 * @return {boolean}
+		 */
+		const hasNestedMetadata = computed( () => {
+			const metadataKeyValues = getKeyValues( props.metadata );
+			return metadataKeyValues ? metadataKeyValues.has( 'nestedMetadata' ) : false;
+		} );
+
+		/**
+		 * Returns the metadata collection for the selected function
+		 * call metadata Id.
+		 *
+		 * @param {Object} metadata
+		 * @param {string} selectedPath
+		 * @param {number} index
+		 * @param {Array} path
+		 * @return {Object|undefined}
+		 */
+		function findMetadata( metadata, selectedPath, index = 0, path = [] ) {
+			const metadataKeyValues = getKeyValues( metadata );
+			// TODO (T368531) Checking keyValues as a safeguard;
+			// 1. keyValues should always exist
+			// 2. keyValues should not only contain a zObjectKey and no other metadata (T369625)
+			if ( !metadataKeyValues || metadataKeyValues.size === 1 && metadataKeyValues.has( 'zObjectKey' ) ) {
+				return undefined;
+			}
+
+			let nestedMetadata = metadataKeyValues.get( 'nestedMetadata' );
+
+			path.push( index );
+			const uniqueId = path.join( '-' );
+
+			if ( uniqueId === selectedPath ) {
+				return metadata;
+			}
+
+			if ( nestedMetadata ) {
+				nestedMetadata = nestedMetadata.slice( 1 );
+				for ( const i in nestedMetadata ) {
+					const child = nestedMetadata[ i ];
+					const found = findMetadata( child, selectedPath, i, path.slice() );
+					if ( found ) {
+						return found;
+					}
+				}
+			}
+
+			return undefined;
+		}
+
+		/**
+		 * Returns the selected metadata collection given the
+		 * currently selected function Call Id that identifies it.
+		 * If no collection matches the Id, the parent metadata object
+		 * is returned.
+		 *
+		 * @return {Object}
+		 */
+		const selectedMetadata = computed( () => {
+			let selected;
+			if ( hasNestedMetadata.value ) {
+				selected = findMetadata( props.metadata, selectedMetadataPath.value );
+			}
+			return selected || props.metadata;
+		} );
+
+		/**
+		 * Returns the help link from the Metadata dialog
+		 *
+		 * @return {string}
+		 */
+		const tooltipMetaDataHelpLink = computed( () => i18n( 'wikilambda-helplink-tooltip' ).text() );
+
+		/**
+		 * Returns the parsed help link from the Metadata dialog
+		 *
+		 * @return {string}
+		 */
+		const parsedMetaDataHelpLink = computed( () => {
+			const unformattedLink = i18n( 'wikilambda-metadata-help-link' ).text();
+			return mw.internalWikiUrlencode( unformattedLink );
+		} );
+
+		/**
+		 * Returns the available keys present in the metadata object
+		 *
+		 * @return {Map|undefined}
+		 */
+		const keyValues = computed( () => getKeyValues( selectedMetadata.value ) );
+
+		/**
+		 * Returns if there are explicit errors in the metadata
+		 *
+		 * @param {Map} kv The keyValues map to check
+		 * @return {boolean}
+		 */
+		function hasExplicitErrors( kv ) {
+			return !!kv.get( 'errors' );
+		}
+
+		/**
+		 * Returns if there's a test failure (expected vs actual results differ)
+		 *
+		 * @param {Map} kv The keyValues map to check
+		 * @return {boolean}
+		 */
+		function hasTestFailure( kv ) {
+			const expectedResult = kv.get( 'expectedTestResult' );
+			const actualResult = kv.get( 'actualTestResult' );
+
+			if ( expectedResult && actualResult ) {
+				const expectedValue = getStringValue( expectedResult );
+				const actualValue = getStringValue( actualResult );
+				return expectedValue !== actualValue;
+			}
+
+			return false;
+		}
+
+		/**
+		 * Transform method.
+		 * Given a mixed type value returns a string
+		 * either by returning its Z6K1, or strigifying it
+		 *
+		 * @param {Mixed} value
+		 * @return {string}
+		 */
+		function getStringValue( value ) {
+			if ( typeof value === 'string' ) {
+				return value;
+			}
+			if ( ( typeof value === 'object' ) && ( value[ Constants.Z_STRING_VALUE ] ) ) {
+				return value[ Constants.Z_STRING_VALUE ];
+			}
+			return JSON.stringify( value );
+		}
+
 		/**
 		 * Returns the array of menu items to feed the CdxSelect
 		 * component. Each menu item identifies the metadata collection
@@ -345,39 +358,39 @@ module.exports = exports = defineComponent( {
 		 * @param {Array} path
 		 * @return {Array}
 		 */
-		generateFunctionMenuItems: function ( metadata, depth = 1, index = 0, path = [] ) {
-			const keyValues = this.getKeyValues( metadata );
+		function generateFunctionMenuItems( metadata, depth = 1, index = 0, path = [] ) {
+			const metadataKeyValues = getKeyValues( metadata );
 			// TODO (T368531) Checking keyValues as a safeguard;
 			// 1. keyValues should always exist.
 			// 2. keyValues should not only contain a zObjectKey and no other metadata (T369625)
-			if ( !keyValues || keyValues.size === 1 && keyValues.has( 'zObjectKey' ) ) {
+			if ( !metadataKeyValues || metadataKeyValues.size === 1 && metadataKeyValues.has( 'zObjectKey' ) ) {
 				return [];
 			}
 
-			let functionCall = keyValues.get( 'zObjectKey' );
-			let labelizedFunctionCall = this.$i18n( 'wikilambda-editor-default-name' ).text();
+			let functionCall = metadataKeyValues.get( 'zObjectKey' );
+			let labelizedFunctionCall = i18n( 'wikilambda-editor-default-name' ).text();
 
 			// If zObjectKey is not present, extract function Zid from implementationId
 			if ( !functionCall ) {
-				let implementationId = keyValues.get( 'implementationId' );
-				implementationId = this.getStringValue( implementationId );
-				functionCall = this.getFunctionZidOfImplementation( implementationId );
+				let implementationId = metadataKeyValues.get( 'implementationId' );
+				implementationId = getStringValue( implementationId );
+				functionCall = store.getFunctionZidOfImplementation( implementationId );
 			}
 
 			// If functionCall has any values, transform into human-readable labels
 			if ( functionCall ) {
 				const zids = extractZIDs( functionCall, true );
-				labelizedFunctionCall = this.addSpacing( functionCall );
+				labelizedFunctionCall = addSpacing( functionCall );
 				zids.forEach( ( zid ) => {
-					labelizedFunctionCall = labelizedFunctionCall.split( zid ).join( this.getLabelData( zid ).label );
+					labelizedFunctionCall = labelizedFunctionCall.split( zid ).join( store.getLabelData( zid ).label );
 				} );
 			}
 
 			path.push( index );
 			const uniqueId = path.join( '-' );
 
-			const nestedMetadata = keyValues.get( 'nestedMetadata' );
-			const hasErrors = this.hasExplicitErrors( keyValues ) || this.hasTestFailure( keyValues );
+			const nestedMetadata = metadataKeyValues.get( 'nestedMetadata' );
+			const hasErrors = hasExplicitErrors( metadataKeyValues ) || hasTestFailure( metadataKeyValues );
 			const state = !hasErrors ? 'pass' : 'fail';
 
 			const menuItems = [ {
@@ -393,177 +406,86 @@ module.exports = exports = defineComponent( {
 			// Recursively create child menu items
 			if ( nestedMetadata ) {
 				nestedMetadata.slice( 1 ).forEach( ( child, i ) => {
-					const childMenuItems = this.generateFunctionMenuItems( child, depth + 1, i, path.slice() );
+					const childMenuItems = generateFunctionMenuItems( child, depth + 1, i, path.slice() );
 					menuItems.push( ...childMenuItems );
 				} );
 			}
 
 			return menuItems;
-		},
+		}
+
 		/**
-		 * Returns the metadata collection for the selected function
-		 * call metadata Id.
+		 * Adds spacing to function call strings for better readability
 		 *
-		 * @param {Object} metadata
-		 * @param {string} selectedMetadataPath
-		 * @param {number} index
-		 * @param {Array} path
-		 * @return {Object|undefined}
+		 * @param {string} functionCall
+		 * @return {string}
 		 */
-		findMetadata: function ( metadata, selectedMetadataPath, index = 0, path = [] ) {
-			const keyValues = this.getKeyValues( metadata );
-			// TODO (T368531) Checking keyValues as a safeguard;
-			// 1. keyValues should always exist
-			// 2. keyValues should not only contain a zObjectKey and no other metadata (T369625)
-			if ( !keyValues || keyValues.size === 1 && keyValues.has( 'zObjectKey' ) ) {
-				return undefined;
-			}
+		function addSpacing( functionCall ) {
+			let spaced = functionCall.split( '(' ).join( ' (' );
+			spaced = spaced.split( ',' ).join( ', ' );
+			return spaced;
+		}
 
-			let nestedMetadata = keyValues.get( 'nestedMetadata' );
-
-			path.push( index );
-			const uniqueId = path.join( '-' );
-
-			if ( uniqueId === selectedMetadataPath ) {
-				return metadata;
-			}
-
-			if ( nestedMetadata ) {
-				nestedMetadata = nestedMetadata.slice( 1 );
-				for ( const i in nestedMetadata ) {
-					const child = nestedMetadata[ i ];
-					const selectedMetadata = this.findMetadata( child, selectedMetadataPath, i, path.slice() );
-					if ( selectedMetadata ) {
-						return selectedMetadata;
-					}
-				}
-			}
-
-			return undefined;
-		},
 		/**
-		 * Selects the given function call metadata Id
-		 *
-		 * @param {string} value
-		 */
-		setSelectedMetadata: function ( value ) {
-			this.selectedMetadataPath = value;
-		},
-		/**
-		 * Closes the dialog.
-		 */
-		closeDialog: function () {
-			this.selectedMetadataPath = '0';
-			this.$emit( 'close-dialog' );
-		},
-		/**
-		 * Returns the compiled metadata sections. Each item in the
-		 * array contains the following properties:
-		 * * title: the section title
-		 * * description (optional): the method name that returns the description
-		 * * sections (optional): the array of subsections, or
-		 * * keys (optional): the array of terminal keys
-		 *
-		 * @param {Array} sections
 		 * @return {Array}
 		 */
-		compileSections: function ( sections ) {
-			const metadata = [];
-			for ( const key in sections ) {
-				const value = sections[ key ];
-				// Build section
-				const section = {
-					// possible message keys:
-					// * wikilambda-functioncall-metadata-errors
-					// * wikilambda-functioncall-metadata-implementation
-					// * wikilambda-functioncall-metadata-duration
-					// * wikilambda-functioncall-metadata-orchestration
-					// * wikilambda-functioncall-metadata-evaluation
-					// * wikilambda-functioncall-metadata-cpu-usage
-					// * wikilambda-functioncall-metadata-memory-usage
-					// * wikilambda-functioncall-metadata-hostname
-					// * wikilambda-functioncall-metadata-programming-language
-					title: this.$i18n( value.title ).text(),
-					content: ( 'sections' in value ) ?
-						this.compileSections( value.sections ) :
-						this.compileKeys( value.keys ),
-					open: value.open || false
-				};
-				// Check that section has content
-				if ( section.content.length > 0 ) {
-					// Compute description if needed and description function is available
-					if ( ( 'description' in value ) && ( value.description in this ) ) {
-						section.description = this[ value.description ]();
-					}
-					metadata.push( section );
-				}
+		const sections = computed( () => {
+			if ( !keyValues.value ) {
+				return [];
 			}
-			return metadata;
-		},
+			return compileSections( metadataKeys );
+		} );
+
 		/**
-		 * Returns the compiled terminal key-values for the metadata sections
-		 * given an array of key specifications. Each item in the array contains
-		 * the following properties:
-		 * * title: the key title,
-		 * * key: mapping to the key identifier from the metadata array
-		 * * transform (optional): method name to transform the value
+		 * Returns the parent-level menuItems array for the dialog selector.
 		 *
-		 * @param {Array} keys
 		 * @return {Array}
 		 */
-		compileKeys: function ( keys ) {
-			const metadata = [];
-			for ( const value of keys ) {
-				if ( this.keyValues.has( value.key ) ) {
-					const item = {
-						// possible message keys:
-						// * wikilambda-functioncall-metadata-errors-summary
-						// * wikilambda-functioncall-metadata-validator-errors-summary
-						// * wikilambda-functioncall-metadata-expected-result
-						// * wikilambda-functioncall-metadata-actual-result
-						// * wikilambda-functioncall-metadata-execution-debug-logs
-						// * wikilambda-functioncall-metadata-implementation-name
-						// * wikilambda-functioncall-metadata-implementation-id
-						// * wikilambda-functioncall-metadata-implementation-type
-						// * wikilambda-functioncall-metadata-duration
-						// * wikilambda-functioncall-metadata-start-time
-						// * wikilambda-functioncall-metadata-end-time
-						// * wikilambda-functioncall-metadata-orchestration
-						// * wikilambda-functioncall-metadata-evaluation
-						// * wikilambda-functioncall-metadata-execution
-						// * wikilambda-functioncall-metadata-programming-language-version
-						title: this.$i18n( value.title ).text(),
-						data: this.getTransformedValue( value )
-					};
+		const functionMenuItems = computed( () => ( hasNestedMetadata.value ?
+			generateFunctionMenuItems( props.metadata ) : [] ) );
 
-					// If the data is available, add to metadata
-					if ( item.data ) {
-						metadata.push( item );
-					}
-				}
-			}
-			return metadata;
-		},
 		/**
-		 * @param {Object} item
-		 * @return {Object|undefined}
+		 * Returns the class of the selected menuItem,
+		 * to identify its passing/failing state.
+		 *
+		 * @return {string}
 		 */
-		getTransformedValue: function ( item ) {
-			let value = this.keyValues.get( item.key );
+		const selectedMenuItemClass = computed( () => {
+			const selectedMenuItem = functionMenuItems.value
+				.find( ( menuItem ) => menuItem.value === selectedMetadataPath.value );
+			return selectedMenuItem ?
+				`ext-wikilambda-app-function-metadata-dialog__selected--${ selectedMenuItem.state }` :
+				'';
+		} );
 
-			if ( ( 'transform' in item ) && ( item.transform in this ) ) {
-				value = this[ item.transform ]( value );
-			}
+		/**
+		 * Returns if there are any errors in the metadata
+		 *
+		 * @return {boolean}
+		 */
+		const hasMetadataErrors = computed( () => hasExplicitErrors( keyValues.value ) ||
+			hasTestFailure( keyValues.value ) );
 
-			if ( !value ) {
-				return undefined;
-			}
+		/**
+		 * Returns the URL for a given ZID
+		 *
+		 * @param {string} zid
+		 * @return {string}
+		 */
+		function getUrl( zid ) {
+			return urlUtils.generateViewUrl( { langCode: store.getUserLangCode, zid } );
+		}
 
-			// Wrap in text object if value is still a string
-			return ( typeof value === 'string' ) ?
-				{ type: Constants.METADATA_CONTENT_TYPE.TEXT, value } :
-				value;
-		},
+		/**
+		 * Checks if a string is a valid ZID format
+		 *
+		 * @param {string} zid
+		 * @return {boolean}
+		 */
+		function isValidZidFormat( zid ) {
+			return /^Z\d+$/.test( zid );
+		}
+
 		/**
 		 * Returns the error section summary, which consists on the labelized
 		 * error type, followed by the string arguments (if any) in parenthesis:
@@ -573,86 +495,92 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {LabelData|string}
 		 */
-		getErrorSummary: function () {
+		function getErrorSummary() {
 			// Check for explicit errors first
-			if ( this.hasExplicitErrors( this.keyValues ) ) {
-				return this.getExplicitErrorSummary();
+			if ( hasExplicitErrors( keyValues.value ) ) {
+				return getExplicitErrorSummary();
 			}
 
 			// Check for test failure
-			if ( this.hasTestFailure( this.keyValues ) ) {
-				return this.$i18n( 'wikilambda-functioncall-metadata-test-failure' ).text();
+			if ( hasTestFailure( keyValues.value ) ) {
+				return i18n( 'wikilambda-functioncall-metadata-test-failure' ).text();
 			}
 
 			// Return None if there are no errors
-			return this.$i18n( 'wikilambda-functioncall-metadata-errors-none' ).text();
-		},
+			return i18n( 'wikilambda-functioncall-metadata-errors-none' ).text();
+		}
+
 		/**
 		 * Returns the explicit error section summary
 		 *
 		 * @return {string}
 		 */
-		getExplicitErrorSummary: function () {
-			const error = this.keyValues.get( 'errors' );
+		function getExplicitErrorSummary() {
+			const error = keyValues.value.get( 'errors' );
 			const errorData = extractErrorData( error );
-			const colon = this.$i18n( 'colon-separator' ).text();
-			const comma = this.$i18n( 'comma-separator' ).text();
+			const colon = i18n( 'colon-separator' ).text();
+			const comma = i18n( 'comma-separator' ).text();
 
 			if ( !errorData ) {
 				return '';
 			}
 			// Return labelized parent error type
-			const title = this.getLabelData( errorData.errorType ).label;
+			const title = store.getLabelData( errorData.errorType ).label;
 			const args = [];
 			for ( const arg of errorData.stringArgs ) {
-				const key = this.getLabelData( arg.key ).label;
-				const value = this.$i18n( 'quotation-marks', escapeHtml( arg.value ) ).text();
+				const key = store.getLabelData( arg.key ).label;
+				const value = i18n( 'quotation-marks', escapeHtml( arg.value ) ).text();
 				args.push( `${ key }${ colon }${ value }` );
 			}
-			const argblock = this.$i18n( 'parentheses', args.join( comma ) ).text();
+			const argblock = i18n( 'parentheses', args.join( comma ) ).text();
 			return `${ title } ${ argblock }`;
-		},
+		}
+
 		/**
 		 * Returns the implementation section summary
 		 *
 		 * @return {LabelData|string}
 		 */
-		getImplementationSummary: function () {
-			const implementationId = this.keyValues.get( 'implementationId' );
-			const zid = this.getStringValue( implementationId );
-			return this.isValidZidFormat( zid ) ? this.getLabelData( zid ) : '';
-		},
+		function getImplementationSummary() {
+			const implementationId = keyValues.value.get( 'implementationId' );
+			const zid = getStringValue( implementationId );
+			return isValidZidFormat( zid ) ? store.getLabelData( zid ) : '';
+		}
+
 		/**
 		 * Returns the duration section summary
 		 *
 		 * @return {string}
 		 */
-		getDurationSummary: function () {
-			return this.keyValues.get( 'orchestrationDuration' );
-		},
+		function getDurationSummary() {
+			return keyValues.value.get( 'orchestrationDuration' );
+		}
+
 		/**
 		 * Returns the CPU usage section summary
 		 *
 		 * @return {string}
 		 */
-		getCpuUsageSummary: function () {
-			return this.sumValuesWithUnit( [
-				this.keyValues.get( 'orchestrationCpuUsage' ),
-				this.keyValues.get( 'evaluationCpuUsage' )
+		function getCpuUsageSummary() {
+			return sumValuesWithUnit( [
+				keyValues.value.get( 'orchestrationCpuUsage' ),
+				keyValues.value.get( 'evaluationCpuUsage' )
 			], 'ms' );
-		},
+		}
+
 		/**
 		 * Returns the memory usage section summary
 		 *
 		 * @return {string}
 		 */
-		getMemoryUsageSummary: function () {
-			return this.sumValuesWithUnit( [
-				this.keyValues.get( 'orchestrationMemoryUsage' ),
-				this.keyValues.get( 'evaluationMemoryUsage' ),
-				this.keyValues.get( 'executionMemoryUsage' )
+		function getMemoryUsageSummary() {
+			return sumValuesWithUnit( [
+				keyValues.value.get( 'orchestrationMemoryUsage' ),
+				keyValues.value.get( 'evaluationMemoryUsage' ),
+				keyValues.value.get( 'executionMemoryUsage' )
 			], 'MiB' );
-		},
+		}
+
 		/**
 		 * Helper function to sum an array of values which
 		 * are stringified numbers followed by their unit
@@ -661,7 +589,7 @@ module.exports = exports = defineComponent( {
 		 * @param {string} unit
 		 * @return {string}
 		 */
-		sumValuesWithUnit: function ( values, unit ) {
+		function sumValuesWithUnit( values, unit ) {
 			let total = 0;
 			for ( let value of values ) {
 				try {
@@ -672,7 +600,8 @@ module.exports = exports = defineComponent( {
 				total += value;
 			}
 			return `${ total.toPrecision( 4 ) } ${ unit }`;
-		},
+		}
+
 		/**
 		 * Transform method.
 		 * Returns the linked label of the root error from the given
@@ -682,21 +611,22 @@ module.exports = exports = defineComponent( {
 		 * @param {Mixed} value
 		 * @return {Object | undefined}
 		 */
-		getErrorType: function ( value ) {
+		function getErrorType( value ) {
 			const data = extractErrorData( value );
 			if ( data ) {
 				const errorType = data.errorType;
-				const errorLabelData = this.getLabelData( errorType );
+				const errorLabelData = store.getLabelData( errorType );
 				return {
 					type: Constants.METADATA_CONTENT_TYPE.LINK,
 					value: errorLabelData.label,
 					lang: errorLabelData.langCode,
 					dir: errorLabelData.langDir,
-					url: this.getUrl( errorType )
+					url: getUrl( errorType )
 				};
 			}
 			return undefined;
-		},
+		}
+
 		/**
 		 * Transform method.
 		 * Returns a safe HTML fragment with the content for the error
@@ -708,19 +638,19 @@ module.exports = exports = defineComponent( {
 		 * @param {Mixed} value
 		 * @return {Object | undefined}
 		 */
-		getErrorStringArgs: function ( value ) {
+		function getErrorStringArgs( value ) {
 			const data = extractErrorData( value );
 			if ( data && data.stringArgs && data.stringArgs.length ) {
 				const list = [];
-				const colon = this.$i18n( 'colon-separator' ).text();
+				const colon = i18n( 'colon-separator' ).text();
 				for ( const arg of data.stringArgs ) {
-					const key = this.getLabelData( arg.key );
+					const key = store.getLabelData( arg.key );
 					// SECURITY: Escape any HTML in the argument label
 					const escapedLabel = escapeHtml( key.labelOrUntitled );
 					const keySpan = `<span dir="${ key.langDir }" lang="${ key.langCode }">${ escapedLabel }</span>`;
 					// SECURITY: Escape any HTML in the argument value
 					const escapedArg = escapeHtml( arg.value );
-					const quotedArg = this.$i18n( 'quotation-marks', escapedArg ).text();
+					const quotedArg = i18n( 'quotation-marks', escapedArg ).text();
 					list.push( `<li>${ keySpan }${ colon }${ quotedArg }</li>` );
 				}
 				return {
@@ -729,7 +659,8 @@ module.exports = exports = defineComponent( {
 				};
 			}
 			return undefined;
-		},
+		}
+
 		/**
 		 * Transform method.
 		 * Returns a safe HTML fragment with the content for the sub-errors.
@@ -740,13 +671,13 @@ module.exports = exports = defineComponent( {
 		 * @param {Mixed} value
 		 * @return {Object | undefined}
 		 */
-		getErrorChildren: function ( value ) {
+		function getErrorChildren( value ) {
 			const data = extractErrorData( value );
 			if ( data && data.children && data.children.length ) {
 				const children = [];
 				for ( const child of data.children ) {
-					const url = this.getUrl( child.errorType );
-					const e = this.getLabelData( child.errorType );
+					const url = getUrl( child.errorType );
+					const e = store.getLabelData( child.errorType );
 					// SECURITY: Escape any HTML in the error type label
 					const escapedLabel = escapeHtml( e.label );
 					const a = `<a href="${ url }" dir="${ e.langDir }" lang="${ e.langCode }">${ escapedLabel }</a>`;
@@ -758,7 +689,8 @@ module.exports = exports = defineComponent( {
 				};
 			}
 			return undefined;
-		},
+		}
+
 		/**
 		 * Transform method.
 		 * Given the value of implementationId, returns the name of that
@@ -768,46 +700,21 @@ module.exports = exports = defineComponent( {
 		 * @param {Mixed} value
 		 * @return {Object | undefined}
 		 */
-		getImplementationLink: function ( value ) {
-			const zid = this.getStringValue( value );
-			if ( this.isValidZidFormat( zid ) ) {
-				const labelData = this.getLabelData( zid );
+		function getImplementationLink( value ) {
+			const zid = getStringValue( value );
+			if ( isValidZidFormat( zid ) ) {
+				const labelData = store.getLabelData( zid );
 				return {
 					type: Constants.METADATA_CONTENT_TYPE.LINK,
 					value: labelData.labelOrUntitled,
 					lang: labelData.langCode,
 					dir: labelData.langDir,
-					url: this.getUrl( zid )
+					url: getUrl( zid )
 				};
 			}
 			return undefined;
-		},
-		/**
-		 * Transform method.
-		 * Given a mixed type value returns a string
-		 * either by returning its Z6K1, or strigifying it
-		 *
-		 * @param {Mixed} value
-		 * @return {string}
-		 */
-		getStringValue: function ( value ) {
-			if ( typeof value === 'string' ) {
-				return value;
-			}
-			if ( ( typeof value === 'object' ) && ( value[ Constants.Z_STRING_VALUE ] ) ) {
-				return value[ Constants.Z_STRING_VALUE ];
-			}
-			return JSON.stringify( value );
-		},
-		/**
-		 * Returns the url for a given Zid
-		 *
-		 * @param {string} zid
-		 * @return {string}
-		 */
-		getUrl: function ( zid ) {
-			return urlUtils.generateViewUrl( { langCode: this.getUserLangCode, zid } );
-		},
+		}
+
 		/**
 		 * Transform method.
 		 * Attempts to render a relative timestamp given a
@@ -816,7 +723,7 @@ module.exports = exports = defineComponent( {
 		 * @param {string} input
 		 * @return {Object}
 		 */
-		toRelativeTime: function ( input ) {
+		function toRelativeTime( input ) {
 			const transformDateTime = ( dateTimeString ) => {
 				if ( Intl.RelativeTimeFormat ) {
 					const target = Date.parse( dateTimeString );
@@ -825,7 +732,7 @@ module.exports = exports = defineComponent( {
 
 					let relativeTimeFormatter;
 					try {
-						relativeTimeFormatter = new Intl.RelativeTimeFormat( mw.config.get( 'wgUserLanguage' ) );
+						relativeTimeFormatter = new Intl.RelativeTimeFormat( store.getUserLangCode );
 					} catch ( error ) {
 						// Fall back to English if the MW locale isn't supported
 						relativeTimeFormatter = new Intl.RelativeTimeFormat( 'en' );
@@ -887,28 +794,188 @@ module.exports = exports = defineComponent( {
 				type: Constants.METADATA_CONTENT_TYPE.TEXT,
 				value: transformDateTime( input )
 			};
-		},
+		}
+
 		/**
-		 * Returns whether the given payload is an instance of LabelData
+		 * Returns the compiled metadata sections. Each item in the
+		 * array contains the following properties:
+		 * * title: the section title
+		 * * description (optional): the method name that returns the description
+		 * * sections (optional): the array of subsections, or
+		 * * keys (optional): the array of terminal keys
 		 *
-		 * @param {LabelData|string} payload
+		 * @param {Array} sectionsConfig
+		 * @return {Array}
+		 */
+		function compileSections( sectionsConfig ) {
+			const metadata = [];
+			for ( const key in sectionsConfig ) {
+				const value = sectionsConfig[ key ];
+				// Build section
+				const section = {
+					// possible message keys:
+					// * wikilambda-functioncall-metadata-errors
+					// * wikilambda-functioncall-metadata-implementation
+					// * wikilambda-functioncall-metadata-duration
+					// * wikilambda-functioncall-metadata-orchestration
+					// * wikilambda-functioncall-metadata-evaluation
+					// * wikilambda-functioncall-metadata-cpu-usage
+					// * wikilambda-functioncall-metadata-memory-usage
+					// * wikilambda-functioncall-metadata-hostname
+					// * wikilambda-functioncall-metadata-programming-langua
+					title: i18n( value.title ).text(),
+					content: ( 'sections' in value ) ?
+						compileSections( value.sections ) :
+						compileKeys( value.keys ),
+					open: value.open || false
+				};
+				// Check that section has content
+				if ( section.content.length > 0 ) {
+					// Compute description if needed and description function is available
+					if ( ( 'description' in value ) ) {
+						const descMethod = value.description;
+						if ( descMethod === 'getErrorSummary' ) {
+							section.description = getErrorSummary();
+						} else if ( descMethod === 'getImplementationSummary' ) {
+							section.description = getImplementationSummary();
+						} else if ( descMethod === 'getDurationSummary' ) {
+							section.description = getDurationSummary();
+						} else if ( descMethod === 'getCpuUsageSummary' ) {
+							section.description = getCpuUsageSummary();
+						} else if ( descMethod === 'getMemoryUsageSummary' ) {
+							section.description = getMemoryUsageSummary();
+						}
+					}
+					metadata.push( section );
+				}
+			}
+			return metadata;
+		}
+
+		/**
+		 * Returns the compiled terminal key-values for the metadata sections
+		 * given an array of key specifications. Each item in the array contains
+		 * the following properties:
+		 * * title: the key title,
+		 * * key: mapping to the key identifier from the metadata array
+		 * * transform (optional): method name to transform the value
+		 *
+		 * @param {Array} keys
+		 * @return {Array}
+		 */
+		function compileKeys( keys ) {
+			const metadata = [];
+			for ( const value of keys ) {
+				if ( keyValues.value.has( value.key ) ) {
+					const item = {
+						// possible message keys:
+						// * wikilambda-functioncall-metadata-errors-summary
+						// * wikilambda-functioncall-metadata-validator-errors-summary
+						// * wikilambda-functioncall-metadata-expected-result
+						// * wikilambda-functioncall-metadata-actual-result
+						// * wikilambda-functioncall-metadata-execution-debug-logs
+						// * wikilambda-functioncall-metadata-implementation-name
+						// * wikilambda-functioncall-metadata-implementation-id
+						// * wikilambda-functioncall-metadata-implementation-type
+						// * wikilambda-functioncall-metadata-duration
+						// * wikilambda-functioncall-metadata-start-time
+						// * wikilambda-functioncall-metadata-end-time
+						// * wikilambda-functioncall-metadata-orchestration
+						// * wikilambda-functioncall-metadata-evaluation
+						// * wikilambda-functioncall-metadata-execution
+						// * wikilambda-functioncall-metadata-programming-language-version
+						title: i18n( value.title ).text(),
+						data: getTransformedValue( value )
+					};
+
+					// If the data is available, add to metadata
+					if ( item.data ) {
+						metadata.push( item );
+					}
+				}
+			}
+			return metadata;
+		}
+
+		/**
+		 * Transforms metadata values based on the transform method specified
+		 *
+		 * @param {Object} item
+		 * @return {Object|undefined}
+		 */
+		function getTransformedValue( item ) {
+			let value = keyValues.value.get( item.key );
+
+			if ( ( 'transform' in item ) ) {
+				const transformMethod = item.transform;
+				if ( transformMethod === 'getErrorType' ) {
+					value = getErrorType( value );
+				} else if ( transformMethod === 'getErrorStringArgs' ) {
+					value = getErrorStringArgs( value );
+				} else if ( transformMethod === 'getErrorChildren' ) {
+					value = getErrorChildren( value );
+				} else if ( transformMethod === 'getImplementationLink' ) {
+					value = getImplementationLink( value );
+				} else if ( transformMethod === 'getStringValue' ) {
+					value = getStringValue( value );
+				} else if ( transformMethod === 'toRelativeTime' ) {
+					value = toRelativeTime( value );
+				}
+			}
+
+			if ( !value ) {
+				return undefined;
+			}
+
+			// Wrap in text object if value is still a string
+			return ( typeof value === 'string' ) ?
+				{ type: Constants.METADATA_CONTENT_TYPE.TEXT, value } :
+				value;
+		}
+
+		/**
+		 * Sets the selected metadata path
+		 *
+		 * @param {string} value
+		 */
+		function setSelectedMetadata( value ) {
+			selectedMetadataPath.value = value;
+		}
+
+		/**
+		 * Closes the dialog
+		 */
+		function closeDialog() {
+			selectedMetadataPath.value = '0';
+			emit( 'close-dialog' );
+		}
+
+		/**
+		 * Checks if the payload is an instance of LabelData
+		 *
+		 * @param {*} payload
 		 * @return {boolean}
 		 */
-		isLabelData( payload ) {
+		function isLabelData( payload ) {
 			return ( payload instanceof LabelData );
-		},
-		/**
-		 * Given a function call string representation, adds spacing
-		 * before opening brackets and after divider commas
-		 *
-		 * @param {string} functionCall
-		 * @return {string}
-		 */
-		addSpacing( functionCall ) {
-			let spaced = functionCall.split( '(' ).join( ' (' );
-			spaced = spaced.split( ',' ).join( ', ' );
-			return spaced;
 		}
+
+		return {
+			apiErrors,
+			closeDialog,
+			functionMenuItems,
+			hasMetadataErrors,
+			hasNestedMetadata,
+			iconHelpNotice,
+			isLabelData,
+			parsedMetaDataHelpLink,
+			sections,
+			selectedMetadataPath,
+			selectedMenuItemClass,
+			setSelectedMetadata,
+			tooltipMetaDataHelpLink,
+			i18n
+		};
 	}
 } );
 </script>

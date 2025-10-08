@@ -13,6 +13,24 @@ const ExpandedToggle = require( '../../../../resources/ext.wikilambda.app/compon
 
 describe( 'ExpandedToggle', () => {
 	let store;
+
+	/**
+	 * Helper function to render ExpandedToggle component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderExpandedToggle( props = {} ) {
+		const defaultProps = {
+			expanded: true,
+			hasExpandedMode: true
+		};
+		return shallowMount( ExpandedToggle, {
+			props: { ...defaultProps, ...props },
+			global: { stubs: { CdxButton: false } }
+		} );
+	}
+
 	beforeEach( () => {
 		store = useMainStore();
 		store.waitForRunningParsers = Promise.resolve();
@@ -20,24 +38,14 @@ describe( 'ExpandedToggle', () => {
 
 	describe( 'when toggle is enabled', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( ExpandedToggle, {
-				props: {
-					expanded: true,
-					hasExpandedMode: true // togglable
-				},
-				global: { stubs: { CdxButton: false } }
-			} );
+			const wrapper = renderExpandedToggle();
 
 			expect( wrapper.findComponent( { name: 'wl-expanded-toggle' } ).exists() ).toBe( true );
 		} );
 
 		it( 'expands when collapsed and button is clicked', async () => {
-			const wrapper = shallowMount( ExpandedToggle, {
-				props: {
-					expanded: false, // collapsed
-					hasExpandedMode: true
-				},
-				global: { stubs: { CdxButton: false } }
+			const wrapper = renderExpandedToggle( {
+				expanded: false // collapsed
 			} );
 
 			expect( wrapper.find( '.ext-wikilambda-app-expanded-toggle__icon--collapsed' ).exists() ).toBe( true );
@@ -49,13 +57,7 @@ describe( 'ExpandedToggle', () => {
 		} );
 
 		it( 'collapses when expanded and button is clicked', async () => {
-			const wrapper = shallowMount( ExpandedToggle, {
-				props: {
-					expanded: true, // expanded
-					hasExpandedMode: true
-				},
-				global: { stubs: { CdxButton: false } }
-			} );
+			const wrapper = renderExpandedToggle();
 
 			expect( wrapper.find( '.ext-wikilambda-app-expanded-toggle__icon--expanded' ).exists() ).toBe( true );
 
@@ -68,24 +70,18 @@ describe( 'ExpandedToggle', () => {
 
 	describe( 'when toggle is disabled', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( ExpandedToggle, {
-				props: {
-					expanded: false,
-					hasExpandedMode: false // not togglable
-				},
-				global: { stubs: { CdxButton: false } }
+			const wrapper = renderExpandedToggle( {
+				expanded: false,
+				hasExpandedMode: false // not togglable
 			} );
 
 			expect( wrapper.findComponent( { name: 'wl-expanded-toggle' } ).exists() ).toBe( true );
 		} );
 
 		it( 'shows a non-collapse/expandable button', () => {
-			const wrapper = shallowMount( ExpandedToggle, {
-				props: {
-					expanded: false,
-					hasExpandedMode: false
-				},
-				global: { stubs: { CdxButton: false } }
+			const wrapper = renderExpandedToggle( {
+				expanded: false,
+				hasExpandedMode: false
 			} );
 
 			expect( wrapper.find( '.ext-wikilambda-app-expanded-toggle__icon--disabled' ).exists() ).toBe( true );

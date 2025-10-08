@@ -21,14 +21,13 @@
 		@load-more="onLoadMore"
 	>
 		<template #no-results>
-			{{ $i18n( 'wikilambda-zobjectselector-no-results' ).text() }}
+			{{ i18n( 'wikilambda-zobjectselector-no-results' ).text() }}
 		</template>
 	</cdx-lookup>
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapActions } = require( 'pinia' );
+const { computed, defineComponent, inject, onMounted, ref, watch } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
 const useMainStore = require( '../../../store/index.js' );
@@ -61,161 +60,68 @@ module.exports = exports = defineComponent( {
 			default: ''
 		}
 	},
-	data: function () {
-		return {
-			wikidataIcon: wikidataIconSvg,
-			inputValue: '',
-			lookupResults: [],
-			lookupConfig: {
-				boldLabel: true,
-				searchQuery: '',
-				visibleItemLimit: 5,
-				searchContinue: null
-			},
-			lookupDelayTimer: null,
-			lookupDelayMs: 300,
-			lookupAbortController: null
-		};
-	},
-	computed: {
+	emits: [ 'select-wikidata-entity' ],
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
+
+		// Reactive data
+		const wikidataIcon = wikidataIconSvg;
+		const inputValue = ref( '' );
+		const lookupResults = ref( [] );
+		const lookupConfig = ref( {
+			boldLabel: true,
+			searchQuery: '',
+			visibleItemLimit: 5,
+			searchContinue: null
+		} );
+		const lookupDelayTimer = ref( null );
+		const lookupDelayMs = 300;
+		const lookupAbortController = ref( null );
+
 		/**
 		 * Return the placeholder string depending on the item to select
 		 *
 		 * @return {string}
 		 */
-		lookupPlaceholder: function () {
-			if ( this.placeholder ) {
-				return this.placeholder;
+		const lookupPlaceholder = computed( () => {
+			if ( props.placeholder ) {
+				return props.placeholder;
 			}
-			const msg = Constants.WIKIDATA_SELECTOR_PLACEHOLDER_MSG[ this.type ];
-			// eslint-disable-next-line mediawiki/msg-doc
-			return this.$i18n( msg || 'wikilambda-wikidata-entity-selector-placeholder' ).text();
-		}
-	},
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'lookupWikidataEntities'
-	] ), {
-		/**
-		 * On field input, perform a backend lookup and
-		 * save the returned objects in lookupResults array.
-		 *
-		 * @param {string} input
-		 */
-		onInput: function ( input ) {
-			this.inputValue = input;
+			const msg = Constants.WIKIDATA_SELECTOR_PLACEHOLDER_MSG[ props.type ];
 
-			// Reset searchContinue when a new search is initiated
-			this.lookupConfig.searchContinue = null;
+			return i18n( msg || 'wikilambda-wikidata-entity-selector-placeholder' ).text();
+		} );
 
-			// If empty input, reset lookupResults
-			if ( !input ) {
-				this.lookupResults = [];
-				return;
-			}
-
-			// Search after 300 ms
-			clearTimeout( this.lookupDelayTimer );
-			this.lookupDelayTimer = setTimeout( () => {
-				this.getLookupResults( input );
-			}, this.lookupDelayMs );
-		},
-		/**
-		 * When lookup selected value updates, emit a set-value
-		 * event so that parent ZObjectKeyValue sets the value
-		 * of the Fetch Wikidata Entity function call.
-		 * If the field is cleared, set value as empty string.
-		 *
-		 * @param {string} value
-		 */
-		onSelect: function ( value ) {
-			// T374246: Disable clear strategy
-			if ( value === null ) {
-				return;
-			}
-
-			// If the already selected value is selected again, exit early
-			// and reset the input value to the selected value (T382755).
-			if ( this.entityId === value ) {
-				this.inputValue = this.entityLabel;
-				return;
-			}
-
-			this.$emit( 'select-wikidata-entity', value || '' );
-		},
-
-		/**
-		 * On focus, if there is an inputValue and the lookupResults are empty,
-		 * get the lookup results for the inputValue.
-		 * This ensures that the lookup results are populated when the field is focused,
-		 * especially when the field is mounted.
-		 */
-		onFocus: function () {
-			if ( this.inputValue && !this.lookupResults.length ) {
-				this.getLookupResults( this.inputValue );
-			}
-		},
-
-		/**
-		 * On blur, select the value that matches the inputValue if valid;
-		 * else, restore the previous selected value.
-		 */
-		onBlur: function () {
-			// If current inputValue matches selected lexeme, do nothing:
-			if ( this.inputValue === this.entityLabel ) {
-				return;
-			}
-
-			// Match current inputValue with available menu options:
-			const match = this.lookupResults.find( ( option ) => option.label === this.inputValue );
-			if ( match ) {
-				// Select new value
-				this.onSelect( match.value );
-			} else {
-				// Reset to old value
-				this.inputValue = this.entityLabel;
-				this.lookupConfig.searchQuery = this.entityLabel;
-			}
-		},
-		/**
-		 * Load more Wikidata Entities when the user scrolls to the bottom of the list
-		 * and there are more results to load.
-		 */
-		onLoadMore: function () {
-			if ( !this.lookupConfig.searchContinue ) {
-				// No more results to load
-				return;
-			}
-
-			// Use the existing search term stored in lookupConfig.searchQuery
-			this.getLookupResults( this.lookupConfig.searchQuery );
-		},
 		/**
 		 * Perform Wikidata Entity lookup given a search term.
 		 *
-		 * @param {string} input
+		 * @param {string} searchTerm
 		 */
-		getLookupResults: function ( input ) {
+		function getLookupResults( searchTerm ) {
 			// Cancel previous request if any
-			if ( this.lookupAbortController ) {
-				this.lookupAbortController.abort();
+			if ( lookupAbortController.value ) {
+				lookupAbortController.value.abort();
 			}
-			this.lookupAbortController = new AbortController();
+			lookupAbortController.value = new AbortController();
 
 			const payload = {
-				search: input,
-				type: Constants.WIKIDATA_API_TYPE_VALUES[ this.type ],
-				searchContinue: this.lookupConfig.searchContinue,
-				signal: this.lookupAbortController.signal
+				search: searchTerm,
+				type: Constants.WIKIDATA_API_TYPE_VALUES[ props.type ],
+				searchContinue: lookupConfig.value.searchContinue,
+				signal: lookupAbortController.value.signal
 			};
 
-			this.lookupWikidataEntities( payload )
+			store.lookupWikidataEntities( payload )
 				.then( ( data ) => {
 					const { searchContinue, search } = data;
-					this.lookupConfig.searchContinue = searchContinue;
-					this.lookupConfig.searchQuery = input;
-					this.lookupResults = [];
+
+					lookupConfig.value.searchContinue = searchContinue;
+					lookupConfig.value.searchQuery = searchTerm;
+					lookupResults.value = [];
+
 					for ( const entity of search ) {
-						this.lookupResults.push( {
+						lookupResults.value.push( {
 							value: entity.id,
 							label: entity.label,
 							description: entity.description,
@@ -227,18 +133,131 @@ module.exports = exports = defineComponent( {
 					if ( error.code === 'abort' ) {
 						return;
 					}
-					this.lookupConfig.searchQuery = input;
-					this.lookupResults = [];
+					lookupConfig.value.searchQuery = searchTerm;
+					lookupResults.value = [];
 				} );
 		}
-	} ),
-	watch: {
-		entityLabel: function ( label ) {
-			this.inputValue = label;
+
+		/**
+		 * On field input, perform a backend lookup and
+		 * save the returned objects in lookupResults array.
+		 *
+		 * @param {string} input
+		 */
+		function onInput( input ) {
+			inputValue.value = input;
+
+			// Reset searchContinue when a new search is initiated
+			lookupConfig.value.searchContinue = null;
+
+			// If empty input, do nothing
+			if ( !input ) {
+				lookupResults.value = [];
+				return;
+			}
+
+			// Search after 300 ms
+			clearTimeout( lookupDelayTimer.value );
+			lookupDelayTimer.value = setTimeout( () => {
+				getLookupResults( input );
+			}, lookupDelayMs );
 		}
-	},
-	mounted: function () {
-		this.inputValue = this.entityLabel;
+
+		/**
+		 * When lookup selected value updates, emit a set-value
+		 * event so that parent ZObjectKeyValue sets the value
+		 * of the Fetch Wikidata Entity function call.
+		 * If the field is cleared, set value as empty string.
+		 *
+		 * @param {string} value
+		 */
+		function onSelect( value ) {
+			// T374246: Disable clear strategy
+			if ( value === null ) {
+				return;
+			}
+
+			// If the already selected value is selected again, exit early
+			// and reset the input value to the selected value (T382755).
+			if ( props.entityId === value ) {
+				inputValue.value = props.entityLabel;
+				return;
+			}
+
+			emit( 'select-wikidata-entity', value || '' );
+		}
+
+		/**
+		 * On focus, if there is an inputValue and the lookupResults are empty,
+		 * get the lookup results for the inputValue.
+		 * This ensures that the lookup results are populated when the field is focused,
+		 * especially when the field is mounted.
+		 */
+		function onFocus() {
+			if ( inputValue.value && !lookupResults.value.length ) {
+				getLookupResults( inputValue.value );
+			}
+		}
+
+		/**
+		 * On blur, select the value that matches the inputValue if valid;
+		 * else, restore the previous selected value.
+		 */
+		function onBlur() {
+			// If current inputValue matches selected lexeme, do nothing:
+			if ( inputValue.value === props.entityLabel ) {
+				return;
+			}
+
+			// Match current inputValue with available menu options:
+			const match = lookupResults.value.find( ( option ) => option.label === inputValue.value );
+			if ( match ) {
+				// Select new value
+				onSelect( match.value );
+			} else {
+				// Reset to old value
+				inputValue.value = props.entityLabel;
+				lookupConfig.value.searchQuery = props.entityLabel;
+			}
+		}
+
+		/**
+		 * Load more Wikidata Entities when the user scrolls to the bottom of the list
+		 * and there are more results to load.
+		 */
+		function onLoadMore() {
+			if ( !lookupConfig.value.searchContinue ) {
+				// No more results to load
+				return;
+			}
+
+			// Use the existing search term stored in lookupConfig.searchQuery
+			getLookupResults( lookupConfig.value.searchQuery );
+		}
+
+		// Watchers
+		watch( () => props.entityLabel, ( label ) => {
+			inputValue.value = label;
+		} );
+
+		// Lifecycle
+		onMounted( () => {
+			inputValue.value = props.entityLabel;
+		} );
+
+		return {
+			inputValue,
+			lookupConfig,
+			lookupPlaceholder,
+			lookupResults,
+			onBlur,
+			onFocus,
+			onInput,
+			onLoadMore,
+			onSelect,
+			wikidataIcon,
+			i18n
+		};
 	}
 } );
 </script>
@@ -249,6 +268,7 @@ module.exports = exports = defineComponent( {
 		display: -webkit-box;
 		-webkit-box-orient: vertical;
 		-webkit-line-clamp: 2;
+		line-clamp: 2;
 		overflow: hidden;
 	}
 }

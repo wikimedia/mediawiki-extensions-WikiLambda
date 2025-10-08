@@ -34,11 +34,11 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const { mapActions, mapState } = require( 'pinia' );
+const { computed, watch, onMounted } = require( 'vue' );
 
 const wikidataIconSvg = require( './wikidataIconSvg.js' );
 const Constants = require( '../../../Constants.js' );
-const zobjectMixin = require( '../../../mixins/zobjectMixin.js' );
+const useZObject = require( '../../../composables/useZObject.js' );
 const useMainStore = require( '../../../store/index.js' );
 const LabelData = require( '../../../store/classes/LabelData.js' );
 
@@ -53,9 +53,9 @@ module.exports = exports = defineComponent( {
 		'wl-wikidata-entity-selector': WikidataEntitySelector,
 		'cdx-icon': CdxIcon
 	},
-	mixins: [ zobjectMixin ],
+
 	props: {
-		keyPath: { // eslint-disable-line vue/no-unused-properties
+		keyPath: {
 			type: String,
 			required: true
 		},
@@ -72,53 +72,46 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	data: function () {
-		return {
-			wikidataIcon: wikidataIconSvg,
-			lexemeType: Constants.Z_WIKIDATA_LEXEME
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getLexemeLabelData',
-		'getLexemeUrl'
-	] ), {
+	setup( props, { emit } ) {
+		// Use ZObject utilities composable
+		const { getWikidataEntityId } = useZObject( { keyPath: props.keyPath } );
+
+		// Use main store
+		const store = useMainStore();
+
+		// Data
+		const wikidataIcon = wikidataIconSvg;
+		const lexemeType = Constants.Z_WIKIDATA_LEXEME;
+
 		/**
 		 * Returns the Lexeme Id string value, if any Lexeme is selected.
 		 *
 		 * @return {string|undefined}
 		 */
-		lexemeId: function () {
-			return this.getWikidataEntityId( this.objectValue, this.lexemeType );
-		},
+		const lexemeId = computed( () => getWikidataEntityId( props.objectValue, lexemeType ) );
+
 		/**
 		 * Returns the Wikidata URL for the selected Lexeme.
 		 *
 		 * @return {string|undefined}
 		 */
-		lexemeUrl: function () {
-			return this.getLexemeUrl( this.lexemeId );
-		},
+		const lexemeUrl = computed( () => store.getLexemeUrl( lexemeId.value ) );
+
 		/**
 		 * Returns the LabelData object for the selected Lexeme.
 		 *
 		 * @return {LabelData|undefined}
 		 */
-		lexemeLabelData: function () {
-			return this.getLexemeLabelData( this.lexemeId );
-		},
+		const lexemeLabelData = computed( () => store.getLexemeLabelData( lexemeId.value ) );
+
 		/**
 		 * Returns the string label of the selected Lexeme or
 		 * an empty string if none is selected.
 		 *
 		 * @return {string}
 		 */
-		lexemeLabel: function () {
-			return this.lexemeLabelData ? this.lexemeLabelData.label : '';
-		}
-	} ),
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'fetchLexemes'
-	] ), {
+		const lexemeLabel = computed( () => lexemeLabelData.value ? lexemeLabelData.value.label : '' );
+
 		/**
 		 * Emit a set-value event to persist in the store
 		 * the changes made by a new wikidata entity selection,
@@ -128,12 +121,12 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string|null} value
 		 */
-		onSelect: function ( value ) {
+		function onSelect( value ) {
 			// If type is Wikidata Entity Reference:
 			// * Set Reference Id
 			// Else (type is Function Call):
 			// * Set Reference Id of the Fetch Function Id argument
-			const keyPath = ( this.type === Constants.Z_WIKIDATA_REFERENCE_LEXEME ) ? [
+			const keyPath = ( props.type === Constants.Z_WIKIDATA_REFERENCE_LEXEME ) ? [
 				Constants.Z_WIKIDATA_REFERENCE_LEXEME_ID,
 				Constants.Z_STRING_VALUE
 			] : [
@@ -142,23 +135,35 @@ module.exports = exports = defineComponent( {
 				Constants.Z_STRING_VALUE
 			];
 
-			this.$emit( 'set-value', {
+			emit( 'set-value', {
 				value: value || '',
 				keyPath
 			} );
 		}
-	} ),
-	watch: {
-		lexemeId: function ( id ) {
+
+		// Watch lexemeId
+		watch( lexemeId, ( id ) => {
 			if ( id ) {
-				this.fetchLexemes( { ids: [ id ] } );
+				store.fetchLexemes( { ids: [ id ] } );
 			}
-		}
-	},
-	mounted: function () {
-		if ( this.lexemeId ) {
-			this.fetchLexemes( { ids: [ this.lexemeId ] } );
-		}
+		} );
+
+		// On mounted
+		onMounted( () => {
+			if ( lexemeId.value ) {
+				store.fetchLexemes( { ids: [ lexemeId.value ] } );
+			}
+		} );
+
+		return {
+			lexemeId,
+			lexemeLabel,
+			lexemeLabelData,
+			lexemeType,
+			lexemeUrl,
+			onSelect,
+			wikidataIcon
+		};
 	}
 } );
 </script>

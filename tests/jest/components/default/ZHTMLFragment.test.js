@@ -18,15 +18,26 @@ const objectValue = {
 };
 
 describe( 'ZHTMLFragment', () => {
+	/**
+	 * Helper function to render ZHTMLFragment component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderZHTMLFragment( props = {}, options = {} ) {
+		const defaultProps = {
+			keyPath,
+			objectValue,
+			edit: false
+		};
+		return shallowMount( ZHTMLFragment, { props: { ...defaultProps, ...props }, ...options } );
+	}
+
 	describe( 'in view mode', () => {
 		it( 'renders the code editor in read-only mode with the correct value', () => {
-			const wrapper = shallowMount( ZHTMLFragment, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false
-				}
-			} );
+			const wrapper = renderZHTMLFragment();
+
 			const editor = wrapper.findComponent( { name: 'code-editor' } );
 			expect( editor.exists() ).toBe( true );
 			expect( editor.props( 'readOnly' ) ).toBe( true );
@@ -37,13 +48,8 @@ describe( 'ZHTMLFragment', () => {
 
 	describe( 'in edit mode', () => {
 		it( 'renders the code editor in editable mode', () => {
-			const wrapper = shallowMount( ZHTMLFragment, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true
-				}
-			} );
+			const wrapper = renderZHTMLFragment( { edit: true } );
+
 			const editor = wrapper.findComponent( { name: 'code-editor' } );
 			expect( editor.exists() ).toBe( true );
 			expect( editor.props( 'readOnly' ) ).toBe( false );
@@ -52,13 +58,8 @@ describe( 'ZHTMLFragment', () => {
 		} );
 
 		it( 'emits set-value event with correct payload when setValue is called', async () => {
-			const wrapper = shallowMount( ZHTMLFragment, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true
-				}
-			} );
+			const wrapper = renderZHTMLFragment( { edit: true } );
+
 			const editor = wrapper.findComponent( { name: 'code-editor' } );
 			await editor.vm.$emit( 'change', '<i>changed</i>' );
 			expect( wrapper.emitted( 'set-value' ) ).toBeTruthy();

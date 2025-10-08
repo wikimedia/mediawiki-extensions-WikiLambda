@@ -15,7 +15,7 @@
 				v-if="canEditType"
 				weight="quiet"
 				class="ext-wikilambda-app-function-editor-inputs-item__action-delete"
-				:aria-label="$i18n( 'wikilambda-function-definition-inputs-item-remove' ).text()"
+				:aria-label="i18n( 'wikilambda-function-definition-inputs-item-remove' ).text()"
 				data-testid="remove-input"
 				@click="removeInput"
 			>
@@ -65,8 +65,7 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapActions } = require( 'pinia' );
+const { computed, defineComponent, inject, onMounted, ref } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
 const icons = require( './../../../../lib/icons.json' );
@@ -133,103 +132,115 @@ module.exports = exports = defineComponent( {
 			default: null
 		}
 	},
-	data: function () {
-		return {
-			maxInputLabelChars: Constants.INPUT_CHARS_MAX,
-			remainingChars: Constants.INPUT_CHARS_MAX,
-			iconTrash: icons.cdxIconTrash
-		};
-	},
-	computed: {
+	emits: [ 'argument-label-updated', 'remove' ],
+	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
+
+		// Reactive data
+		const maxInputLabelChars = Constants.INPUT_CHARS_MAX;
+		const remainingChars = ref( Constants.INPUT_CHARS_MAX );
+		const iconTrash = icons.cdxIconTrash;
+
 		/**
 		 * Returns the label and index for the current input.
 		 * If not active, returns label, index and selected type.
 		 *
 		 * @return {string}
 		 */
-		inputFieldLabel: function () {
-			const inputNumber = this.index + 1;
-			return this.$i18n( 'wikilambda-function-viewer-details-input-number', inputNumber ).text();
-		},
+		const inputFieldLabel = computed( () => {
+			const inputNumber = props.index + 1;
+			return i18n( 'wikilambda-function-viewer-details-input-number', inputNumber ).text();
+		} );
+
 		/**
 		 * Returns the title for the input label field
 		 *
 		 * @return {string}
 		 */
-		inputLabelTitle: function () {
-			return this.$i18n( 'wikilambda-function-definition-input-item-label' ).text();
-		},
+		const inputLabelTitle = computed( () => i18n( 'wikilambda-function-definition-input-item-label' ).text() );
+
 		/**
 		 * Returns the placeholder for the input label field
 		 *
 		 * @return {string}
 		 */
-		inputLabelFieldPlaceholder: function () {
-			return this.$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text();
-		},
+		const inputLabelFieldPlaceholder = computed( () => i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text() );
+
 		/**
 		 * Returns the title for the input type field
 		 *
 		 * @return {string}
 		 */
-		inputTypeLabel: function () {
-			return LabelData.fromString(
-				this.$i18n( 'wikilambda-function-definition-input-item-type' ).text()
-			);
-		},
+		const inputTypeLabel = computed( () => LabelData.fromString(
+			i18n( 'wikilambda-function-definition-input-item-type' ).text()
+		) );
+
 		/**
 		 * Returns the placeholder for the input type field
 		 *
 		 * @return {string}
 		 */
-		inputTypeFieldPlaceholder: function () {
-			return this.$i18n( 'wikilambda-function-definition-inputs-item-selector-placeholder' ).text();
-		}
-	},
-	methods: Object.assign( {}, mapActions( useMainStore, [
-		'setZMonolingualString'
-	] ), {
+		const inputTypeFieldPlaceholder = computed( () => i18n( 'wikilambda-function-definition-inputs-item-selector-placeholder' ).text() );
+
 		/**
 		 * Updates the remainingChars data property as the user types into the Z2K2 field
 		 *
 		 * @param {Event} event - the event object that is automatically passed in on input
 		 */
-		updateRemainingChars: function ( event ) {
+		function updateRemainingChars( event ) {
 			const { length } = event.target.value;
-			this.remainingChars = this.maxInputLabelChars - length;
-		},
+			remainingChars.value = maxInputLabelChars - length;
+		}
+
 		/**
 		 * Removes the input given by its index (zero-lead, excluding benjamin item)
 		 */
-		removeInput: function () {
-			this.$emit( 'remove', this.index );
-		},
+		function removeInput() {
+			emit( 'remove', props.index );
+		}
+
 		/**
 		 * Persist the new input label in the globally stored object
 		 *
 		 * @param {Object} event
 		 */
-		persistInputLabel: function ( event ) {
-			this.setZMonolingualString( {
+		function persistInputLabel( event ) {
+			store.setZMonolingualString( {
 				parentKeyPath: [
 					Constants.STORED_OBJECTS.MAIN,
 					Constants.Z_PERSISTENTOBJECT_VALUE,
 					Constants.Z_FUNCTION_ARGUMENTS,
-					String( this.index + 1 ),
+					String( props.index + 1 ),
 					Constants.Z_ARGUMENT_LABEL,
 					Constants.Z_MULTILINGUALSTRING_VALUE
 				],
-				itemKeyPath: this.input ? this.input.keyPath : undefined,
+				itemKeyPath: props.input ? props.input.keyPath : undefined,
 				value: event.target.value,
-				lang: this.zLanguage
+				lang: props.zLanguage
 			} );
-			this.$emit( 'argument-label-updated' );
+			emit( 'argument-label-updated' );
 		}
-	} ),
-	mounted: function () {
-		this.$nextTick( function () {
-			this.remainingChars = this.maxInputLabelChars - ( this.input ? this.input.value.length : 0 );
+
+		// Lifecycle
+		onMounted( () => {
+			remainingChars.value = maxInputLabelChars - ( props.input ? props.input.value.length : 0 );
 		} );
+
+		return {
+			iconTrash,
+			inputFieldLabel,
+			inputLabelFieldPlaceholder,
+			inputLabelTitle,
+			inputTypeFieldPlaceholder,
+			inputTypeLabel,
+			maxInputLabelChars,
+			persistInputLabel,
+			remainingChars,
+			removeInput,
+			updateRemainingChars,
+			i18n
+		};
 	}
 } );
 </script>

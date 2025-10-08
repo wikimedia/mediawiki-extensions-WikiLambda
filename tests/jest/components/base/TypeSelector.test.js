@@ -18,6 +18,31 @@ describe( 'TypeSelector', () => {
 		keyPath,
 		objectValue;
 
+	/**
+	 * Helper function to render TypeSelector component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderTypeSelector( props = {}, options = {} ) {
+		const defaultProps = {
+			type: Constants.Z_TYPE
+		};
+		const defaultOptions = {
+			global: {
+				stubs: {
+					CdxField: false,
+					...options?.stubs
+				}
+			}
+		};
+		return shallowMount( TypeSelector, {
+			props: { ...defaultProps, ...props },
+			...defaultOptions
+		} );
+	}
+
 	beforeEach( () => {
 		store = useMainStore();
 		store.getExpectedTypeOfKey = createGettersWithFunctionsMock();
@@ -34,13 +59,9 @@ describe( 'TypeSelector', () => {
 			keyPath = 'main.Z2K2.Z8K2';
 			objectValue = { Z1K1: 'Z9', Z9K1: '' };
 
-			const wrapper = shallowMount( TypeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					type: Constants.Z_TYPE
-				},
-				global: { stubs: { CdxField: false } }
+			const wrapper = renderTypeSelector( {
+				keyPath,
+				objectValue
 			} );
 
 			const lookup = wrapper.getComponent( { name: 'wl-z-object-selector' } );
@@ -52,13 +73,9 @@ describe( 'TypeSelector', () => {
 			keyPath = 'main.Z2K2.Z8K2';
 			objectValue = { Z1K1: 'Z9', Z9K1: 'Z6' };
 
-			const wrapper = shallowMount( TypeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					type: Constants.Z_TYPE
-				},
-				global: { stubs: { CdxField: false } }
+			const wrapper = renderTypeSelector( {
+				keyPath,
+				objectValue
 			} );
 
 			const lookup = wrapper.getComponent( { name: 'wl-z-object-selector' } );
@@ -75,13 +92,9 @@ describe( 'TypeSelector', () => {
 			};
 			store.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z4' );
 
-			const wrapper = shallowMount( TypeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					type: Constants.Z_TYPE
-				},
-				global: { stubs: { CdxField: false } }
+			const wrapper = renderTypeSelector( {
+				keyPath,
+				objectValue
 			} );
 
 			const lookup = wrapper.getComponent( { name: 'wl-z-object-selector' } );
@@ -107,13 +120,9 @@ describe( 'TypeSelector', () => {
 			};
 			store.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z4' );
 
-			const wrapper = shallowMount( TypeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					type: Constants.Z_TYPE
-				},
-				global: { stubs: { CdxField: false } }
+			const wrapper = renderTypeSelector( {
+				keyPath,
+				objectValue
 			} );
 
 			const lookup = wrapper.getComponent( { name: 'wl-z-object-selector' } );
@@ -145,13 +154,9 @@ describe( 'TypeSelector', () => {
 			store.getStoredObject = jest.fn().mockReturnValue( mockStoredObjects.Z6.data );
 			store.createObjectByType = jest.fn().mockReturnValue( { Z1K1: 'Z9', Z9K1: 'Z6' } );
 
-			const wrapper = shallowMount( TypeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					type: Constants.Z_TYPE
-				},
-				global: { stubs: { CdxField: false } }
+			const wrapper = renderTypeSelector( {
+				keyPath,
+				objectValue
 			} );
 
 			const lookup = wrapper.getComponent( { name: 'wl-z-object-selector' } );
@@ -175,13 +180,9 @@ describe( 'TypeSelector', () => {
 			store.createObjectByType = jest.fn().mockReturnValue( blankFunctionCall );
 			store.getStoredObject = createGettersWithFunctionsMock( mockStoredObjects.Z881.data );
 
-			const wrapper = shallowMount( TypeSelector, {
-				props: {
-					keyPath,
-					objectValue,
-					type: Constants.Z_TYPE
-				},
-				global: { stubs: { CdxField: false } }
+			const wrapper = renderTypeSelector( {
+				keyPath,
+				objectValue
 			} );
 
 			const lookup = wrapper.getComponent( { name: 'wl-z-object-selector' } );

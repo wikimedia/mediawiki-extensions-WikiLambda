@@ -23,16 +23,16 @@
 				@click="showMetadata = !showMetadata"
 				@keydown.enter="showMetadata = !showMetadata"
 			>
-				{{ $i18n( 'wikilambda-function-evaluator-result-details' ).text() }}
+				{{ i18n( 'wikilambda-function-evaluator-result-details' ).text() }}
 			</cdx-button>
 			<cdx-button
 				v-if="showShareButton"
-				v-tooltip:bottom="$i18n( 'wikilambda-function-evaluator-share-button-tooltip' ).text()"
+				v-tooltip:bottom="i18n( 'wikilambda-function-evaluator-share-button-tooltip' ).text()"
 				data-testid="evaluation-result-share-button"
 				@click="shareFunction"
 			>
 				<cdx-icon :icon="iconLink"></cdx-icon>
-				{{ $i18n( 'wikilambda-function-evaluator-share-button' ).text() }}
+				{{ i18n( 'wikilambda-function-evaluator-share-button' ).text() }}
 				<cdx-icon v-if="linkCopied" :icon="iconCheck"></cdx-icon>
 			</cdx-button>
 		</div>
@@ -48,12 +48,12 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapState } = require( 'pinia' );
+const { computed, defineComponent, inject, ref } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
 const useMainStore = require( '../../../store/index.js' );
-const clipboardMixin = require( '../../../mixins/clipboardMixin.js' );
+const useClipboard = require( '../../../composables/useClipboard.js' );
+const useEventLog = require( '../../../composables/useEventLog.js' );
 const { hybridToCanonical } = require( '../../../utils/schemata.js' );
 const { getZFunctionCallFunctionId } = require( '../../../utils/zobjectUtils.js' );
 const urlUtils = require( '../../../utils/urlUtils.js' );
@@ -77,7 +77,6 @@ module.exports = exports = defineComponent( {
 	directives: {
 		tooltip: CdxTooltip
 	},
-	mixins: [ clipboardMixin ],
 	props: {
 		contentType: {
 			type: String,
@@ -85,35 +84,66 @@ module.exports = exports = defineComponent( {
 			default: undefined
 		}
 	},
-	data: function () {
-		return {
-			showMetadata: false,
-			linkCopied: false,
-			responseKey: Constants.Z_RESPONSEENVELOPE_VALUE,
-			responseKeyPath: [
-				Constants.STORED_OBJECTS.RESPONSE,
-				Constants.Z_RESPONSEENVELOPE_VALUE
-			].join( '.' ),
-			iconLink: icons.cdxIconLink,
-			iconCheck: icons.cdxIconCheck
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getCurrentZObjectId',
-		'getCurrentZObjectType',
-		'getLabelData',
-		'getZObjectByKeyPath',
-		'getCurrentView'
-	] ), {
+	setup( props ) {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
+		const clipboard = useClipboard();
+		const eventLog = useEventLog();
+		const linkCopied = ref( false );
+		const iconLink = icons.cdxIconLink;
+		const iconCheck = icons.cdxIconCheck;
+		const showMetadata = ref( false );
+		const responseKey = Constants.Z_RESPONSEENVELOPE_VALUE;
+		const responseKeyPath = [
+			Constants.STORED_OBJECTS.RESPONSE,
+			Constants.Z_RESPONSEENVELOPE_VALUE
+		].join( '.' );
 
 		/**
-		 * Returns whether we're on the RunFunction page
+		 * The function call response object as set in the store
+		 *
+		 * @return {Object}
+		 */
+		const responseObject = computed( () => store.getZObjectByKeyPath( [ Constants.STORED_OBJECTS.RESPONSE ] ) );
+
+		/**
+		 * Returns whether there's a metadata value
 		 *
 		 * @return {boolean}
 		 */
-		isRunFunctionPage: function () {
-			return this.getCurrentView === Constants.VIEWS.FUNCTION_EVALUATOR;
-		},
+		const hasMetadata = computed( () => responseObject.value &&
+				typeof responseObject.value === 'object' &&
+				Constants.Z_RESPONSEENVELOPE_METADATA in responseObject.value );
+
+		/**
+		 * Returns the metadata/Z22K2 object, if defined.
+		 *
+		 * @return {Object|undefined}
+		 */
+		const metadata = computed( () => hasMetadata.value ?
+			hybridToCanonical( responseObject.value[ Constants.Z_RESPONSEENVELOPE_METADATA ] ) :
+			undefined );
+
+		/**
+		 * Returns the selected function call object
+		 *
+		 * @return {Object|undefined}
+		 */
+		const selectedFunctionCall = computed( () => store.getZObjectByKeyPath(
+			[ Constants.STORED_OBJECTS.FUNCTION_CALL ]
+		) );
+
+		/**
+		 * Returns the selected function ZID from the function call
+		 *
+		 * @return {string|undefined}
+		 */
+		const selectedFunctionZid = computed( () => {
+			if ( !selectedFunctionCall.value ) {
+				return undefined;
+			}
+			return getZFunctionCallFunctionId( selectedFunctionCall.value );
+		} );
 
 		/**
 		 * Returns whether the share button should be shown
@@ -121,60 +151,9 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {boolean}
 		 */
-		showShareButton: function () {
-			return this.selectedFunctionZid &&
-				this.contentType !== Constants.Z_TESTER &&
-				this.contentType !== Constants.Z_IMPLEMENTATION;
-		},
-		/**
-		 * The function call response object as set in the store
-		 *
-		 * @return {Object}
-		 */
-		responseObject: function () {
-			return this.getZObjectByKeyPath( [ Constants.STORED_OBJECTS.RESPONSE ] );
-		},
-
-		/**
-		 * Returns whether there's a metadata value
-		 *
-		 * @return {boolean}
-		 */
-		hasMetadata: function () {
-			return this.responseObject &&
-				typeof this.responseObject === 'object' &&
-				Constants.Z_RESPONSEENVELOPE_METADATA in this.responseObject;
-		},
-
-		/**
-		 * Returns the metadata/Z22K2 object, if defined.
-		 *
-		 * @return {Object|undefined}
-		 */
-		metadata: function () {
-			return this.hasMetadata ?
-				hybridToCanonical( this.responseObject[ Constants.Z_RESPONSEENVELOPE_METADATA ] ) :
-				undefined;
-		},
-
-		/**
-		 * Returns the help link from the Metadata dialog
-		 *
-		 * @return {string}
-		 */
-		tooltipMetaDataHelpLink: function () {
-			return this.$i18n( 'wikilambda-helplink-tooltip' ).text();
-		},
-
-		/**
-		 * Returns the parsed help link from the Metadata dialog
-		 *
-		 * @return {string}
-		 */
-		parsedMetaDataHelpLink: function () {
-			const unformattedLink = this.$i18n( 'wikilambda-metadata-help-link' ).text();
-			return mw.internalWikiUrlencode( unformattedLink );
-		},
+		const showShareButton = computed( () => selectedFunctionZid.value &&
+				props.contentType !== Constants.Z_TESTER &&
+				props.contentType !== Constants.Z_IMPLEMENTATION );
 
 		/**
 		 * If we are in an implementation page, return the implementation
@@ -182,69 +161,63 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string|undefined}
 		 */
-		implementationName: function () {
+		const implementationName = computed( () => {
 			// If the page is an implementation, return implementation label
-			if ( this.getCurrentZObjectType === Constants.Z_IMPLEMENTATION ) {
-				return this.getLabelData( this.getCurrentZObjectId );
+			if ( store.getCurrentZObjectType === Constants.Z_IMPLEMENTATION ) {
+				return store.getLabelData( store.getCurrentZObjectId );
 			}
 			return undefined;
-		},
+		} );
 
-		/**
-		 * Returns the selected function call object
-		 *
-		 * @return {Object|undefined}
-		 */
-		selectedFunctionCall: function () {
-			return this.getZObjectByKeyPath( [ Constants.STORED_OBJECTS.FUNCTION_CALL ] );
-		},
-
-		/**
-		 * Returns the selected function ZID from the function call
-		 *
-		 * @return {string|undefined}
-		 */
-		selectedFunctionZid: function () {
-			if ( !this.selectedFunctionCall ) {
-				return undefined;
-			}
-			return getZFunctionCallFunctionId( this.selectedFunctionCall );
-		}
-	} ),
-	methods: {
 		/**
 		 * Generates a shareable URL for the current function call and copies it to clipboard
 		 */
-		shareFunction: function () {
+		function shareFunction() {
 			try {
 				// Convert to canonical form
-				const canonicalFunctionCall = hybridToCanonical( this.selectedFunctionCall );
+				const canonicalFunctionCall = hybridToCanonical( selectedFunctionCall.value );
 
 				// Generate shareable URL (appends to current page)
 				const shareUrl = urlUtils.generateShareUrl( canonicalFunctionCall );
 
 				// Copy to clipboard
-				this.copyToClipboard(
+				clipboard.copyToClipboard(
 					shareUrl,
 					() => {
-						this.linkCopied = true;
+						linkCopied.value = true;
 						const interactionData = {
-							zlang: this.getUserLangZid || null,
-							zobjectid: this.getCurrentZObjectId || null,
-							zobjecttype: this.getCurrentZObjectType || null,
-							selectedfunctionzid: this.selectedFunctionZid || null,
-							haserrors: !!this.hasMetadataErrors
+							zlang: store.getUserLangZid || null,
+							zobjectid: store.getCurrentZObjectId || null,
+							zobjecttype: store.getCurrentZObjectType || null,
+							selectedfunctionzid: selectedFunctionZid.value || null,
+							haserrors: !!store.hasMetadataErrors
 						};
-						this.submitInteraction( 'share', interactionData );
+						eventLog.submitInteraction( 'share', interactionData );
 					},
 					() => {
-						this.linkCopied = false;
+						linkCopied.value = false;
 					}
 				);
 			} catch ( _e ) {
 				// Do nothing for now
 			}
 		}
+
+		return {
+			i18n,
+			hasMetadata,
+			iconLink,
+			iconCheck,
+			implementationName,
+			linkCopied,
+			metadata,
+			responseKey,
+			responseKeyPath,
+			responseObject,
+			showMetadata,
+			showShareButton,
+			shareFunction
+		};
 	}
 } );
 

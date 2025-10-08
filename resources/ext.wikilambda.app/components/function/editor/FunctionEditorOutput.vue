@@ -36,8 +36,7 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { mapState } = require( 'pinia' );
+const { computed, defineComponent, inject } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
 const FunctionEditorField = require( './FunctionEditorField.vue' );
@@ -75,89 +74,89 @@ module.exports = exports = defineComponent( {
 			default: null
 		}
 	},
-	data: function () {
-		return {
-			outputTypeKeyPath: [
-				Constants.STORED_OBJECTS.MAIN,
-				Constants.Z_PERSISTENTOBJECT_VALUE,
-				Constants.Z_FUNCTION_RETURN_TYPE
-			].join( '.' )
-		};
-	},
-	computed: Object.assign( {}, mapState( useMainStore, [
-		'getUserLangCode',
-		'getZFunctionOutput'
-	] ), {
+	setup() {
+		const i18n = inject( 'i18n' );
+		const store = useMainStore();
+
+		const outputTypeKeyPath = [
+			Constants.STORED_OBJECTS.MAIN,
+			Constants.Z_PERSISTENTOBJECT_VALUE,
+			Constants.Z_FUNCTION_RETURN_TYPE
+		].join( '.' );
+
 		/**
 		 * Returns the output type of the function
 		 *
 		 * @return {Object}
 		 */
-		outputType: function () {
-			return this.getZFunctionOutput;
-		},
+		const outputType = computed( () => store.getZFunctionOutput );
+
 		/**
 		 * Returns the label for the output field
 		 *
-		 * @return {string}
-		 */
-		outputLabel: function () {
-			// TODO (T335583): Replace i18n message with key label
-			// return this.getLabelData( Constants.Z_FUNCTION_RETURN_TYPE );
-			return this.$i18n( 'wikilambda-function-definition-output-label' ).text();
-		},
-		/**
-		 * Returns the title of the "Type" column for the output field
+		 * TODO (T335583): Replace i18n message with key label
 		 *
 		 * @return {string}
 		 */
-		outputTypeLabel: function () {
-			return LabelData.fromString(
-				this.$i18n( 'wikilambda-function-definition-output-type-label' ).text()
-			);
-		},
+		const outputLabel = computed( () => i18n( 'wikilambda-function-definition-output-label' ).text() );
+
+		/**
+		 * Returns the title of the "Type" column for the output field
+		 *
+		 * @return {LabelData}
+		 */
+		const outputTypeLabel = computed( () => LabelData.fromString(
+			i18n( 'wikilambda-function-definition-output-type-label' ).text()
+		) );
+
 		/**
 		 * Returns the id for the output field
 		 *
 		 * @return {string}
 		 */
-		outputFieldId: function () {
-			return 'ext-wikilambda-app-function-editor-output__label-id';
-		},
+		const outputFieldId = computed( () => 'ext-wikilambda-app-function-editor-output__label-id' );
+
 		/**
 		 * Returns the description for the output field
 		 *
 		 * @return {string}
 		 */
-		outputFieldDescription: function () {
-			return this.$i18n( 'wikilambda-function-definition-output-description' ).text();
-		},
+		const outputFieldDescription = computed( () => i18n( 'wikilambda-function-definition-output-description' ).text() );
+
 		/**
 		 * Returns the placeholder for the output field
 		 *
 		 * @return {string}
 		 */
-		outputFieldPlaceholder: function () {
-			return this.$i18n( 'wikilambda-function-definition-output-selector' ).text();
-		},
+		const outputFieldPlaceholder = computed( () => i18n( 'wikilambda-function-definition-output-selector' ).text() );
+
 		/**
 		 * Returns the URL to the Special page List Object by Type
 		 *
 		 * @return {string}
 		 */
-		listObjectsUrl: function () {
-			return new mw.Title( Constants.PATHS.LIST_OBJECTS_BY_TYPE_TYPE )
-				.getUrl( { uselang: this.getUserLangCode } );
-		},
+		const listObjectsUrl = computed( () => new mw.Title( Constants.PATHS.LIST_OBJECTS_BY_TYPE_TYPE )
+			.getUrl( { uselang: store.getUserLangCode } ) );
+
 		/**
 		 * Returns the text for the link to the Special page List Object by Type
 		 *
 		 * @return {string}
 		 */
-		listObjectsLink: function () {
-			return this.$i18n( 'wikilambda-function-definition-output-types' ).text();
-		}
-	} )
+		const listObjectsLink = computed( () => i18n( 'wikilambda-function-definition-output-types' ).text() );
+
+		return {
+			listObjectsLink,
+			listObjectsUrl,
+			outputFieldDescription,
+			outputFieldId,
+			outputFieldPlaceholder,
+			outputLabel,
+			outputType,
+			outputTypeKeyPath,
+			outputTypeLabel
+		};
+	}
 } );
 </script>
 

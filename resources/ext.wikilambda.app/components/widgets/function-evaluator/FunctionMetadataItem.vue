@@ -7,7 +7,7 @@
 <template>
 	<li class="ext-wikilambda-app-function-metadata-item">
 		<span class="ext-wikilambda-app-function-metadata-item__title">{{
-			item.title }}</span>{{ $i18n( 'colon-separator' ).text() }}
+			item.title }}</span>{{ i18n( 'colon-separator' ).text() }}
 		<template v-if="item.data">
 			<a
 				v-if="item.data.type === METADATA_CONTENT_TYPE.LINK"
@@ -32,7 +32,7 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
+const { defineComponent, inject } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
 
@@ -51,9 +51,13 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	data: function () {
+	setup() {
+		const i18n = inject( 'i18n' );
+		const METADATA_CONTENT_TYPE = Constants.METADATA_CONTENT_TYPE;
+
 		return {
-			METADATA_CONTENT_TYPE: Constants.METADATA_CONTENT_TYPE
+			METADATA_CONTENT_TYPE,
+			i18n
 		};
 	}
 } );

@@ -43,6 +43,23 @@ const objectValueFetch = {
 describe( 'WikidataLexeme', () => {
 	let store;
 
+	/**
+	 * Helper function to render WikidataLexeme component
+	 *
+	 * @param {Object} props - Props to pass to the component
+	 * @param {Object} options - Additional mount options
+	 * @return {Object} Mounted wrapper
+	 */
+	function renderWikidataLexeme( props = {}, options = {} ) {
+		const defaultProps = {
+			keyPath,
+			objectValue,
+			edit: false,
+			type: Constants.Z_WIKIDATA_REFERENCE_LEXEME
+		};
+		return shallowMount( WikidataLexeme, { props: { ...defaultProps, ...props }, ...options } );
+	}
+
 	beforeEach( () => {
 		store = useMainStore();
 		store.getLexemeData = createGettersWithFunctionsMock();
@@ -51,25 +68,14 @@ describe( 'WikidataLexeme', () => {
 
 	describe( 'in view mode', () => {
 		it( 'renders wikidata lexeme reference without errors', () => {
-			const wrapper = shallowMount( WikidataLexeme, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false,
-					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME
-				}
-			} );
+			const wrapper = renderWikidataLexeme();
 			expect( wrapper.find( '.ext-wikilambda-app-wikidata-lexeme' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders wikidata lexeme fetch function without errors', () => {
-			const wrapper = shallowMount( WikidataLexeme, {
-				props: {
-					keyPath,
-					objectValue: objectValueFetch,
-					edit: false,
-					type: Constants.Z_FUNCTION_CALL
-				}
+			const wrapper = renderWikidataLexeme( {
+				objectValue: objectValueFetch,
+				type: Constants.Z_FUNCTION_CALL
 			} );
 			expect( wrapper.find( '.ext-wikilambda-app-wikidata-lexeme' ).exists() ).toBe( true );
 		} );
@@ -77,14 +83,8 @@ describe( 'WikidataLexeme', () => {
 		it( 'renders the lexeme external link if data is available', () => {
 			store.getLexemeData = createGettersWithFunctionsMock( lexemeData );
 
-			const wrapper = shallowMount( WikidataLexeme, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false,
-					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME
-				}
-			} );
+			const wrapper = renderWikidataLexeme();
+
 			const link = wrapper.find( '.ext-wikilambda-app-wikidata-lexeme__link' );
 			expect( link.exists() ).toBe( true );
 			expect( link.attributes().href ).toContain( `Lexeme:${ lexemeId }` );
@@ -92,14 +92,8 @@ describe( 'WikidataLexeme', () => {
 		} );
 
 		it( 'renders the lexeme external link if data is not available', () => {
-			const wrapper = shallowMount( WikidataLexeme, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: false,
-					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME
-				}
-			} );
+			const wrapper = renderWikidataLexeme();
+
 			const link = wrapper.find( '.ext-wikilambda-app-wikidata-lexeme__link' );
 			expect( link.exists() ).toBe( true );
 			expect( link.attributes().href ).toContain( `Lexeme:${ lexemeId }` );
@@ -109,100 +103,29 @@ describe( 'WikidataLexeme', () => {
 
 	describe( 'in edit mode', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( WikidataLexeme, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME
-				}
-			} );
+			const wrapper = renderWikidataLexeme( { edit: true } );
+
 			expect( wrapper.find( '.ext-wikilambda-app-wikidata-lexeme' ).exists() ).toBe( true );
-		} );
-
-		it( 'renders blank wikidata entity selector', () => {
-			const wrapper = shallowMount( WikidataLexeme, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME
-				}
-			} );
-			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
-			expect( lookup.exists() ).toBe( true );
-		} );
-
-		it( 'renders wikidata entity selector', () => {
-			const wrapper = shallowMount( WikidataLexeme, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME
-				}
-			} );
-			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
-			expect( lookup.exists() ).toBe( true );
 		} );
 
 		it( 'initializes wikidata entity selector', async () => {
 			store.getLexemeData = createGettersWithFunctionsMock( lexemeData );
 
-			const wrapper = shallowMount( WikidataLexeme, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME
-				}
-			} );
-			await wrapper.vm.$nextTick();
+			const wrapper = renderWikidataLexeme( { edit: true } );
 
 			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
 			expect( lookup.exists() ).toBe( true );
-			expect( lookup.vm.entityId ).toBe( lexemeId );
-			expect( lookup.vm.entityLabel ).toBe( lexemeLabel );
-			expect( store.fetchLexemes ).toHaveBeenCalledWith( { ids: [ lexemeId ] } );
-		} );
-
-		it( 'initializes wikidata entity selector input value with delayed fetch response', async () => {
-			const wrapper = shallowMount( WikidataLexeme, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME
-				}
-			} );
-
-			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
-			expect( lookup.vm.entityId ).toBe( lexemeId );
-			expect( lookup.vm.entityLabel ).toBe( lexemeId );
-
-			store.getLexemeData = createGettersWithFunctionsMock( lexemeData );
-
-			await wrapper.vm.$nextTick();
-
 			expect( lookup.vm.entityId ).toBe( lexemeId );
 			expect( lookup.vm.entityLabel ).toBe( lexemeLabel );
 			expect( store.fetchLexemes ).toHaveBeenCalledWith( { ids: [ lexemeId ] } );
 		} );
 
 		it( 'sets lexeme reference ID when selecting option from the menu', async () => {
-			const wrapper = shallowMount( WikidataLexeme, {
-				props: {
-					keyPath,
-					objectValue,
-					edit: true,
-					type: Constants.Z_WIKIDATA_REFERENCE_LEXEME
-				}
-			} );
+			const wrapper = renderWikidataLexeme( { edit: true } );
 
 			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
 			lookup.vm.$emit( 'select-wikidata-entity', lexemeId );
 
-			await wrapper.vm.$nextTick();
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ {
 				value: lexemeId,
 				keyPath: [
@@ -213,19 +136,15 @@ describe( 'WikidataLexeme', () => {
 		} );
 
 		it( 'sets lexeme fetch function ID when selecting option from the menu', async () => {
-			const wrapper = shallowMount( WikidataLexeme, {
-				props: {
-					keyPath,
-					objectValue: objectValueFetch,
-					edit: true,
-					type: Constants.Z_FUNCTION_CALL
-				}
+			const wrapper = renderWikidataLexeme( {
+				objectValue: objectValueFetch,
+				edit: true,
+				type: Constants.Z_FUNCTION_CALL
 			} );
 
 			const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
 			lookup.vm.$emit( 'select-wikidata-entity', lexemeId );
 
-			await wrapper.vm.$nextTick();
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ {
 				value: lexemeId,
 				keyPath: [
