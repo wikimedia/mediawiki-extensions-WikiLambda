@@ -30,7 +30,6 @@ abstract class WikiLambdaClientIntegrationTestCase extends MediaWikiIntegrationT
 	protected function runPrivateMethod( $object, $methodName, $args ) {
 		$reflector = new \ReflectionClass( get_class( $object ) );
 		$method = $reflector->getMethod( $methodName );
-		$method->setAccessible( true );
 		return $method->invokeArgs( $object, $args );
 	}
 }
