@@ -5,16 +5,7 @@
 			"Marphy 123"
 		]
 	},
-	"wikilambda-monolingual-string-list-dialog-accessible-title": "Kosolola mpo na kotika yo omona mpe okosalela liste ya bansinga ya minoko ebele",
-	"wikilambda-monolingual-string-list-dialog-title": "Makambo na minoko misusu",
-	"wikilambda-monolingual-string-list-dialog-add-language": "Bakisa monoko",
-	"wikilambda-monolingual-string-list-dialog-available": "Minɔkɔ oyo ezali",
-	"wikilambda-monolingual-string-list-dialog-search-placeholder": "Minɔkɔ ya bolukiluki",
-	"wikilambda-monolingual-string-list-dialog-suggested": "Minɔkɔ oyo balobeli",
-	"wikilambda-editor-multilingual-string-loadmore": "{{PLURAL:$1| $1 monoko| $1 minoko}}",
-	"wikilambda-editor-monolingual-string-nolanguage": "Elobeli moko te",
 	"wikilambda-functioncall-error-unclear-category": "Ba page oyo ezali na libunga ya Wikifonctions oyo ezali na mbeba ya polele te",
 	"wikilambda-functioncall-error-unclear-category-desc": "Ba page oyo ezali na ba appels na Wikifunctions oyo ebimisaka libunga ya systeme",
-	"wikilambda-functioncall-metadata-test-failure": "Résultat oyo ezelamaki mpe résultat ya solo ekokani te.",
 	"wikilambda-mode-selector-move-group-label": "Kotombola to kokitisa biloko na liste"
 }

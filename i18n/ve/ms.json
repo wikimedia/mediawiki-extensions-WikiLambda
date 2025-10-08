@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Hakimi97"
+		]
+	},
+	"wikilambda-fragment-disabled": "Panggilan fungsi Wikifungsi dilumpuhkan pada masa ini. Anda mungkin ingin menggantikan panggilan ini.",
+	"wikilambda-fragment-pending": "⏳ Fungsi sedang dipanggil…",
+	"wikilambda-recentchanges-edit-legend": "Sunting daripada Wikifungsi",
+	"wikilambda-recentchanges-edit-letter": "F",
+	"wikilambda-recentchanges-edit-title": "Suntingan Wikifungsi",
+	"wikilambda-recentchanges-entry-function": "Fungsi",
+	"wikilambda-recentchanges-explanation-connect-implementation": "{{PLURAL:$1|Pelaksanaan|$1 pelaksanaan:}} $2 telah disambungkan",
+	"wikilambda-recentchanges-explanation-connect-tester": "{{PLURAL:$1|Kes ujian|$1 kes ujian}} tersambung: $2",
+	"wikilambda-recentchanges-explanation-delete-function": "Takrifan Wikifungsi telah dihapuskan",
+	"wikilambda-recentchanges-explanation-delete-implementation": "Pelaksanaan $1 telah dihapuskan",
+	"wikilambda-recentchanges-explanation-delete-tester": "Kes ujian $1 telah dihapuskan",
+	"wikilambda-recentchanges-explanation-disconnect-implementation": "{{PLURAL:$1|Pelaksanaan|$1 pelaksanaan:}} $2 telah dinyahsambungkan",
+	"wikilambda-recentchanges-filter-rc-pref": "Tunjukkan suntingan Wikifungsi dalam perubahan terkini"
+}
