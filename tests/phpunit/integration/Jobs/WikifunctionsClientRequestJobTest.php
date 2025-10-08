@@ -109,7 +109,6 @@ class WikifunctionsClientRequestJobTest extends WikiLambdaClientIntegrationTestC
 
 		// Inject mock HttpRequestFactory:
 		$ref = new \ReflectionProperty( $job, 'httpRequestFactory' );
-		$ref->setAccessible( true );
 		$ref->setValue( $job, $mockHttpRequestFactory );
 
 		// Run private remoteCall method:

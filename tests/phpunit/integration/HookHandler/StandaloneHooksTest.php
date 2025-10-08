@@ -460,7 +460,6 @@ EOT;
 				} ) );
 			$secondaryUpdate = $zobjectUpdates[0];
 			$ref = new \ReflectionProperty( $secondaryUpdate, 'orchestrator' );
-			$ref->setAccessible( true );
 			$ref->setValue( $secondaryUpdate, $mockOrchestratorRequest );
 
 			// Execute the update.
@@ -561,7 +560,6 @@ EOT;
 				} ) );
 			$secondaryUpdate = $zobjectUpdates[0];
 			$ref = new \ReflectionProperty( $secondaryUpdate, 'orchestrator' );
-			$ref->setAccessible( true );
 			$ref->setValue( $secondaryUpdate, $mockOrchestratorRequest );
 
 			// Execute the update.
